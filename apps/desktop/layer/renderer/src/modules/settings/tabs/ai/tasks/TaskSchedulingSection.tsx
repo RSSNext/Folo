@@ -11,8 +11,8 @@ export const TaskSchedulingSection = () => {
 
   const handleCreateTask = useCallback(() => {
     present({
-      title: "",
-      canClose: false,
+      title: "New AI Task",
+      canClose: true,
       content: () => <AITaskModal />,
     })
   }, [present])

@@ -67,29 +67,29 @@ export const TimeSelect = memo<TimeSelectProps>(
         <Select disabled={disabled} value={hourValue} onValueChange={(h) => update(h, minuteValue)}>
           <SelectTrigger
             aria-label={label ? `${label} hour` : "Hour"}
-            className="w-16 justify-between px-2 py-1 text-sm"
+            className="bg-material-opaque hover:bg-mix-accent/background-1/4 h-6 w-12 justify-between rounded-[4px] border-0 px-1.5 py-0 text-xs"
           >
             <SelectValue />
           </SelectTrigger>
-          <SelectContent className="max-h-64 w-20 p-1">
+          <SelectContent position="item-aligned" className="max-h-[50vh] w-16 p-1">
             {hours.map((h) => (
-              <SelectItem key={h.value} value={h.value} className="text-sm">
+              <SelectItem key={h.value} value={h.value} className="h-6 text-xs">
                 {h.label}
               </SelectItem>
             ))}
           </SelectContent>
         </Select>
-        <span className="text-text-secondary select-none px-0.5">:</span>
+        <span className="text-text-secondary mx-0.5 select-none text-xs">:</span>
         <Select disabled={disabled} value={minuteValue} onValueChange={(m) => update(hourValue, m)}>
           <SelectTrigger
             aria-label={label ? `${label} minute` : "Minute"}
-            className="w-16 justify-between px-2 py-1 text-sm"
+            className="bg-material-opaque hover:bg-mix-accent/background-1/4 h-6 w-12 justify-between rounded-[4px] border-0 px-1.5 py-0 text-xs"
           >
             <SelectValue />
           </SelectTrigger>
-          <SelectContent className="max-h-64 w-20 p-1">
+          <SelectContent position="item-aligned" className="max-h-[50vh] w-16 p-1">
             {minutes.map((m) => (
-              <SelectItem key={m.value} value={m.value} className="text-sm">
+              <SelectItem key={m.value} value={m.value} className="h-6 text-xs">
                 {m.label}
               </SelectItem>
             ))}

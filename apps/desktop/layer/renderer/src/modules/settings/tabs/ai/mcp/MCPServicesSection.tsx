@@ -253,12 +253,6 @@ export const MCPServicesSection = () => {
             </div>
           )}
 
-          {isLoading && (
-            <div className="flex items-center justify-center py-8">
-              <i className="i-mgc-loading-3-cute-re size-6 animate-spin" />
-            </div>
-          )}
-
           {mcpServices.map((service) => (
             <MCPServiceItem
               key={service.id}

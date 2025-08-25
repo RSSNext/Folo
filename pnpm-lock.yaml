@@ -1556,6 +1556,9 @@ importers:
       '@react-hook/window-size':
         specifier: 3.1.1
         version: 3.1.1(react@19.0.0)
+      '@rehookify/datepicker':
+        specifier: 6.6.8
+        version: 6.6.8(react@19.0.0)
       '@types/hast':
         specifier: 3.0.4
         version: 3.0.4
@@ -5707,6 +5710,12 @@ packages:
 
   '@react-types/shared@3.29.1':
     resolution: {integrity: sha512-KtM+cDf2CXoUX439rfEhbnEdAgFZX20UP2A35ypNIawR7/PFFPjQDWyA2EnClCcW/dLWJDEPX2U8+EJff8xqmQ==}
+    peerDependencies:
+      react: 19.0.0
+
+  '@rehookify/datepicker@6.6.8':
+    resolution: {integrity: sha512-s/KFkVZSLWTICeFOshlhgAGiRTzuSXSQOJHoXWcihqX8Nz8ZctgGaskd5+ybxSrcndSYGGts4XsL4A7P9kimBQ==}
+    engines: {node: '>=16'}
     peerDependencies:
       react: 19.0.0
 
@@ -21204,6 +21213,10 @@ snapshots:
       react: 19.0.0
 
   '@react-types/shared@3.29.1(react@19.0.0)':
+    dependencies:
+      react: 19.0.0
+
+  '@rehookify/datepicker@6.6.8(react@19.0.0)':
     dependencies:
       react: 19.0.0
 

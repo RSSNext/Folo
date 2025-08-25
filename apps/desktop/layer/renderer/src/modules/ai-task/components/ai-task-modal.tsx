@@ -2,17 +2,15 @@ import { Button } from "@follow/components/ui/button/index.js"
 import {
   Form,
   FormControl,
-  FormDescription,
   FormField,
   FormItem,
-  FormLabel,
   FormMessage,
 } from "@follow/components/ui/form/index.jsx"
-import { TextArea } from "@follow/components/ui/input/index.js"
+import { Input, TextArea } from "@follow/components/ui/input/index.js"
+import { Label } from "@follow/components/ui/label/index.jsx"
 import type { AITask } from "@follow-app/client-sdk"
 import { zodResolver } from "@hookform/resolvers/zod"
 import dayjs from "dayjs"
-import { memo } from "react"
 import { useForm } from "react-hook-form"
 import { toast } from "sonner"
 import { z } from "zod"
@@ -22,7 +20,6 @@ import { useCreateAITaskMutation, useUpdateAITaskMutation } from "~/modules/ai-t
 import type { ScheduleType } from "~/modules/ai-task/types"
 import { scheduleSchema } from "~/modules/ai-task/types"
 
-import { AITaskModalHeader } from "./ai-task-modal-header"
 import { ScheduleConfig } from "./schedule-config"
 
 const MAX_PROMPT_LENGTH = 2000
@@ -130,7 +127,7 @@ const getDefaultFormData = (task?: AITask, prompt?: string): TaskFormData => {
   }
 }
 
-export const AITaskModal = memo<AITaskModalProps>(({ task, prompt, onSubmit }) => {
+export const AITaskModal = ({ task, prompt, onSubmit }: AITaskModalProps) => {
   const { dismiss } = useCurrentModal()
   const createAITaskMutation = useCreateAITaskMutation()
   const updateAITaskMutation = useUpdateAITaskMutation()
@@ -187,60 +184,101 @@ export const AITaskModal = memo<AITaskModalProps>(({ task, prompt, onSubmit }) =
   const currentMutation = isEditing ? updateAITaskMutation : createAITaskMutation
 
   return (
-    <>
-      <AITaskModalHeader
-        title={form.watch("title")}
-        error={form.formState.errors.title?.message as string | undefined}
-        onClose={dismiss}
-        onSaveTitle={async (newTitle) => {
-          form.setValue("title", newTitle, { shouldValidate: true, shouldDirty: true })
-        }}
-      />
+    <div className="min-w-[400px] space-y-6">
+      <Form {...form}>
+        <form onSubmit={form.handleSubmit(handleSubmit)} className="space-y-6">
+          {/* Task Basic Information Section */}
+          <div className="space-y-4">
+            <div className="flex items-center gap-2">
+              <i className="i-mgc-file-upload-cute-re text-text-secondary size-4" />
+              <h3 className="text-text text-sm font-medium">Task Information</h3>
+            </div>
 
-      <div className="w-[500px] space-y-6 p-6">
-        <Form {...form}>
-          <form onSubmit={form.handleSubmit(handleSubmit)} className="space-y-6">
-            {/* Schedule Configuration */}
-            <ScheduleConfig
-              value={scheduleValue}
-              onChange={handleScheduleChange}
-              errors={form.formState.errors.schedule as Record<string, string>}
-            />
-
-            {/* Task Details */}
-            <div className="space-y-4">
+            <div className="space-y-2">
+              <Label className="text-text pl-2 text-sm font-medium">Task Name</Label>
               <FormField
                 control={form.control}
-                name="prompt"
+                name="title"
                 render={({ field }) => (
                   <FormItem>
-                    <FormLabel>AI Prompt</FormLabel>
-                    <FormDescription>
-                      The prompt that will be sent to AI when this task runs
-                    </FormDescription>
                     <FormControl>
-                      <TextArea
-                        placeholder="Enter the AI prompt to execute..."
-                        className="min-h-[100px] resize-none"
-                        maxLength={2000}
-                        {...field}
-                      />
+                      <Input placeholder="Enter a descriptive name for your task..." {...field} />
                     </FormControl>
-                    {field.value?.length > MAX_PROMPT_LENGTH * 0.8 && (
-                      <FormDescription>{`${field.value.length}/${MAX_PROMPT_LENGTH} characters`}</FormDescription>
-                    )}
                     <FormMessage />
                   </FormItem>
                 )}
               />
             </div>
+          </div>
 
-            {/* Form Actions */}
-            <div className="border-border flex justify-end space-x-3 border-t pt-4">
-              <Button type="button" variant="ghost" onClick={dismiss}>
+          {/* Schedule Configuration Section */}
+          <div className="space-y-4">
+            <div className="flex items-center gap-2">
+              <i className="i-mgc-calendar-time-add-cute-re text-text-secondary size-4" />
+              <h3 className="text-text text-sm font-medium">Schedule Configuration</h3>
+            </div>
+
+            <ScheduleConfig
+              value={scheduleValue}
+              onChange={handleScheduleChange}
+              errors={form.formState.errors.schedule as Record<string, string>}
+            />
+          </div>
+
+          {/* AI Prompt Section */}
+          <div className="space-y-4">
+            <div className="flex items-center gap-2">
+              <i className="i-mgc-magic-2-cute-re text-text-secondary size-4" />
+              <h3 className="text-text text-sm font-medium">AI Instructions</h3>
+            </div>
+
+            <div className="space-y-2">
+              <Label className="text-text pl-2 text-sm font-medium">Prompt</Label>
+              <FormField
+                control={form.control}
+                name="prompt"
+                render={({ field }) => (
+                  <FormItem>
+                    <FormControl>
+                      <TextArea
+                        placeholder="Describe what you want the AI to do when this task runs..."
+                        className="min-h-[120px] resize-none px-3 py-2 text-sm leading-relaxed"
+                        maxLength={2000}
+                        {...field}
+                      />
+                    </FormControl>
+                    <div className="flex items-center justify-between">
+                      <div className="text-text-tertiary text-xs">
+                        Provide clear, specific instructions for the AI to execute
+                      </div>
+                      {field.value?.length > MAX_PROMPT_LENGTH * 0.8 && (
+                        <div className="text-text-secondary text-xs font-medium">
+                          {field.value.length}/{MAX_PROMPT_LENGTH}
+                        </div>
+                      )}
+                    </div>
+                    <FormMessage />
+                  </FormItem>
+                )}
+              />
+            </div>
+          </div>
+
+          {/* Form Actions */}
+
+          <div className="flex items-center justify-between">
+            <div />
+            <div className="flex gap-3">
+              <Button
+                type="button"
+                variant="outline"
+                size="sm"
+                onClick={dismiss}
+                disabled={currentMutation.isPending}
+              >
                 Cancel
               </Button>
-              <Button type="submit" disabled={currentMutation.isPending}>
+              <Button type="submit" size="sm" disabled={currentMutation.isPending}>
                 {currentMutation.isPending ? (
                   <>
                     <i className="i-mgc-loading-3-cute-re mr-2 size-4 animate-spin" />
@@ -256,11 +294,11 @@ export const AITaskModal = memo<AITaskModalProps>(({ task, prompt, onSubmit }) =
                 )}
               </Button>
             </div>
-          </form>
-        </Form>
-      </div>
-    </>
+          </div>
+        </form>
+      </Form>
+    </div>
   )
-})
+}
 
 AITaskModal.displayName = "AITaskModal"
