@@ -94,34 +94,36 @@ export const ArticleLayout: React.FC<ArticleLayoutProps> = ({
       <EntryTitle entryId={entryId} compact={compact} />
 
       {/* Content Type Toggle */}
-      <div className="mb-6 mt-4 flex items-center gap-2">
-        <div className="flex rounded-lg border border-gray-200 p-1 dark:border-gray-700">
-          <button
-            type="button"
-            onClick={() => setShowTranscript(false)}
-            className={cn(
-              "rounded-md px-3 py-1 text-sm transition-colors",
-              !showTranscript
-                ? "bg-blue-500 text-white"
-                : "text-gray-600 hover:bg-gray-100 dark:text-gray-400 dark:hover:bg-gray-800",
-            )}
-          >
-            Article
-          </button>
-          <button
-            type="button"
-            onClick={() => setShowTranscript(true)}
-            className={cn(
-              "rounded-md px-3 py-1 text-sm transition-colors",
-              showTranscript
-                ? "bg-blue-500 text-white"
-                : "text-gray-600 hover:bg-gray-100 dark:text-gray-400 dark:hover:bg-gray-800",
-            )}
-          >
-            Transcript
-          </button>
+      {transcriptionData?.srt && (
+        <div className="mb-6 mt-4 flex items-center gap-2">
+          <div className="flex rounded-lg border border-gray-200 p-1 dark:border-gray-700">
+            <button
+              type="button"
+              onClick={() => setShowTranscript(false)}
+              className={cn(
+                "rounded-md px-3 py-1 text-sm transition-colors",
+                !showTranscript
+                  ? "bg-blue-500 text-white"
+                  : "text-gray-600 hover:bg-gray-100 dark:text-gray-400 dark:hover:bg-gray-800",
+              )}
+            >
+              Article
+            </button>
+            <button
+              type="button"
+              onClick={() => setShowTranscript(true)}
+              className={cn(
+                "rounded-md px-3 py-1 text-sm transition-colors",
+                showTranscript
+                  ? "bg-blue-500 text-white"
+                  : "text-gray-600 hover:bg-gray-100 dark:text-gray-400 dark:hover:bg-gray-800",
+              )}
+            >
+              Transcript
+            </button>
+          </div>
         </div>
-      </div>
+      )}
 
       <WrappedElementProvider boundingDetection>
         <div className="mx-auto mb-32 mt-8 max-w-full cursor-auto text-[0.94rem]">
