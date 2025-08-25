@@ -157,15 +157,17 @@ export const SettingLists = () => {
                               <span
                                 className={cn(
                                   "inline-flex items-center",
-                                  views[row.view]!.className,
+                                  views.find((v) => v.view === row.view)?.className,
                                 )}
                               >
-                                {views[row.view]!.icon}
+                                {views.find((v) => v.view === row.view)?.icon}
                               </span>
                             </TooltipTrigger>
                             <TooltipPortal>
                               <TooltipContent>
-                                {t(views[row.view]!.name, { ns: "common" })}
+                                {t(views.find((v) => v.view === row.view)!.name, {
+                                  ns: "common",
+                                })}
                               </TooltipContent>
                             </TooltipPortal>
                           </Tooltip>

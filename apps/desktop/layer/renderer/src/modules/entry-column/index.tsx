@@ -103,7 +103,7 @@ function EntryColumnImpl() {
       }
 
       if (!renderAsRead) return
-      if (!views[view]!.wideMode) {
+      if (!views.find((v) => v.view === view)?.wideMode) {
         return
       }
       // For gird, render as mark read logic
@@ -119,7 +119,7 @@ function EntryColumnImpl() {
   }, [entries])
   const isMobile = useMobile()
 
-  const ListComponent = views[view]!.gridMode ? EntryColumnGrid : EntryList
+  const ListComponent = views.find((v) => v.view === view)?.gridMode ? EntryColumnGrid : EntryList
   return (
     <Focusable
       scope={HotkeyScope.Timeline}

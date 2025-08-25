@@ -62,7 +62,7 @@ const parseNavigateEntryOptions = (options: NavigateEntryOptions): ParsedNavigat
   let finalTimelineId = timelineId || params.timelineId || ROUTE_FEED_PENDING
   const finalEntryId = entryId || ROUTE_ENTRY_PENDING
   const subscription = getSubscriptionByFeedId(finalFeedId)
-  const finalView = subscription?.view || view
+  const finalView = view || subscription?.view
 
   if ("feedId" in options && feedId === null) {
     finalFeedId = ROUTE_FEED_PENDING

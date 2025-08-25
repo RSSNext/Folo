@@ -30,7 +30,10 @@ const EntryLayoutContentLegacy = () => {
   const settingWideMode = useRealInWideMode()
   const realEntryId = entryId === ROUTE_ENTRY_PENDING ? "" : entryId
   usePrefetchEntryDetail(realEntryId)
-  const showEntryContent = !(views[view]!.wideMode || (settingWideMode && !realEntryId))
+  const showEntryContent = !(
+    views.find((v) => v.view === view)?.wideMode ||
+    (settingWideMode && !realEntryId)
+  )
   const wideMode = !!(settingWideMode && realEntryId)
   const feedColumnTempShow = useTimelineColumnTempShow()
   const feedColumnShow = useTimelineColumnShow()
@@ -75,7 +78,7 @@ export const EntryLayoutContentWithAI = () => {
   const realEntryId = entryId === ROUTE_ENTRY_PENDING ? "" : entryId
   const wideMode = !!(settingWideMode && realEntryId)
 
-  const isWideView = views[view]?.wideMode
+  const isWideView = views.find((v) => v.view === view)?.wideMode
   return (
     <AppLayoutGridContainerProvider>
       <EntryGridContainer wideMode={wideMode}>
