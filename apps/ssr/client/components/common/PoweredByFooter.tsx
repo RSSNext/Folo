@@ -14,7 +14,7 @@ export const PoweredByFooter: Component = ({ className }) => (
           </p>
           <div className="flex items-center justify-center gap-4 md:justify-start">
             <a
-              href="https://app.folo.is/privacy-policy"
+              href="https://folo.is/privacy-policy"
               target="_blank"
               rel="noopener noreferrer"
               className="text-text-secondary hover:text-text text-xs transition-colors"
@@ -22,7 +22,7 @@ export const PoweredByFooter: Component = ({ className }) => (
               Privacy Policy
             </a>
             <a
-              href="https://app.folo.is/terms"
+              href="https://folo.is/terms-of-service"
               target="_blank"
               rel="noopener noreferrer"
               className="text-text-secondary hover:text-text text-xs transition-colors"

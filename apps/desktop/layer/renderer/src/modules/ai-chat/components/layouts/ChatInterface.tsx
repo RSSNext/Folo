@@ -40,7 +40,7 @@ import { WelcomeScreen } from "./WelcomeScreen"
 
 const SCROLL_BOTTOM_THRESHOLD = 100
 
-const ChatInterfaceContent = () => {
+const ChatInterfaceContent = ({ centerInputOnEmpty }: ChatInterfaceProps) => {
   const hasMessages = useHasMessages()
   const status = useChatStatus()
   const chatActions = useChatActions()
@@ -182,7 +182,7 @@ const ChatInterfaceContent = () => {
       <div className="flex min-h-0 flex-1 flex-col">
         <AnimatePresence>
           {!hasMessages && !isLoadingHistory ? (
-            <WelcomeScreen onSend={handleSendMessage} />
+            <WelcomeScreen onSend={handleSendMessage} centerInputOnEmpty={centerInputOnEmpty} />
           ) : (
             <ScrollArea
               flex
@@ -213,7 +213,7 @@ const ChatInterfaceContent = () => {
             type="button"
             onClick={() => resetScrollState()}
             className={cn(
-              "center bg-background/85 backdrop-blur-background group flex size-8 items-center gap-2 rounded-full border transition-all",
+              "center bg-mix-background/transparent-8/2 backdrop-blur-background group flex size-8 items-center gap-2 rounded-full border transition-all",
               "border-border",
               "hover:border-border/60 active:scale-[0.98]",
             )}
@@ -224,10 +224,11 @@ const ChatInterfaceContent = () => {
       )}
 
       <div
-        className={clsx(
-          "absolute mx-auto duration-200 ease-in-out",
+        className={cn(
+          "absolute mx-auto duration-500 ease-in-out",
           hasMessages && "inset-x-0 bottom-0 max-w-4xl px-6 pb-6",
-          !hasMessages && "inset-x-0 bottom-0 max-w-3xl px-6 pb-6",
+          !hasMessages && "inset-x-0 bottom-0 max-w-3xl px-6 pb-6 duration-200",
+          centerInputOnEmpty && !hasMessages && "bottom-1/2 translate-y-full duration-200",
         )}
       >
         {error && <CollapsibleError error={error} />}
@@ -237,9 +238,12 @@ const ChatInterfaceContent = () => {
   )
 }
 
-export const ChatInterface = () => (
+interface ChatInterfaceProps {
+  centerInputOnEmpty?: boolean
+}
+export const ChatInterface = (props: ChatInterfaceProps) => (
   <ErrorBoundary fallback={AIErrorFallback}>
-    <ChatInterfaceContent />
+    <ChatInterfaceContent {...props} />
   </ErrorBoundary>
 )
 

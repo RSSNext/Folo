@@ -18,9 +18,7 @@ interface ShowConfirmDialogInput {
 }
 
 export class MenuService extends IpcService {
-  constructor() {
-    super("menu")
-  }
+  static override readonly groupName = "menu"
 
   private normalizeMenuItems(
     items: SerializableMenuItem[],

@@ -11,6 +11,8 @@ import type { Config } from "tailwindcss/types/config"
 import { withUIKit } from "tailwindcss-uikit-colors/src/macos/tailwind"
 import { workspaceRootSync } from "workspace-root"
 
+import ratioMixingPlugin from "./ratio-mixing-plugin"
+
 const workspaceRoot = workspaceRootSync(__dirname)
 const twConfig = {
   darkMode: ["class", '[data-theme="dark"]'],
@@ -107,6 +109,15 @@ const twConfig = {
     require("tailwindcss-safe-area"),
 
     require(resolve(__dirname, "./tailwind-extend.css")),
+
+    ratioMixingPlugin({
+      baseColors: {
+        background: "hsl(var(--background))",
+        accent: "hsl(var(--fo-a))",
+        red: "rgb(var(--color-red))",
+        transparent: "transparent",
+      },
+    }),
   ],
 } satisfies Config
 

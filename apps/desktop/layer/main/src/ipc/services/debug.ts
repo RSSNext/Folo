@@ -7,9 +7,7 @@ interface InspectElementInput {
 }
 
 export class DebugService extends IpcService {
-  constructor() {
-    super("debug")
-  }
+  static override readonly groupName = "debug"
 
   @IpcMethod()
   inspectElement(context: IpcContext, input: InspectElementInput): void {

@@ -1,3 +1,5 @@
+import { Folo } from "@follow/components/icons/folo.js"
+import { clsx } from "@follow/utils"
 import type { EditorState, LexicalEditor } from "lexical"
 import { AnimatePresence, m } from "motion/react"
 import { useTranslation } from "react-i18next"
@@ -10,9 +12,10 @@ import { DefaultWelcomeContent, EntrySummaryCard } from "../welcome"
 
 interface WelcomeScreenProps {
   onSend: (message: EditorState | string, editor: LexicalEditor | null) => void
+  centerInputOnEmpty?: boolean
 }
 
-export const WelcomeScreen = ({ onSend }: WelcomeScreenProps) => {
+export const WelcomeScreen = ({ onSend, centerInputOnEmpty }: WelcomeScreenProps) => {
   const { t } = useTranslation("ai")
   const aiSettings = useAISettingValue()
   const mainEntryId = useMainEntryId()
@@ -33,7 +36,9 @@ export const WelcomeScreen = ({ onSend }: WelcomeScreenProps) => {
             <AISpline />
           </div>
           <div className="flex flex-col gap-2">
-            <h1 className="text-text text-2xl font-semibold">{APP_NAME} AI</h1>
+            <h1 className="text-text flex items-center justify-center gap-2 text-2xl font-semibold">
+              <Folo className="size-11" /> AI
+            </h1>
             <p className="text-text-secondary text-balance text-sm">
               {hasEntryContext
                 ? t("welcome_description_contextual", {
@@ -45,7 +50,12 @@ export const WelcomeScreen = ({ onSend }: WelcomeScreenProps) => {
         </m.div>
 
         {/* Dynamic Content Area */}
-        <div className="relative flex items-start justify-center">
+        <div
+          className={clsx(
+            "relative flex items-start justify-center",
+            centerInputOnEmpty && "absolute bottom-0 translate-y-40",
+          )}
+        >
           <AnimatePresence mode="wait">
             {hasEntryContext ? (
               <EntrySummaryCard
