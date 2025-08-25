@@ -18,7 +18,6 @@ import { loginHandler } from "~/lib/auth"
 import { useAuthProviders } from "~/queries/users"
 
 import { LoginWithPassword, RegisterForm } from "./Form"
-import { LegalModalContent } from "./LegalModal"
 import { ReferralForm } from "./ReferralForm"
 import { TokenModalContent } from "./TokenModal"
 
@@ -46,14 +45,12 @@ export const LoginModalContent = (props: LoginModalContentProps) => {
   const [isEmail, setIsEmail] = useState(false)
 
   const handleOpenLegal = (type: "privacy" | "tos") => {
-    present({
-      id: `legal-${type}`,
-      title: type === "privacy" ? t("login.privacy") : t("login.terms"),
-      content: () => <LegalModalContent type={type} />,
-      resizeable: true,
-      clickOutsideToDismiss: true,
-      max: true,
-    })
+    const path = {
+      privacy: "privacy-policy",
+      tos: "terms-of-service",
+    }
+
+    window.open(`https://folo.is/${path[type]}`, "_blank")
   }
 
   const handleOpenToken = () => {

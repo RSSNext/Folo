@@ -112,7 +112,7 @@ const EntryContentImpl: Component<EntryContentProps> = ({
       <EntryCommandShortcutRegister entryId={entryId} view={view} />
       <AIEntryHeader
         entryId={entryId}
-        className={cn("@container h-[55px] shrink-0 px-3", classNames?.header)}
+        className={cn("absolute inset-x-0 top-0", classNames?.header)}
         compact={compact}
       />
       <div className="w-full" ref={setPanelPortalElement} />
@@ -129,7 +129,7 @@ const EntryContentImpl: Component<EntryContentProps> = ({
           />
         </RootPortal>
         {/* <EntryTimeline entryId={entryId} className="top-48" /> */}
-        <EntryScrollArea scrollerRef={scrollerRef}>
+        <EntryScrollArea scrollerRef={scrollerRef} viewportClassName="pt-[95px]">
           {/* Indicator for the entry */}
           {!isZenMode && isInHasTimelineView && (
             <>
@@ -211,7 +211,8 @@ export const EntryContent = memo(EntryContentImpl)
 
 const EntryScrollArea: Component<{
   scrollerRef: React.RefObject<HTMLDivElement | null>
-}> = ({ children, className, scrollerRef }) => {
+  viewportClassName?: string
+}> = ({ children, className, scrollerRef, viewportClassName }) => {
   const isInPeekModal = useInPeekModal()
 
   if (isInPeekModal) {
@@ -228,6 +229,7 @@ const EntryScrollArea: Component<{
       )}
       scrollbarClassName="mr-[1.5px] print:hidden"
       ref={scrollerRef}
+      viewportClassName={viewportClassName}
     >
       {children}
     </ScrollArea.ScrollArea>

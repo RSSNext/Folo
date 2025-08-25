@@ -8,7 +8,7 @@ import { useEntryContentScrollToTop } from "../../../atoms"
 import { EntryReadHistory } from "../../entry-read-history"
 import { useEntryHeaderContext } from "./context"
 
-function EntryHeaderReadHistoryImpl() {
+function EntryHeaderReadHistoryImpl({ className }: { className?: string }) {
   const { entryId } = useEntryHeaderContext()
   const { view } = useRouteParams()
   const isAtTop = useEntryContentScrollToTop()
@@ -21,6 +21,7 @@ function EntryHeaderReadHistoryImpl() {
         "zen-mode-macos:left-12 text-body absolute left-5 top-0 flex h-full items-center gap-2 leading-none",
         "visible z-[11]",
         isWide && "static",
+        className,
       )}
     >
       <EntryReadHistory entryId={entryId} />

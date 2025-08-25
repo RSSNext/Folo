@@ -1,18 +1,13 @@
-import { useCallback, useState } from "react"
+import { useState } from "react"
 import { Trans, useTranslation } from "react-i18next"
-import { TouchableOpacity, TouchableWithoutFeedback, View } from "react-native"
+import { Linking, Pressable, TouchableOpacity, TouchableWithoutFeedback, View } from "react-native"
 import { KeyboardAvoidingView, KeyboardController } from "react-native-keyboard-controller"
 import Animated, { useAnimatedStyle, useSharedValue } from "react-native-reanimated"
 import { useSafeAreaInsets } from "react-native-safe-area-context"
-import * as ContextMenu from "zeego/context-menu"
 
 import { Logo } from "@/src/components/ui/logo"
 import { Text } from "@/src/components/ui/typography/Text"
-import { useNavigation } from "@/src/lib/navigation/hooks"
-import { NavigationLink } from "@/src/lib/navigation/NavigationLink"
 import { useScaleHeight } from "@/src/lib/responsive"
-import { PrivacyPolicyScreen } from "@/src/screens/(headless)/PrivacyPolicyScreen"
-import { TermsMarkdown, TermsScreen } from "@/src/screens/(headless)/TermsScreen"
 
 import { EmailLogin, EmailSignUp } from "./email"
 import { SocialLogin } from "./social"
@@ -54,14 +49,13 @@ export function Login() {
               }}
             />
             <Text
-              className="text-label"
               style={{
                 fontSize,
                 lineHeight,
               }}
             >
-              <Text className="font-semibold">{`${isRegister ? t("signin.sign_up_to") : t("signin.sign_in_to")} `}</Text>
-              <Text className="font-bold">Folo</Text>
+              <Text className="text-3xl font-semibold">{`${isRegister ? t("signin.sign_up_to") : t("signin.sign_in_to")} `}</Text>
+              <Text className="text-3xl font-bold">Folo</Text>
             </Text>
             {isEmail ? (
               isRegister ? (
@@ -120,46 +114,26 @@ const TermsCheckBox = () => {
   )
 }
 const TermsText = () => {
-  const navigation = useNavigation()
   return (
-    <ContextMenu.Root>
-      <ContextMenu.Trigger className="w-full overflow-hidden rounded-full">
-        <Text className="text-secondary-label text-center text-sm">
-          By continuing, you agree to our{" "}
-        </Text>
-        <View className="flex-row items-center">
-          <NavigationLink
-            destination={TermsScreen}
-            suppressHighlighting
-            className="text-secondary-label"
-          >
-            <Text className="font-semibold">Terms of Service</Text>
-          </NavigationLink>
-          <Text className="text-secondary-label">&nbsp;&&nbsp;</Text>
-          <NavigationLink
-            destination={PrivacyPolicyScreen}
-            suppressHighlighting
-            className="text-secondary-label"
-          >
-            <Text className="font-semibold">Privacy Policy</Text>
-          </NavigationLink>
-        </View>
-      </ContextMenu.Trigger>
-
-      <ContextMenu.Content>
-        <ContextMenu.Preview
-          size="STRETCH"
-          onPress={useCallback(() => {
-            navigation.pushControllerView(TermsScreen)
-          }, [navigation])}
+    <View>
+      <Text className="text-secondary-label text-center text-sm">
+        By continuing, you agree to our{" "}
+      </Text>
+      <View className="flex-row items-center">
+        <Pressable
+          onPress={() => Linking.openURL("https://folo.is/terms-of-service")}
+          className="text-secondary-label"
         >
-          {() => (
-            <View className="bg-system-background flex-1">
-              <TermsMarkdown />
-            </View>
-          )}
-        </ContextMenu.Preview>
-      </ContextMenu.Content>
-    </ContextMenu.Root>
+          <Text className="font-semibold">Terms of Service</Text>
+        </Pressable>
+        <Text className="text-secondary-label">&nbsp;&&nbsp;</Text>
+        <Pressable
+          onPress={() => Linking.openURL("https://folo.is/privacy-policy")}
+          className="text-secondary-label"
+        >
+          <Text className="font-semibold">Privacy Policy</Text>
+        </Pressable>
+      </View>
+    </View>
   )
 }

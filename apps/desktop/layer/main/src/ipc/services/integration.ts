@@ -54,9 +54,7 @@ interface CustomFetchInput {
 }
 
 export class IntegrationService extends IpcService {
-  constructor() {
-    super("integration")
-  }
+  static override readonly groupName = "integration"
 
   @IpcMethod()
   async saveToObsidian(

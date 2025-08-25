@@ -15,12 +15,9 @@ export const modalMontionConfig = {
   animate: enterStyle,
   exit: {
     ...initialStyle,
-    // no spring
-    transition: {
-      type: "tween",
-    },
+    transition: Spring.presets.smooth,
   },
-  transition: Spring.presets.microRebound,
+  transition: Spring.presets.snappy,
 } satisfies MotionProps
 
 // Radix context menu z-index 999

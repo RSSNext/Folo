@@ -169,7 +169,7 @@ export const CollapsibleError: React.FC<CollapsibleErrorProps> = ({
       >
         <div
           className={
-            "border-red/20 shadow-red/5 dark:shadow-red/10 backdrop-blur-background relative overflow-hidden rounded-xl bg-[color-mix(in_srgb,_color-mix(in_srgb,rgb(var(--color-red)),hsl(var(--background))_80%),transparent_30%)] transition-all duration-200"
+            "border-red/20 shadow-red/5 dark:shadow-red/10 backdrop-blur-background bg-mix-red-20 relative overflow-hidden rounded-xl transition-all duration-200"
           }
         >
           {/* Collapsed Content */}
