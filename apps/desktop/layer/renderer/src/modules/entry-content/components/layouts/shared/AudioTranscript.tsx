@@ -19,6 +19,8 @@ interface AudioTranscriptProps {
   style?: React.CSSProperties
   /** Optional: number of consecutive subtitle lines to merge together (default: no merging) */
   mergeLines?: number
+  /** Type of transcript: 'subtitle' disables jump and progress tracking, 'transcription' enables all features */
+  type?: "subtitle" | "transcription"
 }
 
 /**
@@ -146,7 +148,12 @@ export const AudioTranscript: React.FC<AudioTranscriptProps> = ({
   srt,
   entryId,
   mergeLines,
+  type = "transcription",
 }) => {
+  // Determine if jump and progress tracking should be disabled based on type
+  const disableJump = type === "subtitle"
+  const disableProgressTracking = type === "subtitle"
+
   // Get current playing time from the audio player
   const currentTime = useAudioPlayerAtomSelector((v) => v.currentTime) || 0
   const isPlaying = useAudioPlayerAtomSelector((v) => v.status === "playing")
@@ -183,15 +190,18 @@ export const AudioTranscript: React.FC<AudioTranscriptProps> = ({
   }
 
   // Find the current active subtitle based on current time
-  // Only show active state if this transcript matches the currently playing audio
-  const currentSubtitleIndex = isCurrentAudio
-    ? subtitles.findIndex(
-        (subtitle) =>
-          currentTime >= subtitle.startTimeInSeconds && currentTime <= subtitle.endTimeInSeconds,
-      )
-    : -1
+  // Only show active state if this transcript matches the currently playing audio and progress tracking is enabled
+  const currentSubtitleIndex =
+    !disableProgressTracking && isCurrentAudio
+      ? subtitles.findIndex(
+          (subtitle) =>
+            currentTime >= subtitle.startTimeInSeconds && currentTime <= subtitle.endTimeInSeconds,
+        )
+      : -1
 
   const handleTimeJump = (timeInSeconds: number) => {
+    if (disableJump) return
+
     if (isCurrentAudio) {
       // If this is the current audio, seek to the time
       AudioPlayer.seek(timeInSeconds)
@@ -244,34 +254,50 @@ export const AudioTranscript: React.FC<AudioTranscriptProps> = ({
             <div
               key={subtitle.index}
               className={cn(
-                "group cursor-pointer rounded-lg p-4 transition-all duration-300 ease-in-out",
-                "hover:shadow-md active:scale-[0.98]",
+                "group rounded-lg p-4 transition-all duration-300 ease-in-out",
+                !disableJump && "cursor-pointer hover:shadow-md active:scale-[0.98]",
+                !disableJump &&
+                  "hover:border-gray-200 hover:bg-gray-50 dark:hover:border-gray-700 dark:hover:bg-gray-800/50",
                 isActive
                   ? "border-2 border-blue-200 bg-blue-50 shadow-sm dark:border-blue-800 dark:bg-blue-900/20"
-                  : "border border-transparent hover:border-gray-200 hover:bg-gray-50 dark:hover:border-gray-700 dark:hover:bg-gray-800/50",
+                  : "border border-transparent",
                 isPast && "opacity-70",
               )}
-              onClick={() => handleTimeJump(subtitle.startTimeInSeconds)}
-              title={`Jump to ${formatTime(subtitle.startTime)}`}
+              onClick={() => !disableJump && handleTimeJump(subtitle.startTimeInSeconds)}
+              title={!disableJump ? `Jump to ${formatTime(subtitle.startTime)}` : undefined}
             >
               <div className="mb-2 flex items-center gap-2">
-                <button
-                  type="button"
-                  onClick={(e) => {
-                    e.stopPropagation()
-                    handleTimeJump(subtitle.startTimeInSeconds)
-                  }}
-                  className={cn(
-                    "font-mono text-xs transition-colors",
-                    "cursor-pointer rounded bg-gray-100 px-2 py-1 hover:bg-gray-200 dark:bg-gray-800 dark:hover:bg-gray-700",
-                    isActive
-                      ? "bg-blue-100 text-blue-700 hover:bg-blue-200 dark:bg-blue-800 dark:text-blue-300 dark:hover:bg-blue-700"
-                      : "text-gray-600 hover:text-blue-600 dark:text-gray-400 dark:hover:text-blue-400",
-                  )}
-                  title="Jump to this time"
-                >
-                  {formatTime(subtitle.startTime)}
-                </button>
+                {!disableJump ? (
+                  <button
+                    type="button"
+                    onClick={(e) => {
+                      e.stopPropagation()
+                      handleTimeJump(subtitle.startTimeInSeconds)
+                    }}
+                    className={cn(
+                      "font-mono text-xs transition-colors",
+                      "cursor-pointer rounded bg-gray-100 px-2 py-1 hover:bg-gray-200 dark:bg-gray-800 dark:hover:bg-gray-700",
+                      isActive
+                        ? "bg-blue-100 text-blue-700 hover:bg-blue-200 dark:bg-blue-800 dark:text-blue-300 dark:hover:bg-blue-700"
+                        : "text-gray-600 hover:text-blue-600 dark:text-gray-400 dark:hover:text-blue-400",
+                    )}
+                    title="Jump to this time"
+                  >
+                    {formatTime(subtitle.startTime)}
+                  </button>
+                ) : (
+                  <span
+                    className={cn(
+                      "font-mono text-xs",
+                      "rounded bg-gray-100 px-2 py-1 dark:bg-gray-800",
+                      isActive
+                        ? "bg-blue-100 text-blue-700 dark:bg-blue-800 dark:text-blue-300"
+                        : "text-gray-600 dark:text-gray-400",
+                    )}
+                  >
+                    {formatTime(subtitle.startTime)}
+                  </span>
+                )}
                 <span
                   className={cn(
                     "text-xs",
@@ -291,7 +317,7 @@ export const AudioTranscript: React.FC<AudioTranscriptProps> = ({
               <div
                 className={cn(
                   "text-sm leading-relaxed transition-colors",
-                  "group-hover:text-blue-600 dark:group-hover:text-blue-400",
+                  !disableJump && "group-hover:text-blue-600 dark:group-hover:text-blue-400",
                   isActive && "font-medium text-gray-900 dark:text-gray-100",
                 )}
               >
@@ -300,11 +326,6 @@ export const AudioTranscript: React.FC<AudioTranscriptProps> = ({
             </div>
           )
         })}
-      </div>
-
-      {/* Footer */}
-      <div className="border-t border-gray-200 pt-4 text-center text-xs text-gray-600 dark:border-gray-700 dark:text-gray-400">
-        Audio transcript powered by AI transcription
       </div>
     </div>
   )

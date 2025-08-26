@@ -1,7 +1,8 @@
 import { useEntry } from "@follow/store/entry/hooks"
+import { useState } from "react"
 
 import { EntryTitle } from "../EntryTitle"
-import { ContentBody } from "./shared/ContentBody"
+import { AudioTranscript, ContentBody, TranscriptToggle, useTranscription } from "./shared"
 import { VideoPlayer } from "./shared/VideoPlayer"
 
 interface VideosLayoutProps {
@@ -21,6 +22,8 @@ export const VideosLayout: React.FC<VideosLayoutProps> = ({
   translation,
 }) => {
   const entry = useEntry(entryId, (state) => state)
+  const { data: transcriptionData } = useTranscription(entryId)
+  const [showTranscript, setShowTranscript] = useState(false)
 
   if (!entry) return null
 
@@ -49,14 +52,31 @@ export const VideosLayout: React.FC<VideosLayoutProps> = ({
         {/* Title */}
         <EntryTitle entryId={entryId} compact={compact} />
 
-        {/* Description/Content */}
-        <ContentBody
-          entryId={entryId}
-          translation={translation}
-          compact={compact}
-          noMedia={true}
-          className="text-base"
+        {/* Content Type Toggle */}
+        <TranscriptToggle
+          showTranscript={showTranscript}
+          onToggle={setShowTranscript}
+          hasTranscript={!!transcriptionData}
         />
+
+        {/* Description/Content or Transcript */}
+        {showTranscript ? (
+          <AudioTranscript
+            className="prose dark:prose-invert !max-w-full"
+            srt={transcriptionData}
+            entryId={entryId}
+            mergeLines={10}
+            type="subtitle"
+          />
+        ) : (
+          <ContentBody
+            entryId={entryId}
+            translation={translation}
+            compact={compact}
+            noMedia={true}
+            className="text-base"
+          />
+        )}
       </div>
     </div>
   )

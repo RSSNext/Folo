@@ -1,12 +1,10 @@
 import { MemoedDangerousHTMLStyle } from "@follow/components/common/MemoedDangerousHTMLStyle.js"
-import { SegmentGroup, SegmentItem } from "@follow/components/ui/segment/index.js"
 import { FeedViewType } from "@follow/constants"
 import { useEntry } from "@follow/store/entry/hooks"
 import { useFeedById } from "@follow/store/feed/hooks"
 import { useIsInbox } from "@follow/store/inbox/hooks"
 import { cn } from "@follow/utils"
 import { ErrorBoundary } from "@sentry/react"
-import { useQuery } from "@tanstack/react-query"
 import { useCallback, useMemo, useRef, useState } from "react"
 
 import { useUISettingKey } from "~/atoms/settings/ui"
@@ -15,7 +13,6 @@ import type { TocRef } from "~/components/ui/markdown/components/Toc"
 import { useInPeekModal } from "~/components/ui/modal/inspire/InPeekModal"
 import { readableContentMaxWidthClassName } from "~/constants/ui"
 import { useRenderStyle } from "~/hooks/biz/useRenderStyle"
-import { followClient } from "~/lib/api-client"
 import type { TextSelectionEvent } from "~/lib/simple-text-selection"
 import { useBlockActions } from "~/modules/ai-chat/store/hooks"
 import { BlockSliceAction } from "~/modules/ai-chat/store/slices/block.slice"
@@ -30,7 +27,7 @@ import { ReadabilityNotice } from "../entry-content/ReadabilityNotice"
 import { EntryAttachments } from "../EntryAttachments"
 import { EntryTitle } from "../EntryTitle"
 import { SupportCreator } from "../SupportCreator"
-import { AudioTranscript } from "./shared/AudioTranscript"
+import { AudioTranscript, TranscriptToggle, useTranscription } from "./shared"
 
 interface ArticleLayoutProps {
   entryId: string
@@ -40,30 +37,6 @@ interface ArticleLayoutProps {
     content?: string
     title?: string
   }
-}
-
-const useTranscription = (entryId: string) => {
-  const entry = useEntry(entryId, (state) => {
-    return {
-      audioUrl: state.attachments?.find((att) => att.mime_type?.startsWith("audio/"))?.url,
-      subtitleUrl: state.attachments?.find((att) => att.mime_type === "text/srt")?.url,
-    }
-  })
-
-  return useQuery({
-    queryKey: ["transcription", entryId],
-    queryFn: async () => {
-      if (entry?.subtitleUrl) {
-        return (await fetch(entry.subtitleUrl)).text()
-      }
-
-      if (entry?.audioUrl) {
-        const res = await followClient.api.entries.transcription({ url: entry.audioUrl })
-        return res.data?.srt || ""
-      }
-      return ""
-    },
-  })
 }
 
 export const ArticleLayout: React.FC<ArticleLayoutProps> = ({
@@ -107,17 +80,12 @@ export const ArticleLayout: React.FC<ArticleLayoutProps> = ({
       <EntryTitle entryId={entryId} compact={compact} />
 
       {/* Content Type Toggle */}
-      {transcriptionData && (
-        <div className="mb-6 mt-4 flex items-center gap-2">
-          <SegmentGroup
-            value={showTranscript ? "transcript" : "article"}
-            onValueChanged={(value) => setShowTranscript(value === "transcript")}
-          >
-            <SegmentItem value="article" label="Article" />
-            <SegmentItem value="transcript" label="Transcript" />
-          </SegmentGroup>
-        </div>
-      )}
+      <TranscriptToggle
+        showTranscript={showTranscript}
+        onToggle={setShowTranscript}
+        hasTranscript={!!transcriptionData}
+        contentLabel="Article"
+      />
 
       <WrappedElementProvider boundingDetection>
         <div className="mx-auto mb-32 mt-8 max-w-full cursor-auto text-[0.94rem]">
@@ -130,6 +98,7 @@ export const ArticleLayout: React.FC<ArticleLayoutProps> = ({
                 srt={transcriptionData}
                 entryId={entryId}
                 mergeLines={10}
+                type="transcription"
               />
             ) : (
               <ShadowDOM
