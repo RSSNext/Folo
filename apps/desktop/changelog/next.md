@@ -8,6 +8,7 @@
   - Discover what to read next based on your subscriptions and saved items.
   - Streamlined chat UI with context pickers for feeds, entries, and more.
   - Early preview: we’ll iterate quickly with your feedback.
+  - Limited rollout: currently available to a subset of users; we’ll expand testing over time.
 
 ## Improvements
 

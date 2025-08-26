@@ -4,7 +4,7 @@ inputs:
   xcode-version:
     description: "Xcode version to use"
     required: false
-    default: "16.2.0"
+    default: "16.4.0"
 
 runs:
   using: "composite"
@@ -12,3 +12,7 @@ runs:
     - uses: maxim-lobanov/setup-xcode@v1
       with:
         xcode-version: ${{ inputs.xcode-version }}
+
+    - name: Download iOS Platform
+      run: xcodebuild -downloadPlatform iOS
+      shell: bash

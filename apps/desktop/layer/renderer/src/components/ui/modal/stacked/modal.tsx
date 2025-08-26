@@ -382,7 +382,9 @@ export const ModalInternal = memo(function Modal({
                       </Dialog.DialogClose>
                     )}
                   </div>
-                  <div className="bg-border mx-1 mt-2 h-px shrink-0" />
+                  {(title || icon || canClose) && (
+                    <div className="bg-border mx-1 mt-2 h-px shrink-0" />
+                  )}
 
                   <div
                     className={cn(

@@ -121,6 +121,17 @@ export const EntryItemWrapper: FC<
     })
   }, [entry?.id])
 
+  const handleDoubleClick = useCallback(
+    (e: MouseEvent<HTMLElement>) => {
+      e.preventDefault()
+      e.stopPropagation()
+      if (!entry?.url) return
+      if (!entry?.id) return
+      window.open(entry?.url, "_blank", "noopener,noreferrer")
+    },
+    [entry?.id, entry?.url],
+  )
+
   const handleClick = useCallback(
     (e: TouchEvent<HTMLElement> | MouseEvent<HTMLElement>) => {
       e.preventDefault()
@@ -219,6 +230,7 @@ export const EntryItemWrapper: FC<
           itemClassName,
         )}
         onClick={handleClick}
+        onDoubleClick={handleDoubleClick}
         onMouseEnter={handleMouseEnter}
         onMouseLeave={handleMouseLeave}
         {...contextMenuProps}
