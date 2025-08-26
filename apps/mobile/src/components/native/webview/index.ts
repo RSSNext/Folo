@@ -27,13 +27,30 @@ declare class ISharedWebViewModule extends NativeModule<{
 }> {
   load(url: string): void
   evaluateJavaScript(js: string): void
+  dispatch?(type: string, payload?: string): void
+
+  // Debug helpers (iOS only)
+  getDebugState?(): WebViewDebugState
+  destroyForDebug?(): void
+  reloadLastURL?(): void
+  flushQueue?(): void
 }
 
 export const SharedWebViewModule = requireNativeModule<ISharedWebViewModule>("FOSharedWebView")
 
 // Re-export all WebView utilities
 export { usePrepareEntryRenderWebView, useWebViewEntry, useWebViewMode } from "./hooks"
-export { preloadWebViewEntry, WebViewManager } from "./webview-manager"
+export { WebViewManager } from "./webview-manager"
+
+// Dev/debug helpers (iOS implemented; Android no-op)
+export type WebViewDebugState = {
+  hasWebView: boolean
+  hasHost: boolean
+  ready: boolean
+  pending: number
+  lastURL?: string | null
+  contentHeight: number
+}
 
 let prepareOnce = false
 
