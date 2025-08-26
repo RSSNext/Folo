@@ -145,12 +145,6 @@ export const EntryItemWrapper: FC<
         unreadSyncService.markEntryAsRead(entry.id)
       }
 
-      // TODO
-      // setTimeout(
-      //   () => EventBus.dispatch(COMMAND_ID.layout.focusToEntryRender, { highlightBoundary: false }),
-      //   60,
-      // )
-
       navigate({
         entryId: entry.id,
       })

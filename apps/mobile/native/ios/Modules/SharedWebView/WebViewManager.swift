@@ -39,22 +39,29 @@ enum WebViewManager {
         }
     }
 
-    static private(set) var shared: WKWebView = {
-        FOWebView(frame: .zero, state: state)
+    private(set) static var shared: WKWebView = {
+        if Thread.isMainThread {
+            return FOWebView(frame: .zero, state: state)
+        }
+        return DispatchQueue.main.sync {
+            FOWebView(frame: .zero, state: state)
+        }
     }()
 
     static func resetWebView() {
-        self.state = WebViewState()
-        self.shared = FOWebView(frame: .zero, state: state)
+        DispatchQueue.main.async {
+            state = WebViewState()
+            shared = FOWebView(frame: .zero, state: state)
+        }
     }
 
-  static func presentModalWebView(url: URL, from viewController: UIViewController, onDismiss: (() -> Void)? = nil) {
-      let safariVC = SafariViewController(url: url)
-      safariVC.view.tintColor = Utils.accentColor
-      safariVC.preferredControlTintColor = Utils.accentColor
-    
-      if let onDismiss = onDismiss { safariVC.setOnDismiss(onDismiss) }
-      viewController.present(safariVC, animated: true)
+    static func presentModalWebView(url: URL, from viewController: UIViewController, onDismiss: (() -> Void)? = nil) {
+        let safariVC = SafariViewController(url: url)
+        safariVC.view.tintColor = Utils.accentColor
+        safariVC.preferredControlTintColor = Utils.accentColor
+
+        if let onDismiss = onDismiss { safariVC.setOnDismiss(onDismiss) }
+        viewController.present(safariVC, animated: true)
     }
 }
 
@@ -65,7 +72,6 @@ struct SharedWebViewUI: UIViewRepresentable {
     }
 
     func updateUIView(_ uiView: WKWebView, context: Context) {
-
     }
 }
 
@@ -77,15 +83,14 @@ extension WebViewManager {
 }
 
 fileprivate class SafariViewController: SFSafariViewController {
-  
-  private var onDismiss: (() -> Void)?
-  
-  public func setOnDismiss(_ onDismiss: @escaping () -> Void) {
-    self.onDismiss = onDismiss
-  }
-  
-  override func viewDidDisappear(_ animated: Bool) {
-    super.viewDidDisappear(animated)
-    onDismiss?()
-  }
+    private var onDismiss: (() -> Void)?
+
+    public func setOnDismiss(_ onDismiss: @escaping () -> Void) {
+        self.onDismiss = onDismiss
+    }
+
+    override func viewDidDisappear(_ animated: Bool) {
+        super.viewDidDisappear(animated)
+        onDismiss?()
+    }
 }
