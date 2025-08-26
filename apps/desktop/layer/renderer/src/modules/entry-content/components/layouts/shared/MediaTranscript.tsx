@@ -222,7 +222,7 @@ export const MediaTranscript: React.FC<MediaTranscriptProps> = ({
               !disableJump && "cursor-pointer",
               isActive
                 ? "bg-accent/5 dark:bg-accent/10 border-accent scale-[1.02] transform border-l-4 shadow-sm"
-                : "transform hover:scale-[1.01] hover:bg-gray-50 hover:shadow-sm dark:hover:bg-gray-900/50",
+                : "hover:bg-gray-50 hover:shadow-sm dark:hover:bg-gray-900/50",
               isPast && "opacity-50",
             )}
             onClick={() => !disableJump && handleTimeJump(subtitle.startTimeInSeconds)}
