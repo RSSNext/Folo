@@ -225,7 +225,7 @@ export const MediaTranscript: React.FC<MediaTranscriptProps> = ({
                 !disableJump &&
                   "hover:border-gray-200 hover:bg-gray-50 dark:hover:border-gray-700 dark:hover:bg-gray-800/50",
                 isActive
-                  ? "border-2 border-blue-200 bg-blue-50 shadow-sm dark:border-blue-800 dark:bg-blue-900/20"
+                  ? "border-accent/20 bg-accent/5 border-2 shadow-sm"
                   : "border border-transparent",
                 isPast && "opacity-70",
               )}
@@ -244,8 +244,8 @@ export const MediaTranscript: React.FC<MediaTranscriptProps> = ({
                       "font-mono text-xs transition-colors",
                       "cursor-pointer rounded bg-gray-100 px-2 py-1 hover:bg-gray-200 dark:bg-gray-800 dark:hover:bg-gray-700",
                       isActive
-                        ? "bg-blue-100 text-blue-700 hover:bg-blue-200 dark:bg-blue-800 dark:text-blue-300 dark:hover:bg-blue-700"
-                        : "text-gray-600 hover:text-blue-600 dark:text-gray-400 dark:hover:text-blue-400",
+                        ? "bg-accent/10 text-accent hover:bg-accent/15"
+                        : "hover:text-accent dark:hover:text-accent text-gray-600 dark:text-gray-400",
                     )}
                     title="Jump to this time"
                   >
@@ -256,9 +256,7 @@ export const MediaTranscript: React.FC<MediaTranscriptProps> = ({
                     className={cn(
                       "font-mono text-xs",
                       "rounded bg-gray-100 px-2 py-1 dark:bg-gray-800",
-                      isActive
-                        ? "bg-blue-100 text-blue-700 dark:bg-blue-800 dark:text-blue-300"
-                        : "text-gray-600 dark:text-gray-400",
+                      isActive ? "bg-accent/10 text-accent" : "text-gray-600 dark:text-gray-400",
                     )}
                   >
                     {formatTime(subtitle.startTime)}
@@ -267,23 +265,19 @@ export const MediaTranscript: React.FC<MediaTranscriptProps> = ({
                 <span
                   className={cn(
                     "text-xs",
-                    isActive
-                      ? "text-blue-600 dark:text-blue-400"
-                      : "text-gray-600 dark:text-gray-400",
+                    isActive ? "text-accent" : "text-gray-600 dark:text-gray-400",
                   )}
                 >
                   #{subtitle.index}
                 </span>
                 {isActive && type === "transcription" && (
-                  <span className="text-xs font-medium text-blue-600 dark:text-blue-400">
-                    • Playing
-                  </span>
+                  <span className="text-accent text-xs font-medium">• Playing</span>
                 )}
               </div>
               <div
                 className={cn(
                   "text-sm leading-relaxed transition-colors",
-                  !disableJump && "group-hover:text-blue-600 dark:group-hover:text-blue-400",
+                  !disableJump && "group-hover:text-accent",
                   isActive && "font-medium text-gray-900 dark:text-gray-100",
                 )}
               >
@@ -292,12 +286,6 @@ export const MediaTranscript: React.FC<MediaTranscriptProps> = ({
             </div>
           )
         })}
-      </div>
-
-      {/* Footer */}
-      <div className="border-t border-gray-200 pt-4 text-center text-xs text-gray-600 dark:border-gray-700 dark:text-gray-400">
-        <span>{type === "transcription" ? "Audio transcript" : "Video subtitles"}</span>
-        <span> powered by AI transcription</span>
       </div>
     </div>
   )
