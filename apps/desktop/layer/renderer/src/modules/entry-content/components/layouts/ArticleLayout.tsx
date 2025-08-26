@@ -22,7 +22,6 @@ import { EntryContentHTMLRenderer } from "~/modules/renderer/html"
 import { WrappedElementProvider } from "~/providers/wrapped-element-provider"
 
 import { useEntryContent, useEntryMediaInfo } from "../../hooks"
-import { AudioTranscript } from "../AudioTranscript"
 import { ContainerToc } from "../entry-content/accessories/ContainerToc"
 import { EntryRenderError } from "../entry-content/EntryRenderError"
 import { EntryTitleMetaHandler } from "../entry-content/EntryTitleMetaHandler"
@@ -30,6 +29,7 @@ import { ReadabilityNotice } from "../entry-content/ReadabilityNotice"
 import { EntryAttachments } from "../EntryAttachments"
 import { EntryTitle } from "../EntryTitle"
 import { SupportCreator } from "../SupportCreator"
+import { AudioTranscript } from "./shared/AudioTranscript"
 
 interface ArticleLayoutProps {
   entryId: string
@@ -41,14 +41,27 @@ interface ArticleLayoutProps {
   }
 }
 
-const useTranscription = (url: string | undefined) => {
+const useTranscription = (entryId: string) => {
+  const entry = useEntry(entryId, (state) => {
+    return {
+      audioUrl: state.attachments?.find((att) => att.mime_type?.startsWith("audio/"))?.url,
+      subtitleUrl: state.attachments?.find((att) => att.mime_type === "text/srt")?.url,
+    }
+  })
+
   return useQuery({
-    queryKey: ["transcription", url],
+    queryKey: ["transcription", entryId],
     queryFn: async () => {
-      const res = await followClient.api.entries.transcription({ url: url! })
-      return res.data
+      if (entry?.subtitleUrl) {
+        return (await fetch(entry.subtitleUrl)).text()
+      }
+
+      if (entry?.audioUrl) {
+        const res = await followClient.api.entries.transcription({ url: entry.audioUrl })
+        return res.data?.srt || ""
+      }
+      return ""
     },
-    enabled: !!url,
   })
 }
 
@@ -61,9 +74,8 @@ export const ArticleLayout: React.FC<ArticleLayoutProps> = ({
   const entry = useEntry(entryId, (state) => ({
     feedId: state.feedId,
     inboxId: state.inboxHandle,
-    audioUrl: state.attachments?.find((att) => att.mime_type?.startsWith("audio/"))?.url,
   }))
-  const { data: transcriptionData } = useTranscription(entry?.audioUrl)
+  const { data: transcriptionData } = useTranscription(entryId)
 
   const feed = useFeedById(entry?.feedId)
   const isInbox = useIsInbox(entry?.inboxId)
@@ -94,7 +106,7 @@ export const ArticleLayout: React.FC<ArticleLayoutProps> = ({
       <EntryTitle entryId={entryId} compact={compact} />
 
       {/* Content Type Toggle */}
-      {transcriptionData?.srt && (
+      {transcriptionData && (
         <div className="mb-6 mt-4 flex items-center gap-2">
           <div className="flex rounded-lg border border-gray-200 p-1 dark:border-gray-700">
             <button
@@ -133,7 +145,7 @@ export const ArticleLayout: React.FC<ArticleLayoutProps> = ({
             {showTranscript ? (
               <AudioTranscript
                 className="prose dark:prose-invert !max-w-full"
-                srt={transcriptionData?.srt}
+                srt={transcriptionData}
                 entryId={entryId}
                 mergeLines={10}
               />
