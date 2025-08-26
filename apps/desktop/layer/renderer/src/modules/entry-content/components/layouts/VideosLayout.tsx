@@ -2,7 +2,7 @@ import { useEntry } from "@follow/store/entry/hooks"
 import { useState } from "react"
 
 import { EntryTitle } from "../EntryTitle"
-import { AudioTranscript, ContentBody, TranscriptToggle, useTranscription } from "./shared"
+import { ContentBody, MediaTranscript, TranscriptToggle, useTranscription } from "./shared"
 import { VideoPlayer } from "./shared/VideoPlayer"
 
 interface VideosLayoutProps {
@@ -61,7 +61,7 @@ export const VideosLayout: React.FC<VideosLayoutProps> = ({
 
         {/* Description/Content or Transcript */}
         {showTranscript ? (
-          <AudioTranscript
+          <MediaTranscript
             className="prose dark:prose-invert !max-w-full"
             srt={transcriptionData}
             entryId={entryId}

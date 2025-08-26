@@ -27,7 +27,7 @@ import { ReadabilityNotice } from "../entry-content/ReadabilityNotice"
 import { EntryAttachments } from "../EntryAttachments"
 import { EntryTitle } from "../EntryTitle"
 import { SupportCreator } from "../SupportCreator"
-import { AudioTranscript, TranscriptToggle, useTranscription } from "./shared"
+import { MediaTranscript, TranscriptToggle, useTranscription } from "./shared"
 
 interface ArticleLayoutProps {
   entryId: string
@@ -93,7 +93,7 @@ export const ArticleLayout: React.FC<ArticleLayoutProps> = ({
           <ErrorBoundary fallback={EntryRenderError}>
             <ReadabilityNotice entryId={entryId} />
             {showTranscript ? (
-              <AudioTranscript
+              <MediaTranscript
                 className="prose dark:prose-invert !max-w-full"
                 srt={transcriptionData}
                 entryId={entryId}

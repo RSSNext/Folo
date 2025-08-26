@@ -12,7 +12,7 @@ interface SubtitleItem {
   endTimeInSeconds: number
 }
 
-interface AudioTranscriptProps {
+interface MediaTranscriptProps {
   className?: string
   srt: string | undefined
   entryId: string | undefined
@@ -142,7 +142,7 @@ function formatTime(timeString: string): string {
   return `${hours}:${minutes}:${secondsPart}`
 }
 
-export const AudioTranscript: React.FC<AudioTranscriptProps> = ({
+export const MediaTranscript: React.FC<MediaTranscriptProps> = ({
   className,
   style,
   srt,
@@ -227,7 +227,7 @@ export const AudioTranscript: React.FC<AudioTranscriptProps> = ({
   return (
     <div className={cn("space-y-6", className)} style={style}>
       {/* Audio Player Status */}
-      {show && isCurrentAudio && (
+      {show && isCurrentAudio && type === "transcription" && (
         <div className="border-b border-gray-200 pb-4 dark:border-gray-700">
           <div className="flex items-center gap-4">
             <button
@@ -308,7 +308,7 @@ export const AudioTranscript: React.FC<AudioTranscriptProps> = ({
                 >
                   #{subtitle.index}
                 </span>
-                {isActive && (
+                {isActive && type === "transcription" && (
                   <span className="text-xs font-medium text-blue-600 dark:text-blue-400">
                     • Playing
                   </span>
@@ -326,6 +326,12 @@ export const AudioTranscript: React.FC<AudioTranscriptProps> = ({
             </div>
           )
         })}
+      </div>
+
+      {/* Footer */}
+      <div className="border-t border-gray-200 pt-4 text-center text-xs text-gray-600 dark:border-gray-700 dark:text-gray-400">
+        <span>{type === "transcription" ? "Audio transcript" : "Video subtitles"}</span>
+        <span> powered by AI transcription</span>
       </div>
     </div>
   )
