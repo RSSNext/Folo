@@ -1,28 +1,35 @@
 // DONT EDIT THIS FILE MANUALLY
 import ai_en from "@locales/ai/en.json"
 import ai_ja from "@locales/ai/ja.json"
+import ai_tr from "@locales/ai/tr.json"
 import en from "@locales/app/en.json"
 import app_ja from "@locales/app/ja.json"
+import app_tr from "@locales/app/tr.json"
 import app_zhCN from "@locales/app/zh-CN.json"
 import app_zhTW from "@locales/app/zh-TW.json"
 import common_en from "@locales/common/en.json"
 import common_ja from "@locales/common/ja.json"
+import common_tr from "@locales/common/tr.json"
 import common_zhCN from "@locales/common/zh-CN.json"
 import common_zhTW from "@locales/common/zh-TW.json"
 import errors_en from "@locales/errors/en.json"
 import errors_ja from "@locales/errors/ja.json"
+import errors_tr from "@locales/errors/tr.json"
 import errors_zhCN from "@locales/errors/zh-CN.json"
 import errors_zhTW from "@locales/errors/zh-TW.json"
 import lang_en from "@locales/lang/en.json"
 import lang_ja from "@locales/lang/ja.json"
+import lang_tr from "@locales/lang/tr.json"
 import lang_zhCN from "@locales/lang/zh-CN.json"
 import lang_zhTW from "@locales/lang/zh-TW.json"
 import settings_en from "@locales/settings/en.json"
 import settings_ja from "@locales/settings/ja.json"
+import settings_tr from "@locales/settings/tr.json"
 import settings_zhCN from "@locales/settings/zh-CN.json"
 import settings_zhTW from "@locales/settings/zh-TW.json"
 import shortcuts_en from "@locales/shortcuts/en.json"
 import shortcuts_ja from "@locales/shortcuts/ja.json"
+import shortcuts_tr from "@locales/shortcuts/tr.json"
 import shortcuts_zhCN from "@locales/shortcuts/zh-CN.json"
 import shortcuts_zhTW from "@locales/shortcuts/zh-TW.json"
 
@@ -69,6 +76,15 @@ export const defaultResources = {
     shortcuts: shortcuts_zhTW,
     errors: errors_zhTW,
     ai: ai_en, // Fallback to English until Traditional Chinese translation is available
+  },
+  tr: {
+    app: app_tr,
+    lang: lang_tr,
+    common: common_tr,
+    settings: settings_tr,
+    shortcuts: shortcuts_tr,
+    errors: errors_tr,
+    ai: ai_tr,
   },
 } satisfies Record<
   RendererSupportedLanguages,

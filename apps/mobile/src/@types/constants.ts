@@ -1,4 +1,4 @@
-const langs = ["en", "ja", "zh-CN", "zh-TW"] as const
+const langs = ["en", "ja", "zh-CN", "zh-TW", "tr"] as const
 export const currentSupportedLanguages = langs as readonly string[]
 export type MobileSupportedLanguages = (typeof langs)[number]
 
