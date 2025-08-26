@@ -84,7 +84,6 @@ export const ArticleLayout: React.FC<ArticleLayoutProps> = ({
         showTranscript={showTranscript}
         onToggle={setShowTranscript}
         hasTranscript={!!transcriptionData}
-        contentLabel="Article"
       />
 
       <WrappedElementProvider boundingDetection>

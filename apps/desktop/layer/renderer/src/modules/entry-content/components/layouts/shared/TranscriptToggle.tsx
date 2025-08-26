@@ -4,14 +4,12 @@ interface TranscriptToggleProps {
   showTranscript: boolean
   onToggle: (showTranscript: boolean) => void
   hasTranscript: boolean
-  contentLabel?: string
 }
 
 export const TranscriptToggle: React.FC<TranscriptToggleProps> = ({
   showTranscript,
   onToggle,
   hasTranscript,
-  contentLabel = "Content",
 }) => {
   if (!hasTranscript) return null
 
@@ -21,7 +19,7 @@ export const TranscriptToggle: React.FC<TranscriptToggleProps> = ({
         value={showTranscript ? "transcript" : "content"}
         onValueChanged={(value) => onToggle(value === "transcript")}
       >
-        <SegmentItem value="content" label={contentLabel} />
+        <SegmentItem value="content" label="Content" />
         <SegmentItem value="transcript" label="Transcript" />
       </SegmentGroup>
     </div>
