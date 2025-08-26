@@ -218,11 +218,11 @@ export const MediaTranscript: React.FC<MediaTranscriptProps> = ({
           <div
             key={subtitle.index}
             className={cn(
-              "group relative rounded-lg px-3 py-2 transition-all duration-300 ease-out",
+              "group relative rounded-lg border-l-4 px-3 py-2 transition-all duration-300 ease-out",
               !disableJump && "cursor-pointer",
               isActive
-                ? "bg-accent/5 dark:bg-accent/10 border-accent scale-[1.02] transform border-l-4 shadow-sm"
-                : "hover:bg-gray-50 hover:shadow-sm dark:hover:bg-gray-900/50",
+                ? "bg-accent/5 dark:bg-accent/10 border-accent shadow-sm"
+                : "border-transparent hover:bg-gray-50 hover:shadow-sm dark:hover:bg-gray-900/50",
               isPast && "opacity-50",
             )}
             onClick={() => !disableJump && handleTimeJump(subtitle.startTimeInSeconds)}
@@ -240,7 +240,7 @@ export const MediaTranscript: React.FC<MediaTranscriptProps> = ({
                     className={cn(
                       "rounded-md px-2 py-1 font-mono text-xs leading-none transition-all duration-200",
                       isActive
-                        ? "text-accent bg-accent/10 dark:bg-accent/15 font-medium"
+                        ? "text-accent bg-accent/10 dark:bg-accent/15"
                         : "text-gray-400 hover:bg-gray-100 hover:text-gray-600 dark:text-gray-500 dark:hover:bg-gray-800 dark:hover:text-gray-300",
                     )}
                     title="Jump to this time"
@@ -252,7 +252,7 @@ export const MediaTranscript: React.FC<MediaTranscriptProps> = ({
                     className={cn(
                       "rounded-md px-2 py-1 font-mono text-xs leading-none",
                       isActive
-                        ? "text-accent bg-accent/10 dark:bg-accent/15 font-medium"
+                        ? "text-accent bg-accent/10 dark:bg-accent/15"
                         : "bg-gray-100 text-gray-400 dark:bg-gray-800 dark:text-gray-500",
                     )}
                   >
@@ -267,7 +267,7 @@ export const MediaTranscript: React.FC<MediaTranscriptProps> = ({
                   className={cn(
                     "text-sm leading-relaxed transition-all duration-300",
                     isActive
-                      ? "transform font-medium text-gray-900 dark:text-gray-50"
+                      ? "text-gray-900 dark:text-gray-50"
                       : "text-gray-600 dark:text-gray-300",
                     !disableJump && "group-hover:text-gray-900 dark:group-hover:text-gray-100",
                   )}
@@ -277,9 +277,13 @@ export const MediaTranscript: React.FC<MediaTranscriptProps> = ({
               </div>
 
               {/* Active indicator */}
-              {isActive && type === "transcription" && (
-                <div className="animate-in fade-in slide-in-from-right-2 flex flex-shrink-0 items-center duration-300">
-                  <div className="bg-accent size-2 animate-pulse rounded-full shadow-sm" />
+              {type === "transcription" && (
+                <div className="flex w-6 flex-shrink-0 items-center justify-center">
+                  {isActive && (
+                    <div className="animate-in fade-in slide-in-from-right-2 duration-300">
+                      <div className="bg-accent size-2 animate-pulse rounded-full shadow-sm" />
+                    </div>
+                  )}
                 </div>
               )}
             </div>
