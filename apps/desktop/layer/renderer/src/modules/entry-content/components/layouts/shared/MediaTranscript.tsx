@@ -110,20 +110,6 @@ function parseSrt(srtText: string, mergeLines?: number): SubtitleItem[] {
   return subtitles
 }
 
-/**
- * Converts seconds to SRT time format (HH:MM:SS,mmm)
- * @param seconds - Time in seconds
- * @returns Time string in HH:MM:SS,mmm format
- */
-function secondsToSrtTime(seconds: number): string {
-  const hours = Math.floor(seconds / 3600)
-  const minutes = Math.floor((seconds % 3600) / 60)
-  const secs = Math.floor(seconds % 60)
-  const millisecs = Math.floor((seconds % 1) * 1000)
-
-  return `${hours.toString().padStart(2, "0")}:${minutes.toString().padStart(2, "0")}:${secs.toString().padStart(2, "0")},${millisecs.toString().padStart(3, "0")}`
-}
-
 function formatTime(timeString: string): string {
   // Convert SRT time format (HH:MM:SS,mmm) to a more readable format
   const time = timeString.replace(",", ".")
@@ -156,9 +142,7 @@ export const MediaTranscript: React.FC<MediaTranscriptProps> = ({
 
   // Get current playing time from the audio player
   const currentTime = useAudioPlayerAtomSelector((v) => v.currentTime) || 0
-  const isPlaying = useAudioPlayerAtomSelector((v) => v.status === "playing")
   const status = useAudioPlayerAtomSelector((v) => v.status)
-  const show = useAudioPlayerAtomSelector((v) => v.show)
   const playerEntryId = useAudioPlayerAtomSelector((v) => v.entryId)
 
   // Get the audio URL for this entry to support cross-audio jumping
@@ -226,24 +210,6 @@ export const MediaTranscript: React.FC<MediaTranscriptProps> = ({
 
   return (
     <div className={cn("space-y-6", className)} style={style}>
-      {/* Audio Player Status */}
-      {show && isCurrentAudio && type === "transcription" && (
-        <div className="border-b border-gray-200 pb-4 dark:border-gray-700">
-          <div className="flex items-center gap-4">
-            <button
-              type="button"
-              onClick={() => AudioPlayer.togglePlayAndPause()}
-              className="rounded border border-gray-300 px-3 py-1 text-sm transition-colors hover:bg-gray-100 dark:border-gray-600 dark:hover:bg-gray-800"
-            >
-              {isPlaying ? "⏸️" : "▶️"}
-            </button>
-            <div className="text-sm text-gray-600 dark:text-gray-400">
-              Audio Transcript - {formatTime(secondsToSrtTime(currentTime))}
-            </div>
-          </div>
-        </div>
-      )}
-
       {/* Transcript Content */}
       <div className="space-y-4">
         {subtitles.map((subtitle, index) => {
