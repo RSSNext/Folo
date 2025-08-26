@@ -209,30 +209,27 @@ export const MediaTranscript: React.FC<MediaTranscriptProps> = ({
   }
 
   return (
-    <div className={cn("space-y-6", className)} style={style}>
-      {/* Transcript Content */}
-      <div className="space-y-4">
-        {subtitles.map((subtitle, index) => {
-          const isActive = index === currentSubtitleIndex
-          const isPast = isCurrentAudio && currentTime > subtitle.endTimeInSeconds
+    <div className={cn("space-y-1", className)} style={style}>
+      {subtitles.map((subtitle, index) => {
+        const isActive = index === currentSubtitleIndex
+        const isPast = isCurrentAudio && currentTime > subtitle.endTimeInSeconds
 
-          return (
-            <div
-              key={subtitle.index}
-              className={cn(
-                "group rounded-lg p-4 transition-all duration-300 ease-in-out",
-                !disableJump && "cursor-pointer hover:shadow-md active:scale-[0.98]",
-                !disableJump &&
-                  "hover:border-gray-200 hover:bg-gray-50 dark:hover:border-gray-700 dark:hover:bg-gray-800/50",
-                isActive
-                  ? "border-accent/20 bg-accent/5 border-2 shadow-sm"
-                  : "border border-transparent",
-                isPast && "opacity-70",
-              )}
-              onClick={() => !disableJump && handleTimeJump(subtitle.startTimeInSeconds)}
-              title={!disableJump ? `Jump to ${formatTime(subtitle.startTime)}` : undefined}
-            >
-              <div className="mb-2 flex items-center gap-2">
+        return (
+          <div
+            key={subtitle.index}
+            className={cn(
+              "group relative rounded-lg px-3 py-2 transition-all duration-300 ease-out",
+              !disableJump && "cursor-pointer",
+              isActive
+                ? "bg-accent/5 dark:bg-accent/10 border-accent scale-[1.02] transform border-l-4 shadow-sm"
+                : "transform hover:scale-[1.01] hover:bg-gray-50 hover:shadow-sm dark:hover:bg-gray-900/50",
+              isPast && "opacity-50",
+            )}
+            onClick={() => !disableJump && handleTimeJump(subtitle.startTimeInSeconds)}
+          >
+            <div className="flex items-start gap-4">
+              {/* Time indicator */}
+              <div className="flex-shrink-0">
                 {!disableJump ? (
                   <button
                     type="button"
@@ -241,11 +238,10 @@ export const MediaTranscript: React.FC<MediaTranscriptProps> = ({
                       handleTimeJump(subtitle.startTimeInSeconds)
                     }}
                     className={cn(
-                      "font-mono text-xs transition-colors",
-                      "cursor-pointer rounded bg-gray-100 px-2 py-1 hover:bg-gray-200 dark:bg-gray-800 dark:hover:bg-gray-700",
+                      "rounded-md px-2 py-1 font-mono text-xs leading-none transition-all duration-200",
                       isActive
-                        ? "bg-accent/10 text-accent hover:bg-accent/15"
-                        : "hover:text-accent dark:hover:text-accent text-gray-600 dark:text-gray-400",
+                        ? "text-accent bg-accent/10 dark:bg-accent/15 font-medium"
+                        : "text-gray-400 hover:bg-gray-100 hover:text-gray-600 dark:text-gray-500 dark:hover:bg-gray-800 dark:hover:text-gray-300",
                     )}
                     title="Jump to this time"
                   >
@@ -254,39 +250,42 @@ export const MediaTranscript: React.FC<MediaTranscriptProps> = ({
                 ) : (
                   <span
                     className={cn(
-                      "font-mono text-xs",
-                      "rounded bg-gray-100 px-2 py-1 dark:bg-gray-800",
-                      isActive ? "bg-accent/10 text-accent" : "text-gray-600 dark:text-gray-400",
+                      "rounded-md px-2 py-1 font-mono text-xs leading-none",
+                      isActive
+                        ? "text-accent bg-accent/10 dark:bg-accent/15 font-medium"
+                        : "bg-gray-100 text-gray-400 dark:bg-gray-800 dark:text-gray-500",
                     )}
                   >
                     {formatTime(subtitle.startTime)}
                   </span>
                 )}
-                <span
+              </div>
+
+              {/* Content */}
+              <div className="min-w-0 flex-1">
+                <p
                   className={cn(
-                    "text-xs",
-                    isActive ? "text-accent" : "text-gray-600 dark:text-gray-400",
+                    "text-sm leading-relaxed transition-all duration-300",
+                    isActive
+                      ? "transform font-medium text-gray-900 dark:text-gray-50"
+                      : "text-gray-600 dark:text-gray-300",
+                    !disableJump && "group-hover:text-gray-900 dark:group-hover:text-gray-100",
                   )}
                 >
-                  #{subtitle.index}
-                </span>
-                {isActive && type === "transcription" && (
-                  <span className="text-accent text-xs font-medium">• Playing</span>
-                )}
+                  {subtitle.text}
+                </p>
               </div>
-              <div
-                className={cn(
-                  "text-sm leading-relaxed transition-colors",
-                  !disableJump && "group-hover:text-accent",
-                  isActive && "font-medium text-gray-900 dark:text-gray-100",
-                )}
-              >
-                {subtitle.text}
-              </div>
+
+              {/* Active indicator */}
+              {isActive && type === "transcription" && (
+                <div className="animate-in fade-in slide-in-from-right-2 flex flex-shrink-0 items-center duration-300">
+                  <div className="bg-accent size-2 animate-pulse rounded-full shadow-sm" />
+                </div>
+              )}
             </div>
-          )
-        })}
-      </div>
+          </div>
+        )
+      })}
     </div>
   )
 }
