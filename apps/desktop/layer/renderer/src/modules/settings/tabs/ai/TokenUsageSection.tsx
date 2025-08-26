@@ -57,7 +57,7 @@ export const TokenUsageSection = () => {
           <div className="text-text-tertiary flex items-center justify-between text-xs">
             <span>0</span>
             <span>
-              {t("token_usage.resets_at")}: {resetDate.toLocaleDateString()}
+              {t("token_usage.resets_at")}: {resetDate.toLocaleString()}
             </span>
             <span>{tokenUsage.total.toLocaleString()}</span>
           </div>

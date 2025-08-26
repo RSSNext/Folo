@@ -1,7 +1,8 @@
-import { Button } from "@follow/components/ui/button/index.js"
 import { KbdCombined } from "@follow/components/ui/kbd/Kbd.js"
-import { Switch } from "@follow/components/ui/switch/index.jsx"
 import type { AIShortcut } from "@follow/shared/settings/interface"
+
+import type { ActionButton } from "~/modules/ai-task/components/ai-item-actions"
+import { ItemActions } from "~/modules/ai-task/components/ai-item-actions"
 
 interface ShortcutItemProps {
   shortcut: AIShortcut
@@ -11,6 +12,19 @@ interface ShortcutItemProps {
 }
 
 export const ShortcutItem = ({ shortcut, onDelete, onToggle, onEdit }: ShortcutItemProps) => {
+  const actions: ActionButton[] = [
+    {
+      icon: "i-mgc-edit-cute-re",
+      onClick: () => onEdit(shortcut),
+      title: "Edit shortcut",
+    },
+    {
+      icon: "i-mgc-delete-2-cute-re",
+      onClick: () => onDelete(shortcut.id),
+      title: "Delete shortcut",
+    },
+  ]
+
   return (
     <div className="hover:bg-material-medium border-border group rounded-lg border p-4 transition-colors">
       <div className="flex items-start justify-between">
@@ -28,26 +42,11 @@ export const ShortcutItem = ({ shortcut, onDelete, onToggle, onEdit }: ShortcutI
           </p>
         </div>
 
-        <div className="ml-4 flex items-center gap-3">
-          <div className="flex items-center gap-1 opacity-60 transition-opacity group-hover:opacity-100">
-            <Button variant="ghost" size="sm" onClick={() => onEdit(shortcut)}>
-              <i className="i-mgc-edit-cute-re size-4" />
-            </Button>
-            <Button variant="ghost" size="sm" onClick={() => onDelete(shortcut.id)}>
-              <i className="i-mgc-delete-2-cute-re size-4" />
-            </Button>
-          </div>
-
-          <div className="border-fill-tertiary flex items-center gap-2 border-l pl-3">
-            <span className="text-text-tertiary text-xs font-medium">
-              {shortcut.enabled ? "ON" : "OFF"}
-            </span>
-            <Switch
-              checked={shortcut.enabled}
-              onCheckedChange={(enabled) => onToggle(shortcut.id, enabled)}
-            />
-          </div>
-        </div>
+        <ItemActions
+          actions={actions}
+          enabled={shortcut.enabled}
+          onToggle={(enabled) => onToggle(shortcut.id, enabled)}
+        />
       </div>
     </div>
   )
