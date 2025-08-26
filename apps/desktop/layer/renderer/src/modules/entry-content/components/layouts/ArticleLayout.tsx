@@ -1,4 +1,5 @@
 import { MemoedDangerousHTMLStyle } from "@follow/components/common/MemoedDangerousHTMLStyle.js"
+import { SegmentGroup, SegmentItem } from "@follow/components/ui/segment/index.js"
 import { FeedViewType } from "@follow/constants"
 import { useEntry } from "@follow/store/entry/hooks"
 import { useFeedById } from "@follow/store/feed/hooks"
@@ -108,32 +109,13 @@ export const ArticleLayout: React.FC<ArticleLayoutProps> = ({
       {/* Content Type Toggle */}
       {transcriptionData && (
         <div className="mb-6 mt-4 flex items-center gap-2">
-          <div className="flex rounded-lg border border-gray-200 p-1 dark:border-gray-700">
-            <button
-              type="button"
-              onClick={() => setShowTranscript(false)}
-              className={cn(
-                "rounded-md px-3 py-1 text-sm transition-colors",
-                !showTranscript
-                  ? "bg-blue-500 text-white"
-                  : "text-gray-600 hover:bg-gray-100 dark:text-gray-400 dark:hover:bg-gray-800",
-              )}
-            >
-              Article
-            </button>
-            <button
-              type="button"
-              onClick={() => setShowTranscript(true)}
-              className={cn(
-                "rounded-md px-3 py-1 text-sm transition-colors",
-                showTranscript
-                  ? "bg-blue-500 text-white"
-                  : "text-gray-600 hover:bg-gray-100 dark:text-gray-400 dark:hover:bg-gray-800",
-              )}
-            >
-              Transcript
-            </button>
-          </div>
+          <SegmentGroup
+            value={showTranscript ? "transcript" : "article"}
+            onValueChanged={(value) => setShowTranscript(value === "transcript")}
+          >
+            <SegmentItem value="article" label="Article" />
+            <SegmentItem value="transcript" label="Transcript" />
+          </SegmentGroup>
         </div>
       )}
 
