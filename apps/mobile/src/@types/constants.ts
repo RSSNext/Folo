@@ -10,4 +10,5 @@ export const dayjsLocaleImportMap = {
   ["zh-CN"]: ["zh-cn", () => import("dayjs/locale/zh-cn")],
   ["ja"]: ["ja", () => import("dayjs/locale/ja")],
   ["zh-TW"]: ["zh-tw", () => import("dayjs/locale/zh-tw")],
+  ["tr"]: ["tr", () => import("dayjs/locale/tr")],
 } as const

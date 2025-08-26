@@ -187,7 +187,7 @@
   "entry_content.support_amount": "Bu akışın içerik üreticisini {{amount}} kişi destekledi.",
   "entry_content.support_creator": "İçerik Üreticisini Destekle",
   "entry_content.web_app_notice": "Web uygulaması bu içerik türünü desteklemeyebilir. Masaüstü uygulamasını indirebilirsiniz.",
-  "entry_list.zero_unread": "Sıfır okunmamış",
+  "entry_list.zero_unread": "Tamamı okundu",
   "entry_list_header.daily_report": "Günlük Rapor",
   "entry_list_header.grid": "Izgara",
   "entry_list_header.items": "öğe",

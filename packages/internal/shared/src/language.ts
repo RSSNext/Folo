@@ -31,5 +31,10 @@ export const ACTION_LANGUAGE_MAP: Record<
     value: "ja",
     code: "jpn",
   },
+  tr: {
+    label: "Turkish",
+    value: "tr",
+    code: "tur",
+  },
 }
 export const ACTION_LANGUAGE_KEYS = Object.keys(ACTION_LANGUAGE_MAP) as SupportedActionLanguage[]
