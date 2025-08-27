@@ -19,6 +19,8 @@ import {
   useDeleteAIChatSessionMutation,
 } from "~/modules/ai-chat-session/query"
 
+import { AIPersistService } from "../../services"
+
 interface TaskReportDropdownProps {
   triggerElement?: ReactElement
 }
@@ -27,10 +29,10 @@ interface SessionItemProps {
   session: AIChatSession
   onClick?: () => void
   onDelete?: (e: React.MouseEvent) => void
-  isDeleting?: boolean
+  isLoading?: boolean
 }
 
-const SessionItem = ({ session, onClick, onDelete, isDeleting }: SessionItemProps) => {
+const SessionItem = ({ session, onClick, onDelete, isLoading }: SessionItemProps) => {
   const hasUnread =
     session.lastSeenAt && session.updatedAt
       ? new Date(session.updatedAt) > new Date(session.lastSeenAt)
@@ -55,9 +57,9 @@ const SessionItem = ({ session, onClick, onDelete, isDeleting }: SessionItemProp
               type="button"
               onClick={onDelete}
               className="bg-accent absolute inset-y-0 right-0 flex items-center px-2 py-1 text-white opacity-0 shadow-lg backdrop-blur-sm group-data-[highlighted]:text-white group-data-[highlighted]:opacity-100"
-              disabled={isDeleting}
+              disabled={isLoading}
             >
-              {isDeleting ? (
+              {isLoading ? (
                 <i className="i-mgc-loading-3-cute-re size-4 animate-spin" />
               ) : (
                 <i className="i-mgc-delete-2-cute-re size-4" />
@@ -87,7 +89,7 @@ export const TaskReportDropdown = ({ triggerElement }: TaskReportDropdownProps) 
   const deleteSessionMutation = useDeleteAIChatSessionMutation()
   const { ask } = useDialog()
   const { t } = useTranslation("ai")
-  const [deletingChatId, setDeletingChatId] = useState<string | null>(null)
+  const [loadingChatId, setLoadingChatId] = useState<string | null>(null)
 
   const handleSessionSelect = useCallback(
     (chatId: string) => {
@@ -114,9 +116,12 @@ export const TaskReportDropdown = ({ triggerElement }: TaskReportDropdownProps) 
 
       if (!confirm) return
 
-      setDeletingChatId(chatId)
+      setLoadingChatId(chatId)
       try {
-        await deleteSessionMutation.mutateAsync({ chatId })
+        await Promise.all([
+          deleteSessionMutation.mutateAsync({ chatId }),
+          AIPersistService.deleteSession(chatId),
+        ])
         toast.success(t("delete_chat_success"))
 
         if (chatId === currentChatId) {
@@ -126,7 +131,7 @@ export const TaskReportDropdown = ({ triggerElement }: TaskReportDropdownProps) 
         console.error("Failed to delete session:", error)
         toast.error(t("delete_chat_error"))
       } finally {
-        setDeletingChatId(null)
+        setLoadingChatId(null)
       }
     },
     [sessions, ask, t, currentChatId, chatActions, deleteSessionMutation],
@@ -150,7 +155,7 @@ export const TaskReportDropdown = ({ triggerElement }: TaskReportDropdownProps) 
               session={session}
               onClick={() => handleSessionSelect(session.chatId)}
               onDelete={(e) => handleDeleteSession(session.chatId, e)}
-              isDeleting={deletingChatId === session.chatId}
+              isLoading={loadingChatId === session.chatId}
             />
           ))
         ) : (
