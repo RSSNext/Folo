@@ -11,7 +11,6 @@ import { PanelStyleSection } from "./ai/PanelStyleSection"
 import { PersonalizePromptSection } from "./ai/PersonalizePromptSection"
 import { AIShortcutsSection } from "./ai/shortcuts/AIShortcutsSection"
 import { TaskSchedulingSection } from "./ai/tasks"
-import { TokenUsageSection } from "./ai/TokenUsageSection"
 
 const SettingBuilder = createSettingBuilder(useAISettingValue)
 const defineSettingItem = createDefineSettingItem(useAISettingValue, setAISetting)
@@ -23,11 +22,6 @@ export const SettingAI = () => {
     <div className="mt-4">
       <SettingBuilder
         settings={[
-          {
-            type: "title",
-            value: t("token_usage.title"),
-          },
-          TokenUsageSection,
           {
             type: "title",
             value: t("features.title"),
