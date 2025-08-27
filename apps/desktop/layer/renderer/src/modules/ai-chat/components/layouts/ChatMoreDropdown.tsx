@@ -19,6 +19,7 @@ import { useChatHistory } from "~/modules/ai-chat/hooks/useChatHistory"
 import { AIPersistService } from "~/modules/ai-chat/services"
 import { useChatActions, useCurrentChatId, useCurrentTitle } from "~/modules/ai-chat/store/hooks"
 import { downloadMarkdown, exportChatToMarkdown } from "~/modules/ai-chat/utils/export"
+import { useSettingModal } from "~/modules/settings/modal/use-setting-modal-hack"
 
 export const ChatMoreDropdown = ({
   triggerElement,
@@ -32,6 +33,7 @@ export const ChatMoreDropdown = ({
   const currentTitle = useCurrentTitle()
   const currentChatId = useCurrentChatId()
   const panelStyle = useAIChatPanelStyle()
+  const settingModalPresent = useSettingModal()
 
   const chatActions = useChatActions()
   const { t } = useTranslation("ai")
@@ -188,6 +190,11 @@ export const ChatMoreDropdown = ({
             </DropdownMenuItem>
           </>
         )}
+
+        <DropdownMenuItem onClick={() => settingModalPresent("ai")}>
+          <i className="i-mgc-settings-1-cute-re mr-2 size-4" />
+          <span>AI Settings</span>
+        </DropdownMenuItem>
       </DropdownMenuContent>
     </DropdownMenu>
   )

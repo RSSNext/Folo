@@ -50,7 +50,7 @@ export const PersonalizePromptSection = () => {
     <div className="space-y-4">
       <div className="space-y-2">
         <Label className="text-text text-sm font-medium">{t("personalize.prompt.label")}</Label>
-        <div className="relative -mx-3">
+        <div className="relative -ml-3">
           <TextArea
             value={prompt}
             onChange={handlePromptChange}
