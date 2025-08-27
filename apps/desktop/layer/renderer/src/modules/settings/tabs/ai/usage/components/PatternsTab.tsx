@@ -1,14 +1,14 @@
 import { Card, CardContent, CardHeader, CardTitle } from "@follow/components/ui/card/index.jsx"
+import type { UsagePattern } from "@follow-app/client-sdk"
 import { useTranslation } from "react-i18next"
 
-import type { OperationPattern } from "../types"
 import { formatTokenCount } from "../utils"
 import { BarList, TinyBars } from "./charts"
 
 interface PatternsTabProps {
   hourBuckets: number[]
   maxHourCount: number
-  byOperation: OperationPattern[]
+  byOperation: UsagePattern[]
 }
 
 export const PatternsTab = ({ hourBuckets, maxHourCount, byOperation }: PatternsTabProps) => {

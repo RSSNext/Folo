@@ -1,7 +1,7 @@
 import { Card, CardContent, CardHeader, CardTitle } from "@follow/components/ui/card/index.jsx"
+import type { ModelPattern } from "@follow-app/client-sdk"
 import { useTranslation } from "react-i18next"
 
-import type { ModelPattern } from "../types"
 import { formatTokenCount } from "../utils"
 import { BarList } from "./charts"
 

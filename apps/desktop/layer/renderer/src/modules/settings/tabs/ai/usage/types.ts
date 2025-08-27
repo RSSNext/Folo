@@ -1,22 +1,3 @@
-// Analytics Types
-export interface DailyPattern {
-  date: string
-  totalTokens: number
-  peakHour?: number | null
-}
-
-export interface OperationPattern {
-  operationType: string
-  percentage: number
-  totalTokens: number
-}
-
-export interface ModelPattern {
-  model: string
-  avgEfficiency: number
-  totalTokens: number
-}
-
 // Chart Data Types
 export interface ChartDataPoint {
   label: string

@@ -1,7 +1,7 @@
 import { Card, CardContent, CardHeader, CardTitle } from "@follow/components/ui/card/index.jsx"
+import type { DailyPattern } from "@follow-app/client-sdk"
 import { useTranslation } from "react-i18next"
 
-import type { DailyPattern } from "../types"
 import { formatTokenCount } from "../utils"
 import { Sparkline } from "./charts"
 
