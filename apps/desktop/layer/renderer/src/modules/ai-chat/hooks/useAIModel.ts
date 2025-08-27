@@ -1,20 +1,7 @@
-import { useQuery } from "@tanstack/react-query"
 import { useEffect, useMemo } from "react"
 
-import { followApi } from "~/lib/api-client"
-
 import { setAIModelState, useAIModelState } from "../atoms/session"
-
-const useAIConfiguration = () => {
-  return useQuery({
-    queryKey: ["aiConfiguration"],
-    queryFn: async () => {
-      return followApi.ai.config()
-    },
-    staleTime: 5 * 60 * 1000,
-    retry: false,
-  })
-}
+import { useAIConfiguration } from "./useAIConfiguration"
 
 export const useAIModel = () => {
   const { data: configuration, isLoading } = useAIConfiguration()

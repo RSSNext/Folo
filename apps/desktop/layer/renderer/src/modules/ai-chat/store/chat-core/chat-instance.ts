@@ -6,12 +6,12 @@ import { ZustandChatState } from "./chat-state"
 import type { ChatSlice } from "./types"
 
 // Custom Chat class that uses Zustand-integrated state
-export class ZustandChat<UI_MESSAGE extends BizUIMessage> extends AbstractChat<UI_MESSAGE> {
-  override state: ZustandChatState<UI_MESSAGE>
+export class ZustandChat extends AbstractChat<BizUIMessage> {
+  override state: ZustandChatState
   #unsubscribeFns: (() => void)[] = []
 
   constructor(
-    { messages, ...init }: ChatInit<UI_MESSAGE>,
+    { messages, ...init }: ChatInit<BizUIMessage>,
     updateZustandState: (updater: (state: ChatSlice) => ChatSlice) => void,
   ) {
     const state = new ZustandChatState(messages, updateZustandState, init.id || "")

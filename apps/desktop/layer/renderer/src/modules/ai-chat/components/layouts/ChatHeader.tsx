@@ -5,7 +5,6 @@ import { useCallback } from "react"
 import { AIChatPanelStyle, setAIPanelVisibility, useAIChatPanelStyle } from "~/atoms/settings/ai"
 import { GlassButton } from "~/components/ui/button/GlassButton"
 import { useBlockActions, useChatActions, useCurrentTitle } from "~/modules/ai-chat/store/hooks"
-import { useSettingModal } from "~/modules/settings/modal/use-setting-modal-hack"
 
 import { ChatMoreDropdown } from "./ChatMoreDropdown"
 import { EditableTitle } from "./EditableTitle"
@@ -16,13 +15,11 @@ const ChatHeaderLayout = ({
 }: {
   renderActions: (ctx: {
     onNewChatClick: () => void
-    openAISettings: () => void
     currentTitle: string | undefined
     onSaveTitle: (newTitle: string) => Promise<void>
   }) => ReactNode
 }) => {
   const currentTitle = useCurrentTitle()
-  const settingModalPresent = useSettingModal()
   const chatActions = useChatActions()
   const blockActions = useBlockActions()
 
@@ -63,7 +60,6 @@ const ChatHeaderLayout = ({
         <div className="flex items-center gap-2">
           {renderActions({
             onNewChatClick: handleNewChatClick,
-            openAISettings: () => settingModalPresent("ai"),
             currentTitle,
             onSaveTitle: handleTitleSave,
           })}
@@ -78,14 +74,10 @@ export const ChatHeader = () => {
 
   return (
     <ChatHeaderLayout
-      renderActions={({ onNewChatClick, openAISettings }) => (
+      renderActions={({ onNewChatClick }) => (
         <>
           <ActionButton tooltip="New Chat" onClick={onNewChatClick}>
             <i className="i-mgc-add-cute-re text-text-secondary size-5" />
-          </ActionButton>
-
-          <ActionButton tooltip="AI Settings" onClick={openAISettings}>
-            <i className="i-mgc-user-setting-cute-re text-text-secondary size-5" />
           </ActionButton>
 
           <ChatMoreDropdown
@@ -113,14 +105,10 @@ export const ChatHeader = () => {
 export const ChatPageHeader = () => {
   return (
     <ChatHeaderLayout
-      renderActions={({ onNewChatClick, openAISettings }) => (
+      renderActions={({ onNewChatClick }) => (
         <>
           <GlassButton description="New Chat" size="sm" onClick={onNewChatClick}>
             <i className="i-mgc-add-cute-re text-text-secondary size-4" />
-          </GlassButton>
-
-          <GlassButton description="AI Settings" size="sm" onClick={openAISettings}>
-            <i className="i-mgc-user-setting-cute-re text-text-secondary size-4" />
           </GlassButton>
 
           <div className="bg-border mx-2 h-5 w-px" />

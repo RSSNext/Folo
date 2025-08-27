@@ -157,8 +157,6 @@ class AIPersistServiceStatic {
         messages
           .filter((message) => message.parts.length > 0)
           .map((message) => {
-            const convertedParts = message.parts as any[]
-
             return {
               id: message.id,
               chatId,
@@ -169,7 +167,7 @@ class AIPersistServiceStatic {
               finishedAt: message.metadata?.finishTime
                 ? new Date(message.metadata.finishTime)
                 : undefined,
-              messageParts: convertedParts,
+              messageParts: message.parts,
               metadata: message.metadata,
             } as typeof aiChatMessagesTable.$inferInsert
           }),

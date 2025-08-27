@@ -5,9 +5,9 @@ export interface FileAttachment {
   name: string
   type: string
   size: number
-  dataUrl: string
+  dataUrl?: string
   previewUrl?: string
-  uploadStatus: "processing" | "uploading" | "completed" | "error"
+  uploadStatus?: "processing" | "uploading" | "completed" | "error"
   serverUrl?: string
   errorMessage?: string
   /** Upload progress percentage (0-100) */

@@ -155,9 +155,7 @@ export const MediaTranscript: React.FC<MediaTranscriptProps> = ({
 
   if (!srt) {
     return (
-      <div className={cn("p-4 text-center text-gray-500 dark:text-gray-400", className)}>
-        No transcript available
-      </div>
+      <div className={cn("text-secondary p-4 text-center", className)}>No transcript available</div>
     )
   }
 
@@ -166,7 +164,7 @@ export const MediaTranscript: React.FC<MediaTranscriptProps> = ({
     subtitles = parseSrt(srt, mergeLines)
   } catch (error) {
     return (
-      <div className={cn("p-4 text-center text-red-500", className)}>
+      <div className={cn("text-red p-4 text-center", className)}>
         Error parsing transcript:{" "}
         <span>{error instanceof Error ? error.message : "Unknown error"}</span>
       </div>
@@ -221,15 +219,15 @@ export const MediaTranscript: React.FC<MediaTranscriptProps> = ({
               "group relative rounded-lg border-l-4 px-3 py-2 transition-all duration-300 ease-out",
               !disableJump && "cursor-pointer",
               isActive
-                ? "bg-accent/5 dark:bg-accent/10 border-accent shadow-sm"
-                : "border-transparent hover:bg-gray-50 hover:shadow-sm dark:hover:bg-gray-900/50",
+                ? "bg-accent/5 border-accent shadow-sm"
+                : "hover:bg-fill-secondary border-transparent hover:shadow-sm",
               isPast && "opacity-50",
             )}
             onClick={() => !disableJump && handleTimeJump(subtitle.startTimeInSeconds)}
           >
             <div className="flex items-start gap-4">
               {/* Time indicator */}
-              <div className="flex-shrink-0">
+              <div className="flex-shrink-0 translate-y-3">
                 {!disableJump ? (
                   <button
                     type="button"
@@ -240,8 +238,8 @@ export const MediaTranscript: React.FC<MediaTranscriptProps> = ({
                     className={cn(
                       "rounded-md px-2 py-1 font-mono text-xs leading-none transition-all duration-200",
                       isActive
-                        ? "text-accent bg-accent/10 dark:bg-accent/15"
-                        : "text-gray-400 hover:bg-gray-100 hover:text-gray-600 dark:text-gray-500 dark:hover:bg-gray-800 dark:hover:text-gray-300",
+                        ? "text-accent bg-accent/10"
+                        : "text-text-tertiary hover:bg-fill-tertiary hover:text-text-secondary",
                     )}
                     title="Jump to this time"
                   >
@@ -251,9 +249,7 @@ export const MediaTranscript: React.FC<MediaTranscriptProps> = ({
                   <span
                     className={cn(
                       "rounded-md px-2 py-1 font-mono text-xs leading-none",
-                      isActive
-                        ? "text-accent bg-accent/10 dark:bg-accent/15"
-                        : "bg-gray-100 text-gray-400 dark:bg-gray-800 dark:text-gray-500",
+                      isActive ? "text-accent bg-accent/10" : "bg-fill-tertiary text-text-tertiary",
                     )}
                   >
                     {formatTime(subtitle.startTime)}
@@ -266,10 +262,8 @@ export const MediaTranscript: React.FC<MediaTranscriptProps> = ({
                 <p
                   className={cn(
                     "text-sm leading-relaxed transition-all duration-300",
-                    isActive
-                      ? "text-gray-900 dark:text-gray-50"
-                      : "text-gray-600 dark:text-gray-300",
-                    !disableJump && "group-hover:text-gray-900 dark:group-hover:text-gray-100",
+                    isActive ? "text-text-secondary" : "text-text-secondary",
+                    !disableJump && "group-hover:text-text",
                   )}
                 >
                   {subtitle.text}

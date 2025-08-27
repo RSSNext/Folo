@@ -6,18 +6,31 @@ import { useEventCallback } from "usehooks-ts"
 
 import { modalMontionConfig } from "../constants"
 
+export interface ModalAnimateControls {
+  /** Controller for modal animations */
+  animateController: ReturnType<typeof useAnimationControls>
+  /** Play notice animation when modal can't be dismissed */
+  playNoticeAnimation: () => void
+  /** Play exit animation and return promise that resolves when complete */
+  playExitAnimation: () => Promise<void>
+}
+
 /**
  * @internal
+ * Hook for managing modal animations including enter, notice, and exit animations
  */
-export const useModalAnimate = (isTop: boolean) => {
+export const useModalAnimate = (isTop: boolean): ModalAnimateControls => {
   const animateController = useAnimationControls()
 
+  // Initial enter animation
   useEffect(() => {
     nextFrame(() => {
       animateController.start(modalMontionConfig.animate)
     })
   }, [animateController])
-  const noticeModal = useCallback(() => {
+
+  // Notice animation for when modal can't be dismissed
+  const playNoticeAnimation = useCallback(() => {
     animateController
       .start({
         scale: 1.01,
@@ -30,6 +43,7 @@ export const useModalAnimate = (isTop: boolean) => {
       })
   }, [animateController])
 
+  // Stack position animation
   useLayoutEffect(() => {
     if (isTop) return
     animateController.start({
@@ -47,13 +61,16 @@ export const useModalAnimate = (isTop: boolean) => {
         /* empty */
       }
     }
-  }, [isTop])
+  }, [isTop, animateController])
+
+  // Exit animation
+  const playExitAnimation = useEventCallback(async () => {
+    await animateController.start(modalMontionConfig.exit)
+  })
 
   return {
-    noticeModal,
     animateController,
-    dismissing: useEventCallback(async () => {
-      await animateController.start(modalMontionConfig.exit)
-    }),
+    playNoticeAnimation,
+    playExitAnimation,
   }
 }

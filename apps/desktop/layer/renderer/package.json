@@ -119,7 +119,7 @@
     "@follow/models": "workspace:*",
     "@follow/types": "workspace:*",
     "@follow/utils": "workspace:*",
-    "@folo-services/ai-tools": "0.2.20",
+    "@folo-services/ai-tools": "0.2.31",
     "@types/node": "24.0.10",
     "@vite-pwa/assets-generator": "1.0.0",
     "fake-indexeddb": "6.0.1",

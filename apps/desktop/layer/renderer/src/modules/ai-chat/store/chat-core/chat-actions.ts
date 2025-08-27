@@ -12,7 +12,7 @@ import type { ChatSlice } from "./types"
 export class ChatSliceActions {
   constructor(
     private params: Parameters<StateCreator<ChatSlice, [], [], ChatSlice>>,
-    private chatInstance: ZustandChat<BizUIMessage>,
+    private chatInstance: ZustandChat,
   ) {
     return autoBindThis(this)
   }
@@ -182,7 +182,7 @@ export class ChatSliceActions {
     this.chatInstance.destroy()
 
     // Create new chat instance
-    const newChatInstance = new ZustandChat<BizUIMessage>(
+    const newChatInstance = new ZustandChat(
       {
         id: newChatId,
         messages: [],
@@ -221,7 +221,7 @@ export class ChatSliceActions {
       this.chatInstance.destroy()
 
       // Create new chat instance with loaded messages
-      const newChatInstance = new ZustandChat<BizUIMessage>(
+      const newChatInstance = new ZustandChat(
         {
           id: chatId,
           messages,
