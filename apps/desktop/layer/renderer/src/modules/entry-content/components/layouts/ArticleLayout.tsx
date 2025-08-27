@@ -5,7 +5,7 @@ import { useFeedById } from "@follow/store/feed/hooks"
 import { useIsInbox } from "@follow/store/inbox/hooks"
 import { cn } from "@follow/utils"
 import { ErrorBoundary } from "@sentry/react"
-import { useCallback, useMemo, useRef } from "react"
+import { useCallback, useMemo, useRef, useState } from "react"
 
 import { useUISettingKey } from "~/atoms/settings/ui"
 import { ShadowDOM } from "~/components/common/ShadowDOM"
@@ -27,6 +27,7 @@ import { ReadabilityNotice } from "../entry-content/ReadabilityNotice"
 import { EntryAttachments } from "../EntryAttachments"
 import { EntryTitle } from "../EntryTitle"
 import { SupportCreator } from "../SupportCreator"
+import { MediaTranscript, TranscriptToggle, useTranscription } from "./shared"
 
 interface ArticleLayoutProps {
   entryId: string
@@ -48,8 +49,11 @@ export const ArticleLayout: React.FC<ArticleLayoutProps> = ({
     feedId: state.feedId,
     inboxId: state.inboxHandle,
   }))
+  const { data: transcriptionData } = useTranscription(entryId)
+
   const feed = useFeedById(entry?.feedId)
   const isInbox = useIsInbox(entry?.inboxId)
+  const [showTranscript, setShowTranscript] = useState(false)
 
   const { content } = useEntryContent(entryId)
   const customCSS = useUISettingKey("customCSS")
@@ -68,34 +72,52 @@ export const ArticleLayout: React.FC<ArticleLayoutProps> = ({
   const handleSelectionClear = useCallback(() => {
     removeBlock(BlockSliceAction.SPECIAL_TYPES.selectedText)
   }, [removeBlock])
+
   if (!entry) return null
 
   return (
     <div className={cn(readableContentMaxWidthClassName, "@[500px]:px-4 mx-auto")}>
       <EntryTitle entryId={entryId} compact={compact} />
 
+      {/* Content Type Toggle */}
+      <TranscriptToggle
+        showTranscript={showTranscript}
+        onToggle={setShowTranscript}
+        hasTranscript={!!transcriptionData}
+      />
+
       <WrappedElementProvider boundingDetection>
         <div className="mx-auto mb-32 mt-8 max-w-full cursor-auto text-[0.94rem]">
           <EntryTitleMetaHandler entryId={entryId} />
           <ErrorBoundary fallback={EntryRenderError}>
             <ReadabilityNotice entryId={entryId} />
-            <ShadowDOM
-              injectHostStyles={!isInbox}
-              textSelectionEnabled
-              onTextSelect={handleTextSelect}
-              onSelectionClear={handleSelectionClear}
-            >
-              {!!customCSS && <MemoedDangerousHTMLStyle>{customCSS}</MemoedDangerousHTMLStyle>}
-
-              <Renderer
+            {showTranscript ? (
+              <MediaTranscript
+                className="prose dark:prose-invert !max-w-full"
+                srt={transcriptionData}
                 entryId={entryId}
-                view={FeedViewType.Articles}
-                feedId={feed?.id || ""}
-                noMedia={noMedia}
-                content={content}
-                translation={translation}
+                mergeLines={10}
+                type="transcription"
               />
-            </ShadowDOM>
+            ) : (
+              <ShadowDOM
+                injectHostStyles={!isInbox}
+                textSelectionEnabled
+                onTextSelect={handleTextSelect}
+                onSelectionClear={handleSelectionClear}
+              >
+                {!!customCSS && <MemoedDangerousHTMLStyle>{customCSS}</MemoedDangerousHTMLStyle>}
+
+                <Renderer
+                  entryId={entryId}
+                  view={FeedViewType.Articles}
+                  feedId={feed?.id || ""}
+                  noMedia={noMedia}
+                  content={content}
+                  translation={translation}
+                />
+              </ShadowDOM>
+            )}
           </ErrorBoundary>
         </div>
       </WrappedElementProvider>

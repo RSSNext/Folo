@@ -78,8 +78,7 @@ export function EntryPictureItem({ id }: { id: string }) {
               index,
             })
           })()
-          // const fullEntry = getEntry(id)
-          // preloadWebViewEntry(fullEntry)
+
           unreadSyncService.markEntryAsRead(id)
         }}
       />

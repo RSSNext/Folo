@@ -41,4 +41,21 @@
       })
     },
   }
+
+  // Signal readiness once DOM is interactive/loaded (guard to send once)
+  if (!window.__FO_WEBVIEW_READY__) {
+    let sent = false
+    const sendReady = () => {
+      if (sent) return
+      sent = true
+      window.__FO_WEBVIEW_READY__ = true
+      try {
+        send({ type: "ready" })
+      } catch {
+        /* empty */
+      }
+    }
+    document.addEventListener("DOMContentLoaded", sendReady)
+    window.addEventListener("load", sendReady)
+  }
 })()

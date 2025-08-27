@@ -1,19 +1,18 @@
-import { clsx } from "@follow/utils"
 import { EventBus } from "@follow/utils/event-bus"
 import { Portal } from "@gorhom/portal"
 import { useAtom } from "jotai"
 import * as React from "react"
 import { useCallback, useEffect } from "react"
-import { TouchableOpacity, View } from "react-native"
+import { View } from "react-native"
 import { runOnJS, runOnUI } from "react-native-reanimated"
 import TrackPlayer from "react-native-track-player"
 
-import { BugCuteReIcon } from "@/src/icons/bug_cute_re"
 import { player } from "@/src/lib/player"
 
 import { useLightboxControls } from "../../ui/lightbox/lightboxState"
 import { PlatformActivityIndicator } from "../../ui/loading/PlatformActivityIndicator"
 import { sharedWebViewHeightAtom } from "./atom"
+import { DebugPanel } from "./DebugPanel"
 import { useWebViewEntry, useWebViewMode } from "./hooks"
 import type { AudioSeekEvent } from "./index"
 import { prepareEntryRenderWebView } from "./index"
@@ -97,7 +96,6 @@ export function EntryContentWebView(props: EntryContentWebViewProps) {
 
   const handleModeToggle = React.useCallback(() => {
     const nextMode = mode === "debug" ? "normal" : "debug"
-
     handleModeSwitch(nextMode)
   }, [mode, handleModeSwitch])
 
@@ -125,23 +123,7 @@ export function EntryContentWebView(props: EntryContentWebViewProps) {
           </View>
         )}
       </Portal>
-      {__DEV__ && (
-        <Portal>
-          <View className="bottom-safe-offset-2 absolute left-4 flex-row gap-4">
-            <TouchableOpacity
-              className={clsx(
-                "flex size-12 items-center justify-center rounded-full",
-                mode === "debug" ? "bg-yellow" : "bg-red",
-              )}
-              onPress={handleModeToggle}
-            >
-              <BugCuteReIcon color="#fff" />
-            </TouchableOpacity>
-          </View>
-        </Portal>
-      )}
+      <DebugPanel mode={mode} onModeToggle={handleModeToggle} />
     </>
   )
 }
-
-export { preloadWebViewEntry } from "./webview-manager"
