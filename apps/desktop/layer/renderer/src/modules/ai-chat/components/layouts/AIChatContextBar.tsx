@@ -102,7 +102,7 @@ export const AIChatContextBar: Component<{ onSendShortcut?: (prompt: string) => 
           tooltip="Schedule Action"
           onClick={handleScheduleActionClick}
         >
-          <i className="i-mgc-calendar-time-add-cute-re size-5" />
+          <i className="i-mgc-calendar-time-add-cute-re size-3.5" />
         </ActionButton>
 
         {/* Context Blocks */}
