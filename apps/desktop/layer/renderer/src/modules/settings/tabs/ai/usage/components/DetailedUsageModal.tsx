@@ -78,6 +78,11 @@ export const DetailedUsageModal = () => {
   })
   const maxHourCount = Math.max(1, ...hourBuckets)
 
+  const formattedUsageTokens = formatTokenCount(usage.used)
+  const formattedRemainingTokens = formatTokenCount(rateLimit.remainingTokens)
+  const formattedTotalTokens = formatTokenCount(usage.total)
+  const formattedAvgDaily = formatTokenCount(avgDaily)
+
   return (
     <div className="max-h-[80vh] min-h-[640px] w-[500px] max-w-full space-y-6 overflow-y-auto">
       <p className="text-text-secondary text-sm">
@@ -106,15 +111,15 @@ export const DetailedUsageModal = () => {
               <div className="bg-fill-secondary/40 rounded-lg p-4">
                 <Metric
                   label={t("usage_analysis.tokens_used")}
-                  value={formatTokenCount(usage.used).value}
-                  unit={formatTokenCount(usage.used).unit}
+                  value={formattedUsageTokens.value}
+                  unit={formattedUsageTokens.unit}
                 />
               </div>
               <div className="bg-fill-secondary/40 rounded-lg p-4">
                 <Metric
                   label={t("usage_analysis.tokens_remaining")}
-                  value={formatTokenCount(rateLimit.remainingTokens).value}
-                  unit={formatTokenCount(rateLimit.remainingTokens).unit}
+                  value={formattedRemainingTokens.value}
+                  unit={formattedRemainingTokens.unit}
                 />
               </div>
             </div>
@@ -122,8 +127,8 @@ export const DetailedUsageModal = () => {
               <div className="bg-fill-secondary/20 rounded-lg p-3">
                 <StatCompact
                   label={t("usage_analysis.total_limit")}
-                  value={formatTokenCount(usage.total).value}
-                  unit={formatTokenCount(usage.total).unit}
+                  value={formattedTotalTokens.value}
+                  unit={formattedTotalTokens.unit}
                 />
               </div>
               <div className="bg-fill-secondary/20 rounded-lg p-3">
@@ -139,8 +144,8 @@ export const DetailedUsageModal = () => {
           <div className="border-fill-tertiary bg-fill-secondary/10 rounded-lg border p-4">
             <StatCompact
               label={t("analytics.avg_per_day", { defaultValue: "Avg/day" })}
-              value={formatTokenCount(avgDaily).value}
-              unit={formatTokenCount(avgDaily).unit}
+              value={formattedAvgDaily.value}
+              unit={formattedAvgDaily.unit}
             />
           </div>
           <div className="border-fill-tertiary bg-fill-secondary/10 rounded-lg border p-4">

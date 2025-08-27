@@ -15,3 +15,8 @@ export const formatTimeRemaining = (ms: number): string => {
   const rem = minutes % 60
   return rem ? `${hours}h ${rem}m` : `${hours}h`
 }
+
+export const formatTokenCountString = (count: number): string => {
+  const formatted = formatTokenCount(count)
+  return `${formatted.value}${formatted.unit}`
+}

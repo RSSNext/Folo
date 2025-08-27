@@ -5,7 +5,7 @@ import { useModalStack } from "~/components/ui/modal/stacked/hooks"
 import { useAIConfiguration } from "~/modules/ai-chat/hooks/useAIConfiguration"
 
 import { DetailedUsageModal, UsageProgressRing, UsageWarningBanner } from "./components"
-import { formatTimeRemaining, formatTokenCount } from "./utils"
+import { formatTimeRemaining, formatTokenCountString } from "./utils"
 
 export const UsageAnalysisSection = () => {
   const { t } = useTranslation("ai")
@@ -57,8 +57,7 @@ export const UsageAnalysisSection = () => {
             <div className="flex-1 space-y-2">
               <div className="flex items-baseline gap-2">
                 <span className="text-text text-lg font-semibold">
-                  {formatTokenCount(rateLimit.remainingTokens).value}
-                  {formatTokenCount(rateLimit.remainingTokens).unit}
+                  {formatTokenCountString(rateLimit.remainingTokens)}
                 </span>
                 <span className="text-text-secondary text-sm">
                   {t("usage_analysis.tokens_remaining")}
@@ -66,9 +65,7 @@ export const UsageAnalysisSection = () => {
               </div>
 
               <div className="text-text-tertiary text-xs">
-                {formatTokenCount(usage.used).value}
-                {formatTokenCount(usage.used).unit} / {formatTokenCount(usage.total).value}
-                {formatTokenCount(usage.total).unit} used
+                {formatTokenCountString(usage.used)} / {formatTokenCountString(usage.total)} used
               </div>
 
               <div className="text-text-secondary text-xs">

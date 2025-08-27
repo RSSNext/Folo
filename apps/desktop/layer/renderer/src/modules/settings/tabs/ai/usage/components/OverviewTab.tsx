@@ -2,7 +2,7 @@ import { Card, CardContent, CardHeader, CardTitle } from "@follow/components/ui/
 import type { DailyPattern } from "@follow-app/client-sdk"
 import { useTranslation } from "react-i18next"
 
-import { formatTokenCount } from "../utils"
+import { formatTokenCountString } from "../utils"
 import { Sparkline } from "./charts"
 
 interface OverviewTabProps {
@@ -33,10 +33,7 @@ export const OverviewTab = ({ dailyTotals, peakDay }: OverviewTabProps) => {
               {peakDay?.date ? (
                 <span>
                   <span>{t("analytics.peak", { defaultValue: "Peak" })}: </span>
-                  <span>
-                    {formatTokenCount(peakDay.totalTokens).value}
-                    {formatTokenCount(peakDay.totalTokens).unit}
-                  </span>
+                  <span>{formatTokenCountString(peakDay.totalTokens)}</span>
                   <span>{" · "}</span>
                   <span>{new Date(peakDay.date).toLocaleDateString()} </span>
                   <span>

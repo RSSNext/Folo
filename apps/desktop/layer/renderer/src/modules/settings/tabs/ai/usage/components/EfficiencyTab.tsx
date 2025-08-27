@@ -2,7 +2,7 @@ import { Card, CardContent, CardHeader, CardTitle } from "@follow/components/ui/
 import type { ModelPattern } from "@follow-app/client-sdk"
 import { useTranslation } from "react-i18next"
 
-import { formatTokenCount } from "../utils"
+import { formatTokenCount, formatTokenCountString } from "../utils"
 import { BarList } from "./charts"
 
 interface EfficiencyTabProps {
@@ -22,12 +22,15 @@ export const EfficiencyTab = ({ byModel }: EfficiencyTabProps) => {
       <CardContent>
         {byModel?.length > 0 ? (
           <BarList
-            data={byModel.map((m) => ({
-              label: m.model ?? "unknown",
-              value: m.avgEfficiency || 0,
-              right: `${formatTokenCount(m.totalTokens ?? 0).value}${formatTokenCount(m.totalTokens ?? 0).unit}`,
-            }))}
-            format={(v) => `${formatTokenCount(v).value}${formatTokenCount(v).unit}`}
+            data={byModel.map((m) => {
+              const formatted = formatTokenCount(m.totalTokens ?? 0)
+              return {
+                label: m.model ?? "unknown",
+                value: m.avgEfficiency || 0,
+                right: `${formatted.value}${formatted.unit}`,
+              }
+            })}
+            format={(v) => formatTokenCountString(v)}
           />
         ) : (
           <div className="text-text-tertiary py-8 text-center text-sm">

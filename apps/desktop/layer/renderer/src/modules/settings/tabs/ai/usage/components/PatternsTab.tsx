@@ -2,7 +2,7 @@ import { Card, CardContent, CardHeader, CardTitle } from "@follow/components/ui/
 import type { UsagePattern } from "@follow-app/client-sdk"
 import { useTranslation } from "react-i18next"
 
-import { formatTokenCount } from "../utils"
+import { formatTokenCountString } from "../utils"
 import { BarList, TinyBars } from "./charts"
 
 interface PatternsTabProps {
@@ -53,7 +53,8 @@ export const PatternsTab = ({ hourBuckets, maxHourCount, byOperation }: Patterns
               data={byOperation.map((o) => ({
                 label: o.operationType ?? "unknown",
                 value: o.percentage || 0,
-                right: `${formatTokenCount(o.totalTokens ?? 0).value}${formatTokenCount(o.totalTokens ?? 0).unit}`,
+
+                right: formatTokenCountString(o.totalTokens ?? 0),
               }))}
               suffix="%"
             />
