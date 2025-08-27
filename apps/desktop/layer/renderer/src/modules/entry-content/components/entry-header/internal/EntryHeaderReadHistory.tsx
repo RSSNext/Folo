@@ -2,6 +2,7 @@ import { views } from "@follow/constants"
 import { cn } from "@follow/utils/utils"
 import { memo } from "react"
 
+import { useUISettingKey } from "~/atoms/settings/ui"
 import { useRouteParams } from "~/hooks/biz/useRouteParams"
 
 import { useEntryContentScrollToTop } from "../../../atoms"
@@ -9,11 +10,12 @@ import { EntryReadHistory } from "../../entry-read-history"
 import { useEntryHeaderContext } from "./context"
 
 function EntryHeaderReadHistoryImpl({ className }: { className?: string }) {
+  const hideRecentReader = useUISettingKey("hideRecentReader")
   const { entryId } = useEntryHeaderContext()
   const { view } = useRouteParams()
   const isAtTop = useEntryContentScrollToTop()
   const isWide = views[view]?.wideMode
-  if (!isAtTop) return null
+  if (!isAtTop || hideRecentReader) return null
 
   return (
     <div
