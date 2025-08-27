@@ -19,7 +19,7 @@ import {
   useDeleteAIChatSessionMutation,
 } from "~/modules/ai-chat-session/query"
 
-interface ChatSessionDropdownProps {
+interface TaskReportDropdownProps {
   triggerElement?: ReactElement
 }
 
@@ -31,7 +31,6 @@ interface SessionItemProps {
 }
 
 const SessionItem = ({ session, onClick, onDelete, isDeleting }: SessionItemProps) => {
-  // Check if session has unread updates
   const hasUnread =
     session.lastSeenAt && session.updatedAt
       ? new Date(session.updatedAt) > new Date(session.lastSeenAt)
@@ -75,13 +74,13 @@ const EmptyState = () => {
   return (
     <div className="flex flex-col items-center py-8 text-center">
       <i className="i-mgc-comment-cute-re text-text-secondary mb-2 block size-8" />
-      <p className="text-text-secondary text-sm">No chat sessions yet</p>
+      <p className="text-text-secondary text-sm">No task reports yet</p>
       <p className="text-text-tertiary text-xs">Start a new conversation to begin</p>
     </div>
   )
 }
 
-export const ChatSessionDropdown = ({ triggerElement }: ChatSessionDropdownProps) => {
+export const TaskReportDropdown = ({ triggerElement }: TaskReportDropdownProps) => {
   const sessions = useAIChatSessionListQuery()
   const currentChatId = useCurrentChatId()
   const chatActions = useChatActions()
@@ -93,7 +92,6 @@ export const ChatSessionDropdown = ({ triggerElement }: ChatSessionDropdownProps
   const handleSessionSelect = useCallback(
     (chatId: string) => {
       if (chatId !== currentChatId) {
-        // TODO complete hydration logic
         chatActions.switchToChat(chatId)
       }
     },

@@ -7,8 +7,8 @@ import { GlassButton } from "~/components/ui/button/GlassButton"
 import { useBlockActions, useChatActions, useCurrentTitle } from "~/modules/ai-chat/store/hooks"
 
 import { ChatMoreDropdown } from "./ChatMoreDropdown"
-import { ChatSessionDropdown } from "./ChatSessionDropdown"
 import { EditableTitle } from "./EditableTitle"
+import { TaskReportDropdown } from "./TaskReportDropdown"
 
 // Base header layout with shared logic inside
 const ChatHeaderLayout = ({
@@ -81,7 +81,7 @@ export const ChatHeader = () => {
             <i className="i-mgc-add-cute-re text-text-secondary size-5" />
           </ActionButton>
 
-          <ChatSessionDropdown />
+          <TaskReportDropdown />
 
           <ChatMoreDropdown
             triggerElement={
@@ -114,9 +114,9 @@ export const ChatPageHeader = () => {
             <i className="i-mgc-add-cute-re text-text-secondary size-4" />
           </GlassButton>
 
-         <ChatSessionDropdown
+          <TaskReportDropdown
             triggerElement={
-              <GlassButton description="Chat Sessions" size="sm">
+              <GlassButton description="Task Reports" size="sm">
                 <i className="i-mgc-comment-cute-re text-text-secondary size-4" />
               </GlassButton>
             }
