@@ -273,7 +273,7 @@ export const MCPServicesSection = () => {
             </div>
           </div>
 
-          {mcpServices.length === 0 && (
+          {mcpServices.length === 0 && !isLoading && (
             <div className="py-8 text-center">
               <div className="bg-fill-secondary mx-auto mb-3 flex size-12 items-center justify-center rounded-full">
                 <i className="i-mgc-plugin-2-cute-re text-text size-6" />
