@@ -14,6 +14,7 @@ import {
 } from "~/components/ui/dropdown-menu/dropdown-menu"
 import { useDialog } from "~/components/ui/modal/stacked/hooks"
 import { useChatActions, useCurrentChatId } from "~/modules/ai-chat/store/hooks"
+import { AIChatSessionService } from "~/modules/ai-chat-session"
 import {
   useAIChatSessionListQuery,
   useDeleteAIChatSessionMutation,
@@ -92,10 +93,15 @@ export const TaskReportDropdown = ({ triggerElement }: TaskReportDropdownProps) 
   const [loadingChatId, setLoadingChatId] = useState<string | null>(null)
 
   const handleSessionSelect = useCallback(
-    (chatId: string) => {
-      if (chatId !== currentChatId) {
-        chatActions.switchToChat(chatId)
+    async (session: AIChatSession) => {
+      if (session.chatId === currentChatId) return
+      try {
+        await AIChatSessionService.fetchAndPersistMessages(session)
+      } catch (e) {
+        console.error("Failed to sync chat session messages:", e)
+        toast.error("Failed to load chat messages")
       }
+      chatActions.switchToChat(session.chatId)
     },
     [chatActions, currentChatId],
   )
@@ -153,7 +159,7 @@ export const TaskReportDropdown = ({ triggerElement }: TaskReportDropdownProps) 
             <SessionItem
               key={session.chatId}
               session={session}
-              onClick={() => handleSessionSelect(session.chatId)}
+              onClick={() => handleSessionSelect(session)}
               onDelete={(e) => handleDeleteSession(session.chatId, e)}
               isLoading={loadingChatId === session.chatId}
             />
