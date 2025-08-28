@@ -285,7 +285,8 @@ export const useEntriesByView = ({ onReset }: { onReset?: () => void }) => {
 
   const groupByDate = useGeneralSettingKey("groupByDate")
   const groupedCounts: number[] | undefined = useMemo(() => {
-    if (views[view]!.gridMode) {
+    const viewDefinition = views.find((v) => v.view === view)
+    if (viewDefinition?.gridMode) {
       return
     }
     if (!groupByDate) {

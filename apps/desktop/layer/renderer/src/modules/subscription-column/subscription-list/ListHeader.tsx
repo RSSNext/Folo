@@ -36,7 +36,7 @@ export const ListHeader = ({ view }: { view: FeedViewType }) => {
           }
         }}
       >
-        {view !== undefined && t(views[view]!.name, { ns: "common" })}
+        {view !== undefined && t(views.find((v) => v.view === view)!.name, { ns: "common" })}
       </div>
       <div className="text-text-secondary ml-2 flex items-center gap-3 text-base lg:text-sm">
         <SortButton />

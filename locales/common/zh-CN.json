@@ -28,6 +28,7 @@
   "feed.follower_one": "订阅者",
   "feed.follower_other": "订阅者",
   "feed.updated_at": "更新于",
+  "feed_view_type.all": "全部",
   "feed_view_type.articles": "文章",
   "feed_view_type.audios": "音频",
   "feed_view_type.notifications": "通知",

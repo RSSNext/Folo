@@ -99,12 +99,14 @@ class SubscriptionActions implements Hydratable, Resetable {
 
         if (subscription.feedId && subscription.type === "feed") {
           draft.feedIdByView[subscription.view].add(subscription.feedId)
+          draft.feedIdByView[FeedViewType.All].add(subscription.feedId)
           if (subscription.category) {
             draft.categories[subscription.view].add(subscription.category)
           }
         }
         if (subscription.listId && subscription.type === "list") {
           draft.listIdByView[subscription.view].add(subscription.listId)
+          draft.listIdByView[FeedViewType.All].add(subscription.listId)
         }
       }
     })
@@ -323,10 +325,18 @@ class SubscriptionSyncService {
           const subscription = draft.data[id]
           if (!subscription) continue
           draft.subscriptionIdSet.delete(getSubscriptionDBId(subscription))
-          if (subscription.feedId) draft.feedIdByView[subscription.view].delete(subscription.feedId)
-          if (subscription.listId) draft.listIdByView[subscription.view].delete(subscription.listId)
-          if (subscription.category)
+          if (subscription.feedId) {
+            draft.feedIdByView[subscription.view].delete(subscription.feedId)
+            draft.feedIdByView[FeedViewType.All].delete(subscription.feedId)
+          }
+          if (subscription.listId) {
+            draft.listIdByView[subscription.view].delete(subscription.listId)
+            draft.listIdByView[FeedViewType.All].delete(subscription.listId)
+          }
+          if (subscription.category) {
             draft.categories[subscription.view].delete(subscription.category)
+            draft.categories[FeedViewType.All].delete(subscription.category)
+          }
           delete draft.data[id]
         }
       })
@@ -349,9 +359,18 @@ class SubscriptionSyncService {
           draft.data[id] = subscription
 
           draft.subscriptionIdSet.add(getSubscriptionDBId(subscription))
-          if (subscription.feedId) draft.feedIdByView[subscription.view].add(subscription.feedId)
-          if (subscription.listId) draft.listIdByView[subscription.view].add(subscription.listId)
-          if (subscription.category) draft.categories[subscription.view].add(subscription.category)
+          if (subscription.feedId) {
+            draft.feedIdByView[subscription.view].add(subscription.feedId)
+            draft.feedIdByView[FeedViewType.All].add(subscription.feedId)
+          }
+          if (subscription.listId) {
+            draft.listIdByView[subscription.view].add(subscription.listId)
+            draft.listIdByView[FeedViewType.All].add(subscription.listId)
+          }
+          if (subscription.category) {
+            draft.categories[subscription.view].add(subscription.category)
+            draft.categories[FeedViewType.All].add(subscription.category)
+          }
         }
       })
     })

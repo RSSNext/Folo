@@ -4,6 +4,7 @@ import { FeedViewType } from "./enums"
 
 export interface ViewDefinition {
   name:
+    | "feed_view_type.all"
     | "feed_view_type.articles"
     | "feed_view_type.audios"
     | "feed_view_type.notifications"
@@ -18,20 +19,35 @@ export interface ViewDefinition {
   wideMode?: boolean
   gridMode?: boolean
   activeColor: string
+  /** if it's switchable from other views to this view by user */
+  switchable: boolean
 }
 export const views: ViewDefinition[] = [
   {
-    name: "feed_view_type.articles",
-    icon: <i className="i-mgc-paper-cute-fi" />,
+    name: "feed_view_type.all",
+    icon: <i className="i-mgc-bubble-cute-fi" />,
     className: "text-folo",
     peerClassName: "peer-checked:text-folo dark:peer-checked:text-folo",
+    translation: "title,description,content",
+    view: FeedViewType.All,
+    gridMode: true,
+    wideMode: true,
+    activeColor: "#FF5C00",
+    switchable: false,
+  },
+  {
+    name: "feed_view_type.articles",
+    icon: <i className="i-mgc-paper-cute-fi" />,
+    className: "text-lime-600 dark:text-lime-500",
+    peerClassName: "peer-checked:text-lime-600 dark:peer-checked:text-lime-500",
     translation: "title,description",
     view: FeedViewType.Articles,
     activeColor: "#FF5C00",
+    switchable: true,
   },
   {
     name: "feed_view_type.social_media",
-    icon: <i className="i-mgc-twitter-cute-fi" />,
+    icon: <i className="i-mgc-thought-cute-fi" />,
     className: "text-sky-600 dark:text-sky-500",
     peerClassName: "peer-checked:text-sky-600 peer-checked:dark:text-sky-500",
     wideMode: true,
@@ -39,6 +55,7 @@ export const views: ViewDefinition[] = [
     view: FeedViewType.SocialMedia,
     // sky-500
     activeColor: "#0ea5e9",
+    switchable: true,
   },
   {
     name: "feed_view_type.pictures",
@@ -51,6 +68,7 @@ export const views: ViewDefinition[] = [
     view: FeedViewType.Pictures,
     // green-500
     activeColor: "#22c55e",
+    switchable: true,
   },
   {
     name: "feed_view_type.videos",
@@ -63,6 +81,7 @@ export const views: ViewDefinition[] = [
     view: FeedViewType.Videos,
     // red-500
     activeColor: "#ef4444",
+    switchable: true,
   },
   {
     name: "feed_view_type.audios",
@@ -73,6 +92,7 @@ export const views: ViewDefinition[] = [
     view: FeedViewType.Audios,
     // purple-500
     activeColor: "#a855f7",
+    switchable: true,
   },
   {
     name: "feed_view_type.notifications",
@@ -83,6 +103,7 @@ export const views: ViewDefinition[] = [
     view: FeedViewType.Notifications,
     // yellow-500
     activeColor: "#eab308",
+    switchable: true,
   },
 ]
 

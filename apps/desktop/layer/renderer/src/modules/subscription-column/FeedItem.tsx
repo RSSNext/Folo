@@ -71,6 +71,10 @@ const FeedItemImpl = ({ view, feedId, className, isPreview }: FeedItemProps) => 
   const { t } = useTranslation()
   const subscription = useSubscriptionByFeedId(feedId)
   const navigate = useNavigateEntry()
+
+  // Use current route view for navigation to stay in current view (e.g., All view)
+  const currentRouteView = useRouteParamsSelector((s) => s.view)
+  const navigationView = currentRouteView ?? view
   const feed = useFeedById(feedId, (feed) => {
     return {
       type: feed.type,
@@ -101,14 +105,14 @@ const FeedItemImpl = ({ view, feedId, className, isPreview }: FeedItemProps) => 
       }
 
       e.stopPropagation()
-      if (view === undefined) return
+      if (navigationView === undefined) return
       navigate({
         feedId,
         entryId: null,
-        view,
+        view: navigationView,
       })
     },
-    [feedId, navigate, setSelectedFeedIds, view],
+    [feedId, navigate, setSelectedFeedIds, navigationView],
   )
 
   const feedUnread = useUnreadById(feedId)
@@ -271,6 +275,11 @@ const ListItemImpl: Component<ListItemProps> = ({
   const [isContextMenuOpen, setIsContextMenuOpen] = useState(false)
   const subscription = useSubscriptionByFeedId(listId)!
   const navigate = useNavigateEntry()
+
+  // Use current route view for navigation to stay in current view (e.g., All view)
+  const currentRouteView = useRouteParamsSelector((s) => s.view)
+  const navigationView = currentRouteView ?? view
+
   const handleNavigate = useCallback(
     (e: React.MouseEvent<HTMLDivElement>) => {
       e.stopPropagation()
@@ -278,10 +287,10 @@ const ListItemImpl: Component<ListItemProps> = ({
       navigate({
         listId,
         entryId: null,
-        view,
+        view: navigationView,
       })
     },
-    [listId, navigate, view],
+    [listId, navigate, navigationView],
   )
   const showContextMenu = useShowContextMenu()
   const { t } = useTranslation()
@@ -381,6 +390,11 @@ const InboxItemImpl: Component<InboxItemProps> = ({ view, inboxId, className, ic
 
   const [isContextMenuOpen, setIsContextMenuOpen] = useState(false)
   const navigate = useNavigateEntry()
+
+  // Use current route view for navigation to stay in current view (e.g., All view)
+  const currentRouteView = useRouteParamsSelector((s) => s.view)
+  const navigationView = currentRouteView ?? view
+
   const handleNavigate = useCallback(
     (e: React.MouseEvent<HTMLDivElement>) => {
       e.stopPropagation()
@@ -388,10 +402,10 @@ const InboxItemImpl: Component<InboxItemProps> = ({ view, inboxId, className, ic
       navigate({
         inboxId,
         entryId: null,
-        view,
+        view: navigationView,
       })
     },
-    [inboxId, navigate, view],
+    [inboxId, navigate, navigationView],
   )
   const showContextMenu = useShowContextMenu()
 
