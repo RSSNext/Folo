@@ -58,8 +58,18 @@ export const AllItem: EntryListItemFC = ({ entryId, entryPreview, translation })
   const view = useViewTypeByEntryId(entryId)
   const entry = useEntry(entryId, (state) => {
     /// keep-sorted
-    const { attachments, feedId, id, read, url } = state
-    const { authorAvatar, publishedAt, title } = state
+    const {
+      attachments,
+      authorAvatar,
+      content,
+      description,
+      feedId,
+      id,
+      publishedAt,
+      read,
+      title,
+      url,
+    } = state
 
     const media = state.media || []
     const photo = media.find((a) => a.type === "photo")
@@ -80,6 +90,7 @@ export const AllItem: EntryListItemFC = ({ entryId, entryPreview, translation })
     return {
       attachments,
       duration,
+      content,
       feedId,
       firstMedia,
       iconEntry,
@@ -88,6 +99,7 @@ export const AllItem: EntryListItemFC = ({ entryId, entryPreview, translation })
       publishedAt,
       read,
       title,
+      description,
       url,
     }
   })
@@ -214,7 +226,9 @@ export const AllItem: EntryListItemFC = ({ entryId, entryPreview, translation })
               />
             ) : (
               <div className="flex min-h-[10em] flex-col items-center justify-center overflow-hidden px-4 py-20 text-[1.5rem] font-normal leading-[1.2]">
-                <div className="line-clamp-6 max-w-full break-words">{entry.title}</div>
+                <div className="line-clamp-6 max-w-full break-words">
+                  {entry.title || entry.content || entry.description}
+                </div>
               </div>
             )}
           </>
