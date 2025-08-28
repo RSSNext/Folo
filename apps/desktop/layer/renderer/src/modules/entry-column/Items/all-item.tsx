@@ -227,7 +227,7 @@ export const AllItem: EntryListItemFC = ({ entryId, entryPreview, translation })
             ) : (
               <div className="flex min-h-[10em] flex-col items-center justify-center overflow-hidden px-4 py-20 text-[1.5rem] font-normal leading-[1.2]">
                 <div className="line-clamp-6 max-w-full break-words">
-                  {entry.title || entry.content || entry.description}
+                  {entry.title || entry.description || entry.content}
                 </div>
               </div>
             )}
