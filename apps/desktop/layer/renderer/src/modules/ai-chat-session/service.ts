@@ -1,8 +1,10 @@
 import type { AIChatMessage, AIChatSession } from "@follow-app/client-sdk"
 
 import { followApi } from "../../lib/api-client"
+import { queryClient } from "../../lib/query-client"
 import { AIPersistService } from "../ai-chat/services"
 import type { BizUIMessage } from "../ai-chat/store/types"
+import { aiChatSessionKeys } from "./query"
 
 /**
  * Service for syncing AI chat session messages from remote API into local DB.
@@ -26,6 +28,18 @@ class AIChatSessionServiceStatic {
 
     await AIPersistService.ensureSession(session.chatId, session.title)
     await AIPersistService.upsertMessages(session.chatId, normalized)
+
+    await followApi.aiChatSessions.markSeen({
+      chatId: session.chatId,
+      lastSeenAt: new Date().toISOString(),
+    })
+
+    // Invalidate related queries so UI updates outside of hook-based mutation flows
+    Promise.all([
+      queryClient.invalidateQueries({ queryKey: aiChatSessionKeys.detail(session.chatId) }),
+      queryClient.invalidateQueries({ queryKey: aiChatSessionKeys.lists() }),
+      queryClient.invalidateQueries({ queryKey: aiChatSessionKeys.unread() }),
+    ])
     return normalized
   }
 
