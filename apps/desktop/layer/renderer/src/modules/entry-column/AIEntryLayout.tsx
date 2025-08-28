@@ -1,10 +1,9 @@
 import { Spring } from "@follow/components/constants/spring.js"
-import { Button } from "@follow/components/ui/button/index.js"
 import { PanelSplitter } from "@follow/components/ui/divider/index.js"
 import { defaultUISettings } from "@follow/shared/settings/defaults"
 import { cn } from "@follow/utils"
 import { AnimatePresence } from "motion/react"
-import { useCallback, useEffect, useMemo, useRef, useState } from "react"
+import { useCallback, useEffect, useMemo, useRef } from "react"
 import { useResizable } from "react-resizable-layout"
 import { useParams } from "react-router"
 
@@ -18,6 +17,8 @@ import { EntryContent } from "~/modules/entry-content/components/entry-content"
 import { AppLayoutGridContainerProvider } from "~/providers/app-grid-layout-container-provider"
 
 import { AIChatRoot } from "../ai-chat/components/layouts/AIChatRoot"
+import { AISplineButton } from "../app-layout/ai/AISplineButton"
+import { setScrollToExitTutorialSeen } from "./atoms/tutorial"
 import { EntryColumn } from "./index"
 
 const AIEntryLayoutImpl = () => {
@@ -31,7 +32,6 @@ const AIEntryLayoutImpl = () => {
   const entryContentRef = useRef<HTMLDivElement>(null)
   const accumulatedDelta = useRef(0)
   const isScrollingAtTop = useRef(false)
-  const [showScrollHint, setShowScrollHint] = useState(false)
 
   const handleCloseGesture = useCallback(() => {
     navigate({ entryId: null })
@@ -50,7 +50,6 @@ const AIEntryLayoutImpl = () => {
       // Check if we're at the top of the content
       const scrollTop = scrollElement?.scrollTop || 0
       isScrollingAtTop.current = scrollTop === 0
-      setShowScrollHint(scrollTop === 0)
 
       // Handle trackpad/mouse wheel: upward scroll (deltaY < 0) or downward swipe gesture
       // On macOS trackpad, natural scrolling makes upward finger movement negative deltaY
@@ -62,6 +61,7 @@ const AIEntryLayoutImpl = () => {
         if (accumulatedDelta.current > 1000) {
           handleCloseGesture()
           accumulatedDelta.current = 0
+          setScrollToExitTutorialSeen(true)
         }
       } else {
         // Reset accumulation when scrolling down or not at top
@@ -90,24 +90,10 @@ const AIEntryLayoutImpl = () => {
       el.addEventListener("wheel", handleWheel, { passive: false })
     })
 
-    // Initial scroll position check for hint visibility
-    const initialCheckScrollPosition = () => {
-      const scrollTop = scrollViewport?.scrollTop || element.scrollTop || 0
-      setShowScrollHint(scrollTop === 0)
-    }
-
-    // Check initial position
-    initialCheckScrollPosition()
-
-    // Add scroll listener for hint visibility
-    const scrollElement = scrollViewport || element
-    scrollElement.addEventListener("scroll", initialCheckScrollPosition, { passive: true })
-
     return () => {
       elementsToListen.forEach((el) => {
         el.removeEventListener("wheel", handleWheel)
       })
-      scrollElement.removeEventListener("scroll", initialCheckScrollPosition)
     }
   }, [realEntryId, handleWheel])
 
@@ -130,7 +116,6 @@ const AIEntryLayoutImpl = () => {
       window.dispatchEvent(new Event("resize"))
     },
   })
-
   return (
     <div className="relative flex min-w-0 grow">
       <div className={cn("h-full flex-1", panelStyle === AIChatPanelStyle.Fixed && "border-r")}>
@@ -139,40 +124,18 @@ const AIEntryLayoutImpl = () => {
             {/* Entry list - always rendered to prevent animation */}
             <EntryColumn key="entry-list" />
 
-            {/* Entry content overlay with exit animation */}
-            <AnimatePresence mode="wait">
+            <AnimatePresence>
               {realEntryId && (
                 <m.div
                   lcpOptimization
                   ref={entryContentRef}
-                  key={realEntryId}
                   initial={{ y: "100%" }}
                   animate={{ y: 0 }}
                   exit={{ y: "100%" }}
-                  transition={Spring.presets.microRebound}
+                  transition={Spring.presets.smooth}
                   className="bg-theme-background absolute inset-0 z-10 border-l"
                 >
-                  {/* Scroll hint indicator */}
-                  <div className="center z-50 pt-2">
-                    <Button
-                      variant="ghost"
-                      size="sm"
-                      onClick={() => navigate({ entryId: null })}
-                      buttonClassName="transform cursor-pointer select-none no-drag-region"
-                      aria-label="Scroll up or click to exit"
-                    >
-                      <div className="text-text flex items-center gap-2 rounded-full font-medium">
-                        <i
-                          className={cn(
-                            "text-base",
-                            showScrollHint ? "i-mgc-up-cute-re" : "i-mgc-close-cute-re",
-                          )}
-                        />
-                        <span>{showScrollHint ? "Scroll up to exit" : "Click to exit"}</span>
-                      </div>
-                    </Button>
-                  </div>
-                  <EntryContent entryId={realEntryId} className="h-[calc(100%-2.25rem)]" />
+                  <EntryContent entryId={realEntryId} className="h-full" />
                 </m.div>
               )}
             </AnimatePresence>
@@ -193,6 +156,7 @@ const AIEntryLayoutImpl = () => {
             }}
           />
           <AIChatLayout
+            key="ai-chat-layout"
             style={
               { width: position, "--ai-chat-layout-width": `${position}px` } as React.CSSProperties
             }
@@ -201,7 +165,7 @@ const AIEntryLayoutImpl = () => {
       )}
 
       {/* Floating panel - renders outside layout flow */}
-      {panelStyle === AIChatPanelStyle.Floating && <AIChatLayout />}
+      {panelStyle === AIChatPanelStyle.Floating && <AIChatLayout key="ai-chat-layout" />}
     </div>
   )
 }
@@ -210,6 +174,8 @@ export const AIEntryLayout = () => {
   return (
     <AIChatRoot wrapFocusable={false}>
       <AIEntryLayoutImpl />
+      {/* AI Spline Button - available globally when floating AI chat is closed */}
+      <AISplineButton />
     </AIChatRoot>
   )
 }

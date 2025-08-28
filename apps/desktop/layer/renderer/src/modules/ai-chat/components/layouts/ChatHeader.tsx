@@ -1,23 +1,27 @@
 import { ActionButton } from "@follow/components/ui/button/index.js"
+import type { ReactNode } from "react"
 import { useCallback } from "react"
-import { useTranslation } from "react-i18next"
 
 import { AIChatPanelStyle, setAIPanelVisibility, useAIChatPanelStyle } from "~/atoms/settings/ai"
-import { useDialog } from "~/components/ui/modal/stacked/hooks"
+import { GlassButton } from "~/components/ui/button/GlassButton"
 import { useBlockActions, useChatActions, useCurrentTitle } from "~/modules/ai-chat/store/hooks"
-import { useSettingModal } from "~/modules/settings/modal/use-setting-modal-hack"
 
 import { ChatMoreDropdown } from "./ChatMoreDropdown"
 import { EditableTitle } from "./EditableTitle"
 
-export const ChatHeader = () => {
+// Base header layout with shared logic inside
+const ChatHeaderLayout = ({
+  renderActions,
+}: {
+  renderActions: (ctx: {
+    onNewChatClick: () => void
+    currentTitle: string | undefined
+    onSaveTitle: (newTitle: string) => Promise<void>
+  }) => ReactNode
+}) => {
   const currentTitle = useCurrentTitle()
-
-  const settingModalPresent = useSettingModal()
   const chatActions = useChatActions()
   const blockActions = useBlockActions()
-  const { ask } = useDialog()
-  const { t } = useTranslation("ai")
 
   const handleNewChatClick = useCallback(() => {
     const messages = chatActions.getMessages()
@@ -25,16 +29,9 @@ export const ChatHeader = () => {
       return
     }
 
-    ask({
-      title: t("clear_chat"),
-      message: t("clear_chat_message"),
-      variant: "danger",
-      onConfirm: () => {
-        chatActions.newChat()
-        blockActions.clearBlocks({ keepSpecialTypes: true })
-      },
-    })
-  }, [chatActions, currentTitle, ask, t, blockActions])
+    chatActions.newChat()
+    blockActions.clearBlocks({ keepSpecialTypes: true })
+  }, [chatActions, currentTitle, blockActions])
 
   const handleTitleSave = useCallback(
     async (newTitle: string) => {
@@ -43,7 +40,6 @@ export const ChatHeader = () => {
     [chatActions],
   )
 
-  const panelStyle = useAIChatPanelStyle()
   const maskImage = `linear-gradient(to bottom, black 0%, black 75%, transparent 100%)`
   return (
     <div className="absolute inset-x-0 top-0 z-[1] h-12">
@@ -62,15 +58,35 @@ export const ChatHeader = () => {
 
         {/* Right side - Actions */}
         <div className="flex items-center gap-2">
-          <ActionButton tooltip="New Chat" onClick={handleNewChatClick}>
+          {renderActions({
+            onNewChatClick: handleNewChatClick,
+            currentTitle,
+            onSaveTitle: handleTitleSave,
+          })}
+        </div>
+      </div>
+    </div>
+  )
+}
+
+export const ChatHeader = () => {
+  const panelStyle = useAIChatPanelStyle()
+
+  return (
+    <ChatHeaderLayout
+      renderActions={({ onNewChatClick }) => (
+        <>
+          <ActionButton tooltip="New Chat" onClick={onNewChatClick}>
             <i className="i-mgc-add-cute-re text-text-secondary size-5" />
           </ActionButton>
 
-          <ActionButton tooltip="AI Settings" onClick={() => settingModalPresent("ai")}>
-            <i className="i-mgc-user-setting-cute-re text-text-secondary size-5" />
-          </ActionButton>
-
-          <ChatMoreDropdown />
+          <ChatMoreDropdown
+            triggerElement={
+              <ActionButton tooltip="More">
+                <i className="i-mingcute-more-1-fill size-5 opacity-80" />
+              </ActionButton>
+            }
+          />
 
           {panelStyle === AIChatPanelStyle.Floating && (
             <>
@@ -80,8 +96,33 @@ export const ChatHeader = () => {
               </ActionButton>
             </>
           )}
-        </div>
-      </div>
-    </div>
+        </>
+      )}
+    />
+  )
+}
+
+export const ChatPageHeader = () => {
+  return (
+    <ChatHeaderLayout
+      renderActions={({ onNewChatClick }) => (
+        <>
+          <GlassButton description="New Chat" size="sm" onClick={onNewChatClick}>
+            <i className="i-mgc-add-cute-re text-text-secondary size-4" />
+          </GlassButton>
+
+          <div className="bg-border mx-2 h-5 w-px" />
+          <ChatMoreDropdown
+            canToggleMode={false}
+            asChild={false}
+            triggerElement={
+              <GlassButton description="More" size="sm">
+                <i className="i-mingcute-more-1-fill size-4 opacity-80" />
+              </GlassButton>
+            }
+          />
+        </>
+      )}
+    />
   )
 }

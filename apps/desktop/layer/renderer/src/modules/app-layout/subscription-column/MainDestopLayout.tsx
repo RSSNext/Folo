@@ -16,7 +16,6 @@ import { PlainModal } from "~/components/ui/modal/stacked/custom-modal"
 import { DeclarativeModal } from "~/components/ui/modal/stacked/declarative-modal"
 import { ROOT_CONTAINER_ID } from "~/constants/dom"
 import { EnvironmentIndicator } from "~/modules/app/EnvironmentIndicator"
-import { AISplineButton } from "~/modules/app-layout/ai/AISplineButton"
 import { LoginModalContent } from "~/modules/auth/LoginModalContent"
 import { DebugRegistry } from "~/modules/debug/registry"
 import { CmdF } from "~/modules/panel/cmdf"
@@ -81,9 +80,6 @@ export function MainDestopLayout() {
       <SearchCmdK />
       <CmdNTrigger />
       {IN_ELECTRON && <CmdF />}
-
-      {/* AI Spline Button - available globally when floating AI chat is closed */}
-      <AISplineButton />
     </RootContainer>
   )
 }

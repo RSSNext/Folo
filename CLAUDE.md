@@ -38,7 +38,6 @@ Follow (Folo) is a modern RSS aggregator and content management platform with mu
   - `utils/` - Utility functions and helpers
   - `tracker/` - Analytics and tracking
   - `logger/` - Logging utilities
-  - `legal/` - Legal and compliance utilities
 - **`packages/configs/`** - Shared configuration files
   - `tailwindcss/` - Tailwind CSS configurations
   - TypeScript and build configurations
@@ -137,6 +136,7 @@ For mobile, see @apps/mobile/CLAUDE.md
 3. For plural-sensitive languages, use `_one` and `_other` suffixes
 4. **Avoid conflicting flat keys** - During build, flat dot-separated keys (e.g., 'exif.custom.rendered.custom') are automatically converted to nested objects, which can cause conflicts. For example, 'exif.custom.rendered.custom' conflicts with 'exif.custom.rendered'. Avoid such patterns.
 5. **Never use `defaultValue` in translations** - Always add proper translations to all three required language files: `en.json`, `zh-CN.json`, and `ja.json` in the appropriate feature directories under `locales/`
+6. **Top-scope variables with translatable content** - Use `const` assertions (`as const`) instead of functions for type safety
 
 Example:
 

@@ -79,8 +79,7 @@ export const loadLanguageAndApply = async (lang: string) => {
 
     if (IN_ELECTRON) {
       importFilePath =
-        (await (ipcServices as any)?.app.resolveAppAsarPath(`dist/renderer/locales/${lang}.js`)) ||
-        ""
+        (await ipcServices?.app.resolveAppAsarPath(`dist/renderer/locales/${lang}.js`)) || ""
     } else {
       importFilePath = `/locales/${lang}.js`
     }

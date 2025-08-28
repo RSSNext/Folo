@@ -1,5 +1,5 @@
 import { Button } from "@follow/components/ui/button/index.js"
-import { Collapse, CollapseGroup } from "@follow/components/ui/collapse/index.js"
+import { CollapseCss, CollapseCssGroup } from "@follow/components/ui/collapse/CollapseCss.js"
 import { Divider } from "@follow/components/ui/divider/index.js"
 import { InputV2 } from "@follow/components/ui/input/index.js"
 import {
@@ -332,25 +332,28 @@ export const SettingIntegration = () => {
     return [knowledgeManagement, readingServices, mediaTools, downloadTools]
   }, [t, settings])
 
-  const filteredCategories = useMemo(() => {
-    if (!searchQuery) return integrationCategories
+  const filteredIntegrations = useMemo(() => {
+    const allIntegrations = integrationCategories.flatMap((category) =>
+      category.integrations.map((integration) => ({
+        ...integration,
+        categoryTitle: category.title,
+        categoryIcon: category.icon,
+      })),
+    )
 
-    return integrationCategories
-      .map((category) => ({
-        ...category,
-        integrations: category.integrations.filter((integration) => {
-          const matchesSearch = searchQuery
-            ? (integration.title as string).toLowerCase().includes(searchQuery.toLowerCase()) ||
-              integration.key.toString().toLowerCase().includes(searchQuery.toLowerCase())
-            : true
-          return matchesSearch
-        }),
-      }))
-      .filter((category) => category.integrations.length > 0)
+    if (!searchQuery) return allIntegrations
+
+    return allIntegrations.filter((integration) => {
+      const matchesSearch = searchQuery
+        ? (integration.title as string).toLowerCase().includes(searchQuery.toLowerCase()) ||
+          integration.key.toString().toLowerCase().includes(searchQuery.toLowerCase())
+        : true
+      return matchesSearch
+    })
   }, [integrationCategories, searchQuery])
 
-  const shouldDefaultOpen = useCallback((category: (typeof integrationCategories)[0]) => {
-    return category.integrations.some((integration) => integration.configured)
+  const shouldDefaultOpen = useCallback((integration: (typeof filteredIntegrations)[0]) => {
+    return integration.configured
   }, [])
 
   return (
@@ -401,76 +404,62 @@ export const SettingIntegration = () => {
       <Divider />
 
       {/* Built-in Integration Section */}
-      {filteredCategories.length > 0 ? (
+      {filteredIntegrations.length > 0 ? (
         <>
           <div className="space-y-6">
             <div className="flex items-center justify-between">
               <SettingSectionTitle title={t("integration.builtin.title")} />
-              <span className="text-text-tertiary flex items-center gap-1 text-sm tabular-nums">
+              <span className="text-text-tertiary flex items-center gap-1 text-sm">
                 <span className="bg-green size-2 rounded-full" />
-                {filteredCategories.reduce(
-                  (acc, cat) => acc + cat.integrations.filter((i) => i.configured).length,
-                  0,
-                )}
-                /{filteredCategories.reduce((acc, cat) => acc + cat.integrations.length, 0)}{" "}
-                configured
+                {filteredIntegrations.filter((i) => i.configured).length}/
+                {filteredIntegrations.length} configured
               </span>
             </div>
 
-            <div className="space-y-4">
-              {filteredCategories.map((category) => (
-                <CollapseGroup key={category.id}>
-                  <Collapse
+            <CollapseCssGroup>
+              <div className="space-y-4">
+                {filteredIntegrations.map((integration) => (
+                  <CollapseCss
+                    key={integration.key}
+                    collapseId={integration.key}
                     title={
                       <div className="flex items-center gap-3">
                         <span className="text-text-secondary inline-flex items-center justify-center">
-                          {category.icon}
+                          {integration.icon}
                         </span>
-                        <span className="font-medium">{category.title as string}</span>
-                        <span className="text-text-tertiary ml-auto mr-2 flex items-center gap-1 text-xs tabular-nums">
-                          <span className="bg-green size-1.5 rounded-full" />
-                          {category.integrations.filter((i) => i.configured).length}/
-                          {category.integrations.length}
-                        </span>
+                        <div className="flex flex-col items-start">
+                          <span className="font-medium">{integration.title as string}</span>
+                          <span className="text-text-tertiary text-xs">
+                            {integration.categoryTitle as string}
+                          </span>
+                        </div>
+                        <div className="ml-auto flex items-center gap-2">
+                          {integration.configured && (
+                            <span className="bg-green/10 text-green inline-flex items-center gap-1 rounded-full px-2 py-0.5 text-xs">
+                              <i className="i-mingcute-check-line" />
+                              {t("integration.status.configured")}
+                            </span>
+                          )}
+                          {integration.enabled && (
+                            <span className="bg-blue/10 text-blue inline-flex items-center gap-1 rounded-full px-2 py-0.5 text-xs">
+                              <i className="i-mingcute-power-line" />
+                              {t("integration.status.enabled")}
+                            </span>
+                          )}
+                        </div>
                       </div>
                     }
-                    defaultOpen={shouldDefaultOpen(category)}
-                    className="border-border bg-background rounded-lg border px-4 py-2 shadow-sm"
-                    contentClassName="px-4 pb-4 pt-8"
+                    defaultOpen={shouldDefaultOpen(integration)}
+                    className="border-border bg-background mt-4 rounded-lg border px-4 py-2 shadow-sm"
+                    contentClassName="px-4"
                   >
-                    <div className="space-y-6">
-                      {category.integrations.map((integration) => (
-                        <div key={integration.key} className="space-y-4">
-                          <div className="border-fill-secondary flex items-center gap-3 border-b pb-3">
-                            <span className="text-text-secondary inline-flex items-center justify-center">
-                              {integration.icon}
-                            </span>
-                            <h4 className="text-text font-medium">{integration.title as string}</h4>
-                            <div className="ml-auto flex items-center gap-2">
-                              {integration.configured && (
-                                <span className="bg-green/10 text-green inline-flex items-center gap-1 rounded-full px-2 py-0.5 text-xs">
-                                  <i className="i-mingcute-check-line" />
-                                  {t("integration.status.configured")}
-                                </span>
-                              )}
-                              {integration.enabled && (
-                                <span className="bg-blue/10 text-blue inline-flex items-center gap-1 rounded-full px-2 py-0.5 text-xs">
-                                  <i className="i-mingcute-power-line" />
-                                  {t("integration.status.enabled")}
-                                </span>
-                              )}
-                            </div>
-                          </div>
-                          <div className="pl-7">
-                            <SettingBuilder settings={integration.settings} />
-                          </div>
-                        </div>
-                      ))}
+                    <div className="pb-4">
+                      <SettingBuilder settings={integration.settings} />
                     </div>
-                  </Collapse>
-                </CollapseGroup>
-              ))}
-            </div>
+                  </CollapseCss>
+                ))}
+              </div>
+            </CollapseCssGroup>
           </div>
         </>
       ) : (

@@ -10,6 +10,8 @@ interface DefaultWelcomeContentProps {
   shortcuts: Array<{ id: string; name: string; prompt: string; enabled: boolean; hotkey?: string }>
 }
 
+const DEFAULT_SHORTCUTS = ["Generate today daily report"]
+
 export const DefaultWelcomeContent: React.FC<DefaultWelcomeContentProps> = ({
   onSend,
   shortcuts: enabledShortcuts,
@@ -39,6 +41,15 @@ export const DefaultWelcomeContent: React.FC<DefaultWelcomeContentProps> = ({
         {/* Show customize button when no shortcuts are available */}
         {enabledShortcuts.length === 0 && (
           <>
+            {DEFAULT_SHORTCUTS.slice(0, 4 - enabledShortcuts.length).map((suggestion, index) => (
+              <AIShortcutButton
+                key={suggestion}
+                onClick={() => onSend(suggestion, null)}
+                animationDelay={(enabledShortcuts.length + index) * 0.1}
+              >
+                {suggestion}
+              </AIShortcutButton>
+            ))}
             <AIShortcutButton
               key="customize-shortcuts"
               onClick={() => showSettings("ai")}

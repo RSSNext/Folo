@@ -18,8 +18,8 @@ import { AIModelIndicator } from "./AIModelIndicator"
 
 const chatInputVariants = cva(
   [
-    "bg-background/60 focus-within:ring-accent/20 focus-within:border-accent/80 border-border/80",
-    "relative overflow-hidden rounded-2xl border backdrop-blur-xl duration-200 focus-within:ring-2",
+    "bg-mix-background/transparent-8/2 focus-within:ring-accent/20 focus-within:border-accent/80 border-border/80",
+    "relative overflow-hidden rounded-2xl border backdrop-blur-background duration-200 focus-within:ring-2",
   ],
   {
     variants: {
@@ -114,7 +114,7 @@ export const ChatInput = memo(({ onSend, variant }: ChatInputProps) => {
       {/* Context Bar - Always shown, positioned below the input area */}
       <div className="border-border/20 relative z-10 border-t bg-transparent">
         <div className="flex items-center justify-between px-4 py-2.5">
-          <div className="flex-1">
+          <div className="min-w-0 flex-1 shrink">
             <AIChatContextBar
               className="border-0 bg-transparent p-0"
               onSendShortcut={(prompt) => onSend(prompt, null)}

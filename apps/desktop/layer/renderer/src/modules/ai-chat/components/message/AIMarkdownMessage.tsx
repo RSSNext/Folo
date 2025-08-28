@@ -18,6 +18,7 @@ import { MarkdownLink } from "~/components/ui/markdown/renderers/MarkdownLink"
 import { usePeekModal } from "~/hooks/biz/usePeekModal"
 
 import { animatedPlugin } from "./animatedPlugin"
+import { parseIncompleteMarkdown } from "./parse-incomplete-markdown"
 
 // Buffer configuration interface
 interface BufferConfig {
@@ -294,6 +295,7 @@ const useThrottledMarkdownParsing = (text: string, isProcessing: boolean) => {
 
   const parseWithCache = useCallback(
     (content: string, shouldProcess: boolean) => {
+      const parsedContent = parseIncompleteMarkdown(content)
       const now = Date.now()
 
       // During streaming, throttle parsing
@@ -306,14 +308,14 @@ const useThrottledMarkdownParsing = (text: string, isProcessing: boolean) => {
       }
 
       // If content hasn't changed, return cached result
-      if (content === lastParsedTextRef.current && cachedResultRef.current) {
+      if (parsedContent === lastParsedTextRef.current && cachedResultRef.current) {
         return cachedResultRef.current
       }
 
       // Parse and cache the result
-      const result = baseAIMarkdownParser(content, isProcessing)
+      const result = baseAIMarkdownParser(parsedContent, isProcessing)
 
-      lastParsedTextRef.current = content
+      lastParsedTextRef.current = parsedContent
       cachedResultRef.current = result
       lastParseTimeRef.current = now
       return result
@@ -342,7 +344,7 @@ export const AIMarkdownStreamingMessage = memo(
     className?: string
     isProcessing?: boolean
   }) => {
-    const className = `prose dark:prose-invert text-sm
+    const className = `prose max-w-full dark:prose-invert text-sm
   prose-h1:text-2xl prose-h2:text-xl prose-h3:text-lg prose-h4:text-base prose-h5:text-base prose-h6:text-sm
   prose-li:list-disc prose-li:marker:text-accent prose-hr:border-border prose-hr:mx-8`
 

@@ -88,7 +88,7 @@ export function SetModalContent({
               <tr>
                 <td className="text-text-secondary text-sm">{t("rsshub.table.price")}</td>
                 <td className="flex items-center gap-1">
-                  {instance.price} <i className="i-mgc-power text-accent" />
+                  {instance.price} <i className="i-mgc-power text-folo" />
                 </td>
               </tr>
               <tr>

@@ -3,7 +3,6 @@
   "envMode": "loose",
   "tasks": {
     "Folo#build:web": {
-      "dependsOn": ["@follow/legal#build"],
       "outputs": ["out/**"]
     },
     "//#format:check": {},
@@ -16,7 +15,6 @@
       "dependsOn": ["@follow/electron-main#build"]
     },
     "@follow/ssr#build": {
-      "dependsOn": ["@follow/legal#build"],
       "outputs": ["dist/**"]
     },
     "build": {

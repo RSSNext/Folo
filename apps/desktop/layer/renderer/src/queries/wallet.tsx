@@ -114,7 +114,7 @@ export const useClaimWalletDailyRewardMutation = () => {
 
       toast(
         <div className="flex items-center gap-1 text-lg" onClick={() => navigate("/power")}>
-          <i className="i-mgc-power text-accent animate-flip" />
+          <i className="i-mgc-power text-folo animate-flip" />
         </div>,
         {
           unstyled: true,

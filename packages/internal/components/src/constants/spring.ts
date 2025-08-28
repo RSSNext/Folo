@@ -1,37 +1,5 @@
 import type { Transition } from "motion/react"
 
-const reboundPreset: Transition = {
-  type: "spring",
-  bounce: 10,
-  stiffness: 140,
-  damping: 8,
-}
-
-const microDampingPreset: Transition = {
-  type: "spring",
-  damping: 24,
-}
-
-const microReboundPreset: Transition = {
-  type: "spring",
-  stiffness: 400,
-  damping: 30,
-  duration: 0.3,
-}
-
-const softSpringPreset: Transition = {
-  duration: 0.35,
-  type: "spring",
-  stiffness: 120,
-  damping: 20,
-}
-
-const softBouncePreset: Transition = {
-  type: "spring",
-  damping: 10,
-  stiffness: 100,
-}
-
 /**
  * A smooth spring with a predefined duration and no bounce.
  */
@@ -58,18 +26,13 @@ const bouncyPreset: Transition = {
   duration: 0.4,
   bounce: 0.3,
 }
-class SpringPresets {
-  rebound = reboundPreset
-  microDamping = microDampingPreset
-  microRebound = microReboundPreset
-  softSpring = softSpringPreset
-  softBounce = softBouncePreset
-  smooth = smoothPreset
-  snappy = snappyPreset
-  bouncy = bouncyPreset
-}
+
 class SpringStatic {
-  presets = new SpringPresets()
+  presets = {
+    smooth: smoothPreset,
+    snappy: snappyPreset,
+    bouncy: bouncyPreset,
+  }
 
   /**
    * A smooth spring with a predefined duration and no bounce that can be tuned.

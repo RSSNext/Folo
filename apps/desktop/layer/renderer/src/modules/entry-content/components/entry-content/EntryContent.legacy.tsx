@@ -33,6 +33,7 @@ import { COMMAND_ID } from "~/modules/command/commands/id"
 import { EntryContentHTMLRenderer } from "~/modules/renderer/html"
 import { WrappedElementProvider } from "~/providers/wrapped-element-provider"
 
+import { AISummary } from "../../AISummary"
 import { ApplyEntryActions } from "../../ApplyEntryActions"
 import { useEntryContent, useEntryMediaInfo } from "../../hooks"
 import { EntryHeader } from "../entry-header"
@@ -186,6 +187,7 @@ const EntryContentImpl: Component<EntryContentProps> = ({
               <WrappedElementProvider boundingDetection>
                 <div className="mx-auto mb-32 mt-8 max-w-full cursor-auto text-[0.94rem]">
                   <EntryTitleMetaHandler entryId={entryId} />
+                  <AISummary entryId={entryId} />
                   <ErrorBoundary fallback={EntryRenderError}>
                     <ReadabilityNotice entryId={entryId} />
                     <ShadowDOM injectHostStyles={!isInbox}>

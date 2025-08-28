@@ -118,6 +118,24 @@ export const MCPServicesSection = () => {
     },
   })
 
+  const toggleConnectionMutation = useMutation({
+    mutationFn: ({ connectionId, enabled }: { connectionId: string; enabled: boolean }) =>
+      updateMCPConnection(connectionId, { enabled }),
+
+    onError: () => {
+      toast.error("Failed to update MCP connection")
+    },
+    onMutate(variables) {
+      queryClient.setQueryData(mcpQueryKeys.connections(), (old: MCPService[]) => {
+        return old.map((service) =>
+          service.id === variables.connectionId
+            ? { ...service, enabled: variables.enabled }
+            : service,
+        )
+      })
+    },
+  })
+
   // Mutation for deleting MCP connection
   const deleteConnectionMutation = useMutation({
     mutationFn: deleteMCPConnection,
@@ -184,12 +202,28 @@ export const MCPServicesSection = () => {
     })
   }
 
-  const handleDeleteService = (id: string) => {
-    deleteConnectionMutation.mutate(id)
+  const { ask } = useDialog()
+
+  const handleDeleteService = async (id: string) => {
+    const confirmed = await ask({
+      title: t("integration.mcp.service.delete_title"),
+      message: t("integration.mcp.service.delete_message"),
+      confirmText: t("words.delete", { ns: "common" }),
+      cancelText: t("words.cancel", { ns: "common" }),
+      variant: "danger",
+    })
+
+    if (confirmed) {
+      deleteConnectionMutation.mutate(id)
+    }
   }
 
   const handleRefreshTools = (connectionId?: string) => {
     refreshToolsMutation.mutate(connectionId ? [connectionId] : undefined)
+  }
+
+  const handleToggleEnabled = (id: string, enabled: boolean) => {
+    toggleConnectionMutation.mutate({ connectionId: id, enabled })
   }
 
   // Show error message if query failed
@@ -253,12 +287,6 @@ export const MCPServicesSection = () => {
             </div>
           )}
 
-          {isLoading && (
-            <div className="flex items-center justify-center py-8">
-              <i className="i-mgc-loading-3-cute-re size-6 animate-spin" />
-            </div>
-          )}
-
           {mcpServices.map((service) => (
             <MCPServiceItem
               key={service.id}
@@ -266,6 +294,7 @@ export const MCPServicesSection = () => {
               onDelete={handleDeleteService}
               onRefresh={handleRefreshTools}
               onEdit={handleEditService}
+              onToggleEnabled={handleToggleEnabled}
               isDeleting={
                 deleteConnectionMutation.isPending &&
                 deleteConnectionMutation.variables === service.id

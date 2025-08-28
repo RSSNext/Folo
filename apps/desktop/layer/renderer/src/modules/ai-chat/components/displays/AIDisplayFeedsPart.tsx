@@ -96,7 +96,7 @@ const AIDisplayFeedsPartBase = ({
   return (
     <DisplayCardWrapper title={title || "RSS Feeds"} emoji="📡" description={`${totalFeeds} feeds`}>
       {/* Statistics Overview */}
-      <div className="@[600px]:grid-cols-4 grid grid-cols-2 gap-4 md:grid-cols-4">
+      <div className="@[600px]:grid-cols-3 @[400px]:grid-cols-2 grid grid-cols-1 gap-4">
         <StatCard title="Total Feeds" value={totalFeeds} emoji="📊" />
         <StatCard
           title="Active Feeds"

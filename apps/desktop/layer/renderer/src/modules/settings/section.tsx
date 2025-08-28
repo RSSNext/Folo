@@ -11,13 +11,14 @@ import { SettingActionItem, SettingDescription, SettingSwitch } from "./control"
 
 export const SettingSectionTitle: FC<{
   title: string | ReactNode
-
+  className?: string
   margin?: "compact" | "normal"
-}> = ({ title, margin }) => (
+}> = ({ title, margin, className }) => (
   <div
     className={cn(
       "text-text text-headline shrink-0 font-bold opacity-50 first:mt-0",
       margin === "compact" ? "mb-2 mt-8" : "mb-4 mt-10",
+      className,
     )}
   >
     {typeof title === "string" ? titleCase(title) : title}

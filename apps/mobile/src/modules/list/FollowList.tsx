@@ -69,7 +69,7 @@ const Impl = (props: { id: string }) => {
     resolver: zodResolver(formSchema),
     defaultValues: {
       view: list?.view ?? FeedViewType.Articles,
-      isPrivate: subscription?.isPrivate,
+      isPrivate: subscription?.isPrivate ?? false,
       hideFromTimeline: subscription?.hideFromTimeline ?? undefined,
       title: subscription?.title ?? undefined,
     },

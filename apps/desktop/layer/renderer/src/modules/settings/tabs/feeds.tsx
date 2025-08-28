@@ -113,8 +113,8 @@ const SubscriptionFeedsSection = () => {
   const presentDeleteSubscription = useConfirmUnsubscribeSubscriptionModal()
   const handleBatchUnsubscribe = useCallback(() => {
     const feedIds = Array.from(selectedFeeds)
-    presentDeleteSubscription(feedIds)
-  }, [presentDeleteSubscription, selectedFeeds])
+    presentDeleteSubscription(feedIds, () => setSelectedFeeds(new Set()))
+  }, [presentDeleteSubscription, selectedFeeds, setSelectedFeeds])
 
   const [visibleableFeedIds, setVisibleableFeedIds] = useState<Set<string>>(() => new Set())
   const scrollContainerElement = useScrollViewElement()

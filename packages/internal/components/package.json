@@ -60,6 +60,7 @@
     "@radix-ui/react-toast": "1.2.15",
     "@radix-ui/react-tooltip": "1.2.8",
     "@react-hook/window-size": "3.1.1",
+    "@rehookify/datepicker": "6.6.8",
     "@types/hast": "3.0.4",
     "@types/unist": "3.0.3",
     "class-variance-authority": "0.7.1",
