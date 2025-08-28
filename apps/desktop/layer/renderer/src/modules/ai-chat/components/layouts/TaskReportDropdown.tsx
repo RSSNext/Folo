@@ -1,7 +1,7 @@
 import { ActionButton } from "@follow/components/ui/button/index.js"
 import type { AIChatSession } from "@follow-app/client-sdk"
 import type { ReactElement } from "react"
-import { useCallback, useState } from "react"
+import { useCallback, useMemo, useState } from "react"
 import { useTranslation } from "react-i18next"
 import { toast } from "sonner"
 
@@ -33,12 +33,13 @@ interface SessionItemProps {
   isLoading?: boolean
 }
 
-const SessionItem = ({ session, onClick, onDelete, isLoading }: SessionItemProps) => {
-  const hasUnread =
-    session.lastSeenAt && session.updatedAt
-      ? new Date(session.updatedAt) > new Date(session.lastSeenAt)
-      : false
+// Helper to determine if a session has unread messages
+const isSessionUnread = (session: AIChatSession): boolean => {
+  if (!session.lastSeenAt || !session.updatedAt) return false
+  return new Date(session.updatedAt) > new Date(session.lastSeenAt)
+}
 
+const SessionItem = ({ session, onClick, onDelete, isLoading }: SessionItemProps) => {
   return (
     <DropdownMenuItem
       onClick={onClick}
@@ -47,7 +48,6 @@ const SessionItem = ({ session, onClick, onDelete, isLoading }: SessionItemProps
       <div className="flex min-w-0 flex-1 justify-between">
         <div className="flex min-w-0 flex-1 items-center gap-2">
           <p className="mb-0.5 truncate font-medium">{session.title || "Untitled Chat"}</p>
-          {hasUnread && <div className="bg-accent size-2 shrink-0 rounded-full" />}
         </div>
         <div className="relative flex min-w-0 items-center">
           <p className="text-text-secondary ml-2 shrink-0 truncate text-xs">
@@ -76,9 +76,8 @@ const SessionItem = ({ session, onClick, onDelete, isLoading }: SessionItemProps
 const EmptyState = () => {
   return (
     <div className="flex flex-col items-center py-8 text-center">
-      <i className="i-mgc-comment-cute-re text-text-secondary mb-2 block size-8" />
-      <p className="text-text-secondary text-sm">No task reports yet</p>
-      <p className="text-text-tertiary text-xs">Start a new conversation to begin</p>
+      <i className="i-mgc-inbox-cute-re text-text-secondary mb-2 block size-8" />
+      <p className="text-text-secondary text-sm">All task reports read</p>
     </div>
   )
 }
@@ -91,6 +90,14 @@ export const TaskReportDropdown = ({ triggerElement }: TaskReportDropdownProps) 
   const { ask } = useDialog()
   const { t } = useTranslation("ai")
   const [loadingChatId, setLoadingChatId] = useState<string | null>(null)
+
+  // Only keep unread sessions for display
+  const unreadSessions = useMemo(
+    () => (sessions || []).filter((s) => isSessionUnread(s)),
+    [sessions],
+  )
+
+  const hasUnreadSessions = unreadSessions.length > 0
 
   const handleSessionSelect = useCallback(
     async (session: AIChatSession) => {
@@ -144,8 +151,14 @@ export const TaskReportDropdown = ({ triggerElement }: TaskReportDropdownProps) 
   )
 
   const defaultTrigger = (
-    <ActionButton tooltip="Task Reports">
-      <i className="i-mgc-comment-cute-re text-text-secondary size-5" />
+    <ActionButton tooltip="Task Reports" className="relative">
+      <i className="i-mgc-inbox-cute-re text-text-secondary size-5" />
+      {hasUnreadSessions && (
+        <span
+          className="bg-accent absolute right-1 top-1 block size-2 rounded-full shadow-[0_0_0_2px_var(--color-bg-default)] dark:shadow-[0_0_0_2px_var(--color-bg-default)]"
+          aria-label="Unread task reports"
+        />
+      )}
     </ActionButton>
   )
 
@@ -154,8 +167,8 @@ export const TaskReportDropdown = ({ triggerElement }: TaskReportDropdownProps) 
       <DropdownMenuTrigger asChild>{triggerElement || defaultTrigger}</DropdownMenuTrigger>
 
       <DropdownMenuContent align="end" className="w-80">
-        {sessions && sessions.length > 0 ? (
-          sessions.map((session) => (
+        {unreadSessions.length > 0 ? (
+          unreadSessions.map((session) => (
             <SessionItem
               key={session.chatId}
               session={session}
