@@ -17,14 +17,8 @@ class AIChatSessionServiceStatic {
    * Defensive in extracting the message array because the SDK response shape may evolve.
    */
   async fetchAndPersistMessages(session: AIChatSession): Promise<BizUIMessage[]> {
-    const response = await followApi.aiChatSessions.messages.get({
-      chatId: session.chatId,
-    })
-    const { data } = response
-    // TODO fetch more pages base data.nextBefore and session.lastSeenAt
-
-    const chatMessages = data.messages
-    const normalized = chatMessages.map(this.normalizeRemoteMessage)
+    const unseenMessages = await this.fetchUnseenRemoteMessages(session.chatId, session.lastSeenAt)
+    const normalized = unseenMessages.map(this.normalizeRemoteMessage)
 
     await AIPersistService.ensureSession(session.chatId, session.title)
     await AIPersistService.upsertMessages(session.chatId, normalized)
@@ -41,6 +35,41 @@ class AIChatSessionServiceStatic {
       queryClient.invalidateQueries({ queryKey: aiChatSessionKeys.unread() }),
     ])
     return normalized
+  }
+
+  /**
+   * Fetch remote messages for a chat session that are newer than the provided lastSeenAt timestamp.
+   * Implements keyset pagination using `before` / `nextBefore` and stops when:
+   *  - We have paged past (<=) lastSeenAt, or
+   *  - There is no further `nextBefore`, or
+   *  - A safety MAX_PAGES cap is reached.
+   * Returns only unseen (newer) remote messages.
+   */
+  private async fetchUnseenRemoteMessages(
+    chatId: string,
+    lastSeenAt: string,
+  ): Promise<AIChatMessage[]> {
+    const MAX_PAGES = 10
+    const allMessages: AIChatMessage[] = []
+    const lastSeenAtDate = new Date(lastSeenAt)
+    let before: string | undefined
+    for (let page = 0; page < MAX_PAGES; page++) {
+      const resp = await followApi.aiChatSessions.messages.get(
+        before ? { chatId, before } : { chatId },
+      )
+      const { data } = resp
+      const batch = data.messages
+      allMessages.push(...batch)
+
+      const { nextBefore } = data
+      if (!nextBefore || new Date(nextBefore) <= lastSeenAtDate) {
+        break
+      }
+      before = nextBefore
+    }
+    return allMessages.sort(
+      (a, b) => new Date(a.createdAt).getTime() - new Date(b.createdAt).getTime(),
+    )
   }
 
   /**
