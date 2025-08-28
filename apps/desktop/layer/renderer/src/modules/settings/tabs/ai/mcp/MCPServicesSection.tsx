@@ -18,6 +18,7 @@ import {
   updateMCPConnection,
 } from "~/queries/mcp"
 
+import { MCPPresetSelectionModal } from "./MCPPresetSelectionModal"
 import { MCPServiceItem } from "./MCPServiceItem"
 import { MCPServiceModalContent } from "./MCPServiceModalContent"
 
@@ -169,10 +170,47 @@ export const MCPServicesSection = () => {
     present({
       title: "Add MCP Service",
       content: ({ dismiss }: { dismiss: () => void }) => (
-        <MCPServiceModalContent
-          service={null}
-          onSave={(service) => {
-            createConnectionMutation.mutate(service)
+        <MCPPresetSelectionModal
+          onPresetSelected={(preset) => {
+            if (preset.authRequired) {
+              // Show form with preset values pre-filled
+              present({
+                title: `Setup ${preset.displayName}`,
+                content: ({ dismiss: dismissForm }) => (
+                  <MCPServiceModalContent
+                    service={null}
+                    initialValues={preset.configTemplate}
+                    onSave={(service) => {
+                      createConnectionMutation.mutate(service)
+                      dismissForm()
+                    }}
+                    onCancel={dismissForm}
+                    isLoading={createConnectionMutation.isPending}
+                  />
+                ),
+              })
+            } else {
+              // Direct submission for services that don't require auth
+              createConnectionMutation.mutate(preset.configTemplate)
+            }
+            dismiss()
+          }}
+          onManualConfig={() => {
+            // Show manual configuration form
+            present({
+              title: "Add MCP Service",
+              content: ({ dismiss: dismissForm }) => (
+                <MCPServiceModalContent
+                  service={null}
+                  onSave={(service) => {
+                    createConnectionMutation.mutate(service)
+                    dismissForm()
+                  }}
+                  onCancel={dismissForm}
+                  isLoading={createConnectionMutation.isPending}
+                />
+              ),
+            })
             dismiss()
           }}
           onCancel={dismiss}

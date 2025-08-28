@@ -16,6 +16,11 @@ import { toast } from "sonner"
 
 interface MCPServiceModalContentProps {
   service?: MCPService | null
+  initialValues?: {
+    name: string
+    transportType: "streamable-http" | "sse"
+    url: string
+  }
   onSave: (service: {
     name: string
     transportType: "streamable-http" | "sse"
@@ -28,15 +33,16 @@ interface MCPServiceModalContentProps {
 
 export const MCPServiceModalContent = ({
   service,
+  initialValues,
   onSave,
   onCancel,
   isLoading = false,
 }: MCPServiceModalContentProps) => {
   const { t } = useTranslation("ai")
-  const [name, setName] = useState(service?.name || "")
-  const [url, setUrl] = useState(service?.url || "")
+  const [name, setName] = useState(service?.name || initialValues?.name || "")
+  const [url, setUrl] = useState(service?.url || initialValues?.url || "")
   const [transportType, setTransportType] = useState<"streamable-http" | "sse">(
-    service?.transportType || "streamable-http",
+    service?.transportType || initialValues?.transportType || "streamable-http",
   )
   const [headers, setHeaders] = useState<Record<string, string>>(service?.headers || {})
 
