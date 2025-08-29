@@ -22,15 +22,16 @@ interface MediaTranscriptProps {
 }
 
 /**
- * Converts SRT time format (HH:MM:SS,mmm) to seconds
- * @param timeString - Time string in HH:MM:SS,mmm format
+ * Converts SRT time format (HH:MM:SS,mmm or HH:MM:SS.mmm) to seconds
+ * @param timeString - Time string in HH:MM:SS,mmm or HH:MM:SS.mmm format
  * @returns Time in seconds
  */
 function srtTimeToSeconds(timeString: string): number {
   const [hours, minutes, seconds] = timeString.split(":")
   if (!hours || !minutes || !seconds) return 0
 
-  const [secs, millisecs] = seconds.split(",")
+  // Handle both comma and dot as decimal separator
+  const [secs, millisecs] = seconds.split(/[,.]/)
   if (!secs) return 0
 
   return (
@@ -47,34 +48,56 @@ function srtTimeToSeconds(timeString: string): number {
  * @returns Array of parsed subtitle items
  */
 function parseSrt(srtText: string): SubtitleItem[] {
+  // Split by double newlines (with optional whitespace) to separate subtitle blocks
   const blocks = srtText.trim().split(/\n\s*\n/)
 
-  const subtitles = blocks.map((block) => {
-    const lines = block.trim().split("\n")
-    if (!lines[0] || !lines[1]) {
-      throw new Error("Invalid SRT format: missing required lines")
-    }
+  const subtitles = blocks
+    .map((block) => {
+      const lines = block.trim().split("\n")
 
-    const index = Number.parseInt(lines[0], 10)
-    const timeMatch = lines[1].match(/(\d{2}:\d{2}:\d{2},\d{3}) --> (\d{2}:\d{2}:\d{2},\d{3})/)
+      // Skip empty blocks
+      if (lines.length < 3 || !lines[0] || !lines[1]) {
+        return null
+      }
 
-    if (!timeMatch || !timeMatch[1] || !timeMatch[2]) {
-      throw new Error("Invalid SRT format: invalid time format")
-    }
+      const index = Number.parseInt(lines[0].trim(), 10)
 
-    const startTime = timeMatch[1]
-    const endTime = timeMatch[2]
-    const text = lines.slice(2).join("\n")
+      // Validate index
+      if (Number.isNaN(index)) {
+        return null
+      }
 
-    return {
-      index,
-      startTime,
-      endTime,
-      text,
-      startTimeInSeconds: srtTimeToSeconds(startTime),
-      endTimeInSeconds: srtTimeToSeconds(endTime),
-    }
-  })
+      // More flexible time format matching (handles various SRT time formats)
+      const timeMatch = lines[1].match(
+        /(\d{1,2}:\d{2}:\d{2}[,.]?\d{0,3})\s*-->\s*(\d{1,2}:\d{2}:\d{2}[,.]?\d{0,3})/,
+      )
+
+      if (!timeMatch || !timeMatch[1] || !timeMatch[2]) {
+        return null
+      }
+
+      // Normalize time format (replace . with , for consistency)
+      const startTime = timeMatch[1].replace(".", ",")
+      const endTime = timeMatch[2].replace(".", ",")
+
+      // Join all text lines (from line 3 onwards) with newlines
+      const text = lines.slice(2).join("\n").trim()
+
+      // Skip if no text content
+      if (!text) {
+        return null
+      }
+
+      return {
+        index,
+        startTime,
+        endTime,
+        text,
+        startTimeInSeconds: srtTimeToSeconds(startTime),
+        endTimeInSeconds: srtTimeToSeconds(endTime),
+      }
+    })
+    .filter((subtitle): subtitle is SubtitleItem => subtitle !== null)
 
   return subtitles
 }
