@@ -62,16 +62,16 @@ const getTaskStatus = (task: AITask) => {
 const getStatusColor = (status: string) => {
   switch (status) {
     case "completed": {
-      return "text-green-600 bg-green-50 border-green-200"
+      return "text-green bg-green-50 dark:bg-green-950"
     }
     case "scheduled": {
-      return "text-blue-600 bg-blue-50 border-blue-200"
+      return "text-blue bg-blue-50 dark:bg-blue-950"
     }
     case "paused": {
-      return "text-gray-600 bg-gray-50 border-gray-200"
+      return "text-gray bg-gray-50 dark:bg-gray-950"
     }
     default: {
-      return "text-gray-600 bg-gray-50 border-gray-200"
+      return "text-gray bg-gray-50 dark:bg-gray-950"
     }
   }
 }
@@ -112,7 +112,7 @@ export const TaskItem = memo<TaskItemProps>(({ task, isDeleting, onDelete, onTog
             <h4 className="text-text text-sm font-medium">{task.name}</h4>
             <span
               className={cn(
-                "inline-flex items-center rounded-full border px-2 py-1 text-xs font-medium",
+                "inline-flex items-center rounded-full px-2 py-1 text-xs",
                 statusColorClass,
               )}
             >
