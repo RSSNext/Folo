@@ -148,38 +148,46 @@ export const AITaskModal = ({ task, prompt, onSubmit }: AITaskModalProps) => {
   }
 
   const handleSubmit = async (data: TaskFormData) => {
-    try {
-      // Process the form data to ensure proper datetime format
-      const processedData = {
-        ...data,
-        schedule: data.schedule,
-      }
+    // Process the form data to ensure proper datetime format
+    const processedData = {
+      ...data,
+      schedule: data.schedule,
+    }
 
-      if (isEditing) {
-        // Update existing task
-        await updateAITaskMutation.mutateAsync({
+    // The optimistic mutations handle success/error toasts and error cases automatically
+    if (isEditing) {
+      // Update existing task
+      updateAITaskMutation.mutate(
+        {
           id: task.id,
           name: processedData.title,
           prompt: processedData.prompt,
           schedule: processedData.schedule,
-        })
-        toast.success(t("tasks.toast.updated"))
-      } else {
-        // Create new task
-        await createAITaskMutation.mutateAsync({
+        },
+        {
+          onSuccess: () => {
+            toast.success(t("tasks.toast.updated"))
+            onSubmit?.(processedData)
+            dismiss()
+          },
+        },
+      )
+    } else {
+      // Create new task
+      createAITaskMutation.mutate(
+        {
           name: processedData.title,
           prompt: processedData.prompt,
           schedule: processedData.schedule,
-        })
-        toast.success(t("tasks.toast.created"))
-      }
-
-      // Call the optional onSubmit callback
-      onSubmit?.(processedData)
-      dismiss()
-    } catch (error) {
-      console.error(`Failed to update/create AI task:`, error)
-      toast.error(isEditing ? t("tasks.toast.update_error") : t("tasks.toast.create_error"))
+        },
+        {
+          onSuccess: () => {
+            toast.success(t("tasks.toast.created"))
+            onSubmit?.(processedData)
+            dismiss()
+          },
+        },
+      )
     }
   }
 
