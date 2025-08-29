@@ -105,14 +105,19 @@ class AIPersistServiceStatic {
         messages.map((message) => {
           // Store parts as-is since they're stored as JSON and the UI can handle them
           const convertedParts = message.parts as any[]
+          const createdAt =
+            message.metadata?.finishTime && typeof message.metadata?.duration === "number"
+              ? new Date(
+                  new Date(message.metadata.finishTime).getTime() - message.metadata.duration,
+                )
+              : new Date()
 
           return {
             id: message.id,
             chatId,
             role: message.role,
             contentFormat: "plaintext" as const,
-
-            createdAt: new Date(),
+            createdAt,
             status: "completed" as const,
             finishedAt: message.metadata?.finishTime
               ? new Date(message.metadata.finishTime)
@@ -157,12 +162,18 @@ class AIPersistServiceStatic {
         messages
           .filter((message) => message.parts.length > 0)
           .map((message) => {
+            const createdAt =
+              message.metadata?.finishTime && typeof message.metadata?.duration === "number"
+                ? new Date(
+                    new Date(message.metadata.finishTime).getTime() - message.metadata.duration,
+                  )
+                : new Date()
             return {
               id: message.id,
               chatId,
               role: message.role,
               contentFormat: "plaintext" as const,
-              createdAt: new Date(),
+              createdAt,
               status: "completed" as const,
               finishedAt: message.metadata?.finishTime
                 ? new Date(message.metadata.finishTime)

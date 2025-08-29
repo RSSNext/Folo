@@ -83,7 +83,6 @@ class AIChatSessionServiceStatic {
       : undefined
 
     const metadata: BizUIMessage["metadata"] = {
-      startTime,
       finishTime,
       duration,
     }
