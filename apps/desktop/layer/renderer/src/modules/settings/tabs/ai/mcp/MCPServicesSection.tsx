@@ -6,6 +6,7 @@ import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query"
 import * as React from "react"
 import { useTranslation } from "react-i18next"
 import { toast } from "sonner"
+import { useEventListener } from "usehooks-ts"
 
 import { setMCPEnabled, useMCPEnabled } from "~/atoms/settings/ai"
 import { useDialog, useModalStack } from "~/components/ui/modal/stacked/hooks"
@@ -28,8 +29,10 @@ export const MCPServicesSection = () => {
   const queryClient = useQueryClient()
   const dialog = useDialog()
 
+  const shouldWindowFocusRefetchRef = React.useRef(false)
+
   // Reusable OAuth authorization handler using dialog
-  const handleOAuthAuthorization = async (authorizationUrl: string, connectionId?: string) => {
+  const handleOAuthAuthorization = async (authorizationUrl: string, _connectionId?: string) => {
     const confirmed = await dialog.ask({
       title: t("integration.mcp.service.auth_required"),
       message: t("integration.mcp.service.auth_message"),
@@ -42,21 +45,23 @@ export const MCPServicesSection = () => {
       const popup = window.open(
         authorizationUrl,
         "_blank",
-        "width=600,height=700,scrollbars=yes,resizable=yes",
+        "width=600,height=700,scrollbars=yes,resizable=yes,popup=yes",
       )
 
       if (!popup) {
         toast.error(t("integration.mcp.service.popup_blocked"))
       } else {
-        popup.onclose = () => {
-          // FIXME
-          setTimeout(() => {
-            refreshToolsMutation.mutate(connectionId ? [connectionId] : undefined)
-          }, 3000)
-        }
+        shouldWindowFocusRefetchRef.current = true
       }
     }
   }
+
+  useEventListener("focus", () => {
+    if (shouldWindowFocusRefetchRef.current) {
+      shouldWindowFocusRefetchRef.current = false
+      refetch()
+    }
+  })
 
   // Query for MCP connections
   const {
@@ -69,7 +74,6 @@ export const MCPServicesSection = () => {
     queryFn: fetchMCPConnections,
     enabled: mcpEnabled,
     refetchInterval: 30_000,
-    refetchOnWindowFocus: true,
     retry: 2,
   })
 
@@ -172,7 +176,7 @@ export const MCPServicesSection = () => {
       content: ({ dismiss }: { dismiss: () => void }) => (
         <MCPPresetSelectionModal
           onPresetSelected={(preset) => {
-            if (preset.authRequired) {
+            if (!preset.quickSetup) {
               // Show form with preset values pre-filled
               present({
                 title: `Setup ${preset.displayName}`,
@@ -185,12 +189,11 @@ export const MCPServicesSection = () => {
                       dismissForm()
                     }}
                     onCancel={dismissForm}
-                    isLoading={createConnectionMutation.isPending}
                   />
                 ),
               })
             } else {
-              // Direct submission for services that don't require auth
+              // Direct submission for services
               createConnectionMutation.mutate(preset.configTemplate)
             }
             dismiss()
@@ -207,14 +210,11 @@ export const MCPServicesSection = () => {
                     dismissForm()
                   }}
                   onCancel={dismissForm}
-                  isLoading={createConnectionMutation.isPending}
                 />
               ),
             })
             dismiss()
           }}
-          onCancel={dismiss}
-          isLoading={createConnectionMutation.isPending}
         />
       ),
     })
@@ -234,7 +234,6 @@ export const MCPServicesSection = () => {
             dismiss()
           }}
           onCancel={dismiss}
-          isLoading={updateConnectionMutation.isPending}
         />
       ),
     })

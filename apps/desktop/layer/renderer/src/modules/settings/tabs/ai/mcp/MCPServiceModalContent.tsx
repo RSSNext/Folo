@@ -28,7 +28,6 @@ interface MCPServiceModalContentProps {
     headers?: Record<string, string>
   }) => void
   onCancel: () => void
-  isLoading?: boolean
 }
 
 export const MCPServiceModalContent = ({
@@ -36,7 +35,6 @@ export const MCPServiceModalContent = ({
   initialValues,
   onSave,
   onCancel,
-  isLoading = false,
 }: MCPServiceModalContentProps) => {
   const { t } = useTranslation("ai")
   const [name, setName] = useState(service?.name || initialValues?.name || "")
@@ -128,18 +126,11 @@ export const MCPServiceModalContent = ({
       <div className="flex items-center justify-between">
         <div />
         <div className="flex gap-2">
-          <Button variant="outline" size="sm" onClick={onCancel} disabled={isLoading}>
+          <Button variant="outline" size="sm" onClick={onCancel}>
             Cancel
           </Button>
-          <Button size="sm" onClick={handleSave} disabled={isLoading}>
-            {isLoading ? (
-              <>
-                <i className="i-mgc-loading-3-cute-re mr-2 size-4 animate-spin" />
-                Saving...
-              </>
-            ) : (
-              "Save"
-            )}
+          <Button size="sm" onClick={handleSave}>
+            Save
           </Button>
         </div>
       </div>

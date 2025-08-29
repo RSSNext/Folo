@@ -5,7 +5,8 @@ export interface MCPPreset {
   icon: string // simple-icons class name
   description: string
   features: string[]
-  category: "popular" | "productivity" | "development" | "other"
+
+  quickSetup: boolean
   authRequired: boolean
   configTemplate: {
     name: string
@@ -22,12 +23,46 @@ export const MCP_PRESETS: MCPPreset[] = [
     icon: "i-simple-icons-notion",
     description: "Connect your Notion workspace",
     features: ["Read & search pages", "Create new content", "Update existing pages"],
-    category: "popular",
+
+    quickSetup: true,
     authRequired: true,
     configTemplate: {
       name: "Notion",
-      transportType: "sse",
-      url: "https://api.notion.com/v1/mcp",
+      transportType: "streamable-http",
+      url: "https://mcp.notion.com/mcp",
+    },
+  },
+  {
+    id: "linear",
+    name: "linear",
+    displayName: "Linear",
+    icon: "i-simple-icons-linear",
+    description: "Connect your Linear workspace",
+    features: ["Read & search issues", "Create new issues", "Update existing issues"],
+
+    quickSetup: true,
+    authRequired: true,
+    configTemplate: {
+      name: "Linear",
+      transportType: "streamable-http",
+      url: "https://mcp.linear.app/mcp",
+    },
+  },
+
+  {
+    id: "github",
+    name: "github",
+    displayName: "GitHub",
+    icon: "i-simple-icons-github",
+    description: "Connect your GitHub repository",
+    features: ["Read & search issues", "Create new issues", "Update existing issues"],
+
+    quickSetup: false,
+    authRequired: true,
+    configTemplate: {
+      name: "GitHub",
+      transportType: "streamable-http",
+      url: "https://api.githubcopilot.com/mcp",
     },
   },
 ]

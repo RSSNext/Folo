@@ -279,19 +279,13 @@ export const AITaskModal = ({ task, prompt, onSubmit }: AITaskModalProps) => {
                 {t("words.cancel", { ns: "common" })}
               </Button>
               <Button type="submit" size="sm" disabled={currentMutation.isPending}>
-                {currentMutation.isPending ? (
-                  <>
-                    <i className="i-mgc-loading-3-cute-re mr-2 size-4 animate-spin" />
-                    {isEditing ? t("tasks.actions.updating") : t("tasks.actions.scheduling")}
-                  </>
-                ) : (
-                  <>
-                    <i
-                      className={`mr-2 size-4 ${isEditing ? "i-mgc-edit-cute-re" : "i-mgc-calendar-time-add-cute-re"}`}
-                    />
-                    {isEditing ? t("tasks.actions.update") : t("tasks.actions.schedule")}
-                  </>
-                )}
+                {currentMutation.isPending
+                  ? isEditing
+                    ? t("tasks.actions.updating")
+                    : t("tasks.actions.scheduling")
+                  : isEditing
+                    ? t("tasks.actions.update")
+                    : t("tasks.actions.schedule")}
               </Button>
             </div>
           </div>

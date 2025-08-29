@@ -5,10 +5,9 @@ import type { MCPPreset } from "./types"
 interface MCPPresetCardProps {
   preset: MCPPreset
   onSelect: (preset: MCPPreset) => void
-  isLoading?: boolean
 }
 
-export const MCPPresetCard = ({ preset, onSelect, isLoading }: MCPPresetCardProps) => {
+export const MCPPresetCard = ({ preset, onSelect }: MCPPresetCardProps) => {
   return (
     <div className="border-fill-secondary bg-fill hover:border-accent hover:bg-fill-secondary group rounded-lg border p-4 transition-all hover:shadow-md">
       <div className="flex flex-col items-center space-y-3 text-center">
@@ -38,16 +37,8 @@ export const MCPPresetCard = ({ preset, onSelect, isLoading }: MCPPresetCardProp
           size="sm"
           buttonClassName="w-full bg-accent text-white hover:bg-accent/90"
           onClick={() => onSelect(preset)}
-          disabled={isLoading}
         >
-          {isLoading ? (
-            <>
-              <i className="i-mgc-loading-3-cute-re mr-2 size-4 animate-spin" />
-              Setting up...
-            </>
-          ) : (
-            "Quick Setup"
-          )}
+          Quick Setup
         </Button>
 
         {/* Auth Required Indicator */}

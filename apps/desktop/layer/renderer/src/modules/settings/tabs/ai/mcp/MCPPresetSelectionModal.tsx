@@ -1,6 +1,4 @@
 import { Button } from "@follow/components/ui/button/index.js"
-import { Label } from "@follow/components/ui/label/index.jsx"
-import { useTranslation } from "react-i18next"
 
 import { MCPPresetCard } from "./MCPPresetCard"
 import type { MCPPreset } from "./types"
@@ -9,37 +7,18 @@ import { MCP_PRESETS } from "./types"
 interface MCPPresetSelectionModalProps {
   onPresetSelected: (preset: MCPPreset) => void
   onManualConfig: () => void
-  onCancel: () => void
-  isLoading?: boolean
 }
 
 export const MCPPresetSelectionModal = ({
   onPresetSelected,
   onManualConfig,
-  onCancel,
-  isLoading,
 }: MCPPresetSelectionModalProps) => {
-  const { t } = useTranslation("ai")
-
-  const popularPresets = MCP_PRESETS.filter((preset) => preset.category === "popular")
-
   return (
     <div className="space-y-6">
-      {/* Popular Services Section */}
       <div className="space-y-4">
-        <Label className="text-text text-sm font-medium">
-          <i className="i-mgc-star-cute-re mr-2 size-4" />
-          Popular Services
-        </Label>
-
         <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-3">
-          {popularPresets.map((preset) => (
-            <MCPPresetCard
-              key={preset.id}
-              preset={preset}
-              onSelect={onPresetSelected}
-              isLoading={isLoading}
-            />
+          {MCP_PRESETS.map((preset) => (
+            <MCPPresetCard key={preset.id} preset={preset} onSelect={onPresetSelected} />
           ))}
 
           {/* Custom/Manual Configuration Card */}
@@ -90,19 +69,10 @@ export const MCPPresetSelectionModal = ({
           <div className="space-y-1">
             <p className="text-text text-xs font-medium">More services coming soon</p>
             <p className="text-text-secondary text-xs">
-              We're working on adding presets for GitHub, Slack, Discord, and other popular
-              services. For now, you can use the custom configuration option for any MCP-compatible
-              service.
+              You can use the custom configuration option for any MCP-compatible service.
             </p>
           </div>
         </div>
-      </div>
-
-      {/* Footer Actions */}
-      <div className="flex items-center justify-end space-x-2">
-        <Button variant="ghost" size="sm" onClick={onCancel}>
-          {t("words.cancel", { ns: "common" })}
-        </Button>
       </div>
     </div>
   )
