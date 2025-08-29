@@ -7,7 +7,6 @@ import { settingSyncQueue } from "../modules/settings/sync-queue"
 import { initAnalytics } from "./analytics"
 import { initializeAppCheck } from "./app-check"
 import { initBackgroundTask } from "./background"
-import { initCrashlytics } from "./crashlytics"
 import { initializeDayjs } from "./dayjs"
 import { initDeviceType } from "./device"
 import { hydrateQueryClient, hydrateSettings } from "./hydrate"
@@ -57,7 +56,7 @@ export const initializeApp = async () => {
     electron: false,
     using_indexed_db: true,
   })
-  initCrashlytics()
+
   initBackgroundTask()
   console.log(`Initialize done,`, `${loadingTime}ms`)
 }

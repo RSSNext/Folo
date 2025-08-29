@@ -45,3 +45,7 @@ android
 Podfile.lock
 
 buildServer.json
+
+.env.local
+
+.env.local

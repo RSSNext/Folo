@@ -7,10 +7,12 @@ import {
   authClientContext,
   queryClientContext,
 } from "@follow/store/context"
+import { captureException } from "@sentry/react-native"
 import { registerRootComponent } from "expo"
 import { Image } from "expo-image"
 import { LinearGradient } from "expo-linear-gradient"
 import { cssInterop } from "nativewind"
+import { useEffect } from "react"
 import { useTranslation } from "react-i18next"
 import { enableFreeze } from "react-native-screens"
 
@@ -56,6 +58,11 @@ registerRootComponent(RootComponent)
 
 function RootComponent() {
   const { t } = useTranslation()
+
+  useEffect(() => {
+    captureException(new Error("test"))
+  }, [])
+
   return (
     <RootProviders>
       <BottomTabProvider>
