@@ -18,8 +18,8 @@
   },
   "devDependencies": {
     "@follow/configs": "workspace:*",
-    "nbump": "2.1.5",
-    "tsdown": "0.12.9"
+    "nbump": "2.1.7",
+    "tsdown": "0.14.1"
   },
   "publishConfig": {
     "exports": {
