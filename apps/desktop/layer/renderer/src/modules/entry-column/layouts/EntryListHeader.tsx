@@ -30,7 +30,6 @@ import { useFeedHeaderTitle } from "~/store/feed/hooks"
 import { MarkAllReadButton } from "../components/mark-all-button"
 import { useIsPreviewFeed } from "../hooks/useIsPreviewFeed"
 import { AppendTaildingDivider } from "./AppendTaildingDivider"
-import { DailyReportButton } from "./buttons/DailyReportButton"
 import { SwitchToMasonryButton } from "./buttons/SwitchToMasonryButton"
 import { WideModeButton } from "./buttons/WideModeButton"
 
@@ -99,7 +98,6 @@ export const EntryListHeader: FC<{
 
             <AppendTaildingDivider>
               {!views[view]!.wideMode && !aiEnabled && <WideModeButton />}
-              {view === FeedViewType.SocialMedia && <DailyReportButton />}
               {view === FeedViewType.Pictures && <SwitchToMasonryButton />}
             </AppendTaildingDivider>
 
