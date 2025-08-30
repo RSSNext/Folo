@@ -15,14 +15,29 @@ jobs:
       - name: Check out repository
         uses: actions/checkout@v4
 
+      - name: Prepare prompt variables
+        id: prepare_input
+        uses: actions/github-script@v7
+        with:
+          script: |
+            const core = require('@actions/core');
+            const issue = context.payload.issue || {};
+            const title = issue.title || '';
+            const body = issue.body || '';
+            const indent = '      ';
+            // Indent subsequent lines so YAML block scalar indentation remains valid
+            const bodyIndented = body.replace(/\n/g, '\n' + indent);
+            core.setOutput('issue_title_json', JSON.stringify(title));
+            core.setOutput('issue_body_indented_json', JSON.stringify(bodyIndented));
+
       - name: Find similar issues with AI (MCP)
         id: inference
         uses: actions/ai-inference@v1
         with:
           prompt-file: ./.github/prompts/similar_issues.prompt.yml
           input: |
-            issue_title: ${{ toJson(github.event.issue.title) }}
-            issue_body: ${{ toJson(github.event.issue.body || '') }}
+            issue_title: ${{ steps.prepare_input.outputs.issue_title_json }}
+            issue_body: ${{ steps.prepare_input.outputs.issue_body_indented_json }}
           enable-github-mcp: true
           # Inference token can use GITHUB_TOKEN. MCP specifically requires a PAT.
           token: ${{ secrets.GITHUB_TOKEN }}
