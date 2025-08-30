@@ -20,6 +20,7 @@ import { useCurrentModal } from "~/components/ui/modal/stacked/hooks"
 import { useCreateAITaskMutation, useUpdateAITaskMutation } from "~/modules/ai-task/query"
 import type { ScheduleType } from "~/modules/ai-task/types"
 import { scheduleSchema } from "~/modules/ai-task/types"
+import { useSettingModal } from "~/modules/settings/modal/use-setting-modal-hack"
 
 import { ScheduleConfig } from "./schedule-config"
 
@@ -133,6 +134,7 @@ export const AITaskModal = ({ task, prompt, onSubmit }: AITaskModalProps) => {
   const createAITaskMutation = useCreateAITaskMutation()
   const updateAITaskMutation = useUpdateAITaskMutation()
   const { t } = useTranslation("ai")
+  const settingModalPresent = useSettingModal()
 
   const isEditing = !!task
 
@@ -274,8 +276,18 @@ export const AITaskModal = ({ task, prompt, onSubmit }: AITaskModalProps) => {
 
           {/* Form Actions */}
 
-          <div className="flex items-center justify-between">
-            <div />
+          <div className="flex items-center justify-end">
+            {!task && (
+              <button
+                type="button"
+                onClick={() => settingModalPresent("ai")}
+                className="text-text-tertiary hover:text-text-secondary mr-auto flex items-center gap-1 text-xs underline-offset-2 hover:underline disabled:opacity-50"
+                disabled={currentMutation.isPending}
+              >
+                <i className="i-mgc-settings-7-cute-re size-3" />
+                {t("tasks.view_in_settings")}
+              </button>
+            )}
             <div className="flex gap-3">
               <Button
                 type="button"

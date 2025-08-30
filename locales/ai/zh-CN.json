@@ -154,6 +154,7 @@
   "tasks.validation.prompt_required": "指令为必填项",
   "tasks.validation.title_max": "标题必须少于 50 个字符",
   "tasks.validation.title_required": "标题为必填项",
+  "tasks.view_in_settings": "在设置中查看已计划任务",
   "token_usage.description": "监控您的AI令牌消耗和限制",
   "token_usage.resets_at": "重置时间",
   "token_usage.title": "令牌使用情况",
