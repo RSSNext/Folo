@@ -24,6 +24,7 @@ import { AIPersistService } from "../../services"
 
 interface TaskReportDropdownProps {
   triggerElement?: ReactElement
+  asChild?: boolean
 }
 
 interface SessionItemProps {
@@ -82,7 +83,7 @@ const EmptyState = () => {
   )
 }
 
-export const TaskReportDropdown = ({ triggerElement }: TaskReportDropdownProps) => {
+export const TaskReportDropdown = ({ triggerElement, asChild = true }: TaskReportDropdownProps) => {
   const sessions = useAIChatSessionListQuery()
   const currentChatId = useCurrentChatId()
   const chatActions = useChatActions()
@@ -164,7 +165,9 @@ export const TaskReportDropdown = ({ triggerElement }: TaskReportDropdownProps) 
 
   return (
     <DropdownMenu>
-      <DropdownMenuTrigger asChild>{triggerElement || defaultTrigger}</DropdownMenuTrigger>
+      <DropdownMenuTrigger asChild={asChild}>
+        {triggerElement || defaultTrigger}
+      </DropdownMenuTrigger>
 
       <DropdownMenuContent align="end" className="w-80">
         {unreadSessions.length > 0 ? (

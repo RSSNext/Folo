@@ -115,6 +115,7 @@ export const ChatPageHeader = () => {
           </GlassButton>
 
           <TaskReportDropdown
+            asChild={false}
             triggerElement={
               <GlassButton description="Task Reports" size="sm">
                 <i className="i-mgc-inbox-cute-re text-text-secondary size-4" />
