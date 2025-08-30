@@ -2,6 +2,7 @@
 
 ## Shiny new things
 
+- add a button to open the search panel (#4296)
 - AI Chat for RSS (Folo AI): A personalized, context-aware chat built for readers. The assistant understands your feeds, lists, and reading patterns to help you get more from what you follow.
   - Summarize articles, translate content, and get quick explanations—without leaving your timeline.
   - Ask feed-aware questions (e.g., “What did I miss this week?”) and receive suggestions tailored to your habits.

@@ -75,6 +75,10 @@ export const SettingAppearance = () => {
             label: t("appearance.unread_count.sidebar.title"),
             description: t("appearance.unread_count.sidebar.description"),
           }),
+          defineItem("showSearchButton", {
+            label: t("appearance.show_search_button.label"),
+            description: t("appearance.show_search_button.description"),
+          }),
           defineItem("hideExtraBadge", {
             label: t("appearance.hide_extra_badge.label"),
             description: t("appearance.hide_extra_badge.description"),
