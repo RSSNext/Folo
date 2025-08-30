@@ -116,7 +116,6 @@ class AIPersistServiceStatic {
             id: message.id,
             chatId,
             role: message.role,
-            contentFormat: "plaintext" as const,
             createdAt,
             status: "completed" as const,
             finishedAt: message.metadata?.finishTime
@@ -124,7 +123,7 @@ class AIPersistServiceStatic {
               : undefined,
             messageParts: convertedParts,
             metadata: message.metadata,
-          } as typeof aiChatMessagesTable.$inferInsert
+          } satisfies typeof aiChatMessagesTable.$inferInsert
         }),
       )
       .onConflictDoUpdate({
@@ -172,7 +171,6 @@ class AIPersistServiceStatic {
               id: message.id,
               chatId,
               role: message.role,
-              contentFormat: "plaintext" as const,
               createdAt,
               status: "completed" as const,
               finishedAt: message.metadata?.finishTime
