@@ -3,7 +3,7 @@ import { PanelSplitter } from "@follow/components/ui/divider/index.js"
 import { defaultUISettings } from "@follow/shared/settings/defaults"
 import { cn } from "@follow/utils"
 import { AnimatePresence } from "motion/react"
-import { useCallback, useEffect, useMemo, useRef } from "react"
+import { memo, useCallback, useEffect, useMemo, useRef } from "react"
 import { useResizable } from "react-resizable-layout"
 import { useParams } from "react-router"
 
@@ -170,7 +170,7 @@ const AIEntryLayoutImpl = () => {
   )
 }
 
-export const AIEntryLayout = () => {
+export const AIEntryLayout = memo(function AIEntryLayout() {
   return (
     <AIChatRoot wrapFocusable={false}>
       <AIEntryLayoutImpl />
@@ -178,4 +178,5 @@ export const AIEntryLayout = () => {
       <AISplineButton />
     </AIChatRoot>
   )
-}
+})
+AIEntryLayout.displayName = "AIEntryLayout"
