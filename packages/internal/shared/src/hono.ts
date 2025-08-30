@@ -218,7 +218,7 @@ declare const achievementsOpenAPISchema: zod110.ZodObject<{
 }>;
 //#endregion
 //#region src/schema/actions.d.ts
-declare const languageSchema: z$1.ZodEnum<["en", "ja", "zh-CN", "zh-TW"]>;
+declare const languageSchema: z$1.ZodEnum<["en", "ja", "zh-CN", "zh-TW", "tr"]>;
 declare const conditionItemSchema: z$1.ZodObject<{
   field: z$1.ZodEnum<["view", "title", "site_url", "feed_url", "category", "entry_title", "entry_content", "entry_url", "entry_author", "entry_media_length", "entry_attachments_duration", "status"]>;
   operator: z$1.ZodEnum<["contains", "not_contains", "eq", "not_eq", "gt", "lt", "regex"]>;
@@ -22729,7 +22729,7 @@ declare const _routes: hono_hono_base42.HonoBase<Env, ({
       input: {
         query: {
           id: string;
-          language?: "en" | "ja" | "zh-CN" | "zh-TW" | undefined;
+          language?: "en" | "ja" | "zh-CN" | "zh-TW" | "tr" | undefined;
           target?: "content" | "readabilityContent" | undefined;
         };
       };
@@ -22747,7 +22747,7 @@ declare const _routes: hono_hono_base42.HonoBase<Env, ({
       input: {
         query: {
           id: string;
-          language: "en" | "ja" | "zh-CN" | "zh-TW";
+          language: "en" | "ja" | "zh-CN" | "zh-TW" | "tr";
           fields: string;
           part?: string | undefined;
         };
