@@ -1,5 +1,5 @@
 import type { MCPService } from "@follow/shared/settings/interface"
-import type { UpdateConnectionRequest } from "@follow-app/client-sdk"
+import type { McpConnectionInfo, UpdateConnectionRequest } from "@follow-app/client-sdk"
 
 import { followApi } from "~/lib/api-client"
 
@@ -14,7 +14,11 @@ export const createMCPConnection = async (connectionData: {
 
 export const fetchMCPConnections = async (): Promise<MCPService[]> => {
   const response = await followApi.mcp.getConnections()
-  return response.data
+  return response.data.map(
+    (service: McpConnectionInfo): MCPService => ({
+      ...service,
+    }),
+  )
 }
 
 export const updateMCPConnection = async (

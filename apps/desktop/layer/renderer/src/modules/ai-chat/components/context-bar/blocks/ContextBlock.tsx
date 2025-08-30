@@ -71,8 +71,8 @@ export const ContextBlock: FC<{ block: AIChatContextBlock }> = memo(({ block }) 
             <div className="flex items-center gap-1.5">
               <div className="relative">
                 <ImageThumbnail
-                  previewUrl={previewUrl || dataUrl}
-                  originalUrl={dataUrl}
+                  previewUrl={previewUrl || dataUrl || ""}
+                  originalUrl={dataUrl || ""}
                   alt={name}
                   filename={name}
                   className={"m-0.5 size-5 rounded-md"}
