@@ -69,7 +69,7 @@ jobs:
               const title = m.title || 'Untitled';
               const url = m.url || '';
               const score = typeof m.similarity_score === 'number' ? ` (similarity: ${m.similarity_score.toFixed(2)})` : '';
-              lines.push(`- ${num} ${title} ${url}${score}`.trim());
+              lines.push(`- ${url}${score}`.trim());
             }
             core.setOutput('has_matches', 'true');
             core.setOutput('comment_body', lines.join('\n'));

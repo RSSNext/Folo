@@ -32,9 +32,10 @@ jsonSchema: |-
             "properties": {
               "number": { "type": "integer" },
               "title": { "type": "string" },
-              "url": { "type": "string" }
+              "url": { "type": "string" },
+              "similarity_score": { "type": "number", "minimum": 0, "maximum": 1 }
             },
-            "required": ["number", "title", "url"],
+            "required": ["number", "title", "url", "similarity_score"],
             "additionalProperties": false
           }
         }
