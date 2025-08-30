@@ -11,36 +11,37 @@ import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query"
 
 import { followApi } from "~/lib/api-client"
 
+const aiChatSessionKey = "ai-chat-session"
 export const aiChatSessionKeys = {
-  all: ["ai-chat-session"] as const,
-  lists: () => [...aiChatSessionKeys.all, "list"] as const,
-  list: (filters?: ListSessionsQuery) => [...aiChatSessionKeys.lists(), filters] as const,
-  details: () => [...aiChatSessionKeys.all, "detail"] as const,
-  detail: (chatId: string) => [...aiChatSessionKeys.details(), chatId] as const,
-  messages: () => [...aiChatSessionKeys.all, "messages"] as const,
+  lists: [aiChatSessionKey, "list"] as const,
+  list: (filters?: ListSessionsQuery) => [aiChatSessionKey, "list", filters] as const,
+  details: [aiChatSessionKey, "detail"] as const,
+  detail: (chatId: string) => [aiChatSessionKey, "detail", chatId] as const,
+  messages: [aiChatSessionKey, "messages"] as const,
   message: (chatId: string, filters?: GetMessagesQuery) =>
-    [...aiChatSessionKeys.messages(), chatId, filters] as const,
-  unread: () => [...aiChatSessionKeys.all, "unread"] as const,
-}
+    [aiChatSessionKey, "messages", chatId, filters] as const,
+  unread: [aiChatSessionKey, "unread"] as const,
+} as const
 
 // Queries
 
 export const useAIChatSessionListQuery = (filters?: ListSessionsQuery) => {
   const { data } = useQuery({
     queryKey: aiChatSessionKeys.list(filters),
-    queryFn: () => followApi.aiChatSessions.list(filters),
+    queryFn: () => followApi.aiChatSessions.list(filters).then((res) => res.data),
   })
-  return data?.data
+  return data
 }
 
 export const useAIChatSessionQuery = (chatId: string | undefined, opts?: { enabled?: boolean }) => {
   const enabled = !!chatId && (opts?.enabled ?? true)
   const { data } = useQuery({
-    queryKey: chatId ? aiChatSessionKeys.detail(chatId) : aiChatSessionKeys.details(),
-    queryFn: () => followApi.aiChatSessions.get({ chatId: chatId as string }),
+    queryKey: chatId ? aiChatSessionKeys.detail(chatId) : aiChatSessionKeys.details,
+    queryFn: () =>
+      followApi.aiChatSessions.get({ chatId: chatId as string }).then((res) => res.data),
     enabled,
   })
-  return data?.data
+  return data
 }
 
 export const useAIChatMessagesQuery = (
@@ -50,19 +51,22 @@ export const useAIChatMessagesQuery = (
 ) => {
   const enabled = !!chatId && (opts?.enabled ?? true)
   const { data } = useQuery({
-    queryKey: chatId ? aiChatSessionKeys.message(chatId, filters) : aiChatSessionKeys.messages(),
-    queryFn: () => followApi.aiChatSessions.messages.get({ chatId: chatId as string, ...filters }),
+    queryKey: chatId ? aiChatSessionKeys.message(chatId, filters) : aiChatSessionKeys.messages,
+    queryFn: () =>
+      followApi.aiChatSessions.messages
+        .get({ chatId: chatId as string, ...filters })
+        .then((res) => res.data),
     enabled,
   })
-  return data?.data
+  return data
 }
 
 export const useUnreadChatSessionsQuery = (filters?: GetUnreadQuery) => {
   const { data } = useQuery({
-    queryKey: aiChatSessionKeys.unread(),
-    queryFn: () => followApi.aiChatSessions.unread(filters),
+    queryKey: aiChatSessionKeys.unread,
+    queryFn: () => followApi.aiChatSessions.unread(filters).then((res) => res.data),
   })
-  return data?.data
+  return data
 }
 
 // Mutations
@@ -74,7 +78,7 @@ export const useUpdateAIChatSessionMutation = () => {
     onSuccess: async (res) => {
       const chatId = res?.data?.chatId ?? undefined
       await Promise.all([
-        qc.invalidateQueries({ queryKey: aiChatSessionKeys.lists() }),
+        qc.invalidateQueries({ queryKey: aiChatSessionKeys.lists }),
         chatId
           ? qc.invalidateQueries({ queryKey: aiChatSessionKeys.detail(chatId) })
           : Promise.resolve(),
@@ -89,9 +93,9 @@ export const useDeleteAIChatSessionMutation = () => {
     mutationFn: (input) => followApi.aiChatSessions.delete(input),
     onSuccess: async (_res, vars) => {
       await Promise.all([
-        qc.invalidateQueries({ queryKey: aiChatSessionKeys.lists() }),
+        qc.invalidateQueries({ queryKey: aiChatSessionKeys.lists }),
         qc.invalidateQueries({ queryKey: aiChatSessionKeys.detail(vars.chatId) }),
-        qc.invalidateQueries({ queryKey: aiChatSessionKeys.messages() }),
+        qc.invalidateQueries({ queryKey: aiChatSessionKeys.messages }),
       ])
     },
   })
@@ -104,8 +108,8 @@ export const useMarkChatSessionSeenMutation = () => {
     onSuccess: async (res) => {
       const chatId = res?.data?.chatId ?? undefined
       await Promise.all([
-        qc.invalidateQueries({ queryKey: aiChatSessionKeys.lists() }),
-        qc.invalidateQueries({ queryKey: aiChatSessionKeys.unread() }),
+        qc.invalidateQueries({ queryKey: aiChatSessionKeys.lists }),
+        qc.invalidateQueries({ queryKey: aiChatSessionKeys.unread }),
         chatId
           ? qc.invalidateQueries({ queryKey: aiChatSessionKeys.detail(chatId) })
           : Promise.resolve(),

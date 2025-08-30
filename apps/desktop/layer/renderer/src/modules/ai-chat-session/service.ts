@@ -6,6 +6,9 @@ import { AIPersistService } from "../ai-chat/services"
 import type { BizUIMessage } from "../ai-chat/store/types"
 import { aiChatSessionKeys } from "./query"
 
+// Hard cap on pagination to prevent excessive API calls while keeping initial sync fast.
+const MAX_PAGES = 10
+
 /**
  * Service for syncing AI chat session messages from remote API into local DB.
  */
@@ -31,8 +34,8 @@ class AIChatSessionServiceStatic {
     // Invalidate related queries so UI updates outside of hook-based mutation flows
     Promise.all([
       queryClient.invalidateQueries({ queryKey: aiChatSessionKeys.detail(session.chatId) }),
-      queryClient.invalidateQueries({ queryKey: aiChatSessionKeys.lists() }),
-      queryClient.invalidateQueries({ queryKey: aiChatSessionKeys.unread() }),
+      queryClient.invalidateQueries({ queryKey: aiChatSessionKeys.lists }),
+      queryClient.invalidateQueries({ queryKey: aiChatSessionKeys.unread }),
     ])
     return normalized
   }
@@ -49,7 +52,6 @@ class AIChatSessionServiceStatic {
     chatId: string,
     lastSeenAt: string,
   ): Promise<AIChatMessage[]> {
-    const MAX_PAGES = 10
     const allMessages: AIChatMessage[] = []
     const lastSeenAtDate = new Date(lastSeenAt)
     let before: string | undefined
