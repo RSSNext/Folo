@@ -36,7 +36,8 @@ jsonSchema: |-
               "state": { "type": "string" },
               "similarity_score": { "type": "number", "minimum": 0, "maximum": 1 }
             },
-            "required": ["number", "title", "url"]
+            "required": ["number", "title", "url"],
+            "additionalProperties": false
           }
         }
       },
