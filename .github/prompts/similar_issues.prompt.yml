@@ -1,6 +1,6 @@
 messages:
   - role: system
-    content: >-
+    content: |-
       You are a GitHub assistant with access to GitHub Model Context Protocol (MCP)
       tools in read-only mode. Your task is to search this repository's issues to find
       previously filed issues similar to the provided issue title and body. Use the
@@ -17,30 +17,29 @@ messages:
       {{issue_body}}
 model: openai/gpt-5
 responseFormat: json_schema
-jsonSchema:
-  name: similar_issues_result
-  strict: true
-  schema:
-    type: object
-    properties:
-      matches:
-        type: array
-        items:
-          type: object
-          properties:
-            number:
-              type: integer
-            title:
-              type: string
-            url:
-              type: string
-              format: uri
-            state:
-              type: string
-            similarity_score:
-              type: number
-              minimum: 0
-              maximum: 1
-          required: [number, title, url]
-    required: [matches]
-    additionalProperties: false
+jsonSchema: |-
+  {
+    "name": "similar_issues_result",
+    "strict": true,
+    "schema": {
+      "type": "object",
+      "properties": {
+        "matches": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "properties": {
+              "number": { "type": "integer" },
+              "title": { "type": "string" },
+              "url": { "type": "string", "format": "uri" },
+              "state": { "type": "string" },
+              "similarity_score": { "type": "number", "minimum": 0, "maximum": 1 }
+            },
+            "required": ["number", "title", "url"]
+          }
+        }
+      },
+      "required": ["matches"],
+      "additionalProperties": false
+    }
+  }
