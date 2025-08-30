@@ -20,7 +20,6 @@ jobs:
         uses: actions/github-script@v7
         with:
           script: |
-            const core = require('@actions/core');
             const issue = context.payload.issue || {};
             const title = issue.title || '';
             const body = issue.body || '';
@@ -51,7 +50,6 @@ jobs:
           AI_RESPONSE: ${{ steps.inference.outputs.response }}
         with:
           script: |
-            const core = require('@actions/core');
             let data;
             try {
               data = JSON.parse(process.env.AI_RESPONSE || '{}');
