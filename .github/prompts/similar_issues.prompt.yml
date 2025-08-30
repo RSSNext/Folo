@@ -32,7 +32,7 @@ jsonSchema: |-
             "properties": {
               "number": { "type": "integer" },
               "title": { "type": "string" },
-              "url": { "type": "string" },
+              "url": { "type": "string" }
             },
             "required": ["number", "title", "url"],
             "additionalProperties": false
