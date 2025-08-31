@@ -9,7 +9,7 @@ messages:
       the current issue. Return up to 3 of the most similar past issues. If none are
       reasonably similar, return an empty list. Output must follow the response schema
       exactly and include only data you actually retrieved from GitHub tools.
-      The current GitHub repository context is: owner "RSSNext", repo "Folo".
+      The current GitHub repository is: "{{repository}}".
   - role: user
     content: |-
       Find similar issues for this new issue:
