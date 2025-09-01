@@ -42,6 +42,7 @@ export const UsageAnalysisSection = () => {
                   id: "detailed-usage-modal",
                   content: DetailedUsageModal,
                   title: t("usage_analysis.detailed_title"),
+                  modalContentClassName: "-mx-6 -mb-4",
                 })
               }
               className="text-text-secondary hover:text-text flex items-center gap-1 text-sm duration-200"

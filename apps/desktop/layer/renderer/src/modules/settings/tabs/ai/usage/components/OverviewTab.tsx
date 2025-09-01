@@ -14,7 +14,7 @@ export const OverviewTab = ({ dailyTotals, peakDay }: OverviewTabProps) => {
   const { t } = useTranslation("ai")
 
   return (
-    <div className="space-y-4">
+    <div className="space-y-4 px-4">
       {dailyTotals.length > 0 ? (
         <Card>
           <CardHeader>

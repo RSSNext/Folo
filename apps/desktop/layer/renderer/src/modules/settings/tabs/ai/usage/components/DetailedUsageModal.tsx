@@ -84,96 +84,98 @@ export const DetailedUsageModal = () => {
   const formattedAvgDaily = formatTokenCount(avgDaily)
 
   return (
-    <div className="max-h-[80vh] min-h-[640px] w-[500px] max-w-full space-y-6 overflow-y-auto">
-      <p className="text-text-secondary text-sm">
-        {t("usage_analysis.detailed_description", {
-          defaultValue: "Track your AI token usage, patterns, and efficiency.",
-        })}
-      </p>
+    <div className="flex max-h-[80vh] min-h-[640px] w-[500px] max-w-full flex-col space-y-6 overflow-hidden">
+      <div className="space-y-6 px-4">
+        <p className="text-text-secondary text-sm">
+          {t("usage_analysis.detailed_description", {
+            defaultValue: "Track your AI token usage, patterns, and efficiency.",
+          })}
+        </p>
 
-      {rateLimit?.warningLevel && rateLimit.warningLevel !== "safe" && (
-        <UsageWarningBanner
-          level={rateLimit.warningLevel}
-          projectedLimitTime={rateLimit.projectedLimitTime ?? null}
-          usageRate={rateLimit.usageRate}
-          detailed={true}
-        />
-      )}
+        {rateLimit?.warningLevel && rateLimit.warningLevel !== "safe" && (
+          <UsageWarningBanner
+            level={rateLimit.warningLevel}
+            projectedLimitTime={rateLimit.projectedLimitTime ?? null}
+            usageRate={rateLimit.usageRate}
+            detailed={true}
+          />
+        )}
 
-      {/* Layout Option 4: Asymmetric Modern */}
-      <div className="space-y-4">
-        <div className="grid grid-cols-5 gap-4">
-          <div className="from-material-opaque/40 to-material-opaque/60 col-span-2 flex items-center justify-center rounded-xl bg-gradient-to-br p-6">
-            <UsageProgressRing percentage={usagePercentage} size={130} />
-          </div>
-          <div className="col-span-3 space-y-4">
-            <div className="grid grid-cols-2 gap-4">
-              <div className="bg-fill-secondary/40 rounded-lg p-4">
-                <Metric
-                  label={t("usage_analysis.tokens_used")}
-                  value={formattedUsageTokens.value}
-                  unit={formattedUsageTokens.unit}
-                />
+        {/* Layout Option 4: Asymmetric Modern */}
+        <div className="space-y-4">
+          <div className="grid grid-cols-5 gap-4">
+            <div className="from-material-opaque/40 to-material-opaque/60 col-span-2 flex items-center justify-center rounded-xl bg-gradient-to-br p-6">
+              <UsageProgressRing percentage={usagePercentage} size={130} />
+            </div>
+            <div className="col-span-3 space-y-4">
+              <div className="grid grid-cols-2 gap-4">
+                <div className="bg-fill-secondary/40 rounded-lg p-4">
+                  <Metric
+                    label={t("usage_analysis.tokens_used")}
+                    value={formattedUsageTokens.value}
+                    unit={formattedUsageTokens.unit}
+                  />
+                </div>
+                <div className="bg-fill-secondary/40 rounded-lg p-4">
+                  <Metric
+                    label={t("usage_analysis.tokens_remaining")}
+                    value={formattedRemainingTokens.value}
+                    unit={formattedRemainingTokens.unit}
+                  />
+                </div>
               </div>
-              <div className="bg-fill-secondary/40 rounded-lg p-4">
-                <Metric
-                  label={t("usage_analysis.tokens_remaining")}
-                  value={formattedRemainingTokens.value}
-                  unit={formattedRemainingTokens.unit}
-                />
+              <div className="grid grid-cols-2 gap-4">
+                <div className="bg-fill-secondary/20 rounded-lg p-3">
+                  <StatCompact
+                    label={t("usage_analysis.total_limit")}
+                    value={formattedTotalTokens.value}
+                    unit={formattedTotalTokens.unit}
+                  />
+                </div>
+                <div className="bg-fill-secondary/20 rounded-lg p-3">
+                  <StatCompact
+                    label={t("usage_analysis.resets_in")}
+                    value={formatTimeRemaining(rateLimit.windowResetTime - Date.now())}
+                  />
+                </div>
               </div>
             </div>
-            <div className="grid grid-cols-2 gap-4">
-              <div className="bg-fill-secondary/20 rounded-lg p-3">
-                <StatCompact
-                  label={t("usage_analysis.total_limit")}
-                  value={formattedTotalTokens.value}
-                  unit={formattedTotalTokens.unit}
-                />
-              </div>
-              <div className="bg-fill-secondary/20 rounded-lg p-3">
-                <StatCompact
-                  label={t("usage_analysis.resets_in")}
-                  value={formatTimeRemaining(rateLimit.windowResetTime - Date.now())}
-                />
-              </div>
+          </div>
+          <div className="grid grid-cols-2 gap-4">
+            <div className="border-fill-tertiary bg-fill-secondary/10 rounded-lg border p-4">
+              <StatCompact
+                label={t("analytics.avg_per_day", { defaultValue: "Avg/day" })}
+                value={formattedAvgDaily.value}
+                unit={formattedAvgDaily.unit}
+              />
             </div>
-          </div>
-        </div>
-        <div className="grid grid-cols-2 gap-4">
-          <div className="border-fill-tertiary bg-fill-secondary/10 rounded-lg border p-4">
-            <StatCompact
-              label={t("analytics.avg_per_day", { defaultValue: "Avg/day" })}
-              value={formattedAvgDaily.value}
-              unit={formattedAvgDaily.unit}
-            />
-          </div>
-          <div className="border-fill-tertiary bg-fill-secondary/10 rounded-lg border p-4">
-            <StatCompact
-              label={t("analytics.peak_day", { defaultValue: "Peak day" })}
-              value={peakDay?.date ? new Date(peakDay.date).toLocaleDateString() : "-"}
-              hint={
-                peakDay?.peakHour != null
-                  ? t("analytics.at_hour", { defaultValue: "@ {{h}}:00", h: peakDay.peakHour })
-                  : undefined
-              }
-            />
+            <div className="border-fill-tertiary bg-fill-secondary/10 rounded-lg border p-4">
+              <StatCompact
+                label={t("analytics.peak_day", { defaultValue: "Peak day" })}
+                value={peakDay?.date ? new Date(peakDay.date).toLocaleDateString() : "-"}
+                hint={
+                  peakDay?.peakHour != null
+                    ? t("analytics.at_hour", { defaultValue: "@ {{h}}:00", h: peakDay.peakHour })
+                    : undefined
+                }
+              />
+            </div>
           </div>
         </div>
       </div>
-      <Tabs defaultValue="overview" className="relative flex h-[400px] flex-col space-y-4">
-        <TabsList className="grid w-full grid-cols-4">
+      <Tabs defaultValue="overview" className="relative flex min-h-0 grow flex-col space-y-4">
+        <TabsList className="grid w-full grid-cols-4 px-4">
           <TabsTrigger value="overview">{t("analytics.tabs.overview")}</TabsTrigger>
           <TabsTrigger value="patterns">{t("analytics.tabs.patterns")}</TabsTrigger>
           <TabsTrigger value="efficiency">{t("analytics.tabs.efficiency")}</TabsTrigger>
           <TabsTrigger value="history">{t("analytics.tabs.history")}</TabsTrigger>
         </TabsList>
 
-        <TabsScrollAreaContent className="h-0 grow" value="overview">
+        <TabsScrollAreaContent className="h-0 grow" viewportClassName="pb-4" value="overview">
           <OverviewTab dailyTotals={dailyTotals} peakDay={peakDay} />
         </TabsScrollAreaContent>
 
-        <TabsScrollAreaContent className="h-0 grow" value="patterns">
+        <TabsScrollAreaContent className="h-0 grow" viewportClassName="pb-4" value="patterns">
           <PatternsTab
             hourBuckets={hourBuckets}
             maxHourCount={maxHourCount}
@@ -181,11 +183,11 @@ export const DetailedUsageModal = () => {
           />
         </TabsScrollAreaContent>
 
-        <TabsScrollAreaContent className="h-0 grow" value="efficiency">
+        <TabsScrollAreaContent className="h-0 grow" viewportClassName="pb-4" value="efficiency">
           <EfficiencyTab byModel={byModel} />
         </TabsScrollAreaContent>
 
-        <TabsScrollAreaContent className="h-0 grow" value="history">
+        <TabsScrollAreaContent className="h-0 grow" viewportClassName="pb-4" value="history">
           <HistoryTab analysis={analysis!} />
         </TabsScrollAreaContent>
       </Tabs>

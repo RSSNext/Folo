@@ -13,7 +13,7 @@ export const EfficiencyTab = ({ byModel }: EfficiencyTabProps) => {
   const { t } = useTranslation("ai")
 
   return (
-    <Card>
+    <Card className="mx-4">
       <CardHeader>
         <CardTitle className="text-text text-base">
           {t("analytics.efficiency_analysis", { defaultValue: "Efficiency analysis" })}

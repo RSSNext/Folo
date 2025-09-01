@@ -15,7 +15,7 @@ export const PatternsTab = ({ hourBuckets, maxHourCount, byOperation }: Patterns
   const { t } = useTranslation("ai")
 
   return (
-    <div className="grid grid-cols-1 gap-4 md:grid-cols-2">
+    <div className="@md:grid-cols-2 mx-4 grid grid-cols-1 gap-4">
       <Card>
         <CardHeader>
           <CardTitle className="text-text text-base">
