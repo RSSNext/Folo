@@ -52,6 +52,21 @@ const cardStylePresets = [
   },
 ]
 
+const highlightUnderlineBg =
+  "before:absolute before:rounded-lg before:bottom-0 before:left-0 before:right-0 before:h-[0.75rem] before:z-[-1]"
+const highlightFullBg =
+  "before:absolute before:bottom-0 before:left-0 before:right-0 before:top-0 before:z-[-1]"
+const highlightStyle = [
+  cn(highlightUnderlineBg, "before:bg-blue-400"),
+  cn(highlightUnderlineBg, "before:bg-yellow-400"),
+  cn(highlightUnderlineBg, "before:bg-green-400"),
+  cn(highlightUnderlineBg, "before:bg-orange-400"),
+  cn(highlightFullBg, "before:bg-blue-200"),
+  cn(highlightFullBg, "before:bg-yellow-200"),
+  cn(highlightFullBg, "before:bg-green-200"),
+  cn(highlightFullBg, "before:bg-orange-200"),
+]
+
 const ViewTag = IN_ELECTRON ? "webview" : "iframe"
 
 export const AllItem: EntryListItemFC = ({ entryId, entryPreview, translation }) => {
@@ -63,6 +78,7 @@ export const AllItem: EntryListItemFC = ({ entryId, entryPreview, translation })
       authorAvatar,
       content,
       description,
+      extra,
       feedId,
       id,
       publishedAt,
@@ -91,6 +107,7 @@ export const AllItem: EntryListItemFC = ({ entryId, entryPreview, translation })
       attachments,
       duration,
       content,
+      extra,
       feedId,
       firstMedia,
       iconEntry,
@@ -119,17 +136,23 @@ export const AllItem: EntryListItemFC = ({ entryId, entryPreview, translation })
     [entry, entryPreview],
   )
 
-  const cardStyle = useMemo(() => {
-    // Use a hash of entryId to get a consistent index for cardStylePresets
+  const randomStyle = useMemo(() => {
+    // Use a hash of entryId to get a consistent index for card style
     // djb2 hash
     let hash = 5381
     for (let i = 0, len = entryId.length; i < len; ++i) {
       hash = (hash << 5) + hash + entryId.codePointAt(i)!
     }
 
-    const index = (hash >>> 0) % cardStylePresets.length
+    const hashShift = (hash >>> 0) + 1
 
-    return cardStylePresets[index]!
+    const cardIndex = hashShift % cardStylePresets.length
+    const highlightIndex = hashShift % highlightStyle.length
+
+    return {
+      card: cardStylePresets[cardIndex]!,
+      highlight: highlightStyle[highlightIndex]!,
+    }
   }, [entryId])
 
   const isActive = useRouteParamsSelector(({ entryId }) => entryId === entry?.id)
@@ -180,6 +203,32 @@ export const AllItem: EntryListItemFC = ({ entryId, entryPreview, translation })
 
   if (!entry) return null
 
+  const title = entry.title || entry.description || entry.content
+  const titleKeyword = entry.extra?.title_keyword || ""
+
+  const titleWithKeyword =
+    titleKeyword && title ? (
+      <>
+        {title
+          .split(new RegExp(`(${titleKeyword.replaceAll(/[.*+?^${}()|[\]\\]/g, "\\$&")})`, "gi"))
+          .map((part, index) => {
+            const isKeyword = part.toLowerCase() === titleKeyword.toLowerCase()
+            return isKeyword ? (
+              <span
+                key={`keyword-${index}-${part}`}
+                className={cn("relative z-[1]", randomStyle.highlight)}
+              >
+                {part}
+              </span>
+            ) : (
+              <span key={`text-${index}-${part}`}>{part}</span>
+            )
+          })}
+      </>
+    ) : (
+      title
+    )
+
   return (
     <div className="group">
       {/* Hero */}
@@ -187,7 +236,7 @@ export const AllItem: EntryListItemFC = ({ entryId, entryPreview, translation })
         className={cn(
           "relative flex max-h-[35em] flex-col overflow-hidden rounded-lg",
           "before:group-hover:bg-theme-item-hover before:absolute before:inset-0 before:z-10 before:transition-colors before:duration-200",
-          cardStyle.card,
+          randomStyle.card.card,
         )}
       >
         {/* Icon */}
@@ -195,7 +244,7 @@ export const AllItem: EntryListItemFC = ({ entryId, entryPreview, translation })
           <div
             className={cn(
               "absolute left-4 top-4 z-[1] flex items-center justify-center text-2xl",
-              cardStyle.icon,
+              randomStyle.card.icon,
             )}
           >
             {icon}
@@ -226,9 +275,7 @@ export const AllItem: EntryListItemFC = ({ entryId, entryPreview, translation })
               />
             ) : (
               <div className="flex min-h-[10em] flex-col items-center justify-center overflow-hidden px-4 py-20 text-[1.5rem] font-normal leading-[1.2]">
-                <div className="line-clamp-6 max-w-full break-words">
-                  {entry.title || entry.description || entry.content}
-                </div>
+                <div className="line-clamp-6 max-w-full break-words">{titleWithKeyword}</div>
               </div>
             )}
           </>
