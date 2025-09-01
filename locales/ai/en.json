@@ -158,7 +158,7 @@
   "tasks.validation.prompt_required": "Prompt is required",
   "tasks.validation.title_max": "Title must be less than 50 characters",
   "tasks.validation.title_required": "Title is required",
-  "tasks.view_in_settings": "View scheduled tasks in Settings",
+  "tasks.view_in_settings": "View scheduled tasks",
   "token_usage.description": "Monitor your AI token consumption and limits",
   "token_usage.resets_at": "Resets at",
   "token_usage.title": "Token Usage",

@@ -126,7 +126,7 @@
   "tasks.validation.prompt_required": "プロンプトは必須です",
   "tasks.validation.title_max": "タイトルは50文字未満である必要があります",
   "tasks.validation.title_required": "タイトルは必須です",
-  "tasks.view_in_settings": "設定でスケジュールされたタスクを表示",
+  "tasks.view_in_settings": "スケジュールされたタスクを表示",
   "usage_analysis.active_session": "アクティブセッション",
   "usage_analysis.current_usage": "現在の使用状況",
   "usage_analysis.detailed_description": "AI使用パターンとインサイトの包括的概要",

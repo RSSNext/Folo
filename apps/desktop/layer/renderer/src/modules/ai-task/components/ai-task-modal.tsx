@@ -57,6 +57,10 @@ interface AITaskModalProps {
   task?: AITask // Existing task for editing (optional)
   prompt?: string
   onSubmit?: (data: TaskFormData) => void
+  /**
+   * Explicitly control whether to show the "open settings" tip/link.
+   */
+  showSettingsTip?: boolean
 }
 
 // Convert existing task data to form format or use defaults
@@ -129,7 +133,12 @@ const getDefaultFormData = (task?: AITask, prompt?: string): TaskFormData => {
   }
 }
 
-export const AITaskModal = ({ task, prompt, onSubmit }: AITaskModalProps) => {
+export const AITaskModal = ({
+  task,
+  prompt,
+  onSubmit,
+  showSettingsTip = false,
+}: AITaskModalProps) => {
   const { dismiss } = useCurrentModal()
   const createAITaskMutation = useCreateAITaskMutation()
   const updateAITaskMutation = useUpdateAITaskMutation()
@@ -277,7 +286,7 @@ export const AITaskModal = ({ task, prompt, onSubmit }: AITaskModalProps) => {
           {/* Form Actions */}
 
           <div className="flex items-center justify-end">
-            {!task && (
+            {showSettingsTip && (
               <button
                 type="button"
                 onClick={() => settingModalPresent("ai")}
