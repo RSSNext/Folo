@@ -8,7 +8,7 @@ import * as React from "react"
 import type {
   AIDisplayAnalyticsTool,
   AIDisplayEntriesTool,
-  AIDisplayFeedsTool,
+  AIDisplayFeedTool,
   AIDisplayFlowTool,
   AIDisplaySubscriptionsTool,
   BizUIMessage,
@@ -18,7 +18,7 @@ import { useChatStatus } from "../../store/hooks"
 import {
   AIDisplayAnalyticsPart,
   AIDisplayEntriesPart,
-  AIDisplayFeedsPart,
+  AIDisplayFeedPart,
   AIDisplaySubscriptionsPart,
   AIReasoningPart,
 } from "../displays"
@@ -87,8 +87,8 @@ export const AIMessageParts: React.FC<AIMessagePartsProps> = React.memo(
             <AIDisplaySubscriptionsPart key={partKey} part={part as AIDisplaySubscriptionsTool} />
           )
         }
-        case "tool-displayFeeds": {
-          return <AIDisplayFeedsPart key={partKey} part={part as AIDisplayFeedsTool} />
+        case "tool-displayFeed": {
+          return <AIDisplayFeedPart key={partKey} part={part as AIDisplayFeedTool} />
         }
 
         case "tool-displayFlowChart": {

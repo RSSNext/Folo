@@ -30,8 +30,8 @@ export function withDisplayStateHandler<T>(config: {
   errorTitle: string
   maxWidth?: string
 }) {
-  return function <P extends { part: { state: string; output?: T } }>(
-    WrappedComponent: ComponentType<P & { output: NonNullable<T> }>,
+  return function <P extends { part: { state: string; output?: T; input?: any } }>(
+    WrappedComponent: ComponentType<P & { output: NonNullable<T>; input: any }>,
   ): ComponentType<P> {
     const WithDisplayStateHandler = toolMemo((props: P) => {
       const { part } = props
@@ -59,7 +59,9 @@ export function withDisplayStateHandler<T>(config: {
       }
 
       // Render the wrapped component with the validated output
-      return <WrappedComponent {...props} output={part.output as NonNullable<T>} />
+      return (
+        <WrappedComponent {...props} output={part.output as NonNullable<T>} input={part.input} />
+      )
     })
 
     WithDisplayStateHandler.displayName = `withDisplayStateHandler(${WrappedComponent.displayName || WrappedComponent.name})`
