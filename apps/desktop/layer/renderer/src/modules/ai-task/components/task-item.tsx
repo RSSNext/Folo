@@ -1,20 +1,20 @@
 import { cn } from "@follow/utils/utils"
 import type { AITask, TaskSchedule } from "@follow-app/client-sdk"
 import dayjs from "dayjs"
-import { memo } from "react"
+import { memo, useCallback, useMemo, useState } from "react"
+import { useTranslation } from "react-i18next"
+import { toast } from "sonner"
 
-import { useModalStack } from "~/components/ui/modal/stacked/hooks"
+import { setAIPanelVisibility } from "~/atoms/settings/ai"
+import { useDialog, useModalStack } from "~/components/ui/modal/stacked/hooks"
+import { ChatSliceActions } from "~/modules/ai-chat/store/chat-core/chat-actions"
+import { AIChatSessionService } from "~/modules/ai-chat-session"
+import { useAIChatSessionListQuery } from "~/modules/ai-chat-session/query"
 import type { ActionButton } from "~/modules/ai-task/components/ai-item-actions"
 import { ItemActions } from "~/modules/ai-task/components/ai-item-actions"
 
+import { useDeleteAITaskMutation, useUpdateAITaskMutation } from "../query"
 import { AITaskModal } from "./ai-task-modal"
-
-interface TaskItemProps {
-  task: AITask
-  isDeleting: boolean
-  onDelete: (id: string, name: string) => void
-  onToggle: (id: string, name: string, currentEnabled: boolean) => void
-}
 
 const formatScheduleText = (schedule: TaskSchedule) => {
   if (!schedule) return "Unknown schedule"
@@ -76,10 +76,22 @@ const getStatusColor = (status: string) => {
   }
 }
 
-export const TaskItem = memo<TaskItemProps>(({ task, isDeleting, onDelete, onToggle }) => {
+export const TaskItem = memo(({ task }: { task: AITask }) => {
   const { present } = useModalStack()
+  const deleteTaskMutation = useDeleteAITaskMutation()
+  const updateTaskMutation = useUpdateAITaskMutation()
+  const { ask } = useDialog()
+  const { t } = useTranslation()
+  const sessions = useAIChatSessionListQuery()
+  // const chatActions = useChatActions()
+  const [openingReport, setOpeningReport] = useState(false)
   const status = getTaskStatus(task)
   const statusColorClass = getStatusColor(status)
+
+  const taskSession = useMemo(
+    () => sessions?.find((s) => s.chatId === task.id),
+    [sessions, task.id],
+  )
 
   const handleEditTask = (task: AITask) => {
     present({
@@ -89,7 +101,43 @@ export const TaskItem = memo<TaskItemProps>(({ task, isDeleting, onDelete, onTog
     })
   }
 
+  const isDeleting = deleteTaskMutation.isPending
+
+  const handleOpenReport = useCallback(async () => {
+    if (!taskSession) {
+      toast.error("No report session found for this task yet.")
+      return
+    }
+    setOpeningReport(true)
+    try {
+      await AIChatSessionService.fetchAndPersistMessages(taskSession)
+    } catch (e) {
+      console.error("Failed to sync chat session messages:", e)
+      toast.error("Failed to load chat messages")
+    }
+    setAIPanelVisibility(true)
+    const chatActions = ChatSliceActions.getActiveInstance()
+    if (!chatActions) {
+      console.error("No active chat session found.")
+    }
+    chatActions?.switchToChat(taskSession.chatId)
+    setOpeningReport(false)
+    toast("Switch to the chat panel to view reports.")
+  }, [taskSession])
+
   const actions: ActionButton[] = [
+    // Only show if the task has at least one run
+    ...(taskSession
+      ? [
+          {
+            icon: "i-mgc-history-cute-re" as const,
+            onClick: handleOpenReport,
+            title: "View reports",
+            loading: openingReport,
+            disabled: openingReport,
+          } satisfies ActionButton,
+        ]
+      : []),
     {
       icon: "i-mgc-edit-cute-re",
       onClick: () => handleEditTask(task),
@@ -97,7 +145,24 @@ export const TaskItem = memo<TaskItemProps>(({ task, isDeleting, onDelete, onTog
     },
     {
       icon: "i-mgc-delete-2-cute-re",
-      onClick: () => onDelete(task.id, task.name),
+      onClick: async () => {
+        const confirmed = await ask({
+          title: "Delete Task",
+          // translation fallback pattern; primary key then default string
+          message: `Are you sure you want to delete the task "${task.name}"?`,
+          confirmText: t("words.delete", { ns: "common" }),
+          cancelText: t("words.cancel", { ns: "common" }),
+          variant: "danger",
+        })
+        if (!confirmed) return
+        try {
+          await deleteTaskMutation.mutateAsync({ id: task.id })
+          toast.success("Task deleted successfully")
+        } catch (error) {
+          console.error("Failed to delete task:", error)
+          toast.error("Failed to delete task. Please try again.")
+        }
+      },
       title: "Delete task",
       disabled: isDeleting,
       loading: isDeleting,
@@ -144,7 +209,14 @@ export const TaskItem = memo<TaskItemProps>(({ task, isDeleting, onDelete, onTog
         <ItemActions
           actions={actions}
           enabled={task.isEnabled}
-          onToggle={() => onToggle(task.id, task.name, task.isEnabled)}
+          onToggle={async () => {
+            try {
+              await updateTaskMutation.mutateAsync({ id: task.id, isEnabled: !task.isEnabled })
+            } catch (error) {
+              console.error("Failed to toggle task:", error)
+              toast.error("Failed to update task. Please try again.")
+            }
+          }}
         />
       </div>
     </div>

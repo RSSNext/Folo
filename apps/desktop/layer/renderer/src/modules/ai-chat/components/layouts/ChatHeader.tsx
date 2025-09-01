@@ -8,6 +8,7 @@ import { useBlockActions, useChatActions, useCurrentTitle } from "~/modules/ai-c
 
 import { ChatMoreDropdown } from "./ChatMoreDropdown"
 import { EditableTitle } from "./EditableTitle"
+import { TaskReportDropdown } from "./TaskReportDropdown"
 
 // Base header layout with shared logic inside
 const ChatHeaderLayout = ({
@@ -80,6 +81,8 @@ export const ChatHeader = () => {
             <i className="i-mgc-add-cute-re text-text-secondary size-5" />
           </ActionButton>
 
+          <TaskReportDropdown />
+
           <ChatMoreDropdown
             triggerElement={
               <ActionButton tooltip="More">
@@ -110,6 +113,15 @@ export const ChatPageHeader = () => {
           <GlassButton description="New Chat" size="sm" onClick={onNewChatClick}>
             <i className="i-mgc-add-cute-re text-text-secondary size-4" />
           </GlassButton>
+
+          <TaskReportDropdown
+            asChild={false}
+            triggerElement={
+              <GlassButton description="Task Reports" size="sm">
+                <i className="i-mgc-inbox-cute-re text-text-secondary size-4" />
+              </GlassButton>
+            }
+          />
 
           <div className="bg-border mx-2 h-5 w-px" />
           <ChatMoreDropdown
