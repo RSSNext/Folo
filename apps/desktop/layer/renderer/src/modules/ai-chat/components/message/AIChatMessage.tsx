@@ -1,13 +1,12 @@
 import { createDefaultLexicalEditor } from "@follow/components/ui/lexical-rich-editor/editor.js"
 import { stopPropagation, thenable } from "@follow/utils"
-import type { UIDataTypes, UIMessage } from "ai"
 import type { LexicalEditor } from "lexical"
 import { m } from "motion/react"
 import * as React from "react"
 import { toast } from "sonner"
 
 import { copyToClipboard } from "~/lib/clipboard"
-import type { BizUIMessage, BizUIMetadata, BizUITools } from "~/modules/ai-chat/store/types"
+import type { BizUIMessage } from "~/modules/ai-chat/store/types"
 
 import { MentionPlugin } from "../../editor"
 import type { RichTextPart } from "../../types/ChatSession"
@@ -27,7 +26,7 @@ interface AIChatMessageProps {
 }
 
 // Utility function for converting message to markdown
-const useMessageMarkdownFormat = (message: UIMessage<BizUIMetadata, UIDataTypes, BizUITools>) => {
+const useMessageMarkdownFormat = (message: BizUIMessage) => {
   return React.useCallback(() => {
     let content = ""
     for (const part of message.parts) {

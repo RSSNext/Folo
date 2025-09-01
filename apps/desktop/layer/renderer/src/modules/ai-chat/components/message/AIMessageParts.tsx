@@ -12,6 +12,7 @@ import type {
   BizUIMessage,
 } from "~/modules/ai-chat/store/types"
 
+import { useChatStatus } from "../../store/hooks"
 import {
   AIDisplayAnalyticsPart,
   AIDisplayEntriesPart,
@@ -31,12 +32,34 @@ interface AIMessagePartsProps {
 }
 
 export const AIMessageParts: React.FC<AIMessagePartsProps> = React.memo(({ message }) => {
+  const [shouldStreamingAnimation, setShouldStreamingAnimation] = React.useState(false)
+  const chatStatus = useChatStatus()
+
+  React.useEffect(() => {
+    // Delay 2s to set shouldStreamingAnimation
+    const timerId = setTimeout(() => {
+      setShouldStreamingAnimation(true)
+    }, 2000)
+    return () => clearTimeout(timerId)
+  }, [])
+
+  const shouldMessageAnimation = React.useMemo(() => {
+    return chatStatus === "streaming" && shouldStreamingAnimation
+  }, [chatStatus, shouldStreamingAnimation])
+
   return message.parts.map((part, index) => {
     const partKey = `${message.id}-${index}`
 
     switch (part.type) {
       case "text": {
-        return <AIMarkdownStreamingMessage key={partKey} text={part.text} className={"text-text"} />
+        return (
+          <AIMarkdownStreamingMessage
+            key={partKey}
+            text={part.text}
+            className={"text-text"}
+            isStreaming={shouldMessageAnimation}
+          />
+        )
       }
 
       case "reasoning": {
