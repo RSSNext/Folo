@@ -405,7 +405,7 @@ export const ModalInternal = memo(function Modal({
 
                   <div
                     className={cn(
-                      "-mx-2 min-h-0 shrink grow overflow-auto p-4",
+                      "-mx-2 min-h-0 shrink grow overflow-auto overflow-x-hidden p-4",
                       modalContentClassName,
                     )}
                   >
