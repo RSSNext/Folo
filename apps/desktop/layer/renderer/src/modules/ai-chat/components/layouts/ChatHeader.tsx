@@ -41,7 +41,7 @@ const ChatHeaderLayout = ({
     [chatActions],
   )
 
-  const maskImage = `linear-gradient(to bottom, black 0%, black 75%, transparent 100%)`
+  const maskImage = `linear-gradient(to bottom, black 0%, black 90%, transparent 100%)`
   return (
     <div className="absolute inset-x-0 top-0 z-[1] h-12">
       <div
