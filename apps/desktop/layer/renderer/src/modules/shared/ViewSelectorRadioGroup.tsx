@@ -63,8 +63,14 @@ export const ViewSelectorRadioGroup = ({
         ))}
       </CardHeader>
       {showPreview && (
-        <CardContent className="relative flex w-full flex-col gap-2">
-          {entries.slice(0, 2).map((entry) => (
+        <CardContent
+          className={
+            views[view || FeedViewType.Articles]?.gridMode
+              ? "relative grid w-full grid-cols-3 flex-col gap-2 pb-4"
+              : "relative flex w-full flex-col gap-2 pb-0"
+          }
+        >
+          {entries.slice(0, 3).map((entry) => (
             <EntryItemStateless entry={entry} feed={feed} view={view} key={entry.guid} />
           ))}
         </CardContent>
