@@ -5,7 +5,7 @@ import { AnimatePresence, m } from "motion/react"
 import * as React from "react"
 
 import { useEditingMessageId, useSetEditingMessageId } from "~/modules/ai-chat/atoms/session"
-import { useChatActions } from "~/modules/ai-chat/store/hooks"
+import { useChatActions, useChatStatus } from "~/modules/ai-chat/store/hooks"
 import type { AIChatContextBlock, BizUIMessage } from "~/modules/ai-chat/store/types"
 
 import type { RichTextPart } from "../../types/ChatSession"
@@ -29,6 +29,8 @@ export const UserChatMessage: React.FC<UserChatMessageProps> = React.memo(({ mes
   const editingMessageId = useEditingMessageId()
   const setEditingMessageId = useSetEditingMessageId()
 
+  const chatStatus = useChatStatus()
+  const isStreaming = chatStatus === "submitted" || chatStatus === "streaming"
   const isEditing = editingMessageId === messageId
 
   // Extract data-block parts for separate rendering
@@ -115,11 +117,15 @@ export const UserChatMessage: React.FC<UserChatMessageProps> = React.memo(({ mes
 
       {/* Main chat message */}
       <m.div
-        initial={{
-          opacity: 0,
-          y: 20,
-          scale: 0.95,
-        }}
+        initial={
+          isStreaming
+            ? {
+                opacity: 0,
+                y: 20,
+                scale: 0.95,
+              }
+            : true
+        }
         animate={{
           opacity: 1,
           y: 0,

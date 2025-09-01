@@ -19,7 +19,7 @@ import {
   AIDisplaySubscriptionsPart,
   AIReasoningPart,
 } from "../displays"
-import { AIMarkdownStreamingMessage } from "./AIMarkdownMessage"
+import { AIMarkdownStreamingMessage } from "./AIMarkdownMessage.v2"
 import { ToolInvocationComponent } from "./ToolInvocationComponent"
 
 const LazyAIDisplayFlowPart = React.lazy(() =>
@@ -36,14 +36,7 @@ export const AIMessageParts: React.FC<AIMessagePartsProps> = React.memo(({ messa
 
     switch (part.type) {
       case "text": {
-        return (
-          <AIMarkdownStreamingMessage
-            isProcessing={message.metadata?.totalTokens === undefined}
-            key={partKey}
-            text={part.text}
-            className={"text-text"}
-          />
-        )
+        return <AIMarkdownStreamingMessage key={partKey} text={part.text} className={"text-text"} />
       }
 
       case "reasoning": {

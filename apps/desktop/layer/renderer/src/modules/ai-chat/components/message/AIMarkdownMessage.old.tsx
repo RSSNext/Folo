@@ -1,3 +1,7 @@
+/**
+ * This AI Markdown Message use a optimize tokenization algorithm to render the streaming text.
+ * But tokenization put into the server response, so we can disable it.
+ */
 import type { LinkProps } from "@follow/components/ui/link/LinkWithTooltip.js"
 import { parseMarkdown } from "@follow/components/utils/parse-markdown.js"
 import { cn, isBizId } from "@follow/utils"
@@ -334,6 +338,9 @@ const useThrottledMarkdownParsing = (text: string, isProcessing: boolean) => {
   }, [text, isProcessing, parseWithCache])
 }
 
+/**
+ * @deprecated
+ */
 export const AIMarkdownStreamingMessage = memo(
   ({
     text,
