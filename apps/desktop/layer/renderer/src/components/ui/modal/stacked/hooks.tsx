@@ -36,8 +36,7 @@ const actions = {
     return jotaiStore.get(modalStackAtom).find((item) => item.id === id)
   },
   dismiss(id: string) {
-    ModalEventBus.dispatch("MODAL_DISPATCH", {
-      type: "dismiss",
+    ModalEventBus.dispatch("DISMISS", {
       id,
     })
   },

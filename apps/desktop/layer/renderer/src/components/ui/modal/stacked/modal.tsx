@@ -91,7 +91,11 @@ export const ModalInternal = memo(function Modal({
   const [isClosing, setIsClosing] = useState(false)
 
   // Animation controls
-  const { animateController, playNoticeAnimation, playExitAnimation } = useModalAnimate(!!isTop)
+  const { animateController, playNoticeAnimation, playExitAnimation } = useModalAnimate(
+    !!isTop,
+    item.id,
+    setIsClosing,
+  )
 
   // Simple dismiss logic
   const close = useEventCallback(async (forceClose = false) => {
@@ -105,7 +109,7 @@ export const ModalInternal = memo(function Modal({
         // Custom modals handle their own animation
         setStack((p) => p.filter((modal) => modal.id !== item.id))
       } else {
-        // Play exit animation then remove from stack
+        // Play exit animation then remove from stack\
         await playExitAnimation()
         setStack((p) => p.filter((modal) => modal.id !== item.id))
       }
@@ -332,6 +336,7 @@ export const ModalInternal = memo(function Modal({
               onClick={handleClickOutsideToDismiss}
               style={{
                 zIndex: currentModalZIndex,
+                perspective: 1200,
               }}
               tabIndex={-1}
             >
@@ -339,7 +344,7 @@ export const ModalInternal = memo(function Modal({
 
               <m.div
                 ref={modalElementRef}
-                style={modalStyle}
+                style={{ ...modalStyle, transformStyle: "preserve-3d" }}
                 {...modalMontionConfig}
                 animate={animateController}
                 className={cn(

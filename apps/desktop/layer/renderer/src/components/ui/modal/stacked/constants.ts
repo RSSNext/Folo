@@ -2,12 +2,15 @@ import { Spring } from "@follow/components/constants/spring.js"
 import type { MotionProps, TargetAndTransition } from "motion/react"
 
 const enterStyle: TargetAndTransition = {
-  scale: 1,
   opacity: 1,
+  // Draw the modal towards the viewer from depth
+  transformPerspective: 1200,
+  z: 0,
 }
 const initialStyle: TargetAndTransition = {
-  scale: 0.96,
   opacity: 0,
+  transformPerspective: 1200,
+  z: -48,
 }
 
 export const modalMontionConfig = {

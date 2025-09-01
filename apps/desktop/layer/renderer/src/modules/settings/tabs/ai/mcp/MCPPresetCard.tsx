@@ -9,7 +9,7 @@ interface MCPPresetCardProps {
 
 export const MCPPresetCard = ({ preset, onSelect }: MCPPresetCardProps) => {
   return (
-    <div className="border-fill-secondary bg-fill hover:border-accent hover:bg-fill-secondary group rounded-lg border p-4 transition-all hover:shadow-md">
+    <div className="border-fill-secondary bg-material-medium hover:border-accent hover:bg-fill-quaternary group rounded-lg border p-4 transition-all hover:shadow-md">
       <div className="flex flex-col items-center space-y-3 text-center">
         {/* Icon */}
         <div className="flex size-12 items-center justify-center">

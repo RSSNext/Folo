@@ -4,14 +4,12 @@ import { useAnimationControls } from "motion/react"
 import { useCallback, useEffect, useLayoutEffect } from "react"
 import { useEventCallback } from "usehooks-ts"
 
+import { ModalEventBus } from "../bus"
 import { modalMontionConfig } from "../constants"
 
 export interface ModalAnimateControls {
-  /** Controller for modal animations */
   animateController: ReturnType<typeof useAnimationControls>
-  /** Play notice animation when modal can't be dismissed */
   playNoticeAnimation: () => void
-  /** Play exit animation and return promise that resolves when complete */
   playExitAnimation: () => Promise<void>
 }
 
@@ -19,26 +17,37 @@ export interface ModalAnimateControls {
  * @internal
  * Hook for managing modal animations including enter, notice, and exit animations
  */
-export const useModalAnimate = (isTop: boolean): ModalAnimateControls => {
+export const useModalAnimate = (
+  isTop: boolean,
+  modalId: string,
+  setIsClosing: (isClosing: boolean) => void,
+): ModalAnimateControls => {
   const animateController = useAnimationControls()
 
   // Initial enter animation
   useEffect(() => {
+    ModalEventBus.subscribe("RE_PRESENT", (data) => {
+      if (data.id !== modalId) {
+        return
+      }
+      setIsClosing(false)
+      animateController.start(modalMontionConfig.animate)
+    })
     nextFrame(() => {
       animateController.start(modalMontionConfig.animate)
     })
-  }, [animateController])
+  }, [animateController, modalId, setIsClosing])
 
   // Notice animation for when modal can't be dismissed
   const playNoticeAnimation = useCallback(() => {
     animateController
       .start({
-        scale: 1.01,
+        z: 6,
         transition: Spring.snappy(0.06),
       })
       .then(() => {
         animateController.start({
-          scale: 1,
+          z: 0,
         })
       })
   }, [animateController])
@@ -47,14 +56,16 @@ export const useModalAnimate = (isTop: boolean): ModalAnimateControls => {
   useLayoutEffect(() => {
     if (isTop) return
     animateController.start({
-      scale: 0.96,
-      y: 10,
+      z: -64,
+      rotateX: 2.5,
+      y: 8,
     })
     return () => {
       try {
         animateController.stop()
         animateController.start({
-          scale: 1,
+          z: 0,
+          rotateX: 0,
           y: 0,
         })
       } catch {
