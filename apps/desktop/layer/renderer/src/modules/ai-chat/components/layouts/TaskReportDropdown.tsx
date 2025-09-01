@@ -165,9 +165,21 @@ export const TaskReportDropdown = ({ triggerElement, asChild = true }: TaskRepor
 
   return (
     <DropdownMenu>
-      <DropdownMenuTrigger asChild={asChild}>
-        {triggerElement || defaultTrigger}
-      </DropdownMenuTrigger>
+      {asChild ? (
+        <DropdownMenuTrigger asChild={asChild}>
+          {triggerElement || defaultTrigger}
+        </DropdownMenuTrigger>
+      ) : (
+        <DropdownMenuTrigger className="relative">
+          {triggerElement || defaultTrigger}
+          {hasUnreadSessions && triggerElement && (
+            <span
+              className="bg-accent absolute right-1 top-1 block size-2 rounded-full shadow-[0_0_0_2px_var(--color-bg-default)] dark:shadow-[0_0_0_2px_var(--color-bg-default)]"
+              aria-label="Unread task reports"
+            />
+          )}
+        </DropdownMenuTrigger>
+      )}
 
       <DropdownMenuContent align="end" className="w-80">
         {unreadSessions.length > 0 ? (
