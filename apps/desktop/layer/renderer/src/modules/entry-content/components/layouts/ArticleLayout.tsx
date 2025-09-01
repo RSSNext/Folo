@@ -96,7 +96,6 @@ export const ArticleLayout: React.FC<ArticleLayoutProps> = ({
                 className="prose dark:prose-invert !max-w-full"
                 srt={transcriptionData}
                 entryId={entryId}
-                mergeLines={10}
                 type="transcription"
               />
             ) : (

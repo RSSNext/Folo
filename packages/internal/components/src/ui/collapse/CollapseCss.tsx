@@ -1,3 +1,7 @@
+/**
+ * @see https://www.zhangxinxu.com/wordpress/2024/06/css-transition-behavior/
+ * @see https://www.zhangxinxu.com/wordpress/2024/11/css-calc-interpolate-size/
+ */
 import { cn } from "@follow/utils/utils"
 import type { FC } from "react"
 import * as React from "react"
@@ -59,44 +63,52 @@ interface CollapseProps {
   title: React.ReactNode
   hideArrow?: boolean
   defaultOpen?: boolean
+  isOpened?: boolean // For controlled usage
   collapseId?: string
   onOpenChange?: (isOpened: boolean) => void
   contentClassName?: string
   className?: string
   children: React.ReactNode
+  innerClassName?: string
 }
 
 export const CollapseCss: FC<CollapseProps> = ({
   title,
   hideArrow,
   defaultOpen = false,
+  isOpened: controlledIsOpened,
   collapseId,
   onOpenChange,
   contentClassName,
   className,
+  innerClassName,
   children,
 }) => {
   const reactId = React.useId()
   const id = collapseId ?? reactId
   const { openStates, setOpenState } = useCollapseContext()
 
-  const isOpened = openStates[id] ?? defaultOpen
+  // Use controlled value if provided, otherwise use context state or defaultOpen
+  const isOpened = controlledIsOpened ?? openStates[id] ?? defaultOpen
 
   const handleToggle = React.useCallback(() => {
     const newOpened = !isOpened
-    setOpenState(id, newOpened)
+    // Only update context state if not controlled
+    if (controlledIsOpened === undefined) {
+      setOpenState(id, newOpened)
+    }
     onOpenChange?.(newOpened)
-  }, [id, isOpened, setOpenState, onOpenChange])
+  }, [id, isOpened, controlledIsOpened, setOpenState, onOpenChange])
 
   return (
     <div className={cn("flex flex-col", className)} data-state={isOpened ? "open" : "hidden"}>
       <div
         className="relative flex w-full cursor-pointer items-center justify-between"
-        onClick={handleToggle}
+        onClick={controlledIsOpened === undefined ? handleToggle : undefined}
       >
         <span className="w-0 shrink grow truncate">{title}</span>
         {!hideArrow && (
-          <div className="inline-flex shrink-0 items-center text-gray-400">
+          <div className="text-text-secondary inline-flex shrink-0 items-center">
             <i
               className={cn(
                 "i-mingcute-down-line transition-transform duration-300 ease-in-out",
@@ -106,7 +118,11 @@ export const CollapseCss: FC<CollapseProps> = ({
           </div>
         )}
       </div>
-      <CollapseCssContent isOpened={isOpened} className={contentClassName}>
+      <CollapseCssContent
+        isOpened={isOpened}
+        className={contentClassName}
+        innerClassName={innerClassName}
+      >
         {children}
       </CollapseCssContent>
     </div>
@@ -117,24 +133,36 @@ interface CollapseContentProps {
   isOpened: boolean
   className?: string
   children: React.ReactNode
+  innerClassName?: string
 }
 
-const CollapseCssContent: FC<CollapseContentProps> = ({ isOpened, className, children }) => {
+const CollapseCssContent: FC<CollapseContentProps> = ({
+  isOpened,
+  className,
+  children,
+  innerClassName,
+}) => {
   const contentRef = React.useRef<HTMLDivElement>(null)
 
   return (
     <div
       ref={contentRef}
       className={cn(
-        "overflow-hidden transition-all duration-300 ease-in-out [interpolate-size:allow-keywords]",
-        isOpened ? "h-[calc-size(auto)] opacity-100" : "h-0 opacity-0",
-
+        "overflow-hidden [interpolate-size:allow-keywords] [transition-behavior:allow-discrete]",
+        "transition-[height,opacity,display] duration-300 ease-in-out",
+        "[@starting-style]:h-0 [@starting-style]:opacity-0",
         className,
+        isOpened ? "block h-[calc-size(auto)] opacity-100" : "hidden h-0 opacity-0",
       )}
       data-state={isOpened ? "open" : "closed"}
     >
       <div
-        className={tw`transition-transform duration-300 ease-in-out ${isOpened ? "translateY(0)" : "translateY(-8px)"}`}
+        className={cn(
+          "transition-transform duration-300 ease-in-out",
+          "[@starting-style]:translate-y-[-8px]",
+          isOpened ? "translate-y-0" : "translate-y-[-8px]",
+          innerClassName,
+        )}
       >
         {children}
       </div>

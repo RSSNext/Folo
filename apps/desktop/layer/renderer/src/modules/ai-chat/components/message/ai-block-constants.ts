@@ -123,6 +123,6 @@ export function isImageAttachment(block: AIChatContextBlock): boolean {
  * Gets display content for file attachments based on upload status
  */
 export function getFileDisplayContent(attachment: FileAttachment): string {
-  const statusLabel = FILE_STATUS_LABELS[attachment.uploadStatus]
+  const statusLabel = FILE_STATUS_LABELS[attachment.uploadStatus || "error"]
   return statusLabel || attachment.name
 }

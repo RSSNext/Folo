@@ -31,6 +31,7 @@ import {
   useMessages,
 } from "~/modules/ai-chat/store/hooks"
 
+import type { AIChatContextBlock } from "../../store/types"
 import { convertLexicalToMarkdown } from "../../utils/lexical-markdown"
 import { GlobalFileDropZone } from "../file/GlobalFileDropZone"
 import { AIErrorFallback } from "./AIErrorFallback"
@@ -119,7 +120,7 @@ const ChatInterfaceContent = ({ centerInputOnEmpty }: ChatInterfaceProps) => {
     (message: string | EditorState, editor: LexicalEditor | null) => {
       resetScrollState()
 
-      const blocks = [] as any[]
+      const blocks = [] as AIChatContextBlock[]
 
       for (const block of blockActions.getBlocks()) {
         if (block.type === "fileAttachment" && block.attachment.serverUrl) {

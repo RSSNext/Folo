@@ -1,9 +1,4 @@
-import {
-  Accordion,
-  AccordionContent,
-  AccordionItem,
-  AccordionTrigger,
-} from "@follow/components/ui/accordion/index.js"
+import { CollapseCss, CollapseCssGroup } from "@follow/components/ui/collapse/index.js"
 import { JsonHighlighter } from "@follow/components/ui/json-highlighter/index.js"
 import type { ToolUIPart } from "ai"
 import { getToolName } from "ai"
@@ -29,29 +24,34 @@ export const ToolInvocationComponent: React.FC<ToolInvocationComponentProps> = R
       >
         <div className="max-w-[calc(var(--ai-chat-layout-width,65ch)] w-[9999px]" />
 
-        <Accordion type="single" collapsible className="w-full">
-          <AccordionItem value={accordionValue} className="group border-none">
-            <AccordionTrigger
-              className="group flex h-6 min-w-0 flex-1 items-center justify-between py-0 hover:no-underline"
-              chevron={false}
+        <div className="w-full">
+          <CollapseCssGroup>
+            <CollapseCss
+              collapseId={accordionValue}
+              hideArrow
+              className="group border-none"
+              title={
+                <div className="group flex h-6 min-w-0 flex-1 items-center justify-between py-0">
+                  <div className="flex items-center gap-2 text-xs">
+                    <i
+                      className={hasError ? "i-mgc-close-cute-re text-red" : "i-mgc-tool-cute-re"}
+                    />
+                    <span className="text-text-secondary">
+                      {hasError ? "Tool Failed:" : "Tool Called:"}
+                    </span>
+                    <h4 className={`truncate font-medium ${hasError ? "text-red" : "text-text"}`}>
+                      {toolName}
+                    </h4>
+                  </div>
+
+                  {/* Custom arrow that only shows on hover */}
+                  <div className="ml-auto flex items-center justify-center opacity-0 transition-opacity duration-200 group-hover:opacity-100">
+                    <i className="i-mgc-right-cute-re size-3 shrink-0 transition-transform duration-200 group-data-[state=open]:rotate-90" />
+                  </div>
+                </div>
+              }
+              contentClassName="pb-0 pt-2"
             >
-              <div className="flex items-center gap-2 text-xs">
-                <i className={hasError ? "i-mgc-close-cute-re text-red" : "i-mgc-tool-cute-re"} />
-                <span className="text-text-secondary">
-                  {hasError ? "Tool Failed:" : "Tool Called:"}
-                </span>
-                <h4 className={`truncate font-medium ${hasError ? "text-red" : "text-text"}`}>
-                  {toolName}
-                </h4>
-              </div>
-
-              {/* Custom arrow that only shows on hover */}
-              <div className="ml-auto flex items-center justify-center opacity-0 transition-opacity duration-200 group-hover:opacity-100">
-                <i className="i-mgc-right-cute-re size-3 shrink-0 transition-transform duration-200 group-data-[state=open]:rotate-90" />
-              </div>
-            </AccordionTrigger>
-
-            <AccordionContent className="pb-0 pt-2">
               <div className="space-y-2 text-xs">
                 {/* Show tool arguments if available */}
                 {hasArgs ? (
@@ -85,9 +85,9 @@ export const ToolInvocationComponent: React.FC<ToolInvocationComponentProps> = R
                   </div>
                 ) : null}
               </div>
-            </AccordionContent>
-          </AccordionItem>
-        </Accordion>
+            </CollapseCss>
+          </CollapseCssGroup>
+        </div>
       </div>
     )
   },

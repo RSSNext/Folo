@@ -99,6 +99,12 @@ pnpm run typecheck
 pnpm run test
 ```
 
+You must first use `typecheck` to check if the code types are correct, and after making modifications, you need to use `typecheck` again until it passes.
+
+After the `typecheck` passes, you can use `lint:fix` to check the code quality.
+
+This project is a monorepo, and you can use the typecheck and `lint:fix` of sub-packages as needed, but please note that you must follow the above steps in order.
+
 ## Architecture Guidelines
 
 ### Multi-Platform Architecture

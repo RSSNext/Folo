@@ -65,7 +65,6 @@ export const VideosLayout: React.FC<VideosLayoutProps> = ({
             className="prose dark:prose-invert !max-w-full"
             srt={transcriptionData}
             entryId={entryId}
-            mergeLines={10}
             type="subtitle"
           />
         ) : (

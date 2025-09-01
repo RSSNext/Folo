@@ -7,12 +7,13 @@ import * as React from "react"
 import { toast } from "sonner"
 
 import { copyToClipboard } from "~/lib/clipboard"
-import type { BizUIMetadata, BizUITools } from "~/modules/ai-chat/store/types"
+import type { BizUIMessage, BizUIMetadata, BizUITools } from "~/modules/ai-chat/store/types"
 
 import { MentionPlugin } from "../../editor"
 import type { RichTextPart } from "../../types/ChatSession"
 import { convertLexicalToMarkdown } from "../../utils/lexical-markdown"
 import { AIMessageParts } from "./AIMessageParts"
+import { TokenUsagePill } from "./TokenUsagePill"
 
 export interface ChatMessage {
   id: string
@@ -22,7 +23,7 @@ export interface ChatMessage {
 }
 
 interface AIChatMessageProps {
-  message: UIMessage<BizUIMetadata, UIDataTypes, BizUITools>
+  message: BizUIMessage
 }
 
 // Utility function for converting message to markdown
@@ -96,6 +97,16 @@ export const AIChatMessage: React.FC<AIChatMessageProps> = React.memo(({ message
             <i className="i-mgc-copy-2-cute-re size-3" />
             <span>Copy</span>
           </button>
+          {message.metadata && (
+            <TokenUsagePill metadata={message.metadata}>
+              <button
+                type="button"
+                className="text-text-secondary hover:bg-fill-tertiary flex items-center gap-1 rounded-md px-2 py-1 text-xs transition-colors"
+              >
+                <i className="i-mgc-information-cute-re size-3" />
+              </button>
+            </TokenUsagePill>
+          )}
         </div>
 
         <div className="h-6" />

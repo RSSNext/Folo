@@ -141,42 +141,48 @@ SocialMediaItem.wrapperClassName = readableContentMaxWidth
 
 export function SocialMediaItemStateLess({ entry, feed }: EntryItemStatelessProps) {
   return (
-    <div className="relative select-none rounded-md text-zinc-700 transition-colors dark:text-neutral-400">
-      <div className="relative">
-        <div className="group relative flex px-8 py-6">
-          <FeedIcon className="mr-2 size-9" feed={feed} fallback />
-          <div className="ml-2 min-w-0 flex-1">
-            <div className="-mt-0.5 line-clamp-5 flex-1 text-sm">
-              <div className="flex space-x-1">
-                <FeedTitle feed={feed} />
-                <span className="text-zinc-500">·</span>
-                <span>{!!entry.publishedAt && <RelativeTime date={entry.publishedAt} />}</span>
-              </div>
-              <div className="relative mt-0.5 text-sm">{entry.description}</div>
-            </div>
-            <div className="mt-2 flex gap-2 overflow-x-auto">
-              {entry.media?.slice(0, 2).map((media) => (
-                <Media
-                  key={media.url}
-                  thumbnail
-                  src={media.url}
-                  type={media.type}
-                  previewImageUrl={media.preview_image_url}
-                  className="size-28 overflow-hidden rounded"
-                  mediaContainerClassName={"w-auto h-auto rounded"}
-                  loading="lazy"
-                  proxy={{
-                    width: 160,
-                    height: 160,
-                  }}
-                  height={media.height}
-                  width={media.width}
-                  blurhash={media.blurhash}
-                />
-              ))}
+    <div className="relative flex py-4">
+      <FeedIcon fallback feed={feed} size={32} className="mr-2 mt-1" />
+      <div className="min-w-0 flex-1">
+        <div className="-mt-0.5 flex-1 text-sm">
+          <div className="flex select-none flex-wrap space-x-1 leading-6">
+            <span className="inline-flex min-w-0 items-center gap-1 text-base font-semibold">
+              <FeedTitle feed={feed} />
+            </span>
+            <span className="text-zinc-500">·</span>
+            <span className="text-zinc-500">
+              <RelativeTime date={entry.publishedAt} />
+            </span>
+          </div>
+          <div className="relative mt-1 text-base">
+            <div className="prose dark:prose-invert prose-blockquote:mt-0 cursor-auto select-text truncate align-middle text-sm leading-relaxed">
+              {entry.description}
             </div>
           </div>
         </div>
+        {entry.media && entry.media.length > 0 && (
+          <div className="mt-4 flex gap-[8px] overflow-x-auto pb-2">
+            {entry.media.slice(0, 3).map((media) => (
+              <Media
+                key={media.url}
+                thumbnail
+                src={media.url}
+                type={media.type}
+                previewImageUrl={media.preview_image_url}
+                className="size-28 shrink-0 rounded object-cover"
+                mediaContainerClassName="w-auto h-auto rounded"
+                loading="lazy"
+                proxy={{
+                  width: 160,
+                  height: 160,
+                }}
+                height={media.height}
+                width={media.width}
+                blurhash={media.blurhash}
+              />
+            ))}
+          </div>
+        )}
       </div>
     </div>
   )

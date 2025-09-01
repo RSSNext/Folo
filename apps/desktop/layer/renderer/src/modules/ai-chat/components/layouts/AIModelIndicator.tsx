@@ -24,6 +24,15 @@ const providerIcons: Record<ProviderType, string> = {
   meta: "i-simple-icons-meta",
 }
 
+const AIModelNameMapping = {
+  "gpt-4o": "GPT-4o",
+  "gpt-4o-mini": "GPT-4o mini",
+  "gpt-4": "GPT-4",
+  "gpt-5": "GPT-5",
+  "gpt-5-mini": "GPT-5 mini",
+  "gpt-5-nano": "GPT-5 nano",
+}
+
 const parseModelString = (modelString: string) => {
   if (!modelString || !modelString.includes("/")) {
     return { provider: "openai" as ProviderType, modelName: modelString || "Unknown" }
@@ -65,7 +74,7 @@ export const AIModelIndicator = memo(({ className, onModelChange }: AIModelIndic
       )}
     >
       <i className={cn("size-3", iconClass)} />
-      <span className="max-w-20 truncate">{modelName}</span>
+      <span className="max-w-20 truncate">{AIModelNameMapping[modelName] || modelName}</span>
       {hasMultipleModels && <i className="i-mingcute-down-line size-3 opacity-60" />}
     </div>
   )
@@ -96,7 +105,7 @@ export const AIModelIndicator = memo(({ className, onModelChange }: AIModelIndic
               checked={isSelected}
             >
               <i className={cn("size-3", itemIconClass)} />
-              <span className="truncate">{itemModelName}</span>
+              <span className="truncate">{AIModelNameMapping[itemModelName] || itemModelName}</span>
             </DropdownMenuItem>
           )
         })}

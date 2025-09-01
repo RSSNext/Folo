@@ -23,7 +23,7 @@ export const AIDataBlockPart: React.FC<AIDataBlockPartProps> = React.memo(({ blo
     <div className="min-w-0 max-w-full text-left">
       <div
         className={cn(
-          "inline-flex flex-wrap items-center gap-1.5 rounded-lg px-2 py-1",
+          "inline-flex flex-wrap items-center gap-1.5 rounded-lg py-1 pl-2 pr-1",
           "bg-fill-secondary border-border/50 border",
         )}
       >

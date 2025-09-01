@@ -1,13 +1,12 @@
 import { Spring } from "@follow/components/constants/spring.js"
 import { stopPropagation, thenable } from "@follow/utils"
-import type { UIDataTypes, UIMessage } from "ai"
 import type { LexicalEditor, SerializedEditorState } from "lexical"
 import { AnimatePresence, m } from "motion/react"
 import * as React from "react"
 
 import { useEditingMessageId, useSetEditingMessageId } from "~/modules/ai-chat/atoms/session"
 import { useChatActions } from "~/modules/ai-chat/store/hooks"
-import type { AIChatContextBlock, BizUIMetadata, BizUITools } from "~/modules/ai-chat/store/types"
+import type { AIChatContextBlock, BizUIMessage } from "~/modules/ai-chat/store/types"
 
 import type { RichTextPart } from "../../types/ChatSession"
 import { convertLexicalToMarkdown } from "../../utils/lexical-markdown"
@@ -16,7 +15,7 @@ import { EditableMessage } from "./EditableMessage"
 import { UserMessageParts } from "./UserMessageParts"
 
 interface UserChatMessageProps {
-  message: UIMessage<BizUIMetadata, UIDataTypes, BizUITools>
+  message: BizUIMessage
 }
 
 export const UserChatMessage: React.FC<UserChatMessageProps> = React.memo(({ message }) => {

@@ -1,11 +1,12 @@
 import type { FC, PropsWithChildren } from "react"
-import { useMemo, useRef } from "react"
+import { useEffect, useMemo, useRef } from "react"
 
 import { Focusable } from "~/components/common/Focusable"
 import { HotkeyScope } from "~/constants"
 
 import type { AIPanelRefs } from "../../store/AIChatContext"
 import { AIChatStoreContext, AIPanelRefsContext } from "../../store/AIChatContext"
+import { ChatSliceActions } from "../../store/chat-core/chat-actions"
 import { useChatActions, useCurrentChatId } from "../../store/hooks"
 import { createAIChatStore } from "../../store/store"
 
@@ -49,6 +50,11 @@ export const AIChatRoot: FC<AIChatRootProps> = ({
   chatId: externalChatId,
 }) => {
   const useAiContextStore = useMemo(createAIChatStore, [])
+  const chatActions = useAiContextStore((state) => state.chatActions)
+
+  useEffect(() => {
+    ChatSliceActions.setActiveInstance(chatActions)
+  }, [chatActions])
 
   const Element = (
     <AIChatStoreContext value={useAiContextStore}>
@@ -65,3 +71,4 @@ export const AIChatRoot: FC<AIChatRootProps> = ({
   }
   return Element
 }
+AIChatRoot.displayName = "AIChatRoot"

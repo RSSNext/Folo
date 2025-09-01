@@ -35,9 +35,9 @@ export const ItemActions = ({ actions, enabled, onToggle }: ItemActionsProps) =>
     <div className="ml-4 flex items-center gap-3">
       {/* Action buttons group */}
       <div className="flex items-center gap-1 opacity-60 transition-opacity group-hover:opacity-100">
-        {actions.map((action, index) => (
+        {actions.map((action) => (
           <Button
-            key={index}
+            key={action.title}
             variant="ghost"
             size="sm"
             onClick={action.onClick}
