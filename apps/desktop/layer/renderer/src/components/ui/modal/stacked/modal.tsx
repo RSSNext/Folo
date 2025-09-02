@@ -90,15 +90,13 @@ export const ModalInternal = memo(function Modal({
   const setStack = useSetAtom(modalStackAtom)
 
   // Animation controls
-  const { animateController, playNoticeAnimation, playExitAnimation, isClosing } = useModalAnimate(
-    !!isTop,
-    item.id,
-  )
+  const { animateController, playNoticeAnimation, playExitAnimation, isClosing, readyToClose } =
+    useModalAnimate(!!isTop, item.id)
 
   // Simple dismiss logic
   const close = useEventCallback(async (forceClose = false) => {
     if (!canClose && !forceClose) return
-
+    readyToClose()
     try {
       if (CustomModalComponent) {
         // Custom modals handle their own animation

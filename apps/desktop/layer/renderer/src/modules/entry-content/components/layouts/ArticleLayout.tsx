@@ -7,6 +7,7 @@ import { cn } from "@follow/utils"
 import { ErrorBoundary } from "@sentry/react"
 import { useCallback, useMemo, useRef, useState } from "react"
 
+import { AIChatPanelStyle, useAIChatPanelStyle } from "~/atoms/settings/ai"
 import { useUISettingKey } from "~/atoms/settings/ui"
 import { ShadowDOM } from "~/components/common/ShadowDOM"
 import type { TocRef } from "~/components/ui/markdown/components/Toc"
@@ -19,6 +20,7 @@ import { BlockSliceAction } from "~/modules/ai-chat/store/slices/block.slice"
 import { EntryContentHTMLRenderer } from "~/modules/renderer/html"
 import { WrappedElementProvider } from "~/providers/wrapped-element-provider"
 
+import { AISummary } from "../../AISummary"
 import { useEntryContent, useEntryMediaInfo } from "../../hooks"
 import { ContainerToc } from "../entry-content/accessories/ContainerToc"
 import { EntryRenderError } from "../entry-content/EntryRenderError"
@@ -73,6 +75,9 @@ export const ArticleLayout: React.FC<ArticleLayoutProps> = ({
     removeBlock(BlockSliceAction.SPECIAL_TYPES.selectedText)
   }, [removeBlock])
 
+  const aiChatPanelStyle = useAIChatPanelStyle()
+
+  const shouldShowAISummary = aiChatPanelStyle === AIChatPanelStyle.Floating
   if (!entry) return null
 
   return (
@@ -89,6 +94,8 @@ export const ArticleLayout: React.FC<ArticleLayoutProps> = ({
       <WrappedElementProvider boundingDetection>
         <div className="mx-auto mb-32 mt-8 max-w-full cursor-auto text-[0.94rem]">
           <EntryTitleMetaHandler entryId={entryId} />
+
+          {shouldShowAISummary && <AISummary entryId={entryId} />}
           <ErrorBoundary fallback={EntryRenderError}>
             <ReadabilityNotice entryId={entryId} />
             {showTranscript ? (

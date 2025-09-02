@@ -174,7 +174,6 @@ export const AIEntryLayout = memo(function AIEntryLayout() {
   return (
     <AIChatRoot wrapFocusable={false}>
       <AIEntryLayoutImpl />
-      {/* AI Spline Button - available globally when floating AI chat is closed */}
       <AISplineButton />
     </AIChatRoot>
   )
