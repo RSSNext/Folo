@@ -229,6 +229,13 @@ export const AllItem: EntryListItemFC = ({ entryId, entryPreview, translation })
       title
     )
 
+  const mediaCover = entryMedia?.[0] ?? entry.firstMedia ?? null
+
+  const mediaCoverHeight = mediaCover?.height
+  const mediaCoverWidth = mediaCover?.width
+
+  const aspectRatio = mediaCoverHeight && mediaCoverWidth ? mediaCoverWidth / mediaCoverHeight : 1
+
   return (
     <div className="group">
       {/* Hero */}
@@ -240,7 +247,7 @@ export const AllItem: EntryListItemFC = ({ entryId, entryPreview, translation })
         )}
       >
         {/* Icon */}
-        {!entryMedia?.[0] && (
+        {!mediaCover && (
           <div
             className={cn(
               "absolute left-4 top-4 z-[1] flex items-center justify-center text-2xl",
@@ -257,22 +264,23 @@ export const AllItem: EntryListItemFC = ({ entryId, entryPreview, translation })
           view === FeedViewType.SocialMedia ||
           view === FeedViewType.Audios) && (
           <>
-            {entryMedia?.[0] ? (
+            {mediaCover ? (
               <Media
-                src={entryMedia[0].url}
-                type={entryMedia[0].type}
-                previewImageUrl={entryMedia[0].preview_image_url}
+                src={mediaCover.url}
+                type={mediaCover.type}
+                previewImageUrl={mediaCover.preview_image_url}
                 className="min-h-[10em] w-full overflow-hidden"
-                mediaContainerClassName="w-auto min-h-[10em] h-auto object-cover"
-                videoClassName="min-h-[10em]"
+                mediaContainerClassName="size-full min-h-[10em] object-cover"
+                videoClassName="size-full min-h-[10em] object-cover"
                 loading="lazy"
                 proxy={{
-                  width: entryMedia[0].width ?? 160,
-                  height: entryMedia[0].height ?? 160,
+                  width: mediaCoverWidth ?? 200,
+                  height: mediaCoverHeight ?? 200,
                 }}
-                height={entryMedia[0].height}
-                width={entryMedia[0].width}
-                blurhash={entryMedia[0].blurhash}
+                blurhash={mediaCover.blurhash || undefined}
+                style={{
+                  aspectRatio,
+                }}
               />
             ) : (
               <div className="flex min-h-[10em] flex-col items-center justify-center overflow-hidden px-4 py-20 text-[1.5rem] font-normal leading-[1.2]">
@@ -317,20 +325,23 @@ export const AllItem: EntryListItemFC = ({ entryId, entryPreview, translation })
                     isActive && "rounded-b-none",
                   )}
                 />
-              ) : entry.firstMedia ? (
+              ) : mediaCover ? (
                 <Media
-                  key={entry.firstMedia.url}
-                  src={entry.firstMedia.url}
-                  type={entry.firstMedia.type}
-                  previewImageUrl={entry.firstMedia.preview_image_url}
-                  className={cn(
-                    "aspect-video w-full shrink-0 rounded-md object-cover",
-                    isActive && "rounded-b-none",
-                  )}
+                  key={mediaCover.url}
+                  src={mediaCover.url}
+                  type={mediaCover.type}
+                  previewImageUrl={mediaCover.preview_image_url}
+                  className="min-h-[10em] w-full overflow-hidden"
+                  mediaContainerClassName="size-full min-h-[10em] object-cover"
+                  videoClassName="size-full min-h-[10em] object-cover"
                   loading="lazy"
                   proxy={{
-                    width: 640,
-                    height: 360,
+                    width: mediaCover.width ?? 640,
+                    height: mediaCover.height ?? 360,
+                  }}
+                  blurhash={mediaCover.blurhash || undefined}
+                  style={{
+                    aspectRatio,
                   }}
                   showFallback={true}
                 />
