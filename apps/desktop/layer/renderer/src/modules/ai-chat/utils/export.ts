@@ -1,12 +1,7 @@
-import type { UIDataTypes, UIMessage } from "ai"
-
-import type { BizUIMetadata, BizUITools } from "../store/types"
+import type { BizUIMessage } from "../store/types"
 import type { RichTextPart } from "../types/ChatSession"
 
-export const exportChatToMarkdown = (
-  messages: UIMessage<BizUIMetadata, UIDataTypes, BizUITools>[],
-  title?: string,
-) => {
+export const exportChatToMarkdown = (messages: BizUIMessage[], title?: string) => {
   const date = new Date().toLocaleString()
   let markdown = `# ${title || "AI Chat Export"}\n\n`
   markdown += `*Exported on ${date}*\n\n---\n\n`

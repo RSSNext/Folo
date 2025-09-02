@@ -1,7 +1,7 @@
 import { Spring } from "@follow/components/constants/spring.js"
 import { nextFrame } from "@follow/utils/dom"
 import { useAnimationControls } from "motion/react"
-import { useCallback, useEffect, useLayoutEffect } from "react"
+import { useCallback, useEffect, useLayoutEffect, useState } from "react"
 import { useEventCallback } from "usehooks-ts"
 
 import { ModalEventBus } from "../bus"
@@ -11,19 +11,17 @@ export interface ModalAnimateControls {
   animateController: ReturnType<typeof useAnimationControls>
   playNoticeAnimation: () => void
   playExitAnimation: () => Promise<void>
+  isClosing: boolean
+  readyToClose: () => void
 }
 
 /**
  * @internal
  * Hook for managing modal animations including enter, notice, and exit animations
  */
-export const useModalAnimate = (
-  isTop: boolean,
-  modalId: string,
-  setIsClosing: (isClosing: boolean) => void,
-): ModalAnimateControls => {
+export const useModalAnimate = (isTop: boolean, modalId: string): ModalAnimateControls => {
   const animateController = useAnimationControls()
-
+  const [isClosing, setIsClosing] = useState(false)
   // Initial enter animation
   useEffect(() => {
     ModalEventBus.subscribe("RE_PRESENT", (data) => {
@@ -83,5 +81,11 @@ export const useModalAnimate = (
     animateController,
     playNoticeAnimation,
     playExitAnimation,
+    isClosing,
+    readyToClose: useEventCallback(() => {
+      if (isClosing) return // Prevent multiple calls
+
+      setIsClosing(true)
+    }),
   }
 }

@@ -4,6 +4,7 @@ import { useCallback, useEffect } from "react"
 import { useTranslation } from "react-i18next"
 
 import { m } from "~/components/common/Motion"
+import { useFeature } from "~/hooks/biz/useFeature"
 
 import { setScrollToExitTutorialSeen, useScrollToExitTutorialSeen } from "../atoms/tutorial"
 
@@ -78,22 +79,15 @@ const ScrollGestureIcon = () => (
   </m.svg>
 )
 
-interface ScrollToExitTutorialProps {
-  /** Whether to show the tutorial */
-  show: boolean
-  /** Optional callback when tutorial is dismissed */
-  onDismiss?: () => void
-}
-
-export const ScrollToExitTutorial = ({ show, onDismiss }: ScrollToExitTutorialProps) => {
+export const ScrollToExitTutorial = () => {
   const { t } = useTranslation()
   const hasSeenTutorial = useScrollToExitTutorialSeen()
-  const isVisible = show && !hasSeenTutorial
+  const aiLayout = useFeature("ai")
+  const isVisible = aiLayout && !hasSeenTutorial
 
   const handleDismiss = useCallback(() => {
     setScrollToExitTutorialSeen(true)
-    onDismiss?.()
-  }, [onDismiss])
+  }, [])
 
   // Handle Escape key to dismiss
   useEffect(() => {

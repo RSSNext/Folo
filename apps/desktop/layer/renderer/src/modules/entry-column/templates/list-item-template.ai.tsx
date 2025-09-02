@@ -285,7 +285,8 @@ function AudioCover({
   const estimatedMins = seconds && Math.floor(seconds / 60)
 
   const handleClickPlay = (e: React.MouseEvent<HTMLDivElement>) => {
-    if (isMobile) e.stopPropagation()
+    e.stopPropagation()
+    e.preventDefault()
     if (!playStatus) {
       // switch this to play
       AudioPlayer.mount({
@@ -306,8 +307,8 @@ function AudioCover({
 
       <div
         className={cn(
-          "center absolute inset-0 w-full transition-all duration-200 ease-in-out group-hover:-translate-y-2 group-hover:opacity-100",
-          playStatus || isMobile ? "-translate-y-2 opacity-100" : "opacity-0",
+          "center absolute inset-0 w-full transition-all duration-200 ease-in-out group-hover:opacity-100",
+          playStatus || isMobile ? "opacity-100" : "opacity-0",
         )}
         onClick={handleClickPlay}
       >

@@ -173,13 +173,13 @@ const AIDisplaySubscriptionsPartBase = ({
 }) => {
   const {
     subscriptions,
-    displayType = "list",
     showAnalytics = true,
     showCategories = true,
     title,
     groupBy = "none",
     filterBy = "all",
   } = output
+  const displayType = "displayType" in output ? (output.displayType as string) : "list"
 
   // Calculate statistics
   const totalSubscriptions = subscriptions.length

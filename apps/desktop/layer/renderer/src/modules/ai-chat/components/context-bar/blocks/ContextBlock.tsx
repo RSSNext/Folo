@@ -67,12 +67,13 @@ export const ContextBlock: FC<{ block: AIChatContextBlock }> = memo(({ block }) 
         const fileCategory = getFileCategoryFromMimeType(type)
 
         if (fileCategory === "image" && (dataUrl || previewUrl)) {
+          const validPreviewUrl = (dataUrl || previewUrl)!
           return (
             <div className="flex items-center gap-1.5">
               <div className="relative">
                 <ImageThumbnail
-                  previewUrl={previewUrl || dataUrl}
-                  originalUrl={dataUrl}
+                  previewUrl={validPreviewUrl}
+                  originalUrl={dataUrl || validPreviewUrl}
                   alt={name}
                   filename={name}
                   className={"m-0.5 size-5 rounded-md"}

@@ -97,13 +97,11 @@ export const MCPServicesSection = () => {
           headers: variables.headers,
           isConnected: false,
           enabled: true,
-          status: "pending" as const,
           toolCount: 0,
           resourceCount: 0,
           promptCount: 0,
           createdAt: new Date().toISOString(),
           lastUsed: null,
-          isOptimistic: true,
         }
 
         return {

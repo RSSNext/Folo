@@ -3,7 +3,7 @@ import type { AIChatMessage, AIChatSession } from "@follow-app/client-sdk"
 import { followApi } from "../../lib/api-client"
 import { queryClient } from "../../lib/query-client"
 import { AIPersistService } from "../ai-chat/services"
-import type { BizUIMessage } from "../ai-chat/store/types"
+import type { BizUIMessage, BizUIMetadata } from "../ai-chat/store/types"
 import { aiChatSessionKeys } from "./query"
 
 // Hard cap on pagination to prevent excessive API calls while keeping initial sync fast.
@@ -78,16 +78,8 @@ class AIChatSessionServiceStatic {
    * Normalize a remote message object into BizUIMessage shape expected by the local chat system.
    */
   private normalizeRemoteMessage = (msg: AIChatMessage): BizUIMessage => {
-    const startTime = msg.createdAt
-    const finishTime = msg.finishedAt ?? undefined
-    const duration = finishTime
-      ? new Date(finishTime).getTime() - new Date(startTime).getTime()
-      : undefined
-
-    const metadata: BizUIMessage["metadata"] = {
-      finishTime,
-      duration,
-    }
+    const metadata =
+      msg.metadata && typeof msg.metadata === "object" ? (msg.metadata as BizUIMetadata) : undefined
 
     const normalizedParts = msg.messageParts.filter(
       (i) => i.type === "text",
