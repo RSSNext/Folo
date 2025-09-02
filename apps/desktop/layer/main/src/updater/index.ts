@@ -4,7 +4,7 @@ import { autoUpdater as defaultAutoUpdater } from "electron-updater"
 
 import { GITHUB_OWNER, GITHUB_REPO } from "~/constants/app"
 import { WindowManager } from "~/manager/window"
-import { canUpdateRender, CanUpdateRenderState, hotUpdateRender } from "~/updater/hot-updater"
+import { CanUpdateRenderState, renderUpdater } from "~/updater/render"
 
 import { channel, isWindows } from "../env"
 import { logger } from "../logger"
@@ -33,21 +33,15 @@ let downloading = false
 let checkingUpdate = false
 
 const checkRenderUpdateAvailable = async () => {
-  const [state, manifest] = await canUpdateRender()
-  if (state === CanUpdateRenderState.NEEDED && manifest) {
-    return true
-  }
-  return false
+  const [state] = await renderUpdater.check()
+  return state === CanUpdateRenderState.NEEDED
 }
 
 const upgradeRenderIfNeeded = async () => {
-  const [state, manifest] = await canUpdateRender()
-  if (state === CanUpdateRenderState.NO_NEEDED) {
-    return { upgraded: false }
-  }
-  if (state === CanUpdateRenderState.NEEDED && manifest) {
-    await hotUpdateRender(manifest)
-    return { upgraded: true }
+  const [state] = await renderUpdater.check()
+  if (state === CanUpdateRenderState.NEEDED) {
+    const upgraded = await renderUpdater.apply()
+    return { upgraded }
   }
   return { upgraded: false }
 }

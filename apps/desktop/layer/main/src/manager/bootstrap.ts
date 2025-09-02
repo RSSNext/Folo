@@ -14,7 +14,7 @@ import { handleUrlRouting } from "../lib/router"
 import { store } from "../lib/store"
 import { updateNotificationsToken } from "../lib/user"
 import { logger } from "../logger"
-import { cleanupOldRender } from "../updater/hot-updater"
+import { renderUpdater } from "../updater/render"
 import { AppManager } from "./app"
 
 const apiURL = process.env["VITE_API_URL"] || import.meta.env.VITE_API_URL
@@ -133,7 +133,7 @@ export class BootstrapManager {
         y: bounds.y,
       })
       await session.defaultSession.cookies.flushStore()
-      await cleanupOldRender()
+      await renderUpdater.cleanup()
     })
 
     app.on("window-all-closed", () => {
