@@ -5,7 +5,6 @@ import { useTranslation } from "react-i18next"
 
 import { m } from "~/components/common/Motion"
 import { useNavigateEntry } from "~/hooks/biz/useNavigateEntry"
-import { ScrollToExitTutorial } from "~/modules/entry-column/components/ScrollToExitTutorial"
 import { useEntryContentScrollToTop } from "~/modules/entry-content/atoms"
 
 import { EntryHeaderRoot } from "./internal/context"
@@ -17,7 +16,7 @@ import type { EntryHeaderProps } from "./types"
 function EntryHeaderImpl({ entryId, className, compact }: EntryHeaderProps) {
   const { t } = useTranslation()
   const navigate = useNavigateEntry()
-  const isAtTop = !!useEntryContentScrollToTop()
+  const isAtTop = useEntryContentScrollToTop()
 
   return (
     <>
@@ -63,9 +62,6 @@ function EntryHeaderImpl({ entryId, className, compact }: EntryHeaderProps) {
             <EntryHeaderActionsContainer />
           </div>
         </div>
-
-        {/* First-time user tutorial for scroll-to-exit */}
-        <ScrollToExitTutorial show={!!entryId && isAtTop} />
       </EntryHeaderRoot>
     </>
   )

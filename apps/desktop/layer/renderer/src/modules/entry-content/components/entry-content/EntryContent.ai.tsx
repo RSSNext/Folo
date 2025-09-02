@@ -124,6 +124,7 @@ const EntryContentImpl: Component<EntryContentProps> = ({
       >
         <RootPortal to={panelPortalElement}>
           <EntryScrollingAndNavigationHandler
+            entryId={entryId}
             scrollAnimationRef={scrollAnimationRef}
             scrollerRef={scrollerRef}
           />
