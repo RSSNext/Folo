@@ -1,13 +1,12 @@
 import { createDefaultLexicalEditor } from "@follow/components/ui/lexical-rich-editor/editor.js"
 import { stopPropagation, thenable } from "@follow/utils"
-import type { UIDataTypes, UIMessage } from "ai"
 import type { LexicalEditor } from "lexical"
 import { m } from "motion/react"
 import * as React from "react"
 import { toast } from "sonner"
 
 import { copyToClipboard } from "~/lib/clipboard"
-import type { BizUIMessage, BizUIMetadata, BizUITools } from "~/modules/ai-chat/store/types"
+import type { BizUIMessage } from "~/modules/ai-chat/store/types"
 
 import { MentionPlugin } from "../../editor"
 import type { RichTextPart } from "../../types/ChatSession"
@@ -24,10 +23,11 @@ export interface ChatMessage {
 
 interface AIChatMessageProps {
   message: BizUIMessage
+  isLastMessage: boolean
 }
 
 // Utility function for converting message to markdown
-const useMessageMarkdownFormat = (message: UIMessage<BizUIMetadata, UIDataTypes, BizUITools>) => {
+const useMessageMarkdownFormat = (message: BizUIMessage) => {
   return React.useCallback(() => {
     let content = ""
     for (const part of message.parts) {
@@ -59,61 +59,64 @@ const useMessageMarkdownFormat = (message: UIMessage<BizUIMetadata, UIDataTypes,
 }
 
 // AI message component
-export const AIChatMessage: React.FC<AIChatMessageProps> = React.memo(({ message }) => {
-  if (message.parts.length === 0) {
-    throw thenable
-  }
-
-  const getMessageMarkdownFormat = useMessageMarkdownFormat(message)
-
-  const handleCopy = React.useCallback(async () => {
-    const messageContent = getMessageMarkdownFormat()
-    try {
-      await copyToClipboard(messageContent)
-      toast.success("Message copied to clipboard")
-    } catch {
-      toast.error("Failed to copy message")
+export const AIChatMessage: React.FC<AIChatMessageProps> = React.memo(
+  ({ message, isLastMessage }) => {
+    if (message.parts.length === 0) {
+      throw thenable
     }
-  }, [getMessageMarkdownFormat])
 
-  return (
-    <div onContextMenu={stopPropagation} className="group flex justify-start">
-      <div className="text-text relative flex max-w-full flex-col gap-2">
-        {/* Normal message display */}
-        <div className="text-text">
-          <div className="flex select-text flex-col gap-2 text-sm">
-            <AIMessageParts message={message} />
+    const getMessageMarkdownFormat = useMessageMarkdownFormat(message)
+
+    const handleCopy = React.useCallback(async () => {
+      const messageContent = getMessageMarkdownFormat()
+      try {
+        await copyToClipboard(messageContent)
+        toast.success("Message copied to clipboard")
+      } catch {
+        toast.error("Failed to copy message")
+      }
+    }, [getMessageMarkdownFormat])
+
+    return (
+      <div onContextMenu={stopPropagation} className="group flex justify-start">
+        <div className="text-text relative flex max-w-full flex-col gap-2">
+          {/* Normal message display */}
+          <div className="text-text">
+            <div className="flex select-text flex-col gap-2 text-sm">
+              <AIMessageParts message={message} isLastMessage={isLastMessage} />
+            </div>
           </div>
-        </div>
 
-        {/* Action buttons */}
-        <div className="absolute -left-2 bottom-1 flex gap-1 opacity-0 transition-opacity duration-200 group-hover:opacity-100">
-          <button
-            type="button"
-            onClick={handleCopy}
-            className="text-text-secondary hover:bg-fill-tertiary flex items-center gap-1 rounded-md px-2 py-1 text-xs transition-colors"
-            title="Copy message"
-          >
-            <i className="i-mgc-copy-2-cute-re size-3" />
-            <span>Copy</span>
-          </button>
-          {message.metadata && (
-            <TokenUsagePill metadata={message.metadata}>
-              <button
-                type="button"
-                className="text-text-secondary hover:bg-fill-tertiary flex items-center gap-1 rounded-md px-2 py-1 text-xs transition-colors"
-              >
-                <i className="i-mgc-information-cute-re size-3" />
-              </button>
-            </TokenUsagePill>
-          )}
-        </div>
+          {/* Action buttons */}
+          <div className="absolute -left-2 bottom-1 right-0 flex gap-1 opacity-0 transition-opacity duration-200 group-hover:opacity-100">
+            <button
+              type="button"
+              onClick={handleCopy}
+              className="text-text-secondary hover:bg-fill-tertiary flex items-center gap-1 rounded-md px-2 py-1 text-xs transition-colors"
+              title="Copy message"
+            >
+              <i className="i-mgc-copy-2-cute-re size-3" />
+              <span>Copy</span>
+            </button>
 
-        <div className="h-6" />
+            {message.metadata && (
+              <TokenUsagePill metadata={message.metadata}>
+                <button
+                  type="button"
+                  className="text-text-secondary hover:bg-fill-tertiary absolute right-0 flex items-center gap-1 rounded-md px-2 py-1 text-xs transition-colors"
+                >
+                  <i className="i-mgc-information-cute-re size-3" />
+                </button>
+              </TokenUsagePill>
+            )}
+          </div>
+
+          <div className="h-6" />
+        </div>
       </div>
-    </div>
-  )
-})
+    )
+  },
+)
 
 export const AIChatWaitingIndicator: React.FC = () => {
   return (

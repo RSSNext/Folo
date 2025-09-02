@@ -44,7 +44,7 @@ export interface AIChatContextBlocks {
 }
 
 export type AIDisplayAnalyticsTool = ToolWithState<BizUITools["displayAnalytics"]>
-export type AIDisplayFeedsTool = ToolWithState<BizUITools["displayFeeds"]>
+export type AIDisplayFeedTool = ToolWithState<BizUITools["displayFeed"]>
 export type AIDisplayEntriesTool = ToolWithState<BizUITools["displayEntries"]>
 export type AIDisplaySubscriptionsTool = ToolWithState<BizUITools["displaySubscriptions"]>
 export type AIDisplayFlowTool = ToolWithState<BizUITools["displayFlowChart"]>

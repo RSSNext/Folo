@@ -10,15 +10,17 @@ import {
   DropdownMenu,
   DropdownMenuContent,
   DropdownMenuItem,
+  DropdownMenuSeparator,
   DropdownMenuTrigger,
 } from "~/components/ui/dropdown-menu/dropdown-menu"
-import { useDialog } from "~/components/ui/modal/stacked/hooks"
+import { useDialog, useModalStack } from "~/components/ui/modal/stacked/hooks"
 import { useChatActions, useCurrentChatId } from "~/modules/ai-chat/store/hooks"
 import { AIChatSessionService } from "~/modules/ai-chat-session"
 import {
   useAIChatSessionListQuery,
   useDeleteAIChatSessionMutation,
 } from "~/modules/ai-chat-session/query"
+import { AITaskModal, useCanCreateNewAITask } from "~/modules/ai-task"
 
 import { AIPersistService } from "../../services"
 
@@ -77,7 +79,7 @@ const SessionItem = ({ session, onClick, onDelete, isLoading }: SessionItemProps
 const EmptyState = () => {
   return (
     <div className="flex flex-col items-center py-8 text-center">
-      <i className="i-mgc-inbox-cute-re text-text-secondary mb-2 block size-8" />
+      <i className="i-mgc-calendar-time-add-cute-re text-text-secondary mb-2 block size-8" />
       <p className="text-text-secondary text-sm">All task reports read</p>
     </div>
   )
@@ -99,6 +101,20 @@ export const TaskReportDropdown = ({ triggerElement, asChild = true }: TaskRepor
   )
 
   const hasUnreadSessions = unreadSessions.length > 0
+
+  const { present } = useModalStack()
+  const canCreateNewTask = useCanCreateNewAITask()
+  const handleScheduleActionClick = () => {
+    if (!canCreateNewTask) {
+      toast.error("Please remove an existing task before creating a new one.")
+      return
+    }
+    present({
+      title: "New AI Task",
+      canClose: true,
+      content: () => <AITaskModal showSettingsTip />,
+    })
+  }
 
   const handleSessionSelect = useCallback(
     async (session: AIChatSession) => {
@@ -153,7 +169,7 @@ export const TaskReportDropdown = ({ triggerElement, asChild = true }: TaskRepor
 
   const defaultTrigger = (
     <ActionButton tooltip="Task Reports" className="relative">
-      <i className="i-mgc-inbox-cute-re text-text-secondary size-5" />
+      <i className="i-mgc-calendar-time-add-cute-re text-text-secondary size-5" />
       {hasUnreadSessions && (
         <span
           className="bg-accent absolute right-1 top-1 block size-2 rounded-full shadow-[0_0_0_2px_var(--color-bg-default)] dark:shadow-[0_0_0_2px_var(--color-bg-default)]"
@@ -194,6 +210,16 @@ export const TaskReportDropdown = ({ triggerElement, asChild = true }: TaskRepor
           ))
         ) : (
           <EmptyState />
+        )}
+
+        {canCreateNewTask && (
+          <>
+            <DropdownMenuSeparator />
+            <DropdownMenuItem onClick={handleScheduleActionClick}>
+              <i className="i-mgc-add-cute-re mr-2 size-4" />
+              New Task
+            </DropdownMenuItem>
+          </>
         )}
       </DropdownMenuContent>
     </DropdownMenu>

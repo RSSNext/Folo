@@ -148,7 +148,7 @@ const FallbackableImage = function FallbackableImage({
 }
 
 type FeedIconFeed =
-  | Pick<FeedModel, "ownerUserId" | "id" | "title" | "url" | "image" | "siteUrl" | "type">
+  | Pick<FeedModel, "title" | "image" | "siteUrl" | "type">
   | ListModel
   | FeedOrListRespModel
 

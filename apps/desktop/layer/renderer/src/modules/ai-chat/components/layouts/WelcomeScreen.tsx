@@ -1,4 +1,5 @@
 import { Folo } from "@follow/components/icons/folo.js"
+import { ScrollArea } from "@follow/components/ui/scroll-area/ScrollArea.js"
 import { clsx } from "@follow/utils"
 import type { EditorState, LexicalEditor } from "lexical"
 import { AnimatePresence, m } from "motion/react"
@@ -24,8 +25,13 @@ export const WelcomeScreen = ({ onSend, centerInputOnEmpty }: WelcomeScreenProps
   const enabledShortcuts = aiSettings.shortcuts?.filter((shortcut) => shortcut.enabled) || []
 
   return (
-    <div className="flex flex-1 flex-col items-center px-6 pb-32">
-      <div className="flex w-full max-w-2xl flex-1 flex-col justify-center space-y-8">
+    <ScrollArea
+      rootClassName="flex min-h-0 flex-1"
+      viewportClassName="px-6 pt-24 flex min-h-0 grow"
+      scrollbarClassName="mb-40 mt-12"
+      flex
+    >
+      <div className="flex w-full max-w-2xl flex-1 flex-col justify-center space-y-8 pb-52">
         {/* Header Section - Always Present */}
         <m.div
           initial={{ opacity: 0, y: -20 }}
@@ -73,6 +79,6 @@ export const WelcomeScreen = ({ onSend, centerInputOnEmpty }: WelcomeScreenProps
           </AnimatePresence>
         </div>
       </div>
-    </div>
+    </ScrollArea>
   )
 }

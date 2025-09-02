@@ -253,15 +253,18 @@ const Messages: FC = () => {
 
   return (
     <div className="relative flex min-w-0 flex-1 flex-col">
-      {messages.map((message) => (
-        <Suspense key={message.id}>
-          {message.role === "user" ? (
-            <UserChatMessage message={message} />
-          ) : (
-            <AIChatMessage message={message} />
-          )}
-        </Suspense>
-      ))}
+      {messages.map((message, index) => {
+        const isLastMessage = index === messages.length - 1
+        return (
+          <Suspense key={message.id}>
+            {message.role === "user" ? (
+              <UserChatMessage message={message} />
+            ) : (
+              <AIChatMessage message={message} isLastMessage={isLastMessage} />
+            )}
+          </Suspense>
+        )
+      })}
     </div>
   )
 }

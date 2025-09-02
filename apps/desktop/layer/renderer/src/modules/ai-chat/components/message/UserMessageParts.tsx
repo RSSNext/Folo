@@ -2,7 +2,7 @@ import * as React from "react"
 
 import type { BizUIMessage } from "~/modules/ai-chat/store/types"
 
-import { AIMarkdownMessage } from "./AIMarkdownMessage"
+import { AIMarkdownMessage } from "./AIMarkdownMessage.old"
 import { AIRichTextMessage } from "./AIRichTextMessage"
 
 interface UserMessagePartsProps {
