@@ -254,7 +254,8 @@ export const AllItem: EntryListItemFC = ({ entryId, entryPreview, translation })
         {/* Social Media */}
         {(view === FeedViewType.Articles ||
           view === FeedViewType.Notifications ||
-          view === FeedViewType.SocialMedia) && (
+          view === FeedViewType.SocialMedia ||
+          view === FeedViewType.Audios) && (
           <>
             {entryMedia?.[0] ? (
               <Media
@@ -345,33 +346,6 @@ export const AllItem: EntryListItemFC = ({ entryId, entryPreview, translation })
                 </div>
               )}
             </div>
-          </div>
-        )}
-
-        {/* Audios */}
-        {view === FeedViewType.Audios && (
-          <div className="relative flex gap-2 overflow-x-auto">
-            {entryMedia?.[0] ? (
-              <Media
-                src={entryMedia[0].url}
-                type={entryMedia[0].type}
-                previewImageUrl={entryMedia[0].preview_image_url}
-                className="min-h-[15em] w-full overflow-hidden"
-                mediaContainerClassName="w-auto min-h-[15em] h-auto object-cover"
-                loading="lazy"
-                proxy={{
-                  width: entryMedia[0].width ?? 160,
-                  height: entryMedia[0].height ?? 160,
-                }}
-                height={entryMedia[0].height}
-                width={entryMedia[0].width}
-              />
-            ) : (
-              <div className="center bg-material-medium text-text-secondary aspect-square w-full flex-col gap-1 rounded-md text-xs">
-                <i className="i-mgc-sad-cute-re size-6" />
-                {t("entry_content.no_content")}
-              </div>
-            )}
           </div>
         )}
       </div>
