@@ -7,8 +7,8 @@ import { ErrorBoundary } from "@sentry/react"
 import type { EditorState, LexicalEditor } from "lexical"
 import { AnimatePresence } from "motion/react"
 import { nanoid } from "nanoid"
-import type { FC } from "react"
-import { Suspense, useEffect, useState } from "react"
+import type { FC, Ref } from "react"
+import { Suspense, useEffect, useRef, useState } from "react"
 import { useEventCallback } from "usehooks-ts"
 
 import { useAISettingKey } from "~/atoms/settings/ai"
@@ -66,9 +66,14 @@ const ChatInterfaceContent = ({ centerInputOnEmpty }: ChatInterfaceProps) => {
 
   const [scrollAreaRef, setScrollAreaRef] = useState<HTMLDivElement | null>(null)
   const [isAtBottom, setIsAtBottom] = useState(true)
+  const [messageContainerMinHeight, setMessageContainerMinHeight] = useState<number | undefined>()
+  const previousMinHeightRef = useRef<number>(0)
+  const messagesContentRef = useRef<HTMLDivElement | null>(null)
 
   useEffect(() => {
     setIsAtBottom(true)
+    setMessageContainerMinHeight(undefined)
+    previousMinHeightRef.current = 0
   }, [currentChatId])
 
   const { isLoading: isLoadingHistory } = useLoadMessages(currentChatId || "", {
@@ -116,6 +121,33 @@ const ChatInterfaceContent = ({ centerInputOnEmpty }: ChatInterfaceProps) => {
   }, [scrollAreaRef])
 
   const blockActions = useBlockActions()
+
+  const scrollHeightBeforeSendingRef = useRef<number>(0)
+  const scrollContainerParentRef = useRef<HTMLDivElement | null>(null)
+  const handleScrollPositioning = useEventCallback(() => {
+    const $scrollContainerParent = scrollContainerParentRef.current
+    if (!scrollAreaRef || !$scrollContainerParent) return
+
+    const parentClientHeight = $scrollContainerParent.clientHeight
+    // Use actual content height captured before send (messages container height), not inflated by minHeight
+    const currentScrollHeight = scrollHeightBeforeSendingRef.current
+
+    // Calculate new minimum height based on actual content height
+    // Use previousMinHeightRef which tracks the real content height, not reserved space
+    const baseHeight = Math.max(previousMinHeightRef.current, currentScrollHeight)
+    const newMinHeight = baseHeight + parentClientHeight - 250
+
+    setMessageContainerMinHeight(newMinHeight)
+
+    // Scroll to the end immediately to position user message at top
+    nextFrame(() => {
+      scrollAreaRef.scrollTo({
+        top: scrollAreaRef.scrollHeight,
+        behavior: "instant",
+      })
+    })
+  })
+
   const handleSendMessage = useEventCallback(
     (message: string | EditorState, editor: LexicalEditor | null) => {
       resetScrollState()
@@ -161,12 +193,19 @@ const ChatInterfaceContent = ({ centerInputOnEmpty }: ChatInterfaceProps) => {
         })
       }
 
+      // Capture actual content height (messages container), not including reserved minHeight
+      scrollHeightBeforeSendingRef.current = messagesContentRef.current?.scrollHeight ?? 0
       chatActions.sendMessage({
         parts,
         role: "user",
         id: nanoid(),
       })
       tracker.aiChatMessageSent()
+
+      nextFrame(() => {
+        // Calculate and adjust scroll positioning immediately
+        handleScrollPositioning()
+      })
     },
   )
 
@@ -174,13 +213,21 @@ const ChatInterfaceContent = ({ centerInputOnEmpty }: ChatInterfaceProps) => {
     if (status === "submitted") {
       resetScrollState()
     }
-  }, [status, resetScrollState])
+
+    // When AI response is complete, update the reference height but keep the container height unchanged
+    // This avoids CLS while ensuring next calculation is based on actual content
+    if (status === "ready" && scrollAreaRef && messagesContentRef.current) {
+      // Update the reference to actual content height for next calculation (use messages container)
+      previousMinHeightRef.current = messagesContentRef.current.scrollHeight
+      // Keep the current minHeight unchanged to avoid CLS
+    }
+  }, [status, resetScrollState, messageContainerMinHeight, scrollAreaRef])
 
   const shouldShowScrollToBottom = hasMessages && !isAtBottom && !isLoadingHistory
 
   return (
     <GlobalFileDropZone className="flex size-full flex-col">
-      <div className="flex min-h-0 flex-1 flex-col">
+      <div className="flex min-h-0 flex-1 flex-col" ref={scrollContainerParentRef}>
         <AnimatePresence>
           {!hasMessages && !isLoadingHistory ? (
             <WelcomeScreen onSend={handleSendMessage} centerInputOnEmpty={centerInputOnEmpty} />
@@ -197,8 +244,15 @@ const ChatInterfaceContent = ({ centerInputOnEmpty }: ChatInterfaceProps) => {
                   <i className="i-mgc-loading-3-cute-re text-text size-8 animate-spin" />
                 </div>
               ) : (
-                <div className="mx-auto w-full max-w-4xl px-6 py-8">
-                  <Messages />
+                <div
+                  className="mx-auto w-full max-w-4xl px-6 py-8"
+                  style={{
+                    minHeight: messageContainerMinHeight
+                      ? `${messageContainerMinHeight}px`
+                      : undefined,
+                  }}
+                >
+                  <Messages contentRef={messagesContentRef} />
 
                   {(status === "submitted" || status === "streaming") && <AIChatWaitingIndicator />}
                 </div>
@@ -248,11 +302,11 @@ export const ChatInterface = (props: ChatInterfaceProps) => (
   </ErrorBoundary>
 )
 
-const Messages: FC = () => {
+const Messages: FC<{ contentRef?: Ref<HTMLDivElement> }> = ({ contentRef }) => {
   const messages = useMessages()
 
   return (
-    <div className="relative flex min-w-0 flex-1 flex-col">
+    <div ref={contentRef} className="relative flex min-w-0 flex-1 flex-col">
       {messages.map((message, index) => {
         const isLastMessage = index === messages.length - 1
         return (
