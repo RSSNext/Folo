@@ -13,6 +13,7 @@ import { useCallback, useEffect, useMemo, useRef, useState } from "react"
 
 import { useGeneralSettingKey } from "~/atoms/settings/general"
 
+import { EntryColumnShortcutHandler } from "../EntryColumnShortcutHandler"
 import { batchMarkRead } from "../hooks/useEntryMarkReadHandler"
 import { EntryItem } from "../item"
 
@@ -21,6 +22,7 @@ interface AllMasonryProps {
   hasNextPage: boolean
   endReached: () => void
   Footer?: FC | ReactNode
+  refetch: () => void
 }
 
 const GUTTER = 16
@@ -31,7 +33,13 @@ interface MasonryItem {
   entryId: string
 }
 
-export const AllMasonry: FC<AllMasonryProps> = ({ data, hasNextPage, endReached, Footer }) => {
+export const AllMasonry: FC<AllMasonryProps> = ({
+  data,
+  hasNextPage,
+  endReached,
+  Footer,
+  refetch,
+}) => {
   const scrollElement = useScrollViewElement()
   const [containerRef, setContainerRef] = useState<HTMLDivElement | null>(null)
   const [width, setWidth] = useState<number>(0)
@@ -96,9 +104,12 @@ export const AllMasonry: FC<AllMasonryProps> = ({ data, hasNextPage, endReached,
     },
   )
 
+  const currentRange = useRef<{ start: number; end: number } | undefined>(undefined)
   const handleRender = useCallback(
-    (startIndex: number, stopIndex: number, items: MasonryItem[]) =>
-      maybeLoadMore(startIndex, stopIndex, items as any[]),
+    (startIndex: number, stopIndex: number, items: MasonryItem[]) => {
+      currentRange.current = { start: startIndex, end: stopIndex }
+      return maybeLoadMore(startIndex, stopIndex, items as any[])
+    },
     [maybeLoadMore],
   )
 
@@ -106,7 +117,6 @@ export const AllMasonry: FC<AllMasonryProps> = ({ data, hasNextPage, endReached,
   const renderMarkRead = useGeneralSettingKey("renderMarkUnread")
   const scrollMarkRead = useGeneralSettingKey("scrollMarkUnread")
   const dataRef = useRefValue(data)
-  const currentRange = useRef<{ start: number; end: number } | undefined>(undefined)
 
   useEffect(() => {
     if (!renderMarkRead && !scrollMarkRead) return
@@ -159,6 +169,43 @@ export const AllMasonry: FC<AllMasonryProps> = ({ data, hasNextPage, endReached,
     return () => observer.disconnect()
   }, [scrollElement, renderMarkRead, scrollMarkRead, dataRef])
 
+  const handleScrollTo = useCallback(
+    (index: number) => {
+      if (!scrollElement) return
+
+      const findTarget = (): HTMLElement | null => {
+        const byIndex = containerRef?.querySelector<HTMLElement>(`[data-index="${index}"]`)
+        if (byIndex) return byIndex
+        const id = dataRef.current[index]
+        if (!id) return null
+        return containerRef?.querySelector<HTMLElement>(`[data-entry-id="${id}"]`) ?? null
+      }
+
+      const scrollToEl = (el: HTMLElement) => {
+        const scRect = scrollElement.getBoundingClientRect()
+        const elRect = el.getBoundingClientRect()
+        const centerOffset = (scrollElement.clientHeight - elRect.height) / 2
+        const targetTop = elRect.top - scRect.top + scrollElement.scrollTop - centerOffset
+        const nextTop = Math.max(0, Math.round(targetTop))
+        if (Math.abs(nextTop - scrollElement.scrollTop) > 2) {
+          scrollElement.scrollTo({ top: nextTop, behavior: "auto" })
+        }
+      }
+
+      const el = findTarget()
+      if (el) {
+        scrollToEl(el)
+      } else {
+        // Try once more on the next frame in case virtualization just mounted it
+        requestAnimationFrame(() => {
+          const el2 = findTarget()
+          if (el2) scrollToEl(el2)
+        })
+      }
+    },
+    [containerRef, dataRef, scrollElement],
+  )
+
   if (!width) {
     return (
       <div ref={setContainerRef} className="mx-4 pt-4">
@@ -189,6 +236,12 @@ export const AllMasonry: FC<AllMasonryProps> = ({ data, hasNextPage, endReached,
         {Footer && <div className="mb-4">{typeof Footer === "function" ? <Footer /> : Footer}</div>}
         {(hasNextPage || isLoadingMore) && <SkeletonGrid columnCount={columnCount} />}
       </div>
+
+      <EntryColumnShortcutHandler
+        refetch={refetch}
+        data={dataRef.current}
+        handleScrollTo={handleScrollTo}
+      />
     </div>
   )
 }
