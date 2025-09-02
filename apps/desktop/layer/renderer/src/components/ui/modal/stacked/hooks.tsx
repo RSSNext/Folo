@@ -2,7 +2,7 @@ import { Button } from "@follow/components/ui/button/index.js"
 import { atom, useAtomValue } from "jotai"
 import type { DragControls } from "motion/react"
 import type { ResizeCallback, ResizeStartCallback } from "re-resizable"
-import { use, useState } from "react"
+import { use, useDeferredValue, useState } from "react"
 import { flushSync } from "react-dom"
 import { useTranslation } from "react-i18next"
 import { useContextSelector } from "use-context-selector"
@@ -202,4 +202,9 @@ export const useDialog = (): DialogInstance => {
 }
 
 const modalStackLengthAtom = atom((get) => get(modalStackAtom).length)
-export const useHasModal = () => useAtomValue(modalStackLengthAtom) > 0
+export const useHasModal = () => {
+  //  The keydown event of modal exit is triggered in the same loop,
+  //  leading to unexpected simultaneous responses to other hotkeys,
+  //  so deferredValue is added to delay the update
+  return useDeferredValue(useAtomValue(modalStackLengthAtom) > 0)
+}
