@@ -12,9 +12,9 @@ export function AudioItem({ entryId, entryPreview, translation }: UniversalItemP
 AudioItem.wrapperClassName = readableContentMaxWidth
 
 export const AudioItemSkeleton = (
-  <div className="relative mx-auto w-full select-none rounded-md">
+  <div className={`relative mx-auto w-full select-none rounded-md ${readableContentMaxWidth}`}>
     <div className="relative">
-      <div className="group relative flex py-4 pl-3 pr-2">
+      <div className="group relative flex py-4">
         <div className="-mt-0.5 line-clamp-4 flex-1 text-sm leading-tight">
           <div className="text-material-opaque flex gap-1 text-[10px] font-bold">
             <Skeleton className="h-3 w-20" />
