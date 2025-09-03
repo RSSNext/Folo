@@ -21,11 +21,9 @@ export const updateNotificationsToken = async (newCredentials?: Credentials) => 
   const credentials = newCredentials || store.get("notifications-credentials")
   if (credentials?.fcm?.token) {
     try {
-      await apiClient.messaging.$post({
-        json: {
-          token: credentials.fcm.token,
-          channel: notificationChannel,
-        },
+      await apiClient.messaging.createToken({
+        token: credentials.fcm.token,
+        channel: notificationChannel,
       })
       logger.info("updateNotificationsToken success: ", credentials.fcm.token)
     } catch (error) {
@@ -35,9 +33,7 @@ export const updateNotificationsToken = async (newCredentials?: Credentials) => 
 }
 
 export const deleteNotificationsToken = async () => {
-  await apiClient.messaging.$delete({
-    json: {
-      channel: notificationChannel,
-    },
+  await apiClient.messaging.deleteToken({
+    channel: notificationChannel,
   })
 }

@@ -23,6 +23,7 @@
     "@electron-toolkit/preload": "3.0.2",
     "@electron-toolkit/utils": "4.0.0",
     "@eneris/push-receiver": "4.3.0",
+    "@follow-app/client-sdk": "catalog:",
     "@follow-app/readability": "workspace:*",
     "@follow/shared": "workspace:*",
     "@follow/utils": "workspace:*",
