@@ -13,7 +13,7 @@ import { Link } from "react-router"
 import { toast } from "sonner"
 
 import { setAppSearchOpen } from "~/atoms/app"
-import { useIsZenMode, useSetZenMode } from "~/atoms/settings/ui"
+import { useIsZenMode, useSetZenMode, useUISettingKey } from "~/atoms/settings/ui"
 import { setTimelineColumnShow, useTimelineColumnShow } from "~/atoms/sidebar"
 import {
   DropdownMenu,
@@ -165,5 +165,16 @@ const SearchTrigger = () => {
     { preventDefault: true },
   )
 
-  return null
+  const t = useI18n()
+  const showSearchButton = useUISettingKey("showSearchButton")
+
+  return showSearchButton ? (
+    <ActionButton
+      shortcut="$mod+K"
+      tooltip={t("words.search")}
+      onClick={() => setAppSearchOpen(true)}
+    >
+      <i className="i-mgc-search-3-cute-re text-text-secondary size-5" />
+    </ActionButton>
+  ) : null
 }

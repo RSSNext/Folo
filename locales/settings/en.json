@@ -158,6 +158,8 @@
   "appearance.reduce_motion.description": "Reducing the Motion of Elements to Improve Performance and Reduce Energy Consumption",
   "appearance.reduce_motion.label": "Reduce Motion",
   "appearance.save": "Save",
+  "appearance.show_search_button.description": "Whether to display the search button on the homepage",
+  "appearance.show_search_button.label": "Show Search Button",
   "appearance.sidebar": "Sidebar",
   "appearance.sidebar_title": "Appearance",
   "appearance.subscription_list.title": "Subscription List",

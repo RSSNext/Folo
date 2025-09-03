@@ -158,6 +158,8 @@
   "appearance.reduce_motion.description": "要素の動きを減らして、パフォーマンスを向上させ、エネルギー消費を抑えます",
   "appearance.reduce_motion.label": "動きを減らす",
   "appearance.save": "保存",
+  "appearance.show_search_button.description": "ホームページに検索ボタンを表示するかどうか",
+  "appearance.show_search_button.label": "検索ボタンを表示",
   "appearance.sidebar": "サイドバー",
   "appearance.sidebar_title": "外観",
   "appearance.subscription_list.title": "購読リスト",
