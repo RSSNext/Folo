@@ -39,6 +39,7 @@ const getDisplayContent = (block: AIChatContextBlock): React.ReactNode => {
       }
       return getFileDisplayContent(block.attachment)
     }
+
     default: {
       return ""
     }
