@@ -1,3 +1,5 @@
+import { views } from "@follow/constants"
+
 import type { AIChatContextBlock, FileAttachment } from "~/modules/ai-chat/store/types"
 import {
   getFileCategoryFromMimeType,
@@ -91,6 +93,12 @@ export function getBlockIcon(block: AIChatContextBlock): string {
     const fileCategory = getFileCategoryFromMimeType(block.attachment.type)
     return getFileIconName(fileCategory)
   }
+
+  if (block.type === "mainView") {
+    const viewIcon = views.find((v) => v.view === Number(block.value))?.icon.props.className
+    return viewIcon
+  }
+
   return BLOCK_ICONS[block.type] || BLOCK_ICONS.fileAttachment
 }
 
