@@ -59,6 +59,7 @@ export const useCreateAITaskMutation = () => {
         prompt: variables.prompt,
         isEnabled: variables.isEnabled ?? true,
         schedule: variables.schedule,
+        options: variables.options ?? { notifyChannels: ["email"] },
         userId: "temp-user",
         createdAt: new Date().toISOString(),
         updatedAt: new Date().toISOString(),
