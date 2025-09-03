@@ -411,9 +411,6 @@ importers:
       msedge-tts:
         specifier: 2.0.0
         version: 2.0.0(bufferutil@4.0.9)(utf-8-validate@6.0.5)
-      nanoid:
-        specifier: 5.0.9
-        version: 5.0.9
       node-machine-id:
         specifier: 1.1.12
         version: 1.1.12
@@ -12046,11 +12043,6 @@ packages:
   nanoid@3.3.8:
     resolution: {integrity: sha512-WNLf5Sd8oZxOm+TzppcYk8gVOgP+l58xNy58D0nbUnOxOWRWvlcCV4kUF7ltmI6PsrLl/BgKEyS4mqsGChFN0w==}
     engines: {node: ^10 || ^12 || ^13.7 || ^14 || >=15.0.1}
-    hasBin: true
-
-  nanoid@5.0.9:
-    resolution: {integrity: sha512-Aooyr6MXU6HpvvWXKoVoXwKMs/KyVakWwg7xQfv5/S/RIgJMy0Ifa45H9qqYy7pTCszrHzP21Uk4PZq2HpEM8Q==}
-    engines: {node: ^18 || >=20}
     hasBin: true
 
   nanoid@5.1.5:
@@ -29324,8 +29316,6 @@ snapshots:
   nanoid@3.3.11: {}
 
   nanoid@3.3.8: {}
-
-  nanoid@5.0.9: {}
 
   nanoid@5.1.5: {}
 
