@@ -56,43 +56,39 @@ const cardStylePresets = [
 const highlightStyle = [
   {
     type: "underline",
-    className:
-      "underline decoration-blue-500 decoration-4 underline-offset-1 [text-decoration-skip-ink]-[none]",
+    className: "underline decoration-blue-500 decoration-4 underline-offset-1",
   },
   {
     type: "underline",
-    className:
-      "underline decoration-yellow-500 decoration-4 underline-offset-1 [text-decoration-skip-ink]-[none]",
+    className: "underline decoration-yellow-500 decoration-4 underline-offset-1",
   },
   {
     type: "underline",
-    className:
-      "underline decoration-green-500 decoration-4 underline-offset-1 [text-decoration-skip-ink]-[none]",
+    className: "underline decoration-green-500 decoration-4 underline-offset-1",
   },
   {
     type: "underline",
-    className:
-      "underline decoration-orange-500 decoration-4 underline-offset-1 [text-decoration-skip-ink]-[none]",
+    className: "underline decoration-orange-500 decoration-4 underline-offset-1",
   },
   // {
   //   type: "underline-wavy",
   //   className:
-  //     "underline decoration-blue-500 decoration-4 underline-offset-1 [text-decoration-skip-ink]-[none] decoration-wavy",
+  //     "underline decoration-blue-500 decoration-4 underline-offset-1 decoration-wavy",
   // },
   // {
   //   type: "underline-wavy",
   //   className:
-  //     "underline decoration-yellow-500 decoration-4 underline-offset-1 [text-decoration-skip-ink]-[none] decoration-wavy",
+  //     "underline decoration-yellow-500 decoration-4 underline-offset-1 decoration-wavy",
   // },
   // {
   //   type: "underline-wavy",
   //   className:
-  //     "underline decoration-green-500 decoration-4 underline-offset-1 [text-decoration-skip-ink]-[none] decoration-wavy",
+  //     "underline decoration-green-500 decoration-4 underline-offset-1 decoration-wavy",
   // },
   // {
   //   type: "underline-wavy",
   //   className:
-  //     "underline decoration-orange-500 decoration-4 underline-offset-1 [text-decoration-skip-ink]-[none] decoration-wavy",
+  //     "underline decoration-orange-500 decoration-4 underline-offset-1 decoration-wavy",
   // },
   {
     type: "full",
@@ -266,6 +262,9 @@ export const AllItem: EntryListItemFC = ({ entryId, entryPreview, translation })
               <span
                 key={`keyword-${index}-${part}`}
                 className={cn(type === "highlight" && randomStyle.highlight.className)}
+                style={{
+                  textDecorationSkipInk: "none",
+                }}
               >
                 {part}
               </span>
