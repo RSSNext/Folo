@@ -1,12 +1,15 @@
 import { cn } from "@follow/utils/utils"
-import { memo, useCallback, useMemo, useRef } from "react"
+import { memo, useCallback, useEffect, useMemo, useRef } from "react"
 
 import { useAISettingValue } from "~/atoms/settings/ai"
 import { DropdownMenu, DropdownMenuTrigger } from "~/components/ui/dropdown-menu/dropdown-menu"
+import { useRouteParamsSelector } from "~/hooks/biz/useRouteParams"
 import { useFileUploadWithDefaults } from "~/modules/ai-chat/hooks/useFileUpload"
 import { useAIChatStore } from "~/modules/ai-chat/store/AIChatContext"
 import { SUPPORTED_MIME_ACCEPT } from "~/modules/ai-chat/utils/file-validation"
 
+import { useBlockActions } from "../../store/hooks"
+import { BlockSliceAction } from "../../store/slices/block.slice"
 import { ContextBlock } from "../context-bar/blocks"
 import { ContextMenuContent, ShortcutsMenuContent } from "../context-bar/menus"
 
@@ -26,6 +29,19 @@ export const AIChatContextBar: Component<{ onSendShortcut?: (prompt: string) => 
     const handleAttachFile = useCallback(() => {
       fileInputRef.current?.click()
     }, [])
+
+    const view = useRouteParamsSelector((i) => i.view)
+    const { addOrUpdateBlock, removeBlock } = useBlockActions()
+    useEffect(() => {
+      addOrUpdateBlock({
+        id: BlockSliceAction.SPECIAL_TYPES.mainView,
+        type: "mainView",
+        value: `${view}`,
+      })
+      return () => {
+        removeBlock(BlockSliceAction.SPECIAL_TYPES.mainView)
+      }
+    }, [addOrUpdateBlock, view, removeBlock])
 
     return (
       <div className={cn("flex flex-wrap items-center gap-2 px-4 py-3", className)}>
