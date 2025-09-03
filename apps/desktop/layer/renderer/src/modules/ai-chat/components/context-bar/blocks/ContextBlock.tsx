@@ -1,6 +1,8 @@
+import { views } from "@follow/constants"
 import { clsx, cn } from "@follow/utils/utils"
 import type { FC } from "react"
 import { memo } from "react"
+import { useTranslation } from "react-i18next"
 
 import { ImageThumbnail } from "~/modules/ai-chat/components/layouts/ImageThumbnail"
 import { CircularProgress } from "~/modules/ai-chat/components/ui/UploadProgress"
@@ -13,11 +15,18 @@ import {
 
 import { EntryTitle, FeedTitle } from "./TitleComponents"
 
+const blockTypeCanNotBeRemoved = new Set(["mainEntry", "mainView"])
+
 export const ContextBlock: FC<{ block: AIChatContextBlock }> = memo(({ block }) => {
+  const { t } = useTranslation("common")
   const blockActions = useChatBlockActions()
 
   const getBlockIcon = () => {
     switch (block.type) {
+      case "mainView": {
+        const viewIcon = views.find((v) => v.view === Number(block.value))?.icon.props.className
+        return viewIcon
+      }
       case "mainEntry": {
         return "i-mgc-star-cute-fi"
       }
@@ -50,6 +59,10 @@ export const ContextBlock: FC<{ block: AIChatContextBlock }> = memo(({ block }) 
 
   const getDisplayContent = () => {
     switch (block.type) {
+      case "mainView": {
+        const viewName = views.find((v) => v.view === Number(block.value))?.name
+        return viewName ? t(viewName) : block.value
+      }
       case "mainEntry":
       case "referEntry": {
         return <EntryTitle entryId={block.value} fallback={block.value} />
@@ -145,6 +158,9 @@ export const ContextBlock: FC<{ block: AIChatContextBlock }> = memo(({ block }) 
 
   const getBlockLabel = () => {
     switch (block.type) {
+      case "mainView": {
+        return ""
+      }
       case "mainEntry": {
         return "Current"
       }
@@ -167,7 +183,7 @@ export const ContextBlock: FC<{ block: AIChatContextBlock }> = memo(({ block }) 
     }
   }
 
-  const canRemove = block.type !== "mainEntry"
+  const canRemove = !blockTypeCanNotBeRemoved.has(block.type)
 
   return (
     <div
