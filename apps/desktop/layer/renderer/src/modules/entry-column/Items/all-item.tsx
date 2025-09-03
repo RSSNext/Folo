@@ -9,7 +9,7 @@ import { cn, formatDuration, transformVideoUrl } from "@follow/utils"
 import { FeedViewType } from "@follow-app/client-sdk"
 import { useHover } from "@use-gesture/react"
 import dayjs from "dayjs"
-import { useCallback, useEffect, useMemo, useRef, useState } from "react"
+import { useCallback, useMemo, useRef, useState } from "react"
 import { useTranslation } from "react-i18next"
 
 import { usePreviewMedia } from "~/components/ui/media/hooks"
@@ -56,36 +56,44 @@ const cardStylePresets = [
 const highlightStyle = [
   {
     type: "underline",
-    className: "underline decoration-blue-500 decoration-4 underline-offset-1",
+    className:
+      "underline decoration-blue-500 decoration-4 underline-offset-1 [text-decoration-skip-ink]-[none]",
   },
   {
     type: "underline",
-    className: "underline decoration-yellow-500 decoration-4 underline-offset-1",
+    className:
+      "underline decoration-yellow-500 decoration-4 underline-offset-1 [text-decoration-skip-ink]-[none]",
   },
   {
     type: "underline",
-    className: "underline decoration-green-500 decoration-4 underline-offset-1",
+    className:
+      "underline decoration-green-500 decoration-4 underline-offset-1 [text-decoration-skip-ink]-[none]",
   },
   {
     type: "underline",
-    className: "underline decoration-orange-500 decoration-4 underline-offset-1",
+    className:
+      "underline decoration-orange-500 decoration-4 underline-offset-1 [text-decoration-skip-ink]-[none]",
   },
-  {
-    type: "underline-wavy",
-    className: "underline decoration-blue-500 decoration-4 underline-offset-1 decoration-wavy",
-  },
-  {
-    type: "underline-wavy",
-    className: "underline decoration-yellow-500 decoration-4 underline-offset-1 decoration-wavy",
-  },
-  {
-    type: "underline-wavy",
-    className: "underline decoration-green-500 decoration-4 underline-offset-1 decoration-wavy",
-  },
-  {
-    type: "underline-wavy",
-    className: "underline decoration-orange-500 decoration-4 underline-offset-1 decoration-wavy",
-  },
+  // {
+  //   type: "underline-wavy",
+  //   className:
+  //     "underline decoration-blue-500 decoration-4 underline-offset-1 [text-decoration-skip-ink]-[none] decoration-wavy",
+  // },
+  // {
+  //   type: "underline-wavy",
+  //   className:
+  //     "underline decoration-yellow-500 decoration-4 underline-offset-1 [text-decoration-skip-ink]-[none] decoration-wavy",
+  // },
+  // {
+  //   type: "underline-wavy",
+  //   className:
+  //     "underline decoration-green-500 decoration-4 underline-offset-1 [text-decoration-skip-ink]-[none] decoration-wavy",
+  // },
+  // {
+  //   type: "underline-wavy",
+  //   className:
+  //     "underline decoration-orange-500 decoration-4 underline-offset-1 [text-decoration-skip-ink]-[none] decoration-wavy",
+  // },
   {
     type: "full",
     className: "bg-blue-200 text-black",
@@ -215,29 +223,28 @@ export const AllItem: EntryListItemFC = ({ entryId, entryPreview, translation })
   )
 
   const ref = useRef<HTMLDivElement>(null)
-  const [hovered, setHovered] = useState(false)
+  const hoverTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null)
+  const [showPreview, setShowPreview] = useState(false)
   useHover(
     (event) => {
-      setHovered(event.active)
+      const hovered = event.active
+      if (hovered) {
+        unreadSyncService.markEntryAsRead(entryId)
+        if (hoverTimerRef.current) {
+          clearTimeout(hoverTimerRef.current)
+        }
+        hoverTimerRef.current = setTimeout(() => {
+          setShowPreview(true)
+        }, 500)
+      } else {
+        if (hoverTimerRef.current) {
+          clearTimeout(hoverTimerRef.current)
+          hoverTimerRef.current = null
+        }
+      }
     },
-    {
-      target: ref,
-    },
+    { target: ref },
   )
-
-  const [showPreview, setShowPreview] = useState(false)
-  useEffect(() => {
-    if (hovered) {
-      unreadSyncService.markEntryAsRead(entryId)
-      const timer = setTimeout(() => {
-        setShowPreview(true)
-      }, 500)
-      return () => clearTimeout(timer)
-    } else {
-      setShowPreview(false)
-      return () => {}
-    }
-  }, [entryId, hovered])
 
   const title = entry?.title || entry?.description || entry?.content
   const titleKeyword = entry?.extra?.title_keyword?.toLowerCase().trim() || ""
@@ -247,28 +254,30 @@ export const AllItem: EntryListItemFC = ({ entryId, entryPreview, translation })
 
     const renderTitle = ({ type }: { type: "highlight" | "normal" }) => (
       <>
-        {title.split(new RegExp(`(${titleKeyword})`, "gi")).map((part, index) => {
-          // Check if this part matches the keyword (case-insensitive)
-          const normalizedPart = part.toLowerCase().trim()
-          const normalizedKeyword = titleKeyword.trim()
-          const isKeyword = normalizedPart === normalizedKeyword && part.trim() !== ""
+        {title
+          .split(new RegExp(`(${titleKeyword.replaceAll(/[.*+?^${}()|[\]\\]/g, "\\$&")})`, "gi"))
+          .map((part, index) => {
+            // Check if this part matches the keyword (case-insensitive)
+            const normalizedPart = part.toLowerCase().trim()
+            const normalizedKeyword = titleKeyword.trim()
+            const isKeyword = normalizedPart === normalizedKeyword && part.trim() !== ""
 
-          return isKeyword ? (
-            <span
-              key={`keyword-${index}-${part}`}
-              className={cn(type === "highlight" && randomStyle.highlight.className)}
-            >
-              {part}
-            </span>
-          ) : (
-            <span
-              key={`text-${index}-${part}`}
-              className={cn(type === "highlight" && "text-transparent")}
-            >
-              {part}
-            </span>
-          )
-        })}
+            return isKeyword ? (
+              <span
+                key={`keyword-${index}-${part}`}
+                className={cn(type === "highlight" && randomStyle.highlight.className)}
+              >
+                {part}
+              </span>
+            ) : (
+              <span
+                key={`text-${index}-${part}`}
+                className={cn(type === "highlight" && "text-transparent")}
+              >
+                {part}
+              </span>
+            )
+          })}
       </>
     )
 
