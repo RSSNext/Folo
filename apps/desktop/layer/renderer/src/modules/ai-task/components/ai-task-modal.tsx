@@ -11,6 +11,7 @@ import { Label } from "@follow/components/ui/label/index.jsx"
 import type { AITask } from "@follow-app/client-sdk"
 import { zodResolver } from "@hookform/resolvers/zod"
 import dayjs from "dayjs"
+import type { GlobalError } from "react-hook-form"
 import { useForm } from "react-hook-form"
 import { useTranslation } from "react-i18next"
 import { toast } from "sonner"
@@ -193,7 +194,7 @@ export const AITaskModal = ({ task, prompt, showSettingsTip = false }: AITaskMod
             <ScheduleConfig
               value={scheduleValue}
               onChange={handleScheduleChange}
-              errors={form.formState.errors.schedule as Record<string, string>}
+              errors={form.formState.errors.schedule as Record<string, GlobalError>}
             />
           </div>
 
