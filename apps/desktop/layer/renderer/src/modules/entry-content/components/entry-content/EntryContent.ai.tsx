@@ -1,8 +1,6 @@
-import { Spring } from "@follow/components/constants/spring.js"
-import { MotionButtonBase } from "@follow/components/ui/button/index.js"
 import { RootPortal } from "@follow/components/ui/portal/index.js"
 import { ScrollArea } from "@follow/components/ui/scroll-area/index.js"
-import { FeedViewType } from "@follow/constants"
+import type { FeedViewType } from "@follow/constants"
 import { useTitle } from "@follow/hooks"
 import type { FeedModel } from "@follow/models/types"
 import { useEntry } from "@follow/store/entry/hooks"
@@ -10,24 +8,19 @@ import { useFeedById } from "@follow/store/feed/hooks"
 import { useIsInbox } from "@follow/store/inbox/hooks"
 import { thenable } from "@follow/utils"
 import { stopPropagation } from "@follow/utils/dom"
-import { EventBus } from "@follow/utils/event-bus"
 import { cn } from "@follow/utils/utils"
 import type { JSAnimation } from "motion/react"
-import { useAnimationControls } from "motion/react"
 import * as React from "react"
 import { memo, useEffect, useRef, useState } from "react"
 
 import { useEntryIsInReadability } from "~/atoms/readability"
-import { useIsZenMode } from "~/atoms/settings/ui"
 import { Focusable } from "~/components/common/Focusable"
-import { m } from "~/components/common/Motion"
 import { useInPeekModal } from "~/components/ui/modal/inspire/InPeekModal"
 import { HotkeyScope } from "~/constants"
 import { useRouteParamsSelector } from "~/hooks/biz/useRouteParams"
 import { useFeedSafeUrl } from "~/hooks/common/useFeedSafeUrl"
 import { useBlockActions } from "~/modules/ai-chat/store/hooks"
 import { BlockSliceAction } from "~/modules/ai-chat/store/slices/block.slice"
-import { COMMAND_ID } from "~/modules/command/commands/id"
 
 import { ApplyEntryActions } from "../../ApplyEntryActions"
 import { useEntryContent } from "../../hooks"
@@ -40,11 +33,6 @@ import { EntryNoContent } from "./EntryNoContent"
 import { EntryScrollingAndNavigationHandler } from "./EntryScrollingAndNavigationHandler.js"
 import type { EntryContentProps } from "./types"
 
-const contentVariants = {
-  initial: { opacity: 0, y: 30 },
-  animate: { opacity: 1, y: 0 },
-  exit: { opacity: 0, y: 30 },
-}
 const EntryContentImpl: Component<EntryContentProps> = ({
   entryId,
   noMedia,
@@ -72,17 +60,9 @@ const EntryContentImpl: Component<EntryContentProps> = ({
   const scrollerRef = useRef<HTMLDivElement | null>(null)
   const safeUrl = useFeedSafeUrl(entryId)
 
-  const isZenMode = useIsZenMode()
-
   const [panelPortalElement, setPanelPortalElement] = useState<HTMLDivElement | null>(null)
 
   const scrollAnimationRef = useRef<JSAnimation<any> | null>(null)
-
-  const isInHasTimelineView = ![
-    FeedViewType.Pictures,
-    FeedViewType.SocialMedia,
-    FeedViewType.Videos,
-  ].includes(view)
 
   const { addOrUpdateBlock, removeBlock } = useBlockActions()
   useEffect(() => {
@@ -95,17 +75,11 @@ const EntryContentImpl: Component<EntryContentProps> = ({
       removeBlock(BlockSliceAction.SPECIAL_TYPES.mainEntry)
     }
   }, [addOrUpdateBlock, entryId, removeBlock])
-  const animationController = useAnimationControls()
 
   const focusableRef = useRef<HTMLDivElement>(null)
   useEffect(() => {
-    animationController.set(contentVariants.exit)
-    animationController.start(contentVariants.animate)
     focusableRef.current?.focus()
-    return () => {
-      animationController.stop()
-    }
-  }, [animationController, entryId])
+  }, [entryId])
 
   return (
     <div className={cn(className, "@container flex flex-col")}>
@@ -124,47 +98,13 @@ const EntryContentImpl: Component<EntryContentProps> = ({
       >
         <RootPortal to={panelPortalElement}>
           <EntryScrollingAndNavigationHandler
-            entryId={entryId}
             scrollAnimationRef={scrollAnimationRef}
             scrollerRef={scrollerRef}
           />
         </RootPortal>
         {/* <EntryTimeline entryId={entryId} className="top-48" /> */}
-        <EntryScrollArea scrollerRef={scrollerRef} viewportClassName="pt-[95px]">
-          {/* Indicator for the entry */}
-          {!isZenMode && isInHasTimelineView && (
-            <>
-              <div className="absolute inset-y-0 left-0 z-[9] flex w-12 items-center justify-center opacity-40 duration-200 hover:opacity-100">
-                <MotionButtonBase
-                  // -12： Visual center point
-                  className="absolute left-0 shrink-0 !-translate-y-12 cursor-pointer"
-                  onClick={() => {
-                    EventBus.dispatch(COMMAND_ID.timeline.switchToPrevious)
-                  }}
-                >
-                  <i className="i-mgc-left-small-sharp text-text-secondary size-16" />
-                </MotionButtonBase>
-              </div>
-
-              <div className="absolute inset-y-0 right-0 z-[9] flex w-12 items-center justify-center opacity-40 duration-200 hover:opacity-100">
-                <MotionButtonBase
-                  className="absolute right-0 shrink-0 !-translate-y-12 cursor-pointer"
-                  onClick={() => {
-                    EventBus.dispatch(COMMAND_ID.timeline.switchToNext)
-                  }}
-                >
-                  <i className="i-mgc-right-small-sharp text-text-secondary size-16" />
-                </MotionButtonBase>
-              </div>
-            </>
-          )}
-          <m.div
-            lcpOptimization
-            className="select-text"
-            initial={{ opacity: 0, y: 30 }}
-            animate={animationController}
-            transition={Spring.presets.smooth}
-          >
+        <EntryScrollArea scrollerRef={scrollerRef} viewportClassName="pt-[55px]">
+          <div className="select-text">
             <article
               data-testid="entry-render"
               onContextMenu={stopPropagation}
@@ -199,7 +139,7 @@ const EntryContentImpl: Component<EntryContentProps> = ({
                 />
               )}
             </article>
-          </m.div>
+          </div>
         </EntryScrollArea>
         <SourceContentPanel src={safeUrl ?? "#"} />
       </Focusable>

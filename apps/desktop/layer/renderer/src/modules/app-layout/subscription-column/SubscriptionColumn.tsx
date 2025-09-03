@@ -119,6 +119,11 @@ const FeedResponsiveResizerContainer = ({
       setTimelineColumnTempShow(false)
       return
     }
+    // Disable left-edge reveal when entry content is open in AI layout
+    if (aiEnabled && entryId && !isPendingEntry) {
+      setTimelineColumnTempShow(false)
+      return
+    }
     const handler = debounce(
       (e: MouseEvent) => {
         const mouseX = e.clientX
@@ -147,7 +152,7 @@ const FeedResponsiveResizerContainer = ({
     return () => {
       document.removeEventListener("mousemove", handler)
     }
-  }, [feedColumnShow])
+  }, [feedColumnShow, aiEnabled, entryId, isPendingEntry])
 
   const when = useGlobalFocusableScopeSelector(
     // eslint-disable-next-line @eslint-react/hooks-extra/no-unnecessary-use-callback

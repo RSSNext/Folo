@@ -10,6 +10,15 @@ const smoothPreset: Transition = {
 }
 
 /**
+ * A smooth spring with a predefined duration and no bounce.
+ */
+const fastSmoothPreset: Transition = {
+  type: "spring",
+  duration: 0.3,
+  bounce: 0,
+}
+
+/**
  * A spring with a predefined duration and small amount of bounce that feels more snappy.
  */
 const snappyPreset: Transition = {
@@ -29,6 +38,7 @@ const bouncyPreset: Transition = {
 
 class SpringStatic {
   presets = {
+    fastSmooth: fastSmoothPreset,
     smooth: smoothPreset,
     snappy: snappyPreset,
     bouncy: bouncyPreset,

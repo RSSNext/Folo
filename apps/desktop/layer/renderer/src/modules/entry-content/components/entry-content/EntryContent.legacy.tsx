@@ -134,7 +134,6 @@ const EntryContentImpl: Component<EntryContentProps> = ({
           <EntryScrollingAndNavigationHandler
             scrollAnimationRef={scrollAnimationRef}
             scrollerRef={scrollerRef}
-            entryId={entryId}
           />
         </RootPortal>
         <EntryTimelineSidebar entryId={entryId} />
