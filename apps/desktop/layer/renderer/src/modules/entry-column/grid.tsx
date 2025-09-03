@@ -26,7 +26,7 @@ import { PictureMasonry } from "./Items/picture-masonry"
 import type { EntryListProps } from "./list"
 
 export const EntryColumnGrid: FC<EntryListProps> = (props) => {
-  const { entriesIds, feedId, hasNextPage, view, fetchNextPage } = props
+  const { entriesIds, feedId, hasNextPage, view, fetchNextPage, refetch } = props
 
   const isMobile = useMobile()
   const masonry = useUISettingKey("pictureViewMasonry") || isMobile
@@ -39,6 +39,7 @@ export const EntryColumnGrid: FC<EntryListProps> = (props) => {
         endReached={fetchNextPage}
         data={entriesIds}
         Footer={props.Footer}
+        refetch={refetch}
       />
     )
   }

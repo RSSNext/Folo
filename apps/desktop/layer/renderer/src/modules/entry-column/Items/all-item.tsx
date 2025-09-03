@@ -319,7 +319,7 @@ export const AllItem: EntryListItemFC = ({ entryId, entryPreview, translation })
           </div>
         )}
 
-        {/* Social Media */}
+        {/* Common views */}
         {(view === FeedViewType.Articles ||
           view === FeedViewType.Notifications ||
           view === FeedViewType.SocialMedia ||
@@ -366,9 +366,8 @@ export const AllItem: EntryListItemFC = ({ entryId, entryPreview, translation })
                 onPreview={previewMedia}
               />
             ) : (
-              <div className="center bg-material-medium text-text-secondary aspect-square w-full flex-col gap-1 rounded-md text-xs">
-                <i className="i-mgc-sad-cute-re size-6" />
-                {t("entry_content.no_content")}
+              <div className="flex min-h-[10em] flex-col items-center justify-center overflow-hidden px-4 py-20 text-[1.5rem] font-normal leading-[1.2]">
+                <div className="line-clamp-6 max-w-full break-words">{titleWithKeyword}</div>
               </div>
             )}
           </div>
