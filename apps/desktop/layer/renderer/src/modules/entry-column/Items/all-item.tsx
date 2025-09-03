@@ -4,6 +4,7 @@ import { useIsEntryStarred } from "@follow/store/collection/hooks"
 import { useEntry } from "@follow/store/entry/hooks"
 import { useEntryStore } from "@follow/store/entry/store"
 import { useFeedById } from "@follow/store/feed/hooks"
+import { unreadSyncService } from "@follow/store/unread/store"
 import { cn, formatDuration, transformVideoUrl } from "@follow/utils"
 import { FeedViewType } from "@follow-app/client-sdk"
 import { useHover } from "@use-gesture/react"
@@ -52,19 +53,55 @@ const cardStylePresets = [
   },
 ]
 
-const highlightUnderlineBg =
-  "before:absolute before:rounded-lg before:bottom-0 before:left-0 before:right-0 before:h-[0.75rem] before:z-[-1]"
-const highlightFullBg =
-  "before:absolute before:bottom-0 before:left-0 before:right-0 before:top-0 before:z-[-1]"
 const highlightStyle = [
-  cn(highlightUnderlineBg, "before:bg-blue-400"),
-  cn(highlightUnderlineBg, "before:bg-yellow-400"),
-  cn(highlightUnderlineBg, "before:bg-green-400"),
-  cn(highlightUnderlineBg, "before:bg-orange-400"),
-  cn(highlightFullBg, "before:bg-blue-200"),
-  cn(highlightFullBg, "before:bg-yellow-200"),
-  cn(highlightFullBg, "before:bg-green-200"),
-  cn(highlightFullBg, "before:bg-orange-200"),
+  {
+    type: "underline",
+    className: "underline decoration-blue-500 decoration-4 underline-offset-1",
+  },
+  {
+    type: "underline",
+    className: "underline decoration-yellow-500 decoration-4 underline-offset-1",
+  },
+  {
+    type: "underline",
+    className: "underline decoration-green-500 decoration-4 underline-offset-1",
+  },
+  {
+    type: "underline",
+    className: "underline decoration-orange-500 decoration-4 underline-offset-1",
+  },
+  {
+    type: "underline-wavy",
+    className: "underline decoration-blue-500 decoration-4 underline-offset-1 decoration-wavy",
+  },
+  {
+    type: "underline-wavy",
+    className: "underline decoration-yellow-500 decoration-4 underline-offset-1 decoration-wavy",
+  },
+  {
+    type: "underline-wavy",
+    className: "underline decoration-green-500 decoration-4 underline-offset-1 decoration-wavy",
+  },
+  {
+    type: "underline-wavy",
+    className: "underline decoration-orange-500 decoration-4 underline-offset-1 decoration-wavy",
+  },
+  {
+    type: "full",
+    className: "bg-blue-200 text-black",
+  },
+  {
+    type: "full",
+    className: "bg-yellow-200 text-black",
+  },
+  {
+    type: "full",
+    className: "bg-green-200 text-black",
+  },
+  {
+    type: "full",
+    className: "bg-orange-200 text-black",
+  },
 ]
 
 const ViewTag = IN_ELECTRON ? "webview" : "iframe"
@@ -191,6 +228,7 @@ export const AllItem: EntryListItemFC = ({ entryId, entryPreview, translation })
   const [showPreview, setShowPreview] = useState(false)
   useEffect(() => {
     if (hovered) {
+      unreadSyncService.markEntryAsRead(entryId)
       const timer = setTimeout(() => {
         setShowPreview(true)
       }, 500)
@@ -199,35 +237,50 @@ export const AllItem: EntryListItemFC = ({ entryId, entryPreview, translation })
       setShowPreview(false)
       return () => {}
     }
-  }, [hovered])
+  }, [entryId, hovered])
+
+  const title = entry?.title || entry?.description || entry?.content
+  const titleKeyword = entry?.extra?.title_keyword?.toLowerCase().trim() || ""
+
+  const titleWithKeyword = useMemo(() => {
+    if (!title || !titleKeyword) return title
+
+    const renderTitle = ({ type }: { type: "highlight" | "normal" }) => (
+      <>
+        {title.split(new RegExp(`(${titleKeyword})`, "gi")).map((part, index) => {
+          // Check if this part matches the keyword (case-insensitive)
+          const normalizedPart = part.toLowerCase().trim()
+          const normalizedKeyword = titleKeyword.trim()
+          const isKeyword = normalizedPart === normalizedKeyword && part.trim() !== ""
+
+          return isKeyword ? (
+            <span
+              key={`keyword-${index}-${part}`}
+              className={cn(type === "highlight" && randomStyle.highlight.className)}
+            >
+              {part}
+            </span>
+          ) : (
+            <span
+              key={`text-${index}-${part}`}
+              className={cn(type === "highlight" && "text-transparent")}
+            >
+              {part}
+            </span>
+          )
+        })}
+      </>
+    )
+
+    return (
+      <div className="relative">
+        {renderTitle({ type: "normal" })}
+        <div className="absolute inset-0 z-0">{renderTitle({ type: "highlight" })}</div>
+      </div>
+    )
+  }, [randomStyle.highlight.className, titleKeyword, title])
 
   if (!entry) return null
-
-  const title = entry.title || entry.description || entry.content
-  const titleKeyword = entry.extra?.title_keyword || ""
-
-  const titleWithKeyword =
-    titleKeyword && title ? (
-      <>
-        {title
-          .split(new RegExp(`(${titleKeyword.replaceAll(/[.*+?^${}()|[\]\\]/g, "\\$&")})`, "gi"))
-          .map((part, index) => {
-            const isKeyword = part.toLowerCase() === titleKeyword.toLowerCase()
-            return isKeyword ? (
-              <span
-                key={`keyword-${index}-${part}`}
-                className={cn("relative z-[1]", randomStyle.highlight)}
-              >
-                {part}
-              </span>
-            ) : (
-              <span key={`text-${index}-${part}`}>{part}</span>
-            )
-          })}
-      </>
-    ) : (
-      title
-    )
 
   const mediaCover = entryMedia?.[0] ?? entry.firstMedia ?? null
 
@@ -237,7 +290,7 @@ export const AllItem: EntryListItemFC = ({ entryId, entryPreview, translation })
   const aspectRatio = mediaCoverHeight && mediaCoverWidth ? mediaCoverWidth / mediaCoverHeight : 1
 
   return (
-    <div className="group">
+    <div className="group" ref={ref}>
       {/* Hero */}
       <div
         className={cn(
@@ -316,7 +369,7 @@ export const AllItem: EntryListItemFC = ({ entryId, entryPreview, translation })
         {/* Videos */}
         {view === FeedViewType.Videos && (
           <div className="cursor-card w-full">
-            <div className="relative overflow-x-auto" ref={ref}>
+            <div className="relative overflow-x-auto">
               {miniIframeSrc && showPreview ? (
                 <ViewTag
                   src={miniIframeSrc}

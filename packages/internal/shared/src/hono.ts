@@ -23280,6 +23280,7 @@ declare const _routes: hono_hono_base42.HonoBase<Env, ({
                 url: string;
                 content_html?: string | undefined;
               }[] | null | undefined;
+              title_keyword?: string | undefined;
             } | null | undefined;
           };
           feeds: {
@@ -23549,6 +23550,7 @@ declare const _routes: hono_hono_base42.HonoBase<Env, ({
                 url: string;
                 content_html?: string | undefined;
               }[] | null | undefined;
+              title_keyword?: string | undefined;
             } | null | undefined;
           };
           feeds: {
