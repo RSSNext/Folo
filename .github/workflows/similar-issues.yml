@@ -41,7 +41,6 @@ jobs:
           enable-github-mcp: true
           token: ${{ secrets.USER_PAT }}
           github-mcp-token: ${{ secrets.USER_PAT }}
-          max-tokens: 8000
           endpoint: https://models.github.ai/orgs/RSSNext/inference
 
       - name: Prepare comment body
