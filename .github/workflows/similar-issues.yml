@@ -39,8 +39,7 @@ jobs:
             issue_body: ${{ steps.prepare_input.outputs.issue_body_indented_json }}
             repository: ${{ github.repository }}
           enable-github-mcp: true
-          # Inference token can use GITHUB_TOKEN. MCP specifically requires a PAT.
-          token: ${{ secrets.GITHUB_TOKEN }}
+          token: ${{ secrets.USER_PAT }}
           github-mcp-token: ${{ secrets.USER_PAT }}
           max-tokens: 8000
           endpoint: https://models.github.ai/orgs/RSSNext/inference
