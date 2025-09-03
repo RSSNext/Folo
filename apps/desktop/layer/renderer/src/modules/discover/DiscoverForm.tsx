@@ -17,7 +17,7 @@ import { useMutation } from "@tanstack/react-query"
 import { produce } from "immer"
 import { atom, useAtomValue, useStore } from "jotai"
 import type { ChangeEvent } from "react"
-import { useCallback, useEffect } from "react"
+import { startTransition, useCallback, useEffect } from "react"
 import { useForm } from "react-hook-form"
 import { useTranslation } from "react-i18next"
 import { useSearchParams } from "react-router"
@@ -30,23 +30,13 @@ import { apiClient } from "~/lib/api-fetch"
 import { DiscoverFeedCard } from "./DiscoverFeedCard"
 import { FeedForm } from "./FeedForm"
 
-const formSchema = z.object({
-  keyword: z.string().min(1),
-  target: z.enum(["feeds", "lists"]),
-})
-
-const info: Record<
-  string,
-  {
-    label: I18nKeys
-    prefix?: string[]
-    showModal?: boolean
-    default?: string
-    labelSuffix?: React.ReactNode
-  }
-> = {
+const info = {
   search: {
     label: "discover.any_url_or_keyword",
+    schema: z.object({
+      keyword: z.string().min(1),
+      target: z.enum(["feeds", "lists"]),
+    }),
   },
   rss: {
     label: "discover.rss_url",
@@ -64,6 +54,9 @@ const info: Record<
         <span>Folo Flavored Feed Spec</span>
       </a>
     ),
+    schema: z.object({
+      keyword: z.string().url().startsWith("https://"),
+    }),
   },
   rsshub: {
     label: "discover.rss_hub_route",
@@ -81,15 +74,28 @@ const info: Record<
         <span>RSSHub Docs</span>
       </a>
     ),
+    schema: z.object({
+      keyword: z.string().url().startsWith("rsshub://"),
+    }),
   },
-}
+} satisfies Record<
+  string,
+  {
+    label: I18nKeys
+    prefix?: string[]
+    showModal?: boolean
+    default?: string
+    labelSuffix?: React.ReactNode
+    schema?: any
+  }
+>
 
 type DiscoverSearchData = Awaited<ReturnType<typeof apiClient.discover.$post>>["data"]
 
 const discoverSearchDataAtom = atom<Record<string, DiscoverSearchData>>()
 
 export function DiscoverForm({ type = "search" }: { type?: string }) {
-  const { prefix, default: defaultValue } = info[type]!
+  const { prefix, default: defaultValue, schema: formSchema } = info[type]!
 
   const [searchParams, setSearchParams] = useSearchParams()
   const keywordFromSearch = searchParams.get("keyword") || ""
@@ -99,8 +105,10 @@ export function DiscoverForm({ type = "search" }: { type?: string }) {
       keyword: defaultValue || keywordFromSearch || "",
       target: "feeds",
     },
+    mode: "all",
   })
   const { watch, trigger } = form
+
   // validate default value from search params
   useEffect(() => {
     if (!keywordFromSearch) {
@@ -153,42 +161,45 @@ export function DiscoverForm({ type = "search" }: { type?: string }) {
 
   const handleKeywordChange = useCallback(
     (event: ChangeEvent<HTMLInputElement>) => {
-      const syncKeyword = (keyword: string) => {
-        setSearchParams(
-          (prev) => {
-            const newParams = new URLSearchParams(prev)
-            if (keyword) {
-              newParams.set("keyword", keyword)
-            } else {
-              newParams.delete("keyword")
-            }
-            return newParams
-          },
-          {
-            replace: true,
-          },
-        )
-      }
+      startTransition(() => {
+        const trimmedKeyword = event.target.value.trimStart()
+        if (!prefix) {
+          setValue(trimmedKeyword)
+          return
+        }
+        const isValidPrefix = prefix.find((p) => trimmedKeyword.startsWith(p))
+        if (!isValidPrefix) {
+          setValue(prefix[0]!)
+          return
+        }
+        if (trimmedKeyword.startsWith(`${isValidPrefix}${isValidPrefix}`)) {
+          setValue(trimmedKeyword.slice(isValidPrefix.length))
+          return
+        }
+        setValue(trimmedKeyword)
 
-      const trimmedKeyword = event.target.value.trimStart()
-      if (!prefix) {
-        form.setValue("keyword", trimmedKeyword, { shouldValidate: true })
-        syncKeyword(trimmedKeyword)
-        return
-      }
-      const isValidPrefix = prefix.find((p) => trimmedKeyword.startsWith(p))
-      if (!isValidPrefix) {
-        form.setValue("keyword", prefix[0]!)
-        syncKeyword(prefix[0]!)
-        return
-      }
-      if (trimmedKeyword.startsWith(`${isValidPrefix}${isValidPrefix}`)) {
-        form.setValue("keyword", trimmedKeyword.slice(isValidPrefix.length))
-        syncKeyword(trimmedKeyword.slice(isValidPrefix.length))
-        return
-      }
-      form.setValue("keyword", trimmedKeyword)
-      syncKeyword(trimmedKeyword)
+        function setValue(value: string) {
+          form.setValue("keyword", value, { shouldValidate: true })
+          syncKeyword(value)
+        }
+
+        function syncKeyword(keyword: string) {
+          setSearchParams(
+            (prev) => {
+              const newParams = new URLSearchParams(prev)
+              if (keyword) {
+                newParams.set("keyword", keyword)
+              } else {
+                newParams.delete("keyword")
+              }
+              return newParams
+            },
+            {
+              replace: true,
+            },
+          )
+        }
+      })
     },
     [form, prefix, setSearchParams],
   )
@@ -214,7 +225,7 @@ export function DiscoverForm({ type = "search" }: { type?: string }) {
         }),
       )
     },
-    [discoverSearchDataAtom, jotaiStore],
+    [atomKey, jotaiStore],
   )
 
   const handleUnSubscribed = useCallback(
@@ -234,7 +245,7 @@ export function DiscoverForm({ type = "search" }: { type?: string }) {
         }),
       )
     },
-    [discoverSearchDataAtom, jotaiStore],
+    [atomKey, jotaiStore],
   )
 
   const handleTargetChange = useCallback(
