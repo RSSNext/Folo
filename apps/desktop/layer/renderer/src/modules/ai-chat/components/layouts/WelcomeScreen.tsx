@@ -64,11 +64,7 @@ export const WelcomeScreen = ({ onSend, centerInputOnEmpty }: WelcomeScreenProps
         >
           <AnimatePresence mode="wait">
             {hasEntryContext ? (
-              <EntrySummaryCard
-                key="entry-summary"
-                entryId={mainEntryId}
-                onSend={(message) => onSend(message, null)}
-              />
+              <EntrySummaryCard key="entry-summary" entryId={mainEntryId} />
             ) : (
               <DefaultWelcomeContent
                 key="default-welcome"
