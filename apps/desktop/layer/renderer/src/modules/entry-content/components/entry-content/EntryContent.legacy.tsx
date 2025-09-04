@@ -1,3 +1,4 @@
+import { useGlobalFocusableScopeSelector } from "@follow/components/common/Focusable/hooks.js"
 import { MemoedDangerousHTMLStyle } from "@follow/components/common/MemoedDangerousHTMLStyle.js"
 import { Spring } from "@follow/components/constants/spring.js"
 import { MotionButtonBase } from "@follow/components/ui/button/index.js"
@@ -15,17 +16,18 @@ import { EventBus } from "@follow/utils/event-bus"
 import { clsx, cn } from "@follow/utils/utils"
 import { ErrorBoundary } from "@sentry/react"
 import type { JSAnimation, Variants } from "motion/react"
-import { m, useAnimationControls } from "motion/react"
+import { AnimatePresence, m, useAnimationControls } from "motion/react"
 import * as React from "react"
 import { memo, useEffect, useMemo, useRef, useState } from "react"
 
 import { useEntryIsInReadability } from "~/atoms/readability"
 import { useIsZenMode, useUISettingKey } from "~/atoms/settings/ui"
-import { Focusable } from "~/components/common/Focusable"
+import { Focusable, FocusablePresets } from "~/components/common/Focusable"
 import { ShadowDOM } from "~/components/common/ShadowDOM"
 import type { TocRef } from "~/components/ui/markdown/components/Toc"
 import { useInPeekModal } from "~/components/ui/modal/inspire/InPeekModal"
 import { HotkeyScope } from "~/constants"
+import { useNavigateEntry } from "~/hooks/biz/useNavigateEntry"
 import { useRenderStyle } from "~/hooks/biz/useRenderStyle"
 import { useRouteParamsSelector } from "~/hooks/biz/useRouteParams"
 import { useFeedSafeUrl } from "~/hooks/common/useFeedSafeUrl"
@@ -35,7 +37,9 @@ import { WrappedElementProvider } from "~/providers/wrapped-element-provider"
 
 import { AISummary } from "../../AISummary"
 import { ApplyEntryActions } from "../../ApplyEntryActions"
+import { NAVIGATION_HINTS_ICONS, NAVIGATION_HINTS_TEXT } from "../../constants/navigation-hints"
 import { useEntryContent, useEntryMediaInfo } from "../../hooks"
+import { useEntryNavigationHints } from "../../hooks/useEntryNavigationHints"
 import { EntryHeader } from "../entry-header"
 import { EntryAttachments } from "../EntryAttachments"
 import { EntryTimelineSidebar } from "../EntryTimelineSidebar"
@@ -139,6 +143,7 @@ const EntryContentImpl: Component<EntryContentProps> = ({
         </RootPortal>
         <EntryTimelineSidebar entryId={entryId} />
         <EntryScrollArea className={className} scrollerRef={scrollerRef}>
+          <EntryNavigationHandler entryId={entryId} />
           {/* Indicator for the entry */}
           <m.div
             initial={pageMotionVariants.initial}
@@ -312,3 +317,73 @@ const Renderer: React.FC<{
     </EntryContentHTMLRenderer>
   )
 })
+
+// EntryNavigationHandler for legacy version (without wheel gesture)
+const EntryNavigationHandler = ({ entryId }: { entryId: string }) => {
+  const navigate = useNavigateEntry()
+  const when = useGlobalFocusableScopeSelector(FocusablePresets.isEntryRender)
+
+  // Handle close gesture
+  const handleCloseEntry = React.useCallback(() => {
+    navigate({ entryId: null })
+  }, [navigate])
+
+  // Navigation hints for entry content (legacy version without wheel gesture)
+  const { showFirstEntryHint, showScrollHint, showBottomHint } = useEntryNavigationHints({
+    enabled: when && !!entryId,
+    entryId,
+  })
+
+  // Render hint button with different states
+  const renderHintButton = (icon: string, text: string, position: "top" | "bottom" = "top") => (
+    <m.div
+      initial={{ y: position === "top" ? -50 : 50, opacity: 0 }}
+      animate={{ y: 0, opacity: 1 }}
+      exit={{ y: position === "top" ? -50 : 50, opacity: 0 }}
+      transition={Spring.presets.smooth}
+      className={clsx(
+        "pointer-events-none absolute z-40 flex justify-center",
+        position === "top" ? "inset-x-0 top-4" : "inset-x-0 bottom-4",
+      )}
+    >
+      <button
+        onClick={handleCloseEntry}
+        type="button"
+        className={clsx(
+          "group pointer-events-auto flex items-center gap-2",
+          "rounded-full border px-3.5 py-2",
+          "border-border/40 bg-material-ultra-thin/70 shadow-[0_1px_2px_rgba(0,0,0,0.06),0_8px_24px_rgba(0,0,0,0.08)]",
+          "hover:bg-material-thin/70 hover:border-border/60 active:scale-[0.98]",
+          "backdrop-blur-background",
+        )}
+      >
+        <i className={clsx(icon, "text-text/90 mr-1 size-5")} />
+        <span className="text-text/90 text-left text-[13px] font-medium">{text}</span>
+      </button>
+    </m.div>
+  )
+
+  return (
+    <AnimatePresence mode="popLayout">
+      {/* First entry hint */}
+      {showFirstEntryHint &&
+        renderHintButton(
+          NAVIGATION_HINTS_ICONS.ARROW_UP,
+          NAVIGATION_HINTS_TEXT.SCROLL_UP_EXIT,
+          "top",
+        )}
+
+      {/* Scroll threshold hint */}
+      {showScrollHint &&
+        renderHintButton(
+          NAVIGATION_HINTS_ICONS.ARROW_UP,
+          NAVIGATION_HINTS_TEXT.SCROLL_UP_EXIT,
+          "top",
+        )}
+
+      {/* Bottom hint */}
+      {showBottomHint &&
+        renderHintButton(NAVIGATION_HINTS_ICONS.CLOSE, NAVIGATION_HINTS_TEXT.ESC_EXIT, "bottom")}
+    </AnimatePresence>
+  )
+}

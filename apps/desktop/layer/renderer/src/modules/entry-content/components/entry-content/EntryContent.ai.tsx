@@ -30,6 +30,7 @@ import { BlockSliceAction } from "~/modules/ai-chat/store/slices/block.slice"
 import { COMMAND_ID } from "~/modules/command/commands/id"
 
 import { ApplyEntryActions } from "../../ApplyEntryActions"
+import { setEntryContentScrollToTop } from "../../atoms"
 import { useEntryContent } from "../../hooks"
 import { AIEntryHeader } from "../entry-header"
 import { getEntryContentLayout } from "../layouts"
@@ -69,7 +70,7 @@ const EntryContentImpl: Component<EntryContentProps> = ({
   const { error, content, isPending } = useEntryContent(entryId)
 
   const view = useRouteParamsSelector((route) => route.view)
-  const scrollerRef = useRef<HTMLDivElement | null>(null)
+  const [scrollerRef, setScrollerRef] = useState<HTMLDivElement | null>(null)
   const safeUrl = useFeedSafeUrl(entryId)
 
   const isZenMode = useIsZenMode()
@@ -107,6 +108,24 @@ const EntryContentImpl: Component<EntryContentProps> = ({
     }
   }, [animationController, entryId])
 
+  useEffect(() => {
+    setEntryContentScrollToTop(true)
+  }, [entryId])
+  useEffect(() => {
+    if (!scrollerRef) return
+
+    const handler = () => {
+      setEntryContentScrollToTop(scrollerRef.scrollTop < 50)
+    }
+    scrollerRef.addEventListener("scroll", handler)
+
+    return () => {
+      scrollerRef.removeEventListener("scroll", handler)
+    }
+  }, [scrollerRef])
+
+  const scrollerRefObject = React.useMemo(() => ({ current: scrollerRef }), [scrollerRef])
+
   return (
     <div className={cn(className, "@container flex flex-col")}>
       <EntryCommandShortcutRegister entryId={entryId} view={view} />
@@ -126,11 +145,12 @@ const EntryContentImpl: Component<EntryContentProps> = ({
           <EntryScrollingAndNavigationHandler
             entryId={entryId}
             scrollAnimationRef={scrollAnimationRef}
-            scrollerRef={scrollerRef}
+            scrollerRef={scrollerRefObject}
           />
         </RootPortal>
         {/* <EntryTimeline entryId={entryId} className="top-48" /> */}
-        <EntryScrollArea scrollerRef={scrollerRef} viewportClassName="pt-[95px]">
+        <EntryScrollArea scrollerRef={setScrollerRef}>
+          {/* <EntryNavigationHandler entryId={entryId} /> */}
           {/* Indicator for the entry */}
           {!isZenMode && isInHasTimelineView && (
             <>
@@ -168,7 +188,7 @@ const EntryContentImpl: Component<EntryContentProps> = ({
             <article
               data-testid="entry-render"
               onContextMenu={stopPropagation}
-              className={"relative w-full min-w-0 pb-10 pt-2"}
+              className={"relative w-full min-w-0 pb-10 pt-12"}
             >
               <ApplyEntryActions entryId={entryId} key={entryId} />
 
@@ -209,7 +229,7 @@ const EntryContentImpl: Component<EntryContentProps> = ({
 export const EntryContent = memo(EntryContentImpl)
 
 const EntryScrollArea: Component<{
-  scrollerRef: React.RefObject<HTMLDivElement | null>
+  scrollerRef: React.Ref<HTMLDivElement | null>
   viewportClassName?: string
 }> = ({ children, className, scrollerRef, viewportClassName }) => {
   const isInPeekModal = useInPeekModal()

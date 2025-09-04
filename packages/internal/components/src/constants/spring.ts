@@ -1,5 +1,4 @@
 import type { Transition } from "motion/react"
-
 /**
  * A smooth spring with a predefined duration and no bounce.
  */
