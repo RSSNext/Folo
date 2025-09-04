@@ -43,7 +43,9 @@ export const HistoryTab = ({ analysis }: HistoryTabProps) => {
                 <span className="text-text truncate text-sm font-medium">
                   {item.operationType
                     ? t("analytics.history_operation", {
-                        operation: item.operationType,
+                        operation: t(`analytics.operation_types.${item.operationType}`, {
+                          defaultValue: item.operationType,
+                        }),
                       })
                     : t("analytics.history_usage")}
                 </span>
