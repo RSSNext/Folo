@@ -3,7 +3,7 @@ import { PanelSplitter } from "@follow/components/ui/divider/index.js"
 import { defaultUISettings } from "@follow/shared/settings/defaults"
 import { cn } from "@follow/utils"
 import { AnimatePresence } from "motion/react"
-import { memo, useEffect, useMemo, useRef } from "react"
+import { memo, useEffect, useLayoutEffect, useMemo, useRef, useState } from "react"
 import { useResizable } from "react-resizable-layout"
 import { useParams } from "react-router"
 
@@ -11,7 +11,7 @@ import { AIChatPanelStyle, useAIChatPanelStyle } from "~/atoms/settings/ai"
 import { getUISettings, setUISetting } from "~/atoms/settings/ui"
 import { getFeedColumnShow, setTimelineColumnShow } from "~/atoms/sidebar"
 import { m } from "~/components/common/Motion"
-import { readableContentMaxWidthClassName, ROUTE_ENTRY_PENDING } from "~/constants"
+import { ROUTE_ENTRY_PENDING } from "~/constants"
 import { useNavigateEntry } from "~/hooks/biz/useNavigateEntry"
 import { AIChatLayout } from "~/modules/app-layout/ai/AIChatLayout"
 import { EntryContent } from "~/modules/entry-content/components/entry-content"
@@ -28,8 +28,18 @@ const AIEntryLayoutImpl = () => {
 
   const realEntryId = entryId === ROUTE_ENTRY_PENDING ? "" : entryId
 
-  // Entry content ref (for focus/measurement if needed)
+  // Entry list width lock and content ref
+  const [lockedListWidth, setLockedListWidth] = useState<number | null>(null)
+  const entryListContainerRef = useRef<HTMLDivElement>(null)
   const entryContentRef = useRef<HTMLDivElement>(null)
+
+  // Lock entry list width at the moment of opening to avoid layout shift
+  useLayoutEffect(() => {
+    if (realEntryId && entryListContainerRef.current) {
+      const { width } = entryListContainerRef.current.getBoundingClientRect()
+      if (width) setLockedListWidth(Math.round(width))
+    }
+  }, [realEntryId])
 
   // AI chat resizable panel configuration
   const aiColWidth = useMemo(() => getUISettings().aiColWidth, [])
@@ -68,14 +78,15 @@ const AIEntryLayoutImpl = () => {
           <div className="relative h-full overflow-hidden">
             {/* Entry list - always rendered to prevent animation */}
             <div
-              className={cn(realEntryId ? readableContentMaxWidthClassName : undefined, "h-full")}
-              // Visually constrain list width when content is open
+              ref={entryListContainerRef}
+              className={cn("h-full")}
+              style={{ width: lockedListWidth ? `${lockedListWidth}px` : undefined }}
             >
               <EntryColumn key="entry-list" />
             </div>
 
             {/* Entry content: fixed width panel that slides in under AI chat */}
-            <AnimatePresence initial={false}>
+            <AnimatePresence initial={false} onExitComplete={() => setLockedListWidth(null)}>
               {realEntryId && (
                 <div className="pointer-events-none absolute inset-0 z-30">
                   {/* Scrim covers uncovered area; animate with content */}
@@ -96,7 +107,7 @@ const AIEntryLayoutImpl = () => {
                     animate={{ x: 0 }}
                     exit={{ x: "100%" }}
                     transition={Spring.presets.fastSmooth}
-                    className="bg-theme-background pointer-events-auto absolute inset-y-0 right-0 z-10 w-[clamp(50ch,65vw,75ch)] border-l"
+                    className="bg-theme-background pointer-events-auto absolute inset-y-0 right-0 z-10 w-[clamp(50ch,65vw,75ch)] border-l px-4 md:px-6"
                   >
                     <EntryContent entryId={realEntryId} className="h-full" />
                   </m.div>
