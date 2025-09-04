@@ -7,12 +7,10 @@ import { cn } from "@follow/utils/utils"
 import { m } from "motion/react"
 import type { FC, PropsWithChildren } from "react"
 import { memo, useEffect, useRef, useState } from "react"
-import { useHotkeys } from "react-hotkeys-hook"
 import { useTranslation } from "react-i18next"
 import { Link } from "react-router"
 import { toast } from "sonner"
 
-import { setAppSearchOpen } from "~/atoms/app"
 import { useIsZenMode, useSetZenMode } from "~/atoms/settings/ui"
 import { setTimelineColumnShow, useTimelineColumnShow } from "~/atoms/sidebar"
 import {
@@ -61,7 +59,6 @@ export const SubscriptionColumnHeader = memo(() => {
             <i className="i-mgc-add-cute-re text-text-secondary size-5" />
           </ActionButton>
         </Link>
-        <SearchTrigger />
 
         <ProfileButton method="modal" animatedAvatar />
         <LayoutActionButton />
@@ -154,16 +151,4 @@ const LogoContextMenu: FC<PropsWithChildren> = ({ children }) => {
       </DropdownMenuContent>
     </DropdownMenu>
   )
-}
-
-const SearchTrigger = () => {
-  useHotkeys(
-    "meta+k,ctrl+k",
-    () => {
-      setAppSearchOpen(true)
-    },
-    { preventDefault: true },
-  )
-
-  return null
 }

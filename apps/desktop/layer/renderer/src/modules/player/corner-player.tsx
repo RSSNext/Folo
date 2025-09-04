@@ -1,4 +1,3 @@
-import { useGlobalFocusableScopeSelector } from "@follow/components/common/Focusable/index.js"
 import { Spring } from "@follow/components/constants/spring.js"
 import { useMobile } from "@follow/components/hooks/useMobile.js"
 import { Tooltip, TooltipContent, TooltipTrigger } from "@follow/components/ui/tooltip/index.jsx"
@@ -23,7 +22,6 @@ import {
   useAudioPlayerAtomSelector,
   useAudioPlayerAtomValue,
 } from "~/atoms/player"
-import { FocusablePresets } from "~/components/common/Focusable"
 import { VolumeSlider } from "~/components/ui/media/VolumeSlider"
 import type { NavigateEntryOptions } from "~/hooks/biz/useNavigateEntry"
 import { useNavigateEntry } from "~/hooks/biz/useNavigateEntry"
@@ -31,7 +29,6 @@ import type { FeedIconEntry } from "~/modules/feed/feed-icon"
 import { FeedIcon } from "~/modules/feed/feed-icon"
 
 import { COMMAND_ID } from "../command/commands/id"
-import { useCommandBinding } from "../command/hooks/use-command-binding"
 
 const handleClickPlay = () => {
   AudioPlayer.togglePlayAndPause()
@@ -140,11 +137,6 @@ const CornerPlayerImpl = ({ hideControls, rounded }: ControlButtonProps) => {
   const feed = useFeedById(entry?.feedId)
   const subscription = useSubscriptionByFeedId(entry?.feedId)
   const list = useListById(listId)
-
-  useCommandBinding({
-    commandId: COMMAND_ID.global.toggleCornerPlay,
-    when: useGlobalFocusableScopeSelector(FocusablePresets.isSubscriptionOrTimeline),
-  })
 
   useEffect(() => {
     return EventBus.subscribe(COMMAND_ID.global.toggleCornerPlay, () => {
