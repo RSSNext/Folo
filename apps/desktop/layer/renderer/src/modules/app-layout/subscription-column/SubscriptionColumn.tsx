@@ -110,7 +110,7 @@ const FeedResponsiveResizerContainer = ({
   const aiEnabled = useFeature("ai")
   const feedColumnShow = useTimelineColumnShow()
   const feedColumnTempShow = useTimelineColumnTempShow()
-  const { entryId, isPendingEntry } = useRouteParams()
+  const { entryId, isPendingEntry, view: currentView } = useRouteParams()
   const navigate = useNavigateEntry()
   const t = useI18n()
 
@@ -206,7 +206,7 @@ const FeedResponsiveResizerContainer = ({
           {entryId && !isPendingEntry && aiEnabled && !isAtTop && (
             <m.div
               className="bg-background/80 hover:bg-background/90 center absolute inset-0 z-20 cursor-pointer backdrop-blur-[2px] transition-colors duration-200"
-              onClick={() => navigate({ entryId: null })}
+              onClick={() => navigate({ entryId: null, view: currentView })}
               initial={{ opacity: 0 }}
               animate={{ opacity: 1 }}
               exit={{ opacity: 0 }}

@@ -8,7 +8,5 @@ export function Component() {
 }
 
 export const loader = () => {
-  return redirect(
-    `/timeline/view-${FeedViewType.Articles}/${ROUTE_FEED_PENDING}/${ROUTE_ENTRY_PENDING}`,
-  )
+  return redirect(`/timeline/view-${FeedViewType.All}/${ROUTE_FEED_PENDING}/${ROUTE_ENTRY_PENDING}`)
 }

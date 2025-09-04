@@ -31,36 +31,38 @@ export const ViewSelectorRadioGroup = ({
   return (
     <Card className={rest.disabled ? "pointer-events-none" : void 0}>
       <CardHeader className={cn("grid grid-cols-6 space-y-0 px-2 py-3", className)}>
-        {views.map((view) => (
-          <div key={view.name}>
-            <input
-              className="peer hidden"
-              type="radio"
-              id={view.name}
-              value={view.view}
-              ref={ref}
-              {...rest}
-            />
-            <label
-              htmlFor={view.name}
-              className={cn(
-                "hover:text-text",
-                view.peerClassName,
-                "center flex h-10 flex-col text-xs leading-none opacity-80 duration-200",
-                "text-text-secondary",
-                "peer-checked:opacity-100",
-                "whitespace-nowrap",
-              )}
-            >
-              {cloneElement(view.icon, {
-                className: `text-lg ${view.icon?.props?.className ?? ""}`,
-              })}
-              <span className="mt-1 hidden text-xs lg:inline">
-                {t(view.name, { ns: "common" })}
-              </span>
-            </label>
-          </div>
-        ))}
+        {views
+          .filter((v) => v.switchable)
+          .map((view) => (
+            <div key={view.name}>
+              <input
+                className="peer hidden"
+                type="radio"
+                id={view.name}
+                value={view.view}
+                ref={ref}
+                {...rest}
+              />
+              <label
+                htmlFor={view.name}
+                className={cn(
+                  "hover:text-text",
+                  view.peerClassName,
+                  "center flex h-10 flex-col text-xs leading-none opacity-80 duration-200",
+                  "text-text-secondary",
+                  "peer-checked:opacity-100",
+                  "whitespace-nowrap",
+                )}
+              >
+                {cloneElement(view.icon, {
+                  className: `text-lg ${view.icon?.props?.className ?? ""}`,
+                })}
+                <span className="mt-1 hidden text-xs lg:inline">
+                  {t(view.name, { ns: "common" })}
+                </span>
+              </label>
+            </div>
+          ))}
       </CardHeader>
       {showPreview && (
         <CardContent

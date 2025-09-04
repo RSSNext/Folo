@@ -21,6 +21,7 @@ import { MediaContainerWidthProvider } from "~/components/ui/media/MediaContaine
 
 import { EntryItemSkeleton } from "./EntryItemSkeleton"
 import { EntryItem } from "./item"
+import { AllMasonry } from "./Items/all-masonry"
 import { PictureMasonry } from "./Items/picture-masonry"
 import type { EntryListProps } from "./list"
 
@@ -29,6 +30,18 @@ export const EntryColumnGrid: FC<EntryListProps> = (props) => {
 
   const isMobile = useMobile()
   const masonry = useUISettingKey("pictureViewMasonry") || isMobile
+
+  if (view === FeedViewType.All) {
+    return (
+      <AllMasonry
+        key={feedId}
+        hasNextPage={hasNextPage}
+        endReached={fetchNextPage}
+        data={entriesIds}
+        Footer={props.Footer}
+      />
+    )
+  }
 
   if (masonry && view === FeedViewType.Pictures) {
     return (
