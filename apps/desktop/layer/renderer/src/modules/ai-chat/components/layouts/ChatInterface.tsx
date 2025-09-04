@@ -226,8 +226,8 @@ const ChatInterfaceContent = ({ centerInputOnEmpty }: ChatInterfaceProps) => {
   const shouldShowScrollToBottom = hasMessages && !isAtBottom && !isLoadingHistory
 
   return (
-    <GlobalFileDropZone className="flex size-full flex-col">
-      <div className="@container flex min-h-0 flex-1 flex-col" ref={scrollContainerParentRef}>
+    <GlobalFileDropZone className="@container flex size-full flex-col">
+      <div className="flex min-h-0 flex-1 flex-col" ref={scrollContainerParentRef}>
         <AnimatePresence>
           {!hasMessages && !isLoadingHistory ? (
             <WelcomeScreen onSend={handleSendMessage} centerInputOnEmpty={centerInputOnEmpty} />
