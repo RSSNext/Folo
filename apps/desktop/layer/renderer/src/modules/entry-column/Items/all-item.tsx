@@ -4,7 +4,6 @@ import { useIsEntryStarred } from "@follow/store/collection/hooks"
 import { useEntry } from "@follow/store/entry/hooks"
 import { useEntryStore } from "@follow/store/entry/store"
 import { useFeedById } from "@follow/store/feed/hooks"
-import { unreadSyncService } from "@follow/store/unread/store"
 import { cn, formatDuration, transformVideoUrl } from "@follow/utils"
 import { FeedViewType } from "@follow-app/client-sdk"
 import { useHover } from "@use-gesture/react"
@@ -142,7 +141,6 @@ export const AllItem: EntryListItemFC = ({ entryId, entryPreview, translation })
       ? Number.parseInt(duration_in_seconds.toString())
       : undefined
     const duration = formatDuration(seconds)
-    const firstMedia = media[0]
 
     return {
       attachments,
@@ -150,7 +148,6 @@ export const AllItem: EntryListItemFC = ({ entryId, entryPreview, translation })
       content,
       extra,
       feedId,
-      firstMedia,
       iconEntry,
       id,
       media,
@@ -225,7 +222,6 @@ export const AllItem: EntryListItemFC = ({ entryId, entryPreview, translation })
     (event) => {
       const hovered = event.active
       if (hovered) {
-        unreadSyncService.markEntryAsRead(entryId)
         if (hoverTimerRef.current) {
           clearTimeout(hoverTimerRef.current)
         }
@@ -233,6 +229,7 @@ export const AllItem: EntryListItemFC = ({ entryId, entryPreview, translation })
           setShowPreview(true)
         }, 500)
       } else {
+        setShowPreview(false)
         if (hoverTimerRef.current) {
           clearTimeout(hoverTimerRef.current)
           hoverTimerRef.current = null
@@ -290,12 +287,13 @@ export const AllItem: EntryListItemFC = ({ entryId, entryPreview, translation })
 
   if (!entry) return null
 
-  const mediaCover = entryMedia?.[0] ?? entry.firstMedia ?? null
+  const mediaCover = entryMedia?.[0] ?? null
 
   const mediaCoverHeight = mediaCover?.height
   const mediaCoverWidth = mediaCover?.width
 
-  const aspectRatio = mediaCoverHeight && mediaCoverWidth ? mediaCoverWidth / mediaCoverHeight : 1
+  const aspectRatio =
+    mediaCoverHeight && mediaCoverWidth ? mediaCoverWidth / mediaCoverHeight : undefined
 
   return (
     <div className="group" ref={ref}>
@@ -340,7 +338,7 @@ export const AllItem: EntryListItemFC = ({ entryId, entryPreview, translation })
                 }}
                 blurhash={mediaCover.blurhash || undefined}
                 style={{
-                  aspectRatio,
+                  aspectRatio: aspectRatio ?? 1,
                 }}
               />
             ) : (
@@ -377,15 +375,7 @@ export const AllItem: EntryListItemFC = ({ entryId, entryPreview, translation })
         {view === FeedViewType.Videos && (
           <div className="cursor-card w-full">
             <div className="relative overflow-x-auto">
-              {miniIframeSrc && showPreview ? (
-                <ViewTag
-                  src={miniIframeSrc}
-                  className={cn(
-                    "pointer-events-none aspect-video w-full shrink-0 rounded-md bg-black object-cover",
-                    isActive && "rounded-b-none",
-                  )}
-                />
-              ) : mediaCover ? (
+              {mediaCover ? (
                 <Media
                   key={mediaCover.url}
                   src={mediaCover.url}
@@ -401,14 +391,21 @@ export const AllItem: EntryListItemFC = ({ entryId, entryPreview, translation })
                   }}
                   blurhash={mediaCover.blurhash || undefined}
                   style={{
-                    aspectRatio,
+                    aspectRatio: aspectRatio ?? 16 / 9,
                   }}
                   showFallback={true}
                 />
               ) : (
-                <div className="center bg-material-medium text-text-secondary aspect-video w-full flex-col gap-1 rounded-md text-xs">
-                  <i className="i-mgc-sad-cute-re size-6" />
-                  No media available
+                <div className="flex min-h-[10em] flex-col items-center justify-center overflow-hidden px-4 py-20 text-[1.5rem] font-normal leading-[1.2]">
+                  <div className="line-clamp-6 max-w-full break-words">{titleWithKeyword}</div>
+                </div>
+              )}
+              {miniIframeSrc && showPreview && (
+                <div className="pointer-events-none absolute inset-0">
+                  <ViewTag
+                    src={miniIframeSrc}
+                    className={cn("pointer-events-none size-full min-h-[10em] object-cover")}
+                  />
                 </div>
               )}
               {!!entry.duration && (
