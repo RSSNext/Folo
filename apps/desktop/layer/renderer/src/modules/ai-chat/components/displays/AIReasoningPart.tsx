@@ -23,6 +23,7 @@ export const AIReasoningPart: React.FC<AIReasoningPartProps> = React.memo(
         <CollapseCssGroup key={groupKey}>
           <div>
             <CollapseCss
+              hideArrow
               collapseId={collapseId}
               defaultOpen={isStreaming}
               onOpenChange={(opened) => {
@@ -38,6 +39,9 @@ export const AIReasoningPart: React.FC<AIReasoningPartProps> = React.memo(
                     <span className="text-text-secondary">
                       {isStreaming ? "Reasoning..." : "Reasoning"}
                     </span>
+                  </div>
+                  <div className="ml-auto flex items-center justify-center opacity-0 transition-opacity duration-200 group-hover:opacity-100">
+                    <i className="i-mgc-right-cute-re size-3 shrink-0 transition-transform duration-200 group-data-[state=open]:rotate-90" />
                   </div>
                 </div>
               }

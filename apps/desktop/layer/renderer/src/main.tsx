@@ -23,7 +23,6 @@ import { ElECTRON_CUSTOM_TITLEBAR_HEIGHT } from "./constants"
 import { initializeApp } from "./initialize"
 import { registerAppGlobalShortcuts } from "./initialize/global-shortcuts"
 import { followApi } from "./lib/api-client"
-import { ipcServices } from "./lib/client"
 import { queryClient } from "./lib/query-client"
 import { router } from "./router"
 
@@ -68,5 +67,3 @@ ReactDOM.createRoot($container).render(
     <RouterProvider router={router} />
   </React.StrictMode>,
 )
-
-window.a = ipcServices
