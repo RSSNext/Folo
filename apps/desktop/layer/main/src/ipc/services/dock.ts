@@ -76,7 +76,8 @@ export class DockService extends IpcService {
 
   @IpcMethod()
   async updateUnreadCount(): Promise<void> {
-    const res = await apiClient.reads["total-count"].$get()
+    const res = await apiClient.reads.getTotalCount()
+
     setDockCount(res.data.count)
   }
 

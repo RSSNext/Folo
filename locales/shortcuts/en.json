@@ -18,6 +18,8 @@
   "command.entry.scroll_up.title": "Scroll Up",
   "command.global.quick_add.description": "Open quick add panel to follow a new feed or others",
   "command.global.quick_add.title": "Quick Add",
+  "command.global.quick_search.description": "Open the quick search panel",
+  "command.global.quick_search.title": "Quick Search",
   "command.global.show_shortcuts.description": "Show the shortcuts guideline modal",
   "command.global.show_shortcuts.title": "Show Shortcuts",
   "command.global.toggle_ai_chat.description": "Toggle the AI chat panel",

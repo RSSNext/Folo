@@ -79,6 +79,7 @@
   "discover.inbox.description": "You can receive information via email and webhooks through the inbox.",
   "discover.inbox.email": "Email",
   "discover.inbox.handle": "Handle",
+  "discover.inbox.no_inbox": "You currently have no inbox, click the button below to create your first inbox.",
   "discover.inbox.secret": "Secret",
   "discover.inbox.title": "Title",
   "discover.inbox.webhooks_docs": "Webhooks docs",

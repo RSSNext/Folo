@@ -1,4 +1,6 @@
+import { views } from "@follow/constants"
 import { cn } from "@follow/utils/utils"
+import { t } from "i18next"
 import * as React from "react"
 
 import type { AIChatContextBlock } from "~/modules/ai-chat/store/types"
@@ -23,6 +25,10 @@ interface AIDataBlockItemProps {
  */
 const getDisplayContent = (block: AIChatContextBlock): React.ReactNode => {
   switch (block.type) {
+    case "mainView": {
+      const viewName = views.find((v) => v.view === Number(block.value))?.name
+      return viewName ? t(viewName, { ns: "common" }) : block.value
+    }
     case "mainEntry":
     case "referEntry": {
       return <EntryTitle entryId={block.value} fallback={block.value} />
@@ -39,6 +45,7 @@ const getDisplayContent = (block: AIChatContextBlock): React.ReactNode => {
       }
       return getFileDisplayContent(block.attachment)
     }
+
     default: {
       return ""
     }
