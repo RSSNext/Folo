@@ -245,35 +245,35 @@ export const AllItem: EntryListItemFC = ({ entryId, entryPreview, translation })
   const titleWithKeyword = useMemo(() => {
     if (!title || !titleKeyword) return title
 
+    const regex = new RegExp(`(${titleKeyword.replaceAll(/[.*+?^${}()|[\]\\]/g, "\\$&")})`, "gi")
+
     const renderTitle = ({ type }: { type: "highlight" | "normal" }) => (
       <>
-        {title
-          .split(new RegExp(`(${titleKeyword.replaceAll(/[.*+?^${}()|[\]\\]/g, "\\$&")})`, "gi"))
-          .map((part, index) => {
-            // Check if this part matches the keyword (case-insensitive)
-            const normalizedPart = part.toLowerCase().trim()
-            const normalizedKeyword = titleKeyword.trim()
-            const isKeyword = normalizedPart === normalizedKeyword && part.trim() !== ""
+        {title.split(regex).map((part, index) => {
+          // Check if this part matches the keyword (case-insensitive)
+          const normalizedPart = part.toLowerCase().trim()
+          const normalizedKeyword = titleKeyword.trim()
+          const isKeyword = normalizedPart === normalizedKeyword && part.trim() !== ""
 
-            return isKeyword ? (
-              <span
-                key={`keyword-${index}-${part}`}
-                className={cn(type === "highlight" && randomStyle.highlight.className)}
-                style={{
-                  textDecorationSkipInk: "none",
-                }}
-              >
-                {part}
-              </span>
-            ) : (
-              <span
-                key={`text-${index}-${part}`}
-                className={cn(type === "highlight" && "text-transparent")}
-              >
-                {part}
-              </span>
-            )
-          })}
+          return isKeyword ? (
+            <span
+              key={`keyword-${index}-${part}`}
+              className={cn(type === "highlight" && randomStyle.highlight.className)}
+              style={{
+                textDecorationSkipInk: "none",
+              }}
+            >
+              {part}
+            </span>
+          ) : (
+            <span
+              key={`text-${index}-${part}`}
+              className={cn(type === "highlight" && "text-transparent")}
+            >
+              {part}
+            </span>
+          )
+        })}
       </>
     )
 
