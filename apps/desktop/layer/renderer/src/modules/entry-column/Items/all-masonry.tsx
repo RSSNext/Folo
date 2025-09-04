@@ -335,12 +335,13 @@ const MasonryWrapper: FC<{
 
 // Loading skeleton component
 const LoadingSkeleton: FC<{ count?: number }> = ({ count = 1 }) => {
-  const keys = useMemo(() => Array.from({ length: count }, () => crypto.randomUUID()), [count])
+  const keys = useMemo(() => Array.from({ length: count }), [count])
   return (
     <>
-      {keys.map((key) => (
+      {keys.map((_, index) => (
         <div
-          key={key}
+          // eslint-disable-next-line @eslint-react/no-array-index-key
+          key={index}
           className="border-border bg-background mb-4 overflow-hidden rounded-lg border"
         >
           <div className="space-y-3 p-4">
