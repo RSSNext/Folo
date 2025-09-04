@@ -227,7 +227,7 @@ const ChatInterfaceContent = ({ centerInputOnEmpty }: ChatInterfaceProps) => {
 
   return (
     <GlobalFileDropZone className="flex size-full flex-col">
-      <div className="flex min-h-0 flex-1 flex-col" ref={scrollContainerParentRef}>
+      <div className="@container flex min-h-0 flex-1 flex-col" ref={scrollContainerParentRef}>
         <AnimatePresence>
           {!hasMessages && !isLoadingHistory ? (
             <WelcomeScreen onSend={handleSendMessage} centerInputOnEmpty={centerInputOnEmpty} />

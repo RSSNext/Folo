@@ -74,7 +74,9 @@ export const AIModelIndicator = memo(({ className, onModelChange }: AIModelIndic
       )}
     >
       <i className={cn("size-3", iconClass)} />
-      <span className="max-w-20 truncate">{AIModelNameMapping[modelName] || modelName}</span>
+      <span className="@sm:inline hidden max-w-20 truncate">
+        {AIModelNameMapping[modelName] || modelName}
+      </span>
       {hasMultipleModels && <i className="i-mingcute-down-line size-3 opacity-60" />}
     </div>
   )
