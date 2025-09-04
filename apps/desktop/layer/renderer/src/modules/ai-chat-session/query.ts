@@ -29,7 +29,7 @@ export const useAIChatSessionListQuery = (filters?: ListSessionsQuery) => {
   const { data } = useQuery({
     queryKey: aiChatSessionKeys.list(filters),
     queryFn: () => followApi.aiChatSessions.list(filters).then((res) => res.data),
-    staleTime: 1 * 60 * 1000, // 1 minute
+    refetchInterval: 1 * 60 * 1000, // 1 minute
   })
   return data
 }
