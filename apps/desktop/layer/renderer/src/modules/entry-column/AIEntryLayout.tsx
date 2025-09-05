@@ -16,7 +16,7 @@ import { EntryContent } from "~/modules/entry-content/components/entry-content"
 import { AppLayoutGridContainerProvider } from "~/providers/app-grid-layout-container-provider"
 
 import { AIChatRoot } from "../ai-chat/components/layouts/AIChatRoot"
-import { AISplineButton } from "../app-layout/ai/AISplineButton"
+import { AIIndicator } from "../app-layout/ai/AISplineButton"
 import { EntryColumn } from "./index"
 
 const AIEntryLayoutImpl = () => {
@@ -103,7 +103,7 @@ export const AIEntryLayout = memo(function AIEntryLayout() {
   return (
     <AIChatRoot wrapFocusable={false}>
       <AIEntryLayoutImpl />
-      <AISplineButton />
+      <AIIndicator />
     </AIChatRoot>
   )
 })
