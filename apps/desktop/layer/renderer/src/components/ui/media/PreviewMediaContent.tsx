@@ -569,12 +569,8 @@ const DOMImageViewer: FC<{
       smooth={true}
       onInit={(e) => {
         if (e.instance.wrapperComponent) {
-          e.instance.wrapperComponent.onclick = (e) => {
-            if (e.target instanceof HTMLDivElement && e.target.dataset.imageContainer) {
-              e.stopPropagation()
-            } else {
-              dismiss()
-            }
+          e.instance.wrapperComponent.onclick = () => {
+            dismiss()
           }
         }
       }}
@@ -593,7 +589,7 @@ const DOMImageViewer: FC<{
         wrapperProps={{
           onClick: stopPropagation,
         }}
-        wrapperClass="!w-full !h-full !absolute !inset-0"
+        wrapperClass="!w-full !h-full !absolute !inset-0 cursor-zoom-out"
         contentClass="!w-full !h-full flex items-center justify-center"
       >
         <div

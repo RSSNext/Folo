@@ -284,10 +284,11 @@ export const SocialMediaGallery = ({ entryId }: { entryId: string }) => {
               type={media.type}
               previewImageUrl={media.preview_image_url}
               blurhash={media.blurhash}
-              className="data-[state=loading]:!bg-material-ultra-thick size-28 shrink-0"
+              className="data-[state=loading]:!bg-material-ultra-thick size-28 shrink-0 cursor-zoom-in"
               loading="lazy"
               proxy={proxySize}
-              onClick={() => {
+              onClick={(e) => {
+                e.stopPropagation()
                 previewMedia(
                   mediaList.map((m) => ({
                     url: m.url,
@@ -334,10 +335,11 @@ export const SocialMediaGallery = ({ entryId }: { entryId: string }) => {
               type={m.type}
               previewImageUrl={m.preview_image_url}
               blurhash={m.blurhash}
-              className="aspect-square w-full rounded object-cover"
+              className="aspect-square w-full cursor-zoom-in rounded object-cover"
               loading="lazy"
               proxy={proxySize}
-              onClick={() => {
+              onClick={(e) => {
+                e.stopPropagation()
                 previewMedia(
                   media.map((m) => ({
                     url: m.url,
