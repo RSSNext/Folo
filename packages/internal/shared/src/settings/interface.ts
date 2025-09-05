@@ -91,6 +91,12 @@ export interface UISettings {
 
   // Discover
   discoverLanguage: "all" | "eng" | "cmn"
+
+  // Desktop: Timeline tabs preset (excluding the first fixed tab)
+  timelineTabs: {
+    visible: string[]
+    hidden: string[]
+  }
 }
 
 export interface IntegrationSettings {

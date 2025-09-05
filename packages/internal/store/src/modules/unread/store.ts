@@ -1,10 +1,11 @@
-import type { FeedViewType } from "@follow/constants"
+import { FeedViewType } from "@follow/constants"
 import type { UnreadSchema } from "@follow/database/schemas/types"
 import { EntryService } from "@follow/database/services/entry"
 import { UnreadService } from "@follow/database/services/unread"
+import type { MarkAllAsReadRequest } from "@follow-app/client-sdk"
 import { isEqual } from "es-toolkit"
 
-import { apiClient } from "../../context"
+import { api, apiClient } from "../../context"
 import type { Hydratable, Resetable } from "../../lib/base"
 import { createTransaction, createZustandStore } from "../../lib/helper"
 import { getEntry } from "../entry/getter"
@@ -127,14 +128,17 @@ class UnreadSyncService {
     excludePrivate: boolean
   }) {
     const request = async () => {
-      const res = await apiClient().reads.all.$post({
-        json: {
-          view,
-          excludePrivate,
-          ...filter,
-          ...time,
-        },
-      })
+      const args: MarkAllAsReadRequest = {
+        view: view === FeedViewType.All ? undefined : view,
+        excludePrivate,
+        ...filter,
+        ...time,
+      }
+      if (view === FeedViewType.All) {
+        delete args.view
+      }
+      const res = await api().reads.markAllAsRead(args)
+
       return res.data.read
     }
 
@@ -161,7 +165,7 @@ class UnreadSyncService {
 
   async markViewAsRead(view: FeedViewType, excludePrivate: boolean) {
     await this.markBatchAsRead({
-      view,
+      view: view === FeedViewType.All ? undefined : view,
       excludePrivate,
     })
   }

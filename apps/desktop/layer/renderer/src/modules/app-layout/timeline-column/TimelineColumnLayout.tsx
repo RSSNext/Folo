@@ -24,7 +24,8 @@ export function TimelineColumnLayout() {
   const settingWideMode = useRealInWideMode()
   const entryColWidth = useMemo(() => getUISettings().entryColWidth, [])
   const { view } = useRouteParams()
-  const inWideMode = (view ? views[view]!.wideMode : false) || settingWideMode
+  const inWideMode =
+    (view ? views.find((v) => v.view === view)?.wideMode : false) || settingWideMode
   const feedColumnWidth = useUISettingKey("feedColWidth")
   const startDragPosition = useRef(0)
   const { position, separatorProps, isDragging, separatorCursor, setPosition } = useResizable({

@@ -12,6 +12,7 @@ import { getUISettings, setUISetting } from "~/atoms/settings/ui"
 import { m } from "~/components/common/Motion"
 import { ROUTE_ENTRY_PENDING } from "~/constants"
 import { useNavigateEntry } from "~/hooks/biz/useNavigateEntry"
+import { useRouteParams } from "~/hooks/biz/useRouteParams"
 import { AIChatLayout } from "~/modules/app-layout/ai/AIChatLayout"
 import { EntryContent } from "~/modules/entry-content/components/entry-content"
 import { AppLayoutGridContainerProvider } from "~/providers/app-grid-layout-container-provider"
@@ -33,9 +34,15 @@ const AIEntryLayoutImpl = () => {
   const accumulatedDelta = useRef(0)
   const isScrollingAtTop = useRef(false)
 
+  const { view: currentView } = useRouteParams()
+
+  const closeEntry = useCallback(() => {
+    navigate({ entryId: null, view: currentView })
+  }, [navigate, currentView])
+
   const handleCloseGesture = useCallback(() => {
-    navigate({ entryId: null })
-  }, [navigate])
+    closeEntry()
+  }, [closeEntry])
 
   const handleWheel = useCallback(
     (e: WheelEvent) => {

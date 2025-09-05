@@ -28,6 +28,7 @@
   "feed.follower_one": "follower",
   "feed.follower_other": "followers",
   "feed.updated_at": "Updated",
+  "feed_view_type.all": "All",
   "feed_view_type.articles": "Articles",
   "feed_view_type.audios": "Audios",
   "feed_view_type.notifications": "Notifications",

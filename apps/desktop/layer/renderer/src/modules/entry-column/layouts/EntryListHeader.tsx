@@ -62,7 +62,16 @@ export const EntryListHeader: FC<{
 
   const feed = useFeedById(feedId)
 
-  const titleStyleBasedView = ["pl-6", "pl-7", "pl-7", "pl-7", "px-5", "pl-6"]
+  const titleStyleBasedView = {
+    [FeedViewType.All]: "pl-5",
+    [FeedViewType.Articles]: "pl-7",
+    [FeedViewType.Pictures]: "pl-7",
+    [FeedViewType.Videos]: "pl-7",
+    [FeedViewType.SocialMedia]: "px-5",
+    [FeedViewType.Audios]: "pl-6",
+    [FeedViewType.Notifications]: "pl-6",
+  }
+
   const feedColumnShow = useTimelineColumnShow()
   const commandShortcuts = useCommandShortcuts()
   const runCmdFn = useRunCommandFn()
@@ -89,15 +98,17 @@ export const EntryListHeader: FC<{
             )}
             onClick={stopPropagation}
           >
-            {views[view]!.wideMode && entryId && entryId !== ROUTE_ENTRY_PENDING && !aiEnabled && (
-              <>
-                <EntryHeader entryId={entryId} />
-                <DividerVertical className="mx-2 w-px" />
-              </>
-            )}
+            {views.find((v) => v.view === view)?.wideMode &&
+              entryId &&
+              entryId !== ROUTE_ENTRY_PENDING && (
+                <>
+                  <EntryHeader entryId={entryId} />
+                  <DividerVertical className="mx-2 w-px" />
+                </>
+              )}
 
             <AppendTaildingDivider>
-              {!views[view]!.wideMode && !aiEnabled && <WideModeButton />}
+              {!views.find((v) => v.view === view)?.wideMode && !aiEnabled && <WideModeButton />}
               {view === FeedViewType.Pictures && <SwitchToMasonryButton />}
             </AppendTaildingDivider>
 
