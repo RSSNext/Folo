@@ -301,7 +301,7 @@ export const AllItem: EntryListItemFC = ({ entryId, entryPreview, translation })
       <div
         className={cn(
           "relative flex max-h-[35em] flex-col overflow-hidden rounded-lg",
-          "before:group-hover:bg-theme-item-hover before:absolute before:inset-0 before:z-10 before:transition-colors before:duration-200",
+          "before:group-hover:bg-theme-item-hover before:pointer-events-none before:absolute before:inset-0 before:z-10 before:transition-colors before:duration-200",
           randomStyle.card.card,
         )}
       >
