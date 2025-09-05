@@ -32,11 +32,8 @@ export const NotifyChannelsConfig = ({ value, onChange }: NotifyChannelsConfigPr
 
   return (
     <div className="space-y-3">
-      <div className="flex items-start gap-3 rounded-md border p-3 text-sm">
-        <div className="mt-0.5">
-          <Switch checked={enabled} onCheckedChange={toggle} />
-        </div>
-        <div className="flex flex-col gap-1">
+      <div className="flex items-center gap-3 rounded-md border p-3 text-sm">
+        <div className="flex flex-1 flex-col gap-1">
           <div className="text-text flex items-center gap-1 font-medium">
             <i className={cn("text-text-secondary size-4", EMAIL_CHANNEL.icon)} />
             {t(EMAIL_CHANNEL.labelKey)}
@@ -45,6 +42,7 @@ export const NotifyChannelsConfig = ({ value, onChange }: NotifyChannelsConfigPr
             {t(EMAIL_CHANNEL.helperKey)}
           </div>
         </div>
+        <Switch checked={enabled} onCheckedChange={toggle} />
       </div>
     </div>
   )
