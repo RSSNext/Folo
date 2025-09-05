@@ -122,6 +122,8 @@
   "settings.panel_style.fixed": "Fixed",
   "settings.panel_style.floating": "Floating",
   "settings.panel_style.label": "Panel Style",
+  "settings.showSplineButton.description": "Show or hide the AI assistant indicator in the bottom-right corner",
+  "settings.showSplineButton.label": "AI Assistant Indicator",
   "settings.title": "AI Settings",
   "shortcuts.add": "Add Shortcut",
   "shortcuts.added": "Shortcut added successfully",

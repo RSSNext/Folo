@@ -21,7 +21,7 @@ export const ListHeader = ({ view }: { view: FeedViewType }) => {
   const navigateEntry = useNavigateEntry()
 
   return (
-    <div onClick={stopPropagation} className="mx-3 flex items-center justify-between px-2.5 py-1">
+    <div onClick={stopPropagation} className="mx-3 flex items-center justify-between p-1">
       <div
         className="text-base font-bold"
         onClick={(e) => {

@@ -7,11 +7,13 @@ import { atom, useAtomValue } from "jotai"
 
 export interface WebAISettings extends AISettings {
   panelStyle: AIChatPanelStyle
+  showSplineButton: boolean
 }
 
 export const createDefaultSettings = (): WebAISettings => ({
   ...defaultAISettings,
   panelStyle: AIChatPanelStyle.Fixed,
+  showSplineButton: true,
 })
 
 export const {

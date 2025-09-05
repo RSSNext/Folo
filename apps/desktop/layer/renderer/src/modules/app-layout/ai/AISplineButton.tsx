@@ -1,5 +1,5 @@
 import { Spring } from "@follow/components/constants/spring.js"
-import { cn } from "@follow/utils"
+import { clsx } from "@follow/utils"
 import { AnimatePresence, m } from "motion/react"
 import type { FC } from "react"
 
@@ -8,16 +8,15 @@ import {
   setAIPanelVisibility,
   useAIChatPanelStyle,
   useAIPanelVisibility,
+  useAISettingKey,
 } from "~/atoms/settings/ai"
 import { AISpline } from "~/modules/ai-chat/components/3d-models/AISpline"
+import { AISmartSidebar } from "~/modules/ai-chat/components/layouts/AISmartSidebar"
 
-export interface AISplineButtonProps {
-  className?: string
-}
-
-export const AISplineButton: FC<AISplineButtonProps> = ({ className }) => {
+export const AIIndicator: FC = () => {
   const panelStyle = useAIChatPanelStyle()
   const isVisible = useAIPanelVisibility()
+  const showSplineButton = useAISettingKey("showSplineButton")
 
   // Only show the spline button when:
   // 1. Panel style is floating
@@ -30,7 +29,8 @@ export const AISplineButton: FC<AISplineButtonProps> = ({ className }) => {
 
   return (
     <AnimatePresence>
-      {shouldShow && (
+      {shouldShow && !showSplineButton && <AISmartSidebar />}
+      {shouldShow && showSplineButton && (
         <m.button
           key="ai-spline-button"
           initial={{ scale: 0, opacity: 0 }}
@@ -40,15 +40,13 @@ export const AISplineButton: FC<AISplineButtonProps> = ({ className }) => {
           whileTap={{ scale: 0.95 }}
           transition={Spring.presets.smooth}
           onClick={handleClick}
-          className={cn(
+          className={clsx(
             "fixed bottom-8 right-8 z-40",
             "size-16 rounded-2xl",
-            "backdrop-blur-xl",
             "hover:scale-105",
             "active:scale-95",
             "flex items-center justify-center",
             "transition-all duration-300 ease-out",
-            className,
           )}
           title="Open AI Chat"
         >

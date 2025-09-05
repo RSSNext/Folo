@@ -70,7 +70,7 @@ export const AISummaryCardBase: React.FC<AISummaryCardBaseProps> = ({
         "group relative overflow-hidden rounded-2xl border border-neutral-200/50 p-5 backdrop-blur-xl",
         "bg-gradient-to-b from-neutral-50/80 to-white/40 dark:from-neutral-900/80 dark:to-neutral-900/40",
         "dark:border-neutral-800/50",
-        "shadow-[0_8px_32px_rgba(0,0,0,0.08)] dark:shadow-[0_8px_32px_rgba(0,0,0,0.3)]",
+
         isLoading &&
           "before:absolute before:inset-0 before:-z-10 before:animate-[pulse_2s_cubic-bezier(0.4,0,0.6,1)_infinite] before:bg-gradient-to-r before:from-purple-100/0 before:via-purple-300/10 before:to-purple-100/0 dark:before:from-purple-900/0 dark:before:via-purple-600/10 dark:before:to-purple-900/0",
         className,

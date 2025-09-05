@@ -1,4 +1,4 @@
-import { useCallback, useState } from "react"
+import { startTransition, useCallback, useState } from "react"
 import { useTranslation } from "react-i18next"
 import { toast } from "sonner"
 
@@ -131,7 +131,7 @@ export const ChatMoreDropdown = ({
                 {sessions.map((session) => (
                   <DropdownMenuItem
                     key={session.chatId}
-                    onClick={() => chatActions.switchToChat(session.chatId)}
+                    onClick={() => startTransition(() => chatActions.switchToChat(session.chatId))}
                     className="group flex h-12 cursor-pointer items-center justify-between rounded-md px-2 py-3"
                   >
                     <div className="min-w-0 flex-1">
@@ -175,9 +175,9 @@ export const ChatMoreDropdown = ({
           <span>Export Chat</span>
         </DropdownMenuItem>
 
+        <DropdownMenuSeparator />
         {canToggleMode && (
           <>
-            <DropdownMenuSeparator />
             <DropdownMenuItem onClick={handleToggleMode}>
               <i
                 className={`mr-2 size-4 ${panelStyle === AIChatPanelStyle.Fixed ? "i-mingcute-rectangle-vertical-line" : "i-mingcute-layout-right-line"}`}

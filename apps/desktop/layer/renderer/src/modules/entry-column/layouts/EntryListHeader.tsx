@@ -80,7 +80,7 @@ export const EntryListHeader: FC<{
   return (
     <div
       className={cn(
-        "flex w-full flex-col pr-4 pt-2.5",
+        "flex h-12 w-full flex-col pr-4 pt-2.5",
         !feedColumnShow && "macos:mt-4 macos:pt-margin-macos-traffic-light-y",
         titleStyleBasedView[view],
         isPreview && "px-4",
@@ -91,7 +91,7 @@ export const EntryListHeader: FC<{
         {!isPreview && (
           <div
             className={cn(
-              "text-text-secondary relative z-[1] flex items-center gap-1 self-baseline",
+              "text-text-secondary relative z-[1] flex items-center gap-2 self-baseline",
               !headerTitle && "opacity-0 [&_*]:!pointer-events-none",
 
               "translate-x-[6px]",

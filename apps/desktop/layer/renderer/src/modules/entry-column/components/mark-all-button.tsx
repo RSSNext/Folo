@@ -1,5 +1,6 @@
 import { useGlobalFocusableScopeSelector } from "@follow/components/common/Focusable/hooks.js"
-import { ActionButton, Button } from "@follow/components/ui/button/index.js"
+import { ActionButton } from "@follow/components/ui/button/index.js"
+import { styledButtonVariant } from "@follow/components/ui/button/variants.js"
 import { Kbd, KbdCombined } from "@follow/components/ui/kbd/Kbd.js"
 import { useCountdown } from "@follow/hooks"
 import { EventBus } from "@follow/utils/event-bus"
@@ -138,28 +139,18 @@ export const FlatMarkAllReadButton: FC<
   const { className, filter, which, buttonClassName, iconClassName } = props
   const [status, setStatus] = useState<"initial" | "confirm" | "done">("initial")
 
-  const animate = {
-    initial: { rotate: -30, opacity: 0.9 },
-    exit: { rotate: -30, opacity: 0.9 },
-    animate: { rotate: 0, opacity: 1 },
-  }
   return (
-    <Button
-      variant="ghost"
+    <button
+      type="button"
       disabled={status === "done"}
-      buttonClassName={buttonClassName}
-      textClassName={cn(
-        "center relative flex h-auto gap-1",
-
-        className,
-      )}
+      className={cn(styledButtonVariant({ variant: "ghost" }), className, buttonClassName)}
       onClick={() => {
         markAllByRoute(getRouteParams(), filter)
           .then(() => setStatus("done"))
           .catch(() => setStatus("initial"))
       }}
     >
-      <i key={2} {...animate} className={cn("i-mgc-check-circle-cute-re", iconClassName)} />
+      <i key={2} className={cn("i-mgc-check-circle-cute-re", iconClassName)} />
       <span className="duration-200">
         {status === "done" ? (
           t("mark_all_read_button.done")
@@ -174,6 +165,6 @@ export const FlatMarkAllReadButton: FC<
           />
         )}
       </span>
-    </Button>
+    </button>
   )
 }

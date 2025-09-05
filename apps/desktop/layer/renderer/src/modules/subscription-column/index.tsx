@@ -138,7 +138,7 @@ export function SubscriptionColumn({
         </RootPortal>
       )}
 
-      <div className="relative mb-4 mt-3">
+      <div className="relative mb-2 mt-3">
         <TabsRow />
       </div>
       <div
@@ -265,7 +265,7 @@ const TabsRow: FC = () => {
   }
 
   return (
-    <div className="text-text-secondary flex h-11 items-center px-3 text-xl">
+    <div className="text-text-secondary flex h-11 items-center px-1 text-xl">
       <SubscriptionTabButton
         shortcut="BackQuote"
         key={first}

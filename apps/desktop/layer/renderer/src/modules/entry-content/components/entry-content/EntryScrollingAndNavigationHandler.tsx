@@ -16,16 +16,13 @@ import { useEventCallback } from "usehooks-ts"
 import { FocusablePresets } from "~/components/common/Focusable"
 import { COMMAND_ID } from "~/modules/command/commands/id"
 import { useCommandBinding } from "~/modules/command/hooks/use-command-binding"
-import { ScrollToExitTutorial } from "~/modules/entry-column/components/ScrollToExitTutorial"
 
 export const EntryScrollingAndNavigationHandler = ({
   scrollerRef,
   scrollAnimationRef,
-  entryId,
 }: {
   scrollerRef: React.RefObject<HTMLDivElement | null>
   scrollAnimationRef: React.RefObject<JSAnimation<any> | null>
-  entryId: string
 }) => {
   const isAlreadyScrolledBottomRef = useRef(false)
   const [showKeepScrollingPanel, setShowKeepScrollingPanel] = useState(false)
@@ -79,20 +76,11 @@ export const EntryScrollingAndNavigationHandler = ({
       }
     }
 
-    const checkScrollBottomByWheel = () => {
-      isAlreadyScrolledBottomRef.current = false
-      setShowKeepScrollingPanel(false)
-    }
-    scrollerRef.current?.addEventListener("wheel", checkScrollBottomByWheel)
-
     const cleanupScrollAnimation = () => {
       scrollAnimationRef.current?.stop()
       scrollAnimationRef.current = null
     }
     return combineCleanupFunctions(
-      () => {
-        scrollerRef.current?.removeEventListener("wheel", checkScrollBottomByWheel)
-      },
       cleanupScrollAnimation,
       EventBus.subscribe(COMMAND_ID.entryRender.scrollUp, () => {
         const $scroller = scrollerRef.current
@@ -175,9 +163,6 @@ export const EntryScrollingAndNavigationHandler = ({
           </button>
         </m.div>
       )}
-
-      {/* First-time user tutorial for scroll-to-exit */}
-      {!!entryId && <ScrollToExitTutorial />}
     </AnimatePresence>
   )
 }
