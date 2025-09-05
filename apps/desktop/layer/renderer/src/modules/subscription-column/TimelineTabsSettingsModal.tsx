@@ -55,9 +55,7 @@ function TabItem({ id }: { id: UniqueIdentifier }) {
   const { t } = useTranslation()
   return (
     <div className="hover:bg-material-opaque flex w-full items-center gap-2 rounded-md p-2">
-      <div className="flex size-6 items-center justify-center text-lg">
-        {typeof meta.icon === "function" ? meta.icon({ isActive: false }) : meta.icon}
-      </div>
+      <div className="flex size-6 items-center justify-center text-lg">{meta.icon}</div>
       <div className="text-text-secondary text-callout">
         {t(meta.name as any, { ns: "common" })}
       </div>
