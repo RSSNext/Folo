@@ -240,10 +240,10 @@ export function EntryHeaderBreadcrumb() {
           {/* Return Back Button  */}
           <button
             type="button"
-            className="text-text-secondary hover:text-text hover:bg-fill/50 focus-visible:bg-fill/60 inline-flex max-w-[40vw] shrink-0 items-center truncate rounded bg-transparent px-1.5 py-0.5 text-sm transition-colors"
+            className="text-text-secondary hover:text-text hover:bg-fill/50 focus-visible:bg-fill/60 inline-flex shrink-0 items-center rounded bg-transparent p-2"
             onClick={() => navigate({ entryId: null })}
           >
-            <i className="i-mingcute-arrow-left-line size-4" />
+            <i className="i-mingcute-close-fill size-4" />
           </button>
           {views[view]?.name && (
             <div className="flex items-center">

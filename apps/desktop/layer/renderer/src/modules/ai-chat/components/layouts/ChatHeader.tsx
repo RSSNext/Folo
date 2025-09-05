@@ -86,7 +86,7 @@ export const ChatHeader = () => {
           <ChatMoreDropdown
             triggerElement={
               <ActionButton tooltip="More">
-                <i className="i-mingcute-more-1-fill size-5 opacity-80" />
+                <i className="i-mingcute-more-1-fill text-text-secondary size-5" />
               </ActionButton>
             }
           />

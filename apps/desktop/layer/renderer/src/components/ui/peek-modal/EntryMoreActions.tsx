@@ -49,7 +49,7 @@ export const EntryMoreActions: FC<{ entryId: string }> = ({ entryId }) => {
   return (
     <DropdownMenu>
       <DropdownMenuTrigger asChild>
-        <i className="i-mgc-more-1-cute-re" />
+        <i className="i-mingcute-more-1-fill" />
       </DropdownMenuTrigger>
       <RootPortal>
         <DropdownMenuContent alignOffset={20} sideOffset={30}>

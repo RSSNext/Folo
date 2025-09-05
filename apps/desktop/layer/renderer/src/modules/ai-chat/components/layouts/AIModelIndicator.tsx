@@ -66,7 +66,8 @@ export const AIModelIndicator = memo(({ className, onModelChange }: AIModelIndic
           ? "hover:bg-material-medium cursor-button"
           : "hover:bg-material-medium/50",
         "duration-200",
-        "gap-1.5 px-2 py-1 text-xs",
+        "gap-1.5 p-1 text-xs",
+        hasMultipleModels && "px-2",
         "bg-material-ultra-thin border-border/50",
         "text-text-secondary",
 

@@ -74,7 +74,7 @@ export const MoreActions = ({
     <DropdownMenu>
       <DropdownMenuTrigger asChild>
         <ActionButton
-          icon={<i className="i-mgc-more-1-cute-re" />}
+          icon={<i className="i-mingcute-more-1-fill" />}
           size={compact ? "xs" : "base"}
         />
       </DropdownMenuTrigger>

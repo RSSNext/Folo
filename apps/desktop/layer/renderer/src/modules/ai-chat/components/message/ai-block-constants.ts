@@ -66,6 +66,7 @@ export const BLOCK_LABELS = {
   referFeed: "Feed",
   selectedText: "Text",
   fileAttachment: "File",
+  mainView: "View",
 } as const
 
 /**
