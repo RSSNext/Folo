@@ -11,52 +11,23 @@ import { Label } from "@follow/components/ui/label/index.jsx"
 import type { AITask } from "@follow-app/client-sdk"
 import { zodResolver } from "@hookform/resolvers/zod"
 import dayjs from "dayjs"
+import type { GlobalError } from "react-hook-form"
 import { useForm } from "react-hook-form"
 import { useTranslation } from "react-i18next"
 import { toast } from "sonner"
-import { z } from "zod"
 
 import { useCurrentModal } from "~/components/ui/modal/stacked/hooks"
 import { useCreateAITaskMutation, useUpdateAITaskMutation } from "~/modules/ai-task/query"
-import type { ScheduleType } from "~/modules/ai-task/types"
-import { scheduleSchema } from "~/modules/ai-task/types"
+import type { ScheduleType, TaskFormData } from "~/modules/ai-task/types"
+import { MAX_PROMPT_LENGTH, taskSchema } from "~/modules/ai-task/types"
 import { useSettingModal } from "~/modules/settings/modal/use-setting-modal-hack"
 
+import { NotifyChannelsConfig } from "./notify-channels-config"
 import { ScheduleConfig } from "./schedule-config"
-
-const MAX_PROMPT_LENGTH = 2000
-
-const taskSchema = z
-  .object({
-    title: z.string().min(1, "Title is required").max(50, "Title must be less than 50 characters"),
-    prompt: z
-      .string()
-      .min(1, "Prompt is required")
-      .max(MAX_PROMPT_LENGTH, "Prompt must be less than 2000 characters"),
-    schedule: scheduleSchema,
-  })
-  .refine(
-    (data) => {
-      // Validate that for "once" type, the date is in the future
-      if (data.schedule.type === "once") {
-        const scheduledDate = dayjs(data.schedule.date)
-        const now = dayjs()
-        return scheduledDate.isAfter(now)
-      }
-      return true
-    },
-    {
-      message: "Scheduled date must be in the future",
-      path: ["schedule", "date"],
-    },
-  )
-
-type TaskFormData = z.infer<typeof taskSchema>
 
 interface AITaskModalProps {
   task?: AITask // Existing task for editing (optional)
   prompt?: string
-  onSubmit?: (data: TaskFormData) => void
   /**
    * Explicitly control whether to show the "open settings" tip/link.
    */
@@ -71,12 +42,13 @@ const getDefaultFormData = (task?: AITask, prompt?: string): TaskFormData => {
   if (!task) {
     // Default values for creating new task
     return {
-      title: "AI Task",
+      name: "AI Task",
       prompt: prompt || "",
       schedule: {
         type: "once",
         date: now.add(1, "hour").toISOString(),
       },
+      options: { notifyChannels: ["email"] },
     }
   }
   if (prompt) {
@@ -127,18 +99,15 @@ const getDefaultFormData = (task?: AITask, prompt?: string): TaskFormData => {
   }
 
   return {
-    title: task.name,
+    name: task.name,
     prompt: task.prompt,
     schedule: formSchedule,
+    // @ts-expect-error --  Type fixed, remove this comment in next release
+    options: task.options ?? { notifyChannels: ["email"] },
   }
 }
 
-export const AITaskModal = ({
-  task,
-  prompt,
-  onSubmit,
-  showSettingsTip = false,
-}: AITaskModalProps) => {
+export const AITaskModal = ({ task, prompt, showSettingsTip = false }: AITaskModalProps) => {
   const { dismiss } = useCurrentModal()
   const createAITaskMutation = useCreateAITaskMutation()
   const updateAITaskMutation = useUpdateAITaskMutation()
@@ -153,52 +122,36 @@ export const AITaskModal = ({
   })
 
   const scheduleValue = form.watch("schedule")
+  const notifyChannelsValue = form.watch("options.notifyChannels")
 
   const handleScheduleChange = (newSchedule: ScheduleType) => {
     form.setValue("schedule", newSchedule)
   }
 
   const handleSubmit = async (data: TaskFormData) => {
-    // Process the form data to ensure proper datetime format
-    const processedData = {
-      ...data,
-      schedule: data.schedule,
-    }
-
     // The optimistic mutations handle success/error toasts and error cases automatically
     if (isEditing) {
       // Update existing task
       updateAITaskMutation.mutate(
         {
           id: task.id,
-          name: processedData.title,
-          prompt: processedData.prompt,
-          schedule: processedData.schedule,
+          ...data,
         },
         {
           onSuccess: () => {
             toast.success(t("tasks.toast.updated"))
-            onSubmit?.(processedData)
             dismiss()
           },
         },
       )
     } else {
       // Create new task
-      createAITaskMutation.mutate(
-        {
-          name: processedData.title,
-          prompt: processedData.prompt,
-          schedule: processedData.schedule,
+      createAITaskMutation.mutate(data, {
+        onSuccess: () => {
+          toast.success(t("tasks.toast.created"))
+          dismiss()
         },
-        {
-          onSuccess: () => {
-            toast.success(t("tasks.toast.created"))
-            onSubmit?.(processedData)
-            dismiss()
-          },
-        },
-      )
+      })
     }
   }
 
@@ -219,7 +172,7 @@ export const AITaskModal = ({
               <Label className="text-text pl-2 text-sm font-medium">{t("tasks.name")}</Label>
               <FormField
                 control={form.control}
-                name="title"
+                name="name"
                 render={({ field }) => (
                   <FormItem>
                     <FormControl>
@@ -242,7 +195,7 @@ export const AITaskModal = ({
             <ScheduleConfig
               value={scheduleValue}
               onChange={handleScheduleChange}
-              errors={form.formState.errors.schedule as Record<string, string>}
+              errors={form.formState.errors.schedule as Record<string, GlobalError>}
             />
           </div>
 
@@ -281,6 +234,18 @@ export const AITaskModal = ({
                 )}
               />
             </div>
+          </div>
+
+          {/* Notification Channels Section */}
+          <div className="space-y-4">
+            <div className="flex items-center gap-2">
+              <i className="i-mgc-notification-cute-re text-text-secondary size-4" />
+              <h3 className="text-text text-sm font-medium">{t("tasks.section.notifications")}</h3>
+            </div>
+            <NotifyChannelsConfig
+              value={notifyChannelsValue}
+              onChange={(channels) => form.setValue("options.notifyChannels", channels)}
+            />
           </div>
 
           {/* Form Actions */}
