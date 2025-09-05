@@ -1,4 +1,5 @@
 import { useGlobalFocusableScopeSelector } from "@follow/components/common/Focusable/hooks.js"
+import { Spring } from "@follow/components/constants/spring.js"
 import { ActionButton } from "@follow/components/ui/button/index.js"
 import { RootPortal } from "@follow/components/ui/portal/index.js"
 import { FeedViewType } from "@follow/constants"
@@ -12,7 +13,7 @@ import { useWheel } from "@use-gesture/react"
 import { Lethargy } from "lethargy"
 import { AnimatePresence, m } from "motion/react"
 import type { FC, PropsWithChildren } from "react"
-import { memo, useCallback, useEffect, useLayoutEffect, useRef, useState } from "react"
+import { memo, useCallback, useEffect, useLayoutEffect, useMemo, useRef, useState } from "react"
 
 import { useRootContainerElement } from "~/atoms/dom"
 import { useUISettingKey } from "~/atoms/settings/ui"
@@ -182,35 +183,45 @@ const SwipeWrapper: FC<{ active: string; children: React.JSX.Element[] }> = memo
   ({ children, active }) => {
     const reduceMotion = useReduceMotion()
     const timelineList = useTimelineList()
-    const index = timelineList.indexOf(active)
+    const viewIndex = timelineList.indexOf(active)
 
     const feedColumnWidth = useUISettingKey("feedColWidth")
+    const timelineTabs = useUISettingKey("timelineTabs")
     const containerRef = useRef<HTMLDivElement>(null)
 
-    const prevActiveIndexRef = useRef(-1)
+    // Use custom ordering for direction calculation
+    const orderedForDirection = useMemo(() => {
+      if (timelineList.length === 0) return [] as string[]
+      const first = timelineList[0]
+      const rest = timelineList.slice(1)
+      const savedVisible = (timelineTabs?.visible ?? []).filter((id) => rest.includes(id))
+      const ordered = [first, ...savedVisible, ...rest.filter((id) => !savedVisible.includes(id))]
+      return ordered
+    }, [timelineList, timelineTabs])
+
+    const orderIndex = orderedForDirection.indexOf(active)
+
+    const prevOrderIndexRef = useRef(-1)
     const [isReady, setIsReady] = useState(false)
 
     const [direction, setDirection] = useState<"left" | "right">("right")
-    const [currentAnimtedActive, setCurrentAnimatedActive] = useState(index)
+    const [currentAnimtedActive, setCurrentAnimatedActive] = useState(viewIndex)
 
     useLayoutEffect(() => {
-      const prevActiveIndex = prevActiveIndexRef.current
-      if (prevActiveIndex !== index) {
-        if (prevActiveIndex < index) {
-          setDirection("right")
-        } else {
-          setDirection("left")
-        }
+      const prevOrderIndex = prevOrderIndexRef.current
+      if (prevOrderIndex !== orderIndex) {
+        if (prevOrderIndex < orderIndex) setDirection("right")
+        else setDirection("left")
       }
       // eslint-disable-next-line @eslint-react/web-api/no-leaked-timeout
       setTimeout(() => {
-        setCurrentAnimatedActive(index)
+        setCurrentAnimatedActive(viewIndex)
       }, 0)
-      if (prevActiveIndexRef.current !== -1) {
+      if (prevOrderIndexRef.current !== -1) {
         setIsReady(true)
       }
-      prevActiveIndexRef.current = index
-    }, [index])
+      prevOrderIndexRef.current = orderIndex
+    }, [orderIndex, viewIndex])
 
     if (reduceMotion) {
       return <div ref={containerRef}>{children[currentAnimtedActive]}</div>
@@ -226,7 +237,7 @@ const SwipeWrapper: FC<{ active: string; children: React.JSX.Element[] }> = memo
           }
           animate={{ x: 0 }}
           exit={{ x: direction === "right" ? -feedColumnWidth : feedColumnWidth }}
-          transition={{ x: { type: "spring", stiffness: 700, damping: 40 } }}
+          transition={Spring.presets.snappy}
           ref={containerRef}
         >
           {children[currentAnimtedActive]}
