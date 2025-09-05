@@ -11,7 +11,7 @@ function EntryHeaderImpl({ entryId, className, compact }: EntryHeaderProps) {
   return (
     <EntryHeaderRoot entryId={entryId} className={className} compact={compact}>
       <div
-        className="bg-background border-border relative z-10 flex h-12 w-full items-center justify-between gap-3 px-4 data-[at-top='false']:border-b"
+        className="bg-background relative z-10 flex h-12 w-full items-center justify-between gap-3 px-4"
         data-at-top={isAtTop}
         data-hide-in-print
       >

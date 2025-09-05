@@ -17,7 +17,7 @@ import { memo, useCallback, useEffect, useLayoutEffect, useMemo, useRef, useStat
 
 import { useRootContainerElement } from "~/atoms/dom"
 import { useUISettingKey } from "~/atoms/settings/ui"
-import { setTimelineColumnShow, useTimelineColumnShow } from "~/atoms/sidebar"
+import { setTimelineColumnShow, useSubscriptionColumnShow } from "~/atoms/sidebar"
 import { Focusable } from "~/components/common/Focusable"
 import { HotkeyScope, ROUTE_TIMELINE_OF_VIEW } from "~/constants"
 import { useBackHome } from "~/hooks/biz/useNavigateEntry"
@@ -98,7 +98,7 @@ export function SubscriptionColumn({
   )
 
   const shouldFreeUpSpace = useShouldFreeUpSpace()
-  const feedColumnShow = useTimelineColumnShow()
+  const feedColumnShow = useSubscriptionColumnShow()
   const rootContainerElement = useRootContainerElement()
 
   const focusableContainerRef = useRef<HTMLDivElement>(null)
@@ -131,7 +131,7 @@ export function SubscriptionColumn({
         <RootPortal to={rootContainerElement}>
           <ActionButton
             tooltip={"Toggle Feed Column"}
-            className="center left-macos-traffic-light macos:flex absolute top-2.5 z-0 hidden -translate-x-2 text-zinc-500"
+            className="center macos:left-macos-traffic-light-2 macos:flex absolute left-0 top-2.5 z-0 hidden -translate-x-2 text-zinc-500"
             onClick={() => setTimelineColumnShow(true)}
           >
             <i className="i-mgc-layout-leftbar-open-cute-re" />

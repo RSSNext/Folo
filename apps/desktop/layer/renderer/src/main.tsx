@@ -53,7 +53,7 @@ if (IN_ELECTRON) {
       break
     }
     case "macOS": {
-      document.body.style.cssText += `--fo-macos-traffic-light-width: 100px; --fo-macos-traffic-light-height: 30px;`
+      document.body.style.cssText += `--fo-macos-traffic-light-width: 80px; --fo-macos-traffic-light-height: 30px;`
       break
     }
   }

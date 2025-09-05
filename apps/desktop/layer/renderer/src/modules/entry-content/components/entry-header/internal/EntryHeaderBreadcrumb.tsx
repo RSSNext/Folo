@@ -79,7 +79,7 @@ function ViewSubscriptionsDropdown({
       <DropdownMenuTrigger asChild>
         <button
           type="button"
-          className="text-text-tertiary hover:text-text focus-visible:bg-fill/60 -ml-1 inline-flex size-6 items-center justify-center rounded transition-colors"
+          className="text-text-tertiary no-drag-region hover:text-text focus-visible:bg-fill/60 -ml-1 inline-flex size-6 items-center justify-center rounded transition-colors"
           aria-label="Open subscriptions of this view"
         >
           <i className="i-mingcute-down-line size-4" />
@@ -188,7 +188,7 @@ function FeedEntriesDropdown({
       <DropdownMenuTrigger asChild>
         <button
           type="button"
-          className="text-text-tertiary hover:text-text focus-visible:bg-fill/60 -ml-2 inline-flex size-6 items-center justify-center rounded transition-colors"
+          className="text-text-tertiary no-drag-region hover:text-text focus-visible:bg-fill/60 -ml-2 inline-flex size-6 items-center justify-center rounded transition-colors"
           aria-label="Open entries from this feed"
         >
           <i className="i-mingcute-down-line size-4" />
@@ -229,18 +229,18 @@ export function EntryHeaderBreadcrumb() {
   if (!meta) return null
 
   return (
-    <div className="flex min-w-0 flex-1 items-center gap-1 overflow-hidden">
+    <div className="flex min-w-0 flex-1 overflow-hidden">
       <nav
         aria-label="Breadcrumb"
         className={
-          "text-text-secondary group/breadcrumb flex min-w-0 items-center gap-1 truncate leading-tight"
+          "text-text-secondary group/breadcrumb -mb-1 flex min-w-0 items-center gap-1 truncate leading-tight"
         }
       >
         <div className="flex min-w-0 items-center gap-1">
           {/* Return Back Button  */}
           <button
             type="button"
-            className="text-text-secondary hover:text-text hover:bg-fill/50 focus-visible:bg-fill/60 inline-flex shrink-0 items-center rounded bg-transparent p-2"
+            className="text-text-secondary no-drag-region hover:text-text hover:bg-fill/50 focus-visible:bg-fill/60 inline-flex shrink-0 items-center rounded bg-transparent p-2"
             onClick={() => navigate({ entryId: null })}
           >
             <i className="i-mingcute-close-fill size-4" />
@@ -250,7 +250,7 @@ export function EntryHeaderBreadcrumb() {
               <button
                 type="button"
                 className={cn(
-                  "text-text-secondary hover:text-text hover:bg-fill/50 focus-visible:bg-fill/60 inline-flex max-w-[40vw] items-center truncate rounded bg-transparent px-1.5 py-0.5 text-sm transition-colors",
+                  "text-text-secondary no-drag-region hover:text-text hover:bg-fill/50 focus-visible:bg-fill/60 inline-flex max-w-[40vw] items-center truncate rounded bg-transparent px-1.5 py-0.5 text-sm transition-colors",
                 )}
                 onClick={() => navigate({ entryId: null, view })}
               >
@@ -267,7 +267,7 @@ export function EntryHeaderBreadcrumb() {
             <button
               type="button"
               className={cn(
-                "text-text-secondary hover:text-text hover:bg-fill/50 focus-visible:bg-fill/60 inline-flex max-w-[40vw] items-center truncate rounded bg-transparent px-1.5 py-0.5 text-sm transition-colors",
+                "text-text-secondary no-drag-region hover:text-text hover:bg-fill/50 focus-visible:bg-fill/60 inline-flex max-w-[40vw] items-center truncate rounded bg-transparent px-1.5 py-0.5 text-sm transition-colors",
               )}
               onClick={() => navigate({ entryId: null, feedId: meta.feedId })}
               title={meta.feedTitle}

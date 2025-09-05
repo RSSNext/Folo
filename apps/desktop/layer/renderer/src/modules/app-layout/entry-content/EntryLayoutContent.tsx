@@ -10,7 +10,7 @@ import { useParams } from "react-router"
 
 import { AIChatPanelStyle, useAIChatPanelStyle } from "~/atoms/settings/ai"
 import { useRealInWideMode } from "~/atoms/settings/ui"
-import { useTimelineColumnShow, useTimelineColumnTempShow } from "~/atoms/sidebar"
+import { useSubscriptionColumnShow, useSubscriptionColumnTempShow } from "~/atoms/sidebar"
 import { m } from "~/components/common/Motion"
 import { FixedModalCloseButton } from "~/components/ui/modal/components/close"
 import { ROUTE_ENTRY_PENDING } from "~/constants"
@@ -35,8 +35,8 @@ const EntryLayoutContentLegacy = () => {
     (settingWideMode && !realEntryId)
   )
   const wideMode = !!(settingWideMode && realEntryId)
-  const feedColumnTempShow = useTimelineColumnTempShow()
-  const feedColumnShow = useTimelineColumnShow()
+  const feedColumnTempShow = useSubscriptionColumnTempShow()
+  const feedColumnShow = useSubscriptionColumnShow()
   const shouldHeaderPaddingLeft = feedColumnTempShow && !feedColumnShow && settingWideMode
 
   if (!showEntryContent) {
@@ -105,8 +105,8 @@ const Grid = ({ entryId }) => {
   const settingWideMode = useRealInWideMode()
 
   const wideMode = !!(settingWideMode && entryId)
-  const feedColumnTempShow = useTimelineColumnTempShow()
-  const feedColumnShow = useTimelineColumnShow()
+  const feedColumnTempShow = useSubscriptionColumnTempShow()
+  const feedColumnShow = useSubscriptionColumnShow()
   const panelStyle = useAIChatPanelStyle()
   const aiPinned = panelStyle === AIChatPanelStyle.Fixed
   const shouldHeaderPaddingLeft = feedColumnTempShow && !feedColumnShow && settingWideMode

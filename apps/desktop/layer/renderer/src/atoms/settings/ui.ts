@@ -79,9 +79,7 @@ export const useToggleZenMode = () => {
   const setZenMode = useSetZenMode()
   const isZenMode = useIsZenMode()
   return useEventCallback(() => {
-    const newIsZenMode = !isZenMode
-    document.documentElement.dataset.zenMode = newIsZenMode.toString()
-    setZenMode(newIsZenMode)
+    setZenMode(!isZenMode)
   })
 }
 

@@ -12,7 +12,7 @@ import { Link } from "react-router"
 import { toast } from "sonner"
 
 import { useIsZenMode, useSetZenMode } from "~/atoms/settings/ui"
-import { setTimelineColumnShow, useTimelineColumnShow } from "~/atoms/sidebar"
+import { setTimelineColumnShow, useSubscriptionColumnShow } from "~/atoms/sidebar"
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -68,7 +68,7 @@ export const SubscriptionColumnHeader = memo(() => {
 })
 
 const LayoutActionButton = () => {
-  const feedColumnShow = useTimelineColumnShow()
+  const feedColumnShow = useSubscriptionColumnShow()
 
   const [animation, setAnimation] = useState({ width: !feedColumnShow ? "auto" : 0 })
   const isZenMode = useIsZenMode()

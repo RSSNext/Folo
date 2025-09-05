@@ -8,7 +8,8 @@ import i18next from "i18next"
 import { useEffect, useInsertionEffect, useLayoutEffect, useRef } from "react"
 
 import { useGeneralSettingKey } from "~/atoms/settings/general"
-import { useUISettingValue } from "~/atoms/settings/ui"
+import { useIsZenMode, useUISettingValue } from "~/atoms/settings/ui"
+import { useSubscriptionColumnShow } from "~/atoms/sidebar"
 import { I18N_LOCALE_KEY } from "~/constants"
 import { useReduceMotion } from "~/hooks/biz/useReduceMotion"
 import { useSyncTheme } from "~/hooks/common"
@@ -81,6 +82,15 @@ const useUISettingSync = () => {
   useUpdateDockBadge(setting)
 }
 
+const useDataAttrSync = () => {
+  const isZenMode = useIsZenMode()
+  const columnShow = useSubscriptionColumnShow()
+  useEffect(() => {
+    document.documentElement.dataset.zenMode = isZenMode.toString()
+    document.documentElement.dataset.leftColumnHidden = (!columnShow).toString()
+  }, [isZenMode, columnShow])
+}
+
 const useUXSettingSync = () => {
   const reduceMotion = useReduceMotion()
   useLayoutEffect(() => {
@@ -119,6 +129,6 @@ export const SettingSync = () => {
   useUXSettingSync()
   useLanguageSync()
   useGeneralSettingSync()
-
+  useDataAttrSync()
   return null
 }

@@ -15,7 +15,7 @@ import { useNavigate } from "react-router"
 
 import { previewBackPath } from "~/atoms/preview"
 import { useGeneralSettingKey } from "~/atoms/settings/general"
-import { useTimelineColumnShow } from "~/atoms/sidebar"
+import { useSubscriptionColumnShow } from "~/atoms/sidebar"
 import { ROUTE_ENTRY_PENDING } from "~/constants"
 import { useFeature } from "~/hooks/biz/useFeature"
 import { useFollow } from "~/hooks/biz/useFollow"
@@ -72,7 +72,7 @@ export const EntryListHeader: FC<{
     [FeedViewType.Notifications]: "pl-6",
   }
 
-  const feedColumnShow = useTimelineColumnShow()
+  const feedColumnShow = useSubscriptionColumnShow()
   const commandShortcuts = useCommandShortcuts()
   const runCmdFn = useRunCommandFn()
 
