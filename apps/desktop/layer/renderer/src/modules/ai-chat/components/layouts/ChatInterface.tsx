@@ -283,7 +283,9 @@ const ChatInterfaceContent = ({ centerInputOnEmpty }: ChatInterfaceProps) => {
           "absolute mx-auto duration-500 ease-in-out",
           hasMessages && "inset-x-0 bottom-0 max-w-4xl px-6 pb-6",
           !hasMessages && "inset-x-0 bottom-0 max-w-3xl px-6 pb-6 duration-200",
-          centerInputOnEmpty && !hasMessages && "bottom-1/2 translate-y-full duration-200",
+          centerInputOnEmpty &&
+            !hasMessages &&
+            "bottom-1/2 translate-y-[calc(100%+1rem)] duration-200",
         )}
       >
         {error && <CollapsibleError error={error} />}

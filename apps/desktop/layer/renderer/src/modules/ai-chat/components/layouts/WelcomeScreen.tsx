@@ -31,7 +31,7 @@ export const WelcomeScreen = ({ onSend, centerInputOnEmpty }: WelcomeScreenProps
       scrollbarClassName="mb-40 mt-12"
       flex
     >
-      <div className="flex w-full max-w-2xl flex-1 flex-col justify-center space-y-8 pb-52">
+      <div className="mx-auto flex w-full flex-1 flex-col justify-center space-y-8 pb-52">
         {/* Header Section - Always Present */}
         <m.div
           initial={{ opacity: 0, y: -20 }}

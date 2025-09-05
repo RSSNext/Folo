@@ -4,7 +4,6 @@ import type { ReactNode } from "react"
 import { useCallback } from "react"
 
 import { AIChatPanelStyle, setAIPanelVisibility, useAIChatPanelStyle } from "~/atoms/settings/ai"
-import { GlassButton } from "~/components/ui/button/GlassButton"
 import { useBlockActions, useChatActions, useCurrentTitle } from "~/modules/ai-chat/store/hooks"
 
 import { ChatMoreDropdown } from "./ChatMoreDropdown"
@@ -118,27 +117,19 @@ export const ChatPageHeader = () => {
     <ChatHeaderLayout
       renderActions={({ onNewChatClick }) => (
         <>
-          <GlassButton description="New Chat" size="sm" onClick={onNewChatClick}>
-            <i className="i-mgc-add-cute-re text-text-secondary size-4" />
-          </GlassButton>
+          <ActionButton tooltip="New Chat" onClick={onNewChatClick}>
+            <i className="i-mgc-add-cute-re text-text-secondary size-5" />
+          </ActionButton>
 
-          <TaskReportDropdown
-            asChild={false}
-            triggerElement={
-              <GlassButton description="Task Reports" size="sm">
-                <i className="i-mgc-inbox-cute-re text-text-secondary size-4" />
-              </GlassButton>
-            }
-          />
+          <TaskReportDropdown />
 
           <div className="bg-border mx-2 h-5 w-px" />
           <ChatMoreDropdown
             canToggleMode={false}
-            asChild={false}
             triggerElement={
-              <GlassButton description="More" size="sm">
-                <i className="i-mingcute-more-1-fill size-4 opacity-80" />
-              </GlassButton>
+              <ActionButton tooltip="More">
+                <i className="i-mingcute-more-1-fill text-text-secondary size-5" />
+              </ActionButton>
             }
           />
         </>
