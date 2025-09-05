@@ -17,6 +17,7 @@ import { AppLayoutGridContainerProvider } from "~/providers/app-grid-layout-cont
 
 import { AIChatRoot } from "../ai-chat/components/layouts/AIChatRoot"
 import { AIIndicator } from "../app-layout/ai/AISplineButton"
+import { AIEntryHeader } from "../entry-content/components/entry-header"
 import { EntryColumn } from "./index"
 
 const AIEntryLayoutImpl = () => {
@@ -52,17 +53,29 @@ const AIEntryLayoutImpl = () => {
           <div className="relative h-full">
             {/* Entry list - always rendered to prevent animation */}
             <EntryColumn key="entry-list" />
-
+            <AnimatePresence>
+              {realEntryId && (
+                <m.div
+                  className="absolute inset-x-0 top-0 z-10"
+                  initial={{ translateY: "-50px", opacity: 0 }}
+                  animate={{ translateY: 0, opacity: 1 }}
+                  exit={{ translateY: "-50px", opacity: 0 }}
+                  transition={Spring.smooth(0.3)}
+                >
+                  <AIEntryHeader entryId={realEntryId} />
+                </m.div>
+              )}
+            </AnimatePresence>
             {/* Entry content overlay with exit animation */}
-            <AnimatePresence mode="popLayout">
+            <AnimatePresence>
               {realEntryId && (
                 <m.div
                   lcpOptimization
-                  initial={{ y: 50, opacity: 0, scale: 0.98 }}
-                  animate={{ y: 0, opacity: 1, scale: 1 }}
-                  exit={{ y: 50, opacity: 0, scale: 0.98 }}
+                  initial={{ translateY: "50px", opacity: 0, scale: 0.98 }}
+                  animate={{ translateY: 0, opacity: 1, scale: 1 }}
+                  exit={{ translateY: "50px", opacity: 0, scale: 0.98 }}
                   transition={Spring.smooth(0.3)}
-                  className="bg-theme-background absolute inset-0 z-10 border-l"
+                  className="bg-theme-background absolute inset-0 z-[9]"
                 >
                   <EntryContent entryId={realEntryId} className="h-full" />
                 </m.div>

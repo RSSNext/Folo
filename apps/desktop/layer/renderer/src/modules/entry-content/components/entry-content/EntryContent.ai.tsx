@@ -32,7 +32,6 @@ import { COMMAND_ID } from "~/modules/command/commands/id"
 import { ApplyEntryActions } from "../../ApplyEntryActions"
 import { setEntryContentScrollToTop } from "../../atoms"
 import { useEntryContent } from "../../hooks"
-import { AIEntryHeader } from "../entry-header"
 import { getEntryContentLayout } from "../layouts"
 import { SourceContentPanel } from "../SourceContentView"
 import { EntryCommandShortcutRegister } from "./EntryCommandShortcutRegister"
@@ -51,7 +50,6 @@ const EntryContentImpl: Component<EntryContentProps> = ({
   noMedia,
   className,
   compact,
-  classNames,
 }) => {
   const entry = useEntry(entryId, (state) => {
     const { feedId, inboxHandle } = state
@@ -129,11 +127,7 @@ const EntryContentImpl: Component<EntryContentProps> = ({
   return (
     <div className={cn(className, "@container flex flex-col")}>
       <EntryCommandShortcutRegister entryId={entryId} view={view} />
-      <AIEntryHeader
-        entryId={entryId}
-        className={cn("absolute inset-x-0 top-0", classNames?.header)}
-        compact={compact}
-      />
+
       <div className="w-full" ref={setPanelPortalElement} />
 
       <Focusable
