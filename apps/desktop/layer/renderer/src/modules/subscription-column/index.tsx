@@ -1,7 +1,7 @@
 import { useGlobalFocusableScopeSelector } from "@follow/components/common/Focusable/hooks.js"
 import { ActionButton } from "@follow/components/ui/button/index.js"
 import { RootPortal } from "@follow/components/ui/portal/index.js"
-import type { FeedViewType } from "@follow/constants"
+import { FeedViewType } from "@follow/constants"
 import { useTypeScriptHappyCallback } from "@follow/hooks"
 import { ELECTRON_BUILD } from "@follow/shared/constants"
 import { usePrefetchSubscription } from "@follow/store/subscription/hooks"
@@ -32,6 +32,7 @@ import { useShouldFreeUpSpace } from "./hook"
 import { SubscriptionListGuard } from "./subscription-list/SubscriptionListGuard"
 import { SubscriptionColumnHeader } from "./SubscriptionColumnHeader"
 import { SubscriptionTabButton } from "./SubscriptionTabButton"
+import { useShowTimelineTabsSettingsModal } from "./TimelineTabsSettingsModal"
 
 const lethargy = new Lethargy()
 
@@ -138,11 +139,7 @@ export function SubscriptionColumn({
       )}
 
       <div className="relative mb-4 mt-3">
-        <div className="text-text-secondary flex h-11 justify-between gap-0 px-3 text-xl">
-          {timelineList.map((timelineId) => (
-            <SubscriptionTabButton key={timelineId} timelineId={timelineId} />
-          ))}
-        </div>
+        <TabsRow />
       </div>
       <div
         className={cn("relative mt-1 flex size-full", !shouldFreeUpSpace && "overflow-hidden")}
@@ -238,6 +235,52 @@ const SwipeWrapper: FC<{ active: string; children: React.JSX.Element[] }> = memo
     )
   },
 )
+
+const TabsRow: FC = () => {
+  const timelineList = useTimelineList()
+  const showSettings = useShowTimelineTabsSettingsModal()
+  const timelineTabs = useUISettingKey("timelineTabs")
+
+  if (timelineList.length <= 5) {
+    return (
+      <div className="text-text-secondary flex h-11 items-center gap-0 px-3 text-xl">
+        {timelineList.map((timelineId, index) => (
+          <SubscriptionTabButton
+            key={timelineId}
+            timelineId={timelineId}
+            shortcut={`${index + 1}`}
+          />
+        ))}
+      </div>
+    )
+  }
+
+  const first = timelineList[0]
+  const rest = timelineList.slice(1)
+  const savedVisible = (timelineTabs?.visible ?? []).filter((id) => rest.includes(id))
+  const visible: string[] = [...savedVisible]
+  for (const id of rest) {
+    if (visible.length >= 4) break
+    if (!visible.includes(id)) visible.push(id)
+  }
+
+  return (
+    <div className="text-text-secondary flex h-11 items-center px-3 text-xl">
+      <SubscriptionTabButton
+        shortcut="BackQuote"
+        key={first}
+        timelineId={`${ROUTE_TIMELINE_OF_VIEW}${FeedViewType.All}`}
+      />
+      {visible.map((timelineId, index) => (
+        <SubscriptionTabButton key={timelineId} timelineId={timelineId} shortcut={`${index + 1}`} />
+      ))}
+
+      <ActionButton tooltip={"Customize Tabs"} onClick={showSettings}>
+        <i className="i-mingcute-dots-fill" />
+      </ActionButton>
+    </div>
+  )
+}
 
 const CommandsHandler = ({
   setActive,

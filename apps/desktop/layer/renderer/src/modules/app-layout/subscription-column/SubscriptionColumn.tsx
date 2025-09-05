@@ -103,7 +103,6 @@ const FeedResponsiveResizerContainer = ({
 
   const feedColumnShow = useTimelineColumnShow()
   const feedColumnTempShow = useTimelineColumnTempShow()
-
   const t = useI18n()
 
   useEffect(() => {

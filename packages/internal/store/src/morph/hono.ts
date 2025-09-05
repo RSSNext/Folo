@@ -50,6 +50,7 @@ class LegacyHonoMorph {
       extra: data.entries.extra
         ? {
             links: data.entries.extra.links ?? undefined,
+            title_keyword: data.entries.extra.title_keyword ?? undefined,
           }
         : null,
       language: data.entries.language,

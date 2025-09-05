@@ -432,7 +432,11 @@ export const useEntryActions = ({
       new EntryActionMenuItem({
         id: COMMAND_ID.entry.readability,
         onClick: runCmdFn(COMMAND_ID.entry.readability, [{ entryId, entryUrl: entry.url! }]),
-        hide: !!entry.readability || compact || (view && views[view]!.wideMode) || !entry.url,
+        hide:
+          !!entry.readability ||
+          compact ||
+          (view && views.find((v) => v.view === view)?.wideMode) ||
+          !entry.url,
         active: isEntryInReadability,
         notice: !entry.doesContentContainsHTMLTags && !isEntryInReadability,
         entryId,

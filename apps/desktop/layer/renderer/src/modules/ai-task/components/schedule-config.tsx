@@ -10,6 +10,7 @@ import {
 import { cn } from "@follow/utils/utils"
 import dayjs from "dayjs"
 import { memo, useMemo } from "react"
+import type { GlobalError } from "react-hook-form"
 import { useTranslation } from "react-i18next"
 
 import type { ScheduleType } from "~/modules/ai-task/types"
@@ -17,7 +18,7 @@ import type { ScheduleType } from "~/modules/ai-task/types"
 interface ScheduleConfigProps {
   value: ScheduleType
   onChange: (value: ScheduleType) => void
-  errors?: Record<string, string>
+  errors?: Record<string, GlobalError>
 }
 
 const dayOfWeekOptions = [
@@ -95,7 +96,7 @@ const getQuickPresets = () => {
   ]
 }
 
-const defaultErrors: Record<string, string> = {}
+const defaultErrors: NonNullable<ScheduleConfigProps["errors"]> = {}
 
 // Calculate next execution times for timeline preview
 const getNextExecutions = (schedule: ScheduleType, count = 5): dayjs.Dayjs[] => {
@@ -280,7 +281,7 @@ export const ScheduleConfig = memo<ScheduleConfigProps>(
               </button>
             ))}
           </div>
-          {errors.type && <p className="text-red mt-2 text-sm">{errors.type}</p>}
+          {errors.type && <p className="text-red mt-2 text-sm">{errors.type.message}</p>}
         </div>
 
         {/* Time Configuration */}
@@ -300,7 +301,7 @@ export const ScheduleConfig = memo<ScheduleConfigProps>(
               }}
               placeholder={t("schedule.date_time_placeholder")}
             />
-            {errors.date && <p className="text-red mt-2 text-sm">{errors.date}</p>}
+            {errors.date && <p className="text-red mt-2 text-sm">{errors.date.message}</p>}
           </div>
         )}
 
@@ -324,7 +325,9 @@ export const ScheduleConfig = memo<ScheduleConfigProps>(
                 })
               }}
             />
-            {errors.timeOfDay && <p className="text-red mt-2 text-sm">{errors.timeOfDay}</p>}
+            {errors.timeOfDay && (
+              <p className="text-red mt-2 text-sm">{errors.timeOfDay.message}</p>
+            )}
           </div>
         )}
 
@@ -357,7 +360,7 @@ export const ScheduleConfig = memo<ScheduleConfigProps>(
                     ))}
                   </SelectContent>
                 </Select>
-                {errors.dayOfWeek && <p className="text-red text-sm">{errors.dayOfWeek}</p>}
+                {errors.dayOfWeek && <p className="text-red text-sm">{errors.dayOfWeek.message}</p>}
               </div>
               <div className="space-y-1">
                 <Label className="text-text-secondary text-xs">{t("schedule.time_label")}</Label>
@@ -379,7 +382,7 @@ export const ScheduleConfig = memo<ScheduleConfigProps>(
                     })
                   }}
                 />
-                {errors.timeOfDay && <p className="text-red text-sm">{errors.timeOfDay}</p>}
+                {errors.timeOfDay && <p className="text-red text-sm">{errors.timeOfDay.message}</p>}
               </div>
             </div>
           </div>
@@ -414,7 +417,9 @@ export const ScheduleConfig = memo<ScheduleConfigProps>(
                     ))}
                   </SelectContent>
                 </Select>
-                {errors.dayOfMonth && <p className="text-red text-sm">{errors.dayOfMonth}</p>}
+                {errors.dayOfMonth && (
+                  <p className="text-red text-sm">{errors.dayOfMonth.message}</p>
+                )}
               </div>
               <div className="space-y-1">
                 <Label className="text-text-secondary text-xs">{t("schedule.time_label")}</Label>
@@ -436,7 +441,7 @@ export const ScheduleConfig = memo<ScheduleConfigProps>(
                     })
                   }}
                 />
-                {errors.timeOfDay && <p className="text-red text-sm">{errors.timeOfDay}</p>}
+                {errors.timeOfDay && <p className="text-red text-sm">{errors.timeOfDay.message}</p>}
               </div>
             </div>
           </div>

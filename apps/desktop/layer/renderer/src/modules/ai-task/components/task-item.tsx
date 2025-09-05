@@ -97,7 +97,6 @@ export const TaskItem = memo(({ task }: { task: AITask }) => {
     present({
       title: "Edit AI Task",
       content: () => <AITaskModal task={task} />,
-      clickOutsideToDismiss: true,
     })
   }
 
