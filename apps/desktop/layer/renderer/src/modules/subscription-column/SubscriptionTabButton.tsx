@@ -62,7 +62,7 @@ const ViewSwitchButton: FC<{
       shortcut={`${view + 1}`}
       className={cn(
         isActive && item.className,
-        "flex h-11 w-9 shrink-0 flex-col items-center gap-1 text-[1.375rem]",
+        "flex h-11 w-8 shrink-0 flex-col items-center gap-1 text-[1.375rem]",
         ELECTRON ? "hover:!bg-theme-item-hover" : "",
         isOver && "border-orange-400 bg-orange-400/60",
       )}
