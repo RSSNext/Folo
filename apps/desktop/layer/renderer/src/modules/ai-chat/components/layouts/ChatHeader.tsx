@@ -1,4 +1,5 @@
 import { ActionButton } from "@follow/components/ui/button/index.js"
+import clsx from "clsx"
 import type { ReactNode } from "react"
 import { useCallback } from "react"
 
@@ -41,16 +42,23 @@ const ChatHeaderLayout = ({
     [chatActions],
   )
 
-  const maskImage = `linear-gradient(to bottom, black 0%, black 90%, transparent 100%)`
+  const isFloating = useAIChatPanelStyle() === AIChatPanelStyle.Floating
+
   return (
-    <div className="absolute inset-x-0 top-0 z-[1] h-12">
-      <div
-        className="bg-background/70 backdrop-blur-background absolute inset-0"
-        style={{
-          maskImage,
-          WebkitMaskImage: maskImage,
-        }}
-      />
+    <div
+      className={clsx(
+        "absolute inset-x-0 top-0 z-[1] h-12",
+        !isFloating && "bg-background border-b",
+      )}
+    >
+      {isFloating && (
+        <div
+          className="bg-background/70 backdrop-blur-background absolute inset-0"
+          style={{
+            maskImage: `linear-gradient(to bottom, black 0%, black 90%, transparent 100%)`,
+          }}
+        />
+      )}
 
       <div className="relative z-10 flex h-full items-center justify-between px-4">
         <div className="mr-2 flex min-w-0 flex-1 items-center">
