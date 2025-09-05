@@ -248,9 +248,9 @@ const ActionBar = ({ entryId }: { entryId: string }) => {
 
   return (
     <m.div
-      initial={{ opacity: 0, scale: 0.9, y: "-1/2" }}
-      animate={{ opacity: 1, scale: 1, y: "-1/2" }}
-      exit={{ opacity: 0, scale: 0.9, y: "-1/2" }}
+      initial={{ opacity: 0, scale: 0.9, translateY: "-1/2" }}
+      animate={{ opacity: 1, scale: 1, translateY: "-1/2" }}
+      exit={{ opacity: 0, scale: 0.9, translateY: "-1/2" }}
       transition={Spring.presets.smooth}
       className="absolute -right-2 top-0 -translate-y-1/2 rounded-lg border border-gray-200 bg-white/90 p-1 shadow-sm backdrop-blur-sm dark:border-neutral-900 dark:bg-neutral-900"
       onClick={(e) => {
@@ -260,7 +260,7 @@ const ActionBar = ({ entryId }: { entryId: string }) => {
     >
       <div className="flex items-center gap-1">
         <EntryHeaderActions entryId={entryId} view={view} compact />
-        <MoreActions entryId={entryId} view={view} compact />
+        <MoreActions entryId={entryId} view={view} compact hideCustomizeToolbar />
       </div>
     </m.div>
   )
