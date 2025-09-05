@@ -8,6 +8,7 @@ import {
   setAIPanelVisibility,
   useAIChatPanelStyle,
   useAIPanelVisibility,
+  useAISettingKey,
 } from "~/atoms/settings/ai"
 import { AISpline } from "~/modules/ai-chat/components/3d-models/AISpline"
 
@@ -18,6 +19,7 @@ export interface AISplineButtonProps {
 export const AISplineButton: FC<AISplineButtonProps> = ({ className }) => {
   const panelStyle = useAIChatPanelStyle()
   const isVisible = useAIPanelVisibility()
+  const showSplineButton = useAISettingKey("showSplineButton")
 
   // Only show the spline button when:
   // 1. Panel style is floating
@@ -30,7 +32,7 @@ export const AISplineButton: FC<AISplineButtonProps> = ({ className }) => {
 
   return (
     <AnimatePresence>
-      {shouldShow && (
+      {shouldShow && showSplineButton && (
         <m.button
           key="ai-spline-button"
           initial={{ scale: 0, opacity: 0 }}
@@ -43,7 +45,6 @@ export const AISplineButton: FC<AISplineButtonProps> = ({ className }) => {
           className={cn(
             "fixed bottom-8 right-8 z-40",
             "size-16 rounded-2xl",
-            "backdrop-blur-xl",
             "hover:scale-105",
             "active:scale-95",
             "flex items-center justify-center",

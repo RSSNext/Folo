@@ -30,6 +30,10 @@ export const SettingAI = () => {
           },
 
           PanelStyleSection,
+          defineSettingItem("showSplineButton", {
+            label: t("settings.showSplineButton.label"),
+            description: t("settings.showSplineButton.description"),
+          }),
           defineSettingItem("autoScrollWhenStreaming", {
             label: t("settings.autoScrollWhenStreaming.label"),
             description: t("settings.autoScrollWhenStreaming.description"),
