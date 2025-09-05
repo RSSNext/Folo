@@ -58,10 +58,10 @@ const AIEntryLayoutImpl = () => {
               {realEntryId && (
                 <m.div
                   lcpOptimization
-                  initial={{ y: 150, opacity: 0, scale: 0.98 }}
+                  initial={{ y: 50, opacity: 0, scale: 0.98 }}
                   animate={{ y: 0, opacity: 1, scale: 1 }}
-                  exit={{ y: 150, opacity: 0, scale: 0.98 }}
-                  transition={Spring.presets.smooth}
+                  exit={{ y: 50, opacity: 0, scale: 0.98 }}
+                  transition={Spring.smooth(0.3)}
                   className="bg-theme-background absolute inset-0 z-10 border-l"
                 >
                   <EntryContent entryId={realEntryId} className="h-full" />
