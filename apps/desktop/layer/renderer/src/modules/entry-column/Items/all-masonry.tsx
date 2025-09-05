@@ -228,7 +228,6 @@ export const AllMasonry: FC<AllMasonryProps> = ({
         itemKey={itemKey}
         itemHeightEstimate={200}
         onError={() => {
-          console.info("Forcing remount due to masonry error")
           setForceRemountCounter((prev) => prev + 1)
         }}
       />
