@@ -271,7 +271,7 @@ jobs:
       - name: Generate artifact attestation
         if: env.RELEASE == 'true'
         continue-on-error: true
-        uses: actions/attest-build-provenance@v2
+        uses: actions/attest-build-provenance@v3
         with:
           subject-path: |
             apps/desktop/out/make/**/Folo-*.dmg
