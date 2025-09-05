@@ -91,7 +91,7 @@ export const EntryListHeader: FC<{
         {!isPreview && (
           <div
             className={cn(
-              "text-text-secondary relative z-[1] flex items-center gap-1 self-baseline",
+              "text-text-secondary relative z-[1] flex items-center gap-2 self-baseline",
               !headerTitle && "opacity-0 [&_*]:!pointer-events-none",
 
               "translate-x-[6px]",
