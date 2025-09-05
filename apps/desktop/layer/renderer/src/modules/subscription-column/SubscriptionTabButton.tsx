@@ -16,8 +16,15 @@ import { useRouteParamsSelector } from "~/hooks/biz/useRouteParams"
 
 import { resetSelectedFeedIds } from "./atom"
 
-export function SubscriptionTabButton({ timelineId }: { timelineId: string }) {
+export function SubscriptionTabButton({
+  timelineId,
+  shortcut,
+}: {
+  timelineId: string
+  shortcut: string
+}) {
   const activeTimelineId = useRouteParamsSelector((s) => s.timelineId)
+
   const isActive = activeTimelineId === timelineId
   const navigate = useNavigateEntry()
   const setActive = useCallback(() => {
@@ -31,7 +38,9 @@ export function SubscriptionTabButton({ timelineId }: { timelineId: string }) {
 
   if (timelineId.startsWith(ROUTE_TIMELINE_OF_VIEW)) {
     const id = Number.parseInt(timelineId.slice(ROUTE_TIMELINE_OF_VIEW.length), 10) as FeedViewType
-    return <ViewSwitchButton view={id} isActive={isActive} setActive={setActive} />
+    return (
+      <ViewSwitchButton view={id} isActive={isActive} setActive={setActive} shortcut={shortcut} />
+    )
   }
 }
 
@@ -39,7 +48,8 @@ const ViewSwitchButton: FC<{
   view: FeedViewType
   isActive: boolean
   setActive: () => void
-}> = ({ view, isActive, setActive }) => {
+  shortcut: string
+}> = ({ view, isActive, setActive, shortcut }) => {
   const unreadByView = useUnreadByView(view)
   const { t } = useTranslation()
   const showSidebarUnreadCount = useUISettingKey("sidebarShowUnreadCount")
@@ -59,10 +69,10 @@ const ViewSwitchButton: FC<{
       ref={setNodeRef}
       key={item.name}
       tooltip={t(item.name, { ns: "common" })}
-      shortcut={`${view + 1}`}
+      shortcut={shortcut}
       className={cn(
         isActive && item.className,
-        "flex h-11 w-8 shrink-0 flex-col items-center gap-1 text-[1.375rem]",
+        "flex h-11 w-8 shrink-0 grow flex-col items-center gap-1 text-[1.375rem]",
         ELECTRON ? "hover:!bg-theme-item-hover" : "",
         isOver && "border-orange-400 bg-orange-400/60",
       )}
