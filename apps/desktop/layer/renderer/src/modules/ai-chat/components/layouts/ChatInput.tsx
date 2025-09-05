@@ -20,6 +20,7 @@ const chatInputVariants = cva(
   [
     "bg-mix-background/transparent-8/2 focus-within:ring-accent/20 focus-within:border-accent/80 border-border/80",
     "relative overflow-hidden rounded-2xl border backdrop-blur-background duration-200 focus-within:ring-2",
+    "z-[1]",
   ],
   {
     variants: {

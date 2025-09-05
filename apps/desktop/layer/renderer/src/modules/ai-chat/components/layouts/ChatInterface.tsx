@@ -232,32 +232,36 @@ const ChatInterfaceContent = ({ centerInputOnEmpty }: ChatInterfaceProps) => {
           {!hasMessages && !isLoadingHistory ? (
             <WelcomeScreen onSend={handleSendMessage} centerInputOnEmpty={centerInputOnEmpty} />
           ) : (
-            <ScrollArea
-              flex
-              scrollbarClassName="mb-40 mt-12"
-              ref={setScrollAreaRef}
-              rootClassName="flex-1"
-              viewportClassName={cn("pt-12 pb-32", error && "pb-48")}
-            >
-              {isLoadingHistory ? (
-                <div className="flex min-h-96 items-center justify-center">
-                  <i className="i-mgc-loading-3-cute-re text-text size-8 animate-spin" />
-                </div>
-              ) : (
-                <div
-                  className="mx-auto w-full max-w-4xl px-6 py-8"
-                  style={{
-                    minHeight: messageContainerMinHeight
-                      ? `${messageContainerMinHeight}px`
-                      : undefined,
-                  }}
-                >
-                  <Messages contentRef={messagesContentRef} />
+            <>
+              <ScrollArea
+                flex
+                scrollbarClassName="mb-40 mt-12"
+                ref={setScrollAreaRef}
+                rootClassName="flex-1"
+                viewportClassName={cn("pt-12 pb-32", error && "pb-48")}
+              >
+                {isLoadingHistory ? (
+                  <div className="flex min-h-96 items-center justify-center">
+                    <i className="i-mgc-loading-3-cute-re text-text size-8 animate-spin" />
+                  </div>
+                ) : (
+                  <div
+                    className="mx-auto w-full max-w-4xl px-6 py-8"
+                    style={{
+                      minHeight: messageContainerMinHeight
+                        ? `${messageContainerMinHeight}px`
+                        : undefined,
+                    }}
+                  >
+                    <Messages contentRef={messagesContentRef} />
 
-                  {(status === "submitted" || status === "streaming") && <AIChatWaitingIndicator />}
-                </div>
-              )}
-            </ScrollArea>
+                    {(status === "submitted" || status === "streaming") && (
+                      <AIChatWaitingIndicator />
+                    )}
+                  </div>
+                )}
+              </ScrollArea>
+            </>
           )}
         </AnimatePresence>
       </div>
@@ -290,6 +294,12 @@ const ChatInterfaceContent = ({ centerInputOnEmpty }: ChatInterfaceProps) => {
       >
         {error && <CollapsibleError error={error} />}
         <ChatInput onSend={handleSendMessage} variant={!hasMessages ? "minimal" : "default"} />
+        {!centerInputOnEmpty && (
+          <div
+            className="bg-background backdrop-blur-background absolute inset-x-0 bottom-0 h-28"
+            style={{ maskImage: "linear-gradient(to bottom, transparent, black)" }}
+          />
+        )}
       </div>
     </GlobalFileDropZone>
   )
