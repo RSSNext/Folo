@@ -17,6 +17,8 @@ interface MediaTranscriptProps {
   srt: string | undefined
   entryId: string | undefined
   style?: React.CSSProperties
+  /** Optional: number of consecutive subtitle lines to merge together (default: no merging) */
+  mergeLines?: number
   /** Type of transcript: 'subtitle' disables jump and progress tracking, 'transcription' enables all features */
   type?: "subtitle" | "transcription"
 }
@@ -43,11 +45,12 @@ function srtTimeToSeconds(timeString: string): number {
 }
 
 /**
- * Parses SRT subtitle text and returns all subtitles as individual items
+ * Parses SRT subtitle text and optionally merges consecutive lines
  * @param srtText - The SRT format text to parse
+ * @param mergeLines - Optional number of consecutive subtitle items to merge together
  * @returns Array of parsed subtitle items
  */
-function parseSrt(srtText: string): SubtitleItem[] {
+function parseSrt(srtText: string, mergeLines?: number): SubtitleItem[] {
   // Split by double newlines (with optional whitespace) to separate subtitle blocks
   const blocks = srtText.trim().split(/\n\s*\n/)
 
@@ -99,6 +102,34 @@ function parseSrt(srtText: string): SubtitleItem[] {
     })
     .filter((subtitle): subtitle is SubtitleItem => subtitle !== null)
 
+  // If mergeLines is specified and > 1, merge consecutive subtitles
+  if (mergeLines && mergeLines > 1) {
+    const mergedSubtitles: SubtitleItem[] = []
+
+    for (let i = 0; i < subtitles.length; i += mergeLines) {
+      const chunk = subtitles.slice(i, i + mergeLines)
+      if (chunk.length === 0) continue
+
+      const firstItem = chunk[0]
+      const lastItem = chunk.at(-1)
+
+      if (!firstItem || !lastItem) continue
+
+      const mergedText = chunk.map((item) => item.text).join(" ")
+
+      mergedSubtitles.push({
+        index: Math.floor(i / mergeLines) + 1,
+        startTime: firstItem.startTime,
+        endTime: lastItem.endTime,
+        text: mergedText,
+        startTimeInSeconds: firstItem.startTimeInSeconds,
+        endTimeInSeconds: lastItem.endTimeInSeconds,
+      })
+    }
+
+    return mergedSubtitles
+  }
+
   return subtitles
 }
 
@@ -125,6 +156,7 @@ export const MediaTranscript: React.FC<MediaTranscriptProps> = ({
   style,
   srt,
   entryId,
+  mergeLines,
   type = "transcription",
 }) => {
   // Determine if jump and progress tracking should be disabled based on type
@@ -146,18 +178,16 @@ export const MediaTranscript: React.FC<MediaTranscriptProps> = ({
 
   if (!srt) {
     return (
-      <div className={cn("text-text-secondary p-4 text-center", className)}>
-        No transcript available
-      </div>
+      <div className={cn("text-secondary p-4 text-center", className)}>No transcript available</div>
     )
   }
 
   let subtitles: SubtitleItem[]
   try {
-    subtitles = parseSrt(srt)
+    subtitles = parseSrt(srt, mergeLines)
   } catch (error) {
     return (
-      <div className={cn("p-4 text-center text-red-500", className)}>
+      <div className={cn("text-red p-4 text-center", className)}>
         Error parsing transcript:{" "}
         <span>{error instanceof Error ? error.message : "Unknown error"}</span>
       </div>
@@ -200,30 +230,81 @@ export const MediaTranscript: React.FC<MediaTranscriptProps> = ({
   }
 
   return (
-    <div className={cn("flex flex-wrap gap-1 leading-relaxed", className)} style={style}>
+    <div className={cn("space-y-1", className)} style={style}>
       {subtitles.map((subtitle, index) => {
         const isActive = index === currentSubtitleIndex
-        const isPast =
-          !disableProgressTracking && isCurrentAudio && currentTime > subtitle.endTimeInSeconds
+        const isPast = isCurrentAudio && currentTime > subtitle.endTimeInSeconds
 
         return (
-          <span
+          <div
             key={subtitle.index}
             className={cn(
-              "inline-block transition-all duration-300 ease-out",
+              "group relative rounded-lg border-l-4 px-3 py-2 transition-all duration-300 ease-out",
               !disableJump && "cursor-pointer",
               isActive
-                ? "bg-accent/20 text-accent rounded-md px-1 py-0.5 font-medium"
-                : isPast
-                  ? "text-text-tertiary"
-                  : "text-text-secondary hover:text-text",
-              !disableJump && !isActive && "hover:bg-fill-secondary/50 rounded-md px-1 py-0.5",
+                ? "bg-accent/5 border-accent shadow-sm"
+                : "hover:bg-fill-secondary border-transparent hover:shadow-sm",
+              isPast && "opacity-50",
             )}
             onClick={() => !disableJump && handleTimeJump(subtitle.startTimeInSeconds)}
-            title={!disableJump ? `Jump to ${formatTime(subtitle.startTime)}` : undefined}
           >
-            {subtitle.text}
-          </span>
+            <div className="flex items-start gap-4">
+              {/* Time indicator */}
+              <div className="flex-shrink-0 translate-y-3">
+                {!disableJump ? (
+                  <button
+                    type="button"
+                    onClick={(e) => {
+                      e.stopPropagation()
+                      handleTimeJump(subtitle.startTimeInSeconds)
+                    }}
+                    className={cn(
+                      "rounded-md px-2 py-1 font-mono text-xs leading-none transition-all duration-200",
+                      isActive
+                        ? "text-accent bg-accent/10"
+                        : "text-text-tertiary hover:bg-fill-tertiary hover:text-text-secondary",
+                    )}
+                    title="Jump to this time"
+                  >
+                    {formatTime(subtitle.startTime)}
+                  </button>
+                ) : (
+                  <span
+                    className={cn(
+                      "rounded-md px-2 py-1 font-mono text-xs leading-none",
+                      isActive ? "text-accent bg-accent/10" : "bg-fill-tertiary text-text-tertiary",
+                    )}
+                  >
+                    {formatTime(subtitle.startTime)}
+                  </span>
+                )}
+              </div>
+
+              {/* Content */}
+              <div className="min-w-0 flex-1">
+                <p
+                  className={cn(
+                    "text-sm leading-relaxed transition-all duration-300",
+                    isActive ? "text-text-secondary" : "text-text-secondary",
+                    !disableJump && "group-hover:text-text",
+                  )}
+                >
+                  {subtitle.text}
+                </p>
+              </div>
+
+              {/* Active indicator */}
+              {type === "transcription" && (
+                <div className="flex w-6 flex-shrink-0 items-center justify-center">
+                  {isActive && (
+                    <div className="animate-in fade-in slide-in-from-right-2 duration-300">
+                      <div className="bg-accent size-2 animate-pulse rounded-full shadow-sm" />
+                    </div>
+                  )}
+                </div>
+              )}
+            </div>
+          </div>
         )
       })}
     </div>

@@ -149,6 +149,7 @@ const Wrapper: FC<{
 
   return (
     <div ref={containerRef} className="fixed inset-0">
+      <HeaderActions src={src} />
       <m.div
         variants={modalVariants}
         initial="initial"
@@ -172,7 +173,6 @@ const Wrapper: FC<{
             hasSideContent ? "min-w-96 items-center justify-center" : "",
           )}
         >
-          <HeaderActions src={src} />
           {isArray ? renderedChildren[0] : renderedChildren}
         </div>
         {hasSideContent ? (
@@ -188,6 +188,11 @@ const Wrapper: FC<{
   )
 }
 
+const headerActionsVariants = {
+  initial: { opacity: 0, translateY: "-20px" },
+  animate: { opacity: 1, translateY: "0px" },
+  exit: { opacity: 0, translateY: "-20px" },
+}
 const GLASS_BUTTON_CLASS = tw`group-hover/left:opacity-100 opacity-0`
 const HeaderActions: FC<{
   src: string
@@ -196,7 +201,14 @@ const HeaderActions: FC<{
 
   const { dismiss } = useCurrentModal()
   return (
-    <div className="pointer-events-none absolute inset-x-0 top-0 z-[100] flex h-16 items-center justify-end gap-2 px-3">
+    <m.div
+      className="pointer-events-none absolute inset-x-0 top-0 z-[100] flex h-16 items-center justify-end gap-2 px-3"
+      variants={headerActionsVariants}
+      initial="initial"
+      animate="animate"
+      exit="exit"
+      transition={Spring.presets.smooth}
+    >
       <GlassButton
         theme="dark"
         className={GLASS_BUTTON_CLASS}
@@ -229,7 +241,7 @@ const HeaderActions: FC<{
       >
         <i className="i-mgc-close-cute-re" />
       </GlassButton>
-    </div>
+    </m.div>
   )
 }
 
