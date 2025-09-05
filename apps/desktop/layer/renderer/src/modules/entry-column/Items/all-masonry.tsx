@@ -9,7 +9,7 @@ import { ErrorBoundary } from "@sentry/react"
 import type { RenderComponentProps } from "masonic"
 import { useInfiniteLoader } from "masonic"
 import type { FC, ReactNode } from "react"
-import { useCallback, useEffect, useMemo, useRef, useState } from "react"
+import { startTransition, useCallback, useEffect, useMemo, useRef, useState } from "react"
 
 import { useGeneralSettingKey } from "~/atoms/settings/general"
 
@@ -71,7 +71,9 @@ export const AllMasonry: FC<AllMasonryProps> = ({
     const resizeObserver = new ResizeObserver((entries) => {
       const [first] = entries
       if (first) {
-        setWidth(first.contentRect.width)
+        startTransition(() => {
+          setWidth(first.contentRect.width)
+        })
       }
     })
 
@@ -341,7 +343,7 @@ const LoadingSkeleton: FC<{ count?: number }> = ({ count = 1 }) => {
         <div
           // eslint-disable-next-line @eslint-react/no-array-index-key
           key={index}
-          className="border-border bg-background mb-4 overflow-hidden rounded-lg border"
+          className="border-material-ultra-thick bg-background overflow-hidden rounded-lg border"
         >
           <div className="space-y-3 p-4">
             <Skeleton className="h-4 w-3/4" />
@@ -355,16 +357,11 @@ const LoadingSkeleton: FC<{ count?: number }> = ({ count = 1 }) => {
 }
 
 const SkeletonGrid: FC<{ columnCount: number }> = ({ columnCount }) => {
-  const keys = useMemo(
-    () => Array.from({ length: columnCount * 2 }, () => crypto.randomUUID()),
-    [columnCount],
-  )
+  const keys = useMemo(() => Array.from({ length: columnCount * 2 }, () => null), [columnCount])
   return (
-    <div className="grid gap-4" style={{ gridTemplateColumns: `repeat(${columnCount}, 1fr)` }}>
-      {keys.map((key) => (
-        <div key={key}>
-          <LoadingSkeleton count={1} />
-        </div>
+    <div className="mb-4 grid gap-4" style={{ gridTemplateColumns: `repeat(${columnCount}, 1fr)` }}>
+      {keys.map((_, index) => (
+        <LoadingSkeleton count={1} key={index} />
       ))}
     </div>
   )
