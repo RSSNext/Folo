@@ -88,7 +88,30 @@ export const Masonry = <Item,>(props: MasonryProps<Item>) => {
     itemCounter.current = props.items.length
   }
 
-  nextProps.positioner = usePositioner(nextProps, [shrunk && Math.random()])
+  // Reset positioner if the head of the list changes (e.g. prepend on refetch).
+  // Masonic's positioner caches layout by index; when items are inserted at the
+  // start, all indices shift and stale caches can cause overlap. Tying the
+  // positioner to the first item's key forces a clean reflow only when needed.
+  const firstItemKey = React.useMemo(() => {
+    if (!props.items || props.items.length === 0) return "__empty__"
+    try {
+      // Prefer consumer-provided itemKey for stable identity
+      if (typeof props.itemKey === "function") {
+        return String(props.itemKey(props.items[0] as any, 0))
+      }
+      // Fallback: attempt a stable string from the item itself
+      const first = props.items[0] as any
+      if (first == null) return "__null__"
+      if (typeof first === "string" || typeof first === "number") return String(first)
+      if (first.id != null) return String(first.id)
+      if (first.key != null) return String(first.key)
+      return JSON.stringify(first)
+    } catch {
+      return "__unknown__"
+    }
+  }, [props.items, props.itemKey])
+
+  nextProps.positioner = usePositioner(nextProps, [shrunk && Math.random(), firstItemKey])
 
   nextProps.resizeObserver = useResizeObserver(nextProps.positioner)
   nextProps.scrollTop = scrollTop
