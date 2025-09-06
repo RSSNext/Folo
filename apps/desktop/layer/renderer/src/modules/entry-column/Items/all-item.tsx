@@ -20,6 +20,7 @@ import { EntryContent } from "~/modules/entry-content/components/entry-content"
 import type { FeedIconEntry } from "~/modules/feed/feed-icon"
 import { FeedIcon } from "~/modules/feed/feed-icon"
 import { FeedTitle } from "~/modules/feed/feed-title"
+import { useImageDimensions } from "~/store/image"
 
 import { StarIcon } from "../star-icon"
 import { EntryTranslation } from "../translation"
@@ -285,15 +286,17 @@ export const AllItem: EntryListItemFC = ({ entryId, entryPreview, translation })
     )
   }, [randomStyle.highlight.className, titleKeyword, title])
 
-  if (!entry) return null
-
   const mediaCover = entryMedia?.[0] ?? null
 
-  const mediaCoverHeight = mediaCover?.height
-  const mediaCoverWidth = mediaCover?.width
+  const dim = useImageDimensions(mediaCover?.url ?? "")
+
+  const mediaCoverHeight = mediaCover?.height ?? dim?.height
+  const mediaCoverWidth = mediaCover?.width ?? dim?.width
 
   const aspectRatio =
     mediaCoverHeight && mediaCoverWidth ? mediaCoverWidth / mediaCoverHeight : undefined
+
+  if (!entry) return null
 
   return (
     <div className="group" ref={ref}>
@@ -351,7 +354,12 @@ export const AllItem: EntryListItemFC = ({ entryId, entryPreview, translation })
 
         {/* Pictures */}
         {view === FeedViewType.Pictures && (
-          <div className="relative flex gap-2 overflow-x-auto">
+          <div
+            className="relative flex gap-2 overflow-x-auto"
+            style={{
+              aspectRatio: aspectRatio ?? 1,
+            }}
+          >
             {entryMedia ? (
               <SwipeMedia
                 media={entryMedia}
