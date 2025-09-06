@@ -91,19 +91,19 @@ const highlightStyle = [
   // },
   {
     type: "full",
-    className: "bg-blue-200 text-black",
+    className: "bg-blue-200",
   },
   {
     type: "full",
-    className: "bg-yellow-200 text-black",
+    className: "bg-yellow-200",
   },
   {
     type: "full",
-    className: "bg-green-200 text-black",
+    className: "bg-green-200",
   },
   {
     type: "full",
-    className: "bg-orange-200 text-black",
+    className: "bg-orange-200",
   },
 ]
 
@@ -328,13 +328,13 @@ export const AllItem: EntryListItemFC = ({ entryId, entryPreview, translation })
                 src={mediaCover.url}
                 type={mediaCover.type}
                 previewImageUrl={mediaCover.preview_image_url}
-                className="min-h-[10em] w-full overflow-hidden"
-                mediaContainerClassName="size-full min-h-[10em] object-cover"
-                videoClassName="size-full min-h-[10em] object-cover"
+                className="min-h-[6em] w-full overflow-hidden"
+                mediaContainerClassName="size-full min-h-[6em] object-cover"
+                videoClassName="size-full min-h-[6em] object-cover"
                 loading="lazy"
                 proxy={{
-                  width: mediaCoverWidth ?? 200,
-                  height: mediaCoverHeight ?? 200,
+                  width: 600,
+                  height: 0,
                 }}
                 blurhash={mediaCover.blurhash || undefined}
                 style={{
@@ -342,7 +342,7 @@ export const AllItem: EntryListItemFC = ({ entryId, entryPreview, translation })
                 }}
               />
             ) : (
-              <div className="flex min-h-[10em] flex-col items-center justify-center overflow-hidden px-4 py-20 text-[1.5rem] font-normal leading-[1.2]">
+              <div className="flex min-h-[6em] flex-col items-center justify-center overflow-hidden px-5 py-16 text-xl font-medium leading-snug text-black/80">
                 <div className="line-clamp-6 max-w-full break-words">{titleWithKeyword}</div>
               </div>
             )}
@@ -364,7 +364,7 @@ export const AllItem: EntryListItemFC = ({ entryId, entryPreview, translation })
                 onPreview={previewMedia}
               />
             ) : (
-              <div className="flex min-h-[10em] flex-col items-center justify-center overflow-hidden px-4 py-20 text-[1.5rem] font-normal leading-[1.2]">
+              <div className="flex min-h-[6em] flex-col items-center justify-center overflow-hidden px-4 py-20 text-[1.5rem] font-normal leading-[1.2]">
                 <div className="line-clamp-6 max-w-full break-words">{titleWithKeyword}</div>
               </div>
             )}
@@ -381,9 +381,9 @@ export const AllItem: EntryListItemFC = ({ entryId, entryPreview, translation })
                   src={mediaCover.url}
                   type={mediaCover.type}
                   previewImageUrl={mediaCover.preview_image_url}
-                  className="min-h-[10em] w-full overflow-hidden"
-                  mediaContainerClassName="size-full min-h-[10em] object-cover"
-                  videoClassName="size-full min-h-[10em] object-cover"
+                  className="min-h-[6em] w-full overflow-hidden"
+                  mediaContainerClassName="size-full min-h-[6em] object-cover"
+                  videoClassName="size-full min-h-[6em] object-cover"
                   loading="lazy"
                   proxy={{
                     width: mediaCover.width ?? 640,
@@ -396,7 +396,7 @@ export const AllItem: EntryListItemFC = ({ entryId, entryPreview, translation })
                   showFallback={true}
                 />
               ) : (
-                <div className="flex min-h-[10em] flex-col items-center justify-center overflow-hidden px-4 py-20 text-[1.5rem] font-normal leading-[1.2]">
+                <div className="flex min-h-[6em] flex-col items-center justify-center overflow-hidden px-4 py-20 text-[1.5rem] font-normal leading-[1.2]">
                   <div className="line-clamp-6 max-w-full break-words">{titleWithKeyword}</div>
                 </div>
               )}
@@ -404,7 +404,7 @@ export const AllItem: EntryListItemFC = ({ entryId, entryPreview, translation })
                 <div className="pointer-events-none absolute inset-0">
                   <ViewTag
                     src={miniIframeSrc}
-                    className={cn("pointer-events-none size-full min-h-[10em] object-cover")}
+                    className={cn("pointer-events-none size-full min-h-[6em] object-cover")}
                   />
                 </div>
               )}

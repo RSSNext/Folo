@@ -26,7 +26,7 @@ interface AllMasonryProps {
 }
 
 const GUTTER = 16
-const COLUMN_WIDTH = 250
+const COLUMN_WIDTH = 230
 const OVERSCAN = 2
 
 interface MasonryItem {
@@ -83,7 +83,7 @@ export const AllMasonry: FC<AllMasonryProps> = ({
 
   const columnCount = useMemo(() => {
     if (!width) return 1
-    return Math.max(1, Math.floor(width / COLUMN_WIDTH))
+    return Math.max(1, Math.round(width / COLUMN_WIDTH))
   }, [width])
 
   const columnWidth = useMemo(() => {
@@ -268,10 +268,7 @@ const MasonryItemRender: React.ComponentType<RenderComponentProps<MasonryItem>> 
     <div
       data-entry-id={data.entryId}
       data-index={index}
-      className={clsx(
-        "bg-background rounded-lg shadow-sm",
-        "transition-all duration-200 hover:shadow-md",
-      )}
+      className={clsx("bg-background rounded-lg")}
     >
       <EntryItem entryId={data.entryId} view={FeedViewType.All} />
     </div>
