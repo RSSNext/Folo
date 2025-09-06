@@ -16,7 +16,7 @@ import { registerAppTray } from "~/lib/tray"
 import { logger, revealLogFile } from "~/logger"
 import { AppManager } from "~/manager/app"
 import { WindowManager } from "~/manager/window"
-import { cleanupOldRender, loadDynamicRenderEntry } from "~/updater/hot-updater"
+import { renderUpdater } from "~/updater/render"
 
 import { downloadFile } from "../../lib/download"
 import { checkForAppUpdates, quitAndInstall } from "../../updater"
@@ -60,7 +60,7 @@ export class AppService extends IpcService {
   rendererUpdateReload(): void {
     const __dirname = fileURLToPath(new URL(".", import.meta.url))
     const allWindows = BrowserWindow.getAllWindows()
-    const dynamicRenderEntry = loadDynamicRenderEntry()
+    const dynamicRenderEntry = renderUpdater.entry()
 
     const appLoadEntry = dynamicRenderEntry || path.resolve(__dirname, "../renderer/index.html")
     logger.info("appLoadEntry", appLoadEntry)
@@ -77,7 +77,7 @@ export class AppService extends IpcService {
     }
 
     setTimeout(() => {
-      cleanupOldRender()
+      renderUpdater.cleanup()
     }, 1000)
   }
 
