@@ -7,6 +7,7 @@ import {
   authClientContext,
   queryClientContext,
 } from "@follow/store/context"
+import * as Sentry from "@sentry/react-native"
 import { registerRootComponent } from "expo"
 import { Image } from "expo-image"
 import { LinearGradient } from "expo-linear-gradient"
@@ -35,6 +36,12 @@ import { SettingsTabScreen } from "./screens/(stack)/(tabs)/settings"
 import { SubscriptionsTabScreen } from "./screens/(stack)/(tabs)/subscriptions"
 import { registerSitemap } from "./sitemap"
 
+Sentry.init({
+  dsn: "https://14b6b8c1a3b3a27797c6ab62a84c05cd@o4509926679904256.ingest.us.sentry.io/4509926681214976",
+  enableAutoSessionTracking: true,
+  // Sessions close after app is 10 seconds in the background.
+  sessionTrackingIntervalMillis: 10000,
+})
 // @ts-expect-error
 global.APP_NAME = "Folo"
 // @ts-expect-error
@@ -52,7 +59,7 @@ enableFreeze(true)
 initializeApp()
 registerSitemap()
 initializeI18n()
-registerRootComponent(RootComponent)
+registerRootComponent(Sentry.wrap(RootComponent))
 
 function RootComponent() {
   const { t } = useTranslation()

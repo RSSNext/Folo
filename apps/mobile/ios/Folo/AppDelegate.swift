@@ -1,3 +1,4 @@
+import Dispatch
 import Expo
 import FirebaseCore
 import RNFBAppCheck

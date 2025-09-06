@@ -1,9 +1,9 @@
-const { getDefaultConfig } = require("expo/metro-config")
 const { withNativeWind } = require("nativewind/metro")
 const path = require("pathe")
 const { wrapWithReanimatedMetroConfig } = require("react-native-reanimated/metro-config")
+const { getSentryExpoConfig } = require("@sentry/react-native/metro")
 
-const config = getDefaultConfig(__dirname, { isCSSEnabled: true })
+const config = getSentryExpoConfig(__dirname, { isCSSEnabled: true })
 config.resolver.sourceExts.push("sql")
 
 config.transformer.getTransformOptions = async () => ({

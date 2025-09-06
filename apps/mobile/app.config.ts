@@ -137,7 +137,7 @@ export default ({ config }: ConfigContext): ExpoConfig => {
       require("./plugins/with-android-manifest-plugin.js"),
       "expo-secure-store",
       "@react-native-firebase/app",
-      "@react-native-firebase/crashlytics",
+
       [
         "expo-image-picker",
         {
