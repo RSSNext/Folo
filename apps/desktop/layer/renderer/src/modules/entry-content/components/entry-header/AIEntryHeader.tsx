@@ -11,9 +11,7 @@ function EntryHeaderImpl({ entryId, className, compact }: EntryHeaderProps) {
   return (
     <EntryHeaderRoot entryId={entryId} className={className} compact={compact}>
       <div
-        // Fixed height(3.25rem)(52px) to align with the sidebar padding(pt-2.5)(10px)
-        // (52 - 32) / 2 = 10
-        className="bg-background relative z-10 flex h-[3.25rem] w-full items-center justify-between gap-3 px-4"
+        className="bg-background relative z-10 flex h-12 w-full items-center justify-between gap-3 px-4"
         data-at-top={isAtTop}
         data-hide-in-print
       >
