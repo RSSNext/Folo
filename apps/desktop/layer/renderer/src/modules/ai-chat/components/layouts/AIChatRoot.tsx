@@ -1,3 +1,4 @@
+import { atom } from "jotai"
 import type { FC, PropsWithChildren } from "react"
 import { useEffect, useMemo, useRef } from "react"
 
@@ -5,7 +6,11 @@ import { Focusable } from "~/components/common/Focusable"
 import { HotkeyScope } from "~/constants"
 
 import type { AIPanelRefs } from "../../store/AIChatContext"
-import { AIChatStoreContext, AIPanelRefsContext } from "../../store/AIChatContext"
+import {
+  AIChatStoreContext,
+  AIPanelRefsContext,
+  AIRootStateContext,
+} from "../../store/AIChatContext"
 import { ChatSliceActions } from "../../store/chat-core/chat-actions"
 import { useChatActions, useCurrentChatId } from "../../store/hooks"
 import { createAIChatStore } from "../../store/store"
@@ -58,7 +63,16 @@ export const AIChatRoot: FC<AIChatRootProps> = ({
 
   const Element = (
     <AIChatStoreContext value={useAiContextStore}>
-      <AIChatRootInner chatId={externalChatId}>{children}</AIChatRootInner>
+      <AIRootStateContext
+        value={useMemo(
+          () => ({
+            isScrolledBeyondThreshold: atom(false),
+          }),
+          [],
+        )}
+      >
+        <AIChatRootInner chatId={externalChatId}>{children}</AIChatRootInner>
+      </AIRootStateContext>
     </AIChatStoreContext>
   )
 

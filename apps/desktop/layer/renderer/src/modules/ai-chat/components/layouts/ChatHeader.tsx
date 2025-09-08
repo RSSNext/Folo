@@ -1,11 +1,13 @@
 import { ActionButton } from "@follow/components/ui/button/index.js"
 import { cn } from "@follow/utils"
+import { useAtomValue } from "jotai"
 import type { ReactNode } from "react"
 import { useCallback } from "react"
 
 import { AIChatPanelStyle, setAIPanelVisibility, useAIChatPanelStyle } from "~/atoms/settings/ai"
 import { useBlockActions, useChatActions, useCurrentTitle } from "~/modules/ai-chat/store/hooks"
 
+import { useAIRootState } from "../../store/AIChatContext"
 import { ChatMoreDropdown } from "./ChatMoreDropdown"
 import { EditableTitle } from "./EditableTitle"
 import { TaskReportDropdown } from "./TaskReportDropdown"
@@ -43,8 +45,17 @@ const ChatHeaderLayout = ({
 
   const isFloating = useAIChatPanelStyle() === AIChatPanelStyle.Floating
 
+  const { isScrolledBeyondThreshold } = useAIRootState()
+  const isScrolledBeyondThresholdValue = useAtomValue(isScrolledBeyondThreshold)
+
   return (
-    <div className={cn("absolute inset-x-0 top-0 z-[1]", !isFloating && "bg-background border-b")}>
+    <div
+      className={cn(
+        "absolute inset-x-0 top-0 z-[1] duration-200",
+        !isFloating && "bg-background data-[scrolled-beyond-threshold=true]:border-b",
+      )}
+      data-scrolled-beyond-threshold={isScrolledBeyondThresholdValue}
+    >
       <div className="h-entry-header">
         {isFloating && (
           <div

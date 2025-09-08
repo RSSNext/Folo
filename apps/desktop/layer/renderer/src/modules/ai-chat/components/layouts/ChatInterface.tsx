@@ -4,11 +4,12 @@ import { tracker } from "@follow/tracker"
 import { clsx, cn, nextFrame } from "@follow/utils"
 import type { BizUIMessage } from "@folo-services/ai-tools"
 import { ErrorBoundary } from "@sentry/react"
+import { useSetAtom } from "jotai"
 import type { EditorState, LexicalEditor } from "lexical"
 import { AnimatePresence } from "motion/react"
 import { nanoid } from "nanoid"
 import type { FC, Ref } from "react"
-import { Suspense, useEffect, useRef, useState } from "react"
+import { Suspense, useCallback, useEffect, useRef, useState } from "react"
 import { useEventCallback } from "usehooks-ts"
 
 import { useAISettingKey } from "~/atoms/settings/ai"
@@ -31,6 +32,8 @@ import {
   useMessages,
 } from "~/modules/ai-chat/store/hooks"
 
+import { SCROLLED_BEYOND_THRESHOLD } from "../../constants"
+import { useAIRootState } from "../../store/AIChatContext"
 import type { AIChatContextBlock } from "../../store/types"
 import { convertLexicalToMarkdown } from "../../utils/lexical-markdown"
 import { GlobalFileDropZone } from "../file/GlobalFileDropZone"
@@ -225,6 +228,15 @@ const ChatInterfaceContent = ({ centerInputOnEmpty }: ChatInterfaceProps) => {
 
   const shouldShowScrollToBottom = hasMessages && !isAtBottom && !isLoadingHistory
 
+  const { isScrolledBeyondThreshold } = useAIRootState()
+  const setIsScrolledBeyondThreshold = useSetAtom(isScrolledBeyondThreshold)
+  const handleScroll = useCallback(
+    (event: React.UIEvent<HTMLDivElement>) => {
+      const { scrollTop } = event.currentTarget
+      setIsScrolledBeyondThreshold(scrollTop > SCROLLED_BEYOND_THRESHOLD)
+    },
+    [setIsScrolledBeyondThreshold],
+  )
   return (
     <GlobalFileDropZone className="@container flex size-full flex-col">
       <div className="flex min-h-0 flex-1 flex-col" ref={scrollContainerParentRef}>
@@ -234,6 +246,7 @@ const ChatInterfaceContent = ({ centerInputOnEmpty }: ChatInterfaceProps) => {
           ) : (
             <>
               <ScrollArea
+                onScroll={handleScroll}
                 flex
                 scrollbarClassName="mb-40 mt-12"
                 ref={setScrollAreaRef}
