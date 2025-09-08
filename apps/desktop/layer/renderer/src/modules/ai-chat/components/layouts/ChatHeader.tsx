@@ -1,5 +1,5 @@
 import { ActionButton } from "@follow/components/ui/button/index.js"
-import clsx from "clsx"
+import { cn } from "@follow/utils"
 import type { ReactNode } from "react"
 import { useCallback } from "react"
 
@@ -44,33 +44,30 @@ const ChatHeaderLayout = ({
   const isFloating = useAIChatPanelStyle() === AIChatPanelStyle.Floating
 
   return (
-    <div
-      className={clsx(
-        "absolute inset-x-0 top-0 z-[1] h-12",
-        !isFloating && "bg-background border-b",
-      )}
-    >
-      {isFloating && (
-        <div
-          className="bg-background/70 backdrop-blur-background absolute inset-0"
-          style={{
-            maskImage: `linear-gradient(to bottom, black 0%, black 90%, transparent 100%)`,
-          }}
-        />
-      )}
+    <div className={cn("absolute inset-x-0 top-0 z-[1]", !isFloating && "bg-background border-b")}>
+      <div className="h-entry-header">
+        {isFloating && (
+          <div
+            className="bg-background/70 backdrop-blur-background absolute inset-0"
+            style={{
+              maskImage: `linear-gradient(to bottom, black 0%, black 90%, transparent 100%)`,
+            }}
+          />
+        )}
 
-      <div className="relative z-10 flex h-full items-center justify-between px-4">
-        <div className="mr-2 flex min-w-0 flex-1 items-center">
-          <EditableTitle title={currentTitle} onSave={handleTitleSave} placeholder="New Chat" />
-        </div>
+        <div className="relative z-10 flex h-full items-center justify-between px-4">
+          <div className="mr-2 flex min-w-0 flex-1 items-center">
+            <EditableTitle title={currentTitle} onSave={handleTitleSave} placeholder="New Chat" />
+          </div>
 
-        {/* Right side - Actions */}
-        <div className="flex items-center gap-2">
-          {renderActions({
-            onNewChatClick: handleNewChatClick,
-            currentTitle,
-            onSaveTitle: handleTitleSave,
-          })}
+          {/* Right side - Actions */}
+          <div className="flex items-center gap-2">
+            {renderActions({
+              onNewChatClick: handleNewChatClick,
+              currentTitle,
+              onSaveTitle: handleTitleSave,
+            })}
+          </div>
         </div>
       </div>
     </div>

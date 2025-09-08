@@ -233,7 +233,7 @@ export function EntryHeaderBreadcrumb() {
       <nav
         aria-label="Breadcrumb"
         className={
-          "text-text-secondary group/breadcrumb -mb-1 flex min-w-0 items-center gap-1 truncate leading-tight"
+          "text-text-secondary group/breadcrumb flex min-w-0 items-center gap-1 truncate leading-tight"
         }
       >
         <div className="flex min-w-0 items-center gap-1">
