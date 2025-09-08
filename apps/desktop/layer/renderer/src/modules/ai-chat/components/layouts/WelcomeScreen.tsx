@@ -1,18 +1,15 @@
 import { Folo } from "@follow/components/icons/folo.js"
 import { ScrollArea } from "@follow/components/ui/scroll-area/ScrollArea.js"
 import { clsx } from "@follow/utils"
-import { useSetAtom } from "jotai"
 import type { EditorState, LexicalEditor } from "lexical"
 import { AnimatePresence, m } from "motion/react"
-import { useCallback } from "react"
 import { useTranslation } from "react-i18next"
 
 import { useAISettingValue } from "~/atoms/settings/ai"
 import { AISpline } from "~/modules/ai-chat/components/3d-models/AISpline"
 
-import { SCROLLED_BEYOND_THRESHOLD } from "../../constants"
+import { useAttachScrollBeyond } from "../../hooks/useAttachScrollBeyond"
 import { useMainEntryId } from "../../hooks/useMainEntryId"
-import { useAIRootState } from "../../store/AIChatContext"
 import { DefaultWelcomeContent, EntrySummaryCard } from "../welcome"
 
 interface WelcomeScreenProps {
@@ -28,15 +25,7 @@ export const WelcomeScreen = ({ onSend, centerInputOnEmpty }: WelcomeScreenProps
   const hasEntryContext = !!mainEntryId
   const enabledShortcuts = aiSettings.shortcuts?.filter((shortcut) => shortcut.enabled) || []
 
-  const { isScrolledBeyondThreshold } = useAIRootState()
-  const setIsScrolledBeyondThreshold = useSetAtom(isScrolledBeyondThreshold)
-  const handleScroll = useCallback(
-    (event: React.UIEvent<HTMLDivElement>) => {
-      const { scrollTop } = event.currentTarget
-      setIsScrolledBeyondThreshold(scrollTop > SCROLLED_BEYOND_THRESHOLD)
-    },
-    [setIsScrolledBeyondThreshold],
-  )
+  const { handleScroll } = useAttachScrollBeyond()
   return (
     <ScrollArea
       rootClassName="flex min-h-0 flex-1"

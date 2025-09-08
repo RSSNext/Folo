@@ -36,6 +36,7 @@ const AIChatRootInner: FC<AIChatRootProps> = ({ children, chatId: externalChatId
   const inputRef = useRef<HTMLTextAreaElement>(null!)
   const refsContext = useMemo<AIPanelRefs>(() => ({ panelRef, inputRef }), [panelRef, inputRef])
   useAIShortcut()
+
   if (!currentChatId) {
     return (
       <div className="bg-background flex size-full items-center justify-center">
