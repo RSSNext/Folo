@@ -18,7 +18,7 @@ import { useForm } from "react-hook-form"
 import { useTranslation } from "react-i18next"
 import { z } from "zod"
 
-import { apiClient } from "~/lib/api-fetch"
+import { followClient } from "~/lib/api-client"
 
 const formSchema = z.object({
   referral: z.string().optional(),
@@ -37,7 +37,7 @@ function getDefaultReferralCode() {
 }
 
 async function getReferralCycleDays(code: string) {
-  return apiClient.referrals.days.$get({ query: { code } })
+  return followClient.api.referrals.getDays({ code })
 }
 
 export function ReferralForm({

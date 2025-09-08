@@ -1,5 +1,5 @@
 // sync this file with apps/desktop/layer/renderer/src/modules/auth/ReferralForm.tsx
-import { apiClient } from "@client/lib/api-fetch"
+import { followClient } from "@client/lib/api-fetch"
 import {
   Form,
   FormControl,
@@ -36,7 +36,7 @@ function getDefaultReferralCode() {
 }
 
 async function getReferralCycleDays(code: string) {
-  return apiClient.referrals.days.$get({ query: { code } })
+  return followClient.api.referrals.getDays({ code })
 }
 
 export function ReferralForm({

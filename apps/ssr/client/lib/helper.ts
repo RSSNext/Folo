@@ -1,7 +1,7 @@
 import type { FeedOrListRespModel } from "@follow/models/types"
 import { DEEPLINK_SCHEME } from "@follow/shared/constants"
+import type { FollowClient } from "@follow-app/client-sdk"
 
-import type { ApiClient } from "~/lib/api-client"
 import type { defineMetadata } from "~/meta-handler"
 
 export const getPreferredTitle = (feed?: FeedOrListRespModel | null) => {
@@ -37,7 +37,7 @@ type ExtractHydrateData<T> = T extends readonly (infer Item)[]
 type UnwrapMetadataFn<T> =
   T extends <P extends Record<string, string>>(args: {
     params: P
-    apiClient: ApiClient
+    apiClient: FollowClient
     origin: string
     throwError: (status: number, message: any) => never
   }) => Promise<infer R> | infer R

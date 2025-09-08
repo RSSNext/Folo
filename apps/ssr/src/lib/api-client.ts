@@ -4,6 +4,7 @@ import { requestContext } from "@fastify/request-context"
 import { env } from "@follow/shared/env.ssr"
 import type { AppType } from "@follow/shared/hono"
 import { createSSRAPIHeaders } from "@follow/utils/headers"
+import { FollowClient } from "@follow-app/client-sdk"
 import { hc } from "hono/client"
 import { ofetch } from "ofetch"
 
@@ -71,6 +72,40 @@ export const createApiClient = () => {
     },
   })
   return apiClient
+}
+
+export const createFollowClient = () => {
+  const authSessionToken = getTokenFromCookie(requestContext.get("req")?.headers.cookie || "")
+
+  const apiFetch = createApiFetch()
+  const baseURL = getBaseURL()
+
+  const client = new FollowClient({
+    credentials: "include",
+    timeout: 10000,
+    baseURL,
+    fetch: async (input: any, options = {}) => apiFetch(input.toString(), options),
+  })
+
+  client.addRequestInterceptor(async (ctx) => {
+    const { options } = ctx
+    const header = new Headers(options.headers)
+
+    const headers = createSSRAPIHeaders({ version: PKG.version })
+
+    Object.entries(headers).forEach(([key, value]) => {
+      header.set(key, value)
+    })
+
+    if (authSessionToken) {
+      header.set("Cookie", `__Secure-better-auth.session_token=${authSessionToken}`)
+    }
+
+    options.headers = Object.fromEntries(header.entries())
+    return ctx
+  })
+
+  return client
 }
 
 export const getTokenFromCookie = (cookie: string) => {

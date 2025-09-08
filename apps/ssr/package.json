@@ -12,6 +12,7 @@
   "dependencies": {
     "@fastify/middie": "9.0.3",
     "@fastify/request-context": "6.2.0",
+    "@follow-app/client-sdk": "catalog:",
     "@follow/tracker": "workspace:*",
     "@fontsource/sn-pro": "5.2.5",
     "@hcaptcha/react-hcaptcha": "1.12.0",

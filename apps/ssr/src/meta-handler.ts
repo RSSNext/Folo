@@ -1,8 +1,8 @@
+import type { FollowClient } from "@follow-app/client-sdk"
 import type { FastifyReply, FastifyRequest } from "fastify"
 import { match } from "path-to-regexp"
 
-import type { ApiClient } from "./lib/api-client"
-import { createApiClient } from "./lib/api-client"
+import { createFollowClient } from "./lib/api-client"
 import importer from "./meta-handler.map"
 
 interface MetaTagdata {
@@ -31,7 +31,7 @@ interface MetaDescription {
 interface MetaHydrateData {
   type: "hydrate"
   data: any
-  path: string
+
   key: string
 }
 export type MetaTag = MetaTagdata | MetaOpenGraph | MetaTitle | MetaHydrateData | MetaDescription
@@ -40,7 +40,7 @@ export async function injectMetaHandler(
   req: FastifyRequest,
   res: FastifyReply,
 ): Promise<MetaTag[]> {
-  const apiClient = createApiClient()
+  const apiClient = createFollowClient()
   const upstreamOrigin = req.requestContext.get("upstreamOrigin")
   const url = req.originalUrl
 
@@ -78,7 +78,7 @@ export function defineMetadata<Params extends Record<string, string>, T extends 
     req: FastifyRequest
     url: URL
     params: Params
-    apiClient: ApiClient
+    apiClient: FollowClient
     searchParams: URLSearchParams
     origin: string
     setStatus: (status: number) => void

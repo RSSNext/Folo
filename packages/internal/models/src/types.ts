@@ -41,10 +41,6 @@ export type FeedAnalyticsModel = ExtractBizResponse<
   typeof _apiClient.feeds.$get
 >["data"]["analytics"]
 
-export type ListAnalyticsModel = ExtractBizResponse<
-  typeof _apiClient.lists.$get
->["data"]["analytics"]
-
 export type ListModel = Omit<ListModelPoplutedFeeds, "feeds">
 export type ListModelPoplutedFeeds = ExtractBizResponse<
   typeof _apiClient.lists.$get
@@ -143,8 +139,6 @@ export type ActionConditionIndex = {
 export const TransactionTypes = ["mint", "purchase", "tip", "withdraw", "airdrop"] as const
 
 export type WalletModel = ExtractBizResponse<typeof _apiClient.wallets.$get>["data"][number]
-
-export type ServerConfigs = ExtractBizResponse<typeof _apiClient.status.configs.$get>["data"]
 
 export type RSSHubModel = Omit<
   ExtractBizResponse<typeof _apiClient.rsshub.list.$get>["data"][number],

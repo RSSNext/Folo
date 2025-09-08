@@ -1,6 +1,7 @@
 import type { GeneralSettings, UISettings } from "@follow/shared/settings/interface"
 import { isEmptyObject, jotaiStore, sleep } from "@follow/utils"
 import { EventBus } from "@follow/utils/event-bus"
+import type { SettingsTab } from "@follow-app/client-sdk"
 import { omit } from "es-toolkit/compat"
 import type { PrimitiveAtom } from "jotai"
 
@@ -10,7 +11,7 @@ import {
   getGeneralSettings,
 } from "@/src/atoms/settings/general"
 import { __uiSettingAtom, getUISettings, uiServerSyncWhiteListKeys } from "@/src/atoms/settings/ui"
-import { apiClient } from "@/src/lib/api-fetch"
+import { followClient } from "@/src/lib/api-client"
 import { kv } from "@/src/lib/kv"
 
 type SettingMapping = {
@@ -169,11 +170,10 @@ class SettingSyncQueue {
       if (isEmptyObject(json)) {
         continue
       }
-      const promise = apiClient.settings[":tab"]
-        .$patch({
-          param: {
-            tab,
-          },
+
+      const promise = followClient.api.settings
+        .update({
+          tab: tab as SettingsTab,
           json,
         })
         .then(() => {
@@ -197,13 +197,11 @@ class SettingSyncQueue {
       const promises = [] as Promise<any>[]
       for (const tab in localSettingGetterMap) {
         const payload = localSettingGetterMap[tab as SettingSyncTab]()
-        const promise = apiClient.settings[":tab"].$patch({
-          param: {
-            tab,
-          },
+
+        const promise = followClient.api.settings.update({
+          tab: tab as SettingsTab,
           json: payload,
         })
-
         promises.push(promise)
       }
 
@@ -213,10 +211,8 @@ class SettingSyncQueue {
       const payload = localSettingGetterMap[tab]()
 
       this.chain = this.chain.finally(() =>
-        apiClient.settings[":tab"].$patch({
-          param: {
-            tab,
-          },
+        followClient.api.settings.update({
+          tab: tab as SettingsTab,
           json: payload,
         }),
       )
@@ -235,7 +231,7 @@ class SettingSyncQueue {
     if (this.pendingPromise) {
       return this.pendingPromise
     }
-    const promise = apiClient.settings.$get({ query: {} })
+    const promise = followClient.api.settings.get()
     this.pendingPromise = promise.finally(() => {
       this.pendingPromise = null
     })

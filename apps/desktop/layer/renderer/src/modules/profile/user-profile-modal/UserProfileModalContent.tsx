@@ -4,11 +4,11 @@ import { ActionButton, Button } from "@follow/components/ui/button/index.js"
 import { LoadingCircle } from "@follow/components/ui/loading/index.jsx"
 import { ScrollArea } from "@follow/components/ui/scroll-area/index.js"
 import { Tooltip, TooltipContent, TooltipTrigger } from "@follow/components/ui/tooltip/index.js"
-import type { ExtractBizResponse } from "@follow/models"
 import { usePrefetchUser, useUserById, useWhoami } from "@follow/store/user/hooks"
 import { nextFrame, stopPropagation } from "@follow/utils/dom"
 import { getStorageNS } from "@follow/utils/ns"
 import { cn } from "@follow/utils/utils"
+import type { ListWithStats } from "@follow-app/client-sdk"
 import { useQuery } from "@tanstack/react-query"
 import { useAtom } from "jotai"
 import { atomWithStorage } from "jotai/utils"
@@ -20,7 +20,7 @@ import { useTranslation } from "react-i18next"
 import { m } from "~/components/common/Motion"
 import { useCurrentModal } from "~/components/ui/modal/stacked/hooks"
 import { useFollow } from "~/hooks/biz/useFollow"
-import { apiClient } from "~/lib/api-fetch"
+import { followClient } from "~/lib/api-client"
 import { replaceImgUrlIfNeed } from "~/lib/img-proxy"
 import { UrlBuilder } from "~/lib/url-builder"
 import { FeedIcon } from "~/modules/feed/feed-icon"
@@ -63,7 +63,7 @@ const pickUserData = <
   }
 }
 
-const ListCard = memo(({ list }: { list: List }) => {
+const ListCard = memo(({ list }: { list: ListWithStats }) => {
   return (
     <div className="group/card border-fill bg-material-ultra-thin hover:border-fill-secondary relative overflow-hidden rounded-lg border transition-all duration-200">
       <a
@@ -77,7 +77,7 @@ const ListCard = memo(({ list }: { list: List }) => {
             <div className="shrink-0">
               <FeedIcon
                 fallback
-                feed={list}
+                feed={list as any}
                 className="border-fill-secondary size-10 rounded-lg border"
                 noMargin
               />
@@ -367,15 +367,13 @@ const useUserListsQuery = (userId: string) => {
   return useQuery({
     queryKey: ["lists", userId],
     queryFn: async () => {
-      const res = await apiClient.lists.list.$get({ query: { userId } })
+      const res = await followClient.api.lists.list({ userId })
       return res.data
     },
   })
 }
 
-type List = ExtractBizResponse<typeof apiClient.lists.list.$get>["data"][number]
-
-const Lists = ({ lists }: { lists: List[] }) => {
+const Lists = ({ lists }: { lists: ListWithStats[] }) => {
   const { t } = useTranslation()
   if (!lists || lists.length === 0) return null
   return (

@@ -1,4 +1,5 @@
 import { cn } from "@follow/utils"
+import type { CreateInvitationRequest } from "@follow-app/client-sdk"
 import { useMutation, useQuery } from "@tanstack/react-query"
 import dayjs from "dayjs"
 import { setStringAsync } from "expo-clipboard"
@@ -24,7 +25,7 @@ import { MonoText } from "@/src/components/ui/typography/MonoText"
 import { Text } from "@/src/components/ui/typography/Text"
 import { LoveCuteFiIcon } from "@/src/icons/love_cute_fi"
 import { PowerIcon } from "@/src/icons/power"
-import { apiClient } from "@/src/lib/api-fetch"
+import { followClient } from "@/src/lib/api-client"
 import type { DialogComponent } from "@/src/lib/dialog"
 import { Dialog } from "@/src/lib/dialog"
 import { toastFetchError } from "@/src/lib/error-parser"
@@ -39,15 +40,15 @@ const invitationQueryKey = ["invitations"]
 const useInvitationsQuery = () => {
   return useQuery({
     queryKey: invitationQueryKey,
-    queryFn: () => apiClient.invitations.$get().then((res) => res.data),
+    queryFn: () => followClient.api.invitations.list().then((res) => res.data),
   })
 }
 const useInvitationsLimitationQuery = () => {
   const { data } = useQuery({
     queryKey: ["invitations", "limitation"],
-    queryFn: () => apiClient.invitations.limitation.$get(),
+    queryFn: () => followClient.api.invitations.getLimitation().then((res) => res.data),
   })
-  return data?.data
+  return data
 }
 const numberFormatter = new Intl.NumberFormat("en-US")
 export const InvitationsScreen: NavigationControllerView = () => {
@@ -209,10 +210,8 @@ const ConfirmGenerateDialog: DialogComponent = () => {
   const { dismiss } = Dialog.useDialogContext()!
   const newInvitation = useMutation({
     mutationKey: ["newInvitation"],
-    mutationFn: (values: Parameters<typeof apiClient.invitations.new.$post>[0]["json"]) =>
-      apiClient.invitations.new.$post({
-        json: values,
-      }),
+    mutationFn: (values: CreateInvitationRequest) =>
+      followClient.api.invitations.create({ TOTPCode: values.TOTPCode }),
     onError(err) {
       toastFetchError(err)
       console.error(err)

@@ -4,6 +4,7 @@ import { RelativeTime } from "@follow/components/ui/datetime/index.js"
 import { useIsSubscribed } from "@follow/store/subscription/hooks"
 import { getBackgroundGradient } from "@follow/utils/color"
 import { cn, formatNumber } from "@follow/utils/utils"
+import type { TrendingFeedItem } from "@follow-app/client-sdk"
 import type { FC } from "react"
 import { memo } from "react"
 import { useTranslation } from "react-i18next"
@@ -13,14 +14,11 @@ import { Media } from "~/components/ui/media/Media"
 import { useFollow } from "~/hooks/biz/useFollow"
 import { navigateEntry } from "~/hooks/biz/useNavigateEntry"
 import { useFeedSafeUrl } from "~/hooks/common/useFeedSafeUrl"
-import type { apiClient } from "~/lib/api-fetch"
 
 import { FollowSummary } from "../feed/feed-summary"
 
-export type DiscoverItem = Awaited<ReturnType<typeof apiClient.discover.$post>>["data"][number]
-
 export const FeedCardActions: FC<{
-  item: DiscoverItem
+  item: TrendingFeedItem
   onSuccess?: (item: DiscoverItem) => void
   isSubscribed: boolean
   followButtonVariant?: "ghost" | "outline"
