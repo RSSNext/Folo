@@ -7,7 +7,7 @@ import { memo, useMemo, useRef } from "react"
 import { useResizable } from "react-resizable-layout"
 import { useParams } from "react-router"
 
-import { AIChatPanelStyle, useAIChatPanelStyle } from "~/atoms/settings/ai"
+import { AIChatPanelStyle, useAIChatPanelStyle, useAIPanelVisibility } from "~/atoms/settings/ai"
 import { getUISettings, setUISetting } from "~/atoms/settings/ui"
 import { m } from "~/components/common/Motion"
 import { ROUTE_ENTRY_PENDING } from "~/constants"
@@ -23,7 +23,9 @@ import { EntryColumn } from "./index"
 const AIEntryLayoutImpl = () => {
   const { entryId } = useParams()
 
-  const panelStyle = useAIChatPanelStyle()
+  const aiPanelStyle = useAIChatPanelStyle()
+  const isAIPanelVisible = useAIPanelVisibility()
+  const aiSidebarVisible = aiPanelStyle === AIChatPanelStyle.Fixed && isAIPanelVisible
 
   const realEntryId = entryId === ROUTE_ENTRY_PENDING ? "" : entryId
 
@@ -48,7 +50,7 @@ const AIEntryLayoutImpl = () => {
   })
   return (
     <div className="relative flex min-w-0 grow">
-      <div className={cn("h-full flex-1", panelStyle === AIChatPanelStyle.Fixed && "border-r")}>
+      <div className={cn("h-full flex-1", aiPanelStyle === AIChatPanelStyle.Fixed && "border-r")}>
         <AppLayoutGridContainerProvider>
           <div className="relative h-full">
             {/* Entry list - always rendered to prevent animation */}
@@ -88,7 +90,7 @@ const AIEntryLayoutImpl = () => {
       </div>
 
       {/* Fixed panel layout */}
-      {panelStyle === AIChatPanelStyle.Fixed && (
+      {aiSidebarVisible && (
         <>
           <PanelSplitter
             {...separatorProps}
@@ -109,7 +111,7 @@ const AIEntryLayoutImpl = () => {
       )}
 
       {/* Floating panel - renders outside layout flow */}
-      {panelStyle === AIChatPanelStyle.Floating && <AIChatLayout key="ai-chat-layout" />}
+      {aiPanelStyle === AIChatPanelStyle.Floating && <AIChatLayout key="ai-chat-layout" />}
     </div>
   )
 }

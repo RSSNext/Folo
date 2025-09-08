@@ -1,8 +1,13 @@
-import { startTransition, useCallback, useState } from "react"
+import { startTransition, useCallback, useRef, useState } from "react"
 import { useTranslation } from "react-i18next"
 import { toast } from "sonner"
 
-import { AIChatPanelStyle, setAIChatPanelStyle, useAIChatPanelStyle } from "~/atoms/settings/ai"
+import {
+  AIChatPanelStyle,
+  setAIChatPanelStyle,
+  setAIPanelVisibility,
+  useAIChatPanelStyle,
+} from "~/atoms/settings/ai"
 import { RelativeDay } from "~/components/ui/datetime"
 import {
   DropdownMenu,
@@ -108,6 +113,10 @@ export const ChatMoreDropdown = ({
     setAIChatPanelStyle(newStyle)
   }, [panelStyle])
 
+  const handleCloseSidebar = useRef(() => {
+    setAIPanelVisibility(false)
+  }).current
+
   return (
     <DropdownMenu onOpenChange={handleDropdownOpen}>
       <DropdownMenuTrigger asChild={asChild}>{triggerElement}</DropdownMenuTrigger>
@@ -195,6 +204,16 @@ export const ChatMoreDropdown = ({
           <i className="i-mgc-settings-1-cute-re mr-2 size-4" />
           <span>AI Settings</span>
         </DropdownMenuItem>
+
+        {panelStyle !== AIChatPanelStyle.Floating && (
+          <>
+            <DropdownMenuSeparator />
+            <DropdownMenuItem onClick={handleCloseSidebar}>
+              <i className="i-mgc-close-cute-re mr-2 size-4" />
+              <span>Close Sidebar</span>
+            </DropdownMenuItem>
+          </>
+        )}
       </DropdownMenuContent>
     </DropdownMenu>
   )
