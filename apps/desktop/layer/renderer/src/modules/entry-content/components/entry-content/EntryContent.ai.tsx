@@ -38,6 +38,7 @@ import { EntryCommandShortcutRegister } from "./EntryCommandShortcutRegister"
 import { EntryContentLoading } from "./EntryContentLoading"
 import { EntryNoContent } from "./EntryNoContent"
 import { EntryScrollingAndNavigationHandler } from "./EntryScrollingAndNavigationHandler.js"
+import { EntryTitleMetaHandler } from "./EntryTitleMetaHandler"
 import type { EntryContentProps } from "./types"
 
 const contentVariants = {
@@ -126,6 +127,7 @@ const EntryContentImpl: Component<EntryContentProps> = ({
 
   return (
     <div className={cn(className, "@container flex flex-col")}>
+      <EntryTitleMetaHandler entryId={entryId} />
       <EntryCommandShortcutRegister entryId={entryId} view={view} />
 
       <div className="w-full" ref={setPanelPortalElement} />

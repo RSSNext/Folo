@@ -24,7 +24,6 @@ import { AISummary } from "../../AISummary"
 import { useEntryContent, useEntryMediaInfo } from "../../hooks"
 import { ContainerToc } from "../entry-content/accessories/ContainerToc"
 import { EntryRenderError } from "../entry-content/EntryRenderError"
-import { EntryTitleMetaHandler } from "../entry-content/EntryTitleMetaHandler"
 import { ReadabilityNotice } from "../entry-content/ReadabilityNotice"
 import { EntryAttachments } from "../EntryAttachments"
 import { EntryTitle } from "../EntryTitle"
@@ -93,8 +92,6 @@ export const ArticleLayout: React.FC<ArticleLayoutProps> = ({
 
       <WrappedElementProvider boundingDetection>
         <div className="mx-auto mb-32 mt-8 max-w-full cursor-auto text-[0.94rem]">
-          <EntryTitleMetaHandler entryId={entryId} />
-
           {shouldShowAISummary && <AISummary entryId={entryId} />}
           <ErrorBoundary fallback={EntryRenderError}>
             <ReadabilityNotice entryId={entryId} />
