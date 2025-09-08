@@ -226,6 +226,7 @@ export function EntryHeaderBreadcrumb() {
 
   const { t } = useTranslation()
   const view = useRouteParamsSelector((s) => s.view)
+  const viewName = views.find((v) => v.view === view)?.name
   if (!meta) return null
 
   return (
@@ -245,7 +246,7 @@ export function EntryHeaderBreadcrumb() {
           >
             <i className="i-mingcute-close-fill size-4" />
           </button>
-          {views[view]?.name && (
+          {viewName && (
             <div className="flex items-center">
               <button
                 type="button"
@@ -254,9 +255,7 @@ export function EntryHeaderBreadcrumb() {
                 )}
                 onClick={() => navigate({ entryId: null, view })}
               >
-                <span className="text-text-secondary text-sm">
-                  {t(views[view]?.name, { ns: "common" })}
-                </span>
+                <span className="text-text-secondary text-sm">{t(viewName, { ns: "common" })}</span>
               </button>
 
               <ViewSubscriptionsDropdown view={view} onNavigate={navigate} />
