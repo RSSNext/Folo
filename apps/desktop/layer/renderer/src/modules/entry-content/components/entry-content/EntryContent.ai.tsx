@@ -127,6 +127,8 @@ const EntryContentImpl: Component<EntryContentProps> = ({
 
   return (
     <div className={cn(className, "@container flex flex-col")}>
+      {/* Fix wired layout animation issue for now. TODO: investigate more */}
+      <m.div layout className="hidden" />
       <EntryTitleMetaHandler entryId={entryId} />
       <EntryCommandShortcutRegister entryId={entryId} view={view} />
 
