@@ -442,8 +442,8 @@ export const AllItem: EntryListItemFC = ({ entryId, entryPreview, translation })
             )}
           </div>
         </div>
-        <div className="flex items-center justify-between truncate text-[13px]">
-          <div className="flex items-center gap-1">
+        <div className="flex min-w-0 items-center justify-between text-[13px]">
+          <div className="flex min-w-0 items-center gap-1">
             <FeedIcon
               fallback
               noMargin
@@ -457,15 +457,11 @@ export const AllItem: EntryListItemFC = ({ entryId, entryPreview, translation })
             </span>
           </div>
 
-          <div>
-            <span className={cn("text-zinc-500")}>
-              {dayjs
-                .duration(dayjs(entry.publishedAt).diff(dayjs(), "minute"), "minute")
-                .humanize()}
-              {t("space")}
-              {t("words.ago")}
-            </span>
-          </div>
+          <span className={"text-text-secondary ml-2 min-w-0 shrink-0"}>
+            {dayjs.duration(dayjs(entry.publishedAt).diff(dayjs(), "minute"), "minute").humanize()}
+            {t("space")}
+            {t("words.ago")}
+          </span>
         </div>
       </div>
     </div>

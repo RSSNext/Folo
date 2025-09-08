@@ -5,6 +5,7 @@ import { useEffect, useMemo, useRef } from "react"
 import { Focusable } from "~/components/common/Focusable"
 import { HotkeyScope } from "~/constants"
 
+import { useAIShortcut } from "../../hooks/useAIShortcut"
 import type { AIPanelRefs } from "../../store/AIChatContext"
 import {
   AIChatStoreContext,
@@ -34,7 +35,7 @@ const AIChatRootInner: FC<AIChatRootProps> = ({ children, chatId: externalChatId
   const panelRef = useRef<HTMLDivElement>(null!)
   const inputRef = useRef<HTMLTextAreaElement>(null!)
   const refsContext = useMemo<AIPanelRefs>(() => ({ panelRef, inputRef }), [panelRef, inputRef])
-
+  useAIShortcut()
   if (!currentChatId) {
     return (
       <div className="bg-background flex size-full items-center justify-center">
