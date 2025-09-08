@@ -21,7 +21,6 @@ import { useEntryIsInReadability } from "~/atoms/readability"
 import { useIsZenMode } from "~/atoms/settings/ui"
 import { Focusable } from "~/components/common/Focusable"
 import { m } from "~/components/common/Motion"
-import { useInPeekModal } from "~/components/ui/modal/inspire/InPeekModal"
 import { HotkeyScope } from "~/constants"
 import { useRouteParamsSelector } from "~/hooks/biz/useRouteParams"
 import { useFeedSafeUrl } from "~/hooks/common/useFeedSafeUrl"
@@ -127,8 +126,6 @@ const EntryContentImpl: Component<EntryContentProps> = ({
 
   return (
     <div className={cn(className, "@container flex flex-col")}>
-      {/* Fix wired layout animation issue for now. TODO: investigate more */}
-      <m.div layout className="hidden" />
       <EntryTitleMetaHandler entryId={entryId} />
       <EntryCommandShortcutRegister entryId={entryId} view={view} />
 
@@ -229,11 +226,6 @@ const EntryScrollArea: Component<{
   scrollerRef: React.Ref<HTMLDivElement | null>
   viewportClassName?: string
 }> = ({ children, className, scrollerRef, viewportClassName }) => {
-  const isInPeekModal = useInPeekModal()
-
-  if (isInPeekModal) {
-    return <div className="p-5">{children}</div>
-  }
   return (
     <ScrollArea.ScrollArea
       focusable

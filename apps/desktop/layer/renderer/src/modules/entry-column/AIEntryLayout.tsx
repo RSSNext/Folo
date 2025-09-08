@@ -69,16 +69,18 @@ const AIEntryLayoutImpl = () => {
             {/* Entry content overlay with exit animation */}
             <AnimatePresence>
               {realEntryId && (
-                <m.div
-                  lcpOptimization
-                  initial={{ translateY: "50px", opacity: 0, scale: 0.98 }}
-                  animate={{ translateY: 0, opacity: 1, scale: 1 }}
-                  exit={{ translateY: "50px", opacity: 0, scale: 0.98 }}
-                  transition={Spring.smooth(0.3)}
-                  className="bg-theme-background absolute inset-0 z-[9]"
-                >
-                  <EntryContent entryId={realEntryId} className="h-full" />
-                </m.div>
+                <div className="pointer-events-none absolute inset-0 z-[9] flex flex-col overflow-hidden">
+                  <m.div
+                    lcpOptimization
+                    initial={{ translateY: "50px", opacity: 0, scale: 0.98 }}
+                    animate={{ translateY: 0, opacity: 1, scale: 1 }}
+                    exit={{ translateY: "50px", opacity: 0, scale: 0.98 }}
+                    transition={Spring.smooth(0.3)}
+                    className="bg-theme-background pointer-events-auto flex-1"
+                  >
+                    <EntryContent entryId={realEntryId} className="h-full" />
+                  </m.div>
+                </div>
               )}
             </AnimatePresence>
           </div>

@@ -30,7 +30,7 @@ export const SocialMediaLayout: React.FC<SocialMediaLayoutProps> = ({
   if (!entry || !feed) return null
 
   return (
-    <div className={cn(readableContentMaxWidthClassName, "mx-auto space-y-5")}>
+    <div className={cn(readableContentMaxWidthClassName, "mx-auto space-y-5 pt-12")}>
       {/* Single Author header without avatar */}
       <AuthorHeader entryId={entryId} />
 
