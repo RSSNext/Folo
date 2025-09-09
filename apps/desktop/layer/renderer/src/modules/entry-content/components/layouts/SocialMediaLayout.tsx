@@ -3,7 +3,7 @@ import { useFeedById } from "@follow/store/feed/hooks"
 import { cn } from "@follow/utils/utils"
 
 import { readableContentMaxWidthClassName } from "~/constants/ui"
-import { SocialMediaGallery } from "~/modules/entry-column/Items/social-media-item"
+import { MediaGallery } from "~/modules/entry-column/Items/media-gallery"
 
 import { AuthorHeader } from "./shared/AuthorHeader"
 import { ContentBody } from "./shared/ContentBody"
@@ -44,7 +44,7 @@ export const SocialMediaLayout: React.FC<SocialMediaLayoutProps> = ({
       />
 
       {/* Media gallery */}
-      {!noMedia && <SocialMediaGallery entryId={entryId} />}
+      {!noMedia && <MediaGallery entryId={entryId} />}
     </div>
   )
 }
