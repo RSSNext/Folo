@@ -1,4 +1,4 @@
-import { FeedViewType } from "@follow/constants"
+import type { FeedViewType } from "@follow/constants"
 
 import { FEED_COLLECTION_LIST, ROUTE_FEED_IN_FOLDER } from "../../constants/app"
 import type { SubscriptionState } from "./store"
@@ -21,7 +21,7 @@ export const folderFeedsByFeedIdSelector =
     for (const feedId in state.data) {
       const subscription = state.data[feedId]!
       if (
-        (subscription.view === view || view === FeedViewType.All) &&
+        subscription.view === view &&
         (subscription.category
           ? subscription.category === folderName
           : getDefaultCategory(subscription) === folderName)

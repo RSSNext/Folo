@@ -1,6 +1,5 @@
 import { FeedViewType } from "@follow/constants"
 
-import { AllItem } from "./all-item"
 import { ArticleItem } from "./article-item"
 import { AudioItem } from "./audio-item"
 import { NotificationItem } from "./notification-item"
@@ -9,7 +8,6 @@ import { SocialMediaItem } from "./social-media-item"
 import { VideoItem } from "./video-item"
 
 const ItemMap = {
-  [FeedViewType.All]: AllItem,
   [FeedViewType.Articles]: ArticleItem,
   [FeedViewType.SocialMedia]: SocialMediaItem,
   [FeedViewType.Pictures]: PictureItem,

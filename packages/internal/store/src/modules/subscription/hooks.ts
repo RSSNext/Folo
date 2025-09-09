@@ -262,7 +262,6 @@ export const useViewWithSubscription = () =>
     return views
       .filter((view) => {
         if (
-          view.view === FeedViewType.All ||
           view.view === FeedViewType.Articles ||
           view.view === FeedViewType.SocialMedia ||
           view.view === FeedViewType.Pictures ||
