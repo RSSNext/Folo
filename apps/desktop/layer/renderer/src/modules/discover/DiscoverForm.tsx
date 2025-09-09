@@ -11,6 +11,7 @@ import {
 import { Input } from "@follow/components/ui/input/index.js"
 import { SegmentGroup, SegmentItem } from "@follow/components/ui/segment/index.js"
 import { ResponsiveSelect } from "@follow/components/ui/select/responsive.js"
+import type { DiscoveryItem } from "@follow-app/client-sdk"
 import { zodResolver } from "@hookform/resolvers/zod"
 import { repository } from "@pkg"
 import { useMutation } from "@tanstack/react-query"
@@ -25,7 +26,7 @@ import { z } from "zod"
 
 import { useIsInMASReview } from "~/atoms/server-configs"
 import { useModalStack } from "~/components/ui/modal/stacked/hooks"
-import { apiClient } from "~/lib/api-fetch"
+import { followClient } from "~/lib/api-client"
 
 import { DiscoverFeedCard } from "./DiscoverFeedCard"
 import { FeedForm } from "./FeedForm"
@@ -90,9 +91,7 @@ const info = {
   }
 >
 
-type DiscoverSearchData = Awaited<ReturnType<typeof apiClient.discover.$post>>["data"]
-
-const discoverSearchDataAtom = atom<Record<string, DiscoverSearchData>>()
+const discoverSearchDataAtom = atom<Record<string, DiscoveryItem[]>>()
 
 export function DiscoverForm({ type = "search" }: { type?: string }) {
   const { prefix, default: defaultValue, schema: formSchema } = info[type]!
@@ -125,11 +124,9 @@ export function DiscoverForm({ type = "search" }: { type?: string }) {
   const jotaiStore = useStore()
   const mutation = useMutation({
     mutationFn: async ({ keyword, target }: { keyword: string; target: "feeds" | "lists" }) => {
-      let { data } = await apiClient.discover.$post({
-        json: {
-          keyword: keyword.trim(),
-          target,
-        },
+      let { data } = await followClient.api.discover.discover({
+        keyword: keyword.trim(),
+        target,
       })
       if (isInMASReview) {
         data = data.filter((item) => !item.list?.fee)
@@ -205,7 +202,7 @@ export function DiscoverForm({ type = "search" }: { type?: string }) {
   )
 
   const handleSuccess = useCallback(
-    (item: DiscoverSearchData[number]) => {
+    (item: DiscoveryItem) => {
       const currentData = jotaiStore.get(discoverSearchDataAtom)
       if (!currentData) return
       jotaiStore.set(
@@ -229,7 +226,7 @@ export function DiscoverForm({ type = "search" }: { type?: string }) {
   )
 
   const handleUnSubscribed = useCallback(
-    (item: DiscoverSearchData[number]) => {
+    (item: DiscoveryItem) => {
       const currentData = jotaiStore.get(discoverSearchDataAtom)
       if (!currentData) return
       jotaiStore.set(

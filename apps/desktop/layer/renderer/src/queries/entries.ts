@@ -1,5 +1,4 @@
-import { useAuthQuery } from "~/hooks/common"
-import { apiClient } from "~/lib/api-fetch"
+import { followClient } from "~/lib/api-client"
 import { defineQuery } from "~/lib/defineQuery"
 import { getEntriesParams } from "~/lib/utils"
 
@@ -8,10 +7,8 @@ export const entries = {
     defineQuery(
       ["entries-preview", id],
       async () => {
-        const res = await apiClient.entries.preview.$get({
-          query: {
-            id,
-          },
+        const res = await followClient.api.entries.preview({
+          id,
         })
 
         return res.data
@@ -54,15 +51,13 @@ export const entries = {
           query.feedId = query.feedIdList[0]
           delete query.feedIdList
         }
-        return apiClient.entries["check-new"].$get({
-          query: {
-            insertedAfter: query.insertedAfter,
-            view: query.view,
-            feedId: query.feedId,
-            read: typeof query.read === "boolean" ? JSON.stringify(query.read) : undefined,
-            feedIdList: query.feedIdList,
-          },
-        }) as Promise<{ data: { has_new: boolean; lastest_at?: string } }>
+        return followClient.api.entries.checkNew({
+          insertedAfter: query.insertedAfter,
+          view: query.view,
+          feedId: query.feedId,
+          read: typeof query.read === "boolean" ? query.read : undefined,
+          feedIdList: query.feedIdList,
+        })
       },
 
       {
@@ -70,8 +65,3 @@ export const entries = {
       },
     ),
 }
-
-export const useEntriesPreview = ({ id }: { id?: string }) =>
-  useAuthQuery(entries.preview(id!), {
-    enabled: !!id,
-  })

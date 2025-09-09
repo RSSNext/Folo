@@ -1,6 +1,7 @@
 import { Skeleton } from "@follow/components/ui/skeleton/index.js"
-import type { FeedAnalyticsModel, FeedOrListRespModel, ListAnalyticsModel } from "@follow/models"
+import type { FeedOrListRespModel } from "@follow/models"
 import { formatNumber } from "@follow/utils"
+import type { FeedAnalyticsModel, ListAnalyticsSchema } from "@follow-app/client-sdk"
 import type { FC } from "react"
 import { useTranslation } from "react-i18next"
 
@@ -11,7 +12,7 @@ import { FollowSummary } from "../feed/feed-summary"
 export interface FeedSummaryProps {
   feed: FeedOrListRespModel
 
-  analytics?: FeedAnalyticsModel | ListAnalyticsModel
+  analytics?: FeedAnalyticsModel | ListAnalyticsSchema
 
   showAnalytics?: boolean
   isLoading?: boolean

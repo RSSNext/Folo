@@ -1,5 +1,5 @@
 import { userActions } from "@follow/store/user/store"
-import type { UseRSSHubInstanceRequest } from "@follow-app/client-sdk"
+import type { RSSHubUseRequest } from "@follow-app/client-sdk"
 import { useMutation } from "@tanstack/react-query"
 
 import { followClient } from "~/lib/api-client"
@@ -10,8 +10,7 @@ import type { MutationBaseProps } from "./types"
 
 export const useSetRSSHubMutation = ({ onError }: MutationBaseProps = {}) =>
   useMutation({
-    mutationFn: (data: UseRSSHubInstanceRequest) =>
-      followClient.api.rsshub.useInstance({ ...data }),
+    mutationFn: (data: RSSHubUseRequest) => followClient.api.rsshub.use({ ...data }),
 
     onSuccess: (_, variables) => {
       rsshub.list().invalidate()
@@ -39,7 +38,7 @@ export const useAddRSSHubMutation = ({ onError }: MutationBaseProps = {}) =>
       accessKey?: string
       id?: string
     }) =>
-      followClient.api.rsshub.createInstance({
+      followClient.api.rsshub.create({
         baseUrl,
         accessKey,
         id,
@@ -58,7 +57,7 @@ export const useAddRSSHubMutation = ({ onError }: MutationBaseProps = {}) =>
 
 export const useDeleteRSSHubMutation = ({ onError }: MutationBaseProps = {}) =>
   useMutation({
-    mutationFn: (id: string) => followClient.api.rsshub.deleteInstance({ id }),
+    mutationFn: (id: string) => followClient.api.rsshub.delete({ id }),
 
     onError: (error) => {
       onError?.(error)
@@ -69,13 +68,13 @@ export const useDeleteRSSHubMutation = ({ onError }: MutationBaseProps = {}) =>
 export const rsshub = {
   get: ({ id }: { id: string }) =>
     defineQuery(["rsshub", "get", id], async () => {
-      const res = await followClient.api.rsshub.getInstance({ id })
+      const res = await followClient.api.rsshub.get({ id })
       return res.data
     }),
 
   list: () =>
     defineQuery(["rsshub", "list"], async () => {
-      const res = await followClient.api.rsshub.listInstances()
+      const res = await followClient.api.rsshub.list()
       userActions.upsertMany(res.data.map((item) => item.owner).filter((item) => item !== null))
 
       return res.data
@@ -83,7 +82,7 @@ export const rsshub = {
 
   status: () =>
     defineQuery(["rsshub", "status"], async () => {
-      const res = await followClient.api.rsshub.getStatus()
+      const res = await followClient.api.rsshub.status()
       return res.data
     }),
 }

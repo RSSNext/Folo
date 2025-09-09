@@ -1,29 +1,26 @@
 import { RiNftFill } from "@follow/components/icons/nft.jsx"
 import { Button, MotionButtonBase } from "@follow/components/ui/button/index.js"
 import { styledButtonVariant } from "@follow/components/ui/button/variants.js"
-import { Input } from "@follow/components/ui/input/Input.js"
 import { LoadingCircle, LoadingWithIcon } from "@follow/components/ui/loading/index.jsx"
 import { ScrollArea } from "@follow/components/ui/scroll-area/ScrollArea.js"
-import { Tooltip, TooltipContent, TooltipTrigger } from "@follow/components/ui/tooltip/index.js"
 import { useOnce } from "@follow/hooks"
-import type { ExtractBizResponse } from "@follow/models/types"
 import { Chain } from "@follow/utils/chain"
 import { cn } from "@follow/utils/utils"
+import type { AchievementWithPower } from "@follow-app/client-sdk"
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query"
 import type { PrimitiveAtom } from "jotai"
 import { atom, useStore } from "jotai"
 import { nanoid } from "nanoid"
 import type { FC, ReactNode } from "react"
-import { useEffect, useId, useMemo, useRef, useState } from "react"
+import { useEffect, useMemo, useState } from "react"
 import { useTranslation } from "react-i18next"
 
-import { useServerConfigs } from "~/atoms/server-configs"
 import { LazyDotLottie } from "~/components/common/LazyDotLottie"
 import { VideoPlayer } from "~/components/ui/media/VideoPlayer"
 import { ScaleModal } from "~/components/ui/modal/stacked/custom-modal"
-import { useCurrentModal, useModalStack } from "~/components/ui/modal/stacked/hooks"
+import { useModalStack } from "~/components/ui/modal/stacked/hooks"
 import { useI18n } from "~/hooks/common"
-import { apiClient } from "~/lib/api-fetch"
+import { followClient } from "~/lib/api-client"
 import achievementAnimationUri from "~/lottie/achievement.lottie?url"
 
 const absoluteachievementAnimationUri = new URL(achievementAnimationUri, import.meta.url).href
@@ -100,7 +97,6 @@ const prefetchVideos = () => {
   })
 }
 
-type Achievement = ExtractBizResponse<typeof apiClient.achievement.$get>["data"]
 export const AchievementModalContent: FC = () => {
   const jotaiStore = useStore()
 
@@ -120,16 +116,14 @@ export const AchievementModalContent: FC = () => {
       persist: true,
     },
     queryFn: async () => {
-      const res = await apiClient.achievement.$get({
-        query: {
-          type: "all",
-        },
+      const res = await followClient.api.achievement.list({
+        type: "all",
       })
 
       jotaiStore.set(achievementsDataAtom, res.data)
       return res.data
     },
-    initialData: defaultAchievements as Achievement,
+    initialData: defaultAchievements as AchievementWithPower[],
   })
 
   useEffect(() => {
@@ -330,16 +324,14 @@ const buildDefaultAchievements = () => {
 }
 
 const MintButton: FC<{
-  achievementsDataAtom: PrimitiveAtom<Achievement | undefined>
-  achievement: Achievement[number]
+  achievementsDataAtom: PrimitiveAtom<AchievementWithPower[] | undefined>
+  achievement: AchievementWithPower
   onMinted: () => void
 }> = ({ achievementsDataAtom, achievement, onMinted }) => {
   const { mutateAsync: mintAchievement, isPending: isMinting } = useMutation({
     mutationFn: async (actionId: number) => {
-      return apiClient.achievement.$put({
-        json: {
-          actionId,
-        },
+      return followClient.api.achievement.claim({
+        actionId,
       })
     },
   })
@@ -383,15 +375,13 @@ const MintButton: FC<{
 }
 
 const IncompleteButton: FC<{
-  achievement: Achievement[number]
+  achievement: AchievementWithPower
   refetch: () => void
 }> = ({ achievement, refetch }) => {
   const { mutateAsync: checkAchievement, isPending: checkPending } = useMutation({
     mutationFn: async (actionId: number) => {
-      return apiClient.achievement.check.$post({
-        json: {
-          actionId,
-        },
+      return followClient.api.achievement.check({
+        actionId,
       })
     },
     onSuccess: () => {
@@ -399,34 +389,31 @@ const IncompleteButton: FC<{
     },
   })
 
-  const { present } = useModalStack()
   let Content: ReactNode
 
-  const { PRODUCT_HUNT_VOTE_URL } = useServerConfigs() || {}
-
   switch (achievement.actionId) {
-    case AchievementsActionIdMap.PRODUCT_HUNT_VOTE: {
-      return (
-        <Tooltip>
-          <TooltipTrigger asChild>
-            <Button
-              disabled={!PRODUCT_HUNT_VOTE_URL}
-              onClick={() => {
-                present({
-                  title: "Validate Your Vote",
-                  content: () => <VoteValidateModalContent refetch={refetch} />,
-                })
-              }}
-            >
-              Validate
-            </Button>
-          </TooltipTrigger>
-          {!PRODUCT_HUNT_VOTE_URL && (
-            <TooltipContent>Product Hunt Vote is not ready, We'll see.</TooltipContent>
-          )}
-        </Tooltip>
-      )
-    }
+    // case AchievementsActionIdMap.PRODUCT_HUNT_VOTE: {
+    //   return (
+    //     <Tooltip>
+    //       <TooltipTrigger asChild>
+    //         <Button
+    //           disabled={!PRODUCT_HUNT_VOTE_URL}
+    //           onClick={() => {
+    //             present({
+    //               title: "Validate Your Vote",
+    //               content: () => <VoteValidateModalContent refetch={refetch} />,
+    //             })
+    //           }}
+    //         >
+    //           Validate
+    //         </Button>
+    //       </TooltipTrigger>
+    //       {!PRODUCT_HUNT_VOTE_URL && (
+    //         <TooltipContent>Product Hunt Vote is not ready, We'll see.</TooltipContent>
+    //       )}
+    //     </Tooltip>
+    //   )
+    // }
     default: {
       Content = (
         <>
@@ -474,76 +461,5 @@ const IncompleteButton: FC<{
     >
       {Content}
     </button>
-  )
-}
-const VoteValidateModalContent: FC<{ refetch: () => void }> = ({ refetch }) => {
-  const ref = useRef<HTMLInputElement>(null)
-  const { dismiss } = useCurrentModal()
-  const { present } = useModalStack()
-  const { mutateAsync: audit, isPending } = useMutation({
-    mutationFn: (username: string) => {
-      return apiClient.achievement.audit.$post({
-        json: {
-          actionId: AchievementsActionIdMap.PRODUCT_HUNT_VOTE,
-          payload: {
-            username,
-          },
-        },
-      })
-    },
-    onSuccess: () => {
-      dismiss()
-
-      refetch()
-      present({
-        title: "Thank you!",
-        content: () => <div>Thank you for your vote. Please wait for our verification.</div>,
-        clickOutsideToDismiss: true,
-      })
-    },
-  })
-  const { PRODUCT_HUNT_VOTE_URL } = useServerConfigs() || {}
-  const id = useId()
-
-  const openOnceRef = useRef(false)
-  useEffect(() => {
-    if (openOnceRef.current) return
-    if (PRODUCT_HUNT_VOTE_URL) {
-      window.open(PRODUCT_HUNT_VOTE_URL, "_blank")
-      openOnceRef.current = true
-    }
-  }, [PRODUCT_HUNT_VOTE_URL])
-
-  return (
-    <form
-      className="flex flex-col gap-2"
-      onSubmit={(e) => {
-        e.preventDefault()
-        if (!ref.current?.value) return
-        audit(ref.current.value)
-      }}
-    >
-      <label className="text-sm" htmlFor={id}>
-        Please vote for {APP_NAME} on{" "}
-        <a
-          href={PRODUCT_HUNT_VOTE_URL}
-          className="follow-link--underline"
-          target="_blank"
-          rel="noreferrer"
-        >
-          Product Hunt!
-        </a>{" "}
-        Then fill in your username here.
-      </label>
-      <div>
-        <Input ref={ref} autoFocus id={id} placeholder="Your Product Hunt username" />
-      </div>
-
-      <div className="mt-2 flex justify-end">
-        <Button isLoading={isPending} type="submit">
-          Validate
-        </Button>
-      </div>
-    </form>
   )
 }

@@ -1,10 +1,6 @@
-import type {
-  CombinedEntryModel,
-  EntryModelSimple,
-  FeedModel,
-  FeedOrListRespModel,
-} from "@follow/models/types"
+import type { CombinedEntryModel, FeedModel, FeedOrListRespModel } from "@follow/models/types"
 import type { EntryTranslation } from "@follow/store/translation/types"
+import type { ParsedEntry } from "@follow-app/client-sdk"
 import type { FC } from "react"
 
 export type UniversalItemProps = {
@@ -23,6 +19,6 @@ export type EntryListItemFC<P extends object = object> = FC<P & UniversalItemPro
 
 export type EntryItemStatelessProps = {
   feed: FeedModel
-  entry: EntryModelSimple
+  entry: ParsedEntry
   view?: number
 }

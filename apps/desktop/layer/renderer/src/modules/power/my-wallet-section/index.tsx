@@ -12,7 +12,7 @@ import { useMutation } from "@tanstack/react-query"
 import { Trans, useTranslation } from "react-i18next"
 
 import { useServerConfigs } from "~/atoms/server-configs"
-import { apiClient } from "~/lib/api-fetch"
+import { followClient } from "~/lib/api-client"
 import { SettingSectionTitle } from "~/modules/settings/section"
 import { ActivityPoints } from "~/modules/wallet/activity-points"
 import { Balance } from "~/modules/wallet/balance"
@@ -34,7 +34,7 @@ export const MyWalletSection = ({ className }: { className?: string }) => {
 
   const refreshMutation = useMutation({
     mutationFn: async () => {
-      await apiClient.wallets.refresh.$post()
+      await followClient.api.wallets.refresh()
     },
     onSuccess: () => {
       walletActions.get().invalidate()

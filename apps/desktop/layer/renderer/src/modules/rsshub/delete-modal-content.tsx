@@ -10,7 +10,7 @@ export const ConfirmDeleteModalContent = ({ id, dismiss }: { dismiss: () => void
   const { t } = useTranslation("settings")
   const deleteMutation = useMutation({
     mutationFn: () => {
-      return followClient.api.rsshub.deleteInstance({ id })
+      return followClient.api.rsshub.delete({ id })
     },
     onSuccess: () => {
       Queries.rsshub.list().invalidate()
