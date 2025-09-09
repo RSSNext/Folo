@@ -1,4 +1,4 @@
-import type { FeedViewType } from "@follow/constants"
+import { FeedViewType } from "@follow/constants"
 import type { UnreadSchema } from "@follow/database/schemas/types"
 import { EntryService } from "@follow/database/services/entry"
 import { UnreadService } from "@follow/database/services/unread"
@@ -129,10 +129,13 @@ class UnreadSyncService {
   }) {
     const request = async () => {
       const args: MarkAllAsReadRequest = {
-        view,
+        view: view === FeedViewType.All ? undefined : view,
         excludePrivate,
         ...filter,
         ...time,
+      }
+      if (view === FeedViewType.All) {
+        delete args.view
       }
       const res = await api().reads.markAllAsRead(args)
 
@@ -162,7 +165,7 @@ class UnreadSyncService {
 
   async markViewAsRead(view: FeedViewType, excludePrivate: boolean) {
     await this.markBatchAsRead({
-      view,
+      view: view === FeedViewType.All ? undefined : view,
       excludePrivate,
     })
   }

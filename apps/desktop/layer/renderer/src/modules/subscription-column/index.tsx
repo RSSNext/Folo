@@ -280,7 +280,7 @@ const TabsRow: FC = () => {
       <SubscriptionTabButton
         shortcut="BackQuote"
         key={first}
-        timelineId={`${ROUTE_TIMELINE_OF_VIEW}${FeedViewType.Articles}`}
+        timelineId={`${ROUTE_TIMELINE_OF_VIEW}${FeedViewType.All}`}
       />
       {visible.map((timelineId, index) => (
         <SubscriptionTabButton key={timelineId} timelineId={timelineId} shortcut={`${index + 1}`} />

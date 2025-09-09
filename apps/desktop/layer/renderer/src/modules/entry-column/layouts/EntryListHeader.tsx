@@ -63,6 +63,7 @@ export const EntryListHeader: FC<{
   const feed = useFeedById(feedId)
 
   const titleStyleBasedView = {
+    [FeedViewType.All]: "pl-5",
     [FeedViewType.Articles]: "pl-7",
     [FeedViewType.Pictures]: "pl-7",
     [FeedViewType.Videos]: "pl-7",
