@@ -8,7 +8,7 @@ import { renderToImage } from "~/lib/og/render-to-image"
 import { getImageBase64, OGAvatar, OGCanvas } from "./__base"
 
 export const renderFeedOG = async (apiClient: FollowClient, feedId: string) => {
-  const feed = await apiClient.feeds.$get({ query: { id: feedId } }).catch(() => null)
+  const feed = await apiClient.api.feeds.get({ id: feedId }).catch(() => null)
 
   if (!feed?.data.feed) {
     throw 404

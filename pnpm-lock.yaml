@@ -8,7 +8,7 @@ catalogs:
   default:
     '@follow-app/client-sdk':
       specifier: /Users/innei/git/work/rss3/follow-server/packages/client-sdk
-      version: 0.3.53
+      version: 0.3.55
     tailwindcss-uikit-colors:
       specifier: 1.0.0
       version: 1.0.0
@@ -1880,6 +1880,9 @@ importers:
         specifier: ^4.1.3
         version: 4.1.3(e661b682803e46e94d456ab74e2713b4)
     devDependencies:
+      '@follow-app/client-sdk':
+        specifier: 'catalog:'
+        version: link:../../../../follow-server/packages/client-sdk
       '@follow/configs':
         specifier: workspace:*
         version: link:../../configs

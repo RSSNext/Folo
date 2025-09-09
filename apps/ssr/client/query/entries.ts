@@ -1,14 +1,12 @@
-import { apiClient } from "@client/lib/api-fetch"
+import { followClient } from "@client/lib/api-fetch"
 import { getHydrateData } from "@client/lib/helper"
 import { useQuery } from "@tanstack/react-query"
 
 import type { Feed } from "./feed"
 
 const fetchEntriesPreview = async ({ id }: { id?: string }) => {
-  const res = await apiClient.entries.preview.$get({
-    query: {
-      id: id!,
-    },
+  const res = await followClient.api.entries.preview({
+    id: id!,
   })
 
   return res.data
@@ -22,6 +20,6 @@ export const useEntriesPreview = ({ id }: { id?: string }) => {
   })
 }
 
-export type EntriesPreview = (Awaited<ReturnType<typeof fetchEntriesPreview>>[number] & {
+export type EntriesPreview = (Awaited<ReturnType<typeof fetchEntriesPreview>> & {
   feeds?: Feed["feed"]
 })[]

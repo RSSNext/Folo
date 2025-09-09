@@ -1,10 +1,9 @@
 import { UserRole } from "@follow/constants"
 import type { UserSchema } from "@follow/database/schemas/types"
 import { UserService } from "@follow/database/services/user"
-import type { AuthSession } from "@follow/shared/hono"
 import { create, indexedResolver, windowScheduler } from "@yornaath/batshit"
 
-import { apiClient, authClient } from "../../context"
+import { api, authClient } from "../../context"
 import type { Hydratable, Resetable } from "../../lib/base"
 import { createImmerSetter, createTransaction, createZustandStore } from "../../lib/helper"
 import { honoMorph } from "../../morph/hono"
@@ -39,9 +38,7 @@ const immerSet = createImmerSetter(useUserStore)
 class UserSyncService {
   private userBatcher = create({
     fetcher: async (userIds: string[]) => {
-      const res = await apiClient().profiles.batch.$post({
-        json: { ids: userIds },
-      })
+      const res = await api().profiles.getBatch({ ids: userIds })
 
       if (res.code === 0) {
         const { whoami } = get()
@@ -66,17 +63,14 @@ class UserSyncService {
   })
 
   async whoami() {
-    const res = (await (apiClient()["better-auth"] as any)[
-      "get-session"
-    ].$get()) as AuthSession | null
+    const res = await api().auth.getSession()
     if (res) {
       const user = honoMorph.toUser(res.user, true)
       immerSet((state) => {
-        state.whoami = { ...user, emailVerified: res.user.emailVerified }
-        // @ts-expect-error
-        state.role = res.role
-        if (res.roleEndAt) {
-          state.roleEndAt = new Date(res.roleEndAt)
+        state.whoami = { ...user, emailVerified: res.user?.emailVerified }
+        state.role = res.user?.role as UserRole | null
+        if (res.user?.roleEndAt) {
+          state.roleEndAt = new Date(res.user?.roleEndAt)
         }
       })
       userActions.upsertMany([user])
@@ -179,7 +173,7 @@ class UserSyncService {
   }
 
   async applyInvitationCode(code: string) {
-    const res = await apiClient().invitations.use.$post({ json: { code } })
+    const res = await api().invitations.use({ code })
     if (res.code === 0) {
       immerSet((state) => {
         state.role = UserRole.Pro

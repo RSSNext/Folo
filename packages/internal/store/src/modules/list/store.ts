@@ -1,7 +1,7 @@
 import { ListService } from "@follow/database/services/list"
 import { clone } from "es-toolkit"
 
-import { apiClient } from "../../context"
+import { api } from "../../context"
 import type { Hydratable, Resetable } from "../../lib/base"
 import { createImmerSetter, createTransaction, createZustandStore } from "../../lib/helper"
 import { honoMorph } from "../../morph/hono"
@@ -79,7 +79,7 @@ export const listActions = new ListActions()
 class ListSyncServices {
   async fetchListById(params: { id: string | undefined }) {
     if (!params.id) return null
-    const list = await apiClient().lists.$get({ query: { listId: params.id } })
+    const list = await api().lists.get({ listId: params.id })
 
     await listActions.upsertMany([honoMorph.toList(list.data.list)])
 
@@ -87,21 +87,19 @@ class ListSyncServices {
   }
 
   async fetchOwnedLists() {
-    const res = await apiClient().lists.list.$get({ query: {} })
+    const res = await api().lists.list({})
     await listActions.upsertMany(res.data.map((list) => honoMorph.toList(list)))
 
     return res.data.map((list) => honoMorph.toList(list))
   }
 
   async createList(params: { list: CreateListModel }) {
-    const res = await apiClient().lists.$post({
-      json: {
-        title: params.list.title,
-        description: params.list.description,
-        image: params.list.image,
-        view: params.list.view,
-        fee: params.list.fee || 0,
-      },
+    const res = await api().lists.create({
+      title: params.list.title,
+      description: params.list.description,
+      image: params.list.image,
+      view: params.list.view,
+      fee: params.list.fee || 0,
     })
     await listActions.upsertMany([honoMorph.toList(res.data)])
     await subscriptionActions.upsertMany([
@@ -142,9 +140,7 @@ class ListSyncServices {
     })
 
     tx.request(async () => {
-      await apiClient().lists.$patch({
-        json: nextModel,
-      })
+      await api().lists.update(nextModel)
     })
 
     tx.persist(async () => {
@@ -177,7 +173,7 @@ class ListSyncServices {
 
     tx.request(async () => {
       await subscriptionSyncService.unsubscribe([listId])
-      await apiClient().lists.$delete({ json: { listId } })
+      await api().lists.delete({ listId })
     })
 
     tx.rollback(() => {
@@ -197,9 +193,7 @@ class ListSyncServices {
   async addFeedsToFeedList(
     params: { listId: string; feedIds: string[] } | { listId: string; feedId: string },
   ) {
-    const feeds = await apiClient().lists.feeds.$post({
-      json: params,
-    })
+    const feeds = await api().lists.addFeeds(params)
     const list = get().lists[params.listId]
     if (!list) return
 
@@ -212,9 +206,7 @@ class ListSyncServices {
   }
 
   async removeFeedFromFeedList(params: { listId: string; feedId: string }) {
-    await apiClient().lists.feeds.$delete({
-      json: params,
-    })
+    await api().lists.removeFeed(params)
     const list = get().lists[params.listId]
     if (!list) return
 

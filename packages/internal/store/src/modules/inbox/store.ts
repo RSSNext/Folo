@@ -1,7 +1,7 @@
 import type { InboxSchema } from "@follow/database/schemas/types"
 import { InboxService } from "@follow/database/services/inbox"
 
-import { apiClient } from "../../context"
+import { api } from "../../context"
 import type { Hydratable, Resetable } from "../../lib/base"
 import { createImmerSetter, createTransaction, createZustandStore } from "../../lib/helper"
 import type { InboxModel } from "./types"
@@ -84,11 +84,9 @@ class InboxSyncService {
       await inboxActions.upsertManyInSession([newInbox])
     })
     tx.request(async () => {
-      await apiClient().inboxes.$post({
-        json: {
-          handle,
-          title,
-        },
+      await api().inboxes.post({
+        handle,
+        title,
       })
     })
 
@@ -110,11 +108,9 @@ class InboxSyncService {
       await inboxActions.upsertManyInSession([newInbox])
     })
     tx.request(async () => {
-      await apiClient().inboxes.$put({
-        json: {
-          handle,
-          title,
-        },
+      await api().inboxes.put({
+        id: handle,
+        title,
       })
     })
 
@@ -130,10 +126,8 @@ class InboxSyncService {
     const tx = createTransaction(inbox)
     tx.store(async () => inboxActions.deleteById(inboxId))
     tx.request(async () => {
-      await apiClient().inboxes.$delete({
-        json: {
-          handle: inboxId,
-        },
+      await api().inboxes.delete({
+        id: inboxId,
       })
     })
 

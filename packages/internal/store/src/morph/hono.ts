@@ -1,3 +1,5 @@
+import type { AddFeedsResponse } from "@follow-app/client-sdk"
+
 import type { EntryModel } from "../modules/entry/types"
 import type { FeedModel } from "../modules/feed/types"
 import type { ListModel } from "../modules/list/types"
@@ -62,7 +64,7 @@ class LegacyHonoMorph {
     }
   }
 
-  toFeed(data: HonoApiClient.Feed_Get["feed"]): FeedModel {
+  toFeed(data: AddFeedsResponse["data"][number]): FeedModel {
     return {
       type: "feed",
       id: data.id,

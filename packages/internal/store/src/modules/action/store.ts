@@ -8,7 +8,7 @@ import type {
 } from "@follow/models/types"
 import { merge } from "es-toolkit/compat"
 
-import { apiClient } from "../../context"
+import { api } from "../../context"
 import { createImmerSetter, createZustandStore } from "../../lib/helper"
 
 type ActionStore = {
@@ -25,7 +25,7 @@ const immerSet = createImmerSetter(useActionStore)
 
 class ActionSyncService {
   async fetchRules() {
-    const res = await apiClient().actions.$get()
+    const res = await api().actions.get()
     if (res.data) {
       actionActions.updateRules(
         (res.data.rules ?? []).map((rule, index) => {
@@ -53,7 +53,7 @@ class ActionSyncService {
       return null
     }
 
-    const res = await apiClient().actions.$put({ json: { rules: rules as any } })
+    const res = await api().actions.put({ rules: rules as any })
     actionActions.setDirty(false)
     return res
   }

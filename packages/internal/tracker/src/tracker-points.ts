@@ -1,12 +1,19 @@
+import type { AuthUser } from "@follow-app/client-sdk"
+
 import { TrackerMapper } from "./enums"
 import { trackManager } from "./track-manager"
-import type { IdentifyPayload } from "./types"
 
 export class TrackerPoints {
   // App
-  identify(props: IdentifyPayload) {
+  identify(props: AuthUser) {
     this.manager.identify(props)
-    this.track(TrackerMapper.Identify, props)
+    this.track(TrackerMapper.Identify, {
+      id: props.id,
+      name: props.name,
+      email: props.email,
+      image: props.image,
+      handle: props.handle,
+    })
   }
 
   appInit(props: {
