@@ -1,4 +1,4 @@
-import type { ComponentType, ReactElement } from "react"
+import type { ComponentType, FC, ReactElement } from "react"
 import { createElement, Suspense } from "react"
 
 type FallbackOptions = ReactElement | ComponentType
@@ -14,9 +14,9 @@ interface WithSuspenseOptions {
  * @returns A new component wrapped with Suspense
  */
 export function withSuspense<P extends object>(
-  Component: ComponentType<P>,
+  Component: FC<P>,
   options: WithSuspenseOptions = {},
-): ComponentType<P> {
+): FC<P> {
   const { fallback } = options
 
   const WrappedComponent = (props: P) => {
@@ -27,5 +27,5 @@ export function withSuspense<P extends object>(
 
   WrappedComponent.displayName = `withSuspense(${Component.displayName || Component.name || "Component"})`
 
-  return WrappedComponent
+  return WrappedComponent as FC<P>
 }

@@ -20,9 +20,14 @@ export const EntryTitleMetaHandler: Component<{
   const feedTitle = feed?.title || inbox?.title
 
   useEffect(() => {
-    if (entry?.title && feedTitle) {
-      setEntryTitleMeta({ entryTitle: entry.title, feedTitle, feedId: entry.feedId!, entryId })
-    }
+    if (!entry?.feedId) return
+    setEntryTitleMeta({
+      entryTitle: entry?.title || "",
+      feedTitle: feedTitle || "",
+      feedId: entry?.feedId || "",
+      entryId,
+    })
+
     return () => {
       setEntryTitleMeta(null)
     }

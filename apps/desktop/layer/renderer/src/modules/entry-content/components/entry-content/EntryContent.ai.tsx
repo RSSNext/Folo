@@ -34,6 +34,7 @@ import { useEntryContent } from "../../hooks"
 import { getEntryContentLayout } from "../layouts"
 import { SourceContentPanel } from "../SourceContentView"
 import { EntryCommandShortcutRegister } from "./EntryCommandShortcutRegister"
+import { EntryContentFallback } from "./EntryContentFallback"
 import { EntryContentLoading } from "./EntryContentLoading"
 import { EntryNoContent } from "./EntryNoContent"
 import { EntryScrollingAndNavigationHandler } from "./EntryScrollingAndNavigationHandler.js"
@@ -57,6 +58,7 @@ const EntryContentImpl: Component<EntryContentProps> = ({
 
     return { feedId, inboxId: inboxHandle, title, url }
   })
+
   if (!entry) throw thenable
 
   useTitle(entry.title)
@@ -220,7 +222,13 @@ const EntryContentImpl: Component<EntryContentProps> = ({
     </div>
   )
 }
-export const EntryContent = memo(EntryContentImpl)
+export const EntryContent: Component<EntryContentProps> = memo((props) => {
+  return (
+    <EntryContentFallback entryId={props.entryId}>
+      <EntryContentImpl {...props} />
+    </EntryContentFallback>
+  )
+})
 
 const EntryScrollArea: Component<{
   scrollerRef: React.Ref<HTMLDivElement | null>
