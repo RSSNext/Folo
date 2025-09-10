@@ -7,15 +7,18 @@ import {
   TooltipTrigger,
 } from "@follow/components/ui/tooltip/index.js"
 import { EllipsisHorizontalTextWithTooltip } from "@follow/components/ui/typography/index.js"
+import { IN_ELECTRON } from "@follow/shared/constants"
 import { useCollectionEntry, useIsEntryStarred } from "@follow/store/collection/hooks"
 import { useEntry } from "@follow/store/entry/hooks"
 import type { EntryModel } from "@follow/store/entry/types"
 import { useFeedById } from "@follow/store/feed/hooks"
 import { useInboxById } from "@follow/store/inbox/hooks"
+import { transformVideoUrl } from "@follow/utils/url-for-video"
 import { cn, isSafari } from "@follow/utils/utils"
 import { useMemo } from "react"
 import { titleCase } from "title-case"
 
+import { AudioPlayer, useAudioPlayerAtomSelector } from "~/atoms/player"
 import { useGeneralSettingKey } from "~/atoms/settings/general"
 import { useUISettingKey } from "~/atoms/settings/ui"
 import { RelativeTime } from "~/components/ui/datetime"
@@ -34,11 +37,19 @@ import { readableContentMaxWidth } from "../styles"
 import type { EntryItemStatelessProps, UniversalItemProps } from "../types"
 import { MediaGallery } from "./media-gallery"
 
+const ViewTag = IN_ELECTRON ? "webview" : "iframe"
+
 const entrySelector = (state: EntryModel) => {
   const { feedId, inboxHandle, read } = state
   const { authorAvatar, authorUrl, description, publishedAt, title } = state
 
   const audios = state.attachments?.filter((a) => a.mime_type?.startsWith("audio") && a.url)
+  const video = transformVideoUrl({
+    url: state?.url ?? "",
+    isIframe: !IN_ELECTRON,
+    attachments: state?.attachments,
+    mini: true,
+  })
   const firstAudio = audios?.[0]
   const media = state.media || []
   const firstMedia = media?.[0]
@@ -59,6 +70,7 @@ const entrySelector = (state: EntryModel) => {
     read,
     title,
     titleEntry,
+    video,
   }
 }
 export function AllItem({ entryId, entryPreview, translation }: UniversalItemProps) {
@@ -179,28 +191,8 @@ export function AllItem({ entryId, entryPreview, translation }: UniversalItemPro
             </TooltipRoot>
           </Tooltip>
         )}
-        {/* TODO */}
-        {/* {hasAudio && entry.firstAudio && (
-          <AudioCover
-            entryId={entryId}
-            src={entry.firstAudio.url}
-            durationInSeconds={entry.firstAudio.duration_in_seconds}
-            feedIcon={
-              <FeedIcon
-                fallback={true}
-                fallbackElement={
-                  <div className={clsx("bg-material-ultra-thick", "size-[80px]", "rounded")} />
-                }
-                feed={feed || inbox}
-                entry={entry?.iconEntry}
-                size={80}
-                className="m-0 rounded"
-                useMedia
-                noMargin
-              />
-            }
-          />
-        )} */}
+        {entry.firstAudio && <AudioIcon entryId={entryId} src={entry.firstAudio.url} />}
+        {entry.video && <VideoIcon src={entry.video} />}
         <div
           className={cn(
             "relative flex min-w-0 items-center truncate break-words",
@@ -290,3 +282,69 @@ export const AllItemSkeleton = (
     </div>
   </div>
 )
+
+function AudioIcon({ entryId, src }: { entryId: string; src: string }) {
+  const playStatus = useAudioPlayerAtomSelector((playerValue) =>
+    playerValue.src === src && playerValue.show ? playerValue.status : false,
+  )
+
+  const handleClickPlay = (e: React.MouseEvent<HTMLDivElement>) => {
+    e.stopPropagation()
+    e.preventDefault()
+    if (!playStatus) {
+      // switch this to play
+      AudioPlayer.mount({
+        type: "audio",
+        entryId,
+        src,
+        currentTime: 0,
+      })
+    } else {
+      // switch between play and pause
+      AudioPlayer.togglePlayAndPause()
+    }
+  }
+
+  return (
+    <div className="relative mr-1 shrink-0 text-base">
+      <div
+        className={cn("center w-full transition-all duration-200 ease-in-out")}
+        onClick={handleClickPlay}
+      >
+        <button type="button" className="center text-text/90">
+          <i
+            className={cn({
+              "i-mingcute-pause-fill": playStatus && playStatus === "playing",
+              "i-mingcute-loading-fill animate-spin": playStatus && playStatus === "loading",
+              "i-mgc-music-2-cute-fi": !playStatus || playStatus === "paused",
+            })}
+          />
+        </button>
+      </div>
+    </div>
+  )
+}
+
+function VideoIcon({ src }: { src: string }) {
+  return (
+    <Tooltip>
+      <TooltipRoot>
+        <TooltipTrigger asChild>
+          <i className="i-mgc-video-cute-fi text-text/90 mr-1 shrink-0 text-lg" />
+        </TooltipTrigger>
+        <TooltipPortal>
+          <TooltipContent className="flex-col gap-1" side={"bottom"}>
+            <div className="flex items-center gap-1">
+              <ViewTag
+                src={src}
+                className={cn(
+                  "pointer-events-none aspect-video w-[575px] shrink-0 rounded-md bg-black object-cover",
+                )}
+              />
+            </div>
+          </TooltipContent>
+        </TooltipPortal>
+      </TooltipRoot>
+    </Tooltip>
+  )
+}
