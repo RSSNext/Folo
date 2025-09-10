@@ -6,6 +6,7 @@ import { ScrollArea } from "@follow/components/ui/scroll-area/index.js"
 import { Tooltip, TooltipContent, TooltipTrigger } from "@follow/components/ui/tooltip/index.js"
 import type { ExtractBizResponse } from "@follow/models"
 import { usePrefetchUser, useUserById, useWhoami } from "@follow/store/user/hooks"
+import { getAvatarUrl } from "@follow/utils"
 import { nextFrame, stopPropagation } from "@follow/utils/dom"
 import { getStorageNS } from "@follow/utils/ns"
 import { cn } from "@follow/utils/utils"
@@ -21,7 +22,6 @@ import { m } from "~/components/common/Motion"
 import { useCurrentModal } from "~/components/ui/modal/stacked/hooks"
 import { useFollow } from "~/hooks/biz/useFollow"
 import { apiClient } from "~/lib/api-fetch"
-import { replaceImgUrlIfNeed } from "~/lib/img-proxy"
 import { UrlBuilder } from "~/lib/url-builder"
 import { FeedIcon } from "~/modules/feed/feed-icon"
 
@@ -242,11 +242,8 @@ const UserInfo = ({ userInfo }: { userInfo: PickedUser }) => {
         <div className="flex items-center gap-4">
           <div className="relative">
             <Avatar className="size-14 shrink-0 shadow-lg ring-4 ring-white/10">
-              <AvatarImage
-                src={replaceImgUrlIfNeed(userInfo.image || undefined)}
-                className="bg-material-ultra-thick"
-              />
-              <AvatarFallback className="from-blue to-purple bg-gradient-to-br text-4xl font-bold uppercase text-white">
+              <AvatarImage src={getAvatarUrl(userInfo)} className="bg-material-ultra-thick" />
+              <AvatarFallback className="from-blue to-purple bg-gradient-to-br text-2xl font-bold uppercase text-white">
                 {userInfo.name?.slice(0, 2)}
               </AvatarFallback>
             </Avatar>
