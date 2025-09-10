@@ -1,10 +1,10 @@
 import { Avatar, AvatarFallback, AvatarImage } from "@follow/components/ui/avatar/index.jsx"
 import { PlatformIcon } from "@follow/components/ui/platform-icon/index.jsx"
-import type { CombinedEntryModel, FeedModel, FeedOrListRespModel } from "@follow/models/types"
 import { getBackgroundGradient } from "@follow/utils/color"
 import { getImageProxyUrl, replaceImgUrlIfNeed } from "@follow/utils/img-proxy"
 import { cn, getUrlIcon } from "@follow/utils/utils"
-import type { FeedGetResponse } from "@follow-app/client-sdk"
+import type { FeedGetResponse, FeedModel } from "@follow-app/client-sdk"
+import type { MediaModel } from "@folo-services/drizzle"
 import { m } from "motion/react"
 import type { ReactNode } from "react"
 import { useMemo } from "react"
@@ -67,20 +67,27 @@ const FallbackableImage = function FallbackableImage({
   )
 }
 
-type FeedIconEntry = Pick<CombinedEntryModel["entries"], "media" | "authorAvatar">
+type FeedIconEntry = {
+  media?: Nullable<MediaModel[]>
+
+  [key: string]: any
+}
 const fadeInVariant = {
   initial: { opacity: 0 },
   animate: { opacity: 1 },
 }
 
 type FeedIconTarget = {
-  title?: string
-  image?: string
-  siteUrl?: string
+  title?: Nullable<string>
+  image?: Nullable<string>
+  siteUrl?: Nullable<string>
   type: "feed" | "list" | "inbox"
   entry?: FeedIconEntry | null
   useMedia?: boolean
   feed?: FeedGetResponse["data"]["feed"] | null
+
+  url?: string
+  [key: string]: any
 }
 const isIconLoadedSet = new Set<string>()
 export function FeedIcon({
@@ -119,8 +126,8 @@ export function FeedIcon({
       : entry?.authorAvatar) || target?.image
 
   const colors = useMemo(
-    () => getBackgroundGradient(target?.title || (target as FeedModel)?.url || siteUrl || ""),
-    [target?.title, (target as FeedModel)?.url, siteUrl],
+    () => getBackgroundGradient(target?.title || target?.url || siteUrl || ""),
+    [target?.title, target?.url, siteUrl],
   )
   let ImageElement: ReactNode
   let finalSrc = ""
@@ -199,9 +206,9 @@ export function FeedIcon({
       break
     }
     case !!fallbackUrl:
-    case !!(target as FeedModel)?.siteUrl: {
+    case !!target?.siteUrl: {
       const [src, fallbackSrc] = getFeedIconSrc({
-        siteUrl: (target as FeedModel)?.siteUrl || fallbackUrl,
+        siteUrl: target?.siteUrl || fallbackUrl,
         fallback,
         proxy: {
           width: size * 2,
@@ -212,7 +219,7 @@ export function FeedIcon({
 
       ImageElement = (
         <PlatformIcon
-          url={(target as FeedModel)?.siteUrl || fallbackUrl}
+          url={target?.siteUrl || fallbackUrl}
           style={sizeStyle}
           className={cn("center", className)}
         >

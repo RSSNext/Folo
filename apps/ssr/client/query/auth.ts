@@ -1,5 +1,4 @@
 import { getSession } from "@client/lib/auth"
-import type { AuthSession } from "@follow/shared/hono"
 import { useQuery } from "@tanstack/react-query"
 import type { FetchError } from "ofetch"
 
@@ -25,7 +24,7 @@ export const useSession = (options?: { enabled?: boolean }) => {
   const fetchError = error as FetchError
 
   return {
-    session: data?.data as AuthSession,
+    session: data?.data,
     ...rest,
     status: isLoading
       ? "loading"

@@ -2,7 +2,6 @@ import "./load-env"
 
 import { requestContext } from "@fastify/request-context"
 import { env } from "@follow/shared/env.ssr"
-import type { AppType } from "@follow/shared/hono"
 import { createSSRAPIHeaders } from "@follow/utils/headers"
 import { FollowClient } from "@follow-app/client-sdk"
 import { hc } from "hono/client"
@@ -56,23 +55,6 @@ export const createApiFetch = () => {
     baseURL,
   })
 }
-export const createApiClient = () => {
-  const authSessionToken = getTokenFromCookie(requestContext.get("req")?.headers.cookie || "")
-
-  const baseURL = getBaseURL()
-  const apiFetch = createApiFetch()
-
-  const apiClient = hc<AppType>(baseURL, {
-    fetch: async (input: any, options = {}) => apiFetch(input.toString(), options),
-    headers() {
-      return {
-        "User-Agent": `Folo External Server Api Client/${PKG.version}`,
-        Cookie: authSessionToken ? `__Secure-better-auth.session_token=${authSessionToken}` : "",
-      }
-    },
-  })
-  return apiClient
-}
 
 export const createFollowClient = () => {
   const authSessionToken = getTokenFromCookie(requestContext.get("req")?.headers.cookie || "")
@@ -122,5 +104,3 @@ export const getTokenFromCookie = (cookie: string) => {
     )
   return parsedCookieMap["__Secure-better-auth.session_token"]
 }
-
-export type ApiClient = ReturnType<typeof createApiClient>

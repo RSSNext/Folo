@@ -5,7 +5,7 @@ import type { defineMetadata } from "~/meta-handler"
 
 type Target = {
   id: string
-  title?: string
+  title?: Nullable<string>
   [key: string]: any
 }
 export const getPreferredTitle = (target?: Target | null) => {

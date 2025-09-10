@@ -10,11 +10,12 @@ import { Button } from "@follow/components/ui/button/index.jsx"
 import { LoadingCircle } from "@follow/components/ui/loading/index.jsx"
 import { useTitle } from "@follow/hooks"
 import { cn, formatNumber } from "@follow/utils/utils"
+import type { FeedSchema } from "@follow-app/client-sdk"
 import { Fragment, memo } from "react"
 import { useTranslation } from "react-i18next"
 import { useParams } from "react-router"
 
-const FeedRow = memo<{ feed: Feed["feed"] }>(({ feed }) => {
+const FeedRow = memo<{ feed: FeedSchema }>(({ feed }) => {
   return (
     <a
       className="border-border/40 bg-card hover:border-border group relative flex cursor-pointer items-start justify-between rounded-lg border p-4 transition-all duration-200 hover:shadow-sm hover:shadow-black/5 dark:hover:shadow-white/5"
@@ -68,7 +69,7 @@ export function Component() {
         acc[feed.id] = feed
         return acc
       },
-      {} as Record<string, Feed["feed"]>,
+      {} as Record<string, FeedSchema>,
     ) || {}
 
   useTitle(list.data?.list.title)
