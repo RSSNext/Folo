@@ -81,7 +81,7 @@ export const ArticleLayout: React.FC<ArticleLayoutProps> = ({
   if (!entry) return null
 
   return (
-    <div className={cn(readableContentMaxWidthClassName, "@[500px]:px-4 mx-auto")}>
+    <div className={cn(readableContentMaxWidthClassName, "@[500px]:px-4 mx-auto mt-1")}>
       <EntryTitle entryId={entryId} compact={compact} />
 
       <ArticleAudioPlayer entryId={entryId} />
@@ -94,7 +94,7 @@ export const ArticleLayout: React.FC<ArticleLayoutProps> = ({
       />
 
       <WrappedElementProvider boundingDetection>
-        <div className="mx-auto mb-32 mt-8 max-w-full cursor-auto text-[0.94rem]">
+        <div className="mx-auto mb-32 mt-6 max-w-full cursor-auto text-[0.94rem]">
           {shouldShowAISummary && <AISummary entryId={entryId} />}
           <ErrorBoundary fallback={EntryRenderError}>
             <ReadabilityNotice entryId={entryId} />

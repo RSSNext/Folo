@@ -17,14 +17,14 @@ export const EntryUser: Component<{
   const presentUserProfile = usePresentUserProfileModal("drawer")
   if (!user) return null
   return (
-    <div className="no-drag-region relative cursor-pointer hover:!z-[99999]" ref={ref}>
+    <div className="no-drag-region center relative cursor-pointer hover:!z-[99999]" ref={ref}>
       <button
         type="button"
         onClick={() => {
           presentUserProfile(userId)
         }}
       >
-        <Avatar className="border-border ring-background aspect-square size-7 border ring-1">
+        <Avatar className="border-border ring-background aspect-square size-6 border ring-1">
           <AvatarImage
             src={replaceImgUrlIfNeed(user?.image || undefined)}
             className="bg-material-ultra-thick"
