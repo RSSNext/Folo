@@ -47,10 +47,14 @@ export const ReadabilityNotice = ({ entryId }: { entryId: string }) => {
                 {T("words.back")}
               </Button>
             </div>
-          ) : (
+          ) : status === ReadabilityStatus.WAITING ? (
             <div className="center mt-32 flex flex-col gap-2">
               <LoadingWithIcon size="large" icon={<i className="i-mgc-docment-cute-re" />} />
               <span className="text-sm">{t("entry_content.fetching_content")}</span>
+            </div>
+          ) : (
+            <div className="center mt-32">
+              <span className="text-sm">{t("entry_content.no_content")}</span>
             </div>
           )}
         </>
