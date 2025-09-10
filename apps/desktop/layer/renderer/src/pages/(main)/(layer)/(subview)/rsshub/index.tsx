@@ -1,9 +1,9 @@
 import { Logo } from "@follow/components/icons/logo.jsx"
 import { Button } from "@follow/components/ui/button/index.js"
 import { RSSHubLogo } from "@follow/components/ui/platform-icon/icons.js"
-import type { RSSHubModel } from "@follow/models"
 import { whoami } from "@follow/store/user/getters"
 import { cn, formatNumber } from "@follow/utils/utils"
+import type { RSSHubListItem } from "@follow-app/client-sdk"
 import { memo, useCallback, useEffect } from "react"
 import { useTranslation } from "react-i18next"
 
@@ -80,7 +80,7 @@ export function Component() {
   )
 }
 
-type InstanceItem = RSSHubModel | { id: string; isOfficial: true }
+type InstanceItem = RSSHubListItem | { id: string; isOfficial: true }
 
 const InstanceCard = memo(({ item }: { item: InstanceItem }) => {
   const { t } = useTranslation("settings")
@@ -91,7 +91,7 @@ const InstanceCard = memo(({ item }: { item: InstanceItem }) => {
   const { present } = useModalStack()
 
   const isOfficial = "isOfficial" in item && item.isOfficial
-  const instance = isOfficial ? ({} as Partial<RSSHubModel>) : (item as RSSHubModel)
+  const instance = isOfficial ? ({} as Partial<RSSHubListItem>) : (item as RSSHubListItem)
 
   const isInUse = isOfficial
     ? !status?.data?.usage?.rsshubId
@@ -198,7 +198,7 @@ const InstanceCard = memo(({ item }: { item: InstanceItem }) => {
                   present({
                     title: t("rsshub.table.edit"),
                     content: ({ dismiss }) => (
-                      <AddModalContent dismiss={dismiss} instance={instance as RSSHubModel} />
+                      <AddModalContent dismiss={dismiss} instance={instance as RSSHubListItem} />
                     ),
                   })
                 }
@@ -237,7 +237,7 @@ const InstanceCard = memo(({ item }: { item: InstanceItem }) => {
               )}
             </div>
           ) : (
-            <SelectInstanceButton instance={instance as RSSHubModel} />
+            <SelectInstanceButton instance={instance as RSSHubListItem} />
           )}
         </div>
       </div>
@@ -245,7 +245,7 @@ const InstanceCard = memo(({ item }: { item: InstanceItem }) => {
   )
 })
 
-function List({ data }: { data?: RSSHubModel[] }) {
+function List({ data }: { data?: RSSHubListItem[] }) {
   const status = useAuthQuery(Queries.rsshub.status())
 
   const sortedData: InstanceItem[] = [
@@ -298,7 +298,7 @@ function List({ data }: { data?: RSSHubModel[] }) {
   )
 }
 
-function SelectInstanceButton({ instance }: { instance: RSSHubModel }) {
+function SelectInstanceButton({ instance }: { instance: RSSHubListItem }) {
   const { t } = useTranslation("settings")
   const { present } = useModalStack()
   const status = useAuthQuery(Queries.rsshub.status())

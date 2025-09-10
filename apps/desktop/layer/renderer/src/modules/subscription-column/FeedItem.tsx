@@ -193,7 +193,7 @@ const FeedItemImpl = ({ view, feedId, className, isPreview }: FeedItemProps) => 
       {...contextMenuProps}
     >
       <div className={cn("flex min-w-0 items-center", isFeed && feed.errorAt && "text-red")}>
-        <FeedIcon fallback feed={feed} size={16} />
+        <FeedIcon fallback target={feed} size={16} />
         <FeedTitle feed={feed} />
         {isFeed && (
           <ErrorTooltip errorAt={feed.errorAt} errorMessage={feed.errorMessage}>
@@ -319,7 +319,7 @@ const ListItemImpl: Component<ListItemProps> = ({
       {...contextMenuProps}
     >
       <div className="flex min-w-0 flex-1 items-center">
-        <FeedIcon fallback feed={list} size={iconSize} className="mask mask-squircle" />
+        <FeedIcon fallback target={list} size={iconSize} className="mask mask-squircle" />
         <EllipsisHorizontalTextWithTooltip className="truncate">
           {getPreferredTitle(list)}
         </EllipsisHorizontalTextWithTooltip>
@@ -432,7 +432,7 @@ const InboxItemImpl: Component<InboxItemProps> = ({ view, inboxId, className, ic
       {...contextMenuProps}
     >
       <div className={"flex min-w-0 items-center"}>
-        <FeedIcon fallback feed={inbox} size={iconSize} />
+        <FeedIcon fallback target={inbox} size={iconSize} />
         <EllipsisHorizontalTextWithTooltip className="truncate">
           {getPreferredTitle(inbox)}
         </EllipsisHorizontalTextWithTooltip>

@@ -1,9 +1,9 @@
 import { Spring } from "@follow/components/constants/spring.js"
 import { MotionButtonBase } from "@follow/components/ui/button/index.js"
 import { IN_ELECTRON } from "@follow/shared/constants"
-import type { MediaModel } from "@follow/shared/hono"
 import { stopPropagation } from "@follow/utils/dom"
 import { cn } from "@follow/utils/utils"
+import type { EntryMedia } from "@follow-app/client-sdk"
 import useEmblaCarousel from "embla-carousel-react"
 import { WheelGesturesPlugin } from "embla-carousel-wheel-gestures"
 import { useAnimationControls } from "motion/react"
@@ -245,7 +245,7 @@ const HeaderActions: FC<{
   )
 }
 
-export interface PreviewMediaProps extends MediaModel {
+export interface PreviewMediaProps extends EntryMedia {
   fallbackUrl?: string
 }
 export const PreviewMediaContent: FC<{
@@ -289,7 +289,7 @@ export const PreviewMediaContent: FC<{
 
   if (media.length === 0) return null
   if (media.length === 1) {
-    const src = media[0]!.url
+    const src = media[0]!.url!
     const { type } = media[0]!
     const isVideo = type === "video"
     return (

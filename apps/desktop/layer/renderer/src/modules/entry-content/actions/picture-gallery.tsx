@@ -5,7 +5,7 @@ import {
   useMasonryItemWidth,
 } from "@follow/components/ui/masonry/contexts.jsx"
 import { useMasonryColumn } from "@follow/components/ui/masonry/hooks.js"
-import type { MediaModel } from "@follow/models/types"
+import type { MediaModel } from "@folo-services/drizzle"
 import type { RenderComponentProps } from "masonic"
 import { Masonry } from "masonic"
 import { useState } from "react"
@@ -47,7 +47,7 @@ const Render: React.ComponentType<
     />
   )
 }
-export const ImageGallery = ({ images }: { images: MediaModel }) => {
+export const ImageGallery = ({ images }: { images: MediaModel[] }) => {
   const { containerRef, currentColumn, currentItemWidth } = useMasonryColumn(gutter)
 
   const [masonryItemsRadio, setMasonryItemsRadio] = useState<Record<string, number>>({})

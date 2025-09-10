@@ -1,15 +1,11 @@
-import type { CombinedEntryModel, FeedModel, FeedOrListRespModel } from "@follow/models/types"
+import type { FeedModel } from "@follow/store/feed/types"
+import type { ListModel } from "@follow/store/list/types"
 import type { EntryTranslation } from "@follow/store/translation/types"
 import type { ParsedEntry } from "@follow-app/client-sdk"
 import type { FC } from "react"
 
 export type UniversalItemProps = {
   entryId: string
-  entryPreview?: CombinedEntryModel & {
-    feeds: FeedOrListRespModel
-    feedId: string
-    inboxId: string
-  }
   translation?: EntryTranslation
 }
 

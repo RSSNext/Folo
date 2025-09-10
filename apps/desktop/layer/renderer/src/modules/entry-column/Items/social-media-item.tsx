@@ -89,7 +89,7 @@ export const SocialMediaItem: EntryListItemFC = ({ entryId, translation }) => {
           "before:bg-accent before:absolute before:-left-3 before:top-8 before:block before:size-2 before:rounded-full",
       )}
     >
-      <FeedIcon fallback feed={feed} entry={entry.iconEntry} size={32} className="mt-1" />
+      <FeedIcon fallback target={feed} entry={entry.iconEntry} size={32} className="mt-1" />
       <div ref={ref} className="ml-2 min-w-0 flex-1">
         <div className="-mt-0.5 flex-1 text-sm">
           <div className="flex select-none flex-wrap space-x-1 leading-6" ref={titleRef}>
@@ -142,7 +142,7 @@ SocialMediaItem.wrapperClassName = readableContentMaxWidth
 export function SocialMediaItemStateLess({ entry, feed }: EntryItemStatelessProps) {
   return (
     <div className="relative flex py-4">
-      <FeedIcon fallback feed={feed} size={32} className="mr-2 mt-1" />
+      <FeedIcon fallback target={feed} size={32} className="mr-2 mt-1" />
       <div className="min-w-0 flex-1">
         <div className="-mt-0.5 flex-1 text-sm">
           <div className="flex select-none flex-wrap space-x-1 leading-6">

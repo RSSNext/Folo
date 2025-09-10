@@ -8,8 +8,8 @@ import { FeedTitle } from "~/modules/feed/feed-title"
 import { readableContentMaxWidth } from "../styles"
 import type { EntryItemStatelessProps, UniversalItemProps } from "../types"
 
-export function NotificationItem({ entryId, entryPreview, translation }: UniversalItemProps) {
-  return <ListItem entryId={entryId} entryPreview={entryPreview} translation={translation} simple />
+export function NotificationItem({ entryId, translation }: UniversalItemProps) {
+  return <ListItem entryId={entryId} translation={translation} simple />
 }
 
 NotificationItem.wrapperClassName = readableContentMaxWidth
@@ -17,7 +17,7 @@ NotificationItem.wrapperClassName = readableContentMaxWidth
 export function NotificationItemStateLess({ entry, feed }: EntryItemStatelessProps) {
   return (
     <div className="cursor-menu group relative flex py-4">
-      <FeedIcon feed={feed} fallback className="mr-2 size-5" />
+      <FeedIcon target={feed} fallback className="mr-2 size-5" />
       <div className="-mt-0.5 min-w-0 flex-1 text-sm leading-tight">
         <div className="text-text-secondary flex gap-1 text-[10px] font-bold">
           <FeedTitle feed={feed} />

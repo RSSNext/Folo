@@ -1,20 +1,21 @@
 import type {
   ActionConditionIndex,
-  ActionFilter,
   ActionFilterItem,
   ActionId,
-  ActionModel,
-  ActionRules,
-} from "@follow/models/types"
+  ActionItem,
+} from "@follow-app/client-sdk"
 import { merge } from "es-toolkit/compat"
 
 import { api } from "../../context"
 import { createImmerSetter, createZustandStore } from "../../lib/helper"
 
 type ActionStore = {
-  rules: ActionRules
+  rules: ActionItem[]
   isDirty: boolean
 }
+
+type ActionRules = ActionItem[]
+type ActionModel = ActionItem
 
 export const useActionStore = createZustandStore<ActionStore>("action")(() => ({
   rules: [],
@@ -36,7 +37,7 @@ class ActionSyncService {
 
           return {
             ...rule,
-            condition: finalCondition as ActionFilter,
+            condition: finalCondition as ActionFilterItem,
             index,
           }
         }),

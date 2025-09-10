@@ -90,7 +90,7 @@ export const EntryToastPreview = ({ entryId }: { entryId: string }) => {
         <FeedIcon
           fallback
           className="mask-squircle mask"
-          feed={feed}
+          target={feed}
           entry={entry.iconEntry}
           size={36}
         />

@@ -1,8 +1,4 @@
-import type { z } from "zod"
-
-import type { languageSchema } from "./hono"
-
-export type SupportedActionLanguage = z.infer<typeof languageSchema>
+export type SupportedActionLanguage = "en" | "ja" | "zh-CN" | "zh-TW"
 export const ACTION_LANGUAGE_MAP: Record<
   SupportedActionLanguage,
   {

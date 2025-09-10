@@ -52,7 +52,7 @@ export function Component() {
             <div className="relative mx-auto inline-block">
               <FeedIcon
                 fallback
-                feed={feedData}
+                target={feedData}
                 className="mask-squircle mask border-border border"
                 noMargin
                 size={80}

@@ -9,8 +9,8 @@ import { FeedTitle } from "~/modules/feed/feed-title"
 import { readableContentMaxWidth } from "../styles"
 import type { EntryItemStatelessProps, UniversalItemProps } from "../types"
 
-export function ArticleItem({ entryId, entryPreview, translation }: UniversalItemProps) {
-  return <ListItem entryId={entryId} entryPreview={entryPreview} translation={translation} />
+export function ArticleItem({ entryId, translation }: UniversalItemProps) {
+  return <ListItem entryId={entryId} translation={translation} />
 }
 
 ArticleItem.wrapperClassName = readableContentMaxWidth
@@ -18,7 +18,7 @@ ArticleItem.wrapperClassName = readableContentMaxWidth
 export function ArticleItemStateLess({ entry, feed }: EntryItemStatelessProps) {
   return (
     <div className="group relative flex py-4">
-      <FeedIcon feed={feed} fallback className="mr-2 size-5" />
+      <FeedIcon target={feed} fallback className="mr-2 size-5" />
       <div className="-mt-0.5 min-w-0 flex-1 text-sm leading-tight">
         <div className="text-text-secondary flex gap-1 text-[10px] font-bold">
           <FeedTitle feed={feed} />

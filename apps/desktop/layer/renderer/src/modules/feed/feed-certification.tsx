@@ -5,8 +5,9 @@ import {
   TooltipPortal,
   TooltipTrigger,
 } from "@follow/components/ui/tooltip/index.jsx"
-import type { FeedOrListRespModel } from "@follow/models/types"
-import { useWhoami } from "@follow/store/user/hooks"
+import type { FeedModel } from "@follow/store/feed/types"
+import type { ListModel } from "@follow/store/list/types"
+import { useUserById, useWhoami } from "@follow/store/user/hooks"
 import { cn } from "@follow/utils/utils"
 import { useTranslation } from "react-i18next"
 
@@ -17,11 +18,11 @@ export const FeedCertification = ({
   feed,
   className,
 }: {
-  feed: FeedOrListRespModel
+  feed: FeedModel | ListModel
   className?: string
 }) => {
   const me = useWhoami()
-  const presentUserProfile = usePresentUserProfileModal("drawer")
+
   const { t } = useTranslation()
   const { type } = feed
 
@@ -61,17 +62,8 @@ export const FeedCertification = ({
             </div>
             <div className="mt-1 flex items-center gap-1.5">
               <span>{t("feed_item.claimed_by_owner")}</span>
-              {feed.owner ? (
-                <Avatar
-                  className="inline-flex aspect-square size-5 rounded-full"
-                  onClick={(e) => {
-                    e.stopPropagation()
-                    presentUserProfile(feed.owner!.id)
-                  }}
-                >
-                  <AvatarImage src={replaceImgUrlIfNeed(feed.owner.image || undefined)} />
-                  <AvatarFallback>{feed.owner.name?.slice(0, 2)}</AvatarFallback>
-                </Avatar>
+              {feed.ownerUserId ? (
+                <FeedCertificateAvatar userId={feed.ownerUserId} />
               ) : (
                 <span>{t("feed_item.claimed_by_unknown")}</span>
               )}
@@ -80,5 +72,23 @@ export const FeedCertification = ({
         </TooltipPortal>
       </Tooltip>
     ))
+  )
+}
+
+const FeedCertificateAvatar = ({ userId }: { userId: string }) => {
+  const user = useUserById(userId)
+  const presentUserProfile = usePresentUserProfileModal("drawer")
+  if (!user) return null
+  return (
+    <Avatar
+      className="inline-flex aspect-square size-5 rounded-full"
+      onClick={(e) => {
+        e.stopPropagation()
+        presentUserProfile(userId)
+      }}
+    >
+      <AvatarImage src={replaceImgUrlIfNeed(user.image || undefined)} />
+      <AvatarFallback>{user.name?.slice(0, 2)}</AvatarFallback>
+    </Avatar>
   )
 }

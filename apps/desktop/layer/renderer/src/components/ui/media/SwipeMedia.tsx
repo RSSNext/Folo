@@ -1,4 +1,4 @@
-import type { MediaModel } from "@follow/shared/hono"
+import type { MediaModel } from "@follow/database/schemas/types"
 import { stopPropagation } from "@follow/utils/dom"
 import { cn } from "@follow/utils/utils"
 import useEmblaCarousel from "embla-carousel-react"

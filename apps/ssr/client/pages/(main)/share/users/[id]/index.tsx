@@ -34,7 +34,7 @@ const FeedCard = memo<FeedCardProps>(({ subscription, feedId, view }) => {
       >
         <div className="flex items-start space-x-4">
           <div className="shrink-0">
-            <FeedIcon fallback feed={subscription.feeds} size={44} className="rounded-lg" />
+            <FeedIcon fallback target={subscription.feeds} size={44} className="rounded-lg" />
           </div>
           <div className="min-w-0 flex-1">
             <h3 className="group-hover/card:text-accent truncate font-medium text-zinc-900 transition-colors dark:text-zinc-100">
@@ -179,7 +179,7 @@ const Lists = ({ userId }: { userId: string }) => {
           >
             <FeedIcon
               fallback
-              feed={list}
+              target={list}
               className="mask-squircle mask border-border border"
               size={80}
               noMargin

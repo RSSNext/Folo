@@ -261,8 +261,6 @@ const ListInnerForm = ({
         feed={{
           ...list,
           fee: list.fee || 0,
-          createdAt: null,
-          updatedAt: null,
         }}
         analytics={analytics}
         showAnalytics

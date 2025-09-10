@@ -6,7 +6,7 @@ import { create, indexedResolver, windowScheduler } from "@yornaath/batshit"
 import { api, authClient } from "../../context"
 import type { Hydratable, Resetable } from "../../lib/base"
 import { createImmerSetter, createTransaction, createZustandStore } from "../../lib/helper"
-import { honoMorph } from "../../morph/hono"
+import { apiMorph } from "../../morph/api"
 import type { UserProfileEditable } from "./types"
 
 export type UserModel = UserSchema
@@ -65,9 +65,10 @@ class UserSyncService {
   async whoami() {
     const res = await api().auth.getSession()
     if (res) {
-      const user = honoMorph.toUser(res.user, true)
+      if (!res.user) return res
+      const user = apiMorph.toUser(res.user, true)
       immerSet((state) => {
-        state.whoami = { ...user, emailVerified: res.user?.emailVerified }
+        state.whoami = { ...user, emailVerified: res.user?.emailVerified ?? false }
         state.role = res.user?.role as UserRole | null
         if (res.user?.roleEndAt) {
           state.roleEndAt = new Date(res.user?.roleEndAt)

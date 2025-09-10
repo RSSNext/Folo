@@ -1,15 +1,19 @@
-import type { FeedOrListRespModel } from "@follow/models/types"
 import { DEEPLINK_SCHEME } from "@follow/shared/constants"
 import type { FollowClient } from "@follow-app/client-sdk"
 
 import type { defineMetadata } from "~/meta-handler"
 
-export const getPreferredTitle = (feed?: FeedOrListRespModel | null) => {
-  if (!feed?.id) {
-    return feed?.title
+type Target = {
+  id: string
+  title?: string
+  [key: string]: any
+}
+export const getPreferredTitle = (target?: Target | null) => {
+  if (!target?.id) {
+    return target?.title
   }
 
-  return feed.title
+  return target.title
 }
 
 export const getHydrateData = (key: string) => {

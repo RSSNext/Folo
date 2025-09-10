@@ -1,6 +1,6 @@
 import { Card, CardContent, CardHeader } from "@follow/components/ui/card/index.jsx"
 import { FeedViewType, views } from "@follow/constants"
-import type { FeedModel } from "@follow/models"
+import type { FeedModel } from "@follow/store/feed/types"
 import { cn } from "@follow/utils/utils"
 import type { ParsedEntry } from "@follow-app/client-sdk"
 import { cloneElement } from "react"

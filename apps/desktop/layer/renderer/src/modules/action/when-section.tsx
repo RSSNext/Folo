@@ -9,10 +9,10 @@ import {
   SelectValue,
 } from "@follow/components/ui/select/index.jsx"
 import { ResponsiveSelect } from "@follow/components/ui/select/responsive.js"
-import type { ActionFeedField, ActionOperation } from "@follow/models/types"
 import { filterFieldOptions, filterOperatorOptions } from "@follow/store/action/constant"
 import { useActionRule } from "@follow/store/action/hooks"
 import { actionActions } from "@follow/store/action/store"
+import type { ActionFeedField, ActionOperation } from "@follow-app/client-sdk"
 import { Fragment } from "react"
 import { useTranslation } from "react-i18next"
 

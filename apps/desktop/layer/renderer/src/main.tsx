@@ -3,19 +3,13 @@ import "@follow/components/tailwind"
 import "./styles/main.css"
 
 import { IN_ELECTRON, WEB_BUILD } from "@follow/shared/constants"
-import {
-  apiClientContext,
-  apiContext,
-  authClientContext,
-  queryClientContext,
-} from "@follow/store/context"
+import { apiContext, authClientContext, queryClientContext } from "@follow/store/context"
 import { getOS } from "@follow/utils/utils"
 import * as React from "react"
 import { flushSync } from "react-dom"
 import ReactDOM from "react-dom/client"
 import { RouterProvider } from "react-router/dom"
 
-import { apiClient } from "~/lib/api-fetch"
 import { authClient } from "~/lib/auth"
 
 import { setAppIsReady } from "./atoms/app"
@@ -26,7 +20,6 @@ import { followApi } from "./lib/api-client"
 import { queryClient } from "./lib/query-client"
 import { router } from "./router"
 
-apiClientContext.provide(apiClient)
 authClientContext.provide(authClient)
 queryClientContext.provide(queryClient)
 apiContext.provide(followApi)

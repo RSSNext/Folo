@@ -1,8 +1,8 @@
-import type { AuthSession } from "@follow/shared/hono"
 import { whoamiQueryKey } from "@follow/store/user/hooks"
 import { userSyncService } from "@follow/store/user/store"
 import { tracker } from "@follow/tracker"
 import { clearStorage } from "@follow/utils/ns"
+import type { AuthSession } from "@follow-app/client-sdk"
 import type { FetchError } from "ofetch"
 
 import { QUERY_PERSIST_KEY } from "~/constants"
@@ -58,18 +58,35 @@ export const useSession = (options?: { enabled?: boolean }) => {
   const { error } = rest
   const fetchError = error as FetchError
 
+  const getAuthStatus = ():
+    | "loading"
+    | "authenticated"
+    | "error"
+    | "unauthenticated"
+    | "unknown" => {
+    if (isLoading) {
+      return "loading"
+    }
+
+    if (fetchError) {
+      return "error"
+    }
+
+    if (data) {
+      return "authenticated"
+    }
+
+    if (data === null) {
+      return "unauthenticated"
+    }
+
+    return "unknown"
+  }
+
   return {
-    session: data as AuthSession,
+    session: data,
     ...rest,
-    status: isLoading
-      ? "loading"
-      : data
-        ? "authenticated"
-        : fetchError
-          ? "error"
-          : data === null
-            ? "unauthenticated"
-            : "unknown",
+    status: getAuthStatus(),
   } as const
 }
 

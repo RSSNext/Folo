@@ -294,7 +294,7 @@ const GridItemFooter = ({
         <FeedIcon
           fallback
           className="mr-0.5 flex"
-          feed={feed?.feed || entry.feeds}
+          target={feed?.feed || entry.feeds}
           entry={entry}
           size={18}
         />

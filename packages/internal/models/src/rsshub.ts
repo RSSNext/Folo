@@ -1,6 +1,5 @@
 import type { FeedViewType } from "@follow/constants"
-
-import type { FeedModel } from "./types"
+import type { FeedModel } from "@follow-app/client-sdk"
 
 export type RSSHubRouteType = Record<string, RSSHubRouteDeclaration>
 export interface RSSHubRouteDeclaration {

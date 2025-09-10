@@ -80,7 +80,7 @@ export const EntryTitle = ({ entryId, compact }: EntryLinkProps) => {
 
   return compact ? (
     <div className="cursor-button @sm:-mx-3 @sm:p-3 -mx-6 flex items-center gap-2 rounded-lg p-6 transition-colors">
-      <FeedIcon fallback feed={feed || inbox} entry={entry.iconEntry} size={50} />
+      <FeedIcon fallback target={feed || inbox} entry={entry.iconEntry} size={50} />
       <div className="leading-6">
         <div className="flex items-center gap-1 text-base font-semibold">
           <span>{entry.author || feed?.title || inbox?.title}</span>
@@ -129,7 +129,7 @@ export const EntryTitle = ({ entryId, compact }: EntryLinkProps) => {
                 })
               }
             >
-              <FeedIcon fallback feed={feed || inbox} entry={entry.iconEntry} size={16} />
+              <FeedIcon fallback target={feed || inbox} entry={entry.iconEntry} size={16} />
               {getPreferredTitle(feed || inbox, entry.titleEntry)}
             </div>
 

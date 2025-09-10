@@ -77,7 +77,7 @@ const ListCard = memo(({ list }: { list: ListWithStats }) => {
             <div className="shrink-0">
               <FeedIcon
                 fallback
-                feed={list as any}
+                target={list as any}
                 className="border-fill-secondary size-10 rounded-lg border"
                 noMargin
               />

@@ -109,7 +109,7 @@ const highlightStyle = [
 
 const ViewTag = IN_ELECTRON ? "webview" : "iframe"
 
-export const AllItem: EntryListItemFC = ({ entryId, entryPreview, translation }) => {
+export const AllItem: EntryListItemFC = ({ entryId, translation }) => {
   const view = useViewTypeByEntryId(entryId)
   const entry = useEntry(entryId, (state) => {
     /// keep-sorted
@@ -169,10 +169,7 @@ export const AllItem: EntryListItemFC = ({ entryId, entryPreview, translation })
 
   const icon = useMemo(() => views.find((v) => v.view === view)?.icon, [view])
 
-  const entryMedia = useMemo(
-    () => entry?.media || entryPreview?.entries?.media || [],
-    [entry, entryPreview],
-  )
+  const entryMedia = useMemo(() => entry?.media || [], [entry])
 
   const randomStyle = useMemo(() => {
     // Use a hash of entryId to get a consistent index for card style
@@ -448,7 +445,7 @@ export const AllItem: EntryListItemFC = ({ entryId, entryPreview, translation })
               fallback
               noMargin
               className="flex"
-              feed={feeds!}
+              target={feeds!}
               entry={entry.iconEntry}
               size={18}
             />
@@ -469,10 +466,6 @@ export const AllItem: EntryListItemFC = ({ entryId, entryPreview, translation })
 }
 
 AllItem.wrapperClassName = "hover:bg-transparent"
-
-// function AllArticleItem({ entryId, entryPreview, translation }: UniversalItemProps) {
-//   return <ListItem entryId={entryId} entryPreview={entryPreview} translation={translation} />
-// }
 
 // Determine the most appropriate view type for an entry
 function useViewTypeByEntryId(entryId: string): FeedViewType {

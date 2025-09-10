@@ -1,7 +1,7 @@
 import { views } from "@follow/constants"
-import type { FeedOrListRespModel } from "@follow/models/types"
 import type { EntryModel } from "@follow/store/entry/types"
 import { useFeedById, usePrefetchFeed } from "@follow/store/feed/hooks"
+import type { FeedModel } from "@follow/store/feed/types"
 import { useListById, usePrefetchListById } from "@follow/store/list/hooks"
 import { getSubscriptionByFeedId } from "@follow/store/subscription/getter"
 import { useTranslation } from "react-i18next"
@@ -14,21 +14,27 @@ import {
 } from "~/constants"
 import { useRouteParams } from "~/hooks/biz/useRouteParams"
 
+export type PreferredTitleTarget = {
+  type: string
+  id: string
+  title?: Nullable<string>
+  [key: string]: any
+}
 export const getPreferredTitle = (
-  feed?: Pick<FeedOrListRespModel, "type" | "id" | "title"> | null,
+  target?: PreferredTitleTarget,
   entry?: Pick<EntryModel, "authorUrl"> | null,
 ) => {
-  if (!feed?.id) {
-    return feed?.title
+  if (!target?.id) {
+    return target?.title
   }
 
-  if (feed.type === "inbox") {
+  if (target.type === "inbox") {
     if (entry?.authorUrl) return entry.authorUrl.replace(/^mailto:/, "")
-    return feed.title || `${feed.id.slice(0, 1).toUpperCase()}${feed.id.slice(1)}'s Inbox`
+    return target.title || `${target.id.slice(0, 1).toUpperCase()}${target.id.slice(1)}'s Inbox`
   }
 
-  const subscription = getSubscriptionByFeedId(feed.id)
-  return subscription?.title || feed.title
+  const subscription = getSubscriptionByFeedId(target.id)
+  return subscription?.title || target.title
 }
 
 export const useFeedHeaderTitle = () => {

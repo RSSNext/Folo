@@ -106,7 +106,6 @@ export const ProfileSettingForm = ({
         handle: values.handle,
         image: values.image,
         name: values.name,
-        // @ts-expect-error
         bio: values.bio,
         website: values.website,
         socialLinks: values.socialLinks,

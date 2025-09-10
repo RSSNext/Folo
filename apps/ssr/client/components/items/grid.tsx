@@ -47,7 +47,7 @@ const GridItemFooter: FC<{
         <FeedIcon
           fallback
           className="mr-0.5 flex"
-          feed={feed?.feed || entryPreview.feeds!}
+          target={feed?.feed || entryPreview.feeds!}
           entry={entryPreview}
           size={18}
         />

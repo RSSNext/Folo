@@ -24,7 +24,7 @@ const FeedRow = memo<{ feed: Feed["feed"] }>(({ feed }) => {
     >
       <div className="flex min-w-0 flex-1 items-start space-x-3">
         <div className="shrink-0">
-          <FeedIcon fallback feed={feed} className="mask-squircle mask" size={40} />
+          <FeedIcon fallback target={feed} className="mask-squircle mask" size={40} />
         </div>
         <div className="min-w-0 flex-1">
           <div className="flex items-center space-x-2">
@@ -98,7 +98,7 @@ export function Component() {
             <div className="relative mx-auto inline-block">
               <FeedIcon
                 fallback
-                feed={list.data.list}
+                target={list.data.list}
                 className="mask-squircle mask border-border border"
                 size={80}
                 noMargin

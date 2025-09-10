@@ -5,8 +5,8 @@ import { ListItem } from "~/modules/entry-column/templates/list-item-template"
 import { readableContentMaxWidth } from "../styles"
 import type { UniversalItemProps } from "../types"
 
-export function AudioItem({ entryId, entryPreview, translation }: UniversalItemProps) {
-  return <ListItem entryId={entryId} entryPreview={entryPreview} translation={translation} />
+export function AudioItem({ entryId, translation }: UniversalItemProps) {
+  return <ListItem entryId={entryId} translation={translation} />
 }
 
 AudioItem.wrapperClassName = readableContentMaxWidth

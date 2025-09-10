@@ -1,12 +1,18 @@
 import type { FeedSchema, InboxSchema } from "@follow/database/schemas/types"
 import type {
+  AddFeedsResponse,
+  AuthUser,
+  EntryGetByIdResponse,
   EntryListResponse,
   EntryWithFeed,
   ExtractResponseData,
   FeedViewType,
+  GetListData,
+  InboxEntryGetResponse,
   InboxListEntry,
   InboxListEntryResponse,
   InboxSubscriptionResponse,
+  ListSchema,
   ListSubscriptionResponse,
   SubscriptionWithFeed,
 } from "@follow-app/client-sdk"
@@ -16,8 +22,63 @@ import type { EntryModel } from "../modules/entry/types"
 import type { FeedModel } from "../modules/feed/types"
 import type { ListModel } from "../modules/list/types"
 import type { SubscriptionModel } from "../modules/subscription/types"
+import type { MeModel } from "../modules/user/store"
 
 class APIMorph {
+  toList(data: ListSchema): ListModel {
+    return {
+      id: data.id,
+      title: data.title!,
+      userId: ("ownerUserId" in data && data.ownerUserId ? data.ownerUserId : data.owner?.id)!,
+      description: data.description!,
+      view: data.view,
+      image: data.image!,
+      ownerUserId: ("ownerUserId" in data && data.ownerUserId ? data.ownerUserId : data.owner?.id)!,
+      feedIds: (data.feedIds ?? []) as string[],
+      fee: (data.fee ?? 0) as number,
+      subscriptionCount:
+        "subscriptionCount" in data ? (data.subscriptionCount as number | null) : null,
+      purchaseAmount:
+        "purchaseAmount" in data && data.purchaseAmount != null
+          ? String(data.purchaseAmount)
+          : null,
+      type: "list",
+    }
+  }
+
+  toEntry(data?: InboxEntryGetResponse["data"] | EntryGetByIdResponse["data"]): EntryModel | null {
+    if (!data) return null
+
+    return {
+      id: data.entries.id,
+      title: data.entries.title,
+      url: data.entries.url,
+      content: data.entries.content,
+      readabilityContent: null,
+      description: data.entries.description,
+      guid: data.entries.guid,
+      author: data.entries.author,
+      authorUrl: data.entries.authorUrl,
+      authorAvatar: data.entries.authorAvatar,
+      insertedAt: new Date(data.entries.insertedAt),
+      publishedAt: new Date(data.entries.publishedAt),
+      media: data.entries.media ?? null,
+      categories: data.entries.categories ?? null,
+      attachments: data.entries.attachments ?? null,
+      extra: data.entries.extra
+        ? {
+            links: data.entries.extra.links ?? undefined,
+            title_keyword: data.entries.extra.title_keyword ?? undefined,
+          }
+        : null,
+      language: data.entries.language,
+      feedId: data.feeds.id,
+      inboxHandle: "feeds" in data ? (data.feeds.type === "inbox" ? data.feeds.id : null) : null,
+      read: false,
+      sources: null,
+      settings: null,
+    }
+  }
   toSubscription(
     data: (SubscriptionWithFeed | ListSubscriptionResponse | InboxSubscriptionResponse)[],
   ) {
@@ -180,6 +241,38 @@ class APIMorph {
       errorMessage: data.errorMessage,
       siteUrl: data.siteUrl,
       tipUserIds: data.tipUsers ? data.tipUsers.map((user) => user.id) : [],
+    }
+  }
+
+  toFeedFromAddFeeds(data: AddFeedsResponse["data"][number]): FeedModel {
+    return {
+      type: "feed",
+      id: data.id,
+      title: data.title,
+      url: data.url,
+      image: data.image,
+      description: data.description,
+      ownerUserId: data.ownerUserId,
+      errorAt: data.errorAt,
+      errorMessage: data.errorMessage,
+      siteUrl: data.siteUrl,
+      tipUserIds: data.tipUsers ? data.tipUsers.map((user) => user.id) : [],
+    }
+  }
+
+  toUser(data: AuthUser, isMe?: boolean): MeModel {
+    return {
+      id: data.id,
+      name: data.name,
+      email: data.email,
+      handle: data.handle,
+      image: data.image,
+      isMe: isMe ?? false,
+      emailVerified: data.emailVerified ?? undefined,
+      twoFactorEnabled: (data.twoFactorEnabled ?? undefined) as boolean | undefined,
+      bio: data.bio,
+      website: data.website,
+      socialLinks: data.socialLinks,
     }
   }
 }

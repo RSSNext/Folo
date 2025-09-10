@@ -4,7 +4,7 @@ import { clone } from "es-toolkit"
 import { api } from "../../context"
 import type { Hydratable, Resetable } from "../../lib/base"
 import { createImmerSetter, createTransaction, createZustandStore } from "../../lib/helper"
-import { honoMorph } from "../../morph/hono"
+import { apiMorph } from "../../morph/api"
 import { storeDbMorph } from "../../morph/store-db"
 import { feedActions } from "../feed/store"
 import { subscriptionActions, subscriptionSyncService } from "../subscription/store"
@@ -81,16 +81,16 @@ class ListSyncServices {
     if (!params.id) return null
     const list = await api().lists.get({ listId: params.id })
 
-    await listActions.upsertMany([honoMorph.toList(list.data.list)])
+    await listActions.upsertMany([apiMorph.toList(list.data.list)])
 
     return list.data
   }
 
   async fetchOwnedLists() {
     const res = await api().lists.list({})
-    await listActions.upsertMany(res.data.map((list) => honoMorph.toList(list)))
+    await listActions.upsertMany(res.data.map((list) => apiMorph.toList(list)))
 
-    return res.data.map((list) => honoMorph.toList(list))
+    return res.data.map((list) => apiMorph.toList(list))
   }
 
   async createList(params: { list: CreateListModel }) {
@@ -101,7 +101,7 @@ class ListSyncServices {
       view: params.list.view,
       fee: params.list.fee || 0,
     })
-    await listActions.upsertMany([honoMorph.toList(res.data)])
+    await listActions.upsertMany([apiMorph.toList(res.data)])
     await subscriptionActions.upsertMany([
       {
         isPrivate: false,
@@ -198,7 +198,7 @@ class ListSyncServices {
     if (!list) return
 
     feeds.data.forEach((feed) => {
-      feedActions.upsertMany([honoMorph.toFeed(feed)])
+      feedActions.upsertMany([apiMorph.toFeedFromAddFeeds(feed)])
     })
     await listActions.upsertMany([
       { ...list, feedIds: [...list.feedIds, ...feeds.data.map((feed) => feed.id)] },

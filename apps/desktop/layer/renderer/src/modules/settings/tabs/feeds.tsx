@@ -430,7 +430,7 @@ const FeedListItem = memo(
           <Checkbox checked={selected} onCheckedChange={(checked) => onSelect(id, !!checked)} />
         </div>
         <div className="flex min-w-0 items-center gap-1">
-          <FeedIcon feed={feed} size={16} />
+          <FeedIcon target={feed} size={16} />
           <div className="flex min-w-0 flex-col">
             {feed?.errorAt ? (
               <Tooltip>
@@ -570,7 +570,7 @@ const FeedClaimedSection = () => {
                         href={UrlBuilder.shareFeed(row.feed.id)}
                         className="flex items-center"
                       >
-                        <FeedIcon fallback feed={row.feed} size={16} />
+                        <FeedIcon fallback target={row.feed} size={16} />
                         <EllipsisHorizontalTextWithTooltip className="inline-block max-w-[200px] truncate">
                           {row.feed.title}
                         </EllipsisHorizontalTextWithTooltip>

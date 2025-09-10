@@ -158,7 +158,7 @@ const SubscriptionItem: FC<{
         target="_blank"
         onClick={isMobile ? handleFollow : undefined}
       >
-        <FeedIcon feed={subscription.feeds as any} size={22} className="mr-3" />
+        <FeedIcon target={subscription.feeds as any} size={22} className="mr-3" />
         <div
           className={cn(
             "w-0 flex-1 grow",

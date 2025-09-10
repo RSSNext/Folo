@@ -9,8 +9,8 @@ import {
 } from "@follow/components/ui/form/index.jsx"
 import { Input } from "@follow/components/ui/input/Input.js"
 import { LoadingCircle } from "@follow/components/ui/loading/index.jsx"
-import type { RSSHubModel } from "@follow/models"
 import { whoami } from "@follow/store/user/getters"
+import type { RSSHubListItem } from "@follow-app/client-sdk"
 import { zodResolver } from "@hookform/resolvers/zod"
 import { useEffect } from "react"
 import { useForm } from "react-hook-form"
@@ -28,7 +28,7 @@ export function AddModalContent({
   instance,
 }: {
   dismiss: () => void
-  instance?: RSSHubModel
+  instance?: RSSHubListItem
 }) {
   const { t } = useTranslation("settings")
   const addRSSHubMutation = useAddRSSHubMutation()

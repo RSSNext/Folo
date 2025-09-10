@@ -370,7 +370,7 @@ const RouteItem = memo(
               {analytics.topFeeds.slice(0, 2).map((feed: any) => (
                 <div key={feed.id} className="flex w-2/5 flex-1 items-center text-sm">
                   <FeedIcon
-                    feed={feed}
+                    target={feed}
                     className="mask-squircle mask shrink-0 rounded-none"
                     size={16}
                   />

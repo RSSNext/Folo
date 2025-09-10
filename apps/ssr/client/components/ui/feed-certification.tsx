@@ -6,15 +6,15 @@ import {
   TooltipPortal,
   TooltipTrigger,
 } from "@follow/components/ui/tooltip/index.jsx"
-import type { FeedOrListRespModel } from "@follow/models/types"
 import { cn } from "@follow/utils/utils"
+import type { FeedGetResponse } from "@follow-app/client-sdk"
 import { useTranslation } from "react-i18next"
 
 export const FeedCertification = ({
   feed,
   className,
 }: {
-  feed: FeedOrListRespModel
+  feed: FeedGetResponse["data"]["feed"]
   className?: string
 }) => {
   const me = useWhoami()

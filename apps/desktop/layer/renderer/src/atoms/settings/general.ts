@@ -1,9 +1,11 @@
 import { createSettingAtom } from "@follow/atoms/helper/setting.js"
-import type { SupportedLanguages } from "@follow/models"
 import { defaultGeneralSettings } from "@follow/shared/settings/defaults"
 import { enhancedGeneralSettingKeys } from "@follow/shared/settings/enhanced"
 import type { GeneralSettings } from "@follow/shared/settings/interface"
+import type { SupportedLanguages } from "@follow-app/client-sdk"
+import type { languageSchema } from "@folo-services/drizzle"
 import { useCallback, useMemo } from "react"
+import type z from "zod"
 
 import { jotaiStore } from "~/lib/jotai"
 import { getDefaultLanguage } from "~/lib/language"

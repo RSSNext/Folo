@@ -33,7 +33,12 @@ const SingleEntryCard = ({ entry }: { entry: SingleEntry }) => {
       {/* Header */}
       <div className="flex w-full items-start justify-between">
         <div className="flex">
-          <FeedIcon disableFadeIn entry={null} feed={undefined} siteUrl={entry.url ?? undefined} />
+          <FeedIcon
+            disableFadeIn
+            entry={null}
+            target={undefined}
+            siteUrl={entry.url ?? undefined}
+          />
           <h3 className="text-text line-clamp-2 flex-1 font-semibold leading-tight">
             {entry.title || "Untitled Entry"}
           </h3>

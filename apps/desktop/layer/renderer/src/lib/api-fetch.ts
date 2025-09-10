@@ -1,10 +1,8 @@
 import { DEV } from "@follow/shared/constants"
 import { env } from "@follow/shared/env.desktop"
-import type { AppType } from "@follow/shared/hono"
 import { userActions } from "@follow/store/user/store"
 import { createDesktopAPIHeaders } from "@follow/utils/headers"
 import PKG from "@pkg"
-import { hc } from "hono/client"
 import { FetchError, ofetch } from "ofetch"
 import { createElement } from "react"
 import { toast } from "sonner"
@@ -82,16 +80,6 @@ export const apiFetch = ofetch.create({
       // ignore
     }
   },
-})
-
-export const apiClient = hc<AppType>(env.VITE_API_URL, {
-  fetch: async (input, options = {}) =>
-    apiFetch(input.toString(), options).catch((err) => {
-      if (err instanceof FetchError && !err.response) {
-        setApiStatus(NetworkStatus.OFFLINE)
-      }
-      throw err
-    }),
 })
 
 if (DEV) {

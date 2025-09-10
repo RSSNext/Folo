@@ -22,9 +22,9 @@ import { EntryItemWrapper } from "../layouts/EntryItemWrapper"
 import { GridItem, GridItemFooter } from "../templates/grid-item-template"
 import type { UniversalItemProps } from "../types"
 
-export function PictureItem({ entryId, entryPreview, translation }: UniversalItemProps) {
+export function PictureItem({ entryId, translation }: UniversalItemProps) {
   const entry = useEntry(entryId, (state) => ({ media: state.media, id: state.id }))
-  const entryMedia = entry?.media || entryPreview?.entries?.media || []
+  const entryMedia = entry?.media || []
 
   const isActive = useRouteParamsSelector(({ entryId }) => entryId === entry?.id)
 
@@ -33,7 +33,7 @@ export function PictureItem({ entryId, entryPreview, translation }: UniversalIte
   const previewMedia = usePreviewMedia(entryContent)
   if (!entry) return null
   return (
-    <GridItem entryId={entryId} entryPreview={entryPreview} translation={translation}>
+    <GridItem entryId={entryId} translation={translation}>
       <div className="relative flex gap-2 overflow-x-auto">
         {entryMedia ? (
           <SwipeMedia
@@ -64,7 +64,7 @@ const proxySize = {
 
 export const PictureWaterFallItem = memo(function PictureWaterFallItem({
   entryId,
-  entryPreview,
+
   translation,
   index,
   className,
@@ -93,7 +93,7 @@ export const PictureWaterFallItem = memo(function PictureWaterFallItem({
     }
   }, [ref, intersectionObserver])
 
-  const media = entry?.media || entryPreview?.entries?.media || []
+  const media = entry?.media || []
 
   if (media?.length === 0) return null
   if (!entry) return null
@@ -122,11 +122,7 @@ export const PictureWaterFallItem = memo(function PictureWaterFallItem({
             />
 
             <div className="z-[3] shrink-0 overflow-hidden rounded-b-md pb-1">
-              <GridItemFooter
-                entryId={entryId}
-                entryPreview={entryPreview}
-                translation={translation}
-              />
+              <GridItemFooter entryId={entryId} translation={translation} />
             </div>
           </MasonryItemFixedDimensionWrapper>
         ) : (

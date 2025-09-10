@@ -9,7 +9,6 @@ import type { Hydratable, Resetable } from "../../lib/base"
 import { createImmerSetter, createTransaction, createZustandStore } from "../../lib/helper"
 import { apiMorph } from "../../morph/api"
 import { dbStoreMorph } from "../../morph/db-store"
-import { honoMorph } from "../../morph/hono"
 import { storeDbMorph } from "../../morph/store-db"
 import { collectionActions } from "../collection/store"
 import { clearAllFeedUnreadDirty, clearFeedUnreadDirty } from "../feed/hooks"
@@ -560,7 +559,7 @@ class EntrySyncServices {
       currentEntry?.inboxHandle || isInbox
         ? await api().entries.inbox.get({ id: entryId })
         : await api().entries.get({ id: entryId })
-    const entry = honoMorph.toEntry(res.data)
+    const entry = apiMorph.toEntry(res.data)
     if (!currentEntry && entry) {
       await entryActions.upsertMany([entry])
     } else {

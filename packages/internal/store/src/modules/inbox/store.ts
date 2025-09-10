@@ -109,7 +109,7 @@ class InboxSyncService {
     })
     tx.request(async () => {
       await api().inboxes.put({
-        id: handle,
+        handle,
         title,
       })
     })
@@ -127,7 +127,7 @@ class InboxSyncService {
     tx.store(async () => inboxActions.deleteById(inboxId))
     tx.request(async () => {
       await api().inboxes.delete({
-        id: inboxId,
+        handle: inboxId,
       })
     })
 
