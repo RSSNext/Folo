@@ -29,6 +29,7 @@ import { EntryAttachments } from "../EntryAttachments"
 import { EntryTitle } from "../EntryTitle"
 import { SupportCreator } from "../SupportCreator"
 import { MediaTranscript, TranscriptToggle, useTranscription } from "./shared"
+import { ArticleAudioPlayer } from "./shared/AudioPlayer"
 
 interface ArticleLayoutProps {
   entryId: string
@@ -82,6 +83,8 @@ export const ArticleLayout: React.FC<ArticleLayoutProps> = ({
   return (
     <div className={cn(readableContentMaxWidthClassName, "@[500px]:px-4 mx-auto")}>
       <EntryTitle entryId={entryId} compact={compact} />
+
+      <ArticleAudioPlayer entryId={entryId} />
 
       {/* Content Type Toggle */}
       <TranscriptToggle
