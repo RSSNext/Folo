@@ -8,6 +8,7 @@ import type { FeedModel } from "@follow/models/types"
 import { useEntry } from "@follow/store/entry/hooks"
 import { useFeedById } from "@follow/store/feed/hooks"
 import { useIsInbox } from "@follow/store/inbox/hooks"
+import { useSubscriptionByFeedId } from "@follow/store/subscription/hooks"
 import { thenable } from "@follow/utils"
 import { stopPropagation } from "@follow/utils/dom"
 import { EventBus } from "@follow/utils/event-bus"
@@ -63,13 +64,16 @@ const EntryContentImpl: Component<EntryContentProps> = ({
 
   useTitle(entry.title)
   const feed = useFeedById(entry.feedId)
+  const subscription = useSubscriptionByFeedId(entry.feedId)
 
   const isInbox = useIsInbox(entry.inboxId)
   const isInReadabilityMode = useEntryIsInReadability(entryId)
 
   const { error, content, isPending } = useEntryContent(entryId)
 
-  const view = useRouteParamsSelector((route) => route.view)
+  const routeView = useRouteParamsSelector((route) => route.view)
+  const subscriptionView = subscription?.view
+  const view = typeof subscriptionView === "number" ? subscriptionView : routeView
   const [scrollerRef, setScrollerRef] = useState<HTMLDivElement | null>(null)
   const safeUrl = useFeedSafeUrl(entryId)
 
