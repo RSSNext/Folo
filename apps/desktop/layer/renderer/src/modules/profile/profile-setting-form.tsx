@@ -108,6 +108,7 @@ export const ProfileSettingForm = ({
         name: values.name,
         bio: values.bio,
         website: values.website,
+        // @ts-expect-error
         socialLinks: values.socialLinks,
       }),
     onError: (error) => {

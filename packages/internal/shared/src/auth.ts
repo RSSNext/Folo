@@ -1,11 +1,11 @@
 import { stripeClient } from "@better-auth/stripe/client"
 import { IN_ELECTRON } from "@follow/shared"
-import type { authPlugins } from "@follow/shared/hono"
+import type { AuthPlugins } from "@follow-app/client-sdk"
 import type { BetterAuthClientPlugin, BetterFetchOption } from "better-auth/client"
 import { inferAdditionalFields, twoFactorClient } from "better-auth/client/plugins"
 import { createAuthClient } from "better-auth/react"
 
-type AuthPlugin = (typeof authPlugins)[number]
+type AuthPlugin = AuthPlugins[number]
 export const baseAuthPlugins = [
   {
     id: "customGetProviders",
@@ -27,6 +27,18 @@ export const baseAuthPlugins = [
     user: {
       handle: {
         type: "string",
+        required: false,
+      },
+      bio: {
+        type: "string",
+        required: false,
+      },
+      website: {
+        type: "string",
+        required: false,
+      },
+      socialLinks: {
+        type: "json",
         required: false,
       },
     },
