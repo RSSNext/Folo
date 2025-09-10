@@ -227,7 +227,6 @@ export function EntryHeaderBreadcrumb() {
   const { t } = useTranslation()
   const view = useRouteParamsSelector((s) => s.view)
   const viewName = views.find((v) => v.view === view)?.name
-  if (!meta) return null
 
   return (
     <div className="flex min-w-0 flex-1 overflow-hidden">
@@ -241,10 +240,10 @@ export function EntryHeaderBreadcrumb() {
           {/* Return Back Button  */}
           <button
             type="button"
-            className="text-text-secondary no-drag-region hover:text-text hover:bg-fill/50 focus-visible:bg-fill/60 inline-flex shrink-0 items-center rounded bg-transparent p-2"
+            className="text-text-secondary no-drag-region hover:text-text hover:bg-fill/50 focus-visible:bg-fill/60 inline-flex shrink-0 items-center rounded-full bg-transparent p-2"
             onClick={() => navigate({ entryId: null })}
           >
-            <i className="i-mingcute-close-fill size-4" />
+            <i className="i-mingcute-close-line size-5" />
           </button>
           {viewName && (
             <div className="flex items-center">
@@ -261,31 +260,41 @@ export function EntryHeaderBreadcrumb() {
               <ViewSubscriptionsDropdown view={view} onNavigate={navigate} />
             </div>
           )}
-          {Slash}
-          <div className="flex items-center">
-            <button
-              type="button"
-              className={cn(
-                "text-text-secondary no-drag-region hover:text-text hover:bg-fill/50 focus-visible:bg-fill/60 inline-flex max-w-[40vw] items-center truncate rounded bg-transparent px-1.5 py-0.5 text-sm transition-colors",
+          {meta && (
+            <>
+              {Slash}
+              <div className="flex items-center">
+                <button
+                  type="button"
+                  className={cn(
+                    "text-text-secondary no-drag-region hover:text-text hover:bg-fill/50 focus-visible:bg-fill/60 inline-flex max-w-[40vw] items-center truncate rounded bg-transparent px-1.5 py-0.5 text-sm transition-colors",
+                  )}
+                  onClick={() => navigate({ entryId: null, feedId: meta.feedId })}
+                  title={meta.feedTitle}
+                >
+                  <span className="truncate">{meta.feedTitle}</span>
+                </button>
+
+                <FeedEntriesDropdown
+                  feedId={meta.feedId}
+                  currentEntryId={entryId}
+                  onNavigate={navigate}
+                />
+              </div>
+
+              {!!meta.entryTitle && (
+                <>
+                  {Slash}
+                  <span
+                    className="text-text truncate px-1.5 py-0.5 text-sm"
+                    title={meta.entryTitle}
+                  >
+                    {meta.entryTitle}
+                  </span>
+                </>
               )}
-              onClick={() => navigate({ entryId: null, feedId: meta.feedId })}
-              title={meta.feedTitle}
-            >
-              <span className="truncate">{meta.feedTitle}</span>
-            </button>
-
-            <FeedEntriesDropdown
-              feedId={meta.feedId}
-              currentEntryId={entryId}
-              onNavigate={navigate}
-            />
-          </div>
-
-          {Slash}
-
-          <span className="text-text truncate px-1.5 py-0.5 text-sm" title={meta.entryTitle}>
-            {meta.entryTitle}
-          </span>
+            </>
+          )}
         </div>
       </nav>
     </div>

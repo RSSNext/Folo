@@ -30,8 +30,6 @@ export const views: ViewDefinition[] = [
     peerClassName: "peer-checked:text-folo dark:peer-checked:text-folo",
     translation: "title,description,content",
     view: FeedViewType.All,
-    gridMode: true,
-    wideMode: true,
     activeColor: "#FF5C00",
     switchable: false,
   },

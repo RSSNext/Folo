@@ -1,4 +1,4 @@
-import { views } from "@follow/constants"
+import { FeedViewType, views } from "@follow/constants"
 import { useCollectionEntryList } from "@follow/store/collection/hooks"
 import {
   useEntriesQuery,
@@ -50,6 +50,7 @@ const useRemoteEntries = (): UseEntriesReturn => {
       ...(hidePrivateSubscriptionsInTimeline === true && {
         hidePrivateSubscriptionsInTimeline: true,
       }),
+      ...(view === FeedViewType.All && { limit: 40 }),
     }
 
     if (feedId && listId && isBizId(feedId)) {
@@ -286,7 +287,7 @@ export const useEntriesByView = ({ onReset }: { onReset?: () => void }) => {
   const groupByDate = useGeneralSettingKey("groupByDate")
   const groupedCounts: number[] | undefined = useMemo(() => {
     const viewDefinition = views.find((v) => v.view === view)
-    if (viewDefinition?.gridMode) {
+    if (viewDefinition?.gridMode || view === FeedViewType.All) {
       return
     }
     if (!groupByDate) {

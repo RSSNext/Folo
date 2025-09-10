@@ -1,6 +1,5 @@
 import { PanelSplitter } from "@follow/components/ui/divider/PanelSplitter.js"
 import { views } from "@follow/constants"
-import { usePrefetchEntryDetail } from "@follow/store/entry/hooks"
 import { clsx, cn } from "@follow/utils/utils"
 import { easeOut } from "motion/react"
 import type { FC, PropsWithChildren } from "react"
@@ -29,7 +28,7 @@ const EntryLayoutContentLegacy = () => {
 
   const settingWideMode = useRealInWideMode()
   const realEntryId = entryId === ROUTE_ENTRY_PENDING ? "" : entryId
-  usePrefetchEntryDetail(realEntryId)
+
   const showEntryContent = !(
     views.find((v) => v.view === view)?.wideMode ||
     (settingWideMode && !realEntryId)

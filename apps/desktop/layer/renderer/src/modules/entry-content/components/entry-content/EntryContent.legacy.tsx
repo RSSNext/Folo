@@ -48,6 +48,7 @@ import { SourceContentPanel } from "../SourceContentView"
 import { SupportCreator } from "../SupportCreator"
 import { ContainerToc } from "./accessories/ContainerToc"
 import { EntryCommandShortcutRegister } from "./EntryCommandShortcutRegister"
+import { EntryContentFallback } from "./EntryContentFallback"
 import { EntryContentLoading } from "./EntryContentLoading"
 import { EntryNoContent } from "./EntryNoContent"
 import { EntryRenderError } from "./EntryRenderError"
@@ -244,7 +245,13 @@ const EntryContentImpl: Component<EntryContentProps> = ({
     </>
   )
 }
-export const EntryContent = memo(EntryContentImpl)
+export const EntryContent: Component<EntryContentProps> = memo((props) => {
+  return (
+    <EntryContentFallback entryId={props.entryId}>
+      <EntryContentImpl {...props} />
+    </EntryContentFallback>
+  )
+})
 
 const EntryScrollArea: Component<{
   scrollerRef: React.RefObject<HTMLDivElement | null>

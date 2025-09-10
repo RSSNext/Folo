@@ -252,7 +252,10 @@ const ActionBar = ({ entryId }: { entryId: string }) => {
       animate={{ opacity: 1, scale: 1, translateY: "-1/2" }}
       exit={{ opacity: 0, scale: 0.9, translateY: "-1/2" }}
       transition={Spring.presets.smooth}
-      className="absolute -right-2 top-0 -translate-y-1/2 rounded-lg border border-gray-200 bg-white/90 p-1 shadow-sm backdrop-blur-sm dark:border-neutral-900 dark:bg-neutral-900"
+      className={cn(
+        "absolute -right-2 top-0 -translate-y-1/2 rounded-lg border border-gray-200 bg-white/90 p-1 shadow-sm backdrop-blur-sm dark:border-neutral-900 dark:bg-neutral-900",
+        view === FeedViewType.All && "top-1/2",
+      )}
       onClick={(e) => {
         e.stopPropagation()
         e.preventDefault()

@@ -8,6 +8,7 @@ import { useEntry } from "@follow/store/entry/hooks"
 import { useFeedById } from "@follow/store/feed/hooks"
 import type { FeedModel } from "@follow/store/feed/types"
 import { useIsInbox } from "@follow/store/inbox/hooks"
+import { useSubscriptionByFeedId } from "@follow/store/subscription/hooks"
 import { thenable } from "@follow/utils"
 import { stopPropagation } from "@follow/utils/dom"
 import { EventBus } from "@follow/utils/event-bus"
@@ -34,6 +35,7 @@ import { useEntryContent } from "../../hooks"
 import { getEntryContentLayout } from "../layouts"
 import { SourceContentPanel } from "../SourceContentView"
 import { EntryCommandShortcutRegister } from "./EntryCommandShortcutRegister"
+import { EntryContentFallback } from "./EntryContentFallback"
 import { EntryContentLoading } from "./EntryContentLoading"
 import { EntryNoContent } from "./EntryNoContent"
 import { EntryScrollingAndNavigationHandler } from "./EntryScrollingAndNavigationHandler.js"
@@ -57,17 +59,21 @@ const EntryContentImpl: Component<EntryContentProps> = ({
 
     return { feedId, inboxId: inboxHandle, title, url }
   })
+
   if (!entry) throw thenable
 
   useTitle(entry.title)
   const feed = useFeedById(entry.feedId)
+  const subscription = useSubscriptionByFeedId(entry.feedId)
 
   const isInbox = useIsInbox(entry.inboxId)
   const isInReadabilityMode = useEntryIsInReadability(entryId)
 
   const { error, content, isPending } = useEntryContent(entryId)
 
-  const view = useRouteParamsSelector((route) => route.view)
+  const routeView = useRouteParamsSelector((route) => route.view)
+  const subscriptionView = subscription?.view
+  const view = typeof subscriptionView === "number" ? subscriptionView : routeView
   const [scrollerRef, setScrollerRef] = useState<HTMLDivElement | null>(null)
   const safeUrl = useFeedSafeUrl(entryId)
 
@@ -220,7 +226,13 @@ const EntryContentImpl: Component<EntryContentProps> = ({
     </div>
   )
 }
-export const EntryContent = memo(EntryContentImpl)
+export const EntryContent: Component<EntryContentProps> = memo((props) => {
+  return (
+    <EntryContentFallback entryId={props.entryId}>
+      <EntryContentImpl {...props} />
+    </EntryContentFallback>
+  )
+})
 
 const EntryScrollArea: Component<{
   scrollerRef: React.Ref<HTMLDivElement | null>

@@ -1,7 +1,6 @@
 // import { Avatar, AvatarFallback, AvatarImage } from "@follow/components/ui/avatar/index.jsx"
 import { PlatformIcon } from "@follow/components/ui/platform-icon/index.jsx"
 import type { FeedModel } from "@follow/store/feed/types"
-import type { ListModel } from "@follow/store/list/types"
 import { getBackgroundGradient } from "@follow/utils/color"
 import { getImageProxyUrl } from "@follow/utils/img-proxy"
 import { cn, getUrlIcon } from "@follow/utils/utils"
@@ -200,16 +199,8 @@ export function FeedIcon({
   disableFadeIn?: boolean
   noMargin?: boolean
 }) {
-  const marginClassName = noMargin ? "" : "mr-2"
-  const iconProps = getIconProps({
-    target,
-    entry,
-    useMedia,
-    siteUrl,
-    fallbackUrl,
-    fallback,
-    size,
-  })
+  const marginClassName = cn(noMargin ? "" : "mr-2", className)
+  const iconProps = getIconProps({ target, entry, useMedia, siteUrl, fallbackUrl, fallback, size })
 
   const colors = useMemo(
     () => getBackgroundGradient(target?.title || (target as FeedModel)?.url || siteUrl || ""),
@@ -239,7 +230,6 @@ export function FeedIcon({
         "flex shrink-0 items-center justify-center rounded-sm",
         "text-white",
         marginClassName,
-        className,
       )}
     >
       <span
@@ -266,13 +256,13 @@ export function FeedIcon({
         <PlatformIcon url={iconProps.platformUrl!} style={sizeStyle} className={className}>
           {fallbackSrc ? (
             <FallbackableImage
-              className={cn(marginClassName, className)}
+              className={marginClassName}
               style={sizeStyle}
               fallbackUrl={fallbackSrc}
             />
           ) : (
             <m.img
-              className={cn(marginClassName, className)}
+              className={marginClassName}
               style={sizeStyle}
               {...(disableFadeIn || isIconLoaded ? {} : fadeInVariant)}
             />

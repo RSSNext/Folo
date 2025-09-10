@@ -78,7 +78,7 @@ const AIEntryLayoutImpl = () => {
                     animate={{ translateY: 0, opacity: 1, scale: 1 }}
                     exit={{ translateY: "50px", opacity: 0, scale: 0.98 }}
                     transition={Spring.smooth(0.3)}
-                    className="bg-theme-background pointer-events-auto relative h-0 flex-1"
+                    className="bg-theme-background pointer-events-auto relative flex h-0 flex-1 flex-col"
                   >
                     <EntryContent entryId={realEntryId} className="h-full" />
                   </m.div>
