@@ -71,8 +71,8 @@ export const VideoPlayer = ({
   const isPlayer = variant === "player"
   const [clickToStatus, setClickToStatus] = useState(null as "play" | "pause" | null)
 
-  const scaleValue = useSpring(1, Spring.presets.softSpring)
-  const opacityValue = useSpring(0, Spring.presets.softSpring)
+  const scaleValue = useSpring(1, Spring.presets.smooth)
+  const opacityValue = useSpring(0, Spring.presets.smooth)
   const handleClick = useEventCallback((e?: any) => {
     if (!isPlayer) return
     e?.stopPropagation()

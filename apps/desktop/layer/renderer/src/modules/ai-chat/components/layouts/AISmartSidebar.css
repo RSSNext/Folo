@@ -1,0 +1,60 @@
+/* CSS animations for AISmartSidebar (replacing motion/react) */
+
+.ai-ambient-bar {
+  transform-origin: right center;
+  transition:
+    width 0.3s ease-out,
+    opacity 0.3s ease-out,
+    transform 0.3s ease-out;
+}
+
+@keyframes ai-bar-pulse {
+  0%,
+  100% {
+    transform: scale(1);
+  }
+  50% {
+    transform: scale(1.1);
+  }
+}
+
+.ai-ambient-pulse {
+  animation: ai-bar-pulse 2s ease-in-out infinite;
+}
+
+.ai-glow-blob {
+  transition:
+    opacity 0.3s cubic-bezier(0.22, 1, 0.36, 1),
+    transform 0.3s cubic-bezier(0.22, 1, 0.36, 1);
+  will-change: transform, opacity;
+  border-radius: 9999px;
+}
+
+.ai-prompt-container {
+  opacity: 0;
+  transform: translateX(20px);
+  transition:
+    opacity 0.25s cubic-bezier(0.22, 1, 0.36, 1),
+    transform 0.25s cubic-bezier(0.22, 1, 0.36, 1);
+}
+
+.ai-prompt-visible {
+  opacity: 1;
+  transform: translateX(0);
+}
+
+@keyframes ai-dot-pulse-kf {
+  0%,
+  100% {
+    transform: scale(1);
+    opacity: 0.7;
+  }
+  50% {
+    transform: scale(1.2);
+    opacity: 1;
+  }
+}
+
+.ai-dot-pulse {
+  animation: ai-dot-pulse-kf 2s ease-in-out infinite;
+}

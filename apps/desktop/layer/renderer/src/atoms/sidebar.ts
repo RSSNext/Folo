@@ -7,20 +7,20 @@ import { getIsZenMode, useIsZenMode } from "./settings/ui"
 const [
   ,
   ,
-  internal_useTimelineColumnShow,
+  internal_useSubscriptionColumnShow,
   ,
-  internal_getTimelineColumnShow,
+  internal_getSubscriptionShow,
   setTimelineColumnShow,
 ] = createAtomHooks(atom(true))
 
-export const useTimelineColumnShow = () => {
+export const useSubscriptionColumnShow = () => {
   const isZenMode = useIsZenMode()
-  return internal_useTimelineColumnShow() && !isZenMode
+  return internal_useSubscriptionColumnShow() && !isZenMode
 }
 
-export const getFeedColumnShow = () => {
+export const getSubscriptionColumnShow = () => {
   const isZenMode = getIsZenMode()
-  return internal_getTimelineColumnShow() && !isZenMode
+  return internal_getSubscriptionShow() && !isZenMode
 }
 
 export { setTimelineColumnShow }
@@ -28,8 +28,8 @@ export { setTimelineColumnShow }
 export const [
   ,
   ,
-  useTimelineColumnTempShow,
+  useSubscriptionColumnTempShow,
   ,
-  getTimelineColumnTempShow,
-  setTimelineColumnTempShow,
+  getSubscriptionColumnTempShow,
+  setSubscriptionColumnTempShow,
 ] = createAtomHooks(atom(false))

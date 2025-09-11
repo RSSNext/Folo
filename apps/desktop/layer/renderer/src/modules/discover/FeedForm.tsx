@@ -315,7 +315,7 @@ const FeedInnerForm = ({
                 </div>
                 <FormControl>
                   <div className="flex gap-2">
-                    <Input {...field} />
+                    <Input placeholder={feed.title || undefined} {...field} />
                     <Button
                       buttonClassName="shrink-0"
                       type="button"
@@ -426,7 +426,7 @@ const FeedInnerForm = ({
           {isSubscribed && (
             <Button
               type="button"
-              variant="text"
+              variant="ghost"
               onClick={() => {
                 dismiss()
               }}

@@ -12,7 +12,7 @@ import type { FC, ReactNode } from "react"
 
 export interface GlassButtonProps {
   description?: string
-  onClick: () => void
+  onClick?: () => void
   className?: string
   children: ReactNode
   /**
@@ -54,7 +54,7 @@ const glassButtonVariants = cva(
       },
       variant: {
         glass: ["backdrop-blur-md border shadow-lg"],
-        flat: ["border shadow-none"],
+        flat: ["border shadow-sm hover:shadow-md"],
       },
     },
     compoundVariants: [
@@ -90,7 +90,12 @@ const glassButtonVariants = cva(
       {
         variant: "flat",
         theme: "light",
-        className: ["bg-white/80 hover:bg-white/90", "border-gray/20 hover:border-gray/30"],
+        className: [
+          "bg-white/80 hover:bg-white/90",
+          "border-gray/20 hover:border-gray/30",
+          // Subtle shadow color for clearer hover feedback
+          "shadow-gray/10 hover:shadow-gray/25",
+        ],
       },
       {
         variant: "flat",
@@ -98,6 +103,7 @@ const glassButtonVariants = cva(
         className: [
           "bg-fill-secondary hover:bg-fill-tertiary",
           "border-gray/20 hover:border-gray/30",
+          "shadow-black/10 hover:shadow-black/25",
         ],
       },
       {
@@ -106,6 +112,7 @@ const glassButtonVariants = cva(
         className: [
           "bg-white/80 hover:bg-white/90 dark:bg-fill-secondary dark:hover:bg-fill-tertiary",
           "border-gray/20 hover:border-gray/30",
+          "shadow-gray/10 hover:shadow-gray/25 dark:shadow-black/10 dark:hover:shadow-black/25",
         ],
       },
     ],
@@ -164,7 +171,7 @@ export const GlassButton: FC<GlassButtonProps> = ({
           type="button"
           onClick={(e) => {
             e.stopPropagation()
-            onClick()
+            onClick?.()
           }}
           className={cn(glassButtonVariants({ size, theme, variant }), className)}
           initial={{ scale: 1 }}

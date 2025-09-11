@@ -202,6 +202,9 @@ export async function uploadFileAttachment(
     onProgressUpdate?.(currentAttachment)
 
     const { dataUrl } = fileAttachment
+    if (!dataUrl) {
+      throw new Error("No data URL found for file attachment")
+    }
     const blob = await fetch(dataUrl).then((r) => r.blob())
 
     // TODO: Replace with real progress tracking when followApi supports it

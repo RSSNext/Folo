@@ -1,0 +1,217 @@
+import { Spring } from "@follow/components/constants/spring.js"
+import { useEntry } from "@follow/store/entry/hooks"
+import { cn } from "@follow/utils/utils"
+import dayjs from "dayjs"
+import { AnimatePresence, m } from "motion/react"
+import { useCallback, useMemo } from "react"
+
+import { AudioPlayer, useAudioPlayerAtomSelector } from "~/atoms/player"
+
+interface AudioPlayerProps {
+  entryId: string
+  className?: string
+}
+
+// Helper function to format duration
+const formatDuration = (seconds: number) => {
+  if (!seconds || seconds === Infinity) return "0:00"
+  const duration = dayjs.duration(seconds, "seconds")
+  const hours = Math.floor(duration.asHours())
+  const minutes = duration.minutes()
+  const secs = duration.seconds()
+
+  if (hours > 0) {
+    return `${hours}:${minutes.toString().padStart(2, "0")}:${secs.toString().padStart(2, "0")}`
+  }
+  return `${minutes}:${secs.toString().padStart(2, "0")}`
+}
+
+export const ArticleAudioPlayer: React.FC<AudioPlayerProps> = ({ entryId, className }) => {
+  const entry = useEntry(entryId, (state) => ({
+    attachments: state.attachments,
+    feedId: state.feedId,
+  }))
+
+  // Find the first audio attachment
+  const audioAttachment = useMemo(() => {
+    return entry?.attachments?.find(
+      (attachment) => attachment.mime_type?.startsWith("audio/") && attachment.url,
+    )
+  }, [entry?.attachments])
+
+  const currentPlayingEntryId = useAudioPlayerAtomSelector((v) => v.entryId)
+  const status = useAudioPlayerAtomSelector((v) => v.status)
+  const currentTime = useAudioPlayerAtomSelector((v) => v.currentTime)
+  const duration = useAudioPlayerAtomSelector((v) => v.duration)
+
+  const isCurrentAudio = currentPlayingEntryId === entryId
+  const isPlaying = isCurrentAudio && status === "playing"
+  const isLoading = isCurrentAudio && status === "loading"
+
+  const handlePlayAudio = useCallback(() => {
+    if (!audioAttachment) return
+
+    if (isCurrentAudio) {
+      AudioPlayer.togglePlayAndPause()
+    } else {
+      AudioPlayer.mount({
+        entryId,
+        src: audioAttachment.url,
+        type: "audio",
+        currentTime: 0,
+      })
+    }
+  }, [audioAttachment, entryId, isCurrentAudio])
+
+  const handleDownload = useCallback(() => {
+    if (!audioAttachment?.url) return
+    window.open(audioAttachment.url, "_blank")
+  }, [audioAttachment?.url])
+
+  const handleBack = useCallback(() => {
+    if (!isCurrentAudio) return
+    AudioPlayer.back(10)
+  }, [isCurrentAudio])
+
+  const handleForward = useCallback(() => {
+    if (!isCurrentAudio) return
+    AudioPlayer.forward(10)
+  }, [isCurrentAudio])
+
+  // Only show progress for current audio, otherwise reset to 0
+  const displayCurrentTime = isCurrentAudio ? currentTime || 0 : 0
+  const displayDuration = isCurrentAudio ? duration || 0 : 0
+  const displayHasValidDuration =
+    isCurrentAudio && duration && duration > 0 && duration !== Infinity
+
+  const handleProgressClick = useCallback(
+    (event: React.MouseEvent<HTMLDivElement>) => {
+      if (!isCurrentAudio || !displayHasValidDuration) return
+
+      const rect = event.currentTarget.getBoundingClientRect()
+      const clickX = event.clientX - rect.left
+      const progressPercent = clickX / rect.width
+      const newTime = progressPercent * displayDuration
+
+      AudioPlayer.seek(newTime)
+    },
+    [isCurrentAudio, displayHasValidDuration, displayDuration],
+  )
+
+  const currentTimeDisplay = formatDuration(displayCurrentTime)
+  const durationDisplay = formatDuration(displayDuration)
+
+  // Don't render if no audio attachment
+  if (!audioAttachment) {
+    return null
+  }
+
+  const progressPercent = displayHasValidDuration ? (displayCurrentTime / displayDuration) * 100 : 0
+
+  return (
+    <AnimatePresence>
+      <m.div
+        initial={{ opacity: 0, scale: 0.95 }}
+        animate={{ opacity: 1, scale: 1 }}
+        exit={{ opacity: 0, scale: 0.95 }}
+        transition={Spring.presets.smooth}
+        className={cn(
+          "border-border bg-theme-background rounded-lg border p-4 shadow-sm",
+          "my-4 w-full",
+          className,
+        )}
+      >
+        {/* Control buttons and progress bar */}
+        <div className="flex items-center gap-3">
+          {/* Control buttons */}
+          <div className="flex shrink-0 items-center gap-1">
+            {/* Skip Back 10s */}
+            <button
+              type="button"
+              onClick={handleBack}
+              disabled={!isCurrentAudio}
+              className={cn(
+                "hover:bg-theme-item-hover flex size-8 items-center justify-center rounded-full transition-colors",
+                !isCurrentAudio && "cursor-not-allowed opacity-50",
+              )}
+              title="Back 10s"
+            >
+              <i className="i-mgc-back-2-cute-re size-4" />
+            </button>
+
+            {/* Play/Pause Button */}
+            <button
+              type="button"
+              onClick={handlePlayAudio}
+              disabled={!audioAttachment}
+              className={cn(
+                "bg-accent hover:bg-accent/90 flex size-10 items-center justify-center rounded-full text-white transition-all duration-200",
+                "shadow-md hover:shadow-lg",
+                !audioAttachment && "cursor-not-allowed opacity-50",
+              )}
+              title={isPlaying ? "Pause" : "Play"}
+            >
+              {isLoading ? (
+                <i className="i-mgc-loading-3-cute-re size-5 animate-spin" />
+              ) : isPlaying ? (
+                <i className="i-mgc-pause-cute-fi size-5" />
+              ) : (
+                <i className="i-mgc-play-cute-fi size-5" />
+              )}
+            </button>
+
+            {/* Skip Forward 10s */}
+            <button
+              type="button"
+              onClick={handleForward}
+              disabled={!isCurrentAudio}
+              className={cn(
+                "hover:bg-theme-item-hover flex size-8 items-center justify-center rounded-full transition-colors",
+                !isCurrentAudio && "cursor-not-allowed opacity-50",
+              )}
+              title="Forward 10s"
+            >
+              <i className="i-mgc-forward-2-cute-re size-4" />
+            </button>
+          </div>
+
+          {/* Progress Bar Container */}
+          <div className="flex-1">
+            <div
+              className="bg-border group relative h-2 w-full cursor-pointer overflow-hidden rounded-full"
+              onClick={handleProgressClick}
+            >
+              <div
+                className="bg-accent h-full rounded-full transition-all duration-200"
+                style={{ width: `${progressPercent}%` }}
+              />
+              {/* Hover indicator */}
+              <div className="absolute inset-y-0 right-0 w-3 opacity-0 transition-opacity duration-200 group-hover:opacity-100">
+                <div className="bg-accent/50 size-full rounded-full" />
+              </div>
+            </div>
+          </div>
+
+          {/* Time Display and Download */}
+          <div className="flex shrink-0 items-center gap-2">
+            <div className="flex gap-1 text-xs">
+              <span className="text-text-secondary font-mono">{currentTimeDisplay}</span>
+              <span className="text-text-secondary">/</span>
+              <span className="text-text-secondary font-mono">{durationDisplay}</span>
+            </div>
+
+            {/* Download Button */}
+            <button
+              type="button"
+              onClick={handleDownload}
+              className="text-text-secondary hover:text-text flex size-7 items-center justify-center rounded-full transition-colors"
+              title="Download"
+            >
+              <i className="i-mgc-download-2-cute-re size-3.5" />
+            </button>
+          </div>
+        </div>
+      </m.div>
+    </AnimatePresence>
+  )
+}

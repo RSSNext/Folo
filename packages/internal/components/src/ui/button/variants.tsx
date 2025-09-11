@@ -37,7 +37,7 @@ export const styledButtonVariant = cva(
     ],
     variants: {
       size: {
-        sm: "px-3 py-1 rounded-md text-sm font-medium",
+        sm: "px-3 py-1 rounded-lg text-sm font-medium",
         default: "px-4 py-1.5 rounded-lg text-sm font-semibold",
         lg: "px-5 py-2 rounded-lg text-base font-semibold",
       },

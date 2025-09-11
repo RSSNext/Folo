@@ -5,6 +5,7 @@ interface EntryContentContextType {
   showAISummaryAtom: PrimitiveAtom<boolean>
   showAITranslationAtom: PrimitiveAtom<boolean>
   showReadabilityAtom: PrimitiveAtom<boolean>
+  showSourceContentAtom: PrimitiveAtom<boolean>
   titleHeightAtom: PrimitiveAtom<number>
 }
 export const EntryContentContext = createContext<EntryContentContextType>(null!)

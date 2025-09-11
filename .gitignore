@@ -28,4 +28,3 @@ buildServer.json
 apps/desktop/build/appxmanifest.xml
 
 .claude/settings.local.json
-PRPS/*

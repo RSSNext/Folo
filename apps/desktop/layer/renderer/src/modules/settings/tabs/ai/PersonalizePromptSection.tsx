@@ -50,7 +50,7 @@ export const PersonalizePromptSection = () => {
     <div className="space-y-4">
       <div className="space-y-2">
         <Label className="text-text text-sm font-medium">{t("personalize.prompt.label")}</Label>
-        <div className="relative -mx-3">
+        <div className="relative -ml-3">
           <TextArea
             value={prompt}
             onChange={handlePromptChange}
@@ -85,9 +85,9 @@ export const PersonalizePromptSection = () => {
         {hasChanges && (
           <SettingModalContentPortal>
             <m.div
-              initial={{ y: 20, scale: 0.95 }}
-              animate={{ y: 0, scale: 1 }}
-              exit={{ y: 20, scale: 0.95 }}
+              initial={{ y: 20 }}
+              animate={{ y: 0 }}
+              exit={{ y: 20, opacity: 0 }}
               transition={Spring.presets.snappy}
               className="absolute inset-x-0 bottom-3 z-10 flex justify-center px-3"
             >

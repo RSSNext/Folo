@@ -1,5 +1,7 @@
+/* eslint-disable unicorn/no-for-loop */
 import type { ChatState, ChatStatus } from "ai"
 import { throttle } from "es-toolkit/compat"
+import { produce } from "immer"
 
 import { AIPersistService } from "../../services"
 import { ChatStateEventEmitter } from "../event-system/event-emitter"
@@ -7,14 +9,14 @@ import type { BizUIMessage } from "../types"
 import type { ChatSlice } from "./types"
 
 // Zustand Chat State that implements AI SDK ChatState interface
-export class ZustandChatState<UI_MESSAGE extends BizUIMessage> implements ChatState<UI_MESSAGE> {
-  #messages: UI_MESSAGE[]
+export class ZustandChatState implements ChatState<BizUIMessage> {
+  #messages: BizUIMessage[]
   #status: ChatStatus = "ready"
   #error: Error | undefined = undefined
-  #eventEmitter = new ChatStateEventEmitter<UI_MESSAGE>()
+  #eventEmitter = new ChatStateEventEmitter()
 
   constructor(
-    initialMessages: UI_MESSAGE[] = [],
+    initialMessages: BizUIMessage[] = [],
     private updateZustandState: (updater: (state: ChatSlice) => ChatSlice) => void,
     private chatId: string,
   ) {
@@ -25,10 +27,36 @@ export class ZustandChatState<UI_MESSAGE extends BizUIMessage> implements ChatSt
   #setupEventHandlers(): void {
     // Setup event handlers for automatic Zustand synchronization
     this.#eventEmitter.on("messages", ({ messages }) => {
-      this.updateZustandState((state) => ({
-        ...state,
-        messages: [...messages],
-      }))
+      this.updateZustandState(
+        produce((state) => {
+          const stateMessages = state.messages
+          for (let i = 0; i < messages.length; i++) {
+            const message = messages[i]!
+            if (!stateMessages[i]) {
+              stateMessages[i] = structuredClone(message) as any
+            } else {
+              const stateMessage = stateMessages[i]!
+              stateMessage.id = message.id
+
+              for (let j = 0; j < message.parts.length; j++) {
+                const statePart = stateMessage.parts[j] || {}
+                const messagePart = message.parts[j]!
+
+                Object.assign(statePart, messagePart)
+                stateMessage.parts[j] = statePart as any
+              }
+
+              stateMessage.parts.length = message.parts.length
+
+              stateMessage.role = message.role
+
+              stateMessage.metadata = stateMessage.metadata ?? {}
+              Object.assign(stateMessage.metadata, message.metadata)
+            }
+          }
+          stateMessages.length = messages.length
+        }),
+      )
     })
 
     this.#eventEmitter.on("status", ({ status }) => {
@@ -69,19 +97,20 @@ export class ZustandChatState<UI_MESSAGE extends BizUIMessage> implements ChatSt
     this.#eventEmitter.emit("error", { error: newError })
   }
 
-  get messages(): UI_MESSAGE[] {
+  get messages(): BizUIMessage[] {
     return this.#messages
   }
 
-  set messages(newMessages: UI_MESSAGE[]) {
+  set messages(newMessages: BizUIMessage[]) {
     this.#messages = [...newMessages]
+
     this.#eventEmitter.emit("messages", { messages: this.#messages })
 
     // Auto-persist messages when they change
     this.#persistMessages()
   }
 
-  pushMessage = (message: UI_MESSAGE) => {
+  pushMessage = (message: BizUIMessage) => {
     this.messages = this.#messages.concat(message)
   }
 
@@ -91,7 +120,7 @@ export class ZustandChatState<UI_MESSAGE extends BizUIMessage> implements ChatSt
     this.messages = this.#messages.slice(0, -1)
   }
 
-  replaceMessage = (index: number, message: UI_MESSAGE) => {
+  replaceMessage = (index: number, message: BizUIMessage) => {
     if (index < 0 || index >= this.#messages.length) return
 
     this.messages = [
@@ -123,7 +152,7 @@ export class ZustandChatState<UI_MESSAGE extends BizUIMessage> implements ChatSt
   }
 
   // Internal event subscription with payload access
-  onMessagesChange = (listener: (messages: UI_MESSAGE[]) => void): (() => void) => {
+  onMessagesChange = (listener: (messages: BizUIMessage[]) => void): (() => void) => {
     return this.#eventEmitter.on("messages", ({ messages }) => listener(messages))
   }
 

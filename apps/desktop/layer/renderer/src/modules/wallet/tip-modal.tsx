@@ -140,7 +140,7 @@ const TipModalContent_: FC<{
 
       <div className="flex flex-col justify-center gap-y-2">
         <div className="flex flex-row items-center gap-x-2 font-bold">
-          <i className="i-mgc-power text-accent" />
+          <i className="i-mgc-power text-folo" />
           <span>{t("tip_modal.amount")}</span>
         </div>
 
@@ -151,7 +151,7 @@ const TipModalContent_: FC<{
               wrapperClassName="justify-center"
               label={
                 <span className="flex items-center gap-1">
-                  10 <i className="i-mgc-power text-accent" />
+                  10 <i className="i-mgc-power text-folo" />
                 </span>
               }
               value="10"
@@ -161,7 +161,7 @@ const TipModalContent_: FC<{
               wrapperClassName="justify-center group"
               label={
                 <span className="flex items-center gap-1">
-                  20 <i className="i-mgc-power text-accent" />
+                  20 <i className="i-mgc-power text-folo" />
                 </span>
               }
               value="20"

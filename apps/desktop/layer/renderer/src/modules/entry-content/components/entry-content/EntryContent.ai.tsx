@@ -8,6 +8,7 @@ import type { FeedModel } from "@follow/models/types"
 import { useEntry } from "@follow/store/entry/hooks"
 import { useFeedById } from "@follow/store/feed/hooks"
 import { useIsInbox } from "@follow/store/inbox/hooks"
+import { useSubscriptionByFeedId } from "@follow/store/subscription/hooks"
 import { thenable } from "@follow/utils"
 import { stopPropagation } from "@follow/utils/dom"
 import { EventBus } from "@follow/utils/event-bus"
@@ -21,7 +22,6 @@ import { useEntryIsInReadability } from "~/atoms/readability"
 import { useIsZenMode } from "~/atoms/settings/ui"
 import { Focusable } from "~/components/common/Focusable"
 import { m } from "~/components/common/Motion"
-import { useInPeekModal } from "~/components/ui/modal/inspire/InPeekModal"
 import { HotkeyScope } from "~/constants"
 import { useRouteParamsSelector } from "~/hooks/biz/useRouteParams"
 import { useFeedSafeUrl } from "~/hooks/common/useFeedSafeUrl"
@@ -30,14 +30,16 @@ import { BlockSliceAction } from "~/modules/ai-chat/store/slices/block.slice"
 import { COMMAND_ID } from "~/modules/command/commands/id"
 
 import { ApplyEntryActions } from "../../ApplyEntryActions"
+import { setEntryContentScrollToTop } from "../../atoms"
 import { useEntryContent } from "../../hooks"
-import { AIEntryHeader } from "../entry-header"
 import { getEntryContentLayout } from "../layouts"
 import { SourceContentPanel } from "../SourceContentView"
 import { EntryCommandShortcutRegister } from "./EntryCommandShortcutRegister"
+import { EntryContentFallback } from "./EntryContentFallback"
 import { EntryContentLoading } from "./EntryContentLoading"
 import { EntryNoContent } from "./EntryNoContent"
 import { EntryScrollingAndNavigationHandler } from "./EntryScrollingAndNavigationHandler.js"
+import { EntryTitleMetaHandler } from "./EntryTitleMetaHandler"
 import type { EntryContentProps } from "./types"
 
 const contentVariants = {
@@ -50,7 +52,6 @@ const EntryContentImpl: Component<EntryContentProps> = ({
   noMedia,
   className,
   compact,
-  classNames,
 }) => {
   const entry = useEntry(entryId, (state) => {
     const { feedId, inboxHandle } = state
@@ -58,18 +59,22 @@ const EntryContentImpl: Component<EntryContentProps> = ({
 
     return { feedId, inboxId: inboxHandle, title, url }
   })
+
   if (!entry) throw thenable
 
   useTitle(entry.title)
   const feed = useFeedById(entry.feedId)
+  const subscription = useSubscriptionByFeedId(entry.feedId)
 
   const isInbox = useIsInbox(entry.inboxId)
   const isInReadabilityMode = useEntryIsInReadability(entryId)
 
   const { error, content, isPending } = useEntryContent(entryId)
 
-  const view = useRouteParamsSelector((route) => route.view)
-  const scrollerRef = useRef<HTMLDivElement | null>(null)
+  const routeView = useRouteParamsSelector((route) => route.view)
+  const subscriptionView = subscription?.view
+  const view = typeof subscriptionView === "number" ? subscriptionView : routeView
+  const [scrollerRef, setScrollerRef] = useState<HTMLDivElement | null>(null)
   const safeUrl = useFeedSafeUrl(entryId)
 
   const isZenMode = useIsZenMode()
@@ -107,14 +112,29 @@ const EntryContentImpl: Component<EntryContentProps> = ({
     }
   }, [animationController, entryId])
 
+  useEffect(() => {
+    setEntryContentScrollToTop(true)
+  }, [entryId])
+  useEffect(() => {
+    if (!scrollerRef) return
+
+    const handler = () => {
+      setEntryContentScrollToTop(scrollerRef.scrollTop < 50)
+    }
+    scrollerRef.addEventListener("scroll", handler)
+
+    return () => {
+      scrollerRef.removeEventListener("scroll", handler)
+    }
+  }, [scrollerRef])
+
+  const scrollerRefObject = React.useMemo(() => ({ current: scrollerRef }), [scrollerRef])
+
   return (
     <div className={cn(className, "@container flex flex-col")}>
+      <EntryTitleMetaHandler entryId={entryId} />
       <EntryCommandShortcutRegister entryId={entryId} view={view} />
-      <AIEntryHeader
-        entryId={entryId}
-        className={cn("@container h-[55px] shrink-0 px-3", classNames?.header)}
-        compact={compact}
-      />
+
       <div className="w-full" ref={setPanelPortalElement} />
 
       <Focusable
@@ -125,11 +145,12 @@ const EntryContentImpl: Component<EntryContentProps> = ({
         <RootPortal to={panelPortalElement}>
           <EntryScrollingAndNavigationHandler
             scrollAnimationRef={scrollAnimationRef}
-            scrollerRef={scrollerRef}
+            scrollerRef={scrollerRefObject}
           />
         </RootPortal>
         {/* <EntryTimeline entryId={entryId} className="top-48" /> */}
-        <EntryScrollArea scrollerRef={scrollerRef}>
+        <EntryScrollArea scrollerRef={setScrollerRef}>
+          {/* <EntryNavigationHandler entryId={entryId} /> */}
           {/* Indicator for the entry */}
           {!isZenMode && isInHasTimelineView && (
             <>
@@ -167,7 +188,7 @@ const EntryContentImpl: Component<EntryContentProps> = ({
             <article
               data-testid="entry-render"
               onContextMenu={stopPropagation}
-              className={"relative w-full min-w-0 pb-10 pt-2"}
+              className={"relative w-full min-w-0 pb-10 pt-12"}
             >
               <ApplyEntryActions entryId={entryId} key={entryId} />
 
@@ -202,21 +223,21 @@ const EntryContentImpl: Component<EntryContentProps> = ({
         </EntryScrollArea>
         <SourceContentPanel src={safeUrl ?? "#"} />
       </Focusable>
-
-      {/* <React.Suspense>{!isInPeekModal && <AISmartSidebar entryId={entryId} />}</React.Suspense> */}
     </div>
   )
 }
-export const EntryContent = memo(EntryContentImpl)
+export const EntryContent: Component<EntryContentProps> = memo((props) => {
+  return (
+    <EntryContentFallback entryId={props.entryId}>
+      <EntryContentImpl {...props} />
+    </EntryContentFallback>
+  )
+})
 
 const EntryScrollArea: Component<{
-  scrollerRef: React.RefObject<HTMLDivElement | null>
-}> = ({ children, className, scrollerRef }) => {
-  const isInPeekModal = useInPeekModal()
-
-  if (isInPeekModal) {
-    return <div className="p-5">{children}</div>
-  }
+  scrollerRef: React.Ref<HTMLDivElement | null>
+  viewportClassName?: string
+}> = ({ children, className, scrollerRef, viewportClassName }) => {
   return (
     <ScrollArea.ScrollArea
       focusable
@@ -228,6 +249,7 @@ const EntryScrollArea: Component<{
       )}
       scrollbarClassName="mr-[1.5px] print:hidden"
       ref={scrollerRef}
+      viewportClassName={viewportClassName}
     >
       {children}
     </ScrollArea.ScrollArea>

@@ -1,6 +1,5 @@
-import { jotaiStore } from "@follow/utils/jotai"
 import { cn } from "@follow/utils/utils"
-import { atom, useAtom, useStore } from "jotai"
+import { atom, useStore } from "jotai"
 import type { Variants } from "motion/react"
 import { AnimatePresence, m } from "motion/react"
 import type { FC } from "react"
@@ -8,7 +7,7 @@ import * as React from "react"
 import { useEffect } from "react"
 
 import type { CollapseContextValue } from "./hooks"
-import { CollaspeContext, useCollapseContext } from "./hooks"
+import { CollaspeContext } from "./hooks"
 
 interface CollapseProps {
   title: React.ReactNode
@@ -19,6 +18,9 @@ interface CollapseProps {
   contentClassName?: string
 }
 
+/**
+ * @deprecated Use CollapseCssGroup instead
+ */
 export const CollapseGroup: FC<
   {
     defaultOpenId?: string
@@ -44,33 +46,9 @@ export const CollapseGroup: FC<
   return <CollaspeContext value={ctxValue}>{children}</CollaspeContext>
 }
 
-export const Collapse: Component<CollapseProps> = ({ onOpenChange, ...props }) => {
-  const [isOpened, setIsOpened] = React.useState(props.defaultOpen ?? false)
-  const reactId = React.useId()
-  const id = props.collapseId ?? reactId
-  const { currentOpenCollapseIdAtom, collapseGroupItemStateAtom } = useCollapseContext()
-  const [currentId, setCurrentId] = useAtom(currentOpenCollapseIdAtom)
-
-  React.useEffect(() => {
-    if (isOpened) {
-      setCurrentId(id)
-    }
-    const prevState = jotaiStore.get(collapseGroupItemStateAtom)
-    jotaiStore.set(collapseGroupItemStateAtom, { ...prevState, [id]: isOpened })
-
-    return () => {
-      const prevState = jotaiStore.get(collapseGroupItemStateAtom)
-      delete prevState[id]
-      jotaiStore.set(collapseGroupItemStateAtom, prevState)
-    }
-  }, [collapseGroupItemStateAtom, id, isOpened, setCurrentId])
-  React.useEffect(() => {
-    const isOpened = currentId === id
-    setIsOpened(isOpened)
-    onOpenChange?.(isOpened)
-  }, [currentId, id])
-  return <CollapseControlled isOpened={isOpened} onOpenChange={setIsOpened} {...props} />
-}
+/**
+ * @deprecated Use CollapseCss instead
+ */
 
 export const CollapseControlled: Component<
   {
@@ -100,6 +78,10 @@ export const CollapseControlled: Component<
     </CollapseContent>
   </div>
 )
+
+/**
+ * @deprecated Use CollapseCssContent instead
+ */
 export const CollapseContent: Component<{
   isOpened: boolean
   withBackground?: boolean

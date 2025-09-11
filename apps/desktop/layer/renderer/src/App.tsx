@@ -1,14 +1,16 @@
 import { isMobile } from "@follow/components/hooks/useMobile.js"
 import { IN_ELECTRON } from "@follow/shared/constants"
 import { tracker } from "@follow/tracker"
+import { nextFrame } from "@follow/utils"
 import { cn, getOS } from "@follow/utils/utils"
-import { useEffect } from "react"
+import { useEffect, useLayoutEffect, useRef } from "react"
 import { Outlet } from "react-router"
 
 import { useAppIsReady } from "./atoms/app"
 import { useUISettingKey } from "./atoms/settings/ui"
 import { applyAfterReadyCallbacks } from "./initialize/queue"
 import { removeAppSkeleton } from "./lib/app"
+import { ipcServices } from "./lib/client"
 import { appLog } from "./lib/log"
 import { Titlebar } from "./modules/app/Titlebar"
 import { RootProviders } from "./providers/root-providers"
@@ -37,13 +39,19 @@ function App() {
 const AppLayer = () => {
   const appIsReady = useAppIsReady()
 
-  useEffect(() => {
-    removeAppSkeleton()
+  const onceReady = useRef(false)
+  useLayoutEffect(() => {
+    if (appIsReady && !onceReady.current) {
+      onceReady.current = true
+      ipcServices?.app.readyToShowMainWindow()
+      nextFrame(removeAppSkeleton)
+    }
+  }, [appIsReady])
 
+  useEffect(() => {
     const doneTime = Math.trunc(performance.now())
     tracker.uiRenderInit(doneTime)
     appLog("App is ready", `${doneTime}ms`)
-
     applyAfterReadyCallbacks()
 
     if (isMobile()) {

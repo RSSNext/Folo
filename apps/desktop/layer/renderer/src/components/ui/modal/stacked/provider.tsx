@@ -7,6 +7,7 @@ import { getUISettings } from "~/atoms/settings/ui"
 import { jotaiStore } from "~/lib/jotai"
 
 import { modalStackAtom } from "./atom"
+import { ModalEventBus } from "./bus"
 import { PresentModalContextInternal } from "./context"
 import { modalIdToPropsMap } from "./hooks"
 import { ModalStack } from "./modal-stack"
@@ -35,6 +36,7 @@ export const ModalStackProvider: FC<PropsWithChildren> = ({ children }) => {
           const index = p.indexOf(existingModal)
           return [...p.slice(0, index), ...p.slice(index + 1), existingModal]
         })
+        ModalEventBus.dispatch("RE_PRESENT", { id: modalId })
       } else {
         // NOTE: The props of the Command Modal are immutable, so we'll just take the store value and inject it.
         // There is no need to inject `overlay` props, this is rendered responsively based on ui changes.

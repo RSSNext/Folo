@@ -1,3 +1,4 @@
+import { ErrorBoundary } from "@sentry/react"
 import { createElement, lazy, Suspense } from "react"
 
 const AISplineLoader = lazy(() =>
@@ -5,10 +6,16 @@ const AISplineLoader = lazy(() =>
 )
 export const AISpline = () => {
   return createElement(
-    Suspense,
+    ErrorBoundary,
     {
-      fallback: createElement("div", { className: "size-16 mx-auto" }),
+      handled: true,
     },
-    createElement(AISplineLoader),
+    createElement(
+      Suspense,
+      {
+        fallback: createElement("div", { className: "size-16 mx-auto" }),
+      },
+      createElement(AISplineLoader),
+    ),
   )
 }

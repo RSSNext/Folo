@@ -5,9 +5,9 @@ export interface FileAttachment {
   name: string
   type: string
   size: number
-  dataUrl: string
+  dataUrl?: string
   previewUrl?: string
-  uploadStatus: "processing" | "uploading" | "completed" | "error"
+  uploadStatus?: "processing" | "uploading" | "completed" | "error"
   serverUrl?: string
   errorMessage?: string
   /** Upload progress percentage (0-100) */
@@ -19,7 +19,7 @@ interface BaseContextBlock {
 }
 
 export interface ValueContextBlock extends BaseContextBlock {
-  type: "mainEntry" | "referEntry" | "referFeed" | "selectedText"
+  type: "mainView" | "mainEntry" | "referEntry" | "referFeed" | "selectedText"
   value: string
 }
 
@@ -44,7 +44,7 @@ export interface AIChatContextBlocks {
 }
 
 export type AIDisplayAnalyticsTool = ToolWithState<BizUITools["displayAnalytics"]>
-export type AIDisplayFeedsTool = ToolWithState<BizUITools["displayFeeds"]>
+export type AIDisplayFeedTool = ToolWithState<BizUITools["displayFeed"]>
 export type AIDisplayEntriesTool = ToolWithState<BizUITools["displayEntries"]>
 export type AIDisplaySubscriptionsTool = ToolWithState<BizUITools["displaySubscriptions"]>
 export type AIDisplayFlowTool = ToolWithState<BizUITools["displayFlowChart"]>

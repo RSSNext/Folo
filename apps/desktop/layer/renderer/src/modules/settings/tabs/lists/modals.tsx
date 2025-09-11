@@ -191,7 +191,7 @@ export const ListCreationModalContent = ({ id }: { id?: string }) => {
                     min={0}
                     onChange={(value) => field.onChange(value.target.valueAsNumber)}
                   />
-                  <i className="i-mgc-power text-accent ml-4 shrink-0 text-xl" />
+                  <i className="i-mgc-power text-folo ml-4 shrink-0 text-xl" />
                 </div>
               </FormControl>
               <FormMessage />

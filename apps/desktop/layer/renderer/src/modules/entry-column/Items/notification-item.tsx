@@ -16,17 +16,16 @@ NotificationItem.wrapperClassName = readableContentMaxWidth
 
 export function NotificationItemStateLess({ entry, feed }: EntryItemStatelessProps) {
   return (
-    <div className="relative w-full max-w-lg select-none">
-      <div className="group relative flex py-4 pl-3 pr-2">
-        <FeedIcon feed={feed} fallback />
-
-        <div className="-mt-0.5 line-clamp-4 flex-1 text-sm leading-tight">
-          <div className="text-text-secondary flex gap-1 text-[10px] font-bold">
-            <FeedTitle feed={feed} />
-            <span>·</span>
-            <span>{!!entry.publishedAt && <RelativeTime date={entry.publishedAt} />}</span>
-          </div>
-          <div className="relative my-0.5 break-words">{entry.title}</div>
+    <div className="cursor-menu group relative flex py-4">
+      <FeedIcon feed={feed} fallback className="mr-2 size-5" />
+      <div className="-mt-0.5 min-w-0 flex-1 text-sm leading-tight">
+        <div className="text-text-secondary flex gap-1 text-[10px] font-bold">
+          <FeedTitle feed={feed} />
+          <span>·</span>
+          <span>{!!entry.publishedAt && <RelativeTime date={entry.publishedAt} />}</span>
+        </div>
+        <div className="text-text relative my-0.5 truncate break-words font-medium">
+          {entry.title}
         </div>
       </div>
     </div>
@@ -34,8 +33,8 @@ export function NotificationItemStateLess({ entry, feed }: EntryItemStatelessPro
 }
 
 export const NotificationItemSkeleton = (
-  <div className="relative w-full max-w-lg select-none">
-    <div className="group relative flex py-4 pl-3 pr-2">
+  <div className={`relative w-full select-none ${readableContentMaxWidth}`}>
+    <div className="group relative flex py-4">
       <Skeleton className="mr-2 size-5 shrink-0 overflow-hidden rounded-sm" />
       <div className="-mt-0.5 line-clamp-4 flex-1 text-sm leading-tight">
         <div className="text-material-opaque flex gap-1 text-[10px] font-bold">

@@ -96,6 +96,12 @@ export const defaultUISettings: UISettings = {
 
   // Discover
   discoverLanguage: "all",
+
+  // Timeline tabs preset (excluding the first fixed tab)
+  timelineTabs: {
+    visible: [],
+    hidden: [],
+  },
 }
 
 export const defaultIntegrationSettings: IntegrationSettings = {

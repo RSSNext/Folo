@@ -10,35 +10,70 @@ export const NetworkStatusIndicator = () => {
   if (networkStatus === NetworkStatus.ONLINE && apiStatus === NetworkStatus.ONLINE) {
     return null
   }
-  const canAccessAnyData =
-    networkStatus === NetworkStatus.ONLINE && apiStatus === NetworkStatus.ONLINE
+
+  const isNetworkOffline = networkStatus === NetworkStatus.OFFLINE
+  const isApiOffline = apiStatus === NetworkStatus.OFFLINE
+
+  // Determine status type for styling
+  const statusType = isNetworkOffline ? "offline" : isApiOffline ? "api-error" : "unknown"
 
   return (
     <Tooltip>
       <TooltipTrigger asChild>
         <div
           className={cn(
-            "bg-background fixed bottom-2 left-2 flex items-center gap-1 rounded-full border px-1.5 py-1",
-            !canAccessAnyData &&
-              "border-current bg-red-50 text-red-400 dark:bg-red-800 dark:text-red-500",
+            "fixed bottom-3 left-3 flex items-center gap-2 rounded-full border backdrop-blur-md transition-all duration-200 hover:scale-105",
+            "px-3 py-2 shadow-lg ring-1 ring-inset",
+            // Default styling
+            "bg-material-thick border-fill text-text-secondary",
+            // Network offline - more severe styling
+            statusType === "offline" && [
+              "bg-red/10 border-red/30 text-red ring-red/20",
+              "dark:bg-red/15 dark:border-red/40 dark:text-red dark:ring-red/25",
+            ],
+            // API error - warning styling
+            statusType === "api-error" && [
+              "bg-red/10 border-red/30 text-red ring-red/20",
+              "dark:bg-red/15 dark:border-red/40 dark:text-red dark:ring-red/25",
+            ],
           )}
         >
-          <i className="i-mgc-wifi-off-cute-re shrink-0 text-base" />
-          <span className="shrink-0 text-xs font-semibold opacity-50">
-            {networkStatus === NetworkStatus.OFFLINE
-              ? "Local Mode (alpha)"
-              : apiStatus === NetworkStatus.OFFLINE
-                ? "API Error"
-                : ""}
+          <i
+            className={cn(
+              "size-4 shrink-0 transition-all duration-200",
+              statusType === "offline" && "i-mgc-wifi-off-cute-re",
+              statusType === "api-error" && "i-mgc-wifi-off-cute-re",
+            )}
+          />
+
+          <span
+            className={cn(
+              "shrink-0 text-xs font-medium transition-colors duration-200",
+              statusType === "offline" && "text-orange",
+              statusType === "api-error" && "text-red",
+            )}
+          >
+            {isNetworkOffline ? "Local Mode" : isApiOffline ? "API Error" : "Connection Issue"}
           </span>
         </div>
       </TooltipTrigger>
-      <TooltipContent className="max-w-[35ch]" align="start" side="top">
-        {networkStatus === NetworkStatus.OFFLINE
-          ? "Currently in Local data mode due to current network connection failure."
-          : apiStatus === NetworkStatus.OFFLINE
-            ? "Your network connection is normal, there may be an error on the remote server and the API interface is temporarily unreachable."
-            : ""}
+      <TooltipContent className="max-w-[40ch] text-sm" align="start" side="top" sideOffset={8}>
+        <div className="space-y-1">
+          <div className="font-medium">
+            {isNetworkOffline
+              ? "🔄 Local Mode Active"
+              : isApiOffline
+                ? "⚠️ API Connection Error"
+                : "❌ Connection Problem"}
+          </div>
+          <div className="text-text-secondary text-xs leading-relaxed">
+            {isNetworkOffline
+              ? "Operating in local data mode due to network connection failure. Some features may be limited."
+              : isApiOffline
+                ? "Your network connection is stable, but our API servers are temporarily unreachable. Please try again later."
+                : "There's an issue with the connection. Please check your network settings."}
+          </div>
+        </div>
       </TooltipContent>
     </Tooltip>
   )

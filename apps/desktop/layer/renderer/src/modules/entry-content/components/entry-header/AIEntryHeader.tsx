@@ -1,20 +1,21 @@
 import { memo } from "react"
 
+import { useEntryContentScrollToTop } from "../../atoms"
 import { EntryHeaderRoot } from "./internal/context"
 import { EntryHeaderActionsContainer } from "./internal/EntryHeaderActionsContainer"
-import { EntryHeaderMeta } from "./internal/EntryHeaderMeta"
-import { EntryHeaderReadHistory } from "./internal/EntryHeaderReadHistory"
+import { EntryHeaderBreadcrumb } from "./internal/EntryHeaderBreadcrumb"
 import type { EntryHeaderProps } from "./types"
 
 function EntryHeaderImpl({ entryId, className, compact }: EntryHeaderProps) {
+  const isAtTop = useEntryContentScrollToTop()
   return (
     <EntryHeaderRoot entryId={entryId} className={className} compact={compact}>
-      <EntryHeaderReadHistory />
       <div
-        className="relative z-10 flex w-full items-center justify-between gap-3"
+        className="bg-background h-entry-header relative z-10 flex w-full items-center justify-between gap-3 px-4"
+        data-at-top={isAtTop}
         data-hide-in-print
       >
-        <EntryHeaderMeta />
+        <EntryHeaderBreadcrumb />
         <EntryHeaderActionsContainer />
       </div>
     </EntryHeaderRoot>

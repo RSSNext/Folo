@@ -244,7 +244,7 @@ const SubscriptionImpl = ({ ref, className, view, isSubscriptionLoading }: Subsc
         }}
         mask={false}
         flex
-        viewportClassName={cn("!px-3", shouldFreeUpSpace && "!overflow-visible")}
+        viewportClassName={cn("!px-1", shouldFreeUpSpace && "!overflow-visible")}
         rootClassName={cn("h-full", shouldFreeUpSpace && "overflow-visible")}
       >
         <StarredItem view={view} />
@@ -416,7 +416,7 @@ const useRegisterCommand = () => {
 }
 
 const SubscriptionListSkeleton = () => (
-  <div className="px-3">
+  <div className="px-1">
     {Array.from({ length: 5 }).map((_, index) => (
       <div key={index} className="flex h-8 items-center justify-between">
         <Skeleton className="h-4 w-28" />

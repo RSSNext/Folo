@@ -31,9 +31,9 @@ export class WebViewBridgeManager {
   /**
    * Set code highlighting themes for light and dark modes
    */
-  setCodeTheme = (light: string, dark: string) => {
-    this.store.set(codeThemeLightAtom, light)
-    this.store.set(codeThemeDarkAtom, dark)
+  setCodeTheme = (v: { light: string; dark: string }) => {
+    this.store.set(codeThemeLightAtom, v.light)
+    this.store.set(codeThemeDarkAtom, v.dark)
   }
 
   /**
@@ -70,13 +70,72 @@ export class WebViewBridgeManager {
    * This maintains backward compatibility with existing native code
    */
   exposeToWindow() {
-    Object.assign(window, {
-      setEntry: this.setEntry,
-      setCodeTheme: this.setCodeTheme,
-      setReaderRenderInlineStyle: this.setReaderRenderInlineStyle,
-      setNoMedia: this.setNoMedia,
-      setRootFontSize: this.setRootFontSize,
-      reset: this.reset,
-    })
+    // Minimal native->JS dispatch bridge to centralize API surface
+    if (!window.__FO_BRIDGE__) {
+      const handlers = {
+        setEntry: this.setEntry,
+        setCodeTheme: this.setCodeTheme,
+        setReaderRenderInlineStyle: this.setReaderRenderInlineStyle,
+        setNoMedia: this.setNoMedia,
+        setRootFontSize: this.setRootFontSize,
+      } as const
+
+      const tryParse = (v: any): any => {
+        if (typeof v !== "string") return v
+        const s = v.trim()
+        if (!s) return v
+        if ((s.startsWith("{") && s.endsWith("}")) || (s.startsWith("[") && s.endsWith("]"))) {
+          try {
+            return JSON.parse(s)
+          } catch {
+            return v
+          }
+        }
+        if (s === "true") return true
+        if (s === "false") return false
+        const n = Number(s)
+        if (!Number.isNaN(n) && s === String(n)) return n
+        return v
+      }
+
+      window.__FO_BRIDGE__ = {
+        dispatch(type, payload) {
+          try {
+            // @ts-expect-error
+            const fn = handlers[type]
+            if (typeof fn === "function") {
+              fn(tryParse(payload))
+            } else {
+              console.warn("[FO_BRIDGE] No handler for", type)
+            }
+          } catch (e) {
+            console.error("[FO_BRIDGE] dispatch error", type, e)
+          }
+        },
+        applyState(state) {
+          try {
+            if (!state || typeof state !== "object") return
+            for (const key of Object.keys(state)) {
+              const fn = handlers[key as keyof typeof handlers]
+              if (typeof fn === "function") {
+                // @ts-expect-error
+                fn(tryParse(state[key]))
+              }
+            }
+          } catch (e) {
+            console.error("[FO_BRIDGE] applyState error", e)
+          }
+        },
+      }
+    }
+  }
+}
+
+declare global {
+  interface Window {
+    __FO_BRIDGE__: {
+      dispatch: (type: string, payload: string) => void
+      applyState: (state: Record<string, any>) => void
+    }
   }
 }

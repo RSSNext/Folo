@@ -1,3 +1,4 @@
+import type { PrimitiveAtom } from "jotai"
 import { createContext, use } from "react"
 import type { StoreApi } from "zustand"
 import type { UseBoundStoreWithEqualityFn } from "zustand/traditional"
@@ -21,4 +22,18 @@ export const useAIChatStore = () => {
     throw new Error("useAIChatStore must be used within a AIChatStoreContext")
   }
   return store
+}
+
+export type AIRootStateContext = {
+  isScrolledBeyondThreshold: PrimitiveAtom<boolean>
+}
+
+export const AIRootStateContext = createContext<AIRootStateContext>(null!)
+
+export const useAIRootState = () => {
+  const context = use(AIRootStateContext)
+  if (!context) {
+    throw new Error("useAIRootState must be used within a AIRootStateContext")
+  }
+  return context
 }

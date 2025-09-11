@@ -1,12 +1,15 @@
-import { Button } from "@follow/components/ui/button/index.js"
 import type { MCPService } from "@follow/shared/settings/interface"
 import { useTranslation } from "react-i18next"
+
+import type { ActionButton } from "~/modules/ai-task/components/ai-item-actions"
+import { ItemActions } from "~/modules/ai-task/components/ai-item-actions"
 
 interface MCPServiceItemProps {
   service: MCPService
   onDelete: (id: string) => void
   onRefresh: (connectionId: string) => void
   onEdit: (service: MCPService) => void
+  onToggleEnabled: (id: string, enabled: boolean) => void
   isDeleting?: boolean
   isRefreshing?: boolean
 }
@@ -16,6 +19,7 @@ export const MCPServiceItem = ({
   onDelete,
   onRefresh,
   onEdit,
+  onToggleEnabled,
   isDeleting = false,
   isRefreshing = false,
 }: MCPServiceItemProps) => {
@@ -35,6 +39,28 @@ export const MCPServiceItem = ({
     if (!dateString) return "Never"
     return new Date(dateString).toLocaleDateString()
   }
+
+  const actions: ActionButton[] = [
+    {
+      icon: "i-mgc-edit-cute-re",
+      onClick: () => onEdit(service),
+      title: "Edit connection",
+    },
+    {
+      icon: "i-mgc-refresh-2-cute-re",
+      onClick: () => onRefresh(service.id),
+      title: "Refresh tools",
+      disabled: isRefreshing,
+      loading: isRefreshing,
+    },
+    {
+      icon: "i-mgc-delete-2-cute-re",
+      onClick: () => onDelete(service.id),
+      title: "Delete service",
+      disabled: isDeleting,
+      loading: isDeleting,
+    },
+  ]
 
   return (
     <div className="hover:bg-material-medium border-border group rounded-lg border p-4 transition-colors">
@@ -73,36 +99,11 @@ export const MCPServiceItem = ({
           </div>
         </div>
 
-        <div className="ml-4 flex items-center gap-1 opacity-60 transition-opacity group-hover:opacity-100">
-          <Button variant="ghost" size="sm" onClick={() => onEdit(service)} title="Edit connection">
-            <i className="i-mgc-edit-cute-re size-4" />
-          </Button>
-          <Button
-            variant="ghost"
-            size="sm"
-            onClick={() => onRefresh(service.id)}
-            title="Refresh tools"
-            disabled={isRefreshing}
-          >
-            {isRefreshing ? (
-              <i className="i-mgc-loading-3-cute-re size-4 animate-spin" />
-            ) : (
-              <i className="i-mgc-refresh-2-cute-re size-4" />
-            )}
-          </Button>
-          <Button
-            variant="ghost"
-            size="sm"
-            onClick={() => onDelete(service.id)}
-            disabled={isDeleting}
-          >
-            {isDeleting ? (
-              <i className="i-mgc-loading-3-cute-re size-4 animate-spin" />
-            ) : (
-              <i className="i-mgc-delete-2-cute-re size-4" />
-            )}
-          </Button>
-        </div>
+        <ItemActions
+          actions={actions}
+          enabled={service.enabled}
+          onToggle={(enabled) => onToggleEnabled(service.id, enabled)}
+        />
       </div>
     </div>
   )

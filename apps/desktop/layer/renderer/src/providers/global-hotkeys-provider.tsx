@@ -15,11 +15,37 @@ import { COMMAND_ID } from "~/modules/command/commands/id"
 import { useRunCommandFn } from "~/modules/command/hooks/use-command"
 import { useCommandBinding, useCommandShortcuts } from "~/modules/command/hooks/use-command-binding"
 
-export const GlobalHotkeysProvider = () => {
+const useRegisterGlobalHotkeys = () => {
+  const notInFloatingLayerScope = useGlobalFocusableScopeSelector(
+    FocusablePresets.isNotFloatingLayerScope,
+  )
   useCommandBinding({
     commandId: COMMAND_ID.global.showShortcuts,
+    when: notInFloatingLayerScope,
   })
 
+  useCommandBinding({
+    commandId: COMMAND_ID.global.toggleCornerPlay,
+    when: notInFloatingLayerScope,
+  })
+
+  useCommandBinding({
+    commandId: COMMAND_ID.global.quickAdd,
+    when: notInFloatingLayerScope,
+  })
+
+  useCommandBinding({
+    commandId: COMMAND_ID.global.quickSearch,
+    when: notInFloatingLayerScope,
+  })
+
+  useCommandBinding({
+    commandId: COMMAND_ID.global.toggleAIChat,
+    when: notInFloatingLayerScope,
+  })
+}
+export const GlobalHotkeysProvider = () => {
+  useRegisterGlobalHotkeys()
   useEventListener("keydown", (e) => {
     if (e.key === "Tab") {
       nextFrame(() => {

@@ -47,7 +47,7 @@ export const SourceContentView = ({ src }: { src: string }) => {
         className="size-full"
         initial={{ opacity: 0 }}
         animate={{ opacity: loading ? 0 : 1 }}
-        transition={Spring.presets.softSpring}
+        transition={Spring.presets.smooth}
       >
         <ViewTag
           ref={webviewRef}
@@ -74,7 +74,7 @@ export const SourceContentPanel = ({ src }: { src: string | null }) => {
           animate="visible"
           exit="exit"
           variants={variants}
-          transition={Spring.presets.softSpring}
+          transition={Spring.presets.smooth}
         >
           <SourceContentView src={src} />
         </m.div>

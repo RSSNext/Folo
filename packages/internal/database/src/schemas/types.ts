@@ -57,6 +57,7 @@ export type ExtraModel = {
     type: string
     content_html?: string
   }[]
+  title_keyword?: string
 }
 
 // export { ImageColorsResult } from "react-native-image-colors"

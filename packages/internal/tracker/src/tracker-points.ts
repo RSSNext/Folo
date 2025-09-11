@@ -43,10 +43,6 @@ export class TrackerPoints {
     this.track(TrackerMapper.Integration, props)
   }
 
-  dailyReportModal() {
-    this.track(TrackerMapper.DailyReportModal)
-  }
-
   switchToMasonry() {
     this.track(TrackerMapper.SwitchToMasonry)
   }

@@ -1,9 +1,12 @@
 import { useGlobalFocusableScopeSelector } from "@follow/components/common/Focusable/hooks.js"
 import type { FeedViewType } from "@follow/constants"
 import { useEntry } from "@follow/store/entry/hooks"
+import { useHotkeys } from "react-hotkeys-hook"
 
 import { FocusablePresets } from "~/components/common/Focusable"
 import { useHasModal } from "~/components/ui/modal/stacked/hooks"
+import { useFeature } from "~/hooks/biz/useFeature"
+import { useNavigateEntry } from "~/hooks/biz/useNavigateEntry"
 import { COMMAND_ID } from "~/modules/command/commands/id"
 import { useCommandBinding } from "~/modules/command/hooks/use-command-binding"
 /**
@@ -63,6 +66,19 @@ export const EntryCommandShortcutRegister = ({
     commandId: COMMAND_ID.entry.share,
     args: [{ entryId }],
   })
+
+  const isAIlayout = useFeature("ai")
+
+  const navigate = useNavigateEntry()
+  useHotkeys(
+    "Escape",
+    () => {
+      navigate({ entryId: null })
+    },
+    {
+      enabled: isAIlayout && baseCondition,
+    },
+  )
 
   return null
 }

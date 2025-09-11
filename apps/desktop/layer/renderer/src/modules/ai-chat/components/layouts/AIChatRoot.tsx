@@ -1,11 +1,18 @@
+import { atom } from "jotai"
 import type { FC, PropsWithChildren } from "react"
-import { useMemo, useRef } from "react"
+import { useEffect, useMemo, useRef } from "react"
 
 import { Focusable } from "~/components/common/Focusable"
 import { HotkeyScope } from "~/constants"
 
+import { useAIShortcut } from "../../hooks/useAIShortcut"
 import type { AIPanelRefs } from "../../store/AIChatContext"
-import { AIChatStoreContext, AIPanelRefsContext } from "../../store/AIChatContext"
+import {
+  AIChatStoreContext,
+  AIPanelRefsContext,
+  AIRootStateContext,
+} from "../../store/AIChatContext"
+import { ChatSliceActions } from "../../store/chat-core/chat-actions"
 import { useChatActions, useCurrentChatId } from "../../store/hooks"
 import { createAIChatStore } from "../../store/store"
 
@@ -28,6 +35,7 @@ const AIChatRootInner: FC<AIChatRootProps> = ({ children, chatId: externalChatId
   const panelRef = useRef<HTMLDivElement>(null!)
   const inputRef = useRef<HTMLTextAreaElement>(null!)
   const refsContext = useMemo<AIPanelRefs>(() => ({ panelRef, inputRef }), [panelRef, inputRef])
+  useAIShortcut()
 
   if (!currentChatId) {
     return (
@@ -49,10 +57,24 @@ export const AIChatRoot: FC<AIChatRootProps> = ({
   chatId: externalChatId,
 }) => {
   const useAiContextStore = useMemo(createAIChatStore, [])
+  const chatActions = useAiContextStore((state) => state.chatActions)
+
+  useEffect(() => {
+    ChatSliceActions.setActiveInstance(chatActions)
+  }, [chatActions])
 
   const Element = (
     <AIChatStoreContext value={useAiContextStore}>
-      <AIChatRootInner chatId={externalChatId}>{children}</AIChatRootInner>
+      <AIRootStateContext
+        value={useMemo(
+          () => ({
+            isScrolledBeyondThreshold: atom(false),
+          }),
+          [],
+        )}
+      >
+        <AIChatRootInner chatId={externalChatId}>{children}</AIChatRootInner>
+      </AIRootStateContext>
     </AIChatStoreContext>
   )
 
@@ -65,3 +87,4 @@ export const AIChatRoot: FC<AIChatRootProps> = ({
   }
   return Element
 }
+AIChatRoot.displayName = "AIChatRoot"

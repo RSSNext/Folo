@@ -1636,6 +1636,7 @@ type ExtraModel = {
     type: string;
     content_html?: string;
   }[];
+  title_keyword?: string
 };
 declare const CommonEntryFields: {
   id: drizzle_orm142.HasRuntimeDefault<drizzle_orm142.HasDefault<drizzle_orm142.IsPrimaryKey<drizzle_orm142.NotNull<drizzle_orm_pg_core100.PgTextBuilderInitial<"id", [string, ...string[]]>>>>>;
@@ -23279,6 +23280,7 @@ declare const _routes: hono_hono_base42.HonoBase<Env, ({
                 url: string;
                 content_html?: string | undefined;
               }[] | null | undefined;
+              title_keyword?: string | undefined;
             } | null | undefined;
           };
           feeds: {
@@ -23548,6 +23550,7 @@ declare const _routes: hono_hono_base42.HonoBase<Env, ({
                 url: string;
                 content_html?: string | undefined;
               }[] | null | undefined;
+              title_keyword?: string | undefined;
             } | null | undefined;
           };
           feeds: {

@@ -1,5 +1,7 @@
 import { FeedViewType, views } from "@follow/constants"
 
+import { readableContentMaxWidthClassName } from "~/constants/ui"
+
 import { FlatMarkAllReadButton } from "./mark-all-button"
 
 export const FooterMarkItem = ({
@@ -17,7 +19,7 @@ export const FooterMarkItem = ({
 
   if (view === FeedViewType.SocialMedia) {
     return <SocialMediaFooterMarkItem filter={filter} />
-  } else if (views[view]!.gridMode) {
+  } else if (views.find((v) => v.view === view)?.gridMode) {
     return <GridFooterMarkItem filter={filter} />
   }
   return <CommonFooterMarkItem filter={filter} />
@@ -58,12 +60,14 @@ const GridFooterMarkItem = ({ filter }: FooterMarkItemProps) => {
 
 const CommonFooterMarkItem = ({ filter }: FooterMarkItemProps) => {
   return (
-    <FlatMarkAllReadButton
-      className="justify-start"
-      buttonClassName="w-full rounded-none px-6 py-4"
-      iconClassName="mr-1 text-base"
-      which="above"
-      filter={filter}
-    />
+    <div className={`relative flex w-full ${readableContentMaxWidthClassName} mx-auto`}>
+      <FlatMarkAllReadButton
+        className="justify-start"
+        buttonClassName="w-full px-4 pl-3 py-4"
+        iconClassName="w-7 mr-3 text-base"
+        which="above"
+        filter={filter}
+      />
+    </div>
   )
 }

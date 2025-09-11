@@ -10,9 +10,24 @@ import { ZustandChat } from "./chat-instance"
 import type { ChatSlice } from "./types"
 
 export class ChatSliceActions {
+  // Hold reference to the most recently constructed (active) ChatSliceActions instance
+  private static _current: ChatSliceActions | null = null
+
+  /**
+   * Get the currently active ChatSliceActions instance.
+   */
+  static getActiveInstance(): ChatSliceActions | null {
+    if (!this._current) return null
+    return this._current
+  }
+
+  static setActiveInstance(instance: ChatSliceActions | null) {
+    this._current = instance
+  }
+
   constructor(
     private params: Parameters<StateCreator<ChatSlice, [], [], ChatSlice>>,
-    private chatInstance: ZustandChat<BizUIMessage>,
+    private chatInstance: ZustandChat,
   ) {
     return autoBindThis(this)
   }
@@ -182,7 +197,7 @@ export class ChatSliceActions {
     this.chatInstance.destroy()
 
     // Create new chat instance
-    const newChatInstance = new ZustandChat<BizUIMessage>(
+    const newChatInstance = new ZustandChat(
       {
         id: newChatId,
         messages: [],
@@ -221,7 +236,7 @@ export class ChatSliceActions {
       this.chatInstance.destroy()
 
       // Create new chat instance with loaded messages
-      const newChatInstance = new ZustandChat<BizUIMessage>(
+      const newChatInstance = new ZustandChat(
         {
           id: chatId,
           messages,

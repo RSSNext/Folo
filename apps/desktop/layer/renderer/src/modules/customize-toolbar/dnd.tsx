@@ -62,10 +62,6 @@ const warningActionButton: Partial<
     show: !IN_ELECTRON,
     info: "entry_actions.warn_info_for_desktop",
   },
-  [COMMAND_ID.global.toggleAIChat]: {
-    show: true,
-    info: "entry_actions.warn_info_ai_chat_pinned_tip",
-  },
 }
 
 export const SortableActionButton = ({ id }: { id: UniqueIdentifier }) => {
@@ -99,7 +95,7 @@ export const SortableActionButton = ({ id }: { id: UniqueIdentifier }) => {
 
 export function DroppableContainer({ children }: { children: ReactNode }) {
   return (
-    <div className="border-border bg-material-ultra-thin flex min-h-[120px] w-full flex-wrap items-center justify-center rounded-lg border p-2 pb-6 shadow-sm">
+    <div className="border-border bg-material-ultra-thin flex min-h-[120px] w-full flex-wrap items-center justify-center rounded-lg border p-2 shadow-sm">
       {children}
     </div>
   )

@@ -30,6 +30,7 @@ export class BlockSliceAction {
   }
 
   static SPECIAL_TYPES = {
+    mainView: "mainView",
     mainEntry: "mainEntry",
     selectedText: "selectedText",
   }

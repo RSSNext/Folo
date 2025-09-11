@@ -1,8 +1,11 @@
+import { WEB_BUILD } from "@follow/shared/constants"
 import type { ClassValue } from "clsx"
 import { clsx } from "clsx"
 import dayjs from "dayjs"
 import { extendTailwindMerge } from "tailwind-merge"
 import { parse } from "tldts"
+
+import { replaceImgUrlIfNeed } from "./img-proxy"
 
 type Nullable<T> = T | null | undefined
 
@@ -242,6 +245,27 @@ export const getUrlIcon = (url: string, fallback?: boolean | undefined) => {
   }
 
   return ret
+}
+
+export const getAvatarUrl = (user?: {
+  email?: string | null
+  name?: string | null
+  handle?: string | null
+  image?: string | null
+}) => {
+  if (user) {
+    if (user?.image) {
+      return replaceImgUrlIfNeed({
+        url: user.image,
+        inBrowser: WEB_BUILD,
+      })
+    } else {
+      const fallbackUrl = `https://avatar.vercel.sh/${user.handle || user.name}.svg?text=${(user.handle || user.name)?.slice(0, 2).toUpperCase()}`
+      return `https://unavatar.webp.se/gravatar/${user.email}?fallback=${encodeURIComponent(fallbackUrl)}`
+    }
+  } else {
+    return `https://avatar.vercel.sh/folo`
+  }
 }
 
 export { parse as parseUrl } from "tldts"

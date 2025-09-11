@@ -21,7 +21,7 @@ export const ListHeader = ({ view }: { view: FeedViewType }) => {
   const navigateEntry = useNavigateEntry()
 
   return (
-    <div onClick={stopPropagation} className="mx-3 flex items-center justify-between px-2.5 py-1">
+    <div onClick={stopPropagation} className="mx-3 flex items-center justify-between p-1">
       <div
         className="text-base font-bold"
         onClick={(e) => {
@@ -36,7 +36,7 @@ export const ListHeader = ({ view }: { view: FeedViewType }) => {
           }
         }}
       >
-        {view !== undefined && t(views[view]!.name, { ns: "common" })}
+        {view !== undefined && t(views.find((v) => v.view === view)!.name, { ns: "common" })}
       </div>
       <div className="text-text-secondary ml-2 flex items-center gap-3 text-base lg:text-sm">
         <SortButton />

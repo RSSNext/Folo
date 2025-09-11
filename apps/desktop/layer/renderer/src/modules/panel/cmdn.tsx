@@ -1,4 +1,3 @@
-import { useGlobalFocusableScopeSelector } from "@follow/components/common/Focusable/hooks.js"
 import { Form, FormControl, FormField, FormItem } from "@follow/components/ui/form/index.jsx"
 import { useRegisterGlobalContext } from "@follow/shared/bridge"
 import { tracker } from "@follow/tracker"
@@ -11,7 +10,6 @@ import { useTranslation } from "react-i18next"
 import { useEventCallback } from "usehooks-ts"
 import { z } from "zod"
 
-import { FocusablePresets } from "~/components/common/Focusable"
 import { m } from "~/components/common/Motion"
 import { PlainModal } from "~/components/ui/modal/stacked/custom-modal"
 import { useModalStack } from "~/components/ui/modal/stacked/hooks"
@@ -19,7 +17,6 @@ import { getRouteParams } from "~/hooks/biz/useRouteParams"
 import { ipcServices } from "~/lib/client"
 
 import { COMMAND_ID } from "../command/commands/id"
-import { useCommandBinding } from "../command/hooks/use-command-binding"
 import { FeedForm } from "../discover/FeedForm"
 
 const CmdNPanel = () => {
@@ -115,11 +112,6 @@ export const CmdNTrigger = () => {
       id: "quick-add",
       clickOutsideToDismiss: true,
     })
-  })
-
-  useCommandBinding({
-    commandId: COMMAND_ID.global.quickAdd,
-    when: useGlobalFocusableScopeSelector(FocusablePresets.isNotFloatingLayerScope),
   })
 
   useEffect(() => {

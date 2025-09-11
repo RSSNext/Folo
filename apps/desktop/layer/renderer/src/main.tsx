@@ -11,6 +11,7 @@ import {
 } from "@follow/store/context"
 import { getOS } from "@follow/utils/utils"
 import * as React from "react"
+import { flushSync } from "react-dom"
 import ReactDOM from "react-dom/client"
 import { RouterProvider } from "react-router/dom"
 
@@ -37,7 +38,8 @@ initializeApp().finally(() => {
     }
   })
 
-  setAppIsReady(true)
+  // eslint-disable-next-line @eslint-react/dom/no-flush-sync
+  flushSync(() => setAppIsReady(true))
 })
 
 const $container = document.querySelector("#root") as HTMLElement
@@ -51,7 +53,7 @@ if (IN_ELECTRON) {
       break
     }
     case "macOS": {
-      document.body.style.cssText += `--fo-macos-traffic-light-width: 100px; --fo-macos-traffic-light-height: 30px;`
+      document.body.style.cssText += `--fo-macos-traffic-light-width: 80px; --fo-macos-traffic-light-height: 30px;`
       break
     }
   }

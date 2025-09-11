@@ -153,6 +153,7 @@ class APIMorph {
         extra: item.entries.extra
           ? {
               links: item.entries.extra.links ?? undefined,
+              title_keyword: item.entries.extra.title_keyword ?? undefined,
             }
           : null,
         language: item.entries.language,

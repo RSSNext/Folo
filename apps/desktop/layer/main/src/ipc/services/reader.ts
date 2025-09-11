@@ -3,13 +3,13 @@ import fs from "node:fs"
 import { callWindowExpose } from "@follow/shared/bridge"
 import { readability } from "@follow-app/readability"
 import { app, BrowserWindow } from "electron"
+import type { IpcContext } from "electron-ipc-decorator"
+import { IpcMethod, IpcService } from "electron-ipc-decorator"
 import { MsEdgeTTS, OUTPUT_FORMAT } from "msedge-tts"
 import path from "pathe"
 import type { ModelResult } from "vscode-languagedetection"
 
 import { detectCodeStringLanguage } from "../../modules/language-detection"
-import type { IpcContext } from "../base"
-import { IpcMethod, IpcService } from "../base"
 
 const tts = new MsEdgeTTS()
 
@@ -29,9 +29,7 @@ interface DetectCodeStringLanguageInput {
 }
 
 export class ReaderService extends IpcService {
-  constructor() {
-    super("reader")
-  }
+  static override readonly groupName = "reader"
 
   @IpcMethod()
   async readability(_context: IpcContext, input: ReadabilityInput) {

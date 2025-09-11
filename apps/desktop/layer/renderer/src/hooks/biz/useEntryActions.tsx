@@ -228,7 +228,7 @@ export const useEntryActions = ({
   compact?: boolean
 }) => {
   const entry = useEntry(entryId, entrySelector)
-  const { isCollection } = useRouteParams()
+  const { isCollection, entryId: routeEntryId } = useRouteParams()
   const isInCollection = useIsEntryStarred(entryId)
   const isEntryInReadability = useEntryIsInReadability(entryId)
 
@@ -255,6 +255,8 @@ export const useEntryActions = ({
   const integrationSettings = useIntegrationSettingValue()
 
   const shortcuts = useCommandShortcuts()
+
+  const isCurrentVisitEntry = routeEntryId === entryId
 
   const actionConfigs: EntryActionItem[] = useMemo(() => {
     if (!hasEntry) return []
@@ -338,6 +340,7 @@ export const useEntryActions = ({
       }),
       new EntryActionMenuItem({
         id: COMMAND_ID.entry.exportAsPDF,
+        hide: !isCurrentVisitEntry,
         onClick: runCmdFn(COMMAND_ID.entry.exportAsPDF, [{ entryId }]),
         entryId,
       }),
@@ -432,7 +435,11 @@ export const useEntryActions = ({
       new EntryActionMenuItem({
         id: COMMAND_ID.entry.readability,
         onClick: runCmdFn(COMMAND_ID.entry.readability, [{ entryId, entryUrl: entry.url! }]),
-        hide: !!entry.readability || compact || (view && views[view]!.wideMode) || !entry.url,
+        hide:
+          !!entry.readability ||
+          compact ||
+          (view && views.find((v) => v.view === view)?.wideMode) ||
+          !entry.url,
         active: isEntryInReadability,
         notice: !entry.doesContentContainsHTMLTags && !isEntryInReadability,
         entryId,
@@ -493,6 +500,7 @@ export const useEntryActions = ({
     shortcuts,
     view,
     isInCollection,
+    isCurrentVisitEntry,
     isShowSourceContent,
     isShowAISummaryAuto,
     isShowAISummaryOnce,
@@ -502,7 +510,6 @@ export const useEntryActions = ({
     isCollection,
     compact,
     isEntryInReadability,
-
     integrationSettings.customIntegration,
     integrationSettings.enableCustomIntegration,
   ])

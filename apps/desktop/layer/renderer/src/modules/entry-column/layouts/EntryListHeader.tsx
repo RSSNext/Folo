@@ -15,7 +15,7 @@ import { useNavigate } from "react-router"
 
 import { previewBackPath } from "~/atoms/preview"
 import { useGeneralSettingKey } from "~/atoms/settings/general"
-import { useTimelineColumnShow } from "~/atoms/sidebar"
+import { useSubscriptionColumnShow } from "~/atoms/sidebar"
 import { ROUTE_ENTRY_PENDING } from "~/constants"
 import { useFeature } from "~/hooks/biz/useFeature"
 import { useFollow } from "~/hooks/biz/useFollow"
@@ -30,7 +30,6 @@ import { useFeedHeaderTitle } from "~/store/feed/hooks"
 import { MarkAllReadButton } from "../components/mark-all-button"
 import { useIsPreviewFeed } from "../hooks/useIsPreviewFeed"
 import { AppendTaildingDivider } from "./AppendTaildingDivider"
-import { DailyReportButton } from "./buttons/DailyReportButton"
 import { SwitchToMasonryButton } from "./buttons/SwitchToMasonryButton"
 import { WideModeButton } from "./buttons/WideModeButton"
 
@@ -63,8 +62,17 @@ export const EntryListHeader: FC<{
 
   const feed = useFeedById(feedId)
 
-  const titleStyleBasedView = ["pl-6", "pl-7", "pl-7", "pl-7", "px-5", "pl-6"]
-  const feedColumnShow = useTimelineColumnShow()
+  const titleStyleBasedView = {
+    [FeedViewType.All]: "pl-7",
+    [FeedViewType.Articles]: "pl-7",
+    [FeedViewType.Pictures]: "pl-7",
+    [FeedViewType.Videos]: "pl-7",
+    [FeedViewType.SocialMedia]: "px-5",
+    [FeedViewType.Audios]: "pl-6",
+    [FeedViewType.Notifications]: "pl-6",
+  }
+
+  const feedColumnShow = useSubscriptionColumnShow()
   const commandShortcuts = useCommandShortcuts()
   const runCmdFn = useRunCommandFn()
 
@@ -72,7 +80,7 @@ export const EntryListHeader: FC<{
   return (
     <div
       className={cn(
-        "flex w-full flex-col pr-4 pt-2.5",
+        "flex h-12 w-full flex-col pr-4 pt-2.5",
         !feedColumnShow && "macos:mt-4 macos:pt-margin-macos-traffic-light-y",
         titleStyleBasedView[view],
         isPreview && "px-4",
@@ -83,23 +91,24 @@ export const EntryListHeader: FC<{
         {!isPreview && (
           <div
             className={cn(
-              "text-text-secondary relative z-[1] flex items-center gap-1 self-baseline",
+              "text-text-secondary relative z-[1] flex items-center gap-2 self-baseline",
               !headerTitle && "opacity-0 [&_*]:!pointer-events-none",
 
               "translate-x-[6px]",
             )}
             onClick={stopPropagation}
           >
-            {views[view]!.wideMode && entryId && entryId !== ROUTE_ENTRY_PENDING && !aiEnabled && (
-              <>
-                <EntryHeader entryId={entryId} />
-                <DividerVertical className="mx-2 w-px" />
-              </>
-            )}
+            {views.find((v) => v.view === view)?.wideMode &&
+              entryId &&
+              entryId !== ROUTE_ENTRY_PENDING && (
+                <>
+                  <EntryHeader entryId={entryId} />
+                  <DividerVertical className="mx-2 w-px" />
+                </>
+              )}
 
             <AppendTaildingDivider>
-              {!views[view]!.wideMode && !aiEnabled && <WideModeButton />}
-              {view === FeedViewType.SocialMedia && <DailyReportButton />}
+              {!views.find((v) => v.view === view)?.wideMode && !aiEnabled && <WideModeButton />}
               {view === FeedViewType.Pictures && <SwitchToMasonryButton />}
             </AppendTaildingDivider>
 

@@ -1,9 +1,13 @@
-import { ActionButton } from "@follow/components/ui/button/index.js"
-import { useCallback, useState } from "react"
+import { startTransition, useCallback, useRef, useState } from "react"
 import { useTranslation } from "react-i18next"
 import { toast } from "sonner"
 
-import { AIChatPanelStyle, setAIChatPanelStyle, useAIChatPanelStyle } from "~/atoms/settings/ai"
+import {
+  AIChatPanelStyle,
+  setAIChatPanelStyle,
+  setAIPanelVisibility,
+  useAIChatPanelStyle,
+} from "~/atoms/settings/ai"
 import { RelativeDay } from "~/components/ui/datetime"
 import {
   DropdownMenu,
@@ -20,11 +24,21 @@ import { useChatHistory } from "~/modules/ai-chat/hooks/useChatHistory"
 import { AIPersistService } from "~/modules/ai-chat/services"
 import { useChatActions, useCurrentChatId, useCurrentTitle } from "~/modules/ai-chat/store/hooks"
 import { downloadMarkdown, exportChatToMarkdown } from "~/modules/ai-chat/utils/export"
+import { useSettingModal } from "~/modules/settings/modal/use-setting-modal-hack"
 
-export const ChatMoreDropdown = () => {
+export const ChatMoreDropdown = ({
+  triggerElement,
+  asChild = true,
+  canToggleMode = true,
+}: {
+  triggerElement: React.ReactNode
+  asChild?: boolean
+  canToggleMode?: boolean
+}) => {
   const currentTitle = useCurrentTitle()
   const currentChatId = useCurrentChatId()
   const panelStyle = useAIChatPanelStyle()
+  const settingModalPresent = useSettingModal()
 
   const chatActions = useChatActions()
   const { t } = useTranslation("ai")
@@ -99,13 +113,13 @@ export const ChatMoreDropdown = () => {
     setAIChatPanelStyle(newStyle)
   }, [panelStyle])
 
+  const handleCloseSidebar = useRef(() => {
+    setAIPanelVisibility(false)
+  }).current
+
   return (
     <DropdownMenu onOpenChange={handleDropdownOpen}>
-      <DropdownMenuTrigger asChild>
-        <ActionButton tooltip="More">
-          <i className="i-mingcute-more-1-fill size-5 opacity-80" />
-        </ActionButton>
-      </DropdownMenuTrigger>
+      <DropdownMenuTrigger asChild={asChild}>{triggerElement}</DropdownMenuTrigger>
       <DropdownMenuContent align="end" className="w-56">
         {/* Chat History Submenu */}
         <DropdownMenuSub>
@@ -126,7 +140,7 @@ export const ChatMoreDropdown = () => {
                 {sessions.map((session) => (
                   <DropdownMenuItem
                     key={session.chatId}
-                    onClick={() => chatActions.switchToChat(session.chatId)}
+                    onClick={() => startTransition(() => chatActions.switchToChat(session.chatId))}
                     className="group flex h-12 cursor-pointer items-center justify-between rounded-md px-2 py-3"
                   >
                     <div className="min-w-0 flex-1">
@@ -171,17 +185,35 @@ export const ChatMoreDropdown = () => {
         </DropdownMenuItem>
 
         <DropdownMenuSeparator />
+        {canToggleMode && (
+          <>
+            <DropdownMenuItem onClick={handleToggleMode}>
+              <i
+                className={`mr-2 size-4 ${panelStyle === AIChatPanelStyle.Fixed ? "i-mingcute-rectangle-vertical-line" : "i-mingcute-layout-right-line"}`}
+              />
+              <span>
+                {panelStyle === AIChatPanelStyle.Fixed
+                  ? "Switch to Floating Panel"
+                  : "Switch to Fixed Panel"}
+              </span>
+            </DropdownMenuItem>
+          </>
+        )}
 
-        <DropdownMenuItem onClick={handleToggleMode}>
-          <i
-            className={`mr-2 size-4 ${panelStyle === AIChatPanelStyle.Fixed ? "i-mingcute-rectangle-vertical-line" : "i-mingcute-layout-right-line"}`}
-          />
-          <span>
-            {panelStyle === AIChatPanelStyle.Fixed
-              ? "Switch to Floating Panel"
-              : "Switch to Fixed Panel"}
-          </span>
+        <DropdownMenuItem onClick={() => settingModalPresent("ai")}>
+          <i className="i-mgc-settings-1-cute-re mr-2 size-4" />
+          <span>AI Settings</span>
         </DropdownMenuItem>
+
+        {panelStyle !== AIChatPanelStyle.Floating && (
+          <>
+            <DropdownMenuSeparator />
+            <DropdownMenuItem onClick={handleCloseSidebar}>
+              <i className="i-mgc-close-cute-re mr-2 size-4" />
+              <span>Close Sidebar</span>
+            </DropdownMenuItem>
+          </>
+        )}
       </DropdownMenuContent>
     </DropdownMenu>
   )

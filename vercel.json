@@ -70,26 +70,6 @@
       ]
     },
     {
-      "source": "/terms",
-      "destination": "https://follow-external-ssr-follow.vercel.app/terms",
-      "has": [
-        {
-          "type": "host",
-          "value": "app.follow.is"
-        }
-      ]
-    },
-    {
-      "source": "/privacy-policy",
-      "destination": "https://follow-external-ssr-follow.vercel.app/privacy-policy",
-      "has": [
-        {
-          "type": "host",
-          "value": "app.follow.is"
-        }
-      ]
-    },
-    {
       "source": "/external-dist/:path*",
       "destination": "https://follow-external-ssr-follow.vercel.app/external-dist/:path*",
       "has": [
@@ -162,26 +142,6 @@
     {
       "source": "/reset-password",
       "destination": "https://follow-external-ssr.vercel.app/reset-password",
-      "has": [
-        {
-          "type": "host",
-          "value": "app.folo.is"
-        }
-      ]
-    },
-    {
-      "source": "/terms",
-      "destination": "https://follow-external-ssr.vercel.app/terms",
-      "has": [
-        {
-          "type": "host",
-          "value": "app.folo.is"
-        }
-      ]
-    },
-    {
-      "source": "/privacy-policy",
-      "destination": "https://follow-external-ssr.vercel.app/privacy-policy",
       "has": [
         {
           "type": "host",

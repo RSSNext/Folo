@@ -1,10 +1,5 @@
-import {
-  Accordion,
-  AccordionContent,
-  AccordionItem,
-  AccordionTrigger,
-} from "@follow/components/ui/accordion/index.js"
 import { Button } from "@follow/components/ui/button/index.js"
+import { CollapseCss, CollapseCssGroup } from "@follow/components/ui/collapse/index.js"
 import { DropZone } from "@follow/components/ui/drop-zone/index.js"
 import { Form, FormControl, FormField, FormItem } from "@follow/components/ui/form/index.jsx"
 import type { BizRespose } from "@follow/models"
@@ -79,18 +74,25 @@ export function DiscoverImport() {
   return (
     <div className="flex flex-col">
       <div className="mb-2 font-medium">1. {t("discover.import.opml_step1")}</div>
-      <Accordion type="single" collapsible className="mb-6 w-[500px]">
-        <AccordionItem value="inoreader">
-          <AccordionTrigger className="justify-normal gap-2 hover:no-underline">
-            <Media
-              className="size-5"
-              src="https://inoreader.com/favicon.ico"
-              alt="inoreader"
-              type="photo"
-            />
-            {t("discover.import.opml_step1_inoreader")}
-          </AccordionTrigger>
-          <AccordionContent className="flex flex-col gap-1">
+      <div className="mb-6 w-[500px]">
+        <CollapseCssGroup defaultOpenId="inoreader">
+          <CollapseCss
+            collapseId="inoreader"
+            title={
+              <div className="border-border flex h-14 items-center justify-normal gap-2 font-medium">
+                <Media
+                  className="size-5"
+                  src="https://inoreader.com/favicon.ico"
+                  alt="inoreader"
+                  type="photo"
+                />
+                {t("discover.import.opml_step1_inoreader")}
+                <div className="bg-border absolute inset-x-0 bottom-0 h-px" />
+              </div>
+            }
+            contentClassName="flex flex-col gap-1"
+            innerClassName="p-4"
+          >
             <p>
               <Trans
                 ns="app"
@@ -111,19 +113,24 @@ export function DiscoverImport() {
             </p>
             <p>{t("discover.import.opml_step1_inoreader_step2")}</p>
             <p>{t("discover.import.opml_step1_inoreader_step3")}</p>
-          </AccordionContent>
-        </AccordionItem>
-        <AccordionItem value="feedly">
-          <AccordionTrigger className="justify-normal gap-2 hover:no-underline">
-            <Media
-              className="size-5"
-              src="https://feedly.com/favicon.ico"
-              alt="feedly"
-              type="photo"
-            />
-            {t("discover.import.opml_step1_feedly")}
-          </AccordionTrigger>
-          <AccordionContent className="flex flex-col gap-1">
+          </CollapseCss>
+          <CollapseCss
+            collapseId="feedly"
+            title={
+              <div className="border-border flex h-14 items-center justify-normal gap-2 font-medium">
+                <Media
+                  className="size-5"
+                  src="https://feedly.com/favicon.ico"
+                  alt="feedly"
+                  type="photo"
+                />
+                {t("discover.import.opml_step1_feedly")}
+                <div className="bg-border absolute inset-x-0 bottom-0 h-px" />
+              </div>
+            }
+            contentClassName="flex flex-col gap-1"
+            innerClassName="p-4"
+          >
             <p>
               <Trans
                 ns="app"
@@ -143,18 +150,24 @@ export function DiscoverImport() {
               />
             </p>
             <p>{t("discover.import.opml_step1_feedly_step2")}</p>
-          </AccordionContent>
-        </AccordionItem>
-        <AccordionItem value="other" className="border-b-0">
-          <AccordionTrigger className="justify-normal gap-2 hover:no-underline">
-            <i className="i-mgc-rss-cute-fi ml-[-0.14rem] size-6 text-orange-500" />
-            {t("discover.import.opml_step1_other")}
-          </AccordionTrigger>
-          <AccordionContent className="flex flex-col gap-1">
+          </CollapseCss>
+          <CollapseCss
+            collapseId="other"
+            title={
+              <div className="border-border flex h-14 items-center justify-normal gap-2 font-medium">
+                <i className="i-mgc-rss-cute-fi ml-[-0.14rem] size-6 text-orange-500" />
+                {t("discover.import.opml_step1_other")}
+                <div className="bg-border absolute inset-x-0 bottom-0 h-px" />
+              </div>
+            }
+            contentClassName="flex flex-col gap-1"
+            className="border-b-0"
+            innerClassName="p-4"
+          >
             {t("discover.import.opml_step1_other_step1")}
-          </AccordionContent>
-        </AccordionItem>
-      </Accordion>
+          </CollapseCss>
+        </CollapseCssGroup>
+      </div>
 
       <div className="mb-4 font-medium">2. {t("discover.import.opml_step2")}</div>
       <Form {...form}>

@@ -1,3 +1,4 @@
+import { Button } from "@follow/components/ui/button/index.js"
 import type { AIShortcut } from "@follow/shared/settings/interface"
 import { useTranslation } from "react-i18next"
 import { toast } from "sonner"
@@ -5,7 +6,6 @@ import { toast } from "sonner"
 import { setAISetting, useAISettingValue } from "~/atoms/settings/ai"
 import { useModalStack } from "~/components/ui/modal/stacked/hooks"
 
-import { SettingActionItem } from "../../../control"
 import { ShortcutItem } from "./ShortcutItem"
 import { ShortcutModalContent } from "./ShortcutModalContent"
 
@@ -73,13 +73,15 @@ export const AIShortcutsSection = () => {
   }
 
   return (
-    <div className="space-y-4">
-      <SettingActionItem
-        label={t("shortcuts.add")}
-        action={handleAddShortcut}
-        buttonText={t("shortcuts.add")}
-      />
-
+    <div className="relative space-y-4">
+      <Button
+        variant="outline"
+        buttonClassName="absolute right-0 -top-10"
+        size="sm"
+        onClick={handleAddShortcut}
+      >
+        {t("shortcuts.add")}
+      </Button>
       {shortcuts.length === 0 && (
         <div className="py-8 text-center">
           <div className="bg-fill-secondary mx-auto mb-3 flex size-12 items-center justify-center rounded-full">

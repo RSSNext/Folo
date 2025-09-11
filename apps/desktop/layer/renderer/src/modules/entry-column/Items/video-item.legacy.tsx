@@ -237,44 +237,50 @@ const PreviewVideoModalContent: ModalContentComponent<{
 
 export function VideoItemStateLess({ entry, feed }: EntryItemStatelessProps) {
   return (
-    <div className="text-text relative mx-auto w-full max-w-lg rounded-md transition-colors">
-      <div className="relative">
-        <div className="p-1.5">
-          <div className="w-full">
-            <div className="overflow-x-auto">
-              {entry.media?.[0] ? (
-                <Media
-                  thumbnail
-                  src={entry.media[0].url}
-                  type={entry.media[0].type}
-                  previewImageUrl={entry.media[0].preview_image_url}
-                  className="aspect-video w-full shrink-0 overflow-hidden"
-                  mediaContainerClassName={"w-auto h-auto rounded"}
-                  loading="lazy"
-                  proxy={{
-                    width: 0,
-                    height: 0,
-                  }}
-                  height={entry.media[0].height}
-                  width={entry.media[0].width}
-                  blurhash={entry.media[0].blurhash}
-                />
-              ) : (
-                <Skeleton className="aspect-video w-full shrink-0 overflow-hidden" />
-              )}
+    <div className="p-1.5">
+      <div className="w-full">
+        <div className="relative overflow-x-auto">
+          {entry.media?.[0] ? (
+            <Media
+              thumbnail
+              src={entry.media[0].url}
+              type={entry.media[0].type}
+              previewImageUrl={entry.media[0].preview_image_url}
+              className="aspect-video w-full shrink-0 rounded-md object-cover"
+              mediaContainerClassName="w-auto h-auto rounded"
+              loading="lazy"
+              proxy={{
+                width: 640,
+                height: 360,
+              }}
+              height={entry.media[0].height}
+              width={entry.media[0].width}
+              blurhash={entry.media[0].blurhash}
+            />
+          ) : (
+            <div className="center bg-material-medium text-text-secondary aspect-video w-full flex-col gap-1 rounded-md text-xs">
+              <i className="i-mgc-sad-cute-re size-6" />
+              No media available
             </div>
+          )}
+        </div>
+      </div>
+      <div className="relative px-2 text-sm">
+        <div className="flex items-center">
+          <div className="bg-accent mr-1 size-1.5 shrink-0 self-center rounded-full duration-200" />
+          <div className="relative mb-1 mt-1.5 flex w-full items-center gap-1 truncate font-medium">
+            <span className="min-w-0 grow truncate">{entry.title}</span>
           </div>
-          <div className="relative flex-1 px-2 pb-3 pt-1 text-sm">
-            <div className="relative mb-1 mt-1.5 truncate font-medium leading-none">
-              {entry.title}
-            </div>
-            <div className="text-text-secondary mt-1 flex items-center gap-1 truncate text-[13px]">
-              <FeedIcon feed={feed} fallback className="size-4" />
-              <FeedTitle feed={feed} />
-              <span className="text-material-opaque">·</span>
-              {!!entry.publishedAt && <RelativeTime date={entry.publishedAt} />}
-            </div>
-          </div>
+        </div>
+        <div className="flex items-center gap-1 truncate text-[13px]">
+          <FeedIcon fallback noMargin className="flex" feed={feed} size={18} />
+          <span className="min-w-0 truncate pl-1">
+            <FeedTitle feed={feed} />
+          </span>
+          <span className="text-zinc-500">·</span>
+          <span className="text-zinc-500">
+            {!!entry.publishedAt && <RelativeTime date={entry.publishedAt} />}
+          </span>
         </div>
       </div>
     </div>

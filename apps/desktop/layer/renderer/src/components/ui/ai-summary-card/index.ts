@@ -1,0 +1,1 @@
+export { AISummaryCardBase } from "./AISummaryCardBase"

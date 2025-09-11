@@ -10,7 +10,7 @@ const TooltipProvider = TooltipPrimitive.Provider
 const TooltipRoot = TooltipPrimitive.Root
 
 const Tooltip: typeof TooltipProvider = ({ children, ...props }) => (
-  <TooltipProvider {...props}>
+  <TooltipProvider delayDuration={200} skipDelayDuration={1000} {...props}>
     <TooltipPrimitive.Tooltip>{children}</TooltipPrimitive.Tooltip>
   </TooltipProvider>
 )

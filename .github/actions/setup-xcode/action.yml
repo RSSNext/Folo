@@ -13,6 +13,102 @@ runs:
       with:
         xcode-version: ${{ inputs.xcode-version }}
 
+    - name: Setup Xcode Environment
+      run: |
+        set -e
+
+        echo "=== Checking CI Environment ==="
+        echo "Current user: $(whoami)"
+        echo "User groups: $(groups)"
+        echo "Sudo available: $(sudo -n true 2>/dev/null && echo 'YES' || echo 'NO')"
+        echo "Xcode path: $(xcode-select -p 2>/dev/null || echo 'Not set')"
+
+        # Set Xcode path and accept license
+        echo "=== Setting up Xcode ==="
+        if command -v sudo >/dev/null && sudo -n true 2>/dev/null; then
+            sudo xcode-select -s /Applications/Xcode_${{ inputs.xcode-version }}.app/Contents/Developer
+            sudo xcodebuild -license accept
+            echo "Using sudo for Xcode setup"
+        else
+            xcode-select -s /Applications/Xcode_${{ inputs.xcode-version }}.app/Contents/Developer
+            xcodebuild -license accept
+            echo "Using direct access for Xcode setup"
+        fi
+
+        echo "Final Xcode path: $(xcode-select -p)"
+      shell: bash
+
+    - name: Start Simulator Service
+      run: |
+        echo "=== Starting Simulator Service ==="
+        # Try to start simulator service (ignore errors if already running)
+        sudo launchctl load -w /System/Library/LaunchDaemons/com.apple.CoreSimulator.CoreSimulatorService.plist 2>/dev/null || {
+            echo "CoreSimulator service might already be running or command unavailable"
+        }
+
+        # Alternative for newer macOS versions
+        sudo launchctl bootstrap system /System/Library/LaunchDaemons/com.apple.CoreSimulator.CoreSimulatorService.plist 2>/dev/null || {
+            echo "Bootstrap command failed or service already running"
+        }
+
+        # Wait a moment for service to start
+        sleep 3
+      shell: bash
+
     - name: Download iOS Platform
-      run: xcodebuild -downloadPlatform iOS
+      run: |
+        set -e
+
+        echo "=== Checking Available SDKs ==="
+        echo "Currently available SDKs:"
+        xcodebuild -showsdks | grep -E "(iOS|Simulator)" || echo "No iOS SDKs found yet"
+
+        echo "=== Attempting iOS Platform Download ==="
+
+        # Method 1: Try standard download
+        if xcodebuild -downloadPlatform iOS -quiet 2>/dev/null; then
+            echo "✅ iOS platform downloaded successfully with xcodebuild"
+        elif xcrun xcodebuild -downloadPlatform iOS -quiet 2>/dev/null; then
+            echo "✅ iOS platform downloaded successfully with xcrun xcodebuild"
+        else
+            echo "⚠️  Platform download failed, checking if iOS SDK is already available..."
+
+            # Check if iOS SDK is available
+            if xcodebuild -showsdks | grep -q "iOS"; then
+                echo "✅ iOS SDK is already available, continuing..."
+            else
+                echo "❌ No iOS SDK found and download failed"
+                echo "Available SDKs:"
+                xcodebuild -showsdks
+
+                # Try alternative download method
+                echo "Trying alternative download method..."
+                xcodebuild -downloadAllPlatforms -quiet || {
+                    echo "❌ All download methods failed"
+                    exit 1
+                }
+            fi
+        fi
+
+        echo "=== Final SDK Status ==="
+        echo "Available iOS SDKs:"
+        xcodebuild -showsdks | grep -E "(iOS|Simulator)" || echo "No iOS SDKs found"
+
+        echo "Available simulators:"
+        xcrun simctl list devices available | head -20 || echo "No simulators found"
+      shell: bash
+
+    - name: Verify Setup
+      run: |
+        echo "=== Verification ==="
+        echo "Xcode version: $(xcodebuild -version | head -1)"
+        echo "Selected Xcode: $(xcode-select -p)"
+        echo "iOS SDK available: $(xcodebuild -showsdks | grep -c iOS || echo 0)"
+
+        # Test basic functionality
+        if xcodebuild -showsdks | grep -q "iOS"; then
+            echo "✅ Setup completed successfully!"
+        else
+            echo "⚠️  Setup completed but iOS SDK may not be fully available"
+        fi
       shell: bash

@@ -7,8 +7,6 @@
 
 @preconcurrency import WebKit
 
-private var pendingJavaScripts: [String] = []
-
 class FOWebView: WKWebView {
   private func setupView() {
     scrollView.isScrollEnabled = false
@@ -28,7 +26,7 @@ class FOWebView: WKWebView {
   private var state: WebViewState!
 
   init(frame: CGRect, state: WebViewState) {
-    let configuration = FOWKWebViewConfiguration.shared
+    let configuration = FOWKWebViewConfiguration()
 
     super.init(frame: frame, configuration: configuration)
     configuration.userContentController.add(self, name: "message")
@@ -46,10 +44,14 @@ class FOWebView: WKWebView {
 }
 
 private class FOWKWebViewConfiguration: WKWebViewConfiguration {
-  public static let shared = FOWKWebViewConfiguration()
+  private static let sharedProcessPool = WKProcessPool()
   override init() {
     super.init()
     let configuration = self
+
+    // Share process pool and default data store across instances for faster warm-up
+    configuration.processPool = FOWKWebViewConfiguration.sharedProcessPool
+    configuration.websiteDataStore = .default()
 
     let hexAccentColor = Utils.accentColor.toHex()
     let css = """
@@ -105,34 +107,29 @@ private class FOWKWebViewConfiguration: WKWebViewConfiguration {
       schemeHandler, forURLScheme: FollowImageURLSchemeHandler.rewriteScheme
     )
 
-    let customSchemeScript = WKUserScript(
+    // Only rewrite <img>.src to custom scheme; keep XHR/fetch unchanged to avoid breaking CORS/auth
+    let customImageScript = WKUserScript(
       source: """
       (function() {
-          const originalXHROpen = XMLHttpRequest.prototype.open;
-          XMLHttpRequest.prototype.open = function(method, url, ...args) {
-              const modifiedUrl = url.replace(/^https?:/, '\(FollowImageURLSchemeHandler.rewriteScheme):');
-              originalXHROpen.call(this, method, modifiedUrl, ...args);
-          };
-
-          const originalFetch = window.fetch;
-          window.fetch = function(url, options) {
-              const modifiedUrl = url.replace(/^https?:/, '\(FollowImageURLSchemeHandler.rewriteScheme):');
-              return originalFetch(modifiedUrl, options);
-          };
-
           const originalImageSrc = Object.getOwnPropertyDescriptor(Image.prototype, 'src');
-          Object.defineProperty(Image.prototype, 'src', {
-              set: function(url) {
-                  const modifiedUrl = url.replace(/^https?:/, '\(FollowImageURLSchemeHandler.rewriteScheme):');
-                  originalImageSrc.set.call(this, modifiedUrl);
-              }
-          });
+          if (originalImageSrc && originalImageSrc.set) {
+            Object.defineProperty(Image.prototype, 'src', {
+                set: function(url) {
+                    try {
+                      const modifiedUrl = (typeof url === 'string') ? url.replace(/^https?:/, '\(FollowImageURLSchemeHandler.rewriteScheme):') : url;
+                      originalImageSrc.set.call(this, modifiedUrl);
+                    } catch (e) {
+                      originalImageSrc.set.call(this, url);
+                    }
+                }
+            });
+          }
       })();
       """,
       injectionTime: .atDocumentStart,
       forMainFrameOnly: false
     )
-    configuration.userContentController.addUserScript(customSchemeScript)
+    configuration.userContentController.addUserScript(customImageScript)
 
     configuration.userContentController.addUserScript(script2)
   }
@@ -177,6 +174,11 @@ extension FOWebView: WKNavigationDelegate, WKScriptMessageHandler, WKUIDelegate 
         guard let data = data else { return }
 
         switch data.type {
+        case "ready":
+          // Notify manager that the bridge is ready and flush queued scripts
+          DispatchQueue.main.async {
+            WebViewManager.markReadyAndFlush()
+          }
         case "setContentHeight":
           let data = try? JSONDecoder().decode(
             SetContentHeightPayload.self, from: decode
@@ -188,7 +190,7 @@ extension FOWebView: WKNavigationDelegate, WKScriptMessageHandler, WKUIDelegate 
           }
 
         case "measure":
-          measureWebView(SharedWebViewModule.sharedWebView!)
+          measureWebView(self)
 
         case "previewImage":
           let data = try? JSONDecoder().decode(
@@ -236,6 +238,13 @@ extension FOWebView: WKNavigationDelegate, WKScriptMessageHandler, WKUIDelegate 
 
     Timer.scheduledTimer(withTimeInterval: 1, repeats: false) { [weak self] _ in
       self?.measureWebView(webView)
+    }
+  }
+
+  func webViewWebContentProcessDidTerminate(_ webView: WKWebView) {
+    // Attempt a graceful recovery via the manager
+    DispatchQueue.main.async {
+      WebViewManager.handleProcessTerminated()
     }
   }
 

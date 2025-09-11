@@ -9,7 +9,6 @@ class WebViewView: ExpoView {
 
     required init(appContext: AppContext? = nil) {
         super.init(appContext: appContext)
-        addSubview(SharedWebViewModule.sharedWebView!)
 
         clipsToBounds = true
         cancellable = WebViewManager.state.$contentHeight
@@ -32,12 +31,18 @@ class WebViewView: ExpoView {
             width: bounds.width,
             height: WebViewManager.state.contentHeight
         )
-        guard let webView = SharedWebViewModule.sharedWebView else { return }
-        webView.frame = rect
-        webView.scrollView.frame = rect
-
+        WebViewManager.updateFrame(rect)
         frame = rect
         onContentHeightChange(["height": Float(rect.height)])
 
+    }
+
+    override func didMoveToWindow() {
+        super.didMoveToWindow()
+        if window != nil {
+            WebViewManager.attach(to: self)
+        } else {
+            WebViewManager.detach(from: self)
+        }
     }
 }

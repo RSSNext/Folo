@@ -96,12 +96,6 @@ Because we know content is more than just text. From articles to videos, images 
 
 ![](https://github.com/user-attachments/assets/d1379fd6-8767-476e-b0dc-d61753715e26)
 
-### $POWER An Ownership Economy
-
-Tip creators across instantly with $POWER, support content you love, and unlock value in your own work. Your content, your power.
-
-![](https://github.com/user-attachments/assets/23bbcd63-45ca-40c8-83ef-96bd1100b701)
-
 ### More Than Just An App
 
 This isn’t just another app. Folo is a community — introducing a new era of openness and community-driven experience.

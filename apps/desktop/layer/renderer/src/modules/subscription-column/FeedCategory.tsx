@@ -229,7 +229,7 @@ function FeedCategoryImpl({ data: ids, view, categoryOpenStateData }: FeedCatego
           new MenuItemText({
             label: t("sidebar.feed_column.context_menu.change_to_other_view"),
             submenu: views
-              .filter((v) => v.view !== view)
+              .filter((v) => v.view !== view && v.switchable)
               .map(
                 (v) =>
                   new MenuItemText({

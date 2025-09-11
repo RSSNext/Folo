@@ -9,4 +9,8 @@ apps/mobile/android
 apps/mobile/ios
 apps/mobile/native/example
 
+apps/mobile/native/android
+apps/mobile/native/ios
+apps/mobile/.expo
+
 generated-routes.ts

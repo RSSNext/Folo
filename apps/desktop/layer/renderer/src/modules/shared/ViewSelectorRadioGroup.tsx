@@ -31,40 +31,48 @@ export const ViewSelectorRadioGroup = ({
   return (
     <Card className={rest.disabled ? "pointer-events-none" : void 0}>
       <CardHeader className={cn("grid grid-cols-6 space-y-0 px-2 py-3", className)}>
-        {views.map((view) => (
-          <div key={view.name}>
-            <input
-              className="peer hidden"
-              type="radio"
-              id={view.name}
-              value={view.view}
-              ref={ref}
-              {...rest}
-            />
-            <label
-              htmlFor={view.name}
-              className={cn(
-                "hover:text-text",
-                view.peerClassName,
-                "center flex h-10 flex-col text-xs leading-none opacity-80 duration-200",
-                "text-text-secondary",
-                "peer-checked:opacity-100",
-                "whitespace-nowrap",
-              )}
-            >
-              {cloneElement(view.icon, {
-                className: `text-lg ${view.icon?.props?.className ?? ""}`,
-              })}
-              <span className="mt-1 hidden text-xs lg:inline">
-                {t(view.name, { ns: "common" })}
-              </span>
-            </label>
-          </div>
-        ))}
+        {views
+          .filter((v) => v.switchable)
+          .map((view) => (
+            <div key={view.name}>
+              <input
+                className="peer hidden"
+                type="radio"
+                id={view.name}
+                value={view.view}
+                ref={ref}
+                {...rest}
+              />
+              <label
+                htmlFor={view.name}
+                className={cn(
+                  "hover:text-text",
+                  view.peerClassName,
+                  "center flex h-10 flex-col text-xs leading-none opacity-80 duration-200",
+                  "text-text-secondary",
+                  "peer-checked:opacity-100",
+                  "whitespace-nowrap",
+                )}
+              >
+                {cloneElement(view.icon, {
+                  className: `text-lg ${view.icon?.props?.className ?? ""}`,
+                })}
+                <span className="mt-1 hidden text-xs lg:inline">
+                  {t(view.name, { ns: "common" })}
+                </span>
+              </label>
+            </div>
+          ))}
       </CardHeader>
       {showPreview && (
-        <CardContent className="relative flex w-full flex-col gap-2">
-          {entries.slice(0, 2).map((entry) => (
+        <CardContent
+          className={
+            views[view || FeedViewType.Articles]?.gridMode
+              ? "relative grid w-full grid-cols-3 flex-col gap-2 pb-4"
+              : "relative flex w-full flex-col gap-2 pb-0"
+          }
+        >
+          {entries.slice(0, 3).map((entry) => (
             <EntryItemStateless entry={entry} feed={feed} view={view} key={entry.guid} />
           ))}
         </CardContent>

@@ -1,12 +1,5 @@
-import type {
-  InfiniteData,
-  QueryKey,
-  UseInfiniteQueryOptions,
-  UseInfiniteQueryResult,
-  UseQueryOptions,
-  UseQueryResult,
-} from "@tanstack/react-query"
-import { useInfiniteQuery, useQuery } from "@tanstack/react-query"
+import type { QueryKey, UseQueryOptions, UseQueryResult } from "@tanstack/react-query"
+import { useQuery } from "@tanstack/react-query"
 import type { FetchError } from "ofetch"
 
 import { useLoginModalShow } from "~/atoms/user"
@@ -32,36 +25,6 @@ export function useAuthQuery<
     useQuery({
       queryKey: query.key,
       queryFn: query.fn,
-      enabled: !authFail && options.enabled !== false,
-      ...options,
-    }),
-    {
-      key: query.key,
-      fn: query.fn,
-    },
-  )
-}
-
-export function useAuthInfiniteQuery<
-  T extends DefinedQuery<any, any>,
-  E = FetchError,
-  FNR = Awaited<ReturnType<T["fn"]>>,
-  R = FNR,
->(
-  query: T,
-  options: Omit<UseInfiniteQueryOptions<FNR, E>, "queryKey" | "queryFn">,
-): CombinedObject<
-  UseInfiniteQueryResult<InfiniteData<R>, FetchError>,
-  { key: T["key"]; fn: T["fn"] }
-> {
-  const authFail = useLoginModalShow()
-  // @ts-expect-error
-  return Object.assign(
-    {},
-    // @ts-expect-error
-    useInfiniteQuery<T, E>({
-      queryFn: query.fn,
-      queryKey: query.key,
       enabled: !authFail && options.enabled !== false,
       ...options,
     }),

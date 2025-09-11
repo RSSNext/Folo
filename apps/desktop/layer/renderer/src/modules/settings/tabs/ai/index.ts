@@ -1,5 +1,4 @@
-export { MCPServicesSection } from "./mcp"
 export { PanelStyleSection } from "./PanelStyleSection"
 export { PersonalizePromptSection } from "./PersonalizePromptSection"
 export { AIShortcutsSection } from "./shortcuts"
-export { TokenUsageSection } from "./TokenUsageSection"
+export { UsageAnalysisSection } from "./usage"

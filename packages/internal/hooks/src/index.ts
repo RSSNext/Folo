@@ -1,4 +1,5 @@
 export type { HTMLMediaState } from "./factory/createHTMLMediaHook"
+export * from "./optimistic"
 export * from "./useAnyPointDown"
 export * from "./useControlled"
 export * from "./useCountDown"

@@ -7,4 +7,5 @@ export enum ErrorComponentType {
   FeedNotFound = "FeedNotFound",
   // Section
   RSSHubDiscoverError = "RSSHubDiscoverError",
+  EntryNotFound = "EntryNotFound",
 }

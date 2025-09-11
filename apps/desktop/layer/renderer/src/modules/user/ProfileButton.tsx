@@ -1,5 +1,6 @@
 import { MdiMeditation } from "@follow/components/icons/Meditation.js"
 import { ActionButton } from "@follow/components/ui/button/index.js"
+import { RSSHubLogo } from "@follow/components/ui/platform-icon/icons.js"
 import { RootPortal } from "@follow/components/ui/portal/index.js"
 import { EllipsisHorizontalTextWithTooltip } from "@follow/components/ui/typography/EllipsisWithTooltip.js"
 import { UserRole } from "@follow/constants"
@@ -12,7 +13,6 @@ import { memo, useCallback, useLayoutEffect, useState } from "react"
 import { useTranslation } from "react-i18next"
 import { useNavigate } from "react-router"
 
-import rsshubLogoUrl from "~/assets/rsshub-icon.png?url"
 import { useIsInMASReview, useServerConfigs } from "~/atoms/server-configs"
 import { useIsZenMode, useSetZenMode } from "~/atoms/settings/ui"
 import {
@@ -36,8 +36,6 @@ import type { LoginProps } from "./LoginButton"
 import { LoginButton } from "./LoginButton"
 import { UserAvatar } from "./UserAvatar"
 import { UserProBadge } from "./UserProBadge"
-
-const rsshubLogo = new URL(rsshubLogoUrl, import.meta.url).href
 
 export type ProfileButtonProps = LoginProps & {
   animatedAvatar?: boolean
@@ -152,6 +150,16 @@ export const ProfileButton: FC<ProfileButtonProps> = memo((props) => {
           </DropdownMenuItem>
         )}
 
+        <DropdownMenuItem
+          className="pl-3"
+          onClick={() => {
+            navigate("/ai")
+          }}
+          icon={<i className="i-mgc-ai-cute-re" />}
+        >
+          {t("user_button.ai")}
+        </DropdownMenuItem>
+
         <DropdownMenuSeparator />
 
         {!zenModeSetting && (
@@ -181,7 +189,7 @@ export const ProfileButton: FC<ProfileButtonProps> = memo((props) => {
             onClick={() => {
               navigate("/rsshub")
             }}
-            icon={<img src={rsshubLogo} className="size-3 grayscale" />}
+            icon={<RSSHubLogo className="size-3 grayscale" />}
           >
             {t("words.rsshub")}
           </DropdownMenuItem>

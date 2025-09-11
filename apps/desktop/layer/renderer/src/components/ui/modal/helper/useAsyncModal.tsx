@@ -42,6 +42,7 @@ export const useAsyncModal = () => {
 
 const LazyContent = () => {
   const ctx = use(AsyncModalContext)
+
   const queryResult = ctx.useDataFetcher()
 
   return (

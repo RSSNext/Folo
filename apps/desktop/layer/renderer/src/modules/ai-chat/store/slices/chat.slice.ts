@@ -7,14 +7,13 @@ import { ChatSliceActions } from "../chat-core/chat-actions"
 import { ZustandChat } from "../chat-core/chat-instance"
 import type { ChatSlice } from "../chat-core/types"
 import { createChatTransport } from "../transport"
-import type { BizUIMessage } from "../types"
 
 export const createChatSlice: StateCreator<ChatSlice, [], [], ChatSlice> = (...params) => {
   const [set, get] = params
   const chatId = nanoid()
 
   // Create chat instance with Zustand integration
-  const chatInstance = new ZustandChat<BizUIMessage>(
+  const chatInstance = new ZustandChat(
     {
       id: chatId,
       messages: [],

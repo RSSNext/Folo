@@ -4,8 +4,11 @@ import { fileURLToPath } from "node:url"
 import { callWindowExpose } from "@follow/shared/bridge"
 import { DEV } from "@follow/shared/constants"
 import { app, BrowserWindow, clipboard, dialog, shell } from "electron"
+import type { IpcContext } from "electron-ipc-decorator"
+import { IpcMethod, IpcService } from "electron-ipc-decorator"
 import path from "pathe"
 
+import { START_IN_TRAY_ARGS } from "~/constants/app"
 import { getCacheSize } from "~/lib/cleaner"
 import { i18n } from "~/lib/i18n"
 import { store, StoreKey } from "~/lib/store"
@@ -17,8 +20,6 @@ import { cleanupOldRender, loadDynamicRenderEntry } from "~/updater/hot-updater"
 
 import { downloadFile } from "../../lib/download"
 import { checkForAppUpdates, quitAndInstall } from "../../updater"
-import type { IpcContext } from "../base"
-import { IpcMethod, IpcService } from "../base"
 
 interface WindowActionInput {
   action: "close" | "minimize" | "maximum"
@@ -34,9 +35,7 @@ interface Sender extends Electron.WebContents {
 }
 
 export class AppService extends IpcService {
-  constructor() {
-    super("app")
-  }
+  static override readonly groupName = "app"
 
   @IpcMethod()
   getAppVersion(): string {
@@ -184,6 +183,16 @@ export class AppService extends IpcService {
   }
 
   @IpcMethod()
+  readyToShowMainWindow(_context: IpcContext) {
+    const shouldShowWindow =
+      !app.getLoginItemSettings().wasOpenedAsHidden && !process.argv.includes(START_IN_TRAY_ARGS)
+    if (shouldShowWindow) {
+      const window = WindowManager.getMainWindow()
+      if (window) window.show()
+    }
+  }
+
+  @IpcMethod()
   openCacheFolder(_context: IpcContext): void {
     const dir = path.join(app.getPath("userData"), "cache")
     shell.openPath(dir)
@@ -217,22 +226,6 @@ export class AppService extends IpcService {
     })
   }
 
-  // getCacheLimit: t.procedure.action(async () => {
-  //   return store.get(StoreKey.CacheSizeLimit)
-  // }),
-
-  // clearCache: t.procedure.action(async () => {
-
-  // }),
-
-  // limitCacheSize: t.procedure.input<number>().action(async ({ input }) => {
-  //   logger.info("set limitCacheSize", input)
-  //   if (input === 0) {
-  //     store.delete(StoreKey.CacheSizeLimit)
-  //   } else {
-  //     store.set(StoreKey.CacheSizeLimit, input)
-  //   }
-  // }),
   @IpcMethod()
   limitCacheSize(_context: IpcContext, input: number): void {
     if (input === 0) {

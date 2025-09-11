@@ -1,3 +1,6 @@
 export { AuthorHeader } from "./AuthorHeader"
 export { ContentBody } from "./ContentBody"
+export { MediaTranscript } from "./MediaTranscript"
+export { TranscriptToggle } from "./TranscriptToggle"
+export { useTranscription } from "./useTranscription"
 export { VideoPlayer } from "./VideoPlayer"

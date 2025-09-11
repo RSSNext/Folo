@@ -1,14 +1,14 @@
 import { createRequire } from "node:module"
 
 import { app, nativeTheme } from "electron"
+import type { IpcContext } from "electron-ipc-decorator"
+import { IpcMethod, IpcService } from "electron-ipc-decorator"
 
 import { WindowManager } from "~/manager/window"
 
 import { setProxyConfig, updateProxy } from "../../lib/proxy"
 import { store } from "../../lib/store"
 import { getTrayConfig, setTrayConfig } from "../../lib/tray"
-import type { IpcContext } from "../base"
-import { IpcMethod, IpcService } from "../base"
 
 const require = createRequire(import.meta.url)
 
@@ -20,9 +20,7 @@ interface SetLoginItemSettingsInput {
 }
 
 export class SettingService extends IpcService {
-  constructor() {
-    super("setting")
-  }
+  static override readonly groupName = "setting"
 
   @IpcMethod()
   getLoginItemSettings(_context: IpcContext): Electron.LoginItemSettings {

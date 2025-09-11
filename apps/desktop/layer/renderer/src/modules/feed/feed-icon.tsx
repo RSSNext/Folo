@@ -148,7 +148,7 @@ const FallbackableImage = function FallbackableImage({
 }
 
 type FeedIconFeed =
-  | Pick<FeedModel, "ownerUserId" | "id" | "title" | "url" | "image" | "siteUrl" | "type">
+  | Pick<FeedModel, "title" | "image" | "siteUrl" | "type">
   | ListModel
   | FeedOrListRespModel
 
@@ -188,7 +188,7 @@ export function FeedIcon({
   disableFadeIn?: boolean
   noMargin?: boolean
 }) {
-  const marginClassName = noMargin ? "" : "mr-2"
+  const marginClassName = cn(noMargin ? "" : "mr-2", className)
   const iconProps = getIconProps({ feed, entry, useMedia, siteUrl, fallbackUrl, fallback, size })
 
   const colors = useMemo(
@@ -219,7 +219,6 @@ export function FeedIcon({
         "flex shrink-0 items-center justify-center rounded-sm",
         "text-white",
         marginClassName,
-        className,
       )}
     >
       <span
@@ -246,13 +245,13 @@ export function FeedIcon({
         <PlatformIcon url={iconProps.platformUrl!} style={sizeStyle} className={className}>
           {fallbackSrc ? (
             <FallbackableImage
-              className={cn(marginClassName, className)}
+              className={marginClassName}
               style={sizeStyle}
               fallbackUrl={fallbackSrc}
             />
           ) : (
             <m.img
-              className={cn(marginClassName, className)}
+              className={marginClassName}
               style={sizeStyle}
               {...(disableFadeIn || isIconLoaded ? {} : fadeInVariant)}
             />

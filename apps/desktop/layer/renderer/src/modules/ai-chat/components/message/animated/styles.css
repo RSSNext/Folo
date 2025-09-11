@@ -1,0 +1,10 @@
+@keyframes ft-typeIn {
+  from {
+    /* transform: translateY(2px);
+    opacity: 0; */
+  }
+  to {
+    /* transform: translateY(0%);
+    opacity: 1; */
+  }
+}
