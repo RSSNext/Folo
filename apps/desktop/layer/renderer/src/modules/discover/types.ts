@@ -1,6 +1,4 @@
-import type { FeedViewType } from "@follow/constants"
-
-export * from "@follow/models/rsshub"
+export * from "@follow-app/client-sdk"
 
 export type ParsedFeedItem = {
   url: string

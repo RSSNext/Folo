@@ -12,7 +12,7 @@ import { ItemPressable } from "@/src/components/ui/pressable/ItemPressable"
 import { Text } from "@/src/components/ui/typography/Text"
 import { RightCuteReIcon } from "@/src/icons/right_cute_re"
 import { User3CuteReIcon } from "@/src/icons/user_3_cute_re"
-import { apiClient } from "@/src/lib/api-fetch"
+import { followClient } from "@/src/lib/api-client"
 import { useNavigation } from "@/src/lib/navigation/hooks"
 import { UrlBuilder } from "@/src/lib/url-builder"
 import { FollowScreen } from "@/src/screens/(modal)/FollowScreen"
@@ -22,21 +22,16 @@ import { useSearchPageContext } from "../ctx"
 import { ItemSeparator } from "./__base"
 import { useDataSkeleton } from "./hooks"
 
-type SearchResultItem = Awaited<ReturnType<typeof apiClient.discover.$post>>["data"][number]
+type SearchResultItem = Awaited<
+  ReturnType<typeof followClient.api.discover.discover>
+>["data"][number]
 export const SearchList = () => {
   const { searchValueAtom } = useSearchPageContext()
   const searchValue = useAtomValue(searchValueAtom)
   const windowWidth = useWindowDimensions().width
   const { data, isLoading } = useQuery({
     queryKey: ["searchList", searchValue],
-    queryFn: () => {
-      return apiClient.discover.$post({
-        json: {
-          keyword: searchValue,
-          target: "lists",
-        },
-      })
-    },
+    queryFn: () => followClient.api.discover.discover({ keyword: searchValue, target: "lists" }),
     enabled: !!searchValue,
   })
   const skeleton = useDataSkeleton(isLoading, data)

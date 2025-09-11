@@ -1,12 +1,7 @@
 import "./global.css"
 import "./polyfill"
 
-import {
-  apiClientContext,
-  apiContext,
-  authClientContext,
-  queryClientContext,
-} from "@follow/store/context"
+import { apiContext, authClientContext, queryClientContext } from "@follow/store/context"
 import { registerRootComponent } from "expo"
 import { Image } from "expo-image"
 import { LinearGradient } from "expo-linear-gradient"
@@ -20,7 +15,6 @@ import { BottomTabs } from "./components/layouts/tabbar/BottomTabs"
 import { Lightbox } from "./components/ui/lightbox/Lightbox"
 import { initializeApp } from "./initialize"
 import { followApi } from "./lib/api-client"
-import { apiClient } from "./lib/api-fetch"
 import { authClient } from "./lib/auth"
 import { initializeI18n } from "./lib/i18n"
 import { TabBarPortal } from "./lib/navigation/bottom-tab/TabBarPortal"
@@ -39,7 +33,6 @@ import { registerSitemap } from "./sitemap"
 global.APP_NAME = "Folo"
 // @ts-expect-error
 global.ELECTRON = false
-apiClientContext.provide(apiClient)
 authClientContext.provide(authClient)
 queryClientContext.provide(queryClient)
 apiContext.provide(followApi)

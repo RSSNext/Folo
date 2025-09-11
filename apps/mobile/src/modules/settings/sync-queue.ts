@@ -249,8 +249,8 @@ class SettingSyncQueue {
     if (isEmptyObject(remoteSettings.settings)) return
 
     for (const tab in remoteSettings.settings) {
-      const remoteSettingPayload = remoteSettings.settings[tab]
-      const updated = remoteSettings.updated[tab]
+      const remoteSettingPayload = remoteSettings.settings[tab as SettingsTab]
+      const updated = remoteSettings.updated[tab as SettingsTab]
 
       if (!updated) {
         continue

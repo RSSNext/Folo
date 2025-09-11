@@ -172,15 +172,7 @@ function FollowImpl(props: { feedId: string; defaultView?: FeedViewType }) {
     >
       {/* Group 1 */}
       <GroupedInsetListCard>
-        <FeedSummary
-          className="px-5 py-4"
-          item={{
-            feed: {
-              ...feed,
-              type: "feed",
-            },
-          }}
-        >
+        <FeedSummary className="px-5 py-4" feed={feed}>
           <View className="ml-11 mt-2 flex-row items-center gap-3 opacity-60">
             <View className="flex-row items-center gap-1">
               <User3CuteReIcon color={textLabelColor} width={12} height={12} />

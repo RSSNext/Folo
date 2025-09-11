@@ -1,6 +1,7 @@
 import { UserRole } from "@follow/constants"
 import type { UserSchema } from "@follow/database/schemas/types"
 import { UserService } from "@follow/database/services/user"
+import type { AuthUser } from "@follow-app/client-sdk"
 import { create, indexedResolver, windowScheduler } from "@yornaath/batshit"
 
 import { api, authClient } from "../../context"
@@ -11,7 +12,7 @@ import type { UserProfileEditable } from "./types"
 
 export type UserModel = UserSchema
 
-export type MeModel = UserModel & {
+export type MeModel = AuthUser & {
   emailVerified?: boolean
   twoFactorEnabled?: boolean | null
 }
@@ -66,7 +67,7 @@ class UserSyncService {
     const res = await api().auth.getSession()
     if (res) {
       if (!res.user) return res
-      const user = apiMorph.toUser(res.user, true)
+      const user = apiMorph.toWhoami(res.user)
       immerSet((state) => {
         state.whoami = { ...user, emailVerified: res.user?.emailVerified ?? false }
         state.role = res.user?.role as UserRole | null
@@ -90,14 +91,14 @@ class UserSyncService {
     tx.store(() => {
       immerSet((state) => {
         if (!state.whoami) return
-        state.whoami = { ...state.whoami, ...data }
+        state.whoami = { ...state.whoami, ...data } as MeModel
       })
     })
 
     tx.request(async () => {
       await authClient().updateUser({
         ...data,
-        socialLinks: data.socialLinks || null,
+        socialLinks: (data.socialLinks || null) as any,
       })
     })
     tx.persist(async () => {
@@ -222,7 +223,7 @@ class UserActions implements Hydratable, Resetable {
       for (const user of users) {
         state.users[user.id] = user
         if (user.isMe) {
-          state.whoami = { ...user, emailVerified: user.emailVerified ?? false }
+          state.whoami = { ...user, emailVerified: user.emailVerified ?? false } as MeModel
         }
       }
     })

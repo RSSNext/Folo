@@ -67,7 +67,7 @@ export const Trending = ({
               preview
               view={item.view}
               key={item.feed?.id}
-              item={item}
+              feed={item.feed!}
               className={cn("flex flex-1 flex-row items-center bg-none py-3", itemClassName)}
               simple
               preChildren={

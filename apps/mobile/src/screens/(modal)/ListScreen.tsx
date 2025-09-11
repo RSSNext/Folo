@@ -24,10 +24,10 @@ import {
   GroupedInsetListCard,
 } from "@/src/components/ui/grouped/GroupedList"
 import { PowerIcon } from "@/src/icons/power"
-import { getBizFetchErrorMessage } from "@/src/lib/api-fetch"
 import { useNavigation } from "@/src/lib/navigation/hooks"
 import { useSetModalScreenOptions } from "@/src/lib/navigation/ScreenOptionsContext"
 import type { NavigationControllerView } from "@/src/lib/navigation/types"
+import { getBizFetchErrorMessage } from "@/src/lib/parse-api-error"
 import { toast } from "@/src/lib/toast"
 import { FeedViewSelector } from "@/src/modules/feed/view-selector"
 import { accentColor } from "@/src/theme/colors"

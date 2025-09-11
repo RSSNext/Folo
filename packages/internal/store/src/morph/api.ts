@@ -7,7 +7,6 @@ import type {
   EntryWithFeed,
   ExtractResponseData,
   FeedViewType,
-  GetListData,
   InboxEntryGetResponse,
   InboxListEntry,
   InboxListEntryResponse,
@@ -260,19 +259,26 @@ class APIMorph {
     }
   }
 
-  toUser(data: AuthUser, isMe?: boolean): MeModel {
+  toWhoami(data: AuthUser): MeModel {
     return {
       id: data.id,
       name: data.name,
       email: data.email,
       handle: data.handle,
       image: data.image,
-      isMe: isMe ?? false,
-      emailVerified: data.emailVerified ?? undefined,
-      twoFactorEnabled: (data.twoFactorEnabled ?? undefined) as boolean | undefined,
+      emailVerified: data.emailVerified ?? false,
+      twoFactorEnabled: (data.twoFactorEnabled ?? null) as boolean | null,
       bio: data.bio,
       website: data.website,
       socialLinks: data.socialLinks,
+      createdAt: data.createdAt,
+      updatedAt: data.updatedAt,
+      isAnonymous: data.isAnonymous,
+      suspended: data.suspended,
+      role: data.role,
+      roleEndAt: data.roleEndAt,
+      deleted: data.deleted,
+      stripeCustomerId: data.stripeCustomerId,
     }
   }
 }

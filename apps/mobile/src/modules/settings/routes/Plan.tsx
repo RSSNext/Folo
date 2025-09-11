@@ -268,6 +268,8 @@ export const PlanScreen: NavigationControllerView = () => {
                 upgradePlanMutation.mutate()
               }}
             >
+              {/* TODO current not return back this value */}
+              {/* @ts-expect-error current not return back this value */}
               <Text className="text-white">{`Pay $${serverConfigs?.REFERRAL_PRO_PREVIEW_STRIPE_PRICE_IN_DOLLAR || 1}`}</Text>
             </Pressable>
           </View>
