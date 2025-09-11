@@ -1,4 +1,3 @@
-import { FeedViewType } from "@follow/constants"
 import { useViewWithSubscription } from "@follow/store/subscription/hooks"
 import { useUnreadByView } from "@follow/store/unread/hooks"
 import { cn } from "@follow/utils"
@@ -27,7 +26,7 @@ const ACTIVE_WIDTH = 180
 const INACTIVE_WIDTH = 48
 const ACTIVE_TEXT_WIDTH = 100
 export function TimelineViewSelector() {
-  const activeViews = useViewWithSubscription()
+  const activeViews = useViewWithSubscription({ excludeAll: true })
   const scrollViewRef = React.useRef<ScrollView | null>(null)
   const selectedFeed = useSelectedFeed()
   return (
@@ -44,21 +43,19 @@ export function TimelineViewSelector() {
         contentContainerClassName="flex-row gap-3 items-center px-3"
         showsHorizontalScrollIndicator={false}
       >
-        {activeViews
-          .filter((v) => v !== FeedViewType.All)
-          .map((v, index) => {
-            const view = views.find((view) => view.view === v)
-            if (!view) return null
-            return (
-              <ViewItem
-                key={view.name}
-                index={index}
-                view={view}
-                scrollViewRef={scrollViewRef}
-                isActive={selectedFeed?.type === "view" && selectedFeed.viewId === view.view}
-              />
-            )
-          })}
+        {activeViews.map((v, index) => {
+          const view = views.find((view) => view.view === v)
+          if (!view) return null
+          return (
+            <ViewItem
+              key={view.name}
+              index={index}
+              view={view}
+              scrollViewRef={scrollViewRef}
+              isActive={selectedFeed?.type === "view" && selectedFeed.viewId === view.view}
+            />
+          )
+        })}
       </ScrollView>
     </View>
   )
@@ -80,7 +77,7 @@ function ItemWrapper({
   style?: Exclude<StyleProp<ViewStyle>, number>
 }) {
   const { width: windowWidth } = useWindowDimensions()
-  const activeViews = useViewWithSubscription()
+  const activeViews = useViewWithSubscription({ excludeAll: true })
   const dragProgress = useTimelineSelectorDragProgress()
   const activeWidth = Math.max(
     windowWidth - (INACTIVE_WIDTH + 12) * (activeViews.length - 1) - 8 * 2,
