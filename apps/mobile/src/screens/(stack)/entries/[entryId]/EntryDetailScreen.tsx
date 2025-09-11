@@ -47,6 +47,7 @@ export const EntryDetailScreen: NavigationControllerView<{
     summary: state.settings?.summary,
     translation: state.settings?.translation,
     readability: state.settings?.readability,
+    sourceContent: state.settings?.sourceContent,
   }))
   useAutoMarkAsRead(entryId, !!entry)
   const insets = useSafeAreaInsets()
@@ -55,10 +56,10 @@ export const EntryDetailScreen: NavigationControllerView<{
       showAISummaryAtom: atom(entry?.summary || false),
       showAITranslationAtom: atom(!!entry?.translation || false),
       showReadabilityAtom: atom(entry?.readability || false),
-      showSourceContentAtom: atom(!entry?.readability),
+      showSourceContentAtom: atom(entry?.sourceContent || false),
       titleHeightAtom: atom(0),
     }),
-    [entry?.readability, entry?.summary, entry?.translation],
+    [entry?.readability, entry?.sourceContent, entry?.summary, entry?.translation],
   )
   const navigation = useNavigation()
   const nextEntryId = useMemo(() => {
