@@ -1,11 +1,12 @@
 import { useGlobalFocusableScopeSelector } from "@follow/components/common/Focusable/hooks.js"
-import { Spring } from "@follow/components/constants/spring.js"
 import { useMobile } from "@follow/components/hooks/useMobile.js"
+import { getMousePosition } from "@follow/components/hooks/useMouse.js"
+import { ActionButton } from "@follow/components/ui/button/action-button.js"
 import { FeedViewType, views } from "@follow/constants"
 import { useEntry } from "@follow/store/entry/hooks"
 import { unreadSyncService } from "@follow/store/unread/store"
 import { cn } from "@follow/utils/utils"
-import { AnimatePresence, m } from "motion/react"
+import { AnimatePresence } from "motion/react"
 import type { FC, MouseEvent, PropsWithChildren, TouchEvent } from "react"
 import { useCallback, useEffect, useMemo, useState } from "react"
 import { useTranslation } from "react-i18next"
@@ -20,12 +21,13 @@ import {
 } from "~/atoms/context-menu"
 import { useGeneralSettingKey } from "~/atoms/settings/general"
 import { FocusablePresets } from "~/components/common/Focusable"
+import { CommandActionButton } from "~/components/ui/button/CommandActionButton"
 import { useEntryIsRead } from "~/hooks/biz/useAsRead"
 import { useContextMenuActionShortCutTrigger } from "~/hooks/biz/useContextMenuActionShortCutTrigger"
 import {
+  EntryActionMenuItem,
   HIDE_ACTIONS_IN_ENTRY_CONTEXT_MENU,
   useEntryActions,
-  useSortedEntryActions,
 } from "~/hooks/biz/useEntryActions"
 import { useFeature } from "~/hooks/biz/useFeature"
 import { useFeedActions } from "~/hooks/biz/useFeedActions"
@@ -34,8 +36,7 @@ import { getRouteParams, useRouteParams, useRouteParamsSelector } from "~/hooks/
 import { useContextMenu } from "~/hooks/common/useContextMenu"
 import { copyToClipboard } from "~/lib/clipboard"
 import { COMMAND_ID } from "~/modules/command/commands/id"
-import { EntryHeaderActions } from "~/modules/entry-content/actions/header-actions"
-import { MoreActions } from "~/modules/entry-content/actions/more-actions"
+import type { FollowCommandId } from "~/modules/command/types"
 
 export const EntryItemWrapper: FC<
   {
@@ -231,30 +232,58 @@ export const EntryItemWrapper: FC<
         {...(!isMobile ? { onTouchStart: handleClick } : {})}
       >
         {children}
-        <AnimatePresence>{showAction && isWide && <ActionBar entryId={entryId} />}</AnimatePresence>
+        <AnimatePresence>
+          {showAction && isWide && (
+            <ActionBar
+              openContextMenu={() => {
+                const { x, y } = getMousePosition()
+                const mouseEvent = new MouseEvent("contextmenu", {
+                  bubbles: true,
+                  cancelable: true,
+                  clientX: x,
+                  clientY: y,
+                })
+                contextMenuProps.onContextMenu?.(mouseEvent as unknown as MouseEvent<HTMLElement>)
+              }}
+              entryId={entryId}
+            />
+          )}
+        </AnimatePresence>
       </Link>
     </div>
   )
 }
 
-const ActionBar = ({ entryId }: { entryId: string }) => {
-  const { mainAction: entryActions } = useSortedEntryActions({
-    entryId,
-    view: FeedViewType.SocialMedia,
-  })
+const SHOW_ACTION_BAR_ACTIONS_ORDER = [
+  // Copy
+  COMMAND_ID.entry.copyTitle,
+  COMMAND_ID.entry.copyLink,
+  COMMAND_ID.entry.star,
+  COMMAND_ID.entry.read,
+  COMMAND_ID.entry.openInBrowser,
+  COMMAND_ID.entry.tip,
+  COMMAND_ID.entry.share,
+] as FollowCommandId[]
+const SHOW_ACTION_BAR_ACTIONS = new Set<FollowCommandId>(SHOW_ACTION_BAR_ACTIONS_ORDER)
+
+const ActionBar = ({
+  entryId,
+  openContextMenu,
+}: {
+  entryId: string
+  openContextMenu: () => void
+}) => {
   const { view } = useRouteParams()
+
+  const entryActions = useEntryActions({ entryId, view })
 
   if (entryActions.length === 0) return null
 
   return (
-    <m.div
-      initial={{ opacity: 0, scale: 0.9, translateY: "-1/2" }}
-      animate={{ opacity: 1, scale: 1, translateY: "-1/2" }}
-      exit={{ opacity: 0, scale: 0.9, translateY: "-1/2" }}
-      transition={Spring.presets.smooth}
+    <div
       className={cn(
         "absolute -right-2 top-0 -translate-y-1/2 rounded-lg border border-gray-200 bg-white/90 p-1 shadow-sm backdrop-blur-sm dark:border-neutral-900 dark:bg-neutral-900",
-        view === FeedViewType.All && "top-1/2",
+        view === FeedViewType.All && "right-1 top-1/2",
       )}
       onClick={(e) => {
         e.stopPropagation()
@@ -262,9 +291,31 @@ const ActionBar = ({ entryId }: { entryId: string }) => {
       }}
     >
       <div className="flex items-center gap-1">
-        <EntryHeaderActions entryId={entryId} view={view} compact />
-        <MoreActions entryId={entryId} view={view} compact hideCustomizeToolbar />
+        {(
+          entryActions.filter(
+            (item) => item instanceof EntryActionMenuItem && SHOW_ACTION_BAR_ACTIONS.has(item.id),
+          ) as EntryActionMenuItem[]
+        )
+          .sort(
+            (a, b) =>
+              SHOW_ACTION_BAR_ACTIONS_ORDER.indexOf(a.id) -
+              SHOW_ACTION_BAR_ACTIONS_ORDER.indexOf(b.id),
+          )
+          .map((item) => (
+            <CommandActionButton
+              key={item.id}
+              onClick={item.onClick}
+              size="xs"
+              commandId={item.id}
+            />
+          ))}
+
+        <ActionButton
+          onClick={openContextMenu}
+          size="xs"
+          icon={<i className="i-mingcute-more-1-fill" />}
+        />
       </div>
-    </m.div>
+    </div>
   )
 }

@@ -7,12 +7,12 @@ import { MoreActions } from "../../../actions/more-actions"
 import { useEntryHeaderContext } from "./context"
 
 function EntryHeaderActionsContainerImpl() {
-  const { entryId, compact } = useEntryHeaderContext()
+  const { entryId } = useEntryHeaderContext()
   const { view } = useRouteParams()
 
   return (
     <div className="relative flex shrink-0 items-center justify-end gap-2">
-      <EntryHeaderActions entryId={entryId} view={view} compact={compact} />
+      <EntryHeaderActions entryId={entryId} view={view} />
       <MoreActions entryId={entryId} view={view} />
     </div>
   )

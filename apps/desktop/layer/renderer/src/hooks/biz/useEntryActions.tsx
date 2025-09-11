@@ -214,19 +214,8 @@ export const HIDE_ACTIONS_IN_ENTRY_CONTEXT_MENU = [
   COMMAND_ID.settings.customizeToolbar,
   COMMAND_ID.entry.readability,
   COMMAND_ID.entry.exportAsPDF,
-  // Copy
-  COMMAND_ID.entry.copyTitle,
-  COMMAND_ID.entry.copyLink,
 ]
-export const useEntryActions = ({
-  entryId,
-  view,
-  compact,
-}: {
-  entryId: string
-  view: FeedViewType
-  compact?: boolean
-}) => {
+export const useEntryActions = ({ entryId, view }: { entryId: string; view: FeedViewType }) => {
   const entry = useEntry(entryId, entrySelector)
   const { isCollection, entryId: routeEntryId } = useRouteParams()
   const isInCollection = useIsEntryStarred(entryId)
@@ -428,7 +417,7 @@ export const useEntryActions = ({
       new EntryActionMenuItem({
         id: COMMAND_ID.entry.tts,
         onClick: runCmdFn(COMMAND_ID.entry.tts, [{ entryId }]),
-        hide: !IN_ELECTRON || compact || !entry.hasContent,
+        hide: !IN_ELECTRON || !entry.hasContent,
         shortcut: shortcuts[COMMAND_ID.entry.tts],
         entryId,
       }),
@@ -437,7 +426,6 @@ export const useEntryActions = ({
         onClick: runCmdFn(COMMAND_ID.entry.readability, [{ entryId, entryUrl: entry.url! }]),
         hide:
           !!entry.readability ||
-          compact ||
           (view && views.find((v) => v.view === view)?.wideMode) ||
           !entry.url,
         active: isEntryInReadability,
@@ -508,7 +496,6 @@ export const useEntryActions = ({
     isShowAITranslationAuto,
     isShowAITranslationOnce,
     isCollection,
-    compact,
     isEntryInReadability,
     integrationSettings.customIntegration,
     integrationSettings.enableCustomIntegration,
@@ -520,13 +507,11 @@ export const useEntryActions = ({
 export const useSortedEntryActions = ({
   entryId,
   view,
-  compact,
 }: {
   entryId: string
   view: FeedViewType
-  compact?: boolean
 }) => {
-  const entryActions = useEntryActions({ entryId, view, compact })
+  const entryActions = useEntryActions({ entryId, view })
   const orderMap = useToolbarOrderMap()
   const mainAction = useMemo(
     () =>

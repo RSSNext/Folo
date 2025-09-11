@@ -11,7 +11,6 @@ import type { EntryHeaderProps } from "../types"
 
 interface EntryHeaderContextValue {
   entryId: string
-  compact?: boolean
 }
 
 const EntryHeaderContext = createContext<EntryHeaderContextValue | null>(null)

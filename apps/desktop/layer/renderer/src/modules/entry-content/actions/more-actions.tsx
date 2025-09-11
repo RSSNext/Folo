@@ -26,12 +26,12 @@ import type { FollowCommandId } from "~/modules/command/types"
 export const MoreActions = ({
   entryId,
   view,
-  compact,
+
   hideCustomizeToolbar = false,
 }: {
   entryId: string
   view: FeedViewType
-  compact?: boolean
+
   hideCustomizeToolbar?: boolean
 }) => {
   const { moreAction } = useSortedEntryActions({ entryId, view })
@@ -78,10 +78,7 @@ export const MoreActions = ({
   return (
     <DropdownMenu>
       <DropdownMenuTrigger asChild>
-        <ActionButton
-          icon={<i className="i-mingcute-more-1-fill" />}
-          size={compact ? "xs" : "base"}
-        />
+        <ActionButton icon={<i className="i-mingcute-more-1-fill" />} />
       </DropdownMenuTrigger>
       <RootPortal>
         <DropdownMenuContent>
