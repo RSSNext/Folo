@@ -257,10 +257,14 @@ export const getSubscriptionCategory = (view?: FeedViewType) => {
   return view === undefined ? [] : Array.from(state.categories[view])
 }
 
-export const useViewWithSubscription = () =>
+export const useViewWithSubscription = (options?: { excludeAll?: boolean }) =>
   useSubscriptionStore((state) => {
     return views
       .filter((view) => {
+        if (options?.excludeAll && view.view === FeedViewType.All) {
+          return false
+        }
+
         if (
           view.view === FeedViewType.All ||
           view.view === FeedViewType.Articles ||
