@@ -5,6 +5,7 @@ import { useFeedById } from "@follow/store/feed/hooks"
 import { usePrefetchEntryTranslation } from "@follow/store/translation/hooks"
 import { useAutoMarkAsRead } from "@follow/store/unread/hooks"
 import { PortalProvider } from "@gorhom/portal"
+import * as WebBrowser from "expo-web-browser"
 import { atom, useAtomValue, useSetAtom } from "jotai"
 import { useCallback, useEffect, useMemo } from "react"
 import { View } from "react-native"
@@ -54,6 +55,7 @@ export const EntryDetailScreen: NavigationControllerView<{
       showAISummaryAtom: atom(entry?.summary || false),
       showAITranslationAtom: atom(!!entry?.translation || false),
       showReadabilityAtom: atom(entry?.readability || false),
+      showSourceContentAtom: atom(!entry?.readability),
       titleHeightAtom: atom(0),
     }),
     [entry?.readability, entry?.summary, entry?.translation],
@@ -134,7 +136,8 @@ export const EntryDetailScreen: NavigationControllerView<{
   )
 }
 const EntryContentWebViewWithContext = ({ entryId }: { entryId: string }) => {
-  const { showReadabilityAtom, showAITranslationAtom } = useEntryContentContext()
+  const { showReadabilityAtom, showAITranslationAtom, showSourceContentAtom } =
+    useEntryContentContext()
   const showReadabilityOnce = useAtomValue(showReadabilityAtom)
   const translationSetting = useGeneralSettingKey("translation")
   const showTranslationOnce = useAtomValue(showAITranslationAtom)
@@ -143,6 +146,7 @@ const EntryContentWebViewWithContext = ({ entryId }: { entryId: string }) => {
   const entry = useEntry(entryId, (state) => ({
     content: state.content,
     readabilityContent: state.readabilityContent,
+    url: state.url,
   }))
   usePrefetchEntryTranslation({
     entryIds: [entryId],
@@ -166,6 +170,14 @@ const EntryContentWebViewWithContext = ({ entryId }: { entryId: string }) => {
       entrySyncServices.fetchEntryReadabilityContent(entryId)
     }
   }, [showReadabilityOnce, entryId])
+
+  const showSourceContent = useAtomValue(showSourceContentAtom)
+  useEffect(() => {
+    if (showSourceContent && entry?.url) {
+      WebBrowser.openBrowserAsync(entry?.url)
+    }
+  }, [entry?.url, showSourceContent])
+
   return (
     <EntryContentWebView
       entryId={entryId}
