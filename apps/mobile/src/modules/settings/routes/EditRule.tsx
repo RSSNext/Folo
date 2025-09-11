@@ -5,8 +5,9 @@ import {
   filterOperatorOptions,
 } from "@follow/store/action/constant"
 import { useActionRule } from "@follow/store/action/hooks"
+import type { ActionModel } from "@follow/store/action/store"
 import { actionActions } from "@follow/store/action/store"
-import type { ActionFilterItem, ActionId, ActionItem as ActionModel } from "@follow-app/client-sdk"
+import type { ActionFilterItem, ActionId } from "@follow-app/client-sdk"
 import { merge } from "es-toolkit/compat"
 import { useTranslation } from "react-i18next"
 import { View } from "react-native"
@@ -137,7 +138,7 @@ const FilterSection: React.FC<{
   )
 }
 const ConditionSection: React.FC<{
-  filter: ActionFilterItem
+  filter: ActionFilterItem[]
   index: number
 }> = ({ filter, index }) => {
   const { t } = useTranslation("settings")

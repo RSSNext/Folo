@@ -4,8 +4,8 @@ import {
   usePrefetchActions,
   useUpdateActionsMutation,
 } from "@follow/store/action/hooks"
+import type { ActionModel } from "@follow/store/action/store"
 import { actionActions } from "@follow/store/action/store"
-import type { ActionItem as ActionModel } from "@follow-app/client-sdk"
 import { useCallback } from "react"
 import { useTranslation } from "react-i18next"
 import type { ListRenderItem } from "react-native"

@@ -20,7 +20,7 @@ type ActionStore = {
 }
 
 type ActionRules = ActionItem[]
-type ActionModel = ActionItem
+export type ActionModel = ActionItem
 
 export const useActionStore = createZustandStore<ActionStore>("action")(() => ({
   rules: [],
