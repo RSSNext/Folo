@@ -65,15 +65,14 @@ export const ChatInput = memo(({ onSend, variant }: ChatInputProps) => {
       if (event.key === "Enter" && !event.shiftKey) {
         event.preventDefault()
         if (isProcessing) {
-          stop?.()
-        } else {
-          handleSend()
+          return false
         }
+        handleSend()
         return true
       }
       return false
     },
-    [handleSend, isProcessing, stop],
+    [handleSend, isProcessing],
   )
 
   const handleEditorChange = useCallback((editorState: EditorState, editor: LexicalEditor) => {
