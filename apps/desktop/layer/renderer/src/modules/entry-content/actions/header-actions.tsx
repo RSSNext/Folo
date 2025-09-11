@@ -14,16 +14,8 @@ import { EntryActionDropdownItem, useSortedEntryActions } from "~/hooks/biz/useE
 import { useCommand } from "~/modules/command/hooks/use-command"
 import type { FollowCommandId } from "~/modules/command/types"
 
-export const EntryHeaderActions = ({
-  entryId,
-  view,
-  compact,
-}: {
-  entryId: string
-  view: FeedViewType
-  compact?: boolean
-}) => {
-  const { mainAction: actionConfigs } = useSortedEntryActions({ entryId, view, compact })
+export const EntryHeaderActions = ({ entryId, view }: { entryId: string; view: FeedViewType }) => {
+  const { mainAction: actionConfigs } = useSortedEntryActions({ entryId, view })
 
   return actionConfigs
     .filter((item) => item instanceof MenuItemText || item instanceof EntryActionDropdownItem)
@@ -40,7 +32,6 @@ export const EntryHeaderActions = ({
           clickableDisabled={config.disabled}
           highlightMotion={config.notice}
           id={`${config.entryId}/${config.id}`}
-          size={compact ? "xs" : "base"}
         />
       )
 
