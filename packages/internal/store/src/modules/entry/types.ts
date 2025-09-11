@@ -39,6 +39,7 @@ export type UseEntriesReturn = {
   hasNextPage: boolean
   error: Error | null
   fetchedTime?: number
+  queryKey?: (string | number | boolean | string[] | undefined)[]
 }
 
 export type UseEntriesControl = Pick<

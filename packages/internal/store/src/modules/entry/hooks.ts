@@ -70,9 +70,8 @@ export const useEntriesQuery = (
 
   const isPop =
     "history" in globalThis && "isPop" in globalThis.history && !!globalThis.history.isPop
-
-  const query = useInfiniteQuery({
-    queryKey: [
+  const queryKey = useMemo(
+    () => [
       "entries",
       feedId,
       inboxId,
@@ -84,6 +83,21 @@ export const useEntriesQuery = (
       unreadOnly,
       hidePrivateSubscriptionsInTimeline,
     ],
+    [
+      feedId,
+      inboxId,
+      listId,
+      view,
+      limit,
+      feedIdList,
+      isCollection,
+      unreadOnly,
+      hidePrivateSubscriptionsInTimeline,
+    ],
+  )
+
+  const query = useInfiniteQuery({
+    queryKey,
     queryFn: ({ pageParam }) =>
       entrySyncServices.fetchEntries({
         ...props,
@@ -124,8 +138,9 @@ export const useEntriesQuery = (
     return {
       ...query,
       entriesIds,
+      queryKey,
     }
-  }, [entriesIds, query])
+  }, [entriesIds, query, queryKey])
 }
 
 export const usePrefetchEntryDetail = (entryId: string | undefined, isInbox?: boolean) => {
