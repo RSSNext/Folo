@@ -12,7 +12,7 @@ import { toast } from "sonner"
 
 import { FocusablePresets } from "~/components/common/Focusable"
 import { useNavigateEntry } from "~/hooks/biz/useNavigateEntry"
-import { useRouteEntryId } from "~/hooks/biz/useRouteParams"
+import { getRouteParams, useRouteEntryId } from "~/hooks/biz/useRouteParams"
 
 import { COMMAND_ID } from "../command/commands/id"
 import { useCommandBinding } from "../command/hooks/use-command-binding"
@@ -71,9 +71,11 @@ export const EntryColumnShortcutHandler: FC<{
 
       handleScrollTo(nextIndex)
       const nextId = data![nextIndex]
+      const { view } = getRouteParams()
 
       navigate({
         entryId: nextId,
+        view,
       })
     })
   }, [currentEntryIdRef, dataRef, handleScrollTo, navigate, when])
@@ -94,8 +96,11 @@ export const EntryColumnShortcutHandler: FC<{
       handleScrollTo(nextIndex)
       const nextId = data![nextIndex]
 
+      const { view } = getRouteParams()
+
       navigate({
         entryId: nextId,
+        view,
       })
     })
   }, [currentEntryIdRef, dataRef, handleScrollTo, navigate])
