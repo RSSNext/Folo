@@ -1,10 +1,11 @@
+import type { ActionConditionIndex } from "@follow-app/client-sdk"
 import { useMutation, useQuery } from "@tanstack/react-query"
 import { FetchError } from "ofetch"
 import { useCallback } from "react"
 
 import type { GeneralMutationOptions } from "../../types"
+import type { ActionItem } from "./store"
 import { actionActions, actionSyncService, useActionStore } from "./store"
-import type { ActionConditionIndex, ActionItem } from "@follow-app/client-sdk"
 
 export const usePrefetchActions = () => {
   return useQuery({

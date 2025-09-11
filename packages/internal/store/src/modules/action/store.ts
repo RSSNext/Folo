@@ -2,12 +2,17 @@ import type {
   ActionConditionIndex,
   ActionFilterItem,
   ActionId,
-  ActionItem,
+  ActionItem as ActionItemRes,
 } from "@follow-app/client-sdk"
 import { merge } from "es-toolkit/compat"
 
 import { api } from "../../context"
 import { createImmerSetter, createZustandStore } from "../../lib/helper"
+
+export type ActionItem = Omit<ActionItemRes, "condition"> & {
+  condition: ActionFilterItem[][]
+  index: number
+}
 
 type ActionStore = {
   rules: ActionItem[]
@@ -37,7 +42,7 @@ class ActionSyncService {
 
           return {
             ...rule,
-            condition: finalCondition as ActionFilterItem,
+            condition: finalCondition as ActionFilterItem[][],
             index,
           }
         }),

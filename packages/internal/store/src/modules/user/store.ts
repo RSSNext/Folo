@@ -97,7 +97,6 @@ class UserSyncService {
     tx.request(async () => {
       await authClient().updateUser({
         ...data,
-        // @ts-expect-error
         socialLinks: data.socialLinks || null,
       })
     })
