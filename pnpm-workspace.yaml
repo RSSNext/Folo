@@ -49,7 +49,6 @@ overrides:
 patchedDependencies:
   immer@10.1.1: patches/immer@10.1.1.patch
   re-resizable@6.11.2: patches/re-resizable@6.11.2.patch
-  hono: patches/hono.patch
   electron-context-menu@4.0.5: patches/electron-context-menu@4.0.5.patch
   "@mozilla/readability@0.6.0": patches/@mozilla__readability@0.6.0.patch
   daisyui@4.12.24: patches/daisyui@4.12.24.patch

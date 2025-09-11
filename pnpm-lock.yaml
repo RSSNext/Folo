@@ -49,9 +49,6 @@ patchedDependencies:
   electron-context-menu@4.0.5:
     hash: 15ed04a0d246eb9e701f47314b91328c64a8a7374914ad58b4053a3f84075fab
     path: patches/electron-context-menu@4.0.5.patch
-  hono:
-    hash: 5c74c2d2afaa5880c13d75458dd26c84da568851691b1fb6de6d877c29936d05
-    path: patches/hono.patch
   immer@10.1.1:
     hash: 594c60b929bc0a3b56576f1a1787da1aec2a1fba51e3c21ec09c0ed38280af6c
     path: patches/immer@10.1.1.patch
@@ -288,9 +285,6 @@ importers:
       happy-dom:
         specifier: 18.0.1
         version: 18.0.1
-      hono:
-        specifier: 4.8.1
-        version: 4.8.1(patch_hash=5c74c2d2afaa5880c13d75458dd26c84da568851691b1fb6de6d877c29936d05)
       html-minifier-terser:
         specifier: 7.2.0
         version: 7.2.0
@@ -448,9 +442,6 @@ importers:
       electron-devtools-installer:
         specifier: 4.0.0
         version: 4.0.0
-      hono:
-        specifier: 4.8.1
-        version: 4.8.1(patch_hash=5c74c2d2afaa5880c13d75458dd26c84da568851691b1fb6de6d877c29936d05)
       typescript:
         specifier: 'catalog:'
         version: 5.8.3
@@ -1007,9 +998,6 @@ importers:
       franc-min:
         specifier: 6.2.0
         version: 6.2.0
-      hono:
-        specifier: 4.8.1
-        version: 4.8.1(patch_hash=5c74c2d2afaa5880c13d75458dd26c84da568851691b1fb6de6d877c29936d05)
       i18next:
         specifier: 25.3.1
         version: 25.3.1(typescript@5.8.3)
@@ -1784,7 +1772,7 @@ importers:
         version: link:../utils
       hono:
         specifier: 4.8.1
-        version: 4.8.1(patch_hash=5c74c2d2afaa5880c13d75458dd26c84da568851691b1fb6de6d877c29936d05)
+        version: 4.8.1
     devDependencies:
       '@follow/configs':
         specifier: workspace:*
@@ -1807,9 +1795,6 @@ importers:
       '@folo-services/drizzle':
         specifier: 0.1.26
         version: 0.1.26(@opentelemetry/api@1.9.0)(@types/pg@8.6.1)(expo-sqlite@15.2.12(expo@53.0.12(@babel/core@7.28.0)(@expo/metro-runtime@5.0.4(react-native@0.79.1(@babel/core@7.28.0)(@types/react@19.1.8)(bufferutil@4.0.9)(react@19.0.0)))(bufferutil@4.0.9)(graphql@16.8.1)(react-native-webview@13.15.0(react-native@0.79.1(@babel/core@7.28.0)(@types/react@19.1.8)(bufferutil@4.0.9)(react@19.0.0))(react@19.0.0))(react-native@0.79.1(@babel/core@7.28.0)(@types/react@19.1.8)(bufferutil@4.0.9)(react@19.0.0))(react@19.0.0))(react-native@0.79.1(@babel/core@7.28.0)(@types/react@19.1.8)(bufferutil@4.0.9)(react@19.0.0))(react@19.0.0))(kysely@0.28.5)
-      '@hono/node-server':
-        specifier: 1.15.0
-        version: 1.15.0(hono@4.8.1(patch_hash=5c74c2d2afaa5880c13d75458dd26c84da568851691b1fb6de6d877c29936d05))
       '@t3-oss/env-core':
         specifier: 0.13.8
         version: 0.13.8(arktype@2.1.20)(typescript@5.8.3)(zod@3.25.75)
@@ -1822,9 +1807,6 @@ importers:
       drizzle-orm:
         specifier: 0.44.3
         version: 0.44.3(@opentelemetry/api@1.9.0)(@types/pg@8.6.1)(expo-sqlite@15.2.12(expo@53.0.12(@babel/core@7.28.0)(@expo/metro-runtime@5.0.4(react-native@0.79.1(@babel/core@7.28.0)(@types/react@19.1.8)(bufferutil@4.0.9)(react@19.0.0)))(bufferutil@4.0.9)(graphql@16.8.1)(react-native-webview@13.15.0(react-native@0.79.1(@babel/core@7.28.0)(@types/react@19.1.8)(bufferutil@4.0.9)(react@19.0.0))(react@19.0.0))(react-native@0.79.1(@babel/core@7.28.0)(@types/react@19.1.8)(bufferutil@4.0.9)(react@19.0.0))(react@19.0.0))(react-native@0.79.1(@babel/core@7.28.0)(@types/react@19.1.8)(bufferutil@4.0.9)(react@19.0.0))(react@19.0.0))(kysely@0.28.5)(pg@8.16.3)
-      hono:
-        specifier: 4.8.1
-        version: 4.8.1(patch_hash=5c74c2d2afaa5880c13d75458dd26c84da568851691b1fb6de6d877c29936d05)
       sonner:
         specifier: 2.0.6
         version: 2.0.6(react-dom@19.0.0(react@19.0.0))(react@19.0.0)
@@ -4144,12 +4126,6 @@ packages:
 
   '@hexagon/base64@1.1.28':
     resolution: {integrity: sha512-lhqDEAvWixy3bZ+UOYbPwUbBkwBq5C1LAJ/xPC8Oi+lL54oyakv/npbA0aU2hgCsx/1NUd4IBvV03+aUBWxerw==}
-
-  '@hono/node-server@1.15.0':
-    resolution: {integrity: sha512-MjmK4l5N4dQpZ9OSWN0tCj7ejuc7WvuWMzSKtc89bnknJykAeHxzRigXBTYZk85H6Awrii6RM59iUiUluApu2A==}
-    engines: {node: '>=18.14.1'}
-    peerDependencies:
-      hono: ^4
 
   '@hookform/resolvers@5.1.1':
     resolution: {integrity: sha512-J/NVING3LMAEvexJkyTLjruSm7aOFx7QX21pzkiJfMoNG0wl5aFEjLTl7ay7IQb9EWY6AkrBy7tHL2Alijpdcg==}
@@ -19394,10 +19370,6 @@ snapshots:
 
   '@hexagon/base64@1.1.28': {}
 
-  '@hono/node-server@1.15.0(hono@4.8.1(patch_hash=5c74c2d2afaa5880c13d75458dd26c84da568851691b1fb6de6d877c29936d05))':
-    dependencies:
-      hono: 4.8.1(patch_hash=5c74c2d2afaa5880c13d75458dd26c84da568851691b1fb6de6d877c29936d05)
-
   '@hookform/resolvers@5.1.1(react-hook-form@7.60.0(react@19.0.0))':
     dependencies:
       '@standard-schema/utils': 0.3.0
@@ -27294,7 +27266,7 @@ snapshots:
     dependencies:
       react-is: 16.13.1
 
-  hono@4.8.1(patch_hash=5c74c2d2afaa5880c13d75458dd26c84da568851691b1fb6de6d877c29936d05): {}
+  hono@4.8.1: {}
 
   hookable@5.5.3: {}
 

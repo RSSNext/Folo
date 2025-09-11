@@ -36,12 +36,10 @@
     "@electron-toolkit/tsconfig": "1.0.1",
     "@follow-app/client-sdk": "catalog:",
     "@folo-services/drizzle": "0.1.26",
-    "@hono/node-server": "1.15.0",
     "@t3-oss/env-core": "0.13.8",
     "ai": "5.0.4",
     "better-auth": "1.3.9",
     "drizzle-orm": "0.44.3",
-    "hono": "4.8.1",
     "sonner": "2.0.6",
     "stripe": "18.2.1",
     "zod": "3.25.75"

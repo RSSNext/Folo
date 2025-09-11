@@ -4,7 +4,6 @@ import { requestContext } from "@fastify/request-context"
 import { env } from "@follow/shared/env.ssr"
 import { createSSRAPIHeaders } from "@follow/utils/headers"
 import { FollowClient } from "@follow-app/client-sdk"
-import { hc } from "hono/client"
 import { ofetch } from "ofetch"
 
 import PKG from "../../../desktop/package.json"
