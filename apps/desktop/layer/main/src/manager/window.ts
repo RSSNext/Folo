@@ -16,7 +16,7 @@ import { store } from "~/lib/store"
 import { getTrayConfig } from "~/lib/tray"
 import { refreshBound } from "~/lib/utils"
 import { logger } from "~/logger"
-import { loadDynamicRenderEntry } from "~/updater/hot-updater"
+import { renderUpdater } from "~/updater/render"
 
 const __dirname = fileURLToPath(new URL(".", import.meta.url))
 
@@ -315,7 +315,7 @@ class WindowManagerStatic {
       logger.log(process.env["ELECTRON_RENDERER_URL"] + (options?.extraPath || ""))
     } else {
       // Production entry
-      const dynamicRenderEntry = loadDynamicRenderEntry()
+      const dynamicRenderEntry = renderUpdater.entry()
       logger.info("load dynamic render entry", dynamicRenderEntry)
       const appLoadFileEntry =
         dynamicRenderEntry || path.resolve(__dirname, "../renderer/index.html")
