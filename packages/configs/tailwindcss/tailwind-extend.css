@@ -51,7 +51,10 @@
   }
 
   .shadow-modal {
-    @apply shadow-2xl shadow-stone-300 dark:shadow-stone-900;
+    box-shadow: 0 8px 20px rgba(0, 0, 0, 0.08);
+  }
+  [theme="dark"] .shadow-modal {
+    box-shadow: 0 8px 20px rgba(0, 0, 0, 0.8);
   }
   /* Utils */
   .no-animation {
