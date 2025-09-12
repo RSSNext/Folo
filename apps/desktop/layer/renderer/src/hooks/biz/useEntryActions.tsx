@@ -206,7 +206,7 @@ const entrySelector = (state: EntryModel) => {
     hasBitTorrent: attachments.some((a) => a.mime_type === "application/x-bittorrent"),
   }
 }
-export const HIDE_ACTIONS_IN_ENTRY_CONTEXT_MENU = [
+export const HIDE_ACTIONS_IN_ENTRY_CONTEXT_MENU: FollowCommandId[] = [
   COMMAND_ID.entry.viewSourceContent,
   COMMAND_ID.entry.toggleAISummary,
   COMMAND_ID.entry.toggleAITranslation,
@@ -214,6 +214,10 @@ export const HIDE_ACTIONS_IN_ENTRY_CONTEXT_MENU = [
   COMMAND_ID.settings.customizeToolbar,
   COMMAND_ID.entry.readability,
   COMMAND_ID.entry.exportAsPDF,
+]
+
+export const HIDE_ACTIONS_IN_ENTRY_TOOLBAR_ACTIONS: FollowCommandId[] = [
+  ...HIDE_ACTIONS_IN_ENTRY_CONTEXT_MENU,
 ]
 export const useEntryActions = ({ entryId, view }: { entryId: string; view: FeedViewType }) => {
   const entry = useEntry(entryId, entrySelector)
