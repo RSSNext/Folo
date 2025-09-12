@@ -2,9 +2,6 @@ import { createSettingAtom } from "@follow/atoms/helper/setting.js"
 import { defaultUISettings } from "@follow/shared/settings/defaults"
 import { enhancedUISettingKeys } from "@follow/shared/settings/enhanced"
 import type { UISettings } from "@follow/shared/settings/interface"
-import { jotaiStore } from "@follow/utils/jotai"
-import { atom, useAtomValue } from "jotai"
-import { useEventCallback } from "usehooks-ts"
 
 import { getDefaultLanguage } from "~/lib/language"
 import { DEFAULT_ACTION_ORDER } from "~/modules/customize-toolbar/constant"
@@ -19,8 +16,6 @@ export const createDefaultUISettings = (): UISettings => ({
   discoverLanguage: getDefaultLanguage().startsWith("zh") ? "all" : "eng",
   accentColor: "orange",
 })
-
-const zenModeAtom = atom(false)
 
 const {
   useSettingKey: useUISettingKeyInternal,
@@ -64,27 +59,3 @@ export const uiServerSyncWhiteListKeys: (keyof UISettings)[] = [
   "accentColor",
   // "customCSS",
 ]
-
-export const useIsZenMode = () => useAtomValue(zenModeAtom)
-export const getIsZenMode = () => jotaiStore.get(zenModeAtom)
-
-export const useSetZenMode = () => {
-  return setZenMode
-}
-export const setZenMode = (checked: boolean) => {
-  jotaiStore.set(zenModeAtom, checked)
-}
-
-export const useToggleZenMode = () => {
-  const setZenMode = useSetZenMode()
-  const isZenMode = useIsZenMode()
-  return useEventCallback(() => {
-    setZenMode(!isZenMode)
-  })
-}
-
-export const useRealInWideMode = () => {
-  const wideMode = useUISettingKey("wideMode")
-  const isZenMode = useIsZenMode()
-  return wideMode || isZenMode
-}

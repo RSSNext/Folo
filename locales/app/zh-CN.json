@@ -193,8 +193,6 @@
   "entry_list_header.refresh": "刷新",
   "entry_list_header.show_all": "显示全部",
   "entry_list_header.show_unread_only": "仅显示未读",
-  "entry_list_header.switch_to_normalmode": "切换到双列模式",
-  "entry_list_header.switch_to_widemode": "切换到宽屏模式",
   "entry_list_header.unread": "未读",
   "feed.actions.follow": "订阅",
   "feed.actions.followed": "已订阅",
@@ -445,7 +443,6 @@
   "user_button.power": "Power",
   "user_button.preferences": "设置",
   "user_button.profile": "个人资料",
-  "user_button.zen_mode": "禅定模式",
   "user_profile.about": "关于",
   "user_profile.close": "关闭",
   "user_profile.created_lists": "创建的列表",
@@ -490,6 +487,5 @@
   "words.user": "用户",
   "words.view": "视图",
   "words.which.all": "全部",
-  "words.zero_items": "没有内容",
-  "zen.exit": "退出禅定模式"
+  "words.zero_items": "没有内容"
 }

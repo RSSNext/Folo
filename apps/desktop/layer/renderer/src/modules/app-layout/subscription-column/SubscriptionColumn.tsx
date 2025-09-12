@@ -14,7 +14,7 @@ import { useEffect, useRef, useState } from "react"
 import { Trans } from "react-i18next"
 import { useResizable } from "react-resizable-layout"
 
-import { getIsZenMode, getUISettings, setUISetting } from "~/atoms/settings/ui"
+import { getUISettings, setUISetting } from "~/atoms/settings/ui"
 import {
   getSubscriptionColumnTempShow,
   setSubscriptionColumnTempShow,
@@ -117,7 +117,7 @@ const FeedResponsiveResizerContainer = ({
 
         const uiSettings = getUISettings()
         const feedColumnTempShow = getSubscriptionColumnTempShow()
-        const isInEntryContentWideMode = uiSettings.wideMode || getIsZenMode()
+        const isInEntryContentWideMode = false
         const feedWidth = uiSettings.feedColWidth
         if (mouseY < 200 && isInEntryContentWideMode && mouseX < feedWidth) return
         const threshold = feedColumnTempShow ? uiSettings.feedColWidth : 100

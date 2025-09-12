@@ -193,8 +193,6 @@
   "entry_list_header.refresh": "更新",
   "entry_list_header.show_all": "すべて表示",
   "entry_list_header.show_unread_only": "未読のみ表示",
-  "entry_list_header.switch_to_normalmode": "2 列モードに切り替え",
-  "entry_list_header.switch_to_widemode": "ワイドモードに切り替え",
   "entry_list_header.unread": "未読",
   "feed.actions.follow": "フォロー",
   "feed.actions.followed": "フォロー済み",
@@ -443,7 +441,6 @@
   "user_button.power": "Power",
   "user_button.preferences": "設定",
   "user_button.profile": "プロフィール",
-  "user_button.zen_mode": "Zen モード",
   "user_profile.about": "About",
   "user_profile.close": "閉じる",
   "user_profile.created_lists": "作成したリスト",
@@ -488,6 +485,5 @@
   "words.user": "ユーザー",
   "words.view": "表示",
   "words.which.all": "すべて",
-  "words.zero_items": "アイテムがありません",
-  "zen.exit": "Zen モードを終了"
+  "words.zero_items": "アイテムがありません"
 }

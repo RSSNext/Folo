@@ -2,7 +2,6 @@ import { ScrollArea } from "@follow/components/ui/scroll-area/ScrollArea.js"
 import { views } from "@follow/constants"
 import { cn } from "@follow/utils/utils"
 
-import { useIsZenMode } from "~/atoms/settings/ui"
 import { useRouteParamsSelector } from "~/hooks/biz/useRouteParams"
 
 import type { EntryColumnWrapperProps } from "./types"
@@ -13,8 +12,6 @@ const animationStyles = tw`duration-300 ease-in-out animate-in fade-in slide-in-
 export const EntryColumnWrapper = ({ ref, children, onScroll }: EntryColumnWrapperProps) => {
   const view = useRouteParamsSelector((state) => state.view)
 
-  const isZenMode = useIsZenMode()
-
   return (
     <div className={cn(styles, animationStyles)}>
       <ScrollArea
@@ -24,7 +21,7 @@ export const EntryColumnWrapper = ({ ref, children, onScroll }: EntryColumnWrapp
         )}
         mask={false}
         ref={ref}
-        rootClassName={cn("h-full", isZenMode ? "max-w-[80ch] mx-auto" : "")}
+        rootClassName="h-full"
         viewportClassName={"[&>div]:grow flex"}
         onScroll={onScroll}
       >

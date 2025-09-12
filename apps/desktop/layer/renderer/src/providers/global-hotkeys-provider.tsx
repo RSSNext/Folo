@@ -72,11 +72,6 @@ export const GlobalHotkeysProvider = () => {
         preHandler(e)
         highlightElement(document.activeElement as HTMLElement)
       },
-      [commandShortcuts[COMMAND_ID.layout.toggleZenMode]]: (e) => {
-        if (!isNormalLayer) return
-        preHandler(e)
-        runCommandFn(COMMAND_ID.layout.toggleZenMode, [])()
-      },
     })
   }, [commandShortcuts, runCommandFn, isNormalLayer])
 

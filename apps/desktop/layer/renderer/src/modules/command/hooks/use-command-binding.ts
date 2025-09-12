@@ -13,8 +13,6 @@ import { useCommandHotkey } from "./use-register-hotkey"
 export const defaultCommandShortcuts = {
   // Layout commands
   [COMMAND_ID.layout.toggleSubscriptionColumn]: transformShortcut("$mod+B"),
-  [COMMAND_ID.layout.toggleWideMode]: transformShortcut("$mod+["),
-  [COMMAND_ID.layout.toggleZenMode]: transformShortcut("Shift+$mod+Z"),
 
   // Subscription commands
   [COMMAND_ID.subscription.markAllAsRead]: transformShortcut("Shift+$mod+A"),
@@ -83,8 +81,6 @@ export const useCommandShortcutItems = () => {
 }
 export const allowCustomizeCommands = new Set([
   COMMAND_ID.layout.toggleSubscriptionColumn,
-  COMMAND_ID.layout.toggleWideMode,
-  COMMAND_ID.layout.toggleZenMode,
 
   COMMAND_ID.subscription.markAllAsRead,
 
