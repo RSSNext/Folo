@@ -1,4 +1,5 @@
 import { atom } from "jotai"
+import type { ReactNode } from "react"
 
 import { createAtomHooks } from "~/lib/jotai"
 
@@ -11,13 +12,9 @@ const [
   setTimelineColumnShow,
 ] = createAtomHooks(atom(true))
 
-export const useSubscriptionColumnShow = () => {
-  return internal_useSubscriptionColumnShow()
-}
+export const useSubscriptionColumnShow = internal_useSubscriptionColumnShow
 
-export const getSubscriptionColumnShow = () => {
-  return internal_getSubscriptionShow()
-}
+export const getSubscriptionColumnShow = internal_getSubscriptionShow
 
 export { setTimelineColumnShow }
 
@@ -29,3 +26,21 @@ export const [
   getSubscriptionColumnTempShow,
   setSubscriptionColumnTempShow,
 ] = createAtomHooks(atom(false))
+
+export const [
+  ,
+  ,
+  useSubscriptionColumnApronNode,
+  ,
+  getSubscriptionColumnApronNode,
+  setSubscriptionColumnApronNode,
+] = createAtomHooks(atom<ReactNode | null>(null))
+
+export const [
+  ,
+  ,
+  useSubscriptionEntryPlaneVisible,
+  ,
+  getSubscriptionEntryPlaneVisible,
+  setSubscriptionEntryPlaneVisible,
+] = createAtomHooks(atom(true))
