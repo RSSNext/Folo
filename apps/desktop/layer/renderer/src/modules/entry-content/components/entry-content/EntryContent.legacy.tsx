@@ -21,7 +21,7 @@ import * as React from "react"
 import { memo, useEffect, useMemo, useRef, useState } from "react"
 
 import { useEntryIsInReadability } from "~/atoms/readability"
-import { useIsZenMode, useUISettingKey } from "~/atoms/settings/ui"
+import { useUISettingKey } from "~/atoms/settings/ui"
 import { Focusable, FocusablePresets } from "~/components/common/Focusable"
 import { ShadowDOM } from "~/components/common/ShadowDOM"
 import type { TocRef } from "~/components/ui/markdown/components/Toc"
@@ -42,7 +42,6 @@ import { useEntryContent, useEntryMediaInfo } from "../../hooks"
 import { useEntryNavigationHints } from "../../hooks/useEntryNavigationHints"
 import { EntryHeader } from "../entry-header"
 import { EntryAttachments } from "../EntryAttachments"
-import { EntryTimelineSidebar } from "../EntryTimelineSidebar"
 import { EntryTitle } from "../EntryTitle"
 import { SourceContentPanel } from "../SourceContentView"
 import { SupportCreator } from "../SupportCreator"
@@ -93,7 +92,6 @@ const EntryContentImpl: Component<EntryContentProps> = ({
   const customCSS = useUISettingKey("customCSS")
 
   const isInPeekModal = useInPeekModal()
-  const isZenMode = useIsZenMode()
 
   const [panelPortalElement, setPanelPortalElement] = useState<HTMLDivElement | null>(null)
 
@@ -141,7 +139,7 @@ const EntryContentImpl: Component<EntryContentProps> = ({
             scrollerRef={scrollerRef}
           />
         </RootPortal>
-        <EntryTimelineSidebar entryId={entryId} />
+
         <EntryScrollArea className={className} scrollerRef={scrollerRef}>
           <EntryNavigationHandler entryId={entryId} />
           {/* Indicator for the entry */}
@@ -151,7 +149,7 @@ const EntryContentImpl: Component<EntryContentProps> = ({
             transition={Spring.presets.bouncy}
             className="select-text"
           >
-            {!isZenMode && isInHasTimelineView && !isInPeekModal && (
+            {isInHasTimelineView && !isInPeekModal && (
               <>
                 <div className="absolute inset-y-0 left-0 flex w-12 items-center justify-center opacity-0 duration-200 hover:opacity-100">
                   <MotionButtonBase

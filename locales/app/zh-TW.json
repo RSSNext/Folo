@@ -178,8 +178,6 @@
   "entry_list_header.refresh": "重新整理",
   "entry_list_header.show_all": "顯示全部",
   "entry_list_header.show_unread_only": "僅顯示未讀",
-  "entry_list_header.switch_to_normalmode": "切換到正常模式",
-  "entry_list_header.switch_to_widemode": "切換到寬螢幕模式",
   "entry_list_header.unread": "未讀",
   "feed.actions.follow": "跟隨",
   "feed.actions.followed": "已跟隨",
@@ -409,7 +407,6 @@
   "user_button.power": "Power",
   "user_button.preferences": "偏好設定",
   "user_button.profile": "個人檔案",
-  "user_button.zen_mode": "禪定模式",
   "user_profile.close": "關閉",
   "user_profile.edit": "編輯",
   "user_profile.loading": "載入中",
@@ -451,6 +448,5 @@
   "words.user": "使用者",
   "words.view": "視圖",
   "words.which.all": "全部",
-  "words.zero_items": "沒有內容",
-  "zen.exit": "退出禪定模式"
+  "words.zero_items": "沒有內容"
 }

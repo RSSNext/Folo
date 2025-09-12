@@ -8,7 +8,7 @@ import i18next from "i18next"
 import { useEffect, useInsertionEffect, useLayoutEffect, useRef } from "react"
 
 import { useGeneralSettingKey } from "~/atoms/settings/general"
-import { useIsZenMode, useUISettingValue } from "~/atoms/settings/ui"
+import { useUISettingValue } from "~/atoms/settings/ui"
 import { useSubscriptionColumnShow } from "~/atoms/sidebar"
 import { I18N_LOCALE_KEY } from "~/constants"
 import { useReduceMotion } from "~/hooks/biz/useReduceMotion"
@@ -83,12 +83,10 @@ const useUISettingSync = () => {
 }
 
 const useDataAttrSync = () => {
-  const isZenMode = useIsZenMode()
   const columnShow = useSubscriptionColumnShow()
   useEffect(() => {
-    document.documentElement.dataset.zenMode = isZenMode.toString()
     document.documentElement.dataset.leftColumnHidden = (!columnShow).toString()
-  }, [isZenMode, columnShow])
+  }, [columnShow])
 }
 
 const useUXSettingSync = () => {

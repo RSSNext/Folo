@@ -9,7 +9,7 @@ import { toast } from "sonner"
 
 import { setWindowState } from "~/atoms/app"
 import { getGeneralSettings } from "~/atoms/settings/general"
-import { getUISettings, useToggleZenMode } from "~/atoms/settings/ui"
+import { getUISettings } from "~/atoms/settings/ui"
 import { setUpdaterStatus, useUpdaterStatus } from "~/atoms/updater"
 import { useDialog, useModalStack } from "~/components/ui/modal/stacked/hooks"
 import { useDiscoverRSSHubRouteModal } from "~/hooks/biz/useDiscoverRSSHubRoute"
@@ -117,13 +117,6 @@ export const ExtensionExposeProvider = () => {
       },
     })
   }, [follow, present, presentDiscoverRSSHubRoute, presentUserProfile, t])
-
-  const toggleZenMode = useToggleZenMode()
-  useEffect(() => {
-    registerGlobalContext({
-      zenMode: toggleZenMode,
-    })
-  }, [toggleZenMode])
 
   const dialog = useDialog()
   useEffect(() => {

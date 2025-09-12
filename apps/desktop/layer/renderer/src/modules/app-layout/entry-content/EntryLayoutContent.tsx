@@ -8,7 +8,6 @@ import { useResizable } from "react-resizable-layout"
 import { useParams } from "react-router"
 
 import { AIChatPanelStyle, useAIChatPanelStyle } from "~/atoms/settings/ai"
-import { useRealInWideMode } from "~/atoms/settings/ui"
 import { useSubscriptionColumnShow, useSubscriptionColumnTempShow } from "~/atoms/sidebar"
 import { m } from "~/components/common/Motion"
 import { FixedModalCloseButton } from "~/components/ui/modal/components/close"
@@ -26,7 +25,7 @@ const EntryLayoutContentLegacy = () => {
   const { view } = useRouteParams()
   const navigate = useNavigateEntry()
 
-  const settingWideMode = useRealInWideMode()
+  const settingWideMode = false
   const realEntryId = entryId === ROUTE_ENTRY_PENDING ? "" : entryId
 
   const showEntryContent = !(
@@ -73,7 +72,7 @@ export const EntryLayoutContentWithAI = () => {
   const { entryId, view } = useRouteParams()
   const navigate = useNavigateEntry()
 
-  const settingWideMode = useRealInWideMode()
+  const settingWideMode = false
   const realEntryId = entryId === ROUTE_ENTRY_PENDING ? "" : entryId
   const wideMode = !!(settingWideMode && realEntryId)
 
@@ -101,7 +100,7 @@ export const EntryLayoutContent = () => {
   return <EntryLayoutContentLegacy />
 }
 const Grid = ({ entryId }) => {
-  const settingWideMode = useRealInWideMode()
+  const settingWideMode = false
 
   const wideMode = !!(settingWideMode && entryId)
   const feedColumnTempShow = useSubscriptionColumnTempShow()

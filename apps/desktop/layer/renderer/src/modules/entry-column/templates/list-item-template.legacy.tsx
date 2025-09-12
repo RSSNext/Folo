@@ -11,7 +11,7 @@ import { titleCase } from "title-case"
 
 import { AudioPlayer, useAudioPlayerAtomSelector } from "~/atoms/player"
 import { useGeneralSettingKey } from "~/atoms/settings/general"
-import { useRealInWideMode, useUISettingKey } from "~/atoms/settings/ui"
+import { useUISettingKey } from "~/atoms/settings/ui"
 import { RelativeTime } from "~/components/ui/datetime"
 import { Media } from "~/components/ui/media/Media"
 import { FEED_COLLECTION_LIST } from "~/constants"
@@ -86,7 +86,7 @@ export function ListItem({
 
   const inbox = useInboxById(entry?.inboxId)
 
-  const settingWideMode = useRealInWideMode()
+  const settingWideMode = false
   const thumbnailRatio = useUISettingKey("thumbnailRatio")
   const rid = `list-item-${entryId}`
 

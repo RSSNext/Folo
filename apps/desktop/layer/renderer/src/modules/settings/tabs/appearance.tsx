@@ -16,8 +16,6 @@ import { bundledThemesInfo } from "shiki/themes"
 import {
   getUISettings,
   setUISetting,
-  useIsZenMode,
-  useToggleZenMode,
   useUISettingKey,
   useUISettingSelector,
   useUISettingValue,
@@ -27,12 +25,7 @@ import { useSetTheme } from "~/hooks/common"
 import { useShowCustomizeToolbarModal } from "~/modules/customize-toolbar/modal"
 
 import { SETTING_MODAL_ID } from "../constants"
-import {
-  SettingActionItem,
-  SettingDescription,
-  SettingSwitch,
-  SettingTabbedSegment,
-} from "../control"
+import { SettingActionItem, SettingDescription, SettingTabbedSegment } from "../control"
 import { createDefineSettingItem } from "../helper/builder"
 import { createSettingBuilder } from "../helper/setting-builder"
 import {
@@ -84,8 +77,6 @@ export const SettingAppearance = () => {
             type: "title",
             value: t("appearance.reading_view.title"),
           },
-
-          !isMobile && ZenMode,
 
           {
             type: "title",
@@ -314,23 +305,6 @@ export const AppThemeSegment = () => {
         setTheme(value as "light" | "dark" | "system")
       }}
     />
-  )
-}
-
-const ZenMode = () => {
-  const { t } = useTranslation("settings")
-  const isZenMode = useIsZenMode()
-  const toggleZenMode = useToggleZenMode()
-  return (
-    <SettingItemGroup>
-      <SettingSwitch
-        checked={isZenMode}
-        className="mt-4"
-        onCheckedChange={toggleZenMode}
-        label={t("appearance.zen_mode.label")}
-      />
-      <SettingDescription>{t("appearance.zen_mode.description_simple")}</SettingDescription>
-    </SettingItemGroup>
   )
 }
 

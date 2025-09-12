@@ -19,7 +19,6 @@ import * as React from "react"
 import { memo, useEffect, useRef, useState } from "react"
 
 import { useEntryIsInReadability } from "~/atoms/readability"
-import { useIsZenMode } from "~/atoms/settings/ui"
 import { Focusable } from "~/components/common/Focusable"
 import { m } from "~/components/common/Motion"
 import { HotkeyScope } from "~/constants"
@@ -76,8 +75,6 @@ const EntryContentImpl: Component<EntryContentProps> = ({
   const view = typeof subscriptionView === "number" ? subscriptionView : routeView
   const [scrollerRef, setScrollerRef] = useState<HTMLDivElement | null>(null)
   const safeUrl = useFeedSafeUrl(entryId)
-
-  const isZenMode = useIsZenMode()
 
   const [panelPortalElement, setPanelPortalElement] = useState<HTMLDivElement | null>(null)
 
@@ -152,7 +149,7 @@ const EntryContentImpl: Component<EntryContentProps> = ({
         <EntryScrollArea scrollerRef={setScrollerRef}>
           {/* <EntryNavigationHandler entryId={entryId} /> */}
           {/* Indicator for the entry */}
-          {!isZenMode && isInHasTimelineView && (
+          {isInHasTimelineView && (
             <>
               <div className="absolute inset-y-0 left-0 z-[9] flex w-12 items-center justify-center opacity-40 duration-200 hover:opacity-100">
                 <MotionButtonBase
