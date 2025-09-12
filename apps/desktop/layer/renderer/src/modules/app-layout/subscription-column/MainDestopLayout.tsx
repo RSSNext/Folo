@@ -18,6 +18,7 @@ import { ROOT_CONTAINER_ID } from "~/constants/dom"
 import { EnvironmentIndicator } from "~/modules/app/EnvironmentIndicator"
 import { LoginModalContent } from "~/modules/auth/LoginModalContent"
 import { DebugRegistry } from "~/modules/debug/registry"
+import { EntriesProvider } from "~/modules/entry-column/context/EntriesContext"
 import { CmdF } from "~/modules/panel/cmdf"
 import { SearchCmdK } from "~/modules/panel/cmdk"
 import { CmdNTrigger } from "~/modules/panel/cmdn"
@@ -46,18 +47,20 @@ export function MainDestopLayout() {
         <AppNotificationContainer />
       </Suspense>
 
-      <SubscriptionColumnContainer />
+      <EntriesProvider>
+        <SubscriptionColumnContainer />
 
-      <main
-        ref={setMainContainerElement}
-        className="bg-theme-background flex min-w-0 flex-1 pt-[calc(var(--fo-window-padding-top)_-10px)] !outline-none"
-        // NOTE: tabIndex for main element can get by `document.activeElement`
-        tabIndex={-1}
-      >
-        <AppErrorBoundary errorType={errorTypes}>
-          <Outlet />
-        </AppErrorBoundary>
-      </main>
+        <main
+          ref={setMainContainerElement}
+          className="bg-theme-background flex min-w-0 flex-1 pt-[calc(var(--fo-window-padding-top)_-10px)] !outline-none"
+          // NOTE: tabIndex for main element can get by `document.activeElement`
+          tabIndex={-1}
+        >
+          <AppErrorBoundary errorType={errorTypes}>
+            <Outlet />
+          </AppErrorBoundary>
+        </main>
+      </EntriesProvider>
 
       <NewUserGuide />
 

@@ -2,7 +2,7 @@ import { EllipsisHorizontalTextWithTooltip } from "@follow/components/ui/typogra
 import type { FeedViewType } from "@follow/constants"
 import { useEntry } from "@follow/store/entry/hooks"
 import { useFeedById } from "@follow/store/feed/hooks"
-import { cn } from "@follow/utils/utils"
+import { clsx, cn } from "@follow/utils/utils"
 import { memo, useCallback } from "react"
 
 import { RelativeTime } from "~/components/ui/datetime"
@@ -70,7 +70,12 @@ const EntrySubscriptionItemImpl = ({ entryId, view, className }: EntrySubscripti
     <div
       data-entry-id={entryId}
       data-active={isActive}
-      className={cn(feedColumnStyles.item, "py-1 pl-2.5", !entry.read && "font-medium", className)}
+      className={cn(
+        feedColumnStyles.item,
+        "mx-1 w-[calc(100%_-0.5rem)] py-1 pl-2.5",
+        !entry.read && "font-medium",
+        className,
+      )}
       onClick={handleClick}
     >
       <div className="flex min-w-0 flex-1 items-start gap-2">
@@ -78,7 +83,7 @@ const EntrySubscriptionItemImpl = ({ entryId, view, className }: EntrySubscripti
 
         <div className="min-w-0 flex-1">
           <EllipsisHorizontalTextWithTooltip
-            className={cn("text-text truncate text-sm leading-tight", entry.read && "opacity-90")}
+            className={clsx("text-text truncate text-sm leading-tight", entry.read && "opacity-90")}
           >
             {entry.title}
           </EllipsisHorizontalTextWithTooltip>

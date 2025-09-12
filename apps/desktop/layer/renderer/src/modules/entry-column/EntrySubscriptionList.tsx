@@ -2,10 +2,9 @@ import { ScrollArea } from "@follow/components/ui/scroll-area/ScrollArea.js"
 import type { FC, RefObject } from "react"
 import { memo, startTransition, useEffect, useRef, useState } from "react"
 
-import { EntryItemSkeleton } from "~/modules/entry-column/EntryItemSkeleton"
-
+import { EntrySubscriptionSkeleton } from "./components/EntrySubscriptionSkeleton"
+import { useEntriesContext } from "./context/EntriesContext"
 import { EntrySubscriptionItem } from "./EntrySubscriptionItem"
-import { useEntrySubscriptionData } from "./hooks/subscription/useEntrySubscriptionData"
 import { useEntryVirtualizer } from "./hooks/subscription/useEntryVirtualizer"
 
 export interface EntrySubscriptionListProps {
@@ -20,16 +19,14 @@ const handleKeyDown: React.KeyboardEventHandler<HTMLDivElement> = (e) => {
 }
 
 export const EntrySubscriptionList: FC<EntrySubscriptionListProps> = memo(({ scrollToEntryId }) => {
-  // Get all data internally
-  const { entriesIds, hasNextPage, isFetchingNextPage, fetchNextPage, view } =
-    useEntrySubscriptionData()
+  // Use shared context exclusively to guarantee full synchronization
+  const { entriesIds, hasNextPage, isFetchingNextPage, fetchNextPage, view } = useEntriesContext()
 
   const scrollAreaRef = useRef<HTMLDivElement>(null)
 
   // Handle virtualization internally
-  const { rowVirtualizer, renderData, totalSize } = useEntryVirtualizer({
+  const { rowVirtualizer, renderData, totalSize, scrollToEntry } = useEntryVirtualizer({
     entriesIds,
-    scrollToEntryId,
     scrollElement: scrollAreaRef as RefObject<HTMLElement>,
   })
 
@@ -50,6 +47,11 @@ export const EntrySubscriptionList: FC<EntrySubscriptionListProps> = memo(({ scr
       setReady(true)
     })
   }, [])
+  useEffect(() => {
+    if (scrollToEntryId) {
+      scrollToEntry(scrollToEntryId)
+    }
+  }, [scrollToEntryId, scrollToEntry])
   return (
     <ScrollArea rootClassName="h-0 grow" ref={scrollAreaRef}>
       <div
@@ -63,7 +65,7 @@ export const EntrySubscriptionList: FC<EntrySubscriptionListProps> = memo(({ scr
           if (!ready) return null
 
           if (item.isLoaderRow) {
-            const Content = hasNextPage ? <EntryItemSkeleton view={view} count={3} /> : null
+            const Content = hasNextPage ? <EntrySubscriptionSkeleton count={3} /> : null
 
             return (
               <div

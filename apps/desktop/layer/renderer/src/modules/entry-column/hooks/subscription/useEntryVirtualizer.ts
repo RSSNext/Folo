@@ -1,6 +1,6 @@
 import type { Range } from "@tanstack/react-virtual"
 import type { RefObject } from "react"
-import { useCallback, useMemo } from "react"
+import { useCallback, useMemo, useRef } from "react"
 
 import { useEntryVirtualization } from "../useEntryVirtualization"
 
@@ -51,15 +51,17 @@ export const useEntryVirtualizer = ({
     })
   }, [virtualization.renderData, entriesIds])
 
+  const scrollToRef = useRef<typeof virtualization.scrollTo>(null)
+  scrollToRef.current = virtualization.scrollTo.bind(virtualization)
   // Scroll to specific entry programmatically
   const scrollToEntry = useCallback(
     (entryId: string) => {
       const index = entriesIds.indexOf(entryId)
       if (index !== -1) {
-        virtualization.scrollTo(index, "start")
+        scrollToRef.current?.(index, "center")
       }
     },
-    [entriesIds, virtualization],
+    [entriesIds, scrollToRef],
   )
 
   return {
