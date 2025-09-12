@@ -1,4 +1,3 @@
-import { useMobile } from "@follow/components/hooks/useMobile.js"
 import { FeedViewType, views } from "@follow/constants"
 import { useTitle } from "@follow/hooks"
 import { useEntry } from "@follow/store/entry/hooks"
@@ -117,21 +116,19 @@ function EntryColumnImpl() {
       entries.fetchNextPage()
     }
   }, [entries])
-  const isMobile = useMobile()
 
   const ListComponent = views.find((v) => v.view === view)?.gridMode ? EntryColumnGrid : EntryList
+
   return (
     <Focusable
       scope={HotkeyScope.Timeline}
       data-hide-in-print
       className="@container relative flex h-full flex-1 flex-col"
-      onClick={
-        isMobile
-          ? undefined
-          : () =>
-              navigate({
-                entryId: null,
-              })
+      onClick={() =>
+        navigate({
+          view,
+          entryId: null,
+        })
       }
     >
       {entriesIds.length === 0 &&
@@ -145,11 +142,7 @@ function EntryColumnImpl() {
         hasUpdate={entries.hasUpdate}
       />
 
-      <EntryColumnWrapper
-        onScroll={handleScroll}
-        onPullToRefresh={entries.refetch}
-        key={`${routeFeedId}-${view}`}
-      >
+      <EntryColumnWrapper onScroll={handleScroll} key={`${routeFeedId}-${view}`}>
         {entriesIds.length === 0 ? (
           entries.isLoading ? (
             <EntryItemSkeleton view={view} />

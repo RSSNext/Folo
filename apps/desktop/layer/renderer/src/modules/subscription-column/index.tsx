@@ -17,7 +17,11 @@ import { memo, useCallback, useEffect, useLayoutEffect, useMemo, useRef, useStat
 
 import { useRootContainerElement } from "~/atoms/dom"
 import { useUISettingKey } from "~/atoms/settings/ui"
-import { setTimelineColumnShow, useSubscriptionColumnShow } from "~/atoms/sidebar"
+import {
+  setTimelineColumnShow,
+  useSubscriptionColumnApronNode,
+  useSubscriptionColumnShow,
+} from "~/atoms/sidebar"
 import { Focusable } from "~/components/common/Focusable"
 import { HotkeyScope, ROUTE_TIMELINE_OF_VIEW } from "~/constants"
 import { useBackHome } from "~/hooks/biz/useNavigateEntry"
@@ -174,9 +178,15 @@ export function SubscriptionColumn({
         </SwipeWrapper>
       </div>
 
+      <ApronNodeContainer />
+
       {children}
     </WindowUnderBlur>
   )
+}
+
+const ApronNodeContainer: FC = () => {
+  return useSubscriptionColumnApronNode()
 }
 
 const SwipeWrapper: FC<{ active: string; children: React.JSX.Element[] }> = memo(

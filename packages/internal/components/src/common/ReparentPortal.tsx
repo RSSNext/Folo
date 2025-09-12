@@ -1,6 +1,6 @@
 import type * as React from "react"
 import type { CSSProperties } from "react"
-import { useEffect, useLayoutEffect, useMemo, useRef } from "react"
+import { useLayoutEffect, useMemo, useRef } from "react"
 import { createPortal } from "react-dom"
 
 type Target = HTMLElement | null | string | (() => HTMLElement | null | undefined) | undefined
@@ -40,13 +40,16 @@ export function ReparentPortal({
   const hostEl = useMemo(() => {
     const el = document.createElement(hostTag)
     if (debugName) el.dataset.reparentPortal = debugName
+    if (hostClassName != null) el.className = hostClassName
+    if (hostStyle != null) Object.assign(el.style, hostStyle)
+
     return el
   }, [hostTag, debugName])
 
   const lastParentRef = useRef<HTMLElement | null>(null)
 
   // Sync styles/classes to hostEl
-  useEffect(() => {
+  useLayoutEffect(() => {
     if (hostClassName != null) hostEl.className = hostClassName
     if (hostStyle != null) Object.assign(hostEl.style, hostStyle)
   }, [hostEl, hostClassName, hostStyle])

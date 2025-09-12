@@ -3,14 +3,16 @@ import { PanelSplitter } from "@follow/components/ui/divider/index.js"
 import { defaultUISettings } from "@follow/shared/settings/defaults"
 import { cn } from "@follow/utils"
 import { AnimatePresence } from "motion/react"
-import { memo, useMemo, useRef } from "react"
+import { memo, startTransition, useEffect, useMemo, useRef } from "react"
 import { useResizable } from "react-resizable-layout"
 import { useParams } from "react-router"
 
 import { AIChatPanelStyle, useAIChatPanelStyle, useAIPanelVisibility } from "~/atoms/settings/ai"
 import { getUISettings, setUISetting } from "~/atoms/settings/ui"
+import { setSubscriptionColumnApronNode, useSubscriptionEntryPlaneVisible } from "~/atoms/sidebar"
 import { m } from "~/components/common/Motion"
 import { ROUTE_ENTRY_PENDING } from "~/constants"
+import { useRouteParamsSelector } from "~/hooks/biz/useRouteParams"
 import { AIChatLayout } from "~/modules/app-layout/ai/AIChatLayout"
 import { EntryContent } from "~/modules/entry-content/components/entry-content"
 import { AppLayoutGridContainerProvider } from "~/providers/app-grid-layout-container-provider"
@@ -18,6 +20,8 @@ import { AppLayoutGridContainerProvider } from "~/providers/app-grid-layout-cont
 import { AIChatRoot } from "../ai-chat/components/layouts/AIChatRoot"
 import { AIIndicator } from "../app-layout/ai/AISplineButton"
 import { AIEntryHeader } from "../entry-content/components/entry-header"
+import { EntryPlaneToolbar } from "./components/EntryPlaneToolbar"
+import { EntrySubscriptionList } from "./EntrySubscriptionList"
 import { EntryColumn } from "./index"
 
 const AIEntryLayoutImpl = () => {
@@ -112,6 +116,7 @@ const AIEntryLayoutImpl = () => {
 
       {/* Floating panel - renders outside layout flow */}
       {aiPanelStyle === AIChatPanelStyle.Floating && <AIChatLayout key="ai-chat-layout" />}
+      <SubscriptionColumnToggler />
     </div>
   )
 }
@@ -125,3 +130,57 @@ export const AIEntryLayout = memo(function AIEntryLayout() {
   )
 })
 AIEntryLayout.displayName = "AIEntryLayout"
+
+const SubscriptionColumnToggler = () => {
+  const isInEntry = useRouteParamsSelector((s) => s.entryId !== ROUTE_ENTRY_PENDING)
+
+  useEffect(() => {
+    if (isInEntry) {
+      startTransition(() => {
+        setSubscriptionColumnApronNode(<SubscriptionEntryListPlaneNode />)
+      })
+      return () => {
+        startTransition(() => {
+          setSubscriptionColumnApronNode(null)
+        })
+      }
+    }
+  }, [isInEntry])
+  return null
+}
+
+const SubscriptionEntryListPlaneNode = () => {
+  const entryId = useRouteParamsSelector((s) => s.entryId)
+  const isVisible = useSubscriptionEntryPlaneVisible()
+
+  return (
+    <m.div
+      className={cn(
+        "bg-sidebar backdrop-blur-background absolute left-0 top-12 z-[2] rounded-r-lg",
+        isVisible ? "w-feed-col bottom-0 flex flex-col" : "w-[40px]",
+      )}
+      id="subscription-entry-list-plane-node"
+      initial={false}
+      animate={{
+        width: isVisible ? "var(--fo-feed-col-w, 256px)" : "40px",
+      }}
+      transition={Spring.presets.smooth}
+    >
+      <EntryPlaneToolbar />
+      <AnimatePresence mode="popLayout">
+        {isVisible && (
+          <m.div
+            key="entry-list"
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            exit={{ opacity: 0 }}
+            transition={{ duration: 0.1 }}
+            className="w-feed-col flex flex-1 flex-col whitespace-pre"
+          >
+            <EntrySubscriptionList scrollToEntryId={entryId} />
+          </m.div>
+        )}
+      </AnimatePresence>
+    </m.div>
+  )
+}
