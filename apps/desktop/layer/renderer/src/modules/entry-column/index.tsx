@@ -19,9 +19,9 @@ import { useFeedHeaderTitle } from "~/store/feed/hooks"
 
 import { EntryColumnWrapper } from "./components/entry-column-wrapper/EntryColumnWrapper"
 import { FooterMarkItem } from "./components/FooterMarkItem"
+import { useEntriesContext } from "./context/EntriesContext"
 import { EntryItemSkeleton } from "./EntryItemSkeleton"
 import { EntryColumnGrid } from "./grid"
-import { useEntriesByView } from "./hooks/useEntriesByView"
 import { useSnapEntryIdList } from "./hooks/useEntryIdListSnap"
 import { useEntryMarkReadHandler } from "./hooks/useEntryMarkReadHandler"
 import { EntryListHeader } from "./layouts/EntryListHeader"
@@ -29,11 +29,14 @@ import { EntryEmptyList, EntryList } from "./list"
 
 function EntryColumnImpl() {
   const listRef = useRef<Virtualizer<HTMLElement, Element>>(undefined)
-  const entries = useEntriesByView({
-    onReset: useCallback(() => {
+  const entries = useEntriesContext()
+  // Register reset handler to keep scroll behavior when data resets
+  useEffect(() => {
+    entries.setOnReset(() => {
       listRef.current?.scrollToIndex(0)
-    }, []),
-  })
+    })
+    return () => entries.setOnReset(null)
+  }, [entries])
 
   const { entriesIds, groupedCounts } = entries
   useSnapEntryIdList(entriesIds)
