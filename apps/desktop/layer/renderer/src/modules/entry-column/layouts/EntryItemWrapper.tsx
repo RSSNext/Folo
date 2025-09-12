@@ -27,7 +27,9 @@ import { useContextMenuActionShortCutTrigger } from "~/hooks/biz/useContextMenuA
 import {
   EntryActionMenuItem,
   HIDE_ACTIONS_IN_ENTRY_CONTEXT_MENU,
+  HIDE_ACTIONS_IN_ENTRY_TOOLBAR_ACTIONS,
   useEntryActions,
+  useSortedEntryActions,
 } from "~/hooks/biz/useEntryActions"
 import { useFeature } from "~/hooks/biz/useFeature"
 import { useFeedActions } from "~/hooks/biz/useFeedActions"
@@ -36,7 +38,6 @@ import { getRouteParams, useRouteParams, useRouteParamsSelector } from "~/hooks/
 import { useContextMenu } from "~/hooks/common/useContextMenu"
 import { copyToClipboard } from "~/lib/clipboard"
 import { COMMAND_ID } from "~/modules/command/commands/id"
-import type { FollowCommandId } from "~/modules/command/types"
 
 export const EntryItemWrapper: FC<
   {
@@ -254,18 +255,6 @@ export const EntryItemWrapper: FC<
   )
 }
 
-const SHOW_ACTION_BAR_ACTIONS_ORDER = [
-  // Copy
-  COMMAND_ID.entry.copyTitle,
-  COMMAND_ID.entry.copyLink,
-  COMMAND_ID.entry.star,
-  COMMAND_ID.entry.read,
-  COMMAND_ID.entry.openInBrowser,
-  COMMAND_ID.entry.tip,
-  COMMAND_ID.entry.share,
-] as FollowCommandId[]
-const SHOW_ACTION_BAR_ACTIONS = new Set<FollowCommandId>(SHOW_ACTION_BAR_ACTIONS_ORDER)
-
 const ActionBar = ({
   entryId,
   openContextMenu,
@@ -275,9 +264,7 @@ const ActionBar = ({
 }) => {
   const { view } = useRouteParams()
 
-  const entryActions = useEntryActions({ entryId, view })
-
-  if (entryActions.length === 0) return null
+  const { mainAction } = useSortedEntryActions({ entryId, view })
 
   return (
     <div
@@ -292,23 +279,14 @@ const ActionBar = ({
     >
       <div className="flex items-center gap-1">
         {(
-          entryActions.filter(
-            (item) => item instanceof EntryActionMenuItem && SHOW_ACTION_BAR_ACTIONS.has(item.id),
+          mainAction.filter(
+            (item) =>
+              item instanceof EntryActionMenuItem &&
+              !HIDE_ACTIONS_IN_ENTRY_TOOLBAR_ACTIONS.includes(item.id),
           ) as EntryActionMenuItem[]
-        )
-          .sort(
-            (a, b) =>
-              SHOW_ACTION_BAR_ACTIONS_ORDER.indexOf(a.id) -
-              SHOW_ACTION_BAR_ACTIONS_ORDER.indexOf(b.id),
-          )
-          .map((item) => (
-            <CommandActionButton
-              key={item.id}
-              onClick={item.onClick}
-              size="xs"
-              commandId={item.id}
-            />
-          ))}
+        ).map((item) => (
+          <CommandActionButton key={item.id} onClick={item.onClick} size="xs" commandId={item.id} />
+        ))}
 
         <ActionButton
           onClick={openContextMenu}
