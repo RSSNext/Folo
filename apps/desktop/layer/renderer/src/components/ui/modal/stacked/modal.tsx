@@ -337,15 +337,14 @@ export const ModalInternal = memo(function Modal({
 
               <m.div
                 ref={modalElementRef}
-                style={{ ...modalStyle, transformStyle: "preserve-3d" }}
+                style={modalStyle}
                 {...modalMontionConfig}
                 animate={animateController}
                 className={cn(
-                  "relative flex flex-col overflow-hidden rounded-lg px-2 pt-2",
+                  "relative flex flex-col overflow-hidden rounded-xl px-2 pt-1",
                   "bg-background",
-                  "shadow-modal",
+                  "shadow-modal [transform-style:preserve-3d]",
                   max ? "h-[90vh] w-[90vw]" : "max-h-[90vh]",
-
                   "border-border border",
                   modalClassName,
                 )}
@@ -373,7 +372,7 @@ export const ModalInternal = memo(function Modal({
                 >
                   <div className={"relative flex items-center"}>
                     <Dialog.Title
-                      className="flex w-0 max-w-full grow items-center gap-2 px-2 py-1 text-lg font-semibold"
+                      className="text-text flex w-0 max-w-full grow items-center gap-2 px-2 py-1 text-base font-medium"
                       onPointerDownCapture={handleDrag}
                       onPointerDown={relocateModal}
                     >
@@ -384,7 +383,7 @@ export const ModalInternal = memo(function Modal({
                     </Dialog.Title>
                     {canClose && (
                       <Dialog.DialogClose
-                        className="center hover:bg-material-ultra-thick z-[2] rounded-lg p-2"
+                        className="center hover:bg-fill-quaternary text-text-secondary hover:text-text z-[2] -mr-1 rounded-lg p-2"
                         tabIndex={1}
                         onClick={close}
                       >
@@ -393,12 +392,12 @@ export const ModalInternal = memo(function Modal({
                     )}
                   </div>
                   {(title || icon || canClose) && (
-                    <div className="bg-border mx-1 mt-2 h-px shrink-0" />
+                    <div className="bg-border mx-1 mt-1 h-px shrink-0" />
                   )}
 
                   <div
                     className={cn(
-                      "-mx-2 min-h-0 shrink grow overflow-auto overflow-x-hidden p-4",
+                      "text-text -mx-2 min-h-0 shrink grow overflow-auto overflow-x-hidden px-4 pb-4 pt-3 text-sm",
                       modalContentClassName,
                     )}
                   >
