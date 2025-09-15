@@ -1,3 +1,5 @@
+import "client-only"
+
 import { env } from "@follow/shared/env.ssr"
 import { createSSRAPIHeaders } from "@follow/utils/headers"
 import { FollowClient } from "@follow-app/client-sdk"

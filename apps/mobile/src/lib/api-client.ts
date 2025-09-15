@@ -6,6 +6,7 @@ import { Platform } from "react-native"
 import DeviceInfo from "react-native-device-info"
 
 import { PlanScreen } from "../modules/settings/routes/Plan"
+import { LoginScreen } from "../screens/(modal)/LoginScreen"
 import { getCookie } from "./auth"
 import { getClientId, getSessionId } from "./client-session"
 import { getUserAgent } from "./native/user-agent"
@@ -48,25 +49,23 @@ followClient.addRequestInterceptor(async (ctx) => {
   return ctx
 })
 
-followClient.addErrorInterceptor(async ({ error, response }) => {
-  if (!response) {
-    return error
-  }
-
+followClient.addResponseInterceptor(async (ctx) => {
+  const { response } = ctx
   if (response.status === 401) {
     userActions.removeCurrentUser()
-  } else {
+    Navigation.rootNavigation.presentControllerView(LoginScreen)
+  } else if (response.status >= 400) {
     try {
-      const json = await response.json()
-      console.error(`Request failed with status ${response.status}`, json)
+      const isJSON = response.headers.get("content-type")?.includes("application/json")
+      const json = isJSON ? await response.json() : null
 
-      if (json.code.toString().startsWith("11")) {
+      if (isJSON && json?.code?.toString().startsWith("11")) {
         Navigation.rootNavigation.presentControllerView(PlanScreen)
       }
-    } catch {
+    } catch (error) {
       console.error(`Request failed with status ${response.status}`, error)
     }
   }
 
-  return error
+  return ctx.response
 })

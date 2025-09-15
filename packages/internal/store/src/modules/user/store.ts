@@ -65,6 +65,7 @@ class UserSyncService {
 
   async whoami() {
     const res = await api().auth.getSession()
+
     if (res) {
       if (!res.user) return res
       const user = apiMorph.toWhoami(res.user)
@@ -189,8 +190,8 @@ class UserSyncService {
   async fetchUser(userId: string | undefined) {
     if (!userId) return null
 
-    // 使用批处理器获取用户
     const user = await this.userBatcher.fetch(userId)
+
     return user || null
   }
 
