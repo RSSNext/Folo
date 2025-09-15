@@ -9,16 +9,9 @@ import { cn } from "@follow/utils/utils"
 import { AnimatePresence } from "motion/react"
 import type { FC, MouseEvent, PropsWithChildren, TouchEvent } from "react"
 import { useCallback, useEffect, useMemo, useState } from "react"
-import { useTranslation } from "react-i18next"
 import { NavLink } from "react-router"
 import { useDebounceCallback } from "usehooks-ts"
 
-import {
-  MENU_ITEM_SEPARATOR,
-  MenuItemSeparator,
-  MenuItemText,
-  useShowContextMenu,
-} from "~/atoms/context-menu"
 import { useGeneralSettingKey } from "~/atoms/settings/general"
 import { FocusablePresets } from "~/components/common/Focusable"
 import { CommandActionButton } from "~/components/ui/button/CommandActionButton"
@@ -26,18 +19,14 @@ import { useEntryIsRead } from "~/hooks/biz/useAsRead"
 import { useContextMenuActionShortCutTrigger } from "~/hooks/biz/useContextMenuActionShortCutTrigger"
 import {
   EntryActionMenuItem,
-  HIDE_ACTIONS_IN_ENTRY_CONTEXT_MENU,
   HIDE_ACTIONS_IN_ENTRY_TOOLBAR_ACTIONS,
   useEntryActions,
   useSortedEntryActions,
 } from "~/hooks/biz/useEntryActions"
+import { useEntryContextMenu } from "~/hooks/biz/useEntryContextMenu"
 import { useFeature } from "~/hooks/biz/useFeature"
-import { useFeedActions } from "~/hooks/biz/useFeedActions"
 import { getNavigateEntryPath, useNavigateEntry } from "~/hooks/biz/useNavigateEntry"
 import { getRouteParams, useRouteParams, useRouteParamsSelector } from "~/hooks/biz/useRouteParams"
-import { useContextMenu } from "~/hooks/common/useContextMenu"
-import { copyToClipboard } from "~/lib/clipboard"
-import { COMMAND_ID } from "~/modules/command/commands/id"
 
 export const EntryItemWrapper: FC<
   {
@@ -53,15 +42,7 @@ export const EntryItemWrapper: FC<
     return { feedId, id, inboxId: inboxHandle, read, url }
   })
   const actionConfigs = useEntryActions({ entryId, view })
-
-  const feedItems = useFeedActions({
-    feedId: entry?.feedId || entry?.inboxId || "",
-    view,
-    type: "entryList",
-  })
   const isMobile = useMobile()
-
-  const { t } = useTranslation("common")
 
   const isActive = useRouteParamsSelector(({ entryId }) => entryId === entry?.id, [entry?.id])
   const when = useGlobalFocusableScopeSelector(FocusablePresets.isTimeline)
@@ -154,60 +135,10 @@ export const EntryItemWrapper: FC<
     },
     [asRead, entry?.id, entry?.feedId, navigate, view],
   )
-  const [isContextMenuOpen, setIsContextMenuOpen] = useState(false)
-  const showContextMenu = useShowContextMenu()
-
-  const contextMenuProps = useContextMenu({
-    onContextMenu: async (e) => {
-      const $target = e.target as HTMLElement
-      const selection = window.getSelection()
-      if (selection) {
-        const targetHasSelection =
-          selection?.toString().length > 0 && $target.contains(selection?.anchorNode)
-        if (targetHasSelection) {
-          e.stopPropagation()
-          return
-        }
-      }
-
-      e.preventDefault()
-      setIsContextMenuOpen(true)
-
-      await showContextMenu(
-        [
-          ...actionConfigs.filter((item) => {
-            if (item instanceof MenuItemSeparator) {
-              return true
-            }
-            return !HIDE_ACTIONS_IN_ENTRY_CONTEXT_MENU.includes(item.id as any)
-          }),
-          MENU_ITEM_SEPARATOR,
-          ...feedItems.filter((item) => {
-            if (item instanceof MenuItemSeparator) {
-              return true
-            }
-            return item && !item.disabled
-          }),
-
-          MENU_ITEM_SEPARATOR,
-          // Copy
-          ...actionConfigs.filter((item) => {
-            if (item instanceof MenuItemSeparator) {
-              return false
-            }
-            return [COMMAND_ID.entry.copyTitle, COMMAND_ID.entry.copyLink].includes(item.id as any)
-          }),
-          new MenuItemText({
-            label: `${t("words.copy")}${t("space")}${t("words.entry")} ${t("words.id")}`,
-            click: () => {
-              copyToClipboard(entry?.id || "")
-            },
-          }),
-        ],
-        e,
-      )
-      setIsContextMenuOpen(false)
-    },
+  const { contextMenuProps, isContextMenuOpen, openContextMenuAt } = useEntryContextMenu({
+    entryId,
+    view,
+    feedId: entry?.feedId || entry?.inboxId || "",
   })
 
   const aiEnabled = useFeature("ai")
@@ -238,13 +169,7 @@ export const EntryItemWrapper: FC<
             <ActionBar
               openContextMenu={() => {
                 const { x, y } = getMousePosition()
-                const mouseEvent = new MouseEvent("contextmenu", {
-                  bubbles: true,
-                  cancelable: true,
-                  clientX: x,
-                  clientY: y,
-                })
-                contextMenuProps.onContextMenu?.(mouseEvent as unknown as MouseEvent<HTMLElement>)
+                void openContextMenuAt(x, y)
               }}
               entryId={entryId}
             />
