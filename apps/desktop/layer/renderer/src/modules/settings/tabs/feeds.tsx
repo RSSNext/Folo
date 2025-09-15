@@ -29,9 +29,10 @@ import {
   useSubscriptionByFeedId,
 } from "@follow/store/subscription/hooks"
 import { clsx, formatNumber, sortByAlphabet } from "@follow/utils/utils"
+import { useVirtualizer } from "@tanstack/react-virtual"
 import { AnimatePresence, m } from "motion/react"
 import type { FC } from "react"
-import { memo, useCallback, useEffect, useMemo, useState } from "react"
+import { memo, useCallback, useMemo, useState } from "react"
 import { useTranslation } from "react-i18next"
 
 import { useIsInMASReview } from "~/atoms/server-configs"
@@ -116,36 +117,6 @@ const SubscriptionFeedsSection = () => {
     presentDeleteSubscription(feedIds, () => setSelectedFeeds(new Set()))
   }, [presentDeleteSubscription, selectedFeeds, setSelectedFeeds])
 
-  const [visibleableFeedIds, setVisibleableFeedIds] = useState<Set<string>>(() => new Set())
-  const scrollContainerElement = useScrollViewElement()
-  useEffect(() => {
-    if (!scrollContainerElement) return
-    const observer = new IntersectionObserver((entries) => {
-      setVisibleableFeedIds((prevSet) => {
-        const nextSet = new Set(prevSet)
-        entries.forEach((entry) => {
-          const targetId = (entry.target as HTMLButtonElement).dataset.id
-          if (targetId) {
-            if (entry.isIntersecting) {
-              nextSet.add(targetId)
-            } else {
-              nextSet.delete(targetId)
-            }
-          }
-        })
-        return nextSet
-      })
-    })
-    scrollContainerElement.querySelectorAll("[data-id]").forEach((el) => {
-      observer.observe(el)
-    })
-    return () => {
-      observer.disconnect()
-    }
-  }, [scrollContainerElement])
-
-  usePrefetchFeedAnalytics(Array.from(visibleableFeedIds))
-
   return (
     <section className="relative mt-4">
       <h2 className="mb-2 text-lg font-semibold">{t("feeds.subscription")}</h2>
@@ -215,13 +186,15 @@ const SubscriptionFeedsSection = () => {
           </div>
 
           {/* Feed List */}
-          <SortedFeedsList
-            feeds={allFeeds}
-            sortField={sortField}
-            sortDirection={sortDirection}
-            selectedFeeds={selectedFeeds}
-            onSelect={handleSelectFeed}
-          />
+          <div className="relative">
+            <SortedFeedsList
+              feeds={allFeeds}
+              sortField={sortField}
+              sortDirection={sortDirection}
+              selectedFeeds={selectedFeeds}
+              onSelect={handleSelectFeed}
+            />
+          </div>
 
           {/* Sticky Action Bar at bottom when scrolled */}
           <AnimatePresence>
@@ -289,6 +262,8 @@ const SortedFeedsList: FC<{
   selectedFeeds: Set<string>
   onSelect: (feedId: string, checked: boolean) => void
 }> = ({ feeds, sortField, sortDirection, selectedFeeds, onSelect }) => {
+  const scrollContainerElement = useScrollViewElement()
+
   const sortedFeedIds = useMemo(() => {
     switch (sortField) {
       case "date": {
@@ -358,14 +333,60 @@ const SortedFeedsList: FC<{
     }
   }, [feeds, sortDirection, sortField])
 
-  return sortedFeedIds.map((feedId) => (
-    <FeedListItem
-      id={feedId}
-      key={feedId}
-      selected={selectedFeeds.has(feedId)}
-      onSelect={onSelect}
-    />
-  ))
+  const rowVirtualizer = useVirtualizer({
+    count: sortedFeedIds.length,
+    getScrollElement: () => scrollContainerElement,
+    estimateSize: () => 44, // Estimated height of each feed item (h-10 = 40px + 4px gap)
+    overscan: 5,
+  })
+
+  // Track visible feeds for analytics prefetching
+  const virtualItems = rowVirtualizer.getVirtualItems()
+  const visibleFeedIds = useMemo(() => {
+    const feedIds: string[] = []
+    virtualItems.forEach((item) => {
+      const feedId = sortedFeedIds[item.index]
+      if (feedId) {
+        feedIds.push(feedId)
+      }
+    })
+    return feedIds
+  }, [virtualItems, sortedFeedIds])
+
+  usePrefetchFeedAnalytics(visibleFeedIds)
+
+  return (
+    <div
+      className="space-y-1"
+      style={{
+        height: `${rowVirtualizer.getTotalSize()}px`,
+        width: "100%",
+        position: "relative",
+      }}
+    >
+      {virtualItems.map((virtualRow) => {
+        const feedId = sortedFeedIds[virtualRow.index]
+        if (!feedId) return null
+
+        return (
+          <div
+            key={virtualRow.key}
+            data-index={virtualRow.index}
+            ref={rowVirtualizer.measureElement}
+            style={{
+              position: "absolute",
+              top: 0,
+              left: 0,
+              width: "100%",
+              transform: `translateY(${virtualRow.start}px)`,
+            }}
+          >
+            <FeedListItem id={feedId} selected={selectedFeeds.has(feedId)} onSelect={onSelect} />
+          </div>
+        )
+      })}
+    </div>
+  )
 }
 
 const ViewSelector: FC<{ selectedFeeds: Set<string> }> = ({ selectedFeeds }) => {

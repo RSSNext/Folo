@@ -323,15 +323,17 @@ export const getFeedSubscriptionIdsSelector = (state: StateType) => (view: FeedV
 }
 
 export const getAllFeedSubscriptionSelector = (state: StateType) => () => {
-  return Object.values(state.feedIdByView).flatMap((feedId) =>
-    Array.from(feedId)
-      .map((id) => state.data[id])
-      .filter((feed) => !!feed),
+  return Array.from(
+    new Set(Object.values(state.feedIdByView).flatMap((feedId) => Array.from(feedId))),
   )
+    .map((id) => state.data[id])
+    .filter((feed) => !!feed)
 }
 
 export const getAllFeedSubscriptionIdsSelector = (state: StateType) => () => {
-  return Object.values(state.feedIdByView).flatMap((feedId) => Array.from(feedId))
+  return Array.from(
+    new Set(Object.values(state.feedIdByView).flatMap((feedId) => Array.from(feedId))),
+  )
 }
 
 export const getAllSubscriptionSelector = (state: StateType) => () => {
