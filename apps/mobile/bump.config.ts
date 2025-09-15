@@ -23,6 +23,7 @@ export default defineConfig({
   push: false,
   commitMessage: "release(mobile): release v${NEW_VERSION}",
   tagPrefix: "mobile@",
+  tag: false,
   changelog: false,
   allowedBranches: ["dev"],
 })
