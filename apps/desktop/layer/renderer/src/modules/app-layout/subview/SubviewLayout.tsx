@@ -20,6 +20,35 @@ import { HotkeyScope } from "~/constants"
 
 import { useSubViewRightView, useSubViewTitleValue } from "./hooks"
 
+/**
+ * SubviewLayout Component
+ *
+ * A full-screen modal-style layout for subview pages like Discover, AI, etc.
+ * This layout provides:
+ * - Fullscreen overlay with enhanced header controls
+ * - Smooth scroll behavior with progress indicators
+ * - Glass morphism UI elements with backdrop blur effects
+ * - Back navigation with ESC key support
+ * - Dynamic title display based on scroll position
+ * - Configurable right-side action buttons
+ *
+ * Layout Structure:
+ * ```
+ * SubviewLayout
+ * ├── Fixed Header (glass, floating)
+ * │   ├── Back Button (left)
+ * │   ├── Title (center, fade in on scroll)
+ * │   └── Action Buttons (right, configurable)
+ * ├── Scrollable Content Area
+ * │   └── Outlet (renders subview pages)
+ * └── Progress FAB (bottom-right, scroll to top)
+ * ```
+ *
+ * @component
+ * @example
+ * // Used for routes like /discover, /power, /action, /rsshub
+ * // Provides full-screen modal-like experience
+ */
 export function SubviewLayout() {
   return (
     <Focusable className="contents" scope={HotkeyScope.SubLayer}>
@@ -28,6 +57,19 @@ export function SubviewLayout() {
   )
 }
 
+/**
+ * SubviewLayoutInner Component
+ *
+ * The inner implementation of SubviewLayout that handles:
+ * - Scroll state management and progress tracking
+ * - Header elevation and transparency effects
+ * - Navigation history and ESC key handling
+ * - Dynamic title visibility based on scroll position
+ * - Smooth scroll animations and auto-scroll behavior
+ *
+ * @component
+ * @internal
+ */
 function SubviewLayoutInner() {
   const navigate = useNavigate()
   const prevLocation = useRef(getReadonlyRoute().location).current
@@ -79,7 +121,7 @@ function SubviewLayoutInner() {
     ) {
       springScrollTo(0, scrollRef)
     }
-  }, [location.pathname, discoverType, scrollRef])
+  }, [location.pathname, discoverType, scrollRef, navigationType])
 
   useEffect(() => {
     const $scroll = scrollRef
@@ -296,7 +338,7 @@ const ScrollProgressFAB = ({
           type="button"
           className="absolute inset-0 flex items-center justify-center opacity-0 transition-opacity duration-200 group-hover/fab:opacity-100"
         >
-          <i className="i-mingcute-arow-to-up-line" />
+          <i className="i-mingcute-arrow-to-up-line" />
         </button>
       </div>
     </div>

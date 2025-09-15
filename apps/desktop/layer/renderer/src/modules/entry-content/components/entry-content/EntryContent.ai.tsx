@@ -126,7 +126,6 @@ const EntryContentImpl: Component<EntryContentProps> = ({
   }, [scrollerRef])
 
   const scrollerRefObject = React.useMemo(() => ({ current: scrollerRef }), [scrollerRef])
-
   return (
     <div className={cn(className, "@container flex flex-col")}>
       <EntryTitleMetaHandler entryId={entryId} />

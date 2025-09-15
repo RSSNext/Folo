@@ -11,7 +11,28 @@ import { useRouteParams } from "~/hooks/biz/useRouteParams"
 import { EntryColumn } from "~/modules/entry-column"
 import { AppLayoutGridContainerProvider } from "~/providers/app-grid-layout-container-provider"
 
-export function TimelineColumnLayout() {
+/**
+ * TimelineEntryTwoColumnLayout Component
+ *
+ * A resizable two-column layout for timeline entry browsing and content reading.
+ * This layout manages:
+ * - Entry column (left): Displays the list of timeline entries/articles
+ * - Content area (right): Renders the selected entry content via Outlet
+ * - Resizable splitter: Allows users to adjust column widths
+ * - Wide mode support: Adapts layout for wide content types
+ *
+ * Layout Behavior:
+ * - Normal mode: Entry column + resizable splitter + content area
+ * - Wide mode: Entry column takes full width, no splitter
+ * - Persists column width settings in user preferences
+ * - Responsive sizing with min/max constraints
+ *
+ * @component
+ * @example
+ * // Used in timeline routes like /timeline/:timelineId/:feedId
+ * // Renders EntryColumn on left, Outlet content on right
+ */
+export function TimelineEntryTwoColumnLayout() {
   const containerRef = useRef<HTMLDivElement>(null)
 
   // Memo this initial value to avoid re-render
