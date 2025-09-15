@@ -616,13 +616,7 @@ class EntrySyncServices {
     return entry
   }
 
-  async fetchEntryContentByStream(
-    remoteEntryIds?: string[],
-    options?: {
-      fetch?: typeof fetch
-      cookie?: string
-    },
-  ) {
+  async fetchEntryContentByStream(remoteEntryIds?: string[]) {
     if (!remoteEntryIds || remoteEntryIds.length === 0) return
 
     const onlyNoStored = true
@@ -642,23 +636,10 @@ class EntrySyncServices {
     if (nextIds.length === 0) return
 
     const readStream = async () => {
-      // https://github.com/facebook/react-native/issues/37505
-      // TODO: And it seems we can not just use fetch from expo for ofetch, need further investigation
-      const response = await (options?.fetch || fetch)(
-        `${process.env.VITE_API_URL}/entries/stream`,
-        {
-          method: "POST",
-          headers: options?.cookie
-            ? {
-                cookie: options.cookie,
-              }
-            : undefined,
-          credentials: options?.cookie ? "omit" : "include",
-          body: JSON.stringify({
-            ids: nextIds,
-          }),
-        },
-      )
+      const response = await api().entries.stream({
+        ids: nextIds,
+      })
+
       if (!response.ok) {
         console.error("Failed to fetch stream:", response.statusText, await response.text())
         return
@@ -683,6 +664,7 @@ class EntrySyncServices {
             if (lines[i]!.trim()) {
               const json = JSON.parse(lines[i]!)
               // Handle each JSON line here
+
               entryActions.updateEntryContent({ entryId: json.id, content: json.content })
             }
           }
