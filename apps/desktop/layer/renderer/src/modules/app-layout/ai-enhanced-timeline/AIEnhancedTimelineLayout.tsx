@@ -13,18 +13,46 @@ import { setSubscriptionColumnApronNode, useSubscriptionEntryPlaneVisible } from
 import { m } from "~/components/common/Motion"
 import { ROUTE_ENTRY_PENDING } from "~/constants"
 import { useRouteParamsSelector } from "~/hooks/biz/useRouteParams"
+import { AIChatRoot } from "~/modules/ai-chat/components/layouts/AIChatRoot"
 import { AIChatLayout } from "~/modules/app-layout/ai/AIChatLayout"
+import { AIIndicator } from "~/modules/app-layout/ai/AISplineButton"
+import { EntryColumn } from "~/modules/entry-column"
+import { EntryPlaneToolbar } from "~/modules/entry-column/components/EntryPlaneToolbar"
+import { EntrySubscriptionList } from "~/modules/entry-column/EntrySubscriptionList"
 import { EntryContent } from "~/modules/entry-content/components/entry-content"
+import { AIEntryHeader } from "~/modules/entry-content/components/entry-header"
 import { AppLayoutGridContainerProvider } from "~/providers/app-grid-layout-container-provider"
 
-import { AIChatRoot } from "../ai-chat/components/layouts/AIChatRoot"
-import { AIIndicator } from "../app-layout/ai/AISplineButton"
-import { AIEntryHeader } from "../entry-content/components/entry-header"
-import { EntryPlaneToolbar } from "./components/EntryPlaneToolbar"
-import { EntrySubscriptionList } from "./EntrySubscriptionList"
-import { EntryColumn } from "./index"
-
-const AIEntryLayoutImpl = () => {
+/**
+ * AIEnhancedTimelineLayout Component
+ *
+ * An advanced timeline layout that integrates AI chat functionality with entry browsing.
+ * This layout provides:
+ * - Entry list display with animated content overlay
+ * - Integrated AI chat panel (Fixed/Floating modes)
+ * - Dynamic subscription column toggling
+ * - Smooth animations for entry transitions
+ * - Resizable AI panel with persistent settings
+ *
+ * Layout Structure:
+ * ```
+ * AIEnhancedTimelineLayout
+ * ├── Main Content Area
+ * │   ├── EntryColumn (entry list)
+ * │   ├── AIEntryHeader (animated overlay)
+ * │   └── EntryContent (animated overlay)
+ * ├── AI Chat Panel (resizable, optional)
+ * │   ├── Fixed Panel (docked to right)
+ * │   └── Floating Panel (draggable overlay)
+ * └── Subscription Column Toggler
+ * ```
+ *
+ * @component
+ * @example
+ * // Used in AI-enabled timeline routes
+ * // Provides enhanced timeline experience with AI assistance
+ */
+const AIEnhancedTimelineLayoutImpl = () => {
   const { entryId } = useParams()
 
   const aiPanelStyle = useAIChatPanelStyle()
@@ -121,15 +149,15 @@ const AIEntryLayoutImpl = () => {
   )
 }
 
-export const AIEntryLayout = memo(function AIEntryLayout() {
+export const AIEnhancedTimelineLayout = memo(function AIEnhancedTimelineLayout() {
   return (
     <AIChatRoot wrapFocusable={false}>
-      <AIEntryLayoutImpl />
+      <AIEnhancedTimelineLayoutImpl />
       <AIIndicator />
     </AIChatRoot>
   )
 })
-AIEntryLayout.displayName = "AIEntryLayout"
+AIEnhancedTimelineLayout.displayName = "AIEnhancedTimelineLayout"
 
 const SubscriptionColumnToggler = () => {
   const isInEntry = useRouteParamsSelector((s) => s.entryId !== ROUTE_ENTRY_PENDING)

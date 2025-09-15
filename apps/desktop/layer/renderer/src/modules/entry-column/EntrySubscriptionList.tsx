@@ -3,7 +3,7 @@ import type { FC, RefObject } from "react"
 import { memo, startTransition, useEffect, useRef, useState } from "react"
 
 import { EntrySubscriptionSkeleton } from "./components/EntrySubscriptionSkeleton"
-import { useEntriesContext } from "./context/EntriesContext"
+import { useEntriesActions, useEntriesState } from "./context/EntriesContext"
 import { EntrySubscriptionItem } from "./EntrySubscriptionItem"
 import { useEntryVirtualizer } from "./hooks/subscription/useEntryVirtualizer"
 
@@ -20,7 +20,8 @@ const handleKeyDown: React.KeyboardEventHandler<HTMLDivElement> = (e) => {
 
 export const EntrySubscriptionList: FC<EntrySubscriptionListProps> = memo(({ scrollToEntryId }) => {
   // Use shared context exclusively to guarantee full synchronization
-  const { entriesIds, hasNextPage, isFetchingNextPage, fetchNextPage, view } = useEntriesContext()
+  const { entriesIds, hasNextPage, isFetchingNextPage, view } = useEntriesState()
+  const { fetchNextPage } = useEntriesActions()
 
   const scrollAreaRef = useRef<HTMLDivElement>(null)
 
