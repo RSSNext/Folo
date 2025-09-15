@@ -55,20 +55,21 @@ export const KbdCombined: FC<{
   className?: string
   joint?: boolean
   kbdProps?: Partial<React.ComponentProps<typeof Kbd>>
-}> = ({ children, joint, className, kbdProps }) => {
+  abbr?: string
+}> = ({ children, joint, className, kbdProps, abbr }) => {
   const keys = children.split(",")
   return (
     <div className="flex items-center gap-1">
       {keys.map((k, i) => (
         <Fragment key={k}>
           {joint ? (
-            <Kbd className={className} {...kbdProps}>
+            <Kbd className={className} {...kbdProps} abbr={abbr}>
               {k}
             </Kbd>
           ) : (
             <div className="flex items-center gap-1">
               {k.split("+").map((key) => (
-                <Kbd key={key} className={className} {...kbdProps}>
+                <Kbd key={key} className={className} {...kbdProps} abbr={abbr}>
                   {key}
                 </Kbd>
               ))}
@@ -309,98 +310,102 @@ function simulateKeyPress(key: string) {
 
   document.dispatchEvent(event)
 }
-export const Kbd: FC<{ children: string; className?: string; wrapButton?: boolean }> = memo(
-  ({ children, className, wrapButton = true }) => {
-    let specialKeys = (SpecialKeys as any)[os] as Record<string, string>
-    specialKeys = { ...SharedKeys, ...specialKeys }
+export const Kbd: FC<{
+  children: string
+  className?: string
+  wrapButton?: boolean
+  abbr?: string
+}> = memo(({ children, className, wrapButton = true, abbr }) => {
+  let specialKeys = (SpecialKeys as any)[os] as Record<string, string>
+  specialKeys = { ...SharedKeys, ...specialKeys }
 
-    const [isKeyPressed, setIsKeyPressed] = React.useState(false)
-    React.useEffect(() => {
-      const handler = () => {
-        setIsKeyPressed(isHotkeyPressed(children.toLowerCase()))
-      }
-      document.addEventListener("keydown", handler)
-      document.addEventListener("keyup", handler)
+  const [isKeyPressed, setIsKeyPressed] = React.useState(false)
+  React.useEffect(() => {
+    const handler = () => {
+      setIsKeyPressed(isHotkeyPressed(children.toLowerCase()))
+    }
+    document.addEventListener("keydown", handler)
+    document.addEventListener("keyup", handler)
 
-      return () => {
-        document.removeEventListener("keydown", handler)
-        document.removeEventListener("keyup", handler)
-      }
-    }, [children])
+    return () => {
+      document.removeEventListener("keydown", handler)
+      document.removeEventListener("keyup", handler)
+    }
+  }, [children])
 
-    const handleClick = React.useCallback(() => {
-      setIsKeyPressed(true)
-      setTimeout(() => {
-        setIsKeyPressed(false)
-      }, 100)
+  const handleClick = React.useCallback(() => {
+    setIsKeyPressed(true)
+    setTimeout(() => {
+      setIsKeyPressed(false)
+    }, 100)
 
-      simulateKeyPress(children.trim())
-    }, [children])
+    simulateKeyPress(children.trim())
+  }, [children])
 
-    const Kbd = (
-      <kbd
-        className={cn(
-          "kbd text-text box-border h-5 space-x-1 font-sans text-[0.7rem] tabular-nums transition-[border] duration-200",
+  const KbdElement = (
+    <kbd
+      className={cn(
+        "kbd text-text box-border h-5 space-x-1 font-sans text-[0.7rem] tabular-nums transition-[border] duration-200",
 
-          wrapButton && (isKeyPressed ? "" : "border-b-2 hover:border-b"),
-          className,
-        )}
-      >
-        {children.split("+").map((key_) => {
-          let key: string = key_.toLowerCase()
-          for (const [k, v] of Object.entries(specialKeys)) {
-            key = key.replace(k, v)
+        wrapButton && (isKeyPressed ? "" : "border-b-2 hover:border-b"),
+        className,
+      )}
+      {...(abbr && { title: abbr })}
+    >
+      {children.split("+").map((key_) => {
+        let key: string = key_.toLowerCase()
+        for (const [k, v] of Object.entries(specialKeys)) {
+          key = key.replace(k, v)
+        }
+
+        switch (key) {
+          case SharedKeys.space: {
+            return <MaterialSymbolsSpaceBarRounded key={key} />
           }
 
-          switch (key) {
-            case SharedKeys.space: {
-              return <MaterialSymbolsSpaceBarRounded key={key} />
-            }
-
-            case SharedKeys.backspace: {
-              return <IcOutlineBackspace key={key} />
-            }
-            case SpecialKeys.macOS.meta: {
-              return <MaterialSymbolsKeyboardCommandKey key={key} />
-            }
-            case SpecialKeys.macOS.alt: {
-              return <MaterialSymbolsKeyboardOptionKey key={key} />
-            }
-
-            case SpecialKeys.macOS.ctrl: {
-              return <MaterialSymbolsKeyboardControlKey key={key} />
-            }
-
-            case SpecialKeys.macOS.shift: {
-              return <MaterialSymbolsShiftOutlineRounded key={key} />
-            }
-
-            case SharedKeys.tab: {
-              return <MaterialSymbolsKeyboardTabRounded key={key} />
-            }
-            case SpecialKeys.Windows.meta: {
-              return <MaterialSymbolsWindowOutlineSharp key={key} />
-            }
-            default: {
-              return (
-                <span className="capitalize" key={key}>
-                  {key}
-                </span>
-              )
-            }
+          case SharedKeys.backspace: {
+            return <IcOutlineBackspace key={key} />
           }
-        })}
-      </kbd>
-    )
-    return wrapButton ? (
-      <button type="button" className="contents" onClick={handleClick}>
-        {Kbd}
-      </button>
-    ) : (
-      Kbd
-    )
-  },
-)
+          case SpecialKeys.macOS.meta: {
+            return <MaterialSymbolsKeyboardCommandKey key={key} />
+          }
+          case SpecialKeys.macOS.alt: {
+            return <MaterialSymbolsKeyboardOptionKey key={key} />
+          }
+
+          case SpecialKeys.macOS.ctrl: {
+            return <MaterialSymbolsKeyboardControlKey key={key} />
+          }
+
+          case SpecialKeys.macOS.shift: {
+            return <MaterialSymbolsShiftOutlineRounded key={key} />
+          }
+
+          case SharedKeys.tab: {
+            return <MaterialSymbolsKeyboardTabRounded key={key} />
+          }
+          case SpecialKeys.Windows.meta: {
+            return <MaterialSymbolsWindowOutlineSharp key={key} />
+          }
+          default: {
+            return (
+              <span className="capitalize" key={key}>
+                {key}
+              </span>
+            )
+          }
+        }
+      })}
+    </kbd>
+  )
+  return wrapButton ? (
+    <button type="button" className="contents" onClick={handleClick}>
+      {KbdElement}
+    </button>
+  ) : (
+    KbdElement
+  )
+})
 
 function MaterialSymbolsKeyboardCommandKey(props: React.SVGProps<SVGSVGElement>) {
   return (

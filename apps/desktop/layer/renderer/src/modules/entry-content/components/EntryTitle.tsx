@@ -157,11 +157,7 @@ export const EntryTitle = ({ entryId, compact }: EntryLinkProps) => {
           </div>
         </div>
         {/* Recent Readers */}
-        {aiEnabled && !hideRecentReader && (
-          <div className="-mb-2 mt-2 flex h-6 items-center">
-            <EntryReadHistory entryId={entryId} />
-          </div>
-        )}
+        {aiEnabled && !hideRecentReader && <EntryReadHistory entryId={entryId} />}
       </div>
     </div>
   )

@@ -3,11 +3,14 @@ import "./AISmartSidebar.css"
 
 import { Spring } from "@follow/components/constants/spring.js"
 import { useMousePosition } from "@follow/components/hooks/useMouse.js"
+import { KbdCombined } from "@follow/components/ui/kbd/Kbd.js"
 import { AnimatePresence, m } from "motion/react"
 import * as React from "react"
 import { useEffect, useState } from "react"
 
 import { setAIPanelVisibility, useAIPanelVisibility } from "~/atoms/settings/ai"
+import { COMMAND_ID } from "~/modules/command/commands/id"
+import { useCommandShortcut } from "~/modules/command/hooks/use-command-binding"
 
 const AIAmbientSidebar: React.FC<{ onExpand: () => void }> = ({ onExpand }) => {
   const [intensity, setIntensity] = useState(0)
@@ -46,6 +49,7 @@ const AIAmbientSidebar: React.FC<{ onExpand: () => void }> = ({ onExpand }) => {
     }
   }, [mousePosition])
 
+  const toggleAIChatShortcut = useCommandShortcut(COMMAND_ID.global.toggleAIChat)
   return (
     <>
       <div
@@ -103,6 +107,9 @@ const AIAmbientSidebar: React.FC<{ onExpand: () => void }> = ({ onExpand }) => {
                 <div className="flex items-center gap-2">
                   <div className="from-folo ai-dot-pulse size-2 rounded-full bg-gradient-to-r to-red-500" />
                   <span className="text-text text-sm font-medium">Open AI Chat</span>
+                  <KbdCombined abbr="Open AI Chat" joint className="rounded-full px-2">
+                    {toggleAIChatShortcut}
+                  </KbdCombined>
                 </div>
               </button>
             </m.div>
