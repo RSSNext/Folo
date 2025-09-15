@@ -5,16 +5,23 @@ import type { MetaTag } from "~/meta-handler"
 import { defineMetadata } from "~/meta-handler"
 
 export default defineMetadata(async ({ params, apiClient, origin }): Promise<MetaTag[]> => {
-  const mayBeUserId = params.id
+  const userIdOrHandle = params.id
 
-  const handle = isBizId(mayBeUserId || "")
-    ? mayBeUserId
-    : `${mayBeUserId}`.startsWith("@")
-      ? `${mayBeUserId}`.slice(1)
-      : mayBeUserId
+  let handle = undefined
+  let userId = undefined
+
+  if (!userIdOrHandle) {
+    throw new Error("User ID or handle is required")
+  }
+
+  if (isBizId(userIdOrHandle || "")) {
+    userId = userIdOrHandle
+  } else {
+    handle = userIdOrHandle.startsWith("@") ? userIdOrHandle.slice(1) : userIdOrHandle
+  }
 
   const profileRes = await apiClient.api.profiles
-    .getProfile({ id: mayBeUserId, handle })
+    .getProfile({ id: userId, handle })
     .catch(callNotFound)
 
   const realUserId = profileRes.data.id
@@ -45,13 +52,13 @@ export default defineMetadata(async ({ params, apiClient, origin }): Promise<Met
     {
       type: "openGraph",
       title: `${name} on ${APP_NAME}`,
-      image: `${origin}/og/user/${mayBeUserId}`,
+      image: `${origin}/og/user/${userIdOrHandle}`,
     },
     {
       type: "hydrate",
       data: profileRes.data,
 
-      key: `profiles.$get,query:id=${mayBeUserId}`,
+      key: `profiles.$get,query:id=${userIdOrHandle}`,
     },
     isSubscriptionsResolved && {
       type: "hydrate",

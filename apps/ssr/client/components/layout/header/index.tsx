@@ -99,7 +99,7 @@ export const Header = () => {
               whileHover={{ scale: 1.02 }}
               whileTap={{ scale: 0.98 }}
               className={cn(
-                "inline-flex items-center gap-2 rounded-full border px-3 font-medium",
+                "inline-flex items-center gap-2 rounded-full border px-6 font-medium",
                 "bg-fill/60 text-text hover:bg-fill/80 text-sm",
                 isCompact ? "h-8" : "h-10",
               )}
@@ -114,7 +114,7 @@ export const Header = () => {
               whileHover={{ scale: 1.02 }}
               whileTap={{ scale: 0.98 }}
               className={cn(
-                "inline-flex items-center justify-center rounded-full px-4 font-medium",
+                "inline-flex items-center justify-center rounded-full px-6 font-medium",
                 "bg-white text-sm text-black shadow-sm hover:shadow",
                 "dark:bg-zinc-50 dark:text-zinc-900",
                 isCompact ? "h-8" : "h-10",

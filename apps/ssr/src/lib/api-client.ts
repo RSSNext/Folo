@@ -58,14 +58,13 @@ export const createApiFetch = () => {
 export const createFollowClient = () => {
   const authSessionToken = getTokenFromCookie(requestContext.get("req")?.headers.cookie || "")
 
-  const apiFetch = createApiFetch()
   const baseURL = getBaseURL()
 
   const client = new FollowClient({
     credentials: "include",
     timeout: 10000,
     baseURL,
-    fetch: async (input: any, options = {}) => apiFetch(input.toString(), options),
+    fetch: async (input: any, options = {}) => fetch(input.toString(), options),
   })
 
   client.addRequestInterceptor(async (ctx) => {
