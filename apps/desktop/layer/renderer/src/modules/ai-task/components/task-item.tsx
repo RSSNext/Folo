@@ -13,7 +13,11 @@ import { useAIChatSessionListQuery } from "~/modules/ai-chat-session/query"
 import type { ActionButton } from "~/modules/ai-task/components/ai-item-actions"
 import { ItemActions } from "~/modules/ai-task/components/ai-item-actions"
 
-import { useDeleteAITaskMutation, useUpdateAITaskMutation } from "../query"
+import {
+  useDeleteAITaskMutation,
+  useTestRunAITaskMutation,
+  useUpdateAITaskMutation,
+} from "../query"
 import { AITaskModal } from "./ai-task-modal"
 
 const formatScheduleText = (schedule: TaskSchedule) => {
@@ -80,6 +84,7 @@ export const TaskItem = memo(({ task }: { task: AITask }) => {
   const { present } = useModalStack()
   const deleteTaskMutation = useDeleteAITaskMutation()
   const updateTaskMutation = useUpdateAITaskMutation()
+  const testRunMutation = useTestRunAITaskMutation()
   const { ask } = useDialog()
   const { t } = useTranslation()
   const sessions = useAIChatSessionListQuery()
@@ -137,6 +142,26 @@ export const TaskItem = memo(({ task }: { task: AITask }) => {
           } satisfies ActionButton,
         ]
       : []),
+    {
+      icon: "i-mgc-test-tube-cute-re" as const,
+      onClick: async () => {
+        try {
+          const loadingId = toast.loading(
+            "Starting test run… This may take about 1 minute. You can view the result in the Chat panel.",
+          )
+          await testRunMutation.mutateAsync({ id: task.id })
+          toast.success("Test run finished. You can view the report in the Chat panel.", {
+            id: loadingId,
+          })
+        } catch (error) {
+          console.error("Failed to run test:", error)
+          toast.error("Failed to run test. Please try again.")
+        }
+      },
+      title: "Test run",
+      disabled: testRunMutation.isPending,
+      loading: testRunMutation.isPending,
+    },
     {
       icon: "i-mgc-edit-cute-re",
       onClick: () => handleEditTask(task),
