@@ -161,12 +161,12 @@ class AIPersistServiceStatic {
         messages
           .filter((message) => message.parts.length > 0)
           .map((message) => {
-            const createdAt =
-              message.metadata?.finishTime && typeof message.metadata?.duration === "number"
-                ? new Date(
-                    new Date(message.metadata.finishTime).getTime() - message.metadata.duration,
-                  )
-                : new Date()
+            const createdAt = message.metadata?.finishTime
+              ? new Date(
+                  new Date(message.metadata.finishTime).getTime() -
+                    (message.metadata.duration ?? 0),
+                )
+              : new Date()
             return {
               id: message.id,
               chatId,
