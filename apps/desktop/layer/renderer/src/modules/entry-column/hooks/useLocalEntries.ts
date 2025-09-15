@@ -1,4 +1,4 @@
-import type { FeedViewType } from "@follow/constants"
+import { FeedViewType } from "@follow/constants"
 import { useCollectionEntryList } from "@follow/store/collection/hooks"
 import {
   useEntryIdsByFeedId,
@@ -31,7 +31,7 @@ function getEntryIdsFromMultiplePlace(...entryIds: Array<string[] | undefined | 
 
 export const useLocalEntries = ({
   feedId,
-  view,
+  view = FeedViewType.All,
   inboxId,
   listId,
   isCollection,
@@ -121,7 +121,7 @@ export const useLocalEntries = ({
     const debouncedFetch = debounce(() => {
       setPage((prev) => prev + 1)
     }, 300)
-    return debouncedFetch()
+    debouncedFetch()
   }, [])
 
   useEffect(() => {
@@ -133,7 +133,7 @@ export const useLocalEntries = ({
     hasNext,
     hasUpdate: false,
     refetch,
-    fetchNextPage: fetchNextPage as () => Promise<void>,
+    fetchNextPage,
     isLoading: false,
     isRefetching: false,
     isReady: true,
