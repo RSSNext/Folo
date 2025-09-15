@@ -39,7 +39,10 @@ export const EntryReadHistory: Component<{ entryId: string }> = ({ entryId }) =>
 
   if (!entryHistory) return null
   if (!me) return null
-  if (!entryHistory.userIds) return null
+
+  const displayUsers = entryHistory.userIds.filter((id) => id !== me?.id).slice(0, LIMIT)
+
+  if (displayUsers.length === 0) return null
 
   return (
     <div
@@ -47,13 +50,9 @@ export const EntryReadHistory: Component<{ entryId: string }> = ({ entryId }) =>
       data-hide-in-print
     >
       <AvatarGroup>
-        {entryHistory.userIds
-          .filter((id) => id !== me?.id)
-          .slice(0, LIMIT)
-
-          .map((userId) => (
-            <EntryUser userId={userId} key={userId} />
-          ))}
+        {displayUsers.map((userId) => (
+          <EntryUser userId={userId} key={userId} />
+        ))}
       </AvatarGroup>
 
       {totalCount > LIMIT && (

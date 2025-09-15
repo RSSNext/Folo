@@ -145,13 +145,12 @@ const EntryContentImpl: Component<EntryContentProps> = ({
             scrollerRef={scrollerRefObject}
           />
         </RootPortal>
-        {/* <EntryTimeline entryId={entryId} className="top-48" /> */}
+
         <EntryScrollArea scrollerRef={setScrollerRef}>
-          {/* <EntryNavigationHandler entryId={entryId} /> */}
           {/* Indicator for the entry */}
           {isInHasTimelineView && (
             <>
-              <div className="absolute inset-y-0 left-0 z-[9] flex w-12 items-center justify-center opacity-40 duration-200 hover:opacity-100">
+              <div className="absolute inset-y-0 left-0 z-[9] flex w-12 items-center justify-center opacity-0 duration-200 hover:opacity-100 group-hover:opacity-40">
                 <MotionButtonBase
                   // -12： Visual center point
                   className="absolute left-0 shrink-0 !-translate-y-12 cursor-pointer"
@@ -163,7 +162,7 @@ const EntryContentImpl: Component<EntryContentProps> = ({
                 </MotionButtonBase>
               </div>
 
-              <div className="absolute inset-y-0 right-0 z-[9] flex w-12 items-center justify-center opacity-40 duration-200 hover:opacity-100">
+              <div className="absolute inset-y-0 right-0 z-[9] flex w-12 items-center justify-center opacity-0 duration-200 hover:opacity-100 group-hover:opacity-40">
                 <MotionButtonBase
                   className="absolute right-0 shrink-0 !-translate-y-12 cursor-pointer"
                   onClick={() => {
