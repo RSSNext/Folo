@@ -1348,22 +1348,6 @@ importers:
         specifier: 0.3.0
         version: 0.3.0
 
-  packages/changelog-cli:
-    dependencies:
-      dotenv:
-        specifier: 17.2.0
-        version: 17.2.0
-      pathe:
-        specifier: 2.0.3
-        version: 2.0.3
-    devDependencies:
-      tsx:
-        specifier: 4.20.3
-        version: 4.20.3
-      typescript:
-        specifier: 'catalog:'
-        version: 5.8.3
-
   packages/configs:
     dependencies:
       '@egoist/tailwindcss-icons':
@@ -8597,10 +8581,6 @@ packages:
 
   dotenv@16.5.0:
     resolution: {integrity: sha512-m/C+AwOAr9/W1UOIZUo232ejMNnJAJtYQjUbHoNTBNTJSvqzzDh7vnrei3o3r3m9blf6ZoDkvcw0VmozNRFJxg==}
-    engines: {node: '>=12'}
-
-  dotenv@17.2.0:
-    resolution: {integrity: sha512-Q4sgBT60gzd0BB0lSyYD3xM4YxrXA9y4uBDof1JNYGzOXrQdQ6yX+7XIAqoFOGQFOTK1D3Hts5OllpxMDZFONQ==}
     engines: {node: '>=12'}
 
   dotenv@9.0.2:
@@ -21326,7 +21306,7 @@ snapshots:
       debug: 2.6.9
       invariant: 2.2.4
       metro: 0.82.4(bufferutil@4.0.9)(utf-8-validate@6.0.5)
-      metro-config: 0.82.4(bufferutil@4.0.9)(utf-8-validate@6.0.5)
+      metro-config: 0.82.4(bufferutil@4.0.9)
       metro-core: 0.82.4
       semver: 7.7.2
     transitivePeerDependencies:
@@ -24735,8 +24715,6 @@ snapshots:
   dotenv@16.4.7: {}
 
   dotenv@16.5.0: {}
-
-  dotenv@17.2.0: {}
 
   dotenv@9.0.2: {}
 
@@ -28684,22 +28662,6 @@ snapshots:
       - supports-color
       - utf-8-validate
 
-  metro-config@0.82.4(bufferutil@4.0.9)(utf-8-validate@6.0.5):
-    dependencies:
-      connect: 3.7.0
-      cosmiconfig: 5.2.1
-      flow-enums-runtime: 0.0.6
-      jest-validate: 29.7.0
-      metro: 0.82.4(bufferutil@4.0.9)(utf-8-validate@6.0.5)
-      metro-cache: 0.82.4
-      metro-core: 0.82.4
-      metro-runtime: 0.82.4
-    transitivePeerDependencies:
-      - bufferutil
-      - supports-color
-      - utf-8-validate
-    optional: true
-
   metro-core@0.82.4:
     dependencies:
       flow-enums-runtime: 0.0.6
@@ -28885,7 +28847,7 @@ snapshots:
       metro-babel-transformer: 0.82.4
       metro-cache: 0.82.4
       metro-cache-key: 0.82.4
-      metro-config: 0.82.4(bufferutil@4.0.9)(utf-8-validate@6.0.5)
+      metro-config: 0.82.4(bufferutil@4.0.9)
       metro-core: 0.82.4
       metro-file-map: 0.82.4
       metro-resolver: 0.82.4
