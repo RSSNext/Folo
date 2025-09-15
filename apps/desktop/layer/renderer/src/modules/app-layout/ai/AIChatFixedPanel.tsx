@@ -13,6 +13,7 @@ export const AIChatFixedPanel: FC<AIChatFixedPanelProps> = ({ className, ...prop
   return (
     <Focusable
       scope={HotkeyScope.AIChat}
+      data-hide-in-print
       className={cn("bg-background relative flex h-full flex-col overflow-hidden", className)}
       {...props}
     >

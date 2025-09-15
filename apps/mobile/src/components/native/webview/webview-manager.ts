@@ -11,9 +11,7 @@ export const WebViewManager = {
    * Set code highlighting themes for light and dark modes
    */
   setCodeTheme(light: string, dark: string): void {
-    SharedWebViewModule.evaluateJavaScript(
-      `setCodeTheme(${JSON.stringify(light)}, ${JSON.stringify(dark)})`,
-    )
+    SharedWebViewModule.dispatch?.("setCodeTheme", JSON.stringify({ light, dark }))
   },
 
   /**
@@ -21,38 +19,36 @@ export const WebViewManager = {
    */
   setEntry(entry?: EntryModel | null): void {
     if (!entry) return
-
-    SharedWebViewModule.evaluateJavaScript(
-      `setEntry(JSON.parse(${JSON.stringify(JSON.stringify(entry))}))`,
-    )
+    const json = JSON.stringify(entry)
+    SharedWebViewModule.dispatch?.("setEntry", json)
   },
 
   /**
    * Set root font size for the WebView
    */
   setRootFontSize(size = 16): void {
-    SharedWebViewModule.evaluateJavaScript(`setRootFontSize(${size})`)
+    SharedWebViewModule.dispatch?.("setRootFontSize", JSON.stringify(size))
   },
 
   /**
    * Toggle media display in WebView
    */
   setNoMedia(value: boolean): void {
-    SharedWebViewModule.evaluateJavaScript(`setNoMedia(${value})`)
+    SharedWebViewModule.dispatch?.("setNoMedia", JSON.stringify(value))
   },
 
   /**
    * Set reader render inline style preference
    */
   setReaderRenderInlineStyle(value: boolean): void {
-    SharedWebViewModule.evaluateJavaScript(`setReaderRenderInlineStyle(${value})`)
+    SharedWebViewModule.dispatch?.("setReaderRenderInlineStyle", JSON.stringify(value))
   },
 
   /**
    * Execute custom JavaScript code in WebView
    */
   executeScript(script: string): void {
-    SharedWebViewModule.evaluateJavaScript(script)
+    SharedWebViewModule.dispatch?.("executeScript", JSON.stringify(script))
   },
 
   /**
@@ -62,6 +58,3 @@ export const WebViewManager = {
     SharedWebViewModule.load(url)
   },
 }
-
-// Export for backward compatibility
-export const preloadWebViewEntry = WebViewManager.setEntry.bind(WebViewManager)

@@ -41,7 +41,7 @@ export const EntryTranslation: Component<{
   const SourceTag = inline ? "span" : "p"
 
   return (
-    <div>
+    <>
       {isHTML ? (
         <HTML as="div" className={cn("prose dark:prose-invert", className)} noMedia>
           {nextTarget || source}
@@ -58,6 +58,6 @@ export const EntryTranslation: Component<{
           {nextTarget && !inline && <p>{nextTarget}</p>}
         </div>
       )}
-    </div>
+    </>
   )
 }

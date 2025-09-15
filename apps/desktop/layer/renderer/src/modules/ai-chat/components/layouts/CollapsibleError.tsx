@@ -1,7 +1,6 @@
-import { Spring } from "@follow/components/constants/spring.js"
+import { ScrollArea } from "@follow/components/ui/scroll-area/ScrollArea.js"
 import { cn } from "@follow/utils"
 import { ExceptionCodeMap } from "@follow-app/client-sdk"
-import { m } from "motion/react"
 import * as React from "react"
 
 import { useI18n } from "~/hooks/common/useI18n"
@@ -12,6 +11,7 @@ interface CollapsibleErrorProps {
   className?: string
   collapsedHeight?: string
   icon?: string
+  expandedMaxHeight?: string
 }
 
 interface ErrorData {
@@ -27,6 +27,7 @@ export const CollapsibleError: React.FC<CollapsibleErrorProps> = ({
   className,
   collapsedHeight = "48px",
   icon = "i-mgc-alert-cute-fi",
+  expandedMaxHeight = "240px",
 }) => {
   const [isExpanded, setIsExpanded] = React.useState(false)
   const t = useI18n()
@@ -159,60 +160,42 @@ export const CollapsibleError: React.FC<CollapsibleErrorProps> = ({
       onMouseEnter={() => setIsExpanded(true)}
       onMouseLeave={() => setIsExpanded(false)}
     >
-      <m.div
-        initial={false}
-        animate={{
-          height: isExpanded ? "auto" : collapsedHeight,
-        }}
-        transition={Spring.presets.snappy}
-        className="overflow-hidden"
+      <div
+        className={
+          "border-red/20 shadow-red/5 dark:shadow-red/10 backdrop-blur-background bg-mix-red-20 relative overflow-hidden rounded-xl transition-all duration-200"
+        }
       >
+        {/* Collapsed Content */}
         <div
-          className={cn(
-            "bg-red/5 border-red/20 shadow-red/5 dark:shadow-red/10 relative overflow-hidden rounded-xl backdrop-blur-2xl transition-all duration-200",
-            "group-hover:bg-red/10 group-hover:border-red/30",
-          )}
+          className="relative z-10 flex items-center gap-3 p-3"
+          style={{ minHeight: collapsedHeight }}
         >
-          {/* Glass effect overlay */}
-          <div className="from-red/5 absolute inset-0 bg-gradient-to-r to-transparent" />
-
-          {/* Collapsed Content */}
-          <div className="relative z-10 flex items-center gap-3 p-3">
-            <m.div
-              transition={{ duration: 0.2 }}
-              className="bg-red/20 flex size-6 flex-shrink-0 items-center justify-center rounded-full"
-            >
-              <i className={cn(icon, "text-red size-3")} />
-            </m.div>
-            <div className="min-w-0 flex-1">
-              <div className="text-red text-sm font-medium">{getErrorTitle()}</div>
-            </div>
-            <m.span
-              animate={{
-                opacity: isExpanded ? 0 : 1,
-                scale: isExpanded ? 0.8 : 1,
-              }}
-              transition={{ duration: 0.15 }}
-              className="text-text-tertiary text-xs"
-            >
-              hover to expand
-            </m.span>
+          <div className="bg-red/20 flex size-6 flex-shrink-0 items-center justify-center rounded-full transition-colors duration-200">
+            <i className={cn(icon, "text-red size-3")} />
           </div>
-
-          {/* Expanded Content */}
-          <m.div
-            animate={{
-              opacity: isExpanded ? 1 : 0,
-              height: isExpanded ? "auto" : 0,
+          <div className="min-w-0 flex-1">
+            <div className="text-red text-sm font-medium">{getErrorTitle()}</div>
+          </div>
+          <span
+            className="text-text-tertiary text-xs transition-all duration-150"
+            style={{
+              opacity: isExpanded ? 0 : 1,
+              transform: isExpanded ? "scale(0.95)" : "scale(1)",
             }}
-            transition={{
-              duration: 0.2,
-              ease: "easeOut",
-            }}
-            className="overflow-hidden"
           >
+            hover to expand
+          </span>
+        </div>
+
+        {/* Expanded Content */}
+        <div
+          className="overflow-hidden transition-[max-height,opacity] duration-200 ease-out"
+          style={{ maxHeight: isExpanded ? expandedMaxHeight : "0px", opacity: isExpanded ? 1 : 0 }}
+          aria-hidden={!isExpanded}
+        >
+          <ScrollArea focusable={false} viewportProps={{ style: { maxHeight: expandedMaxHeight } }}>
             <div className="border-red/20 bg-red/5 border-t px-3 pb-3">
-              <div className="text-red/80 bg-red/10 mt-2 rounded-md p-3 text-xs leading-relaxed">
+              <div className="text-red/80 bg-red/10 mt-2 cursor-text select-text break-all rounded-md p-3 text-xs leading-relaxed">
                 {displayMessage as string}
               </div>
               {contextualInfo && (
@@ -221,9 +204,9 @@ export const CollapsibleError: React.FC<CollapsibleErrorProps> = ({
                 </div>
               )}
             </div>
-          </m.div>
+          </ScrollArea>
         </div>
-      </m.div>
+      </div>
     </div>
   )
 }

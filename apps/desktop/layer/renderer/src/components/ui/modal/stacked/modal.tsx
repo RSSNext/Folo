@@ -89,20 +89,29 @@ export const ModalInternal = memo(function Modal({
 
   const setStack = useSetAtom(modalStackAtom)
 
-  const [currentIsClosing, setCurrentIsClosing] = useState(false)
-  const { noticeModal, animateController, dismissing } = useModalAnimate(!!isTop)
+  // Animation controls
+  const { animateController, playNoticeAnimation, playExitAnimation, isClosing, readyToClose } =
+    useModalAnimate(!!isTop, item.id)
 
-  const close = useEventCallback((forceClose = false) => {
+  // Simple dismiss logic
+  const close = useEventCallback(async (forceClose = false) => {
     if (!canClose && !forceClose) return
-    setCurrentIsClosing(true)
-
-    if (!CustomModalComponent) {
-      dismissing().then(() => {
+    readyToClose()
+    try {
+      if (CustomModalComponent) {
+        // Custom modals handle their own animation
         setStack((p) => p.filter((modal) => modal.id !== item.id))
-      })
-    } else {
+      } else {
+        // Play exit animation then remove from stack\
+        await playExitAnimation()
+        setStack((p) => p.filter((modal) => modal.id !== item.id))
+      }
+    } catch (error) {
+      // If animation fails, still remove from stack
+      console.warn("Modal animation failed:", error)
       setStack((p) => p.filter((modal) => modal.id !== item.id))
     }
+
     onPropsClose?.(false)
   })
 
@@ -120,7 +129,6 @@ export const ModalInternal = memo(function Modal({
   const dismiss = useCallback(
     (e: SyntheticEvent) => {
       e.stopPropagation()
-
       close(true)
     },
     [close],
@@ -186,11 +194,11 @@ export const ModalInternal = memo(function Modal({
   )
 
   useEffect(() => {
-    if (currentIsClosing) {
+    if (isClosing) {
       // Radix dialog will block pointer events
       document.body.style.pointerEvents = "auto"
     }
-  }, [currentIsClosing])
+  }, [isClosing])
 
   const modalStyle = resizeableStyle
   const { handleSelectStart, handleDetectSelectEnd, isSelectingRef } = useModalSelect()
@@ -198,10 +206,13 @@ export const ModalInternal = memo(function Modal({
     (e: SyntheticEvent) => {
       if (isSelectingRef.current) return
 
-      const fn = modal ? (clickOutsideToDismiss && canClose ? dismiss : noticeModal) : undefined
-      fn?.(e)
+      if (modal && clickOutsideToDismiss && canClose) {
+        dismiss(e)
+      } else if (modal) {
+        playNoticeAnimation()
+      }
     },
-    [canClose, clickOutsideToDismiss, dismiss, modal, noticeModal, isSelectingRef],
+    [canClose, clickOutsideToDismiss, dismiss, modal, playNoticeAnimation, isSelectingRef],
   )
 
   const openAutoFocus = useCallback(
@@ -230,9 +241,7 @@ export const ModalInternal = memo(function Modal({
     <ModalOverlay
       zIndex={currentModalZIndex - 1}
       blur={overlayOptions?.blur}
-      hidden={
-        item.overlay ? currentIsClosing : !(modalSettingOverlay && isBottom) || currentIsClosing
-      }
+      hidden={item.overlay ? isClosing : !(modalSettingOverlay && isBottom) || isClosing}
     />
   )
 
@@ -258,7 +267,7 @@ export const ModalInternal = memo(function Modal({
                 className={cn(
                   "no-drag-region fixed",
                   modal ? "inset-0 overflow-auto" : "left-0 top-0",
-                  currentIsClosing ? "!pointer-events-none" : "!pointer-events-auto",
+                  isClosing ? "!pointer-events-none" : "!pointer-events-auto",
                   modalContainerClassName,
                 )}
                 style={{
@@ -311,7 +320,7 @@ export const ModalInternal = memo(function Modal({
               className={cn(
                 "fixed flex",
                 modal ? "inset-0 overflow-auto" : "left-0 top-0",
-                currentIsClosing && "!pointer-events-none",
+                isClosing && "!pointer-events-none",
                 modalContainerClassName,
                 !isResizeable && "center",
               )}
@@ -320,6 +329,7 @@ export const ModalInternal = memo(function Modal({
               onClick={handleClickOutsideToDismiss}
               style={{
                 zIndex: currentModalZIndex,
+                perspective: 1200,
               }}
               tabIndex={-1}
             >
@@ -327,7 +337,7 @@ export const ModalInternal = memo(function Modal({
 
               <m.div
                 ref={modalElementRef}
-                style={modalStyle}
+                style={{ ...modalStyle, transformStyle: "preserve-3d" }}
                 {...modalMontionConfig}
                 animate={animateController}
                 className={cn(
@@ -382,11 +392,13 @@ export const ModalInternal = memo(function Modal({
                       </Dialog.DialogClose>
                     )}
                   </div>
-                  <div className="bg-border mx-1 mt-2 h-px shrink-0" />
+                  {(title || icon || canClose) && (
+                    <div className="bg-border mx-1 mt-2 h-px shrink-0" />
+                  )}
 
                   <div
                     className={cn(
-                      "-mx-2 min-h-0 shrink grow overflow-auto p-4",
+                      "-mx-2 min-h-0 shrink grow overflow-auto overflow-x-hidden p-4",
                       modalContentClassName,
                     )}
                   >

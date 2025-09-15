@@ -45,7 +45,7 @@ export const MyWalletSection = ({ className }: { className?: string }) => {
     return (
       <div className="center absolute inset-0 flex">
         <LoadingWithIcon
-          icon={<i className="i-mgc-power text-accent" />}
+          icon={<i className="i-mgc-power text-folo" />}
           size="large"
           className="-translate-y-full"
         />
@@ -62,7 +62,7 @@ export const MyWalletSection = ({ className }: { className?: string }) => {
       <div className="mb-2 flex items-center justify-between">
         <div>
           <div className="flex items-center gap-1">
-            <Balance className="text-accent text-xl font-bold">
+            <Balance className="text-folo text-xl font-bold">
               {BigInt(myWallet.powerToken || 0n)}
             </Balance>
             <Button

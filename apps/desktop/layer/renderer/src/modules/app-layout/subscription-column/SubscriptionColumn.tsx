@@ -16,15 +16,12 @@ import { useResizable } from "react-resizable-layout"
 
 import { getIsZenMode, getUISettings, setUISetting } from "~/atoms/settings/ui"
 import {
-  getTimelineColumnTempShow,
-  setTimelineColumnTempShow,
-  useTimelineColumnShow,
-  useTimelineColumnTempShow,
+  getSubscriptionColumnTempShow,
+  setSubscriptionColumnTempShow,
+  useSubscriptionColumnShow,
+  useSubscriptionColumnTempShow,
 } from "~/atoms/sidebar"
 import { FloatingLayerScope } from "~/constants"
-import { useFeature } from "~/hooks/biz/useFeature"
-import { useNavigateEntry } from "~/hooks/biz/useNavigateEntry"
-import { useRouteParams } from "~/hooks/biz/useRouteParams"
 import { useBatchUpdateSubscription } from "~/hooks/biz/useSubscriptionActions"
 import { useI18n } from "~/hooks/common"
 import { NetworkStatusIndicator } from "~/modules/app/NetworkStatusIndicator"
@@ -104,16 +101,13 @@ const FeedResponsiveResizerContainer = ({
     },
   })
 
-  const aiEnabled = useFeature("ai")
-  const feedColumnShow = useTimelineColumnShow()
-  const feedColumnTempShow = useTimelineColumnTempShow()
-  const { entryId, isPendingEntry } = useRouteParams()
-  const navigate = useNavigateEntry()
+  const feedColumnShow = useSubscriptionColumnShow()
+  const feedColumnTempShow = useSubscriptionColumnTempShow()
   const t = useI18n()
 
   useEffect(() => {
     if (feedColumnShow) {
-      setTimelineColumnTempShow(false)
+      setSubscriptionColumnTempShow(false)
       return
     }
     const handler = debounce(
@@ -122,16 +116,16 @@ const FeedResponsiveResizerContainer = ({
         const mouseY = e.clientY
 
         const uiSettings = getUISettings()
-        const feedColumnTempShow = getTimelineColumnTempShow()
+        const feedColumnTempShow = getSubscriptionColumnTempShow()
         const isInEntryContentWideMode = uiSettings.wideMode || getIsZenMode()
         const feedWidth = uiSettings.feedColWidth
         if (mouseY < 200 && isInEntryContentWideMode && mouseX < feedWidth) return
         const threshold = feedColumnTempShow ? uiSettings.feedColWidth : 100
 
         if (mouseX < threshold) {
-          setTimelineColumnTempShow(true)
+          setSubscriptionColumnTempShow(true)
         } else {
-          setTimelineColumnTempShow(false)
+          setSubscriptionColumnTempShow(false)
         }
       },
       36,
@@ -191,24 +185,6 @@ const FeedResponsiveResizerContainer = ({
         }}
       >
         <Slot className={!feedColumnShow ? "!bg-sidebar" : ""}>{children}</Slot>
-
-        {/* Semi-transparent overlay with exit hint when in wide mode with entry selected */}
-        {entryId && !isPendingEntry && aiEnabled && (
-          <div
-            className="absolute inset-0 z-20 cursor-pointer bg-white/50 backdrop-blur-[2px] transition-colors duration-200 hover:bg-white/70"
-            onClick={() => navigate({ entryId: null })}
-          >
-            <div className="flex items-center justify-center px-4 pt-16">
-              <div className="flex flex-col items-center gap-2 rounded-lg px-4 py-3">
-                <div className="text-text flex items-center gap-2">
-                  <i className="i-mgc-arrow-left-cute-re text-lg" />
-                  <span className="text-sm font-medium">{t("entry.exit_detail")}</span>
-                </div>
-                <span className="text-text-secondary text-xs">{t("entry.click_to_return")}</span>
-              </div>
-            </div>
-          </div>
-        )}
       </div>
 
       <div

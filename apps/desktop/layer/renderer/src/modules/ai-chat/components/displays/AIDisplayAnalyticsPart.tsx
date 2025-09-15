@@ -51,7 +51,7 @@ const FeedAnalytics = ({ data }: { data: AnalyticsData["feedData"] }) => {
       </div>
 
       {analytics && (
-        <div className="@[400px]:grid-cols-2 grid grid-cols-1 gap-4">
+        <div className="@[600px]:grid-cols-2 @[400px]:grid-cols-2 grid grid-cols-1 gap-4">
           <StatCard title="Views" value={analytics.view || 0} emoji="👀" />
           <StatCard
             title="Last Checked"
@@ -258,7 +258,7 @@ const AIDisplayAnalyticsPartBase = ({
   }
 
   return (
-    <Card className="mx-auto mb-2 w-full max-w-4xl">
+    <Card className="w-[calc(var(--ai-chat-layout-width,65ch)] mx-auto mb-2">
       <CardHeader>
         <CardTitle className="text-text flex items-center gap-2 text-xl font-semibold">
           <span className="text-lg">📊</span>
@@ -279,5 +279,5 @@ export const AIDisplayAnalyticsPart = withDisplayStateHandler<AIDisplayAnalytics
   title: "Analytics",
   loadingDescription: "Fetching analytics data...",
   errorTitle: "Analytics Error",
-  maxWidth: "max-w-4xl",
+  maxWidth: "max-w-full",
 })(AIDisplayAnalyticsPartBase)

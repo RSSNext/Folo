@@ -16,6 +16,11 @@ import { toast } from "sonner"
 
 interface MCPServiceModalContentProps {
   service?: MCPService | null
+  initialValues?: {
+    name: string
+    transportType: "streamable-http" | "sse"
+    url: string
+  }
   onSave: (service: {
     name: string
     transportType: "streamable-http" | "sse"
@@ -23,20 +28,19 @@ interface MCPServiceModalContentProps {
     headers?: Record<string, string>
   }) => void
   onCancel: () => void
-  isLoading?: boolean
 }
 
 export const MCPServiceModalContent = ({
   service,
+  initialValues,
   onSave,
   onCancel,
-  isLoading = false,
 }: MCPServiceModalContentProps) => {
   const { t } = useTranslation("ai")
-  const [name, setName] = useState(service?.name || "")
-  const [url, setUrl] = useState(service?.url || "")
+  const [name, setName] = useState(service?.name || initialValues?.name || "")
+  const [url, setUrl] = useState(service?.url || initialValues?.url || "")
   const [transportType, setTransportType] = useState<"streamable-http" | "sse">(
-    service?.transportType || "streamable-http",
+    service?.transportType || initialValues?.transportType || "streamable-http",
   )
   const [headers, setHeaders] = useState<Record<string, string>>(service?.headers || {})
 
@@ -122,18 +126,11 @@ export const MCPServiceModalContent = ({
       <div className="flex items-center justify-between">
         <div />
         <div className="flex gap-2">
-          <Button variant="outline" size="sm" onClick={onCancel} disabled={isLoading}>
+          <Button variant="outline" size="sm" onClick={onCancel}>
             Cancel
           </Button>
-          <Button size="sm" onClick={handleSave} disabled={isLoading}>
-            {isLoading ? (
-              <>
-                <i className="i-mgc-loading-3-cute-re mr-2 size-4 animate-spin" />
-                Saving...
-              </>
-            ) : (
-              "Save"
-            )}
+          <Button size="sm" onClick={handleSave}>
+            Save
           </Button>
         </div>
       </div>

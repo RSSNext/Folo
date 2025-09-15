@@ -2,13 +2,12 @@ import { existsSync } from "node:fs"
 import fsp from "node:fs/promises"
 
 import { shell } from "electron"
+import type { IpcContext } from "electron-ipc-decorator"
+import { IpcMethod, IpcService } from "electron-ipc-decorator"
 import path from "pathe"
 
 import { store } from "~/lib/store"
 import { logger } from "~/logger"
-
-import type { IpcContext } from "../base"
-import { IpcMethod, IpcService } from "../base"
 
 // Taken from https://github.com/rollup/rollup/blob/4f69d33af3b2ec9320c43c9e6c65ea23a02bdde3/src/utils/sanitizeFileName.ts
 // https://datatracker.ietf.org/doc/html/rfc2396
@@ -55,9 +54,7 @@ interface CustomFetchInput {
 }
 
 export class IntegrationService extends IpcService {
-  constructor() {
-    super("integration")
-  }
+  static override readonly groupName = "integration"
 
   @IpcMethod()
   async saveToObsidian(

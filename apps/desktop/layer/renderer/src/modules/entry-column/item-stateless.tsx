@@ -2,8 +2,8 @@ import { FeedViewType } from "@follow/constants"
 import type { FC } from "react"
 import { memo } from "react"
 
+import { AllItemStateLess } from "./Items/all-item"
 import { ArticleItemStateLess } from "./Items/article-item"
-import { AudioItemStateLess } from "./Items/audio-item"
 import { NotificationItemStateLess } from "./Items/notification-item"
 import { PictureItemStateLess } from "./Items/picture-item-stateless"
 import { SocialMediaItemStateLess } from "./Items/social-media-item"
@@ -11,11 +11,12 @@ import { VideoItemStateLess } from "./Items/video-item"
 import type { EntryItemStatelessProps } from "./types"
 
 const StatelessItemMap = {
+  [FeedViewType.All]: AllItemStateLess,
   [FeedViewType.Articles]: ArticleItemStateLess,
   [FeedViewType.SocialMedia]: SocialMediaItemStateLess,
   [FeedViewType.Pictures]: PictureItemStateLess,
   [FeedViewType.Videos]: VideoItemStateLess,
-  [FeedViewType.Audios]: AudioItemStateLess,
+  [FeedViewType.Audios]: ArticleItemStateLess,
   [FeedViewType.Notifications]: NotificationItemStateLess,
 }
 

@@ -1,23 +1,30 @@
 import { ActionButton } from "@follow/components/ui/button/index.js"
+import { cn } from "@follow/utils"
+import { useAtomValue } from "jotai"
+import type { ReactNode } from "react"
 import { useCallback } from "react"
-import { useTranslation } from "react-i18next"
 
 import { AIChatPanelStyle, setAIPanelVisibility, useAIChatPanelStyle } from "~/atoms/settings/ai"
-import { useDialog } from "~/components/ui/modal/stacked/hooks"
 import { useBlockActions, useChatActions, useCurrentTitle } from "~/modules/ai-chat/store/hooks"
-import { useSettingModal } from "~/modules/settings/modal/use-setting-modal-hack"
 
+import { useAIRootState } from "../../store/AIChatContext"
 import { ChatMoreDropdown } from "./ChatMoreDropdown"
 import { EditableTitle } from "./EditableTitle"
+import { TaskReportDropdown } from "./TaskReportDropdown"
 
-export const ChatHeader = () => {
+// Base header layout with shared logic inside
+const ChatHeaderLayout = ({
+  renderActions,
+}: {
+  renderActions: (ctx: {
+    onNewChatClick: () => void
+    currentTitle: string | undefined
+    onSaveTitle: (newTitle: string) => Promise<void>
+  }) => ReactNode
+}) => {
   const currentTitle = useCurrentTitle()
-
-  const settingModalPresent = useSettingModal()
   const chatActions = useChatActions()
   const blockActions = useBlockActions()
-  const { ask } = useDialog()
-  const { t } = useTranslation("ai")
 
   const handleNewChatClick = useCallback(() => {
     const messages = chatActions.getMessages()
@@ -27,7 +34,7 @@ export const ChatHeader = () => {
 
     chatActions.newChat()
     blockActions.clearBlocks({ keepSpecialTypes: true })
-  }, [chatActions, currentTitle, ask, t, blockActions])
+  }, [chatActions, currentTitle, blockActions])
 
   const handleTitleSave = useCallback(
     async (newTitle: string) => {
@@ -36,34 +43,68 @@ export const ChatHeader = () => {
     [chatActions],
   )
 
-  const panelStyle = useAIChatPanelStyle()
-  const maskImage = `linear-gradient(to bottom, black 0%, black 75%, transparent 100%)`
+  const isFloating = useAIChatPanelStyle() === AIChatPanelStyle.Floating
+
+  const { isScrolledBeyondThreshold } = useAIRootState()
+  const isScrolledBeyondThresholdValue = useAtomValue(isScrolledBeyondThreshold)
+
   return (
-    <div className="absolute inset-x-0 top-0 z-[1] h-12">
-      <div
-        className="bg-background/70 backdrop-blur-background absolute inset-0"
-        style={{
-          maskImage,
-          WebkitMaskImage: maskImage,
-        }}
-      />
+    <div
+      className={cn(
+        "absolute inset-x-0 top-0 z-[1] duration-200",
+        !isFloating && "bg-background data-[scrolled-beyond-threshold=true]:border-b",
+      )}
+      data-scrolled-beyond-threshold={isScrolledBeyondThresholdValue}
+    >
+      <div className="h-entry-header">
+        {isFloating && (
+          <div
+            className="bg-background/70 backdrop-blur-background absolute inset-0"
+            style={{
+              maskImage: `linear-gradient(to bottom, black 0%, black 90%, transparent 100%)`,
+            }}
+          />
+        )}
 
-      <div className="relative z-10 flex h-full items-center justify-between px-4">
-        <div className="mr-2 flex min-w-0 flex-1 items-center">
-          <EditableTitle title={currentTitle} onSave={handleTitleSave} placeholder="New Chat" />
+        <div className="relative z-10 flex h-full items-center justify-between px-4">
+          <div className="mr-2 flex min-w-0 flex-1 items-center">
+            <EditableTitle title={currentTitle} onSave={handleTitleSave} placeholder="New Chat" />
+          </div>
+
+          {/* Right side - Actions */}
+          <div className="flex items-center gap-2">
+            {renderActions({
+              onNewChatClick: handleNewChatClick,
+              currentTitle,
+              onSaveTitle: handleTitleSave,
+            })}
+          </div>
         </div>
+      </div>
+    </div>
+  )
+}
 
-        {/* Right side - Actions */}
-        <div className="flex items-center gap-2">
-          <ActionButton tooltip="New Chat" onClick={handleNewChatClick}>
+export const ChatHeader = () => {
+  const panelStyle = useAIChatPanelStyle()
+
+  return (
+    <ChatHeaderLayout
+      renderActions={({ onNewChatClick }) => (
+        <>
+          <ActionButton tooltip="New Chat" onClick={onNewChatClick}>
             <i className="i-mgc-add-cute-re text-text-secondary size-5" />
           </ActionButton>
 
-          <ActionButton tooltip="AI Settings" onClick={() => settingModalPresent("ai")}>
-            <i className="i-mgc-user-setting-cute-re text-text-secondary size-5" />
-          </ActionButton>
+          <TaskReportDropdown />
 
-          <ChatMoreDropdown />
+          <ChatMoreDropdown
+            triggerElement={
+              <ActionButton tooltip="More">
+                <i className="i-mingcute-more-1-fill text-text-secondary size-5" />
+              </ActionButton>
+            }
+          />
 
           {panelStyle === AIChatPanelStyle.Floating && (
             <>
@@ -73,8 +114,34 @@ export const ChatHeader = () => {
               </ActionButton>
             </>
           )}
-        </div>
-      </div>
-    </div>
+        </>
+      )}
+    />
+  )
+}
+
+export const ChatPageHeader = () => {
+  return (
+    <ChatHeaderLayout
+      renderActions={({ onNewChatClick }) => (
+        <>
+          <ActionButton tooltip="New Chat" onClick={onNewChatClick}>
+            <i className="i-mgc-add-cute-re text-text-secondary size-5" />
+          </ActionButton>
+
+          <TaskReportDropdown />
+
+          <div className="bg-border mx-2 h-5 w-px" />
+          <ChatMoreDropdown
+            canToggleMode={false}
+            triggerElement={
+              <ActionButton tooltip="More">
+                <i className="i-mingcute-more-1-fill text-text-secondary size-5" />
+              </ActionButton>
+            }
+          />
+        </>
+      )}
+    />
   )
 }

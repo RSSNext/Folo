@@ -65,7 +65,7 @@ export const UpdateNotice = () => {
       onClick={handleClick}
       initial={{ y: 50, opacity: 0 }}
       animate={{ y: 0, opacity: 1 }}
-      transition={Spring.presets.softBounce}
+      transition={Spring.presets.snappy}
     >
       <m.div
         layout

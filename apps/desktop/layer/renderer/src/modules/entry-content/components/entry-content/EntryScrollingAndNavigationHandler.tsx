@@ -76,20 +76,11 @@ export const EntryScrollingAndNavigationHandler = ({
       }
     }
 
-    const checkScrollBottomByWheel = () => {
-      isAlreadyScrolledBottomRef.current = false
-      setShowKeepScrollingPanel(false)
-    }
-    scrollerRef.current?.addEventListener("wheel", checkScrollBottomByWheel)
-
     const cleanupScrollAnimation = () => {
       scrollAnimationRef.current?.stop()
       scrollAnimationRef.current = null
     }
     return combineCleanupFunctions(
-      () => {
-        scrollerRef.current?.removeEventListener("wheel", checkScrollBottomByWheel)
-      },
       cleanupScrollAnimation,
       EventBus.subscribe(COMMAND_ID.entryRender.scrollUp, () => {
         const $scroller = scrollerRef.current

@@ -3,7 +3,7 @@ import { useFeedById } from "@follow/store/feed/hooks"
 import { cn } from "@follow/utils/utils"
 
 import { readableContentMaxWidthClassName } from "~/constants/ui"
-import { SocialMediaGallery } from "~/modules/entry-column/Items/social-media-item"
+import { MediaGallery } from "~/modules/entry-column/Items/media-gallery"
 
 import { AuthorHeader } from "./shared/AuthorHeader"
 import { ContentBody } from "./shared/ContentBody"
@@ -30,7 +30,7 @@ export const SocialMediaLayout: React.FC<SocialMediaLayoutProps> = ({
   if (!entry || !feed) return null
 
   return (
-    <div className={cn(readableContentMaxWidthClassName, "mx-auto space-y-5")}>
+    <div className={cn(readableContentMaxWidthClassName, "mx-auto space-y-5 pt-12")}>
       {/* Single Author header without avatar */}
       <AuthorHeader entryId={entryId} />
 
@@ -44,7 +44,7 @@ export const SocialMediaLayout: React.FC<SocialMediaLayoutProps> = ({
       />
 
       {/* Media gallery */}
-      {!noMedia && <SocialMediaGallery entryId={entryId} />}
+      {!noMedia && <MediaGallery entryId={entryId} />}
     </div>
   )
 }

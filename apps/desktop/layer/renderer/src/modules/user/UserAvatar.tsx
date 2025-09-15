@@ -87,7 +87,7 @@ export const UserAvatar = ({
         role !== UserRole.Free &&
         role !== UserRole.Trial && (
           <UserProBadge
-            className="absolute bottom-0 right-0 -mb-[6%] -mr-[6%] size-2/5 max-h-5 max-w-5"
+            className="absolute bottom-0 right-0 mb-[-6%] mr-[-6%] size-2/5 max-h-5 max-w-5"
             iconClassName="size-full"
             role={role}
           />

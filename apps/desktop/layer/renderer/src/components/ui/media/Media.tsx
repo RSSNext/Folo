@@ -23,6 +23,7 @@ type BaseProps = {
   blurhash?: string
   inline?: boolean
   fitContent?: boolean
+  videoClassName?: string
 }
 
 const isImageLoadedSet = new Set<string>()
@@ -71,6 +72,7 @@ const MediaImpl: FC<MediaProps> = ({
     width,
     inline,
     fitContent,
+    videoClassName,
     ...rest
   } = props
 
@@ -287,7 +289,12 @@ const MediaImpl: FC<MediaProps> = ({
             )}
             onClick={handleClick}
           >
-            <VideoPreview src={src!} previewImageUrl={previewImageSrc} thumbnail={thumbnail} />
+            <VideoPreview
+              src={src!}
+              previewImageUrl={previewImageSrc}
+              thumbnail={thumbnail}
+              videoClassName={videoClassName}
+            />
           </span>
         )
       }
@@ -487,7 +494,8 @@ const VideoPreview: FC<{
   src: string
   previewImageUrl?: string
   thumbnail?: boolean
-}> = ({ src, previewImageUrl, thumbnail = false }) => {
+  videoClassName?: string
+}> = ({ src, previewImageUrl, thumbnail = false, videoClassName }) => {
   const [isInitVideoPlayer, setIsInitVideoPlayer] = useState(!previewImageUrl)
 
   const [videoRef, setVideoRef] = useState<VideoPlayerRef | null>(null)
@@ -507,7 +515,7 @@ const VideoPreview: FC<{
       {!isInitVideoPlayer ? (
         <img
           src={previewImageUrl}
-          className="size-full object-cover"
+          className={cn("size-full object-cover", videoClassName)}
           onMouseEnter={() => {
             setIsInitVideoPlayer(true)
           }}
@@ -520,7 +528,7 @@ const VideoPreview: FC<{
           poster={previewImageUrl}
           ref={setVideoRef}
           muted
-          className="not-prose relative size-full object-cover"
+          className={cn("not-prose relative size-full object-cover", videoClassName)}
         />
       )}
 

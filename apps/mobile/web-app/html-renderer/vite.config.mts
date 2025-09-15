@@ -16,6 +16,9 @@ export default defineConfig({
       "~": path.resolve(__dirname, "./src"),
     },
   },
+  define: {
+    ELECTRON: "false",
+  },
 
   plugins: [react({}), astPlugin],
 })

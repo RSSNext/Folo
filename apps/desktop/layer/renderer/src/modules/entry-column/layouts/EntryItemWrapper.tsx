@@ -121,6 +121,17 @@ export const EntryItemWrapper: FC<
     })
   }, [entry?.id])
 
+  const handleDoubleClick = useCallback(
+    (e: MouseEvent<HTMLElement>) => {
+      e.preventDefault()
+      e.stopPropagation()
+      if (!entry?.url) return
+      if (!entry?.id) return
+      window.open(entry?.url, "_blank", "noopener,noreferrer")
+    },
+    [entry?.id, entry?.url],
+  )
+
   const handleClick = useCallback(
     (e: TouchEvent<HTMLElement> | MouseEvent<HTMLElement>) => {
       e.preventDefault()
@@ -134,17 +145,12 @@ export const EntryItemWrapper: FC<
         unreadSyncService.markEntryAsRead(entry.id)
       }
 
-      // TODO
-      // setTimeout(
-      //   () => EventBus.dispatch(COMMAND_ID.layout.focusToEntryRender, { highlightBoundary: false }),
-      //   60,
-      // )
-
       navigate({
+        view,
         entryId: entry.id,
       })
     },
-    [asRead, entry?.id, entry?.feedId, navigate],
+    [asRead, entry?.id, entry?.feedId, navigate, view],
   )
   const [isContextMenuOpen, setIsContextMenuOpen] = useState(false)
   const showContextMenu = useShowContextMenu()
@@ -203,7 +209,7 @@ export const EntryItemWrapper: FC<
   })
 
   const aiEnabled = useFeature("ai")
-  const isWide = views[view as FeedViewType]?.wideMode || aiEnabled
+  const isWide = views.find((v) => v.view === view)?.wideMode || aiEnabled
 
   const Link = view === FeedViewType.SocialMedia ? "article" : NavLink
 
@@ -218,6 +224,7 @@ export const EntryItemWrapper: FC<
           itemClassName,
         )}
         onClick={handleClick}
+        onDoubleClick={handleDoubleClick}
         onMouseEnter={handleMouseEnter}
         onMouseLeave={handleMouseLeave}
         {...contextMenuProps}
@@ -241,11 +248,14 @@ const ActionBar = ({ entryId }: { entryId: string }) => {
 
   return (
     <m.div
-      initial={{ opacity: 0, scale: 0.9, y: "-1/2" }}
-      animate={{ opacity: 1, scale: 1, y: "-1/2" }}
-      exit={{ opacity: 0, scale: 0.9, y: "-1/2" }}
+      initial={{ opacity: 0, scale: 0.9, translateY: "-1/2" }}
+      animate={{ opacity: 1, scale: 1, translateY: "-1/2" }}
+      exit={{ opacity: 0, scale: 0.9, translateY: "-1/2" }}
       transition={Spring.presets.smooth}
-      className="absolute -right-2 top-0 -translate-y-1/2 rounded-lg border border-gray-200 bg-white/90 p-1 shadow-sm backdrop-blur-sm dark:border-neutral-900 dark:bg-neutral-900"
+      className={cn(
+        "absolute -right-2 top-0 -translate-y-1/2 rounded-lg border border-gray-200 bg-white/90 p-1 shadow-sm backdrop-blur-sm dark:border-neutral-900 dark:bg-neutral-900",
+        view === FeedViewType.All && "top-1/2",
+      )}
       onClick={(e) => {
         e.stopPropagation()
         e.preventDefault()
@@ -253,7 +263,7 @@ const ActionBar = ({ entryId }: { entryId: string }) => {
     >
       <div className="flex items-center gap-1">
         <EntryHeaderActions entryId={entryId} view={view} compact />
-        <MoreActions entryId={entryId} view={view} compact />
+        <MoreActions entryId={entryId} view={view} compact hideCustomizeToolbar />
       </div>
     </m.div>
   )

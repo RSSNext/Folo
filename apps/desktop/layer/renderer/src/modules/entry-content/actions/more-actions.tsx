@@ -27,10 +27,12 @@ export const MoreActions = ({
   entryId,
   view,
   compact,
+  hideCustomizeToolbar = false,
 }: {
   entryId: string
   view: FeedViewType
   compact?: boolean
+  hideCustomizeToolbar?: boolean
 }) => {
   const { moreAction } = useSortedEntryActions({ entryId, view })
 
@@ -56,14 +58,17 @@ export const MoreActions = ({
 
   const runCmdFn = useRunCommandFn()
   const extraAction: EntryActionMenuItem[] = useMemo(
-    () => [
-      new EntryActionMenuItem({
-        id: COMMAND_ID.settings.customizeToolbar,
-        onClick: runCmdFn(COMMAND_ID.settings.customizeToolbar, []),
-        entryId,
-      }),
-    ],
-    [entryId, runCmdFn],
+    () =>
+      !hideCustomizeToolbar
+        ? [
+            new EntryActionMenuItem({
+              id: COMMAND_ID.settings.customizeToolbar,
+              onClick: runCmdFn(COMMAND_ID.settings.customizeToolbar, []),
+              entryId,
+            }),
+          ]
+        : [],
+    [entryId, hideCustomizeToolbar, runCmdFn],
   )
 
   if (availableActions.length === 0 && extraAction.length === 0) {
@@ -74,7 +79,7 @@ export const MoreActions = ({
     <DropdownMenu>
       <DropdownMenuTrigger asChild>
         <ActionButton
-          icon={<i className="i-mgc-more-1-cute-re" />}
+          icon={<i className="i-mingcute-more-1-fill" />}
           size={compact ? "xs" : "base"}
         />
       </DropdownMenuTrigger>
@@ -121,7 +126,7 @@ export const MoreActions = ({
 
             return null
           })}
-          {availableActions.length > 0 && <DropdownMenuSeparator />}
+          {availableActions.length > 0 && extraAction.length > 0 && <DropdownMenuSeparator />}
           {extraAction
             .filter((item) => item instanceof MenuItemText)
             .map((config) => (

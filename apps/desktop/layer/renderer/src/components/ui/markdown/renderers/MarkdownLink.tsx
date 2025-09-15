@@ -1,5 +1,4 @@
 import { Button } from "@follow/components/ui/button/index.js"
-import { MagneticHoverEffect } from "@follow/components/ui/effect/MagneticHoverEffect.js"
 import type { LinkProps } from "@follow/components/ui/link/LinkWithTooltip.js"
 import {
   Tooltip,
@@ -49,10 +48,12 @@ export const MarkdownLink: Component<LinkProps> = (props) => {
   return (
     <Tooltip delayDuration={0}>
       <TooltipTrigger asChild>
-        <MagneticHoverEffect
-          as="a"
+        <a
           draggable="false"
-          className={cn("text-text font-semibold no-underline", props.className)}
+          className={cn(
+            "text-text follow-link--underline font-semibold no-underline",
+            props.className,
+          )}
           href={populatedFullHref}
           title={props.title}
           target="_blank"
@@ -64,7 +65,7 @@ export const MarkdownLink: Component<LinkProps> = (props) => {
           {typeof props.children === "string" && (
             <i className="i-mgc-arrow-right-up-cute-re size-[0.9em] translate-y-[2px] opacity-70" />
           )}
-        </MagneticHoverEffect>
+        </a>
       </TooltipTrigger>
       {!!populatedFullHref && (
         <TooltipPortal>

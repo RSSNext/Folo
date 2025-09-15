@@ -4,6 +4,8 @@ import * as TabsPrimitive from "@radix-ui/react-tabs"
 import { cva } from "class-variance-authority"
 import * as React from "react"
 
+import { ScrollArea } from "../scroll-area"
+
 const TabsIdContext = React.createContext<string | null>(null)
 const SetTabIndicatorContext = React.createContext<
   React.Dispatch<
@@ -172,6 +174,31 @@ const TabsContent = ({
     {...props}
   />
 )
-TabsContent.displayName = TabsPrimitive.Content.displayName
+
+export const TabsScrollAreaContent = ({
+  ref,
+  className,
+  scrollareaRootClassName,
+  viewportClassName,
+  children,
+  ...props
+}: React.ComponentPropsWithoutRef<typeof TabsPrimitive.Content> & {
+  ref?: React.Ref<React.ElementRef<typeof TabsPrimitive.Content> | null>
+  scrollareaRootClassName?: string
+  viewportClassName?: string
+}) => (
+  <TabsPrimitive.Content
+    ref={ref}
+    className={cn("ring-offset-background mt-2 focus-visible:outline-none", className)}
+    {...props}
+  >
+    <ScrollArea.ScrollArea
+      rootClassName={cn("h-full", scrollareaRootClassName)}
+      viewportClassName={cn("h-full", viewportClassName)}
+    >
+      {children}
+    </ScrollArea.ScrollArea>
+  </TabsPrimitive.Content>
+)
 
 export { Tabs, TabsContent, TabsList, TabsTrigger }

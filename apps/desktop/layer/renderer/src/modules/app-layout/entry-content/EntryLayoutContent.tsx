@@ -1,6 +1,5 @@
 import { PanelSplitter } from "@follow/components/ui/divider/PanelSplitter.js"
 import { views } from "@follow/constants"
-import { usePrefetchEntryDetail } from "@follow/store/entry/hooks"
 import { clsx, cn } from "@follow/utils/utils"
 import { easeOut } from "motion/react"
 import type { FC, PropsWithChildren } from "react"
@@ -10,7 +9,7 @@ import { useParams } from "react-router"
 
 import { AIChatPanelStyle, useAIChatPanelStyle } from "~/atoms/settings/ai"
 import { useRealInWideMode } from "~/atoms/settings/ui"
-import { useTimelineColumnShow, useTimelineColumnTempShow } from "~/atoms/sidebar"
+import { useSubscriptionColumnShow, useSubscriptionColumnTempShow } from "~/atoms/sidebar"
 import { m } from "~/components/common/Motion"
 import { FixedModalCloseButton } from "~/components/ui/modal/components/close"
 import { ROUTE_ENTRY_PENDING } from "~/constants"
@@ -29,11 +28,14 @@ const EntryLayoutContentLegacy = () => {
 
   const settingWideMode = useRealInWideMode()
   const realEntryId = entryId === ROUTE_ENTRY_PENDING ? "" : entryId
-  usePrefetchEntryDetail(realEntryId)
-  const showEntryContent = !(views[view]!.wideMode || (settingWideMode && !realEntryId))
+
+  const showEntryContent = !(
+    views.find((v) => v.view === view)?.wideMode ||
+    (settingWideMode && !realEntryId)
+  )
   const wideMode = !!(settingWideMode && realEntryId)
-  const feedColumnTempShow = useTimelineColumnTempShow()
-  const feedColumnShow = useTimelineColumnShow()
+  const feedColumnTempShow = useSubscriptionColumnTempShow()
+  const feedColumnShow = useSubscriptionColumnShow()
   const shouldHeaderPaddingLeft = feedColumnTempShow && !feedColumnShow && settingWideMode
 
   if (!showEntryContent) {
@@ -75,7 +77,7 @@ export const EntryLayoutContentWithAI = () => {
   const realEntryId = entryId === ROUTE_ENTRY_PENDING ? "" : entryId
   const wideMode = !!(settingWideMode && realEntryId)
 
-  const isWideView = views[view]?.wideMode
+  const isWideView = views.find((v) => v.view === view)?.wideMode
   return (
     <AppLayoutGridContainerProvider>
       <EntryGridContainer wideMode={wideMode}>
@@ -102,8 +104,8 @@ const Grid = ({ entryId }) => {
   const settingWideMode = useRealInWideMode()
 
   const wideMode = !!(settingWideMode && entryId)
-  const feedColumnTempShow = useTimelineColumnTempShow()
-  const feedColumnShow = useTimelineColumnShow()
+  const feedColumnTempShow = useSubscriptionColumnTempShow()
+  const feedColumnShow = useSubscriptionColumnShow()
   const panelStyle = useAIChatPanelStyle()
   const aiPinned = panelStyle === AIChatPanelStyle.Fixed
   const shouldHeaderPaddingLeft = feedColumnTempShow && !feedColumnShow && settingWideMode
