@@ -18,7 +18,7 @@ export default defineConfig({
   ],
   finally: [
     "git push origin release/mobile/${NEW_VERSION}",
-    "gh pr create --title 'release(mobile): Release v${NEW_VERSION}' --body 'v${NEW_VERSION}' --base main --head release/mobile/${NEW_VERSION}",
+    "gh pr create --title 'release(mobile): Release v${NEW_VERSION}' --body 'v${NEW_VERSION}' --base mobile-main --head release/mobile/${NEW_VERSION}",
   ],
   push: false,
   commitMessage: "release(mobile): release v${NEW_VERSION}",
