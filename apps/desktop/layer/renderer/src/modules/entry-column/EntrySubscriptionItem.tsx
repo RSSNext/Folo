@@ -6,6 +6,7 @@ import { clsx, cn } from "@follow/utils/utils"
 import { memo, useCallback } from "react"
 
 import { RelativeTime } from "~/components/ui/datetime"
+import { useEntryContextMenu } from "~/hooks/biz/useEntryContextMenu"
 import { useNavigateEntry } from "~/hooks/biz/useNavigateEntry"
 import { useRouteParamsSelector } from "~/hooks/biz/useRouteParams"
 import { FeedIcon } from "~/modules/feed/feed-icon"
@@ -49,6 +50,11 @@ const EntrySubscriptionItemImpl = ({ entryId, view, className }: EntrySubscripti
   })
 
   const isActive = useRouteParamsSelector((routerParams) => routerParams.entryId === entryId)
+  const { contextMenuProps } = useEntryContextMenu({
+    entryId,
+    view: navigationView as FeedViewType,
+    feedId: entry?.feedId || "",
+  })
 
   const handleClick = useCallback(
     (e: React.MouseEvent<HTMLDivElement>) => {
@@ -77,6 +83,7 @@ const EntrySubscriptionItemImpl = ({ entryId, view, className }: EntrySubscripti
         className,
       )}
       onClick={handleClick}
+      {...contextMenuProps}
     >
       <div className="flex min-w-0 flex-1 items-start gap-2">
         <FeedIcon fallback feed={feed} size={14} className="mt-0.5 shrink-0" />
