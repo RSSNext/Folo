@@ -253,7 +253,6 @@ export const ModalInternal = memo(function Modal({
         <Dialog.Root open onOpenChange={onClose} modal={modal}>
           <Dialog.Portal>
             {Overlay}
-            <Dialog.DialogTitle className="sr-only">{title}</Dialog.DialogTitle>
             <Dialog.Content
               ref={setModalContentRef}
               asChild
@@ -278,6 +277,7 @@ export const ModalInternal = memo(function Modal({
                 onFocus={stopPropagation}
                 tabIndex={-1}
               >
+                <Dialog.DialogTitle className="sr-only">{title}</Dialog.DialogTitle>
                 {DragBar}
                 <div
                   className={cn("contents", modalClassName, modalContentClassName)}
