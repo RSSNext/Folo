@@ -33,6 +33,7 @@ import { registerSitemap } from "./sitemap"
 global.APP_NAME = "Folo"
 // @ts-expect-error
 global.ELECTRON = false
+// @ts-expect-error
 authClientContext.provide(authClient)
 queryClientContext.provide(queryClient)
 apiContext.provide(followApi)
