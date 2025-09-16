@@ -646,6 +646,7 @@ class EntrySyncServices {
       }
 
       const reader = response.body?.getReader()
+
       if (!reader) return
 
       const decoder = new TextDecoder()

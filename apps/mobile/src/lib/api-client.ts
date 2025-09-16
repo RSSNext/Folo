@@ -1,6 +1,7 @@
 import { userActions } from "@follow/store/user/store"
 import { createMobileAPIHeaders } from "@follow/utils/headers"
 import { FollowClient } from "@follow-app/client-sdk"
+import { fetch } from "expo/fetch"
 import { nativeApplicationVersion } from "expo-application"
 import { Platform } from "react-native"
 import DeviceInfo from "react-native-device-info"
@@ -17,14 +18,23 @@ export const followClient = new FollowClient({
   credentials: "omit",
   timeout: 10000,
   baseURL: proxyEnv.API_URL,
-  fetch: async (input, options = {}) =>
-    fetch(input.toString(), {
-      ...options,
-      cache: "no-store",
-    }),
+  fetch: async (input, options = {}) => fetch(input.toString(), options as any) as any,
 })
 
 export const followApi = followClient.api
+followClient.addRequestInterceptor(async (ctx) => {
+  const { url } = ctx
+
+  try {
+    const urlObj = new URL(url)
+    urlObj.searchParams.set("t", Date.now().toString())
+    ctx.url = urlObj.toString()
+  } catch {
+    /* empty */
+  }
+
+  return ctx
+})
 followClient.addRequestInterceptor(async (ctx) => {
   const { options } = ctx
   const header = options.headers || {}
