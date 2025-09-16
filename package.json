@@ -40,7 +40,7 @@
     "@tsslint/cli": "1.5.18",
     "@tsslint/config": "1.5.18",
     "@tsslint/eslint": "1.5.18",
-    "@types/node": "24.0.10",
+    "@types/node": "24.5.0",
     "@types/react": "19.1.8",
     "@types/react-dom": "19.1.6",
     "@vercel/node": "5.3.3",

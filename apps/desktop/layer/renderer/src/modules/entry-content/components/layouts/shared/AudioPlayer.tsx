@@ -44,6 +44,13 @@ export const ArticleAudioPlayer: React.FC<AudioPlayerProps> = ({ entryId, classN
   const currentTime = useAudioPlayerAtomSelector((v) => v.currentTime)
   const duration = useAudioPlayerAtomSelector((v) => v.duration)
 
+  // Use attachment duration as fallback when player duration is not available
+  const attachmentDuration = useMemo(() => {
+    if (!audioAttachment?.duration_in_seconds) return 0
+    const seconds = Number(audioAttachment.duration_in_seconds)
+    return Number.isFinite(seconds) ? seconds : 0
+  }, [audioAttachment?.duration_in_seconds])
+
   const isCurrentAudio = currentPlayingEntryId === entryId
   const isPlaying = isCurrentAudio && status === "playing"
   const isLoading = isCurrentAudio && status === "loading"
@@ -80,9 +87,14 @@ export const ArticleAudioPlayer: React.FC<AudioPlayerProps> = ({ entryId, classN
 
   // Only show progress for current audio, otherwise reset to 0
   const displayCurrentTime = isCurrentAudio ? currentTime || 0 : 0
-  const displayDuration = isCurrentAudio ? duration || 0 : 0
+  // Use player duration first, fallback to attachment duration, then 0
+  const displayDuration = isCurrentAudio
+    ? duration && duration > 0 && duration !== Infinity
+      ? duration
+      : attachmentDuration
+    : attachmentDuration || 0
   const displayHasValidDuration =
-    isCurrentAudio && duration && duration > 0 && duration !== Infinity
+    displayDuration && displayDuration > 0 && displayDuration !== Infinity
 
   const handleProgressClick = useCallback(
     (event: React.MouseEvent<HTMLDivElement>) => {

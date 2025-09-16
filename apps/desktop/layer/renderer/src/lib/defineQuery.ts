@@ -1,8 +1,10 @@
 import type { InfiniteData, QueryFunction, QueryKey } from "@tanstack/react-query"
-import type { Draft, ValidRecipeReturnType } from "immer"
+import type { Draft, Producer } from "immer"
 import { produce } from "immer"
 
 import { queryClient } from "./query-client"
+
+type ValidRecipeReturnDraftType<T> = ReturnType<Producer<T>>
 
 export type DefinedQuery<TQueryKey extends QueryKey, TData> = Readonly<{
   key: TQueryKey
@@ -21,18 +23,14 @@ export type DefinedQuery<TQueryKey extends QueryKey, TData> = Readonly<{
   refetch: () => Promise<TData | undefined>
   prefetch: () => Promise<TData | undefined>
 
-  setData: <Data = TData>(
-    updater: (draft: Draft<Data>) => ValidRecipeReturnType<Draft<Data>>,
-  ) => void
+  setData: <Data = TData>(updater: (draft: Draft<Data>) => ValidRecipeReturnDraftType<Data>) => void
   setInfiniteData: (
-    updater: (
-      draft: Draft<InfiniteData<TData>>,
-    ) => ValidRecipeReturnType<Draft<InfiniteData<TData>>>,
+    updater: (draft: Draft<InfiniteData<TData>>) => ValidRecipeReturnDraftType<InfiniteData<TData>>,
   ) => void
   getData: () => TData | undefined
 
   optimisticUpdate: <Data = TData>(
-    updater: (draft: Draft<Data>) => ValidRecipeReturnType<Draft<Data>> | void,
+    updater: (draft: Draft<Data>) => ValidRecipeReturnDraftType<Data> | void,
   ) => Promise<{
     previousData: Awaited<Data> | undefined
     restore: () => void
@@ -40,9 +38,7 @@ export type DefinedQuery<TQueryKey extends QueryKey, TData> = Readonly<{
   }>
 
   optimisticInfiniteUpdate: (
-    updater: (
-      draft: Draft<InfiniteData<TData>>,
-    ) => ValidRecipeReturnType<Draft<InfiniteData<TData>>>,
+    updater: (draft: Draft<InfiniteData<TData>>) => ValidRecipeReturnDraftType<InfiniteData<TData>>,
   ) => Promise<{
     previousData: Awaited<InfiniteData<TData>> | undefined
     restore: () => void
@@ -142,7 +138,7 @@ export function defineQuery<
     getData: () => queryClient.getQueryData<TData>(key),
 
     optimisticUpdate: async <Data = TData>(
-      updater: (draft: Draft<Data>) => ValidRecipeReturnType<Draft<Data>>,
+      updater: (draft: Draft<Data>) => ValidRecipeReturnDraftType<Data>,
     ) => {
       await queryClient.cancelQueries({
         queryKey: key,

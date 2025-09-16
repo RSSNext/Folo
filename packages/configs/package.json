@@ -19,7 +19,7 @@
     "@iconify/utils": "2.3.0",
     "@tailwindcss/container-queries": "0.1.1",
     "@tailwindcss/typography": "0.5.16",
-    "es-toolkit": "1.39.6",
+    "es-toolkit": "1.39.10",
     "tailwindcss-animate": "1.0.7",
     "tailwindcss-motion": "1.1.1",
     "tailwindcss-multi": "0.4.6",

@@ -1,13 +1,14 @@
 import { Spring } from "@follow/components/constants/spring.js"
 import { PanelSplitter } from "@follow/components/ui/divider/index.js"
+import { FeedViewType } from "@follow/constants"
 import { defaultUISettings } from "@follow/shared/settings/defaults"
 import { cn } from "@follow/utils"
 import { AnimatePresence } from "motion/react"
-import { memo, startTransition, useEffect, useMemo, useRef } from "react"
+import { memo, startTransition, useCallback, useEffect, useMemo, useRef } from "react"
 import { useResizable } from "react-resizable-layout"
-import { useParams } from "react-router"
 
 import { AIChatPanelStyle, useAIChatPanelStyle, useAIPanelVisibility } from "~/atoms/settings/ai"
+import { useGeneralSettingKey } from "~/atoms/settings/general"
 import { getUISettings, setUISetting } from "~/atoms/settings/ui"
 import { setSubscriptionColumnApronNode, useSubscriptionEntryPlaneVisible } from "~/atoms/sidebar"
 import { m } from "~/components/common/Motion"
@@ -53,33 +54,69 @@ import { AppLayoutGridContainerProvider } from "~/providers/app-grid-layout-cont
  * // Provides enhanced timeline experience with AI assistance
  */
 const AIEnhancedTimelineLayoutImpl = () => {
-  const { entryId } = useParams()
-
   const aiPanelStyle = useAIChatPanelStyle()
   const isAIPanelVisible = useAIPanelVisibility()
   const aiSidebarVisible = aiPanelStyle === AIChatPanelStyle.Fixed && isAIPanelVisible
 
+  const { view, isAllFeeds, entryId } = useRouteParamsSelector((s) => ({
+    view: s.view,
+    isAllFeeds: s.isAllFeeds,
+    entryId: s.entryId,
+  }))
   const realEntryId = entryId === ROUTE_ENTRY_PENDING ? "" : entryId
 
   // AI chat resizable panel configuration
-  const aiColWidth = useMemo(() => getUISettings().aiColWidth, [])
+  const isAllView = view === FeedViewType.All && isAllFeeds && !realEntryId
+  const widthRange: [number, number] = isAllView ? [500, 1200] : [300, 1200]
+  const [minWidth, maxWidth] = widthRange
+
+  const clampWidth = useCallback(
+    (value: number) => Math.max(minWidth, Math.min(maxWidth, Math.round(value))),
+    [minWidth, maxWidth],
+  )
+
+  const getHalfScreenWidth = useCallback(
+    () => clampWidth(typeof window !== "undefined" ? window.innerWidth / 2 : 800),
+    [clampWidth],
+  )
+
+  const resolvePreferredWidth = useCallback(() => {
+    const ui = getUISettings()
+    const halfScreen = getHalfScreenWidth()
+    return isAllView ? (ui.aiColWidthAll ?? halfScreen) : ui.aiColWidth
+  }, [getHalfScreenWidth, isAllView])
+
+  // Calculate initial width depending on view
+  const initialAiWidth = useMemo(() => resolvePreferredWidth(), [resolvePreferredWidth])
   const startDragPosition = useRef(0)
+
   const { position, separatorProps, isDragging, separatorCursor, setPosition } = useResizable({
     axis: "x",
-    min: 300,
-    max: 1200,
-    initial: aiColWidth,
+    min: minWidth,
+    max: maxWidth,
+    initial: initialAiWidth,
     reverse: true,
     onResizeStart({ position }) {
       startDragPosition.current = position
     },
     onResizeEnd({ position }) {
       if (position === startDragPosition.current) return
-      setUISetting("aiColWidth", position)
+      // Persist per-view width
+      setUISetting(isAllView ? "aiColWidthAll" : "aiColWidth", position)
       // TODO: Remove this after useMeasure can get bounds in time
       window.dispatchEvent(new Event("resize"))
     },
   })
+
+  // When view changes, switch to the saved width for that view
+  useEffect(() => {
+    const width = resolvePreferredWidth()
+    setPosition(width)
+    // Trigger layout update
+    window.dispatchEvent(new Event("resize"))
+  }, [resolvePreferredWidth])
+
+  const showCompactTimelineColumn = useGeneralSettingKey("showCompactTimelineInSub")
   return (
     <div className="relative flex min-w-0 grow">
       <div className={cn("h-full flex-1", aiPanelStyle === AIChatPanelStyle.Fixed && "border-r")}>
@@ -129,8 +166,12 @@ const AIEnhancedTimelineLayoutImpl = () => {
             cursor={separatorCursor}
             isDragging={isDragging}
             onDoubleClick={() => {
-              setUISetting("aiColWidth", defaultUISettings.aiColWidth)
-              setPosition(defaultUISettings.aiColWidth)
+              const resetWidth = isAllView
+                ? getHalfScreenWidth()
+                : clampWidth(defaultUISettings.aiColWidth)
+              setUISetting(isAllView ? "aiColWidthAll" : "aiColWidth", resetWidth)
+              setPosition(resetWidth)
+              window.dispatchEvent(new Event("resize"))
             }}
           />
           <AIChatLayout
@@ -144,7 +185,7 @@ const AIEnhancedTimelineLayoutImpl = () => {
 
       {/* Floating panel - renders outside layout flow */}
       {aiPanelStyle === AIChatPanelStyle.Floating && <AIChatLayout key="ai-chat-layout" />}
-      <SubscriptionColumnToggler />
+      {showCompactTimelineColumn && <SubscriptionColumnToggler />}
     </div>
   )
 }

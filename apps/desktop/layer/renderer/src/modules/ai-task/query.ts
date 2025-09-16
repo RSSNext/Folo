@@ -6,7 +6,7 @@ import type {
   TaskCreateResponse,
   UpdateTaskRequest,
 } from "@follow-app/client-sdk"
-import { useQuery } from "@tanstack/react-query"
+import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query"
 
 import { followApi } from "~/lib/api-client"
 
@@ -20,6 +20,7 @@ export const aiTaskKeys = {
   list: [aiTaskKey, "list"] as const,
   details: [aiTaskKey, "detail"] as const,
   detail: (id: string) => [...aiTaskKeys.details, id] as const,
+  testRun: [aiTaskKey, "test-run"] as const,
 }
 
 // Queries
@@ -99,4 +100,19 @@ export const useDeleteAITaskMutation = () => {
       retryable: false,
     }),
   )
+}
+
+export const useTestRunAITaskMutation = () => {
+  const queryClient = useQueryClient()
+  return useMutation({
+    mutationKey: aiTaskKeys.testRun,
+    mutationFn: ({ id }: { id: string }) => followApi.aiTask.testRun({ id }, { timeout: 80000 }),
+    onSuccess: async (_res, { id }) => {
+      // Refresh task list and detail to reflect any updated run info
+      await Promise.all([
+        queryClient.invalidateQueries({ queryKey: aiTaskKeys.list }),
+        queryClient.invalidateQueries({ queryKey: aiTaskKeys.detail(id) }),
+      ])
+    },
+  })
 }

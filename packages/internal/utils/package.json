@@ -37,7 +37,7 @@
     "clsx": "2.1.1",
     "dompurify": "3.2.6",
     "linkedom": "0.18.11",
-    "motion": "12.23.0",
+    "motion": "12.23.13",
     "nanoid": "5.1.5",
     "path-to-regexp": "8.2.0",
     "tailwind-merge": "3.3.1",

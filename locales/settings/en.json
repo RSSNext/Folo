@@ -306,6 +306,8 @@
   "general.rebuild_database.warning.line2": "Are you sure you want to continue?",
   "general.send_anonymous_data.description": "By opting to send anonymized telemetry data, you contribute to improving the overall user experience of Folo.",
   "general.send_anonymous_data.label": "Send anonymous data",
+  "general.show_compact_timeline_in_sub.description": "When viewing entry content, show timeline items in the left subscription column for quick selection.",
+  "general.show_compact_timeline_in_sub.label": "Show timeline in subscription column while reading",
   "general.show_quick_timeline.description": "Show the quick timeline at the top of the feed list.",
   "general.show_quick_timeline.label": "Show feed list timeline",
   "general.show_unread_on_launch.description": "Automatically filter to unread content when the app starts",
