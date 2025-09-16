@@ -1,11 +1,12 @@
 import { stripeClient } from "@better-auth/stripe/client"
 import { IN_ELECTRON } from "@follow/shared"
-import type { AuthPlugins } from "@follow-app/client-sdk"
+import type { AuthPlugins } from "@follow-app/client-sdk/auth"
 import type { BetterAuthClientPlugin, BetterFetchOption } from "better-auth/client"
+import { createAuthClient } from "better-auth/client"
 import { inferAdditionalFields, twoFactorClient } from "better-auth/client/plugins"
-import { createAuthClient } from "better-auth/react"
 
 type AuthPlugin = AuthPlugins[number]
+
 export const baseAuthPlugins = [
   {
     id: "customGetProviders",
@@ -23,6 +24,7 @@ export const baseAuthPlugins = [
     id: "oneTimeToken",
     $InferServerPlugin: {} as Extract<AuthPlugin, { id: "oneTimeToken" }>,
   },
+
   inferAdditionalFields({
     user: {
       handle: {
@@ -37,10 +39,10 @@ export const baseAuthPlugins = [
         type: "string",
         required: false,
       },
-      socialLinks: {
-        type: "json",
-        required: false,
-      },
+      // socialLinks: {
+      //   type: "json",
+      //   required: false,
+      // },
     },
   }),
   twoFactorClient(),
@@ -52,6 +54,7 @@ export type AuthClient<ExtraPlugins extends BetterAuthClientPlugin[] = []> = Ret
     plugins: [...typeof baseAuthPlugins, ...ExtraPlugins]
   }>
 >
+
 export type LoginRuntime = "browser" | "app"
 
 export class Auth {
