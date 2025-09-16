@@ -8,6 +8,7 @@ import { memo, startTransition, useCallback, useEffect, useMemo, useRef } from "
 import { useResizable } from "react-resizable-layout"
 
 import { AIChatPanelStyle, useAIChatPanelStyle, useAIPanelVisibility } from "~/atoms/settings/ai"
+import { useGeneralSettingKey } from "~/atoms/settings/general"
 import { getUISettings, setUISetting } from "~/atoms/settings/ui"
 import { setSubscriptionColumnApronNode, useSubscriptionEntryPlaneVisible } from "~/atoms/sidebar"
 import { m } from "~/components/common/Motion"
@@ -114,6 +115,8 @@ const AIEnhancedTimelineLayoutImpl = () => {
     // Trigger layout update
     window.dispatchEvent(new Event("resize"))
   }, [resolvePreferredWidth])
+
+  const showCompactTimelineColumn = useGeneralSettingKey("showCompactTimelineInSub")
   return (
     <div className="relative flex min-w-0 grow">
       <div className={cn("h-full flex-1", aiPanelStyle === AIChatPanelStyle.Fixed && "border-r")}>
@@ -182,7 +185,7 @@ const AIEnhancedTimelineLayoutImpl = () => {
 
       {/* Floating panel - renders outside layout flow */}
       {aiPanelStyle === AIChatPanelStyle.Floating && <AIChatLayout key="ai-chat-layout" />}
-      <SubscriptionColumnToggler />
+      {showCompactTimelineColumn && <SubscriptionColumnToggler />}
     </div>
   )
 }

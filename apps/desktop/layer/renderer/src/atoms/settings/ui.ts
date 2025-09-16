@@ -1,6 +1,5 @@
 import { createSettingAtom } from "@follow/atoms/helper/setting.js"
 import { defaultUISettings } from "@follow/shared/settings/defaults"
-import { enhancedUISettingKeys } from "@follow/shared/settings/enhanced"
 import type { UISettings } from "@follow/shared/settings/interface"
 
 import { getDefaultLanguage } from "~/lib/language"
@@ -29,6 +28,26 @@ const {
   settingAtom: __uiSettingAtom,
 } = createSettingAtom("ui", createDefaultUISettings)
 
+export const uiServerSyncWhiteListKeys: (keyof UISettings)[] = [
+  "uiFontFamily",
+  "readerFontFamily",
+  "opaqueSidebar",
+  "accentColor",
+  // "customCSS",
+]
+
+export const enhancedUISettingKeys = new Set<keyof UISettings>([
+  "hideExtraBadge",
+  "codeHighlightThemeLight",
+  "codeHighlightThemeDark",
+  "dateFormat",
+  "readerRenderInlineStyle",
+  "modalOverlay",
+  "reduceMotion",
+  "usePointerCursor",
+  "opaqueSidebar",
+])
+
 const [useUISettingKey, useUISettingSelector, useUISettingKeys, getUISettings, useUISettingValue] =
   hookEnhancedSettings(
     useUISettingKeyInternal,
@@ -51,11 +70,3 @@ export {
   useUISettingSelector,
   useUISettingValue,
 }
-
-export const uiServerSyncWhiteListKeys: (keyof UISettings)[] = [
-  "uiFontFamily",
-  "readerFontFamily",
-  "opaqueSidebar",
-  "accentColor",
-  // "customCSS",
-]

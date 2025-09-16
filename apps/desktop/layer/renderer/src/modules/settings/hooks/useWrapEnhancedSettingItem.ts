@@ -1,8 +1,8 @@
 import { defaultSettings } from "@follow/shared/settings/defaults"
-import { enhancedSettingKeys } from "@follow/shared/settings/enhanced"
 import { useCallback } from "react"
 
-import { useGeneralSettingKey } from "~/atoms/settings/general"
+import { enhancedGeneralSettingKeys, useGeneralSettingKey } from "~/atoms/settings/general"
+import { enhancedUISettingKeys } from "~/atoms/settings/ui"
 
 export enum WrapEnhancedSettingTab {
   General,
@@ -10,8 +10,8 @@ export enum WrapEnhancedSettingTab {
 }
 
 const enhancedSettingMapper: Record<WrapEnhancedSettingTab, Set<keyof any>> = {
-  [WrapEnhancedSettingTab.General]: enhancedSettingKeys.general,
-  [WrapEnhancedSettingTab.Appearance]: enhancedSettingKeys.ui,
+  [WrapEnhancedSettingTab.General]: enhancedGeneralSettingKeys,
+  [WrapEnhancedSettingTab.Appearance]: enhancedUISettingKeys,
 }
 const defaultSettingMapper: Record<WrapEnhancedSettingTab, Record<keyof any, any>> = {
   [WrapEnhancedSettingTab.General]: defaultSettings.general,

@@ -1,4 +1,3 @@
-import { useMobile } from "@follow/components/hooks/useMobile.js"
 import { ResponsiveSelect } from "@follow/components/ui/select/responsive.js"
 import { useTypeScriptHappyCallback } from "@follow/hooks"
 import { ACTION_LANGUAGE_MAP } from "@follow/shared"
@@ -22,6 +21,7 @@ import {
   useGeneralSettingValue,
 } from "~/atoms/settings/general"
 import { useDialog } from "~/components/ui/modal/stacked/hooks"
+import { useFeature } from "~/hooks/biz/useFeature"
 import { useProxyValue, useSetProxy } from "~/hooks/biz/useProxySetting"
 import { useMinimizeToTrayValue, useSetMinimizeToTray } from "~/hooks/biz/useTraySetting"
 import { fallbackLanguage } from "~/i18n"
@@ -65,11 +65,10 @@ export const SettingGeneral = () => {
     WrapEnhancedSettingTab.General,
   )
 
-  const isMobile = useMobile()
-
   const { ask } = useDialog()
   const reRenderKey = useGeneralSettingKey("enhancedSettings")
 
+  const isAiLayout = useFeature("ai")
   return (
     <div className="mt-4">
       <SettingBuilder
@@ -88,7 +87,7 @@ export const SettingGeneral = () => {
             },
           }),
           IN_ELECTRON && MinimizeToTraySetting,
-          isMobile && StartupScreenSelector,
+          StartupScreenSelector,
           LanguageSelector,
 
           {
@@ -143,10 +142,10 @@ export const SettingGeneral = () => {
             label: t("general.dim_read.label"),
             description: t("general.dim_read.description"),
           }),
-          isMobile &&
-            defineSettingItem("showQuickTimeline", {
-              label: t("general.show_quick_timeline.label"),
-              description: t("general.show_quick_timeline.description"),
+          isAiLayout &&
+            defineSettingItem("showCompactTimelineInSub", {
+              label: t("general.show_compact_timeline_in_sub.label"),
+              description: t("general.show_compact_timeline_in_sub.description"),
             }),
 
           { type: "title", value: t("general.mark_as_read.title") },
@@ -155,11 +154,11 @@ export const SettingGeneral = () => {
             label: t("general.mark_as_read.scroll.label"),
             description: t("general.mark_as_read.scroll.description"),
           }),
-          !isMobile &&
-            defineSettingItem("hoverMarkUnread", {
-              label: t("general.mark_as_read.hover.label"),
-              description: t("general.mark_as_read.hover.description"),
-            }),
+
+          defineSettingItem("hoverMarkUnread", {
+            label: t("general.mark_as_read.hover.label"),
+            description: t("general.mark_as_read.hover.description"),
+          }),
           defineSettingItem("renderMarkUnread", {
             label: t("general.mark_as_read.render.label"),
             description: t("general.mark_as_read.render.description"),
@@ -253,8 +252,6 @@ export const LanguageSelector = ({
 
   const [loadingLanguageLockMap] = useAtom(langLoadingLockMapAtom)
 
-  const isMobile = useMobile()
-
   return (
     <div className={cn("mb-3 mt-4 flex w-full items-center", containerClassName)}>
       <div className="flex grow flex-col gap-1">
@@ -281,9 +278,6 @@ export const LanguageSelector = ({
 
           const originalLanguageName = defaultResources[lang].lang.name
 
-          if (isMobile) {
-            return `${originalLanguageName} (${percent}%)`
-          }
           return (
             <span className="group" key={lang}>
               <span>

@@ -306,6 +306,8 @@
   "general.rebuild_database.warning.line2": "确定继续？",
   "general.send_anonymous_data.description": "发送匿名用户数据，帮助产品改进和功能迭代。",
   "general.send_anonymous_data.label": "发送匿名数据",
+  "general.show_compact_timeline_in_sub.description": "进入文章内容页时，在左侧订阅栏显示时间线条目以便快速选择。",
+  "general.show_compact_timeline_in_sub.label": "阅读时在订阅栏显示时间线",
   "general.show_quick_timeline.description": "在时间线顶部显示列表和分类的时间线快递导航。",
   "general.show_quick_timeline.label": "显示时间线快速导航",
   "general.show_unread_on_launch.description": "应用启动时仅显示未读内容。",
