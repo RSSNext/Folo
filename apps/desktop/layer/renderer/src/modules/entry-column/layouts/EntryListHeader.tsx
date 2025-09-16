@@ -22,10 +22,11 @@ import { useFollow } from "~/hooks/biz/useFollow"
 import { getRouteParams, useRouteParams } from "~/hooks/biz/useRouteParams"
 import { COMMAND_ID } from "~/modules/command/commands/id"
 import { useRunCommandFn } from "~/modules/command/hooks/use-command"
-import { useCommandShortcuts } from "~/modules/command/hooks/use-command-binding"
+import { useCommandShortcut } from "~/modules/command/hooks/use-command-binding"
 import { EntryHeader } from "~/modules/entry-content/components/entry-header"
+import { FeedIcon } from "~/modules/feed/feed-icon"
 import { useRefreshFeedMutation } from "~/queries/feed"
-import { useFeedHeaderTitle } from "~/store/feed/hooks"
+import { useFeedHeaderIcon, useFeedHeaderTitle } from "~/store/feed/hooks"
 
 import { MarkAllReadButton } from "../components/mark-all-button"
 import { useIsPreviewFeed } from "../hooks/useIsPreviewFeed"
@@ -47,9 +48,11 @@ export const EntryListHeader: FC<{
   const isPreview = useIsPreviewFeed()
 
   const headerTitle = useFeedHeaderTitle()
+  const feedIcon = useFeedHeaderIcon()
 
   const titleInfo = !!headerTitle && (
     <div className="flex min-w-0 items-center break-all text-lg font-bold leading-tight">
+      {feedIcon && <FeedIcon target={feedIcon} fallback size={20} />}
       <EllipsisHorizontalTextWithTooltip className="inline-block !w-auto max-w-full">
         {headerTitle}
       </EllipsisHorizontalTextWithTooltip>
@@ -73,7 +76,7 @@ export const EntryListHeader: FC<{
   }
 
   const feedColumnShow = useSubscriptionColumnShow()
-  const commandShortcuts = useCommandShortcuts()
+  const toggleUnreadOnlyShortcut = useCommandShortcut(COMMAND_ID.timeline.unreadOnly)
   const runCmdFn = useRunCommandFn()
 
   const aiEnabled = useFeature("ai")
@@ -149,7 +152,7 @@ export const EntryListHeader: FC<{
                       ? t("entry_list_header.show_unread_only")
                       : t("entry_list_header.show_all")
                   }
-                  shortcut={commandShortcuts[COMMAND_ID.timeline.unreadOnly]}
+                  shortcut={toggleUnreadOnlyShortcut}
                   onClick={() => runCmdFn(COMMAND_ID.timeline.unreadOnly, [!unreadOnly])()}
                 >
                   {unreadOnly ? (

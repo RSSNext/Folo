@@ -6,6 +6,7 @@ import type { FC } from "react"
 export type UniversalItemProps = {
   entryId: string
   translation?: EntryTranslation
+  currentFeedTitle?: string
 }
 
 export type EntryListItemFC<P extends object = object> = FC<P & UniversalItemProps> & {

@@ -73,7 +73,7 @@ const entrySelector = (state: EntryModel) => {
     video,
   }
 }
-export function AllItem({ entryId, translation }: UniversalItemProps) {
+export function AllItem({ entryId, translation, currentFeedTitle }: UniversalItemProps) {
   const entry = useEntry(entryId, entrySelector)
   const simple = true
 
@@ -132,32 +132,37 @@ export function AllItem({ entryId, translation }: UniversalItemProps) {
 
   const related = feed || inbox
 
+  const thisFeedTitle = getPreferredTitle(related, entry?.titleEntry)
   return (
     <div
       className={cn(
-        "cursor-menu group relative flex items-center py-2",
+        "cursor-menu group relative flex items-start py-2",
         !isRead &&
           "before:bg-accent before:absolute before:-left-4 before:top-[14px] before:block before:size-2 before:rounded-full",
       )}
     >
-      <FeedIcon target={related} fallback entry={entry?.iconEntry} size={20} />
-      <div className={cn("flex h-fit min-w-0 flex-1 flex-row items-center text-sm leading-tight")}>
-        <div
-          className={cn(
-            "mr-4 flex w-20 shrink-0 gap-1 text-xs",
-            "text-text-secondary",
-            isInCollection && "text-text-secondary",
-            isRead && dimRead && "text-text-tertiary",
-          )}
-        >
-          <EllipsisHorizontalTextWithTooltip className="truncate">
-            <FeedTitle
-              feed={related}
-              title={getPreferredTitle(related, entry?.titleEntry)}
-              className="space-x-0.5"
-            />
-          </EllipsisHorizontalTextWithTooltip>
+      {currentFeedTitle !== thisFeedTitle && (
+        <div className="flex min-w-0 shrink-0 items-center gap-1">
+          <FeedIcon target={related} fallback entry={entry?.iconEntry} size={20} />
+          <div
+            className={cn(
+              "mr-4 flex w-20 shrink-0 gap-1 text-xs",
+              "text-text-secondary",
+              isInCollection && "text-text-secondary",
+              isRead && dimRead && "text-text-tertiary",
+            )}
+          >
+            <EllipsisHorizontalTextWithTooltip className="truncate">
+              <FeedTitle
+                feed={related}
+                title={getPreferredTitle(related, entry?.titleEntry)}
+                className="space-x-0.5"
+              />
+            </EllipsisHorizontalTextWithTooltip>
+          </div>
         </div>
+      )}
+      <div className={cn("flex h-fit min-w-0 flex-1 flex-row items-start text-sm leading-tight")}>
         {entry.firstMedia && (
           <Tooltip>
             <TooltipRoot>
@@ -201,22 +206,26 @@ export function AllItem({ entryId, translation }: UniversalItemProps) {
             isRead && dimRead && "text-text-secondary",
           )}
         >
-          {entry?.title ? (
-            <EntryTranslation
-              className={cn(
-                "inline-flex min-w-0 items-center hyphens-auto font-medium",
-                lineClamp.title,
-              )}
-              source={titleCase(entry?.title ?? "")}
-              target={titleCase(translation?.title ?? "")}
-            />
-          ) : (
-            <EntryTranslation
-              className={cn("inline-flex items-center hyphens-auto", lineClamp.description)}
-              source={entry?.description}
-              target={translation?.description}
-            />
-          )}
+          <EllipsisHorizontalTextWithTooltip>
+            {entry?.title ? (
+              <EntryTranslation
+                inline={false}
+                className={cn(
+                  "flex min-w-0 flex-col justify-center hyphens-auto font-medium",
+                  lineClamp.title,
+                )}
+                source={titleCase(entry?.title ?? "")}
+                target={titleCase(translation?.title ?? "")}
+              />
+            ) : (
+              <EntryTranslation
+                inline={false}
+                className={cn("inline-flex items-center hyphens-auto", lineClamp.description)}
+                source={entry?.description}
+                target={translation?.description}
+              />
+            )}
+          </EllipsisHorizontalTextWithTooltip>
           {!!isInCollection && <StarIcon className="absolute right-0 top-0" />}
         </div>
         {!simple && (

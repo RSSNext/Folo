@@ -13,6 +13,7 @@ import { useEventCallback } from "usehooks-ts"
 
 import { useGeneralSettingKey } from "~/atoms/settings/general"
 import { m } from "~/components/common/Motion"
+import { useFeedHeaderTitle } from "~/store/feed/hooks"
 
 import { VirtualRowItem } from "./components/VirtualRowItem"
 import { EntryColumnShortcutHandler } from "./EntryColumnShortcutHandler"
@@ -187,6 +188,8 @@ export const EntryList: FC<EntryListProps> = memo(
       })
     }, [])
 
+    const currentFeedTitle = useFeedHeaderTitle()!
+
     return (
       <>
         <div
@@ -240,6 +243,7 @@ export const EntryList: FC<EntryListProps> = memo(
                 isStickyItem={isStickyItem}
                 isActiveStickyItem={isActiveStickyItem}
                 measureElement={rowVirtualizer.measureElement}
+                currentFeedTitle={currentFeedTitle}
               />
             )
           })}

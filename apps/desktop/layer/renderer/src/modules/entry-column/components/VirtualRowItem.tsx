@@ -18,6 +18,7 @@ interface VirtualRowItemProps {
   isStickyItem: boolean
   isActiveStickyItem: boolean
   measureElement: (element: Element | null) => void
+  currentFeedTitle?: string
 }
 
 const EntryHeadDateItem: FC<{
@@ -50,6 +51,7 @@ export const VirtualRowItem: FC<VirtualRowItemProps> = memo(
     isStickyItem,
     isActiveStickyItem,
     measureElement,
+    currentFeedTitle,
   }) => {
     return (
       <Fragment key={virtualRowKey}>
@@ -76,6 +78,7 @@ export const VirtualRowItem: FC<VirtualRowItemProps> = memo(
         )}
 
         <EntryVirtualListItem
+          currentFeedTitle={currentFeedTitle}
           entryId={entriesIds[virtualRowIndex]!}
           view={view}
           data-index={virtualRowIndex}
