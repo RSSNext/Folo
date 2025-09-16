@@ -12,6 +12,8 @@ catalog:
   "@follow-app/client-sdk": 0.3.65
   tailwindcss-uikit-colors: 1.0.0
 
+ignorePatchFailures: false
+
 onlyBuiltDependencies:
   - "@firebase/util"
   - "@sentry/cli"
@@ -46,7 +48,6 @@ overrides:
   "@floating-ui/react-dom": 2.1.4
   "@floating-ui/react": 0.27.14
 
-ignorePatchFailures: false
 patchedDependencies:
   re-resizable@6.11.2: patches/re-resizable@6.11.2.patch
   hono: patches/hono.patch

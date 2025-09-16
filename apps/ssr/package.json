@@ -19,7 +19,7 @@
     "@radix-ui/react-avatar": "1.1.10",
     "@resvg/resvg-js": "2.6.2",
     "@sentry/react": "9.35.0",
-    "@tanstack/react-query": "5.81.5",
+    "@tanstack/react-query": "5.89.0",
     "blurhash": "2.0.5",
     "dayjs": "1.11.18",
     "fastify": "5.4.0",
