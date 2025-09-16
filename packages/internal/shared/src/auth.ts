@@ -39,10 +39,10 @@ export const baseAuthPlugins = [
         type: "string",
         required: false,
       },
-      // socialLinks: {
-      //   type: "json",
-      //   required: false,
-      // },
+      socialLinks: {
+        type: "json",
+        required: false,
+      },
     },
   }),
   twoFactorClient(),
