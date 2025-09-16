@@ -15,12 +15,18 @@ export class ChatSliceActions {
 
   /**
    * Get the currently active ChatSliceActions instance.
+   *
+   * WARNING: Anti-pattern — temporary global accessor used. Do NOT use in new code.
+   * This may be removed/refactored.
    */
   static getActiveInstance(): ChatSliceActions | null {
     if (!this._current) return null
     return this._current
   }
 
+  /**
+   * See warning above — this setter exists solely for the same limited purpose.
+   */
   static setActiveInstance(instance: ChatSliceActions | null) {
     this._current = instance
   }
