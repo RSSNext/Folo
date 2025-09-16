@@ -39,7 +39,7 @@ jobs:
             issue_body: ${{ steps.prepare_input.outputs.issue_body_indented_json }}
             repository: ${{ github.repository }}
           enable-github-mcp: true
-          token: ${{ secrets.USER_PAT }}
+          token: ${{ secrets.GITHUB_TOKEN }}
           github-mcp-token: ${{ secrets.USER_PAT }}
           endpoint: https://models.github.ai/orgs/RSSNext/inference
 
