@@ -1,11 +1,12 @@
+import type { RSSHubRouteMetadata } from "@follow-app/client-sdk"
+
 import { DiscoverFeedForm } from "./DiscoverFeedForm"
-import type { RSSHubRoute } from "./types"
 
 export const RecommendationContent = ({
   route,
   routePrefix,
 }: {
-  route: RSSHubRoute
+  route: RSSHubRouteMetadata
   routePrefix: string
 }) => (
   <div className="mx-auto w-full max-w-[700px] sm:min-w-[550px]">

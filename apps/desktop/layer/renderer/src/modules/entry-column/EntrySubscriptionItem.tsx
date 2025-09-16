@@ -86,7 +86,7 @@ const EntrySubscriptionItemImpl = ({ entryId, view, className }: EntrySubscripti
       {...contextMenuProps}
     >
       <div className="flex min-w-0 flex-1 items-start gap-2">
-        <FeedIcon fallback feed={feed} size={14} className="mt-0.5 shrink-0" />
+        <FeedIcon fallback target={feed} size={14} className="mt-0.5 shrink-0" />
 
         <div className="min-w-0 flex-1">
           <EllipsisHorizontalTextWithTooltip

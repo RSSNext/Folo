@@ -1,7 +1,6 @@
 import { FeedViewType } from "@follow/constants"
 
 import { getServerConfigs } from "~/atoms/server-configs"
-import type { RSSHubRoute } from "~/modules/discover/types"
 
 import { FEED_COLLECTION_LIST, ROUTE_FEED_PENDING } from "../constants/app"
 
@@ -46,27 +45,6 @@ export function getEntriesParams({
     view,
     ...params,
   }
-}
-
-const rsshubCategoryMap: Partial<Record<string, FeedViewType>> = {
-  design: FeedViewType.Pictures,
-  forecast: FeedViewType.Notifications,
-  live: FeedViewType.Notifications,
-  picture: FeedViewType.Pictures,
-  "program-update": FeedViewType.Notifications,
-  "social-media": FeedViewType.SocialMedia,
-}
-
-export const getViewFromRoute = (route: RSSHubRoute) => {
-  if (route.view) {
-    return route.view
-  }
-  for (const categories of route.categories) {
-    if (rsshubCategoryMap[categories]) {
-      return rsshubCategoryMap[categories]
-    }
-  }
-  return null
 }
 
 export const getLevelMultiplier = (level: number) => {
