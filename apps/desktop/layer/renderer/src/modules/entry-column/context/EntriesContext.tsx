@@ -1,5 +1,5 @@
 import type { FeedViewType } from "@follow/constants"
-import { createContext, use, useCallback, useEffect, useMemo, useRef } from "react"
+import { createContext, use, useCallback, useLayoutEffect, useMemo, useRef } from "react"
 
 import { useRouteParams } from "~/hooks/biz/useRouteParams"
 
@@ -55,22 +55,22 @@ export const EntriesProvider: React.FC<React.PropsWithChildren> = ({ children })
 
   // Keep latest dynamic values in refs for stable actions
   const entriesIdsRef = useRef(entries.entriesIds)
-  useEffect(() => {
+  useLayoutEffect(() => {
     entriesIdsRef.current = entries.entriesIds
   }, [entries.entriesIds])
 
   const idToIndexRef = useRef(idToIndex)
-  useEffect(() => {
+  useLayoutEffect(() => {
     idToIndexRef.current = idToIndex
   }, [idToIndex])
 
   const fetchNextPageRef = useRef(entries.fetchNextPage)
-  useEffect(() => {
+  useLayoutEffect(() => {
     fetchNextPageRef.current = entries.fetchNextPage
   }, [entries.fetchNextPage])
 
   const refetchRef = useRef(entries.refetch)
-  useEffect(() => {
+  useLayoutEffect(() => {
     refetchRef.current = entries.refetch
   }, [entries.refetch])
 
