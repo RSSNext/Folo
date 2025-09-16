@@ -73,7 +73,7 @@ const entrySelector = (state: EntryModel) => {
     video,
   }
 }
-export function AllItem({ entryId, entryPreview, translation }: UniversalItemProps) {
+export function AllItem({ entryId, translation }: UniversalItemProps) {
   const entry = useEntry(entryId, entrySelector)
   const simple = true
 
@@ -84,18 +84,17 @@ export function AllItem({ entryId, entryPreview, translation }: UniversalItemPro
 
   const inInCollection = useRouteParamsSelector((s) => s.feedId === FEED_COLLECTION_LIST)
 
-  const feed =
-    useFeedById(entry?.feedId, (feed) => {
-      return {
-        type: feed.type,
-        ownerUserId: feed.ownerUserId,
-        id: feed.id,
-        title: feed.title,
-        url: (feed as any).url || "",
-        image: feed.image,
-        siteUrl: feed.siteUrl,
-      }
-    }) || entryPreview?.feeds
+  const feed = useFeedById(entry?.feedId, (feed) => {
+    return {
+      type: feed.type,
+      ownerUserId: feed.ownerUserId,
+      id: feed.id,
+      title: feed.title,
+      url: (feed as any).url || "",
+      image: feed.image,
+      siteUrl: feed.siteUrl,
+    }
+  })
 
   const inbox = useInboxById(entry?.inboxId)
 
@@ -141,7 +140,7 @@ export function AllItem({ entryId, entryPreview, translation }: UniversalItemPro
           "before:bg-accent before:absolute before:-left-4 before:top-[14px] before:block before:size-2 before:rounded-full",
       )}
     >
-      <FeedIcon feed={related} fallback entry={entry?.iconEntry} size={20} />
+      <FeedIcon target={related} fallback entry={entry?.iconEntry} size={20} />
       <div className={cn("flex h-fit min-w-0 flex-1 flex-row items-center text-sm leading-tight")}>
         <div
           className={cn(
@@ -249,7 +248,7 @@ AllItem.wrapperClassName = "pl-7 pr-5"
 export function AllItemStateLess({ entry, feed }: EntryItemStatelessProps) {
   return (
     <div className="cursor-menu group relative flex py-4">
-      <FeedIcon feed={feed} fallback className="mr-2 size-5" />
+      <FeedIcon target={feed} fallback className="mr-2 size-5" />
       <div className="-mt-0.5 min-w-0 flex-1 text-sm leading-tight">
         <div className="text-text-secondary flex gap-1 text-[10px] font-bold">
           <FeedTitle feed={feed} />

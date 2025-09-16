@@ -1,6 +1,6 @@
 import { UserRole } from "@follow/constants"
-import type { ServerConfigs } from "@follow/models/types"
 import { useUserRole, useWhoami } from "@follow/store/user/hooks"
+import type { StatusConfigs as ServerConfigs } from "@follow-app/client-sdk"
 import type { ParseKeys } from "i18next"
 import type { FC } from "react"
 import { Fragment, useMemo } from "react"

@@ -1,9 +1,9 @@
 import { GridList } from "@client/components/items/grid"
 import { NormalListItem } from "@client/components/items/normal"
 import { PictureList } from "@client/components/items/picture"
-import type { EntriesPreview } from "@client/query/entries"
 import type { Feed } from "@client/query/feed"
 import { FeedViewType } from "@follow/constants"
+import type { ParsedEntry } from "@follow-app/client-sdk"
 import type { FC } from "react"
 import { useMemo } from "react"
 
@@ -23,7 +23,7 @@ export const Item = ({
   feed,
   view,
 }: {
-  entries: EntriesPreview
+  entries: ParsedEntry[]
   feed?: Feed
   view: FeedViewType
 }) => {
@@ -43,7 +43,7 @@ export const Item = ({
 }
 
 const NormalList: FC<{
-  entries: EntriesPreview
+  entries: ParsedEntry[]
 
   feed?: Feed
 }> = ({ entries, feed }) => {
@@ -53,12 +53,11 @@ const NormalList: FC<{
         <div className="relative cursor-default" key={entry.id}>
           <NormalListItem
             withDetails
-            entryId={entry.id}
             entryPreview={{
-              entries: entry,
-              feeds: feed?.feed || entry.feeds!,
-              read: true,
-              feedId: feed?.feed.id || entry.feeds?.id!,
+              entry,
+              feed: feed?.feed,
+
+              feedId: feed?.feed.id,
             }}
           />
         </div>

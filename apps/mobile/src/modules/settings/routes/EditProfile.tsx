@@ -124,6 +124,7 @@ const ProfileForm: FC<{
     "instagram",
     "facebook",
     "youtube",
+    // @ts-expect-error adding discord
     "discord",
   ]
   const socialCopyMap = {

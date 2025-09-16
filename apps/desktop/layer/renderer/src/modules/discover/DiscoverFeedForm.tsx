@@ -19,6 +19,7 @@ import {
   regexpPathToPath,
 } from "@follow/utils/path-parser"
 import { cn } from "@follow/utils/utils"
+import type { RSSHubRouteMetadata } from "@follow-app/client-sdk"
 import { zodResolver } from "@hookform/resolvers/zod"
 import { m } from "motion/react"
 import type { FC } from "react"
@@ -39,7 +40,6 @@ import {
 } from "~/components/ui/modal/stacked/hooks"
 
 import { FeedForm } from "./FeedForm"
-import type { RSSHubRoute } from "./types"
 import { normalizeRSSHubParameters } from "./utils"
 
 const FeedMaintainers = ({ maintainers }: { maintainers?: string[] }) => {
@@ -92,7 +92,7 @@ export const DiscoverFeedForm = ({
   viewportClassName,
   rootClassName,
 }: {
-  route: RSSHubRoute
+  route: RSSHubRouteMetadata
   routePrefix: string
   noDescription?: boolean
   routeParams?: RouteParams

@@ -53,14 +53,14 @@ followClient.addResponseInterceptor(({ response }) => {
   return response
 })
 
-followClient.addErrorInterceptor(async ({ error, response }) => {
+followClient.addErrorInterceptor(async ({ response, error }) => {
   if (!response) {
     logger.error("API Request failed - no response", error)
     return error
   }
+})
 
-  logger.error(`API Request failed: ${response.status} ${response.statusText}`, error)
-
+followClient.addResponseInterceptor(async ({ response }) => {
   // Handle specific error cases if needed in main process
   if (response.status === 401) {
     logger.warn("Authentication failed in main process")
@@ -73,7 +73,7 @@ followClient.addErrorInterceptor(async ({ error, response }) => {
     // ignore JSON parsing errors
   }
 
-  return error
+  return response
 })
 
 // Legacy export for compatibility

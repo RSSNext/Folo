@@ -1,9 +1,10 @@
 import { tracker } from "@follow/tracker"
+import type { BoostFeedRequest } from "@follow-app/client-sdk"
 import { useMutation } from "@tanstack/react-query"
 import { toast } from "sonner"
 
 import { useAuthQuery, useI18n } from "~/hooks/common"
-import { apiClient } from "~/lib/api-fetch"
+import { followClient } from "~/lib/api-client"
 import { defineQuery } from "~/lib/defineQuery"
 import { toastFetchError } from "~/lib/error-parser"
 
@@ -12,19 +13,15 @@ import { updateFeedBoostStatus } from "./atom"
 const query = {
   getStatus: ({ feedId }: { feedId: string }) =>
     defineQuery(["boostFeed", feedId], async () => {
-      const res = await apiClient.boosts.$get({
-        query: {
-          feedId,
-        },
+      const res = await followClient.api.boosts.getFeedBoostLevel({
+        feedId,
       })
       return res.data
     }),
   getBoosters: ({ feedId }: { feedId: string }) =>
     defineQuery(["boosters", feedId], async () => {
-      const res = await apiClient.boosts.boosters.$get({
-        query: {
-          feedId,
-        },
+      const res = await followClient.api.boosts.getFeedBoosters({
+        feedId,
       })
 
       return res.data
@@ -45,8 +42,12 @@ export const useFeedBoostersQuery = (feedId: string | null | undefined) =>
 export const useBoostFeedMutation = () => {
   const t = useI18n()
   return useMutation({
-    mutationFn: (data: Parameters<typeof apiClient.boosts.$post>[0]["json"]) =>
-      apiClient.boosts.$post({ json: data }),
+    mutationFn: (data: BoostFeedRequest) =>
+      followClient.api.boosts.boostFeed({
+        amount: data.amount,
+        feedId: data.feedId,
+        TOTPCode: data.TOTPCode,
+      }),
     onError(err) {
       toastFetchError(err)
     },

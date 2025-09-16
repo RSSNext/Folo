@@ -8,8 +8,8 @@ packages:
   - "!**/example/**"
 
 catalog:
-  typescript: 5.9.2
   "@follow-app/client-sdk": 0.3.65
+  typescript: 5.9.2
   tailwindcss-uikit-colors: 1.0.0
 
 ignorePatchFailures: false
@@ -50,7 +50,6 @@ overrides:
 
 patchedDependencies:
   re-resizable@6.11.2: patches/re-resizable@6.11.2.patch
-  hono: patches/hono.patch
   "@mozilla/readability@0.6.0": patches/@mozilla__readability@0.6.0.patch
   daisyui@4.12.24: patches/daisyui@4.12.24.patch
   jsonpointer: patches/jsonpointer.patch

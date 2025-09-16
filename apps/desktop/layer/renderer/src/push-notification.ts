@@ -3,7 +3,7 @@ import { initializeApp } from "firebase/app"
 import { getMessaging, getToken } from "firebase/messaging"
 
 import { setAppMessagingToken } from "./atoms/app"
-import { apiClient } from "./lib/api-fetch"
+import { followClient } from "./lib/api-client"
 import { router } from "./router"
 
 const firebaseConfig = env.VITE_FIREBASE_CONFIG ? JSON.parse(env.VITE_FIREBASE_CONFIG) : null
@@ -13,7 +13,7 @@ export async function registerWebPushNotifications() {
     return
   }
   try {
-    const actions = await apiClient.actions.$get()
+    const actions = await followClient.api.actions.get()
     const rules = actions.data?.rules
     const hasPushNotificationRule = rules?.some(
       (rule) => rule.result.newEntryNotification && !rule.result.disabled,
@@ -44,11 +44,9 @@ export async function registerWebPushNotifications() {
       serviceWorkerRegistration: registration,
     })
 
-    await apiClient.messaging.$post({
-      json: {
-        token,
-        channel: "web",
-      },
+    await followClient.api.messaging.createToken({
+      token,
+      channel: "web",
     })
 
     registerPushNotificationPostMessage()

@@ -27,7 +27,7 @@ import { z } from "zod"
 
 import { useModalStack } from "~/components/ui/modal/stacked/hooks"
 import { useAuthQuery } from "~/hooks/common/useBizQuery"
-import { apiClient } from "~/lib/api-fetch"
+import { followClient } from "~/lib/api-client"
 import { defineQuery } from "~/lib/defineQuery"
 import { useTOTPModalWrapper } from "~/modules/profile/hooks"
 import { Balance } from "~/modules/wallet/balance"
@@ -69,7 +69,7 @@ const WithdrawModalContent = ({ dismiss }: { dismiss: () => void }) => {
 
   const powerPrice = useAuthQuery(
     defineQuery(["power-price"], async () => {
-      const res = await apiClient.wallets["power-price"].$get()
+      const res = await followClient.api.wallets.powerPrice()
       return res.data
     }),
   )
@@ -87,13 +87,11 @@ const WithdrawModalContent = ({ dismiss }: { dismiss: () => void }) => {
       TOTPCode?: string
     }) => {
       const amountBigInt = from(amount, 18)[0]
-      await apiClient.wallets.transactions.withdraw.$post({
-        json: {
-          address,
-          amount: amountBigInt.toString(),
-          toRss3,
-          TOTPCode,
-        },
+      await followClient.api.wallets.transactions.withdraw({
+        address,
+        amount: amountBigInt.toString(),
+        toRss3,
+        TOTPCode,
       })
     },
   })
@@ -113,7 +111,7 @@ const WithdrawModalContent = ({ dismiss }: { dismiss: () => void }) => {
     if (mutation.isSuccess) {
       toast.success(t("wallet.withdraw.success"))
       walletActions.get().invalidate()
-      walletActions.transactions.get().invalidate()
+      walletActions.transactions.get({}).invalidate()
       dismiss()
     }
   }, [mutation.isSuccess, t, dismiss])

@@ -1,5 +1,5 @@
-import type { SupportedLanguages } from "@follow/models/types"
 import type { SupportedActionLanguage } from "@follow/shared"
+import type { SupportedLanguages } from "@follow-app/client-sdk"
 import { useQueries } from "@tanstack/react-query"
 import { useCallback } from "react"
 

@@ -211,7 +211,7 @@ const CornerPlayerImpl = ({ hideControls, rounded }: ControlButtonProps) => {
         {/* play cover */}
         <div className="relative size-[3.625rem] shrink-0">
           <FeedIcon
-            feed={feed}
+            target={feed}
             entry={entry.iconEntry}
             size={isMobile ? 65.25 : 58}
             fallback={false}

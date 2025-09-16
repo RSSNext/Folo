@@ -3,7 +3,7 @@ import type {
   ActionId,
   ActionOperation,
   SupportedLanguages,
-} from "@follow/models/types"
+} from "@follow-app/client-sdk"
 import type { ParseKeys } from "i18next"
 import type { SFSymbol } from "sf-symbols-typescript"
 

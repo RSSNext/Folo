@@ -14,7 +14,6 @@ export default defineConfig(
     formatting: false,
     lessOpinionated: true,
     ignores: [
-      "packages/internal/shared/src/hono.ts",
       "resources/**",
       "apps/mobile/android/**",
       "apps/mobile/ios/**",

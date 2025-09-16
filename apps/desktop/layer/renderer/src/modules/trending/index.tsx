@@ -8,7 +8,7 @@ import { useEffect, useState } from "react"
 import { useTranslation } from "react-i18next"
 
 import { setUISetting, useUISettingKey } from "~/atoms/settings/ui"
-import { apiClient } from "~/lib/api-fetch"
+import { followClient } from "~/lib/api-client"
 
 import { TrendingFeedCard } from "../discover/TrendingFeedCard"
 
@@ -61,12 +61,10 @@ export function Trending({
   const { data, isLoading } = useQuery({
     queryKey: ["trending", lang, selectedView],
     queryFn: async () => {
-      return await apiClient.trending.feeds.$get({
-        query: {
-          language: lang === "all" ? undefined : lang,
-          view: selectedView === "all" ? undefined : Number(selectedView),
-          limit,
-        },
+      return await followClient.api.trending.getFeeds({
+        language: lang === "all" ? undefined : lang,
+        view: selectedView === "all" ? undefined : Number(selectedView),
+        limit,
       })
     },
     meta: {

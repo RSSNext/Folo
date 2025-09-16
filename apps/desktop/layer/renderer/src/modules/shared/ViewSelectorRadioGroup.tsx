@@ -1,7 +1,8 @@
 import { Card, CardContent, CardHeader } from "@follow/components/ui/card/index.jsx"
 import { FeedViewType, views } from "@follow/constants"
-import type { EntryModelSimple, FeedModel } from "@follow/models"
+import type { FeedModel } from "@follow/store/feed/types"
 import { cn } from "@follow/utils/utils"
+import type { ParsedEntry } from "@follow-app/client-sdk"
 import { cloneElement } from "react"
 
 import { useI18n } from "~/hooks/common"
@@ -17,7 +18,7 @@ export const ViewSelectorRadioGroup = ({
   className,
   ...rest
 }: {
-  entries?: EntryModelSimple[]
+  entries?: ParsedEntry[]
   feed?: FeedModel
   view?: number
 } & React.InputHTMLAttributes<HTMLInputElement> & {

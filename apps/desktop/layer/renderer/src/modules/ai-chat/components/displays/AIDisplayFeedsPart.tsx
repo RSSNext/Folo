@@ -31,10 +31,10 @@ const AIDisplayFeedPartBase = ({
         <div className="flex">
           <FeedIcon
             disableFadeIn
-            feed={{
+            target={{
               type: "feed",
               title,
-              id: feedId,
+
               image,
               siteUrl,
             }}

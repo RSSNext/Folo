@@ -22,7 +22,7 @@ export const RecommendationListItem: FC<{
     for (const route in data.routes) {
       const routeData = data.routes[route]!
       if (routeData.categories) {
-        routeData.categories.forEach((c) => categories.add(c))
+        routeData.categories.forEach((c: string) => categories.add(c))
       }
     }
     categories.delete("popular")

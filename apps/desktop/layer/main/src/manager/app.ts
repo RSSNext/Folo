@@ -2,7 +2,6 @@ import { PushReceiver } from "@eneris/push-receiver"
 import { callWindowExpose } from "@follow/shared/bridge"
 import { APP_PROTOCOL, DEV, LEGACY_APP_PROTOCOL } from "@follow/shared/constants"
 import { env } from "@follow/shared/env.desktop"
-import type { MessagingData } from "@follow/shared/hono"
 import { app, nativeTheme, Notification, shell } from "electron"
 import contextMenu from "electron-context-menu"
 import path from "pathe"
@@ -121,12 +120,15 @@ class AppManagerStatic {
       logger.info(
         `PushReceiver received notification: ${JSON.stringify(notification.message.data)}`,
       )
-      const data = notification.message.data as MessagingData
+      const { data } = notification.message
+      if (!data) {
+        return
+      }
       switch (data.type) {
         case "new-entry": {
           const notification = new Notification({
-            title: data.title,
-            body: data.description,
+            title: data.title as string,
+            body: data.description as string,
           })
           notification.on("click", () => {
             const mainWindow = WindowManager.getMainWindowOrCreate()
@@ -134,9 +136,9 @@ class AppManagerStatic {
             mainWindow.focus()
             const handlers = callWindowExpose(mainWindow)
             handlers.navigateEntry({
-              feedId: data.feedId,
-              entryId: data.entryId,
-              view: Number.parseInt(data.view),
+              feedId: data.feedId as string,
+              entryId: data.entryId as string,
+              view: Number.parseInt(data.view as string),
             })
           })
           notification.show()

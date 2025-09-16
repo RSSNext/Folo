@@ -70,7 +70,6 @@
     "es-toolkit": "1.39.10",
     "fake-indexeddb": "6.2.2",
     "happy-dom": "18.0.1",
-    "hono": "4.9.7",
     "html-minifier-terser": "7.2.0",
     "js-yaml": "4.1.0",
     "nbump": "2.1.5",

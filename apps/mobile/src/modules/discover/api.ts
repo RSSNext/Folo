@@ -1,22 +1,18 @@
-import { apiClient } from "@/src/lib/api-fetch"
+import { followClient } from "@/src/lib/api-client"
 
 import type { DiscoverCategories, Language } from "./constants"
 
 export const fetchRsshubPopular = (category: DiscoverCategories, lang: Language) => {
-  return apiClient.discover.rsshub.$get({
-    query: {
-      category: "popular",
-      categories: category === "all" ? "popular" : category,
-      lang: lang === "all" ? undefined : lang,
-    },
+  return followClient.api.discover.rsshub({
+    category: "popular",
+    categories: category === "all" ? "popular" : category,
+    lang: lang === "all" ? undefined : lang,
   })
 }
 
 export const fetchRsshubAnalysis = (lang: Language) => {
-  return apiClient.discover["rsshub-analytics"].$get({
-    query: {
-      ...(lang !== "all" && { lang }),
-    },
+  return followClient.api.discover.rsshubAnalytics({
+    ...(lang !== "all" && { lang }),
   })
 }
 
@@ -29,11 +25,9 @@ export const fetchFeedTrending = ({
   view?: number
   limit: number
 }) => {
-  return apiClient.trending.feeds.$get({
-    query: {
-      language: lang,
-      view,
-      limit,
-    },
+  return followClient.api.trending.getFeeds({
+    language: lang,
+    view,
+    limit,
   })
 }

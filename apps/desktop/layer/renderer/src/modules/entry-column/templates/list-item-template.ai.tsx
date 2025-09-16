@@ -55,7 +55,6 @@ const entrySelector = (state: EntryModel) => {
 }
 export function ListItem({
   entryId,
-  entryPreview,
   translation,
   simple,
 }: UniversalItemProps & {
@@ -71,18 +70,17 @@ export function ListItem({
 
   const inInCollection = useRouteParamsSelector((s) => s.feedId === FEED_COLLECTION_LIST)
 
-  const feed =
-    useFeedById(entry?.feedId, (feed) => {
-      return {
-        type: feed.type,
-        ownerUserId: feed.ownerUserId,
-        id: feed.id,
-        title: feed.title,
-        url: (feed as any).url || "",
-        image: feed.image,
-        siteUrl: feed.siteUrl,
-      }
-    }) || entryPreview?.feeds
+  const feed = useFeedById(entry?.feedId, (feed) => {
+    return {
+      type: feed.type,
+      ownerUserId: feed.ownerUserId,
+      id: feed.id,
+      title: feed.title,
+      url: (feed as any).url || "",
+      image: feed.image,
+      siteUrl: feed.siteUrl,
+    }
+  })
 
   const inbox = useInboxById(entry?.inboxId)
 
@@ -149,7 +147,7 @@ export function ListItem({
           "before:bg-accent before:absolute before:-left-3 before:top-6 before:block before:size-2 before:rounded-full",
       )}
     >
-      <FeedIcon feed={related} fallback entry={entry?.iconEntry} size={24} />
+      <FeedIcon target={related} fallback entry={entry?.iconEntry} size={24} />
       <div
         className={cn("-mt-0.5 ml-1 h-fit flex-1 text-sm leading-tight", lineClamp.global)}
         style={{
@@ -226,7 +224,7 @@ export function ListItem({
               fallbackElement={
                 <div className={clsx("bg-material-ultra-thick", "size-[80px]", "rounded")} />
               }
-              feed={feed || inbox}
+              target={feed || inbox}
               entry={entry?.iconEntry}
               size={80}
               className="m-0 rounded"

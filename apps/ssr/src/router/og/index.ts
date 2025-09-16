@@ -2,7 +2,7 @@ import { Readable } from "node:stream"
 
 import type { FastifyInstance, FastifyReply } from "fastify"
 
-import { createApiClient } from "~/lib/api-client"
+import { createFollowClient } from "~/lib/api-client"
 
 import { renderFeedOG } from "./feed"
 import { renderListOG } from "./list"
@@ -12,7 +12,7 @@ export const ogRoute = (app: FastifyInstance) => {
   app.get("/og/:type/:id", async (req, reply) => {
     const { type, id } = req.params as Record<string, string>
 
-    const apiClient = createApiClient()
+    const apiClient = createFollowClient()
     let imageRes: {
       image: Buffer
       contentType: string

@@ -1,6 +1,6 @@
 import type { UIMessage } from "ai"
 
-import { apiClient } from "~/lib/api-fetch"
+import { followClient } from "~/lib/api-client"
 
 export const generateChatTitle = async (messages: UIMessage[]) => {
   if (messages.length < 2) return null
@@ -23,8 +23,8 @@ export const generateChatTitle = async (messages: UIMessage[]) => {
       }
     })
 
-    const response = await apiClient.ai["summary-title"].$post({
-      json: { messages: relevantMessages },
+    const response = await followClient.api.ai.summaryTitle({
+      messages: relevantMessages,
     })
 
     if ("title" in response) {

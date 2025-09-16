@@ -5,7 +5,7 @@ import { UnreadService } from "@follow/database/services/unread"
 import type { MarkAllAsReadRequest } from "@follow-app/client-sdk"
 import { isEqual } from "es-toolkit"
 
-import { api, apiClient } from "../../context"
+import { api } from "../../context"
 import type { Hydratable, Resetable } from "../../lib/base"
 import { createTransaction, createZustandStore } from "../../lib/helper"
 import { getEntry } from "../entry/getter"
@@ -32,9 +32,7 @@ const set = useUnreadStore.setState
 
 class UnreadSyncService {
   async resetFromRemote() {
-    const res = await apiClient().reads.$get({
-      query: {},
-    })
+    const res = await api().reads.get({})
 
     if (isEqual(res.data, get().data)) {
       return res.data
@@ -213,13 +211,9 @@ class UnreadSyncService {
 
     tx.request(async () => {
       if (read) {
-        await apiClient().reads.$post({
-          json: { entryIds: [entryId], isInbox },
-        })
+        await api().reads.markAsRead({ entryIds: [entryId], isInbox })
       } else {
-        await apiClient().reads.$delete({
-          json: { entryId, isInbox },
-        })
+        await api().reads.markAsUnread({ entryId, isInbox })
       }
     })
 

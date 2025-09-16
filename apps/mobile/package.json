@@ -18,7 +18,7 @@
     "web": "expo start --web"
   },
   "dependencies": {
-    "@better-auth/expo": "1.2.9",
+    "@better-auth/expo": "1.3.11",
     "@expo/metro-runtime": "5.0.4",
     "@expo/react-native-action-sheet": "4.1.1",
     "@follow/components": "workspace:*",
@@ -48,7 +48,7 @@
     "@tanstack/react-query": "5.89.0",
     "@tanstack/react-query-persist-client": "5.89.0",
     "@types/qrcode": "1.5.5",
-    "better-auth": "1.2.9",
+    "better-auth": "1.3.11",
     "camelcase-keys": "10.0.0",
     "dayjs": "1.11.18",
     "dnum": "2.15.0",
@@ -87,7 +87,6 @@
     "expo-video": "2.2.2",
     "expo-web-browser": "14.2.0",
     "franc-min": "6.2.0",
-    "hono": "4.9.7",
     "i18next": "25.5.2",
     "jotai": "2.14.0",
     "lru-cache": "11.1.0",

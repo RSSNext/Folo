@@ -8,6 +8,7 @@
     "posthog-react-native": "^4.1.3"
   },
   "devDependencies": {
+    "@follow-app/client-sdk": "catalog:",
     "@follow/configs": "workspace:*",
     "@react-native-firebase/analytics": "22.2.1"
   }

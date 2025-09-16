@@ -15,7 +15,7 @@ export const checkLanguage = ({
   const pureContent = parseHtml(content)
     .toText()
     .replaceAll(/https?:\/\/\S+|www\.\S+/g, " ")
-  const { code } = ACTION_LANGUAGE_MAP[language]
+  const { code } = ACTION_LANGUAGE_MAP[language] ?? {}
   if (!code) {
     return false
   }

@@ -8,7 +8,7 @@ import { useMutation } from "@tanstack/react-query"
 import { useEffect } from "react"
 import { Platform } from "react-native"
 
-import { apiClient } from "@/src/lib/api-fetch"
+import { followClient } from "@/src/lib/api-client"
 import { kv } from "@/src/lib/kv"
 import { useNavigation } from "@/src/lib/navigation/hooks"
 import { requestNotificationPermission } from "@/src/lib/permission"
@@ -19,12 +19,7 @@ const FIREBASE_MESSAGING_TOKEN_STORAGE_KEY = "firebase_messaging_token"
 async function saveMessagingToken() {
   const app = getApp()
   const token = await getMessaging(app).getToken()
-  await apiClient.messaging.$post({
-    json: {
-      token,
-      channel: Platform.OS,
-    },
-  })
+  await followClient.api.messaging.createToken({ token, channel: Platform.OS })
   kv.set(FIREBASE_MESSAGING_TOKEN_STORAGE_KEY, token)
 }
 

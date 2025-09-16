@@ -16,6 +16,7 @@ import {
   TooltipPortal,
   TooltipTrigger,
 } from "@follow/components/ui/tooltip/index.jsx"
+import type { CreateInvitationRequest } from "@follow-app/client-sdk"
 import { useMutation } from "@tanstack/react-query"
 import dayjs from "dayjs"
 import { Trans, useTranslation } from "react-i18next"
@@ -25,7 +26,7 @@ import { useServerConfigs } from "~/atoms/server-configs"
 import { CopyButton } from "~/components/ui/button/CopyButton"
 import { useModalStack } from "~/components/ui/modal/stacked/hooks"
 import { useAuthQuery } from "~/hooks/common"
-import { apiClient } from "~/lib/api-fetch"
+import { followClient } from "~/lib/api-client"
 import { copyToClipboard } from "~/lib/clipboard"
 import { toastFetchError } from "~/lib/error-parser"
 import { usePresentUserProfileModal, useTOTPModalWrapper } from "~/modules/profile/hooks"
@@ -172,8 +173,8 @@ const ConfirmModalContent = ({ dismiss }: { dismiss: () => void }) => {
   const { t } = useTranslation("settings")
   const newInvitation = useMutation({
     mutationKey: ["newInvitation"],
-    mutationFn: (values: Parameters<typeof apiClient.invitations.new.$post>[0]["json"]) =>
-      apiClient.invitations.new.$post({ json: values }),
+    mutationFn: (values: CreateInvitationRequest) =>
+      followClient.api.invitations.create({ TOTPCode: values.TOTPCode }),
     onError(err) {
       toastFetchError(err)
     },

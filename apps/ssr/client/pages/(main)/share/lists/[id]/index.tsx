@@ -2,7 +2,6 @@ import { Item } from "@client/components/items"
 import { FeedCertification } from "@client/components/ui/feed-certification"
 import { FeedIcon } from "@client/components/ui/feed-icon"
 import { openInFollowApp } from "@client/lib/helper"
-import type { Feed } from "@client/query/feed"
 import { useList } from "@client/query/list"
 import { FollowIcon } from "@follow/components/icons/follow.jsx"
 import { Avatar, AvatarFallback, AvatarImage } from "@follow/components/ui/avatar/index.jsx"
@@ -10,11 +9,12 @@ import { Button } from "@follow/components/ui/button/index.jsx"
 import { LoadingCircle } from "@follow/components/ui/loading/index.jsx"
 import { useTitle } from "@follow/hooks"
 import { cn, formatNumber } from "@follow/utils/utils"
+import type { FeedSchema } from "@follow-app/client-sdk"
 import { Fragment, memo } from "react"
 import { useTranslation } from "react-i18next"
 import { useParams } from "react-router"
 
-const FeedRow = memo<{ feed: Feed["feed"] }>(({ feed }) => {
+const FeedRow = memo<{ feed: FeedSchema }>(({ feed }) => {
   return (
     <a
       className="border-border/40 bg-card hover:border-border group relative flex cursor-pointer items-start justify-between rounded-lg border p-4 transition-all duration-200 hover:shadow-sm hover:shadow-black/5 dark:hover:shadow-white/5"
@@ -24,7 +24,7 @@ const FeedRow = memo<{ feed: Feed["feed"] }>(({ feed }) => {
     >
       <div className="flex min-w-0 flex-1 items-start space-x-3">
         <div className="shrink-0">
-          <FeedIcon fallback feed={feed} className="mask-squircle mask" size={40} />
+          <FeedIcon fallback target={feed} className="mask-squircle mask" size={40} />
         </div>
         <div className="min-w-0 flex-1">
           <div className="flex items-center space-x-2">
@@ -68,7 +68,7 @@ export function Component() {
         acc[feed.id] = feed
         return acc
       },
-      {} as Record<string, Feed["feed"]>,
+      {} as Record<string, FeedSchema>,
     ) || {}
 
   useTitle(list.data?.list.title)
@@ -98,7 +98,7 @@ export function Component() {
             <div className="relative mx-auto inline-block">
               <FeedIcon
                 fallback
-                feed={list.data.list}
+                target={list.data.list}
                 className="mask-squircle mask border-border border"
                 size={80}
                 noMargin

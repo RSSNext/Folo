@@ -58,7 +58,6 @@
     "@types/node": "24.5.0",
     "electron": "37.2.0",
     "electron-devtools-installer": "4.0.0",
-    "hono": "4.9.7",
     "typescript": "catalog:"
   }
 }

@@ -1,8 +1,8 @@
 import { createSettingAtom } from "@follow/atoms/helper/setting.js"
-import type { SupportedLanguages } from "@follow/models"
 import { defaultGeneralSettings } from "@follow/shared/settings/defaults"
 import { hookEnhancedSettings as baseHookEnhancedSettings } from "@follow/shared/settings/hook"
 import type { GeneralSettings as BaseGeneralSettings } from "@follow/shared/settings/interface"
+import type { SupportedLanguages } from "@follow-app/client-sdk"
 
 import { jotaiStore } from "~/lib/jotai"
 import { getDefaultLanguage } from "~/lib/language"

@@ -272,7 +272,7 @@ const SearchItem = memo(function Item({
       }}
     >
       <div className="relative flex w-full items-center justify-between px-1 py-2">
-        {feed && <FeedIcon className="mr-2 size-5 shrink-0 rounded" feed={feed} />}
+        {feed && <FeedIcon className="mr-2 size-5 shrink-0 rounded" target={feed} />}
         <span className="block min-w-0 flex-1 shrink-0 truncate">{title}</span>
         <span className="block min-w-0 shrink-0 grow-0 text-xs font-medium text-zinc-800 opacity-60 dark:text-slate-200/80">
           {subtitle}

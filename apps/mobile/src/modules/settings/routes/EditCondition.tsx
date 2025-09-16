@@ -1,7 +1,7 @@
-import type { ActionConditionIndex } from "@follow/models/types"
 import { filterFieldOptions, filterOperatorOptions } from "@follow/store/action/constant"
 import { useActionRuleCondition } from "@follow/store/action/hooks"
 import { actionActions } from "@follow/store/action/store"
+import type { ActionConditionIndex } from "@follow-app/client-sdk"
 import { useMemo } from "react"
 import { useTranslation } from "react-i18next"
 import { View } from "react-native"

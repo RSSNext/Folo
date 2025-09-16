@@ -3,14 +3,14 @@ import { useMutation } from "@tanstack/react-query"
 import { useTranslation } from "react-i18next"
 import { toast } from "sonner"
 
-import { apiClient } from "~/lib/api-fetch"
+import { followClient } from "~/lib/api-client"
 import { Queries } from "~/queries"
 
 export const ConfirmDeleteModalContent = ({ id, dismiss }: { dismiss: () => void; id: string }) => {
   const { t } = useTranslation("settings")
   const deleteMutation = useMutation({
     mutationFn: () => {
-      return apiClient.rsshub.$delete({ json: { id } })
+      return followClient.api.rsshub.delete({ id })
     },
     onSuccess: () => {
       Queries.rsshub.list().invalidate()
