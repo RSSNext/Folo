@@ -2,7 +2,6 @@ import { whoamiQueryKey } from "@follow/store/user/hooks"
 import { userSyncService } from "@follow/store/user/store"
 import { tracker } from "@follow/tracker"
 import { clearStorage } from "@follow/utils/ns"
-import type { AuthSession } from "@follow-app/client-sdk"
 import type { FetchError } from "ofetch"
 
 import { QUERY_PERSIST_KEY } from "~/constants"

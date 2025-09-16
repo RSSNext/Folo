@@ -1,6 +1,5 @@
 import { LazyImage } from "@client/components/ui/image"
 import { getPreferredTitle } from "@client/lib/helper"
-import type { EntriesPreview } from "@client/query/entries"
 import type { Feed } from "@client/query/feed"
 import { MemoedDangerousHTMLStyle } from "@follow/components/common/MemoedDangerousHTMLStyle.jsx"
 import { TitleMarquee } from "@follow/components/ui/marquee/index.jsx"

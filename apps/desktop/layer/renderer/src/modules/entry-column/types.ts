@@ -1,5 +1,4 @@
 import type { FeedModel } from "@follow/store/feed/types"
-import type { ListModel } from "@follow/store/list/types"
 import type { EntryTranslation } from "@follow/store/translation/types"
 import type { ParsedEntry } from "@follow-app/client-sdk"
 import type { FC } from "react"

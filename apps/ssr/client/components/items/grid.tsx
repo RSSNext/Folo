@@ -1,4 +1,3 @@
-import type { EntriesPreview } from "@client/query/entries"
 import type { Feed } from "@client/query/feed"
 import { TitleMarquee } from "@follow/components/ui/marquee/index.jsx"
 import type { ParsedEntry } from "@follow-app/client-sdk"

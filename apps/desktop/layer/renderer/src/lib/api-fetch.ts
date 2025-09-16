@@ -3,7 +3,7 @@ import { env } from "@follow/shared/env.desktop"
 import { userActions } from "@follow/store/user/store"
 import { createDesktopAPIHeaders } from "@follow/utils/headers"
 import PKG from "@pkg"
-import { FetchError, ofetch } from "ofetch"
+import { ofetch } from "ofetch"
 import { createElement } from "react"
 import { toast } from "sonner"
 

@@ -1,7 +1,6 @@
 import { views } from "@follow/constants"
 import type { EntryModel } from "@follow/store/entry/types"
 import { useFeedById, usePrefetchFeed } from "@follow/store/feed/hooks"
-import type { FeedModel } from "@follow/store/feed/types"
 import { useListById, usePrefetchListById } from "@follow/store/list/hooks"
 import { getSubscriptionByFeedId } from "@follow/store/subscription/getter"
 import { useTranslation } from "react-i18next"

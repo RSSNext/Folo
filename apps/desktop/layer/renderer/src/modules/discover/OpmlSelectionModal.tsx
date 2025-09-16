@@ -14,7 +14,6 @@ import { toast } from "sonner"
 
 import { useCurrentModal } from "~/components/ui/modal/stacked/hooks"
 import { followClient } from "~/lib/api-client"
-import { apiFetch } from "~/lib/api-fetch"
 import { toastFetchError } from "~/lib/error-parser"
 
 import type { ParsedFeedItem } from "./types"

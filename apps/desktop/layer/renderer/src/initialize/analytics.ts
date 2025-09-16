@@ -1,6 +1,6 @@
 import { env } from "@follow/shared/env.desktop"
 import { setFirebaseTracker, setPostHogTracker, tracker } from "@follow/tracker"
-import type { AuthSession, AuthSessionResponse } from "@follow-app/client-sdk"
+import type { AuthSessionResponse } from "@follow-app/client-sdk"
 import posthog from "posthog-js"
 
 import { QUERY_PERSIST_KEY } from "~/constants/app"
