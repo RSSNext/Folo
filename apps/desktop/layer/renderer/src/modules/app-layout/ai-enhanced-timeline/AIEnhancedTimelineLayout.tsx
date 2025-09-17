@@ -76,7 +76,7 @@ const AIEnhancedTimelineLayoutImpl = () => {
   )
 
   const getHalfScreenWidth = useCallback(
-    () => clampWidth(typeof window !== "undefined" ? window.innerWidth / 2 : 800),
+    () => clampWidth(typeof window !== "undefined" ? window.innerWidth * 0.4 : 800),
     [clampWidth],
   )
 
