@@ -8,7 +8,7 @@ import type { EditorState, LexicalEditor } from "lexical"
 import { AnimatePresence } from "motion/react"
 import { nanoid } from "nanoid"
 import type { FC, Ref } from "react"
-import { Suspense, useEffect, useRef, useState } from "react"
+import { Suspense, useEffect, useLayoutEffect, useRef, useState } from "react"
 import { useEventCallback } from "usehooks-ts"
 
 import { useAISettingKey } from "~/atoms/settings/ai"
@@ -210,6 +210,28 @@ const ChatInterfaceContent = ({ centerInputOnEmpty }: ChatInterfaceProps) => {
     },
   )
 
+  const [bottomPanelHeight, setBottomPanelHeight] = useState<number>(0)
+  const bottomPanelRef = useRef<HTMLDivElement | null>(null)
+
+  useLayoutEffect(() => {
+    if (!bottomPanelRef.current) {
+      return
+    }
+    setBottomPanelHeight(bottomPanelRef.current.offsetHeight)
+
+    const resizeObserver = new ResizeObserver(() => {
+      if (!bottomPanelRef.current) {
+        return
+      }
+      setBottomPanelHeight(bottomPanelRef.current.offsetHeight)
+    })
+    resizeObserver.observe(bottomPanelRef.current)
+
+    return () => {
+      resizeObserver.disconnect()
+    }
+  }, [])
+
   useEffect(() => {
     if (status === "submitted") {
       resetScrollState()
@@ -238,10 +260,20 @@ const ChatInterfaceContent = ({ centerInputOnEmpty }: ChatInterfaceProps) => {
               <ScrollArea
                 onScroll={handleScroll}
                 flex
-                scrollbarClassName="mb-40 mt-12"
+                scrollbarClassName="mt-12"
+                scrollbarProps={{
+                  style: {
+                    marginBottom: Math.max(160, bottomPanelHeight) + (error ? 64 : 0),
+                  },
+                }}
                 ref={setScrollAreaRef}
                 rootClassName="flex-1"
-                viewportClassName={cn("pt-12 pb-32", error && "pb-48")}
+                viewportProps={{
+                  style: {
+                    paddingBottom: Math.max(128, bottomPanelHeight) + (error ? 64 : 0),
+                  },
+                }}
+                viewportClassName={"pt-12"}
               >
                 {isLoadingHistory ? (
                   <div className="flex min-h-96 items-center justify-center">
@@ -286,6 +318,7 @@ const ChatInterfaceContent = ({ centerInputOnEmpty }: ChatInterfaceProps) => {
       )}
 
       <div
+        ref={bottomPanelRef}
         className={cn(
           "absolute mx-auto duration-500 ease-in-out",
           hasMessages && "inset-x-0 bottom-0 max-w-4xl px-6 pb-6",

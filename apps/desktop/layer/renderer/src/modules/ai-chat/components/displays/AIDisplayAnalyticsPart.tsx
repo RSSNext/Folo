@@ -258,7 +258,7 @@ const AIDisplayAnalyticsPartBase = ({
   }
 
   return (
-    <Card className="w-[calc(var(--ai-chat-layout-width,65ch)] mx-auto mb-2">
+    <Card className="mx-auto mb-2 w-[calc(var(--ai-chat-layout-width,65ch))] max-w-full">
       <CardHeader>
         <CardTitle className="text-text flex items-center gap-2 text-xl font-semibold">
           <span className="text-lg">📊</span>

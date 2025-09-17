@@ -18,7 +18,7 @@ export const AIReasoningPart: React.FC<AIReasoningPartProps> = React.memo(
 
     return (
       <div className={cn("border-border min-w-0 max-w-full text-left", className)}>
-        <div className="w-[calc(var(--ai-chat-layout-width,65ch))]" />
+        <div className="w-[calc(var(--ai-chat-layout-width,65ch))] max-w-full" />
 
         <CollapseCssGroup key={groupKey}>
           <div>
