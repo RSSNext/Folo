@@ -4,29 +4,20 @@ import { FeedViewType } from "@follow/constants"
 import { clsx } from "@follow/utils"
 import type { EditorState, LexicalEditor } from "lexical"
 import { AnimatePresence, m } from "motion/react"
-import { startTransition, useEffect, useState } from "react"
+import { useEffect, useRef } from "react"
 import { useTranslation } from "react-i18next"
 
 import { useAISettingValue } from "~/atoms/settings/ai"
 import { ROUTE_ENTRY_PENDING } from "~/constants"
 import { useRouteParamsSelector } from "~/hooks/biz/useRouteParams"
 import { AISpline } from "~/modules/ai-chat/components/3d-models/AISpline"
-import { ZustandChat } from "~/modules/ai-chat/store/chat-core/chat-instance"
-import { createChatTransport } from "~/modules/ai-chat/store/transport"
-import type { BizUIMessage } from "~/modules/ai-chat/store/types"
 
 import { useAttachScrollBeyond } from "../../hooks/useAttachScrollBeyond"
 import { useMainEntryId } from "../../hooks/useMainEntryId"
+import { useChatActions, useChatError, useChatStatus, useMessages } from "../../store/hooks"
 import { AIMessageParts } from "../message/AIMessageParts"
 import { DefaultWelcomeContent, EntrySummaryCard } from "../welcome"
-
-type WelcomeTimelineSummaryStatus = "idle" | "loading" | "success" | "error"
-
-interface WelcomeTimelineSummaryState {
-  status: WelcomeTimelineSummaryStatus
-  message: BizUIMessage | null
-  error?: string
-}
+import { AIChatRoot } from "./AIChatRoot"
 
 interface WelcomeScreenProps {
   onSend: (message: EditorState | string, editor: LexicalEditor | null) => void
@@ -43,11 +34,6 @@ export const WelcomeScreen = ({ onSend, centerInputOnEmpty }: WelcomeScreenProps
     entryId: s.entryId,
   }))
 
-  const [timelineSummary, setTimelineSummary] = useState<WelcomeTimelineSummaryState>({
-    status: "idle",
-    message: null,
-  })
-
   const realEntryId = entryId === ROUTE_ENTRY_PENDING ? "" : entryId
   const isAllView = view === FeedViewType.All && isAllFeeds && !realEntryId
 
@@ -55,135 +41,8 @@ export const WelcomeScreen = ({ onSend, centerInputOnEmpty }: WelcomeScreenProps
   const enabledShortcuts = aiSettings.shortcuts?.filter((shortcut) => shortcut.enabled) || []
   const shouldFetchTimelineSummary = isAllView && !hasEntryContext
 
-  useEffect(() => {
-    if (!shouldFetchTimelineSummary) {
-      setTimelineSummary({ status: "idle", message: null, error: undefined })
-      return
-    }
-
-    let isCancelled = false
-
-    const placeholderMessage: BizUIMessage = {
-      id: "timeline-summary",
-      role: "assistant",
-      parts: [],
-    }
-
-    setTimelineSummary({
-      status: "loading",
-      message: placeholderMessage,
-      error: undefined,
-    })
-
-    const localSliceRef = {
-      current: {
-        chatId: "timeline-summary",
-        messages: [] as BizUIMessage[],
-        status: "ready",
-        error: undefined as Error | undefined,
-        isStreaming: false,
-        currentTitle: undefined as string | undefined,
-        chatInstance: null as unknown,
-        chatActions: null as unknown,
-      },
-    }
-
-    const updateChatSlice = (updater: (state: any) => any) => {
-      localSliceRef.current = updater(localSliceRef.current)
-    }
-
-    const chat = new ZustandChat(
-      {
-        id: "timeline-summary",
-        messages: [],
-        transport: createChatTransport(),
-      },
-      updateChatSlice as any,
-    )
-
-    localSliceRef.current.chatInstance = chat
-
-    const unsubscribeMessages = chat.chatState.onMessagesChange((messages) => {
-      if (isCancelled) return
-
-      const latestMessage = messages.at(-1) ?? placeholderMessage
-
-      startTransition(() => {
-        setTimelineSummary((prev) => ({
-          ...prev,
-          message: latestMessage,
-        }))
-      })
-    })
-
-    const unsubscribeStatus = chat.chatState.onStatusChange((status) => {
-      if (isCancelled) return
-
-      if (status === "submitted" || status === "streaming") {
-        startTransition(() => {
-          setTimelineSummary((prev) => ({
-            ...prev,
-            status: "loading",
-            error: undefined,
-          }))
-        })
-        return
-      }
-
-      if (status === "ready") {
-        startTransition(() => {
-          setTimelineSummary((prev) => ({
-            ...prev,
-            status: prev.error ? "error" : "success",
-          }))
-        })
-      }
-    })
-
-    const unsubscribeError = chat.chatState.onErrorChange((error) => {
-      if (isCancelled || !error) return
-
-      startTransition(() => {
-        setTimelineSummary((prev) => ({
-          status: "error",
-          message: prev.message ?? placeholderMessage,
-          error: error.message,
-        }))
-      })
-    })
-
-    const fetchTimelineSummary = async () => {
-      try {
-        await chat.sendMessage(undefined, {
-          body: { scene: "timeline-summary" },
-        })
-      } catch (error) {
-        if (isCancelled) return
-
-        console.error("Failed to fetch timeline summary", error)
-        const errorMessage = error instanceof Error ? error.message : String(error)
-        setTimelineSummary((prev) => ({
-          status: "error",
-          message: prev.message ?? placeholderMessage,
-          error: errorMessage,
-        }))
-      }
-    }
-
-    fetchTimelineSummary()
-
-    return () => {
-      isCancelled = true
-      unsubscribeMessages()
-      unsubscribeStatus()
-      unsubscribeError()
-      void chat.stop()
-      chat.destroy()
-    }
-  }, [shouldFetchTimelineSummary])
-
   const { handleScroll } = useAttachScrollBeyond()
-  const showTimelineSummary = shouldFetchTimelineSummary && timelineSummary.status !== "idle"
+  const showTimelineSummary = shouldFetchTimelineSummary
 
   return (
     <ScrollArea
@@ -195,13 +54,9 @@ export const WelcomeScreen = ({ onSend, centerInputOnEmpty }: WelcomeScreenProps
     >
       <div className="mx-auto flex w-full flex-1 flex-col justify-center space-y-8 pb-52">
         {showTimelineSummary ? (
-          <TimelineSummarySection
-            summary={timelineSummary}
-            heading={t("timeline_summary.heading")}
-            generatingLabel={t("timeline_summary.generating")}
-            emptyLabel={t("timeline_summary.empty")}
-            errorLabel={t("timeline_summary.error")}
-          />
+          <AIChatRoot>
+            <TimelineSummarySection />
+          </AIChatRoot>
         ) : (
           <DefaultWelcomeHeader
             description={
@@ -252,22 +107,34 @@ const DefaultWelcomeHeader = ({ description }: { description: string }) => (
   </m.div>
 )
 
-const TimelineSummarySection = ({
-  summary,
-  heading,
-  generatingLabel,
-  emptyLabel,
-  errorLabel,
-}: {
-  summary: WelcomeTimelineSummaryState
-  heading: string
-  generatingLabel: string
-  emptyLabel: string
-  errorLabel: string
-}) => {
-  const isLoading = summary.status === "loading"
-  const isError = summary.status === "error"
-  const { message } = summary
+const TimelineSummarySection = () => {
+  const { getChatInstance } = useChatActions()
+
+  const status = useChatStatus()
+  const error = useChatError()
+  const onceRef = useRef(false)
+  const messages = useMessages()
+  useEffect(() => {
+    if (onceRef.current) return
+    onceRef.current = true
+    let isCancelled = false
+    const fetchTimelineSummary = async () => {
+      if (isCancelled) return
+
+      await getChatInstance().sendMessage(undefined, {
+        body: { scene: "timeline-summary" },
+      })
+    }
+
+    fetchTimelineSummary()
+
+    return () => {
+      isCancelled = true
+    }
+  }, [getChatInstance])
+
+  const message = messages.at(-1)
+
   const hasContent =
     message?.parts.some((part) => {
       if (part.type === "text" || part.type === "reasoning") {
@@ -276,6 +143,10 @@ const TimelineSummarySection = ({
       return true
     }) ?? false
 
+  const { t } = useTranslation("ai")
+
+  const isLoading = status === "streaming"
+  const isError = status === "error"
   return (
     <m.div initial={{ opacity: 0, y: -20 }} animate={{ opacity: 1, y: 0 }}>
       <div className="bg-fill-tertiary/60 border-border/60 dark:border-border/40 relative mx-auto flex w-full max-w-3xl flex-col gap-4 overflow-hidden rounded-3xl border p-7 text-left shadow-lg backdrop-blur-md">
@@ -283,9 +154,11 @@ const TimelineSummarySection = ({
           <div className="flex items-center gap-3">
             <AISpline />
             <div className="flex flex-col">
-              <span className="text-text text-base font-semibold">{heading}</span>
+              <span className="text-text text-base font-semibold">
+                {t("timeline_summary.heading")}
+              </span>
               <span className="text-text-secondary text-xs">
-                {isLoading ? generatingLabel : undefined}
+                {isLoading ? t("timeline_summary.generating") : undefined}
               </span>
             </div>
           </div>
@@ -296,15 +169,15 @@ const TimelineSummarySection = ({
 
         <div className="text-text flex select-text flex-col gap-2 text-sm leading-6">
           {isError ? (
-            <p className="text-text text-sm font-medium">{errorLabel}</p>
+            <p className="text-text text-sm font-medium">{t("timeline_summary.error")}</p>
           ) : hasContent && message ? (
             <AIMessageParts message={message} isLastMessage={isLoading} />
           ) : (
-            <p className="text-text-secondary text-sm">{emptyLabel}</p>
+            <p className="text-text-secondary text-sm">{t("timeline_summary.empty")}</p>
           )}
         </div>
 
-        {isError && summary.error && <p className="text-text-secondary text-xs">{summary.error}</p>}
+        {isError && error && <p className="text-text-secondary text-xs">{error.message}</p>}
       </div>
     </m.div>
   )

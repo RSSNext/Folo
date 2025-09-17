@@ -1,5 +1,5 @@
 import { autoBindThis } from "@follow/utils/bind-this"
-import type { ChatStatus } from "ai"
+import type { ChatRequestOptions, ChatStatus } from "ai"
 import { nanoid } from "nanoid"
 import type { StateCreator } from "zustand"
 
@@ -83,6 +83,10 @@ export class ChatSliceActions {
   }
 
   // Getter
+  getChatInstance = (): ZustandChat => {
+    return this.chatInstance
+  }
+
   getMessages = (): BizUIMessage[] => {
     return this.chatInstance.chatState.messages
   }
@@ -143,7 +147,7 @@ export class ChatSliceActions {
   }
 
   // Core chat actions using AI SDK AbstractChat methods
-  sendMessage = async (message: string | BizUIMessage) => {
+  sendMessage = async (message: string | BizUIMessage, options?: ChatRequestOptions) => {
     try {
       // Convert string to message object if needed
       const messageObj =
@@ -154,7 +158,7 @@ export class ChatSliceActions {
           : (message as Parameters<typeof this.chatInstance.sendMessage>[0])
 
       // Use the AI SDK's sendMessage method
-      const response = await this.chatInstance.sendMessage(messageObj)
+      const response = await this.chatInstance.sendMessage(messageObj, options)
       return response
     } catch (error) {
       this.setError(error as Error)

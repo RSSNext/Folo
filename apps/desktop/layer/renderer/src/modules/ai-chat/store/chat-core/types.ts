@@ -2,6 +2,7 @@ import type { ChatStatus } from "ai"
 
 import type { BizUIMessage } from "../types"
 import type { ChatSliceActions } from "./chat-actions"
+import type { ZustandChat } from "./chat-instance"
 
 // Zustand slice interface
 export interface ChatSlice {
@@ -16,7 +17,7 @@ export interface ChatSlice {
   currentTitle: string | undefined
 
   // AI SDK Chat instance (forward declaration to avoid circular import)
-  chatInstance: any
+  chatInstance: ZustandChat
 
   // Actions
   chatActions: ChatSliceActions
