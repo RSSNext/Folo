@@ -61,3 +61,8 @@ patchedDependencies:
   react-native-screens: patches/react-native-screens.patch
   react-native-ios-utilities: patches/react-native-ios-utilities.patch
   "@sentry/electron": patches/@sentry__electron.patch
+
+# See https://pnpm.io/settings#minimumreleaseage
+minimumReleaseAge: 1440
+minimumReleaseAgeExclude:
+  - "@follow-app/client-sdk"
