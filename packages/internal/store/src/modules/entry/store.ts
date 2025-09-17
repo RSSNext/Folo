@@ -637,7 +637,7 @@ class EntrySyncServices {
 
     const readStream = async () => {
       const response = await api().entries.stream({
-        ids: nextIds,
+        ids: nextIds.slice(0, 30),
       })
 
       if (!response.ok) {
