@@ -1,9 +1,7 @@
 import { Folo } from "@follow/components/icons/folo.js"
 import { ScrollArea } from "@follow/components/ui/scroll-area/ScrollArea.js"
 import { FeedViewType } from "@follow/constants"
-import { env } from "@follow/shared/env.desktop"
 import { clsx } from "@follow/utils"
-import { DefaultChatTransport, readUIMessageStream } from "ai"
 import type { EditorState, LexicalEditor } from "lexical"
 import { AnimatePresence, m } from "motion/react"
 import { startTransition, useEffect, useState } from "react"
@@ -12,8 +10,9 @@ import { useTranslation } from "react-i18next"
 import { useAISettingValue } from "~/atoms/settings/ai"
 import { ROUTE_ENTRY_PENDING } from "~/constants"
 import { useRouteParamsSelector } from "~/hooks/biz/useRouteParams"
-import { getAIModelState } from "~/modules/ai-chat/atoms/session"
 import { AISpline } from "~/modules/ai-chat/components/3d-models/AISpline"
+import { ZustandChat } from "~/modules/ai-chat/store/chat-core/chat-instance"
+import { createChatTransport } from "~/modules/ai-chat/store/transport"
 import type { BizUIMessage } from "~/modules/ai-chat/store/types"
 
 import { useAttachScrollBeyond } from "../../hooks/useAttachScrollBeyond"
@@ -62,9 +61,9 @@ export const WelcomeScreen = ({ onSend, centerInputOnEmpty }: WelcomeScreenProps
       return
     }
 
-    const abortController = new AbortController()
     let isCancelled = false
-    let lastMessage: BizUIMessage = {
+
+    const placeholderMessage: BizUIMessage = {
       id: "timeline-summary",
       role: "assistant",
       parts: [],
@@ -72,74 +71,102 @@ export const WelcomeScreen = ({ onSend, centerInputOnEmpty }: WelcomeScreenProps
 
     setTimelineSummary({
       status: "loading",
-      message: lastMessage,
+      message: placeholderMessage,
       error: undefined,
     })
 
-    const transport = new DefaultChatTransport<BizUIMessage>({
-      api: `${env.VITE_API_URL}/ai/timeline-summary`,
-      credentials: "include",
-      body: () => {
-        const { selectedModel } = getAIModelState()
-        return selectedModel ? { model: selectedModel } : {}
+    const localSliceRef = {
+      current: {
+        chatId: "timeline-summary",
+        messages: [] as BizUIMessage[],
+        status: "ready",
+        error: undefined as Error | undefined,
+        isStreaming: false,
+        currentTitle: undefined as string | undefined,
+        chatInstance: null as unknown,
+        chatActions: null as unknown,
       },
+    }
+
+    const updateChatSlice = (updater: (state: any) => any) => {
+      localSliceRef.current = updater(localSliceRef.current)
+    }
+
+    const chat = new ZustandChat(
+      {
+        id: "timeline-summary",
+        messages: [],
+        transport: createChatTransport(),
+      },
+      updateChatSlice as any,
+    )
+
+    localSliceRef.current.chatInstance = chat
+
+    const unsubscribeMessages = chat.chatState.onMessagesChange((messages) => {
+      if (isCancelled) return
+
+      const latestMessage = messages.at(-1) ?? placeholderMessage
+
+      startTransition(() => {
+        setTimelineSummary((prev) => ({
+          ...prev,
+          message: latestMessage,
+        }))
+      })
+    })
+
+    const unsubscribeStatus = chat.chatState.onStatusChange((status) => {
+      if (isCancelled) return
+
+      if (status === "submitted" || status === "streaming") {
+        startTransition(() => {
+          setTimelineSummary((prev) => ({
+            ...prev,
+            status: "loading",
+            error: undefined,
+          }))
+        })
+        return
+      }
+
+      if (status === "ready") {
+        startTransition(() => {
+          setTimelineSummary((prev) => ({
+            ...prev,
+            status: prev.error ? "error" : "success",
+          }))
+        })
+      }
+    })
+
+    const unsubscribeError = chat.chatState.onErrorChange((error) => {
+      if (isCancelled || !error) return
+
+      startTransition(() => {
+        setTimelineSummary((prev) => ({
+          status: "error",
+          message: prev.message ?? placeholderMessage,
+          error: error.message,
+        }))
+      })
     })
 
     const fetchTimelineSummary = async () => {
-      let encounteredError = false
-
       try {
-        const stream = await transport.sendMessages({
-          chatId: "timeline-summary",
-          messages: [],
-          trigger: "submit-message",
-          messageId: undefined,
-          abortSignal: abortController.signal,
+        await chat.sendMessage(undefined, {
+          body: { scene: "timeline-summary" },
         })
-
-        const messageStream = readUIMessageStream<BizUIMessage>({
-          message: lastMessage,
-          stream,
-          terminateOnError: true,
-        })
-
-        for await (const message of messageStream) {
-          if (isCancelled || abortController.signal.aborted) {
-            break
-          }
-
-          lastMessage = message
-          startTransition(() => {
-            setTimelineSummary({
-              status: "loading",
-              message,
-              error: undefined,
-            })
-          })
-        }
       } catch (error) {
-        if (abortController.signal.aborted || isCancelled) {
-          return
-        }
+        if (isCancelled) return
 
-        encounteredError = true
         console.error("Failed to fetch timeline summary", error)
         const errorMessage = error instanceof Error ? error.message : String(error)
-        setTimelineSummary({
+        setTimelineSummary((prev) => ({
           status: "error",
-          message: lastMessage,
+          message: prev.message ?? placeholderMessage,
           error: errorMessage,
-        })
-      } finally {
-        if (!encounteredError && !isCancelled && !abortController.signal.aborted) {
-          startTransition(() => {
-            setTimelineSummary({
-              status: "success",
-              message: lastMessage,
-              error: undefined,
-            })
-          })
-        }
+        }))
       }
     }
 
@@ -147,7 +174,11 @@ export const WelcomeScreen = ({ onSend, centerInputOnEmpty }: WelcomeScreenProps
 
     return () => {
       isCancelled = true
-      abortController.abort()
+      unsubscribeMessages()
+      unsubscribeStatus()
+      unsubscribeError()
+      void chat.stop()
+      chat.destroy()
     }
   }, [shouldFetchTimelineSummary])
 
