@@ -3,8 +3,7 @@ import { ScrollArea } from "@follow/components/ui/scroll-area/ScrollArea.js"
 import { FeedViewType } from "@follow/constants"
 import { env } from "@follow/shared/env.desktop"
 import { clsx } from "@follow/utils"
-import type { UIMessageChunk } from "ai"
-import { DefaultChatTransport } from "ai"
+import { DefaultChatTransport, readUIMessageStream } from "ai"
 import type { EditorState, LexicalEditor } from "lexical"
 import { AnimatePresence, m } from "motion/react"
 import { startTransition, useEffect, useState } from "react"
@@ -13,25 +12,21 @@ import { useTranslation } from "react-i18next"
 import { useAISettingValue } from "~/atoms/settings/ai"
 import { ROUTE_ENTRY_PENDING } from "~/constants"
 import { useRouteParamsSelector } from "~/hooks/biz/useRouteParams"
+import { getAIModelState } from "~/modules/ai-chat/atoms/session"
 import { AISpline } from "~/modules/ai-chat/components/3d-models/AISpline"
+import type { BizUIMessage } from "~/modules/ai-chat/store/types"
 
 import { useAttachScrollBeyond } from "../../hooks/useAttachScrollBeyond"
 import { useMainEntryId } from "../../hooks/useMainEntryId"
-import { AIMarkdownStreamingMessage } from "../message/AIMarkdownMessage.v2"
+import { AIMessageParts } from "../message/AIMessageParts"
 import { DefaultWelcomeContent, EntrySummaryCard } from "../welcome"
 
 type WelcomeTimelineSummaryStatus = "idle" | "loading" | "success" | "error"
 
 interface WelcomeTimelineSummaryState {
   status: WelcomeTimelineSummaryStatus
-  content: string
+  message: BizUIMessage | null
   error?: string
-}
-
-class TimelineSummaryTransport extends DefaultChatTransport<any> {
-  public parseStream(stream: ReadableStream<Uint8Array>) {
-    return this.processResponseStream(stream)
-  }
 }
 
 interface WelcomeScreenProps {
@@ -51,7 +46,7 @@ export const WelcomeScreen = ({ onSend, centerInputOnEmpty }: WelcomeScreenProps
 
   const [timelineSummary, setTimelineSummary] = useState<WelcomeTimelineSummaryState>({
     status: "idle",
-    content: "",
+    message: null,
   })
 
   const realEntryId = entryId === ROUTE_ENTRY_PENDING ? "" : entryId
@@ -63,110 +58,86 @@ export const WelcomeScreen = ({ onSend, centerInputOnEmpty }: WelcomeScreenProps
 
   useEffect(() => {
     if (!shouldFetchTimelineSummary) {
-      setTimelineSummary({ status: "idle", content: "", error: undefined })
+      setTimelineSummary({ status: "idle", message: null, error: undefined })
       return
     }
 
-    const controller = new AbortController()
+    const abortController = new AbortController()
     let isCancelled = false
-    let reader: ReadableStreamDefaultReader<UIMessageChunk> | null = null
+    let lastMessage: BizUIMessage = {
+      id: "timeline-summary",
+      role: "assistant",
+      parts: [],
+    }
 
-    const transport = new TimelineSummaryTransport()
+    setTimelineSummary({
+      status: "loading",
+      message: lastMessage,
+      error: undefined,
+    })
+
+    const transport = new DefaultChatTransport<BizUIMessage>({
+      api: `${env.VITE_API_URL}/ai/timeline-summary`,
+      credentials: "include",
+      body: () => {
+        const { selectedModel } = getAIModelState()
+        return selectedModel ? { model: selectedModel } : {}
+      },
+    })
 
     const fetchTimelineSummary = async () => {
-      setTimelineSummary({ status: "loading", content: "", error: undefined })
-
-      const url = `${env.VITE_API_URL}/ai/timeline-summary`
+      let encounteredError = false
 
       try {
-        const response = await fetch(url, {
-          credentials: "include",
-          method: "GET",
+        const stream = await transport.sendMessages({
+          chatId: "timeline-summary",
+          messages: [],
+          trigger: "timeline-summary",
+          abortSignal: abortController.signal,
         })
 
-        if (!response.ok) {
-          const message = await response.text()
-          throw new Error(message || `Timeline summary request failed (${response.status})`)
-        }
+        const messageStream = readUIMessageStream<BizUIMessage>({
+          message: lastMessage,
+          stream,
+          terminateOnError: true,
+        })
 
-        if (!response.body) {
-          throw new Error("Timeline summary response is empty")
-        }
-
-        const stream = transport.parseStream(response.body)
-        reader = stream.getReader()
-        const activeTextIds = new Set<string>()
-
-        while (!isCancelled) {
-          const { done, value } = await reader.read()
-          if (done) break
-          if (!value) continue
-
-          switch (value.type) {
-            case "text-start": {
-              activeTextIds.add(value.id)
-              break
-            }
-            case "text-delta": {
-              if (activeTextIds.has(value.id) && typeof value.delta === "string" && value.delta) {
-                const { delta } = value
-                startTransition(() => {
-                  setTimelineSummary((prev) => ({
-                    ...prev,
-                    content: prev.content + delta,
-                  }))
-                })
-              }
-              break
-            }
-            case "text-end": {
-              activeTextIds.delete(value.id)
-              break
-            }
-            case "error":
-            case "tool-output-error": {
-              const errorText =
-                value.type === "error"
-                  ? value.errorText
-                  : (value as { errorText: string }).errorText
-              throw new Error(errorText)
-            }
-            default: {
-              const maybeText =
-                (value as { delta?: string; text?: string }).delta ??
-                (value as { text?: string }).text
-              if (typeof maybeText === "string" && maybeText) {
-                startTransition(() => {
-                  setTimelineSummary((prev) => ({
-                    ...prev,
-                    content: prev.content + maybeText,
-                  }))
-                })
-              }
-              break
-            }
+        for await (const message of messageStream) {
+          if (isCancelled || abortController.signal.aborted) {
+            break
           }
-        }
 
-        if (!isCancelled) {
-          setTimelineSummary((prev) => ({ ...prev, status: "success" }))
+          lastMessage = message
+          startTransition(() => {
+            setTimelineSummary({
+              status: "loading",
+              message,
+              error: undefined,
+            })
+          })
         }
       } catch (error) {
-        if (controller.signal.aborted || isCancelled) {
+        if (abortController.signal.aborted || isCancelled) {
           return
         }
 
+        encounteredError = true
         console.error("Failed to fetch timeline summary", error)
         const errorMessage = error instanceof Error ? error.message : String(error)
-        setTimelineSummary((prev) => ({
+        setTimelineSummary({
           status: "error",
-          content: prev.content,
+          message: lastMessage,
           error: errorMessage,
-        }))
+        })
       } finally {
-        if (reader) {
-          reader.cancel().catch(() => {})
-          reader = null
+        if (!encounteredError && !isCancelled && !abortController.signal.aborted) {
+          startTransition(() => {
+            setTimelineSummary({
+              status: "success",
+              message: lastMessage,
+              error: undefined,
+            })
+          })
         }
       }
     }
@@ -175,11 +146,7 @@ export const WelcomeScreen = ({ onSend, centerInputOnEmpty }: WelcomeScreenProps
 
     return () => {
       isCancelled = true
-      controller.abort()
-      if (reader) {
-        reader.cancel().catch(() => {})
-        reader = null
-      }
+      abortController.abort()
     }
   }, [shouldFetchTimelineSummary])
 
@@ -268,7 +235,14 @@ const TimelineSummarySection = ({
 }) => {
   const isLoading = summary.status === "loading"
   const isError = summary.status === "error"
-  const hasContent = summary.content.trim().length > 0
+  const { message } = summary
+  const hasContent =
+    message?.parts.some((part) => {
+      if (part.type === "text" || part.type === "reasoning") {
+        return part.text.trim().length > 0
+      }
+      return true
+    }) ?? false
 
   return (
     <m.div initial={{ opacity: 0, y: -20 }} animate={{ opacity: 1, y: 0 }}>
@@ -288,11 +262,11 @@ const TimelineSummarySection = ({
           )}
         </div>
 
-        <div className="text-text prose dark:prose-invert max-w-none text-sm leading-6">
+        <div className="text-text flex select-text flex-col gap-2 text-sm leading-6">
           {isError ? (
             <p className="text-text text-sm font-medium">{errorLabel}</p>
-          ) : hasContent ? (
-            <AIMarkdownStreamingMessage text={summary.content} isStreaming={isLoading} />
+          ) : hasContent && message ? (
+            <AIMessageParts message={message} isLastMessage={isLoading} />
           ) : (
             <p className="text-text-secondary text-sm">{emptyLabel}</p>
           )}
