@@ -92,7 +92,8 @@ export const WelcomeScreen = ({ onSend, centerInputOnEmpty }: WelcomeScreenProps
         const stream = await transport.sendMessages({
           chatId: "timeline-summary",
           messages: [],
-          trigger: "timeline-summary",
+          trigger: "submit-message",
+          messageId: undefined,
           abortSignal: abortController.signal,
         })
 
