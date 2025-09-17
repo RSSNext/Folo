@@ -330,10 +330,16 @@ const ChatInterfaceContent = ({ centerInputOnEmpty }: ChatInterfaceProps) => {
       >
         {error && <CollapsibleError error={error} />}
         <ChatInput onSend={handleSendMessage} variant={!hasMessages ? "minimal" : "default"} />
+        <div className="text-text-secondary relative z-[1] -mb-4 mt-2 pl-2 text-xs">
+          AI can make mistakes, please verify critical information.
+        </div>
         {!centerInputOnEmpty && (
           <div
-            className="bg-background backdrop-blur-background absolute inset-x-0 bottom-0 h-28"
-            style={{ maskImage: "linear-gradient(to bottom, transparent, black)" }}
+            className="bg-background absolute inset-x-0 bottom-0 opacity-90"
+            style={{
+              maskImage: "linear-gradient(to bottom, transparent, black)",
+              height: bottomPanelHeight,
+            }}
           />
         )}
       </div>
