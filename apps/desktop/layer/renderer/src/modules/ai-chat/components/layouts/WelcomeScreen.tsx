@@ -149,7 +149,7 @@ const TimelineSummarySection = () => {
   const isError = status === "error"
   return (
     <m.div initial={{ opacity: 0, y: -20 }} animate={{ opacity: 1, y: 0 }}>
-      <div className="bg-fill-tertiary/60 border-border/60 dark:border-border/40 relative mx-auto flex w-full max-w-3xl flex-col gap-4 overflow-hidden rounded-3xl border p-7 text-left shadow-lg backdrop-blur-md">
+      <div className="bg-material-ultra-thin border-border relative mx-auto flex w-full max-w-3xl flex-col gap-4 overflow-hidden rounded-3xl border p-7 text-left shadow-sm">
         <div className="flex flex-wrap items-center justify-between gap-3">
           <div className="flex items-center gap-3">
             <AISpline />

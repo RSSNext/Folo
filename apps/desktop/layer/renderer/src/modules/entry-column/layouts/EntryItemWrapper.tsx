@@ -145,7 +145,7 @@ export const EntryItemWrapper: FC<
   const isWide = views.find((v) => v.view === view)?.wideMode || aiEnabled
 
   const Link = view === FeedViewType.SocialMedia ? "article" : NavLink
-
+  const isAll = view === FeedViewType.All
   return (
     <div data-entry-id={entry?.id} style={style}>
       <Link
@@ -153,6 +153,7 @@ export const EntryItemWrapper: FC<
         className={cn(
           "hover:bg-theme-item-hover cursor-button relative block overflow-visible duration-200",
           isWide ? "@[650px]:rounded-md rounded-none" : "",
+          isAll && "!rounded-none",
           (isActive || isContextMenuOpen) && "!bg-theme-item-active",
           itemClassName,
         )}

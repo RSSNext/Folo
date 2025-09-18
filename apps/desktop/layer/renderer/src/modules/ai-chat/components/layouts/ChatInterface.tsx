@@ -344,7 +344,8 @@ const ChatInterfaceContent = ({ centerInputOnEmpty }: ChatInterfaceProps) => {
         <div className="text-text-secondary relative z-[1] -mb-4 mt-2 pl-2 text-xs">
           AI can make mistakes, please verify critical information.
         </div>
-        {!centerInputOnEmpty && (
+
+        {(!centerInputOnEmpty || hasMessages) && (
           <div
             className="bg-background absolute inset-x-0 bottom-0 opacity-90"
             style={{
