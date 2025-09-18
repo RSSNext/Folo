@@ -30,8 +30,9 @@ export const AIChatContextBar: Component<{ onSendShortcut?: (prompt: string) => 
       fileInputRef.current?.click()
     }, [])
 
-    const view = useRouteParamsSelector((i) => i.view)
     const { addOrUpdateBlock, removeBlock } = useBlockActions()
+    const view = useRouteParamsSelector((i) => i.view)
+    const feedId = useRouteParamsSelector((i) => i.feedId)
     useEffect(() => {
       addOrUpdateBlock({
         id: BlockSliceAction.SPECIAL_TYPES.mainView,
@@ -42,6 +43,21 @@ export const AIChatContextBar: Component<{ onSendShortcut?: (prompt: string) => 
         removeBlock(BlockSliceAction.SPECIAL_TYPES.mainView)
       }
     }, [addOrUpdateBlock, view, removeBlock])
+
+    useEffect(() => {
+      if (feedId) {
+        addOrUpdateBlock({
+          id: BlockSliceAction.SPECIAL_TYPES.mainFeed,
+          type: "mainFeed",
+          value: feedId,
+        })
+      } else {
+        removeBlock(BlockSliceAction.SPECIAL_TYPES.mainFeed)
+      }
+      return () => {
+        removeBlock(BlockSliceAction.SPECIAL_TYPES.mainFeed)
+      }
+    }, [addOrUpdateBlock, feedId, removeBlock])
 
     return (
       <div className={cn("flex flex-wrap items-center gap-2 px-4 py-3", className)}>

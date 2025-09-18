@@ -33,6 +33,7 @@ const getDisplayContent = (block: AIChatContextBlock): React.ReactNode => {
     case "referEntry": {
       return <EntryTitle entryId={block.value} fallback={block.value} />
     }
+    case "mainFeed":
     case "referFeed": {
       return <FeedTitle feedId={block.value} fallback={block.value} />
     }

@@ -15,7 +15,7 @@ import {
 
 import { EntryTitle, FeedTitle } from "./TitleComponents"
 
-const blockTypeCanNotBeRemoved = new Set(["mainEntry", "mainView"])
+const blockTypeCanNotBeRemoved = new Set(["mainEntry", "mainFeed", "mainView"])
 
 export const ContextBlock: FC<{ block: AIChatContextBlock }> = memo(({ block }) => {
   const { t } = useTranslation("common")
@@ -33,6 +33,7 @@ export const ContextBlock: FC<{ block: AIChatContextBlock }> = memo(({ block }) 
       case "referEntry": {
         return "i-mgc-paper-cute-fi"
       }
+      case "mainFeed":
       case "referFeed": {
         return "i-mgc-rss-cute-fi"
       }
@@ -67,6 +68,7 @@ export const ContextBlock: FC<{ block: AIChatContextBlock }> = memo(({ block }) 
       case "referEntry": {
         return <EntryTitle entryId={block.value} fallback={block.value} />
       }
+      case "mainFeed":
       case "referFeed": {
         return <FeedTitle feedId={block.value} fallback={block.value} />
       }
@@ -162,6 +164,9 @@ export const ContextBlock: FC<{ block: AIChatContextBlock }> = memo(({ block }) 
         return ""
       }
       case "mainEntry": {
+        return "Current"
+      }
+      case "mainFeed": {
         return "Current"
       }
       case "referEntry": {

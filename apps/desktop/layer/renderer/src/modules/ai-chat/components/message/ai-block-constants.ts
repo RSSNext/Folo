@@ -15,6 +15,11 @@ export const BLOCK_STYLES = {
     icon: "bg-orange/10 text-orange",
     label: "text-orange",
   },
+  mainFeed: {
+    container: "from-orange/5 to-orange/10 border-orange/20 hover:border-orange/30",
+    icon: "bg-orange/10 text-orange",
+    label: "text-orange",
+  },
   referEntry: {
     container: "from-blue/5 to-blue/10 border-blue/20 hover:border-blue/30",
     icon: "bg-blue/10 text-blue",
@@ -51,6 +56,7 @@ export const DEFAULT_BLOCK_STYLES = {
  */
 export const BLOCK_ICONS = {
   mainEntry: "i-mgc-star-cute-fi",
+  mainFeed: "i-mgc-rss-cute-fi",
   referEntry: "i-mgc-paper-cute-fi",
   referFeed: "i-mgc-rss-cute-fi",
   selectedText: "i-mgc-quill-pen-cute-re",
@@ -62,6 +68,7 @@ export const BLOCK_ICONS = {
  */
 export const BLOCK_LABELS = {
   mainEntry: "Current",
+  mainFeed: "Current",
   referEntry: "Ref",
   referFeed: "Feed",
   selectedText: "Text",
