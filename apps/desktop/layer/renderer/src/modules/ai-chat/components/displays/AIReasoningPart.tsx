@@ -44,7 +44,6 @@ export const AIReasoningPart: React.FC<AIReasoningPartProps> = React.memo(
                 </div>
               }
               className="group/inner w-full border-none"
-              contentClassName="pb-0 pt-2"
             >
               <div className="text-xs">
                 <pre className="text-text-secondary bg-material-medium overflow-x-auto whitespace-pre-wrap rounded p-3 text-[11px] leading-relaxed">
