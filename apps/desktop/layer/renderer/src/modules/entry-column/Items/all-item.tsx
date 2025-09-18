@@ -20,9 +20,7 @@ import { titleCase } from "title-case"
 
 import { AudioPlayer, useAudioPlayerAtomSelector } from "~/atoms/player"
 import { useGeneralSettingKey } from "~/atoms/settings/general"
-import { useUISettingKey } from "~/atoms/settings/ui"
 import { RelativeTime } from "~/components/ui/datetime"
-import { Media } from "~/components/ui/media/Media"
 import { FEED_COLLECTION_LIST } from "~/constants"
 import { useEntryIsRead } from "~/hooks/biz/useAsRead"
 import { useRouteParamsSelector } from "~/hooks/biz/useRouteParams"
@@ -35,7 +33,6 @@ import { getPreferredTitle } from "~/store/feed/hooks"
 import { StarIcon } from "../star-icon"
 import { readableContentMaxWidth } from "../styles"
 import type { EntryItemStatelessProps, UniversalItemProps } from "../types"
-import { MediaGallery } from "./media-gallery"
 
 const ViewTag = IN_ELECTRON ? "webview" : "iframe"
 
@@ -52,7 +49,6 @@ const entrySelector = (state: EntryModel) => {
   })
   const firstAudio = audios?.[0]
   const media = state.media || []
-  const firstMedia = media?.[0]
   const photo = media.find((a) => a.type === "photo")
   const firstPhotoUrl = photo?.url
   const iconEntry: FeedIconEntry = { firstPhotoUrl, authorAvatar }
@@ -63,7 +59,6 @@ const entrySelector = (state: EntryModel) => {
     description,
     feedId,
     firstAudio,
-    firstMedia,
     iconEntry,
     inboxId: inboxHandle,
     publishedAt,
@@ -97,9 +92,6 @@ export function AllItem({ entryId, translation, currentFeedTitle }: UniversalIte
   })
 
   const inbox = useInboxById(entry?.inboxId)
-
-  const thumbnailRatio = useUISettingKey("thumbnailRatio")
-  const rid = `list-item-${entryId}`
 
   const bilingual = useGeneralSettingKey("translationMode") === "bilingual"
   const lineClamp = useMemo(() => {
@@ -136,70 +128,20 @@ export function AllItem({ entryId, translation, currentFeedTitle }: UniversalIte
   return (
     <div
       className={cn(
-        "cursor-menu group relative flex items-start py-2",
+        "cursor-menu group relative flex items-center py-2",
         !isRead &&
           "before:bg-accent before:absolute before:-left-4 before:top-[14px] before:block before:size-2 before:rounded-full",
       )}
     >
       {currentFeedTitle !== thisFeedTitle && (
-        <div className="flex min-w-0 shrink-0 items-center gap-1">
-          <FeedIcon target={related} fallback entry={entry?.iconEntry} size={20} />
-          <div
-            className={cn(
-              "mr-4 flex w-20 shrink-0 gap-1 text-xs",
-              "text-text-secondary",
-              isInCollection && "text-text-secondary",
-              isRead && dimRead && "text-text-tertiary",
-            )}
-          >
-            <EllipsisHorizontalTextWithTooltip className="truncate">
-              <FeedTitle
-                feed={related}
-                title={getPreferredTitle(related, entry?.titleEntry)}
-                className="space-x-0.5"
-              />
-            </EllipsisHorizontalTextWithTooltip>
-          </div>
-        </div>
+        <FeedIcon target={related} fallback entry={entry?.iconEntry} size={16} />
       )}
-      <div className={cn("flex h-fit min-w-0 flex-1 flex-row items-start text-sm leading-tight")}>
-        {entry.firstMedia && (
-          <Tooltip>
-            <TooltipRoot>
-              <TooltipTrigger asChild>
-                <Media
-                  thumbnail
-                  src={entry.firstMedia.url}
-                  type={entry.firstMedia.type}
-                  previewImageUrl={entry.firstMedia.preview_image_url}
-                  className={cn("center mr-2 flex shrink-0 rounded", "size-5")}
-                  mediaContainerClassName={"w-auto h-auto rounded-sm"}
-                  loading="lazy"
-                  key={`${rid}-media-${thumbnailRatio}`}
-                  proxy={{
-                    width: 40,
-                    height: 40,
-                  }}
-                  height={entry.firstMedia.height}
-                  width={entry.firstMedia.width}
-                  blurhash={entry.firstMedia.blurhash}
-                />
-              </TooltipTrigger>
-              <TooltipPortal>
-                <TooltipContent className="flex-col gap-1" side={"bottom"}>
-                  <div className="flex items-center gap-1">
-                    <MediaGallery entryId={entryId} containerWidth={575} />
-                  </div>
-                </TooltipContent>
-              </TooltipPortal>
-            </TooltipRoot>
-          </Tooltip>
-        )}
+      <div className={cn("flex h-fit min-w-0 flex-1 items-center truncate text-sm leading-tight")}>
         {entry.firstAudio && <AudioIcon entryId={entryId} src={entry.firstAudio.url} />}
         {entry.video && <VideoIcon src={entry.video} />}
         <div
           className={cn(
-            "relative flex min-w-0 items-center truncate break-words",
+            "relative flex items-center",
             "text-text",
             !!isInCollection && "pr-5",
             entry?.title ? "font-medium" : "text-[13px]",
@@ -209,9 +151,8 @@ export function AllItem({ entryId, translation, currentFeedTitle }: UniversalIte
           <EllipsisHorizontalTextWithTooltip>
             {entry?.title ? (
               <EntryTranslation
-                inline={false}
                 className={cn(
-                  "flex min-w-0 flex-col justify-center hyphens-auto font-medium",
+                  "inline-flex min-w-0 items-center hyphens-auto font-medium",
                   lineClamp.title,
                 )}
                 source={titleCase(entry?.title ?? "")}
@@ -219,7 +160,6 @@ export function AllItem({ entryId, translation, currentFeedTitle }: UniversalIte
               />
             ) : (
               <EntryTranslation
-                inline={false}
                 className={cn("inline-flex items-center hyphens-auto", lineClamp.description)}
                 source={entry?.description}
                 target={translation?.description}
@@ -228,25 +168,23 @@ export function AllItem({ entryId, translation, currentFeedTitle }: UniversalIte
           </EllipsisHorizontalTextWithTooltip>
           {!!isInCollection && <StarIcon className="absolute right-0 top-0" />}
         </div>
-        {!simple && (
-          <div
-            className={cn(
-              "text-[13px]",
-              "text-text-secondary",
-              isRead && dimRead && "text-text-tertiary",
-            )}
-          >
-            <EntryTranslation
-              className={cn("hyphens-auto", lineClamp.description)}
-              source={entry?.description}
-              target={translation?.description}
-            />
-          </div>
-        )}
+        <div
+          className={cn(
+            "ml-2 truncate text-[13px]",
+            "text-text-secondary",
+            isRead && dimRead && "text-text-tertiary",
+          )}
+        >
+          <EntryTranslation
+            className={cn("hyphens-auto", lineClamp.description)}
+            source={entry?.description}
+            target={translation?.description}
+          />
+        </div>
       </div>
 
       <div className="text-text-secondary ml-4 shrink-0 text-xs">
-        {!!displayTime && <RelativeTime date={displayTime} />}
+        {!!displayTime && <RelativeTime date={displayTime} compact />}
       </div>
     </div>
   )
@@ -314,7 +252,7 @@ function AudioIcon({ entryId, src }: { entryId: string; src: string }) {
   }
 
   return (
-    <div className="relative mr-1 shrink-0 text-base">
+    <div className="relative mr-1 flex shrink-0 items-center text-[15px]">
       <div
         className={cn("center w-full transition-all duration-200 ease-in-out")}
         onClick={handleClickPlay}
@@ -338,7 +276,7 @@ function VideoIcon({ src }: { src: string }) {
     <Tooltip>
       <TooltipRoot>
         <TooltipTrigger asChild>
-          <i className="i-mgc-video-cute-fi text-text/90 mr-1 shrink-0 text-lg" />
+          <i className="i-mgc-video-cute-fi text-text/90 mr-1 shrink-0 text-base" />
         </TooltipTrigger>
         <TooltipPortal>
           <TooltipContent className="flex-col gap-1" side={"bottom"}>
