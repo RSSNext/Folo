@@ -16,6 +16,7 @@ import type {
 
 import { useChatStatus } from "../../store/hooks"
 import {
+  AIChainOfThought,
   AIDisplayAnalyticsPart,
   AIDisplayEntriesPart,
   AIDisplayFeedPart,
@@ -51,79 +52,107 @@ export const AIMessageParts: React.FC<AIMessagePartsProps> = React.memo(
       return chatStatus === "streaming" && shouldStreamingAnimation && isLastMessage
     }, [chatStatus, isLastMessage, shouldStreamingAnimation])
 
-    return message.parts.map((part, index) => {
-      const partKey = `${message.id}-${index}`
+    const displayParts = React.useMemo(() => {
+      return message.parts.filter(
+        (part) => part.type === "text" || part.type.startsWith("tool-display"),
+      )
+    }, [message.parts])
+    const thoughtParts = React.useMemo(() => {
+      return message.parts.filter(
+        (part) => !(part.type === "text" || part.type.startsWith("tool-display")),
+      )
+    }, [message.parts])
 
-      switch (part.type) {
-        case "text": {
-          return (
-            <AIMarkdownStreamingMessage
-              key={partKey}
-              text={part.text}
-              className={"text-text"}
-              isStreaming={shouldMessageAnimation}
-            />
-          )
-        }
+    return (
+      <>
+        <AIChainOfThought isStreaming={displayParts.length === 0}>
+          {thoughtParts.map((part, index) => {
+            const partKey = `${message.id}-${index}`
 
-        case "reasoning": {
-          return (
-            <AIReasoningPart
-              key={partKey}
-              text={part.text}
-              isStreaming={part.state === "streaming"}
-            />
-          )
-        }
+            switch (part.type) {
+              case "reasoning": {
+                return (
+                  <AIReasoningPart
+                    key={partKey}
+                    text={part.text}
+                    isStreaming={part.state === "streaming"}
+                  />
+                )
+              }
+              default: {
+                if (part.type.startsWith("tool-")) {
+                  if (part.type.startsWith("tool-chunkBreak")) {
+                    return null
+                  }
+                  return <ToolInvocationComponent key={partKey} part={part as ToolUIPart} />
+                }
+                return null
+              }
+            }
+          })}
+        </AIChainOfThought>
+        {displayParts.map((part, index) => {
+          const partKey = `${message.id}-${index}`
 
-        case "tool-displayAnalytics": {
-          return <AIDisplayAnalyticsPart key={partKey} part={part as AIDisplayAnalyticsTool} />
-        }
-        case "tool-displayEntries": {
-          return <AIDisplayEntriesPart key={partKey} part={part as AIDisplayEntriesTool} />
-        }
-        case "tool-displaySubscriptions": {
-          return (
-            <AIDisplaySubscriptionsPart key={partKey} part={part as AIDisplaySubscriptionsTool} />
-          )
-        }
-        case "tool-displayFeed": {
-          return <AIDisplayFeedPart key={partKey} part={part as AIDisplayFeedTool} />
-        }
+          switch (part.type) {
+            case "text": {
+              return (
+                <AIMarkdownStreamingMessage
+                  key={partKey}
+                  text={part.text}
+                  className={"text-text"}
+                  isStreaming={shouldMessageAnimation}
+                />
+              )
+            }
 
-        case "tool-displayFlowChart": {
-          const loadingElement = (
-            <div className="bg-material-medium my-2 flex aspect-[4/3] w-[calc(var(--ai-chat-layout-width,65ch))] max-w-full items-center justify-center rounded">
-              <div className="flex flex-col items-center gap-4">
-                <div className="flex items-center gap-2">
-                  <i className="i-mgc-loading-3-cute-re text-text-secondary size-4 animate-spin" />
-                  <span className="text-text-secondary text-sm font-medium">
-                    Generating Flow Chart...
-                  </span>
+            case "tool-displayAnalytics": {
+              return <AIDisplayAnalyticsPart key={partKey} part={part as AIDisplayAnalyticsTool} />
+            }
+            case "tool-displayEntries": {
+              return <AIDisplayEntriesPart key={partKey} part={part as AIDisplayEntriesTool} />
+            }
+            case "tool-displaySubscriptions": {
+              return (
+                <AIDisplaySubscriptionsPart
+                  key={partKey}
+                  part={part as AIDisplaySubscriptionsTool}
+                />
+              )
+            }
+            case "tool-displayFeed": {
+              return <AIDisplayFeedPart key={partKey} part={part as AIDisplayFeedTool} />
+            }
+
+            case "tool-displayFlowChart": {
+              const loadingElement = (
+                <div className="bg-material-medium my-2 flex aspect-[4/3] w-[calc(var(--ai-chat-layout-width,65ch))] max-w-full items-center justify-center rounded">
+                  <div className="flex flex-col items-center gap-4">
+                    <div className="flex items-center gap-2">
+                      <i className="i-mgc-loading-3-cute-re text-text-secondary size-4 animate-spin" />
+                      <span className="text-text-secondary text-sm font-medium">
+                        Generating Flow Chart...
+                      </span>
+                    </div>
+                  </div>
                 </div>
-              </div>
-            </div>
-          )
-          return (
-            <ErrorBoundary key={partKey} beforeCapture={alwaysFalse}>
-              <React.Suspense fallback={loadingElement}>
-                <LazyAIDisplayFlowPart part={part as AIDisplayFlowTool} />
-              </React.Suspense>
-            </ErrorBoundary>
-          )
-        }
+              )
+              return (
+                <ErrorBoundary key={partKey} beforeCapture={alwaysFalse}>
+                  <React.Suspense fallback={loadingElement}>
+                    <LazyAIDisplayFlowPart part={part as AIDisplayFlowTool} />
+                  </React.Suspense>
+                </ErrorBoundary>
+              )
+            }
 
-        default: {
-          if (part.type.startsWith("tool-")) {
-            if (part.type.startsWith("tool-chunkBreak")) {
+            default: {
               return null
             }
-            return <ToolInvocationComponent key={partKey} part={part as ToolUIPart} />
           }
-          return null
-        }
-      }
-    })
+        })}
+      </>
+    )
   },
 )
 

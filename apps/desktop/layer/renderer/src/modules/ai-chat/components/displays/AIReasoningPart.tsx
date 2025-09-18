@@ -33,19 +33,17 @@ export const AIReasoningPart: React.FC<AIReasoningPartProps> = React.memo(
                 }
               }}
               title={
-                <div className="group flex h-6 min-w-0 flex-1 items-center justify-between py-0">
-                  <div className="flex items-center gap-2 text-xs">
-                    <i className="i-mingcute-bulb-2-line text-purple" />
-                    <span className="text-text-secondary">
-                      {isStreaming ? "Reasoning..." : "Reasoning"}
-                    </span>
+                <div className="group/inner flex h-6 min-w-0 flex-1 items-center py-0">
+                  <div className="text-text-secondary flex items-center gap-2 text-xs">
+                    <i className="i-mgc-brain-cute-re" />
+                    <span>{isStreaming ? "Reasoning..." : "Reasoning"}</span>
                   </div>
-                  <div className="ml-auto flex items-center justify-center opacity-0 transition-opacity duration-200 group-hover:opacity-100">
-                    <i className="i-mgc-right-cute-re size-3 shrink-0 transition-transform duration-200 group-data-[state=open]:rotate-90" />
+                  <div className="ml-2 flex items-center justify-center opacity-0 transition-opacity duration-200 group-hover/inner:opacity-100">
+                    <i className="i-mgc-right-cute-re size-3 shrink-0 transition-transform duration-200 group-data-[state=open]/inner:rotate-90" />
                   </div>
                 </div>
               }
-              className="group w-full border-none"
+              className="group/inner w-full border-none"
               contentClassName="pb-0 pt-2"
             >
               <div className="text-xs">

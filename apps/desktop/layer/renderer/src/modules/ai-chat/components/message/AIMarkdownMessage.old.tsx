@@ -351,7 +351,7 @@ export const AIMarkdownStreamingMessage = memo(
     className?: string
     isProcessing?: boolean
   }) => {
-    const className = `prose max-w-full dark:prose-invert text-sm
+    const className = `prose max-w-full dark:prose-invert prose-sm
   prose-h1:text-2xl prose-h2:text-xl prose-h3:text-lg prose-h4:text-base prose-h5:text-base prose-h6:text-sm
   prose-li:list-disc prose-li:marker:text-accent prose-hr:border-border prose-hr:mx-8`
 

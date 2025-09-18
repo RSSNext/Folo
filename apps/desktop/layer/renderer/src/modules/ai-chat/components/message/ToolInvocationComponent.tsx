@@ -32,13 +32,11 @@ export const ToolInvocationComponent: React.FC<ToolInvocationComponentProps> = R
               className="group border-none"
               title={
                 <div className="group flex h-6 min-w-0 flex-1 items-center justify-between py-0">
-                  <div className="flex items-center gap-2 text-xs">
+                  <div className="text-text-secondary flex items-center gap-2 text-xs">
                     <i
                       className={hasError ? "i-mgc-close-cute-re text-red" : "i-mgc-tool-cute-re"}
                     />
-                    <span className="text-text-secondary">
-                      {hasError ? "Tool Failed:" : "Tool Called:"}
-                    </span>
+                    <span>{hasError ? "Tool Failed:" : "Tool Called:"}</span>
                     <h4 className={`truncate font-medium ${hasError ? "text-red" : "text-text"}`}>
                       {toolName}
                     </h4>

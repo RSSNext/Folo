@@ -1,0 +1,60 @@
+import { CollapseCss, CollapseCssGroup } from "@follow/components/ui/collapse/CollapseCss.js"
+import { cn } from "@follow/utils"
+import * as React from "react"
+
+interface AIChainOfThoughtProps {
+  children: React.ReactNode
+  isStreaming?: boolean
+  className?: string
+}
+
+export const AIChainOfThought: React.FC<AIChainOfThoughtProps> = React.memo(
+  ({ children, isStreaming = false, className }) => {
+    const collapseId = React.useMemo(() => `chain-${Math.random().toString(36).slice(2)}`, [])
+    // Re-mount CollapseCssGroup when streaming state changes or when we need to force-open while streaming
+    const [remountTick, setRemountTick] = React.useState(0)
+    const groupKey = `${isStreaming ? "streaming" : "idle"}:${remountTick}`
+    if (!children) return null
+
+    return (
+      <div className={cn("border-border min-w-0 max-w-full text-left", className)}>
+        <div className="w-[calc(var(--ai-chat-layout-width,65ch))] max-w-full" />
+
+        <CollapseCssGroup key={groupKey}>
+          <div>
+            <CollapseCss
+              hideArrow
+              collapseId={collapseId}
+              defaultOpen={isStreaming}
+              onOpenChange={(opened) => {
+                // While streaming, keep it open and block manual collapse
+                if (isStreaming && !opened) {
+                  setRemountTick((x) => x + 1)
+                }
+              }}
+              title={
+                <div className="group flex h-6 min-w-0 flex-1 items-center py-0">
+                  <div className="flex items-center gap-2 text-xs">
+                    {/* <i className="i-mgc-brain-cute-re text-purple" /> */}
+                    <span className="text-text-secondary">
+                      {isStreaming ? "Thinking..." : "Finished Thinking"}
+                    </span>
+                  </div>
+                  <div className="ml-2 flex items-center justify-center opacity-0 transition-opacity duration-200 group-hover:opacity-100">
+                    <i className="i-mgc-right-cute-re size-3 shrink-0 transition-transform duration-200 group-data-[state=open]:rotate-90" />
+                  </div>
+                </div>
+              }
+              className="group w-full border-none"
+              contentClassName="pb-2 pt-1"
+            >
+              {children}
+            </CollapseCss>
+          </div>
+        </CollapseCssGroup>
+      </div>
+    )
+  },
+)
+
+AIChainOfThought.displayName = "AIChainOfThought"
