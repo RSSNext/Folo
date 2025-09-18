@@ -90,7 +90,7 @@ export const getCategoryFeedIds = (category: string, view: FeedViewType): string
     const subscription = state.data[id]
     if (!subscription) continue
     if (
-      subscription.view === view &&
+      (subscription.view === view || view === FeedViewType.All) &&
       (subscription.category === category || getDefaultCategory(subscription) === category)
     ) {
       feedIds.push(id)

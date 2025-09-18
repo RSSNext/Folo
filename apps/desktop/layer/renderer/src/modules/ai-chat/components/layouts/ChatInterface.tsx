@@ -1,4 +1,5 @@
 import { ScrollArea } from "@follow/components/ui/scroll-area/ScrollArea.js"
+import { getCategoryFeedIds } from "@follow/store/subscription/getter"
 import { usePrefetchSummary } from "@follow/store/summary/hooks"
 import { tracker } from "@follow/tracker"
 import { clsx, cn, nextFrame } from "@follow/utils"
@@ -13,6 +14,8 @@ import { useEventCallback } from "usehooks-ts"
 
 import { useAISettingKey } from "~/atoms/settings/ai"
 import { useActionLanguage } from "~/atoms/settings/general"
+import { ROUTE_FEED_IN_FOLDER } from "~/constants"
+import { getRouteParams } from "~/hooks/biz/useRouteParams"
 import {
   AIChatMessage,
   AIChatWaitingIndicator,
@@ -166,6 +169,14 @@ const ChatInterfaceContent = ({ centerInputOnEmpty }: ChatInterfaceProps) => {
               size: block.attachment.size,
               serverUrl: block.attachment.serverUrl,
             },
+          })
+        } else if (block.type === "mainFeed" && block.value.startsWith(ROUTE_FEED_IN_FOLDER)) {
+          const categoryName = block.value.slice(ROUTE_FEED_IN_FOLDER.length)
+          const { view } = getRouteParams()
+          const feedIds = getCategoryFeedIds(categoryName, view)
+          blocks.push({
+            ...block,
+            value: feedIds.join(","),
           })
         } else {
           blocks.push(block)

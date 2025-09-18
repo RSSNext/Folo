@@ -1,5 +1,5 @@
 import { useEntry } from "@follow/store/entry/hooks"
-import { useFeedById } from "@follow/store/feed/hooks"
+import { useFeedsByIds } from "@follow/store/feed/hooks"
 import * as React from "react"
 
 interface TitleProps {
@@ -33,13 +33,15 @@ EntryTitle.displayName = "EntryTitle"
  * Displays feed title with fallback handling
  */
 export const FeedTitle: React.FC<FeedTitleProps> = React.memo(({ feedId, fallback }) => {
-  const feed = useFeedById(feedId, (feed) => ({ title: feed?.title }))
+  const finalFeedIds = feedId?.split(",").map((id) => id.trim())
+  const feeds = useFeedsByIds(finalFeedIds, (feed) => ({ title: feed?.title }))
+  const feedTitles = feeds.map((feed) => feed.title).join(", ")
 
-  if (!feedId || !feed?.title) {
+  if (!feedId || !feedTitles) {
     return <span className="text-text-tertiary">{fallback}</span>
   }
 
-  return <span title={feed.title}>{feed.title}</span>
+  return <span title={feedTitles}>{feedTitles}</span>
 })
 
 FeedTitle.displayName = "FeedTitle"

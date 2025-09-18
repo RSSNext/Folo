@@ -4,6 +4,7 @@ import type { FC } from "react"
 import { memo } from "react"
 import { useTranslation } from "react-i18next"
 
+import { ROUTE_FEED_IN_FOLDER } from "~/constants"
 import { ImageThumbnail } from "~/modules/ai-chat/components/layouts/ImageThumbnail"
 import { CircularProgress } from "~/modules/ai-chat/components/ui/UploadProgress"
 import { useChatBlockActions } from "~/modules/ai-chat/store/hooks"
@@ -70,7 +71,10 @@ export const ContextBlock: FC<{ block: AIChatContextBlock }> = memo(({ block }) 
       }
       case "mainFeed":
       case "referFeed": {
-        return <FeedTitle feedId={block.value} fallback={block.value} />
+        const fallback = block.value.startsWith(ROUTE_FEED_IN_FOLDER)
+          ? block.value.slice(ROUTE_FEED_IN_FOLDER.length)
+          : block.value
+        return <FeedTitle feedId={block.value} fallback={fallback} />
       }
       case "selectedText": {
         return `"${block.value}"`

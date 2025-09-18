@@ -34,6 +34,34 @@ export function useFeedById<T>(
   )
 }
 
+export function useFeedsByIds(ids: string[] | undefined | null): FeedModel[]
+export function useFeedsByIds<T>(
+  ids: string[] | undefined | null,
+  selector: (feed: FeedModel) => T,
+): T[]
+export function useFeedsByIds<T>(
+  ids: string[] | undefined | null,
+  // @ts-expect-error
+  selector: (feed: FeedModel) => T = defaultSelector,
+): T[] {
+  return useFeedStore(
+    useCallback(
+      (state) => {
+        if (!ids || ids.length === 0) return []
+        const feeds: T[] = []
+        for (const id of ids) {
+          const feed = state.feeds[id]
+          if (feed) {
+            feeds.push(selector(feed))
+          }
+        }
+        return feeds
+      },
+      [ids?.toString()],
+    ),
+  )
+}
+
 export function useFeedByUrl(url: string | undefined | null): FeedModel | undefined {
   return useFeedStore(
     useCallback(
