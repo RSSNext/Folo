@@ -27,7 +27,7 @@
     "typecheck": "tsc --noEmit"
   },
   "peerDependencies": {
-    "react-native": ">=0.74.0"
+    "react-native": ">=0.81.4"
   },
   "dependencies": {
     "@follow/shared": "workspace:*",

@@ -43,6 +43,21 @@ target 'Folo' do
   )
 
   post_install do |installer|
+    react_native_post_install(installer, config[:reactNativePath])
+
+    installer.pods_project.targets.each do |target|
+      if target.name == 'React-jsinspector-modern' || target.name == 'React-jsinspector'
+        target.build_configurations.each do |cfg|
+          cfg.build_settings['HEADER_SEARCH_PATHS'] = [
+            '$(inherited)',
+            '"$(PODS_TARGET_SRCROOT)/"',
+            '"$(PODS_TARGET_SRCROOT)/cdp"',
+            '"$(PODS_ROOT)/Headers/Public/React-jsinspector-modern"'
+          ].join(' ')
+          cfg.build_settings['DEFINES_MODULE'] = 'YES'
+        end
+      end
+    end
     react_native_post_install(
       installer,
       config[:reactNativePath],

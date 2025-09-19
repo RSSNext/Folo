@@ -12,7 +12,6 @@
 import * as React from "react"
 import { useCallback, useMemo, useState } from "react"
 import { LayoutAnimation, PixelRatio, ScrollView, StyleSheet, View } from "react-native"
-import { SystemBars } from "react-native-edge-to-edge"
 import { Gesture } from "react-native-gesture-handler"
 import PagerView from "react-native-pager-view"
 import type { AnimatedRef, SharedValue, WithSpringConfig } from "react-native-reanimated"
@@ -53,13 +52,11 @@ const SLOW_SPRING: WithSpringConfig = {
   mass: isIOS ? 1.25 : 0.75,
   damping: 300,
   stiffness: 800,
-  restDisplacementThreshold: 0.01,
 }
 const FAST_SPRING: WithSpringConfig = {
   mass: isIOS ? 1.25 : 0.75,
   damping: 150,
   stiffness: 900,
-  restDisplacementThreshold: 0.01,
 }
 function canAnimate(lightbox: Lightbox): boolean {
   return (
@@ -298,16 +295,6 @@ function ImageView({
 
   return (
     <Animated.View style={[styles.container, containerStyle]}>
-      <SystemBars
-        style={{
-          statusBar: "light",
-          navigationBar: "light",
-        }}
-        hidden={{
-          statusBar: isScaled || !showControls,
-          navigationBar: false,
-        }}
-      />
       <Animated.View style={[styles.backdrop, backdropStyle]} renderToHardwareTextureAndroid />
       <PagerView
         scrollEnabled={!isScaled}

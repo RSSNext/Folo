@@ -38,7 +38,7 @@
     "@follow/shared": "workspace:*",
     "ai": "5.0.47",
     "drizzle-orm": "0.44.5",
-    "expo-sqlite": "15.2.12",
+    "expo-sqlite": "16.0.8",
     "sqlocal": "npm:@hyoban/sqlocal@0.14.1-fork.4",
     "wa-sqlite": "git+https://github.com/rhashimoto/wa-sqlite.git#v1.0.8"
   },

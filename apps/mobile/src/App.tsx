@@ -12,7 +12,6 @@ import { useIntentHandler } from "./hooks/useIntentHandler"
 import { useMessaging, useUpdateMessagingToken } from "./hooks/useMessaging"
 import { useOnboarding } from "./hooks/useOnboarding"
 import { useUnreadCountBadge } from "./hooks/useUnreadCountBadge"
-import { DebugButton, EnvProfileIndicator } from "./modules/debug"
 
 export function App({ children }: { children: React.ReactNode }) {
   return (
@@ -25,9 +24,9 @@ export function App({ children }: { children: React.ReactNode }) {
           <RootSiblingParent>{children}</RootSiblingParent>
         </ScaleableWrapper>
 
-        {__DEV__ && <DebugButton />}
+        {/* {__DEV__ && <DebugButton />} */}
 
-        <EnvProfileIndicator />
+        {/* <EnvProfileIndicator /> */}
       </View>
     </>
   )
