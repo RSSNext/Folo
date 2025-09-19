@@ -17,7 +17,7 @@ import { repository } from "@pkg"
 import { useMutation } from "@tanstack/react-query"
 import { produce } from "immer"
 import { atom, useAtomValue, useStore } from "jotai"
-import type { ChangeEvent } from "react"
+import type { ChangeEvent, CompositionEvent } from "react"
 import { startTransition, useCallback, useEffect } from "react"
 import { useForm } from "react-hook-form"
 import { useTranslation } from "react-i18next"
@@ -31,7 +31,7 @@ import { followClient } from "~/lib/api-client"
 import { DiscoverFeedCard } from "./DiscoverFeedCard"
 import { FeedForm } from "./FeedForm"
 
-const info = {
+const FEED_DISCOVERY_INFO = {
   search: {
     label: "discover.any_url_or_keyword",
     schema: z.object({
@@ -94,7 +94,14 @@ const info = {
 const discoverSearchDataAtom = atom<Record<string, DiscoveryItem[]>>()
 
 export function DiscoverForm({ type = "search" }: { type?: string }) {
-  const { prefix, default: defaultValue, schema: formSchema } = info[type]!
+  const {
+    prefix,
+    default: defaultValue,
+    schema: formSchema,
+    label,
+    labelSuffix,
+    showModal,
+  } = FEED_DISCOVERY_INFO[type]!
 
   const [searchParams, setSearchParams] = useSearchParams()
   const keywordFromSearch = searchParams.get("keyword") || ""
@@ -114,7 +121,7 @@ export function DiscoverForm({ type = "search" }: { type?: string }) {
       return
     }
     trigger("keyword")
-  }, [trigger])
+  }, [trigger, keywordFromSearch])
 
   const target = watch("target")
   const atomKey = keywordFromSearch + target
@@ -146,7 +153,7 @@ export function DiscoverForm({ type = "search" }: { type?: string }) {
   const { present, dismissAll } = useModalStack()
 
   function onSubmit(values: z.infer<typeof formSchema>) {
-    if (info[type]!.showModal) {
+    if (FEED_DISCOVERY_INFO[type]!.showModal) {
       present({
         title: t("feed_form.add_feed"),
         content: () => <FeedForm url={values.keyword} onSuccess={dismissAll} />,
@@ -156,10 +163,10 @@ export function DiscoverForm({ type = "search" }: { type?: string }) {
     }
   }
 
-  const handleKeywordChange = useCallback(
-    (event: ChangeEvent<HTMLInputElement>) => {
+  const normalizeAndSet = useCallback(
+    (rawValue: string) => {
       startTransition(() => {
-        const trimmedKeyword = event.target.value.trimStart()
+        const trimmedKeyword = rawValue.trimStart()
         if (!prefix) {
           setValue(trimmedKeyword)
           return
@@ -199,6 +206,25 @@ export function DiscoverForm({ type = "search" }: { type?: string }) {
       })
     },
     [form, prefix, setSearchParams],
+  )
+
+  const handleKeywordChange = useCallback(
+    (event: ChangeEvent<HTMLInputElement>) => {
+      const { value } = event.currentTarget
+      // During composition, update raw value without normalization or syncing URL params
+      if ((event.nativeEvent as InputEvent)?.isComposing) {
+        form.setValue("keyword", value, { shouldValidate: false })
+        return
+      }
+      normalizeAndSet(value)
+    },
+    [form, normalizeAndSet],
+  )
+  const handleCompositionEnd = useCallback(
+    (event: CompositionEvent<HTMLInputElement>) => {
+      normalizeAndSet(event.currentTarget.value)
+    },
+    [normalizeAndSet],
   )
 
   const handleSuccess = useCallback(
@@ -269,14 +295,15 @@ export function DiscoverForm({ type = "search" }: { type?: string }) {
               render={({ field }) => (
                 <FormItem className="mb-4">
                   <FormLabel className="text-text text-headline mb-2 flex items-center gap-2 pl-2 font-bold">
-                    {t(info[type]?.label!)}
-                    {info[type]?.labelSuffix}
+                    {t(label)}
+                    {labelSuffix}
                   </FormLabel>
                   <FormControl>
                     <Input
                       autoFocus
                       {...field}
                       onChange={handleKeywordChange}
+                      onCompositionEnd={handleCompositionEnd}
                       placeholder={type === "search" ? "Enter URL or keyword..." : undefined}
                     />
                   </FormControl>
@@ -330,7 +357,7 @@ export function DiscoverForm({ type = "search" }: { type?: string }) {
                 type="submit"
                 isLoading={mutation.isPending}
               >
-                {info[type]!.showModal ? t("discover.preview") : t("words.search")}
+                {showModal ? t("discover.preview") : t("words.search")}
               </Button>
             </div>
           </div>
