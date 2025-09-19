@@ -36,7 +36,7 @@
     "chardet": "2.1.0",
     "clsx": "2.1.1",
     "dompurify": "3.2.7",
-    "linkedom": "0.18.12",
+    "linkedom": "0.18.11",
     "motion": "12.23.16",
     "nanoid": "5.1.5",
     "path-to-regexp": "8.3.0",
