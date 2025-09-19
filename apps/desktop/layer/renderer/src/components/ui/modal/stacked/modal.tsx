@@ -370,30 +370,33 @@ export const ModalInternal = memo(function Modal({
                   defaultSize={resizeDefaultSize}
                   className="flex grow flex-col"
                 >
-                  <div className={"relative flex items-center"}>
-                    <Dialog.Title
-                      className="text-text flex w-0 max-w-full grow items-center gap-2 px-2 py-1 text-base font-medium"
-                      onPointerDownCapture={handleDrag}
-                      onPointerDown={relocateModal}
-                    >
-                      {!!icon && <span className="center flex size-4">{icon}</span>}
-                      <EllipsisHorizontalTextWithTooltip className="truncate">
-                        <span>{title}</span>
-                      </EllipsisHorizontalTextWithTooltip>
-                    </Dialog.Title>
-                    {canClose && (
-                      <Dialog.DialogClose
-                        className="center hover:bg-fill-quaternary text-text-secondary hover:text-text z-[2] -mr-1 rounded-lg p-2"
-                        tabIndex={1}
-                        onClick={close}
+                  <div className={"bg-background relative z-10 flex flex-col"}>
+                    <div className={"flex items-center"}>
+                      <Dialog.Title
+                        className="text-text flex w-0 max-w-full grow items-center gap-2 px-2 py-1 text-base font-medium"
+                        onPointerDownCapture={handleDrag}
+                        onPointerDown={relocateModal}
                       >
-                        <i className="i-mgc-close-cute-re" />
-                      </Dialog.DialogClose>
+                        {!!icon && <span className="center flex size-4">{icon}</span>}
+                        <EllipsisHorizontalTextWithTooltip className="truncate">
+                          <span>{title}</span>
+                        </EllipsisHorizontalTextWithTooltip>
+                      </Dialog.Title>
+                      {canClose && (
+                        <Dialog.DialogClose
+                          className="center hover:bg-fill-quaternary text-text-secondary hover:text-text z-[2] -mr-1 rounded-lg p-2"
+                          tabIndex={1}
+                          onClick={close}
+                        >
+                          <i className="i-mgc-close-cute-re" />
+                        </Dialog.DialogClose>
+                      )}
+                    </div>
+
+                    {(title || icon || canClose) && (
+                      <div className="bg-border mx-1 mt-1 h-px shrink-0" />
                     )}
                   </div>
-                  {(title || icon || canClose) && (
-                    <div className="bg-border mx-1 mt-1 h-px shrink-0" />
-                  )}
 
                   <div
                     className={cn(
