@@ -31,17 +31,17 @@
     "typecheck": "tsc --noEmit"
   },
   "dependencies": {
-    "@better-auth/stripe": "1.3.11",
+    "@better-auth/stripe": "1.3.12",
     "@electron-toolkit/preload": "3.0.2",
     "@electron-toolkit/tsconfig": "1.0.1",
     "@follow-app/client-sdk": "catalog:",
-    "@folo-services/drizzle": "0.1.26",
+    "@folo-services/drizzle": "0.1.27",
     "@t3-oss/env-core": "0.13.8",
-    "ai": "5.0.4",
-    "better-auth": "1.3.11",
-    "drizzle-orm": "0.44.3",
+    "ai": "5.0.47",
+    "better-auth": "1.3.12",
+    "drizzle-orm": "0.44.5",
     "sonner": "2.0.7",
-    "stripe": "18.2.1",
+    "stripe": "18.5.0",
     "zod": "3.25.75"
   }
 }

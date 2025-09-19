@@ -174,7 +174,7 @@ class SettingSyncQueue {
       const promise = followClient.api.settings
         .update({
           tab: tab as SettingsTab,
-          json,
+          ...json,
         })
         .then(() => {
           // remove from queue
@@ -200,7 +200,7 @@ class SettingSyncQueue {
 
         const promise = followClient.api.settings.update({
           tab: tab as SettingsTab,
-          json: payload,
+          ...payload,
         })
         promises.push(promise)
       }
@@ -213,7 +213,7 @@ class SettingSyncQueue {
       this.chain = this.chain.finally(() =>
         followClient.api.settings.update({
           tab: tab as SettingsTab,
-          json: payload,
+          ...payload,
         }),
       )
 

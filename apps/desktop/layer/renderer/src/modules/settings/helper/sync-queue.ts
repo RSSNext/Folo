@@ -176,7 +176,7 @@ class SettingSyncQueue {
       const promise = followClient.api.settings
         .update({
           tab: tab as SettingsTab,
-          json,
+          ...json,
         })
         .then(() => {
           // remove from queue
