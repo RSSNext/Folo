@@ -32,7 +32,10 @@ export const AIChatContextBar: Component<{ onSendShortcut?: (prompt: string) => 
 
     const { addOrUpdateBlock, removeBlock } = useBlockActions()
     const view = useRouteParamsSelector((i) => i.view)
-    const feedId = useRouteParamsSelector((i) => i.feedId)
+    const feedId = useRouteParamsSelector((i) => {
+      if (i.isAllFeeds) return
+      return i.feedId
+    })
     useEffect(() => {
       addOrUpdateBlock({
         id: BlockSliceAction.SPECIAL_TYPES.mainView,
