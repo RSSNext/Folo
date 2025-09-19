@@ -126,8 +126,7 @@ export const useEntriesQuery = (
     }
     return (
       query.data?.pages
-        ?.map((page) => page.data?.map((entry) => entry.entries.id))
-        .flat()
+        ?.flatMap((page) => page.data?.map((entry) => entry.entries.id))
         .filter((id) => typeof id === "string") || []
     )
   }, [query.data, query.isLoading, query.isError])

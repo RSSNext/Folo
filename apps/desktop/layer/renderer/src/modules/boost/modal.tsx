@@ -29,7 +29,7 @@ export const BoostModalContent = ({ feedId }: { feedId: string }) => {
   const balanceBigInt = cPowerBigInt + dPowerBigInt
   const [amount, setAmount] = useState<number>(0)
   const amountBigInt = from(amount, 18)[0]
-  const wrongNumberRange = amountBigInt > balanceBigInt || amountBigInt <= BigInt(0)
+  const wrongNumberRange = amountBigInt > balanceBigInt || amountBigInt <= 0n
 
   const { data: boostStatus, isLoading } = useBoostStatusQuery(feedId)
   const boostFeedMutation = useBoostFeedMutation()
