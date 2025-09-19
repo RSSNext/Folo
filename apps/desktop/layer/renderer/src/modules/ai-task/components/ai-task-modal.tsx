@@ -17,6 +17,7 @@ import { useTranslation } from "react-i18next"
 import { toast } from "sonner"
 
 import { useCurrentModal } from "~/components/ui/modal/stacked/hooks"
+import { AIPersistService } from "~/modules/ai-chat/services"
 import { useCreateAITaskMutation, useUpdateAITaskMutation } from "~/modules/ai-task/query"
 import type { ScheduleType, TaskFormData } from "~/modules/ai-task/types"
 import { MAX_PROMPT_LENGTH, taskSchema } from "~/modules/ai-task/types"
@@ -138,7 +139,16 @@ export const AITaskModal = ({ task, prompt, showSettingsTip = false }: AITaskMod
           ...data,
         },
         {
-          onSuccess: () => {
+          onSuccess: async () => {
+            // If task name changed, sync the AI chat session title (chatId === task.id)
+            const trimmedTitle = data.name?.trim()
+            if (trimmedTitle) {
+              try {
+                await AIPersistService.updateSessionTitle(task.id, trimmedTitle)
+              } catch (err) {
+                console.error("Failed to update AI session title:", err, task, data)
+              }
+            }
             toast.success(t("tasks.toast.updated"))
             dismiss()
           },
