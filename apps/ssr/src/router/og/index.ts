@@ -61,7 +61,15 @@ export const ogRoute = (app: FastifyInstance) => {
   })
 }
 
-const createErrorFallback = (reply: FastifyReply) => (code: number) => {
-  reply.code(code).send("Internal server error")
+const createErrorFallback = (reply: FastifyReply) => (code: number | Error) => {
+  if (typeof code !== "number" && code instanceof Error) {
+    reply.code(500).send(code.message)
+    return null
+  }
+  let message = "Internal server error"
+  if (code === 404) {
+    message = "Not found"
+  }
+  reply.code(code).send(message)
   return null
 }
