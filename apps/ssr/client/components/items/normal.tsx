@@ -3,6 +3,7 @@ import { EllipsisHorizontalTextWithTooltip } from "@follow/components/ui/typogra
 import { cn } from "@follow/utils/utils"
 import type { FeedSchema, ParsedEntry } from "@follow-app/client-sdk"
 import { memo } from "react"
+import * as React from "react"
 
 import { FeedIcon } from "../ui/feed-icon"
 import { LazyImage } from "../ui/image"

@@ -1,6 +1,7 @@
 import { stopPropagation } from "@follow/utils/dom"
 import dayjs from "dayjs"
 import type { FC } from "react"
+import * as React from "react"
 import { useEffect, useRef, useState } from "react"
 import { useTranslation } from "react-i18next"
 

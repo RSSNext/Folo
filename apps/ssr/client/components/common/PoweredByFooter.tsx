@@ -1,5 +1,6 @@
 import { SocialMediaLinks } from "@follow/constants"
 import { cn } from "@follow/utils/utils"
+import * as React from "react"
 
 export const PoweredByFooter: Component = ({ className }) => (
   <footer className={cn("border-border/40 bg-background/60 border-t backdrop-blur-sm", className)}>

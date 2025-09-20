@@ -3,6 +3,7 @@ import { TitleMarquee } from "@follow/components/ui/marquee/index.jsx"
 import type { ParsedEntry } from "@follow-app/client-sdk"
 import dayjs from "dayjs"
 import type { FC } from "react"
+import * as React from "react"
 
 import { FeedIcon } from "../ui/feed-icon"
 import { LazyImage } from "../ui/image"

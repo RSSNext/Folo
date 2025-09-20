@@ -10,6 +10,7 @@ import { LoadingCircle } from "@follow/components/ui/loading/index.jsx"
 import { useTitle } from "@follow/hooks"
 import { cn } from "@follow/utils/utils"
 import type { SubscriptionWithFeed, UserProfile } from "@follow-app/client-sdk"
+import * as React from "react"
 import { Fragment, memo, useState } from "react"
 import { useParams } from "react-router"
 

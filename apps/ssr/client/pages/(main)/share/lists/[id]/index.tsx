@@ -11,6 +11,7 @@ import { useTitle } from "@follow/hooks"
 import { cn, formatNumber } from "@follow/utils/utils"
 import type { FeedSchema } from "@follow-app/client-sdk"
 import { Fragment, memo } from "react"
+import * as React from "react"
 import { useTranslation } from "react-i18next"
 import { useParams } from "react-router"
 

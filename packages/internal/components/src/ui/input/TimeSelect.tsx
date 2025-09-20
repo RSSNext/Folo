@@ -1,5 +1,6 @@
 import { cn } from "@follow/utils/utils"
 import { memo, useMemo } from "react"
+import * as React from "react"
 
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "../select"
 

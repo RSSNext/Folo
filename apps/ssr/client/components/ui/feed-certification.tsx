@@ -8,6 +8,7 @@ import {
 } from "@follow/components/ui/tooltip/index.jsx"
 import { cn } from "@follow/utils/utils"
 import type { FeedSchema } from "@follow-app/client-sdk"
+import * as React from "react"
 import { useTranslation } from "react-i18next"
 
 export const FeedCertification = ({

@@ -8,6 +8,7 @@ import type { MediaModel } from "@folo-services/drizzle"
 import { m } from "motion/react"
 import type { ReactNode } from "react"
 import { useMemo } from "react"
+import * as React from "react"
 
 const getFeedIconSrc = ({
   src,

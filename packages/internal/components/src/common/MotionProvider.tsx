@@ -1,4 +1,5 @@
 import { domMax, LazyMotion, MotionConfig } from "motion/react"
+import * as React from "react"
 
 export const MotionProvider = ({ children }: { children: React.ReactNode }) => {
   return (

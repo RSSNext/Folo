@@ -1,5 +1,6 @@
 import { cn } from "@follow/utils/utils"
 import type { DetailedHTMLProps, FC, HTMLAttributes } from "react"
+import * as React from "react"
 
 export const Divider: FC<DetailedHTMLProps<HTMLAttributes<HTMLHRElement>, HTMLHRElement>> = (
   props,

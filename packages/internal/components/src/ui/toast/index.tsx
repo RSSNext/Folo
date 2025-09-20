@@ -1,4 +1,5 @@
 import { useIsDark } from "@follow/hooks"
+import * as React from "react"
 import { Toaster as Sonner } from "sonner"
 
 import { ZIndexProvider } from "../z-index"

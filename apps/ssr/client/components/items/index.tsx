@@ -6,6 +6,7 @@ import { FeedViewType } from "@follow/constants"
 import type { ParsedEntry } from "@follow-app/client-sdk"
 import type { FC } from "react"
 import { useMemo } from "react"
+import * as React from "react"
 
 const viewsRenderType = {
   Normal: [

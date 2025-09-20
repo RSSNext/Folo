@@ -4,6 +4,7 @@ import { UserRole } from "@follow/constants"
 import { getBackgroundGradient } from "@follow/utils/color"
 import { cn } from "@follow/utils/utils"
 import { useMemo } from "react"
+import * as React from "react"
 
 export const UserAvatar = ({ className }: { className?: string }) => {
   let user = useWhoami()

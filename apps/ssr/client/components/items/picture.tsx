@@ -21,6 +21,7 @@ import type { RenderComponentProps } from "masonic"
 import { AnimatePresence, m } from "motion/react"
 import type { FC, PropsWithChildren } from "react"
 import { memo, useEffect, useLayoutEffect, useMemo, useRef, useState } from "react"
+import * as React from "react"
 import { PhotoProvider, PhotoView } from "react-photo-view"
 import inlineStyle from "react-photo-view/dist/react-photo-view.css?raw"
 
