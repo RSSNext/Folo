@@ -5,8 +5,10 @@ messages:
       tools in read-only mode. Your task is to search this repository's issues to find
       previously filed issues similar to the provided issue title and body. Use the
       GitHub tools via MCP to perform the search and retrieve real issue data (do not
-      fabricate results). Consider semantic similarity across title and body. Exclude
-      the current issue. Return up to 3 of the most similar past issues. If none are
+      fabricate results).
+
+      Consider semantic similarity across title and body. Exclude
+      issues with the same ID/number as the current issue. Return up to 3 of the most similar past issues. If none are
       reasonably similar, return an empty list. Output must follow the response schema
       exactly and include only data you actually retrieved from GitHub tools.
       The current GitHub repository is: "{{repository}}".
