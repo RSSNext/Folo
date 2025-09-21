@@ -13,6 +13,7 @@ import remarkGfm from "remark-gfm"
 
 import { MemoizedShikiCode } from "~/components/ui/code-highlighter"
 import { MarkdownLink } from "~/components/ui/markdown/renderers"
+import { useNavigateEntry } from "~/hooks/biz/useNavigateEntry"
 import { usePeekModal } from "~/hooks/biz/usePeekModal"
 
 import { ANIMATION_STYLE as ANIMATION_STYLE_DEFAULT, DEFAULT_ANIMATION } from "./constants"
@@ -93,6 +94,16 @@ export const MarkdownAnimateText: React.FC<MarkdownAnimateTextProps> = ({
       a: ({ node, ...props }) => {
         return React.createElement(RelatedEntryLink, { ...props } as any)
       },
+      "folo-entry": ({ node, children, ...props }: any) => (
+        <InlineFoloReference type="entry" style={ANIMATION_STYLE} {...props}>
+          {children}
+        </InlineFoloReference>
+      ),
+      "folo-feed": ({ node, children, ...props }: any) => (
+        <InlineFoloReference type="feed" style={ANIMATION_STYLE} {...props}>
+          {children}
+        </InlineFoloReference>
+      ),
 
       text: ({ node, ...props }: any) => <span {...props}>{animateText(props.children)}</span>,
       h1: ({ node, ...props }: any) => <h1 {...props}>{animateText(props.children)}</h1>,
@@ -176,6 +187,62 @@ export const MarkdownAnimateText: React.FC<MarkdownAnimateTextProps> = ({
     <ReactMarkdown components={components} remarkPlugins={[remarkGfm]} rehypePlugins={[rehypeRaw]}>
       {content}
     </ReactMarkdown>
+  )
+}
+
+const InlineFoloReference: React.FC<{
+  type: "entry" | "feed"
+  children?: React.ReactNode
+  className?: string
+  style?: React.CSSProperties
+}> = ({ type, children, className, style }) => {
+  const peekModal = usePeekModal()
+  const navigateEntry = useNavigateEntry()
+
+  const targetId = React.useMemo(() => {
+    return React.Children.toArray(children)
+      .map((child) => {
+        if (typeof child === "string" || typeof child === "number") {
+          return String(child)
+        }
+        return ""
+      })
+      .join("")
+      .trim()
+  }, [children])
+
+  const handleClick = React.useCallback(
+    (event: React.MouseEvent<HTMLButtonElement>) => {
+      event.preventDefault()
+      event.stopPropagation()
+
+      if (!targetId) return
+
+      if (type === "entry") {
+        peekModal(targetId, "modal")
+      } else {
+        navigateEntry({ feedId: targetId, entryId: null })
+      }
+    },
+    [navigateEntry, peekModal, targetId, type],
+  )
+
+  if (!targetId) return null
+
+  const baseClassName =
+    "inline-flex items-center align-middle cursor-pointer text-text-secondary mx-[0.15em] opacity-80 transition-opacity hover:opacity-100 hover:text-text"
+
+  return (
+    <button
+      type="button"
+      aria-label={type === "entry" ? `Open entry ${targetId}` : `Open feed ${targetId}`}
+      title={type === "entry" ? `Open entry ${targetId}` : `Open feed ${targetId}`}
+      className={className ? `${baseClassName} ${className}` : baseClassName}
+      style={style}
+      onClick={handleClick}
+    >
+      <i className="i-mgc-docment-cute-re size-[1em]" />
+    </button>
   )
 }
 
