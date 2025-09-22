@@ -10,10 +10,12 @@ import { TabScreenWrapper } from "./native"
 import { LifecycleEvents, ScreenNameRegister } from "./shared"
 import type { TabScreenContextType } from "./TabScreenContext"
 import { TabScreenContext } from "./TabScreenContext"
-import type { TabScreenComponent, TabScreenProps } from "./types"
+import type { ResolvedTabScreenProps, TabScreenComponent, TabScreenProps } from "./types"
 
 export const TabScreen: FC<PropsWithChildren<Omit<TabScreenProps, "tabScreenIndex">>> = ({
   children,
+  icon,
+  activeIcon,
   ...props
 }) => {
   const { tabScreenIndex } = props as any as TabScreenProps
@@ -26,16 +28,11 @@ export const TabScreen: FC<PropsWithChildren<Omit<TabScreenProps, "tabScreenInde
 
   const setTabScreens = useSetAtom(tabScreens)
 
-  const mergedProps = useMemo(() => {
-    const propsFromChildren: Partial<TabScreenProps> = {}
+  const mergedProps = useMemo((): ResolvedTabScreenProps => {
+    const propsFromChildren: Partial<ResolvedTabScreenProps> = {}
     if (children && typeof children === "object") {
       const childType = (children as any).type as TabScreenComponent
-      if ("tabBarIcon" in childType) {
-        propsFromChildren.renderIcon = childType.tabBarIcon
-      }
-      if ("title" in childType) {
-        propsFromChildren.title = childType.title
-      }
+
       if ("lazy" in childType) {
         propsFromChildren.lazy = childType.lazy
       }
@@ -46,8 +43,23 @@ export const TabScreen: FC<PropsWithChildren<Omit<TabScreenProps, "tabScreenInde
     return {
       ...propsFromChildren,
       ...props,
+      title: props.title,
+      tabScreenIndex,
+      icon: ({ focused, color }) => {
+        const Icon = !focused ? icon : activeIcon
+
+        if (typeof Icon === "string" && !Icon) {
+          if (__DEV__) {
+            throw new Error("Icon is a string, but it should be a ReactNode")
+          } else {
+            return null
+          }
+        }
+
+        return <Icon color={color} focused={focused} height={24} width={24} />
+      },
     }
-  }, [children, props])
+  }, [activeIcon, children, icon, props, tabScreenIndex])
   useEffect(() => {
     setTabScreens((prev) => [
       ...prev,
@@ -95,7 +107,12 @@ export const TabScreen: FC<PropsWithChildren<Omit<TabScreenProps, "tabScreenInde
 
   const render = !__DEV__ && isIOS ? true : isSelected
   return (
-    <TabScreenWrapper style={StyleSheet.absoluteFill}>
+    <TabScreenWrapper
+      style={StyleSheet.absoluteFill}
+      title={mergedProps.title}
+      icon={icon}
+      activeIcon={activeIcon}
+    >
       <TabScreenContext value={ctxValue}>
         {shouldLoadReact && render && (
           <WrappedScreenItem screenId={`tab-screen-${tabScreenIndex}`}>

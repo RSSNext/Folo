@@ -12,7 +12,9 @@ import { enableFreeze } from "react-native-screens"
 import { App } from "./App"
 import { BottomTabProvider } from "./components/layouts/tabbar/BottomTabProvider"
 import { BottomTabs } from "./components/layouts/tabbar/BottomTabs"
+import { ReactNativeTab } from "./components/layouts/tabbar/ReactNativeTab"
 import { Lightbox } from "./components/ui/lightbox/Lightbox"
+import { NativeImagesMap } from "./constants/native-images"
 import { initializeApp } from "./initialize"
 import { followApi } from "./lib/api-client"
 import { authClient } from "./lib/auth"
@@ -60,24 +62,42 @@ function RootComponent() {
         >
           <App>
             <TabRoot>
-              <TabScreen title={t("tabs.home")} identifier="IndexTabScreen">
+              <TabScreen
+                activeIcon={NativeImagesMap.home5CuteFi}
+                icon={NativeImagesMap.home5CuteRe}
+                title={t("tabs.home")}
+                identifier="IndexTabScreen"
+              >
                 <IndexTabScreen />
               </TabScreen>
 
-              <TabScreen title={t("tabs.subscriptions")} identifier="SubscriptionsTabScreen">
+              <TabScreen
+                activeIcon={NativeImagesMap.blackBoard2CuteFi}
+                icon={NativeImagesMap.blackBoard2CuteRe}
+                title={t("tabs.subscriptions")}
+                identifier="SubscriptionsTabScreen"
+              >
                 <SubscriptionsTabScreen />
               </TabScreen>
 
-              <TabScreen title={t("tabs.discover")} identifier="DiscoverTabScreen">
+              <TabScreen
+                activeIcon={NativeImagesMap.search3CuteFi}
+                icon={NativeImagesMap.search3CuteRe}
+                title={t("tabs.discover")}
+                identifier="DiscoverTabScreen"
+              >
                 <DiscoverTabScreen />
               </TabScreen>
-              <TabScreen title={t("tabs.settings")} identifier="SettingsTabScreen">
+              <TabScreen
+                activeIcon={NativeImagesMap.settings1CuteFi}
+                icon={NativeImagesMap.settings1CuteRe}
+                title={t("tabs.settings")}
+                identifier="SettingsTabScreen"
+              >
                 <SettingsTabScreen />
               </TabScreen>
 
-              <TabBarPortal>
-                <BottomTabs />
-              </TabBarPortal>
+              <ReactNativeTab />
             </TabRoot>
           </App>
         </RootStackNavigation>

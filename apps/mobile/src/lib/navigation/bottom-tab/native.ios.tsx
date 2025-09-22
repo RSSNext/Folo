@@ -5,6 +5,8 @@ import type { TabBarRootWrapperProps } from "./types"
 
 export const TabBarPortalWrapper = requireNativeView<ViewProps>("TabBarPortal")
 
-export const TabScreenWrapper = requireNativeView<ViewProps>("TabScreen")
+export type TabScreenNativeProps = ViewProps & { title?: string }
+
+export const TabScreenWrapper = requireNativeView<TabScreenNativeProps>("TabScreen")
 
 export const TabBarRootWrapper = requireNativeView<TabBarRootWrapperProps>("TabBarRoot")

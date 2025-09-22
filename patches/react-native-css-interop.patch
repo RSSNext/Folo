@@ -1,0 +1,13 @@
+diff --git a/dist/runtime/native/api.js b/dist/runtime/native/api.js
+index 5ea02d81fd0954009978e04b12542e58a954af7e..c665f5fb72758b4d1e87c8b81fd0a91485a40e29 100644
+--- a/dist/runtime/native/api.js
++++ b/dist/runtime/native/api.js
+@@ -24,7 +24,7 @@ const cssInterop = (baseComponent, mapping) => {
+     const type = (0, unwrap_components_1.getComponentType)(baseComponent);
+     if (type === "function") {
+         component = (props) => {
+-            return (0, native_interop_1.interop)(baseComponent, configs, props, undefined);
++          return (0, native_interop_1.interop)(baseComponent, configs, props, props.ref);
+         };
+     }
+     else {

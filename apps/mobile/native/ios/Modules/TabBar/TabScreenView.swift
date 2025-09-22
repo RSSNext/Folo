@@ -9,6 +9,12 @@ import ExpoModulesCore
 import UIKit
 
 class TabScreenView: ExpoView {
+  weak var ownerViewController: UIViewController?
+
+  var icon: String?
+  var activeIcon: String?
+  var title: String?
+
   required init(appContext: AppContext? = nil) {
     super.init(appContext: appContext)
   }

@@ -11,13 +11,13 @@ import type { ActionFilterItem, ActionId } from "@follow-app/client-sdk"
 import { merge } from "es-toolkit/compat"
 import { useTranslation } from "react-i18next"
 import { View } from "react-native"
-import * as DropdownMenu from "zeego/dropdown-menu"
 
 import { SwipeableItem } from "@/src/components/common/SwipeableItem"
 import {
   NavigationBlurEffectHeaderView,
   SafeNavigationScrollView,
 } from "@/src/components/layouts/views/SafeNavigationScrollView"
+import { DropdownMenu } from "@/src/components/ui/context-menu"
 import { PlainTextField } from "@/src/components/ui/form/TextField"
 import {
   GroupedInsetListActionCell,

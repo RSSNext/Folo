@@ -1,7 +1,7 @@
 import { useMemo } from "react"
 import { TouchableOpacity } from "react-native"
-import * as DropdownMenu from "zeego/dropdown-menu"
 
+import { DropdownMenu } from "@/src/components/ui/context-menu"
 import { ListExpansionCuteReIcon } from "@/src/icons/list_expansion_cute_re"
 
 import {
