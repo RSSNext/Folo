@@ -23,6 +23,7 @@ import { ItemPressableStyle } from "@/src/components/ui/pressable/enum"
 import { ItemPressable } from "@/src/components/ui/pressable/ItemPressable"
 import { Text } from "@/src/components/ui/typography/Text"
 import { CalendarTimeAddCuteReIcon } from "@/src/icons/calendar_time_add_cute_re"
+import { Eye2CuteReIcon } from "@/src/icons/eye_2_cute_re"
 import { openLink } from "@/src/lib/native"
 import { useNavigation } from "@/src/lib/navigation/hooks"
 import type { NavigationControllerView } from "@/src/lib/navigation/types"
@@ -217,6 +218,7 @@ const EntryInfo = ({ entryId }: { entryId: string }) => {
       </View>
       {!hideRecentReader && (
         <View className="flex flex-row items-center gap-1">
+          <Eye2CuteReIcon width={16} height={16} color={secondaryLabelColor} />
           <Text className="text-secondary-label text-sm leading-tight">{readCount}</Text>
         </View>
       )}
