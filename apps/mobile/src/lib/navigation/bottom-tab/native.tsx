@@ -16,6 +16,11 @@ export const TabScreenWrapper = ({ title, icon, activeIcon, ...rest }: TabScreen
   return <View {...rest} />
 }
 
-export const TabBarRootWrapper = (props: TabBarRootWrapperProps) => {
+export const TabBarRootWrapper = ({
+  onTabIndexChange,
+  onTabItemPress,
+  selectedIndex,
+  ...props
+}: TabBarRootWrapperProps) => {
   return <View {...props} />
 }

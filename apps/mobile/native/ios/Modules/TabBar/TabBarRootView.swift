@@ -37,6 +37,7 @@ class TabBarRootView: ExpoView {
   private var tabViewControllers: [UIViewController] = []
 
   private let onTabIndexChange = EventDispatcher()
+  private let onTabItemPress = EventDispatcher()
 
   required init(appContext: AppContext? = nil) {
     super.init(appContext: appContext)
@@ -133,6 +134,14 @@ class TabBarRootView: ExpoView {
 // MARK: - UITabBarControllerDelegate
 
 extension TabBarRootView: UITabBarControllerDelegate {
+  func tabBarController(
+    _ tabBarController: UITabBarController, shouldSelect viewController: UIViewController
+  ) -> Bool {
+    if let index = tabViewControllers.firstIndex(of: viewController) {
+      onTabItemPress(["index": index, "currentIndex": tabBarController.selectedIndex])
+    }
+    return true
+  }
   func tabBarController(
     _ tabBarController: UITabBarController, didSelect viewController: UIViewController
   ) {

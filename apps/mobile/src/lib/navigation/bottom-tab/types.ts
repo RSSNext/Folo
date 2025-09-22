@@ -28,7 +28,16 @@ export interface ResolvedTabScreenProps extends Omit<TabScreenProps, "icon" | "a
   icon: (props: TabbarIconProps) => React.ReactNode
 }
 
-export type TabBarRootWrapperProps = {
+export interface TabBarRootWrapperProps extends ViewProps {
+  /**
+   *
+   * iOS only
+   */
   onTabIndexChange: (e: NativeSyntheticEvent<{ index: number }>) => void
+  /**
+   * iOS only
+   */
+  onTabItemPress?: (e: NativeSyntheticEvent<{ index: number; currentIndex: number }>) => void
+
   selectedIndex: number
-} & ViewProps
+}
