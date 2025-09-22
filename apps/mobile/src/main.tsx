@@ -11,15 +11,12 @@ import { enableFreeze } from "react-native-screens"
 
 import { App } from "./App"
 import { BottomTabProvider } from "./components/layouts/tabbar/BottomTabProvider"
-import { BottomTabs } from "./components/layouts/tabbar/BottomTabs"
 import { ReactNativeTab } from "./components/layouts/tabbar/ReactNativeTab"
 import { Lightbox } from "./components/ui/lightbox/Lightbox"
-import { NativeImagesMap } from "./constants/native-images"
 import { initializeApp } from "./initialize"
 import { followApi } from "./lib/api-client"
 import { authClient } from "./lib/auth"
 import { initializeI18n } from "./lib/i18n"
-import { TabBarPortal } from "./lib/navigation/bottom-tab/TabBarPortal"
 import { TabRoot } from "./lib/navigation/bottom-tab/TabRoot"
 import { TabScreen } from "./lib/navigation/bottom-tab/TabScreen"
 import { RootStackNavigation } from "./lib/navigation/StackNavigation"
@@ -63,8 +60,8 @@ function RootComponent() {
           <App>
             <TabRoot>
               <TabScreen
-                activeIcon={NativeImagesMap.home5CuteFi}
-                icon={NativeImagesMap.home5CuteRe}
+                activeIcon={"home5CuteFi"}
+                icon={"home5CuteRe"}
                 title={t("tabs.home")}
                 identifier="IndexTabScreen"
               >
@@ -72,8 +69,8 @@ function RootComponent() {
               </TabScreen>
 
               <TabScreen
-                activeIcon={NativeImagesMap.blackBoard2CuteFi}
-                icon={NativeImagesMap.blackBoard2CuteRe}
+                activeIcon={"blackBoard2CuteFi"}
+                icon={"blackBoard2CuteRe"}
                 title={t("tabs.subscriptions")}
                 identifier="SubscriptionsTabScreen"
               >
@@ -81,16 +78,16 @@ function RootComponent() {
               </TabScreen>
 
               <TabScreen
-                activeIcon={NativeImagesMap.search3CuteFi}
-                icon={NativeImagesMap.search3CuteRe}
+                activeIcon={"search3CuteFi"}
+                icon={"search3CuteRe"}
                 title={t("tabs.discover")}
                 identifier="DiscoverTabScreen"
               >
                 <DiscoverTabScreen />
               </TabScreen>
               <TabScreen
-                activeIcon={NativeImagesMap.settings1CuteFi}
-                icon={NativeImagesMap.settings1CuteRe}
+                activeIcon={"settings1CuteFi"}
+                icon={"settings1CuteRe"}
                 title={t("tabs.settings")}
                 identifier="SettingsTabScreen"
               >

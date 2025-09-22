@@ -1,6 +1,8 @@
 import type { FC } from "react"
 import type { NativeSyntheticEvent, ViewProps } from "react-native"
 
+import type { IconNativeName } from "@/src/constants/native-images"
+
 export type TabbarIconProps = {
   focused: boolean
   size?: number
@@ -18,16 +20,8 @@ export interface TabScreenProps {
   lazy?: boolean
   identifier?: string
 
-  /**
-   * iOS: Pass icon name
-   * Other: Pass icon component
-   */
-  icon: string | React.FC<TabbarIconProps>
-  /**
-   * iOS: Pass icon name
-   * Other: Pass icon component
-   */
-  activeIcon: string | React.FC<TabbarIconProps>
+  icon: IconNativeName
+  activeIcon: IconNativeName
 }
 
 export interface ResolvedTabScreenProps extends Omit<TabScreenProps, "icon" | "activeIcon"> {

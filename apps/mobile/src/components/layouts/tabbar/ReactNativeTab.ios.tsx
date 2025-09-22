@@ -1,12 +1,15 @@
 import { Platform } from "react-native"
 import DeviceInfo from "react-native-device-info"
-import { BottomTabs } from "react-native-screens"
 
 import { TabBarPortal } from "@/src/lib/navigation/bottom-tab/TabBarPortal"
+import { isIos26 } from "@/src/lib/platform"
+
+import { BottomTabs } from "./BottomTabs"
 
 const isIpad = Platform.OS === "ios" && DeviceInfo.isTablet()
+
 export const ReactNativeTab = () => {
-  if (!isIpad) {
+  if (isIos26 && !isIpad) {
     return null
   }
   return (

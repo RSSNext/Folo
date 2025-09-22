@@ -17,10 +17,15 @@ class TabBarRootView: ExpoView {
       tabBarController.tabBar.isTranslucent = false
       tabBarController.tabBar.barStyle = .default
 
-      tabBarController.tabBar.isHidden = true
-      if #available(iOS 18.0, *) {
-        tabBarController.isTabBarHidden = true
-      }
+    }
+
+    tabBarController.tabBar.isHidden = true
+    if #available(iOS 18.0, *) {
+      tabBarController.isTabBarHidden = true
+    }
+
+    if #available(iOS 26.0, *) {
+      tabBarController.isTabBarHidden = false
     }
 
     tabBarController.tabBar.tintColor = Utils.accentColor

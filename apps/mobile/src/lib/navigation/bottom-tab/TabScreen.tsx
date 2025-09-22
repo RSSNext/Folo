@@ -3,6 +3,8 @@ import type { FC, PropsWithChildren } from "react"
 import { use, useEffect, useMemo } from "react"
 import { StyleSheet } from "react-native"
 
+import { IconNativeNameMap, IconNodeMap } from "@/src/constants/native-images"
+
 import { isIOS } from "../../platform"
 import { WrappedScreenItem } from "../WrappedScreenItem"
 import { BottomTabContext } from "./BottomTabContext"
@@ -48,15 +50,9 @@ export const TabScreen: FC<PropsWithChildren<Omit<TabScreenProps, "tabScreenInde
       icon: ({ focused, color }) => {
         const Icon = !focused ? icon : activeIcon
 
-        if (typeof Icon === "string" && !Icon) {
-          if (__DEV__) {
-            throw new Error("Icon is a string, but it should be a ReactNode")
-          } else {
-            return null
-          }
-        }
+        const ResolvedIcon = IconNodeMap[Icon]
 
-        return <Icon color={color} focused={focused} height={24} width={24} />
+        return <ResolvedIcon color={color} height={24} width={24} />
       },
     }
   }, [activeIcon, children, icon, props, tabScreenIndex])
@@ -110,8 +106,8 @@ export const TabScreen: FC<PropsWithChildren<Omit<TabScreenProps, "tabScreenInde
     <TabScreenWrapper
       style={StyleSheet.absoluteFill}
       title={mergedProps.title}
-      icon={icon}
-      activeIcon={activeIcon}
+      icon={IconNativeNameMap[icon]}
+      activeIcon={IconNativeNameMap[activeIcon]}
     >
       <TabScreenContext value={ctxValue}>
         {shouldLoadReact && render && (
