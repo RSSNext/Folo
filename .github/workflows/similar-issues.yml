@@ -58,13 +58,30 @@ jobs:
               return;
             }
             const matches = Array.isArray(data.matches) ? data.matches : [];
-            if (!matches.length) {
+            const rawIssueNumber = context?.payload?.issue?.number;
+            const issueNumber = typeof rawIssueNumber === 'string' ? Number(rawIssueNumber) : rawIssueNumber;
+            const filteredMatches = Number.isFinite(issueNumber)
+              ? matches.filter((m) => {
+                  const matchNumber = typeof m?.number === 'string' ? Number(m.number) : m?.number;
+                  if (Number.isFinite(matchNumber)) {
+                    return matchNumber !== issueNumber;
+                  }
+                  if (typeof m?.url === 'string') {
+                    const urlMatch = m.url.match(/\/issues\/(\d+)(?:$|[?#])/);
+                    if (urlMatch) {
+                      return Number(urlMatch[1]) !== issueNumber;
+                    }
+                  }
+                  return true;
+                })
+              : matches;
+            if (!filteredMatches.length) {
               core.setOutput('has_matches', 'false');
               return;
             }
             const lines = [];
             lines.push('I found similar issues that might help:');
-            for (const m of matches.slice(0, 3)) {
+            for (const m of filteredMatches.slice(0, 3)) {
               const num = m.number != null ? `#${m.number}` : '';
               const title = m.title || 'Untitled';
               const url = m.url || '';
