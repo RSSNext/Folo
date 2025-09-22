@@ -11,13 +11,12 @@ import { enableFreeze } from "react-native-screens"
 
 import { App } from "./App"
 import { BottomTabProvider } from "./components/layouts/tabbar/BottomTabProvider"
-import { BottomTabs } from "./components/layouts/tabbar/BottomTabs"
+import { ReactNativeTab } from "./components/layouts/tabbar/ReactNativeTab"
 import { Lightbox } from "./components/ui/lightbox/Lightbox"
 import { initializeApp } from "./initialize"
 import { followApi } from "./lib/api-client"
 import { authClient } from "./lib/auth"
 import { initializeI18n } from "./lib/i18n"
-import { TabBarPortal } from "./lib/navigation/bottom-tab/TabBarPortal"
 import { TabRoot } from "./lib/navigation/bottom-tab/TabRoot"
 import { TabScreen } from "./lib/navigation/bottom-tab/TabScreen"
 import { RootStackNavigation } from "./lib/navigation/StackNavigation"
@@ -60,24 +59,42 @@ function RootComponent() {
         >
           <App>
             <TabRoot>
-              <TabScreen title={t("tabs.home")} identifier="IndexTabScreen">
+              <TabScreen
+                activeIcon={"home5CuteFi"}
+                icon={"home5CuteRe"}
+                title={t("tabs.home")}
+                identifier="IndexTabScreen"
+              >
                 <IndexTabScreen />
               </TabScreen>
 
-              <TabScreen title={t("tabs.subscriptions")} identifier="SubscriptionsTabScreen">
+              <TabScreen
+                activeIcon={"blackBoard2CuteFi"}
+                icon={"blackBoard2CuteRe"}
+                title={t("tabs.subscriptions")}
+                identifier="SubscriptionsTabScreen"
+              >
                 <SubscriptionsTabScreen />
               </TabScreen>
 
-              <TabScreen title={t("tabs.discover")} identifier="DiscoverTabScreen">
+              <TabScreen
+                activeIcon={"search3CuteFi"}
+                icon={"search3CuteRe"}
+                title={t("tabs.discover")}
+                identifier="DiscoverTabScreen"
+              >
                 <DiscoverTabScreen />
               </TabScreen>
-              <TabScreen title={t("tabs.settings")} identifier="SettingsTabScreen">
+              <TabScreen
+                activeIcon={"settings1CuteFi"}
+                icon={"settings1CuteRe"}
+                title={t("tabs.settings")}
+                identifier="SettingsTabScreen"
+              >
                 <SettingsTabScreen />
               </TabScreen>
 
-              <TabBarPortal>
-                <BottomTabs />
-              </TabBarPortal>
+              <ReactNativeTab />
             </TabRoot>
           </App>
         </RootStackNavigation>

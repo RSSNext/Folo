@@ -9,10 +9,15 @@ packages:
 
 catalog:
   "@follow-app/client-sdk": 0.3.66
-  typescript: 5.9.2
   tailwindcss-uikit-colors: 1.0.0
+  typescript: 5.9.2
 
 ignorePatchFailures: false
+
+minimumReleaseAge: 1440
+
+minimumReleaseAgeExclude:
+  - "@follow-app/client-sdk"
 
 onlyBuiltDependencies:
   - "@firebase/util"
@@ -36,34 +41,29 @@ onlyBuiltDependencies:
 
 overrides:
   "@electron/node-gyp": 10.2.0-electron.2
+  "@floating-ui/core": 1.7.2
+  "@floating-ui/dom": 1.7.2
+  "@floating-ui/react": 0.27.14
+  "@floating-ui/react-dom": 2.1.4
   is-core-module: npm:@nolyfill/is-core-module@1.0.39
   isarray: npm:@nolyfill/isarray@1.0.44
   lan-network@<0.1.7: 0.1.7
+  nativewind>react-native-css-interop: 0.1.22
   react: 19.0.0
   react-dom: 19.0.0
   react-native-ios-context-menu: 3.1.1
   react-native-ios-utilities: 5.1.5
-  "@floating-ui/core": 1.7.2
-  "@floating-ui/dom": 1.7.2
-  "@floating-ui/react-dom": 2.1.4
-  "@floating-ui/react": 0.27.14
-  "nativewind>react-native-css-interop": "0.1.22"
 
 patchedDependencies:
-  re-resizable@6.11.2: patches/re-resizable@6.11.2.patch
+  "@microflash/remark-callout-directives": patches/@microflash__remark-callout-directives.patch
   "@mozilla/readability@0.6.0": patches/@mozilla__readability@0.6.0.patch
+  "@pengx17/electron-forge-maker-appimage": patches/@pengx17__electron-forge-maker-appimage.patch
+  "@sentry/electron": patches/@sentry__electron.patch
   daisyui@4.12.24: patches/daisyui@4.12.24.patch
   jsonpointer: patches/jsonpointer.patch
-  workbox-precaching: patches/workbox-precaching.patch
-  "@pengx17/electron-forge-maker-appimage": patches/@pengx17__electron-forge-maker-appimage.patch
-  "@microflash/remark-callout-directives": patches/@microflash__remark-callout-directives.patch
-  react-native-track-player: patches/react-native-track-player.patch
-  react-native-sheet-transitions: patches/react-native-sheet-transitions.patch
-  react-native-screens: patches/react-native-screens.patch
+  re-resizable@6.11.2: patches/re-resizable@6.11.2.patch
   react-native-ios-utilities: patches/react-native-ios-utilities.patch
-  "@sentry/electron": patches/@sentry__electron.patch
-
-# See https://pnpm.io/settings#minimumreleaseage
-minimumReleaseAge: 0
-minimumReleaseAgeExclude:
-  - "@follow-app/client-sdk"
+  react-native-screens: patches/react-native-screens.patch
+  react-native-sheet-transitions: patches/react-native-sheet-transitions.patch
+  react-native-track-player: patches/react-native-track-player.patch
+  workbox-precaching: patches/workbox-precaching.patch
