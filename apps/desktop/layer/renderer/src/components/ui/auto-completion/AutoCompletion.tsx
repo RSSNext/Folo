@@ -63,6 +63,7 @@ export const Autocomplete = ({
   const zIndex = useCorrectZIndex(9)
   return (
     <Combobox
+      as="div"
       immediate
       value={selectedOptions}
       onChange={(suggestion) => {
