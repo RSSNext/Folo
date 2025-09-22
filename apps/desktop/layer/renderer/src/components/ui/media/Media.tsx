@@ -388,12 +388,7 @@ const MediaImpl: FC<MediaProps> = ({
       style={style}
     >
       {!!props.width && !!props.height && !!containerWidth ? (
-        <AspectRatio
-          width={Number.parseInt(props.width as string)}
-          height={Number.parseInt(props.height as string)}
-          containerWidth={containerWidth}
-          fitContent={fitContent}
-        >
+        <>
           <div
             className={cn(
               "absolute inset-0 flex items-center justify-center overflow-hidden rounded",
@@ -410,7 +405,7 @@ const MediaImpl: FC<MediaProps> = ({
           <div className="absolute inset-0 flex items-center justify-center overflow-hidden rounded">
             {InnerContent}
           </div>
-        </AspectRatio>
+        </>
       ) : (
         InnerContent
       )}
@@ -445,7 +440,7 @@ const FallbackMedia: FC<MediaProps> = ({ type, mediaContainerClassName, classNam
   </div>
 )
 
-const AspectRatio = ({
+const _AspectRatio = ({
   width,
   height,
   containerWidth,
