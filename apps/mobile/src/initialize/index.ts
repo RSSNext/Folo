@@ -7,18 +7,20 @@ import { settingSyncQueue } from "../modules/settings/sync-queue"
 import { initAnalytics } from "./analytics"
 import { initializeAppCheck } from "./app-check"
 import { initBackgroundTask } from "./background"
-import { initCrashlytics } from "./crashlytics"
 import { initializeDayjs } from "./dayjs"
 import { initDeviceType } from "./device"
 import { hydrateQueryClient, hydrateSettings } from "./hydrate"
 import { migrateDatabase } from "./migration"
 import { initializePlayer } from "./player"
+import { initializeSentry } from "./sentry"
 
 /* eslint-disable no-console */
 export const initializeApp = async () => {
   console.log(`Initialize...`)
 
   const now = Date.now()
+
+  initializeSentry()
 
   await initDeviceType()
   await initializeDB()
@@ -57,7 +59,7 @@ export const initializeApp = async () => {
     electron: false,
     using_indexed_db: true,
   })
-  initCrashlytics()
+
   initBackgroundTask()
   console.log(`Initialize done,`, `${loadingTime}ms`)
 }

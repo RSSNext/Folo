@@ -2,6 +2,7 @@ import "./global.css"
 import "./polyfill"
 
 import { apiContext, authClientContext, queryClientContext } from "@follow/store/context"
+import * as Sentry from "@sentry/react-native"
 import { registerRootComponent } from "expo"
 import { Image } from "expo-image"
 import { LinearGradient } from "expo-linear-gradient"
@@ -27,7 +28,6 @@ import { DiscoverTabScreen } from "./screens/(stack)/(tabs)/discover"
 import { SettingsTabScreen } from "./screens/(stack)/(tabs)/settings"
 import { SubscriptionsTabScreen } from "./screens/(stack)/(tabs)/subscriptions"
 import { registerSitemap } from "./sitemap"
-
 // @ts-expect-error
 global.APP_NAME = "Folo"
 // @ts-expect-error
@@ -45,7 +45,7 @@ enableFreeze(true)
 initializeApp()
 registerSitemap()
 initializeI18n()
-registerRootComponent(RootComponent)
+registerRootComponent(Sentry.wrap(RootComponent))
 
 function RootComponent() {
   const { t } = useTranslation()
