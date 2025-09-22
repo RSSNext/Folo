@@ -1,4 +1,4 @@
-# Internal Packages Development Guide
+# AGENTS.md
 
 This file provides specific guidance for developing shared packages used across all platforms.
 

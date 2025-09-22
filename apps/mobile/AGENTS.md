@@ -1,4 +1,4 @@
-# Mobile App Development Guide
+# AGENTS.md
 
 This file provides specific guidance for developing the React Native mobile application.
 

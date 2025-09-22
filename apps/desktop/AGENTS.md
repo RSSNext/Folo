@@ -1,4 +1,4 @@
-# Desktop App Development Guide
+# AGENTS.md
 
 This file provides specific guidance for developing the Electron desktop application.
 
