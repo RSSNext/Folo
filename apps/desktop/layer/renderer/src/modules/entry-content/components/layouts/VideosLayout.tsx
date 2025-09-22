@@ -4,18 +4,9 @@ import { useState } from "react"
 import { EntryTitle } from "../EntryTitle"
 import { ContentBody, MediaTranscript, TranscriptToggle, useTranscription } from "./shared"
 import { VideoPlayer } from "./shared/VideoPlayer"
+import type { EntryLayoutProps } from "./types"
 
-interface VideosLayoutProps {
-  entryId: string
-  compact?: boolean
-  noMedia?: boolean
-  translation?: {
-    content?: string
-    title?: string
-  }
-}
-
-export const VideosLayout: React.FC<VideosLayoutProps> = ({
+export const VideosLayout: React.FC<EntryLayoutProps> = ({
   entryId,
   compact = false,
   noMedia = false,

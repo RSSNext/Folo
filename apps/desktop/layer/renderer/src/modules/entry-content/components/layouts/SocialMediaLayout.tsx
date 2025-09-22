@@ -7,18 +7,9 @@ import { readableContentMaxWidthClassName } from "~/constants/ui"
 
 import { AuthorHeader } from "./shared/AuthorHeader"
 import { ContentBody } from "./shared/ContentBody"
+import type { EntryLayoutProps } from "./types"
 
-interface SocialMediaLayoutProps {
-  entryId: string
-  compact?: boolean
-  noMedia?: boolean
-  translation?: {
-    content?: string
-    title?: string
-  }
-}
-
-export const SocialMediaLayout: React.FC<SocialMediaLayoutProps> = ({
+export const SocialMediaLayout: React.FC<EntryLayoutProps> = ({
   entryId,
   compact = false,
   noMedia = false,

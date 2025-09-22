@@ -30,18 +30,9 @@ import { EntryTitle } from "../EntryTitle"
 import { SupportCreator } from "../SupportCreator"
 import { MediaTranscript, TranscriptToggle, useTranscription } from "./shared"
 import { ArticleAudioPlayer } from "./shared/AudioPlayer"
+import type { EntryLayoutProps } from "./types"
 
-interface ArticleLayoutProps {
-  entryId: string
-  compact?: boolean
-  noMedia?: boolean
-  translation?: {
-    content?: string
-    title?: string
-  }
-}
-
-export const ArticleLayout: React.FC<ArticleLayoutProps> = ({
+export const ArticleLayout: React.FC<EntryLayoutProps> = ({
   entryId,
   compact = false,
   noMedia = false,
