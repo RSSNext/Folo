@@ -50,7 +50,7 @@ export function FeedCardActions<T extends TrendingFeedItem | DiscoveryItem>({
             navigateEntry({
               feedId: item.feed.id,
               view: item.analytics?.view ?? 0,
-              backPath: location.pathname,
+              backPath: `${location.pathname}${location.search}`,
             })
           }}
         >
