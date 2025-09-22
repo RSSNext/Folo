@@ -2,7 +2,6 @@ import { isMobile } from "@follow/components/hooks/useMobile.js"
 import { use, useCallback } from "react"
 
 import { replaceImgUrlIfNeed } from "~/lib/img-proxy"
-import { AIChatRoot } from "~/modules/ai-chat/components/layouts/AIChatRoot"
 
 import { PlainModal } from "../modal/stacked/custom-modal"
 import { useModalStack } from "../modal/stacked/hooks"
@@ -23,11 +22,9 @@ export const usePreviewMedia = (children?: React.ReactNode) => {
       }
       present({
         content: () => (
-          <AIChatRoot>
-            <PreviewMediaContent initialIndex={initialIndex} media={media}>
-              {children}
-            </PreviewMediaContent>
-          </AIChatRoot>
+          <PreviewMediaContent initialIndex={initialIndex} media={media}>
+            {children}
+          </PreviewMediaContent>
         ),
         autoFocus: false,
         title: "Media Preview",
