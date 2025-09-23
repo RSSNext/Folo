@@ -373,7 +373,7 @@ export const ModalInternal = memo(function Modal({
                   <div className={"bg-background relative z-10 flex flex-col"}>
                     <div className={"flex items-center"}>
                       <Dialog.Title
-                        className="text-text flex w-0 max-w-full grow items-center gap-2 px-2 py-1 text-base font-medium"
+                        className="text-text flex w-0 max-w-full grow items-center gap-2 px-2 pb-1 pt-2 text-base font-medium"
                         onPointerDownCapture={handleDrag}
                         onPointerDown={relocateModal}
                       >

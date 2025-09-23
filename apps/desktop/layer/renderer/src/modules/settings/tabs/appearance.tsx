@@ -24,6 +24,7 @@ import { useCurrentModal, useModalStack } from "~/components/ui/modal/stacked/ho
 import { useSetTheme } from "~/hooks/common"
 import { useShowCustomizeToolbarModal } from "~/modules/customize-toolbar/modal"
 
+import { useShowTimelineTabsSettingsModal } from "../../subscription-column/TimelineTabsSettingsModal"
 import { SETTING_MODAL_ID } from "../constants"
 import { SettingActionItem, SettingDescription, SettingTabbedSegment } from "../control"
 import { createDefineSettingItem } from "../helper/builder"
@@ -57,7 +58,6 @@ export const SettingAppearance = () => {
           GlobalFontSize,
           UIFontSelector,
           ContentLineHeight,
-          CustomizeToolbar,
 
           {
             type: "title",
@@ -160,6 +160,8 @@ export const SettingAppearance = () => {
           },
 
           CustomCSS,
+          CustomizeToolbar,
+          CustomizeSubscriptionTabs,
         ]}
       />
     </div>
@@ -529,8 +531,28 @@ const CustomizeToolbar = () => {
         action={async () => {
           showModal()
         }}
-        buttonText={t("appearance.customize_toolbar.label")}
+        buttonText={t("appearance.words.customize")}
       />
+      <SettingDescription className="-mt-3">
+        {t("appearance.customize_toolbar.description")}
+      </SettingDescription>
+    </SettingItemGroup>
+  )
+}
+
+const CustomizeSubscriptionTabs = () => {
+  const { t } = useTranslation("settings")
+  const showTabsModal = useShowTimelineTabsSettingsModal()
+  return (
+    <SettingItemGroup>
+      <SettingActionItem
+        label={t("appearance.customize_sub_tabs.label")}
+        action={() => showTabsModal()}
+        buttonText={t("appearance.words.customize")}
+      />
+      <SettingDescription className="-mt-3">
+        {t("appearance.customize_sub_tabs.description")}
+      </SettingDescription>
     </SettingItemGroup>
   )
 }

@@ -37,7 +37,6 @@ import { useShouldFreeUpSpace } from "./hook"
 import { SubscriptionListGuard } from "./subscription-list/SubscriptionListGuard"
 import { SubscriptionColumnHeader } from "./SubscriptionColumnHeader"
 import { SubscriptionTabButton } from "./SubscriptionTabButton"
-import { useShowTimelineTabsSettingsModal } from "./TimelineTabsSettingsModal"
 
 const lethargy = new Lethargy()
 
@@ -259,7 +258,6 @@ const SwipeWrapper: FC<{ active: string; children: React.JSX.Element[] }> = memo
 
 const TabsRow: FC = () => {
   const timelineList = useTimelineList()
-  const showSettings = useShowTimelineTabsSettingsModal()
   const timelineTabs = useUISettingKey("timelineTabs")
 
   if (timelineList.length <= 5) {
@@ -295,10 +293,6 @@ const TabsRow: FC = () => {
       {visible.map((timelineId, index) => (
         <SubscriptionTabButton key={timelineId} timelineId={timelineId} shortcut={`${index + 1}`} />
       ))}
-
-      <ActionButton tooltip={"Customize Tabs"} onClick={showSettings}>
-        <i className="i-mingcute-dots-fill" />
-      </ActionButton>
     </div>
   )
 }
