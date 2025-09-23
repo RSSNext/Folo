@@ -62,7 +62,7 @@ export const AIMessageParts: React.FC<AIMessagePartsProps> = React.memo(
           parts.push(part)
         } else if (part.type.startsWith("tool-display")) {
           parts.push(part as ToolUIPart<BizUITools>)
-        } else if (part.type === "reasoning") {
+        } else if (part.type === "reasoning" && part.text) {
           mergedReasoningParts.push(part as ReasoningUIPart)
         }
       }
@@ -73,9 +73,11 @@ export const AIMessageParts: React.FC<AIMessagePartsProps> = React.memo(
       return parts
     }, [message.parts])
 
+    const lowPriorityParts = React.useDeferredValue(displayParts)
+
     return (
       <>
-        {displayParts.map((partOrParts, index) => {
+        {lowPriorityParts.map((partOrParts, index) => {
           const partKey = `${message.id}-${index}`
 
           if (Array.isArray(partOrParts)) {

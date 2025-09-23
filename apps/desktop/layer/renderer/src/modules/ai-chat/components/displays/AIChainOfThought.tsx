@@ -1,5 +1,6 @@
 import type { CollapseCssRef } from "@follow/components/ui/collapse/CollapseCss.js"
 import { CollapseCss, CollapseCssGroup } from "@follow/components/ui/collapse/CollapseCss.js"
+import { ShinyText } from "@follow/components/ui/shiny-text/ShinyText.js"
 import { cn } from "@follow/utils"
 import type { ReasoningUIPart } from "ai"
 import * as React from "react"
@@ -33,8 +34,6 @@ export const AIChainOfThought: React.FC<AIChainOfThoughtProps> = React.memo(
 
     return (
       <div className={cn("border-border min-w-0 max-w-full text-left", className)}>
-        <div className="w-[calc(var(--ai-chat-layout-width,65ch))] max-w-full" />
-
         <CollapseCssGroup>
           <CollapseCss
             ref={collapseRef}
@@ -46,8 +45,9 @@ export const AIChainOfThought: React.FC<AIChainOfThoughtProps> = React.memo(
                 <div className="flex items-center gap-2 text-xs">
                   <span className="text-text-secondary">
                     {!currentChainReasoningIsFinished ? (
-                      <span>
-                        Thinking: <span className="font-medium">{currentReasoningTitle}</span>
+                      <span className="flex items-center gap-2">
+                        Thinking:{" "}
+                        <ShinyText className="font-medium" text={currentReasoningTitle ?? ""} />
                       </span>
                     ) : (
                       "Finished Thinking"
