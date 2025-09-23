@@ -21,7 +21,7 @@ import {
   AIDisplayFeedPart,
   AIDisplaySubscriptionsPart,
 } from "../displays"
-import { AIMarkdownStreamingMessage } from "./AIMarkdownMessage.v2"
+import { AIMarkdownStreamingMessage } from "./AIMarkdownMessage"
 
 const LazyAIDisplayFlowPart = React.lazy(() =>
   import("../displays/AIDisplayFlowPart").then((mod) => ({ default: mod.AIDisplayFlowPart })),

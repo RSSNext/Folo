@@ -2,7 +2,7 @@ import * as React from "react"
 
 import type { BizUIMessage } from "~/modules/ai-chat/store/types"
 
-import { AIMarkdownMessage } from "./AIMarkdownMessage.old"
+import { AIMarkdownStreamingMessage } from "./AIMarkdownMessage"
 import { AIRichTextMessage } from "./AIRichTextMessage"
 
 interface UserMessagePartsProps {
@@ -15,7 +15,7 @@ export const UserMessageParts: React.FC<UserMessagePartsProps> = React.memo(({ m
 
     switch (part.type) {
       case "text": {
-        return <AIMarkdownMessage key={partKey} text={part.text} />
+        return <AIMarkdownStreamingMessage key={partKey} text={part.text} />
       }
 
       case "data-block": {
