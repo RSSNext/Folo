@@ -347,7 +347,7 @@ const ChatInterfaceContent = ({ centerInputOnEmpty }: ChatInterfaceProps) => {
 
         {(!centerInputOnEmpty || hasMessages) && (
           <div
-            className="bg-background absolute inset-x-0 bottom-0 opacity-90"
+            className="bg-background pointer-events-none absolute inset-x-0 bottom-0 z-0 opacity-90"
             style={{
               maskImage: "linear-gradient(to bottom, transparent, black)",
               height: bottomPanelHeight,

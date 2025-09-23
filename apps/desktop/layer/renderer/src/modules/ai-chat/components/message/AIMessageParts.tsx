@@ -2,7 +2,7 @@ import "@xyflow/react/dist/style.css"
 
 import { alwaysFalse } from "@follow/utils"
 import { ErrorBoundary } from "@sentry/react"
-import type { ToolUIPart } from "ai"
+import type { ReasoningUIPart, TextUIPart, ToolUIPart } from "ai"
 import * as React from "react"
 
 import type {
@@ -11,6 +11,7 @@ import type {
   AIDisplayFlowTool,
   AIDisplaySubscriptionsTool,
   BizUIMessage,
+  BizUITools,
 } from "~/modules/ai-chat/store/types"
 
 import { useChatStatus } from "../../store/hooks"
@@ -19,10 +20,8 @@ import {
   AIDisplayEntriesPart,
   AIDisplayFeedPart,
   AIDisplaySubscriptionsPart,
-  AIReasoningPart,
 } from "../displays"
 import { AIMarkdownStreamingMessage } from "./AIMarkdownMessage.v2"
-import { ToolInvocationComponent } from "./ToolInvocationComponent"
 
 const LazyAIDisplayFlowPart = React.lazy(() =>
   import("../displays/AIDisplayFlowPart").then((mod) => ({ default: mod.AIDisplayFlowPart })),
@@ -51,46 +50,40 @@ export const AIMessageParts: React.FC<AIMessagePartsProps> = React.memo(
     }, [chatStatus, isLastMessage, shouldStreamingAnimation])
 
     const displayParts = React.useMemo(() => {
-      return message.parts.filter(
-        (part) => part.type === "text" || part.type.startsWith("tool-display"),
-      )
-    }, [message.parts])
-    const thoughtParts = React.useMemo(() => {
-      return message.parts.filter(
-        (part) => !(part.type === "text" || part.type.startsWith("tool-display")),
-      )
+      const parts = [] as (ReasoningUIPart[] | TextUIPart | ToolUIPart<BizUITools>)[]
+
+      const mergedReasoningParts: ReasoningUIPart[] = []
+      for (const part of message.parts) {
+        if (part.type !== "reasoning") {
+          parts.push(mergedReasoningParts.concat())
+          mergedReasoningParts.length = 0
+        }
+        if (part.type === "text") {
+          parts.push(part)
+        } else if (part.type.startsWith("tool-display")) {
+          parts.push(part as ToolUIPart<BizUITools>)
+        } else if (part.type === "reasoning") {
+          mergedReasoningParts.push(part as ReasoningUIPart)
+        }
+      }
+
+      if (mergedReasoningParts.length > 0) {
+        parts.push(mergedReasoningParts.concat())
+      }
+      return parts
     }, [message.parts])
 
     return (
       <>
-        <AIChainOfThought isStreaming={displayParts.length === 0}>
-          {thoughtParts.map((part, index) => {
-            const partKey = `${message.id}-${index}`
-
-            switch (part.type) {
-              case "reasoning": {
-                return (
-                  <AIReasoningPart
-                    key={partKey}
-                    text={part.text}
-                    isStreaming={part.state === "streaming"}
-                  />
-                )
-              }
-              default: {
-                if (part.type.startsWith("tool-")) {
-                  if (part.type.startsWith("tool-chunkBreak")) {
-                    return null
-                  }
-                  return <ToolInvocationComponent key={partKey} part={part as ToolUIPart} />
-                }
-                return null
-              }
-            }
-          })}
-        </AIChainOfThought>
-        {displayParts.map((part, index) => {
+        {displayParts.map((partOrParts, index) => {
           const partKey = `${message.id}-${index}`
+
+          if (Array.isArray(partOrParts)) {
+            const reasoningParts = partOrParts as ReasoningUIPart[]
+            return <AIChainOfThought key={partKey} groups={reasoningParts} />
+          }
+
+          const part = partOrParts as TextUIPart | ToolUIPart<BizUITools>
 
           switch (part.type) {
             case "text": {
