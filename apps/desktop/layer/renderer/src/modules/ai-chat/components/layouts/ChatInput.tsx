@@ -7,11 +7,12 @@ import { cva } from "class-variance-authority"
 import { noop } from "es-toolkit"
 import type { EditorState, LexicalEditor } from "lexical"
 import { $getRoot } from "lexical"
-import { memo, useCallback, useRef, useState } from "react"
+import { memo, use, useCallback, useRef, useState } from "react"
 
 import { AIChatContextBar } from "~/modules/ai-chat/components/layouts/AIChatContextBar"
 
 import { FileUploadPlugin, MentionPlugin } from "../../editor"
+import { AIPanelRefsContext } from "../../store/AIChatContext"
 import { useChatActions, useChatStatus } from "../../store/hooks"
 import { AIChatSendButton } from "./AIChatSendButton"
 import { AIModelIndicator } from "./AIModelIndicator"
@@ -48,6 +49,11 @@ export const ChatInput = memo(({ onSend, variant }: ChatInputProps) => {
   }, [chatActions])
 
   const editorRef = useRef<LexicalRichEditorRef>(null)
+
+  const aiPanelRefs = use(AIPanelRefsContext)
+  if (editorRef.current) {
+    aiPanelRefs.inputRef.current = editorRef.current
+  }
   const [isEmpty, setIsEmpty] = useState(true)
   const [currentEditor, setCurrentEditor] = useState<LexicalEditor | null>(null)
 

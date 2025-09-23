@@ -1,16 +1,17 @@
+import { useFocusable } from "@follow/components/common/Focusable/hooks.js"
 import { ScrollArea } from "@follow/components/ui/scroll-area/ScrollArea.js"
 import { getCategoryFeedIds } from "@follow/store/subscription/getter"
 import { usePrefetchSummary } from "@follow/store/summary/hooks"
 import { tracker } from "@follow/tracker"
-import { clsx, cn, nextFrame } from "@follow/utils"
+import { clsx, cn, detectIsEditableElement, nextFrame } from "@follow/utils"
 import type { BizUIMessage } from "@folo-services/ai-tools"
 import { ErrorBoundary } from "@sentry/react"
 import type { EditorState, LexicalEditor } from "lexical"
 import { AnimatePresence } from "motion/react"
 import { nanoid } from "nanoid"
 import type { FC, Ref } from "react"
-import { Suspense, useEffect, useLayoutEffect, useRef, useState } from "react"
-import { useEventCallback } from "usehooks-ts"
+import { Suspense, use, useEffect, useLayoutEffect, useRef, useState } from "react"
+import { useEventCallback, useEventListener } from "usehooks-ts"
 
 import { useAISettingKey } from "~/atoms/settings/ai"
 import { useActionLanguage } from "~/atoms/settings/general"
@@ -35,6 +36,7 @@ import {
 } from "~/modules/ai-chat/store/hooks"
 
 import { useAttachScrollBeyond } from "../../hooks/useAttachScrollBeyond"
+import { AIPanelRefsContext } from "../../store/AIChatContext"
 import type { AIChatContextBlock } from "../../store/types"
 import { convertLexicalToMarkdown } from "../../utils/lexical-markdown"
 import { GlobalFileDropZone } from "../file/GlobalFileDropZone"
@@ -50,6 +52,21 @@ const ChatInterfaceContent = ({ centerInputOnEmpty }: ChatInterfaceProps) => {
   const status = useChatStatus()
   const chatActions = useChatActions()
   const error = useChatError()
+
+  const isFocusWithIn = useFocusable()
+
+  const aiPanelRefs = use(AIPanelRefsContext)
+
+  useEventListener("keydown", () => {
+    if (isFocusWithIn) {
+      const currentActiveElement = document.activeElement
+
+      if (detectIsEditableElement(currentActiveElement as HTMLElement)) {
+        return
+      }
+      aiPanelRefs.inputRef?.current?.focus()
+    }
+  })
 
   useEffect(() => {
     if (error) {
@@ -331,7 +348,7 @@ const ChatInterfaceContent = ({ centerInputOnEmpty }: ChatInterfaceProps) => {
       <div
         ref={bottomPanelRef}
         className={cn(
-          "absolute mx-auto duration-500 ease-in-out",
+          "absolute z-10 mx-auto duration-500 ease-in-out",
           hasMessages && "inset-x-0 bottom-0 max-w-4xl px-6 pb-6",
           !hasMessages && "inset-x-0 bottom-0 max-w-3xl px-6 pb-6 duration-200",
           centerInputOnEmpty &&

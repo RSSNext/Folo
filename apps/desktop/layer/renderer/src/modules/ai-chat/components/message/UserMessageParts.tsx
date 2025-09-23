@@ -15,7 +15,7 @@ export const UserMessageParts: React.FC<UserMessagePartsProps> = React.memo(({ m
 
     switch (part.type) {
       case "text": {
-        return <AIMarkdownStreamingMessage key={partKey} text={part.text} />
+        return <AIMarkdownStreamingMessage isStreaming={false} key={partKey} text={part.text} />
       }
 
       case "data-block": {

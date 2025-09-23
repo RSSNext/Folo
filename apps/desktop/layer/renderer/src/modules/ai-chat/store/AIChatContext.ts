@@ -1,3 +1,4 @@
+import type { LexicalRichEditorRef } from "@follow/components/ui/lexical-rich-editor/types.js"
 import type { PrimitiveAtom } from "jotai"
 import { createContext, use } from "react"
 import type { StoreApi } from "zustand"
@@ -6,8 +7,7 @@ import type { UseBoundStoreWithEqualityFn } from "zustand/traditional"
 import type { AiChatStore } from "./store"
 
 export type AIPanelRefs = {
-  panelRef: React.RefObject<HTMLDivElement>
-  inputRef: React.RefObject<HTMLTextAreaElement>
+  inputRef: React.RefObject<LexicalRichEditorRef>
 }
 
 export const AIPanelRefsContext = createContext<AIPanelRefs>(null!)

@@ -1,3 +1,4 @@
+import type { LexicalRichEditorRef } from "@follow/components/ui/lexical-rich-editor/types.js"
 import { atom } from "jotai"
 import type { FC, PropsWithChildren } from "react"
 import { useEffect, useMemo, useRef } from "react"
@@ -32,9 +33,8 @@ const AIChatRootInner: FC<AIChatRootProps> = ({ children, chatId: externalChatId
     }
   }, [currentChatId, externalChatId, chatActions])
 
-  const panelRef = useRef<HTMLDivElement>(null!)
-  const inputRef = useRef<HTMLTextAreaElement>(null!)
-  const refsContext = useMemo<AIPanelRefs>(() => ({ panelRef, inputRef }), [panelRef, inputRef])
+  const inputRef = useRef<LexicalRichEditorRef>(null!)
+  const refsContext = useMemo<AIPanelRefs>(() => ({ inputRef }), [inputRef])
   useAIShortcut()
 
   if (!currentChatId) {

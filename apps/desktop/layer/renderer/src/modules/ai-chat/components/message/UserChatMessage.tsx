@@ -184,7 +184,7 @@ export const UserChatMessage: React.FC<UserChatMessageProps> = React.memo(({ mes
       <AnimatePresence>
         {isEditing && (
           <m.div
-            className="absolute inset-x-0 bottom-0 z-10 flex"
+            className="absolute inset-x-0 bottom-0 z-[1] flex"
             style={{
               top: dataBlockHeight > 0 ? `${dataBlockHeight}px` : 0,
             }}
