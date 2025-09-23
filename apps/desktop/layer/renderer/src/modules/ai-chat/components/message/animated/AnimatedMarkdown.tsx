@@ -16,7 +16,7 @@ import { MarkdownLink } from "~/components/ui/markdown/renderers"
 import { useNavigateEntry } from "~/hooks/biz/useNavigateEntry"
 import { usePeekModal } from "~/hooks/biz/usePeekModal"
 
-import { ANIMATION_STYLE as ANIMATION_STYLE_DEFAULT, DEFAULT_ANIMATION } from "./constants"
+import { ANIMATION_STYLE as ANIMATION_STYLE_DEFAULT } from "./constants"
 import { TokenizedText } from "./TokenizedText"
 
 interface MarkdownAnimateTextProps {
@@ -50,20 +50,14 @@ export const MarkdownAnimateText: React.FC<MarkdownAnimateTextProps> = ({
           ))
         } else if (typeof input === "string") {
           return <TokenizedText key={`pcc-${keyCounter++}`} input={input} />
+        } else if (typeof input === "number") {
+          return <TokenizedText key={`pcc-${keyCounter++}`} input={String(input)} />
+        } else if (React.isValidElement(input)) {
+          // Preserve element structure and do not wrap block elements (avoid <span><ul>...)
+          return React.cloneElement(input as React.ReactElement, { key: `pcc-${keyCounter++}` })
         } else {
-          // Return non-string, non-element inputs unchanged (null, undefined, etc.)
-          return (
-            <span
-              key={`pcc-${keyCounter++}`}
-              style={{
-                animation: DEFAULT_ANIMATION,
-                whiteSpace: "pre-wrap",
-                display: "inline-block",
-              }}
-            >
-              {input}
-            </span>
-          )
+          // Return other inputs unchanged (null, undefined, booleans, etc.)
+          return input
         }
       }
 
