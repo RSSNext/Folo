@@ -22,7 +22,7 @@ export const ToolInvocationComponent: React.FC<ToolInvocationComponentProps> = R
       <div
         className={`min-w-0 max-w-full text-left ${hasError ? "border-red/30" : "border-border"}`}
       >
-        <div className="w-[calc(var(--ai-chat-layout-width,65ch))] max-w-full" />
+        <div className="w-[calc(var(--ai-chat-message-container-width,65ch))] max-w-full" />
 
         <div className="w-full">
           <CollapseCssGroup>

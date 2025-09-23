@@ -9,7 +9,7 @@ import { ErrorBoundary } from "@sentry/react"
 import type { EditorState, LexicalEditor } from "lexical"
 import { AnimatePresence } from "motion/react"
 import { nanoid } from "nanoid"
-import type { FC, Ref } from "react"
+import type { FC, RefObject } from "react"
 import { Suspense, use, useEffect, useLayoutEffect, useRef, useState } from "react"
 import { useEventCallback, useEventListener } from "usehooks-ts"
 
@@ -316,7 +316,7 @@ const ChatInterfaceContent = ({ centerInputOnEmpty }: ChatInterfaceProps) => {
                         : undefined,
                     }}
                   >
-                    <Messages contentRef={messagesContentRef} />
+                    <Messages contentRef={messagesContentRef as RefObject<HTMLDivElement>} />
 
                     {(status === "submitted" || status === "streaming") && (
                       <AIChatWaitingIndicator />
@@ -385,11 +385,25 @@ export const ChatInterface = (props: ChatInterfaceProps) => (
   </ErrorBoundary>
 )
 
-const Messages: FC<{ contentRef?: Ref<HTMLDivElement> }> = ({ contentRef }) => {
+const Messages: FC<{ contentRef?: RefObject<HTMLDivElement> }> = ({ contentRef }) => {
   const messages = useMessages()
 
+  const [messageContainerWidth, setMessageContainerWidth] = useState<number>(0)
+
+  useLayoutEffect(() => {
+    if (!contentRef) return
+    setMessageContainerWidth(contentRef.current?.clientWidth ?? 0)
+  }, [contentRef])
   return (
-    <div ref={contentRef} className="relative flex min-w-0 flex-1 flex-col">
+    <div
+      ref={contentRef}
+      className="relative flex min-w-0 flex-1 flex-col"
+      style={
+        {
+          "--ai-chat-message-container-width": `${messageContainerWidth}px`,
+        } as React.CSSProperties
+      }
+    >
       {messages.map((message, index) => {
         const isLastMessage = index === messages.length - 1
         return (

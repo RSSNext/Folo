@@ -193,7 +193,7 @@ export const UserChatMessage: React.FC<UserChatMessageProps> = React.memo(({ mes
             exit={{ opacity: 0, scale: 0.98 }}
             transition={{ duration: 0.15, ease: "easeOut" }}
           >
-            <div className="w-full max-w-[var(--ai-chat-layout-width,65ch)]">
+            <div className="w-full max-w-[var(--ai-chat-message-container-width,65ch)]">
               <EditableMessage
                 messageId={messageId}
                 parts={message.parts}

@@ -33,7 +33,7 @@ export const AIChainOfThought: React.FC<AIChainOfThoughtProps> = React.memo(
     if (!groups || groups.length === 0) return null
 
     return (
-      <div className={cn("border-border min-w-0 max-w-full text-left", className)}>
+      <div className={cn("border-border w-full min-w-0 text-left", className)}>
         <CollapseCssGroup>
           <CollapseCss
             ref={collapseRef}
@@ -41,7 +41,7 @@ export const AIChainOfThought: React.FC<AIChainOfThoughtProps> = React.memo(
             collapseId={collapseId}
             defaultOpen={!currentChainReasoningIsFinished}
             title={
-              <div className="group flex h-6 min-w-0 flex-1 items-center py-0">
+              <div className="group flex h-6 w-[calc(var(--ai-chat-message-container-width,65ch))] min-w-0 flex-1 items-center py-0">
                 <div className="flex items-center gap-2 text-xs">
                   <span className="text-text-secondary">
                     {!currentChainReasoningIsFinished ? (

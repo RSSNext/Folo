@@ -1,7 +1,6 @@
 /**
  * @see https://github.com/Ephibbs/flowtoken/blob/main/src/components/AnimatedMarkdown.tsx
  */
-import "./styles.css"
 
 import type { LinkProps } from "@follow/components/ui/link/LinkWithTooltip.js"
 import { isBizId } from "@follow/utils"
