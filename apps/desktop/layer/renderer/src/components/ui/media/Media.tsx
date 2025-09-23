@@ -23,6 +23,7 @@ type BaseProps = {
   blurhash?: string
   inline?: boolean
   fitContent?: boolean
+  fitContainer?: boolean
   videoClassName?: string
 }
 
@@ -72,6 +73,7 @@ const MediaImpl: FC<MediaProps> = ({
     width,
     inline,
     fitContent,
+    fitContainer,
     videoClassName,
     ...rest
   } = props
@@ -393,6 +395,7 @@ const MediaImpl: FC<MediaProps> = ({
           height={Number.parseInt(props.height as string)}
           containerWidth={containerWidth}
           fitContent={fitContent}
+          fitContainer={fitContainer}
         >
           <div
             className={cn(
@@ -452,6 +455,7 @@ const AspectRatio = ({
   children,
   style,
   fitContent,
+  fitContainer,
   ...props
 }: {
   width: number
@@ -463,6 +467,7 @@ const AspectRatio = ({
    * If `fit` is true, the content width may be increased to fit the container width
    */
   fitContent?: boolean
+  fitContainer?: boolean
   [key: string]: any
 }) => {
   const scaleFactor =
@@ -479,8 +484,8 @@ const AspectRatio = ({
     <div
       style={{
         position: "relative",
-        width: scaledWidth ? `${scaledWidth}px` : "100%",
-        height: scaledHeight ? `${scaledHeight}px` : "auto",
+        width: fitContainer ? "100%" : scaledWidth ? `${scaledWidth}px` : "100%",
+        height: fitContainer ? "100%" : scaledHeight ? `${scaledHeight}px` : "auto",
         ...style,
       }}
       {...props}

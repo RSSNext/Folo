@@ -44,6 +44,7 @@ export function PictureItem({ entryId, translation }: UniversalItemProps) {
             )}
             imgClassName="object-cover"
             onPreview={previewMedia}
+            fitContainer
           />
         ) : (
           <div className="center bg-material-medium text-text-secondary aspect-square w-full flex-col gap-1 rounded-md text-xs">

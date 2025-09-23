@@ -19,6 +19,7 @@ export function SwipeMedia({
   imgClassName,
   onPreview,
   proxySize = defaultProxySize,
+  fitContainer,
 }: {
   media?: MediaModel[] | null
   className?: string
@@ -28,6 +29,7 @@ export function SwipeMedia({
     width: number
     height: number
   } | null
+  fitContainer?: boolean
 }) {
   const uniqMedia = media ? uniqBy(media, "url") : []
 
@@ -90,6 +92,7 @@ export function SwipeMedia({
                   }}
                   showFallback={true}
                   fitContent
+                  fitContainer={fitContainer}
                 />
               </div>
             ))}

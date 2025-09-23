@@ -40,6 +40,7 @@ export function PictureItem({ entryId, translation }: UniversalItemProps) {
               isActive && "rounded-b-none",
             )}
             imgClassName="object-cover"
+            fitContainer
           />
         ) : (
           <div className="center bg-material-medium text-text-secondary aspect-square w-full flex-col gap-1 rounded-md text-xs">

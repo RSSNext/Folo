@@ -111,6 +111,7 @@ export function VideoItem({ entryId, translation }: UniversalItemProps) {
                 height: 360,
               }}
               showFallback={true}
+              fitContainer
             />
           ) : (
             <div className="center bg-material-medium text-text-secondary aspect-video w-full flex-col gap-1 rounded-md text-xs">
@@ -150,6 +151,7 @@ export function VideoItemStateLess({ entry, feed }: EntryItemStatelessProps) {
               height={entry.media[0].height}
               width={entry.media[0].width}
               blurhash={entry.media[0].blurhash}
+              fitContainer
             />
           ) : (
             <div className="center bg-material-medium text-text-secondary aspect-video w-full flex-col gap-1 rounded-md text-xs">
