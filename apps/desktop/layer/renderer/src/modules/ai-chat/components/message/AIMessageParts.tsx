@@ -80,7 +80,13 @@ export const AIMessageParts: React.FC<AIMessagePartsProps> = React.memo(
 
           if (Array.isArray(partOrParts)) {
             const reasoningParts = partOrParts as ReasoningUIPart[]
-            return <AIChainOfThought key={partKey} groups={reasoningParts} />
+            return (
+              <AIChainOfThought
+                key={partKey}
+                groups={reasoningParts}
+                isStreaming={shouldMessageAnimation}
+              />
+            )
           }
 
           const part = partOrParts as TextUIPart | ToolUIPart<BizUITools>
