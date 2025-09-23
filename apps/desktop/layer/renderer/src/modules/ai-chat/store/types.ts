@@ -43,7 +43,6 @@ export interface AIChatContextBlocks {
   blocks: AIChatContextBlock[]
 }
 
-export type AIDisplayAnalyticsTool = ToolWithState<BizUITools["displayAnalytics"]>
 export type AIDisplayFeedTool = ToolWithState<BizUITools["displayFeed"]>
 export type AIDisplayEntriesTool = ToolWithState<BizUITools["displayEntries"]>
 export type AIDisplaySubscriptionsTool = ToolWithState<BizUITools["displaySubscriptions"]>

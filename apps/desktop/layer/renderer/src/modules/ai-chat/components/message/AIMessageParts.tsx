@@ -6,7 +6,6 @@ import type { ToolUIPart } from "ai"
 import * as React from "react"
 
 import type {
-  AIDisplayAnalyticsTool,
   AIDisplayEntriesTool,
   AIDisplayFeedTool,
   AIDisplayFlowTool,
@@ -17,7 +16,6 @@ import type {
 import { useChatStatus } from "../../store/hooks"
 import {
   AIChainOfThought,
-  AIDisplayAnalyticsPart,
   AIDisplayEntriesPart,
   AIDisplayFeedPart,
   AIDisplaySubscriptionsPart,
@@ -106,9 +104,6 @@ export const AIMessageParts: React.FC<AIMessagePartsProps> = React.memo(
               )
             }
 
-            case "tool-displayAnalytics": {
-              return <AIDisplayAnalyticsPart key={partKey} part={part as AIDisplayAnalyticsTool} />
-            }
             case "tool-displayEntries": {
               return <AIDisplayEntriesPart key={partKey} part={part as AIDisplayEntriesTool} />
             }
