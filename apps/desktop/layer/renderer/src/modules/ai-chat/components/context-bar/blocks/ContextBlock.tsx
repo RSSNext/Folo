@@ -16,7 +16,7 @@ import {
 
 import { EntryTitle, FeedTitle } from "./TitleComponents"
 
-const blockTypeCanNotBeRemoved = new Set(["mainEntry", "mainFeed", "mainView"])
+const blockTypeCanNotBeRemoved = new Set(["mainView"])
 
 export const ContextBlock: FC<{ block: AIChatContextBlock }> = memo(({ block }) => {
   const { t } = useTranslation("common")
