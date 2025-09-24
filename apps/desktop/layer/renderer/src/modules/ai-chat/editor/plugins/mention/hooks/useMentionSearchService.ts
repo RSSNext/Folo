@@ -121,7 +121,43 @@ const parseDateInput = (raw: string): Dayjs | null => {
     }
   }
 
+  const monthDay = parseMonthDayInput(trimmed)
+  if (monthDay) {
+    return monthDay
+  }
+
   return null
+}
+
+const parseMonthDayInput = (raw: string): Dayjs | null => {
+  const normalized = raw.trim()
+  if (!normalized) return null
+
+  const currentDay = dayjs().startOf("day")
+  const currentYear = currentDay.year()
+
+  const numericMatch = normalized.match(/^(\d{1,2})[-/.](\d{1,2})$/)
+  const zhMatch = normalized.match(/^(\d{1,2})月(\d{1,2})日$/)
+
+  const match = numericMatch ?? zhMatch
+  if (!match) return null
+
+  const month = Number(match[1])
+  const day = Number(match[2])
+  if (Number.isNaN(month) || Number.isNaN(day)) {
+    return null
+  }
+
+  let candidate = dayjs(`${currentYear}-${month}-${day}`, "YYYY-M-D", true)
+  if (!candidate.isValid()) {
+    return null
+  }
+
+  if (candidate.isAfter(currentDay)) {
+    candidate = candidate.subtract(1, "year")
+  }
+
+  return candidate.startOf("day")
 }
 
 const parseDateRangeInput = (raw: string): MentionData | null => {
