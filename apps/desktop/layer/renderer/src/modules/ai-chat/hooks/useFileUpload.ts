@@ -48,7 +48,9 @@ export interface FileUploadHandlers {
 /**
  * Hook for handling file uploads with progress tracking and block management
  */
-export function useFileUpload(options: UseFileUploadOptions = {}): FileUploadHandlers {
+export function useFileUpload(
+  options: Omit<UseFileUploadOptions, "nonce"> = {},
+): FileUploadHandlers {
   const {
     showSuccessToast = false,
     showErrorToast = true,
@@ -62,6 +64,7 @@ export function useFileUpload(options: UseFileUploadOptions = {}): FileUploadHan
   const uploadFile = useCallback(
     async (file: File, id?: string): Promise<ProcessFileResult> => {
       // Create initial file attachment for immediate UI feedback
+
       const initialFileAttachment: FileAttachment = {
         id: id || nanoid(),
         name: file.name,
@@ -76,14 +79,18 @@ export function useFileUpload(options: UseFileUploadOptions = {}): FileUploadHan
       blockActions.addFileAttachment(initialFileAttachment)
 
       try {
-        const result = await processAndUploadFile(file, processOptions, (updatedAttachment) => {
-          // Update the attachment with the same ID to maintain consistency
-          const syncedAttachment = {
-            ...updatedAttachment,
-            id: initialFileAttachment.id, // Keep the same ID
-          }
-          blockActions.updateFileAttachment(initialFileAttachment.id, syncedAttachment)
-        })
+        const result = await processAndUploadFile(
+          file,
+          { ...processOptions, nonce: initialFileAttachment.id },
+          (updatedAttachment) => {
+            // Update the attachment with the same ID to maintain consistency
+            const syncedAttachment = {
+              ...updatedAttachment,
+              id: initialFileAttachment.id, // Keep the same ID
+            }
+            blockActions.updateFileAttachment(initialFileAttachment.id, syncedAttachment)
+          },
+        )
 
         if (result.success && result.fileAttachment) {
           // Update the final completed state with the same ID

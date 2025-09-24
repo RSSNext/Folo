@@ -1,3 +1,6 @@
+import type { BizUIMessage } from "@folo-services/ai-tools"
+import { useShallow } from "zustand/shallow"
+
 import { useAIChatStore } from "./AIChatContext"
 
 /**
@@ -38,6 +41,19 @@ export const useBlockActions = () => {
 export const useMessages = () => {
   const store = useAIChatStore()
   return store((state) => state.messages)
+}
+
+export const useMessageByIdSelector = <T>(
+  messageId: string,
+  selector: (message: BizUIMessage) => T,
+): T | undefined => {
+  const store = useAIChatStore()
+  return store(
+    useShallow((state) => {
+      const message = state.messages.find((message) => message.id === messageId)
+      return message ? selector(message) : undefined
+    }),
+  )
 }
 
 /**
