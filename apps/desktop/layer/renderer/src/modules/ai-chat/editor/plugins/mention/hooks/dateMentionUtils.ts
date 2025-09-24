@@ -33,9 +33,13 @@ export const clampRangeToPastMonth = (range: DateRange): DateRange | null => {
 }
 
 export const formatRangeValue = (range: DateRange): string => {
-  const startIso = range.start.format(MENTION_DATE_VALUE_FORMAT)
-  const endIso = range.end.format(MENTION_DATE_VALUE_FORMAT)
-  return startIso === endIso ? startIso : `${startIso}..${endIso}`
+  const rangeStart = range.start.startOf("day")
+  const startIso = rangeStart.format(MENTION_DATE_VALUE_FORMAT)
+
+  const endExclusive = range.end.add(1, "day").startOf("day")
+  const endIso = endExclusive.format(MENTION_DATE_VALUE_FORMAT)
+
+  return `${startIso}..${endIso}`
 }
 
 export const createMentionFromRange = (

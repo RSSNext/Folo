@@ -1,6 +1,8 @@
 import dayjs from "dayjs"
 
-export const MENTION_DATE_VALUE_FORMAT = "YYYY-MM-DD"
+export const MENTION_DATE_VALUE_FORMAT = "YYYY-MM-DDTHH:mm:ssZ"
+
+const LEGACY_MENTION_DATE_VALUE_FORMAT = "YYYY-MM-DD"
 
 export interface MentionDateDisplay {
   label: string
@@ -10,36 +12,56 @@ export interface MentionDateDisplay {
   endLabel: string | null
 }
 
-const buildRangeLabel = (startISO: string, endISO: string): MentionDateDisplay => {
-  const start = dayjs(startISO, MENTION_DATE_VALUE_FORMAT, true)
-  const end = dayjs(endISO, MENTION_DATE_VALUE_FORMAT, true)
+const parseMentionBoundary = (raw: string) => {
+  if (!raw) return null
 
-  if (!start.isValid() || !end.isValid()) {
+  const direct = dayjs(raw)
+  if (direct.isValid()) {
+    return direct
+  }
+
+  const legacy = dayjs(raw, LEGACY_MENTION_DATE_VALUE_FORMAT, true)
+  return legacy.isValid() ? legacy : null
+}
+
+const buildRangeLabel = (startISO: string, endISO: string): MentionDateDisplay => {
+  const start = parseMentionBoundary(startISO)
+  const end = parseMentionBoundary(endISO)
+
+  if (!start || !end) {
     return {
       label: `${startISO}..${endISO}`,
-      startISO: start.isValid() ? startISO : null,
-      endISO: end.isValid() ? endISO : null,
-      startLabel: start.isValid() ? start.format("MMM D, YYYY") : null,
-      endLabel: end.isValid() ? end.format("MMM D, YYYY") : null,
+      startISO: start ? startISO : null,
+      endISO: end ? endISO : null,
+      startLabel: start ? start.startOf("day").format("MMM D, YYYY") : null,
+      endLabel: end ? end.startOf("day").format("MMM D, YYYY") : null,
     }
   }
 
   const normalizedStart = start.startOf("day")
   const normalizedEnd = end.startOf("day")
-  const isRange = !normalizedStart.isSame(normalizedEnd, "day")
 
-  const label = !isRange
+  const hasExclusiveEnd =
+    normalizedEnd.isAfter(normalizedStart) &&
+    end.hour() === 0 &&
+    end.minute() === 0 &&
+    end.second() === 0 &&
+    end.millisecond() === 0
+
+  const displayEnd = hasExclusiveEnd ? normalizedEnd.subtract(1, "day") : normalizedEnd
+
+  const label = normalizedStart.isSame(displayEnd, "day")
     ? normalizedStart.format("MMM D, YYYY")
-    : normalizedStart.year() === normalizedEnd.year()
-      ? `${normalizedStart.format("MMM D")} – ${normalizedEnd.format("MMM D, YYYY")}`
-      : `${normalizedStart.format("MMM D, YYYY")} – ${normalizedEnd.format("MMM D, YYYY")}`
+    : normalizedStart.year() === displayEnd.year()
+      ? `${normalizedStart.format("MMM D")} – ${displayEnd.format("MMM D, YYYY")}`
+      : `${normalizedStart.format("MMM D, YYYY")} – ${displayEnd.format("MMM D, YYYY")}`
 
   return {
     label,
     startISO: normalizedStart.format(MENTION_DATE_VALUE_FORMAT),
     endISO: normalizedEnd.format(MENTION_DATE_VALUE_FORMAT),
     startLabel: normalizedStart.format("MMM D, YYYY"),
-    endLabel: normalizedEnd.format("MMM D, YYYY"),
+    endLabel: displayEnd.format("MMM D, YYYY"),
   }
 }
 
