@@ -83,9 +83,10 @@ const createDateMentionFromRange = (
   const normalizedStart = start.startOf("day")
   const normalizedEnd = end.startOf("day")
   const currentDay = dayjs().startOf("day")
+  const minAllowedDay = currentDay.subtract(1, "month")
 
   const isReversed = normalizedStart.isAfter(normalizedEnd)
-  const rangeStart = isReversed ? normalizedEnd : normalizedStart
+  let rangeStart = isReversed ? normalizedEnd : normalizedStart
   let rangeEnd = isReversed ? normalizedStart : normalizedEnd
 
   if (rangeStart.isAfter(currentDay)) {
@@ -94,6 +95,14 @@ const createDateMentionFromRange = (
 
   if (rangeEnd.isAfter(currentDay)) {
     rangeEnd = currentDay
+  }
+
+  if (rangeEnd.isBefore(minAllowedDay)) {
+    return null
+  }
+
+  if (rangeStart.isBefore(minAllowedDay)) {
+    rangeStart = minAllowedDay
   }
 
   if (rangeStart.isAfter(rangeEnd)) {
