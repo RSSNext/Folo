@@ -33,7 +33,7 @@ export const useMentionSearchService = () => {
         return results
       }
 
-      if (type === "feed" || type === "entry") {
+      if (type === "feed" || type === "entry" || type === "category") {
         const searchResults = search(trimmedQuery, type, 10)
         searchResults.forEach((item) =>
           pushResult({

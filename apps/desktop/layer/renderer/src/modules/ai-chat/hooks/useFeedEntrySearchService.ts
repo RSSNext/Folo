@@ -1,11 +1,12 @@
 import { useEntryIdsByView } from "@follow/store/entry/hooks"
 import { useEntryStore } from "@follow/store/entry/store"
 import { getFeedById } from "@follow/store/feed/getter"
-import { useAllFeedSubscription } from "@follow/store/subscription/hooks"
+import { useAllFeedSubscription, useCategories } from "@follow/store/subscription/hooks"
 import type { IFuseOptions } from "fuse.js"
 import Fuse from "fuse.js"
 import { useMemo } from "react"
 
+import { ROUTE_FEED_IN_FOLDER } from "~/constants"
 import { useRouteParamsSelector } from "~/hooks/biz/useRouteParams"
 
 /**
@@ -14,7 +15,7 @@ import { useRouteParamsSelector } from "~/hooks/biz/useRouteParams"
 export interface SearchItem {
   id: string
   title: string
-  type: "feed" | "entry"
+  type: "feed" | "entry" | "category"
 }
 
 /**
@@ -32,6 +33,8 @@ const defaultFuseOptions: IFuseOptions<SearchItem> = {
   threshold: 0.3,
   includeScore: true,
 }
+
+const MAX_CATEGORY_RESULTS = 3
 /**
  * Hook that provides unified search functionality for feeds and entries
  * Used by both context bar and mention plugin
@@ -40,10 +43,24 @@ export const useFeedEntrySearchService = (options: SearchServiceOptions = {}) =>
   const { maxRecentEntries = 50, fuseOptions = defaultFuseOptions } = options
 
   // Get data sources
-  const allSubscriptions = useAllFeedSubscription()
   const view = useRouteParamsSelector((route) => route.view)
+  const allSubscriptions = useAllFeedSubscription()
+  const categories = useCategories()
   const recentEntryIds = useEntryIdsByView(view, false)
   const entryStore = useEntryStore((state) => state.data)
+
+  const categoryItems = useMemo(() => {
+    if (!categories?.length) return []
+
+    return categories
+      .filter((category) => !!category && category.trim().length > 0)
+      .map((category) => ({
+        id: `${ROUTE_FEED_IN_FOLDER}${category}`,
+        title: category,
+        type: "category" as const,
+      }))
+      .sort((a, b) => a.title.localeCompare(b.title))
+  }, [categories])
 
   // Prepare feed items
   const feedItems = useMemo(() => {
@@ -84,8 +101,8 @@ export const useFeedEntrySearchService = (options: SearchServiceOptions = {}) =>
 
   // Combine all search items
   const allItems = useMemo(() => {
-    return [...feedItems, ...entryItems]
-  }, [feedItems, entryItems])
+    return [...categoryItems, ...feedItems, ...entryItems]
+  }, [categoryItems, feedItems, entryItems])
 
   // Create Fuse instance for fuzzy search
   const fuse = useMemo(() => {
@@ -94,19 +111,36 @@ export const useFeedEntrySearchService = (options: SearchServiceOptions = {}) =>
 
   // Search function
   const search = useMemo(() => {
-    return (query: string, type?: "feed" | "entry", maxResults = 10): SearchItem[] => {
+    const applyCategoryLimit = (items: SearchItem[]) => {
+      let categoryCount = 0
+      return items.filter((item) => {
+        if (item.type !== "category") return true
+        if (categoryCount >= MAX_CATEGORY_RESULTS) {
+          return false
+        }
+        categoryCount += 1
+        return true
+      })
+    }
+
+    return (query: string, type?: "feed" | "entry" | "category", maxResults = 10): SearchItem[] => {
+      const matchesType = (item: SearchItem) => {
+        if (!type) return true
+        if (type === "feed") return item.type === "feed" || item.type === "category"
+        return item.type === type
+      }
+
       if (!query.trim()) {
         // If no query, return recent items of the specified type
-        const filteredItems = allItems.filter((item) => !type || item.type === type)
+        const filteredItems = applyCategoryLimit(allItems.filter(matchesType))
         return filteredItems.slice(0, maxResults)
       }
 
       // Perform fuzzy search
       const fuseResults = fuse.search(query)
-      return fuseResults
-        .map((result) => result.item)
-        .filter((item) => !type || item.type === type)
-        .slice(0, maxResults)
+      const filteredResults = fuseResults.map((result) => result.item).filter(matchesType)
+
+      return applyCategoryLimit(filteredResults).slice(0, maxResults)
     }
   }, [allItems, fuse])
 
@@ -114,6 +148,7 @@ export const useFeedEntrySearchService = (options: SearchServiceOptions = {}) =>
     search,
     feedItems,
     entryItems,
+    categoryItems,
     allItems,
   }
 }

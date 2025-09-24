@@ -1,4 +1,4 @@
-export type MentionType = "entry" | "feed" | "date"
+export type MentionType = "entry" | "feed" | "date" | "category"
 
 export interface MentionData {
   id: string

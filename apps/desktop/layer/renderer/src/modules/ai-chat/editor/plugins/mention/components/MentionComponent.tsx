@@ -28,6 +28,7 @@ const MentionTooltipContent = ({ mentionData }: { mentionData: MentionData }) =>
           "rounded px-1.5 py-0.5 text-xs font-medium",
           mentionData.type === "entry" && "bg-blue text-black",
           mentionData.type === "feed" && "bg-orange text-black",
+          mentionData.type === "category" && "bg-green text-black",
           mentionData.type === "date" && "bg-purple text-black",
         )}
       >
@@ -56,6 +57,13 @@ const getMentionStyles = (type: MentionData["type"]) => {
         baseStyles,
         "bg-orange/10 text-orange border-orange/20",
         "hover:bg-orange/20 hover:border-orange/30",
+      )
+    }
+    case "category": {
+      return cn(
+        baseStyles,
+        "bg-green/10 text-green border-green/20",
+        "hover:bg-green/20 hover:border-green/30",
       )
     }
     case "date": {

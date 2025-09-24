@@ -23,6 +23,9 @@ const getBlockType = (mentionType: string): ValueContextBlock["type"] => {
     case "feed": {
       return "referFeed"
     }
+    case "category": {
+      return "referFeed"
+    }
     case "date": {
       return "referDate"
     }
