@@ -34,6 +34,69 @@ const DATE_FORMATS = [
 
 const MAX_INLINE_DATE_SUGGESTIONS = 3
 
+const ENGLISH_WEEKDAY_MAP: Record<string, number> = {
+  sunday: 0,
+  sun: 0,
+  monday: 1,
+  mon: 1,
+  tuesday: 2,
+  tue: 2,
+  tues: 2,
+  wednesday: 3,
+  wed: 3,
+  weds: 3,
+  thursday: 4,
+  thu: 4,
+  thur: 4,
+  thurs: 4,
+  friday: 5,
+  fri: 5,
+  saturday: 6,
+  sat: 6,
+}
+
+const CHINESE_WEEKDAY_MAP: Record<string, number> = {
+  周日: 0,
+  周天: 0,
+  星期日: 0,
+  星期天: 0,
+  礼拜日: 0,
+  礼拜天: 0,
+  周一: 1,
+  星期一: 1,
+  礼拜一: 1,
+  周二: 2,
+  星期二: 2,
+  礼拜二: 2,
+  周三: 3,
+  星期三: 3,
+  礼拜三: 3,
+  周四: 4,
+  星期四: 4,
+  礼拜四: 4,
+  周五: 5,
+  星期五: 5,
+  礼拜五: 5,
+  周六: 6,
+  星期六: 6,
+  礼拜六: 6,
+}
+
+const ENGLISH_THIS_WEEK_PREFIXES = new Set(["this", "this week", "current", "current week"])
+
+const ENGLISH_LAST_WEEK_PREFIXES = new Set(["last", "last week", "previous", "previous week"])
+
+const CHINESE_THIS_WEEK_PREFIXES = new Set(["这周", "本周", "这星期", "本星期", "这礼拜", "本礼拜"])
+
+const CHINESE_LAST_WEEK_PREFIXES = new Set([
+  "上周",
+  "上星期",
+  "上一周",
+  "上个星期",
+  "上礼拜",
+  "上个礼拜",
+])
+
 interface DateDescriptor {
   id?: string
   displayName: string | null
@@ -169,6 +232,112 @@ const parseMonthDayInput = (raw: string): Dayjs | null => {
   return candidate.startOf("day")
 }
 
+const buildWeekdayMention = (
+  dayIndex: number,
+  prefix: "auto" | "this" | "last",
+  displayName: string,
+): MentionData | null => {
+  const currentDay = dayjs().startOf("day")
+  const minAllowedDay = currentDay.subtract(1, "month")
+
+  let baseWeekStart = currentDay.startOf("week")
+
+  if (prefix === "last") {
+    baseWeekStart = baseWeekStart.subtract(1, "week")
+  }
+
+  let candidate = baseWeekStart.add(dayIndex, "day")
+
+  if ((prefix === "auto" || prefix === "this") && candidate.isAfter(currentDay)) {
+    candidate = candidate.subtract(1, "week")
+  }
+
+  if (candidate.isAfter(currentDay)) {
+    candidate = currentDay
+  }
+
+  if (candidate.isBefore(minAllowedDay)) {
+    return null
+  }
+
+  return createDateMentionFromRange(candidate, candidate, displayName)
+}
+
+const parseWeekdayMention = (raw: string): MentionData | null => {
+  const trimmed = raw.trim()
+  if (!trimmed) return null
+
+  const normalized = trimmed.toLowerCase()
+
+  const englishMatch = normalized.match(
+    /^(?:(this week|this|current week|current|last week|last|previous week|previous)\s+)?(monday|mon|tuesday|tue|tues|wednesday|wed|weds|thursday|thu|thur|thurs|friday|fri|saturday|sat|sunday|sun)$/,
+  )
+
+  if (englishMatch) {
+    const prefixRaw = (englishMatch[1] ?? "").trim()
+    const dayToken = englishMatch[2]
+
+    if (!dayToken) {
+      return null
+    }
+
+    const dayIndex = ENGLISH_WEEKDAY_MAP[dayToken]
+
+    if (dayIndex === undefined) {
+      return null
+    }
+
+    let prefix: "auto" | "this" | "last" = "auto"
+
+    if (prefixRaw) {
+      if (ENGLISH_THIS_WEEK_PREFIXES.has(prefixRaw)) {
+        prefix = "this"
+      } else if (ENGLISH_LAST_WEEK_PREFIXES.has(prefixRaw)) {
+        prefix = "last"
+      } else {
+        return null
+      }
+    }
+
+    return buildWeekdayMention(dayIndex, prefix, trimmed)
+  }
+
+  const chineseMatch = trimmed.match(
+    /^(这周|本周|这星期|本星期|这礼拜|本礼拜|上周|上星期|上一周|上个星期|上礼拜|上个礼拜)?(周[一二三四五六日天]|星期[一二三四五六日天]|礼拜[一二三四五六日天])$/,
+  )
+
+  if (chineseMatch) {
+    const prefixRaw = chineseMatch[1]
+    const dayToken = chineseMatch[2]
+
+    if (!dayToken) {
+      return null
+    }
+
+    const dayIndex = CHINESE_WEEKDAY_MAP[dayToken]
+
+    if (dayIndex === undefined) {
+      return null
+    }
+
+    let prefix: "auto" | "this" | "last" = "auto"
+
+    if (prefixRaw) {
+      if (CHINESE_THIS_WEEK_PREFIXES.has(prefixRaw)) {
+        prefix = "this"
+      } else if (CHINESE_LAST_WEEK_PREFIXES.has(prefixRaw)) {
+        prefix = "last"
+      } else {
+        return null
+      }
+    }
+
+    return buildWeekdayMention(dayIndex, prefix, trimmed)
+  }
+
+  return null
+}
+
 const parseDateRangeInput = (raw: string): MentionData | null => {
   if (!raw.includes("..")) return null
 
@@ -287,21 +456,30 @@ const buildRelativeDateMentions = (query: string): MentionData[] => {
       displayName: "Today",
       start: today,
       end: today,
-      keywords: ["today", "tod", today.format(MENTION_DATE_VALUE_FORMAT)],
+      keywords: ["today", "tod", today.format(MENTION_DATE_VALUE_FORMAT), "今天", "今日"],
     },
     {
       id: "date:yesterday",
       displayName: "Yesterday",
       start: yesterday,
       end: yesterday,
-      keywords: ["yesterday", "yday", yesterday.format(MENTION_DATE_VALUE_FORMAT)],
+      keywords: ["yesterday", "yday", yesterday.format(MENTION_DATE_VALUE_FORMAT), "昨天", "昨日"],
     },
     {
       id: "date:last-3-days",
       displayName: "Last 3 days",
       start: lastThreeStart,
       end: today,
-      keywords: ["last 3 days", "past 3 days", "3d", formatRangeValue(lastThreeStart, today)],
+      keywords: [
+        "last 3 days",
+        "past 3 days",
+        "3d",
+        formatRangeValue(lastThreeStart, today),
+        "最近3天",
+        "最近三天",
+        "近3天",
+        "近三天",
+      ],
     },
     {
       id: "date:last-7-days",
@@ -314,6 +492,12 @@ const buildRelativeDateMentions = (query: string): MentionData[] => {
         "past week",
         "7d",
         formatRangeValue(lastSevenStart, today),
+        "最近7天",
+        "最近七天",
+        "近7天",
+        "近七天",
+        "近一周",
+        "最近一周",
       ],
     },
     {
@@ -327,6 +511,12 @@ const buildRelativeDateMentions = (query: string): MentionData[] => {
         "30d",
         "month",
         formatRangeValue(lastThirtyStart, today),
+        "最近30天",
+        "最近三十天",
+        "近30天",
+        "近三十天",
+        "近一个月",
+        "最近一个月",
       ],
     },
     {
@@ -334,14 +524,36 @@ const buildRelativeDateMentions = (query: string): MentionData[] => {
       displayName: "This week",
       start: thisWeekStart,
       end: today,
-      keywords: ["this week", "current week", "week", formatRangeValue(thisWeekStart, today)],
+      keywords: [
+        "this week",
+        "current week",
+        "week",
+        formatRangeValue(thisWeekStart, today),
+        "这周",
+        "本周",
+        "这星期",
+        "本星期",
+        "这礼拜",
+        "本礼拜",
+      ],
     },
     {
       id: "date:last-week",
       displayName: "Last week",
       start: lastWeekStart,
       end: lastWeekEnd,
-      keywords: ["last week", "previous week", "lw", formatRangeValue(lastWeekStart, lastWeekEnd)],
+      keywords: [
+        "last week",
+        "previous week",
+        "lw",
+        formatRangeValue(lastWeekStart, lastWeekEnd),
+        "上周",
+        "上一周",
+        "上星期",
+        "上个星期",
+        "上礼拜",
+        "上个礼拜",
+      ],
     },
     {
       id: "date:this-month",
@@ -354,6 +566,9 @@ const buildRelativeDateMentions = (query: string): MentionData[] => {
         "month",
         thisMonthStart.format("YYYY-MM"),
         formatRangeValue(thisMonthStart, today),
+        "这个月",
+        "本月",
+        "这月",
       ],
     },
     {
@@ -366,6 +581,9 @@ const buildRelativeDateMentions = (query: string): MentionData[] => {
         "previous month",
         lastMonthStart.format("YYYY-MM"),
         formatRangeValue(lastMonthStart, lastMonthEnd),
+        "上个月",
+        "上月",
+        "上一个月",
       ],
     },
   ]
@@ -418,6 +636,11 @@ const buildAbsoluteDateMentions = (query: string): MentionData[] => {
     )
 
     return mention ? [mention] : []
+  }
+
+  const weekdayMention = parseWeekdayMention(query)
+  if (weekdayMention) {
+    return [weekdayMention]
   }
 
   const monthMention = parseNumericMonthMention(trimmed) ?? parseNamedMonthMention(trimmed)
