@@ -19,7 +19,17 @@ interface MentionBlockReference {
 const getResourceId = (type: string, value: string) => `${type}:${value}`
 
 const getBlockType = (mentionType: string): ValueContextBlock["type"] => {
-  return mentionType === "feed" ? "referFeed" : "referEntry"
+  switch (mentionType) {
+    case "feed": {
+      return "referFeed"
+    }
+    case "date": {
+      return "referDate"
+    }
+    default: {
+      return "referEntry"
+    }
+  }
 }
 
 /**
