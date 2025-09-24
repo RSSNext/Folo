@@ -2,13 +2,17 @@ import type { CollapseCssRef } from "@follow/components/ui/collapse/CollapseCss.
 import { CollapseCss, CollapseCssGroup } from "@follow/components/ui/collapse/CollapseCss.js"
 import { ShinyText } from "@follow/components/ui/shiny-text/ShinyText.js"
 import { cn } from "@follow/utils"
-import type { ReasoningUIPart } from "ai"
+import type { BizUITools } from "@folo-services/ai-tools"
+import type { ReasoningUIPart, ToolUIPart } from "ai"
+import { isToolUIPart } from "ai"
 import * as React from "react"
 
+import { ToolInvocationComponent } from "../message/ToolInvocationComponent"
 import { AIReasoningPart } from "./AIReasoningPart"
 
+export type ChainReasoningPart = ReasoningUIPart | ToolUIPart<BizUITools>
 interface AIChainOfThoughtProps {
-  groups: ReadonlyArray<ReasoningUIPart>
+  groups: ReadonlyArray<ChainReasoningPart>
   isStreaming?: boolean
   className?: string
 }
@@ -17,14 +21,34 @@ export const AIChainOfThought: React.FC<AIChainOfThoughtProps> = React.memo(
     const collapseId = React.useMemo(() => `chain-${Math.random().toString(36).slice(2)}`, [])
 
     const collapseRef = React.useRef<CollapseCssRef>(null)
-    const lastPartText = groups.at?.(-1)?.text
+
     const currentChainReasoningIsFinished = React.useMemo(() => {
-      return groups.every((part) => part.state === "done")
+      let allDone = true
+      for (const part of groups) {
+        if (isToolUIPart(part)) {
+          continue
+        }
+        if (part.state !== "done") {
+          allDone = false
+          break
+        }
+      }
+      return allDone
     }, [groups])
     const currentReasoningTitle = React.useMemo(() => {
       if (!isStreaming) return null
+
+      const lastPart = groups.at?.(-1)
+
+      if (!lastPart) return null
+
+      if (isToolUIPart(lastPart)) {
+        return `Calling ${lastPart.type.replace("tool-", "")}`
+      }
+
+      const lastPartText = lastPart.text
       return extractHeading(lastPartText)
-    }, [isStreaming, lastPartText])
+    }, [groups, isStreaming])
 
     React.useEffect(() => {
       collapseRef.current?.setIsOpened(!currentChainReasoningIsFinished)
@@ -65,12 +89,14 @@ export const AIChainOfThought: React.FC<AIChainOfThoughtProps> = React.memo(
             <div className="relative">
               <div aria-hidden className="border-fill absolute inset-y-0 left-2 border-l" />
               {groups.map((part, index) => {
+                const innerCollapseId = `${collapseId}-${index}`
+                if (isToolUIPart(part)) {
+                  return <ToolInvocationComponent key={innerCollapseId} part={part} />
+                }
                 const mergedText = part.text
 
                 const title = extractHeading(part.text)
                 const groupStreaming = part.state === "streaming"
-
-                const innerCollapseId = `${collapseId}-${index}`
 
                 return (
                   <div key={innerCollapseId} className="relative pb-3 pl-8 last:pb-0">
@@ -78,7 +104,7 @@ export const AIChainOfThought: React.FC<AIChainOfThoughtProps> = React.memo(
                       aria-hidden
                       className={cn(
                         "absolute left-2 top-2 size-2 -translate-x-1/2 rounded-full border",
-                        groupStreaming ? "border-accent bg-accent" : "border-fill bg-fill-vibrant",
+                        "border-fill bg-fill-vibrant",
                       )}
                     >
                       <i className="i-mgc-brain-cute-re absolute top-1/2 -translate-x-1/4 -translate-y-1/2" />

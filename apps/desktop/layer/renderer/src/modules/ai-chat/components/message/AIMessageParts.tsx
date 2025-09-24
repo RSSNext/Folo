@@ -21,6 +21,7 @@ import {
   AIDisplayFeedPart,
   AIDisplaySubscriptionsPart,
 } from "../displays"
+import type { ChainReasoningPart } from "../displays/AIChainOfThought"
 import { AIMarkdownStreamingMessage } from "./AIMarkdownMessage"
 import { ToolInvocationComponent } from "./ToolInvocationComponent"
 
@@ -51,28 +52,46 @@ export const AIMessageParts: React.FC<AIMessagePartsProps> = React.memo(
     }, [chatStatus, isLastMessage, shouldStreamingAnimation])
 
     const displayParts = React.useMemo(() => {
-      const parts = [] as (ReasoningUIPart[] | TextUIPart | ToolUIPart<BizUITools>)[]
+      const parts = [] as (ChainReasoningPart[] | TextUIPart | ToolUIPart<BizUITools>)[]
 
-      const chainReasoningParts: ReasoningUIPart[] = []
+      let chainReasoningParts: ChainReasoningPart[] | null = null
       for (const part of message.parts) {
-        if (part.type !== "reasoning") {
-          parts.push(chainReasoningParts.concat())
-          chainReasoningParts.length = 0
+        const isReasoning = part.type === "reasoning" && !!(part as ReasoningUIPart).text
+        const isTool = part.type.startsWith("tool-")
+
+        if (isReasoning) {
+          if (!chainReasoningParts) {
+            chainReasoningParts = []
+            // insert by reference once; keep appending to the same array thereafter
+            parts.push(chainReasoningParts)
+          }
+          chainReasoningParts.push(part as ReasoningUIPart)
+          continue
         }
+
+        if (isTool) {
+          if (chainReasoningParts && chainReasoningParts.length > 0) {
+            chainReasoningParts.push(part as ToolUIPart<BizUITools>)
+          } else {
+            parts.push(part as ToolUIPart<BizUITools>)
+          }
+          continue
+        }
+
+        // Only add text to top-level; do not break an active chain
         if (part.type === "text") {
           parts.push(part)
-        } else if (part.type.startsWith("tool-")) {
-          parts.push(part as ToolUIPart<BizUITools>)
-        } else if (part.type === "reasoning" && part.text) {
-          chainReasoningParts.push(part as ReasoningUIPart)
+          continue
         }
+
+        // Unknown/meta parts (e.g., step-start, source) are skipped here without breaking an active chain
       }
 
-      if (chainReasoningParts.length > 0) {
-        parts.push(chainReasoningParts.concat())
-      }
+      // No final flush needed; chain array already referenced in parts
       return parts
     }, [message.parts])
+
+    // console.info("displayParts", displayParts)
 
     const lowPriorityParts = React.useDeferredValue(displayParts)
 
@@ -82,7 +101,7 @@ export const AIMessageParts: React.FC<AIMessagePartsProps> = React.memo(
           const partKey = `${message.id}-${index}`
 
           if (Array.isArray(partOrParts)) {
-            const reasoningParts = partOrParts as ReasoningUIPart[]
+            const reasoningParts = partOrParts as ChainReasoningPart[]
             return (
               <AIChainOfThought
                 key={partKey}
