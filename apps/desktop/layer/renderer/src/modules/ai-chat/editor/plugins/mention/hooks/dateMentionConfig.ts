@@ -42,6 +42,12 @@ export const RELATIVE_DATE_DEFINITIONS: readonly RelativeDateDefinition[] = [
     range: (today) => clampRangeToPastMonth({ start: today.subtract(6, "day"), end: today }),
   },
   {
+    id: "date:relative:last-15-days",
+    labelKey: "mentions.date.relative.last_15_days.label",
+    searchKeys: ["mentions.date.relative.last_15_days.search"],
+    range: (today) => clampRangeToPastMonth({ start: today.subtract(14, "day"), end: today }),
+  },
+  {
     id: "date:relative:last-30-days",
     labelKey: "mentions.date.relative.last_30_days.label",
     searchKeys: ["mentions.date.relative.last_30_days.search"],
@@ -63,6 +69,99 @@ export const RELATIVE_DATE_DEFINITIONS: readonly RelativeDateDefinition[] = [
       return clampRangeToPastMonth({ start, end })
     },
   },
+  // Weekday in this week (future days are filtered by clampRangeToPastMonth)
+  {
+    id: "date:relative:this-week-monday",
+    labelKey: "mentions.date.weekday.day.monday.label",
+    searchKeys: [
+      "mentions.date.weekday.prefix.this.search",
+      "mentions.date.weekday.day.monday.search",
+    ],
+    range: (today) => {
+      const startOfWeek = today.startOf("week")
+      const target = startOfWeek.add(1, "day")
+      return clampRangeToPastMonth({ start: target, end: target })
+    },
+  },
+  {
+    id: "date:relative:this-week-tuesday",
+    labelKey: "mentions.date.weekday.day.tuesday.label",
+    searchKeys: [
+      "mentions.date.weekday.prefix.this.search",
+      "mentions.date.weekday.day.tuesday.search",
+    ],
+    range: (today) => {
+      const startOfWeek = today.startOf("week")
+      const target = startOfWeek.add(2, "day")
+      return clampRangeToPastMonth({ start: target, end: target })
+    },
+  },
+  {
+    id: "date:relative:this-week-wednesday",
+    labelKey: "mentions.date.weekday.day.wednesday.label",
+    searchKeys: [
+      "mentions.date.weekday.prefix.this.search",
+      "mentions.date.weekday.day.wednesday.search",
+    ],
+    range: (today) => {
+      const startOfWeek = today.startOf("week")
+      const target = startOfWeek.add(3, "day")
+      return clampRangeToPastMonth({ start: target, end: target })
+    },
+  },
+  {
+    id: "date:relative:this-week-thursday",
+    labelKey: "mentions.date.weekday.day.thursday.label",
+    searchKeys: [
+      "mentions.date.weekday.prefix.this.search",
+      "mentions.date.weekday.day.thursday.search",
+    ],
+    range: (today) => {
+      const startOfWeek = today.startOf("week")
+      const target = startOfWeek.add(4, "day")
+      return clampRangeToPastMonth({ start: target, end: target })
+    },
+  },
+  {
+    id: "date:relative:this-week-friday",
+    labelKey: "mentions.date.weekday.day.friday.label",
+    searchKeys: [
+      "mentions.date.weekday.prefix.this.search",
+      "mentions.date.weekday.day.friday.search",
+    ],
+    range: (today) => {
+      const startOfWeek = today.startOf("week")
+      const target = startOfWeek.add(5, "day")
+      return clampRangeToPastMonth({ start: target, end: target })
+    },
+  },
+  {
+    id: "date:relative:this-week-saturday",
+    labelKey: "mentions.date.weekday.day.saturday.label",
+    searchKeys: [
+      "mentions.date.weekday.prefix.this.search",
+      "mentions.date.weekday.day.saturday.search",
+    ],
+    range: (today) => {
+      const startOfWeek = today.startOf("week")
+      const target = startOfWeek.add(6, "day")
+      return clampRangeToPastMonth({ start: target, end: target })
+    },
+  },
+  {
+    id: "date:relative:this-week-sunday",
+    labelKey: "mentions.date.weekday.day.sunday.label",
+    searchKeys: [
+      "mentions.date.weekday.prefix.this.search",
+      "mentions.date.weekday.day.sunday.search",
+    ],
+    range: (today) => {
+      const startOfWeek = today.startOf("week")
+      const target = startOfWeek.add(0, "day")
+      return clampRangeToPastMonth({ start: target, end: target })
+    },
+  },
+
   {
     id: "date:relative:this-month",
     labelKey: "mentions.date.relative.this_month.label",
