@@ -1,5 +1,5 @@
 diff --git a/dist/SheetProvider.js b/dist/SheetProvider.js
-index 212e57ad58d533723060dd2f05670d3b99901858..9a327805268506541d9d5a41d0ff90115d4b86be 100644
+index 212e57ad58d533723060dd2f05670d3b99901858..c14820ae5e35835ee88d64e4f67511c8e4bd7041 100644
 --- a/dist/SheetProvider.js
 +++ b/dist/SheetProvider.js
 @@ -31,6 +31,7 @@ const SheetContext = (0, react_1.createContext)(null);
@@ -31,7 +31,7 @@ index 212e57ad58d533723060dd2f05670d3b99901858..9a327805268506541d9d5a41d0ff9011
 -    }, []);
      const isEnabled = react_native_1.Platform.OS === 'web' ? enableForWeb : true;
 -    return (<SheetContext.Provider value={{
-+    return (<SheetContext.Provider value={useMemo(() => ({
++    return (<SheetContext.Provider value={react_1.useMemo(() => ({
              scale,
              setScale,
 +            isScaling,
@@ -76,7 +76,7 @@ index 3f95f54763b2f223bd1120254c83135096c80b82..dc5ac1bb45a543ec68a615c729a96d0b
      }, [disableSheetContentResizeOnDragDown]);
      const backgroundStyle = (0, react_native_reanimated_1.useAnimatedStyle)(() => ({
 diff --git a/package.json b/package.json
-index ba7644c884d4326c59d404a0d11d74bdde2ac568..295e7b5ca0300383861c54b23418819bd1788adc 100644
+index ba7644c884d4326c59d404a0d11d74bdde2ac568..5c344c96dc0cf1d3bab787e95d7ffbe6fd8d992a 100644
 --- a/package.json
 +++ b/package.json
 @@ -14,9 +14,9 @@

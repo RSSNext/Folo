@@ -60,7 +60,7 @@ patchedDependencies:
     hash: 4904c53aa4ed573c7e31df357d1b73feeefa4f92b6d41d4157a611401b34345d
     path: patches/react-native-screens.patch
   react-native-sheet-transitions:
-    hash: 9c3ff48673eeded5ccadd908fc989c4a866666e92d97f7079ab198a43e83208b
+    hash: 4db5ed53b31f4349d609d7dd2d0e053b6ee4c27e8d6d72c90ee74015ae18235f
     path: patches/react-native-sheet-transitions.patch
   react-native-track-player:
     hash: d011fdd16d124609523059323ac7614e3999174a9c7b21074c1124d7075650fb
@@ -1088,7 +1088,7 @@ importers:
         version: 4.11.1(patch_hash=4904c53aa4ed573c7e31df357d1b73feeefa4f92b6d41d4157a611401b34345d)(react-native@0.79.6(@babel/core@7.28.4)(@types/react@19.1.13)(bufferutil@4.0.9)(react@19.0.0))(react@19.0.0)
       react-native-sheet-transitions:
         specifier: 0.1.2
-        version: 0.1.2(patch_hash=9c3ff48673eeded5ccadd908fc989c4a866666e92d97f7079ab198a43e83208b)(react-native-gesture-handler@2.28.0(react-native@0.79.6(@babel/core@7.28.4)(@types/react@19.1.13)(bufferutil@4.0.9)(react@19.0.0))(react@19.0.0))(react-native-reanimated@4.1.0(@babel/core@7.28.4)(react-native-worklets@0.5.1(@babel/core@7.28.4)(react-native@0.79.6(@babel/core@7.28.4)(@types/react@19.1.13)(bufferutil@4.0.9)(react@19.0.0))(react@19.0.0))(react-native@0.79.6(@babel/core@7.28.4)(@types/react@19.1.13)(bufferutil@4.0.9)(react@19.0.0))(react@19.0.0))(react-native@0.79.6(@babel/core@7.28.4)(@types/react@19.1.13)(bufferutil@4.0.9)(react@19.0.0))(react@19.0.0)
+        version: 0.1.2(patch_hash=4db5ed53b31f4349d609d7dd2d0e053b6ee4c27e8d6d72c90ee74015ae18235f)(react-native-gesture-handler@2.28.0(react-native@0.79.6(@babel/core@7.28.4)(@types/react@19.1.13)(bufferutil@4.0.9)(react@19.0.0))(react@19.0.0))(react-native-reanimated@4.1.0(@babel/core@7.28.4)(react-native-worklets@0.5.1(@babel/core@7.28.4)(react-native@0.79.6(@babel/core@7.28.4)(@types/react@19.1.13)(bufferutil@4.0.9)(react@19.0.0))(react@19.0.0))(react-native@0.79.6(@babel/core@7.28.4)(@types/react@19.1.13)(bufferutil@4.0.9)(react@19.0.0))(react@19.0.0))(react-native@0.79.6(@babel/core@7.28.4)(@types/react@19.1.13)(bufferutil@4.0.9)(react@19.0.0))(react@19.0.0)
       react-native-svg:
         specifier: 15.12.0
         version: 15.12.0(react-native@0.79.6(@babel/core@7.28.4)(@types/react@19.1.13)(bufferutil@4.0.9)(react@19.0.0))(react@19.0.0)
@@ -1600,7 +1600,7 @@ importers:
         version: 7.62.0(react@19.0.0)
       react-i18next:
         specifier: 15.7.3
-        version: 15.7.3(i18next@25.5.2(typescript@5.9.2))(react-dom@19.0.0(react@19.0.0))(react-native@0.79.6(@babel/core@7.28.0)(@types/react@19.1.13)(bufferutil@4.0.9)(react@19.0.0))(react@19.0.0)(typescript@5.9.2)
+        version: 15.7.3(i18next@25.5.2(typescript@5.9.2))(react-dom@19.0.0(react@19.0.0))(react-native@0.79.6(@babel/core@7.28.4)(@types/react@19.1.13)(bufferutil@4.0.9)(react@19.0.0))(react@19.0.0)(typescript@5.9.2)
       rehype-infer-description-meta:
         specifier: 2.0.0
         version: 2.0.0
@@ -32447,7 +32447,7 @@ snapshots:
       react-native-is-edge-to-edge: 1.2.1(react-native@0.79.6(@babel/core@7.28.4)(@types/react@19.1.13)(bufferutil@4.0.9)(react@19.0.0))(react@19.0.0)
       warn-once: 0.1.1
 
-  react-native-sheet-transitions@0.1.2(patch_hash=9c3ff48673eeded5ccadd908fc989c4a866666e92d97f7079ab198a43e83208b)(react-native-gesture-handler@2.28.0(react-native@0.79.6(@babel/core@7.28.4)(@types/react@19.1.13)(bufferutil@4.0.9)(react@19.0.0))(react@19.0.0))(react-native-reanimated@4.1.0(@babel/core@7.28.4)(react-native-worklets@0.5.1(@babel/core@7.28.4)(react-native@0.79.6(@babel/core@7.28.4)(@types/react@19.1.13)(bufferutil@4.0.9)(react@19.0.0))(react@19.0.0))(react-native@0.79.6(@babel/core@7.28.4)(@types/react@19.1.13)(bufferutil@4.0.9)(react@19.0.0))(react@19.0.0))(react-native@0.79.6(@babel/core@7.28.4)(@types/react@19.1.13)(bufferutil@4.0.9)(react@19.0.0))(react@19.0.0):
+  react-native-sheet-transitions@0.1.2(patch_hash=4db5ed53b31f4349d609d7dd2d0e053b6ee4c27e8d6d72c90ee74015ae18235f)(react-native-gesture-handler@2.28.0(react-native@0.79.6(@babel/core@7.28.4)(@types/react@19.1.13)(bufferutil@4.0.9)(react@19.0.0))(react@19.0.0))(react-native-reanimated@4.1.0(@babel/core@7.28.4)(react-native-worklets@0.5.1(@babel/core@7.28.4)(react-native@0.79.6(@babel/core@7.28.4)(@types/react@19.1.13)(bufferutil@4.0.9)(react@19.0.0))(react@19.0.0))(react-native@0.79.6(@babel/core@7.28.4)(@types/react@19.1.13)(bufferutil@4.0.9)(react@19.0.0))(react@19.0.0))(react-native@0.79.6(@babel/core@7.28.4)(@types/react@19.1.13)(bufferutil@4.0.9)(react@19.0.0))(react@19.0.0):
     dependencies:
       react: 19.0.0
       react-native: 0.79.6(@babel/core@7.28.4)(@types/react@19.1.13)(bufferutil@4.0.9)(react@19.0.0)
