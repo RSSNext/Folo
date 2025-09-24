@@ -1,154 +1,101 @@
-diff --git a/src/SheetProvider.tsx b/src/SheetProvider.tsx
-index 2e3964c86ad78a9eddcb074ab26ae8ee2ae12179..20e2f9c25cdb0e7daca3c2211967f21452a04ed9 100644
---- a/src/SheetProvider.tsx
-+++ b/src/SheetProvider.tsx
-@@ -1,23 +1,23 @@
--import React, { createContext, useContext, useCallback, useEffect } from 'react'
--import { Platform, View } from 'react-native'
--import Animated, {
-+import React, { createContext, useCallback, useContext, useEffect, useMemo } from "react"
-+import { Platform } from "react-native"
-+import {
-+  cancelAnimation,
-   useSharedValue,
-   withSpring,
--  useAnimatedStyle,
--  cancelAnimation,
--  runOnJS
--} from 'react-native-reanimated'
-+  type SharedValue,
-+} from "react-native-reanimated"
- 
- interface SheetContextType {
--  scale: Animated.SharedValue<number>
-+  scale: SharedValue<number>
-   setScale: (scale: number) => void
--  resizeType: 'incremental' | 'decremental'
-+  isScaling: boolean
-+  resizeType: "incremental" | "decremental"
-   enableForWeb: boolean
+diff --git a/dist/SheetProvider.js b/dist/SheetProvider.js
+index 212e57ad58d533723060dd2f05670d3b99901858..c14820ae5e35835ee88d64e4f67511c8e4bd7041 100644
+--- a/dist/SheetProvider.js
++++ b/dist/SheetProvider.js
+@@ -31,6 +31,7 @@ const SheetContext = (0, react_1.createContext)(null);
+ function SheetProvider({ children, resizeType = 'decremental', enableForWeb = false }) {
+     const scale = (0, react_native_reanimated_1.useSharedValue)(1);
+     const isMounted = (0, react_native_reanimated_1.useSharedValue)(false);
++    const [isScaling, setIsScaling] = react_1.useState(false);
+     (0, react_1.useEffect)(() => {
+         // Delay setting isMounted to ensure view is ready
+         requestAnimationFrame(() => {
+@@ -48,6 +49,7 @@ function SheetProvider({ children, resizeType = 'decremental', enableForWeb = fa
+             scale.value = newScale;
+             return;
+         }
++        setIsScaling(newScale !== 1);
+         scale.value = (0, react_native_reanimated_1.withSpring)(newScale, {
+             damping: 20,
+             stiffness: 300,
+@@ -56,20 +58,14 @@ function SheetProvider({ children, resizeType = 'decremental', enableForWeb = fa
+             restSpeedThreshold: 0.01,
+         });
+     }, []);
+-    const animatedStyle = (0, react_native_reanimated_1.useAnimatedStyle)(() => {
+-        if (!isMounted.value)
+-            return {};
+-        return {
+-            transform: [{ scale: scale.value }],
+-        };
+-    }, []);
+     const isEnabled = react_native_1.Platform.OS === 'web' ? enableForWeb : true;
+-    return (<SheetContext.Provider value={{
++    return (<SheetContext.Provider value={react_1.useMemo(() => ({
+             scale,
+             setScale,
++            isScaling,
+             resizeType,
+             enableForWeb: isEnabled
+-        }}>
++        }), [scale, setScale, isScaling, resizeType, isEnabled])}>
+       {/* <View style={{ flex: 1, backgroundColor: 'red',
+             position: 'absolute',
+             top: 0,
+@@ -78,19 +74,7 @@ function SheetProvider({ children, resizeType = 'decremental', enableForWeb = fa
+             bottom: 0,
+             zIndex: -1
+            }}/> */}
+-
+-      <react_native_reanimated_1.default.View style={[
+-            {
+-                flex: 1,
+-                backfaceVisibility: 'hidden',
+-            },
+-            react_native_1.Platform.OS === 'ios' ? animatedStyle : null
+-        ]} collapsable={false}>
+-
+         {children}
+-
+-      </react_native_reanimated_1.default.View>
+-
+     </SheetContext.Provider>);
  }
- 
- interface SheetProviderProps {
-   children: React.ReactNode
--  resizeType?: 'incremental' | 'decremental'
-+  resizeType?: "incremental" | "decremental"
-   enableForWeb?: boolean
- }
- 
-@@ -25,11 +25,12 @@ const SheetContext = createContext<SheetContextType | null>(null)
- 
- export function SheetProvider({
-   children,
--  resizeType = 'decremental',
--  enableForWeb = false
-+  resizeType = "decremental",
-+  enableForWeb = false,
- }: SheetProviderProps) {
-   const scale = useSharedValue(1)
-   const isMounted = useSharedValue(false)
-+  const [isScaling, setIsScaling] = React.useState(false)
- 
-   useEffect(() => {
-     // Delay setting isMounted to ensure view is ready
-@@ -46,11 +47,13 @@ export function SheetProvider({
-   const setScale = useCallback((newScale: number) => {
-     if (!isMounted.value) return
- 
--    if (Platform.OS === 'android') {
-+    if (Platform.OS === "android") {
-       scale.value = newScale
-       return
-     }
- 
-+    setIsScaling(newScale !== 1)
-+
-     scale.value = withSpring(newScale, {
-       damping: 20,
-       stiffness: 300,
-@@ -60,47 +63,22 @@ export function SheetProvider({
-     })
-   }, [])
- 
--  const animatedStyle = useAnimatedStyle(() => {
--    if (!isMounted.value) return {}
--
--    return {
--      transform: [{ scale: scale.value }],
--    }
--  }, [])
--
--  const isEnabled = Platform.OS === 'web' ? enableForWeb : true
-+  const isEnabled = Platform.OS === "web" ? enableForWeb : true
- 
-   return (
--    <SheetContext.Provider value={{
--      scale,
--      setScale,
--      resizeType,
--      enableForWeb: isEnabled
--    }}>
--      {/* <View style={{ flex: 1, backgroundColor: 'red',
--          position: 'absolute',
--          top: 0,
--          left: 0,
--          right: 0,
--          bottom: 0,
--          zIndex: -1
--         }}/> */}
--
--      <Animated.View
--        style={[
--          {
--            flex: 1,
--            backfaceVisibility: 'hidden',
--          },
--          Platform.OS === 'ios' ? animatedStyle : null
--        ]}
--        collapsable={false}
--      >
--
--        {children}
--
--      </Animated.View>
--
-+    <SheetContext.Provider
-+      value={useMemo(
-+        () => ({
-+          scale,
-+          setScale,
-+          isScaling,
-+          resizeType,
-+          enableForWeb: isEnabled,
-+        }),
-+        [scale, setScale, isScaling, resizeType, isEnabled],
-+      )}
-+    >
-+      {children}
-     </SheetContext.Provider>
-   )
- }
-@@ -108,7 +86,7 @@ export function SheetProvider({
- export function useSheet() {
-   const context = useContext(SheetContext)
-   if (!context) {
--    throw new Error('useSheet must be used within a SheetProvider')
-+    throw new Error("useSheet must be used within a SheetProvider")
+ exports.SheetProvider = SheetProvider;
+diff --git a/dist/SheetScreen.js b/dist/SheetScreen.js
+index 3f95f54763b2f223bd1120254c83135096c80b82..dc5ac1bb45a543ec68a615c729a96d0b0204c8b0 100644
+--- a/dist/SheetScreen.js
++++ b/dist/SheetScreen.js
+@@ -193,7 +193,7 @@ function SheetScreen({ children, onClose, scaleFactor = 0.83, dragThreshold = 15
+                 { scale }
+             ],
+             opacity: opacity.value,
+-            borderRadius: borderRadius.value,
++            borderRadius: translateY.value === 0 ? 0 : borderRadius.value,
+         };
+     }, [disableSheetContentResizeOnDragDown]);
+     const backgroundStyle = (0, react_native_reanimated_1.useAnimatedStyle)(() => ({
+diff --git a/package.json b/package.json
+index ba7644c884d4326c59d404a0d11d74bdde2ac568..5c344c96dc0cf1d3bab787e95d7ffbe6fd8d992a 100644
+--- a/package.json
++++ b/package.json
+@@ -14,9 +14,9 @@
+     "transitions",
+     "animation"
+   ],
+-  "main": "src/index.ts",
+-  "module": "src/index.ts",
+-  "types": "src/index.ts",
++  "main": "dist/index.js",
++  "module": "dist/index.js",
++  "types": "dist/index.d.ts",
+   "files": [
+     "src",
+     "dist",
+@@ -32,4 +32,4 @@
+     "react-native-reanimated": "*",
+     "react-native-gesture-handler": "*"
    }
-   return context
 -} 
 \ No newline at end of file
 +}
-diff --git a/src/SheetScreen.tsx b/src/SheetScreen.tsx
-index 3eebf713a5dcf42dd43b2c34cef136b682828d23..ca1394fe4319151cd1a31f303c2e70de5f48850a 100644
---- a/src/SheetScreen.tsx
-+++ b/src/SheetScreen.tsx
-@@ -278,7 +278,7 @@ export function SheetScreen({
-         { scale }
-       ],
-       opacity: opacity.value,
--      borderRadius: borderRadius.value,
-+      borderRadius: translateY.value === 0 ? 0 : borderRadius.value,
-     }
-   }, [disableSheetContentResizeOnDragDown])
- 
