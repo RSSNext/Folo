@@ -66,8 +66,6 @@ const getMentionStyles = (type: MentionData["type"]) => {
       )
     }
   }
-
-  return cn(baseStyles, "bg-fill text-text border-fill-secondary")
 }
 export const MentionComponent: React.FC<MentionComponentProps> = ({ mentionData, className }) => {
   const handleClick = (e: React.MouseEvent) => {
