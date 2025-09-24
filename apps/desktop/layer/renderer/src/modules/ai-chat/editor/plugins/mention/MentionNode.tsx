@@ -1,3 +1,4 @@
+import i18next from "i18next"
 import type {
   DOMConversionMap,
   DOMConversionOutput,
@@ -13,6 +14,8 @@ import { $applyNodeReplacement, DecoratorNode } from "lexical"
 import * as React from "react"
 
 import { MentionComponent } from "./components/MentionComponent"
+import { RANGE_WITH_LABEL_KEY } from "./hooks/dateMentionConfig"
+import { getDateMentionDisplayName } from "./hooks/dateMentionUtils"
 import type { MentionData } from "./types"
 
 export type SerializedMentionNode = Spread<
@@ -76,7 +79,7 @@ export class MentionNode extends DecoratorNode<React.JSX.Element> {
     element.dataset.lexicalMention = "true"
     element.dataset.mentionType = this.__mentionData.type
     element.dataset.mentionId = this.__mentionData.id
-    element.textContent = `@${this.__mentionData.name}`
+    element.textContent = `@${resolveMentionDisplayName(this.__mentionData)}`
     element.className = "mention-node"
     return { element }
   }
@@ -163,4 +166,15 @@ export function $createMentionNode(mentionData: MentionData): MentionNode {
 
 export function $isMentionNode(node: LexicalNode | null | undefined): node is MentionNode {
   return node instanceof MentionNode
+}
+
+const resolveMentionDisplayName = (mentionData: MentionData): string => {
+  if (mentionData.type !== "date") {
+    return mentionData.name
+  }
+
+  const language = i18next.language || i18next.resolvedLanguage || i18next.options?.lng || "en"
+  const translate = i18next.getFixedT(language, "ai")
+
+  return getDateMentionDisplayName(mentionData, translate, language, RANGE_WITH_LABEL_KEY)
 }

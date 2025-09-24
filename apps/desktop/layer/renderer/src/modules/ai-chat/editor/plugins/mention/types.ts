@@ -1,10 +1,21 @@
 export type MentionType = "entry" | "feed" | "date"
 
+export type MentionLabelValue = string | number | boolean | MentionLabelDescriptor
+
+export interface MentionLabelDescriptor {
+  key: I18nKeysForAi
+  values?: Record<string, MentionLabelValue>
+}
+
 export interface MentionData {
   id: string
   name: string
   type: MentionType
   value: unknown
+  label?: MentionLabelDescriptor
+  labelOptions?: {
+    appendRange?: boolean
+  }
 }
 
 export interface MentionMatch {

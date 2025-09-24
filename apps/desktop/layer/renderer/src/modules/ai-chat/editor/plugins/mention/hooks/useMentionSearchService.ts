@@ -1,18 +1,23 @@
 import { useMemo } from "react"
+import { useTranslation } from "react-i18next"
 
 import { useFeedEntrySearchService } from "~/modules/ai-chat/hooks/useFeedEntrySearchService"
 
 import type { MentionData, MentionType } from "../types"
-import { buildDateMentions, MAX_INLINE_DATE_SUGGESTIONS } from "./dateMentionSearch"
+import { createDateMentionBuilder, MAX_INLINE_DATE_SUGGESTIONS } from "./dateMentionSearch"
 
 /**
  * Hook that provides search functionality for mentions
  * Uses the shared feed/entry search service
  */
 export const useMentionSearchService = () => {
+  const { t, i18n } = useTranslation("ai")
+  const language = i18n.language || i18n.resolvedLanguage || "en"
   const { search } = useFeedEntrySearchService({
     maxRecentEntries: 50,
   })
+
+  const buildDateMentions = useMemo(() => createDateMentionBuilder({ t, language }), [t, language])
 
   const searchMentions = useMemo(() => {
     return async (query: string, type?: MentionType): Promise<MentionData[]> => {
@@ -66,7 +71,7 @@ export const useMentionSearchService = () => {
 
       return results
     }
-  }, [search])
+  }, [buildDateMentions, search])
 
   return { searchMentions }
 }
