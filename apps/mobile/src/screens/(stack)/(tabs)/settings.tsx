@@ -50,7 +50,11 @@ const SettingHeader = ({ scrollY }: { scrollY: SharedValue<number> }) => {
   const { t } = useTranslation()
   const frame = useSafeAreaFrame()
   const insets = useSafeAreaInsets()
-  const headerHeight = getDefaultHeaderHeight(frame, false, insets.top)
+  const headerHeight = getDefaultHeaderHeight({
+    landscape: frame.width > frame.height,
+    modalPresentation: false,
+    topInset: insets.top,
+  })
   const styles = useAnimatedStyle(() => {
     return {
       opacity: scrollY.value / 100,
