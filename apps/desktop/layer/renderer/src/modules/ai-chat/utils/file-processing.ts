@@ -1,5 +1,3 @@
-import { nanoid } from "nanoid"
-
 import { followApi } from "~/lib/api-client"
 
 import type { FileAttachment } from "../store/types"
@@ -10,6 +8,8 @@ export interface ProcessFileOptions {
   maxImageWidth?: number
   maxImageHeight?: number
   imageQuality?: number
+
+  nonce: string
 }
 
 export interface ProcessFileResult {
@@ -20,7 +20,7 @@ export interface ProcessFileResult {
 
 export async function processFile(
   file: File,
-  options: ProcessFileOptions = {},
+  options: ProcessFileOptions,
 ): Promise<ProcessFileResult> {
   const { maxImageWidth = 1920, maxImageHeight = 1080, imageQuality = 0.85 } = options
 
@@ -34,7 +34,7 @@ export async function processFile(
   }
 
   try {
-    const fileId = nanoid()
+    const { nonce: fileId } = options
     let dataUrl: string
     let previewUrl: string | undefined
 
@@ -157,30 +157,6 @@ function fileToDataUrl(file: File): Promise<string> {
   })
 }
 
-export async function processFileList(
-  files: FileList,
-  options?: ProcessFileOptions,
-): Promise<ProcessFileResult[]> {
-  const results: ProcessFileResult[] = []
-
-  for (const file of files) {
-    if (file) {
-      const result = await processFile(file, options)
-      results.push(result)
-    }
-  }
-
-  return results
-}
-
-export function createFileAttachmentBlock(fileAttachment: FileAttachment) {
-  return {
-    id: fileAttachment.id,
-    type: "fileAttachment" as const,
-    attachment: fileAttachment,
-  }
-}
-
 // Utility to clean up object URLs to prevent memory leaks
 export function cleanupFileAttachment(fileAttachment: FileAttachment) {
   if (fileAttachment.previewUrl?.startsWith("blob:")) {
@@ -267,7 +243,7 @@ export async function uploadFileAttachment(
 
 export async function processAndUploadFile(
   file: File,
-  options: ProcessFileOptions = {},
+  options: ProcessFileOptions,
   onProgressUpdate?: (attachment: FileAttachment) => void,
 ): Promise<ProcessFileResult> {
   // First process the file locally

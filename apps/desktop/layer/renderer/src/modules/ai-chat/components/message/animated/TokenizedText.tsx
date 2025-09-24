@@ -110,7 +110,7 @@ export const TokenizedText = ({ input }: { input: React.ReactNode }) => {
         }
 
         return (
-          <span key={key} className="inline-block whitespace-pre-wrap" style={ANIMATION_STYLE}>
+          <span key={key} className="inline whitespace-pre-wrap" style={ANIMATION_STYLE}>
             {text}
           </span>
         )

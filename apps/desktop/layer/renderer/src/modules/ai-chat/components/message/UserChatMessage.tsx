@@ -11,6 +11,7 @@ import type { AIChatContextBlock, BizUIMessage } from "~/modules/ai-chat/store/t
 import type { RichTextPart } from "../../types/ChatSession"
 import { convertLexicalToMarkdown } from "../../utils/lexical-markdown"
 import { AIDataBlockPart } from "./AIDataBlockPart"
+import { AIMessageIdContext } from "./AIMessageIdContext"
 import { EditableMessage } from "./EditableMessage"
 import { UserMessageParts } from "./UserMessageParts"
 
@@ -94,117 +95,119 @@ export const UserChatMessage: React.FC<UserChatMessageProps> = React.memo(({ mes
   }, [chatActions, messageId])
 
   return (
-    <div className="relative flex flex-col gap-3">
-      {/* Render data-block parts separately, outside the chat bubble */}
-      {dataBlockParts.length > 0 && (
-        <div ref={dataBlockRef} className="flex justify-end">
-          <div className="max-w-[calc(100%-1rem)]">
-            {dataBlockParts.map((part) => {
-              if (part.type === "data-block" && "data" in part) {
-                const blocks = part.data as AIChatContextBlock[]
-                return (
-                  <AIDataBlockPart
-                    key={`${messageId}-datablock-${blocks.map((b) => b.id).join("-")}`}
-                    blocks={blocks}
-                  />
-                )
-              }
-              return null
-            })}
-          </div>
-        </div>
-      )}
-
-      {/* Main chat message */}
-      <m.div
-        initial={
-          isStreaming
-            ? {
-                opacity: 0,
-                y: 20,
-                scale: 0.95,
-              }
-            : true
-        }
-        animate={{
-          opacity: 1,
-          y: 0,
-          scale: 1,
-        }}
-        transition={Spring.presets.smooth}
-        onContextMenu={stopPropagation}
-        className="group flex justify-end"
-        onMouseEnter={() => setIsHovered(true)}
-        onMouseLeave={() => setIsHovered(false)}
-      >
-        <div className="text-text relative flex max-w-[calc(100%-1rem)] flex-col gap-2">
-          {/* Normal message display - always rendered to maintain layout */}
-          <div className="text-text bg-mix-accent/background-1/4 rounded-2xl px-4 py-2.5 backdrop-blur-sm">
-            <div className="flex select-text flex-col gap-2 text-sm">
-              <UserMessageParts message={message} />
+    <AIMessageIdContext value={messageId}>
+      <div className="relative flex flex-col gap-3">
+        {/* Render data-block parts separately, outside the chat bubble */}
+        {dataBlockParts.length > 0 && (
+          <div ref={dataBlockRef} className="flex justify-end">
+            <div className="max-w-[calc(100%-1rem)]">
+              {dataBlockParts.map((part) => {
+                if (part.type === "data-block" && "data" in part) {
+                  const blocks = part.data as AIChatContextBlock[]
+                  return (
+                    <AIDataBlockPart
+                      key={`${messageId}-datablock-${blocks.map((b) => b.id).join("-")}`}
+                      blocks={blocks}
+                    />
+                  )
+                }
+                return null
+              })}
             </div>
           </div>
+        )}
 
-          {/* Action buttons - only show when not editing */}
-          {!isEditing && (
+        {/* Main chat message */}
+        <m.div
+          initial={
+            isStreaming
+              ? {
+                  opacity: 0,
+                  y: 20,
+                  scale: 0.95,
+                }
+              : true
+          }
+          animate={{
+            opacity: 1,
+            y: 0,
+            scale: 1,
+          }}
+          transition={Spring.presets.smooth}
+          onContextMenu={stopPropagation}
+          className="group flex justify-end"
+          onMouseEnter={() => setIsHovered(true)}
+          onMouseLeave={() => setIsHovered(false)}
+        >
+          <div className="text-text relative flex max-w-[calc(100%-1rem)] flex-col gap-2">
+            {/* Normal message display - always rendered to maintain layout */}
+            <div className="text-text bg-mix-accent/background-1/4 rounded-2xl px-4 py-2.5 backdrop-blur-sm">
+              <div className="flex select-text flex-col gap-2 text-sm">
+                <UserMessageParts message={message} />
+              </div>
+            </div>
+
+            {/* Action buttons - only show when not editing */}
+            {!isEditing && (
+              <m.div
+                className="absolute bottom-1 right-0 flex gap-1"
+                initial={{ opacity: 0 }}
+                animate={{
+                  opacity: isHovered ? 1 : 0,
+                }}
+                transition={{ duration: 0.2, ease: "easeOut" }}
+              >
+                <button
+                  type="button"
+                  onClick={handleEdit}
+                  className="text-text-secondary hover:bg-fill-secondary flex items-center gap-1 rounded-md px-2 py-1 text-xs transition-colors"
+                  title="Edit message"
+                >
+                  <i className="i-mgc-edit-cute-re size-3" />
+                  <span>Edit</span>
+                </button>
+                <button
+                  type="button"
+                  onClick={handleRetry}
+                  className="text-text-secondary hover:bg-fill-secondary flex items-center gap-1 rounded-md px-2 py-1 text-xs transition-colors"
+                  title="Retry"
+                >
+                  <i className="i-mgc-refresh-2-cute-re size-3" />
+                  <span>Retry</span>
+                </button>
+              </m.div>
+            )}
+
+            <div className="h-6" />
+          </div>
+        </m.div>
+
+        {/* Full-width edit overlay - positioned at the top level to span entire container */}
+        <AnimatePresence>
+          {isEditing && (
             <m.div
-              className="absolute bottom-1 right-0 flex gap-1"
-              initial={{ opacity: 0 }}
-              animate={{
-                opacity: isHovered ? 1 : 0,
+              className="absolute inset-x-0 bottom-0 z-[1] flex"
+              style={{
+                top: dataBlockHeight > 0 ? `${dataBlockHeight}px` : 0,
               }}
-              transition={{ duration: 0.2, ease: "easeOut" }}
+              initial={{ opacity: 0, scale: 0.98 }}
+              animate={{ opacity: 1, scale: 1 }}
+              exit={{ opacity: 0, scale: 0.98 }}
+              transition={{ duration: 0.15, ease: "easeOut" }}
             >
-              <button
-                type="button"
-                onClick={handleEdit}
-                className="text-text-secondary hover:bg-fill-secondary flex items-center gap-1 rounded-md px-2 py-1 text-xs transition-colors"
-                title="Edit message"
-              >
-                <i className="i-mgc-edit-cute-re size-3" />
-                <span>Edit</span>
-              </button>
-              <button
-                type="button"
-                onClick={handleRetry}
-                className="text-text-secondary hover:bg-fill-secondary flex items-center gap-1 rounded-md px-2 py-1 text-xs transition-colors"
-                title="Retry"
-              >
-                <i className="i-mgc-refresh-2-cute-re size-3" />
-                <span>Retry</span>
-              </button>
+              <div className="w-full max-w-[var(--ai-chat-message-container-width,65ch)]">
+                <EditableMessage
+                  messageId={messageId}
+                  parts={message.parts}
+                  onSave={handleSaveEdit}
+                  onCancel={handleCancelEdit}
+                  className="min-h-full w-full"
+                />
+              </div>
             </m.div>
           )}
-
-          <div className="h-6" />
-        </div>
-      </m.div>
-
-      {/* Full-width edit overlay - positioned at the top level to span entire container */}
-      <AnimatePresence>
-        {isEditing && (
-          <m.div
-            className="absolute inset-x-0 bottom-0 z-[1] flex"
-            style={{
-              top: dataBlockHeight > 0 ? `${dataBlockHeight}px` : 0,
-            }}
-            initial={{ opacity: 0, scale: 0.98 }}
-            animate={{ opacity: 1, scale: 1 }}
-            exit={{ opacity: 0, scale: 0.98 }}
-            transition={{ duration: 0.15, ease: "easeOut" }}
-          >
-            <div className="w-full max-w-[var(--ai-chat-message-container-width,65ch)]">
-              <EditableMessage
-                messageId={messageId}
-                parts={message.parts}
-                onSave={handleSaveEdit}
-                onCancel={handleCancelEdit}
-                className="min-h-full w-full"
-              />
-            </div>
-          </m.div>
-        )}
-      </AnimatePresence>
-    </div>
+        </AnimatePresence>
+      </div>
+    </AIMessageIdContext>
   )
 })

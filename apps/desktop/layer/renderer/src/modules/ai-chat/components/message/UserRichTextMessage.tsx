@@ -16,7 +16,7 @@ function onError(error: Error) {
   console.error("Lexical Read-Only Editor Error:", error)
 }
 
-interface AIRichTextMessageProps {
+interface UserRichTextMessageProps {
   data: {
     state: SerializedEditorState | string // Serialized editor state as a JSON string
     text: string
@@ -24,7 +24,7 @@ interface AIRichTextMessageProps {
   className?: string
 }
 
-export const AIRichTextMessage: React.FC<AIRichTextMessageProps> = React.memo(
+export const UserRichTextMessage: React.FC<UserRichTextMessageProps> = React.memo(
   ({ data, className }) => {
     let initialConfig: InitialConfigType = null!
     if (!initialConfig) {

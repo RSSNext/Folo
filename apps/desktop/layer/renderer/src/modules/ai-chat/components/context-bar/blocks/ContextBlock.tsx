@@ -5,7 +5,7 @@ import { memo } from "react"
 import { useTranslation } from "react-i18next"
 
 import { ROUTE_FEED_IN_FOLDER } from "~/constants"
-import { ImageThumbnail } from "~/modules/ai-chat/components/layouts/ImageThumbnail"
+import { ImageThumbnail } from "~/modules/ai-chat/components/message/ImageThumbnail"
 import { CircularProgress } from "~/modules/ai-chat/components/ui/UploadProgress"
 import { useChatBlockActions } from "~/modules/ai-chat/store/hooks"
 import type { AIChatContextBlock } from "~/modules/ai-chat/store/types"
@@ -93,16 +93,12 @@ export const ContextBlock: FC<{ block: AIChatContextBlock }> = memo(({ block }) 
         const fileCategory = getFileCategoryFromMimeType(type)
 
         if (fileCategory === "image" && (dataUrl || previewUrl)) {
-          const validPreviewUrl = (dataUrl || previewUrl)!
           return (
             <div className="flex items-center gap-1.5">
               <div className="relative">
                 <ImageThumbnail
-                  previewUrl={validPreviewUrl}
-                  originalUrl={dataUrl || validPreviewUrl}
-                  alt={name}
-                  filename={name}
                   className={"m-0.5 size-5 rounded-md"}
+                  attachment={block.attachment}
                 />
                 {uploadStatus === "uploading" && uploadProgress !== undefined && (
                   <div className="absolute inset-0 flex items-center justify-center rounded-md bg-black/50">
