@@ -4,7 +4,6 @@ import { t } from "i18next"
 import * as React from "react"
 
 import type { AIChatContextBlock } from "~/modules/ai-chat/store/types"
-import { formatMentionDateValue } from "~/modules/ai-chat/utils/mentionDate"
 
 import {
   getBlockIcon,
@@ -37,9 +36,6 @@ const getDisplayContent = (block: AIChatContextBlock): React.ReactNode => {
     case "mainFeed":
     case "referFeed": {
       return <FeedTitle feedId={block.value} fallback={block.value} />
-    }
-    case "referDate": {
-      return formatMentionDateValue(block.value).label
     }
     case "selectedText": {
       return `"${block.value}"`

@@ -30,11 +30,6 @@ export const BLOCK_STYLES = {
     icon: "bg-green/10 text-green",
     label: "text-green",
   },
-  referDate: {
-    container: "from-purple/5 to-purple/10 border-purple/20 hover:border-purple/30",
-    icon: "bg-purple/10 text-purple",
-    label: "text-purple",
-  },
   selectedText: {
     container: "from-purple/5 to-purple/10 border-purple/20 hover:border-purple/30",
     icon: "bg-purple/10 text-purple",
@@ -64,7 +59,6 @@ export const BLOCK_ICONS = {
   mainFeed: "i-mgc-rss-cute-fi",
   referEntry: "i-mgc-paper-cute-fi",
   referFeed: "i-mgc-rss-cute-fi",
-  referDate: "i-mgc-calendar-time-add-cute-re",
   selectedText: "i-mgc-quill-pen-cute-re",
   fileAttachment: "i-mgc-file-upload-cute-re",
 } as const
@@ -77,7 +71,6 @@ export const BLOCK_LABELS = {
   mainFeed: "Current",
   referEntry: "Ref",
   referFeed: "Feed",
-  referDate: "Date",
   selectedText: "Text",
   fileAttachment: "File",
   mainView: "View",

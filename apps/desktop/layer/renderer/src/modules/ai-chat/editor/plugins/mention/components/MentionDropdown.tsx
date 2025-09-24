@@ -82,7 +82,6 @@ const MentionSuggestionItem = React.memo(
             "mr-1.5 inline-flex size-4 items-center justify-center",
             mention.type === "entry" && "text-blue-500",
             mention.type === "feed" && "text-orange-500",
-            mention.type === "date" && "text-purple-500",
           )}
         >
           <MentionTypeIcon type={mention.type} />

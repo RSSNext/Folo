@@ -13,7 +13,6 @@ import {
   getFileCategoryFromMimeType,
   getFileIconName,
 } from "~/modules/ai-chat/utils/file-validation"
-import { formatMentionDateValue } from "~/modules/ai-chat/utils/mentionDate"
 
 import { EntryTitle, FeedTitle } from "./TitleComponents"
 
@@ -38,9 +37,6 @@ export const ContextBlock: FC<{ block: AIChatContextBlock }> = memo(({ block }) 
       case "mainFeed":
       case "referFeed": {
         return "i-mgc-rss-cute-fi"
-      }
-      case "referDate": {
-        return "i-mgc-calendar-time-add-cute-re"
       }
       case "selectedText": {
         return "i-mgc-quill-pen-cute-re"
@@ -79,9 +75,6 @@ export const ContextBlock: FC<{ block: AIChatContextBlock }> = memo(({ block }) 
           ? block.value.slice(ROUTE_FEED_IN_FOLDER.length)
           : block.value
         return <FeedTitle feedId={block.value} fallback={fallback} />
-      }
-      case "referDate": {
-        return formatMentionDateValue(block.value).label
       }
       case "selectedText": {
         return `"${block.value}"`
@@ -181,9 +174,6 @@ export const ContextBlock: FC<{ block: AIChatContextBlock }> = memo(({ block }) 
       }
       case "referFeed": {
         return "Feed"
-      }
-      case "referDate": {
-        return "Date"
       }
       case "selectedText": {
         return "Text"
