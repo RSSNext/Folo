@@ -1,6 +1,5 @@
 import { useFocusable } from "@follow/components/common/Focusable/hooks.js"
 import { ScrollArea } from "@follow/components/ui/scroll-area/ScrollArea.js"
-import { FeedViewType } from "@follow/constants"
 import { getCategoryFeedIds } from "@follow/store/subscription/getter"
 import { usePrefetchSummary } from "@follow/store/summary/hooks"
 import { tracker } from "@follow/tracker"
@@ -175,7 +174,6 @@ const ChatInterfaceContent = ({ centerInputOnEmpty }: ChatInterfaceProps) => {
       resetScrollState()
 
       const blocks = [] as AIChatContextBlock[]
-      const { view } = getRouteParams()
 
       for (const block of blockActions.getBlocks()) {
         if (block.type === "fileAttachment" && block.attachment.serverUrl) {
@@ -194,13 +192,11 @@ const ChatInterfaceContent = ({ centerInputOnEmpty }: ChatInterfaceProps) => {
           block.value.startsWith(ROUTE_FEED_IN_FOLDER)
         ) {
           const categoryName = block.value.slice(ROUTE_FEED_IN_FOLDER.length)
+          const { view } = getRouteParams()
           const feedIds = getCategoryFeedIds(categoryName, view)
-          const fallbackFeedIds =
-            feedIds.length > 0 ? feedIds : getCategoryFeedIds(categoryName, FeedViewType.All)
-          const normalizedFeedIds = fallbackFeedIds.length > 0 ? fallbackFeedIds : null
           blocks.push({
             ...block,
-            value: normalizedFeedIds ? normalizedFeedIds.join(",") : block.value,
+            value: feedIds.join(","),
           })
         } else {
           blocks.push(block)
