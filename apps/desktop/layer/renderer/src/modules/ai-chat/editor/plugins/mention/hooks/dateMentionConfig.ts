@@ -27,7 +27,7 @@ export const DATE_FORMATS = [
   "YYYY年M月D日",
 ]
 
-export const MAX_INLINE_DATE_SUGGESTIONS = 3
+export const MAX_INLINE_DATE_SUGGESTIONS = 2
 
 export interface WeekdayInfo {
   index: number

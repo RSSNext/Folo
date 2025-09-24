@@ -10,9 +10,7 @@ import { buildDateMentions, MAX_INLINE_DATE_SUGGESTIONS } from "./dateMentionSea
  * Uses the shared feed/entry search service
  */
 export const useMentionSearchService = () => {
-  const { search } = useFeedEntrySearchService({
-    maxRecentEntries: 50,
-  })
+  const { search } = useFeedEntrySearchService()
 
   const searchMentions = useMemo(() => {
     return async (query: string, type?: MentionType): Promise<MentionData[]> => {
