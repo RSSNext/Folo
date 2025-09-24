@@ -22,8 +22,6 @@ export interface SearchItem {
  * Search service options
  */
 export interface SearchServiceOptions {
-  /** Maximum number of recent entries to include */
-  maxRecentEntries?: number
   /** Fuse.js search options */
   fuseOptions?: IFuseOptions<SearchItem>
 }
@@ -39,7 +37,7 @@ const defaultFuseOptions: IFuseOptions<SearchItem> = {
  * Used by both context bar and mention plugin
  */
 export const useFeedEntrySearchService = (options: SearchServiceOptions = {}) => {
-  const { maxRecentEntries = 50, fuseOptions = defaultFuseOptions } = options
+  const { fuseOptions = defaultFuseOptions } = options
 
   // Get data sources
   const view = useRouteParamsSelector((route) => route.view)
@@ -84,7 +82,6 @@ export const useFeedEntrySearchService = (options: SearchServiceOptions = {}) =>
     if (!recentEntryIds) return []
 
     return recentEntryIds
-      .slice(0, maxRecentEntries)
       .map((entryId) => {
         const entry = entryStore[entryId]
         return entry
@@ -96,7 +93,7 @@ export const useFeedEntrySearchService = (options: SearchServiceOptions = {}) =>
           : null
       })
       .filter(Boolean) as SearchItem[]
-  }, [recentEntryIds, entryStore, maxRecentEntries])
+  }, [recentEntryIds, entryStore])
 
   // Combine all search items
   const allItems = useMemo(() => {
