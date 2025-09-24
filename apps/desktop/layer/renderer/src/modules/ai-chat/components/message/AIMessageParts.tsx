@@ -53,23 +53,23 @@ export const AIMessageParts: React.FC<AIMessagePartsProps> = React.memo(
     const displayParts = React.useMemo(() => {
       const parts = [] as (ReasoningUIPart[] | TextUIPart | ToolUIPart<BizUITools>)[]
 
-      const mergedReasoningParts: ReasoningUIPart[] = []
+      const chainReasoningParts: ReasoningUIPart[] = []
       for (const part of message.parts) {
         if (part.type !== "reasoning") {
-          parts.push(mergedReasoningParts.concat())
-          mergedReasoningParts.length = 0
+          parts.push(chainReasoningParts.concat())
+          chainReasoningParts.length = 0
         }
         if (part.type === "text") {
           parts.push(part)
         } else if (part.type.startsWith("tool-")) {
           parts.push(part as ToolUIPart<BizUITools>)
         } else if (part.type === "reasoning" && part.text) {
-          mergedReasoningParts.push(part as ReasoningUIPart)
+          chainReasoningParts.push(part as ReasoningUIPart)
         }
       }
 
-      if (mergedReasoningParts.length > 0) {
-        parts.push(mergedReasoningParts.concat())
+      if (chainReasoningParts.length > 0) {
+        parts.push(chainReasoningParts.concat())
       }
       return parts
     }, [message.parts])

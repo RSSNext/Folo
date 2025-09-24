@@ -48,6 +48,9 @@ const getDisplayContent = (block: AIChatContextBlock): React.ReactNode => {
       if (!block.attachment) {
         return "[File: Unknown]"
       }
+      if (block.attachment.name && !block.attachment.uploadStatus) {
+        return block.attachment.name
+      }
       return getFileDisplayContent(block.attachment)
     }
 
