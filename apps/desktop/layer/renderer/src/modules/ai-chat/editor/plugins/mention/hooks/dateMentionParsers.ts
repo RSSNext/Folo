@@ -47,11 +47,11 @@ const addSearchTerm = (set: Set<string>, term: string) => {
   }
 }
 
-const extractSearchTerms = (t: AiTFunction, key: string): string[] => {
+const extractSearchTerms = (t: AiTFunction, key: string, lng?: string): string[] => {
   // Use a relaxed call signature to avoid strict key typing issues
   const tUnsafe: (key: string, options?: any) => unknown = (key, options) =>
     (t as unknown as (k: string, o?: any) => unknown)(key, options)
-  const raw = tUnsafe(key, { returnObjects: true }) as unknown
+  const raw = tUnsafe(key, { returnObjects: true, lng }) as unknown
 
   // Backward-compatible: if translations provided an array, keep supporting it
   if (Array.isArray(raw)) {
@@ -63,7 +63,7 @@ const extractSearchTerms = (t: AiTFunction, key: string): string[] => {
 
   // Preferred: translations provide a single string; support multiple synonyms
   // delimited by common separators: |, comma (en/, zh ，), Japanese/Chinese lists (、), or newline
-  const value = tUnsafe(key) as unknown
+  const value = tUnsafe(key, { lng }) as unknown
   if (typeof value !== "string") return []
 
   const pieces = value
@@ -80,12 +80,16 @@ const buildRelativeCandidates = ({ t }: DateMentionBuilderContext): RelativeDate
     const terms = new Set<string>()
     const label: MentionLabelDescriptor = { key: definition.labelKey }
 
-    // Use unsafe t signature for label key to avoid namespace mismatch typing
-    const tUnsafeLabel: (key: string) => string = (key) =>
-      (t as unknown as (k: string) => string)(key)
-    addSearchTerm(terms, tUnsafeLabel(definition.labelKey))
+    addSearchTerm(terms, t(definition.labelKey))
+    // Always include English label as a searchable term
+    const tUnsafeLabel: (key: string, options?: any) => string = (key, options) =>
+      (t as unknown as (k: string, o?: any) => string)(key, options)
+    addSearchTerm(terms, tUnsafeLabel(definition.labelKey, { lng: "en" }))
     definition.searchKeys.forEach((key) => {
+      // Localized terms
       extractSearchTerms(t, key).forEach((term) => addSearchTerm(terms, term))
+      // Always include English terms
+      extractSearchTerms(t, key, "en").forEach((term) => addSearchTerm(terms, term))
     })
 
     return {
@@ -101,11 +105,7 @@ const buildRangeMention = (
   range: DateRange,
   context: DateMentionBuilderContext,
 ): MentionData => {
-  const labelText = resolveMentionLabel(
-    candidate.label,
-    // Relax i18n typing to a simple translator signature
-    context.t,
-  )
+  const labelText = resolveMentionLabel(candidate.label, context.t)
   const rangeText = formatLocalizedRange(range, context.language)
   const appendRange = labelText
     ? labelText.localeCompare(rangeText, undefined, { sensitivity: "accent" }) !== 0
