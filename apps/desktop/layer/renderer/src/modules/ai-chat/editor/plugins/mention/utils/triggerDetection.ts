@@ -43,12 +43,13 @@ export const getMentionType = (query: string): [MentionType | undefined, string]
   // Simple heuristic - could be enhanced with more sophisticated detection
   if (query.startsWith("@#")) return ["feed", query.slice(2)]
   if (query.startsWith("@+")) return ["entry", query.slice(2)]
+  if (query.startsWith("@!")) return ["date", query.slice(2)]
   // Return undefined for general @ trigger to search both types
   return [undefined, query.slice(1)]
 }
 
 export const cleanQuery = (query: string): string => {
-  return query.replace(/^@[#+]?/, "").toLowerCase()
+  return query.replace(/^@[#+!]?/, "").trim()
 }
 
 export const shouldTriggerMention = (query: string): boolean => {

@@ -28,6 +28,7 @@ const MentionTooltipContent = ({ mentionData }: { mentionData: MentionData }) =>
           "rounded px-1.5 py-0.5 text-xs font-medium",
           mentionData.type === "entry" && "bg-blue text-black",
           mentionData.type === "feed" && "bg-orange text-black",
+          mentionData.type === "date" && "bg-purple text-black",
         )}
       >
         {mentionData.type}
@@ -57,7 +58,16 @@ const getMentionStyles = (type: MentionData["type"]) => {
         "hover:bg-orange/20 hover:border-orange/30",
       )
     }
+    case "date": {
+      return cn(
+        baseStyles,
+        "bg-purple/10 text-purple border-purple/20",
+        "hover:bg-purple/20 hover:border-purple/30",
+      )
+    }
   }
+
+  return cn(baseStyles, "bg-fill text-text border-fill-secondary")
 }
 export const MentionComponent: React.FC<MentionComponentProps> = ({ mentionData, className }) => {
   const handleClick = (e: React.MouseEvent) => {

@@ -15,6 +15,9 @@ export const MentionTypeIcon: React.FC<MentionTypeIconProps> = ({ type, classNam
     case "feed": {
       return <i className={`i-mgc-rss-cute-fi ${className}`} />
     }
+    case "date": {
+      return <i className={`i-mgc-calendar-time-add-cute-re ${className}`} />
+    }
     default: {
       return <i className={`i-mgc-ai-cute-re ${className}`} />
     }
