@@ -33,7 +33,7 @@ export function PlayPauseButton({ size = 24, className, color }: ControlButtonPr
   return (
     <View className={className}>
       <ReAnimatedPressable
-        entering={ZoomIn.springify().damping(10).stiffness(200).mass(1)}
+        entering={ZoomIn.springify()}
         exiting={FadeOut}
         key={playing ? "pause" : "play"}
         onPress={() => {

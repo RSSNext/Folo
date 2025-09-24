@@ -49,7 +49,7 @@ interface ShowDialogOptions<Ctx> {
     confirmText?: string
   }
 }
-const entering = SlideInUp.springify().damping(20).stiffness(140)
+const entering = SlideInUp.springify()
 const exiting = SlideOutUp.duration(400)
 type DialogContextType = {
   dismiss: () => void
