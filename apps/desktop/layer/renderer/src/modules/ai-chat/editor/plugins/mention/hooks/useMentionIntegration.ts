@@ -10,7 +10,7 @@ import { useMentionSearchService } from "./useMentionSearchService"
  */
 export const useMentionIntegration = () => {
   const { searchMentions } = useMentionSearchService()
-  const { handleMentionInsert: syncMentionInsert } = useMentionBlockSync()
+  const { handleMentionInsert: syncMentionInsert } = useMentionBlockSync(["date"])
 
   // Handle mention insertion with node key tracking
   const handleMentionInsert = useCallback(

@@ -13,8 +13,11 @@ import { cn, thenable } from "@follow/utils"
 import { useLexicalComposerContext } from "@lexical/react/LexicalComposerContext"
 import * as React from "react"
 import { useCallback, useEffect, useRef, useState } from "react"
+import { useTranslation } from "react-i18next"
 
 import { MENTION_TRIGGER_PATTERN } from "../constants"
+import { RANGE_WITH_LABEL_KEY } from "../hooks/dateMentionConfig"
+import { getDateMentionDisplayName } from "../hooks/dateMentionUtils"
 import type { MentionData } from "../types"
 import { calculateDropdownPosition } from "../utils/positioning"
 import { MentionTypeIcon } from "./shared/MentionTypeIcon"
@@ -42,21 +45,38 @@ const MentionSuggestionItem = React.memo(
     onClick: (mention: MentionData) => void
     query: string
   }) => {
+    const { t, i18n } = useTranslation("ai")
+    const language = i18n.language || i18n.resolvedLanguage || "en"
+
+    const displayName = React.useMemo(() => {
+      if (mention.type === "date") {
+        return getDateMentionDisplayName(mention, t, language, RANGE_WITH_LABEL_KEY)
+      }
+      return mention.name
+    }, [mention, t, language])
+
     const handleClick = useCallback(() => {
       onClick(mention)
     }, [mention, onClick])
 
     // Highlight matching text
-    const highlightText = (text: string, query: string) => {
-      const cleanQuery = query.replace(MENTION_TRIGGER_PATTERN, "").toLowerCase()
+    const highlightText = (text: string, rawQuery: string) => {
+      const cleanQuery = rawQuery.replace(MENTION_TRIGGER_PATTERN, "").toLowerCase()
       if (!cleanQuery) return text
 
       const parts = text.split(new RegExp(`(${cleanQuery})`, "gi"))
-      return parts.map((part) => {
+      return parts.map((part, index) => {
         const isMatch = part.toLowerCase() === cleanQuery
 
+        if (!part) {
+          return null
+        }
+
         return (
-          <span key={mention.id} className={isMatch ? "text-text-vibrant font-semibold" : ""}>
+          <span
+            key={`${mention.id}-${index}`}
+            className={isMatch ? "text-text-vibrant font-semibold" : ""}
+          >
             {part}
           </span>
         )
@@ -90,7 +110,7 @@ const MentionSuggestionItem = React.memo(
         </span>
 
         {/* Content */}
-        <span className="flex-1 truncate">{highlightText(mention.name, query)}</span>
+        <span className="flex-1 truncate">{highlightText(displayName, query)}</span>
 
         {/* Selection Indicator */}
         {isSelected && (
