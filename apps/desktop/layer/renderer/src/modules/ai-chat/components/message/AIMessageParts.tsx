@@ -22,6 +22,7 @@ import {
   AIDisplaySubscriptionsPart,
 } from "../displays"
 import { AIMarkdownStreamingMessage } from "./AIMarkdownMessage"
+import { ToolInvocationComponent } from "./ToolInvocationComponent"
 
 const LazyAIDisplayFlowPart = React.lazy(() =>
   import("../displays/AIDisplayFlowPart").then((mod) => ({ default: mod.AIDisplayFlowPart })),
@@ -60,7 +61,7 @@ export const AIMessageParts: React.FC<AIMessagePartsProps> = React.memo(
         }
         if (part.type === "text") {
           parts.push(part)
-        } else if (part.type.startsWith("tool-display")) {
+        } else if (part.type.startsWith("tool-")) {
           parts.push(part as ToolUIPart<BizUITools>)
         } else if (part.type === "reasoning" && part.text) {
           mergedReasoningParts.push(part as ReasoningUIPart)
@@ -143,6 +144,12 @@ export const AIMessageParts: React.FC<AIMessagePartsProps> = React.memo(
             }
 
             default: {
+              if (part.type.startsWith("tool-")) {
+                return (
+                  <ToolInvocationComponent key={partKey} part={part as ToolUIPart<BizUITools>} />
+                )
+              }
+
               return null
             }
           }

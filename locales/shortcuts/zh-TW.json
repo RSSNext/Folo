@@ -20,7 +20,7 @@
   "command.global.quick_add.title": "快速新增",
   "command.global.show_shortcuts.description": "顯示快捷鍵指南。",
   "command.global.show_shortcuts.title": "顯示快捷鍵",
-  "command.global.toggle_corner_play.description": "播放或暫停播放狀態（若目前有音訊在背景播放）",
+  "command.global.toggle_corner_play.description": "播放或暫停播放狀態（若目前有音訊在背景播放）。",
   "command.global.toggle_corner_play.title": "切換角落播放",
   "command.layout.focus_to_entry_render.title": "聚焦到條目內容",
   "command.layout.focus_to_subscription.title": "聚焦到訂閱",
