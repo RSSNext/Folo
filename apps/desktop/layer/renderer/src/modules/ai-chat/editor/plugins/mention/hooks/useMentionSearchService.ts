@@ -97,6 +97,103 @@ const CHINESE_LAST_WEEK_PREFIXES = new Set([
   "上个礼拜",
 ])
 
+const WEEKDAYS_INFO = [
+  {
+    index: 0,
+    english: "Sunday",
+    short: "Sun",
+    chineseRoots: ["周日", "周天", "星期日", "星期天", "礼拜日", "礼拜天"],
+  },
+  {
+    index: 1,
+    english: "Monday",
+    short: "Mon",
+    chineseRoots: ["周一", "星期一", "礼拜一"],
+  },
+  {
+    index: 2,
+    english: "Tuesday",
+    short: "Tue",
+    chineseRoots: ["周二", "星期二", "礼拜二"],
+  },
+  {
+    index: 3,
+    english: "Wednesday",
+    short: "Wed",
+    chineseRoots: ["周三", "星期三", "礼拜三"],
+  },
+  {
+    index: 4,
+    english: "Thursday",
+    short: "Thu",
+    chineseRoots: ["周四", "星期四", "礼拜四"],
+  },
+  {
+    index: 5,
+    english: "Friday",
+    short: "Fri",
+    chineseRoots: ["周五", "星期五", "礼拜五"],
+  },
+  {
+    index: 6,
+    english: "Saturday",
+    short: "Sat",
+    chineseRoots: ["周六", "星期六", "礼拜六"],
+  },
+] as const
+
+type WeekdayAutoCompleteEntry = {
+  id: string
+  dayIndex: number
+  prefix: "this" | "last"
+  displayName: string
+  keywords: string[]
+}
+
+const WEEKDAY_AUTOCOMPLETE_ENTRIES: WeekdayAutoCompleteEntry[] = WEEKDAYS_INFO.flatMap(
+  ({ index, english, short, chineseRoots }) => {
+    const englishLower = english.toLowerCase()
+    const shortLower = short.toLowerCase()
+
+    const baseEnglishKeywords = [englishLower, shortLower]
+    const thisEnglishKeywords = [
+      `this ${englishLower}`,
+      `this ${shortLower}`,
+      `current ${englishLower}`,
+      `current ${shortLower}`,
+      ...baseEnglishKeywords,
+    ]
+    const lastEnglishKeywords = [
+      `last ${englishLower}`,
+      `last ${shortLower}`,
+      `previous ${englishLower}`,
+      `previous ${shortLower}`,
+      englishLower,
+      shortLower,
+    ]
+
+    const chineseThisKeywords = chineseRoots.flatMap((root) => [root, `这${root}`, `本${root}`])
+    const chineseLastKeywords = chineseRoots.flatMap((root) => [`上${root}`, `上个${root}`])
+
+    return [
+      {
+        id: `date:this-${englishLower}`,
+        dayIndex: index,
+        prefix: "this" as const,
+        displayName: `This ${english}`,
+        keywords: [...thisEnglishKeywords, ...chineseThisKeywords],
+      },
+      {
+        id: `date:last-${englishLower}`,
+        dayIndex: index,
+        prefix: "last" as const,
+        displayName: `Last ${english}`,
+        keywords: [...lastEnglishKeywords, ...chineseLastKeywords],
+      },
+    ]
+  },
+)
+
 interface DateDescriptor {
   id?: string
   displayName: string | null
@@ -336,6 +433,32 @@ const parseWeekdayMention = (raw: string): MentionData | null => {
   }
 
   return null
+}
+
+const buildWeekdayAutoCompleteMentions = (query: string): MentionData[] => {
+  const trimmed = query.trim()
+  if (!trimmed) return []
+
+  const normalized = trimmed.toLowerCase()
+  const results: MentionData[] = []
+
+  WEEKDAY_AUTOCOMPLETE_ENTRIES.forEach((entry) => {
+    const matches = entry.keywords.some((keyword) => {
+      const lowerKeyword = keyword.toLowerCase()
+      return lowerKeyword.includes(normalized) || normalized.includes(lowerKeyword)
+    })
+
+    if (!matches) {
+      return
+    }
+
+    const mention = buildWeekdayMention(entry.dayIndex, entry.prefix, entry.displayName)
+    if (mention) {
+      results.push(mention)
+    }
+  })
+
+  return results
 }
 
 const parseDateRangeInput = (raw: string): MentionData | null => {
@@ -667,6 +790,7 @@ const buildDateMentions = (query: string): MentionData[] => {
   }
 
   buildRelativeDateMentions(query).forEach(addMention)
+  buildWeekdayAutoCompleteMentions(query).forEach(addMention)
   buildAbsoluteDateMentions(query).forEach(addMention)
 
   return Array.from(mentions.values())
