@@ -34,7 +34,6 @@ const defaultFuseOptions: IFuseOptions<SearchItem> = {
   includeScore: true,
 }
 
-const MAX_CATEGORY_RESULTS = 3
 /**
  * Hook that provides unified search functionality for feeds and entries
  * Used by both context bar and mention plugin
@@ -107,20 +106,53 @@ export const useFeedEntrySearchService = (options: SearchServiceOptions = {}) =>
   // Create Fuse instance for fuzzy search
   const fuse = useMemo(() => {
     return new Fuse(allItems, fuseOptions)
-  }, [allItems, JSON.stringify(fuseOptions)])
+  }, [allItems, fuseOptions])
+
+  // Calculate type ratios for proportional result distribution
+  const typeRatios = useMemo(() => {
+    const totalItems = allItems.length
+    if (totalItems === 0) {
+      return { category: 0, feed: 0, entry: 0 }
+    }
+
+    const categoryCounts = allItems.reduce(
+      (acc, item) => {
+        acc[item.type] += 1
+        return acc
+      },
+      { category: 0, feed: 0, entry: 0 },
+    )
+
+    return {
+      category: categoryCounts.category / totalItems,
+      feed: categoryCounts.feed / totalItems,
+      entry: categoryCounts.entry / totalItems,
+    }
+  }, [allItems])
 
   // Search function
   const search = useMemo(() => {
-    const applyCategoryLimit = (items: SearchItem[]) => {
-      let categoryCount = 0
-      return items.filter((item) => {
-        if (item.type !== "category") return true
-        if (categoryCount >= MAX_CATEGORY_RESULTS) {
-          return false
+    const applyProportionalLimit = (items: SearchItem[], maxResults: number) => {
+      // Calculate max items per type based on ratios
+      const maxPerType = {
+        category: Math.max(1, Math.floor(maxResults * typeRatios.category)),
+        feed: Math.max(1, Math.floor(maxResults * typeRatios.feed)),
+        entry: Math.max(1, Math.floor(maxResults * typeRatios.entry)),
+      }
+
+      const counts = { category: 0, feed: 0, entry: 0 }
+      const result: SearchItem[] = []
+
+      for (const item of items) {
+        if (result.length >= maxResults) break
+
+        if (counts[item.type] < maxPerType[item.type]) {
+          result.push(item)
+          counts[item.type] += 1
         }
-        categoryCount += 1
-        return true
-      })
+      }
+
+      return result
     }
 
     return (query: string, type?: "feed" | "entry" | "category", maxResults = 10): SearchItem[] => {
@@ -132,17 +164,17 @@ export const useFeedEntrySearchService = (options: SearchServiceOptions = {}) =>
 
       if (!query.trim()) {
         // If no query, return recent items of the specified type
-        const filteredItems = applyCategoryLimit(allItems.filter(matchesType))
-        return filteredItems.slice(0, maxResults)
+        const filteredItems = allItems.filter(matchesType)
+        return applyProportionalLimit(filteredItems, maxResults)
       }
 
       // Perform fuzzy search
       const fuseResults = fuse.search(query)
       const filteredResults = fuseResults.map((result) => result.item).filter(matchesType)
 
-      return applyCategoryLimit(filteredResults).slice(0, maxResults)
+      return applyProportionalLimit(filteredResults, maxResults)
     }
-  }, [allItems, fuse])
+  }, [allItems, fuse, typeRatios])
 
   return {
     search,
