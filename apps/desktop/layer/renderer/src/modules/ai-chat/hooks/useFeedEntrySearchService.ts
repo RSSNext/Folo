@@ -103,7 +103,7 @@ export const useFeedEntrySearchService = (options: SearchServiceOptions = {}) =>
   // Create Fuse instance for fuzzy search
   const fuse = useMemo(() => {
     return new Fuse(allItems, fuseOptions)
-  }, [allItems, fuseOptions])
+  }, [allItems, JSON.stringify(fuseOptions)])
 
   // Calculate type ratios for proportional result distribution
   const typeRatios = useMemo(() => {
