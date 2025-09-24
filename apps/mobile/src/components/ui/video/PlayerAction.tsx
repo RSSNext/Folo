@@ -53,6 +53,7 @@ export function PlayerAction({
     >
       <View className={cn("overflow-hidden rounded-full p-2", buttonClassName)}>
         <ThemedBlurView
+          useGlass
           style={StyleSheet.absoluteFillObject}
           intensity={30}
           experimentalBlurMethod="none"

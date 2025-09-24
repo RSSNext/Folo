@@ -1,10 +1,15 @@
+import { Portal } from "@gorhom/portal"
 import { use, useLayoutEffect } from "react"
-import { Platform } from "react-native"
+import { Platform, View } from "react-native"
 import DeviceInfo from "react-native-device-info"
 import { useSafeAreaInsets } from "react-native-safe-area-context"
 
+import { BottomTabContext } from "@/src/lib/navigation/bottom-tab/BottomTabContext"
 import { TabBarPortal } from "@/src/lib/navigation/bottom-tab/TabBarPortal"
+import { useNavigation } from "@/src/lib/navigation/hooks"
+import { NavigationInstanceContext } from "@/src/lib/navigation/NavigationInstanceContext"
 import { isIos26 } from "@/src/lib/platform"
+import { GlassPlayerTabBar } from "@/src/modules/player/GlassPlayerTabBar"
 
 import { BottomTabs } from "./BottomTabs"
 import { SetBottomTabBarHeightContext } from "./contexts/BottomTabBarHeightContext"
@@ -25,10 +30,24 @@ export const ReactNativeTab = () => {
 const NativeTabBarHolder = () => {
   const setHeight = use(SetBottomTabBarHeightContext)
   const insets = useSafeAreaInsets()
+
+  const tabBarHeight = 68 + insets.bottom
   useLayoutEffect(() => {
     //https://developer.apple.com/design/human-interface-guidelines/tab-bars
-    setHeight(68 + insets.bottom)
-  }, [insets.bottom, setHeight])
+    setHeight(tabBarHeight)
+  }, [insets.bottom, setHeight, tabBarHeight])
 
-  return null
+  const bottomTabContext = use(BottomTabContext)
+  const navigation = useNavigation()
+  return (
+    <Portal>
+      <BottomTabContext value={bottomTabContext}>
+        <NavigationInstanceContext value={navigation}>
+          <View className="bg-red absolute inset-x-0 bottom-[68px] mb-4">
+            <GlassPlayerTabBar className="absolute inset-x-0 bottom-0" />
+          </View>
+        </NavigationInstanceContext>
+      </BottomTabContext>
+    </Portal>
+  )
 }
