@@ -140,21 +140,21 @@ export const buildWeekdayAutoCompleteMentions: MentionListBuilder = (query) => {
 
   const normalized = trimmed.toLowerCase()
 
-  return WEEKDAY_AUTOCOMPLETE_CONFIGS.reduce<MentionData[]>((acc, config) => {
+  for (const config of WEEKDAY_AUTOCOMPLETE_CONFIGS) {
     const matches = config.keywords.some((keyword) => {
       const lower = keyword.toLowerCase()
       return lower.includes(normalized) || normalized.includes(lower)
     })
 
-    if (!matches) return acc
+    if (!matches) continue
 
     const mention = buildWeekdayMention(config.dayIndex, config.prefix, config.displayName)
     if (mention) {
-      acc.push({ ...mention, id: config.id })
+      return [{ ...mention, id: config.id }]
     }
+  }
 
-    return acc
-  }, [])
+  return []
 }
 
 const parseDateRangeInput: MentionParser = (raw) => {
