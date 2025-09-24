@@ -36,7 +36,6 @@ export const usePeekModal = () => {
 
           CustomModalComponent: ({ children }) => {
             const feedId = useEntry(entryId, (state) => state.feedId)
-            if (!feedId) return null
 
             return (
               <PeekModal
@@ -47,7 +46,11 @@ export const usePeekModal = () => {
                     icon: <EntryMoreActions entryId={entryId} />,
                   },
                 ]}
-                to={`/timeline/view-${getRouteParams().view}/${feedId}/${entryId}`}
+                to={
+                  feedId
+                    ? `/timeline/view-${getRouteParams().view}/${feedId}/${entryId}`
+                    : undefined
+                }
               >
                 {children}
               </PeekModal>
