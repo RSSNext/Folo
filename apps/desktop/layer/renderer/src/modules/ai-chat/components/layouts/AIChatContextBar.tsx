@@ -31,17 +31,25 @@ export const AIChatContextBar: Component<{ onSendShortcut?: (prompt: string) => 
     }, [])
 
     const { addOrUpdateBlock, removeBlock } = useBlockActions()
-    const view = useRouteParamsSelector((i) => i.view)
+    const view = useRouteParamsSelector((i) => {
+      if (!i.isPendingEntry) return
+      return i.view
+    })
     const feedId = useRouteParamsSelector((i) => {
-      if (i.isAllFeeds) return
+      if (i.isAllFeeds || !i.isPendingEntry) return
       return i.feedId
     })
     useEffect(() => {
-      addOrUpdateBlock({
-        id: BlockSliceAction.SPECIAL_TYPES.mainView,
-        type: "mainView",
-        value: `${view}`,
-      })
+      if (typeof view === "number") {
+        addOrUpdateBlock({
+          id: BlockSliceAction.SPECIAL_TYPES.mainView,
+          type: "mainView",
+          value: `${view}`,
+        })
+      } else {
+        removeBlock(BlockSliceAction.SPECIAL_TYPES.mainView)
+      }
+
       return () => {
         removeBlock(BlockSliceAction.SPECIAL_TYPES.mainView)
       }

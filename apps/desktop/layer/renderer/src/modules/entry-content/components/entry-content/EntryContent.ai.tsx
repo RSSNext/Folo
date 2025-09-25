@@ -95,6 +95,7 @@ const EntryContentImpl: Component<EntryContentProps> = ({
     })
     return () => {
       removeBlock(BlockSliceAction.SPECIAL_TYPES.mainEntry)
+      removeBlock(BlockSliceAction.SPECIAL_TYPES.selectedText)
     }
   }, [addOrUpdateBlock, entryId, removeBlock])
   const animationController = useAnimationControls()

@@ -17,7 +17,7 @@ import { formatMentionDateValue } from "~/modules/ai-chat/utils/mentionDate"
 
 import { EntryTitle, FeedTitle } from "./TitleComponents"
 
-const blockTypeCanNotBeRemoved = new Set(["mainView"])
+const blockTypeCanNotBeRemoved = new Set<string>([])
 
 export const ContextBlock: FC<{ block: AIChatContextBlock }> = memo(({ block }) => {
   const { t } = useTranslation("common")
