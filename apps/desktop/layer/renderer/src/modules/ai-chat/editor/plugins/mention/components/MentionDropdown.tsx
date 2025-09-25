@@ -28,6 +28,7 @@ interface MentionDropdownProps {
   selectedIndex: number
   isLoading: boolean
   onSelect: (mention: MentionData) => void
+  onSetSelectIndex: (index: number) => void
   onClose: () => void
   query: string
   anchor?: HTMLElement | null
@@ -39,12 +40,13 @@ const MentionSuggestionItem = React.memo(
     isSelected,
     onClick,
     query,
+    ...props
   }: {
     mention: MentionData
     isSelected: boolean
     onClick: (mention: MentionData) => void
     query: string
-  }) => {
+  } & Omit<React.HTMLAttributes<HTMLDivElement>, "onClick">) => {
     const { t, i18n } = useTranslation("ai")
     const language = i18n.language || i18n.resolvedLanguage || "en"
 
@@ -95,6 +97,7 @@ const MentionSuggestionItem = React.memo(
         onClick={handleClick}
         role="option"
         aria-selected={isSelected}
+        {...props}
       >
         {/* Icon */}
         <span
@@ -131,6 +134,7 @@ export const MentionDropdown: React.FC<MentionDropdownProps> = ({
   selectedIndex,
   isLoading,
   onSelect,
+  onSetSelectIndex,
   onClose,
   query,
 }) => {
@@ -272,6 +276,7 @@ export const MentionDropdown: React.FC<MentionDropdownProps> = ({
                     key={`${mention.type}-${mention.id}`}
                     mention={mention}
                     isSelected={index === selectedIndex}
+                    onMouseMove={() => onSetSelectIndex(index)}
                     onClick={onSelect}
                     query={query}
                   />

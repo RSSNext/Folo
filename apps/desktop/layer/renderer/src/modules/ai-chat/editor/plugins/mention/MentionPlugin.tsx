@@ -103,6 +103,7 @@ export function MentionPlugin() {
       suggestions,
       selectedIndex,
       isLoading,
+      onSetSelectIndex: setSelectedIndex,
       onSelect: selectMention,
       onClose: handleEscapeKey,
       query: mentionMatch?.matchingString || "",
@@ -113,9 +114,10 @@ export function MentionPlugin() {
     suggestions,
     selectedIndex,
     isLoading,
+    setSelectedIndex,
     selectMention,
     handleEscapeKey,
-    mentionMatch,
+    mentionMatch?.matchingString,
   ])
 
   return dropdownProps ? (
