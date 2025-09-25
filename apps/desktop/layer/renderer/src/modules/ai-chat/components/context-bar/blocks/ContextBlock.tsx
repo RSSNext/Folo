@@ -4,7 +4,6 @@ import type { FC, ReactNode } from "react"
 import { memo } from "react"
 import { useTranslation } from "react-i18next"
 
-import { ROUTE_FEED_IN_FOLDER } from "~/constants"
 import { ImageThumbnail } from "~/modules/ai-chat/components/message/ImageThumbnail"
 import { CircularProgress } from "~/modules/ai-chat/components/ui/UploadProgress"
 import { useChatBlockActions } from "~/modules/ai-chat/store/hooks"
@@ -86,10 +85,6 @@ export const MainViewFeedContextBlock: FC<{
 
   const viewIcon = views.find((v) => v.view === Number(viewBlock.value))?.icon.props.className
 
-  const category = feedBlock.value.startsWith(ROUTE_FEED_IN_FOLDER)
-    ? feedBlock.value.slice(ROUTE_FEED_IN_FOLDER.length)
-    : undefined
-
   const canRemove =
     !blockTypeCanNotBeRemoved.has(viewBlock.type) && !blockTypeCanNotBeRemoved.has(feedBlock.type)
 
@@ -103,9 +98,7 @@ export const MainViewFeedContextBlock: FC<{
       icon={viewIcon}
       canRemove={canRemove}
       onRemove={handleRemove}
-      content={
-        <FeedTitle feedId={feedBlock.value} category={category} fallback={feedBlock.value} />
-      }
+      content={<FeedTitle feedId={feedBlock.value} fallback={feedBlock.value} />}
     />
   )
 })
@@ -167,10 +160,7 @@ export const ContextBlock: FC<{ block: AIChatContextBlock }> = memo(({ block }) 
       }
       case "mainFeed":
       case "referFeed": {
-        const fallback = block.value.startsWith(ROUTE_FEED_IN_FOLDER)
-          ? block.value.slice(ROUTE_FEED_IN_FOLDER.length)
-          : block.value
-        return <FeedTitle feedId={block.value} fallback={fallback} />
+        return <FeedTitle feedId={block.value} fallback={block.value} />
       }
       case "referDate": {
         return formatMentionDateValue(block.value).label
