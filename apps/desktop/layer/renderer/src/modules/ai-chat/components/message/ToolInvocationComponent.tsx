@@ -2,14 +2,17 @@ import { CollapseCss, CollapseCssGroup } from "@follow/components/ui/collapse/in
 import { JsonHighlighter } from "@follow/components/ui/json-highlighter/index.js"
 import type { ToolUIPart } from "ai"
 import { getToolName } from "ai"
+import clsx from "clsx"
 import * as React from "react"
 
 interface ToolInvocationComponentProps {
   part: ToolUIPart
+
+  variant: "loose" | "tight"
 }
 
 export const ToolInvocationComponent: React.FC<ToolInvocationComponentProps> = React.memo(
-  ({ part }) => {
+  ({ part, variant }) => {
     const toolName = getToolName(part)
     const hasError = "errorText" in part && part.errorText
     const hasResult = "output" in part && part.output
@@ -21,7 +24,7 @@ export const ToolInvocationComponent: React.FC<ToolInvocationComponentProps> = R
     const accordionValue = `tool-${"toolCallId" in part ? part.toolCallId : Math.random()}`
 
     return (
-      <div className="relative pb-3 pl-8 last:pb-0">
+      <div className={clsx("relative pl-8 last:pb-0", variant === "tight" ? "pb-0" : "pb-3")}>
         <div
           aria-hidden
           className={`absolute left-2 top-2 size-2 -translate-x-1/2 rounded-full border ${

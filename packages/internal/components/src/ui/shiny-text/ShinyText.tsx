@@ -24,10 +24,8 @@ export const ShinyText: FC<AnimatedShinyTextProps> = ({
         "text-text-secondary mx-auto max-w-md",
 
         // Shine effect
-        "bg-clip-text bg-no-repeat [background-position:0_0] [background-size:var(--shiny-width)_100%] [transition:background-position_1s_cubic-bezier(.6,.6,0,1)_infinite]",
+        "bg-clip-text bg-repeat-x",
 
-        // Shine gradient
-        "bg-gradient-to-r from-transparent via-black/90 via-50% to-transparent dark:via-white/80",
         styles["shiny-text"],
         className,
       )}

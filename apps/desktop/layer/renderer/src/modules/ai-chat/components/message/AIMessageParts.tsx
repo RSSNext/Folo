@@ -165,7 +165,11 @@ export const AIMessageParts: React.FC<AIMessagePartsProps> = React.memo(
             default: {
               if (part.type.startsWith("tool-")) {
                 return (
-                  <ToolInvocationComponent key={partKey} part={part as ToolUIPart<BizUITools>} />
+                  <ToolInvocationComponent
+                    key={partKey}
+                    part={part as ToolUIPart<BizUITools>}
+                    variant="tight"
+                  />
                 )
               }
 

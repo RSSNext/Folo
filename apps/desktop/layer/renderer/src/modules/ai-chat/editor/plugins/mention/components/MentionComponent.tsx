@@ -43,7 +43,7 @@ const MentionTooltipContent = ({
 
 const getMentionStyles = (type: MentionData["type"]) => {
   const baseStyles = tw`
-    inline-flex items-center gap-1 px-2 py-0.5 rounded-md
+    inline items-center gap-1 px-2 py-0.5 rounded-md
     font-medium text-sm cursor-pointer select-none
   `
 
@@ -100,7 +100,7 @@ export const MentionComponent: React.FC<MentionComponentProps> = ({ mentionData,
       <TooltipRoot>
         <TooltipTrigger asChild>
           <span className={cn(getMentionStyles(mentionData.type), className)} onClick={handleClick}>
-            <MentionTypeIcon type={mentionData.type} />
+            <MentionTypeIcon type={mentionData.type} className="mr-1 translate-y-[2px]" />
             <span>@{displayName}</span>
           </span>
         </TooltipTrigger>

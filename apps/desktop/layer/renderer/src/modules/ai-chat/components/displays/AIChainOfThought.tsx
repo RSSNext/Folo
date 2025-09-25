@@ -1,3 +1,4 @@
+import { Spring } from "@follow/components/constants/spring.js"
 import type { CollapseCssRef } from "@follow/components/ui/collapse/CollapseCss.js"
 import { CollapseCss, CollapseCssGroup } from "@follow/components/ui/collapse/CollapseCss.js"
 import { ShinyText } from "@follow/components/ui/shiny-text/ShinyText.js"
@@ -5,6 +6,7 @@ import { cn } from "@follow/utils"
 import type { BizUITools } from "@folo-services/ai-tools"
 import type { ReasoningUIPart, ToolUIPart } from "ai"
 import { isToolUIPart } from "ai"
+import { AnimatePresence, m } from "motion/react"
 import * as React from "react"
 
 import { ToolInvocationComponent } from "../message/ToolInvocationComponent"
@@ -81,7 +83,22 @@ export const AIChainOfThought: React.FC<AIChainOfThoughtProps> = React.memo(
                     {!currentChainReasoningIsFinished ? (
                       <span className="flex items-center gap-2">
                         Thinking:{" "}
-                        <ShinyText className="font-medium">{currentReasoningTitle ?? ""}</ShinyText>
+                        <span className="min-w-0 truncate">
+                          <AnimatePresence initial={false} mode="popLayout">
+                            <m.span
+                              key={currentReasoningTitle ?? "empty"}
+                              initial={{ opacity: 0, y: 6, filter: "blur(4px)" }}
+                              animate={{ opacity: 1, y: 0, filter: "blur(0px)" }}
+                              exit={{ opacity: 0, y: -6, filter: "blur(4px)" }}
+                              transition={Spring.presets.smooth}
+                              className="inline-block"
+                            >
+                              <ShinyText className="font-medium">
+                                {currentReasoningTitle ?? ""}
+                              </ShinyText>
+                            </m.span>
+                          </AnimatePresence>
+                        </span>
                       </span>
                     ) : (
                       "Finished Thinking"
@@ -101,7 +118,9 @@ export const AIChainOfThought: React.FC<AIChainOfThoughtProps> = React.memo(
               {groups.map((part, index) => {
                 const innerCollapseId = `${collapseId}-${index}`
                 if (isToolUIPart(part)) {
-                  return <ToolInvocationComponent key={innerCollapseId} part={part} />
+                  return (
+                    <ToolInvocationComponent variant="loose" key={innerCollapseId} part={part} />
+                  )
                 }
                 const mergedText = part.text
 
