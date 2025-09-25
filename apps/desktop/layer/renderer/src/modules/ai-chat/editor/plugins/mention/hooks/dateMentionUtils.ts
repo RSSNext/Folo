@@ -42,7 +42,7 @@ export const formatRangeValue = (range: DateRange): string => {
   const endExclusive = range.end.add(1, "day").startOf("day")
   const endIso = endExclusive.format(MENTION_DATE_VALUE_FORMAT)
 
-  return `${startIso}..${endIso}`
+  return `<mention-date start="${startIso}" end="${endIso}"/>`
 }
 
 const DEFAULT_DATE_FORMAT: Intl.DateTimeFormatOptions = {

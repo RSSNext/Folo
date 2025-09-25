@@ -1,4 +1,4 @@
-import { useEntry, useEntryIdsByFeedId, useEntryIdsByView } from "@follow/store/entry/hooks"
+import { useEntryIdsByFeedId, useEntryIdsByView } from "@follow/store/entry/hooks"
 import { useEntryStore } from "@follow/store/entry/store"
 import type { FC } from "react"
 import { useMemo } from "react"
@@ -12,13 +12,11 @@ import { PickerList } from "./PickerList"
 export const CurrentFeedEntriesPickerList: FC<{ onSelect: (entryId: string) => void }> = ({
   onSelect,
 }) => {
-  const mainEntryId = useAIChatStore()((s) => {
-    const block = s.blocks.find((b) => b.type === "mainEntry")
-    return block && block.type === "mainEntry" ? block.value : undefined
+  const mainFeedId = useAIChatStore()((s) => {
+    const block = s.blocks.find((b) => b.type === "mainFeed")
+    return block && block.type === "mainFeed" ? block.value : undefined
   })
-  const feedId = useEntry(mainEntryId, (e) => e?.feedId)
-
-  const entryIds = useEntryIdsByFeedId(feedId!)
+  const entryIds = useEntryIdsByFeedId(mainFeedId)
 
   return <BaseEntryPickerList items={entryIds || []} onSelect={onSelect} />
 }
