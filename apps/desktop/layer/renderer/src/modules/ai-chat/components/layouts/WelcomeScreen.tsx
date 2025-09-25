@@ -102,6 +102,7 @@ const DefaultWelcomeHeader = ({ description }: { description: string }) => (
       <h1 className="text-text flex items-center justify-center gap-2 text-2xl font-semibold">
         <Folo className="size-11" /> AI
       </h1>
+
       <p className="text-text-secondary text-balance text-sm">{description}</p>
     </div>
   </m.div>

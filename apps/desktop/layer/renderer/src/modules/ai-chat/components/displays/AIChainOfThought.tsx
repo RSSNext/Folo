@@ -71,7 +71,7 @@ export const AIChainOfThought: React.FC<AIChainOfThoughtProps> = React.memo(
                     {!currentChainReasoningIsFinished ? (
                       <span className="flex items-center gap-2">
                         Thinking:{" "}
-                        <ShinyText className="font-medium" text={currentReasoningTitle ?? ""} />
+                        <ShinyText className="font-medium">{currentReasoningTitle ?? ""}</ShinyText>
                       </span>
                     ) : (
                       "Finished Thinking"
