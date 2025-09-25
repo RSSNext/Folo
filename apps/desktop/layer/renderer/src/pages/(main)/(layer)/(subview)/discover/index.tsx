@@ -20,6 +20,7 @@ import { DiscoverTransform } from "~/modules/discover/DiscoverTransform"
 import { DiscoverUser } from "~/modules/discover/DiscoverUser"
 import { Recommendations } from "~/modules/discover/recommendations"
 import { Trending } from "~/modules/trending"
+import { RssosGenerator } from "~/modules/rssos/RssosGenerator"
 
 const tabs: {
   name: I18nKeys
@@ -54,6 +55,10 @@ const tabs: {
   {
     name: "words.import",
     value: "import",
+  },
+  {
+    name: "RSSOS",
+    value: "rssos",
   },
 ]
 
@@ -163,4 +168,5 @@ const TabComponent: Record<string, React.FC<{ type?: string; isInit?: boolean }>
   user: DiscoverUser,
   default: DiscoverForm,
   transform: DiscoverTransform,
+  rssos: RssosGenerator,
 }

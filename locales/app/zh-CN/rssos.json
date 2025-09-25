@@ -1,0 +1,22 @@
+{
+  "title": "从任意网站生成RSS",
+  "description": "输入任意网站URL，自动使用RSSOS服务生成RSS订阅源。",
+  "url_placeholder": "https://example.com",
+  "generate": "生成RSS",
+  "generating": "正在生成...",
+  "invalid_url": "请输入有效的URL",
+  "generation_failed": "生成RSS订阅源失败",
+  "generation_success": "RSS订阅源生成成功！从{{type}}网站找到了{{count}}篇文章。",
+  "generation_error": "生成RSS订阅源失败",
+  "error": "错误：{{message}}",
+  "copied": "RSS URL已复制到剪贴板！",
+  "copy_failed": "复制到剪贴板失败",
+  "adding_to_folo": "正在添加RSS订阅源到Folo...",
+  "generated_url": "生成的RSS URL：",
+  "copy": "复制URL",
+  "preview": "预览RSS",
+  "add_to_folo": "添加到Folo",
+  "info": "RSSOS自动检测并解析博客、新闻网站、作品集等各类网站内容。",
+  "powered_by": "由RSSOS通用RSS生成器提供支持",
+  "learn_more": "了解更多"
+}

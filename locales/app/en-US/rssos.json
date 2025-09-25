@@ -1,0 +1,22 @@
+{
+  "title": "Generate RSS from Any Website",
+  "description": "Enter any website URL to automatically generate an RSS feed using RSSOS service.",
+  "url_placeholder": "https://example.com",
+  "generate": "Generate RSS",
+  "generating": "Generating...",
+  "invalid_url": "Please enter a valid URL",
+  "generation_failed": "Failed to generate RSS feed",
+  "generation_success": "RSS feed generated successfully! Found {{count}} articles from {{type}} site.",
+  "generation_error": "Failed to generate RSS feed",
+  "error": "Error: {{message}}",
+  "copied": "RSS URL copied to clipboard!",
+  "copy_failed": "Failed to copy to clipboard",
+  "adding_to_folo": "Adding RSS feed to Folo...",
+  "generated_url": "Generated RSS URL:",
+  "copy": "Copy URL",
+  "preview": "Preview RSS",
+  "add_to_folo": "Add to Folo",
+  "info": "RSSOS automatically detects and parses content from blogs, news sites, portfolios, and more.",
+  "powered_by": "Powered by RSSOS - Universal RSS Generator",
+  "learn_more": "Learn more"
+}
