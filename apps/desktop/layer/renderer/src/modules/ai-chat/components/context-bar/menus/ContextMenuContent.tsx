@@ -79,7 +79,7 @@ export const ContextMenuContent: FC = () => {
       {/* Reference Date */}
       <DropdownMenuSub>
         <DropdownMenuSubTrigger>
-          <i className="i-mgc-calendar-time-add-cute-re mr-1.5 size-4" />
+          <i className="i-mgc-calendar-time-add-cute-fi mr-1.5 size-4" />
           Reference Date
         </DropdownMenuSubTrigger>
         <DropdownMenuSubContent className="w-64">
