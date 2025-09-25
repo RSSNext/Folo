@@ -80,7 +80,7 @@ const filterEmptyMessagePart = (messageParts: BizUIMessage["parts"]) => {
   }
   return parts
 }
-// AI message component
+
 export const AIChatMessage: React.FC<AIChatMessageProps> = React.memo(
   ({ message: originalMessage, isLastMessage }) => {
     const message = React.useMemo(() => {

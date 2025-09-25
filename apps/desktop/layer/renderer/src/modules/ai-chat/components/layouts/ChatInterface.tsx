@@ -10,7 +10,7 @@ import type { EditorState, LexicalEditor } from "lexical"
 import { AnimatePresence } from "motion/react"
 import { nanoid } from "nanoid"
 import type { FC, RefObject } from "react"
-import { Suspense, use, useEffect, useLayoutEffect, useRef, useState } from "react"
+import { startTransition, Suspense, use, useEffect, useLayoutEffect, useRef, useState } from "react"
 import { useEventCallback, useEventListener } from "usehooks-ts"
 
 import { useAISettingKey } from "~/atoms/settings/ai"
@@ -395,7 +395,20 @@ const Messages: FC<{ contentRef?: RefObject<HTMLDivElement> }> = ({ contentRef }
 
   useLayoutEffect(() => {
     if (!contentRef) return
-    setMessageContainerWidth(contentRef.current?.clientWidth ?? 0)
+
+    const setMessageContainerWidthTransition = () =>
+      startTransition(() => {
+        setMessageContainerWidth(contentRef.current?.clientWidth ?? 0)
+      })
+    setMessageContainerWidthTransition()
+    const resizeObserver = new ResizeObserver(() => {
+      setMessageContainerWidthTransition()
+    })
+    resizeObserver.observe(contentRef.current)
+
+    return () => {
+      resizeObserver.disconnect()
+    }
   }, [contentRef])
   return (
     <div

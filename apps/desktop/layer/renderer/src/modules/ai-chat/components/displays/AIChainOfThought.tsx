@@ -33,6 +33,11 @@ export const AIChainOfThought: React.FC<AIChainOfThoughtProps> = React.memo(
           break
         }
       }
+
+      const isEndWithTool = groups.at?.(-1)?.type.startsWith("tool-")
+      if (isEndWithTool) {
+        allDone = false
+      }
       return allDone
     }, [groups])
     const currentReasoningTitle = React.useMemo(() => {
@@ -43,7 +48,7 @@ export const AIChainOfThought: React.FC<AIChainOfThoughtProps> = React.memo(
       if (!lastPart) return null
 
       if (isToolUIPart(lastPart)) {
-        return `Calling ${lastPart.type.replace("tool-", "")}`
+        return `Calling [${lastPart.type.replace("tool-", "")}]`
       }
 
       const lastPartText = lastPart.text
@@ -57,7 +62,12 @@ export const AIChainOfThought: React.FC<AIChainOfThoughtProps> = React.memo(
     if (!groups || groups.length === 0) return null
 
     return (
-      <div className={cn("border-border w-full min-w-0 text-left", className)}>
+      <div
+        className={cn(
+          "border-border w-[calc(var(--ai-chat-message-container-width,65ch))] min-w-0 text-left",
+          className,
+        )}
+      >
         <CollapseCssGroup>
           <CollapseCss
             ref={collapseRef}

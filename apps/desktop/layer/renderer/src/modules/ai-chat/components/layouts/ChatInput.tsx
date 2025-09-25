@@ -98,7 +98,7 @@ export const ChatInput = memo(({ onSend, variant }: ChatInputProps) => {
         <ScrollArea rootClassName="mx-5 my-3.5 mr-14 flex-1 overflow-auto">
           <LexicalRichEditor
             ref={editorRef}
-            placeholder="Message AI assistant..."
+            placeholder="Message, @ for context"
             className="w-full"
             onChange={handleEditorChange}
             onKeyDown={handleKeyDown}
