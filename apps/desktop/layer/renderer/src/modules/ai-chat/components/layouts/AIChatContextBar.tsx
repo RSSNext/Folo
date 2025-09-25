@@ -117,7 +117,7 @@ export const AIChatContextBar: Component<{ onSendShortcut?: (prompt: string) => 
               type="button"
               className="bg-material-medium hover:bg-material-thin border-border text-text-secondary hover:text-text-secondary flex size-7 items-center justify-center rounded-md border transition-colors"
             >
-              <i className="i-mgc-add-cute-re size-3.5" />
+              <i className="i-mgc-at-cute-re size-3.5" />
             </button>
           </DropdownMenuTrigger>
           <ContextMenuContent />
