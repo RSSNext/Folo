@@ -12,12 +12,20 @@ export const EntryTitle: FC<{ entryId?: string; fallback: string }> = ({ entryId
   return <span>{entryTitle}</span>
 }
 
-export const FeedTitle: FC<{ feedId?: string; fallback: string }> = ({ feedId, fallback }) => {
+export const FeedTitle: FC<{ feedId?: string; category?: string; fallback: string }> = ({
+  feedId,
+  category,
+  fallback,
+}) => {
   const finalFeedIds = feedId?.split(",").map((id) => id.trim())
   const feeds = useFeedsByIds(finalFeedIds, (feed) => ({ title: feed?.title }))
   const feedTitles = feeds.map((feed) => feed.title).join(", ")
 
   if (!feedId || !feedTitles) {
+    if (category) {
+      return <span>{category}</span>
+    }
+
     return <span className="text-text-tertiary">{fallback}</span>
   }
 

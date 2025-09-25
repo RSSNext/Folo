@@ -1,6 +1,6 @@
 import { views } from "@follow/constants"
 import { clsx, cn } from "@follow/utils/utils"
-import type { FC } from "react"
+import type { FC, ReactNode } from "react"
 import { memo } from "react"
 import { useTranslation } from "react-i18next"
 
@@ -8,7 +8,7 @@ import { ROUTE_FEED_IN_FOLDER } from "~/constants"
 import { ImageThumbnail } from "~/modules/ai-chat/components/message/ImageThumbnail"
 import { CircularProgress } from "~/modules/ai-chat/components/ui/UploadProgress"
 import { useChatBlockActions } from "~/modules/ai-chat/store/hooks"
-import type { AIChatContextBlock } from "~/modules/ai-chat/store/types"
+import type { AIChatContextBlock, ValueContextBlock } from "~/modules/ai-chat/store/types"
 import {
   getFileCategoryFromMimeType,
   getFileIconName,
@@ -18,6 +18,98 @@ import { formatMentionDateValue } from "~/modules/ai-chat/utils/mentionDate"
 import { EntryTitle, FeedTitle } from "./TitleComponents"
 
 const blockTypeCanNotBeRemoved = new Set<string>([])
+
+const BlockContainer: FC<{
+  icon: string | null | undefined
+  label?: string
+  canRemove: boolean
+  onRemove?: () => void
+  content: ReactNode
+}> = memo(({ icon, label, canRemove, onRemove, content }) => {
+  const isStringContent = typeof content === "string"
+
+  return (
+    <div
+      className={cn(
+        "group relative flex h-7 min-w-0 max-w-[calc(50%-0.5rem)] flex-shrink-0 items-center gap-2 overflow-hidden rounded-lg px-2.5",
+        "bg-fill-tertiary border-border border",
+      )}
+    >
+      <div
+        className={clsx(
+          "min-w-0",
+          canRemove
+            ? "group-hover:[mask-image:linear-gradient(to_right,black_0%,black_calc(100%-3rem),rgba(0,0,0,0.8)_calc(100%-2rem),rgba(0,0,0,0.3)_calc(100%-1rem),transparent_100%)]"
+            : void 0,
+        )}
+      >
+        <div className="flex min-w-0 flex-1 items-center gap-1.5">
+          <div className="flex items-center gap-1">
+            {icon && <i className={cn("size-3.5 flex-shrink-0", icon)} />}
+            {label && <span className="text-text-tertiary text-xs font-medium">{label}</span>}
+          </div>
+
+          {isStringContent ? (
+            <span className="text-text min-w-0 flex-1 truncate text-xs">{content}</span>
+          ) : (
+            <div className="text-text min-w-0 flex-1 truncate text-xs">{content}</div>
+          )}
+        </div>
+      </div>
+
+      {canRemove && (
+        <button
+          type="button"
+          onClick={onRemove}
+          className="text-text/90 cursor-button hover:text-text absolute inset-y-0 right-2 flex-shrink-0 opacity-0 transition-all ease-in group-hover:opacity-100"
+        >
+          <i className="i-mgc-close-cute-re size-3" />
+        </button>
+      )}
+    </div>
+  )
+})
+BlockContainer.displayName = "ContextBlockContainer"
+
+type ValueBlockOf<Type extends ValueContextBlock["type"]> = Omit<ValueContextBlock, "type"> & {
+  type: Type
+}
+
+type MainViewBlock = ValueBlockOf<"mainView">
+type MainFeedBlock = ValueBlockOf<"mainFeed">
+
+export const MainViewFeedContextBlock: FC<{
+  viewBlock: MainViewBlock
+  feedBlock: MainFeedBlock
+}> = memo(({ viewBlock, feedBlock }) => {
+  const blockActions = useChatBlockActions()
+
+  const viewIcon = views.find((v) => v.view === Number(viewBlock.value))?.icon.props.className
+
+  const category = feedBlock.value.startsWith(ROUTE_FEED_IN_FOLDER)
+    ? feedBlock.value.slice(ROUTE_FEED_IN_FOLDER.length)
+    : undefined
+
+  const canRemove =
+    !blockTypeCanNotBeRemoved.has(viewBlock.type) && !blockTypeCanNotBeRemoved.has(feedBlock.type)
+
+  const handleRemove = () => {
+    blockActions.removeBlock(viewBlock.id)
+    blockActions.removeBlock(feedBlock.id)
+  }
+
+  return (
+    <BlockContainer
+      icon={viewIcon}
+      canRemove={canRemove}
+      onRemove={handleRemove}
+      content={
+        <FeedTitle feedId={feedBlock.value} category={category} fallback={feedBlock.value} />
+      }
+    />
+  )
+})
+MainViewFeedContextBlock.displayName = "MainViewFeedContextBlock"
 
 export const ContextBlock: FC<{ block: AIChatContextBlock }> = memo(({ block }) => {
   const { t } = useTranslation("common")
@@ -201,39 +293,12 @@ export const ContextBlock: FC<{ block: AIChatContextBlock }> = memo(({ block }) 
   const canRemove = !blockTypeCanNotBeRemoved.has(block.type)
 
   return (
-    <div
-      className={cn(
-        "group relative flex h-7 min-w-0 max-w-[calc(50%-0.5rem)] flex-shrink-0 items-center gap-2 overflow-hidden rounded-lg px-2.5",
-        "bg-fill-tertiary border-border border",
-      )}
-    >
-      <div
-        className={clsx(
-          "min-w-0",
-          canRemove
-            ? "group-hover:[mask-image:linear-gradient(to_right,black_0%,black_calc(100%-3rem),rgba(0,0,0,0.8)_calc(100%-2rem),rgba(0,0,0,0.3)_calc(100%-1rem),transparent_100%)]"
-            : void 0,
-        )}
-      >
-        <div className="flex min-w-0 flex-1 items-center gap-1.5">
-          <div className="flex items-center gap-1">
-            {getBlockIcon() && <i className={cn("size-3.5 flex-shrink-0", getBlockIcon())} />}
-            <span className="text-text-tertiary text-xs font-medium">{getBlockLabel()}</span>
-          </div>
-
-          <span className={"text-text min-w-0 flex-1 truncate text-xs"}>{getDisplayContent()}</span>
-        </div>
-      </div>
-
-      {canRemove && (
-        <button
-          type="button"
-          onClick={() => blockActions.removeBlock(block.id)}
-          className="text-text/90 cursor-button hover:text-text absolute inset-y-0 right-2 flex-shrink-0 opacity-0 transition-all ease-in group-hover:opacity-100"
-        >
-          <i className="i-mgc-close-cute-re size-3" />
-        </button>
-      )}
-    </div>
+    <BlockContainer
+      icon={getBlockIcon()}
+      label={getBlockLabel()}
+      canRemove={canRemove}
+      onRemove={canRemove ? () => blockActions.removeBlock(block.id) : undefined}
+      content={getDisplayContent()}
+    />
   )
 })
