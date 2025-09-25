@@ -79,12 +79,12 @@ const createAiMessageMarkdownElementsRender = (canAnimate: boolean) => {
     a: ({ node, ...props }) => {
       return React.createElement(RelatedEntryLink, { ...props } as any)
     },
-    "folo-entry": ({ node, children, ...props }: any) => (
+    "mention-entry": ({ node, children, ...props }: any) => (
       <InlineFoloReference type="entry" style={ANIMATION_STYLE} {...props}>
         {children}
       </InlineFoloReference>
     ),
-    "folo-feed": ({ node, children, ...props }: any) => (
+    "mention-feed": ({ node, children, ...props }: any) => (
       <InlineFoloReference type="feed" style={ANIMATION_STYLE} {...props}>
         {children}
       </InlineFoloReference>
@@ -185,21 +185,25 @@ const InlineFoloReference: React.FC<{
   children?: React.ReactNode
   className?: string
   style?: React.CSSProperties
-}> = ({ type, children, className, style }) => {
+  id?: string
+}> = ({ type, children, className, style, id }) => {
   const peekModal = usePeekModal()
   const navigateEntry = useNavigateEntry()
 
   const targetId = React.useMemo(() => {
-    return React.Children.toArray(children)
-      .map((child) => {
-        if (typeof child === "string" || typeof child === "number") {
-          return String(child)
-        }
-        return ""
-      })
-      .join("")
-      .trim()
-  }, [children])
+    return (
+      id ||
+      React.Children.toArray(children)
+        .map((child) => {
+          if (typeof child === "string" || typeof child === "number") {
+            return String(child)
+          }
+          return ""
+        })
+        .join("")
+        .trim()
+    )
+  }, [id, children])
 
   const handleClick = React.useCallback(
     (event: React.MouseEvent<HTMLButtonElement>) => {
