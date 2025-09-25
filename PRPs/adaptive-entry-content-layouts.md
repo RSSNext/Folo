@@ -25,7 +25,6 @@ Transform the entry content display system from a fixed, article-centric layout 
   <AISummary />           // AI-generated summary
   <EntryContentHTMLRenderer /> // Main content
   <EntryAttachments />    // File attachments
-  <SupportCreator />      // Creator support section
 </div>
 ```
 
@@ -145,7 +144,6 @@ const EntryContentLayoutFactory = {
 <AISummary />
 <EntryContentHTMLRenderer />
 <EntryAttachments />
-<SupportCreator />
 ```
 
 ## Implementation Tasks

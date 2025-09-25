@@ -34,7 +34,6 @@ enum AchievementsActionIdMap {
   // TODO
   // FOLLOW_SPECIAL_FEED = 6,
   ALPHA_TESTER = 7,
-  FEED_BOOSTER = 8,
 }
 
 const achievementActionIdMetaMap: Record<
@@ -79,10 +78,6 @@ const achievementActionIdMetaMap: Record<
     title: "achievement.alpha_tester",
     description: "achievement.alpha_tester_description",
     video: "https://assets.folo.is/AlphaBadge.webm",
-  },
-  [AchievementsActionIdMap.FEED_BOOSTER]: {
-    title: "achievement.feed_booster",
-    description: "achievement.feed_booster_description",
   },
 }
 

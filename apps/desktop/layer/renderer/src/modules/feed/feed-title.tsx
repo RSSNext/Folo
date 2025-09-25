@@ -5,7 +5,6 @@ import type { ListModel } from "@follow/store/list/types"
 import { cn } from "@follow/utils/utils"
 
 import { useUISettingKey } from "~/atoms/settings/ui"
-import { BoostCertification } from "~/modules/boost/boost-certification"
 import { FeedCertification } from "~/modules/feed/feed-certification"
 import { getPreferredTitle } from "~/store/feed/hooks"
 
@@ -31,12 +30,7 @@ export const FeedTitle = ({
       <EllipsisHorizontalTextWithTooltip className={cn("truncate", titleClassName)}>
         {title || getPreferredTitle(feed)}
       </EllipsisHorizontalTextWithTooltip>
-      {!hideExtraBadge && feed.type !== "inbox" && (
-        <>
-          <FeedCertification feed={feed} />
-          <BoostCertification feed={feed} />
-        </>
-      )}
+      {!hideExtraBadge && feed.type !== "inbox" && <FeedCertification feed={feed} />}
     </div>
   )
 }

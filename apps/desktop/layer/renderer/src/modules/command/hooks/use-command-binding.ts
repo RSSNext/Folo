@@ -37,7 +37,6 @@ export const defaultCommandShortcuts = {
   [COMMAND_ID.entry.read]: "M",
   [COMMAND_ID.entry.share]: transformShortcut("$mod+Alt+S"),
   [COMMAND_ID.entry.star]: "S",
-  [COMMAND_ID.entry.tip]: transformShortcut("Shift+$mod+T"),
   [COMMAND_ID.entry.tts]: transformShortcut("Shift+$mod+V"),
 
   // Entry render commands
@@ -100,7 +99,6 @@ export const allowCustomizeCommands = new Set([
   COMMAND_ID.entry.read,
   COMMAND_ID.entry.share,
   COMMAND_ID.entry.star,
-  COMMAND_ID.entry.tip,
   COMMAND_ID.entry.tts,
 ] as const)
 type ExtractSetType<T extends Set<unknown>> = T extends Set<infer U> ? U : never

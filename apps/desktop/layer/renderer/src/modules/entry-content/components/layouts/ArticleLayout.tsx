@@ -27,7 +27,6 @@ import { EntryRenderError } from "../entry-content/EntryRenderError"
 import { ReadabilityNotice } from "../entry-content/ReadabilityNotice"
 import { EntryAttachments } from "../EntryAttachments"
 import { EntryTitle } from "../EntryTitle"
-import { SupportCreator } from "../SupportCreator"
 import { MediaTranscript, TranscriptToggle, useTranscription } from "./shared"
 import { ArticleAudioPlayer } from "./shared/AudioPlayer"
 import type { EntryLayoutProps } from "./types"
@@ -120,7 +119,6 @@ export const ArticleLayout: React.FC<EntryLayoutProps> = ({
       </WrappedElementProvider>
 
       <EntryAttachments entryId={entryId} />
-      <SupportCreator entryId={entryId} />
     </div>
   )
 }

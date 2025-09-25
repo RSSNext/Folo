@@ -51,12 +51,6 @@ export const EntryCommandShortcutRegister = ({
 
   useCommandBinding({
     when: baseCondition,
-    commandId: COMMAND_ID.entry.tip,
-    args: [{ entryId }],
-  })
-
-  useCommandBinding({
-    when: baseCondition,
     commandId: COMMAND_ID.entry.copyTitle,
     args: [{ entryId }],
   })

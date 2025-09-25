@@ -239,7 +239,6 @@ class APIMorph {
       errorAt: data.errorAt,
       errorMessage: data.errorMessage,
       siteUrl: data.siteUrl,
-      tipUserIds: data.tipUsers ? data.tipUsers.map((user) => user.id) : [],
     }
   }
 
@@ -255,7 +254,6 @@ class APIMorph {
       errorAt: data.errorAt,
       errorMessage: data.errorMessage,
       siteUrl: data.siteUrl,
-      tipUserIds: data.tipUsers ? data.tipUsers.map((user) => user.id) : [],
     }
   }
 

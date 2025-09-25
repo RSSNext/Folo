@@ -7,7 +7,6 @@ import { entrySyncServices } from "@follow/store/entry/store"
 import type { EntryModel } from "@follow/store/entry/types"
 import { useFeedById } from "@follow/store/feed/hooks"
 import { useIsInbox } from "@follow/store/inbox/hooks"
-import { whoami } from "@follow/store/user/getters"
 import { useUserRole } from "@follow/store/user/hooks"
 import { doesTextContainHTML } from "@follow/utils/utils"
 import { useMemo } from "react"
@@ -299,16 +298,6 @@ export const useEntryActions = ({ entryId, view }: { entryId: string; view: Feed
         id: COMMAND_ID.integration.saveToQBittorrent,
         onClick: runCmdFn(COMMAND_ID.integration.saveToQBittorrent, [{ entryId }]),
         hide: !IN_ELECTRON || !entry.hasBitTorrent,
-        entryId,
-      }),
-      new EntryActionMenuItem({
-        id: COMMAND_ID.entry.tip,
-        onClick: runCmdFn(COMMAND_ID.entry.tip, [
-          { entryId, feedId: feed?.id, userId: feed?.ownerUserId },
-        ]),
-        hide: isInbox || feed?.ownerUserId === whoami()?.id,
-        // shortcut: shortcuts.entry.tip.key,
-        shortcut: shortcuts[COMMAND_ID.entry.tip],
         entryId,
       }),
       new EntryActionMenuItem({

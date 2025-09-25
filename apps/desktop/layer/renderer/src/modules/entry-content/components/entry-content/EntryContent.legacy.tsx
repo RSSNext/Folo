@@ -44,7 +44,6 @@ import { EntryHeader } from "../entry-header"
 import { EntryAttachments } from "../EntryAttachments"
 import { EntryTitle } from "../EntryTitle"
 import { SourceContentPanel } from "../SourceContentView"
-import { SupportCreator } from "../SupportCreator"
 import { ContainerToc } from "./accessories/ContainerToc"
 import { EntryCommandShortcutRegister } from "./EntryCommandShortcutRegister"
 import { EntryContentFallback } from "./EntryContentFallback"
@@ -234,7 +233,6 @@ const EntryContentImpl: Component<EntryContentProps> = ({
               )}
 
               <EntryAttachments entryId={entryId} />
-              <SupportCreator entryId={entryId} />
             </article>
           </m.div>
         </EntryScrollArea>

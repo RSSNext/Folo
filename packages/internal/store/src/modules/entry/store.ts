@@ -20,7 +20,6 @@ import type {
   InsertedBeforeTimeRangeFilter,
   PublishAtTimeRangeFilter,
 } from "../unread/types"
-import { whoami } from "../user/getters"
 import { userActions } from "../user/store"
 import { getEntry } from "./getter"
 import type { EntryModel, FetchEntriesProps, FetchEntriesPropsSettings } from "./types"
@@ -539,14 +538,7 @@ class EntrySyncServices {
 
     const dataFeeds = res.data?.map((e) => e.feeds).filter((f) => f.type === "feed")
     const feeds = dataFeeds?.map((f) => apiMorph.toFeed(f)) ?? []
-    const users = dataFeeds?.flatMap((f) => f.tipUsers).filter((u) => !!u) ?? []
     feedActions.upsertMany(feeds)
-    userActions.upsertMany(
-      users.map((u) => ({
-        ...u,
-        isMe: u.id === whoami()?.id,
-      })),
-    )
 
     return res
   }

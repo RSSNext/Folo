@@ -42,10 +42,6 @@ export class TrackerPoints {
     this.track(TrackerMapper.NavigateEntry, props)
   }
 
-  boostSent(props: { amount: string; feedId: string; transactionId: string }) {
-    this.track(TrackerMapper.BoostSent, props)
-  }
-
   integration(props: { type: string; event: string }) {
     this.track(TrackerMapper.Integration, props)
   }
@@ -80,10 +76,6 @@ export class TrackerPoints {
     this.track(TrackerMapper.UpdateRestart, props)
   }
 
-  tipModalOpened(props: { entryId?: string }) {
-    this.track(TrackerMapper.TipModalOpened, props)
-  }
-
   subscribeModalOpened(props: {
     feedId?: string
     listId?: string
@@ -99,10 +91,6 @@ export class TrackerPoints {
 
   dailyRewardClaimed() {
     this.track(TrackerMapper.DailyRewardClaimed)
-  }
-
-  tipSent(props: { amount: string; entryId: string; transactionId: string }) {
-    this.track(TrackerMapper.TipSent, props)
   }
 
   register(props: { type: "email" | "social" }) {

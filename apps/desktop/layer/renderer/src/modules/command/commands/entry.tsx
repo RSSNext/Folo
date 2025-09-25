@@ -16,7 +16,6 @@ import { toggleShowAISummaryOnce } from "~/atoms/ai-summary"
 import { toggleShowAITranslationOnce } from "~/atoms/ai-translation"
 import { AudioPlayer, getAudioPlayerAtomValue } from "~/atoms/player"
 import { showPopover } from "~/atoms/popover"
-import { useIsInMASReview } from "~/atoms/server-configs"
 import { useGeneralSettingKey } from "~/atoms/settings/general"
 import {
   getShowSourceContent,
@@ -33,7 +32,6 @@ import { parseHtml } from "~/lib/parse-html"
 import { useActivationModal } from "~/modules/activation"
 import { markAllByRoute } from "~/modules/entry-column/hooks/useMarkAll"
 import { useGalleryModal } from "~/modules/entry-content/hooks"
-import { useTipModal } from "~/modules/wallet/hooks"
 
 import { useRegisterFollowCommand } from "../hooks/use-register-command"
 import type { Command, CommandCategory } from "../types"
@@ -109,7 +107,6 @@ export const useRegisterEntryCommands = () => {
   const uncollect = useUnCollect()
   const deleteInboxEntry = useDeleteInboxEntry()
   const showSourceContentModal = useSourceContentModal()
-  const openTipModal = useTipModal()
   const openGalleryModal = useGalleryModal()
   const read = useRead()
   const unread = useUnread()
@@ -119,27 +116,8 @@ export const useRegisterEntryCommands = () => {
 
   const voice = useGeneralSettingKey("voice")
 
-  const isInMASReview = useIsInMASReview()
-
   useRegisterFollowCommand(
     [
-      ...(isInMASReview
-        ? ([] as any[])
-        : [
-            {
-              id: COMMAND_ID.entry.tip,
-              label: t("entry_actions.tip"),
-              icon: <i className="i-mgc-power-outline" />,
-              category,
-              run: ({ userId, feedId, entryId }) => {
-                openTipModal({
-                  userId,
-                  feedId,
-                  entryId,
-                })
-              },
-            },
-          ]),
       {
         id: COMMAND_ID.entry.star,
         label: t("entry_actions.star"),
@@ -410,9 +388,7 @@ export const useRegisterEntryCommands = () => {
         },
       },
     ],
-    {
-      deps: [isInMASReview],
-    },
+    {},
   )
 
   useRegisterFollowCommand(
@@ -449,11 +425,6 @@ export const useRegisterEntryCommands = () => {
     },
   )
 }
-
-export type TipCommand = Command<{
-  id: typeof COMMAND_ID.entry.tip
-  fn: (data: { userId?: string | null; feedId?: string; entryId?: string }) => void
-}>
 
 export type StarCommand = Command<{
   id: typeof COMMAND_ID.entry.star
@@ -536,7 +507,6 @@ export type ReadabilityCommand = Command<{
 }>
 
 export type EntryCommand =
-  | TipCommand
   | StarCommand
   | DeleteCommand
   | CopyLinkCommand
