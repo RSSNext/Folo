@@ -74,7 +74,7 @@ const createAiMessageMarkdownElementsRender = (canAnimate: boolean) => {
         }
       }
 
-      return <pre className="text-text-secondary">{children}</pre>
+      return <pre className="text-text-secondary bg-material-medium">{children}</pre>
     },
     a: ({ node, ...props }) => {
       return React.createElement(RelatedEntryLink, { ...props } as any)
