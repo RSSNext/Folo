@@ -13,9 +13,7 @@ import { createDateMentionBuilder, MAX_INLINE_DATE_SUGGESTIONS } from "./dateMen
 export const useMentionSearchService = () => {
   const { t, i18n } = useTranslation("ai")
   const language = i18n.language || i18n.resolvedLanguage || "en"
-  const { search } = useFeedEntrySearchService({
-    maxRecentEntries: 50,
-  })
+  const { search } = useFeedEntrySearchService()
 
   const buildDateMentions = useMemo(() => createDateMentionBuilder({ t, language }), [t, language])
 
@@ -38,7 +36,7 @@ export const useMentionSearchService = () => {
         return results
       }
 
-      if (type === "feed" || type === "entry") {
+      if (type === "feed" || type === "entry" || type === "category") {
         const searchResults = search(trimmedQuery, type, 10)
         searchResults.forEach((item) =>
           pushResult({

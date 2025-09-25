@@ -187,7 +187,10 @@ const ChatInterfaceContent = ({ centerInputOnEmpty }: ChatInterfaceProps) => {
               serverUrl: block.attachment.serverUrl,
             },
           })
-        } else if (block.type === "mainFeed" && block.value.startsWith(ROUTE_FEED_IN_FOLDER)) {
+        } else if (
+          (block.type === "mainFeed" || block.type === "referFeed") &&
+          block.value.startsWith(ROUTE_FEED_IN_FOLDER)
+        ) {
           const categoryName = block.value.slice(ROUTE_FEED_IN_FOLDER.length)
           const { view } = getRouteParams()
           const feedIds = getCategoryFeedIds(categoryName, view)

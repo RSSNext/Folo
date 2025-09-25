@@ -62,6 +62,13 @@ const getMentionStyles = (type: MentionData["type"]) => {
         "hover:bg-orange/20 hover:border-orange/30",
       )
     }
+    case "category": {
+      return cn(
+        baseStyles,
+        "bg-green/10 text-green border-green/20",
+        "hover:bg-green/20 hover:border-green/30",
+      )
+    }
     case "date": {
       return cn(
         baseStyles,
