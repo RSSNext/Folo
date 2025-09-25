@@ -102,7 +102,11 @@ function ProfileScreenImpl(props: { userId: string }) {
     })
   }, [user?.id, user?.name])
   const frame = useSafeAreaFrame()
-  const headerHeight = getDefaultHeaderHeight(frame, false, 0)
+  const headerHeight = getDefaultHeaderHeight({
+    landscape: frame.width > frame.height,
+    modalPresentation: false,
+    topInset: 0,
+  })
   const whoami = useWhoami()
   const isMyProfile = user?.id === whoami?.id
   const actionCtx = useMemo(

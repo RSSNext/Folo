@@ -26,6 +26,7 @@ class TabBarRootView: ExpoView {
 
     if #available(iOS 26.0, *) {
       tabBarController.isTabBarHidden = false
+      tabBarController.tabBarMinimizeBehavior = .onScrollDown
     }
 
     tabBarController.tabBar.tintColor = Utils.accentColor

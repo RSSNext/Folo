@@ -37,7 +37,11 @@ export const DiscoverHeader = () => {
   const frame = useSafeAreaFrame()
   const insets = useSafeAreaInsets()
   const sheetModal = useScreenIsInSheetModal()
-  const headerHeight = getDefaultHeaderHeight(frame, sheetModal, insets.top)
+  const headerHeight = getDefaultHeaderHeight({
+    landscape: frame.width > frame.height,
+    modalPresentation: sheetModal,
+    topInset: insets.top,
+  })
   const scrollContainerAnimatedX = useSearchPageScrollContainerAnimatedX()
   const { searchFocusedAtom } = useSearchPageContext()
   const isFocused = useAtomValue(searchFocusedAtom)

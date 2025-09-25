@@ -1,8 +1,11 @@
 import type { BlurViewProps } from "expo-blur"
 import { BlurView } from "expo-blur"
+import { GlassView } from "expo-glass-effect"
 import { useColorScheme } from "nativewind"
 import { Platform, StyleSheet, View } from "react-native"
 import { useColor } from "react-native-uikit-colors"
+
+import { isIos26 } from "@/src/lib/platform"
 
 /**
  * @android In Android, the BlurView is experimental and not fully supported,
@@ -13,14 +16,18 @@ import { useColor } from "react-native-uikit-colors"
 export const ThemedBlurView = ({
   ref,
   tint,
+  useGlass,
   ...rest
-}: BlurViewProps & { ref?: React.Ref<BlurView | null> }) => {
+}: BlurViewProps & { ref?: React.Ref<BlurView | null>; useGlass?: boolean }) => {
   const { colorScheme } = useColorScheme()
 
   const background = useColor("systemBackground")
 
   const useBlurView = Platform.OS === "ios" || "experimentalBlurMethod" in rest
 
+  if (isIos26 && useGlass) {
+    return <GlassView style={rest.style} glassEffectStyle="regular" />
+  }
   return useBlurView ? (
     <BlurView
       ref={ref}

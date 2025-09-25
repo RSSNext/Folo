@@ -76,6 +76,8 @@
   "integration.mcp.services.title": "MCP服务",
   "integration.title": "集成",
   "mentions.date.display.with_range": "{{label}}（{{range}}）",
+  "mentions.date.relative.last_15_days.label": "最近15天",
+  "mentions.date.relative.last_15_days.search": "最近15天|近半个月",
   "mentions.date.relative.last_30_days.label": "最近30天",
   "mentions.date.relative.last_30_days.search": "最近30天|近一个月",
   "mentions.date.relative.last_3_days.label": "最近3天",
