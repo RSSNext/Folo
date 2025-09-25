@@ -88,16 +88,16 @@ export class BootstrapManager {
         if (url.hostname === "us.i.posthog.com") {
           const responseHeaders = details.responseHeaders || {}
 
-          responseHeaders["Access-Control-Allow-Origin"] = ["*"]
-          responseHeaders["Access-Control-Allow-Methods"] = [
+          responseHeaders["access-control-allow-origin"] = ["*"]
+          responseHeaders["access-control-allow-methods"] = [
             "GET",
             "POST",
             "PUT",
             "DELETE",
             "OPTIONS",
           ]
-          responseHeaders["Access-Control-Allow-Headers"] = ["*"]
-          responseHeaders["Access-Control-Allow-Credentials"] = ["true"]
+          responseHeaders["access-control-allow-headers"] = ["*"]
+          responseHeaders["access-control-allow-credentials"] = ["true"]
 
           callback({
             cancel: false,
