@@ -1,7 +1,7 @@
 import { cn } from "@follow/utils/utils"
 import type { AITask, TaskSchedule } from "@follow-app/client-sdk"
 import dayjs from "dayjs"
-import type { TFunction } from "i18next"
+import type { i18n, TFunction } from "i18next"
 import { memo, useCallback, useMemo, useState } from "react"
 import { useTranslation } from "react-i18next"
 import { toast } from "sonner"
@@ -21,7 +21,7 @@ import {
 } from "../query"
 import { AITaskModal } from "./ai-task-modal"
 
-const formatScheduleText = (schedule: TaskSchedule, t: TFunction<"ai", undefined>) => {
+const formatScheduleText = (schedule: TaskSchedule, t: TFunction<"ai", undefined>, i18n: i18n) => {
   if (!schedule) return t("tasks.schedule.unknown")
   switch (schedule.type) {
     case "once": {
@@ -36,18 +36,14 @@ const formatScheduleText = (schedule: TaskSchedule, t: TFunction<"ai", undefined
       return t("tasks.schedule.daily", { time: time.format("h:mm A") })
     }
     case "weekly": {
-      const days = [
-        t("days.sunday", { ns: "common" }),
-        t("days.monday", { ns: "common" }),
-        t("days.tuesday", { ns: "common" }),
-        t("days.wednesday", { ns: "common" }),
-        t("days.thursday", { ns: "common" }),
-        t("days.friday", { ns: "common" }),
-        t("days.saturday", { ns: "common" }),
-      ]
       const time = dayjs(schedule.timeOfDay)
+      const locale = i18n.language
+      const dow = Math.min(6, Math.max(0, schedule.dayOfWeek))
+      const dayName = new Intl.DateTimeFormat(locale, { weekday: "long" }).format(
+        dayjs().day(dow).toDate(),
+      )
       return t("tasks.schedule.weekly", {
-        day: days[schedule.dayOfWeek],
+        day: dayName,
         time: time.format("h:mm A"),
       })
     }
@@ -100,7 +96,7 @@ export const TaskItem = memo(({ task }: { task: AITask }) => {
   const updateTaskMutation = useUpdateAITaskMutation()
   const testRunMutation = useTestRunAITaskMutation()
   const { ask } = useDialog()
-  const { t } = useTranslation("ai")
+  const { t, i18n } = useTranslation("ai")
   const sessions = useAIChatSessionListQuery()
   // const chatActions = useChatActions()
   const [openingReport, setOpeningReport] = useState(false)
@@ -228,7 +224,7 @@ export const TaskItem = memo(({ task }: { task: AITask }) => {
           <div className="space-y-1">
             <p className="text-text-secondary text-xs">
               <span className="text-text-tertiary">{t("tasks.fields.schedule")}</span>{" "}
-              {formatScheduleText(task.schedule, t)}
+              {formatScheduleText(task.schedule, t, i18n)}
             </p>
             <p className="text-text-secondary text-xs">
               <span className="text-text-tertiary">{t("tasks.fields.prompt")}</span> {task.prompt}
