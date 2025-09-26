@@ -1,5 +1,6 @@
 import { cn } from "@follow/utils/utils"
 import { memo } from "react"
+import { useTranslation } from "react-i18next"
 
 import { useAITaskListQuery } from "../query"
 import { TaskItem } from "./task-item"
@@ -10,6 +11,7 @@ interface TaskListProps {
 
 export const AITaskList = memo<TaskListProps>(({ className }) => {
   const tasks = useAITaskListQuery()
+  const { t } = useTranslation("ai")
 
   if (tasks === undefined) {
     return null
@@ -21,10 +23,8 @@ export const AITaskList = memo<TaskListProps>(({ className }) => {
         <div className="bg-fill-secondary mx-auto mb-3 flex size-12 items-center justify-center rounded-full">
           <i className="i-mgc-calendar-time-add-cute-re text-text size-6" />
         </div>
-        <h4 className="text-text mb-1 text-sm font-medium">No scheduled tasks</h4>
-        <p className="text-text-secondary text-xs">
-          Create your first AI task to automate your workflows.
-        </p>
+        <h4 className="text-text mb-1 text-sm font-medium">{t("tasks.empty.title")}</h4>
+        <p className="text-text-secondary text-xs">{t("tasks.empty.desc")}</p>
       </div>
     )
   }

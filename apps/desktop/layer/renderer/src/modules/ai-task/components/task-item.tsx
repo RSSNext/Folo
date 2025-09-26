@@ -1,6 +1,7 @@
 import { cn } from "@follow/utils/utils"
 import type { AITask, TaskSchedule } from "@follow-app/client-sdk"
 import dayjs from "dayjs"
+import type { TFunction } from "i18next"
 import { memo, useCallback, useMemo, useState } from "react"
 import { useTranslation } from "react-i18next"
 import { toast } from "sonner"
@@ -20,29 +21,42 @@ import {
 } from "../query"
 import { AITaskModal } from "./ai-task-modal"
 
-const formatScheduleText = (schedule: TaskSchedule) => {
-  if (!schedule) return "Unknown schedule"
-
+const formatScheduleText = (schedule: TaskSchedule, t: TFunction<"ai", undefined>) => {
+  if (!schedule) return t("tasks.schedule.unknown")
   switch (schedule.type) {
     case "once": {
       const date = dayjs(schedule.date)
-      return `Once on ${date.format("MMM D, YYYY")} at ${date.format("h:mm A")}`
+      return t("tasks.schedule.once", {
+        date: date.format("MMM D, YYYY"),
+        time: date.format("h:mm A"),
+      })
     }
     case "daily": {
       const time = dayjs(schedule.timeOfDay)
-      return `Daily at ${time.format("h:mm A")}`
+      return t("tasks.schedule.daily", { time: time.format("h:mm A") })
     }
     case "weekly": {
-      const days = ["Sunday", "Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday"]
+      const days = [
+        t("days.sunday", { ns: "common" }),
+        t("days.monday", { ns: "common" }),
+        t("days.tuesday", { ns: "common" }),
+        t("days.wednesday", { ns: "common" }),
+        t("days.thursday", { ns: "common" }),
+        t("days.friday", { ns: "common" }),
+        t("days.saturday", { ns: "common" }),
+      ]
       const time = dayjs(schedule.timeOfDay)
-      return `Weekly on ${days[schedule.dayOfWeek]} at ${time.format("h:mm A")}`
+      return t("tasks.schedule.weekly", {
+        day: days[schedule.dayOfWeek],
+        time: time.format("h:mm A"),
+      })
     }
     case "monthly": {
       const time = dayjs(schedule.timeOfDay)
-      return `Monthly on day ${schedule.dayOfMonth} at ${time.format("h:mm A")}`
+      return t("tasks.schedule.monthly", { day: schedule.dayOfMonth, time: time.format("h:mm A") })
     }
     default: {
-      return "Unknown schedule"
+      return t("tasks.schedule.unknown")
     }
   }
 }
@@ -86,7 +100,7 @@ export const TaskItem = memo(({ task }: { task: AITask }) => {
   const updateTaskMutation = useUpdateAITaskMutation()
   const testRunMutation = useTestRunAITaskMutation()
   const { ask } = useDialog()
-  const { t } = useTranslation()
+  const { t } = useTranslation("ai")
   const sessions = useAIChatSessionListQuery()
   // const chatActions = useChatActions()
   const [openingReport, setOpeningReport] = useState(false)
@@ -100,7 +114,7 @@ export const TaskItem = memo(({ task }: { task: AITask }) => {
 
   const handleEditTask = (task: AITask) => {
     present({
-      title: "Edit AI Task",
+      title: t("tasks.modal.edit_title"),
       content: () => <AITaskModal task={task} />,
     })
   }
@@ -109,7 +123,7 @@ export const TaskItem = memo(({ task }: { task: AITask }) => {
 
   const handleOpenReport = useCallback(async () => {
     if (!taskSession) {
-      toast.error("No report session found for this task yet.")
+      toast.error(t("tasks.toast.no_report"))
       return
     }
     setOpeningReport(true)
@@ -117,7 +131,7 @@ export const TaskItem = memo(({ task }: { task: AITask }) => {
       await AIChatSessionService.fetchAndPersistMessages(taskSession)
     } catch (e) {
       console.error("Failed to sync chat session messages:", e)
-      toast.error("Failed to load chat messages")
+      toast.error(t("tasks.toast.load_failed"))
     }
     setAIPanelVisibility(true)
     const chatActions = ChatSliceActions.getActiveInstance()
@@ -126,8 +140,8 @@ export const TaskItem = memo(({ task }: { task: AITask }) => {
     }
     chatActions?.switchToChat(taskSession.chatId)
     setOpeningReport(false)
-    toast("Switch to the chat panel to view reports.")
-  }, [taskSession])
+    toast(t("tasks.toast.switch_to_chat"))
+  }, [taskSession, t])
 
   const actions: ActionButton[] = [
     // Only show if the task has at least one run
@@ -136,7 +150,7 @@ export const TaskItem = memo(({ task }: { task: AITask }) => {
           {
             icon: "i-mgc-history-cute-re" as const,
             onClick: handleOpenReport,
-            title: "View reports",
+            title: t("tasks.actions.view_reports"),
             loading: openingReport,
             disabled: openingReport,
           } satisfies ActionButton,
@@ -146,34 +160,32 @@ export const TaskItem = memo(({ task }: { task: AITask }) => {
       icon: "i-mgc-test-tube-cute-re" as const,
       onClick: async () => {
         try {
-          const loadingId = toast.loading(
-            "Starting test run… This may take about 1 minute. You can view the result in the Chat panel.",
-          )
+          const loadingId = toast.loading(t("tasks.toast.test_start"))
           await testRunMutation.mutateAsync({ id: task.id })
-          toast.success("Test run finished. You can view the report in the Chat panel.", {
+          toast.success(t("tasks.toast.test_success"), {
             id: loadingId,
           })
         } catch (error) {
           console.error("Failed to run test:", error)
-          toast.error("Failed to run test. Please try again.")
+          toast.error(t("tasks.toast.test_failed"))
         }
       },
-      title: "Test run",
+      title: t("tasks.actions.test_run"),
       disabled: testRunMutation.isPending,
       loading: testRunMutation.isPending,
     },
     {
       icon: "i-mgc-edit-cute-re",
       onClick: () => handleEditTask(task),
-      title: "Edit task",
+      title: t("tasks.actions.edit_task"),
     },
     {
       icon: "i-mgc-delete-2-cute-re",
       onClick: async () => {
         const confirmed = await ask({
-          title: "Delete Task",
+          title: t("tasks.modal.delete_title"),
           // translation fallback pattern; primary key then default string
-          message: `Are you sure you want to delete the task "${task.name}"?`,
+          message: t("tasks.modal.delete_confirm", { name: task.name }),
           confirmText: t("words.delete", { ns: "common" }),
           cancelText: t("words.cancel", { ns: "common" }),
           variant: "danger",
@@ -181,13 +193,13 @@ export const TaskItem = memo(({ task }: { task: AITask }) => {
         if (!confirmed) return
         try {
           await deleteTaskMutation.mutateAsync({ id: task.id })
-          toast.success("Task deleted successfully")
+          toast.success(t("tasks.toast.delete_success"))
         } catch (error) {
           console.error("Failed to delete task:", error)
-          toast.error("Failed to delete task. Please try again.")
+          toast.error(t("tasks.toast.delete_failed"))
         }
       },
-      title: "Delete task",
+      title: t("tasks.actions.delete_task"),
       disabled: isDeleting,
       loading: isDeleting,
     },
@@ -210,20 +222,20 @@ export const TaskItem = memo(({ task }: { task: AITask }) => {
                 <i className="i-mgc-calendar-time-add-cute-re mr-1 size-3" />
               )}
               {status === "paused" && <i className="i-mgc-pause-cute-re mr-1 size-3" />}
-              {status.charAt(0).toUpperCase() + status.slice(1)}
+              <span>{t(`tasks.status.${status}`)}</span>
             </span>
           </div>
           <div className="space-y-1">
             <p className="text-text-secondary text-xs">
-              <span className="text-text-tertiary">Schedule:</span>{" "}
-              {formatScheduleText(task.schedule)}
+              <span className="text-text-tertiary">{t("tasks.fields.schedule")}</span>{" "}
+              {formatScheduleText(task.schedule, t)}
             </p>
             <p className="text-text-secondary text-xs">
-              <span className="text-text-tertiary">Prompt:</span> {task.prompt}
+              <span className="text-text-tertiary">{t("tasks.fields.prompt")}</span> {task.prompt}
             </p>
             {task.createdAt && (
               <p className="text-text-secondary text-xs">
-                <span className="text-text-tertiary">Created:</span>{" "}
+                <span className="text-text-tertiary">{t("tasks.fields.created")}</span>{" "}
                 {dayjs(task.createdAt).format("MMM D, YYYY h:mm A")}
               </p>
             )}
@@ -238,7 +250,7 @@ export const TaskItem = memo(({ task }: { task: AITask }) => {
               await updateTaskMutation.mutateAsync({ id: task.id, isEnabled: !task.isEnabled })
             } catch (error) {
               console.error("Failed to toggle task:", error)
-              toast.error("Failed to update task. Please try again.")
+              toast.error(t("tasks.toast.update_failed"))
             }
           }}
         />

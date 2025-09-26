@@ -60,7 +60,7 @@ export const SettingAI = () => {
           <Divider key="task-scheduling-divider" />,
           {
             type: "title",
-            value: "Task Scheduling",
+            value: t("tasks.section.title"),
           },
           TaskSchedulingSection,
           AISecurityDisclosureSection,
