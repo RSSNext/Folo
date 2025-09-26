@@ -1,3 +1,4 @@
+import { getCategoryFeedIds } from "@follow/store/subscription/getter"
 import i18next from "i18next"
 import type {
   DOMConversionMap,
@@ -12,6 +13,9 @@ import type {
 } from "lexical"
 import { $applyNodeReplacement, DecoratorNode } from "lexical"
 import * as React from "react"
+
+import { ROUTE_FEED_IN_FOLDER } from "~/constants"
+import { getRouteParams } from "~/hooks/biz/useRouteParams"
 
 import { MentionComponent } from "./components/MentionComponent"
 import { RANGE_WITH_LABEL_KEY } from "./hooks/dateMentionConfig"
@@ -96,7 +100,22 @@ export class MentionNode extends DecoratorNode<React.JSX.Element> {
    * For export markdown conversion
    */
   override getTextContent(): string {
-    return `[[ref:${this.__mentionData.type}:${this.__mentionData.value}]]`
+    const { type, value } = this.__mentionData
+    if (type === "date" && value) {
+      return value as string
+    }
+
+    if (
+      type === "category" &&
+      typeof value === "string" &&
+      value.startsWith(ROUTE_FEED_IN_FOLDER)
+    ) {
+      const { view } = getRouteParams()
+      const ids = getCategoryFeedIds(value.slice(ROUTE_FEED_IN_FOLDER.length), view)
+      return `<mention-feed ids=${JSON.stringify(ids)}/>`
+    }
+
+    return `<mention-${type} id="${value}"/>`
   }
 
   override decorate(_editor: LexicalEditor): React.JSX.Element {

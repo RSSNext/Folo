@@ -3,9 +3,9 @@ import { Suspense, useMemo } from "react"
 
 import { MentionDropdown } from "./components/MentionDropdown"
 import { DEFAULT_MAX_SUGGESTIONS } from "./constants"
-import { useMentionIntegration } from "./hooks/useMentionIntegration"
 import { useMentionKeyboard } from "./hooks/useMentionKeyboard"
 import { useMentionSearch } from "./hooks/useMentionSearch"
+import { useMentionSearchService } from "./hooks/useMentionSearchService"
 import { useMentionSelection } from "./hooks/useMentionSelection"
 import { useMentionTrigger } from "./hooks/useMentionTrigger"
 import { MentionNode } from "./MentionNode"
@@ -13,7 +13,7 @@ import { defaultTriggerFn } from "./utils/triggerDetection"
 
 export function MentionPlugin() {
   // Get integrated search and context block handling
-  const { searchMentions, handleMentionInsert } = useMentionIntegration()
+  const { searchMentions } = useMentionSearchService()
 
   // Hook for detecting mention triggers
   const { mentionMatch, isActive, clearMentionMatch } = useMentionTrigger({
@@ -37,7 +37,6 @@ export function MentionPlugin() {
   // Hook for handling mention selection
   const { selectMention } = useMentionSelection({
     mentionMatch,
-    onMentionInsert: handleMentionInsert,
     onSelectionComplete: () => {
       clearMentionMatch()
       clearSuggestions()

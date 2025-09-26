@@ -39,12 +39,13 @@ export const getEntryIdsByViewSelector =
       .sort((a, b) => sortEntryIdsByPublishDate(a, b))
   }
 
-export const getEntryIdsByFeedIdSelector = (state: StateType) => (feedId: string | undefined) => {
-  if (!feedId) return null
-  const ids = state.entryIdByFeed[feedId]
-  if (!ids) return null
-  return Array.from(ids).sort((a, b) => sortEntryIdsByPublishDate(a, b))
-}
+export const getEntryIdsByFeedIdSelector =
+  (state: StateType) => (feedId: string | undefined | null) => {
+    if (!feedId) return null
+    const ids = state.entryIdByFeed[feedId]
+    if (!ids) return null
+    return Array.from(ids).sort((a, b) => sortEntryIdsByPublishDate(a, b))
+  }
 
 export const getEntryIdsByFeedIdsSelector =
   (state: StateType) => (feedIds: string[] | undefined) => {
