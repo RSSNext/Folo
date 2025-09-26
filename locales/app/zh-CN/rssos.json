@@ -18,5 +18,7 @@
   "add_to_folo": "添加到Folo",
   "info": "RSSOS自动检测并解析博客、新闻网站、作品集等各类网站内容。",
   "powered_by": "由RSSOS通用RSS生成器提供支持",
-  "learn_more": "了解更多"
+  "learn_more": "了解更多",
+  "web_mode_info": "在网页模式下，请复制RSS链接并手动添加到Folo。完整的订阅流程需要桌面应用。",
+  "add_error": "无法打开订阅表单。请复制RSS链接并手动添加。"
 }

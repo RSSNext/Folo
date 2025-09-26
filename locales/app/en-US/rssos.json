@@ -18,5 +18,7 @@
   "add_to_folo": "Add to Folo",
   "info": "RSSOS automatically detects and parses content from blogs, news sites, portfolios, and more.",
   "powered_by": "Powered by RSSOS - Universal RSS Generator",
-  "learn_more": "Learn more"
+  "learn_more": "Learn more",
+  "web_mode_info": "In web mode, please copy the RSS URL and add it manually to Folo. The full subscription flow requires the desktop app.",
+  "add_error": "Unable to open subscription form. Please copy the RSS URL and add it manually."
 }

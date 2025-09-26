@@ -11,7 +11,7 @@ import { FeedForm } from "~/modules/discover/FeedForm"
 const RSSOS_API_BASE = "https://rssos.vercel.app"
 
 export const RssosGenerator: React.FC = () => {
-  const { t } = useTranslation()
+  const { t } = useTranslation("app")
   const [url, setUrl] = useState("")
   const [isGenerating, setIsGenerating] = useState(false)
   const [generatedRssUrl, setGeneratedRssUrl] = useState("")
@@ -82,12 +82,43 @@ export const RssosGenerator: React.FC = () => {
 
   const { present, dismissAll } = useModalStack()
   
-  const addToFolo = useCallback(() => {
-    // Open Folo's native subscription form with the generated RSS URL
-    present({
-      title: t("feed_form.add_feed", "Add Feed"),
-      content: () => <FeedForm url={generatedRssUrl} onSuccess={dismissAll} />,
-    })
+  const addToFolo = useCallback(async () => {
+    // Check if we're in web build mode
+    if (typeof window !== 'undefined' && window.location.hostname === 'localhost') {
+      // In web development mode, provide a helpful message
+      toast.info(
+        t("rssos.web_mode_info", "In web mode, please copy the RSS URL and add it manually to Folo. The full subscription flow requires the desktop app.")
+        { duration: 5000 }
+      )
+      
+      // Copy URL to clipboard for convenience
+      try {
+        await navigator.clipboard.writeText(generatedRssUrl)
+        toast.success(t("rssos.copied", "RSS URL copied to clipboard!"))
+      } catch {
+        // Fallback - just show the info message
+      }
+      return
+    }
+    
+    // In production/desktop mode, use the full subscription form
+    try {
+      present({
+        title: t("feed_form.add_feed", "Add Feed"),
+        content: () => <FeedForm url={generatedRssUrl} onSuccess={dismissAll} />,
+      })
+    } catch (error) {
+      console.error('Error opening feed form:', error)
+      toast.error(t("rssos.add_error", "Unable to open subscription form. Please copy the RSS URL and add it manually."))
+      
+      // Copy URL to clipboard as fallback
+      try {
+        await navigator.clipboard.writeText(generatedRssUrl)
+        toast.success(t("rssos.copied", "RSS URL copied to clipboard!"))
+      } catch {
+        // Silent fail
+      }
+    }
   }, [generatedRssUrl, t, present, dismissAll])
 
   return (
