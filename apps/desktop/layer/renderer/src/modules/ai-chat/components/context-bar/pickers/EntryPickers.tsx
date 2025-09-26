@@ -1,3 +1,4 @@
+import { getEntry } from "@follow/store/entry/getter"
 import { useEntryIdsByFeedId, useEntryIdsByView } from "@follow/store/entry/hooks"
 import { useEntryStore } from "@follow/store/entry/store"
 import type { FC } from "react"
@@ -13,8 +14,13 @@ export const CurrentFeedEntriesPickerList: FC<{ onSelect: (entryId: string) => v
   onSelect,
 }) => {
   const mainFeedId = useAIChatStore()((s) => {
-    const block = s.blocks.find((b) => b.type === "mainFeed")
-    return block && block.type === "mainFeed" ? block.value : undefined
+    const mainFeedBlock = s.blocks.find((b) => b.type === "mainFeed")
+    const mainEntryBlock = s.blocks.find((b) => b.type === "mainEntry")
+    return mainFeedBlock && mainFeedBlock.type === "mainFeed"
+      ? mainFeedBlock.value
+      : mainEntryBlock && mainEntryBlock.type === "mainEntry"
+        ? getEntry(mainEntryBlock.value)?.feedId
+        : null
   })
   const entryIds = useEntryIdsByFeedId(mainFeedId)
 
