@@ -1,5 +1,4 @@
 import { getCategoryFeedIds } from "@follow/store/subscription/getter"
-import { FeedViewType } from "@follow-app/client-sdk"
 import i18next from "i18next"
 import type {
   DOMConversionMap,
@@ -16,6 +15,7 @@ import { $applyNodeReplacement, DecoratorNode } from "lexical"
 import * as React from "react"
 
 import { ROUTE_FEED_IN_FOLDER } from "~/constants"
+import { getRouteParams } from "~/hooks/biz/useRouteParams"
 
 import { MentionComponent } from "./components/MentionComponent"
 import { RANGE_WITH_LABEL_KEY } from "./hooks/dateMentionConfig"
@@ -110,7 +110,8 @@ export class MentionNode extends DecoratorNode<React.JSX.Element> {
       typeof value === "string" &&
       value.startsWith(ROUTE_FEED_IN_FOLDER)
     ) {
-      const ids = getCategoryFeedIds(value.slice(ROUTE_FEED_IN_FOLDER.length), FeedViewType.All)
+      const { view } = getRouteParams()
+      const ids = getCategoryFeedIds(value.slice(ROUTE_FEED_IN_FOLDER.length), view)
       return `<mention-feed ids=${JSON.stringify(ids)}/>`
     }
 
