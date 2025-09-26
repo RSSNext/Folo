@@ -103,8 +103,7 @@ const getDefaultFormData = (task?: AITask, prompt?: string): TaskFormData => {
     name: task.name,
     prompt: task.prompt,
     schedule: formSchedule,
-    // @ts-expect-error --  Type fixed, remove this comment in next release
-    options: task.options ?? { notifyChannels: ["email"] },
+    options: { notifyChannels: ["email"], ...task.options },
   }
 }
 
