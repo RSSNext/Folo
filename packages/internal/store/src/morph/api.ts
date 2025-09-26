@@ -1,4 +1,5 @@
 import type { FeedSchema, InboxSchema } from "@follow/database/schemas/types"
+import { getDateISOString } from "@follow/utils/utils"
 import type {
   AddFeedsResponse,
   AuthUser,
@@ -178,7 +179,7 @@ class APIMorph {
       }
       if (item.collections)
         collections.push({
-          createdAt: item.collections.createdAt,
+          createdAt: getDateISOString(item.collections.createdAt),
           entryId: item.entries.id,
           feedId: item.feeds.id,
           view,

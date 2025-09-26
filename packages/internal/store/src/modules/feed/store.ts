@@ -1,6 +1,6 @@
 import type { FeedSchema } from "@follow/database/schemas/types"
 import { FEED_EXTRA_DATA_KEYS, FeedService } from "@follow/database/services/feed"
-import { isBizId } from "@follow/utils"
+import { getDateISOString, isBizId } from "@follow/utils"
 
 import { api } from "../../context"
 import type { Hydratable, Resetable } from "../../lib/base"
@@ -204,7 +204,7 @@ class FeedSyncServices {
         await feedActions.patch(id, {
           subscriptionCount: feedAnalytics.subscriptionCount,
           updatesPerWeek: feedAnalytics.updatesPerWeek,
-          latestEntryPublishedAt: feedAnalytics.latestEntryPublishedAt,
+          latestEntryPublishedAt: getDateISOString(feedAnalytics.latestEntryPublishedAt),
         })
       }
     }

@@ -536,3 +536,11 @@ export const getMobilePlatform = once((): MobilePlatform => {
 export const isMobileDevice = once((): boolean => {
   return getMobilePlatform() !== null
 })
+
+export function getDateISOString(dateOrDateString: Date | string | null): string | null {
+  if (!dateOrDateString) return null
+  if (typeof dateOrDateString === "string") {
+    return dateOrDateString
+  }
+  return dateOrDateString.toISOString()
+}
