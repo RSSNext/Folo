@@ -3,7 +3,7 @@ import { cn } from "@follow/utils/utils"
 import { t } from "i18next"
 import * as React from "react"
 
-import type { AIChatContextBlock } from "~/modules/ai-chat/store/types"
+import type { AIChatContextBlock, ValueContextBlock } from "~/modules/ai-chat/store/types"
 
 import {
   getBlockIcon,
@@ -18,6 +18,15 @@ import { ImageThumbnail } from "./ImageThumbnail"
 interface AIDataBlockItemProps {
   block: AIChatContextBlock
   index: number
+}
+
+type ValueBlockOf<Type extends ValueContextBlock["type"]> = Omit<ValueContextBlock, "type"> & {
+  type: Type
+}
+
+interface MainViewFeedDataBlockItemProps {
+  viewBlock: ValueBlockOf<"mainView">
+  feedBlock: ValueBlockOf<"mainFeed">
 }
 
 /**
@@ -87,13 +96,15 @@ const BlockIcon: React.FC<{
 BlockIcon.displayName = "BlockIcon"
 
 /**
- * Individual block item component with optimized rendering and animations
+ * Shared block container component to ensure consistency
  */
-export const AIDataBlockItem: React.FC<AIDataBlockItemProps> = React.memo(({ block }) => {
-  const styles = React.useMemo(() => getBlockStyles(block.type), [block.type])
-  const label = React.useMemo(() => getBlockLabel(block.type), [block.type])
-  const displayContent = React.useMemo(() => getDisplayContent(block), [block])
-
+const BlockContainer: React.FC<{
+  styles: ReturnType<typeof getBlockStyles>
+  block: AIChatContextBlock
+  label?: string
+  displayContent: React.ReactNode
+  title?: string
+}> = React.memo(({ styles, block, label, displayContent, title }) => {
   return (
     <div
       key={block.id}
@@ -107,11 +118,15 @@ export const AIDataBlockItem: React.FC<AIDataBlockItemProps> = React.memo(({ blo
 
       {/* Label and content */}
       <div className="flex min-w-0 items-center gap-1">
-        <span className={cn("text-xs font-medium", styles.label)}>{label}</span>
-        <span className="text-text-secondary text-xs">·</span>
+        {label && (
+          <>
+            <span className={cn("text-xs font-medium", styles.label)}>{label}</span>
+            <span className="text-text-secondary text-xs">·</span>
+          </>
+        )}
         <span
           className="text-text max-w-24 truncate text-xs font-medium"
-          title={typeof displayContent === "string" ? displayContent : undefined}
+          title={title || (typeof displayContent === "string" ? displayContent : undefined)}
         >
           {displayContent}
         </span>
@@ -120,4 +135,49 @@ export const AIDataBlockItem: React.FC<AIDataBlockItemProps> = React.memo(({ blo
   )
 })
 
+BlockContainer.displayName = "BlockContainer"
+
+/**
+ * Individual block item component with optimized rendering and animations
+ */
+export const AIDataBlockItem: React.FC<AIDataBlockItemProps> = React.memo(({ block }) => {
+  const styles = React.useMemo(() => getBlockStyles(block.type), [block.type])
+  const label = React.useMemo(() => getBlockLabel(block.type), [block.type])
+  const displayContent = React.useMemo(() => getDisplayContent(block), [block])
+
+  return (
+    <BlockContainer styles={styles} block={block} label={label} displayContent={displayContent} />
+  )
+})
+
 AIDataBlockItem.displayName = "AIDataBlockItem"
+
+/**
+ * Combined block item component for main view and main feed
+ * Displays view icon with feed title content
+ */
+export const MainViewFeedDataBlockItem: React.FC<MainViewFeedDataBlockItemProps> = React.memo(
+  ({ viewBlock, feedBlock }) => {
+    const { styles, displayContent, title } = React.useMemo(() => {
+      const view = views.find((v) => v.view === Number(viewBlock.value))
+      const viewName = view?.name ? t(view.name, { ns: "common" }) : viewBlock.value
+
+      return {
+        styles: getBlockStyles("mainView"),
+        displayContent: <FeedTitle feedId={feedBlock.value} fallback={feedBlock.value} />,
+        title: `${viewName} - ${feedBlock.value}`,
+      }
+    }, [viewBlock.value, feedBlock.value])
+
+    return (
+      <BlockContainer
+        styles={styles}
+        block={viewBlock}
+        displayContent={displayContent}
+        title={title}
+      />
+    )
+  },
+)
+
+MainViewFeedDataBlockItem.displayName = "MainViewFeedDataBlockItem"

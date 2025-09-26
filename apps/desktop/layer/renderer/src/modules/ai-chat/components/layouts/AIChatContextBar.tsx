@@ -4,19 +4,15 @@ import { memo, useCallback, useEffect, useMemo, useRef } from "react"
 import { useAISettingValue } from "~/atoms/settings/ai"
 import { DropdownMenu, DropdownMenuTrigger } from "~/components/ui/dropdown-menu/dropdown-menu"
 import { useRouteParamsSelector } from "~/hooks/biz/useRouteParams"
+import { useDisplayBlocks } from "~/modules/ai-chat/hooks/useDisplayBlocks"
 import { useFileUploadWithDefaults } from "~/modules/ai-chat/hooks/useFileUpload"
 import { useAIChatStore } from "~/modules/ai-chat/store/AIChatContext"
-import type { AIChatContextBlock, ValueContextBlock } from "~/modules/ai-chat/store/types"
 import { SUPPORTED_MIME_ACCEPT } from "~/modules/ai-chat/utils/file-validation"
 
 import { useBlockActions } from "../../store/hooks"
 import { BlockSliceAction } from "../../store/slices/block.slice"
 import { ContextBlock, MainViewFeedContextBlock } from "../context-bar/blocks"
 import { ContextMenuContent, ShortcutsMenuContent } from "../context-bar/menus"
-
-type ValueBlockOf<Type extends ValueContextBlock["type"]> = Omit<ValueContextBlock, "type"> & {
-  type: Type
-}
 
 export const AIChatContextBar: Component<{ onSendShortcut?: (prompt: string) => void }> = memo(
   ({ className, onSendShortcut }) => {
@@ -75,38 +71,7 @@ export const AIChatContextBar: Component<{ onSendShortcut?: (prompt: string) => 
       }
     }, [addOrUpdateBlock, feedId, removeBlock])
 
-    const displayBlocks = useMemo(() => {
-      const mainViewBlock = blocks.find(
-        (block): block is ValueBlockOf<"mainView"> => block.type === "mainView",
-      )
-      const mainFeedBlock = blocks.find(
-        (block): block is ValueBlockOf<"mainFeed"> => block.type === "mainFeed",
-      )
-
-      if (mainViewBlock && mainFeedBlock) {
-        const items: (
-          | {
-              kind: "combined"
-              viewBlock: ValueBlockOf<"mainView">
-              feedBlock: ValueBlockOf<"mainFeed">
-            }
-          | { kind: "single"; block: AIChatContextBlock }
-        )[] = []
-
-        items.push({ kind: "combined", viewBlock: mainViewBlock, feedBlock: mainFeedBlock })
-
-        const otherBlocks = blocks.filter(
-          (block) => block.id !== mainViewBlock.id && block.id !== mainFeedBlock.id,
-        )
-        otherBlocks.forEach((block) => {
-          items.push({ kind: "single", block })
-        })
-
-        return items
-      }
-
-      return blocks.map((block) => ({ kind: "single" as const, block }))
-    }, [blocks])
+    const displayBlocks = useDisplayBlocks(blocks)
 
     return (
       <div className={cn("flex flex-wrap items-center gap-2 px-4 py-3", className)}>

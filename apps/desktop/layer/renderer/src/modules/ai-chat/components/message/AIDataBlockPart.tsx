@@ -1,9 +1,10 @@
 import { cn } from "@follow/utils/utils"
 import * as React from "react"
 
+import { useDisplayBlocks } from "~/modules/ai-chat/hooks/useDisplayBlocks"
 import type { AIChatContextBlock } from "~/modules/ai-chat/store/types"
 
-import { AIDataBlockItem } from "./AIDataBlockItem"
+import { AIDataBlockItem, MainViewFeedDataBlockItem } from "./AIDataBlockItem"
 
 interface AIDataBlockPartProps {
   blocks: AIChatContextBlock[]
@@ -14,8 +15,10 @@ interface AIDataBlockPartProps {
  * Displays various types of context (entries, feeds, text, files) with compact styling
  */
 export const AIDataBlockPart: React.FC<AIDataBlockPartProps> = React.memo(({ blocks }) => {
+  const displayBlocks = useDisplayBlocks(blocks)
+
   // Early return for empty blocks
-  if (!blocks?.length) {
+  if (displayBlocks.length === 0) {
     return null
   }
 
@@ -34,9 +37,19 @@ export const AIDataBlockPart: React.FC<AIDataBlockPartProps> = React.memo(({ blo
         </div>
 
         {/* Render individual block items */}
-        {blocks.map((block, index) => (
-          <AIDataBlockItem key={block.id} block={block} index={index} />
-        ))}
+        {displayBlocks.map((item, index) => {
+          if (item.kind === "combined") {
+            return (
+              <MainViewFeedDataBlockItem
+                key={item.viewBlock.id}
+                viewBlock={item.viewBlock}
+                feedBlock={item.feedBlock}
+              />
+            )
+          }
+
+          return <AIDataBlockItem key={item.block.id} block={item.block} index={index} />
+        })}
       </div>
     </div>
   )
