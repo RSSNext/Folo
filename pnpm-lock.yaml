@@ -7,8 +7,8 @@ settings:
 catalogs:
   default:
     '@follow-app/client-sdk':
-      specifier: 0.3.66
-      version: 0.3.66
+      specifier: 0.3.67
+      version: 0.3.67
     tailwindcss-uikit-colors:
       specifier: 1.0.0
       version: 1.0.0
@@ -339,7 +339,7 @@ importers:
         version: 4.3.0
       '@follow-app/client-sdk':
         specifier: 'catalog:'
-        version: 0.3.66(@opentelemetry/api@1.9.0)(@types/pg@8.15.4)(expo-sqlite@15.2.12(expo@53.0.12(@babel/core@7.28.4)(@expo/metro-runtime@5.0.4(react-native@0.79.6(@babel/core@7.28.4)(@types/react@19.1.13)(bufferutil@4.0.9)(react@19.0.0)(utf-8-validate@6.0.5)))(bufferutil@4.0.9)(graphql@16.8.1)(react-native-webview@13.16.0(react-native@0.79.6(@babel/core@7.28.4)(@types/react@19.1.13)(bufferutil@4.0.9)(react@19.0.0)(utf-8-validate@6.0.5))(react@19.0.0))(react-native@0.79.6(@babel/core@7.28.4)(@types/react@19.1.13)(bufferutil@4.0.9)(react@19.0.0)(utf-8-validate@6.0.5))(react@19.0.0)(utf-8-validate@6.0.5))(react-native@0.79.6(@babel/core@7.28.4)(@types/react@19.1.13)(bufferutil@4.0.9)(react@19.0.0)(utf-8-validate@6.0.5))(react@19.0.0))(kysely@0.28.7)(pg@8.16.3)(react-dom@19.0.0(react@19.0.0))(react@19.0.0)
+        version: 0.3.67(@opentelemetry/api@1.9.0)(@types/pg@8.15.4)(expo-sqlite@15.2.12(expo@53.0.12(@babel/core@7.28.4)(@expo/metro-runtime@5.0.4(react-native@0.79.6(@babel/core@7.28.4)(@types/react@19.1.13)(bufferutil@4.0.9)(react@19.0.0)(utf-8-validate@6.0.5)))(bufferutil@4.0.9)(graphql@16.8.1)(react-native-webview@13.16.0(react-native@0.79.6(@babel/core@7.28.4)(@types/react@19.1.13)(bufferutil@4.0.9)(react@19.0.0)(utf-8-validate@6.0.5))(react@19.0.0))(react-native@0.79.6(@babel/core@7.28.4)(@types/react@19.1.13)(bufferutil@4.0.9)(react@19.0.0)(utf-8-validate@6.0.5))(react@19.0.0)(utf-8-validate@6.0.5))(react-native@0.79.6(@babel/core@7.28.4)(@types/react@19.1.13)(bufferutil@4.0.9)(react@19.0.0)(utf-8-validate@6.0.5))(react@19.0.0))(hono@4.9.8)(kysely@0.28.7)(pg@8.16.3)(react-dom@19.0.0(react@19.0.0))(react@19.0.0)
       '@follow-app/readability':
         specifier: workspace:*
         version: link:../../../../packages/readability
@@ -454,7 +454,7 @@ importers:
         version: 3.0.2(electron@38.1.0)
       '@follow-app/client-sdk':
         specifier: 'catalog:'
-        version: 0.3.66(@opentelemetry/api@1.9.0)(@types/pg@8.15.4)(expo-sqlite@15.2.12(expo@53.0.12(@babel/core@7.28.0)(@expo/metro-runtime@5.0.4(react-native@0.79.6(@babel/core@7.28.0)(@types/react@19.1.13)(bufferutil@4.0.9)(react@19.0.0)))(bufferutil@4.0.9)(graphql@16.8.1)(react-native-webview@13.16.0(react-native@0.79.6(@babel/core@7.28.0)(@types/react@19.1.13)(bufferutil@4.0.9)(react@19.0.0))(react@19.0.0))(react-native@0.79.6(@babel/core@7.28.0)(@types/react@19.1.13)(bufferutil@4.0.9)(react@19.0.0))(react@19.0.0))(react-native@0.79.6(@babel/core@7.28.0)(@types/react@19.1.13)(bufferutil@4.0.9)(react@19.0.0))(react@19.0.0))(kysely@0.28.7)(pg@8.16.3)(react-dom@19.0.0(react@19.0.0))(react@19.0.0)
+        version: 0.3.67(@opentelemetry/api@1.9.0)(@types/pg@8.15.4)(expo-sqlite@15.2.12(expo@53.0.12(@babel/core@7.28.0)(@expo/metro-runtime@5.0.4(react-native@0.79.6(@babel/core@7.28.0)(@types/react@19.1.13)(bufferutil@4.0.9)(react@19.0.0)))(bufferutil@4.0.9)(graphql@16.8.1)(react-native-webview@13.16.0(react-native@0.79.6(@babel/core@7.28.0)(@types/react@19.1.13)(bufferutil@4.0.9)(react@19.0.0))(react@19.0.0))(react-native@0.79.6(@babel/core@7.28.0)(@types/react@19.1.13)(bufferutil@4.0.9)(react@19.0.0))(react@19.0.0))(react-native@0.79.6(@babel/core@7.28.0)(@types/react@19.1.13)(bufferutil@4.0.9)(react@19.0.0))(react@19.0.0))(hono@4.9.8)(kysely@0.28.7)(pg@8.16.3)(react-dom@19.0.0(react@19.0.0))(react@19.0.0)
       '@follow/database':
         specifier: workspace:*
         version: link:../../../../packages/internal/database
@@ -1181,7 +1181,7 @@ importers:
         version: 6.2.1
       '@follow-app/client-sdk':
         specifier: 'catalog:'
-        version: 0.3.66(@opentelemetry/api@1.9.0)(@types/pg@8.15.4)(expo-sqlite@15.2.12(expo@53.0.12(@babel/core@7.28.4)(@expo/metro-runtime@5.0.4(react-native@0.79.6(@babel/core@7.28.4)(@types/react@19.1.13)(bufferutil@4.0.9)(react@19.0.0)))(bufferutil@4.0.9)(graphql@16.8.1)(react-native-webview@13.16.0(react-native@0.79.6(@babel/core@7.28.4)(@types/react@19.1.13)(bufferutil@4.0.9)(react@19.0.0))(react@19.0.0))(react-native@0.79.6(@babel/core@7.28.4)(@types/react@19.1.13)(bufferutil@4.0.9)(react@19.0.0))(react@19.0.0))(react-native@0.79.6(@babel/core@7.28.4)(@types/react@19.1.13)(bufferutil@4.0.9)(react@19.0.0))(react@19.0.0))(kysely@0.28.7)(pg@8.16.3)(react-dom@19.0.0(react@19.0.0))(react@19.0.0)
+        version: 0.3.67(@opentelemetry/api@1.9.0)(@types/pg@8.15.4)(expo-sqlite@15.2.12(expo@53.0.12(@babel/core@7.28.4)(@expo/metro-runtime@5.0.4(react-native@0.79.6(@babel/core@7.28.4)(@types/react@19.1.13)(bufferutil@4.0.9)(react@19.0.0)))(bufferutil@4.0.9)(graphql@16.8.1)(react-native-webview@13.16.0(react-native@0.79.6(@babel/core@7.28.4)(@types/react@19.1.13)(bufferutil@4.0.9)(react@19.0.0))(react@19.0.0))(react-native@0.79.6(@babel/core@7.28.4)(@types/react@19.1.13)(bufferutil@4.0.9)(react@19.0.0))(react@19.0.0))(react-native@0.79.6(@babel/core@7.28.4)(@types/react@19.1.13)(bufferutil@4.0.9)(react@19.0.0))(react@19.0.0))(hono@4.9.8)(kysely@0.28.7)(pg@8.16.3)(react-dom@19.0.0(react@19.0.0))(react@19.0.0)
       '@follow/tracker':
         specifier: workspace:*
         version: link:../../packages/internal/tracker
@@ -1667,7 +1667,7 @@ importers:
     dependencies:
       '@follow-app/client-sdk':
         specifier: 'catalog:'
-        version: 0.3.66(@opentelemetry/api@1.9.0)(@types/pg@8.15.4)(expo-sqlite@15.2.12(expo@53.0.12(@babel/core@7.28.4)(@expo/metro-runtime@5.0.4(react-native@0.79.6(@babel/core@7.28.4)(@types/react@19.1.13)(bufferutil@4.0.9)(react@19.0.0)))(bufferutil@4.0.9)(graphql@16.8.1)(react-native-webview@13.16.0(react-native@0.79.6(@babel/core@7.28.4)(@types/react@19.1.13)(bufferutil@4.0.9)(react@19.0.0))(react@19.0.0))(react-native@0.79.6(@babel/core@7.28.4)(@types/react@19.1.13)(bufferutil@4.0.9)(react@19.0.0))(react@19.0.0))(react-native@0.79.6(@babel/core@7.28.4)(@types/react@19.1.13)(bufferutil@4.0.9)(react@19.0.0))(react@19.0.0))(kysely@0.28.7)(pg@8.16.3)(react-dom@19.0.0(react@19.0.0))(react@19.0.0)
+        version: 0.3.67(@opentelemetry/api@1.9.0)(@types/pg@8.15.4)(expo-sqlite@15.2.12(expo@53.0.12(@babel/core@7.28.4)(@expo/metro-runtime@5.0.4(react-native@0.79.6(@babel/core@7.28.4)(@types/react@19.1.13)(bufferutil@4.0.9)(react@19.0.0)))(bufferutil@4.0.9)(graphql@16.8.1)(react-native-webview@13.16.0(react-native@0.79.6(@babel/core@7.28.4)(@types/react@19.1.13)(bufferutil@4.0.9)(react@19.0.0))(react@19.0.0))(react-native@0.79.6(@babel/core@7.28.4)(@types/react@19.1.13)(bufferutil@4.0.9)(react@19.0.0))(react@19.0.0))(react-native@0.79.6(@babel/core@7.28.4)(@types/react@19.1.13)(bufferutil@4.0.9)(react@19.0.0))(react@19.0.0))(hono@4.9.8)(kysely@0.28.7)(pg@8.16.3)(react-dom@19.0.0(react@19.0.0))(react@19.0.0)
       '@follow/configs':
         specifier: workspace:*
         version: link:../../configs
@@ -1679,7 +1679,7 @@ importers:
     dependencies:
       '@follow-app/client-sdk':
         specifier: 'catalog:'
-        version: 0.3.66(@opentelemetry/api@1.9.0)(@types/pg@8.15.4)(expo-sqlite@15.2.12(expo@53.0.12(@babel/core@7.28.4)(@expo/metro-runtime@5.0.4(react-native@0.79.6(@babel/core@7.28.4)(@types/react@19.1.13)(bufferutil@4.0.9)(react@19.0.0)))(bufferutil@4.0.9)(graphql@16.8.1)(react-native-webview@13.16.0(react-native@0.79.6(@babel/core@7.28.4)(@types/react@19.1.13)(bufferutil@4.0.9)(react@19.0.0))(react@19.0.0))(react-native@0.79.6(@babel/core@7.28.4)(@types/react@19.1.13)(bufferutil@4.0.9)(react@19.0.0))(react@19.0.0))(react-native@0.79.6(@babel/core@7.28.4)(@types/react@19.1.13)(bufferutil@4.0.9)(react@19.0.0))(react@19.0.0))(kysely@0.28.7)(pg@8.16.3)(react-dom@19.0.0(react@19.0.0))(react@19.0.0)
+        version: 0.3.67(@opentelemetry/api@1.9.0)(@types/pg@8.15.4)(expo-sqlite@15.2.12(expo@53.0.12(@babel/core@7.28.4)(@expo/metro-runtime@5.0.4(react-native@0.79.6(@babel/core@7.28.4)(@types/react@19.1.13)(bufferutil@4.0.9)(react@19.0.0)))(bufferutil@4.0.9)(graphql@16.8.1)(react-native-webview@13.16.0(react-native@0.79.6(@babel/core@7.28.4)(@types/react@19.1.13)(bufferutil@4.0.9)(react@19.0.0))(react@19.0.0))(react-native@0.79.6(@babel/core@7.28.4)(@types/react@19.1.13)(bufferutil@4.0.9)(react@19.0.0))(react@19.0.0))(react-native@0.79.6(@babel/core@7.28.4)(@types/react@19.1.13)(bufferutil@4.0.9)(react@19.0.0))(react@19.0.0))(hono@4.9.8)(kysely@0.28.7)(pg@8.16.3)(react-dom@19.0.0(react@19.0.0))(react@19.0.0)
       '@follow/constants':
         specifier: workspace:*
         version: link:../constants
@@ -1751,7 +1751,7 @@ importers:
     dependencies:
       '@follow-app/client-sdk':
         specifier: 'catalog:'
-        version: 0.3.66(@opentelemetry/api@1.9.0)(@types/pg@8.15.4)(expo-sqlite@15.2.12(expo@53.0.12(@babel/core@7.28.4)(@expo/metro-runtime@5.0.4(react-native@0.79.6(@babel/core@7.28.4)(@types/react@19.1.13)(bufferutil@4.0.9)(react@19.0.0)))(bufferutil@4.0.9)(graphql@16.8.1)(react-native-webview@13.16.0(react-native@0.79.6(@babel/core@7.28.4)(@types/react@19.1.13)(bufferutil@4.0.9)(react@19.0.0))(react@19.0.0))(react-native@0.79.6(@babel/core@7.28.4)(@types/react@19.1.13)(bufferutil@4.0.9)(react@19.0.0))(react@19.0.0))(react-native@0.79.6(@babel/core@7.28.4)(@types/react@19.1.13)(bufferutil@4.0.9)(react@19.0.0))(react@19.0.0))(kysely@0.28.7)(pg@8.16.3)(react-dom@19.0.0(react@19.0.0))(react@19.0.0)
+        version: 0.3.67(@opentelemetry/api@1.9.0)(@types/pg@8.15.4)(expo-sqlite@15.2.12(expo@53.0.12(@babel/core@7.28.4)(@expo/metro-runtime@5.0.4(react-native@0.79.6(@babel/core@7.28.4)(@types/react@19.1.13)(bufferutil@4.0.9)(react@19.0.0)))(bufferutil@4.0.9)(graphql@16.8.1)(react-native-webview@13.16.0(react-native@0.79.6(@babel/core@7.28.4)(@types/react@19.1.13)(bufferutil@4.0.9)(react@19.0.0))(react@19.0.0))(react-native@0.79.6(@babel/core@7.28.4)(@types/react@19.1.13)(bufferutil@4.0.9)(react@19.0.0))(react@19.0.0))(react-native@0.79.6(@babel/core@7.28.4)(@types/react@19.1.13)(bufferutil@4.0.9)(react@19.0.0))(react@19.0.0))(hono@4.9.8)(kysely@0.28.7)(pg@8.16.3)(react-dom@19.0.0(react@19.0.0))(react@19.0.0)
       '@follow/constants':
         specifier: workspace:*
         version: link:../constants
@@ -1782,7 +1782,7 @@ importers:
         version: 1.0.1(@types/node@24.5.2)
       '@follow-app/client-sdk':
         specifier: 'catalog:'
-        version: 0.3.66(@opentelemetry/api@1.9.0)(@types/pg@8.15.4)(expo-sqlite@15.2.12(expo@53.0.12(@babel/core@7.28.4)(@expo/metro-runtime@5.0.4(react-native@0.79.6(@babel/core@7.28.4)(@types/react@19.1.13)(bufferutil@4.0.9)(react@19.0.0)))(bufferutil@4.0.9)(graphql@16.8.1)(react-native-webview@13.16.0(react-native@0.79.6(@babel/core@7.28.4)(@types/react@19.1.13)(bufferutil@4.0.9)(react@19.0.0))(react@19.0.0))(react-native@0.79.6(@babel/core@7.28.4)(@types/react@19.1.13)(bufferutil@4.0.9)(react@19.0.0))(react@19.0.0))(react-native@0.79.6(@babel/core@7.28.4)(@types/react@19.1.13)(bufferutil@4.0.9)(react@19.0.0))(react@19.0.0))(kysely@0.28.7)(pg@8.16.3)(react-dom@19.0.0(react@19.0.0))(react@19.0.0)
+        version: 0.3.67(@opentelemetry/api@1.9.0)(@types/pg@8.15.4)(expo-sqlite@15.2.12(expo@53.0.12(@babel/core@7.28.4)(@expo/metro-runtime@5.0.4(react-native@0.79.6(@babel/core@7.28.4)(@types/react@19.1.13)(bufferutil@4.0.9)(react@19.0.0)))(bufferutil@4.0.9)(graphql@16.8.1)(react-native-webview@13.16.0(react-native@0.79.6(@babel/core@7.28.4)(@types/react@19.1.13)(bufferutil@4.0.9)(react@19.0.0))(react@19.0.0))(react-native@0.79.6(@babel/core@7.28.4)(@types/react@19.1.13)(bufferutil@4.0.9)(react@19.0.0))(react@19.0.0))(react-native@0.79.6(@babel/core@7.28.4)(@types/react@19.1.13)(bufferutil@4.0.9)(react@19.0.0))(react@19.0.0))(hono@4.9.8)(kysely@0.28.7)(pg@8.16.3)(react-dom@19.0.0(react@19.0.0))(react@19.0.0)
       '@folo-services/drizzle':
         specifier: 0.1.27
         version: 0.1.27(@opentelemetry/api@1.9.0)(@types/pg@8.15.4)(expo-sqlite@15.2.12(expo@53.0.12(@babel/core@7.28.4)(@expo/metro-runtime@5.0.4(react-native@0.79.6(@babel/core@7.28.4)(@types/react@19.1.13)(bufferutil@4.0.9)(react@19.0.0)))(bufferutil@4.0.9)(graphql@16.8.1)(react-native-webview@13.16.0(react-native@0.79.6(@babel/core@7.28.4)(@types/react@19.1.13)(bufferutil@4.0.9)(react@19.0.0))(react@19.0.0))(react-native@0.79.6(@babel/core@7.28.4)(@types/react@19.1.13)(bufferutil@4.0.9)(react@19.0.0))(react@19.0.0))(react-native@0.79.6(@babel/core@7.28.4)(@types/react@19.1.13)(bufferutil@4.0.9)(react@19.0.0))(react@19.0.0))(kysely@0.28.7)
@@ -1812,7 +1812,7 @@ importers:
     dependencies:
       '@follow-app/client-sdk':
         specifier: 'catalog:'
-        version: 0.3.66(@opentelemetry/api@1.9.0)(@types/pg@8.15.4)(expo-sqlite@15.2.12(expo@53.0.12(@babel/core@7.28.4)(@expo/metro-runtime@5.0.4(react-native@0.79.6(@babel/core@7.28.4)(@types/react@19.1.13)(bufferutil@4.0.9)(react@19.0.0)))(bufferutil@4.0.9)(graphql@16.8.1)(react-native-webview@13.16.0(react-native@0.79.6(@babel/core@7.28.4)(@types/react@19.1.13)(bufferutil@4.0.9)(react@19.0.0))(react@19.0.0))(react-native@0.79.6(@babel/core@7.28.4)(@types/react@19.1.13)(bufferutil@4.0.9)(react@19.0.0))(react@19.0.0))(react-native@0.79.6(@babel/core@7.28.4)(@types/react@19.1.13)(bufferutil@4.0.9)(react@19.0.0))(react@19.0.0))(kysely@0.28.7)(pg@8.16.3)(react-dom@19.0.0(react@19.0.0))(react@19.0.0)
+        version: 0.3.67(@opentelemetry/api@1.9.0)(@types/pg@8.15.4)(expo-sqlite@15.2.12(expo@53.0.12(@babel/core@7.28.4)(@expo/metro-runtime@5.0.4(react-native@0.79.6(@babel/core@7.28.4)(@types/react@19.1.13)(bufferutil@4.0.9)(react@19.0.0)))(bufferutil@4.0.9)(graphql@16.8.1)(react-native-webview@13.16.0(react-native@0.79.6(@babel/core@7.28.4)(@types/react@19.1.13)(bufferutil@4.0.9)(react@19.0.0))(react@19.0.0))(react-native@0.79.6(@babel/core@7.28.4)(@types/react@19.1.13)(bufferutil@4.0.9)(react@19.0.0))(react@19.0.0))(react-native@0.79.6(@babel/core@7.28.4)(@types/react@19.1.13)(bufferutil@4.0.9)(react@19.0.0))(react@19.0.0))(hono@4.9.8)(kysely@0.28.7)(pg@8.16.3)(react-dom@19.0.0(react@19.0.0))(react@19.0.0)
       '@follow/configs':
         specifier: workspace:*
         version: link:../../configs
@@ -1861,7 +1861,7 @@ importers:
     devDependencies:
       '@follow-app/client-sdk':
         specifier: 'catalog:'
-        version: 0.3.66(@opentelemetry/api@1.9.0)(@types/pg@8.15.4)(expo-sqlite@15.2.12(expo@53.0.12(@babel/core@7.28.4)(@expo/metro-runtime@5.0.4(react-native@0.79.6(@babel/core@7.28.4)(@types/react@19.1.13)(bufferutil@4.0.9)(react@19.0.0)))(bufferutil@4.0.9)(graphql@16.8.1)(react-native-webview@13.16.0(react-native@0.79.6(@babel/core@7.28.4)(@types/react@19.1.13)(bufferutil@4.0.9)(react@19.0.0))(react@19.0.0))(react-native@0.79.6(@babel/core@7.28.4)(@types/react@19.1.13)(bufferutil@4.0.9)(react@19.0.0))(react@19.0.0))(react-native@0.79.6(@babel/core@7.28.4)(@types/react@19.1.13)(bufferutil@4.0.9)(react@19.0.0))(react@19.0.0))(kysely@0.28.7)(pg@8.16.3)(react-dom@19.0.0(react@19.0.0))(react@19.0.0)
+        version: 0.3.67(@opentelemetry/api@1.9.0)(@types/pg@8.15.4)(expo-sqlite@15.2.12(expo@53.0.12(@babel/core@7.28.4)(@expo/metro-runtime@5.0.4(react-native@0.79.6(@babel/core@7.28.4)(@types/react@19.1.13)(bufferutil@4.0.9)(react@19.0.0)))(bufferutil@4.0.9)(graphql@16.8.1)(react-native-webview@13.16.0(react-native@0.79.6(@babel/core@7.28.4)(@types/react@19.1.13)(bufferutil@4.0.9)(react@19.0.0))(react@19.0.0))(react-native@0.79.6(@babel/core@7.28.4)(@types/react@19.1.13)(bufferutil@4.0.9)(react@19.0.0))(react@19.0.0))(react-native@0.79.6(@babel/core@7.28.4)(@types/react@19.1.13)(bufferutil@4.0.9)(react@19.0.0))(react@19.0.0))(hono@4.9.8)(kysely@0.28.7)(pg@8.16.3)(react-dom@19.0.0(react@19.0.0))(react@19.0.0)
       '@follow/configs':
         specifier: workspace:*
         version: link:../../configs
@@ -2022,6 +2022,11 @@ packages:
 
   '@ark/util@0.46.0':
     resolution: {integrity: sha512-JPy/NGWn/lvf1WmGCPw2VGpBg5utZraE84I7wli18EDF3p3zc/e9WolT35tINeZO3l7C77SjqRJeAUoT0CvMRg==}
+
+  '@asteasolutions/zod-to-openapi@8.1.0':
+    resolution: {integrity: sha512-tQFxVs05J/6QXXqIzj6rTRk3nj1HFs4pe+uThwE95jL5II2JfpVXkK+CqkO7aT0Do5AYqO6LDrKpleLUFXgY+g==}
+    peerDependencies:
+      zod: ^4.0.0
 
   '@babel/code-frame@7.10.4':
     resolution: {integrity: sha512-vG6SvB6oYEhvgisZNFRmRCUkLz11c7rp+tbNTynGqc6mS1d5ATd/sGyV6W0KZZnXRKMTzZDRgQT3Ou9jhpAfUg==}
@@ -4210,23 +4215,26 @@ packages:
   '@floating-ui/utils@0.2.10':
     resolution: {integrity: sha512-aGTxbpbg8/b5JfU1HXSrbH3wXZuLPJcNEcZQFMxLs3oSzgtVu6nFPkbbGGUvBcUjKV2YyB9Wxxabo+HEH9tcRQ==}
 
-  '@follow-app/client-sdk@0.3.66':
-    resolution: {integrity: sha512-njQdiY8IUkQj/rWRu9P019qi6AKqWVQ+nx1p8XkWU1og/RQZ+BRdffL+XVyRTSIV4PL7C5SXDZr861w1MKgpRQ==}
+  '@follow-app/client-sdk@0.3.67':
+    resolution: {integrity: sha512-6LMtHhmjHFgrtzE+Q0V5Jjx16TMVkNmcLwoBTTCyqC3+M1RWW1KpVfNULTQ1zWmRh71cRvUJJXz1gdd3FpBfEg==}
 
   '@folo-services/ai-tools@0.2.41':
     resolution: {integrity: sha512-tX2hTfLAZHYw7B0fWVuCA+uE1ZDGGKyDaPLEgn9WRdwYVnBdOqBFPbNx3FioB69fg+aLHeCKgHMkNEmlQZ/nUA==}
 
-  '@folo-services/constants@0.1.33':
-    resolution: {integrity: sha512-RF6hE4K5tKUUge+uEhM/6A276tuSeqq1oaQjou5/A+JEUa+VDYRIVfeEXoJhxSfdb+fs4oeMlWm0TS4GOa2SMA==}
+  '@folo-services/constants@0.1.34':
+    resolution: {integrity: sha512-l22gfh84z/8WB4E3Q84Nbpp2vU5qCAKBuE4eL94UxejryyTfYWosRz1vD13JS/FDUMNJxpmvuqbPjrMFHqd1eg==}
 
   '@folo-services/drizzle@0.1.27':
     resolution: {integrity: sha512-7bo9ZkBwGaYmDJqo+PX1eLYO0oJQMZqOkUEEchD78GldfnkaR2AQ5SK7BYrb57Qi6MQJ+A1AuFd3DV41o0cJfw==}
 
+  '@folo-services/drizzle@0.1.28':
+    resolution: {integrity: sha512-j6m3TVHC947vctWStj/9ak+H2uPNgp3G7+JP9x20V1YBmnqqt8Uyar+qmu0sUoI0HHgh0nqgYF6NBzIqTQ0rBA==}
+
   '@folo-services/exceptions@0.1.16':
     resolution: {integrity: sha512-ThmLLe1Dv2CFsDIgcuY6kJhYJnjiQ7UEsewaqc25MkuImDabhzWnnad+3zRnJGLpveaMeEZ69uqUsTbKC+fR7g==}
 
-  '@folo-services/shared@0.0.25':
-    resolution: {integrity: sha512-U8dk5N+ajDvZlh0J9mChVyLrBDpDYJ4h0u0CLqC+JKIhLbXIy/P2q2ZtWtVyiMVCppfNDqHE82bLCl8INdb7lw==}
+  '@folo-services/shared@0.0.26':
+    resolution: {integrity: sha512-svM4YizoOpMfc7KAUCMLWIhzWuEmN3dn6cEdK1W1I04206Fo2iwVbQV+fP/saXQmHVSBD3zjww0PR/DLypw6PA==}
 
   '@fontsource/sn-pro@5.2.5':
     resolution: {integrity: sha512-rBdBv/0ygj6bkO7xDMMFpwobLdSrcQ2Jncb6DIwdeYGoAgeWkQRwVYhGDKasfLjEYCNYxrqr6wsXsM9+aU39RA==}
@@ -4276,6 +4284,19 @@ packages:
 
   '@hexagon/base64@1.1.28':
     resolution: {integrity: sha512-lhqDEAvWixy3bZ+UOYbPwUbBkwBq5C1LAJ/xPC8Oi+lL54oyakv/npbA0aU2hgCsx/1NUd4IBvV03+aUBWxerw==}
+
+  '@hono/zod-openapi@1.1.2':
+    resolution: {integrity: sha512-XqfK6cdEMo7Nz7N4rYgfndvQDPGf1T4TzZnG2dEqx5aIiSN4MNIC/73xy1KhUo7pGSKlf9fKL9VOtOkRUNHu6w==}
+    engines: {node: '>=16.0.0'}
+    peerDependencies:
+      hono: '>=4.3.6'
+      zod: ^4.0.0
+
+  '@hono/zod-validator@0.7.3':
+    resolution: {integrity: sha512-uYGdgVib3RlGD698WR5dVM0zB3UuPY5vHKXffGUbUh7r4xY+mFIhF3/v4AcQVLrU5CQdBso8BJr4wuVoCrjTuQ==}
+    peerDependencies:
+      hono: '>=3.9.0'
+      zod: ^3.25.0 || ^4.0.0
 
   '@hookform/resolvers@5.2.2':
     resolution: {integrity: sha512-A/IxlMLShx3KjV/HeTcTfaMxdwy690+L/ZADoeaTltLx+CVuzkeVIPuybK3jrRfw7YZnmdKsVVHAlEPIAEUNlA==}
@@ -4753,6 +4774,9 @@ packages:
   '@napi-rs/wasm-runtime@0.2.12':
     resolution: {integrity: sha512-ZVWUcfwY4E/yPitQJl481FjFo3K22D6qF0DuFH6Y/nbnE11GY5uguDxZMGXPQ8WQ0128MXQD7TnfHyK4oWoIJQ==}
 
+  '@napi-rs/wasm-runtime@1.0.5':
+    resolution: {integrity: sha512-TBr9Cf9onSAS2LQ2+QHx6XcC6h9+RIzJgbqG3++9TUZSH204AwEy5jg3BTQ0VATsyoGj4ee49tN/y6rvaOOtcg==}
+
   '@noble/ciphers@2.0.0':
     resolution: {integrity: sha512-j/l6jpnpaIBM87cAYPJzi/6TgqmBv9spkqPyCXvRYsu5uxqh6tPJZDnD85yo8VWqzTuTQPgfv7NgT63u7kbwAQ==}
     engines: {node: '>= 20.19.0'}
@@ -5106,12 +5130,8 @@ packages:
     peerDependencies:
       '@opentelemetry/api': ^1.1.0
 
-  '@oxc-project/runtime@0.71.0':
-    resolution: {integrity: sha512-QwoF5WUXIGFQ+hSxWEib4U/aeLoiDN9JlP18MnBgx9LLPRDfn1iICtcow7Jgey6HLH4XFceWXQD5WBJ39dyJcw==}
-    engines: {node: '>=6.9.0'}
-
-  '@oxc-project/types@0.71.0':
-    resolution: {integrity: sha512-5CwQ4MI+P4MQbjLWXgNurA+igGwu/opNetIE13LBs9+V93R64MLvDKOOLZIXSzEfovU3Zef3q3GjPnMTgJTn2w==}
+  '@oxc-project/types@0.92.0':
+    resolution: {integrity: sha512-PDLfCbwgXjGdTBxzcuDOUxJYNBl6P8dOp3eDKWw54dYvqONan9rwGDRQU0zrkdEMiItfXQQUOI17uOcMX5Zm7A==}
 
   '@peculiar/asn1-android@2.5.0':
     resolution: {integrity: sha512-t8A83hgghWQkcneRsgGs2ebAlRe54ns88p7ouv8PW2tzF1nAW4yHcL4uZKrFpIU+uszIRzTkcCuie37gpkId0A==}
@@ -6069,75 +6089,98 @@ packages:
     resolution: {integrity: sha512-xBaJish5OeGmniDj9cW5PRa/PtmuVU3ziqrbr5xJj901ZDN4TosrVaNZpEiLZAxdfnhAe7uQ7QFWfjPe9d9K2Q==}
     engines: {node: '>= 10'}
 
-  '@rolldown/binding-darwin-arm64@1.0.0-beta.9-commit.d91dfb5':
-    resolution: {integrity: sha512-Mp0/gqiPdepHjjVm7e0yL1acWvI0rJVVFQEADSezvAjon9sjQ7CEg9JnXICD4B1YrPmN9qV/e7cQZCp87tTV4w==}
+  '@rolldown/binding-android-arm64@1.0.0-beta.40':
+    resolution: {integrity: sha512-9Ii9phC7QU6Lb+ncMfG1Xlosq0NBB1N/4sw+EGZ3y0BBWGy02TOb5ghWZalphAKv9rn1goqo5WkBjyd2YvsLmA==}
+    engines: {node: ^20.19.0 || >=22.12.0}
+    cpu: [arm64]
+    os: [android]
+
+  '@rolldown/binding-darwin-arm64@1.0.0-beta.40':
+    resolution: {integrity: sha512-5O6d0y2tBQTL+ecQY3qXIwSnF1/Zik8q7LZMKeyF+VJ9l194d0IdMhl2zUF0cqWbYHuF4Pnxplk4OhurPQ/Z9Q==}
+    engines: {node: ^20.19.0 || >=22.12.0}
     cpu: [arm64]
     os: [darwin]
 
-  '@rolldown/binding-darwin-x64@1.0.0-beta.9-commit.d91dfb5':
-    resolution: {integrity: sha512-40re4rMNrsi57oavRzIOpRGmg3QRlW6Ea8Q3znaqgOuJuKVrrm2bIQInTfkZJG7a4/5YMX7T951d0+toGLTdCA==}
+  '@rolldown/binding-darwin-x64@1.0.0-beta.40':
+    resolution: {integrity: sha512-izB9jygt3miPQbOTZfSu5K51isUplqa8ysByOKQqcJHgrBWmbTU8TM9eouv6tRmBR0kjcEcID9xhmA1CeZ1VIg==}
+    engines: {node: ^20.19.0 || >=22.12.0}
     cpu: [x64]
     os: [darwin]
 
-  '@rolldown/binding-freebsd-x64@1.0.0-beta.9-commit.d91dfb5':
-    resolution: {integrity: sha512-8BDM939bbMariZupiHp3OmP5N+LXPT4mULA0hZjDaq970PCxv4krZOSMG+HkWUUwmuQROtV+/00xw39EO0P+8g==}
+  '@rolldown/binding-freebsd-x64@1.0.0-beta.40':
+    resolution: {integrity: sha512-2fdpEpKT+wwP0vig9dqxu+toTeWmVSjo3psJQVDeLJ51rO+GXcCJ1IkCXjhMKVEevNtZS7B8T8Z2vvmRV9MAdA==}
+    engines: {node: ^20.19.0 || >=22.12.0}
     cpu: [x64]
     os: [freebsd]
 
-  '@rolldown/binding-linux-arm-gnueabihf@1.0.0-beta.9-commit.d91dfb5':
-    resolution: {integrity: sha512-sntsPaPgrECpBB/+2xrQzVUt0r493TMPI+4kWRMhvMsmrxOqH1Ep5lM0Wua/ZdbfZNwm1aVa5pcESQfNfM4Fhw==}
+  '@rolldown/binding-linux-arm-gnueabihf@1.0.0-beta.40':
+    resolution: {integrity: sha512-HP2lo78OWULN+8TewpLbS9PS00jh0CaF04tA2u8z2I+6QgVgrYOYKvX+T0hlO5smgso4+qb3YchzumWJl3yCPQ==}
+    engines: {node: ^20.19.0 || >=22.12.0}
     cpu: [arm]
     os: [linux]
 
-  '@rolldown/binding-linux-arm64-gnu@1.0.0-beta.9-commit.d91dfb5':
-    resolution: {integrity: sha512-5clBW/I+er9F2uM1OFjJFWX86y7Lcy0M+NqsN4s3o07W+8467Zk8oQa4B45vdaXoNUF/yqIAgKkA/OEdQDxZqA==}
+  '@rolldown/binding-linux-arm64-gnu@1.0.0-beta.40':
+    resolution: {integrity: sha512-ng00gfr9BhA2NPAOU5RWAlTiL+JcwAD+L+4yUD1sbBy6tgHdLiNBOvKtHISIF9RM9/eQeS0tAiWOYZGIH9JMew==}
+    engines: {node: ^20.19.0 || >=22.12.0}
     cpu: [arm64]
     os: [linux]
     libc: [glibc]
 
-  '@rolldown/binding-linux-arm64-musl@1.0.0-beta.9-commit.d91dfb5':
-    resolution: {integrity: sha512-wv+rnAfQDk9p/CheX8/Kmqk2o1WaFa4xhWI9gOyDMk/ljvOX0u0ubeM8nI1Qfox7Tnh71eV5AjzSePXUhFOyOg==}
+  '@rolldown/binding-linux-arm64-musl@1.0.0-beta.40':
+    resolution: {integrity: sha512-mF0R1l9kLcaag/9cLEiYYdNZ4v1uuX4jklSDZ1s6vJE4RB3LirUney0FavdVRwCJ5sDvfvsPgXgtBXWYr2M2tQ==}
+    engines: {node: ^20.19.0 || >=22.12.0}
     cpu: [arm64]
     os: [linux]
     libc: [musl]
 
-  '@rolldown/binding-linux-x64-gnu@1.0.0-beta.9-commit.d91dfb5':
-    resolution: {integrity: sha512-gxD0/xhU4Py47IH3bKZbWtvB99tMkUPGPJFRfSc5UB9Osoje0l0j1PPbxpUtXIELurYCqwLBKXIMTQGifox1BQ==}
+  '@rolldown/binding-linux-x64-gnu@1.0.0-beta.40':
+    resolution: {integrity: sha512-+wi08S7wT5iLPHRZb0USrS6n+T6m+yY++dePYedE5uvKIpWCJJioFTaRtWjpm0V6dVNLcq2OukrvfdlGtH9Wgg==}
+    engines: {node: ^20.19.0 || >=22.12.0}
     cpu: [x64]
     os: [linux]
     libc: [glibc]
 
-  '@rolldown/binding-linux-x64-musl@1.0.0-beta.9-commit.d91dfb5':
-    resolution: {integrity: sha512-HotuVe3XUjDwqqEMbm3o3IRkP9gdm8raY/btd/6KE3JGLF/cv4+3ff1l6nOhAZI8wulWDPEXPtE7v+HQEaTXnA==}
+  '@rolldown/binding-linux-x64-musl@1.0.0-beta.40':
+    resolution: {integrity: sha512-W5qBGAemUocIBKCcOsDjlV9GUt28qhl/+M6etWBeLS5gQK0J6XDg0YVzfOQdvq57ZGjYNP0NvhYzqhOOnEx+4g==}
+    engines: {node: ^20.19.0 || >=22.12.0}
     cpu: [x64]
     os: [linux]
     libc: [musl]
 
-  '@rolldown/binding-wasm32-wasi@1.0.0-beta.9-commit.d91dfb5':
-    resolution: {integrity: sha512-8Cx+ucbd8n2dIr21FqBh6rUvTVL0uTgEtKR7l+MUZ5BgY4dFh1e4mPVX8oqmoYwOxBiXrsD2JIOCz4AyKLKxWA==}
-    engines: {node: '>=14.21.3'}
+  '@rolldown/binding-openharmony-arm64@1.0.0-beta.40':
+    resolution: {integrity: sha512-vJwoDehtt+yqj2zacq1AqNc2uE/oh7mnRGqAUbuldV6pgvU01OSQUJ7Zu+35hTopnjFoDNN6mIezkYlGAv5RFA==}
+    engines: {node: ^20.19.0 || >=22.12.0}
+    cpu: [arm64]
+    os: [openharmony]
+
+  '@rolldown/binding-wasm32-wasi@1.0.0-beta.40':
+    resolution: {integrity: sha512-Oj3YyqVUPurr1FlMpEE/bJmMC+VWAWPM/SGUfklO5KUX97bk5Q/733nPg4RykK8q8/TluJoQYvRc05vL/B74dw==}
+    engines: {node: '>=14.0.0'}
     cpu: [wasm32]
 
-  '@rolldown/binding-win32-arm64-msvc@1.0.0-beta.9-commit.d91dfb5':
-    resolution: {integrity: sha512-Vhq5vikrVDxAa75fxsyqj0c0Y/uti/TwshXI71Xb8IeUQJOBnmLUsn5dgYf5ljpYYkNa0z9BPAvUDIDMmyDi+w==}
+  '@rolldown/binding-win32-arm64-msvc@1.0.0-beta.40':
+    resolution: {integrity: sha512-0ZtO6yN8XjVoFfN4HDWQj4nDu3ndMybr7jIM00DJqOmc+yFhly7rdOy7fNR9Sky3leCpBtsXfepVqRmVpYKPVA==}
+    engines: {node: ^20.19.0 || >=22.12.0}
     cpu: [arm64]
     os: [win32]
 
-  '@rolldown/binding-win32-ia32-msvc@1.0.0-beta.9-commit.d91dfb5':
-    resolution: {integrity: sha512-lN7RIg9Iugn08zP2aZN9y/MIdG8iOOCE93M1UrFlrxMTqPf8X+fDzmR/OKhTSd1A2pYNipZHjyTcb5H8kyQSow==}
+  '@rolldown/binding-win32-ia32-msvc@1.0.0-beta.40':
+    resolution: {integrity: sha512-BPl1inoJXPpIe38Ja46E4y11vXlJyuleo+9Rmu//pYL5fIDYJkXUj/oAXqjSuwLcssrcwnuPgzvzvlz9++cr3w==}
+    engines: {node: ^20.19.0 || >=22.12.0}
     cpu: [ia32]
     os: [win32]
 
-  '@rolldown/binding-win32-x64-msvc@1.0.0-beta.9-commit.d91dfb5':
-    resolution: {integrity: sha512-7/7cLIn48Y+EpQ4CePvf8reFl63F15yPUlg4ZAhl+RXJIfydkdak1WD8Ir3AwAO+bJBXzrfNL+XQbxm0mcQZmw==}
+  '@rolldown/binding-win32-x64-msvc@1.0.0-beta.40':
+    resolution: {integrity: sha512-UguA4ltbAk+nbwHRxqaUP/etpTbR0HjyNlsu4Zjbh/ytNbFsbw8CA4tEBkwDyjgI5NIPea6xY11zpl7R2/ddVA==}
+    engines: {node: ^20.19.0 || >=22.12.0}
     cpu: [x64]
     os: [win32]
 
   '@rolldown/pluginutils@1.0.0-beta.35':
     resolution: {integrity: sha512-slYrCpoxJUqzFDDNlvrOYRazQUNRvWPjXA17dAOISY3rDMxX6k8K4cj2H+hEYMHF81HO3uNd5rHVigAWRM5dSg==}
 
-  '@rolldown/pluginutils@1.0.0-beta.9-commit.d91dfb5':
-    resolution: {integrity: sha512-8sExkWRK+zVybw3+2/kBkYBFeLnEUWz1fT7BLHplpzmtqkOfTbAQ9gkt4pzwGIIZmg4Qn5US5ACjUBenrhezwQ==}
+  '@rolldown/pluginutils@1.0.0-beta.40':
+    resolution: {integrity: sha512-s3GeJKSQOwBlzdUrj4ISjJj5SfSh+aqn0wjOar4Bx95iV1ETI7F6S/5hLcfAxZ9kXDcyrAkxPlqmd1ZITttf+w==}
 
   '@rollup/plugin-babel@5.3.1':
     resolution: {integrity: sha512-WFfdLWU/xVWKeRQnKmIAQULUI7Il0gZnBIH/ZFO069wYIfPu+8zrfp/KMW0atmELoRDq8FbiP3VCss9MhCut7Q==}
@@ -7824,35 +7867,6 @@ packages:
   before-after-hook@2.2.3:
     resolution: {integrity: sha512-NzUnlZexiaH/46WDhANlyR2bXRopNg4F/zuSA3OpZnllCUgRaOF2znDioDWrmbNVsuZk6l9pMquQB38cfBZwkQ==}
 
-  better-auth@1.3.12:
-    resolution: {integrity: sha512-FckxiAexCkkk2F0EOPmhXjWhYYE8eYg2x68lOIirSgyQ0TWc4JDvA5y8Vax5Jc7iyXk5MjJBY3DfwTPDZ87Lbg==}
-    peerDependencies:
-      '@lynx-js/react': '*'
-      '@sveltejs/kit': ^2.0.0
-      next: ^14.0.0 || ^15.0.0
-      react: 19.0.0
-      react-dom: 19.0.0
-      solid-js: ^1.0.0
-      svelte: ^4.0.0 || ^5.0.0
-      vue: ^3.0.0
-    peerDependenciesMeta:
-      '@lynx-js/react':
-        optional: true
-      '@sveltejs/kit':
-        optional: true
-      next:
-        optional: true
-      react:
-        optional: true
-      react-dom:
-        optional: true
-      solid-js:
-        optional: true
-      svelte:
-        optional: true
-      vue:
-        optional: true
-
   better-auth@1.3.13:
     resolution: {integrity: sha512-vNIVExB87JTM19+1+p6SZ6xbzZFLw4ug8ir61qCArE8UbIN3SZQi0T3/PjubpWPwsLjINBsVizeHxPf5S7Ss0A==}
     peerDependencies:
@@ -9124,6 +9138,12 @@ packages:
     peerDependencies:
       drizzle-orm: '>=0.36.0'
       zod: '>=3.0.0'
+
+  drizzle-zod@0.8.3:
+    resolution: {integrity: sha512-66yVOuvGhKJnTdiqj1/Xaaz9/qzOdRJADpDa68enqS6g3t0kpNkwNYjUuaeXgZfO/UWuIM9HIhSlJ6C5ZraMww==}
+    peerDependencies:
+      drizzle-orm: '>=0.36.0'
+      zod: ^3.25.0 || ^4.0.0
 
   ds-store@0.1.6:
     resolution: {integrity: sha512-kY21M6Lz+76OS3bnCzjdsJSF7LBpLYGCVfavW8TgQD2XkcqIZ86W0y9qUDZu6fp7SIZzqosMDW2zi7zVFfv4hw==}
@@ -10850,6 +10870,10 @@ packages:
 
   hoist-non-react-statics@3.3.2:
     resolution: {integrity: sha512-/gGivxi8JPKWNm/W0jSmzcMPpfpPLc3dY/6GxhX2hQ9iGj3aDfklV4ET7NjKpSinLpJ5vafa9iiGIEZg10SfBw==}
+
+  hono@4.9.8:
+    resolution: {integrity: sha512-JW8Bb4RFWD9iOKxg5PbUarBYGM99IcxFl2FPBo2gSJO11jjUDqlP1Bmfyqt8Z/dGhIQ63PMA9LdcLefXyIasyg==}
+    engines: {node: '>=16.9.0'}
 
   hookable@5.5.3:
     resolution: {integrity: sha512-Yc+BQe8SvoXH1643Qez1zqLRmbA5rCL+sSmk6TVos0LWVfNIB7PGncdlId77WzLGSIB5KaWgTaNTs2lNVEI6VQ==}
@@ -12728,6 +12752,9 @@ packages:
     resolution: {integrity: sha512-7x81NCL719oNbsq/3mh+hVrAWmFuEYUqrq/Iw3kUzH8ReypT9QQ0BLoJS7/G9k6N81XjW4qHWtjWwe/9eLy1EQ==}
     engines: {node: '>=12'}
 
+  openapi3-ts@4.5.0:
+    resolution: {integrity: sha512-jaL+HgTq2Gj5jRcfdutgRGLosCy/hT8sQf6VOy+P+g36cZOjI1iukdPnijC+4CmeRzg/jEllJUboEic2FhxhtQ==}
+
   optionator@0.9.4:
     resolution: {integrity: sha512-6IpQ7mKUxRcZNLIObR0hz7lxsapSSIYNZJwXPGeF0mTVqGKFIXj1DQcMoT22S3ROcLyY/rz0PWaWZ9ayWmad9g==}
     engines: {node: '>= 0.8.0'}
@@ -14382,8 +14409,9 @@ packages:
       vue-tsc:
         optional: true
 
-  rolldown@1.0.0-beta.9-commit.d91dfb5:
-    resolution: {integrity: sha512-FHkj6gGEiEgmAXQchglofvUUdwj2Oiw603Rs+zgFAnn9Cb7T7z3fiaEc0DbN3ja4wYkW6sF2rzMEtC1V4BGx/g==}
+  rolldown@1.0.0-beta.40:
+    resolution: {integrity: sha512-VqEHbKpOgTPmQrZ4fVn4eshDQS/6g/fRpNE7cFSJY+eQLDZn4B9X61J6L+hnlt1u2uRI+pF7r1USs6S5fuWCvw==}
+    engines: {node: ^20.19.0 || >=22.12.0}
     hasBin: true
 
   rollup@2.79.2:
@@ -16404,6 +16432,11 @@ snapshots:
 
   '@ark/util@0.46.0':
     optional: true
+
+  '@asteasolutions/zod-to-openapi@8.1.0(zod@4.1.11)':
+    dependencies:
+      openapi3-ts: 4.5.0
+      zod: 4.1.11
 
   '@babel/code-frame@7.10.4':
     dependencies:
@@ -20090,14 +20123,14 @@ snapshots:
 
   '@floating-ui/utils@0.2.10': {}
 
-  '@follow-app/client-sdk@0.3.66(@opentelemetry/api@1.9.0)(@types/pg@8.15.4)(expo-sqlite@15.2.12(expo@53.0.12(@babel/core@7.28.0)(@expo/metro-runtime@5.0.4(react-native@0.79.6(@babel/core@7.28.0)(@types/react@19.1.13)(bufferutil@4.0.9)(react@19.0.0)))(bufferutil@4.0.9)(graphql@16.8.1)(react-native-webview@13.16.0(react-native@0.79.6(@babel/core@7.28.0)(@types/react@19.1.13)(bufferutil@4.0.9)(react@19.0.0))(react@19.0.0))(react-native@0.79.6(@babel/core@7.28.0)(@types/react@19.1.13)(bufferutil@4.0.9)(react@19.0.0))(react@19.0.0))(react-native@0.79.6(@babel/core@7.28.0)(@types/react@19.1.13)(bufferutil@4.0.9)(react@19.0.0))(react@19.0.0))(kysely@0.28.7)(pg@8.16.3)(react-dom@19.0.0(react@19.0.0))(react@19.0.0)':
+  '@follow-app/client-sdk@0.3.67(@opentelemetry/api@1.9.0)(@types/pg@8.15.4)(expo-sqlite@15.2.12(expo@53.0.12(@babel/core@7.28.0)(@expo/metro-runtime@5.0.4(react-native@0.79.6(@babel/core@7.28.0)(@types/react@19.1.13)(bufferutil@4.0.9)(react@19.0.0)))(bufferutil@4.0.9)(graphql@16.8.1)(react-native-webview@13.16.0(react-native@0.79.6(@babel/core@7.28.0)(@types/react@19.1.13)(bufferutil@4.0.9)(react@19.0.0))(react@19.0.0))(react-native@0.79.6(@babel/core@7.28.0)(@types/react@19.1.13)(bufferutil@4.0.9)(react@19.0.0))(react@19.0.0))(react-native@0.79.6(@babel/core@7.28.0)(@types/react@19.1.13)(bufferutil@4.0.9)(react@19.0.0))(react@19.0.0))(hono@4.9.8)(kysely@0.28.7)(pg@8.16.3)(react-dom@19.0.0(react@19.0.0))(react@19.0.0)':
     dependencies:
-      '@folo-services/constants': 0.1.33
-      '@folo-services/drizzle': 0.1.27(@opentelemetry/api@1.9.0)(@types/pg@8.15.4)(expo-sqlite@15.2.12(expo@53.0.12(@babel/core@7.28.0)(@expo/metro-runtime@5.0.4(react-native@0.79.6(@babel/core@7.28.0)(@types/react@19.1.13)(bufferutil@4.0.9)(react@19.0.0)))(bufferutil@4.0.9)(graphql@16.8.1)(react-native-webview@13.16.0(react-native@0.79.6(@babel/core@7.28.0)(@types/react@19.1.13)(bufferutil@4.0.9)(react@19.0.0))(react@19.0.0))(react-native@0.79.6(@babel/core@7.28.0)(@types/react@19.1.13)(bufferutil@4.0.9)(react@19.0.0))(react@19.0.0))(react-native@0.79.6(@babel/core@7.28.0)(@types/react@19.1.13)(bufferutil@4.0.9)(react@19.0.0))(react@19.0.0))(kysely@0.28.7)
+      '@folo-services/constants': 0.1.34
+      '@folo-services/drizzle': 0.1.28(@opentelemetry/api@1.9.0)(@types/pg@8.15.4)(expo-sqlite@15.2.12(expo@53.0.12(@babel/core@7.28.0)(@expo/metro-runtime@5.0.4(react-native@0.79.6(@babel/core@7.28.0)(@types/react@19.1.13)(bufferutil@4.0.9)(react@19.0.0)))(bufferutil@4.0.9)(graphql@16.8.1)(react-native-webview@13.16.0(react-native@0.79.6(@babel/core@7.28.0)(@types/react@19.1.13)(bufferutil@4.0.9)(react@19.0.0))(react@19.0.0))(react-native@0.79.6(@babel/core@7.28.0)(@types/react@19.1.13)(bufferutil@4.0.9)(react@19.0.0))(react@19.0.0))(react-native@0.79.6(@babel/core@7.28.0)(@types/react@19.1.13)(bufferutil@4.0.9)(react@19.0.0))(react@19.0.0))(hono@4.9.8)(kysely@0.28.7)
       '@folo-services/exceptions': 0.1.16
-      '@folo-services/shared': 0.0.25(@opentelemetry/api@1.9.0)(@types/pg@8.15.4)(expo-sqlite@15.2.12(expo@53.0.12(@babel/core@7.28.0)(@expo/metro-runtime@5.0.4(react-native@0.79.6(@babel/core@7.28.0)(@types/react@19.1.13)(bufferutil@4.0.9)(react@19.0.0)))(bufferutil@4.0.9)(graphql@16.8.1)(react-native-webview@13.16.0(react-native@0.79.6(@babel/core@7.28.0)(@types/react@19.1.13)(bufferutil@4.0.9)(react@19.0.0))(react@19.0.0))(react-native@0.79.6(@babel/core@7.28.0)(@types/react@19.1.13)(bufferutil@4.0.9)(react@19.0.0))(react@19.0.0))(react-native@0.79.6(@babel/core@7.28.0)(@types/react@19.1.13)(bufferutil@4.0.9)(react@19.0.0))(react@19.0.0))(kysely@0.28.7)(pg@8.16.3)
-      better-auth: 1.3.12(react-dom@19.0.0(react@19.0.0))(react@19.0.0)
-      zod: 3.25.76
+      '@folo-services/shared': 0.0.26(@opentelemetry/api@1.9.0)(@types/pg@8.15.4)(expo-sqlite@15.2.12(expo@53.0.12(@babel/core@7.28.0)(@expo/metro-runtime@5.0.4(react-native@0.79.6(@babel/core@7.28.0)(@types/react@19.1.13)(bufferutil@4.0.9)(react@19.0.0)))(bufferutil@4.0.9)(graphql@16.8.1)(react-native-webview@13.16.0(react-native@0.79.6(@babel/core@7.28.0)(@types/react@19.1.13)(bufferutil@4.0.9)(react@19.0.0))(react@19.0.0))(react-native@0.79.6(@babel/core@7.28.0)(@types/react@19.1.13)(bufferutil@4.0.9)(react@19.0.0))(react@19.0.0))(react-native@0.79.6(@babel/core@7.28.0)(@types/react@19.1.13)(bufferutil@4.0.9)(react@19.0.0))(react@19.0.0))(hono@4.9.8)(kysely@0.28.7)(pg@8.16.3)
+      better-auth: 1.3.13(react-dom@19.0.0(react@19.0.0))(react@19.0.0)
+      zod: 4.1.11
     transitivePeerDependencies:
       - '@aws-sdk/client-rds-data'
       - '@cloudflare/workers-types'
@@ -20122,6 +20155,7 @@ snapshots:
       - bun-types
       - expo-sqlite
       - gel
+      - hono
       - knex
       - kysely
       - mysql2
@@ -20138,14 +20172,14 @@ snapshots:
       - svelte
       - vue
 
-  '@follow-app/client-sdk@0.3.66(@opentelemetry/api@1.9.0)(@types/pg@8.15.4)(expo-sqlite@15.2.12(expo@53.0.12(@babel/core@7.28.4)(@expo/metro-runtime@5.0.4(react-native@0.79.6(@babel/core@7.28.4)(@types/react@19.1.13)(bufferutil@4.0.9)(react@19.0.0)(utf-8-validate@6.0.5)))(bufferutil@4.0.9)(graphql@16.8.1)(react-native-webview@13.16.0(react-native@0.79.6(@babel/core@7.28.4)(@types/react@19.1.13)(bufferutil@4.0.9)(react@19.0.0)(utf-8-validate@6.0.5))(react@19.0.0))(react-native@0.79.6(@babel/core@7.28.4)(@types/react@19.1.13)(bufferutil@4.0.9)(react@19.0.0)(utf-8-validate@6.0.5))(react@19.0.0)(utf-8-validate@6.0.5))(react-native@0.79.6(@babel/core@7.28.4)(@types/react@19.1.13)(bufferutil@4.0.9)(react@19.0.0)(utf-8-validate@6.0.5))(react@19.0.0))(kysely@0.28.7)(pg@8.16.3)(react-dom@19.0.0(react@19.0.0))(react@19.0.0)':
+  '@follow-app/client-sdk@0.3.67(@opentelemetry/api@1.9.0)(@types/pg@8.15.4)(expo-sqlite@15.2.12(expo@53.0.12(@babel/core@7.28.4)(@expo/metro-runtime@5.0.4(react-native@0.79.6(@babel/core@7.28.4)(@types/react@19.1.13)(bufferutil@4.0.9)(react@19.0.0)(utf-8-validate@6.0.5)))(bufferutil@4.0.9)(graphql@16.8.1)(react-native-webview@13.16.0(react-native@0.79.6(@babel/core@7.28.4)(@types/react@19.1.13)(bufferutil@4.0.9)(react@19.0.0)(utf-8-validate@6.0.5))(react@19.0.0))(react-native@0.79.6(@babel/core@7.28.4)(@types/react@19.1.13)(bufferutil@4.0.9)(react@19.0.0)(utf-8-validate@6.0.5))(react@19.0.0)(utf-8-validate@6.0.5))(react-native@0.79.6(@babel/core@7.28.4)(@types/react@19.1.13)(bufferutil@4.0.9)(react@19.0.0)(utf-8-validate@6.0.5))(react@19.0.0))(hono@4.9.8)(kysely@0.28.7)(pg@8.16.3)(react-dom@19.0.0(react@19.0.0))(react@19.0.0)':
     dependencies:
-      '@folo-services/constants': 0.1.33
-      '@folo-services/drizzle': 0.1.27(@opentelemetry/api@1.9.0)(@types/pg@8.15.4)(expo-sqlite@15.2.12(expo@53.0.12(@babel/core@7.28.4)(@expo/metro-runtime@5.0.4(react-native@0.79.6(@babel/core@7.28.4)(@types/react@19.1.13)(bufferutil@4.0.9)(react@19.0.0)(utf-8-validate@6.0.5)))(bufferutil@4.0.9)(graphql@16.8.1)(react-native-webview@13.16.0(react-native@0.79.6(@babel/core@7.28.4)(@types/react@19.1.13)(bufferutil@4.0.9)(react@19.0.0)(utf-8-validate@6.0.5))(react@19.0.0))(react-native@0.79.6(@babel/core@7.28.4)(@types/react@19.1.13)(bufferutil@4.0.9)(react@19.0.0)(utf-8-validate@6.0.5))(react@19.0.0)(utf-8-validate@6.0.5))(react-native@0.79.6(@babel/core@7.28.4)(@types/react@19.1.13)(bufferutil@4.0.9)(react@19.0.0)(utf-8-validate@6.0.5))(react@19.0.0))(kysely@0.28.7)
+      '@folo-services/constants': 0.1.34
+      '@folo-services/drizzle': 0.1.28(@opentelemetry/api@1.9.0)(@types/pg@8.15.4)(expo-sqlite@15.2.12(expo@53.0.12(@babel/core@7.28.4)(@expo/metro-runtime@5.0.4(react-native@0.79.6(@babel/core@7.28.4)(@types/react@19.1.13)(bufferutil@4.0.9)(react@19.0.0)(utf-8-validate@6.0.5)))(bufferutil@4.0.9)(graphql@16.8.1)(react-native-webview@13.16.0(react-native@0.79.6(@babel/core@7.28.4)(@types/react@19.1.13)(bufferutil@4.0.9)(react@19.0.0)(utf-8-validate@6.0.5))(react@19.0.0))(react-native@0.79.6(@babel/core@7.28.4)(@types/react@19.1.13)(bufferutil@4.0.9)(react@19.0.0)(utf-8-validate@6.0.5))(react@19.0.0)(utf-8-validate@6.0.5))(react-native@0.79.6(@babel/core@7.28.4)(@types/react@19.1.13)(bufferutil@4.0.9)(react@19.0.0)(utf-8-validate@6.0.5))(react@19.0.0))(hono@4.9.8)(kysely@0.28.7)
       '@folo-services/exceptions': 0.1.16
-      '@folo-services/shared': 0.0.25(@opentelemetry/api@1.9.0)(@types/pg@8.15.4)(expo-sqlite@15.2.12(expo@53.0.12(@babel/core@7.28.4)(@expo/metro-runtime@5.0.4(react-native@0.79.6(@babel/core@7.28.4)(@types/react@19.1.13)(bufferutil@4.0.9)(react@19.0.0)(utf-8-validate@6.0.5)))(bufferutil@4.0.9)(graphql@16.8.1)(react-native-webview@13.16.0(react-native@0.79.6(@babel/core@7.28.4)(@types/react@19.1.13)(bufferutil@4.0.9)(react@19.0.0)(utf-8-validate@6.0.5))(react@19.0.0))(react-native@0.79.6(@babel/core@7.28.4)(@types/react@19.1.13)(bufferutil@4.0.9)(react@19.0.0)(utf-8-validate@6.0.5))(react@19.0.0)(utf-8-validate@6.0.5))(react-native@0.79.6(@babel/core@7.28.4)(@types/react@19.1.13)(bufferutil@4.0.9)(react@19.0.0)(utf-8-validate@6.0.5))(react@19.0.0))(kysely@0.28.7)(pg@8.16.3)
-      better-auth: 1.3.12(react-dom@19.0.0(react@19.0.0))(react@19.0.0)
-      zod: 3.25.76
+      '@folo-services/shared': 0.0.26(@opentelemetry/api@1.9.0)(@types/pg@8.15.4)(expo-sqlite@15.2.12(expo@53.0.12(@babel/core@7.28.4)(@expo/metro-runtime@5.0.4(react-native@0.79.6(@babel/core@7.28.4)(@types/react@19.1.13)(bufferutil@4.0.9)(react@19.0.0)(utf-8-validate@6.0.5)))(bufferutil@4.0.9)(graphql@16.8.1)(react-native-webview@13.16.0(react-native@0.79.6(@babel/core@7.28.4)(@types/react@19.1.13)(bufferutil@4.0.9)(react@19.0.0)(utf-8-validate@6.0.5))(react@19.0.0))(react-native@0.79.6(@babel/core@7.28.4)(@types/react@19.1.13)(bufferutil@4.0.9)(react@19.0.0)(utf-8-validate@6.0.5))(react@19.0.0)(utf-8-validate@6.0.5))(react-native@0.79.6(@babel/core@7.28.4)(@types/react@19.1.13)(bufferutil@4.0.9)(react@19.0.0)(utf-8-validate@6.0.5))(react@19.0.0))(hono@4.9.8)(kysely@0.28.7)(pg@8.16.3)
+      better-auth: 1.3.13(react-dom@19.0.0(react@19.0.0))(react@19.0.0)
+      zod: 4.1.11
     transitivePeerDependencies:
       - '@aws-sdk/client-rds-data'
       - '@cloudflare/workers-types'
@@ -20170,6 +20204,7 @@ snapshots:
       - bun-types
       - expo-sqlite
       - gel
+      - hono
       - knex
       - kysely
       - mysql2
@@ -20186,14 +20221,14 @@ snapshots:
       - svelte
       - vue
 
-  '@follow-app/client-sdk@0.3.66(@opentelemetry/api@1.9.0)(@types/pg@8.15.4)(expo-sqlite@15.2.12(expo@53.0.12(@babel/core@7.28.4)(@expo/metro-runtime@5.0.4(react-native@0.79.6(@babel/core@7.28.4)(@types/react@19.1.13)(bufferutil@4.0.9)(react@19.0.0)))(bufferutil@4.0.9)(graphql@16.8.1)(react-native-webview@13.16.0(react-native@0.79.6(@babel/core@7.28.4)(@types/react@19.1.13)(bufferutil@4.0.9)(react@19.0.0))(react@19.0.0))(react-native@0.79.6(@babel/core@7.28.4)(@types/react@19.1.13)(bufferutil@4.0.9)(react@19.0.0))(react@19.0.0))(react-native@0.79.6(@babel/core@7.28.4)(@types/react@19.1.13)(bufferutil@4.0.9)(react@19.0.0))(react@19.0.0))(kysely@0.28.7)(pg@8.16.3)(react-dom@19.0.0(react@19.0.0))(react@19.0.0)':
+  '@follow-app/client-sdk@0.3.67(@opentelemetry/api@1.9.0)(@types/pg@8.15.4)(expo-sqlite@15.2.12(expo@53.0.12(@babel/core@7.28.4)(@expo/metro-runtime@5.0.4(react-native@0.79.6(@babel/core@7.28.4)(@types/react@19.1.13)(bufferutil@4.0.9)(react@19.0.0)))(bufferutil@4.0.9)(graphql@16.8.1)(react-native-webview@13.16.0(react-native@0.79.6(@babel/core@7.28.4)(@types/react@19.1.13)(bufferutil@4.0.9)(react@19.0.0))(react@19.0.0))(react-native@0.79.6(@babel/core@7.28.4)(@types/react@19.1.13)(bufferutil@4.0.9)(react@19.0.0))(react@19.0.0))(react-native@0.79.6(@babel/core@7.28.4)(@types/react@19.1.13)(bufferutil@4.0.9)(react@19.0.0))(react@19.0.0))(hono@4.9.8)(kysely@0.28.7)(pg@8.16.3)(react-dom@19.0.0(react@19.0.0))(react@19.0.0)':
     dependencies:
-      '@folo-services/constants': 0.1.33
-      '@folo-services/drizzle': 0.1.27(@opentelemetry/api@1.9.0)(@types/pg@8.15.4)(expo-sqlite@15.2.12(expo@53.0.12(@babel/core@7.28.4)(@expo/metro-runtime@5.0.4(react-native@0.79.6(@babel/core@7.28.4)(@types/react@19.1.13)(bufferutil@4.0.9)(react@19.0.0)))(bufferutil@4.0.9)(graphql@16.8.1)(react-native-webview@13.16.0(react-native@0.79.6(@babel/core@7.28.4)(@types/react@19.1.13)(bufferutil@4.0.9)(react@19.0.0))(react@19.0.0))(react-native@0.79.6(@babel/core@7.28.4)(@types/react@19.1.13)(bufferutil@4.0.9)(react@19.0.0))(react@19.0.0))(react-native@0.79.6(@babel/core@7.28.4)(@types/react@19.1.13)(bufferutil@4.0.9)(react@19.0.0))(react@19.0.0))(kysely@0.28.7)
+      '@folo-services/constants': 0.1.34
+      '@folo-services/drizzle': 0.1.28(@opentelemetry/api@1.9.0)(@types/pg@8.15.4)(expo-sqlite@15.2.12(expo@53.0.12(@babel/core@7.28.4)(@expo/metro-runtime@5.0.4(react-native@0.79.6(@babel/core@7.28.4)(@types/react@19.1.13)(bufferutil@4.0.9)(react@19.0.0)))(bufferutil@4.0.9)(graphql@16.8.1)(react-native-webview@13.16.0(react-native@0.79.6(@babel/core@7.28.4)(@types/react@19.1.13)(bufferutil@4.0.9)(react@19.0.0))(react@19.0.0))(react-native@0.79.6(@babel/core@7.28.4)(@types/react@19.1.13)(bufferutil@4.0.9)(react@19.0.0))(react@19.0.0))(react-native@0.79.6(@babel/core@7.28.4)(@types/react@19.1.13)(bufferutil@4.0.9)(react@19.0.0))(react@19.0.0))(hono@4.9.8)(kysely@0.28.7)
       '@folo-services/exceptions': 0.1.16
-      '@folo-services/shared': 0.0.25(@opentelemetry/api@1.9.0)(@types/pg@8.15.4)(expo-sqlite@15.2.12(expo@53.0.12(@babel/core@7.28.4)(@expo/metro-runtime@5.0.4(react-native@0.79.6(@babel/core@7.28.4)(@types/react@19.1.13)(bufferutil@4.0.9)(react@19.0.0)))(bufferutil@4.0.9)(graphql@16.8.1)(react-native-webview@13.16.0(react-native@0.79.6(@babel/core@7.28.4)(@types/react@19.1.13)(bufferutil@4.0.9)(react@19.0.0))(react@19.0.0))(react-native@0.79.6(@babel/core@7.28.4)(@types/react@19.1.13)(bufferutil@4.0.9)(react@19.0.0))(react@19.0.0))(react-native@0.79.6(@babel/core@7.28.4)(@types/react@19.1.13)(bufferutil@4.0.9)(react@19.0.0))(react@19.0.0))(kysely@0.28.7)(pg@8.16.3)
-      better-auth: 1.3.12(react-dom@19.0.0(react@19.0.0))(react@19.0.0)
-      zod: 3.25.76
+      '@folo-services/shared': 0.0.26(@opentelemetry/api@1.9.0)(@types/pg@8.15.4)(expo-sqlite@15.2.12(expo@53.0.12(@babel/core@7.28.4)(@expo/metro-runtime@5.0.4(react-native@0.79.6(@babel/core@7.28.4)(@types/react@19.1.13)(bufferutil@4.0.9)(react@19.0.0)))(bufferutil@4.0.9)(graphql@16.8.1)(react-native-webview@13.16.0(react-native@0.79.6(@babel/core@7.28.4)(@types/react@19.1.13)(bufferutil@4.0.9)(react@19.0.0))(react@19.0.0))(react-native@0.79.6(@babel/core@7.28.4)(@types/react@19.1.13)(bufferutil@4.0.9)(react@19.0.0))(react@19.0.0))(react-native@0.79.6(@babel/core@7.28.4)(@types/react@19.1.13)(bufferutil@4.0.9)(react@19.0.0))(react@19.0.0))(hono@4.9.8)(kysely@0.28.7)(pg@8.16.3)
+      better-auth: 1.3.13(react-dom@19.0.0(react@19.0.0))(react@19.0.0)
+      zod: 4.1.11
     transitivePeerDependencies:
       - '@aws-sdk/client-rds-data'
       - '@cloudflare/workers-types'
@@ -20218,6 +20253,7 @@ snapshots:
       - bun-types
       - expo-sqlite
       - gel
+      - hono
       - knex
       - kysely
       - mysql2
@@ -20273,54 +20309,15 @@ snapshots:
       - sql.js
       - sqlite3
 
-  '@folo-services/constants@0.1.33':
+  '@folo-services/constants@0.1.34':
     dependencies:
-      zod: 3.25.76
+      zod: 4.1.11
 
   '@folo-services/drizzle@0.1.27(@opentelemetry/api@1.9.0)(@types/pg@8.15.4)(expo-sqlite@15.2.12(expo@53.0.12(@babel/core@7.28.0)(@expo/metro-runtime@5.0.4(react-native@0.79.6(@babel/core@7.28.0)(@types/react@19.1.13)(bufferutil@4.0.9)(react@19.0.0)))(bufferutil@4.0.9)(graphql@16.8.1)(react-native-webview@13.16.0(react-native@0.79.6(@babel/core@7.28.0)(@types/react@19.1.13)(bufferutil@4.0.9)(react@19.0.0))(react@19.0.0))(react-native@0.79.6(@babel/core@7.28.0)(@types/react@19.1.13)(bufferutil@4.0.9)(react@19.0.0))(react@19.0.0))(react-native@0.79.6(@babel/core@7.28.0)(@types/react@19.1.13)(bufferutil@4.0.9)(react@19.0.0))(react@19.0.0))(kysely@0.28.7)':
     dependencies:
       '@folo-services/exceptions': 0.1.16
       drizzle-orm: 0.44.5(@opentelemetry/api@1.9.0)(@types/pg@8.15.4)(expo-sqlite@15.2.12(expo@53.0.12(@babel/core@7.28.0)(@expo/metro-runtime@5.0.4(react-native@0.79.6(@babel/core@7.28.0)(@types/react@19.1.13)(bufferutil@4.0.9)(react@19.0.0)))(bufferutil@4.0.9)(graphql@16.8.1)(react-native-webview@13.16.0(react-native@0.79.6(@babel/core@7.28.0)(@types/react@19.1.13)(bufferutil@4.0.9)(react@19.0.0))(react@19.0.0))(react-native@0.79.6(@babel/core@7.28.0)(@types/react@19.1.13)(bufferutil@4.0.9)(react@19.0.0))(react@19.0.0))(react-native@0.79.6(@babel/core@7.28.0)(@types/react@19.1.13)(bufferutil@4.0.9)(react@19.0.0))(react@19.0.0))(kysely@0.28.7)(pg@8.16.3)
       drizzle-zod: 0.7.1(drizzle-orm@0.44.5(@opentelemetry/api@1.9.0)(@types/pg@8.15.4)(expo-sqlite@15.2.12(expo@53.0.12(@babel/core@7.28.0)(@expo/metro-runtime@5.0.4(react-native@0.79.6(@babel/core@7.28.0)(@types/react@19.1.13)(bufferutil@4.0.9)(react@19.0.0)))(bufferutil@4.0.9)(graphql@16.8.1)(react-native-webview@13.16.0(react-native@0.79.6(@babel/core@7.28.0)(@types/react@19.1.13)(bufferutil@4.0.9)(react@19.0.0))(react@19.0.0))(react-native@0.79.6(@babel/core@7.28.0)(@types/react@19.1.13)(bufferutil@4.0.9)(react@19.0.0))(react@19.0.0))(react-native@0.79.6(@babel/core@7.28.0)(@types/react@19.1.13)(bufferutil@4.0.9)(react@19.0.0))(react@19.0.0))(kysely@0.28.7)(pg@8.16.3))(zod@3.25.76)
-      nanoid: 5.1.5
-      pg: 8.16.3
-      zod: 3.25.76
-    transitivePeerDependencies:
-      - '@aws-sdk/client-rds-data'
-      - '@cloudflare/workers-types'
-      - '@electric-sql/pglite'
-      - '@libsql/client'
-      - '@libsql/client-wasm'
-      - '@neondatabase/serverless'
-      - '@op-engineering/op-sqlite'
-      - '@opentelemetry/api'
-      - '@planetscale/database'
-      - '@prisma/client'
-      - '@tidbcloud/serverless'
-      - '@types/better-sqlite3'
-      - '@types/pg'
-      - '@types/sql.js'
-      - '@upstash/redis'
-      - '@vercel/postgres'
-      - '@xata.io/client'
-      - better-sqlite3
-      - bun-types
-      - expo-sqlite
-      - gel
-      - knex
-      - kysely
-      - mysql2
-      - pg-native
-      - postgres
-      - prisma
-      - sql.js
-      - sqlite3
-
-  '@folo-services/drizzle@0.1.27(@opentelemetry/api@1.9.0)(@types/pg@8.15.4)(expo-sqlite@15.2.12(expo@53.0.12(@babel/core@7.28.4)(@expo/metro-runtime@5.0.4(react-native@0.79.6(@babel/core@7.28.4)(@types/react@19.1.13)(bufferutil@4.0.9)(react@19.0.0)(utf-8-validate@6.0.5)))(bufferutil@4.0.9)(graphql@16.8.1)(react-native-webview@13.16.0(react-native@0.79.6(@babel/core@7.28.4)(@types/react@19.1.13)(bufferutil@4.0.9)(react@19.0.0)(utf-8-validate@6.0.5))(react@19.0.0))(react-native@0.79.6(@babel/core@7.28.4)(@types/react@19.1.13)(bufferutil@4.0.9)(react@19.0.0)(utf-8-validate@6.0.5))(react@19.0.0)(utf-8-validate@6.0.5))(react-native@0.79.6(@babel/core@7.28.4)(@types/react@19.1.13)(bufferutil@4.0.9)(react@19.0.0)(utf-8-validate@6.0.5))(react@19.0.0))(kysely@0.28.7)':
-    dependencies:
-      '@folo-services/exceptions': 0.1.16
-      drizzle-orm: 0.44.5(@opentelemetry/api@1.9.0)(@types/pg@8.15.4)(expo-sqlite@15.2.12(expo@53.0.12(@babel/core@7.28.4)(@expo/metro-runtime@5.0.4(react-native@0.79.6(@babel/core@7.28.4)(@types/react@19.1.13)(bufferutil@4.0.9)(react@19.0.0)(utf-8-validate@6.0.5)))(bufferutil@4.0.9)(graphql@16.8.1)(react-native-webview@13.16.0(react-native@0.79.6(@babel/core@7.28.4)(@types/react@19.1.13)(bufferutil@4.0.9)(react@19.0.0)(utf-8-validate@6.0.5))(react@19.0.0))(react-native@0.79.6(@babel/core@7.28.4)(@types/react@19.1.13)(bufferutil@4.0.9)(react@19.0.0)(utf-8-validate@6.0.5))(react@19.0.0)(utf-8-validate@6.0.5))(react-native@0.79.6(@babel/core@7.28.4)(@types/react@19.1.13)(bufferutil@4.0.9)(react@19.0.0)(utf-8-validate@6.0.5))(react@19.0.0))(kysely@0.28.7)(pg@8.16.3)
-      drizzle-zod: 0.7.1(drizzle-orm@0.44.5(@opentelemetry/api@1.9.0)(@types/pg@8.15.4)(expo-sqlite@15.2.12(expo@53.0.12(@babel/core@7.28.4)(@expo/metro-runtime@5.0.4(react-native@0.79.6(@babel/core@7.28.4)(@types/react@19.1.13)(bufferutil@4.0.9)(react@19.0.0)(utf-8-validate@6.0.5)))(bufferutil@4.0.9)(graphql@16.8.1)(react-native-webview@13.16.0(react-native@0.79.6(@babel/core@7.28.4)(@types/react@19.1.13)(bufferutil@4.0.9)(react@19.0.0)(utf-8-validate@6.0.5))(react@19.0.0))(react-native@0.79.6(@babel/core@7.28.4)(@types/react@19.1.13)(bufferutil@4.0.9)(react@19.0.0)(utf-8-validate@6.0.5))(react@19.0.0)(utf-8-validate@6.0.5))(react-native@0.79.6(@babel/core@7.28.4)(@types/react@19.1.13)(bufferutil@4.0.9)(react@19.0.0)(utf-8-validate@6.0.5))(react@19.0.0))(kysely@0.28.7)(pg@8.16.3))(zod@3.25.76)
       nanoid: 5.1.5
       pg: 8.16.3
       zod: 3.25.76
@@ -20394,14 +20391,138 @@ snapshots:
       - sql.js
       - sqlite3
 
+  '@folo-services/drizzle@0.1.28(@opentelemetry/api@1.9.0)(@types/pg@8.15.4)(expo-sqlite@15.2.12(expo@53.0.12(@babel/core@7.28.0)(@expo/metro-runtime@5.0.4(react-native@0.79.6(@babel/core@7.28.0)(@types/react@19.1.13)(bufferutil@4.0.9)(react@19.0.0)))(bufferutil@4.0.9)(graphql@16.8.1)(react-native-webview@13.16.0(react-native@0.79.6(@babel/core@7.28.0)(@types/react@19.1.13)(bufferutil@4.0.9)(react@19.0.0))(react@19.0.0))(react-native@0.79.6(@babel/core@7.28.0)(@types/react@19.1.13)(bufferutil@4.0.9)(react@19.0.0))(react@19.0.0))(react-native@0.79.6(@babel/core@7.28.0)(@types/react@19.1.13)(bufferutil@4.0.9)(react@19.0.0))(react@19.0.0))(hono@4.9.8)(kysely@0.28.7)':
+    dependencies:
+      '@folo-services/exceptions': 0.1.16
+      '@hono/zod-openapi': 1.1.2(hono@4.9.8)(zod@4.1.11)
+      drizzle-orm: 0.44.5(@opentelemetry/api@1.9.0)(@types/pg@8.15.4)(expo-sqlite@15.2.12(expo@53.0.12(@babel/core@7.28.0)(@expo/metro-runtime@5.0.4(react-native@0.79.6(@babel/core@7.28.0)(@types/react@19.1.13)(bufferutil@4.0.9)(react@19.0.0)))(bufferutil@4.0.9)(graphql@16.8.1)(react-native-webview@13.16.0(react-native@0.79.6(@babel/core@7.28.0)(@types/react@19.1.13)(bufferutil@4.0.9)(react@19.0.0))(react@19.0.0))(react-native@0.79.6(@babel/core@7.28.0)(@types/react@19.1.13)(bufferutil@4.0.9)(react@19.0.0))(react@19.0.0))(react-native@0.79.6(@babel/core@7.28.0)(@types/react@19.1.13)(bufferutil@4.0.9)(react@19.0.0))(react@19.0.0))(kysely@0.28.7)(pg@8.16.3)
+      drizzle-zod: 0.8.3(drizzle-orm@0.44.5(@opentelemetry/api@1.9.0)(@types/pg@8.15.4)(expo-sqlite@15.2.12(expo@53.0.12(@babel/core@7.28.0)(@expo/metro-runtime@5.0.4(react-native@0.79.6(@babel/core@7.28.0)(@types/react@19.1.13)(bufferutil@4.0.9)(react@19.0.0)))(bufferutil@4.0.9)(graphql@16.8.1)(react-native-webview@13.16.0(react-native@0.79.6(@babel/core@7.28.0)(@types/react@19.1.13)(bufferutil@4.0.9)(react@19.0.0))(react@19.0.0))(react-native@0.79.6(@babel/core@7.28.0)(@types/react@19.1.13)(bufferutil@4.0.9)(react@19.0.0))(react@19.0.0))(react-native@0.79.6(@babel/core@7.28.0)(@types/react@19.1.13)(bufferutil@4.0.9)(react@19.0.0))(react@19.0.0))(kysely@0.28.7)(pg@8.16.3))(zod@4.1.11)
+      nanoid: 5.1.5
+      pg: 8.16.3
+      zod: 4.1.11
+    transitivePeerDependencies:
+      - '@aws-sdk/client-rds-data'
+      - '@cloudflare/workers-types'
+      - '@electric-sql/pglite'
+      - '@libsql/client'
+      - '@libsql/client-wasm'
+      - '@neondatabase/serverless'
+      - '@op-engineering/op-sqlite'
+      - '@opentelemetry/api'
+      - '@planetscale/database'
+      - '@prisma/client'
+      - '@tidbcloud/serverless'
+      - '@types/better-sqlite3'
+      - '@types/pg'
+      - '@types/sql.js'
+      - '@upstash/redis'
+      - '@vercel/postgres'
+      - '@xata.io/client'
+      - better-sqlite3
+      - bun-types
+      - expo-sqlite
+      - gel
+      - hono
+      - knex
+      - kysely
+      - mysql2
+      - pg-native
+      - postgres
+      - prisma
+      - sql.js
+      - sqlite3
+
+  '@folo-services/drizzle@0.1.28(@opentelemetry/api@1.9.0)(@types/pg@8.15.4)(expo-sqlite@15.2.12(expo@53.0.12(@babel/core@7.28.4)(@expo/metro-runtime@5.0.4(react-native@0.79.6(@babel/core@7.28.4)(@types/react@19.1.13)(bufferutil@4.0.9)(react@19.0.0)(utf-8-validate@6.0.5)))(bufferutil@4.0.9)(graphql@16.8.1)(react-native-webview@13.16.0(react-native@0.79.6(@babel/core@7.28.4)(@types/react@19.1.13)(bufferutil@4.0.9)(react@19.0.0)(utf-8-validate@6.0.5))(react@19.0.0))(react-native@0.79.6(@babel/core@7.28.4)(@types/react@19.1.13)(bufferutil@4.0.9)(react@19.0.0)(utf-8-validate@6.0.5))(react@19.0.0)(utf-8-validate@6.0.5))(react-native@0.79.6(@babel/core@7.28.4)(@types/react@19.1.13)(bufferutil@4.0.9)(react@19.0.0)(utf-8-validate@6.0.5))(react@19.0.0))(hono@4.9.8)(kysely@0.28.7)':
+    dependencies:
+      '@folo-services/exceptions': 0.1.16
+      '@hono/zod-openapi': 1.1.2(hono@4.9.8)(zod@4.1.11)
+      drizzle-orm: 0.44.5(@opentelemetry/api@1.9.0)(@types/pg@8.15.4)(expo-sqlite@15.2.12(expo@53.0.12(@babel/core@7.28.4)(@expo/metro-runtime@5.0.4(react-native@0.79.6(@babel/core@7.28.4)(@types/react@19.1.13)(bufferutil@4.0.9)(react@19.0.0)(utf-8-validate@6.0.5)))(bufferutil@4.0.9)(graphql@16.8.1)(react-native-webview@13.16.0(react-native@0.79.6(@babel/core@7.28.4)(@types/react@19.1.13)(bufferutil@4.0.9)(react@19.0.0)(utf-8-validate@6.0.5))(react@19.0.0))(react-native@0.79.6(@babel/core@7.28.4)(@types/react@19.1.13)(bufferutil@4.0.9)(react@19.0.0)(utf-8-validate@6.0.5))(react@19.0.0)(utf-8-validate@6.0.5))(react-native@0.79.6(@babel/core@7.28.4)(@types/react@19.1.13)(bufferutil@4.0.9)(react@19.0.0)(utf-8-validate@6.0.5))(react@19.0.0))(kysely@0.28.7)(pg@8.16.3)
+      drizzle-zod: 0.8.3(drizzle-orm@0.44.5(@opentelemetry/api@1.9.0)(@types/pg@8.15.4)(expo-sqlite@15.2.12(expo@53.0.12(@babel/core@7.28.4)(@expo/metro-runtime@5.0.4(react-native@0.79.6(@babel/core@7.28.4)(@types/react@19.1.13)(bufferutil@4.0.9)(react@19.0.0)(utf-8-validate@6.0.5)))(bufferutil@4.0.9)(graphql@16.8.1)(react-native-webview@13.16.0(react-native@0.79.6(@babel/core@7.28.4)(@types/react@19.1.13)(bufferutil@4.0.9)(react@19.0.0)(utf-8-validate@6.0.5))(react@19.0.0))(react-native@0.79.6(@babel/core@7.28.4)(@types/react@19.1.13)(bufferutil@4.0.9)(react@19.0.0)(utf-8-validate@6.0.5))(react@19.0.0)(utf-8-validate@6.0.5))(react-native@0.79.6(@babel/core@7.28.4)(@types/react@19.1.13)(bufferutil@4.0.9)(react@19.0.0)(utf-8-validate@6.0.5))(react@19.0.0))(kysely@0.28.7)(pg@8.16.3))(zod@4.1.11)
+      nanoid: 5.1.5
+      pg: 8.16.3
+      zod: 4.1.11
+    transitivePeerDependencies:
+      - '@aws-sdk/client-rds-data'
+      - '@cloudflare/workers-types'
+      - '@electric-sql/pglite'
+      - '@libsql/client'
+      - '@libsql/client-wasm'
+      - '@neondatabase/serverless'
+      - '@op-engineering/op-sqlite'
+      - '@opentelemetry/api'
+      - '@planetscale/database'
+      - '@prisma/client'
+      - '@tidbcloud/serverless'
+      - '@types/better-sqlite3'
+      - '@types/pg'
+      - '@types/sql.js'
+      - '@upstash/redis'
+      - '@vercel/postgres'
+      - '@xata.io/client'
+      - better-sqlite3
+      - bun-types
+      - expo-sqlite
+      - gel
+      - hono
+      - knex
+      - kysely
+      - mysql2
+      - pg-native
+      - postgres
+      - prisma
+      - sql.js
+      - sqlite3
+
+  '@folo-services/drizzle@0.1.28(@opentelemetry/api@1.9.0)(@types/pg@8.15.4)(expo-sqlite@15.2.12(expo@53.0.12(@babel/core@7.28.4)(@expo/metro-runtime@5.0.4(react-native@0.79.6(@babel/core@7.28.4)(@types/react@19.1.13)(bufferutil@4.0.9)(react@19.0.0)))(bufferutil@4.0.9)(graphql@16.8.1)(react-native-webview@13.16.0(react-native@0.79.6(@babel/core@7.28.4)(@types/react@19.1.13)(bufferutil@4.0.9)(react@19.0.0))(react@19.0.0))(react-native@0.79.6(@babel/core@7.28.4)(@types/react@19.1.13)(bufferutil@4.0.9)(react@19.0.0))(react@19.0.0))(react-native@0.79.6(@babel/core@7.28.4)(@types/react@19.1.13)(bufferutil@4.0.9)(react@19.0.0))(react@19.0.0))(hono@4.9.8)(kysely@0.28.7)':
+    dependencies:
+      '@folo-services/exceptions': 0.1.16
+      '@hono/zod-openapi': 1.1.2(hono@4.9.8)(zod@4.1.11)
+      drizzle-orm: 0.44.5(@opentelemetry/api@1.9.0)(@types/pg@8.15.4)(expo-sqlite@15.2.12(expo@53.0.12(@babel/core@7.28.4)(@expo/metro-runtime@5.0.4(react-native@0.79.6(@babel/core@7.28.4)(@types/react@19.1.13)(bufferutil@4.0.9)(react@19.0.0)))(bufferutil@4.0.9)(graphql@16.8.1)(react-native-webview@13.16.0(react-native@0.79.6(@babel/core@7.28.4)(@types/react@19.1.13)(bufferutil@4.0.9)(react@19.0.0))(react@19.0.0))(react-native@0.79.6(@babel/core@7.28.4)(@types/react@19.1.13)(bufferutil@4.0.9)(react@19.0.0))(react@19.0.0))(react-native@0.79.6(@babel/core@7.28.4)(@types/react@19.1.13)(bufferutil@4.0.9)(react@19.0.0))(react@19.0.0))(kysely@0.28.7)(pg@8.16.3)
+      drizzle-zod: 0.8.3(drizzle-orm@0.44.5(@opentelemetry/api@1.9.0)(@types/pg@8.15.4)(expo-sqlite@15.2.12(expo@53.0.12(@babel/core@7.28.4)(@expo/metro-runtime@5.0.4(react-native@0.79.6(@babel/core@7.28.4)(@types/react@19.1.13)(bufferutil@4.0.9)(react@19.0.0)))(bufferutil@4.0.9)(graphql@16.8.1)(react-native-webview@13.16.0(react-native@0.79.6(@babel/core@7.28.4)(@types/react@19.1.13)(bufferutil@4.0.9)(react@19.0.0))(react@19.0.0))(react-native@0.79.6(@babel/core@7.28.4)(@types/react@19.1.13)(bufferutil@4.0.9)(react@19.0.0))(react@19.0.0))(react-native@0.79.6(@babel/core@7.28.4)(@types/react@19.1.13)(bufferutil@4.0.9)(react@19.0.0))(react@19.0.0))(kysely@0.28.7)(pg@8.16.3))(zod@4.1.11)
+      nanoid: 5.1.5
+      pg: 8.16.3
+      zod: 4.1.11
+    transitivePeerDependencies:
+      - '@aws-sdk/client-rds-data'
+      - '@cloudflare/workers-types'
+      - '@electric-sql/pglite'
+      - '@libsql/client'
+      - '@libsql/client-wasm'
+      - '@neondatabase/serverless'
+      - '@op-engineering/op-sqlite'
+      - '@opentelemetry/api'
+      - '@planetscale/database'
+      - '@prisma/client'
+      - '@tidbcloud/serverless'
+      - '@types/better-sqlite3'
+      - '@types/pg'
+      - '@types/sql.js'
+      - '@upstash/redis'
+      - '@vercel/postgres'
+      - '@xata.io/client'
+      - better-sqlite3
+      - bun-types
+      - expo-sqlite
+      - gel
+      - hono
+      - knex
+      - kysely
+      - mysql2
+      - pg-native
+      - postgres
+      - prisma
+      - sql.js
+      - sqlite3
+
   '@folo-services/exceptions@0.1.16': {}
 
-  '@folo-services/shared@0.0.25(@opentelemetry/api@1.9.0)(@types/pg@8.15.4)(expo-sqlite@15.2.12(expo@53.0.12(@babel/core@7.28.0)(@expo/metro-runtime@5.0.4(react-native@0.79.6(@babel/core@7.28.0)(@types/react@19.1.13)(bufferutil@4.0.9)(react@19.0.0)))(bufferutil@4.0.9)(graphql@16.8.1)(react-native-webview@13.16.0(react-native@0.79.6(@babel/core@7.28.0)(@types/react@19.1.13)(bufferutil@4.0.9)(react@19.0.0))(react@19.0.0))(react-native@0.79.6(@babel/core@7.28.0)(@types/react@19.1.13)(bufferutil@4.0.9)(react@19.0.0))(react@19.0.0))(react-native@0.79.6(@babel/core@7.28.0)(@types/react@19.1.13)(bufferutil@4.0.9)(react@19.0.0))(react@19.0.0))(kysely@0.28.7)(pg@8.16.3)':
+  '@folo-services/shared@0.0.26(@opentelemetry/api@1.9.0)(@types/pg@8.15.4)(expo-sqlite@15.2.12(expo@53.0.12(@babel/core@7.28.0)(@expo/metro-runtime@5.0.4(react-native@0.79.6(@babel/core@7.28.0)(@types/react@19.1.13)(bufferutil@4.0.9)(react@19.0.0)))(bufferutil@4.0.9)(graphql@16.8.1)(react-native-webview@13.16.0(react-native@0.79.6(@babel/core@7.28.0)(@types/react@19.1.13)(bufferutil@4.0.9)(react@19.0.0))(react@19.0.0))(react-native@0.79.6(@babel/core@7.28.0)(@types/react@19.1.13)(bufferutil@4.0.9)(react@19.0.0))(react@19.0.0))(react-native@0.79.6(@babel/core@7.28.0)(@types/react@19.1.13)(bufferutil@4.0.9)(react@19.0.0))(react@19.0.0))(hono@4.9.8)(kysely@0.28.7)(pg@8.16.3)':
     dependencies:
-      '@folo-services/drizzle': 0.1.27(@opentelemetry/api@1.9.0)(@types/pg@8.15.4)(expo-sqlite@15.2.12(expo@53.0.12(@babel/core@7.28.0)(@expo/metro-runtime@5.0.4(react-native@0.79.6(@babel/core@7.28.0)(@types/react@19.1.13)(bufferutil@4.0.9)(react@19.0.0)))(bufferutil@4.0.9)(graphql@16.8.1)(react-native-webview@13.16.0(react-native@0.79.6(@babel/core@7.28.0)(@types/react@19.1.13)(bufferutil@4.0.9)(react@19.0.0))(react@19.0.0))(react-native@0.79.6(@babel/core@7.28.0)(@types/react@19.1.13)(bufferutil@4.0.9)(react@19.0.0))(react@19.0.0))(react-native@0.79.6(@babel/core@7.28.0)(@types/react@19.1.13)(bufferutil@4.0.9)(react@19.0.0))(react@19.0.0))(kysely@0.28.7)
+      '@folo-services/drizzle': 0.1.28(@opentelemetry/api@1.9.0)(@types/pg@8.15.4)(expo-sqlite@15.2.12(expo@53.0.12(@babel/core@7.28.0)(@expo/metro-runtime@5.0.4(react-native@0.79.6(@babel/core@7.28.0)(@types/react@19.1.13)(bufferutil@4.0.9)(react@19.0.0)))(bufferutil@4.0.9)(graphql@16.8.1)(react-native-webview@13.16.0(react-native@0.79.6(@babel/core@7.28.0)(@types/react@19.1.13)(bufferutil@4.0.9)(react@19.0.0))(react@19.0.0))(react-native@0.79.6(@babel/core@7.28.0)(@types/react@19.1.13)(bufferutil@4.0.9)(react@19.0.0))(react@19.0.0))(react-native@0.79.6(@babel/core@7.28.0)(@types/react@19.1.13)(bufferutil@4.0.9)(react@19.0.0))(react@19.0.0))(hono@4.9.8)(kysely@0.28.7)
+      '@hono/zod-openapi': 1.1.2(hono@4.9.8)(zod@4.1.11)
       drizzle-orm: 0.44.5(@opentelemetry/api@1.9.0)(@types/pg@8.15.4)(expo-sqlite@15.2.12(expo@53.0.12(@babel/core@7.28.0)(@expo/metro-runtime@5.0.4(react-native@0.79.6(@babel/core@7.28.0)(@types/react@19.1.13)(bufferutil@4.0.9)(react@19.0.0)))(bufferutil@4.0.9)(graphql@16.8.1)(react-native-webview@13.16.0(react-native@0.79.6(@babel/core@7.28.0)(@types/react@19.1.13)(bufferutil@4.0.9)(react@19.0.0))(react@19.0.0))(react-native@0.79.6(@babel/core@7.28.0)(@types/react@19.1.13)(bufferutil@4.0.9)(react@19.0.0))(react@19.0.0))(react-native@0.79.6(@babel/core@7.28.0)(@types/react@19.1.13)(bufferutil@4.0.9)(react@19.0.0))(react@19.0.0))(kysely@0.28.7)(pg@8.16.3)
-      drizzle-zod: 0.7.1(drizzle-orm@0.44.5(@opentelemetry/api@1.9.0)(@types/pg@8.15.4)(expo-sqlite@15.2.12(expo@53.0.12(@babel/core@7.28.0)(@expo/metro-runtime@5.0.4(react-native@0.79.6(@babel/core@7.28.0)(@types/react@19.1.13)(bufferutil@4.0.9)(react@19.0.0)))(bufferutil@4.0.9)(graphql@16.8.1)(react-native-webview@13.16.0(react-native@0.79.6(@babel/core@7.28.0)(@types/react@19.1.13)(bufferutil@4.0.9)(react@19.0.0))(react@19.0.0))(react-native@0.79.6(@babel/core@7.28.0)(@types/react@19.1.13)(bufferutil@4.0.9)(react@19.0.0))(react@19.0.0))(react-native@0.79.6(@babel/core@7.28.0)(@types/react@19.1.13)(bufferutil@4.0.9)(react@19.0.0))(react@19.0.0))(kysely@0.28.7)(pg@8.16.3))(zod@3.25.76)
-      zod: 3.25.76
+      drizzle-zod: 0.8.3(drizzle-orm@0.44.5(@opentelemetry/api@1.9.0)(@types/pg@8.15.4)(expo-sqlite@15.2.12(expo@53.0.12(@babel/core@7.28.0)(@expo/metro-runtime@5.0.4(react-native@0.79.6(@babel/core@7.28.0)(@types/react@19.1.13)(bufferutil@4.0.9)(react@19.0.0)))(bufferutil@4.0.9)(graphql@16.8.1)(react-native-webview@13.16.0(react-native@0.79.6(@babel/core@7.28.0)(@types/react@19.1.13)(bufferutil@4.0.9)(react@19.0.0))(react@19.0.0))(react-native@0.79.6(@babel/core@7.28.0)(@types/react@19.1.13)(bufferutil@4.0.9)(react@19.0.0))(react@19.0.0))(react-native@0.79.6(@babel/core@7.28.0)(@types/react@19.1.13)(bufferutil@4.0.9)(react@19.0.0))(react@19.0.0))(kysely@0.28.7)(pg@8.16.3))(zod@4.1.11)
+      zod: 4.1.11
     transitivePeerDependencies:
       - '@aws-sdk/client-rds-data'
       - '@cloudflare/workers-types'
@@ -20424,6 +20545,7 @@ snapshots:
       - bun-types
       - expo-sqlite
       - gel
+      - hono
       - knex
       - kysely
       - mysql2
@@ -20434,12 +20556,13 @@ snapshots:
       - sql.js
       - sqlite3
 
-  '@folo-services/shared@0.0.25(@opentelemetry/api@1.9.0)(@types/pg@8.15.4)(expo-sqlite@15.2.12(expo@53.0.12(@babel/core@7.28.4)(@expo/metro-runtime@5.0.4(react-native@0.79.6(@babel/core@7.28.4)(@types/react@19.1.13)(bufferutil@4.0.9)(react@19.0.0)(utf-8-validate@6.0.5)))(bufferutil@4.0.9)(graphql@16.8.1)(react-native-webview@13.16.0(react-native@0.79.6(@babel/core@7.28.4)(@types/react@19.1.13)(bufferutil@4.0.9)(react@19.0.0)(utf-8-validate@6.0.5))(react@19.0.0))(react-native@0.79.6(@babel/core@7.28.4)(@types/react@19.1.13)(bufferutil@4.0.9)(react@19.0.0)(utf-8-validate@6.0.5))(react@19.0.0)(utf-8-validate@6.0.5))(react-native@0.79.6(@babel/core@7.28.4)(@types/react@19.1.13)(bufferutil@4.0.9)(react@19.0.0)(utf-8-validate@6.0.5))(react@19.0.0))(kysely@0.28.7)(pg@8.16.3)':
+  '@folo-services/shared@0.0.26(@opentelemetry/api@1.9.0)(@types/pg@8.15.4)(expo-sqlite@15.2.12(expo@53.0.12(@babel/core@7.28.4)(@expo/metro-runtime@5.0.4(react-native@0.79.6(@babel/core@7.28.4)(@types/react@19.1.13)(bufferutil@4.0.9)(react@19.0.0)(utf-8-validate@6.0.5)))(bufferutil@4.0.9)(graphql@16.8.1)(react-native-webview@13.16.0(react-native@0.79.6(@babel/core@7.28.4)(@types/react@19.1.13)(bufferutil@4.0.9)(react@19.0.0)(utf-8-validate@6.0.5))(react@19.0.0))(react-native@0.79.6(@babel/core@7.28.4)(@types/react@19.1.13)(bufferutil@4.0.9)(react@19.0.0)(utf-8-validate@6.0.5))(react@19.0.0)(utf-8-validate@6.0.5))(react-native@0.79.6(@babel/core@7.28.4)(@types/react@19.1.13)(bufferutil@4.0.9)(react@19.0.0)(utf-8-validate@6.0.5))(react@19.0.0))(hono@4.9.8)(kysely@0.28.7)(pg@8.16.3)':
     dependencies:
-      '@folo-services/drizzle': 0.1.27(@opentelemetry/api@1.9.0)(@types/pg@8.15.4)(expo-sqlite@15.2.12(expo@53.0.12(@babel/core@7.28.4)(@expo/metro-runtime@5.0.4(react-native@0.79.6(@babel/core@7.28.4)(@types/react@19.1.13)(bufferutil@4.0.9)(react@19.0.0)(utf-8-validate@6.0.5)))(bufferutil@4.0.9)(graphql@16.8.1)(react-native-webview@13.16.0(react-native@0.79.6(@babel/core@7.28.4)(@types/react@19.1.13)(bufferutil@4.0.9)(react@19.0.0)(utf-8-validate@6.0.5))(react@19.0.0))(react-native@0.79.6(@babel/core@7.28.4)(@types/react@19.1.13)(bufferutil@4.0.9)(react@19.0.0)(utf-8-validate@6.0.5))(react@19.0.0)(utf-8-validate@6.0.5))(react-native@0.79.6(@babel/core@7.28.4)(@types/react@19.1.13)(bufferutil@4.0.9)(react@19.0.0)(utf-8-validate@6.0.5))(react@19.0.0))(kysely@0.28.7)
+      '@folo-services/drizzle': 0.1.28(@opentelemetry/api@1.9.0)(@types/pg@8.15.4)(expo-sqlite@15.2.12(expo@53.0.12(@babel/core@7.28.4)(@expo/metro-runtime@5.0.4(react-native@0.79.6(@babel/core@7.28.4)(@types/react@19.1.13)(bufferutil@4.0.9)(react@19.0.0)(utf-8-validate@6.0.5)))(bufferutil@4.0.9)(graphql@16.8.1)(react-native-webview@13.16.0(react-native@0.79.6(@babel/core@7.28.4)(@types/react@19.1.13)(bufferutil@4.0.9)(react@19.0.0)(utf-8-validate@6.0.5))(react@19.0.0))(react-native@0.79.6(@babel/core@7.28.4)(@types/react@19.1.13)(bufferutil@4.0.9)(react@19.0.0)(utf-8-validate@6.0.5))(react@19.0.0)(utf-8-validate@6.0.5))(react-native@0.79.6(@babel/core@7.28.4)(@types/react@19.1.13)(bufferutil@4.0.9)(react@19.0.0)(utf-8-validate@6.0.5))(react@19.0.0))(hono@4.9.8)(kysely@0.28.7)
+      '@hono/zod-openapi': 1.1.2(hono@4.9.8)(zod@4.1.11)
       drizzle-orm: 0.44.5(@opentelemetry/api@1.9.0)(@types/pg@8.15.4)(expo-sqlite@15.2.12(expo@53.0.12(@babel/core@7.28.4)(@expo/metro-runtime@5.0.4(react-native@0.79.6(@babel/core@7.28.4)(@types/react@19.1.13)(bufferutil@4.0.9)(react@19.0.0)(utf-8-validate@6.0.5)))(bufferutil@4.0.9)(graphql@16.8.1)(react-native-webview@13.16.0(react-native@0.79.6(@babel/core@7.28.4)(@types/react@19.1.13)(bufferutil@4.0.9)(react@19.0.0)(utf-8-validate@6.0.5))(react@19.0.0))(react-native@0.79.6(@babel/core@7.28.4)(@types/react@19.1.13)(bufferutil@4.0.9)(react@19.0.0)(utf-8-validate@6.0.5))(react@19.0.0)(utf-8-validate@6.0.5))(react-native@0.79.6(@babel/core@7.28.4)(@types/react@19.1.13)(bufferutil@4.0.9)(react@19.0.0)(utf-8-validate@6.0.5))(react@19.0.0))(kysely@0.28.7)(pg@8.16.3)
-      drizzle-zod: 0.7.1(drizzle-orm@0.44.5(@opentelemetry/api@1.9.0)(@types/pg@8.15.4)(expo-sqlite@15.2.12(expo@53.0.12(@babel/core@7.28.4)(@expo/metro-runtime@5.0.4(react-native@0.79.6(@babel/core@7.28.4)(@types/react@19.1.13)(bufferutil@4.0.9)(react@19.0.0)(utf-8-validate@6.0.5)))(bufferutil@4.0.9)(graphql@16.8.1)(react-native-webview@13.16.0(react-native@0.79.6(@babel/core@7.28.4)(@types/react@19.1.13)(bufferutil@4.0.9)(react@19.0.0)(utf-8-validate@6.0.5))(react@19.0.0))(react-native@0.79.6(@babel/core@7.28.4)(@types/react@19.1.13)(bufferutil@4.0.9)(react@19.0.0)(utf-8-validate@6.0.5))(react@19.0.0)(utf-8-validate@6.0.5))(react-native@0.79.6(@babel/core@7.28.4)(@types/react@19.1.13)(bufferutil@4.0.9)(react@19.0.0)(utf-8-validate@6.0.5))(react@19.0.0))(kysely@0.28.7)(pg@8.16.3))(zod@3.25.76)
-      zod: 3.25.76
+      drizzle-zod: 0.8.3(drizzle-orm@0.44.5(@opentelemetry/api@1.9.0)(@types/pg@8.15.4)(expo-sqlite@15.2.12(expo@53.0.12(@babel/core@7.28.4)(@expo/metro-runtime@5.0.4(react-native@0.79.6(@babel/core@7.28.4)(@types/react@19.1.13)(bufferutil@4.0.9)(react@19.0.0)(utf-8-validate@6.0.5)))(bufferutil@4.0.9)(graphql@16.8.1)(react-native-webview@13.16.0(react-native@0.79.6(@babel/core@7.28.4)(@types/react@19.1.13)(bufferutil@4.0.9)(react@19.0.0)(utf-8-validate@6.0.5))(react@19.0.0))(react-native@0.79.6(@babel/core@7.28.4)(@types/react@19.1.13)(bufferutil@4.0.9)(react@19.0.0)(utf-8-validate@6.0.5))(react@19.0.0)(utf-8-validate@6.0.5))(react-native@0.79.6(@babel/core@7.28.4)(@types/react@19.1.13)(bufferutil@4.0.9)(react@19.0.0)(utf-8-validate@6.0.5))(react@19.0.0))(kysely@0.28.7)(pg@8.16.3))(zod@4.1.11)
+      zod: 4.1.11
     transitivePeerDependencies:
       - '@aws-sdk/client-rds-data'
       - '@cloudflare/workers-types'
@@ -20462,6 +20585,7 @@ snapshots:
       - bun-types
       - expo-sqlite
       - gel
+      - hono
       - knex
       - kysely
       - mysql2
@@ -20472,12 +20596,13 @@ snapshots:
       - sql.js
       - sqlite3
 
-  '@folo-services/shared@0.0.25(@opentelemetry/api@1.9.0)(@types/pg@8.15.4)(expo-sqlite@15.2.12(expo@53.0.12(@babel/core@7.28.4)(@expo/metro-runtime@5.0.4(react-native@0.79.6(@babel/core@7.28.4)(@types/react@19.1.13)(bufferutil@4.0.9)(react@19.0.0)))(bufferutil@4.0.9)(graphql@16.8.1)(react-native-webview@13.16.0(react-native@0.79.6(@babel/core@7.28.4)(@types/react@19.1.13)(bufferutil@4.0.9)(react@19.0.0))(react@19.0.0))(react-native@0.79.6(@babel/core@7.28.4)(@types/react@19.1.13)(bufferutil@4.0.9)(react@19.0.0))(react@19.0.0))(react-native@0.79.6(@babel/core@7.28.4)(@types/react@19.1.13)(bufferutil@4.0.9)(react@19.0.0))(react@19.0.0))(kysely@0.28.7)(pg@8.16.3)':
+  '@folo-services/shared@0.0.26(@opentelemetry/api@1.9.0)(@types/pg@8.15.4)(expo-sqlite@15.2.12(expo@53.0.12(@babel/core@7.28.4)(@expo/metro-runtime@5.0.4(react-native@0.79.6(@babel/core@7.28.4)(@types/react@19.1.13)(bufferutil@4.0.9)(react@19.0.0)))(bufferutil@4.0.9)(graphql@16.8.1)(react-native-webview@13.16.0(react-native@0.79.6(@babel/core@7.28.4)(@types/react@19.1.13)(bufferutil@4.0.9)(react@19.0.0))(react@19.0.0))(react-native@0.79.6(@babel/core@7.28.4)(@types/react@19.1.13)(bufferutil@4.0.9)(react@19.0.0))(react@19.0.0))(react-native@0.79.6(@babel/core@7.28.4)(@types/react@19.1.13)(bufferutil@4.0.9)(react@19.0.0))(react@19.0.0))(hono@4.9.8)(kysely@0.28.7)(pg@8.16.3)':
     dependencies:
-      '@folo-services/drizzle': 0.1.27(@opentelemetry/api@1.9.0)(@types/pg@8.15.4)(expo-sqlite@15.2.12(expo@53.0.12(@babel/core@7.28.4)(@expo/metro-runtime@5.0.4(react-native@0.79.6(@babel/core@7.28.4)(@types/react@19.1.13)(bufferutil@4.0.9)(react@19.0.0)))(bufferutil@4.0.9)(graphql@16.8.1)(react-native-webview@13.16.0(react-native@0.79.6(@babel/core@7.28.4)(@types/react@19.1.13)(bufferutil@4.0.9)(react@19.0.0))(react@19.0.0))(react-native@0.79.6(@babel/core@7.28.4)(@types/react@19.1.13)(bufferutil@4.0.9)(react@19.0.0))(react@19.0.0))(react-native@0.79.6(@babel/core@7.28.4)(@types/react@19.1.13)(bufferutil@4.0.9)(react@19.0.0))(react@19.0.0))(kysely@0.28.7)
+      '@folo-services/drizzle': 0.1.28(@opentelemetry/api@1.9.0)(@types/pg@8.15.4)(expo-sqlite@15.2.12(expo@53.0.12(@babel/core@7.28.4)(@expo/metro-runtime@5.0.4(react-native@0.79.6(@babel/core@7.28.4)(@types/react@19.1.13)(bufferutil@4.0.9)(react@19.0.0)))(bufferutil@4.0.9)(graphql@16.8.1)(react-native-webview@13.16.0(react-native@0.79.6(@babel/core@7.28.4)(@types/react@19.1.13)(bufferutil@4.0.9)(react@19.0.0))(react@19.0.0))(react-native@0.79.6(@babel/core@7.28.4)(@types/react@19.1.13)(bufferutil@4.0.9)(react@19.0.0))(react@19.0.0))(react-native@0.79.6(@babel/core@7.28.4)(@types/react@19.1.13)(bufferutil@4.0.9)(react@19.0.0))(react@19.0.0))(hono@4.9.8)(kysely@0.28.7)
+      '@hono/zod-openapi': 1.1.2(hono@4.9.8)(zod@4.1.11)
       drizzle-orm: 0.44.5(@opentelemetry/api@1.9.0)(@types/pg@8.15.4)(expo-sqlite@15.2.12(expo@53.0.12(@babel/core@7.28.4)(@expo/metro-runtime@5.0.4(react-native@0.79.6(@babel/core@7.28.4)(@types/react@19.1.13)(bufferutil@4.0.9)(react@19.0.0)))(bufferutil@4.0.9)(graphql@16.8.1)(react-native-webview@13.16.0(react-native@0.79.6(@babel/core@7.28.4)(@types/react@19.1.13)(bufferutil@4.0.9)(react@19.0.0))(react@19.0.0))(react-native@0.79.6(@babel/core@7.28.4)(@types/react@19.1.13)(bufferutil@4.0.9)(react@19.0.0))(react@19.0.0))(react-native@0.79.6(@babel/core@7.28.4)(@types/react@19.1.13)(bufferutil@4.0.9)(react@19.0.0))(react@19.0.0))(kysely@0.28.7)(pg@8.16.3)
-      drizzle-zod: 0.7.1(drizzle-orm@0.44.5(@opentelemetry/api@1.9.0)(@types/pg@8.15.4)(expo-sqlite@15.2.12(expo@53.0.12(@babel/core@7.28.4)(@expo/metro-runtime@5.0.4(react-native@0.79.6(@babel/core@7.28.4)(@types/react@19.1.13)(bufferutil@4.0.9)(react@19.0.0)))(bufferutil@4.0.9)(graphql@16.8.1)(react-native-webview@13.16.0(react-native@0.79.6(@babel/core@7.28.4)(@types/react@19.1.13)(bufferutil@4.0.9)(react@19.0.0))(react@19.0.0))(react-native@0.79.6(@babel/core@7.28.4)(@types/react@19.1.13)(bufferutil@4.0.9)(react@19.0.0))(react@19.0.0))(react-native@0.79.6(@babel/core@7.28.4)(@types/react@19.1.13)(bufferutil@4.0.9)(react@19.0.0))(react@19.0.0))(kysely@0.28.7)(pg@8.16.3))(zod@3.25.76)
-      zod: 3.25.76
+      drizzle-zod: 0.8.3(drizzle-orm@0.44.5(@opentelemetry/api@1.9.0)(@types/pg@8.15.4)(expo-sqlite@15.2.12(expo@53.0.12(@babel/core@7.28.4)(@expo/metro-runtime@5.0.4(react-native@0.79.6(@babel/core@7.28.4)(@types/react@19.1.13)(bufferutil@4.0.9)(react@19.0.0)))(bufferutil@4.0.9)(graphql@16.8.1)(react-native-webview@13.16.0(react-native@0.79.6(@babel/core@7.28.4)(@types/react@19.1.13)(bufferutil@4.0.9)(react@19.0.0))(react@19.0.0))(react-native@0.79.6(@babel/core@7.28.4)(@types/react@19.1.13)(bufferutil@4.0.9)(react@19.0.0))(react@19.0.0))(react-native@0.79.6(@babel/core@7.28.4)(@types/react@19.1.13)(bufferutil@4.0.9)(react@19.0.0))(react@19.0.0))(kysely@0.28.7)(pg@8.16.3))(zod@4.1.11)
+      zod: 4.1.11
     transitivePeerDependencies:
       - '@aws-sdk/client-rds-data'
       - '@cloudflare/workers-types'
@@ -20500,6 +20625,7 @@ snapshots:
       - bun-types
       - expo-sqlite
       - gel
+      - hono
       - knex
       - kysely
       - mysql2
@@ -20560,6 +20686,19 @@ snapshots:
       use-sync-external-store: 1.5.0(react@19.0.0)
 
   '@hexagon/base64@1.1.28': {}
+
+  '@hono/zod-openapi@1.1.2(hono@4.9.8)(zod@4.1.11)':
+    dependencies:
+      '@asteasolutions/zod-to-openapi': 8.1.0(zod@4.1.11)
+      '@hono/zod-validator': 0.7.3(hono@4.9.8)(zod@4.1.11)
+      hono: 4.9.8
+      openapi3-ts: 4.5.0
+      zod: 4.1.11
+
+  '@hono/zod-validator@0.7.3(hono@4.9.8)(zod@4.1.11)':
+    dependencies:
+      hono: 4.9.8
+      zod: 4.1.11
 
   '@hookform/resolvers@5.2.2(react-hook-form@7.62.0(react@19.0.0))':
     dependencies:
@@ -21218,6 +21357,13 @@ snapshots:
       '@tybys/wasm-util': 0.10.1
     optional: true
 
+  '@napi-rs/wasm-runtime@1.0.5':
+    dependencies:
+      '@emnapi/core': 1.5.0
+      '@emnapi/runtime': 1.5.0
+      '@tybys/wasm-util': 0.10.1
+    optional: true
+
   '@noble/ciphers@2.0.0': {}
 
   '@noble/hashes@2.0.0': {}
@@ -21702,9 +21848,7 @@ snapshots:
       '@opentelemetry/api': 1.9.0
       '@opentelemetry/core': 2.1.0(@opentelemetry/api@1.9.0)
 
-  '@oxc-project/runtime@0.71.0': {}
-
-  '@oxc-project/types@0.71.0': {}
+  '@oxc-project/types@0.92.0': {}
 
   '@peculiar/asn1-android@2.5.0':
     dependencies:
@@ -22783,7 +22927,7 @@ snapshots:
       debug: 2.6.9
       invariant: 2.2.4
       metro: 0.82.4(bufferutil@4.0.9)(utf-8-validate@6.0.5)
-      metro-config: 0.82.4(bufferutil@4.0.9)(utf-8-validate@6.0.5)
+      metro-config: 0.82.4(bufferutil@4.0.9)
       metro-core: 0.82.4
       semver: 7.7.2
     transitivePeerDependencies:
@@ -22941,47 +23085,53 @@ snapshots:
       '@resvg/resvg-js-win32-ia32-msvc': 2.6.2
       '@resvg/resvg-js-win32-x64-msvc': 2.6.2
 
-  '@rolldown/binding-darwin-arm64@1.0.0-beta.9-commit.d91dfb5':
+  '@rolldown/binding-android-arm64@1.0.0-beta.40':
     optional: true
 
-  '@rolldown/binding-darwin-x64@1.0.0-beta.9-commit.d91dfb5':
+  '@rolldown/binding-darwin-arm64@1.0.0-beta.40':
     optional: true
 
-  '@rolldown/binding-freebsd-x64@1.0.0-beta.9-commit.d91dfb5':
+  '@rolldown/binding-darwin-x64@1.0.0-beta.40':
     optional: true
 
-  '@rolldown/binding-linux-arm-gnueabihf@1.0.0-beta.9-commit.d91dfb5':
+  '@rolldown/binding-freebsd-x64@1.0.0-beta.40':
     optional: true
 
-  '@rolldown/binding-linux-arm64-gnu@1.0.0-beta.9-commit.d91dfb5':
+  '@rolldown/binding-linux-arm-gnueabihf@1.0.0-beta.40':
     optional: true
 
-  '@rolldown/binding-linux-arm64-musl@1.0.0-beta.9-commit.d91dfb5':
+  '@rolldown/binding-linux-arm64-gnu@1.0.0-beta.40':
     optional: true
 
-  '@rolldown/binding-linux-x64-gnu@1.0.0-beta.9-commit.d91dfb5':
+  '@rolldown/binding-linux-arm64-musl@1.0.0-beta.40':
     optional: true
 
-  '@rolldown/binding-linux-x64-musl@1.0.0-beta.9-commit.d91dfb5':
+  '@rolldown/binding-linux-x64-gnu@1.0.0-beta.40':
     optional: true
 
-  '@rolldown/binding-wasm32-wasi@1.0.0-beta.9-commit.d91dfb5':
+  '@rolldown/binding-linux-x64-musl@1.0.0-beta.40':
+    optional: true
+
+  '@rolldown/binding-openharmony-arm64@1.0.0-beta.40':
+    optional: true
+
+  '@rolldown/binding-wasm32-wasi@1.0.0-beta.40':
     dependencies:
-      '@napi-rs/wasm-runtime': 0.2.12
+      '@napi-rs/wasm-runtime': 1.0.5
     optional: true
 
-  '@rolldown/binding-win32-arm64-msvc@1.0.0-beta.9-commit.d91dfb5':
+  '@rolldown/binding-win32-arm64-msvc@1.0.0-beta.40':
     optional: true
 
-  '@rolldown/binding-win32-ia32-msvc@1.0.0-beta.9-commit.d91dfb5':
+  '@rolldown/binding-win32-ia32-msvc@1.0.0-beta.40':
     optional: true
 
-  '@rolldown/binding-win32-x64-msvc@1.0.0-beta.9-commit.d91dfb5':
+  '@rolldown/binding-win32-x64-msvc@1.0.0-beta.40':
     optional: true
 
   '@rolldown/pluginutils@1.0.0-beta.35': {}
 
-  '@rolldown/pluginutils@1.0.0-beta.9-commit.d91dfb5': {}
+  '@rolldown/pluginutils@1.0.0-beta.40': {}
 
   '@rollup/plugin-babel@5.3.1(@babel/core@7.28.4)(@types/babel__core@7.20.5)(rollup@2.79.2)':
     dependencies:
@@ -25083,24 +25233,6 @@ snapshots:
 
   before-after-hook@2.2.3: {}
 
-  better-auth@1.3.12(react-dom@19.0.0(react@19.0.0))(react@19.0.0):
-    dependencies:
-      '@better-auth/utils': 0.3.0
-      '@better-fetch/fetch': 1.1.18
-      '@noble/ciphers': 2.0.0
-      '@noble/hashes': 2.0.0
-      '@simplewebauthn/browser': 13.2.0
-      '@simplewebauthn/server': 13.2.1
-      better-call: 1.0.19
-      defu: 6.1.4
-      jose: 6.1.0
-      kysely: 0.28.7
-      nanostores: 1.0.1
-      zod: 4.1.11
-    optionalDependencies:
-      react: 19.0.0
-      react-dom: 19.0.0(react@19.0.0)
-
   better-auth@1.3.13(react-dom@19.0.0(react@19.0.0))(react@19.0.0):
     dependencies:
       '@better-auth/utils': 0.3.0
@@ -26402,15 +26534,25 @@ snapshots:
       drizzle-orm: 0.44.5(@opentelemetry/api@1.9.0)(@types/pg@8.15.4)(expo-sqlite@15.2.12(expo@53.0.12(@babel/core@7.28.0)(@expo/metro-runtime@5.0.4(react-native@0.79.6(@babel/core@7.28.0)(@types/react@19.1.13)(bufferutil@4.0.9)(react@19.0.0)))(bufferutil@4.0.9)(graphql@16.8.1)(react-native-webview@13.16.0(react-native@0.79.6(@babel/core@7.28.0)(@types/react@19.1.13)(bufferutil@4.0.9)(react@19.0.0))(react@19.0.0))(react-native@0.79.6(@babel/core@7.28.0)(@types/react@19.1.13)(bufferutil@4.0.9)(react@19.0.0))(react@19.0.0))(react-native@0.79.6(@babel/core@7.28.0)(@types/react@19.1.13)(bufferutil@4.0.9)(react@19.0.0))(react@19.0.0))(kysely@0.28.7)(pg@8.16.3)
       zod: 3.25.76
 
-  drizzle-zod@0.7.1(drizzle-orm@0.44.5(@opentelemetry/api@1.9.0)(@types/pg@8.15.4)(expo-sqlite@15.2.12(expo@53.0.12(@babel/core@7.28.4)(@expo/metro-runtime@5.0.4(react-native@0.79.6(@babel/core@7.28.4)(@types/react@19.1.13)(bufferutil@4.0.9)(react@19.0.0)(utf-8-validate@6.0.5)))(bufferutil@4.0.9)(graphql@16.8.1)(react-native-webview@13.16.0(react-native@0.79.6(@babel/core@7.28.4)(@types/react@19.1.13)(bufferutil@4.0.9)(react@19.0.0)(utf-8-validate@6.0.5))(react@19.0.0))(react-native@0.79.6(@babel/core@7.28.4)(@types/react@19.1.13)(bufferutil@4.0.9)(react@19.0.0)(utf-8-validate@6.0.5))(react@19.0.0)(utf-8-validate@6.0.5))(react-native@0.79.6(@babel/core@7.28.4)(@types/react@19.1.13)(bufferutil@4.0.9)(react@19.0.0)(utf-8-validate@6.0.5))(react@19.0.0))(kysely@0.28.7)(pg@8.16.3))(zod@3.25.76):
-    dependencies:
-      drizzle-orm: 0.44.5(@opentelemetry/api@1.9.0)(@types/pg@8.15.4)(expo-sqlite@15.2.12(expo@53.0.12(@babel/core@7.28.4)(@expo/metro-runtime@5.0.4(react-native@0.79.6(@babel/core@7.28.4)(@types/react@19.1.13)(bufferutil@4.0.9)(react@19.0.0)(utf-8-validate@6.0.5)))(bufferutil@4.0.9)(graphql@16.8.1)(react-native-webview@13.16.0(react-native@0.79.6(@babel/core@7.28.4)(@types/react@19.1.13)(bufferutil@4.0.9)(react@19.0.0)(utf-8-validate@6.0.5))(react@19.0.0))(react-native@0.79.6(@babel/core@7.28.4)(@types/react@19.1.13)(bufferutil@4.0.9)(react@19.0.0)(utf-8-validate@6.0.5))(react@19.0.0)(utf-8-validate@6.0.5))(react-native@0.79.6(@babel/core@7.28.4)(@types/react@19.1.13)(bufferutil@4.0.9)(react@19.0.0)(utf-8-validate@6.0.5))(react@19.0.0))(kysely@0.28.7)(pg@8.16.3)
-      zod: 3.25.76
-
   drizzle-zod@0.7.1(drizzle-orm@0.44.5(@opentelemetry/api@1.9.0)(@types/pg@8.15.4)(expo-sqlite@15.2.12(expo@53.0.12(@babel/core@7.28.4)(@expo/metro-runtime@5.0.4(react-native@0.79.6(@babel/core@7.28.4)(@types/react@19.1.13)(bufferutil@4.0.9)(react@19.0.0)))(bufferutil@4.0.9)(graphql@16.8.1)(react-native-webview@13.16.0(react-native@0.79.6(@babel/core@7.28.4)(@types/react@19.1.13)(bufferutil@4.0.9)(react@19.0.0))(react@19.0.0))(react-native@0.79.6(@babel/core@7.28.4)(@types/react@19.1.13)(bufferutil@4.0.9)(react@19.0.0))(react@19.0.0))(react-native@0.79.6(@babel/core@7.28.4)(@types/react@19.1.13)(bufferutil@4.0.9)(react@19.0.0))(react@19.0.0))(kysely@0.28.7)(pg@8.16.3))(zod@3.25.76):
     dependencies:
       drizzle-orm: 0.44.5(@opentelemetry/api@1.9.0)(@types/pg@8.15.4)(expo-sqlite@15.2.12(expo@53.0.12(@babel/core@7.28.4)(@expo/metro-runtime@5.0.4(react-native@0.79.6(@babel/core@7.28.4)(@types/react@19.1.13)(bufferutil@4.0.9)(react@19.0.0)))(bufferutil@4.0.9)(graphql@16.8.1)(react-native-webview@13.16.0(react-native@0.79.6(@babel/core@7.28.4)(@types/react@19.1.13)(bufferutil@4.0.9)(react@19.0.0))(react@19.0.0))(react-native@0.79.6(@babel/core@7.28.4)(@types/react@19.1.13)(bufferutil@4.0.9)(react@19.0.0))(react@19.0.0))(react-native@0.79.6(@babel/core@7.28.4)(@types/react@19.1.13)(bufferutil@4.0.9)(react@19.0.0))(react@19.0.0))(kysely@0.28.7)(pg@8.16.3)
       zod: 3.25.76
+
+  drizzle-zod@0.8.3(drizzle-orm@0.44.5(@opentelemetry/api@1.9.0)(@types/pg@8.15.4)(expo-sqlite@15.2.12(expo@53.0.12(@babel/core@7.28.0)(@expo/metro-runtime@5.0.4(react-native@0.79.6(@babel/core@7.28.0)(@types/react@19.1.13)(bufferutil@4.0.9)(react@19.0.0)))(bufferutil@4.0.9)(graphql@16.8.1)(react-native-webview@13.16.0(react-native@0.79.6(@babel/core@7.28.0)(@types/react@19.1.13)(bufferutil@4.0.9)(react@19.0.0))(react@19.0.0))(react-native@0.79.6(@babel/core@7.28.0)(@types/react@19.1.13)(bufferutil@4.0.9)(react@19.0.0))(react@19.0.0))(react-native@0.79.6(@babel/core@7.28.0)(@types/react@19.1.13)(bufferutil@4.0.9)(react@19.0.0))(react@19.0.0))(kysely@0.28.7)(pg@8.16.3))(zod@4.1.11):
+    dependencies:
+      drizzle-orm: 0.44.5(@opentelemetry/api@1.9.0)(@types/pg@8.15.4)(expo-sqlite@15.2.12(expo@53.0.12(@babel/core@7.28.0)(@expo/metro-runtime@5.0.4(react-native@0.79.6(@babel/core@7.28.0)(@types/react@19.1.13)(bufferutil@4.0.9)(react@19.0.0)))(bufferutil@4.0.9)(graphql@16.8.1)(react-native-webview@13.16.0(react-native@0.79.6(@babel/core@7.28.0)(@types/react@19.1.13)(bufferutil@4.0.9)(react@19.0.0))(react@19.0.0))(react-native@0.79.6(@babel/core@7.28.0)(@types/react@19.1.13)(bufferutil@4.0.9)(react@19.0.0))(react@19.0.0))(react-native@0.79.6(@babel/core@7.28.0)(@types/react@19.1.13)(bufferutil@4.0.9)(react@19.0.0))(react@19.0.0))(kysely@0.28.7)(pg@8.16.3)
+      zod: 4.1.11
+
+  drizzle-zod@0.8.3(drizzle-orm@0.44.5(@opentelemetry/api@1.9.0)(@types/pg@8.15.4)(expo-sqlite@15.2.12(expo@53.0.12(@babel/core@7.28.4)(@expo/metro-runtime@5.0.4(react-native@0.79.6(@babel/core@7.28.4)(@types/react@19.1.13)(bufferutil@4.0.9)(react@19.0.0)(utf-8-validate@6.0.5)))(bufferutil@4.0.9)(graphql@16.8.1)(react-native-webview@13.16.0(react-native@0.79.6(@babel/core@7.28.4)(@types/react@19.1.13)(bufferutil@4.0.9)(react@19.0.0)(utf-8-validate@6.0.5))(react@19.0.0))(react-native@0.79.6(@babel/core@7.28.4)(@types/react@19.1.13)(bufferutil@4.0.9)(react@19.0.0)(utf-8-validate@6.0.5))(react@19.0.0)(utf-8-validate@6.0.5))(react-native@0.79.6(@babel/core@7.28.4)(@types/react@19.1.13)(bufferutil@4.0.9)(react@19.0.0)(utf-8-validate@6.0.5))(react@19.0.0))(kysely@0.28.7)(pg@8.16.3))(zod@4.1.11):
+    dependencies:
+      drizzle-orm: 0.44.5(@opentelemetry/api@1.9.0)(@types/pg@8.15.4)(expo-sqlite@15.2.12(expo@53.0.12(@babel/core@7.28.4)(@expo/metro-runtime@5.0.4(react-native@0.79.6(@babel/core@7.28.4)(@types/react@19.1.13)(bufferutil@4.0.9)(react@19.0.0)(utf-8-validate@6.0.5)))(bufferutil@4.0.9)(graphql@16.8.1)(react-native-webview@13.16.0(react-native@0.79.6(@babel/core@7.28.4)(@types/react@19.1.13)(bufferutil@4.0.9)(react@19.0.0)(utf-8-validate@6.0.5))(react@19.0.0))(react-native@0.79.6(@babel/core@7.28.4)(@types/react@19.1.13)(bufferutil@4.0.9)(react@19.0.0)(utf-8-validate@6.0.5))(react@19.0.0)(utf-8-validate@6.0.5))(react-native@0.79.6(@babel/core@7.28.4)(@types/react@19.1.13)(bufferutil@4.0.9)(react@19.0.0)(utf-8-validate@6.0.5))(react@19.0.0))(kysely@0.28.7)(pg@8.16.3)
+      zod: 4.1.11
+
+  drizzle-zod@0.8.3(drizzle-orm@0.44.5(@opentelemetry/api@1.9.0)(@types/pg@8.15.4)(expo-sqlite@15.2.12(expo@53.0.12(@babel/core@7.28.4)(@expo/metro-runtime@5.0.4(react-native@0.79.6(@babel/core@7.28.4)(@types/react@19.1.13)(bufferutil@4.0.9)(react@19.0.0)))(bufferutil@4.0.9)(graphql@16.8.1)(react-native-webview@13.16.0(react-native@0.79.6(@babel/core@7.28.4)(@types/react@19.1.13)(bufferutil@4.0.9)(react@19.0.0))(react@19.0.0))(react-native@0.79.6(@babel/core@7.28.4)(@types/react@19.1.13)(bufferutil@4.0.9)(react@19.0.0))(react@19.0.0))(react-native@0.79.6(@babel/core@7.28.4)(@types/react@19.1.13)(bufferutil@4.0.9)(react@19.0.0))(react@19.0.0))(kysely@0.28.7)(pg@8.16.3))(zod@4.1.11):
+    dependencies:
+      drizzle-orm: 0.44.5(@opentelemetry/api@1.9.0)(@types/pg@8.15.4)(expo-sqlite@15.2.12(expo@53.0.12(@babel/core@7.28.4)(@expo/metro-runtime@5.0.4(react-native@0.79.6(@babel/core@7.28.4)(@types/react@19.1.13)(bufferutil@4.0.9)(react@19.0.0)))(bufferutil@4.0.9)(graphql@16.8.1)(react-native-webview@13.16.0(react-native@0.79.6(@babel/core@7.28.4)(@types/react@19.1.13)(bufferutil@4.0.9)(react@19.0.0))(react@19.0.0))(react-native@0.79.6(@babel/core@7.28.4)(@types/react@19.1.13)(bufferutil@4.0.9)(react@19.0.0))(react@19.0.0))(react-native@0.79.6(@babel/core@7.28.4)(@types/react@19.1.13)(bufferutil@4.0.9)(react@19.0.0))(react@19.0.0))(kysely@0.28.7)(pg@8.16.3)
+      zod: 4.1.11
 
   ds-store@0.1.6:
     dependencies:
@@ -29093,6 +29235,8 @@ snapshots:
     dependencies:
       react-is: 16.13.1
 
+  hono@4.9.8: {}
+
   hookable@5.5.3: {}
 
   hosted-git-info@2.8.9: {}
@@ -30506,22 +30650,6 @@ snapshots:
       - supports-color
       - utf-8-validate
 
-  metro-config@0.82.4(bufferutil@4.0.9)(utf-8-validate@6.0.5):
-    dependencies:
-      connect: 3.7.0
-      cosmiconfig: 5.2.1
-      flow-enums-runtime: 0.0.6
-      jest-validate: 29.7.0
-      metro: 0.82.4(bufferutil@4.0.9)(utf-8-validate@6.0.5)
-      metro-cache: 0.82.4
-      metro-core: 0.82.4
-      metro-runtime: 0.82.4
-    transitivePeerDependencies:
-      - bufferutil
-      - supports-color
-      - utf-8-validate
-    optional: true
-
   metro-core@0.82.4:
     dependencies:
       flow-enums-runtime: 0.0.6
@@ -30707,7 +30835,7 @@ snapshots:
       metro-babel-transformer: 0.82.4
       metro-cache: 0.82.4
       metro-cache-key: 0.82.4
-      metro-config: 0.82.4(bufferutil@4.0.9)(utf-8-validate@6.0.5)
+      metro-config: 0.82.4(bufferutil@4.0.9)
       metro-core: 0.82.4
       metro-file-map: 0.82.4
       metro-resolver: 0.82.4
@@ -31380,6 +31508,10 @@ snapshots:
       define-lazy-prop: 2.0.0
       is-docker: 2.2.1
       is-wsl: 2.2.0
+
+  openapi3-ts@4.5.0:
+    dependencies:
+      yaml: 2.8.1
 
   optionator@0.9.4:
     dependencies:
@@ -33161,7 +33293,7 @@ snapshots:
       sprintf-js: 1.1.3
     optional: true
 
-  rolldown-plugin-dts@0.16.7(rolldown@1.0.0-beta.9-commit.d91dfb5)(typescript@5.9.2):
+  rolldown-plugin-dts@0.16.7(rolldown@1.0.0-beta.40)(typescript@5.9.2):
     dependencies:
       '@babel/generator': 7.28.3
       '@babel/parser': 7.28.4
@@ -33172,32 +33304,33 @@ snapshots:
       dts-resolver: 2.1.2
       get-tsconfig: 4.10.1
       magic-string: 0.30.19
-      rolldown: 1.0.0-beta.9-commit.d91dfb5
+      rolldown: 1.0.0-beta.40
     optionalDependencies:
       typescript: 5.9.2
     transitivePeerDependencies:
       - oxc-resolver
       - supports-color
 
-  rolldown@1.0.0-beta.9-commit.d91dfb5:
+  rolldown@1.0.0-beta.40:
     dependencies:
-      '@oxc-project/runtime': 0.71.0
-      '@oxc-project/types': 0.71.0
-      '@rolldown/pluginutils': 1.0.0-beta.9-commit.d91dfb5
+      '@oxc-project/types': 0.92.0
+      '@rolldown/pluginutils': 1.0.0-beta.40
       ansis: 4.1.0
     optionalDependencies:
-      '@rolldown/binding-darwin-arm64': 1.0.0-beta.9-commit.d91dfb5
-      '@rolldown/binding-darwin-x64': 1.0.0-beta.9-commit.d91dfb5
-      '@rolldown/binding-freebsd-x64': 1.0.0-beta.9-commit.d91dfb5
-      '@rolldown/binding-linux-arm-gnueabihf': 1.0.0-beta.9-commit.d91dfb5
-      '@rolldown/binding-linux-arm64-gnu': 1.0.0-beta.9-commit.d91dfb5
-      '@rolldown/binding-linux-arm64-musl': 1.0.0-beta.9-commit.d91dfb5
-      '@rolldown/binding-linux-x64-gnu': 1.0.0-beta.9-commit.d91dfb5
-      '@rolldown/binding-linux-x64-musl': 1.0.0-beta.9-commit.d91dfb5
-      '@rolldown/binding-wasm32-wasi': 1.0.0-beta.9-commit.d91dfb5
-      '@rolldown/binding-win32-arm64-msvc': 1.0.0-beta.9-commit.d91dfb5
-      '@rolldown/binding-win32-ia32-msvc': 1.0.0-beta.9-commit.d91dfb5
-      '@rolldown/binding-win32-x64-msvc': 1.0.0-beta.9-commit.d91dfb5
+      '@rolldown/binding-android-arm64': 1.0.0-beta.40
+      '@rolldown/binding-darwin-arm64': 1.0.0-beta.40
+      '@rolldown/binding-darwin-x64': 1.0.0-beta.40
+      '@rolldown/binding-freebsd-x64': 1.0.0-beta.40
+      '@rolldown/binding-linux-arm-gnueabihf': 1.0.0-beta.40
+      '@rolldown/binding-linux-arm64-gnu': 1.0.0-beta.40
+      '@rolldown/binding-linux-arm64-musl': 1.0.0-beta.40
+      '@rolldown/binding-linux-x64-gnu': 1.0.0-beta.40
+      '@rolldown/binding-linux-x64-musl': 1.0.0-beta.40
+      '@rolldown/binding-openharmony-arm64': 1.0.0-beta.40
+      '@rolldown/binding-wasm32-wasi': 1.0.0-beta.40
+      '@rolldown/binding-win32-arm64-msvc': 1.0.0-beta.40
+      '@rolldown/binding-win32-ia32-msvc': 1.0.0-beta.40
+      '@rolldown/binding-win32-x64-msvc': 1.0.0-beta.40
 
   rollup@2.79.2:
     optionalDependencies:
@@ -34282,8 +34415,8 @@ snapshots:
       diff: 8.0.2
       empathic: 2.0.0
       hookable: 5.5.3
-      rolldown: 1.0.0-beta.9-commit.d91dfb5
-      rolldown-plugin-dts: 0.16.7(rolldown@1.0.0-beta.9-commit.d91dfb5)(typescript@5.9.2)
+      rolldown: 1.0.0-beta.40
+      rolldown-plugin-dts: 0.16.7(rolldown@1.0.0-beta.40)(typescript@5.9.2)
       semver: 7.7.2
       tinyexec: 1.0.1
       tinyglobby: 0.2.15
