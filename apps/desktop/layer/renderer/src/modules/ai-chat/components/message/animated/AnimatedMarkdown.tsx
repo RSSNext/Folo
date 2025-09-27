@@ -298,8 +298,8 @@ export const InlineTooltipContent: React.FC<BaseInlineFoloReferenceProps> = ({
 }) => {
   if (!id) return null
   return (
-    <div className="flex flex-col gap-2">
-      <h4 className="text-text-secondary flex items-center gap-1 text-sm">
+    <div className="flex flex-col gap-2 p-1">
+      <h4 className="text-text-secondary flex items-center text-sm">
         {type === "entry" ? <TooltipEntryIcon entryId={id} /> : <TooltipFeedIcon feedId={id} />}
         {title}
       </h4>
@@ -319,7 +319,7 @@ const TooltipFeedIcon = ({ feedId }: { feedId: string }) => {
   const target = useFeedById(feedId, feedIconSelector)
 
   if (!target) return null
-  return <FeedIcon target={target} />
+  return <FeedIcon size={16} target={target} />
 }
 
 const RelatedEntryLink = (props: LinkProps) => {

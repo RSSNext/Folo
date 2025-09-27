@@ -57,11 +57,15 @@ const ChatInterfaceContent = ({ centerInputOnEmpty }: ChatInterfaceProps) => {
 
   const aiPanelRefs = use(AIPanelRefsContext)
 
-  useEventListener("keydown", () => {
+  useEventListener("keydown", (e) => {
     if (isFocusWithIn) {
       const currentActiveElement = document.activeElement
 
       if (detectIsEditableElement(currentActiveElement as HTMLElement)) {
+        return
+      }
+
+      if (e.shiftKey || e.metaKey || e.ctrlKey) {
         return
       }
       aiPanelRefs.inputRef?.current?.focus()

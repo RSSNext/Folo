@@ -9,6 +9,123 @@ const singleUnderscorePattern = /(_)([^_]*)$/
 const inlineCodePattern = /(`)([^`]*)$/
 const strikethroughPattern = /(~~)([^~]*)$/
 
+// Detect custom inline reference tags
+const mentionTagStartPattern = /<\s*mention-(?:entry|feed)\b/gi
+
+// Finds the end index of a self-closing tag (`/>`) starting at `startIndex`.
+// Returns the index of `>` when a `/>` is found outside of quotes; otherwise -1.
+const findSelfClosingTagEnd = (text: string, startIndex: number): number => {
+  // Don't process if inside a complete code block
+  if (hasCompleteCodeBlock(text)) return -1
+
+  let inQuote: '"' | "'" | null = null
+  for (let i = startIndex; i < text.length; i++) {
+    const char = text[i]
+    if (inQuote) {
+      if (char === inQuote && text[i - 1] !== "\\") {
+        inQuote = null
+      }
+      continue
+    }
+    if (char === '"' || char === "'") {
+      inQuote = char
+      continue
+    }
+    if (char === "/" && text[i + 1] === ">") {
+      return i + 1 // index of '>' in `/>`
+    }
+  }
+  return -1
+}
+
+// Trims trailing, incomplete `<mention-entry ... />` or `<mention-feed ... />` tags to avoid
+// injecting broken raw HTML into markdown while streaming.
+const handleIncompleteMentionTags = (text: string): string => {
+  // Don't process if inside a complete code block
+  if (hasCompleteCodeBlock(text)) {
+    return text
+  }
+
+  let cutIndex: number | null = null
+  let match: RegExpExecArray | null
+  mentionTagStartPattern.lastIndex = 0
+  while ((match = mentionTagStartPattern.exec(text))) {
+    const start = match.index
+    const end = findSelfClosingTagEnd(text, start)
+    if (end === -1) {
+      cutIndex = start
+      break
+    } else {
+      // continue scanning after this complete tag
+      mentionTagStartPattern.lastIndex = end + 1
+    }
+  }
+
+  if (cutIndex !== null) {
+    const nextNewlineIndex = text.indexOf("\n", cutIndex)
+    if (nextNewlineIndex !== -1) {
+      // Remove only the incomplete tag segment and preserve following lines
+      return text.substring(0, cutIndex) + text.substring(nextNewlineIndex)
+    }
+    // No newline after the incomplete tag; drop the trailing incomplete segment
+    return text.substring(0, cutIndex)
+  }
+  return text
+}
+
+// Handles `<Use: <mention-... />` wrapper by:
+// - Replacing the whole wrapper with only the inner `<mention-... />` when complete
+// - Trimming from `<Use:` if the inner mention tag is incomplete while streaming
+const handleUseWrapper = (text: string): string => {
+  // Don't process if inside a complete code block
+  if (hasCompleteCodeBlock(text)) return text
+
+  const usePattern = /<\s*Use:\s*/gi
+  let result = text
+  let match: RegExpExecArray | null
+  usePattern.lastIndex = 0
+
+  // We rebuild iteratively in case of multiple occurrences
+  while ((match = usePattern.exec(result))) {
+    const useStart = match.index
+    const mentionStart = result.indexOf("<mention-", useStart)
+    if (mentionStart === -1) {
+      // Incomplete `<Use:` without a mention yet → remove only the incomplete segment
+      const nextNewlineIndex = result.indexOf("\n", useStart)
+      return nextNewlineIndex !== -1
+        ? result.substring(0, useStart) + result.substring(nextNewlineIndex)
+        : result.substring(0, useStart)
+    }
+
+    // Ensure mention is the immediate content of the Use wrapper (allow whitespace)
+    const between = result.substring(useStart + match[0].length, mentionStart)
+    if (!/^\s*$/.test(between)) {
+      // Unexpected content between Use and mention → treat as plain text, continue
+      continue
+    }
+
+    const mentionEnd = findSelfClosingTagEnd(result, mentionStart)
+    if (mentionEnd === -1) {
+      // Mention not finished yet → remove only the incomplete wrapper segment
+      const nextNewlineIndex = result.indexOf("\n", useStart)
+      return nextNewlineIndex !== -1
+        ? result.substring(0, useStart) + result.substring(nextNewlineIndex)
+        : result.substring(0, useStart)
+    }
+
+    // Replace `<Use: <mention-.../>` with `<mention-.../>`
+    const before = result.substring(0, useStart)
+    const mentionTag = result.substring(mentionStart, mentionEnd + 1)
+    const after = result.substring(mentionEnd + 1)
+    result = before + mentionTag + after
+
+    // Reset the regex lastIndex to continue scanning after the replaced tag
+    usePattern.lastIndex = before.length + mentionTag.length
+  }
+
+  return result
+}
+
 // Helper function to check if we have a complete code block
 const hasCompleteCodeBlock = (text: string): boolean => {
   const tripleBackticks = (text.match(/```/g) || []).length
@@ -25,7 +142,7 @@ const handleIncompleteLinksAndImages = (text: string): string => {
     // For images, we still remove them as they can't show skeleton
     if (isImage) {
       const startIndex = text.lastIndexOf(linkMatch[1]!)
-      return text.slice(0, Math.max(0, startIndex))
+      return text.substring(0, startIndex)
     }
 
     // For links, preserve the text and close the link with a
@@ -54,6 +171,25 @@ const handleIncompleteBold = (text: string): string => {
       return text
     }
 
+    // Check if the bold marker is in a list item context
+    // Find the position of the matched bold marker
+    const markerIndex = text.lastIndexOf(boldMatch[1]!)
+    const beforeMarker = text.substring(0, markerIndex)
+    const lastNewlineBeforeMarker = beforeMarker.lastIndexOf("\n")
+    const lineStart = lastNewlineBeforeMarker === -1 ? 0 : lastNewlineBeforeMarker + 1
+    const lineBeforeMarker = text.substring(lineStart, markerIndex)
+
+    // Check if this line is a list item with just the bold marker
+    if (/^\s*[-*+]\s+$/.test(lineBeforeMarker)) {
+      // This is a list item with just emphasis markers
+      // Check if content after marker spans multiple lines
+      const hasNewlineInContent = contentAfterMarker.includes("\n")
+      if (hasNewlineInContent) {
+        // Don't complete if the content spans to another line
+        return text
+      }
+    }
+
     const asteriskPairs = (text.match(/\*\*/g) || []).length
     if (asteriskPairs % 2 === 1) {
       return `${text}**`
@@ -74,6 +210,25 @@ const handleIncompleteDoubleUnderscoreItalic = (text: string): string => {
     const contentAfterMarker = italicMatch[2]
     if (!contentAfterMarker || /^[\s_~*`]*$/.test(contentAfterMarker)) {
       return text
+    }
+
+    // Check if the underscore marker is in a list item context
+    // Find the position of the matched underscore marker
+    const markerIndex = text.lastIndexOf(italicMatch[1]!)
+    const beforeMarker = text.substring(0, markerIndex)
+    const lastNewlineBeforeMarker = beforeMarker.lastIndexOf("\n")
+    const lineStart = lastNewlineBeforeMarker === -1 ? 0 : lastNewlineBeforeMarker + 1
+    const lineBeforeMarker = text.substring(lineStart, markerIndex)
+
+    // Check if this line is a list item with just the underscore marker
+    if (/^\s*[-*+]\s+$/.test(lineBeforeMarker)) {
+      // This is a list item with just emphasis markers
+      // Check if content after marker spans multiple lines
+      const hasNewlineInContent = contentAfterMarker.includes("\n")
+      if (hasNewlineInContent) {
+        // Don't complete if the content spans to another line
+        return text
+      }
     }
 
     const underscorePairs = (text.match(/__/g) || []).length
@@ -146,7 +301,7 @@ const handleIncompleteSingleAsteriskItalic = (text: string): string => {
     }
 
     // Get content after the first single asterisk
-    const contentAfterFirstAsterisk = text.slice(Math.max(0, firstSingleAsteriskIndex + 1))
+    const contentAfterFirstAsterisk = text.substring(firstSingleAsteriskIndex + 1)
 
     // Check if there's meaningful content after the asterisk
     // Don't close if content is only whitespace or emphasis markers
@@ -206,6 +361,15 @@ const countSingleUnderscores = (text: string): number => {
       if (isWithinMathBlock(text, index)) {
         return acc
       }
+      // Skip if underscore is word-internal (between word characters)
+      if (
+        prevChar &&
+        nextChar &&
+        /[\p{L}\p{N}_]/u.test(prevChar) &&
+        /[\p{L}\p{N}_]/u.test(nextChar)
+      ) {
+        return acc
+      }
       if (prevChar !== "_" && nextChar !== "_") {
         return acc + 1
       }
@@ -224,15 +388,28 @@ const handleIncompleteSingleUnderscoreItalic = (text: string): string => {
   const singleUnderscoreMatch = text.match(singleUnderscorePattern)
 
   if (singleUnderscoreMatch) {
-    // Find the first single underscore position (not part of __)
+    // Find the first single underscore position (not part of __ and not word-internal)
     let firstSingleUnderscoreIndex = -1
     for (let i = 0; i < text.length; i++) {
       if (
         text[i] === "_" &&
         text[i - 1] !== "_" &&
         text[i + 1] !== "_" &&
+        text[i - 1] !== "\\" &&
         !isWithinMathBlock(text, i)
       ) {
+        // Check if underscore is word-internal (between word characters)
+        const prevChar = i > 0 ? text[i - 1] : ""
+        const nextChar = i < text.length - 1 ? text[i + 1] : ""
+        if (
+          prevChar &&
+          nextChar &&
+          /[\p{L}\p{N}_]/u.test(prevChar) &&
+          /[\p{L}\p{N}_]/u.test(nextChar)
+        ) {
+          continue
+        }
+
         firstSingleUnderscoreIndex = i
         break
       }
@@ -243,7 +420,7 @@ const handleIncompleteSingleUnderscoreItalic = (text: string): string => {
     }
 
     // Get content after the first single underscore
-    const contentAfterFirstUnderscore = text.slice(Math.max(0, firstSingleUnderscoreIndex + 1))
+    const contentAfterFirstUnderscore = text.substring(firstSingleUnderscoreIndex + 1)
 
     // Check if there's meaningful content after the underscore
     // Don't close if content is only whitespace or emphasis markers
@@ -253,6 +430,12 @@ const handleIncompleteSingleUnderscoreItalic = (text: string): string => {
 
     const singleUnderscores = countSingleUnderscores(text)
     if (singleUnderscores % 2 === 1) {
+      // If text ends with newline(s), insert underscore before them
+      const trailingNewlineMatch = text.match(/\n+$/)
+      if (trailingNewlineMatch) {
+        const textBeforeNewlines = text.slice(0, -trailingNewlineMatch[0].length)
+        return `${textBeforeNewlines}_${trailingNewlineMatch[0]}`
+      }
       return `${text}_`
     }
   }
@@ -357,6 +540,24 @@ const handleIncompleteStrikethrough = (text: string): string => {
   return text
 }
 
+// Counts single dollar signs that are not part of double dollar signs and not escaped
+const _countSingleDollarSigns = (text: string): number => {
+  return text.split("").reduce((acc, char, index) => {
+    if (char === "$") {
+      const prevChar = text[index - 1]
+      const nextChar = text[index + 1]
+      // Skip if escaped with backslash
+      if (prevChar === "\\") {
+        return acc
+      }
+      if (prevChar !== "$" && nextChar !== "$") {
+        return acc + 1
+      }
+    }
+    return acc
+  }, 0)
+}
+
 // Completes incomplete block KaTeX formatting ($$)
 const handleIncompleteBlockKatex = (text: string): string => {
   // Count all $$ pairs in the text
@@ -453,6 +654,10 @@ export const parseIncompleteMarkdown = (text: string): string => {
   // Handle various formatting completions
   // Handle triple asterisks first (most specific)
   result = handleIncompleteBoldItalic(result)
+  // Normalize and guard the `<Use:` wrapper first so inner tags are handled correctly
+  result = handleUseWrapper(result)
+  // Handle custom mention tags trimming before other single-character completions
+  result = handleIncompleteMentionTags(result)
   result = handleIncompleteBold(result)
   result = handleIncompleteDoubleUnderscoreItalic(result)
   result = handleIncompleteSingleAsteriskItalic(result)
