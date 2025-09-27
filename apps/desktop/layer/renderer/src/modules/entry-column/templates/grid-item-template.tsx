@@ -6,6 +6,7 @@ import { cn } from "@follow/utils/utils"
 import dayjs from "dayjs"
 import { useTranslation } from "react-i18next"
 
+import { useUISettingKey } from "~/atoms/settings/ui"
 import { useEntryIsRead } from "~/hooks/biz/useAsRead"
 import { EntryTranslation } from "~/modules/entry-column/translation"
 import type { FeedIconEntry } from "~/modules/feed/feed-icon"
@@ -73,6 +74,9 @@ export const GridItemFooter = ({
   const asRead = useEntryIsRead(entry)
 
   const { t } = useTranslation("common")
+
+  const isImageOnly = useUISettingKey("pictureViewImageOnly")
+  if (isImageOnly) return null
 
   if (!entry) return null
   return (

@@ -1,4 +1,5 @@
 import {
+  MasonryForceRerenderContext,
   MasonryIntersectionContext,
   MasonryItemsAspectRatioContext,
   MasonryItemsAspectRatioSetterContext,
@@ -30,6 +31,7 @@ import {
 import { useEventCallback } from "usehooks-ts"
 
 import { useActionLanguage, useGeneralSettingKey } from "~/atoms/settings/general"
+import { useUISettingKey } from "~/atoms/settings/ui"
 import { MediaContainerWidthProvider } from "~/components/ui/media/MediaContainerWidthProvider"
 import type { StoreImageType } from "~/store/image"
 import { imageActions } from "~/store/image"
@@ -221,6 +223,12 @@ export const PictureMasonry: FC<MasonryProps> = (props) => {
     }
   }, [])
 
+  const isImageOnly = useUISettingKey("pictureViewImageOnly")
+  const [masonryForceRerender, setMasonrtForceRerender] = useState(0)
+  useEffect(() => {
+    setMasonrtForceRerender((i) => i + 1)
+  }, [isImageOnly, setMasonrtForceRerender])
+
   return (
     <div ref={containerRef} className="mx-4 pt-4">
       {isInitDim && deferIsInitLayout && (
@@ -229,29 +237,31 @@ export const PictureMasonry: FC<MasonryProps> = (props) => {
           <MasonryItemsAspectRatioContext.Provider value={masonryItemsRadio}>
             <MasonryItemsAspectRatioSetterContext value={setMasonryItemsRadio}>
               <MasonryIntersectionContext value={intersectionObserver}>
-                <MediaContainerWidthProvider width={currentItemWidth}>
-                  <FirstScreenReadyContext value={firstScreenReady}>
-                    <Masonry
-                      items={firstScreenReady ? items : items.slice(0, FirstScreenItemCount)}
-                      columnGutter={gutter}
-                      columnWidth={currentItemWidth}
-                      columnCount={currentColumn}
-                      overscanBy={2}
-                      render={MasonryRender}
-                      onRender={handleRender}
-                      itemKey={itemKey}
-                    />
-                    {props.Footer ? (
-                      typeof props.Footer === "function" ? (
-                        <div className="mb-4">
-                          <props.Footer />
-                        </div>
-                      ) : (
-                        <div className="mb-4">{props.Footer}</div>
-                      )
-                    ) : null}
-                  </FirstScreenReadyContext>
-                </MediaContainerWidthProvider>
+                <MasonryForceRerenderContext value={masonryForceRerender}>
+                  <MediaContainerWidthProvider width={currentItemWidth}>
+                    <FirstScreenReadyContext value={firstScreenReady}>
+                      <Masonry
+                        items={firstScreenReady ? items : items.slice(0, FirstScreenItemCount)}
+                        columnGutter={gutter}
+                        columnWidth={currentItemWidth}
+                        columnCount={currentColumn}
+                        overscanBy={2}
+                        render={MasonryRender}
+                        onRender={handleRender}
+                        itemKey={itemKey}
+                      />
+                      {props.Footer ? (
+                        typeof props.Footer === "function" ? (
+                          <div className="mb-4">
+                            <props.Footer />
+                          </div>
+                        ) : (
+                          <div className="mb-4">{props.Footer}</div>
+                        )
+                      ) : null}
+                    </FirstScreenReadyContext>
+                  </MediaContainerWidthProvider>
+                </MasonryForceRerenderContext>
               </MasonryIntersectionContext>
             </MasonryItemsAspectRatioSetterContext>
           </MasonryItemsAspectRatioContext.Provider>
