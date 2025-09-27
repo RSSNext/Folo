@@ -116,29 +116,30 @@ export const AIChatMessage: React.FC<AIChatMessageProps> = React.memo(
           </div>
 
           {/* Action buttons */}
-          <div className="absolute -left-2 bottom-1 right-0 flex gap-1 opacity-0 transition-opacity duration-200 group-hover:opacity-100">
-            <button
-              type="button"
-              onClick={handleCopy}
-              className="text-text-secondary hover:bg-fill-tertiary flex items-center gap-1 rounded-md px-2 py-1 text-xs transition-colors"
-              title="Copy message"
-            >
-              <i className="i-mgc-copy-2-cute-re size-3" />
-              <span>Copy</span>
-            </button>
+          {!!originalMessage.metadata?.finishTime && (
+            <div className="absolute -left-2 bottom-1 right-0 flex gap-1 opacity-0 transition-opacity duration-200 group-hover:opacity-100">
+              <button
+                type="button"
+                onClick={handleCopy}
+                className="text-text-secondary hover:bg-fill-tertiary flex items-center gap-1 rounded-md px-2 py-1 text-xs transition-colors"
+                title="Copy message"
+              >
+                <i className="i-mgc-copy-2-cute-re size-3" />
+                <span>Copy</span>
+              </button>
 
-            {message.metadata && (
-              <TokenUsagePill metadata={message.metadata}>
-                <button
-                  type="button"
-                  className="text-text-secondary hover:bg-fill-tertiary absolute right-0 flex items-center gap-1 rounded-md px-2 py-1 text-xs transition-colors"
-                >
-                  <i className="i-mgc-information-cute-re size-3" />
-                </button>
-              </TokenUsagePill>
-            )}
-          </div>
-
+              {message.metadata && (
+                <TokenUsagePill metadata={message.metadata}>
+                  <button
+                    type="button"
+                    className="text-text-secondary hover:bg-fill-tertiary absolute right-0 flex items-center gap-1 rounded-md px-2 py-1 text-xs transition-colors"
+                  >
+                    <i className="i-mgc-information-cute-re size-3" />
+                  </button>
+                </TokenUsagePill>
+              )}
+            </div>
+          )}
           <div className="h-6" />
         </div>
       </div>
