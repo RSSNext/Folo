@@ -21,6 +21,31 @@ import {
 } from "../query"
 import { AITaskModal } from "./ai-task-modal"
 
+/**
+ * Returns a localized weekday name for the given dayOfWeek index (0=Sunday ... 6=Saturday).
+ *
+ * @see https://stackoverflow.com/questions/30437134/how-to-get-the-weekday-names-using-intl
+ *
+ * @example
+ * ```ts
+ * getLocalizedWeekday(0, 'zh') // '星期日'
+ * getLocalizedWeekday(1, 'ja-jp') // '月曜日'
+ * ```
+ */
+const getLocalizedWeekday = (
+  dayOfWeek: number,
+  locale: string | undefined,
+  options: { format?: "long" | "short" | "narrow" } = {},
+): string => {
+  const fmt = options.format || "long"
+  const d = new Date()
+  d.setHours(15, 0, 0, 0) /* normalise */
+  d.setDate(d.getDate() - d.getDay()) /* Sunday */
+  const loc = locale || "en-US"
+  const date = d.setDate(d.getDate() + dayOfWeek)
+  return new Intl.DateTimeFormat(loc, { weekday: fmt }).format(date)
+}
+
 const formatScheduleText = (schedule: TaskSchedule, t: TFunction<"ai", undefined>, i18n: i18n) => {
   if (!schedule) return t("tasks.schedule.unknown")
   switch (schedule.type) {
@@ -37,15 +62,8 @@ const formatScheduleText = (schedule: TaskSchedule, t: TFunction<"ai", undefined
     }
     case "weekly": {
       const time = dayjs(schedule.timeOfDay)
-      const locale = i18n.language
-      const dow = Math.min(6, Math.max(0, schedule.dayOfWeek))
-      const dayName = new Intl.DateTimeFormat(locale, { weekday: "long" }).format(
-        dayjs().day(dow).toDate(),
-      )
-      return t("tasks.schedule.weekly", {
-        day: dayName,
-        time: time.format("h:mm A"),
-      })
+      const dayName = getLocalizedWeekday(schedule.dayOfWeek, i18n.language)
+      return t("tasks.schedule.weekly", { day: dayName, time: time.format("h:mm A") })
     }
     case "monthly": {
       const time = dayjs(schedule.timeOfDay)
