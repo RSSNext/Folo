@@ -76,7 +76,7 @@ class APIMorph {
       inboxHandle: "feeds" in data ? (data.feeds.type === "inbox" ? data.feeds.id : null) : null,
       read: false,
       sources: null,
-      settings: null,
+      settings: "settings" in data ? data.settings || null : null,
     }
   }
   toSubscription(
