@@ -27,7 +27,7 @@ import { useModalStack } from "~/components/ui/modal/stacked/hooks"
 import { ROUTE_TIMELINE_OF_VIEW } from "~/constants"
 import { useTimelineList } from "~/hooks/biz/useTimelineList"
 
-const MAX_VISIBLE = 4
+const MAX_VISIBLE = 5
 
 function ContainerDroppable({ id, children }: { id: "visible" | "hidden"; children: ReactNode }) {
   const { setNodeRef, isOver } = useDroppable({ id, data: { container: id } })

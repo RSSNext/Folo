@@ -24,6 +24,7 @@ import {
 } from "~/atoms/sidebar"
 import { Focusable } from "~/components/common/Focusable"
 import { HotkeyScope, ROUTE_TIMELINE_OF_VIEW } from "~/constants"
+import { useFeature } from "~/hooks/biz/useFeature"
 import { useBackHome } from "~/hooks/biz/useNavigateEntry"
 import { useReduceMotion } from "~/hooks/biz/useReduceMotion"
 import { useRouteParamsSelector } from "~/hooks/biz/useRouteParams"
@@ -257,10 +258,11 @@ const SwipeWrapper: FC<{ active: string; children: React.JSX.Element[] }> = memo
 )
 
 const TabsRow: FC = () => {
+  const aiEnabled = useFeature("ai")
   const timelineList = useTimelineList()
   const timelineTabs = useUISettingKey("timelineTabs")
 
-  if (timelineList.length <= 5) {
+  if (!aiEnabled) {
     return (
       <div className="text-text-secondary flex h-11 items-center gap-0 px-3 text-xl">
         {timelineList.map((timelineId, index) => (
@@ -279,7 +281,7 @@ const TabsRow: FC = () => {
   const savedVisible = (timelineTabs?.visible ?? []).filter((id) => rest.includes(id))
   const visible: string[] = [...savedVisible]
   for (const id of rest) {
-    if (visible.length >= 4) break
+    if (visible.length >= 5) break
     if (!visible.includes(id)) visible.push(id)
   }
 
