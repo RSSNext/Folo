@@ -2,7 +2,7 @@ import { useEntry } from "@follow/store/entry/hooks"
 import { useFeedById } from "@follow/store/feed/hooks"
 import { useInboxById } from "@follow/store/inbox/hooks"
 import { useEntryTranslation } from "@follow/store/translation/hooks"
-import { clsx, formatEstimatedMins, formatTimeToSeconds } from "@follow/utils"
+import { cn, formatEstimatedMins, formatTimeToSeconds } from "@follow/utils"
 import { titleCase } from "title-case"
 import { useShallow } from "zustand/shallow"
 
@@ -10,7 +10,6 @@ import { useShowAITranslation } from "~/atoms/ai-translation"
 import { useActionLanguage } from "~/atoms/settings/general"
 import { useUISettingKey } from "~/atoms/settings/ui"
 import { RelativeTime } from "~/components/ui/datetime"
-import { useFeature } from "~/hooks/biz/useFeature"
 import { useNavigateEntry } from "~/hooks/biz/useNavigateEntry"
 import { useFeedSafeUrl } from "~/hooks/common/useFeedSafeUrl"
 import type { FeedIconEntry } from "~/modules/feed/feed-icon"
@@ -23,9 +22,16 @@ import { EntryReadHistory } from "./entry-read-history"
 interface EntryLinkProps {
   entryId: string
   compact?: boolean
+  containerClassName?: string
+  noRecentReader?: boolean
 }
 
-export const EntryTitle = ({ entryId, compact }: EntryLinkProps) => {
+export const EntryTitle = ({
+  entryId,
+  compact,
+  containerClassName,
+  noRecentReader,
+}: EntryLinkProps) => {
   const entry = useEntry(
     entryId,
     useShallow((state) => {
@@ -58,7 +64,6 @@ export const EntryTitle = ({ entryId, compact }: EntryLinkProps) => {
     }),
   )
 
-  const aiEnabled = useFeature("ai")
   const hideRecentReader = useUISettingKey("hideRecentReader")
 
   const feed = useFeedById(entry?.feedId)
@@ -91,7 +96,7 @@ export const EntryTitle = ({ entryId, compact }: EntryLinkProps) => {
       </div>
     </div>
   ) : (
-    <div className={clsx("group relative block min-w-0", aiEnabled && "mt-12")}>
+    <div className={cn("group relative block min-w-0", containerClassName)}>
       <div className="flex flex-col gap-3">
         <a
           href={populatedFullHref ?? "#"}
@@ -157,7 +162,7 @@ export const EntryTitle = ({ entryId, compact }: EntryLinkProps) => {
           </div>
         </div>
         {/* Recent Readers */}
-        {aiEnabled && !hideRecentReader && <EntryReadHistory entryId={entryId} />}
+        {!noRecentReader && !hideRecentReader && <EntryReadHistory entryId={entryId} />}
       </div>
     </div>
   )

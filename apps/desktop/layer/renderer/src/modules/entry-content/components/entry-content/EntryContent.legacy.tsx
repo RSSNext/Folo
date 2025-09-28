@@ -185,7 +185,7 @@ const EntryContentImpl: Component<EntryContentProps> = ({
                   : "@[950px]:max-w-[70ch] @7xl:max-w-[80ch] max-w-[550px]",
               )}
             >
-              <EntryTitle entryId={entryId} compact={compact} />
+              <EntryTitle entryId={entryId} compact={compact} noRecentReader />
 
               <WrappedElementProvider boundingDetection>
                 <div className="mx-auto mb-32 mt-8 max-w-full cursor-auto text-[0.94rem]">
