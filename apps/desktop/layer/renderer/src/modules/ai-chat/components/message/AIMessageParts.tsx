@@ -58,6 +58,7 @@ export const AIMessageParts: React.FC<AIMessagePartsProps> = React.memo(
       for (const part of message.parts) {
         const isReasoning = part.type === "reasoning" && !!(part as ReasoningUIPart).text
         const isTool = part.type.startsWith("tool-")
+        const isDisplayTool = isTool && part.type.startsWith("tool-display")
 
         if (isReasoning) {
           if (!chainReasoningParts) {
@@ -70,7 +71,7 @@ export const AIMessageParts: React.FC<AIMessagePartsProps> = React.memo(
         }
 
         if (isTool) {
-          if (chainReasoningParts && chainReasoningParts.length > 0) {
+          if (chainReasoningParts && chainReasoningParts.length > 0 && !isDisplayTool) {
             chainReasoningParts.push(part as ToolUIPart<BizUITools>)
           } else {
             parts.push(part as ToolUIPart<BizUITools>)
