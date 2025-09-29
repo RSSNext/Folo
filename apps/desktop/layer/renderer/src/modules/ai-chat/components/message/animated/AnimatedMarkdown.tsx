@@ -3,15 +3,6 @@
  */
 
 import type { LinkProps } from "@follow/components/ui/link/LinkWithTooltip.js"
-import {
-  Tooltip,
-  TooltipContent,
-  TooltipPortal,
-  TooltipTrigger,
-} from "@follow/components/ui/tooltip/index.js"
-import { useEntry } from "@follow/store/entry/hooks"
-import { useFeedById } from "@follow/store/feed/hooks"
-import { feedIconSelector } from "@follow/store/feed/selectors"
 import { cn, isBizId } from "@follow/utils"
 import * as React from "react"
 import type { Components } from "react-markdown"
@@ -20,10 +11,10 @@ import rehypeRaw from "rehype-raw"
 import remarkGfm from "remark-gfm"
 
 import { MemoizedShikiCode } from "~/components/ui/code-highlighter"
+import { EntryPreviewCard, FeedPreviewCard } from "~/components/ui/hover-preview"
 import { MarkdownLink } from "~/components/ui/markdown/renderers"
 import { useNavigateEntry } from "~/hooks/biz/useNavigateEntry"
 import { usePeekModal } from "~/hooks/biz/usePeekModal"
-import { FeedIcon } from "~/modules/feed/feed-icon"
 
 import { ANIMATION_STYLE as ANIMATION_STYLE_DEFAULT } from "./constants"
 import { TokenizedText } from "./TokenizedText"
@@ -193,9 +184,6 @@ export const MarkdownAnimateText: React.FC<MarkdownAnimateTextProps> = ({
 type BaseInlineFoloReferenceProps = {
   type: "entry" | "feed"
   id?: string
-  reason?: string
-  description?: string
-  title?: string
 }
 const InlineFoloReference: React.FC<
   BaseInlineFoloReferenceProps & {
@@ -203,7 +191,7 @@ const InlineFoloReference: React.FC<
     className?: string
     style?: React.CSSProperties
   }
-> = ({ type, children, className, style, id, title, reason, description }) => {
+> = ({ type, children, className, style, id }) => {
   const peekModal = usePeekModal()
   const navigateEntry = useNavigateEntry()
 
@@ -240,95 +228,32 @@ const InlineFoloReference: React.FC<
 
   if (!targetId) return null
 
-  if (!title)
-    return (
-      <button
-        type="button"
-        aria-label={type === "entry" ? `Open entry ${targetId}` : `Open feed ${targetId}`}
-        title={type === "entry" ? `Open entry ${targetId}` : `Open feed ${targetId}`}
-        className={cn(
-          "text-text-secondary hover:text-text mx-[0.15em] inline-flex cursor-pointer items-center align-middle opacity-80 transition-opacity hover:opacity-100",
-          className,
-        )}
-        style={style}
-        onClick={handleClick}
-      >
-        <i className="i-mgc-docment-cute-re size-[1em]" />
-      </button>
-    )
-
-  return (
-    <Tooltip>
-      <TooltipTrigger>
-        {type === "entry" && <InnerFoloEntryReference id={id!} />}
-        {type === "feed" && <BaseFoloReferenceBadge>{title}</BaseFoloReferenceBadge>}
-      </TooltipTrigger>
-      <TooltipPortal>
-        <TooltipContent>
-          <InlineTooltipContent
-            title={title}
-            reason={reason}
-            description={description}
-            type={type}
-            id={id}
-          />
-        </TooltipContent>
-      </TooltipPortal>
-    </Tooltip>
-  )
-}
-
-const InnerFoloEntryReference: React.FC<{ id: string }> = ({ id }) => {
-  const feedId = useEntry(id, (s) => s.feedId)
-  const feedTitle = useFeedById(feedId, (s) => s.title)
-  return <BaseFoloReferenceBadge>{feedTitle}</BaseFoloReferenceBadge>
-}
-
-const BaseFoloReferenceBadge = (props: React.PropsWithChildren) => {
-  return (
+  const isEntry = type === "entry"
+  const button = (
     <button
       type="button"
+      aria-label={type === "entry" ? `Open entry ${targetId}` : `Open feed ${targetId}`}
+      title={type === "entry" ? `Open entry ${targetId}` : `Open feed ${targetId}`}
       className={cn(
-        `text-text-secondary hover:text-text bg-material-medium mx-[0.15em] inline-flex cursor-pointer items-center rounded-full px-2 opacity-80 transition-opacity hover:opacity-100`,
-        `-translate-y-0.5 text-[0.65rem]`,
+        "text-text-secondary hover:text-text mx-[0.15em] inline-flex cursor-pointer items-center align-middle opacity-80 transition-opacity hover:opacity-100",
+        className,
       )}
+      style={style}
+      onClick={handleClick}
     >
-      {props.children}
+      {isEntry ? (
+        <i className="i-mgc-docment-cute-re size-[1em]" />
+      ) : (
+        <i className="i-mgc-rss-2-cute-fi size-[1em]" />
+      )}
     </button>
   )
-}
 
-export const InlineTooltipContent: React.FC<BaseInlineFoloReferenceProps> = ({
-  title,
-  reason,
-  description,
-  type,
-  id,
-}) => {
-  if (!id) return null
-  return (
-    <div className="flex flex-col gap-2 p-1">
-      <h4 className="text-text flex items-center text-sm">
-        {type === "entry" ? <TooltipEntryIcon entryId={id} /> : <TooltipFeedIcon feedId={id} />}
-        {title}
-      </h4>
-      {reason && <h2 className="text-text font-medium">{reason}</h2>}
-      {description && <p className="text-sm">{description}</p>}
-    </div>
-  )
-}
-
-const TooltipEntryIcon = ({ entryId }: { entryId: string }) => {
-  const feedId = useEntry(entryId, (e) => e.feedId)
-  if (!feedId) return null
-  return <TooltipFeedIcon feedId={feedId} />
-}
-
-const TooltipFeedIcon = ({ feedId }: { feedId: string }) => {
-  const target = useFeedById(feedId, feedIconSelector)
-
-  if (!target) return null
-  return <FeedIcon size={16} target={target} />
+  if (isEntry) {
+    return <EntryPreviewCard entryId={targetId}>{button}</EntryPreviewCard>
+  } else {
+    return <FeedPreviewCard feedId={targetId}>{button}</FeedPreviewCard>
+  }
 }
 
 const RelatedEntryLink = (props: LinkProps) => {
