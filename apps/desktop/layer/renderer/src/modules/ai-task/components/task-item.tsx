@@ -162,7 +162,7 @@ export const TaskItem = memo(({ task }: { task: AITask }) => {
     ...(taskSession
       ? [
           {
-            icon: "i-mgc-history-cute-re" as const,
+            icon: "i-mgc-history-cute-re",
             onClick: handleOpenReport,
             title: t("tasks.actions.view_reports"),
             loading: openingReport,
@@ -171,7 +171,7 @@ export const TaskItem = memo(({ task }: { task: AITask }) => {
         ]
       : []),
     {
-      icon: "i-mgc-test-tube-cute-re" as const,
+      icon: "i-mgc-test-tube-cute-re",
       onClick: async () => {
         try {
           const loadingId = toast.loading(t("tasks.toast.test_start"))

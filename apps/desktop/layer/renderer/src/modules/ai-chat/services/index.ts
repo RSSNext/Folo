@@ -235,7 +235,7 @@ class AIPersistServiceStatic {
     }
 
     // Only query database if not in cache or cache shows it doesn't exist
-    if (cachedExists === undefined) {
+    if (!cachedExists) {
       const existing = await this.getChatSession(chatId)
 
       if (existing) {
@@ -274,17 +274,7 @@ class AIPersistServiceStatic {
         updatedAt: true,
       },
     })
-
-    // Explicitly check if the result is valid
-    if (!result || !result.chatId) {
-      // Mark as not existing in cache
-      this.markSessionExists(chatId, false)
-      return null
-    }
-
-    // Mark as existing in cache
-    this.markSessionExists(chatId, true)
-    return result
+    return result?.chatId ? result : null
   }
 
   async getChatSessions(limit = 20) {

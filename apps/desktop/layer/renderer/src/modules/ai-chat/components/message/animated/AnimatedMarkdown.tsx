@@ -259,20 +259,9 @@ const InlineFoloReference: React.FC<
 
   return (
     <Tooltip>
-      <TooltipTrigger asChild>
-        <button
-          type="button"
-          aria-label={type === "entry" ? `Open entry ${title}` : `Open feed ${title}`}
-          className={cn(
-            `text-text-secondary hover:text-text bg-material-medium mx-[0.15em] inline-flex cursor-pointer items-center rounded-full px-2 opacity-80 transition-opacity hover:opacity-100`,
-            `-translate-y-0.5 text-[0.65rem]`,
-            className,
-          )}
-          style={style}
-          onClick={handleClick}
-        >
-          {title}
-        </button>
+      <TooltipTrigger>
+        {type === "entry" && <InnerFoloEntryReference id={id!} />}
+        {type === "feed" && <BaseFoloReferenceBadge>{title}</BaseFoloReferenceBadge>}
       </TooltipTrigger>
       <TooltipPortal>
         <TooltipContent>
@@ -289,6 +278,26 @@ const InlineFoloReference: React.FC<
   )
 }
 
+const InnerFoloEntryReference: React.FC<{ id: string }> = ({ id }) => {
+  const feedId = useEntry(id, (s) => s.feedId)
+  const feedTitle = useFeedById(feedId, (s) => s.title)
+  return <BaseFoloReferenceBadge>{feedTitle}</BaseFoloReferenceBadge>
+}
+
+const BaseFoloReferenceBadge = (props: React.PropsWithChildren) => {
+  return (
+    <button
+      type="button"
+      className={cn(
+        `text-text-secondary hover:text-text bg-material-medium mx-[0.15em] inline-flex cursor-pointer items-center rounded-full px-2 opacity-80 transition-opacity hover:opacity-100`,
+        `-translate-y-0.5 text-[0.65rem]`,
+      )}
+    >
+      {props.children}
+    </button>
+  )
+}
+
 export const InlineTooltipContent: React.FC<BaseInlineFoloReferenceProps> = ({
   title,
   reason,
@@ -299,7 +308,7 @@ export const InlineTooltipContent: React.FC<BaseInlineFoloReferenceProps> = ({
   if (!id) return null
   return (
     <div className="flex flex-col gap-2 p-1">
-      <h4 className="text-text-secondary flex items-center text-sm">
+      <h4 className="text-text flex items-center text-sm">
         {type === "entry" ? <TooltipEntryIcon entryId={id} /> : <TooltipFeedIcon feedId={id} />}
         {title}
       </h4>

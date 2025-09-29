@@ -145,13 +145,13 @@ export const ChatMoreDropdown = ({
                   >
                     <div className="min-w-0 flex-1">
                       <p className="truncate text-sm font-medium">{session.title || "New Chat"}</p>
-                      <p className="text-text-secondary group-hover:text-text-secondary-dark mt-0.5 text-xs">
+                      <p className="text-text-secondary group-data-[highlighted]:text-text-secondary-dark mt-0.5 text-xs">
                         <span>{session.messageCount}</span>
                         <span> {session.messageCount === 1 ? "message" : "messages"}</span>
                       </p>
                     </div>
                     <div className="relative flex min-w-0 items-center">
-                      <span className="text-text-secondary group-hover:text-text-secondary-dark ml-2 shrink-0 cursor-help text-xs">
+                      <span className="text-text-secondary group-data-[highlighted]:text-text-secondary-dark ml-2 shrink-0 cursor-help text-xs">
                         <RelativeDay date={session.updatedAt} />
                       </span>
                       <button
