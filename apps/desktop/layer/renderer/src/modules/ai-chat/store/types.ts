@@ -37,6 +37,7 @@ export type AIChatContextBlockInput =
 
 export interface AIChatStoreInitial {
   blocks: AIChatContextBlock[]
+  chatId?: string
 }
 
 export interface AIChatContextBlocks {

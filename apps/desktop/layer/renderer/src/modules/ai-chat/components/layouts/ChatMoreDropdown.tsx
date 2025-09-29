@@ -63,7 +63,7 @@ export const ChatMoreDropdown = ({
 
       const confirm = await ask({
         title: t("delete_chat"),
-        message: t("delete_chat_message", { title: session.title || "New Chat" }),
+        message: t("delete_chat_message", { title: session.title || t("common.new_chat") }),
         variant: "danger",
       })
 
@@ -144,7 +144,9 @@ export const ChatMoreDropdown = ({
                     className="group flex h-12 cursor-pointer items-center justify-between rounded-md px-2 py-3"
                   >
                     <div className="min-w-0 flex-1">
-                      <p className="truncate text-sm font-medium">{session.title || "New Chat"}</p>
+                      <p className="truncate text-sm font-medium">
+                        {session.title || t("common.new_chat")}
+                      </p>
                       <p className="text-text-secondary group-data-[highlighted]:text-text-secondary-dark mt-0.5 text-xs">
                         <span>{session.messageCount}</span>
                         <span> {session.messageCount === 1 ? "message" : "messages"}</span>

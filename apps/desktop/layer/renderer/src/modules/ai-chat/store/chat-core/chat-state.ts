@@ -174,7 +174,7 @@ export class ZustandChatState implements ChatState<BizUIMessage> {
       if (this.#messages.length === 0) return
 
       try {
-        await AIPersistService.ensureSession(this.chatId, "New Chat")
+        await AIPersistService.ensureSession(this.chatId)
         // Save messages using incremental updates
         await AIPersistService.upsertMessages(this.chatId, this.#messages)
         // Update session time after successfully saving messages

@@ -3,6 +3,7 @@ import { cn } from "@follow/utils"
 import { useAtomValue } from "jotai"
 import type { ReactNode } from "react"
 import { useCallback } from "react"
+import { useTranslation } from "react-i18next"
 
 import { AIChatPanelStyle, setAIPanelVisibility, useAIChatPanelStyle } from "~/atoms/settings/ai"
 import { useBlockActions, useChatActions, useCurrentTitle } from "~/modules/ai-chat/store/hooks"
@@ -48,6 +49,7 @@ const ChatHeaderLayout = ({
   const { isScrolledBeyondThreshold } = useAIRootState()
   const isScrolledBeyondThresholdValue = useAtomValue(isScrolledBeyondThreshold)
 
+  const { t } = useTranslation("ai")
   return (
     <div
       className={cn(
@@ -68,7 +70,11 @@ const ChatHeaderLayout = ({
 
         <div className="relative z-10 flex h-full items-center justify-between px-4">
           <div className="mr-2 flex min-w-0 flex-1 items-center">
-            <EditableTitle title={currentTitle} onSave={handleTitleSave} placeholder="New Chat" />
+            <EditableTitle
+              title={currentTitle}
+              onSave={handleTitleSave}
+              placeholder={t("common.new_chat")}
+            />
           </div>
 
           {/* Right side - Actions */}
@@ -87,12 +93,13 @@ const ChatHeaderLayout = ({
 
 export const ChatHeader = () => {
   const panelStyle = useAIChatPanelStyle()
+  const { t } = useTranslation("ai")
 
   return (
     <ChatHeaderLayout
       renderActions={({ onNewChatClick }) => (
         <>
-          <ActionButton tooltip="New Chat" onClick={onNewChatClick}>
+          <ActionButton tooltip={t("common.new_chat")} onClick={onNewChatClick}>
             <i className="i-mgc-add-cute-re text-text-secondary size-5" />
           </ActionButton>
 
@@ -121,11 +128,13 @@ export const ChatHeader = () => {
 }
 
 export const ChatPageHeader = () => {
+  const { t } = useTranslation("ai")
+
   return (
     <ChatHeaderLayout
       renderActions={({ onNewChatClick }) => (
         <>
-          <ActionButton tooltip="New Chat" onClick={onNewChatClick}>
+          <ActionButton tooltip={t("common.new_chat")} onClick={onNewChatClick}>
             <i className="i-mgc-add-cute-re text-text-secondary size-5" />
           </ActionButton>
 

@@ -56,7 +56,10 @@ export const AIChatRoot: FC<AIChatRootProps> = ({
   wrapFocusable = true,
   chatId: externalChatId,
 }) => {
-  const useAiContextStore = useMemo(createAIChatStore, [])
+  const useAiContextStore = useMemo(
+    () => createAIChatStore({ chatId: externalChatId }),
+    [externalChatId],
+  )
   const chatActions = useAiContextStore((state) => state.chatActions)
 
   useEffect(() => {
