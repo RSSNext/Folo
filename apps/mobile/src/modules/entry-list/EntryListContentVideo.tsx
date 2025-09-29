@@ -3,7 +3,7 @@ import { usePrefetchEntryTranslation } from "@follow/store/translation/hooks"
 import type { FlashListProps, FlashListRef } from "@shopify/flash-list"
 import type { ElementRef } from "react"
 import { useImperativeHandle, useMemo, useRef } from "react"
-import { StyleSheet, View } from "react-native"
+import { Dimensions, StyleSheet, useWindowDimensions, View } from "react-native"
 
 import { useActionLanguage, useGeneralSettingKey } from "@/src/atoms/settings/general"
 import { useBottomTabBarHeight } from "@/src/components/layouts/tabbar/hooks"
@@ -16,6 +16,8 @@ import { GridEntryListFooter } from "./EntryListFooter"
 import { useOnViewableItemsChanged } from "./hooks"
 import { EntryVideoItem } from "./templates/EntryVideoItem"
 
+const screenWidth = Dimensions.get("screen").width
+
 export const EntryListContentVideo = ({
   ref: forwardRef,
   entryIds,
@@ -25,6 +27,8 @@ export const EntryListContentVideo = ({
   FlashListProps<string>,
   "data" | "renderItem"
 > & { ref?: React.Ref<ElementRef<typeof TimelineSelectorMasonryList> | null> }) => {
+  const { width } = useWindowDimensions()
+
   const ref = useRef<FlashListRef<any>>(null)
   useImperativeHandle(forwardRef, () => ref.current!)
   const { fetchNextPage, refetch, isRefetching, isFetching, hasNextPage, isReady } = useEntries()
@@ -84,6 +88,10 @@ export const EntryListContentVideo = ({
     )
   }
 
+  // 最多 4 列，最少 2 列
+  const minItemWidth = screenWidth / 4
+  const numColumns = Math.max(2, Math.floor(width / minItemWidth))
+
   return (
     <TimelineSelectorMasonryList
       ref={ref}
@@ -94,7 +102,7 @@ export const EntryListContentVideo = ({
       onViewableItemsChanged={onViewableItemsChanged}
       onScroll={onScroll}
       onEndReached={fetchNextPage}
-      numColumns={2}
+      numColumns={numColumns}
       ListFooterComponent={ListFooterComponent}
       {...rest}
       onRefresh={refetch}

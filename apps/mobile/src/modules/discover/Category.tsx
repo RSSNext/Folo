@@ -3,7 +3,7 @@ import { CategoryMap, RSSHubCategories } from "@follow/constants"
 import { LinearGradient } from "expo-linear-gradient"
 import { memo } from "react"
 import { useTranslation } from "react-i18next"
-import { Pressable, StyleSheet, View } from "react-native"
+import { Dimensions, Pressable, StyleSheet, useWindowDimensions, View } from "react-native"
 import { useColor } from "react-native-uikit-colors"
 
 import { Grid } from "@/src/components/ui/grid"
@@ -17,9 +17,16 @@ import { Recommendations } from "@/src/modules/discover/Recommendations"
 import { DiscoverSettingsScreen } from "@/src/screens/(modal)/DiscoverSettingsScreen"
 import { RecommendationCategoryScreen } from "@/src/screens/(stack)/recommendation/RecommendationCategoryScreen"
 
+const screenWidth = Dimensions.get("screen").width
+
 export const Category = () => {
   const navigation = useNavigation()
   const label = useColor("label")
+
+  // 最多 6 列，最少 2 列
+  const { width } = useWindowDimensions()
+  const minItemWidth = screenWidth / 6
+  const columns = Math.max(2, Math.floor(width / minItemWidth))
   return (
     <>
       <View className="mt-4 flex-row items-center justify-between pb-1 pl-6 pr-5 pt-4">
@@ -30,15 +37,13 @@ export const Category = () => {
         <ItemPressable
           className="rounded-lg p-1"
           itemStyle={ItemPressableStyle.UnStyled}
-          onPress={() => {
-            navigation.presentControllerView(DiscoverSettingsScreen)
-          }}
+          onPress={() => navigation.presentControllerView(DiscoverSettingsScreen)}
         >
           <FilterCuteReIcon width={20} height={20} color={label} />
         </ItemPressable>
       </View>
 
-      <Grid columns={2} gap={12} className="p-4">
+      <Grid columns={columns} gap={12} className="p-4">
         {RSSHubCategories.map((category) => (
           <CategoryItem key={category} category={category} />
         ))}
