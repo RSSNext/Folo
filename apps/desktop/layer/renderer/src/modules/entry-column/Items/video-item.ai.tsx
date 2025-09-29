@@ -18,7 +18,7 @@ import type { EntryItemStatelessProps, UniversalItemProps } from "../types"
 
 const ViewTag = IN_ELECTRON ? "webview" : "iframe"
 
-export function VideoItem({ entryId, entryPreview, translation }: UniversalItemProps) {
+export function VideoItem({ entryId, translation }: UniversalItemProps) {
   const entry = useEntry(entryId, (state) => {
     const { id, url } = state
 
@@ -81,7 +81,7 @@ export function VideoItem({ entryId, entryPreview, translation }: UniversalItemP
 
   if (!entry) return null
   return (
-    <GridItem entryId={entryId} entryPreview={entryPreview} translation={translation}>
+    <GridItem entryId={entryId} translation={translation}>
       <div className="cursor-card w-full">
         <div className="relative overflow-x-auto" ref={ref}>
           {miniIframeSrc && showPreview ? (
@@ -111,6 +111,7 @@ export function VideoItem({ entryId, entryPreview, translation }: UniversalItemP
                 height: 360,
               }}
               showFallback={true}
+              fitContainer
             />
           ) : (
             <div className="center bg-material-medium text-text-secondary aspect-video w-full flex-col gap-1 rounded-md text-xs">
@@ -150,6 +151,7 @@ export function VideoItemStateLess({ entry, feed }: EntryItemStatelessProps) {
               height={entry.media[0].height}
               width={entry.media[0].width}
               blurhash={entry.media[0].blurhash}
+              fitContainer
             />
           ) : (
             <div className="center bg-material-medium text-text-secondary aspect-video w-full flex-col gap-1 rounded-md text-xs">
@@ -167,7 +169,7 @@ export function VideoItemStateLess({ entry, feed }: EntryItemStatelessProps) {
           </div>
         </div>
         <div className="flex items-center gap-1 truncate text-[13px]">
-          <FeedIcon fallback noMargin className="flex" feed={feed} size={18} />
+          <FeedIcon fallback noMargin className="flex" target={feed} size={18} />
           <span className="min-w-0 truncate pl-1">
             <FeedTitle feed={feed} />
           </span>

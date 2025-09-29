@@ -1,4 +1,4 @@
-import type { MediaModel } from "@follow/shared/hono"
+import type { MediaModel } from "@follow/database/schemas/types"
 import { stopPropagation } from "@follow/utils/dom"
 import { cn } from "@follow/utils/utils"
 import useEmblaCarousel from "embla-carousel-react"
@@ -19,6 +19,7 @@ export function SwipeMedia({
   imgClassName,
   onPreview,
   proxySize = defaultProxySize,
+  fitContainer,
 }: {
   media?: MediaModel[] | null
   className?: string
@@ -28,6 +29,7 @@ export function SwipeMedia({
     width: number
     height: number
   } | null
+  fitContainer?: boolean
 }) {
   const uniqMedia = media ? uniqBy(media, "url") : []
 
@@ -90,6 +92,7 @@ export function SwipeMedia({
                   }}
                   showFallback={true}
                   fitContent
+                  fitContainer={fitContainer}
                 />
               </div>
             ))}

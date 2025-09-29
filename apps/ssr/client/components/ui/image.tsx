@@ -3,6 +3,7 @@ import { cn } from "@follow/utils/utils"
 import * as Avatar from "@radix-ui/react-avatar"
 import type { MouseEvent, PropsWithChildren } from "react"
 import { useMemo } from "react"
+import * as React from "react"
 import { Blurhash } from "react-blurhash"
 
 type LazyImageProps = PropsWithChildren<{

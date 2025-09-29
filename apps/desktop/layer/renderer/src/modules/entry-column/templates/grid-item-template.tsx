@@ -20,14 +20,14 @@ interface GridItemProps extends UniversalItemProps {
   wrapperClassName?: string
 }
 export function GridItem(props: GridItemProps) {
-  const { entryId, entryPreview, wrapperClassName, children, translation } = props
+  const { entryId, wrapperClassName, children, translation } = props
   const hasEntry = useHasEntry(entryId)
 
   if (!hasEntry) return null
   return (
     <div className={cn("p-1.5", wrapperClassName)}>
       {children}
-      <GridItemFooter entryId={entryId} entryPreview={entryPreview} translation={translation} />
+      <GridItemFooter entryId={entryId} translation={translation} />
     </div>
   )
 }
@@ -38,7 +38,7 @@ export const GridItemFooter = ({
   titleClassName,
   descriptionClassName,
   timeClassName,
-}: Pick<GridItemProps, "entryId" | "entryPreview" | "translation"> & {
+}: Pick<GridItemProps, "entryId" | "translation"> & {
   titleClassName?: string
   descriptionClassName?: string
   timeClassName?: string
@@ -105,7 +105,7 @@ export const GridItemFooter = ({
           fallback
           noMargin
           className="flex"
-          feed={feeds!}
+          target={feeds!}
           entry={entry?.iconEntry}
           size={18}
         />

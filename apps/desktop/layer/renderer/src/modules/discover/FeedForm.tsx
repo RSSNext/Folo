@@ -14,13 +14,14 @@ import { RootPortal } from "@follow/components/ui/portal/index.js"
 import { ScrollArea } from "@follow/components/ui/scroll-area/index.js"
 import { Switch } from "@follow/components/ui/switch/index.jsx"
 import { FeedViewType } from "@follow/constants"
-import type { EntryModelSimple, FeedAnalyticsModel, FeedModel } from "@follow/models/types"
 import { useFeedByIdOrUrl } from "@follow/store/feed/hooks"
+import type { FeedModel } from "@follow/store/feed/types"
 import { useCategories, useSubscriptionByFeedId } from "@follow/store/subscription/hooks"
 import { subscriptionSyncService } from "@follow/store/subscription/store"
 import { whoami } from "@follow/store/user/getters"
 import { tracker } from "@follow/tracker"
 import { cn } from "@follow/utils/utils"
+import type { FeedAnalyticsModel, ParsedEntry } from "@follow-app/client-sdk"
 import { zodResolver } from "@hookform/resolvers/zod"
 import { useMutation } from "@tanstack/react-query"
 import { useCallback, useEffect, useMemo, useRef } from "react"
@@ -150,6 +151,7 @@ export const FeedForm: Component<{
       }, [
         defaultValues,
         feed,
+        feedQuery.data?.analytics,
         feedQuery.data?.entries,
         feedQuery.data?.subscription,
         feedQuery.error,
@@ -190,7 +192,7 @@ const FeedInnerForm = ({
     hideFromTimeline?: boolean | null
   }
   feed: FeedModel
-  entries?: EntryModelSimple[]
+  entries?: ParsedEntry[]
   analytics?: FeedAnalyticsModel
 
   placeholderRef: React.RefObject<HTMLDivElement | null>

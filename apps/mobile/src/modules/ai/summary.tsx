@@ -73,12 +73,9 @@ export const AISummary: FC<{
   const measureContent = (event: LayoutChangeEvent) => {
     setContentHeight(event.nativeEvent.layout.height + 10)
     height.value = withSpring(event.nativeEvent.layout.height + 10, {
-      dampingRatio: 2,
-      stiffness: 90,
-      overshootClamping: true,
-      restDisplacementThreshold: 0.01,
-      restSpeedThreshold: 0.01,
       duration: 200,
+      dampingRatio: 0.8,
+      overshootClamping: true,
     })
   }
   const purpleColor = useColor("purple")

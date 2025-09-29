@@ -106,17 +106,16 @@ export const ProfileSettingForm = ({
         handle: values.handle,
         image: values.image,
         name: values.name,
-        // @ts-expect-error
         bio: values.bio,
         website: values.website,
-        socialLinks: values.socialLinks,
+        socialLinks: values.socialLinks as any,
       }),
     onError: (error) => {
       toastFetchError(error)
     },
     onSuccess: (_, variables) => {
       if (user && variables) {
-        userActions.updateWhoami({ ...variables })
+        userActions.updateWhoami({ ...variables } as any)
       }
       toast(t("profile.updateSuccess"), {
         duration: 3000,

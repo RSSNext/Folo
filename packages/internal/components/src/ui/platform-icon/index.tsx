@@ -2,6 +2,7 @@ import * as LinkParsers from "@follow/utils/link-parser"
 import { cn } from "@follow/utils/utils"
 import { Slot } from "@radix-ui/react-slot"
 import type { FC } from "react"
+import * as React from "react"
 
 import { getSupportedPlatformIconName } from "./utils"
 

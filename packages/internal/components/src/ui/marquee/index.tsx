@@ -1,4 +1,5 @@
 import type { PropsWithChildren } from "react"
+import * as React from "react"
 import { useCallback, useRef, useState } from "react"
 import type { MarqueeProps } from "react-fast-marquee"
 import Marquee from "react-fast-marquee"

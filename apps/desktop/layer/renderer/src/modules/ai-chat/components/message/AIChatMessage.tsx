@@ -58,9 +58,37 @@ const useMessageMarkdownFormat = (message: BizUIMessage) => {
   }, [message.parts])
 }
 
-// AI message component
+const filterEmptyMessagePart = (messageParts: BizUIMessage["parts"]) => {
+  const parts = [] as BizUIMessage["parts"]
+  for (const part of messageParts) {
+    switch (part.type) {
+      case "step-start": {
+        break
+      }
+      case "reasoning":
+      case "text": {
+        if (part.text) {
+          parts.push(part)
+        }
+        break
+      }
+      default: {
+        parts.push(part)
+        break
+      }
+    }
+  }
+  return parts
+}
+
 export const AIChatMessage: React.FC<AIChatMessageProps> = React.memo(
-  ({ message, isLastMessage }) => {
+  ({ message: originalMessage, isLastMessage }) => {
+    const message = React.useMemo(() => {
+      return {
+        ...originalMessage,
+        parts: filterEmptyMessagePart(originalMessage.parts),
+      }
+    }, [originalMessage])
     if (message.parts.length === 0) {
       throw thenable
     }

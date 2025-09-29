@@ -19,7 +19,7 @@ export const FooterMarkItem = ({
 
   if (view === FeedViewType.SocialMedia) {
     return <SocialMediaFooterMarkItem filter={filter} />
-  } else if (views.find((v) => v.view === view)?.gridMode) {
+  } else if (views.find((v) => v.view === view)?.gridMode || view === FeedViewType.All) {
     return <GridFooterMarkItem filter={filter} />
   }
   return <CommonFooterMarkItem filter={filter} />

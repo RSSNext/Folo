@@ -2,7 +2,7 @@ import type { UseQueryResult } from "@tanstack/react-query"
 import { useQuery, useQueryClient } from "@tanstack/react-query"
 import { useCallback, useMemo } from "react"
 
-import { apiClient } from "@/src/lib/api-fetch"
+import { followClient } from "@/src/lib/api-client"
 
 // eslint-disable-next-line unused-imports/no-unused-vars
 type ExtractQueryData<T> = T extends UseQueryResult<infer T> ? T : never
@@ -11,10 +11,8 @@ export const useShareSubscription = ({ userId }: { userId: string }) => {
   const query = useQuery({
     queryKey,
     queryFn: async () => {
-      const subscriptions = await apiClient.subscriptions.$get({
-        query: {
-          userId,
-        },
+      const subscriptions = await followClient.api.subscriptions.get({
+        userId,
       })
 
       return subscriptions

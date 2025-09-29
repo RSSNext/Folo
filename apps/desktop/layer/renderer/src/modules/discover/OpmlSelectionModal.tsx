@@ -3,9 +3,9 @@ import { Checkbox } from "@follow/components/ui/checkbox/index.jsx"
 import { Input } from "@follow/components/ui/input/index.js"
 import { ScrollArea } from "@follow/components/ui/scroll-area/index.js"
 import { Tooltip, TooltipContent, TooltipTrigger } from "@follow/components/ui/tooltip/index.jsx"
-import type { BizRespose } from "@follow/models"
 import { subscriptionSyncService } from "@follow/store/subscription/store"
 import { cn } from "@follow/utils/utils"
+import type { ExtractResponseData, SubscriptionParseOpmlResponse } from "@follow-app/client-sdk"
 import { useMutation } from "@tanstack/react-query"
 import Fuse from "fuse.js"
 import { useCallback, useMemo, useState } from "react"
@@ -13,22 +13,17 @@ import { Trans, useTranslation } from "react-i18next"
 import { toast } from "sonner"
 
 import { useCurrentModal } from "~/components/ui/modal/stacked/hooks"
-import { apiFetch } from "~/lib/api-fetch"
+import { followClient } from "~/lib/api-client"
 import { toastFetchError } from "~/lib/error-parser"
 
-import type { ParsedFeedItem, ParsedOpmlData } from "./types"
+import type { ParsedFeedItem } from "./types"
 
-type FeedResponseList = {
-  id: string
-  url: string
-  title: string | null
-}[]
 export const OpmlSelectionModal = ({
   parsedData,
 
   file,
 }: {
-  parsedData: ParsedOpmlData
+  parsedData: ExtractResponseData<SubscriptionParseOpmlResponse>
 
   file: File
 }) => {
@@ -41,16 +36,7 @@ export const OpmlSelectionModal = ({
       formData.append("file", file)
       formData.append("items", JSON.stringify(selectedItems.map((i) => i.url)))
 
-      const { data } = await apiFetch<
-        BizRespose<{
-          successfulItems: FeedResponseList
-          conflictItems: FeedResponseList
-          parsedErrorItems: FeedResponseList
-        }>
-      >("/subscriptions/import", {
-        method: "POST",
-        body: formData,
-      })
+      const { data } = await followClient.api.subscriptions.import(formData)
 
       return data
     },

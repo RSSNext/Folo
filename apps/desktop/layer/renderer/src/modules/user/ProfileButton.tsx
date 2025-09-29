@@ -1,4 +1,3 @@
-import { MdiMeditation } from "@follow/components/icons/Meditation.js"
 import { ActionButton } from "@follow/components/ui/button/index.js"
 import { RSSHubLogo } from "@follow/components/ui/platform-icon/icons.js"
 import { RootPortal } from "@follow/components/ui/portal/index.js"
@@ -14,7 +13,6 @@ import { useTranslation } from "react-i18next"
 import { useNavigate } from "react-router"
 
 import { useIsInMASReview, useServerConfigs } from "~/atoms/server-configs"
-import { useIsZenMode, useSetZenMode } from "~/atoms/settings/ui"
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -30,8 +28,6 @@ import { useSettingModal } from "~/modules/settings/modal/use-setting-modal-hack
 import { signOut, useSession } from "~/queries/auth"
 
 import { useActivationModal } from "../activation"
-import { COMMAND_ID } from "../command/commands/id"
-import { useCommandShortcuts } from "../command/hooks/use-command-binding"
 import type { LoginProps } from "./LoginButton"
 import { LoginButton } from "./LoginButton"
 import { UserAvatar } from "./UserAvatar"
@@ -56,11 +52,7 @@ export const ProfileButton: FC<ProfileButtonProps> = memo((props) => {
 
   const role = useUserRole()
   const presentActivationModal = useActivationModal()
-  const zenModeSetting = useIsZenMode()
-  const setZenMode = useSetZenMode()
   const isInMASReview = useIsInMASReview()
-
-  const shortcuts = useCommandShortcuts()
 
   if (status === "unauthenticated") {
     return <LoginButton {...props} />
@@ -162,18 +154,6 @@ export const ProfileButton: FC<ProfileButtonProps> = memo((props) => {
 
         <DropdownMenuSeparator />
 
-        {!zenModeSetting && (
-          <DropdownMenuItem
-            className="pl-3"
-            onClick={() => {
-              setZenMode(true)
-            }}
-            icon={<MdiMeditation className="size-4" />}
-            shortcut={shortcuts[COMMAND_ID.layout.toggleZenMode]}
-          >
-            {t("user_button.zen_mode")}
-          </DropdownMenuItem>
-        )}
         <DropdownMenuItem
           className="pl-3"
           onClick={() => {

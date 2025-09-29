@@ -29,7 +29,7 @@ export const BoostModalContent = ({ feedId }: { feedId: string }) => {
   const balanceBigInt = cPowerBigInt + dPowerBigInt
   const [amount, setAmount] = useState<number>(0)
   const amountBigInt = from(amount, 18)[0]
-  const wrongNumberRange = amountBigInt > balanceBigInt || amountBigInt <= BigInt(0)
+  const wrongNumberRange = amountBigInt > balanceBigInt || amountBigInt <= 0n
 
   const { data: boostStatus, isLoading } = useBoostStatusQuery(feedId)
   const boostFeedMutation = useBoostFeedMutation()
@@ -54,7 +54,7 @@ export const BoostModalContent = ({ feedId }: { feedId: string }) => {
   return (
     <div className="flex w-full flex-col gap-3 lg:max-h-[700px] lg:w-[80vw] lg:max-w-[450px]">
       <div className="center flex flex-col gap-2">
-        <FeedIcon noMargin feed={feed} size={50} />
+        <FeedIcon noMargin target={feed} size={50} />
 
         <h1 className="center mt-2 flex flex-wrap text-lg font-bold">
           <div className="center flex shrink-0">

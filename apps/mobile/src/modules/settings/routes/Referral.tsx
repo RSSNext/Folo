@@ -24,7 +24,7 @@ import {
 import { MonoText } from "@/src/components/ui/typography/MonoText"
 import { Text } from "@/src/components/ui/typography/Text"
 import { LoveCuteFiIcon } from "@/src/icons/love_cute_fi"
-import { apiClient } from "@/src/lib/api-fetch"
+import { followClient } from "@/src/lib/api-client"
 import type { NavigationControllerView } from "@/src/lib/navigation/types"
 import { toast } from "@/src/lib/toast"
 import { useColor } from "@/src/theme/colors"
@@ -32,7 +32,7 @@ import { useColor } from "@/src/theme/colors"
 const useReferralInfoQuery = () => {
   return useQuery({
     queryKey: ["referral", "info"],
-    queryFn: () => apiClient.referrals.$get().then((res) => res.data),
+    queryFn: () => followClient.api.referrals.getReferrals().then((res) => res.data),
   })
 }
 export const ReferralScreen: NavigationControllerView = () => {

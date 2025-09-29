@@ -1,3 +1,4 @@
+import { Kbd } from "@follow/components/ui/kbd/Kbd.js"
 import type { LexicalRichEditorRef } from "@follow/components/ui/lexical-rich-editor/index.js"
 import { LexicalRichEditor } from "@follow/components/ui/lexical-rich-editor/index.js"
 import { ScrollArea } from "@follow/components/ui/scroll-area/ScrollArea.js"
@@ -151,9 +152,11 @@ export const EditableMessage = ({
       </div>
 
       {/* Helper text */}
-      <div className="text-text-tertiary mt-2 text-xs">
-        Press <kbd className="bg-fill text-text-secondary rounded px-1 py-0.5">Enter</kbd> to save,{" "}
-        <kbd className="bg-fill text-text-secondary rounded px-1 py-0.5">Esc</kbd> to cancel
+      <div className="relative mt-2">
+        <div className="bg-background absolute -inset-x-2 -bottom-2 -top-8 z-[-1]" />
+        <div className="text-text-secondary relative z-[1] text-xs">
+          Press <Kbd abbr="Enter">Enter</Kbd> to save, <Kbd abbr="Esc">Esc</Kbd> to cancel
+        </div>
       </div>
     </div>
   )

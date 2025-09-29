@@ -186,7 +186,12 @@ export const InternalNavigationHeader = ({
 
   const sheetModal = useScreenIsInSheetModal()
   const defaultHeight = useMemo(
-    () => getDefaultHeaderHeight(frame, sheetModal, sheetModal ? 0 : insets.top),
+    () =>
+      getDefaultHeaderHeight({
+        landscape: frame.width > frame.height,
+        modalPresentation: sheetModal,
+        topInset: sheetModal ? 0 : insets.top,
+      }),
     [frame, insets.top, sheetModal],
   )
 

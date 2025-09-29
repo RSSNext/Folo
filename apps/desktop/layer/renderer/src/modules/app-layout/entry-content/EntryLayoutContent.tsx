@@ -1,14 +1,9 @@
-import { PanelSplitter } from "@follow/components/ui/divider/PanelSplitter.js"
 import { views } from "@follow/constants"
-import { clsx, cn } from "@follow/utils/utils"
+import { cn } from "@follow/utils/utils"
 import { easeOut } from "motion/react"
 import type { FC, PropsWithChildren } from "react"
-import { useMemo } from "react"
-import { useResizable } from "react-resizable-layout"
 import { useParams } from "react-router"
 
-import { AIChatPanelStyle, useAIChatPanelStyle } from "~/atoms/settings/ai"
-import { useRealInWideMode } from "~/atoms/settings/ui"
 import { useSubscriptionColumnShow, useSubscriptionColumnTempShow } from "~/atoms/sidebar"
 import { m } from "~/components/common/Motion"
 import { FixedModalCloseButton } from "~/components/ui/modal/components/close"
@@ -26,7 +21,7 @@ const EntryLayoutContentLegacy = () => {
   const { view } = useRouteParams()
   const navigate = useNavigateEntry()
 
-  const settingWideMode = useRealInWideMode()
+  const settingWideMode = false
   const realEntryId = entryId === ROUTE_ENTRY_PENDING ? "" : entryId
 
   const showEntryContent = !(
@@ -69,29 +64,6 @@ const EntryLayoutContentLegacy = () => {
     </AppLayoutGridContainerProvider>
   )
 }
-export const EntryLayoutContentWithAI = () => {
-  const { entryId, view } = useRouteParams()
-  const navigate = useNavigateEntry()
-
-  const settingWideMode = useRealInWideMode()
-  const realEntryId = entryId === ROUTE_ENTRY_PENDING ? "" : entryId
-  const wideMode = !!(settingWideMode && realEntryId)
-
-  const isWideView = views.find((v) => v.view === view)?.wideMode
-  return (
-    <AppLayoutGridContainerProvider>
-      <EntryGridContainer wideMode={wideMode}>
-        {wideMode && (
-          <FixedModalCloseButton
-            className="no-drag-region macos:translate-y-margin-macos-traffic-light-y absolute left-4 top-4 z-10"
-            onClick={() => navigate({ entryId: null })}
-          />
-        )}
-        {realEntryId && !isWideView ? <Grid entryId={realEntryId} /> : null}
-      </EntryGridContainer>
-    </AppLayoutGridContainerProvider>
-  )
-}
 
 export const EntryLayoutContent = () => {
   const aiEnabled = useFeature("ai")
@@ -99,61 +71,6 @@ export const EntryLayoutContent = () => {
     return null
   }
   return <EntryLayoutContentLegacy />
-}
-const Grid = ({ entryId }) => {
-  const settingWideMode = useRealInWideMode()
-
-  const wideMode = !!(settingWideMode && entryId)
-  const feedColumnTempShow = useSubscriptionColumnTempShow()
-  const feedColumnShow = useSubscriptionColumnShow()
-  const panelStyle = useAIChatPanelStyle()
-  const aiPinned = panelStyle === AIChatPanelStyle.Fixed
-  const shouldHeaderPaddingLeft = feedColumnTempShow && !feedColumnShow && settingWideMode
-
-  const { isDragging, position, separatorProps, separatorCursor } = useResizable({
-    axis: "x",
-    min: 300,
-    max: 500,
-    initial: 400,
-    reverse: true,
-  })
-
-  return (
-    <div
-      className={clsx(
-        aiPinned && "grid grid-cols-[1fr_400px]",
-        "flex min-h-0 grow flex-col overflow-hidden",
-      )}
-      style={{
-        gridTemplateColumns: `1fr ${position}px`,
-      }}
-    >
-      <div className="flex min-h-0 grow flex-col overflow-hidden">
-        <EntryContent
-          entryId={entryId}
-          classNames={useMemo(() => {
-            return {
-              header: shouldHeaderPaddingLeft
-                ? "ml-[calc(theme(width.feed-col)+theme(width.8))]"
-                : wideMode
-                  ? "ml-12"
-                  : "",
-            }
-          }, [shouldHeaderPaddingLeft, wideMode])}
-        />
-      </div>
-      {aiPinned && (
-        <div className="relative flex min-h-0 grow flex-col border-l">
-          <PanelSplitter
-            className="absolute inset-y-0 left-0"
-            isDragging={isDragging}
-            cursor={separatorCursor}
-            {...separatorProps}
-          />
-        </div>
-      )}
-    </div>
-  )
 }
 
 const EntryGridContainer: FC<

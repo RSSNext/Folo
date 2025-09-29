@@ -194,14 +194,7 @@ function FormImpl({ route, routePrefix, name }: RsshubFormParams) {
             {!!topFeeds?.length && (
               <View className="bg-secondary-system-grouped-background mx-4 mt-4 rounded-[10px] py-1">
                 {topFeeds.map((feed) => (
-                  <FeedSummary
-                    key={feed.id}
-                    item={{
-                      feed,
-                    }}
-                    simple
-                    className="px-4 py-2"
-                  />
+                  <FeedSummary key={feed.id} feed={feed} simple className="px-4 py-2" />
                 ))}
               </View>
             )}

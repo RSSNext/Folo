@@ -104,16 +104,12 @@ export default extendConfig({
       addVariant("group-motion-reduce", ':merge(.group)[data-motion-reduce="true"] &')
       addVariant("peer-motion-reduce", ':merge(.peer)[data-motion-reduce="true"] ~ &')
 
-      addVariant("zen-mode-macos", "html[data-zen-mode='true'][data-os='macOS'] &")
-      addVariant("zen-mode-windows", "html[data-zen-mode='true'][data-os='Windows'] &")
-
       addVariant("left-column-hidden", "html[data-left-column-hidden='true'] &")
       addVariant(
         "macos-left-column-hidden",
         "html[data-os='macOS'][data-left-column-hidden='true'] &",
       )
 
-      addVariant("zen-mode", "html[data-zen-mode='true'] &")
       addVariant("macos", "html[data-os='macOS'] &")
       addVariant("windows", "html[data-os='Windows'] &")
     }),

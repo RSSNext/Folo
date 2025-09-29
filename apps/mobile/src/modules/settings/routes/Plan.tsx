@@ -24,7 +24,7 @@ import { Text } from "@/src/components/ui/typography/Text"
 import { CheckLineIcon } from "@/src/icons/check_line"
 import { PowerOutlineIcon } from "@/src/icons/power_outline"
 import { TimeCuteReIcon } from "@/src/icons/time_cute_re"
-import { apiClient } from "@/src/lib/api-fetch"
+import { followClient } from "@/src/lib/api-client"
 import { authClient } from "@/src/lib/auth"
 import { useNavigation } from "@/src/lib/navigation/hooks"
 import type { NavigationControllerView } from "@/src/lib/navigation/types"
@@ -94,7 +94,7 @@ const PLAN_CONFIGS: Plan[] = [
 const useReferralInfoQuery = () => {
   return useQuery({
     queryKey: ["referral", "info"],
-    queryFn: () => apiClient.referrals.$get().then((res) => res.data),
+    queryFn: () => followClient.api.referrals.getReferrals().then((res) => res.data),
   })
 }
 export const PlanScreen: NavigationControllerView = () => {
@@ -118,10 +118,8 @@ export const PlanScreen: NavigationControllerView = () => {
     try {
       const result = await validateReceipt(purchase.transactionId)
       if (result.isValid) {
-        apiClient.referrals["verify-receipt"].$post({
-          json: {
-            appReceipt: result.receiptData,
-          },
+        followClient.api.referrals.verifyReceipt({
+          appReceipt: result.receiptData,
         })
       }
     } catch (error) {
@@ -270,6 +268,8 @@ export const PlanScreen: NavigationControllerView = () => {
                 upgradePlanMutation.mutate()
               }}
             >
+              {/* TODO current not return back this value */}
+              {/* @ts-expect-error current not return back this value */}
               <Text className="text-white">{`Pay $${serverConfigs?.REFERRAL_PRO_PREVIEW_STRIPE_PRICE_IN_DOLLAR || 1}`}</Text>
             </Pressable>
           </View>

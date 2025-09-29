@@ -2,7 +2,7 @@ import { useEntry } from "@follow/store/entry/hooks"
 import { useFeedById } from "@follow/store/feed/hooks"
 import { useInboxById } from "@follow/store/inbox/hooks"
 import { useEntryTranslation } from "@follow/store/translation/hooks"
-import { formatEstimatedMins, formatTimeToSeconds } from "@follow/utils"
+import { clsx, formatEstimatedMins, formatTimeToSeconds } from "@follow/utils"
 import { titleCase } from "title-case"
 import { useShallow } from "zustand/shallow"
 
@@ -80,7 +80,7 @@ export const EntryTitle = ({ entryId, compact }: EntryLinkProps) => {
 
   return compact ? (
     <div className="cursor-button @sm:-mx-3 @sm:p-3 -mx-6 flex items-center gap-2 rounded-lg p-6 transition-colors">
-      <FeedIcon fallback feed={feed || inbox} entry={entry.iconEntry} size={50} />
+      <FeedIcon fallback target={feed || inbox} entry={entry.iconEntry} size={50} />
       <div className="leading-6">
         <div className="flex items-center gap-1 text-base font-semibold">
           <span>{entry.author || feed?.title || inbox?.title}</span>
@@ -91,7 +91,7 @@ export const EntryTitle = ({ entryId, compact }: EntryLinkProps) => {
       </div>
     </div>
   ) : (
-    <div className="group relative block min-w-0 rounded-lg">
+    <div className={clsx("group relative block min-w-0", aiEnabled && "mt-12")}>
       <div className="flex flex-col gap-3">
         <a
           href={populatedFullHref ?? "#"}
@@ -119,7 +119,7 @@ export const EntryTitle = ({ entryId, compact }: EntryLinkProps) => {
                 })
               }
             >
-              <FeedIcon fallback feed={feed || inbox} entry={entry.iconEntry} size={16} />
+              <FeedIcon fallback target={feed || inbox} entry={entry.iconEntry} size={16} />
               {getPreferredTitle(feed || inbox, entry.titleEntry)}
             </div>
 
@@ -157,14 +157,7 @@ export const EntryTitle = ({ entryId, compact }: EntryLinkProps) => {
           </div>
         </div>
         {/* Recent Readers */}
-        {aiEnabled &&
-          (hideRecentReader ? (
-            <div className="h-6" />
-          ) : (
-            <div className="-mb-2 mt-2 flex h-6 items-center">
-              <EntryReadHistory entryId={entryId} />
-            </div>
-          ))}
+        {aiEnabled && !hideRecentReader && <EntryReadHistory entryId={entryId} />}
       </div>
     </div>
   )

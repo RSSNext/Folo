@@ -14,14 +14,13 @@ import type { EntryListItemFC } from "./types"
 interface EntryItemProps {
   entryId: string
   view: FeedViewType
+  currentFeedTitle?: string
 }
 const EntryItemImpl = memo(function EntryItemImpl({
   entryId,
   view,
-}: {
-  entryId: string
-  view: FeedViewType
-}) {
+  currentFeedTitle,
+}: EntryItemProps) {
   const enableTranslation = useGeneralSettingKey("translation")
   const actionLanguage = useActionLanguage()
   const translation = useEntryTranslation({
@@ -41,16 +40,16 @@ const EntryItemImpl = memo(function EntryItemImpl({
 
   return (
     <EntryItemWrapper itemClassName={Item.wrapperClassName} entryId={entryId} view={view}>
-      <Item entryId={entryId} translation={translation} />
+      <Item entryId={entryId} translation={translation} currentFeedTitle={currentFeedTitle} />
     </EntryItemWrapper>
   )
 })
 
-export const EntryItem: FC<EntryItemProps> = memo(({ entryId, view }) => {
+export const EntryItem: FC<EntryItemProps> = memo(({ entryId, view, currentFeedTitle }) => {
   const hasEntry = useHasEntry(entryId)
 
   if (!hasEntry) return null
-  return <EntryItemImpl entryId={entryId} view={view} />
+  return <EntryItemImpl entryId={entryId} view={view} currentFeedTitle={currentFeedTitle} />
 })
 
 export const EntryVirtualListItem = ({
@@ -58,6 +57,7 @@ export const EntryVirtualListItem = ({
   entryId,
   view,
   className,
+  currentFeedTitle,
   ...props
 }: EntryItemProps &
   React.DetailedHTMLProps<React.HTMLAttributes<HTMLDivElement>, HTMLDivElement> & {
@@ -69,7 +69,7 @@ export const EntryVirtualListItem = ({
 
   return (
     <div className="absolute left-0 top-0 w-full will-change-transform" ref={ref} {...props}>
-      <EntryItemImpl entryId={entryId} view={view} />
+      <EntryItemImpl entryId={entryId} view={view} currentFeedTitle={currentFeedTitle} />
     </div>
   )
 }

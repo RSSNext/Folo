@@ -2,7 +2,7 @@ import { tracker } from "@follow/tracker"
 import { useQuery } from "@tanstack/react-query"
 import { useEffect } from "react"
 
-import { apiClient, queryClient } from "../../context"
+import { api, queryClient } from "../../context"
 import type { GeneralQueryOptions } from "../../types"
 import { isNewUserQueryKey } from "./constants"
 import { userSyncService, useUserStore } from "./store"
@@ -24,7 +24,7 @@ export const usePrefetchSessionUser = () => {
   useEffect(() => {
     if (query.data) {
       const { user } = query.data
-      tracker.identify(user)
+      user && tracker.identify(user)
     }
   }, [query.data])
   return query
@@ -67,7 +67,7 @@ export function useIsNewUser(options?: GeneralQueryOptions) {
     enabled: options?.enabled,
     queryKey: isNewUserQueryKey,
     queryFn: async () => {
-      const subscriptions = await apiClient().subscriptions.$get({ query: {} })
+      const subscriptions = await api().subscriptions.get({})
       return subscriptions.data.length < 5
     },
   })

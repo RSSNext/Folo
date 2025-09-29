@@ -86,7 +86,7 @@ if (import.meta.hot) {
       console.info("reload", lang, nsName)
       await i18next.reloadResources(lang, nsName)
 
-      import.meta.env.DEV && EventBus.dispatch("I18N_UPDATE", "")
+      EventBus.dispatch("I18N_UPDATE", "")
     },
   )
 }

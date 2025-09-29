@@ -1,1 +1,1 @@
-export { MainDestopLayout } from "./MainDestopLayout"
+export { MainDestopLayout } from "../MainDestopLayout"

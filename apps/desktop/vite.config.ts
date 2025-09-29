@@ -1,4 +1,4 @@
-import { existsSync, readFileSync, writeFileSync } from "node:fs"
+import { existsSync, mkdirSync, readFileSync, writeFileSync } from "node:fs"
 import { fileURLToPath } from "node:url"
 
 import type { env as EnvType } from "@follow/shared/env.desktop"
@@ -6,7 +6,7 @@ import legacy from "@vitejs/plugin-legacy"
 import { minify as htmlMinify } from "html-minifier-terser"
 import { cyan, dim, green } from "kolorist"
 import { parseHTML } from "linkedom"
-import { resolve } from "pathe"
+import { join, resolve } from "pathe"
 import type { PluginOption, ResolvedConfig, ViteDevServer } from "vite"
 import { defineConfig, loadEnv } from "vite"
 import { analyzer } from "vite-bundle-analyzer"
@@ -321,14 +321,14 @@ const htmlPlugin: (env: any) => PluginOption = (env) => {
     closeBundle() {
       const { root } = config
       const dist = config.build.outDir
-      const debugProxyHtml = resolve(root, "debug_proxy.html")
+      const debugProxyHtml = join(root, "debug_proxy.html")
 
       if (existsSync(debugProxyHtml)) {
         const content = readFileSync(debugProxyHtml, "utf-8")
 
+        mkdirSync(dist, { recursive: true })
         writeFileSync(
-          resolve(dist, "__debug_proxy.html"),
-
+          join(dist, "__debug_proxy.html"),
           content.replace("import.meta.env.VITE_API_URL", `"${env.VITE_API_URL}"`),
         )
       }

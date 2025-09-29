@@ -1,16 +1,26 @@
-import { apiClient } from "@client/lib/api-fetch"
+import { followClient } from "@client/lib/api-fetch"
 import { getProviders } from "@client/lib/auth"
 import { getHydrateData } from "@client/lib/helper"
 import type { LoginHydrateData } from "@client/pages/(login)/login/metadata"
-import type { ExtractBizResponse } from "@follow/models"
 import { isBizId, sortByAlphabet } from "@follow/utils/utils"
+import type {
+  InboxSubscriptionResponse,
+  ListSubscriptionResponse,
+  SubscriptionWithFeed,
+} from "@follow-app/client-sdk"
 import { useQuery } from "@tanstack/react-query"
+
+type GetUserSubscriptionsResponse = (
+  | SubscriptionWithFeed
+  | ListSubscriptionResponse
+  | InboxSubscriptionResponse
+)[]
 
 const UN_CATEGORIZED = "Uncategorized"
 const groupSubscriptions = (
-  subscriptions: SubscriptionResult,
-): Record<string, SubscriptionResult> => {
-  const groupFolder = {} as Record<string, SubscriptionResult>
+  subscriptions: GetUserSubscriptionsResponse,
+): Record<string, GetUserSubscriptionsResponse> => {
+  const groupFolder = {} as Record<string, GetUserSubscriptionsResponse>
   for (const subscription of subscriptions.filter((s) => !s.isPrivate) || []) {
     if (!subscription.category && "feeds" in subscription) {
       subscription.category = UN_CATEGORIZED
@@ -39,10 +49,9 @@ const groupSubscriptions = (
   return groupFolder
 }
 
-export type SubscriptionResult = ExtractBizResponse<typeof apiClient.subscriptions.$get>["data"]
 const fetchUserSubscriptions = async (userId: string | undefined) => {
-  const res = await apiClient.subscriptions.$get({
-    query: { userId },
+  const res = await followClient.api.subscriptions.get({
+    userId,
   })
   return res.data
 }
@@ -68,12 +77,7 @@ export const fetchUser = async (handleOrId: string | undefined) => {
       ? `${handleOrId}`.slice(1)
       : handleOrId
 
-  const res = await apiClient.profiles.$get({
-    query: {
-      handle,
-      id: isBizId(handle || "") ? handle : undefined,
-    },
-  })
+  const res = await followClient.api.profiles.getProfile({ id: handleOrId, handle })
   return res.data
 }
 

@@ -63,7 +63,7 @@ const TipModalContent_: FC<{
 
   const amountBigInt = from(amount, 18)[0]
 
-  const wrongNumberRange = amountBigInt > balanceBigInt || amountBigInt <= BigInt(0)
+  const wrongNumberRange = amountBigInt > balanceBigInt || amountBigInt <= 0n
 
   const { dismiss } = useCurrentModal()
 

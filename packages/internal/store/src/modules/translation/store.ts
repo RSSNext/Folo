@@ -2,7 +2,7 @@ import type { TranslationSchema } from "@follow/database/schemas/types"
 import { TranslationService } from "@follow/database/services/translation"
 import type { SupportedActionLanguage } from "@follow/shared"
 
-import { apiClient } from "../../context"
+import { api } from "../../context"
 import type { Hydratable, Resetable } from "../../lib/base"
 import { createImmerSetter, createTransaction, createZustandStore } from "../../lib/helper"
 import { getEntry } from "../entry/getter"
@@ -116,9 +116,7 @@ class TranslationSyncService {
 
     if (fields.length === 0) return null
 
-    const res = await apiClient().ai.translation.$get({
-      query: { id: entryId, language, fields: fields.join(",") },
-    })
+    const res = await api().ai.translation({ id: entryId, language, fields: fields.join(",") })
 
     if (!res.data) return null
 

@@ -14,7 +14,6 @@ export default defineConfig(
     formatting: false,
     lessOpinionated: true,
     ignores: [
-      "packages/internal/shared/src/hono.ts",
       "resources/**",
       "apps/mobile/android/**",
       "apps/mobile/ios/**",
@@ -42,8 +41,6 @@ export default defineConfig(
       "@eslint-react/hooks-extra/no-direct-set-state-in-use-effect": 0,
       "@eslint-react/dom/no-flush-sync": 1,
       "@eslint-react/hooks-extra/no-unnecessary-use-callback": "warn",
-      // NOTE: Disable this temporarily
-      "react-compiler/react-compiler": 0,
       "unicorn/no-array-callback-reference": 0,
       "no-restricted-syntax": 0,
       "no-restricted-globals": [
@@ -55,6 +52,25 @@ export default defineConfig(
             "You can use `useLocaltion` or `getReadonlyRoute` to get the route info.",
         },
       ],
+
+      // disable react compiler rules for now
+      "react-hooks/no-unused-directives": "off",
+      "react-hooks/static-components": "off",
+      "react-hooks/use-memo": "off",
+      "react-hooks/component-hook-factories": "off",
+      "react-hooks/preserve-manual-memoization": "off",
+      "react-hooks/immutability": "off",
+      "react-hooks/globals": "off",
+      "react-hooks/refs": "off",
+      "react-hooks/set-state-in-effect": "off",
+      "react-hooks/error-boundaries": "off",
+      "react-hooks/purity": "off",
+      "react-hooks/set-state-in-render": "off",
+      "react-hooks/unsupported-syntax": "off",
+      "react-hooks/config": "off",
+      "react-hooks/gating": "off",
+
+      "unicorn/require-module-specifiers": "off",
     },
   },
   // use correct tailwind config for eslint

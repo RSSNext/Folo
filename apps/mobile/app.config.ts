@@ -137,7 +137,14 @@ export default ({ config }: ConfigContext): ExpoConfig => {
       require("./plugins/with-android-manifest-plugin.js"),
       "expo-secure-store",
       "@react-native-firebase/app",
-      "@react-native-firebase/crashlytics",
+      [
+        "@sentry/react-native/expo",
+        {
+          url: "https://sentry.io/",
+          project: "react-native",
+          organization: "follow-rg",
+        },
+      ],
       [
         "expo-image-picker",
         {

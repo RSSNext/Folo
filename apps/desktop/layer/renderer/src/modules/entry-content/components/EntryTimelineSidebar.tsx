@@ -4,23 +4,18 @@ import { cn } from "@follow/utils/utils"
 import type { TargetAndTransition } from "motion/react"
 import { m } from "motion/react"
 
-import { useIsZenMode } from "~/atoms/settings/ui"
 import { useEntryIsRead } from "~/hooks/biz/useAsRead"
 import { useNavigateEntry } from "~/hooks/biz/useNavigateEntry"
 import { useRouteParamsSelector } from "~/hooks/biz/useRouteParams"
 import { useGetEntryIdInRange } from "~/modules/entry-column/hooks/useEntryIdListSnap"
 
-export const EntryTimelineSidebar = ({ entryId }: { entryId: string }) => {
-  const isZenMode = useIsZenMode()
-
-  if (!isZenMode) {
-    return null
-  }
-
-  return <EntryTimeline entryId={entryId} />
-}
-
-export const EntryTimeline = ({ entryId, className }: { entryId: string; className?: string }) => {
+export const EntryTimelineSidebar = ({
+  entryId,
+  className,
+}: {
+  entryId: string
+  className?: string
+}) => {
   const entryIds = useGetEntryIdInRange(entryId, [5, 5])
 
   return (

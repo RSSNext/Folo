@@ -2,7 +2,7 @@ import type { FeedViewType } from "@follow/constants"
 import type { CollectionSchema } from "@follow/database/schemas/types"
 import { CollectionService } from "@follow/database/services/collection"
 
-import { apiClient } from "../../context"
+import { api } from "../../context"
 import type { Hydratable, Resetable } from "../../lib/base"
 import { createTransaction, createZustandStore } from "../../lib/helper"
 import { getEntry } from "../entry/getter"
@@ -49,11 +49,9 @@ class CollectionSyncService {
       ])
     })
     tx.request(async () => {
-      await apiClient().collections.$post({
-        json: {
-          entryId,
-          view,
-        },
+      await api().collections.post({
+        entryId,
+        view,
       })
     })
     tx.rollback(() => {
@@ -75,10 +73,8 @@ class CollectionSyncService {
       collectionActions.delete(entryId)
     })
     tx.request(async () => {
-      await apiClient().collections.$delete({
-        json: {
-          entryId,
-        },
+      await api().collections.delete({
+        entryId,
       })
     })
 

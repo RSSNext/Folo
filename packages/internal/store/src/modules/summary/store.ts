@@ -3,7 +3,7 @@ import { summaryService } from "@follow/database/services/summary"
 import type { SupportedActionLanguage } from "@follow/shared"
 import { parseHtml } from "@follow/utils/html"
 
-import { apiClient } from "../../context"
+import { api } from "../../context"
 import type { Hydratable, Resetable } from "../../lib/base"
 import { createImmerSetter, createTransaction, createZustandStore } from "../../lib/helper"
 import { getEntry } from "../entry/getter"
@@ -106,7 +106,9 @@ class SummaryActions implements Resetable, Hydratable {
 
     if (entries.length <= 10) return
 
-    const sortedEntries = entries.sort(([, a], [, b]) => a.lastAccessed - b.lastAccessed)
+    const sortedEntries = entries.sort(
+      ([, a], [, b]) => (a?.lastAccessed || 0) - (b?.lastAccessed || 0),
+    )
 
     const entriesToRemove = sortedEntries.slice(0, entries.length - 10)
 
@@ -174,13 +176,11 @@ class SummarySyncService {
     })
 
     // Use Our AI to generate summary
-    const pendingPromise = apiClient()
-      .ai.summary.$get({
-        query: {
-          id: entryId,
-          language: actionLanguage,
-          target,
-        },
+    const pendingPromise = api()
+      .ai.summary({
+        id: entryId,
+        language: actionLanguage,
+        target,
       })
       .then((summary) => {
         immerSet((state) => {

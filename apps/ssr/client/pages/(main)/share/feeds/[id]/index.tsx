@@ -9,7 +9,9 @@ import { RelativeTime } from "@follow/components/ui/datetime/index.jsx"
 import { LoadingCircle } from "@follow/components/ui/loading/index.jsx"
 import { useTitle } from "@follow/hooks"
 import { cn } from "@follow/utils/utils"
+import type { FeedSchema } from "@follow-app/client-sdk"
 import { Fragment } from "react"
+import * as React from "react"
 import { useTranslation } from "react-i18next"
 import { useParams, useSearchParams } from "react-router"
 
@@ -25,7 +27,7 @@ export function Component() {
   })
   const view = Number.parseInt(search.get("view") || feed.data?.analytics?.view?.toString() || "0")
 
-  const feedData = feed.data?.feed
+  const feedData = feed.data?.feed as FeedSchema
   const analytics = feed.data?.analytics
   const isSubscribed = !!feed.data?.subscription
   const entries = feed.data?.entries.map((entry) => ({
@@ -52,7 +54,7 @@ export function Component() {
             <div className="relative mx-auto inline-block">
               <FeedIcon
                 fallback
-                feed={feedData}
+                target={feedData}
                 className="mask-squircle mask border-border border"
                 noMargin
                 size={80}

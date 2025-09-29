@@ -114,6 +114,8 @@ export const createSSRAPIHeaders = ({ version }: { version: string }) => {
     "X-App-Platform": SSRPlatform.SSR,
     "X-App-Name": "Folo SSR",
     "X-App-Version": version,
+    "User-Agent":
+      "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/133.0.0.0 Safari/537.36 Folo",
     ...(DEV ? { "X-App-Dev": "1" } : {}),
   }
 }

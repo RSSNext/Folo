@@ -2,7 +2,6 @@ import { FeedIcon } from "@client/components/ui/feed-icon"
 import { openInFollowApp } from "@client/lib/helper"
 import { UrlBuilder } from "@client/lib/url-builder"
 import { useListsByUserId } from "@client/query/list"
-import type { SubscriptionResult, User } from "@client/query/users"
 import { useUserQuery, useUserSubscriptionsQuery } from "@client/query/users"
 import { FollowIcon } from "@follow/components/icons/follow.jsx"
 import { Avatar, AvatarFallback, AvatarImage } from "@follow/components/ui/avatar/index.jsx"
@@ -10,11 +9,13 @@ import { Button } from "@follow/components/ui/button/index.jsx"
 import { LoadingCircle } from "@follow/components/ui/loading/index.jsx"
 import { useTitle } from "@follow/hooks"
 import { cn } from "@follow/utils/utils"
+import type { SubscriptionWithFeed, UserProfile } from "@follow-app/client-sdk"
+import * as React from "react"
 import { Fragment, memo, useState } from "react"
 import { useParams } from "react-router"
 
 interface FeedCardProps {
-  subscription: SubscriptionResult[number]
+  subscription: SubscriptionWithFeed
   feedId: string
   view: number
 }
@@ -34,7 +35,15 @@ const FeedCard = memo<FeedCardProps>(({ subscription, feedId, view }) => {
       >
         <div className="flex items-start space-x-4">
           <div className="shrink-0">
-            <FeedIcon fallback feed={subscription.feeds} size={44} className="rounded-lg" />
+            <FeedIcon
+              fallback
+              target={{
+                type: "feed",
+                ...subscription.feeds,
+              }}
+              size={44}
+              className="rounded-lg"
+            />
           </div>
           <div className="min-w-0 flex-1">
             <h3 className="group-hover/card:text-accent truncate font-medium text-zinc-900 transition-colors dark:text-zinc-100">
@@ -96,7 +105,7 @@ export const Component = () => {
   )
 }
 
-const UserHero = ({ user }: { user: User }) => {
+const UserHero = ({ user }: { user: UserProfile }) => {
   const subscriptions = useUserSubscriptionsQuery(user.id)
 
   const totalFeeds = Object.values(subscriptions.data || {}).reduce(
@@ -179,7 +188,7 @@ const Lists = ({ userId }: { userId: string }) => {
           >
             <FeedIcon
               fallback
-              feed={list}
+              target={list}
               className="mask-squircle mask border-border border"
               size={80}
               noMargin

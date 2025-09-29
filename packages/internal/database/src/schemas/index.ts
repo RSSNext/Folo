@@ -170,9 +170,7 @@ export const aiChatTable = sqliteTable(
       .notNull()
       .default(sql`(unixepoch() * 1000)`),
   }),
-  (table) => ({
-    updatedAtIdx: index("idx_ai_chat_sessions_updated_at").on(table.updatedAt),
-  }),
+  (table) => [index("idx_ai_chat_sessions_updated_at").on(table.updatedAt)],
 )
 
 // Message Part types based on Vercel AI SDK UIMessage parts
@@ -242,12 +240,9 @@ export const aiChatMessagesTable = sqliteTable(
     // Store UIMessage parts for complex assistant responses (tools, reasoning, etc)
     messageParts: t.text("message_parts", { mode: "json" }).$type<UIMessagePart[]>(),
   }),
-  (table) => ({
-    chatIdCreatedAtIdx: index("idx_ai_chat_messages_chat_id_created_at").on(
-      table.chatId,
-      table.createdAt,
-    ),
-    statusIdx: index("idx_ai_chat_messages_status").on(table.status),
-    chatIdRoleIdx: index("idx_ai_chat_messages_chat_id_role").on(table.chatId, table.role),
-  }),
+  (table) => [
+    index("idx_ai_chat_messages_chat_id_created_at").on(table.chatId, table.createdAt),
+    index("idx_ai_chat_messages_status").on(table.status),
+    index("idx_ai_chat_messages_chat_id_role").on(table.chatId, table.role),
+  ],
 )

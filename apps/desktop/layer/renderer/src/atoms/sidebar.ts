@@ -1,8 +1,7 @@
 import { atom } from "jotai"
+import type { ReactNode } from "react"
 
 import { createAtomHooks } from "~/lib/jotai"
-
-import { getIsZenMode, useIsZenMode } from "./settings/ui"
 
 const [
   ,
@@ -13,15 +12,9 @@ const [
   setTimelineColumnShow,
 ] = createAtomHooks(atom(true))
 
-export const useSubscriptionColumnShow = () => {
-  const isZenMode = useIsZenMode()
-  return internal_useSubscriptionColumnShow() && !isZenMode
-}
+export const useSubscriptionColumnShow = internal_useSubscriptionColumnShow
 
-export const getSubscriptionColumnShow = () => {
-  const isZenMode = getIsZenMode()
-  return internal_getSubscriptionShow() && !isZenMode
-}
+export const getSubscriptionColumnShow = internal_getSubscriptionShow
 
 export { setTimelineColumnShow }
 
@@ -33,3 +26,21 @@ export const [
   getSubscriptionColumnTempShow,
   setSubscriptionColumnTempShow,
 ] = createAtomHooks(atom(false))
+
+export const [
+  ,
+  ,
+  useSubscriptionColumnApronNode,
+  ,
+  getSubscriptionColumnApronNode,
+  setSubscriptionColumnApronNode,
+] = createAtomHooks(atom<ReactNode | null>(null))
+
+export const [
+  ,
+  ,
+  useSubscriptionEntryPlaneVisible,
+  ,
+  getSubscriptionEntryPlaneVisible,
+  setSubscriptionEntryPlaneVisible,
+] = createAtomHooks(atom(true))

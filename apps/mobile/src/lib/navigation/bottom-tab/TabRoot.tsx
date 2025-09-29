@@ -1,8 +1,11 @@
+import { useTypeScriptHappyCallback } from "@follow/hooks"
 import { useAtom } from "jotai"
 import type { FC, PropsWithChildren } from "react"
 import * as React from "react"
 import { use, useCallback, useMemo } from "react"
 import { StyleSheet } from "react-native"
+
+import { useNavigationScrollToTop } from "@/src/components/layouts/tabbar/hooks"
 
 import { BottomTabContext } from "./BottomTabContext"
 import { TabBarRootWrapper } from "./native"
@@ -12,6 +15,8 @@ import type { TabScreenProps } from "./types"
 export const TabRoot: FC<PropsWithChildren> = ({ children }) => {
   const { currentIndexAtom } = use(BottomTabContext)
   const [tabIndex, setTabIndex] = useAtom(currentIndexAtom)
+
+  const scrollToTop = useNavigationScrollToTop()
 
   const MapChildren = useMemo(() => {
     let cnt = 0
@@ -32,6 +37,15 @@ export const TabRoot: FC<PropsWithChildren> = ({ children }) => {
           setTabIndex(e.nativeEvent.index)
         },
         [setTabIndex],
+      )}
+      onTabItemPress={useTypeScriptHappyCallback(
+        (e) => {
+          const { index, currentIndex } = e.nativeEvent
+          if (index === currentIndex) {
+            scrollToTop()
+          }
+        },
+        [scrollToTop],
       )}
       selectedIndex={tabIndex}
     >

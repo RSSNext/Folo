@@ -58,7 +58,6 @@ const ViewSwitchButton: FC<{
   const { isOver, setNodeRef } = useDroppable({
     id: `view-${item.name}`,
     data: {
-      category: "",
       view: item.view,
     },
   })

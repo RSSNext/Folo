@@ -19,7 +19,14 @@ interface BaseContextBlock {
 }
 
 export interface ValueContextBlock extends BaseContextBlock {
-  type: "mainView" | "mainEntry" | "referEntry" | "referFeed" | "selectedText"
+  type:
+    | "mainView"
+    | "mainEntry"
+    | "mainFeed"
+    | "referEntry"
+    | "referFeed"
+    | "referDate"
+    | "selectedText"
   value: string
 }
 
@@ -43,7 +50,6 @@ export interface AIChatContextBlocks {
   blocks: AIChatContextBlock[]
 }
 
-export type AIDisplayAnalyticsTool = ToolWithState<BizUITools["displayAnalytics"]>
 export type AIDisplayFeedTool = ToolWithState<BizUITools["displayFeed"]>
 export type AIDisplayEntriesTool = ToolWithState<BizUITools["displayEntries"]>
 export type AIDisplaySubscriptionsTool = ToolWithState<BizUITools["displaySubscriptions"]>

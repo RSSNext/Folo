@@ -21,6 +21,8 @@ import {
   ROUTE_TIMELINE_OF_VIEW,
 } from "~/constants"
 
+import { useRouteParamsSelector } from "./useRouteParams"
+
 export type NavigateEntryOptions = Partial<{
   timelineId: string
   feedId: string | null
@@ -62,7 +64,7 @@ const parseNavigateEntryOptions = (options: NavigateEntryOptions): ParsedNavigat
   let finalTimelineId = timelineId || params.timelineId || ROUTE_FEED_PENDING
   const finalEntryId = entryId || ROUTE_ENTRY_PENDING
   const subscription = getSubscriptionByFeedId(finalFeedId)
-  const finalView = view || subscription?.view
+  const finalView = typeof view === "number" ? view : subscription?.view
 
   if ("feedId" in options && feedId === null) {
     finalFeedId = ROUTE_FEED_PENDING
@@ -148,11 +150,20 @@ export const navigateEntry = (options: NavigateEntryOptions) => {
 
 export const useBackHome = (timelineId?: string) => {
   const navigate = useNavigateEntry()
+  const feedId = useRouteParamsSelector((state) => state.feedId)
+  const entryId = useRouteParamsSelector((state) => state.entryId)
+  const backToFeed =
+    entryId && feedId && entryId !== ROUTE_ENTRY_PENDING && feedId !== ROUTE_FEED_PENDING
+  const feedIdToNavigate = backToFeed ? feedId : null
 
   return useCallback(
     (overvideTimelineId?: string) => {
-      navigate({ feedId: null, entryId: null, timelineId: overvideTimelineId ?? timelineId })
+      navigate({
+        feedId: feedIdToNavigate,
+        entryId: null,
+        timelineId: overvideTimelineId ?? timelineId,
+      })
     },
-    [timelineId, navigate],
+    [navigate, feedIdToNavigate, timelineId],
   )
 }

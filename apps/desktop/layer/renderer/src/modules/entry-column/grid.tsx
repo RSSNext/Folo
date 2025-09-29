@@ -147,7 +147,7 @@ const VirtualGridImpl: FC<
   })
 
   const rowVirtualizer = useVirtualizer({
-    count: rows.length + 1,
+    count: rows.length + (hasNextPage ? 1 : 0) + (Footer ? 1 : 0),
     estimateSize: () => {
       return columns[0]! / ratioMap[view] + 58
     },
@@ -193,15 +193,17 @@ const VirtualGridImpl: FC<
 
   const virtualItems = rowVirtualizer.getVirtualItems()
   useEffect(() => {
+    if (!hasNextPage) return
+
     const lastItem = virtualItems.at(-1)
 
     if (!lastItem) {
       return
     }
 
-    const isPlaceholderRow = lastItem.index === rows.length
+    const isLoaderRow = lastItem.index >= rows.length
 
-    if (isPlaceholderRow && hasNextPage) {
+    if (isLoaderRow) {
       fetchNextPage()
     }
   }, [fetchNextPage, hasNextPage, rows.length, virtualItems])
@@ -222,8 +224,10 @@ const VirtualGridImpl: FC<
       }}
     >
       {rowVirtualizer.getVirtualItems().map((virtualRow) => {
-        const isLoaderRow = virtualRow.key === rows.length
-        if (isLoaderRow && ready) {
+        const footerRowIndex = rows.length + (hasNextPage ? 1 : 0)
+        const isFooterRow = Footer && virtualRow.key === footerRowIndex
+
+        if (isFooterRow && ready) {
           return (
             <div
               key={virtualRow.key}
@@ -233,35 +237,50 @@ const VirtualGridImpl: FC<
                 transform: `translateY(${virtualRow.start}px)`,
               }}
             >
-              {Footer ? typeof Footer === "function" ? <Footer /> : Footer : null}
-              {hasNextPage && <EntryItemSkeleton view={view} count={6} />}
+              {typeof Footer === "function" ? <Footer /> : Footer}
             </div>
           )
         }
+
         return (
           <Fragment key={virtualRow.key}>
-            {columnVirtualizer.getVirtualItems().map((virtualColumn) => (
-              <div
-                ref={columnVirtualizer.measureElement}
-                key={virtualColumn.key}
-                data-index={virtualColumn.index}
-                className="absolute left-0 top-4"
-                style={{
-                  height: `${virtualRow.size}px`,
-                  width: `${virtualColumn.size}px`,
-                  transform: `translateX(${virtualColumn.start}px) translateY(${virtualRow.start}px)`,
-                }}
-              >
-                <MediaContainerWidthProvider width={columns[virtualColumn.index] ?? 0}>
-                  {ready && (
-                    <EntryItem
-                      entryId={entriesIds[virtualRow.index * columns.length + virtualColumn.index]!}
-                      view={view}
-                    />
-                  )}
-                </MediaContainerWidthProvider>
-              </div>
-            ))}
+            {columnVirtualizer.getVirtualItems().map((virtualColumn) => {
+              const currentRow = rows[virtualRow.index] || []
+              const columnIndex = virtualColumn.index
+              const isDataRow = virtualRow.index < rows.length
+              const hasEntry = currentRow[columnIndex]
+              const isSkeletonRow = virtualRow.index === rows.length
+
+              let content: React.ReactNode = null
+              if (isDataRow && hasEntry) {
+                content = ready && <EntryItem entryId={currentRow[columnIndex]!} view={view} />
+              } else if (
+                (isDataRow && !hasEntry && hasNextPage) ||
+                (isSkeletonRow && hasNextPage && ready)
+              ) {
+                content = ready && <EntryItemSkeleton view={view} count={1} />
+              }
+
+              if (!content) return null
+
+              return (
+                <div
+                  ref={columnVirtualizer.measureElement}
+                  key={virtualColumn.key}
+                  data-index={virtualColumn.index}
+                  className="absolute left-0 top-4"
+                  style={{
+                    height: `${virtualRow.size}px`,
+                    width: `${virtualColumn.size}px`,
+                    transform: `translateX(${virtualColumn.start}px) translateY(${virtualRow.start}px)`,
+                  }}
+                >
+                  <MediaContainerWidthProvider width={columns[virtualColumn.index] ?? 0}>
+                    {content}
+                  </MediaContainerWidthProvider>
+                </div>
+              )
+            })}
           </Fragment>
         )
       })}

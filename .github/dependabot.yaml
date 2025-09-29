@@ -46,7 +46,6 @@ updates:
         patterns:
           - immer
           - re-resizable
-          - hono
           - electron-context-menu
           - "@mozilla/readability"
           - daisyui

@@ -1,20 +1,26 @@
 import type {
   ActionConditionIndex,
-  ActionFilter,
   ActionFilterItem,
   ActionId,
-  ActionModel,
-  ActionRules,
-} from "@follow/models/types"
+  ActionItem as ActionItemRes,
+} from "@follow-app/client-sdk"
 import { merge } from "es-toolkit/compat"
 
-import { apiClient } from "../../context"
+import { api } from "../../context"
 import { createImmerSetter, createZustandStore } from "../../lib/helper"
 
+export type ActionItem = Omit<ActionItemRes, "condition"> & {
+  condition: ActionFilterItem[][]
+  index: number
+}
+
 type ActionStore = {
-  rules: ActionRules
+  rules: ActionItem[]
   isDirty: boolean
 }
+
+type ActionRules = ActionItem[]
+export type ActionModel = ActionItem
 
 export const useActionStore = createZustandStore<ActionStore>("action")(() => ({
   rules: [],
@@ -25,7 +31,7 @@ const immerSet = createImmerSetter(useActionStore)
 
 class ActionSyncService {
   async fetchRules() {
-    const res = await apiClient().actions.$get()
+    const res = await api().actions.get()
     if (res.data) {
       actionActions.updateRules(
         (res.data.rules ?? []).map((rule, index) => {
@@ -36,7 +42,7 @@ class ActionSyncService {
 
           return {
             ...rule,
-            condition: finalCondition as ActionFilter,
+            condition: finalCondition as ActionFilterItem[][],
             index,
           }
         }),
@@ -53,7 +59,7 @@ class ActionSyncService {
       return null
     }
 
-    const res = await apiClient().actions.$put({ json: { rules: rules as any } })
+    const res = await api().actions.put({ rules: rules as any })
     actionActions.setDirty(false)
     return res
   }

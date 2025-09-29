@@ -4,12 +4,11 @@ import { isBizId } from "@follow/utils"
 import { cloneDeep } from "es-toolkit"
 import { debounce } from "es-toolkit/compat"
 
-import { api, apiClient } from "../../context"
+import { api } from "../../context"
 import type { Hydratable, Resetable } from "../../lib/base"
 import { createImmerSetter, createTransaction, createZustandStore } from "../../lib/helper"
 import { apiMorph } from "../../morph/api"
 import { dbStoreMorph } from "../../morph/db-store"
-import { honoMorph } from "../../morph/hono"
 import { storeDbMorph } from "../../morph/store-db"
 import { collectionActions } from "../collection/store"
 import { clearAllFeedUnreadDirty, clearFeedUnreadDirty } from "../feed/hooks"
@@ -558,9 +557,9 @@ class EntrySyncServices {
     const currentEntry = getEntry(entryId)
     const res =
       currentEntry?.inboxHandle || isInbox
-        ? await apiClient().entries.inbox.$get({ query: { id: entryId } })
-        : await apiClient().entries.$get({ query: { id: entryId } })
-    const entry = honoMorph.toEntry(res.data)
+        ? await api().entries.inbox.get({ id: entryId })
+        : await api().entries.get({ id: entryId })
+    const entry = apiMorph.toEntry(res.data)
     if (!currentEntry && entry) {
       await entryActions.upsertMany([entry])
     } else {
@@ -597,10 +596,8 @@ class EntrySyncServices {
     let readabilityContent: string | null | undefined
 
     try {
-      const { data: contentByFetch } = await apiClient().entries.readability.$get({
-        query: {
-          id: entryId,
-        },
+      const { data: contentByFetch } = await api().entries.readability({
+        id: entryId,
       })
       readabilityContent = contentByFetch?.content || null
     } catch (error) {
@@ -619,13 +616,7 @@ class EntrySyncServices {
     return entry
   }
 
-  async fetchEntryContentByStream(
-    remoteEntryIds?: string[],
-    options?: {
-      fetch?: typeof fetch
-      cookie?: string
-    },
-  ) {
+  async fetchEntryContentByStream(remoteEntryIds?: string[]) {
     if (!remoteEntryIds || remoteEntryIds.length === 0) return
 
     const onlyNoStored = true
@@ -645,29 +636,17 @@ class EntrySyncServices {
     if (nextIds.length === 0) return
 
     const readStream = async () => {
-      // https://github.com/facebook/react-native/issues/37505
-      // TODO: And it seems we can not just use fetch from expo for ofetch, need further investigation
-      const response = await (options?.fetch || fetch)(
-        apiClient().entries.stream.$url().toString(),
-        {
-          method: "POST",
-          headers: options?.cookie
-            ? {
-                cookie: options.cookie,
-              }
-            : undefined,
-          credentials: options?.cookie ? "omit" : "include",
-          body: JSON.stringify({
-            ids: nextIds,
-          }),
-        },
-      )
+      const response = await api().entries.stream({
+        ids: nextIds.slice(0, 30),
+      })
+
       if (!response.ok) {
         console.error("Failed to fetch stream:", response.statusText, await response.text())
         return
       }
 
       const reader = response.body?.getReader()
+
       if (!reader) return
 
       const decoder = new TextDecoder()
@@ -686,6 +665,7 @@ class EntrySyncServices {
             if (lines[i]!.trim()) {
               const json = JSON.parse(lines[i]!)
               // Handle each JSON line here
+
               entryActions.updateEntryContent({ entryId: json.id, content: json.content })
             }
           }
@@ -711,13 +691,9 @@ class EntrySyncServices {
   }
 
   async fetchEntryReadHistory(entryId: EntryId, size: number) {
-    const res = await apiClient().entries["read-histories"][":id"].$get({
-      param: {
-        id: entryId,
-      },
-      query: {
-        size,
-      },
+    const res = await api().entries.readHistories({
+      id: entryId,
+      size,
     })
 
     await userActions.upsertMany(Object.values(res.data.users))
@@ -735,7 +711,7 @@ class EntrySyncServices {
       entryActions.deleteInboxEntryById(entryId)
     })
     tx.request(async () => {
-      await apiClient().entries.inbox.$delete({ json: { entryId } })
+      await api().entries.inbox.delete({ entryId })
     })
     tx.rollback(() => {
       entryActions.upsertManyInSession([currentEntry])

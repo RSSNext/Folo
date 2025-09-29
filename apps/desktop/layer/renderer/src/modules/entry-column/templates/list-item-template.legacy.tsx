@@ -11,7 +11,7 @@ import { titleCase } from "title-case"
 
 import { AudioPlayer, useAudioPlayerAtomSelector } from "~/atoms/player"
 import { useGeneralSettingKey } from "~/atoms/settings/general"
-import { useRealInWideMode, useUISettingKey } from "~/atoms/settings/ui"
+import { useUISettingKey } from "~/atoms/settings/ui"
 import { RelativeTime } from "~/components/ui/datetime"
 import { Media } from "~/components/ui/media/Media"
 import { FEED_COLLECTION_LIST } from "~/constants"
@@ -55,7 +55,7 @@ const entrySelector = (state: EntryModel) => {
 }
 export function ListItem({
   entryId,
-  entryPreview,
+
   translation,
   simple,
 }: UniversalItemProps & {
@@ -71,22 +71,21 @@ export function ListItem({
 
   const inInCollection = useRouteParamsSelector((s) => s.feedId === FEED_COLLECTION_LIST)
 
-  const feed =
-    useFeedById(entry?.feedId, (feed) => {
-      return {
-        type: feed.type,
-        ownerUserId: feed.ownerUserId,
-        id: feed.id,
-        title: feed.title,
-        url: (feed as any).url || "",
-        image: feed.image,
-        siteUrl: feed.siteUrl,
-      }
-    }) || entryPreview?.feeds
+  const feed = useFeedById(entry?.feedId, (feed) => {
+    return {
+      type: feed.type,
+      ownerUserId: feed.ownerUserId,
+      id: feed.id,
+      title: feed.title,
+      url: (feed as any).url || "",
+      image: feed.image,
+      siteUrl: feed.siteUrl,
+    }
+  })
 
   const inbox = useInboxById(entry?.inboxId)
 
-  const settingWideMode = useRealInWideMode()
+  const settingWideMode = false
   const thumbnailRatio = useUISettingKey("thumbnailRatio")
   const rid = `list-item-${entryId}`
 
@@ -151,7 +150,7 @@ export function ListItem({
         settingWideMode ? "py-3" : "py-4",
       )}
     >
-      <FeedIcon feed={related} fallback entry={entry?.iconEntry} />
+      <FeedIcon target={related} fallback entry={entry?.iconEntry} />
       <div
         className={cn("-mt-0.5 flex-1 text-sm leading-tight", lineClamp.global)}
         style={{
@@ -234,7 +233,7 @@ export function ListItem({
                   )}
                 />
               }
-              feed={feed || inbox}
+              target={feed || inbox}
               entry={entry?.iconEntry}
               size={settingWideMode ? 65 : 80}
               className="m-0 rounded"

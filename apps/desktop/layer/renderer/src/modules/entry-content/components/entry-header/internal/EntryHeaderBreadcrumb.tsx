@@ -241,7 +241,7 @@ export function EntryHeaderBreadcrumb() {
           <button
             type="button"
             className="text-text-secondary no-drag-region hover:text-text hover:bg-fill/50 focus-visible:bg-fill/60 inline-flex shrink-0 items-center rounded-full bg-transparent p-2"
-            onClick={() => navigate({ entryId: null })}
+            onClick={() => navigate({ entryId: null, view })}
           >
             <i className="i-mingcute-close-line size-5" />
           </button>

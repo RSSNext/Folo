@@ -39,7 +39,7 @@ import { PlatformActivityIndicator } from "@/src/components/ui/loading/PlatformA
 import { ItemPressable } from "@/src/components/ui/pressable/ItemPressable"
 import { Text } from "@/src/components/ui/typography/Text"
 import { ShareForwardCuteReIcon } from "@/src/icons/share_forward_cute_re"
-import type { apiClient } from "@/src/lib/api-fetch"
+import type { followClient } from "@/src/lib/api-client"
 import { Navigation } from "@/src/lib/navigation/Navigation"
 import type { NavigationControllerView } from "@/src/lib/navigation/types"
 import { toast } from "@/src/lib/toast"
@@ -51,7 +51,7 @@ import { useColor } from "@/src/theme/colors"
 import { FeedScreen } from "../(stack)/feeds/[feedId]/FeedScreen"
 import { FollowScreen } from "./FollowScreen"
 
-type Subscription = Awaited<ReturnType<typeof apiClient.subscriptions.$get>>["data"][number]
+type Subscription = Awaited<ReturnType<typeof followClient.api.subscriptions.get>>["data"][number]
 export const ProfileScreen: NavigationControllerView<{
   userId: string
 }> = ({ userId }) => {
@@ -102,7 +102,11 @@ function ProfileScreenImpl(props: { userId: string }) {
     })
   }, [user?.id, user?.name])
   const frame = useSafeAreaFrame()
-  const headerHeight = getDefaultHeaderHeight(frame, false, 0)
+  const headerHeight = getDefaultHeaderHeight({
+    landscape: frame.width > frame.height,
+    modalPresentation: false,
+    topInset: 0,
+  })
   const whoami = useWhoami()
   const isMyProfile = user?.id === whoami?.id
   const actionCtx = useMemo(

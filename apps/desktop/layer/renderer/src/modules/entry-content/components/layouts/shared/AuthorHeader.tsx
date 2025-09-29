@@ -54,7 +54,7 @@ export const AuthorHeader: React.FC<AuthorHeaderProps> = ({
       {showAvatar && (
         <FeedIcon
           fallback
-          feed={feed}
+          target={feed}
           entry={entry.iconEntry}
           size={avatarSize}
           className="shrink-0"

@@ -1,12 +1,10 @@
 import { debouncedFetchEntryContentByStream } from "@follow/store/entry/store"
 import { unreadSyncService } from "@follow/store/unread/store"
 import type { ViewToken } from "@shopify/flash-list"
-import { fetch as expoFetch } from "expo/fetch"
 import { useCallback, useEffect, useInsertionEffect, useMemo, useRef, useState } from "react"
 import type { NativeScrollEvent, NativeSyntheticEvent } from "react-native"
 
 import { useGeneralSettingKey } from "@/src/atoms/settings/general"
-import { getCookie } from "@/src/lib/auth"
 
 const defaultIdExtractor = (item: ViewToken<string>) => item.key
 export function useOnViewableItemsChanged({
@@ -35,10 +33,7 @@ export function useOnViewableItemsChanged({
   }) => void = useNonReactiveCallback(({ viewableItems, changed }) => {
     setViewableItems(viewableItems)
 
-    debouncedFetchEntryContentByStream(
-      viewableItems.map((item) => stableIdExtractor(item)),
-      { cookie: getCookie(), fetch: expoFetch as any },
-    )
+    debouncedFetchEntryContentByStream(viewableItems.map((item) => stableIdExtractor(item)))
     const removed = changed.filter((item) => !item.isViewable)
 
     // Only when the scroll direction is down and the current offset is a positive number, is it marked as read.

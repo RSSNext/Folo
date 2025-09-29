@@ -17,7 +17,11 @@ import { memo, useCallback, useEffect, useLayoutEffect, useMemo, useRef, useStat
 
 import { useRootContainerElement } from "~/atoms/dom"
 import { useUISettingKey } from "~/atoms/settings/ui"
-import { setTimelineColumnShow, useSubscriptionColumnShow } from "~/atoms/sidebar"
+import {
+  setTimelineColumnShow,
+  useSubscriptionColumnApronNode,
+  useSubscriptionColumnShow,
+} from "~/atoms/sidebar"
 import { Focusable } from "~/components/common/Focusable"
 import { HotkeyScope, ROUTE_TIMELINE_OF_VIEW } from "~/constants"
 import { useBackHome } from "~/hooks/biz/useNavigateEntry"
@@ -33,7 +37,6 @@ import { useShouldFreeUpSpace } from "./hook"
 import { SubscriptionListGuard } from "./subscription-list/SubscriptionListGuard"
 import { SubscriptionColumnHeader } from "./SubscriptionColumnHeader"
 import { SubscriptionTabButton } from "./SubscriptionTabButton"
-import { useShowTimelineTabsSettingsModal } from "./TimelineTabsSettingsModal"
 
 const lethargy = new Lethargy()
 
@@ -174,9 +177,15 @@ export function SubscriptionColumn({
         </SwipeWrapper>
       </div>
 
+      <ApronNodeContainer />
+
       {children}
     </WindowUnderBlur>
   )
+}
+
+const ApronNodeContainer: FC = () => {
+  return useSubscriptionColumnApronNode()
 }
 
 const SwipeWrapper: FC<{ active: string; children: React.JSX.Element[] }> = memo(
@@ -249,7 +258,6 @@ const SwipeWrapper: FC<{ active: string; children: React.JSX.Element[] }> = memo
 
 const TabsRow: FC = () => {
   const timelineList = useTimelineList()
-  const showSettings = useShowTimelineTabsSettingsModal()
   const timelineTabs = useUISettingKey("timelineTabs")
 
   if (timelineList.length <= 5) {
@@ -285,10 +293,6 @@ const TabsRow: FC = () => {
       {visible.map((timelineId, index) => (
         <SubscriptionTabButton key={timelineId} timelineId={timelineId} shortcut={`${index + 1}`} />
       ))}
-
-      <ActionButton tooltip={"Customize Tabs"} onClick={showSettings}>
-        <i className="i-mingcute-dots-fill" />
-      </ActionButton>
     </div>
   )
 }

@@ -7,7 +7,7 @@ import { useChatBlockActions } from "~/modules/ai-chat/store/hooks"
 import type { AIChatContextBlock, ValueContextBlock } from "~/modules/ai-chat/store/types"
 
 import { $isMentionNode, MentionNode } from "../MentionNode"
-import type { MentionData } from "../types"
+import type { MentionData, MentionType } from "../types"
 
 interface MentionBlockReference {
   mentionNodeKey: string
@@ -19,7 +19,20 @@ interface MentionBlockReference {
 const getResourceId = (type: string, value: string) => `${type}:${value}`
 
 const getBlockType = (mentionType: string): ValueContextBlock["type"] => {
-  return mentionType === "feed" ? "referFeed" : "referEntry"
+  switch (mentionType) {
+    case "feed": {
+      return "referFeed"
+    }
+    case "category": {
+      return "referFeed"
+    }
+    case "date": {
+      return "referDate"
+    }
+    default: {
+      return "referEntry"
+    }
+  }
 }
 
 /**
@@ -28,7 +41,7 @@ const getBlockType = (mentionType: string): ValueContextBlock["type"] => {
  * - When a block is removed, corresponding mentions are removed
  * - When a mention is removed, corresponding block is removed (if no other mentions reference it)
  */
-export const useMentionBlockSync = () => {
+export const useMentionBlockSync = (ignoreTypes: MentionType[]) => {
   const [editor] = useLexicalComposerContext()
   const blockActions = useChatBlockActions()
   const blocks = useAIChatStore()((state) => state.blocks)
@@ -100,6 +113,10 @@ export const useMentionBlockSync = () => {
   // Handle mention insertion - create block and track reference
   const handleMentionInsert = useCallback(
     (mentionData: MentionData, mentionNodeKey: string) => {
+      if (ignoreTypes.includes(mentionData.type)) {
+        return
+      }
+
       const resourceId = getResourceId(mentionData.type, mentionData.value as string)
 
       // Check if block already exists for this resource
@@ -114,6 +131,10 @@ export const useMentionBlockSync = () => {
       } else {
         // Create new block
         const blockType = getBlockType(mentionData.type)
+
+        if (!blockType) {
+          return
+        }
 
         // Generate block ID (mimicking the block slice logic)
         const newBlock: Omit<ValueContextBlock, "id"> = {

@@ -1,6 +1,6 @@
 import { env } from "@follow/shared/env.desktop"
-import type { AuthSession } from "@follow/shared/hono"
 import { setFirebaseTracker, setPostHogTracker, tracker } from "@follow/tracker"
+import type { AuthSessionResponse } from "@follow-app/client-sdk"
 import posthog from "posthog-js"
 
 import { QUERY_PERSIST_KEY } from "~/constants/app"
@@ -25,7 +25,7 @@ export const initAnalytics = async () => {
     }),
   )
 
-  let session: AuthSession | undefined
+  let session: AuthSessionResponse | undefined
   try {
     const queryData = JSON.parse(window.localStorage.getItem(QUERY_PERSIST_KEY) ?? "{}")
     session = queryData.clientState.queries.find(

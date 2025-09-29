@@ -1,7 +1,7 @@
-import type { ServerConfigs } from "@follow/models/types"
 import { createAtomHooks } from "@follow/utils/jotai"
+import type { StatusConfigs } from "@follow-app/client-sdk"
 import { atom } from "jotai"
 
 export const [, , useServerConfigs, , getServerConfigs, setServerConfigs] = createAtomHooks(
-  atom<Nullable<ServerConfigs>>(null),
+  atom<Nullable<StatusConfigs>>(null),
 )

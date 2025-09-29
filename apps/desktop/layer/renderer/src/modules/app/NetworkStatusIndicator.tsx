@@ -30,12 +30,16 @@ export const NetworkStatusIndicator = () => {
             statusType === "offline" && [
               "bg-red/10 border-red/30 text-red ring-red/20",
               "dark:bg-red/15 dark:border-red/40 dark:text-red dark:ring-red/25",
+
+              ELECTRON && "!bg-sidebar",
             ],
             // API error - warning styling
             statusType === "api-error" && [
               "bg-red/10 border-red/30 text-red ring-red/20",
               "dark:bg-red/15 dark:border-red/40 dark:text-red dark:ring-red/25",
+              ELECTRON && "!bg-sidebar",
             ],
+            ELECTRON && "backdrop-blur-none",
           )}
         >
           <i

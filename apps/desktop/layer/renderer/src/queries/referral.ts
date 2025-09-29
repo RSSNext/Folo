@@ -1,5 +1,5 @@
 import { useAuthQuery } from "~/hooks/common/useBizQuery"
-import { apiClient } from "~/lib/api-fetch"
+import { followClient } from "~/lib/api-client"
 import { defineQuery } from "~/lib/defineQuery"
 
 export const referral = {
@@ -7,7 +7,7 @@ export const referral = {
     defineQuery(
       ["referral"],
       async () => {
-        const res = await apiClient.referrals.$get()
+        const res = await followClient.api.referrals.getReferrals()
         return res.data
       },
       {

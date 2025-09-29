@@ -49,7 +49,7 @@ type Account = {
   provider: string
   profile:
     | {
-        id: string
+        id: string | number
         name?: string
         email?: string | null
         image?: string

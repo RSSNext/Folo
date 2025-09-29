@@ -1,6 +1,7 @@
 import type { GeneralSettings, UISettings } from "@follow/shared/settings/interface"
 import { isEmptyObject, jotaiStore, sleep } from "@follow/utils"
 import { EventBus } from "@follow/utils/event-bus"
+import type { SettingsTab } from "@follow-app/client-sdk"
 import { omit } from "es-toolkit/compat"
 import type { PrimitiveAtom } from "jotai"
 
@@ -10,7 +11,7 @@ import {
   getGeneralSettings,
 } from "@/src/atoms/settings/general"
 import { __uiSettingAtom, getUISettings, uiServerSyncWhiteListKeys } from "@/src/atoms/settings/ui"
-import { apiClient } from "@/src/lib/api-fetch"
+import { followClient } from "@/src/lib/api-client"
 import { kv } from "@/src/lib/kv"
 
 type SettingMapping = {
@@ -169,12 +170,11 @@ class SettingSyncQueue {
       if (isEmptyObject(json)) {
         continue
       }
-      const promise = apiClient.settings[":tab"]
-        .$patch({
-          param: {
-            tab,
-          },
-          json,
+
+      const promise = followClient.api.settings
+        .update({
+          tab: tab as SettingsTab,
+          ...json,
         })
         .then(() => {
           // remove from queue
@@ -197,13 +197,11 @@ class SettingSyncQueue {
       const promises = [] as Promise<any>[]
       for (const tab in localSettingGetterMap) {
         const payload = localSettingGetterMap[tab as SettingSyncTab]()
-        const promise = apiClient.settings[":tab"].$patch({
-          param: {
-            tab,
-          },
-          json: payload,
-        })
 
+        const promise = followClient.api.settings.update({
+          tab: tab as SettingsTab,
+          ...payload,
+        })
         promises.push(promise)
       }
 
@@ -213,11 +211,9 @@ class SettingSyncQueue {
       const payload = localSettingGetterMap[tab]()
 
       this.chain = this.chain.finally(() =>
-        apiClient.settings[":tab"].$patch({
-          param: {
-            tab,
-          },
-          json: payload,
+        followClient.api.settings.update({
+          tab: tab as SettingsTab,
+          ...payload,
         }),
       )
 
@@ -235,7 +231,7 @@ class SettingSyncQueue {
     if (this.pendingPromise) {
       return this.pendingPromise
     }
-    const promise = apiClient.settings.$get({ query: {} })
+    const promise = followClient.api.settings.get()
     this.pendingPromise = promise.finally(() => {
       this.pendingPromise = null
     })
@@ -253,8 +249,8 @@ class SettingSyncQueue {
     if (isEmptyObject(remoteSettings.settings)) return
 
     for (const tab in remoteSettings.settings) {
-      const remoteSettingPayload = remoteSettings.settings[tab]
-      const updated = remoteSettings.updated[tab]
+      const remoteSettingPayload = remoteSettings.settings[tab as SettingsTab]
+      const updated = remoteSettings.updated[tab as SettingsTab]
 
       if (!updated) {
         continue

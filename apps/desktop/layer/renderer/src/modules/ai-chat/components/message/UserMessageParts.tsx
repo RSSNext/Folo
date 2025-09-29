@@ -2,8 +2,8 @@ import * as React from "react"
 
 import type { BizUIMessage } from "~/modules/ai-chat/store/types"
 
-import { AIMarkdownMessage } from "./AIMarkdownMessage.old"
-import { AIRichTextMessage } from "./AIRichTextMessage"
+import { AIMarkdownStreamingMessage } from "./AIMarkdownMessage"
+import { UserRichTextMessage } from "./UserRichTextMessage"
 
 interface UserMessagePartsProps {
   message: BizUIMessage
@@ -15,7 +15,7 @@ export const UserMessageParts: React.FC<UserMessagePartsProps> = React.memo(({ m
 
     switch (part.type) {
       case "text": {
-        return <AIMarkdownMessage key={partKey} text={part.text} />
+        return <AIMarkdownStreamingMessage isStreaming={false} key={partKey} text={part.text} />
       }
 
       case "data-block": {
@@ -25,7 +25,7 @@ export const UserMessageParts: React.FC<UserMessagePartsProps> = React.memo(({ m
 
       case "data-rich-text": {
         return (
-          <AIRichTextMessage
+          <UserRichTextMessage
             key={partKey}
             data={part.data as { state: string; text: string }}
             className="text-text"

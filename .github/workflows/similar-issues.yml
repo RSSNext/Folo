@@ -13,11 +13,11 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - name: Check out repository
-        uses: actions/checkout@v4
+        uses: actions/checkout@v5
 
       - name: Prepare prompt variables
         id: prepare_input
-        uses: actions/github-script@v7
+        uses: actions/github-script@v8
         with:
           script: |
             const issue = context.payload.issue || {};
@@ -31,7 +31,7 @@ jobs:
 
       - name: Find similar issues with AI (MCP)
         id: inference
-        uses: actions/ai-inference@v1
+        uses: actions/ai-inference@v2
         with:
           prompt-file: ./.github/prompts/similar_issues.prompt.yml
           input: |
@@ -39,13 +39,13 @@ jobs:
             issue_body: ${{ steps.prepare_input.outputs.issue_body_indented_json }}
             repository: ${{ github.repository }}
           enable-github-mcp: true
-          token: ${{ secrets.USER_PAT }}
+          token: ${{ secrets.GITHUB_TOKEN }}
           github-mcp-token: ${{ secrets.USER_PAT }}
           endpoint: https://models.github.ai/orgs/RSSNext/inference
 
       - name: Prepare comment body
         id: prepare
-        uses: actions/github-script@v7
+        uses: actions/github-script@v8
         env:
           AI_RESPONSE: ${{ steps.inference.outputs.response }}
         with:
@@ -58,13 +58,30 @@ jobs:
               return;
             }
             const matches = Array.isArray(data.matches) ? data.matches : [];
-            if (!matches.length) {
+            const rawIssueNumber = context?.payload?.issue?.number;
+            const issueNumber = typeof rawIssueNumber === 'string' ? Number(rawIssueNumber) : rawIssueNumber;
+            const filteredMatches = Number.isFinite(issueNumber)
+              ? matches.filter((m) => {
+                  const matchNumber = typeof m?.number === 'string' ? Number(m.number) : m?.number;
+                  if (Number.isFinite(matchNumber)) {
+                    return matchNumber !== issueNumber;
+                  }
+                  if (typeof m?.url === 'string') {
+                    const urlMatch = m.url.match(/\/issues\/(\d+)(?:$|[?#])/);
+                    if (urlMatch) {
+                      return Number(urlMatch[1]) !== issueNumber;
+                    }
+                  }
+                  return true;
+                })
+              : matches;
+            if (!filteredMatches.length) {
               core.setOutput('has_matches', 'false');
               return;
             }
             const lines = [];
             lines.push('I found similar issues that might help:');
-            for (const m of matches.slice(0, 3)) {
+            for (const m of filteredMatches.slice(0, 3)) {
               const num = m.number != null ? `#${m.number}` : '';
               const title = m.title || 'Untitled';
               const url = m.url || '';
@@ -76,7 +93,7 @@ jobs:
 
       - name: Comment similar issues
         if: steps.prepare.outputs.has_matches == 'true'
-        uses: actions/github-script@v7
+        uses: actions/github-script@v8
         with:
           script: |
             const body = ${{ toJson(steps.prepare.outputs.comment_body) }};

@@ -2,6 +2,7 @@
 import type { ChatState, ChatStatus } from "ai"
 import { throttle } from "es-toolkit/compat"
 import { produce } from "immer"
+import { startTransition } from "react"
 
 import { AIPersistService } from "../../services"
 import { ChatStateEventEmitter } from "../event-system/event-emitter"
@@ -102,12 +103,14 @@ export class ZustandChatState implements ChatState<BizUIMessage> {
   }
 
   set messages(newMessages: BizUIMessage[]) {
-    this.#messages = [...newMessages]
+    startTransition(() => {
+      this.#messages = [...newMessages]
 
-    this.#eventEmitter.emit("messages", { messages: this.#messages })
+      this.#eventEmitter.emit("messages", { messages: this.#messages })
 
-    // Auto-persist messages when they change
-    this.#persistMessages()
+      // Auto-persist messages when they change
+      this.#persistMessages()
+    })
   }
 
   pushMessage = (message: BizUIMessage) => {

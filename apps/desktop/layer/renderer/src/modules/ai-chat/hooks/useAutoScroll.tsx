@@ -15,8 +15,6 @@ export const useAutoScroll = (viewport: HTMLElement | null, enabled: boolean) =>
     isAtBottomRef.current = isAtBottom
   }, [isAtBottom])
 
-  // cancellation is tracked purely via ref to avoid re-renders while user interacts
-
   const scrollToBottom = useCallback(
     (force = false) => {
       if (!viewport) return
@@ -26,8 +24,26 @@ export const useAutoScroll = (viewport: HTMLElement | null, enabled: boolean) =>
       }
 
       if (force || (isAtBottomRef.current && !isAutoScrollCancelledRef.current)) {
+        const { scrollTop, scrollHeight, clientHeight } = viewport
+        const targetScrollTop = scrollHeight - clientHeight
+        const distance = Math.abs(targetScrollTop - scrollTop)
+
+        // If the jump is very large, set immediately to avoid the animation falling behind
+        const MAX_ANIMATED_DISTANCE = clientHeight * 1.5
+        if (distance > MAX_ANIMATED_DISTANCE) {
+          isAutoScrollingRef.current = true
+          viewport.scrollTop = targetScrollTop
+          // After immediate jump, update state
+          const atBottom = scrollHeight - viewport.scrollTop - clientHeight <= BOTTOM_THRESHOLD
+          if (isAtBottomRef.current !== atBottom) {
+            setIsAtBottom(atBottom)
+          }
+          isAutoScrollingRef.current = false
+          scrollAnimationRef.current = null
+          return
+        }
+
         isAutoScrollingRef.current = true
-        const targetScrollTop = viewport.scrollHeight - viewport.clientHeight
         const animation = springScrollTo(targetScrollTop, viewport)
 
         scrollAnimationRef.current = animation
@@ -35,8 +51,8 @@ export const useAutoScroll = (viewport: HTMLElement | null, enabled: boolean) =>
           scrollAnimationRef.current = null
           isAutoScrollingRef.current = false
           // After animation, re-evaluate position
-          const { scrollTop, scrollHeight, clientHeight } = viewport
-          const atBottom = scrollHeight - scrollTop - clientHeight <= BOTTOM_THRESHOLD
+          const { scrollTop: st, scrollHeight: sh, clientHeight: ch } = viewport
+          const atBottom = sh - st - ch <= BOTTOM_THRESHOLD
           if (isAtBottomRef.current !== atBottom) {
             setIsAtBottom(atBottom)
           }
@@ -53,6 +69,15 @@ export const useAutoScroll = (viewport: HTMLElement | null, enabled: boolean) =>
     const handleScroll = throttle(() => {
       if (isAutoScrollingRef.current) {
         return
+      }
+      const { scrollTop, scrollHeight, clientHeight } = viewport
+      const atBottom = scrollHeight - scrollTop - clientHeight <= BOTTOM_THRESHOLD
+      if (atBottom !== isAtBottomRef.current) {
+        setIsAtBottom(atBottom)
+      }
+      // If user scrolled back to bottom, resume auto-scroll
+      if (atBottom) {
+        isAutoScrollCancelledRef.current = false
       }
     }, 100)
 
@@ -107,6 +132,14 @@ export const useAutoScroll = (viewport: HTMLElement | null, enabled: boolean) =>
     return () => {
       resizeObserver.disconnect()
     }
+  }, [viewport, enabled, scrollToBottom])
+
+  // Ensure we start at bottom on mount/enable
+  useEffect(() => {
+    if (!viewport || !enabled) return
+    requestAnimationFrame(() => {
+      scrollToBottom(true)
+    })
   }, [viewport, enabled, scrollToBottom])
 
   const resetScrollState = useCallback(() => {

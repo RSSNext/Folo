@@ -9,9 +9,10 @@ import type {
 } from "lexical"
 import { DecoratorNode } from "lexical"
 import * as React from "react"
-import { useShallow } from "zustand/shallow"
 
-import { useAIChatStore } from "~/modules/ai-chat/store/AIChatContext"
+import { useAIMessageId } from "~/modules/ai-chat/components/message/AIMessageIdContext"
+import { useMessageByIdSelector } from "~/modules/ai-chat/store/hooks"
+import { findFileAttachmentBlock, isDataBlockPart } from "~/modules/ai-chat/utils/extractor"
 
 export type SerializedFileAttachmentNode = Spread<
   {
@@ -112,14 +113,18 @@ interface FileAttachmentComponentProps {
 function FileAttachmentComponent({ node }: FileAttachmentComponentProps) {
   const attachmentId = node.getAttachmentId()
 
-  const fileAttachment = useAIChatStore()(
-    useShallow((state) => {
-      const block = state.blocks.find(
-        (block) => block.type === "fileAttachment" && block.attachment.id === attachmentId,
-      )
-      return block?.type === "fileAttachment" ? block.attachment : null
-    }),
-  )
+  const messageId = useAIMessageId()!
+
+  const fileAttachment = useMessageByIdSelector(messageId, (message) => {
+    for (const part of message.parts) {
+      if (!isDataBlockPart(part)) continue
+
+      const block = findFileAttachmentBlock(part, attachmentId)
+      if (block) {
+        return block.attachment
+      }
+    }
+  })
 
   if (!fileAttachment) {
     return (

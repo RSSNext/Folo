@@ -1,5 +1,6 @@
-import { apiClient } from "~/lib/api-fetch"
 import { getClientId, getSessionId } from "~/lib/client-session"
+
+import { followClient } from "./api-client"
 
 class Analytics4 {
   private clientID: string
@@ -46,8 +47,8 @@ class Analytics4 {
       user_properties: this.userProperties,
     }
 
-    return apiClient.data.g.$post({
-      json: payload,
+    return followClient.api.data.sendAnalytics({
+      ...payload,
     })
   }
 }

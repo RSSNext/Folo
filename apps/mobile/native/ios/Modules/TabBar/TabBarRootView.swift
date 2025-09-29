@@ -10,12 +10,14 @@ import Foundation
 import SnapKit
 import UIKit
 
-class TabBarRootView: ExpoView {
-  private lazy var tabBarController = {
+@MainActor
+enum CustomTabbarController {
+  static var tabBarController = {
     let tabBarController = UITabBarController()
     if #available(iOS 16.0, *), UIDevice.current.userInterfaceIdiom == .pad {
       tabBarController.tabBar.isTranslucent = false
       tabBarController.tabBar.barStyle = .default
+
     }
 
     tabBarController.tabBar.isHidden = true
@@ -23,13 +25,29 @@ class TabBarRootView: ExpoView {
       tabBarController.isTabBarHidden = true
     }
 
+    if #available(iOS 26.0, *) {
+      tabBarController.isTabBarHidden = false
+      tabBarController.tabBarMinimizeBehavior = .onScrollDown
+
+    }
+
+    tabBarController.tabBar.tintColor = Utils.accentColor
+
     return tabBarController
   }()
+}
+
+class TabBarRootView: ExpoView {
+  private var tabBarController = CustomTabbarController.tabBarController
 
   private let vc = UIViewController()
   private var tabViewControllers: [UIViewController] = []
+  private var bottomAccessoryView: UIView?
 
   private let onTabIndexChange = EventDispatcher()
+  private let onTabItemPress = EventDispatcher()
+
+
 
   required init(appContext: AppContext? = nil) {
     super.init(appContext: appContext)
@@ -66,7 +84,7 @@ class TabBarRootView: ExpoView {
       return
     }
     if let fromView = tabViewControllers[beforeIndex].view,
-       let toView = tabViewControllers[index].view
+      let toView = tabViewControllers[index].view
     {
       if fromView != toView {
         UIView.transition(
@@ -89,6 +107,17 @@ class TabBarRootView: ExpoView {
     if let tabScreenView = subview as? TabScreenView {
       let screenVC = UIViewController()
       screenVC.view = tabScreenView
+      tabScreenView.ownerViewController = screenVC
+      // Apply current title if already provided from React side
+      if let currentTitle = tabScreenView.title {
+        screenVC.tabBarItem.title = currentTitle
+      }
+      if let icon = tabScreenView.icon {
+        screenVC.tabBarItem.image = .init(UIImage(named: icon)!)
+      }
+      if let activeIcon = tabScreenView.activeIcon {
+        screenVC.tabBarItem.selectedImage = .init(UIImage(named: activeIcon)!)
+      }
       tabViewControllers.append(screenVC)
       tabBarController.viewControllers = tabViewControllers
       tabBarController.didMove(toParent: vc)
@@ -98,6 +127,7 @@ class TabBarRootView: ExpoView {
       let tabBarView = tabBarController.view!
       tabBarView.addSubview(tabBarPortalView)
     }
+
   }
 
   override func willRemoveSubview(_ subview: UIView) {
@@ -109,12 +139,21 @@ class TabBarRootView: ExpoView {
       tabBarController.viewControllers = tabViewControllers
       tabBarController.didMove(toParent: vc)
     }
+
   }
 }
 
 // MARK: - UITabBarControllerDelegate
 
 extension TabBarRootView: UITabBarControllerDelegate {
+  func tabBarController(
+    _ tabBarController: UITabBarController, shouldSelect viewController: UIViewController
+  ) -> Bool {
+    if let index = tabViewControllers.firstIndex(of: viewController) {
+      onTabItemPress(["index": index, "currentIndex": tabBarController.selectedIndex])
+    }
+    return true
+  }
   func tabBarController(
     _ tabBarController: UITabBarController, didSelect viewController: UIViewController
   ) {

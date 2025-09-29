@@ -1,6 +1,8 @@
 import { ResponsiveSelect } from "@follow/components/ui/select/responsive.js"
 import { ACTION_LANGUAGE_MAP } from "@follow/shared/language"
+import type { ActionAction } from "@follow/store/action/constant"
 import { availableActionMap as availableActionMapOriginal } from "@follow/store/action/constant"
+import type { ActionId } from "@follow-app/client-sdk"
 import { useTranslation } from "react-i18next"
 
 import { defaultResources } from "~/@types/default-resource"
@@ -22,7 +24,7 @@ export const availableActionMap: typeof availableActionMapOriginal = {
     ...availableActionMapOriginal.translation,
     prefixElement: <AiTargetLanguageSelector />,
   },
-}
+} as Record<ActionId, ActionAction>
 
 function AiTargetLanguageSelector() {
   const { t } = useTranslation("settings")

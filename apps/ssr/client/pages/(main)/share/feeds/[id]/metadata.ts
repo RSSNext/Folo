@@ -7,7 +7,7 @@ import { defineMetadata } from "~/meta-handler"
 const meta = defineMetadata(async ({ params, apiClient, origin }) => {
   const feedId = params.id
 
-  const feed = await apiClient.feeds.$get({ query: { id: feedId } }).catch(callNotFound)
+  const feed = await apiClient.api.feeds.get({ id: feedId }).catch(callNotFound)
 
   const { title, description } = feed.data.feed
 
@@ -25,7 +25,7 @@ const meta = defineMetadata(async ({ params, apiClient, origin }) => {
     {
       type: "hydrate",
       data: feed.data,
-      path: apiClient.feeds.$url({ query: { id: feedId } }).pathname,
+      path: `/feeds/${feedId}`,
       key: `feeds.$get,query:id=${feedId}`,
     },
     {

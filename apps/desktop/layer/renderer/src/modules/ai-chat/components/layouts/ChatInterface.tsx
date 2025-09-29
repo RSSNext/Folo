@@ -1,18 +1,22 @@
+import { useFocusable } from "@follow/components/common/Focusable/hooks.js"
 import { ScrollArea } from "@follow/components/ui/scroll-area/ScrollArea.js"
+import { getCategoryFeedIds } from "@follow/store/subscription/getter"
 import { usePrefetchSummary } from "@follow/store/summary/hooks"
 import { tracker } from "@follow/tracker"
-import { clsx, cn, nextFrame } from "@follow/utils"
+import { clsx, cn, detectIsEditableElement, nextFrame } from "@follow/utils"
 import type { BizUIMessage } from "@folo-services/ai-tools"
 import { ErrorBoundary } from "@sentry/react"
 import type { EditorState, LexicalEditor } from "lexical"
 import { AnimatePresence } from "motion/react"
 import { nanoid } from "nanoid"
-import type { FC, Ref } from "react"
-import { Suspense, useEffect, useRef, useState } from "react"
-import { useEventCallback } from "usehooks-ts"
+import type { FC, RefObject } from "react"
+import { startTransition, Suspense, use, useEffect, useLayoutEffect, useRef, useState } from "react"
+import { useEventCallback, useEventListener } from "usehooks-ts"
 
 import { useAISettingKey } from "~/atoms/settings/ai"
 import { useActionLanguage } from "~/atoms/settings/general"
+import { ROUTE_FEED_IN_FOLDER } from "~/constants"
+import { getRouteParams } from "~/hooks/biz/useRouteParams"
 import {
   AIChatMessage,
   AIChatWaitingIndicator,
@@ -32,6 +36,7 @@ import {
 } from "~/modules/ai-chat/store/hooks"
 
 import { useAttachScrollBeyond } from "../../hooks/useAttachScrollBeyond"
+import { AIPanelRefsContext } from "../../store/AIChatContext"
 import type { AIChatContextBlock } from "../../store/types"
 import { convertLexicalToMarkdown } from "../../utils/lexical-markdown"
 import { GlobalFileDropZone } from "../file/GlobalFileDropZone"
@@ -47,6 +52,21 @@ const ChatInterfaceContent = ({ centerInputOnEmpty }: ChatInterfaceProps) => {
   const status = useChatStatus()
   const chatActions = useChatActions()
   const error = useChatError()
+
+  const isFocusWithIn = useFocusable()
+
+  const aiPanelRefs = use(AIPanelRefsContext)
+
+  useEventListener("keydown", () => {
+    if (isFocusWithIn) {
+      const currentActiveElement = document.activeElement
+
+      if (detectIsEditableElement(currentActiveElement as HTMLElement)) {
+        return
+      }
+      aiPanelRefs.inputRef?.current?.focus()
+    }
+  })
 
   useEffect(() => {
     if (error) {
@@ -167,6 +187,17 @@ const ChatInterfaceContent = ({ centerInputOnEmpty }: ChatInterfaceProps) => {
               serverUrl: block.attachment.serverUrl,
             },
           })
+        } else if (
+          (block.type === "mainFeed" || block.type === "referFeed") &&
+          block.value.startsWith(ROUTE_FEED_IN_FOLDER)
+        ) {
+          const categoryName = block.value.slice(ROUTE_FEED_IN_FOLDER.length)
+          const { view } = getRouteParams()
+          const feedIds = getCategoryFeedIds(categoryName, view)
+          blocks.push({
+            ...block,
+            value: feedIds.join(","),
+          })
         } else {
           blocks.push(block)
         }
@@ -210,6 +241,28 @@ const ChatInterfaceContent = ({ centerInputOnEmpty }: ChatInterfaceProps) => {
     },
   )
 
+  const [bottomPanelHeight, setBottomPanelHeight] = useState<number>(0)
+  const bottomPanelRef = useRef<HTMLDivElement | null>(null)
+
+  useLayoutEffect(() => {
+    if (!bottomPanelRef.current) {
+      return
+    }
+    setBottomPanelHeight(bottomPanelRef.current.offsetHeight)
+
+    const resizeObserver = new ResizeObserver(() => {
+      if (!bottomPanelRef.current) {
+        return
+      }
+      setBottomPanelHeight(bottomPanelRef.current.offsetHeight)
+    })
+    resizeObserver.observe(bottomPanelRef.current)
+
+    return () => {
+      resizeObserver.disconnect()
+    }
+  }, [])
+
   useEffect(() => {
     if (status === "submitted") {
       resetScrollState()
@@ -238,10 +291,20 @@ const ChatInterfaceContent = ({ centerInputOnEmpty }: ChatInterfaceProps) => {
               <ScrollArea
                 onScroll={handleScroll}
                 flex
-                scrollbarClassName="mb-40 mt-12"
+                scrollbarClassName="mt-12"
+                scrollbarProps={{
+                  style: {
+                    marginBottom: Math.max(160, bottomPanelHeight) + (error ? 64 : 0),
+                  },
+                }}
                 ref={setScrollAreaRef}
                 rootClassName="flex-1"
-                viewportClassName={cn("pt-12 pb-32", error && "pb-48")}
+                viewportProps={{
+                  style: {
+                    paddingBottom: Math.max(128, bottomPanelHeight) + (error ? 64 : 0),
+                  },
+                }}
+                viewportClassName={"pt-12"}
               >
                 {isLoadingHistory ? (
                   <div className="flex min-h-96 items-center justify-center">
@@ -256,7 +319,7 @@ const ChatInterfaceContent = ({ centerInputOnEmpty }: ChatInterfaceProps) => {
                         : undefined,
                     }}
                   >
-                    <Messages contentRef={messagesContentRef} />
+                    <Messages contentRef={messagesContentRef as RefObject<HTMLDivElement>} />
 
                     {(status === "submitted" || status === "streaming") && (
                       <AIChatWaitingIndicator />
@@ -286,8 +349,9 @@ const ChatInterfaceContent = ({ centerInputOnEmpty }: ChatInterfaceProps) => {
       )}
 
       <div
+        ref={bottomPanelRef}
         className={cn(
-          "absolute mx-auto duration-500 ease-in-out",
+          "absolute z-10 mx-auto duration-500 ease-in-out",
           hasMessages && "inset-x-0 bottom-0 max-w-4xl px-6 pb-6",
           !hasMessages && "inset-x-0 bottom-0 max-w-3xl px-6 pb-6 duration-200",
           centerInputOnEmpty &&
@@ -297,10 +361,17 @@ const ChatInterfaceContent = ({ centerInputOnEmpty }: ChatInterfaceProps) => {
       >
         {error && <CollapsibleError error={error} />}
         <ChatInput onSend={handleSendMessage} variant={!hasMessages ? "minimal" : "default"} />
-        {!centerInputOnEmpty && (
+        <div className="text-text-secondary relative z-[1] -mb-4 mt-2 pl-2 text-xs">
+          AI can make mistakes, please verify critical information.
+        </div>
+
+        {(!centerInputOnEmpty || hasMessages) && (
           <div
-            className="bg-background backdrop-blur-background absolute inset-x-0 bottom-0 h-28"
-            style={{ maskImage: "linear-gradient(to bottom, transparent, black)" }}
+            className="bg-background pointer-events-none absolute inset-x-0 bottom-0 z-0 opacity-90"
+            style={{
+              maskImage: "linear-gradient(to bottom, transparent, black)",
+              height: bottomPanelHeight,
+            }}
           />
         )}
       </div>
@@ -317,11 +388,38 @@ export const ChatInterface = (props: ChatInterfaceProps) => (
   </ErrorBoundary>
 )
 
-const Messages: FC<{ contentRef?: Ref<HTMLDivElement> }> = ({ contentRef }) => {
+const Messages: FC<{ contentRef?: RefObject<HTMLDivElement> }> = ({ contentRef }) => {
   const messages = useMessages()
 
+  const [messageContainerWidth, setMessageContainerWidth] = useState<number>(0)
+
+  useLayoutEffect(() => {
+    if (!contentRef) return
+
+    const setMessageContainerWidthTransition = () =>
+      startTransition(() => {
+        setMessageContainerWidth(contentRef.current?.clientWidth ?? 0)
+      })
+    setMessageContainerWidthTransition()
+    const resizeObserver = new ResizeObserver(() => {
+      setMessageContainerWidthTransition()
+    })
+    resizeObserver.observe(contentRef.current)
+
+    return () => {
+      resizeObserver.disconnect()
+    }
+  }, [contentRef])
   return (
-    <div ref={contentRef} className="relative flex min-w-0 flex-1 flex-col">
+    <div
+      ref={contentRef}
+      className="relative flex min-w-0 flex-1 flex-col"
+      style={
+        {
+          "--ai-chat-message-container-width": `${messageContainerWidth}px`,
+        } as React.CSSProperties
+      }
+    >
       {messages.map((message, index) => {
         const isLastMessage = index === messages.length - 1
         return (

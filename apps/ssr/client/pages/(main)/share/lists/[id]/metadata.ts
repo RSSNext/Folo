@@ -5,7 +5,7 @@ import { defineMetadata } from "~/meta-handler"
 
 export default defineMetadata(async ({ params, apiClient, origin }) => {
   const listId = params.id!
-  const list = await apiClient.lists.$get({ query: { listId } }).catch(callNotFound)
+  const list = await apiClient.api.lists.get({ listId }).catch(callNotFound)
 
   const { title, description } = list.data.list
   return [
@@ -22,7 +22,7 @@ export default defineMetadata(async ({ params, apiClient, origin }) => {
     {
       type: "hydrate",
       data: list.data,
-      path: apiClient.lists.$url({ query: { listId } }).pathname,
+
       key: `lists.$get,query:listId=${listId}`,
     },
     {

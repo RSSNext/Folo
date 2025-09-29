@@ -1,15 +1,15 @@
 import { Spring } from "@follow/components/constants/spring.js"
 import { MotionButtonBase } from "@follow/components/ui/button/index.js"
 import { IN_ELECTRON } from "@follow/shared/constants"
-import type { MediaModel } from "@follow/shared/hono"
 import { stopPropagation } from "@follow/utils/dom"
 import { cn } from "@follow/utils/utils"
+import type { EntryMedia } from "@follow-app/client-sdk"
 import useEmblaCarousel from "embla-carousel-react"
 import { WheelGesturesPlugin } from "embla-carousel-wheel-gestures"
 import { useAnimationControls } from "motion/react"
 import type { FC } from "react"
 import * as React from "react"
-import { Fragment, useCallback, useEffect, useRef, useState } from "react"
+import { Fragment, use, useCallback, useEffect, useMemo, useRef, useState } from "react"
 import { useTranslation } from "react-i18next"
 import type { ReactZoomPanPinchRef, ReactZoomPanPinchState } from "react-zoom-pan-pinch"
 import { TransformComponent, TransformWrapper } from "react-zoom-pan-pinch"
@@ -50,6 +50,11 @@ const modalVariants = {
   }),
 }
 
+const PreviewWrapperDragContext = React.createContext<{
+  isDragging: boolean
+  lastDragEndAt: number
+}>({ isDragging: false, lastDragEndAt: 0 })
+
 const Wrapper: FC<{
   src: string
   children:
@@ -69,6 +74,7 @@ const Wrapper: FC<{
   // Drag close state
   const [isImageZoomed, setIsImageZoomed] = useState(false)
   const [isDragging, setIsDragging] = useState(false)
+  const [lastDragEndAt, setLastDragEndAt] = useState(0)
   const [dragOffset, setDragOffset] = useState({ x: 0, y: 0 })
 
   // Combined zoom change callback
@@ -127,6 +133,7 @@ const Wrapper: FC<{
       } else {
         // Reset to normal state
         setIsDragging(false)
+        setLastDragEndAt(performance.now())
         setDragOffset({ x: 0, y: 0 })
         controls.start("visible", {
           ...Spring.presets.snappy,
@@ -147,44 +154,47 @@ const Wrapper: FC<{
     })
   }, [controls])
 
+  const dragCtxValue = useMemo(() => ({ isDragging, lastDragEndAt }), [isDragging, lastDragEndAt])
   return (
-    <div ref={containerRef} className="fixed inset-0">
-      <HeaderActions src={src} />
-      <m.div
-        variants={modalVariants}
-        initial="initial"
-        animate={controls}
-        exit="exit"
-        custom={dragOffset}
-        className="bg-material-medium-dark flex size-full pt-[var(--fo-window-padding-top)] backdrop-blur"
-        drag={enableDragClose}
-        dragConstraints={{ top: 0, bottom: 300, left: -200, right: 200 }}
-        dragElastic={{ top: 0, bottom: 0.3, left: 0.2, right: 0.2 }}
-        onDragStart={handleDragStart}
-        onDrag={handleDrag}
-        onDragEnd={handleDragEnd}
-        style={{
-          cursor: enableDragClose ? (isDragging ? "grabbing" : "grab") : "default",
-        }}
-      >
-        <div
-          className={cn(
-            "group/left relative flex h-full w-0 grow overflow-hidden",
-            hasSideContent ? "min-w-96 items-center justify-center" : "",
-          )}
+    <PreviewWrapperDragContext value={dragCtxValue}>
+      <div ref={containerRef} className="fixed inset-0">
+        <HeaderActions src={src} />
+        <m.div
+          variants={modalVariants}
+          initial="initial"
+          animate={controls}
+          exit="exit"
+          custom={dragOffset}
+          className="bg-material-medium-dark flex size-full pt-[var(--fo-window-padding-top)] backdrop-blur"
+          drag={enableDragClose}
+          dragConstraints={{ top: 0, bottom: 300, left: -200, right: 200 }}
+          dragElastic={{ top: 0, bottom: 0.3, left: 0.2, right: 0.2 }}
+          onDragStart={handleDragStart}
+          onDrag={handleDrag}
+          onDragEnd={handleDragEnd}
+          style={{
+            cursor: enableDragClose ? (isDragging ? "grabbing" : "grab") : "default",
+          }}
         >
-          {isArray ? renderedChildren[0] : renderedChildren}
-        </div>
-        {hasSideContent ? (
           <div
-            className="bg-background box-border flex h-full w-[400px] min-w-0 shrink-0 flex-col px-2 pt-1"
-            onClick={stopPropagation}
+            className={cn(
+              "group/left relative flex h-full w-0 grow overflow-hidden",
+              hasSideContent ? "min-w-96 items-center justify-center" : "",
+            )}
           >
-            {isArray ? renderedChildren[1] : null}
+            {isArray ? renderedChildren[0] : renderedChildren}
           </div>
-        ) : undefined}
-      </m.div>
-    </div>
+          {hasSideContent ? (
+            <div
+              className="bg-background box-border flex h-full w-[400px] min-w-0 shrink-0 flex-col px-2 pt-1"
+              onClick={stopPropagation}
+            >
+              {isArray ? renderedChildren[1] : null}
+            </div>
+          ) : undefined}
+        </m.div>
+      </div>
+    </PreviewWrapperDragContext>
   )
 }
 
@@ -245,7 +255,7 @@ const HeaderActions: FC<{
   )
 }
 
-export interface PreviewMediaProps extends MediaModel {
+export interface PreviewMediaProps extends EntryMedia {
   fallbackUrl?: string
 }
 export const PreviewMediaContent: FC<{
@@ -289,7 +299,7 @@ export const PreviewMediaContent: FC<{
 
   if (media.length === 0) return null
   if (media.length === 1) {
-    const src = media[0]!.url
+    const src = media[0]!.url!
     const { type } = media[0]!
     const isVideo = type === "video"
     return (
@@ -528,9 +538,9 @@ const DOMImageViewer: FC<{
   onLoad,
   onError,
 }) => {
+  const { isDragging: isModalDragging, lastDragEndAt } = use(PreviewWrapperDragContext)
   const onTransformed = useCallback(
     (ref: ReactZoomPanPinchRef, state: Omit<ReactZoomPanPinchState, "previousScale">) => {
-      // 当缩放比例不等于 1 时，认为图片被缩放了
       const isZoomed = state.scale !== 1
       onZoomChange?.(isZoomed)
     },
@@ -547,75 +557,87 @@ const DOMImageViewer: FC<{
   const { dismiss } = useCurrentModal()
 
   return (
-    <TransformWrapper
-      ref={transformRef}
-      initialScale={1}
-      minScale={minZoom}
-      maxScale={maxZoom}
-      wheel={{
-        step: 0.1,
-      }}
-      pinch={{
-        step: 0.5,
-      }}
-      doubleClick={{
-        step: 2,
-        mode: "toggle",
-        animationTime: 200,
-        animationType: "easeInOutCubic",
-      }}
-      limitToBounds={true}
-      centerOnInit={true}
-      smooth={true}
-      onInit={(e) => {
-        if (e.instance.wrapperComponent) {
-          e.instance.wrapperComponent.onclick = () => {
-            dismiss()
-          }
-        }
-      }}
-      alignmentAnimation={{
-        sizeX: 0,
-        sizeY: 0,
-        velocityAlignmentTime: 0.2,
-      }}
-      velocityAnimation={{
-        sensitivity: 1,
-        animationTime: 0.2,
-      }}
-      onTransformed={onTransformed}
-    >
-      <TransformComponent
-        wrapperProps={{
-          onClick: stopPropagation,
+    <div className="relative size-full">
+      <TransformWrapper
+        ref={transformRef}
+        initialScale={1}
+        minScale={minZoom}
+        maxScale={maxZoom}
+        wheel={{
+          step: 0.1,
         }}
-        wrapperClass="!w-full !h-full !absolute !inset-0 cursor-zoom-out"
-        contentClass="!w-full !h-full flex items-center justify-center"
+        pinch={{
+          step: 0.5,
+        }}
+        doubleClick={{
+          step: 2,
+          mode: "toggle",
+          animationTime: 200,
+          animationType: "easeInOutCubic",
+        }}
+        limitToBounds={true}
+        centerOnInit={true}
+        smooth={true}
+        centerZoomedOut
+        alignmentAnimation={{
+          sizeX: 0,
+          sizeY: 0,
+          velocityAlignmentTime: 0.2,
+        }}
+        velocityAnimation={{
+          sensitivity: 1,
+          animationTime: 0.2,
+        }}
+        onTransformed={onTransformed}
       >
-        <div
-          className="relative inline-block h-full overflow-hidden"
-          onClick={stopPropagation}
-          tabIndex={-1}
-          data-image-container
+        <TransformComponent
+          wrapperProps={{
+            onClick: (e) => {
+              if (
+                (e as React.MouseEvent).detail >= 2 ||
+                isModalDragging ||
+                performance.now() - lastDragEndAt < 150
+              ) {
+                stopPropagation(e)
+                return
+              }
+              const target = e.target as HTMLElement
+              // If click is not on the image container, treat it as overlay click and dismiss
+              if (!target.closest("[data-image-container]")) {
+                dismiss()
+                return
+              }
+              stopPropagation(e)
+            },
+          }}
+          wrapperClass="!w-full !h-full !absolute !inset-0 cursor-default"
+          contentClass="!w-full !h-full flex items-center justify-center"
         >
-          <img
-            height={height}
-            width={width}
-            src={src || undefined}
-            alt={alt}
-            className={cn(
-              "mx-auto h-full object-contain",
-              highResLoaded ? "opacity-100" : "opacity-0",
-            )}
-            draggable={false}
-            loading={loading}
-            decoding="async"
-            onLoad={onLoad}
+          <div
+            className="relative inline-block h-full cursor-grab overflow-hidden"
             onClick={stopPropagation}
-            onError={onError}
-          />
-        </div>
-      </TransformComponent>
-    </TransformWrapper>
+            tabIndex={-1}
+            data-image-container
+          >
+            <img
+              height={height}
+              width={width}
+              src={src || undefined}
+              alt={alt}
+              className={cn(
+                "mx-auto h-full object-contain",
+                highResLoaded ? "opacity-100" : "opacity-0",
+              )}
+              draggable={false}
+              loading={loading}
+              decoding="async"
+              onLoad={onLoad}
+              onClick={stopPropagation}
+              onError={onError}
+            />
+          </div>
+        </TransformComponent>
+      </TransformWrapper>
+    </div>
   )
 }

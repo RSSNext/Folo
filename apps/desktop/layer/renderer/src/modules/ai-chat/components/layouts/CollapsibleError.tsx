@@ -177,11 +177,12 @@ export const CollapsibleError: React.FC<CollapsibleErrorProps> = ({
             <div className="text-red text-sm font-medium">{getErrorTitle()}</div>
           </div>
           <span
-            className="text-text-tertiary text-xs transition-all duration-150"
-            style={{
-              opacity: isExpanded ? 0 : 1,
-              transform: isExpanded ? "scale(0.95)" : "scale(1)",
-            }}
+            className={cn(
+              "text-text-tertiary text-xs",
+              "transition-[opacity,transform] duration-150 ease-in-out",
+              "[@starting-style]:scale-100 [@starting-style]:opacity-100",
+              isExpanded ? "scale-95 opacity-0" : "scale-100 opacity-100",
+            )}
           >
             hover to expand
           </span>
@@ -189,9 +190,14 @@ export const CollapsibleError: React.FC<CollapsibleErrorProps> = ({
 
         {/* Expanded Content */}
         <div
-          className="overflow-hidden transition-[max-height,opacity] duration-200 ease-out"
-          style={{ maxHeight: isExpanded ? expandedMaxHeight : "0px", opacity: isExpanded ? 1 : 0 }}
+          className={cn(
+            "overflow-hidden [interpolate-size:allow-keywords] [transition-behavior:allow-discrete]",
+            "transition-[height,opacity,display] duration-200 ease-in-out",
+            "[@starting-style]:h-0 [@starting-style]:opacity-0",
+            isExpanded ? "block h-[calc-size(auto)] opacity-100" : "hidden h-0 opacity-0",
+          )}
           aria-hidden={!isExpanded}
+          data-state={isExpanded ? "open" : "closed"}
         >
           <ScrollArea focusable={false} viewportProps={{ style: { maxHeight: expandedMaxHeight } }}>
             <div className="border-red/20 bg-red/5 border-t px-3 pb-3">

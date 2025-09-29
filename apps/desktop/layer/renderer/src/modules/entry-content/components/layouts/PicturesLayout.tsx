@@ -6,18 +6,9 @@ import { SwipeMedia } from "~/components/ui/media/SwipeMedia"
 import { readableContentMaxWidthClassName } from "~/constants/ui"
 
 import { AuthorHeader, ContentBody } from "./shared"
+import type { EntryLayoutProps } from "./types"
 
-interface PicturesLayoutProps {
-  entryId: string
-  compact?: boolean
-  noMedia?: boolean
-  translation?: {
-    content?: string
-    title?: string
-  }
-}
-
-export const PicturesLayout: React.FC<PicturesLayoutProps> = ({
+export const PicturesLayout: React.FC<EntryLayoutProps> = ({
   entryId,
   compact = false,
   noMedia = false,

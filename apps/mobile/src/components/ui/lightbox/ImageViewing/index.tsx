@@ -53,13 +53,11 @@ const SLOW_SPRING: WithSpringConfig = {
   mass: isIOS ? 1.25 : 0.75,
   damping: 300,
   stiffness: 800,
-  restDisplacementThreshold: 0.01,
 }
 const FAST_SPRING: WithSpringConfig = {
   mass: isIOS ? 1.25 : 0.75,
   damping: 150,
   stiffness: 900,
-  restDisplacementThreshold: 0.01,
 }
 function canAnimate(lightbox: Lightbox): boolean {
   return (

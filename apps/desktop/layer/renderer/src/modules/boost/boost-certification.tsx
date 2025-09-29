@@ -4,7 +4,8 @@ import {
   TooltipPortal,
   TooltipTrigger,
 } from "@follow/components/ui/tooltip/index.js"
-import type { FeedOrListRespModel } from "@follow/models/types"
+import type { FeedModel } from "@follow/store/feed/types"
+import type { ListModel } from "@follow/store/list/types"
 import { cn } from "@follow/utils/utils"
 import { useTranslation } from "react-i18next"
 
@@ -14,7 +15,7 @@ export const BoostCertification = ({
   feed,
   className,
 }: {
-  feed: FeedOrListRespModel
+  feed: FeedModel | ListModel
   className?: string
 }) => {
   const showBoostModal = useBoostModal()

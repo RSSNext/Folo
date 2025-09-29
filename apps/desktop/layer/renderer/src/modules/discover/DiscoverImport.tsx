@@ -2,7 +2,6 @@ import { Button } from "@follow/components/ui/button/index.js"
 import { CollapseCss, CollapseCssGroup } from "@follow/components/ui/collapse/index.js"
 import { DropZone } from "@follow/components/ui/drop-zone/index.js"
 import { Form, FormControl, FormField, FormItem } from "@follow/components/ui/form/index.jsx"
-import type { BizRespose } from "@follow/models"
 import { zodResolver } from "@hookform/resolvers/zod"
 import { useMutation } from "@tanstack/react-query"
 import { Fragment } from "react"
@@ -12,20 +11,13 @@ import { z } from "zod"
 
 import { Media } from "~/components/ui/media/Media"
 import { useModalStack } from "~/components/ui/modal/stacked/hooks"
-import { apiFetch } from "~/lib/api-fetch"
+import { followClient } from "~/lib/api-client"
 import { toastFetchError } from "~/lib/error-parser"
 
 import { OpmlSelectionModal } from "./OpmlSelectionModal"
-import type { ParsedOpmlData } from "./types"
 
-const parseOpmlFile = async (file: File): Promise<ParsedOpmlData> => {
-  const formData = new FormData()
-  formData.append("file", file)
-
-  const data = await apiFetch<BizRespose<ParsedOpmlData>>("/subscriptions/parse-opml", {
-    method: "POST",
-    body: formData,
-  })
+const parseOpmlFile = async (file: File) => {
+  const data = await followClient.api.subscriptions.parseOpml(await file.arrayBuffer())
 
   return data.data
 }

@@ -1,10 +1,10 @@
-import type { ActionModel } from "@follow/models/types"
 import {
   useActionRules,
   useIsActionDataDirty,
   usePrefetchActions,
   useUpdateActionsMutation,
 } from "@follow/store/action/hooks"
+import type { ActionModel } from "@follow/store/action/store"
 import { actionActions } from "@follow/store/action/store"
 import { useCallback } from "react"
 import { useTranslation } from "react-i18next"
@@ -157,7 +157,7 @@ const ItemSeparatorComponent = () => {
     />
   )
 }
-const keyExtractor = (item: ActionModel) => item.index.toString()
+const keyExtractor = (_item: ActionModel, index: number) => index.toString()
 const ListItemCell: ListRenderItem<ActionModel> = (props) => {
   return <ListItemCellImpl {...props} />
 }

@@ -38,7 +38,7 @@ const devHandler = (app: FastifyInstance) => {
 }
 const prodHandler = (app: FastifyInstance) => {
   app.get("*", async (req, reply) => {
-    // @ts-expect-error
+    // @ts-ignore
     const template = await import("../../.generated/index.template").then((m) => m.default)
     const { document } = parseHTML(template)
     await safeInjectMetaToTemplate(document, req, reply)

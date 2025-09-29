@@ -7,7 +7,6 @@ import * as HoverCard from "@radix-ui/react-hover-card"
 import { AnimatePresence, m } from "motion/react"
 import { memo, use, useCallback, useEffect, useImperativeHandle, useRef, useState } from "react"
 
-import { useRealInWideMode } from "~/atoms/settings/ui"
 import { COMMAND_ID } from "~/modules/command/commands/id"
 import {
   useWrappedElementPosition,
@@ -60,7 +59,7 @@ export const Toc = ({
 
   const renderContentElementPosition = useWrappedElementPosition()
   const renderContentElementSize = useWrappedElementSize()
-  const entryContentInWideMode = useRealInWideMode()
+  const entryContentInWideMode = false
   const shouldShowTitle = useViewport((v) => {
     if (!entryContentInWideMode) return false
     const { w } = v

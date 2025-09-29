@@ -1,19 +1,23 @@
 import { FeedViewType } from "@follow/constants"
+import type { FC } from "react"
 
 import { ArticleLayout } from "./ArticleLayout"
-import { PicturesLayout } from "./PicturesLayout"
+import { MediaLayout } from "./MediaLayout"
 import { SocialMediaLayout } from "./SocialMediaLayout"
-import { VideosLayout } from "./VideosLayout"
+import type { EntryLayoutProps } from "./types"
 
-const EntryContentLayoutFactory = {
+type EntryLayoutComponent = FC<EntryLayoutProps>
+
+const EntryContentLayoutFactory: Record<FeedViewType, EntryLayoutComponent> = {
+  [FeedViewType.All]: ArticleLayout, // Use article layout as fallback for all view
   [FeedViewType.Articles]: ArticleLayout,
   [FeedViewType.SocialMedia]: SocialMediaLayout,
-  [FeedViewType.Pictures]: PicturesLayout,
-  [FeedViewType.Videos]: VideosLayout,
+  [FeedViewType.Pictures]: MediaLayout, // Use unified media layout for pictures
+  [FeedViewType.Videos]: MediaLayout, // Use unified media layout for videos
   [FeedViewType.Audios]: ArticleLayout, // Use article layout as fallback for audio
   [FeedViewType.Notifications]: ArticleLayout, // Use article layout as fallback for notifications
 }
 
-export const getEntryContentLayout = (viewType: FeedViewType) => {
+export const getEntryContentLayout = (viewType: FeedViewType): EntryLayoutComponent => {
   return EntryContentLayoutFactory[viewType] || ArticleLayout
 }

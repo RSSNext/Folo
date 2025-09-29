@@ -4,9 +4,9 @@ import { RootPortal } from "@follow/components/ui/portal/index.js"
 import { ScrollArea } from "@follow/components/ui/scroll-area/index.js"
 import { FeedViewType } from "@follow/constants"
 import { useTitle } from "@follow/hooks"
-import type { FeedModel } from "@follow/models/types"
 import { useEntry } from "@follow/store/entry/hooks"
 import { useFeedById } from "@follow/store/feed/hooks"
+import type { FeedModel } from "@follow/store/feed/types"
 import { useIsInbox } from "@follow/store/inbox/hooks"
 import { useSubscriptionByFeedId } from "@follow/store/subscription/hooks"
 import { thenable } from "@follow/utils"
@@ -19,7 +19,6 @@ import * as React from "react"
 import { memo, useEffect, useRef, useState } from "react"
 
 import { useEntryIsInReadability } from "~/atoms/readability"
-import { useIsZenMode } from "~/atoms/settings/ui"
 import { Focusable } from "~/components/common/Focusable"
 import { m } from "~/components/common/Motion"
 import { HotkeyScope } from "~/constants"
@@ -77,8 +76,6 @@ const EntryContentImpl: Component<EntryContentProps> = ({
   const [scrollerRef, setScrollerRef] = useState<HTMLDivElement | null>(null)
   const safeUrl = useFeedSafeUrl(entryId)
 
-  const isZenMode = useIsZenMode()
-
   const [panelPortalElement, setPanelPortalElement] = useState<HTMLDivElement | null>(null)
 
   const scrollAnimationRef = useRef<JSAnimation<any> | null>(null)
@@ -98,6 +95,7 @@ const EntryContentImpl: Component<EntryContentProps> = ({
     })
     return () => {
       removeBlock(BlockSliceAction.SPECIAL_TYPES.mainEntry)
+      removeBlock(BlockSliceAction.SPECIAL_TYPES.selectedText)
     }
   }, [addOrUpdateBlock, entryId, removeBlock])
   const animationController = useAnimationControls()
@@ -129,7 +127,6 @@ const EntryContentImpl: Component<EntryContentProps> = ({
   }, [scrollerRef])
 
   const scrollerRefObject = React.useMemo(() => ({ current: scrollerRef }), [scrollerRef])
-
   return (
     <div className={cn(className, "@container flex flex-col")}>
       <EntryTitleMetaHandler entryId={entryId} />
@@ -148,13 +145,12 @@ const EntryContentImpl: Component<EntryContentProps> = ({
             scrollerRef={scrollerRefObject}
           />
         </RootPortal>
-        {/* <EntryTimeline entryId={entryId} className="top-48" /> */}
+
         <EntryScrollArea scrollerRef={setScrollerRef}>
-          {/* <EntryNavigationHandler entryId={entryId} /> */}
           {/* Indicator for the entry */}
-          {!isZenMode && isInHasTimelineView && (
+          {isInHasTimelineView && (
             <>
-              <div className="absolute inset-y-0 left-0 z-[9] flex w-12 items-center justify-center opacity-40 duration-200 hover:opacity-100">
+              <div className="absolute inset-y-0 left-0 z-[9] flex w-12 items-center justify-center opacity-0 duration-200 hover:opacity-100 group-hover:opacity-40">
                 <MotionButtonBase
                   // -12： Visual center point
                   className="absolute left-0 shrink-0 !-translate-y-12 cursor-pointer"
@@ -166,7 +162,7 @@ const EntryContentImpl: Component<EntryContentProps> = ({
                 </MotionButtonBase>
               </div>
 
-              <div className="absolute inset-y-0 right-0 z-[9] flex w-12 items-center justify-center opacity-40 duration-200 hover:opacity-100">
+              <div className="absolute inset-y-0 right-0 z-[9] flex w-12 items-center justify-center opacity-0 duration-200 hover:opacity-100 group-hover:opacity-40">
                 <MotionButtonBase
                   className="absolute right-0 shrink-0 !-translate-y-12 cursor-pointer"
                   onClick={() => {

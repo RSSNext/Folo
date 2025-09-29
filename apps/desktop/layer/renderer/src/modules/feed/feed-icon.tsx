@@ -1,8 +1,6 @@
 // import { Avatar, AvatarFallback, AvatarImage } from "@follow/components/ui/avatar/index.jsx"
 import { PlatformIcon } from "@follow/components/ui/platform-icon/index.jsx"
-import type { FeedOrListRespModel } from "@follow/models/types"
 import type { FeedModel } from "@follow/store/feed/types"
-import type { ListModel } from "@follow/store/list/types"
 import { getBackgroundGradient } from "@follow/utils/color"
 import { getImageProxyUrl } from "@follow/utils/img-proxy"
 import { cn, getUrlIcon } from "@follow/utils/utils"
@@ -21,18 +19,22 @@ const getBorderRadius = (size: number) => {
   return "rounded-xl" // 12px for extra large avatars
 }
 
-function getIconProps(
-  props: Pick<
-    Parameters<typeof FeedIcon>[0],
-    "feed" | "entry" | "useMedia" | "siteUrl" | "fallbackUrl" | "fallback" | "size"
-  >,
-) {
-  const { feed, entry, useMedia, siteUrl: propSiteUrl, fallbackUrl, fallback, size = 20 } = props
+type GetIconPropsProps = {
+  target?: IconTarget | null
+  entry?: FeedIconEntry | null
+  useMedia?: boolean
+  siteUrl?: string
+  fallbackUrl?: string
+  fallback?: boolean
+  size?: number
+}
+function getIconProps(props: GetIconPropsProps) {
+  const { target, entry, useMedia, siteUrl: propSiteUrl, fallbackUrl, fallback, size = 20 } = props
   const image =
-    (useMedia ? entry?.firstPhotoUrl || entry?.authorAvatar : entry?.authorAvatar) || feed?.image
-  const siteUrl = (feed as FeedModel)?.siteUrl || fallbackUrl
+    (useMedia ? entry?.firstPhotoUrl || entry?.authorAvatar : entry?.authorAvatar) || target?.image
+  const siteUrl = (target as FeedModel)?.siteUrl || fallbackUrl
 
-  if (propSiteUrl && !feed) {
+  if (propSiteUrl && !target) {
     const [src] = getFeedIconSrc({
       siteUrl: propSiteUrl,
     })
@@ -72,13 +74,13 @@ function getIconProps(
       fallbackSrc,
     }
   }
-  if (feed?.type === "inbox") {
+  if (target?.type === "inbox") {
     return {
       type: "inbox" as const,
     }
   }
 
-  if (feed?.title) {
+  if (target?.title) {
     return {
       type: "text" as const,
     }
@@ -147,10 +149,19 @@ const FallbackableImage = function FallbackableImage({
   )
 }
 
-type FeedIconFeed =
-  | Pick<FeedModel, "title" | "image" | "siteUrl" | "type">
-  | ListModel
-  | FeedOrListRespModel
+// type FeedIconFeed = Pick<FeedModel, "title" | "image" | "siteUrl" | "type"> | ListModel
+type IconTarget = {
+  title?: Nullable<string>
+  image?: Nullable<string>
+  siteUrl?: Nullable<string>
+  type: "feed" | "list" | "inbox"
+  entry?: FeedIconEntry | null
+  useMedia?: boolean
+  feed?: FeedModel | null
+  fallbackUrl?: string
+  fallback?: boolean
+  size?: number
+}
 
 export type FeedIconEntry = { authorAvatar?: string | null; firstPhotoUrl?: string | null }
 const fadeInVariant = {
@@ -160,7 +171,7 @@ const fadeInVariant = {
 
 const isIconLoadedSet = new Set<string>()
 export function FeedIcon({
-  feed,
+  target,
   entry,
   fallbackUrl,
   className,
@@ -172,7 +183,7 @@ export function FeedIcon({
   disableFadeIn,
   noMargin,
 }: {
-  feed?: FeedIconFeed | null
+  target?: IconTarget | null
   entry?: FeedIconEntry | null
   fallbackUrl?: string
   className?: string
@@ -189,11 +200,11 @@ export function FeedIcon({
   noMargin?: boolean
 }) {
   const marginClassName = cn(noMargin ? "" : "mr-2", className)
-  const iconProps = getIconProps({ feed, entry, useMedia, siteUrl, fallbackUrl, fallback, size })
+  const iconProps = getIconProps({ target, entry, useMedia, siteUrl, fallbackUrl, fallback, size })
 
   const colors = useMemo(
-    () => getBackgroundGradient(feed?.title || (feed as FeedModel)?.url || siteUrl || ""),
-    [feed?.title, (feed as FeedModel)?.url, siteUrl],
+    () => getBackgroundGradient(target?.title || (target as FeedModel)?.url || siteUrl || ""),
+    [target?.title, (target as FeedModel)?.url, siteUrl],
   )
 
   const sizeStyle: React.CSSProperties = useMemo(
@@ -226,7 +237,7 @@ export function FeedIcon({
           fontSize: size / 2,
         }}
       >
-        {!!feed?.title && feed.title[0]}
+        {!!target?.title && target.title[0]}
       </span>
     </span>
   )

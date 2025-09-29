@@ -51,7 +51,7 @@ export const EntryTranslation: Component<{
           {nextTarget && inline && (
             <>
               <span className="align-middle">{nextTarget}</span>
-              <i className="i-mgc-translate-2-ai-cute-re mr-2 align-middle" />
+              <i className="i-mgc-translate-2-ai-cute-re mx-2 align-middle" />
             </>
           )}
           <SourceTag className={cn(inline && "align-middle")}>{source}</SourceTag>

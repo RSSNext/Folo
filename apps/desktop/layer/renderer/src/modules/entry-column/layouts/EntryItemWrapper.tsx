@@ -1,41 +1,32 @@
 import { useGlobalFocusableScopeSelector } from "@follow/components/common/Focusable/hooks.js"
-import { Spring } from "@follow/components/constants/spring.js"
 import { useMobile } from "@follow/components/hooks/useMobile.js"
+import { getMousePosition } from "@follow/components/hooks/useMouse.js"
+import { ActionButton } from "@follow/components/ui/button/action-button.js"
 import { FeedViewType, views } from "@follow/constants"
 import { useEntry } from "@follow/store/entry/hooks"
 import { unreadSyncService } from "@follow/store/unread/store"
 import { cn } from "@follow/utils/utils"
-import { AnimatePresence, m } from "motion/react"
+import { AnimatePresence } from "motion/react"
 import type { FC, MouseEvent, PropsWithChildren, TouchEvent } from "react"
 import { useCallback, useEffect, useMemo, useState } from "react"
-import { useTranslation } from "react-i18next"
 import { NavLink } from "react-router"
 import { useDebounceCallback } from "usehooks-ts"
 
-import {
-  MENU_ITEM_SEPARATOR,
-  MenuItemSeparator,
-  MenuItemText,
-  useShowContextMenu,
-} from "~/atoms/context-menu"
 import { useGeneralSettingKey } from "~/atoms/settings/general"
 import { FocusablePresets } from "~/components/common/Focusable"
+import { CommandActionButton } from "~/components/ui/button/CommandActionButton"
 import { useEntryIsRead } from "~/hooks/biz/useAsRead"
 import { useContextMenuActionShortCutTrigger } from "~/hooks/biz/useContextMenuActionShortCutTrigger"
 import {
-  HIDE_ACTIONS_IN_ENTRY_CONTEXT_MENU,
+  EntryActionMenuItem,
+  HIDE_ACTIONS_IN_ENTRY_TOOLBAR_ACTIONS,
   useEntryActions,
   useSortedEntryActions,
 } from "~/hooks/biz/useEntryActions"
+import { useEntryContextMenu } from "~/hooks/biz/useEntryContextMenu"
 import { useFeature } from "~/hooks/biz/useFeature"
-import { useFeedActions } from "~/hooks/biz/useFeedActions"
 import { getNavigateEntryPath, useNavigateEntry } from "~/hooks/biz/useNavigateEntry"
 import { getRouteParams, useRouteParams, useRouteParamsSelector } from "~/hooks/biz/useRouteParams"
-import { useContextMenu } from "~/hooks/common/useContextMenu"
-import { copyToClipboard } from "~/lib/clipboard"
-import { COMMAND_ID } from "~/modules/command/commands/id"
-import { EntryHeaderActions } from "~/modules/entry-content/actions/header-actions"
-import { MoreActions } from "~/modules/entry-content/actions/more-actions"
 
 export const EntryItemWrapper: FC<
   {
@@ -51,15 +42,7 @@ export const EntryItemWrapper: FC<
     return { feedId, id, inboxId: inboxHandle, read, url }
   })
   const actionConfigs = useEntryActions({ entryId, view })
-
-  const feedItems = useFeedActions({
-    feedId: entry?.feedId || entry?.inboxId || "",
-    view,
-    type: "entryList",
-  })
   const isMobile = useMobile()
-
-  const { t } = useTranslation("common")
 
   const isActive = useRouteParamsSelector(({ entryId }) => entryId === entry?.id, [entry?.id])
   const when = useGlobalFocusableScopeSelector(FocusablePresets.isTimeline)
@@ -152,67 +135,17 @@ export const EntryItemWrapper: FC<
     },
     [asRead, entry?.id, entry?.feedId, navigate, view],
   )
-  const [isContextMenuOpen, setIsContextMenuOpen] = useState(false)
-  const showContextMenu = useShowContextMenu()
-
-  const contextMenuProps = useContextMenu({
-    onContextMenu: async (e) => {
-      const $target = e.target as HTMLElement
-      const selection = window.getSelection()
-      if (selection) {
-        const targetHasSelection =
-          selection?.toString().length > 0 && $target.contains(selection?.anchorNode)
-        if (targetHasSelection) {
-          e.stopPropagation()
-          return
-        }
-      }
-
-      e.preventDefault()
-      setIsContextMenuOpen(true)
-
-      await showContextMenu(
-        [
-          ...actionConfigs.filter((item) => {
-            if (item instanceof MenuItemSeparator) {
-              return true
-            }
-            return !HIDE_ACTIONS_IN_ENTRY_CONTEXT_MENU.includes(item.id as any)
-          }),
-          MENU_ITEM_SEPARATOR,
-          ...feedItems.filter((item) => {
-            if (item instanceof MenuItemSeparator) {
-              return true
-            }
-            return item && !item.disabled
-          }),
-
-          MENU_ITEM_SEPARATOR,
-          // Copy
-          ...actionConfigs.filter((item) => {
-            if (item instanceof MenuItemSeparator) {
-              return false
-            }
-            return [COMMAND_ID.entry.copyTitle, COMMAND_ID.entry.copyLink].includes(item.id as any)
-          }),
-          new MenuItemText({
-            label: `${t("words.copy")}${t("space")}${t("words.entry")} ${t("words.id")}`,
-            click: () => {
-              copyToClipboard(entry?.id || "")
-            },
-          }),
-        ],
-        e,
-      )
-      setIsContextMenuOpen(false)
-    },
+  const { contextMenuProps, isContextMenuOpen, openContextMenuAt } = useEntryContextMenu({
+    entryId,
+    view,
+    feedId: entry?.feedId || entry?.inboxId || "",
   })
 
   const aiEnabled = useFeature("ai")
   const isWide = views.find((v) => v.view === view)?.wideMode || aiEnabled
 
   const Link = view === FeedViewType.SocialMedia ? "article" : NavLink
-
+  const isAll = view === FeedViewType.All
   return (
     <div data-entry-id={entry?.id} style={style}>
       <Link
@@ -220,6 +153,7 @@ export const EntryItemWrapper: FC<
         className={cn(
           "hover:bg-theme-item-hover cursor-button relative block overflow-visible duration-200",
           isWide ? "@[650px]:rounded-md rounded-none" : "",
+          isAll && "!rounded-none",
           (isActive || isContextMenuOpen) && "!bg-theme-item-active",
           itemClassName,
         )}
@@ -231,30 +165,38 @@ export const EntryItemWrapper: FC<
         {...(!isMobile ? { onTouchStart: handleClick } : {})}
       >
         {children}
-        <AnimatePresence>{showAction && isWide && <ActionBar entryId={entryId} />}</AnimatePresence>
+        <AnimatePresence>
+          {showAction && isWide && (
+            <ActionBar
+              openContextMenu={() => {
+                const { x, y } = getMousePosition()
+                void openContextMenuAt(x, y)
+              }}
+              entryId={entryId}
+            />
+          )}
+        </AnimatePresence>
       </Link>
     </div>
   )
 }
 
-const ActionBar = ({ entryId }: { entryId: string }) => {
-  const { mainAction: entryActions } = useSortedEntryActions({
-    entryId,
-    view: FeedViewType.SocialMedia,
-  })
+const ActionBar = ({
+  entryId,
+  openContextMenu,
+}: {
+  entryId: string
+  openContextMenu: () => void
+}) => {
   const { view } = useRouteParams()
 
-  if (entryActions.length === 0) return null
+  const { mainAction } = useSortedEntryActions({ entryId, view })
 
   return (
-    <m.div
-      initial={{ opacity: 0, scale: 0.9, translateY: "-1/2" }}
-      animate={{ opacity: 1, scale: 1, translateY: "-1/2" }}
-      exit={{ opacity: 0, scale: 0.9, translateY: "-1/2" }}
-      transition={Spring.presets.smooth}
+    <div
       className={cn(
         "absolute -right-2 top-0 -translate-y-1/2 rounded-lg border border-gray-200 bg-white/90 p-1 shadow-sm backdrop-blur-sm dark:border-neutral-900 dark:bg-neutral-900",
-        view === FeedViewType.All && "top-1/2",
+        view === FeedViewType.All && "right-1 top-1/2",
       )}
       onClick={(e) => {
         e.stopPropagation()
@@ -262,9 +204,22 @@ const ActionBar = ({ entryId }: { entryId: string }) => {
       }}
     >
       <div className="flex items-center gap-1">
-        <EntryHeaderActions entryId={entryId} view={view} compact />
-        <MoreActions entryId={entryId} view={view} compact hideCustomizeToolbar />
+        {(
+          mainAction.filter(
+            (item) =>
+              item instanceof EntryActionMenuItem &&
+              !HIDE_ACTIONS_IN_ENTRY_TOOLBAR_ACTIONS.includes(item.id),
+          ) as EntryActionMenuItem[]
+        ).map((item) => (
+          <CommandActionButton key={item.id} onClick={item.onClick} size="xs" commandId={item.id} />
+        ))}
+
+        <ActionButton
+          onClick={openContextMenu}
+          size="xs"
+          icon={<i className="i-mingcute-more-1-fill" />}
+        />
       </div>
-    </m.div>
+    </div>
   )
 }

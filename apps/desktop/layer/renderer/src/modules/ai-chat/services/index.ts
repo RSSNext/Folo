@@ -4,6 +4,7 @@ import { aiChatMessagesTable, aiChatTable } from "@follow/database/schemas/index
 import { asc, count, eq, inArray, sql } from "drizzle-orm"
 
 import type { BizUIMessage } from "../store/types"
+import { isDataBlockPart, isFileAttachmentBlock } from "../utils/extractor"
 
 class AIPersistServiceStatic {
   // Cache for session existence to avoid repeated queries
@@ -154,33 +155,50 @@ class AIPersistServiceStatic {
 
     // Ensure the chat session exists first to avoid foreign key constraint failure
     await this.ensureSession(chatId)
+    const results = messages.reduce<(typeof aiChatMessagesTable.$inferInsert)[]>((acc, message) => {
+      if (message.parts.length === 0) return acc
 
+      const createdAt = message.metadata?.finishTime
+        ? new Date(
+            new Date(message.metadata.finishTime).getTime() - (message.metadata.duration ?? 0),
+          )
+        : new Date()
+
+      const cleanParts = [] as typeof message.parts
+
+      for (const part of message.parts) {
+        if (isDataBlockPart(part)) {
+          const nextPart = structuredClone(part)
+          for (const block of nextPart.data) {
+            if (isFileAttachmentBlock(block)) {
+              Reflect.deleteProperty(block.attachment, "dataUrl")
+            }
+          }
+
+          cleanParts.push(nextPart)
+        } else {
+          cleanParts.push(part)
+        }
+      }
+
+      acc.push({
+        id: message.id,
+        chatId,
+        role: message.role,
+        createdAt,
+        status: "completed" as const,
+        finishedAt: message.metadata?.finishTime
+          ? new Date(message.metadata.finishTime)
+          : undefined,
+        messageParts: cleanParts as (typeof aiChatMessagesTable.$inferInsert)["messageParts"],
+        metadata: message.metadata,
+      })
+
+      return acc
+    }, [])
     await db
       .insert(aiChatMessagesTable)
-      .values(
-        messages
-          .filter((message) => message.parts.length > 0)
-          .map((message) => {
-            const createdAt =
-              message.metadata?.finishTime && typeof message.metadata?.duration === "number"
-                ? new Date(
-                    new Date(message.metadata.finishTime).getTime() - message.metadata.duration,
-                  )
-                : new Date()
-            return {
-              id: message.id,
-              chatId,
-              role: message.role,
-              createdAt,
-              status: "completed" as const,
-              finishedAt: message.metadata?.finishTime
-                ? new Date(message.metadata.finishTime)
-                : undefined,
-              messageParts: message.parts,
-              metadata: message.metadata,
-            } as typeof aiChatMessagesTable.$inferInsert
-          }),
-      )
+      .values(results)
       .onConflictDoUpdate({
         target: [aiChatMessagesTable.id],
         set: {
