@@ -3,7 +3,7 @@ import { usePrefetchEntryTranslation } from "@follow/store/translation/hooks"
 import type { FlashListProps, FlashListRef } from "@shopify/flash-list"
 import type { ElementRef } from "react"
 import { useImperativeHandle, useRef } from "react"
-import { StyleSheet, View } from "react-native"
+import { Dimensions, StyleSheet, useWindowDimensions, View } from "react-native"
 
 import { useActionLanguage, useGeneralSettingKey } from "@/src/atoms/settings/general"
 import { useBottomTabBarHeight } from "@/src/components/layouts/tabbar/hooks"
@@ -18,6 +18,8 @@ import { useOnViewableItemsChanged } from "./hooks"
 // import type { MasonryItem } from "./templates/EntryGridItem"
 import { EntryPictureItem } from "./templates/EntryPictureItem"
 
+const screenWidth = Dimensions.get("screen").width
+
 export const EntryListContentPicture = ({
   ref: forwardRef,
   entryIds,
@@ -27,8 +29,9 @@ export const EntryListContentPicture = ({
   FlashListProps<string>,
   "data" | "renderItem"
 > & { ref?: React.Ref<ElementRef<typeof TimelineSelectorMasonryList> | null> }) => {
-  const ref = useRef<FlashListRef<any>>(null)
+  const { width } = useWindowDimensions()
 
+  const ref = useRef<FlashListRef<any>>(null)
   useImperativeHandle(forwardRef, () => ref.current!)
   const { fetchNextPage, refetch, isRefetching, hasNextPage, isFetching, isReady } = useEntries()
   const { onViewableItemsChanged, onScroll, viewableItems } = useOnViewableItemsChanged({
@@ -73,6 +76,10 @@ export const EntryListContentPicture = ({
     )
   }
 
+  // 最多 4 列，最少 2 列
+  const minItemWidth = screenWidth / 4
+  const numColumns = Math.max(2, Math.floor(width / minItemWidth))
+
   return (
     <TimelineSelectorMasonryList
       ref={ref}
@@ -83,7 +90,7 @@ export const EntryListContentPicture = ({
       onViewableItemsChanged={onViewableItemsChanged}
       onScroll={onScroll}
       onEndReached={fetchNextPage}
-      numColumns={2}
+      numColumns={numColumns}
       contentContainerStyle={styles.contentContainer}
       ListFooterComponent={
         hasNextPage ? (
