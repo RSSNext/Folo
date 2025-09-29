@@ -1,7 +1,6 @@
 import { Portal } from "@gorhom/portal"
 import { use, useLayoutEffect } from "react"
-import { Platform, View } from "react-native"
-import DeviceInfo from "react-native-device-info"
+import { View } from "react-native"
 import { useSafeAreaInsets } from "react-native-safe-area-context"
 
 import { BottomTabContext } from "@/src/lib/navigation/bottom-tab/BottomTabContext"
@@ -14,10 +13,10 @@ import { GlassPlayerTabBar } from "@/src/modules/player/GlassPlayerTabBar"
 import { BottomTabs } from "./BottomTabs"
 import { SetBottomTabBarHeightContext } from "./contexts/BottomTabBarHeightContext"
 
-const isIpad = Platform.OS === "ios" && DeviceInfo.isTablet()
+// const isIpad = Platform.OS === "ios" && DeviceInfo.isTablet()
 
 export const ReactNativeTab = () => {
-  if (isIos26 && !isIpad) {
+  if (isIos26) {
     return <NativeTabBarHolder />
   }
   return (

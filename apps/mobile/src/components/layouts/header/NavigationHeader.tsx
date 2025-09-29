@@ -36,6 +36,7 @@ import {
   useScreenIsInSheetModal,
 } from "@/src/lib/navigation/hooks"
 import { ScreenItemContext } from "@/src/lib/navigation/ScreenItemContext"
+import { isIos26 } from "@/src/lib/platform"
 
 import { ThemedBlurView } from "../../common/ThemedBlurView"
 import { PlatformActivityIndicator } from "../../ui/loading/PlatformActivityIndicator"
@@ -243,8 +244,9 @@ export const InternalNavigationHeader = ({
   const HeaderLeft = headerLeft ?? DefaultHeaderBackButton
 
   const renderTitle = customHeaderTitle ?? FakeNativeHeaderTitle
-  const headerTitle =
-    typeof renderTitle !== "function"
+  const headerTitle = isIos26
+    ? undefined
+    : typeof renderTitle !== "function"
       ? renderTitle
       : createElement(renderTitle, {
           children: title,
