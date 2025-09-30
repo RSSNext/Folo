@@ -110,7 +110,7 @@ export const AIChatMessage: React.FC<AIChatMessageProps> = React.memo(
         <div className="text-text relative flex max-w-full flex-col gap-2">
           {/* Normal message display */}
           <div className="text-text">
-            <div className="flex select-text flex-col gap-2 text-sm">
+            <div className="flex cursor-text select-text flex-col gap-2 text-sm">
               <AIMessageParts message={message} isLastMessage={isLastMessage} />
             </div>
           </div>

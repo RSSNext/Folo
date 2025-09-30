@@ -54,7 +54,7 @@ export const WelcomeScreen = ({ onSend, centerInputOnEmpty }: WelcomeScreenProps
     const month = now.getMonth() + 1
     const year = now.getFullYear()
 
-    return `${AI_CHAT_SPECIAL_ID_PREFIX}${year}-${month}-${day}`
+    return `${AI_CHAT_SPECIAL_ID_PREFIX.TIMELINE_SUMMARY}${year}-${month}-${day}`
   }, [])
 
   const status = useChatStatus()
