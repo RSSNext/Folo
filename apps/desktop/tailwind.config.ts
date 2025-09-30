@@ -48,7 +48,8 @@ export default extendConfig({
         screen: "100svh",
         // button height 2rem (size-8) + sidebar padding top 0.625rem (pt-2.5) x 2
         // 2 + 0.625 * 2 = 3.25
-        "entry-header": "3.25rem",
+        "top-header": "3.25rem",
+        "top-header-with-border-b": "calc(3.25rem + 1px)",
       },
       colors: {
         sidebar: "hsl(var(--fo-sidebar) / <alpha-value>)",

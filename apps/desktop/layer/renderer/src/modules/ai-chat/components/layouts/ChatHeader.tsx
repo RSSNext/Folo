@@ -59,7 +59,7 @@ const ChatHeaderLayout = ({
       )}
       data-scrolled-beyond-threshold={isScrolledBeyondThresholdValue}
     >
-      <div className="h-entry-header">
+      <div className="h-top-header">
         {isFloating && (
           <div
             className="bg-background/70 backdrop-blur-background absolute inset-0"
