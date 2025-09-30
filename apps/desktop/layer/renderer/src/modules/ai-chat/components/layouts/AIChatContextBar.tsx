@@ -2,6 +2,7 @@ import { cn } from "@follow/utils/utils"
 import { memo, useCallback, useEffect, useMemo, useRef } from "react"
 
 import { useAISettingValue } from "~/atoms/settings/ai"
+import { useGeneralSettingKey } from "~/atoms/settings/general"
 import { DropdownMenu, DropdownMenuTrigger } from "~/components/ui/dropdown-menu/dropdown-menu"
 import { useRouteParamsSelector } from "~/hooks/biz/useRouteParams"
 import { useDisplayBlocks } from "~/modules/ai-chat/hooks/useDisplayBlocks"
@@ -11,7 +12,7 @@ import { SUPPORTED_MIME_ACCEPT } from "~/modules/ai-chat/utils/file-validation"
 
 import { useBlockActions } from "../../store/hooks"
 import { BlockSliceAction } from "../../store/slices/block.slice"
-import { ContextBlock, MainViewFeedContextBlock } from "../context-bar/blocks"
+import { CombinedContextBlock, ContextBlock } from "../context-bar/blocks"
 import { ContextMenuContent, ShortcutsMenuContent } from "../context-bar/menus"
 
 export const AIChatContextBar: Component<{ onSendShortcut?: (prompt: string) => void }> = memo(
@@ -71,6 +72,24 @@ export const AIChatContextBar: Component<{ onSendShortcut?: (prompt: string) => 
       }
     }, [addOrUpdateBlock, feedId, removeBlock])
 
+    // Add unreadOnly context block only when unreadOnly is enabled
+    const unreadOnly = useGeneralSettingKey("unreadOnly")
+    useEffect(() => {
+      if (unreadOnly) {
+        addOrUpdateBlock({
+          id: BlockSliceAction.SPECIAL_TYPES.unreadOnly,
+          type: "unreadOnly",
+          value: "true",
+        })
+      } else {
+        removeBlock(BlockSliceAction.SPECIAL_TYPES.unreadOnly)
+      }
+
+      return () => {
+        removeBlock(BlockSliceAction.SPECIAL_TYPES.unreadOnly)
+      }
+    }, [addOrUpdateBlock, unreadOnly, removeBlock])
+
     const displayBlocks = useDisplayBlocks(blocks)
 
     return (
@@ -128,10 +147,11 @@ export const AIChatContextBar: Component<{ onSendShortcut?: (prompt: string) => 
         {displayBlocks.map((item) => {
           if (item.kind === "combined") {
             return (
-              <MainViewFeedContextBlock
+              <CombinedContextBlock
                 key={item.viewBlock.id}
                 viewBlock={item.viewBlock}
                 feedBlock={item.feedBlock}
+                unreadOnlyBlock={item.unreadOnlyBlock}
               />
             )
           }

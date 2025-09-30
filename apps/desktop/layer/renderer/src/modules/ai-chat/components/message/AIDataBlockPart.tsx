@@ -4,7 +4,7 @@ import * as React from "react"
 import { useDisplayBlocks } from "~/modules/ai-chat/hooks/useDisplayBlocks"
 import type { AIChatContextBlock } from "~/modules/ai-chat/store/types"
 
-import { AIDataBlockItem, MainViewFeedDataBlockItem } from "./AIDataBlockItem"
+import { AIDataBlockItem, CombinedDataBlockItem } from "./AIDataBlockItem"
 
 interface AIDataBlockPartProps {
   blocks: AIChatContextBlock[]
@@ -40,10 +40,11 @@ export const AIDataBlockPart: React.FC<AIDataBlockPartProps> = React.memo(({ blo
         {displayBlocks.map((item, index) => {
           if (item.kind === "combined") {
             return (
-              <MainViewFeedDataBlockItem
+              <CombinedDataBlockItem
                 key={item.viewBlock.id}
                 viewBlock={item.viewBlock}
                 feedBlock={item.feedBlock}
+                unreadOnlyBlock={item.unreadOnlyBlock}
               />
             )
           }

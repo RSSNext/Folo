@@ -24,9 +24,10 @@ type ValueBlockOf<Type extends ValueContextBlock["type"]> = Omit<ValueContextBlo
   type: Type
 }
 
-interface MainViewFeedDataBlockItemProps {
+interface CombinedDataBlockItemProps {
   viewBlock: ValueBlockOf<"mainView">
-  feedBlock: ValueBlockOf<"mainFeed">
+  feedBlock?: ValueBlockOf<"mainFeed">
+  unreadOnlyBlock?: ValueBlockOf<"unreadOnly">
 }
 
 /**
@@ -47,6 +48,9 @@ const getDisplayContent = (block: AIChatContextBlock): React.ReactNode => {
     }
     case "selectedText": {
       return `"${block.value}"`
+    }
+    case "unreadOnly": {
+      return "Unread Only"
     }
     case "fileAttachment": {
       if (!block.attachment) {
@@ -153,21 +157,40 @@ export const AIDataBlockItem: React.FC<AIDataBlockItemProps> = React.memo(({ blo
 AIDataBlockItem.displayName = "AIDataBlockItem"
 
 /**
- * Combined block item component for main view and main feed
- * Displays view icon with feed title content
+ * Combined block item component for main view with optional feed and unread filter
+ * Displays view icon with appropriate content based on available blocks
  */
-export const MainViewFeedDataBlockItem: React.FC<MainViewFeedDataBlockItemProps> = React.memo(
-  ({ viewBlock, feedBlock }) => {
+export const CombinedDataBlockItem: React.FC<CombinedDataBlockItemProps> = React.memo(
+  ({ viewBlock, feedBlock, unreadOnlyBlock }) => {
     const { styles, displayContent, title } = React.useMemo(() => {
       const view = views.find((v) => v.view === Number(viewBlock.value))
       const viewName = view?.name ? t(view.name, { ns: "common" }) : viewBlock.value
 
+      const unreadOnlyText = unreadOnlyBlock ? " (Unread Only)" : ""
+
+      // Determine content based on whether feedBlock exists
+      const content = feedBlock ? (
+        <span className="flex items-center gap-1">
+          <FeedTitle feedId={feedBlock.value} fallback={feedBlock.value} />
+          {unreadOnlyBlock && <i className="i-mgc-round-cute-fi size-3" title="Unread Only" />}
+        </span>
+      ) : (
+        <span className="flex items-center gap-1">
+          {viewName}
+          {unreadOnlyBlock && <i className="i-mgc-round-cute-fi size-3" title="Unread Only" />}
+        </span>
+      )
+
+      const titleText = feedBlock
+        ? `${viewName} - ${feedBlock.value}${unreadOnlyText}`
+        : `${viewName}${unreadOnlyText}`
+
       return {
         styles: getBlockStyles("mainView"),
-        displayContent: <FeedTitle feedId={feedBlock.value} fallback={feedBlock.value} />,
-        title: `${viewName} - ${feedBlock.value}`,
+        displayContent: content,
+        title: titleText,
       }
-    }, [viewBlock.value, feedBlock.value])
+    }, [viewBlock.value, feedBlock, unreadOnlyBlock])
 
     return (
       <BlockContainer
@@ -180,4 +203,4 @@ export const MainViewFeedDataBlockItem: React.FC<MainViewFeedDataBlockItemProps>
   },
 )
 
-MainViewFeedDataBlockItem.displayName = "MainViewFeedDataBlockItem"
+CombinedDataBlockItem.displayName = "CombinedDataBlockItem"
