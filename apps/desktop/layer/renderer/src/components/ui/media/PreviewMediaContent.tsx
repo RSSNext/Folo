@@ -21,6 +21,7 @@ import { ipcServices } from "~/lib/client"
 import { replaceImgUrlIfNeed } from "~/lib/img-proxy"
 
 import { useCurrentModal } from "../modal/stacked/hooks"
+import type { VideoPlayerRef } from "./VideoPlayer"
 import { VideoPlayer } from "./VideoPlayer"
 
 // Calculate the dynamic scale value and offset
@@ -264,6 +265,7 @@ export const PreviewMediaContent: FC<{
   children?: React.ReactNode
   onZoomChange?: (isZoomed: boolean) => void
 }> = ({ media, initialIndex = 0, children, onZoomChange }) => {
+  const videoRefs = useRef<VideoPlayerRef[]>([])
   const [emblaRef, emblaApi] = useEmblaCarousel({ loop: true, startIndex: initialIndex }, [
     WheelGesturesPlugin(),
   ])
@@ -296,6 +298,18 @@ export const PreviewMediaContent: FC<{
     $container.addEventListener("keydown", handleKeyDown)
     return () => $container.removeEventListener("keydown", handleKeyDown)
   }, [emblaApi, ref])
+
+  // Pause all videos when slide change
+  // And play the current video if it's a video
+  useEffect(() => {
+    videoRefs.current.forEach((video) => {
+      video.controls.pause()
+    })
+    const currentVideo = videoRefs.current[currentSlideIndex]
+    if (currentVideo) {
+      currentVideo.controls.play()
+    }
+  }, [currentSlideIndex])
 
   if (media.length === 0) return null
   if (media.length === 1) {
@@ -342,8 +356,12 @@ export const PreviewMediaContent: FC<{
               <div className="mr-2 flex w-full flex-none items-center justify-center" key={med.url}>
                 {med.type === "video" ? (
                   <VideoPlayer
+                    ref={(el) => {
+                      if (videoRefs.current && el) {
+                        videoRefs.current.push(el)
+                      }
+                    }}
                     src={med.url}
-                    autoPlay
                     muted
                     controls
                     className="size-full object-contain"
