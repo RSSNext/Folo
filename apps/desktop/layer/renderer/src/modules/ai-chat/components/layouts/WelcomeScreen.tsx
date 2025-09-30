@@ -1,6 +1,7 @@
 import { Folo } from "@follow/components/icons/folo.js"
 import { ScrollArea } from "@follow/components/ui/scroll-area/ScrollArea.js"
 import { FeedViewType } from "@follow/constants"
+import { useElementWidth } from "@follow/hooks"
 import { clsx } from "@follow/utils"
 import type { EditorState, LexicalEditor } from "lexical"
 import { AnimatePresence, m } from "motion/react"
@@ -174,6 +175,9 @@ const TimelineSummarySection = () => {
 
   const { t } = useTranslation("ai")
 
+  const messageContainerRef = useRef<HTMLDivElement>(null)
+  const messageContainerWidth = useElementWidth(messageContainerRef)
+
   const isLoading = status === "streaming"
   const isError = status === "error"
   return (
@@ -196,7 +200,16 @@ const TimelineSummarySection = () => {
           )}
         </div>
 
-        <div className="text-text flex select-text flex-col gap-2 text-sm leading-6">
+        <div
+          className="text-text flex select-text flex-col gap-2 text-sm leading-6"
+          ref={messageContainerRef}
+          style={
+            {
+              "--ai-chat-message-container-width": `${messageContainerWidth}px`,
+              opacity: messageContainerWidth > 0 ? 1 : 0,
+            } as React.CSSProperties
+          }
+        >
           {isError ? (
             <p className="text-text text-sm font-medium">{t("timeline_summary.error")}</p>
           ) : hasContent && message ? (

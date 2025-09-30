@@ -1,5 +1,6 @@
 import { useFocusable } from "@follow/components/common/Focusable/hooks.js"
 import { ScrollArea } from "@follow/components/ui/scroll-area/ScrollArea.js"
+import { useElementWidth } from "@follow/hooks"
 import { getCategoryFeedIds } from "@follow/store/subscription/getter"
 import { usePrefetchSummary } from "@follow/store/summary/hooks"
 import { tracker } from "@follow/tracker"
@@ -10,7 +11,7 @@ import type { EditorState, LexicalEditor } from "lexical"
 import { AnimatePresence } from "motion/react"
 import { nanoid } from "nanoid"
 import type { FC, RefObject } from "react"
-import { startTransition, Suspense, use, useEffect, useLayoutEffect, useRef, useState } from "react"
+import { Suspense, use, useEffect, useLayoutEffect, useRef, useState } from "react"
 import { useEventCallback, useEventListener } from "usehooks-ts"
 
 import { useAISettingKey } from "~/atoms/settings/ai"
@@ -391,26 +392,8 @@ export const ChatInterface = (props: ChatInterfaceProps) => (
 
 const Messages: FC<{ contentRef?: RefObject<HTMLDivElement> }> = ({ contentRef }) => {
   const messages = useMessages()
-
-  const [messageContainerWidth, setMessageContainerWidth] = useState<number>(0)
-
-  useLayoutEffect(() => {
-    if (!contentRef) return
-
-    const setMessageContainerWidthTransition = () =>
-      startTransition(() => {
-        setMessageContainerWidth(contentRef.current?.clientWidth ?? 0)
-      })
-    setMessageContainerWidthTransition()
-    const resizeObserver = new ResizeObserver(() => {
-      setMessageContainerWidthTransition()
-    })
-    resizeObserver.observe(contentRef.current)
-
-    return () => {
-      resizeObserver.disconnect()
-    }
-  }, [contentRef])
+  const fallbackRef = useRef<HTMLDivElement>(null)
+  const messageContainerWidth = useElementWidth(contentRef ?? fallbackRef)
   return (
     <div
       ref={contentRef}
@@ -421,18 +404,19 @@ const Messages: FC<{ contentRef?: RefObject<HTMLDivElement> }> = ({ contentRef }
         } as React.CSSProperties
       }
     >
-      {messages.map((message, index) => {
-        const isLastMessage = index === messages.length - 1
-        return (
-          <Suspense key={message.id}>
-            {message.role === "user" ? (
-              <UserChatMessage message={message} />
-            ) : (
-              <AIChatMessage message={message} isLastMessage={isLastMessage} />
-            )}
-          </Suspense>
-        )
-      })}
+      {!!messageContainerWidth &&
+        messages.map((message, index) => {
+          const isLastMessage = index === messages.length - 1
+          return (
+            <Suspense key={message.id}>
+              {message.role === "user" ? (
+                <UserChatMessage message={message} />
+              ) : (
+                <AIChatMessage message={message} isLastMessage={isLastMessage} />
+              )}
+            </Suspense>
+          )
+        })}
     </div>
   )
 }
