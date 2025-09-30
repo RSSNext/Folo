@@ -12,6 +12,7 @@ import { ROUTE_ENTRY_PENDING } from "~/constants"
 import { useRouteParamsSelector } from "~/hooks/biz/useRouteParams"
 import { AISpline } from "~/modules/ai-chat/components/3d-models/AISpline"
 
+import { AI_CHAT_SPECIAL_ID_PREFIX } from "../../constants"
 import { useAttachScrollBeyond } from "../../hooks/useAttachScrollBeyond"
 import { useMainEntryId } from "../../hooks/useMainEntryId"
 import { AIPersistService } from "../../services"
@@ -52,7 +53,7 @@ export const WelcomeScreen = ({ onSend, centerInputOnEmpty }: WelcomeScreenProps
     const month = now.getMonth() + 1
     const year = now.getFullYear()
 
-    return `today-timeline-summary-${year}-${month}-${day}`
+    return `${AI_CHAT_SPECIAL_ID_PREFIX}${year}-${month}-${day}`
   }, [])
 
   const status = useChatStatus()
@@ -81,7 +82,7 @@ export const WelcomeScreen = ({ onSend, centerInputOnEmpty }: WelcomeScreenProps
     >
       <div className="mx-auto flex w-full flex-1 flex-col justify-center space-y-8 pb-52">
         {showTimelineSummary ? (
-          <AIChatRoot chatId={todayTimelineSummaryId}>
+          <AIChatRoot chatId={todayTimelineSummaryId} generateId={() => todayTimelineSummaryId}>
             <TimelineSummarySection />
           </AIChatRoot>
         ) : (

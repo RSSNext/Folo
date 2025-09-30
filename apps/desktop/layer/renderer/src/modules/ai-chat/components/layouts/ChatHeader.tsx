@@ -29,13 +29,14 @@ const ChatHeaderLayout = ({
 
   const handleNewChatClick = useCallback(() => {
     const messages = chatActions.getMessages()
-    if (messages.length === 0 && !currentTitle) {
+
+    if (messages.length === 0) {
       return
     }
 
     chatActions.newChat()
     blockActions.clearBlocks({ keepSpecialTypes: true })
-  }, [chatActions, currentTitle, blockActions])
+  }, [chatActions, blockActions])
 
   const handleTitleSave = useCallback(
     async (newTitle: string) => {

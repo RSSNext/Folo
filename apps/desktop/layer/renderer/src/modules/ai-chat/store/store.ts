@@ -13,9 +13,10 @@ export type AiChatStore = BlockSlice &
   }
 
 export const createAIChatStore = (initialState?: Partial<AIChatStoreInitial>) => {
+  const { blocks, chatId, generateId } = initialState || {}
   return createWithEqualityFn<AiChatStore>((...a) => {
-    const blockSlice = createBlockSlice(initialState?.blocks)(...a)
-    const chatSlice = createChatSlice({ chatId: initialState?.chatId || nanoid() })(...a)
+    const blockSlice = createBlockSlice(blocks)(...a)
+    const chatSlice = createChatSlice({ chatId: chatId || nanoid(), generateId })(...a)
 
     return {
       ...blockSlice,

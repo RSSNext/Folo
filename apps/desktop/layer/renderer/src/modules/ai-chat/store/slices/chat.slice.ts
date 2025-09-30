@@ -1,3 +1,4 @@
+import type { IdGenerator } from "ai"
 import type { StateCreator } from "zustand"
 
 import { AIPersistService } from "../../services"
@@ -9,11 +10,12 @@ import { createChatTransport } from "../transport"
 
 export const createChatSlice: (options: {
   chatId: string
+  generateId?: IdGenerator
 }) => StateCreator<ChatSlice, [], [], ChatSlice> =
   (options) =>
   (...params) => {
     const [set, get] = params
-    const { chatId } = options
+    const { chatId, generateId } = options
 
     // Create chat instance with Zustand integration
     const chatInstance = new ZustandChat(
@@ -21,6 +23,7 @@ export const createChatSlice: (options: {
         id: chatId,
         messages: [],
         transport: createChatTransport(),
+        generateId,
         onFinish: async (options) => {
           const { message } = options
 

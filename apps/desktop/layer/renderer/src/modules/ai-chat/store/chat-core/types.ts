@@ -6,7 +6,6 @@ import type { ZustandChat } from "./chat-instance"
 
 // Zustand slice interface
 export interface ChatSlice {
-  // Chat state (mirrored from ChatState)
   chatId: string
   messages: BizUIMessage[]
   status: ChatStatus

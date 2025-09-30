@@ -1,4 +1,5 @@
 import type { BizUITools, ToolWithState } from "@folo-services/ai-tools"
+import type { IdGenerator } from "ai"
 
 export interface FileAttachment {
   id: string
@@ -38,6 +39,7 @@ export type AIChatContextBlockInput =
 export interface AIChatStoreInitial {
   blocks: AIChatContextBlock[]
   chatId?: string
+  generateId?: IdGenerator
 }
 
 export interface AIChatContextBlocks {
