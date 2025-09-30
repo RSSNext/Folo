@@ -3,7 +3,7 @@ import { ScrollArea } from "@follow/components/ui/scroll-area/ScrollArea.js"
 import { FeedViewType } from "@follow/constants"
 import { useElementWidth } from "@follow/hooks"
 import { clsx } from "@follow/utils"
-import type { EditorState, LexicalEditor } from "lexical"
+import type { EditorState } from "lexical"
 import { AnimatePresence, m } from "motion/react"
 import { useEffect, useMemo, useRef } from "react"
 import { getI18n, useTranslation } from "react-i18next"
@@ -23,7 +23,7 @@ import { DefaultWelcomeContent, EntrySummaryCard } from "../welcome"
 import { AIChatRoot } from "./AIChatRoot"
 
 interface WelcomeScreenProps {
-  onSend: (message: EditorState | string, editor: LexicalEditor | null) => void
+  onSend: (message: EditorState | string) => void
   centerInputOnEmpty?: boolean
 }
 

@@ -5,7 +5,7 @@ import type { StateCreator } from "zustand"
 
 import { AIPersistService } from "../../services"
 import { createChatTransport } from "../transport"
-import type { BizUIMessage } from "../types"
+import type { BizUIMessage, SendingUIMessage } from "../types"
 import { ZustandChat } from "./chat-instance"
 import type { ChatSlice } from "./types"
 
@@ -147,7 +147,7 @@ export class ChatSliceActions {
   }
 
   // Core chat actions using AI SDK AbstractChat methods
-  sendMessage = async (message: string | BizUIMessage, options?: ChatRequestOptions) => {
+  sendMessage = async (message: string | SendingUIMessage, options?: ChatRequestOptions) => {
     try {
       // Convert string to message object if needed
       const messageObj =

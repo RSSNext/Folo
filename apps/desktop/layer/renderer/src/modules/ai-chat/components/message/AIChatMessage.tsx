@@ -9,7 +9,6 @@ import { copyToClipboard } from "~/lib/clipboard"
 import type { BizUIMessage } from "~/modules/ai-chat/store/types"
 
 import { MentionPlugin } from "../../editor"
-import type { RichTextPart } from "../../types/ChatSession"
 import { convertLexicalToMarkdown } from "../../utils/lexical-markdown"
 import { AIMessageParts } from "./AIMessageParts"
 import { TokenUsagePill } from "./TokenUsagePill"
@@ -39,9 +38,7 @@ const useMessageMarkdownFormat = (message: BizUIMessage) => {
         }
         case "data-rich-text": {
           lexicalEditor ||= createDefaultLexicalEditor([MentionPlugin])
-          lexicalEditor.setEditorState(
-            lexicalEditor.parseEditorState((part as RichTextPart).data.state),
-          )
+          lexicalEditor.setEditorState(lexicalEditor.parseEditorState(part.data.state))
           content += convertLexicalToMarkdown(lexicalEditor)
           break
         }

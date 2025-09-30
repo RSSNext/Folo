@@ -5,13 +5,13 @@ import { getCategoryFeedIds } from "@follow/store/subscription/getter"
 import { usePrefetchSummary } from "@follow/store/summary/hooks"
 import { tracker } from "@follow/tracker"
 import { clsx, cn, detectIsEditableElement, nextFrame } from "@follow/utils"
-import type { BizUIMessage } from "@folo-services/ai-tools"
 import { ErrorBoundary } from "@sentry/react"
-import type { EditorState, LexicalEditor } from "lexical"
+import type { EditorState } from "lexical"
+import { createEditor } from "lexical"
 import { AnimatePresence } from "motion/react"
 import { nanoid } from "nanoid"
 import type { FC, RefObject } from "react"
-import { Suspense, use, useEffect, useLayoutEffect, useRef, useState } from "react"
+import { Suspense, use, useEffect, useLayoutEffect, useMemo, useRef, useState } from "react"
 import { useEventCallback, useEventListener } from "usehooks-ts"
 
 import { useAISettingKey } from "~/atoms/settings/ai"
@@ -36,10 +36,11 @@ import {
   useMessages,
 } from "~/modules/ai-chat/store/hooks"
 
+import { LexicalAIEditorNodes } from "../../editor"
 import { useAttachScrollBeyond } from "../../hooks/useAttachScrollBeyond"
 import { AIPanelRefsContext } from "../../store/AIChatContext"
-import type { AIChatContextBlock } from "../../store/types"
-import { convertLexicalToMarkdown } from "../../utils/lexical-markdown"
+import type { AIChatContextBlock, BizUIMessage } from "../../store/types"
+import { convertLexicalToMarkdown, getEditorStateJSONString } from "../../utils/lexical-markdown"
 import { GlobalFileDropZone } from "../file/GlobalFileDropZone"
 import { AIErrorFallback } from "./AIErrorFallback"
 import { ChatInput } from "./ChatInput"
@@ -174,74 +175,81 @@ const ChatInterfaceContent = ({ centerInputOnEmpty }: ChatInterfaceProps) => {
     })
   })
 
-  const handleSendMessage = useEventCallback(
-    (message: string | EditorState, editor: LexicalEditor | null) => {
-      resetScrollState()
+  const staticEditor = useMemo(() => {
+    return createEditor({
+      nodes: LexicalAIEditorNodes,
+    })
+  }, [])
 
-      const blocks = [] as AIChatContextBlock[]
+  const handleSendMessage = useEventCallback((message: string | EditorState) => {
+    resetScrollState()
 
-      for (const block of blockActions.getBlocks()) {
-        if (block.type === "fileAttachment" && block.attachment.serverUrl) {
-          blocks.push({
-            ...block,
-            attachment: {
-              id: block.attachment.id,
-              name: block.attachment.name,
-              type: block.attachment.type,
-              size: block.attachment.size,
-              serverUrl: block.attachment.serverUrl,
-            },
-          })
-        } else if (block.type === "mainFeed" && block.value.startsWith(ROUTE_FEED_IN_FOLDER)) {
-          const categoryName = block.value.slice(ROUTE_FEED_IN_FOLDER.length)
-          const { view } = getRouteParams()
-          const feedIds = getCategoryFeedIds(categoryName, view)
-          blocks.push({
-            ...block,
-            value: feedIds.join(","),
-          })
-        } else {
-          blocks.push(block)
-        }
-      }
+    const blocks = [] as AIChatContextBlock[]
 
-      const parts: BizUIMessage["parts"] = [
-        {
-          type: "data-block",
-          data: blocks,
-        },
-      ]
-
-      if (typeof message === "string") {
-        parts.push({
-          type: "text",
-          text: message,
-        })
-      } else if (editor) {
-        parts.push({
-          type: "data-rich-text",
-          data: {
-            state: JSON.stringify(message.toJSON()),
-            text: convertLexicalToMarkdown(editor),
+    for (const block of blockActions.getBlocks()) {
+      if (block.type === "fileAttachment" && block.attachment.serverUrl) {
+        blocks.push({
+          ...block,
+          attachment: {
+            id: block.attachment.id,
+            name: block.attachment.name,
+            type: block.attachment.type,
+            size: block.attachment.size,
+            serverUrl: block.attachment.serverUrl,
           },
         })
+      } else if (block.type === "mainFeed" && block.value.startsWith(ROUTE_FEED_IN_FOLDER)) {
+        const categoryName = block.value.slice(ROUTE_FEED_IN_FOLDER.length)
+        const { view } = getRouteParams()
+        const feedIds = getCategoryFeedIds(categoryName, view)
+        blocks.push({
+          ...block,
+          value: feedIds.join(","),
+        })
+      } else {
+        blocks.push(block)
       }
+    }
 
-      // Capture actual content height (messages container), not including reserved minHeight
-      scrollHeightBeforeSendingRef.current = messagesContentRef.current?.scrollHeight ?? 0
-      chatActions.sendMessage({
-        parts,
-        role: "user",
-        id: nanoid(),
-      })
-      tracker.aiChatMessageSent()
+    const parts: BizUIMessage["parts"] = [
+      {
+        type: "data-block",
+        data: blocks,
+      },
+    ]
 
-      nextFrame(() => {
-        // Calculate and adjust scroll positioning immediately
-        handleScrollPositioning()
+    if (typeof message === "string") {
+      parts.push({
+        type: "data-rich-text",
+        data: {
+          state: getEditorStateJSONString(message),
+          text: message,
+        },
       })
-    },
-  )
+    } else {
+      parts.push({
+        type: "data-rich-text",
+        data: {
+          state: JSON.stringify(message.toJSON()),
+          text: convertLexicalToMarkdown(staticEditor),
+        },
+      })
+    }
+
+    // Capture actual content height (messages container), not including reserved minHeight
+    scrollHeightBeforeSendingRef.current = messagesContentRef.current?.scrollHeight ?? 0
+    chatActions.sendMessage({
+      parts,
+      role: "user",
+      id: nanoid(),
+    })
+    tracker.aiChatMessageSent()
+
+    nextFrame(() => {
+      // Calculate and adjust scroll positioning immediately
+      handleScrollPositioning()
+    })
+  })
 
   const [bottomPanelHeight, setBottomPanelHeight] = useState<number>(0)
   const bottomPanelRef = useRef<HTMLDivElement | null>(null)
@@ -394,6 +402,7 @@ const Messages: FC<{ contentRef?: RefObject<HTMLDivElement> }> = ({ contentRef }
   const messages = useMessages()
   const fallbackRef = useRef<HTMLDivElement>(null)
   const messageContainerWidth = useElementWidth(contentRef ?? fallbackRef)
+
   return (
     <div
       ref={contentRef}
