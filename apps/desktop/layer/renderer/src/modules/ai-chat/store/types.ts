@@ -63,6 +63,6 @@ export type BizUIMessage = UIMessage<BizUIMetadata, BizUIDataTypes, BizUITools> 
   createdAt: Date
 }
 
-export type BizUIMessagePart = UIMessagePart<BizUIMetadata, BizUITools>
+export type BizUIMessagePart = UIMessagePart<BizUIDataTypes, BizUITools>
 
 export type SendingUIMessage = Omit<BizUIMessage, "createdAt">

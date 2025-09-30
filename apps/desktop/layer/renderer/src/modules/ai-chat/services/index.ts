@@ -39,18 +39,15 @@ class AIPersistServiceStatic {
    * Convert enhanced database message to BizUIMessage format for compatibility
    */
   private convertToUIMessage(dbMessage: AiChatMessagesModel): BizUIMessage {
-    // Reconstruct UIMessage from database fields
     const uiMessage: BizUIMessage = {
       id: dbMessage.id,
       role: dbMessage.role,
       createdAt: dbMessage.createdAt,
-      parts: [], // AI SDK v5 uses parts array
+      parts: [],
     }
 
-    // Add parts based on content format and data
     if (dbMessage.messageParts && dbMessage.messageParts.length > 0) {
-      // For assistant messages with complex parts (tools, reasoning, etc)
-      uiMessage.parts = dbMessage.messageParts as BizUIMessagePart[]
+      uiMessage.parts = dbMessage.messageParts as any[] as BizUIMessagePart[]
     }
 
     return uiMessage

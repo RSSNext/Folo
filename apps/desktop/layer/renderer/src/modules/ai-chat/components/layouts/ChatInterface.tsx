@@ -227,6 +227,7 @@ const ChatInterfaceContent = ({ centerInputOnEmpty }: ChatInterfaceProps) => {
         },
       })
     } else {
+      staticEditor.setEditorState(message)
       parts.push({
         type: "data-rich-text",
         data: {
