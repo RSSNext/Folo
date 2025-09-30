@@ -129,7 +129,7 @@ export class ZustandChatState implements ChatState<BizUIMessage> {
 
     this.messages = [
       ...this.#messages.slice(0, index),
-      this.#fillMessageCreatedAt(message),
+      this.snapshot(this.#fillMessageCreatedAt(message)),
       ...this.#messages.slice(index + 1),
     ]
   }
@@ -158,7 +158,8 @@ export class ZustandChatState implements ChatState<BizUIMessage> {
   )
 
   #fillMessageCreatedAt(message: SendingUIMessage | BizUIMessage): BizUIMessage {
-    const nextMessage = { ...message } as BizUIMessage
+    // we should directly edit the message object instead of creating a new one
+    const nextMessage = message as BizUIMessage
 
     if (nextMessage.createdAt) return nextMessage
     if (
