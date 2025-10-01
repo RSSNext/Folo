@@ -299,6 +299,12 @@ export const PreviewMediaContent: FC<{
     return () => $container.removeEventListener("keydown", handleKeyDown)
   }, [emblaApi, ref])
 
+  const setVideoRef = useCallback((el: VideoPlayerRef | null) => {
+    if (el) {
+      videoRefs.current.push(el)
+    }
+  }, [])
+
   // Pause all videos when slide change
   // And play the current video if it's a video
   useEffect(() => {
@@ -356,11 +362,7 @@ export const PreviewMediaContent: FC<{
               <div className="mr-2 flex w-full flex-none items-center justify-center" key={med.url}>
                 {med.type === "video" ? (
                   <VideoPlayer
-                    ref={(el) => {
-                      if (videoRefs.current && el) {
-                        videoRefs.current.push(el)
-                      }
-                    }}
+                    ref={setVideoRef}
                     src={med.url}
                     muted
                     controls
