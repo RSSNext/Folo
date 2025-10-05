@@ -17,12 +17,14 @@ interface EntryPreviewCardProps {
   entryId: string
   children: React.ReactNode
   className?: string
+  onNavigate?: (entryId: string) => void
 }
 
 export const EntryPreviewCard: React.FC<EntryPreviewCardProps> = ({
   entryId,
   children,
   className,
+  onNavigate,
 }) => {
   // Prefetch entry details on hover
   usePrefetchEntryDetail(entryId)
@@ -57,29 +59,45 @@ export const EntryPreviewCard: React.FC<EntryPreviewCardProps> = ({
         >
           {/* Header */}
           <div className="bg-fill-tertiary border-border border-b p-3">
-            <div className="flex items-center gap-2">
+            <a
+              target="_blank"
+              rel="noopener noreferrer"
+              href={feed.siteUrl || feed.url}
+              className="flex items-center gap-2"
+            >
               <FeedIcon target={feed} size={16} />
               <div className="min-w-0 flex-1">
                 <div className="text-text line-clamp-1 text-sm font-medium">{feed.title}</div>
-                <div className="text-text-tertiary line-clamp-1 text-xs">{feed.url}</div>
+                <span className="text-text-tertiary line-clamp-1 text-xs">{feed.url}</span>
               </div>
-            </div>
+            </a>
           </div>
 
           {/* Content */}
           <div className="p-3">
             <div className="space-y-2">
-              <h3 className="text-text line-clamp-2 text-sm font-semibold">{entry.title}</h3>
+              <a
+                href={entry.url ?? "#"}
+                onClick={(e) => {
+                  e.preventDefault()
+                  onNavigate?.(entryId)
+                }}
+                className="contents"
+                target="_blank"
+                rel="noopener noreferrer"
+              >
+                <h3 className="text-text line-clamp-2 text-sm font-semibold">{entry.title}</h3>
 
-              {entry.description && (
-                <p className="text-text-secondary line-clamp-3 text-xs">{entry.description}</p>
-              )}
+                {entry.description && (
+                  <p className="text-text-secondary line-clamp-3 text-xs">{entry.description}</p>
+                )}
+              </a>
 
               <div className="flex items-center justify-between pt-2">
                 <div className="text-text-tertiary text-xs">
                   {entry.author && <span>by {entry.author}</span>}
                 </div>
-                <div className="text-text-tertiary text-xs">
+                <div className="text-text-tertiary shrink-0 self-start text-xs">
                   <RelativeTime date={entry.publishedAt} />
                 </div>
               </div>

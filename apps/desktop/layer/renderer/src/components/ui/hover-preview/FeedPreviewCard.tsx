@@ -15,12 +15,15 @@ interface FeedPreviewCardProps {
   feedId: string
   children: React.ReactNode
   className?: string
+
+  onNavigate?: (feedId: string) => void
 }
 
 export const FeedPreviewCard: React.FC<FeedPreviewCardProps> = ({
   feedId,
   children,
   className,
+  onNavigate,
 }) => {
   const feed = useFeedById(feedId, feedIconSelector)
 
@@ -39,7 +42,16 @@ export const FeedPreviewCard: React.FC<FeedPreviewCardProps> = ({
           className={cn("overflow-hidden", className)}
         >
           {/* Header */}
-          <div className="bg-fill-tertiary border-border border-b p-4">
+          <a
+            className="bg-fill-tertiary border-border border-b p-4"
+            href={feed.url ?? "#"}
+            onClick={(e) => {
+              e.preventDefault()
+              onNavigate?.(feedId)
+            }}
+            target="_blank"
+            rel="noopener noreferrer"
+          >
             <div className="flex items-start gap-3">
               <FeedIcon target={feed} size={40} className="shrink-0" />
               <div className="min-w-0 flex-1">
@@ -48,7 +60,7 @@ export const FeedPreviewCard: React.FC<FeedPreviewCardProps> = ({
                 </div>
               </div>
             </div>
-          </div>
+          </a>
         </m.div>
       </HoverCardContent>
     </HoverCard>
