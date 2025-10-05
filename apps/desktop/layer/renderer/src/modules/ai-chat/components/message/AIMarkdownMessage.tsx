@@ -1,4 +1,4 @@
-import { cn } from "@follow/utils"
+import { cn, stopPropagation } from "@follow/utils"
 import { memo, useRef } from "react"
 
 import { MarkdownAnimateText } from "./animated/AnimatedMarkdown"
@@ -23,7 +23,7 @@ export const AIMarkdownStreamingMessage = memo(
 
     const stableStreamingState = useRef(isStreaming)
     return (
-      <div className={cn(className, classNameProp)}>
+      <div onContextMenu={stopPropagation} className={cn(className, classNameProp)}>
         <MarkdownAnimateText
           content={parseIncompleteMarkdown(text)}
           isStreaming={stableStreamingState.current}
