@@ -377,13 +377,28 @@ const ChatInterfaceContent = ({ centerInputOnEmpty }: ChatInterfaceProps) => {
         </div>
 
         {(!centerInputOnEmpty || hasMessages) && (
-          <div
-            className="bg-background pointer-events-none absolute inset-x-0 bottom-0 z-0 opacity-90"
-            style={{
-              maskImage: "linear-gradient(to bottom, transparent, black)",
-              height: bottomPanelHeight,
-            }}
-          />
+          <div className="absolute inset-x-0 bottom-0 isolate">
+            <div
+              className="pointer-events-none absolute inset-x-0 bottom-0 h-44"
+              style={{
+                maskImage: "linear-gradient(to top, black 70%, rgba(0,0,0,.6) 85%, transparent)",
+                WebkitMaskImage:
+                  "linear-gradient(to top, black 60%, rgba(0,0,0,.6) 85%, transparent)",
+                backdropFilter: "blur(22px) brightness(0.6)",
+                WebkitBackdropFilter: "blur(22px) brightness(0.6)",
+              }}
+            />
+
+            <div
+              className="from-background/20 to-background/0 pointer-events-none absolute inset-x-0 bottom-0 h-60 bg-gradient-to-b"
+              style={{
+                maskImage: "linear-gradient(to top, black 20%, transparent 70%)",
+                WebkitMaskImage: "linear-gradient(to top, black 20%, transparent 70%)",
+                backdropFilter: "blur(50px) saturate(130%)",
+                WebkitBackdropFilter: "blur(50px) saturate(130%)",
+              }}
+            />
+          </div>
         )}
       </div>
     </GlobalFileDropZone>
