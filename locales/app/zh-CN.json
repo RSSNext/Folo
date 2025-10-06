@@ -172,6 +172,7 @@
   "entry_content.web_app_notice": "网页版不支持展示此类型，请下载客户端查看。",
   "entry_list.zero_unread": "全部已读",
   "entry_list_header.grid": "网格布局",
+  "entry_list_header.image_only": "仅图片",
   "entry_list_header.items": "内容",
   "entry_list_header.masonry": "瀑布流布局",
   "entry_list_header.masonry_column": "布局列数",

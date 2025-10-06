@@ -2,6 +2,7 @@ import { useMobile } from "@follow/components/hooks/useMobile.js"
 import { AutoResizeHeight } from "@follow/components/ui/auto-resize-height/index.js"
 import { ActionButton } from "@follow/components/ui/button/index.js"
 import { SegmentGroup, SegmentItem } from "@follow/components/ui/segment/index.js"
+import { Switch } from "@follow/components/ui/switch/index.js"
 import { clsx, cn } from "@follow/utils/utils"
 import {
   HoverCard,
@@ -15,6 +16,7 @@ import { setUISetting, useUISettingKey } from "~/atoms/settings/ui"
 
 export const SwitchToMasonryButton = () => {
   const isMasonry = useUISettingKey("pictureViewMasonry")
+  const isImageOnly = useUISettingKey("pictureViewImageOnly")
   const { t } = useTranslation()
   const isMobile = useMobile()
 
@@ -74,6 +76,17 @@ export const SwitchToMasonryButton = () => {
                     }
                   />
                 </SegmentGroup>
+              </div>
+              <div className="flex items-center justify-between">
+                <label className="mr-2 w-[120px] text-sm">
+                  {t("entry_list_header.image_only")}
+                </label>
+                <Switch
+                  checked={isImageOnly}
+                  onCheckedChange={(checked) => {
+                    setUISetting("pictureViewImageOnly", checked)
+                  }}
+                />
               </div>
             </div>
           </AutoResizeHeight>

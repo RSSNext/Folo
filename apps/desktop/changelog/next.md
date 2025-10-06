@@ -9,6 +9,7 @@
   - Streamlined chat UI with context pickers for feeds, entries, and more.
   - Early preview: we’ll iterate quickly with your feedback.
   - Limited rollout: currently available to a subset of users; we’ll expand testing over time.
+- Image Only Mode: Add image only mode for image view (#4423)
 
 ## Improvements
 
@@ -18,4 +19,4 @@
 
 ## Thanks
 
-Special thanks to volunteer contributors @ for their valuable contributions
+Special thanks to volunteer contributors @rien7 for their valuable contributions

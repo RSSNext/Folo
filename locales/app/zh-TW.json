@@ -157,6 +157,7 @@
   "entry_content.web_app_notice": "Web 應用程式不支援此類型內容。您可以下載桌面應用程式。",
   "entry_list.zero_unread": "全部已讀",
   "entry_list_header.grid": "格線佈局",
+  "entry_list_header.image_only": "僅圖片",
   "entry_list_header.items": "內容",
   "entry_list_header.masonry": "瀑布式佈局",
   "entry_list_header.masonry_column": "佈局列數",

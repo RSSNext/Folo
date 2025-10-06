@@ -11,6 +11,7 @@ import type { PropsWithChildren } from "react"
 import { memo, use, useEffect, useMemo, useState } from "react"
 import { useTranslation } from "react-i18next"
 
+import { useUISettingKey } from "~/atoms/settings/ui"
 import { SwipeMedia } from "~/components/ui/media/SwipeMedia"
 import { useRouteParamsSelector } from "~/hooks/biz/useRouteParams"
 import { EntryContent } from "~/modules/entry-content/components/entry-content"
@@ -74,6 +75,7 @@ export const PictureWaterFallItem = memo(function PictureWaterFallItem({
   }))
 
   const isActive = useRouteParamsSelector(({ entryId }) => entryId === entry?.id)
+  const isImageOnly = useUISettingKey("pictureViewImageOnly")
   const entryContent = useMemo(() => <EntryContent entryId={entryId} noMedia compact />, [entryId])
   const previewMedia = usePreviewMedia(entryContent)
   const itemWidth = useMasonryItemWidth()
@@ -119,9 +121,11 @@ export const PictureWaterFallItem = memo(function PictureWaterFallItem({
               onPreview={previewMedia}
             />
 
-            <div className="z-[3] shrink-0 overflow-hidden rounded-b-md pb-1">
-              <GridItemFooter entryId={entryId} translation={translation} />
-            </div>
+            {!isImageOnly && (
+              <div className="z-[3] shrink-0 overflow-hidden rounded-b-md pb-1">
+                <GridItemFooter entryId={entryId} translation={translation} />
+              </div>
+            )}
           </MasonryItemFixedDimensionWrapper>
         ) : (
           <div className="center bg-material-medium text-text-secondary aspect-video flex-col gap-1 rounded-md text-xs">
@@ -142,6 +146,7 @@ const MasonryItemFixedDimensionWrapper = (
   const { url, children } = props
   const dim = useImageDimensions(url)
   const itemWidth = useMasonryItemWidth()
+  const isImageOnly = useUISettingKey("pictureViewImageOnly")
 
   const stableRadio = useMemo(() => {
     return dim ? dim.ratio : 1
@@ -160,9 +165,9 @@ const MasonryItemFixedDimensionWrapper = (
   const style = useMemo(
     () => ({
       width: itemWidth,
-      height: itemWidth / finalRatio + 60,
+      height: itemWidth / finalRatio + (!isImageOnly ? 60 : 0),
     }),
-    [itemWidth, finalRatio],
+    [itemWidth, finalRatio, isImageOnly],
   )
 
   if (!style.height || style.height === Infinity) return null
