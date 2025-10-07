@@ -379,13 +379,11 @@ const ChatInterfaceContent = ({ centerInputOnEmpty }: ChatInterfaceProps) => {
         {(!centerInputOnEmpty || hasMessages) && (
           <div className="absolute inset-x-0 bottom-0 isolate">
             <div
-              className="pointer-events-none absolute inset-x-0 bottom-0 h-44"
+              className="pointer-events-none absolute inset-x-0 bottom-0 h-44 backdrop-blur-xl backdrop-brightness-110 dark:backdrop-brightness-75"
               style={{
-                maskImage: "linear-gradient(to top, black 70%, rgba(0,0,0,.6) 85%, transparent)",
+                maskImage: "linear-gradient(to top, black 0%, rgba(0, 0, 0, 0.6) 25%, transparent)",
                 WebkitMaskImage:
-                  "linear-gradient(to top, black 60%, rgba(0,0,0,.6) 85%, transparent)",
-                backdropFilter: "blur(22px) brightness(0.6)",
-                WebkitBackdropFilter: "blur(22px) brightness(0.6)",
+                  "linear-gradient(to top, black 0%, rgba(0, 0, 0, 0.6) 25%, transparent)",
               }}
             />
 
