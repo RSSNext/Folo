@@ -246,7 +246,7 @@ export function EntryHeaderBreadcrumb() {
             <i className="i-mingcute-close-line size-5" />
           </button>
           {viewName && (
-            <div className="flex items-center">
+            <div className="@[700px]:flex hidden items-center">
               <button
                 type="button"
                 className={cn(
@@ -262,8 +262,8 @@ export function EntryHeaderBreadcrumb() {
           )}
           {meta && (
             <>
-              {Slash}
-              <div className="flex items-center">
+              <span className="@[700px]:inline hidden">{Slash}</span>
+              <div className="@[700px]:flex hidden min-w-[120px] shrink items-center">
                 <button
                   type="button"
                   className={cn(
@@ -284,9 +284,9 @@ export function EntryHeaderBreadcrumb() {
 
               {!!meta.entryTitle && (
                 <>
-                  {Slash}
+                  <span className="@[700px]:inline hidden shrink-0">{Slash}</span>
                   <span
-                    className="text-text truncate px-1.5 py-0.5 text-sm"
+                    className="text-text min-w-0 max-w-[30vw] truncate px-1.5 py-0.5 text-sm"
                     title={meta.entryTitle}
                   >
                     {meta.entryTitle}

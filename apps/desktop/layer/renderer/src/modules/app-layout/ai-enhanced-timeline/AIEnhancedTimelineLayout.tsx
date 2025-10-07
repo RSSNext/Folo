@@ -119,7 +119,12 @@ const AIEnhancedTimelineLayoutImpl = () => {
   const showCompactTimelineColumn = useGeneralSettingKey("showCompactTimelineInSub")
   return (
     <div className="relative flex min-w-0 grow">
-      <div className={cn("h-full flex-1", aiPanelStyle === AIChatPanelStyle.Fixed && "border-r")}>
+      <div
+        className={cn(
+          "h-full min-w-[300px] flex-1",
+          aiPanelStyle === AIChatPanelStyle.Fixed && "border-r",
+        )}
+      >
         <AppLayoutGridContainerProvider>
           <div className="relative h-full">
             {/* Entry list - always rendered to prevent animation */}
