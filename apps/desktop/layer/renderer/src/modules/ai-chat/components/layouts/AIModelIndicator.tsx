@@ -15,34 +15,31 @@ interface AIModelIndicatorProps {
   onModelChange?: (model: string) => void
 }
 
-type ProviderType = "openai" | "anthropic" | "google" | "meta"
+type ProviderType = "openai" | "google" | "auto"
 
 const providerIcons: Record<ProviderType, string> = {
   openai: "i-simple-icons-openai",
-  anthropic: "i-simple-icons-anthropic",
-  google: "i-simple-icons-google",
-  meta: "i-simple-icons-meta",
+  google: "i-simple-icons-googlegemini",
+  auto: "i-simple-icons-folo",
 }
 
 const AIModelNameMapping = {
-  "gpt-4o": "GPT-4o",
-  "gpt-4o-mini": "GPT-4o mini",
-  "gpt-4": "GPT-4",
+  auto: "Auto",
   "gpt-5": "GPT-5",
   "gpt-5-mini": "GPT-5 mini",
   "gpt-5-nano": "GPT-5 nano",
 }
 
 const parseModelString = (modelString: string) => {
-  if (!modelString || !modelString.includes("/")) {
-    return { provider: "openai" as ProviderType, modelName: modelString || "Unknown" }
+  if (!modelString || !modelString.includes("/") || modelString === "auto") {
+    return { provider: "auto" as ProviderType, modelName: modelString || "Unknown" }
   }
 
   const [provider, ...modelParts] = modelString.split("/")
   const modelName = modelParts.join("/")
 
   return {
-    provider: (provider as ProviderType) || "openai",
+    provider: (provider as ProviderType) || "auto",
     modelName: modelName || "Unknown",
   }
 }
@@ -55,7 +52,7 @@ export const AIModelIndicator = memo(({ className, onModelChange }: AIModelIndic
     return parseModelString(currentModel || defaultModel || "")
   }, [currentModel, defaultModel])
 
-  const iconClass = providerIcons[provider] || providerIcons.openai
+  const iconClass = providerIcons[provider] || providerIcons.auto
   const hasMultipleModels = availableModels && availableModels.length > 1
 
   const modelContent = (
@@ -92,7 +89,7 @@ export const AIModelIndicator = memo(({ className, onModelChange }: AIModelIndic
       <DropdownMenuContent align="end" className="min-w-48">
         {availableModels.map((model) => {
           const { provider: itemProvider, modelName: itemModelName } = parseModelString(model)
-          const itemIconClass = providerIcons[itemProvider] || providerIcons.openai
+          const itemIconClass = providerIcons[itemProvider] || providerIcons.auto
           const isSelected = model === (currentModel || defaultModel)
 
           const handleModelSelect = () => {
