@@ -18,9 +18,9 @@ interface AIModelIndicatorProps {
 type ProviderType = "openai" | "google" | "auto" | "deepseek"
 
 const providerIcons: Record<ProviderType, string> = {
+  auto: "i-mgc-folo-bot-original size-4 -ml-0.5",
   openai: "i-mgc-openai-original",
   google: "i-simple-icons-googlegemini",
-  auto: "i-simple-icons-folo",
   deepseek: "i-mgc-deepseek-original",
 }
 

@@ -185,7 +185,7 @@ const TimelineSummarySection = () => {
       <div className="bg-material-ultra-thin border-border relative mx-auto flex w-full max-w-3xl flex-col gap-4 overflow-hidden rounded-2xl border p-7 text-left shadow-sm">
         <div className="flex flex-wrap items-center justify-between gap-3">
           <div className="flex items-center gap-3">
-            <AISpline />
+            <i className="i-mgc-folo-bot-original size-10" />
             <div className="flex flex-col">
               <span className="text-text text-base font-semibold">
                 {t("timeline_summary.heading")}

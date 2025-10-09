@@ -248,7 +248,7 @@
   "timeline_summary.empty": "Timeline summary will appear here shortly.",
   "timeline_summary.error": "Unable to generate timeline summary right now.",
   "timeline_summary.generating": "Summarizing your timeline...",
-  "timeline_summary.heading": "Timeline Summary",
+  "timeline_summary.heading": "What's New in Timeline",
   "token_usage.description": "Monitor your AI token consumption and limits.",
   "token_usage.resets_at": "Resets at",
   "token_usage.title": "Token Usage",
