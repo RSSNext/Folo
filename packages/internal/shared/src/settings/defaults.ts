@@ -9,9 +9,6 @@ export const defaultGeneralSettings: GeneralSettings = {
   summary: true,
   actionLanguage: "default",
 
-  // mobile app
-  startupScreen: "timeline",
-
   sendAnonymousData: true,
   showQuickTimeline: true,
 

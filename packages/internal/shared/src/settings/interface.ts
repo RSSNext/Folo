@@ -5,7 +5,6 @@ export interface GeneralSettings {
   translationMode: "bilingual" | "translation-only"
   summary: boolean
   actionLanguage: string
-  startupScreen: "subscription" | "timeline"
   sendAnonymousData: boolean
   unreadOnly: boolean
   scrollMarkUnread: boolean
