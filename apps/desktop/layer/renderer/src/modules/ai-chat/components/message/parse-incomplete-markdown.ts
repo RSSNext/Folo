@@ -11,14 +11,16 @@ const strikethroughPattern = /(~~)([^~]*)$/
 
 // Detect custom inline reference tags
 const mentionTagStartPattern = /<\s*mention-(?:entry|feed)\b/gi
+const mentionTagCompletePattern = /^<\s*(mention-(?:entry|feed))/i
 
-// Finds the end index of a self-closing tag (`/>`) starting at `startIndex`.
-// Returns the index of `>` when a `/>` is found outside of quotes; otherwise -1.
-const findSelfClosingTagEnd = (text: string, startIndex: number): number => {
+// Finds the end index of a mention tag (self-closing or paired) starting at `startIndex`.
+// Returns the index of the closing `>` when found outside of quotes; otherwise -1.
+const findMentionTagEnd = (text: string, startIndex: number): number => {
   // Don't process if inside a complete code block
   if (hasCompleteCodeBlock(text)) return -1
 
   let inQuote: '"' | "'" | null = null
+  let openingTagEnd = -1
   for (let i = startIndex; i < text.length; i++) {
     const char = text[i]
     if (inQuote) {
@@ -34,11 +36,43 @@ const findSelfClosingTagEnd = (text: string, startIndex: number): number => {
     if (char === "/" && text[i + 1] === ">") {
       return i + 1 // index of '>' in `/>`
     }
+    if (char === ">") {
+      openingTagEnd = i
+      break
+    }
   }
-  return -1
+
+  if (openingTagEnd === -1) {
+    return -1
+  }
+
+  const openingTag = text.substring(startIndex, openingTagEnd + 1)
+  const tagNameMatch = openingTag.match(mentionTagCompletePattern)
+  if (!tagNameMatch) {
+    return -1
+  }
+
+  // If the tag is already self-closing (allow whitespace before `/`)
+  if (/\/\s*>$/.test(openingTag)) {
+    return openingTagEnd
+  }
+
+  const tagName = (tagNameMatch[1] ?? "").toLowerCase()
+  if (!tagName) {
+    return -1
+  }
+  const afterOpening = text.substring(openingTagEnd + 1)
+  const closingTagPattern = new RegExp(`<\\s*/\\s*${tagName}\\s*>`, "i")
+  const closingMatch = closingTagPattern.exec(afterOpening)
+
+  if (!closingMatch) {
+    return -1
+  }
+
+  return openingTagEnd + 1 + closingMatch.index + closingMatch[0].length - 1
 }
 
-// Trims trailing, incomplete `<mention-entry ... />` or `<mention-feed ... />` tags to avoid
+// Trims trailing, incomplete `<mention-entry ...>` or `<mention-feed ...>` tags to avoid
 // injecting broken raw HTML into markdown while streaming.
 const handleIncompleteMentionTags = (text: string): string => {
   // Don't process if inside a complete code block
@@ -51,7 +85,7 @@ const handleIncompleteMentionTags = (text: string): string => {
   mentionTagStartPattern.lastIndex = 0
   while ((match = mentionTagStartPattern.exec(text))) {
     const start = match.index
-    const end = findSelfClosingTagEnd(text, start)
+    const end = findMentionTagEnd(text, start)
     if (end === -1) {
       cutIndex = start
       break
@@ -73,8 +107,8 @@ const handleIncompleteMentionTags = (text: string): string => {
   return text
 }
 
-// Handles `<Use: <mention-... />` wrapper by:
-// - Replacing the whole wrapper with only the inner `<mention-... />` when complete
+// Handles `<Use: ...>` wrappers that contain mention tags (self-closing or paired) by:
+// - Replacing the whole wrapper with only the inner `<mention-...>` when complete
 // - Trimming from `<Use:` if the inner mention tag is incomplete while streaming
 const handleUseWrapper = (text: string): string => {
   // Don't process if inside a complete code block
@@ -104,7 +138,7 @@ const handleUseWrapper = (text: string): string => {
       continue
     }
 
-    const mentionEnd = findSelfClosingTagEnd(result, mentionStart)
+    const mentionEnd = findMentionTagEnd(result, mentionStart)
     if (mentionEnd === -1) {
       // Mention not finished yet → remove only the incomplete wrapper segment
       const nextNewlineIndex = result.indexOf("\n", useStart)
@@ -113,7 +147,7 @@ const handleUseWrapper = (text: string): string => {
         : result.substring(0, useStart)
     }
 
-    // Replace `<Use: <mention-.../>` with `<mention-.../>`
+    // Replace `<Use: <mention-...>` with `<mention-...>`
     const before = result.substring(0, useStart)
     const mentionTag = result.substring(mentionStart, mentionEnd + 1)
     const after = result.substring(mentionEnd + 1)
