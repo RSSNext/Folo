@@ -400,7 +400,7 @@ export const TimelineSelectorDragProgressProvider = ({ children }: { children: R
   const selectedFeed = useSelectedFeed()
   const viewId = selectedFeed?.type === "view" ? selectedFeed.viewId : undefined
 
-  const activeViews = useViewWithSubscription({ excludeAll: true })
+  const activeViews = useViewWithSubscription()
 
   const activeViewIndex = useMemo(
     () => activeViews.indexOf(viewId as FeedViewType),

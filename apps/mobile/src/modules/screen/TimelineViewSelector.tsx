@@ -26,7 +26,7 @@ const ACTIVE_WIDTH = 180
 const INACTIVE_WIDTH = 48
 const ACTIVE_TEXT_WIDTH = 100
 export function TimelineViewSelector() {
-  const activeViews = useViewWithSubscription({ excludeAll: true })
+  const activeViews = useViewWithSubscription()
   const scrollViewRef = React.useRef<ScrollView | null>(null)
   const selectedFeed = useSelectedFeed()
   return (
@@ -77,7 +77,7 @@ function ItemWrapper({
   style?: Exclude<StyleProp<ViewStyle>, number>
 }) {
   const { width: windowWidth } = useWindowDimensions()
-  const activeViews = useViewWithSubscription({ excludeAll: true })
+  const activeViews = useViewWithSubscription()
   const dragProgress = useTimelineSelectorDragProgress()
   const activeWidth = Math.max(
     windowWidth - (INACTIVE_WIDTH + 12) * (activeViews.length - 1) - 8 * 2,
