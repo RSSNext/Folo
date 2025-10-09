@@ -7,7 +7,7 @@ import { EntryHeaderActions } from "../../../actions/header-actions"
 import { MoreActions } from "../../../actions/more-actions"
 import { useEntryHeaderContext } from "./context"
 
-function EntryHeaderActionsContainerImpl({ isSmallWidth }: { isSmallWidth: boolean }) {
+function EntryHeaderActionsContainerImpl({ isSmallWidth }: { isSmallWidth?: boolean }) {
   const { entryId } = useEntryHeaderContext()
   const { view } = useRouteParams()
 

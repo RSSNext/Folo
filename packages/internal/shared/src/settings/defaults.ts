@@ -83,6 +83,7 @@ export const defaultUISettings: UISettings = {
 
   // View
   pictureViewMasonry: true,
+  pictureViewImageOnly: false,
   wideMode: false,
 
   // Action Order
