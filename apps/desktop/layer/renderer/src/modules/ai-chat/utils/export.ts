@@ -1,5 +1,4 @@
 import type { BizUIMessage } from "../store/types"
-import type { RichTextPart } from "../types/ChatSession"
 
 export const exportChatToMarkdown = (messages: BizUIMessage[], title?: string) => {
   const date = new Date().toLocaleString()
@@ -22,7 +21,7 @@ export const exportChatToMarkdown = (messages: BizUIMessage[], title?: string) =
             if (part.type === "text") {
               acc.push(part.text)
             } else if (part.type === "data-rich-text") {
-              acc.push((part as RichTextPart).data.text)
+              acc.push(part.data.text)
             }
             return acc
           }, [] as string[])
@@ -40,7 +39,7 @@ export const exportChatToMarkdown = (messages: BizUIMessage[], title?: string) =
             if (part.type === "text") {
               acc.push(part.text)
             } else if (part.type === "data-rich-text") {
-              acc.push((part as RichTextPart).data.text)
+              acc.push(part.data.text)
             }
             return acc
           }, [] as string[])

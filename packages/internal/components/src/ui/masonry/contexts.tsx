@@ -5,6 +5,10 @@ import { createContext as createContextSelector, useContextSelector } from "use-
 
 export const MasonryItemWidthContext = createContext(0)
 
+export const MasonryForceRerenderContext = createContext(0)
+
+export const useMasonryForceRerender = () => use(MasonryForceRerenderContext)
+
 export const useMasonryItemWidth = () => use(MasonryItemWidthContext)
 
 export const MasonryItemsAspectRatioContext = createContextSelector({} as Record<string, number>)

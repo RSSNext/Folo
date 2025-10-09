@@ -1,8 +1,9 @@
 import { Folo } from "@follow/components/icons/folo.js"
 import { ScrollArea } from "@follow/components/ui/scroll-area/ScrollArea.js"
 import { FeedViewType } from "@follow/constants"
+import { useElementWidth } from "@follow/hooks"
 import { clsx } from "@follow/utils"
-import type { EditorState, LexicalEditor } from "lexical"
+import type { EditorState } from "lexical"
 import { AnimatePresence, m } from "motion/react"
 import { useEffect, useMemo, useRef } from "react"
 import { getI18n, useTranslation } from "react-i18next"
@@ -12,6 +13,7 @@ import { ROUTE_ENTRY_PENDING } from "~/constants"
 import { useRouteParamsSelector } from "~/hooks/biz/useRouteParams"
 import { AISpline } from "~/modules/ai-chat/components/3d-models/AISpline"
 
+import { AI_CHAT_SPECIAL_ID_PREFIX } from "../../constants"
 import { useAttachScrollBeyond } from "../../hooks/useAttachScrollBeyond"
 import { useMainEntryId } from "../../hooks/useMainEntryId"
 import { AIPersistService } from "../../services"
@@ -21,7 +23,7 @@ import { DefaultWelcomeContent, EntrySummaryCard } from "../welcome"
 import { AIChatRoot } from "./AIChatRoot"
 
 interface WelcomeScreenProps {
-  onSend: (message: EditorState | string, editor: LexicalEditor | null) => void
+  onSend: (message: EditorState | string) => void
   centerInputOnEmpty?: boolean
 }
 
@@ -52,7 +54,7 @@ export const WelcomeScreen = ({ onSend, centerInputOnEmpty }: WelcomeScreenProps
     const month = now.getMonth() + 1
     const year = now.getFullYear()
 
-    return `today-timeline-summary-${year}-${month}-${day}`
+    return `${AI_CHAT_SPECIAL_ID_PREFIX.TIMELINE_SUMMARY}${year}-${month}-${day}`
   }, [])
 
   const status = useChatStatus()
@@ -81,7 +83,7 @@ export const WelcomeScreen = ({ onSend, centerInputOnEmpty }: WelcomeScreenProps
     >
       <div className="mx-auto flex w-full flex-1 flex-col justify-center space-y-8 pb-52">
         {showTimelineSummary ? (
-          <AIChatRoot chatId={todayTimelineSummaryId}>
+          <AIChatRoot chatId={todayTimelineSummaryId} generateId={() => todayTimelineSummaryId}>
             <TimelineSummarySection />
           </AIChatRoot>
         ) : (
@@ -173,6 +175,9 @@ const TimelineSummarySection = () => {
 
   const { t } = useTranslation("ai")
 
+  const messageContainerRef = useRef<HTMLDivElement>(null)
+  const messageContainerWidth = useElementWidth(messageContainerRef)
+
   const isLoading = status === "streaming"
   const isError = status === "error"
   return (
@@ -195,7 +200,16 @@ const TimelineSummarySection = () => {
           )}
         </div>
 
-        <div className="text-text flex select-text flex-col gap-2 text-sm leading-6">
+        <div
+          className="text-text flex select-text flex-col gap-2 text-sm leading-6"
+          ref={messageContainerRef}
+          style={
+            {
+              "--ai-chat-message-container-width": `${messageContainerWidth}px`,
+              opacity: messageContainerWidth > 0 ? 1 : 0,
+            } as React.CSSProperties
+          }
+        >
           {isError ? (
             <p className="text-text text-sm font-medium">{t("timeline_summary.error")}</p>
           ) : hasContent && message ? (

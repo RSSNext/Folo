@@ -35,6 +35,11 @@ export const BLOCK_STYLES = {
     icon: "bg-pink/10 text-pink",
     label: "text-pink",
   },
+  unreadOnly: {
+    container: "from-green/5 to-green/10 border-green/20 hover:border-green/30",
+    icon: "bg-green/10 text-green",
+    label: "text-green",
+  },
 } as const
 
 /**
@@ -55,6 +60,7 @@ export const BLOCK_ICONS = {
   referEntry: "i-mgc-paper-cute-fi",
   selectedText: "i-mgc-quill-pen-cute-re",
   fileAttachment: "i-mgc-file-upload-cute-re",
+  unreadOnly: "i-mgc-round-cute-fi",
 } as const
 
 /**
@@ -67,6 +73,7 @@ export const BLOCK_LABELS = {
   selectedText: "Text",
   fileAttachment: "File",
   mainView: "View",
+  unreadOnly: "Filter",
 } as const
 
 /**

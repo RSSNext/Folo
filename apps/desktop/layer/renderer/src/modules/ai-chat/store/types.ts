@@ -1,4 +1,5 @@
-import type { BizUITools, ToolWithState } from "@folo-services/ai-tools"
+import type { BizUIMetadata, BizUITools, ToolWithState } from "@folo-services/ai-tools"
+import type { IdGenerator, UIMessage, UIMessagePart } from "ai"
 
 export interface FileAttachment {
   id: string
@@ -19,7 +20,7 @@ interface BaseContextBlock {
 }
 
 export interface ValueContextBlock extends BaseContextBlock {
-  type: "mainView" | "mainEntry" | "mainFeed" | "referEntry" | "selectedText"
+  type: "mainView" | "mainEntry" | "mainFeed" | "referEntry" | "selectedText" | "unreadOnly"
   value: string
 }
 
@@ -38,6 +39,7 @@ export type AIChatContextBlockInput =
 export interface AIChatStoreInitial {
   blocks: AIChatContextBlock[]
   chatId?: string
+  generateId?: IdGenerator
 }
 
 export interface AIChatContextBlocks {
@@ -49,4 +51,18 @@ export type AIDisplayEntriesTool = ToolWithState<BizUITools["displayEntries"]>
 export type AIDisplaySubscriptionsTool = ToolWithState<BizUITools["displaySubscriptions"]>
 export type AIDisplayFlowTool = ToolWithState<BizUITools["displayFlowChart"]>
 
-export { type BizUIMessage, type BizUIMetadata, type BizUITools } from "@folo-services/ai-tools"
+export { type BizUIMetadata, type BizUITools } from "@folo-services/ai-tools"
+export type BizUIDataTypes = {
+  "rich-text": {
+    state: string
+    text: string
+  }
+  block: AIChatContextBlock[]
+}
+export type BizUIMessage = UIMessage<BizUIMetadata, BizUIDataTypes, BizUITools> & {
+  createdAt: Date
+}
+
+export type BizUIMessagePart = UIMessagePart<BizUIDataTypes, BizUITools>
+
+export type SendingUIMessage = Omit<BizUIMessage, "createdAt">

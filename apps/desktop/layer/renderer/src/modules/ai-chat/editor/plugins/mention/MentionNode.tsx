@@ -112,10 +112,10 @@ export class MentionNode extends DecoratorNode<React.JSX.Element> {
     ) {
       const { view } = getRouteParams()
       const ids = getCategoryFeedIds(value.slice(ROUTE_FEED_IN_FOLDER.length), view)
-      return `<mention-feed ids=${JSON.stringify(ids)}/>`
+      return `<mention-feed ids=${JSON.stringify(ids)}></mention-feed>`
     }
 
-    return `<mention-${type} id="${value}"/>`
+    return `<mention-${type} id="${value}"></mention-${type}>`
   }
 
   override decorate(_editor: LexicalEditor): React.JSX.Element {

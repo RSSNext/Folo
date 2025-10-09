@@ -210,21 +210,15 @@ const InlineFoloReference: React.FC<
     )
   }, [id, children])
 
-  const handleClick = React.useCallback(
-    (event: React.MouseEvent<HTMLButtonElement>) => {
-      event.preventDefault()
-      event.stopPropagation()
+  const handleClick = React.useCallback(() => {
+    if (!targetId) return
 
-      if (!targetId) return
-
-      if (type === "entry") {
-        peekModal(targetId, "modal")
-      } else {
-        navigateEntry({ feedId: targetId, entryId: null })
-      }
-    },
-    [navigateEntry, peekModal, targetId, type],
-  )
+    if (type === "entry") {
+      peekModal(targetId, "modal")
+    } else {
+      navigateEntry({ feedId: targetId, entryId: null })
+    }
+  }, [navigateEntry, peekModal, targetId, type])
 
   if (!targetId) return null
 
@@ -236,6 +230,7 @@ const InlineFoloReference: React.FC<
       title={type === "entry" ? `Open entry ${targetId}` : `Open feed ${targetId}`}
       className={cn(
         "text-text-secondary hover:text-text mx-[0.15em] inline-flex cursor-pointer items-center align-middle opacity-80 transition-opacity hover:opacity-100",
+        "-translate-y-0.5",
         className,
       )}
       style={style}
@@ -250,9 +245,17 @@ const InlineFoloReference: React.FC<
   )
 
   if (isEntry) {
-    return <EntryPreviewCard entryId={targetId}>{button}</EntryPreviewCard>
+    return (
+      <EntryPreviewCard entryId={targetId} onNavigate={handleClick}>
+        {button}
+      </EntryPreviewCard>
+    )
   } else {
-    return <FeedPreviewCard feedId={targetId}>{button}</FeedPreviewCard>
+    return (
+      <FeedPreviewCard feedId={targetId} onNavigate={handleClick}>
+        {button}
+      </FeedPreviewCard>
+    )
   }
 }
 

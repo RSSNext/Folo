@@ -1,4 +1,5 @@
 import type { LexicalRichEditorRef } from "@follow/components/ui/lexical-rich-editor/types.js"
+import type { IdGenerator } from "ai"
 import { atom } from "jotai"
 import type { FC, PropsWithChildren } from "react"
 import { useEffect, useMemo, useRef } from "react"
@@ -20,6 +21,7 @@ import { createAIChatStore } from "../../store/store"
 interface AIChatRootProps extends PropsWithChildren {
   wrapFocusable?: boolean
   chatId?: string
+  generateId?: IdGenerator
 }
 
 const AIChatRootInner: FC<AIChatRootProps> = ({ children, chatId: externalChatId }) => {
@@ -55,9 +57,13 @@ export const AIChatRoot: FC<AIChatRootProps> = ({
   children,
   wrapFocusable = true,
   chatId: externalChatId,
+  generateId,
 }) => {
+  const stableGenerateIdFn = useRef(generateId)
+  stableGenerateIdFn.current = generateId
+
   const useAiContextStore = useMemo(
-    () => createAIChatStore({ chatId: externalChatId }),
+    () => createAIChatStore({ chatId: externalChatId, generateId: stableGenerateIdFn.current }),
     [externalChatId],
   )
   const chatActions = useAiContextStore((state) => state.chatActions)

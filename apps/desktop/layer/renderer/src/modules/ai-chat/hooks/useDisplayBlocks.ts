@@ -10,7 +10,8 @@ export type DisplayBlockItem =
   | {
       kind: "combined"
       viewBlock: ValueBlockOf<"mainView">
-      feedBlock: ValueBlockOf<"mainFeed">
+      feedBlock?: ValueBlockOf<"mainFeed">
+      unreadOnlyBlock?: ValueBlockOf<"unreadOnly">
     }
   | { kind: "single"; block: AIChatContextBlock }
 
@@ -31,14 +32,27 @@ export const useDisplayBlocks = (blocks: AIChatContextBlock[]): DisplayBlockItem
     const mainFeedBlock = blocks.find(
       (block): block is ValueBlockOf<"mainFeed"> => block.type === "mainFeed",
     )
+    const unreadOnlyBlock = blocks.find(
+      (block): block is ValueBlockOf<"unreadOnly"> => block.type === "unreadOnly",
+    )
 
-    if (mainViewBlock && mainFeedBlock) {
+    // Always filter out unreadOnly from single blocks since it should only appear in combined blocks
+    const filteredBlocks = blocks.filter((block) => block.type !== "unreadOnly")
+
+    if (mainViewBlock) {
       const items: DisplayBlockItem[] = []
 
-      items.push({ kind: "combined", viewBlock: mainViewBlock, feedBlock: mainFeedBlock })
+      // Create combined block with optional feedBlock
+      items.push({
+        kind: "combined",
+        viewBlock: mainViewBlock,
+        ...(mainFeedBlock && { feedBlock: mainFeedBlock }),
+        ...(unreadOnlyBlock && { unreadOnlyBlock }),
+      })
 
-      const otherBlocks = blocks.filter(
-        (block) => block.id !== mainViewBlock.id && block.id !== mainFeedBlock.id,
+      // Add other blocks (excluding mainView, mainFeed, and unreadOnly)
+      const otherBlocks = filteredBlocks.filter(
+        (block) => block.id !== mainViewBlock.id && block.id !== mainFeedBlock?.id,
       )
       otherBlocks.forEach((block) => {
         items.push({ kind: "single", block })
@@ -47,6 +61,7 @@ export const useDisplayBlocks = (blocks: AIChatContextBlock[]): DisplayBlockItem
       return items
     }
 
-    return blocks.map((block) => ({ kind: "single" as const, block }))
+    // If no mainView, show all blocks except unreadOnly
+    return filteredBlocks.map((block) => ({ kind: "single" as const, block }))
   }, [blocks])
 }

@@ -75,33 +75,58 @@ type ValueBlockOf<Type extends ValueContextBlock["type"]> = Omit<ValueContextBlo
 
 type MainViewBlock = ValueBlockOf<"mainView">
 type MainFeedBlock = ValueBlockOf<"mainFeed">
+type UnreadOnlyBlock = ValueBlockOf<"unreadOnly">
 
-export const MainViewFeedContextBlock: FC<{
+export const CombinedContextBlock: FC<{
   viewBlock: MainViewBlock
-  feedBlock: MainFeedBlock
-}> = memo(({ viewBlock, feedBlock }) => {
+  feedBlock?: MainFeedBlock
+  unreadOnlyBlock?: UnreadOnlyBlock
+}> = memo(({ viewBlock, feedBlock, unreadOnlyBlock }) => {
+  const { t } = useTranslation("common")
   const blockActions = useChatBlockActions()
 
   const viewIcon = views.find((v) => v.view === Number(viewBlock.value))?.icon.props.className
 
   const canRemove =
-    !blockTypeCanNotBeRemoved.has(viewBlock.type) && !blockTypeCanNotBeRemoved.has(feedBlock.type)
+    !blockTypeCanNotBeRemoved.has(viewBlock.type) &&
+    (!feedBlock || !blockTypeCanNotBeRemoved.has(feedBlock.type))
 
   const handleRemove = () => {
     blockActions.removeBlock(viewBlock.id)
-    blockActions.removeBlock(feedBlock.id)
+    if (feedBlock) {
+      blockActions.removeBlock(feedBlock.id)
+    }
+    if (unreadOnlyBlock) {
+      blockActions.removeBlock(unreadOnlyBlock.id)
+    }
   }
+
+  // Determine what to display
+  const displayContent = feedBlock ? (
+    <span className="flex items-center gap-1">
+      <FeedTitle feedId={feedBlock.value} fallback={feedBlock.value} />
+      {unreadOnlyBlock && <i className="i-mgc-round-cute-fi size-3" title="Unread Only" />}
+    </span>
+  ) : (
+    <span className="flex items-center gap-1">
+      {(() => {
+        const viewName = views.find((v) => v.view === Number(viewBlock.value))?.name
+        return viewName ? t(viewName) : viewBlock.value
+      })()}
+      {unreadOnlyBlock && <i className="i-mgc-round-cute-fi size-3" title="Unread Only" />}
+    </span>
+  )
 
   return (
     <BlockContainer
       icon={viewIcon}
       canRemove={canRemove}
       onRemove={handleRemove}
-      content={<FeedTitle feedId={feedBlock.value} fallback={feedBlock.value} />}
+      content={displayContent}
     />
   )
 })
-MainViewFeedContextBlock.displayName = "MainViewFeedContextBlock"
+CombinedContextBlock.displayName = "CombinedContextBlock"
 
 export const ContextBlock: FC<{ block: AIChatContextBlock }> = memo(({ block }) => {
   const { t } = useTranslation("common")
@@ -124,6 +149,9 @@ export const ContextBlock: FC<{ block: AIChatContextBlock }> = memo(({ block }) 
       }
       case "selectedText": {
         return "i-mgc-quill-pen-cute-re"
+      }
+      case "unreadOnly": {
+        return "i-mgc-round-cute-fi"
       }
       case "fileAttachment": {
         const { type, dataUrl, previewUrl } = block.attachment
@@ -158,6 +186,9 @@ export const ContextBlock: FC<{ block: AIChatContextBlock }> = memo(({ block }) 
       }
       case "selectedText": {
         return `"${block.value}"`
+      }
+      case "unreadOnly": {
+        return "Unread Only"
       }
       case "fileAttachment": {
         const { type, name, dataUrl, previewUrl, uploadStatus, errorMessage, uploadProgress } =
@@ -254,6 +285,9 @@ export const ContextBlock: FC<{ block: AIChatContextBlock }> = memo(({ block }) 
       }
       case "selectedText": {
         return "Text"
+      }
+      case "unreadOnly": {
+        return "Filter"
       }
       case "fileAttachment": {
         return "File"

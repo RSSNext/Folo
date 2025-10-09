@@ -26,15 +26,15 @@ import type { FollowCommandId } from "~/modules/command/types"
 export const MoreActions = ({
   entryId,
   view,
-
+  showMainAction = false,
   hideCustomizeToolbar = false,
 }: {
   entryId: string
   view: FeedViewType
-
+  showMainAction?: boolean
   hideCustomizeToolbar?: boolean
 }) => {
-  const { moreAction } = useSortedEntryActions({ entryId, view })
+  const { moreAction, mainAction } = useSortedEntryActions({ entryId, view })
 
   const actionConfigs = useMemo(
     () =>
@@ -81,7 +81,25 @@ export const MoreActions = ({
         <ActionButton icon={<i className="i-mingcute-more-1-fill" />} />
       </DropdownMenuTrigger>
       <RootPortal>
-        <DropdownMenuContent>
+        <DropdownMenuContent align="end">
+          {showMainAction && (
+            <div>
+              {mainAction
+                .filter((config) => config instanceof MenuItemText)
+                .map((config) => {
+                  return (
+                    <CommandDropdownMenuItem
+                      key={config.id}
+                      commandId={config.id}
+                      onClick={config.onClick!}
+                      active={config.active}
+                    />
+                  )
+                })}
+              <DropdownMenuSeparator />
+            </div>
+          )}
+
           {availableActions.map((config) => {
             // Handle EntryActionI with sub-menu
             if (config instanceof EntryActionDropdownItem && config.hasChildren) {

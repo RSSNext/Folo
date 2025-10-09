@@ -90,6 +90,7 @@ class AIChatSessionServiceStatic {
       role: msg.role satisfies BizUIMessage["role"],
       parts: normalizedParts,
       metadata,
+      createdAt: new Date(msg.createdAt),
     }
   }
 }

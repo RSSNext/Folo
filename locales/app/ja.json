@@ -172,6 +172,7 @@
   "entry_content.web_app_notice": "このコンテンツタイプはウェブアプリではサポートされていないかもしれません。デスクトップアプリをダウンロードしてください。",
   "entry_list.zero_unread": "未読ゼロ",
   "entry_list_header.grid": "グリッド",
+  "entry_list_header.image_only": "イメージのみ",
   "entry_list_header.items": "項目",
   "entry_list_header.masonry": "メイソンリー",
   "entry_list_header.masonry_column": "メイソンリー列",

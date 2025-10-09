@@ -8,7 +8,6 @@ import { useEditingMessageId, useSetEditingMessageId } from "~/modules/ai-chat/a
 import { useChatActions, useChatStatus } from "~/modules/ai-chat/store/hooks"
 import type { AIChatContextBlock, BizUIMessage } from "~/modules/ai-chat/store/types"
 
-import type { RichTextPart } from "../../types/ChatSession"
 import { convertLexicalToMarkdown } from "../../utils/lexical-markdown"
 import { AIDataBlockPart } from "./AIDataBlockPart"
 import { AIMessageIdContext } from "./AIMessageIdContext"
@@ -68,12 +67,10 @@ export const UserChatMessage: React.FC<UserChatMessageProps> = React.memo(({ mes
         const nextMessage = messages[messageIndex]!
         chatActions.setMessages(messagesToKeep)
 
-        const richTextPart = nextMessage.parts.find(
-          (part) => part.type === "data-rich-text",
-        ) as RichTextPart
+        const richTextPart = nextMessage.parts.find((part) => part.type === "data-rich-text")
         if (richTextPart) {
           richTextPart.data = {
-            state: newState,
+            state: JSON.stringify(newState),
             text: messageContent,
           }
         }

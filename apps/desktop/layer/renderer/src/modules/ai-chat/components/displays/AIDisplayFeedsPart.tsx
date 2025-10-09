@@ -40,11 +40,11 @@ const AIDisplayFeedPartBase = ({
             }}
             siteUrl={siteUrl!}
           />
-          <h3 className="text-text line-clamp-2 flex-1 font-semibold leading-tight">
+          <h3 className="text-text line-clamp-2 flex-1 text-left font-semibold leading-tight">
             {title || "Untitled Feed"}
           </h3>
         </div>
-        <i className="i-mgc-external-link-cute-re text-text-tertiary shrink-0 opacity-60 transition-opacity group-hover:opacity-100" />
+        <i className="i-mgc-external-link-cute-re text-text-tertiary ml-2 shrink-0 opacity-60 transition-opacity group-hover:opacity-100" />
       </div>
 
       {/* Description */}

@@ -1,12 +1,12 @@
 import { AIShortcutButton } from "@follow/components/ui/ai-shortcut-button/index.js"
-import type { EditorState, LexicalEditor } from "lexical"
+import type { EditorState } from "lexical"
 import { m } from "motion/react"
 import { useTranslation } from "react-i18next"
 
 import { useSettingModal } from "~/modules/settings/modal/use-setting-modal-hack"
 
 interface DefaultWelcomeContentProps {
-  onSend: (message: EditorState | string, editor: LexicalEditor | null) => void
+  onSend: (message: EditorState | string) => void
   shortcuts: Array<{ id: string; name: string; prompt: string; enabled: boolean; hotkey?: string }>
 }
 
@@ -28,7 +28,7 @@ export const DefaultWelcomeContent: React.FC<DefaultWelcomeContentProps> = ({
         {enabledShortcuts.slice(0, 6).map((shortcut, index) => (
           <AIShortcutButton
             key={shortcut.id}
-            onClick={() => onSend(shortcut.prompt, null)}
+            onClick={() => onSend(shortcut.prompt)}
             animationDelay={index * 0.1}
             title={shortcut.hotkey ? `${shortcut.name} (${shortcut.hotkey})` : shortcut.name}
           >

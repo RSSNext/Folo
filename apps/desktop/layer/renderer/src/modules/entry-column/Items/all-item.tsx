@@ -184,7 +184,7 @@ export function AllItem({ entryId, translation, currentFeedTitle }: UniversalIte
       </div>
 
       <div className="text-text-secondary ml-4 shrink-0 text-xs">
-        {!!displayTime && <RelativeTime date={displayTime} compact />}
+        {!!displayTime && <RelativeTime date={displayTime} postfix="" />}
       </div>
     </div>
   )

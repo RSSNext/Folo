@@ -28,6 +28,7 @@ export const useLoadMessages = (
             parts: message.messageParts as any[],
             role: message.role,
             metadata: message.metadata as BizUIMetadata,
+            createdAt: message.createdAt,
           }))
           chatActions.setMessages(messagesToSet)
           onLoadEventCallback(messagesToSet)
