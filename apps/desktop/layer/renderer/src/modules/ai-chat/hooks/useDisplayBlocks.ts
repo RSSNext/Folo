@@ -9,7 +9,7 @@ type ValueBlockOf<Type extends ValueContextBlock["type"]> = Omit<ValueContextBlo
 export type DisplayBlockItem =
   | {
       kind: "combined"
-      viewBlock: ValueBlockOf<"mainView">
+      viewBlock?: ValueBlockOf<"mainView">
       feedBlock?: ValueBlockOf<"mainFeed">
       unreadOnlyBlock?: ValueBlockOf<"unreadOnly">
     }

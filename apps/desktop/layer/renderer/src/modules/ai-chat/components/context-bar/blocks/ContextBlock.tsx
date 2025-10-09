@@ -78,21 +78,20 @@ type MainFeedBlock = ValueBlockOf<"mainFeed">
 type UnreadOnlyBlock = ValueBlockOf<"unreadOnly">
 
 export const CombinedContextBlock: FC<{
-  viewBlock: MainViewBlock
+  viewBlock?: MainViewBlock
   feedBlock?: MainFeedBlock
   unreadOnlyBlock?: UnreadOnlyBlock
 }> = memo(({ viewBlock, feedBlock, unreadOnlyBlock }) => {
   const { t } = useTranslation("common")
   const blockActions = useChatBlockActions()
 
-  const viewIcon = views.find((v) => v.view === Number(viewBlock.value))?.icon.props.className
-
-  const canRemove =
-    !blockTypeCanNotBeRemoved.has(viewBlock.type) &&
-    (!feedBlock || !blockTypeCanNotBeRemoved.has(feedBlock.type))
+  const viewIcon =
+    viewBlock && views.find((v) => v.view === Number(viewBlock.value))?.icon.props.className
 
   const handleRemove = () => {
-    blockActions.removeBlock(viewBlock.id)
+    if (viewBlock) {
+      blockActions.removeBlock(viewBlock.id)
+    }
     if (feedBlock) {
       blockActions.removeBlock(feedBlock.id)
     }
@@ -110,6 +109,7 @@ export const CombinedContextBlock: FC<{
   ) : (
     <span className="flex items-center gap-1">
       {(() => {
+        if (!viewBlock) return null
         const viewName = views.find((v) => v.view === Number(viewBlock.value))?.name
         return viewName ? t(viewName) : viewBlock.value
       })()}
@@ -120,7 +120,7 @@ export const CombinedContextBlock: FC<{
   return (
     <BlockContainer
       icon={viewIcon}
-      canRemove={canRemove}
+      canRemove={true}
       onRemove={handleRemove}
       content={displayContent}
     />

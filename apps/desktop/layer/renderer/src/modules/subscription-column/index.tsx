@@ -23,7 +23,7 @@ import {
   useSubscriptionColumnShow,
 } from "~/atoms/sidebar"
 import { Focusable } from "~/components/common/Focusable"
-import { HotkeyScope, ROUTE_TIMELINE_OF_VIEW } from "~/constants"
+import { HotkeyScope, ROUTE_TIMELINE_OF_VIEW, ROUTE_VIEW_ALL } from "~/constants"
 import { useFeature } from "~/hooks/biz/useFeature"
 import { useBackHome } from "~/hooks/biz/useNavigateEntry"
 import { useReduceMotion } from "~/hooks/biz/useReduceMotion"
@@ -50,6 +50,11 @@ export function SubscriptionColumn({
 
   const carouselRef = useRef<HTMLDivElement>(null)
   const timelineList = useTimelineList()
+  const aiEnabled = useFeature("ai")
+  const allTimelineList = useMemo(() => {
+    if (aiEnabled) return [ROUTE_VIEW_ALL, ...timelineList]
+    return timelineList
+  }, [aiEnabled, timelineList])
 
   const routeParams = useRouteParamsSelector((s) => ({
     timelineId: s.timelineId,
@@ -57,7 +62,7 @@ export function SubscriptionColumn({
     listId: s.listId,
   }))
 
-  const [timelineId, setMemoizedTimelineId] = useState(routeParams.timelineId ?? timelineList[0])
+  const [timelineId, setMemoizedTimelineId] = useState(routeParams.timelineId ?? allTimelineList[0])
 
   useEffect(() => {
     if (routeParams.timelineId) setMemoizedTimelineId(routeParams.timelineId)
@@ -68,7 +73,7 @@ export function SubscriptionColumn({
     (args: string | ((prev: string | undefined, index: number) => string)) => {
       let nextActive
       if (typeof args === "function") {
-        const index = timelineId ? timelineList.indexOf(timelineId) : 0
+        const index = timelineId ? allTimelineList.indexOf(timelineId) : 0
         nextActive = args(timelineId, index)
       } else {
         nextActive = args
@@ -77,7 +82,7 @@ export function SubscriptionColumn({
       navigateBackHome(nextActive)
       resetSelectedFeedIds()
     },
-    [navigateBackHome, timelineId, timelineList],
+    [navigateBackHome, timelineId, allTimelineList],
   )
 
   useWheel(
@@ -86,7 +91,7 @@ export function SubscriptionColumn({
         const s = lethargy.check(event)
         if (s) {
           if (!wait && Math.abs(dex) > 20) {
-            setActive((_, i) => timelineList[clamp(i + dx, 0, timelineList.length - 1)]!)
+            setActive((_, i) => allTimelineList[clamp(i + dx, 0, allTimelineList.length - 1)]!)
             return true
           } else {
             return
@@ -129,7 +134,7 @@ export function SubscriptionColumn({
         }
       }, [navigateBackHome])}
     >
-      <CommandsHandler setActive={setActive} timelineList={timelineList} />
+      <CommandsHandler setActive={setActive} timelineList={allTimelineList} />
       <SubscriptionColumnHeader />
       {!feedColumnShow && (
         <RootPortal to={rootContainerElement}>
@@ -161,15 +166,17 @@ export function SubscriptionColumn({
         }, [])}
       >
         <SwipeWrapper active={timelineId!}>
-          {timelineList.map((timelineId) => (
+          {allTimelineList.map((timelineId) => (
             <section key={timelineId} className="w-feed-col h-full shrink-0 snap-center">
               <SubscriptionListGuard
                 key={timelineId}
                 view={
-                  Number.parseInt(
-                    timelineId.slice(ROUTE_TIMELINE_OF_VIEW.length),
-                    10,
-                  ) as FeedViewType
+                  timelineId === ROUTE_VIEW_ALL
+                    ? FeedViewType.All
+                    : (Number.parseInt(
+                        timelineId.slice(ROUTE_TIMELINE_OF_VIEW.length),
+                        10,
+                      ) as FeedViewType)
                 }
                 isSubscriptionLoading={isSubscriptionLoading}
               />
@@ -193,7 +200,12 @@ const SwipeWrapper: FC<{ active: string; children: React.JSX.Element[] }> = memo
   ({ children, active }) => {
     const reduceMotion = useReduceMotion()
     const timelineList = useTimelineList()
-    const viewIndex = timelineList.indexOf(active)
+    const aiEnabled = useFeature("ai")
+    const allTimelineList = useMemo(() => {
+      if (aiEnabled) return [ROUTE_VIEW_ALL, ...timelineList]
+      return timelineList
+    }, [aiEnabled, timelineList])
+    const viewIndex = allTimelineList.indexOf(active)
 
     const feedColumnWidth = useUISettingKey("feedColWidth")
     const timelineTabs = useUISettingKey("timelineTabs")
@@ -201,13 +213,13 @@ const SwipeWrapper: FC<{ active: string; children: React.JSX.Element[] }> = memo
 
     // Use custom ordering for direction calculation
     const orderedForDirection = useMemo(() => {
-      if (timelineList.length === 0) return [] as string[]
-      const first = timelineList[0]
-      const rest = timelineList.slice(1)
+      if (allTimelineList.length === 0) return [] as string[]
+      const first = allTimelineList[0]
+      const rest = allTimelineList.slice(1)
       const savedVisible = (timelineTabs?.visible ?? []).filter((id) => rest.includes(id))
       const ordered = [first, ...savedVisible, ...rest.filter((id) => !savedVisible.includes(id))]
       return ordered
-    }, [timelineList, timelineTabs])
+    }, [allTimelineList, timelineTabs])
 
     const orderIndex = orderedForDirection.indexOf(active)
 
@@ -276,11 +288,9 @@ const TabsRow: FC = () => {
     )
   }
 
-  const first = timelineList[0]
-  const rest = timelineList.slice(1)
-  const savedVisible = (timelineTabs?.visible ?? []).filter((id) => rest.includes(id))
+  const savedVisible = (timelineTabs?.visible ?? []).filter((id) => timelineList.includes(id))
   const visible: string[] = [...savedVisible]
-  for (const id of rest) {
+  for (const id of timelineList) {
     if (visible.length >= 5) break
     if (!visible.includes(id)) visible.push(id)
   }
@@ -289,8 +299,8 @@ const TabsRow: FC = () => {
     <div className="text-text-secondary flex h-11 items-center px-1 text-xl">
       <SubscriptionTabButton
         shortcut="BackQuote"
-        key={first}
-        timelineId={`${ROUTE_TIMELINE_OF_VIEW}${FeedViewType.All}`}
+        key={ROUTE_VIEW_ALL}
+        timelineId={ROUTE_VIEW_ALL}
       />
       {visible.map((timelineId, index) => (
         <SubscriptionTabButton key={timelineId} timelineId={timelineId} shortcut={`${index + 1}`} />

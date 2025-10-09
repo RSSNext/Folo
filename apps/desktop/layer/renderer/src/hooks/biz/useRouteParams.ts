@@ -17,6 +17,7 @@ import {
   ROUTE_FEED_IN_LIST,
   ROUTE_FEED_PENDING,
   ROUTE_TIMELINE_OF_VIEW,
+  ROUTE_VIEW_ALL,
 } from "~/constants"
 
 export const useRouteEntryId = () => {
@@ -36,6 +37,7 @@ export interface BizRouteParams {
   isCollection: boolean
   isAllFeeds: boolean
   isPendingEntry: boolean
+  isAllView: boolean
   folderName?: string
   inboxId?: string
   listId?: string
@@ -47,6 +49,7 @@ const parseRouteParams = (params: Params<any>, _searchParams: URLSearchParams): 
     ? params.feedId.slice(ROUTE_FEED_IN_LIST.length)
     : undefined
   const list = listId ? getListById(listId) : undefined
+  const isAllView = params.timelineId === ROUTE_VIEW_ALL
 
   return {
     view: params.timelineId?.startsWith(ROUTE_TIMELINE_OF_VIEW)
@@ -54,10 +57,13 @@ const parseRouteParams = (params: Params<any>, _searchParams: URLSearchParams): 
           params.timelineId.slice(ROUTE_TIMELINE_OF_VIEW.length),
           10,
         ) as FeedViewType)
-      : (list?.view ?? FeedViewType.Articles),
+      : isAllView
+        ? FeedViewType.All
+        : (list?.view ?? FeedViewType.Articles),
     entryId: params.entryId || undefined,
     feedId: params.feedId || undefined,
     // alias
+    isAllView,
     isCollection: params.feedId === FEED_COLLECTION_LIST,
     isAllFeeds: params.feedId === ROUTE_FEED_PENDING,
     isPendingEntry: params.entryId === ROUTE_ENTRY_PENDING,

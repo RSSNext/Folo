@@ -1,7 +1,6 @@
 import { useDroppable } from "@dnd-kit/core"
 import { ActionButton } from "@follow/components/ui/button/index.js"
-import type { FeedViewType } from "@follow/constants"
-import { views } from "@follow/constants"
+import { FeedViewType, viewAll, views } from "@follow/constants"
 import { useUnreadByView } from "@follow/store/unread/hooks"
 import { cn } from "@follow/utils/utils"
 import type { FC } from "react"
@@ -10,7 +9,7 @@ import { useTranslation } from "react-i18next"
 
 import { useUISettingKey } from "~/atoms/settings/ui"
 import { FocusablePresets } from "~/components/common/Focusable"
-import { ROUTE_TIMELINE_OF_VIEW } from "~/constants"
+import { ROUTE_TIMELINE_OF_VIEW, ROUTE_VIEW_ALL } from "~/constants"
 import { useNavigateEntry } from "~/hooks/biz/useNavigateEntry"
 import { useRouteParamsSelector } from "~/hooks/biz/useRouteParams"
 
@@ -41,7 +40,54 @@ export function SubscriptionTabButton({
     return (
       <ViewSwitchButton view={id} isActive={isActive} setActive={setActive} shortcut={shortcut} />
     )
+  } else if (timelineId === ROUTE_VIEW_ALL) {
+    return <ViewAllSwitchButton isActive={isActive} setActive={setActive} shortcut={shortcut} />
   }
+}
+
+const ViewAllSwitchButton: FC<{
+  isActive: boolean
+  setActive: () => void
+  shortcut: string
+}> = ({ isActive, setActive, shortcut }) => {
+  const unreadByView = useUnreadByView(FeedViewType.All)
+  const { t } = useTranslation()
+  const showSidebarUnreadCount = useUISettingKey("sidebarShowUnreadCount")
+  const item = viewAll
+
+  return (
+    <ActionButton
+      shortcutScope={FocusablePresets.isNotFloatingLayerScope}
+      key={item.name}
+      tooltip={t(item.name, { ns: "common" })}
+      shortcut={shortcut}
+      className={cn(
+        isActive && item.className,
+        "flex h-11 w-8 shrink-0 grow flex-col items-center gap-1 text-[1.375rem]",
+        ELECTRON ? "hover:!bg-theme-item-hover" : "",
+      )}
+      onClick={(e) => {
+        startTransition(() => {
+          setActive()
+        })
+        e.stopPropagation()
+      }}
+    >
+      {item.icon}
+      {showSidebarUnreadCount ? (
+        <div className="text-[0.625rem] font-medium leading-none">
+          {unreadByView > 99 ? <span className="-mr-0.5">99+</span> : unreadByView}
+        </div>
+      ) : (
+        <i
+          className={cn(
+            "i-mgc-round-cute-fi text-[0.25rem]",
+            unreadByView ? (isActive ? "opacity-100" : "opacity-60") : "opacity-0",
+          )}
+        />
+      )}
+    </ActionButton>
+  )
 }
 
 const ViewSwitchButton: FC<{

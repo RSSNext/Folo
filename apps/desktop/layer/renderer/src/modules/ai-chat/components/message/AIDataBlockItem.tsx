@@ -25,7 +25,7 @@ type ValueBlockOf<Type extends ValueContextBlock["type"]> = Omit<ValueContextBlo
 }
 
 interface CombinedDataBlockItemProps {
-  viewBlock: ValueBlockOf<"mainView">
+  viewBlock?: ValueBlockOf<"mainView">
   feedBlock?: ValueBlockOf<"mainFeed">
   unreadOnlyBlock?: ValueBlockOf<"unreadOnly">
 }
@@ -162,23 +162,63 @@ AIDataBlockItem.displayName = "AIDataBlockItem"
  */
 export const CombinedDataBlockItem: React.FC<CombinedDataBlockItemProps> = React.memo(
   ({ viewBlock, feedBlock, unreadOnlyBlock }) => {
-    const { styles, displayContent, title } = React.useMemo(() => {
+    const { styles, displayContent, title, block } = React.useMemo(() => {
+      const unreadOnlyText = unreadOnlyBlock ? " (Unread Only)" : ""
+      const unreadIcon = unreadOnlyBlock && (
+        <i className="i-mgc-round-cute-fi size-3" title="Unread Only" />
+      )
+
+      // Helper function to create content with optional unread indicator
+      const createContent = (mainContent: React.ReactNode) => (
+        <span className="flex items-center gap-1">
+          {mainContent}
+          {unreadIcon}
+        </span>
+      )
+
+      // Handle case when viewBlock is null/undefined
+      if (!viewBlock) {
+        // Prioritize feedBlock if available
+        if (feedBlock) {
+          return {
+            styles: getBlockStyles("mainFeed"),
+            displayContent: createContent(
+              <FeedTitle feedId={feedBlock.value} fallback={feedBlock.value} />,
+            ),
+            title: `${feedBlock.value}${unreadOnlyText}`,
+            block: feedBlock,
+          }
+        }
+
+        // Handle unreadOnly-only case
+        if (unreadOnlyBlock) {
+          return {
+            styles: getBlockStyles("unreadOnly"),
+            displayContent: createContent("Unread Only"),
+            title: "Unread Only",
+            block: unreadOnlyBlock,
+          }
+        }
+
+        // Fallback case
+        const fallbackBlock = { id: "fallback", type: "mainView" as const, value: "" }
+        return {
+          styles: getBlockStyles("mainView"),
+          displayContent: createContent("No context"),
+          title: "No context",
+          block: fallbackBlock,
+        }
+      }
+
+      // Handle case when viewBlock exists
       const view = views.find((v) => v.view === Number(viewBlock.value))
       const viewName = view?.name ? t(view.name, { ns: "common" }) : viewBlock.value
 
-      const unreadOnlyText = unreadOnlyBlock ? " (Unread Only)" : ""
-
-      // Determine content based on whether feedBlock exists
-      const content = feedBlock ? (
-        <span className="flex items-center gap-1">
-          <FeedTitle feedId={feedBlock.value} fallback={feedBlock.value} />
-          {unreadOnlyBlock && <i className="i-mgc-round-cute-fi size-3" title="Unread Only" />}
-        </span>
+      // Determine primary content: feedBlock takes precedence over viewBlock
+      const primaryContent = feedBlock ? (
+        <FeedTitle feedId={feedBlock.value} fallback={feedBlock.value} />
       ) : (
-        <span className="flex items-center gap-1">
-          {viewName}
-          {unreadOnlyBlock && <i className="i-mgc-round-cute-fi size-3" title="Unread Only" />}
-        </span>
+        viewName
       )
 
       const titleText = feedBlock
@@ -187,18 +227,14 @@ export const CombinedDataBlockItem: React.FC<CombinedDataBlockItemProps> = React
 
       return {
         styles: getBlockStyles("mainView"),
-        displayContent: content,
+        displayContent: createContent(primaryContent),
         title: titleText,
+        block: viewBlock,
       }
-    }, [viewBlock.value, feedBlock, unreadOnlyBlock])
+    }, [viewBlock, feedBlock, unreadOnlyBlock])
 
     return (
-      <BlockContainer
-        styles={styles}
-        block={viewBlock}
-        displayContent={displayContent}
-        title={title}
-      />
+      <BlockContainer styles={styles} block={block} displayContent={displayContent} title={title} />
     )
   },
 )

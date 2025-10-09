@@ -1,4 +1,4 @@
-import { views } from "@follow/constants"
+import { viewAll, views } from "@follow/constants"
 import type { EntryModel } from "@follow/store/entry/types"
 import { useFeedById, usePrefetchFeed } from "@follow/store/feed/hooks"
 import { feedIconSelector } from "@follow/store/feed/selectors"
@@ -40,7 +40,7 @@ export const getPreferredTitle = (
 
 export const useFeedHeaderTitle = () => {
   const { t } = useTranslation()
-  const { feedId: currentFeedId, view, listId: currentListId } = useRouteParams()
+  const { feedId: currentFeedId, view, isAllView, listId: currentListId } = useRouteParams()
 
   const feedTitle = useFeedById(currentFeedId, getPreferredTitle)
   const listTitle = useListById(currentListId, getPreferredTitle)
@@ -50,7 +50,9 @@ export const useFeedHeaderTitle = () => {
 
   switch (currentFeedId) {
     case ROUTE_FEED_PENDING: {
-      return t(views.find((v) => v.view === view)!.name, { ns: "common" })
+      return t(isAllView ? viewAll.name : views.find((v) => v.view === view)!.name, {
+        ns: "common",
+      })
     }
     case FEED_COLLECTION_LIST: {
       return t("words.starred")
