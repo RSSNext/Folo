@@ -15,12 +15,13 @@ interface AIModelIndicatorProps {
   onModelChange?: (model: string) => void
 }
 
-type ProviderType = "openai" | "google" | "auto"
+type ProviderType = "openai" | "google" | "auto" | "deepseek"
 
 const providerIcons: Record<ProviderType, string> = {
-  openai: "i-simple-icons-openai",
+  openai: "i-mgc-openai-original",
   google: "i-simple-icons-googlegemini",
   auto: "i-simple-icons-folo",
+  deepseek: "i-mgc-deepseek-original",
 }
 
 const AIModelNameMapping = {
