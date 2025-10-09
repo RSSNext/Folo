@@ -39,12 +39,10 @@ const extendMap: Record<FeedViewType, ViewDefinitionExtended> = {
 
 export interface ViewDefinition extends Omit<ViewDefinitionBase, "icon">, ViewDefinitionExtended {}
 
-export const views: ViewDefinition[] = viewsBase
-  .filter((view) => view.view !== FeedViewType.All)
-  .map((view) => {
-    const extendedView = extendMap[view.view]
-    return {
-      ...view,
-      ...extendedView,
-    }
-  })
+export const views: ViewDefinition[] = viewsBase.map((view) => {
+  const extendedView = extendMap[view.view]
+  return {
+    ...view,
+    ...extendedView,
+  }
+})
