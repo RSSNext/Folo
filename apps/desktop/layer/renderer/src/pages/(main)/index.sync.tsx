@@ -16,6 +16,6 @@ export function Component() {
 export const loader = () => {
   const aiEnabled = getFeature("ai")
   return redirect(
-    `/timeline/${aiEnabled ? ROUTE_VIEW_ALL : `${ROUTE_TIMELINE_OF_VIEW}-${FeedViewType.Articles}`}/${ROUTE_FEED_PENDING}/${ROUTE_ENTRY_PENDING}`,
+    `/timeline/${aiEnabled ? ROUTE_VIEW_ALL : `${ROUTE_TIMELINE_OF_VIEW}${FeedViewType.Articles}`}/${ROUTE_FEED_PENDING}/${ROUTE_ENTRY_PENDING}`,
   )
 }
