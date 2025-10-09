@@ -34,6 +34,9 @@ export const viewAll: ViewDefinition = {
   switchable: false,
 }
 
+/**
+ * Subscription views only
+ */
 export const views: ViewDefinition[] = [
   {
     name: "feed_view_type.articles",

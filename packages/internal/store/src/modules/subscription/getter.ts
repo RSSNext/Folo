@@ -80,24 +80,8 @@ export const getSubscriptionByCategory = ({
   return ids
 }
 
-export const getFolderFeedsByFeedId = ({ feedId, view }: { feedId?: string; view: FeedViewType }) =>
-  folderFeedsByFeedIdSelector({ feedId, view })(useSubscriptionStore.getState())
-
-export const getCategoryFeedIds = (category: string, view: FeedViewType): string[] => {
-  const feedIds = [] as string[]
-  const state = useSubscriptionStore.getState()
-  for (const id of state.feedIdByView[view].keys()) {
-    const subscription = state.data[id]
-    if (!subscription) continue
-    if (
-      (subscription.view === view || view === FeedViewType.All) &&
-      (subscription.category === category || getDefaultCategory(subscription) === category)
-    ) {
-      feedIds.push(id)
-    }
-  }
-  return feedIds
-}
+export const getCategoryFeedIds = (feedIdOrCategory: string | undefined, view: FeedViewType) =>
+  folderFeedsByFeedIdSelector({ feedIdOrCategory, view })(useSubscriptionStore.getState())
 
 // Utility functions for creating getters
 type StateType = ReturnType<typeof useSubscriptionStore.getState>

@@ -5,21 +5,21 @@ import type { SubscriptionState } from "./store"
 import { getDefaultCategory } from "./utils"
 
 export const folderFeedsByFeedIdSelector =
-  ({ feedId, view }: { feedId?: string; view: FeedViewType }) =>
+  ({ feedIdOrCategory, view }: { feedIdOrCategory: string | undefined; view: FeedViewType }) =>
   (state: SubscriptionState): string[] => {
-    if (typeof feedId !== "string") return []
-    if (feedId === FEED_COLLECTION_LIST) {
-      return [feedId]
+    if (typeof feedIdOrCategory !== "string") return []
+    if (feedIdOrCategory === FEED_COLLECTION_LIST) {
+      return [feedIdOrCategory]
     }
 
-    if (!feedId.startsWith(ROUTE_FEED_IN_FOLDER)) {
-      return []
-    }
+    const folderName = feedIdOrCategory.startsWith(ROUTE_FEED_IN_FOLDER)
+      ? feedIdOrCategory.slice(ROUTE_FEED_IN_FOLDER.length)
+      : feedIdOrCategory
 
-    const folderName = feedId.replace(ROUTE_FEED_IN_FOLDER, "")
     const feedIds: string[] = []
     for (const feedId in state.data) {
-      const subscription = state.data[feedId]!
+      const subscription = state.data[feedId]
+      if (!subscription) continue
       if (
         (subscription.view === view || view === FeedViewType.All) &&
         (subscription.category
