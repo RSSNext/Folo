@@ -4,6 +4,7 @@ import { useEffect } from "react"
 
 import { AIChatRoot } from "~/modules/ai-chat/components/layouts/AIChatRoot"
 
+import { settingSyncQueue } from "../settings/helper/sync-queue"
 import { AIChatPane } from "./ai-chat-pane"
 import { DiscoverImportStep } from "./discover-import-step"
 import { FeedsSelectionList } from "./feeds-selection-list"
@@ -18,6 +19,22 @@ export function GuideModalContent({ onClose }: { onClose: () => void }) {
       step,
       done: step === "finish",
     })
+  }, [step])
+
+  useEffect(() => {
+    if (step !== "finish") {
+      return
+    }
+
+    const syncSettings = async () => {
+      try {
+        await settingSyncQueue.replaceRemote("general")
+      } catch (error) {
+        console.error("Failed to sync settings after onboarding", error)
+      }
+    }
+
+    syncSettings()
   }, [step])
 
   useEffect(() => {
