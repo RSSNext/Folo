@@ -1,7 +1,7 @@
 import { useScrollElementUpdate } from "@follow/components/ui/scroll-area/hooks.js"
 import { ResponsiveSelect } from "@follow/components/ui/select/responsive.js"
 import { Skeleton } from "@follow/components/ui/skeleton/index.jsx"
-import { views } from "@follow/constants"
+import { FeedViewType, views } from "@follow/constants"
 import { cn } from "@follow/utils/utils"
 import { useQuery } from "@tanstack/react-query"
 import { useEffect, useState } from "react"
@@ -34,10 +34,12 @@ const viewOptions = [
     label: "words.all",
     value: "all",
   },
-  ...views.map((view) => ({
-    label: view.name,
-    value: `${view.view}`,
-  })),
+  ...views
+    .filter((view) => view.view !== FeedViewType.All)
+    .map((view) => ({
+      label: view.name,
+      value: `${view.view}`,
+    })),
 ]
 
 type View = (typeof viewOptions)[number]["value"]
