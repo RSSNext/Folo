@@ -7,13 +7,14 @@ import { cva } from "class-variance-authority"
 import { noop } from "es-toolkit"
 import type { EditorState, LexicalEditor } from "lexical"
 import { $getRoot } from "lexical"
-import { memo, use, useCallback, useRef, useState } from "react"
+import type { Ref } from "react"
+import { memo, use, useCallback, useImperativeHandle, useRef, useState } from "react"
 
 import { AIChatContextBar } from "~/modules/ai-chat/components/layouts/AIChatContextBar"
 
 import { FileUploadPlugin, MentionPlugin } from "../../editor"
 import { AIPanelRefsContext } from "../../store/AIChatContext"
-import { useChatActions, useChatStatus } from "../../store/hooks"
+import { useChatActions, useChatScene, useChatStatus } from "../../store/hooks"
 import { AIChatSendButton } from "./AIChatSendButton"
 import { AIModelIndicator } from "./AIModelIndicator"
 
@@ -38,9 +39,10 @@ const chatInputVariants = cva(
 
 interface ChatInputProps extends VariantProps<typeof chatInputVariants> {
   onSend: (message: EditorState | string, editor: LexicalEditor | null) => void
+  ref?: Ref<LexicalRichEditorRef | null>
 }
 
-export const ChatInput = memo(({ onSend, variant }: ChatInputProps) => {
+export const ChatInput = memo(({ onSend, variant, ref: forwardedRef }: ChatInputProps) => {
   const status = useChatStatus()
   const chatActions = useChatActions()
 
@@ -48,12 +50,20 @@ export const ChatInput = memo(({ onSend, variant }: ChatInputProps) => {
     chatActions.stop()
   }, [chatActions])
 
-  const editorRef = useRef<LexicalRichEditorRef>(null)
+  const editorRef = useRef<LexicalRichEditorRef | null>(null)
+
+  useImperativeHandle<LexicalRichEditorRef | null, LexicalRichEditorRef | null>(
+    forwardedRef,
+    () => editorRef.current,
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+    [editorRef.current],
+  )
 
   const aiPanelRefs = use(AIPanelRefsContext)
   if (editorRef.current) {
     aiPanelRefs.inputRef.current = editorRef.current
   }
+
   const [isEmpty, setIsEmpty] = useState(true)
   const [currentEditor, setCurrentEditor] = useState<LexicalEditor | null>(null)
 
@@ -91,6 +101,8 @@ export const ChatInput = memo(({ onSend, variant }: ChatInputProps) => {
     })
   }, [])
 
+  const scene = useChatScene()
+
   return (
     <div className={cn(chatInputVariants({ variant }))}>
       {/* Input Area */}
@@ -98,12 +110,12 @@ export const ChatInput = memo(({ onSend, variant }: ChatInputProps) => {
         <ScrollArea rootClassName="mx-5 my-3.5 mr-14 flex-1 overflow-auto">
           <LexicalRichEditor
             ref={editorRef}
-            placeholder="Message, @ for context"
+            placeholder={scene === "onboarding" ? "Enter your message" : "Message, @ for context"}
             className="w-full"
             onChange={handleEditorChange}
             onKeyDown={handleKeyDown}
             autoFocus
-            plugins={[MentionPlugin, FileUploadPlugin]}
+            plugins={scene === "onboarding" ? [] : [MentionPlugin, FileUploadPlugin]}
             namespace="AIChatRichEditor"
           />
         </ScrollArea>
@@ -117,22 +129,24 @@ export const ChatInput = memo(({ onSend, variant }: ChatInputProps) => {
         </div>
       </div>
 
-      {/* Context Bar - Always shown, positioned below the input area */}
-      <div className="border-border/20 relative z-10 border-t bg-transparent">
-        <div className="flex items-center justify-between px-4 py-2.5">
-          <div className="min-w-0 flex-1 shrink">
-            <AIChatContextBar
-              className="border-0 bg-transparent p-0"
-              onSendShortcut={(prompt) => onSend(prompt, null)}
+      {/* Context Bar - only shown in non-onboarding scene, positioned below the input area */}
+      {scene !== "onboarding" && (
+        <div className="border-border/20 relative z-10 border-t bg-transparent">
+          <div className="flex items-center justify-between px-4 py-2.5">
+            <div className="min-w-0 flex-1 shrink">
+              <AIChatContextBar
+                className="border-0 bg-transparent p-0"
+                onSendShortcut={(prompt) => onSend(prompt, null)}
+              />
+            </div>
+            <AIModelIndicator
+              className="-mr-1.5 ml-3 translate-y-[2px] self-start"
+              // Current not support switch model, will open this feature later
+              onModelChange={noop}
             />
           </div>
-          <AIModelIndicator
-            className="-mr-1.5 ml-3 translate-y-[2px] self-start"
-            // Current not support switch model, will open this feature later
-            onModelChange={noop}
-          />
         </div>
-      </div>
+      )}
     </div>
   )
 })

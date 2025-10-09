@@ -77,5 +77,6 @@ export const createChatSlice: (options: {
       currentTitle: undefined,
       chatInstance,
       chatActions,
+      scene: "general",
     }
   }

@@ -80,3 +80,11 @@ export const useChatError = () => {
   const store = useAIChatStore()
   return store((state) => state.error)
 }
+
+/**
+ * Hook to get the chat scene
+ */
+export const useChatScene = () => {
+  const store = useAIChatStore()
+  return store((state) => state.scene)
+}

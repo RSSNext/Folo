@@ -20,4 +20,7 @@ export interface ChatSlice {
 
   // Actions
   chatActions: ChatSliceActions
+
+  // Scene
+  scene: "general" | "onboarding" | "timeline-summary"
 }
