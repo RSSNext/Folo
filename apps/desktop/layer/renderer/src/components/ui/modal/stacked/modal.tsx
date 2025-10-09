@@ -112,6 +112,7 @@ export const ModalInternal = memo(function Modal({
       setStack((p) => p.filter((modal) => modal.id !== item.id))
     }
 
+    item.onClose?.()
     onPropsClose?.(false)
   })
 

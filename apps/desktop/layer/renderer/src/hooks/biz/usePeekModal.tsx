@@ -1,6 +1,9 @@
 import { useEntry } from "@follow/store/entry/hooks"
 import { useCallback } from "react"
 
+import { disableShowAISummaryOnce } from "~/atoms/ai-summary"
+import { disableShowAITranslationOnce } from "~/atoms/ai-translation"
+import { resetShowSourceContent } from "~/atoms/source-content"
 import { PeekModal } from "~/components/ui/modal/inspire/PeekModal"
 import { PlainModal } from "~/components/ui/modal/stacked/custom-modal"
 import { useModalStack } from "~/components/ui/modal/stacked/hooks"
@@ -58,6 +61,11 @@ export const usePeekModal = () => {
           },
           content: () => <EntryModalPreview entryId={entryId} />,
           overlay: true,
+          onClose: () => {
+            disableShowAISummaryOnce()
+            disableShowAITranslationOnce()
+            resetShowSourceContent()
+          },
         })
       }
     },
