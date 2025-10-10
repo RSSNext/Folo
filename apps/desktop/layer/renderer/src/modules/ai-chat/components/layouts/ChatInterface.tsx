@@ -412,7 +412,7 @@ export const ChatInterface = (props: ChatInterfaceProps) => (
   </ErrorBoundary>
 )
 
-const Messages: FC<{ contentRef?: RefObject<HTMLDivElement> }> = ({ contentRef }) => {
+export const Messages: FC<{ contentRef?: RefObject<HTMLDivElement> }> = ({ contentRef }) => {
   const messages = useMessages()
   const fallbackRef = useRef<HTMLDivElement>(null)
   const messageContainerWidth = useElementWidth(contentRef ?? fallbackRef)

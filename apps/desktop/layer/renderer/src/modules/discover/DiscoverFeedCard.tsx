@@ -166,7 +166,7 @@ export const DiscoverFeedCard: FC<DiscoverFeedCardProps> = memo(
   },
 )
 
-const SearchResultContent: FC<{
+export const SearchResultContent: FC<{
   entry: NonUndefined<DiscoveryItem["entries"]>[number]
 }> = memo(({ entry }) => {
   const safeUrl = useFeedSafeUrl(entry.id)

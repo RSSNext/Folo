@@ -214,7 +214,7 @@
   "timeline_summary.empty": "まもなくタイムラインの概要が表示されます。",
   "timeline_summary.error": "現在タイムラインの概要を生成できません。",
   "timeline_summary.generating": "タイムラインを要約しています...",
-  "timeline_summary.heading": "タイムラインの概要",
+  "timeline_summary.heading": "タイムラインに新しい内容はありますか",
   "usage_analysis.active_session": "アクティブセッション",
   "usage_analysis.current_usage": "現在の使用状況",
   "usage_analysis.detailed_description": "AI使用パターンとインサイトの包括的概要",
