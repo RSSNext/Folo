@@ -23,7 +23,6 @@ import { PlainModal } from "~/components/ui/modal/stacked/custom-modal"
 import { useModalStack } from "~/components/ui/modal/stacked/hooks"
 import { useRenderStyle } from "~/hooks/biz/useRenderStyle"
 import { useRouteParamsSelector } from "~/hooks/biz/useRouteParams"
-import { checkLanguage } from "~/lib/translate"
 import { EntryContent } from "~/modules/entry-content/components/entry-content/EntryContent"
 import { FeedIcon } from "~/modules/feed/feed-icon"
 import { FeedTitle } from "~/modules/feed/feed-title"
@@ -186,7 +185,6 @@ const PreviewVideoModalContent: ModalContentComponent<{
   })
   usePrefetchEntryTranslation({
     entryIds: [entryId],
-    checkLanguage,
     setting: enableTranslation,
     language: actionLanguage,
     withContent: true,

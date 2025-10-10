@@ -27,7 +27,6 @@ import { Eye2CuteReIcon } from "@/src/icons/eye_2_cute_re"
 import { openLink } from "@/src/lib/native"
 import { useNavigation } from "@/src/lib/navigation/hooks"
 import type { NavigationControllerView } from "@/src/lib/navigation/types"
-import { checkLanguage } from "@/src/lib/translation"
 import { EntryContentContext, useEntryContentContext } from "@/src/modules/entry-content/ctx"
 import { EntryAISummary } from "@/src/modules/entry-content/EntryAISummary"
 import { EntryNavigationHeader } from "@/src/modules/entry-content/EntryNavigationHeader"
@@ -155,7 +154,6 @@ const EntryContentWebViewWithContext = ({ entryId }: { entryId: string }) => {
     withContent: true,
     target: showReadabilityOnce && entry?.readabilityContent ? "readabilityContent" : "content",
     language: actionLanguage,
-    checkLanguage,
     setting: translation,
   })
 

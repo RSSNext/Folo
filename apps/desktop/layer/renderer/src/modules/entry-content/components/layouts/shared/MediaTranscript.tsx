@@ -1,8 +1,8 @@
 import { useEntry } from "@follow/store/entry/hooks"
 import { cn } from "@follow/utils"
+import { checkLanguage } from "@follow/utils/language"
 
 import { AudioPlayer, useAudioPlayerAtomSelector } from "~/atoms/player"
-import { checkLanguage } from "~/lib/translate"
 
 const MAX_PARAGRAPH_LENGTH = 300
 

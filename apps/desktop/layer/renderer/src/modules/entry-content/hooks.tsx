@@ -9,7 +9,6 @@ import { useShowAITranslation } from "~/atoms/ai-translation"
 import { useEntryIsInReadability, useEntryIsInReadabilitySuccess } from "~/atoms/readability"
 import { useActionLanguage } from "~/atoms/settings/general"
 import { useModalStack } from "~/components/ui/modal/stacked/hooks"
-import { checkLanguage } from "~/lib/translate"
 
 import { ImageGalleryContent } from "./components/ImageGalleryContent"
 
@@ -56,7 +55,6 @@ export const useEntryContent = (entryId: string) => {
   })
   usePrefetchEntryTranslation({
     entryIds: [entryId],
-    checkLanguage,
     setting: enableTranslation,
     language: actionLanguage,
     withContent: true,

@@ -13,14 +13,12 @@ export const usePrefetchEntryTranslation = ({
   target = "content",
   setting,
   language,
-  checkLanguage,
 }: {
   entryIds: string[]
   withContent?: boolean
   target?: "content" | "readabilityContent"
   setting: boolean
   language: SupportedActionLanguage
-  checkLanguage: (params: { content: string; language: SupportedActionLanguage }) => boolean
 }) => {
   const entryList = (useEntryList(entryIds)?.filter(
     (entry) => entry !== null && (setting || !!entry?.settings?.translation),
@@ -41,7 +39,6 @@ export const usePrefetchEntryTranslation = ({
             language,
             withContent: finalWithContent,
             target,
-            checkLanguage,
           }),
       }
     }),
