@@ -27,10 +27,10 @@ export default defineConfig({
       try {
         const insertCode = `try {
 const noop = () => {}
-import("@fontsource/sn-pro").then(noop)
-import('kose-font').then(noop)
-import('kose-font/fonts/KosefontP-JP.ttf').then(noop)
-import('kose-font/fonts/Kosefont-JP.ttf').then(noop)
+await import("@fontsource/sn-pro").then(noop)
+await import('kose-font').then(noop)
+await import('kose-font/fonts/KosefontP-JP.ttf').then(noop)
+await import('kose-font/fonts/Kosefont-JP.ttf').then(noop)
 ${(() => {
   const require = createRequire(import.meta.url)
   const fontDepsPath = require.resolve("@fontsource/sn-pro")
