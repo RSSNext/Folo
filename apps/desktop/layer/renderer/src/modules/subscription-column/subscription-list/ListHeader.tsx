@@ -1,4 +1,5 @@
-import { FeedViewType, getView } from "@follow/constants"
+import type { FeedViewType } from "@follow/constants"
+import { getView } from "@follow/constants"
 import { useCategoryOpenStateByView } from "@follow/store/subscription/hooks"
 import { subscriptionActions } from "@follow/store/subscription/store"
 import { useUnreadByView } from "@follow/store/unread/hooks"
@@ -36,7 +37,7 @@ export const ListHeader = ({ view }: { view: FeedViewType }) => {
         }}
       >
         {view !== undefined &&
-          t((getView(view)?.name ?? getView(FeedViewType.All)?.name ?? "") as any, {
+          t(getView(view).name, {
             ns: "common",
           })}
       </div>
