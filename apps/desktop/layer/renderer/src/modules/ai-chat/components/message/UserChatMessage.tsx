@@ -4,6 +4,7 @@ import type { LexicalEditor, SerializedEditorState } from "lexical"
 import { AnimatePresence, m } from "motion/react"
 import * as React from "react"
 
+import { RelativeTime } from "~/components/ui/datetime"
 import { useEditingMessageId, useSetEditingMessageId } from "~/modules/ai-chat/atoms/session"
 import { useChatActions, useChatScene, useChatStatus } from "~/modules/ai-chat/store/hooks"
 import type { AIChatContextBlock, BizUIMessage } from "~/modules/ai-chat/store/types"
@@ -149,13 +150,16 @@ export const UserChatMessage: React.FC<UserChatMessageProps> = React.memo(({ mes
             {/* Action buttons - only show when not editing */}
             {!isEditing && (
               <m.div
-                className="absolute bottom-1 right-0 flex gap-1"
+                className="absolute bottom-1 right-0 flex items-center gap-1"
                 initial={{ opacity: 0 }}
                 animate={{
                   opacity: isHovered ? 1 : 0,
                 }}
                 transition={{ duration: 0.2, ease: "easeOut" }}
               >
+                <span className="text-text-tertiary whitespace-nowrap px-2 py-1 text-[11px] leading-none">
+                  <RelativeTime date={message.createdAt} />
+                </span>
                 <button
                   type="button"
                   onClick={handleEdit}

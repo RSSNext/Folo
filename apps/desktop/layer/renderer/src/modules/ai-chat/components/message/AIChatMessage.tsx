@@ -5,6 +5,7 @@ import { m } from "motion/react"
 import * as React from "react"
 import { toast } from "sonner"
 
+import { RelativeTime } from "~/components/ui/datetime"
 import { copyToClipboard } from "~/lib/clipboard"
 import type { BizUIMessage } from "~/modules/ai-chat/store/types"
 
@@ -114,7 +115,10 @@ export const AIChatMessage: React.FC<AIChatMessageProps> = React.memo(
 
           {/* Action buttons */}
           {!!originalMessage.metadata?.finishTime && (
-            <div className="absolute -left-2 bottom-1 right-0 flex gap-1 opacity-0 transition-opacity duration-200 group-hover:opacity-100">
+            <div className="absolute -left-2 bottom-1 right-0 flex items-center gap-1 opacity-0 transition-opacity duration-200 group-hover:opacity-100">
+              <span className="text-text-tertiary whitespace-nowrap px-2 py-1 text-[11px] leading-none">
+                <RelativeTime date={originalMessage.createdAt} />
+              </span>
               <button
                 type="button"
                 onClick={handleCopy}
