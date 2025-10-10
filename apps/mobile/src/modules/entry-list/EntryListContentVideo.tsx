@@ -7,7 +7,6 @@ import { StyleSheet, View } from "react-native"
 
 import { useActionLanguage, useGeneralSettingKey } from "@/src/atoms/settings/general"
 import { useBottomTabBarHeight } from "@/src/components/layouts/tabbar/hooks"
-import { checkLanguage } from "@/src/lib/translation"
 import { useEntries } from "@/src/modules/screen/atoms"
 import { useHeaderHeight } from "@/src/modules/screen/hooks/useHeaderHeight"
 
@@ -38,7 +37,6 @@ export const EntryListContentVideo = ({
     entryIds: active ? viewableItems.map((item) => item.key) : [],
     language: actionLanguage,
     setting: translation,
-    checkLanguage,
   })
 
   const ListFooterComponent = useMemo(

@@ -7,7 +7,6 @@ import { View } from "react-native"
 
 import { useActionLanguage, useGeneralSettingKey } from "@/src/atoms/settings/general"
 import { useBottomTabBarHeight } from "@/src/components/layouts/tabbar/hooks"
-import { checkLanguage } from "@/src/lib/translation"
 import { useHeaderHeight } from "@/src/modules/screen/hooks/useHeaderHeight"
 
 import { useEntries } from "../screen/atoms"
@@ -57,7 +56,6 @@ export const EntryListContentArticle = ({
     entryIds: active ? viewableItems.map((item) => item.key) : [],
     language: actionLanguage,
     setting: translation,
-    checkLanguage,
   })
 
   const headerHeight = useHeaderHeight()

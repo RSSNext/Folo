@@ -5,7 +5,6 @@ import type { FC } from "react"
 import { memo } from "react"
 
 import { useActionLanguage, useGeneralSettingKey } from "~/atoms/settings/general"
-import { checkLanguage } from "~/lib/translate"
 
 import { getItemComponentByView } from "./Items/getItemComponentByView"
 import { EntryItemWrapper } from "./layouts/EntryItemWrapper"
@@ -30,7 +29,6 @@ const EntryItemImpl = memo(function EntryItemImpl({
   })
   usePrefetchEntryTranslation({
     entryIds: [entryId],
-    checkLanguage,
     setting: enableTranslation,
     language: actionLanguage,
     withContent: view === FeedViewType.SocialMedia,

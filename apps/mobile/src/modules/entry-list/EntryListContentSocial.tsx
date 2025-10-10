@@ -5,7 +5,6 @@ import { useCallback, useImperativeHandle, useMemo, useRef } from "react"
 import { View } from "react-native"
 
 import { useActionLanguage, useGeneralSettingKey } from "@/src/atoms/settings/general"
-import { checkLanguage } from "@/src/lib/translation"
 
 import { useEntries } from "../screen/atoms"
 import { TimelineSelectorList } from "../screen/TimelineSelectorList"
@@ -50,7 +49,6 @@ export const EntryListContentSocial = ({
     entryIds: active ? viewableItems.map((item) => item.key) : [],
     language: actionLanguage,
     setting: translation,
-    checkLanguage,
   })
 
   // Show loading skeleton when entries are not ready and no data yet

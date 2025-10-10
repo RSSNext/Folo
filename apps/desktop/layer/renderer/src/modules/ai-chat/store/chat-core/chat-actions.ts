@@ -173,10 +173,16 @@ export class ChatSliceActions {
     }
   }
 
-  regenerate = async ({ messageId }: { messageId: string }) => {
+  regenerate = async ({ messageId, ...options }: { messageId: string } & ChatRequestOptions) => {
     try {
       // Use the AI SDK's regenerate method
-      const response = await this.chatInstance.regenerate({ messageId })
+      const finalOptions = merge(
+        {
+          body: { scene: this.get().scene },
+        },
+        options,
+      )
+      const response = await this.chatInstance.regenerate({ messageId, ...finalOptions })
       return response
     } catch (error) {
       this.setError(error as Error)

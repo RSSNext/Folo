@@ -8,7 +8,6 @@ import { StyleSheet, View } from "react-native"
 import { useActionLanguage, useGeneralSettingKey } from "@/src/atoms/settings/general"
 import { useBottomTabBarHeight } from "@/src/components/layouts/tabbar/hooks"
 import { PlatformActivityIndicator } from "@/src/components/ui/loading/PlatformActivityIndicator"
-import { checkLanguage } from "@/src/lib/translation"
 import { useEntries } from "@/src/modules/screen/atoms"
 import { useHeaderHeight } from "@/src/modules/screen/hooks/useHeaderHeight"
 
@@ -39,7 +38,6 @@ export const EntryListContentPicture = ({
   usePrefetchEntryTranslation({
     entryIds: active ? viewableItems.map((item) => item.key) : [],
     language: actionLanguage,
-    checkLanguage,
     setting: translation,
   })
 
