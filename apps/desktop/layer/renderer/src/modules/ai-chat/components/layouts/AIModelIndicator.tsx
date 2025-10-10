@@ -29,6 +29,8 @@ const AIModelNameMapping = {
   "gpt-5": "GPT-5",
   "gpt-5-mini": "GPT-5 mini",
   "gpt-5-nano": "GPT-5 nano",
+  "gemini-2.5-pro": "Gemini 2.5 Pro",
+  "deepseek-v3.2-exp-thinking": "DeepSeek V3.2 Exp Thinking",
 }
 
 const parseModelString = (modelString: string) => {

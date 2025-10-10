@@ -19,6 +19,8 @@ export const AIMarkdownStreamingMessage = memo(
   prose-li:list-disc prose-li:marker:text-accent prose-hr:border-border prose-hr:mx-8
   w-[calc(var(--ai-chat-message-container-width,65ch))]
   prose-pre:!text-base
+  prose-strong:font-bold prose-headings:font-bold
+  [&_ol>li]:list-decimal
   `
 
     const stableStreamingState = useRef(isStreaming)
