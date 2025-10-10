@@ -6,7 +6,7 @@ import { clsx } from "@follow/utils"
 import type { EditorState } from "lexical"
 import { AnimatePresence, m } from "motion/react"
 import { useEffect, useMemo, useRef } from "react"
-import { getI18n, useTranslation } from "react-i18next"
+import { useTranslation } from "react-i18next"
 
 import { useAISettingValue } from "~/atoms/settings/ai"
 import { ROUTE_ENTRY_PENDING } from "~/constants"
@@ -16,7 +16,6 @@ import { AISpline } from "~/modules/ai-chat/components/3d-models/AISpline"
 import { AI_CHAT_SPECIAL_ID_PREFIX } from "../../constants"
 import { useAttachScrollBeyond } from "../../hooks/useAttachScrollBeyond"
 import { useMainEntryId } from "../../hooks/useMainEntryId"
-import { AIPersistService } from "../../services"
 import { useChatActions, useChatError, useChatStatus, useMessages } from "../../store/hooks"
 import { AIMessageParts } from "../message/AIMessageParts"
 import { DefaultWelcomeContent, EntrySummaryCard } from "../welcome"
@@ -57,22 +56,6 @@ export const WelcomeScreen = ({ onSend, centerInputOnEmpty }: WelcomeScreenProps
     return `${AI_CHAT_SPECIAL_ID_PREFIX.TIMELINE_SUMMARY}${year}-${month}-${day}`
   }, [])
 
-  const status = useChatStatus()
-  const { setCurrentTitle, getCurrentTitle } = useChatActions()
-
-  const onceRef = useRef(false)
-  useEffect(() => {
-    if (!onceRef.current && !getCurrentTitle()) {
-      onceRef.current = true
-      const title = t("timeline.summary.title_template", {
-        date: Intl.DateTimeFormat(getI18n().language, {
-          dateStyle: "short",
-        }).format(),
-      })
-      setCurrentTitle(title)
-      AIPersistService.updateSessionTitle(todayTimelineSummaryId, title)
-    }
-  }, [getCurrentTitle, setCurrentTitle, status, t, todayTimelineSummaryId])
   return (
     <ScrollArea
       rootClassName="flex min-h-0 flex-1"

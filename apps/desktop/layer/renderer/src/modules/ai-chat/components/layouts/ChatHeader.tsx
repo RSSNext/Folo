@@ -1,13 +1,17 @@
 import { ActionButton } from "@follow/components/ui/button/index.js"
+import { FeedViewType } from "@follow/constants"
 import { cn } from "@follow/utils"
 import { useAtomValue } from "jotai"
 import type { ReactNode } from "react"
-import { useCallback } from "react"
-import { useTranslation } from "react-i18next"
+import { useCallback, useMemo } from "react"
+import { getI18n, useTranslation } from "react-i18next"
 
 import { AIChatPanelStyle, setAIPanelVisibility, useAIChatPanelStyle } from "~/atoms/settings/ai"
+import { ROUTE_ENTRY_PENDING } from "~/constants"
+import { useRouteParamsSelector } from "~/hooks/biz/useRouteParams"
 import { useBlockActions, useChatActions, useCurrentTitle } from "~/modules/ai-chat/store/hooks"
 
+import { useMainEntryId } from "../../hooks/useMainEntryId"
 import { useAIRootState } from "../../store/AIChatContext"
 import { ChatMoreDropdown } from "./ChatMoreDropdown"
 import { EditableTitle } from "./EditableTitle"
@@ -20,12 +24,37 @@ const ChatHeaderLayout = ({
   renderActions: (ctx: {
     onNewChatClick: () => void
     currentTitle: string | undefined
+    displayTitle: string | undefined
     onSaveTitle: (newTitle: string) => Promise<void>
   }) => ReactNode
 }) => {
   const currentTitle = useCurrentTitle()
   const chatActions = useChatActions()
   const blockActions = useBlockActions()
+  const { t } = useTranslation("ai")
+
+  const mainEntryId = useMainEntryId()
+  const { view, isAllFeeds, entryId } = useRouteParamsSelector((s) => ({
+    view: s.view,
+    isAllFeeds: s.isAllFeeds,
+    entryId: s.entryId,
+  }))
+  const realEntryId = entryId === ROUTE_ENTRY_PENDING ? "" : entryId
+  const isAllView = view === FeedViewType.All && isAllFeeds && !realEntryId
+  const hasEntryContext = !!mainEntryId
+  const shouldShowTimelineSummary = isAllView && !hasEntryContext
+
+  const timelineSummaryTitle = useMemo(() => {
+    if (!shouldShowTimelineSummary) return
+
+    return t("timeline.summary.title_template", {
+      date: Intl.DateTimeFormat(getI18n().language, {
+        dateStyle: "short",
+      }).format(),
+    })
+  }, [shouldShowTimelineSummary, t])
+
+  const displayTitle = currentTitle || timelineSummaryTitle
 
   const handleNewChatClick = useCallback(() => {
     const messages = chatActions.getMessages()
@@ -49,8 +78,6 @@ const ChatHeaderLayout = ({
 
   const { isScrolledBeyondThreshold } = useAIRootState()
   const isScrolledBeyondThresholdValue = useAtomValue(isScrolledBeyondThreshold)
-
-  const { t } = useTranslation("ai")
   return (
     <div
       className={cn(
@@ -72,7 +99,7 @@ const ChatHeaderLayout = ({
         <div className="relative z-10 flex h-full items-center justify-between px-4">
           <div className="mr-2 flex min-w-0 flex-1 items-center">
             <EditableTitle
-              title={currentTitle}
+              title={displayTitle}
               onSave={handleTitleSave}
               placeholder={t("common.new_chat")}
             />
@@ -83,6 +110,7 @@ const ChatHeaderLayout = ({
             {renderActions({
               onNewChatClick: handleNewChatClick,
               currentTitle,
+              displayTitle,
               onSaveTitle: handleTitleSave,
             })}
           </div>
