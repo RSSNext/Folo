@@ -54,7 +54,7 @@ const SessionItem = ({ session, onClick, onDelete, isLoading }: SessionItemProps
         </div>
         <div className="relative flex min-w-0 items-center">
           <p className="text-text-secondary ml-2 shrink-0 truncate text-xs">
-            <RelativeDay date={new Date(session.createdAt)} />
+            <RelativeDay date={new Date(session.updatedAt)} />
           </p>
           {onDelete && (
             <button
