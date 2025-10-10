@@ -1,7 +1,8 @@
+import { Checkbox } from "@follow/components/ui/checkbox/index.jsx"
 import type { LexicalRichEditorRef } from "@follow/components/ui/lexical-rich-editor/index.js"
 import { LexicalRichEditor } from "@follow/components/ui/lexical-rich-editor/index.js"
 import { ScrollArea } from "@follow/components/ui/scroll-area/ScrollArea.js"
-import { cn, stopPropagation } from "@follow/utils"
+import { cn, nextFrame, stopPropagation } from "@follow/utils"
 import type { VariantProps } from "class-variance-authority"
 import { cva } from "class-variance-authority"
 import { noop } from "es-toolkit"
@@ -13,6 +14,7 @@ import { memo, use, useCallback, useImperativeHandle, useRef, useState } from "r
 import { AIChatContextBar } from "~/modules/ai-chat/components/layouts/AIChatContextBar"
 
 import { FileUploadPlugin, MentionPlugin } from "../../editor"
+import { useTimelineSummarySession } from "../../hooks/useTimelineSummarySession"
 import { AIPanelRefsContext } from "../../store/AIChatContext"
 import { useChatActions, useChatScene, useChatStatus } from "../../store/hooks"
 import { AIChatSendButton } from "./AIChatSendButton"
@@ -40,115 +42,158 @@ const chatInputVariants = cva(
 interface ChatInputProps extends VariantProps<typeof chatInputVariants> {
   onSend: (message: EditorState | string, editor: LexicalEditor | null) => void
   ref?: Ref<LexicalRichEditorRef | null>
+  isWelcomeScreen?: boolean
 }
 
-export const ChatInput = memo(({ onSend, variant, ref: forwardedRef }: ChatInputProps) => {
-  const status = useChatStatus()
-  const chatActions = useChatActions()
+export const ChatInput = memo(
+  ({ onSend, variant, ref: forwardedRef, isWelcomeScreen = false }: ChatInputProps) => {
+    const status = useChatStatus()
+    const chatActions = useChatActions()
 
-  const stop = useCallback(() => {
-    chatActions.stop()
-  }, [chatActions])
+    const stop = useCallback(() => {
+      chatActions.stop()
+    }, [chatActions])
 
-  const editorRef = useRef<LexicalRichEditorRef | null>(null)
+    const editorRef = useRef<LexicalRichEditorRef | null>(null)
 
-  useImperativeHandle<LexicalRichEditorRef | null, LexicalRichEditorRef | null>(
-    forwardedRef,
-    () => editorRef.current,
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-    [editorRef.current],
-  )
+    useImperativeHandle<LexicalRichEditorRef | null, LexicalRichEditorRef | null>(
+      forwardedRef,
+      () => editorRef.current,
+      // eslint-disable-next-line react-hooks/exhaustive-deps
+      [editorRef.current],
+    )
 
-  const aiPanelRefs = use(AIPanelRefsContext)
-  if (editorRef.current) {
-    aiPanelRefs.inputRef.current = editorRef.current
-  }
-
-  const [isEmpty, setIsEmpty] = useState(true)
-  const [currentEditor, setCurrentEditor] = useState<LexicalEditor | null>(null)
-
-  const isProcessing = status === "submitted" || status === "streaming"
-
-  const handleSend = useCallback(() => {
-    if (currentEditor && editorRef.current && !editorRef.current.isEmpty()) {
-      onSend(currentEditor.getEditorState(), currentEditor)
-      editorRef.current.clear()
+    const aiPanelRefs = use(AIPanelRefsContext)
+    if (editorRef.current) {
+      aiPanelRefs.inputRef.current = editorRef.current
     }
-  }, [currentEditor, onSend])
 
-  const handleKeyDown = useCallback(
-    (event: KeyboardEvent) => {
-      if (event.key === "Enter" && !event.shiftKey) {
-        event.preventDefault()
-        if (isProcessing) {
-          return false
+    const [isEmpty, setIsEmpty] = useState(true)
+    const [currentEditor, setCurrentEditor] = useState<LexicalEditor | null>(null)
+
+    const isProcessing = status === "submitted" || status === "streaming"
+
+    const handleEditorChange = useCallback((editorState: EditorState, editor: LexicalEditor) => {
+      setCurrentEditor(editor)
+      // Update isEmpty state based on editor content
+      editorState.read(() => {
+        const root = $getRoot()
+        const textContent = root.getTextContent().trim()
+        setIsEmpty(textContent === "")
+      })
+    }, [])
+
+    const scene = useChatScene()
+
+    // Determine if timeline summary can be reused and get today's session id
+    const { canReuseTimelineSummary, todayTimelineSummaryId } = useTimelineSummarySession()
+
+    const [reuseSummary, setReuseSummary] = useState(true)
+
+    const handleSend = useCallback(async () => {
+      if (currentEditor && editorRef.current && !editorRef.current.isEmpty()) {
+        if (isWelcomeScreen && canReuseTimelineSummary && reuseSummary) {
+          try {
+            await chatActions.switchToChat(todayTimelineSummaryId)
+          } catch {
+            // ignore switch errors
+          }
         }
-        handleSend()
-        return true
+
+        const editorState = currentEditor?.getEditorState()
+        nextFrame(() => {
+          onSend(editorState, currentEditor)
+        })
+        editorRef.current.clear()
       }
-      return false
-    },
-    [handleSend, isProcessing],
-  )
+    }, [
+      currentEditor,
+      onSend,
+      isWelcomeScreen,
+      canReuseTimelineSummary,
+      reuseSummary,
+      chatActions,
+      todayTimelineSummaryId,
+    ])
 
-  const handleEditorChange = useCallback((editorState: EditorState, editor: LexicalEditor) => {
-    setCurrentEditor(editor)
-    // Update isEmpty state based on editor content
-    editorState.read(() => {
-      const root = $getRoot()
-      const textContent = root.getTextContent().trim()
-      setIsEmpty(textContent === "")
-    })
-  }, [])
+    const handleSendClick = useCallback(() => {
+      void handleSend()
+    }, [handleSend])
 
-  const scene = useChatScene()
+    const handleKeyDown = useCallback(
+      (event: KeyboardEvent) => {
+        if (event.key === "Enter" && !event.shiftKey) {
+          event.preventDefault()
+          if (isProcessing) {
+            return false
+          }
+          void handleSend()
+          return true
+        }
+        return false
+      },
+      [handleSend, isProcessing],
+    )
 
-  return (
-    <div className={cn(chatInputVariants({ variant }))}>
-      {/* Input Area */}
-      <div className="relative z-10 flex items-end" onContextMenu={stopPropagation}>
-        <ScrollArea rootClassName="mx-5 my-3.5 mr-14 flex-1 overflow-auto">
-          <LexicalRichEditor
-            ref={editorRef}
-            placeholder={scene === "onboarding" ? "Enter your message" : "Message, @ for context"}
-            className="w-full"
-            onChange={handleEditorChange}
-            onKeyDown={handleKeyDown}
-            autoFocus
-            plugins={scene === "onboarding" ? [] : [MentionPlugin, FileUploadPlugin]}
-            namespace="AIChatRichEditor"
-          />
-        </ScrollArea>
-        <div className="absolute right-3 top-3">
-          <AIChatSendButton
-            onClick={isProcessing ? stop : handleSend}
-            disabled={!isProcessing && isEmpty}
-            isProcessing={isProcessing}
-            size="sm"
-          />
-        </div>
-      </div>
-
-      {/* Context Bar - only shown in non-onboarding scene, positioned below the input area */}
-      {scene !== "onboarding" && (
-        <div className="border-border/20 relative z-10 border-t bg-transparent">
-          <div className="flex items-center justify-between px-4 py-2.5">
-            <div className="min-w-0 flex-1 shrink">
-              <AIChatContextBar
-                className="border-0 bg-transparent p-0"
-                onSendShortcut={(prompt) => onSend(prompt, null)}
-              />
-            </div>
-            <AIModelIndicator
-              className="-mr-1.5 ml-3 translate-y-[2px] self-start"
-              // Current not support switch model, will open this feature later
-              onModelChange={noop}
+    return (
+      <div className={cn(chatInputVariants({ variant }))}>
+        {/* Input Area */}
+        <div className="relative z-10 flex items-end" onContextMenu={stopPropagation}>
+          <ScrollArea rootClassName="mx-5 my-3.5 mr-14 flex-1 overflow-auto">
+            <LexicalRichEditor
+              ref={editorRef}
+              placeholder={scene === "onboarding" ? "Enter your message" : "Message, @ for context"}
+              className="w-full"
+              onChange={handleEditorChange}
+              onKeyDown={handleKeyDown}
+              autoFocus
+              plugins={scene === "onboarding" ? [] : [MentionPlugin, FileUploadPlugin]}
+              namespace="AIChatRichEditor"
+            />
+          </ScrollArea>
+          <div className="absolute right-3 top-3">
+            <AIChatSendButton
+              onClick={isProcessing ? stop : handleSendClick}
+              disabled={!isProcessing && isEmpty}
+              isProcessing={isProcessing}
+              size="sm"
             />
           </div>
         </div>
-      )}
-    </div>
-  )
-})
+
+        {/* Context Bar - only shown in non-onboarding scene, positioned below the input area */}
+        {scene !== "onboarding" && (
+          <div className="border-border/20 relative z-10 border-t bg-transparent">
+            <div className="flex items-center justify-between px-4 py-2.5">
+              <div className="min-w-0 flex-1 shrink">
+                <AIChatContextBar
+                  className="border-0 bg-transparent p-0"
+                  onSendShortcut={(prompt) => onSend(prompt, null)}
+                />
+              </div>
+              <div className="flex items-center gap-3">
+                {isWelcomeScreen && canReuseTimelineSummary && (
+                  <label className="text-text-secondary flex select-none items-center gap-2 text-xs">
+                    <Checkbox
+                      checked={reuseSummary}
+                      size="sm"
+                      onCheckedChange={(v) => setReuseSummary(!!v)}
+                    />
+                    Ask about summary
+                  </label>
+                )}
+                <AIModelIndicator
+                  className="-mr-1.5 ml-1 translate-y-[2px] self-start"
+                  // Current not support switch model, will open this feature later
+                  onModelChange={noop}
+                />
+              </div>
+            </div>
+          </div>
+        )}
+      </div>
+    )
+  },
+)
 
 ChatInput.displayName = "ChatInput"

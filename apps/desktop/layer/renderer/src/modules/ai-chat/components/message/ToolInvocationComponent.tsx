@@ -27,15 +27,9 @@ export const ToolInvocationComponent: React.FC<ToolInvocationComponentProps> = R
       <div className={clsx("relative pl-8 last:pb-0", variant === "tight" ? "pb-0" : "pb-3")}>
         <div
           aria-hidden
-          className={`absolute left-2 top-2 size-2 -translate-x-1/2 rounded-full border ${
-            hasError ? "border-red bg-red" : "border-fill bg-fill-vibrant"
-          }`}
+          className={`border-fill bg-fill-vibrant absolute left-2 top-2 size-2 -translate-x-1/2 rounded-full border ${hasError ? "text-red" : ""}`}
         >
-          <i
-            className={`absolute top-1/2 -translate-x-1/4 -translate-y-1/2 ${
-              hasError ? "i-mgc-close-cute-re" : "i-mgc-tool-cute-re"
-            }`}
-          />
+          <i className={`i-mgc-tool-cute-re absolute top-1/2 -translate-x-1/4 -translate-y-1/2`} />
         </div>
 
         <CollapseCssGroup>

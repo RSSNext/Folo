@@ -371,7 +371,11 @@ const ChatInterfaceContent = ({ centerInputOnEmpty }: ChatInterfaceProps) => {
         )}
       >
         {error && <CollapsibleError error={error} />}
-        <ChatInput onSend={handleSendMessage} variant={!hasMessages ? "minimal" : "default"} />
+        <ChatInput
+          onSend={handleSendMessage}
+          variant={!hasMessages ? "minimal" : "default"}
+          isWelcomeScreen={!hasMessages && !isLoadingHistory}
+        />
         <div className="text-text-secondary relative z-[1] -mb-4 mt-2 pl-2 text-xs">
           AI can make mistakes, please verify critical information.
         </div>

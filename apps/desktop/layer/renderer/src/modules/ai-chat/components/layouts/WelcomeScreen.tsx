@@ -1,21 +1,18 @@
 import { Folo } from "@follow/components/icons/folo.js"
 import { ScrollArea } from "@follow/components/ui/scroll-area/ScrollArea.js"
-import { FeedViewType } from "@follow/constants"
 import { useElementWidth } from "@follow/hooks"
 import { clsx } from "@follow/utils"
 import type { EditorState } from "lexical"
 import { AnimatePresence, m } from "motion/react"
-import { useEffect, useMemo, useRef } from "react"
+import { useEffect, useRef } from "react"
 import { useTranslation } from "react-i18next"
 
 import { useAISettingValue } from "~/atoms/settings/ai"
-import { ROUTE_ENTRY_PENDING } from "~/constants"
-import { useRouteParamsSelector } from "~/hooks/biz/useRouteParams"
 import { AISpline } from "~/modules/ai-chat/components/3d-models/AISpline"
 
-import { AI_CHAT_SPECIAL_ID_PREFIX } from "../../constants"
 import { useAttachScrollBeyond } from "../../hooks/useAttachScrollBeyond"
 import { useMainEntryId } from "../../hooks/useMainEntryId"
+import { useTimelineSummarySession } from "../../hooks/useTimelineSummarySession"
 import { useChatActions, useChatError, useChatStatus, useMessages } from "../../store/hooks"
 import { AIMessageParts } from "../message/AIMessageParts"
 import { DefaultWelcomeContent, EntrySummaryCard } from "../welcome"
@@ -30,31 +27,15 @@ export const WelcomeScreen = ({ onSend, centerInputOnEmpty }: WelcomeScreenProps
   const { t } = useTranslation("ai")
   const aiSettings = useAISettingValue()
   const mainEntryId = useMainEntryId()
-  const { view, isAllFeeds, entryId } = useRouteParamsSelector((s) => ({
-    view: s.view,
-    isAllFeeds: s.isAllFeeds,
-    entryId: s.entryId,
-  }))
-
-  const realEntryId = entryId === ROUTE_ENTRY_PENDING ? "" : entryId
-  const isAllView = view === FeedViewType.All && isAllFeeds && !realEntryId
-
-  const hasEntryContext = !!mainEntryId
+  const { todayTimelineSummaryId, canReuseTimelineSummary, hasEntryContext } =
+    useTimelineSummarySession()
   const enabledShortcuts = aiSettings.shortcuts?.filter((shortcut) => shortcut.enabled) || []
-  const shouldFetchTimelineSummary = isAllView && !hasEntryContext
+  const shouldFetchTimelineSummary = canReuseTimelineSummary
 
   const { handleScroll } = useAttachScrollBeyond()
   const showTimelineSummary = shouldFetchTimelineSummary
 
-  const todayTimelineSummaryId = useMemo(() => {
-    const now = new Date()
-
-    const day = now.getDate()
-    const month = now.getMonth() + 1
-    const year = now.getFullYear()
-
-    return `${AI_CHAT_SPECIAL_ID_PREFIX.TIMELINE_SUMMARY}${year}-${month}-${day}`
-  }, [])
+  // todayTimelineSummaryId from hook
 
   return (
     <ScrollArea
@@ -85,7 +66,7 @@ export const WelcomeScreen = ({ onSend, centerInputOnEmpty }: WelcomeScreenProps
           )}
         >
           <AnimatePresence mode="wait">
-            {hasEntryContext ? (
+            {hasEntryContext && mainEntryId ? (
               <EntrySummaryCard key="entry-summary" entryId={mainEntryId} />
             ) : (
               <DefaultWelcomeContent
