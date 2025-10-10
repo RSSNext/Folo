@@ -9,6 +9,7 @@ import { useFeedById } from "@follow/store/feed/hooks"
 import { useWhoami } from "@follow/store/user/hooks"
 import { stopPropagation } from "@follow/utils/dom"
 import { cn, isBizId } from "@follow/utils/utils"
+import { useAtomValue } from "jotai"
 import type { FC } from "react"
 import { useTranslation } from "react-i18next"
 import { useNavigate } from "react-router"
@@ -30,6 +31,7 @@ import { useFeedHeaderIcon, useFeedHeaderTitle } from "~/store/feed/hooks"
 
 import { MarkAllReadButton } from "../components/mark-all-button"
 import { useIsPreviewFeed } from "../hooks/useIsPreviewFeed"
+import { useEntryRootState } from "../store/EntryColumnContext"
 import { AppendTaildingDivider } from "./AppendTaildingDivider"
 import { SwitchToMasonryButton } from "./buttons/SwitchToMasonryButton"
 import { WideModeButton } from "./buttons/WideModeButton"
@@ -80,6 +82,8 @@ export const EntryListHeader: FC<{
   const runCmdFn = useRunCommandFn()
 
   const aiEnabled = useFeature("ai")
+  const { isScrolledBeyondThreshold } = useEntryRootState()
+  const isScrolledBeyondThresholdValue = useAtomValue(isScrolledBeyondThreshold)
   return (
     <div
       className={cn(
@@ -87,8 +91,10 @@ export const EntryListHeader: FC<{
         !feedColumnShow && "macos:mt-4 macos:pt-margin-macos-traffic-light-y",
         titleStyleBasedView[view],
         isPreview && "px-4",
-        view === FeedViewType.All && "border-b",
+        view === FeedViewType.All &&
+          "data-[scrolled-beyond-threshold=true]:border-b-border border-b border-transparent",
       )}
+      data-scrolled-beyond-threshold={isScrolledBeyondThresholdValue}
     >
       <div className={"flex w-full justify-between"}>
         {isPreview ? <PreviewHeaderInfoWrapper>{titleInfo}</PreviewHeaderInfoWrapper> : titleInfo}

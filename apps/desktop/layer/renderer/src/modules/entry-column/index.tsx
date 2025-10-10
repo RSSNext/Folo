@@ -6,7 +6,8 @@ import { useSubscriptionByFeedId } from "@follow/store/subscription/hooks"
 import { unreadSyncService } from "@follow/store/unread/store"
 import { isBizId } from "@follow/utils/utils"
 import type { Range, Virtualizer } from "@tanstack/react-virtual"
-import { memo, useCallback, useEffect, useRef } from "react"
+import { atom } from "jotai"
+import { memo, useCallback, useEffect, useMemo, useRef } from "react"
 
 import { useGeneralSettingKey } from "~/atoms/settings/general"
 import { Focusable } from "~/components/common/Focusable"
@@ -22,12 +23,14 @@ import { FooterMarkItem } from "./components/FooterMarkItem"
 import { useEntriesActions, useEntriesState } from "./context/EntriesContext"
 import { EntryItemSkeleton } from "./EntryItemSkeleton"
 import { EntryColumnGrid } from "./grid"
+import { useAttachScrollBeyond } from "./hooks/useAttachScrollBeyond"
 import { useSnapEntryIdList } from "./hooks/useEntryIdListSnap"
 import { useEntryMarkReadHandler } from "./hooks/useEntryMarkReadHandler"
 import { EntryListHeader } from "./layouts/EntryListHeader"
 import { EntryEmptyList, EntryList } from "./list"
+import { EntryRootStateContext } from "./store/EntryColumnContext"
 
-function EntryColumnImpl() {
+function EntryColumnContent() {
   const listRef = useRef<Virtualizer<HTMLElement, Element>>(undefined)
   const state = useEntriesState()
   const actions = useEntriesActions()
@@ -90,6 +93,15 @@ function EntryColumnImpl() {
     }
   }, [handleMarkReadInRange, routeFeedId])
 
+  const { handleScroll: handleScrollBeyond } = useAttachScrollBeyond()
+  const handleCombinedScroll = useCallback(
+    (e: React.UIEvent<HTMLDivElement>) => {
+      handleScrollBeyond(e)
+      handleScroll()
+    },
+    [handleScrollBeyond, handleScroll],
+  )
+
   const navigate = useNavigateEntry()
   const rangeQueueRef = useRef<Range[]>([])
   const isRefreshing = state.isFetching && !state.isFetchingNextPage
@@ -146,7 +158,7 @@ function EntryColumnImpl() {
         hasUpdate={state.hasUpdate}
       />
 
-      <EntryColumnWrapper onScroll={handleScroll} key={`${routeFeedId}-${view}`}>
+      <EntryColumnWrapper onScroll={handleCombinedScroll} key={`${routeFeedId}-${view}`}>
         {entriesIds.length === 0 ? (
           state.isLoading ? (
             <EntryItemSkeleton view={view} />
@@ -172,6 +184,21 @@ function EntryColumnImpl() {
         )}
       </EntryColumnWrapper>
     </Focusable>
+  )
+}
+
+function EntryColumnImpl() {
+  return (
+    <EntryRootStateContext
+      value={useMemo(
+        () => ({
+          isScrolledBeyondThreshold: atom(false),
+        }),
+        [],
+      )}
+    >
+      <EntryColumnContent />
+    </EntryRootStateContext>
   )
 }
 
