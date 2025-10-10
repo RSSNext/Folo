@@ -23,7 +23,7 @@ export interface ViewDefinition {
   switchable: boolean
 }
 
-export const viewAll: ViewDefinition = {
+const viewAll: ViewDefinition = {
   name: "feed_view_type.all",
   icon: <i className="i-mgc-bubble-cute-fi" />,
   className: "text-folo",
@@ -37,7 +37,7 @@ export const viewAll: ViewDefinition = {
 /**
  * Subscription views only
  */
-export const views: ViewDefinition[] = [
+const views: ViewDefinition[] = [
   {
     name: "feed_view_type.articles",
     icon: <i className="i-mgc-paper-cute-fi" />,
@@ -110,4 +110,15 @@ export const views: ViewDefinition[] = [
   },
 ]
 
-export const viewList = views.map((view) => view.view)
+const allViews = [viewAll, ...views]
+
+export function getView(id: FeedViewType): ViewDefinition
+export function getView(id: number): ViewDefinition | undefined
+export function getView(id: FeedViewType | number): ViewDefinition | undefined {
+  return allViews.find((view) => view.view === id)
+}
+
+export function getViewList(options: { includeAll?: boolean } = {}): ViewDefinition[] {
+  const { includeAll = false } = options
+  return includeAll ? allViews : views
+}

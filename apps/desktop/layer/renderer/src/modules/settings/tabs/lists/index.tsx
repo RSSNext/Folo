@@ -17,7 +17,7 @@ import {
   TooltipPortal,
   TooltipTrigger,
 } from "@follow/components/ui/tooltip/index.jsx"
-import { views } from "@follow/constants"
+import { getView } from "@follow/constants"
 import { useOwnedLists, usePrefetchLists } from "@follow/store/list/hooks"
 import { listSyncServices } from "@follow/store/list/store"
 import { cn, formatNumber } from "@follow/utils/utils"
@@ -157,15 +157,15 @@ export const SettingLists = () => {
                               <span
                                 className={cn(
                                   "inline-flex items-center",
-                                  views.find((v) => v.view === row.view)?.className,
+                                  getView(row.view)?.className,
                                 )}
                               >
-                                {views.find((v) => v.view === row.view)?.icon}
+                                {getView(row.view)?.icon}
                               </span>
                             </TooltipTrigger>
                             <TooltipPortal>
                               <TooltipContent>
-                                {t(views.find((v) => v.view === row.view)!.name, {
+                                {t(getView(row.view)!.name, {
                                   ns: "common",
                                 })}
                               </TooltipContent>

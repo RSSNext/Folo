@@ -1,4 +1,4 @@
-import { FeedViewType, views } from "@follow/constants"
+import { FeedViewType, getViewList } from "@follow/constants"
 import { useQuery } from "@tanstack/react-query"
 import { useCallback, useMemo, useRef } from "react"
 
@@ -259,7 +259,7 @@ export const getSubscriptionCategory = (view?: FeedViewType) => {
 
 export const useViewWithSubscription = () =>
   useSubscriptionStore((state) => {
-    return views
+    return getViewList()
       .filter((view) => {
         if (
           view.view === FeedViewType.Articles ||

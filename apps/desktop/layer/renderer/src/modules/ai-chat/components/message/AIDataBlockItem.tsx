@@ -1,4 +1,4 @@
-import { views } from "@follow/constants"
+import { getView } from "@follow/constants"
 import { cn } from "@follow/utils/utils"
 import { t } from "i18next"
 import * as React from "react"
@@ -36,7 +36,7 @@ interface CombinedDataBlockItemProps {
 const getDisplayContent = (block: AIChatContextBlock): React.ReactNode => {
   switch (block.type) {
     case "mainView": {
-      const viewName = views.find((v) => v.view === Number(block.value))?.name
+      const viewName = getView(Number(block.value))?.name
       return viewName ? t(viewName, { ns: "common" }) : block.value
     }
     case "mainEntry":
@@ -211,7 +211,7 @@ export const CombinedDataBlockItem: React.FC<CombinedDataBlockItemProps> = React
       }
 
       // Handle case when viewBlock exists
-      const view = views.find((v) => v.view === Number(viewBlock.value))
+      const view = getView(Number(viewBlock.value))
       const viewName = view?.name ? t(view.name, { ns: "common" }) : viewBlock.value
 
       // Determine primary content: feedBlock takes precedence over viewBlock

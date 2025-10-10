@@ -1,5 +1,5 @@
 import { ScrollArea } from "@follow/components/ui/scroll-area/index.js"
-import { views } from "@follow/constants"
+import { getView } from "@follow/constants"
 import { getEntry, getEntryIdsByFeedId } from "@follow/store/entry/getter"
 import { useFeedById } from "@follow/store/feed/hooks"
 import { useListById } from "@follow/store/list/hooks"
@@ -226,7 +226,7 @@ export function EntryHeaderBreadcrumb() {
 
   const { t } = useTranslation()
   const view = useRouteParamsSelector((s) => s.view)
-  const viewName = views.find((v) => v.view === view)?.name
+  const viewName = getView(view)?.name
 
   return (
     <div className="flex min-w-0 flex-1 overflow-hidden">

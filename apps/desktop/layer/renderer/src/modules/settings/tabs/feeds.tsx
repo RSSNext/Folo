@@ -20,7 +20,7 @@ import {
   TooltipTrigger,
 } from "@follow/components/ui/tooltip/index.js"
 import { EllipsisHorizontalTextWithTooltip } from "@follow/components/ui/typography/index.js"
-import { views } from "@follow/constants"
+import { getView, getViewList } from "@follow/constants"
 import { getFeedById } from "@follow/store/feed/getter"
 import { useFeedById, usePrefetchFeedAnalytics } from "@follow/store/feed/hooks"
 import { getSubscriptionByFeedId } from "@follow/store/subscription/getter"
@@ -394,7 +394,7 @@ const ViewSelector: FC<{ selectedFeeds: Set<string> }> = ({ selectedFeeds }) => 
   const { t: tCommon } = useTranslation("common")
   const { mutate: batchUpdateSubscription } = useBatchUpdateSubscription()
   const { ask } = useDialog()
-  return views.map((view) => {
+  return getViewList().map((view) => {
     return (
       <DropdownMenuItem
         key={view.view}
@@ -480,8 +480,8 @@ const FeedListItem = memo(
         </div>
 
         <div className="text-text flex items-center gap-1 text-sm opacity-80">
-          {views.find((v) => v.view === subscription.view)!.icon}
-          <span>{tCommon(views.find((v) => v.view === subscription.view)!.name)}</span>
+          {getView(subscription.view)!.icon}
+          <span>{tCommon(getView(subscription.view)!.name)}</span>
         </div>
         {!!subscription.createdAt && (
           <div className="whitespace-nowrap pr-1 text-center text-sm">

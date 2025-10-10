@@ -1,5 +1,5 @@
 import { ScrollArea } from "@follow/components/ui/scroll-area/ScrollArea.js"
-import { views } from "@follow/constants"
+import { getView } from "@follow/constants"
 import { cn } from "@follow/utils/utils"
 
 import { useRouteParamsSelector } from "~/hooks/biz/useRouteParams"
@@ -15,10 +15,7 @@ export const EntryColumnWrapper = ({ ref, children, onScroll }: EntryColumnWrapp
   return (
     <div className={cn(styles, animationStyles)}>
       <ScrollArea
-        scrollbarClassName={cn(
-          !views.find((v) => v.view === view)?.wideMode ? "w-[5px] p-0" : "",
-          "z-[3]",
-        )}
+        scrollbarClassName={cn(!getView(view)?.wideMode ? "w-[5px] p-0" : "", "z-[3]")}
         mask={false}
         ref={ref}
         rootClassName="h-full"

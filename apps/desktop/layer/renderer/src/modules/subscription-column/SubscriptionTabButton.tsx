@@ -1,6 +1,6 @@
 import { useDroppable } from "@dnd-kit/core"
 import { ActionButton } from "@follow/components/ui/button/index.js"
-import { FeedViewType, viewAll, views } from "@follow/constants"
+import { FeedViewType, getView } from "@follow/constants"
 import { useUnreadByView } from "@follow/store/unread/hooks"
 import { cn } from "@follow/utils/utils"
 import type { FC } from "react"
@@ -53,7 +53,7 @@ const ViewAllSwitchButton: FC<{
   const unreadByView = useUnreadByView(FeedViewType.All)
   const { t } = useTranslation()
   const showSidebarUnreadCount = useUISettingKey("sidebarShowUnreadCount")
-  const item = viewAll
+  const item = getView(FeedViewType.All)
 
   return (
     <ActionButton
@@ -99,7 +99,7 @@ const ViewSwitchButton: FC<{
   const unreadByView = useUnreadByView(view)
   const { t } = useTranslation()
   const showSidebarUnreadCount = useUISettingKey("sidebarShowUnreadCount")
-  const item = views.find((item) => item.view === view)!
+  const item = getView(view)
 
   const { isOver, setNodeRef } = useDroppable({
     id: `view-${item.name}`,

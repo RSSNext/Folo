@@ -17,7 +17,7 @@ import {
 } from "@dnd-kit/sortable"
 import { CSS } from "@dnd-kit/utilities"
 import { Button } from "@follow/components/ui/button/index.js"
-import { views } from "@follow/constants"
+import { getViewList } from "@follow/constants"
 import type { CSSProperties, ReactNode } from "react"
 import { useCallback, useMemo } from "react"
 import { useTranslation } from "react-i18next"
@@ -46,7 +46,7 @@ function ContainerDroppable({ id, children }: { id: "visible" | "hidden"; childr
 function getViewMeta(timelineId: string) {
   if (!timelineId.startsWith(ROUTE_TIMELINE_OF_VIEW)) return { name: timelineId, icon: null }
   const id = Number.parseInt(timelineId.slice(ROUTE_TIMELINE_OF_VIEW.length), 10)
-  const item = views.find((v) => v.view === id)
+  const item = getViewList().find((v) => v.view === id)
   return { name: item?.name ?? String(id), icon: item?.icon ?? null }
 }
 

@@ -5,7 +5,7 @@ import { LoadingCircle } from "@follow/components/ui/loading/index.jsx"
 import { useScrollViewElement } from "@follow/components/ui/scroll-area/hooks.js"
 import { ShrinkingFocusBorder } from "@follow/components/ui/shrinking-focus-border/index.js"
 import type { FeedViewType } from "@follow/constants"
-import { views } from "@follow/constants"
+import { getViewList } from "@follow/constants"
 import { useInputComposition, useRefValue } from "@follow/hooks"
 import { useFeedStore } from "@follow/store/feed/store"
 import { useOwnedListByView } from "@follow/store/list/hooks"
@@ -228,7 +228,7 @@ function FeedCategoryImpl({ data: ids, view, categoryOpenStateData }: FeedCatego
           MenuItemSeparator.default,
           new MenuItemText({
             label: t("sidebar.feed_column.context_menu.change_to_other_view"),
-            submenu: views
+            submenu: getViewList()
               .filter((v) => v.view !== view && v.switchable)
               .map(
                 (v) =>

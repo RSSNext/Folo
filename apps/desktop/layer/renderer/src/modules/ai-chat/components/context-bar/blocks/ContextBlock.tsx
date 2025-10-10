@@ -1,4 +1,4 @@
-import { views } from "@follow/constants"
+import { getView } from "@follow/constants"
 import { clsx, cn } from "@follow/utils/utils"
 import type { FC, ReactNode } from "react"
 import { memo } from "react"
@@ -85,8 +85,7 @@ export const CombinedContextBlock: FC<{
   const { t } = useTranslation("common")
   const blockActions = useChatBlockActions()
 
-  const viewIcon =
-    viewBlock && views.find((v) => v.view === Number(viewBlock.value))?.icon.props.className
+  const viewIcon = viewBlock && getView(Number(viewBlock.value))?.icon.props.className
 
   const handleRemove = () => {
     if (viewBlock) {
@@ -110,7 +109,7 @@ export const CombinedContextBlock: FC<{
     <span className="flex items-center gap-1">
       {(() => {
         if (!viewBlock) return null
-        const viewName = views.find((v) => v.view === Number(viewBlock.value))?.name
+        const viewName = getView(Number(viewBlock.value))?.name
         return viewName ? t(viewName) : viewBlock.value
       })()}
       {unreadOnlyBlock && <i className="i-mgc-round-cute-fi size-3" title="Unread Only" />}
@@ -135,7 +134,7 @@ export const ContextBlock: FC<{ block: AIChatContextBlock }> = memo(({ block }) 
   const getBlockIcon = () => {
     switch (block.type) {
       case "mainView": {
-        const viewIcon = views.find((v) => v.view === Number(block.value))?.icon.props.className
+        const viewIcon = getView(Number(block.value))?.icon.props.className
         return viewIcon
       }
       case "mainEntry": {
@@ -174,7 +173,7 @@ export const ContextBlock: FC<{ block: AIChatContextBlock }> = memo(({ block }) 
   const getDisplayContent = () => {
     switch (block.type) {
       case "mainView": {
-        const viewName = views.find((v) => v.view === Number(block.value))?.name
+        const viewName = getView(Number(block.value))?.name
         return viewName ? t(viewName) : block.value
       }
       case "mainEntry":

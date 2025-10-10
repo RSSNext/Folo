@@ -1,4 +1,4 @@
-import { views } from "@follow/constants"
+import { getView } from "@follow/constants"
 import dayjs from "dayjs"
 import { memo, useCallback } from "react"
 import { useTranslation } from "react-i18next"
@@ -40,7 +40,7 @@ const Item = memo(
   }) => {
     const { feedId, title, image, siteUrl, category, subscribedAt, view } = sub
     const { t } = useTranslation()
-    const currentView = views[view]
+    const currentView = getView(view)
     if (currentView === undefined) {
       return null
     }

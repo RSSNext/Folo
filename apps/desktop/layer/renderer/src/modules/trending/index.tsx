@@ -1,7 +1,7 @@
 import { useScrollElementUpdate } from "@follow/components/ui/scroll-area/hooks.js"
 import { ResponsiveSelect } from "@follow/components/ui/select/responsive.js"
 import { Skeleton } from "@follow/components/ui/skeleton/index.jsx"
-import { views } from "@follow/constants"
+import { getViewList } from "@follow/constants"
 import { cn } from "@follow/utils/utils"
 import { useQuery } from "@tanstack/react-query"
 import { useEffect, useState } from "react"
@@ -34,7 +34,7 @@ const viewOptions = [
     label: "words.all",
     value: "all",
   },
-  ...views.map((view) => ({
+  ...getViewList().map((view) => ({
     label: view.name,
     value: `${view.view}`,
   })),

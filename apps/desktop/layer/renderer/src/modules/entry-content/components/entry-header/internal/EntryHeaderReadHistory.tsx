@@ -1,4 +1,4 @@
-import { views } from "@follow/constants"
+import { getView } from "@follow/constants"
 import { cn } from "@follow/utils/utils"
 import { memo } from "react"
 
@@ -14,7 +14,7 @@ function EntryHeaderReadHistoryImpl({ className }: { className?: string }) {
   const { entryId } = useEntryHeaderContext()
   const { view } = useRouteParams()
   const isAtTop = useEntryContentScrollToTop()
-  const isWide = views[view]?.wideMode
+  const isWide = getView(view)?.wideMode
   if (!isAtTop || hideRecentReader) return null
 
   return (
