@@ -81,8 +81,8 @@ const ChatHeaderLayout = ({
   return (
     <div
       className={cn(
-        "absolute inset-x-0 top-0 z-[1] duration-200",
-        !isFloating && "bg-background data-[scrolled-beyond-threshold=true]:border-b",
+        "absolute inset-x-0 top-0 z-[1] border-b border-transparent duration-200",
+        !isFloating && "bg-background data-[scrolled-beyond-threshold=true]:border-b-border",
       )}
       data-scrolled-beyond-threshold={isScrolledBeyondThresholdValue}
     >
