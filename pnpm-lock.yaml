@@ -529,7 +529,7 @@ importers:
         version: 3.12.2
       '@splinetool/react-spline':
         specifier: 4.1.0
-        version: 4.1.0(@splinetool/runtime@1.10.22)(react-dom@19.0.0(react@19.0.0))(react@19.0.0)
+        version: 4.1.0(@splinetool/runtime@1.10.77)(react-dom@19.0.0(react@19.0.0))(react@19.0.0)
       '@tanstack/query-sync-storage-persister':
         specifier: 5.89.0
         version: 5.89.0
@@ -1606,7 +1606,7 @@ importers:
         version: 7.62.0(react@19.0.0)
       react-i18next:
         specifier: 15.7.3
-        version: 15.7.3(i18next@25.5.2(typescript@5.9.2))(react-dom@19.0.0(react@19.0.0))(react-native@0.79.6(@babel/core@7.28.0)(@types/react@19.1.13)(bufferutil@4.0.9)(react@19.0.0))(react@19.0.0)(typescript@5.9.2)
+        version: 15.7.3(i18next@25.5.2(typescript@5.9.2))(react-dom@19.0.0(react@19.0.0))(react-native@0.79.6(@babel/core@7.28.4)(@types/react@19.1.13)(bufferutil@4.0.9)(react@19.0.0))(react@19.0.0)(typescript@5.9.2)
       rehype-infer-description-meta:
         specifier: 2.0.0
         version: 2.0.0
@@ -6683,8 +6683,8 @@ packages:
       next:
         optional: true
 
-  '@splinetool/runtime@1.10.22':
-    resolution: {integrity: sha512-fRohYdQoC3bxsRI6gquOgDrenxMrpUYO4DTN2b5+KlTGhdSPWE+qIxlCkaS0zowoafCWeR/eQ/Uqw7EJhm4n9g==}
+  '@splinetool/runtime@1.10.77':
+    resolution: {integrity: sha512-2uMy7/LDWqRsvClDDyyLZ7GbTHwCIJvhmadTRLLso4VwVNaeKrz/P9IPF71Z7HTj3mAGoavxxdKemb4bkcJxjA==}
 
   '@sqlite.org/sqlite-wasm@3.50.0-build1':
     resolution: {integrity: sha512-h1ilVgUR3h1rGxglOyolwMYRf6Pj71iXadNGvSHhsYcmbRjIH5JXcFk729UyJ6Z3x82lFOYmy0wqW+iGefNVtQ==}
@@ -7556,10 +7556,6 @@ packages:
 
   ansis@4.1.0:
     resolution: {integrity: sha512-BGcItUBWSMRgOCe+SVZJ+S7yTRG0eGt9cXAHev72yuGcY23hnLA7Bky5L/xLyPINoSN95geovfBkqoTlNZYa7w==}
-    engines: {node: '>=14'}
-
-  ansis@4.2.0:
-    resolution: {integrity: sha512-HqZ5rWlFjGiV0tDm3UxxgNRqsOTniqoKZu0pIAfh7TZQMGuZK+hH0drySty0si0QXj1ieop4+SkSfPZBPPkHig==}
     engines: {node: '>=14'}
 
   any-base@1.1.0:
@@ -10542,6 +10538,10 @@ packages:
   generate-object-property@1.2.0:
     resolution: {integrity: sha512-TuOwZWgJ2VAMEGJvAyPWvpqxSANF0LDpmyHauMjFYzaACvn+QTT/AZomvPCzVBV7yDN3OmwHQ5OvHaeLKre3JQ==}
 
+  generator-function@2.0.1:
+    resolution: {integrity: sha512-SFdFmIJi+ybC0vjlHN0ZGVGHc3lgE0DxPAT0djjVg+kjOnSqclqmj0KQ7ykTOLP6YxoqOvuAODGdcHJn+43q3g==}
+    engines: {node: '>= 0.4'}
+
   gensync@1.0.0-beta.2:
     resolution: {integrity: sha512-3hN7NaskYvMDLQY55gnW3NQ+mesEAepTqlg+VEbj7zzqEMBVNhzcGYYeqFo/TlYz6eQiFcp1HcsCZO+nGgS8zg==}
     engines: {node: '>=6.9.0'}
@@ -11191,6 +11191,10 @@ packages:
 
   is-generator-function@1.1.0:
     resolution: {integrity: sha512-nPUB5km40q9e8UfN/Zc24eLlzdSf9OfKByBw9CIdw4H1giPMeA0OIJvbchsCu4npfI2QcMVBsGEBHKZ7wLTWmQ==}
+    engines: {node: '>= 0.4'}
+
+  is-generator-function@1.1.2:
+    resolution: {integrity: sha512-upqt1SkGkODW9tsGNG5mtXTXtECizwtS2kA161M+gJPc1xdb/Ax629af6YrTwcOeQHbewrPNlE5Dx7kzvXTizA==}
     engines: {node: '>= 0.4'}
 
   is-glob@4.0.3:
@@ -23636,9 +23640,9 @@ snapshots:
     dependencies:
       '@sinonjs/commons': 3.0.1
 
-  '@splinetool/react-spline@4.1.0(@splinetool/runtime@1.10.22)(react-dom@19.0.0(react@19.0.0))(react@19.0.0)':
+  '@splinetool/react-spline@4.1.0(@splinetool/runtime@1.10.77)(react-dom@19.0.0(react@19.0.0))(react@19.0.0)':
     dependencies:
-      '@splinetool/runtime': 1.10.22
+      '@splinetool/runtime': 1.10.77
       blurhash: 2.0.5
       lodash.debounce: 4.0.8
       react: 19.0.0
@@ -23646,7 +23650,7 @@ snapshots:
       react-merge-refs: 2.1.1
       thumbhash: 0.1.1
 
-  '@splinetool/runtime@1.10.22':
+  '@splinetool/runtime@1.10.77':
     dependencies:
       on-change: 4.0.2
       semver-compare: 1.0.0
@@ -24700,8 +24704,6 @@ snapshots:
   ansicolors@0.3.2: {}
 
   ansis@4.1.0: {}
-
-  ansis@4.2.0: {}
 
   any-base@1.1.0: {}
 
@@ -28711,6 +28713,8 @@ snapshots:
       is-property: 1.0.2
     optional: true
 
+  generator-function@2.0.1: {}
+
   gensync@1.0.0-beta.2: {}
 
   gesto@1.19.4:
@@ -29534,6 +29538,14 @@ snapshots:
   is-generator-function@1.1.0:
     dependencies:
       call-bound: 1.0.4
+      get-proto: 1.0.1
+      has-tostringtag: 1.0.2
+      safe-regex-test: 1.1.0
+
+  is-generator-function@1.1.2:
+    dependencies:
+      call-bound: 1.0.4
+      generator-function: 2.0.1
       get-proto: 1.0.1
       has-tostringtag: 1.0.2
       safe-regex-test: 1.1.0
@@ -33290,7 +33302,7 @@ snapshots:
       '@oxc-project/runtime': 0.71.0
       '@oxc-project/types': 0.71.0
       '@rolldown/pluginutils': 1.0.0-beta.9-commit.d91dfb5
-      ansis: 4.2.0
+      ansis: 4.1.0
     optionalDependencies:
       '@rolldown/binding-darwin-arm64': 1.0.0-beta.9-commit.d91dfb5
       '@rolldown/binding-darwin-x64': 1.0.0-beta.9-commit.d91dfb5
@@ -35079,7 +35091,7 @@ snapshots:
       is-async-function: 2.1.1
       is-date-object: 1.1.0
       is-finalizationregistry: 1.1.1
-      is-generator-function: 1.1.0
+      is-generator-function: 1.1.2
       is-regex: 1.2.1
       is-weakref: 1.1.1
       isarray: '@nolyfill/isarray@1.0.44'
