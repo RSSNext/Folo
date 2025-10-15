@@ -245,6 +245,7 @@
   "tasks.validation.title_required": "Title is required",
   "tasks.view_in_settings": "View scheduled tasks",
   "timeline.summary.title_template": "Timeline summary for {{- date}}",
+  "timeline_summary.ask_option": "Ask about",
   "timeline_summary.empty": "Timeline summary will appear here shortly.",
   "timeline_summary.error": "Unable to generate timeline summary right now.",
   "timeline_summary.generating": "Summarizing your timeline...",

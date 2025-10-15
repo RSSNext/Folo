@@ -10,6 +10,7 @@ import type { EditorState, LexicalEditor } from "lexical"
 import { $getRoot } from "lexical"
 import type { Ref } from "react"
 import { memo, use, useCallback, useImperativeHandle, useRef, useState } from "react"
+import { useTranslation } from "react-i18next"
 
 import { AIChatContextBar } from "~/modules/ai-chat/components/layouts/AIChatContextBar"
 
@@ -135,6 +136,8 @@ export const ChatInput = memo(
       [handleSend, isProcessing],
     )
 
+    const { t } = useTranslation("ai")
+
     return (
       <div className={cn(chatInputVariants({ variant }))}>
         {/* Input Area */}
@@ -179,7 +182,10 @@ export const ChatInput = memo(
                       size="sm"
                       onCheckedChange={(v) => setReuseSummary(!!v)}
                     />
-                    Ask about summary
+                    <span>
+                      {t("timeline_summary.ask_option")}{" "}
+                      <span className="text-text">{t("timeline_summary.heading")}</span>
+                    </span>
                   </label>
                 )}
                 <AIModelIndicator
