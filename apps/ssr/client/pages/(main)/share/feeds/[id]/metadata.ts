@@ -1,8 +1,8 @@
 import type { GetHydrateData } from "@client/lib/helper"
 import { APPLE_APP_STORE_ID } from "@follow/constants"
 
-import { callNotFound } from "~/lib/not-found"
-import { defineMetadata } from "~/meta-handler"
+import { callNotFound } from "@/lib/not-found"
+import { defineMetadata } from "@/meta-handler"
 
 const meta = defineMetadata(async ({ params, apiClient, origin }) => {
   const feedId = params.id

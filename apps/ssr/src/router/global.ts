@@ -9,8 +9,8 @@ import { FetchError } from "ofetch"
 import path, { dirname, resolve } from "pathe"
 import xss from "xss"
 
-import { NotFoundError } from "~/lib/not-found"
-import { buildSeoMetaTags } from "~/lib/seo"
+import { NotFoundError } from "@/lib/not-found"
+import { buildSeoMetaTags } from "@/lib/seo"
 
 import { injectMetaHandler, MetaError } from "../meta-handler"
 
