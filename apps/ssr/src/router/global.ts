@@ -2,8 +2,6 @@ import { readFileSync } from "node:fs"
 import { fileURLToPath } from "node:url"
 
 import { env } from "@follow/shared/env.ssr"
-import { NotFoundError } from "@src/lib/not-found"
-import { buildSeoMetaTags } from "@src/lib/seo"
 import type { FastifyInstance, FastifyReply, FastifyRequest } from "fastify"
 import { minify } from "html-minifier-terser"
 import { parseHTML } from "linkedom"
@@ -11,6 +9,8 @@ import { FetchError } from "ofetch"
 import path, { dirname, resolve } from "pathe"
 import xss from "xss"
 
+import { NotFoundError } from "../lib/not-found"
+import { buildSeoMetaTags } from "../lib/seo"
 import { injectMetaHandler, MetaError } from "../meta-handler"
 
 const devHandler = (app: FastifyInstance) => {
