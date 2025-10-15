@@ -1,7 +1,8 @@
 import type { GetHydrateData } from "@client/lib/helper"
 import type { AuthProvider } from "@client/query/users"
-import { createApiFetch } from "@root/lib/api-client"
-import { defineMetadata } from "@root/meta-handler"
+
+import { createApiFetch } from "../../../../src/lib/api-client"
+import { defineMetadata } from "../../../../src/meta-handler"
 
 const getTypedProviders = async () => {
   const apiFetch = createApiFetch()

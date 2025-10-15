@@ -1,6 +1,7 @@
 import { APPLE_APP_STORE_ID } from "@follow/constants"
-import { callNotFound } from "@root/lib/not-found"
-import { defineMetadata } from "@root/meta-handler"
+
+import { callNotFound } from "../../../../../../src/lib/not-found"
+import { defineMetadata } from "../../../../../../src/meta-handler"
 
 export default defineMetadata(async ({ params, apiClient, origin }) => {
   const listId = params.id!

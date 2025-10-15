@@ -1,6 +1,6 @@
 import { getFeedIconSrc } from "@follow/components/utils/icon.js"
 import type { FollowClient } from "@follow-app/client-sdk"
-import { renderToImage } from "@root/lib/og/render-to-image"
+import { renderToImage } from "@src/lib/og/render-to-image"
 import * as React from "react"
 
 import { getImageBase64, OGAvatar, OGCanvas } from "./__base"
