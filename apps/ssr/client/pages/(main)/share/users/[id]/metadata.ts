@@ -1,8 +1,7 @@
 import { isBizId } from "@follow/utils/utils"
-
-import { callNotFound } from "@/lib/not-found"
-import type { MetaTag } from "@/meta-handler"
-import { defineMetadata } from "@/meta-handler"
+import { callNotFound } from "@root/lib/not-found"
+import type { MetaTag } from "@root/meta-handler"
+import { defineMetadata } from "@root/meta-handler"
 
 export default defineMetadata(async ({ params, apiClient, origin }): Promise<MetaTag[]> => {
   const userIdOrHandle = params.id

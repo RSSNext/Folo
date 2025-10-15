@@ -22,7 +22,7 @@
       }
     ],
     "paths": {
-      "@/*": ["./src/*"],
+      "@root/*": ["./src/*"],
       "@client/*": ["./client/*"],
       "@locales/*": ["../../locales/*"]
     }

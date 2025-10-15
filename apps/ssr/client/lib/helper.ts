@@ -1,7 +1,6 @@
 import { DEEPLINK_SCHEME } from "@follow/shared/constants"
 import type { FollowClient } from "@follow-app/client-sdk"
-
-import type { defineMetadata } from "@/meta-handler"
+import type { defineMetadata } from "@root/meta-handler"
 
 type Target = {
   id: string

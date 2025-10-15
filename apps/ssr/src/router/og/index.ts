@@ -1,8 +1,7 @@
 import { Readable } from "node:stream"
 
+import { createFollowClient } from "@root/lib/api-client"
 import type { FastifyInstance, FastifyReply } from "fastify"
-
-import { createFollowClient } from "@/lib/api-client"
 
 import { renderFeedOG } from "./feed"
 import { renderListOG } from "./list"
