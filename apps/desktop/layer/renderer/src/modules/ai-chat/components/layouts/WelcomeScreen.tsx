@@ -1,10 +1,11 @@
 import { Folo } from "@follow/components/icons/folo.js"
 import { ScrollArea } from "@follow/components/ui/scroll-area/ScrollArea.js"
 import { useElementWidth } from "@follow/hooks"
+import { DEFAULT_SHORTCUT_TARGETS } from "@follow/shared/settings/interface"
 import { clsx } from "@follow/utils"
 import type { EditorState } from "lexical"
 import { AnimatePresence, m } from "motion/react"
-import { useEffect, useRef } from "react"
+import { useEffect, useMemo, useRef } from "react"
 import { useTranslation } from "react-i18next"
 
 import { useAISettingValue } from "~/atoms/settings/ai"
@@ -15,7 +16,7 @@ import { useMainEntryId } from "../../hooks/useMainEntryId"
 import { useTimelineSummarySession } from "../../hooks/useTimelineSummarySession"
 import { useChatActions, useChatError, useChatStatus, useMessages } from "../../store/hooks"
 import { AIMessageParts } from "../message/AIMessageParts"
-import { DefaultWelcomeContent, EntrySummaryCard } from "../welcome"
+import { DefaultWelcomeContent, EntryWelcomeContent } from "../welcome"
 import { AIChatRoot } from "./AIChatRoot"
 
 interface WelcomeScreenProps {
@@ -29,8 +30,27 @@ export const WelcomeScreen = ({ onSend, centerInputOnEmpty }: WelcomeScreenProps
   const mainEntryId = useMainEntryId()
   const { todayTimelineSummaryId, canReuseTimelineSummary, hasEntryContext } =
     useTimelineSummarySession()
-  const enabledShortcuts = aiSettings.shortcuts?.filter((shortcut) => shortcut.enabled) || []
+  const enabledShortcuts = aiSettings.shortcuts || []
   const shouldFetchTimelineSummary = canReuseTimelineSummary
+
+  const { list: listShortcuts, entry: entryShortcuts } = useMemo(() => {
+    const list: typeof enabledShortcuts = []
+    const entry: typeof enabledShortcuts = []
+    for (const shortcut of enabledShortcuts) {
+      if (!shortcut.enabled) continue
+      const targets =
+        shortcut.displayTargets && shortcut.displayTargets.length > 0
+          ? shortcut.displayTargets
+          : DEFAULT_SHORTCUT_TARGETS
+      if (targets.includes("list")) {
+        list.push(shortcut)
+      }
+      if (targets.includes("entry")) {
+        entry.push(shortcut)
+      }
+    }
+    return { list, entry }
+  }, [enabledShortcuts])
 
   const { handleScroll } = useAttachScrollBeyond()
   const showTimelineSummary = shouldFetchTimelineSummary
@@ -67,12 +87,17 @@ export const WelcomeScreen = ({ onSend, centerInputOnEmpty }: WelcomeScreenProps
         >
           <AnimatePresence mode="wait">
             {hasEntryContext && mainEntryId ? (
-              <EntrySummaryCard key="entry-summary" entryId={mainEntryId} />
+              <EntryWelcomeContent
+                key="entry-welcome"
+                entryId={mainEntryId}
+                onSend={onSend}
+                shortcuts={entryShortcuts}
+              />
             ) : (
               <DefaultWelcomeContent
                 key="default-welcome"
                 onSend={onSend}
-                shortcuts={enabledShortcuts}
+                shortcuts={listShortcuts}
               />
             )}
           </AnimatePresence>

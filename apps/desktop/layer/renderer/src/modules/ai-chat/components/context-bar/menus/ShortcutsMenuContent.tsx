@@ -1,4 +1,6 @@
+import type { AIShortcut } from "@follow/shared/settings/interface"
 import type { FC } from "react"
+import { useTranslation } from "react-i18next"
 
 import {
   DropdownMenuContent,
@@ -8,26 +10,28 @@ import {
 import { useSettingModal } from "~/modules/settings/modal/use-setting-modal-hack"
 
 interface ShortcutsMenuContentProps {
-  shortcuts: Array<{
-    id: string
-    name: string
-    prompt: string
-    enabled: boolean
-  }>
+  shortcuts: AIShortcut[]
+  context: "list" | "entry"
   onSendShortcut?: (prompt: string) => void
 }
 
 export const ShortcutsMenuContent: FC<ShortcutsMenuContentProps> = ({
   shortcuts,
+  context,
   onSendShortcut,
 }) => {
   const showSettingModal = useSettingModal()
+  const { t } = useTranslation("ai")
   const enabledShortcuts = shortcuts.filter((shortcut) => shortcut.enabled)
+  const emptyMessage =
+    context === "entry"
+      ? t("shortcuts.context_menu.empty.entry")
+      : t("shortcuts.context_menu.empty.list")
 
   return (
     <DropdownMenuContent align="start">
       {enabledShortcuts.length === 0 ? (
-        <div className="text-text-tertiary p-3 text-center text-xs">No shortcuts configured</div>
+        <div className="text-text-tertiary p-3 text-center text-xs">{emptyMessage}</div>
       ) : (
         enabledShortcuts.map((shortcut) => (
           <DropdownMenuItem key={shortcut.id} onClick={() => onSendShortcut?.(shortcut.prompt)}>
@@ -43,7 +47,7 @@ export const ShortcutsMenuContent: FC<ShortcutsMenuContentProps> = ({
         }}
       >
         <i className="i-mgc-settings-7-cute-re mr-1.5 size-3.5" />
-        <span>Manage Shortcut</span>
+        <span>{t("shortcuts.manage")}</span>
       </DropdownMenuItem>
     </DropdownMenuContent>
   )

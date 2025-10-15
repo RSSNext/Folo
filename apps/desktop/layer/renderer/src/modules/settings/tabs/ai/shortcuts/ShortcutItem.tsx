@@ -1,5 +1,7 @@
 import { KbdCombined } from "@follow/components/ui/kbd/Kbd.js"
-import type { AIShortcut } from "@follow/shared/settings/interface"
+import type { AIShortcut, AIShortcutTarget } from "@follow/shared/settings/interface"
+import { DEFAULT_SHORTCUT_TARGETS } from "@follow/shared/settings/interface"
+import { useTranslation } from "react-i18next"
 
 import type { ActionButton } from "~/modules/ai-task/components/ai-item-actions"
 import { ItemActions } from "~/modules/ai-task/components/ai-item-actions"
@@ -12,6 +14,11 @@ interface ShortcutItemProps {
 }
 
 export const ShortcutItem = ({ shortcut, onDelete, onToggle, onEdit }: ShortcutItemProps) => {
+  const { t } = useTranslation("ai")
+  const targets =
+    shortcut.displayTargets && shortcut.displayTargets.length > 0
+      ? (shortcut.displayTargets as AIShortcutTarget[])
+      : DEFAULT_SHORTCUT_TARGETS
   const actions: ActionButton[] = [
     {
       icon: "i-mgc-edit-cute-re",
@@ -40,6 +47,16 @@ export const ShortcutItem = ({ shortcut, onDelete, onToggle, onEdit }: ShortcutI
           <p className="text-text-secondary line-clamp-2 text-xs leading-relaxed">
             {shortcut.prompt}
           </p>
+          <div className="flex flex-wrap gap-1.5">
+            {targets.map((target) => (
+              <span
+                key={target}
+                className="bg-material-thin text-text-tertiary inline-flex items-center rounded-full px-2 py-0.5 text-[11px] font-medium uppercase tracking-wide"
+              >
+                {t(`shortcuts.targets.${target}`)}
+              </span>
+            ))}
+          </div>
         </div>
 
         <ItemActions

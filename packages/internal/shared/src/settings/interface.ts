@@ -180,6 +180,10 @@ export interface CustomIntegration {
   enabled: boolean
 }
 
+export type AIShortcutTarget = "list" | "entry"
+
+export const DEFAULT_SHORTCUT_TARGETS: readonly AIShortcutTarget[] = ["list", "entry"]
+
 export interface AIShortcut {
   id: string
   name: string
@@ -187,6 +191,7 @@ export interface AIShortcut {
   enabled: boolean
   icon?: string
   hotkey?: string
+  displayTargets?: AIShortcutTarget[]
 }
 
 export type MCPTransportType = "streamable-http" | "sse"

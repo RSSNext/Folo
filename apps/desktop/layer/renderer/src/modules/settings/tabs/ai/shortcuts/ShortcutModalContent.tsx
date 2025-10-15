@@ -1,9 +1,11 @@
 import { Button } from "@follow/components/ui/button/index.js"
+import { Checkbox } from "@follow/components/ui/checkbox/index.jsx"
 import { Input, TextArea } from "@follow/components/ui/input/index.js"
 import { Label } from "@follow/components/ui/label/index.jsx"
 import { Switch } from "@follow/components/ui/switch/index.jsx"
-import type { AIShortcut } from "@follow/shared/settings/interface"
-import { useState } from "react"
+import type { AIShortcut, AIShortcutTarget } from "@follow/shared/settings/interface"
+import { DEFAULT_SHORTCUT_TARGETS } from "@follow/shared/settings/interface"
+import { useEffect, useMemo, useState } from "react"
 import { useTranslation } from "react-i18next"
 import { toast } from "sonner"
 
@@ -18,10 +20,37 @@ export const ShortcutModalContent = ({ shortcut, onSave, onCancel }: ShortcutMod
   const [name, setName] = useState(shortcut?.name || "")
   const [prompt, setPrompt] = useState(shortcut?.prompt || "")
   const [enabled, setEnabled] = useState(shortcut?.enabled ?? true)
+  const initialTargets = useMemo<AIShortcutTarget[]>(() => {
+    if (shortcut?.displayTargets && shortcut.displayTargets.length > 0) {
+      return [...shortcut.displayTargets]
+    }
+    return [...DEFAULT_SHORTCUT_TARGETS]
+  }, [shortcut?.displayTargets])
+  const [displayTargets, setDisplayTargets] = useState<AIShortcutTarget[]>(initialTargets)
+
+  useEffect(() => {
+    setDisplayTargets(initialTargets)
+  }, [initialTargets])
+
+  const handleTargetChange = (target: AIShortcutTarget, checked: boolean) => {
+    setDisplayTargets((prev) => {
+      if (checked) {
+        if (prev.includes(target)) {
+          return prev
+        }
+        return [...prev, target]
+      }
+      return prev.filter((item) => item !== target)
+    })
+  }
 
   const handleSave = () => {
     if (!name.trim() || !prompt.trim()) {
       toast.error(t("shortcuts.validation.required"))
+      return
+    }
+    if (displayTargets.length === 0) {
+      toast.error(t("shortcuts.validation.targets_required"))
       return
     }
 
@@ -29,6 +58,7 @@ export const ShortcutModalContent = ({ shortcut, onSave, onCancel }: ShortcutMod
       name: name.trim(),
       prompt: prompt.trim(),
       enabled,
+      displayTargets,
     })
   }
 
@@ -83,6 +113,27 @@ export const ShortcutModalContent = ({ shortcut, onSave, onCancel }: ShortcutMod
           placeholder={t("shortcuts.prompt_placeholder")}
           className="min-h-[60px] resize-none text-sm"
         />
+      </div>
+
+      <div className="space-y-2">
+        <Label className="text-text text-xs">{t("shortcuts.targets.label")}</Label>
+        <div className="text-text-secondary flex flex-wrap gap-3 text-xs">
+          <label className="flex items-center gap-2">
+            <Checkbox
+              checked={displayTargets.includes("list")}
+              onCheckedChange={(value) => handleTargetChange("list", Boolean(value))}
+            />
+            <span>{t("shortcuts.targets.list")}</span>
+          </label>
+          <label className="flex items-center gap-2">
+            <Checkbox
+              checked={displayTargets.includes("entry")}
+              onCheckedChange={(value) => handleTargetChange("entry", Boolean(value))}
+            />
+            <span>{t("shortcuts.targets.entry")}</span>
+          </label>
+        </div>
+        <p className="text-text-tertiary text-xs">{t("shortcuts.targets.help")}</p>
       </div>
 
       <div className="flex items-center justify-between">

@@ -1,3 +1,4 @@
+import { DEFAULT_SHORTCUT_TARGETS } from "@follow/shared/settings/interface"
 import { cn } from "@follow/utils/utils"
 import { FeedViewType } from "@follow-app/client-sdk"
 import { memo, useCallback, useEffect, useMemo, useRef } from "react"
@@ -8,6 +9,7 @@ import { DropdownMenu, DropdownMenuTrigger } from "~/components/ui/dropdown-menu
 import { useRouteParamsSelector } from "~/hooks/biz/useRouteParams"
 import { useDisplayBlocks } from "~/modules/ai-chat/hooks/useDisplayBlocks"
 import { useFileUploadWithDefaults } from "~/modules/ai-chat/hooks/useFileUpload"
+import { useMainEntryId } from "~/modules/ai-chat/hooks/useMainEntryId"
 import { useAIChatStore } from "~/modules/ai-chat/store/AIChatContext"
 import { SUPPORTED_MIME_ACCEPT } from "~/modules/ai-chat/utils/file-validation"
 
@@ -22,18 +24,28 @@ export const AIChatContextBar: Component<{ onSendShortcut?: (prompt: string) => 
     const { shortcuts } = useAISettingValue()
     const fileInputRef = useRef<HTMLInputElement>(null)
     const { handleFileInputChange } = useFileUploadWithDefaults()
+    const mainEntryId = useMainEntryId()
+    const shortcutContext: "entry" | "list" = mainEntryId ? "entry" : "list"
 
     // Filter enabled shortcuts
-    const enabledShortcuts = useMemo(
-      () => shortcuts.filter((shortcut) => shortcut.enabled),
-      [shortcuts],
-    )
+    const contextualShortcuts = useMemo(() => {
+      return shortcuts.filter((shortcut) => {
+        if (!shortcut.enabled) return false
+        const targets =
+          shortcut.displayTargets && shortcut.displayTargets.length > 0
+            ? shortcut.displayTargets
+            : DEFAULT_SHORTCUT_TARGETS
+        return targets.includes(shortcutContext)
+      })
+    }, [shortcuts, shortcutContext])
+    const hasContextualShortcuts = contextualShortcuts.length > 0
 
     const handleAttachFile = useCallback(() => {
       fileInputRef.current?.click()
     }, [])
 
     const { addOrUpdateBlock, removeBlock } = useBlockActions()
+
     const view = useRouteParamsSelector((i) => {
       if (!i.isPendingEntry) return
       return i.view
@@ -129,7 +141,7 @@ export const AIChatContextBar: Component<{ onSendShortcut?: (prompt: string) => 
         />
 
         {/* AI Shortcuts Button */}
-        {enabledShortcuts.length > 0 && (
+        {hasContextualShortcuts && (
           <DropdownMenu>
             <DropdownMenuTrigger asChild>
               <button
@@ -140,7 +152,11 @@ export const AIChatContextBar: Component<{ onSendShortcut?: (prompt: string) => 
                 <i className="i-mgc-magic-2-cute-re size-3.5" />
               </button>
             </DropdownMenuTrigger>
-            <ShortcutsMenuContent shortcuts={shortcuts} onSendShortcut={onSendShortcut} />
+            <ShortcutsMenuContent
+              shortcuts={contextualShortcuts}
+              context={shortcutContext}
+              onSendShortcut={onSendShortcut}
+            />
           </DropdownMenu>
         )}
 
