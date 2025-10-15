@@ -13,7 +13,7 @@ import { useWheel } from "@use-gesture/react"
 import { Lethargy } from "lethargy"
 import { AnimatePresence, m } from "motion/react"
 import type { FC, PropsWithChildren } from "react"
-import { memo, useCallback, useEffect, useLayoutEffect, useMemo, useRef, useState } from "react"
+import { memo, useCallback, useEffect, useLayoutEffect, useRef, useState } from "react"
 
 import { useRootContainerElement } from "~/atoms/dom"
 import { useUISettingKey } from "~/atoms/settings/ui"
@@ -49,12 +49,11 @@ export function SubscriptionColumn({
   usePrefetchUnread()
 
   const carouselRef = useRef<HTMLDivElement>(null)
-  const timelineList = useTimelineList({ ordered: true, visible: true })
-  const aiEnabled = useFeature("ai")
-  const allTimelineList = useMemo(() => {
-    if (aiEnabled) return [ROUTE_VIEW_ALL, ...timelineList]
-    return timelineList
-  }, [aiEnabled, timelineList])
+  const timelineList = useTimelineList({
+    withAll: true,
+    ordered: true,
+    visible: true,
+  })
 
   const routeParams = useRouteParamsSelector((s) => ({
     timelineId: s.timelineId,
@@ -62,7 +61,7 @@ export function SubscriptionColumn({
     listId: s.listId,
   }))
 
-  const [timelineId, setMemoizedTimelineId] = useState(routeParams.timelineId ?? allTimelineList[0])
+  const [timelineId, setMemoizedTimelineId] = useState(routeParams.timelineId ?? timelineList[0])
 
   useEffect(() => {
     if (routeParams.timelineId) setMemoizedTimelineId(routeParams.timelineId)
@@ -73,7 +72,7 @@ export function SubscriptionColumn({
     (args: string | ((prev: string | undefined, index: number) => string)) => {
       let nextActive
       if (typeof args === "function") {
-        const index = timelineId ? allTimelineList.indexOf(timelineId) : 0
+        const index = timelineId ? timelineList.indexOf(timelineId) : 0
         nextActive = args(timelineId, index)
       } else {
         nextActive = args
@@ -82,7 +81,7 @@ export function SubscriptionColumn({
       navigateBackHome(nextActive)
       resetSelectedFeedIds()
     },
-    [navigateBackHome, timelineId, allTimelineList],
+    [navigateBackHome, timelineId, timelineList],
   )
 
   useWheel(
@@ -91,7 +90,7 @@ export function SubscriptionColumn({
         const s = lethargy.check(event)
         if (s) {
           if (!wait && Math.abs(dex) > 20) {
-            setActive((_, i) => allTimelineList[clamp(i + dx, 0, allTimelineList.length - 1)]!)
+            setActive((_, i) => timelineList[clamp(i + dx, 0, timelineList.length - 1)]!)
             return true
           } else {
             return
@@ -134,7 +133,7 @@ export function SubscriptionColumn({
         }
       }, [navigateBackHome])}
     >
-      <CommandsHandler setActive={setActive} timelineList={allTimelineList} />
+      <CommandsHandler setActive={setActive} timelineList={timelineList} />
       <SubscriptionColumnHeader />
       {!feedColumnShow && (
         <RootPortal to={rootContainerElement}>
@@ -166,7 +165,7 @@ export function SubscriptionColumn({
         }, [])}
       >
         <SwipeWrapper active={timelineId!}>
-          {allTimelineList.map((timelineId) => (
+          {timelineList.map((timelineId) => (
             <section key={timelineId} className="w-feed-col h-full shrink-0 snap-center">
               <SubscriptionListGuard
                 key={timelineId}
@@ -199,13 +198,8 @@ const ApronNodeContainer: FC = () => {
 const SwipeWrapper: FC<{ active: string; children: React.JSX.Element[] }> = memo(
   ({ children, active }) => {
     const reduceMotion = useReduceMotion()
-    const timelineList = useTimelineList({ ordered: true, visible: true })
-    const aiEnabled = useFeature("ai")
-    const allTimelineList = useMemo(() => {
-      if (aiEnabled) return [ROUTE_VIEW_ALL, ...timelineList]
-      return timelineList
-    }, [aiEnabled, timelineList])
-    const viewIndex = allTimelineList.indexOf(active)
+    const timelineList = useTimelineList({ withAll: true, ordered: true, visible: true })
+    const viewIndex = timelineList.indexOf(active)
 
     const feedColumnWidth = useUISettingKey("feedColWidth")
     const containerRef = useRef<HTMLDivElement>(null)
@@ -262,27 +256,15 @@ const TabsRow: FC = () => {
   const aiEnabled = useFeature("ai")
   const timelineList = useTimelineList({ ordered: true, visible: true })
 
-  if (!aiEnabled) {
-    return (
-      <div className="text-text-secondary flex h-11 items-center gap-0 px-3 text-xl">
-        {timelineList.map((timelineId, index) => (
-          <SubscriptionTabButton
-            key={timelineId}
-            timelineId={timelineId}
-            shortcut={`${index + 1}`}
-          />
-        ))}
-      </div>
-    )
-  }
-
   return (
     <div className="text-text-secondary flex h-11 items-center px-1 text-xl">
-      <SubscriptionTabButton
-        shortcut="BackQuote"
-        key={ROUTE_VIEW_ALL}
-        timelineId={ROUTE_VIEW_ALL}
-      />
+      {aiEnabled && (
+        <SubscriptionTabButton
+          shortcut="BackQuote"
+          key={ROUTE_VIEW_ALL}
+          timelineId={ROUTE_VIEW_ALL}
+        />
+      )}
       {timelineList.map((timelineId, index) => (
         <SubscriptionTabButton key={timelineId} timelineId={timelineId} shortcut={`${index + 1}`} />
       ))}

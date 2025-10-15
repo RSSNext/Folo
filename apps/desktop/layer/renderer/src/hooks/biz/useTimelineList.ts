@@ -2,14 +2,19 @@ import { useViewWithSubscription } from "@follow/store/subscription/hooks"
 import { useMemo } from "react"
 
 import { useUISettingKey } from "~/atoms/settings/ui"
+import { ROUTE_VIEW_ALL } from "~/constants/app"
+
+import { useFeature } from "./useFeature"
 
 export const useTimelineList = (options?: {
   ordered?: boolean
   visible?: boolean
   hidden?: boolean
+  withAll?: boolean
 }) => {
   const timelineTabs = useUISettingKey("timelineTabs")
   const views = useViewWithSubscription()
+  const aiEnabled = useFeature("ai")
 
   const viewsIds = useMemo(() => {
     const ids = views.map((view) => `view-${view}`)
@@ -34,5 +39,7 @@ export const useTimelineList = (options?: {
     views,
   ])
 
-  return viewsIds
+  return useMemo(() => {
+    return options?.withAll && aiEnabled ? [ROUTE_VIEW_ALL, ...viewsIds] : viewsIds
+  }, [aiEnabled, options?.withAll, viewsIds])
 }
