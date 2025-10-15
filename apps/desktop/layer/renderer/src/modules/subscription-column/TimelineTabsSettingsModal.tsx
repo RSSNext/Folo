@@ -24,7 +24,7 @@ import { useTranslation } from "react-i18next"
 
 import { setUISetting } from "~/atoms/settings/ui"
 import { useModalStack } from "~/components/ui/modal/stacked/hooks"
-import { ROUTE_TIMELINE_OF_VIEW } from "~/constants"
+import { parseView } from "~/hooks/biz/useRouteParams"
 import { useTimelineList } from "~/hooks/biz/useTimelineList"
 
 const MAX_VISIBLE = 5
@@ -44,8 +44,8 @@ function ContainerDroppable({ id, children }: { id: "visible" | "hidden"; childr
 }
 
 function getViewMeta(timelineId: string) {
-  if (!timelineId.startsWith(ROUTE_TIMELINE_OF_VIEW)) return { name: timelineId, icon: null }
-  const id = Number.parseInt(timelineId.slice(ROUTE_TIMELINE_OF_VIEW.length), 10)
+  const id = parseView(timelineId)
+  if (typeof id !== "number") return { name: timelineId, icon: null }
   const item = getView(id)
   return { name: item?.name ?? String(id), icon: item?.icon ?? null }
 }

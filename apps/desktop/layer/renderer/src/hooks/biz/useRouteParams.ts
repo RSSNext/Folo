@@ -37,11 +37,20 @@ export interface BizRouteParams {
   isCollection: boolean
   isAllFeeds: boolean
   isPendingEntry: boolean
-  isAllView: boolean
   folderName?: string
   inboxId?: string
   listId?: string
   timelineId?: string
+}
+
+export function parseView(input: string | undefined): FeedViewType | undefined {
+  if (input === ROUTE_VIEW_ALL) return FeedViewType.All
+  if (input?.startsWith(ROUTE_TIMELINE_OF_VIEW)) {
+    const view = Number.parseInt(input?.slice(ROUTE_TIMELINE_OF_VIEW.length), 10)
+    if (Object.values(FeedViewType).includes(view)) {
+      return view as FeedViewType
+    }
+  }
 }
 
 const parseRouteParams = (params: Params<any>, _searchParams: URLSearchParams): BizRouteParams => {
@@ -49,21 +58,12 @@ const parseRouteParams = (params: Params<any>, _searchParams: URLSearchParams): 
     ? params.feedId.slice(ROUTE_FEED_IN_LIST.length)
     : undefined
   const list = listId ? getListById(listId) : undefined
-  const isAllView = params.timelineId === ROUTE_VIEW_ALL
 
   return {
-    view: params.timelineId?.startsWith(ROUTE_TIMELINE_OF_VIEW)
-      ? (Number.parseInt(
-          params.timelineId.slice(ROUTE_TIMELINE_OF_VIEW.length),
-          10,
-        ) as FeedViewType)
-      : isAllView
-        ? FeedViewType.All
-        : (list?.view ?? FeedViewType.Articles),
+    view: parseView(params.timelineId) ?? list?.view ?? FeedViewType.Articles,
     entryId: params.entryId || undefined,
     feedId: params.feedId || undefined,
     // alias
-    isAllView,
     isCollection: params.feedId === FEED_COLLECTION_LIST,
     isAllFeeds: params.feedId === ROUTE_FEED_PENDING,
     isPendingEntry: params.entryId === ROUTE_ENTRY_PENDING,

@@ -9,9 +9,8 @@ import { useTranslation } from "react-i18next"
 
 import { useUISettingKey } from "~/atoms/settings/ui"
 import { FocusablePresets } from "~/components/common/Focusable"
-import { ROUTE_TIMELINE_OF_VIEW, ROUTE_VIEW_ALL } from "~/constants"
 import { useNavigateEntry } from "~/hooks/biz/useNavigateEntry"
-import { useRouteParamsSelector } from "~/hooks/biz/useRouteParams"
+import { parseView, useRouteParamsSelector } from "~/hooks/biz/useRouteParams"
 
 import { resetSelectedFeedIds } from "./atom"
 
@@ -35,13 +34,14 @@ export function SubscriptionTabButton({
     resetSelectedFeedIds()
   }, [navigate, timelineId])
 
-  if (timelineId.startsWith(ROUTE_TIMELINE_OF_VIEW)) {
-    const id = Number.parseInt(timelineId.slice(ROUTE_TIMELINE_OF_VIEW.length), 10) as FeedViewType
+  const view = parseView(timelineId)
+
+  if (view === FeedViewType.All) {
+    return <ViewAllSwitchButton isActive={isActive} setActive={setActive} shortcut={shortcut} />
+  } else if (typeof view === "number") {
     return (
-      <ViewSwitchButton view={id} isActive={isActive} setActive={setActive} shortcut={shortcut} />
+      <ViewSwitchButton view={view} isActive={isActive} setActive={setActive} shortcut={shortcut} />
     )
-  } else if (timelineId === ROUTE_VIEW_ALL) {
-    return <ViewAllSwitchButton isActive={isActive} setActive={setActive} shortcut="BackQuote" />
   }
 }
 

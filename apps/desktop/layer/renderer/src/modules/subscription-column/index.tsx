@@ -23,10 +23,10 @@ import {
   useSubscriptionColumnShow,
 } from "~/atoms/sidebar"
 import { Focusable } from "~/components/common/Focusable"
-import { HotkeyScope, ROUTE_TIMELINE_OF_VIEW, ROUTE_VIEW_ALL } from "~/constants"
+import { HotkeyScope } from "~/constants"
 import { useBackHome } from "~/hooks/biz/useNavigateEntry"
 import { useReduceMotion } from "~/hooks/biz/useReduceMotion"
-import { useRouteParamsSelector } from "~/hooks/biz/useRouteParams"
+import { parseView, useRouteParamsSelector } from "~/hooks/biz/useRouteParams"
 import { useTimelineList } from "~/hooks/biz/useTimelineList"
 
 import { WindowUnderBlur } from "../../components/ui/background"
@@ -168,14 +168,7 @@ export function SubscriptionColumn({
             <section key={timelineId} className="w-feed-col h-full shrink-0 snap-center">
               <SubscriptionListGuard
                 key={timelineId}
-                view={
-                  timelineId === ROUTE_VIEW_ALL
-                    ? FeedViewType.All
-                    : (Number.parseInt(
-                        timelineId.slice(ROUTE_TIMELINE_OF_VIEW.length),
-                        10,
-                      ) as FeedViewType)
-                }
+                view={parseView(timelineId) ?? FeedViewType.Articles}
                 isSubscriptionLoading={isSubscriptionLoading}
               />
             </section>
