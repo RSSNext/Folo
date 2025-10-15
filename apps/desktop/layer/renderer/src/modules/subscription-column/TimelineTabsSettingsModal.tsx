@@ -90,20 +90,18 @@ function SortableTabItem({ id }: { id: UniqueIdentifier }) {
 function useResolvedTimelineTabs() {
   const timelineTabs = useUISettingKey("timelineTabs")
   const timelineList = useTimelineList()
-  const first = timelineList[0]
-  const rest = timelineList.slice(1)
 
   // Resolve visible: keep saved order, ensure they exist in rest, cap at MAX_VISIBLE
-  const savedVisible = (timelineTabs?.visible ?? []).filter((id) => rest.includes(id))
+  const savedVisible = (timelineTabs?.visible ?? []).filter((id) => timelineList.includes(id))
   const filledVisible = [...savedVisible]
-  for (const id of rest) {
+  for (const id of timelineList) {
     if (filledVisible.length >= MAX_VISIBLE) break
     if (!filledVisible.includes(id)) filledVisible.push(id)
   }
 
-  const hidden = rest.filter((id) => !filledVisible.includes(id))
+  const hidden = timelineList.filter((id) => !filledVisible.includes(id))
 
-  return { first, visible: filledVisible, hidden }
+  return { visible: filledVisible, hidden }
 }
 
 const TimelineTabsSettings = () => {
