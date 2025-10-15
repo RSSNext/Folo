@@ -96,7 +96,6 @@ function useResolvedTimelineTabs() {
 
 const TimelineTabsSettings = () => {
   const { visible, hidden } = useResolvedTimelineTabs()
-  const timelineListForReset = useTimelineList()
 
   const sensors = useSensors(
     useSensor(PointerSensor),
@@ -231,8 +230,8 @@ const TimelineTabsSettings = () => {
           variant="outline"
           onClick={() => {
             setUISetting("timelineTabs", {
-              visible: timelineListForReset.slice(0, MAX_VISIBLE),
-              hidden: timelineListForReset.slice(MAX_VISIBLE),
+              visible: [],
+              hidden: [],
             })
           }}
         >
