@@ -24,7 +24,6 @@ import {
 } from "~/atoms/sidebar"
 import { Focusable } from "~/components/common/Focusable"
 import { HotkeyScope, ROUTE_TIMELINE_OF_VIEW, ROUTE_VIEW_ALL } from "~/constants"
-import { useFeature } from "~/hooks/biz/useFeature"
 import { useBackHome } from "~/hooks/biz/useNavigateEntry"
 import { useReduceMotion } from "~/hooks/biz/useReduceMotion"
 import { useRouteParamsSelector } from "~/hooks/biz/useRouteParams"
@@ -253,18 +252,10 @@ const SwipeWrapper: FC<{ active: string; children: React.JSX.Element[] }> = memo
 )
 
 const TabsRow: FC = () => {
-  const aiEnabled = useFeature("ai")
-  const timelineList = useTimelineList({ ordered: true, visible: true })
+  const timelineList = useTimelineList({ withAll: true, ordered: true, visible: true })
 
   return (
     <div className="text-text-secondary flex h-11 items-center px-1 text-xl">
-      {aiEnabled && (
-        <SubscriptionTabButton
-          shortcut="BackQuote"
-          key={ROUTE_VIEW_ALL}
-          timelineId={ROUTE_VIEW_ALL}
-        />
-      )}
       {timelineList.map((timelineId, index) => (
         <SubscriptionTabButton key={timelineId} timelineId={timelineId} shortcut={`${index + 1}`} />
       ))}

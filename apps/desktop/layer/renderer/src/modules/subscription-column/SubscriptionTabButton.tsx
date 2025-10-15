@@ -41,7 +41,7 @@ export function SubscriptionTabButton({
       <ViewSwitchButton view={id} isActive={isActive} setActive={setActive} shortcut={shortcut} />
     )
   } else if (timelineId === ROUTE_VIEW_ALL) {
-    return <ViewAllSwitchButton isActive={isActive} setActive={setActive} shortcut={shortcut} />
+    return <ViewAllSwitchButton isActive={isActive} setActive={setActive} shortcut="BackQuote" />
   }
 }
 
