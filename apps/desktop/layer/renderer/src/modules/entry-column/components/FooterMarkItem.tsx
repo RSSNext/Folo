@@ -1,4 +1,4 @@
-import { FeedViewType, views } from "@follow/constants"
+import { FeedViewType, getView } from "@follow/constants"
 
 import { readableContentMaxWidthClassName } from "~/constants/ui"
 
@@ -19,7 +19,7 @@ export const FooterMarkItem = ({
 
   if (view === FeedViewType.SocialMedia) {
     return <SocialMediaFooterMarkItem filter={filter} />
-  } else if (views.find((v) => v.view === view)?.gridMode || view === FeedViewType.All) {
+  } else if (getView(view)?.gridMode || view === FeedViewType.All) {
     return <GridFooterMarkItem filter={filter} />
   }
   return <CommonFooterMarkItem filter={filter} />

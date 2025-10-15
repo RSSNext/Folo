@@ -1,4 +1,4 @@
-import { views } from "@follow/constants"
+import { getView } from "@follow/constants"
 import { entryActions } from "@follow/store/entry/store"
 import { unreadSyncService } from "@follow/store/unread/store"
 import type { Range } from "@tanstack/react-virtual"
@@ -33,7 +33,7 @@ export const useEntryMarkReadHandler = (entriesIds: string[]) => {
   )
 
   return useMemo(() => {
-    if (views.find((v) => v.view === feedView)?.wideMode && renderAsRead) {
+    if (getView(feedView)?.wideMode && renderAsRead) {
       return handleRenderAsRead
     }
 

@@ -20,7 +20,7 @@ import {
   TableHeader,
   TableRow,
 } from "@follow/components/ui/table/index.jsx"
-import { views } from "@follow/constants"
+import { FeedViewType } from "@follow/constants"
 import { getFeedById } from "@follow/store/feed/getter"
 import { useFeedById } from "@follow/store/feed/hooks"
 import { useListById } from "@follow/store/list/hooks"
@@ -62,7 +62,7 @@ export const ListCreationModalContent = ({ id }: { id?: string }) => {
   const form = useForm<z.infer<typeof formSchema>>({
     resolver: zodResolver(formSchema),
     defaultValues: {
-      view: list?.view.toString() || views[0]?.view.toString(),
+      view: list?.view.toString() || FeedViewType.Articles.toString(),
       fee: list?.fee || 0,
       title: list?.title || "",
       description: list?.description || "",

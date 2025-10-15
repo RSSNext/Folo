@@ -1,4 +1,5 @@
 import { cn } from "@follow/utils/utils"
+import { FeedViewType } from "@follow-app/client-sdk"
 import { memo, useCallback, useEffect, useMemo, useRef } from "react"
 
 import { useAISettingValue } from "~/atoms/settings/ai"
@@ -42,7 +43,7 @@ export const AIChatContextBar: Component<{ onSendShortcut?: (prompt: string) => 
       return i.feedId
     })
     useEffect(() => {
-      if (typeof view === "number") {
+      if (typeof view === "number" && view !== FeedViewType.All) {
         addOrUpdateBlock({
           id: BlockSliceAction.SPECIAL_TYPES.mainView,
           type: "mainView",
@@ -148,7 +149,7 @@ export const AIChatContextBar: Component<{ onSendShortcut?: (prompt: string) => 
           if (item.kind === "combined") {
             return (
               <CombinedContextBlock
-                key={item.viewBlock.id}
+                key={`combined-${item.viewBlock?.id}-${item.feedBlock?.id}-${item.unreadOnlyBlock?.id}`}
                 viewBlock={item.viewBlock}
                 feedBlock={item.feedBlock}
                 unreadOnlyBlock={item.unreadOnlyBlock}

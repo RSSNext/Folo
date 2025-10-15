@@ -2,7 +2,7 @@ import { ActionButton, MotionButtonBase } from "@follow/components/ui/button/ind
 import { DividerVertical } from "@follow/components/ui/divider/index.js"
 import { RotatingRefreshIcon } from "@follow/components/ui/loading/index.jsx"
 import { EllipsisHorizontalTextWithTooltip } from "@follow/components/ui/typography/index.js"
-import { FeedViewType, views } from "@follow/constants"
+import { FeedViewType, getView } from "@follow/constants"
 import { useIsOnline } from "@follow/hooks"
 import { getFeedById } from "@follow/store/feed/getter"
 import { useFeedById } from "@follow/store/feed/hooks"
@@ -108,17 +108,15 @@ export const EntryListHeader: FC<{
             )}
             onClick={stopPropagation}
           >
-            {views.find((v) => v.view === view)?.wideMode &&
-              entryId &&
-              entryId !== ROUTE_ENTRY_PENDING && (
-                <>
-                  <EntryHeader entryId={entryId} />
-                  <DividerVertical className="mx-2 w-px" />
-                </>
-              )}
+            {getView(view)?.wideMode && entryId && entryId !== ROUTE_ENTRY_PENDING && (
+              <>
+                <EntryHeader entryId={entryId} />
+                <DividerVertical className="mx-2 w-px" />
+              </>
+            )}
 
             <AppendTaildingDivider>
-              {!views.find((v) => v.view === view)?.wideMode && !aiEnabled && <WideModeButton />}
+              {!getView(view)?.wideMode && !aiEnabled && <WideModeButton />}
               {view === FeedViewType.Pictures && <SwitchToMasonryButton />}
             </AppendTaildingDivider>
 

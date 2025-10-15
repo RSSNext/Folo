@@ -1,6 +1,6 @@
 import { LoadingCircle } from "@follow/components/ui/loading/index.js"
 import type { FeedViewType } from "@follow/constants"
-import { views } from "@follow/constants"
+import { getView } from "@follow/constants"
 import { cn } from "@follow/utils/utils"
 import type { FC } from "react"
 import { memo } from "react"
@@ -28,11 +28,7 @@ export const EntryItemSkeleton: FC<{
   }
 
   return (
-    <div
-      className={cn(
-        views.find((v) => v.view === view)?.gridMode ? girdClassNames : "flex flex-col",
-      )}
-    >
+    <div className={cn(getView(view)?.gridMode ? girdClassNames : "flex flex-col")}>
       {Array.from({ length: count }).map((_, index) => (
         // eslint-disable-next-line @eslint-react/no-array-index-key -- index is unique
         <div key={index}>{SkeletonItem}</div>

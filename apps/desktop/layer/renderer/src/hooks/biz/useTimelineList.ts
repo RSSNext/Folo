@@ -1,22 +1,45 @@
-import { FeedViewType } from "@follow/constants"
 import { useViewWithSubscription } from "@follow/store/subscription/hooks"
 import { useMemo } from "react"
 
-import { useFeature } from "~/hooks/biz/useFeature"
+import { useUISettingKey } from "~/atoms/settings/ui"
+import { ROUTE_VIEW_ALL } from "~/constants/app"
 
-export const useTimelineList = () => {
+import { useFeature } from "./useFeature"
+
+export const useTimelineList = (options?: {
+  ordered?: boolean
+  visible?: boolean
+  hidden?: boolean
+  withAll?: boolean
+}) => {
+  const timelineTabs = useUISettingKey("timelineTabs")
   const views = useViewWithSubscription()
-
-  // because the All view is highly tied to the AI
-  // so we need to filter it out if the AI is not enabled
   const aiEnabled = useFeature("ai")
 
-  const filteredViews = useMemo(
-    () => (aiEnabled ? views : views.filter((v) => v !== FeedViewType.All)),
-    [views, aiEnabled],
-  )
+  const viewsIds = useMemo(() => {
+    const ids = views.map((view) => `view-${view}`)
+    if (!options?.ordered) {
+      return ids
+    }
+    const savedVisible = (timelineTabs?.visible ?? []).filter((id) => ids.includes(id))
+    const savedHidden = (timelineTabs?.hidden ?? []).filter((id) => ids.includes(id))
+    const extraHidden = ids.filter((id) => !savedVisible.includes(id) && !savedHidden.includes(id))
 
-  const viewsIds = useMemo(() => filteredViews.map((view) => `view-${view}`), [filteredViews])
+    if (options?.visible) return savedVisible
+    if (options?.hidden) return [...savedHidden, ...extraHidden]
 
-  return viewsIds
+    const ordered = [...savedVisible, ...savedHidden, ...extraHidden]
+    return ordered
+  }, [
+    options?.hidden,
+    options?.ordered,
+    options?.visible,
+    timelineTabs?.hidden,
+    timelineTabs?.visible,
+    views,
+  ])
+
+  return useMemo(() => {
+    return options?.withAll && aiEnabled ? [ROUTE_VIEW_ALL, ...viewsIds] : viewsIds
+  }, [aiEnabled, options?.withAll, viewsIds])
 }

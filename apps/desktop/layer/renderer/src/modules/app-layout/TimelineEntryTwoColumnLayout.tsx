@@ -1,5 +1,5 @@
 import { PanelSplitter } from "@follow/components/ui/divider/index.js"
-import { views } from "@follow/constants"
+import { getView } from "@follow/constants"
 import { defaultUISettings } from "@follow/shared/settings/defaults"
 import { cn, isSafari } from "@follow/utils/utils"
 import { useMemo, useRef } from "react"
@@ -39,7 +39,7 @@ export function TimelineEntryTwoColumnLayout() {
 
   const entryColWidth = useMemo(() => getUISettings().entryColWidth, [])
   const { view } = useRouteParams()
-  const inWideMode = (view ? views.find((v) => v.view === view)?.wideMode : false) || false
+  const inWideMode = (view ? getView(view)?.wideMode : false) || false
   const feedColumnWidth = useUISettingKey("feedColWidth")
   const startDragPosition = useRef(0)
   const { position, separatorProps, isDragging, separatorCursor, setPosition } = useResizable({

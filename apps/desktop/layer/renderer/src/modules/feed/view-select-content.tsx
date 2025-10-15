@@ -1,5 +1,5 @@
 import { SelectContent, SelectItem } from "@follow/components/ui/select/index.jsx"
-import { FeedViewType, views } from "@follow/constants"
+import { getViewList } from "@follow/constants"
 import { cn } from "@follow/utils/utils"
 import { useTranslation } from "react-i18next"
 
@@ -8,16 +8,14 @@ export const ViewSelectContent = () => {
 
   return (
     <SelectContent>
-      {views
-        .filter((view) => view.view !== FeedViewType.All)
-        .map((view, index) => (
-          <SelectItem key={view.name} value={`${index}`}>
-            <div className="flex items-center gap-2">
-              <span className={cn(view.className, "flex")}>{view.icon}</span>
-              <span>{t(view.name, { ns: "common" })}</span>
-            </div>
-          </SelectItem>
-        ))}
+      {getViewList().map((view, index) => (
+        <SelectItem key={view.name} value={`${index}`}>
+          <div className="flex items-center gap-2">
+            <span className={cn(view.className, "flex")}>{view.icon}</span>
+            <span>{t(view.name, { ns: "common" })}</span>
+          </div>
+        </SelectItem>
+      ))}
     </SelectContent>
   )
 }

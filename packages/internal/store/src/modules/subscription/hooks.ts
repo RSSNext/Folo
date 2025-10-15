@@ -1,4 +1,4 @@
-import { FeedViewType, views } from "@follow/constants"
+import { FeedViewType, getViewList } from "@follow/constants"
 import { useQuery } from "@tanstack/react-query"
 import { useCallback, useMemo, useRef } from "react"
 
@@ -257,16 +257,11 @@ export const getSubscriptionCategory = (view?: FeedViewType) => {
   return view === undefined ? [] : Array.from(state.categories[view])
 }
 
-export const useViewWithSubscription = (options?: { excludeAll?: boolean }) =>
+export const useViewWithSubscription = () =>
   useSubscriptionStore((state) => {
-    return views
+    return getViewList()
       .filter((view) => {
-        if (options?.excludeAll && view.view === FeedViewType.All) {
-          return false
-        }
-
         if (
-          view.view === FeedViewType.All ||
           view.view === FeedViewType.Articles ||
           view.view === FeedViewType.SocialMedia ||
           view.view === FeedViewType.Pictures ||
@@ -320,7 +315,7 @@ export const useFolderFeedsByFeedId = ({
   return useSubscriptionStore(
     useCallback(
       (state) => {
-        return folderFeedsByFeedIdSelector({ feedId, view })(state)
+        return folderFeedsByFeedIdSelector({ feedIdOrCategory: feedId, view })(state)
       },
       [feedId, view],
     ),

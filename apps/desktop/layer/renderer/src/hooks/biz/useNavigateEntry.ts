@@ -1,7 +1,7 @@
 import { getReadonlyRoute, getStableRouterNavigate } from "@follow/components/atoms/route.js"
 import { useMobile } from "@follow/components/hooks/useMobile.js"
 import { useSheetContext } from "@follow/components/ui/sheet/context.js"
-import type { FeedViewType } from "@follow/constants"
+import { FeedViewType } from "@follow/constants"
 import { getEntry } from "@follow/store/entry/getter"
 import { getSubscriptionByFeedId } from "@follow/store/subscription/getter"
 import { tracker } from "@follow/tracker"
@@ -19,6 +19,7 @@ import {
   ROUTE_FEED_IN_LIST,
   ROUTE_FEED_PENDING,
   ROUTE_TIMELINE_OF_VIEW,
+  ROUTE_VIEW_ALL,
 } from "~/constants"
 
 import { useRouteParamsSelector } from "./useRouteParams"
@@ -85,7 +86,8 @@ const parseNavigateEntryOptions = (options: NavigateEntryOptions): ParsedNavigat
   finalFeedId = encodeURIComponent(finalFeedId)
 
   if (finalView !== undefined && !timelineId) {
-    finalTimelineId = `${ROUTE_TIMELINE_OF_VIEW}${finalView}`
+    finalTimelineId =
+      finalView === FeedViewType.All ? ROUTE_VIEW_ALL : `${ROUTE_TIMELINE_OF_VIEW}${finalView}`
   }
 
   return {

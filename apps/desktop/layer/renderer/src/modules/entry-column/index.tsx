@@ -1,4 +1,4 @@
-import { FeedViewType, views } from "@follow/constants"
+import { FeedViewType, getView } from "@follow/constants"
 import { useTitle } from "@follow/hooks"
 import { useEntry } from "@follow/store/entry/hooks"
 import { useFeedById } from "@follow/store/feed/hooks"
@@ -118,7 +118,7 @@ function EntryColumnContent() {
       }
 
       if (!renderAsRead) return
-      if (!views.find((v) => v.view === view)?.wideMode) {
+      if (!getView(view)?.wideMode) {
         return
       }
       // For gird, render as mark read logic
@@ -133,7 +133,7 @@ function EntryColumnContent() {
     }
   }, [actions, state.hasNextPage, state.isFetchingNextPage])
 
-  const ListComponent = views.find((v) => v.view === view)?.gridMode ? EntryColumnGrid : EntryList
+  const ListComponent = getView(view)?.gridMode ? EntryColumnGrid : EntryList
 
   return (
     <Focusable

@@ -1,5 +1,5 @@
 import { isMobile } from "@follow/components/hooks/useMobile.js"
-import { FeedViewType, UserRole, views } from "@follow/constants"
+import { FeedViewType, getView, UserRole } from "@follow/constants"
 import { IN_ELECTRON } from "@follow/shared/constants"
 import { useIsEntryStarred } from "@follow/store/collection/hooks"
 import { useEntry } from "@follow/store/entry/hooks"
@@ -417,10 +417,7 @@ export const useEntryActions = ({ entryId, view }: { entryId: string; view: Feed
       new EntryActionMenuItem({
         id: COMMAND_ID.entry.readability,
         onClick: runCmdFn(COMMAND_ID.entry.readability, [{ entryId, entryUrl: entry.url! }]),
-        hide:
-          !!entry.readability ||
-          (view && views.find((v) => v.view === view)?.wideMode) ||
-          !entry.url,
+        hide: !!entry.readability || (view && getView(view)?.wideMode) || !entry.url,
         active: isEntryInReadability,
         notice: !entry.doesContentContainsHTMLTags && !isEntryInReadability,
         entryId,

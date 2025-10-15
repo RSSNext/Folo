@@ -17,14 +17,14 @@ import {
 } from "@dnd-kit/sortable"
 import { CSS } from "@dnd-kit/utilities"
 import { Button } from "@follow/components/ui/button/index.js"
-import { views } from "@follow/constants"
+import { getView } from "@follow/constants"
 import type { CSSProperties, ReactNode } from "react"
 import { useCallback, useMemo } from "react"
 import { useTranslation } from "react-i18next"
 
-import { setUISetting, useUISettingKey } from "~/atoms/settings/ui"
+import { setUISetting } from "~/atoms/settings/ui"
 import { useModalStack } from "~/components/ui/modal/stacked/hooks"
-import { ROUTE_TIMELINE_OF_VIEW } from "~/constants"
+import { parseView } from "~/hooks/biz/useRouteParams"
 import { useTimelineList } from "~/hooks/biz/useTimelineList"
 
 const MAX_VISIBLE = 5
@@ -44,9 +44,9 @@ function ContainerDroppable({ id, children }: { id: "visible" | "hidden"; childr
 }
 
 function getViewMeta(timelineId: string) {
-  if (!timelineId.startsWith(ROUTE_TIMELINE_OF_VIEW)) return { name: timelineId, icon: null }
-  const id = Number.parseInt(timelineId.slice(ROUTE_TIMELINE_OF_VIEW.length), 10)
-  const item = views.find((v) => v.view === id)
+  const id = parseView(timelineId)
+  if (typeof id !== "number") return { name: timelineId, icon: null }
+  const item = getView(id)
   return { name: item?.name ?? String(id), icon: item?.icon ?? null }
 }
 
@@ -88,22 +88,10 @@ function SortableTabItem({ id }: { id: UniqueIdentifier }) {
 }
 
 function useResolvedTimelineTabs() {
-  const timelineTabs = useUISettingKey("timelineTabs")
-  const timelineList = useTimelineList()
-  const first = timelineList[0]
-  const rest = timelineList.slice(1)
+  const timelineList = useTimelineList({ ordered: true, visible: true })
+  const timelineListHidden = useTimelineList({ ordered: true, hidden: true })
 
-  // Resolve visible: keep saved order, ensure they exist in rest, cap at MAX_VISIBLE
-  const savedVisible = (timelineTabs?.visible ?? []).filter((id) => rest.includes(id))
-  const filledVisible = [...savedVisible]
-  for (const id of rest) {
-    if (filledVisible.length >= MAX_VISIBLE) break
-    if (!filledVisible.includes(id)) filledVisible.push(id)
-  }
-
-  const hidden = rest.filter((id) => !filledVisible.includes(id))
-
-  return { first, visible: filledVisible, hidden }
+  return { visible: timelineList, hidden: timelineListHidden }
 }
 
 const TimelineTabsSettings = () => {
@@ -242,11 +230,9 @@ const TimelineTabsSettings = () => {
         <Button
           variant="outline"
           onClick={() => {
-            // reset to current timeline order: first 4 visible, rest hidden
-            const rest = timelineListForReset.slice(1)
             setUISetting("timelineTabs", {
-              visible: rest.slice(0, MAX_VISIBLE),
-              hidden: rest.slice(MAX_VISIBLE),
+              visible: timelineListForReset.slice(0, MAX_VISIBLE),
+              hidden: timelineListForReset.slice(MAX_VISIBLE),
             })
           }}
         >

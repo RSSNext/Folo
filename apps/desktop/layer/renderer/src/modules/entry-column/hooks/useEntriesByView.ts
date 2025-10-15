@@ -1,4 +1,4 @@
-import { FeedViewType, views } from "@follow/constants"
+import { FeedViewType, getView } from "@follow/constants"
 import { useCollectionEntryList } from "@follow/store/collection/hooks"
 import {
   useEntriesQuery,
@@ -268,7 +268,7 @@ export const useEntriesByView = ({ onReset }: { onReset?: () => void }) => {
 
   const groupByDate = useGeneralSettingKey("groupByDate")
   const groupedCounts: number[] | undefined = useMemo(() => {
-    const viewDefinition = views.find((v) => v.view === view)
+    const viewDefinition = getView(view)
     if (viewDefinition?.gridMode || view === FeedViewType.All) {
       return
     }

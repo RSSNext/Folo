@@ -1,5 +1,5 @@
 import type { ViewDefinition as ViewDefinitionBase } from "@follow/constants"
-import { FeedViewType, views as viewsBase } from "@follow/constants"
+import { FeedViewType, getViewList } from "@follow/constants"
 
 import { AnnouncementCuteFiIcon } from "../icons/announcement_cute_fi"
 import { BubbleCuteFiIcon } from "../icons/bubble_cute_fi"
@@ -39,12 +39,10 @@ const extendMap: Record<FeedViewType, ViewDefinitionExtended> = {
 
 export interface ViewDefinition extends Omit<ViewDefinitionBase, "icon">, ViewDefinitionExtended {}
 
-export const views: ViewDefinition[] = viewsBase
-  .filter((view) => view.view !== FeedViewType.All)
-  .map((view) => {
-    const extendedView = extendMap[view.view]
-    return {
-      ...view,
-      ...extendedView,
-    }
-  })
+export const views: ViewDefinition[] = getViewList().map((view) => {
+  const extendedView = extendMap[view.view]
+  return {
+    ...view,
+    ...extendedView,
+  }
+})

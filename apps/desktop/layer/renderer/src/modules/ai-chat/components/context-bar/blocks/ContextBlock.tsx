@@ -1,4 +1,4 @@
-import { views } from "@follow/constants"
+import { getView } from "@follow/constants"
 import { clsx, cn } from "@follow/utils/utils"
 import type { FC, ReactNode } from "react"
 import { memo } from "react"
@@ -78,21 +78,19 @@ type MainFeedBlock = ValueBlockOf<"mainFeed">
 type UnreadOnlyBlock = ValueBlockOf<"unreadOnly">
 
 export const CombinedContextBlock: FC<{
-  viewBlock: MainViewBlock
+  viewBlock?: MainViewBlock
   feedBlock?: MainFeedBlock
   unreadOnlyBlock?: UnreadOnlyBlock
 }> = memo(({ viewBlock, feedBlock, unreadOnlyBlock }) => {
   const { t } = useTranslation("common")
   const blockActions = useChatBlockActions()
 
-  const viewIcon = views.find((v) => v.view === Number(viewBlock.value))?.icon.props.className
-
-  const canRemove =
-    !blockTypeCanNotBeRemoved.has(viewBlock.type) &&
-    (!feedBlock || !blockTypeCanNotBeRemoved.has(feedBlock.type))
+  const viewIcon = viewBlock && getView(Number(viewBlock.value))?.icon.props.className
 
   const handleRemove = () => {
-    blockActions.removeBlock(viewBlock.id)
+    if (viewBlock) {
+      blockActions.removeBlock(viewBlock.id)
+    }
     if (feedBlock) {
       blockActions.removeBlock(feedBlock.id)
     }
@@ -110,7 +108,8 @@ export const CombinedContextBlock: FC<{
   ) : (
     <span className="flex items-center gap-1">
       {(() => {
-        const viewName = views.find((v) => v.view === Number(viewBlock.value))?.name
+        if (!viewBlock) return null
+        const viewName = getView(Number(viewBlock.value))?.name
         return viewName ? t(viewName) : viewBlock.value
       })()}
       {unreadOnlyBlock && <i className="i-mgc-round-cute-fi size-3" title="Unread Only" />}
@@ -120,7 +119,7 @@ export const CombinedContextBlock: FC<{
   return (
     <BlockContainer
       icon={viewIcon}
-      canRemove={canRemove}
+      canRemove={true}
       onRemove={handleRemove}
       content={displayContent}
     />
@@ -135,7 +134,7 @@ export const ContextBlock: FC<{ block: AIChatContextBlock }> = memo(({ block }) 
   const getBlockIcon = () => {
     switch (block.type) {
       case "mainView": {
-        const viewIcon = views.find((v) => v.view === Number(block.value))?.icon.props.className
+        const viewIcon = getView(Number(block.value))?.icon.props.className
         return viewIcon
       }
       case "mainEntry": {
@@ -174,7 +173,7 @@ export const ContextBlock: FC<{ block: AIChatContextBlock }> = memo(({ block }) 
   const getDisplayContent = () => {
     switch (block.type) {
       case "mainView": {
-        const viewName = views.find((v) => v.view === Number(block.value))?.name
+        const viewName = getView(Number(block.value))?.name
         return viewName ? t(viewName) : block.value
       }
       case "mainEntry":

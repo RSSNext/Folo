@@ -1,5 +1,5 @@
 import type { FeedViewType } from "@follow/constants"
-import { views } from "@follow/constants"
+import { getView } from "@follow/constants"
 import { useCategoryOpenStateByView } from "@follow/store/subscription/hooks"
 import { subscriptionActions } from "@follow/store/subscription/store"
 import { useUnreadByView } from "@follow/store/unread/hooks"
@@ -36,7 +36,10 @@ export const ListHeader = ({ view }: { view: FeedViewType }) => {
           }
         }}
       >
-        {view !== undefined && t(views.find((v) => v.view === view)!.name, { ns: "common" })}
+        {view !== undefined &&
+          t(getView(view).name, {
+            ns: "common",
+          })}
       </div>
       <div className="text-text-secondary ml-2 flex items-center gap-3 text-base lg:text-sm">
         <SortButton />

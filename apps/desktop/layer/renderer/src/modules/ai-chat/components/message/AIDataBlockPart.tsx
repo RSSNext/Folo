@@ -41,7 +41,7 @@ export const AIDataBlockPart: React.FC<AIDataBlockPartProps> = React.memo(({ blo
           if (item.kind === "combined") {
             return (
               <CombinedDataBlockItem
-                key={item.viewBlock.id}
+                key={`combined-${item.viewBlock?.id}-${item.feedBlock?.id}-${item.unreadOnlyBlock?.id}`}
                 viewBlock={item.viewBlock}
                 feedBlock={item.feedBlock}
                 unreadOnlyBlock={item.unreadOnlyBlock}

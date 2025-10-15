@@ -9,14 +9,14 @@ type ValueBlockOf<Type extends ValueContextBlock["type"]> = Omit<ValueContextBlo
 export type DisplayBlockItem =
   | {
       kind: "combined"
-      viewBlock: ValueBlockOf<"mainView">
+      viewBlock?: ValueBlockOf<"mainView">
       feedBlock?: ValueBlockOf<"mainFeed">
       unreadOnlyBlock?: ValueBlockOf<"unreadOnly">
     }
   | { kind: "single"; block: AIChatContextBlock }
 
 /**
- * Custom hook to process blocks and merge mainView + mainFeed when both exist
+ * Custom hook to process blocks and merge mainView, mainFeed, and unreadOnly when any of them exist
  * Returns an array of display items that can be either combined or single blocks
  */
 export const useDisplayBlocks = (blocks: AIChatContextBlock[]): DisplayBlockItem[] => {
@@ -36,23 +36,22 @@ export const useDisplayBlocks = (blocks: AIChatContextBlock[]): DisplayBlockItem
       (block): block is ValueBlockOf<"unreadOnly"> => block.type === "unreadOnly",
     )
 
-    // Always filter out unreadOnly from single blocks since it should only appear in combined blocks
-    const filteredBlocks = blocks.filter((block) => block.type !== "unreadOnly")
-
-    if (mainViewBlock) {
+    // If any of the three special block types exist, create a combined block
+    if (mainViewBlock || mainFeedBlock || unreadOnlyBlock) {
       const items: DisplayBlockItem[] = []
 
-      // Create combined block with optional feedBlock
+      // Create combined block with optional blocks
       items.push({
         kind: "combined",
-        viewBlock: mainViewBlock,
+        ...(mainViewBlock && { viewBlock: mainViewBlock }),
         ...(mainFeedBlock && { feedBlock: mainFeedBlock }),
         ...(unreadOnlyBlock && { unreadOnlyBlock }),
       })
 
       // Add other blocks (excluding mainView, mainFeed, and unreadOnly)
-      const otherBlocks = filteredBlocks.filter(
-        (block) => block.id !== mainViewBlock.id && block.id !== mainFeedBlock?.id,
+      const otherBlocks = blocks.filter(
+        (block) =>
+          block.type !== "mainView" && block.type !== "mainFeed" && block.type !== "unreadOnly",
       )
       otherBlocks.forEach((block) => {
         items.push({ kind: "single", block })
@@ -61,7 +60,7 @@ export const useDisplayBlocks = (blocks: AIChatContextBlock[]): DisplayBlockItem
       return items
     }
 
-    // If no mainView, show all blocks except unreadOnly
-    return filteredBlocks.map((block) => ({ kind: "single" as const, block }))
+    // If none of the special blocks exist, show all blocks as single blocks
+    return blocks.map((block) => ({ kind: "single" as const, block }))
   }, [blocks])
 }

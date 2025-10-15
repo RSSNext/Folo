@@ -1,4 +1,4 @@
-import { views } from "@follow/constants"
+import { getView } from "@follow/constants"
 
 import type { AIChatContextBlock, FileAttachment } from "~/modules/ai-chat/store/types"
 import {
@@ -103,7 +103,7 @@ export function getBlockIcon(block: AIChatContextBlock): string {
   }
 
   if (block.type === "mainView") {
-    const viewIcon = views.find((v) => v.view === Number(block.value))?.icon.props.className
+    const viewIcon = getView(Number(block.value))?.icon.props.className
     return viewIcon
   }
 

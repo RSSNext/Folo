@@ -1,4 +1,4 @@
-import { views } from "@follow/constants"
+import { getView } from "@follow/constants"
 import { cn } from "@follow/utils/utils"
 import { easeOut } from "motion/react"
 import type { FC, PropsWithChildren } from "react"
@@ -24,10 +24,7 @@ const EntryLayoutContentLegacy = () => {
   const settingWideMode = false
   const realEntryId = entryId === ROUTE_ENTRY_PENDING ? "" : entryId
 
-  const showEntryContent = !(
-    views.find((v) => v.view === view)?.wideMode ||
-    (settingWideMode && !realEntryId)
-  )
+  const showEntryContent = !(getView(view)?.wideMode || (settingWideMode && !realEntryId))
   const wideMode = !!(settingWideMode && realEntryId)
   const feedColumnTempShow = useSubscriptionColumnTempShow()
   const feedColumnShow = useSubscriptionColumnShow()
