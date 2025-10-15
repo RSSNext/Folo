@@ -240,11 +240,9 @@ const TimelineTabsSettings = () => {
         <Button
           variant="outline"
           onClick={() => {
-            // reset to current timeline order: first 4 visible, rest hidden
-            const rest = timelineListForReset.slice(1)
             setUISetting("timelineTabs", {
-              visible: rest.slice(0, MAX_VISIBLE),
-              hidden: rest.slice(MAX_VISIBLE),
+              visible: timelineListForReset.slice(0, MAX_VISIBLE),
+              hidden: timelineListForReset.slice(MAX_VISIBLE),
             })
           }}
         >
