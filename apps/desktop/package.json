@@ -63,7 +63,7 @@
     "code-inspector-plugin": "1.2.10",
     "cssnano": "7.1.1",
     "drizzle-orm": "0.44.5",
-    "electron": "37.2.0",
+    "electron": "38.2.2",
     "electron-devtools-installer": "4.0.0",
     "electron-packager-languages": "0.6.0",
     "electron-vite": "4.0.0",
