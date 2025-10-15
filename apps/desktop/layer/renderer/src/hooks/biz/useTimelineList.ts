@@ -23,12 +23,12 @@ export const useTimelineList = (options?: {
     }
     const savedVisible = (timelineTabs?.visible ?? []).filter((id) => ids.includes(id))
     const savedHidden = (timelineTabs?.hidden ?? []).filter((id) => ids.includes(id))
-    const extraHidden = ids.filter((id) => !savedVisible.includes(id) && !savedHidden.includes(id))
+    const extra = ids.filter((id) => !savedVisible.includes(id) && !savedHidden.includes(id))
 
-    if (options?.visible) return savedVisible
-    if (options?.hidden) return [...savedHidden, ...extraHidden]
+    if (options?.visible) return [...savedVisible, ...extra]
+    if (options?.hidden) return [...savedHidden, ...extra]
 
-    const ordered = [...savedVisible, ...savedHidden, ...extraHidden]
+    const ordered = [...savedVisible, ...savedHidden, ...extra]
     return ordered
   }, [
     options?.hidden,
@@ -40,6 +40,7 @@ export const useTimelineList = (options?: {
   ])
 
   return useMemo(() => {
-    return options?.withAll && aiEnabled ? [ROUTE_VIEW_ALL, ...viewsIds] : viewsIds
+    const slicedViewsIds = viewsIds.slice(0, 5)
+    return options?.withAll && aiEnabled ? [ROUTE_VIEW_ALL, ...slicedViewsIds] : slicedViewsIds
   }, [aiEnabled, options?.withAll, viewsIds])
 }
