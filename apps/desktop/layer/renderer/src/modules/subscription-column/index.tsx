@@ -49,7 +49,7 @@ export function SubscriptionColumn({
   usePrefetchUnread()
 
   const carouselRef = useRef<HTMLDivElement>(null)
-  const timelineList = useTimelineList()
+  const timelineList = useTimelineList({ ordered: true, visible: true })
   const aiEnabled = useFeature("ai")
   const allTimelineList = useMemo(() => {
     if (aiEnabled) return [ROUTE_VIEW_ALL, ...timelineList]
@@ -199,7 +199,7 @@ const ApronNodeContainer: FC = () => {
 const SwipeWrapper: FC<{ active: string; children: React.JSX.Element[] }> = memo(
   ({ children, active }) => {
     const reduceMotion = useReduceMotion()
-    const timelineList = useTimelineList()
+    const timelineList = useTimelineList({ ordered: true, visible: true })
     const aiEnabled = useFeature("ai")
     const allTimelineList = useMemo(() => {
       if (aiEnabled) return [ROUTE_VIEW_ALL, ...timelineList]
@@ -208,20 +208,9 @@ const SwipeWrapper: FC<{ active: string; children: React.JSX.Element[] }> = memo
     const viewIndex = allTimelineList.indexOf(active)
 
     const feedColumnWidth = useUISettingKey("feedColWidth")
-    const timelineTabs = useUISettingKey("timelineTabs")
     const containerRef = useRef<HTMLDivElement>(null)
 
-    // Use custom ordering for direction calculation
-    const orderedForDirection = useMemo(() => {
-      if (allTimelineList.length === 0) return [] as string[]
-      const first = allTimelineList[0]
-      const rest = allTimelineList.slice(1)
-      const savedVisible = (timelineTabs?.visible ?? []).filter((id) => rest.includes(id))
-      const ordered = [first, ...savedVisible, ...rest.filter((id) => !savedVisible.includes(id))]
-      return ordered
-    }, [allTimelineList, timelineTabs])
-
-    const orderIndex = orderedForDirection.indexOf(active)
+    const orderIndex = timelineList.indexOf(active)
 
     const prevOrderIndexRef = useRef(-1)
     const [isReady, setIsReady] = useState(false)
@@ -271,8 +260,7 @@ const SwipeWrapper: FC<{ active: string; children: React.JSX.Element[] }> = memo
 
 const TabsRow: FC = () => {
   const aiEnabled = useFeature("ai")
-  const timelineList = useTimelineList()
-  const timelineTabs = useUISettingKey("timelineTabs")
+  const timelineList = useTimelineList({ ordered: true, visible: true })
 
   if (!aiEnabled) {
     return (
@@ -288,13 +276,6 @@ const TabsRow: FC = () => {
     )
   }
 
-  const savedVisible = (timelineTabs?.visible ?? []).filter((id) => timelineList.includes(id))
-  const visible: string[] = [...savedVisible]
-  for (const id of timelineList) {
-    if (visible.length >= 5) break
-    if (!visible.includes(id)) visible.push(id)
-  }
-
   return (
     <div className="text-text-secondary flex h-11 items-center px-1 text-xl">
       <SubscriptionTabButton
@@ -302,7 +283,7 @@ const TabsRow: FC = () => {
         key={ROUTE_VIEW_ALL}
         timelineId={ROUTE_VIEW_ALL}
       />
-      {visible.map((timelineId, index) => (
+      {timelineList.map((timelineId, index) => (
         <SubscriptionTabButton key={timelineId} timelineId={timelineId} shortcut={`${index + 1}`} />
       ))}
     </div>

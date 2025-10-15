@@ -22,7 +22,7 @@ import type { CSSProperties, ReactNode } from "react"
 import { useCallback, useMemo } from "react"
 import { useTranslation } from "react-i18next"
 
-import { setUISetting, useUISettingKey } from "~/atoms/settings/ui"
+import { setUISetting } from "~/atoms/settings/ui"
 import { useModalStack } from "~/components/ui/modal/stacked/hooks"
 import { ROUTE_TIMELINE_OF_VIEW } from "~/constants"
 import { useTimelineList } from "~/hooks/biz/useTimelineList"
@@ -88,20 +88,10 @@ function SortableTabItem({ id }: { id: UniqueIdentifier }) {
 }
 
 function useResolvedTimelineTabs() {
-  const timelineTabs = useUISettingKey("timelineTabs")
-  const timelineList = useTimelineList()
+  const timelineList = useTimelineList({ ordered: true, visible: true })
+  const timelineListHidden = useTimelineList({ ordered: true, hidden: true })
 
-  // Resolve visible: keep saved order, ensure they exist in rest, cap at MAX_VISIBLE
-  const savedVisible = (timelineTabs?.visible ?? []).filter((id) => timelineList.includes(id))
-  const filledVisible = [...savedVisible]
-  for (const id of timelineList) {
-    if (filledVisible.length >= MAX_VISIBLE) break
-    if (!filledVisible.includes(id)) filledVisible.push(id)
-  }
-
-  const hidden = timelineList.filter((id) => !filledVisible.includes(id))
-
-  return { visible: filledVisible, hidden }
+  return { visible: timelineList, hidden: timelineListHidden }
 }
 
 const TimelineTabsSettings = () => {
