@@ -252,6 +252,7 @@
   "timeline_summary.error": "暂时无法生成时间线总结。",
   "timeline_summary.generating": "正在生成时间线总结...",
   "timeline_summary.heading": "时间线有什么新内容",
+  "timeline_summary.options.include": "与时间线总结聊天",
   "token_usage.description": "监控您的AI令牌消耗和限制",
   "token_usage.resets_at": "重置时间",
   "token_usage.title": "令牌使用情况",

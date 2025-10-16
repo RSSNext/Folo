@@ -179,10 +179,7 @@ export const ChatInput = memo(
                       size="sm"
                       onCheckedChange={(v) => setReuseSummary(!!v)}
                     />
-                    <span>
-                      {t("timeline_summary.ask_option")}{" "}
-                      <span className="text-text">{t("timeline_summary.heading")}</span>
-                    </span>
+                    <span>{t("timeline_summary.options.include")}</span>
                   </label>
                 )}
                 <AIModelIndicator className="-mr-1.5 ml-1 translate-y-[2px] self-start" />

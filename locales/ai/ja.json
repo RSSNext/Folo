@@ -224,6 +224,7 @@
   "timeline_summary.error": "現在タイムラインの概要を生成できません。",
   "timeline_summary.generating": "タイムラインを要約しています...",
   "timeline_summary.heading": "タイムラインに新しい内容はありますか",
+  "timeline_summary.options.include": "タイムライン要約でチャット",
   "usage_analysis.active_session": "アクティブセッション",
   "usage_analysis.current_usage": "現在の使用状況",
   "usage_analysis.detailed_description": "AI使用パターンとインサイトの包括的概要",
