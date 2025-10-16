@@ -3,7 +3,6 @@ import { FeedViewType } from "@follow-app/client-sdk"
 import { memo, useCallback, useEffect, useRef } from "react"
 
 import { useGeneralSettingKey } from "~/atoms/settings/general"
-import { DropdownMenu, DropdownMenuTrigger } from "~/components/ui/dropdown-menu/dropdown-menu"
 import { useRouteParamsSelector } from "~/hooks/biz/useRouteParams"
 import { useDisplayBlocks } from "~/modules/ai-chat/hooks/useDisplayBlocks"
 import { useFileUploadWithDefaults } from "~/modules/ai-chat/hooks/useFileUpload"
@@ -13,7 +12,6 @@ import { SUPPORTED_MIME_ACCEPT } from "~/modules/ai-chat/utils/file-validation"
 import { useBlockActions } from "../../store/hooks"
 import { BlockSliceAction } from "../../store/slices/block.slice"
 import { CombinedContextBlock, ContextBlock } from "../context-bar/blocks"
-import { ContextMenuContent } from "../context-bar/menus"
 
 export const AIChatContextBar: Component = memo(({ className }) => {
   const blocks = useAIChatStore()((s) => s.blocks)
@@ -87,19 +85,6 @@ export const AIChatContextBar: Component = memo(({ className }) => {
 
   return (
     <div className={cn("flex flex-wrap items-center gap-2 px-4 py-3", className)}>
-      {/* Add Context Button */}
-      <DropdownMenu>
-        <DropdownMenuTrigger asChild>
-          <button
-            type="button"
-            className="bg-material-medium hover:bg-material-thin border-border text-text-secondary hover:text-text-secondary flex size-7 items-center justify-center rounded-md border transition-colors"
-          >
-            <i className="i-mgc-at-cute-re size-3.5" />
-          </button>
-        </DropdownMenuTrigger>
-        <ContextMenuContent />
-      </DropdownMenu>
-
       {/* File Upload Button */}
       <button
         type="button"

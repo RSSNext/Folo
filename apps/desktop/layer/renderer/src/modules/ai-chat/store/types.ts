@@ -20,7 +20,7 @@ interface BaseContextBlock {
 }
 
 export interface ValueContextBlock extends BaseContextBlock {
-  type: "mainView" | "mainEntry" | "mainFeed" | "referEntry" | "selectedText" | "unreadOnly"
+  type: "mainView" | "mainEntry" | "mainFeed" | "selectedText" | "unreadOnly"
   value: string
 }
 

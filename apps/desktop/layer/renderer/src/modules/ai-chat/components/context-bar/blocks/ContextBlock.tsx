@@ -140,9 +140,6 @@ export const ContextBlock: FC<{ block: AIChatContextBlock }> = memo(({ block }) 
       case "mainEntry": {
         return "i-mgc-star-cute-fi"
       }
-      case "referEntry": {
-        return "i-mgc-paper-cute-fi"
-      }
       case "mainFeed": {
         return "i-mgc-rss-cute-fi"
       }
@@ -176,8 +173,7 @@ export const ContextBlock: FC<{ block: AIChatContextBlock }> = memo(({ block }) 
         const viewName = getView(Number(block.value))?.name
         return viewName ? t(viewName) : block.value
       }
-      case "mainEntry":
-      case "referEntry": {
+      case "mainEntry": {
         return <EntryTitle entryId={block.value} fallback={block.value} />
       }
       case "mainFeed": {
@@ -278,9 +274,6 @@ export const ContextBlock: FC<{ block: AIChatContextBlock }> = memo(({ block }) 
       }
       case "mainFeed": {
         return "Current"
-      }
-      case "referEntry": {
-        return "Ref"
       }
       case "selectedText": {
         return "Text"

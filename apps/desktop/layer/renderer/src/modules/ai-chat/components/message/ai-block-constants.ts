@@ -20,11 +20,6 @@ export const BLOCK_STYLES = {
     icon: "bg-orange/10 text-orange",
     label: "text-orange",
   },
-  referEntry: {
-    container: "from-blue/5 to-blue/10 border-blue/20 hover:border-blue/30",
-    icon: "bg-blue/10 text-blue",
-    label: "text-blue",
-  },
   selectedText: {
     container: "from-purple/5 to-purple/10 border-purple/20 hover:border-purple/30",
     icon: "bg-purple/10 text-purple",
@@ -57,7 +52,6 @@ export const DEFAULT_BLOCK_STYLES = {
 export const BLOCK_ICONS = {
   mainEntry: "i-mgc-star-cute-fi",
   mainFeed: "i-mgc-rss-cute-fi",
-  referEntry: "i-mgc-paper-cute-fi",
   selectedText: "i-mgc-quill-pen-cute-re",
   fileAttachment: "i-mgc-file-upload-cute-re",
   unreadOnly: "i-mgc-round-cute-fi",
@@ -69,7 +63,6 @@ export const BLOCK_ICONS = {
 export const BLOCK_LABELS = {
   mainEntry: "Current",
   mainFeed: "Current",
-  referEntry: "Ref",
   selectedText: "Text",
   fileAttachment: "File",
   mainView: "View",

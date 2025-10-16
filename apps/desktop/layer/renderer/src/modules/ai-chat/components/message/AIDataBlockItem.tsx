@@ -39,8 +39,7 @@ const getDisplayContent = (block: AIChatContextBlock): React.ReactNode => {
       const viewName = getView(Number(block.value))?.name
       return viewName ? t(viewName, { ns: "common" }) : block.value
     }
-    case "mainEntry":
-    case "referEntry": {
+    case "mainEntry": {
       return <EntryTitle entryId={block.value} fallback={block.value} />
     }
     case "mainFeed": {
