@@ -204,15 +204,6 @@ class AIPersistServiceStatic {
       const referenceDate = timestamps?.updatedAt ?? timestamps?.createdAt ?? new Date()
       const formattedDateTime = this.formatDateTime(referenceDate, i18n.language)
 
-      const translatedTitle = i18n.t("ai:chat.history.auto_title", {
-        datetime: formattedDateTime,
-        defaultValue: `${formattedDateTime} chat`,
-      })
-
-      if (typeof translatedTitle === "string" && translatedTitle.length > 0) {
-        return translatedTitle
-      }
-
       return `${formattedDateTime} chat`
     }
 
@@ -233,15 +224,6 @@ class AIPersistServiceStatic {
     }
 
     const formattedDateTime = this.formatDateTime(targetDate, i18n.language)
-
-    const translatedTitle = i18n.t("ai:timeline.summary.title_template", {
-      datetime: formattedDateTime,
-      defaultValue: `${formattedDateTime} timeline summary`,
-    })
-
-    if (typeof translatedTitle === "string" && translatedTitle.length > 0) {
-      return translatedTitle
-    }
 
     return `${formattedDateTime} timeline summary`
   }
