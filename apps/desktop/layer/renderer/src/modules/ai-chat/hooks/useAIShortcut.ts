@@ -2,7 +2,12 @@ import { useGlobalFocusableScopeSelector } from "@follow/components/common/Focus
 import { useEffect } from "react"
 import { tinykeys } from "tinykeys"
 
-import { setAIPanelVisibility } from "~/atoms/settings/ai"
+import {
+  AIChatPanelStyle,
+  getAIPanelVisibility,
+  getAISettings,
+  setAIPanelVisibility,
+} from "~/atoms/settings/ai"
 import { FocusablePresets } from "~/components/common/Focusable"
 
 import { useChatActions } from "../store/hooks"
@@ -20,9 +25,11 @@ export const useAIShortcut = () => {
         chatActions.newChat()
       },
       "$mod+w": (e) => {
-        e.preventDefault()
-        // close AI chat
-        setAIPanelVisibility(false)
+        if (getAISettings().panelStyle === AIChatPanelStyle.Floating && getAIPanelVisibility()) {
+          e.preventDefault()
+          // close AI chat
+          setAIPanelVisibility(false)
+        }
       },
     })
   }, [chatActions, isFocus])
