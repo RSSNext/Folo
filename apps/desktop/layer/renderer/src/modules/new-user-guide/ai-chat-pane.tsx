@@ -434,6 +434,11 @@ function AIChatInterface({ inputRef }: AIChatInterfaceProps) {
   const messages = useMessages()
   const setStep = useSetAtom(stepAtom)
 
+  const hasFeedsSelection = messages.some((msg) =>
+    // @ts-expect-error TODO: fix this after version published
+    msg.parts.some((p) => p.type === "tool-onboardingGetTrendingFeeds" && p.output),
+  )
+
   return (
     <div className="flex h-full flex-1 flex-col" ref={scrollContainerParentRef}>
       <ScrollArea
@@ -463,13 +468,16 @@ function AIChatInterface({ inputRef }: AIChatInterfaceProps) {
           <Messages contentRef={messagesContentRef as RefObject<HTMLDivElement>} />
 
           {/* if the last message is from ai, show "Next Step" button */}
-          {messages.length > 0 && messages.at(-1)?.role === "assistant" && status === "ready" && (
-            <div>
-              <Button onClick={() => setStep("pre-finish")}>
-                {t.app("new_user_guide.actions.next")}
-              </Button>
-            </div>
-          )}
+          {messages.length > 0 &&
+            messages.at(-1)?.role === "assistant" &&
+            status === "ready" &&
+            hasFeedsSelection && (
+              <div>
+                <Button onClick={() => setStep("pre-finish")}>
+                  {t.app("new_user_guide.actions.next")}
+                </Button>
+              </div>
+            )}
 
           {(status === "submitted" || status === "streaming") && <AIChatWaitingIndicator />}
         </div>
