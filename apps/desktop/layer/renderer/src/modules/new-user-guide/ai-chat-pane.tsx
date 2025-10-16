@@ -92,7 +92,7 @@ function pickSuggestionKeys(previous?: readonly SuggestionKey[]): SuggestionKey[
 
 export function AIChatPane() {
   return (
-    <div className="flex h-full flex-col justify-between gap-8 overflow-hidden bg-[#0f0f0f] p-2 text-white lg:col-span-6">
+    <div className="bg-background flex h-full flex-col justify-between gap-8 overflow-hidden p-2 lg:col-span-6">
       <AIChatPaneImpl />
     </div>
   )
@@ -205,10 +205,7 @@ function Welcome({ onSuggestionClick }: WelcomeProps) {
                 key={suggestionKey}
                 onClick={() => onClickSuggestion(suggestionText)}
                 animationDelay={index * 0.05}
-                className={cn(
-                  "font-normal text-black shadow-[0_12px_30px_rgba(15,15,15,0.35)] hover:text-black",
-                  gradientByIndex(index),
-                )}
+                className={cn("font-normal text-black", gradientByIndex(index))}
               >
                 {suggestionText}
               </AIShortcutButton>
