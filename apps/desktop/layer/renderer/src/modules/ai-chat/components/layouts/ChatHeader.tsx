@@ -22,7 +22,6 @@ const ChatHeaderLayout = ({
     onNewChatClick: () => void
     currentTitle: string | undefined
     displayTitle: string | undefined
-    onSaveTitle: (newTitle: string) => Promise<void>
   }) => ReactNode
 }) => {
   const currentTitle = useCurrentTitle()
@@ -42,13 +41,6 @@ const ChatHeaderLayout = ({
     chatActions.newChat()
     blockActions.clearBlocks({ keepSpecialTypes: true })
   }, [chatActions, blockActions])
-
-  const handleTitleSave = useCallback(
-    async (newTitle: string) => {
-      await chatActions.editChatTitle(newTitle)
-    },
-    [chatActions],
-  )
 
   const isFloating = useAIChatPanelStyle() === AIChatPanelStyle.Floating
 
@@ -73,11 +65,11 @@ const ChatHeaderLayout = ({
         )}
 
         <div className="relative z-10 flex h-full items-center justify-between px-4">
-          <div className="mr-2 flex min-w-0 flex-1 items-center">
-            <EditableTitle
-              title={displayTitle}
-              onSave={handleTitleSave}
-              placeholder={t("common.new_chat")}
+          <div className="mr-2 flex min-w-0 items-center">
+            <ChatHistoryDropdown
+              triggerElement={
+                <EditableTitle title={displayTitle} placeholder={t("common.new_chat")} />
+              }
             />
           </div>
 
@@ -87,7 +79,6 @@ const ChatHeaderLayout = ({
               onNewChatClick: handleNewChatClick,
               currentTitle,
               displayTitle,
-              onSaveTitle: handleTitleSave,
             })}
           </div>
         </div>
@@ -107,8 +98,6 @@ export const ChatHeader = () => {
           <ActionButton tooltip={t("common.new_chat")} onClick={onNewChatClick}>
             <i className="i-mgc-add-cute-re text-text-secondary size-5" />
           </ActionButton>
-
-          <ChatHistoryDropdown />
 
           <TaskReportDropdown />
 
@@ -144,8 +133,6 @@ export const ChatPageHeader = () => {
           <ActionButton tooltip={t("common.new_chat")} onClick={onNewChatClick}>
             <i className="i-mgc-add-cute-re text-text-secondary size-5" />
           </ActionButton>
-
-          <ChatHistoryDropdown />
 
           <TaskReportDropdown />
 
