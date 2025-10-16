@@ -4,6 +4,9 @@ import type { AiChatMessagesModel } from "@follow/database/schemas/index"
 import { aiChatMessagesTable, aiChatTable } from "@follow/database/schemas/index"
 import { asc, count, eq, inArray, sql } from "drizzle-orm"
 
+import { getI18n } from "~/i18n"
+
+import { AI_CHAT_SPECIAL_ID_PREFIX } from "../constants"
 import type { BizUIMessage, BizUIMessagePart } from "../store/types"
 import { isDataBlockPart, isFileAttachmentBlock } from "../utils/extractor"
 
@@ -76,12 +79,23 @@ class AIPersistServiceStatic {
     ])
 
     // Convert null title to undefined for type compatibility
-    const session = sessionRaw
-      ? {
-          ...sessionRaw,
-          title: sessionRaw.title || undefined,
-        }
-      : null
+    if (!sessionRaw) {
+      return { session: null, messages }
+    }
+
+    const resolvedTitle = this.resolveSessionTitle(sessionRaw.chatId, sessionRaw.title, {
+      createdAt: sessionRaw.createdAt,
+      updatedAt: sessionRaw.updatedAt,
+    })
+
+    if (resolvedTitle && sessionRaw.title !== resolvedTitle) {
+      await this.updateSessionTitle(sessionRaw.chatId, resolvedTitle)
+    }
+
+    const session = {
+      ...sessionRaw,
+      title: resolvedTitle ?? undefined,
+    }
 
     return { session, messages }
   }
@@ -166,6 +180,96 @@ class AIPersistServiceStatic {
       .where(eq(aiChatMessagesTable.chatId, chatId) && inArray(aiChatMessagesTable.id, messageIds))
   }
 
+  private resolveSessionTitle(
+    chatId: string,
+    title?: string | null,
+    timestamps?: { createdAt?: Date; updatedAt?: Date },
+  ): string | undefined {
+    const trimmed = title?.trim()
+    if (trimmed) {
+      return trimmed
+    }
+
+    return this.getDefaultSessionTitle(chatId, timestamps)
+  }
+
+  private getDefaultSessionTitle(
+    chatId: string,
+    timestamps?: { createdAt?: Date; updatedAt?: Date },
+  ): string | undefined {
+    const i18n = getI18n()
+    const prefix = AI_CHAT_SPECIAL_ID_PREFIX.TIMELINE_SUMMARY
+
+    if (!chatId.startsWith(prefix)) {
+      const referenceDate = timestamps?.updatedAt ?? timestamps?.createdAt ?? new Date()
+      const formattedDateTime = this.formatDateTime(referenceDate, i18n.language)
+
+      const translatedTitle = i18n.t("ai:chat.history.auto_title", {
+        datetime: formattedDateTime,
+        defaultValue: `${formattedDateTime} chat`,
+      })
+
+      if (typeof translatedTitle === "string" && translatedTitle.length > 0) {
+        return translatedTitle
+      }
+
+      return `${formattedDateTime} chat`
+    }
+
+    const datePart = chatId.slice(prefix.length)
+    const [yearStr, monthStr, dayStr] = datePart.split("-")
+
+    const now = new Date()
+    const year = Number.parseInt(yearStr ?? "", 10)
+    const month = Number.parseInt(monthStr ?? "", 10)
+    const day = Number.parseInt(dayStr ?? "", 10)
+
+    let targetDate = new Date(now)
+    if (!Number.isNaN(year) && !Number.isNaN(month) && !Number.isNaN(day)) {
+      const parsedDate = new Date(year, month - 1, day, now.getHours(), now.getMinutes())
+      if (!Number.isNaN(parsedDate.getTime())) {
+        targetDate = parsedDate
+      }
+    }
+
+    const formattedDateTime = this.formatDateTime(targetDate, i18n.language)
+
+    const translatedTitle = i18n.t("ai:timeline.summary.title_template", {
+      datetime: formattedDateTime,
+      defaultValue: `${formattedDateTime} timeline summary`,
+    })
+
+    if (typeof translatedTitle === "string" && translatedTitle.length > 0) {
+      return translatedTitle
+    }
+
+    return `${formattedDateTime} timeline summary`
+  }
+
+  private formatDateTime(date: Date, locale?: string): string {
+    try {
+      const resolvedLocale = locale && locale.length > 0 ? locale : undefined
+      const timeFormatter = new Intl.DateTimeFormat(resolvedLocale, {
+        hour: "numeric",
+      })
+      const dateFormatter = new Intl.DateTimeFormat(resolvedLocale, {
+        dateStyle: "medium",
+      })
+
+      const formattedTime = timeFormatter.format(date)
+      const formattedDate = dateFormatter.format(date)
+
+      return `${formattedTime} ${formattedDate}`
+    } catch {
+      const pad = (value: number) => value.toString().padStart(2, "0")
+      const year = date.getFullYear()
+      const month = pad(date.getMonth() + 1)
+      const day = pad(date.getDate())
+      const hours = pad(date.getHours())
+      return `${hours} ${year}-${month}-${day}`
+    }
+  }
+
   /**
    * Ensure session exists (idempotent operation)
    */
@@ -183,6 +287,16 @@ class AIPersistServiceStatic {
 
       if (existing) {
         this.markSessionExists(chatId, true)
+        const hasExistingTitle = existing.title?.trim().length
+        if (!hasExistingTitle) {
+          const resolvedTitle = this.resolveSessionTitle(chatId, title ?? existing.title, {
+            createdAt: existing.createdAt,
+            updatedAt: existing.updatedAt,
+          })
+          if (resolvedTitle) {
+            await this.updateSessionTitle(chatId, resolvedTitle)
+          }
+        }
         return
       }
 
@@ -199,7 +313,7 @@ class AIPersistServiceStatic {
     const now = new Date()
     await db.insert(aiChatTable).values({
       chatId,
-      title,
+      title: this.resolveSessionTitle(chatId, title, { createdAt: now, updatedAt: now }),
       createdAt: now,
       updatedAt: now,
     })
@@ -248,7 +362,25 @@ class AIPersistServiceStatic {
 
     const messageCountMap = new Map(messageCounts.map((item) => [item.chatId, item.messageCount]))
 
-    return chats
+    const normalizedChats = await Promise.all(
+      chats.map(async (chat) => {
+        const resolvedTitle = this.resolveSessionTitle(chat.chatId, chat.title, {
+          createdAt: chat.createdAt,
+          updatedAt: chat.updatedAt,
+        })
+
+        if (resolvedTitle && chat.title !== resolvedTitle) {
+          await this.updateSessionTitle(chat.chatId, resolvedTitle)
+        }
+
+        return {
+          ...chat,
+          title: resolvedTitle ?? chat.title ?? undefined,
+        }
+      }),
+    )
+
+    return normalizedChats
       .map((chat) => ({
         chatId: chat.chatId,
         title: chat.title,
