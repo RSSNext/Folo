@@ -8,11 +8,11 @@ import { nextFrame } from "@follow/utils"
 import { cn } from "@follow/utils/utils"
 import { AnimatePresence } from "framer-motion"
 import { useSetAtom } from "jotai"
-import type { EditorState, LexicalEditor } from "lexical"
-import { $getRoot, $getSelection, $isRangeSelection } from "lexical"
+import type { EditorState } from "lexical"
+import { $getRoot, $getSelection, $isRangeSelection, createEditor } from "lexical"
 import { nanoid } from "nanoid"
 import type { RefObject } from "react"
-import { Fragment, useEffect, useLayoutEffect, useRef, useState } from "react"
+import { Fragment, useEffect, useLayoutEffect, useMemo, useRef, useState } from "react"
 import { useEventCallback } from "usehooks-ts"
 
 import { useI18n } from "~/hooks/common"
@@ -30,10 +30,14 @@ import {
   useMessages,
 } from "~/modules/ai-chat/store/hooks"
 import type { AIChatContextBlock, BizUIMessage } from "~/modules/ai-chat/store/types"
-import { convertLexicalToMarkdown } from "~/modules/ai-chat/utils/lexical-markdown"
+import {
+  convertLexicalToMarkdown,
+  getEditorStateJSONString,
+} from "~/modules/ai-chat/utils/lexical-markdown"
 
 import { CollapsibleError } from "../ai-chat/components/layouts/CollapsibleError"
 import { AIChatWaitingIndicator } from "../ai-chat/components/message/AIChatMessage"
+import { LexicalAIEditorNodes } from "../ai-chat/editor"
 import { stepAtom } from "./store"
 
 const SUGGESTION_KEYS = [
@@ -332,66 +336,74 @@ function AIChatInterface({ inputRef }: AIChatInterfaceProps) {
     })
   })
 
-  const handleSendMessage = useEventCallback(
-    (message: string | EditorState, editor: LexicalEditor | null) => {
-      resetScrollState()
+  const staticEditor = useMemo(() => {
+    return createEditor({
+      nodes: LexicalAIEditorNodes,
+    })
+  }, [])
 
-      const blocks = [] as AIChatContextBlock[]
+  const handleSendMessage = useEventCallback((message: string | EditorState) => {
+    resetScrollState()
 
-      for (const block of blockActions.getBlocks()) {
-        if (block.type === "fileAttachment" && block.attachment.serverUrl) {
-          blocks.push({
-            ...block,
-            attachment: {
-              id: block.attachment.id,
-              name: block.attachment.name,
-              type: block.attachment.type,
-              size: block.attachment.size,
-              serverUrl: block.attachment.serverUrl,
-            },
-          })
-        } else {
-          blocks.push(block)
-        }
-      }
+    const blocks = [] as AIChatContextBlock[]
 
-      const parts: BizUIMessage["parts"] = [
-        {
-          type: "data-block",
-          data: blocks,
-        },
-      ]
-
-      if (typeof message === "string") {
-        parts.push({
-          type: "text",
-          text: message,
-        })
-      } else if (editor) {
-        parts.push({
-          type: "data-rich-text",
-          data: {
-            state: JSON.stringify(message.toJSON()),
-            text: convertLexicalToMarkdown(editor),
+    for (const block of blockActions.getBlocks()) {
+      if (block.type === "fileAttachment" && block.attachment.serverUrl) {
+        blocks.push({
+          ...block,
+          attachment: {
+            id: block.attachment.id,
+            name: block.attachment.name,
+            type: block.attachment.type,
+            size: block.attachment.size,
+            serverUrl: block.attachment.serverUrl,
           },
         })
+      } else {
+        blocks.push(block)
       }
+    }
 
-      // Capture actual content height (messages container), not including reserved minHeight
-      scrollHeightBeforeSendingRef.current = messagesContentRef.current?.scrollHeight ?? 0
-      chatActions.sendMessage({
-        parts,
-        role: "user",
-        id: nanoid(),
-      })
-      tracker.aiChatMessageSent()
+    const parts: BizUIMessage["parts"] = [
+      {
+        type: "data-block",
+        data: blocks,
+      },
+    ]
 
-      nextFrame(() => {
-        // Calculate and adjust scroll positioning immediately
-        handleScrollPositioning()
+    if (typeof message === "string") {
+      parts.push({
+        type: "data-rich-text",
+        data: {
+          state: getEditorStateJSONString(message),
+          text: message,
+        },
       })
-    },
-  )
+    } else {
+      staticEditor.setEditorState(message)
+      parts.push({
+        type: "data-rich-text",
+        data: {
+          state: JSON.stringify(message.toJSON()),
+          text: convertLexicalToMarkdown(staticEditor),
+        },
+      })
+    }
+
+    // Capture actual content height (messages container), not including reserved minHeight
+    scrollHeightBeforeSendingRef.current = messagesContentRef.current?.scrollHeight ?? 0
+    chatActions.sendMessage({
+      parts,
+      role: "user",
+      id: nanoid(),
+    })
+    tracker.aiChatMessageSent()
+
+    nextFrame(() => {
+      // Calculate and adjust scroll positioning immediately
+      handleScrollPositioning()
+    })
+  })
 
   const [bottomPanelHeight, setBottomPanelHeight] = useState<number>(0)
   const bottomPanelRef = useRef<HTMLDivElement | null>(null)
