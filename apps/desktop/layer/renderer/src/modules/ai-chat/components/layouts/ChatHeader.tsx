@@ -9,6 +9,7 @@ import { AIChatPanelStyle, setAIPanelVisibility, useAIChatPanelStyle } from "~/a
 import { useBlockActions, useChatActions, useCurrentTitle } from "~/modules/ai-chat/store/hooks"
 
 import { useAIRootState } from "../../store/AIChatContext"
+import { ChatHistoryDropdown } from "./ChatHistoryDropdown"
 import { ChatMoreDropdown } from "./ChatMoreDropdown"
 import { EditableTitle } from "./EditableTitle"
 import { TaskReportDropdown } from "./TaskReportDropdown"
@@ -107,6 +108,8 @@ export const ChatHeader = () => {
             <i className="i-mgc-add-cute-re text-text-secondary size-5" />
           </ActionButton>
 
+          <ChatHistoryDropdown />
+
           <TaskReportDropdown />
 
           <ChatMoreDropdown
@@ -141,6 +144,8 @@ export const ChatPageHeader = () => {
           <ActionButton tooltip={t("common.new_chat")} onClick={onNewChatClick}>
             <i className="i-mgc-add-cute-re text-text-secondary size-5" />
           </ActionButton>
+
+          <ChatHistoryDropdown />
 
           <TaskReportDropdown />
 
