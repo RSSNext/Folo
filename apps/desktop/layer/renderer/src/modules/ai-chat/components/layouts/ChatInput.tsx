@@ -5,7 +5,6 @@ import { ScrollArea } from "@follow/components/ui/scroll-area/ScrollArea.js"
 import { cn, nextFrame, stopPropagation } from "@follow/utils"
 import type { VariantProps } from "class-variance-authority"
 import { cva } from "class-variance-authority"
-import { noop } from "es-toolkit"
 import type { EditorState, LexicalEditor } from "lexical"
 import { $getRoot } from "lexical"
 import type { Ref } from "react"
@@ -131,6 +130,7 @@ export const ChatInput = memo(
           void handleSend()
           return true
         }
+
         return false
       },
       [handleSend, isProcessing],
@@ -185,11 +185,7 @@ export const ChatInput = memo(
                     </span>
                   </label>
                 )}
-                <AIModelIndicator
-                  className="-mr-1.5 ml-1 translate-y-[2px] self-start"
-                  // Current not support switch model, will open this feature later
-                  onModelChange={noop}
-                />
+                <AIModelIndicator className="-mr-1.5 ml-1 translate-y-[2px] self-start" />
               </div>
             </div>
           </div>

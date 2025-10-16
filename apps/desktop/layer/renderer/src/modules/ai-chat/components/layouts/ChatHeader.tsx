@@ -11,7 +11,7 @@ import { useBlockActions, useChatActions, useCurrentTitle } from "~/modules/ai-c
 import { useAIRootState } from "../../store/AIChatContext"
 import { ChatHistoryDropdown } from "./ChatHistoryDropdown"
 import { ChatMoreDropdown } from "./ChatMoreDropdown"
-import { EditableTitle } from "./EditableTitle"
+import { AIHeaderTitle } from "./EditableTitle"
 import { TaskReportDropdown } from "./TaskReportDropdown"
 
 // Base header layout with shared logic inside
@@ -68,7 +68,7 @@ const ChatHeaderLayout = ({
           <div className="mr-2 flex min-w-0 items-center">
             <ChatHistoryDropdown
               triggerElement={
-                <EditableTitle title={displayTitle} placeholder={t("common.new_chat")} />
+                <AIHeaderTitle title={displayTitle} placeholder={t("common.new_chat")} />
               }
             />
           </div>

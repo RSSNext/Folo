@@ -23,6 +23,7 @@ import { EntrySubscriptionList } from "~/modules/entry-column/EntrySubscriptionL
 import { EntryContent } from "~/modules/entry-content/components/entry-content"
 import { AIEntryHeader } from "~/modules/entry-content/components/entry-header"
 import { AppLayoutGridContainerProvider } from "~/providers/app-grid-layout-container-provider"
+import { MainViewHotkeysProvider } from "~/providers/main-view-hotkeys-provider"
 
 /**
  * AIEnhancedTimelineLayout Component
@@ -200,6 +201,7 @@ export const AIEnhancedTimelineLayout = memo(function AIEnhancedTimelineLayout()
     <AIChatRoot wrapFocusable={false}>
       <AIEnhancedTimelineLayoutImpl />
       <AIIndicator />
+      <MainViewHotkeysProvider />
     </AIChatRoot>
   )
 })
