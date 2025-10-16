@@ -23,6 +23,8 @@
   "chat.history.auto_title": "{{- datetime}} 聊天",
   "clear_chat": "清空对话",
   "clear_chat_message": "确定要清空所有历史记录吗？此操作将永久删除所有内容，包括所有聊天记录和数据，且无法撤销。",
+  "common.generate_title": "生成标题",
+  "common.generating_title": "正在生成标题...",
   "common.new_chat": "新对话",
   "customize_shortcuts": "自定义快捷方式",
   "customize_shortcuts_title": "自定义 AI 快捷方式",

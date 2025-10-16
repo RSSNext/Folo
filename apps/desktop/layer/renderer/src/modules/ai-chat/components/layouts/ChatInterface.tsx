@@ -38,9 +38,10 @@ import {
 
 import { LexicalAIEditorNodes } from "../../editor"
 import { useAttachScrollBeyond } from "../../hooks/useAttachScrollBeyond"
-import { AIPanelRefsContext } from "../../store/AIChatContext"
-import type { AIChatContextBlock, BizUIMessage } from "../../store/types"
+import { AIPanelRefsContext, useAIChatStore } from "../../store/AIChatContext"
+import type { AIChatContextBlock, BizUIMessage, SendingUIMessage } from "../../store/types"
 import { convertLexicalToMarkdown, getEditorStateJSONString } from "../../utils/lexical-markdown"
+import { generateAndUpdateChatTitle } from "../../utils/titleGeneration"
 import { GlobalFileDropZone } from "../file/GlobalFileDropZone"
 import { AIErrorFallback } from "./AIErrorFallback"
 import { ChatInput } from "./ChatInput"
@@ -181,6 +182,8 @@ const ChatInterfaceContent = ({ centerInputOnEmpty }: ChatInterfaceProps) => {
     })
   }, [])
 
+  const aiStore = useAIChatStore()
+
   const handleSendMessage = useEventCallback((message: string | EditorState) => {
     resetScrollState()
 
@@ -239,13 +242,25 @@ const ChatInterfaceContent = ({ centerInputOnEmpty }: ChatInterfaceProps) => {
 
     // Capture actual content height (messages container), not including reserved minHeight
     scrollHeightBeforeSendingRef.current = messagesContentRef.current?.scrollHeight ?? 0
-    chatActions.sendMessage({
+    const sendMessage: SendingUIMessage = {
       parts,
       role: "user",
       id: nanoid(),
-    })
+    }
+    chatActions.sendMessage(sendMessage)
     tracker.aiChatMessageSent()
+    ;(async () => {
+      const closureChatId = currentChatId
+      if (aiStore.getState().currentTitle) {
+        return
+      }
 
+      await generateAndUpdateChatTitle(closureChatId, [sendMessage], (title) => {
+        if (currentChatId === closureChatId) {
+          chatActions.setCurrentTitle(title)
+        }
+      })
+    })()
     nextFrame(() => {
       // Calculate and adjust scroll positioning immediately
       handleScrollPositioning()

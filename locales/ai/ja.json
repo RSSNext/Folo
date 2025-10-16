@@ -23,6 +23,8 @@
   "chat.history.auto_title": "{{- datetime}} のチャット",
   "clear_chat": "Chat をクリア",
   "clear_chat_message": "本当にすべての履歴をクリアしてもよろしいですか？この操作はすべてのコンテンツ、Chat ログ、データを永久に削除し、元に戻すことはできません。",
+  "common.generate_title": "タイトルを生成",
+  "common.generating_title": "タイトルを生成中...",
   "common.new_chat": "新規チャット",
   "customize_shortcuts": "ショートカットをカスタマイズ",
   "customize_shortcuts_title": "AIショートカットをカスタマイズ",

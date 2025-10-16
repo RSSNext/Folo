@@ -23,6 +23,8 @@
   "chat.history.auto_title": "{{- datetime}} chat",
   "clear_chat": "Clear Chat",
   "clear_chat_message": "Are you sure you want to clear all history? This action will permanently delete all content, including all chat logs and data, and cannot be undone.",
+  "common.generate_title": "Generate Title",
+  "common.generating_title": "Generating title...",
   "common.new_chat": "New Chat",
   "customize_shortcuts": "Customize shortcuts",
   "customize_shortcuts_title": "Customize AI shortcuts",
