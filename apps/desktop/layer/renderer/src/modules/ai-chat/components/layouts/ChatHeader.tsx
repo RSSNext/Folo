@@ -1,17 +1,13 @@
 import { ActionButton } from "@follow/components/ui/button/index.js"
-import { FeedViewType } from "@follow/constants"
 import { cn } from "@follow/utils"
 import { useAtomValue } from "jotai"
 import type { ReactNode } from "react"
-import { useCallback, useMemo } from "react"
-import { getI18n, useTranslation } from "react-i18next"
+import { useCallback } from "react"
+import { useTranslation } from "react-i18next"
 
 import { AIChatPanelStyle, setAIPanelVisibility, useAIChatPanelStyle } from "~/atoms/settings/ai"
-import { ROUTE_ENTRY_PENDING } from "~/constants"
-import { useRouteParamsSelector } from "~/hooks/biz/useRouteParams"
 import { useBlockActions, useChatActions, useCurrentTitle } from "~/modules/ai-chat/store/hooks"
 
-import { useMainEntryId } from "../../hooks/useMainEntryId"
 import { useAIRootState } from "../../store/AIChatContext"
 import { ChatMoreDropdown } from "./ChatMoreDropdown"
 import { EditableTitle } from "./EditableTitle"
@@ -33,28 +29,7 @@ const ChatHeaderLayout = ({
   const blockActions = useBlockActions()
   const { t } = useTranslation("ai")
 
-  const mainEntryId = useMainEntryId()
-  const { view, isAllFeeds, entryId } = useRouteParamsSelector((s) => ({
-    view: s.view,
-    isAllFeeds: s.isAllFeeds,
-    entryId: s.entryId,
-  }))
-  const realEntryId = entryId === ROUTE_ENTRY_PENDING ? "" : entryId
-  const isAllView = view === FeedViewType.All && isAllFeeds && !realEntryId
-  const hasEntryContext = !!mainEntryId
-  const shouldShowTimelineSummary = isAllView && !hasEntryContext
-
-  const timelineSummaryTitle = useMemo(() => {
-    if (!shouldShowTimelineSummary) return
-
-    return t("timeline.summary.title_template", {
-      date: Intl.DateTimeFormat(getI18n().language, {
-        dateStyle: "short",
-      }).format(),
-    })
-  }, [shouldShowTimelineSummary, t])
-
-  const displayTitle = currentTitle || timelineSummaryTitle
+  const displayTitle = currentTitle
 
   const handleNewChatClick = useCallback(() => {
     const messages = chatActions.getMessages()
