@@ -171,7 +171,7 @@ export const ChatInput = memo(
               <div className="min-w-0 flex-1 shrink">
                 <AIChatContextBar className="border-0 bg-transparent p-0" />
               </div>
-              <div className="flex items-center gap-3">
+              <div className="flex items-center gap-3 self-start">
                 {isWelcomeScreen && canReuseTimelineSummary && (
                   <label className="text-text-secondary flex select-none items-center gap-2 text-xs">
                     <Checkbox
@@ -182,7 +182,7 @@ export const ChatInput = memo(
                     <span>{t("timeline_summary.options.include")}</span>
                   </label>
                 )}
-                <AIModelIndicator className="-mr-1.5 ml-1 translate-y-[2px] self-start" />
+                <AIModelIndicator className="-mr-1.5 ml-1 translate-y-[2px]" />
               </div>
             </div>
           </div>

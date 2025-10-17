@@ -21,42 +21,6 @@ export const createChatSlice: (options: {
         messages: [],
         transport: createChatTransport(),
         generateId,
-        // onFinish: async (options) => {
-        //   const { message } = options
-
-        //   // Only trigger title generation for assistant messages (AI responses)
-        //   if (message.role !== "assistant") return
-
-        //   // Get current messages to check if this is the first AI response
-        //   const allMessages = chatInstance.chatState.messages
-
-        //   // Check if we have exactly 2 messages (1 user + 1 assistant = first exchange)
-        //   // Or if we have 2+ messages and this is the first assistant message
-        //   const assistantMessages = allMessages.filter((m) => m.role === "assistant")
-        //   const isFirstAIResponse = assistantMessages.length === 1
-
-        //   if (isFirstAIResponse && allMessages.length >= 2) {
-        //     try {
-        //       // Generate title using the first user message and first AI response
-        //       const firstExchange = allMessages.slice(0, 2)
-
-        //       const title = await generateChatTitle(firstExchange)
-
-        //       if (title && chatId) {
-        //         try {
-        //           await AIPersistService.updateSessionTitle(chatId, title)
-        //           if (get().chatId === chatId) {
-        //             chatActions.setCurrentTitle(title)
-        //           }
-        //         } catch (error) {
-        //           console.error("Failed to update session title:", error)
-        //         }
-        //       }
-        //     } catch (error) {
-        //       console.error("Failed to generate chat title:", error)
-        //     }
-        //   }
-        // },
       },
       set,
     )

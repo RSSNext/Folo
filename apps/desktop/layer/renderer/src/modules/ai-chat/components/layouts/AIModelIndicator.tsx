@@ -61,7 +61,7 @@ export const AIModelIndicator = memo(({ className, onModelChange }: AIModelIndic
   const modelContent = (
     <div
       className={cn(
-        "inline-flex shrink-0 items-center rounded-full border font-medium backdrop-blur-sm transition-colors",
+        "inline-flex shrink-0 items-center rounded-xl border font-medium backdrop-blur-sm transition-colors",
         hasMultipleModels
           ? "hover:bg-material-medium cursor-button"
           : "hover:bg-material-medium/50",
