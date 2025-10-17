@@ -1,5 +1,11 @@
 import { Button } from "@follow/components/ui/button/index.js"
+import {
+  DEFAULT_SUMMARIZE_TIMELINE_PROMPT,
+  DEFAULT_SUMMARIZE_TIMELINE_SHORTCUT_ID,
+  defaultAISettings,
+} from "@follow/shared/settings/defaults"
 import type { AIShortcut } from "@follow/shared/settings/interface"
+import { useEffect } from "react"
 import { useTranslation } from "react-i18next"
 import { toast } from "sonner"
 
@@ -13,6 +19,22 @@ export const AIShortcutsSection = () => {
   const { t } = useTranslation("ai")
   const { shortcuts } = useAISettingValue()
   const { present } = useModalStack()
+
+  useEffect(() => {
+    if (!shortcuts.some((shortcut) => shortcut.id === DEFAULT_SUMMARIZE_TIMELINE_SHORTCUT_ID)) {
+      const defaultSummarizeShortcut = defaultAISettings.shortcuts.find(
+        (shortcut) => shortcut.id === DEFAULT_SUMMARIZE_TIMELINE_SHORTCUT_ID,
+      ) ?? {
+        name: "Summarize",
+        prompt: DEFAULT_SUMMARIZE_TIMELINE_PROMPT,
+        enabled: true,
+        displayTargets: ["list"],
+        id: DEFAULT_SUMMARIZE_TIMELINE_SHORTCUT_ID,
+      }
+
+      setAISetting("shortcuts", [...shortcuts, { ...defaultSummarizeShortcut }])
+    }
+  }, [shortcuts, setAISetting])
 
   const handleAddShortcut = () => {
     present({
