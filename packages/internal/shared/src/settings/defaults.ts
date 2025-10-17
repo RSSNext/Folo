@@ -158,7 +158,24 @@ export const defaultIntegrationSettings: IntegrationSettings = {
 
 export const defaultAISettings: AISettings = {
   personalizePrompt: "",
-  shortcuts: [],
+  shortcuts: [
+    {
+      name: "Summarize",
+      prompt:
+        "Please provide a clear, concise summary of the current context. Begin with a simple answer distilling the main point. Then cover 3-4 main ideas.​ Be concise. Like one sentence for each, max two.",
+      enabled: true,
+      displayTargets: ["list", "entry"],
+      id: "default-summarize",
+    },
+    {
+      name: "Analyze",
+      prompt:
+        "Analyze this content, looking for bias, patterns, trends, connections. Consider the author, the source. Research to fact check, if it seems beneficial. Research the broader setting. Try and think about what someone would want to know here.\n\nIf no content has been provided, ask about the relevant subject matter​​",
+      enabled: true,
+      displayTargets: ["entry"],
+      id: "default-analyze",
+    },
+  ],
 
   // MCP Services
   mcpEnabled: false,
