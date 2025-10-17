@@ -362,7 +362,7 @@ export const MCPServicesSection = () => {
       </div>
 
       {mcpEnabled && (
-        <div className="space-y-4">
+        <>
           <div className="flex items-center justify-between">
             <Label className="text-text text-sm font-medium">
               {t("integration.mcp.services.title")}
@@ -402,24 +402,27 @@ export const MCPServicesSection = () => {
             </div>
           )}
 
-          {mcpServices.map((service) => (
-            <MCPServiceItem
-              key={service.id}
-              service={service}
-              onDelete={handleDeleteService}
-              onRefresh={handleRefreshTools}
-              onEdit={handleEditService}
-              onToggleEnabled={handleToggleEnabled}
-              isDeleting={
-                deleteConnectionMutation.isPending &&
-                deleteConnectionMutation.variables === service.id
-              }
-              isRefreshing={
-                refreshToolsMutation.isPending && refreshToolsMutation.variables?.[0] === service.id
-              }
-            />
-          ))}
-        </div>
+          <div className="!mt-2 space-y-4">
+            {mcpServices.map((service) => (
+              <MCPServiceItem
+                key={service.id}
+                service={service}
+                onDelete={handleDeleteService}
+                onRefresh={handleRefreshTools}
+                onEdit={handleEditService}
+                onToggleEnabled={handleToggleEnabled}
+                isDeleting={
+                  deleteConnectionMutation.isPending &&
+                  deleteConnectionMutation.variables === service.id
+                }
+                isRefreshing={
+                  refreshToolsMutation.isPending &&
+                  refreshToolsMutation.variables?.[0] === service.id
+                }
+              />
+            ))}
+          </div>
+        </>
       )}
     </div>
   )

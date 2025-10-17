@@ -1,4 +1,3 @@
-import { Divider } from "@follow/components/ui/divider/Divider.js"
 import { Label } from "@follow/components/ui/label/index.js"
 import { useTranslation } from "react-i18next"
 
@@ -57,7 +56,7 @@ export const SettingAI = () => {
             value: t("integration.title"),
           },
           MCPServicesSection,
-          <Divider key="task-scheduling-divider" />,
+
           {
             type: "title",
             value: t("tasks.section.title"),

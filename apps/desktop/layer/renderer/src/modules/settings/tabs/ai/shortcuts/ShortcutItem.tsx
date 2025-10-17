@@ -38,7 +38,7 @@ export const ShortcutItem = ({ shortcut, onDelete, onToggle, onEdit }: ShortcutI
   }
 
   return (
-    <div className="hover:bg-material-medium border-border group rounded-lg border p-4 transition-colors">
+    <div className="hover:bg-material-medium border-border group -ml-3 rounded-lg border p-3 transition-colors">
       <div className="flex items-start justify-between">
         <div className="flex-1 space-y-2">
           <div className="flex items-center gap-2">

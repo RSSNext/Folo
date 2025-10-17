@@ -1,10 +1,12 @@
 import { AIShortcutButton } from "@follow/components/ui/ai-shortcut-button/index.js"
 import { DEFAULT_SHORTCUT_TARGETS } from "@follow/shared/settings/interface"
+import { nextFrame } from "@follow/utils"
 import { useCallback, useMemo } from "react"
 import { useTranslation } from "react-i18next"
 
 import { useAISettingValue } from "~/atoms/settings/ai"
 import { useSettingModal } from "~/modules/settings/modal/use-setting-modal-hack"
+import { useCreateAIShortcutModal } from "~/modules/settings/tabs/ai/shortcuts/hooks"
 
 import { useMainEntryId } from "../../hooks/useMainEntryId"
 
@@ -40,9 +42,13 @@ export const ChatShortcutsRow: React.FC<ChatShortcutsRowProps> = ({ onSelect }) 
     return (mainEntryId ? entry : list) ?? []
   }, [aiSettings.shortcuts, mainEntryId])
 
+  const handleAddShortcut = useCreateAIShortcutModal()
   const handleCustomize = useCallback(() => {
     showSettings("ai")
-  }, [showSettings])
+    nextFrame(() => {
+      handleAddShortcut()
+    })
+  }, [handleAddShortcut, showSettings])
 
   return (
     <div className="mb-3 px-1">

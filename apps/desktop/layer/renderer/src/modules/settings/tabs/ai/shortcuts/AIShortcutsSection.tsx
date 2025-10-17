@@ -4,21 +4,18 @@ import {
   DEFAULT_SUMMARIZE_TIMELINE_SHORTCUT_ID,
   defaultAISettings,
 } from "@follow/shared/settings/defaults"
-import type { AIShortcut } from "@follow/shared/settings/interface"
 import { useEffect } from "react"
 import { useTranslation } from "react-i18next"
 import { toast } from "sonner"
 
 import { setAISetting, useAISettingValue } from "~/atoms/settings/ai"
-import { useModalStack } from "~/components/ui/modal/stacked/hooks"
 
+import { useCreateAIShortcutModal, useEditAIShortcutModal } from "./hooks"
 import { ShortcutItem } from "./ShortcutItem"
-import { ShortcutModalContent } from "./ShortcutModalContent"
 
 export const AIShortcutsSection = () => {
   const { t } = useTranslation("ai")
   const { shortcuts } = useAISettingValue()
-  const { present } = useModalStack()
 
   useEffect(() => {
     if (!shortcuts.some((shortcut) => shortcut.id === DEFAULT_SUMMARIZE_TIMELINE_SHORTCUT_ID)) {
@@ -34,50 +31,10 @@ export const AIShortcutsSection = () => {
 
       setAISetting("shortcuts", [...shortcuts, { ...defaultSummarizeShortcut }])
     }
-  }, [shortcuts, setAISetting])
+  }, [shortcuts])
 
-  const handleAddShortcut = () => {
-    present({
-      title: "Add AI Shortcut",
-      content: ({ dismiss }: { dismiss: () => void }) => (
-        <ShortcutModalContent
-          shortcut={null}
-          onSave={(shortcut) => {
-            const newShortcut: AIShortcut = {
-              ...shortcut,
-              id: Date.now().toString(),
-            }
-            setAISetting("shortcuts", [...shortcuts, newShortcut])
-            toast.success(t("shortcuts.added"))
-            dismiss()
-          }}
-          onCancel={dismiss}
-        />
-      ),
-    })
-  }
-
-  const handleEditShortcut = (shortcut: AIShortcut) => {
-    present({
-      title: "Edit AI Shortcut",
-      content: ({ dismiss }: { dismiss: () => void }) => (
-        <ShortcutModalContent
-          shortcut={shortcut}
-          onSave={(updatedShortcut) => {
-            setAISetting(
-              "shortcuts",
-              shortcuts.map((s) =>
-                s.id === shortcut.id ? { ...updatedShortcut, id: shortcut.id } : s,
-              ),
-            )
-            toast.success(t("shortcuts.updated"))
-            dismiss()
-          }}
-          onCancel={dismiss}
-        />
-      ),
-    })
-  }
+  const handleAddShortcut = useCreateAIShortcutModal()
+  const handleEditShortcut = useEditAIShortcutModal()
 
   const handleDeleteShortcut = (id: string) => {
     setAISetting(
