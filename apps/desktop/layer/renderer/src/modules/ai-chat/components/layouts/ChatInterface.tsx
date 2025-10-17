@@ -45,6 +45,7 @@ import { generateAndUpdateChatTitle } from "../../utils/titleGeneration"
 import { GlobalFileDropZone } from "../file/GlobalFileDropZone"
 import { AIErrorFallback } from "./AIErrorFallback"
 import { ChatInput } from "./ChatInput"
+import { ChatShortcutsRow } from "./ChatShortcutsRow"
 import { CollapsibleError } from "./CollapsibleError"
 import { WelcomeScreen } from "./WelcomeScreen"
 
@@ -311,7 +312,7 @@ const ChatInterfaceContent = ({ centerInputOnEmpty }: ChatInterfaceProps) => {
       <div className="flex min-h-0 flex-1 flex-col" ref={scrollContainerParentRef}>
         <AnimatePresence>
           {!hasMessages && !isLoadingHistory ? (
-            <WelcomeScreen onSend={handleSendMessage} centerInputOnEmpty={centerInputOnEmpty} />
+            <WelcomeScreen centerInputOnEmpty={centerInputOnEmpty} />
           ) : (
             <>
               <ScrollArea
@@ -386,6 +387,7 @@ const ChatInterfaceContent = ({ centerInputOnEmpty }: ChatInterfaceProps) => {
         )}
       >
         {error && <CollapsibleError error={error} />}
+        <ChatShortcutsRow onSelect={(prompt) => handleSendMessage(prompt)} />
         <ChatInput
           onSend={handleSendMessage}
           variant={!hasMessages ? "minimal" : "default"}
