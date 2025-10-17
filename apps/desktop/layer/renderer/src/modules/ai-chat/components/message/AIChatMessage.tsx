@@ -1,4 +1,5 @@
 import { createDefaultLexicalEditor } from "@follow/components/ui/lexical-rich-editor/editor.js"
+import { convertLexicalToMarkdown } from "@follow/components/ui/lexical-rich-editor/utils.js"
 import { stopPropagation, thenable } from "@follow/utils"
 import type { LexicalEditor } from "lexical"
 import { m } from "motion/react"
@@ -10,7 +11,6 @@ import { copyToClipboard } from "~/lib/clipboard"
 import type { BizUIMessage } from "~/modules/ai-chat/store/types"
 
 import { MentionPlugin } from "../../editor"
-import { convertLexicalToMarkdown } from "../../utils/lexical-markdown"
 import { AIMessageParts } from "./AIMessageParts"
 import { TokenUsagePill } from "./TokenUsagePill"
 

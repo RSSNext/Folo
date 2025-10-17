@@ -1,15 +1,15 @@
 import { Spring } from "@follow/components/constants/spring.js"
 import { Button } from "@follow/components/ui/button/index.js"
-import { TextArea } from "@follow/components/ui/input/index.js"
 import { Label } from "@follow/components/ui/label/index.jsx"
+import { LexicalRichEditorTextArea } from "@follow/components/ui/lexical-rich-editor/index.js"
 import { AnimatePresence } from "motion/react"
-import * as React from "react"
-import { useState } from "react"
+import { useRef, useState } from "react"
 import { useTranslation } from "react-i18next"
 import { toast } from "sonner"
 
 import { setAISetting, useAISettingValue } from "~/atoms/settings/ai"
 import { m } from "~/components/common/Motion"
+import { MentionPlugin } from "~/modules/ai-chat/editor"
 
 import { SettingDescription } from "../../control"
 import { SettingModalContentPortal } from "../../modal/layout"
@@ -17,18 +17,18 @@ import { SettingModalContentPortal } from "../../modal/layout"
 export const PersonalizePromptSection = () => {
   const { t } = useTranslation("ai")
   const aiSettings = useAISettingValue()
-  const [prompt, setPrompt] = useState(aiSettings.personalizePrompt)
+  const promptRef = useRef("")
   const [isSaving, setIsSaving] = useState(false)
+  const [currentLength, setCurrentLength] = useState(0)
+  const [hasChanges, setHasChanges] = useState(false)
 
   const MAX_CHARACTERS = 500
-  const currentLength = prompt.length
   const isOverLimit = currentLength > MAX_CHARACTERS
-  const hasChanges = prompt !== aiSettings.personalizePrompt
 
-  const handlePromptChange = (e: React.ChangeEvent<HTMLTextAreaElement>) => {
-    const { value } = e.target
-    // Allow typing but show validation error if over limit
-    setPrompt(value)
+  const handleEditorChange = (value: string, textLength: number) => {
+    promptRef.current = value
+    setCurrentLength(textLength)
+    setHasChanges(value !== aiSettings.personalizePrompt)
   }
 
   const handleSave = async () => {
@@ -37,10 +37,13 @@ export const PersonalizePromptSection = () => {
       return
     }
 
+    if (!promptRef.current) return
+
     setIsSaving(true)
     try {
-      setAISetting("personalizePrompt", prompt)
+      setAISetting("personalizePrompt", promptRef.current)
       toast.success(t("personalize.saved"))
+      setHasChanges(false)
     } finally {
       setIsSaving(false)
     }
@@ -51,9 +54,11 @@ export const PersonalizePromptSection = () => {
       <div className="space-y-2">
         <Label className="text-text text-sm font-medium">{t("personalize.prompt.label")}</Label>
         <div className="relative -ml-3">
-          <TextArea
-            value={prompt}
-            onChange={handlePromptChange}
+          <LexicalRichEditorTextArea
+            initialValue={aiSettings.personalizePrompt}
+            onValueChange={handleEditorChange}
+            plugins={[MentionPlugin]}
+            namespace="PersonalizePromptEditor"
             placeholder={t("personalize.prompt.placeholder")}
             className={`min-h-[80px] resize-none text-sm ${
               isOverLimit ? "border-red focus:border-red" : ""

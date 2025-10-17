@@ -6,8 +6,9 @@ import {
   FormItem,
   FormMessage,
 } from "@follow/components/ui/form/index.jsx"
-import { Input, TextArea } from "@follow/components/ui/input/index.js"
+import { Input } from "@follow/components/ui/input/index.js"
 import { Label } from "@follow/components/ui/label/index.jsx"
+import { LexicalRichEditorTextArea } from "@follow/components/ui/lexical-rich-editor/index.js"
 import type { AITask } from "@follow-app/client-sdk"
 import { zodResolver } from "@hookform/resolvers/zod"
 import dayjs from "dayjs"
@@ -17,6 +18,7 @@ import { useTranslation } from "react-i18next"
 import { toast } from "sonner"
 
 import { useCurrentModal } from "~/components/ui/modal/stacked/hooks"
+import { MentionPlugin } from "~/modules/ai-chat/editor"
 import { AIPersistService } from "~/modules/ai-chat/services"
 import { useCreateAITaskMutation, useUpdateAITaskMutation } from "~/modules/ai-task/query"
 import type { ScheduleType, TaskFormData } from "~/modules/ai-task/types"
@@ -223,21 +225,24 @@ export const AITaskModal = ({ task, prompt, showSettingsTip = false }: AITaskMod
                 render={({ field }) => (
                   <FormItem>
                     <FormControl>
-                      <TextArea
-                        placeholder={t("tasks.prompt_placeholder")}
-                        className="min-h-[120px] resize-none px-3 py-2 text-sm leading-relaxed"
-                        maxLength={2000}
-                        {...field}
-                      />
+                      <div className="relative">
+                        <LexicalRichEditorTextArea
+                          initialValue={field.value}
+                          onValueChange={(value, _textLength) => {
+                            field.onChange(value)
+                          }}
+                          plugins={[MentionPlugin]}
+                          namespace="AITaskPromptEditor"
+                          placeholder={t("tasks.prompt_placeholder")}
+                          className="min-h-[120px] resize-none text-sm"
+                        />
+                        {field.value?.length > MAX_PROMPT_LENGTH * 0.8 && (
+                          <div className="text-text-secondary absolute bottom-2 right-2 text-xs font-medium">
+                            {field.value.length}/{MAX_PROMPT_LENGTH}
+                          </div>
+                        )}
+                      </div>
                     </FormControl>
-                    <div className="flex items-center justify-between">
-                      <div className="text-text-tertiary text-xs">{t("tasks.prompt_helper")}</div>
-                      {field.value?.length > MAX_PROMPT_LENGTH * 0.8 && (
-                        <div className="text-text-secondary text-xs font-medium">
-                          {field.value.length}/{MAX_PROMPT_LENGTH}
-                        </div>
-                      )}
-                    </div>
                     <FormMessage />
                   </FormItem>
                 )}
