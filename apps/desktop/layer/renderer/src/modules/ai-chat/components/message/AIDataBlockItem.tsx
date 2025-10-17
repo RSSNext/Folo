@@ -5,15 +5,10 @@ import * as React from "react"
 
 import type { AIChatContextBlock, ValueContextBlock } from "~/modules/ai-chat/store/types"
 
-import {
-  getBlockIcon,
-  getBlockLabel,
-  getBlockStyles,
-  getFileDisplayContent,
-  isImageAttachment,
-} from "./ai-block-constants"
-import { EntryTitle, FeedTitle } from "./BlockTitleComponents"
+import { getBlockStyles } from "./ai-block-constants"
+import { FeedTitle } from "./BlockTitleComponents"
 import { ImageThumbnail } from "./ImageThumbnail"
+import { useContextBlockPresentation } from "./useContextBlockPresentation"
 
 interface AIDataBlockItemProps {
   block: AIChatContextBlock
@@ -33,39 +28,6 @@ interface CombinedDataBlockItemProps {
 /**
  * Gets the display content for a context block
  */
-const getDisplayContent = (block: AIChatContextBlock): React.ReactNode => {
-  switch (block.type) {
-    case "mainView": {
-      const viewName = getView(Number(block.value))?.name
-      return viewName ? t(viewName, { ns: "common" }) : block.value
-    }
-    case "mainEntry": {
-      return <EntryTitle entryId={block.value} fallback={block.value} />
-    }
-    case "mainFeed": {
-      return <FeedTitle feedId={block.value} fallback={block.value} />
-    }
-    case "selectedText": {
-      return `"${block.value}"`
-    }
-    case "unreadOnly": {
-      return "Unread Only"
-    }
-    case "fileAttachment": {
-      if (!block.attachment) {
-        return "[File: Unknown]"
-      }
-      if (block.attachment.name && !block.attachment.uploadStatus) {
-        return block.attachment.name
-      }
-      return getFileDisplayContent(block.attachment)
-    }
-
-    default: {
-      return ""
-    }
-  }
-}
 
 /**
  * Renders the appropriate icon or image thumbnail for a block
@@ -73,19 +35,27 @@ const getDisplayContent = (block: AIChatContextBlock): React.ReactNode => {
 const BlockIcon: React.FC<{
   block: AIChatContextBlock
   styles: ReturnType<typeof getBlockStyles>
-}> = React.memo(({ block, styles }) => {
-  // Handle image thumbnails for file attachments
-  if (block.type === "fileAttachment" && block.attachment && isImageAttachment(block)) {
+  presentation: ReturnType<typeof useContextBlockPresentation>
+}> = React.memo(({ block, styles, presentation }) => {
+  if (
+    block.type === "fileAttachment" &&
+    presentation.attachment &&
+    presentation.isImageAttachment
+  ) {
     return (
       <div
         className={cn("flex size-4 flex-shrink-0 items-center justify-center rounded", styles.icon)}
       >
-        <ImageThumbnail attachment={block.attachment} />
+        <ImageThumbnail attachment={presentation.attachment} />
       </div>
     )
   }
 
-  const iconClass = getBlockIcon(block)
+  const iconClass = presentation.icon
+
+  if (!iconClass) {
+    return null
+  }
 
   return (
     <div
@@ -107,7 +77,8 @@ const BlockContainer: React.FC<{
   label?: string
   displayContent: React.ReactNode
   title?: string
-}> = React.memo(({ styles, block, label, displayContent, title }) => {
+  presentation: ReturnType<typeof useContextBlockPresentation>
+}> = React.memo(({ styles, block, label, displayContent, title, presentation }) => {
   return (
     <div
       key={block.id}
@@ -117,7 +88,7 @@ const BlockContainer: React.FC<{
         styles.container,
       )}
     >
-      <BlockIcon block={block} styles={styles} />
+      <BlockIcon block={block} styles={styles} presentation={presentation} />
 
       {/* Label and content */}
       <div className="flex min-w-0 items-center gap-1">
@@ -145,11 +116,17 @@ BlockContainer.displayName = "BlockContainer"
  */
 export const AIDataBlockItem: React.FC<AIDataBlockItemProps> = React.memo(({ block }) => {
   const styles = React.useMemo(() => getBlockStyles(block.type), [block.type])
-  const label = React.useMemo(() => getBlockLabel(block.type), [block.type])
-  const displayContent = React.useMemo(() => getDisplayContent(block), [block])
+  const presentation = useContextBlockPresentation(block)
 
   return (
-    <BlockContainer styles={styles} block={block} label={label} displayContent={displayContent} />
+    <BlockContainer
+      styles={styles}
+      block={block}
+      label={presentation.label}
+      displayContent={presentation.displayContent}
+      title={presentation.title}
+      presentation={presentation}
+    />
   )
 })
 
@@ -232,8 +209,17 @@ export const CombinedDataBlockItem: React.FC<CombinedDataBlockItemProps> = React
       }
     }, [viewBlock, feedBlock, unreadOnlyBlock])
 
+    const presentation = useContextBlockPresentation(block)
+
     return (
-      <BlockContainer styles={styles} block={block} displayContent={displayContent} title={title} />
+      <BlockContainer
+        styles={styles}
+        block={block}
+        label={presentation.label}
+        displayContent={displayContent}
+        title={title}
+        presentation={presentation}
+      />
     )
   },
 )

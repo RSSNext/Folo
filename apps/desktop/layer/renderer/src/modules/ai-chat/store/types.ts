@@ -19,10 +19,18 @@ interface BaseContextBlock {
   id: string
 }
 
-export interface ValueContextBlock extends BaseContextBlock {
-  type: "mainView" | "mainEntry" | "mainFeed" | "selectedText" | "unreadOnly"
+export type ValueContextBlockType =
+  | "mainView"
+  | "mainEntry"
+  | "mainFeed"
+  | "selectedText"
+  | "unreadOnly"
+export interface AbstractValueContextBlock<T extends string> extends BaseContextBlock {
+  type: T
   value: string
 }
+
+export type ValueContextBlock = AbstractValueContextBlock<ValueContextBlockType>
 
 export interface FileAttachmentContextBlock extends BaseContextBlock {
   type: "fileAttachment"
@@ -35,6 +43,8 @@ export type AIChatContextBlock = ValueContextBlock | FileAttachmentContextBlock
 export type AIChatContextBlockInput =
   | Omit<ValueContextBlock, "id">
   | Omit<FileAttachmentContextBlock, "id">
+
+export type AIChatContextBlockType = AIChatContextBlock["type"]
 
 export interface AIChatStoreInitial {
   blocks: AIChatContextBlock[]
