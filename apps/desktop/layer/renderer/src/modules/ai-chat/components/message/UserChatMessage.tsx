@@ -1,4 +1,5 @@
 import { Spring } from "@follow/components/constants/spring.js"
+import { convertLexicalToMarkdown } from "@follow/components/ui/lexical-rich-editor/utils.js"
 import { stopPropagation, thenable } from "@follow/utils"
 import type { LexicalEditor, SerializedEditorState } from "lexical"
 import { AnimatePresence, m } from "motion/react"
@@ -9,7 +10,6 @@ import { useEditingMessageId, useSetEditingMessageId } from "~/modules/ai-chat/a
 import { useChatActions, useChatScene, useChatStatus } from "~/modules/ai-chat/store/hooks"
 import type { AIChatContextBlock, BizUIMessage } from "~/modules/ai-chat/store/types"
 
-import { convertLexicalToMarkdown } from "../../utils/lexical-markdown"
 import { AIDataBlockPart } from "./AIDataBlockPart"
 import { AIMessageIdContext } from "./AIMessageIdContext"
 import { EditableMessage } from "./EditableMessage"

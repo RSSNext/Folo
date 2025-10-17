@@ -1,4 +1,8 @@
 import { useFocusable } from "@follow/components/common/Focusable/hooks.js"
+import {
+  convertLexicalToMarkdown,
+  getEditorStateJSONString,
+} from "@follow/components/ui/lexical-rich-editor/utils.js"
 import { ScrollArea } from "@follow/components/ui/scroll-area/ScrollArea.js"
 import { useElementWidth } from "@follow/hooks"
 import { getCategoryFeedIds } from "@follow/store/subscription/getter"
@@ -40,7 +44,6 @@ import { LexicalAIEditorNodes } from "../../editor"
 import { useAttachScrollBeyond } from "../../hooks/useAttachScrollBeyond"
 import { AIPanelRefsContext, useAIChatStore } from "../../store/AIChatContext"
 import type { AIChatContextBlock, BizUIMessage, SendingUIMessage } from "../../store/types"
-import { convertLexicalToMarkdown, getEditorStateJSONString } from "../../utils/lexical-markdown"
 import { generateAndUpdateChatTitle } from "../../utils/titleGeneration"
 import { GlobalFileDropZone } from "../file/GlobalFileDropZone"
 import { AIErrorFallback } from "./AIErrorFallback"

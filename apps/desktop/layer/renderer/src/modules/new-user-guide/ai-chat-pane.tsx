@@ -2,6 +2,10 @@ import { Logo } from "@follow/components/icons/logo.jsx"
 import { AIShortcutButton } from "@follow/components/ui/ai-shortcut-button/index.js"
 import { Button } from "@follow/components/ui/button/index.js"
 import type { LexicalRichEditorRef } from "@follow/components/ui/lexical-rich-editor/index.js"
+import {
+  convertLexicalToMarkdown,
+  getEditorStateJSONString,
+} from "@follow/components/ui/lexical-rich-editor/utils.js"
 import { ScrollArea } from "@follow/components/ui/scroll-area/ScrollArea.js"
 import { tracker } from "@follow/tracker"
 import { nextFrame } from "@follow/utils"
@@ -30,10 +34,6 @@ import {
   useMessages,
 } from "~/modules/ai-chat/store/hooks"
 import type { AIChatContextBlock, BizUIMessage } from "~/modules/ai-chat/store/types"
-import {
-  convertLexicalToMarkdown,
-  getEditorStateJSONString,
-} from "~/modules/ai-chat/utils/lexical-markdown"
 
 import { CollapsibleError } from "../ai-chat/components/layouts/CollapsibleError"
 import { AIChatWaitingIndicator } from "../ai-chat/components/message/AIChatMessage"

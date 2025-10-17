@@ -1,3 +1,4 @@
+import type { InitialEditorStateType } from "@lexical/react/LexicalComposer"
 import type { EditorState, Klass, LexicalEditor, LexicalNode } from "lexical"
 
 export interface LexicalRichEditorRef {
@@ -23,7 +24,7 @@ export interface LexicalRichEditorProps {
   namespace?: string
   theme?: any
   enabledPlugins?: BuiltInPlugins
-  initalEditorState?: EditorState
+  initalEditorState?: InitialEditorStateType
   plugins?: LexicalPluginFC[]
 }
 export type LexicalPluginFC<T = unknown> = React.FC<T> & {
