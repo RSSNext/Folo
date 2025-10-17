@@ -9,3 +9,8 @@ export const useAIMessageId = () => {
   }
   return ctx
 }
+
+export const useAIMessageOptionalId = () => {
+  const ctx = use(AIMessageIdContext)
+  return ctx
+}
