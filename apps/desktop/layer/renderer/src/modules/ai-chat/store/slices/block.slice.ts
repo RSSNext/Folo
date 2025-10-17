@@ -73,6 +73,22 @@ export class BlockSliceAction {
     )
   }
 
+  toggleBlockDisabled(id: string, disabled?: boolean) {
+    this.set(
+      produce((state: BlockSlice) => {
+        const block = state.blocks.find((block) => block.id === id)
+        if (block) {
+          const nextDisabled = disabled ?? !block.disabled
+
+          if (!nextDisabled) {
+            delete block.disabled
+          } else {
+            block.disabled = true
+          }
+        }
+      }),
+    )
+  }
   updateBlock(id: string, updates: Partial<AIChatContextBlock>) {
     this.set(
       produce((state: BlockSlice) => {

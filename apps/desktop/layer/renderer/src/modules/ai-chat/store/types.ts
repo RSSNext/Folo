@@ -17,6 +17,7 @@ export interface FileAttachment {
 
 interface BaseContextBlock {
   id: string
+  disabled?: boolean
 }
 
 export type ValueContextBlockType =

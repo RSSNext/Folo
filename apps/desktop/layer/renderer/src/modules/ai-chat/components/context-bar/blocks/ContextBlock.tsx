@@ -14,21 +14,30 @@ const BlockContainer: FC<{
   icon: string | null | undefined
   label?: string
   onRemove?: () => void
+  disabled?: boolean
+  onDisableClick?: () => void
   content: ReactNode
-}> = memo(({ icon, label, onRemove, content }) => {
+}> = memo(({ icon, label, onRemove, content, disabled, onDisableClick }) => {
   const isStringContent = typeof content === "string"
 
   return (
     <div
-      className={cn(
+      className={clsx(
         "group relative flex h-7 min-w-0 max-w-[calc(50%-0.5rem)] flex-shrink-0 items-center gap-2 overflow-hidden rounded-lg px-2.5",
         "bg-fill-tertiary border-border border",
+        disabled && "cursor-pointer border-dashed opacity-50",
       )}
+      onClick={() => {
+        if (disabled) {
+          onDisableClick?.()
+        }
+      }}
     >
       <div
         className={clsx(
           "min-w-0",
-          "group-hover:[mask-image:linear-gradient(to_right,black_0%,black_calc(100%-3rem),rgba(0,0,0,0.8)_calc(100%-2rem),rgba(0,0,0,0.3)_calc(100%-1rem),transparent_100%)]",
+          !disabled &&
+            "group-hover:[mask-image:linear-gradient(to_right,black_0%,black_calc(100%-3rem),rgba(0,0,0,0.8)_calc(100%-2rem),rgba(0,0,0,0.3)_calc(100%-1rem),transparent_100%)]",
         )}
       >
         <div className="flex min-w-0 flex-1 items-center gap-1.5">
@@ -45,13 +54,15 @@ const BlockContainer: FC<{
         </div>
       </div>
 
-      <button
-        type="button"
-        onClick={onRemove}
-        className="text-text/90 cursor-button hover:text-text absolute inset-y-0 right-2 flex-shrink-0 opacity-0 transition-all ease-in group-hover:opacity-100"
-      >
-        <i className="i-mgc-close-cute-re size-3" />
-      </button>
+      {onRemove && !disabled && (
+        <button
+          type="button"
+          onClick={onRemove}
+          className="text-text/90 cursor-button hover:text-text absolute inset-y-0 right-2 flex-shrink-0 opacity-0 transition-all ease-in group-hover:opacity-100"
+        >
+          <i className="i-mgc-close-cute-re size-3" />
+        </button>
+      )}
     </div>
   )
 })
@@ -70,10 +81,11 @@ export const CombinedContextBlock: FC<{
   const blockActions = useChatBlockActions()
 
   const viewIcon = viewBlock && getView(Number(viewBlock.value))?.icon.props.className
+  const feedIcon = feedBlock && "i-mgc-rss-cute-fi"
 
   const handleRemove = () => {
-    viewBlock && blockActions.removeBlock(viewBlock.id)
-    feedBlock && blockActions.removeBlock(feedBlock.id)
+    viewBlock && blockActions.toggleBlockDisabled(viewBlock.id, true)
+    feedBlock && blockActions.toggleBlockDisabled(feedBlock.id, true)
     unreadOnlyBlock && blockActions.removeBlock(unreadOnlyBlock.id)
   }
 
@@ -94,7 +106,18 @@ export const CombinedContextBlock: FC<{
     </span>
   )
 
-  return <BlockContainer icon={viewIcon} onRemove={handleRemove} content={displayContent} />
+  return (
+    <BlockContainer
+      icon={viewIcon || feedIcon}
+      disabled={viewBlock?.disabled || feedBlock?.disabled}
+      onRemove={handleRemove}
+      onDisableClick={() => {
+        viewBlock && blockActions.toggleBlockDisabled(viewBlock.id, false)
+        feedBlock && blockActions.toggleBlockDisabled(feedBlock.id, false)
+      }}
+      content={displayContent}
+    />
+  )
 })
 CombinedContextBlock.displayName = "CombinedContextBlock"
 
@@ -107,7 +130,19 @@ export const ContextBlock: FC<{ block: AIChatContextBlock }> = memo(({ block }) 
     <BlockContainer
       icon={icon}
       label={label}
-      onRemove={() => blockActions.removeBlock(block.id)}
+      disabled={block.disabled}
+      onRemove={() => {
+        if (block.type === "mainEntry") {
+          blockActions.toggleBlockDisabled(block.id, true)
+        } else {
+          blockActions.removeBlock(block.id)
+        }
+      }}
+      onDisableClick={() => {
+        if (block.type === "mainEntry") {
+          blockActions.toggleBlockDisabled(block.id, false)
+        }
+      }}
       content={displayContent}
     />
   )

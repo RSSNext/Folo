@@ -221,7 +221,7 @@ const ChatInterfaceContent = ({ centerInputOnEmpty }: ChatInterfaceProps) => {
     const parts: BizUIMessage["parts"] = [
       {
         type: "data-block",
-        data: blocks,
+        data: blocks.filter((block) => !block.disabled),
       },
     ]
 
