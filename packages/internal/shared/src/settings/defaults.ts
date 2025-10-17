@@ -162,7 +162,7 @@ export const defaultAISettings: AISettings = {
     {
       name: "Summarize",
       prompt:
-        "Please provide a clear, concise summary of the current context. Begin with a simple answer distilling the main point. Then cover 3-4 main ideas.​ Be concise. Like one sentence for each, max two.",
+        "Please provide a clear, concise summary of the current context entry/entries. Begin with a simple answer distilling the main point. Then cover 3-4 main ideas.​ Be concise. Like one sentence for each, max two.",
       enabled: true,
       displayTargets: ["list", "entry"],
       id: "default-summarize",
