@@ -57,7 +57,7 @@ export const AIShortcutButton: React.FC<AIShortcutButtonProps> = ({
 
         // Style variants
         variant === "default" && [
-          "hover:bg-material-thick bg-white",
+          "hover:bg-material-thick bg-material-thin",
           "border-border/50 hover:border-border border",
           "text-text hover:text-text",
         ],
