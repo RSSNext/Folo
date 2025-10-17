@@ -131,7 +131,7 @@ export const ShortcutModalContent = ({ shortcut, onSave, onCancel }: ShortcutMod
           value={prompt}
           onChange={(e) => setPrompt(e.target.value)}
           placeholder={t("shortcuts.prompt_placeholder")}
-          className="min-h-[60px] resize-none text-sm"
+          className="min-h-[60px] resize-none p-2 px-3 text-sm"
         />
       </div>
 
@@ -140,6 +140,7 @@ export const ShortcutModalContent = ({ shortcut, onSave, onCancel }: ShortcutMod
         <div className="text-text-secondary flex flex-wrap gap-3 text-xs">
           <label className="flex items-center gap-2">
             <Checkbox
+              size="sm"
               checked={displayTargets.includes("list")}
               onCheckedChange={(value) => handleTargetChange("list", Boolean(value))}
             />
@@ -147,6 +148,7 @@ export const ShortcutModalContent = ({ shortcut, onSave, onCancel }: ShortcutMod
           </label>
           <label className="flex items-center gap-2">
             <Checkbox
+              size="sm"
               checked={displayTargets.includes("entry")}
               onCheckedChange={(value) => handleTargetChange("entry", Boolean(value))}
             />
@@ -158,7 +160,7 @@ export const ShortcutModalContent = ({ shortcut, onSave, onCancel }: ShortcutMod
 
       <div className="flex items-center justify-between">
         <div className="flex items-center gap-2">
-          <Switch checked={enabled} onCheckedChange={setEnabled} />
+          <Switch size="sm" checked={enabled} onCheckedChange={setEnabled} />
           <Label className="text-text text-xs">{t("shortcuts.enabled")}</Label>
         </div>
 
