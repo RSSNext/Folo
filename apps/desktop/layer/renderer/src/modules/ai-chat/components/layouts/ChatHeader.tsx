@@ -11,7 +11,7 @@ import { useBlockActions, useChatActions, useCurrentTitle } from "~/modules/ai-c
 import { useAIRootState } from "../../store/AIChatContext"
 import { ChatHistoryDropdown } from "./ChatHistoryDropdown"
 import { ChatMoreDropdown } from "./ChatMoreDropdown"
-import { AIHeaderTitle } from "./EditableTitle"
+import { AIHeaderTitle } from "./ChatTitle"
 import { TaskReportDropdown } from "./TaskReportDropdown"
 
 // Base header layout with shared logic inside
@@ -96,7 +96,7 @@ export const ChatHeader = () => {
       renderActions={({ onNewChatClick }) => (
         <>
           <ActionButton tooltip={t("common.new_chat")} onClick={onNewChatClick}>
-            <i className="i-mgc-add-cute-re text-text-secondary size-5" />
+            <i className="i-mgc-edit-cute-re text-text-secondary size-5" />
           </ActionButton>
 
           <TaskReportDropdown />
@@ -131,7 +131,7 @@ export const ChatPageHeader = () => {
       renderActions={({ onNewChatClick }) => (
         <>
           <ActionButton tooltip={t("common.new_chat")} onClick={onNewChatClick}>
-            <i className="i-mgc-add-cute-re text-text-secondary size-5" />
+            <i className="i-mgc-edit-cute-re text-text-secondary size-5" />
           </ActionButton>
 
           <TaskReportDropdown />

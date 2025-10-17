@@ -378,8 +378,8 @@ const ChatInterfaceContent = ({ centerInputOnEmpty }: ChatInterfaceProps) => {
         ref={bottomPanelRef}
         className={cn(
           "absolute z-10 mx-auto duration-500 ease-in-out",
-          hasMessages && "inset-x-0 bottom-0 max-w-4xl px-6 pb-6",
-          !hasMessages && "inset-x-0 bottom-0 max-w-3xl px-6 pb-6 duration-200",
+          hasMessages && "inset-x-0 bottom-0 max-w-4xl px-4 pb-4",
+          !hasMessages && "inset-x-0 bottom-0 max-w-3xl px-4 pb-4 duration-200",
           centerInputOnEmpty &&
             !hasMessages &&
             "bottom-1/2 translate-y-[calc(100%+1rem)] duration-200",
@@ -391,9 +391,6 @@ const ChatInterfaceContent = ({ centerInputOnEmpty }: ChatInterfaceProps) => {
           variant={!hasMessages ? "minimal" : "default"}
           isWelcomeScreen={!hasMessages && !isLoadingHistory}
         />
-        <div className="text-text-secondary relative z-[1] -mb-4 mt-2 pl-2 text-xs">
-          AI can make mistakes, please verify critical information.
-        </div>
 
         {(!centerInputOnEmpty || hasMessages) && (
           <div className="absolute inset-x-0 bottom-0 isolate">
