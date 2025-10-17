@@ -225,24 +225,25 @@ export const AITaskModal = ({ task, prompt, showSettingsTip = false }: AITaskMod
                 render={({ field }) => (
                   <FormItem>
                     <FormControl>
-                      <div className="relative">
-                        <LexicalRichEditorTextArea
-                          initialValue={field.value}
-                          onValueChange={(value, _textLength) => {
-                            field.onChange(value)
-                          }}
-                          plugins={[MentionPlugin]}
-                          namespace="AITaskPromptEditor"
-                          placeholder={t("tasks.prompt_placeholder")}
-                          className="min-h-[120px] resize-none text-sm"
-                        />
-                        {field.value?.length > MAX_PROMPT_LENGTH * 0.8 && (
-                          <div className="text-text-secondary absolute bottom-2 right-2 text-xs font-medium">
-                            {field.value.length}/{MAX_PROMPT_LENGTH}
-                          </div>
-                        )}
-                      </div>
+                      <LexicalRichEditorTextArea
+                        initialValue={field.value}
+                        onValueChange={(value, _textLength) => {
+                          field.onChange(value)
+                        }}
+                        plugins={[MentionPlugin]}
+                        namespace="AITaskPromptEditor"
+                        placeholder={t("tasks.prompt_placeholder")}
+                        className="min-h-[120px] resize-none text-sm leading-relaxed"
+                      />
                     </FormControl>
+                    <div className="flex items-center justify-between">
+                      <div className="text-text-tertiary text-xs">{t("tasks.prompt_helper")}</div>
+                      {field.value?.length > MAX_PROMPT_LENGTH * 0.8 && (
+                        <div className="text-text-secondary text-xs font-medium">
+                          {field.value.length}/{MAX_PROMPT_LENGTH}
+                        </div>
+                      )}
+                    </div>
                     <FormMessage />
                   </FormItem>
                 )}
