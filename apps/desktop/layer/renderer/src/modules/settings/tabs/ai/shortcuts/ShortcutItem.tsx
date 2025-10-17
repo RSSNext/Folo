@@ -1,4 +1,5 @@
 import { KbdCombined } from "@follow/components/ui/kbd/Kbd.js"
+import { DEFAULT_SUMMARIZE_TIMELINE_SHORTCUT_ID } from "@follow/shared/settings/defaults"
 import type { AIShortcut, AIShortcutTarget } from "@follow/shared/settings/interface"
 import { DEFAULT_SHORTCUT_TARGETS } from "@follow/shared/settings/interface"
 import { useTranslation } from "react-i18next"
@@ -15,6 +16,7 @@ interface ShortcutItemProps {
 
 export const ShortcutItem = ({ shortcut, onDelete, onToggle, onEdit }: ShortcutItemProps) => {
   const { t } = useTranslation("ai")
+  const isProtected = shortcut.id === DEFAULT_SUMMARIZE_TIMELINE_SHORTCUT_ID
   const targets =
     shortcut.displayTargets && shortcut.displayTargets.length > 0
       ? (shortcut.displayTargets as AIShortcutTarget[])
@@ -25,12 +27,15 @@ export const ShortcutItem = ({ shortcut, onDelete, onToggle, onEdit }: ShortcutI
       onClick: () => onEdit(shortcut),
       title: "Edit shortcut",
     },
-    {
+  ]
+
+  if (!isProtected) {
+    actions.push({
       icon: "i-mgc-delete-2-cute-re",
       onClick: () => onDelete(shortcut.id),
       title: "Delete shortcut",
-    },
-  ]
+    })
+  }
 
   return (
     <div className="hover:bg-material-medium border-border group rounded-lg border p-4 transition-colors">
