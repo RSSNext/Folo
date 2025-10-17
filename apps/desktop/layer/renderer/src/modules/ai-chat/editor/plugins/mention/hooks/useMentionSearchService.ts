@@ -1,3 +1,4 @@
+import { getViewList } from "@follow/constants"
 import { useMemo } from "react"
 import { useTranslation } from "react-i18next"
 
@@ -49,6 +50,24 @@ export const useMentionSearchService = () => {
         return results
       }
 
+      const views = getViewList()
+      const lowerQuery = trimmedQuery.toLowerCase()
+
+      const firstView = views.find((view) => {
+        // @ts-expect-error
+        const viewName = t(view.name, { ns: "common" }).toLowerCase()
+        return viewName.includes(lowerQuery) || lowerQuery === ""
+      })
+
+      if (firstView) {
+        pushResult({
+          id: `view-${firstView.view}`,
+          name: t(firstView.name, { ns: "common" }),
+          type: "view",
+          value: firstView.view,
+        })
+      }
+
       const dateSuggestions = buildDateMentions(trimmedQuery)
       const searchResults = search(trimmedQuery, undefined, 10)
 
@@ -69,7 +88,7 @@ export const useMentionSearchService = () => {
 
       return results
     }
-  }, [buildDateMentions, search])
+  }, [buildDateMentions, search, t])
 
   return { searchMentions }
 }

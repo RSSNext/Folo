@@ -109,7 +109,7 @@ const MentionSuggestionItem = React.memo(
             mention.type === "date" && "text-purple-500",
           )}
         >
-          <MentionTypeIcon type={mention.type} />
+          <MentionTypeIcon type={mention.type} value={mention.value} />
         </span>
 
         {/* Content */}

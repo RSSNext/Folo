@@ -1,4 +1,4 @@
-export type MentionType = "entry" | "feed" | "date" | "category"
+export type MentionType = "entry" | "feed" | "date" | "category" | "view"
 
 export type MentionLabelValue = string | number | boolean | MentionLabelDescriptor
 

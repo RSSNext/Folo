@@ -35,7 +35,7 @@ const MentionTooltipContent = ({
         mentionData.type === "date" && "bg-purple",
       )}
     >
-      <MentionTypeIcon type={mentionData.type} className="size-3" />
+      <MentionTypeIcon type={mentionData.type} value={mentionData.value} className="size-3" />
     </div>
     <span className="text-text text-sm">{displayName}</span>
   </div>
@@ -76,6 +76,9 @@ const getMentionStyles = (type: MentionData["type"]) => {
         "hover:bg-purple/20 hover:border-purple/30",
       )
     }
+    case "view": {
+      return cn(baseStyles)
+    }
   }
 }
 export const MentionComponent: React.FC<MentionComponentProps> = ({ mentionData, className }) => {
@@ -100,7 +103,11 @@ export const MentionComponent: React.FC<MentionComponentProps> = ({ mentionData,
       <TooltipRoot>
         <TooltipTrigger asChild>
           <span className={cn(getMentionStyles(mentionData.type), className)} onClick={handleClick}>
-            <MentionTypeIcon type={mentionData.type} className="mr-1 translate-y-[2px]" />
+            <MentionTypeIcon
+              type={mentionData.type}
+              value={mentionData.value}
+              className="mr-1 translate-y-[2px]"
+            />
             <span>@{displayName}</span>
           </span>
         </TooltipTrigger>
