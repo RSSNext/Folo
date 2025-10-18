@@ -365,7 +365,9 @@ const ChatInterfaceContent = ({ centerInputOnEmpty }: ChatInterfaceProps) => {
       </div>
 
       {shouldShowScrollToBottom && (
-        <div className={clsx("absolute right-1/2 z-40 translate-x-1/2", "bottom-44")}>
+        <div
+          className={clsx("absolute right-1/2 z-40 translate-x-1/2", "bottom-48 -translate-y-2")}
+        >
           <button
             type="button"
             onClick={() => resetScrollState()}
