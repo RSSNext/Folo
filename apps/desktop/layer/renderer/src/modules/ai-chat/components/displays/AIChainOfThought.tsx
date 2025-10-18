@@ -20,7 +20,7 @@ interface AIChainOfThoughtProps {
 }
 export const AIChainOfThought: React.FC<AIChainOfThoughtProps> = React.memo(
   ({ groups, isStreaming, className }) => {
-    const collapseId = React.useMemo(() => `chain-${Math.random().toString(36).slice(2)}`, [])
+    const collapseId = React.useId()
 
     const collapseRef = React.useRef<CollapseCssRef>(null)
 
@@ -58,7 +58,7 @@ export const AIChainOfThought: React.FC<AIChainOfThoughtProps> = React.memo(
     }, [groups, isStreaming])
 
     React.useEffect(() => {
-      collapseRef.current?.setIsOpened(!currentChainReasoningIsFinished)
+      if (currentChainReasoningIsFinished) collapseRef.current?.setIsOpened(false)
     }, [collapseRef, currentChainReasoningIsFinished])
 
     if (!groups || groups.length === 0) return null
