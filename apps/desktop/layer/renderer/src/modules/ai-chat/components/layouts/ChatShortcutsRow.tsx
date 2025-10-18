@@ -1,4 +1,3 @@
-import { AIShortcutButton } from "@follow/components/ui/ai-shortcut-button/index.js"
 import { DEFAULT_SHORTCUT_TARGETS } from "@follow/shared/settings/interface"
 import { nextFrame } from "@follow/utils"
 import { useCallback, useMemo } from "react"
@@ -9,6 +8,7 @@ import { useSettingModal } from "~/modules/settings/modal/use-setting-modal-hack
 import { useCreateAIShortcutModal } from "~/modules/settings/tabs/ai/shortcuts/hooks"
 
 import { useMainEntryId } from "../../hooks/useMainEntryId"
+import { AIShortcutButton } from "../ui/AIShortcutButton"
 
 interface ChatShortcutsRowProps {
   onSelect: (prompt: string) => void

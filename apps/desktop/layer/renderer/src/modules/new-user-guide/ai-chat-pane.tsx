@@ -1,5 +1,4 @@
 import { Logo } from "@follow/components/icons/logo.jsx"
-import { AIShortcutButton } from "@follow/components/ui/ai-shortcut-button/index.js"
 import { Button } from "@follow/components/ui/button/index.js"
 import type { LexicalRichEditorRef } from "@follow/components/ui/lexical-rich-editor/index.js"
 import {
@@ -7,6 +6,7 @@ import {
   getEditorStateJSONString,
 } from "@follow/components/ui/lexical-rich-editor/utils.js"
 import { ScrollArea } from "@follow/components/ui/scroll-area/ScrollArea.js"
+import { useIsDark } from "@follow/hooks"
 import { tracker } from "@follow/tracker"
 import { nextFrame } from "@follow/utils"
 import { cn } from "@follow/utils/utils"
@@ -37,6 +37,7 @@ import type { AIChatContextBlock, BizUIMessage } from "~/modules/ai-chat/store/t
 
 import { CollapsibleError } from "../ai-chat/components/layouts/CollapsibleError"
 import { AIChatWaitingIndicator } from "../ai-chat/components/message/AIChatMessage"
+import { AIShortcutButton } from "../ai-chat/components/ui/AIShortcutButton"
 import { LexicalAIEditorNodes } from "../ai-chat/editor"
 import { stepAtom } from "./store"
 
@@ -166,6 +167,7 @@ interface WelcomeProps {
 
 function Welcome({ onSuggestionClick }: WelcomeProps) {
   const t = useI18n()
+  const isDark = useIsDark()
   const [suggestionKeys, setSuggestionKeys] = useState<SuggestionKey[]>(() => pickSuggestionKeys())
 
   const onClickSuggestion = useEventCallback((suggestion: string) => {
@@ -204,12 +206,14 @@ function Welcome({ onSuggestionClick }: WelcomeProps) {
         <div className="flex flex-wrap gap-2">
           {suggestionKeys.map((suggestionKey, index) => {
             const suggestionText = t.app(suggestionKey) as string
+            const gradient = gradientByIndex(index, isDark)
             return (
               <AIShortcutButton
                 key={suggestionKey}
                 onClick={() => onClickSuggestion(suggestionText)}
                 animationDelay={index * 0.05}
-                className={cn("font-normal text-black", gradientByIndex(index))}
+                className="text-text font-normal"
+                style={{ background: gradient }}
               >
                 {suggestionText}
               </AIShortcutButton>
@@ -530,14 +534,32 @@ function AIChatInterface({ inputRef }: AIChatInterfaceProps) {
   )
 }
 
-const GRADIENT_CLASSES = [
-  "bg-gradient-to-r from-[#ff8a00] to-[#ff5f2d]",
-  "bg-gradient-to-r from-[#0ccb8b] to-[#00a36c]",
-  "bg-gradient-to-r from-[#ffd700] to-[#ffa800]",
-  "bg-gradient-to-r from-[#9b5df5] to-[#7848ff]",
-  "bg-gradient-to-r from-[#ff5dc5] to-[#7a5cff]",
+// Softer gradient colors based on ACCENT_COLOR_MAP
+const GRADIENT_COLORS = [
+  {
+    light: { from: "#FF6B35", to: "#FFB088" },
+    dark: { from: "#FF5C00", to: "#FF8B4D" },
+  },
+  {
+    light: { from: "#4CD7A5", to: "#8FE8C7" },
+    dark: { from: "#1FA97A", to: "#4DCFA0" },
+  },
+  {
+    light: { from: "#F7B500", to: "#FFD966" },
+    dark: { from: "#D99800", to: "#F7C84D" },
+  },
+  {
+    light: { from: "#B07BEF", to: "#D4B4F7" },
+    dark: { from: "#8A3DCC", to: "#B07BEF" },
+  },
+  {
+    light: { from: "#F266A8", to: "#F9A1CA" },
+    dark: { from: "#C63C82", to: "#E86BAA" },
+  },
 ]
 
-function gradientByIndex(index: number) {
-  return GRADIENT_CLASSES[index % GRADIENT_CLASSES.length]
+function gradientByIndex(index: number, isDark: boolean) {
+  const colors = GRADIENT_COLORS[index % GRADIENT_COLORS.length]!
+  const mode = isDark ? "dark" : "light"
+  return `linear-gradient(to right, ${colors[mode].from}, ${colors[mode].to})`
 }
