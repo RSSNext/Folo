@@ -268,8 +268,8 @@ importers:
         specifier: 0.44.3
         version: 0.44.3(@opentelemetry/api@1.9.0)(@types/pg@8.6.1)(expo-sqlite@15.2.12(expo@53.0.12(@babel/core@7.28.0)(@expo/metro-runtime@5.0.4(react-native@0.79.1(@babel/core@7.28.0)(@types/react@19.1.8)(bufferutil@4.0.9)(react@19.0.0)))(bufferutil@4.0.9)(graphql@16.8.1)(react-native-webview@13.15.0(react-native@0.79.1(@babel/core@7.28.0)(@types/react@19.1.8)(bufferutil@4.0.9)(react@19.0.0))(react@19.0.0))(react-native@0.79.1(@babel/core@7.28.0)(@types/react@19.1.8)(bufferutil@4.0.9)(react@19.0.0))(react@19.0.0))(react-native@0.79.1(@babel/core@7.28.0)(@types/react@19.1.8)(bufferutil@4.0.9)(react@19.0.0))(react@19.0.0))(kysely@0.28.2)(pg@8.16.3)
       electron:
-        specifier: 37.2.0
-        version: 37.2.0
+        specifier: 38.3.0
+        version: 38.3.0
       electron-devtools-installer:
         specifier: 4.0.0
         version: 4.0.0
@@ -341,10 +341,10 @@ importers:
     dependencies:
       '@electron-toolkit/preload':
         specifier: 3.0.2
-        version: 3.0.2(electron@37.2.0)
+        version: 3.0.2(electron@38.3.0)
       '@electron-toolkit/utils':
         specifier: 4.0.0
-        version: 4.0.0(electron@37.2.0)
+        version: 4.0.0(electron@38.3.0)
       '@eneris/push-receiver':
         specifier: 4.3.0
         version: 4.3.0
@@ -437,8 +437,8 @@ importers:
         specifier: 24.0.10
         version: 24.0.10
       electron:
-        specifier: 37.2.0
-        version: 37.2.0
+        specifier: 38.3.0
+        version: 38.3.0
       electron-devtools-installer:
         specifier: 4.0.0
         version: 4.0.0
@@ -459,7 +459,7 @@ importers:
         version: 10.0.0(@dnd-kit/core@6.3.1(react-dom@19.0.0(react@19.0.0))(react@19.0.0))(react@19.0.0)
       '@electron-toolkit/preload':
         specifier: 3.0.2
-        version: 3.0.2(electron@37.2.0)
+        version: 3.0.2(electron@38.3.0)
       '@follow-app/client-sdk':
         specifier: 'catalog:'
         version: 0.3.27(@opentelemetry/api@1.9.0)(@types/pg@8.6.1)(expo-sqlite@15.2.12(expo@53.0.12(@babel/core@7.28.0)(@expo/metro-runtime@5.0.4(react-native@0.79.1(@babel/core@7.28.0)(@types/react@19.1.8)(bufferutil@4.0.9)(react@19.0.0)))(bufferutil@4.0.9)(graphql@16.8.1)(react-native-webview@13.15.0(react-native@0.79.1(@babel/core@7.28.0)(@types/react@19.1.8)(bufferutil@4.0.9)(react@19.0.0))(react@19.0.0))(react-native@0.79.1(@babel/core@7.28.0)(@types/react@19.1.8)(bufferutil@4.0.9)(react@19.0.0))(react@19.0.0))(react-native@0.79.1(@babel/core@7.28.0)(@types/react@19.1.8)(bufferutil@4.0.9)(react@19.0.0))(react@19.0.0))(kysely@0.28.2)(pg@8.16.3)
@@ -1788,7 +1788,7 @@ importers:
         version: 1.2.9
       '@electron-toolkit/preload':
         specifier: 3.0.2
-        version: 3.0.2(electron@37.2.0)
+        version: 3.0.2(electron@38.3.0)
       '@electron-toolkit/tsconfig':
         specifier: 1.0.1
         version: 1.0.1(@types/node@24.0.10)
@@ -8790,8 +8790,8 @@ packages:
     resolution: {integrity: sha512-bO3y10YikuUwUuDUQRM4KfwNkKhnpVO7IPdbsrejwN9/AABJzzTQ4GeHwyzNSrVO+tEH3/Np255a3sVZpZDjvg==}
     engines: {node: '>=8.0.0'}
 
-  electron@37.2.0:
-    resolution: {integrity: sha512-dE6+qeg6SBUVd5d8CD2+GH82kh+gF1v40+hs+U+UOno681NMSGmBtgqwldQRpbvtnQDD7V2M9Cpfr3+Abw7aBg==}
+  electron@38.3.0:
+    resolution: {integrity: sha512-Wij4AzX4SAV0X/ktq+NrWrp5piTCSS8F6YWh1KAcG+QRtNzyns9XLKERP68nFHIwfprhxF2YCN2uj7nx9DaeJw==}
     engines: {node: '>= 12.20.55'}
     hasBin: true
 
@@ -12562,6 +12562,7 @@ packages:
   phin@3.7.1:
     resolution: {integrity: sha512-GEazpTWwTZaEQ9RhL7Nyz0WwqilbqgLahDM3D0hxWwmVDI52nXEybHqiN6/elwpkJBhcuj+WbBu+QfT0uhPGfQ==}
     engines: {node: '>= 8'}
+    deprecated: Package no longer supported. Contact Support at https://www.npmjs.com/support for more info.
 
   picocolors@1.0.0:
     resolution: {integrity: sha512-1fygroTLlHu66zi26VoTDv8yRgm0Fccecssto+MhsZ0D/DGW2sm8E8AjW7NU5VVTRt5GxbeZ5qBuJr+HyLYkjQ==}
@@ -17185,17 +17186,17 @@ snapshots:
     dependencies:
       chrome-trace-event: 1.0.4
 
-  '@electron-toolkit/preload@3.0.2(electron@37.2.0)':
+  '@electron-toolkit/preload@3.0.2(electron@38.3.0)':
     dependencies:
-      electron: 37.2.0
+      electron: 38.3.0
 
   '@electron-toolkit/tsconfig@1.0.1(@types/node@24.0.10)':
     dependencies:
       '@types/node': 24.0.10
 
-  '@electron-toolkit/utils@4.0.0(electron@37.2.0)':
+  '@electron-toolkit/utils@4.0.0(electron@38.3.0)':
     dependencies:
-      electron: 37.2.0
+      electron: 38.3.0
 
   '@electron/asar@3.4.1':
     dependencies:
@@ -24749,7 +24750,7 @@ snapshots:
       - supports-color
     optional: true
 
-  electron@37.2.0:
+  electron@38.3.0:
     dependencies:
       '@electron/get': 2.0.3
       '@types/node': 22.16.0

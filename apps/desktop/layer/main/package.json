@@ -54,7 +54,7 @@
     "@follow/types": "workspace:*",
     "@types/js-yaml": "4.0.9",
     "@types/node": "24.0.10",
-    "electron": "37.2.0",
+    "electron": "38.3.0",
     "electron-devtools-installer": "4.0.0",
     "hono": "4.8.1",
     "typescript": "catalog:"
