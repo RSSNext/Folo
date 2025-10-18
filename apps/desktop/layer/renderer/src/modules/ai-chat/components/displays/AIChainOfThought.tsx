@@ -36,10 +36,6 @@ export const AIChainOfThought: React.FC<AIChainOfThoughtProps> = React.memo(
         }
       }
 
-      const isEndWithTool = groups.at?.(-1)?.type.startsWith("tool-")
-      if (isEndWithTool) {
-        allDone = false
-      }
       return allDone
     }, [groups])
     const currentReasoningTitle = React.useMemo(() => {
