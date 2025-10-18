@@ -145,7 +145,7 @@ function AIChatPaneImpl() {
       <header className="flex w-full items-start justify-between px-5 pb-5">
         <Logo className="size-12" />
 
-        <Button variant="ghost" onClick={() => setStep("manual-import")}>
+        <Button variant="outline" onClick={() => setStep("manual-import")}>
           {t.app("new_user_guide.actions.import_opml")}
         </Button>
       </header>
@@ -515,14 +515,7 @@ function AIChatInterface({ inputRef }: AIChatInterfaceProps) {
         </div>
       )}
 
-      <div
-        ref={bottomPanelRef}
-        className={cn(
-          "duration-500 ease-in-out",
-          hasMessages && "px-6 pb-6",
-          !hasMessages && "px-6 pb-6 duration-200",
-        )}
-      >
+      <div ref={bottomPanelRef} className={"px-6"}>
         {error && <CollapsibleError error={error} />}
         <ChatInput
           ref={inputRef}

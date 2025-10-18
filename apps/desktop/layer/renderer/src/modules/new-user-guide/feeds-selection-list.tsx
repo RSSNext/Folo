@@ -14,6 +14,7 @@ import { useEffect, useMemo, useRef } from "react"
 
 import { useI18n } from "~/hooks/common"
 
+import { AISplineLoader } from "../ai-chat/components/3d-models/AISplineLoader"
 import { useMessages } from "../ai-chat/store/hooks"
 import { SearchResultContent } from "../discover/DiscoverFeedCard"
 import { FeedIcon } from "../feed/feed-icon"
@@ -183,24 +184,53 @@ function FeedSelectionFirstScreen() {
 
   return (
     <m.div
-      className="relative mr-4 h-full overflow-hidden rounded-3xl bg-[#FF5C02] p-5"
+      className="bg-material-thin relative mr-4 h-full overflow-hidden rounded-3xl border border-zinc-200/50 p-8 backdrop-blur-xl dark:border-zinc-800/50"
       aria-hidden="true"
-      initial={{ opacity: 0, scale: 0.9 }}
-      animate={{ opacity: 1, scale: 1 }}
-      exit={{ opacity: 0, scale: 0.9 }}
+      initial={{ opacity: 0, y: 20 }}
+      animate={{ opacity: 1, y: 0 }}
+      exit={{ opacity: 0, y: -20 }}
+      transition={{ duration: 0.5, ease: "easeOut" }}
     >
-      <h1 className="relative z-[1] text-[6rem] font-semibold leading-[6rem] text-white">
-        {t.app("new_user_guide.intro.title")}
-      </h1>
+      {/* Grid background - consistent with app patterns */}
+      <div className="absolute inset-0 bg-[linear-gradient(rgba(0,0,0,0.03)_1px,transparent_1px),linear-gradient(90deg,rgba(0,0,0,0.03)_1px,transparent_1px)] bg-[size:64px_64px] [mask-image:radial-gradient(ellipse_80%_50%_at_50%_50%,black,transparent)] dark:bg-[linear-gradient(rgba(255,255,255,0.05)_1px,transparent_1px),linear-gradient(90deg,rgba(255,255,255,0.05)_1px,transparent_1px)]" />
 
-      {/* some shapes */}
-      <div className="absolute left-10 top-10 z-0 h-40 w-[30rem] rounded-full bg-[#FF792E]" />
-      <div className="absolute left-80 top-64 z-0 h-40 w-[30rem] rounded-full bg-[#FF792E]" />
-      <div className="absolute left-12 top-[30rem] z-0 h-40 w-[30rem] rounded-full bg-[#FF792E]" />
+      {/* Content */}
+      <div className="relative z-10 flex h-full flex-col items-center justify-center text-center">
+        {/* Icon - using app's existing icon library */}
+        <m.div
+          initial={{ scale: 0.8, opacity: 0 }}
+          animate={{ scale: 1, opacity: 1 }}
+          transition={{ delay: 0.1, duration: 0.6, type: "spring" }}
+          className="mb-6"
+        >
+          <div className="shadow-perfect mx-auto mb-4 flex size-16 items-center justify-center rounded-2xl">
+            <AISplineLoader />
+          </div>
+        </m.div>
 
-      {/* screenshot image */}
-      <div className="absolute -bottom-12 -left-36 z-[1] h-[30rem] w-[40rem] rotate-[-25deg] rounded-3xl border border-white">
-        {/* TODO: add image here */}
+        {/* Title - using app's gradient text pattern */}
+        <m.div
+          initial={{ y: 20, opacity: 0 }}
+          animate={{ y: 0, opacity: 1 }}
+          transition={{ delay: 0.3, duration: 0.6, ease: "easeOut" }}
+          className="mb-4"
+        >
+          <h1 className="bg-gradient-to-r from-zinc-800 to-zinc-600 bg-clip-text text-4xl font-bold text-transparent dark:from-zinc-100 dark:to-zinc-300">
+            {t.app("new_user_guide.intro.title")}
+          </h1>
+        </m.div>
+
+        {/* Description text */}
+        <m.div
+          initial={{ y: 20, opacity: 0 }}
+          animate={{ y: 0, opacity: 1 }}
+          transition={{ delay: 0.5, duration: 0.6, ease: "easeOut" }}
+          className="mb-8 max-w-sm"
+        >
+          <p className="text-text-secondary text-lg leading-relaxed">
+            {t.app("new_user_guide.intro.description")}
+          </p>
+        </m.div>
       </div>
     </m.div>
   )
