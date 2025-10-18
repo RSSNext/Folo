@@ -141,7 +141,7 @@ export const UserChatMessage: React.FC<UserChatMessageProps> = React.memo(({ mes
         >
           <div className="text-text relative flex max-w-[calc(100%-1rem)] flex-col gap-2">
             {/* Normal message display - always rendered to maintain layout */}
-            <div className="text-text bg-mix-accent/background-1/4 rounded-2xl px-4 py-2.5 backdrop-blur-sm">
+            <div className="text-text bg-sidebar-light rounded-2xl px-4 py-2.5 backdrop-blur-sm">
               <div className="flex select-text flex-col gap-2 text-sm">
                 <UserMessageParts message={message} />
               </div>

@@ -33,6 +33,7 @@ const MentionTooltipContent = ({
         mentionData.type === "entry" && "bg-blue",
         mentionData.type === "feed" && "bg-orange",
         mentionData.type === "date" && "bg-purple",
+        mentionData.type === "shortcut" && "bg-amber-700",
       )}
     >
       <MentionTypeIcon type={mentionData.type} value={mentionData.value} className="size-3" />
@@ -79,6 +80,9 @@ const getMentionStyles = (type: MentionData["type"]) => {
     case "view": {
       return cn(baseStyles)
     }
+    case "shortcut": {
+      return cn(baseStyles, "text-amber-700 border-amber-700/20", "hover:border-amber-700/30")
+    }
   }
 }
 export const MentionComponent: React.FC<MentionComponentProps> = ({ mentionData, className }) => {
@@ -89,7 +93,11 @@ export const MentionComponent: React.FC<MentionComponentProps> = ({ mentionData,
     if (mentionData.type === "date") {
       return getDateMentionDisplayName(mentionData, t, language, RANGE_WITH_LABEL_KEY)
     }
-    return mentionData.name
+    if (mentionData.type === "shortcut") {
+      return mentionData.name
+    } else {
+      return `@${mentionData.name}`
+    }
   }, [mentionData, t, language])
 
   const handleClick = (e: React.MouseEvent) => {
@@ -108,7 +116,7 @@ export const MentionComponent: React.FC<MentionComponentProps> = ({ mentionData,
               value={mentionData.value}
               className="mr-1 translate-y-[2px]"
             />
-            <span>@{displayName}</span>
+            <span>{displayName}</span>
           </span>
         </TooltipTrigger>
         <TooltipPortal>

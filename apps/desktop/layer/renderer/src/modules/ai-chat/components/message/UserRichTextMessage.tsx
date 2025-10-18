@@ -10,7 +10,10 @@ import type { SerializedEditorState } from "lexical"
 import * as React from "react"
 import isEqual from "react-fast-compare"
 
+import { useAISettingValue } from "~/atoms/settings/ai"
+
 import { LexicalAIEditorNodes } from "../../editor"
+import { MentionComponent } from "../../editor/plugins/mention"
 
 function onError(error: Error) {
   console.error("Lexical Read-Only Editor Error:", error)
@@ -26,6 +29,48 @@ interface UserRichTextMessageProps {
 
 export const UserRichTextMessage: React.FC<UserRichTextMessageProps> = React.memo(
   ({ data, className }) => {
+    const aiSettings = useAISettingValue()
+    const { shortcuts } = aiSettings
+
+    const shortcutMention = React.useMemo(() => {
+      const rawText = data.text
+      const normalizedText = rawText.trim()
+      if (!normalizedText) {
+        return null
+      }
+
+      const matchedShortcut = shortcuts.find((shortcut) => {
+        if (!shortcut.enabled) {
+          return false
+        }
+
+        if (shortcut.prompt === rawText) {
+          return true
+        }
+
+        return shortcut.prompt.trim() === normalizedText
+      })
+
+      if (!matchedShortcut) {
+        return null
+      }
+
+      return {
+        id: matchedShortcut.id,
+        name: matchedShortcut.name,
+        type: "shortcut" as const,
+        value: matchedShortcut.prompt,
+      }
+    }, [data.text, shortcuts])
+
+    if (shortcutMention) {
+      return (
+        <div className={cn("text-text relative cursor-text text-sm", className)}>
+          <MentionComponent mentionData={shortcutMention} />
+        </div>
+      )
+    }
+
     const editorState = typeof data.state === "object" ? JSON.stringify(data.state) : data.state
 
     let initialConfig: InitialConfigType = null!

@@ -38,6 +38,9 @@ export const MentionTypeIcon: React.FC<MentionTypeIconProps> = ({
       }
       return <i className={`i-mgc-grid-cute-re ${className}`} />
     }
+    case "shortcut": {
+      return <i className={`i-mgc-ai-cute-re ${className}`} />
+    }
     default: {
       return <i className={`i-mgc-ai-cute-re ${className}`} />
     }
