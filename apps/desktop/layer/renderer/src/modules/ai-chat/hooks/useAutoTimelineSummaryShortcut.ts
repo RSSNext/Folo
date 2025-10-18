@@ -107,6 +107,22 @@ export const useAutoTimelineSummaryShortcut = () => {
     return keyParts.join("|")
   }, [isAllTimeline, timelineId, normalizedFeedId])
 
+  const previousIsAllTimelineRef = useRef(isAllTimeline)
+
+  useEffect(() => {
+    const wasAllTimeline = previousIsAllTimelineRef.current
+    if (
+      wasAllTimeline &&
+      !isAllTimeline &&
+      currentChatId &&
+      currentChatId.startsWith(AI_CHAT_SPECIAL_ID_PREFIX.TIMELINE_SUMMARY)
+    ) {
+      blockActions.clearBlocks({ keepSpecialTypes: true })
+      chatActions.newChat()
+    }
+    previousIsAllTimelineRef.current = isAllTimeline
+  }, [blockActions, chatActions, currentChatId, isAllTimeline])
+
   const contextBlocks = useMemo<AIChatContextBlock[]>(() => {
     if (!isAllTimeline) return []
 
