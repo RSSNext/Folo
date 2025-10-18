@@ -30,8 +30,14 @@ export const useLoadMessages = (
             metadata: message.metadata as BizUIMetadata,
             createdAt: message.createdAt,
           }))
-          chatActions.setMessages(messagesToSet)
-          onLoadEventCallback(messagesToSet)
+          const existingMessages = chatActions.getMessages()
+
+          if (messagesToSet.length === 0 && existingMessages.length > 0) {
+            onLoadEventCallback(existingMessages)
+          } else {
+            chatActions.setMessages(messagesToSet)
+            onLoadEventCallback(messagesToSet)
+          }
         }
       })
       .catch((error) => {

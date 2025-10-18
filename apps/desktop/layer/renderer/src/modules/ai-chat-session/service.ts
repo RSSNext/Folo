@@ -23,7 +23,7 @@ class AIChatSessionServiceStatic {
     const unseenMessages = await this.fetchUnseenRemoteMessages(session.chatId, session.lastSeenAt)
     const normalized = unseenMessages.map(this.normalizeRemoteMessage)
 
-    await AIPersistService.ensureSession(session.chatId, session.title)
+    await AIPersistService.ensureSession(session.chatId, { title: session.title })
     await AIPersistService.upsertMessages(session.chatId, normalized)
 
     await followApi.aiChatSessions.markSeen({

@@ -59,15 +59,14 @@ const AIEnhancedTimelineLayoutImpl = () => {
   const isAIPanelVisible = useAIPanelVisibility()
   const aiSidebarVisible = aiPanelStyle === AIChatPanelStyle.Fixed && isAIPanelVisible
 
-  const { view, isAllFeeds, entryId } = useRouteParamsSelector((s) => ({
+  const { view, entryId } = useRouteParamsSelector((s) => ({
     view: s.view,
-    isAllFeeds: s.isAllFeeds,
     entryId: s.entryId,
   }))
   const realEntryId = entryId === ROUTE_ENTRY_PENDING ? "" : entryId
 
   // AI chat resizable panel configuration
-  const isAllView = view === FeedViewType.All && isAllFeeds && !realEntryId
+  const isAllView = view === FeedViewType.All
   const widthRange: [number, number] = isAllView ? [500, 1200] : [300, 1200]
   const [minWidth, maxWidth] = widthRange
 

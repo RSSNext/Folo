@@ -28,6 +28,7 @@ import {
 } from "~/modules/ai-chat/components/message/AIChatMessage"
 import { UserChatMessage } from "~/modules/ai-chat/components/message/UserChatMessage"
 import { useAutoScroll } from "~/modules/ai-chat/hooks/useAutoScroll"
+import { useAutoTimelineSummaryShortcut } from "~/modules/ai-chat/hooks/useAutoTimelineSummaryShortcut"
 import { useLoadMessages } from "~/modules/ai-chat/hooks/useLoadMessages"
 import { useMainEntryId } from "~/modules/ai-chat/hooks/useMainEntryId"
 import {
@@ -59,6 +60,7 @@ const ChatInterfaceContent = ({ centerInputOnEmpty }: ChatInterfaceProps) => {
   const status = useChatStatus()
   const chatActions = useChatActions()
   const error = useChatError()
+  useAutoTimelineSummaryShortcut()
 
   const isFocusWithIn = useFocusable()
 
@@ -391,11 +393,7 @@ const ChatInterfaceContent = ({ centerInputOnEmpty }: ChatInterfaceProps) => {
       >
         {error && <CollapsibleError error={error} />}
         <ChatShortcutsRow onSelect={(prompt) => handleSendMessage(prompt)} />
-        <ChatInput
-          onSend={handleSendMessage}
-          variant={!hasMessages ? "minimal" : "default"}
-          isWelcomeScreen={!hasMessages && !isLoadingHistory}
-        />
+        <ChatInput onSend={handleSendMessage} variant={!hasMessages ? "minimal" : "default"} />
 
         {(!centerInputOnEmpty || hasMessages) && (
           <div className="absolute inset-x-0 bottom-0 isolate">

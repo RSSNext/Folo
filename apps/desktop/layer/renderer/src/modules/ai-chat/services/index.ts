@@ -69,7 +69,12 @@ class AIPersistServiceStatic {
    * Returns both session details and messages to avoid redundant queries
    */
   async loadSessionWithMessages(chatId: string): Promise<{
-    session: { chatId: string; title?: string; createdAt: Date; updatedAt: Date } | null
+    session: {
+      chatId: string
+      title?: string
+      createdAt: Date
+      updatedAt: Date
+    } | null
     messages: BizUIMessage[]
   }> {
     // Load both session and messages in parallel
@@ -255,52 +260,76 @@ class AIPersistServiceStatic {
   /**
    * Ensure session exists (idempotent operation)
    */
-  async ensureSession(chatId: string, title?: string): Promise<void> {
-    // Check cache first to avoid database query
+  async ensureSession(chatId: string, options: { title?: string } = {}): Promise<void> {
     const cachedExists = this.getSessionExistsFromCache(chatId)
+    const shouldCheckDb = cachedExists !== true || options.title
 
-    if (cachedExists === true) {
+    if (!shouldCheckDb) {
       return
     }
 
-    // Only query database if not in cache or cache shows it doesn't exist
-    if (!cachedExists) {
-      const existing = await this.getChatSession(chatId)
+    const existing = await this.getChatSession(chatId)
 
-      if (existing) {
-        this.markSessionExists(chatId, true)
-        const hasExistingTitle = existing.title?.trim().length
-        if (!hasExistingTitle) {
-          const resolvedTitle = this.resolveSessionTitle(chatId, title ?? existing.title, {
-            createdAt: existing.createdAt,
-            updatedAt: existing.updatedAt,
-          })
-          if (resolvedTitle) {
-            await this.updateSessionTitle(chatId, resolvedTitle)
-          }
+    if (existing) {
+      this.markSessionExists(chatId, true)
+
+      const updates: Partial<typeof aiChatTable.$inferInsert> = {}
+      let shouldUpdate = false
+
+      const hasExistingTitle = existing.title?.trim().length
+      if (!hasExistingTitle) {
+        const resolvedTitle = this.resolveSessionTitle(chatId, options.title ?? existing.title, {
+          createdAt: existing.createdAt,
+          updatedAt: existing.updatedAt,
+        })
+        if (resolvedTitle && resolvedTitle !== existing.title) {
+          updates.title = resolvedTitle
+          shouldUpdate = true
         }
-        return
       }
 
-      // Mark as not existing before creating
-      this.markSessionExists(chatId, false)
+      if (shouldUpdate) {
+        updates.updatedAt = new Date()
+        await db.update(aiChatTable).set(updates).where(eq(aiChatTable.chatId, chatId))
+      }
+      return
     }
 
     // Create new session
-    await this.createSession(chatId, title)
+    await this.createSession(chatId, options)
     this.markSessionExists(chatId, true)
   }
 
-  async createSession(chatId: string, title?: string) {
+  async createSession(chatId: string, options: { title?: string } = {}) {
     const now = new Date()
     await db.insert(aiChatTable).values({
       chatId,
-      title: this.resolveSessionTitle(chatId, title, { createdAt: now, updatedAt: now }),
+      title: this.resolveSessionTitle(chatId, options.title, { createdAt: now, updatedAt: now }),
       createdAt: now,
       updatedAt: now,
     })
     // Mark session as existing in cache
     this.markSessionExists(chatId, true)
+  }
+
+  async findTimelineSummarySession(criteria: {
+    view: number
+    feedId: string
+    timelineId?: string | null
+  }) {
+    return db.query.aiChatTable
+      .findFirst({
+        where: (table) =>
+          sql`${table.chatId} LIKE ${`${AI_CHAT_SPECIAL_ID_PREFIX.TIMELINE_SUMMARY}${criteria.view}:${criteria.feedId}:${criteria.timelineId ?? "all"}:%`}`,
+        orderBy: (table, { desc }) => desc(table.updatedAt),
+        columns: {
+          chatId: true,
+          title: true,
+          createdAt: true,
+          updatedAt: true,
+        },
+      })
+      .then((session) => session ?? null)
   }
 
   async getChatSession(chatId: string) {
