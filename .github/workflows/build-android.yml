@@ -33,19 +33,19 @@ jobs:
 
     steps:
       - name: 📦 Checkout code
-        uses: actions/checkout@v4
+        uses: actions/checkout@v5
 
       - name: 📦 Setup pnpm
         uses: pnpm/action-setup@v4
 
       - name: 🏗 Setup Node.js
-        uses: actions/setup-node@v4
+        uses: actions/setup-node@v6
         with:
           node-version: 22
           cache: "pnpm"
 
       - name: Set up JDK 17
-        uses: actions/setup-java@v4
+        uses: actions/setup-java@v5
         with:
           java-version: "17"
           distribution: "zulu"
@@ -92,16 +92,15 @@ jobs:
         id: version
         uses: ./.github/actions/setup-version
         with:
-          # We don't want to create a new release for mobile
-          type: "desktop"
+          type: "mobile"
 
       - name: Create Release Draft
         if: github.event.inputs.release == 'true'
         uses: softprops/action-gh-release@v2
         with:
-          name: v${{ steps.version.outputs.APP_VERSION }}
+          name: Mobile v${{ steps.version.outputs.APP_VERSION }}
           draft: false
           prerelease: true
-          tag_name: v${{ steps.version.outputs.APP_VERSION }}
+          tag_name: mobile/v${{ steps.version.outputs.APP_VERSION }}
           # .aab cannot be installed directly on your Android Emulator or device.
           files: ${{ github.workspace }}/build.apk

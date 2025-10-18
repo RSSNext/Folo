@@ -56,13 +56,13 @@ jobs:
 
     steps:
       - name: Check out Git repository Fully
-        uses: actions/checkout@v4
+        uses: actions/checkout@v5
         if: env.PROD == 'true'
         with:
           fetch-depth: 0
           lfs: true
       - name: Check out Git repository
-        uses: actions/checkout@v4
+        uses: actions/checkout@v5
         if: env.PROD == 'false'
         with:
           fetch-depth: 1
@@ -72,7 +72,7 @@ jobs:
         uses: pnpm/action-setup@v4
 
       - name: Use Node.js
-        uses: actions/setup-node@v4
+        uses: actions/setup-node@v6
         with:
           node-version: 22
           cache: "pnpm"
@@ -222,7 +222,7 @@ jobs:
             apps/desktop/out/make/**/latest.yml
           retention-days: 90
 
-      - uses: signpath/github-action-submit-signing-request@v1.2
+      - uses: signpath/github-action-submit-signing-request@v1.3
         continue-on-error: true
         if: runner.os == 'windows' && env.RELEASE == 'true'
         with:
@@ -297,10 +297,10 @@ jobs:
         if: env.RELEASE == 'true'
         uses: softprops/action-gh-release@v2
         with:
-          name: v${{ steps.version.outputs.APP_VERSION }}
+          name: Desktop v${{ steps.version.outputs.APP_VERSION }}
           draft: false
           prerelease: true
-          tag_name: v${{ steps.version.outputs.APP_VERSION }}
+          tag_name: desktop/v${{ steps.version.outputs.APP_VERSION }}
           files: |
             apps/desktop/out/make/**/Folo-*.dmg
             apps/desktop/out/make/**/Folo-*.zip

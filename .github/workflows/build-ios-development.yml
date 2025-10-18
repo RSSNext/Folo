@@ -40,7 +40,7 @@ jobs:
 
     steps:
       - name: 📦 Checkout code
-        uses: actions/checkout@v4
+        uses: actions/checkout@v5
 
       - name: 📱 Setup EAS
         uses: expo/expo-github-action@v8
@@ -55,6 +55,7 @@ jobs:
         working-directory: apps/mobile
         run: eas build --platform ios --profile development --non-interactive --local --output=./build.ipa
         env:
+          SENTRY_AUTH_TOKEN: ${{ secrets.RN_SENTRY_AUTH_TOKEN }}
           CI: true
 
       # Optional: Upload artifact
@@ -77,7 +78,7 @@ jobs:
 
     steps:
       - name: 📦 Checkout code
-        uses: actions/checkout@v4
+        uses: actions/checkout@v5
 
       - name: 🔧 Setup Xcode
         uses: ./.github/actions/setup-xcode
@@ -86,7 +87,7 @@ jobs:
         uses: pnpm/action-setup@v4
 
       - name: 🏗 Setup Node.js
-        uses: actions/setup-node@v4
+        uses: actions/setup-node@v6
         with:
           node-version: 22
           cache: "pnpm"
@@ -105,7 +106,7 @@ jobs:
         run: eas build --platform ios --profile development --non-interactive --local --output=./build.ipa
         env:
           CI: true
-
+          SENTRY_AUTH_TOKEN: ${{ secrets.RN_SENTRY_AUTH_TOKEN }}
       # Optional: Upload artifact
       - name: 📤 Upload IPA
         uses: actions/upload-artifact@v4
@@ -121,7 +122,7 @@ jobs:
 
     steps:
       - name: 📦 Checkout code
-        uses: actions/checkout@v4
+        uses: actions/checkout@v5
 
       - name: 🔧 Setup Xcode
         uses: ./.github/actions/setup-xcode
@@ -130,7 +131,7 @@ jobs:
         uses: pnpm/action-setup@v4
 
       - name: 🏗 Setup Node.js
-        uses: actions/setup-node@v4
+        uses: actions/setup-node@v6
         with:
           node-version: 22
           cache: "pnpm"
@@ -149,7 +150,7 @@ jobs:
         run: eas build --platform ios --profile ios-simulator --non-interactive --local --output=./build-simulator.ipa
         env:
           CI: true
-
+          SENTRY_AUTH_TOKEN: ${{ secrets.RN_SENTRY_AUTH_TOKEN }}
       # Optional: Upload artifact
       - name: 📤 Upload IPA
         uses: actions/upload-artifact@v4
