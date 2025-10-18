@@ -1,3 +1,4 @@
+import { getEditorStateJSONString } from "@follow/components/ui/lexical-rich-editor/utils.js"
 import { FeedViewType } from "@follow/constants"
 import { DEFAULT_SUMMARIZE_TIMELINE_SHORTCUT_ID } from "@follow/shared/settings/defaults"
 import { getCategoryFeedIds } from "@follow/store/subscription/getter"
@@ -13,7 +14,6 @@ import { AIPersistService } from "../services"
 import { useBlockActions, useChatActions, useCurrentChatId } from "../store/hooks"
 import { BlockSliceAction } from "../store/slices/block.slice"
 import type { AIChatContextBlock, SendingUIMessage } from "../store/types"
-import { getEditorStateJSONString } from "../utils/lexical-markdown"
 
 const ONE_HOUR = 60 * 60 * 1000
 
