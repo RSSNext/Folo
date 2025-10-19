@@ -157,7 +157,7 @@ const Renderer: React.FC<{
       noMedia={noMedia}
       accessory={contentAccessories}
       as="article"
-      className="prose dark:prose-invert prose-h1:text-[1.6em] prose-h1:font-bold !max-w-full hyphens-auto"
+      className="prose dark:prose-invert prose-h1:text-[1.6em] prose-h1:font-bold !max-w-full hyphens-auto [text-autospace:auto]"
       style={stableRenderStyle}
       renderInlineStyle={readerRenderInlineStyle}
     >
