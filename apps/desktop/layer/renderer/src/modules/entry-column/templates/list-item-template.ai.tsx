@@ -183,13 +183,13 @@ export function ListItem({
         >
           {entry?.title ? (
             <EntryTranslation
-              className={cn("hyphens-auto font-medium", lineClamp.title)}
+              className={cn("autospace-normal hyphens-auto font-medium", lineClamp.title)}
               source={titleCase(entry?.title ?? "")}
               target={titleCase(translation?.title ?? "")}
             />
           ) : (
             <EntryTranslation
-              className={cn("hyphens-auto", lineClamp.description)}
+              className={cn("autospace-normal hyphens-auto", lineClamp.description)}
               source={entry?.description}
               target={translation?.description}
             />
@@ -205,7 +205,7 @@ export function ListItem({
             )}
           >
             <EntryTranslation
-              className={cn("hyphens-auto", lineClamp.description)}
+              className={cn("autospace-normal hyphens-auto", lineClamp.description)}
               source={entry?.description}
               target={translation?.description}
             />

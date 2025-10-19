@@ -107,7 +107,7 @@ export const EntryTitle = ({
           <EntryTranslation
             source={titleCase(entry.title ?? "")}
             target={titleCase(translation?.title ?? "")}
-            className="text-text inline-block select-text hyphens-auto duration-200"
+            className="text-text autospace-normal inline-block select-text hyphens-auto duration-200"
             inline={false}
             bilingual
           />
