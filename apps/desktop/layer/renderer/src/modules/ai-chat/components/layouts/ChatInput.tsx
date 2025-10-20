@@ -74,11 +74,9 @@ export const ChatInput = memo(({ onSend, variant, ref: forwardedRef }: ChatInput
 
   const handleEditorChange = useCallback((editorState: EditorState, editor: LexicalEditor) => {
     setCurrentEditor(editor)
-    // Update isEmpty state based on editor content
+
     editorState.read(() => {
-      const root = $getRoot()
-      const textContent = root.getTextContent().trim()
-      setIsEmpty(textContent === "")
+      setIsEmpty($getRoot().isEmpty())
     })
   }, [])
 

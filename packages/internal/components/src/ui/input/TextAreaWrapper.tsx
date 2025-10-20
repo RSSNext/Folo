@@ -1,6 +1,5 @@
 import { cn } from "@follow/utils"
 import clsx from "clsx"
-import { useMotionValue } from "motion/react"
 import type { PropsWithChildren } from "react"
 import { useCallback, useState } from "react"
 
@@ -72,18 +71,6 @@ export const TextAreaWrapper = ({
   const [internalIsFocused, setInternalIsFocused] = useState(false)
   const isFocused = externalIsFocused ?? internalIsFocused
 
-  const mouseX = useMotionValue(0)
-  const mouseY = useMotionValue(0)
-
-  const handleMouseMove = useCallback(
-    ({ clientX, clientY, currentTarget }: React.MouseEvent) => {
-      const bounds = currentTarget.getBoundingClientRect()
-      mouseX.set(clientX - bounds.left)
-      mouseY.set(clientY - bounds.top)
-    },
-    [mouseX, mouseY],
-  )
-
   const handleFocus = useCallback(() => {
     if (externalIsFocused === undefined) {
       setInternalIsFocused(true)
@@ -115,7 +102,6 @@ export const TextAreaWrapper = ({
         paddingClassName,
         wrapperClassName,
       )}
-      onMouseMove={handleMouseMove}
       onFocus={handleFocus}
       onBlur={handleBlur}
       onPointerDown={onPointerDown}

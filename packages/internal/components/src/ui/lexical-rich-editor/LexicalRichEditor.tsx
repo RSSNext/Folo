@@ -75,12 +75,7 @@ export const LexicalRichEditor = function LexicalRichEditor({
         root.clear()
       })
     },
-    isEmpty: () =>
-      editorRef?.getEditorState().read(() => {
-        const root = $getRoot()
-        const textContent = root.getTextContent().trim()
-        return textContent === ""
-      }) || false,
+    isEmpty: () => editorRef?.getEditorState().read(() => $getRoot().isEmpty()) || false,
   }))
 
   return (
