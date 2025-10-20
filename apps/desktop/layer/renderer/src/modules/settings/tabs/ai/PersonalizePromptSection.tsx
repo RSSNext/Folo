@@ -1,6 +1,5 @@
 import { Spring } from "@follow/components/constants/spring.js"
 import { Button } from "@follow/components/ui/button/index.js"
-import { Label } from "@follow/components/ui/label/index.jsx"
 import { LexicalRichEditorTextArea } from "@follow/components/ui/lexical-rich-editor/index.js"
 import { AnimatePresence } from "motion/react"
 import { useRef, useState } from "react"
@@ -52,7 +51,6 @@ export const PersonalizePromptSection = () => {
   return (
     <div className="space-y-4">
       <div className="space-y-2">
-        <Label className="text-text text-sm font-medium">{t("personalize.prompt.label")}</Label>
         <div className="relative -ml-3">
           <LexicalRichEditorTextArea
             initialValue={aiSettings.personalizePrompt}
