@@ -63,7 +63,7 @@ const MentionTooltipContent = ({ mentionData }: { mentionData: MentionData }) =>
     <div className="flex items-center gap-2 p-1">
       <div
         className={cn(
-          "flex size-5 items-center justify-center rounded text-white",
+          "flex size-5 shrink-0 items-center justify-center rounded text-white",
           getIconBgColor(),
         )}
       >
