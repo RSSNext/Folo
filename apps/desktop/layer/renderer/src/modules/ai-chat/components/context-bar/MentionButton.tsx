@@ -1,5 +1,5 @@
 import { $createTextNode, $getSelection, $isRangeSelection } from "lexical"
-import { memo, use, useCallback, useEffect, useRef, useState } from "react"
+import { memo, Suspense, use, useCallback, useEffect, useMemo, useRef, useState } from "react"
 
 import { AIPanelRefsContext } from "~/modules/ai-chat/store/AIChatContext"
 
@@ -81,6 +81,33 @@ export const MentionButton: Component = memo(() => {
     setQuery("")
   }, [])
 
+  // Calculate dropdown props
+  const dropdownProps = useMemo(() => {
+    if (!isMentionDropdownVisible) return null
+
+    return {
+      isVisible: true,
+      suggestions,
+      selectedIndex,
+      isLoading,
+      onSetSelectIndex: setSelectedIndex,
+      onSelect: handleMentionSelect,
+      onClose: handleMentionDropdownClose,
+      query,
+      anchor: atButtonRef.current,
+      showSearchInput: true,
+      onQueryChange: setQuery,
+    }
+  }, [
+    isMentionDropdownVisible,
+    suggestions,
+    selectedIndex,
+    isLoading,
+    handleMentionSelect,
+    handleMentionDropdownClose,
+    query,
+  ])
+
   return (
     <>
       <button
@@ -93,19 +120,11 @@ export const MentionButton: Component = memo(() => {
         <i className="i-mgc-at-cute-re size-3.5" />
       </button>
 
-      <MentionDropdown
-        isVisible={isMentionDropdownVisible}
-        suggestions={suggestions}
-        selectedIndex={selectedIndex}
-        isLoading={isLoading}
-        onSelect={handleMentionSelect}
-        onSetSelectIndex={setSelectedIndex}
-        onClose={handleMentionDropdownClose}
-        query={query}
-        anchor={atButtonRef.current}
-        showSearchInput
-        onQueryChange={setQuery}
-      />
+      {dropdownProps ? (
+        <Suspense fallback={null}>
+          <MentionDropdown {...dropdownProps} />
+        </Suspense>
+      ) : null}
     </>
   )
 })

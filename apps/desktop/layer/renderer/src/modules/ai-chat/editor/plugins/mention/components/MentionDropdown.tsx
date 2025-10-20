@@ -9,7 +9,7 @@ import {
   useRole,
 } from "@floating-ui/react"
 import { RootPortal } from "@follow/components/ui/portal/index.js"
-import { cn } from "@follow/utils"
+import { cn, thenable } from "@follow/utils"
 import { useLexicalComposerContext } from "@lexical/react/LexicalComposerContext"
 import * as React from "react"
 import { useCallback, useEffect, useRef, useState } from "react"
@@ -156,6 +156,8 @@ export const MentionDropdown: React.FC<MentionDropdownProps> = ({
   showSearchInput = false,
   onQueryChange,
 }) => {
+  if (!isVisible) throw thenable
+
   const editor = useOptionalLexicalEditor()
   const dropdownRef = useRef<HTMLDivElement>(null)
   const [referenceWidth, setReferenceWidth] = useState<number>(320)
