@@ -10,13 +10,41 @@ import type { SerializedEditorState } from "lexical"
 import * as React from "react"
 import isEqual from "react-fast-compare"
 
-import { useAISettingValue } from "~/atoms/settings/ai"
-
 import { LexicalAIEditorNodes } from "../../editor"
-import { MentionComponent } from "../../editor/plugins/mention"
+import { getShortcutMarkdownValue } from "../../editor/plugins/shortcut/utils/shortcutTextValue"
 
 function onError(error: Error) {
   console.error("Lexical Read-Only Editor Error:", error)
+}
+
+function replaceShortcutTagsWithMarkdown(state: string): string {
+  try {
+    const parsed = JSON.parse(state) as Record<string, any>
+    const textNodes: Array<{ text: string }> = []
+
+    const traverse = (node: any) => {
+      if (!node) return
+      if (Array.isArray(node.children)) {
+        node.children.forEach(traverse)
+      }
+      if (node.type === "text" && typeof node.text === "string") {
+        textNodes.push(node)
+      }
+    }
+
+    traverse(parsed.root)
+
+    textNodes.forEach((node) => {
+      node.text = node.text.replaceAll(/<shortcut id="([^"]+)"><\/shortcut>/g, (_, id: string) => {
+        return getShortcutMarkdownValue(id)
+      })
+    })
+
+    return JSON.stringify(parsed)
+  } catch (error) {
+    console.error("Failed to transform shortcut tags to markdown:", error)
+    return state
+  }
 }
 
 interface UserRichTextMessageProps {
@@ -29,49 +57,12 @@ interface UserRichTextMessageProps {
 
 export const UserRichTextMessage: React.FC<UserRichTextMessageProps> = React.memo(
   ({ data, className }) => {
-    const aiSettings = useAISettingValue()
-    const { shortcuts } = aiSettings
+    const sanitizedState = React.useMemo(() => {
+      const rawState = typeof data.state === "string" ? data.state : JSON.stringify(data.state)
+      return replaceShortcutTagsWithMarkdown(rawState)
+    }, [data.state])
 
-    const shortcutMention = React.useMemo(() => {
-      const rawText = data.text
-      const normalizedText = rawText.trim()
-      if (!normalizedText) {
-        return null
-      }
-
-      const matchedShortcut = shortcuts.find((shortcut) => {
-        if (!shortcut.enabled) {
-          return false
-        }
-
-        if (shortcut.prompt === rawText) {
-          return true
-        }
-
-        return shortcut.prompt.trim() === normalizedText
-      })
-
-      if (!matchedShortcut) {
-        return null
-      }
-
-      return {
-        id: matchedShortcut.id,
-        name: matchedShortcut.name,
-        type: "shortcut" as const,
-        value: matchedShortcut.prompt,
-      }
-    }, [data.text, shortcuts])
-
-    if (shortcutMention) {
-      return (
-        <div className={cn("text-text relative cursor-text text-sm", className)}>
-          <MentionComponent mentionData={shortcutMention} />
-        </div>
-      )
-    }
-
-    const editorState = typeof data.state === "object" ? JSON.stringify(data.state) : data.state
+    const editorState = sanitizedState
 
     let initialConfig: InitialConfigType = null!
     if (!initialConfig) {

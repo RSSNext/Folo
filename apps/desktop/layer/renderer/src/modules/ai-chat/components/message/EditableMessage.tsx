@@ -12,7 +12,7 @@ import { useCallback, useEffect, useMemo, useRef, useState } from "react"
 import { useEditingMessageId, useSetEditingMessageId } from "~/modules/ai-chat/atoms/session"
 import { useChatStatus } from "~/modules/ai-chat/store/hooks"
 
-import { MentionPlugin } from "../../editor"
+import { MentionPlugin, ShortcutPlugin } from "../../editor"
 
 interface EditableMessageProps {
   messageId: string
@@ -39,7 +39,7 @@ export const EditableMessage = ({
   const initialEditorState = useMemo(() => {
     return (parts.find((part) => part.type === "data-rich-text") as any)?.data
       .state as SerializedEditorState
-  }, [])
+  }, [parts])
 
   const isEditing = editingMessageId === messageId
   const isProcessing = status === "submitted" || status === "streaming"
@@ -124,7 +124,7 @@ export const EditableMessage = ({
             onChange={handleEditorChange}
             onKeyDown={handleKeyDown}
             namespace="EditableMessageRichEditor"
-            plugins={[MentionPlugin]}
+            plugins={[MentionPlugin, ShortcutPlugin]}
           />
         </ScrollArea>
 

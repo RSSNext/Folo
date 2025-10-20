@@ -15,7 +15,7 @@ import { COMMAND_ID } from "~/modules/command/commands/id"
 import { getCommand } from "~/modules/command/hooks/use-command"
 import { useCommandShortcut } from "~/modules/command/hooks/use-command-binding"
 
-import { FileUploadPlugin, MentionPlugin } from "../../editor"
+import { FileUploadPlugin, MentionPlugin, ShortcutPlugin } from "../../editor"
 import { AIPanelRefsContext } from "../../store/AIChatContext"
 import { useChatActions, useChatScene, useChatStatus } from "../../store/hooks"
 import { AIChatSendButton } from "./AIChatSendButton"
@@ -146,7 +146,9 @@ export const ChatInput = memo(({ onSend, variant, ref: forwardedRef }: ChatInput
             onChange={handleEditorChange}
             onKeyDown={handleKeyDown}
             autoFocus
-            plugins={scene === "onboarding" ? [] : [MentionPlugin, FileUploadPlugin]}
+            plugins={
+              scene === "onboarding" ? [] : [MentionPlugin, ShortcutPlugin, FileUploadPlugin]
+            }
             namespace="AIChatRichEditor"
           />
         </ScrollArea>

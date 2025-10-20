@@ -36,11 +36,6 @@ export interface CategoryMentionData extends MentionBaseData {
   value: string
 }
 
-export interface ShortcutMentionData extends MentionBaseData {
-  type: "shortcut"
-  value: string
-}
-
 export interface ViewMentionData extends MentionBaseData {
   type: "view"
   value: FeedViewType
@@ -51,7 +46,6 @@ export type MentionData =
   | FeedMentionData
   | DateMentionData
   | CategoryMentionData
-  | ShortcutMentionData
   | ViewMentionData
 
 export type MentionType = MentionData["type"]

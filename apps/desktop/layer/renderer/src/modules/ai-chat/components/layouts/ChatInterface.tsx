@@ -41,7 +41,7 @@ import {
   useMessages,
 } from "~/modules/ai-chat/store/hooks"
 
-import { LexicalAIEditorNodes } from "../../editor"
+import { LexicalAIEditorNodes, MentionPlugin, ShortcutPlugin } from "../../editor"
 import { useAttachScrollBeyond } from "../../hooks/useAttachScrollBeyond"
 import { AIPanelRefsContext, useAIChatStore } from "../../store/AIChatContext"
 import type { AIChatContextBlock, BizUIMessage, SendingUIMessage } from "../../store/types"
@@ -185,6 +185,7 @@ const ChatInterfaceContent = ({ centerInputOnEmpty }: ChatInterfaceProps) => {
   const staticEditor = useMemo(() => {
     return createEditor({
       nodes: LexicalAIEditorNodes,
+      plugins: [MentionPlugin, ShortcutPlugin],
     })
   }, [])
 
