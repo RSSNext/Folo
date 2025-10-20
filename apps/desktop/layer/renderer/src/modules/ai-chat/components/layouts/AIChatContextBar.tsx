@@ -1,5 +1,4 @@
 import { cn } from "@follow/utils/utils"
-import { FeedViewType } from "@follow-app/client-sdk"
 import { memo, useCallback, useEffect, useRef } from "react"
 
 import { useGeneralSettingKey } from "~/atoms/settings/general"
@@ -33,7 +32,7 @@ export const AIChatContextBar: Component = memo(({ className }) => {
     return i.feedId
   })
   useEffect(() => {
-    if (typeof view === "number" && view !== FeedViewType.All) {
+    if (typeof view === "number") {
       addOrUpdateBlock({
         id: BlockSliceAction.SPECIAL_TYPES.mainView,
         type: "mainView",

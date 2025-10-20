@@ -149,6 +149,14 @@ export const useAutoTimelineSummaryShortcut = () => {
 
     const blocks: AIChatContextBlock[] = []
 
+    if (typeof view === "number") {
+      blocks.push({
+        id: BlockSliceAction.SPECIAL_TYPES.mainView,
+        type: "mainView",
+        value: `${view}`,
+      })
+    }
+
     if (normalizedFeedId && normalizedFeedId !== ROUTE_FEED_PENDING) {
       let value = normalizedFeedId
       if (normalizedFeedId.startsWith(ROUTE_FEED_IN_FOLDER)) {
@@ -175,7 +183,7 @@ export const useAutoTimelineSummaryShortcut = () => {
     }
 
     return blocks
-  }, [isAllTimeline, normalizedFeedId, unreadOnly])
+  }, [isAllTimeline, normalizedFeedId, unreadOnly, view])
 
   useEffect(() => {
     if (!contextKey || !defaultShortcut) {
