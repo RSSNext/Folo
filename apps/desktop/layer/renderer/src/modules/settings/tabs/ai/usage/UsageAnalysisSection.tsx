@@ -32,26 +32,6 @@ export const UsageAnalysisSection = () => {
 
       <Card>
         <CardContent className="h-36 p-4">
-          <div className="mb-4 flex items-center justify-between">
-            <h3 className="text-text text-sm font-medium">{t("usage_analysis.title")}</h3>
-
-            <button
-              type="button"
-              onClick={() =>
-                present({
-                  id: "detailed-usage-modal",
-                  content: DetailedUsageModal,
-                  title: t("usage_analysis.detailed_title"),
-                  modalContentClassName: "-mx-6 -mb-4",
-                })
-              }
-              className="text-text-secondary hover:text-text flex items-center gap-1 text-sm duration-200"
-            >
-              {t("usage_analysis.view_details")}
-              <i className="i-mingcute-right-line" />
-            </button>
-          </div>
-
           <div className="flex items-center gap-4">
             <UsageProgressRing percentage={usagePercentage} size="md" />
 
@@ -74,6 +54,23 @@ export const UsageAnalysisSection = () => {
                 {formatTimeRemaining(rateLimit.windowResetTime - Date.now())}
               </div>
             </div>
+          </div>
+          <div className="mt-4 flex items-center justify-between">
+            <button
+              type="button"
+              onClick={() =>
+                present({
+                  id: "detailed-usage-modal",
+                  content: DetailedUsageModal,
+                  title: t("usage_analysis.detailed_title"),
+                  modalContentClassName: "-mx-6 -mb-4",
+                })
+              }
+              className="text-text-secondary hover:text-text flex items-center gap-1 text-sm duration-200"
+            >
+              {t("usage_analysis.view_details")}
+              <i className="i-mingcute-right-line" />
+            </button>
           </div>
         </CardContent>
       </Card>

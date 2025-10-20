@@ -22,7 +22,6 @@ export const SettingAI = () => {
     <div className="mt-4">
       <SettingBuilder
         settings={[
-          UsageAnalysisSection,
           {
             type: "title",
             value: t("features.title"),
@@ -62,6 +61,12 @@ export const SettingAI = () => {
             value: t("tasks.section.title"),
           },
           TaskSchedulingSection,
+
+          {
+            type: "title",
+            value: t("usage_analysis.title"),
+          },
+          UsageAnalysisSection,
           AISecurityDisclosureSection,
         ]}
       />

@@ -1,4 +1,5 @@
 import { ActionButton } from "@follow/components/ui/button/index.js"
+import { nextFrame } from "@follow/utils"
 import type { AIChatSession } from "@follow-app/client-sdk"
 import type { ReactElement } from "react"
 import { useCallback, useMemo, useState } from "react"
@@ -22,6 +23,7 @@ import {
   useDeleteAIChatSessionMutation,
 } from "~/modules/ai-chat-session/query"
 import { AITaskModal, useCanCreateNewAITask } from "~/modules/ai-task"
+import { useSettingModal } from "~/modules/settings/modal/use-setting-modal-hack"
 
 import { AIPersistService } from "../../services"
 
@@ -95,6 +97,7 @@ export const TaskReportDropdown = ({ triggerElement, asChild = true }: TaskRepor
   const { ask } = useDialog()
   const { t } = useTranslation("ai")
   const [loadingChatId, setLoadingChatId] = useState<string | null>(null)
+  const showSettings = useSettingModal()
 
   // Only keep unread sessions for display
   const unreadSessions = useMemo(
@@ -111,10 +114,13 @@ export const TaskReportDropdown = ({ triggerElement, asChild = true }: TaskRepor
       toast.error("Please remove an existing task before creating a new one.")
       return
     }
-    present({
-      title: "New AI Task",
-      canClose: true,
-      content: () => <AITaskModal showSettingsTip />,
+    showSettings("ai")
+    nextFrame(() => {
+      present({
+        title: "New AI Task",
+        canClose: true,
+        content: () => <AITaskModal showSettingsTip />,
+      })
     })
   }
 
