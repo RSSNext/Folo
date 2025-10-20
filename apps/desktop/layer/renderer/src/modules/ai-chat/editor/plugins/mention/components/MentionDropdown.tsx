@@ -303,9 +303,10 @@ export const MentionDropdown: React.FC<MentionDropdownProps> = ({
                   value={query}
                   onChange={(e) => onQueryChange(e.target.value)}
                   onKeyDown={(e) => {
-                    if (e.key === "Enter" && suggestions[0]) {
+                    const suggestion = suggestions[selectedIndex] || suggestions[0]
+                    if (e.key === "Enter" && suggestion) {
                       e.preventDefault()
-                      onSelect(suggestions[0])
+                      onSelect(suggestion)
                     }
                   }}
                   placeholder="Search for context..."
