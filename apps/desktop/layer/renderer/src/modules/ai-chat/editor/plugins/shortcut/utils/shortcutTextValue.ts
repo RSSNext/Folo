@@ -3,7 +3,7 @@ import { getAISettings } from "~/atoms/settings/ai"
 import type { ShortcutData } from "../types"
 
 export function getShortcutTextValue(shortcutData: ShortcutData): string {
-  return `<shortcut id="${shortcutData.id}"></shortcut>`
+  return shortcutData.prompt
 }
 
 export function getShortcutDisplayTextValue(shortcutData: ShortcutData): string {
