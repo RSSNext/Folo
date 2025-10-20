@@ -20,7 +20,7 @@ import { useTranslation } from "react-i18next"
 import { toast } from "sonner"
 
 import { useCurrentModal } from "~/components/ui/modal/stacked/hooks"
-import { MentionPlugin } from "~/modules/ai-chat/editor"
+import { MentionPlugin, ShortcutPlugin } from "~/modules/ai-chat/editor"
 import { AIPersistService } from "~/modules/ai-chat/services"
 import { useCreateAITaskMutation, useUpdateAITaskMutation } from "~/modules/ai-task/query"
 import type { ScheduleType, TaskFormData } from "~/modules/ai-task/types"
@@ -242,7 +242,7 @@ export const AITaskModal = ({ task, prompt, showSettingsTip = false }: AITaskMod
                 onLengthChange={(textLength) => {
                   setPromptTextLength(textLength)
                 }}
-                plugins={[MentionPlugin]}
+                plugins={[MentionPlugin, ShortcutPlugin]}
                 namespace="AITaskPromptEditor"
                 placeholder={t("tasks.prompt_placeholder")}
                 className="min-h-[120px] resize-none text-sm leading-relaxed"

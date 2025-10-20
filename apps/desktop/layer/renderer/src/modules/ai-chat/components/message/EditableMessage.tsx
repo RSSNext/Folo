@@ -12,7 +12,7 @@ import { useCallback, useEffect, useMemo, useRef, useState } from "react"
 import { useEditingMessageId, useSetEditingMessageId } from "~/modules/ai-chat/atoms/session"
 import { useChatStatus } from "~/modules/ai-chat/store/hooks"
 
-import { MentionPlugin } from "../../editor"
+import { MentionPlugin, ShortcutPlugin } from "../../editor"
 
 interface EditableMessageProps {
   messageId: string
@@ -39,7 +39,7 @@ export const EditableMessage = ({
   const initialEditorState = useMemo(() => {
     return (parts.find((part) => part.type === "data-rich-text") as any)?.data
       .state as SerializedEditorState
-  }, [])
+  }, [parts])
 
   const isEditing = editingMessageId === messageId
   const isProcessing = status === "submitted" || status === "streaming"
@@ -116,7 +116,7 @@ export const EditableMessage = ({
     <div className={cn("relative", className)}>
       {/* Edit input */}
       <div className="bg-background/60 focus-within:ring-accent/20 focus-within:border-accent/80 border-border/80 relative overflow-hidden rounded-xl border backdrop-blur-xl duration-200 focus-within:ring-2">
-        <ScrollArea rootClassName="mx-5 my-3.5 mr-20 flex-1 overflow-auto">
+        <ScrollArea rootClassName="mr-20 flex-1 overflow-auto" viewportClassName="px-5 py-3.5">
           <LexicalRichEditor
             ref={editorRef}
             placeholder="Edit your message..."
@@ -124,7 +124,7 @@ export const EditableMessage = ({
             onChange={handleEditorChange}
             onKeyDown={handleKeyDown}
             namespace="EditableMessageRichEditor"
-            plugins={[MentionPlugin]}
+            plugins={[MentionPlugin, ShortcutPlugin]}
           />
         </ScrollArea>
 

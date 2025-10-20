@@ -1,6 +1,6 @@
 import type { LexicalEditor } from "lexical"
 
-import type { MentionDropdownPosition } from "../types"
+import type { MentionDropdownPosition } from "../../mention/types"
 
 export const calculateDropdownPosition = (
   editor: LexicalEditor,
@@ -19,20 +19,5 @@ export const calculateDropdownPosition = (
   return {
     top: rect.bottom - editorRect.top + 8, // 8px offset below cursor
     left: rect.left - editorRect.left,
-  }
-}
-
-export const scrollSelectedItemIntoView = (
-  containerRef: React.RefObject<HTMLElement>,
-  selectedIndex: number,
-): void => {
-  if (!containerRef.current || selectedIndex < 0) return
-
-  const selectedElement = containerRef.current.children[selectedIndex] as HTMLElement
-  if (selectedElement) {
-    selectedElement.scrollIntoView({
-      block: "nearest",
-      behavior: "smooth",
-    })
   }
 }

@@ -1,25 +1,13 @@
-import {
-  autoUpdate,
-  flip,
-  offset,
-  shift,
-  useDismiss,
-  useFloating,
-  useInteractions,
-  useRole,
-} from "@floating-ui/react"
-import { RootPortal } from "@follow/components/ui/portal/index.js"
 import { cn, thenable } from "@follow/utils"
-import { useLexicalComposerContext } from "@lexical/react/LexicalComposerContext"
 import * as React from "react"
-import { useCallback, useEffect, useRef, useState } from "react"
+import { useCallback } from "react"
 import { useTranslation } from "react-i18next"
 
+import { TypeaheadDropdown } from "../../shared/components/TypeaheadDropdown"
 import { MENTION_TRIGGER_PATTERN } from "../constants"
 import { RANGE_WITH_LABEL_KEY } from "../hooks/dateMentionConfig"
 import { getDateMentionDisplayName } from "../hooks/dateMentionUtils"
 import type { MentionData } from "../types"
-import { calculateDropdownPosition } from "../utils/positioning"
 import { MentionTypeIcon } from "./shared/MentionTypeIcon"
 
 interface MentionDropdownProps {
@@ -100,15 +88,7 @@ const MentionSuggestionItem = React.memo(
         {...props}
       >
         {/* Icon */}
-        <span
-          className={cn(
-            "mr-1.5 inline-flex size-4 items-center justify-center",
-            mention.type === "entry" && "text-blue-500",
-            mention.type === "feed" && "text-orange-500",
-            mention.type === "category" && "text-green-500",
-            mention.type === "date" && "text-purple-500",
-          )}
-        >
+        <span className="mr-1.5 inline-flex size-4 items-center justify-center">
           <MentionTypeIcon type={mention.type} value={mention.value} />
         </span>
 
@@ -140,153 +120,29 @@ export const MentionDropdown: React.FC<MentionDropdownProps> = ({
 }) => {
   if (!isVisible) throw thenable
 
-  const [editor] = useLexicalComposerContext()
-  const dropdownRef = useRef<HTMLDivElement>(null)
-  const [referenceWidth, setReferenceWidth] = useState<number>(320)
-
-  // Create virtual reference element based on cursor position
-  const virtualReference = useRef({
-    getBoundingClientRect: () => {
-      const position = calculateDropdownPosition(editor)
-      const editorElement = editor.getRootElement()
-
-      if (!position || !editorElement) {
-        // Fallback to editor element
-        return (
-          editorElement?.getBoundingClientRect() || {
-            top: 0,
-            left: 0,
-            bottom: 0,
-            right: 0,
-            width: 0,
-            height: 0,
-            x: 0,
-            y: 0,
-          }
-        )
-      }
-
-      const editorRect = editorElement.getBoundingClientRect()
-
-      return {
-        top: editorRect.top + position.top,
-        left: editorRect.left + position.left,
-        bottom: editorRect.top + position.top,
-        right: editorRect.left + position.left,
-        width: 0,
-        height: 0,
-        x: editorRect.left + position.left,
-        y: editorRect.top + position.top,
-      }
-    },
-  })
-
-  const { refs, floatingStyles, context } = useFloating({
-    open: isVisible,
-    onOpenChange: (open) => {
-      if (!open) onClose()
-    },
-    middleware: [
-      offset(8),
-      flip({ fallbackPlacements: ["bottom-start", "top-start", "bottom-end", "top-end"] }),
-      shift({ padding: 8 }),
-    ],
-    whileElementsMounted: autoUpdate,
-    placement: "bottom-start",
-  })
-
-  const dismiss = useDismiss(context, {
-    enabled: isVisible,
-  })
-
-  const role = useRole(context, {
-    role: "listbox",
-  })
-
-  const { getFloatingProps } = useInteractions([dismiss, role])
-
-  // Handle scroll to keep selected item in view
-  useEffect(() => {
-    if (isVisible && dropdownRef.current && selectedIndex >= 0) {
-      const listContainer = dropdownRef.current.querySelector('[role="listbox"]')
-      if (listContainer) {
-        const selectedElement = listContainer.children[selectedIndex] as HTMLElement
-        if (selectedElement) {
-          selectedElement.scrollIntoView({
-            block: "nearest",
-            behavior: "smooth",
-          })
-        }
-      }
-    }
-  }, [selectedIndex, isVisible])
-
-  // Set virtual reference element based on cursor position and calculate width
-  useEffect(() => {
-    if (isVisible) {
-      refs.setReference(virtualReference.current)
-
-      const editorElement = editor.getRootElement()
-      if (editorElement) {
-        const rect = editorElement.getBoundingClientRect()
-        setReferenceWidth(rect.width || 320)
-      }
-    }
-  }, [editor, refs, isVisible, query]) // Add query as dependency to update position when typing
-
   return (
-    <RootPortal>
-      {isVisible && (
-        <div
-          ref={refs.setFloating}
-          style={floatingStyles}
-          className="z-[1000]"
-          {...getFloatingProps()}
-        >
-          <div
-            ref={dropdownRef}
-            className={cn(
-              "bg-material-medium backdrop-blur-background text-text shadow-context-menu",
-              "min-w-32 overflow-hidden rounded-[6px] border p-1",
-              "text-body",
-            )}
-            style={{
-              width: Math.max(referenceWidth, 200),
-              maxWidth: 320,
-            }}
-          >
-            {isLoading ? (
-              <div className="text-text-secondary flex items-center gap-2 px-2.5 py-1.5">
-                <i className="i-mgc-loading-3-cute-re size-4 animate-spin" />
-                <span className="text-sm">Searching...</span>
-              </div>
-            ) : suggestions.length === 0 ? (
-              <div className="text-text-tertiary px-2.5 py-1.5 text-center">
-                <span className="text-sm">No matches found</span>
-                {query && (
-                  <div className="text-text-quaternary mt-1 text-xs">
-                    Try a different search term
-                  </div>
-                )}
-              </div>
-            ) : (
-              <div role="listbox" aria-label="Mention suggestions">
-                {suggestions.map((mention, index) => (
-                  <MentionSuggestionItem
-                    key={`${mention.type}-${mention.id}`}
-                    mention={mention}
-                    isSelected={index === selectedIndex}
-                    onMouseMove={() => onSetSelectIndex(index)}
-                    onClick={onSelect}
-                    query={query}
-                  />
-                ))}
-              </div>
-            )}
-          </div>
-        </div>
+    <TypeaheadDropdown
+      isVisible={isVisible}
+      items={suggestions}
+      selectedIndex={selectedIndex}
+      isLoading={isLoading}
+      onSelect={onSelect}
+      onSetSelectIndex={onSetSelectIndex}
+      onClose={onClose}
+      query={query}
+      ariaLabel="Mention suggestions"
+      getKey={(m) => `${m.type}-${m.id}`}
+      renderItem={(mention, _index, isSelected, handlers) => (
+        <MentionSuggestionItem
+          key={`${mention.type}-${mention.id}`}
+          mention={mention}
+          isSelected={isSelected}
+          onMouseMove={handlers.onMouseMove}
+          onClick={() => handlers.onClick()}
+          query={query}
+        />
       )}
-    </RootPortal>
+    />
   )
 }
 

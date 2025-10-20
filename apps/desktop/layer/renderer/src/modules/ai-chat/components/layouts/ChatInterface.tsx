@@ -11,7 +11,7 @@ import { tracker } from "@follow/tracker"
 import { clsx, cn, detectIsEditableElement, nextFrame } from "@follow/utils"
 import { ErrorBoundary } from "@sentry/react"
 import type { EditorState } from "lexical"
-import { createEditor } from "lexical"
+import { $createParagraphNode, $getRoot, createEditor } from "lexical"
 import { AnimatePresence } from "motion/react"
 import { nanoid } from "nanoid"
 import type { FC, RefObject } from "react"
@@ -41,7 +41,7 @@ import {
   useMessages,
 } from "~/modules/ai-chat/store/hooks"
 
-import { LexicalAIEditorNodes } from "../../editor"
+import { LexicalAIEditorNodes, ShortcutNode } from "../../editor"
 import { useAttachScrollBeyond } from "../../hooks/useAttachScrollBeyond"
 import { AIPanelRefsContext, useAIChatStore } from "../../store/AIChatContext"
 import type { AIChatContextBlock, BizUIMessage, SendingUIMessage } from "../../store/types"
@@ -394,7 +394,30 @@ const ChatInterfaceContent = ({ centerInputOnEmpty }: ChatInterfaceProps) => {
         )}
       >
         {error && <CollapsibleError error={error} />}
-        <ChatShortcutsRow onSelect={(prompt) => handleSendMessage(prompt)} />
+        <ChatShortcutsRow
+          onSelect={(shortcutData) => {
+            const tempEditor = createEditor({
+              nodes: LexicalAIEditorNodes,
+            })
+
+            tempEditor.update(
+              () => {
+                const root = $getRoot()
+                root.clear()
+                const paragraph = $createParagraphNode()
+                const shortcutNode = new ShortcutNode(shortcutData)
+                paragraph.append(shortcutNode)
+                root.append(paragraph)
+              },
+              {
+                discrete: true,
+              },
+            )
+
+            const editorState = tempEditor.getEditorState()
+            handleSendMessage(editorState)
+          }}
+        />
         <ChatInput onSend={handleSendMessage} variant={!hasMessages ? "minimal" : "default"} />
 
         {(!centerInputOnEmpty || hasMessages) && (

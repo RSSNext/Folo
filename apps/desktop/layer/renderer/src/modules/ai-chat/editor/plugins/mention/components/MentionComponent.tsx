@@ -14,6 +14,7 @@ import { $getNodeByKey } from "lexical"
 import * as React from "react"
 import { useTranslation } from "react-i18next"
 
+import { MentionLikePill } from "../../shared/components/MentionLikePill"
 import { RANGE_WITH_LABEL_KEY } from "../hooks/dateMentionConfig"
 import {
   createDateMentionData,
@@ -52,9 +53,6 @@ const MentionTooltipContent = ({ mentionData }: { mentionData: MentionData }) =>
       }
       case "date": {
         return "bg-purple"
-      }
-      case "shortcut": {
-        return "bg-amber-700"
       }
     }
   }
@@ -114,9 +112,6 @@ const getMentionStyles = (mentionData: MentionData) => {
       const viewDef = getView(value as number)
       return cn(baseStyles, viewDef!.mentionClassName)
     }
-    case "shortcut": {
-      return cn(baseStyles, "text-amber-700 border-amber-700/20", "hover:border-amber-700/30")
-    }
   }
 }
 
@@ -133,11 +128,7 @@ export const MentionComponent: React.FC<MentionComponentProps> = ({
     if (mentionData.type === "date") {
       return getDateMentionDisplayName(mentionData, t, language, RANGE_WITH_LABEL_KEY)
     }
-    if (mentionData.type === "shortcut") {
-      return mentionData.name
-    } else {
-      return `@${mentionData.name}`
-    }
+    return `@${mentionData.name}`
   }, [mentionData, t, language])
 
   const handleDateRangeChange = React.useCallback(
@@ -180,14 +171,14 @@ export const MentionComponent: React.FC<MentionComponentProps> = ({
 
   const mentionSpan = (
     <TooltipTrigger asChild>
-      <span className={cn(getMentionStyles(mentionData), className)}>
-        <MentionTypeIcon
-          type={mentionData.type}
-          value={mentionData.value}
-          className="mr-1 translate-y-[2px]"
-        />
-        <span>{displayName}</span>
-      </span>
+      <MentionLikePill
+        className={cn(getMentionStyles(mentionData), className)}
+        icon={
+          <MentionTypeIcon type={mentionData.type} value={mentionData.value} className="size-3" />
+        }
+      >
+        {displayName}
+      </MentionLikePill>
     </TooltipTrigger>
   )
 

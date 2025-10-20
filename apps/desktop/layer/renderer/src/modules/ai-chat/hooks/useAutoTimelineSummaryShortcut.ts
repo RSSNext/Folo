@@ -1,7 +1,9 @@
-import { getEditorStateJSONString } from "@follow/components/ui/lexical-rich-editor/utils.js"
+import { convertLexicalToMarkdown } from "@follow/components/ui/lexical-rich-editor/utils.js"
 import { FeedViewType } from "@follow/constants"
 import { DEFAULT_SUMMARIZE_TIMELINE_SHORTCUT_ID } from "@follow/shared/settings/defaults"
 import { getCategoryFeedIds } from "@follow/store/subscription/getter"
+import type { LexicalEditor } from "lexical"
+import { $createParagraphNode, $getRoot, createEditor } from "lexical"
 import { nanoid } from "nanoid"
 import { useEffect, useMemo, useRef } from "react"
 
@@ -11,6 +13,7 @@ import { ROUTE_FEED_IN_FOLDER, ROUTE_FEED_PENDING } from "~/constants"
 import { useRouteParamsSelector } from "~/hooks/biz/useRouteParams"
 
 import { AI_CHAT_SPECIAL_ID_PREFIX } from "../constants"
+import { LexicalAIEditorNodes, ShortcutNode } from "../editor"
 import { AIPersistService } from "../services"
 import { useAIChatStore } from "../store/AIChatContext"
 import { useBlockActions, useChatActions, useCurrentChatId } from "../store/hooks"
@@ -21,7 +24,7 @@ import { isTimelineSummaryAutoContext } from "./useTimelineSummaryAutoContext"
 const ONE_HOUR = 60 * 60 * 1000
 
 const buildSummaryMessage = (
-  prompt: string,
+  editor: LexicalEditor,
   contextBlocks: AIChatContextBlock[],
   messageId: string,
 ): SendingUIMessage => {
@@ -37,8 +40,8 @@ const buildSummaryMessage = (
   parts.push({
     type: "data-rich-text",
     data: {
-      state: getEditorStateJSONString(prompt),
-      text: prompt,
+      state: JSON.stringify(editor.getEditorState().toJSON()),
+      text: convertLexicalToMarkdown(editor),
     },
   })
 
@@ -214,7 +217,7 @@ export const useAutoTimelineSummaryShortcut = () => {
 
     const run = async () => {
       try {
-        const prompt = defaultShortcut.prompt.trim()
+        const { prompt, id, name } = defaultShortcut
         if (!prompt) {
           return
         }
@@ -253,7 +256,25 @@ export const useAutoTimelineSummaryShortcut = () => {
         await chatActions.switchToChat(timelineSummaryChatId)
         blockActions.clearBlocks({ keepSpecialTypes: true })
 
-        const message = buildSummaryMessage(prompt, contextBlocks, nanoid())
+        const tempEditor = createEditor({
+          nodes: LexicalAIEditorNodes,
+        })
+
+        tempEditor.update(
+          () => {
+            const root = $getRoot()
+            root.clear()
+            const paragraph = $createParagraphNode()
+            const shortcutNode = new ShortcutNode({ id, name, prompt })
+            paragraph.append(shortcutNode)
+            root.append(paragraph)
+          },
+          {
+            discrete: true,
+          },
+        )
+
+        const message = buildSummaryMessage(tempEditor, contextBlocks, nanoid())
 
         await chatActions.sendMessage(message, {
           body: { scene: "general" },
