@@ -162,18 +162,12 @@ export const MentionComponent: React.FC<MentionComponentProps> = ({
       })
 
       // Update the node in the editor - this will trigger a re-render
-      editor.update(
-        () => {
-          const node = $getNodeByKey(nodeKey)
-          if ($isMentionNode(node)) {
-            node.setMentionData(newMentionData)
-          }
-        },
-        {
-          // Ensure the decorator is updated immediately
-          discrete: true,
-        },
-      )
+      editor.update(() => {
+        const node = $getNodeByKey(nodeKey)
+        if ($isMentionNode(node)) {
+          node.setMentionData(newMentionData)
+        }
+      })
     },
     [nodeKey, editor, t, language],
   )
