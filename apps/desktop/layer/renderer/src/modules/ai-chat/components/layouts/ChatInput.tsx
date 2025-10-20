@@ -8,8 +8,12 @@ import type { EditorState, LexicalEditor } from "lexical"
 import { $getRoot } from "lexical"
 import type { Ref } from "react"
 import { memo, use, useCallback, useImperativeHandle, useRef, useState } from "react"
+import { matchKeyBindingPress, parseKeybinding } from "tinykeys"
 
 import { AIChatContextBar } from "~/modules/ai-chat/components/layouts/AIChatContextBar"
+import { COMMAND_ID } from "~/modules/command/commands/id"
+import { getCommand } from "~/modules/command/hooks/use-command"
+import { useCommandShortcut } from "~/modules/command/hooks/use-command-binding"
 
 import { FileUploadPlugin, MentionPlugin } from "../../editor"
 import { AIPanelRefsContext } from "../../store/AIChatContext"
@@ -94,8 +98,30 @@ export const ChatInput = memo(({ onSend, variant, ref: forwardedRef }: ChatInput
     void handleSend()
   }, [handleSend])
 
+  const toggleAIChatShortcut = useCommandShortcut(COMMAND_ID.global.toggleAIChat)
+
   const handleKeyDown = useCallback(
     (event: KeyboardEvent) => {
+      // Check if the event matches the toggleAIChat shortcut using tinykeys utilities
+      // Handle comma-separated shortcuts (e.g., "meta+i, ctrl+i")
+      const shortcuts = toggleAIChatShortcut.split(",").map((s) => s.trim())
+
+      const matchesToggleShortcut = shortcuts.some((shortcut) => {
+        const presses = parseKeybinding(shortcut)
+
+        // For single key shortcuts (not sequences), check if the first press matches
+        return presses.length === 1 && presses[0] && matchKeyBindingPress(event, presses[0])
+      })
+
+      if (matchesToggleShortcut) {
+        event.preventDefault()
+        event.stopPropagation()
+
+        getCommand(COMMAND_ID.global.toggleAIChat)?.run()
+
+        return true
+      }
+
       if (event.key === "Enter" && !event.shiftKey) {
         event.preventDefault()
         if (isProcessing) {
@@ -107,7 +133,7 @@ export const ChatInput = memo(({ onSend, variant, ref: forwardedRef }: ChatInput
 
       return false
     },
-    [handleSend, isProcessing],
+    [handleSend, isProcessing, toggleAIChatShortcut],
   )
 
   return (
