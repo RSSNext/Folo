@@ -23,4 +23,6 @@ export interface ChatSlice {
 
   // Scene
   scene: "general" | "onboarding" | "timeline-summary"
+
+  timelineSummaryManualOverride: boolean
 }

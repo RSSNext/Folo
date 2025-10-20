@@ -9,8 +9,10 @@ import {
   setAIPanelVisibility,
 } from "~/atoms/settings/ai"
 import { FocusablePresets } from "~/components/common/Focusable"
+import { getRouteParams } from "~/hooks/biz/useRouteParams"
 
 import { useChatActions } from "../store/hooks"
+import { isTimelineSummaryAutoContext } from "./useTimelineSummaryAutoContext"
 
 export const useAIShortcut = () => {
   const isFocus = useGlobalFocusableScopeSelector(FocusablePresets.isAIChat)
@@ -22,6 +24,10 @@ export const useAIShortcut = () => {
       "$mod+n": (e) => {
         e.preventDefault()
         // New chat
+        const { view, entryId } = getRouteParams()
+        if (isTimelineSummaryAutoContext({ view, entryId })) {
+          chatActions.setTimelineSummaryManualOverride(true)
+        }
         chatActions.newChat()
       },
       "$mod+w": (e) => {

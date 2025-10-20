@@ -293,4 +293,17 @@ export class ChatSliceActions {
   setScene = (scene: ChatSlice["scene"]) => {
     this.set((state) => ({ ...state, scene }))
   }
+
+  setTimelineSummaryManualOverride = (override: boolean) => {
+    this.set((state) => {
+      if (state.timelineSummaryManualOverride === override) {
+        return state
+      }
+      return { ...state, timelineSummaryManualOverride: override }
+    })
+  }
+
+  getTimelineSummaryManualOverride = () => {
+    return this.get().timelineSummaryManualOverride
+  }
 }

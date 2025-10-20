@@ -6,6 +6,7 @@ import { useCallback } from "react"
 import { useTranslation } from "react-i18next"
 
 import { AIChatPanelStyle, setAIPanelVisibility, useAIChatPanelStyle } from "~/atoms/settings/ai"
+import { useTimelineSummaryAutoContext } from "~/modules/ai-chat/hooks/useTimelineSummaryAutoContext"
 import { useBlockActions, useChatActions, useCurrentTitle } from "~/modules/ai-chat/store/hooks"
 
 import { useAIRootState } from "../../store/AIChatContext"
@@ -28,6 +29,7 @@ const ChatHeaderLayout = ({
   const chatActions = useChatActions()
   const blockActions = useBlockActions()
   const { t } = useTranslation("ai")
+  const shouldDisableTimelineSummary = useTimelineSummaryAutoContext()
 
   const displayTitle = currentTitle
 
@@ -38,9 +40,13 @@ const ChatHeaderLayout = ({
       return
     }
 
+    if (shouldDisableTimelineSummary) {
+      chatActions.setTimelineSummaryManualOverride(true)
+    }
+
     chatActions.newChat()
     blockActions.clearBlocks({ keepSpecialTypes: true })
-  }, [chatActions, blockActions])
+  }, [chatActions, blockActions, shouldDisableTimelineSummary])
 
   const isFloating = useAIChatPanelStyle() === AIChatPanelStyle.Floating
 

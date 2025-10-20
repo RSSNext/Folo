@@ -14,6 +14,7 @@ import {
   DropdownMenuTrigger,
 } from "~/components/ui/dropdown-menu/dropdown-menu"
 import { useDialog, useModalStack } from "~/components/ui/modal/stacked/hooks"
+import { useTimelineSummaryAutoContext } from "~/modules/ai-chat/hooks/useTimelineSummaryAutoContext"
 import { useChatActions, useCurrentChatId } from "~/modules/ai-chat/store/hooks"
 import { AIChatSessionService } from "~/modules/ai-chat-session"
 import {
@@ -89,6 +90,7 @@ export const TaskReportDropdown = ({ triggerElement, asChild = true }: TaskRepor
   const sessions = useAIChatSessionListQuery()
   const currentChatId = useCurrentChatId()
   const chatActions = useChatActions()
+  const shouldDisableTimelineSummary = useTimelineSummaryAutoContext()
   const deleteSessionMutation = useDeleteAIChatSessionMutation()
   const { ask } = useDialog()
   const { t } = useTranslation("ai")
@@ -155,6 +157,9 @@ export const TaskReportDropdown = ({ triggerElement, asChild = true }: TaskRepor
         toast.success(t("delete_chat_success"))
 
         if (chatId === currentChatId) {
+          if (shouldDisableTimelineSummary) {
+            chatActions.setTimelineSummaryManualOverride(true)
+          }
           chatActions.newChat()
         }
       } catch (error) {
@@ -164,7 +169,15 @@ export const TaskReportDropdown = ({ triggerElement, asChild = true }: TaskRepor
         setLoadingChatId(null)
       }
     },
-    [sessions, ask, t, currentChatId, chatActions, deleteSessionMutation],
+    [
+      sessions,
+      ask,
+      t,
+      currentChatId,
+      chatActions,
+      deleteSessionMutation,
+      shouldDisableTimelineSummary,
+    ],
   )
 
   const defaultTrigger = (

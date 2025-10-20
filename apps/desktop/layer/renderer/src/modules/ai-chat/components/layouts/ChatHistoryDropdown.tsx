@@ -13,6 +13,7 @@ import {
 } from "~/components/ui/dropdown-menu/dropdown-menu"
 import { useDialog } from "~/components/ui/modal/stacked/hooks"
 import { useChatHistory } from "~/modules/ai-chat/hooks/useChatHistory"
+import { useTimelineSummaryAutoContext } from "~/modules/ai-chat/hooks/useTimelineSummaryAutoContext"
 import { AIPersistService } from "~/modules/ai-chat/services"
 import { useChatActions, useCurrentChatId } from "~/modules/ai-chat/store/hooks"
 
@@ -28,6 +29,7 @@ export const ChatHistoryDropdown = ({
   const { t } = useTranslation("ai")
   const chatActions = useChatActions()
   const currentChatId = useCurrentChatId()
+  const shouldDisableTimelineSummary = useTimelineSummaryAutoContext()
   const { ask } = useDialog()
   const [deletingChatId, setDeletingChatId] = useState<string | null>(null)
   const { sessions, loading, loadHistory } = useChatHistory()
@@ -64,6 +66,9 @@ export const ChatHistoryDropdown = ({
         toast.success(t("delete_chat_success"))
 
         if (chatId === currentChatId) {
+          if (shouldDisableTimelineSummary) {
+            chatActions.setTimelineSummaryManualOverride(true)
+          }
           chatActions.newChat()
         }
 
@@ -75,7 +80,7 @@ export const ChatHistoryDropdown = ({
         setDeletingChatId(null)
       }
     },
-    [sessions, ask, t, currentChatId, loadHistory, chatActions],
+    [sessions, ask, t, currentChatId, loadHistory, chatActions, shouldDisableTimelineSummary],
   )
 
   const defaultTrigger = (

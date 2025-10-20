@@ -6,14 +6,16 @@ import { nanoid } from "nanoid"
 import { useEffect, useMemo, useRef } from "react"
 
 import { useAISettingValue } from "~/atoms/settings/ai"
-import { ROUTE_ENTRY_PENDING, ROUTE_FEED_IN_FOLDER, ROUTE_FEED_PENDING } from "~/constants"
+import { ROUTE_FEED_IN_FOLDER, ROUTE_FEED_PENDING } from "~/constants"
 import { useRouteParamsSelector } from "~/hooks/biz/useRouteParams"
 
 import { AI_CHAT_SPECIAL_ID_PREFIX } from "../constants"
 import { AIPersistService } from "../services"
+import { useAIChatStore } from "../store/AIChatContext"
 import { useBlockActions, useChatActions, useCurrentChatId } from "../store/hooks"
 import { BlockSliceAction } from "../store/slices/block.slice"
 import type { AIChatContextBlock, SendingUIMessage } from "../store/types"
+import { isTimelineSummaryAutoContext } from "./useTimelineSummaryAutoContext"
 
 const ONE_HOUR = 60 * 60 * 1000
 
@@ -75,6 +77,9 @@ export const useAutoTimelineSummaryShortcut = () => {
   const chatActions = useChatActions()
   const blockActions = useBlockActions()
   const currentChatId = useCurrentChatId()
+  const timelineSummaryManualOverride = useAIChatStore()(
+    (state) => state.timelineSummaryManualOverride,
+  )
 
   const automationStateRef = useRef<{
     contextKey: string | null
@@ -85,9 +90,9 @@ export const useAutoTimelineSummaryShortcut = () => {
     promise: null,
     failed: false,
   })
+  const previousContextKeyRef = useRef<string | null>(null)
 
-  const isEntryFocused = entryId && entryId !== ROUTE_ENTRY_PENDING
-  const isAllTimeline = view === FeedViewType.All && !isEntryFocused
+  const isAllTimeline = isTimelineSummaryAutoContext({ view, entryId })
 
   const defaultShortcut = useMemo(() => {
     const shortcuts = aiSettings.shortcuts ?? []
@@ -106,6 +111,13 @@ export const useAutoTimelineSummaryShortcut = () => {
     const keyParts = [`timeline:${timelineId ?? "all"}`, `feed:${normalizedFeedId}`]
     return keyParts.join("|")
   }, [isAllTimeline, timelineId, normalizedFeedId])
+
+  useEffect(() => {
+    if (previousContextKeyRef.current !== contextKey) {
+      chatActions.setTimelineSummaryManualOverride(false)
+      previousContextKeyRef.current = contextKey
+    }
+  }, [chatActions, contextKey])
 
   const previousIsAllTimelineRef = useRef(isAllTimeline)
 
@@ -169,6 +181,10 @@ export const useAutoTimelineSummaryShortcut = () => {
       if (automationStateRef.current.failed) {
         return
       }
+    }
+
+    if (timelineSummaryManualOverride) {
+      return
     }
 
     const run = async () => {
@@ -239,5 +255,6 @@ export const useAutoTimelineSummaryShortcut = () => {
     normalizedFeedId,
     timelineId,
     view,
+    timelineSummaryManualOverride,
   ])
 }
