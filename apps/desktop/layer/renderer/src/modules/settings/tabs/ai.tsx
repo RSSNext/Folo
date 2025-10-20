@@ -15,6 +15,11 @@ import { UsageAnalysisSection } from "./ai/usage"
 const SettingBuilder = createSettingBuilder(useAISettingValue)
 const defineSettingItem = createDefineSettingItem(useAISettingValue, setAISetting)
 
+export const AI_SETTING_SECTION_IDS = {
+  shortcuts: "settings-ai-shortcuts",
+  tasks: "settings-ai-tasks",
+} as const
+
 export const SettingAI = () => {
   const { t } = useTranslation("ai")
 
@@ -47,6 +52,7 @@ export const SettingAI = () => {
           {
             type: "title",
             value: t("shortcuts.title"),
+            id: AI_SETTING_SECTION_IDS.shortcuts,
           },
           AIShortcutsSection,
 
@@ -59,6 +65,7 @@ export const SettingAI = () => {
           {
             type: "title",
             value: t("tasks.section.title"),
+            id: AI_SETTING_SECTION_IDS.tasks,
           },
           TaskSchedulingSection,
 

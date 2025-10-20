@@ -5,6 +5,7 @@ import { useTranslation } from "react-i18next"
 
 import { useAISettingValue } from "~/atoms/settings/ai"
 import { useSettingModal } from "~/modules/settings/modal/use-setting-modal-hack"
+import { AI_SETTING_SECTION_IDS } from "~/modules/settings/tabs/ai"
 import { useCreateAIShortcutModal } from "~/modules/settings/tabs/ai/shortcuts/hooks"
 
 import { useMainEntryId } from "../../hooks/useMainEntryId"
@@ -44,7 +45,7 @@ export const ChatShortcutsRow: React.FC<ChatShortcutsRowProps> = ({ onSelect }) 
 
   const handleAddShortcut = useCreateAIShortcutModal()
   const handleCustomize = useCallback(() => {
-    showSettings("ai")
+    showSettings({ tab: "ai", section: AI_SETTING_SECTION_IDS.shortcuts })
     nextFrame(() => {
       handleAddShortcut()
     })

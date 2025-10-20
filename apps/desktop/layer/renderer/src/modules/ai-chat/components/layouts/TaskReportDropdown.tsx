@@ -24,6 +24,7 @@ import {
 } from "~/modules/ai-chat-session/query"
 import { AITaskModal, useCanCreateNewAITask } from "~/modules/ai-task"
 import { useSettingModal } from "~/modules/settings/modal/use-setting-modal-hack"
+import { AI_SETTING_SECTION_IDS } from "~/modules/settings/tabs/ai"
 
 import { AIPersistService } from "../../services"
 
@@ -114,7 +115,7 @@ export const TaskReportDropdown = ({ triggerElement, asChild = true }: TaskRepor
       toast.error("Please remove an existing task before creating a new one.")
       return
     }
-    showSettings("ai")
+    showSettings({ tab: "ai", section: AI_SETTING_SECTION_IDS.tasks })
     nextFrame(() => {
       present({
         title: "New AI Task",
