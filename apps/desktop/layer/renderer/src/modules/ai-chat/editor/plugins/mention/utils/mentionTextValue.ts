@@ -1,7 +1,10 @@
+import { getView } from "@follow/constants"
+import { getFeedById } from "@follow/store/feed/getter"
 import { getCategoryFeedIds } from "@follow/store/subscription/getter"
 
 import { ROUTE_FEED_IN_FOLDER } from "~/constants"
 import { getRouteParams } from "~/hooks/biz/useRouteParams"
+import { getI18n } from "~/i18n"
 
 import type { MentionData } from "../types"
 
@@ -19,4 +22,33 @@ export function getMentionTextValue(mentionData: MentionData): string {
   }
 
   return `<mention-${type} id="${value}"></mention-${type}>`
+}
+
+export function getMentionDisplayTextValue(mentionData: MentionData): string {
+  const { type, value } = mentionData
+
+  switch (type) {
+    case "category": {
+      if (typeof value === "string" && value.startsWith(ROUTE_FEED_IN_FOLDER)) {
+        const { view } = getRouteParams()
+        const ids = getCategoryFeedIds(value.slice(ROUTE_FEED_IN_FOLDER.length), view)
+        const feedNames = ids.map((id) => getFeedById(id)?.title).join(", ")
+        return feedNames
+      }
+      return "Unknown Category"
+    }
+
+    case "view": {
+      const viewDef = getView(value)
+      const viewKey = viewDef?.name
+
+      if (viewKey) {
+        return getI18n().t(viewKey, { ns: "common" })
+      }
+      return "Unknown View"
+    }
+    default: {
+      return value
+    }
+  }
 }

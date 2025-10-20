@@ -117,7 +117,6 @@
   "mentions.date.weekday.this.label": "今週{{weekday}}",
   "personalize.description": "あなた自身について教えてください。そうすれば、パーソナライズされたAIの応答が得られます。",
   "personalize.prompt.help": "これにより、AIはあなたの好みに基づいてパーソナライズされた応答を提供できます。",
-  "personalize.prompt.label": "個人用プロンプト",
   "personalize.prompt.placeholder": "あなた自身について、どのようにコンテンツを読みたいかを教えてください...",
   "personalize.saved": "パーソナライズが正常に保存されました",
   "personalize.title": "パーソナライズ",

@@ -1,6 +1,7 @@
-import { cn } from "@follow/utils"
+import { cn, stopPropagation } from "@follow/utils"
 import { TRANSFORMERS } from "@lexical/markdown"
 import { AutoFocusPlugin } from "@lexical/react/LexicalAutoFocusPlugin"
+import { AutoLinkPlugin } from "@lexical/react/LexicalAutoLinkPlugin"
 import type { InitialConfigType } from "@lexical/react/LexicalComposer"
 import { LexicalComposer } from "@lexical/react/LexicalComposer"
 import { ContentEditable } from "@lexical/react/LexicalContentEditable"
@@ -12,12 +13,18 @@ import { ListPlugin } from "@lexical/react/LexicalListPlugin"
 import { MarkdownShortcutPlugin } from "@lexical/react/LexicalMarkdownShortcutPlugin"
 import { OnChangePlugin } from "@lexical/react/LexicalOnChangePlugin"
 import { RichTextPlugin } from "@lexical/react/LexicalRichTextPlugin"
+import { TabIndentationPlugin } from "@lexical/react/LexicalTabIndentationPlugin"
 import type { LexicalEditor } from "lexical"
 import { $getRoot } from "lexical"
 import { useImperativeHandle, useState } from "react"
 
 import { LexicalRichEditorNodes } from "./nodes"
-import { KeyboardPlugin } from "./plugins"
+import {
+  CodeHighlightingPlugin,
+  ExitCodeBoundaryPlugin,
+  KeyboardPlugin,
+  TripleBacktickTogglePlugin,
+} from "./plugins"
 import { StringLengthChangePlugin } from "./plugins/string-length-change"
 import { defaultLexicalTheme } from "./theme"
 import type { BuiltInPlugins, LexicalRichEditorProps, LexicalRichEditorRef } from "./types"
@@ -31,8 +38,29 @@ const defaultEnabledPlugins: BuiltInPlugins = {
   list: true,
   link: true,
   autoFocus: true,
+  autoLink: true,
+  tabIndentation: true,
 }
 
+const URL_MATCHER =
+  /((https?:\/\/(www\.)?)|(www\.))[-\w@:%.+~#=]{1,256}\.[a-zA-Z0-9()]{1,6}\b([-\w()@:%+.~#?&/=]*)/
+
+const MATCHERS = [
+  (text: string) => {
+    const match = URL_MATCHER.exec(text)
+    if (match === null) {
+      return null
+    }
+    const fullMatch = match[0]
+    return {
+      index: match.index,
+      length: fullMatch.length,
+      text: fullMatch,
+      url: fullMatch.startsWith("http") ? fullMatch : `https://${fullMatch}`,
+      attributes: { rel: "noreferrer", target: "_blank" },
+    }
+  },
+]
 export const LexicalRichEditor = function LexicalRichEditor({
   ref,
   placeholder = "Enter your message...",
@@ -84,6 +112,7 @@ export const LexicalRichEditor = function LexicalRichEditor({
         <RichTextPlugin
           contentEditable={
             <ContentEditable
+              onContextMenu={stopPropagation}
               className={cn(
                 "scrollbar-none text-text placeholder:text-text-secondary size-full cursor-text",
                 "size-full resize-none bg-transparent",
@@ -103,7 +132,8 @@ export const LexicalRichEditor = function LexicalRichEditor({
         {onChange && <OnChangePlugin onChange={onChange} />}
         {onLengthChange && <StringLengthChangePlugin onChange={onLengthChange} />}
         <EditorRefPlugin editorRef={setEditorRef} />
-
+        {enabledPlugins.tabIndentation && <TabIndentationPlugin />}
+        {enabledPlugins.autoLink && <AutoLinkPlugin matchers={MATCHERS} />}
         {enabledPlugins.history && <HistoryPlugin />}
         {enabledPlugins.markdown && <MarkdownShortcutPlugin transformers={TRANSFORMERS} />}
         {enabledPlugins.list && <ListPlugin />}
@@ -113,6 +143,9 @@ export const LexicalRichEditor = function LexicalRichEditor({
           <Plugin key={Plugin.id} />
         ))}
 
+        <ExitCodeBoundaryPlugin />
+        <CodeHighlightingPlugin />
+        <TripleBacktickTogglePlugin />
         <KeyboardPlugin onKeyDown={onKeyDown} />
         {autoFocus && enabledPlugins.autoFocus && <AutoFocusPlugin />}
       </div>

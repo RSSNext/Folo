@@ -22,7 +22,7 @@ import {
 } from "../hooks/dateMentionUtils"
 import { $isMentionNode } from "../MentionNode"
 import type { MentionData } from "../types"
-import { getMentionTextValue } from "../utils/mentionTextValue"
+import { getMentionDisplayTextValue } from "../utils/mentionTextValue"
 import { MentionTypeIcon } from "./shared/MentionTypeIcon"
 
 interface MentionComponentProps {
@@ -33,7 +33,7 @@ interface MentionComponentProps {
 }
 
 const MentionTooltipContent = ({ mentionData }: { mentionData: MentionData }) => {
-  const displayValue = getMentionTextValue(mentionData)
+  const displayValue = getMentionDisplayTextValue(mentionData)
 
   const getIconBgColor = () => {
     if (mentionData.type === "view" && typeof mentionData.value === "number") {
@@ -60,7 +60,7 @@ const MentionTooltipContent = ({ mentionData }: { mentionData: MentionData }) =>
   }
 
   return (
-    <div className="flex items-center gap-2 p-1">
+    <div className="flex items-start gap-2 p-1">
       <div
         className={cn(
           "flex size-5 shrink-0 items-center justify-center rounded text-white",

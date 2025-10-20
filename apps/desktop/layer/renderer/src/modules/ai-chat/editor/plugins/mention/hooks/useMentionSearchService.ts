@@ -43,7 +43,7 @@ export const useMentionSearchService = () => {
           pushResult({
             id: item.id,
             name: item.title,
-            type: item.type as MentionType,
+            type: item.type,
             value: item.id,
           }),
         )
@@ -76,7 +76,7 @@ export const useMentionSearchService = () => {
         pushResult({
           id: item.id,
           name: item.title,
-          type: item.type as MentionType,
+          type: item.type,
           value: item.id,
         }),
       )

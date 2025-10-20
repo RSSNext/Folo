@@ -1,6 +1,7 @@
 // Replaced motion/react animations with CSS animations
 import "./AISmartSidebar.css"
 
+import { useGlobalFocusableScopeSelector } from "@follow/components/common/Focusable/hooks.js"
 import { Spring } from "@follow/components/constants/spring.js"
 import { useMousePosition } from "@follow/components/hooks/useMouse.js"
 import { KbdCombined } from "@follow/components/ui/kbd/Kbd.js"
@@ -9,6 +10,7 @@ import * as React from "react"
 import { useEffect, useState } from "react"
 
 import { setAIPanelVisibility, useAIPanelVisibility } from "~/atoms/settings/ai"
+import { FocusablePresets } from "~/components/common/Focusable"
 import { COMMAND_ID } from "~/modules/command/commands/id"
 import { useCommandShortcut } from "~/modules/command/hooks/use-command-binding"
 
@@ -18,7 +20,9 @@ const AIAmbientSidebar: React.FC<{ onExpand: () => void }> = ({ onExpand }) => {
   const isShowPromptRef = React.useRef(false)
   const mousePosition = useMousePosition()
 
+  const canShowPrompt = useGlobalFocusableScopeSelector(FocusablePresets.isNotFloatingLayerScope)
   useEffect(() => {
+    if (!canShowPrompt) return
     const rightEdgeDistance = window.innerWidth - mousePosition.x
     const maxDistance = 500
     const threshold = 80
@@ -47,9 +51,10 @@ const AIAmbientSidebar: React.FC<{ onExpand: () => void }> = ({ onExpand }) => {
       setShowPrompt(false)
       isShowPromptRef.current = false
     }
-  }, [mousePosition])
+  }, [canShowPrompt, mousePosition])
 
   const toggleAIChatShortcut = useCommandShortcut(COMMAND_ID.global.toggleAIChat)
+  if (!canShowPrompt) return null
   return (
     <>
       <div

@@ -119,7 +119,6 @@
   "mentions.date.weekday.this.label": "本周{{weekday}}",
   "personalize.description": "介绍一下您自己，以获得个性化的AI响应。",
   "personalize.prompt.help": "这有助于AI根据您的偏好提供个性化响应。",
-  "personalize.prompt.label": "个人提示",
   "personalize.prompt.placeholder": "介绍一下您自己以及您希望如何阅读内容...",
   "personalize.saved": "个性化设置保存成功",
   "personalize.title": "个性化",

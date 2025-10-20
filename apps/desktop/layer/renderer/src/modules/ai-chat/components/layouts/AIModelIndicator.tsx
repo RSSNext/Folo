@@ -15,12 +15,13 @@ interface AIModelIndicatorProps {
   onModelChange?: (model: string) => void
 }
 
-type ProviderType = "openai" | "google" | "auto" | "deepseek"
+type ProviderType = "openai" | "google" | "auto" | "deepseek" | "anthropic"
 
 const providerIcons: Record<ProviderType, string> = {
   auto: "i-mgc-folo-bot-original size-4 -ml-0.5",
   openai: "i-mgc-openai-original",
   google: "i-simple-icons-googlegemini",
+  anthropic: "i-simple-icons-claude",
   deepseek: "i-mgc-deepseek-original",
 }
 
@@ -29,6 +30,8 @@ const AIModelNameMapping = {
   "gpt-5": "GPT-5",
   "gpt-5-mini": "GPT-5 mini",
   "gpt-5-nano": "GPT-5 nano",
+  "gpt-4.1": "GPT-4.1",
+  "claude-sonnet-4.5": "Claude Sonnet 4.5",
   "gemini-2.5-pro": "Gemini 2.5 Pro",
   "deepseek-v3.2-exp-thinking": "DeepSeek V3.2 Exp Thinking",
 }
