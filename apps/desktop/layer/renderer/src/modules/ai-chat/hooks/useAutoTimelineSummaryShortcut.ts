@@ -6,6 +6,7 @@ import { nanoid } from "nanoid"
 import { useEffect, useMemo, useRef } from "react"
 
 import { useAISettingValue } from "~/atoms/settings/ai"
+import { useGeneralSettingKey } from "~/atoms/settings/general"
 import { ROUTE_FEED_IN_FOLDER, ROUTE_FEED_PENDING } from "~/constants"
 import { useRouteParamsSelector } from "~/hooks/biz/useRouteParams"
 
@@ -52,20 +53,24 @@ const buildTimelineSummaryChatId = ({
   view,
   feedId,
   timelineId,
+  unreadOnly,
   seed,
 }: {
   view: number
   feedId: string
   timelineId?: string | null
+  unreadOnly: boolean
   seed: string
 }) => {
   const normalizedTimelineId = timelineId ?? "all"
+  const unreadSegment = unreadOnly ? "unread" : "all"
   const prefix = AI_CHAT_SPECIAL_ID_PREFIX.TIMELINE_SUMMARY
-  return `${prefix}${view}:${feedId}:${normalizedTimelineId}:${seed}`
+  return `${prefix}${view}:${feedId}:${normalizedTimelineId}:${unreadSegment}:${seed}`
 }
 
 export const useAutoTimelineSummaryShortcut = () => {
   const aiSettings = useAISettingValue()
+  const unreadOnly = useGeneralSettingKey("unreadOnly")
 
   const { view, feedId, entryId, timelineId } = useRouteParamsSelector((params) => ({
     view: params.view,
@@ -108,9 +113,13 @@ export const useAutoTimelineSummaryShortcut = () => {
 
   const contextKey = useMemo(() => {
     if (!isAllTimeline) return null
-    const keyParts = [`timeline:${timelineId ?? "all"}`, `feed:${normalizedFeedId}`]
+    const keyParts = [
+      `timeline:${timelineId ?? "all"}`,
+      `feed:${normalizedFeedId}`,
+      `unread:${unreadOnly ? "1" : "0"}`,
+    ]
     return keyParts.join("|")
-  }, [isAllTimeline, timelineId, normalizedFeedId])
+  }, [isAllTimeline, timelineId, normalizedFeedId, unreadOnly])
 
   useEffect(() => {
     if (previousContextKeyRef.current !== contextKey) {
@@ -157,8 +166,16 @@ export const useAutoTimelineSummaryShortcut = () => {
       })
     }
 
+    if (unreadOnly) {
+      blocks.push({
+        id: BlockSliceAction.SPECIAL_TYPES.unreadOnly,
+        type: "unreadOnly",
+        value: "true",
+      })
+    }
+
     return blocks
-  }, [isAllTimeline, normalizedFeedId])
+  }, [isAllTimeline, normalizedFeedId, unreadOnly])
 
   useEffect(() => {
     if (!contextKey || !defaultShortcut) {
@@ -198,6 +215,7 @@ export const useAutoTimelineSummaryShortcut = () => {
           view,
           feedId: normalizedFeedId,
           timelineId: timelineId ?? null,
+          unreadOnly,
         })
         const now = Date.now()
 
@@ -216,6 +234,7 @@ export const useAutoTimelineSummaryShortcut = () => {
           view,
           feedId: normalizedFeedId,
           timelineId: timelineId ?? null,
+          unreadOnly,
           seed: nanoid(6),
         })
 
@@ -254,6 +273,7 @@ export const useAutoTimelineSummaryShortcut = () => {
     defaultShortcut,
     normalizedFeedId,
     timelineId,
+    unreadOnly,
     view,
     timelineSummaryManualOverride,
   ])

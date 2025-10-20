@@ -316,11 +316,14 @@ class AIPersistServiceStatic {
     view: number
     feedId: string
     timelineId?: string | null
+    unreadOnly: boolean
   }) {
+    const timelineSegment = criteria.timelineId ?? "all"
+    const unreadSegment = criteria.unreadOnly ? "unread" : "all"
+    const prefix = `${AI_CHAT_SPECIAL_ID_PREFIX.TIMELINE_SUMMARY}${criteria.view}:${criteria.feedId}:${timelineSegment}:${unreadSegment}:`
     return db.query.aiChatTable
       .findFirst({
-        where: (table) =>
-          sql`${table.chatId} LIKE ${`${AI_CHAT_SPECIAL_ID_PREFIX.TIMELINE_SUMMARY}${criteria.view}:${criteria.feedId}:${criteria.timelineId ?? "all"}:%`}`,
+        where: (table) => sql`${table.chatId} LIKE ${`${prefix}%`}`,
         orderBy: (table, { desc }) => desc(table.updatedAt),
         columns: {
           chatId: true,
