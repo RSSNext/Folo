@@ -14,6 +14,8 @@ export interface BuiltInPlugins {
   list?: boolean
   link?: boolean
   autoFocus?: boolean
+  autoLink?: boolean
+  tabIndentation?: boolean
 }
 export interface LexicalRichEditorProps {
   placeholder?: string
