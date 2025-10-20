@@ -84,7 +84,7 @@ const EmptyState = () => {
   return (
     <div className="flex flex-col items-center py-8 text-center">
       <i className="i-mgc-calendar-time-add-cute-re text-text-secondary mb-2 block size-8" />
-      <p className="text-text-secondary text-sm">All task reports read</p>
+      <p className="text-text-secondary text-sm">No unread task reports</p>
     </div>
   )
 }
@@ -133,6 +133,9 @@ export const TaskReportDropdown = ({ triggerElement, asChild = true }: TaskRepor
       } catch (e) {
         console.error("Failed to sync chat session messages:", e)
         toast.error("Failed to load chat messages")
+      }
+      if (shouldDisableTimelineSummary) {
+        chatActions.setTimelineSummaryManualOverride(true)
       }
       chatActions.switchToChat(session.chatId)
     },

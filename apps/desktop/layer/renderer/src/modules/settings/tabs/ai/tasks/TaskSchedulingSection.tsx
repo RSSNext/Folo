@@ -1,5 +1,4 @@
 import { Button } from "@follow/components/ui/button/index.js"
-import { Label } from "@follow/components/ui/label/index.js"
 import { useCallback } from "react"
 import { useTranslation } from "react-i18next"
 
@@ -22,7 +21,6 @@ export const TaskSchedulingSection = () => {
     <div className="space-y-4">
       <div className="flex items-center justify-between">
         <div className="space-y-1">
-          <Label className="text-text text-sm font-medium">{t("tasks.manage.title")}</Label>
           <div className="text-text-secondary text-xs">
             {t("tasks.manage.desc")}
             {!canCreateNewTask && (

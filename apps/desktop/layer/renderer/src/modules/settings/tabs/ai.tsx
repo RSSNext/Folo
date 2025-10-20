@@ -58,16 +58,16 @@ export const SettingAI = () => {
 
           {
             type: "title",
-            value: t("integration.title"),
-          },
-          MCPServicesSection,
-
-          {
-            type: "title",
             value: t("tasks.section.title"),
             id: AI_SETTING_SECTION_IDS.tasks,
           },
           TaskSchedulingSection,
+
+          {
+            type: "title",
+            value: t("integration.title"),
+          },
+          MCPServicesSection,
 
           {
             type: "title",

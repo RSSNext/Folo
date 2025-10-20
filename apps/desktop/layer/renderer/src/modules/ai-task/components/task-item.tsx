@@ -244,9 +244,6 @@ export const TaskItem = memo(({ task }: { task: AITask }) => {
               <span className="text-text-tertiary">{t("tasks.fields.schedule")}</span>{" "}
               {formatScheduleText(task.schedule, t, i18n)}
             </p>
-            <p className="text-text-secondary text-xs">
-              <span className="text-text-tertiary">{t("tasks.fields.prompt")}</span> {task.prompt}
-            </p>
             {task.createdAt && (
               <p className="text-text-secondary text-xs">
                 <span className="text-text-tertiary">{t("tasks.fields.created")}</span>{" "}
