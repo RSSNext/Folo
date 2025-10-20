@@ -95,7 +95,6 @@
   "mentions.date.relative.today.search": "今日|きょう",
   "mentions.date.relative.yesterday.label": "昨日",
   "mentions.date.relative.yesterday.search": "昨日|きのう",
-  "mentions.date.select_range": "日付範囲を選択",
   "mentions.date.weekday.auto.label": "{{weekday}}",
   "mentions.date.weekday.day.friday.label": "金曜日",
   "mentions.date.weekday.day.friday.search": "金曜日|金曜|きんようび",

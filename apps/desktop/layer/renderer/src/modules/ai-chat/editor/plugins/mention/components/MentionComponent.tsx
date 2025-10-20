@@ -201,7 +201,6 @@ export const MentionComponent: React.FC<MentionComponentProps> = ({
             mode="range"
             rangeValue={currentDateRange}
             onRangeChange={handleDateRangeChange}
-            rangePlaceholder={t("mentions.date.select_range")}
             minDate={dayjs().subtract(1, "month").toISOString()}
           >
             {mentionSpan}

@@ -101,7 +101,6 @@
   "mentions.date.relative.today.search": "today",
   "mentions.date.relative.yesterday.label": "Yesterday",
   "mentions.date.relative.yesterday.search": "yesterday",
-  "mentions.date.select_range": "Select date range",
   "mentions.date.weekday.auto.label": "{{weekday}}",
   "mentions.date.weekday.day.friday.label": "Friday",
   "mentions.date.weekday.day.friday.search": "friday|fri",
