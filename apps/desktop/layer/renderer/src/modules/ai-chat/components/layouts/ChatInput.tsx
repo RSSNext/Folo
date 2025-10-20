@@ -144,7 +144,7 @@ export const ChatInput = memo(({ onSend, variant, ref: forwardedRef }: ChatInput
           <LexicalRichEditor
             ref={editorRef}
             placeholder={scene === "onboarding" ? "Enter your message" : "Message, @ for context"}
-            className="w-full"
+            className="h-14"
             onChange={handleEditorChange}
             onKeyDown={handleKeyDown}
             autoFocus

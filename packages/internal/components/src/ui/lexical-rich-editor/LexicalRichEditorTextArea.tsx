@@ -1,10 +1,11 @@
-import { cn } from "@follow/utils"
-import clsx from "clsx"
+import { cn, nextFrame } from "@follow/utils"
 import type { EditorState, LexicalEditor } from "lexical"
 import { $getRoot } from "lexical"
-import { useMotionValue } from "motion/react"
-import { useCallback, useMemo, useRef, useState } from "react"
+import { useCallback, useImperativeHandle, useMemo, useRef, useState } from "react"
 
+import type { RoundedSize } from "../input/TextAreaWrapper"
+import { roundedMap, TextAreaWrapper } from "../input/TextAreaWrapper"
+import { ScrollArea } from "../scroll-area"
 import { LexicalRichEditor } from "./LexicalRichEditor"
 import type { LexicalRichEditorProps, LexicalRichEditorRef } from "./types"
 import { getEditorStateJSONString } from "./utils"
@@ -33,21 +34,11 @@ interface LexicalRichEditorTextAreaProps extends Omit<LexicalRichEditorProps, "i
   /**
    * Border radius style
    */
-  rounded?: "sm" | "md" | "lg" | "xl" | "2xl" | "3xl" | "default"
+  rounded?: RoundedSize
   /**
    * Whether to show border
    */
   bordered?: boolean
-}
-
-const roundedMap = {
-  sm: "rounded-sm",
-  md: "rounded-md",
-  lg: "rounded-lg",
-  xl: "rounded-xl",
-  "2xl": "rounded-2xl",
-  "3xl": "rounded-3xl",
-  default: "rounded",
 }
 
 export const LexicalRichEditorTextArea = ({
@@ -59,21 +50,11 @@ export const LexicalRichEditorTextArea = ({
   rounded = "lg",
   bordered = true,
   className,
+  ref,
   ...restProps
-}: LexicalRichEditorTextAreaProps) => {
+}: LexicalRichEditorTextAreaProps & { ref?: React.RefObject<LexicalRichEditorRef | null> }) => {
   const editorRef = useRef<LexicalRichEditorRef | null>(null)
   const [isFocus, setIsFocus] = useState(false)
-  const mouseX = useMotionValue(0)
-  const mouseY = useMotionValue(0)
-
-  const handleMouseMove = useCallback(
-    ({ clientX, clientY, currentTarget }: React.MouseEvent) => {
-      const bounds = currentTarget.getBoundingClientRect()
-      mouseX.set(clientX - bounds.left)
-      mouseY.set(clientY - bounds.top)
-    },
-    [mouseX, mouseY],
-  )
 
   // Create initial editor state from saved value
   const initialEditorState = useMemo(() => {
@@ -116,49 +97,40 @@ export const LexicalRichEditorTextArea = ({
     [onChange, onValueChange, onEditorReady],
   )
 
+  useImperativeHandle(ref, () => editorRef.current!)
+
+  const handlePointerDown = useCallback(() => {
+    nextFrame(() => {
+      editorRef.current?.getEditor().focus()
+    })
+  }, [editorRef])
+
   return (
-    <div
-      className={cn(
-        "ring-accent/20 group relative flex h-full border ring-0 duration-200",
-        roundedMap[rounded],
-
-        "hover:border-accent/60 border-transparent",
-        isFocus && "!border-accent/80 ring-2",
-
-        "placeholder:text-text-tertiary dark:text-zinc-200",
-        "bg-theme-background dark:bg-zinc-700/[0.15]",
-
-        "px-3 py-4",
-        wrapperClassName,
-      )}
-      onMouseMove={handleMouseMove}
-      onFocus={() => setIsFocus(true)}
-      onBlur={() => setIsFocus(false)}
+    <TextAreaWrapper
+      wrapperClassName={wrapperClassName}
+      rounded={rounded}
+      bordered={bordered}
+      isFocused={isFocus}
+      onFocusChange={setIsFocus}
+      paddingClassName="p-0"
+      onPointerDown={handlePointerDown}
     >
-      {bordered && (
-        <div
-          className={clsx(
-            "border-border pointer-events-none absolute inset-0 z-0 border",
+      <ScrollArea.ScrollArea rootClassName="size-full" viewportClassName="px-3 py-4">
+        <LexicalRichEditor
+          ref={editorRef}
+          {...restProps}
+          className={cn(
+            "size-full resize-none bg-transparent",
+            "!outline-none",
+            "text-text",
+            "focus:!bg-accent/5",
             roundedMap[rounded],
+            className,
           )}
-          aria-hidden="true"
+          onChange={handleEditorChange}
+          initalEditorState={initialEditorState}
         />
-      )}
-      <LexicalRichEditor
-        ref={editorRef}
-        {...restProps}
-        className={cn(
-          "size-full resize-none bg-transparent",
-          "overflow-auto",
-          "!outline-none",
-          "text-text placeholder:text-text-tertiary",
-          "focus:!bg-accent/5",
-          roundedMap[rounded],
-          className,
-        )}
-        onChange={handleEditorChange}
-        initalEditorState={initialEditorState}
-      />
-    </div>
+      </ScrollArea.ScrollArea>
+    </TextAreaWrapper>
   )
 }

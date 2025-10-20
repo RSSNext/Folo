@@ -21,7 +21,7 @@ export const UsageAnalysisSection = () => {
   const usagePercentage = usage.total === 0 ? 0 : (usage.used / usage.total) * 100
 
   return (
-    <div className="space-y-4">
+    <div className="-ml-3 space-y-4">
       {rateLimit?.warningLevel && rateLimit.warningLevel !== "safe" ? (
         <UsageWarningBanner
           level={rateLimit.warningLevel}
@@ -31,7 +31,7 @@ export const UsageAnalysisSection = () => {
       ) : null}
 
       <Card>
-        <CardContent className="h-36 p-4">
+        <CardContent className="relative p-4">
           <div className="flex items-center gap-4">
             <UsageProgressRing percentage={usagePercentage} size="md" />
 
@@ -55,23 +55,21 @@ export const UsageAnalysisSection = () => {
               </div>
             </div>
           </div>
-          <div className="mt-4 flex items-center justify-between">
-            <button
-              type="button"
-              onClick={() =>
-                present({
-                  id: "detailed-usage-modal",
-                  content: DetailedUsageModal,
-                  title: t("usage_analysis.detailed_title"),
-                  modalContentClassName: "-mx-6 -mb-4",
-                })
-              }
-              className="text-text-secondary hover:text-text flex items-center gap-1 text-sm duration-200"
-            >
-              {t("usage_analysis.view_details")}
-              <i className="i-mingcute-right-line" />
-            </button>
-          </div>
+          <button
+            type="button"
+            onClick={() =>
+              present({
+                id: "detailed-usage-modal",
+                content: DetailedUsageModal,
+                title: t("usage_analysis.detailed_title"),
+                modalContentClassName: "-mx-6 -mb-4",
+              })
+            }
+            className="text-text-secondary hover:text-text absolute right-4 top-4 flex items-center gap-1 text-sm duration-200"
+          >
+            {t("usage_analysis.view_details")}
+            <i className="i-mingcute-right-line" />
+          </button>
         </CardContent>
       </Card>
     </div>

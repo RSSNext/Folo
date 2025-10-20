@@ -12,12 +12,13 @@ import { ListPlugin } from "@lexical/react/LexicalListPlugin"
 import { MarkdownShortcutPlugin } from "@lexical/react/LexicalMarkdownShortcutPlugin"
 import { OnChangePlugin } from "@lexical/react/LexicalOnChangePlugin"
 import { RichTextPlugin } from "@lexical/react/LexicalRichTextPlugin"
-import type { EditorState, LexicalEditor } from "lexical"
+import type { LexicalEditor } from "lexical"
 import { $getRoot } from "lexical"
-import { useCallback, useImperativeHandle, useState } from "react"
+import { useImperativeHandle, useState } from "react"
 
 import { LexicalRichEditorNodes } from "./nodes"
 import { KeyboardPlugin } from "./plugins"
+import { StringLengthChangePlugin } from "./plugins/string-length-change"
 import { defaultLexicalTheme } from "./theme"
 import type { BuiltInPlugins, LexicalRichEditorProps, LexicalRichEditorRef } from "./types"
 
@@ -32,21 +33,22 @@ const defaultEnabledPlugins: BuiltInPlugins = {
   autoFocus: true,
 }
 
-export const LexicalRichEditor = ({
+export const LexicalRichEditor = function LexicalRichEditor({
   ref,
   placeholder = "Enter your message...",
   className,
-  onChange,
-  onKeyDown,
-  autoFocus = false,
   namespace = "LexicalRichEditor",
+  autoFocus = false,
   theme = defaultLexicalTheme,
   enabledPlugins = defaultEnabledPlugins,
   initalEditorState,
   plugins,
-}: LexicalRichEditorProps & { ref?: React.RefObject<LexicalRichEditorRef | null> }) => {
+
+  onKeyDown,
+  onChange,
+  onLengthChange,
+}: LexicalRichEditorProps & { ref?: React.RefObject<LexicalRichEditorRef | null> }) {
   const [editorRef, setEditorRef] = useState<LexicalEditor | null>(null)
-  const [isEmpty, setIsEmpty] = useState(true)
 
   // Collect nodes from plugins
   const pluginNodes = plugins?.flatMap((plugin) => plugin.nodes || []) || []
@@ -62,46 +64,34 @@ export const LexicalRichEditor = ({
     editorState: initalEditorState,
   }
 
-  useImperativeHandle(
-    ref,
-    useCallback(
-      () => ({
-        getEditor: () => editorRef!,
-        focus: () => {
-          editorRef?.focus()
-        },
-        clear: () => {
-          editorRef?.update(() => {
-            const root = $getRoot()
-            root.clear()
-          })
-        },
-        isEmpty: () => isEmpty,
-      }),
-      [isEmpty, editorRef],
-    ),
-  )
-
-  const handleChange = (editorState: EditorState, editor: LexicalEditor) => {
-    // Check if editor is empty
-    editorState.read(() => {
-      const root = $getRoot()
-      const textContent = root.getTextContent().trim()
-      setIsEmpty(textContent === "")
-    })
-
-    onChange?.(editorState, editor)
-  }
+  useImperativeHandle(ref, () => ({
+    getEditor: () => editorRef!,
+    focus: () => {
+      editorRef?.focus()
+    },
+    clear: () => {
+      editorRef?.update(() => {
+        const root = $getRoot()
+        root.clear()
+      })
+    },
+    isEmpty: () =>
+      editorRef?.getEditorState().read(() => {
+        const root = $getRoot()
+        const textContent = root.getTextContent().trim()
+        return textContent === ""
+      }) || false,
+  }))
 
   return (
     <LexicalComposer initialConfig={initialConfig}>
-      <div className={cn("relative", className)}>
+      <div className={cn("relative cursor-text", className)}>
         <RichTextPlugin
           contentEditable={
             <ContentEditable
               className={cn(
-                "scrollbar-none text-text placeholder:text-text-secondary cursor-text",
-                "h-14 w-full resize-none bg-transparent",
+                "scrollbar-none text-text placeholder:text-text-secondary size-full cursor-text",
+                "size-full resize-none bg-transparent",
                 "text-sm !outline-none transition-all duration-200 focus:outline-none",
               )}
               aria-placeholder={placeholder}
@@ -114,7 +104,9 @@ export const LexicalRichEditor = ({
           }
           ErrorBoundary={LexicalErrorBoundary}
         />
-        <OnChangePlugin onChange={handleChange} />
+
+        {onChange && <OnChangePlugin onChange={onChange} />}
+        {onLengthChange && <StringLengthChangePlugin onChange={onLengthChange} />}
         <EditorRefPlugin editorRef={setEditorRef} />
 
         {enabledPlugins.history && <HistoryPlugin />}

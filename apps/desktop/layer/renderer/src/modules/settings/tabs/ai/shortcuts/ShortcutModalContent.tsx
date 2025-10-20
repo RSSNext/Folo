@@ -93,36 +93,6 @@ export const ShortcutModalContent = ({ shortcut, onSave, onCancel }: ShortcutMod
             placeholder={t("shortcuts.name_placeholder")}
           />
         </div>
-        {/* <div className="col-span-2 space-y-2">
-          <Label className="text-text text-xs">{t("shortcuts.hotkey")}</Label>
-          <button
-            type="button"
-            className="border-border hover:bg-material-medium flex h-9 w-full items-center rounded-md border bg-transparent px-3 py-2 text-sm transition-colors focus:outline-none"
-            onClick={() => setIsRecording(!isRecording)}
-          >
-            {isRecording ? (
-              <KeyRecorder
-                onBlur={() => setIsRecording(false)}
-                onChange={(keys) => {
-                  setHotkey(Array.isArray(keys) ? keys.join("+") : "")
-                  setIsRecording(false)
-                }}
-              />
-            ) : (
-              <div className="flex w-full items-center justify-center">
-                <div className="flex items-center justify-center gap-2">
-                  {hotkey ? (
-                    <KbdCombined kbdProps={{ wrapButton: false }} joint={false}>
-                      {hotkey}
-                    </KbdCombined>
-                  ) : (
-                    <span className="text-text-tertiary text-xs">Click to record</span>
-                  )}
-                </div>
-              </div>
-            )}
-          </button>
-        </div> */}
       </div>
 
       <div className="space-y-2">
@@ -131,7 +101,7 @@ export const ShortcutModalContent = ({ shortcut, onSave, onCancel }: ShortcutMod
           value={prompt}
           onChange={(e) => setPrompt(e.target.value)}
           placeholder={t("shortcuts.prompt_placeholder")}
-          className="min-h-[60px] resize-none p-2 px-3 text-sm"
+          className="min-h-[120px] resize-none p-2 px-3 text-sm"
         />
       </div>
 

@@ -52,7 +52,7 @@ export const AIShortcutsSection = () => {
   }
 
   return (
-    <div className="relative space-y-4">
+    <div className="relative -mt-4 space-y-4">
       <div className="flex items-center justify-between">
         <p className="text-text-secondary text-xs">{t("shortcuts.empty.description")}</p>
         <Button variant="outline" size="sm" onClick={handleAddShortcut}>

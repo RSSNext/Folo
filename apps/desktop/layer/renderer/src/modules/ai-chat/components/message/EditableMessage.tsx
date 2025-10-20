@@ -120,7 +120,7 @@ export const EditableMessage = ({
           <LexicalRichEditor
             ref={editorRef}
             placeholder="Edit your message..."
-            className="w-full min-w-64"
+            className="h-14 min-w-64"
             onChange={handleEditorChange}
             onKeyDown={handleKeyDown}
             namespace="EditableMessageRichEditor"

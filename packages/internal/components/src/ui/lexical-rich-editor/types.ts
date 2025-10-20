@@ -18,14 +18,16 @@ export interface BuiltInPlugins {
 export interface LexicalRichEditorProps {
   placeholder?: string
   className?: string
-  onChange?: (editorState: EditorState, editor: LexicalEditor) => void
-  onKeyDown?: (event: KeyboardEvent) => boolean
   autoFocus?: boolean
   namespace?: string
   theme?: any
   enabledPlugins?: BuiltInPlugins
   initalEditorState?: InitialEditorStateType
   plugins?: LexicalPluginFC[]
+
+  onLengthChange?: (length: number, editor: LexicalEditor) => void
+  onChange?: (editorState: EditorState, editor: LexicalEditor) => void
+  onKeyDown?: (event: KeyboardEvent) => boolean
 }
 export type LexicalPluginFC<T = unknown> = React.FC<T> & {
   id: string

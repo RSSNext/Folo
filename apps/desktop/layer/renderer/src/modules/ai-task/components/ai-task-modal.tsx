@@ -8,10 +8,12 @@ import {
 } from "@follow/components/ui/form/index.jsx"
 import { Input } from "@follow/components/ui/input/index.js"
 import { Label } from "@follow/components/ui/label/index.jsx"
+import type { LexicalRichEditorRef } from "@follow/components/ui/lexical-rich-editor/index.js"
 import { LexicalRichEditorTextArea } from "@follow/components/ui/lexical-rich-editor/index.js"
 import type { AITask } from "@follow-app/client-sdk"
 import { zodResolver } from "@hookform/resolvers/zod"
 import dayjs from "dayjs"
+import { useRef, useState } from "react"
 import type { GlobalError } from "react-hook-form"
 import { useForm } from "react-hook-form"
 import { useTranslation } from "react-i18next"
@@ -126,6 +128,11 @@ export const AITaskModal = ({ task, prompt, showSettingsTip = false }: AITaskMod
   const scheduleValue = form.watch("schedule")
   const notifyChannelsValue = form.watch("options.notifyChannels")
 
+  // Uncontrolled prompt state handled outside react-hook-form
+  const initialPromptRef = useRef(form.getValues("prompt"))
+  const promptEditorRef = useRef<LexicalRichEditorRef | null>(null)
+  const [promptTextLength, setPromptTextLength] = useState(0)
+
   const handleScheduleChange = (newSchedule: ScheduleType) => {
     form.setValue("schedule", newSchedule)
   }
@@ -168,10 +175,20 @@ export const AITaskModal = ({ task, prompt, showSettingsTip = false }: AITaskMod
 
   const currentMutation = isEditing ? updateAITaskMutation : createAITaskMutation
 
+  const onSubmit: React.FormEventHandler<HTMLFormElement> = (e) => {
+    if (!promptEditorRef.current) return
+    const promptValue = JSON.stringify(
+      promptEditorRef.current?.getEditor().getEditorState().toJSON(),
+    )
+
+    form.setValue("prompt", promptValue, { shouldDirty: true, shouldValidate: true })
+    return form.handleSubmit(handleSubmit)(e)
+  }
+
   return (
-    <div className="min-w-[400px] space-y-6">
+    <div className="w-[500px] max-w-full space-y-6">
       <Form {...form}>
-        <form onSubmit={form.handleSubmit(handleSubmit)} className="space-y-6">
+        <form onSubmit={onSubmit} className="space-y-6">
           {/* Task Basic Information Section */}
           <div className="space-y-4">
             <div className="flex items-center gap-2">
@@ -219,35 +236,30 @@ export const AITaskModal = ({ task, prompt, showSettingsTip = false }: AITaskMod
 
             <div className="space-y-2">
               <Label className="text-text pl-2 text-sm font-medium">{t("tasks.prompt")}</Label>
-              <FormField
-                control={form.control}
-                name="prompt"
-                render={({ field }) => (
-                  <FormItem>
-                    <FormControl>
-                      <LexicalRichEditorTextArea
-                        initialValue={field.value}
-                        onValueChange={(value, _textLength) => {
-                          field.onChange(value)
-                        }}
-                        plugins={[MentionPlugin]}
-                        namespace="AITaskPromptEditor"
-                        placeholder={t("tasks.prompt_placeholder")}
-                        className="min-h-[120px] resize-none text-sm leading-relaxed"
-                      />
-                    </FormControl>
-                    <div className="flex items-center justify-between">
-                      <div className="text-text-tertiary text-xs">{t("tasks.prompt_helper")}</div>
-                      {field.value?.length > MAX_PROMPT_LENGTH * 0.8 && (
-                        <div className="text-text-secondary text-xs font-medium">
-                          {field.value.length}/{MAX_PROMPT_LENGTH}
-                        </div>
-                      )}
-                    </div>
-                    <FormMessage />
-                  </FormItem>
-                )}
+              <LexicalRichEditorTextArea
+                initialValue={initialPromptRef.current}
+                ref={promptEditorRef}
+                onLengthChange={(textLength) => {
+                  setPromptTextLength(textLength)
+                }}
+                plugins={[MentionPlugin]}
+                namespace="AITaskPromptEditor"
+                placeholder={t("tasks.prompt_placeholder")}
+                className="min-h-[120px] resize-none text-sm leading-relaxed"
               />
+              <div className="flex items-center justify-between">
+                <div className="text-text-tertiary text-xs">{t("tasks.prompt_helper")}</div>
+                {promptTextLength > MAX_PROMPT_LENGTH * 0.8 && (
+                  <div className="text-text-secondary text-xs font-medium">
+                    {promptTextLength}/{MAX_PROMPT_LENGTH}
+                  </div>
+                )}
+              </div>
+              {(form.formState.errors.prompt as GlobalError | undefined)?.message && (
+                <div className="text-red text-xs">
+                  {(form.formState.errors.prompt as GlobalError).message}
+                </div>
+              )}
             </div>
           </div>
 
