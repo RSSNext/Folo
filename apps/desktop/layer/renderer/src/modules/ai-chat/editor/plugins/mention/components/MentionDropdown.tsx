@@ -82,7 +82,7 @@ const MentionSuggestionItem = React.memo(
 
         return (
           <span
-            key={`${mention.id}-${part}-${Math.random()}`}
+            key={`${mention.id}-${part}`}
             className={isMatch ? "text-text-vibrant font-semibold" : ""}
           >
             {part}
