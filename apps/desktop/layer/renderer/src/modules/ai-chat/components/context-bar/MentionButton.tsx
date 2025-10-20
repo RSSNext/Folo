@@ -3,10 +3,10 @@ import { memo, use, useCallback, useEffect, useRef, useState } from "react"
 
 import { AIPanelRefsContext } from "~/modules/ai-chat/store/AIChatContext"
 
-import { MentionDropdown } from "../../editor/plugins/mention/components/MentionDropdown"
 import { useMentionSearchService } from "../../editor/plugins/mention/hooks/useMentionSearchService"
 import { $createMentionNode } from "../../editor/plugins/mention/MentionNode"
 import type { MentionData } from "../../editor/plugins/mention/types"
+import { MentionDropdownManual } from "./MentionDropdownManual"
 
 /**
  * Button component that triggers a mention dropdown for manual context selection
@@ -93,7 +93,7 @@ export const MentionButton: Component = memo(() => {
         <i className="i-mgc-at-cute-re size-3.5" />
       </button>
 
-      <MentionDropdown
+      <MentionDropdownManual
         isVisible={isMentionDropdownVisible}
         suggestions={suggestions}
         selectedIndex={selectedIndex}
@@ -103,7 +103,6 @@ export const MentionButton: Component = memo(() => {
         onClose={handleMentionDropdownClose}
         query={query}
         anchor={atButtonRef.current}
-        showSearchInput
         onQueryChange={setQuery}
       />
     </>
