@@ -179,14 +179,16 @@ export const MentionComponent: React.FC<MentionComponentProps> = ({
   }, [mentionData])
 
   const mentionSpan = (
-    <span className={cn(getMentionStyles(mentionData), className)}>
-      <MentionTypeIcon
-        type={mentionData.type}
-        value={mentionData.value}
-        className="mr-1 translate-y-[2px]"
-      />
-      <span>{displayName}</span>
-    </span>
+    <TooltipTrigger asChild>
+      <span className={cn(getMentionStyles(mentionData), className)}>
+        <MentionTypeIcon
+          type={mentionData.type}
+          value={mentionData.value}
+          className="mr-1 translate-y-[2px]"
+        />
+        <span>{displayName}</span>
+      </span>
+    </TooltipTrigger>
   )
 
   const isEditableDateMention = mentionData.type === "date" && nodeKey && editor
@@ -202,10 +204,10 @@ export const MentionComponent: React.FC<MentionComponentProps> = ({
             rangePlaceholder={t("mentions.date.select_range")}
             minDate={dayjs().subtract(1, "month").toISOString()}
           >
-            <TooltipTrigger asChild>{mentionSpan}</TooltipTrigger>
+            {mentionSpan}
           </DateTimePicker>
         ) : (
-          <TooltipTrigger asChild>{mentionSpan}</TooltipTrigger>
+          mentionSpan
         )}
         <TooltipPortal>
           <TooltipContent side="top" className="max-w-[300px]">
