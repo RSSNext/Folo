@@ -9,7 +9,7 @@ import {
   useRole,
 } from "@floating-ui/react"
 import { RootPortal } from "@follow/components/ui/portal/index.js"
-import { cn, thenable } from "@follow/utils"
+import { cn } from "@follow/utils"
 import { useLexicalComposerContext } from "@lexical/react/LexicalComposerContext"
 import * as React from "react"
 import { useCallback, useEffect, useRef, useState } from "react"
@@ -134,6 +134,15 @@ const MentionSuggestionItem = React.memo(
 
 MentionSuggestionItem.displayName = "MentionSuggestionItem"
 
+function useOptionalLexicalEditor() {
+  try {
+    const [editor] = useLexicalComposerContext()
+    return editor
+  } catch {
+    return null
+  }
+}
+
 export const MentionDropdown: React.FC<MentionDropdownProps> = ({
   isVisible,
   suggestions,
@@ -147,9 +156,7 @@ export const MentionDropdown: React.FC<MentionDropdownProps> = ({
   showSearchInput = false,
   onQueryChange,
 }) => {
-  if (!isVisible) throw thenable
-
-  const [editor] = useLexicalComposerContext()
+  const editor = useOptionalLexicalEditor()
   const dropdownRef = useRef<HTMLDivElement>(null)
   const [referenceWidth, setReferenceWidth] = useState<number>(320)
 
@@ -159,6 +166,19 @@ export const MentionDropdown: React.FC<MentionDropdownProps> = ({
       // If anchor is provided, use it
       if (anchor) {
         return anchor.getBoundingClientRect()
+      }
+
+      if (!editor) {
+        return {
+          top: 0,
+          left: 0,
+          bottom: 0,
+          right: 0,
+          width: 0,
+          height: 0,
+          x: 0,
+          y: 0,
+        }
       }
 
       // Otherwise, calculate based on cursor position
@@ -201,6 +221,9 @@ export const MentionDropdown: React.FC<MentionDropdownProps> = ({
     onOpenChange: (open) => {
       if (!open) onClose()
     },
+    elements: {
+      reference: anchor,
+    },
     middleware: [
       offset(8),
       flip({ fallbackPlacements: ["bottom-start", "top-start", "bottom-end", "top-end"] }),
@@ -241,7 +264,7 @@ export const MentionDropdown: React.FC<MentionDropdownProps> = ({
     if (isVisible) {
       refs.setReference(virtualReference.current)
 
-      const editorElement = editor.getRootElement()
+      const editorElement = editor?.getRootElement()
       if (editorElement) {
         const rect = editorElement.getBoundingClientRect()
         setReferenceWidth(rect.width || 320)
