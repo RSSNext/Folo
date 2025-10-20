@@ -11,6 +11,7 @@ import { SUPPORTED_MIME_ACCEPT } from "~/modules/ai-chat/utils/file-validation"
 import { useBlockActions } from "../../store/hooks"
 import { BlockSliceAction } from "../../store/slices/block.slice"
 import { CombinedContextBlock, ContextBlock } from "../context-bar/blocks"
+import { MentionButton } from "../context-bar/MentionButton"
 
 export const AIChatContextBar: Component = memo(({ className }) => {
   const blocks = useAIChatStore()((s) => s.blocks)
@@ -84,6 +85,8 @@ export const AIChatContextBar: Component = memo(({ className }) => {
 
   return (
     <div className={cn("flex flex-wrap items-center gap-2 px-4 py-3", className)}>
+      <MentionButton />
+
       {/* File Upload Button */}
       <button
         type="button"

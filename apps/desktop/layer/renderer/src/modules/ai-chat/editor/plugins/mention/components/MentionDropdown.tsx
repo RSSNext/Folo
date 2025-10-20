@@ -32,6 +32,12 @@ interface MentionDropdownProps {
   onClose: () => void
   query: string
   anchor?: HTMLElement | null
+  /**
+   * If true, shows a search input at the top of the dropdown
+   * Useful for manual mention triggers (e.g., button-triggered)
+   */
+  showSearchInput?: boolean
+  onQueryChange?: (query: string) => void
 }
 
 const MentionSuggestionItem = React.memo(
@@ -67,7 +73,7 @@ const MentionSuggestionItem = React.memo(
       if (!cleanQuery) return text
 
       const parts = text.split(new RegExp(`(${cleanQuery})`, "gi"))
-      return parts.map((part, index) => {
+      return parts.map((part) => {
         const isMatch = part.toLowerCase() === cleanQuery
 
         if (!part) {
@@ -76,7 +82,7 @@ const MentionSuggestionItem = React.memo(
 
         return (
           <span
-            key={`${mention.id}-${index}`}
+            key={`${mention.id}-${part}-${Math.random()}`}
             className={isMatch ? "text-text-vibrant font-semibold" : ""}
           >
             {part}
@@ -137,6 +143,9 @@ export const MentionDropdown: React.FC<MentionDropdownProps> = ({
   onSetSelectIndex,
   onClose,
   query,
+  anchor,
+  showSearchInput = false,
+  onQueryChange,
 }) => {
   if (!isVisible) throw thenable
 
@@ -144,9 +153,15 @@ export const MentionDropdown: React.FC<MentionDropdownProps> = ({
   const dropdownRef = useRef<HTMLDivElement>(null)
   const [referenceWidth, setReferenceWidth] = useState<number>(320)
 
-  // Create virtual reference element based on cursor position
+  // Create virtual reference element based on cursor position or use provided anchor
   const virtualReference = useRef({
     getBoundingClientRect: () => {
+      // If anchor is provided, use it
+      if (anchor) {
+        return anchor.getBoundingClientRect()
+      }
+
+      // Otherwise, calculate based on cursor position
       const position = calculateDropdownPosition(editor)
       const editorElement = editor.getRootElement()
 
@@ -232,7 +247,7 @@ export const MentionDropdown: React.FC<MentionDropdownProps> = ({
         setReferenceWidth(rect.width || 320)
       }
     }
-  }, [editor, refs, isVisible, query]) // Add query as dependency to update position when typing
+  }, [editor, refs, isVisible, query, anchor]) // Add anchor as dependency
 
   return (
     <RootPortal>
@@ -251,10 +266,24 @@ export const MentionDropdown: React.FC<MentionDropdownProps> = ({
               "text-body",
             )}
             style={{
-              width: Math.max(referenceWidth, 200),
+              width: anchor ? 320 : Math.max(referenceWidth, 200),
               maxWidth: 320,
             }}
           >
+            {/* Search Input - only shown in manual mode */}
+            {showSearchInput && onQueryChange && (
+              <div className="border-border/20 mb-1 border-b px-2 pb-1.5 pt-1">
+                <input
+                  type="text"
+                  value={query}
+                  onChange={(e) => onQueryChange(e.target.value)}
+                  placeholder="Search for context..."
+                  autoFocus
+                  className="text-text placeholder:text-text-quaternary w-full bg-transparent text-sm outline-none"
+                />
+              </div>
+            )}
+
             {isLoading ? (
               <div className="text-text-secondary flex items-center gap-2 px-2.5 py-1.5">
                 <i className="i-mgc-loading-3-cute-re size-4 animate-spin" />
@@ -270,7 +299,11 @@ export const MentionDropdown: React.FC<MentionDropdownProps> = ({
                 )}
               </div>
             ) : (
-              <div role="listbox" aria-label="Mention suggestions">
+              <div
+                role="listbox"
+                aria-label="Mention suggestions"
+                className={cn(showSearchInput && "max-h-[300px] overflow-y-auto")}
+              >
                 {suggestions.map((mention, index) => (
                   <MentionSuggestionItem
                     key={`${mention.type}-${mention.id}`}
