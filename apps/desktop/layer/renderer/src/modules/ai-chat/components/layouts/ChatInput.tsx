@@ -138,7 +138,7 @@ export const ChatInput = memo(({ onSend, variant, ref: forwardedRef }: ChatInput
     <div className={cn(chatInputVariants({ variant }))}>
       {/* Input Area */}
       <div className="relative z-10 flex items-end" onContextMenu={stopPropagation}>
-        <ScrollArea rootClassName="mx-5 my-3.5 mr-14 flex-1 overflow-auto">
+        <ScrollArea rootClassName="mr-14 flex-1 overflow-auto" viewportClassName="px-5 py-3.5">
           <LexicalRichEditor
             ref={editorRef}
             placeholder={scene === "onboarding" ? "Enter your message" : "Message, @ for context"}

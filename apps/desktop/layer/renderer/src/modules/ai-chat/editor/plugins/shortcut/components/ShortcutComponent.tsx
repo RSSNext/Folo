@@ -46,10 +46,7 @@ export const ShortcutComponent: React.FC<ShortcutComponentProps> = ({
           <TooltipContent side="top" className="max-w-[320px]">
             <div className="flex flex-col gap-1 p-1">
               <span className="text-text text-sm font-medium">{shortcutData.name}</span>
-              {shortcutData.hotkey ? (
-                <span className="text-text-secondary text-xs">Hotkey: {shortcutData.hotkey}</span>
-              ) : null}
-              <span className="text-text-secondary text-xs">Tap to insert this shortcut.</span>
+
               {shortcutData.prompt ? (
                 <span className="text-text-tertiary line-clamp-3 text-xs leading-snug">
                   {shortcutData.prompt}

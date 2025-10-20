@@ -4,14 +4,13 @@ export interface ShortcutData {
   id: string
   name: string
   prompt: string
-  hotkey?: string
+
   displayTargets?: readonly AIShortcutTarget[]
 }
 
 export interface ShortcutMetadata {
   id: string
   name: string
-  hotkey?: string
 }
 
 export interface ShortcutMatch {

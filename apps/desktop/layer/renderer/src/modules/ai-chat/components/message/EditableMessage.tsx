@@ -116,7 +116,7 @@ export const EditableMessage = ({
     <div className={cn("relative", className)}>
       {/* Edit input */}
       <div className="bg-background/60 focus-within:ring-accent/20 focus-within:border-accent/80 border-border/80 relative overflow-hidden rounded-xl border backdrop-blur-xl duration-200 focus-within:ring-2">
-        <ScrollArea rootClassName="mx-5 my-3.5 mr-20 flex-1 overflow-auto">
+        <ScrollArea rootClassName="mr-20 flex-1 overflow-auto" viewportClassName="px-5 py-3.5">
           <LexicalRichEditor
             ref={editorRef}
             placeholder="Edit your message..."
