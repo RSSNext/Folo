@@ -224,3 +224,5 @@ export const MentionComponent: React.FC<MentionComponentProps> = ({
     </Tooltip>
   )
 }
+
+MentionComponent.displayName = "MentionComponent"
