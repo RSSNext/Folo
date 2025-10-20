@@ -1,7 +1,6 @@
 import i18next from "i18next"
 import type {
   DOMConversionMap,
-  DOMConversionOutput,
   DOMExportOutput,
   EditorConfig,
   LexicalEditor,
@@ -66,14 +65,8 @@ export class MentionNode extends DecoratorNode<React.JSX.Element> {
 
   static override importDOM(): DOMConversionMap | null {
     return {
-      span: (domNode: HTMLElement) => {
-        if (!Object.hasOwn(domNode.dataset, "lexicalMention")) {
-          return null
-        }
-        return {
-          conversion: convertMentionElement,
-          priority: 1,
-        }
+      span: () => {
+        throw new Error("Not implemented")
       },
     }
   }
@@ -155,29 +148,6 @@ export class MentionNode extends DecoratorNode<React.JSX.Element> {
   extractWithChild(): boolean {
     return false
   }
-}
-
-function convertMentionElement(domNode: HTMLElement): DOMConversionOutput {
-  const mentionType = domNode.dataset.mentionType as MentionData["type"] | null
-  const { mentionId } = domNode.dataset
-  const textContent = domNode.textContent || ""
-
-  if (!mentionType || !mentionId) {
-    return { node: null }
-  }
-
-  // Extract name from text content (remove @ prefix)
-  const name = textContent.startsWith("@") ? textContent.slice(1) : textContent
-
-  const mentionData: MentionData = {
-    id: mentionId,
-    name,
-    type: mentionType,
-    value: null,
-  }
-
-  const node = $createMentionNode(mentionData)
-  return { node }
 }
 
 export function $createMentionNode(mentionData: MentionData): MentionNode {

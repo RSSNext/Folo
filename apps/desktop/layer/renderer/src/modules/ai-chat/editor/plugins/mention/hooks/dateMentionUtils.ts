@@ -4,7 +4,7 @@ import type { TFunction } from "i18next"
 
 import { MENTION_DATE_VALUE_FORMAT } from "~/modules/ai-chat/utils/mentionDate"
 
-import type { MentionData, MentionLabelDescriptor, MentionLabelValue } from "../types"
+import type { DateMentionData, MentionLabelDescriptor, MentionLabelValue } from "../types"
 import type { RelativeDateDefinition } from "./dateMentionConfig"
 import { RELATIVE_DATE_DEFINITIONS } from "./dateMentionConfig"
 
@@ -123,12 +123,12 @@ export const createDateMentionData = ({
   id?: string
   range: DateRange
   label?: MentionLabelDescriptor
-  labelOptions?: MentionData["labelOptions"]
+  labelOptions?: DateMentionData["labelOptions"]
   translate: LabelTranslator
   locale: string
   withRangeKey: I18nKeysForAi
   displayName?: string
-}): MentionData => {
+}): DateMentionData => {
   const value = formatRangeValue(range)
   const baseLabel = displayName ?? resolveMentionLabel(label, translate) ?? value
   let resolvedName = baseLabel
@@ -170,7 +170,7 @@ export const parseRangeValue = (value: string): DateRange | null => {
 }
 
 export const getDateMentionDisplayName = (
-  mention: Pick<MentionData, "label" | "labelOptions" | "value" | "name">,
+  mention: Pick<DateMentionData, "label" | "labelOptions" | "value" | "name">,
   translate: LabelTranslator,
   locale: string,
   withRangeKey: I18nKeysForAi,
