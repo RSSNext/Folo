@@ -12,11 +12,15 @@ import { RootPortal } from "@follow/components/ui/portal/index.js"
 import { cn, thenable } from "@follow/utils"
 import { useLexicalComposerContext } from "@lexical/react/LexicalComposerContext"
 import * as React from "react"
-import { useEffect, useRef, useState } from "react"
+import { useCallback, useEffect, useRef, useState } from "react"
+import { useTranslation } from "react-i18next"
 
+import { MENTION_TRIGGER_PATTERN } from "../constants"
+import { RANGE_WITH_LABEL_KEY } from "../hooks/dateMentionConfig"
+import { getDateMentionDisplayName } from "../hooks/dateMentionUtils"
 import type { MentionData } from "../types"
 import { calculateDropdownPosition } from "../utils/positioning"
-import { MentionSuggestionItem } from "./shared/MentionSuggestionItem"
+import { MentionTypeIcon } from "./shared/MentionTypeIcon"
 
 interface MentionDropdownProps {
   isVisible: boolean
@@ -28,7 +32,107 @@ interface MentionDropdownProps {
   onClose: () => void
   query: string
   anchor?: HTMLElement | null
+  /**
+   * If true, shows a search input at the top of the dropdown
+   * Useful for manual mention triggers (e.g., button-triggered)
+   */
+  showSearchInput?: boolean
+  onQueryChange?: (query: string) => void
 }
+
+const MentionSuggestionItem = React.memo(
+  ({
+    mention,
+    isSelected,
+    onClick,
+    query,
+    ...props
+  }: {
+    mention: MentionData
+    isSelected: boolean
+    onClick: (mention: MentionData) => void
+    query: string
+  } & Omit<React.HTMLAttributes<HTMLDivElement>, "onClick">) => {
+    const { t, i18n } = useTranslation("ai")
+    const language = i18n.language || i18n.resolvedLanguage || "en"
+
+    const displayName = React.useMemo(() => {
+      if (mention.type === "date") {
+        return getDateMentionDisplayName(mention, t, language, RANGE_WITH_LABEL_KEY)
+      }
+      return mention.name
+    }, [mention, t, language])
+
+    const handleClick = useCallback(() => {
+      onClick(mention)
+    }, [mention, onClick])
+
+    // Highlight matching text
+    const highlightText = (text: string, rawQuery: string) => {
+      const cleanQuery = rawQuery.replace(MENTION_TRIGGER_PATTERN, "").toLowerCase()
+      if (!cleanQuery) return text
+
+      const parts = text.split(new RegExp(`(${cleanQuery})`, "gi"))
+      return parts.map((part) => {
+        const isMatch = part.toLowerCase() === cleanQuery
+
+        if (!part) {
+          return null
+        }
+
+        return (
+          <span
+            key={`${mention.id}-${part}`}
+            className={isMatch ? "text-text-vibrant font-semibold" : ""}
+          >
+            {part}
+          </span>
+        )
+      })
+    }
+
+    return (
+      <div
+        className={cn(
+          "cursor-menu relative flex select-none items-center rounded-[5px] px-2.5 py-1 outline-none",
+          "focus-within:outline-transparent",
+          "data-[highlighted]:bg-theme-selection-hover focus:bg-theme-selection-active focus:text-theme-selection-foreground data-[highlighted]:text-theme-selection-foreground",
+          "h-[28px]",
+          isSelected && "bg-theme-selection-active text-theme-selection-foreground",
+        )}
+        onClick={handleClick}
+        role="option"
+        aria-selected={isSelected}
+        {...props}
+      >
+        {/* Icon */}
+        <span
+          className={cn(
+            "mr-1.5 inline-flex size-4 items-center justify-center",
+            mention.type === "entry" && "text-blue-500",
+            mention.type === "feed" && "text-orange-500",
+            mention.type === "category" && "text-green-500",
+            mention.type === "date" && "text-purple-500",
+          )}
+        >
+          <MentionTypeIcon type={mention.type} value={mention.value} />
+        </span>
+
+        {/* Content */}
+        <span className="flex-1 truncate">{highlightText(displayName, query)}</span>
+
+        {/* Selection Indicator */}
+        {isSelected && (
+          <span className="ml-1.5 inline-flex size-4 items-center justify-center">
+            <i className="i-mgc-check-cute-re size-3" />
+          </span>
+        )}
+      </div>
+    )
+  },
+)
+
+MentionSuggestionItem.displayName = "MentionSuggestionItem"
 
 export const MentionDropdown: React.FC<MentionDropdownProps> = ({
   isVisible,
@@ -39,6 +143,9 @@ export const MentionDropdown: React.FC<MentionDropdownProps> = ({
   onSetSelectIndex,
   onClose,
   query,
+  anchor,
+  showSearchInput = false,
+  onQueryChange,
 }) => {
   if (!isVisible) throw thenable
 
@@ -46,9 +153,15 @@ export const MentionDropdown: React.FC<MentionDropdownProps> = ({
   const dropdownRef = useRef<HTMLDivElement>(null)
   const [referenceWidth, setReferenceWidth] = useState<number>(320)
 
-  // Create virtual reference element based on cursor position
+  // Create virtual reference element based on cursor position or use provided anchor
   const virtualReference = useRef({
     getBoundingClientRect: () => {
+      // If anchor is provided, use it
+      if (anchor) {
+        return anchor.getBoundingClientRect()
+      }
+
+      // Otherwise, calculate based on cursor position
       const position = calculateDropdownPosition(editor)
       const editorElement = editor.getRootElement()
 
@@ -134,7 +247,7 @@ export const MentionDropdown: React.FC<MentionDropdownProps> = ({
         setReferenceWidth(rect.width || 320)
       }
     }
-  }, [editor, refs, isVisible, query]) // Add query as dependency to update position when typing
+  }, [editor, refs, isVisible, query, anchor]) // Add anchor as dependency
 
   return (
     <RootPortal>
@@ -153,10 +266,24 @@ export const MentionDropdown: React.FC<MentionDropdownProps> = ({
               "text-body",
             )}
             style={{
-              width: Math.max(referenceWidth, 200),
+              width: anchor ? 320 : Math.max(referenceWidth, 200),
               maxWidth: 320,
             }}
           >
+            {/* Search Input - only shown in manual mode */}
+            {showSearchInput && onQueryChange && (
+              <div className="border-border/20 mb-1 border-b px-2 pb-1.5 pt-1">
+                <input
+                  type="text"
+                  value={query}
+                  onChange={(e) => onQueryChange(e.target.value)}
+                  placeholder="Search for context..."
+                  autoFocus
+                  className="text-text placeholder:text-text-quaternary w-full bg-transparent text-sm outline-none"
+                />
+              </div>
+            )}
+
             {isLoading ? (
               <div className="text-text-secondary flex items-center gap-2 px-2.5 py-1.5">
                 <i className="i-mgc-loading-3-cute-re size-4 animate-spin" />
@@ -172,7 +299,11 @@ export const MentionDropdown: React.FC<MentionDropdownProps> = ({
                 )}
               </div>
             ) : (
-              <div role="listbox" aria-label="Mention suggestions">
+              <div
+                role="listbox"
+                aria-label="Mention suggestions"
+                className={cn(showSearchInput && "max-h-[300px] overflow-y-auto")}
+              >
                 {suggestions.map((mention, index) => (
                   <MentionSuggestionItem
                     key={`${mention.type}-${mention.id}`}
