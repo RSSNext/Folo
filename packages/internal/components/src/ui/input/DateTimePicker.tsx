@@ -163,10 +163,8 @@ export const DateTimePicker = memo<DateTimePickerProps>(
 
     return (
       <Popover open={isOpen} onOpenChange={setIsOpen}>
-        {children ? (
-          <PopoverTrigger asChild>{children}</PopoverTrigger>
-        ) : (
-          <PopoverTrigger asChild>
+        <PopoverTrigger asChild>
+          {children || (
             <Button
               variant="outline"
               disabled={disabled}
@@ -185,8 +183,8 @@ export const DateTimePicker = memo<DateTimePickerProps>(
                   ? currentDateTime.format("MMM DD, YYYY HH:mm")
                   : placeholder}
             </Button>
-          </PopoverTrigger>
-        )}
+          )}
+        </PopoverTrigger>
 
         <PopoverContent
           className={clsx("w-auto min-w-[280px] rounded-[6px] border p-0", contentClassName)}
