@@ -33,10 +33,8 @@ interface MentionComponentProps {
 }
 
 const MentionTooltipContent = ({ mentionData }: { mentionData: MentionData }) => {
-  // Calculate display value - shows the "real" value that will be sent to AI
   const displayValue = getMentionTextValue(mentionData)
 
-  // Get icon background color based on mention type
   const getIconBgColor = () => {
     if (mentionData.type === "view" && typeof mentionData.value === "number") {
       const viewDef = getView(mentionData.value)
@@ -47,19 +45,16 @@ const MentionTooltipContent = ({ mentionData }: { mentionData: MentionData }) =>
 
     switch (mentionData.type) {
       case "entry": {
-        return "bg-blue-600"
+        return "bg-blue"
       }
       case "feed": {
-        return "bg-orange-600"
+        return "bg-orange"
       }
       case "date": {
-        return "bg-purple-600"
+        return "bg-purple"
       }
       case "shortcut": {
         return "bg-amber-700"
-      }
-      default: {
-        return "bg-cyan-600"
       }
     }
   }
@@ -160,7 +155,6 @@ export const MentionComponent: React.FC<MentionComponentProps> = ({
         withRangeKey: RANGE_WITH_LABEL_KEY,
       })
 
-      // Update the node in the editor - this will trigger a re-render
       editor.update(() => {
         const node = $getNodeByKey(nodeKey)
         if ($isMentionNode(node)) {
@@ -171,7 +165,6 @@ export const MentionComponent: React.FC<MentionComponentProps> = ({
     [nodeKey, editor, t, language],
   )
 
-  // Parse current date range from mentionData.value
   const currentDateRange = React.useMemo(() => {
     if (mentionData.type !== "date" || typeof mentionData.value !== "string") {
       return
