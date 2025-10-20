@@ -302,6 +302,12 @@ export const MentionDropdown: React.FC<MentionDropdownProps> = ({
                   type="text"
                   value={query}
                   onChange={(e) => onQueryChange(e.target.value)}
+                  onKeyDown={(e) => {
+                    if (e.key === "Enter" && suggestions[0]) {
+                      e.preventDefault()
+                      onSelect(suggestions[0])
+                    }
+                  }}
                   placeholder="Search for context..."
                   autoFocus
                   className="text-text placeholder:text-text-quaternary w-full bg-transparent text-sm outline-none"

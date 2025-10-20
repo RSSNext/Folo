@@ -69,10 +69,9 @@ export const useMentionSearchService = () => {
       }
 
       const dateSuggestions = buildDateMentions(trimmedQuery)
-      const searchResults = search(trimmedQuery, undefined, 10)
-
       dateSuggestions.slice(0, MAX_INLINE_DATE_SUGGESTIONS).forEach(pushResult)
 
+      const searchResults = search(trimmedQuery, undefined, 10)
       searchResults.forEach((item) =>
         pushResult({
           id: item.id,
@@ -81,10 +80,6 @@ export const useMentionSearchService = () => {
           value: item.id,
         }),
       )
-
-      if (dateSuggestions.length > MAX_INLINE_DATE_SUGGESTIONS) {
-        dateSuggestions.slice(MAX_INLINE_DATE_SUGGESTIONS).forEach(pushResult)
-      }
 
       return results
     }
