@@ -97,6 +97,7 @@
   "mentions.date.relative.today.search": "今天|今日",
   "mentions.date.relative.yesterday.label": "昨天",
   "mentions.date.relative.yesterday.search": "昨天|昨日",
+  "mentions.date.select_range": "选择日期范围",
   "mentions.date.weekday.auto.label": "{{weekday}}",
   "mentions.date.weekday.day.friday.label": "周五",
   "mentions.date.weekday.day.friday.search": "周五|星期五|礼拜五",

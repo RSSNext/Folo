@@ -151,7 +151,11 @@ export const createDateMentionData = ({
 }
 
 export const parseRangeValue = (value: string): DateRange | null => {
-  const [startIso, endIsoExclusive] = value.split("..", 2)
+  // Parse XML format: <mention-date start="YYYY-MM-DD" end="YYYY-MM-DD"></mention-date>
+  const match = value.match(/start="([^"]+)"\s+end="([^"]+)"/)
+  if (!match) return null
+
+  const [, startIso, endIsoExclusive] = match
   if (!startIso || !endIsoExclusive) return null
 
   const start = dayjs(startIso, MENTION_DATE_VALUE_FORMAT, true)
