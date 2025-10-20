@@ -1,9 +1,13 @@
 import { getView } from "@follow/constants"
+import { useSubscriptionsByFeedIds } from "@follow/store/subscription/hooks"
+import type { SubscriptionModel } from "@follow/store/subscription/types"
+import { getDefaultCategory } from "@follow/store/subscription/utils"
 import { clsx, cn } from "@follow/utils/utils"
 import type { FC, ReactNode } from "react"
-import { memo } from "react"
+import { memo, useMemo } from "react"
 import { useTranslation } from "react-i18next"
 
+import { ROUTE_FEED_IN_FOLDER } from "~/constants"
 import { useContextBlockPresentation } from "~/modules/ai-chat/components/message/useContextBlockPresentation"
 import { useChatBlockActions } from "~/modules/ai-chat/store/hooks"
 import type { AbstractValueContextBlock, AIChatContextBlock } from "~/modules/ai-chat/store/types"
@@ -24,7 +28,7 @@ const BlockContainer: FC<{
   return (
     <div
       className={clsx(
-        "group relative flex h-7 min-w-0 flex-shrink-0 items-center gap-2 overflow-hidden rounded-lg px-2.5",
+        "group relative flex h-7 min-w-0 items-center gap-2 overflow-hidden rounded-lg px-2.5",
         "bg-fill-tertiary border-border border",
         disabled && "cursor-pointer border-dashed opacity-50",
       )}
@@ -86,6 +90,46 @@ export const CombinedContextBlock: FC<{
   const viewIcon = viewBlock && getView(Number(viewBlock.value))?.icon.props.className
   const feedIcon = feedBlock && "i-mgc-rss-cute-fi"
 
+  const normalizedFeedIds = useMemo(() => {
+    if (!feedBlock?.value) {
+      return []
+    }
+
+    return feedBlock.value
+      .split(",")
+      .map((id) => id.trim())
+      .filter((id) => id && !id.startsWith(ROUTE_FEED_IN_FOLDER))
+  }, [feedBlock?.value])
+
+  const feedSubscriptions = useSubscriptionsByFeedIds(normalizedFeedIds)
+
+  const sharedFeedCategory = useMemo(() => {
+    if (normalizedFeedIds.length <= 1) {
+      return null
+    }
+
+    const relevantSubscriptions = feedSubscriptions.filter(
+      (subscription): subscription is SubscriptionModel =>
+        !!subscription && subscription.type === "feed" && !!subscription.feedId,
+    )
+
+    if (relevantSubscriptions.length !== normalizedFeedIds.length) {
+      return null
+    }
+
+    const categories = relevantSubscriptions.map((subscription) => {
+      const category = subscription.category || getDefaultCategory(subscription)
+      return category?.trim() || null
+    })
+
+    const firstCategory = categories[0]
+    if (!firstCategory) {
+      return null
+    }
+
+    return categories.every((category) => category === firstCategory) ? firstCategory : null
+  }, [feedSubscriptions, normalizedFeedIds])
+
   const handleRemove = () => {
     viewBlock && blockActions.toggleBlockDisabled(viewBlock.id, true)
     feedBlock && blockActions.toggleBlockDisabled(feedBlock.id, true)
@@ -100,7 +144,17 @@ export const CombinedContextBlock: FC<{
   // Determine what to display
   const displayContent = feedBlock ? (
     <span className="flex items-center gap-1">
-      <FeedTitle feedId={feedBlock.value} fallback={feedBlock.value} className="min-w-0 truncate" />
+      {sharedFeedCategory ? (
+        <span className="min-w-0 truncate" title={sharedFeedCategory}>
+          {sharedFeedCategory}
+        </span>
+      ) : (
+        <FeedTitle
+          feedId={feedBlock.value}
+          fallback={feedBlock.value}
+          className="min-w-0 truncate"
+        />
+      )}
       {unreadOnlyBlock && <i className="i-mgc-round-cute-fi size-3 shrink-0" title="Unread Only" />}
     </span>
   ) : (
