@@ -189,10 +189,12 @@ export const MentionComponent: React.FC<MentionComponentProps> = ({
     </span>
   )
 
-  if (mentionData.type === "date" && nodeKey && editor) {
-    return (
-      <Tooltip>
-        <TooltipRoot>
+  const isEditableDateMention = mentionData.type === "date" && nodeKey && editor
+
+  return (
+    <Tooltip>
+      <TooltipRoot>
+        {isEditableDateMention ? (
           <DateTimePicker
             mode="range"
             rangeValue={currentDateRange}
@@ -202,21 +204,9 @@ export const MentionComponent: React.FC<MentionComponentProps> = ({
           >
             <TooltipTrigger asChild>{mentionSpan}</TooltipTrigger>
           </DateTimePicker>
-          <TooltipPortal>
-            <TooltipContent side="top" className="max-w-[300px]">
-              <MentionTooltipContent mentionData={mentionData} />
-            </TooltipContent>
-          </TooltipPortal>
-        </TooltipRoot>
-      </Tooltip>
-    )
-  }
-
-  // For non-date mentions or read-only date mentions
-  return (
-    <Tooltip>
-      <TooltipRoot>
-        <TooltipTrigger asChild>{mentionSpan}</TooltipTrigger>
+        ) : (
+          <TooltipTrigger asChild>{mentionSpan}</TooltipTrigger>
+        )}
         <TooltipPortal>
           <TooltipContent side="top" className="max-w-[300px]">
             <MentionTooltipContent mentionData={mentionData} />
