@@ -31,9 +31,7 @@ export const MentionTypeIcon: React.FC<MentionTypeIconProps> = ({
       if (typeof value === "number") {
         const viewDef = getView(value)
         if (viewDef?.icon?.props?.className) {
-          return (
-            <i className={`${viewDef.icon.props.className} ${viewDef.className} ${className}`} />
-          )
+          return <i className={`${viewDef.icon.props.className} ${className}`} />
         }
       }
       return <i className={`i-mgc-grid-cute-re ${className}`} />

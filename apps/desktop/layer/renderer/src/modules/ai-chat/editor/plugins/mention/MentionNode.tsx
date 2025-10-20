@@ -1,4 +1,3 @@
-import { getCategoryFeedIds } from "@follow/store/subscription/getter"
 import i18next from "i18next"
 import type {
   DOMConversionMap,
@@ -14,13 +13,11 @@ import type {
 import { $applyNodeReplacement, DecoratorNode } from "lexical"
 import * as React from "react"
 
-import { ROUTE_FEED_IN_FOLDER } from "~/constants"
-import { getRouteParams } from "~/hooks/biz/useRouteParams"
-
 import { MentionComponent } from "./components/MentionComponent"
 import { RANGE_WITH_LABEL_KEY } from "./hooks/dateMentionConfig"
 import { getDateMentionDisplayName } from "./hooks/dateMentionUtils"
 import type { MentionData } from "./types"
+import { getMentionTextValue } from "./utils/mentionTextValue"
 
 export type SerializedMentionNode = Spread<
   {
@@ -43,6 +40,15 @@ export class MentionNode extends DecoratorNode<React.JSX.Element> {
   constructor(mentionData: MentionData, key?: NodeKey) {
     super(key)
     this.__mentionData = mentionData
+  }
+
+  getMentionData(): MentionData {
+    return this.__mentionData
+  }
+
+  setMentionData(mentionData: MentionData): void {
+    const writable = this.getWritable()
+    writable.__mentionData = mentionData
   }
 
   override createDOM(config: EditorConfig): HTMLElement {
@@ -100,28 +106,24 @@ export class MentionNode extends DecoratorNode<React.JSX.Element> {
    * For export markdown conversion
    */
   override getTextContent(): string {
-    const { type, value } = this.__mentionData
-    if (type === "date" && value) {
-      return value as string
-    }
-
-    if (
-      type === "category" &&
-      typeof value === "string" &&
-      value.startsWith(ROUTE_FEED_IN_FOLDER)
-    ) {
-      const { view } = getRouteParams()
-      const ids = getCategoryFeedIds(value.slice(ROUTE_FEED_IN_FOLDER.length), view)
-      return `<mention-feed ids=${JSON.stringify(ids)}></mention-feed>`
-    }
-
-    return `<mention-${type} id="${value}"></mention-${type}>`
+    return getMentionTextValue(this.__mentionData)
   }
 
-  override decorate(_editor: LexicalEditor): React.JSX.Element {
+  override decorate(editor: LexicalEditor): React.JSX.Element {
+    // Use a combination of key and value to ensure re-render when mention data changes
+    const dataKey =
+      typeof this.__mentionData.value === "string"
+        ? this.__mentionData.value
+        : String(this.__mentionData.value)
+
     return (
       <React.Suspense fallback={null}>
-        <MentionComponent mentionData={this.__mentionData} />
+        <MentionComponent
+          mentionData={this.__mentionData}
+          nodeKey={this.__key}
+          editor={editor}
+          key={`${this.__key}-${dataKey}`}
+        />
       </React.Suspense>
     )
   }
