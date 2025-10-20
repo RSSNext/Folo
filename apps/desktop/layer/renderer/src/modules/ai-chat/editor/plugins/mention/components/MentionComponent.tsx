@@ -35,7 +35,6 @@ interface MentionComponentProps {
 const MentionTooltipContent = ({ mentionData }: { mentionData: MentionData }) => {
   // Calculate display value - shows the "real" value that will be sent to AI
   const displayValue = getMentionTextValue(mentionData)
-  const content = displayValue || mentionData.name
 
   // Get icon background color based on mention type
   const getIconBgColor = () => {
@@ -75,7 +74,7 @@ const MentionTooltipContent = ({ mentionData }: { mentionData: MentionData }) =>
       >
         <MentionTypeIcon type={mentionData.type} value={mentionData.value} className="size-3" />
       </div>
-      <span className="text-text text-sm">{content}</span>
+      <span className="text-text text-sm">{displayValue}</span>
     </div>
   )
 }
