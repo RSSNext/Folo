@@ -14,7 +14,11 @@ export const EntryTitle: FC<{ entryId?: string; fallback: string }> = ({ entryId
   return <span>{entryTitle}</span>
 }
 
-export const FeedTitle: FC<{ feedId?: string; fallback: string }> = ({ feedId, fallback }) => {
+export const FeedTitle: FC<{ feedId?: string; fallback: string; className?: string }> = ({
+  feedId,
+  fallback,
+  className,
+}) => {
   const category = feedId?.startsWith(ROUTE_FEED_IN_FOLDER)
     ? feedId.slice(ROUTE_FEED_IN_FOLDER.length)
     : undefined
@@ -24,11 +28,11 @@ export const FeedTitle: FC<{ feedId?: string; fallback: string }> = ({ feedId, f
 
   if (!feedId || !feedTitles) {
     if (category) {
-      return <span>{category}</span>
+      return <span className={className}>{category}</span>
     }
 
-    return <span className="text-text-tertiary">{fallback}</span>
+    return <span className={`text-text-tertiary ${className}`}>{fallback}</span>
   }
 
-  return <span>{feedTitles}</span>
+  return <span className={className}>{feedTitles}</span>
 }

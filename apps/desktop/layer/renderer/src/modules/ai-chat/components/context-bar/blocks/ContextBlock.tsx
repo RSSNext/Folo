@@ -17,13 +17,14 @@ const BlockContainer: FC<{
   disabled?: boolean
   onDisableClick?: () => void
   content: ReactNode
-}> = memo(({ icon, label, onRemove, content, disabled, onDisableClick }) => {
+  readOnly?: boolean
+}> = memo(({ icon, label, onRemove, content, disabled, onDisableClick, readOnly }) => {
   const isStringContent = typeof content === "string"
 
   return (
     <div
       className={clsx(
-        "group relative flex h-7 min-w-0 max-w-[calc(50%-0.5rem)] flex-shrink-0 items-center gap-2 overflow-hidden rounded-lg px-2.5",
+        "group relative flex h-7 min-w-0 flex-shrink-0 items-center gap-2 overflow-hidden rounded-lg px-2.5",
         "bg-fill-tertiary border-border border",
         disabled && "cursor-pointer border-dashed opacity-50",
       )}
@@ -36,7 +37,8 @@ const BlockContainer: FC<{
       <div
         className={clsx(
           "min-w-0",
-          !disabled &&
+          !readOnly &&
+            !disabled &&
             "group-hover:[mask-image:linear-gradient(to_right,black_0%,black_calc(100%-3rem),rgba(0,0,0,0.8)_calc(100%-2rem),rgba(0,0,0,0.3)_calc(100%-1rem),transparent_100%)]",
         )}
       >
@@ -54,7 +56,7 @@ const BlockContainer: FC<{
         </div>
       </div>
 
-      {onRemove && !disabled && (
+      {onRemove && !disabled && !readOnly && (
         <button
           type="button"
           onClick={onRemove}
@@ -76,7 +78,8 @@ export const CombinedContextBlock: FC<{
   viewBlock?: MainViewBlock
   feedBlock?: MainFeedBlock
   unreadOnlyBlock?: UnreadOnlyBlock
-}> = memo(({ viewBlock, feedBlock, unreadOnlyBlock }) => {
+  readOnly?: boolean
+}> = memo(({ viewBlock, feedBlock, unreadOnlyBlock, readOnly = false }) => {
   const { t } = useTranslation("common")
   const blockActions = useChatBlockActions()
 
@@ -89,11 +92,16 @@ export const CombinedContextBlock: FC<{
     unreadOnlyBlock && blockActions.removeBlock(unreadOnlyBlock.id)
   }
 
+  const handleEnable = () => {
+    viewBlock && blockActions.toggleBlockDisabled(viewBlock.id, false)
+    feedBlock && blockActions.toggleBlockDisabled(feedBlock.id, false)
+  }
+
   // Determine what to display
   const displayContent = feedBlock ? (
     <span className="flex items-center gap-1">
-      <FeedTitle feedId={feedBlock.value} fallback={feedBlock.value} />
-      {unreadOnlyBlock && <i className="i-mgc-round-cute-fi size-3" title="Unread Only" />}
+      <FeedTitle feedId={feedBlock.value} fallback={feedBlock.value} className="min-w-0 truncate" />
+      {unreadOnlyBlock && <i className="i-mgc-round-cute-fi size-3 shrink-0" title="Unread Only" />}
     </span>
   ) : (
     <span className="flex items-center gap-1">
@@ -109,41 +117,42 @@ export const CombinedContextBlock: FC<{
   return (
     <BlockContainer
       icon={viewIcon || feedIcon}
-      disabled={viewBlock?.disabled || feedBlock?.disabled}
-      onRemove={handleRemove}
-      onDisableClick={() => {
-        viewBlock && blockActions.toggleBlockDisabled(viewBlock.id, false)
-        feedBlock && blockActions.toggleBlockDisabled(feedBlock.id, false)
-      }}
+      disabled={viewBlock?.disabled || feedBlock?.disabled || unreadOnlyBlock?.disabled}
+      onRemove={!readOnly ? handleRemove : undefined}
+      onDisableClick={!readOnly ? handleEnable : undefined}
       content={displayContent}
+      readOnly={readOnly}
     />
   )
 })
 CombinedContextBlock.displayName = "CombinedContextBlock"
 
-export const ContextBlock: FC<{ block: AIChatContextBlock }> = memo(({ block }) => {
-  const blockActions = useChatBlockActions()
+export const ContextBlock: FC<{ block: AIChatContextBlock; readOnly?: boolean }> = memo(
+  ({ block, readOnly }) => {
+    const blockActions = useChatBlockActions()
 
-  const { icon, label, displayContent } = useContextBlockPresentation(block)
+    const { icon, label, displayContent } = useContextBlockPresentation(block)
 
-  return (
-    <BlockContainer
-      icon={icon}
-      label={label}
-      disabled={block.disabled}
-      onRemove={() => {
-        if (block.type === "mainEntry") {
-          blockActions.toggleBlockDisabled(block.id, true)
-        } else {
-          blockActions.removeBlock(block.id)
-        }
-      }}
-      onDisableClick={() => {
-        if (block.type === "mainEntry") {
-          blockActions.toggleBlockDisabled(block.id, false)
-        }
-      }}
-      content={displayContent}
-    />
-  )
-})
+    return (
+      <BlockContainer
+        icon={icon}
+        label={label}
+        disabled={block.disabled}
+        onRemove={() => {
+          if (block.type === "mainEntry") {
+            blockActions.toggleBlockDisabled(block.id, true)
+          } else {
+            blockActions.removeBlock(block.id)
+          }
+        }}
+        onDisableClick={() => {
+          if (block.type === "mainEntry") {
+            blockActions.toggleBlockDisabled(block.id, false)
+          }
+        }}
+        content={displayContent}
+        readOnly={readOnly}
+      />
+    )
+  },
+)
