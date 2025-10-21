@@ -20,6 +20,8 @@ interface MentionDropdownProps {
   onClose: () => void
   query: string
   anchor?: HTMLElement | null
+  showSearchInput?: boolean
+  onQueryChange?: (query: string) => void
 }
 
 const MentionSuggestionItem = React.memo(
@@ -117,6 +119,9 @@ export const MentionDropdown: React.FC<MentionDropdownProps> = ({
   onSetSelectIndex,
   onClose,
   query,
+  anchor,
+  showSearchInput = false,
+  onQueryChange,
 }) => {
   if (!isVisible) throw thenable
 
@@ -142,6 +147,9 @@ export const MentionDropdown: React.FC<MentionDropdownProps> = ({
           query={query}
         />
       )}
+      anchor={anchor}
+      showSearchInput={showSearchInput}
+      onQueryChange={onQueryChange}
     />
   )
 }
