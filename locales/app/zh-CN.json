@@ -244,6 +244,7 @@
   "login.enter_token": "输入授权令牌以继续",
   "login.forget_password.note": "忘记了密码？",
   "login.have_account": "已有账户？<strong>登录</strong>",
+  "login.lastUsed": "上次使用",
   "login.no_account": "没有账户？<strong>注册</strong>",
   "login.or": "或",
   "login.password": "密码",

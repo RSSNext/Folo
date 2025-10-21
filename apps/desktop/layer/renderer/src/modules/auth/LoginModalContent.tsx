@@ -144,7 +144,7 @@ export const LoginModalContent = (props: LoginModalContentProps) => {
                   <span>{t("login.continueWith", { provider: provider.name })}</span>
                   {lastMethod === key && (
                     <div className="absolute -right-2 -top-2 rounded-xl bg-accent px-2 py-0.5 text-sm text-white">
-                      Last used
+                      {t("login.lastUsed")}
                     </div>
                   )}
                 </MotionButtonBase>

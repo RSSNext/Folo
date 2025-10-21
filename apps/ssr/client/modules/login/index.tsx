@@ -1,5 +1,11 @@
 import { UserAvatar } from "@client/components/ui/user-avatar"
-import { loginHandler, oneTimeToken, signOut, twoFactor } from "@client/lib/auth"
+import {
+  getLastUsedLoginMethod,
+  loginHandler,
+  oneTimeToken,
+  signOut,
+  twoFactor,
+} from "@client/lib/auth"
 import { openInFollowApp } from "@client/lib/helper"
 import { queryClient } from "@client/lib/query-client"
 import { useSession } from "@client/query/auth"
@@ -65,6 +71,17 @@ export function Login() {
   const [openFailed, setOpenFailed] = useState(false)
   const [callbackUrl, setCallbackUrl] = useState<string>()
   const callbackUrlWithScheme = callbackUrl ? `${DEEPLINK_SCHEME}${callbackUrl}` : undefined
+
+  const [lastMethod, setLastMethod] = useState<string | null>(null)
+  useEffect(() => {
+    let lastMethodValue = getLastUsedLoginMethod()
+    if (lastMethodValue === "email") {
+      lastMethodValue = "credential"
+    }
+    if (lastMethodValue) {
+      setLastMethod(lastMethodValue)
+    }
+  }, [lastMethod])
 
   const handleOpenApp = useCallback(async () => {
     const callbackUrl = await getCallbackUrl()
@@ -168,7 +185,7 @@ export function Login() {
                         loginHandler(key, "app")
                       }
                     }}
-                    className="center relative w-full gap-2 rounded-xl border p-2.5 pl-5 font-semibold duration-200 hover:bg-material-medium"
+                    className="center relative w-full gap-2 rounded-xl border py-3 pl-5 font-semibold duration-200 hover:bg-material-medium"
                   >
                     <img
                       className={cn(
@@ -179,6 +196,11 @@ export function Login() {
                       src={isDark ? provider.iconDark64 || provider.icon64 : provider.icon64}
                     />
                     <span>{t("login.continueWith", { provider: provider.name })}</span>
+                    {lastMethod === key && (
+                      <div className="absolute -right-2 -top-2 rounded-xl bg-accent px-2 py-0.5 text-sm text-white">
+                        {t("login.lastUsed")}
+                      </div>
+                    )}
                   </MotionButtonBase>
                 ))}
               </div>
@@ -219,6 +241,7 @@ export function Login() {
     openFailed,
     callbackUrl,
     isDark,
+    lastMethod,
   ])
   const Content = useMemo(() => {
     switch (true) {
