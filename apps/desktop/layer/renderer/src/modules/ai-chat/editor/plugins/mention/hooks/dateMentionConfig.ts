@@ -2,7 +2,7 @@ import type { Dayjs } from "dayjs"
 
 import { clampRangeToPastMonth } from "./dateMentionUtils"
 
-export const MAX_INLINE_DATE_SUGGESTIONS = 3
+export const MAX_INLINE_DATE_SUGGESTIONS = 2
 
 export type DateRangeFactory = (today: Dayjs) => ReturnType<typeof clampRangeToPastMonth>
 

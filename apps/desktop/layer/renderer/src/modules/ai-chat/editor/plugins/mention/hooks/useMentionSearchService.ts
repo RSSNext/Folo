@@ -19,7 +19,11 @@ export const useMentionSearchService = () => {
   const buildDateMentions = useMemo(() => createDateMentionBuilder({ t, language }), [t, language])
 
   const searchMentions = useMemo(() => {
-    return async (query: string, type?: MentionType): Promise<MentionData[]> => {
+    return async (
+      query: string,
+      type?: MentionType,
+      maxSuggestions = 10,
+    ): Promise<MentionData[]> => {
       const trimmedQuery = query.trim()
       const results: MentionData[] = []
       const seen = new Set<string>()
@@ -38,7 +42,7 @@ export const useMentionSearchService = () => {
       }
 
       if (type === "feed" || type === "entry" || type === "category") {
-        const searchResults = search(trimmedQuery, type, 10)
+        const searchResults = search(trimmedQuery, type, maxSuggestions)
         searchResults.forEach((item) =>
           pushResult({
             id: item.id,
@@ -71,7 +75,10 @@ export const useMentionSearchService = () => {
       const dateSuggestions = buildDateMentions(trimmedQuery)
       dateSuggestions.slice(0, MAX_INLINE_DATE_SUGGESTIONS).forEach(pushResult)
 
-      const searchResults = search(trimmedQuery, undefined, 10)
+      // Calculate remaining slots for search results
+      const remainingSlots = Math.max(0, maxSuggestions - results.length)
+
+      const searchResults = search(trimmedQuery, undefined, remainingSlots)
       searchResults.forEach((item) =>
         pushResult({
           id: item.id,

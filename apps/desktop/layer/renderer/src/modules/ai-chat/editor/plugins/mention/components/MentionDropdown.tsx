@@ -1,8 +1,9 @@
 import { cn, thenable } from "@follow/utils"
 import * as React from "react"
-import { useCallback } from "react"
+import { useCallback, useMemo } from "react"
 import { useTranslation } from "react-i18next"
 
+import type { TypeaheadGroup } from "../../shared/components/TypeaheadDropdown"
 import { TypeaheadDropdown } from "../../shared/components/TypeaheadDropdown"
 import { MENTION_TRIGGER_PATTERN } from "../constants"
 import { RANGE_WITH_LABEL_KEY } from "../hooks/dateMentionConfig"
@@ -110,6 +111,41 @@ const MentionSuggestionItem = React.memo(
 
 MentionSuggestionItem.displayName = "MentionSuggestionItem"
 
+const MentionGroupHeader = React.memo(({ type }: { type: MentionData["type"] }) => {
+  const { t } = useTranslation("ai")
+
+  const label = useMemo(() => {
+    switch (type) {
+      case "date": {
+        return t("mentions.section.date")
+      }
+      case "entry": {
+        return t("mentions.section.entry")
+      }
+      case "feed": {
+        return t("mentions.section.feed")
+      }
+      case "category": {
+        return t("mentions.section.category")
+      }
+      case "view": {
+        return t("mentions.section.view")
+      }
+      default: {
+        return ""
+      }
+    }
+  }, [type, t])
+
+  return (
+    <div className="text-text-tertiary mb-1 mt-2 px-2.5 text-xs font-medium first:mt-0">
+      {label}
+    </div>
+  )
+})
+
+MentionGroupHeader.displayName = "MentionGroupHeader"
+
 export const MentionDropdown: React.FC<MentionDropdownProps> = ({
   isVisible,
   suggestions,
@@ -125,10 +161,30 @@ export const MentionDropdown: React.FC<MentionDropdownProps> = ({
 }) => {
   if (!isVisible) throw thenable
 
+  // Group suggestions by type
+  const groupedSuggestions = useMemo<TypeaheadGroup<MentionData, MentionData["type"]>[]>(() => {
+    const groups: TypeaheadGroup<MentionData, MentionData["type"]>[] = []
+    let currentType: MentionData["type"] | null = null
+
+    suggestions.forEach((mention) => {
+      if (mention.type !== currentType) {
+        currentType = mention.type
+        groups.push({ key: currentType, items: [mention] })
+      } else {
+        const lastGroup = groups.at(-1)
+        if (lastGroup) {
+          lastGroup.items.push(mention)
+        }
+      }
+    })
+
+    return groups
+  }, [suggestions])
+
   return (
-    <TypeaheadDropdown
+    <TypeaheadDropdown<MentionData, MentionData["type"]>
       isVisible={isVisible}
-      items={suggestions}
+      items={groupedSuggestions}
       selectedIndex={selectedIndex}
       isLoading={isLoading}
       onSelect={onSelect}
@@ -136,10 +192,9 @@ export const MentionDropdown: React.FC<MentionDropdownProps> = ({
       onClose={onClose}
       query={query}
       ariaLabel="Mention suggestions"
-      getKey={(m) => `${m.type}-${m.id}`}
+      getKey={(mention) => `${mention.type}-${mention.id}`}
       renderItem={(mention, _index, isSelected, handlers) => (
         <MentionSuggestionItem
-          key={`${mention.type}-${mention.id}`}
           mention={mention}
           isSelected={isSelected}
           onMouseMove={handlers.onMouseMove}
@@ -147,6 +202,7 @@ export const MentionDropdown: React.FC<MentionDropdownProps> = ({
           query={query}
         />
       )}
+      renderGroupHeader={(groupKey) => <MentionGroupHeader type={groupKey} />}
       anchor={anchor}
       showSearchInput={showSearchInput}
       onQueryChange={onQueryChange}

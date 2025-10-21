@@ -2,7 +2,6 @@ import * as React from "react"
 import { Suspense, useMemo } from "react"
 
 import { MentionDropdown } from "./components/MentionDropdown"
-import { DEFAULT_MAX_SUGGESTIONS } from "./constants"
 import { useMentionKeyboard } from "./hooks/useMentionKeyboard"
 import { useMentionSearch } from "./hooks/useMentionSearch"
 import { useMentionSearchService } from "./hooks/useMentionSearchService"
@@ -31,7 +30,6 @@ export function MentionPlugin() {
     hasResults,
   } = useMentionSearch({
     onSearch: searchMentions,
-    maxSuggestions: DEFAULT_MAX_SUGGESTIONS,
   })
 
   // Hook for handling mention selection

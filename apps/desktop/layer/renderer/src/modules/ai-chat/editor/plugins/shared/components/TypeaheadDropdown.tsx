@@ -16,9 +16,14 @@ import { useEffect, useMemo, useRef, useState } from "react"
 
 import { calculateDropdownPosition } from "../utils/positioning"
 
-export interface TypeaheadDropdownProps<TItem> {
-  isVisible: boolean
+export interface TypeaheadGroup<TItem, TGroupKey = string> {
+  key: TGroupKey
   items: TItem[]
+}
+
+export interface TypeaheadDropdownProps<TItem, TGroupKey = string> {
+  isVisible: boolean
+  items: TItem[] | TypeaheadGroup<TItem, TGroupKey>[]
   selectedIndex: number
   isLoading: boolean
   onSelect: (item: TItem) => void
@@ -39,6 +44,8 @@ export interface TypeaheadDropdownProps<TItem> {
   anchor?: HTMLElement | null
   showSearchInput?: boolean
   onQueryChange?: (query: string) => void
+  // Group support
+  renderGroupHeader?: (groupKey: TGroupKey) => React.ReactNode
 }
 
 function useOptionalLexicalEditor() {
@@ -50,7 +57,7 @@ function useOptionalLexicalEditor() {
   }
 }
 
-export function TypeaheadDropdown<TItem>({
+export function TypeaheadDropdown<TItem, TGroupKey = string>({
   isVisible,
   items,
   selectedIndex,
@@ -68,12 +75,23 @@ export function TypeaheadDropdown<TItem>({
   anchor,
   showSearchInput = false,
   onQueryChange,
-}: TypeaheadDropdownProps<TItem>) {
+  renderGroupHeader,
+}: TypeaheadDropdownProps<TItem, TGroupKey>) {
   if (!isVisible) throw thenable
 
   const editor = useOptionalLexicalEditor()
   const dropdownRef = useRef<HTMLDivElement>(null)
   const [referenceWidth, setReferenceWidth] = useState<number>(320)
+
+  // Check if items are grouped
+  const isGrouped =
+    items.length > 0 && typeof items[0] === "object" && items[0] !== null && "key" in items[0]
+
+  // Flatten grouped items for selection logic
+  const flatItems = useMemo(() => {
+    if (!isGrouped) return items as TItem[]
+    return (items as TypeaheadGroup<TItem, TGroupKey>[]).flatMap((group) => group.items)
+  }, [items, isGrouped])
 
   const virtualReference = useRef({
     getBoundingClientRect: () => {
@@ -192,7 +210,8 @@ export function TypeaheadDropdown<TItem>({
       )
     }
 
-    if (items.length === 0) {
+    const totalItems = isGrouped ? flatItems.length : items.length
+    if (totalItems === 0) {
       return (
         <div className="text-text-tertiary px-2.5 py-1.5 text-center">
           <span className="text-sm">{emptyMessage}</span>
@@ -201,20 +220,49 @@ export function TypeaheadDropdown<TItem>({
       )
     }
 
+    if (!isGrouped) {
+      // Render flat list
+      return (
+        <div role="listbox" aria-label={ariaLabel}>
+          {(items as TItem[]).map((item, index) => {
+            const isSelected = index === selectedIndex
+            const handlers = {
+              onMouseMove: () => onSetSelectIndex(index),
+              onClick: () => onSelect(item),
+            }
+            return (
+              <React.Fragment key={getKey(item)}>
+                {renderItem(item, index, isSelected, handlers)}
+              </React.Fragment>
+            )
+          })}
+        </div>
+      )
+    }
+
+    // Render grouped list
+    let itemIndex = 0
     return (
       <div role="listbox" aria-label={ariaLabel}>
-        {items.map((item, index) => {
-          const isSelected = index === selectedIndex
-          const handlers = {
-            onMouseMove: () => onSetSelectIndex(index),
-            onClick: () => onSelect(item),
-          }
-          return (
-            <React.Fragment key={getKey(item)}>
-              {renderItem(item, index, isSelected, handlers)}
-            </React.Fragment>
-          )
-        })}
+        {(items as TypeaheadGroup<TItem, TGroupKey>[]).map((group) => (
+          <React.Fragment key={String(group.key)}>
+            {renderGroupHeader && renderGroupHeader(group.key)}
+            {group.items.map((item) => {
+              const currentIndex = itemIndex
+              itemIndex++
+              const isSelected = currentIndex === selectedIndex
+              const handlers = {
+                onMouseMove: () => onSetSelectIndex(currentIndex),
+                onClick: () => onSelect(item),
+              }
+              return (
+                <React.Fragment key={getKey(item)}>
+                  {renderItem(item, currentIndex, isSelected, handlers)}
+                </React.Fragment>
+              )
+            })}
+          </React.Fragment>
+        ))}
       </div>
     )
   }, [
@@ -230,6 +278,9 @@ export function TypeaheadDropdown<TItem>({
     emptyHint,
     onSetSelectIndex,
     onSelect,
+    isGrouped,
+    flatItems,
+    renderGroupHeader,
   ])
 
   return (
@@ -260,10 +311,12 @@ export function TypeaheadDropdown<TItem>({
                   value={query}
                   onChange={(e) => onQueryChange(e.target.value)}
                   onKeyDown={(e) => {
-                    const suggestion = items[selectedIndex] || items[0]
-                    if (e.key === "Enter" && suggestion) {
-                      e.preventDefault()
-                      onSelect(suggestion)
+                    if (e.key === "Enter") {
+                      const suggestion = flatItems[selectedIndex] || flatItems[0]
+                      if (suggestion) {
+                        e.preventDefault()
+                        onSelect(suggestion)
+                      }
                     }
                   }}
                   placeholder="Search for context..."
