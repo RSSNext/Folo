@@ -174,6 +174,7 @@
   "shortcuts.empty.description": "创建自定义AI快捷方式，快速执行常见任务并获得即时AI协助。",
   "shortcuts.empty.title": "暂无快捷方式",
   "shortcuts.enabled": "已启用",
+  "shortcuts.icon": "图标",
   "shortcuts.manage": "管理快捷方式",
   "shortcuts.name": "名称",
   "shortcuts.name_placeholder": "例如：总结文章",

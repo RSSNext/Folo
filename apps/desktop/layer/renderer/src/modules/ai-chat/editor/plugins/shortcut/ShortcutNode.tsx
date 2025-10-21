@@ -76,7 +76,7 @@ export class ShortcutNode extends DecoratorNode<React.JSX.Element> {
     const element = document.createElement("span")
     element.dataset.lexicalShortcut = "true"
     element.dataset.shortcutId = this.__shortcutData.id
-    element.textContent = `#${this.__shortcutData.name}`
+    element.textContent = `/${this.__shortcutData.name}`
     element.className = "shortcut-node"
     return { element }
   }

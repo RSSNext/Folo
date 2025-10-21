@@ -5,6 +5,7 @@ export interface ShortcutData {
   name: string
   prompt: string
 
+  hotkey?: string
   displayTargets?: readonly AIShortcutTarget[]
 }
 

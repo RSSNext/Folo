@@ -71,7 +71,14 @@ export const ChatShortcutsRow: React.FC<ChatShortcutsRowProps> = ({ onSelect }) 
             size="sm"
             title={shortcut.hotkey ? `${shortcut.name} (${shortcut.hotkey})` : shortcut.name}
           >
-            {shortcut.name}
+            <span className="flex items-center gap-1">
+              {shortcut.icon ? (
+                <i className={shortcut.icon} />
+              ) : (
+                <i className="i-mgc-hotkey-cute-re" />
+              )}
+              <span>{shortcut.name}</span>
+            </span>
           </AIShortcutButton>
         ))}
       </div>

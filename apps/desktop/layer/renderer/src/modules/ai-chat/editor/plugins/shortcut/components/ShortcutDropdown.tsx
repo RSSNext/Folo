@@ -2,6 +2,8 @@ import { cn, thenable } from "@follow/utils"
 import * as React from "react"
 import { useCallback } from "react"
 
+import { useAISettingValue } from "~/atoms/settings/ai"
+
 import { TypeaheadDropdown } from "../../shared/components/TypeaheadDropdown"
 import type { ShortcutData } from "../types"
 
@@ -35,7 +37,7 @@ const ShortcutSuggestionItem = React.memo(
 
     const highlightText = useCallback(
       (text: string, rawQuery: string) => {
-        const cleanQuery = rawQuery.replace(/^#/, "").toLowerCase()
+        const cleanQuery = rawQuery.replace(/^\//, "").toLowerCase()
         if (!cleanQuery) return text
 
         const parts = text.split(new RegExp(`(${cleanQuery})`, "gi"))
@@ -59,6 +61,11 @@ const ShortcutSuggestionItem = React.memo(
       [shortcut.id],
     )
 
+    const { shortcuts } = useAISettingValue()
+    const matched = React.useMemo(() => {
+      return shortcuts.find((s) => s.name === shortcut.name)
+    }, [shortcuts, shortcut.name])
+
     return (
       <div
         className={cn(
@@ -74,16 +81,15 @@ const ShortcutSuggestionItem = React.memo(
         {...props}
       >
         <span className="mr-1.5 inline-flex size-4 items-center justify-center text-blue">
-          <span className="inline-flex size-4 items-center justify-center rounded-full bg-blue/10 text-xs font-semibold leading-none">
-            #
-          </span>
+          {matched?.icon ? (
+            <i className={cn("text-[16px]", matched.icon)} />
+          ) : (
+            <span className="inline-flex size-4 items-center justify-center rounded-full bg-blue/10 text-xs font-semibold leading-none">
+              <i className="i-mgc-hotkey-cute-re" />
+            </span>
+          )}
         </span>
         <span className="flex-1 truncate leading-tight">{highlightText(shortcut.name, query)}</span>
-        {isSelected && (
-          <span className="ml-1.5 inline-flex size-4 items-center justify-center">
-            <i className="i-mgc-check-cute-re size-3" />
-          </span>
-        )}
       </div>
     )
   },

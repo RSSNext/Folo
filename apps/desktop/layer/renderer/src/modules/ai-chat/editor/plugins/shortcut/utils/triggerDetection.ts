@@ -36,9 +36,9 @@ export const defaultShortcutTriggerFn = (): ShortcutMatch | null => {
 }
 
 export const cleanShortcutQuery = (query: string): string => {
-  return query.replace(/^#/, "").trim()
+  return query.replace(/^\//, "").trim()
 }
 
 export const shouldTriggerShortcut = (query: string): boolean => {
-  return query.startsWith("#") && query.length > 0
+  return query.startsWith("/") && query.length > 0
 }

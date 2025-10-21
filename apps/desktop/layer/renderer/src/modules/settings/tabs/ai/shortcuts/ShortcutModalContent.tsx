@@ -2,6 +2,12 @@ import { Button } from "@follow/components/ui/button/index.js"
 import { Checkbox } from "@follow/components/ui/checkbox/index.jsx"
 import { Input, TextArea } from "@follow/components/ui/input/index.js"
 import { Label } from "@follow/components/ui/label/index.jsx"
+import {
+  Popover,
+  PopoverClose,
+  PopoverContent,
+  PopoverTrigger,
+} from "@follow/components/ui/popover/index.js"
 import { Switch } from "@follow/components/ui/switch/index.jsx"
 import {
   DEFAULT_SUMMARIZE_TIMELINE_PROMPT,
@@ -31,6 +37,7 @@ export const ShortcutModalContent = ({ shortcut, onSave, onCancel }: ShortcutMod
   }, [isDefaultSummarize, shortcut?.prompt])
   const [prompt, setPrompt] = useState(resolvedPrompt)
   const [enabled, setEnabled] = useState(shortcut?.enabled ?? true)
+  const [icon, setIcon] = useState<string>(shortcut?.icon || "i-mgc-hotkey-cute-re")
   const initialTargets = useMemo<AIShortcutTarget[]>(() => {
     if (shortcut?.displayTargets && shortcut.displayTargets.length > 0) {
       return [...shortcut.displayTargets]
@@ -38,6 +45,38 @@ export const ShortcutModalContent = ({ shortcut, onSave, onCancel }: ShortcutMod
     return [...DEFAULT_SHORTCUT_TARGETS]
   }, [shortcut?.displayTargets])
   const [displayTargets, setDisplayTargets] = useState<AIShortcutTarget[]>(initialTargets)
+  const PRESET_ICONS = useMemo(
+    () => [
+      "i-mgc-hotkey-cute-re",
+      "i-mgc-magic-2-cute-re",
+      "i-mgc-thought-cute-fi",
+      "i-mgc-rocket-cute-re",
+      "i-mgc-quill-pen-cute-re",
+      "i-mgc-search-3-cute-re",
+      "i-mgc-brain-cute-re",
+      "i-mgc-list-check-3-cute-re",
+      "i-mgc-translate-2-cute-re",
+      "i-mgc-send-plane-cute-re",
+      "i-mgc-hammer-cute-re",
+      "i-mgc-settings-1-cute-re",
+      "i-mgc-test-tube-cute-re",
+      "i-mgc-star-cute-re",
+      "i-mgc-bookmark-cute-re",
+      "i-mgc-book-6-cute-re",
+      "i-mgc-plugin-2-cute-re",
+      "i-mgc-grid-2-cute-re",
+      "i-mgc-palette-cute-re",
+      "i-mgc-fire-cute-re",
+      "i-mgc-gift-cute-re",
+      "i-mgc-trophy-cute-re",
+      "i-mgc-tool-cute-re",
+      "i-mgc-link-cute-re",
+      "i-mgc-attachment-cute-re",
+      "i-mgc-external-link-cute-re",
+      "i-mgc-copy-2-cute-re",
+    ],
+    [],
+  )
 
   useEffect(() => {
     setDisplayTargets(initialTargets)
@@ -78,6 +117,7 @@ export const ShortcutModalContent = ({ shortcut, onSave, onCancel }: ShortcutMod
       name: trimmedName,
       prompt: finalPrompt,
       enabled,
+      icon,
       displayTargets,
     })
   }
@@ -95,13 +135,46 @@ export const ShortcutModalContent = ({ shortcut, onSave, onCancel }: ShortcutMod
         </div>
       </div>
 
+      <div className="flex items-center justify-between space-y-2">
+        <Label className="text-xs text-text">{t("shortcuts.icon")}</Label>
+
+        <Popover>
+          <PopoverTrigger asChild>
+            <Button
+              variant="outline"
+              size="sm"
+              buttonClassName="size-8 flex items-center justify-center"
+              title={t("shortcuts.icon_presets")}
+            >
+              <i className={icon || "i-mgc-hotkey-cute-re"} />
+            </Button>
+          </PopoverTrigger>
+          <PopoverContent align="end" className="shadow-context-menu w-[280px] p-2">
+            <div className="grid grid-cols-7 gap-1.5">
+              {PRESET_ICONS.map((klass) => (
+                <PopoverClose asChild key={klass}>
+                  <button
+                    type="button"
+                    className="inline-flex size-8 items-center justify-center rounded-md border border-border bg-material-thin text-text hover:bg-fill hover:text-text-vibrant"
+                    onClick={() => setIcon(klass)}
+                    title={klass}
+                  >
+                    <i className={klass} />
+                  </button>
+                </PopoverClose>
+              ))}
+            </div>
+          </PopoverContent>
+        </Popover>
+      </div>
+
       <div className="space-y-2">
         <Label className="text-xs text-text">{t("shortcuts.prompt")}</Label>
         <TextArea
           value={prompt}
           onChange={(e) => setPrompt(e.target.value)}
           placeholder={t("shortcuts.prompt_placeholder")}
-          className="min-h-[120px] resize-none p-2 px-3 text-sm"
+          className="min-h-[120px] resize-none py-2 text-sm"
         />
       </div>
 

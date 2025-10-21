@@ -15,5 +15,5 @@ export function getShortcutDisplayTextValue(shortcutData: ShortcutData): string 
 export function getShortcutMarkdownValue(shortcutId: string): string {
   const allShortcuts = getAISettings().shortcuts ?? []
   const matchedShortcut = allShortcuts.find((shortcut) => shortcut.id === shortcutId)
-  return matchedShortcut ? `#${matchedShortcut.name}` : `#${shortcutId}`
+  return matchedShortcut ? `/${matchedShortcut.name}` : `/${shortcutId}`
 }

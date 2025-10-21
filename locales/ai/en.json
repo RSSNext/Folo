@@ -180,6 +180,7 @@
   "shortcuts.empty.description": "Create custom AI shortcuts to quickly perform common tasks and get instant AI assistance.",
   "shortcuts.empty.title": "No Shortcuts Yet",
   "shortcuts.enabled": "Enabled",
+  "shortcuts.icon": "Icon",
   "shortcuts.manage": "Manage shortcuts",
   "shortcuts.name": "Name",
   "shortcuts.name_placeholder": "e.g. Summarize Article",

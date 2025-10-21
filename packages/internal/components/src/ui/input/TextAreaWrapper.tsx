@@ -66,7 +66,7 @@ export const TextAreaWrapper = ({
   bordered = true,
   isFocused: externalIsFocused,
   onFocusChange,
-  paddingClassName = "px-3 py-4",
+  paddingClassName,
   onPointerDown,
 }: TextAreaWrapperProps) => {
   const [internalIsFocused, setInternalIsFocused] = useState(false)
@@ -89,7 +89,7 @@ export const TextAreaWrapper = ({
   return (
     <div
       className={cn(
-        "ring-accent/20 group relative flex h-full border ring-0 duration-200",
+        "ring-accent/20 group relative flex h-full overflow-hidden border ring-0 duration-200",
         roundedMap[rounded],
 
         // Border states
