@@ -13,6 +13,7 @@ import { RelativeDay } from "~/components/ui/datetime"
 import { IconScaleTransition } from "~/components/ux/transition/icon"
 import { useFeature } from "~/hooks/biz/useFeature"
 import { getRouteParams, useRouteParams } from "~/hooks/biz/useRouteParams"
+import { useShowEntryDetailsColumn } from "~/hooks/biz/useShowEntryDetailsColumn"
 
 import { markAllByRoute } from "../hooks/useMarkAll"
 
@@ -43,7 +44,9 @@ const useParseDate = (date: string) =>
 const dateItemclassName = tw`relative flex items-center text-sm lg:text-base gap-1 px-4 font-bold text-text h-7`
 export const DateItem = memo(({ date, view, isSticky }: DateItemProps) => {
   const aiEnabled = useFeature("ai")
-  if (view === FeedViewType.SocialMedia || aiEnabled) {
+  const showEntryDetailsColumn = useShowEntryDetailsColumn()
+
+  if (view === FeedViewType.SocialMedia || (aiEnabled && !showEntryDetailsColumn)) {
     return <SocialMediaDateItem date={date} className={dateItemclassName} isSticky={isSticky} />
   }
   return <UniversalDateItem date={date} className={dateItemclassName} isSticky={isSticky} />

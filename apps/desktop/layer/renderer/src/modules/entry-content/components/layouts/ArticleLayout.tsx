@@ -7,7 +7,7 @@ import { cn } from "@follow/utils"
 import { ErrorBoundary } from "@sentry/react"
 import { useCallback, useMemo, useRef, useState } from "react"
 
-import { AIChatPanelStyle, useAIChatPanelStyle } from "~/atoms/settings/ai"
+import { AIChatPanelStyle, useAIChatPanelStyle, useAIPanelVisibility } from "~/atoms/settings/ai"
 import { useUISettingKey } from "~/atoms/settings/ui"
 import { ShadowDOM } from "~/components/common/ShadowDOM"
 import type { TocRef } from "~/components/ui/markdown/components/Toc"
@@ -66,8 +66,9 @@ export const ArticleLayout: React.FC<EntryLayoutProps> = ({
   }, [removeBlock])
 
   const aiChatPanelStyle = useAIChatPanelStyle()
+  const isAIPanelVisible = useAIPanelVisibility()
 
-  const shouldShowAISummary = aiChatPanelStyle === AIChatPanelStyle.Floating
+  const shouldShowAISummary = aiChatPanelStyle === AIChatPanelStyle.Floating || !isAIPanelVisible
   if (!entry) return null
 
   return (
