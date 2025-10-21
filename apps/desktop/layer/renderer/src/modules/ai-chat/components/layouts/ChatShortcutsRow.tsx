@@ -8,11 +8,12 @@ import { useSettingModal } from "~/modules/settings/modal/use-setting-modal-hack
 import { AI_SETTING_SECTION_IDS } from "~/modules/settings/tabs/ai"
 import { useCreateAIShortcutModal } from "~/modules/settings/tabs/ai/shortcuts/hooks"
 
+import type { ShortcutData } from "../../editor/plugins/shortcut/types"
 import { useMainEntryId } from "../../hooks/useMainEntryId"
 import { AIShortcutButton } from "../ui/AIShortcutButton"
 
 interface ChatShortcutsRowProps {
-  onSelect: (prompt: string) => void
+  onSelect: (shortcutData: ShortcutData) => void
 }
 
 export const ChatShortcutsRow: React.FC<ChatShortcutsRowProps> = ({ onSelect }) => {
@@ -65,7 +66,7 @@ export const ChatShortcutsRow: React.FC<ChatShortcutsRowProps> = ({ onSelect }) 
         {shortcutsToDisplay.map((shortcut) => (
           <AIShortcutButton
             key={shortcut.id}
-            onClick={() => onSelect(shortcut.prompt)}
+            onClick={() => onSelect(shortcut)}
             animationDelay={0}
             size="sm"
             title={shortcut.hotkey ? `${shortcut.name} (${shortcut.hotkey})` : shortcut.name}

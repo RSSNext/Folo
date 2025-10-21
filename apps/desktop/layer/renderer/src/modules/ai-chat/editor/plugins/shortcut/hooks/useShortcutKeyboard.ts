@@ -1,25 +1,25 @@
 import { useCallback } from "react"
 
 import { useListKeyboardNavigation } from "../../shared/hooks/useListKeyboardNavigation"
-import type { MentionData } from "../types"
+import type { ShortcutData } from "../types"
 
-interface UseMentionKeyboardOptions {
+interface UseShortcutKeyboardOptions {
   isActive: boolean
-  suggestions: MentionData[]
+  suggestions: ShortcutData[]
   selectedIndex: number
   onArrowKey: (isUp: boolean) => void
   onEnterKey: () => void
   onEscapeKey: () => void
 }
 
-export const useMentionKeyboard = ({
+export const useShortcutKeyboard = ({
   isActive,
   suggestions,
   selectedIndex,
   onArrowKey,
   onEnterKey,
   onEscapeKey,
-}: UseMentionKeyboardOptions) => {
+}: UseShortcutKeyboardOptions) => {
   const handleMove = useCallback((isUp: boolean) => onArrowKey(isUp), [onArrowKey])
   const {
     handleCancel,

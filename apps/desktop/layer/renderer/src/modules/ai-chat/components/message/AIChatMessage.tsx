@@ -10,7 +10,7 @@ import { RelativeTime } from "~/components/ui/datetime"
 import { copyToClipboard } from "~/lib/clipboard"
 import type { BizUIMessage } from "~/modules/ai-chat/store/types"
 
-import { MentionPlugin } from "../../editor"
+import { MentionPlugin, ShortcutPlugin } from "../../editor"
 import { AIMessageParts } from "./AIMessageParts"
 import { TokenUsagePill } from "./TokenUsagePill"
 
@@ -38,7 +38,7 @@ const useMessageMarkdownFormat = (message: BizUIMessage) => {
           break
         }
         case "data-rich-text": {
-          lexicalEditor ||= createDefaultLexicalEditor([MentionPlugin])
+          lexicalEditor ||= createDefaultLexicalEditor([MentionPlugin, ShortcutPlugin])
           lexicalEditor.setEditorState(lexicalEditor.parseEditorState(part.data.state))
           content += convertLexicalToMarkdown(lexicalEditor)
           break
