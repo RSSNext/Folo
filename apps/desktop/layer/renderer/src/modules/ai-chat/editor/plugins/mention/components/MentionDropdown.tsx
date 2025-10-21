@@ -68,7 +68,7 @@ const MentionSuggestionItem = React.memo(
         return (
           <span
             key={`${mention.id}-${index}`}
-            className={isMatch ? "text-text-vibrant font-semibold" : ""}
+            className={isMatch ? "font-semibold text-text-vibrant" : ""}
           >
             {part}
           </span>
@@ -79,7 +79,7 @@ const MentionSuggestionItem = React.memo(
     return (
       <div
         className={cn(
-          "cursor-menu relative flex select-none items-center rounded-[5px] px-2.5 py-1 outline-none",
+          "relative flex cursor-menu select-none items-center rounded-[5px] px-2.5 py-1 outline-none",
           "focus-within:outline-transparent",
           "focus:bg-theme-selection-active focus:text-theme-selection-foreground data-[highlighted]:bg-theme-selection-hover data-[highlighted]:text-theme-selection-foreground",
           "h-[28px]",
@@ -131,7 +131,7 @@ const MentionGroupHeader = React.memo(({ type }: { type: MentionData["type"] }) 
   }, [type, t])
 
   return (
-    <div className="text-text-tertiary mb-1 mt-2 px-2.5 text-xs font-medium first:mt-0">
+    <div className="mb-1 mt-2 px-2.5 text-xs font-medium text-text-tertiary first:mt-0">
       {label}
     </div>
   )
@@ -154,24 +154,30 @@ export const MentionDropdown: React.FC<MentionDropdownProps> = ({
 }) => {
   if (!isVisible) throw thenable
 
-  // Group suggestions by type
+  // Group suggestions by type with stable ordering
   const groupedSuggestions = useMemo<TypeaheadGroup<MentionData, MentionData["type"]>[]>(() => {
-    const groups: TypeaheadGroup<MentionData, MentionData["type"]>[] = []
-    let currentType: MentionData["type"] | null = null
+    const groupMap = new Map<MentionData["type"], MentionData[]>()
 
-    suggestions.forEach((mention) => {
-      if (mention.type !== currentType) {
-        currentType = mention.type
-        groups.push({ key: currentType, items: [mention] })
+    // Group mentions by type
+    for (const mention of suggestions) {
+      const items = groupMap.get(mention.type)
+      if (items) {
+        items.push(mention)
       } else {
-        const lastGroup = groups.at(-1)
-        if (lastGroup) {
-          lastGroup.items.push(mention)
-        }
+        groupMap.set(mention.type, [mention])
       }
-    })
+    }
 
-    return groups
+    // Define stable type order
+    const typeOrder: MentionData["type"][] = ["view", "date", "category", "feed", "entry"]
+
+    // Convert to array with stable ordering
+    return typeOrder
+      .map((type) => {
+        const items = groupMap.get(type)
+        return items?.length ? { key: type, items } : null
+      })
+      .filter((group): group is TypeaheadGroup<MentionData, MentionData["type"]> => group !== null)
   }, [suggestions])
 
   return (
