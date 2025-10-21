@@ -121,7 +121,7 @@ export const AIChatContextBar: Component = memo(({ className }) => {
       <button
         type="button"
         onClick={handleAttachFile}
-        className="border-border bg-material-medium text-text-secondary hover:bg-material-thin hover:text-text-secondary flex size-7 shrink-0 items-center justify-center rounded-md border transition-colors"
+        className="flex size-7 shrink-0 items-center justify-center rounded-md border border-border bg-material-medium text-text-secondary transition-colors hover:bg-material-thin hover:text-text-secondary"
         title="Upload Files"
       >
         <i className="i-mgc-attachment-cute-re size-3.5" />
@@ -158,7 +158,7 @@ export const AIChatContextBar: Component = memo(({ className }) => {
             <PopoverTrigger asChild>
               <button
                 type="button"
-                className="border-border bg-fill-tertiary text-text-secondary hover:bg-fill-secondary hover:text-text flex h-7 shrink-0 items-center gap-1.5 rounded-lg border px-2.5 text-xs transition-colors"
+                className="flex h-7 shrink-0 items-center gap-1.5 rounded-lg border border-border bg-fill-tertiary px-2.5 text-xs text-text-secondary transition-colors hover:bg-fill-secondary hover:text-text"
               >
                 <i className="i-mgc-more-1-cute-re size-3.5" />
                 <span>+{hiddenBlocks.length}</span>
@@ -166,7 +166,7 @@ export const AIChatContextBar: Component = memo(({ className }) => {
             </PopoverTrigger>
             <PopoverContent className="w-80 p-3" align="start">
               <div className="flex flex-col gap-2">
-                <div className="text-text-secondary mb-1 text-xs font-medium">
+                <div className="mb-1 text-xs font-medium text-text-secondary">
                   Additional Context
                 </div>
                 {hiddenBlocks.map((item) => renderBlock(item))}

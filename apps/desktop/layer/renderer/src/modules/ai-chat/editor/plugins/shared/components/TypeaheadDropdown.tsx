@@ -203,7 +203,7 @@ export function TypeaheadDropdown<TItem, TGroupKey = string>({
   const content = useMemo(() => {
     if (isLoading) {
       return (
-        <div className="text-text-secondary flex items-center gap-2 px-2.5 py-1.5">
+        <div className="flex items-center gap-2 px-2.5 py-1.5 text-text-secondary">
           <i className="i-mgc-loading-3-cute-re size-4 animate-spin" />
           <span className="text-sm">{loadingMessage}</span>
         </div>
@@ -213,9 +213,9 @@ export function TypeaheadDropdown<TItem, TGroupKey = string>({
     const totalItems = isGrouped ? flatItems.length : items.length
     if (totalItems === 0) {
       return (
-        <div className="text-text-tertiary px-2.5 py-1.5 text-center">
+        <div className="px-2.5 py-1.5 text-center text-text-tertiary">
           <span className="text-sm">{emptyMessage}</span>
-          {query && <div className="text-text-quaternary mt-1 text-xs">{emptyHint}</div>}
+          {query && <div className="mt-1 text-xs text-text-quaternary">{emptyHint}</div>}
         </div>
       )
     }
@@ -305,7 +305,7 @@ export function TypeaheadDropdown<TItem, TGroupKey = string>({
             }}
           >
             {showSearchInput && onQueryChange && (
-              <div className="border-border -mx-1 mb-1 border-b px-3.5 pb-1.5 pt-1">
+              <div className="-mx-1 mb-1 border-b border-border px-3.5 pb-1.5 pt-1">
                 <input
                   type="text"
                   value={query}
@@ -321,7 +321,7 @@ export function TypeaheadDropdown<TItem, TGroupKey = string>({
                   }}
                   placeholder="Search for context..."
                   autoFocus
-                  className="text-text placeholder:text-text-quaternary w-full bg-transparent text-sm outline-none"
+                  className="w-full bg-transparent text-sm text-text outline-none placeholder:text-text-quaternary"
                 />
               </div>
             )}
