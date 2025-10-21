@@ -16,6 +16,7 @@ import { getCommand } from "~/modules/command/hooks/use-command"
 import { useCommandShortcut } from "~/modules/command/hooks/use-command-binding"
 
 import { FileUploadPlugin, MentionPlugin, ShortcutPlugin } from "../../editor"
+import { useMainEntryId } from "../../hooks/useMainEntryId"
 import { AIPanelRefsContext } from "../../store/AIChatContext"
 import { useChatActions, useChatScene, useChatStatus } from "../../store/hooks"
 import { AIChatSendButton } from "./AIChatSendButton"
@@ -48,6 +49,7 @@ interface ChatInputProps extends VariantProps<typeof chatInputVariants> {
 export const ChatInput = memo(({ onSend, variant, ref: forwardedRef }: ChatInputProps) => {
   const status = useChatStatus()
   const chatActions = useChatActions()
+  const mainEntryId = useMainEntryId()
 
   const stop = useCallback(() => {
     chatActions.stop()
@@ -141,7 +143,11 @@ export const ChatInput = memo(({ onSend, variant, ref: forwardedRef }: ChatInput
         <ScrollArea rootClassName="mr-14 flex-1 overflow-auto" viewportClassName="px-5 py-3.5">
           <LexicalRichEditor
             ref={editorRef}
-            placeholder={scene === "onboarding" ? "Enter your message" : "Message, @ for context"}
+            placeholder={
+              scene === "onboarding"
+                ? "Enter your message"
+                : `Ask anything about this ${mainEntryId ? "entry" : "timeline"}...`
+            }
             className="h-14"
             onChange={handleEditorChange}
             onKeyDown={handleKeyDown}
