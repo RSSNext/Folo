@@ -68,7 +68,7 @@ const MentionSuggestionItem = React.memo(
         return (
           <span
             key={`${mention.id}-${index}`}
-            className={isMatch ? "font-semibold text-text-vibrant" : ""}
+            className={isMatch ? "text-text-vibrant font-semibold" : ""}
           >
             {part}
           </span>
@@ -79,7 +79,7 @@ const MentionSuggestionItem = React.memo(
     return (
       <div
         className={cn(
-          "relative flex cursor-menu select-none items-center rounded-[5px] px-2.5 py-1 outline-none",
+          "cursor-menu relative flex select-none items-center rounded-[5px] px-2.5 py-1 outline-none",
           "focus-within:outline-transparent",
           "focus:bg-theme-selection-active focus:text-theme-selection-foreground data-[highlighted]:bg-theme-selection-hover data-[highlighted]:text-theme-selection-foreground",
           "h-[28px]",
@@ -97,13 +97,6 @@ const MentionSuggestionItem = React.memo(
 
         {/* Content */}
         <span className="flex-1 truncate">{highlightText(displayName, query)}</span>
-
-        {/* Selection Indicator */}
-        {isSelected && (
-          <span className="ml-1.5 inline-flex size-4 items-center justify-center">
-            <i className="i-mgc-check-cute-re size-3" />
-          </span>
-        )}
       </div>
     )
   },
@@ -138,7 +131,7 @@ const MentionGroupHeader = React.memo(({ type }: { type: MentionData["type"] }) 
   }, [type, t])
 
   return (
-    <div className="mb-1 mt-2 px-2.5 text-xs font-medium text-text-tertiary first:mt-0">
+    <div className="text-text-tertiary mb-1 mt-2 px-2.5 text-xs font-medium first:mt-0">
       {label}
     </div>
   )
