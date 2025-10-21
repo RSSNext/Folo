@@ -173,15 +173,17 @@ export const TaskItem = memo(({ task }: { task: AITask }) => {
     {
       icon: "i-mgc-test-tube-cute-re",
       onClick: async () => {
+        const loadingId = toast.loading(t("tasks.toast.test_start"))
         try {
-          const loadingId = toast.loading(t("tasks.toast.test_start"))
           await testRunMutation.mutateAsync({ id: task.id })
           toast.success(t("tasks.toast.test_success"), {
             id: loadingId,
           })
         } catch (error) {
           console.error("Failed to run test:", error)
-          toast.error(t("tasks.toast.test_failed"))
+          toast.error(t("tasks.toast.test_failed"), {
+            id: loadingId,
+          })
         }
       },
       title: t("tasks.actions.test_run"),
@@ -220,11 +222,11 @@ export const TaskItem = memo(({ task }: { task: AITask }) => {
   ]
 
   return (
-    <div className="group -ml-3 rounded-lg border border-border p-3 transition-colors hover:bg-material-medium">
+    <div className="border-border hover:bg-material-medium group -ml-3 rounded-lg border p-3 transition-colors">
       <div className="flex items-start justify-between">
         <div className="flex-1 space-y-2">
           <div className="flex items-center gap-2">
-            <h4 className="text-sm font-medium text-text">{task.name}</h4>
+            <h4 className="text-text text-sm font-medium">{task.name}</h4>
             <span
               className={cn(
                 "inline-flex items-center rounded-full px-2 py-1 text-xs",
@@ -240,12 +242,12 @@ export const TaskItem = memo(({ task }: { task: AITask }) => {
             </span>
           </div>
           <div className="space-y-1">
-            <p className="text-xs text-text-secondary">
+            <p className="text-text-secondary text-xs">
               <span className="text-text-tertiary">{t("tasks.fields.schedule")}</span>{" "}
               {formatScheduleText(task.schedule, t, i18n)}
             </p>
             {task.createdAt && (
-              <p className="text-xs text-text-secondary">
+              <p className="text-text-secondary text-xs">
                 <span className="text-text-tertiary">{t("tasks.fields.created")}</span>{" "}
                 {dayjs(task.createdAt).format("MMM D, YYYY h:mm A")}
               </p>
