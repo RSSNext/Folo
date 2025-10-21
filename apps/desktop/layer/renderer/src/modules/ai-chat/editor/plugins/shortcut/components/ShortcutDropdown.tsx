@@ -49,7 +49,7 @@ const ShortcutSuggestionItem = React.memo(
           return (
             <span
               key={`${shortcut.id}-${index}`}
-              className={isMatch ? "text-text-vibrant font-semibold" : ""}
+              className={isMatch ? "font-semibold text-text-vibrant" : ""}
             >
               {part}
             </span>
@@ -62,9 +62,9 @@ const ShortcutSuggestionItem = React.memo(
     return (
       <div
         className={cn(
-          "cursor-menu relative flex select-none items-center rounded-[5px] px-2.5 py-1 outline-none",
+          "relative flex cursor-menu select-none items-center rounded-[5px] px-2.5 py-1 outline-none",
           "focus-within:outline-transparent",
-          "data-[highlighted]:bg-theme-selection-hover focus:bg-theme-selection-active focus:text-theme-selection-foreground data-[highlighted]:text-theme-selection-foreground",
+          "focus:bg-theme-selection-active focus:text-theme-selection-foreground data-[highlighted]:bg-theme-selection-hover data-[highlighted]:text-theme-selection-foreground",
           "h-[28px]",
           isSelected && "bg-theme-selection-active text-theme-selection-foreground",
         )}
@@ -73,15 +73,12 @@ const ShortcutSuggestionItem = React.memo(
         aria-selected={isSelected}
         {...props}
       >
-        <span className="text-blue mr-1.5 inline-flex size-4 items-center justify-center">
-          <span className="bg-blue/10 inline-flex size-4 items-center justify-center rounded-full text-xs font-semibold leading-none">
+        <span className="mr-1.5 inline-flex size-4 items-center justify-center text-blue">
+          <span className="inline-flex size-4 items-center justify-center rounded-full bg-blue/10 text-xs font-semibold leading-none">
             #
           </span>
         </span>
         <span className="flex-1 truncate leading-tight">{highlightText(shortcut.name, query)}</span>
-        {shortcut.hotkey && (
-          <span className="text-text-tertiary ml-2 text-xs">{shortcut.hotkey}</span>
-        )}
         {isSelected && (
           <span className="ml-1.5 inline-flex size-4 items-center justify-center">
             <i className="i-mgc-check-cute-re size-3" />
