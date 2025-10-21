@@ -9,12 +9,12 @@ import type { LoginRuntime } from "@follow/shared/auth"
 import { stopPropagation } from "@follow/utils/dom"
 import { cn } from "@follow/utils/utils"
 import { m } from "motion/react"
-import { useState } from "react"
+import { useEffect, useState } from "react"
 import { Trans, useTranslation } from "react-i18next"
 
 import { useServerConfigs } from "~/atoms/server-configs"
 import { useCurrentModal, useModalStack } from "~/components/ui/modal/stacked/hooks"
-import { loginHandler } from "~/lib/auth"
+import { authClient, loginHandler } from "~/lib/auth"
 import { useAuthProviders } from "~/queries/users"
 
 import { LoginWithPassword, RegisterForm } from "./Form"
@@ -66,6 +66,18 @@ export const LoginModalContent = (props: LoginModalContentProps) => {
   const handleLoginStateChange = (state: "register" | "login") => {
     setIsRegister(state === "register")
   }
+
+  const [lastMethod, setLastMethod] = useState<string | null>(null)
+  useEffect(() => {
+    let lastMethodValue = authClient.getLastUsedLoginMethod()
+    if (lastMethodValue === "email") {
+      lastMethodValue = "credential"
+    }
+    if (lastMethodValue) {
+      setIsRegister(false)
+      setLastMethod(lastMethodValue)
+    }
+  }, [lastMethod])
 
   const Inner = (
     <>
@@ -130,6 +142,11 @@ export const LoginModalContent = (props: LoginModalContentProps) => {
                     src={isDark ? provider.iconDark64 || provider.icon64 : provider.icon64}
                   />
                   <span>{t("login.continueWith", { provider: provider.name })}</span>
+                  {lastMethod === key && (
+                    <div className="absolute -right-2 -top-2 rounded-xl bg-accent px-2 py-0.5 text-sm text-white">
+                      Last used
+                    </div>
+                  )}
                 </MotionButtonBase>
               ))}
 
