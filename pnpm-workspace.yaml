@@ -14,11 +14,11 @@ catalog:
 
 ignorePatchFailures: false
 
-minimumReleaseAge: 1440
+# minimumReleaseAge: 1440
 
-minimumReleaseAgeExclude:
-  - "@follow-app/*"
-  - "@folo-services/*"
+# minimumReleaseAgeExclude:
+#   - "@follow-app/*"
+#   - "@folo-services/*"
 
 onlyBuiltDependencies:
   - "@firebase/util"
@@ -52,8 +52,6 @@ overrides:
   nativewind>react-native-css-interop: 0.1.22
   react: 19.2.0
   react-dom: 19.2.0
-  react-native-ios-context-menu: 3.1.1
-  react-native-ios-utilities: 5.1.5
 
 patchedDependencies:
   "@microflash/remark-callout-directives": patches/@microflash__remark-callout-directives.patch
@@ -63,8 +61,8 @@ patchedDependencies:
   daisyui@4.12.24: patches/daisyui@4.12.24.patch
   jsonpointer: patches/jsonpointer.patch
   re-resizable@6.11.2: patches/re-resizable@6.11.2.patch
-  react-native-ios-utilities: patches/react-native-ios-utilities.patch
-  react-native-screens: patches/react-native-screens.patch
+  # react-native-ios-utilities: patches/react-native-ios-utilities.patch
+  # react-native-screens: patches/react-native-screens.patch
   react-native-sheet-transitions: patches/react-native-sheet-transitions.patch
   react-native-track-player: patches/react-native-track-player.patch
   workbox-precaching: patches/workbox-precaching.patch

@@ -34,6 +34,8 @@ target 'Folo' do
   use_frameworks! :linkage => podfile_properties['ios.useFrameworks'].to_sym if podfile_properties['ios.useFrameworks']
   use_frameworks! :linkage => ENV['USE_FRAMEWORKS'].to_sym if ENV['USE_FRAMEWORKS']
 
+
+
   use_react_native!(
     :path => config[:reactNativePath],
     :hermes_enabled => podfile_properties['expo.jsEngine'] == nil || podfile_properties['expo.jsEngine'] == 'hermes',
@@ -49,6 +51,25 @@ target 'Folo' do
       :mac_catalyst_enabled => false,
       :ccache_enabled => podfile_properties['apple.ccacheEnabled'] == 'true',
     )
+
+
+  pod 'React-jsinspectorcdp',
+  :path => '../node_modules/react-native/ReactCommon/jsinspector-modern/cdp',
+  :modular_headers => true
+   # 让 jsinspector 能看到 cdp 头文件（避免 'cdp/CdpJson.h' not found）
+   installer.pods_project.targets.each do |t|
+     if ['React-jsinspector-modern', 'React-jsinspector'].include?(t.name)
+       t.build_configurations.each do |cfg|
+         cfg.build_settings['HEADER_SEARCH_PATHS'] = [
+           '"$(inherited)"',
+           '"$(PODS_TARGET_SRCROOT)/"',                     # jsinspector-modern 根
+           '"$(PODS_TARGET_SRCROOT)/cdp"',                  # cdp 子目录
+           '"$(PODS_ROOT)/Headers/Public/React-jsinspector-modern"'
+         ].join(' ')
+      cfg.build_settings['DEFINES_MODULE'] = 'YES'
+    end
+  end
+end
 
     # This is necessary for Xcode 14, because it signs resource bundles by default
     # when building for devices.
