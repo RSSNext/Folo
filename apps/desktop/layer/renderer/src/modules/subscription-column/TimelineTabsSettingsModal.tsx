@@ -34,7 +34,7 @@ function ContainerDroppable({ id, children }: { id: "visible" | "hidden"; childr
   return (
     <div
       ref={setNodeRef}
-      className={`border-border bg-material-ultra-thin flex min-h-[120px] w-full flex-wrap items-center justify-center rounded-lg border p-2 pb-6 shadow-sm ${
+      className={`flex min-h-[120px] w-full flex-wrap items-center justify-center rounded-lg border border-border bg-material-ultra-thin p-2 pb-6 shadow-sm ${
         isOver ? "outline outline-1 outline-orange-400" : ""
       }`}
     >
@@ -54,9 +54,9 @@ function TabItem({ id }: { id: UniqueIdentifier }) {
   const meta = getViewMeta(String(id))
   const { t } = useTranslation()
   return (
-    <div className="hover:bg-material-opaque flex w-full items-center gap-2 rounded-md p-2">
+    <div className="flex w-full items-center gap-2 rounded-md p-2 hover:bg-material-opaque">
       <div className="flex size-6 items-center justify-center text-lg">{meta.icon}</div>
-      <div className="text-text-secondary text-callout">
+      <div className="text-callout text-text-secondary">
         {t(meta.name as any, { ns: "common" })}
       </div>
     </div>
@@ -187,8 +187,8 @@ const TimelineTabsSettings = () => {
       onPointerDown={(e) => e.stopPropagation()}
     >
       <div className="mb-2">
-        <h2 className="text-text text-title2 font-semibold">Timeline Tabs</h2>
-        <p className="text-text-secondary text-headline">
+        <h2 className="text-title2 font-semibold text-text">Timeline Tabs</h2>
+        <p className="text-headline text-text-secondary">
           First tab is fixed. Drag to choose up to {MAX_VISIBLE} visible tabs.
         </p>
       </div>
@@ -200,7 +200,7 @@ const TimelineTabsSettings = () => {
       >
         <div className="space-y-4">
           <div>
-            <h3 className="text-text text-subheadline mb-2 font-medium">
+            <h3 className="mb-2 text-subheadline font-medium text-text">
               Visible ({visible.length}/{MAX_VISIBLE})
             </h3>
             <ContainerDroppable id="visible">
@@ -213,7 +213,7 @@ const TimelineTabsSettings = () => {
           </div>
 
           <div>
-            <h3 className="text-text text-subheadline mb-2 font-medium">Hidden</h3>
+            <h3 className="mb-2 text-subheadline font-medium text-text">Hidden</h3>
             <ContainerDroppable id="hidden">
               <SortableContext items={hidden} strategy={verticalListSortingStrategy}>
                 {hidden.map((id) => (

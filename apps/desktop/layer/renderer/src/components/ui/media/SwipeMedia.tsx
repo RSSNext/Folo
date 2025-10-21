@@ -100,7 +100,7 @@ export function SwipeMedia({
           {emblaApi?.canScrollPrev() && (
             <button
               type="button"
-              className="center bg-material-medium border-border backdrop-blur-background absolute left-2 top-1/2 size-8 -translate-y-1/2 rounded-full border text-white opacity-0 duration-200 group-hover:opacity-100"
+              className="center absolute left-2 top-1/2 size-8 -translate-y-1/2 rounded-full border border-border bg-material-medium text-white opacity-0 backdrop-blur-background duration-200 group-hover:opacity-100"
               onClick={scrollPrev}
               onDoubleClick={stopPropagation}
             >
@@ -110,7 +110,7 @@ export function SwipeMedia({
           {emblaApi?.canScrollNext() && (
             <button
               type="button"
-              className="center bg-material-medium border-border backdrop-blur-background absolute right-2 top-1/2 size-8 -translate-y-1/2 rounded-full border text-white opacity-0 duration-200 group-hover:opacity-100"
+              className="center absolute right-2 top-1/2 size-8 -translate-y-1/2 rounded-full border border-border bg-material-medium text-white opacity-0 backdrop-blur-background duration-200 group-hover:opacity-100"
               onClick={scrollNext}
               onDoubleClick={stopPropagation}
             >

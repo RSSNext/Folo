@@ -40,7 +40,7 @@ export const ResetPassword = () => {
 
   return (
     <SafeNavigationScrollView
-      className="bg-system-grouped-background flex-1"
+      className="flex-1 bg-system-grouped-background"
       Header={
         <NavigationBlurEffectHeaderView
           title="Reset Password"

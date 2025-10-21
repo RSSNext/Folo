@@ -409,8 +409,8 @@ export const SettingIntegration = () => {
           <div className="space-y-6">
             <div className="flex items-center justify-between">
               <SettingSectionTitle title={t("integration.builtin.title")} />
-              <span className="text-text-tertiary flex items-center gap-1 text-sm">
-                <span className="bg-green size-2 rounded-full" />
+              <span className="flex items-center gap-1 text-sm text-text-tertiary">
+                <span className="size-2 rounded-full bg-green" />
                 {filteredIntegrations.filter((i) => i.configured).length}/
                 {filteredIntegrations.length} configured
               </span>
@@ -424,24 +424,24 @@ export const SettingIntegration = () => {
                     collapseId={integration.key}
                     title={
                       <div className="flex items-center gap-3">
-                        <span className="text-text-secondary inline-flex items-center justify-center">
+                        <span className="inline-flex items-center justify-center text-text-secondary">
                           {integration.icon}
                         </span>
                         <div className="flex flex-col items-start">
                           <span className="font-medium">{integration.title as string}</span>
-                          <span className="text-text-tertiary text-xs">
+                          <span className="text-xs text-text-tertiary">
                             {integration.categoryTitle as string}
                           </span>
                         </div>
                         <div className="ml-auto flex items-center gap-2">
                           {integration.configured && (
-                            <span className="bg-green/10 text-green inline-flex items-center gap-1 rounded-full px-2 py-0.5 text-xs">
+                            <span className="inline-flex items-center gap-1 rounded-full bg-green/10 px-2 py-0.5 text-xs text-green">
                               <i className="i-mingcute-check-line" />
                               {t("integration.status.configured")}
                             </span>
                           )}
                           {integration.enabled && (
-                            <span className="bg-blue/10 text-blue inline-flex items-center gap-1 rounded-full px-2 py-0.5 text-xs">
+                            <span className="inline-flex items-center gap-1 rounded-full bg-blue/10 px-2 py-0.5 text-xs text-blue">
                               <i className="i-mingcute-power-line" />
                               {t("integration.status.enabled")}
                             </span>
@@ -450,7 +450,7 @@ export const SettingIntegration = () => {
                       </div>
                     }
                     defaultOpen={shouldDefaultOpen(integration)}
-                    className="border-border bg-background mt-4 rounded-lg border px-4 py-2 shadow-sm"
+                    className="mt-4 rounded-lg border border-border bg-background px-4 py-2 shadow-sm"
                     contentClassName="px-4"
                   >
                     <div className="pb-4">
@@ -464,8 +464,8 @@ export const SettingIntegration = () => {
         </>
       ) : (
         <div className="text-center">
-          <i className="i-mingcute-document-line text-text-tertiary mb-3 text-2xl" />
-          <p className="text-text-tertiary mb-2 text-sm font-medium">
+          <i className="i-mingcute-document-line mb-3 text-2xl text-text-tertiary" />
+          <p className="mb-2 text-sm font-medium text-text-tertiary">
             No built-in integration found
           </p>
         </div>

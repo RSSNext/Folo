@@ -31,7 +31,7 @@ export const EmptyFeedList = memo(({ onClick }: { onClick?: (e: React.MouseEvent
     <div className="mt-12 flex flex-1 items-center font-normal text-zinc-500">
       {isOnDiscoverPage ? (
         <div
-          className="cursor-menu flex flex-1 flex-col items-center justify-center gap-2"
+          className="flex flex-1 cursor-menu flex-col items-center justify-center gap-2"
           onClick={handleClick}
         >
           <i className="i-mgc-arrow-right-up-cute-re text-3xl" />
@@ -41,7 +41,7 @@ export const EmptyFeedList = memo(({ onClick }: { onClick?: (e: React.MouseEvent
         </div>
       ) : (
         <div
-          className="cursor-menu flex flex-1 flex-col items-center justify-center gap-2"
+          className="flex flex-1 cursor-menu flex-col items-center justify-center gap-2"
           onClick={handleClick}
         >
           <i className="i-mgc-add-cute-re text-3xl" />

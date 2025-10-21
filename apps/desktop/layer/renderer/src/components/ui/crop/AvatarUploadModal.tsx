@@ -384,10 +384,10 @@ export const AvatarUploadModal = ({
             className="size-full"
           >
             <div className="flex flex-col items-center gap-2 p-8">
-              <i className="i-mgc-file-upload-cute-re text-text-secondary text-4xl" />
+              <i className="i-mgc-file-upload-cute-re text-4xl text-text-secondary" />
               <div className="text-center">
                 <p className="text-sm font-medium">{t("profile.avatar.dropZoneText")}</p>
-                <p className="text-text-secondary text-xs">{t("profile.avatar.dropZoneSubtext")}</p>
+                <p className="text-xs text-text-secondary">{t("profile.avatar.dropZoneSubtext")}</p>
               </div>
             </div>
           </DropZone>
@@ -427,33 +427,33 @@ export const AvatarUploadModal = ({
             >
               <div className="size-full cursor-move" onMouseDown={handleCropMouseDown}>
                 {/* Grid lines */}
-                <div className="bg-material-medium-light absolute left-1/3 top-0 h-full w-px" />
-                <div className="bg-material-medium-light absolute left-2/3 top-0 h-full w-px" />
-                <div className="bg-material-medium-light absolute left-0 top-1/3 h-px w-full" />
-                <div className="bg-material-medium-light absolute left-0 top-2/3 h-px w-full" />
+                <div className="absolute left-1/3 top-0 h-full w-px bg-material-medium-light" />
+                <div className="absolute left-2/3 top-0 h-full w-px bg-material-medium-light" />
+                <div className="absolute left-0 top-1/3 h-px w-full bg-material-medium-light" />
+                <div className="absolute left-0 top-2/3 h-px w-full bg-material-medium-light" />
 
                 {/* Resize handles */}
                 <div
-                  className="bg-accent absolute -left-1 -top-1 size-3 cursor-nwse-resize rounded-full border-2 border-white"
+                  className="absolute -left-1 -top-1 size-3 cursor-nwse-resize rounded-full border-2 border-white bg-accent"
                   onMouseDown={(e) => handleResizeMouseDown(e, "tl")}
                 />
                 <div
-                  className="bg-accent absolute -right-1 -top-1 size-3 cursor-nesw-resize rounded-full border-2 border-white"
+                  className="absolute -right-1 -top-1 size-3 cursor-nesw-resize rounded-full border-2 border-white bg-accent"
                   onMouseDown={(e) => handleResizeMouseDown(e, "tr")}
                 />
                 <div
-                  className="bg-accent absolute -bottom-1 -left-1 size-3 cursor-nesw-resize rounded-full border-2 border-white"
+                  className="absolute -bottom-1 -left-1 size-3 cursor-nesw-resize rounded-full border-2 border-white bg-accent"
                   onMouseDown={(e) => handleResizeMouseDown(e, "bl")}
                 />
                 <div
-                  className="bg-accent absolute -bottom-1 -right-1 size-3 cursor-nwse-resize rounded-full border-2 border-white"
+                  className="absolute -bottom-1 -right-1 size-3 cursor-nwse-resize rounded-full border-2 border-white bg-accent"
                   onMouseDown={(e) => handleResizeMouseDown(e, "br")}
                 />
               </div>
             </div>
           </div>
 
-          <div className="text-text-secondary text-center text-sm">
+          <div className="text-center text-sm text-text-secondary">
             {t("profile.avatar.cropInstructions")}
           </div>
         </div>

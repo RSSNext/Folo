@@ -21,7 +21,7 @@ export const Titlebar = () => {
       }}
     >
       <button
-        className="no-drag-region hover:bg-theme-item-active pointer-events-auto flex h-full w-[50px] items-center justify-center duration-200"
+        className="no-drag-region pointer-events-auto flex h-full w-[50px] items-center justify-center duration-200 hover:bg-theme-item-active"
         type="button"
         onClick={() => {
           ipcServices?.app.windowAction({ action: "minimize" })
@@ -32,7 +32,7 @@ export const Titlebar = () => {
 
       <button
         type="button"
-        className="no-drag-region hover:bg-theme-item-active pointer-events-auto flex h-full w-[50px] items-center justify-center duration-200"
+        className="no-drag-region pointer-events-auto flex h-full w-[50px] items-center justify-center duration-200 hover:bg-theme-item-active"
         onClick={async () => {
           await ipcServices?.app.windowAction({ action: "maximum" })
         }}

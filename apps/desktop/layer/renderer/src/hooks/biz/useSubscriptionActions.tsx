@@ -57,7 +57,7 @@ export const useDeleteSubscription = ({ onSuccess }: { onSuccess?: () => void } 
               label: (
                 <span className={"flex items-center gap-1 px-1"}>
                   {t("words.undo")}
-                  <Kbd className="border-border inline-flex items-center border bg-transparent text-white">
+                  <Kbd className="inline-flex items-center border border-border bg-transparent text-white">
                     $mod+Z
                   </Kbd>
                 </span>
@@ -88,7 +88,7 @@ const UnfollowInfo = ({ title, undo }: { title: string; undo: () => any }) => {
     preventDefault: true,
   })
   return (
-    <span className="text-text font-medium">
+    <span className="font-medium text-text">
       <Trans
         ns="app"
         i18nKey="notify.unfollow_feed"

@@ -354,8 +354,8 @@ export const MCPServicesSection = () => {
       <div className="space-y-2">
         <div className="flex items-center justify-between">
           <div className="space-y-1">
-            <Label className="text-text text-sm font-medium">{t("integration.mcp.enabled")}</Label>
-            <div className="text-text-secondary text-xs">{t("integration.mcp.description")}</div>
+            <Label className="text-sm font-medium text-text">{t("integration.mcp.enabled")}</Label>
+            <div className="text-xs text-text-secondary">{t("integration.mcp.description")}</div>
           </div>
           <Switch checked={mcpEnabled} onCheckedChange={setMCPEnabled} />
         </div>
@@ -364,7 +364,7 @@ export const MCPServicesSection = () => {
       {mcpEnabled && (
         <>
           <div className="flex items-center justify-between">
-            <Label className="text-text text-sm font-medium">
+            <Label className="text-sm font-medium text-text">
               {t("integration.mcp.services.title")}
             </Label>
             <div className="flex gap-2">
@@ -390,13 +390,13 @@ export const MCPServicesSection = () => {
 
           {mcpServices.length === 0 && !isLoading && (
             <div className="py-8 text-center">
-              <div className="bg-fill-secondary mx-auto mb-3 flex size-12 items-center justify-center rounded-full">
-                <i className="i-mgc-plugin-2-cute-re text-text size-6" />
+              <div className="mx-auto mb-3 flex size-12 items-center justify-center rounded-full bg-fill-secondary">
+                <i className="i-mgc-plugin-2-cute-re size-6 text-text" />
               </div>
-              <h4 className="text-text mb-1 text-sm font-medium">
+              <h4 className="mb-1 text-sm font-medium text-text">
                 {t("integration.mcp.services.empty.title")}
               </h4>
-              <p className="text-text-secondary text-xs">
+              <p className="text-xs text-text-secondary">
                 {t("integration.mcp.services.empty.description")}
               </p>
             </div>

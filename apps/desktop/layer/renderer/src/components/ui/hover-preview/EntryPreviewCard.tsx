@@ -58,7 +58,7 @@ export const EntryPreviewCard: React.FC<EntryPreviewCardProps> = ({
           className={cn("overflow-hidden", className)}
         >
           {/* Header */}
-          <div className="bg-fill-tertiary border-border border-b p-3">
+          <div className="border-b border-border bg-fill-tertiary p-3">
             <a
               target="_blank"
               rel="noopener noreferrer"
@@ -67,8 +67,8 @@ export const EntryPreviewCard: React.FC<EntryPreviewCardProps> = ({
             >
               <FeedIcon target={feed} size={16} />
               <div className="min-w-0 flex-1">
-                <div className="text-text line-clamp-1 text-sm font-medium">{feed.title}</div>
-                <span className="text-text-tertiary line-clamp-1 text-xs">{feed.url}</span>
+                <div className="line-clamp-1 text-sm font-medium text-text">{feed.title}</div>
+                <span className="line-clamp-1 text-xs text-text-tertiary">{feed.url}</span>
               </div>
             </a>
           </div>
@@ -86,18 +86,18 @@ export const EntryPreviewCard: React.FC<EntryPreviewCardProps> = ({
                 target="_blank"
                 rel="noopener noreferrer"
               >
-                <h3 className="text-text line-clamp-2 text-sm font-semibold">{entry.title}</h3>
+                <h3 className="line-clamp-2 text-sm font-semibold text-text">{entry.title}</h3>
 
                 {entry.description && (
-                  <p className="text-text-secondary line-clamp-3 text-xs">{entry.description}</p>
+                  <p className="line-clamp-3 text-xs text-text-secondary">{entry.description}</p>
                 )}
               </a>
 
               <div className="flex items-center justify-between pt-2">
-                <div className="text-text-tertiary text-xs">
+                <div className="text-xs text-text-tertiary">
                   {entry.author && <span>by {entry.author}</span>}
                 </div>
-                <div className="text-text-tertiary shrink-0 self-start text-xs">
+                <div className="shrink-0 self-start text-xs text-text-tertiary">
                   <RelativeTime date={entry.publishedAt} />
                 </div>
               </div>

@@ -76,7 +76,7 @@ export const MCPServiceModalContent = ({
       <div className="space-y-4">
         <div className="grid grid-cols-1 gap-4">
           <div className="space-y-2">
-            <Label className="text-text text-xs">{t("integration.mcp.service.name")}</Label>
+            <Label className="text-xs text-text">{t("integration.mcp.service.name")}</Label>
             <Input
               value={name}
               onChange={(e) => setName(e.target.value)}
@@ -85,7 +85,7 @@ export const MCPServiceModalContent = ({
           </div>
 
           <div className="space-y-2">
-            <Label className="text-text text-xs">Transport Type</Label>
+            <Label className="text-xs text-text">Transport Type</Label>
             <Select
               value={transportType}
               onValueChange={(value) => setTransportType(value as "streamable-http" | "sse")}
@@ -101,7 +101,7 @@ export const MCPServiceModalContent = ({
           </div>
 
           <div className="space-y-2">
-            <Label className="text-text text-xs">URL</Label>
+            <Label className="text-xs text-text">URL</Label>
             <Input
               value={url}
               onChange={(e) => setUrl(e.target.value)}
@@ -110,7 +110,7 @@ export const MCPServiceModalContent = ({
           </div>
 
           <div className="min-w-[500px] space-y-2">
-            <Label className="text-text text-xs">Headers (Optional)</Label>
+            <Label className="text-xs text-text">Headers (Optional)</Label>
             <KeyValueEditor
               value={headers}
               onChange={setHeaders}

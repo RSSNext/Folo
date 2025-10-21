@@ -67,7 +67,7 @@ const MentionTooltipContent = ({ mentionData }: { mentionData: MentionData }) =>
       >
         <MentionTypeIcon type={mentionData.type} value={mentionData.value} className="size-3" />
       </div>
-      <span className="text-text text-sm">{displayValue}</span>
+      <span className="text-sm text-text">{displayValue}</span>
     </div>
   )
 }

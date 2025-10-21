@@ -144,9 +144,9 @@ export function ListItem({
   return (
     <div
       className={cn(
-        "cursor-menu group relative flex",
+        "group relative flex cursor-menu",
         !isRead &&
-          "before:bg-accent before:absolute before:-left-3 before:top-[1.4375rem] before:block before:size-2 before:rounded-full",
+          "before:absolute before:-left-3 before:top-[1.4375rem] before:block before:size-2 before:rounded-full before:bg-accent",
         settingWideMode ? "py-3" : "py-4",
       )}
     >
@@ -323,7 +323,7 @@ function AudioCover({
       >
         <button
           type="button"
-          className="center bg-material-opaque hover:bg-accent size-10 rounded-full opacity-95 hover:text-white hover:opacity-100"
+          className="center size-10 rounded-full bg-material-opaque opacity-95 hover:bg-accent hover:text-white hover:opacity-100"
         >
           <i
             className={cn("size-6", {
@@ -339,14 +339,14 @@ function AudioCover({
         <div className="absolute bottom-0 w-full overflow-hidden rounded-b-sm text-center">
           <div
             className={cn(
-              "bg-material-ultra-thick absolute left-0 top-0 size-full opacity-0 duration-200 group-hover:opacity-100",
+              "absolute left-0 top-0 size-full bg-material-ultra-thick opacity-0 duration-200 group-hover:opacity-100",
               isMobile && "opacity-100",
             )}
           />
           <div
             className={cn(
-              "group-hover:backdrop-blur-background text-body opacity-0 backdrop-blur-none duration-200 group-hover:opacity-100",
-              isMobile && "backdrop-blur-background opacity-100",
+              "text-body opacity-0 backdrop-blur-none duration-200 group-hover:opacity-100 group-hover:backdrop-blur-background",
+              isMobile && "opacity-100 backdrop-blur-background",
             )}
           >
             {isChinese ? `${estimatedMins} 分钟` : formatEstimatedMins(estimatedMins)}

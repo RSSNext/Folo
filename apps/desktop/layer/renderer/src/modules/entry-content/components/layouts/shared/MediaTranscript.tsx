@@ -367,7 +367,7 @@ export const MediaTranscript: React.FC<MediaTranscriptProps> = ({
 
   if (!srt) {
     return (
-      <div className={cn("text-text-secondary p-4 text-center", className)}>
+      <div className={cn("p-4 text-center text-text-secondary", className)}>
         No transcript available
       </div>
     )
@@ -378,7 +378,7 @@ export const MediaTranscript: React.FC<MediaTranscriptProps> = ({
     subtitles = parseSrt(srt)
   } catch (error) {
     return (
-      <div className={cn("text-red p-4 text-center", className)}>
+      <div className={cn("p-4 text-center text-red", className)}>
         Error parsing transcript:{" "}
         <span>{error instanceof Error ? error.message : "Unknown error"}</span>
       </div>
@@ -433,8 +433,8 @@ export const MediaTranscript: React.FC<MediaTranscriptProps> = ({
               "group relative rounded-lg border-l-4 px-3 py-2 transition-all duration-300 ease-out",
               !disableJump && "cursor-pointer",
               isActive
-                ? "bg-accent/5 border-accent shadow-sm"
-                : "hover:bg-fill-secondary border-transparent hover:shadow-sm",
+                ? "border-accent bg-accent/5 shadow-sm"
+                : "border-transparent hover:bg-fill-secondary hover:shadow-sm",
               isPast && "opacity-50",
             )}
             onClick={() => !disableJump && handleTimeJump(subtitle.startTimeInSeconds)}
@@ -452,7 +452,7 @@ export const MediaTranscript: React.FC<MediaTranscriptProps> = ({
                     className={cn(
                       "rounded-md px-2 py-1 font-mono text-xs leading-none transition-all duration-200",
                       isActive
-                        ? "text-accent bg-accent/10"
+                        ? "bg-accent/10 text-accent"
                         : "text-text-tertiary hover:bg-fill-tertiary hover:text-text-secondary",
                     )}
                     title="Jump to this time"
@@ -463,7 +463,7 @@ export const MediaTranscript: React.FC<MediaTranscriptProps> = ({
                   <span
                     className={cn(
                       "rounded-md px-2 py-1 font-mono text-xs leading-none",
-                      isActive ? "text-accent bg-accent/10" : "bg-fill-tertiary text-text-tertiary",
+                      isActive ? "bg-accent/10 text-accent" : "bg-fill-tertiary text-text-tertiary",
                     )}
                   >
                     {formatTime(subtitle.startTime)}
@@ -488,8 +488,8 @@ export const MediaTranscript: React.FC<MediaTranscriptProps> = ({
               {type === "transcription" && (
                 <div className="flex w-6 flex-shrink-0 items-center justify-center">
                   {isActive && (
-                    <div className="animate-in fade-in slide-in-from-right-2 duration-300">
-                      <div className="bg-accent size-2 animate-pulse rounded-full shadow-sm" />
+                    <div className="duration-300 animate-in fade-in slide-in-from-right-2">
+                      <div className="size-2 animate-pulse rounded-full bg-accent shadow-sm" />
                     </div>
                   )}
                 </div>

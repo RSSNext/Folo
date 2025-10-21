@@ -195,7 +195,7 @@ export const AchievementModalContent: FC = () => {
 
       <div className="mt-4 text-xl font-bold">{t("words.achievement")}</div>
 
-      <small className="text-text-secondary mt-1 gap-1">
+      <small className="mt-1 gap-1 text-text-secondary">
         {t("achievement.description")}
         <sup className="inline-block translate-y-1 text-xs">*</sup>
       </small>
@@ -222,7 +222,7 @@ export const AchievementModalContent: FC = () => {
 
                       {copy.video && achievement.type === "received" && (
                         <MotionButtonBase
-                          className="hover:text-accent p-1 duration-200"
+                          className="p-1 duration-200 hover:text-accent"
                           onClick={() => {
                             presentBadgeVideo(achievement.actionId)
                           }}
@@ -231,7 +231,7 @@ export const AchievementModalContent: FC = () => {
                         </MotionButtonBase>
                       )}
                     </div>
-                    <div className="text-text-secondary flex items-center text-sm">
+                    <div className="flex items-center text-sm text-text-secondary">
                       {t(copy.description)}
                     </div>
                   </div>
@@ -260,7 +260,7 @@ export const AchievementModalContent: FC = () => {
                       className={styledButtonVariant({
                         variant: "outline",
                         className: [
-                          "dark:text-text relative gap-1 border-green-200 !bg-green-100/50 text-green-800 dark:border-green-200/20 dark:!bg-green-100/5",
+                          "relative gap-1 border-green-200 !bg-green-100/50 text-green-800 dark:border-green-200/20 dark:!bg-green-100/5 dark:text-text",
                           copy.video ? "cursor-button" : "cursor-default",
                         ],
                       })}
@@ -281,7 +281,7 @@ export const AchievementModalContent: FC = () => {
                       className={styledButtonVariant({
                         variant: "outline",
                         className:
-                          "dark:text-text relative cursor-not-allowed gap-1 border-zinc-200 !bg-zinc-100/50 text-zinc-800 dark:border-zinc-200/20 dark:!bg-zinc-100/5",
+                          "relative cursor-not-allowed gap-1 border-zinc-200 !bg-zinc-100/50 text-zinc-800 dark:border-zinc-200/20 dark:!bg-zinc-100/5 dark:text-text",
                       })}
                     >
                       Validating...
@@ -303,7 +303,7 @@ export const AchievementModalContent: FC = () => {
         </ul>
       </ScrollArea>
 
-      <p className="text-text-tertiary mt-4 pb-4 text-xs">* {t("achievement.nft_coming_soon")}</p>
+      <p className="mt-4 pb-4 text-xs text-text-tertiary">* {t("achievement.nft_coming_soon")}</p>
     </div>
   )
 }
@@ -415,19 +415,19 @@ const IncompleteButton: FC<{
           <div className="center absolute z-[1] opacity-0 duration-200 group-hover:opacity-100">
             <i
               className={cn(
-                "i-mgc-refresh-2-cute-re text-accent size-5",
+                "i-mgc-refresh-2-cute-re size-5 text-accent",
                 checkPending && "animate-spin",
               )}
             />
           </div>
           <div className="duration-200 group-hover:opacity-30">
             <span className="center relative ml-2 inline-flex w-24 -translate-y-1 flex-col *:!m-0">
-              <small className="text-text shrink-0 text-xs leading-tight">
+              <small className="shrink-0 text-xs leading-tight text-text">
                 {achievement.progress} / {achievement.progressMax}
               </small>
-              <span className="bg-accent/10 relative h-1 w-full overflow-hidden rounded-full">
+              <span className="relative h-1 w-full overflow-hidden rounded-full bg-accent/10">
                 <span
-                  className="bg-accent absolute -left-3 top-0 inline-block h-1 rounded-full"
+                  className="absolute -left-3 top-0 inline-block h-1 rounded-full bg-accent"
                   style={{
                     width: `calc(${Math.min(
                       (achievement.progress / achievement.progressMax) * 100,

@@ -82,7 +82,7 @@ export function VideoItem({ entryId, translation }: UniversalItemProps) {
   if (!entry) return null
   return (
     <GridItem entryId={entryId} translation={translation}>
-      <div className="cursor-card w-full">
+      <div className="w-full cursor-card">
         <div className="relative overflow-x-auto" ref={ref}>
           {miniIframeSrc && showPreview ? (
             <ViewTag
@@ -114,7 +114,7 @@ export function VideoItem({ entryId, translation }: UniversalItemProps) {
               fitContainer
             />
           ) : (
-            <div className="center bg-material-medium text-text-secondary aspect-video w-full flex-col gap-1 rounded-md text-xs">
+            <div className="center aspect-video w-full flex-col gap-1 rounded-md bg-material-medium text-xs text-text-secondary">
               <i className="i-mgc-sad-cute-re size-6" />
               No media available
             </div>
@@ -154,7 +154,7 @@ export function VideoItemStateLess({ entry, feed }: EntryItemStatelessProps) {
               fitContainer
             />
           ) : (
-            <div className="center bg-material-medium text-text-secondary aspect-video w-full flex-col gap-1 rounded-md text-xs">
+            <div className="center aspect-video w-full flex-col gap-1 rounded-md bg-material-medium text-xs text-text-secondary">
               <i className="i-mgc-sad-cute-re size-6" />
               No media available
             </div>
@@ -163,7 +163,7 @@ export function VideoItemStateLess({ entry, feed }: EntryItemStatelessProps) {
       </div>
       <div className="relative px-2 text-sm">
         <div className="flex items-center">
-          <div className="bg-accent mr-1 size-1.5 shrink-0 self-center rounded-full duration-200" />
+          <div className="mr-1 size-1.5 shrink-0 self-center rounded-full bg-accent duration-200" />
           <div className="relative mb-1 mt-1.5 flex w-full items-center gap-1 truncate font-medium">
             <span className="min-w-0 grow truncate">{entry.title}</span>
           </div>

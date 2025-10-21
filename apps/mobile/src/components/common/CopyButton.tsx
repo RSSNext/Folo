@@ -86,7 +86,7 @@ export const CopyButton = ({ onCopy, className, size = "sm" }: CopyButtonProps) 
       hitSlop={10}
       style={wrapperStyle}
       className={cn(
-        "bg-gray-4 items-center justify-center rounded-lg",
+        "items-center justify-center rounded-lg bg-gray-4",
         sizeClassNames[size],
         className,
       )}

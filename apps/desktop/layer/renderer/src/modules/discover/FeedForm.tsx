@@ -134,7 +134,7 @@ export const FeedForm: Component<{
           case !!feedQuery.error: {
             return (
               <div className="center grow flex-col gap-3">
-                <i className="i-mgc-close-cute-re text-red size-7" />
+                <i className="i-mgc-close-cute-re size-7 text-red" />
                 <p>{t("feed_form.error_fetching_feed")}</p>
               </div>
             )

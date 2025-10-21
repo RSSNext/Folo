@@ -63,7 +63,7 @@ const ChatHeaderLayout = ({
       <div className="h-top-header">
         {isFloating && (
           <div
-            className="bg-background/70 backdrop-blur-background absolute inset-0"
+            className="absolute inset-0 bg-background/70 backdrop-blur-background"
             style={{
               maskImage: `linear-gradient(to bottom, black 0%, black 90%, transparent 100%)`,
             }}
@@ -102,7 +102,7 @@ export const ChatHeader = () => {
       renderActions={({ onNewChatClick }) => (
         <>
           <ActionButton tooltip={t("common.new_chat")} onClick={onNewChatClick}>
-            <i className="i-mgc-edit-cute-re text-text-secondary size-5" />
+            <i className="i-mgc-edit-cute-re size-5 text-text-secondary" />
           </ActionButton>
 
           <TaskReportDropdown />
@@ -110,16 +110,16 @@ export const ChatHeader = () => {
           <ChatMoreDropdown
             triggerElement={
               <ActionButton tooltip="More">
-                <i className="i-mingcute-more-1-fill text-text-secondary size-5" />
+                <i className="i-mingcute-more-1-fill size-5 text-text-secondary" />
               </ActionButton>
             }
           />
 
           {panelStyle === AIChatPanelStyle.Floating && (
             <>
-              <div className="bg-border h-5 w-px" />
+              <div className="h-5 w-px bg-border" />
               <ActionButton tooltip="Close" onClick={() => setAIPanelVisibility(false)}>
-                <i className="i-mgc-close-cute-re text-text-secondary size-5" />
+                <i className="i-mgc-close-cute-re size-5 text-text-secondary" />
               </ActionButton>
             </>
           )}
@@ -137,17 +137,17 @@ export const ChatPageHeader = () => {
       renderActions={({ onNewChatClick }) => (
         <>
           <ActionButton tooltip={t("common.new_chat")} onClick={onNewChatClick}>
-            <i className="i-mgc-edit-cute-re text-text-secondary size-5" />
+            <i className="i-mgc-edit-cute-re size-5 text-text-secondary" />
           </ActionButton>
 
           <TaskReportDropdown />
 
-          <div className="bg-border mx-2 h-5 w-px" />
+          <div className="mx-2 h-5 w-px bg-border" />
           <ChatMoreDropdown
             canToggleMode={false}
             triggerElement={
               <ActionButton tooltip="More">
-                <i className="i-mingcute-more-1-fill text-text-secondary size-5" />
+                <i className="i-mingcute-more-1-fill size-5 text-text-secondary" />
               </ActionButton>
             }
           />

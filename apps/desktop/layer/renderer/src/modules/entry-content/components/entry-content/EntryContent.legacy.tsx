@@ -122,7 +122,7 @@ const EntryContentImpl: Component<EntryContentProps> = ({
       {!isInPeekModal && (
         <EntryHeader
           entryId={entryId}
-          className={cn("@container h-[55px] shrink-0 px-3", classNames?.header)}
+          className={cn("h-[55px] shrink-0 px-3 @container", classNames?.header)}
           compact={compact}
         />
       )}
@@ -130,7 +130,7 @@ const EntryContentImpl: Component<EntryContentProps> = ({
 
       <Focusable
         scope={HotkeyScope.EntryRender}
-        className="@container relative flex size-full flex-col overflow-hidden print:size-auto print:overflow-visible"
+        className="relative flex size-full flex-col overflow-hidden @container print:size-auto print:overflow-visible"
       >
         <RootPortal to={panelPortalElement}>
           <EntryScrollingAndNavigationHandler
@@ -158,7 +158,7 @@ const EntryContentImpl: Component<EntryContentProps> = ({
                       EventBus.dispatch(COMMAND_ID.timeline.switchToPrevious)
                     }}
                   >
-                    <i className="i-mgc-left-small-sharp text-text-secondary size-16" />
+                    <i className="i-mgc-left-small-sharp size-16 text-text-secondary" />
                   </MotionButtonBase>
                 </div>
 
@@ -169,7 +169,7 @@ const EntryContentImpl: Component<EntryContentProps> = ({
                       EventBus.dispatch(COMMAND_ID.timeline.switchToNext)
                     }}
                   >
-                    <i className="i-mgc-right-small-sharp text-text-secondary size-16" />
+                    <i className="i-mgc-right-small-sharp size-16 text-text-secondary" />
                   </MotionButtonBase>
                 </div>
               </>
@@ -182,7 +182,7 @@ const EntryContentImpl: Component<EntryContentProps> = ({
                 "relative m-auto min-w-0",
                 isInPeekModal
                   ? "max-w-full"
-                  : "@[950px]:max-w-[70ch] @7xl:max-w-[80ch] max-w-[550px]",
+                  : "max-w-[550px] @7xl:max-w-[80ch] @[950px]:max-w-[70ch]",
               )}
             >
               <EntryTitle entryId={entryId} compact={compact} noRecentReader />
@@ -220,7 +220,7 @@ const EntryContentImpl: Component<EntryContentProps> = ({
                     />
                   ) : error ? (
                     <div className="center mt-36 flex flex-col items-center gap-3">
-                      <i className="i-mgc-warning-cute-re text-red text-4xl" />
+                      <i className="i-mgc-warning-cute-re text-4xl text-red" />
                       <span className="text-balance text-center text-sm">Network Error</span>
                       <pre className="mt-6 w-full overflow-auto whitespace-pre-wrap break-all">
                         {error.message}
@@ -311,7 +311,7 @@ const Renderer: React.FC<{
       noMedia={noMedia}
       accessory={contentAccessories}
       as="article"
-      className="prose dark:prose-invert prose-h1:text-[1.6em] prose-h1:font-bold !max-w-full hyphens-auto"
+      className="prose !max-w-full hyphens-auto dark:prose-invert prose-h1:text-[1.6em] prose-h1:font-bold"
       style={stableRenderStyle}
       renderInlineStyle={readerRenderInlineStyle}
     >
@@ -355,12 +355,12 @@ const EntryNavigationHandler = ({ entryId }: { entryId: string }) => {
           "group pointer-events-auto flex items-center gap-2",
           "rounded-full border px-3.5 py-2",
           "border-border/40 bg-material-ultra-thin/70 shadow-[0_1px_2px_rgba(0,0,0,0.06),0_8px_24px_rgba(0,0,0,0.08)]",
-          "hover:bg-material-thin/70 hover:border-border/60 active:scale-[0.98]",
+          "hover:border-border/60 hover:bg-material-thin/70 active:scale-[0.98]",
           "backdrop-blur-background",
         )}
       >
-        <i className={clsx(icon, "text-text/90 mr-1 size-5")} />
-        <span className="text-text/90 text-left text-[13px] font-medium">{text}</span>
+        <i className={clsx(icon, "mr-1 size-5 text-text/90")} />
+        <span className="text-left text-[13px] font-medium text-text/90">{text}</span>
       </button>
     </m.div>
   )

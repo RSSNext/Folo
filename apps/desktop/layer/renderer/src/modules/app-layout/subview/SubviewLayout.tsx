@@ -190,7 +190,7 @@ function SubviewLayoutInner() {
                   isTitleVisible ? "opacity-100" : "opacity-0",
                 )}
               >
-                <div className="text-text truncate font-semibold">{title}</div>
+                <div className="truncate font-semibold text-text">{title}</div>
               </div>
             ) : null}
           </div>
@@ -257,7 +257,7 @@ const SubViewHeaderRightView = ({ isHeaderElevated }: { isHeaderElevated: boolea
     return (
       <div
         className={cn(
-          "bg-fill backdrop-blur-background -mt-2 inline-flex items-center gap-1.5 rounded-full p-2 duration-200",
+          "-mt-2 inline-flex items-center gap-1.5 rounded-full bg-fill p-2 backdrop-blur-background duration-200",
           "has-[:nth-child(1)]:bg-transparent",
           !isHeaderElevated && items.length > 1 ? "bg-material-ultra-thin" : "bg-material-medium",
         )}
@@ -273,8 +273,8 @@ const SubViewHeaderRightView = ({ isHeaderElevated }: { isHeaderElevated: boolea
         "ml-auto inline-flex shrink-0 items-center gap-1.5 rounded-xl border p-1.5",
         "opacity-0 duration-200",
         isHeaderElevated
-          ? "bg-material-ultra-thin border-border/50 opacity-100 shadow-sm backdrop-blur-xl"
-          : "bg-material-medium border-transparent",
+          ? "border-border/50 bg-material-ultra-thin opacity-100 shadow-sm backdrop-blur-xl"
+          : "border-transparent bg-material-medium",
       )}
     >
       <div className="inline-flex items-center">{rightView}</div>
@@ -325,7 +325,7 @@ const ScrollProgressFAB = ({
           />
         </svg>
         <div className="absolute inset-0 flex items-center justify-center opacity-100 transition-opacity duration-200 group-hover/fab:opacity-0">
-          <span className="text-text-secondary text-xs font-medium">{Math.round(progress)}</span>
+          <span className="text-xs font-medium text-text-secondary">{Math.round(progress)}</span>
         </div>
         <button
           onClick={() => {

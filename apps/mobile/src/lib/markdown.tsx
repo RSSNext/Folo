@@ -10,7 +10,7 @@ const wrapText = (children: any): any => {
     if (children.trim() === "") {
       return null
     }
-    return <Text className="text-label text-base">{children}</Text>
+    return <Text className="text-base text-label">{children}</Text>
   }
   if (Array.isArray(children)) {
     return children.map((child, index) => {
@@ -19,7 +19,7 @@ const wrapText = (children: any): any => {
           return null
         }
         return (
-          <Text key={index} className="text-label text-base">
+          <Text key={index} className="text-base text-label">
             {child}
           </Text>
         )
@@ -39,7 +39,7 @@ const wrapText = (children: any): any => {
     if (children.trim() === "") {
       return null
     }
-    return <Text className="text-label text-base">{String(children)}</Text>
+    return <Text className="text-base text-label">{String(children)}</Text>
   }
   return children
 }
@@ -74,7 +74,7 @@ export const renderMarkdown = (markdown: string) => {
       typeof children === "string" ||
       (Array.isArray(children) && children.every((child) => typeof child === "string"))
     ) {
-      return <Text className="text-label text-base">{renderTextChildren(children)}</Text>
+      return <Text className="text-base text-label">{renderTextChildren(children)}</Text>
     }
     // For container-like elements, use View and wrap any text children
     return <View>{wrapText(children)}</View>
@@ -85,7 +85,7 @@ export const renderMarkdown = (markdown: string) => {
     {
       // React Native compatible components - GitHub markdown style
       p: ({ children, node, ...props }: any) => (
-        <TextInput className="text-label mb-4 text-base" multiline readOnly {...props}>
+        <TextInput className="mb-4 text-base text-label" multiline readOnly {...props}>
           {renderTextChildren(children)}
         </TextInput>
       ),
@@ -93,7 +93,7 @@ export const renderMarkdown = (markdown: string) => {
         <TextInput
           readOnly
           multiline
-          className="text-label border-non-opaque-separator mb-4 mt-6 border-b pb-2 text-2xl font-semibold"
+          className="mb-4 mt-6 border-b border-non-opaque-separator pb-2 text-2xl font-semibold text-label"
           {...props}
         >
           {renderTextChildren(children)}
@@ -103,7 +103,7 @@ export const renderMarkdown = (markdown: string) => {
         <TextInput
           readOnly
           multiline
-          className="text-label border-non-opaque-separator mb-4 mt-6 border-b pb-2 text-xl font-semibold"
+          className="mb-4 mt-6 border-b border-non-opaque-separator pb-2 text-xl font-semibold text-label"
           {...props}
         >
           {renderTextChildren(children)}
@@ -113,7 +113,7 @@ export const renderMarkdown = (markdown: string) => {
         <TextInput
           readOnly
           multiline
-          className="text-label mb-4 mt-6 text-lg font-semibold"
+          className="mb-4 mt-6 text-lg font-semibold text-label"
           {...props}
         >
           {renderTextChildren(children)}
@@ -123,7 +123,7 @@ export const renderMarkdown = (markdown: string) => {
         <TextInput
           readOnly
           multiline
-          className="text-label mb-4 mt-6 text-base font-semibold"
+          className="mb-4 mt-6 text-base font-semibold text-label"
           {...props}
         >
           {renderTextChildren(children)}
@@ -133,7 +133,7 @@ export const renderMarkdown = (markdown: string) => {
         <TextInput
           readOnly
           multiline
-          className="text-label mb-4 mt-6 text-base font-semibold"
+          className="mb-4 mt-6 text-base font-semibold text-label"
           {...props}
         >
           {renderTextChildren(children)}
@@ -143,7 +143,7 @@ export const renderMarkdown = (markdown: string) => {
         <TextInput
           readOnly
           multiline
-          className="text-secondary-label mb-4 mt-6 text-sm font-semibold"
+          className="mb-4 mt-6 text-sm font-semibold text-secondary-label"
           {...props}
         >
           {renderTextChildren(children)}
@@ -163,9 +163,9 @@ export const renderMarkdown = (markdown: string) => {
         const bullet = ordered ? `${(index || 0) + 1}.` : "•"
         return (
           <View className="mb-1 flex-row items-start" {...props}>
-            <Text className="text-label mt-0 min-w-[24px] text-base">{bullet}</Text>
+            <Text className="mt-0 min-w-[24px] text-base text-label">{bullet}</Text>
             <View className="flex-1">
-              <Text className="text-label text-base">{renderTextChildren(children)}</Text>
+              <Text className="text-base text-label">{renderTextChildren(children)}</Text>
             </View>
           </View>
         )
@@ -192,7 +192,7 @@ export const renderMarkdown = (markdown: string) => {
       ),
       code: ({ children, node, ...props }: any) => (
         <Text
-          className="bg-quaternary-system-fill text-label text-callout rounded-md px-2 py-1 font-mono"
+          className="rounded-md bg-quaternary-system-fill px-2 py-1 font-mono text-callout text-label"
           {...props}
         >
           {renderTextChildren(children)}
@@ -200,44 +200,44 @@ export const renderMarkdown = (markdown: string) => {
       ),
       pre: ({ children, node, ...props }: any) => (
         <View
-          className="bg-secondary-system-background border-non-opaque-separator mb-4 rounded-lg border p-4"
+          className="mb-4 rounded-lg border border-non-opaque-separator bg-secondary-system-background p-4"
           {...props}
         >
-          <Text className="text-label text-callout font-mono">{renderTextChildren(children)}</Text>
+          <Text className="font-mono text-callout text-label">{renderTextChildren(children)}</Text>
         </View>
       ),
       blockquote: ({ children, node, ...props }: any) => (
         <View
-          className="border-non-opaque-separator bg-secondary-system-background border-l-accent mb-4 rounded-r-lg border-l-4 py-2 pl-4"
+          className="mb-4 rounded-r-lg border-l-4 border-non-opaque-separator border-l-accent bg-secondary-system-background py-2 pl-4"
           {...props}
         >
-          <Text className="text-secondary-label text-base italic">
+          <Text className="text-base italic text-secondary-label">
             {renderTextChildren(children)}
           </Text>
         </View>
       ),
       a: ({ children, href, node, ...props }: any) => (
         <Text
-          className="text-accent font-medium underline"
+          className="font-medium text-accent underline"
           onPress={() => href && Linking.openURL(href)}
           {...props}
         >
           {renderTextChildren(children)}
         </Text>
       ),
-      hr: ({ node, ..._props }: any) => <View className="bg-non-opaque-separator my-3 h-px" />,
+      hr: ({ node, ..._props }: any) => <View className="my-3 h-px bg-non-opaque-separator" />,
       br: ({ node, ..._props }: any) => <Text>{"\n"}</Text>,
       // Common HTML elements that might appear
       div: ({ children, node, ...props }: any) => <View {...props}>{wrapText(children)}</View>,
       span: ({ children, node, ...props }: any) => (
-        <Text className="text-label text-base" {...props}>
+        <Text className="text-base text-label" {...props}>
           {renderTextChildren(children)}
         </Text>
       ),
       // Table elements (GFM table support) - GitHub style with improved mobile layout
       table: ({ children, node, ...props }: any) => (
         <View
-          className="border-non-opaque-separator mb-4 overflow-hidden rounded-md border"
+          className="mb-4 overflow-hidden rounded-md border border-non-opaque-separator"
           {...props}
         >
           {wrapText(children)}
@@ -250,7 +250,7 @@ export const renderMarkdown = (markdown: string) => {
       ),
       tbody: ({ children, node, ...props }: any) => <View {...props}>{wrapText(children)}</View>,
       tr: ({ children, node, ...props }: any) => (
-        <View className="border-non-opaque-separator flex-row border-b last:border-b-0" {...props}>
+        <View className="flex-row border-b border-non-opaque-separator last:border-b-0" {...props}>
           {wrapText(children)}
         </View>
       ),
@@ -261,7 +261,7 @@ export const renderMarkdown = (markdown: string) => {
           align === "center" ? "text-center" : align === "right" ? "text-right" : "text-left"
         return (
           <Text
-            className={`text-label flex-1 px-3 py-2 text-base font-semibold ${textAlignStyle}`}
+            className={`flex-1 px-3 py-2 text-base font-semibold text-label ${textAlignStyle}`}
             {...props}
           >
             {renderTextChildren(children)}
@@ -274,7 +274,7 @@ export const renderMarkdown = (markdown: string) => {
         const textAlignStyle =
           align === "center" ? "text-center" : align === "right" ? "text-right" : "text-left"
         return (
-          <Text className={`text-label text-callout flex-1 px-3 py-2 ${textAlignStyle}`} {...props}>
+          <Text className={`flex-1 px-3 py-2 text-callout text-label ${textAlignStyle}`} {...props}>
             {renderTextChildren(children)}
           </Text>
         )
@@ -287,12 +287,12 @@ export const renderMarkdown = (markdown: string) => {
         </Text>
       ),
       sup: ({ children, node, ...props }: any) => (
-        <Text className="text-label text-callout" {...props}>
+        <Text className="text-callout text-label" {...props}>
           {renderTextChildren(children)}
         </Text>
       ),
       sub: ({ children, node, ...props }: any) => (
-        <Text className="text-label text-callout" {...props}>
+        <Text className="text-callout text-label" {...props}>
           {renderTextChildren(children)}
         </Text>
       ),

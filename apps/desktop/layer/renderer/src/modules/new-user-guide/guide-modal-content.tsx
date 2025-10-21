@@ -45,7 +45,7 @@ export function GuideModalContent({ onClose }: { onClose: () => void }) {
 
   return (
     <AIChatRoot>
-      <div className="bg-theme-background flex h-screen w-screen flex-col items-center justify-center overflow-hidden">
+      <div className="flex h-screen w-screen flex-col items-center justify-center overflow-hidden bg-theme-background">
         <div className="mx-auto flex flex-col gap-8">
           {step === "manual-import" ? (
             <DiscoverImportStep />

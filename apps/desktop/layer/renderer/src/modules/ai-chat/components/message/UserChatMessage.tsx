@@ -139,8 +139,8 @@ export const UserChatMessage: React.FC<UserChatMessageProps> = React.memo(({ mes
           onMouseEnter={() => setIsHovered(true)}
           onMouseLeave={() => setIsHovered(false)}
         >
-          <div className="text-text relative flex max-w-[calc(100%-1rem)] flex-col gap-2">
-            <div className="text-text bg-fill rounded-2xl px-4 py-2.5">
+          <div className="relative flex max-w-[calc(100%-1rem)] flex-col gap-2 text-text">
+            <div className="rounded-2xl bg-fill px-4 py-2.5 text-text">
               <div className="flex select-text flex-col gap-2 text-sm">
                 <UserMessageParts message={message} />
               </div>
@@ -156,13 +156,13 @@ export const UserChatMessage: React.FC<UserChatMessageProps> = React.memo(({ mes
                 }}
                 transition={{ duration: 0.2, ease: "easeOut" }}
               >
-                <span className="text-text-tertiary whitespace-nowrap px-2 py-1 text-[11px] leading-none">
+                <span className="whitespace-nowrap px-2 py-1 text-[11px] leading-none text-text-tertiary">
                   <RelativeTime date={message.createdAt} />
                 </span>
                 <button
                   type="button"
                   onClick={handleEdit}
-                  className="text-text-secondary hover:bg-fill-secondary flex items-center gap-1 rounded-md px-2 py-1 text-xs transition-colors"
+                  className="flex items-center gap-1 rounded-md px-2 py-1 text-xs text-text-secondary transition-colors hover:bg-fill-secondary"
                   title="Edit message"
                 >
                   <i className="i-mgc-edit-cute-re size-3" />
@@ -171,7 +171,7 @@ export const UserChatMessage: React.FC<UserChatMessageProps> = React.memo(({ mes
                 <button
                   type="button"
                   onClick={handleRetry}
-                  className="text-text-secondary hover:bg-fill-secondary flex items-center gap-1 rounded-md px-2 py-1 text-xs transition-colors"
+                  className="flex items-center gap-1 rounded-md px-2 py-1 text-xs text-text-secondary transition-colors hover:bg-fill-secondary"
                   title="Retry"
                 >
                   <i className="i-mgc-refresh-2-cute-re size-3" />

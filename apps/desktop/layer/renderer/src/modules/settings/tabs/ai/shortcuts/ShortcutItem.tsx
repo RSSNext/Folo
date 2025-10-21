@@ -38,25 +38,25 @@ export const ShortcutItem = ({ shortcut, onDelete, onToggle, onEdit }: ShortcutI
   }
 
   return (
-    <div className="hover:bg-material-medium border-border group -ml-3 rounded-lg border p-3 transition-colors">
+    <div className="group -ml-3 rounded-lg border border-border p-3 transition-colors hover:bg-material-medium">
       <div className="flex items-start justify-between">
         <div className="flex-1 space-y-2">
           <div className="flex items-center gap-2">
-            <h4 className="text-text text-sm font-medium">{shortcut.name}</h4>
+            <h4 className="text-sm font-medium text-text">{shortcut.name}</h4>
             {shortcut.hotkey && (
               <KbdCombined kbdProps={{ wrapButton: false }} joint={false}>
                 {shortcut.hotkey}
               </KbdCombined>
             )}
           </div>
-          <p className="text-text-secondary line-clamp-2 text-xs leading-relaxed">
+          <p className="line-clamp-2 text-xs leading-relaxed text-text-secondary">
             {shortcut.prompt}
           </p>
           <div className="flex flex-wrap gap-1.5">
             {targets.map((target) => (
               <span
                 key={target}
-                className="bg-material-thin text-text-tertiary inline-flex items-center rounded-full px-2 py-0.5 text-[11px] font-medium uppercase tracking-wide"
+                className="inline-flex items-center rounded-full bg-material-thin px-2 py-0.5 text-[11px] font-medium uppercase tracking-wide text-text-tertiary"
               >
                 {t(`shortcuts.targets.${target}`)}
               </span>

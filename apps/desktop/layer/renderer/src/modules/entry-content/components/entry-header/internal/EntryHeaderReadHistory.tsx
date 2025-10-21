@@ -20,7 +20,7 @@ function EntryHeaderReadHistoryImpl({ className }: { className?: string }) {
   return (
     <div
       className={cn(
-        "zen-mode-macos:left-12 text-body absolute left-5 top-0 flex h-full items-center gap-2 leading-none",
+        "zen-mode-macos:left-12 absolute left-5 top-0 flex h-full items-center gap-2 text-body leading-none",
         "visible z-[11]",
         isWide && "static",
         className,

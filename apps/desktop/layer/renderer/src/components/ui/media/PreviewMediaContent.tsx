@@ -165,7 +165,7 @@ const Wrapper: FC<{
           animate={controls}
           exit="exit"
           custom={dragOffset}
-          className="bg-material-medium-dark flex size-full pt-[var(--fo-window-padding-top)] backdrop-blur"
+          className="flex size-full bg-material-medium-dark pt-[var(--fo-window-padding-top)] backdrop-blur"
           drag={enableDragClose}
           dragConstraints={{ top: 0, bottom: 300, left: -200, right: 200 }}
           dragElastic={{ top: 0, bottom: 0.3, left: 0.2, right: 0.2 }}
@@ -186,7 +186,7 @@ const Wrapper: FC<{
           </div>
           {hasSideContent ? (
             <div
-              className="bg-background box-border flex h-full w-[400px] min-w-0 shrink-0 flex-col px-2 pt-1"
+              className="box-border flex h-full w-[400px] min-w-0 shrink-0 flex-col bg-background px-2 pt-1"
               onClick={stopPropagation}
             >
               {isArray ? renderedChildren[1] : null}
@@ -490,7 +490,7 @@ const FallbackableImage: FC<
       )}
 
       {currentState === "fallback" && (
-        <div className="bg-material-thick backdrop-blur-background text-text absolute bottom-8 left-1/2 mt-4 -translate-x-1/2 rounded-lg px-3 py-2 text-center text-xs opacity-70">
+        <div className="absolute bottom-8 left-1/2 mt-4 -translate-x-1/2 rounded-lg bg-material-thick px-3 py-2 text-center text-xs text-text opacity-70 backdrop-blur-background">
           <span>
             This image is preview in low quality, because the original image is not available.
           </span>
@@ -501,7 +501,7 @@ const FallbackableImage: FC<
               href={src}
               target="_blank"
               rel="noreferrer"
-              className="hover:text-accent underline duration-200"
+              className="underline duration-200 hover:text-accent"
             >
               visit the original image
             </a>{" "}

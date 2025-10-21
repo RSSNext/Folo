@@ -54,17 +54,17 @@ export const AIShortcutsSection = () => {
   return (
     <div className="relative -mt-4 space-y-4">
       <div className="flex items-center justify-between">
-        <p className="text-text-secondary text-xs">{t("shortcuts.empty.description")}</p>
+        <p className="text-xs text-text-secondary">{t("shortcuts.empty.description")}</p>
         <Button variant="outline" size="sm" onClick={handleAddShortcut}>
           {t("shortcuts.add")}
         </Button>
       </div>
       {shortcuts.length === 0 && (
         <div className="py-8 text-center">
-          <div className="bg-fill-secondary mx-auto mb-3 flex size-12 items-center justify-center rounded-full">
-            <i className="i-mgc-magic-2-cute-re text-text size-6" />
+          <div className="mx-auto mb-3 flex size-12 items-center justify-center rounded-full bg-fill-secondary">
+            <i className="i-mgc-magic-2-cute-re size-6 text-text" />
           </div>
-          <h4 className="text-text mb-1 text-sm font-medium">{t("shortcuts.empty.title")}</h4>
+          <h4 className="mb-1 text-sm font-medium text-text">{t("shortcuts.empty.title")}</h4>
         </div>
       )}
 

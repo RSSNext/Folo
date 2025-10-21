@@ -31,7 +31,7 @@ import { useEntryTitleMeta } from "../../../atoms"
 import { useEntryHeaderContext } from "./context"
 
 const Slash = (
-  <i className="i-mingcute-line-line text-text-tertiary size-4 shrink-0 rotate-[-25deg]" />
+  <i className="i-mingcute-line-line size-4 shrink-0 rotate-[-25deg] text-text-tertiary" />
 )
 
 function ViewSubscriptionsDropdown({
@@ -79,7 +79,7 @@ function ViewSubscriptionsDropdown({
       <DropdownMenuTrigger asChild>
         <button
           type="button"
-          className="text-text-tertiary no-drag-region hover:text-text focus-visible:bg-fill/60 -ml-1 inline-flex size-6 items-center justify-center rounded transition-colors"
+          className="no-drag-region -ml-1 inline-flex size-6 items-center justify-center rounded text-text-tertiary transition-colors hover:text-text focus-visible:bg-fill/60"
           aria-label="Open subscriptions of this view"
         >
           <i className="i-mingcute-down-line size-4" />
@@ -99,7 +99,7 @@ function ViewSubscriptionsDropdown({
               <span className="truncate">All</span>
             </DropdownMenuItem>
             {listSubsRef.current && listSubsRef.current.length > 0 && (
-              <div className="text-text-tertiary px-2 py-1 text-xs">Lists</div>
+              <div className="px-2 py-1 text-xs text-text-tertiary">Lists</div>
             )}
             {listSubsRef.current?.map((s) =>
               s.listId ? (
@@ -113,7 +113,7 @@ function ViewSubscriptionsDropdown({
               ) : null,
             )}
             {feedSubsRef.current && feedSubsRef.current.length > 0 && (
-              <div className="text-text-tertiary px-2 py-1 text-xs">Feeds</div>
+              <div className="px-2 py-1 text-xs text-text-tertiary">Feeds</div>
             )}
             {feedSubsRef.current?.map((s) =>
               s.feedId ? (
@@ -188,7 +188,7 @@ function FeedEntriesDropdown({
       <DropdownMenuTrigger asChild>
         <button
           type="button"
-          className="text-text-tertiary no-drag-region hover:text-text focus-visible:bg-fill/60 -ml-2 inline-flex size-6 items-center justify-center rounded transition-colors"
+          className="no-drag-region -ml-2 inline-flex size-6 items-center justify-center rounded text-text-tertiary transition-colors hover:text-text focus-visible:bg-fill/60"
           aria-label="Open entries from this feed"
         >
           <i className="i-mingcute-down-line size-4" />
@@ -233,28 +233,28 @@ export function EntryHeaderBreadcrumb() {
       <nav
         aria-label="Breadcrumb"
         className={
-          "text-text-secondary group/breadcrumb flex min-w-0 items-center gap-1 truncate leading-tight"
+          "group/breadcrumb flex min-w-0 items-center gap-1 truncate leading-tight text-text-secondary"
         }
       >
         <div className="flex min-w-0 items-center gap-1">
           {/* Return Back Button  */}
           <button
             type="button"
-            className="text-text-secondary no-drag-region hover:text-text hover:bg-fill/50 focus-visible:bg-fill/60 inline-flex shrink-0 items-center rounded-full bg-transparent p-2"
+            className="no-drag-region inline-flex shrink-0 items-center rounded-full bg-transparent p-2 text-text-secondary hover:bg-fill/50 hover:text-text focus-visible:bg-fill/60"
             onClick={() => navigate({ entryId: null, view })}
           >
             <i className="i-mingcute-close-line size-5" />
           </button>
           {viewName && (
-            <div className="@[700px]:flex hidden items-center">
+            <div className="hidden items-center @[700px]:flex">
               <button
                 type="button"
                 className={cn(
-                  "text-text-secondary no-drag-region hover:text-text hover:bg-fill/50 focus-visible:bg-fill/60 inline-flex max-w-[40vw] items-center truncate rounded bg-transparent px-1.5 py-0.5 text-sm transition-colors",
+                  "no-drag-region inline-flex max-w-[40vw] items-center truncate rounded bg-transparent px-1.5 py-0.5 text-sm text-text-secondary transition-colors hover:bg-fill/50 hover:text-text focus-visible:bg-fill/60",
                 )}
                 onClick={() => navigate({ entryId: null, view })}
               >
-                <span className="text-text-secondary text-sm">{t(viewName, { ns: "common" })}</span>
+                <span className="text-sm text-text-secondary">{t(viewName, { ns: "common" })}</span>
               </button>
 
               <ViewSubscriptionsDropdown view={view} onNavigate={navigate} />
@@ -262,12 +262,12 @@ export function EntryHeaderBreadcrumb() {
           )}
           {meta && (
             <>
-              <span className="@[700px]:inline hidden">{Slash}</span>
-              <div className="@[700px]:flex hidden min-w-[120px] shrink items-center">
+              <span className="hidden @[700px]:inline">{Slash}</span>
+              <div className="hidden min-w-[120px] shrink items-center @[700px]:flex">
                 <button
                   type="button"
                   className={cn(
-                    "text-text-secondary no-drag-region hover:text-text hover:bg-fill/50 focus-visible:bg-fill/60 inline-flex max-w-[40vw] items-center truncate rounded bg-transparent px-1.5 py-0.5 text-sm transition-colors",
+                    "no-drag-region inline-flex max-w-[40vw] items-center truncate rounded bg-transparent px-1.5 py-0.5 text-sm text-text-secondary transition-colors hover:bg-fill/50 hover:text-text focus-visible:bg-fill/60",
                   )}
                   onClick={() => navigate({ entryId: null, feedId: meta.feedId })}
                   title={meta.feedTitle}
@@ -284,9 +284,9 @@ export function EntryHeaderBreadcrumb() {
 
               {!!meta.entryTitle && (
                 <>
-                  <span className="@[700px]:inline hidden shrink-0">{Slash}</span>
+                  <span className="hidden shrink-0 @[700px]:inline">{Slash}</span>
                   <span
-                    className="text-text min-w-0 max-w-[30vw] truncate px-1.5 py-0.5 text-sm"
+                    className="min-w-0 max-w-[30vw] truncate px-1.5 py-0.5 text-sm text-text"
                     title={meta.entryTitle}
                   >
                     {meta.entryTitle}

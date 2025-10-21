@@ -43,7 +43,7 @@ const NativeTabBarHolder = () => {
     <Portal>
       <BottomTabContext value={bottomTabContext}>
         <NavigationInstanceContext value={navigation}>
-          <View className="bg-red absolute inset-x-0 bottom-[68px] mb-4">
+          <View className="absolute inset-x-0 bottom-[68px] mb-4 bg-red">
             <GlassPlayerTabBar className="absolute inset-x-0 bottom-0" />
           </View>
         </NavigationInstanceContext>

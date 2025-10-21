@@ -37,15 +37,15 @@ const EmptyActionPlaceholder = () => {
     <div className="relative flex min-h-96 w-full items-center justify-center">
       <div className="flex flex-col items-center gap-6 text-center">
         {/* Simple icon */}
-        <div className="bg-fill-quaternary flex size-16 items-center justify-center rounded-2xl">
-          <i className="i-mgc-magic-2-cute-re text-text-secondary size-8" />
+        <div className="flex size-16 items-center justify-center rounded-2xl bg-fill-quaternary">
+          <i className="i-mgc-magic-2-cute-re size-8 text-text-secondary" />
         </div>
 
         <div className="space-y-2">
-          <h2 className="text-text text-xl font-semibold">
+          <h2 className="text-xl font-semibold text-text">
             {t("actions.action_card.empty.title")}
           </h2>
-          <p className="text-text-secondary max-w-sm text-sm">
+          <p className="max-w-sm text-sm text-text-secondary">
             {t("actions.action_card.empty.description")}
           </p>
         </div>
@@ -63,7 +63,7 @@ const EmptyActionPlaceholder = () => {
           ease: "easeInOut",
         }}
       >
-        <div className="text-text-tertiary flex items-center gap-2">
+        <div className="flex items-center gap-2 text-text-tertiary">
           <span className="text-sm font-medium">{t("actions.action_card.empty.start")}</span>
           <i className="i-mgc-arrow-right-up-cute-re size-6" />
         </div>
@@ -93,7 +93,7 @@ export const ActionSetting = () => {
     <div className="flex w-full flex-col gap-6">
       <ActionButtonGroup />
       {hasActions ? (
-        <div className="@container flex flex-col gap-6">
+        <div className="flex flex-col gap-6 @container">
           {actions.map((_, actionIdx) => {
             return <RuleCard key={actionIdx} index={actionIdx} />
           })}
@@ -237,10 +237,10 @@ const ActionButtonGroup = () => {
     <div className="mb-6 flex w-full items-center justify-end p-4 lg:justify-between">
       {/* Left side - Simple status */}
       <div className="hidden lg:block">
-        <h3 className="text-text text-lg font-medium">
+        <h3 className="text-lg font-medium text-text">
           {hasActions ? `${actionLength} Rules` : "No Rules"}
         </h3>
-        <p className="text-text-secondary text-sm">
+        <p className="text-sm text-text-secondary">
           {hasActions ? "Active automation rules" : "Create your first automation rule"}
         </p>
       </div>

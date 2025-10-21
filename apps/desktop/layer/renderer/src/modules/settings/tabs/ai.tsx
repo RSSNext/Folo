@@ -85,15 +85,15 @@ const AISecurityDisclosureSection = () => {
   const { t } = useTranslation("ai")
 
   return (
-    <div className="border-fill-secondary mt-6 border-t pt-4">
+    <div className="mt-6 border-t border-fill-secondary pt-4">
       <div className="space-y-2">
         <div className="flex items-center gap-2">
-          <i className="i-mgc-safety-certificate-cute-re text-green size-4" />
-          <Label className="text-text text-sm font-medium">
+          <i className="i-mgc-safety-certificate-cute-re size-4 text-green" />
+          <Label className="text-sm font-medium text-text">
             {t("integration.mcp.security.title")}
           </Label>
         </div>
-        <p className="text-text-secondary text-xs leading-relaxed">
+        <p className="text-xs leading-relaxed text-text-secondary">
           {t("integration.mcp.security.description")}
         </p>
       </div>

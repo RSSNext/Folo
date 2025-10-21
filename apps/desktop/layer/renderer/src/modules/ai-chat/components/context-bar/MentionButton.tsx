@@ -114,7 +114,7 @@ export const MentionButton: Component = memo(() => {
         ref={atButtonRef}
         type="button"
         onClick={handleAtButtonClick}
-        className="bg-material-medium hover:bg-material-thin border-border text-text-secondary hover:text-text-secondary flex size-7 items-center justify-center rounded-md border transition-colors"
+        className="flex size-7 items-center justify-center rounded-md border border-border bg-material-medium text-text-secondary transition-colors hover:bg-material-thin hover:text-text-secondary"
         title="Add Context"
       >
         <i className="i-mgc-at-cute-re size-3.5" />

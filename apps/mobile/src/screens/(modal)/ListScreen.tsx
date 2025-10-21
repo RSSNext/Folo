@@ -68,7 +68,7 @@ export const ListScreen: NavigationControllerView<{
   const navigation = useNavigation()
   return (
     <FormProvider form={form}>
-      <SafeNavigationScrollView className="bg-system-grouped-background pb-safe flex-1">
+      <SafeNavigationScrollView className="pb-safe flex-1 bg-system-grouped-background">
         <ScreenOptions title={list?.title} listId={listId} />
 
         <GroupedInsetListCard showSeparator={false} className="mt-2 px-3 py-6">

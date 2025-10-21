@@ -72,7 +72,7 @@ export const LoginModalContent = (props: LoginModalContentProps) => {
       {isEmail && (
         <div className="absolute left-8 top-6">
           <MotionButtonBase
-            className="cursor-button hover:text-accent flex items-center gap-2 text-center font-medium duration-200"
+            className="flex cursor-button items-center gap-2 text-center font-medium duration-200 hover:text-accent"
             onClick={() => setIsEmail(false)}
           >
             <i className="i-mgc-left-cute-fi" />
@@ -106,7 +106,7 @@ export const LoginModalContent = (props: LoginModalContentProps) => {
                 .map((_, index) => (
                   <div
                     key={index}
-                    className="bg-material-ultra-thick border-material-medium relative h-12 w-full animate-pulse rounded-xl border"
+                    className="relative h-12 w-full animate-pulse rounded-xl border border-material-medium bg-material-ultra-thick"
                   />
                 ))
             : providers.map(([key, provider]) => (
@@ -119,7 +119,7 @@ export const LoginModalContent = (props: LoginModalContentProps) => {
                       loginHandler(key, "app")
                     }
                   }}
-                  className="center hover:bg-material-medium relative w-full gap-2 rounded-xl border py-3 pl-5 font-semibold duration-200"
+                  className="center relative w-full gap-2 rounded-xl border py-3 pl-5 font-semibold duration-200 hover:bg-material-medium"
                 >
                   <img
                     className={cn(
@@ -136,12 +136,12 @@ export const LoginModalContent = (props: LoginModalContentProps) => {
           {isRegister && serverConfigs?.REFERRAL_ENABLED && (
             <ReferralForm className="mb-4 w-full" />
           )}
-          <div className="text-text-secondary -mb-1.5 mt-1 text-center text-xs leading-4">
+          <div className="-mb-1.5 mt-1 text-center text-xs leading-4 text-text-secondary">
             <a onClick={() => handleOpenToken()} className="hover:underline">
               {t("login.enter_token")}
             </a>
           </div>
-          <div className="text-text-secondary text-center text-xs leading-4">
+          <div className="text-center text-xs leading-4 text-text-secondary">
             <span>{t("login.agree_to")}</span>{" "}
             <a onClick={() => handleOpenLegal("tos")} className="text-accent hover:underline">
               {t("login.terms")}
@@ -185,7 +185,7 @@ export const LoginModalContent = (props: LoginModalContentProps) => {
         <div
           onClick={stopPropagation}
           tabIndex={-1}
-          className="bg-background relative w-[26rem] rounded-xl border p-3 px-8 shadow-2xl shadow-stone-300 dark:border-neutral-700 dark:shadow-stone-800"
+          className="relative w-[26rem] rounded-xl border bg-background p-3 px-8 shadow-2xl shadow-stone-300 dark:border-neutral-700 dark:shadow-stone-800"
         >
           {Inner}
         </div>

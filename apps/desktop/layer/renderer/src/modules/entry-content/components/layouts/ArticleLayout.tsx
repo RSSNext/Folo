@@ -91,7 +91,7 @@ export const ArticleLayout: React.FC<EntryLayoutProps> = ({
             <ReadabilityNotice entryId={entryId} />
             {showTranscript ? (
               <MediaTranscript
-                className="prose dark:prose-invert !max-w-full"
+                className="prose !max-w-full dark:prose-invert"
                 srt={transcriptionData}
                 entryId={entryId}
                 type="transcription"
@@ -158,7 +158,7 @@ const Renderer: React.FC<{
       noMedia={noMedia}
       accessory={contentAccessories}
       as="article"
-      className="prose dark:prose-invert prose-h1:text-[1.6em] prose-h1:font-bold autospace-normal !max-w-full hyphens-auto"
+      className="autospace-normal prose !max-w-full hyphens-auto dark:prose-invert prose-h1:text-[1.6em] prose-h1:font-bold"
       style={stableRenderStyle}
       renderInlineStyle={readerRenderInlineStyle}
     >

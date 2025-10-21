@@ -202,7 +202,7 @@ const EntryInfo = ({ entryId }: { entryId: string }) => {
       {feed && (
         <View className="flex shrink flex-row items-center gap-2">
           <FeedIcon feed={feed} />
-          <Text className="text-label shrink text-sm font-medium leading-tight" numberOfLines={1}>
+          <Text className="shrink text-sm font-medium leading-tight text-label" numberOfLines={1}>
             {feed.title?.trim()}
           </Text>
         </View>
@@ -211,13 +211,13 @@ const EntryInfo = ({ entryId }: { entryId: string }) => {
         <CalendarTimeAddCuteReIcon width={16} height={16} color={secondaryLabelColor} />
         <RelativeDateTime
           date={publishedAt}
-          className="text-secondary-label text-sm leading-tight"
+          className="text-sm leading-tight text-secondary-label"
         />
       </View>
       {!hideRecentReader && (
         <View className="flex flex-row items-center gap-1">
           <Eye2CuteReIcon width={16} height={16} color={secondaryLabelColor} />
-          <Text className="text-secondary-label text-sm leading-tight">{readCount}</Text>
+          <Text className="text-sm leading-tight text-secondary-label">{readCount}</Text>
         </View>
       )}
     </View>

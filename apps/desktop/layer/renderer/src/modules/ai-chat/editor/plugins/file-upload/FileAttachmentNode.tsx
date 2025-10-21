@@ -115,7 +115,7 @@ interface FileAttachmentComponentProps {
 function FileAttachmentPill({ attachment }: { attachment: FileAttachment }) {
   return (
     <span
-      className="bg-fill border-border inline-flex items-center gap-1 rounded border px-2 py-1 text-xs"
+      className="inline-flex items-center gap-1 rounded border border-border bg-fill px-2 py-1 text-xs"
       style={{
         backgroundColor: "var(--fill)",
         color: "var(--text)",
@@ -127,10 +127,10 @@ function FileAttachmentPill({ attachment }: { attachment: FileAttachment }) {
         {attachment.name}
       </span>
       {attachment.uploadStatus === "uploading" && (
-        <i className="i-mgc-loading-3-cute-re text-accent animate-spin" />
+        <i className="i-mgc-loading-3-cute-re animate-spin text-accent" />
       )}
       {attachment.uploadStatus === "processing" && (
-        <i className="i-mgc-loading-3-cute-re text-accent animate-spin" />
+        <i className="i-mgc-loading-3-cute-re animate-spin text-accent" />
       )}
       {attachment.uploadStatus === "error" && <i className="i-mgc-close-cute-re text-red" />}
       {attachment.uploadStatus === "completed" && <i className="i-mgc-check-cute-re text-green" />}
@@ -140,7 +140,7 @@ function FileAttachmentPill({ attachment }: { attachment: FileAttachment }) {
 
 function MissingFilePill() {
   return (
-    <span className="bg-fill border-border text-gray inline-flex items-center gap-1 rounded border px-2 py-1 text-xs">
+    <span className="inline-flex items-center gap-1 rounded border border-border bg-fill px-2 py-1 text-xs text-gray">
       <i className="i-mgc-attachment-cute-re" />
       <span className="max-w-32 truncate">File not found</span>
     </span>

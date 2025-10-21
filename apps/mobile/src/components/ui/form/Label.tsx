@@ -15,8 +15,8 @@ export const FormLabel: FC<
 > = ({ label, optional, className, style }) => {
   return (
     <View className={cn("flex-row", className)} style={style}>
-      <Text className="text-label font-medium capitalize">{label}</Text>
-      {!optional && <Text className="text-red ml-1 align-sub">*</Text>}
+      <Text className="font-medium capitalize text-label">{label}</Text>
+      {!optional && <Text className="ml-1 align-sub text-red">*</Text>}
     </View>
   )
 }

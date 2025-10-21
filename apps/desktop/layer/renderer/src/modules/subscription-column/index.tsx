@@ -138,7 +138,7 @@ export function SubscriptionColumn({
         <RootPortal to={rootContainerElement}>
           <ActionButton
             tooltip={"Toggle Feed Column"}
-            className="center macos:left-macos-traffic-light-2 macos:flex absolute left-0 top-2.5 z-0 hidden -translate-x-2 text-zinc-500"
+            className="center absolute left-0 top-2.5 z-0 hidden -translate-x-2 text-zinc-500 macos:flex macos:left-macos-traffic-light-2"
             onClick={() => setTimelineColumnShow(true)}
           >
             <i className="i-mgc-layout-leftbar-open-cute-re" />
@@ -165,7 +165,7 @@ export function SubscriptionColumn({
       >
         <SwipeWrapper active={timelineId!}>
           {timelineList.map((timelineId) => (
-            <section key={timelineId} className="w-feed-col h-full shrink-0 snap-center">
+            <section key={timelineId} className="h-full w-feed-col shrink-0 snap-center">
               <SubscriptionListGuard
                 key={timelineId}
                 view={parseView(timelineId) ?? FeedViewType.Articles}
@@ -248,7 +248,7 @@ const TabsRow: FC = () => {
   const timelineList = useTimelineList({ withAll: true, ordered: true, visible: true })
 
   return (
-    <div className="text-text-secondary flex h-11 items-center px-1 text-xl">
+    <div className="flex h-11 items-center px-1 text-xl text-text-secondary">
       {timelineList.map((timelineId, index) => (
         <SubscriptionTabButton key={timelineId} timelineId={timelineId} shortcut={`${index + 1}`} />
       ))}

@@ -115,7 +115,7 @@ export const EditableMessage = ({
   return (
     <div className={cn("relative", className)}>
       {/* Edit input */}
-      <div className="bg-background/60 focus-within:ring-accent/20 focus-within:border-accent/80 border-border/80 relative overflow-hidden rounded-xl border backdrop-blur-xl duration-200 focus-within:ring-2">
+      <div className="relative overflow-hidden rounded-xl border border-border/80 bg-background/60 backdrop-blur-xl duration-200 focus-within:border-accent/80 focus-within:ring-2 focus-within:ring-accent/20">
         <ScrollArea rootClassName="mr-20 flex-1 overflow-auto" viewportClassName="px-5 py-3.5">
           <LexicalRichEditor
             ref={editorRef}
@@ -134,7 +134,7 @@ export const EditableMessage = ({
             type="button"
             onClick={handleCancel}
             disabled={isProcessing}
-            className="text-text-tertiary hover:text-text hover:bg-fill/50 flex size-8 items-center justify-center rounded-lg transition-colors disabled:opacity-50"
+            className="flex size-8 items-center justify-center rounded-lg text-text-tertiary transition-colors hover:bg-fill/50 hover:text-text disabled:opacity-50"
             title="Cancel (Esc)"
           >
             <i className="i-mgc-close-cute-re size-4" />
@@ -143,7 +143,7 @@ export const EditableMessage = ({
             type="button"
             onClick={handleSave}
             disabled={isProcessing || isEmpty}
-            className="text-accent hover:text-accent hover:bg-accent/10 flex size-8 items-center justify-center rounded-lg transition-colors disabled:opacity-50"
+            className="flex size-8 items-center justify-center rounded-lg text-accent transition-colors hover:bg-accent/10 hover:text-accent disabled:opacity-50"
             title="Save (Enter)"
           >
             <i className="i-mgc-send-plane-cute-fi size-4" />
@@ -153,8 +153,8 @@ export const EditableMessage = ({
 
       {/* Helper text */}
       <div className="relative mt-2">
-        <div className="bg-background absolute -inset-x-2 -bottom-2 -top-8 z-[-1]" />
-        <div className="text-text-secondary relative z-[1] text-xs">
+        <div className="absolute -inset-x-2 -bottom-2 -top-8 z-[-1] bg-background" />
+        <div className="relative z-[1] text-xs text-text-secondary">
           Press <Kbd abbr="Enter">Enter</Kbd> to save, <Kbd abbr="Esc">Esc</Kbd> to cancel
         </div>
       </div>

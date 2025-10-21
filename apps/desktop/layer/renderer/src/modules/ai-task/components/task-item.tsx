@@ -220,11 +220,11 @@ export const TaskItem = memo(({ task }: { task: AITask }) => {
   ]
 
   return (
-    <div className="hover:bg-material-medium border-border group -ml-3 rounded-lg border p-3 transition-colors">
+    <div className="group -ml-3 rounded-lg border border-border p-3 transition-colors hover:bg-material-medium">
       <div className="flex items-start justify-between">
         <div className="flex-1 space-y-2">
           <div className="flex items-center gap-2">
-            <h4 className="text-text text-sm font-medium">{task.name}</h4>
+            <h4 className="text-sm font-medium text-text">{task.name}</h4>
             <span
               className={cn(
                 "inline-flex items-center rounded-full px-2 py-1 text-xs",
@@ -240,12 +240,12 @@ export const TaskItem = memo(({ task }: { task: AITask }) => {
             </span>
           </div>
           <div className="space-y-1">
-            <p className="text-text-secondary text-xs">
+            <p className="text-xs text-text-secondary">
               <span className="text-text-tertiary">{t("tasks.fields.schedule")}</span>{" "}
               {formatScheduleText(task.schedule, t, i18n)}
             </p>
             {task.createdAt && (
-              <p className="text-text-secondary text-xs">
+              <p className="text-xs text-text-secondary">
                 <span className="text-text-tertiary">{t("tasks.fields.created")}</span>{" "}
                 {dayjs(task.createdAt).format("MMM D, YYYY h:mm A")}
               </p>

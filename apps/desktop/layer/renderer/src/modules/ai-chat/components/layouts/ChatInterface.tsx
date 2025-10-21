@@ -313,7 +313,7 @@ const ChatInterfaceContent = ({ centerInputOnEmpty }: ChatInterfaceProps) => {
 
   const { handleScroll } = useAttachScrollBeyond()
   return (
-    <GlobalFileDropZone className="@container flex size-full flex-col">
+    <GlobalFileDropZone className="flex size-full flex-col @container">
       <div className="flex min-h-0 flex-1 flex-col" ref={scrollContainerParentRef}>
         <AnimatePresence>
           {!hasMessages && !isLoadingHistory ? (
@@ -340,7 +340,7 @@ const ChatInterfaceContent = ({ centerInputOnEmpty }: ChatInterfaceProps) => {
               >
                 {isLoadingHistory ? (
                   <div className="flex min-h-96 items-center justify-center">
-                    <i className="i-mgc-loading-3-cute-re text-text size-8 animate-spin" />
+                    <i className="i-mgc-loading-3-cute-re size-8 animate-spin text-text" />
                   </div>
                 ) : (
                   <div
@@ -372,7 +372,7 @@ const ChatInterfaceContent = ({ centerInputOnEmpty }: ChatInterfaceProps) => {
             type="button"
             onClick={() => resetScrollState()}
             className={cn(
-              "center bg-mix-background/transparent-8/2 backdrop-blur-background group flex size-8 items-center gap-2 rounded-full border transition-all",
+              "group center flex size-8 items-center gap-2 rounded-full border backdrop-blur-background transition-all bg-mix-background/transparent-8/2",
               "border-border",
               "hover:border-border/60 active:scale-[0.98]",
             )}
@@ -432,7 +432,7 @@ const ChatInterfaceContent = ({ centerInputOnEmpty }: ChatInterfaceProps) => {
             />
 
             <div
-              className="from-background/20 to-background/0 pointer-events-none absolute inset-x-0 bottom-0 h-60 bg-gradient-to-b"
+              className="pointer-events-none absolute inset-x-0 bottom-0 h-60 bg-gradient-to-b from-background/20 to-background/0"
               style={{
                 maskImage: "linear-gradient(to top, black 20%, transparent 70%)",
                 WebkitMaskImage: "linear-gradient(to top, black 20%, transparent 70%)",

@@ -21,7 +21,7 @@ export const EntryTimelineSidebar = ({
   return (
     <m.div
       className={cn(
-        "@lg:hidden @6xl:block @6xl:max-w-[200px] @7xl:max-w-[200px] @[90rem]:max-w-[250px] absolute left-8 top-28 z-[1]",
+        "absolute left-8 top-28 z-[1] @lg:hidden @6xl:block @6xl:max-w-[200px] @7xl:max-w-[200px] @[90rem]:max-w-[250px]",
         className,
       )}
       initial={{ opacity: 0 }}
@@ -61,7 +61,7 @@ const TimelineItem = ({ id }: { id: string }) => {
       onClick={() => navigate({ entryId: id })}
     >
       {!asRead && (
-        <span className="bg-accent absolute -left-4 top-1/2 size-1.5 -translate-y-1/2 rounded-full opacity-50" />
+        <span className="absolute -left-4 top-1/2 size-1.5 -translate-y-1/2 rounded-full bg-accent opacity-50" />
       )}
       <EllipsisHorizontalTextWithTooltip
         className={cn(

@@ -46,7 +46,7 @@ export const EntryReadHistory: Component<{ entryId: string }> = ({ entryId }) =>
 
   return (
     <div
-      className="animate-in fade-in @md:flex hidden items-center duration-200"
+      className="hidden items-center duration-200 animate-in fade-in @md:flex"
       data-hide-in-print
     >
       <AvatarGroup>
@@ -61,9 +61,9 @@ export const EntryReadHistory: Component<{ entryId: string }> = ({ entryId }) =>
             margin: "-8px",
             zIndex: LIMIT + 1,
           }}
-          className="no-drag-region border-border bg-material-opaque ring-background relative flex size-7 items-center justify-center rounded-full border ring-2"
+          className="no-drag-region relative flex size-7 items-center justify-center rounded-full border border-border bg-material-opaque ring-2 ring-background"
         >
-          <span className="text-text-secondary text-[10px] font-medium tabular-nums">
+          <span className="text-[10px] font-medium tabular-nums text-text-secondary">
             +{Math.min(totalCount - LIMIT, 99)}
           </span>
         </div>

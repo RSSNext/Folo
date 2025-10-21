@@ -43,9 +43,9 @@ export const SettingSectionTitle: FC<{
       data-setting-section={sectionId}
       data-highlighted={isHighlighted ? "true" : undefined}
       className={cn(
-        "text-text text-headline shrink-0 font-bold opacity-50 transition-colors duration-300 first:mt-0",
+        "shrink-0 text-headline font-bold text-text opacity-50 transition-colors duration-300 first:mt-0",
         margin === "compact" ? "mb-2 mt-8" : "mb-4 mt-10",
-        isHighlighted && "border-folo -ml-3 rounded-lg border px-3 py-1.5 opacity-100",
+        isHighlighted && "-ml-3 rounded-lg border border-folo px-3 py-1.5 opacity-100",
         className,
       )}
     >

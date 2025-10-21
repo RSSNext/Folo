@@ -96,9 +96,9 @@ export function Trending({
           <i className="i-mgc-trending-up-cute-re text-xl" />
           <span>{t("words.trending")}</span>
         </div>
-        <div className={cn("flex gap-4", center && "md:center justify-end")}>
+        <div className={cn("flex gap-4", center && "justify-end md:center")}>
           <div className="flex items-center">
-            <span className="text-text shrink-0 text-sm font-medium">{t("words.language")}:</span>
+            <span className="shrink-0 text-sm font-medium text-text">{t("words.language")}:</span>
 
             <ResponsiveSelect
               value={lang}
@@ -113,7 +113,7 @@ export function Trending({
             />
           </div>
           <div className="flex items-center">
-            <span className="text-text shrink-0 text-sm font-medium">{t("words.view")}:</span>
+            <span className="shrink-0 text-sm font-medium text-text">{t("words.view")}:</span>
             <ResponsiveSelect
               value={selectedView}
               onValueChange={(value: string) => {

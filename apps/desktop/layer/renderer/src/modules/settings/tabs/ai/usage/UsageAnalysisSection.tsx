@@ -13,7 +13,7 @@ export const UsageAnalysisSection = () => {
 
   const { present } = useModalStack()
   if (isLoading) {
-    return <div className="bg-fill-secondary h-36 animate-pulse rounded-lg" />
+    return <div className="h-36 animate-pulse rounded-lg bg-fill-secondary" />
   }
   if (!config) return null
 
@@ -37,19 +37,19 @@ export const UsageAnalysisSection = () => {
 
             <div className="flex-1 space-y-2">
               <div className="flex items-baseline gap-2">
-                <span className="text-text text-lg font-semibold">
+                <span className="text-lg font-semibold text-text">
                   {formatTokenCountString(rateLimit.remainingTokens)}
                 </span>
-                <span className="text-text-secondary text-sm">
+                <span className="text-sm text-text-secondary">
                   {t("usage_analysis.tokens_remaining")}
                 </span>
               </div>
 
-              <div className="text-text-tertiary text-xs">
+              <div className="text-xs text-text-tertiary">
                 {formatTokenCountString(usage.used)} / {formatTokenCountString(usage.total)} used
               </div>
 
-              <div className="text-text-secondary text-xs">
+              <div className="text-xs text-text-secondary">
                 {t("usage_analysis.resets_in")}{" "}
                 {formatTimeRemaining(rateLimit.windowResetTime - Date.now())}
               </div>
@@ -65,7 +65,7 @@ export const UsageAnalysisSection = () => {
                 modalContentClassName: "-mx-6 -mb-4",
               })
             }
-            className="text-text-secondary hover:text-text absolute right-4 top-4 flex items-center gap-1 text-sm duration-200"
+            className="absolute right-4 top-4 flex items-center gap-1 text-sm text-text-secondary duration-200 hover:text-text"
           >
             {t("usage_analysis.view_details")}
             <i className="i-mingcute-right-line" />

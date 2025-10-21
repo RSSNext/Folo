@@ -127,7 +127,7 @@ export const DiscoverFeedCard: FC<DiscoverFeedCardProps> = memo(
                 </div>
               )}
               <div className="mt-4 flex justify-between gap-4">
-                <div className="text-text-secondary flex items-center gap-3 text-sm">
+                <div className="flex items-center gap-3 text-sm text-text-secondary">
                   {!!item.analytics?.subscriptionCount && (
                     <div className="flex items-center gap-1.5">
                       <i className="i-mgc-user-3-cute-re" />

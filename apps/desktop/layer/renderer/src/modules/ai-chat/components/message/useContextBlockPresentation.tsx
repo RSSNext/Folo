@@ -61,7 +61,7 @@ export function useContextBlockPresentation(block: AIChatContextBlock): ContextB
 
               {uploadStatus === "error" && (
                 <div
-                  className="bg-red/80 absolute inset-0 flex items-center justify-center rounded-md"
+                  className="absolute inset-0 flex items-center justify-center rounded-md bg-red/80"
                   title={errorMessage}
                 >
                   <i className="i-mgc-close-cute-re size-3 text-white" />
@@ -75,11 +75,11 @@ export function useContextBlockPresentation(block: AIChatContextBlock): ContextB
               </span>
 
               {uploadStatus === "uploading" && uploadProgress !== undefined && (
-                <span className="text-text-tertiary text-xs">{Math.round(uploadProgress)}%</span>
+                <span className="text-xs text-text-tertiary">{Math.round(uploadProgress)}%</span>
               )}
 
               {uploadStatus === "error" && (
-                <span className="text-red text-xs" title={errorMessage}>
+                <span className="text-xs text-red" title={errorMessage}>
                   Upload failed
                 </span>
               )}
@@ -102,12 +102,12 @@ export function useContextBlockPresentation(block: AIChatContextBlock): ContextB
                 strokeWidth={2}
                 variant="default"
               />
-              <span className="text-text-tertiary text-xs">{Math.round(uploadProgress)}%</span>
+              <span className="text-xs text-text-tertiary">{Math.round(uploadProgress)}%</span>
             </div>
           )}
 
           {uploadStatus === "error" && (
-            <i className="i-mgc-close-cute-re text-red size-3" title={errorMessage} />
+            <i className="i-mgc-close-cute-re size-3 text-red" title={errorMessage} />
           )}
         </div>
       )

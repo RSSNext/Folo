@@ -20,11 +20,11 @@ export const AITaskList = memo<TaskListProps>(({ className }) => {
   if (tasks.length === 0) {
     return (
       <div className="py-8 text-center">
-        <div className="bg-fill-secondary mx-auto mb-3 flex size-12 items-center justify-center rounded-full">
-          <i className="i-mgc-calendar-time-add-cute-re text-text size-6" />
+        <div className="mx-auto mb-3 flex size-12 items-center justify-center rounded-full bg-fill-secondary">
+          <i className="i-mgc-calendar-time-add-cute-re size-6 text-text" />
         </div>
-        <h4 className="text-text mb-1 text-sm font-medium">{t("tasks.empty.title")}</h4>
-        <p className="text-text-secondary text-xs">{t("tasks.empty.desc")}</p>
+        <h4 className="mb-1 text-sm font-medium text-text">{t("tasks.empty.title")}</h4>
+        <p className="text-xs text-text-secondary">{t("tasks.empty.desc")}</p>
       </div>
     )
   }

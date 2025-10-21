@@ -91,7 +91,7 @@ export const AIChatContextBar: Component = memo(({ className }) => {
       <button
         type="button"
         onClick={handleAttachFile}
-        className="bg-material-medium hover:bg-material-thin border-border text-text-secondary hover:text-text-secondary flex size-7 items-center justify-center rounded-md border transition-colors"
+        className="flex size-7 items-center justify-center rounded-md border border-border bg-material-medium text-text-secondary transition-colors hover:bg-material-thin hover:text-text-secondary"
         title="Upload Files"
       >
         <i className="i-mgc-attachment-cute-re size-3.5" />

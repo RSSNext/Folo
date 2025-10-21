@@ -201,7 +201,7 @@ const AIEnhancedTimelineLayoutImpl = () => {
                             animate={{ translateY: 0, opacity: 1, scale: 1 }}
                             exit={{ translateY: "50px", opacity: 0, scale: 0.98 }}
                             transition={Spring.smooth(0.3)}
-                            className="bg-theme-background pointer-events-auto relative flex h-0 flex-1 flex-col"
+                            className="pointer-events-auto relative flex h-0 flex-1 flex-col bg-theme-background"
                           >
                             <EntryContent entryId={realEntryId} className="h-full" />
                           </m.div>
@@ -228,7 +228,7 @@ const AIEnhancedTimelineLayoutImpl = () => {
                   />
                 </div>
                 <div
-                  className="bg-theme-background absolute inset-y-0 right-0 flex min-w-0 flex-1 flex-col overflow-hidden"
+                  className="absolute inset-y-0 right-0 flex min-w-0 flex-1 flex-col overflow-hidden bg-theme-background"
                   style={{ left: timelineColumnWidth }}
                 >
                   {realEntryId ? (
@@ -237,7 +237,7 @@ const AIEnhancedTimelineLayoutImpl = () => {
                         <AIEntryHeader entryId={realEntryId} />
                       </div>
                       <div className="pointer-events-none absolute inset-0 z-[9] flex flex-col overflow-hidden">
-                        <div className="bg-theme-background pointer-events-auto relative flex h-0 flex-1 flex-col">
+                        <div className="pointer-events-auto relative flex h-0 flex-1 flex-col bg-theme-background">
                           <EntryContent entryId={realEntryId} className="h-full" />
                         </div>
                       </div>
@@ -325,8 +325,8 @@ const SubscriptionEntryListPlaneNode = () => {
   return (
     <m.div
       className={cn(
-        "bg-sidebar backdrop-blur-background absolute left-0 top-12 z-[2] rounded-r-lg",
-        isVisible ? "w-feed-col bottom-0 flex flex-col" : "w-[40px]",
+        "absolute left-0 top-12 z-[2] rounded-r-lg bg-sidebar backdrop-blur-background",
+        isVisible ? "bottom-0 flex w-feed-col flex-col" : "w-[40px]",
       )}
       id="subscription-entry-list-plane-node"
       initial={false}
@@ -344,7 +344,7 @@ const SubscriptionEntryListPlaneNode = () => {
             animate={{ opacity: 1 }}
             exit={{ opacity: 0 }}
             transition={{ duration: 0.1 }}
-            className="w-feed-col flex flex-1 flex-col whitespace-pre"
+            className="flex w-feed-col flex-1 flex-col whitespace-pre"
           >
             <EntrySubscriptionList scrollToEntryId={entryId} />
           </m.div>

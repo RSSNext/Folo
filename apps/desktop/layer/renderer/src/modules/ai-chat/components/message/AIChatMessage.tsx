@@ -105,7 +105,7 @@ export const AIChatMessage: React.FC<AIChatMessageProps> = React.memo(
 
     return (
       <div onContextMenu={stopPropagation} className="group flex justify-start">
-        <div className="text-text relative flex max-w-full flex-col gap-2">
+        <div className="relative flex max-w-full flex-col gap-2 text-text">
           {/* Normal message display */}
           <div className="text-text">
             <div className="flex cursor-text select-text flex-col gap-2 text-sm">
@@ -116,13 +116,13 @@ export const AIChatMessage: React.FC<AIChatMessageProps> = React.memo(
           {/* Action buttons */}
           {!!originalMessage.metadata?.finishTime && (
             <div className="absolute -left-2 bottom-1 right-0 flex items-center gap-1 opacity-0 transition-opacity duration-200 group-hover:opacity-100">
-              <span className="text-text-tertiary whitespace-nowrap px-2 py-1 text-[11px] leading-none">
+              <span className="whitespace-nowrap px-2 py-1 text-[11px] leading-none text-text-tertiary">
                 <RelativeTime date={originalMessage.createdAt} />
               </span>
               <button
                 type="button"
                 onClick={handleCopy}
-                className="text-text-secondary hover:bg-fill-tertiary flex items-center gap-1 rounded-md px-2 py-1 text-xs transition-colors"
+                className="flex items-center gap-1 rounded-md px-2 py-1 text-xs text-text-secondary transition-colors hover:bg-fill-tertiary"
                 title="Copy message"
               >
                 <i className="i-mgc-copy-2-cute-re size-3" />
@@ -133,7 +133,7 @@ export const AIChatMessage: React.FC<AIChatMessageProps> = React.memo(
                 <TokenUsagePill metadata={message.metadata}>
                   <button
                     type="button"
-                    className="text-text-secondary hover:bg-fill-tertiary absolute right-0 flex items-center gap-1 rounded-md px-2 py-1 text-xs transition-colors"
+                    className="absolute right-0 flex items-center gap-1 rounded-md px-2 py-1 text-xs text-text-secondary transition-colors hover:bg-fill-tertiary"
                   >
                     <i className="i-mgc-information-cute-re size-3" />
                   </button>
@@ -157,7 +157,7 @@ export const AIChatWaitingIndicator: React.FC = () => {
       transition={{ duration: 0.2, ease: [0.25, 0.46, 0.45, 0.94] }}
       className="mb-4"
     >
-      <div className="text-text-secondary flex items-center gap-2 rounded-full text-xs">
+      <div className="flex items-center gap-2 rounded-full text-xs text-text-secondary">
         <i className="i-mgc-loading-3-cute-re size-3 animate-spin" />
         <span className="font-medium">Thinking…</span>
       </div>

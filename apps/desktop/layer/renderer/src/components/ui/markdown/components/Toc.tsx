@@ -99,7 +99,7 @@ const TocContainer: React.FC<TocContainerProps> = ({
   return (
     <div
       className={cn(
-        "scrollbar-none group relative overflow-auto opacity-60 duration-200 group-hover:opacity-100",
+        "group relative overflow-auto opacity-60 duration-200 scrollbar-none group-hover:opacity-100",
         "flex flex-col",
         className,
       )}
@@ -130,12 +130,12 @@ const TocHoverCard: React.FC<TocHoverCardProps> = ({
   const [hoverShow, setHoverShow] = useState(false)
 
   return (
-    <div className="scrollbar-none flex grow flex-col scroll-smooth px-2">
+    <div className="flex grow flex-col scroll-smooth px-2 scrollbar-none">
       <HoverCard.Root openDelay={100} open={hoverShow} onOpenChange={setHoverShow}>
         <HoverCard.Trigger asChild>
           <div
             className={cn(
-              "scrollbar-none group overflow-auto opacity-60 duration-200 group-hover:opacity-100",
+              "group overflow-auto opacity-60 duration-200 scrollbar-none group-hover:opacity-100",
               className,
             )}
           >
@@ -164,8 +164,8 @@ const TocHoverCard: React.FC<TocHoverCardProps> = ({
                     className={cn(
                       "relative z-10 -mt-1 rounded-xl border",
                       "px-3 py-1 text-xs",
-                      "bg-material-ultra-thick backdrop-blur-background shadow-context-menu",
-                      "scrollbar-none max-h-[calc(100svh-4rem)] overflow-auto",
+                      "shadow-context-menu bg-material-ultra-thick backdrop-blur-background",
+                      "max-h-[calc(100svh-4rem)] overflow-auto scrollbar-none",
                     )}
                   >
                     {toc.map((heading, index) => (
@@ -190,7 +190,7 @@ const TocHoverCard: React.FC<TocHoverCardProps> = ({
                             })
                           }}
                         >
-                          <EllipsisHorizontalTextWithTooltip className="group-hover:text-accent/80 max-w-prose select-none truncate duration-200">
+                          <EllipsisHorizontalTextWithTooltip className="max-w-prose select-none truncate duration-200 group-hover:text-accent/80">
                             {heading.title}
                           </EllipsisHorizontalTextWithTooltip>
 

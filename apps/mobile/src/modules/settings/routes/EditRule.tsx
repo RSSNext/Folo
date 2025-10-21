@@ -91,7 +91,7 @@ const NameSection: React.FC<{
       >
         <View className="flex-1">
           <PlainTextField
-            className="text-secondary-label w-full flex-1 text-right"
+            className="w-full flex-1 text-right text-secondary-label"
             value={rule.name}
             hitSlop={10}
             selectionColor={accentColor}

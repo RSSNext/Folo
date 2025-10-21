@@ -54,7 +54,7 @@ export const SubscriptionColumnHeader = memo(() => {
       <div className="relative flex items-center gap-2" onClick={stopPropagation}>
         <Link to="/discover" tabIndex={-1}>
           <ActionButton shortcut="$mod+T" tooltip={t("words.discover")}>
-            <i className="i-mgc-add-cute-re text-text-secondary size-5" />
+            <i className="i-mgc-add-cute-re size-5 text-text-secondary" />
           </ActionButton>
         </Link>
 

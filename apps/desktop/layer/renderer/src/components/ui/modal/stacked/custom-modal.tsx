@@ -22,7 +22,7 @@ export const SlideUpModal: ModalTemplateType = (props) => {
   const winHeight = useState(() => window.innerHeight)[0]
   const { dismiss } = useCurrentModal()
   return (
-    <div className={"center container h-full"} onPointerDown={dismiss} onClick={stopPropagation}>
+    <div className={"container center h-full"} onPointerDown={dismiss} onClick={stopPropagation}>
       <m.div
         onPointerDown={stopPropagation}
         tabIndex={-1}
@@ -36,7 +36,7 @@ export const SlideUpModal: ModalTemplateType = (props) => {
           }
         }}
         className={cn(
-          "bg-theme-background relative flex flex-col items-center overflow-hidden rounded-xl border p-8 pb-0",
+          "relative flex flex-col items-center overflow-hidden rounded-xl border bg-theme-background p-8 pb-0",
           "aspect-[7/9] w-[600px] max-w-full shadow lg:max-h-[calc(100vh-10rem)]",
           "motion-preset-slide-up motion-duration-200 motion-ease-spring-smooth",
           props.className,
@@ -95,9 +95,9 @@ export const DrawerModalLayout: FC<PropsWithChildren> = ({ children }) => {
         exit="exit"
         layout="size"
         className={cn(
-          "bg-theme-background flex flex-col items-center overflow-hidden rounded-xl border p-8 pb-0",
+          "flex flex-col items-center overflow-hidden rounded-xl border bg-theme-background p-8 pb-0",
           "shadow-drawer-to-left w-[60ch] max-w-full",
-          "safe-inset-top-4 fixed bottom-4 right-2",
+          "fixed bottom-4 right-2 safe-inset-top-4",
         )}
       >
         {children}
@@ -110,7 +110,7 @@ export const ScaleModal: ModalTemplateType = (props) => {
   const { dismiss } = useCurrentModal()
 
   return (
-    <div className={"center container h-full"} onPointerDown={dismiss} onClick={stopPropagation}>
+    <div className={"container center h-full"} onPointerDown={dismiss} onClick={stopPropagation}>
       <m.div
         onPointerDown={stopPropagation}
         transition={Spring.presets.snappy}

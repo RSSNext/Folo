@@ -66,11 +66,11 @@ const DefaultWelcomeHeader = ({ description }: { description: string }) => (
       <AISpline />
     </div>
     <div className="flex flex-col gap-2">
-      <h1 className="text-text flex items-center justify-center gap-2 text-2xl font-semibold">
+      <h1 className="flex items-center justify-center gap-2 text-2xl font-semibold text-text">
         <Folo className="size-11" /> AI
       </h1>
 
-      <p className="text-text-secondary text-balance text-sm">{description}</p>
+      <p className="text-balance text-sm text-text-secondary">{description}</p>
     </div>
   </m.div>
 )

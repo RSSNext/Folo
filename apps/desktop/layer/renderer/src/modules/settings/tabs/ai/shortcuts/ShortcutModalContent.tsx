@@ -86,7 +86,7 @@ export const ShortcutModalContent = ({ shortcut, onSave, onCancel }: ShortcutMod
     <div className="w-[400px] space-y-4">
       <div className="grid grid-cols-6 gap-4">
         <div className="col-span-6 space-y-2">
-          <Label className="text-text text-xs">{t("shortcuts.name")}</Label>
+          <Label className="text-xs text-text">{t("shortcuts.name")}</Label>
           <Input
             value={name}
             onChange={(e) => setName(e.target.value)}
@@ -96,7 +96,7 @@ export const ShortcutModalContent = ({ shortcut, onSave, onCancel }: ShortcutMod
       </div>
 
       <div className="space-y-2">
-        <Label className="text-text text-xs">{t("shortcuts.prompt")}</Label>
+        <Label className="text-xs text-text">{t("shortcuts.prompt")}</Label>
         <TextArea
           value={prompt}
           onChange={(e) => setPrompt(e.target.value)}
@@ -106,8 +106,8 @@ export const ShortcutModalContent = ({ shortcut, onSave, onCancel }: ShortcutMod
       </div>
 
       <div className="space-y-2">
-        <Label className="text-text text-xs">{t("shortcuts.targets.label")}</Label>
-        <div className="text-text-secondary flex flex-wrap gap-3 text-xs">
+        <Label className="text-xs text-text">{t("shortcuts.targets.label")}</Label>
+        <div className="flex flex-wrap gap-3 text-xs text-text-secondary">
           <label className="flex items-center gap-2">
             <Checkbox
               size="sm"
@@ -125,13 +125,13 @@ export const ShortcutModalContent = ({ shortcut, onSave, onCancel }: ShortcutMod
             <span>{t("shortcuts.targets.entry")}</span>
           </label>
         </div>
-        <p className="text-text-tertiary text-xs">{t("shortcuts.targets.help")}</p>
+        <p className="text-xs text-text-tertiary">{t("shortcuts.targets.help")}</p>
       </div>
 
       <div className="flex items-center justify-between">
         <div className="flex items-center gap-2">
           <Switch size="sm" checked={enabled} onCheckedChange={setEnabled} />
-          <Label className="text-text text-xs">{t("shortcuts.enabled")}</Label>
+          <Label className="text-xs text-text">{t("shortcuts.enabled")}</Label>
         </div>
 
         <div className="flex gap-2">

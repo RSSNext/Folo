@@ -19,7 +19,7 @@ export const MentionLikePill = ({
       ref={ref}
       className={cn(
         "relative inline-flex -translate-y-px select-none items-center rounded-md border-[0.5px] px-2 py-0.5 text-xs font-medium",
-        "bg-fill-secondary hover:bg-fill transition-colors",
+        "bg-fill-secondary transition-colors hover:bg-fill",
         className,
       )}
       {...rest}

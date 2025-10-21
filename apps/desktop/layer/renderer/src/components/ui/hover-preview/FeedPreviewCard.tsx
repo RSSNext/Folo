@@ -43,7 +43,7 @@ export const FeedPreviewCard: React.FC<FeedPreviewCardProps> = ({
         >
           {/* Header */}
           <a
-            className="bg-fill-tertiary border-border border-b p-4"
+            className="border-b border-border bg-fill-tertiary p-4"
             href={feed.url ?? "#"}
             onClick={(e) => {
               e.preventDefault()
@@ -56,7 +56,7 @@ export const FeedPreviewCard: React.FC<FeedPreviewCardProps> = ({
               <FeedIcon target={feed} size={40} className="shrink-0" />
               <div className="min-w-0 flex-1">
                 <div className="flex items-center gap-2">
-                  <h3 className="text-text line-clamp-1 text-sm font-semibold">{feed.title}</h3>
+                  <h3 className="line-clamp-1 text-sm font-semibold text-text">{feed.title}</h3>
                 </div>
               </div>
             </div>

@@ -37,7 +37,7 @@ export const KeyRecorder: FC<KeyRecorderProps> = ({ onChange, onBlur }) => {
   })
   return (
     <div
-      className="text-text-secondary relative flex size-full items-center justify-center px-1 text-xs"
+      className="relative flex size-full items-center justify-center px-1 text-xs text-text-secondary"
       tabIndex={-1}
       role="textbox"
       ref={ref}
@@ -49,13 +49,13 @@ export const KeyRecorder: FC<KeyRecorderProps> = ({ onChange, onBlur }) => {
           </KbdCombined>
         </div>
       ) : (
-        <span className="text-text-secondary pr-4">{t("settings.shortcuts.press_to_record")}</span>
+        <span className="pr-4 text-text-secondary">{t("settings.shortcuts.press_to_record")}</span>
       )}
       <Tooltip delayDuration={0}>
         <TooltipTrigger asChild>
           <button
             type="button"
-            className="hover:text-text absolute inset-y-0 -right-1 z-[1] flex items-center justify-center px-1"
+            className="absolute inset-y-0 -right-1 z-[1] flex items-center justify-center px-1 hover:text-text"
             onClick={(e) => {
               e.stopPropagation()
               if (currentKeys.length === 0) {

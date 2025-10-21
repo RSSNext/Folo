@@ -168,8 +168,8 @@ const Impl = (props: { id: string }) => {
             />
           </View>
           <View className="flex-1 flex-col gap-y-1">
-            <Text className="text-text text-lg font-semibold">{list?.title}</Text>
-            <Text className="text-secondary-label text-sm">{list?.description}</Text>
+            <Text className="text-lg font-semibold text-text">{list?.title}</Text>
+            <Text className="text-sm text-secondary-label">{list?.description}</Text>
           </View>
         </View>
       </GroupedInsetListCard>
@@ -237,10 +237,10 @@ const Impl = (props: { id: string }) => {
                 <FormLabel label="Follow fee" optional />
                 <View className="ml-1 flex-row items-center gap-x-0.5">
                   <PowerIcon height={14} width={14} color={accentColor} />
-                  <Text className="text-label text-sm font-semibold">{list.fee}</Text>
+                  <Text className="text-sm font-semibold text-label">{list.fee}</Text>
                 </View>
               </View>
-              <Text className="text-secondary-label text-sm">
+              <Text className="text-sm text-secondary-label">
                 To follow this list, you must pay a fee to the list creator.
               </Text>
             </View>

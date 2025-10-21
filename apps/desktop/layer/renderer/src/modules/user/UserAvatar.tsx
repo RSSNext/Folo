@@ -61,7 +61,7 @@ export const UserAvatar = ({
       }}
       {...props}
       className={cn(
-        "text-text-secondary relative flex h-20 items-center justify-center gap-2 px-5 py-2 font-medium",
+        "relative flex h-20 items-center justify-center gap-2 px-5 py-2 font-medium text-text-secondary",
         className,
       )}
     >
@@ -72,7 +72,7 @@ export const UserAvatar = ({
         )}
       >
         <AvatarImage
-          className="animate-in fade-in-0 duration-200"
+          className="duration-200 animate-in fade-in-0"
           src={replaceImgUrlIfNeed(renderUserData?.image || undefined)}
         />
         <AvatarFallback

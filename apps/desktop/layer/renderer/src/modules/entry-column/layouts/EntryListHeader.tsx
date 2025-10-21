@@ -87,12 +87,12 @@ export const EntryListHeader: FC<{
   return (
     <div
       className={cn(
-        "h-top-header-with-border-b flex w-full flex-col pr-4 pt-2.5",
+        "flex h-top-header-with-border-b w-full flex-col pr-4 pt-2.5",
         !feedColumnShow && "macos:mt-4 macos:pt-margin-macos-traffic-light-y",
         titleStyleBasedView[view],
         isPreview && "px-4",
         view === FeedViewType.All &&
-          "data-[scrolled-beyond-threshold=true]:border-b-border border-b border-transparent",
+          "border-b border-transparent data-[scrolled-beyond-threshold=true]:border-b-border",
       )}
       data-scrolled-beyond-threshold={isScrolledBeyondThresholdValue}
     >
@@ -101,7 +101,7 @@ export const EntryListHeader: FC<{
         {!isPreview && (
           <div
             className={cn(
-              "text-text-secondary relative z-[1] flex items-center gap-2 self-baseline",
+              "relative z-[1] flex items-center gap-2 self-baseline text-text-secondary",
               !headerTitle && "opacity-0 [&_*]:!pointer-events-none",
 
               "translate-x-[6px]",
@@ -189,7 +189,7 @@ const PreviewHeaderInfoWrapper: Component = ({ children }) => {
             e.stopPropagation()
             navigate(previewBackPath() || "/")
           }}
-          className="no-drag-region hover:text-accent mr-1 inline-flex items-center gap-1 whitespace-nowrap duration-200"
+          className="no-drag-region mr-1 inline-flex items-center gap-1 whitespace-nowrap duration-200 hover:text-accent"
         >
           <i className="i-mingcute-left-line" />
           <span className="text-sm font-medium">{tCommon("words.back")}</span>
@@ -200,7 +200,7 @@ const PreviewHeaderInfoWrapper: Component = ({ children }) => {
 
       <button
         type="button"
-        className="text-accent cursor-button from-accent/10 via-accent/15 to-accent/20 hover:bg-accent animate-gradient-x -mx-4 mt-3.5 flex place-items-center justify-center gap-1 bg-gradient-to-r px-3 py-2 font-semibold transition-all duration-300 hover:text-white"
+        className="-mx-4 mt-3.5 flex animate-gradient-x cursor-button place-items-center justify-center gap-1 bg-gradient-to-r from-accent/10 via-accent/15 to-accent/20 px-3 py-2 font-semibold text-accent transition-all duration-300 hover:bg-accent hover:text-white"
         onClick={() => {
           const { feedId, listId } = getRouteParams()
           const feed = getFeedById(feedId)

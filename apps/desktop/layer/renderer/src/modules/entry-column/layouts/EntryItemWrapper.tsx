@@ -151,8 +151,8 @@ export const EntryItemWrapper: FC<
       <Link
         to={navigationPath}
         className={cn(
-          "hover:bg-theme-item-hover cursor-button relative block overflow-visible duration-200",
-          isWide ? "@[650px]:rounded-md rounded-none" : "",
+          "relative block cursor-button overflow-visible duration-200 hover:bg-theme-item-hover",
+          isWide ? "rounded-none @[650px]:rounded-md" : "",
           isAll && "!rounded-none",
           (isActive || isContextMenuOpen) && "!bg-theme-item-active",
           itemClassName,

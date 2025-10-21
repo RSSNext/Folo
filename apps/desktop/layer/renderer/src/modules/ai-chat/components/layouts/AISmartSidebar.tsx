@@ -95,10 +95,10 @@ const AIAmbientSidebar: React.FC<{ onExpand: () => void }> = ({ onExpand }) => {
               exit={{ opacity: 0, x: 20 }}
               className="ai-prompt-container ai-prompt-visible fixed bottom-12 right-6 z-50 flex flex-col items-end gap-3"
             >
-              <div className="bg-background/90 border-folo/30 rounded-2xl border px-4 py-3 backdrop-blur-xl">
+              <div className="rounded-2xl border border-folo/30 bg-background/90 px-4 py-3 backdrop-blur-xl">
                 <div className="text-right">
-                  <p className="text-text text-sm font-medium">Ask AI anything</p>
-                  <p className="text-text-secondary mt-1 text-xs">
+                  <p className="text-sm font-medium text-text">Ask AI anything</p>
+                  <p className="mt-1 text-xs text-text-secondary">
                     Get insights about this article
                   </p>
                 </div>
@@ -106,12 +106,12 @@ const AIAmbientSidebar: React.FC<{ onExpand: () => void }> = ({ onExpand }) => {
 
               <button
                 type="button"
-                className="border-folo/40 from-folo/20 hover:from-folo/30 rounded-full border bg-gradient-to-r to-red-500/20 px-6 py-2 backdrop-blur-xl transition-all duration-300 hover:to-red-500/30"
+                className="rounded-full border border-folo/40 bg-gradient-to-r from-folo/20 to-red-500/20 px-6 py-2 backdrop-blur-xl transition-all duration-300 hover:from-folo/30 hover:to-red-500/30"
                 onClick={onExpand}
               >
                 <div className="flex items-center gap-2">
-                  <div className="from-folo ai-dot-pulse size-2 rounded-full bg-gradient-to-r to-red-500" />
-                  <span className="text-text text-sm font-medium">Open AI Chat</span>
+                  <div className="ai-dot-pulse size-2 rounded-full bg-gradient-to-r from-folo to-red-500" />
+                  <span className="text-sm font-medium text-text">Open AI Chat</span>
                   <KbdCombined abbr="Open AI Chat" joint className="rounded-full px-2">
                     {toggleAIChatShortcut}
                   </KbdCombined>

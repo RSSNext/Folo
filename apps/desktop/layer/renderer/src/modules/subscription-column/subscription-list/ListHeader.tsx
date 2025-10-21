@@ -41,7 +41,7 @@ export const ListHeader = ({ view }: { view: FeedViewType }) => {
             ns: "common",
           })}
       </div>
-      <div className="text-text-secondary ml-2 flex items-center gap-3 text-base lg:text-sm">
+      <div className="ml-2 flex items-center gap-3 text-base text-text-secondary lg:text-sm">
         <SortButton />
         {expansion ? (
           <i

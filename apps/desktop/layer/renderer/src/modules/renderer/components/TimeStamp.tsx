@@ -30,7 +30,7 @@ export const TimeStamp = (props: { time: string }) => {
 
   return (
     <span
-      className="text-accent cursor-pointer tabular-nums"
+      className="cursor-pointer tabular-nums text-accent"
       onClick={() => {
         AudioPlayer.mount({
           type: "audio",

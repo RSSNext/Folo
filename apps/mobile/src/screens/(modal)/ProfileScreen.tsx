@@ -116,10 +116,10 @@ function ProfileScreenImpl(props: { userId: string }) {
     [removeItemById],
   )
   return (
-    <View className="bg-system-grouped-background flex-1">
+    <View className="flex-1 bg-system-grouped-background">
       <Animated.View
         pointerEvents="box-none"
-        className="border-system-fill border-hairline absolute inset-x-0 top-0 z-[99]"
+        className="border-hairline absolute inset-x-0 top-0 z-[99] border-system-fill"
         style={{
           opacity: headerOpacity,
         }}
@@ -280,7 +280,7 @@ const SubscriptionList = ({ subscriptions }: { subscriptions: Subscription[] }) 
 }
 const renderListItems = ({ item }: { item: PickedListModel }) => (
   <ItemPressable
-    className="bg-secondary-system-grouped-background flex h-12 flex-row items-center"
+    className="flex h-12 flex-row items-center bg-secondary-system-grouped-background"
     style={{
       paddingHorizontal: GROUPED_LIST_ITEM_PADDING,
     }}
@@ -312,7 +312,7 @@ const renderListItems = ({ item }: { item: PickedListModel }) => (
     </View>
 
     <Text
-      className="text-text mr-4"
+      className="mr-4 text-text"
       numberOfLines={1}
       style={{
         marginLeft: GROUPED_ICON_TEXT_GAP,
@@ -325,7 +325,7 @@ const renderListItems = ({ item }: { item: PickedListModel }) => (
 const renderFeedItems = ({ item }: { item: PickedFeedModel }) => (
   <MaybeSwipeable id={item.id}>
     <ItemPressable
-      className="bg-secondary-system-grouped-background flex h-12 flex-row items-center"
+      className="flex h-12 flex-row items-center bg-secondary-system-grouped-background"
       style={{
         paddingHorizontal: GROUPED_LIST_ITEM_PADDING,
       }}
@@ -358,7 +358,7 @@ const renderFeedItems = ({ item }: { item: PickedFeedModel }) => (
         />
       </View>
       <Text
-        className="text-text mr-4"
+        className="mr-4 text-text"
         numberOfLines={1}
         style={{
           marginLeft: GROUPED_ICON_TEXT_GAP,
@@ -414,7 +414,7 @@ const SectionHeader = ({ title }: { title: string }) => (
     }}
   >
     <Text
-      className="text-label text-xl font-medium"
+      className="text-xl font-medium text-label"
       style={{
         marginLeft: GROUPED_LIST_ITEM_PADDING,
       }}

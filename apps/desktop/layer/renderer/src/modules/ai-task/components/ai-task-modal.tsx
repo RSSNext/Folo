@@ -192,12 +192,12 @@ export const AITaskModal = ({ task, prompt, showSettingsTip = false }: AITaskMod
           {/* Task Basic Information Section */}
           <div className="space-y-4">
             <div className="flex items-center gap-2">
-              <i className="i-mgc-file-upload-cute-re text-text-secondary size-4" />
-              <h3 className="text-text text-sm font-medium">{t("tasks.section.info")}</h3>
+              <i className="i-mgc-file-upload-cute-re size-4 text-text-secondary" />
+              <h3 className="text-sm font-medium text-text">{t("tasks.section.info")}</h3>
             </div>
 
             <div className="space-y-2">
-              <Label className="text-text pl-2 text-sm font-medium">{t("tasks.name")}</Label>
+              <Label className="pl-2 text-sm font-medium text-text">{t("tasks.name")}</Label>
               <FormField
                 control={form.control}
                 name="name"
@@ -216,8 +216,8 @@ export const AITaskModal = ({ task, prompt, showSettingsTip = false }: AITaskMod
           {/* Schedule Configuration Section */}
           <div className="space-y-4">
             <div className="flex items-center gap-2">
-              <i className="i-mgc-calendar-time-add-cute-re text-text-secondary size-4" />
-              <h3 className="text-text text-sm font-medium">{t("tasks.section.schedule")}</h3>
+              <i className="i-mgc-calendar-time-add-cute-re size-4 text-text-secondary" />
+              <h3 className="text-sm font-medium text-text">{t("tasks.section.schedule")}</h3>
             </div>
 
             <ScheduleConfig
@@ -230,12 +230,12 @@ export const AITaskModal = ({ task, prompt, showSettingsTip = false }: AITaskMod
           {/* AI Prompt Section */}
           <div className="space-y-4">
             <div className="flex items-center gap-2">
-              <i className="i-mgc-magic-2-cute-re text-text-secondary size-4" />
-              <h3 className="text-text text-sm font-medium">{t("tasks.section.instructions")}</h3>
+              <i className="i-mgc-magic-2-cute-re size-4 text-text-secondary" />
+              <h3 className="text-sm font-medium text-text">{t("tasks.section.instructions")}</h3>
             </div>
 
             <div className="space-y-2">
-              <Label className="text-text pl-2 text-sm font-medium">{t("tasks.prompt")}</Label>
+              <Label className="pl-2 text-sm font-medium text-text">{t("tasks.prompt")}</Label>
               <LexicalRichEditorTextArea
                 initialValue={initialPromptRef.current}
                 ref={promptEditorRef}
@@ -248,15 +248,15 @@ export const AITaskModal = ({ task, prompt, showSettingsTip = false }: AITaskMod
                 className="min-h-[120px] resize-none text-sm leading-relaxed"
               />
               <div className="flex items-center justify-between">
-                <div className="text-text-tertiary text-xs">{t("tasks.prompt_helper")}</div>
+                <div className="text-xs text-text-tertiary">{t("tasks.prompt_helper")}</div>
                 {promptTextLength > MAX_PROMPT_LENGTH * 0.8 && (
-                  <div className="text-text-secondary text-xs font-medium">
+                  <div className="text-xs font-medium text-text-secondary">
                     {promptTextLength}/{MAX_PROMPT_LENGTH}
                   </div>
                 )}
               </div>
               {(form.formState.errors.prompt as GlobalError | undefined)?.message && (
-                <div className="text-red text-xs">
+                <div className="text-xs text-red">
                   {(form.formState.errors.prompt as GlobalError).message}
                 </div>
               )}
@@ -266,8 +266,8 @@ export const AITaskModal = ({ task, prompt, showSettingsTip = false }: AITaskMod
           {/* Notification Channels Section */}
           <div className="space-y-4">
             <div className="flex items-center gap-2">
-              <i className="i-mgc-notification-cute-re text-text-secondary size-4" />
-              <h3 className="text-text text-sm font-medium">{t("tasks.section.notifications")}</h3>
+              <i className="i-mgc-notification-cute-re size-4 text-text-secondary" />
+              <h3 className="text-sm font-medium text-text">{t("tasks.section.notifications")}</h3>
             </div>
             <NotifyChannelsConfig
               value={notifyChannelsValue}
@@ -282,7 +282,7 @@ export const AITaskModal = ({ task, prompt, showSettingsTip = false }: AITaskMod
               <button
                 type="button"
                 onClick={() => settingModalPresent("ai")}
-                className="text-text-tertiary hover:text-text-secondary mr-auto flex items-center gap-1 text-xs underline-offset-2 hover:underline disabled:opacity-50"
+                className="mr-auto flex items-center gap-1 text-xs text-text-tertiary underline-offset-2 hover:text-text-secondary hover:underline disabled:opacity-50"
                 disabled={currentMutation.isPending}
               >
                 <i className="i-mgc-settings-7-cute-re size-3" />

@@ -31,7 +31,7 @@ export const ShortcutsMenuContent: FC<ShortcutsMenuContentProps> = ({
   return (
     <DropdownMenuContent align="start">
       {enabledShortcuts.length === 0 ? (
-        <div className="text-text-tertiary p-3 text-center text-xs">{emptyMessage}</div>
+        <div className="p-3 text-center text-xs text-text-tertiary">{emptyMessage}</div>
       ) : (
         enabledShortcuts.map((shortcut) => (
           <DropdownMenuItem key={shortcut.id} onClick={() => onSendShortcut?.(shortcut.prompt)}>

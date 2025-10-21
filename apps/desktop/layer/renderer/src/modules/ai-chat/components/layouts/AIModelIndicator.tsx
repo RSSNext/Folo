@@ -66,19 +66,19 @@ export const AIModelIndicator = memo(({ className, onModelChange }: AIModelIndic
       className={cn(
         "inline-flex shrink-0 items-center rounded-xl border font-medium backdrop-blur-sm transition-colors",
         hasMultipleModels
-          ? "hover:bg-material-medium cursor-button"
+          ? "cursor-button hover:bg-material-medium"
           : "hover:bg-material-medium/50",
         "duration-200",
         "gap-1.5 p-1 text-xs",
         hasMultipleModels && "px-2",
-        "bg-material-ultra-thin border-border/50",
+        "border-border/50 bg-material-ultra-thin",
         "text-text-secondary",
 
         className,
       )}
     >
       <i className={cn("size-3", iconClass)} />
-      <span className="@md:inline hidden max-w-20 truncate">
+      <span className="hidden max-w-20 truncate @md:inline">
         {AIModelNameMapping[modelName] || modelName}
       </span>
       {hasMultipleModels && <i className="i-mingcute-down-line size-3 opacity-60" />}

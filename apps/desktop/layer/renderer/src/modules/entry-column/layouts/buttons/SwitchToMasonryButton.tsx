@@ -32,7 +32,7 @@ export const SwitchToMasonryButton = () => {
           sideOffset={12}
           side="bottom"
           className={clsx(
-            "bg-background z-10 rounded-xl border drop-shadow",
+            "z-10 rounded-xl border bg-background drop-shadow",
             "data-[state=open]:animate-in data-[state=closed]:animate-out",
             "data-[state=closed]:fade-out-0 data-[state=open]:fade-in-0",
             "data-[state=closed]:slide-out-to-top-5 data-[state=open]:slide-in-from-top-5",

@@ -90,12 +90,12 @@ const EntrySubscriptionItemImpl = ({ entryId, view, className }: EntrySubscripti
 
         <div className="min-w-0 flex-1">
           <EllipsisHorizontalTextWithTooltip
-            className={clsx("text-text truncate text-sm leading-tight", entry.read && "opacity-90")}
+            className={clsx("truncate text-sm leading-tight text-text", entry.read && "opacity-90")}
           >
             {entry.title}
           </EllipsisHorizontalTextWithTooltip>
 
-          <div className="text-text-secondary flex items-center gap-1 text-xs opacity-80">
+          <div className="flex items-center gap-1 text-xs text-text-secondary opacity-80">
             <EllipsisHorizontalTextWithTooltip className="max-w-24 truncate">
               {feed.title}
             </EllipsisHorizontalTextWithTooltip>

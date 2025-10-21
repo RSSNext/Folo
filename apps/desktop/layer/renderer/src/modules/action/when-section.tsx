@@ -57,8 +57,8 @@ export const WhenSection = ({ index }: { index: number }) => {
           {condition.map((orConditions, orConditionIdx) => {
             return (
               <Fragment key={orConditionIdx}>
-                <div className="@[500px]:p-4 group/or relative flex flex-col gap-2 rounded-lg border p-2 pl-6">
-                  <div className="bg-border absolute left-3 top-9 h-[calc(100%-4.5rem)] w-px" />
+                <div className="group/or relative flex flex-col gap-2 rounded-lg border p-2 pl-6 @[500px]:p-4">
+                  <div className="absolute left-3 top-9 h-[calc(100%-4.5rem)] w-px bg-border" />
                   {orConditions.map((condition, conditionIdx) => {
                     const actionConditionIndex = {
                       ruleIndex: index,
@@ -77,8 +77,8 @@ export const WhenSection = ({ index }: { index: number }) => {
                     return (
                       <div className="flex flex-col gap-2" key={conditionIdx}>
                         <div className="group/condition-item relative flex items-center gap-2">
-                          <div className="bg-border absolute -left-3.5 top-1/2 h-px w-3 -translate-y-1/2" />
-                          <div className="bg-background absolute -left-3.5 top-1/2 size-1.5 -translate-y-1/2 rounded-full border" />
+                          <div className="absolute -left-3.5 top-1/2 h-px w-3 -translate-y-1/2 bg-border" />
+                          <div className="absolute -left-3.5 top-1/2 size-1.5 -translate-y-1/2 rounded-full border bg-background" />
                           <ResponsiveSelect
                             placeholder="Select Field"
                             disabled={disabled}
@@ -140,8 +140,8 @@ export const WhenSection = ({ index }: { index: number }) => {
                 </div>
                 {orConditionIdx !== condition.length - 1 && (
                   <div className="relative flex h-8 w-full items-center justify-center">
-                    <div className="bg-border absolute left-0 top-1/2 h-px w-full" />
-                    <span className="text-muted-foreground bg-background z-[1] px-2 text-sm">
+                    <div className="absolute left-0 top-1/2 h-px w-full bg-border" />
+                    <span className="text-muted-foreground z-[1] bg-background px-2 text-sm">
                       {t("actions.action_card.or")}
                     </span>
                   </div>

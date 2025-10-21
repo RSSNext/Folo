@@ -14,7 +14,7 @@ const ModalErrorFallback: FC<AppErrorFallbackProps> = (props) => {
   const modal = useCurrentModal()
   return (
     <m.div
-      className="bg-theme-background flex flex-col items-center justify-center rounded-md p-2"
+      className="flex flex-col items-center justify-center rounded-md bg-theme-background p-2"
       exit={{
         opacity: 0,
         scale: 0.9,

@@ -16,7 +16,7 @@ export const GridList: FC<{
     <div className="grid grid-cols-1 gap-3 px-2 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 lg:px-3">
       {entries.map((entry) => (
         <div
-          className="hover:bg-material-medium overflow-hidden rounded-md p-1.5 duration-200"
+          className="overflow-hidden rounded-md p-1.5 duration-200 hover:bg-material-medium"
           key={entry.id}
         >
           <div className="relative -mx-1.5 -mt-1.5">

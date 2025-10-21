@@ -15,20 +15,20 @@ const EntrySubscriptionSkeletonItem: FC<{ className?: string }> = ({ className }
     >
       <div className="flex min-w-0 flex-1 items-start gap-2">
         {/* Feed icon skeleton */}
-        <div className="bg-fill-secondary mt-0.5 size-3.5 shrink-0 rounded-full" />
+        <div className="mt-0.5 size-3.5 shrink-0 rounded-full bg-fill-secondary" />
 
         <div className="min-w-0 flex-1 space-y-1">
           {/* Title skeleton */}
           <div className="space-y-1">
-            <div className="bg-fill-secondary h-3.5 w-full rounded" />
-            <div className="bg-fill-secondary h-3.5 w-3/4 rounded" />
+            <div className="h-3.5 w-full rounded bg-fill-secondary" />
+            <div className="h-3.5 w-3/4 rounded bg-fill-secondary" />
           </div>
 
           {/* Meta info skeleton */}
           <div className="flex items-center gap-1">
-            <div className="bg-fill-tertiary h-2.5 w-16 rounded" />
-            <div className="bg-fill-tertiary size-1 rounded-full" />
-            <div className="bg-fill-tertiary h-2.5 w-12 rounded" />
+            <div className="h-2.5 w-16 rounded bg-fill-tertiary" />
+            <div className="size-1 rounded-full bg-fill-tertiary" />
+            <div className="h-2.5 w-12 rounded bg-fill-tertiary" />
           </div>
         </div>
       </div>

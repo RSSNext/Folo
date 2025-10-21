@@ -41,9 +41,9 @@ const AIChatRootInner: FC<AIChatRootProps> = ({ children, chatId: externalChatId
 
   if (!currentChatId) {
     return (
-      <div className="bg-background flex size-full items-center justify-center">
+      <div className="flex size-full items-center justify-center bg-background">
         <div className="flex items-center gap-2">
-          <i className="i-mgc-loading-3-cute-re text-text size-6 animate-spin" />
+          <i className="i-mgc-loading-3-cute-re size-6 animate-spin text-text" />
           <span className="text-text-secondary">Initializing chat...</span>
         </div>
       </div>

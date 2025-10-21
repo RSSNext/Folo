@@ -175,7 +175,7 @@ function RegisterForm() {
                   loginHandler(key, "app")
                 }
               }}
-              className="center hover:bg-material-medium relative w-full gap-2 rounded-xl border p-2.5 pl-5 font-semibold duration-200"
+              className="center relative w-full gap-2 rounded-xl border p-2.5 pl-5 font-semibold duration-200 hover:bg-material-medium"
             >
               <img
                 className={cn(

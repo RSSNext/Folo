@@ -29,16 +29,16 @@ export const AIHeaderTitle = ({
         aria-label={ariaLabel}
         className={cn(
           "group/button flex min-w-0 flex-1 cursor-pointer items-center gap-2 rounded-md bg-transparent p-0 text-left",
-          "focus-visible:ring-border focus-visible:ring-offset-background outline-none transition-opacity hover:opacity-80 focus-visible:ring-2 focus-visible:ring-offset-2",
+          "outline-none transition-opacity hover:opacity-80 focus-visible:ring-2 focus-visible:ring-border focus-visible:ring-offset-2 focus-visible:ring-offset-background",
           className,
         )}
       >
-        <h1 className="text-text truncate font-bold">
+        <h1 className="truncate font-bold text-text">
           <span className="animate-mask-left-to-right [--animation-duration:1s]">
             {displayTitle}
           </span>
         </h1>
-        <i className="i-mingcute-down-line text-text-secondary group-data-[state=open]:text-text group-hover/button:text-text size-4 transition-all duration-200 group-data-[state=open]:rotate-180" />
+        <i className="i-mingcute-down-line size-4 text-text-secondary transition-all duration-200 group-hover/button:text-text group-data-[state=open]:rotate-180 group-data-[state=open]:text-text" />
       </button>
     </div>
   )

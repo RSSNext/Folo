@@ -128,9 +128,9 @@ export function AllItem({ entryId, translation, currentFeedTitle }: UniversalIte
   return (
     <div
       className={cn(
-        "cursor-menu group relative flex items-center py-2",
+        "group relative flex cursor-menu items-center py-2",
         !isRead &&
-          "before:bg-accent before:absolute before:-left-4 before:top-[14px] before:block before:size-2 before:rounded-full",
+          "before:absolute before:-left-4 before:top-[14px] before:block before:size-2 before:rounded-full before:bg-accent",
       )}
     >
       {currentFeedTitle !== thisFeedTitle && (
@@ -183,7 +183,7 @@ export function AllItem({ entryId, translation, currentFeedTitle }: UniversalIte
         </div>
       </div>
 
-      <div className="text-text-secondary ml-4 shrink-0 text-xs">
+      <div className="ml-4 shrink-0 text-xs text-text-secondary">
         {!!displayTime && <RelativeTime date={displayTime} postfix="" />}
       </div>
     </div>
@@ -194,15 +194,15 @@ AllItem.wrapperClassName = "pl-7 pr-5"
 
 export function AllItemStateLess({ entry, feed }: EntryItemStatelessProps) {
   return (
-    <div className="cursor-menu group relative flex py-4">
+    <div className="group relative flex cursor-menu py-4">
       <FeedIcon target={feed} fallback className="mr-2 size-5" />
       <div className="-mt-0.5 min-w-0 flex-1 text-sm leading-tight">
-        <div className="text-text-secondary flex gap-1 text-[10px] font-bold">
+        <div className="flex gap-1 text-[10px] font-bold text-text-secondary">
           <FeedTitle feed={feed} />
           <span>·</span>
           <span>{!!entry.publishedAt && <RelativeTime date={entry.publishedAt} />}</span>
         </div>
-        <div className="text-text relative my-0.5 truncate break-words font-medium">
+        <div className="relative my-0.5 truncate break-words font-medium text-text">
           {entry.title}
         </div>
       </div>
@@ -215,7 +215,7 @@ export const AllItemSkeleton = (
     <div className="group relative flex py-4">
       <Skeleton className="mr-2 size-5 shrink-0 overflow-hidden" />
       <div className="-mt-0.5 line-clamp-4 flex-1 text-sm leading-tight">
-        <div className="text-material-opaque flex gap-1 text-[10px] font-bold">
+        <div className="flex gap-1 text-[10px] font-bold text-material-opaque">
           <Skeleton className="h-3 w-32 truncate" />
           <span>·</span>
           <Skeleton className="h-3 w-12 shrink-0" />
@@ -276,7 +276,7 @@ function VideoIcon({ src }: { src: string }) {
     <Tooltip>
       <TooltipRoot>
         <TooltipTrigger asChild>
-          <i className="i-mgc-video-cute-fi text-text/90 mr-1 shrink-0 text-base" />
+          <i className="i-mgc-video-cute-fi mr-1 shrink-0 text-base text-text/90" />
         </TooltipTrigger>
         <TooltipPortal>
           <TooltipContent className="flex-col gap-1" side={"bottom"}>

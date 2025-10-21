@@ -9,8 +9,8 @@ export const StepFinished = () => {
   return (
     <View className="flex-1 items-center justify-center">
       <Logo width={80} height={80} />
-      <Text className="text-text my-4 text-3xl font-bold">{t("onboarding.finished_title")}</Text>
-      <Text className="text-label mb-8 px-6 text-center text-lg">
+      <Text className="my-4 text-3xl font-bold text-text">{t("onboarding.finished_title")}</Text>
+      <Text className="mb-8 px-6 text-center text-lg text-label">
         {t("onboarding.finished_description")}
       </Text>
     </View>

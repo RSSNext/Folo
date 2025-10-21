@@ -130,7 +130,7 @@ function FeedSelectionItem({ feedAtom }: { feedAtom: PrimitiveAtom<FeedSelection
         <TooltipTrigger asChild>
           <i
             onClick={onRemove}
-            className="i-mingcute-minus-circle-fill text-text-secondary hover:text-text absolute right-0 top-0 z-10 size-5 -translate-y-1/2 translate-x-1/2 cursor-pointer transition-colors"
+            className="i-mingcute-minus-circle-fill absolute right-0 top-0 z-10 size-5 -translate-y-1/2 translate-x-1/2 cursor-pointer text-text-secondary transition-colors hover:text-text"
           />
         </TooltipTrigger>
         <TooltipContent>Remove</TooltipContent>
@@ -152,14 +152,14 @@ function FeedSelectionItem({ feedAtom }: { feedAtom: PrimitiveAtom<FeedSelection
               fallback
             />
             <div className="flex flex-col gap-1">
-              <p className="text-text text-sm font-semibold">{feed.title}</p>
-              <p className="text-text-secondary text-xs">{feed.url}</p>
+              <p className="text-sm font-semibold text-text">{feed.title}</p>
+              <p className="text-xs text-text-secondary">{feed.url}</p>
             </div>
           </div>
         </CardHeader>
 
         <CardContent>
-          <CardDescription className="text-text-secondary text-sm">
+          <CardDescription className="text-sm text-text-secondary">
             {feed.description}
           </CardDescription>
 
@@ -179,7 +179,7 @@ function FeedSelectionFirstScreen() {
 
   return (
     <m.div
-      className="bg-material-thin relative mr-4 h-full overflow-hidden rounded-3xl border border-zinc-200/50 p-8 backdrop-blur-xl dark:border-zinc-800/50"
+      className="relative mr-4 h-full overflow-hidden rounded-3xl border border-zinc-200/50 bg-material-thin p-8 backdrop-blur-xl dark:border-zinc-800/50"
       aria-hidden="true"
       initial={{ opacity: 0, y: 20 }}
       animate={{ opacity: 1, y: 0 }}
@@ -222,7 +222,7 @@ function FeedSelectionFirstScreen() {
           transition={{ delay: 0.5, duration: 0.6, ease: "easeOut" }}
           className="mb-8 max-w-sm"
         >
-          <p className="text-text-secondary text-lg leading-relaxed">
+          <p className="text-lg leading-relaxed text-text-secondary">
             {t.app("new_user_guide.intro.description")}
           </p>
         </m.div>

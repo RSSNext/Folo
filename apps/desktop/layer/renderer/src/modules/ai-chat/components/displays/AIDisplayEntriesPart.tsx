@@ -28,7 +28,7 @@ const SingleEntryCard = ({ entry }: { entry: SingleEntry }) => {
     <button
       type="button"
       onClick={handleClick}
-      className="bg-material-thick/80 border-border hover:bg-theme-item-hover group relative flex w-full flex-col items-start justify-start overflow-hidden rounded-lg border p-4 backdrop-blur-sm transition-colors"
+      className="group relative flex w-full flex-col items-start justify-start overflow-hidden rounded-lg border border-border bg-material-thick/80 p-4 backdrop-blur-sm transition-colors hover:bg-theme-item-hover"
     >
       {/* Header */}
       <div className="flex w-full items-start justify-between">
@@ -39,11 +39,11 @@ const SingleEntryCard = ({ entry }: { entry: SingleEntry }) => {
             target={undefined}
             siteUrl={entry.url ?? undefined}
           />
-          <h3 className="text-text line-clamp-2 flex-1 text-left font-semibold leading-tight">
+          <h3 className="line-clamp-2 flex-1 text-left font-semibold leading-tight text-text">
             {entry.title || "Untitled Entry"}
           </h3>
         </div>
-        <i className="i-mgc-external-link-cute-re text-text-tertiary ml-2 shrink-0 opacity-60 transition-opacity group-hover:opacity-100" />
+        <i className="i-mgc-external-link-cute-re ml-2 shrink-0 text-text-tertiary opacity-60 transition-opacity group-hover:opacity-100" />
       </div>
     </button>
   )

@@ -48,13 +48,13 @@ export function FollowSummary({
         />
         <div className="min-w-0 leading-tight">
           <FeedTitle feed={feed} className="mb-0.5 text-[15px] font-semibold" />
-          <EllipsisHorizontalTextWithTooltip className="text-text-secondary truncate text-xs font-normal duration-200">
+          <EllipsisHorizontalTextWithTooltip className="truncate text-xs font-normal text-text-secondary duration-200">
             {feedText}
           </EllipsisHorizontalTextWithTooltip>
         </div>
       </div>
       {!simple && "description" in feed && feed.description && (
-        <EllipsisHorizontalTextWithTooltip className="text-text/80 text-body truncate pl-10 font-normal">
+        <EllipsisHorizontalTextWithTooltip className="truncate pl-10 text-body font-normal text-text/80">
           {feed.description}
         </EllipsisHorizontalTextWithTooltip>
       )}

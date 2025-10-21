@@ -126,7 +126,7 @@ const SubscriptionFeedsSection = () => {
           {/* Header - Sticky */}
           <div
             className={clsx(
-              "bg-background text-text-secondary sticky top-0 z-20 grid h-8 gap-4 border-b px-1 pb-2 text-sm font-medium",
+              "sticky top-0 z-20 grid h-8 gap-4 border-b bg-background px-1 pb-2 text-sm font-medium text-text-secondary",
               GRID_COLS_CLASSNAME,
             )}
           >
@@ -135,7 +135,7 @@ const SubscriptionFeedsSection = () => {
             </div>
             <button
               type="button"
-              className="hover:text-text text-left transition-colors"
+              className="text-left transition-colors hover:text-text"
               onClick={() => handleSort("name")}
             >
               {t("feeds.tableHeaders.name")}
@@ -145,7 +145,7 @@ const SubscriptionFeedsSection = () => {
             </button>
             <button
               type="button"
-              className="hover:text-text ml-4 text-left transition-colors"
+              className="ml-4 text-left transition-colors hover:text-text"
               onClick={() => handleSort("view")}
             >
               {t("feeds.tableHeaders.view")}
@@ -154,7 +154,7 @@ const SubscriptionFeedsSection = () => {
               )}
             </button>
             <button
-              className="hover:text-text text-center transition-colors"
+              className="text-center transition-colors hover:text-text"
               onClick={() => handleSort("date")}
               type="button"
             >
@@ -164,7 +164,7 @@ const SubscriptionFeedsSection = () => {
               )}
             </button>
             <button
-              className="hover:text-text text-nowrap text-center transition-colors"
+              className="text-nowrap text-center transition-colors hover:text-text"
               onClick={() => handleSort("subscriptionCount")}
               type="button"
             >
@@ -174,7 +174,7 @@ const SubscriptionFeedsSection = () => {
               )}
             </button>
             <button
-              className="hover:text-text text-nowrap text-center transition-colors"
+              className="text-nowrap text-center transition-colors hover:text-text"
               onClick={() => handleSort("updatesPerWeek")}
               type="button"
             >
@@ -207,10 +207,10 @@ const SubscriptionFeedsSection = () => {
                   transition={Spring.presets.smooth}
                   className="sticky bottom-16 mt-4 flex justify-center"
                 >
-                  <div className="text-text-secondary bg-material-opaque rounded-md px-4 py-2 text-sm">
+                  <div className="rounded-md bg-material-opaque px-4 py-2 text-sm text-text-secondary">
                     {t("feeds.tableSelected.item", { count: selectedFeeds.size })}
                     <button
-                      className="text-accent cursor-button ml-3 text-xs"
+                      className="ml-3 cursor-button text-xs text-accent"
                       type="button"
                       onClick={() => setSelectedFeeds(new Set())}
                     >
@@ -225,10 +225,10 @@ const SubscriptionFeedsSection = () => {
                   transition={Spring.presets.smooth}
                   className="sticky bottom-4 flex justify-center"
                 >
-                  <div className="bg-material-opaque flex items-center gap-2 rounded px-4 py-2">
+                  <div className="flex items-center gap-2 rounded bg-material-opaque px-4 py-2">
                     <DropdownMenu>
                       <DropdownMenuTrigger asChild>
-                        <MotionButtonBase className="text-accent text-xs" type="button">
+                        <MotionButtonBase className="text-xs text-accent" type="button">
                           {t("feeds.tableSelected.moveToView.action")}
                         </MotionButtonBase>
                       </DropdownMenuTrigger>
@@ -238,7 +238,7 @@ const SubscriptionFeedsSection = () => {
                     </DropdownMenu>
 
                     <MotionButtonBase
-                      className="text-red text-xs"
+                      className="text-xs text-red"
                       type="button"
                       onClick={handleBatchUnsubscribe}
                     >
@@ -441,7 +441,7 @@ const FeedListItem = memo(
         role="button"
         tabIndex={-1}
         className={clsx(
-          "hover:bg-material-medium grid h-10 w-full items-center gap-4 rounded px-1",
+          "grid h-10 w-full items-center gap-4 rounded px-1 hover:bg-material-medium",
           "content-visibility-auto contain-intrinsic-size-[auto_2.5rem]",
           GRID_COLS_CLASSNAME,
         )}
@@ -456,7 +456,7 @@ const FeedListItem = memo(
             {feed?.errorAt ? (
               <Tooltip>
                 <TooltipTrigger>
-                  <EllipsisHorizontalTextWithTooltip className="text-red font-medium leading-4">
+                  <EllipsisHorizontalTextWithTooltip className="font-medium leading-4 text-red">
                     {subscription.title || feed?.title}
                   </EllipsisHorizontalTextWithTooltip>
                 </TooltipTrigger>
@@ -467,19 +467,19 @@ const FeedListItem = memo(
                 </TooltipPortal>
               </Tooltip>
             ) : (
-              <EllipsisHorizontalTextWithTooltip className="text-text font-medium leading-4">
+              <EllipsisHorizontalTextWithTooltip className="font-medium leading-4 text-text">
                 {subscription.title || feed?.title}
               </EllipsisHorizontalTextWithTooltip>
             )}
             {isCustomizeName && (
-              <EllipsisHorizontalTextWithTooltip className="text-text-secondary text-left text-sm">
+              <EllipsisHorizontalTextWithTooltip className="text-left text-sm text-text-secondary">
                 {feed?.title}
               </EllipsisHorizontalTextWithTooltip>
             )}
           </div>
         </div>
 
-        <div className="text-text flex items-center gap-1 text-sm opacity-80">
+        <div className="flex items-center gap-1 text-sm text-text opacity-80">
           {getView(subscription.view)!.icon}
           <span>{tCommon(getView(subscription.view)!.name)}</span>
         </div>
@@ -492,7 +492,7 @@ const FeedListItem = memo(
           {feed?.subscriptionCount ? (
             <Tooltip>
               <TooltipTrigger asChild>
-                <div className="text-text-secondary flex items-center justify-center gap-1">
+                <div className="flex items-center justify-center gap-1 text-text-secondary">
                   <i className="i-mgc-user-3-cute-re" />
                   <span className="tabular-nums">{formatNumber(feed.subscriptionCount)}</span>
                 </div>
@@ -510,7 +510,7 @@ const FeedListItem = memo(
             <div className="flex justify-center gap-1">
               <Tooltip>
                 <TooltipTrigger asChild>
-                  <div className="text-text-secondary flex items-center justify-center gap-1">
+                  <div className="flex items-center justify-center gap-1 text-text-secondary">
                     <i className="i-mgc-safety-certificate-cute-re" />
                     <span className="tabular-nums">
                       {Math.round(feed.updatesPerWeek)}
@@ -562,7 +562,7 @@ const FeedClaimedSection = () => {
         {claimedList.isLoading ? (
           <LoadingCircle size="large" className="center h-36" />
         ) : !claimedList.data?.length ? (
-          <div className="text-text-secondary mt-36 w-full text-center text-sm">
+          <div className="mt-36 w-full text-center text-sm text-text-secondary">
             <p>{t("feeds.noFeeds")}</p>
           </div>
         ) : null}

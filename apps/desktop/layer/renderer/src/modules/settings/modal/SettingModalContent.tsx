@@ -148,7 +148,7 @@ const Content: FC<{
               Link: (
                 <a
                   href={`${repository.url}`}
-                  className="text-accent font-semibold"
+                  className="font-semibold text-accent"
                   target="_blank"
                 />
               ),

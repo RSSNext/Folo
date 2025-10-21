@@ -77,7 +77,7 @@ export const PersonalizePromptSection = () => {
         <SettingDescription>
           {t("personalize.prompt.help")}
           {isOverLimit && (
-            <span className="text-red mt-1 block">
+            <span className="mt-1 block text-red">
               Prompt exceeds {MAX_CHARACTERS} character limit
             </span>
           )}
@@ -94,8 +94,8 @@ export const PersonalizePromptSection = () => {
               transition={Spring.presets.snappy}
               className="absolute inset-x-0 bottom-3 z-10 flex justify-center px-3"
             >
-              <div className="backdrop-blur-background bg-material-medium border-border shadow-perfect flex w-fit max-w-[92%] items-center justify-between gap-3 rounded-full border py-2 pl-5 pr-2">
-                <span className="text-text-secondary text-xs sm:text-sm">Unsaved changes</span>
+              <div className="shadow-perfect flex w-fit max-w-[92%] items-center justify-between gap-3 rounded-full border border-border bg-material-medium py-2 pl-5 pr-2 backdrop-blur-background">
+                <span className="text-xs text-text-secondary sm:text-sm">Unsaved changes</span>
                 <Button
                   buttonClassName="bg-accent rounded-full"
                   size="sm"

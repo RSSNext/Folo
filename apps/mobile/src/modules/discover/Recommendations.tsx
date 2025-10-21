@@ -264,7 +264,7 @@ export const RecommendationTab: TabComponent<{
     )
   }
   return (
-    <View className="bg-system-grouped-background flex-1" {...rest}>
+    <View className="flex-1 bg-system-grouped-background" {...rest}>
       <FlashList
         onScroll={(e) => {
           scrollOffsetRef.current = e.nativeEvent.contentOffset.y

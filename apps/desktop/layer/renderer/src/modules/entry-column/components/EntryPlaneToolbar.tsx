@@ -31,8 +31,8 @@ export const EntryPlaneToolbar: FC<EntryPlaneToolbarProps> = ({ className }) => 
     <div
       onClick={stopPropagation}
       className={cn(
-        "text-text-secondary flex h-11 items-center justify-between px-2 text-xl",
-        "backdrop-blur-background shrink-0",
+        "flex h-11 items-center justify-between px-2 text-xl text-text-secondary",
+        "shrink-0 backdrop-blur-background",
         className,
       )}
     >

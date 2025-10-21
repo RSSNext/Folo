@@ -170,7 +170,7 @@ export const ChatInput = memo(({ onSend, variant, ref: forwardedRef }: ChatInput
 
       {/* Context Bar - only shown in non-onboarding scene, positioned below the input area */}
       {scene !== "onboarding" && (
-        <div className="border-border/20 relative z-10 border-t bg-transparent">
+        <div className="relative z-10 border-t border-border/20 bg-transparent">
           <div className="flex items-center justify-between px-4 py-2.5">
             <div className="min-w-0 flex-1 shrink">
               <AIChatContextBar className="border-0 bg-transparent p-0" />

@@ -39,7 +39,7 @@ const EntryLayoutContentLegacy = () => {
       <EntryGridContainer wideMode={wideMode}>
         {wideMode && (
           <FixedModalCloseButton
-            className="no-drag-region macos:translate-y-margin-macos-traffic-light-y absolute left-4 top-4 z-10"
+            className="no-drag-region absolute left-4 top-4 z-10 macos:translate-y-margin-macos-traffic-light-y"
             onClick={() => navigate({ entryId: null })}
           />
         )}
@@ -87,7 +87,7 @@ const EntryGridContainer: FC<
         animate={{ opacity: 1, y: 0 }}
         exit={{ opacity: 0, y: 100, transition: { duration: 0.2, ease: easeOut } }}
         transition={{ duration: 0.2, type: "spring" }}
-        className={cn("flex min-w-0 flex-1 flex-col", "bg-theme-background absolute inset-0 z-10")}
+        className={cn("flex min-w-0 flex-1 flex-col", "absolute inset-0 z-10 bg-theme-background")}
       >
         {children}
       </m.div>

@@ -88,7 +88,7 @@ export const ThenSection = ({ index }: { index: number }) => {
                           onChange={(e) => change("to", e.target.value)}
                         />
                       </div>
-                      <div className="text-text-secondary flex gap-1">
+                      <div className="flex gap-1 text-text-secondary">
                         <ActionButton
                           disabled={disabled}
                           onClick={() => {
@@ -149,7 +149,7 @@ export const ThenSection = ({ index }: { index: number }) => {
                           })
                         }}
                       />
-                      <div className="text-text-secondary flex gap-1">
+                      <div className="flex gap-1 text-text-secondary">
                         <ActionButton
                           disabled={disabled}
                           onClick={() => {

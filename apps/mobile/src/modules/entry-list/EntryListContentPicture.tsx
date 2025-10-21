@@ -105,21 +105,21 @@ function EntryPictureItemSkeleton() {
   return (
     <View className="mx-1 mb-2">
       {/* Image placeholder */}
-      <View className="bg-system-fill animate-pulse rounded-md" style={{ height: randomHeight }} />
+      <View className="animate-pulse rounded-md bg-system-fill" style={{ height: randomHeight }} />
 
       {/* Footer content */}
       <View className="gap-2 px-1 py-2">
         {/* Title lines */}
         <View className="gap-1">
-          <View className="bg-system-fill h-3 animate-pulse rounded-md" style={{ width: "90%" }} />
-          <View className="bg-system-fill h-3 animate-pulse rounded-md" style={{ width: "70%" }} />
+          <View className="h-3 animate-pulse rounded-md bg-system-fill" style={{ width: "90%" }} />
+          <View className="h-3 animate-pulse rounded-md bg-system-fill" style={{ width: "70%" }} />
         </View>
 
         {/* Feed info */}
         <View className="flex-row items-center gap-1.5">
-          <View className="bg-system-fill size-3.5 animate-pulse rounded-full" />
-          <View className="bg-system-fill h-3 animate-pulse rounded-md" style={{ width: "40%" }} />
-          <View className="bg-system-fill h-3 animate-pulse rounded-md" style={{ width: "30%" }} />
+          <View className="size-3.5 animate-pulse rounded-full bg-system-fill" />
+          <View className="h-3 animate-pulse rounded-md bg-system-fill" style={{ width: "40%" }} />
+          <View className="h-3 animate-pulse rounded-md bg-system-fill" style={{ width: "30%" }} />
         </View>
       </View>
     </View>

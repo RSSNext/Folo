@@ -29,7 +29,7 @@ const BlockContainer: FC<{
     <div
       className={clsx(
         "group relative flex h-7 min-w-0 items-center gap-2 overflow-hidden rounded-lg px-2.5",
-        "bg-fill-tertiary border-border border",
+        "border border-border bg-fill-tertiary",
         disabled && "cursor-pointer border-dashed opacity-50",
       )}
       onClick={() => {
@@ -49,13 +49,13 @@ const BlockContainer: FC<{
         <div className="flex min-w-0 flex-1 items-center gap-1.5">
           <div className="flex items-center gap-1">
             {icon && <i className={cn("size-3.5 flex-shrink-0", icon)} />}
-            {label && <span className="text-text-tertiary text-xs font-medium">{label}</span>}
+            {label && <span className="text-xs font-medium text-text-tertiary">{label}</span>}
           </div>
 
           {isStringContent ? (
-            <span className="text-text min-w-0 flex-1 truncate text-xs">{content}</span>
+            <span className="min-w-0 flex-1 truncate text-xs text-text">{content}</span>
           ) : (
-            <div className="text-text min-w-0 flex-1 truncate text-xs">{content}</div>
+            <div className="min-w-0 flex-1 truncate text-xs text-text">{content}</div>
           )}
         </div>
       </div>
@@ -64,7 +64,7 @@ const BlockContainer: FC<{
         <button
           type="button"
           onClick={onRemove}
-          className="text-text/90 cursor-button hover:text-text absolute inset-y-0 right-2 flex-shrink-0 opacity-0 transition-all ease-in group-hover:opacity-100"
+          className="absolute inset-y-0 right-2 flex-shrink-0 cursor-button text-text/90 opacity-0 transition-all ease-in hover:text-text group-hover:opacity-100"
         >
           <i className="i-mgc-close-cute-re size-3" />
         </button>

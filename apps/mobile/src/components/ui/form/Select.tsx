@@ -60,7 +60,7 @@ export function Select<T>({
           style={wrapperStyle}
         >
           <Text
-            className={cn("text-accent flex-1 text-right font-semibold", disabled && "text-gray")}
+            className={cn("flex-1 text-right font-semibold text-accent", disabled && "text-gray")}
             ellipsizeMode="middle"
             numberOfLines={1}
           >

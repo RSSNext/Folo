@@ -14,7 +14,7 @@ export const AIReasoningPart: React.FC<AIReasoningPartProps> = React.memo(({ tex
     <div className={cn("min-w-0 max-w-full text-left", className)}>
       <div className="w-[calc(var(--ai-chat-message-container-width,65ch))] max-w-full" />
       <div className="text-xs">
-        <pre className="text-text-secondary bg-material-medium overflow-x-auto whitespace-pre-wrap rounded p-3 text-[11px] leading-relaxed">
+        <pre className="overflow-x-auto whitespace-pre-wrap rounded bg-material-medium p-3 text-[11px] leading-relaxed text-text-secondary">
           {text}
         </pre>
       </div>

@@ -367,7 +367,7 @@ export const CustomIntegrationModalContent = ({
       <div className="relative -mx-4 flex h-0 flex-1">
         <ScrollArea.ScrollArea flex rootClassName="flex-1" viewportClassName="px-4">
           <div className="shrink-0 space-y-2 pb-4">
-            <p className="text-text-secondary text-sm">
+            <p className="text-sm text-text-secondary">
               {t("integration.custom_integrations.modal.description")}
             </p>
             <PlaceholderHelp />
@@ -614,7 +614,7 @@ export const CustomIntegrationModalContent = ({
       </div>
 
       {/* Static Footer */}
-      <div className="border-fill-secondary mt-4 flex shrink-0 justify-end gap-2 border-t pt-4">
+      <div className="mt-4 flex shrink-0 justify-end gap-2 border-t border-fill-secondary pt-4">
         <Button variant="outline" type="button" onClick={dismiss}>
           {t("words.cancel", { ns: "common" })}
         </Button>

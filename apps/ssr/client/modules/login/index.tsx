@@ -113,7 +113,7 @@ export function Login() {
             <p className="mt-4 text-center">
               {t("redirect.successMessage", { app_name: APP_NAME })}
             </p>
-            <p className="text-text-secondary mt-2 text-center text-sm">
+            <p className="mt-2 text-center text-sm text-text-secondary">
               {t("redirect.instruction", { app_name: APP_NAME })}
             </p>
             <div className="center mt-8 flex flex-col gap-4 sm:flex-row">
@@ -126,7 +126,7 @@ export function Login() {
               </Button>
             </div>
             {openFailed && callbackUrlWithScheme && (
-              <div className="text-text mt-8 w-[31rem] space-y-2 text-center text-sm">
+              <div className="mt-8 w-[31rem] space-y-2 text-center text-sm text-text">
                 <p className="text-base">
                   <Trans
                     t={t}
@@ -137,7 +137,7 @@ export function Login() {
                   />
                 </p>
                 <p>{t("login.enter_token")}</p>
-                <p className="bg-fill-tertiary flex items-center justify-center gap-4 rounded-lg p-3">
+                <p className="flex items-center justify-center gap-4 rounded-lg bg-fill-tertiary p-3">
                   <span className="blur-sm hover:blur-none">{callbackUrlWithScheme}</span>
                   <i
                     className="i-mgc-copy-2-cute-re size-4 cursor-pointer"
@@ -168,7 +168,7 @@ export function Login() {
                         loginHandler(key, "app")
                       }
                     }}
-                    className="center hover:bg-material-medium relative w-full gap-2 rounded-xl border p-2.5 pl-5 font-semibold duration-200"
+                    className="center relative w-full gap-2 rounded-xl border p-2.5 pl-5 font-semibold duration-200 hover:bg-material-medium"
                   >
                     <img
                       className={cn(
@@ -340,7 +340,7 @@ function LoginWithPassword() {
                 {t("login.password")}
                 <Link
                   to="/forget-password"
-                  className="text-accent block py-1 text-xs hover:underline"
+                  className="block py-1 text-xs text-accent hover:underline"
                 >
                   {t("login.forget_password.note")}
                 </Link>

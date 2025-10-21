@@ -71,7 +71,7 @@ export function DiscoverImport() {
           <CollapseCss
             collapseId="inoreader"
             title={
-              <div className="border-border flex h-14 items-center justify-normal gap-2 font-medium">
+              <div className="flex h-14 items-center justify-normal gap-2 border-border font-medium">
                 <Media
                   className="size-5"
                   src="https://inoreader.com/favicon.ico"
@@ -79,7 +79,7 @@ export function DiscoverImport() {
                   type="photo"
                 />
                 {t("discover.import.opml_step1_inoreader")}
-                <div className="bg-border absolute inset-x-0 bottom-0 h-px" />
+                <div className="absolute inset-x-0 bottom-0 h-px bg-border" />
               </div>
             }
             contentClassName="flex flex-col gap-1"
@@ -109,7 +109,7 @@ export function DiscoverImport() {
           <CollapseCss
             collapseId="feedly"
             title={
-              <div className="border-border flex h-14 items-center justify-normal gap-2 font-medium">
+              <div className="flex h-14 items-center justify-normal gap-2 border-border font-medium">
                 <Media
                   className="size-5"
                   src="https://feedly.com/favicon.ico"
@@ -117,7 +117,7 @@ export function DiscoverImport() {
                   type="photo"
                 />
                 {t("discover.import.opml_step1_feedly")}
-                <div className="bg-border absolute inset-x-0 bottom-0 h-px" />
+                <div className="absolute inset-x-0 bottom-0 h-px bg-border" />
               </div>
             }
             contentClassName="flex flex-col gap-1"
@@ -146,10 +146,10 @@ export function DiscoverImport() {
           <CollapseCss
             collapseId="other"
             title={
-              <div className="border-border flex h-14 items-center justify-normal gap-2 font-medium">
+              <div className="flex h-14 items-center justify-normal gap-2 border-border font-medium">
                 <i className="i-mgc-rss-cute-fi ml-[-0.14rem] size-6 text-orange-500" />
                 {t("discover.import.opml_step1_other")}
-                <div className="bg-border absolute inset-x-0 bottom-0 h-px" />
+                <div className="absolute inset-x-0 bottom-0 h-px bg-border" />
               </div>
             }
             contentClassName="flex flex-col gap-1"
@@ -182,8 +182,8 @@ export function DiscoverImport() {
                       </Fragment>
                     ) : (
                       <Fragment>
-                        <i className="i-mgc-file-upload-cute-re text-text-tertiary size-10" />
-                        <span className="text-title2 text-text-tertiary ml-2">
+                        <i className="i-mgc-file-upload-cute-re size-10 text-text-tertiary" />
+                        <span className="ml-2 text-title2 text-text-tertiary">
                           {t("discover.import.click_to_upload")}
                         </span>
                       </Fragment>

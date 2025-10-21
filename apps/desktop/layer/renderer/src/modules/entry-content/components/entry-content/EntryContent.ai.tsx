@@ -128,7 +128,7 @@ const EntryContentImpl: Component<EntryContentProps> = ({
 
   const scrollerRefObject = React.useMemo(() => ({ current: scrollerRef }), [scrollerRef])
   return (
-    <div className={cn(className, "@container flex flex-col")}>
+    <div className={cn(className, "flex flex-col @container")}>
       <EntryTitleMetaHandler entryId={entryId} />
       <EntryCommandShortcutRegister entryId={entryId} view={view} />
 
@@ -137,7 +137,7 @@ const EntryContentImpl: Component<EntryContentProps> = ({
       <Focusable
         ref={focusableRef}
         scope={HotkeyScope.EntryRender}
-        className="@container relative flex min-h-0 w-full flex-1 flex-col overflow-hidden print:size-auto print:overflow-visible"
+        className="relative flex min-h-0 w-full flex-1 flex-col overflow-hidden @container print:size-auto print:overflow-visible"
       >
         <RootPortal to={panelPortalElement}>
           <EntryScrollingAndNavigationHandler
@@ -158,7 +158,7 @@ const EntryContentImpl: Component<EntryContentProps> = ({
                     EventBus.dispatch(COMMAND_ID.timeline.switchToPrevious)
                   }}
                 >
-                  <i className="i-mgc-left-small-sharp text-text-secondary size-16" />
+                  <i className="i-mgc-left-small-sharp size-16 text-text-secondary" />
                 </MotionButtonBase>
               </div>
 
@@ -169,7 +169,7 @@ const EntryContentImpl: Component<EntryContentProps> = ({
                     EventBus.dispatch(COMMAND_ID.timeline.switchToNext)
                   }}
                 >
-                  <i className="i-mgc-right-small-sharp text-text-secondary size-16" />
+                  <i className="i-mgc-right-small-sharp size-16 text-text-secondary" />
                 </MotionButtonBase>
               </div>
             </>
@@ -196,7 +196,7 @@ const EntryContentImpl: Component<EntryContentProps> = ({
                     />
                   ) : error ? (
                     <div className="center mt-36 flex flex-col items-center gap-3">
-                      <i className="i-mgc-warning-cute-re text-red text-4xl" />
+                      <i className="i-mgc-warning-cute-re text-4xl text-red" />
                       <span className="text-balance text-center text-sm">Network Error</span>
                       <pre className="mt-6 w-full overflow-auto whitespace-pre-wrap break-all">
                         {error.message}

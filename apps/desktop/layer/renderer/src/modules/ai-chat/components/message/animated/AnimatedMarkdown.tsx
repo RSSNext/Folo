@@ -75,7 +75,7 @@ const createAiMessageMarkdownElementsRender = (canAnimate: boolean) => {
         }
       }
 
-      return <pre className="text-text-secondary bg-material-medium">{children}</pre>
+      return <pre className="bg-material-medium text-text-secondary">{children}</pre>
     },
     a: ({ node, ...props }) => {
       return React.createElement(RelatedEntryLink, { ...props } as any)
@@ -114,11 +114,11 @@ const createAiMessageMarkdownElementsRender = (canAnimate: boolean) => {
 
     table: ({ children, ref, node, ...props }) => {
       return (
-        <div className="border-border bg-material-thin overflow-x-auto rounded-lg border">
+        <div className="overflow-x-auto rounded-lg border border-border bg-material-thin">
           <table
             {...props}
             style={ANIMATION_STYLE}
-            className="divide-border my-0 min-w-full divide-y text-sm"
+            className="my-0 min-w-full divide-y divide-border text-sm"
           >
             {children}
           </table>
@@ -136,7 +136,7 @@ const createAiMessageMarkdownElementsRender = (canAnimate: boolean) => {
       return (
         <th
           {...props}
-          className="text-text-secondary whitespace-nowrap px-4 py-3 text-left text-xs font-medium uppercase tracking-wider"
+          className="whitespace-nowrap px-4 py-3 text-left text-xs font-medium uppercase tracking-wider text-text-secondary"
         >
           {children}
         </th>
@@ -144,21 +144,21 @@ const createAiMessageMarkdownElementsRender = (canAnimate: boolean) => {
     },
     tbody: ({ children, ref, node, ...props }) => {
       return (
-        <tbody {...props} className="bg-material-ultra-thin divide-border divide-y">
+        <tbody {...props} className="divide-y divide-border bg-material-ultra-thin">
           {children}
         </tbody>
       )
     },
     tr: ({ children, ref, node, ...props }) => {
       return (
-        <tr {...props} className="hover:bg-material-thin transition-colors duration-150">
+        <tr {...props} className="transition-colors duration-150 hover:bg-material-thin">
           {textAnimator(children as any)}
         </tr>
       )
     },
     td: ({ children, ref, node, ...props }) => {
       return (
-        <td {...props} className="text-text whitespace-nowrap px-4 py-3 text-sm">
+        <td {...props} className="whitespace-nowrap px-4 py-3 text-sm text-text">
           {textAnimator(children as any)}
         </td>
       )
@@ -229,7 +229,7 @@ const InlineFoloReference: React.FC<
       aria-label={type === "entry" ? `Open entry ${targetId}` : `Open feed ${targetId}`}
       title={type === "entry" ? `Open entry ${targetId}` : `Open feed ${targetId}`}
       className={cn(
-        "text-text-secondary hover:text-text mx-[0.15em] inline-flex cursor-pointer items-center align-middle opacity-80 transition-opacity hover:opacity-100",
+        "mx-[0.15em] inline-flex cursor-pointer items-center align-middle text-text-secondary opacity-80 transition-opacity hover:text-text hover:opacity-100",
         "-translate-y-0.5",
         className,
       )}
@@ -270,7 +270,7 @@ const RelatedEntryLink = (props: LinkProps) => {
   return (
     <button
       type="button"
-      className="follow-link--underline text-text cursor-pointer font-semibold no-underline"
+      className="follow-link--underline cursor-pointer font-semibold text-text no-underline"
       onClick={() => {
         peekModal(entryId, "modal")
       }}

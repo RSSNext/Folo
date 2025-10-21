@@ -31,13 +31,13 @@ export const PeekModal = (props: PropsWithChildren<PeekModalProps>) => {
   return (
     <RootPortalContext value={rootRef as HTMLElement}>
       <div
-        className="scrollbar-none relative mx-auto mt-[10vh] max-w-full overflow-hidden px-2 lg:max-w-[65rem] lg:p-0"
+        className="relative mx-auto mt-[10vh] max-w-full overflow-hidden px-2 scrollbar-none lg:max-w-[65rem] lg:p-0"
         ref={setRootRef}
       >
         <m.div
           exit={{ opacity: 0, y: 50 }}
           transition={{ duration: 0.2 }}
-          className="motion-preset-slide-up motion-duration-200 motion-ease-spring-smooth scrollbar-none overflow-hidden"
+          className="motion-preset-slide-up overflow-hidden motion-duration-200 motion-ease-spring-smooth scrollbar-none"
         >
           <InPeekModal value={true}>{children}</InPeekModal>
         </m.div>
@@ -46,7 +46,7 @@ export const PeekModal = (props: PropsWithChildren<PeekModalProps>) => {
           exit={{
             opacity: 0,
           }}
-          className="safe-inset-top-4 fixed right-4 flex items-center gap-4"
+          className="fixed right-4 flex items-center gap-4 safe-inset-top-4"
         >
           {props.rightActions?.map((action) => (
             <GlassButton

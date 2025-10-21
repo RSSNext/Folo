@@ -50,7 +50,7 @@ export function SettingReferral() {
       </div>
       <Divider className="my-6" />
       <p className="my-2 font-semibold">{t("referral.link")}</p>
-      <div className="from-accent/5 border-accent flex rounded-xl border bg-gradient-to-b to-transparent p-4">
+      <div className="flex rounded-xl border border-accent bg-gradient-to-b from-accent/5 to-transparent p-4">
         <pre className="whitespace-pre-wrap text-sm">{referralLink}</pre>
         <CopyButton variant="outline" value={referralLink} />
       </div>

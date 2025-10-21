@@ -154,7 +154,7 @@ export const CollapsibleError: React.FC<CollapsibleErrorProps> = ({
   return (
     <div
       className={cn(
-        "animate-in slide-in-from-bottom-2 fade-in-0 group mb-3 duration-300",
+        "group mb-3 duration-300 animate-in fade-in-0 slide-in-from-bottom-2",
         className,
       )}
       onMouseEnter={() => setIsExpanded(true)}
@@ -162,7 +162,7 @@ export const CollapsibleError: React.FC<CollapsibleErrorProps> = ({
     >
       <div
         className={
-          "border-red/20 shadow-red/5 dark:shadow-red/10 backdrop-blur-background bg-mix-red-20 relative overflow-hidden rounded-xl transition-all duration-200"
+          "relative overflow-hidden rounded-xl border-red/20 shadow-red/5 backdrop-blur-background transition-all duration-200 bg-mix-red-20 dark:shadow-red/10"
         }
       >
         {/* Collapsed Content */}
@@ -170,15 +170,15 @@ export const CollapsibleError: React.FC<CollapsibleErrorProps> = ({
           className="relative z-10 flex items-center gap-3 p-3"
           style={{ minHeight: collapsedHeight }}
         >
-          <div className="bg-red/20 flex size-6 flex-shrink-0 items-center justify-center rounded-full transition-colors duration-200">
-            <i className={cn(icon, "text-red size-3")} />
+          <div className="flex size-6 flex-shrink-0 items-center justify-center rounded-full bg-red/20 transition-colors duration-200">
+            <i className={cn(icon, "size-3 text-red")} />
           </div>
           <div className="min-w-0 flex-1">
-            <div className="text-red text-sm font-medium">{getErrorTitle()}</div>
+            <div className="text-sm font-medium text-red">{getErrorTitle()}</div>
           </div>
           <span
             className={cn(
-              "text-text-tertiary text-xs",
+              "text-xs text-text-tertiary",
               "transition-[opacity,transform] duration-150 ease-in-out",
               "[@starting-style]:scale-100 [@starting-style]:opacity-100",
               isExpanded ? "scale-95 opacity-0" : "scale-100 opacity-100",
@@ -200,12 +200,12 @@ export const CollapsibleError: React.FC<CollapsibleErrorProps> = ({
           data-state={isExpanded ? "open" : "closed"}
         >
           <ScrollArea focusable={false} viewportProps={{ style: { maxHeight: expandedMaxHeight } }}>
-            <div className="border-red/20 bg-red/5 border-t px-3 pb-3">
-              <div className="text-red/80 bg-red/10 mt-2 cursor-text select-text break-all rounded-md p-3 text-xs leading-relaxed">
+            <div className="border-t border-red/20 bg-red/5 px-3 pb-3">
+              <div className="mt-2 cursor-text select-text break-all rounded-md bg-red/10 p-3 text-xs leading-relaxed text-red/80">
                 {displayMessage as string}
               </div>
               {contextualInfo && (
-                <div className="bg-red/5 border-red/10 mt-3 rounded-md border p-3">
+                <div className="mt-3 rounded-md border border-red/10 bg-red/5 p-3">
                   {contextualInfo}
                 </div>
               )}

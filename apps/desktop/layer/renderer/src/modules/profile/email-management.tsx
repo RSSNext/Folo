@@ -61,7 +61,7 @@ export function EmailManagement() {
         </span>
       </div>
       <div className="flex items-center justify-between pl-3">
-        <div className="text-text-secondary group flex items-center gap-2">
+        <div className="group flex items-center gap-2 text-text-secondary">
           {user?.email}
 
           <AnimatedCommandButton

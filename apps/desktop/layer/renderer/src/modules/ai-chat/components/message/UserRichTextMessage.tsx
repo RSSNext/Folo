@@ -76,7 +76,7 @@ export const UserRichTextMessage: React.FC<UserRichTextMessageProps> = React.mem
       }
     }
     return (
-      <div className={cn("text-text relative cursor-text text-sm", className)}>
+      <div className={cn("relative cursor-text text-sm text-text", className)}>
         <LexicalComposer initialConfig={initialConfig}>
           <RichTextPlugin
             contentEditable={

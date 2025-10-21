@@ -64,7 +64,7 @@ export const TwoFASetting: NavigationControllerView<{
         </View>
 
         <View className="mx-12">
-          <Text className="text-secondary-label mb-8 text-sm">
+          <Text className="mb-8 text-sm text-secondary-label">
             Scan the QR code above with your authenticator app, and then enter the 6-digit code
             which will be displayed in your authenticator app.
           </Text>

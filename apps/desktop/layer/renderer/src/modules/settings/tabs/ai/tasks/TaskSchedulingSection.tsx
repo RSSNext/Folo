@@ -21,7 +21,7 @@ export const TaskSchedulingSection = () => {
     <div className="-mt-4 space-y-4">
       <div className="flex items-center justify-between">
         <div className="space-y-1">
-          <div className="text-text-secondary text-xs">
+          <div className="text-xs text-text-secondary">
             {t("tasks.manage.desc")}
             {!canCreateNewTask && (
               <span className="text-red"> {t("tasks.manage.limit_reached")}</span>

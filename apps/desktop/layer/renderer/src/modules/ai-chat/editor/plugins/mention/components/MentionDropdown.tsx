@@ -68,7 +68,7 @@ const MentionSuggestionItem = React.memo(
         return (
           <span
             key={`${mention.id}-${index}`}
-            className={isMatch ? "text-text-vibrant font-semibold" : ""}
+            className={isMatch ? "font-semibold text-text-vibrant" : ""}
           >
             {part}
           </span>
@@ -79,9 +79,9 @@ const MentionSuggestionItem = React.memo(
     return (
       <div
         className={cn(
-          "cursor-menu relative flex select-none items-center rounded-[5px] px-2.5 py-1 outline-none",
+          "relative flex cursor-menu select-none items-center rounded-[5px] px-2.5 py-1 outline-none",
           "focus-within:outline-transparent",
-          "data-[highlighted]:bg-theme-selection-hover focus:bg-theme-selection-active focus:text-theme-selection-foreground data-[highlighted]:text-theme-selection-foreground",
+          "focus:bg-theme-selection-active focus:text-theme-selection-foreground data-[highlighted]:bg-theme-selection-hover data-[highlighted]:text-theme-selection-foreground",
           "h-[28px]",
           isSelected && "bg-theme-selection-active text-theme-selection-foreground",
         )}
@@ -138,7 +138,7 @@ const MentionGroupHeader = React.memo(({ type }: { type: MentionData["type"] }) 
   }, [type, t])
 
   return (
-    <div className="text-text-tertiary mb-1 mt-2 px-2.5 text-xs font-medium first:mt-0">
+    <div className="mb-1 mt-2 px-2.5 text-xs font-medium text-text-tertiary first:mt-0">
       {label}
     </div>
   )

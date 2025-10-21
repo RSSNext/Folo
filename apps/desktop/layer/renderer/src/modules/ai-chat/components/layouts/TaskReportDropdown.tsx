@@ -57,14 +57,14 @@ const SessionItem = ({ session, onClick, onDelete, isLoading }: SessionItemProps
           <p className="mb-0.5 truncate font-medium">{session.title || "Untitled Chat"}</p>
         </div>
         <div className="relative flex min-w-0 items-center">
-          <p className="text-text-secondary ml-2 shrink-0 truncate text-xs">
+          <p className="ml-2 shrink-0 truncate text-xs text-text-secondary">
             <RelativeDay date={new Date(session.updatedAt)} />
           </p>
           {onDelete && (
             <button
               type="button"
               onClick={onDelete}
-              className="bg-accent absolute inset-y-0 right-0 flex items-center px-2 py-1 text-white opacity-0 shadow-lg backdrop-blur-sm group-data-[highlighted]:text-white group-data-[highlighted]:opacity-100"
+              className="absolute inset-y-0 right-0 flex items-center bg-accent px-2 py-1 text-white opacity-0 shadow-lg backdrop-blur-sm group-data-[highlighted]:text-white group-data-[highlighted]:opacity-100"
               disabled={isLoading}
             >
               {isLoading ? (
@@ -83,8 +83,8 @@ const SessionItem = ({ session, onClick, onDelete, isLoading }: SessionItemProps
 const EmptyState = () => {
   return (
     <div className="flex flex-col items-center py-8 text-center">
-      <i className="i-mgc-calendar-time-add-cute-re text-text-secondary mb-2 block size-8" />
-      <p className="text-text-secondary text-sm">No unread task reports</p>
+      <i className="i-mgc-calendar-time-add-cute-re mb-2 block size-8 text-text-secondary" />
+      <p className="text-sm text-text-secondary">No unread task reports</p>
     </div>
   )
 }
@@ -192,10 +192,10 @@ export const TaskReportDropdown = ({ triggerElement, asChild = true }: TaskRepor
 
   const defaultTrigger = (
     <ActionButton tooltip="Task Reports" className="relative">
-      <i className="i-mgc-calendar-time-add-cute-re text-text-secondary size-5" />
+      <i className="i-mgc-calendar-time-add-cute-re size-5 text-text-secondary" />
       {hasUnreadSessions && (
         <span
-          className="bg-accent absolute right-1 top-1 block size-2 rounded-full shadow-[0_0_0_2px_var(--color-bg-default)] dark:shadow-[0_0_0_2px_var(--color-bg-default)]"
+          className="absolute right-1 top-1 block size-2 rounded-full bg-accent shadow-[0_0_0_2px_var(--color-bg-default)] dark:shadow-[0_0_0_2px_var(--color-bg-default)]"
           aria-label="Unread task reports"
         />
       )}
@@ -213,7 +213,7 @@ export const TaskReportDropdown = ({ triggerElement, asChild = true }: TaskRepor
           {triggerElement || defaultTrigger}
           {hasUnreadSessions && triggerElement && (
             <span
-              className="bg-accent absolute right-1 top-1 block size-2 rounded-full shadow-[0_0_0_2px_var(--color-bg-default)] dark:shadow-[0_0_0_2px_var(--color-bg-default)]"
+              className="absolute right-1 top-1 block size-2 rounded-full bg-accent shadow-[0_0_0_2px_var(--color-bg-default)] dark:shadow-[0_0_0_2px_var(--color-bg-default)]"
               aria-label="Unread task reports"
             />
           )}

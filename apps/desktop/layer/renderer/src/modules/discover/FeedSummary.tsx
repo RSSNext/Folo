@@ -39,11 +39,11 @@ export const FeedSummary: FC<FeedSummaryProps> = ({
     <div>
       <FollowSummary feed={feed} />
 
-      <div className="text-callout mt-2 flex h-6 justify-between gap-4 pl-10">
+      <div className="mt-2 flex h-6 justify-between gap-4 pl-10 text-callout">
         {showSkeleton ? (
           <Skeleton className="mt-1 h-5 w-40" />
         ) : (
-          <div className="text-text-secondary flex items-center gap-3">
+          <div className="flex items-center gap-3 text-text-secondary">
             {!!analytics?.subscriptionCount && (
               <div className="flex items-center gap-1.5">
                 <i className="i-mgc-user-3-cute-re" />

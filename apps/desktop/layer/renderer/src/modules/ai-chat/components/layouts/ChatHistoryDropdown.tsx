@@ -85,7 +85,7 @@ export const ChatHistoryDropdown = ({
 
   const defaultTrigger = (
     <ActionButton tooltip="Chat History">
-      <i className="i-mgc-history-cute-re text-text-secondary size-5" />
+      <i className="i-mgc-history-cute-re size-5 text-text-secondary" />
     </ActionButton>
   )
 
@@ -97,12 +97,12 @@ export const ChatHistoryDropdown = ({
       <DropdownMenuContent align="start" className="max-h-96 w-72 overflow-y-auto">
         {loading ? (
           <div className="flex items-center justify-center py-8">
-            <i className="i-mgc-loading-3-cute-re text-text-secondary size-5 animate-spin" />
+            <i className="i-mgc-loading-3-cute-re size-5 animate-spin text-text-secondary" />
           </div>
         ) : sessions.length > 0 ? (
           <>
             <div className="mb-1.5 px-2 py-1">
-              <p className="text-text-secondary text-xs font-medium">Recent Chats</p>
+              <p className="text-xs font-medium text-text-secondary">Recent Chats</p>
             </div>
             {sessions.map((session) => (
               <DropdownMenuItem
@@ -114,19 +114,19 @@ export const ChatHistoryDropdown = ({
                   <p className="truncate text-sm font-medium">
                     {session.title || t("common.new_chat")}
                   </p>
-                  <p className="text-text-secondary group-data-[highlighted]:text-text-secondary-dark mt-0.5 text-xs">
+                  <p className="mt-0.5 text-xs text-text-secondary group-data-[highlighted]:text-text-secondary-dark">
                     <span>{session.messageCount}</span>
                     <span> {session.messageCount === 1 ? "message" : "messages"}</span>
                   </p>
                 </div>
                 <div className="relative flex min-w-0 items-center">
-                  <span className="text-text-secondary group-data-[highlighted]:text-text-secondary-dark ml-2 shrink-0 cursor-help text-xs">
+                  <span className="ml-2 shrink-0 cursor-help text-xs text-text-secondary group-data-[highlighted]:text-text-secondary-dark">
                     <RelativeDay date={session.updatedAt} />
                   </span>
                   <button
                     type="button"
                     onClick={(e) => handleDeleteSession(session.chatId, e)}
-                    className="bg-accent absolute inset-y-0 right-0 flex items-center px-2 py-1 text-white opacity-0 shadow-lg backdrop-blur-sm group-data-[highlighted]:text-white group-data-[highlighted]:opacity-100"
+                    className="absolute inset-y-0 right-0 flex items-center bg-accent px-2 py-1 text-white opacity-0 shadow-lg backdrop-blur-sm group-data-[highlighted]:text-white group-data-[highlighted]:opacity-100"
                     disabled={deletingChatId === session.chatId}
                   >
                     {deletingChatId === session.chatId ? (
@@ -141,8 +141,8 @@ export const ChatHistoryDropdown = ({
           </>
         ) : (
           <div className="flex flex-col items-center py-8 text-center">
-            <i className="i-mgc-time-cute-re text-text-secondary mb-2 block size-8" />
-            <p className="text-text-secondary text-sm">No chat history yet</p>
+            <i className="i-mgc-time-cute-re mb-2 block size-8 text-text-secondary" />
+            <p className="text-sm text-text-secondary">No chat history yet</p>
           </div>
         )}
       </DropdownMenuContent>

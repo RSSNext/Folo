@@ -49,7 +49,7 @@ const Item = memo(
         type="button"
         key={feedId}
         onClick={handleClick(sub)}
-        className="bg-material-thick/80 border-border hover:bg-theme-item-hover group relative flex w-full flex-col items-start justify-start overflow-hidden rounded-lg border p-4 text-left backdrop-blur-sm transition-colors"
+        className="group relative flex w-full flex-col items-start justify-start overflow-hidden rounded-lg border border-border bg-material-thick/80 p-4 text-left backdrop-blur-sm transition-colors hover:bg-theme-item-hover"
       >
         <div className="flex w-full items-start justify-between">
           <div className="flex">
@@ -64,10 +64,10 @@ const Item = memo(
               siteUrl={siteUrl!}
             />
             <div className="flex min-w-0 flex-col">
-              <h3 className="text-text line-clamp-2 font-semibold leading-tight">
+              <h3 className="line-clamp-2 font-semibold leading-tight text-text">
                 {title || "Untitled Feed"}
               </h3>
-              <div className="text-text-tertiary mt-1 flex items-center gap-2 text-xs">
+              <div className="mt-1 flex items-center gap-2 text-xs text-text-tertiary">
                 {category ? <span className="text-text-secondary">{category}</span> : null}
                 <span>Subscribed {dayjs(subscribedAt).format("MMM DD, YYYY")}</span>
                 {currentView.icon}
@@ -75,7 +75,7 @@ const Item = memo(
               </div>
             </div>
           </div>
-          <i className="i-mgc-external-link-cute-re text-text-tertiary shrink-0 opacity-60 transition-opacity group-hover:opacity-100" />
+          <i className="i-mgc-external-link-cute-re shrink-0 text-text-tertiary opacity-60 transition-opacity group-hover:opacity-100" />
         </div>
       </button>
     )

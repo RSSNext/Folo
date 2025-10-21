@@ -31,7 +31,7 @@ export function Settings() {
         style={{
           paddingTop: insets.top,
         }}
-        className="bg-system-grouped-background flex-1"
+        className="flex-1 bg-system-grouped-background"
         contentViewClassName="-mt-24 pb-8"
       >
         <UserHeaderBanner
@@ -72,11 +72,11 @@ const SettingHeader = ({ scrollY }: { scrollY: SharedValue<number> }) => {
     >
       <Animated.View
         pointerEvents="none"
-        className="border-b-hairline border-opaque-separator absolute inset-x-0 top-0 flex-row items-center px-4 pb-2"
+        className="border-b-hairline absolute inset-x-0 top-0 flex-row items-center border-opaque-separator px-4 pb-2"
         style={styles}
       >
         <BlurEffect />
-        <Text className="text-label flex-1 text-center text-[17px] font-semibold">
+        <Text className="flex-1 text-center text-[17px] font-semibold text-label">
           {t("tabs.settings")}
         </Text>
       </Animated.View>
@@ -94,7 +94,7 @@ const EditProfileButton = () => {
       onPress={() => navigation.pushControllerView(EditProfileScreen)}
     >
       <BlurEffect />
-      <Text className="text-label text-sm font-medium">{t("words.edit")}</Text>
+      <Text className="text-sm font-medium text-label">{t("words.edit")}</Text>
     </TouchableOpacity>
   )
 }

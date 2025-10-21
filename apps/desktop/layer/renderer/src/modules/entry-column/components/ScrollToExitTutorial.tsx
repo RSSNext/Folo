@@ -118,16 +118,16 @@ export const ScrollToExitTutorial = () => {
           onClick={handleDismiss}
         >
           <div className="w-fit">
-            <div className="bg-background border-fill-secondary relative cursor-pointer rounded-xl border px-6 py-4 shadow-lg backdrop-blur-md transition-transform hover:scale-105">
+            <div className="relative cursor-pointer rounded-xl border border-fill-secondary bg-background px-6 py-4 shadow-lg backdrop-blur-md transition-transform hover:scale-105">
               <div className="flex items-center gap-4">
                 <ScrollGestureIcon />
                 <div className="flex flex-col gap-1.5">
-                  <div className="text-text text-base">
+                  <div className="text-base text-text">
                     {t("tutorial.scroll_to_exit.title")}
-                    <div className="text-text-secondary text-sm">
+                    <div className="text-sm text-text-secondary">
                       {t("tutorial.scroll_to_exit.description")}
                     </div>
-                    <div className="text-text-tertiary mt-1 text-xs">
+                    <div className="mt-1 text-xs text-text-tertiary">
                       {t("tutorial.scroll_to_exit.dismiss_hint")}
                     </div>
                   </div>

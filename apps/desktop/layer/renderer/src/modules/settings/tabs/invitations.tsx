@@ -58,7 +58,7 @@ export const SettingInvitations = () => {
             }}
             components={{
               PowerIcon: (
-                <i className="i-mgc-power text-folo mx-0.5 size-3.5 -translate-y-px align-middle text-base" />
+                <i className="i-mgc-power mx-0.5 size-3.5 -translate-y-px align-middle text-base text-folo" />
               ),
             }}
             i18nKey="invitation.generateCost"
@@ -199,7 +199,7 @@ const ConfirmModalContent = ({ dismiss }: { dismiss: () => void }) => {
           }}
           components={{
             PowerIcon: (
-              <i className="i-mgc-power text-folo mx-0.5 size-3.5 -translate-y-px align-middle text-base" />
+              <i className="i-mgc-power mx-0.5 size-3.5 -translate-y-px align-middle text-base text-folo" />
             ),
           }}
           i18nKey="invitation.generateCost"

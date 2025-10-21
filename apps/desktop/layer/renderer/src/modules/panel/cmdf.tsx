@@ -125,14 +125,14 @@ const CmdFImpl: FC<{
         e.preventDefault()
         nativeSearch(value)
       }}
-      className="center shadow-perfect focus-within:border-accent fixed right-8 top-12 size-9 w-64 gap-2 rounded-2xl border bg-zinc-50/90 pl-3 pr-2 backdrop-blur duration-200 dark:bg-neutral-800/80"
+      className="center shadow-perfect fixed right-8 top-12 size-9 w-64 gap-2 rounded-2xl border bg-zinc-50/90 pl-3 pr-2 backdrop-blur duration-200 focus-within:border-accent dark:bg-neutral-800/80"
     >
       <div className="relative h-full grow">
         <input
           {...inputProps}
           ref={inputRef}
           name="search"
-          className="caret-accent absolute inset-0 size-full appearance-none bg-transparent font-[system-ui] text-[15px] text-transparent selection:text-transparent"
+          className="absolute inset-0 size-full appearance-none bg-transparent font-[system-ui] text-[15px] text-transparent caret-accent selection:text-transparent"
           style={{
             visibility: isSearching ? "hidden" : "visible",
           }}
@@ -150,7 +150,7 @@ const CmdFImpl: FC<{
 
         <CanvasText
           scrollLeft={scrollLeft}
-          className="[&::placeholder]:text-text pointer-events-none absolute inset-0 size-full text-transparent"
+          className="pointer-events-none absolute inset-0 size-full text-transparent [&::placeholder]:text-text"
           text={value}
         />
       </div>
