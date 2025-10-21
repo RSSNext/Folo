@@ -36,6 +36,18 @@ export interface TypeaheadDropdownProps<TItem> {
   loadingMessage?: string
   emptyMessage?: string
   emptyHint?: string
+  anchor?: HTMLElement | null
+  showSearchInput?: boolean
+  onQueryChange?: (query: string) => void
+}
+
+function useOptionalLexicalEditor() {
+  try {
+    const [editor] = useLexicalComposerContext()
+    return editor
+  } catch {
+    return null
+  }
 }
 
 export function TypeaheadDropdown<TItem>({
@@ -53,15 +65,36 @@ export function TypeaheadDropdown<TItem>({
   loadingMessage = "Searching...",
   emptyMessage = "No matches found",
   emptyHint = "Try a different search term",
+  anchor,
+  showSearchInput = false,
+  onQueryChange,
 }: TypeaheadDropdownProps<TItem>) {
   if (!isVisible) throw thenable
 
-  const [editor] = useLexicalComposerContext()
+  const editor = useOptionalLexicalEditor()
   const dropdownRef = useRef<HTMLDivElement>(null)
   const [referenceWidth, setReferenceWidth] = useState<number>(320)
 
   const virtualReference = useRef({
     getBoundingClientRect: () => {
+      // If anchor is provided, use it
+      if (anchor) {
+        return anchor.getBoundingClientRect()
+      }
+
+      if (!editor) {
+        return {
+          top: 0,
+          left: 0,
+          bottom: 0,
+          right: 0,
+          width: 0,
+          height: 0,
+          x: 0,
+          y: 0,
+        }
+      }
+
       const position = calculateDropdownPosition(editor)
       const editorElement = editor.getRootElement()
 
@@ -99,6 +132,9 @@ export function TypeaheadDropdown<TItem>({
     open: isVisible,
     onOpenChange: (open) => {
       if (!open) onClose()
+    },
+    elements: {
+      reference: anchor,
     },
     middleware: [
       offset(8),
@@ -138,7 +174,7 @@ export function TypeaheadDropdown<TItem>({
     if (isVisible) {
       refs.setReference(virtualReference.current)
 
-      const editorElement = editor.getRootElement()
+      const editorElement = editor?.getRootElement()
       if (editorElement) {
         const rect = editorElement.getBoundingClientRect()
         setReferenceWidth(rect.width || 320)
@@ -213,10 +249,29 @@ export function TypeaheadDropdown<TItem>({
               "text-body",
             )}
             style={{
-              width: Math.max(referenceWidth, 200),
+              width: anchor ? 320 : Math.max(referenceWidth, 200),
               maxWidth: 320,
             }}
           >
+            {showSearchInput && onQueryChange && (
+              <div className="border-border/20 mb-1 border-b px-2 pb-1.5 pt-1">
+                <input
+                  type="text"
+                  value={query}
+                  onChange={(e) => onQueryChange(e.target.value)}
+                  onKeyDown={(e) => {
+                    const suggestion = items[selectedIndex] || items[0]
+                    if (e.key === "Enter" && suggestion) {
+                      e.preventDefault()
+                      onSelect(suggestion)
+                    }
+                  }}
+                  placeholder="Search for context..."
+                  autoFocus
+                  className="text-text placeholder:text-text-quaternary w-full bg-transparent text-sm outline-none"
+                />
+              </div>
+            )}
             {content}
           </div>
         </div>

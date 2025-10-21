@@ -20,10 +20,6 @@ interface MentionDropdownProps {
   onClose: () => void
   query: string
   anchor?: HTMLElement | null
-  /**
-   * If true, shows a search input at the top of the dropdown
-   * Useful for manual mention triggers (e.g., button-triggered)
-   */
   showSearchInput?: boolean
   onQueryChange?: (query: string) => void
 }
@@ -61,7 +57,7 @@ const MentionSuggestionItem = React.memo(
       if (!cleanQuery) return text
 
       const parts = text.split(new RegExp(`(${cleanQuery})`, "gi"))
-      return parts.map((part) => {
+      return parts.map((part, index) => {
         const isMatch = part.toLowerCase() === cleanQuery
 
         if (!part) {
@@ -70,7 +66,7 @@ const MentionSuggestionItem = React.memo(
 
         return (
           <span
-            key={`${mention.id}-${part}`}
+            key={`${mention.id}-${index}`}
             className={isMatch ? "text-text-vibrant font-semibold" : ""}
           >
             {part}
@@ -114,15 +110,6 @@ const MentionSuggestionItem = React.memo(
 
 MentionSuggestionItem.displayName = "MentionSuggestionItem"
 
-function useOptionalLexicalEditor() {
-  try {
-    const [editor] = useLexicalComposerContext()
-    return editor
-  } catch {
-    return null
-  }
-}
-
 export const MentionDropdown: React.FC<MentionDropdownProps> = ({
   isVisible,
   suggestions,
@@ -160,6 +147,9 @@ export const MentionDropdown: React.FC<MentionDropdownProps> = ({
           query={query}
         />
       )}
+      anchor={anchor}
+      showSearchInput={showSearchInput}
+      onQueryChange={onQueryChange}
     />
   )
 }
