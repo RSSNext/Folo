@@ -1,5 +1,6 @@
+import { Popover, PopoverContent, PopoverTrigger } from "@follow/components/ui/popover/index.jsx"
 import { cn } from "@follow/utils/utils"
-import { memo, useCallback, useEffect, useRef } from "react"
+import { memo, useCallback, useEffect, useMemo, useRef } from "react"
 
 import { useGeneralSettingKey } from "~/atoms/settings/general"
 import { useRouteParamsSelector } from "~/hooks/biz/useRouteParams"
@@ -12,6 +13,9 @@ import { useBlockActions } from "../../store/hooks"
 import { BlockSliceAction } from "../../store/slices/block.slice"
 import { CombinedContextBlock, ContextBlock } from "../context-bar/blocks"
 import { MentionButton } from "../context-bar/MentionButton"
+
+// Maximum number of context blocks to show before collapsing into "more" popover
+const MAX_VISIBLE_BLOCKS = 4
 
 export const AIChatContextBar: Component = memo(({ className }) => {
   const blocks = useAIChatStore()((s) => s.blocks)
@@ -83,15 +87,41 @@ export const AIChatContextBar: Component = memo(({ className }) => {
 
   const displayBlocks = useDisplayBlocks(blocks)
 
+  // Split blocks into visible and hidden based on MAX_VISIBLE_BLOCKS
+  const { visibleBlocks, hiddenBlocks } = useMemo(() => {
+    if (displayBlocks.length <= MAX_VISIBLE_BLOCKS) {
+      return { visibleBlocks: displayBlocks, hiddenBlocks: [] }
+    }
+    return {
+      visibleBlocks: displayBlocks.slice(0, MAX_VISIBLE_BLOCKS),
+      hiddenBlocks: displayBlocks.slice(MAX_VISIBLE_BLOCKS),
+    }
+  }, [displayBlocks])
+
+  const renderBlock = useCallback((item: (typeof displayBlocks)[number]) => {
+    if (item.kind === "combined") {
+      return (
+        <CombinedContextBlock
+          key={`combined-${item.viewBlock?.id}-${item.feedBlock?.id}-${item.unreadOnlyBlock?.id}`}
+          viewBlock={item.viewBlock}
+          feedBlock={item.feedBlock}
+          unreadOnlyBlock={item.unreadOnlyBlock}
+        />
+      )
+    }
+
+    return <ContextBlock key={item.block.id} block={item.block} />
+  }, [])
+
   return (
-    <div className={cn("flex flex-wrap items-center gap-2 px-4 py-3", className)}>
+    <div className={cn("flex items-center gap-2 px-4 py-3", className)}>
       <MentionButton />
 
       {/* File Upload Button */}
       <button
         type="button"
         onClick={handleAttachFile}
-        className="flex size-7 items-center justify-center rounded-md border border-border bg-material-medium text-text-secondary transition-colors hover:bg-material-thin hover:text-text-secondary"
+        className="border-border bg-material-medium text-text-secondary hover:bg-material-thin hover:text-text-secondary flex size-7 shrink-0 items-center justify-center rounded-md border transition-colors"
         title="Upload Files"
       >
         <i className="i-mgc-attachment-cute-re size-3.5" />
@@ -107,21 +137,44 @@ export const AIChatContextBar: Component = memo(({ className }) => {
         className="hidden"
       />
 
-      {/* Context Blocks */}
-      {displayBlocks.map((item) => {
-        if (item.kind === "combined") {
-          return (
-            <CombinedContextBlock
-              key={`combined-${item.viewBlock?.id}-${item.feedBlock?.id}-${item.unreadOnlyBlock?.id}`}
-              viewBlock={item.viewBlock}
-              feedBlock={item.feedBlock}
-              unreadOnlyBlock={item.unreadOnlyBlock}
-            />
-          )
-        }
+      {/* Visible Context Blocks */}
+      <div className="flex min-w-0 flex-1 items-center gap-2">
+        {visibleBlocks.map((item) => (
+          <div
+            key={
+              item.kind === "combined"
+                ? `combined-${item.viewBlock?.id}-${item.feedBlock?.id}-${item.unreadOnlyBlock?.id}`
+                : item.block.id
+            }
+            className="max-w-[240px] shrink-0"
+          >
+            {renderBlock(item)}
+          </div>
+        ))}
 
-        return <ContextBlock key={item.block.id} block={item.block} />
-      })}
+        {/* More Button with Popover */}
+        {hiddenBlocks.length > 0 && (
+          <Popover>
+            <PopoverTrigger asChild>
+              <button
+                type="button"
+                className="border-border bg-fill-tertiary text-text-secondary hover:bg-fill-secondary hover:text-text flex h-7 shrink-0 items-center gap-1.5 rounded-lg border px-2.5 text-xs transition-colors"
+              >
+                <i className="i-mgc-more-1-cute-re size-3.5" />
+                <span>+{hiddenBlocks.length}</span>
+              </button>
+            </PopoverTrigger>
+            <PopoverContent className="w-80 p-3" align="start">
+              <div className="flex flex-col gap-2">
+                <div className="text-text-secondary mb-1 text-xs font-medium">
+                  Additional Context
+                </div>
+                {hiddenBlocks.map((item) => renderBlock(item))}
+              </div>
+            </PopoverContent>
+          </Popover>
+        )}
+      </div>
     </div>
   )
 })

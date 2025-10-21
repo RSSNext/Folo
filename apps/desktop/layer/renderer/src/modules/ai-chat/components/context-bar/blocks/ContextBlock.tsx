@@ -22,15 +22,17 @@ const BlockContainer: FC<{
   onDisableClick?: () => void
   content: ReactNode
   readOnly?: boolean
-}> = memo(({ icon, label, onRemove, content, disabled, onDisableClick, readOnly }) => {
+  className?: string
+}> = memo(({ icon, label, onRemove, content, disabled, onDisableClick, readOnly, className }) => {
   const isStringContent = typeof content === "string"
 
   return (
     <div
       className={clsx(
         "group relative flex h-7 min-w-0 items-center gap-2 overflow-hidden rounded-lg px-2.5",
-        "border border-border bg-fill-tertiary",
-        disabled && "cursor-pointer border-dashed opacity-50",
+        "border-border bg-fill-tertiary border",
+        disabled && "cursor-pointer border-dashed italic opacity-50",
+        className,
       )}
       onClick={() => {
         if (disabled) {
@@ -49,13 +51,13 @@ const BlockContainer: FC<{
         <div className="flex min-w-0 flex-1 items-center gap-1.5">
           <div className="flex items-center gap-1">
             {icon && <i className={cn("size-3.5 flex-shrink-0", icon)} />}
-            {label && <span className="text-xs font-medium text-text-tertiary">{label}</span>}
+            {label && <span className="text-text-tertiary text-xs font-medium">{label}</span>}
           </div>
 
           {isStringContent ? (
-            <span className="min-w-0 flex-1 truncate text-xs text-text">{content}</span>
+            <span className="text-text min-w-0 flex-1 truncate text-xs">{content}</span>
           ) : (
-            <div className="min-w-0 flex-1 truncate text-xs text-text">{content}</div>
+            <div className="text-text min-w-0 flex-1 truncate text-xs">{content}</div>
           )}
         </div>
       </div>
@@ -64,7 +66,7 @@ const BlockContainer: FC<{
         <button
           type="button"
           onClick={onRemove}
-          className="absolute inset-y-0 right-2 flex-shrink-0 cursor-button text-text/90 opacity-0 transition-all ease-in hover:text-text group-hover:opacity-100"
+          className="cursor-button text-text/90 hover:text-text absolute inset-y-0 right-2 flex-shrink-0 opacity-0 transition-all ease-in group-hover:opacity-100"
         >
           <i className="i-mgc-close-cute-re size-3" />
         </button>
