@@ -145,6 +145,7 @@ export const createDateMentionData = ({
     name: resolvedName,
     type: "date",
     value,
+    text: value,
     label,
     labelOptions,
   }

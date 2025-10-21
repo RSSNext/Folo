@@ -5,6 +5,7 @@ import { useTranslation } from "react-i18next"
 import { useFeedEntrySearchService } from "~/modules/ai-chat/hooks/useFeedEntrySearchService"
 
 import type { MentionData, MentionType } from "../types"
+import { getMentionTextValue } from "../utils/mentionTextValue"
 import { createDateMentionBuilder, MAX_INLINE_DATE_SUGGESTIONS } from "./dateMentionSearch"
 
 /**
@@ -49,6 +50,10 @@ export const useMentionSearchService = () => {
             name: item.title,
             type: item.type,
             value: item.id,
+            text: getMentionTextValue({
+              type: item.type,
+              value: item.id,
+            }),
           }),
         )
         return results
@@ -69,6 +74,10 @@ export const useMentionSearchService = () => {
           name: t(firstView.name, { ns: "common" }),
           type: "view",
           value: firstView.view,
+          text: getMentionTextValue({
+            type: "view",
+            value: firstView.view,
+          }),
         })
       }
 
@@ -85,6 +94,10 @@ export const useMentionSearchService = () => {
           name: item.title,
           type: item.type,
           value: item.id,
+          text: getMentionTextValue({
+            type: item.type,
+            value: item.id,
+          }),
         }),
       )
 

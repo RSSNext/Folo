@@ -16,7 +16,6 @@ import { MentionComponent } from "./components/MentionComponent"
 import { RANGE_WITH_LABEL_KEY } from "./hooks/dateMentionConfig"
 import { getDateMentionDisplayName } from "./hooks/dateMentionUtils"
 import type { MentionData } from "./types"
-import { getMentionTextValue } from "./utils/mentionTextValue"
 
 export type SerializedMentionNode = Spread<
   {
@@ -99,7 +98,7 @@ export class MentionNode extends DecoratorNode<React.JSX.Element> {
    * For export markdown conversion
    */
   override getTextContent(): string {
-    return getMentionTextValue(this.__mentionData)
+    return this.__mentionData.text
   }
 
   override decorate(editor: LexicalEditor): React.JSX.Element {

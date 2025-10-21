@@ -10,6 +10,7 @@ export interface MentionLabelDescriptor {
 export interface MentionBaseData {
   id: string
   name: string
+  text: string
   label?: MentionLabelDescriptor
 }
 

@@ -8,7 +8,10 @@ import { getI18n } from "~/i18n"
 
 import type { MentionData } from "../types"
 
-export function getMentionTextValue(mentionData: MentionData): string {
+export function getMentionTextValue(mentionData: {
+  type: MentionData["type"]
+  value: MentionData["value"]
+}): string {
   const { type, value } = mentionData
 
   if (type === "date" && value) {
