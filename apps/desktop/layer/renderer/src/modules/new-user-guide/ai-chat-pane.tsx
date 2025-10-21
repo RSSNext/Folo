@@ -97,7 +97,7 @@ function pickSuggestionKeys(previous?: readonly SuggestionKey[]): SuggestionKey[
 
 export function AIChatPane() {
   return (
-    <div className="flex h-full flex-col justify-between gap-8 overflow-hidden bg-background p-2 lg:col-span-6">
+    <div className="bg-background flex h-full flex-col justify-between gap-8 overflow-hidden p-2 lg:col-span-6">
       <AIChatPaneImpl />
     </div>
   )
@@ -195,7 +195,7 @@ function Welcome({ onSuggestionClick }: WelcomeProps) {
 
       <div className="space-y-3">
         <div className="flex flex-wrap items-center justify-between gap-2">
-          <p className="text-xs font-medium uppercase text-text-secondary">
+          <p className="text-text-secondary text-xs font-medium uppercase">
             {t.app("new_user_guide.ai_chat.you_can_say")}
           </p>
           <Button variant="ghost" size="sm" onClick={rerollSuggestions}>
@@ -212,7 +212,7 @@ function Welcome({ onSuggestionClick }: WelcomeProps) {
                 key={suggestionKey}
                 onClick={() => onClickSuggestion(suggestionText)}
                 animationDelay={index * 0.05}
-                className="font-normal text-text"
+                className="text-text font-normal"
                 style={{ background: gradient }}
               >
                 {suggestionText}
@@ -503,7 +503,7 @@ function AIChatInterface({ inputRef }: AIChatInterfaceProps) {
             type="button"
             onClick={() => resetScrollState()}
             className={cn(
-              "group center flex size-8 items-center gap-2 rounded-full border backdrop-blur-background transition-all bg-mix-background/transparent-8/2",
+              "center backdrop-blur-background bg-mix-background/transparent-8/2 group flex size-8 items-center gap-2 rounded-full border transition-all",
               "border-border",
               "hover:border-border/60 active:scale-[0.98]",
             )}
