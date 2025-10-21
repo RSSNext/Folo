@@ -32,7 +32,7 @@ export const ShortcutComponent: React.FC<ShortcutComponentProps> = ({
           <MentionLikePill
             className={className}
             icon={
-              <span className="inline-flex size-4 items-center justify-center rounded-full bg-blue/10 text-[11px] font-semibold leading-none text-blue">
+              <span className="bg-blue/10 text-blue inline-flex size-4 items-center justify-center rounded-full text-[11px] font-semibold leading-none">
                 #
               </span>
             }
@@ -45,10 +45,10 @@ export const ShortcutComponent: React.FC<ShortcutComponentProps> = ({
         <TooltipPortal>
           <TooltipContent side="top" className="max-w-[320px]">
             <div className="flex flex-col gap-1 p-1">
-              <span className="text-sm font-medium text-text">{shortcutData.name}</span>
+              <span className="text-text text-sm font-medium">{shortcutData.name}</span>
 
               {shortcutData.prompt ? (
-                <span className="line-clamp-3 text-xs leading-snug text-text-tertiary">
+                <span className="text-text-secondary text-xs leading-snug">
                   {shortcutData.prompt}
                 </span>
               ) : null}

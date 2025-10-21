@@ -98,7 +98,11 @@ export class ShortcutNode extends DecoratorNode<React.JSX.Element> {
 
     return (
       <React.Suspense fallback={null}>
-        <ShortcutComponent shortcutData={this.__shortcutData} key={`${this.__key}-${dataKey}`} />
+        <ShortcutComponent
+          className="cursor-default"
+          shortcutData={this.__shortcutData}
+          key={`${this.__key}-${dataKey}`}
+        />
       </React.Suspense>
     )
   }
