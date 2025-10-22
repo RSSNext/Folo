@@ -263,7 +263,7 @@ export function EntryHeaderBreadcrumb() {
           {meta && (
             <>
               <span className="hidden @[700px]:inline">{Slash}</span>
-              <div className="hidden min-w-[120px] shrink items-center @[700px]:flex">
+              <div className="hidden min-w-0 shrink items-center @[700px]:flex">
                 <button
                   type="button"
                   className={cn(
