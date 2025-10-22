@@ -58,6 +58,7 @@ import { WelcomeScreen } from "./WelcomeScreen"
 
 const SCROLL_BOTTOM_THRESHOLD = 100
 
+const draftMessages = new Map<string, EditorState>()
 const ChatInterfaceContent = ({ centerInputOnEmpty }: ChatInterfaceProps) => {
   const hasMessages = useHasMessages()
   const status = useChatStatus()
@@ -69,6 +70,8 @@ const ChatInterfaceContent = ({ centerInputOnEmpty }: ChatInterfaceProps) => {
   const isFocusWithIn = useFocusable()
 
   const aiPanelRefs = use(AIPanelRefsContext)
+
+  // Store draft messages for each chatId in memory during browser session
 
   useEventListener("keydown", (e) => {
     if (isFocusWithIn) {
@@ -259,6 +262,12 @@ const ChatInterfaceContent = ({ centerInputOnEmpty }: ChatInterfaceProps) => {
     }
     chatActions.sendMessage(sendMessage)
     tracker.aiChatMessageSent()
+
+    // Clear draft message after sending
+    if (currentChatId) {
+      draftMessages.delete(currentChatId)
+    }
+
     ;(async () => {
       const closureChatId = currentChatId
       if (aiStore.getState().currentTitle) {
@@ -276,6 +285,16 @@ const ChatInterfaceContent = ({ centerInputOnEmpty }: ChatInterfaceProps) => {
       handleScrollPositioning()
     })
   })
+
+  // Save draft message when input changes
+  const handleDraftChange = useEventCallback((editorState: EditorState) => {
+    if (currentChatId) {
+      draftMessages.set(currentChatId, editorState)
+    }
+  })
+
+  // Get initial draft message for current chat
+  const initialDraft = currentChatId ? draftMessages.get(currentChatId) : undefined
 
   const [bottomPanelHeight, setBottomPanelHeight] = useState<number>(0)
   const bottomPanelRef = useRef<HTMLDivElement | null>(null)
@@ -429,7 +448,12 @@ const ChatInterfaceContent = ({ centerInputOnEmpty }: ChatInterfaceProps) => {
             handleSendMessage(editorState)
           }}
         />
-        <ChatInput onSend={handleSendMessage} variant={!hasMessages ? "minimal" : "default"} />
+        <ChatInput
+          onSend={handleSendMessage}
+          variant={!hasMessages ? "minimal" : "default"}
+          initialDraftState={initialDraft}
+          onEditorStateChange={handleDraftChange}
+        />
 
         {(!centerInputOnEmpty || hasMessages) && (
           <div className="absolute inset-x-0 bottom-0 isolate">
