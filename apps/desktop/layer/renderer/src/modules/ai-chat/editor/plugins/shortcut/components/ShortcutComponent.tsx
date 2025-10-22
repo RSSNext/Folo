@@ -56,12 +56,12 @@ export const ShortcutComponent: React.FC<ShortcutComponentProps> = ({
           <TooltipContent side="top" className="max-w-[320px]">
             <div className="flex flex-col gap-1 p-1">
               <div className="flex items-center gap-1.5">
-                <span className="text-text-tertiary font-mono text-xs">/</span>
-                <span className="text-text text-sm font-medium">{shortcutData.name}</span>
+                <span className="font-mono text-xs text-text-tertiary">/</span>
+                <span className="text-sm font-medium text-text">{shortcutData.name}</span>
               </div>
 
               {shortcutData.prompt ? (
-                <span className="text-text-secondary text-xs leading-snug">
+                <span className="text-xs leading-snug text-text-secondary">
                   {shortcutData.prompt}
                 </span>
               ) : null}
