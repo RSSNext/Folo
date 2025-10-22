@@ -161,7 +161,7 @@ export const parseRangeValue = (value: string): DateRange | null => {
 }
 
 export const getDateMentionDisplayName = (
-  mention: Pick<DateMentionData, "label" | "labelOptions" | "value" | "name">,
+  mention: Pick<DateMentionData, "label" | "labelOptions" | "value" | "name" | "id">,
   translate: LabelTranslator,
   locale: string,
   asRange = false,
@@ -176,15 +176,9 @@ export const getDateMentionDisplayName = (
     return mention.name
   }
 
-  const today = dayjs().startOf("day")
-
-  const isSameDay = (a: Dayjs, b: Dayjs) => a.isSame(b, "day")
-
   const matchRelative = (): RelativeDateDefinition | null => {
     for (const def of RELATIVE_DATE_DEFINITIONS) {
-      const defRange = def.range(today)
-      if (!defRange) continue
-      if (isSameDay(defRange.start, range.start) && isSameDay(defRange.end, range.end)) {
+      if (def.id === mention.id) {
         return def
       }
     }
@@ -196,6 +190,5 @@ export const getDateMentionDisplayName = (
     return translate(matched.labelKey)
   }
 
-  // Fallback: show the localized date range only
-  return formatLocalizedRange(range, locale)
+  return asRange ? formatLocalizedRange(range, locale) : mention.name
 }
