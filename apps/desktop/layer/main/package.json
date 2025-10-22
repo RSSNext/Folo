@@ -41,7 +41,7 @@
     "i18next": "25.6.0",
     "js-yaml": "4.1.0",
     "ky": "1.12.0",
-    "linkedom": "0.18.12",
+    "linkedom": "0.18.11",
     "lowdb": "7.0.1",
     "msedge-tts": "2.0.2",
     "node-machine-id": "1.1.12",
