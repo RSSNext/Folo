@@ -154,7 +154,7 @@ const EntryContentWebViewWithContext = ({ entryId }: { entryId: string }) => {
     withContent: true,
     target: showReadabilityOnce && entry?.readabilityContent ? "readabilityContent" : "content",
     language: actionLanguage,
-    setting: translation,
+    enabled: translation,
   })
 
   // Auto toggle readability when content is empty

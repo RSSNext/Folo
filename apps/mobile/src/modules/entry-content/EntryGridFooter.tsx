@@ -33,7 +33,7 @@ export const EntryGridFooter = ({
   const translation = useEntryTranslation({
     entryId,
     language: actionLanguage,
-    setting: enableTranslation,
+    enabled: enableTranslation,
   })
   const feed = useFeedById(entry?.feedId || "")
   if (!entry) return null
