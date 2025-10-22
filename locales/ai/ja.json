@@ -27,7 +27,6 @@
   "common.generating_title": "タイトルを生成中...",
   "common.new_chat": "新規チャット",
   "customize_shortcuts": "ショートカットをカスタマイズ",
-  "customize_shortcuts_title": "AIショートカットをカスタマイズ",
   "delete_chat": "Chat を削除",
   "delete_chat_error": "Chat の削除に失敗しました",
   "delete_chat_message": "本当に「{{title}}」を削除してもよろしいですか？この操作は元に戻すことはできません。",

@@ -1,3 +1,4 @@
+import { getReadonlyRoute } from "@follow/components/atoms/route.js"
 import { DEFAULT_SHORTCUT_TARGETS } from "@follow/shared/settings/interface"
 import { useCallback, useMemo } from "react"
 import { useTranslation } from "react-i18next"
@@ -17,12 +18,13 @@ export const ChatShortcutsRow: React.FC<ChatShortcutsRowProps> = ({ onSelect }) 
   const { t } = useTranslation("ai")
   const aiSettings = useAISettingValue()
   const mainEntryId = useMainEntryId()
+  const isAiPage = useMemo(() => getReadonlyRoute().location.pathname === "/ai", [])
 
   const shortcutsToDisplay = useMemo(() => {
     const shortcuts = aiSettings.shortcuts ?? []
     const list: typeof shortcuts = []
     const entry: typeof shortcuts = []
-
+    const aiPage: typeof shortcuts = []
     for (const shortcut of shortcuts) {
       if (!shortcut.enabled) continue
       const targets =
@@ -35,10 +37,19 @@ export const ChatShortcutsRow: React.FC<ChatShortcutsRowProps> = ({ onSelect }) 
       if (targets.includes("entry")) {
         entry.push(shortcut)
       }
+      if (targets.includes("ai-page")) {
+        aiPage.push(shortcut)
+      }
     }
 
-    return (mainEntryId ? entry : list) ?? []
-  }, [aiSettings.shortcuts, mainEntryId])
+    if (mainEntryId) {
+      return entry
+    }
+    if (isAiPage) {
+      return aiPage
+    }
+    return list
+  }, [aiSettings.shortcuts, mainEntryId, isAiPage])
 
   const handleAddShortcut = useCreateAIShortcutModal()
   const handleCustomize = useCallback(() => {
@@ -52,9 +63,12 @@ export const ChatShortcutsRow: React.FC<ChatShortcutsRowProps> = ({ onSelect }) 
           onClick={handleCustomize}
           animationDelay={0}
           size="sm"
-          title={t("customize_shortcuts_title")}
+          title={t("new_shortcuts")}
         >
           <i className="i-mgc-add-cute-re" />
+          <span className={shortcutsToDisplay.length > 0 ? "sr-only" : "text-text"}>
+            {t("new_shortcuts")}
+          </span>
         </AIShortcutButton>
         {shortcutsToDisplay.map((shortcut) => (
           <AIShortcutButton

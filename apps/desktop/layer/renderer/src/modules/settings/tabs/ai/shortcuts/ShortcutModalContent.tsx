@@ -197,6 +197,14 @@ export const ShortcutModalContent = ({ shortcut, onSave, onCancel }: ShortcutMod
             />
             <span>{t("shortcuts.targets.entry")}</span>
           </label>
+          <label className="flex items-center gap-2">
+            <Checkbox
+              size="sm"
+              checked={displayTargets.includes("ai-page")}
+              onCheckedChange={(value) => handleTargetChange("ai-page", Boolean(value))}
+            />
+            <span>{t("shortcuts.targets.ai-page")}</span>
+          </label>
         </div>
         <p className="text-xs text-text-tertiary">{t("shortcuts.targets.help")}</p>
       </div>
