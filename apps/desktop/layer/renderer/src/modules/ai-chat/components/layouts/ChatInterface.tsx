@@ -59,7 +59,7 @@ import { WelcomeScreen } from "./WelcomeScreen"
 const SCROLL_BOTTOM_THRESHOLD = 100
 
 const draftMessages = new Map<string, EditorState>()
-const ChatInterfaceContent = ({ centerInputOnEmpty }: ChatInterfaceProps) => {
+const ChatInterfaceContent = ({ centerInputOnEmpty, visualOffsetY }: ChatInterfaceProps) => {
   const hasMessages = useHasMessages()
   const status = useChatStatus()
   const chatActions = useChatActions()
@@ -343,147 +343,160 @@ const ChatInterfaceContent = ({ centerInputOnEmpty }: ChatInterfaceProps) => {
   const rateLimitExtraHeight = hasRateLimitError ? 40 : 0
 
   return (
-    <GlobalFileDropZone className="flex size-full flex-col @container">
-      <div className="flex min-h-0 flex-1 flex-col" ref={scrollContainerParentRef}>
-        <AnimatePresence>
-          {!hasMessages && !isLoadingHistory ? (
-            <WelcomeScreen centerInputOnEmpty={centerInputOnEmpty} />
-          ) : (
-            <>
-              <ScrollArea
-                onScroll={handleScroll}
-                flex
-                scrollbarClassName="mt-12"
-                scrollbarProps={{
-                  style: {
-                    marginBottom: Math.max(160, bottomPanelHeight) + rateLimitExtraHeight,
-                  },
-                }}
-                ref={setScrollAreaRef}
-                rootClassName="flex-1"
-                viewportProps={{
-                  style: {
-                    paddingBottom: Math.max(128, bottomPanelHeight) + rateLimitExtraHeight,
-                  },
-                }}
-                viewportClassName={"pt-12"}
-              >
-                {isLoadingHistory ? (
-                  <div className="flex min-h-96 items-center justify-center">
-                    <i className="i-mgc-loading-3-cute-re size-8 animate-spin text-text" />
-                  </div>
-                ) : (
-                  <div
-                    className="mx-auto w-full max-w-4xl px-6 py-8"
-                    style={{
-                      minHeight: messageContainerMinHeight
-                        ? `${messageContainerMinHeight}px`
-                        : undefined,
-                    }}
-                  >
-                    <Messages contentRef={messagesContentRef as RefObject<HTMLDivElement>} />
+    <div
+      className="flex size-full flex-col @container"
+      style={
+        visualOffsetY
+          ? ({
+              transform: `translateY(${typeof visualOffsetY === "number" ? `${visualOffsetY}px` : visualOffsetY})`,
+            } as React.CSSProperties)
+          : undefined
+      }
+    >
+      <GlobalFileDropZone className="flex size-full flex-col @container">
+        <div className="flex min-h-0 flex-1 flex-col" ref={scrollContainerParentRef}>
+          <AnimatePresence>
+            {!hasMessages && !isLoadingHistory ? (
+              <WelcomeScreen centerInputOnEmpty={centerInputOnEmpty} />
+            ) : (
+              <>
+                <ScrollArea
+                  onScroll={handleScroll}
+                  flex
+                  scrollbarClassName="mt-12"
+                  scrollbarProps={{
+                    style: {
+                      marginBottom: Math.max(160, bottomPanelHeight) + rateLimitExtraHeight,
+                    },
+                  }}
+                  ref={setScrollAreaRef}
+                  rootClassName="flex-1"
+                  viewportProps={{
+                    style: {
+                      paddingBottom: Math.max(128, bottomPanelHeight) + rateLimitExtraHeight,
+                    },
+                  }}
+                  viewportClassName={"pt-12"}
+                >
+                  {isLoadingHistory ? (
+                    <div className="flex min-h-96 items-center justify-center">
+                      <i className="i-mgc-loading-3-cute-re size-8 animate-spin text-text" />
+                    </div>
+                  ) : (
+                    <div
+                      className="mx-auto w-full max-w-4xl px-6 py-8"
+                      style={{
+                        minHeight: messageContainerMinHeight
+                          ? `${messageContainerMinHeight}px`
+                          : undefined,
+                      }}
+                    >
+                      <Messages contentRef={messagesContentRef as RefObject<HTMLDivElement>} />
 
-                    {(status === "submitted" || status === "streaming") && (
-                      <AIChatWaitingIndicator />
-                    )}
-                  </div>
-                )}
-              </ScrollArea>
-            </>
-          )}
-        </AnimatePresence>
-      </div>
-
-      {shouldShowScrollToBottom && (
-        <div
-          className={clsx("absolute right-1/2 z-40 translate-x-1/2", "bottom-48 -translate-y-2")}
-        >
-          <button
-            type="button"
-            onClick={() => resetScrollState()}
-            className={cn(
-              "group center flex size-8 items-center gap-2 rounded-full border backdrop-blur-background transition-all bg-mix-background/transparent-8/2",
-              "border-border",
-              "hover:border-border/60 active:scale-[0.98]",
+                      {(status === "submitted" || status === "streaming") && (
+                        <AIChatWaitingIndicator />
+                      )}
+                    </div>
+                  )}
+                </ScrollArea>
+              </>
             )}
-          >
-            <i className="i-mingcute-arrow-down-line text-text/90" />
-          </button>
+          </AnimatePresence>
         </div>
-      )}
 
-      <div
-        ref={bottomPanelRef}
-        className={cn(
-          "absolute z-10 mx-auto duration-500 ease-in-out",
-          hasMessages && "inset-x-0 bottom-0 max-w-4xl px-4 pb-4",
-          !hasMessages && "inset-x-0 bottom-0 max-w-3xl px-4 pb-4 duration-200",
-          centerInputOnEmpty &&
-            !hasMessages &&
-            "bottom-1/2 translate-y-[calc(100%+1rem)] duration-200",
-        )}
-      >
-        {hasRateLimitError && error && <RateLimitNotice error={error} />}
-        <ChatShortcutsRow
-          onSelect={(shortcutData) => {
-            const tempEditor = createEditor({
-              nodes: LexicalAIEditorNodes,
-            })
-
-            tempEditor.update(
-              () => {
-                const root = $getRoot()
-                root.clear()
-                const paragraph = $createParagraphNode()
-                const shortcutNode = new ShortcutNode(shortcutData)
-                paragraph.append(shortcutNode)
-                root.append(paragraph)
-              },
-              {
-                discrete: true,
-              },
-            )
-
-            const editorState = tempEditor.getEditorState()
-            handleSendMessage(editorState)
-          }}
-        />
-        <ChatInput
-          onSend={handleSendMessage}
-          variant={!hasMessages ? "minimal" : "default"}
-          initialDraftState={initialDraft}
-          onEditorStateChange={handleDraftChange}
-        />
-
-        {(!centerInputOnEmpty || hasMessages) && (
-          <div className="absolute inset-x-0 bottom-0 isolate">
-            <div
-              className="pointer-events-none absolute inset-x-0 bottom-0 h-44 backdrop-blur-xl backdrop-brightness-110 dark:backdrop-brightness-75"
-              style={{
-                maskImage: "linear-gradient(to top, black 0%, rgba(0, 0, 0, 0.6) 25%, transparent)",
-                WebkitMaskImage:
-                  "linear-gradient(to top, black 0%, rgba(0, 0, 0, 0.6) 25%, transparent)",
-              }}
-            />
-
-            <div
-              className="pointer-events-none absolute inset-x-0 bottom-0 h-60 bg-gradient-to-b from-background/20 to-background/0"
-              style={{
-                maskImage: "linear-gradient(to top, black 20%, transparent 70%)",
-                WebkitMaskImage: "linear-gradient(to top, black 20%, transparent 70%)",
-                backdropFilter: "blur(50px) saturate(130%)",
-                WebkitBackdropFilter: "blur(50px) saturate(130%)",
-              }}
-            />
+        {shouldShowScrollToBottom && (
+          <div
+            className={clsx("absolute right-1/2 z-40 translate-x-1/2", "bottom-48 -translate-y-2")}
+          >
+            <button
+              type="button"
+              onClick={() => resetScrollState()}
+              className={cn(
+                "group center flex size-8 items-center gap-2 rounded-full border backdrop-blur-background transition-all bg-mix-background/transparent-8/2",
+                "border-border",
+                "hover:border-border/60 active:scale-[0.98]",
+              )}
+            >
+              <i className="i-mingcute-arrow-down-line text-text/90" />
+            </button>
           </div>
         )}
-      </div>
-    </GlobalFileDropZone>
+
+        <div
+          ref={bottomPanelRef}
+          className={cn(
+            "absolute z-10 mx-auto duration-500 ease-in-out",
+            hasMessages && "inset-x-0 bottom-0 max-w-4xl px-4 pb-4",
+            !hasMessages && "inset-x-0 bottom-0 max-w-3xl px-4 pb-4 duration-200",
+            centerInputOnEmpty &&
+              !hasMessages &&
+              "bottom-1/2 translate-y-[calc(100%+1rem)] duration-200",
+          )}
+        >
+          {hasRateLimitError && error && <RateLimitNotice error={error} />}
+          <ChatShortcutsRow
+            onSelect={(shortcutData) => {
+              const tempEditor = createEditor({
+                nodes: LexicalAIEditorNodes,
+              })
+
+              tempEditor.update(
+                () => {
+                  const root = $getRoot()
+                  root.clear()
+                  const paragraph = $createParagraphNode()
+                  const shortcutNode = new ShortcutNode(shortcutData)
+                  paragraph.append(shortcutNode)
+                  root.append(paragraph)
+                },
+                {
+                  discrete: true,
+                },
+              )
+
+              const editorState = tempEditor.getEditorState()
+              handleSendMessage(editorState)
+            }}
+          />
+          <ChatInput
+            onSend={handleSendMessage}
+            variant={!hasMessages ? "minimal" : "default"}
+            initialDraftState={initialDraft}
+            onEditorStateChange={handleDraftChange}
+          />
+
+          {(!centerInputOnEmpty || hasMessages) && (
+            <div className="absolute inset-x-0 bottom-0 isolate">
+              <div
+                className="pointer-events-none absolute inset-x-0 bottom-0 h-44 backdrop-blur-xl backdrop-brightness-110 dark:backdrop-brightness-75"
+                style={{
+                  maskImage:
+                    "linear-gradient(to top, black 0%, rgba(0, 0, 0, 0.6) 25%, transparent)",
+                  WebkitMaskImage:
+                    "linear-gradient(to top, black 0%, rgba(0, 0, 0, 0.6) 25%, transparent)",
+                }}
+              />
+
+              <div
+                className="pointer-events-none absolute inset-x-0 bottom-0 h-60 bg-gradient-to-b from-background/20 to-background/0"
+                style={{
+                  maskImage: "linear-gradient(to top, black 20%, transparent 70%)",
+                  WebkitMaskImage: "linear-gradient(to top, black 20%, transparent 70%)",
+                  backdropFilter: "blur(50px) saturate(130%)",
+                  WebkitBackdropFilter: "blur(50px) saturate(130%)",
+                }}
+              />
+            </div>
+          )}
+        </div>
+      </GlobalFileDropZone>
+    </div>
   )
 }
 
 interface ChatInterfaceProps {
   centerInputOnEmpty?: boolean
+  visualOffsetY?: string | number
 }
 export const ChatInterface = (props: ChatInterfaceProps) => (
   <ErrorBoundary fallback={AIErrorFallback}>
