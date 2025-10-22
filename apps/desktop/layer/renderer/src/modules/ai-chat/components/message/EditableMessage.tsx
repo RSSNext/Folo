@@ -20,6 +20,7 @@ interface EditableMessageProps {
   onSave: (content: SerializedEditorState, editor: LexicalEditor) => void
   onCancel: () => void
   className?: string
+  initialHeight?: number
 }
 
 export const EditableMessage = ({
@@ -28,6 +29,7 @@ export const EditableMessage = ({
   onSave,
   onCancel,
   className,
+  initialHeight,
 }: EditableMessageProps) => {
   const status = useChatStatus()
   const editingMessageId = useEditingMessageId()
@@ -43,6 +45,9 @@ export const EditableMessage = ({
 
   const isEditing = editingMessageId === messageId
   const isProcessing = status === "submitted" || status === "streaming"
+
+  // Compute initial editor height based on original message height
+  const editorInitialHeight = Math.max(56, initialHeight ?? 56)
 
   // Initialize editor with initial content
   useEffect(() => {
@@ -116,11 +121,15 @@ export const EditableMessage = ({
     <div className={cn("relative", className)}>
       {/* Edit input */}
       <div className="relative overflow-hidden rounded-xl border border-border/80 bg-background/60 backdrop-blur-xl duration-200 focus-within:border-accent/80 focus-within:ring-2 focus-within:ring-accent/20">
-        <ScrollArea rootClassName="mr-20 flex-1 overflow-auto" viewportClassName="px-5 py-3.5">
+        <ScrollArea
+          rootClassName="mr-20 flex-1 overflow-auto"
+          viewportClassName="px-5 py-3.5"
+          viewportProps={{ style: { height: editorInitialHeight } }}
+        >
           <LexicalRichEditor
             ref={editorRef}
             placeholder="Edit your message..."
-            className="h-14 min-w-64"
+            className="h-full min-w-64"
             onChange={handleEditorChange}
             onKeyDown={handleKeyDown}
             namespace="EditableMessageRichEditor"

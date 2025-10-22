@@ -1,6 +1,6 @@
 import { Spring } from "@follow/components/constants/spring.js"
 import { convertLexicalToMarkdown } from "@follow/components/ui/lexical-rich-editor/utils.js"
-import { stopPropagation, thenable } from "@follow/utils"
+import { nextFrame, stopPropagation, thenable } from "@follow/utils"
 import type { LexicalEditor, SerializedEditorState } from "lexical"
 import { AnimatePresence, m } from "motion/react"
 import * as React from "react"
@@ -54,9 +54,21 @@ export const UserChatMessage: React.FC<UserChatMessageProps> = React.memo(({ mes
     }
   }, [dataBlockParts.length, isEditing])
 
+  // Measure original message bubble height to initialize edit box height
+  const messageBubbleRef = React.useRef<HTMLDivElement>(null)
+  const [messageBubbleHeight, setMessageBubbleHeight] = React.useState(56)
+  // Only compute once before edit overlay appears
+
   const handleEdit = React.useCallback(() => {
-    setEditingMessageId(messageId)
-  }, [messageId, setEditingMessageId])
+    const el = messageBubbleRef.current
+    if (el) {
+      const { height } = el.getBoundingClientRect()
+      setMessageBubbleHeight(Math.max(56, Math.round(height)))
+    }
+    nextFrame(() => {
+      setEditingMessageId(messageId)
+    })
+  }, [messageId, setEditingMessageId, setMessageBubbleHeight])
 
   const handleSaveEdit = React.useCallback(
     (newState: SerializedEditorState, editor: LexicalEditor) => {
@@ -140,7 +152,7 @@ export const UserChatMessage: React.FC<UserChatMessageProps> = React.memo(({ mes
           onMouseLeave={() => setIsHovered(false)}
         >
           <div className="relative flex max-w-[calc(100%-1rem)] flex-col gap-2 text-text">
-            <div className="rounded-2xl bg-fill px-4 py-2.5 text-text">
+            <div ref={messageBubbleRef} className="rounded-2xl bg-fill px-4 py-2.5 text-text">
               <div className="flex select-text flex-col gap-2 text-sm">
                 <UserMessageParts message={message} />
               </div>
@@ -203,7 +215,8 @@ export const UserChatMessage: React.FC<UserChatMessageProps> = React.memo(({ mes
                   parts={message.parts}
                   onSave={handleSaveEdit}
                   onCancel={handleCancelEdit}
-                  className="min-h-full w-full"
+                  className="w-full"
+                  initialHeight={messageBubbleHeight}
                 />
               </div>
             </m.div>
