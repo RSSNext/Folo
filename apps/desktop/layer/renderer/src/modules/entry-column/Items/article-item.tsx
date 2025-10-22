@@ -1,4 +1,5 @@
 import { Skeleton } from "@follow/components/ui/skeleton/index.jsx"
+import { cn } from "@follow/utils/utils"
 
 import { RelativeTime } from "~/components/ui/datetime"
 import { Media } from "~/components/ui/media/Media"
@@ -13,7 +14,7 @@ export function ArticleItem({ entryId, translation }: UniversalItemProps) {
   return <ListItem entryId={entryId} translation={translation} />
 }
 
-ArticleItem.wrapperClassName = readableContentMaxWidth
+ArticleItem.wrapperClassName = cn(readableContentMaxWidth, "pl-7 pr-4")
 
 export function ArticleItemStateLess({ entry, feed }: EntryItemStatelessProps) {
   return (
