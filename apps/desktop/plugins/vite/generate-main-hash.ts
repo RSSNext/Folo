@@ -33,8 +33,7 @@ export async function calculateMainHash(
 async function main() {
   const cwd = process.cwd()
   const hash = await calculateMainHash(path.resolve(cwd, "layer/main"), [
-    path.resolve(cwd, "apps/desktop/package.json"),
-    path.resolve(cwd, "apps/desktop/layer/main/package.json"),
+    path.resolve(cwd, "package.json"),
   ])
 
   const packageJson = JSON.parse(await fs.readFile(path.resolve(cwd, "package.json"), "utf-8"))
