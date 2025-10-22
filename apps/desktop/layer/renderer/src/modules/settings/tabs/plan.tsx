@@ -63,65 +63,12 @@ const PLAN_CONFIGS: Plan[] = [
   },
 ]
 
-// AI Token configuration types
-interface AITokenPlan {
-  id: string
-  title: string
-  price: number
-  tokens: number
-  isPopular?: boolean
-}
-const AI_TOKEN_IN_PRO_PLAN = 15_000_000
-const AI_TOKEN_IN_PRO_PLAN_PER_DOLLAR = AI_TOKEN_IN_PRO_PLAN / 10
-// AI Token configurations
-const AI_TOKEN_CONFIGS: AITokenPlan[] = [
-  {
-    id: "folo ai token ($5)",
-    title: "Folo AI Token ($5)",
-    price: 5,
-    tokens: AI_TOKEN_IN_PRO_PLAN_PER_DOLLAR * 5,
-    isPopular: false,
-  },
-  {
-    id: "folo ai token ($10)",
-    title: "Folo AI Token ($10)",
-    price: 10,
-    tokens: AI_TOKEN_IN_PRO_PLAN_PER_DOLLAR * 10,
-    isPopular: true,
-  },
-  {
-    id: "folo ai token ($20)",
-    title: "Folo AI Token ($20)",
-    price: 20,
-    tokens: AI_TOKEN_IN_PRO_PLAN_PER_DOLLAR * 20,
-    isPopular: false,
-  },
-]
-
 const useUpgradePlan = ({ plan, annual }: { plan: string; annual: boolean }) => {
   return useMutation({
     mutationFn: async () => {
       const res = await subscription.upgrade({
         plan,
         annual,
-        successUrl: IN_ELECTRON ? `${DEEPLINK_SCHEME}refresh` : env.VITE_WEB_URL,
-        cancelUrl: env.VITE_WEB_URL,
-        disableRedirect: IN_ELECTRON,
-      })
-      if (IN_ELECTRON && res.data?.url) {
-        window.open(res.data.url, "_blank")
-      }
-    },
-  })
-}
-
-const usePurchaseAITokens = ({ tokenPlan }: { tokenPlan: string }) => {
-  return useMutation({
-    mutationFn: async () => {
-      // TODO: Implement AI token purchase API call
-      const res = await subscription.upgrade({
-        plan: tokenPlan,
-        annual: false,
         successUrl: IN_ELECTRON ? `${DEEPLINK_SCHEME}refresh` : env.VITE_WEB_URL,
         cancelUrl: env.VITE_WEB_URL,
         disableRedirect: IN_ELECTRON,
@@ -237,24 +184,6 @@ export function SettingPlan() {
               isCurrentPlan={role === plan.role}
             />
           ))}
-        </div>
-      </div>
-
-      {/* AI Tokens Section */}
-      <div className="space-y-4">
-        <div className="border-b border-fill-secondary pb-2">
-          <h2 className="text-lg font-semibold">AI Tokens</h2>
-          <p className="text-sm text-text-secondary">
-            Purchase additional AI tokens for enhanced content processing and analysis.
-          </p>
-        </div>
-
-        <div className="@container">
-          <div className="grid grid-cols-1 gap-4 @md:grid-cols-2 @xl:grid-cols-3">
-            {AI_TOKEN_CONFIGS.map((tokenPlan) => (
-              <AITokenCard key={tokenPlan.id} tokenPlan={tokenPlan} />
-            ))}
-          </div>
         </div>
       </div>
     </section>
@@ -531,97 +460,6 @@ const PlanAction = ({
           Cancel
         </Button>
       )}
-    </div>
-  )
-}
-
-// AI Token Card Component
-interface AITokenCardProps {
-  tokenPlan: AITokenPlan
-}
-
-const AITokenCard = ({ tokenPlan }: AITokenCardProps) => {
-  const purchaseTokensMutation = usePurchaseAITokens({
-    tokenPlan: tokenPlan.id,
-  })
-
-  // Format tokens display
-  const formatTokens = (tokens: number): string => {
-    if (tokens >= 1000000) {
-      return `${(tokens / 1000000).toFixed(1)}M`
-    }
-    if (tokens >= 1000) {
-      return `${(tokens / 1000).toFixed(0)}K`
-    }
-    return tokens.toString()
-  }
-
-  return (
-    <div
-      className={cn(
-        "group relative flex h-full flex-col overflow-hidden rounded-xl border transition-all duration-200",
-        tokenPlan.isPopular
-          ? "border-accent"
-          : "border-fill-tertiary bg-background hover:border-fill-secondary",
-      )}
-    >
-      {/* Popular badge */}
-      {tokenPlan.isPopular && (
-        <div className="absolute -top-px right-4 z-10">
-          <div className="rounded-b-lg bg-gradient-to-r from-accent to-accent/80 px-1.5 py-1 text-caption font-medium text-white shadow-sm">
-            Most Popular
-          </div>
-        </div>
-      )}
-
-      <div className="flex h-full flex-col p-4 @md:p-5">
-        <div className="flex-1 space-y-3 @md:space-y-4">
-          {/* Header */}
-          <div className="space-y-1">
-            <h3 className="text-base font-semibold @md:text-lg">{tokenPlan.title}</h3>
-            <div className="flex items-baseline gap-1">
-              <span className="text-xl font-bold">${tokenPlan.price}</span>
-              <span className="text-xs text-text-secondary @md:text-sm">one-time</span>
-            </div>
-          </div>
-
-          {/* Token amount */}
-          <div className="space-y-1.5 @md:space-y-2">
-            <div className="flex items-start gap-2.5 @md:gap-3">
-              <div className="mt-0.5 flex size-3.5 items-center justify-center rounded-full bg-blue/10 @md:size-4">
-                <i className="i-mgc-ai-cute-re text-[10px] text-blue @md:text-xs" />
-              </div>
-              <span className="text-xs leading-relaxed @md:text-sm">
-                {formatTokens(tokenPlan.tokens)} AI tokens
-              </span>
-            </div>
-            <div className="flex items-start gap-2.5 @md:gap-3">
-              <div className="mt-0.5 flex size-3.5 items-center justify-center rounded-full bg-green/10 @md:size-4">
-                <i className="i-mgc-check-cute-re text-[10px] text-green @md:text-xs" />
-              </div>
-              <span className="text-xs leading-relaxed @md:text-sm">Never expires</span>
-            </div>
-          </div>
-          <div />
-        </div>
-
-        {/* Purchase button */}
-        <Button
-          variant={tokenPlan.isPopular ? undefined : "outline"}
-          buttonClassName={
-            tokenPlan.isPopular
-              ? "w-full h-9 @md:h-10 text-xs @md:text-sm bg-gradient-to-r from-accent to-accent/80 hover:from-accent/90 hover:to-accent/70"
-              : "w-full h-9 @md:h-10 text-xs @md:text-sm"
-          }
-          onClick={() => purchaseTokensMutation.mutate()}
-          isLoading={purchaseTokensMutation.isPending}
-        >
-          Purchase
-        </Button>
-      </div>
-
-      {/* Subtle gradient line at bottom */}
-      <div className="absolute inset-x-0 bottom-0 h-px bg-gradient-to-r from-transparent via-fill-tertiary to-transparent" />
     </div>
   )
 }
