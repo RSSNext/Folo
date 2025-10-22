@@ -62,7 +62,7 @@ const DefaultWelcomeHeader = ({ description }: { description: string }) => (
     animate={{ opacity: 1, y: 0 }}
     className="space-y-6 text-center"
   >
-    <div className="mx-auto size-16">
+    <div className="center">
       <AISpline />
     </div>
     <div className="flex flex-col gap-2">

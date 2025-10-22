@@ -7,9 +7,16 @@ import { useTranslation } from "react-i18next"
 
 import { AIChatPanelStyle, setAIPanelVisibility, useAIChatPanelStyle } from "~/atoms/settings/ai"
 import { useTimelineSummaryAutoContext } from "~/modules/ai-chat/hooks/useTimelineSummaryAutoContext"
-import { useBlockActions, useChatActions, useCurrentTitle } from "~/modules/ai-chat/store/hooks"
+import {
+  useBlockActions,
+  useChatActions,
+  useCurrentTitle,
+  useHasMessages,
+} from "~/modules/ai-chat/store/hooks"
+import { useSettingModal } from "~/modules/settings/modal/use-setting-modal-hack"
 
 import { useAIRootState } from "../../store/AIChatContext"
+import { AISpline } from "../3d-models/AISpline"
 import { ChatHistoryDropdown } from "./ChatHistoryDropdown"
 import { ChatMoreDropdown } from "./ChatMoreDropdown"
 import { AIHeaderTitle } from "./ChatTitle"
@@ -25,11 +32,13 @@ const ChatHeaderLayout = ({
     displayTitle: string | undefined
   }) => ReactNode
 }) => {
+  const hasMessages = useHasMessages()
   const currentTitle = useCurrentTitle()
   const chatActions = useChatActions()
   const blockActions = useBlockActions()
   const { t } = useTranslation("ai")
   const shouldDisableTimelineSummary = useTimelineSummaryAutoContext()
+  const settingModalPresent = useSettingModal()
 
   const displayTitle = currentTitle
 
@@ -72,6 +81,11 @@ const ChatHeaderLayout = ({
 
         <div className="relative z-10 flex h-full items-center justify-between px-4">
           <div className="mr-2 flex min-w-0 items-center">
+            {hasMessages && (
+              <div onClick={() => settingModalPresent("ai")}>
+                <AISpline className="-mx-1 -mb-1 mr-1 size-9" />
+              </div>
+            )}
             <ChatHistoryDropdown
               triggerElement={
                 <AIHeaderTitle title={displayTitle} placeholder={t("common.new_chat")} />

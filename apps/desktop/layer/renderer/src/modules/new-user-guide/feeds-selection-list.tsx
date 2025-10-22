@@ -198,7 +198,7 @@ function FeedSelectionFirstScreen() {
           transition={{ delay: 0.1, duration: 0.6, type: "spring" }}
           className="mb-6"
         >
-          <div className="shadow-perfect mx-auto mb-4 flex size-16 items-center justify-center rounded-2xl">
+          <div className="mx-auto mb-4 flex items-center justify-center">
             <AISplineLoader />
           </div>
         </m.div>

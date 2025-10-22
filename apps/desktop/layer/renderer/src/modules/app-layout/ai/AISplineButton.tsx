@@ -35,7 +35,7 @@ export const AIIndicator: FC = () => {
           onClick={handleClick}
           className={clsx(
             "fixed bottom-8 right-8 z-40",
-            "size-16 rounded-2xl",
+            "rounded-2xl",
             "hover:scale-105",
             "active:scale-95",
             "flex items-center justify-center",
