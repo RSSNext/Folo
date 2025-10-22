@@ -1,6 +1,6 @@
 import type { AccentColor } from "./interface"
 
-const ACCENT_COLOR_MAP: Record<AccentColor, { light: string; dark: string }> = {
+const ACCENT_COLOR_MAP: Record<string, { light: string; dark: string }> = {
   orange: {
     light: "#FF6B35",
     dark: "#FF5C00",
@@ -36,5 +36,9 @@ const ACCENT_COLOR_MAP: Record<AccentColor, { light: string; dark: string }> = {
 }
 
 export const getAccentColorValue = (color: AccentColor) => {
-  return ACCENT_COLOR_MAP[color]
+  // If it's a custom color (hex code), return it for both light and dark
+  if (color.startsWith("#")) {
+    return { light: color, dark: color }
+  }
+  return ACCENT_COLOR_MAP[color] || ACCENT_COLOR_MAP.blue
 }

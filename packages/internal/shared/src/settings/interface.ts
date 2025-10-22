@@ -46,8 +46,10 @@ export type AccentColor =
   | "red"
   | "yellow"
   | "gray"
+  | string // Allow custom hex colors
 export interface UISettings {
   accentColor: AccentColor
+  customAccentColor?: string // Store custom color value
   entryColWidth: number
   aiColWidth: number
   /**
