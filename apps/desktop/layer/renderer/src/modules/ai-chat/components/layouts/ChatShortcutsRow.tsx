@@ -1,11 +1,8 @@
 import { DEFAULT_SHORTCUT_TARGETS } from "@follow/shared/settings/interface"
-import { nextFrame } from "@follow/utils"
 import { useCallback, useMemo } from "react"
 import { useTranslation } from "react-i18next"
 
 import { useAISettingValue } from "~/atoms/settings/ai"
-import { useSettingModal } from "~/modules/settings/modal/use-setting-modal-hack"
-import { AI_SETTING_SECTION_IDS } from "~/modules/settings/tabs/ai"
 import { useCreateAIShortcutModal } from "~/modules/settings/tabs/ai/shortcuts/hooks"
 
 import type { ShortcutData } from "../../editor/plugins/shortcut/types"
@@ -20,7 +17,6 @@ export const ChatShortcutsRow: React.FC<ChatShortcutsRowProps> = ({ onSelect }) 
   const { t } = useTranslation("ai")
   const aiSettings = useAISettingValue()
   const mainEntryId = useMainEntryId()
-  const showSettings = useSettingModal()
 
   const shortcutsToDisplay = useMemo(() => {
     const shortcuts = aiSettings.shortcuts ?? []
@@ -46,11 +42,8 @@ export const ChatShortcutsRow: React.FC<ChatShortcutsRowProps> = ({ onSelect }) 
 
   const handleAddShortcut = useCreateAIShortcutModal()
   const handleCustomize = useCallback(() => {
-    showSettings({ tab: "ai", section: AI_SETTING_SECTION_IDS.shortcuts })
-    nextFrame(() => {
-      handleAddShortcut()
-    })
-  }, [handleAddShortcut, showSettings])
+    handleAddShortcut()
+  }, [handleAddShortcut])
 
   return (
     <div className="mb-3 px-1">

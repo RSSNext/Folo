@@ -8,7 +8,7 @@ import type { ReactNode } from "react"
 const aiShortcutButtonVariants = cva(
   [
     // Base styles
-    "inline-flex items-center gap-2 rounded-full font-medium transition-shadow",
+    "inline-flex items-center gap-2 rounded-full font-medium",
     "hover:shadow-sm whitespace-nowrap",
     "backdrop-blur-background",
   ],
@@ -20,7 +20,7 @@ const aiShortcutButtonVariants = cva(
       },
       variant: {
         default: [
-          "hover:bg-material-thick bg-material-thin",
+          "hover:bg-material-thick bg-material-ultra-thick",
           "border-border/50 hover:border-border border",
           "text-text hover:text-text",
         ],
