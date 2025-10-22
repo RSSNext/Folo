@@ -78,7 +78,7 @@ export const ChatInput = memo(({ onSend, variant, ref: forwardedRef }: ChatInput
     setCurrentEditor(editor)
 
     editorState.read(() => {
-      setIsEmpty($getRoot().isEmpty())
+      setIsEmpty($getRoot().getTextContent().trim() === "")
     })
   }, [])
 

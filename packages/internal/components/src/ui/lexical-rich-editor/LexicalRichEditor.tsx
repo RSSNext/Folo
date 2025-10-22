@@ -71,6 +71,7 @@ export const LexicalRichEditor = function LexicalRichEditor({
   enabledPlugins = defaultEnabledPlugins,
   initalEditorState,
   plugins,
+  accessories,
 
   onKeyDown,
   onChange,
@@ -103,12 +104,14 @@ export const LexicalRichEditor = function LexicalRichEditor({
         root.clear()
       })
     },
-    isEmpty: () => editorRef?.getEditorState().read(() => $getRoot().isEmpty()) || false,
+    isEmpty: () =>
+      editorRef?.getEditorState().read(() => $getRoot().getTextContent().trim() === "") || false,
   }))
 
   return (
     <LexicalComposer initialConfig={initialConfig}>
       <div className={cn("relative cursor-text", className)}>
+        {accessories}
         <RichTextPlugin
           contentEditable={
             <ContentEditable

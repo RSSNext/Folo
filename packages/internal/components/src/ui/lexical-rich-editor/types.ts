@@ -26,7 +26,7 @@ export interface LexicalRichEditorProps {
   enabledPlugins?: BuiltInPlugins
   initalEditorState?: InitialEditorStateType
   plugins?: LexicalPluginFC[]
-
+  accessories?: React.ReactNode[]
   onLengthChange?: (length: number, editor: LexicalEditor) => void
   onChange?: (editorState: EditorState, editor: LexicalEditor) => void
   onKeyDown?: (event: KeyboardEvent) => boolean
