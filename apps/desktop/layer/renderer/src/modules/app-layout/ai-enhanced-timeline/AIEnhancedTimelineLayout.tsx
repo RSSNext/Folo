@@ -104,7 +104,7 @@ const AIEnhancedTimelineLayoutImpl = () => {
 
   // AI chat resizable panel configuration
   const isAllView = view === FeedViewType.All
-  const widthRange: [number, number] = isAllView ? [500, 1200] : [300, 1200]
+  const widthRange: [number, number] = isAllView ? [500, timelineMaxWidth] : [300, timelineMaxWidth]
   const [minWidth, maxWidth] = widthRange
 
   const clampWidth = useCallback(
@@ -120,8 +120,8 @@ const AIEnhancedTimelineLayoutImpl = () => {
   const resolvePreferredWidth = useCallback(() => {
     const ui = getUISettings()
     const halfScreen = getHalfScreenWidth()
-    return isAllView ? (ui.aiColWidthAll ?? halfScreen) : ui.aiColWidth
-  }, [getHalfScreenWidth, isAllView])
+    return Math.min(isAllView ? (ui.aiColWidthAll ?? halfScreen) : ui.aiColWidth, timelineMaxWidth)
+  }, [getHalfScreenWidth, isAllView, timelineMaxWidth])
 
   // Calculate initial width depending on view
   const initialAiWidth = useMemo(() => resolvePreferredWidth(), [resolvePreferredWidth])
