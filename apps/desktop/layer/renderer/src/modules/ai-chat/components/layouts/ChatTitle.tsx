@@ -38,7 +38,7 @@ export const AIHeaderTitle = ({
             {displayTitle}
           </span>
         </h1>
-        <i className="i-mingcute-down-line size-4 text-text-secondary transition-all duration-200 group-hover/button:text-text group-data-[state=open]:rotate-180 group-data-[state=open]:text-text" />
+        <i className="i-mingcute-down-line size-4 shrink-0 text-text-secondary transition-all duration-200 group-hover/button:text-text group-data-[state=open]:rotate-180 group-data-[state=open]:text-text" />
       </button>
     </div>
   )
