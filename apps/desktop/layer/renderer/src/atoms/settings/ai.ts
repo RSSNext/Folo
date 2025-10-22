@@ -5,6 +5,8 @@ import { jotaiStore } from "@follow/utils"
 import { clamp } from "es-toolkit"
 import { atom, useAtomValue } from "jotai"
 
+import { getFeature } from "~/hooks/biz/useFeature"
+
 export interface WebAISettings extends AISettings {
   panelStyle: AIChatPanelStyle
   showSplineButton: boolean
@@ -74,7 +76,10 @@ export const getFloatingPanelState = () => jotaiStore.get(floatingPanelStateAtom
 const aiPanelVisibilityAtom = atom<boolean>(false)
 export const useAIPanelVisibility = () => useAtomValue(aiPanelVisibilityAtom)
 export const setAIPanelVisibility = (visibility: boolean) => {
-  jotaiStore.set(aiPanelVisibilityAtom, visibility)
+  const aiEnabled = getFeature("ai")
+  if (aiEnabled) {
+    jotaiStore.set(aiPanelVisibilityAtom, visibility)
+  }
 }
 export const getAIPanelVisibility = () => jotaiStore.get(aiPanelVisibilityAtom)
 

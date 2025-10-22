@@ -21,7 +21,6 @@ import {
   useUISettingValue,
 } from "~/atoms/settings/ui"
 import { useCurrentModal, useModalStack } from "~/components/ui/modal/stacked/hooks"
-import { useFeature } from "~/hooks/biz/useFeature"
 import { useSetTheme } from "~/hooks/common"
 import { useShowCustomizeToolbarModal } from "~/modules/customize-toolbar/modal"
 
@@ -41,7 +40,6 @@ const SettingBuilder = createSettingBuilder(useUISettingValue)
 const _defineItem = createDefineSettingItem(useUISettingValue, setUISetting)
 
 export const SettingAppearance = () => {
-  const aiEnabled = useFeature("ai")
   const { t } = useTranslation("settings")
   const isMobile = useMobile()
   const defineItem = useWrapEnhancedSettingItem(_defineItem, WrapEnhancedSettingTab.Appearance)
@@ -163,7 +161,7 @@ export const SettingAppearance = () => {
 
           CustomCSS,
           CustomizeToolbar,
-          aiEnabled && CustomizeSubscriptionTabs,
+          CustomizeSubscriptionTabs,
         ]}
       />
     </div>

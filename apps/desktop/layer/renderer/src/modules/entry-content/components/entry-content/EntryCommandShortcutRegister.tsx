@@ -5,7 +5,6 @@ import { useHotkeys } from "react-hotkeys-hook"
 
 import { FocusablePresets } from "~/components/common/Focusable"
 import { useHasModal } from "~/components/ui/modal/stacked/hooks"
-import { useFeature } from "~/hooks/biz/useFeature"
 import { useNavigateEntry } from "~/hooks/biz/useNavigateEntry"
 import { COMMAND_ID } from "~/modules/command/commands/id"
 import { useCommandBinding } from "~/modules/command/hooks/use-command-binding"
@@ -61,8 +60,6 @@ export const EntryCommandShortcutRegister = ({
     args: [{ entryId }],
   })
 
-  const isAIlayout = useFeature("ai")
-
   const navigate = useNavigateEntry()
   useHotkeys(
     "Escape",
@@ -70,7 +67,7 @@ export const EntryCommandShortcutRegister = ({
       navigate({ entryId: null })
     },
     {
-      enabled: isAIlayout && baseCondition,
+      enabled: baseCondition,
     },
   )
 

@@ -21,6 +21,7 @@ import {
   DropdownMenuSeparator,
   DropdownMenuTrigger,
 } from "~/components/ui/dropdown-menu/dropdown-menu"
+import { useFeature } from "~/hooks/biz/useFeature"
 import { UrlBuilder } from "~/lib/url-builder"
 import { useAchievementModal } from "~/modules/achievement/hooks"
 import { usePresentUserProfileModal } from "~/modules/profile/hooks"
@@ -45,6 +46,7 @@ export const ProfileButton: FC<ProfileButtonProps> = memo((props) => {
   const presentUserProfile = usePresentUserProfileModal("dialog")
   const presentAchievement = useAchievementModal()
   const { t } = useTranslation()
+  const aiEnabled = useFeature("ai")
 
   const [dropdown, setDropdown] = useState(false)
 
@@ -142,15 +144,17 @@ export const ProfileButton: FC<ProfileButtonProps> = memo((props) => {
           </DropdownMenuItem>
         )}
 
-        <DropdownMenuItem
-          className="pl-3"
-          onClick={() => {
-            navigate("/ai")
-          }}
-          icon={<i className="i-mgc-ai-cute-re" />}
-        >
-          {t("user_button.ai")}
-        </DropdownMenuItem>
+        {aiEnabled && (
+          <DropdownMenuItem
+            className="pl-3"
+            onClick={() => {
+              navigate("/ai")
+            }}
+            icon={<i className="i-mgc-ai-cute-re" />}
+          >
+            {t("user_button.ai")}
+          </DropdownMenuItem>
+        )}
 
         <DropdownMenuSeparator />
 

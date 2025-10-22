@@ -2,7 +2,7 @@ import { useGlobalFocusableScopeSelector } from "@follow/components/common/Focus
 import { useMobile } from "@follow/components/hooks/useMobile.js"
 import { getMousePosition } from "@follow/components/hooks/useMouse.js"
 import { ActionButton } from "@follow/components/ui/button/action-button.js"
-import { FeedViewType, getView } from "@follow/constants"
+import { FeedViewType } from "@follow/constants"
 import { useEntry } from "@follow/store/entry/hooks"
 import { unreadSyncService } from "@follow/store/unread/store"
 import { cn } from "@follow/utils/utils"
@@ -24,9 +24,9 @@ import {
   useSortedEntryActions,
 } from "~/hooks/biz/useEntryActions"
 import { useEntryContextMenu } from "~/hooks/biz/useEntryContextMenu"
-import { useFeature } from "~/hooks/biz/useFeature"
 import { getNavigateEntryPath, useNavigateEntry } from "~/hooks/biz/useNavigateEntry"
 import { getRouteParams, useRouteParams, useRouteParamsSelector } from "~/hooks/biz/useRouteParams"
+import { useShowEntryDetailsColumn } from "~/hooks/biz/useShowEntryDetailsColumn"
 
 export const EntryItemWrapper: FC<
   {
@@ -47,6 +47,7 @@ export const EntryItemWrapper: FC<
   const isActive = useRouteParamsSelector(({ entryId }) => entryId === entry?.id, [entry?.id])
   const when = useGlobalFocusableScopeSelector(FocusablePresets.isTimeline)
   useContextMenuActionShortCutTrigger(actionConfigs, isActive && when)
+  const showEntryDetailsColumn = useShowEntryDetailsColumn()
 
   const asRead = useEntryIsRead(entry)
   const hoverMarkUnread = useGeneralSettingKey("hoverMarkUnread")
@@ -141,8 +142,7 @@ export const EntryItemWrapper: FC<
     feedId: entry?.feedId || entry?.inboxId || "",
   })
 
-  const aiEnabled = useFeature("ai")
-  const isWide = getView(view)?.wideMode || aiEnabled
+  const isWide = !showEntryDetailsColumn
 
   const Link = view === FeedViewType.SocialMedia ? "article" : NavLink
   const isAll = view === FeedViewType.All

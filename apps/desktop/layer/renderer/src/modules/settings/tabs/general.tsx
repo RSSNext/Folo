@@ -20,7 +20,6 @@ import {
   useGeneralSettingValue,
 } from "~/atoms/settings/general"
 import { useDialog } from "~/components/ui/modal/stacked/hooks"
-import { useFeature } from "~/hooks/biz/useFeature"
 import { useProxyValue, useSetProxy } from "~/hooks/biz/useProxySetting"
 import { useMinimizeToTrayValue, useSetMinimizeToTray } from "~/hooks/biz/useTraySetting"
 import { fallbackLanguage } from "~/i18n"
@@ -67,7 +66,6 @@ export const SettingGeneral = () => {
   const { ask } = useDialog()
   const reRenderKey = useGeneralSettingKey("enhancedSettings")
 
-  const isAiLayout = useFeature("ai")
   return (
     <div className="mt-4">
       <SettingBuilder
@@ -140,11 +138,10 @@ export const SettingGeneral = () => {
             label: t("general.dim_read.label"),
             description: t("general.dim_read.description"),
           }),
-          isAiLayout &&
-            defineSettingItem("showCompactTimelineInSub", {
-              label: t("general.show_compact_timeline_in_sub.label"),
-              description: t("general.show_compact_timeline_in_sub.description"),
-            }),
+          defineSettingItem("showCompactTimelineInSub", {
+            label: t("general.show_compact_timeline_in_sub.label"),
+            description: t("general.show_compact_timeline_in_sub.description"),
+          }),
 
           { type: "title", value: t("general.mark_as_read.title") },
 

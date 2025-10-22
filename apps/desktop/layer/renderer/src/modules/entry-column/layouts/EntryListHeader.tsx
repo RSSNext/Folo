@@ -18,7 +18,6 @@ import { previewBackPath } from "~/atoms/preview"
 import { useGeneralSettingKey } from "~/atoms/settings/general"
 import { useSubscriptionColumnShow } from "~/atoms/sidebar"
 import { ROUTE_ENTRY_PENDING } from "~/constants"
-import { useFeature } from "~/hooks/biz/useFeature"
 import { useFollow } from "~/hooks/biz/useFollow"
 import { getRouteParams, useRouteParams } from "~/hooks/biz/useRouteParams"
 import { COMMAND_ID } from "~/modules/command/commands/id"
@@ -34,7 +33,6 @@ import { useIsPreviewFeed } from "../hooks/useIsPreviewFeed"
 import { useEntryRootState } from "../store/EntryColumnContext"
 import { AppendTaildingDivider } from "./AppendTaildingDivider"
 import { SwitchToMasonryButton } from "./buttons/SwitchToMasonryButton"
-import { WideModeButton } from "./buttons/WideModeButton"
 
 export const EntryListHeader: FC<{
   refetch: () => void
@@ -81,7 +79,6 @@ export const EntryListHeader: FC<{
   const toggleUnreadOnlyShortcut = useCommandShortcut(COMMAND_ID.timeline.unreadOnly)
   const runCmdFn = useRunCommandFn()
 
-  const aiEnabled = useFeature("ai")
   const { isScrolledBeyondThreshold } = useEntryRootState()
   const isScrolledBeyondThresholdValue = useAtomValue(isScrolledBeyondThreshold)
   return (
@@ -116,7 +113,6 @@ export const EntryListHeader: FC<{
             )}
 
             <AppendTaildingDivider>
-              {!getView(view)?.wideMode && !aiEnabled && <WideModeButton />}
               {view === FeedViewType.Pictures && <SwitchToMasonryButton />}
             </AppendTaildingDivider>
 

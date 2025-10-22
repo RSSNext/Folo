@@ -11,7 +11,7 @@ export const useShowEntryDetailsColumn = () => {
   const isAIPanelVisible = useAIPanelVisibility()
 
   return (
-    view === FeedViewType.Articles &&
+    (view === FeedViewType.All || view === FeedViewType.Articles) &&
     (aiPanelStyle === AIChatPanelStyle.Floating || !isAIPanelVisible)
   )
 }
