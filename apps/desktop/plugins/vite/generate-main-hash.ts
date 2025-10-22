@@ -14,8 +14,6 @@ export async function calculateMainHash(
     ignore: ["node_modules/**", "dist/**"],
   })
 
-  // Sort files for consistent hash
-  files.push(...additionalFiles)
   files.sort()
 
   const hashSum = createHash("sha256")
@@ -23,8 +21,12 @@ export async function calculateMainHash(
   // Read and update hash for each file
   for (const file of files) {
     const content = await fs.readFile(path.join(mainDir, file))
-    const normalizedContent = content.toString("utf-8").replaceAll("\r\n", "\n")
-    hashSum.update(Buffer.from(normalizedContent))
+    hashSum.update(content)
+  }
+
+  for (const file of additionalFiles) {
+    const content = await fs.readFile(file)
+    hashSum.update(content)
   }
 
   return hashSum.digest("hex")
