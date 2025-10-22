@@ -51,11 +51,11 @@ export const useEntryContent = (entryId: string) => {
   const contentTranslated = useEntryTranslation({
     entryId,
     language: actionLanguage,
-    setting: enableTranslation,
+    enabled: enableTranslation,
   })
   usePrefetchEntryTranslation({
     entryIds: [entryId],
-    setting: enableTranslation,
+    enabled: enableTranslation,
     language: actionLanguage,
     withContent: true,
     target: isReadabilitySuccess ? "readabilityContent" : "content",

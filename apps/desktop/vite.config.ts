@@ -103,6 +103,7 @@ export default ({ mode }) => {
         },
       },
     },
+
     server: {
       host: true,
       port: 2233,

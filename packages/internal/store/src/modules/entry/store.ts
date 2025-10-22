@@ -7,6 +7,7 @@ import { debounce } from "es-toolkit/compat"
 import { api } from "../../context"
 import type { Hydratable, Resetable } from "../../lib/base"
 import { createImmerSetter, createTransaction, createZustandStore } from "../../lib/helper"
+import { readNdjsonStream } from "../../lib/stream"
 import { apiMorph } from "../../morph/api"
 import { dbStoreMorph } from "../../morph/db-store"
 import { storeDbMorph } from "../../morph/store-db"
@@ -637,46 +638,9 @@ class EntrySyncServices {
         return
       }
 
-      const reader = response.body?.getReader()
-
-      if (!reader) return
-
-      const decoder = new TextDecoder()
-      let buffer = ""
-
-      try {
-        while (true) {
-          const { done, value } = await reader.read()
-          if (done) break
-
-          buffer += decoder.decode(value, { stream: true })
-          const lines = buffer.split("\n")
-
-          // Process all complete lines
-          for (let i = 0; i < lines.length - 1; i++) {
-            if (lines[i]!.trim()) {
-              const json = JSON.parse(lines[i]!)
-              // Handle each JSON line here
-
-              entryActions.updateEntryContent({ entryId: json.id, content: json.content })
-            }
-          }
-
-          // Keep the last incomplete line in the buffer
-          buffer = lines.at(-1) || ""
-        }
-
-        // Process any remaining data
-        if (buffer.trim()) {
-          const json = JSON.parse(buffer)
-
-          entryActions.updateEntryContent({ entryId: json.id, content: json.content })
-        }
-      } catch (error) {
-        console.error("Error reading stream:", error)
-      } finally {
-        reader.releaseLock()
-      }
+      await readNdjsonStream<{ id: string; content: string }>(response, async (json) => {
+        await entryActions.updateEntryContent({ entryId: json.id, content: json.content })
+      })
     }
 
     readStream()

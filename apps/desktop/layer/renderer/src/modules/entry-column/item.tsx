@@ -25,11 +25,11 @@ const EntryItemImpl = memo(function EntryItemImpl({
   const translation = useEntryTranslation({
     entryId,
     language: actionLanguage,
-    setting: enableTranslation,
+    enabled: enableTranslation,
   })
   usePrefetchEntryTranslation({
     entryIds: [entryId],
-    setting: enableTranslation,
+    enabled: enableTranslation,
     language: actionLanguage,
     withContent: view === FeedViewType.SocialMedia,
   })
