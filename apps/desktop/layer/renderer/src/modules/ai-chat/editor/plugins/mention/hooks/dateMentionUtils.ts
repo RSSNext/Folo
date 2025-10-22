@@ -116,8 +116,6 @@ export const createDateMentionData = ({
   label,
   labelOptions,
   translate,
-  locale,
-  withRangeKey,
   displayName,
 }: {
   id?: string
@@ -125,8 +123,6 @@ export const createDateMentionData = ({
   label?: MentionLabelDescriptor
   labelOptions?: DateMentionData["labelOptions"]
   translate: LabelTranslator
-  locale: string
-  withRangeKey: I18nKeysForAi
   displayName?: string
 }): DateMentionData => {
   // For relative dates with an id, use the relative format
@@ -138,15 +134,7 @@ export const createDateMentionData = ({
       : formatRangeValue(range)
   const text = value // Use the same value for text
 
-  const baseLabel = displayName ?? resolveMentionLabel(label, translate) ?? value
-  let resolvedName = baseLabel
-
-  if (labelOptions?.appendRange) {
-    resolvedName = translate(withRangeKey, {
-      label: baseLabel,
-      range: formatLocalizedRange(range, locale),
-    })
-  }
+  const resolvedName = displayName ?? resolveMentionLabel(label, translate) ?? value
 
   return {
     id: id ?? `date:${value}`,
@@ -207,7 +195,7 @@ export const getDateMentionDisplayName = (
   mention: Pick<DateMentionData, "label" | "labelOptions" | "value" | "name">,
   translate: LabelTranslator,
   locale: string,
-  withRangeKey: I18nKeysForAi,
+  asRange = false,
 ): string => {
   // Only rely on value range to determine the display name
   if (typeof mention.value !== "string") {
@@ -235,12 +223,8 @@ export const getDateMentionDisplayName = (
   }
 
   const matched = matchRelative()
-  if (matched) {
-    const label = translate(matched.labelKey)
-    return translate(withRangeKey, {
-      label,
-      range: formatLocalizedRange(range, locale),
-    })
+  if (matched && !asRange) {
+    return translate(matched.labelKey)
   }
 
   // Fallback: show the localized date range only

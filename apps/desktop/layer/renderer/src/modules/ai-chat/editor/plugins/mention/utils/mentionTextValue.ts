@@ -6,6 +6,8 @@ import { ROUTE_FEED_IN_FOLDER } from "~/constants"
 import { getRouteParams } from "~/hooks/biz/useRouteParams"
 import { getI18n } from "~/i18n"
 
+import type { LabelTranslator } from "../hooks/dateMentionUtils"
+import { getDateMentionDisplayName } from "../hooks/dateMentionUtils"
 import type { MentionData } from "../types"
 
 export function getMentionTextValue(mentionData: {
@@ -27,7 +29,11 @@ export function getMentionTextValue(mentionData: {
   return `<mention-${type} id="${value}"></mention-${type}>`
 }
 
-export function getMentionDisplayTextValue(mentionData: MentionData): string {
+export function getMentionDisplayTextValue(
+  mentionData: MentionData,
+  translate: LabelTranslator,
+  locale: string,
+): string {
   const { type, value } = mentionData
 
   switch (type) {
@@ -49,6 +55,10 @@ export function getMentionDisplayTextValue(mentionData: MentionData): string {
         return getI18n().t(viewKey, { ns: "common" })
       }
       return "Unknown View"
+    }
+
+    case "date": {
+      return getDateMentionDisplayName(mentionData, translate, locale, true)
     }
     default: {
       return value

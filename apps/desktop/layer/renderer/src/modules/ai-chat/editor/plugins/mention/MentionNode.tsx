@@ -13,7 +13,6 @@ import { $applyNodeReplacement, DecoratorNode } from "lexical"
 import * as React from "react"
 
 import { MentionComponent } from "./components/MentionComponent"
-import { RANGE_WITH_LABEL_KEY } from "./hooks/dateMentionConfig"
 import { getDateMentionDisplayName } from "./hooks/dateMentionUtils"
 import type { MentionData } from "./types"
 
@@ -166,5 +165,5 @@ const resolveMentionDisplayName = (mentionData: MentionData): string => {
   const language = i18next.language || i18next.resolvedLanguage || i18next.options?.lng || "en"
   const translate = i18next.getFixedT(language, "ai")
 
-  return getDateMentionDisplayName(mentionData, translate, language, RANGE_WITH_LABEL_KEY)
+  return getDateMentionDisplayName(mentionData, translate, language)
 }

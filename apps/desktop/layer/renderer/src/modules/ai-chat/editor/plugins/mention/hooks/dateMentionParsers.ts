@@ -6,7 +6,7 @@ import type { TFunction } from "i18next"
 
 import type { MentionData, MentionLabelDescriptor } from "../types"
 import type { RelativeDateDefinition } from "./dateMentionConfig"
-import { RANGE_WITH_LABEL_KEY, RELATIVE_DATE_DEFINITIONS } from "./dateMentionConfig"
+import { RELATIVE_DATE_DEFINITIONS } from "./dateMentionConfig"
 import type { DateRange } from "./dateMentionUtils"
 import {
   createDateMentionData,
@@ -118,8 +118,6 @@ const buildRangeMention = (
     label: candidate.label,
     labelOptions: appendRange ? { appendRange: true } : undefined,
     translate: context.t,
-    locale: context.language,
-    withRangeKey: RANGE_WITH_LABEL_KEY,
   })
 }
 
@@ -215,8 +213,6 @@ export const createDateMentionBuilder = (context: DateMentionBuilderContext) => 
         const chronoMention = createDateMentionData({
           range: naturalDateRange,
           translate: context.t,
-          locale: context.language,
-          withRangeKey: RANGE_WITH_LABEL_KEY,
           displayName: formatLocalizedRange(naturalDateRange, context.language),
         })
         mentions.push(chronoMention)

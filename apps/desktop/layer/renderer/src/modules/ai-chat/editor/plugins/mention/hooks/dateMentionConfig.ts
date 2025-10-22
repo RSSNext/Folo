@@ -188,5 +188,3 @@ export interface WeekdayTranslationDescriptor {
   labelKey: string
   searchKey: string
 }
-
-export const RANGE_WITH_LABEL_KEY = "mentions.date.display.with_range"

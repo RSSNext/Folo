@@ -6,7 +6,6 @@ import { useTranslation } from "react-i18next"
 import type { TypeaheadGroup } from "../../shared/components/TypeaheadDropdown"
 import { TypeaheadDropdown } from "../../shared/components/TypeaheadDropdown"
 import { MENTION_TRIGGER_PATTERN } from "../constants"
-import { RANGE_WITH_LABEL_KEY } from "../hooks/dateMentionConfig"
 import { getDateMentionDisplayName } from "../hooks/dateMentionUtils"
 import type { MentionData } from "../types"
 import { MentionTypeIcon } from "./shared/MentionTypeIcon"
@@ -43,7 +42,7 @@ const MentionSuggestionItem = React.memo(
 
     const displayName = React.useMemo(() => {
       if (mention.type === "date") {
-        return getDateMentionDisplayName(mention, t, language, RANGE_WITH_LABEL_KEY)
+        return getDateMentionDisplayName(mention, t, language)
       }
       return mention.name
     }, [mention, t, language])

@@ -80,7 +80,6 @@
   "integration.mcp.services.empty.title": "No MCP Services Connected",
   "integration.mcp.services.title": "MCP Services",
   "integration.title": "Integration",
-  "mentions.date.display.with_range": "{{label}} ({{range}})",
   "mentions.date.relative.last_15_days.label": "Last 15 days",
   "mentions.date.relative.last_15_days.search": "last 15 days|past 15 days|last half month|past half month",
   "mentions.date.relative.last_30_days.label": "Last 30 days",

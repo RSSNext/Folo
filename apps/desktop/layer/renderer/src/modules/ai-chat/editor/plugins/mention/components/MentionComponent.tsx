@@ -15,7 +15,6 @@ import * as React from "react"
 import { useTranslation } from "react-i18next"
 
 import { MentionLikePill } from "../../shared/components/MentionLikePill"
-import { RANGE_WITH_LABEL_KEY } from "../hooks/dateMentionConfig"
 import {
   createDateMentionData,
   getDateMentionDisplayName,
@@ -34,7 +33,9 @@ interface MentionComponentProps {
 }
 
 const MentionTooltipContent = ({ mentionData }: { mentionData: MentionData }) => {
-  const displayValue = getMentionDisplayTextValue(mentionData)
+  const { t, i18n } = useTranslation("ai")
+  const language = i18n.language || i18n.resolvedLanguage || "en"
+  const displayValue = getMentionDisplayTextValue(mentionData, t, language)
 
   const getIconBgColor = () => {
     if (mentionData.type === "view" && typeof mentionData.value === "number") {
@@ -126,7 +127,7 @@ export const MentionComponent: React.FC<MentionComponentProps> = ({
 
   const displayName = React.useMemo(() => {
     if (mentionData.type === "date") {
-      return getDateMentionDisplayName(mentionData, t, language, RANGE_WITH_LABEL_KEY)
+      return getDateMentionDisplayName(mentionData, t, language)
     }
     return `@${mentionData.name}`
   }, [mentionData, t, language])
@@ -142,8 +143,6 @@ export const MentionComponent: React.FC<MentionComponentProps> = ({
       const newMentionData = createDateMentionData({
         range,
         translate: t,
-        locale: language,
-        withRangeKey: RANGE_WITH_LABEL_KEY,
       })
 
       editor.update(() => {
@@ -153,7 +152,7 @@ export const MentionComponent: React.FC<MentionComponentProps> = ({
         }
       })
     },
-    [nodeKey, editor, t, language],
+    [nodeKey, editor, t],
   )
 
   const currentDateRange = React.useMemo(() => {

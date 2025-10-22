@@ -74,7 +74,6 @@
   "integration.mcp.services.empty.title": "MCPサービスが接続されていません",
   "integration.mcp.services.title": "MCPサービス",
   "integration.title": "統合",
-  "mentions.date.display.with_range": "{{label}}（{{range}}）",
   "mentions.date.relative.last_15_days.label": "過去15日間",
   "mentions.date.relative.last_15_days.search": "過去15日間|直近15日間|半月",
   "mentions.date.relative.last_30_days.label": "過去30日間",
