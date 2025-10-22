@@ -53,6 +53,7 @@
     "@yornaath/batshit": "0.11.1",
     "ai": "5.0.76",
     "camelcase-keys": "10.0.0",
+    "chrono-node": "2.9.0",
     "class-variance-authority": "0.7.1",
     "clsx": "2.1.1",
     "cmdk": "1.1.1",

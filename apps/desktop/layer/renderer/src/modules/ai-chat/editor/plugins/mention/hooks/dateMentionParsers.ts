@@ -1,3 +1,4 @@
+import * as chrono from "chrono-node"
 import dayjs from "dayjs"
 import type { IFuseOptions } from "fuse.js"
 import Fuse from "fuse.js"
@@ -129,6 +130,74 @@ const normalizeQuery = (query: string): string => {
   return trimmed.startsWith("@") ? trimmed.slice(1) : trimmed
 }
 
+/**
+ * Get the appropriate chrono parser based on language
+ */
+const getChronoParser = (language: string) => {
+  if (language === "zh-CN") {
+    return chrono.zh.hans
+  }
+  if (language === "zh-TW") {
+    return chrono.zh.hant
+  }
+  if (language === "ja") {
+    return chrono.ja
+  }
+  return chrono.en
+}
+
+/**
+ * Parse natural language dates using chrono-node with language-specific parser
+ * Returns a DateRange if the input can be parsed, otherwise null
+ */
+const parseNaturalLanguageDate = (query: string, language: string): DateRange | null => {
+  if (!query.trim()) return null
+
+  try {
+    // Get language-specific parser
+    const parser = getChronoParser(language)
+
+    // Try to parse the date using chrono with language-specific parser first
+    let parsed = parser.parse(query)
+
+    // If failed and not already using English parser, try English as fallback
+    if ((!parsed || parsed.length === 0) && parser !== chrono.en) {
+      parsed = chrono.en.parse(query)
+    }
+
+    if (!parsed || parsed.length === 0) return null
+
+    const result = parsed[0]
+    if (!result) return null
+
+    // Get the start date
+    const startDate = result.start.date()
+    const start = dayjs(startDate).startOf("day")
+
+    // Check if there's an end date (for ranges)
+    let end: dayjs.Dayjs
+    if (result.end) {
+      const endDate = result.end.date()
+      end = dayjs(endDate).startOf("day")
+    } else {
+      // If no end date, use the start date as a single day
+      end = start
+    }
+
+    // Validate the dates are valid
+    if (!start.isValid() || !end.isValid()) return null
+
+    // Ensure start is before or equal to end
+    if (start.isAfter(end)) {
+      return { start: end, end: start }
+    }
+
+    return { start, end }
+  } catch {
+    return null
+  }
+}
+
 export const createDateMentionBuilder = (context: DateMentionBuilderContext) => {
   const candidates = buildRelativeCandidates(context)
   const fuse = new Fuse(candidates, FUSE_OPTIONS)
@@ -136,9 +205,26 @@ export const createDateMentionBuilder = (context: DateMentionBuilderContext) => 
   return (query: string): MentionData[] => {
     const normalized = normalizeQuery(query)
     const today = dayjs().startOf("day")
-    const bucket = normalized ? fuse.search(normalized).map((result) => result.item) : candidates
-
     const mentions: MentionData[] = []
+
+    // Try to parse as natural language date first
+    if (normalized) {
+      const naturalDateRange = parseNaturalLanguageDate(normalized, context.language)
+      if (naturalDateRange) {
+        // Successfully parsed a natural language date
+        const chronoMention = createDateMentionData({
+          range: naturalDateRange,
+          translate: context.t,
+          locale: context.language,
+          withRangeKey: RANGE_WITH_LABEL_KEY,
+          displayName: formatLocalizedRange(naturalDateRange, context.language),
+        })
+        mentions.push(chronoMention)
+      }
+    }
+
+    // Add predefined relative date suggestions
+    const bucket = normalized ? fuse.search(normalized).map((result) => result.item) : candidates
 
     bucket.forEach((candidate) => {
       const range = candidate.definition.range(today)
