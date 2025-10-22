@@ -144,7 +144,7 @@ export const ShortcutModalContent = ({ shortcut, onSave, onCancel }: ShortcutMod
               variant="outline"
               size="sm"
               buttonClassName="size-8 flex items-center justify-center"
-              title={t("shortcuts.icon_presets")}
+              title={t("shortcuts.icon")}
             >
               <i className={icon || "i-mgc-hotkey-cute-re"} />
             </Button>
