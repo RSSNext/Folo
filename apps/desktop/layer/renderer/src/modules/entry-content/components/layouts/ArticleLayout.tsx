@@ -5,7 +5,7 @@ import { useFeedById } from "@follow/store/feed/hooks"
 import { useIsInbox } from "@follow/store/inbox/hooks"
 import { cn } from "@follow/utils"
 import { ErrorBoundary } from "@sentry/react"
-import { useCallback, useMemo, useRef, useState } from "react"
+import { useCallback, useEffect, useMemo, useRef, useState } from "react"
 
 import { AIChatPanelStyle, useAIChatPanelStyle, useAIPanelVisibility } from "~/atoms/settings/ai"
 import { useUISettingKey } from "~/atoms/settings/ui"
@@ -148,6 +148,12 @@ const Renderer: React.FC<{
     () => (isInPeekModal ? undefined : <ContainerToc ref={tocRef} stickyClassName="top-48" />),
     [isInPeekModal],
   )
+
+  useEffect(() => {
+    if (tocRef) {
+      tocRef.current?.refreshItems()
+    }
+  }, [content, tocRef])
 
   return (
     <EntryContentHTMLRenderer

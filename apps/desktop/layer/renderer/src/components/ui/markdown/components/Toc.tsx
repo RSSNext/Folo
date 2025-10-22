@@ -23,7 +23,6 @@ export interface ITocItem {
   title: string
   anchorId: string
   index: number
-
   $heading: HTMLHeadingElement
 }
 
