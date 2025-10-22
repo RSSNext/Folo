@@ -1,4 +1,5 @@
 import { ScrollArea } from "@follow/components/ui/scroll-area/index.js"
+import { EllipsisHorizontalTextWithTooltip } from "@follow/components/ui/typography/EllipsisWithTooltip.js"
 import { getView } from "@follow/constants"
 import { getEntry, getEntryIdsByFeedId } from "@follow/store/entry/getter"
 import { useFeedById } from "@follow/store/feed/hooks"
@@ -25,6 +26,7 @@ import {
 } from "~/components/ui/dropdown-menu/dropdown-menu"
 import { useNavigateEntry } from "~/hooks/biz/useNavigateEntry"
 import { getRouteParams, useRouteParamsSelector } from "~/hooks/biz/useRouteParams"
+import { useShowEntryDetailsColumn } from "~/hooks/biz/useShowEntryDetailsColumn"
 import { getPreferredTitle } from "~/store/feed/hooks"
 
 import { useEntryTitleMeta } from "../../../atoms"
@@ -227,7 +229,14 @@ export function EntryHeaderBreadcrumb() {
   const { t } = useTranslation()
   const view = useRouteParamsSelector((s) => s.view)
   const viewName = getView(view)?.name
-
+  const showEntryDetailsColumn = useShowEntryDetailsColumn()
+  if (showEntryDetailsColumn && meta?.entryTitle) {
+    return (
+      <EllipsisHorizontalTextWithTooltip className="min-w-0 truncate px-1.5 py-0.5 text-sm font-medium text-text">
+        {meta.entryTitle}
+      </EllipsisHorizontalTextWithTooltip>
+    )
+  }
   return (
     <div className="flex min-w-0 flex-1 overflow-hidden">
       <nav

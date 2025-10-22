@@ -1,7 +1,7 @@
 import { usePrefetchEntryDetail } from "@follow/store/entry/hooks"
 
 import { Paper } from "~/components/ui/paper"
-import { EntryContent as EntryContentLegacy } from "~/modules/entry-content/components/entry-content/EntryContent.legacy"
+import { EntryContent as EntryContentLegacy } from "~/modules/entry-content/EntryContent.legacy"
 
 export const EntryModalPreview = ({ entryId }: { entryId: string }) => {
   const { isPending } = usePrefetchEntryDetail(entryId)
