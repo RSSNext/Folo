@@ -15,6 +15,7 @@ import { $createParagraphNode, $getRoot, createEditor } from "lexical"
 import { AnimatePresence } from "motion/react"
 import { nanoid } from "nanoid"
 import type { FC, RefObject } from "react"
+import * as React from "react"
 import { Suspense, use, useEffect, useLayoutEffect, useMemo, useRef, useState } from "react"
 import { useEventCallback, useEventListener } from "usehooks-ts"
 
@@ -26,6 +27,7 @@ import {
   AIChatMessage,
   AIChatWaitingIndicator,
 } from "~/modules/ai-chat/components/message/AIChatMessage"
+import { ErrorMessage } from "~/modules/ai-chat/components/message/ErrorMessage"
 import { UserChatMessage } from "~/modules/ai-chat/components/message/UserChatMessage"
 import { useAutoScroll } from "~/modules/ai-chat/hooks/useAutoScroll"
 import { useAutoTimelineSummaryShortcut } from "~/modules/ai-chat/hooks/useAutoTimelineSummaryShortcut"
@@ -45,12 +47,13 @@ import { LexicalAIEditorNodes, ShortcutNode } from "../../editor"
 import { useAttachScrollBeyond } from "../../hooks/useAttachScrollBeyond"
 import { AIPanelRefsContext, useAIChatStore } from "../../store/AIChatContext"
 import type { AIChatContextBlock, BizUIMessage, SendingUIMessage } from "../../store/types"
+import { isRateLimitError } from "../../utils/error"
 import { generateAndUpdateChatTitle } from "../../utils/titleGeneration"
 import { GlobalFileDropZone } from "../file/GlobalFileDropZone"
 import { AIErrorFallback } from "./AIErrorFallback"
 import { ChatInput } from "./ChatInput"
 import { ChatShortcutsRow } from "./ChatShortcutsRow"
-import { CollapsibleError } from "./CollapsibleError"
+import { RateLimitNotice } from "./RateLimitNotice"
 import { WelcomeScreen } from "./WelcomeScreen"
 
 const SCROLL_BOTTOM_THRESHOLD = 100
@@ -60,6 +63,7 @@ const ChatInterfaceContent = ({ centerInputOnEmpty }: ChatInterfaceProps) => {
   const status = useChatStatus()
   const chatActions = useChatActions()
   const error = useChatError()
+
   useAutoTimelineSummaryShortcut()
 
   const isFocusWithIn = useFocusable()
@@ -312,6 +316,13 @@ const ChatInterfaceContent = ({ centerInputOnEmpty }: ChatInterfaceProps) => {
   const shouldShowScrollToBottom = hasMessages && !isAtBottom && !isLoadingHistory
 
   const { handleScroll } = useAttachScrollBeyond()
+
+  // Check if error is a rate limit error
+  const hasRateLimitError = useMemo(() => isRateLimitError(error), [error])
+
+  // Additional height for rate limit notice (~40px)
+  const rateLimitExtraHeight = hasRateLimitError ? 40 : 0
+
   return (
     <GlobalFileDropZone className="flex size-full flex-col @container">
       <div className="flex min-h-0 flex-1 flex-col" ref={scrollContainerParentRef}>
@@ -326,14 +337,14 @@ const ChatInterfaceContent = ({ centerInputOnEmpty }: ChatInterfaceProps) => {
                 scrollbarClassName="mt-12"
                 scrollbarProps={{
                   style: {
-                    marginBottom: Math.max(160, bottomPanelHeight) + (error ? 64 : 0),
+                    marginBottom: Math.max(160, bottomPanelHeight) + rateLimitExtraHeight,
                   },
                 }}
                 ref={setScrollAreaRef}
                 rootClassName="flex-1"
                 viewportProps={{
                   style: {
-                    paddingBottom: Math.max(128, bottomPanelHeight) + (error ? 64 : 0),
+                    paddingBottom: Math.max(128, bottomPanelHeight) + rateLimitExtraHeight,
                   },
                 }}
                 viewportClassName={"pt-12"}
@@ -393,7 +404,7 @@ const ChatInterfaceContent = ({ centerInputOnEmpty }: ChatInterfaceProps) => {
             "bottom-1/2 translate-y-[calc(100%+1rem)] duration-200",
         )}
       >
-        {error && <CollapsibleError error={error} />}
+        {hasRateLimitError && error && <RateLimitNotice error={error} />}
         <ChatShortcutsRow
           onSelect={(shortcutData) => {
             const tempEditor = createEditor({
@@ -458,6 +469,7 @@ export const ChatInterface = (props: ChatInterfaceProps) => (
 
 export const Messages: FC<{ contentRef?: RefObject<HTMLDivElement> }> = ({ contentRef }) => {
   const messages = useMessages()
+  const error = useChatError()
   const fallbackRef = useRef<HTMLDivElement>(null)
   const messageContainerWidth = useElementWidth(contentRef ?? fallbackRef)
 
@@ -484,6 +496,8 @@ export const Messages: FC<{ contentRef?: RefObject<HTMLDivElement> }> = ({ conte
             </Suspense>
           )
         })}
+      {/* Render error as the last message in the list */}
+      {!!messageContainerWidth && error && <ErrorMessage error={error} />}
     </div>
   )
 }

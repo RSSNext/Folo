@@ -35,10 +35,11 @@ import {
 } from "~/modules/ai-chat/store/hooks"
 import type { AIChatContextBlock, BizUIMessage } from "~/modules/ai-chat/store/types"
 
-import { CollapsibleError } from "../ai-chat/components/layouts/CollapsibleError"
+import { RateLimitNotice } from "../ai-chat/components/layouts/RateLimitNotice"
 import { AIChatWaitingIndicator } from "../ai-chat/components/message/AIChatMessage"
 import { AIShortcutButton } from "../ai-chat/components/ui/AIShortcutButton"
 import { LexicalAIEditorNodes } from "../ai-chat/editor"
+import { isRateLimitError } from "../ai-chat/utils/error"
 import { stepAtom } from "./store"
 
 const SUGGESTION_KEYS = [
@@ -56,7 +57,7 @@ const SUGGESTION_KEYS = [
   "new_user_guide.ai_chat.suggestions.robotics_coach",
   "new_user_guide.ai_chat.suggestions.saas_marketing_manager",
   "new_user_guide.ai_chat.suggestions.ai_regulation_learner",
-] as const
+] as I18nKeys[]
 
 const SUGGESTION_SAMPLE_SIZE = 5
 
@@ -446,6 +447,12 @@ function AIChatInterface({ inputRef }: AIChatInterfaceProps) {
 
   const shouldShowScrollToBottom = hasMessages && !isAtBottom
 
+  // Check if error is a rate limit error
+  const hasRateLimitError = useMemo(() => isRateLimitError(error), [error])
+
+  // Additional height for rate limit notice (~40px)
+  const rateLimitExtraHeight = hasRateLimitError ? 40 : 0
+
   const messages = useMessages()
   const setStep = useSetAtom(stepAtom)
 
@@ -461,14 +468,14 @@ function AIChatInterface({ inputRef }: AIChatInterfaceProps) {
         scrollbarClassName="mt-12"
         scrollbarProps={{
           style: {
-            marginBottom: Math.max(160, bottomPanelHeight) + (error ? 64 : 0),
+            marginBottom: Math.max(160, bottomPanelHeight) + rateLimitExtraHeight,
           },
         }}
         ref={setScrollAreaRef}
         rootClassName="flex-1"
         viewportProps={{
           style: {
-            paddingBottom: Math.max(128, bottomPanelHeight) + (error ? 64 : 0),
+            paddingBottom: Math.max(128, bottomPanelHeight) + rateLimitExtraHeight,
           },
         }}
         viewportClassName={"pt-12"}
@@ -514,7 +521,7 @@ function AIChatInterface({ inputRef }: AIChatInterfaceProps) {
       )}
 
       <div ref={bottomPanelRef} className={"px-6"}>
-        {error && <CollapsibleError error={error} />}
+        {hasRateLimitError && error && <RateLimitNotice error={error} />}
         <ChatInput
           ref={inputRef}
           onSend={handleSendMessage}
