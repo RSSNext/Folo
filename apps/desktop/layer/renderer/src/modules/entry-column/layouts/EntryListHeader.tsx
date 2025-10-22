@@ -84,10 +84,10 @@ export const EntryListHeader: FC<{
   return (
     <div
       className={cn(
-        "flex h-top-header-with-border-b w-full flex-col pr-4 pt-2.5",
+        "flex h-top-header-with-border-b w-full flex-col pr-2.5 pt-1.5 @[700px]:pr-3 @[1024px]:pr-4 @[1024px]:pt-2",
         !feedColumnShow && "macos:mt-4 macos:pt-margin-macos-traffic-light-y",
         titleStyleBasedView[view],
-        isPreview && "px-4",
+        isPreview && "px-2.5 @[700px]:px-3 @[1024px]:px-4",
         view === FeedViewType.All &&
           "border-b border-transparent data-[scrolled-beyond-threshold=true]:border-b-border",
       )}

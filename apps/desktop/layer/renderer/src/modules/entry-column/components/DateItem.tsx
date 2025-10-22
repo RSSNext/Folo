@@ -40,7 +40,7 @@ const useParseDate = (date: string) =>
     }
   }, [date])
 
-const dateItemclassName = tw`relative flex items-center text-sm lg:text-base gap-1 px-4 font-bold text-text h-7`
+const dateItemclassName = tw`relative flex items-center text-sm lg:text-base gap-1 px-3 font-bold text-text h-7`
 export const DateItem = memo(({ date, view, isSticky }: DateItemProps) => {
   const showEntryDetailsColumn = useShowEntryDetailsColumn()
 

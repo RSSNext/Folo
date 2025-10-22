@@ -147,7 +147,7 @@ export function ListItem({
   return (
     <div
       className={cn(
-        "group relative flex cursor-menu py-4",
+        "group relative flex cursor-menu py-3",
         !isRead &&
           "before:absolute before:-left-3 before:top-6 before:block before:size-2 before:rounded-full before:bg-accent",
       )}

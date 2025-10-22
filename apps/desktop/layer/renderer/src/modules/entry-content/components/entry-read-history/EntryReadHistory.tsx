@@ -37,16 +37,17 @@ export const EntryReadHistory: Component<{ entryId: string }> = ({ entryId }) =>
 
   const LIMIT = getLimit(appGirdContainerWidth)
 
-  if (!entryHistory) return null
-  if (!me) return null
+  const placeholder = <div className="-mb-3 h-10" />
+  if (!entryHistory) return placeholder
+  if (!me) return placeholder
 
   const displayUsers = entryHistory.userIds.filter((id) => id !== me?.id).slice(0, LIMIT)
 
-  if (displayUsers.length === 0) return null
+  if (displayUsers.length === 0) return placeholder
 
   return (
     <div
-      className="hidden items-center duration-200 animate-in fade-in @md:flex"
+      className="-mb-3 hidden h-10 items-center duration-200 animate-in fade-in @md:flex"
       data-hide-in-print
     >
       <AvatarGroup>

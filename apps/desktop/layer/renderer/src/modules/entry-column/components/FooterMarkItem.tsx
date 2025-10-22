@@ -36,7 +36,7 @@ const SocialMediaFooterMarkItem = ({ filter }: FooterMarkItemProps) => {
     <div className="relative flex w-full">
       <FlatMarkAllReadButton
         className="justify-center"
-        buttonClassName="w-[645px] mx-auto mb-4 pl-7 py-4"
+        buttonClassName="w-[645px] mx-auto mb-4 pl-4 py-4 @[700px]:pl-6"
         iconClassName="mr-1 text-lg"
         which="above"
         filter={filter}
