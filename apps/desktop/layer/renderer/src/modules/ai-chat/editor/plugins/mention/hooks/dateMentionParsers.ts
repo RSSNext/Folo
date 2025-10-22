@@ -152,44 +152,23 @@ const parseNaturalLanguageDate = (query: string, language: string): DateRange | 
   if (!query.trim()) return null
 
   try {
-    // Get language-specific parser
     const parser = getChronoParser(language)
-
-    // Try to parse the date using chrono with language-specific parser first
     let parsed = parser.parse(query)
-
-    // If failed and not already using English parser, try English as fallback
     if ((!parsed || parsed.length === 0) && parser !== chrono.en) {
       parsed = chrono.en.parse(query)
     }
 
     if (!parsed || parsed.length === 0) return null
-
     const result = parsed[0]
     if (!result) return null
 
-    // Get the start date
-    const startDate = result.start.date()
-    const start = dayjs(startDate).startOf("day")
+    const start = dayjs(result.start.date())
+    const end = result.end ? dayjs(result.end.date()) : dayjs()
 
-    // Check if there's an end date (for ranges)
-    let end: dayjs.Dayjs
-    if (result.end) {
-      const endDate = result.end.date()
-      end = dayjs(endDate).startOf("day")
-    } else {
-      // If no end date, use the start date as a single day
-      end = start
-    }
-
-    // Validate the dates are valid
     if (!start.isValid() || !end.isValid()) return null
-
-    // Ensure start is before or equal to end
     if (start.isAfter(end)) {
       return { start: end, end: start }
     }
-
     return { start, end }
   } catch {
     return null
@@ -205,15 +184,13 @@ export const createDateMentionBuilder = (context: DateMentionBuilderContext) => 
     const today = dayjs().startOf("day")
     const mentions: MentionData[] = []
 
-    // Try to parse as natural language date first
     if (normalized) {
       const naturalDateRange = parseNaturalLanguageDate(normalized, context.language)
       if (naturalDateRange) {
-        // Successfully parsed a natural language date
         const chronoMention = createDateMentionData({
           range: naturalDateRange,
           translate: context.t,
-          displayName: formatLocalizedRange(naturalDateRange, context.language),
+          displayName: query,
         })
         mentions.push(chronoMention)
       }

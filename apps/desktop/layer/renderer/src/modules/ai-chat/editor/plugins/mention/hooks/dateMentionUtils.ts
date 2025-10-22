@@ -125,13 +125,7 @@ export const createDateMentionData = ({
   translate: LabelTranslator
   displayName?: string
 }): DateMentionData => {
-  // For relative dates with an id, use the relative format
-  // For absolute dates without an id, use the absolute range format
-  const isRelativeDate = id?.startsWith("date:relative:")
-  const value =
-    isRelativeDate && id
-      ? `<mention-date relative="${id.replace("date:relative:", "")}"></mention-date>`
-      : formatRangeValue(range)
+  const value = formatRangeValue(range)
   const text = value // Use the same value for text
 
   const resolvedName = displayName ?? resolveMentionLabel(label, translate) ?? value
@@ -147,32 +141,7 @@ export const createDateMentionData = ({
   }
 }
 
-const parseRelativeDateRange = (value: string): DateRange | null => {
-  const relativeMatch = value.match(/relative="([^"]+)"/)
-  if (!relativeMatch) return null
-
-  const [, relativeKey] = relativeMatch
-  if (!relativeKey) return null
-
-  // Add back the prefix to match with definition id
-  const relativeId = `date:relative:${relativeKey}`
-  const today = dayjs().startOf("day")
-  const definition = RELATIVE_DATE_DEFINITIONS.find((def) => def.id === relativeId)
-  if (!definition) return null
-
-  const range = definition.range(today)
-  if (!range) return null
-
-  return range
-}
-
 export const parseRangeValue = (value: string): DateRange | null => {
-  // Handle relative date format: <mention-date relative="date:relative:today"></mention-date>
-  const relativeResult = parseRelativeDateRange(value)
-  if (relativeResult) {
-    return relativeResult
-  }
-
   // Parse XML format: <mention-date start="YYYY-MM-DD" end="YYYY-MM-DD"></mention-date>
   const match = value.match(/start="([^"]+)"\s+end="([^"]+)"/)
   if (!match) return null
