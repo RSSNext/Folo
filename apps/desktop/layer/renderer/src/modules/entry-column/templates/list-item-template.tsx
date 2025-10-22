@@ -93,10 +93,15 @@ export function ListItem({
     let lineClampTitle = 1
     let lineClampDescription = 2
 
-    if (translation?.title && !simple && bilingual) {
+    if (translation?.title && translation?.title !== entry?.title && !simple && bilingual) {
       lineClampTitle += 1
     }
-    if (translation?.description && !simple && bilingual) {
+    if (
+      translation?.description &&
+      translation?.description !== entry?.description &&
+      !simple &&
+      bilingual
+    ) {
       lineClampDescription += 1
     }
 
@@ -142,7 +147,7 @@ export function ListItem({
   return (
     <div
       className={cn(
-        "group relative mb-4 flex cursor-menu py-4",
+        "group relative flex cursor-menu py-4",
         !isRead &&
           "before:absolute before:-left-3 before:top-6 before:block before:size-2 before:rounded-full before:bg-accent",
       )}
