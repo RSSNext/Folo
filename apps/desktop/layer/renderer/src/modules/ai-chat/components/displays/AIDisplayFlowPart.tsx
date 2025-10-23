@@ -66,7 +66,7 @@ export const AIDisplayFlowPart = toolMemo(({ part }: { part: ToolWithState<any> 
   }, [nodes, edges, colorMode, present])
 
   return (
-    <div className="group relative my-2 aspect-[4/3] w-[calc(var(--ai-chat-layout-width,65ch))] max-w-full overflow-hidden rounded-md">
+    <div className="group relative my-2 aspect-[4/3] w-[calc(var(--ai-chat-message-container-width,65ch))] max-w-full overflow-hidden rounded-md">
       <ReactFlow
         colorMode={colorMode}
         nodes={nodes}
@@ -89,10 +89,10 @@ export const AIDisplayFlowPart = toolMemo(({ part }: { part: ToolWithState<any> 
         onClick={handleOpenModal}
         className={cn(
           "absolute right-2 top-2 flex items-center gap-1.5 rounded-lg px-2.5 py-1.5",
-          "bg-material-thick text-text-secondary text-sm font-medium",
+          "bg-material-thick text-sm font-medium text-text-secondary",
           "opacity-0 transition-all duration-200 group-hover:opacity-100",
           "hover:bg-material-medium hover:text-text focus:opacity-100",
-          "focus:ring-blue focus:outline-none focus:ring-2 focus:ring-offset-1",
+          "focus:outline-none focus:ring-2 focus:ring-blue focus:ring-offset-1",
         )}
         title="Open in full screen"
       >

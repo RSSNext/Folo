@@ -73,12 +73,9 @@ export const AISummary: FC<{
   const measureContent = (event: LayoutChangeEvent) => {
     setContentHeight(event.nativeEvent.layout.height + 10)
     height.value = withSpring(event.nativeEvent.layout.height + 10, {
-      dampingRatio: 2,
-      stiffness: 90,
-      overshootClamping: true,
-      restDisplacementThreshold: 0.01,
-      restSpeedThreshold: 0.01,
       duration: 200,
+      dampingRatio: 0.8,
+      overshootClamping: true,
     })
   }
   const purpleColor = useColor("purple")
@@ -91,7 +88,7 @@ export const AISummary: FC<{
   const mainContent = (
     <Animated.View
       className={cn(
-        "border-opaque-separator/50 mx-4 my-2 rounded-xl",
+        "mx-4 my-2 rounded-xl border-opaque-separator/50",
         isReactElement ? "px-4 pt-4" : "p-4",
         // Opacity modifier style incorrectly applied in Android
         isAndroid ? "bg-secondary-system-background" : "bg-secondary-system-background/30",
@@ -122,7 +119,7 @@ export const AISummary: FC<{
               toast.success("Copied to clipboard")
             }}
             onLongPress={() => setSheetOpen(true)}
-            className="bg-quaternary-system-fill rounded-full p-1.5 active:opacity-70"
+            className="rounded-full bg-quaternary-system-fill p-1.5 active:opacity-70"
             hitSlop={{
               top: 8,
               bottom: 8,
@@ -143,14 +140,14 @@ export const AISummary: FC<{
           {error ? (
             <View className="mt-3">
               <View className="flex-row items-center gap-2">
-                <Text className="text-red flex-1 text-[14px] leading-[20px]">{error}</Text>
+                <Text className="flex-1 text-[14px] leading-[20px] text-red">{error}</Text>
               </View>
               {onRetry && (
                 <Pressable
                   onPress={onRetry}
-                  className="bg-quaternary-system-fill mt-3 self-start rounded-full px-4 py-2"
+                  className="mt-3 self-start rounded-full bg-quaternary-system-fill px-4 py-2"
                 >
-                  <Text className="text-label text-[14px] font-medium">Retry</Text>
+                  <Text className="text-[14px] font-medium text-label">Retry</Text>
                 </Pressable>
               )}
             </View>
@@ -160,7 +157,7 @@ export const AISummary: FC<{
             <TextInput
               readOnly
               multiline
-              className="text-label text-[14px] leading-[22px]"
+              className="text-[14px] leading-[22px] text-label"
               value={summaryText?.trim()}
             />
           )}
@@ -172,18 +169,18 @@ export const AISummary: FC<{
           {error ? (
             <View className="mt-3">
               <View className="flex-row items-center gap-2">
-                <Text className="text-red flex-1 text-[14px] leading-[20px]">{error}</Text>
+                <Text className="flex-1 text-[14px] leading-[20px] text-red">{error}</Text>
               </View>
               {onRetry && (
-                <View className="bg-quaternary-system-fill mt-3 self-start rounded-full px-4 py-2">
-                  <Text className="text-label text-[14px] font-medium">Retry</Text>
+                <View className="mt-3 self-start rounded-full bg-quaternary-system-fill px-4 py-2">
+                  <Text className="text-[14px] font-medium text-label">Retry</Text>
                 </View>
               )}
             </View>
           ) : isReactElement ? (
             <View className="mt-2">{summary}</View>
           ) : (
-            <Text className="text-label mt-2 text-[14px] leading-[22px]" selectable>
+            <Text className="mt-2 text-[14px] leading-[22px] text-label" selectable>
               {summaryText?.trim()}
             </Text>
           )}
@@ -231,7 +228,7 @@ const SelectableTextSheet: FC<{
           >
             <CopyCuteReIcon width={18} height={18} color={textColor} />
           </TouchableOpacity>
-          <Text className="text-label text-lg font-semibold">AI Summary</Text>
+          <Text className="text-lg font-semibold text-label">AI Summary</Text>
           <TouchableOpacity
             onPress={onClose}
             className="rounded-full bg-zinc-100 p-2 active:opacity-80 dark:bg-zinc-800"
@@ -240,7 +237,7 @@ const SelectableTextSheet: FC<{
           </TouchableOpacity>
         </View>
         <ScrollView showsVerticalScrollIndicator={false}>
-          <SelectableText className="text-label text-base leading-6">{text}</SelectableText>
+          <SelectableText className="text-base leading-6 text-label">{text}</SelectableText>
         </ScrollView>
       </View>
     </BottomModal>

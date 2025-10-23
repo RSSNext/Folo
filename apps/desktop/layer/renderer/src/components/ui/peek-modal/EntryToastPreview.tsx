@@ -82,7 +82,7 @@ export const EntryToastPreview = ({ entryId }: { entryId: string }) => {
       exit="exit"
       layout="size"
       className={cn(
-        "shadow-perfect bg-theme-background relative flex flex-col items-center rounded-xl border p-8",
+        "shadow-perfect relative flex flex-col items-center rounded-xl border bg-theme-background p-8",
         "mr-4 mt-4 max-h-[500px] w-[60ch] max-w-full overflow-auto",
       )}
     >
@@ -90,7 +90,7 @@ export const EntryToastPreview = ({ entryId }: { entryId: string }) => {
         <FeedIcon
           fallback
           className="mask-squircle mask"
-          feed={feed}
+          target={feed}
           entry={entry.iconEntry}
           size={36}
         />

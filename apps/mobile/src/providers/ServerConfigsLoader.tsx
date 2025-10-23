@@ -2,7 +2,8 @@ import { useQuery } from "@tanstack/react-query"
 import { useEffect } from "react"
 
 import { setServerConfigs } from "@/src/atoms/server-configs"
-import { apiClient } from "@/src/lib/api-fetch"
+
+import { followClient } from "../lib/api-client"
 
 export const ServerConfigsLoader = () => {
   const serverConfigs = useServerConfigsQuery()
@@ -18,7 +19,7 @@ export const ServerConfigsLoader = () => {
 const useServerConfigsQuery = () => {
   const { data } = useQuery({
     queryKey: ["server-configs"],
-    queryFn: () => apiClient.status.configs.$get(),
+    queryFn: () => followClient.api.status.getConfigs(),
   })
   return data?.data
 }

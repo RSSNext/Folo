@@ -37,7 +37,7 @@ interface BaseCellClassNames {
 export const GroupedOutlineDescription: FC<{
   description: string
 }> = ({ description }) => {
-  return <Text className="text-secondary-label mx-9 mt-2 text-sm">{description}</Text>
+  return <Text className="mx-9 mt-2 text-sm text-secondary-label">{description}</Text>
 }
 export const GroupedInsetListCard: FC<
   PropsWithChildren & ViewProps & GroupedInsetListCardProps
@@ -63,7 +63,7 @@ export const GroupedInsetListCard: FC<
         props.style,
       ]}
       className={cn(
-        "bg-secondary-system-grouped-background flex flex-1 flex-col overflow-hidden rounded-[10px]",
+        "flex flex-1 flex-col overflow-hidden rounded-[10px] bg-secondary-system-grouped-background",
         className,
       )}
     >
@@ -203,7 +203,7 @@ export const GroupedInsetListCell: FC<
 > = ({ label, description, children, className, leftClassName, rightClassName, icon, onPress }) => {
   return (
     <GroupedInsetListBaseCell
-      className={cn("bg-secondary-system-grouped-background flex flex-1", className)}
+      className={cn("flex flex-1 bg-secondary-system-grouped-background", className)}
       as={onPress ? TouchableOpacity : undefined}
       {...(onPress
         ? {
@@ -217,7 +217,7 @@ export const GroupedInsetListCell: FC<
           <Text className="text-label">{titleCase(label)}</Text>
         </View>
         {!!description && (
-          <Text className="text-secondary-label text-sm leading-tight">{description}</Text>
+          <Text className="text-sm leading-tight text-secondary-label">{description}</Text>
         )}
       </View>
 
@@ -241,7 +241,7 @@ export const GroupedInsetListActionCellRadio: FC<{
           <View className="flex-1">
             <Text className="text-label">{label}</Text>
             {!!description && (
-              <Text className="text-secondary-label text-sm leading-tight">{description}</Text>
+              <Text className="text-sm leading-tight text-secondary-label">{description}</Text>
             )}
           </View>
 
@@ -265,7 +265,7 @@ const OverlayInterectionPressable = ({
             {/* Pressed Overlay Effect */}
             {pressed && (
               <Animated.View
-                className="bg-system-fill absolute inset-0"
+                className="absolute inset-0 bg-system-fill"
                 entering={FadeIn.duration(100)}
                 exiting={FadeOut.duration(100)}
               />
@@ -302,7 +302,7 @@ export const GroupedInsetListActionCell: FC<{
               <Text className="text-label">{label}</Text>
             </View>
             {!!description && (
-              <Text className="text-secondary-label text-sm leading-tight">{description}</Text>
+              <Text className="text-sm leading-tight text-secondary-label">{description}</Text>
             )}
           </View>
 
@@ -355,9 +355,9 @@ export const GroupedInformationCell: FC<{
           {icon}
         </View>
       )}
-      <Text className="text-label text-3xl font-bold">{title}</Text>
+      <Text className="text-3xl font-bold text-label">{title}</Text>
       {!!description && (
-        <Text className="text-label mt-3 text-balance text-center text-base leading-tight">
+        <Text className="mt-3 text-balance text-center text-base leading-tight text-label">
           {description}
         </Text>
       )}
@@ -373,7 +373,7 @@ export const GroupedPlainButtonCell: FC<
 > = ({ label, textClassName, ...props }) => {
   return (
     <GroupedInsetListBaseCell as={OverlayInterectionPressable} {...(props as any)}>
-      <Text className={cn("text-accent text-center", textClassName)}>{label}</Text>
+      <Text className={cn("text-center text-accent", textClassName)}>{label}</Text>
     </GroupedInsetListBaseCell>
   )
 }

@@ -25,17 +25,21 @@ export const NetworkStatusIndicator = () => {
             "fixed bottom-3 left-3 flex items-center gap-2 rounded-full border backdrop-blur-md transition-all duration-200 hover:scale-105",
             "px-3 py-2 shadow-lg ring-1 ring-inset",
             // Default styling
-            "bg-material-thick border-fill text-text-secondary",
+            "border-fill bg-material-thick text-text-secondary",
             // Network offline - more severe styling
             statusType === "offline" && [
-              "bg-red/10 border-red/30 text-red ring-red/20",
-              "dark:bg-red/15 dark:border-red/40 dark:text-red dark:ring-red/25",
+              "border-red/30 bg-red/10 text-red ring-red/20",
+              "dark:border-red/40 dark:bg-red/15 dark:text-red dark:ring-red/25",
+
+              ELECTRON && "!bg-sidebar",
             ],
             // API error - warning styling
             statusType === "api-error" && [
-              "bg-red/10 border-red/30 text-red ring-red/20",
-              "dark:bg-red/15 dark:border-red/40 dark:text-red dark:ring-red/25",
+              "border-red/30 bg-red/10 text-red ring-red/20",
+              "dark:border-red/40 dark:bg-red/15 dark:text-red dark:ring-red/25",
+              ELECTRON && "!bg-sidebar",
             ],
+            ELECTRON && "backdrop-blur-none",
           )}
         >
           <i
@@ -66,7 +70,7 @@ export const NetworkStatusIndicator = () => {
                 ? "⚠️ API Connection Error"
                 : "❌ Connection Problem"}
           </div>
-          <div className="text-text-secondary text-xs leading-relaxed">
+          <div className="text-xs leading-relaxed text-text-secondary">
             {isNetworkOffline
               ? "Operating in local data mode due to network connection failure. Some features may be limited."
               : isApiOffline

@@ -12,7 +12,7 @@ import { ItemPressable } from "@/src/components/ui/pressable/ItemPressable"
 import { Text } from "@/src/components/ui/typography/Text"
 import { RightCuteReIcon } from "@/src/icons/right_cute_re"
 import { User3CuteReIcon } from "@/src/icons/user_3_cute_re"
-import { apiClient } from "@/src/lib/api-fetch"
+import { followClient } from "@/src/lib/api-client"
 import { useNavigation } from "@/src/lib/navigation/hooks"
 import { UrlBuilder } from "@/src/lib/url-builder"
 import { FollowScreen } from "@/src/screens/(modal)/FollowScreen"
@@ -22,21 +22,16 @@ import { useSearchPageContext } from "../ctx"
 import { ItemSeparator } from "./__base"
 import { useDataSkeleton } from "./hooks"
 
-type SearchResultItem = Awaited<ReturnType<typeof apiClient.discover.$post>>["data"][number]
+type SearchResultItem = Awaited<
+  ReturnType<typeof followClient.api.discover.discover>
+>["data"][number]
 export const SearchList = () => {
   const { searchValueAtom } = useSearchPageContext()
   const searchValue = useAtomValue(searchValueAtom)
   const windowWidth = useWindowDimensions().width
   const { data, isLoading } = useQuery({
     queryKey: ["searchList", searchValue],
-    queryFn: () => {
-      return apiClient.discover.$post({
-        json: {
-          keyword: searchValue,
-          target: "lists",
-        },
-      })
-    },
+    queryFn: () => followClient.api.discover.discover({ keyword: searchValue, target: "lists" }),
     enabled: !!searchValue,
   })
   const skeleton = useDataSkeleton(isLoading, data)
@@ -48,7 +43,7 @@ export const SearchList = () => {
         width: windowWidth,
       }}
     >
-      <Text className="text-text/60 px-6 pt-4">Found {data.data?.length} lists</Text>
+      <Text className="px-6 pt-4 text-text/60">Found {data.data?.length} lists</Text>
       <View>
         {data.data?.map((item) => (
           <View key={item.feed?.id || Math.random().toString()}>
@@ -94,7 +89,7 @@ const SearchListCard = memo(({ item }: { item: SearchResultItem }) => {
         </View>
         <View className="flex-1">
           <Text
-            className="text-text text-lg font-semibold"
+            className="text-lg font-semibold text-text"
             ellipsizeMode="middle"
             numberOfLines={1}
           >
@@ -109,13 +104,13 @@ const SearchListCard = memo(({ item }: { item: SearchResultItem }) => {
         {/* Subscribe */}
         {isSubscribed ? (
           <View className="ml-auto">
-            <View className="bg-gray-5/60 rounded-lg px-3 py-2">
-              <Text className="text-gray-2 text-sm font-bold">Followed</Text>
+            <View className="rounded-lg bg-gray-5/60 px-3 py-2">
+              <Text className="text-sm font-bold text-gray-2">Followed</Text>
             </View>
           </View>
         ) : (
           <View className="ml-auto">
-            <View className="bg-accent rounded-lg px-3 py-2">
+            <View className="rounded-lg bg-accent px-3 py-2">
               <Text className="text-sm font-bold text-white">Follow</Text>
             </View>
           </View>
@@ -124,7 +119,7 @@ const SearchListCard = memo(({ item }: { item: SearchResultItem }) => {
 
       <View className="mt-3 flex-row items-center gap-1 pl-4 opacity-60">
         <RightCuteReIcon width={16} height={16} />
-        <Text className="text-text text-sm">{UrlBuilder.shareList(item.list?.id ?? "")}</Text>
+        <Text className="text-sm text-text">{UrlBuilder.shareList(item.list?.id ?? "")}</Text>
       </View>
 
       <View className="mt-4 flex-row items-center gap-6 pl-4 opacity-60">

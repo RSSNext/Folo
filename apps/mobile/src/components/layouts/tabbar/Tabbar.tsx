@@ -15,7 +15,7 @@ import { useEventCallback } from "usehooks-ts"
 import { SetBottomTabBarHeightContext } from "@/src/components/layouts/tabbar/contexts/BottomTabBarHeightContext"
 import { gentleSpringPreset, quickSpringPreset, softSpringPreset } from "@/src/constants/spring"
 import { BottomTabContext } from "@/src/lib/navigation/bottom-tab/BottomTabContext"
-import type { TabbarIconProps, TabScreenProps } from "@/src/lib/navigation/bottom-tab/types"
+import type { ResolvedTabScreenProps, TabbarIconProps } from "@/src/lib/navigation/bottom-tab/types"
 import { isAndroid } from "@/src/lib/platform"
 import { PlayerTabBar } from "@/src/modules/player/PlayerTabBar"
 import { accentColor } from "@/src/theme/colors"
@@ -42,12 +42,13 @@ export const Tabbar: FC<{
       !tabBarVisible ? quickSpringPreset : softSpringPreset,
     )
   }, [tabBarVisible, translateY])
-  const placeholderTabScreens = useMemo<TabScreenProps[]>(() => {
+  const placeholderTabScreens = useMemo<ResolvedTabScreenProps[]>(() => {
     return [
       {
         tabScreenIndex: 0,
         title: "",
-        renderIcon: () => <View className="size-5" />,
+        icon: () => <View className="size-5" />,
+
         identifier: "placeholder",
       },
     ]
@@ -88,7 +89,7 @@ export const Tabbar: FC<{
               focused={focused}
               index={index}
               label={label}
-              renderIcon={route.renderIcon}
+              renderIcon={route.icon}
               onPress={onPress}
             />
           )
@@ -267,7 +268,7 @@ const TabBarBackground = () => {
         <ThemedBlurView style={styles.blurEffect} />
       </Animated.View>
       <Animated.View
-        className="bg-opaque-separator/50 absolute top-0 w-full"
+        className="absolute top-0 w-full bg-opaque-separator/50"
         style={[
           separatorStyle,
           {

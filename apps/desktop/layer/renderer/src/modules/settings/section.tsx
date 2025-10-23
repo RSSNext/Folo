@@ -3,27 +3,56 @@
 
 import { cn } from "@follow/utils/utils"
 import type { FC, PropsWithChildren, ReactNode } from "react"
-import { cloneElement } from "react"
+import { cloneElement, createContext, use, useEffect, useRef } from "react"
 import * as React from "react"
 import { titleCase } from "title-case"
 
 import { SettingActionItem, SettingDescription, SettingSwitch } from "./control"
 
+type SettingSectionHighlightContextValue = {
+  highlightedSectionId?: string
+  registerSection: (sectionId: string, element: HTMLElement | null) => void
+}
+
+export const SettingSectionHighlightContext =
+  createContext<SettingSectionHighlightContextValue | null>(null)
+
 export const SettingSectionTitle: FC<{
   title: string | ReactNode
   className?: string
   margin?: "compact" | "normal"
-}> = ({ title, margin, className }) => (
-  <div
-    className={cn(
-      "text-text text-headline shrink-0 font-bold opacity-50 first:mt-0",
-      margin === "compact" ? "mb-2 mt-8" : "mb-4 mt-10",
-      className,
-    )}
-  >
-    {typeof title === "string" ? titleCase(title) : title}
-  </div>
-)
+  sectionId?: string
+}> = ({ title, margin, className, sectionId }) => {
+  const highlightCtx = use(SettingSectionHighlightContext)
+  const elementRef = useRef<HTMLDivElement | null>(null)
+
+  useEffect(() => {
+    if (!sectionId || !highlightCtx) return
+    highlightCtx.registerSection(sectionId, elementRef.current)
+    return () => {
+      highlightCtx.registerSection(sectionId, null)
+    }
+  }, [highlightCtx, sectionId])
+
+  const isHighlighted =
+    !!sectionId && highlightCtx?.highlightedSectionId === sectionId && !!elementRef.current
+
+  return (
+    <div
+      ref={elementRef}
+      data-setting-section={sectionId}
+      data-highlighted={isHighlighted ? "true" : undefined}
+      className={cn(
+        "shrink-0 text-headline font-bold text-text opacity-50 transition-colors duration-300 first:mt-0",
+        margin === "compact" ? "mb-2 mt-8" : "mb-4 mt-10",
+        isHighlighted && "-ml-3 rounded-lg border border-folo px-3 py-1.5 opacity-100",
+        className,
+      )}
+    >
+      {typeof title === "string" ? titleCase(title) : title}
+    </div>
+  )
+}
 
 export const SettingItemGroup: FC<PropsWithChildren> = ({ children }) => {
   const childrenArray = React.Children.toArray(children)

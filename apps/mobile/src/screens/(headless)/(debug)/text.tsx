@@ -11,7 +11,7 @@ export const TextDebugScreen: NavigationControllerView = () => {
   return (
     <SafeAreaView>
       <View className="flex flex-row items-center justify-between p-4">
-        <RNText className="text-label font-medium" allowFontScaling={false}>
+        <RNText className="font-medium text-label" allowFontScaling={false}>
           Enable system font scaling:{" "}
         </RNText>
         <Switch
@@ -24,11 +24,11 @@ export const TextDebugScreen: NavigationControllerView = () => {
 
       <View className="flex p-4">
         <View className="flex flex-row items-center justify-between">
-          <RNText className="text-label font-medium" allowFontScaling={false}>
+          <RNText className="font-medium text-label" allowFontScaling={false}>
             Setting font scaling:{" "}
           </RNText>
 
-          <RNText className="text-label font-medium">{fontScaling.toFixed(2)}</RNText>
+          <RNText className="font-medium text-label">{fontScaling.toFixed(2)}</RNText>
         </View>
         <Slider
           style={{
@@ -47,7 +47,7 @@ export const TextDebugScreen: NavigationControllerView = () => {
         <RNText allowFontScaling={false} className="text-label">
           Use React Native Text:
         </RNText>
-        <RNText className="text-label text-body">
+        <RNText className="text-body text-label">
           Sint eveniet facilis. Occaecati labore temporibus. Nihil qui fuga fugiat provident dolores
           sed. Sed ipsum vel alias. Incidunt iste voluptatibus. Consequatur corrupti deserunt hic
           accusamus.
@@ -58,7 +58,7 @@ export const TextDebugScreen: NavigationControllerView = () => {
         <RNText allowFontScaling={false} className="text-label">
           Use Text:
         </RNText>
-        <Text className="text-label text-body">
+        <Text className="text-body text-label">
           Sint eveniet facilis. Occaecati labore temporibus. Nihil qui fuga fugiat provident dolores
           sed. Sed ipsum vel alias. Incidunt iste voluptatibus. Consequatur corrupti deserunt hic
           accusamus.

@@ -14,10 +14,10 @@ export const ShortcutsGuideline = () => {
     <div className="mt-4 space-y-6">
       {Object.entries(commandShortcuts).map(([type, commands]) => (
         <section key={type}>
-          <div className="text-text-secondary mb-2 pl-3 text-sm font-medium capitalize">
+          <div className="mb-2 pl-3 text-sm font-medium capitalize text-text-secondary">
             {t(type as CommandCategory)}
           </div>
-          <div className="text-text rounded-md border text-[13px]">
+          <div className="rounded-md border text-[13px] text-text">
             {commands.map((commandId) => (
               <CommandShortcutItem key={commandId} commandId={commandId} />
             ))}
@@ -34,7 +34,7 @@ const CommandShortcutItem = memo(({ commandId }: { commandId: FollowCommandId })
 
   if (!command) return null
   return (
-    <div className={"odd:bg-fill-quinary flex h-9 items-center justify-between px-3 py-1.5"}>
+    <div className={"flex h-9 items-center justify-between px-3 py-1.5 odd:bg-fill-quinary"}>
       <div>{command.label.title}</div>
       <div>
         <KbdCombined joint>{commandShortcuts[commandId]}</KbdCombined>

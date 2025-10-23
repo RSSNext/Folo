@@ -1,7 +1,8 @@
 import { Card, CardContent, CardHeader } from "@follow/components/ui/card/index.jsx"
-import { FeedViewType, views } from "@follow/constants"
-import type { EntryModelSimple, FeedModel } from "@follow/models"
+import { FeedViewType, getView, getViewList } from "@follow/constants"
+import type { FeedModel } from "@follow/store/feed/types"
 import { cn } from "@follow/utils/utils"
+import type { ParsedEntry } from "@follow-app/client-sdk"
 import { cloneElement } from "react"
 
 import { useI18n } from "~/hooks/common"
@@ -17,7 +18,7 @@ export const ViewSelectorRadioGroup = ({
   className,
   ...rest
 }: {
-  entries?: EntryModelSimple[]
+  entries?: ParsedEntry[]
   feed?: FeedModel
   view?: number
 } & React.InputHTMLAttributes<HTMLInputElement> & {
@@ -31,7 +32,7 @@ export const ViewSelectorRadioGroup = ({
   return (
     <Card className={rest.disabled ? "pointer-events-none" : void 0}>
       <CardHeader className={cn("grid grid-cols-6 space-y-0 px-2 py-3", className)}>
-        {views
+        {getViewList()
           .filter((v) => v.switchable)
           .map((view) => (
             <div key={view.name}>
@@ -67,7 +68,7 @@ export const ViewSelectorRadioGroup = ({
       {showPreview && (
         <CardContent
           className={
-            views[view || FeedViewType.Articles]?.gridMode
+            getView(view || FeedViewType.Articles)?.gridMode
               ? "relative grid w-full grid-cols-3 flex-col gap-2 pb-4"
               : "relative flex w-full flex-col gap-2 pb-0"
           }

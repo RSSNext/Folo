@@ -1,6 +1,6 @@
-import { apiClient } from "~/lib/api-fetch"
+import { followClient } from "~/lib/api-client"
 import { defineQuery } from "~/lib/defineQuery"
 
 export const settings = {
-  get: () => defineQuery(["settings"], async () => await apiClient.settings.$get({ query: {} })),
+  get: () => defineQuery(["settings"], async () => await followClient.api.settings.get()),
 }

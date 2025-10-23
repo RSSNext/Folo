@@ -218,7 +218,7 @@ export const UserHeaderBanner = ({
           paddingTop: insets.top,
         }}
       >
-        <ReAnimated.View style={avatarStyles} className="bg-system-background rounded-full">
+        <ReAnimated.View style={avatarStyles} className="rounded-full bg-system-background">
           <UserAvatar
             image={user?.image}
             name={user?.name}
@@ -241,7 +241,7 @@ export const UserHeaderBanner = ({
               {user.name}
             </Text>
           ) : (
-            <Text className="text-text text-2xl font-bold">Folo Account</Text>
+            <Text className="text-2xl font-bold text-text">Folo Account</Text>
           )}
 
           {!!role && serverConfigs?.REFERRAL_ENABLED && (
@@ -281,7 +281,7 @@ export const UserHeaderBanner = ({
               className="mx-auto"
               onPress={() => navigation.presentControllerView(LoginScreen)}
             >
-              <Text className="text-accent m-[6] text-[16px]">Sign in to your account</Text>
+              <Text className="m-[6] text-[16px] text-accent">Sign in to your account</Text>
             </TouchableOpacity>
           ) : null}
         </View>

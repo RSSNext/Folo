@@ -50,7 +50,6 @@ const Handler = () => {
     triggerElement.dispatchEvent(
       new MouseEvent("contextmenu", {
         bubbles: true,
-        cancelable: true,
         clientX: contextMenuState.position.x,
         clientY: contextMenuState.position.y,
       }),

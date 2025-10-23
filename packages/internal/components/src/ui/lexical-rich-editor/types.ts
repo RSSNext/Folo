@@ -1,3 +1,4 @@
+import type { InitialEditorStateType } from "@lexical/react/LexicalComposer"
 import type { EditorState, Klass, LexicalEditor, LexicalNode } from "lexical"
 
 export interface LexicalRichEditorRef {
@@ -13,18 +14,22 @@ export interface BuiltInPlugins {
   list?: boolean
   link?: boolean
   autoFocus?: boolean
+  autoLink?: boolean
+  tabIndentation?: boolean
 }
 export interface LexicalRichEditorProps {
   placeholder?: string
   className?: string
-  onChange?: (editorState: EditorState, editor: LexicalEditor) => void
-  onKeyDown?: (event: KeyboardEvent) => boolean
   autoFocus?: boolean
   namespace?: string
   theme?: any
   enabledPlugins?: BuiltInPlugins
-  initalEditorState?: EditorState
+  initalEditorState?: InitialEditorStateType
   plugins?: LexicalPluginFC[]
+  accessories?: React.ReactNode[]
+  onLengthChange?: (length: number, editor: LexicalEditor) => void
+  onChange?: (editorState: EditorState, editor: LexicalEditor) => void
+  onKeyDown?: (event: KeyboardEvent) => boolean
 }
 export type LexicalPluginFC<T = unknown> = React.FC<T> & {
   id: string

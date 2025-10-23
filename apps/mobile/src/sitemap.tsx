@@ -62,7 +62,7 @@ export function registerSitemap() {
 function screenHoC<P extends object>(Component: React.ComponentType<P>, props: P) {
   const Wrapper: NavigationControllerView<P> = function () {
     return (
-      <View className="bg-system-background flex-1">
+      <View className="flex-1 bg-system-background">
         <Component {...props} />
       </View>
     )

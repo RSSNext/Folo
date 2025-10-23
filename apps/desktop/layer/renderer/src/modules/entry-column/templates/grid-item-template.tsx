@@ -6,6 +6,7 @@ import { cn } from "@follow/utils/utils"
 import dayjs from "dayjs"
 import { useTranslation } from "react-i18next"
 
+import { useUISettingKey } from "~/atoms/settings/ui"
 import { useEntryIsRead } from "~/hooks/biz/useAsRead"
 import { EntryTranslation } from "~/modules/entry-column/translation"
 import type { FeedIconEntry } from "~/modules/feed/feed-icon"
@@ -20,14 +21,14 @@ interface GridItemProps extends UniversalItemProps {
   wrapperClassName?: string
 }
 export function GridItem(props: GridItemProps) {
-  const { entryId, entryPreview, wrapperClassName, children, translation } = props
+  const { entryId, wrapperClassName, children, translation } = props
   const hasEntry = useHasEntry(entryId)
 
   if (!hasEntry) return null
   return (
     <div className={cn("p-1.5", wrapperClassName)}>
       {children}
-      <GridItemFooter entryId={entryId} entryPreview={entryPreview} translation={translation} />
+      <GridItemFooter entryId={entryId} translation={translation} />
     </div>
   )
 }
@@ -38,7 +39,7 @@ export const GridItemFooter = ({
   titleClassName,
   descriptionClassName,
   timeClassName,
-}: Pick<GridItemProps, "entryId" | "entryPreview" | "translation"> & {
+}: Pick<GridItemProps, "entryId" | "translation"> & {
   titleClassName?: string
   descriptionClassName?: string
   timeClassName?: string
@@ -74,13 +75,16 @@ export const GridItemFooter = ({
 
   const { t } = useTranslation("common")
 
+  const isImageOnly = useUISettingKey("pictureViewImageOnly")
+  if (isImageOnly) return null
+
   if (!entry) return null
   return (
     <div className={cn("relative px-2 text-sm")}>
       <div className="flex items-center">
         <div
           className={cn(
-            "bg-accent mr-1 size-1.5 shrink-0 self-center rounded-full duration-200",
+            "mr-1 size-1.5 shrink-0 self-center rounded-full bg-accent duration-200",
             asRead && "mr-0 w-0",
           )}
         />
@@ -105,7 +109,7 @@ export const GridItemFooter = ({
           fallback
           noMargin
           className="flex"
-          feed={feeds!}
+          target={feeds!}
           entry={entry?.iconEntry}
           size={18}
         />

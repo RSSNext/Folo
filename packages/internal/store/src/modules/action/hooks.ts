@@ -1,9 +1,10 @@
-import type { ActionConditionIndex, ActionModel, ActionRules } from "@follow/models/types"
+import type { ActionConditionIndex } from "@follow-app/client-sdk"
 import { useMutation, useQuery } from "@tanstack/react-query"
 import { FetchError } from "ofetch"
 import { useCallback } from "react"
 
 import type { GeneralMutationOptions } from "../../types"
+import type { ActionItem } from "./store"
 import { actionActions, actionSyncService, useActionStore } from "./store"
 
 export const usePrefetchActions = () => {
@@ -31,18 +32,18 @@ export const useUpdateActionsMutation = (options?: GeneralMutationOptions) => {
   })
 }
 
-export function useActionRules(): ActionRules
-export function useActionRules<T>(selector: (rules: ActionRules) => T): T
-export function useActionRules<T>(selector?: (rules: ActionRules) => T) {
+export function useActionRules(): ActionItem[]
+export function useActionRules<T>(selector: (rules: ActionItem[]) => T): T
+export function useActionRules<T>(selector?: (rules: ActionItem[]) => T) {
   return useActionStore((state) => {
     const { rules } = state
     return selector ? selector(rules) : rules
   })
 }
 
-export function useActionRule(index: number): ActionModel | undefined
-export function useActionRule<T>(index: number, selector: (rule: ActionModel) => T): T
-export function useActionRule<T>(index: number, selector?: (rule: ActionModel) => T) {
+export function useActionRule(index: number): ActionItem | undefined
+export function useActionRule<T>(index: number, selector: (rule: ActionItem) => T): T
+export function useActionRule<T>(index: number, selector?: (rule: ActionItem) => T) {
   return useActionStore((state) => {
     const rule = state.rules[index]
     if (!rule) return

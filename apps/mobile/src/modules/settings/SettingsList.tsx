@@ -1,6 +1,6 @@
 import { UserRole } from "@follow/constants"
-import type { ServerConfigs } from "@follow/models/types"
 import { useUserRole, useWhoami } from "@follow/store/user/hooks"
+import type { StatusConfigs as ServerConfigs } from "@follow-app/client-sdk"
 import type { ParseKeys } from "i18next"
 import type { FC } from "react"
 import { Fragment, useMemo } from "react"
@@ -280,7 +280,7 @@ export const SettingsList: FC = () => {
   const marginTop = 44 / pixelRatio
 
   return (
-    <View className="bg-system-grouped-background flex-1 pb-4" style={{ marginTop }}>
+    <View className="flex-1 bg-system-grouped-background pb-4" style={{ marginTop }}>
       {filteredNavigationGroups.map((group, index) => (
         <Fragment key={`nav-group-${index}`}>
           <NavigationLinkGroup key={`nav-group-${index}`} links={group} />

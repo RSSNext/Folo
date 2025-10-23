@@ -2,7 +2,7 @@ import { useInputComposition } from "@follow/hooks"
 import { stopPropagation } from "@follow/utils/dom"
 import { cn } from "@follow/utils/utils"
 import type { DetailedHTMLProps, InputHTMLAttributes } from "react"
-
+import * as React from "react"
 // This composition handler is not perfect
 // @see https://foxact.skk.moe/use-composition-input
 export const Input = ({

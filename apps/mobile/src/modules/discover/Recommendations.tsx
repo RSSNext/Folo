@@ -192,10 +192,7 @@ export const RecommendationTab: TabComponent<{
     })
   }, [data])
   const alphabetGroups = useMemo(() => {
-    const result = [] as {
-      key: string
-      data: RSSHubRouteDeclaration
-    }[]
+    const result = [] as Array<{ key: string; data: RSSHubRouteDeclaration }>
     for (const item of keys) {
       if (!data) {
         continue
@@ -212,18 +209,8 @@ export const RecommendationTab: TabComponent<{
       })
     }
     result.sort((a, b) => {
-      let aHeat = 0
-      let bHeat = 0
-      if (typeof a === "string") {
-        aHeat = 0
-      } else {
-        aHeat = Object.values(a.data.routes).reduce((acc, route) => acc + (route.heat || 0), 0)
-      }
-      if (typeof b === "string") {
-        bHeat = 0
-      } else {
-        bHeat = Object.values(b.data.routes).reduce((acc, route) => acc + (route.heat || 0), 0)
-      }
+      const aHeat = Object.values(a.data.routes).reduce((acc, route) => acc + (route.heat || 0), 0)
+      const bHeat = Object.values(b.data.routes).reduce((acc, route) => acc + (route.heat || 0), 0)
       return bHeat - aHeat
     })
     return result
@@ -277,7 +264,7 @@ export const RecommendationTab: TabComponent<{
     )
   }
   return (
-    <View className="bg-system-grouped-background flex-1" {...rest}>
+    <View className="flex-1 bg-system-grouped-background" {...rest}>
       <FlashList
         onScroll={(e) => {
           scrollOffsetRef.current = e.nativeEvent.contentOffset.y

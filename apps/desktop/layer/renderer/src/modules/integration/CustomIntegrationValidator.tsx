@@ -36,7 +36,7 @@ export const CustomIntegrationValidator = ({
           {t("integration.custom_integrations.validation.invalid", "Template has errors")}
         </span>
       </div>
-      <ul className="text-red ml-6 space-y-1 text-sm">
+      <ul className="ml-6 space-y-1 text-sm text-red">
         {validation.errors.map((error, index) => (
           <li key={index} className="list-disc">
             {error}

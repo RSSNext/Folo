@@ -193,7 +193,7 @@ const FeedItemImpl = ({ view, feedId, className, isPreview }: FeedItemProps) => 
       {...contextMenuProps}
     >
       <div className={cn("flex min-w-0 items-center", isFeed && feed.errorAt && "text-red")}>
-        <FeedIcon fallback feed={feed} size={16} />
+        <FeedIcon fallback target={feed} size={16} />
         <FeedTitle feed={feed} />
         {isFeed && (
           <ErrorTooltip errorAt={feed.errorAt} errorMessage={feed.errorMessage}>
@@ -224,7 +224,7 @@ const FeedItemImpl = ({ view, feedId, className, isPreview }: FeedItemProps) => 
             })
           }}
         >
-          <i className="i-mgc-add-cute-re text-accent text-base" />
+          <i className="i-mgc-add-cute-re text-base text-accent" />
         </Button>
       ) : (
         <UnreadNumber unread={feedUnread} className="ml-2" />
@@ -319,7 +319,7 @@ const ListItemImpl: Component<ListItemProps> = ({
       {...contextMenuProps}
     >
       <div className="flex min-w-0 flex-1 items-center">
-        <FeedIcon fallback feed={list} size={iconSize} className="mask mask-squircle" />
+        <FeedIcon fallback target={list} size={iconSize} className="mask-squircle mask" />
         <EllipsisHorizontalTextWithTooltip className="truncate">
           {getPreferredTitle(list)}
         </EllipsisHorizontalTextWithTooltip>
@@ -347,7 +347,7 @@ const ListItemImpl: Component<ListItemProps> = ({
             })
           }}
         >
-          <i className="i-mgc-add-cute-re text-accent text-base" />
+          <i className="i-mgc-add-cute-re text-base text-accent" />
         </Button>
       ) : (
         <UnreadNumber unread={listUnread} className="ml-2" />
@@ -423,7 +423,7 @@ const InboxItemImpl: Component<InboxItemProps> = ({ view, inboxId, className, ic
       data-sub={`inbox-${inboxId}`}
       data-inbox-id={inboxId}
       className={cn(
-        "cursor-menu flex w-full items-center justify-between rounded-md pr-2.5 text-base font-medium leading-loose lg:text-sm",
+        "flex w-full cursor-menu items-center justify-between rounded-md pr-2.5 text-base font-medium leading-loose lg:text-sm",
         feedColumnStyles.item,
         "py-0.5 pl-2.5",
         className,
@@ -432,7 +432,7 @@ const InboxItemImpl: Component<InboxItemProps> = ({ view, inboxId, className, ic
       {...contextMenuProps}
     >
       <div className={"flex min-w-0 items-center"}>
-        <FeedIcon fallback feed={inbox} size={iconSize} />
+        <FeedIcon fallback target={inbox} size={iconSize} />
         <EllipsisHorizontalTextWithTooltip className="truncate">
           {getPreferredTitle(inbox)}
         </EllipsisHorizontalTextWithTooltip>

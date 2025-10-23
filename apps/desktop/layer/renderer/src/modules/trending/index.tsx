@@ -1,14 +1,14 @@
 import { useScrollElementUpdate } from "@follow/components/ui/scroll-area/hooks.js"
 import { ResponsiveSelect } from "@follow/components/ui/select/responsive.js"
 import { Skeleton } from "@follow/components/ui/skeleton/index.jsx"
-import { views } from "@follow/constants"
+import { getViewList } from "@follow/constants"
 import { cn } from "@follow/utils/utils"
 import { useQuery } from "@tanstack/react-query"
 import { useEffect, useState } from "react"
 import { useTranslation } from "react-i18next"
 
 import { setUISetting, useUISettingKey } from "~/atoms/settings/ui"
-import { apiClient } from "~/lib/api-fetch"
+import { followClient } from "~/lib/api-client"
 
 import { TrendingFeedCard } from "../discover/TrendingFeedCard"
 
@@ -34,7 +34,7 @@ const viewOptions = [
     label: "words.all",
     value: "all",
   },
-  ...views.map((view) => ({
+  ...getViewList().map((view) => ({
     label: view.name,
     value: `${view.view}`,
   })),
@@ -61,12 +61,10 @@ export function Trending({
   const { data, isLoading } = useQuery({
     queryKey: ["trending", lang, selectedView],
     queryFn: async () => {
-      return await apiClient.trending.feeds.$get({
-        query: {
-          language: lang === "all" ? undefined : lang,
-          view: selectedView === "all" ? undefined : Number(selectedView),
-          limit,
-        },
+      return await followClient.api.trending.getFeeds({
+        language: lang === "all" ? undefined : lang,
+        view: selectedView === "all" ? undefined : Number(selectedView),
+        limit,
       })
     },
     meta: {
@@ -98,9 +96,9 @@ export function Trending({
           <i className="i-mgc-trending-up-cute-re text-xl" />
           <span>{t("words.trending")}</span>
         </div>
-        <div className={cn("flex gap-4", center && "md:center justify-end")}>
+        <div className={cn("flex gap-4", center && "justify-end md:center")}>
           <div className="flex items-center">
-            <span className="text-text shrink-0 text-sm font-medium">{t("words.language")}:</span>
+            <span className="shrink-0 text-sm font-medium text-text">{t("words.language")}:</span>
 
             <ResponsiveSelect
               value={lang}
@@ -115,7 +113,7 @@ export function Trending({
             />
           </div>
           <div className="flex items-center">
-            <span className="text-text shrink-0 text-sm font-medium">{t("words.view")}:</span>
+            <span className="shrink-0 text-sm font-medium text-text">{t("words.view")}:</span>
             <ResponsiveSelect
               value={selectedView}
               onValueChange={(value: string) => {

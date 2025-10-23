@@ -5,7 +5,6 @@ export interface GeneralSettings {
   translationMode: "bilingual" | "translation-only"
   summary: boolean
   actionLanguage: string
-  startupScreen: "subscription" | "timeline"
   sendAnonymousData: boolean
   unreadOnly: boolean
   scrollMarkUnread: boolean
@@ -47,10 +46,17 @@ export type AccentColor =
   | "red"
   | "yellow"
   | "gray"
+  | string // Allow custom hex colors
 export interface UISettings {
   accentColor: AccentColor
+  customAccentColor?: string // Store custom color value
   entryColWidth: number
   aiColWidth: number
+  /**
+   * Dedicated AI panel width for `FeedViewType.All`.
+   * If not set, the runtime default falls back to half of the window width.
+   */
+  aiColWidthAll?: number
   feedColWidth: number
   opaqueSidebar: boolean
   sidebarShowUnreadCount: boolean
@@ -74,6 +80,7 @@ export interface UISettings {
 
   // view
   pictureViewMasonry: boolean
+  pictureViewImageOnly: boolean
   wideMode: boolean
   contentFontSize: number
   dateFormat: string
@@ -175,13 +182,19 @@ export interface CustomIntegration {
   enabled: boolean
 }
 
+export type AIShortcutTarget = "list" | "entry" | "ai-page"
+
+export const DEFAULT_SHORTCUT_TARGETS: readonly AIShortcutTarget[] = ["list", "entry", "ai-page"]
+
 export interface AIShortcut {
   id: string
   name: string
   prompt: string
+  defaultPrompt?: string
   enabled: boolean
   icon?: string
   hotkey?: string
+  displayTargets?: AIShortcutTarget[]
 }
 
 export type MCPTransportType = "streamable-http" | "sse"

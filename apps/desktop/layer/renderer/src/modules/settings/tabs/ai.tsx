@@ -1,4 +1,3 @@
-import { Divider } from "@follow/components/ui/divider/Divider.js"
 import { Label } from "@follow/components/ui/label/index.js"
 import { useTranslation } from "react-i18next"
 
@@ -16,6 +15,11 @@ import { UsageAnalysisSection } from "./ai/usage"
 const SettingBuilder = createSettingBuilder(useAISettingValue)
 const defineSettingItem = createDefineSettingItem(useAISettingValue, setAISetting)
 
+export const AI_SETTING_SECTION_IDS = {
+  shortcuts: "settings-ai-shortcuts",
+  tasks: "settings-ai-tasks",
+} as const
+
 export const SettingAI = () => {
   const { t } = useTranslation("ai")
 
@@ -23,7 +27,6 @@ export const SettingAI = () => {
     <div className="mt-4">
       <SettingBuilder
         settings={[
-          UsageAnalysisSection,
           {
             type: "title",
             value: t("features.title"),
@@ -49,20 +52,28 @@ export const SettingAI = () => {
           {
             type: "title",
             value: t("shortcuts.title"),
+            id: AI_SETTING_SECTION_IDS.shortcuts,
           },
           AIShortcutsSection,
+
+          {
+            type: "title",
+            value: t("tasks.section.title"),
+            id: AI_SETTING_SECTION_IDS.tasks,
+          },
+          TaskSchedulingSection,
 
           {
             type: "title",
             value: t("integration.title"),
           },
           MCPServicesSection,
-          <Divider key="task-scheduling-divider" />,
+
           {
             type: "title",
-            value: "Task Scheduling",
+            value: t("usage_analysis.title"),
           },
-          TaskSchedulingSection,
+          UsageAnalysisSection,
           AISecurityDisclosureSection,
         ]}
       />
@@ -74,15 +85,15 @@ const AISecurityDisclosureSection = () => {
   const { t } = useTranslation("ai")
 
   return (
-    <div className="border-fill-secondary mt-6 border-t pt-4">
+    <div className="mt-6 border-t border-fill-secondary pt-4">
       <div className="space-y-2">
         <div className="flex items-center gap-2">
-          <i className="i-mgc-safety-certificate-cute-re text-green size-4" />
-          <Label className="text-text text-sm font-medium">
+          <i className="i-mgc-safety-certificate-cute-re size-4 text-green" />
+          <Label className="text-sm font-medium text-text">
             {t("integration.mcp.security.title")}
           </Label>
         </div>
-        <p className="text-text-secondary text-xs leading-relaxed">
+        <p className="text-xs leading-relaxed text-text-secondary">
           {t("integration.mcp.security.description")}
         </p>
       </div>

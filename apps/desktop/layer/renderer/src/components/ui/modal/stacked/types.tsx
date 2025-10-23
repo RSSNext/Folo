@@ -31,6 +31,7 @@ export interface ModalProps {
   modal?: boolean
 
   autoFocus?: boolean
+  onClose?: () => void
 }
 
 export interface DialogInstance {

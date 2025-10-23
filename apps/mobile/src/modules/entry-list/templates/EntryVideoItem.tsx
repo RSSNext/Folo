@@ -85,12 +85,12 @@ export const EntryVideoItem = memo(({ id }: { id: string }) => {
 EntryVideoItem.displayName = "EntryVideoItem"
 const FallbackMedia = () => (
   <View
-    className="bg-tertiary-system-fill w-full items-center justify-center rounded-lg"
+    className="w-full items-center justify-center rounded-lg bg-tertiary-system-fill"
     style={{
       aspectRatio: 16 / 9,
     }}
   >
-    <Text className="text-label text-center">No media available</Text>
+    <Text className="text-center text-label">No media available</Text>
   </View>
 )
 const parseSchemeLink = (url: string) => {

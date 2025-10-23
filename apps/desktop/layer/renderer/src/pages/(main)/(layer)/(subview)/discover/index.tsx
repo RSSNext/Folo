@@ -78,7 +78,7 @@ export function Component() {
     <div className="flex size-full flex-col px-6 py-8">
       {/* Simple Header */}
       <div className="mx-auto mb-8 max-w-6xl text-center">
-        <h1 className="text-text mb-4 text-3xl font-bold">{t("words.discover")}</h1>
+        <h1 className="mb-4 text-3xl font-bold text-text">{t("words.discover")}</h1>
       </div>
 
       <div className="mx-auto w-full max-w-6xl">
@@ -139,14 +139,14 @@ export function Component() {
           <Divider />
 
           <div>
-            <h2 className="text-text mb-6 text-center text-xl font-semibold">Trending</h2>
+            <h2 className="mb-6 text-center text-xl font-semibold text-text">Trending</h2>
             <Trending center />
           </div>
 
           <Divider />
 
           <div>
-            <h2 className="text-text mb-6 text-center text-xl font-semibold">Recommendations</h2>
+            <h2 className="mb-6 text-center text-xl font-semibold text-text">Recommendations</h2>
             <AppErrorBoundary errorType={ErrorComponentType.RSSHubDiscoverError}>
               <Recommendations />
             </AppErrorBoundary>

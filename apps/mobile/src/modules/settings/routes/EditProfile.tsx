@@ -106,7 +106,7 @@ const AvatarSection: FC<{
       />
 
       <TouchableOpacity className="mt-2" hitSlop={10} onPress={setAvatar}>
-        <Text className="text-accent text-lg">{t("profile.set_avatar")}</Text>
+        <Text className="text-lg text-accent">{t("profile.set_avatar")}</Text>
       </TouchableOpacity>
     </View>
   )
@@ -124,6 +124,7 @@ const ProfileForm: FC<{
     "instagram",
     "facebook",
     "youtube",
+    // @ts-expect-error adding discord
     "discord",
   ]
   const socialCopyMap = {
@@ -150,7 +151,7 @@ const ProfileForm: FC<{
             >
               <View className="flex-1">
                 <PlainTextField
-                  className="text-secondary-label w-full flex-1 text-right"
+                  className="w-full flex-1 text-right text-secondary-label"
                   value={dirtyFields.name ?? whoami?.name ?? ""}
                   hitSlop={10}
                   selectionColor={accentColor}
@@ -175,7 +176,7 @@ const ProfileForm: FC<{
             >
               <View className="flex-1">
                 <PlainTextField
-                  className="text-secondary-label w-full flex-1 text-right"
+                  className="w-full flex-1 text-right text-secondary-label"
                   value={dirtyFields.handle ?? whoami?.handle ?? ""}
                   hitSlop={10}
                   selectionColor={accentColor}
@@ -217,7 +218,7 @@ const ProfileForm: FC<{
             <View className="flex-1">
               <TextInput
                 clearButtonMode="always"
-                className="text-label h-[100px] w-full flex-1 px-4 py-3"
+                className="h-[100px] w-full flex-1 px-4 py-3 text-label"
                 value={dirtyFields.bio ?? whoami?.bio ?? ""}
                 hitSlop={10}
                 multiline
@@ -243,7 +244,7 @@ const ProfileForm: FC<{
             >
               <View className="flex-1">
                 <PlainTextField
-                  className="text-secondary-label w-full flex-1 text-right"
+                  className="w-full flex-1 text-right text-secondary-label"
                   value={dirtyFields.website ?? whoami?.website ?? ""}
                   hitSlop={10}
                   selectionColor={accentColor}
@@ -276,7 +277,7 @@ const ProfileForm: FC<{
               >
                 <View className="flex-1">
                   <PlainTextField
-                    className="text-secondary-label w-full flex-1 text-right"
+                    className="w-full flex-1 text-right text-secondary-label"
                     value={dirtyFields.socialLinks?.[social] ?? whoami?.socialLinks?.[social] ?? ""}
                     hitSlop={10}
                     selectionColor={accentColor}

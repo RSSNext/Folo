@@ -1,105 +1,181 @@
+import { Popover, PopoverContent, PopoverTrigger } from "@follow/components/ui/popover/index.jsx"
 import { cn } from "@follow/utils/utils"
 import { memo, useCallback, useEffect, useMemo, useRef } from "react"
 
-import { useAISettingValue } from "~/atoms/settings/ai"
-import { DropdownMenu, DropdownMenuTrigger } from "~/components/ui/dropdown-menu/dropdown-menu"
+import { useGeneralSettingKey } from "~/atoms/settings/general"
 import { useRouteParamsSelector } from "~/hooks/biz/useRouteParams"
+import { useDisplayBlocks } from "~/modules/ai-chat/hooks/useDisplayBlocks"
 import { useFileUploadWithDefaults } from "~/modules/ai-chat/hooks/useFileUpload"
 import { useAIChatStore } from "~/modules/ai-chat/store/AIChatContext"
 import { SUPPORTED_MIME_ACCEPT } from "~/modules/ai-chat/utils/file-validation"
 
 import { useBlockActions } from "../../store/hooks"
 import { BlockSliceAction } from "../../store/slices/block.slice"
-import { ContextBlock } from "../context-bar/blocks"
-import { ContextMenuContent, ShortcutsMenuContent } from "../context-bar/menus"
+import { CombinedContextBlock, ContextBlock } from "../context-bar/blocks"
+import { MentionButton } from "../context-bar/MentionButton"
 
-export const AIChatContextBar: Component<{ onSendShortcut?: (prompt: string) => void }> = memo(
-  ({ className, onSendShortcut }) => {
-    const blocks = useAIChatStore()((s) => s.blocks)
-    const { shortcuts } = useAISettingValue()
-    const fileInputRef = useRef<HTMLInputElement>(null)
-    const { handleFileInputChange } = useFileUploadWithDefaults()
+// Maximum number of context blocks to show before collapsing into "more" popover
+const MAX_VISIBLE_BLOCKS = 4
 
-    // Filter enabled shortcuts
-    const enabledShortcuts = useMemo(
-      () => shortcuts.filter((shortcut) => shortcut.enabled),
-      [shortcuts],
-    )
+export const AIChatContextBar: Component = memo(({ className }) => {
+  const blocks = useAIChatStore()((s) => s.blocks)
+  const fileInputRef = useRef<HTMLInputElement>(null)
+  const { handleFileInputChange } = useFileUploadWithDefaults()
 
-    const handleAttachFile = useCallback(() => {
-      fileInputRef.current?.click()
-    }, [])
+  const handleAttachFile = useCallback(() => {
+    fileInputRef.current?.click()
+  }, [])
 
-    const view = useRouteParamsSelector((i) => i.view)
-    const { addOrUpdateBlock, removeBlock } = useBlockActions()
-    useEffect(() => {
+  const { addOrUpdateBlock, removeBlock } = useBlockActions()
+
+  const view = useRouteParamsSelector((i) => {
+    if (!i.isPendingEntry) return
+    return i.view
+  })
+  const feedId = useRouteParamsSelector((i) => {
+    if (i.isAllFeeds || !i.isPendingEntry) return
+    return i.feedId
+  })
+  useEffect(() => {
+    if (typeof view === "number") {
       addOrUpdateBlock({
         id: BlockSliceAction.SPECIAL_TYPES.mainView,
         type: "mainView",
         value: `${view}`,
       })
-      return () => {
-        removeBlock(BlockSliceAction.SPECIAL_TYPES.mainView)
-      }
-    }, [addOrUpdateBlock, view, removeBlock])
+    } else {
+      removeBlock(BlockSliceAction.SPECIAL_TYPES.mainView)
+    }
 
-    return (
-      <div className={cn("flex flex-wrap items-center gap-2 px-4 py-3", className)}>
-        {/* Add Context Button */}
-        <DropdownMenu>
-          <DropdownMenuTrigger asChild>
-            <button
-              type="button"
-              className="bg-material-medium hover:bg-material-thin border-border text-text-secondary hover:text-text-secondary flex size-7 items-center justify-center rounded-md border transition-colors"
-            >
-              <i className="i-mgc-add-cute-re size-3.5" />
-            </button>
-          </DropdownMenuTrigger>
-          <ContextMenuContent />
-        </DropdownMenu>
+    return () => {
+      removeBlock(BlockSliceAction.SPECIAL_TYPES.mainView)
+    }
+  }, [addOrUpdateBlock, view, removeBlock])
 
-        {/* File Upload Button */}
-        <button
-          type="button"
-          onClick={handleAttachFile}
-          className="bg-material-medium hover:bg-material-thin border-border text-text-secondary hover:text-text-secondary flex size-7 items-center justify-center rounded-md border transition-colors"
-          title="Upload Files"
-        >
-          <i className="i-mgc-attachment-cute-re size-3.5" />
-        </button>
+  useEffect(() => {
+    if (feedId) {
+      addOrUpdateBlock({
+        id: BlockSliceAction.SPECIAL_TYPES.mainFeed,
+        type: "mainFeed",
+        value: feedId,
+      })
+    } else {
+      removeBlock(BlockSliceAction.SPECIAL_TYPES.mainFeed)
+    }
+    return () => {
+      removeBlock(BlockSliceAction.SPECIAL_TYPES.mainFeed)
+    }
+  }, [addOrUpdateBlock, feedId, removeBlock])
 
-        {/* Hidden File Input */}
-        <input
-          ref={fileInputRef}
-          type="file"
-          multiple
-          accept={SUPPORTED_MIME_ACCEPT}
-          onChange={handleFileInputChange}
-          className="hidden"
+  // Add unreadOnly context block only when unreadOnly is enabled
+  const unreadOnly = useGeneralSettingKey("unreadOnly")
+  useEffect(() => {
+    if (unreadOnly) {
+      addOrUpdateBlock({
+        id: BlockSliceAction.SPECIAL_TYPES.unreadOnly,
+        type: "unreadOnly",
+        value: "true",
+      })
+    } else {
+      removeBlock(BlockSliceAction.SPECIAL_TYPES.unreadOnly)
+    }
+
+    return () => {
+      removeBlock(BlockSliceAction.SPECIAL_TYPES.unreadOnly)
+    }
+  }, [addOrUpdateBlock, unreadOnly, removeBlock])
+
+  const displayBlocks = useDisplayBlocks(blocks)
+
+  // Split blocks into visible and hidden based on MAX_VISIBLE_BLOCKS
+  const { visibleBlocks, hiddenBlocks } = useMemo(() => {
+    if (displayBlocks.length <= MAX_VISIBLE_BLOCKS) {
+      return { visibleBlocks: displayBlocks, hiddenBlocks: [] }
+    }
+    return {
+      visibleBlocks: displayBlocks.slice(0, MAX_VISIBLE_BLOCKS),
+      hiddenBlocks: displayBlocks.slice(MAX_VISIBLE_BLOCKS),
+    }
+  }, [displayBlocks])
+
+  const renderBlock = useCallback((item: (typeof displayBlocks)[number]) => {
+    if (item.kind === "combined") {
+      return (
+        <CombinedContextBlock
+          key={`combined-${item.viewBlock?.id}-${item.feedBlock?.id}-${item.unreadOnlyBlock?.id}`}
+          viewBlock={item.viewBlock}
+          feedBlock={item.feedBlock}
+          unreadOnlyBlock={item.unreadOnlyBlock}
         />
+      )
+    }
 
-        {/* AI Shortcuts Button */}
-        {enabledShortcuts.length > 0 && (
-          <DropdownMenu>
-            <DropdownMenuTrigger asChild>
+    return <ContextBlock key={item.block.id} block={item.block} />
+  }, [])
+
+  return (
+    <div className={cn("flex items-center gap-2 px-4 py-3", className)}>
+      <MentionButton />
+
+      {/* File Upload Button */}
+      <button
+        type="button"
+        onClick={handleAttachFile}
+        className="flex size-7 shrink-0 items-center justify-center rounded-md border border-border bg-material-medium text-text-secondary transition-colors hover:bg-material-thin hover:text-text-secondary"
+        title="Upload Files"
+      >
+        <i className="i-mgc-attachment-cute-re size-3.5" />
+      </button>
+
+      {/* Hidden File Input */}
+      <input
+        ref={fileInputRef}
+        type="file"
+        multiple
+        accept={SUPPORTED_MIME_ACCEPT}
+        onChange={handleFileInputChange}
+        className="hidden"
+      />
+
+      {/* Visible Context Blocks */}
+      <div className="flex min-w-0 flex-1 items-center gap-2">
+        {visibleBlocks.map((item) => (
+          <div
+            key={
+              item.kind === "combined"
+                ? `combined-${item.viewBlock?.id}-${item.feedBlock?.id}-${item.unreadOnlyBlock?.id}`
+                : item.block.id
+            }
+            className="max-w-[240px] shrink-0"
+          >
+            {renderBlock(item)}
+          </div>
+        ))}
+
+        {/* More Button with Popover */}
+        {hiddenBlocks.length > 0 && (
+          <Popover>
+            <PopoverTrigger asChild>
               <button
                 type="button"
-                className="bg-material-medium hover:bg-material-thin border-border text-text-secondary hover:text-text-secondary flex size-7 items-center justify-center rounded-md border transition-colors"
-                title="AI Shortcuts"
+                className="flex h-7 shrink-0 items-center gap-1.5 rounded-lg border border-border bg-fill-tertiary px-2.5 text-xs text-text-secondary transition-colors hover:bg-fill-secondary hover:text-text"
               >
-                <i className="i-mgc-magic-2-cute-re size-3.5" />
+                <i className="i-mgc-more-1-cute-re size-3.5" />
+                <span>+{hiddenBlocks.length}</span>
               </button>
-            </DropdownMenuTrigger>
-            <ShortcutsMenuContent shortcuts={shortcuts} onSendShortcut={onSendShortcut} />
-          </DropdownMenu>
+            </PopoverTrigger>
+            <PopoverContent className="w-80 p-3" align="start">
+              <div className="flex flex-col gap-2">
+                <div className="mb-1 text-xs font-medium text-text-secondary">
+                  Additional Context
+                </div>
+                {hiddenBlocks.map((item) => renderBlock(item))}
+              </div>
+            </PopoverContent>
+          </Popover>
         )}
-
-        {/* Context Blocks */}
-        {blocks.map((block) => (
-          <ContextBlock key={block.id} block={block} />
-        ))}
       </div>
-    )
-  },
-)
+    </div>
+  )
+})
 AIChatContextBar.displayName = "AIChatContextBar"

@@ -63,6 +63,7 @@ export const Autocomplete = ({
   const zIndex = useCorrectZIndex(9)
   return (
     <Combobox
+      as="div"
       immediate
       value={selectedOptions}
       onChange={(suggestion) => {
@@ -96,9 +97,9 @@ export const Autocomplete = ({
                     style={{ zIndex }}
                     onWheel={stopPropagation}
                     className={cn(
-                      "bg-material-medium backdrop-blur-background text-text pointer-events-auto",
+                      "pointer-events-auto bg-material-medium text-text backdrop-blur-background",
                       "shadow-context-menu min-w-32 overflow-hidden rounded-[6px] border p-1",
-                      "motion-scale-in-75 motion-duration-150 text-body lg:animate-none",
+                      "text-body motion-scale-in-75 motion-duration-150 lg:animate-none",
                       "w-[var(--input-width)] empty:invisible",
                     )}
                   >

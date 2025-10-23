@@ -75,12 +75,12 @@ export function Select<T>({
           >
             <View className="flex-1">
               <Text
-                className={cn("text-label text-base", isSelected ? "font-semibold" : "font-normal")}
+                className={cn("text-base text-label", isSelected ? "font-semibold" : "font-normal")}
               >
                 {item.label}
               </Text>
               {item.subLabel ? (
-                <Text className="text-secondary-label mt-0.5 text-xs">{item.subLabel}</Text>
+                <Text className="mt-0.5 text-xs text-secondary-label">{item.subLabel}</Text>
               ) : null}
             </View>
             {isSelected && (
@@ -90,7 +90,7 @@ export function Select<T>({
             )}
           </TouchableOpacity>
           <View
-            className={cn("bg-opaque-separator/70 mb-px ml-4")}
+            className={cn("mb-px ml-4 bg-opaque-separator/70")}
             style={{
               height: StyleSheet.hairlineWidth,
             }}
@@ -126,8 +126,8 @@ export function Select<T>({
   )
   const SelectModal = (
     <BottomModal visible={isModalVisible} onClose={closeModal}>
-      <View className="border-b-hairline border-opaque-separator flex-row items-center justify-between p-4">
-        <Text className="text-label text-xl font-semibold">Select an option</Text>
+      <View className="border-b-hairline flex-row items-center justify-between border-opaque-separator p-4">
+        <Text className="text-xl font-semibold text-label">Select an option</Text>
         <TouchableOpacity onPress={closeModal}>
           <Text
             style={{

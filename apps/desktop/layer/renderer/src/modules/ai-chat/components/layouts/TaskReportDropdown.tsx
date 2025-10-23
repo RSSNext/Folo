@@ -1,4 +1,5 @@
 import { ActionButton } from "@follow/components/ui/button/index.js"
+import { nextFrame } from "@follow/utils"
 import type { AIChatSession } from "@follow-app/client-sdk"
 import type { ReactElement } from "react"
 import { useCallback, useMemo, useState } from "react"
@@ -14,6 +15,7 @@ import {
   DropdownMenuTrigger,
 } from "~/components/ui/dropdown-menu/dropdown-menu"
 import { useDialog, useModalStack } from "~/components/ui/modal/stacked/hooks"
+import { useTimelineSummaryAutoContext } from "~/modules/ai-chat/hooks/useTimelineSummaryAutoContext"
 import { useChatActions, useCurrentChatId } from "~/modules/ai-chat/store/hooks"
 import { AIChatSessionService } from "~/modules/ai-chat-session"
 import {
@@ -21,6 +23,8 @@ import {
   useDeleteAIChatSessionMutation,
 } from "~/modules/ai-chat-session/query"
 import { AITaskModal, useCanCreateNewAITask } from "~/modules/ai-task"
+import { useSettingModal } from "~/modules/settings/modal/use-setting-modal-hack"
+import { AI_SETTING_SECTION_IDS } from "~/modules/settings/tabs/ai"
 
 import { AIPersistService } from "../../services"
 
@@ -53,14 +57,14 @@ const SessionItem = ({ session, onClick, onDelete, isLoading }: SessionItemProps
           <p className="mb-0.5 truncate font-medium">{session.title || "Untitled Chat"}</p>
         </div>
         <div className="relative flex min-w-0 items-center">
-          <p className="text-text-secondary ml-2 shrink-0 truncate text-xs">
-            <RelativeDay date={new Date(session.createdAt)} />
+          <p className="ml-2 shrink-0 truncate text-xs text-text-secondary">
+            <RelativeDay date={new Date(session.updatedAt)} />
           </p>
           {onDelete && (
             <button
               type="button"
               onClick={onDelete}
-              className="bg-accent absolute inset-y-0 right-0 flex items-center px-2 py-1 text-white opacity-0 shadow-lg backdrop-blur-sm group-data-[highlighted]:text-white group-data-[highlighted]:opacity-100"
+              className="absolute inset-y-0 right-0 flex items-center bg-accent px-2 py-1 text-white opacity-0 shadow-lg backdrop-blur-sm group-data-[highlighted]:text-white group-data-[highlighted]:opacity-100"
               disabled={isLoading}
             >
               {isLoading ? (
@@ -79,8 +83,8 @@ const SessionItem = ({ session, onClick, onDelete, isLoading }: SessionItemProps
 const EmptyState = () => {
   return (
     <div className="flex flex-col items-center py-8 text-center">
-      <i className="i-mgc-calendar-time-add-cute-re text-text-secondary mb-2 block size-8" />
-      <p className="text-text-secondary text-sm">All task reports read</p>
+      <i className="i-mgc-calendar-time-add-cute-re mb-2 block size-8 text-text-secondary" />
+      <p className="text-sm text-text-secondary">No unread task reports</p>
     </div>
   )
 }
@@ -89,10 +93,12 @@ export const TaskReportDropdown = ({ triggerElement, asChild = true }: TaskRepor
   const sessions = useAIChatSessionListQuery()
   const currentChatId = useCurrentChatId()
   const chatActions = useChatActions()
+  const shouldDisableTimelineSummary = useTimelineSummaryAutoContext()
   const deleteSessionMutation = useDeleteAIChatSessionMutation()
   const { ask } = useDialog()
   const { t } = useTranslation("ai")
   const [loadingChatId, setLoadingChatId] = useState<string | null>(null)
+  const showSettings = useSettingModal()
 
   // Only keep unread sessions for display
   const unreadSessions = useMemo(
@@ -109,10 +115,13 @@ export const TaskReportDropdown = ({ triggerElement, asChild = true }: TaskRepor
       toast.error("Please remove an existing task before creating a new one.")
       return
     }
-    present({
-      title: "New AI Task",
-      canClose: true,
-      content: () => <AITaskModal showSettingsTip />,
+    showSettings({ tab: "ai", section: AI_SETTING_SECTION_IDS.tasks })
+    nextFrame(() => {
+      present({
+        title: "New AI Task",
+        canClose: true,
+        content: () => <AITaskModal showSettingsTip />,
+      })
     })
   }
 
@@ -124,6 +133,9 @@ export const TaskReportDropdown = ({ triggerElement, asChild = true }: TaskRepor
       } catch (e) {
         console.error("Failed to sync chat session messages:", e)
         toast.error("Failed to load chat messages")
+      }
+      if (shouldDisableTimelineSummary) {
+        chatActions.setTimelineSummaryManualOverride(true)
       }
       chatActions.switchToChat(session.chatId)
     },
@@ -155,6 +167,9 @@ export const TaskReportDropdown = ({ triggerElement, asChild = true }: TaskRepor
         toast.success(t("delete_chat_success"))
 
         if (chatId === currentChatId) {
+          if (shouldDisableTimelineSummary) {
+            chatActions.setTimelineSummaryManualOverride(true)
+          }
           chatActions.newChat()
         }
       } catch (error) {
@@ -164,15 +179,23 @@ export const TaskReportDropdown = ({ triggerElement, asChild = true }: TaskRepor
         setLoadingChatId(null)
       }
     },
-    [sessions, ask, t, currentChatId, chatActions, deleteSessionMutation],
+    [
+      sessions,
+      ask,
+      t,
+      currentChatId,
+      chatActions,
+      deleteSessionMutation,
+      shouldDisableTimelineSummary,
+    ],
   )
 
   const defaultTrigger = (
     <ActionButton tooltip="Task Reports" className="relative">
-      <i className="i-mgc-calendar-time-add-cute-re text-text-secondary size-5" />
+      <i className="i-mgc-calendar-time-add-cute-re size-5 text-text-secondary" />
       {hasUnreadSessions && (
         <span
-          className="bg-accent absolute right-1 top-1 block size-2 rounded-full shadow-[0_0_0_2px_var(--color-bg-default)] dark:shadow-[0_0_0_2px_var(--color-bg-default)]"
+          className="absolute right-1 top-1 block size-2 rounded-full bg-accent shadow-[0_0_0_2px_var(--color-bg-default)] dark:shadow-[0_0_0_2px_var(--color-bg-default)]"
           aria-label="Unread task reports"
         />
       )}
@@ -190,7 +213,7 @@ export const TaskReportDropdown = ({ triggerElement, asChild = true }: TaskRepor
           {triggerElement || defaultTrigger}
           {hasUnreadSessions && triggerElement && (
             <span
-              className="bg-accent absolute right-1 top-1 block size-2 rounded-full shadow-[0_0_0_2px_var(--color-bg-default)] dark:shadow-[0_0_0_2px_var(--color-bg-default)]"
+              className="absolute right-1 top-1 block size-2 rounded-full bg-accent shadow-[0_0_0_2px_var(--color-bg-default)] dark:shadow-[0_0_0_2px_var(--color-bg-default)]"
               aria-label="Unread task reports"
             />
           )}

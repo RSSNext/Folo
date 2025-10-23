@@ -6,9 +6,9 @@ export const Paper: Component<{
 }> = ({ children, className, as: As = "main" }) => (
   <As
     className={cn(
-      "bg-background relative md:col-start-1 lg:col-auto",
+      "relative bg-background md:col-start-1 lg:col-auto",
       "-m-4 p-[2rem_1rem] md:m-0 lg:p-[30px_45px]",
-      "border-border rounded-lg lg:border",
+      "rounded-lg border-border lg:border",
       "shadow-perfect perfect-sm",
       "min-w-0",
       "print:!border-none print:!bg-transparent print:!shadow-none",

@@ -114,17 +114,16 @@ export function getFileCategoryFromMimeType(mimeType: string): FileCategory {
 export function getFileIconName(category: FileCategory): string {
   switch (category) {
     case "image": {
-      return "i-mgc-pic-cute-re"
+      return tw`i-mgc-pic-cute-re`
     }
     case "document": {
-      return "i-mgc-file-cute-re"
+      return tw`i-mingcute-file-line`
     }
     case "text": {
-      return "i-mgc-document-cute-re"
+      return tw`i-mingcute-text-line`
     }
-
     default: {
-      return "i-mgc-attachment-cute-re"
+      return tw`i-mgc-attachment-cute-re`
     }
   }
 }

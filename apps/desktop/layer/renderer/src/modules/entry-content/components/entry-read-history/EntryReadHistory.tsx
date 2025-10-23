@@ -37,23 +37,23 @@ export const EntryReadHistory: Component<{ entryId: string }> = ({ entryId }) =>
 
   const LIMIT = getLimit(appGirdContainerWidth)
 
-  if (!entryHistory) return null
-  if (!me) return null
-  if (!entryHistory.userIds) return null
+  const placeholder = <div className="-mb-3 h-10" />
+  if (!entryHistory) return placeholder
+  if (!me) return placeholder
+
+  const displayUsers = entryHistory.userIds.filter((id) => id !== me?.id).slice(0, LIMIT)
+
+  if (displayUsers.length === 0) return placeholder
 
   return (
     <div
-      className="animate-in fade-in @md:flex hidden items-center duration-200"
+      className="-mb-3 hidden h-10 items-center duration-200 animate-in fade-in @md:flex"
       data-hide-in-print
     >
       <AvatarGroup>
-        {entryHistory.userIds
-          .filter((id) => id !== me?.id)
-          .slice(0, LIMIT)
-
-          .map((userId) => (
-            <EntryUser userId={userId} key={userId} />
-          ))}
+        {displayUsers.map((userId) => (
+          <EntryUser userId={userId} key={userId} />
+        ))}
       </AvatarGroup>
 
       {totalCount > LIMIT && (
@@ -62,9 +62,9 @@ export const EntryReadHistory: Component<{ entryId: string }> = ({ entryId }) =>
             margin: "-8px",
             zIndex: LIMIT + 1,
           }}
-          className="no-drag-region border-border bg-material-opaque ring-background relative flex size-7 items-center justify-center rounded-full border ring-2"
+          className="no-drag-region relative flex size-7 items-center justify-center rounded-full border border-border bg-material-opaque ring-2 ring-background"
         >
-          <span className="text-text-secondary text-[10px] font-medium tabular-nums">
+          <span className="text-[10px] font-medium tabular-nums text-text-secondary">
             +{Math.min(totalCount - LIMIT, 99)}
           </span>
         </div>

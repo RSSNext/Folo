@@ -70,8 +70,12 @@ interface CollapseProps {
   className?: string
   children: React.ReactNode
   innerClassName?: string
+  ref?: React.Ref<CollapseCssRef>
 }
 
+export interface CollapseCssRef {
+  setIsOpened: (isOpened: boolean) => void
+}
 export const CollapseCss: FC<CollapseProps> = ({
   title,
   hideArrow,
@@ -83,6 +87,7 @@ export const CollapseCss: FC<CollapseProps> = ({
   className,
   innerClassName,
   children,
+  ref,
 }) => {
   const reactId = React.useId()
   const id = collapseId ?? reactId
@@ -100,6 +105,11 @@ export const CollapseCss: FC<CollapseProps> = ({
     onOpenChange?.(newOpened)
   }, [id, isOpened, controlledIsOpened, setOpenState, onOpenChange])
 
+  React.useImperativeHandle(ref, () => ({
+    setIsOpened: (isOpened: boolean) => {
+      setOpenState(id, isOpened)
+    },
+  }))
   return (
     <div className={cn("flex flex-col", className)} data-state={isOpened ? "open" : "hidden"}>
       <div

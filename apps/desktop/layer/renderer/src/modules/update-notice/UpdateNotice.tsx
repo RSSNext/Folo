@@ -59,7 +59,7 @@ export const UpdateNotice = () => {
     <m.div
       onMouseMove={handleMouseMove}
       className={cn(
-        "bg-background/80 macos:bg-background backdrop-blur-background group absolute inset-x-3 cursor-pointer overflow-hidden rounded-lg py-3 text-center text-sm shadow",
+        "group absolute inset-x-3 cursor-pointer overflow-hidden rounded-lg bg-background/80 py-3 text-center text-sm shadow backdrop-blur-background macos:bg-background",
         playerIsShow ? "bottom-[4.5rem]" : "bottom-3",
       )}
       onClick={handleClick}

@@ -205,12 +205,12 @@ export const SharePanel = ({ entryId }: SharePanelProps) => {
   return (
     <div className="pointer-events-auto max-w-[400px] px-2">
       <div className="mb-4 flex flex-col text-center">
-        <h3 className="text-text mb-2 mt-1 font-semibold">{t("share.title")}</h3>
+        <h3 className="mb-2 mt-1 font-semibold text-text">{t("share.title")}</h3>
         {(() => {
           const entry = getEntry(entryId)
           const title = entry?.title
           return title ? (
-            <p className="text-text-secondary mt-1 min-w-0 text-wrap text-left text-sm font-medium">
+            <p className="mt-1 min-w-0 text-wrap text-left text-sm font-medium text-text-secondary">
               {title}
             </p>
           ) : null
@@ -219,7 +219,7 @@ export const SharePanel = ({ entryId }: SharePanelProps) => {
 
       <div className="mb-6">
         <div className="mb-3">
-          <h4 className="text-text-secondary text-xs font-medium uppercase tracking-wide">
+          <h4 className="text-xs font-medium uppercase tracking-wide text-text-secondary">
             {t("share.social_media")}
           </h4>
         </div>
@@ -241,7 +241,7 @@ export const SharePanel = ({ entryId }: SharePanelProps) => {
               >
                 <i className={cn(option.icon, "size-5", option.color)} />
               </div>
-              <span className="text-text-secondary text-xs font-medium">{option.label}</span>
+              <span className="text-xs font-medium text-text-secondary">{option.label}</span>
             </button>
           ))}
         </div>
@@ -249,7 +249,7 @@ export const SharePanel = ({ entryId }: SharePanelProps) => {
 
       <div>
         <div className="mb-3">
-          <h4 className="text-text-secondary text-xs font-medium uppercase tracking-wide">
+          <h4 className="text-xs font-medium uppercase tracking-wide text-text-secondary">
             {t("share.actions")}
           </h4>
         </div>
@@ -259,7 +259,7 @@ export const SharePanel = ({ entryId }: SharePanelProps) => {
               key={option.id}
               type="button"
               className={cn(
-                "cursor-button relative flex select-none items-center rounded-lg",
+                "relative flex cursor-button select-none items-center rounded-lg",
                 "text-sm outline-none transition-all duration-200",
                 "hover:bg-fill-secondary/80 active:bg-fill-secondary",
                 "group",
@@ -278,7 +278,7 @@ export const SharePanel = ({ entryId }: SharePanelProps) => {
                     className={cn(option.icon, "size-3.5", option.color || "text-text-secondary")}
                   />
                 </div>
-                <span className="text-text text-xs font-medium">{option.label}</span>
+                <span className="text-xs font-medium text-text">{option.label}</span>
               </div>
             </button>
           ))}

@@ -1,6 +1,8 @@
 import { Skeleton } from "@follow/components/ui/skeleton/index.js"
-import type { FeedAnalyticsModel, FeedOrListRespModel, ListAnalyticsModel } from "@follow/models"
+import type { FeedModel } from "@follow/store/feed/types"
+import type { ListModel } from "@follow/store/list/types"
 import { formatNumber } from "@follow/utils"
+import type { FeedAnalyticsModel, ListAnalyticsSchema } from "@follow-app/client-sdk"
 import type { FC } from "react"
 import { useTranslation } from "react-i18next"
 
@@ -9,9 +11,9 @@ import { RelativeTime } from "~/components/ui/datetime"
 import { FollowSummary } from "../feed/feed-summary"
 
 export interface FeedSummaryProps {
-  feed: FeedOrListRespModel
+  feed: FeedModel | ListModel
 
-  analytics?: FeedAnalyticsModel | ListAnalyticsModel
+  analytics?: FeedAnalyticsModel | ListAnalyticsSchema
 
   showAnalytics?: boolean
   isLoading?: boolean
@@ -37,11 +39,11 @@ export const FeedSummary: FC<FeedSummaryProps> = ({
     <div>
       <FollowSummary feed={feed} />
 
-      <div className="text-callout mt-2 flex h-6 justify-between gap-4 pl-10">
+      <div className="mt-2 flex h-6 justify-between gap-4 pl-10 text-callout">
         {showSkeleton ? (
           <Skeleton className="mt-1 h-5 w-40" />
         ) : (
-          <div className="text-text-secondary flex items-center gap-3">
+          <div className="flex items-center gap-3 text-text-secondary">
             {!!analytics?.subscriptionCount && (
               <div className="flex items-center gap-1.5">
                 <i className="i-mgc-user-3-cute-re" />

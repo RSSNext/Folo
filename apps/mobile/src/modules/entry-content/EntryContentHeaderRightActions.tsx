@@ -28,7 +28,6 @@ import { StarCuteReIcon } from "@/src/icons/star_cute_re"
 import { Translate2CuteReIcon } from "@/src/icons/translate_2_cute_re"
 import { hideIntelligenceGlowEffect, openLink, showIntelligenceGlowEffect } from "@/src/lib/native"
 import { toast } from "@/src/lib/toast"
-import { checkLanguage } from "@/src/lib/translation"
 
 import { useEntryContentContext } from "./ctx"
 
@@ -136,7 +135,6 @@ const HeaderRightActionsImpl = ({
       language: getActionLanguage(),
       withContent: true,
       target: showReadability ? "readabilityContent" : "content",
-      checkLanguage,
     })
     setShowTranslation((prev) => !prev)
   }

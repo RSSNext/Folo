@@ -52,7 +52,7 @@ export const HeaderSubmitTextButton = ({
       <Text
         allowFontScaling={false}
         className={cn(
-          "text-accent text-[16px] font-bold",
+          "text-[16px] font-bold text-accent",
           !isValid && "text-secondary-label",
           isLoading && "opacity-0",
         )}

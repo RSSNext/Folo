@@ -84,7 +84,7 @@ export const EntryNavigationHeader: FC<{
           style={{ width: headerBarWidth - 80 }}
         >
           <Animated.Text
-            className={"text-label text-center text-[17px] font-semibold"}
+            className={"text-center text-[17px] font-semibold text-label"}
             numberOfLines={1}
             style={{ opacity: opacityAnimatedValue }}
           >

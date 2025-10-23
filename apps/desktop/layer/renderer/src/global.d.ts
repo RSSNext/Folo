@@ -5,6 +5,8 @@ const { t } = useTranslation()
 const { t: settingsT } = useTranslation("settings")
 // eslint-disable-next-line react-hooks/rules-of-hooks, unused-imports/no-unused-vars
 const { t: shortcutsT } = useTranslation("shortcuts")
+// eslint-disable-next-line react-hooks/rules-of-hooks, unused-imports/no-unused-vars
+const { t: aiT } = useTranslation("ai")
 declare global {
   // BIZ ID
   export type Id = string
@@ -31,6 +33,7 @@ declare global {
   export type I18nKeys = OmitStringType<Parameters<typeof t>[0]>
   export type I18nKeysForSettings = OmitStringType<Parameters<typeof settingsT>[0]>
   export type I18nKeysForShortcuts = OmitStringType<Parameters<typeof shortcutsT>[0]>
+  export type I18nKeysForAi = OmitStringType<Parameters<typeof aiT>[0]>
 
   // MACROS
 

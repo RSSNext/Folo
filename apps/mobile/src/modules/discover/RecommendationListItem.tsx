@@ -22,7 +22,7 @@ export const RecommendationListItem: FC<{
     for (const route in data.routes) {
       const routeData = data.routes[route]!
       if (routeData.categories) {
-        routeData.categories.forEach((c) => categories.add(c))
+        routeData.categories.forEach((c: string) => categories.add(c))
       }
     }
     categories.delete("popular")
@@ -36,17 +36,17 @@ export const RecommendationListItem: FC<{
       <View className="mt-1.5 flex-row justify-between overflow-hidden px-6">
         <View className="flex-row items-center gap-3">
           <FeedIcon siteUrl={`https://${data.url}`} size={24} />
-          <Text className="text-text text-lg font-medium">{data.name}</Text>
+          <Text className="text-lg font-medium text-text">{data.name}</Text>
         </View>
         <View className="flex-row items-center justify-between gap-4">
           {/* Tags */}
           <View className="shrink flex-row items-center">
             {categories.map((c) => (
               <View
-                className="bg-system-fill mr-1 items-center justify-center overflow-hidden rounded-full px-3 py-1"
+                className="mr-1 items-center justify-center overflow-hidden rounded-full bg-system-fill px-3 py-1"
                 key={c}
               >
-                <Text className="text-text/70 text-xs" numberOfLines={1}>
+                <Text className="text-xs text-text/70" numberOfLines={1}>
                   {t(`discover.category.${c}`)}
                 </Text>
               </View>
@@ -76,7 +76,7 @@ export const RecommendationListItem: FC<{
                     <Text
                       ellipsizeMode="middle"
                       numberOfLines={1}
-                      className="text-text/70 whitespace-pre text-sm"
+                      className="whitespace-pre text-sm text-text/70"
                     >
                       {data.routes[route]!.heat}
                     </Text>

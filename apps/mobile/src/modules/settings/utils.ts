@@ -4,8 +4,9 @@ import * as FileSystem from "expo-file-system"
 import * as Sharing from "expo-sharing"
 
 import { getDbPath } from "@/src/database"
-import { apiClient, apiFetch, getBizFetchErrorMessage } from "@/src/lib/api-fetch"
+import { followApi } from "@/src/lib/api-client"
 import { pickImage } from "@/src/lib/native/picker"
+import { getBizFetchErrorMessage } from "@/src/lib/parse-api-error"
 import { toast } from "@/src/lib/toast"
 
 export const setAvatar = async () => {
@@ -16,20 +17,14 @@ export const setAvatar = async () => {
 
   if (!result) return
   const { formData } = result
-  const res = await apiFetch<{
-    url: string
-  }>(apiClient.upload.avatar.$url().toString(), {
-    method: "POST",
-    headers: {
-      "Content-Type": "multipart/form-data",
-    },
-    body: formData,
-  }).catch((err) => {
-    toast.error(getBizFetchErrorMessage(err))
-    throw err
-  })
-
-  const { url } = res
+  const { url } = await followApi.upload
+    .uploadAvatar({
+      file: formData.get("file") as any,
+    } as any)
+    .catch((err) => {
+      toast.error(getBizFetchErrorMessage(err))
+      throw err
+    })
 
   userSyncService
     .updateProfile({
@@ -42,12 +37,6 @@ export const setAvatar = async () => {
       toast.error(getBizFetchErrorMessage(err))
     })
 }
-
-type FeedResponseList = {
-  id: string
-  url: string
-  title: string | null
-}[]
 
 type FileUpload = {
   uri: string
@@ -78,19 +67,7 @@ export const importOpml = async () => {
       name: file.name,
     } as FileUpload as any)
 
-    const { data } = await apiFetch<{
-      data: {
-        successfulItems: FeedResponseList
-        conflictItems: FeedResponseList
-        parsedErrorItems: FeedResponseList
-      }
-    }>("/subscriptions/import", {
-      method: "POST",
-      body: formData,
-      headers: {
-        "Content-Type": "multipart/form-data",
-      },
-    })
+    const { data } = await followApi.subscriptions.import(formData)
 
     const { successfulItems, conflictItems, parsedErrorItems } = data
     toast.success(

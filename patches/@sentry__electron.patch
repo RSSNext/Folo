@@ -1,38 +1,46 @@
 diff --git a/esm/main/ipc.js b/esm/main/ipc.js
-index b5d4478b20cac94e1e1e54900d616286aa9f7733..3639b802c2f4012e943ed2f3d0454fbf5eeda3e3 100644
+index 2fdc06044866a4f4c3420bd8b4a5d2788faa3e4e..7f0250b911871aa12e379d848a6a5b5668bdb282 100644
 --- a/esm/main/ipc.js
 +++ b/esm/main/ipc.js
-@@ -134,14 +134,6 @@ function configureProtocol(client, options) {
+@@ -130,18 +130,6 @@ function configureProtocol(client, ipcUtil, options) {
      if (app.isReady()) {
          throw new Error("Sentry SDK should be initialized before the Electron app 'ready' event is fired");
      }
--    protocol.registerSchemesAsPrivileged([SENTRY_CUSTOM_SCHEME]);
+-    const scheme = {
+-        scheme: ipcUtil.namespace,
+-        privileges: { bypassCSP: true, corsEnabled: true, supportFetchAPI: true, secure: true },
+-    };
+-    protocol.registerSchemesAsPrivileged([scheme]);
 -    // We Proxy this function so that later user calls to registerSchemesAsPrivileged don't overwrite our custom scheme
 -    // eslint-disable-next-line @typescript-eslint/unbound-method
 -    protocol.registerSchemesAsPrivileged = new Proxy(protocol.registerSchemesAsPrivileged, {
 -        apply: (target, __, args) => {
--            target([...args[0], SENTRY_CUSTOM_SCHEME]);
+-            target([...args[0], scheme]);
 -        },
 -    });
-     const rendererStatusChanged = createRendererAnrStatusHandler(client);
+     const rendererStatusChanged = createRendererEventLoopBlockStatusHandler(client);
      app
          .whenReady()
 diff --git a/main/ipc.js b/main/ipc.js
-index 6866654fb79361ec90cc9b175a624d80c1e614b4..74494413854aba2acf777d641e356d0200b5a6d1 100644
+index 3cdf12e818890effadc0d5188fe104549c846b97..597ea1aabc2314e306864c562d9609541fc3edfe 100644
 --- a/main/ipc.js
 +++ b/main/ipc.js
-@@ -134,14 +134,6 @@ function configureProtocol(client, options) {
+@@ -130,18 +130,6 @@ function configureProtocol(client, ipcUtil, options) {
      if (electron.app.isReady()) {
          throw new Error("Sentry SDK should be initialized before the Electron app 'ready' event is fired");
      }
--    electron.protocol.registerSchemesAsPrivileged([SENTRY_CUSTOM_SCHEME]);
+-    const scheme = {
+-        scheme: ipcUtil.namespace,
+-        privileges: { bypassCSP: true, corsEnabled: true, supportFetchAPI: true, secure: true },
+-    };
+-    electron.protocol.registerSchemesAsPrivileged([scheme]);
 -    // We Proxy this function so that later user calls to registerSchemesAsPrivileged don't overwrite our custom scheme
 -    // eslint-disable-next-line @typescript-eslint/unbound-method
 -    electron.protocol.registerSchemesAsPrivileged = new Proxy(electron.protocol.registerSchemesAsPrivileged, {
 -        apply: (target, __, args) => {
--            target([...args[0], SENTRY_CUSTOM_SCHEME]);
+-            target([...args[0], scheme]);
 -        },
 -    });
-     const rendererStatusChanged = rendererAnr.createRendererAnrStatusHandler(client);
+     const rendererStatusChanged = rendererAnr.createRendererEventLoopBlockStatusHandler(client);
      electron.app
          .whenReady()

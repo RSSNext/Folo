@@ -96,7 +96,7 @@ export function SettingModalLayout(
         }}
         transition={Spring.presets.smooth}
         className={cn(
-          "border-border relative flex overflow-hidden rounded-xl rounded-br-none border",
+          "relative flex overflow-hidden rounded-xl rounded-br-none border border-border",
           !overlay && "shadow-perfect",
         )}
         style={resizeableStyle}
@@ -132,7 +132,7 @@ export function SettingModalLayout(
               <div className="absolute inset-x-0 top-0 z-[1] h-8" onPointerDown={handleDrag} />
             )}
             <div className="flex h-0 flex-1" ref={elementRef}>
-              <div className="backdrop-blur-background bg-sidebar border-r-border flex min-h-0 min-w-44 max-w-[20ch] flex-col rounded-l-xl border-r px-2 py-6">
+              <div className="flex min-h-0 min-w-44 max-w-[20ch] flex-col rounded-l-xl border-r border-r-border bg-sidebar px-2 py-6 backdrop-blur-background">
                 <div className="mb-4 flex h-8 items-center gap-2 px-2 font-bold">
                   <Logo className="mr-1 size-6" />
 
@@ -147,7 +147,7 @@ export function SettingModalLayout(
                   <SettingSyncIndicator />
                 </div>
               </div>
-              <div className="bg-background relative flex h-full min-w-0 flex-1 flex-col pt-1">
+              <div className="relative flex h-full min-w-0 flex-1 flex-col bg-background pt-1">
                 <SettingModalContentPortalableContext value={portalableCtxValue}>
                   <Suspense>{children}</Suspense>
                   <SettingModalContentPortalable />
@@ -155,7 +155,7 @@ export function SettingModalLayout(
               </div>
             </div>
 
-            <LetsIconsResizeDownRightLight className="text-border pointer-events-none absolute bottom-0 right-0 size-6 translate-x-px translate-y-px" />
+            <LetsIconsResizeDownRightLight className="pointer-events-none absolute bottom-0 right-0 size-6 translate-x-px translate-y-px text-border" />
           </Resizable>
         </SettingContext.Provider>
       </m.div>
@@ -186,9 +186,9 @@ const SettingItemButtonImpl = (props: {
   return (
     <button
       className={cn(
-        "text-text my-0.5 flex w-full items-center rounded-lg px-2.5 py-0.5 leading-loose",
+        "my-0.5 flex w-full items-center rounded-lg px-2.5 py-0.5 leading-loose text-text",
         isActive && "!bg-theme-item-active !text-text",
-        !IN_ELECTRON && "hover:bg-theme-item-hover duration-200",
+        !IN_ELECTRON && "duration-200 hover:bg-theme-item-hover",
         disabled && "cursor-not-allowed opacity-50",
       )}
       type="button"

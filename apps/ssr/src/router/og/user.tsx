@@ -1,19 +1,16 @@
 import { isBizId } from "@follow/utils/utils"
+import type { FollowClient } from "@follow-app/client-sdk"
 import * as React from "react"
 
-import type { ApiClient } from "~/lib/api-client"
-import { renderToImage } from "~/lib/og/render-to-image"
-
+import { renderToImage } from "../../lib/og/render-to-image"
 import { getImageBase64, OGAvatar, OGCanvas } from "./__base"
 
-export const renderUserOG = async (apiClient: ApiClient, id: string) => {
+export const renderUserOG = async (apiClient: FollowClient, id: string) => {
   const handle = isBizId(id || "") ? id : `${id}`.startsWith("@") ? `${id}`.slice(1) : id
 
-  const user = await apiClient.profiles.$get({
-    query: {
-      handle,
-      id: isBizId(handle || "") ? handle : undefined,
-    },
+  const user = await apiClient.api.profiles.getProfile({
+    id,
+    handle,
   })
 
   if (!user) {

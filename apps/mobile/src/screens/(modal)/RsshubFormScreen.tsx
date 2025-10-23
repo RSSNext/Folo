@@ -120,18 +120,18 @@ function FormImpl({ route, routePrefix, name }: RsshubFormParams) {
               routePrefix={routePrefix}
               errors={nextErrors}
             />
-            <Text className="text-secondary-label mx-4 mt-2 text-center text-sm">
+            <Text className="mx-4 mt-2 text-center text-sm text-secondary-label">
               {`rsshub://${routePrefix}${fullPath}`}
             </Text>
             {keys.length === 0 && (
-              <View className="bg-secondary-system-grouped-background mx-2 mt-4 gap-4 rounded-lg p-3">
-                <Text className="text-label text-center text-base">
+              <View className="mx-2 mt-4 gap-4 rounded-lg bg-secondary-system-grouped-background p-3">
+                <Text className="text-center text-base text-label">
                   This feed has no parameters.
                 </Text>
               </View>
             )}
             {keys.length > 0 && (
-              <View className="bg-secondary-system-grouped-background mx-4 mt-4 gap-5 rounded-[10px] px-4 py-5">
+              <View className="mx-4 mt-4 gap-5 rounded-[10px] bg-secondary-system-grouped-background px-4 py-5">
                 {keys.map((keyItem) => {
                   const parameters = normalizeRSSHubParameters(route.parameters[keyItem.name]!)
                   return (
@@ -182,7 +182,7 @@ function FormImpl({ route, routePrefix, name }: RsshubFormParams) {
                       )}
 
                       {!!parameters && (
-                        <Text className="text-secondary-label ml-2 mt-1 text-xs">
+                        <Text className="ml-2 mt-1 text-xs text-secondary-label">
                           {parameters.description}
                         </Text>
                       )}
@@ -192,16 +192,9 @@ function FormImpl({ route, routePrefix, name }: RsshubFormParams) {
               </View>
             )}
             {!!topFeeds?.length && (
-              <View className="bg-secondary-system-grouped-background mx-4 mt-4 rounded-[10px] py-1">
+              <View className="mx-4 mt-4 rounded-[10px] bg-secondary-system-grouped-background py-1">
                 {topFeeds.map((feed) => (
-                  <FeedSummary
-                    key={feed.id}
-                    item={{
-                      feed,
-                    }}
-                    simple
-                    className="px-4 py-2"
-                  />
+                  <FeedSummary key={feed.id} feed={feed} simple className="px-4 py-2" />
                 ))}
               </View>
             )}
@@ -223,13 +216,13 @@ const Maintainers = ({ maintainers }: { maintainers?: string[] }) => {
     return null
   }
   return (
-    <View className="text-tertiary-label mx-8 mt-4 flex flex-row flex-wrap gap-x-1 text-sm">
-      <Text className="text-secondary-label text-xs">
+    <View className="mx-8 mt-4 flex flex-row flex-wrap gap-x-1 text-sm text-tertiary-label">
+      <Text className="text-xs text-secondary-label">
         This feed is provided by RSSHub, with credit to{" "}
       </Text>
       {maintainers.map((m) => (
         <TouchableOpacity key={m} onPress={() => Linking.openURL(`https://github.com/${m}`)}>
-          <Text className="text-accent/90 text-xs">@{m}</Text>
+          <Text className="text-xs text-accent/90">@{m}</Text>
         </TouchableOpacity>
       ))}
     </View>

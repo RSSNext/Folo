@@ -4,7 +4,7 @@ import { useSharedValue } from "react-native-reanimated"
 
 import type { BottomTabContextType } from "@/src/lib/navigation/bottom-tab/BottomTabContext"
 import { BottomTabContext } from "@/src/lib/navigation/bottom-tab/BottomTabContext"
-import type { TabScreenProps } from "@/src/lib/navigation/bottom-tab/types"
+import type { ResolvedTabScreenProps } from "@/src/lib/navigation/bottom-tab/types"
 
 import { BottomTabHeightProvider } from "./BottomTabHeightProvider"
 import { BottomTabBarBackgroundContext } from "./contexts/BottomTabBarBackgroundContext"
@@ -29,7 +29,7 @@ export const BottomTabProvider = ({
     () => ({
       currentIndexAtom: tabIndexAtom,
       loadedableIndexAtom: atom(new Set<number>()),
-      tabScreensAtom: atom<TabScreenProps[]>([]),
+      tabScreensAtom: atom<ResolvedTabScreenProps[]>([]),
       tabHeightAtom: atom(0),
     }),
     [tabIndexAtom],

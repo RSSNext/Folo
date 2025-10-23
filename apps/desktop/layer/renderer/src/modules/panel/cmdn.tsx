@@ -65,8 +65,8 @@ const CmdNPanel = () => {
         exit={{ opacity: 0 }}
         className={cn(
           "w-[700px] max-w-[100vw] rounded-none md:max-w-[80vw]",
-          "flex flex-col bg-zinc-50/85 shadow-2xl backdrop-blur-md md:rounded-full dark:bg-neutral-900/80",
-          "border-0 border-zinc-200 md:border dark:border-zinc-800",
+          "flex flex-col bg-zinc-50/85 shadow-2xl backdrop-blur-md dark:bg-neutral-900/80 md:rounded-full",
+          "border-0 border-zinc-200 dark:border-zinc-800 md:border",
           "absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 pr-8",
           "z-10",
         )}
@@ -91,7 +91,7 @@ const CmdNPanel = () => {
         <button
           disabled={form.formState.isSubmitting || !form.formState.isValid}
           type="submit"
-          className="center text-accent hover:text-accent/90 absolute inset-y-0 right-3 pl-2 duration-200 disabled:grayscale"
+          className="center absolute inset-y-0 right-3 pl-2 text-accent duration-200 hover:text-accent/90 disabled:grayscale"
         >
           <i className="i-mgc-arrow-right-circle-cute-fi size-6" />
         </button>

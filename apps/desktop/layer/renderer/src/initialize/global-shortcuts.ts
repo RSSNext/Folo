@@ -1,4 +1,5 @@
 import { callWindowExposeRenderer } from "@follow/shared/bridge"
+import { detectIsEditableElement } from "@follow/utils"
 
 interface ShortcutDefinition {
   accelerator: string
@@ -45,11 +46,7 @@ export const registerAppGlobalShortcuts = () => {
   const handleKeydown = (e: KeyboardEvent) => {
     shortcuts.forEach(({ accelerator, action, inputBypass }) => {
       // Prevent on input, textarea, [contenteditable]
-      if (
-        !inputBypass &&
-        (["INPUT", "TEXTAREA"].includes((e.target as HTMLElement)?.tagName) ||
-          (e.target as HTMLElement)?.contentEditable === "true")
-      ) {
+      if (!inputBypass && detectIsEditableElement(e.target as HTMLElement)) {
         return
       }
 

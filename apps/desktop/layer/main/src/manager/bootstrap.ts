@@ -1,3 +1,5 @@
+import { rmSync } from "node:fs"
+
 import { electronApp, optimizer } from "@electron-toolkit/utils"
 import { callWindowExpose } from "@follow/shared/bridge"
 import { DEV, LEGACY_APP_PROTOCOL } from "@follow/shared/constants"
@@ -6,6 +8,7 @@ import { createBuildSafeHeaders } from "@follow/utils/headers"
 import { IMAGE_PROXY_URL } from "@follow/utils/img-proxy"
 import { parse } from "cookie-es"
 import { app, BrowserWindow, net, protocol, session } from "electron"
+import { join } from "pathe"
 
 import { WindowManager } from "~/manager/window"
 
@@ -85,16 +88,16 @@ export class BootstrapManager {
         if (url.hostname === "us.i.posthog.com") {
           const responseHeaders = details.responseHeaders || {}
 
-          responseHeaders["Access-Control-Allow-Origin"] = ["*"]
-          responseHeaders["Access-Control-Allow-Methods"] = [
+          responseHeaders["access-control-allow-origin"] = ["*"]
+          responseHeaders["access-control-allow-methods"] = [
             "GET",
             "POST",
             "PUT",
             "DELETE",
             "OPTIONS",
           ]
-          responseHeaders["Access-Control-Allow-Headers"] = ["*"]
-          responseHeaders["Access-Control-Allow-Credentials"] = ["true"]
+          responseHeaders["access-control-allow-headers"] = ["*"]
+          responseHeaders["access-control-allow-credentials"] = ["true"]
 
           callback({
             cancel: false,
@@ -145,6 +148,14 @@ export class BootstrapManager {
     app.on("before-quit", () => {
       const windows = BrowserWindow.getAllWindows()
       windows.forEach((window) => window.destroy())
+
+      if (import.meta.env.DEV) {
+        const cacheDir = join(app.getPath("userData"), "Cache")
+        const codeCacheDir = join(app.getPath("userData"), "Code Cache")
+
+        rmSync(cacheDir, { recursive: true, force: true })
+        rmSync(codeCacheDir, { recursive: true, force: true })
+      }
     })
   }
 

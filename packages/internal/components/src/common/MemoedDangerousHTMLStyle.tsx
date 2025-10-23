@@ -1,5 +1,6 @@
 import type { FC } from "react"
 import { memo, useMemo } from "react"
+import * as React from "react"
 
 export const MemoedDangerousHTMLStyle: FC<
   {

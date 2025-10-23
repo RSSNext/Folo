@@ -44,6 +44,13 @@ export const ArticleAudioPlayer: React.FC<AudioPlayerProps> = ({ entryId, classN
   const currentTime = useAudioPlayerAtomSelector((v) => v.currentTime)
   const duration = useAudioPlayerAtomSelector((v) => v.duration)
 
+  // Use attachment duration as fallback when player duration is not available
+  const attachmentDuration = useMemo(() => {
+    if (!audioAttachment?.duration_in_seconds) return 0
+    const seconds = Number(audioAttachment.duration_in_seconds)
+    return Number.isFinite(seconds) ? seconds : 0
+  }, [audioAttachment?.duration_in_seconds])
+
   const isCurrentAudio = currentPlayingEntryId === entryId
   const isPlaying = isCurrentAudio && status === "playing"
   const isLoading = isCurrentAudio && status === "loading"
@@ -80,9 +87,14 @@ export const ArticleAudioPlayer: React.FC<AudioPlayerProps> = ({ entryId, classN
 
   // Only show progress for current audio, otherwise reset to 0
   const displayCurrentTime = isCurrentAudio ? currentTime || 0 : 0
-  const displayDuration = isCurrentAudio ? duration || 0 : 0
+  // Use player duration first, fallback to attachment duration, then 0
+  const displayDuration = isCurrentAudio
+    ? duration && duration > 0 && duration !== Infinity
+      ? duration
+      : attachmentDuration
+    : attachmentDuration || 0
   const displayHasValidDuration =
-    isCurrentAudio && duration && duration > 0 && duration !== Infinity
+    displayDuration && displayDuration > 0 && displayDuration !== Infinity
 
   const handleProgressClick = useCallback(
     (event: React.MouseEvent<HTMLDivElement>) => {
@@ -116,7 +128,7 @@ export const ArticleAudioPlayer: React.FC<AudioPlayerProps> = ({ entryId, classN
         exit={{ opacity: 0, scale: 0.95 }}
         transition={Spring.presets.smooth}
         className={cn(
-          "border-border bg-theme-background rounded-lg border p-4 shadow-sm",
+          "rounded-lg border border-border bg-theme-background p-4 shadow-sm",
           "my-4 w-full",
           className,
         )}
@@ -131,7 +143,7 @@ export const ArticleAudioPlayer: React.FC<AudioPlayerProps> = ({ entryId, classN
               onClick={handleBack}
               disabled={!isCurrentAudio}
               className={cn(
-                "hover:bg-theme-item-hover flex size-8 items-center justify-center rounded-full transition-colors",
+                "flex size-8 items-center justify-center rounded-full transition-colors hover:bg-theme-item-hover",
                 !isCurrentAudio && "cursor-not-allowed opacity-50",
               )}
               title="Back 10s"
@@ -145,7 +157,7 @@ export const ArticleAudioPlayer: React.FC<AudioPlayerProps> = ({ entryId, classN
               onClick={handlePlayAudio}
               disabled={!audioAttachment}
               className={cn(
-                "bg-accent hover:bg-accent/90 flex size-10 items-center justify-center rounded-full text-white transition-all duration-200",
+                "flex size-10 items-center justify-center rounded-full bg-accent text-white transition-all duration-200 hover:bg-accent/90",
                 "shadow-md hover:shadow-lg",
                 !audioAttachment && "cursor-not-allowed opacity-50",
               )}
@@ -166,7 +178,7 @@ export const ArticleAudioPlayer: React.FC<AudioPlayerProps> = ({ entryId, classN
               onClick={handleForward}
               disabled={!isCurrentAudio}
               className={cn(
-                "hover:bg-theme-item-hover flex size-8 items-center justify-center rounded-full transition-colors",
+                "flex size-8 items-center justify-center rounded-full transition-colors hover:bg-theme-item-hover",
                 !isCurrentAudio && "cursor-not-allowed opacity-50",
               )}
               title="Forward 10s"
@@ -178,16 +190,16 @@ export const ArticleAudioPlayer: React.FC<AudioPlayerProps> = ({ entryId, classN
           {/* Progress Bar Container */}
           <div className="flex-1">
             <div
-              className="bg-border group relative h-2 w-full cursor-pointer overflow-hidden rounded-full"
+              className="group relative h-2 w-full cursor-pointer overflow-hidden rounded-full bg-border"
               onClick={handleProgressClick}
             >
               <div
-                className="bg-accent h-full rounded-full transition-all duration-200"
+                className="h-full rounded-full bg-accent transition-all duration-200"
                 style={{ width: `${progressPercent}%` }}
               />
               {/* Hover indicator */}
               <div className="absolute inset-y-0 right-0 w-3 opacity-0 transition-opacity duration-200 group-hover:opacity-100">
-                <div className="bg-accent/50 size-full rounded-full" />
+                <div className="size-full rounded-full bg-accent/50" />
               </div>
             </div>
           </div>
@@ -195,16 +207,16 @@ export const ArticleAudioPlayer: React.FC<AudioPlayerProps> = ({ entryId, classN
           {/* Time Display and Download */}
           <div className="flex shrink-0 items-center gap-2">
             <div className="flex gap-1 text-xs">
-              <span className="text-text-secondary font-mono">{currentTimeDisplay}</span>
+              <span className="font-mono text-text-secondary">{currentTimeDisplay}</span>
               <span className="text-text-secondary">/</span>
-              <span className="text-text-secondary font-mono">{durationDisplay}</span>
+              <span className="font-mono text-text-secondary">{durationDisplay}</span>
             </div>
 
             {/* Download Button */}
             <button
               type="button"
               onClick={handleDownload}
-              className="text-text-secondary hover:text-text flex size-7 items-center justify-center rounded-full transition-colors"
+              className="flex size-7 items-center justify-center rounded-full text-text-secondary transition-colors hover:text-text"
               title="Download"
             >
               <i className="i-mgc-download-2-cute-re size-3.5" />

@@ -1,6 +1,5 @@
 import { Spring } from "@follow/components/constants/spring.js"
 import { IN_ELECTRON } from "@follow/shared/constants"
-import { AnimatePresence } from "motion/react"
 import { useEffect, useRef, useState } from "react"
 
 import { useShowSourceContent } from "~/atoms/source-content"
@@ -9,11 +8,6 @@ import { m } from "~/components/common/Motion"
 import { EntryContentLoading } from "./entry-content/EntryContentLoading"
 
 const ViewTag = IN_ELECTRON ? "webview" : "iframe"
-const variants = {
-  hidden: { x: "100%" },
-  visible: { x: 0 },
-  exit: { x: "100%" },
-}
 
 export const SourceContentView = ({ src }: { src: string }) => {
   const showSourceContent = useShowSourceContent()
@@ -39,7 +33,7 @@ export const SourceContentView = ({ src }: { src: string }) => {
   return (
     <div className="relative flex size-full flex-col">
       {loading && (
-        <div className="center mt-16 min-w-0">
+        <div className="center absolute inset-0 mt-16 min-w-0">
           <EntryContentLoading icon={src} />
         </div>
       )}
@@ -64,21 +58,10 @@ export const SourceContentView = ({ src }: { src: string }) => {
 
 export const SourceContentPanel = ({ src }: { src: string | null }) => {
   const showSourceContent = useShowSourceContent()
+  if (!showSourceContent || !src) return null
   return (
-    <AnimatePresence>
-      {showSourceContent && src && (
-        <m.div
-          data-hide-in-print
-          className="bg-theme-background absolute left-0 top-0 z-[1] size-full"
-          initial="hidden"
-          animate="visible"
-          exit="exit"
-          variants={variants}
-          transition={Spring.presets.smooth}
-        >
-          <SourceContentView src={src} />
-        </m.div>
-      )}
-    </AnimatePresence>
+    <div data-hide-in-print className="absolute left-0 top-0 z-[1] size-full bg-theme-background">
+      <SourceContentView src={src} />
+    </div>
   )
 }

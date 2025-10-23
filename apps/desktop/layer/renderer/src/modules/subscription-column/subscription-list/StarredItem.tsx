@@ -18,7 +18,7 @@ export const StarredItem = memo(({ view }: { view: number }) => {
       data-sub={FEED_COLLECTION_LIST}
       data-active={feedId === FEED_COLLECTION_LIST}
       className={cn(
-        "cursor-menu mt-1 flex h-8 w-full shrink-0 items-center gap-2 rounded-md px-2.5",
+        "mt-1 flex h-8 w-full shrink-0 cursor-menu items-center gap-2 rounded-md px-2.5",
         feedColumnStyles.item,
       )}
       onClick={(e) => {

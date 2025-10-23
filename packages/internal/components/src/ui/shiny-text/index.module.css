@@ -1,0 +1,35 @@
+.shiny-text {
+  background-image: none, linear-gradient(90deg, transparent, rgba(0, 0, 0, 0.85), transparent);
+
+  background-size:
+    cover,
+    200% 100%;
+  background-repeat: no-repeat, repeat-x;
+  background-position:
+    center center,
+    0% 0;
+
+  -webkit-background-clip: text;
+  color: transparent;
+
+  animation: shiny-text 2s linear infinite;
+}
+
+[data-theme="dark"] .shiny-text {
+  background-image:
+    none, linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.85), transparent);
+}
+
+@keyframes shiny-text {
+  from {
+    background-position:
+      center center,
+      0% 0;
+  }
+
+  to {
+    background-position:
+      center center,
+      -200% 0;
+  }
+}

@@ -24,10 +24,10 @@ import {
   GroupedInsetListCard,
 } from "@/src/components/ui/grouped/GroupedList"
 import { PowerIcon } from "@/src/icons/power"
-import { getBizFetchErrorMessage } from "@/src/lib/api-fetch"
 import { useNavigation } from "@/src/lib/navigation/hooks"
 import { useSetModalScreenOptions } from "@/src/lib/navigation/ScreenOptionsContext"
 import type { NavigationControllerView } from "@/src/lib/navigation/types"
+import { getBizFetchErrorMessage } from "@/src/lib/parse-api-error"
 import { toast } from "@/src/lib/toast"
 import { FeedViewSelector } from "@/src/modules/feed/view-selector"
 import { accentColor } from "@/src/theme/colors"
@@ -68,7 +68,7 @@ export const ListScreen: NavigationControllerView<{
   const navigation = useNavigation()
   return (
     <FormProvider form={form}>
-      <SafeNavigationScrollView className="bg-system-grouped-background pb-safe flex-1">
+      <SafeNavigationScrollView className="pb-safe flex-1 bg-system-grouped-background">
         <ScreenOptions title={list?.title} listId={listId} />
 
         <GroupedInsetListCard showSeparator={false} className="mt-2 px-3 py-6">

@@ -1,8 +1,8 @@
 import type { FeedSchema } from "@follow/database/schemas/types"
 import { FEED_EXTRA_DATA_KEYS, FeedService } from "@follow/database/services/feed"
-import { isBizId } from "@follow/utils"
+import { getDateISOString, isBizId } from "@follow/utils"
 
-import { apiClient } from "../../context"
+import { api } from "../../context"
 import type { Hydratable, Resetable } from "../../lib/base"
 import { createImmerSetter, createTransaction, createZustandStore } from "../../lib/helper"
 import { whoami } from "../user/getters"
@@ -108,11 +108,9 @@ class FeedSyncServices {
       return null
     }
 
-    const res = await apiClient().feeds.$get({
-      query: {
-        id,
-        url,
-      },
+    const res = await api().feeds.get({
+      id,
+      url,
     })
 
     const nonce = Math.random().toString(36).slice(2, 15)
@@ -136,10 +134,8 @@ class FeedSyncServices {
   }
 
   async fetchFeedByUrl({ url }: FeedQueryParams) {
-    const res = await apiClient().feeds.$get({
-      query: {
-        url,
-      },
+    const res = await api().feeds.get({
+      url,
     })
 
     const nonce = Math.random().toString(36).slice(2, 15)
@@ -174,10 +170,8 @@ class FeedSyncServices {
     })
 
     tx.request(async () => {
-      await apiClient().feeds.claim.challenge.$post({
-        json: {
-          feedId,
-        },
+      await api().feeds.claim.challenge({
+        feedId,
       })
     })
 
@@ -198,10 +192,8 @@ class FeedSyncServices {
 
   async fetchAnalytics(feedId: string | string[]) {
     const feedIds = Array.isArray(feedId) ? feedId : [feedId]
-    const res = await apiClient().feeds.analytics.$post({
-      json: {
-        id: feedIds,
-      },
+    const res = await api().feeds.analytics({
+      id: feedIds,
     })
 
     const { analytics } = res.data
@@ -212,7 +204,7 @@ class FeedSyncServices {
         await feedActions.patch(id, {
           subscriptionCount: feedAnalytics.subscriptionCount,
           updatesPerWeek: feedAnalytics.updatesPerWeek,
-          latestEntryPublishedAt: feedAnalytics.latestEntryPublishedAt,
+          latestEntryPublishedAt: getDateISOString(feedAnalytics.latestEntryPublishedAt),
         })
       }
     }

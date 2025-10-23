@@ -11,7 +11,6 @@ import type { EntryHeaderProps } from "../types"
 
 interface EntryHeaderContextValue {
   entryId: string
-  compact?: boolean
 }
 
 const EntryHeaderContext = createContext<EntryHeaderContextValue | null>(null)
@@ -48,8 +47,8 @@ function EntryHeaderRootImpl({
       <m.div
         data-hide-in-print
         className={cn(
-          "macos-left-column-hidden:pl-margin-macos-traffic-light-x text-text-secondary relative flex min-w-0 items-center justify-between gap-3 overflow-hidden text-lg duration-200",
-          shouldShowMeta && "border-border border-b",
+          "relative flex min-w-0 items-center justify-between gap-3 overflow-hidden text-lg text-text-secondary duration-200 macos-left-column-hidden:pl-margin-macos-traffic-light-x",
+          shouldShowMeta && "border-b border-border",
           className,
         )}
         style={style}

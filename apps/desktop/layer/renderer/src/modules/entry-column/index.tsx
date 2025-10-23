@@ -1,5 +1,4 @@
-import { useMobile } from "@follow/components/hooks/useMobile.js"
-import { FeedViewType, views } from "@follow/constants"
+import { FeedViewType, getView } from "@follow/constants"
 import { useTitle } from "@follow/hooks"
 import { useEntry } from "@follow/store/entry/hooks"
 import { useFeedById } from "@follow/store/feed/hooks"
@@ -7,7 +6,8 @@ import { useSubscriptionByFeedId } from "@follow/store/subscription/hooks"
 import { unreadSyncService } from "@follow/store/unread/store"
 import { isBizId } from "@follow/utils/utils"
 import type { Range, Virtualizer } from "@tanstack/react-virtual"
-import { memo, useCallback, useEffect, useRef } from "react"
+import { atom } from "jotai"
+import { memo, useCallback, useEffect, useMemo, useRef } from "react"
 
 import { useGeneralSettingKey } from "~/atoms/settings/general"
 import { Focusable } from "~/components/common/Focusable"
@@ -20,23 +20,29 @@ import { useFeedHeaderTitle } from "~/store/feed/hooks"
 
 import { EntryColumnWrapper } from "./components/entry-column-wrapper/EntryColumnWrapper"
 import { FooterMarkItem } from "./components/FooterMarkItem"
+import { useEntriesActions, useEntriesState } from "./context/EntriesContext"
 import { EntryItemSkeleton } from "./EntryItemSkeleton"
 import { EntryColumnGrid } from "./grid"
-import { useEntriesByView } from "./hooks/useEntriesByView"
+import { useAttachScrollBeyond } from "./hooks/useAttachScrollBeyond"
 import { useSnapEntryIdList } from "./hooks/useEntryIdListSnap"
 import { useEntryMarkReadHandler } from "./hooks/useEntryMarkReadHandler"
 import { EntryListHeader } from "./layouts/EntryListHeader"
 import { EntryEmptyList, EntryList } from "./list"
+import { EntryRootStateContext } from "./store/EntryColumnContext"
 
-function EntryColumnImpl() {
+function EntryColumnContent() {
   const listRef = useRef<Virtualizer<HTMLElement, Element>>(undefined)
-  const entries = useEntriesByView({
-    onReset: useCallback(() => {
+  const state = useEntriesState()
+  const actions = useEntriesActions()
+  // Register reset handler to keep scroll behavior when data resets
+  useEffect(() => {
+    actions.setOnReset(() => {
       listRef.current?.scrollToIndex(0)
-    }, []),
-  })
+    })
+    return () => actions.setOnReset(null)
+  }, [actions])
 
-  const { entriesIds, groupedCounts } = entries
+  const { entriesIds, groupedCounts } = state
   useSnapEntryIdList(entriesIds)
 
   const {
@@ -87,9 +93,18 @@ function EntryColumnImpl() {
     }
   }, [handleMarkReadInRange, routeFeedId])
 
+  const { handleScroll: handleScrollBeyond } = useAttachScrollBeyond()
+  const handleCombinedScroll = useCallback(
+    (e: React.UIEvent<HTMLDivElement>) => {
+      handleScrollBeyond(e)
+      handleScroll()
+    },
+    [handleScrollBeyond, handleScroll],
+  )
+
   const navigate = useNavigateEntry()
   const rangeQueueRef = useRef<Range[]>([])
-  const isRefreshing = entries.isFetching && !entries.isFetchingNextPage
+  const isRefreshing = state.isFetching && !state.isFetchingNextPage
   const renderAsRead = useGeneralSettingKey("renderMarkUnread")
   const handleRangeChange = useCallback(
     (e: Range) => {
@@ -103,7 +118,7 @@ function EntryColumnImpl() {
       }
 
       if (!renderAsRead) return
-      if (!views.find((v) => v.view === view)?.wideMode) {
+      if (!getView(view)?.wideMode) {
         return
       }
       // For gird, render as mark read logic
@@ -113,45 +128,39 @@ function EntryColumnImpl() {
   )
 
   const fetchNextPage = useCallback(() => {
-    if (entries.hasNextPage && !entries.isFetchingNextPage) {
-      entries.fetchNextPage()
+    if (state.hasNextPage && !state.isFetchingNextPage) {
+      actions.fetchNextPage()
     }
-  }, [entries])
-  const isMobile = useMobile()
+  }, [actions, state.hasNextPage, state.isFetchingNextPage])
 
-  const ListComponent = views.find((v) => v.view === view)?.gridMode ? EntryColumnGrid : EntryList
+  const ListComponent = getView(view)?.gridMode ? EntryColumnGrid : EntryList
+
   return (
     <Focusable
       scope={HotkeyScope.Timeline}
       data-hide-in-print
-      className="@container relative flex h-full flex-1 flex-col"
-      onClick={
-        isMobile
-          ? undefined
-          : () =>
-              navigate({
-                entryId: null,
-              })
+      className="relative flex h-full flex-1 flex-col @container"
+      onClick={() =>
+        navigate({
+          view,
+          entryId: null,
+        })
       }
     >
       {entriesIds.length === 0 &&
-        !entries.isLoading &&
-        !entries.error &&
+        !state.isLoading &&
+        !state.error &&
         (!feed || feed?.type === "feed") && <AddFeedHelper />}
 
       <EntryListHeader
-        refetch={entries.refetch}
+        refetch={actions.refetch}
         isRefreshing={isRefreshing}
-        hasUpdate={entries.hasUpdate}
+        hasUpdate={state.hasUpdate}
       />
 
-      <EntryColumnWrapper
-        onScroll={handleScroll}
-        onPullToRefresh={entries.refetch}
-        key={`${routeFeedId}-${view}`}
-      >
+      <EntryColumnWrapper onScroll={handleCombinedScroll} key={`${routeFeedId}-${view}`}>
         {entriesIds.length === 0 ? (
-          entries.isLoading ? (
+          state.isLoading ? (
             <EntryItemSkeleton view={view} />
           ) : (
             <EntryEmptyList />
@@ -161,24 +170,35 @@ function EntryColumnImpl() {
             gap={view === FeedViewType.SocialMedia ? 10 : undefined}
             listRef={listRef}
             onRangeChange={handleRangeChange}
-            hasNextPage={entries.hasNextPage}
+            hasNextPage={state.hasNextPage}
             view={view}
             feedId={routeFeedId || ""}
             entriesIds={entriesIds}
             fetchNextPage={fetchNextPage}
-            refetch={entries.refetch}
+            refetch={actions.refetch}
             groupCounts={groupedCounts}
             Footer={
-              isCollection ? (
-                void 0
-              ) : (
-                <FooterMarkItem view={view} fetchedTime={entries.fetchedTime} />
-              )
+              isCollection ? void 0 : <FooterMarkItem view={view} fetchedTime={state.fetchedTime} />
             }
           />
         )}
       </EntryColumnWrapper>
     </Focusable>
+  )
+}
+
+function EntryColumnImpl() {
+  return (
+    <EntryRootStateContext
+      value={useMemo(
+        () => ({
+          isScrolledBeyondThreshold: atom(false),
+        }),
+        [],
+      )}
+    >
+      <EntryColumnContent />
+    </EntryRootStateContext>
   )
 }
 

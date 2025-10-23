@@ -1,6 +1,7 @@
-import { cn } from "@follow/utils"
+import { cn, stopPropagation } from "@follow/utils"
 import { TRANSFORMERS } from "@lexical/markdown"
 import { AutoFocusPlugin } from "@lexical/react/LexicalAutoFocusPlugin"
+import { AutoLinkPlugin } from "@lexical/react/LexicalAutoLinkPlugin"
 import type { InitialConfigType } from "@lexical/react/LexicalComposer"
 import { LexicalComposer } from "@lexical/react/LexicalComposer"
 import { ContentEditable } from "@lexical/react/LexicalContentEditable"
@@ -12,12 +13,19 @@ import { ListPlugin } from "@lexical/react/LexicalListPlugin"
 import { MarkdownShortcutPlugin } from "@lexical/react/LexicalMarkdownShortcutPlugin"
 import { OnChangePlugin } from "@lexical/react/LexicalOnChangePlugin"
 import { RichTextPlugin } from "@lexical/react/LexicalRichTextPlugin"
-import type { EditorState, LexicalEditor } from "lexical"
+import { TabIndentationPlugin } from "@lexical/react/LexicalTabIndentationPlugin"
+import type { LexicalEditor } from "lexical"
 import { $getRoot } from "lexical"
-import { useCallback, useImperativeHandle, useState } from "react"
+import { useImperativeHandle, useState } from "react"
 
 import { LexicalRichEditorNodes } from "./nodes"
-import { KeyboardPlugin } from "./plugins"
+import {
+  CodeHighlightingPlugin,
+  ExitCodeBoundaryPlugin,
+  KeyboardPlugin,
+  TripleBacktickTogglePlugin,
+} from "./plugins"
+import { StringLengthChangePlugin } from "./plugins/string-length-change"
 import { defaultLexicalTheme } from "./theme"
 import type { BuiltInPlugins, LexicalRichEditorProps, LexicalRichEditorRef } from "./types"
 
@@ -30,23 +38,46 @@ const defaultEnabledPlugins: BuiltInPlugins = {
   list: true,
   link: true,
   autoFocus: true,
+  autoLink: true,
+  tabIndentation: true,
 }
 
-export const LexicalRichEditor = ({
+const URL_MATCHER =
+  /((https?:\/\/(www\.)?)|(www\.))[-\w@:%.+~#=]{1,256}\.[a-zA-Z0-9()]{1,6}\b([-\w()@:%+.~#?&/=]*)/
+
+const MATCHERS = [
+  (text: string) => {
+    const match = URL_MATCHER.exec(text)
+    if (match === null) {
+      return null
+    }
+    const fullMatch = match[0]
+    return {
+      index: match.index,
+      length: fullMatch.length,
+      text: fullMatch,
+      url: fullMatch.startsWith("http") ? fullMatch : `https://${fullMatch}`,
+      attributes: { rel: "noreferrer", target: "_blank" },
+    }
+  },
+]
+export const LexicalRichEditor = function LexicalRichEditor({
   ref,
   placeholder = "Enter your message...",
   className,
-  onChange,
-  onKeyDown,
-  autoFocus = false,
   namespace = "LexicalRichEditor",
+  autoFocus = false,
   theme = defaultLexicalTheme,
   enabledPlugins = defaultEnabledPlugins,
   initalEditorState,
   plugins,
-}: LexicalRichEditorProps & { ref?: React.RefObject<LexicalRichEditorRef | null> }) => {
+  accessories,
+
+  onKeyDown,
+  onChange,
+  onLengthChange,
+}: LexicalRichEditorProps & { ref?: React.RefObject<LexicalRichEditorRef | null> }) {
   const [editorRef, setEditorRef] = useState<LexicalEditor | null>(null)
-  const [isEmpty, setIsEmpty] = useState(true)
 
   // Collect nodes from plugins
   const pluginNodes = plugins?.flatMap((plugin) => plugin.nodes || []) || []
@@ -62,46 +93,32 @@ export const LexicalRichEditor = ({
     editorState: initalEditorState,
   }
 
-  useImperativeHandle(
-    ref,
-    useCallback(
-      () => ({
-        getEditor: () => editorRef!,
-        focus: () => {
-          editorRef?.focus()
-        },
-        clear: () => {
-          editorRef?.update(() => {
-            const root = $getRoot()
-            root.clear()
-          })
-        },
-        isEmpty: () => isEmpty,
-      }),
-      [isEmpty, editorRef],
-    ),
-  )
-
-  const handleChange = (editorState: EditorState, editor: LexicalEditor) => {
-    // Check if editor is empty
-    editorState.read(() => {
-      const root = $getRoot()
-      const textContent = root.getTextContent().trim()
-      setIsEmpty(textContent === "")
-    })
-
-    onChange?.(editorState, editor)
-  }
+  useImperativeHandle(ref, () => ({
+    getEditor: () => editorRef!,
+    focus: () => {
+      editorRef?.focus()
+    },
+    clear: () => {
+      editorRef?.update(() => {
+        const root = $getRoot()
+        root.clear()
+      })
+    },
+    isEmpty: () =>
+      editorRef?.getEditorState().read(() => $getRoot().getTextContent().trim() === "") || false,
+  }))
 
   return (
     <LexicalComposer initialConfig={initialConfig}>
-      <div className={cn("relative", className)}>
+      <div className={cn("relative cursor-text", className)}>
+        {accessories}
         <RichTextPlugin
           contentEditable={
             <ContentEditable
+              onContextMenu={stopPropagation}
               className={cn(
-                "scrollbar-none text-text placeholder:text-text-secondary cursor-text",
-                "h-14 w-full resize-none bg-transparent",
+                "scrollbar-none text-text placeholder:text-text-secondary size-full cursor-text",
+                "size-full resize-none bg-transparent",
                 "text-sm !outline-none transition-all duration-200 focus:outline-none",
               )}
               aria-placeholder={placeholder}
@@ -114,9 +131,12 @@ export const LexicalRichEditor = ({
           }
           ErrorBoundary={LexicalErrorBoundary}
         />
-        <OnChangePlugin onChange={handleChange} />
-        <EditorRefPlugin editorRef={setEditorRef} />
 
+        {onChange && <OnChangePlugin onChange={onChange} />}
+        {onLengthChange && <StringLengthChangePlugin onChange={onLengthChange} />}
+        <EditorRefPlugin editorRef={setEditorRef} />
+        {enabledPlugins.tabIndentation && <TabIndentationPlugin />}
+        {enabledPlugins.autoLink && <AutoLinkPlugin matchers={MATCHERS} />}
         {enabledPlugins.history && <HistoryPlugin />}
         {enabledPlugins.markdown && <MarkdownShortcutPlugin transformers={TRANSFORMERS} />}
         {enabledPlugins.list && <ListPlugin />}
@@ -126,6 +146,9 @@ export const LexicalRichEditor = ({
           <Plugin key={Plugin.id} />
         ))}
 
+        <ExitCodeBoundaryPlugin />
+        <CodeHighlightingPlugin />
+        <TripleBacktickTogglePlugin />
         <KeyboardPlugin onKeyDown={onKeyDown} />
         {autoFocus && enabledPlugins.autoFocus && <AutoFocusPlugin />}
       </div>

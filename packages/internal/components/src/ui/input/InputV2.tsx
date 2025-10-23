@@ -2,6 +2,7 @@ import { useInputComposition } from "@follow/hooks"
 import { cn, stopPropagation } from "@follow/utils"
 import type { DetailedHTMLProps, InputHTMLAttributes, ReactNode } from "react"
 import { useState } from "react"
+import * as React from "react"
 
 export const InputV2 = ({
   ref,

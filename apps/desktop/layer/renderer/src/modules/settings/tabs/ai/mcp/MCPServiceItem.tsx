@@ -63,36 +63,36 @@ export const MCPServiceItem = ({
   ]
 
   return (
-    <div className="hover:bg-material-medium border-border group rounded-lg border p-4 transition-colors">
+    <div className="group -ml-3 rounded-lg border border-border p-3 transition-colors hover:bg-material-medium">
       <div className="flex items-start justify-between">
         <div className="flex-1 space-y-2">
           <div className="flex items-center gap-2">
-            <h4 className="text-text text-sm font-medium">{service.name}</h4>
+            <h4 className="text-sm font-medium text-text">{service.name}</h4>
             <div
               className={`rounded-full px-2 py-1 text-xs ${getConnectionStatusColor(service.isConnected)}`}
             >
               {getConnectionStatusText(service.isConnected)}
             </div>
-            <div className="bg-blue/10 text-blue rounded-full px-2 py-1 text-xs">
+            <div className="rounded-full bg-blue/10 px-2 py-1 text-xs text-blue">
               {service.transportType}
             </div>
           </div>
           <div className="space-y-1">
             {service.url && (
-              <p className="text-text-secondary text-xs">
+              <p className="text-xs text-text-secondary">
                 <span className="text-text-tertiary">URL:</span> {service.url}
               </p>
             )}
 
-            <p className="text-text-secondary text-xs">
+            <p className="text-xs text-text-secondary">
               <span className="text-text-tertiary">Tools:</span> {service.toolCount}
-              <span className="text-text-tertiary ml-4">Created:</span>{" "}
+              <span className="ml-4 text-text-tertiary">Created:</span>{" "}
               {formatDate(service.createdAt)}
-              <span className="text-text-tertiary ml-4">Last Used:</span>{" "}
+              <span className="ml-4 text-text-tertiary">Last Used:</span>{" "}
               {formatDate(service.lastUsed)}
             </p>
             {service.lastError && (
-              <p className="text-red text-xs">
+              <p className="text-xs text-red">
                 <span className="text-text-tertiary">Error:</span> {service.lastError}
               </p>
             )}

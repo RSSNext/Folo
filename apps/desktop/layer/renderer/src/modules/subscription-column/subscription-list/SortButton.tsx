@@ -73,9 +73,9 @@ export const SortButton = () => {
                 animate={{ opacity: 1, scale: 1, y: 0 }}
                 exit={{ opacity: 0, scale: 0.98, y: 10 }}
                 transition={{ type: "spring", duration: 0.3 }}
-                className="border-border bg-theme-background shadow-context-menu relative z-10 rounded-md border p-3"
+                className="shadow-context-menu relative z-10 rounded-md border border-border bg-theme-background p-3"
               >
-                <HoverCard.Arrow className="fill-border -translate-x-4" />
+                <HoverCard.Arrow className="-translate-x-4 fill-border" />
                 <section className="w-[170px] text-center">
                   <span className="text-[13px]">{t("sidebar.select_sort_method")}</span>
                   <div className="mt-4 grid grid-cols-2 grid-rows-2 gap-2">
@@ -91,9 +91,9 @@ export const SortButton = () => {
                           }}
                           key={`${by}-${order}`}
                           className={cn(
-                            "center border-border flex aspect-square rounded border",
+                            "center flex aspect-square rounded border border-border",
 
-                            "ring-accent/20 ring-0 duration-200",
+                            "ring-0 ring-accent/20 duration-200",
                             active && "border-accent bg-accent/5 ring-2",
                           )}
                         >

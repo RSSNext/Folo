@@ -2,8 +2,7 @@ import { Readable } from "node:stream"
 
 import type { FastifyInstance, FastifyReply } from "fastify"
 
-import { createApiClient } from "~/lib/api-client"
-
+import { createFollowClient } from "../../lib/api-client"
 import { renderFeedOG } from "./feed"
 import { renderListOG } from "./list"
 import { renderUserOG } from "./user"
@@ -12,7 +11,7 @@ export const ogRoute = (app: FastifyInstance) => {
   app.get("/og/:type/:id", async (req, reply) => {
     const { type, id } = req.params as Record<string, string>
 
-    const apiClient = createApiClient()
+    const apiClient = createFollowClient()
     let imageRes: {
       image: Buffer
       contentType: string
@@ -61,7 +60,15 @@ export const ogRoute = (app: FastifyInstance) => {
   })
 }
 
-const createErrorFallback = (reply: FastifyReply) => (code: number) => {
-  reply.code(code).send("Internal server error")
+const createErrorFallback = (reply: FastifyReply) => (code: number | Error) => {
+  if (typeof code !== "number" && code instanceof Error) {
+    reply.code(500).send(code.message)
+    return null
+  }
+  let message = "Internal server error"
+  if (code === 404) {
+    message = "Not found"
+  }
+  reply.code(code).send(message)
   return null
 }

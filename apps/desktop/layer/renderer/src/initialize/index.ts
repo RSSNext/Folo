@@ -34,9 +34,7 @@ export const initializeApp = async () => {
   })
 
   if (DEV) {
-    const favicon = await import("/favicon-dev.ico?url")
-
-    const url = new URL(favicon.default, import.meta.url).href
+    const url = "/favicon-dev.ico"
 
     // Change favicon
     const $icon = document.head.querySelector("link[rel='icon']")

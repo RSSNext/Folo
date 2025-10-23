@@ -1,6 +1,5 @@
 import { Folo } from "@follow/components/icons/folo.js"
 import { Logo } from "@follow/components/icons/logo.jsx"
-import { MdiMeditation } from "@follow/components/icons/Meditation.js"
 import { ActionButton } from "@follow/components/ui/button/index.js"
 import { stopPropagation } from "@follow/utils/dom"
 import { cn } from "@follow/utils/utils"
@@ -11,7 +10,6 @@ import { useTranslation } from "react-i18next"
 import { Link } from "react-router"
 import { toast } from "sonner"
 
-import { useIsZenMode, useSetZenMode } from "~/atoms/settings/ui"
 import { setTimelineColumnShow, useSubscriptionColumnShow } from "~/atoms/sidebar"
 import {
   DropdownMenu,
@@ -56,7 +54,7 @@ export const SubscriptionColumnHeader = memo(() => {
       <div className="relative flex items-center gap-2" onClick={stopPropagation}>
         <Link to="/discover" tabIndex={-1}>
           <ActionButton shortcut="$mod+T" tooltip={t("words.discover")}>
-            <i className="i-mgc-add-cute-re text-text-secondary size-5" />
+            <i className="i-mgc-add-cute-re size-5 text-text-secondary" />
           </ActionButton>
         </Link>
 
@@ -71,8 +69,6 @@ const LayoutActionButton = () => {
   const feedColumnShow = useSubscriptionColumnShow()
 
   const [animation, setAnimation] = useState({ width: !feedColumnShow ? "auto" : 0 })
-  const isZenMode = useIsZenMode()
-  const setIsZenMode = useSetZenMode()
   useEffect(() => {
     setAnimation({ width: !feedColumnShow ? "auto" : 0 })
   }, [feedColumnShow])
@@ -84,27 +80,19 @@ const LayoutActionButton = () => {
   return (
     <m.div initial={animation} animate={animation} className="overflow-hidden">
       <ActionButton
-        tooltip={isZenMode ? t("zen.exit") : t("app.toggle_sidebar")}
+        tooltip={t("app.toggle_sidebar")}
         icon={
-          isZenMode ? (
-            <MdiMeditation />
-          ) : (
-            <i
-              className={cn(
-                !feedColumnShow
-                  ? "i-mgc-layout-leftbar-open-cute-re"
-                  : "i-mgc-layout-leftbar-close-cute-re",
-                "text-text-secondary",
-              )}
-            />
-          )
+          <i
+            className={cn(
+              !feedColumnShow
+                ? "i-mgc-layout-leftbar-open-cute-re"
+                : "i-mgc-layout-leftbar-close-cute-re",
+              "text-text-secondary",
+            )}
+          />
         }
         onClick={() => {
-          if (isZenMode) {
-            setIsZenMode(false)
-          } else {
-            setTimelineColumnShow(!feedColumnShow)
-          }
+          setTimelineColumnShow(!feedColumnShow)
         }}
       />
     </m.div>

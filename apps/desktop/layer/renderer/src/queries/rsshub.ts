@@ -1,7 +1,8 @@
 import { userActions } from "@follow/store/user/store"
+import type { RSSHubUseRequest } from "@follow-app/client-sdk"
 import { useMutation } from "@tanstack/react-query"
 
-import { apiClient } from "~/lib/api-fetch"
+import { followClient } from "~/lib/api-client"
 import { defineQuery } from "~/lib/defineQuery"
 import { toastFetchError } from "~/lib/error-parser"
 
@@ -9,8 +10,7 @@ import type { MutationBaseProps } from "./types"
 
 export const useSetRSSHubMutation = ({ onError }: MutationBaseProps = {}) =>
   useMutation({
-    mutationFn: (data: { id: string | null; durationInMonths?: number; TOTPCode?: string }) =>
-      apiClient.rsshub.use.$post({ json: data }),
+    mutationFn: (data: RSSHubUseRequest) => followClient.api.rsshub.use({ ...data }),
 
     onSuccess: (_, variables) => {
       rsshub.list().invalidate()
@@ -38,12 +38,10 @@ export const useAddRSSHubMutation = ({ onError }: MutationBaseProps = {}) =>
       accessKey?: string
       id?: string
     }) =>
-      apiClient.rsshub.$post({
-        json: {
-          baseUrl,
-          accessKey,
-          id,
-        },
+      followClient.api.rsshub.create({
+        baseUrl,
+        accessKey,
+        id,
       }),
 
     onSuccess: (_) => {
@@ -59,7 +57,7 @@ export const useAddRSSHubMutation = ({ onError }: MutationBaseProps = {}) =>
 
 export const useDeleteRSSHubMutation = ({ onError }: MutationBaseProps = {}) =>
   useMutation({
-    mutationFn: (id: string) => apiClient.rsshub.$delete({ json: { id } }),
+    mutationFn: (id: string) => followClient.api.rsshub.delete({ id }),
 
     onError: (error) => {
       onError?.(error)
@@ -70,13 +68,13 @@ export const useDeleteRSSHubMutation = ({ onError }: MutationBaseProps = {}) =>
 export const rsshub = {
   get: ({ id }: { id: string }) =>
     defineQuery(["rsshub", "get", id], async () => {
-      const res = await apiClient.rsshub.$get({ query: { id } })
+      const res = await followClient.api.rsshub.get({ id })
       return res.data
     }),
 
   list: () =>
     defineQuery(["rsshub", "list"], async () => {
-      const res = await apiClient.rsshub.list.$get()
+      const res = await followClient.api.rsshub.list()
       userActions.upsertMany(res.data.map((item) => item.owner).filter((item) => item !== null))
 
       return res.data
@@ -84,7 +82,7 @@ export const rsshub = {
 
   status: () =>
     defineQuery(["rsshub", "status"], async () => {
-      const res = await apiClient.rsshub.status.$get()
+      const res = await followClient.api.rsshub.status()
       return res.data
     }),
 }

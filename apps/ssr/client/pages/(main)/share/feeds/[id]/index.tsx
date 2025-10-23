@@ -9,7 +9,9 @@ import { RelativeTime } from "@follow/components/ui/datetime/index.jsx"
 import { LoadingCircle } from "@follow/components/ui/loading/index.jsx"
 import { useTitle } from "@follow/hooks"
 import { cn } from "@follow/utils/utils"
+import type { FeedSchema } from "@follow-app/client-sdk"
 import { Fragment } from "react"
+import * as React from "react"
 import { useTranslation } from "react-i18next"
 import { useParams, useSearchParams } from "react-router"
 
@@ -25,7 +27,7 @@ export function Component() {
   })
   const view = Number.parseInt(search.get("view") || feed.data?.analytics?.view?.toString() || "0")
 
-  const feedData = feed.data?.feed
+  const feedData = feed.data?.feed as FeedSchema
   const analytics = feed.data?.analytics
   const isSubscribed = !!feed.data?.subscription
   const entries = feed.data?.entries.map((entry) => ({
@@ -52,8 +54,8 @@ export function Component() {
             <div className="relative mx-auto inline-block">
               <FeedIcon
                 fallback
-                feed={feedData}
-                className="mask-squircle mask border-border border"
+                target={feedData}
+                className="mask-squircle mask border border-border"
                 noMargin
                 size={80}
               />
@@ -63,7 +65,7 @@ export function Component() {
           {/* Feed Info */}
           <div className="space-y-4">
             <div className="flex items-center justify-center gap-2">
-              <h1 className="text-3xl font-semibold text-zinc-900 sm:text-4xl dark:text-zinc-100">
+              <h1 className="text-3xl font-semibold text-zinc-900 dark:text-zinc-100 sm:text-4xl">
                 {feedData.title}
               </h1>
               <FeedCertification feed={feedData} />
@@ -79,7 +81,7 @@ export function Component() {
 
             {/* Stats */}
             <div className="!mt-8 flex justify-center">
-              <div className="divide-material-ultra-thick flex items-center divide-x">
+              <div className="flex items-center divide-x divide-material-ultra-thick">
                 {!!analytics?.subscriptionCount && (
                   <div className="px-4 text-center">
                     <div className="text-xl font-semibold text-zinc-900 dark:text-zinc-100">

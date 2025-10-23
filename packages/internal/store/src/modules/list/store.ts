@@ -1,10 +1,10 @@
 import { ListService } from "@follow/database/services/list"
 import { clone } from "es-toolkit"
 
-import { apiClient } from "../../context"
+import { api } from "../../context"
 import type { Hydratable, Resetable } from "../../lib/base"
 import { createImmerSetter, createTransaction, createZustandStore } from "../../lib/helper"
-import { honoMorph } from "../../morph/hono"
+import { apiMorph } from "../../morph/api"
 import { storeDbMorph } from "../../morph/store-db"
 import { feedActions } from "../feed/store"
 import { subscriptionActions, subscriptionSyncService } from "../subscription/store"
@@ -79,31 +79,29 @@ export const listActions = new ListActions()
 class ListSyncServices {
   async fetchListById(params: { id: string | undefined }) {
     if (!params.id) return null
-    const list = await apiClient().lists.$get({ query: { listId: params.id } })
+    const list = await api().lists.get({ listId: params.id })
 
-    await listActions.upsertMany([honoMorph.toList(list.data.list)])
+    await listActions.upsertMany([apiMorph.toList(list.data.list)])
 
     return list.data
   }
 
   async fetchOwnedLists() {
-    const res = await apiClient().lists.list.$get({ query: {} })
-    await listActions.upsertMany(res.data.map((list) => honoMorph.toList(list)))
+    const res = await api().lists.list({})
+    await listActions.upsertMany(res.data.map((list) => apiMorph.toList(list)))
 
-    return res.data.map((list) => honoMorph.toList(list))
+    return res.data.map((list) => apiMorph.toList(list))
   }
 
   async createList(params: { list: CreateListModel }) {
-    const res = await apiClient().lists.$post({
-      json: {
-        title: params.list.title,
-        description: params.list.description,
-        image: params.list.image,
-        view: params.list.view,
-        fee: params.list.fee || 0,
-      },
+    const res = await api().lists.create({
+      title: params.list.title,
+      description: params.list.description,
+      image: params.list.image,
+      view: params.list.view,
+      fee: params.list.fee || 0,
     })
-    await listActions.upsertMany([honoMorph.toList(res.data)])
+    await listActions.upsertMany([apiMorph.toList(res.data)])
     await subscriptionActions.upsertMany([
       {
         isPrivate: false,
@@ -142,9 +140,7 @@ class ListSyncServices {
     })
 
     tx.request(async () => {
-      await apiClient().lists.$patch({
-        json: nextModel,
-      })
+      await api().lists.update(nextModel)
     })
 
     tx.persist(async () => {
@@ -177,7 +173,7 @@ class ListSyncServices {
 
     tx.request(async () => {
       await subscriptionSyncService.unsubscribe([listId])
-      await apiClient().lists.$delete({ json: { listId } })
+      await api().lists.delete({ listId })
     })
 
     tx.rollback(() => {
@@ -197,14 +193,12 @@ class ListSyncServices {
   async addFeedsToFeedList(
     params: { listId: string; feedIds: string[] } | { listId: string; feedId: string },
   ) {
-    const feeds = await apiClient().lists.feeds.$post({
-      json: params,
-    })
+    const feeds = await api().lists.addFeeds(params)
     const list = get().lists[params.listId]
     if (!list) return
 
     feeds.data.forEach((feed) => {
-      feedActions.upsertMany([honoMorph.toFeed(feed)])
+      feedActions.upsertMany([apiMorph.toFeedFromAddFeeds(feed)])
     })
     await listActions.upsertMany([
       { ...list, feedIds: [...list.feedIds, ...feeds.data.map((feed) => feed.id)] },
@@ -212,9 +206,7 @@ class ListSyncServices {
   }
 
   async removeFeedFromFeedList(params: { listId: string; feedId: string }) {
-    await apiClient().lists.feeds.$delete({
-      json: params,
-    })
+    await api().lists.removeFeed(params)
     const list = get().lists[params.listId]
     if (!list) return
 

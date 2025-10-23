@@ -10,7 +10,7 @@ import { useAsyncModal } from "~/components/ui/modal/helper/useAsyncModal"
 import { PlainModal } from "~/components/ui/modal/stacked/custom-modal"
 import { useModalStack } from "~/components/ui/modal/stacked/hooks"
 import { useAuthQuery } from "~/hooks/common"
-import { apiClient } from "~/lib/api-fetch"
+import { followClient } from "~/lib/api-client"
 import { defineQuery } from "~/lib/defineQuery"
 import { getFetchErrorInfo } from "~/lib/error-parser"
 
@@ -23,9 +23,7 @@ const LazyUserProfileModalContent = lazy(() =>
 export const useUserSubscriptionsQuery = (userId: string | undefined) => {
   const subscriptions = useAuthQuery(
     defineQuery(["subscriptions", "group", userId], async () => {
-      const res = await apiClient.subscriptions.$get({
-        query: { userId },
-      })
+      const res = await followClient.api.subscriptions.get({ userId })
       const groupFolder = {} as Record<string, typeof res.data>
 
       for (const subscription of res.data || []) {

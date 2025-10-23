@@ -4,18 +4,9 @@ import { useState } from "react"
 import { EntryTitle } from "../EntryTitle"
 import { ContentBody, MediaTranscript, TranscriptToggle, useTranscription } from "./shared"
 import { VideoPlayer } from "./shared/VideoPlayer"
+import type { EntryLayoutProps } from "./types"
 
-interface VideosLayoutProps {
-  entryId: string
-  compact?: boolean
-  noMedia?: boolean
-  translation?: {
-    content?: string
-    title?: string
-  }
-}
-
-export const VideosLayout: React.FC<VideosLayoutProps> = ({
+export const VideosLayout: React.FC<EntryLayoutProps> = ({
   entryId,
   compact = false,
   noMedia = false,
@@ -40,7 +31,7 @@ export const VideosLayout: React.FC<VideosLayoutProps> = ({
             className="w-full"
           />
         ) : (
-          <div className="center bg-material-medium text-text-secondary aspect-video w-full flex-col gap-1 rounded-md text-sm">
+          <div className="center aspect-video w-full flex-col gap-1 rounded-md bg-material-medium text-sm text-text-secondary">
             <i className="i-mgc-video-cute-fi mb-2 size-12" />
             Video content not available
           </div>
@@ -62,7 +53,7 @@ export const VideosLayout: React.FC<VideosLayoutProps> = ({
         {/* Description/Content or Transcript */}
         {showTranscript ? (
           <MediaTranscript
-            className="prose dark:prose-invert !max-w-full"
+            className="prose !max-w-full dark:prose-invert"
             srt={transcriptionData}
             entryId={entryId}
             type="subtitle"

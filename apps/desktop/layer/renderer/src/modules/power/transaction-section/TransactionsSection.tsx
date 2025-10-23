@@ -1,7 +1,7 @@
 import { LoadingCircle } from "@follow/components/ui/loading/index.js"
 import { Tabs, TabsList, TabsTrigger } from "@follow/components/ui/tabs/index.jsx"
-import { TransactionTypes } from "@follow/models/types"
 import { useWhoami } from "@follow/store/user/hooks"
+import { TransactionTypes } from "@follow-app/client-sdk"
 import { useState } from "react"
 import { useTranslation } from "react-i18next"
 

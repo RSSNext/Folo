@@ -25,7 +25,7 @@ export function ReferralForm() {
         autoCapitalize="none"
         autoCorrect={false}
         placeholder="Referral Code (optional)"
-        className="text-text flex-1"
+        className="flex-1 text-text"
       />
     </View>
   )

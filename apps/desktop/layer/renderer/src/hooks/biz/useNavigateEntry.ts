@@ -1,7 +1,7 @@
 import { getReadonlyRoute, getStableRouterNavigate } from "@follow/components/atoms/route.js"
 import { useMobile } from "@follow/components/hooks/useMobile.js"
 import { useSheetContext } from "@follow/components/ui/sheet/context.js"
-import type { FeedViewType } from "@follow/constants"
+import { FeedViewType } from "@follow/constants"
 import { getEntry } from "@follow/store/entry/getter"
 import { getSubscriptionByFeedId } from "@follow/store/subscription/getter"
 import { tracker } from "@follow/tracker"
@@ -19,7 +19,10 @@ import {
   ROUTE_FEED_IN_LIST,
   ROUTE_FEED_PENDING,
   ROUTE_TIMELINE_OF_VIEW,
+  ROUTE_VIEW_ALL,
 } from "~/constants"
+
+import { useRouteParamsSelector } from "./useRouteParams"
 
 export type NavigateEntryOptions = Partial<{
   timelineId: string
@@ -62,7 +65,7 @@ const parseNavigateEntryOptions = (options: NavigateEntryOptions): ParsedNavigat
   let finalTimelineId = timelineId || params.timelineId || ROUTE_FEED_PENDING
   const finalEntryId = entryId || ROUTE_ENTRY_PENDING
   const subscription = getSubscriptionByFeedId(finalFeedId)
-  const finalView = view || subscription?.view
+  const finalView = typeof view === "number" ? view : subscription?.view
 
   if ("feedId" in options && feedId === null) {
     finalFeedId = ROUTE_FEED_PENDING
@@ -83,7 +86,8 @@ const parseNavigateEntryOptions = (options: NavigateEntryOptions): ParsedNavigat
   finalFeedId = encodeURIComponent(finalFeedId)
 
   if (finalView !== undefined && !timelineId) {
-    finalTimelineId = `${ROUTE_TIMELINE_OF_VIEW}${finalView}`
+    finalTimelineId =
+      finalView === FeedViewType.All ? ROUTE_VIEW_ALL : `${ROUTE_TIMELINE_OF_VIEW}${finalView}`
   }
 
   return {
@@ -148,11 +152,20 @@ export const navigateEntry = (options: NavigateEntryOptions) => {
 
 export const useBackHome = (timelineId?: string) => {
   const navigate = useNavigateEntry()
+  const feedId = useRouteParamsSelector((state) => state.feedId)
+  const entryId = useRouteParamsSelector((state) => state.entryId)
+  const backToFeed =
+    entryId && feedId && entryId !== ROUTE_ENTRY_PENDING && feedId !== ROUTE_FEED_PENDING
+  const feedIdToNavigate = backToFeed ? feedId : null
 
   return useCallback(
     (overvideTimelineId?: string) => {
-      navigate({ feedId: null, entryId: null, timelineId: overvideTimelineId ?? timelineId })
+      navigate({
+        feedId: feedIdToNavigate,
+        entryId: null,
+        timelineId: overvideTimelineId ?? timelineId,
+      })
     },
-    [timelineId, navigate],
+    [navigate, feedIdToNavigate, timelineId],
   )
 }

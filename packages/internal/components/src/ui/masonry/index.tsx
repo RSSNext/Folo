@@ -8,6 +8,7 @@ import { useForceUpdate } from "motion/react"
 import * as React from "react"
 
 import { useScrollViewElement } from "../scroll-area/hooks.js"
+import { useMasonryForceRerender } from "./contexts.jsx"
 /**
  * A "batteries included" masonry grid which includes all of the implementation details below. This component is the
  * easiest way to get off and running in your app, before switching to more advanced implementations, if necessary.
@@ -20,6 +21,7 @@ export const Masonry = <Item,>(props: MasonryProps<Item>) => {
   const [scrollTop, setScrollTop] = React.useState(0)
   const [isScrolling, setIsScrolling] = React.useState(false)
   const scrollElement = useScrollViewElement()
+  const forceRerender = useMasonryForceRerender()
 
   const fps = props.scrollFps || 12
   React.useEffect(() => {
@@ -88,7 +90,7 @@ export const Masonry = <Item,>(props: MasonryProps<Item>) => {
     itemCounter.current = props.items.length
   }
 
-  nextProps.positioner = usePositioner(nextProps, [shrunk && Math.random()])
+  nextProps.positioner = usePositioner(nextProps, [shrunk && Math.random(), forceRerender])
 
   nextProps.resizeObserver = useResizeObserver(nextProps.positioner)
   nextProps.scrollTop = scrollTop

@@ -39,7 +39,7 @@ import { PlatformActivityIndicator } from "@/src/components/ui/loading/PlatformA
 import { ItemPressable } from "@/src/components/ui/pressable/ItemPressable"
 import { Text } from "@/src/components/ui/typography/Text"
 import { ShareForwardCuteReIcon } from "@/src/icons/share_forward_cute_re"
-import type { apiClient } from "@/src/lib/api-fetch"
+import type { followClient } from "@/src/lib/api-client"
 import { Navigation } from "@/src/lib/navigation/Navigation"
 import type { NavigationControllerView } from "@/src/lib/navigation/types"
 import { toast } from "@/src/lib/toast"
@@ -51,7 +51,7 @@ import { useColor } from "@/src/theme/colors"
 import { FeedScreen } from "../(stack)/feeds/[feedId]/FeedScreen"
 import { FollowScreen } from "./FollowScreen"
 
-type Subscription = Awaited<ReturnType<typeof apiClient.subscriptions.$get>>["data"][number]
+type Subscription = Awaited<ReturnType<typeof followClient.api.subscriptions.get>>["data"][number]
 export const ProfileScreen: NavigationControllerView<{
   userId: string
 }> = ({ userId }) => {
@@ -102,7 +102,11 @@ function ProfileScreenImpl(props: { userId: string }) {
     })
   }, [user?.id, user?.name])
   const frame = useSafeAreaFrame()
-  const headerHeight = getDefaultHeaderHeight(frame, false, 0)
+  const headerHeight = getDefaultHeaderHeight({
+    landscape: frame.width > frame.height,
+    modalPresentation: false,
+    topInset: 0,
+  })
   const whoami = useWhoami()
   const isMyProfile = user?.id === whoami?.id
   const actionCtx = useMemo(
@@ -112,10 +116,10 @@ function ProfileScreenImpl(props: { userId: string }) {
     [removeItemById],
   )
   return (
-    <View className="bg-system-grouped-background flex-1">
+    <View className="flex-1 bg-system-grouped-background">
       <Animated.View
         pointerEvents="box-none"
-        className="border-system-fill border-hairline absolute inset-x-0 top-0 z-[99]"
+        className="border-hairline absolute inset-x-0 top-0 z-[99] border-system-fill"
         style={{
           opacity: headerOpacity,
         }}
@@ -276,7 +280,7 @@ const SubscriptionList = ({ subscriptions }: { subscriptions: Subscription[] }) 
 }
 const renderListItems = ({ item }: { item: PickedListModel }) => (
   <ItemPressable
-    className="bg-secondary-system-grouped-background flex h-12 flex-row items-center"
+    className="flex h-12 flex-row items-center bg-secondary-system-grouped-background"
     style={{
       paddingHorizontal: GROUPED_LIST_ITEM_PADDING,
     }}
@@ -308,7 +312,7 @@ const renderListItems = ({ item }: { item: PickedListModel }) => (
     </View>
 
     <Text
-      className="text-text mr-4"
+      className="mr-4 text-text"
       numberOfLines={1}
       style={{
         marginLeft: GROUPED_ICON_TEXT_GAP,
@@ -321,7 +325,7 @@ const renderListItems = ({ item }: { item: PickedListModel }) => (
 const renderFeedItems = ({ item }: { item: PickedFeedModel }) => (
   <MaybeSwipeable id={item.id}>
     <ItemPressable
-      className="bg-secondary-system-grouped-background flex h-12 flex-row items-center"
+      className="flex h-12 flex-row items-center bg-secondary-system-grouped-background"
       style={{
         paddingHorizontal: GROUPED_LIST_ITEM_PADDING,
       }}
@@ -354,7 +358,7 @@ const renderFeedItems = ({ item }: { item: PickedFeedModel }) => (
         />
       </View>
       <Text
-        className="text-text mr-4"
+        className="mr-4 text-text"
         numberOfLines={1}
         style={{
           marginLeft: GROUPED_ICON_TEXT_GAP,
@@ -410,7 +414,7 @@ const SectionHeader = ({ title }: { title: string }) => (
     }}
   >
     <Text
-      className="text-label text-xl font-medium"
+      className="text-xl font-medium text-label"
       style={{
         marginLeft: GROUPED_LIST_ITEM_PADDING,
       }}

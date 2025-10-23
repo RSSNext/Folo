@@ -1,3 +1,4 @@
+import { Kbd } from "@follow/components/ui/kbd/Kbd.js"
 import type { LexicalRichEditorRef } from "@follow/components/ui/lexical-rich-editor/index.js"
 import { LexicalRichEditor } from "@follow/components/ui/lexical-rich-editor/index.js"
 import { ScrollArea } from "@follow/components/ui/scroll-area/ScrollArea.js"
@@ -11,7 +12,7 @@ import { useCallback, useEffect, useMemo, useRef, useState } from "react"
 import { useEditingMessageId, useSetEditingMessageId } from "~/modules/ai-chat/atoms/session"
 import { useChatStatus } from "~/modules/ai-chat/store/hooks"
 
-import { MentionPlugin } from "../../editor"
+import { MentionPlugin, ShortcutPlugin } from "../../editor"
 
 interface EditableMessageProps {
   messageId: string
@@ -19,6 +20,7 @@ interface EditableMessageProps {
   onSave: (content: SerializedEditorState, editor: LexicalEditor) => void
   onCancel: () => void
   className?: string
+  initialHeight?: number
 }
 
 export const EditableMessage = ({
@@ -27,6 +29,7 @@ export const EditableMessage = ({
   onSave,
   onCancel,
   className,
+  initialHeight,
 }: EditableMessageProps) => {
   const status = useChatStatus()
   const editingMessageId = useEditingMessageId()
@@ -38,10 +41,13 @@ export const EditableMessage = ({
   const initialEditorState = useMemo(() => {
     return (parts.find((part) => part.type === "data-rich-text") as any)?.data
       .state as SerializedEditorState
-  }, [])
+  }, [parts])
 
   const isEditing = editingMessageId === messageId
   const isProcessing = status === "submitted" || status === "streaming"
+
+  // Compute initial editor height based on original message height
+  const editorInitialHeight = Math.max(56, initialHeight ?? 56)
 
   // Initialize editor with initial content
   useEffect(() => {
@@ -114,16 +120,20 @@ export const EditableMessage = ({
   return (
     <div className={cn("relative", className)}>
       {/* Edit input */}
-      <div className="bg-background/60 focus-within:ring-accent/20 focus-within:border-accent/80 border-border/80 relative overflow-hidden rounded-xl border backdrop-blur-xl duration-200 focus-within:ring-2">
-        <ScrollArea rootClassName="mx-5 my-3.5 mr-20 flex-1 overflow-auto">
+      <div className="relative overflow-hidden rounded-xl border border-border/80 bg-background/60 backdrop-blur-xl duration-200 focus-within:border-accent/80 focus-within:ring-2 focus-within:ring-accent/20">
+        <ScrollArea
+          rootClassName="mr-20 flex-1 overflow-auto"
+          viewportClassName="px-5 py-3.5"
+          viewportProps={{ style: { height: editorInitialHeight } }}
+        >
           <LexicalRichEditor
             ref={editorRef}
             placeholder="Edit your message..."
-            className="w-full min-w-64"
+            className="h-full min-w-64"
             onChange={handleEditorChange}
             onKeyDown={handleKeyDown}
             namespace="EditableMessageRichEditor"
-            plugins={[MentionPlugin]}
+            plugins={[MentionPlugin, ShortcutPlugin]}
           />
         </ScrollArea>
 
@@ -133,7 +143,7 @@ export const EditableMessage = ({
             type="button"
             onClick={handleCancel}
             disabled={isProcessing}
-            className="text-text-tertiary hover:text-text hover:bg-fill/50 flex size-8 items-center justify-center rounded-lg transition-colors disabled:opacity-50"
+            className="flex size-8 items-center justify-center rounded-lg text-text-tertiary transition-colors hover:bg-fill/50 hover:text-text disabled:opacity-50"
             title="Cancel (Esc)"
           >
             <i className="i-mgc-close-cute-re size-4" />
@@ -142,7 +152,7 @@ export const EditableMessage = ({
             type="button"
             onClick={handleSave}
             disabled={isProcessing || isEmpty}
-            className="text-accent hover:text-accent hover:bg-accent/10 flex size-8 items-center justify-center rounded-lg transition-colors disabled:opacity-50"
+            className="flex size-8 items-center justify-center rounded-lg text-accent transition-colors hover:bg-accent/10 hover:text-accent disabled:opacity-50"
             title="Save (Enter)"
           >
             <i className="i-mgc-send-plane-cute-fi size-4" />
@@ -151,9 +161,11 @@ export const EditableMessage = ({
       </div>
 
       {/* Helper text */}
-      <div className="text-text-tertiary mt-2 text-xs">
-        Press <kbd className="bg-fill text-text-secondary rounded px-1 py-0.5">Enter</kbd> to save,{" "}
-        <kbd className="bg-fill text-text-secondary rounded px-1 py-0.5">Esc</kbd> to cancel
+      <div className="relative mt-2">
+        <div className="absolute -inset-x-2 -bottom-2 -top-8 z-[-1] bg-background" />
+        <div className="relative z-[1] text-xs text-text-secondary">
+          Press <Kbd abbr="Enter">Enter</Kbd> to save, <Kbd abbr="Esc">Esc</Kbd> to cancel
+        </div>
       </div>
     </div>
   )

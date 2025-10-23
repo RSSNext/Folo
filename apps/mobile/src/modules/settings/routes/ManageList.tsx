@@ -26,9 +26,9 @@ import { FeedIcon } from "@/src/components/ui/icon/feed-icon"
 import { ItemPressable } from "@/src/components/ui/pressable/ItemPressable"
 import { Text } from "@/src/components/ui/typography/Text"
 import { CheckLineIcon } from "@/src/icons/check_line"
-import { getBizFetchErrorMessage } from "@/src/lib/api-fetch"
 import { useNavigation } from "@/src/lib/navigation/hooks"
 import type { NavigationControllerView } from "@/src/lib/navigation/types"
+import { getBizFetchErrorMessage } from "@/src/lib/parse-api-error"
 import { toast } from "@/src/lib/toast"
 import { accentColor } from "@/src/theme/colors"
 
@@ -121,7 +121,7 @@ const ListImpl: React.FC<{
 const SeparatorComponent = () => {
   return (
     <View
-      className="bg-opaque-separator/70 ml-16"
+      className="ml-16 bg-opaque-separator/70"
       style={{
         height: StyleSheet.hairlineWidth,
       }}
@@ -159,7 +159,7 @@ const FeedCell = (props: { feedId: string; isSelected: boolean }) => {
               <FeedIcon feed={feed} size={24} />
             </View>
           </View>
-          <Text className="text-label flex-1" ellipsizeMode="middle" numberOfLines={1}>
+          <Text className="flex-1 text-label" ellipsizeMode="middle" numberOfLines={1}>
             {feed?.title || "Untitled Feed"}
           </Text>
         </View>

@@ -4,6 +4,7 @@ import { UserRole } from "@follow/constants"
 import { getBackgroundGradient } from "@follow/utils/color"
 import { cn } from "@follow/utils/utils"
 import { useMemo } from "react"
+import * as React from "react"
 
 export const UserAvatar = ({ className }: { className?: string }) => {
   let user = useWhoami()
@@ -28,7 +29,18 @@ export const UserAvatar = ({ className }: { className?: string }) => {
         image: "https://avatars-githubusercontent-webp.webp.se/u/41265413?v=4",
         handle: "innei",
         role: UserRole.Free,
-        roleEndAt: new Date(),
+        isAnonymous: false,
+        suspended: false,
+        stripeCustomerId: "",
+        roleEndAt: new Date().toISOString(),
+        bio: "",
+        website: "",
+        socialLinks: {} as any,
+        email: "",
+        emailVerified: false,
+        createdAt: new Date().toISOString(),
+        updatedAt: new Date().toISOString(),
+        twoFactorEnabled: false,
         deleted: false,
       }
     } else {
@@ -40,13 +52,13 @@ export const UserAvatar = ({ className }: { className?: string }) => {
   return (
     <div
       className={cn(
-        "text-text-secondary flex h-20 items-center justify-center gap-8 px-10 py-4 text-2xl font-medium",
+        "flex h-20 items-center justify-center gap-8 px-10 py-4 text-2xl font-medium text-text-secondary",
         className,
       )}
     >
       <Avatar className="border">
         <AvatarImage
-          className="animate-in fade-in-0 aspect-square size-full duration-200"
+          className="aspect-square size-full duration-200 animate-in fade-in-0"
           src={image!}
         />
         <AvatarFallback style={colorfulStyle} className="text-sm">
@@ -54,7 +66,7 @@ export const UserAvatar = ({ className }: { className?: string }) => {
         </AvatarFallback>
       </Avatar>
 
-      <div className="text-text truncate">{name}</div>
+      <div className="truncate text-text">{name}</div>
     </div>
   )
 }

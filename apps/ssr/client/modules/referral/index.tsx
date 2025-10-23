@@ -1,5 +1,5 @@
 // sync this file with apps/desktop/layer/renderer/src/modules/auth/ReferralForm.tsx
-import { apiClient } from "@client/lib/api-fetch"
+import { followClient } from "@client/lib/api-fetch"
 import {
   Form,
   FormControl,
@@ -15,6 +15,7 @@ import { cn } from "@follow/utils/utils"
 import { zodResolver } from "@hookform/resolvers/zod"
 import { useQuery } from "@tanstack/react-query"
 import { useEffect } from "react"
+import * as React from "react"
 import { useForm } from "react-hook-form"
 import { useTranslation } from "react-i18next"
 import { z } from "zod"
@@ -36,7 +37,7 @@ function getDefaultReferralCode() {
 }
 
 async function getReferralCycleDays(code: string) {
-  return apiClient.referrals.days.$get({ query: { code } })
+  return followClient.api.referrals.getDays({ code })
 }
 
 export function ReferralForm({

@@ -2,7 +2,6 @@ import { Button } from "@follow/components/ui/button/index.js"
 import { CollapseCss, CollapseCssGroup } from "@follow/components/ui/collapse/index.js"
 import { DropZone } from "@follow/components/ui/drop-zone/index.js"
 import { Form, FormControl, FormField, FormItem } from "@follow/components/ui/form/index.jsx"
-import type { BizRespose } from "@follow/models"
 import { zodResolver } from "@hookform/resolvers/zod"
 import { useMutation } from "@tanstack/react-query"
 import { Fragment } from "react"
@@ -12,20 +11,13 @@ import { z } from "zod"
 
 import { Media } from "~/components/ui/media/Media"
 import { useModalStack } from "~/components/ui/modal/stacked/hooks"
-import { apiFetch } from "~/lib/api-fetch"
+import { followClient } from "~/lib/api-client"
 import { toastFetchError } from "~/lib/error-parser"
 
 import { OpmlSelectionModal } from "./OpmlSelectionModal"
-import type { ParsedOpmlData } from "./types"
 
-const parseOpmlFile = async (file: File): Promise<ParsedOpmlData> => {
-  const formData = new FormData()
-  formData.append("file", file)
-
-  const data = await apiFetch<BizRespose<ParsedOpmlData>>("/subscriptions/parse-opml", {
-    method: "POST",
-    body: formData,
-  })
+const parseOpmlFile = async (file: File) => {
+  const data = await followClient.api.subscriptions.parseOpml(await file.arrayBuffer())
 
   return data.data
 }
@@ -79,7 +71,7 @@ export function DiscoverImport() {
           <CollapseCss
             collapseId="inoreader"
             title={
-              <div className="border-border flex h-14 items-center justify-normal gap-2 font-medium">
+              <div className="flex h-14 items-center justify-normal gap-2 border-border font-medium">
                 <Media
                   className="size-5"
                   src="https://inoreader.com/favicon.ico"
@@ -87,7 +79,7 @@ export function DiscoverImport() {
                   type="photo"
                 />
                 {t("discover.import.opml_step1_inoreader")}
-                <div className="bg-border absolute inset-x-0 bottom-0 h-px" />
+                <div className="absolute inset-x-0 bottom-0 h-px bg-border" />
               </div>
             }
             contentClassName="flex flex-col gap-1"
@@ -117,7 +109,7 @@ export function DiscoverImport() {
           <CollapseCss
             collapseId="feedly"
             title={
-              <div className="border-border flex h-14 items-center justify-normal gap-2 font-medium">
+              <div className="flex h-14 items-center justify-normal gap-2 border-border font-medium">
                 <Media
                   className="size-5"
                   src="https://feedly.com/favicon.ico"
@@ -125,7 +117,7 @@ export function DiscoverImport() {
                   type="photo"
                 />
                 {t("discover.import.opml_step1_feedly")}
-                <div className="bg-border absolute inset-x-0 bottom-0 h-px" />
+                <div className="absolute inset-x-0 bottom-0 h-px bg-border" />
               </div>
             }
             contentClassName="flex flex-col gap-1"
@@ -154,10 +146,10 @@ export function DiscoverImport() {
           <CollapseCss
             collapseId="other"
             title={
-              <div className="border-border flex h-14 items-center justify-normal gap-2 font-medium">
+              <div className="flex h-14 items-center justify-normal gap-2 border-border font-medium">
                 <i className="i-mgc-rss-cute-fi ml-[-0.14rem] size-6 text-orange-500" />
                 {t("discover.import.opml_step1_other")}
-                <div className="bg-border absolute inset-x-0 bottom-0 h-px" />
+                <div className="absolute inset-x-0 bottom-0 h-px bg-border" />
               </div>
             }
             contentClassName="flex flex-col gap-1"
@@ -190,8 +182,8 @@ export function DiscoverImport() {
                       </Fragment>
                     ) : (
                       <Fragment>
-                        <i className="i-mgc-file-upload-cute-re text-text-tertiary size-10" />
-                        <span className="text-title2 text-text-tertiary ml-2">
+                        <i className="i-mgc-file-upload-cute-re size-10 text-text-tertiary" />
+                        <span className="ml-2 text-title2 text-text-tertiary">
                           {t("discover.import.click_to_upload")}
                         </span>
                       </Fragment>

@@ -99,8 +99,18 @@ export const TokenizedText = ({ input }: { input: React.ReactNode }) => {
           return React.cloneElement(token, { key })
         }
 
+        // Skip rendering completely empty tokens
+        if (text.length === 0) {
+          return null
+        }
+
+        // For whitespace-only tokens, preserve spacing without adding a DOM element
+        if (/^\s+$/.test(text)) {
+          return <React.Fragment key={key}>{text}</React.Fragment>
+        }
+
         return (
-          <span key={key} className="inline-block whitespace-pre-wrap" style={ANIMATION_STYLE}>
+          <span key={key} className="inline whitespace-pre-wrap" style={ANIMATION_STYLE}>
             {text}
           </span>
         )

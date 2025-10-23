@@ -49,7 +49,7 @@ interface ShowDialogOptions<Ctx> {
     confirmText?: string
   }
 }
-const entering = SlideInUp.springify().damping(20).stiffness(140)
+const entering = SlideInUp.springify()
 const exiting = SlideOutUp.duration(400)
 type DialogContextType = {
   dismiss: () => void
@@ -188,7 +188,7 @@ class DialogStatic {
           <FullWindowOverlay>
             <Overlay onPress={handleClose} />
             <Animated.View
-              className="bg-system-background absolute inset-x-0 -top-8 z-10 pt-8"
+              className="absolute inset-x-0 -top-8 z-10 bg-system-background pt-8"
               entering={entering}
               exiting={exiting}
             >
@@ -256,7 +256,7 @@ const DefaultHeader = (props: { title?: string; headerIcon?: ReactNode }) => {
             width: 20,
           } as Partial<ImageProps>,
         )}
-      <Text className="text-label text-lg font-semibold">{props.title}</Text>
+      <Text className="text-lg font-semibold text-label">{props.title}</Text>
     </View>
   )
 }
@@ -276,12 +276,12 @@ const DialogDynamicButtonAction = (props: {
   return (
     <TouchableOpacity
       className={cn(
-        "bg-system-fill flex-1 items-center justify-center rounded-full px-6 py-3",
+        "flex-1 items-center justify-center rounded-full bg-system-fill px-6 py-3",
         props.className,
       )}
       onPress={caller}
     >
-      <Text className={cn("text-label text-base font-medium", props.textClassName)}>
+      <Text className={cn("text-base font-medium text-label", props.textClassName)}>
         {props.text}
       </Text>
     </TouchableOpacity>

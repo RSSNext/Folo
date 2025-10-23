@@ -59,3 +59,9 @@
 i {
   @apply select-none;
 }
+
+@layer utilities {
+  .autospace-normal {
+    text-autospace: normal;
+  }
+}

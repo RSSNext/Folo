@@ -9,9 +9,16 @@ import * as React from "react"
 type CheckboxProps = React.ComponentProps<typeof CheckboxPrimitive.Root> &
   HTMLMotionProps<"button"> & {
     indeterminate?: boolean
+    size?: "sm" | "md"
   }
 
-function Checkbox({ className, onCheckedChange, indeterminate, ...props }: CheckboxProps) {
+function Checkbox({
+  className,
+  onCheckedChange,
+  indeterminate,
+  size = "md",
+  ...props
+}: CheckboxProps) {
   const [isChecked, setIsChecked] = React.useState(props?.checked ?? props?.defaultChecked ?? false)
 
   React.useEffect(() => {
@@ -31,7 +38,8 @@ function Checkbox({ className, onCheckedChange, indeterminate, ...props }: Check
       <m.button
         data-slot="checkbox"
         className={cn(
-          "bg-fill cursor-checkbox focus-visible:ring-border data-[state=checked]:bg-accent peer flex size-5 shrink-0 items-center justify-center rounded-sm transition-colors duration-500 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50 data-[state=checked]:text-white",
+          "bg-fill cursor-checkbox focus-visible:ring-border data-[state=checked]:bg-accent peer flex shrink-0 items-center justify-center rounded-sm transition-colors duration-500 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50 data-[state=checked]:text-white",
+          size === "sm" ? "size-4" : "size-5",
           indeterminate && "bg-accent text-white",
           className,
         )}
@@ -48,7 +56,7 @@ function Checkbox({ className, onCheckedChange, indeterminate, ...props }: Check
               viewBox="0 0 24 24"
               strokeWidth="3.5"
               stroke="currentColor"
-              className="size-3.5"
+              className={size === "sm" ? "size-3" : "size-3.5"}
               initial="hidden"
               animate="visible"
             >
@@ -83,7 +91,7 @@ function Checkbox({ className, onCheckedChange, indeterminate, ...props }: Check
               viewBox="0 0 24 24"
               strokeWidth="3.5"
               stroke="currentColor"
-              className="size-3.5"
+              className={size === "sm" ? "size-3" : "size-3.5"}
               initial="unchecked"
               animate={isChecked ? "checked" : "unchecked"}
             >

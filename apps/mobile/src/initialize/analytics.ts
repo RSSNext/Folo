@@ -1,5 +1,6 @@
 import { whoami } from "@follow/store/user/getters"
 import { setFirebaseTracker, setPostHogTracker, tracker } from "@follow/tracker"
+import type { AuthUser } from "@follow-app/client-sdk"
 import { getAnalytics } from "@react-native-firebase/analytics"
 import { nativeApplicationVersion, nativeBuildVersion } from "expo-application"
 import PostHog from "posthog-react-native"
@@ -11,7 +12,7 @@ export const initAnalytics = async () => {
 
   const user = whoami()
   if (user) {
-    tracker.identify(user)
+    tracker.identify(user as AuthUser)
   }
 
   tracker.manager.appendUserProperties({

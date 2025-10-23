@@ -24,7 +24,7 @@ import { Text } from "@/src/components/ui/typography/Text"
 import { CheckLineIcon } from "@/src/icons/check_line"
 import { PowerOutlineIcon } from "@/src/icons/power_outline"
 import { TimeCuteReIcon } from "@/src/icons/time_cute_re"
-import { apiClient } from "@/src/lib/api-fetch"
+import { followClient } from "@/src/lib/api-client"
 import { authClient } from "@/src/lib/auth"
 import { useNavigation } from "@/src/lib/navigation/hooks"
 import type { NavigationControllerView } from "@/src/lib/navigation/types"
@@ -94,7 +94,7 @@ const PLAN_CONFIGS: Plan[] = [
 const useReferralInfoQuery = () => {
   return useQuery({
     queryKey: ["referral", "info"],
-    queryFn: () => apiClient.referrals.$get().then((res) => res.data),
+    queryFn: () => followClient.api.referrals.getReferrals().then((res) => res.data),
   })
 }
 export const PlanScreen: NavigationControllerView = () => {
@@ -118,10 +118,8 @@ export const PlanScreen: NavigationControllerView = () => {
     try {
       const result = await validateReceipt(purchase.transactionId)
       if (result.isValid) {
-        apiClient.referrals["verify-receipt"].$post({
-          json: {
-            appReceipt: result.receiptData,
-          },
+        followClient.api.referrals.verifyReceipt({
+          appReceipt: result.receiptData,
         })
       }
     } catch (error) {
@@ -178,7 +176,7 @@ export const PlanScreen: NavigationControllerView = () => {
               ns="settings"
               i18nKey="plan.description"
               parent={({ children }: { children: React.ReactNode }) => (
-                <Text className="text-label mt-3 text-left text-base leading-tight">
+                <Text className="mt-3 text-left text-base leading-tight text-label">
                   {children}
                 </Text>
               )}
@@ -220,14 +218,14 @@ export const PlanScreen: NavigationControllerView = () => {
         })}
       </View>
 
-      <View className="bg-secondary-system-grouped-background mx-4 rounded-lg p-4">
+      <View className="mx-4 rounded-lg bg-secondary-system-grouped-background p-4">
         <View className="mb-4 flex-row items-center gap-2">
-          <View className="bg-accent rounded-full p-2">
+          <View className="rounded-full bg-accent p-2">
             <TimeCuteReIcon color="#fff" width={16} height={16} />
           </View>
           <View>
-            <Text className="text-label font-medium">Current Status</Text>
-            <Text className="text-label text-sm">
+            <Text className="font-medium text-label">Current Status</Text>
+            <Text className="text-sm text-label">
               {role === UserRole.Pro
                 ? "You have an active Pro plan"
                 : role === UserRole.PreProTrial
@@ -238,14 +236,14 @@ export const PlanScreen: NavigationControllerView = () => {
         </View>
 
         <View className="mb-4 flex-row items-center justify-between">
-          <Text className="text-label font-medium">Referral Progress</Text>
+          <Text className="font-medium text-label">Referral Progress</Text>
           <Text className="text-label">
             {validInvitationsAmount} / {requiredInvitationsAmount}
           </Text>
         </View>
-        <View className="bg-system-grouped-background h-2 w-full rounded-full">
+        <View className="h-2 w-full rounded-full bg-system-grouped-background">
           <View
-            className="bg-accent h-2 rounded-full"
+            className="h-2 rounded-full bg-accent"
             style={{
               width: `${progress}%`,
             }}
@@ -255,7 +253,7 @@ export const PlanScreen: NavigationControllerView = () => {
         {role !== UserRole.Pro && (
           <View className="mt-4 flex-row items-center gap-2 self-end">
             <Pressable
-              className="bg-accent rounded-lg p-2"
+              className="rounded-lg bg-accent p-2"
               onPress={() => {
                 navigation.pushControllerView(ReferralScreen)
               }}
@@ -264,12 +262,14 @@ export const PlanScreen: NavigationControllerView = () => {
             </Pressable>
             <Text className="text-label">or</Text>
             <Pressable
-              className="bg-accent rounded-lg p-2 disabled:opacity-50"
+              className="rounded-lg bg-accent p-2 disabled:opacity-50"
               disabled={upgradePlanMutation.isPending}
               onPress={() => {
                 upgradePlanMutation.mutate()
               }}
             >
+              {/* TODO current not return back this value */}
+              {/* @ts-expect-error current not return back this value */}
               <Text className="text-white">{`Pay $${serverConfigs?.REFERRAL_PRO_PREVIEW_STRIPE_PRICE_IN_DOLLAR || 1}`}</Text>
             </Pressable>
           </View>
@@ -290,40 +290,40 @@ function PlanCard({ plan, isCurrentPlan, daysLeft, onUpgrade, disabled }: PlanCa
   return (
     <View
       className={cn(
-        "bg-secondary-system-grouped-background min-w-[160px] rounded-lg p-4 shadow-md",
-        isCurrentPlan && "border-accent border-2",
+        "min-w-[160px] rounded-lg bg-secondary-system-grouped-background p-4 shadow-md",
+        isCurrentPlan && "border-2 border-accent",
         plan.isComingSoon && "opacity-75",
       )}
     >
       <View className="mb-4 flex-row items-center justify-between">
-        <Text className="text-label text-lg font-bold">{plan.title}</Text>
-        <Text className="text-label text-lg font-bold">{plan.price}</Text>
+        <Text className="text-lg font-bold text-label">{plan.title}</Text>
+        <Text className="text-lg font-bold text-label">{plan.price}</Text>
       </View>
 
       {plan.features.map((feature, index) => (
         <View key={index} className="mb-2 flex-row items-center gap-2">
-          <View className="bg-green/10 rounded-full p-[2px]">
+          <View className="rounded-full bg-green/10 p-[2px]">
             <CheckLineIcon width={16} height={16} color="rgb(40, 205, 65)" />
           </View>
-          <Text className="text-label text-sm">{feature}</Text>
+          <Text className="text-sm text-label">{feature}</Text>
         </View>
       ))}
 
       {plan.isComingSoon ? (
-        <Text className="text-label/40 border-opaque-separator/40 mt-2 rounded-lg border p-2 text-center text-sm">
+        <Text className="mt-2 rounded-lg border border-opaque-separator/40 p-2 text-center text-sm text-label/40">
           Coming soon
         </Text>
       ) : isCurrentPlan && daysLeft !== null ? (
-        <Text className="text-label/40 border-opaque-separator/40 mt-2 rounded-lg border p-2 text-center text-sm">
+        <Text className="mt-2 rounded-lg border border-opaque-separator/40 p-2 text-center text-sm text-label/40">
           {`In Trial (${daysLeft} days left)`}
         </Text>
       ) : isCurrentPlan ? (
-        <Text className="text-label/40 border-opaque-separator/40 mt-2 rounded-lg border p-2 text-center text-sm">
+        <Text className="mt-2 rounded-lg border border-opaque-separator/40 p-2 text-center text-sm text-label/40">
           Current Plan
         </Text>
       ) : (
         <Pressable className={cn(disabled && "opacity-50")} onPress={onUpgrade} disabled={disabled}>
-          <Text className="text-label border-opaque-separator mt-2 rounded-lg border p-2 text-center text-sm">
+          <Text className="mt-2 rounded-lg border border-opaque-separator p-2 text-center text-sm text-label">
             Upgrade
           </Text>
         </Pressable>

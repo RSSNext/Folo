@@ -58,7 +58,7 @@ export const TwoFactorAuthScreen: NavigationControllerView = () => {
       >
         <View className="mt-20 flex-1 pb-10">
           <View className="mb-10 flex-row items-center justify-center">
-            <Text className="text-label w-72 text-center text-3xl font-bold" numberOfLines={2}>
+            <Text className="w-72 text-center text-3xl font-bold text-label" numberOfLines={2}>
               Verify with your authenticator app
             </Text>
           </View>

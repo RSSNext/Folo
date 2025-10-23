@@ -13,7 +13,7 @@ export const HistoryTab = ({ analysis }: HistoryTabProps) => {
 
   if (!analysis || analysis.usageHistory.length === 0) {
     return (
-      <div className="text-text-secondary text-center">
+      <div className="text-center text-text-secondary">
         <p className="text-sm">{t("analytics.no_history")}</p>
       </div>
     )
@@ -21,8 +21,8 @@ export const HistoryTab = ({ analysis }: HistoryTabProps) => {
 
   return (
     <div className="space-y-3 px-4">
-      <div className="bg-material-opaque sticky top-0 z-10 rounded-lg px-4 py-3">
-        <div className="text-text-secondary grid grid-cols-[2fr_1fr_1fr] gap-4 text-xs font-medium">
+      <div className="sticky top-0 z-10 rounded-lg bg-material-opaque px-4 py-3">
+        <div className="grid grid-cols-[2fr_1fr_1fr] gap-4 text-xs font-medium text-text-secondary">
           <div className="flex items-center gap-2">
             {t("analytics.event", { defaultValue: "Event" })}
           </div>
@@ -40,7 +40,7 @@ export const HistoryTab = ({ analysis }: HistoryTabProps) => {
           <div className="grid grid-cols-[2fr_1fr_1fr] items-center gap-4" key={index}>
             <div className="min-w-0 space-y-1">
               <div className="flex items-center gap-2">
-                <span className="text-text truncate text-sm font-medium">
+                <span className="truncate text-sm font-medium text-text">
                   {item.operationType
                     ? t("analytics.history_operation", {
                         operation: t(`analytics.operation_types.${item.operationType}`, {
@@ -65,7 +65,7 @@ export const HistoryTab = ({ analysis }: HistoryTabProps) => {
             </div>
 
             <div className="flex justify-end">
-              <span className="text-text-tertiary text-xs">
+              <span className="text-xs text-text-tertiary">
                 <RelativeTime date={item.createdAt} />
               </span>
             </div>

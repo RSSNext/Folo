@@ -138,13 +138,13 @@ export const SearchCmdK: React.FC = () => {
         onOpenChange={setAppSearchOpen}
         className={cn(
           "h-[600px] max-h-[80vh] w-[800px] max-w-[100vw] rounded-none md:h-screen md:max-h-[60vh] md:max-w-[80vw]",
-          "backdrop-blur-background bg-material-ultra-thick flex min-h-[50vh] flex-col shadow-2xl md:rounded-xl",
-          "border-border border-0 md:border",
+          "flex min-h-[50vh] flex-col bg-material-ultra-thick shadow-2xl backdrop-blur-background md:rounded-xl",
+          "border-0 border-border md:border",
           "absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2",
         )}
       >
         <Command.Input
-          className="border-border w-full shrink-0 border-b bg-transparent p-4 px-5 text-lg leading-4"
+          className="w-full shrink-0 border-b border-border bg-transparent p-4 px-5 text-lg leading-4"
           ref={inputRef}
           placeholder={searchActions.getCurrentKeyword() || t("search.placeholder")}
           onValueChange={handleSearch}
@@ -272,7 +272,7 @@ const SearchItem = memo(function Item({
       }}
     >
       <div className="relative flex w-full items-center justify-between px-1 py-2">
-        {feed && <FeedIcon className="mr-2 size-5 shrink-0 rounded" feed={feed} />}
+        {feed && <FeedIcon className="mr-2 size-5 shrink-0 rounded" target={feed} />}
         <span className="block min-w-0 flex-1 shrink-0 truncate">{title}</span>
         <span className="block min-w-0 shrink-0 grow-0 text-xs font-medium text-zinc-800 opacity-60 dark:text-slate-200/80">
           {subtitle}
@@ -348,7 +348,7 @@ const SearchOptions: Component = memo(({ children }) => {
   const searchInstance = React.use(SearchCmdKContext)
 
   return (
-    <div className="text-text flex items-center gap-2 text-sm">
+    <div className="flex items-center gap-2 text-sm text-text">
       <span className="shrink-0">{t("search.options.search_type")}</span>
 
       <Select

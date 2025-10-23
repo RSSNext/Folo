@@ -20,7 +20,7 @@ import {
   TooltipTrigger,
 } from "@follow/components/ui/tooltip/index.js"
 import { EllipsisHorizontalTextWithTooltip } from "@follow/components/ui/typography/index.js"
-import { views } from "@follow/constants"
+import { getView, getViewList } from "@follow/constants"
 import { getFeedById } from "@follow/store/feed/getter"
 import { useFeedById, usePrefetchFeedAnalytics } from "@follow/store/feed/hooks"
 import { getSubscriptionByFeedId } from "@follow/store/subscription/getter"
@@ -29,9 +29,10 @@ import {
   useSubscriptionByFeedId,
 } from "@follow/store/subscription/hooks"
 import { clsx, formatNumber, sortByAlphabet } from "@follow/utils/utils"
+import { useVirtualizer } from "@tanstack/react-virtual"
 import { AnimatePresence, m } from "motion/react"
 import type { FC } from "react"
-import { memo, useCallback, useEffect, useMemo, useState } from "react"
+import { memo, useCallback, useMemo, useState } from "react"
 import { useTranslation } from "react-i18next"
 
 import { useIsInMASReview } from "~/atoms/server-configs"
@@ -116,36 +117,6 @@ const SubscriptionFeedsSection = () => {
     presentDeleteSubscription(feedIds, () => setSelectedFeeds(new Set()))
   }, [presentDeleteSubscription, selectedFeeds, setSelectedFeeds])
 
-  const [visibleableFeedIds, setVisibleableFeedIds] = useState<Set<string>>(() => new Set())
-  const scrollContainerElement = useScrollViewElement()
-  useEffect(() => {
-    if (!scrollContainerElement) return
-    const observer = new IntersectionObserver((entries) => {
-      setVisibleableFeedIds((prevSet) => {
-        const nextSet = new Set(prevSet)
-        entries.forEach((entry) => {
-          const targetId = (entry.target as HTMLButtonElement).dataset.id
-          if (targetId) {
-            if (entry.isIntersecting) {
-              nextSet.add(targetId)
-            } else {
-              nextSet.delete(targetId)
-            }
-          }
-        })
-        return nextSet
-      })
-    })
-    scrollContainerElement.querySelectorAll("[data-id]").forEach((el) => {
-      observer.observe(el)
-    })
-    return () => {
-      observer.disconnect()
-    }
-  }, [scrollContainerElement])
-
-  usePrefetchFeedAnalytics(Array.from(visibleableFeedIds))
-
   return (
     <section className="relative mt-4">
       <h2 className="mb-2 text-lg font-semibold">{t("feeds.subscription")}</h2>
@@ -155,7 +126,7 @@ const SubscriptionFeedsSection = () => {
           {/* Header - Sticky */}
           <div
             className={clsx(
-              "bg-background text-text-secondary sticky top-0 z-20 grid h-8 gap-4 border-b px-1 pb-2 text-sm font-medium",
+              "sticky top-0 z-20 grid h-8 gap-4 border-b bg-background px-1 pb-2 text-sm font-medium text-text-secondary",
               GRID_COLS_CLASSNAME,
             )}
           >
@@ -164,7 +135,7 @@ const SubscriptionFeedsSection = () => {
             </div>
             <button
               type="button"
-              className="hover:text-text text-left transition-colors"
+              className="text-left transition-colors hover:text-text"
               onClick={() => handleSort("name")}
             >
               {t("feeds.tableHeaders.name")}
@@ -174,7 +145,7 @@ const SubscriptionFeedsSection = () => {
             </button>
             <button
               type="button"
-              className="hover:text-text ml-4 text-left transition-colors"
+              className="ml-4 text-left transition-colors hover:text-text"
               onClick={() => handleSort("view")}
             >
               {t("feeds.tableHeaders.view")}
@@ -183,7 +154,7 @@ const SubscriptionFeedsSection = () => {
               )}
             </button>
             <button
-              className="hover:text-text text-center transition-colors"
+              className="text-center transition-colors hover:text-text"
               onClick={() => handleSort("date")}
               type="button"
             >
@@ -193,7 +164,7 @@ const SubscriptionFeedsSection = () => {
               )}
             </button>
             <button
-              className="hover:text-text text-nowrap text-center transition-colors"
+              className="text-nowrap text-center transition-colors hover:text-text"
               onClick={() => handleSort("subscriptionCount")}
               type="button"
             >
@@ -203,7 +174,7 @@ const SubscriptionFeedsSection = () => {
               )}
             </button>
             <button
-              className="hover:text-text text-nowrap text-center transition-colors"
+              className="text-nowrap text-center transition-colors hover:text-text"
               onClick={() => handleSort("updatesPerWeek")}
               type="button"
             >
@@ -215,13 +186,15 @@ const SubscriptionFeedsSection = () => {
           </div>
 
           {/* Feed List */}
-          <SortedFeedsList
-            feeds={allFeeds}
-            sortField={sortField}
-            sortDirection={sortDirection}
-            selectedFeeds={selectedFeeds}
-            onSelect={handleSelectFeed}
-          />
+          <div className="relative">
+            <SortedFeedsList
+              feeds={allFeeds}
+              sortField={sortField}
+              sortDirection={sortDirection}
+              selectedFeeds={selectedFeeds}
+              onSelect={handleSelectFeed}
+            />
+          </div>
 
           {/* Sticky Action Bar at bottom when scrolled */}
           <AnimatePresence>
@@ -234,10 +207,10 @@ const SubscriptionFeedsSection = () => {
                   transition={Spring.presets.smooth}
                   className="sticky bottom-16 mt-4 flex justify-center"
                 >
-                  <div className="text-text-secondary bg-material-opaque rounded-md px-4 py-2 text-sm">
+                  <div className="rounded-md bg-material-opaque px-4 py-2 text-sm text-text-secondary">
                     {t("feeds.tableSelected.item", { count: selectedFeeds.size })}
                     <button
-                      className="text-accent cursor-button ml-3 text-xs"
+                      className="ml-3 cursor-button text-xs text-accent"
                       type="button"
                       onClick={() => setSelectedFeeds(new Set())}
                     >
@@ -252,10 +225,10 @@ const SubscriptionFeedsSection = () => {
                   transition={Spring.presets.smooth}
                   className="sticky bottom-4 flex justify-center"
                 >
-                  <div className="bg-material-opaque flex items-center gap-2 rounded px-4 py-2">
+                  <div className="flex items-center gap-2 rounded bg-material-opaque px-4 py-2">
                     <DropdownMenu>
                       <DropdownMenuTrigger asChild>
-                        <MotionButtonBase className="text-accent text-xs" type="button">
+                        <MotionButtonBase className="text-xs text-accent" type="button">
                           {t("feeds.tableSelected.moveToView.action")}
                         </MotionButtonBase>
                       </DropdownMenuTrigger>
@@ -265,7 +238,7 @@ const SubscriptionFeedsSection = () => {
                     </DropdownMenu>
 
                     <MotionButtonBase
-                      className="text-red text-xs"
+                      className="text-xs text-red"
                       type="button"
                       onClick={handleBatchUnsubscribe}
                     >
@@ -289,6 +262,8 @@ const SortedFeedsList: FC<{
   selectedFeeds: Set<string>
   onSelect: (feedId: string, checked: boolean) => void
 }> = ({ feeds, sortField, sortDirection, selectedFeeds, onSelect }) => {
+  const scrollContainerElement = useScrollViewElement()
+
   const sortedFeedIds = useMemo(() => {
     switch (sortField) {
       case "date": {
@@ -358,14 +333,60 @@ const SortedFeedsList: FC<{
     }
   }, [feeds, sortDirection, sortField])
 
-  return sortedFeedIds.map((feedId) => (
-    <FeedListItem
-      id={feedId}
-      key={feedId}
-      selected={selectedFeeds.has(feedId)}
-      onSelect={onSelect}
-    />
-  ))
+  const rowVirtualizer = useVirtualizer({
+    count: sortedFeedIds.length,
+    getScrollElement: () => scrollContainerElement,
+    estimateSize: () => 44, // Estimated height of each feed item (h-10 = 40px + 4px gap)
+    overscan: 5,
+  })
+
+  // Track visible feeds for analytics prefetching
+  const virtualItems = rowVirtualizer.getVirtualItems()
+  const visibleFeedIds = useMemo(() => {
+    const feedIds: string[] = []
+    virtualItems.forEach((item) => {
+      const feedId = sortedFeedIds[item.index]
+      if (feedId) {
+        feedIds.push(feedId)
+      }
+    })
+    return feedIds
+  }, [virtualItems, sortedFeedIds])
+
+  usePrefetchFeedAnalytics(visibleFeedIds)
+
+  return (
+    <div
+      className="space-y-1"
+      style={{
+        height: `${rowVirtualizer.getTotalSize()}px`,
+        width: "100%",
+        position: "relative",
+      }}
+    >
+      {virtualItems.map((virtualRow) => {
+        const feedId = sortedFeedIds[virtualRow.index]
+        if (!feedId) return null
+
+        return (
+          <div
+            key={virtualRow.key}
+            data-index={virtualRow.index}
+            ref={rowVirtualizer.measureElement}
+            style={{
+              position: "absolute",
+              top: 0,
+              left: 0,
+              width: "100%",
+              transform: `translateY(${virtualRow.start}px)`,
+            }}
+          >
+            <FeedListItem id={feedId} selected={selectedFeeds.has(feedId)} onSelect={onSelect} />
+          </div>
+        )
+      })}
+    </div>
+  )
 }
 
 const ViewSelector: FC<{ selectedFeeds: Set<string> }> = ({ selectedFeeds }) => {
@@ -373,7 +394,7 @@ const ViewSelector: FC<{ selectedFeeds: Set<string> }> = ({ selectedFeeds }) => 
   const { t: tCommon } = useTranslation("common")
   const { mutate: batchUpdateSubscription } = useBatchUpdateSubscription()
   const { ask } = useDialog()
-  return views.map((view) => {
+  return getViewList().map((view) => {
     return (
       <DropdownMenuItem
         key={view.view}
@@ -420,7 +441,7 @@ const FeedListItem = memo(
         role="button"
         tabIndex={-1}
         className={clsx(
-          "hover:bg-material-medium grid h-10 w-full items-center gap-4 rounded px-1",
+          "grid h-10 w-full items-center gap-4 rounded px-1 hover:bg-material-medium",
           "content-visibility-auto contain-intrinsic-size-[auto_2.5rem]",
           GRID_COLS_CLASSNAME,
         )}
@@ -430,12 +451,12 @@ const FeedListItem = memo(
           <Checkbox checked={selected} onCheckedChange={(checked) => onSelect(id, !!checked)} />
         </div>
         <div className="flex min-w-0 items-center gap-1">
-          <FeedIcon feed={feed} size={16} />
+          <FeedIcon target={feed} size={16} />
           <div className="flex min-w-0 flex-col">
             {feed?.errorAt ? (
               <Tooltip>
                 <TooltipTrigger>
-                  <EllipsisHorizontalTextWithTooltip className="text-red font-medium leading-4">
+                  <EllipsisHorizontalTextWithTooltip className="font-medium leading-4 text-red">
                     {subscription.title || feed?.title}
                   </EllipsisHorizontalTextWithTooltip>
                 </TooltipTrigger>
@@ -446,21 +467,21 @@ const FeedListItem = memo(
                 </TooltipPortal>
               </Tooltip>
             ) : (
-              <EllipsisHorizontalTextWithTooltip className="text-text font-medium leading-4">
+              <EllipsisHorizontalTextWithTooltip className="font-medium leading-4 text-text">
                 {subscription.title || feed?.title}
               </EllipsisHorizontalTextWithTooltip>
             )}
             {isCustomizeName && (
-              <EllipsisHorizontalTextWithTooltip className="text-text-secondary text-left text-sm">
+              <EllipsisHorizontalTextWithTooltip className="text-left text-sm text-text-secondary">
                 {feed?.title}
               </EllipsisHorizontalTextWithTooltip>
             )}
           </div>
         </div>
 
-        <div className="text-text flex items-center gap-1 text-sm opacity-80">
-          {views.find((v) => v.view === subscription.view)!.icon}
-          <span>{tCommon(views.find((v) => v.view === subscription.view)!.name)}</span>
+        <div className="flex items-center gap-1 text-sm text-text opacity-80">
+          {getView(subscription.view)!.icon}
+          <span>{tCommon(getView(subscription.view)!.name)}</span>
         </div>
         {!!subscription.createdAt && (
           <div className="whitespace-nowrap pr-1 text-center text-sm">
@@ -471,7 +492,7 @@ const FeedListItem = memo(
           {feed?.subscriptionCount ? (
             <Tooltip>
               <TooltipTrigger asChild>
-                <div className="text-text-secondary flex items-center justify-center gap-1">
+                <div className="flex items-center justify-center gap-1 text-text-secondary">
                   <i className="i-mgc-user-3-cute-re" />
                   <span className="tabular-nums">{formatNumber(feed.subscriptionCount)}</span>
                 </div>
@@ -489,7 +510,7 @@ const FeedListItem = memo(
             <div className="flex justify-center gap-1">
               <Tooltip>
                 <TooltipTrigger asChild>
-                  <div className="text-text-secondary flex items-center justify-center gap-1">
+                  <div className="flex items-center justify-center gap-1 text-text-secondary">
                     <i className="i-mgc-safety-certificate-cute-re" />
                     <span className="tabular-nums">
                       {Math.round(feed.updatesPerWeek)}
@@ -541,7 +562,7 @@ const FeedClaimedSection = () => {
         {claimedList.isLoading ? (
           <LoadingCircle size="large" className="center h-36" />
         ) : !claimedList.data?.length ? (
-          <div className="text-text-secondary mt-36 w-full text-center text-sm">
+          <div className="mt-36 w-full text-center text-sm text-text-secondary">
             <p>{t("feeds.noFeeds")}</p>
           </div>
         ) : null}
@@ -570,7 +591,7 @@ const FeedClaimedSection = () => {
                         href={UrlBuilder.shareFeed(row.feed.id)}
                         className="flex items-center"
                       >
-                        <FeedIcon fallback feed={row.feed} size={16} />
+                        <FeedIcon fallback target={row.feed} size={16} />
                         <EllipsisHorizontalTextWithTooltip className="inline-block max-w-[200px] truncate">
                           {row.feed.title}
                         </EllipsisHorizontalTextWithTooltip>

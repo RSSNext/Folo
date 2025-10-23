@@ -11,7 +11,7 @@ const PageErrorFallback: FC<AppErrorFallbackProps> = (props) => {
   const { message, stack } = parseError(props.error)
   useResetErrorWhenRouteChange(props.resetError)
   return (
-    <div className="bg-theme-background pointer-events-auto flex w-full flex-col items-center justify-center rounded-md p-2">
+    <div className="pointer-events-auto flex w-full flex-col items-center justify-center rounded-md bg-theme-background p-2">
       <div className="m-auto max-w-prose text-center">
         <div className="mb-4">
           <i className="i-mgc-bug-cute-re text-4xl text-red-500" />

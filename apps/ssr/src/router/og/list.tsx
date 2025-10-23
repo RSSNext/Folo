@@ -1,13 +1,12 @@
 import { getFeedIconSrc } from "@follow/components/utils/icon.js"
+import type { FollowClient } from "@follow-app/client-sdk"
 import * as React from "react"
 
-import type { ApiClient } from "~/lib/api-client"
-import { renderToImage } from "~/lib/og/render-to-image"
-
+import { renderToImage } from "../../lib/og/render-to-image"
 import { getImageBase64, OGAvatar, OGCanvas } from "./__base"
 
-export const renderListOG = async (apiClient: ApiClient, listId: string) => {
-  const feed = await apiClient.lists.$get({ query: { listId } }).catch(() => null)
+export const renderListOG = async (apiClient: FollowClient, listId: string) => {
+  const feed = await apiClient.api.lists.get({ listId }).catch(() => null)
 
   if (!feed?.data.list) {
     throw 404

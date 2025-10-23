@@ -4,6 +4,7 @@ import { RelativeTime } from "@follow/components/ui/datetime/index.js"
 import { useIsSubscribed } from "@follow/store/subscription/hooks"
 import { getBackgroundGradient } from "@follow/utils/color"
 import { cn, formatNumber } from "@follow/utils/utils"
+import type { DiscoveryItem, TrendingFeedItem } from "@follow-app/client-sdk"
 import type { FC } from "react"
 import { memo } from "react"
 import { useTranslation } from "react-i18next"
@@ -13,82 +14,77 @@ import { Media } from "~/components/ui/media/Media"
 import { useFollow } from "~/hooks/biz/useFollow"
 import { navigateEntry } from "~/hooks/biz/useNavigateEntry"
 import { useFeedSafeUrl } from "~/hooks/common/useFeedSafeUrl"
-import type { apiClient } from "~/lib/api-fetch"
 
 import { FollowSummary } from "../feed/feed-summary"
 
-export type DiscoverItem = Awaited<ReturnType<typeof apiClient.discover.$post>>["data"][number]
-
-export const FeedCardActions: FC<{
-  item: DiscoverItem
-  onSuccess?: (item: DiscoverItem) => void
+export function FeedCardActions<T extends TrendingFeedItem | DiscoveryItem>({
+  item,
+  onSuccess,
+  isSubscribed,
+  followButtonVariant,
+  followedButtonVariant = "ghost",
+  followButtonClassName,
+  followedButtonClassName,
+}: {
+  item: T
+  onSuccess?: (item: T) => void
   isSubscribed: boolean
   followButtonVariant?: "ghost" | "outline"
   followedButtonVariant?: "ghost" | "outline"
   followButtonClassName?: string
   followedButtonClassName?: string
-}> = memo(
-  ({
-    item,
-    onSuccess,
-    isSubscribed,
-    followButtonVariant,
-    followedButtonVariant = "ghost",
-    followButtonClassName,
-    followedButtonClassName,
-  }) => {
-    const follow = useFollow()
-    const { t } = useTranslation()
-    const location = useLocation()
+}) {
+  const follow = useFollow()
+  const { t } = useTranslation()
+  const location = useLocation()
 
-    return (
-      <div className="flex items-center justify-between gap-2">
-        {!isSubscribed && (
-          <Button
-            variant="ghost"
-            disabled={!item.feed?.id}
-            buttonClassName="rounded-lg px-3 font-medium text-zinc-500 transition-colors hover:bg-zinc-100 hover:text-zinc-900 dark:text-zinc-400 dark:hover:bg-zinc-800/80 dark:hover:text-white"
-            onClick={() => {
-              if (!item.feed?.id) return
-              navigateEntry({
-                feedId: item.feed.id,
-                view: item.analytics?.view ?? 0,
-                backPath: location.pathname,
-              })
-            }}
-          >
-            {t("discover.preview")}
-          </Button>
-        )}
+  return (
+    <div className="flex items-center justify-between gap-2">
+      {!isSubscribed && (
         <Button
-          variant={isSubscribed ? followedButtonVariant : followButtonVariant}
+          variant="ghost"
+          disabled={!item.feed?.id}
+          buttonClassName="rounded-lg px-3 font-medium text-zinc-500 transition-colors hover:bg-zinc-100 hover:text-zinc-900 dark:text-zinc-400 dark:hover:bg-zinc-800/80 dark:hover:text-white"
           onClick={() => {
-            follow({
-              isList: !!item.list?.id,
-              id: item.list?.id || item.feed?.id,
-              url: item.feed?.url,
-              onSuccess() {
-                onSuccess?.(item)
-              },
+            if (!item.feed?.id) return
+            navigateEntry({
+              feedId: item.feed.id,
+              view: item.analytics?.view ?? 0,
+              backPath: `${location.pathname}${location.search}`,
             })
           }}
-          buttonClassName={cn(
-            "relative overflow-hidden rounded-lg font-medium transition-all duration-300",
-            isSubscribed ? "border-zinc-200/80 px-3 text-zinc-400 dark:border-zinc-700/80" : "",
-            isSubscribed ? followedButtonClassName : followButtonClassName,
-          )}
         >
-          {isSubscribed ? t("feed.actions.followed") : t("feed.actions.follow")}
+          {t("discover.preview")}
         </Button>
-      </div>
-    )
-  },
-)
+      )}
+      <Button
+        variant={isSubscribed ? followedButtonVariant : followButtonVariant}
+        onClick={() => {
+          follow({
+            isList: "list" in item && !!item.list?.id,
+            id: ("list" in item && item.list?.id) || item.feed?.id,
+            url: item.feed?.url,
+            onSuccess() {
+              onSuccess?.(item)
+            },
+          })
+        }}
+        buttonClassName={cn(
+          "relative overflow-hidden rounded-lg font-medium transition-all duration-300",
+          isSubscribed ? "border-zinc-200/80 px-3 text-zinc-400 dark:border-zinc-700/80" : "",
+          isSubscribed ? followedButtonClassName : followButtonClassName,
+        )}
+      >
+        {isSubscribed ? t("feed.actions.followed") : t("feed.actions.follow")}
+      </Button>
+    </div>
+  )
+}
 
 interface DiscoverFeedCardProps {
-  item: DiscoverItem
-  onSuccess?: (item: DiscoverItem) => void
-  onUnSubscribed?: (item: DiscoverItem) => void
+  item: DiscoveryItem
+  onSuccess?: (item: DiscoveryItem) => void
+  onUnSubscribed?: (item: DiscoveryItem) => void
 
   className?: string
 }
@@ -108,7 +104,7 @@ export const DiscoverFeedCard: FC<DiscoverFeedCardProps> = memo(
         )}
       >
         <CardHeader className="p-4 pb-2">
-          <FollowSummary feed={item.feed || item.list!} docs={item.docs} />
+          <FollowSummary feed={(item.feed || item.list!) as any} docs={item.docs} />
         </CardHeader>
         <CardContent className="px-4">
           {item.docs ? (
@@ -131,7 +127,7 @@ export const DiscoverFeedCard: FC<DiscoverFeedCardProps> = memo(
                 </div>
               )}
               <div className="mt-4 flex justify-between gap-4">
-                <div className="text-text-secondary flex items-center gap-3 text-sm">
+                <div className="flex items-center gap-3 text-sm text-text-secondary">
                   {!!item.analytics?.subscriptionCount && (
                     <div className="flex items-center gap-1.5">
                       <i className="i-mgc-user-3-cute-re" />
@@ -170,8 +166,8 @@ export const DiscoverFeedCard: FC<DiscoverFeedCardProps> = memo(
   },
 )
 
-const SearchResultContent: FC<{
-  entry: NonUndefined<DiscoverItem["entries"]>[number]
+export const SearchResultContent: FC<{
+  entry: NonUndefined<DiscoveryItem["entries"]>[number]
 }> = memo(({ entry }) => {
   const safeUrl = useFeedSafeUrl(entry.id)
   return (
@@ -205,7 +201,7 @@ const SearchResultContent: FC<{
 })
 
 const FeedCardMediaThumbnail: FC<{
-  entry: NonUndefined<DiscoverItem["entries"]>[number]
+  entry: NonUndefined<DiscoveryItem["entries"]>[number]
 }> = ({ entry }) => {
   const [, , , bgAccent, bgAccentLight] = getBackgroundGradient(
     entry.title || entry.url || "Untitled",

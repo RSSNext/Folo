@@ -106,17 +106,16 @@ export const ProfileSettingForm = ({
         handle: values.handle,
         image: values.image,
         name: values.name,
-        // @ts-expect-error
         bio: values.bio,
         website: values.website,
-        socialLinks: values.socialLinks,
+        socialLinks: values.socialLinks as any,
       }),
     onError: (error) => {
       toastFetchError(error)
     },
     onSuccess: (_, variables) => {
       if (user && variables) {
-        userActions.updateWhoami({ ...variables })
+        userActions.updateWhoami({ ...variables } as any)
       }
       toast(t("profile.updateSuccess"), {
         duration: 3000,
@@ -287,7 +286,7 @@ export const ProfileSettingForm = ({
                   rounded="lg"
                   {...field}
                   placeholder={t("profile.profile.bio_placeholder")}
-                  className="placeholder:text-text-tertiary min-h-[80px] resize-none p-3 text-sm"
+                  className="min-h-[80px] resize-none p-3 text-sm placeholder:text-text-tertiary"
                 />
               </FormControl>
               <FormMessage />
@@ -326,17 +325,17 @@ export const ProfileSettingForm = ({
                     <FormControl>
                       <label
                         className={cn(
-                          "ring-accent/20 focus-within:border-accent/80 h-9 duration-200 focus-within:outline-none focus-within:ring-2",
-                          "border-border bg-theme-background hover:bg-accent/5 flex cursor-text items-center gap-2 rounded-lg border px-3 py-2 transition-colors dark:bg-zinc-700/[0.15]",
+                          "h-9 ring-accent/20 duration-200 focus-within:border-accent/80 focus-within:outline-none focus-within:ring-2",
+                          "flex cursor-text items-center gap-2 rounded-lg border border-border bg-theme-background px-3 py-2 transition-colors hover:bg-accent/5 dark:bg-zinc-700/[0.15]",
                         )}
                       >
                         <i
-                          className={`${socialIconClassNames[social]} text-text-secondary shrink-0 text-base`}
+                          className={`${socialIconClassNames[social]} shrink-0 text-base text-text-secondary`}
                         />
                         <input
                           {...field}
                           placeholder={socialCopyMap[social]}
-                          className="placeholder:text-text-tertiary flex-1 border-0 !bg-transparent p-0 text-sm focus-visible:ring-0"
+                          className="flex-1 border-0 !bg-transparent p-0 text-sm placeholder:text-text-tertiary focus-visible:ring-0"
                         />
                       </label>
                     </FormControl>

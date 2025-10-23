@@ -1,39 +1,33 @@
 import { isBizId } from "@follow/utils/utils"
 
-import { callNotFound } from "~/lib/not-found"
-import type { MetaTag } from "~/meta-handler"
-import { defineMetadata } from "~/meta-handler"
+import { callNotFound } from "../../../../../../src/lib/not-found"
+import type { MetaTag } from "../../../../../../src/meta-handler"
+import { defineMetadata } from "../../../../../../src/meta-handler"
 
 export default defineMetadata(async ({ params, apiClient, origin }): Promise<MetaTag[]> => {
-  const mayBeUserId = params.id
+  const userIdOrHandle = params.id
 
-  const handle = isBizId(mayBeUserId || "")
-    ? mayBeUserId
-    : `${mayBeUserId}`.startsWith("@")
-      ? `${mayBeUserId}`.slice(1)
-      : mayBeUserId
+  let handle = undefined
+  let userId = undefined
 
-  const profileRes = await apiClient.profiles
-    .$get({
-      query: {
-        handle,
-        id: isBizId(handle || "") ? handle : undefined,
-      },
-    })
+  if (!userIdOrHandle) {
+    throw new Error("User ID or handle is required")
+  }
+
+  if (isBizId(userIdOrHandle || "")) {
+    userId = userIdOrHandle
+  } else {
+    handle = userIdOrHandle.startsWith("@") ? userIdOrHandle.slice(1) : userIdOrHandle
+  }
+
+  const profileRes = await apiClient.api.profiles
+    .getProfile({ id: userId, handle })
     .catch(callNotFound)
 
   const realUserId = profileRes.data.id
   const [subscriptionsRes, listsRes] = await Promise.allSettled([
-    profileRes.data.id
-      ? apiClient.subscriptions.$get({
-          query: { userId: realUserId },
-        })
-      : Promise.reject(),
-    profileRes.data.id
-      ? apiClient.lists.list.$get({
-          query: { userId: realUserId },
-        })
-      : Promise.reject(),
+    profileRes.data.id ? apiClient.api.subscriptions.get({ userId: realUserId }) : Promise.reject(),
+    profileRes.data.id ? apiClient.api.lists.list({ userId: realUserId }) : Promise.reject(),
   ])
 
   const isSubscriptionsResolved = subscriptionsRes.status === "fulfilled"
@@ -58,24 +52,24 @@ export default defineMetadata(async ({ params, apiClient, origin }): Promise<Met
     {
       type: "openGraph",
       title: `${name} on ${APP_NAME}`,
-      image: `${origin}/og/user/${mayBeUserId}`,
+      image: `${origin}/og/user/${userIdOrHandle}`,
     },
     {
       type: "hydrate",
       data: profileRes.data,
-      path: apiClient.profiles.$url({ query: { id: mayBeUserId } }).pathname,
-      key: `profiles.$get,query:id=${mayBeUserId}`,
+
+      key: `profiles.$get,query:id=${userIdOrHandle}`,
     },
     isSubscriptionsResolved && {
       type: "hydrate",
       data: subscriptionsRes.value.data,
-      path: apiClient.subscriptions.$url({ query: { userId: realUserId } }).pathname,
+
       key: `subscriptions.$get,query:userId=${realUserId}`,
     },
     isListsResolved && {
       type: "hydrate",
       data: listsRes.value.data,
-      path: apiClient.lists.list.$url({ query: { userId: realUserId } }).pathname,
+
       key: `lists.list.$get,query:userId=${realUserId}`,
     },
   ].filter((v) => !!v) as MetaTag[]

@@ -20,10 +20,10 @@ export const CommandActionButton = ({
   return (
     <ActionButton
       ref={ref}
-      icon={icon}
+      {...rest}
       tooltip={label.title}
       tooltipDescription={label.description}
-      {...rest}
+      icon={icon}
     />
   )
 }

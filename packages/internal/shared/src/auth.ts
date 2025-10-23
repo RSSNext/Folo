@@ -1,11 +1,16 @@
 import { stripeClient } from "@better-auth/stripe/client"
 import { IN_ELECTRON } from "@follow/shared"
-import type { authPlugins } from "@follow/shared/hono"
+import type { AuthPlugins } from "@follow-app/client-sdk/auth"
 import type { BetterAuthClientPlugin, BetterFetchOption } from "better-auth/client"
-import { inferAdditionalFields, twoFactorClient } from "better-auth/client/plugins"
-import { createAuthClient } from "better-auth/react"
+import { createAuthClient } from "better-auth/client"
+import {
+  inferAdditionalFields,
+  lastLoginMethodClient,
+  twoFactorClient,
+} from "better-auth/client/plugins"
 
-type AuthPlugin = (typeof authPlugins)[number]
+type AuthPlugin = AuthPlugins[number]
+
 export const baseAuthPlugins = [
   {
     id: "customGetProviders",
@@ -23,16 +28,30 @@ export const baseAuthPlugins = [
     id: "oneTimeToken",
     $InferServerPlugin: {} as Extract<AuthPlugin, { id: "oneTimeToken" }>,
   },
+
   inferAdditionalFields({
     user: {
       handle: {
         type: "string",
         required: false,
       },
+      bio: {
+        type: "string",
+        required: false,
+      },
+      website: {
+        type: "string",
+        required: false,
+      },
+      socialLinks: {
+        type: "json",
+        required: false,
+      },
     },
   }),
   twoFactorClient(),
   stripeClient({ subscription: true }),
+  lastLoginMethodClient(),
 ] satisfies BetterAuthClientPlugin[]
 
 export type AuthClient<ExtraPlugins extends BetterAuthClientPlugin[] = []> = ReturnType<
@@ -40,6 +59,7 @@ export type AuthClient<ExtraPlugins extends BetterAuthClientPlugin[] = []> = Ret
     plugins: [...typeof baseAuthPlugins, ...ExtraPlugins]
   }>
 >
+
 export type LoginRuntime = "browser" | "app"
 
 export class Auth {

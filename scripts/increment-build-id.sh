@@ -15,9 +15,7 @@ while [[ $# -gt 0 ]]; do
     shift
     ;;
   *)
-    echo "Unknown option $1"
-    echo "Usage: $0 [-f|--force]"
-    exit 1
+    shift
     ;;
   esac
 done

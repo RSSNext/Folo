@@ -105,6 +105,9 @@ export const ContentFontSelector = () => {
           }}
           size="sm"
           triggerClassName="w-48"
+          renderItem={({ label, value }) => {
+            return <span style={{ fontFamily: value }}>{label}</span>
+          }}
           items={[
             isCustomFont && { label: readerFontFamily, value: readerFontFamily },
             ...data,
@@ -134,7 +137,15 @@ export const UIFontSelector = () => {
       if (item.value === DEFAULT_FONT) {
         return <span>{t("appearance.global_font.default")}</span>
       }
-      return <span>{item.value}</span>
+      return (
+        <span
+          style={{
+            fontFamily: item.value,
+          }}
+        >
+          {item.value}
+        </span>
+      )
     },
     [t],
   )

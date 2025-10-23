@@ -151,12 +151,13 @@ export const ScrollArea = ({
   asChild = false,
   onUpdateMaxScroll,
   focusable = true,
-
+  scrollbarProps,
   viewportProps,
 }: React.PropsWithChildren & {
   rootClassName?: string
   viewportClassName?: string
   scrollbarClassName?: string
+  scrollbarProps?: React.ComponentProps<typeof ScrollAreaBase.Scrollbar>
   flex?: boolean
   mask?: boolean
   onScroll?: (e: React.UIEvent<HTMLDivElement>) => void
@@ -189,7 +190,7 @@ export const ScrollArea = ({
           >
             {children}
           </Viewport>
-          <Scrollbar orientation={orientation} className={scrollbarClassName} />
+          <Scrollbar orientation={orientation} className={scrollbarClassName} {...scrollbarProps} />
         </Root>
       </ScrollElementEventsContext>
     </ScrollElementContext>

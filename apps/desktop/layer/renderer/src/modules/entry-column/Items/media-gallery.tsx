@@ -84,7 +84,7 @@ export const MediaGallery = ({
               type={media.type}
               previewImageUrl={media.preview_image_url}
               blurhash={media.blurhash}
-              className="data-[state=loading]:!bg-material-ultra-thick size-28 shrink-0 cursor-zoom-in"
+              className="size-28 shrink-0 cursor-zoom-in data-[state=loading]:!bg-material-ultra-thick"
               loading="lazy"
               proxy={proxySize}
               onClick={(e) => {

@@ -1,5 +1,5 @@
-import type { AuthUser } from "@follow/shared/hono"
 import { tracker } from "@follow/tracker"
+import type { AuthUser } from "@follow-app/client-sdk"
 
 export const setIntegrationIdentify = async (user: AuthUser) => {
   tracker.identify(user)

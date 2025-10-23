@@ -51,7 +51,7 @@ const LoadingContainer: FC<{
     <FullWindowOverlay>
       {/* Pressable to prevent the overlay from being clicked */}
       <Pressable style={StyleSheet.absoluteFillObject} className="items-center justify-center">
-        <View className="border-non-opaque-separator relative overflow-hidden rounded-2xl border p-12">
+        <View className="relative overflow-hidden rounded-2xl border border-non-opaque-separator p-12">
           <BlurView style={StyleSheet.absoluteFillObject} tint="systemChromeMaterialDark" />
           {Platform.OS === "ios" ? (
             <PlatformActivityIndicator size={"large"} color="white" />
@@ -62,7 +62,7 @@ const LoadingContainer: FC<{
         {showCancelButton && (
           <View className="absolute inset-x-0 bottom-24 flex-row justify-center">
             <TouchableOpacity onPress={cancel}>
-              <View className="border-opaque-separator rounded-full border-2 p-2">
+              <View className="rounded-full border-2 border-opaque-separator p-2">
                 <CloseCuteReIcon color="gray" height={20} width={20} />
               </View>
             </TouchableOpacity>

@@ -54,7 +54,7 @@ export const UsageProgressRing = ({
           style={{ transition: "stroke-dashoffset 0.3s ease" }}
         />
       </svg>
-      <div className="text-text absolute inset-0 grid place-items-center text-sm font-medium">
+      <div className="absolute inset-0 grid place-items-center text-sm font-medium text-text">
         {Math.round(normalized)}%
       </div>
     </div>

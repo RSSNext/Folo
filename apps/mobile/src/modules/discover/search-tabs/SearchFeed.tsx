@@ -3,7 +3,7 @@ import { useAtomValue } from "jotai"
 import { useWindowDimensions, View } from "react-native"
 
 import { Text } from "@/src/components/ui/typography/Text"
-import { apiClient } from "@/src/lib/api-fetch"
+import { followClient } from "@/src/lib/api-client"
 
 import { useSearchPageContext } from "../ctx"
 import { ItemSeparator } from "./__base"
@@ -17,12 +17,7 @@ export const SearchFeed = () => {
   const { data, isLoading } = useQuery({
     queryKey: ["searchFeed", searchValue],
     queryFn: () => {
-      return apiClient.discover.$post({
-        json: {
-          keyword: searchValue,
-          target: "feeds",
-        },
-      })
+      return followClient.api.discover.discover({ keyword: searchValue, target: "feeds" })
     },
     enabled: !!searchValue,
   })
@@ -35,7 +30,7 @@ export const SearchFeed = () => {
         width: windowWidth,
       }}
     >
-      <Text className="text-text/60 px-6 pt-4">Found {data.data?.length} feeds</Text>
+      <Text className="px-6 pt-4 text-text/60">Found {data.data?.length} feeds</Text>
       <View>
         {data.data?.map((item) => (
           <View key={item.feed?.id || Math.random().toString()}>

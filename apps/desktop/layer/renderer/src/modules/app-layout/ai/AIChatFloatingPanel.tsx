@@ -95,9 +95,10 @@ const AIChatFloatingPanelInner: FC<AIChatFloatingPanelProps> = ({ className, ...
           }}
         >
           <Focusable
+            data-hide-in-print
             scope={HotkeyScope.AIChat}
             className={cn(
-              "bg-background relative flex h-full flex-col overflow-hidden rounded-lg border shadow-xl",
+              "relative flex h-full flex-col overflow-hidden rounded-lg border bg-background shadow-xl",
               className,
             )}
             {...props}

@@ -12,8 +12,6 @@ import { useRegisterNavigationScrollView } from "@/src/components/layouts/tabbar
 import { getDefaultHeaderHeight } from "@/src/components/layouts/utils"
 import { SafeNavigationScrollView } from "@/src/components/layouts/views/SafeNavigationScrollView"
 import { Text } from "@/src/components/ui/typography/Text"
-import { Settings1CuteFiIcon } from "@/src/icons/settings_1_cute_fi"
-import { Settings1CuteReIcon } from "@/src/icons/settings_1_cute_re"
 import type { TabScreenComponent } from "@/src/lib/navigation/bottom-tab/types"
 import { useNavigation } from "@/src/lib/navigation/hooks"
 import { ScreenItemContext } from "@/src/lib/navigation/ScreenItemContext"
@@ -33,7 +31,7 @@ export function Settings() {
         style={{
           paddingTop: insets.top,
         }}
-        className="bg-system-grouped-background flex-1"
+        className="flex-1 bg-system-grouped-background"
         contentViewClassName="-mt-24 pb-8"
       >
         <UserHeaderBanner
@@ -52,7 +50,11 @@ const SettingHeader = ({ scrollY }: { scrollY: SharedValue<number> }) => {
   const { t } = useTranslation()
   const frame = useSafeAreaFrame()
   const insets = useSafeAreaInsets()
-  const headerHeight = getDefaultHeaderHeight(frame, false, insets.top)
+  const headerHeight = getDefaultHeaderHeight({
+    landscape: frame.width > frame.height,
+    modalPresentation: false,
+    topInset: insets.top,
+  })
   const styles = useAnimatedStyle(() => {
     return {
       opacity: scrollY.value / 100,
@@ -70,11 +72,11 @@ const SettingHeader = ({ scrollY }: { scrollY: SharedValue<number> }) => {
     >
       <Animated.View
         pointerEvents="none"
-        className="border-b-hairline border-opaque-separator absolute inset-x-0 top-0 flex-row items-center px-4 pb-2"
+        className="border-b-hairline absolute inset-x-0 top-0 flex-row items-center border-opaque-separator px-4 pb-2"
         style={styles}
       >
         <BlurEffect />
-        <Text className="text-label flex-1 text-center text-[17px] font-semibold">
+        <Text className="flex-1 text-center text-[17px] font-semibold text-label">
           {t("tabs.settings")}
         </Text>
       </Animated.View>
@@ -92,12 +94,8 @@ const EditProfileButton = () => {
       onPress={() => navigation.pushControllerView(EditProfileScreen)}
     >
       <BlurEffect />
-      <Text className="text-label text-sm font-medium">{t("words.edit")}</Text>
+      <Text className="text-sm font-medium text-label">{t("words.edit")}</Text>
     </TouchableOpacity>
   )
 }
 export const SettingsTabScreen: TabScreenComponent = Settings
-SettingsTabScreen.tabBarIcon = ({ focused, color }) => {
-  const Icon = !focused ? Settings1CuteReIcon : Settings1CuteFiIcon
-  return <Icon color={color} width={24} height={24} />
-}

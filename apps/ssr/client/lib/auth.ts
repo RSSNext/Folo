@@ -21,6 +21,7 @@ export const {
   changePassword,
   forgetPassword,
   getAccountInfo,
+  getLastUsedLoginMethod,
   getProviders,
   getSession,
   linkSocial,

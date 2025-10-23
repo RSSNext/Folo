@@ -13,7 +13,7 @@ export function NoLoginInfo({ target }: { target: "timeline" | "subscriptions" }
       onPress={() => destination.Login()}
     >
       <Logo width={40} height={40} color={accentColor} />
-      <Text className="text-secondary-label text-xl">{`Sign in to see your ${target}`}</Text>
+      <Text className="text-xl text-secondary-label">{`Sign in to see your ${target}`}</Text>
     </Pressable>
   )
 }

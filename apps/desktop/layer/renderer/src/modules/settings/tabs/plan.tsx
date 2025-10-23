@@ -63,65 +63,12 @@ const PLAN_CONFIGS: Plan[] = [
   },
 ]
 
-// AI Token configuration types
-interface AITokenPlan {
-  id: string
-  title: string
-  price: number
-  tokens: number
-  isPopular?: boolean
-}
-const AI_TOKEN_IN_PRO_PLAN = 15_000_000
-const AI_TOKEN_IN_PRO_PLAN_PER_DOLLAR = AI_TOKEN_IN_PRO_PLAN / 10
-// AI Token configurations
-const AI_TOKEN_CONFIGS: AITokenPlan[] = [
-  {
-    id: "folo ai token ($5)",
-    title: "Folo AI Token ($5)",
-    price: 5,
-    tokens: AI_TOKEN_IN_PRO_PLAN_PER_DOLLAR * 5,
-    isPopular: false,
-  },
-  {
-    id: "folo ai token ($10)",
-    title: "Folo AI Token ($10)",
-    price: 10,
-    tokens: AI_TOKEN_IN_PRO_PLAN_PER_DOLLAR * 10,
-    isPopular: true,
-  },
-  {
-    id: "folo ai token ($20)",
-    title: "Folo AI Token ($20)",
-    price: 20,
-    tokens: AI_TOKEN_IN_PRO_PLAN_PER_DOLLAR * 20,
-    isPopular: false,
-  },
-]
-
 const useUpgradePlan = ({ plan, annual }: { plan: string; annual: boolean }) => {
   return useMutation({
     mutationFn: async () => {
       const res = await subscription.upgrade({
         plan,
         annual,
-        successUrl: IN_ELECTRON ? `${DEEPLINK_SCHEME}refresh` : env.VITE_WEB_URL,
-        cancelUrl: env.VITE_WEB_URL,
-        disableRedirect: IN_ELECTRON,
-      })
-      if (IN_ELECTRON && res.data?.url) {
-        window.open(res.data.url, "_blank")
-      }
-    },
-  })
-}
-
-const usePurchaseAITokens = ({ tokenPlan }: { tokenPlan: string }) => {
-  return useMutation({
-    mutationFn: async () => {
-      // TODO: Implement AI token purchase API call
-      const res = await subscription.upgrade({
-        plan: tokenPlan,
-        annual: false,
         successUrl: IN_ELECTRON ? `${DEEPLINK_SCHEME}refresh` : env.VITE_WEB_URL,
         cancelUrl: env.VITE_WEB_URL,
         disableRedirect: IN_ELECTRON,
@@ -195,7 +142,7 @@ export function SettingPlan() {
 
       {/* Billing Period Toggle */}
       <div className="flex justify-center">
-        <div className="bg-fill-secondary inline-flex rounded-lg p-1">
+        <div className="inline-flex rounded-lg bg-fill-secondary p-1">
           <button
             type="button"
             onClick={() => setBillingPeriod("monthly")}
@@ -219,14 +166,14 @@ export function SettingPlan() {
             )}
           >
             <span>Yearly</span>
-            <span className="text-green ml-2 text-xs font-medium">Save 25%</span>
+            <span className="ml-2 text-xs font-medium text-green">Save 25%</span>
           </button>
         </div>
       </div>
 
       {/* Plans Grid */}
       <div className="@container">
-        <div className="@md:grid-cols-2 @xl:grid-cols-3 grid grid-cols-1 gap-4">
+        <div className="grid grid-cols-1 gap-4 @md:grid-cols-2 @xl:grid-cols-3">
           {PLAN_CONFIGS.map((plan) => (
             <PlanCard
               key={plan.id}
@@ -237,24 +184,6 @@ export function SettingPlan() {
               isCurrentPlan={role === plan.role}
             />
           ))}
-        </div>
-      </div>
-
-      {/* AI Tokens Section */}
-      <div className="space-y-4">
-        <div className="border-fill-secondary border-b pb-2">
-          <h2 className="text-lg font-semibold">AI Tokens</h2>
-          <p className="text-text-secondary text-sm">
-            Purchase additional AI tokens for enhanced content processing and analysis.
-          </p>
-        </div>
-
-        <div className="@container">
-          <div className="@md:grid-cols-2 @xl:grid-cols-3 grid grid-cols-1 gap-4">
-            {AI_TOKEN_CONFIGS.map((tokenPlan) => (
-              <AITokenCard key={tokenPlan.id} tokenPlan={tokenPlan} />
-            ))}
-          </div>
         </div>
       </div>
     </section>
@@ -327,14 +256,14 @@ const PlanCard = ({
           ? "border-accent"
           : "border-fill-tertiary bg-background hover:border-fill-secondary",
         isCurrentPlan &&
-          "ring-accent ring-offset-background from-accent/5 shadow-accent/10 bg-gradient-to-b to-transparent shadow-lg ring-2 ring-offset-2",
+          "bg-gradient-to-b from-accent/5 to-transparent shadow-lg shadow-accent/10 ring-2 ring-accent ring-offset-2 ring-offset-background",
         plan.isComingSoon && "opacity-75",
       )}
     >
       <PlanBadges isPopular={plan.isPopular || false} />
 
-      <div className="@md:p-5 flex h-full flex-col p-4">
-        <div className="@md:space-y-4 flex-1 space-y-3">
+      <div className="flex h-full flex-col p-4 @md:p-5">
+        <div className="flex-1 space-y-3 @md:space-y-4">
           <PlanHeader
             title={plan.title}
             price={formattedPrice}
@@ -371,7 +300,7 @@ const PlanCard = ({
       </div>
 
       {/* Subtle gradient line at bottom */}
-      <div className="via-fill-tertiary absolute inset-x-0 bottom-0 h-px bg-gradient-to-r from-transparent to-transparent" />
+      <div className="absolute inset-x-0 bottom-0 h-px bg-gradient-to-r from-transparent via-fill-tertiary to-transparent" />
     </div>
   )
 }
@@ -381,7 +310,7 @@ const PlanBadges = ({ isPopular }: { isPopular: boolean }) => (
   <>
     {isPopular && (
       <div className="absolute -top-px right-4 z-10">
-        <div className="from-accent to-accent/80 text-caption rounded-b-lg bg-gradient-to-r px-1.5 py-1 font-medium text-white shadow-sm">
+        <div className="rounded-b-lg bg-gradient-to-r from-accent to-accent/80 px-1.5 py-1 text-caption font-medium text-white shadow-sm">
           Most Popular
         </div>
       </div>
@@ -407,12 +336,12 @@ const PlanHeader = ({
   savingsPercentage: number
 }) => (
   <div className="space-y-1">
-    <h3 className="@md:text-lg text-base font-semibold">{title}</h3>
+    <h3 className="text-base font-semibold @md:text-lg">{title}</h3>
     <div className="flex items-baseline gap-1">
       <span className="text-xl font-bold">{price}</span>
-      {period && <span className="text-text-secondary @md:text-sm text-xs">/{period}</span>}
+      {period && <span className="text-xs text-text-secondary @md:text-sm">/{period}</span>}
     </div>
-    <div className="@md:h-8 h-7 space-y-0.5">
+    <div className="h-7 space-y-0.5 @md:h-8">
       {billingPeriod === "yearly" &&
         monthlyPrice > 0 &&
         yearlyPrice > 0 &&
@@ -421,11 +350,11 @@ const PlanHeader = ({
             <span className="text-text-tertiary line-through">
               ${(monthlyPrice * 12).toFixed(0)}/year
             </span>
-            <span className="text-green font-medium">Save {savingsPercentage}%</span>
+            <span className="font-medium text-green">Save {savingsPercentage}%</span>
           </div>
         )}
       {billingPeriod === "yearly" && monthlyPrice > 0 && yearlyPrice > 0 && (
-        <div className="text-text-secondary text-xs">
+        <div className="text-xs text-text-secondary">
           ${(yearlyPrice / 12).toFixed(1)}/month billed annually
         </div>
       )}
@@ -434,13 +363,13 @@ const PlanHeader = ({
 )
 
 const PlanFeatures = ({ features }: { features: string[] }) => (
-  <div className="@md:space-y-2 space-y-1.5">
+  <div className="space-y-1.5 @md:space-y-2">
     {features.map((feature) => (
-      <div key={feature} className="@md:gap-3 flex items-start gap-2.5">
-        <div className="bg-green/10 @md:size-4 mt-0.5 flex size-3.5 items-center justify-center rounded-full">
-          <i className="i-mgc-check-cute-re text-green @md:text-xs text-[10px]" />
+      <div key={feature} className="flex items-start gap-2.5 @md:gap-3">
+        <div className="mt-0.5 flex size-3.5 items-center justify-center rounded-full bg-green/10 @md:size-4">
+          <i className="i-mgc-check-cute-re text-[10px] text-green @md:text-xs" />
         </div>
-        <span className="@md:text-sm text-xs leading-relaxed">{feature}</span>
+        <span className="text-xs leading-relaxed @md:text-sm">{feature}</span>
       </div>
     ))}
   </div>
@@ -531,97 +460,6 @@ const PlanAction = ({
           Cancel
         </Button>
       )}
-    </div>
-  )
-}
-
-// AI Token Card Component
-interface AITokenCardProps {
-  tokenPlan: AITokenPlan
-}
-
-const AITokenCard = ({ tokenPlan }: AITokenCardProps) => {
-  const purchaseTokensMutation = usePurchaseAITokens({
-    tokenPlan: tokenPlan.id,
-  })
-
-  // Format tokens display
-  const formatTokens = (tokens: number): string => {
-    if (tokens >= 1000000) {
-      return `${(tokens / 1000000).toFixed(1)}M`
-    }
-    if (tokens >= 1000) {
-      return `${(tokens / 1000).toFixed(0)}K`
-    }
-    return tokens.toString()
-  }
-
-  return (
-    <div
-      className={cn(
-        "group relative flex h-full flex-col overflow-hidden rounded-xl border transition-all duration-200",
-        tokenPlan.isPopular
-          ? "border-accent"
-          : "border-fill-tertiary bg-background hover:border-fill-secondary",
-      )}
-    >
-      {/* Popular badge */}
-      {tokenPlan.isPopular && (
-        <div className="absolute -top-px right-4 z-10">
-          <div className="from-accent to-accent/80 text-caption rounded-b-lg bg-gradient-to-r px-1.5 py-1 font-medium text-white shadow-sm">
-            Most Popular
-          </div>
-        </div>
-      )}
-
-      <div className="@md:p-5 flex h-full flex-col p-4">
-        <div className="@md:space-y-4 flex-1 space-y-3">
-          {/* Header */}
-          <div className="space-y-1">
-            <h3 className="@md:text-lg text-base font-semibold">{tokenPlan.title}</h3>
-            <div className="flex items-baseline gap-1">
-              <span className="text-xl font-bold">${tokenPlan.price}</span>
-              <span className="text-text-secondary @md:text-sm text-xs">one-time</span>
-            </div>
-          </div>
-
-          {/* Token amount */}
-          <div className="@md:space-y-2 space-y-1.5">
-            <div className="@md:gap-3 flex items-start gap-2.5">
-              <div className="bg-blue/10 @md:size-4 mt-0.5 flex size-3.5 items-center justify-center rounded-full">
-                <i className="i-mgc-ai-cute-re text-blue @md:text-xs text-[10px]" />
-              </div>
-              <span className="@md:text-sm text-xs leading-relaxed">
-                {formatTokens(tokenPlan.tokens)} AI tokens
-              </span>
-            </div>
-            <div className="@md:gap-3 flex items-start gap-2.5">
-              <div className="bg-green/10 @md:size-4 mt-0.5 flex size-3.5 items-center justify-center rounded-full">
-                <i className="i-mgc-check-cute-re text-green @md:text-xs text-[10px]" />
-              </div>
-              <span className="@md:text-sm text-xs leading-relaxed">Never expires</span>
-            </div>
-          </div>
-          <div />
-        </div>
-
-        {/* Purchase button */}
-        <Button
-          variant={tokenPlan.isPopular ? undefined : "outline"}
-          buttonClassName={
-            tokenPlan.isPopular
-              ? "w-full h-9 @md:h-10 text-xs @md:text-sm bg-gradient-to-r from-accent to-accent/80 hover:from-accent/90 hover:to-accent/70"
-              : "w-full h-9 @md:h-10 text-xs @md:text-sm"
-          }
-          onClick={() => purchaseTokensMutation.mutate()}
-          isLoading={purchaseTokensMutation.isPending}
-        >
-          Purchase
-        </Button>
-      </div>
-
-      {/* Subtle gradient line at bottom */}
-      <div className="via-fill-tertiary absolute inset-x-0 bottom-0 h-px bg-gradient-to-r from-transparent to-transparent" />
     </div>
   )
 }

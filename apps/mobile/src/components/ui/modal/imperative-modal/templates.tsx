@@ -28,7 +28,7 @@ export function Header({
   return (
     <View
       className={cn(
-        "border-non-opaque-separator relative min-h-[50px] w-full flex-row items-center justify-center rounded-t-md border-b py-2",
+        "relative min-h-[50px] w-full flex-row items-center justify-center rounded-t-md border-b border-non-opaque-separator py-2",
         className,
       )}
       style={style}
@@ -74,13 +74,13 @@ export function Input({
   return (
     <View
       className={cn(
-        "bg-tertiary-system-fill relative h-10 flex-row items-center rounded-lg px-3",
+        "relative h-10 flex-row items-center rounded-lg bg-tertiary-system-fill px-3",
         wrapperClassName,
       )}
       style={wrapperStyle}
     >
       <TextInput
-        className={cn("text-label w-full flex-1 p-0", className)}
+        className={cn("w-full flex-1 p-0 text-label", className)}
         clearButtonMode="always"
         style={style}
         value={value}

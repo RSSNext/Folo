@@ -2,7 +2,6 @@ import { FeedIcon } from "@client/components/ui/feed-icon"
 import { openInFollowApp } from "@client/lib/helper"
 import { UrlBuilder } from "@client/lib/url-builder"
 import { useListsByUserId } from "@client/query/list"
-import type { SubscriptionResult, User } from "@client/query/users"
 import { useUserQuery, useUserSubscriptionsQuery } from "@client/query/users"
 import { FollowIcon } from "@follow/components/icons/follow.jsx"
 import { Avatar, AvatarFallback, AvatarImage } from "@follow/components/ui/avatar/index.jsx"
@@ -10,11 +9,13 @@ import { Button } from "@follow/components/ui/button/index.jsx"
 import { LoadingCircle } from "@follow/components/ui/loading/index.jsx"
 import { useTitle } from "@follow/hooks"
 import { cn } from "@follow/utils/utils"
+import type { SubscriptionWithFeed, UserProfile } from "@follow-app/client-sdk"
+import * as React from "react"
 import { Fragment, memo, useState } from "react"
 import { useParams } from "react-router"
 
 interface FeedCardProps {
-  subscription: SubscriptionResult[number]
+  subscription: SubscriptionWithFeed
   feedId: string
   view: number
 }
@@ -24,7 +25,7 @@ const FeedCard = memo<FeedCardProps>(({ subscription, feedId, view }) => {
     return null
   }
   return (
-    <div className="border-border/40 hover:border-border group/card relative overflow-hidden rounded-xl border p-5 transition-all duration-200 hover:shadow-sm hover:shadow-black/5 dark:hover:shadow-white/5">
+    <div className="group/card relative overflow-hidden rounded-xl border border-border/40 p-5 transition-all duration-200 hover:border-border hover:shadow-sm hover:shadow-black/5 dark:hover:shadow-white/5">
       {/* Feed Content */}
       <a
         className="block"
@@ -34,10 +35,18 @@ const FeedCard = memo<FeedCardProps>(({ subscription, feedId, view }) => {
       >
         <div className="flex items-start space-x-4">
           <div className="shrink-0">
-            <FeedIcon fallback feed={subscription.feeds} size={44} className="rounded-lg" />
+            <FeedIcon
+              fallback
+              target={{
+                type: "feed",
+                ...subscription.feeds,
+              }}
+              size={44}
+              className="rounded-lg"
+            />
           </div>
           <div className="min-w-0 flex-1">
-            <h3 className="group-hover/card:text-accent truncate font-medium text-zinc-900 transition-colors dark:text-zinc-100">
+            <h3 className="truncate font-medium text-zinc-900 transition-colors group-hover/card:text-accent dark:text-zinc-100">
               {subscription.feeds?.title}
             </h3>
             {subscription.feeds?.description && (
@@ -96,7 +105,7 @@ export const Component = () => {
   )
 }
 
-const UserHero = ({ user }: { user: User }) => {
+const UserHero = ({ user }: { user: UserProfile }) => {
   const subscriptions = useUserSubscriptionsQuery(user.id)
 
   const totalFeeds = Object.values(subscriptions.data || {}).reduce(
@@ -108,8 +117,8 @@ const UserHero = ({ user }: { user: User }) => {
     <div className="mx-auto max-w-4xl px-6 py-8 text-center sm:px-8 sm:py-12">
       {/* Avatar */}
       <div className="mb-6">
-        <Avatar className="border-border mx-auto size-20 border">
-          <AvatarImage className="animate-in fade-in-0 duration-300" src={user.image!} />
+        <Avatar className="mx-auto size-20 border border-border">
+          <AvatarImage className="duration-300 animate-in fade-in-0" src={user.image!} />
           <AvatarFallback className="bg-zinc-100 text-xl font-medium text-zinc-600 dark:bg-neutral-800 dark:text-neutral-400">
             {user.name?.slice(0, 2)}
           </AvatarFallback>
@@ -118,7 +127,7 @@ const UserHero = ({ user }: { user: User }) => {
 
       {/* User Info */}
       <div className="space-y-3">
-        <h1 className="text-3xl font-semibold text-zinc-900 sm:text-4xl dark:text-zinc-100">
+        <h1 className="text-3xl font-semibold text-zinc-900 dark:text-zinc-100 sm:text-4xl">
           {user.name}
         </h1>
         {user.handle && (
@@ -127,7 +136,7 @@ const UserHero = ({ user }: { user: User }) => {
 
         {/* Stats */}
         <div className="!mt-8 flex justify-center">
-          <div className="divide-material-ultra-thick flex items-center divide-x">
+          <div className="flex items-center divide-x divide-material-ultra-thick">
             <div className="px-4 text-center">
               <div className="text-xl font-semibold text-zinc-900 dark:text-zinc-100">
                 {totalFeeds}
@@ -165,7 +174,7 @@ const Lists = ({ userId }: { userId: string }) => {
 
   return (
     <div className="mx-auto w-full max-w-6xl px-6 pb-16 sm:px-8">
-      <div className="border-border/40 mb-6 border-b pb-3">
+      <div className="mb-6 border-b border-border/40 pb-3">
         <h2 className="text-xl font-medium text-zinc-900 dark:text-zinc-100">Created Lists</h2>
       </div>
       <div data-testid="profile-lists" className="flex flex-col space-y-4">
@@ -175,19 +184,19 @@ const Lists = ({ userId }: { userId: string }) => {
             href={UrlBuilder.shareList(list.id)}
             target="_blank"
             rel="noopener noreferrer"
-            className="group/card border-border/40 relative flex items-start space-x-4 overflow-hidden border-b pb-4 last:border-0"
+            className="group/card relative flex items-start space-x-4 overflow-hidden border-b border-border/40 pb-4 last:border-0"
           >
             <FeedIcon
               fallback
-              feed={list}
-              className="mask-squircle mask border-border border"
+              target={list}
+              className="mask-squircle mask border border-border"
               size={80}
               noMargin
             />
 
             <div className="flex min-w-0 flex-1 flex-col justify-between self-stretch">
               <div>
-                <h3 className="group-hover/card:text-accent truncate font-medium text-zinc-900 transition-colors dark:text-zinc-100">
+                <h3 className="truncate font-medium text-zinc-900 transition-colors group-hover/card:text-accent dark:text-zinc-100">
                   {list.title}
                 </h3>
                 {list.description && (
@@ -268,7 +277,7 @@ const Subscriptions = ({ userId }: { userId: string }) => {
                 {/* Category Header */}
                 <button
                   type="button"
-                  className="border-border/40 hover:border-border/60 mb-6 flex w-full items-center justify-between border-b pb-3 text-left transition-colors"
+                  className="mb-6 flex w-full items-center justify-between border-b border-border/40 pb-3 text-left transition-colors hover:border-border/60"
                   onClick={() => toggleCategory(category)}
                 >
                   <h2 className="text-xl font-medium text-zinc-900 dark:text-zinc-100">

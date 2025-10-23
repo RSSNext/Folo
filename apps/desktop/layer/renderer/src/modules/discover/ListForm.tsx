@@ -12,7 +12,6 @@ import { Input } from "@follow/components/ui/input/index.js"
 import { LoadingCircle } from "@follow/components/ui/loading/index.jsx"
 import { Switch } from "@follow/components/ui/switch/index.jsx"
 import { FeedViewType } from "@follow/constants"
-import type { ListAnalyticsModel } from "@follow/models/types"
 import { useListById, usePrefetchListById } from "@follow/store/list/hooks"
 import type { ListModel } from "@follow/store/list/types"
 import { useSubscriptionByFeedId } from "@follow/store/subscription/hooks"
@@ -20,6 +19,7 @@ import { subscriptionSyncService } from "@follow/store/subscription/store"
 import { whoami } from "@follow/store/user/getters"
 import { tracker } from "@follow/tracker"
 import { cn } from "@follow/utils/utils"
+import type { ListAnalyticsSchema } from "@follow-app/client-sdk"
 import { zodResolver } from "@hookform/resolvers/zod"
 import { useMutation } from "@tanstack/react-query"
 import { useEffect, useRef } from "react"
@@ -176,7 +176,7 @@ const ListInnerForm = ({
     hideFromTimeline?: boolean | null
   }
   list: ListModel
-  analytics?: ListAnalyticsModel
+  analytics?: ListAnalyticsSchema
   isLoading: boolean
 }) => {
   const subscription = useSubscriptionByFeedId(id || "") || subscriptionData
@@ -261,8 +261,6 @@ const ListInnerForm = ({
         feed={{
           ...list,
           fee: list.fee || 0,
-          createdAt: null,
-          updatedAt: null,
         }}
         analytics={analytics}
         showAnalytics
@@ -351,7 +349,7 @@ const ListInnerForm = ({
                 {t("feed_form.fee")}{" "}
                 <div className="ml-2 flex scale-[0.85] items-center gap-1">
                   {list.fee}
-                  <i className="i-mgc-power text-folo size-4" />
+                  <i className="i-mgc-power size-4 text-folo" />
                 </div>
               </FormLabel>
               <FormDescription className="mt-0.5">{t("feed_form.fee_description")}</FormDescription>

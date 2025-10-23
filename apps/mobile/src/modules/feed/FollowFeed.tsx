@@ -5,7 +5,7 @@ import { subscriptionSyncService } from "@follow/store/subscription/store"
 import type { SubscriptionForm } from "@follow/store/subscription/types"
 import { formatNumber } from "@follow/utils"
 import { zodResolver } from "@hookform/resolvers/zod"
-import { useEffect, useState } from "react"
+import { useEffect, useMemo, useState } from "react"
 import { Controller, useForm } from "react-hook-form"
 import { useTranslation } from "react-i18next"
 import { View } from "react-native"
@@ -82,26 +82,24 @@ function FollowImpl(props: { feedId: string; defaultView?: FeedViewType }) {
   const feed = useFeedById(id)
   const subscription = useSubscriptionByFeedId(feed?.id)
   const isSubscribed = !!subscription
-  const form = useForm<z.infer<typeof formSchema>>({
-    resolver: zodResolver(formSchema),
-    defaultValues: {
+  const defaultFormValues = useMemo(() => {
+    return {
       category: subscription?.category ?? undefined,
       isPrivate: subscription?.isPrivate ?? undefined,
       hideFromTimeline: subscription?.hideFromTimeline ?? undefined,
       title: subscription?.title ?? undefined,
       view: subscription?.view ?? defaultView,
-    },
+    }
+  }, [subscription, defaultView])
+  const form = useForm<z.infer<typeof formSchema>>({
+    resolver: zodResolver(formSchema),
+    defaultValues: defaultFormValues,
   })
   useEffect(() => {
-    form.reset(
-      {
-        view: subscription?.view ?? defaultView,
-      },
-      {
-        keepDirtyValues: true,
-      },
-    )
-  }, [defaultView, form, subscription?.view])
+    form.reset(defaultFormValues, {
+      keepDirtyValues: true,
+    })
+  }, [defaultFormValues, form])
   const [isLoading, setIsLoading] = useState(false)
   const navigate = useNavigation()
   const canDismiss = useCanDismiss()
@@ -172,19 +170,11 @@ function FollowImpl(props: { feedId: string; defaultView?: FeedViewType }) {
     >
       {/* Group 1 */}
       <GroupedInsetListCard>
-        <FeedSummary
-          className="px-5 py-4"
-          item={{
-            feed: {
-              ...feed,
-              type: "feed",
-            },
-          }}
-        >
+        <FeedSummary className="px-5 py-4" feed={feed}>
           <View className="ml-11 mt-2 flex-row items-center gap-3 opacity-60">
             <View className="flex-row items-center gap-1">
               <User3CuteReIcon color={textLabelColor} width={12} height={12} />
-              <Text className="text-text text-sm">
+              <Text className="text-sm text-text">
                 {typeof feed.subscriptionCount === "number" ? (
                   formatNumber(feed.subscriptionCount || 0)
                 ) : (
@@ -198,7 +188,7 @@ function FollowImpl(props: { feedId: string; defaultView?: FeedViewType }) {
             {feed.updatesPerWeek ? (
               <View className="flex-row items-center gap-1">
                 <SafetyCertificateCuteReIcon color={textLabelColor} width={12} height={12} />
-                <Text className="text-text text-sm">
+                <Text className="text-sm text-text">
                   {tCommon("feed.entry_week", {
                     count: feed.updatesPerWeek,
                   })}
@@ -207,7 +197,7 @@ function FollowImpl(props: { feedId: string; defaultView?: FeedViewType }) {
             ) : feed.latestEntryPublishedAt ? (
               <View className="flex-row items-center gap-1">
                 <SafeAlertCuteReIcon color={textLabelColor} width={12} height={12} />
-                <Text className="text-text text-sm">
+                <Text className="text-sm text-text">
                   {tCommon("feed.updated_at")}
                   <RelativeDateTime date={feed.latestEntryPublishedAt} />
                 </Text>

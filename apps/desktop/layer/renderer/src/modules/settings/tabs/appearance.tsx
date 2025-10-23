@@ -1,6 +1,7 @@
 import { useMobile } from "@follow/components/hooks/useMobile.js"
 import { Button } from "@follow/components/ui/button/index.js"
 import { LoadingCircle } from "@follow/components/ui/loading/index.js"
+import { Popover, PopoverContent, PopoverTrigger } from "@follow/components/ui/popover/index.js"
 import { ResponsiveSelect } from "@follow/components/ui/select/responsive.js"
 import { useIsDark, useThemeAtomValue } from "@follow/hooks"
 import { ELECTRON_BUILD, IN_ELECTRON } from "@follow/shared/constants"
@@ -8,16 +9,24 @@ import { getAccentColorValue } from "@follow/shared/settings/constants"
 import type { AccentColor } from "@follow/shared/settings/interface"
 import { capitalizeFirstLetter, getOS } from "@follow/utils/utils"
 import dayjs from "dayjs"
+import { throttle } from "es-toolkit/compat"
 import { useForceUpdate } from "motion/react"
-import { lazy, Suspense, useEffect, useRef, useState } from "react"
+import {
+  lazy,
+  startTransition,
+  Suspense,
+  useCallback,
+  useEffect,
+  useMemo,
+  useRef,
+  useState,
+} from "react"
 import { useTranslation } from "react-i18next"
 import { bundledThemesInfo } from "shiki/themes"
 
 import {
   getUISettings,
   setUISetting,
-  useIsZenMode,
-  useToggleZenMode,
   useUISettingKey,
   useUISettingSelector,
   useUISettingValue,
@@ -26,13 +35,9 @@ import { useCurrentModal, useModalStack } from "~/components/ui/modal/stacked/ho
 import { useSetTheme } from "~/hooks/common"
 import { useShowCustomizeToolbarModal } from "~/modules/customize-toolbar/modal"
 
+import { useShowTimelineTabsSettingsModal } from "../../subscription-column/TimelineTabsSettingsModal"
 import { SETTING_MODAL_ID } from "../constants"
-import {
-  SettingActionItem,
-  SettingDescription,
-  SettingSwitch,
-  SettingTabbedSegment,
-} from "../control"
+import { SettingActionItem, SettingDescription, SettingTabbedSegment } from "../control"
 import { createDefineSettingItem } from "../helper/builder"
 import { createSettingBuilder } from "../helper/setting-builder"
 import {
@@ -64,7 +69,6 @@ export const SettingAppearance = () => {
           GlobalFontSize,
           UIFontSelector,
           ContentLineHeight,
-          CustomizeToolbar,
 
           {
             type: "title",
@@ -84,8 +88,6 @@ export const SettingAppearance = () => {
             type: "title",
             value: t("appearance.reading_view.title"),
           },
-
-          !isMobile && ZenMode,
 
           {
             type: "title",
@@ -169,6 +171,8 @@ export const SettingAppearance = () => {
           },
 
           CustomCSS,
+          CustomizeToolbar,
+          CustomizeSubscriptionTabs,
         ]}
       />
     </div>
@@ -314,23 +318,6 @@ export const AppThemeSegment = () => {
         setTheme(value as "light" | "dark" | "system")
       }}
     />
-  )
-}
-
-const ZenMode = () => {
-  const { t } = useTranslation("settings")
-  const isZenMode = useIsZenMode()
-  const toggleZenMode = useToggleZenMode()
-  return (
-    <SettingItemGroup>
-      <SettingSwitch
-        checked={isZenMode}
-        className="mt-4"
-        onCheckedChange={toggleZenMode}
-        label={t("appearance.zen_mode.label")}
-      />
-      <SettingDescription>{t("appearance.zen_mode.description_simple")}</SettingDescription>
-    </SettingItemGroup>
   )
 }
 
@@ -555,8 +542,28 @@ const CustomizeToolbar = () => {
         action={async () => {
           showModal()
         }}
-        buttonText={t("appearance.customize_toolbar.label")}
+        buttonText={t("appearance.words.customize")}
       />
+      <SettingDescription className="-mt-3">
+        {t("appearance.customize_toolbar.description")}
+      </SettingDescription>
+    </SettingItemGroup>
+  )
+}
+
+const CustomizeSubscriptionTabs = () => {
+  const { t } = useTranslation("settings")
+  const showTabsModal = useShowTimelineTabsSettingsModal()
+  return (
+    <SettingItemGroup>
+      <SettingActionItem
+        label={t("appearance.customize_sub_tabs.label")}
+        action={() => showTabsModal()}
+        buttonText={t("appearance.words.customize")}
+      />
+      <SettingDescription className="-mt-3">
+        {t("appearance.customize_sub_tabs.description")}
+      </SettingDescription>
     </SettingItemGroup>
   )
 }
@@ -572,10 +579,227 @@ const ACCENT_COLORS: AccentColor[] = [
   "gray",
 ]
 
+const CustomColorPicker = ({
+  value,
+  onChange,
+}: {
+  value: string
+  onChange: (color: string) => void
+}) => {
+  const barRef = useRef<HTMLDivElement>(null)
+  const indicatorRef = useRef<HTMLDivElement>(null)
+  const barRectRef = useRef<DOMRect | null>(null)
+  const rafIdRef = useRef<number | null>(null)
+  const [isDragging, setIsDragging] = useState(false)
+
+  // Predefined color stops for smooth gradient
+  const colorStops = useMemo(
+    () => [
+      { pos: 0, color: "#3B82F6" },
+      { pos: 0.2, color: "#8B5CF6" },
+      { pos: 0.35, color: "#EC4899" },
+      { pos: 0.5, color: "#EF4444" },
+      { pos: 0.65, color: "#F59E0B" },
+      { pos: 0.8, color: "#FBBF24" },
+      { pos: 1, color: "#10B981" },
+    ],
+    [],
+  )
+
+  // Interpolate color based on position
+  const getColorAtPosition = useCallback(
+    (position: number) => {
+      const pos = Math.max(0, Math.min(1, position))
+
+      // Find the two color stops to interpolate between
+      let lowerStop = colorStops[0]
+      let upperStop = colorStops.at(-1)
+
+      if (!lowerStop || !upperStop) return "#3B82F6"
+
+      for (let i = 0; i < colorStops.length - 1; i++) {
+        const currentStop = colorStops[i]
+        const nextStop = colorStops[i + 1]
+        if (currentStop && nextStop && pos >= currentStop.pos && pos <= nextStop.pos) {
+          lowerStop = currentStop
+          upperStop = nextStop
+          break
+        }
+      }
+
+      // Calculate interpolation factor
+      const range = upperStop.pos - lowerStop.pos
+      const factor = range === 0 ? 0 : (pos - lowerStop.pos) / range
+
+      // Parse hex colors
+      const parseHex = (hex: string) => ({
+        r: Number.parseInt(hex.slice(1, 3), 16),
+        g: Number.parseInt(hex.slice(3, 5), 16),
+        b: Number.parseInt(hex.slice(5, 7), 16),
+      })
+
+      const color1 = parseHex(lowerStop.color)
+      const color2 = parseHex(upperStop.color)
+
+      // Interpolate RGB values
+      const r = Math.round(color1.r + (color2.r - color1.r) * factor)
+      const g = Math.round(color1.g + (color2.g - color1.g) * factor)
+      const b = Math.round(color1.b + (color2.b - color1.b) * factor)
+
+      return `#${[r, g, b].map((v) => v.toString(16).padStart(2, "0")).join("")}`
+    },
+    [colorStops],
+  )
+
+  const updateFromClientX = useCallback(
+    (clientX: number) => {
+      const rect = barRectRef.current ?? barRef.current?.getBoundingClientRect()
+      if (!rect) return
+
+      const x = Math.max(0, Math.min(rect.width, clientX - rect.left))
+      const position = x / rect.width
+
+      if (indicatorRef.current) {
+        indicatorRef.current.style.left = `${position * 100}%`
+      }
+
+      if (rafIdRef.current == null) {
+        rafIdRef.current = requestAnimationFrame(() => {
+          rafIdRef.current = null
+          const color = getColorAtPosition(position)
+          startTransition(() => {
+            onChange(color)
+          })
+        })
+      }
+    },
+    [getColorAtPosition, onChange],
+  )
+
+  const handlePointerDown = useCallback(
+    (e: React.PointerEvent) => {
+      if (!barRef.current) return
+      setIsDragging(true)
+      barRectRef.current = barRef.current.getBoundingClientRect()
+      ;(e.currentTarget as HTMLElement).setPointerCapture(e.pointerId)
+      updateFromClientX(e.clientX)
+    },
+    [updateFromClientX],
+  )
+
+  const handlePointerMove = useCallback(
+    (e: React.PointerEvent) => {
+      if (!isDragging) return
+      updateFromClientX(e.clientX)
+    },
+    [isDragging, updateFromClientX],
+  )
+
+  const endPointer = useCallback((e?: React.PointerEvent) => {
+    if (e) {
+      try {
+        ;(e.currentTarget as HTMLElement).releasePointerCapture(e.pointerId)
+      } catch {
+        /* ignore release error */
+      }
+    }
+    setIsDragging(false)
+    barRectRef.current = null
+  }, [])
+
+  useEffect(() => {
+    return () => {
+      if (rafIdRef.current != null) cancelAnimationFrame(rafIdRef.current)
+      rafIdRef.current = null
+    }
+  }, [])
+
+  // Calculate position indicator based on current color
+  const getIndicatorPosition = useCallback(() => {
+    if (!value.startsWith("#")) return 50
+
+    // Simple approximation - find closest color stop
+    const parseHex = (hex: string) => ({
+      r: Number.parseInt(hex.slice(1, 3), 16),
+      g: Number.parseInt(hex.slice(3, 5), 16),
+      b: Number.parseInt(hex.slice(5, 7), 16),
+    })
+
+    const currentColor = parseHex(value)
+    let closestPos = 0
+    let minDistance = Number.POSITIVE_INFINITY
+
+    for (let i = 0; i <= 100; i++) {
+      const pos = i / 100
+      const testColor = parseHex(getColorAtPosition(pos))
+      const distance =
+        Math.abs(testColor.r - currentColor.r) +
+        Math.abs(testColor.g - currentColor.g) +
+        Math.abs(testColor.b - currentColor.b)
+
+      if (distance < minDistance) {
+        minDistance = distance
+        closestPos = pos
+      }
+    }
+
+    return closestPos * 100
+  }, [value, getColorAtPosition])
+
+  const gradientStyle = useMemo(
+    () => ({
+      background: `linear-gradient(to right, ${colorStops
+        .map((stop) => `${stop.color} ${stop.pos * 100}%`)
+        .join(", ")})`,
+      touchAction: "none" as const,
+    }),
+    [colorStops],
+  )
+
+  return (
+    <div className="w-[280px]">
+      {/* Color gradient bar */}
+      <div className="relative">
+        <div
+          ref={barRef}
+          className="h-6 w-full cursor-pointer"
+          style={gradientStyle}
+          onPointerDown={handlePointerDown}
+          onPointerMove={handlePointerMove}
+          onPointerUp={endPointer}
+          onPointerCancel={endPointer}
+        />
+        {/* Selection indicator */}
+        <div
+          ref={indicatorRef}
+          className="pointer-events-none absolute top-1/2 size-4 -translate-x-1/2 -translate-y-1/2 rounded-full border-2 border-white bg-white/20 shadow-lg backdrop-blur-sm"
+          style={{
+            left: `${getIndicatorPosition()}%`,
+            willChange: "left",
+          }}
+        />
+      </div>
+    </div>
+  )
+}
+
 const AccentColorSelector = () => {
   const { t } = useTranslation("settings")
   const accentColor = useUISettingKey("accentColor")
   const isDark = useIsDark()
+  const [customColor, setCustomColor] = useState("#5CA9F2")
+  const [isPopoverOpen, setIsPopoverOpen] = useState(false)
+
+  const isCustomColor = !ACCENT_COLORS.includes(accentColor as any)
+
+  const handleCustomColorChange = useMemo(
+    () =>
+      throttle((color: string) => {
+        setCustomColor(color)
+        setUISetting("accentColor", color)
+      }, 120),
+    [],
+  )
   return (
     <SettingItemGroup>
       <div className="mt-4 flex items-center justify-between">
@@ -584,6 +808,7 @@ const AccentColorSelector = () => {
           {ACCENT_COLORS.map((color) => {
             const isSelected = accentColor === color
             const colorValue = getAccentColorValue(color)
+            const bgColor = colorValue ? colorValue[isDark ? "dark" : "light"] : "#5CA9F2"
 
             return (
               <button
@@ -592,7 +817,7 @@ const AccentColorSelector = () => {
                 className="group relative flex size-7 items-center justify-center rounded-full transition-all duration-200 hover:scale-110"
                 onClick={() => setUISetting("accentColor", color)}
                 style={{
-                  backgroundColor: colorValue[isDark ? "dark" : "light"],
+                  backgroundColor: bgColor,
                 }}
               >
                 {/* Selection ring */}
@@ -601,7 +826,7 @@ const AccentColorSelector = () => {
                     className="absolute inset-0 rounded-full ring-2 ring-offset-2 ring-offset-white dark:ring-offset-neutral-900"
                     style={
                       {
-                        "--tw-ring-color": colorValue,
+                        "--tw-ring-color": bgColor,
                       } as React.CSSProperties
                     }
                   />
@@ -609,7 +834,7 @@ const AccentColorSelector = () => {
 
                 {/* Checkmark for selected color */}
                 {isSelected && (
-                  <i className="i-mingcute-check-line text-sm text-white drop-shadow-sm" />
+                  <i className="i-mgc-check-cute-re text-sm text-white drop-shadow-sm" />
                 )}
 
                 {/* Hover effect */}
@@ -617,6 +842,51 @@ const AccentColorSelector = () => {
               </button>
             )
           })}
+
+          {/* Custom color button with popover */}
+          <Popover open={isPopoverOpen} onOpenChange={setIsPopoverOpen}>
+            <PopoverTrigger asChild>
+              <button
+                type="button"
+                className="group relative flex size-7 items-center justify-center rounded-full transition-all duration-200 hover:scale-110"
+                style={{
+                  background: isCustomColor
+                    ? (getAccentColorValue(accentColor)?.[isDark ? "dark" : "light"] ?? "#5CA9F2")
+                    : "linear-gradient(135deg, #667eea 0%, #764ba2 25%, #f093fb 50%, #4facfe 75%, #00f2fe 100%)",
+                }}
+              >
+                {/* Selection ring for custom color */}
+                {isCustomColor && (
+                  <div
+                    className="absolute inset-0 rounded-full ring-2 ring-offset-2 ring-offset-white dark:ring-offset-neutral-900"
+                    style={
+                      {
+                        "--tw-ring-color":
+                          getAccentColorValue(accentColor)?.[isDark ? "dark" : "light"] ??
+                          "#5CA9F2",
+                      } as React.CSSProperties
+                    }
+                  />
+                )}
+
+                {/* Icon */}
+                {isCustomColor ? (
+                  <i className="i-mgc-check-cute-re text-sm text-white drop-shadow-sm" />
+                ) : (
+                  <i className="i-mgc-add-cute-re text-sm text-white drop-shadow-sm" />
+                )}
+
+                {/* Hover effect */}
+                <div className="absolute inset-0 rounded-full bg-white opacity-0 transition-opacity duration-200 group-hover:opacity-20" />
+              </button>
+            </PopoverTrigger>
+            <PopoverContent align="end" className="w-auto p-0">
+              <CustomColorPicker
+                value={isCustomColor ? accentColor : customColor}
+                onChange={handleCustomColorChange}
+              />
+            </PopoverContent>
+          </Popover>
         </div>
       </div>
       <SettingDescription>{t("appearance.accent_color.description")}</SettingDescription>

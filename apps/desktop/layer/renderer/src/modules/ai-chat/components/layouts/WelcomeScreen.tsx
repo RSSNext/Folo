@@ -1,31 +1,26 @@
 import { Folo } from "@follow/components/icons/folo.js"
 import { ScrollArea } from "@follow/components/ui/scroll-area/ScrollArea.js"
 import { clsx } from "@follow/utils"
-import type { EditorState, LexicalEditor } from "lexical"
 import { AnimatePresence, m } from "motion/react"
 import { useTranslation } from "react-i18next"
 
-import { useAISettingValue } from "~/atoms/settings/ai"
 import { AISpline } from "~/modules/ai-chat/components/3d-models/AISpline"
 
 import { useAttachScrollBeyond } from "../../hooks/useAttachScrollBeyond"
 import { useMainEntryId } from "../../hooks/useMainEntryId"
-import { DefaultWelcomeContent, EntrySummaryCard } from "../welcome"
+import { DefaultWelcomeContent, EntryWelcomeContent } from "../welcome"
 
 interface WelcomeScreenProps {
-  onSend: (message: EditorState | string, editor: LexicalEditor | null) => void
   centerInputOnEmpty?: boolean
 }
 
-export const WelcomeScreen = ({ onSend, centerInputOnEmpty }: WelcomeScreenProps) => {
+export const WelcomeScreen = ({ centerInputOnEmpty }: WelcomeScreenProps) => {
   const { t } = useTranslation("ai")
-  const aiSettings = useAISettingValue()
   const mainEntryId = useMainEntryId()
-
-  const hasEntryContext = !!mainEntryId
-  const enabledShortcuts = aiSettings.shortcuts?.filter((shortcut) => shortcut.enabled) || []
+  const hasEntryContext = Boolean(mainEntryId)
 
   const { handleScroll } = useAttachScrollBeyond()
+
   return (
     <ScrollArea
       rootClassName="flex min-h-0 flex-1"
@@ -35,28 +30,11 @@ export const WelcomeScreen = ({ onSend, centerInputOnEmpty }: WelcomeScreenProps
       onScroll={handleScroll}
     >
       <div className="mx-auto flex w-full flex-1 flex-col justify-center space-y-8 pb-52">
-        {/* Header Section - Always Present */}
-        <m.div
-          initial={{ opacity: 0, y: -20 }}
-          animate={{ opacity: 1, y: 0 }}
-          className="space-y-6 text-center"
-        >
-          <div className="mx-auto size-16">
-            <AISpline />
-          </div>
-          <div className="flex flex-col gap-2">
-            <h1 className="text-text flex items-center justify-center gap-2 text-2xl font-semibold">
-              <Folo className="size-11" /> AI
-            </h1>
-            <p className="text-text-secondary text-balance text-sm">
-              {hasEntryContext
-                ? t("welcome_description_contextual", {
-                    defaultValue: "Let's discuss this entry together",
-                  })
-                : t("welcome_description")}
-            </p>
-          </div>
-        </m.div>
+        <DefaultWelcomeHeader
+          description={
+            hasEntryContext ? t("welcome_description_contextual") : t("welcome_description")
+          }
+        />
 
         {/* Dynamic Content Area */}
         <div
@@ -66,14 +44,10 @@ export const WelcomeScreen = ({ onSend, centerInputOnEmpty }: WelcomeScreenProps
           )}
         >
           <AnimatePresence mode="wait">
-            {hasEntryContext ? (
-              <EntrySummaryCard key="entry-summary" entryId={mainEntryId} />
+            {hasEntryContext && mainEntryId ? (
+              <EntryWelcomeContent key="entry-welcome" entryId={mainEntryId} />
             ) : (
-              <DefaultWelcomeContent
-                key="default-welcome"
-                onSend={onSend}
-                shortcuts={enabledShortcuts}
-              />
+              <DefaultWelcomeContent key="default-welcome" />
             )}
           </AnimatePresence>
         </div>
@@ -81,3 +55,22 @@ export const WelcomeScreen = ({ onSend, centerInputOnEmpty }: WelcomeScreenProps
     </ScrollArea>
   )
 }
+
+const DefaultWelcomeHeader = ({ description }: { description: string }) => (
+  <m.div
+    initial={{ opacity: 0, y: -20 }}
+    animate={{ opacity: 1, y: 0 }}
+    className="space-y-6 text-center"
+  >
+    <div className="center">
+      <AISpline />
+    </div>
+    <div className="flex flex-col gap-2">
+      <h1 className="flex items-center justify-center gap-2 text-2xl font-semibold text-text">
+        <Folo className="size-11" /> AI
+      </h1>
+
+      <p className="text-balance text-sm text-text-secondary">{description}</p>
+    </div>
+  </m.div>
+)

@@ -1,10 +1,11 @@
-import { views } from "@follow/constants"
-import type { FeedOrListRespModel } from "@follow/models/types"
+import { getView } from "@follow/constants"
 import type { EntryModel } from "@follow/store/entry/types"
 import { useFeedById, usePrefetchFeed } from "@follow/store/feed/hooks"
+import { feedIconSelector } from "@follow/store/feed/selectors"
 import { useListById, usePrefetchListById } from "@follow/store/list/hooks"
 import { getSubscriptionByFeedId } from "@follow/store/subscription/getter"
 import { useTranslation } from "react-i18next"
+import { useShallow } from "zustand/shallow"
 
 import {
   FEED_COLLECTION_LIST,
@@ -14,21 +15,27 @@ import {
 } from "~/constants"
 import { useRouteParams } from "~/hooks/biz/useRouteParams"
 
+export type PreferredTitleTarget = {
+  type: string
+  id: string
+  title?: Nullable<string>
+  [key: string]: any
+}
 export const getPreferredTitle = (
-  feed?: Pick<FeedOrListRespModel, "type" | "id" | "title"> | null,
+  target?: PreferredTitleTarget,
   entry?: Pick<EntryModel, "authorUrl"> | null,
 ) => {
-  if (!feed?.id) {
-    return feed?.title
+  if (!target?.id) {
+    return target?.title
   }
 
-  if (feed.type === "inbox") {
+  if (target.type === "inbox") {
     if (entry?.authorUrl) return entry.authorUrl.replace(/^mailto:/, "")
-    return feed.title || `${feed.id.slice(0, 1).toUpperCase()}${feed.id.slice(1)}'s Inbox`
+    return target.title || `${target.id.slice(0, 1).toUpperCase()}${target.id.slice(1)}'s Inbox`
   }
 
-  const subscription = getSubscriptionByFeedId(feed.id)
-  return subscription?.title || feed.title
+  const subscription = getSubscriptionByFeedId(target.id)
+  return subscription?.title || target.title
 }
 
 export const useFeedHeaderTitle = () => {
@@ -43,7 +50,9 @@ export const useFeedHeaderTitle = () => {
 
   switch (currentFeedId) {
     case ROUTE_FEED_PENDING: {
-      return t(views.find((v) => v.view === view)!.name, { ns: "common" })
+      return t(getView(view).name, {
+        ns: "common",
+      })
     }
     case FEED_COLLECTION_LIST: {
       return t("words.starred")
@@ -58,4 +67,23 @@ export const useFeedHeaderTitle = () => {
       return feedTitle || listTitle
     }
   }
+}
+
+export const useFeedHeaderIcon = () => {
+  const { feedId: currentFeedId, listId: currentListId } = useRouteParams()
+
+  const feedIcon = useFeedById(currentFeedId, useShallow(feedIconSelector))
+  const listIcon = useListById(
+    currentListId,
+    useShallow((feed) => ({
+      type: feed.type,
+      ownerUserId: feed.ownerUserId,
+      id: feed.id,
+      title: feed.title,
+      url: (feed as any).url || "",
+      image: feed.image,
+    })),
+  )
+
+  return feedIcon || listIcon
 }

@@ -170,53 +170,8 @@ export const aiChatTable = sqliteTable(
       .notNull()
       .default(sql`(unixepoch() * 1000)`),
   }),
-  (table) => ({
-    updatedAtIdx: index("idx_ai_chat_sessions_updated_at").on(table.updatedAt),
-  }),
+  (table) => [index("idx_ai_chat_sessions_updated_at").on(table.updatedAt)],
 )
-
-// Message Part types based on Vercel AI SDK UIMessage parts
-interface TextUIPart {
-  type: "text"
-  text: string
-}
-
-interface ReasoningUIPart {
-  type: "reasoning"
-  reasoning: string
-}
-
-interface ToolInvocationUIPart {
-  type: "tool-invocation"
-  toolInvocation: {
-    state: "partial-call" | "call" | "result"
-    toolCallId: string
-    toolName: string
-    args: any
-    result?: any
-  }
-}
-
-interface SourceUIPart {
-  type: "source"
-  source: {
-    sourceType: "url"
-    id: string
-    url: string
-    title?: string
-  }
-}
-
-interface StepStartUIPart {
-  type: "step-start"
-}
-
-type UIMessagePart =
-  | TextUIPart
-  | ReasoningUIPart
-  | ToolInvocationUIPart
-  | SourceUIPart
-  | StepStartUIPart
 
 // AI Chat Messages Table - Rich text support
 export const aiChatMessagesTable = sqliteTable(
@@ -230,7 +185,10 @@ export const aiChatMessagesTable = sqliteTable(
 
     role: t.text("role").notNull().$type<"user" | "assistant" | "system">(),
 
-    createdAt: t.integer("created_at", { mode: "timestamp_ms" }),
+    createdAt: t
+      .integer("created_at", { mode: "timestamp_ms" })
+      .notNull()
+      .default(sql`(unixepoch() * 1000)`),
     metadata: t.text("metadata", { mode: "json" }).$type<any>(),
 
     status: t
@@ -240,14 +198,13 @@ export const aiChatMessagesTable = sqliteTable(
     finishedAt: t.integer("finished_at", { mode: "timestamp_ms" }),
 
     // Store UIMessage parts for complex assistant responses (tools, reasoning, etc)
-    messageParts: t.text("message_parts", { mode: "json" }).$type<UIMessagePart[]>(),
+    messageParts: t.text("message_parts", { mode: "json" }).$type<unknown[]>(),
   }),
-  (table) => ({
-    chatIdCreatedAtIdx: index("idx_ai_chat_messages_chat_id_created_at").on(
-      table.chatId,
-      table.createdAt,
-    ),
-    statusIdx: index("idx_ai_chat_messages_status").on(table.status),
-    chatIdRoleIdx: index("idx_ai_chat_messages_chat_id_role").on(table.chatId, table.role),
-  }),
+  (table) => [
+    index("idx_ai_chat_messages_chat_id_created_at").on(table.chatId, table.createdAt),
+    index("idx_ai_chat_messages_status").on(table.status),
+    index("idx_ai_chat_messages_chat_id_role").on(table.chatId, table.role),
+  ],
 )
+
+export type AiChatMessagesModel = typeof aiChatMessagesTable.$inferSelect

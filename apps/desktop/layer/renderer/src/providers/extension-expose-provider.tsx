@@ -9,7 +9,7 @@ import { toast } from "sonner"
 
 import { setWindowState } from "~/atoms/app"
 import { getGeneralSettings } from "~/atoms/settings/general"
-import { getUISettings, useToggleZenMode } from "~/atoms/settings/ui"
+import { getUISettings } from "~/atoms/settings/ui"
 import { setUpdaterStatus, useUpdaterStatus } from "~/atoms/updater"
 import { useDialog, useModalStack } from "~/components/ui/modal/stacked/hooks"
 import { useDiscoverRSSHubRouteModal } from "~/hooks/biz/useDiscoverRSSHubRoute"
@@ -18,13 +18,14 @@ import { navigateEntry } from "~/hooks/biz/useNavigateEntry"
 import { oneTimeToken } from "~/lib/auth"
 import { queryClient } from "~/lib/query-client"
 import { usePresentUserProfileModal } from "~/modules/profile/hooks"
+import type { SettingModalOptions } from "~/modules/settings/modal/useSettingModal"
 import { useSettingModal } from "~/modules/settings/modal/useSettingModal"
 import { handleSessionChanges } from "~/queries/auth"
 import { clearDataIfLoginOtherAccount } from "~/store/utils/clear"
 
 declare module "@follow/components/providers/stable-router-provider.js" {
   interface CustomRoute {
-    showSettings: (path?: string) => void
+    showSettings: (options?: SettingModalOptions) => void
   }
 }
 
@@ -117,13 +118,6 @@ export const ExtensionExposeProvider = () => {
       },
     })
   }, [follow, present, presentDiscoverRSSHubRoute, presentUserProfile, t])
-
-  const toggleZenMode = useToggleZenMode()
-  useEffect(() => {
-    registerGlobalContext({
-      zenMode: toggleZenMode,
-    })
-  }, [toggleZenMode])
 
   const dialog = useDialog()
   useEffect(() => {

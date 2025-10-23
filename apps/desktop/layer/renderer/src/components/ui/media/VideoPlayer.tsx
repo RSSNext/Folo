@@ -1,4 +1,3 @@
-"~/components/common/Focusable.js"
 import { Spring } from "@follow/components/constants/spring.js"
 import { ActionButton, MotionButtonBase } from "@follow/components/ui/button/index.js"
 import type { HTMLMediaState } from "@follow/hooks"
@@ -140,7 +139,7 @@ export const VideoPlayer = ({
 
   return (
     <Focusable
-      className="center group relative size-full"
+      className="group center relative size-full"
       ref={wrapperRef}
       scope={HotkeyScope.VideoPlayer}
     >
@@ -231,7 +230,7 @@ const ControlBar = memo(() => {
       dragMomentum={false}
       dragConstraints={{ current: document.documentElement }}
       className={cn(
-        "bg-material-thick backdrop-blur-background border-border absolute inset-x-2 bottom-2 h-8 rounded-2xl border",
+        "absolute inset-x-2 bottom-2 h-8 rounded-2xl border border-border bg-material-thick backdrop-blur-background",
         "flex items-center gap-3 px-3",
         "mx-auto max-w-[80vw]",
       )}

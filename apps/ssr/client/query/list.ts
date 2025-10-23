@@ -1,9 +1,9 @@
-import { apiClient } from "@client/lib/api-fetch"
+import { followClient } from "@client/lib/api-fetch"
 import { getHydrateData } from "@client/lib/helper"
 import { useQuery } from "@tanstack/react-query"
 
 const fetchListById = async (id: string) => {
-  const res = await apiClient.lists.$get({ query: { listId: id } })
+  const res = await followClient.api.lists.get({ listId: id })
   return res.data
 }
 
@@ -18,7 +18,7 @@ export const useList = ({ id }: { id?: string }) =>
   })
 
 const fetchListsByUserId = async (userId: string) => {
-  const res = await apiClient.lists.list.$get({ query: { userId } })
+  const res = await followClient.api.lists.list({ userId })
   return res.data
 }
 

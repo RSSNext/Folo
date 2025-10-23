@@ -14,7 +14,7 @@ export const UserProvider = () => {
 
   useEffect(() => {
     if (!session?.user) return
-    // @ts-expect-error FIXME
+
     setIntegrationIdentify(session.user)
   }, [session?.user])
 

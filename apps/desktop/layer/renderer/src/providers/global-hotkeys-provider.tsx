@@ -15,7 +15,7 @@ import { COMMAND_ID } from "~/modules/command/commands/id"
 import { useRunCommandFn } from "~/modules/command/hooks/use-command"
 import { useCommandBinding, useCommandShortcuts } from "~/modules/command/hooks/use-command-binding"
 
-const useRegisterGlobalHotkeys = () => {
+const useRegisterAppGlobalHotkeys = () => {
   const notInFloatingLayerScope = useGlobalFocusableScopeSelector(
     FocusablePresets.isNotFloatingLayerScope,
   )
@@ -38,14 +38,9 @@ const useRegisterGlobalHotkeys = () => {
     commandId: COMMAND_ID.global.quickSearch,
     when: notInFloatingLayerScope,
   })
-
-  useCommandBinding({
-    commandId: COMMAND_ID.global.toggleAIChat,
-    when: notInFloatingLayerScope,
-  })
 }
 export const GlobalHotkeysProvider = () => {
-  useRegisterGlobalHotkeys()
+  useRegisterAppGlobalHotkeys()
   useEventListener("keydown", (e) => {
     if (e.key === "Tab") {
       nextFrame(() => {
@@ -71,11 +66,6 @@ export const GlobalHotkeysProvider = () => {
       "$mod+Period": (e) => {
         preHandler(e)
         highlightElement(document.activeElement as HTMLElement)
-      },
-      [commandShortcuts[COMMAND_ID.layout.toggleZenMode]]: (e) => {
-        if (!isNormalLayer) return
-        preHandler(e)
-        runCommandFn(COMMAND_ID.layout.toggleZenMode, [])()
       },
     })
   }, [commandShortcuts, runCommandFn, isNormalLayer])

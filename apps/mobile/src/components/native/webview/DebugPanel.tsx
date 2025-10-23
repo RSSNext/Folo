@@ -21,7 +21,7 @@ const SimpleButton = ({ label, onPress }: { label: string; onPress: () => void }
     className="mr-2 rounded bg-gray-200 px-2 py-1 dark:bg-gray-700"
     activeOpacity={0.7}
   >
-    <Text className="text-label text-xs">{label}</Text>
+    <Text className="text-xs text-label">{label}</Text>
   </TouchableOpacity>
 )
 
@@ -67,7 +67,7 @@ export function DebugPanel({ mode, onModeToggle }: DebugPanelProps) {
       {visible && (
         <View className="absolute inset-x-4 bottom-20 rounded-lg bg-white p-3 shadow-lg dark:bg-gray-900">
           <View className="mb-3 flex-row items-center justify-between">
-            <Text className="text-label text-sm font-medium">WebView Debug</Text>
+            <Text className="text-sm font-medium text-label">WebView Debug</Text>
             <TouchableOpacity onPress={() => setVisible(false)}>
               <CloseCuteReIcon width={16} height={16} color="#8E8E93" />
             </TouchableOpacity>

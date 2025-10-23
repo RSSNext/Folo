@@ -38,7 +38,7 @@ export function SocialLogin({
           <TouchableOpacity
             key={key}
             hitSlop={20}
-            className="border-opaque-separator border-hairline flex w-full flex-row items-center justify-center gap-2 rounded-xl py-4 pl-5"
+            className="border-hairline flex w-full flex-row items-center justify-center gap-2 rounded-xl border-opaque-separator py-4 pl-5"
             onPress={async () => {
               if (provider.id === "credential") {
                 onPressEmail()
@@ -88,7 +88,7 @@ export function SocialLogin({
               className="absolute left-9 size-6"
               contentFit="contain"
             />
-            <Text className="text-label text-lg font-semibold">
+            <Text className="text-lg font-semibold text-label">
               {t("login.continueWith", {
                 provider: provider.name,
               })}
@@ -97,7 +97,7 @@ export function SocialLogin({
         )
       })}
       {isRegister && serverConfigs?.REFERRAL_ENABLED && (
-        <View className="border-opaque-separator border-hairline w-full rounded-xl px-6 py-4">
+        <View className="border-hairline w-full rounded-xl border-opaque-separator px-6 py-4">
           <ReferralForm />
         </View>
       )}

@@ -139,8 +139,8 @@ export const CustomIntegrationSection = memo(({ searchQuery }: CustomIntegration
   if (settings.enableCustomIntegration && !customIntegrationsMatchesSearch) {
     return (
       <div className="text-center">
-        <i className="i-mgc-webhook-cute-re text-text-tertiary mb-3 text-2xl" />
-        <p className="text-text-tertiary mb-2 text-sm font-medium">No custom integration found</p>
+        <i className="i-mgc-webhook-cute-re mb-3 text-2xl text-text-tertiary" />
+        <p className="mb-2 text-sm font-medium text-text-tertiary">No custom integration found</p>
       </div>
     )
   }
@@ -210,12 +210,12 @@ const CustomIntegrationsSection = ({
       </div>
 
       {integrations.length === 0 ? (
-        <div className="border-fill-secondary flex flex-col items-center justify-center rounded-lg border-2 border-dashed py-12">
-          <i className="i-mgc-webhook-cute-re text-text-tertiary mb-3 text-2xl" />
-          <p className="text-text-tertiary mb-2 text-sm font-medium">
+        <div className="flex flex-col items-center justify-center rounded-lg border-2 border-dashed border-fill-secondary py-12">
+          <i className="i-mgc-webhook-cute-re mb-3 text-2xl text-text-tertiary" />
+          <p className="mb-2 text-sm font-medium text-text-tertiary">
             {t("integration.custom_integrations.list.empty.title")}
           </p>
-          <p className="text-text-quaternary mb-4 max-w-xs text-center text-xs">
+          <p className="mb-4 max-w-xs text-center text-xs text-text-quaternary">
             {t("integration.custom_integrations.list.empty.description")}
           </p>
           <Button size="sm" onClick={onCreateIntegration} buttonClassName="flex items-center gap-2">
@@ -228,28 +228,28 @@ const CustomIntegrationsSection = ({
           {integrations.map((integration) => (
             <div
               key={integration.id}
-              className="border-fill-secondary flex items-center gap-4 border-b pb-4 last:border-b-0 last:pb-0"
+              className="flex items-center gap-4 border-b border-fill-secondary pb-4 last:border-b-0 last:pb-0"
             >
-              <span className="text-text-secondary inline-flex items-center justify-center">
+              <span className="inline-flex items-center justify-center text-text-secondary">
                 <i className={integration.icon} />
               </span>
               <div className="min-w-0 flex-1">
                 <div className="mb-1 flex items-center gap-2">
-                  <span className="text-text font-medium">{integration.name}</span>
+                  <span className="font-medium text-text">{integration.name}</span>
                   {integration.enabled ? (
-                    <span className="bg-green/10 text-green inline-flex items-center gap-1 rounded-full px-2 py-0.5 text-xs">
+                    <span className="inline-flex items-center gap-1 rounded-full bg-green/10 px-2 py-0.5 text-xs text-green">
                       <i className="i-mingcute-power-line" />
                       <span>{t("integration.status.enabled")}</span>
                     </span>
                   ) : (
-                    <span className="bg-gray/10 text-gray inline-flex items-center gap-1 rounded-full px-2 py-0.5 text-xs">
+                    <span className="inline-flex items-center gap-1 rounded-full bg-gray/10 px-2 py-0.5 text-xs text-gray">
                       <i className="i-mgc-pause-cute-re" />
                       <span>{t("integration.custom_integrations.status.disabled")}</span>
                     </span>
                   )}
                 </div>
-                <p className="text-text-tertiary truncate text-xs">
-                  <span className="bg-fill text-text-secondary mr-2 rounded px-1.5 py-0.5 font-mono text-xs">
+                <p className="truncate text-xs text-text-tertiary">
+                  <span className="mr-2 rounded bg-fill px-1.5 py-0.5 font-mono text-xs text-text-secondary">
                     {integration.type === "url-scheme"
                       ? "URL"
                       : integration.fetchTemplate?.method || "GET"}

@@ -1,18 +1,18 @@
 import { UserRole } from "@follow/constants"
 import type { UserSchema } from "@follow/database/schemas/types"
 import { UserService } from "@follow/database/services/user"
-import type { AuthSession } from "@follow/shared/hono"
+import type { AuthUser } from "@follow-app/client-sdk"
 import { create, indexedResolver, windowScheduler } from "@yornaath/batshit"
 
-import { apiClient, authClient } from "../../context"
+import { api, authClient } from "../../context"
 import type { Hydratable, Resetable } from "../../lib/base"
 import { createImmerSetter, createTransaction, createZustandStore } from "../../lib/helper"
-import { honoMorph } from "../../morph/hono"
+import { apiMorph } from "../../morph/api"
 import type { UserProfileEditable } from "./types"
 
 export type UserModel = UserSchema
 
-export type MeModel = UserModel & {
+export type MeModel = AuthUser & {
   emailVerified?: boolean
   twoFactorEnabled?: boolean | null
 }
@@ -39,9 +39,7 @@ const immerSet = createImmerSetter(useUserStore)
 class UserSyncService {
   private userBatcher = create({
     fetcher: async (userIds: string[]) => {
-      const res = await apiClient().profiles.batch.$post({
-        json: { ids: userIds },
-      })
+      const res = await api().profiles.getBatch({ ids: userIds })
 
       if (res.code === 0) {
         const { whoami } = get()
@@ -66,17 +64,16 @@ class UserSyncService {
   })
 
   async whoami() {
-    const res = (await (apiClient()["better-auth"] as any)[
-      "get-session"
-    ].$get()) as AuthSession | null
+    const res = await api().auth.getSession()
+
     if (res) {
-      const user = honoMorph.toUser(res.user, true)
+      if (!res.user) return res
+      const user = apiMorph.toWhoami(res.user)
       immerSet((state) => {
-        state.whoami = { ...user, emailVerified: res.user.emailVerified }
-        // @ts-expect-error
-        state.role = res.role
-        if (res.roleEndAt) {
-          state.roleEndAt = new Date(res.roleEndAt)
+        state.whoami = { ...user, emailVerified: res.user?.emailVerified ?? false }
+        state.role = res.user?.role as UserRole | null
+        if (res.user?.roleEndAt) {
+          state.roleEndAt = new Date(res.user?.roleEndAt)
         }
       })
       userActions.upsertMany([user])
@@ -95,13 +92,14 @@ class UserSyncService {
     tx.store(() => {
       immerSet((state) => {
         if (!state.whoami) return
-        state.whoami = { ...state.whoami, ...data }
+        state.whoami = { ...state.whoami, ...data } as MeModel
       })
     })
 
     tx.request(async () => {
       await authClient().updateUser({
         ...data,
+        socialLinks: (data.socialLinks || null) as any,
       })
     })
     tx.persist(async () => {
@@ -179,7 +177,7 @@ class UserSyncService {
   }
 
   async applyInvitationCode(code: string) {
-    const res = await apiClient().invitations.use.$post({ json: { code } })
+    const res = await api().invitations.use({ code })
     if (res.code === 0) {
       immerSet((state) => {
         state.role = UserRole.Pro
@@ -192,8 +190,8 @@ class UserSyncService {
   async fetchUser(userId: string | undefined) {
     if (!userId) return null
 
-    // 使用批处理器获取用户
     const user = await this.userBatcher.fetch(userId)
+
     return user || null
   }
 
@@ -226,7 +224,7 @@ class UserActions implements Hydratable, Resetable {
       for (const user of users) {
         state.users[user.id] = user
         if (user.isMe) {
-          state.whoami = { ...user, emailVerified: user.emailVerified ?? false }
+          state.whoami = { ...user, emailVerified: user.emailVerified ?? false } as MeModel
         }
       }
     })

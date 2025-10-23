@@ -10,6 +10,7 @@
 		08804409FAE316B2F4286290 /* Pods_Folo.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 2C9A37CAFE9FFED2FCC141E3 /* Pods_Folo.framework */; };
 		1274C3CE4776411EBE7CEAE8 /* rn-web in Resources */ = {isa = PBXBuildFile; fileRef = B69598E8ACBE445EA3C3DCEE /* rn-web */; };
 		13B07FBF1A68108700A75B9A /* Images.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 13B07FB51A68108700A75B9A /* Images.xcassets */; };
+		1FF55C5B2E818E0C000C84BF /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 1FF55C5A2E818E0C000C84BF /* Assets.xcassets */; };
 		21D47042A21541638A8813FF /* GoogleService-Info.plist in Resources */ = {isa = PBXBuildFile; fileRef = 771F66ABFAD64B3D89ABAB8A /* GoogleService-Info.plist */; };
 		3E461D99554A48A4959DE609 /* SplashScreen.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = AA286B85B6C04FC6940260E9 /* SplashScreen.storyboard */; };
 		948BDAD26FE9D66B8735BBD0 /* ExpoModulesProvider.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1CEF90D1FA529DB2CC2AE941 /* ExpoModulesProvider.swift */; };
@@ -24,6 +25,7 @@
 		13B07FB51A68108700A75B9A /* Images.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; name = Images.xcassets; path = Folo/Images.xcassets; sourceTree = "<group>"; };
 		13B07FB61A68108700A75B9A /* Info.plist */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.plist.xml; name = Info.plist; path = Folo/Info.plist; sourceTree = "<group>"; };
 		1CEF90D1FA529DB2CC2AE941 /* ExpoModulesProvider.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; name = ExpoModulesProvider.swift; path = "Pods/Target Support Files/Pods-Folo/ExpoModulesProvider.swift"; sourceTree = "<group>"; };
+		1FF55C5A2E818E0C000C84BF /* Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Assets.xcassets; sourceTree = "<group>"; };
 		2C9A37CAFE9FFED2FCC141E3 /* Pods_Folo.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = Pods_Folo.framework; sourceTree = BUILT_PRODUCTS_DIR; };
 		5D1548572A564A709411B1D2 /* Pods-Folo.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-Folo.release.xcconfig"; path = "Target Support Files/Pods-Folo/Pods-Folo.release.xcconfig"; sourceTree = "<group>"; };
 		771F66ABFAD64B3D89ABAB8A /* GoogleService-Info.plist */ = {isa = PBXFileReference; explicitFileType = undefined; fileEncoding = 4; includeInIndex = 0; lastKnownFileType = text.plist.xml; name = "GoogleService-Info.plist"; path = "Folo/GoogleService-Info.plist"; sourceTree = "<group>"; };
@@ -55,6 +57,7 @@
 		13B07FAE1A68108700A75B9A /* Folo */ = {
 			isa = PBXGroup;
 			children = (
+				1FF55C5A2E818E0C000C84BF /* Assets.xcassets */,
 				F11748412D0307B40044C1D9 /* AppDelegate.swift */,
 				F11748442D0722820044C1D9 /* Folo-Bridging-Header.h */,
 				BB2F792B24A3F905000567C9 /* Supporting */,
@@ -167,7 +170,7 @@
 				800E24972A6A228C8D4807E9 /* [CP] Copy Pods Resources */,
 				6E4ADCBDA5B760296BAE78FA /* [CP] Embed Pods Frameworks */,
 				8F2D99FDEA6998C9D98BD7E0 /* [CP-User] [RNFB] Core Configuration */,
-				8DF9409D54556D15DD94C0B5 /* [CP-User] [RNFB] Crashlytics Configuration */,
+				3B0B406257C84B7586048134 /* Upload Debug Symbols to Sentry */,
 			);
 			buildRules = (
 			);
@@ -218,6 +221,7 @@
 				13B07FBF1A68108700A75B9A /* Images.xcassets in Resources */,
 				3E461D99554A48A4959DE609 /* SplashScreen.storyboard in Resources */,
 				21D47042A21541638A8813FF /* GoogleService-Info.plist in Resources */,
+				1FF55C5B2E818E0C000C84BF /* Assets.xcassets in Resources */,
 				1274C3CE4776411EBE7CEAE8 /* rn-web in Resources */,
 				A6D4133120E003E1031C2B48 /* PrivacyInfo.xcprivacy in Resources */,
 			);
@@ -239,7 +243,7 @@
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 			shellPath = /bin/sh;
-			shellScript = "if [[ -f \"$PODS_ROOT/../.xcode.env\" ]]; then\n  source \"$PODS_ROOT/../.xcode.env\"\nfi\nif [[ -f \"$PODS_ROOT/../.xcode.env.local\" ]]; then\n  source \"$PODS_ROOT/../.xcode.env.local\"\nfi\n\n# The project root by default is one level up from the ios directory\nexport PROJECT_ROOT=\"$PROJECT_DIR\"/..\n\nif [[ \"$CONFIGURATION\" = *Debug* ]]; then\n  export SKIP_BUNDLING=1\nfi\nif [[ -z \"$ENTRY_FILE\" ]]; then\n  # Set the entry JS file using the bundler's entry resolution.\n  export ENTRY_FILE=\"$(\"$NODE_BINARY\" -e \"require('expo/scripts/resolveAppEntry')\" \"$PROJECT_ROOT\" ios absolute | tail -n 1)\"\nfi\n\nif [[ -z \"$CLI_PATH\" ]]; then\n  # Use Expo CLI\n  export CLI_PATH=\"$(\"$NODE_BINARY\" --print \"require.resolve('@expo/cli', { paths: [require.resolve('expo/package.json')] })\")\"\nfi\nif [[ -z \"$BUNDLE_COMMAND\" ]]; then\n  # Default Expo CLI command for bundling\n  export BUNDLE_COMMAND=\"export:embed\"\nfi\n\n# Source .xcode.env.updates if it exists to allow\n# SKIP_BUNDLING to be unset if needed\nif [[ -f \"$PODS_ROOT/../.xcode.env.updates\" ]]; then\n  source \"$PODS_ROOT/../.xcode.env.updates\"\nfi\n# Source local changes to allow overrides\n# if needed\nif [[ -f \"$PODS_ROOT/../.xcode.env.local\" ]]; then\n  source \"$PODS_ROOT/../.xcode.env.local\"\nfi\n\n`\"$NODE_BINARY\" --print \"require('path').dirname(require.resolve('react-native/package.json')) + '/scripts/react-native-xcode.sh'\"`\n\n";
+			shellScript = "if [[ -f \"$PODS_ROOT/../.xcode.env\" ]]; then\n  source \"$PODS_ROOT/../.xcode.env\"\nfi\nif [[ -f \"$PODS_ROOT/../.xcode.env.local\" ]]; then\n  source \"$PODS_ROOT/../.xcode.env.local\"\nfi\n\n# The project root by default is one level up from the ios directory\nexport PROJECT_ROOT=\"$PROJECT_DIR\"/..\n\nif [[ \"$CONFIGURATION\" = *Debug* ]]; then\n  export SKIP_BUNDLING=1\nfi\nif [[ -z \"$ENTRY_FILE\" ]]; then\n  # Set the entry JS file using the bundler's entry resolution.\n  export ENTRY_FILE=\"$(\"$NODE_BINARY\" -e \"require('expo/scripts/resolveAppEntry')\" \"$PROJECT_ROOT\" ios absolute | tail -n 1)\"\nfi\n\nif [[ -z \"$CLI_PATH\" ]]; then\n  # Use Expo CLI\n  export CLI_PATH=\"$(\"$NODE_BINARY\" --print \"require.resolve('@expo/cli', { paths: [require.resolve('expo/package.json')] })\")\"\nfi\nif [[ -z \"$BUNDLE_COMMAND\" ]]; then\n  # Default Expo CLI command for bundling\n  export BUNDLE_COMMAND=\"export:embed\"\nfi\n\n# Source .xcode.env.updates if it exists to allow\n# SKIP_BUNDLING to be unset if needed\nif [[ -f \"$PODS_ROOT/../.xcode.env.updates\" ]]; then\n  source \"$PODS_ROOT/../.xcode.env.updates\"\nfi\n# Source local changes to allow overrides\n# if needed\nif [[ -f \"$PODS_ROOT/../.xcode.env.local\" ]]; then\n  source \"$PODS_ROOT/../.xcode.env.local\"\nfi\n\n/bin/sh `\"$NODE_BINARY\" --print \"require('path').dirname(require.resolve('@sentry/react-native/package.json')) + '/scripts/sentry-xcode.sh'\"` `\"$NODE_BINARY\" --print \"require('path').dirname(require.resolve('react-native/package.json')) + '/scripts/react-native-xcode.sh'\"`\n\n";
 		};
 		08A4A3CD28434E44B6B9DE2E /* [CP] Check Pods Manifest.lock */ = {
 			isa = PBXShellScriptBuildPhase;
@@ -262,6 +266,20 @@
 			shellPath = /bin/sh;
 			shellScript = "diff \"${PODS_PODFILE_DIR_PATH}/Podfile.lock\" \"${PODS_ROOT}/Manifest.lock\" > /dev/null\nif [ $? != 0 ] ; then\n    # print error to STDERR\n    echo \"error: The sandbox is not in sync with the Podfile.lock. Run 'pod install' or update your CocoaPods installation.\" >&2\n    exit 1\nfi\n# This output is used by Xcode 'outputs' to avoid re-running this script phase.\necho \"SUCCESS\" > \"${SCRIPT_OUTPUT_FILE_0}\"\n";
 			showEnvVarsInLog = 0;
+		};
+		3B0B406257C84B7586048134 /* Upload Debug Symbols to Sentry */ = {
+			isa = PBXShellScriptBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			inputPaths = (
+			);
+			name = "Upload Debug Symbols to Sentry";
+			outputPaths = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+			shellPath = /bin/sh;
+			shellScript = "/bin/sh ../../../node_modules/@sentry/react-native/scripts/sentry-xcode-debug-files.sh\n";
 		};
 		6E4ADCBDA5B760296BAE78FA /* [CP] Embed Pods Frameworks */ = {
 			isa = PBXShellScriptBuildPhase;
@@ -302,7 +320,6 @@
 				"${PODS_CONFIGURATION_BUILD_DIR}/FirebaseCore/FirebaseCore_Privacy.bundle",
 				"${PODS_CONFIGURATION_BUILD_DIR}/FirebaseCoreExtension/FirebaseCoreExtension_Privacy.bundle",
 				"${PODS_CONFIGURATION_BUILD_DIR}/FirebaseCoreInternal/FirebaseCoreInternal_Privacy.bundle",
-				"${PODS_CONFIGURATION_BUILD_DIR}/FirebaseCrashlytics/FirebaseCrashlytics_Privacy.bundle",
 				"${PODS_CONFIGURATION_BUILD_DIR}/FirebaseInstallations/FirebaseInstallations_Privacy.bundle",
 				"${PODS_CONFIGURATION_BUILD_DIR}/FirebaseMessaging/FirebaseMessaging_Privacy.bundle",
 				"${PODS_CONFIGURATION_BUILD_DIR}/FollowNative/js.bundle",
@@ -311,7 +328,6 @@
 				"${PODS_CONFIGURATION_BUILD_DIR}/GoogleUtilities/GoogleUtilities_Privacy.bundle",
 				"${PODS_CONFIGURATION_BUILD_DIR}/Mute/Mute.bundle",
 				"${PODS_CONFIGURATION_BUILD_DIR}/PromisesObjC/FBLPromises_Privacy.bundle",
-				"${PODS_CONFIGURATION_BUILD_DIR}/PromisesSwift/Promises_Privacy.bundle",
 				"${PODS_CONFIGURATION_BUILD_DIR}/RCT-Folly/RCT-Folly_privacy.bundle",
 				"${PODS_CONFIGURATION_BUILD_DIR}/RNDeviceInfo/RNDeviceInfoPrivacyInfo.bundle",
 				"${PODS_CONFIGURATION_BUILD_DIR}/RNSVG/RNSVGFilters.bundle",
@@ -319,6 +335,7 @@
 				"${PODS_CONFIGURATION_BUILD_DIR}/React-Core/React-Core_privacy.bundle",
 				"${PODS_CONFIGURATION_BUILD_DIR}/React-cxxreact/React-cxxreact_privacy.bundle",
 				"${PODS_CONFIGURATION_BUILD_DIR}/SDWebImage/SDWebImage.bundle",
+				"${PODS_CONFIGURATION_BUILD_DIR}/Sentry/Sentry.bundle",
 				"${PODS_CONFIGURATION_BUILD_DIR}/SnapKit/SnapKit_Privacy.bundle",
 				"${PODS_CONFIGURATION_BUILD_DIR}/boost/boost_privacy.bundle",
 				"${PODS_CONFIGURATION_BUILD_DIR}/expo-dev-launcher/EXDevLauncher.bundle",
@@ -342,7 +359,6 @@
 				"${TARGET_BUILD_DIR}/${UNLOCALIZED_RESOURCES_FOLDER_PATH}/FirebaseCore_Privacy.bundle",
 				"${TARGET_BUILD_DIR}/${UNLOCALIZED_RESOURCES_FOLDER_PATH}/FirebaseCoreExtension_Privacy.bundle",
 				"${TARGET_BUILD_DIR}/${UNLOCALIZED_RESOURCES_FOLDER_PATH}/FirebaseCoreInternal_Privacy.bundle",
-				"${TARGET_BUILD_DIR}/${UNLOCALIZED_RESOURCES_FOLDER_PATH}/FirebaseCrashlytics_Privacy.bundle",
 				"${TARGET_BUILD_DIR}/${UNLOCALIZED_RESOURCES_FOLDER_PATH}/FirebaseInstallations_Privacy.bundle",
 				"${TARGET_BUILD_DIR}/${UNLOCALIZED_RESOURCES_FOLDER_PATH}/FirebaseMessaging_Privacy.bundle",
 				"${TARGET_BUILD_DIR}/${UNLOCALIZED_RESOURCES_FOLDER_PATH}/js.bundle",
@@ -351,7 +367,6 @@
 				"${TARGET_BUILD_DIR}/${UNLOCALIZED_RESOURCES_FOLDER_PATH}/GoogleUtilities_Privacy.bundle",
 				"${TARGET_BUILD_DIR}/${UNLOCALIZED_RESOURCES_FOLDER_PATH}/Mute.bundle",
 				"${TARGET_BUILD_DIR}/${UNLOCALIZED_RESOURCES_FOLDER_PATH}/FBLPromises_Privacy.bundle",
-				"${TARGET_BUILD_DIR}/${UNLOCALIZED_RESOURCES_FOLDER_PATH}/Promises_Privacy.bundle",
 				"${TARGET_BUILD_DIR}/${UNLOCALIZED_RESOURCES_FOLDER_PATH}/RCT-Folly_privacy.bundle",
 				"${TARGET_BUILD_DIR}/${UNLOCALIZED_RESOURCES_FOLDER_PATH}/RNDeviceInfoPrivacyInfo.bundle",
 				"${TARGET_BUILD_DIR}/${UNLOCALIZED_RESOURCES_FOLDER_PATH}/RNSVGFilters.bundle",
@@ -359,6 +374,7 @@
 				"${TARGET_BUILD_DIR}/${UNLOCALIZED_RESOURCES_FOLDER_PATH}/React-Core_privacy.bundle",
 				"${TARGET_BUILD_DIR}/${UNLOCALIZED_RESOURCES_FOLDER_PATH}/React-cxxreact_privacy.bundle",
 				"${TARGET_BUILD_DIR}/${UNLOCALIZED_RESOURCES_FOLDER_PATH}/SDWebImage.bundle",
+				"${TARGET_BUILD_DIR}/${UNLOCALIZED_RESOURCES_FOLDER_PATH}/Sentry.bundle",
 				"${TARGET_BUILD_DIR}/${UNLOCALIZED_RESOURCES_FOLDER_PATH}/SnapKit_Privacy.bundle",
 				"${TARGET_BUILD_DIR}/${UNLOCALIZED_RESOURCES_FOLDER_PATH}/boost_privacy.bundle",
 				"${TARGET_BUILD_DIR}/${UNLOCALIZED_RESOURCES_FOLDER_PATH}/EXDevLauncher.bundle",
@@ -370,20 +386,6 @@
 			shellPath = /bin/sh;
 			shellScript = "\"${PODS_ROOT}/Target Support Files/Pods-Folo/Pods-Folo-resources.sh\"\n";
 			showEnvVarsInLog = 0;
-		};
-		8DF9409D54556D15DD94C0B5 /* [CP-User] [RNFB] Crashlytics Configuration */ = {
-			isa = PBXShellScriptBuildPhase;
-			buildActionMask = 2147483647;
-			files = (
-			);
-			inputPaths = (
-				"${DWARF_DSYM_FOLDER_PATH}/${DWARF_DSYM_FILE_NAME}/Contents/Resources/DWARF/${TARGET_NAME}",
-				"$(BUILT_PRODUCTS_DIR)/$(INFOPLIST_PATH)",
-			);
-			name = "[CP-User] [RNFB] Crashlytics Configuration";
-			runOnlyForDeploymentPostprocessing = 0;
-			shellPath = /bin/sh;
-			shellScript = "#!/usr/bin/env bash\n#\n# Copyright (c) 2016-present Invertase Limited & Contributors\n#\n# Licensed under the Apache License, Version 2.0 (the \"License\");\n# you may not use this library except in compliance with the License.\n# You may obtain a copy of the License at\n#\n#   http://www.apache.org/licenses/LICENSE-2.0\n#\n# Unless required by applicable law or agreed to in writing, software\n# distributed under the License is distributed on an \"AS IS\" BASIS,\n# WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.\n# See the License for the specific language governing permissions and\n# limitations under the License.\n#\nset -e\n\nif [[ ${PODS_ROOT} ]]; then\n  echo \"info: Exec FirebaseCrashlytics Run from Pods\"\n  \"${PODS_ROOT}/FirebaseCrashlytics/run\"\nelse\n  echo \"info: Exec FirebaseCrashlytics Run from framework\"\n  \"${PROJECT_DIR}/FirebaseCrashlytics.framework/run\"\nfi\n";
 		};
 		8F2D99FDEA6998C9D98BD7E0 /* [CP-User] [RNFB] Core Configuration */ = {
 			isa = PBXShellScriptBuildPhase;

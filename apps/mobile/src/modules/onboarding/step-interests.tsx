@@ -14,8 +14,8 @@ export const StepInterests = () => {
     <OnboardingSectionScreenContainer>
       <View className="flex items-center gap-4">
         <Search3CuteReIcon height={80} width={80} color={accentColor} />
-        <Text className="text-text mt-2 text-2xl font-bold">{t("onboarding.interests_title")}</Text>
-        <Text className="text-label mb-8 px-6 text-center text-lg">
+        <Text className="mt-2 text-2xl font-bold text-text">{t("onboarding.interests_title")}</Text>
+        <Text className="mb-8 px-6 text-center text-lg text-label">
           {t("onboarding.interests_description")}
         </Text>
       </View>

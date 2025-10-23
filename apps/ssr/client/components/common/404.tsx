@@ -5,6 +5,7 @@ import { Button } from "@follow/components/ui/button/index.jsx"
 import { useSyncThemeWebApp, useTitle } from "@follow/hooks"
 import { m, useAnimationControls } from "motion/react"
 import { Fragment, useEffect, useState } from "react"
+import * as React from "react"
 
 const NotFoundContent = () => {
   const [glitchText, setGlitchText] = useState("404")

@@ -14,9 +14,9 @@ import {
   GroupedInsetListCell,
   GroupedOutlineDescription,
 } from "@/src/components/ui/grouped/GroupedList"
-import { getBizFetchErrorMessage } from "@/src/lib/api-fetch"
 import { useNavigation } from "@/src/lib/navigation/hooks"
 import type { NavigationControllerView } from "@/src/lib/navigation/types"
+import { getBizFetchErrorMessage } from "@/src/lib/parse-api-error"
 import { toast } from "@/src/lib/toast"
 
 export const InvitationScreen: NavigationControllerView = () => {
@@ -66,7 +66,7 @@ export const InvitationScreen: NavigationControllerView = () => {
               onChangeText={(text) => {
                 setCode(text)
               }}
-              className="text-secondary-label w-full flex-1 text-left"
+              className="w-full flex-1 text-left text-secondary-label"
             />
           </GroupedInsetListCell>
         </GroupedInsetListCard>

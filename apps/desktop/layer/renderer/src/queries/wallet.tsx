@@ -1,21 +1,20 @@
 import { tracker } from "@follow/tracker"
+import type { TransactionQuery } from "@follow-app/client-sdk"
 import { useMutation } from "@tanstack/react-query"
 import { useNavigate } from "react-router"
 import { toast } from "sonner"
 
 import { useAuthQuery } from "~/hooks/common"
-import { apiClient } from "~/lib/api-fetch"
+import { followClient } from "~/lib/api-client"
 import { defineQuery } from "~/lib/defineQuery"
 import { getFetchErrorMessage, toastFetchError } from "~/lib/error-parser"
 
 export const wallet = {
-  get: ({ userId }: { userId?: string } = {}) =>
+  get: () =>
     defineQuery(
-      ["wallet", userId].filter(Boolean),
+      ["wallet"],
       async () => {
-        const res = await apiClient.wallets.$get({
-          query: { userId },
-        })
+        const res = await followClient.api.wallets.get()
 
         return res.data
       },
@@ -26,15 +25,15 @@ export const wallet = {
 
   claimCheck: () =>
     defineQuery(["wallet", "claimCheck"], async () =>
-      apiClient.wallets.transactions["claim-check"].$get(),
+      followClient.api.wallets.transactions.claimCheck(),
     ),
 
   transactions: {
-    get: (query: Parameters<typeof apiClient.wallets.transactions.$get>[0]["query"] = {}) =>
+    get: (query: TransactionQuery) =>
       defineQuery(
-        ["wallet", "transactions", query].filter(Boolean),
+        ["wallet", "transactions", query],
         async () => {
-          const res = await apiClient.wallets.transactions.$get({ query })
+          const res = await followClient.api.wallets.transactions.get(query)
 
           return res.data
         },
@@ -49,7 +48,7 @@ export const wallet = {
       defineQuery(
         ["wallet", "ranking"],
         async () => {
-          const res = await apiClient.wallets.ranking.$get()
+          const res = await followClient.api.wallets.ranking()
           return res.data
         },
         {
@@ -72,7 +71,7 @@ export const useWalletRanking = () => useAuthQuery(wallet.ranking.get())
 export const useCreateWalletMutation = () =>
   useMutation({
     mutationKey: ["createWallet"],
-    mutationFn: () => apiClient.wallets.$post(),
+    mutationFn: () => followClient.api.wallets.post(),
     async onError(err) {
       toast.error(await getFetchErrorMessage(err))
     },
@@ -93,17 +92,14 @@ export const useClaimWalletDailyRewardMutation = () => {
   return useMutation({
     mutationKey: ["claimWalletDailyReward"],
     mutationFn: ({ tokenV2, tokenV3 }: { tokenV2?: string | null; tokenV3?: string | null }) =>
-      apiClient.wallets.transactions.claim_daily.$post(
-        { json: {} },
-        {
-          headers:
-            tokenV2 || tokenV3
-              ? {
-                  "x-token": tokenV2 ? `r2:${tokenV2}` : `r3:${tokenV3}`,
-                }
-              : undefined,
-        },
-      ),
+      followClient.api.wallets.transactions.claimDaily(undefined, {
+        headers:
+          tokenV2 || tokenV3
+            ? {
+                "x-token": tokenV2 ? `r2:${tokenV2}` : `r3:${tokenV3}`,
+              }
+            : undefined,
+      }),
     async onError(err) {
       toastFetchError(err)
     },
@@ -127,23 +123,3 @@ export const useClaimWalletDailyRewardMutation = () => {
     },
   })
 }
-
-export const useWalletTipMutation = () =>
-  useMutation({
-    mutationKey: ["walletTip"],
-    mutationFn: (data: Parameters<typeof apiClient.wallets.transactions.tip.$post>[0]["json"]) =>
-      apiClient.wallets.transactions.tip.$post({ json: data }),
-    async onError(err) {
-      toastFetchError(err)
-    },
-    onSuccess(response, variables) {
-      wallet.get().invalidate()
-      wallet.transactions.get().invalidate()
-      tracker.tipSent({
-        amount: variables.amount,
-        entryId: variables.entryId,
-        transactionId: response.data.transactionHash,
-      })
-      toast("🎉 Tipped.")
-    },
-  })

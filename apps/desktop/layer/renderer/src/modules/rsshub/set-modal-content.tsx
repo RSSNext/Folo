@@ -9,8 +9,8 @@ import {
   FormMessage,
 } from "@follow/components/ui/form/index.jsx"
 import { Input } from "@follow/components/ui/input/Input.js"
-import type { RSSHubModel } from "@follow/models"
 import { whoami } from "@follow/store/user/getters"
+import type { RSSHubListItem } from "@follow-app/client-sdk"
 import { zodResolver } from "@hookform/resolvers/zod"
 import { useEffect } from "react"
 import { useForm } from "react-hook-form"
@@ -29,7 +29,7 @@ export function SetModalContent({
   instance,
 }: {
   dismiss: () => void
-  instance: RSSHubModel
+  instance: RSSHubListItem
 }) {
   const { t } = useTranslation("settings")
   const setRSSHubMutation = useSetRSSHubMutation()
@@ -72,7 +72,7 @@ export function SetModalContent({
           <table className="w-full">
             <tbody className="divide-y-8 divide-transparent">
               <tr>
-                <td className="text-text-secondary w-24 text-sm">{t("rsshub.table.owner")}</td>
+                <td className="w-24 text-sm text-text-secondary">{t("rsshub.table.owner")}</td>
                 <td>
                   <UserAvatar
                     userId={instance.ownerUserId}
@@ -82,21 +82,21 @@ export function SetModalContent({
                 </td>
               </tr>
               <tr>
-                <td className="text-text-secondary text-sm">{t("rsshub.table.description")}</td>
+                <td className="text-sm text-text-secondary">{t("rsshub.table.description")}</td>
                 <td className="line-clamp-2">{instance.description}</td>
               </tr>
               <tr>
-                <td className="text-text-secondary text-sm">{t("rsshub.table.price")}</td>
+                <td className="text-sm text-text-secondary">{t("rsshub.table.price")}</td>
                 <td className="flex items-center gap-1">
                   {instance.price} <i className="i-mgc-power text-folo" />
                 </td>
               </tr>
               <tr>
-                <td className="text-text-secondary text-sm">{t("rsshub.table.userCount")}</td>
+                <td className="text-sm text-text-secondary">{t("rsshub.table.userCount")}</td>
                 <td>{instance.userCount}</td>
               </tr>
               <tr>
-                <td className="text-text-secondary text-sm">{t("rsshub.table.userLimit")}</td>
+                <td className="text-sm text-text-secondary">{t("rsshub.table.userLimit")}</td>
                 <td>{instance.userLimit || t("rsshub.table.unlimited")}</td>
               </tr>
             </tbody>
@@ -105,7 +105,7 @@ export function SetModalContent({
       </Card>
       {details.data?.purchase && (
         <div>
-          <div className="text-text-secondary text-sm">
+          <div className="text-sm text-text-secondary">
             {t("rsshub.useModal.purchase_expires_at")}
           </div>
           <div className="line-clamp-2">
@@ -134,7 +134,7 @@ export function SetModalContent({
                           min={hasPurchase ? 0 : 1}
                           {...field}
                         />
-                        <span className="text-text-secondary text-sm">
+                        <span className="text-sm text-text-secondary">
                           {t("rsshub.useModal.month")}
                         </span>
                       </div>

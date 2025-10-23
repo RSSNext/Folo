@@ -52,11 +52,11 @@ export const FormSlider = ({
       <View className="mb-3 flex-row items-center justify-between">
         <FormLabel label={label} optional />
         {showValue && (
-          <Text className="text-secondary-label text-sm font-medium">{formatValue(value)}</Text>
+          <Text className="text-sm font-medium text-secondary-label">{formatValue(value)}</Text>
         )}
       </View>
 
-      {!!description && <Text className="text-secondary-label mb-3 text-sm">{description}</Text>}
+      {!!description && <Text className="mb-3 text-sm text-secondary-label">{description}</Text>}
 
       {SliderComponent}
     </View>

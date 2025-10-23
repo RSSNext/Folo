@@ -1,6 +1,6 @@
+import i18next from "i18next"
 import type {
   DOMConversionMap,
-  DOMConversionOutput,
   DOMExportOutput,
   EditorConfig,
   LexicalEditor,
@@ -13,6 +13,7 @@ import { $applyNodeReplacement, DecoratorNode } from "lexical"
 import * as React from "react"
 
 import { MentionComponent } from "./components/MentionComponent"
+import { getDateMentionDisplayName } from "./hooks/dateMentionUtils"
 import type { MentionData } from "./types"
 
 export type SerializedMentionNode = Spread<
@@ -38,6 +39,15 @@ export class MentionNode extends DecoratorNode<React.JSX.Element> {
     this.__mentionData = mentionData
   }
 
+  getMentionData(): MentionData {
+    return this.__mentionData
+  }
+
+  setMentionData(mentionData: MentionData): void {
+    const writable = this.getWritable()
+    writable.__mentionData = mentionData
+  }
+
   override createDOM(config: EditorConfig): HTMLElement {
     const dom = document.createElement("span")
     dom.className = config.theme.mention || "mention-node"
@@ -53,14 +63,8 @@ export class MentionNode extends DecoratorNode<React.JSX.Element> {
 
   static override importDOM(): DOMConversionMap | null {
     return {
-      span: (domNode: HTMLElement) => {
-        if (!Object.hasOwn(domNode.dataset, "lexicalMention")) {
-          return null
-        }
-        return {
-          conversion: convertMentionElement,
-          priority: 1,
-        }
+      span: () => {
+        throw new Error("Not implemented")
       },
     }
   }
@@ -76,7 +80,7 @@ export class MentionNode extends DecoratorNode<React.JSX.Element> {
     element.dataset.lexicalMention = "true"
     element.dataset.mentionType = this.__mentionData.type
     element.dataset.mentionId = this.__mentionData.id
-    element.textContent = `@${this.__mentionData.name}`
+    element.textContent = `@${resolveMentionDisplayName(this.__mentionData)}`
     element.className = "mention-node"
     return { element }
   }
@@ -93,13 +97,24 @@ export class MentionNode extends DecoratorNode<React.JSX.Element> {
    * For export markdown conversion
    */
   override getTextContent(): string {
-    return `[[ref:${this.__mentionData.type}:${this.__mentionData.value}]]`
+    return this.__mentionData.text
   }
 
-  override decorate(_editor: LexicalEditor): React.JSX.Element {
+  override decorate(editor: LexicalEditor): React.JSX.Element {
+    // Use a combination of key and value to ensure re-render when mention data changes
+    const dataKey =
+      typeof this.__mentionData.value === "string"
+        ? this.__mentionData.value
+        : String(this.__mentionData.value)
+
     return (
       <React.Suspense fallback={null}>
-        <MentionComponent mentionData={this.__mentionData} />
+        <MentionComponent
+          mentionData={this.__mentionData}
+          nodeKey={this.__key}
+          editor={editor}
+          key={`${this.__key}-${dataKey}`}
+        />
       </React.Suspense>
     )
   }
@@ -133,29 +148,6 @@ export class MentionNode extends DecoratorNode<React.JSX.Element> {
   }
 }
 
-function convertMentionElement(domNode: HTMLElement): DOMConversionOutput {
-  const mentionType = domNode.dataset.mentionType as MentionData["type"] | null
-  const { mentionId } = domNode.dataset
-  const textContent = domNode.textContent || ""
-
-  if (!mentionType || !mentionId) {
-    return { node: null }
-  }
-
-  // Extract name from text content (remove @ prefix)
-  const name = textContent.startsWith("@") ? textContent.slice(1) : textContent
-
-  const mentionData: MentionData = {
-    id: mentionId,
-    name,
-    type: mentionType,
-    value: null,
-  }
-
-  const node = $createMentionNode(mentionData)
-  return { node }
-}
-
 export function $createMentionNode(mentionData: MentionData): MentionNode {
   const mentionNode = new MentionNode(mentionData)
   return $applyNodeReplacement(mentionNode)
@@ -163,4 +155,15 @@ export function $createMentionNode(mentionData: MentionData): MentionNode {
 
 export function $isMentionNode(node: LexicalNode | null | undefined): node is MentionNode {
   return node instanceof MentionNode
+}
+
+const resolveMentionDisplayName = (mentionData: MentionData): string => {
+  if (mentionData.type !== "date") {
+    return mentionData.name
+  }
+
+  const language = i18next.language || i18next.resolvedLanguage || i18next.options?.lng || "en"
+  const translate = i18next.getFixedT(language, "ai")
+
+  return getDateMentionDisplayName(mentionData, translate, language)
 }

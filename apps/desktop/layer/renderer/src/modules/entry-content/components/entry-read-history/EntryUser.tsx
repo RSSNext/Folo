@@ -24,7 +24,7 @@ export const EntryUser: Component<{
           presentUserProfile(userId)
         }}
       >
-        <Avatar className="border-border ring-background aspect-square size-6 border ring-1">
+        <Avatar className="aspect-square size-6 border border-border ring-1 ring-background">
           <AvatarImage src={getAvatarUrl(user)} className="bg-material-ultra-thick" />
           <AvatarFallback className="text-xs">{getNameInitials(user.name || "")}</AvatarFallback>
         </Avatar>

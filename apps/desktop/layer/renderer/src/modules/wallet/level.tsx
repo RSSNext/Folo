@@ -17,7 +17,7 @@ export const Level = ({
     <div className={cn("flex items-center gap-1", className)}>
       {!hideIcon && <i className="i-mgc-vip-2-cute-fi text-accent" />}
       {isLoading ? (
-        <span className="bg-theme-inactive h-3 w-8 animate-pulse rounded-xl" />
+        <span className="h-3 w-8 animate-pulse rounded-xl bg-theme-inactive" />
       ) : (
         <>
           <span className="tabular-nums">Lv.{level}</span>

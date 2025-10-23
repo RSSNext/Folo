@@ -1,5 +1,7 @@
 import type { AISettings, GeneralSettings, IntegrationSettings, UISettings } from "./interface"
 
+export const DEFAULT_SUMMARIZE_TIMELINE_SHORTCUT_ID = "default-summarize-timeline"
+
 export const defaultGeneralSettings: GeneralSettings = {
   // App
   appLaunchOnStartup: false,
@@ -8,9 +10,6 @@ export const defaultGeneralSettings: GeneralSettings = {
   translationMode: "bilingual",
   summary: true,
   actionLanguage: "default",
-
-  // mobile app
-  startupScreen: "timeline",
 
   sendAnonymousData: true,
   showQuickTimeline: true,
@@ -21,7 +20,7 @@ export const defaultGeneralSettings: GeneralSettings = {
   hidePrivateSubscriptionsInTimeline: false,
 
   // view
-  unreadOnly: true,
+  unreadOnly: false,
   // mark unread
   scrollMarkUnread: true,
   hoverMarkUnread: true,
@@ -83,6 +82,7 @@ export const defaultUISettings: UISettings = {
 
   // View
   pictureViewMasonry: true,
+  pictureViewImageOnly: false,
   wideMode: false,
 
   // Action Order

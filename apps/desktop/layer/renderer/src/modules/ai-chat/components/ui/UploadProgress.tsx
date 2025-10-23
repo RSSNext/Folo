@@ -37,7 +37,7 @@ export const UploadProgress: FC<UploadProgressProps> = memo(
         {/* Progress Bar */}
         <div
           className={cn(
-            "bg-fill-secondary relative overflow-hidden rounded-full",
+            "relative overflow-hidden rounded-full bg-fill-secondary",
             sizeClasses[size],
           )}
         >
@@ -55,7 +55,7 @@ export const UploadProgress: FC<UploadProgressProps> = memo(
 
         {/* Percentage Text */}
         {showPercentage && (
-          <div className="text-text-tertiary mt-1 text-center text-xs">
+          <div className="mt-1 text-center text-xs text-text-tertiary">
             {Math.round(progressValue)}%
           </div>
         )}
@@ -142,7 +142,7 @@ export const CircularProgress: FC<CircularProgressProps> = memo(
 
         {/* Percentage text */}
         {showPercentage && (
-          <div className="text-text-tertiary absolute inset-0 flex items-center justify-center text-xs font-medium">
+          <div className="absolute inset-0 flex items-center justify-center text-xs font-medium text-text-tertiary">
             {Math.round(progressValue)}%
           </div>
         )}

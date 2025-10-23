@@ -1,6 +1,8 @@
 import { EllipsisHorizontalTextWithTooltip } from "@follow/components/ui/typography/EllipsisWithTooltip.js"
-import type { FeedOrListRespModel } from "@follow/models/types"
 import { env } from "@follow/shared/env.desktop"
+import type { FeedModel } from "@follow/store/feed/types"
+import type { InboxModel } from "@follow/store/inbox/types"
+import type { ListModel } from "@follow/store/list/types"
 import { cn } from "@follow/utils/utils"
 
 import { UrlBuilder } from "~/lib/url-builder"
@@ -13,7 +15,7 @@ export function FollowSummary({
   className,
   simple,
 }: {
-  feed: FeedOrListRespModel
+  feed: FeedModel | ListModel | InboxModel
   docs?: string
   className?: string
   simple?: boolean
@@ -39,20 +41,20 @@ export function FollowSummary({
     <div className={cn("flex select-text flex-col gap-2 text-sm", className)}>
       <div className="flex items-center">
         <FeedIcon
-          feed={feed}
+          target={feed}
           fallbackUrl={docs}
           className="mask-squircle mask shrink-0 rounded-none"
           size={32}
         />
         <div className="min-w-0 leading-tight">
           <FeedTitle feed={feed} className="mb-0.5 text-[15px] font-semibold" />
-          <EllipsisHorizontalTextWithTooltip className="text-text-secondary truncate text-xs font-normal duration-200">
+          <EllipsisHorizontalTextWithTooltip className="truncate text-xs font-normal text-text-secondary duration-200">
             {feedText}
           </EllipsisHorizontalTextWithTooltip>
         </div>
       </div>
       {!simple && "description" in feed && feed.description && (
-        <EllipsisHorizontalTextWithTooltip className="text-text/80 text-body truncate pl-10 font-normal">
+        <EllipsisHorizontalTextWithTooltip className="truncate pl-10 text-body font-normal text-text/80">
           {feed.description}
         </EllipsisHorizontalTextWithTooltip>
       )}

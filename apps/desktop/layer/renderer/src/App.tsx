@@ -74,7 +74,7 @@ const AppSkeleton = () => {
   return (
     <div className="flex size-full">
       <div
-        className="bg-sidebar h-full shrink-0"
+        className="h-full shrink-0 bg-sidebar"
         style={{
           width: `${feedColWidth}px`,
         }}

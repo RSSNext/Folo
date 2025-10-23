@@ -112,6 +112,7 @@ export const ModalInternal = memo(function Modal({
       setStack((p) => p.filter((modal) => modal.id !== item.id))
     }
 
+    item.onClose?.()
     onPropsClose?.(false)
   })
 
@@ -253,7 +254,6 @@ export const ModalInternal = memo(function Modal({
         <Dialog.Root open onOpenChange={onClose} modal={modal}>
           <Dialog.Portal>
             {Overlay}
-            <Dialog.DialogTitle className="sr-only">{title}</Dialog.DialogTitle>
             <Dialog.Content
               ref={setModalContentRef}
               asChild
@@ -278,6 +278,7 @@ export const ModalInternal = memo(function Modal({
                 onFocus={stopPropagation}
                 tabIndex={-1}
               >
+                <Dialog.DialogTitle className="sr-only">{title}</Dialog.DialogTitle>
                 {DragBar}
                 <div
                   className={cn("contents", modalClassName, modalContentClassName)}
@@ -337,16 +338,15 @@ export const ModalInternal = memo(function Modal({
 
               <m.div
                 ref={modalElementRef}
-                style={{ ...modalStyle, transformStyle: "preserve-3d" }}
+                style={modalStyle}
                 {...modalMontionConfig}
                 animate={animateController}
                 className={cn(
-                  "relative flex flex-col overflow-hidden rounded-lg px-2 pt-2",
+                  "relative flex flex-col overflow-hidden rounded-xl px-2 pt-1",
                   "bg-background",
-                  "shadow-modal",
+                  "shadow-modal [transform-style:preserve-3d]",
                   max ? "h-[90vh] w-[90vw]" : "max-h-[90vh]",
-
-                  "border-border border",
+                  "border border-border",
                   modalClassName,
                 )}
                 tabIndex={-1}
@@ -371,34 +371,37 @@ export const ModalInternal = memo(function Modal({
                   defaultSize={resizeDefaultSize}
                   className="flex grow flex-col"
                 >
-                  <div className={"relative flex items-center"}>
-                    <Dialog.Title
-                      className="flex w-0 max-w-full grow items-center gap-2 px-2 py-1 text-lg font-semibold"
-                      onPointerDownCapture={handleDrag}
-                      onPointerDown={relocateModal}
-                    >
-                      {!!icon && <span className="center flex size-4">{icon}</span>}
-                      <EllipsisHorizontalTextWithTooltip className="truncate">
-                        <span>{title}</span>
-                      </EllipsisHorizontalTextWithTooltip>
-                    </Dialog.Title>
-                    {canClose && (
-                      <Dialog.DialogClose
-                        className="center hover:bg-material-ultra-thick z-[2] rounded-lg p-2"
-                        tabIndex={1}
-                        onClick={close}
+                  <div className={"relative z-10 flex flex-col bg-background"}>
+                    <div className={"flex items-center"}>
+                      <Dialog.Title
+                        className="flex w-0 max-w-full grow items-center gap-2 px-2 pb-1 pt-2 text-base font-medium text-text"
+                        onPointerDownCapture={handleDrag}
+                        onPointerDown={relocateModal}
                       >
-                        <i className="i-mgc-close-cute-re" />
-                      </Dialog.DialogClose>
+                        {!!icon && <span className="center flex size-4">{icon}</span>}
+                        <EllipsisHorizontalTextWithTooltip className="truncate">
+                          <span>{title}</span>
+                        </EllipsisHorizontalTextWithTooltip>
+                      </Dialog.Title>
+                      {canClose && (
+                        <Dialog.DialogClose
+                          className="center z-[2] -mr-1 rounded-lg p-2 text-text-secondary hover:bg-fill-quaternary hover:text-text"
+                          tabIndex={1}
+                          onClick={close}
+                        >
+                          <i className="i-mgc-close-cute-re" />
+                        </Dialog.DialogClose>
+                      )}
+                    </div>
+
+                    {(title || icon || canClose) && (
+                      <div className="mx-1 mt-1 h-px shrink-0 bg-border" />
                     )}
                   </div>
-                  {(title || icon || canClose) && (
-                    <div className="bg-border mx-1 mt-2 h-px shrink-0" />
-                  )}
 
                   <div
                     className={cn(
-                      "-mx-2 min-h-0 shrink grow overflow-auto overflow-x-hidden p-4",
+                      "-mx-2 min-h-0 shrink grow overflow-auto overflow-x-hidden px-4 pb-4 pt-3 text-sm text-text",
                       modalContentClassName,
                     )}
                   >

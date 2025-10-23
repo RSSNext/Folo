@@ -16,6 +16,7 @@ import yaml from "js-yaml"
 import path, { resolve } from "pathe"
 import { rimraf, rimrafSync } from "rimraf"
 
+const ResolvedMakerAppImage: typeof MakerAppImage = (MakerAppImage as any).default || MakerAppImage
 const platform = process.argv.find((arg) => arg.startsWith("--platform"))?.split("=")[1]
 const mode = process.argv.find((arg) => arg.startsWith("--mode"))?.split("=")[1]
 const isMicrosoftStore =
@@ -187,7 +188,7 @@ const config: ForgeConfig = {
       },
       ["darwin", "mas"],
     ),
-    new MakerAppImage({
+    new ResolvedMakerAppImage({
       config: {
         icons: [
           {

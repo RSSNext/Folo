@@ -1,10 +1,10 @@
 import { defaultGeneralSettings } from "@follow/shared/settings/defaults"
 import type { GeneralSettings } from "@follow/shared/settings/interface"
 import type { FetchEntriesPropsSettings } from "@follow/store/entry/types"
+import type { SupportedLanguages } from "@follow-app/client-sdk"
 import { useMemo } from "react"
 
 import { getDeviceLanguage } from "@/src/lib/i18n"
-import type { SupportedLanguages } from "@/src/lib/language"
 
 import { createSettingAtom } from "./internal/helper"
 

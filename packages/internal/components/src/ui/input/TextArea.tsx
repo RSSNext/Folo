@@ -1,20 +1,13 @@
 import { useInputComposition } from "@follow/hooks"
 import { stopPropagation } from "@follow/utils/dom"
 import { cn } from "@follow/utils/utils"
-import clsx from "clsx"
-import { useMotionValue } from "motion/react"
 import type { DetailedHTMLProps, PropsWithChildren, TextareaHTMLAttributes } from "react"
 import { useCallback, useState } from "react"
+import * as React from "react"
 
-const roundedMap = {
-  sm: "rounded-sm",
-  md: "rounded-md",
-  lg: "rounded-lg",
-  xl: "rounded-xl",
-  "2xl": "rounded-2xl",
-  "3xl": "rounded-3xl",
-  default: "rounded",
-}
+import type { RoundedSize } from "./TextAreaWrapper"
+import { roundedMap, TextAreaWrapper } from "./TextAreaWrapper"
+
 export const TextArea = ({
   ref,
   ...props
@@ -22,7 +15,7 @@ export const TextArea = ({
   PropsWithChildren<{
     wrapperClassName?: string
     onCmdEnter?: (e: React.KeyboardEvent<HTMLTextAreaElement>) => void
-    rounded?: "sm" | "md" | "lg" | "xl" | "2xl" | "3xl" | "default"
+    rounded?: RoundedSize
     bordered?: boolean
     autoHeight?: boolean
   }> & { ref?: React.Ref<HTMLTextAreaElement | null> }) => {
@@ -36,16 +29,6 @@ export const TextArea = ({
     autoHeight,
     ...rest
   } = props
-  const mouseX = useMotionValue(0)
-  const mouseY = useMotionValue(0)
-  const handleMouseMove = useCallback(
-    ({ clientX, clientY, currentTarget }: React.MouseEvent) => {
-      const bounds = currentTarget.getBoundingClientRect()
-      mouseX.set(clientX - bounds.left)
-      mouseY.set(clientY - bounds.top)
-    },
-    [mouseX, mouseY],
-  )
 
   const syncHeight = useCallback(() => {
     if (ref && "current" in ref && ref.current) {
@@ -57,30 +40,14 @@ export const TextArea = ({
 
   const inputProps = useInputComposition<HTMLTextAreaElement>(props)
   const [isFocus, setIsFocus] = useState(false)
+
   return (
-    <div
-      className={cn(
-        "ring-accent/20 group relative flex h-full border ring-0 duration-200",
-        roundedMap[rounded],
-
-        "hover:border-accent/60 border-transparent",
-        isFocus && "!border-accent/80 ring-2",
-
-        "placeholder:text-text-tertiary dark:text-zinc-200",
-        "bg-theme-background dark:bg-zinc-700/[0.15]",
-        wrapperClassName,
-      )}
-      onMouseMove={handleMouseMove}
+    <TextAreaWrapper
+      wrapperClassName={wrapperClassName}
+      rounded={rounded}
+      bordered={bordered}
+      isFocused={isFocus}
     >
-      {bordered && (
-        <div
-          className={clsx(
-            "border-border pointer-events-none absolute inset-0 z-0 border",
-            roundedMap[rounded],
-          )}
-          aria-hidden="true"
-        />
-      )}
       <textarea
         ref={ref}
         className={cn(
@@ -119,7 +86,7 @@ export const TextArea = ({
       />
 
       {children}
-    </div>
+    </TextAreaWrapper>
   )
 }
 TextArea.displayName = "TextArea"

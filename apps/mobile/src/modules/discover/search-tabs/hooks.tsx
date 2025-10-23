@@ -22,7 +22,7 @@ export const useDataSkeleton = (isLoading: boolean, data: any) => {
       return (
         <BaseSearchPageRootView className="h-64 items-center justify-center">
           <SadCuteReIcon height={32} width={32} color={withOpacity(textColor, 0.5)} />
-          <Text className="text-text/50 mt-2">No results found</Text>
+          <Text className="mt-2 text-text/50">No results found</Text>
         </BaseSearchPageRootView>
       )
     }

@@ -144,9 +144,9 @@ export const EntryScrollingAndNavigationHandler = ({
           className={clsx(
             "pointer-events-none absolute !right-1/2 z-40 !translate-x-1/2",
             "bottom-12",
-            "backdrop-blur-background rounded-full border px-3.5 py-2",
+            "rounded-full border px-3.5 py-2 backdrop-blur-background",
             "border-border/40 bg-material-ultra-thick shadow-[0_1px_2px_rgba(0,0,0,0.06),0_8px_24px_rgba(0,0,0,0.08)]",
-            "hover:bg-material-thin/70 hover:border-border/60 active:scale-[0.98]",
+            "hover:border-border/60 hover:bg-material-thin/70 active:scale-[0.98]",
           )}
         >
           <button
@@ -154,8 +154,8 @@ export const EntryScrollingAndNavigationHandler = ({
             type="button"
             className={"group pointer-events-auto flex items-center gap-2"}
           >
-            <i className="i-mingcute-arrow-down-fill text-text/90 mr-1 size-5" />
-            <span className="text-text/90 text-left text-[13px] font-medium">
+            <i className="i-mingcute-arrow-down-fill mr-1 size-5 text-text/90" />
+            <span className="text-left text-[13px] font-medium text-text/90">
               Already scrolled to the bottom.
               <br />
               Keep pressing to jump to the next article

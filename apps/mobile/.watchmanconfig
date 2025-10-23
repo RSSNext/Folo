@@ -1,0 +1,3 @@
+{
+  "ignore_dirs": ["node_modules", "dist", ".git", "ios", "android", "native"]
+}

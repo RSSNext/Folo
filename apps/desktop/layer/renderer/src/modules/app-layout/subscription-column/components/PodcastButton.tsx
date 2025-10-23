@@ -39,7 +39,7 @@ export const PodcastButton = ({ feed }: { feed: FeedModel }) => {
       content={
         <>
           <div className="mb-6 flex gap-4">
-            <FeedIcon feed={feed} entry={entry.iconEntry} size={58} fallback={false} noMargin />
+            <FeedIcon target={feed} entry={entry.iconEntry} size={58} fallback={false} noMargin />
             <div className="flex flex-col justify-center">
               <Marquee
                 play={playerValue.status === "playing"}
@@ -48,7 +48,7 @@ export const PodcastButton = ({ feed }: { feed: FeedModel }) => {
               >
                 {entry.title}
               </Marquee>
-              <div className="text-text mt-0.5 overflow-hidden truncate text-xs">
+              <div className="mt-0.5 overflow-hidden truncate text-xs text-text">
                 <span>{feed.title}</span>
                 <span> · </span>
                 <span>{!!entry.publishedAt && <RelativeTime date={entry.publishedAt} />}</span>
@@ -92,14 +92,14 @@ export const PodcastButton = ({ feed }: { feed: FeedModel }) => {
       }
     >
       <div className="flex size-5 items-center justify-center">
-        <FeedIcon feed={feed} size={22} noMargin />
+        <FeedIcon target={feed} size={22} noMargin />
       </div>
     </PresentSheet>
   )
 }
 
 const ActionIcon = ({ className, onClick }: { className?: string; onClick?: () => void }) => (
-  <button type="button" className="center text-text size-10 rounded-full" onClick={onClick}>
+  <button type="button" className="center size-10 rounded-full text-text" onClick={onClick}>
     <i className={className} />
   </button>
 )
@@ -117,7 +117,7 @@ const PlaybackRateButton = () => {
 
   return (
     <button onClick={handleClick} type="button">
-      <span className="text-text block font-mono text-xs">{rates[currentIndex]!.toFixed(2)}x</span>
+      <span className="block font-mono text-xs text-text">{rates[currentIndex]!.toFixed(2)}x</span>
     </button>
   )
 }

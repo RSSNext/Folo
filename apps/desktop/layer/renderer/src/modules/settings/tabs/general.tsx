@@ -1,4 +1,3 @@
-import { useMobile } from "@follow/components/hooks/useMobile.js"
 import { ResponsiveSelect } from "@follow/components/ui/select/responsive.js"
 import { useTypeScriptHappyCallback } from "@follow/hooks"
 import { ACTION_LANGUAGE_MAP } from "@follow/shared"
@@ -9,7 +8,6 @@ import dayjs from "dayjs"
 import { useAtom } from "jotai"
 import { useEffect } from "react"
 import { useTranslation } from "react-i18next"
-import { useLocation, useRevalidator } from "react-router"
 
 import { currentSupportedLanguages } from "~/@types/constants"
 import { defaultResources } from "~/@types/default-resource"
@@ -65,8 +63,6 @@ export const SettingGeneral = () => {
     WrapEnhancedSettingTab.General,
   )
 
-  const isMobile = useMobile()
-
   const { ask } = useDialog()
   const reRenderKey = useGeneralSettingKey("enhancedSettings")
 
@@ -88,7 +84,6 @@ export const SettingGeneral = () => {
             },
           }),
           IN_ELECTRON && MinimizeToTraySetting,
-          isMobile && StartupScreenSelector,
           LanguageSelector,
 
           {
@@ -143,11 +138,10 @@ export const SettingGeneral = () => {
             label: t("general.dim_read.label"),
             description: t("general.dim_read.description"),
           }),
-          isMobile &&
-            defineSettingItem("showQuickTimeline", {
-              label: t("general.show_quick_timeline.label"),
-              description: t("general.show_quick_timeline.description"),
-            }),
+          defineSettingItem("showCompactTimelineInSub", {
+            label: t("general.show_compact_timeline_in_sub.label"),
+            description: t("general.show_compact_timeline_in_sub.description"),
+          }),
 
           { type: "title", value: t("general.mark_as_read.title") },
 
@@ -155,11 +149,11 @@ export const SettingGeneral = () => {
             label: t("general.mark_as_read.scroll.label"),
             description: t("general.mark_as_read.scroll.description"),
           }),
-          !isMobile &&
-            defineSettingItem("hoverMarkUnread", {
-              label: t("general.mark_as_read.hover.label"),
-              description: t("general.mark_as_read.hover.description"),
-            }),
+
+          defineSettingItem("hoverMarkUnread", {
+            label: t("general.mark_as_read.hover.label"),
+            description: t("general.mark_as_read.hover.description"),
+          }),
           defineSettingItem("renderMarkUnread", {
             label: t("general.mark_as_read.render.label"),
             description: t("general.mark_as_read.render.description"),
@@ -253,8 +247,6 @@ export const LanguageSelector = ({
 
   const [loadingLanguageLockMap] = useAtom(langLoadingLockMapAtom)
 
-  const isMobile = useMobile()
-
   return (
     <div className={cn("mb-3 mt-4 flex w-full items-center", containerClassName)}>
       <div className="flex grow flex-col gap-1">
@@ -281,9 +273,6 @@ export const LanguageSelector = ({
 
           const originalLanguageName = defaultResources[lang].lang.name
 
-          if (isMobile) {
-            return `${originalLanguageName} (${percent}%)`
-          }
           return (
             <span className="group" key={lang}>
               <span>
@@ -394,40 +383,5 @@ const MinimizeToTraySetting = () => {
       />
       <SettingDescription>{t("general.minimize_to_tray.description")}</SettingDescription>
     </SettingItemGroup>
-  )
-}
-
-const StartupScreenSelector = () => {
-  const { t } = useTranslation("settings")
-  const startupScreen = useGeneralSettingKey("startupScreen")
-  const revalidator = useRevalidator()
-  const { pathname } = useLocation()
-
-  return (
-    <div className="mb-3 mt-4 flex items-center justify-between">
-      <span className="shrink-0 text-sm font-medium">{t("general.startup_screen.title")}</span>
-      <ResponsiveSelect
-        size="sm"
-        items={[
-          {
-            label: t("general.startup_screen.timeline"),
-            value: "timeline",
-          },
-          {
-            label: t("general.startup_screen.subscription"),
-            value: "subscription",
-          },
-        ]}
-        triggerClassName="w-48"
-        defaultValue={startupScreen}
-        value={startupScreen}
-        onValueChange={(value) => {
-          setGeneralSetting("startupScreen", value as "subscription" | "timeline")
-          if (value === "timeline" && pathname === "/") {
-            revalidator.revalidate()
-          }
-        }}
-      />
-    </div>
   )
 }

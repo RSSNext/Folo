@@ -1,4 +1,4 @@
-import { FeedViewType, views } from "@follow/constants"
+import { FeedViewType, getView } from "@follow/constants"
 import { useCollectionEntryList } from "@follow/store/collection/hooks"
 import {
   useEntriesQuery,
@@ -13,10 +13,11 @@ import type { UseEntriesReturn } from "@follow/store/entry/types"
 import { fallbackReturn } from "@follow/store/entry/utils"
 import { useFolderFeedsByFeedId } from "@follow/store/subscription/hooks"
 import { unreadSyncService } from "@follow/store/unread/store"
+import { nextFrame } from "@follow/utils"
 import { isBizId } from "@follow/utils/utils"
 import { useMutation } from "@tanstack/react-query"
 import { debounce } from "es-toolkit/compat"
-import { useCallback, useEffect, useMemo, useRef, useState } from "react"
+import { useCallback, useEffect, useMemo, useState } from "react"
 
 import { useGeneralSettingKey } from "~/atoms/settings/general"
 import { ROUTE_FEED_PENDING } from "~/constants/app"
@@ -119,6 +120,7 @@ const useRemoteEntries = (): UseEntriesReturn => {
     hasNextPage: query.hasNextPage,
     error: query.isError ? query.error : null,
     fetchedTime,
+    queryKey: query.queryKey,
   }
 }
 
@@ -237,7 +239,7 @@ const useLocalEntries = (): UseEntriesReturn => {
 }
 
 export const useEntriesByView = ({ onReset }: { onReset?: () => void }) => {
-  const { feedId, view, listId } = useRouteParams()
+  const { view, listId } = useRouteParams()
 
   const remoteQuery = useRemoteEntries()
   const localQuery = useLocalEntries()
@@ -254,39 +256,19 @@ export const useEntriesByView = ({ onReset }: { onReset?: () => void }) => {
   const query = remoteQuery.isReady ? remoteQuery : localQuery
   const entryIds: string[] = query.entriesIds
 
-  // in unread only entries only can grow the data, but not shrink
-  // so we memo this previous data to avoid the flicker
-  const prevEntryIdsRef = useRef(entryIds)
-
-  const isFetchingFirstPage = query.isFetching && !query.isFetchingNextPage
+  const isFetchingFirstPage = remoteQuery.isFetching && !remoteQuery.isFetchingNextPage
 
   useEffect(() => {
-    if (!isFetchingFirstPage) {
-      prevEntryIdsRef.current = entryIds
-
-      onReset?.()
+    if (isFetchingFirstPage) {
+      nextFrame(() => {
+        onReset?.()
+      })
     }
-  }, [isFetchingFirstPage])
-
-  const entryIdsAsDeps = entryIds.toString()
-
-  useEffect(() => {
-    prevEntryIdsRef.current = []
-  }, [feedId])
-  useEffect(() => {
-    if (!prevEntryIdsRef.current) {
-      prevEntryIdsRef.current = entryIds
-
-      return
-    }
-    // merge the new entries with the old entries, and unique them
-    const nextIds = [...new Set([...prevEntryIdsRef.current, ...entryIds])]
-    prevEntryIdsRef.current = nextIds
-  }, [entryIdsAsDeps])
+  }, [isFetchingFirstPage, query.queryKey])
 
   const groupByDate = useGeneralSettingKey("groupByDate")
   const groupedCounts: number[] | undefined = useMemo(() => {
-    const viewDefinition = views.find((v) => v.view === view)
+    const viewDefinition = getView(view)
     if (viewDefinition?.gridMode || view === FeedViewType.All) {
       return
     }

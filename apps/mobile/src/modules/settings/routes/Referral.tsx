@@ -24,7 +24,7 @@ import {
 import { MonoText } from "@/src/components/ui/typography/MonoText"
 import { Text } from "@/src/components/ui/typography/Text"
 import { LoveCuteFiIcon } from "@/src/icons/love_cute_fi"
-import { apiClient } from "@/src/lib/api-fetch"
+import { followClient } from "@/src/lib/api-client"
 import type { NavigationControllerView } from "@/src/lib/navigation/types"
 import { toast } from "@/src/lib/toast"
 import { useColor } from "@/src/theme/colors"
@@ -32,7 +32,7 @@ import { useColor } from "@/src/theme/colors"
 const useReferralInfoQuery = () => {
   return useQuery({
     queryKey: ["referral", "info"],
-    queryFn: () => apiClient.referrals.$get().then((res) => res.data),
+    queryFn: () => followClient.api.referrals.getReferrals().then((res) => res.data),
   })
 }
 export const ReferralScreen: NavigationControllerView = () => {
@@ -64,7 +64,7 @@ export const ReferralScreen: NavigationControllerView = () => {
                 day: referralInfo?.referralCycleDays || 45,
               }}
               parent={({ children }: { children: React.ReactNode }) => (
-                <Text className="text-label mt-3 text-left text-base leading-tight">
+                <Text className="mt-3 text-left text-base leading-tight text-label">
                   {children}
                 </Text>
               )}
@@ -123,7 +123,7 @@ export const ReferralScreen: NavigationControllerView = () => {
         {invitations?.map((invitation) => (
           <GroupedInsetListBaseCell
             key={invitation.code}
-            className="bg-secondary-system-grouped-background flex-1"
+            className="flex-1 bg-secondary-system-grouped-background"
           >
             <View className="mr-2 shrink flex-row items-center gap-4">
               <UserAvatar
@@ -139,7 +139,7 @@ export const ReferralScreen: NavigationControllerView = () => {
                 >
                   {invitation.user?.name || (!invitation.user ? t("invitation.notUsed") : "")}
                 </Text>
-                <Text className="text-secondary-label text-sm">
+                <Text className="text-sm text-secondary-label">
                   {t("invitation.created_at")} {dayjs(invitation.createdAt).format("YYYY/MM/DD")}
                 </Text>
               </View>

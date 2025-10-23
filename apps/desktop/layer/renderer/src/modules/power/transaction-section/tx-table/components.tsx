@@ -73,7 +73,7 @@ export const UserRenderer = ({
       onClick={() => {
         if (user?.id) presentUserModal(user.id)
       }}
-      className="cursor-button flex w-full min-w-0 items-center"
+      className="flex w-full min-w-0 cursor-button items-center"
     >
       {name === APP_NAME ? (
         <Logo className={cn("aspect-square size-4", iconClassName)} />

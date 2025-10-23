@@ -13,13 +13,13 @@
   "dependencies": {
     "@mozilla/readability": "0.6.0",
     "chardet": "2.1.0",
-    "dompurify": "3.2.6",
+    "dompurify": "3.3.0",
     "linkedom": "0.18.11"
   },
   "devDependencies": {
     "@follow/configs": "workspace:*",
-    "nbump": "2.1.5",
-    "tsdown": "0.12.9"
+    "nbump": "2.1.7",
+    "tsdown": "0.15.8"
   },
   "publishConfig": {
     "exports": {

@@ -5,10 +5,14 @@ import { Avatar, AvatarFallback, AvatarImage } from "@follow/components/ui/avata
 import { Button } from "@follow/components/ui/button/index.js"
 import { LoadingWithIcon } from "@follow/components/ui/loading/index.jsx"
 import { EllipsisHorizontalTextWithTooltip } from "@follow/components/ui/typography/index.js"
-import type { SubscriptionModel } from "@follow/models/types"
 import { useIsSubscribed } from "@follow/store/subscription/hooks"
 import { usePrefetchUser, useUserById } from "@follow/store/user/hooks"
 import { cn } from "@follow/utils/utils"
+import type {
+  InboxSubscriptionResponse,
+  ListSubscriptionResponse,
+  SubscriptionWithFeed,
+} from "@follow-app/client-sdk"
 import { AnimatePresence } from "motion/react"
 import type { FC } from "react"
 import { memo, useState } from "react"
@@ -71,7 +75,7 @@ export const SubscriptionItems = ({
 
 export const SubscriptionGroup: FC<{
   category: string
-  subscriptions: SubscriptionModel[]
+  subscriptions: (SubscriptionWithFeed | ListSubscriptionResponse | InboxSubscriptionResponse)[]
   itemStyle: ItemVariant
 }> = memo(({ category, subscriptions, itemStyle }) => {
   const [isOpened, setIsOpened] = useState(true)
@@ -114,7 +118,7 @@ export const SubscriptionGroup: FC<{
 })
 
 const SubscriptionItem: FC<{
-  subscription: SubscriptionModel
+  subscription: SubscriptionWithFeed | ListSubscriptionResponse | InboxSubscriptionResponse
 
   variant: ItemVariant
 }> = ({ subscription, variant }) => {
@@ -149,12 +153,12 @@ const SubscriptionItem: FC<{
       data-feed-id={subscription.feedId}
     >
       <a
-        className="cursor-menu flex flex-1 items-center"
+        className="flex flex-1 cursor-menu items-center"
         href={subscription.feeds.siteUrl!}
         target="_blank"
         onClick={isMobile ? handleFollow : undefined}
       >
-        <FeedIcon feed={subscription.feeds} size={22} className="mr-3" />
+        <FeedIcon target={subscription.feeds as any} size={22} className="mr-3" />
         <div
           className={cn(
             "w-0 flex-1 grow",

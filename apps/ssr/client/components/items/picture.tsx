@@ -1,6 +1,5 @@
 import { LazyImage } from "@client/components/ui/image"
 import { getPreferredTitle } from "@client/lib/helper"
-import type { EntriesPreview } from "@client/query/entries"
 import type { Feed } from "@client/query/feed"
 import { MemoedDangerousHTMLStyle } from "@follow/components/common/MemoedDangerousHTMLStyle.jsx"
 import { TitleMarquee } from "@follow/components/ui/marquee/index.jsx"
@@ -15,12 +14,14 @@ import {
 import { Masonry } from "@follow/components/ui/masonry/index.jsx"
 import { nextFrame } from "@follow/utils/dom"
 import { cn } from "@follow/utils/utils"
+import type { ParsedEntry } from "@follow-app/client-sdk"
 import dayjs from "dayjs"
 import { throttle } from "es-toolkit/compat"
 import type { RenderComponentProps } from "masonic"
 import { AnimatePresence, m } from "motion/react"
 import type { FC, PropsWithChildren } from "react"
 import { memo, useEffect, useLayoutEffect, useMemo, useRef, useState } from "react"
+import * as React from "react"
 import { PhotoProvider, PhotoView } from "react-photo-view"
 import inlineStyle from "react-photo-view/dist/react-photo-view.css?raw"
 
@@ -97,7 +98,7 @@ const getCurrentColumn = (w: number) => {
   return columns
 }
 export const PictureList: FC<{
-  entries: EntriesPreview
+  entries: ParsedEntry[]
 
   feed?: Feed
 }> = ({ entries, feed }) => {
@@ -209,7 +210,7 @@ const render: React.ComponentType<
     width: number | undefined
     blurhash: string | undefined
     id: string
-    entry: EntriesPreview[number]
+    entry: ParsedEntry
     feed?: Feed
   }>
 > = memo(({ data }) => {
@@ -271,7 +272,7 @@ const GridItemFooter = ({
   timeClassName,
   feed,
 }: {
-  entry: EntriesPreview[number]
+  entry: ParsedEntry
   feed?: Feed
   titleClassName?: string
   descriptionClassName?: string
@@ -280,7 +281,7 @@ const GridItemFooter = ({
   return (
     <div className={cn("relative px-2 py-1 text-sm")}>
       <div className="flex items-center">
-        <div className={"bg-accent mr-1 size-1.5 shrink-0 self-center rounded-full duration-200"} />
+        <div className={"mr-1 size-1.5 shrink-0 self-center rounded-full bg-accent duration-200"} />
         <div
           className={cn(
             "relative mb-1 mt-1.5 flex w-full items-center gap-1 truncate font-medium",
@@ -291,15 +292,9 @@ const GridItemFooter = ({
         </div>
       </div>
       <div className="flex items-center gap-1 truncate text-[13px]">
-        <FeedIcon
-          fallback
-          className="mr-0.5 flex"
-          feed={feed?.feed || entry.feeds}
-          entry={entry}
-          size={18}
-        />
+        <FeedIcon fallback className="mr-0.5 flex" target={feed?.feed} entry={entry} size={18} />
         <span className={cn("min-w-0 truncate", descriptionClassName)}>
-          {getPreferredTitle(feed?.feed || entry.feeds)}
+          {getPreferredTitle(feed?.feed)}
         </span>
         <span className={cn("text-zinc-500", timeClassName)}>·</span>
         <span className={cn("text-zinc-500", timeClassName)}>

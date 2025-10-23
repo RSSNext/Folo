@@ -19,6 +19,7 @@ import {
   regexpPathToPath,
 } from "@follow/utils/path-parser"
 import { cn } from "@follow/utils/utils"
+import type { RSSHubRouteMetadata } from "@follow-app/client-sdk"
 import { zodResolver } from "@hookform/resolvers/zod"
 import { m } from "motion/react"
 import type { FC } from "react"
@@ -39,7 +40,6 @@ import {
 } from "~/components/ui/modal/stacked/hooks"
 
 import { FeedForm } from "./FeedForm"
-import type { RSSHubRoute } from "./types"
 import { normalizeRSSHubParameters } from "./utils"
 
 const FeedMaintainers = ({ maintainers }: { maintainers?: string[] }) => {
@@ -48,7 +48,7 @@ const FeedMaintainers = ({ maintainers }: { maintainers?: string[] }) => {
   }
 
   return (
-    <div className="text-text mb-2 flex flex-col gap-x-1 text-sm">
+    <div className="mb-2 flex flex-col gap-x-1 text-sm text-text">
       <Trans
         i18nKey="discover.feed_maintainers"
         components={{
@@ -60,7 +60,7 @@ const FeedMaintainers = ({ maintainers }: { maintainers?: string[] }) => {
                   key={maintainer}
                   target="_blank"
                   rel="noreferrer noopener"
-                  className="text-text-secondary hover:text-accent inline-flex cursor-pointer items-center duration-200"
+                  className="inline-flex cursor-pointer items-center text-text-secondary duration-200 hover:text-accent"
                 >
                   @{maintainer}
                   <i className="i-mgc-external-link-cute-re ml-0.5" />
@@ -92,7 +92,7 @@ export const DiscoverFeedForm = ({
   viewportClassName,
   rootClassName,
 }: {
-  route: RSSHubRoute
+  route: RSSHubRouteMetadata
   routePrefix: string
   noDescription?: boolean
   routeParams?: RouteParams
@@ -242,9 +242,9 @@ export const DiscoverFeedForm = ({
                       name={keyItem.name}
                       render={({ field }) => (
                         <FormItem className="flex flex-col space-y-2">
-                          <FormLabel className="text-text text-headline pl-3 capitalize">
+                          <FormLabel className="pl-3 text-headline capitalize text-text">
                             {keyItem.name}
-                            {!keyItem.optional && <sup className="text-red ml-1 align-sub">*</sup>}
+                            {!keyItem.optional && <sup className="ml-1 align-sub text-red">*</sup>}
                           </FormLabel>
                           {parameters?.options ? (
                             <Select
@@ -283,7 +283,7 @@ export const DiscoverFeedForm = ({
                             />
                           )}
                           {!!parameters && (
-                            <Markdown className="text-text-secondary text-footnote w-full max-w-full whitespace-normal break-all pl-3">
+                            <Markdown className="w-full max-w-full whitespace-normal break-all pl-3 text-footnote text-text-secondary">
                               {parameters.description}
                             </Markdown>
                           )}
@@ -299,7 +299,7 @@ export const DiscoverFeedForm = ({
                         key={`${routeParamsKeyPrefix}${key}`}
                         className="flex flex-col space-y-2"
                       >
-                        <FormLabel className="text-text text-headline pl-3 capitalize">
+                        <FormLabel className="pl-3 text-headline capitalize text-text">
                           {key}
                         </FormLabel>
                         <Input
@@ -308,7 +308,7 @@ export const DiscoverFeedForm = ({
                           className="grow-0"
                         />
                         {!!value.description && (
-                          <Markdown className="text-text-secondary text-footnote w-full max-w-full text-wrap pl-3">
+                          <Markdown className="w-full max-w-full text-wrap pl-3 text-footnote text-text-secondary">
                             {value.description}
                           </Markdown>
                         )}
@@ -354,17 +354,17 @@ const ReadmeAside = ({ description }: { description?: string }) => {
     <RootPortal to={modalElementRef.current}>
       <div className="absolute inset-y-0 -right-px z-0">
         <m.div
-          className="bg-background border-border absolute inset-y-0 left-0 z-[-1] flex w-[40ch] flex-col rounded-md border pt-4 shadow-lg"
+          className="absolute inset-y-0 left-0 z-[-1] flex w-[40ch] flex-col rounded-md border border-border bg-background pt-4 shadow-lg"
           initial={{ x: "-50px" }}
           animate={{ x: "0px" }}
           transition={Spring.presets.smooth}
         >
-          <h3 className="text-headline mb-2 shrink-0 px-4 font-medium">
+          <h3 className="mb-2 shrink-0 px-4 text-headline font-medium">
             {t("discover.feed_description")}
           </h3>
           <ScrollArea.ScrollArea viewportClassName="px-4 pb-4" rootClassName="h-0 grow">
             <div className="pr-4">
-              <Markdown className="prose-p:my-1 w-full cursor-text select-text break-words">
+              <Markdown className="w-full cursor-text select-text break-words prose-p:my-1">
                 {/* Fix markdown directive */}
                 {description.replaceAll("::: ", ":::")}
               </Markdown>
@@ -395,7 +395,7 @@ const PreviewUrl: FC<{
   const renderedPath = `${routePrefix}${fullPath}`
   return (
     <div className="group relative min-w-0 px-1 pb-2">
-      <pre className="bg-material-medium text-text-secondary relative w-full whitespace-pre-line break-words rounded p-2 text-xs">
+      <pre className="relative w-full whitespace-pre-line break-words rounded bg-material-medium p-2 text-xs text-text-secondary">
         {renderedPath}
         <div className="absolute right-1 top-1/2 -translate-y-1/2">
           <CopyButton

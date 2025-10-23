@@ -16,7 +16,7 @@
     "@follow/types": "workspace:*",
     "@follow/utils": "workspace:*",
     "foxact": "0.2.49",
-    "jotai": "2.12.5",
+    "jotai": "2.15.0",
     "usehooks-ts": "3.1.1"
   },
   "devDependencies": {

@@ -39,7 +39,7 @@ export const viteRenderBaseConfig = {
     format: "es",
   },
   optimizeDeps: {
-    exclude: ["sqlocal", "wa-sqlite"],
+    exclude: ["sqlocal", "wa-sqlite", "@follow-app/client-sdk"],
   },
   resolve: {
     alias: {
@@ -67,16 +67,15 @@ export const viteRenderBaseConfig = {
       },
     },
     localesJsonPlugin(),
+    codeInspectorPlugin({
+      bundler: "vite",
+      hotKeys: ["altKey"],
+    }),
     react({
       // jsxImportSource: "@welldone-software/why-did-you-render", // <-----
     }),
     circularImportRefreshPlugin(),
 
-    codeInspectorPlugin({
-      bundler: "vite",
-      hotKeys: ["altKey"],
-      editor: "cursor",
-    }),
     sentryVitePlugin({
       org: "follow-rg",
       project: "follow",

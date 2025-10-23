@@ -16,7 +16,12 @@ export const useDefaultHeaderHeight = () => {
 
   const defaultHeaderHeight = Platform.select({
     android: ANDROID_DEFAULT_HEADER_HEIGHT + topInset,
-    default: getDefaultHeaderHeight(frame, false, topInset),
+
+    default: getDefaultHeaderHeight({
+      landscape: frame.width > frame.height,
+      modalPresentation: false,
+      topInset,
+    }),
   })
 
   return defaultHeaderHeight

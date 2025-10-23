@@ -1,4 +1,3 @@
-import { MdiMeditation } from "@follow/components/icons/Meditation.js"
 import { ActionButton } from "@follow/components/ui/button/index.js"
 import { RSSHubLogo } from "@follow/components/ui/platform-icon/icons.js"
 import { RootPortal } from "@follow/components/ui/portal/index.js"
@@ -14,7 +13,6 @@ import { useTranslation } from "react-i18next"
 import { useNavigate } from "react-router"
 
 import { useIsInMASReview, useServerConfigs } from "~/atoms/server-configs"
-import { useIsZenMode, useSetZenMode } from "~/atoms/settings/ui"
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -23,6 +21,7 @@ import {
   DropdownMenuSeparator,
   DropdownMenuTrigger,
 } from "~/components/ui/dropdown-menu/dropdown-menu"
+import { useFeature } from "~/hooks/biz/useFeature"
 import { UrlBuilder } from "~/lib/url-builder"
 import { useAchievementModal } from "~/modules/achievement/hooks"
 import { usePresentUserProfileModal } from "~/modules/profile/hooks"
@@ -30,8 +29,6 @@ import { useSettingModal } from "~/modules/settings/modal/use-setting-modal-hack
 import { signOut, useSession } from "~/queries/auth"
 
 import { useActivationModal } from "../activation"
-import { COMMAND_ID } from "../command/commands/id"
-import { useCommandShortcuts } from "../command/hooks/use-command-binding"
 import type { LoginProps } from "./LoginButton"
 import { LoginButton } from "./LoginButton"
 import { UserAvatar } from "./UserAvatar"
@@ -49,6 +46,7 @@ export const ProfileButton: FC<ProfileButtonProps> = memo((props) => {
   const presentUserProfile = usePresentUserProfileModal("dialog")
   const presentAchievement = useAchievementModal()
   const { t } = useTranslation()
+  const aiEnabled = useFeature("ai")
 
   const [dropdown, setDropdown] = useState(false)
 
@@ -56,11 +54,7 @@ export const ProfileButton: FC<ProfileButtonProps> = memo((props) => {
 
   const role = useUserRole()
   const presentActivationModal = useActivationModal()
-  const zenModeSetting = useIsZenMode()
-  const setZenMode = useSetZenMode()
   const isInMASReview = useIsInMASReview()
-
-  const shortcuts = useCommandShortcuts()
 
   if (status === "unauthenticated") {
     return <LoginButton {...props} />
@@ -70,7 +64,7 @@ export const ProfileButton: FC<ProfileButtonProps> = memo((props) => {
     <DropdownMenu onOpenChange={setDropdown}>
       <DropdownMenuTrigger
         asChild
-        className="focus-visible:bg-theme-item-hover !outline-none data-[state=open]:bg-transparent"
+        className="!outline-none focus-visible:bg-theme-item-hover data-[state=open]:bg-transparent"
       >
         {props.animatedAvatar ? (
           <TransitionAvatar stage={dropdown ? "zoom-in" : ""} />
@@ -80,7 +74,7 @@ export const ProfileButton: FC<ProfileButtonProps> = memo((props) => {
       </DropdownMenuTrigger>
 
       <DropdownMenuContent
-        className="macos:bg-material-opaque min-w-[240px] overflow-visible px-1 pt-6"
+        className="min-w-[240px] overflow-visible px-1 pt-6 macos:bg-material-opaque"
         side="bottom"
         align="center"
       >
@@ -150,30 +144,20 @@ export const ProfileButton: FC<ProfileButtonProps> = memo((props) => {
           </DropdownMenuItem>
         )}
 
-        <DropdownMenuItem
-          className="pl-3"
-          onClick={() => {
-            navigate("/ai")
-          }}
-          icon={<i className="i-mgc-ai-cute-re" />}
-        >
-          {t("user_button.ai")}
-        </DropdownMenuItem>
-
-        <DropdownMenuSeparator />
-
-        {!zenModeSetting && (
+        {aiEnabled && (
           <DropdownMenuItem
             className="pl-3"
             onClick={() => {
-              setZenMode(true)
+              navigate("/ai")
             }}
-            icon={<MdiMeditation className="size-4" />}
-            shortcut={shortcuts[COMMAND_ID.layout.toggleZenMode]}
+            icon={<i className="i-mgc-ai-cute-re" />}
           >
-            {t("user_button.zen_mode")}
+            {t("user_button.ai")}
           </DropdownMenuItem>
         )}
+
+        <DropdownMenuSeparator />
+
         <DropdownMenuItem
           className="pl-3"
           onClick={() => {
