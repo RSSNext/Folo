@@ -36,7 +36,7 @@ export const EntryListContentVideo = ({
   usePrefetchEntryTranslation({
     entryIds: active ? viewableItems.map((item) => item.key) : [],
     language: actionLanguage,
-    setting: translation,
+    enabled: translation,
   })
 
   const ListFooterComponent = useMemo(

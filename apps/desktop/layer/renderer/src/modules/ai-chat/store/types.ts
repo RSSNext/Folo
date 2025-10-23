@@ -57,10 +57,7 @@ export interface AIChatContextBlocks {
   blocks: AIChatContextBlock[]
 }
 
-export type AIDisplayFeedTool = ToolWithState<BizUITools["displayFeed"]>
-export type AIDisplayEntriesTool = ToolWithState<BizUITools["displayEntries"]>
-export type AIDisplaySubscriptionsTool = ToolWithState<BizUITools["displaySubscriptions"]>
-export type AIDisplayFlowTool = ToolWithState<BizUITools["displayFlowChart"]>
+export type AIDisplayFlowTool = ToolWithState<BizUITools["display_flow_chart"]>
 
 export { type BizUIMetadata, type BizUITools } from "@folo-services/ai-tools"
 export type BizUIDataTypes = {

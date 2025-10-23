@@ -48,7 +48,7 @@ export const EntryListContentSocial = ({
   usePrefetchEntryTranslation({
     entryIds: active ? viewableItems.map((item) => item.key) : [],
     language: actionLanguage,
-    setting: translation,
+    enabled: translation,
   })
 
   // Show loading skeleton when entries are not ready and no data yet

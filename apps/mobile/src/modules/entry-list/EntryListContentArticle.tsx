@@ -55,7 +55,7 @@ export const EntryListContentArticle = ({
   usePrefetchEntryTranslation({
     entryIds: active ? viewableItems.map((item) => item.key) : [],
     language: actionLanguage,
-    setting: translation,
+    enabled: translation,
   })
 
   const headerHeight = useHeaderHeight()

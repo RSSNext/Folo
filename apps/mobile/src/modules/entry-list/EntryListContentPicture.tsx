@@ -38,7 +38,7 @@ export const EntryListContentPicture = ({
   usePrefetchEntryTranslation({
     entryIds: active ? viewableItems.map((item) => item.key) : [],
     language: actionLanguage,
-    setting: translation,
+    enabled: translation,
   })
 
   const renderItem = useTypeScriptHappyCallback(({ item }: { item: string }) => {
