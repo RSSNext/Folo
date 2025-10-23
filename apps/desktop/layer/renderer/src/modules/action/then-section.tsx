@@ -25,7 +25,7 @@ type ThenSectionProps = {
   variant?: "detail" | "compact"
 }
 
-export const ThenSection = ({ index, variant = "detail" }: ThenSectionProps) => {
+export const ThenSection = ({ index, variant: _variant = "detail" }: ThenSectionProps) => {
   const { t } = useTranslation("settings")
   const result = useActionRule(index, (a) => a.result)
 
@@ -49,7 +49,7 @@ export const ThenSection = ({ index, variant = "detail" }: ThenSectionProps) => 
               <button
                 type="button"
                 disabled={disabled}
-                className="flex items-center justify-between rounded-2xl border border-dashed border-fill-secondary/60 bg-material-ultra-thin/80 px-4 py-3 text-xs text-text-tertiary transition-colors hover:border-fill-secondary/80 hover:text-text disabled:opacity-50"
+                className="flex items-center justify-between rounded-lg bg-fill-quaternary px-4 py-3 text-xs text-text-tertiary transition-colors hover:bg-fill-tertiary hover:text-text disabled:opacity-50"
                 onClick={() => {
                   actionActions.addRewriteRule(index)
                 }}
@@ -71,7 +71,7 @@ export const ThenSection = ({ index, variant = "detail" }: ThenSectionProps) => 
                   return (
                     <div
                       key={rewriteIdx}
-                      className="flex flex-col gap-3 rounded-2xl border border-fill-secondary/40 bg-material-ultra-thin/80 p-4"
+                      className="flex flex-col gap-3 rounded-lg bg-fill-quaternary p-4"
                     >
                       <div className="grid gap-3 @[520px]:grid-cols-2">
                         <label className="text-xs font-medium uppercase tracking-wide text-text-tertiary">
@@ -126,7 +126,7 @@ export const ThenSection = ({ index, variant = "detail" }: ThenSectionProps) => 
               <button
                 type="button"
                 disabled={disabled}
-                className="flex items-center justify-between rounded-2xl border border-dashed border-fill-secondary/60 bg-material-ultra-thin/80 px-4 py-3 text-xs text-text-tertiary transition-colors hover:border-fill-secondary/80 hover:text-text disabled:opacity-50"
+                className="flex items-center justify-between rounded-lg bg-fill-quaternary px-4 py-3 text-xs text-text-tertiary transition-colors hover:bg-fill-tertiary hover:text-text disabled:opacity-50"
                 onClick={() => {
                   actionActions.addWebhook(index)
                 }}
@@ -140,7 +140,7 @@ export const ThenSection = ({ index, variant = "detail" }: ThenSectionProps) => 
                   return (
                     <div
                       key={webhookIdx}
-                      className="flex flex-col gap-2 rounded-2xl border border-fill-secondary/40 bg-material-ultra-thin/80 p-4"
+                      className="flex flex-col gap-2 rounded-lg bg-fill-quaternary p-4"
                     >
                       <Input
                         disabled={disabled}
@@ -195,111 +195,153 @@ export const ThenSection = ({ index, variant = "detail" }: ThenSectionProps) => 
   )
 
   return (
-    <section
-      className={cn(
-        "flex flex-col gap-4 rounded-2xl border border-fill-secondary/40 bg-material-ultra-thin/80 p-4 shadow-sm",
-        variant === "compact" && "bg-material-ultra-thin/70",
-      )}
-    >
+    <section className="flex flex-col gap-4">
       <div className="flex flex-wrap items-center justify-between gap-3">
-        <span className="text-xs font-semibold uppercase tracking-wide text-text-tertiary">
+        <span className="text-xs font-semibold uppercase tracking-wide text-text-secondary">
           {t("actions.action_card.then_do")}
         </span>
         {enabledActions.length > 0 && (
-          <span className="text-xs text-text-tertiary">
+          <span className="text-xs text-text-secondary">
             {t("actions.action_card.summary.action_count", { count: enabledActions.length })}
           </span>
         )}
       </div>
 
-      <div className="flex flex-col gap-3">
+      <div className="relative flex flex-col">
         {enabledActions.length === 0 ? (
-          <div className="rounded-2xl border border-dashed border-fill-secondary/60 bg-fill-tertiary/40 px-4 py-6 text-center text-xs text-text-tertiary">
-            {t("actions.action_card.summary.no_actions")}
+          <div className="flex flex-col items-center gap-3 rounded-lg bg-fill-quaternary px-4 py-6">
+            <span className="text-xs text-text-secondary">
+              {t("actions.action_card.summary.no_actions")}
+            </span>
+            <DropdownMenu>
+              <DropdownMenuTrigger asChild disabled={disabled}>
+                <Button variant="outline" size="sm" buttonClassName="border-dashed">
+                  <i className="i-mgc-add-cute-re mr-2" />
+                  {t("actions.action_card.add")}
+                </Button>
+              </DropdownMenuTrigger>
+              <DropdownMenuContent className="w-60">
+                {notEnabledActions.map((action) => {
+                  return (
+                    <DropdownMenuItem
+                      key={action.label}
+                      onClick={() => {
+                        if (action.onEnable) {
+                          action.onEnable(index)
+                        } else {
+                          actionActions.patchRule(index, { result: { [action.value]: true } })
+                        }
+                      }}
+                    >
+                      <div className="flex items-center gap-2">
+                        <i className={action.iconClassname} />
+                        {t(action.label)}
+                      </div>
+                    </DropdownMenuItem>
+                  )
+                })}
+              </DropdownMenuContent>
+            </DropdownMenu>
           </div>
         ) : (
-          enabledActions.map((action) => {
-            return (
-              <Fragment key={action.label}>
-                <div className="flex flex-col gap-3 rounded-2xl border border-fill-secondary/40 bg-fill-tertiary/40 p-4">
-                  <div className="flex flex-wrap items-center justify-between gap-3">
-                    <div className="flex flex-wrap items-center gap-2 text-text">
-                      <span className="flex size-9 items-center justify-center rounded-full bg-fill-quaternary text-text-tertiary">
-                        <i className={cn(action.iconClassname, "text-base")} />
-                      </span>
-                      <span className="text-sm font-medium">{t(action.label)}</span>
-                      {action.prefixElement && (
-                        <div className="ml-1 text-xs text-text-tertiary">
-                          {action.prefixElement}
-                        </div>
-                      )}
-                    </div>
-                    <div className="flex items-center gap-2">
-                      {action.settingsPath && (
-                        <Button
-                          variant="outline"
-                          size="sm"
-                          buttonClassName="rounded-full"
-                          onClick={() => {
-                            settingModalPresent(action.settingsPath)
-                          }}
-                        >
-                          {t("actions.action_card.settings")}
-                        </Button>
-                      )}
-                      <IconButton
-                        icon="i-mgc-delete-2-cute-re"
-                        ariaLabel={t("actions.action_card.summary.delete")}
-                        disabled={disabled}
-                        onClick={() => {
-                          actionActions.deleteRuleAction(index, action.value)
-                        }}
-                      />
-                    </div>
-                  </div>
-                  {action.config && (
-                    <div className="rounded-2xl border border-fill-secondary/30 bg-material-ultra-thin/80 p-4">
-                      {action.config()}
-                    </div>
-                  )}
-                </div>
-              </Fragment>
-            )
-          })
-        )}
-
-        <DropdownMenu>
-          <DropdownMenuTrigger asChild disabled={disabled}>
-            <Button
-              variant="outline"
-              buttonClassName="w-full justify-center border-dashed border-fill-secondary/60"
-            >
-              <i className="i-mgc-add-cute-re mr-2" />
-              {t("actions.action_card.add")}
-            </Button>
-          </DropdownMenuTrigger>
-          <DropdownMenuContent className="w-60">
-            {notEnabledActions.map((action) => {
+          <>
+            {enabledActions.map((action, actionIndex) => {
+              const isLast = actionIndex === enabledActions.length - 1
               return (
-                <DropdownMenuItem
-                  key={action.label}
-                  onClick={() => {
-                    if (action.onEnable) {
-                      action.onEnable(index)
-                    } else {
-                      actionActions.patchRule(index, { result: { [action.value]: true } })
-                    }
-                  }}
-                >
-                  <div className="flex items-center gap-2">
-                    <i className={action.iconClassname} />
-                    {t(action.label)}
+                <Fragment key={action.label}>
+                  <div className="relative flex gap-4">
+                    {/* Connection line and icon */}
+                    <div className="relative flex flex-col items-center">
+                      <div className="flex size-9 shrink-0 items-center justify-center rounded-full bg-material-ultra-thick text-text shadow-sm">
+                        <i className={cn(action.iconClassname, "text-base")} />
+                      </div>
+                      {!isLast && (
+                        <div className="absolute top-9 h-[calc(100%+0.75rem)] w-0.5 bg-gradient-to-b from-fill-secondary to-transparent" />
+                      )}
+                    </div>
+
+                    {/* Action content */}
+                    <div className="flex min-w-0 flex-1 flex-col gap-3 pb-6">
+                      <div className="flex items-center gap-4">
+                        {/* Label */}
+                        <span className="text-sm font-medium text-text">{t(action.label)}</span>
+
+                        {/* Spacer */}
+                        <div className="flex-1" />
+
+                        {/* Value selector or prefix element */}
+                        {action.prefixElement && (
+                          <div className="text-xs text-text-secondary">{action.prefixElement}</div>
+                        )}
+
+                        {/* Settings button */}
+                        {action.settingsPath && (
+                          <Button
+                            variant="outline"
+                            size="sm"
+                            buttonClassName="rounded-lg"
+                            onClick={() => {
+                              settingModalPresent(action.settingsPath)
+                            }}
+                          >
+                            {t("actions.action_card.settings")}
+                          </Button>
+                        )}
+
+                        {/* Delete button */}
+                        <IconButton
+                          icon="i-mgc-delete-2-cute-re"
+                          ariaLabel={t("actions.action_card.summary.delete")}
+                          disabled={disabled}
+                          onClick={() => {
+                            actionActions.deleteRuleAction(index, action.value)
+                          }}
+                        />
+                      </div>
+                      {action.config && (
+                        <div className="rounded-lg bg-fill-quinary p-4">{action.config()}</div>
+                      )}
+                    </div>
                   </div>
-                </DropdownMenuItem>
+                </Fragment>
               )
             })}
-          </DropdownMenuContent>
-        </DropdownMenu>
+            <div className="relative flex gap-4">
+              <div className="size-9 shrink-0" />
+              <div className="pb-2">
+                <DropdownMenu>
+                  <DropdownMenuTrigger asChild disabled={disabled}>
+                    <Button variant="outline" size="sm" buttonClassName="border-dashed">
+                      <i className="i-mgc-add-cute-re mr-2" />
+                      {t("actions.action_card.add")}
+                    </Button>
+                  </DropdownMenuTrigger>
+                  <DropdownMenuContent align="start" className="w-60">
+                    {notEnabledActions.map((action) => {
+                      return (
+                        <DropdownMenuItem
+                          key={action.label}
+                          onClick={() => {
+                            if (action.onEnable) {
+                              action.onEnable(index)
+                            } else {
+                              actionActions.patchRule(index, { result: { [action.value]: true } })
+                            }
+                          }}
+                        >
+                          <div className="flex items-center gap-2">
+                            <i className={action.iconClassname} />
+                            {t(action.label)}
+                          </div>
+                        </DropdownMenuItem>
+                      )
+                    })}
+                  </DropdownMenuContent>
+                </DropdownMenu>
+              </div>
+            </div>
+          </>
+        )}
       </div>
     </section>
   )
@@ -321,7 +363,7 @@ const IconButton = ({
       type="button"
       aria-label={ariaLabel}
       disabled={disabled}
-      className="flex size-9 items-center justify-center rounded-full border border-fill-secondary/40 text-text-tertiary transition-colors hover:border-fill-secondary hover:text-text disabled:opacity-50"
+      className="flex size-6 items-center justify-center rounded-md text-text-secondary transition-colors hover:bg-fill-quaternary hover:text-red disabled:opacity-50"
       onClick={onClick}
     >
       <i className={icon} />

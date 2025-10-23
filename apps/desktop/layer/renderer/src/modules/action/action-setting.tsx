@@ -11,7 +11,7 @@ import { JsonObfuscatedCodec } from "@follow/utils/json-codec"
 import { cn } from "@follow/utils/utils"
 import { useQueryClient } from "@tanstack/react-query"
 import { m } from "motion/react"
-import { useEffect, useState } from "react"
+import { useCallback, useEffect, useState } from "react"
 import { useTranslation } from "react-i18next"
 import { unstable_usePrompt } from "react-router"
 import { toast } from "sonner"
@@ -43,12 +43,12 @@ const EmptyActionPlaceholder = () => {
     <div className="relative flex min-h-96 w-full items-center justify-center">
       <div className="flex flex-col items-center gap-6 text-center">
         {/* Simple icon */}
-        <div className="flex size-16 items-center justify-center rounded-2xl bg-fill-quaternary">
-          <i className="i-mgc-magic-2-cute-re size-8 text-text-secondary" />
+        <div className="flex size-14 items-center justify-center rounded-lg border border-fill-secondary bg-fill-quinary">
+          <i className="i-mgc-magic-2-cute-re size-7 text-text-secondary" />
         </div>
 
         <div className="space-y-2">
-          <h2 className="text-xl font-semibold text-text">
+          <h2 className="text-lg font-semibold text-text">
             {t("actions.action_card.empty.title")}
           </h2>
           <p className="max-w-sm text-sm text-text-secondary">
@@ -69,9 +69,9 @@ const EmptyActionPlaceholder = () => {
           ease: "easeInOut",
         }}
       >
-        <div className="flex items-center gap-2 text-text-tertiary">
+        <div className="flex items-center gap-2 text-text-secondary">
           <span className="text-sm font-medium">{t("actions.action_card.empty.start")}</span>
-          <i className="i-mgc-arrow-right-up-cute-re size-6" />
+          <i className="i-mgc-arrow-right-up-cute-re size-5" />
         </div>
       </m.div>
     </div>
@@ -115,10 +115,11 @@ export const ActionSetting = () => {
   }
 
   return (
-    <div className="flex w-full flex-col gap-6">
+    <>
       <ActionButtonGroup onCreateRule={handleCreateRule} />
+      <ShareImportSection />
       {hasActions ? (
-        <div className="flex flex-col gap-6 @container">
+        <div className="flex w-full flex-col gap-6 @container">
           <div className="hidden @[960px]:grid @[960px]:grid-cols-[minmax(0,260px)_minmax(0,1fr)] @[960px]:gap-6">
             <RuleList selectedIndex={selectedRuleIndex} onSelect={setSelectedRuleIndex} />
             <RuleCard index={selectedRuleIndex} mode="detail" />
@@ -142,6 +143,125 @@ export const ActionSetting = () => {
       ) : (
         <EmptyActionPlaceholder />
       )}
+    </>
+  )
+}
+
+const ShareImportSection = () => {
+  const { t } = useTranslation("settings")
+  const actionLength = useActionRules((actions) => actions.length)
+  const hasActions = actionLength > 0
+
+  const handleExport = useCallback(() => {
+    try {
+      const jsonData = actionActions.exportRules()
+      const filename = generateExportFilename()
+      downloadJsonFile(jsonData, filename)
+      toast.success(`Action rules exported successfully as ${filename}`)
+    } catch {
+      toast.error("Failed to export action rules")
+    }
+  }, [])
+
+  const handleImport = useCallback(async () => {
+    try {
+      const jsonData = await selectJsonFile()
+      const result = actionActions.importRules(jsonData)
+
+      if (result.success) {
+        toast.success(result.message)
+      } else {
+        toast.error(result.message)
+      }
+    } catch (error) {
+      if (error instanceof Error && error.message === "No file selected") {
+        return
+      }
+      toast.error("Failed to import action rules")
+    }
+  }, [])
+
+  const foloPrefix = "folo:actions#"
+  const handleCopyToClipboard = useCallback(async () => {
+    try {
+      const jsonData = actionActions.exportRules()
+      const codecData = JsonObfuscatedCodec.encode(jsonData)
+      await copyToClipboard(`${foloPrefix}${codecData}`)
+      toast.success("Action rules copied to clipboard")
+    } catch (error) {
+      toast.error("Failed to copy action rules to clipboard")
+      console.error(error)
+    }
+  }, [foloPrefix])
+
+  const handleImportFromClipboard = useCallback(async () => {
+    try {
+      const clipboardData = await readFromClipboard()
+      if (!clipboardData.startsWith(foloPrefix)) {
+        toast.error("Invalid clipboard data")
+        return
+      }
+      const codecData = clipboardData.slice(foloPrefix.length)
+      const jsonData = JsonObfuscatedCodec.decode(codecData)
+      const result = actionActions.importRules(jsonData)
+
+      if (result.success) {
+        toast.success(result.message)
+      } else {
+        toast.error(result.message)
+      }
+    } catch (error) {
+      if (error instanceof Error && error.message.includes("clipboard")) {
+        toast.error(error.message)
+      } else {
+        toast.error("Failed to import from clipboard")
+      }
+      console.error(error)
+    }
+  }, [foloPrefix])
+
+  return (
+    <div className="mb-4 flex justify-end">
+      <DropdownMenu>
+        <DropdownMenuTrigger asChild>
+          <Button
+            variant="outline"
+            size="sm"
+            className="size-9 p-0"
+            aria-label={
+              hasActions
+                ? t("actions.action_card.summary.share")
+                : t("actions.action_card.summary.import")
+            }
+          >
+            <i
+              className={cn(
+                "size-4",
+                hasActions ? "i-mgc-share-forward-cute-re" : "i-mgc-file-import-cute-re",
+              )}
+            />
+          </Button>
+        </DropdownMenuTrigger>
+        <DropdownMenuContent align="end" className="w-56">
+          <DropdownMenuItem onClick={handleExport} disabled={!hasActions}>
+            <i className="i-mgc-download-2-cute-re mr-3 size-4" />
+            {t("actions.action_card.summary.export")}
+          </DropdownMenuItem>
+          <DropdownMenuItem onClick={handleImport}>
+            <i className="i-mgc-file-upload-cute-re mr-3 size-4" />
+            {t("actions.action_card.summary.import_file")}
+          </DropdownMenuItem>
+          <DropdownMenuSeparator />
+          <DropdownMenuItem onClick={handleCopyToClipboard} disabled={!hasActions}>
+            <i className="i-mgc-copy-2-cute-re mr-3 size-4" />
+            {t("actions.action_card.summary.copy")}
+          </DropdownMenuItem>
+          <DropdownMenuItem onClick={handleImportFromClipboard}>
+            <i className="i-mgc-paste-cute-re mr-3 size-4" />
+            {t("actions.action_card.summary.import_clipboard")}
+          </DropdownMenuItem>
+        </DropdownMenuContent>
+      </DropdownMenu>
     </div>
   )
 }
@@ -161,7 +281,7 @@ const RuleList = ({
   }
 
   return (
-    <div className="flex h-full flex-col gap-2 overflow-hidden rounded-3xl bg-material-ultra-thin/90 p-3 shadow-sm ring-1 ring-border/30">
+    <div className="flex h-full flex-col gap-0 overflow-hidden rounded-lg border border-fill-secondary bg-material-opaque">
       {rules.map((rule, index) => {
         const isActive = index === selectedIndex
         const displayName = getRuleDisplayName(rule, index, t)
@@ -174,15 +294,13 @@ const RuleList = ({
             type="button"
             onClick={() => onSelect(index)}
             className={cn(
-              "flex flex-col gap-1 rounded-2xl border border-transparent px-4 py-3 text-left transition-all",
-              isActive
-                ? "border-fill-secondary bg-fill-secondary/80 shadow-sm"
-                : "hover:border-fill-secondary/60 hover:bg-fill-secondary/40",
+              "flex flex-col gap-1 border-b border-fill-tertiary px-4 py-3 text-left transition-all last:border-b-0",
+              isActive ? "bg-fill-quaternary" : "hover:bg-fill-quinary",
             )}
           >
             <span className="text-sm font-medium text-text">{displayName}</span>
-            <span className="line-clamp-2 text-xs text-text-tertiary">{whenSummary}</span>
-            <span className="line-clamp-1 text-xs text-text-tertiary">{actionSummary}</span>
+            <span className="line-clamp-2 text-xs text-text-secondary">{whenSummary}</span>
+            <span className="line-clamp-1 text-xs text-text-secondary">{actionSummary}</span>
           </button>
         )
       })}
@@ -203,7 +321,6 @@ const ActionButtonGroup = ({ onCreateRule }: { onCreateRule: () => void }) => {
 
   const mutation = useUpdateActionsMutation({
     onSuccess: () => {
-      // apply new action settings
       queryClient.invalidateQueries({
         queryKey: ["entries"],
       })
@@ -213,78 +330,6 @@ const ActionButtonGroup = ({ onCreateRule }: { onCreateRule: () => void }) => {
       toast.error(error)
     },
   })
-
-  const handleExport = () => {
-    try {
-      const jsonData = actionActions.exportRules()
-      const filename = generateExportFilename()
-      downloadJsonFile(jsonData, filename)
-      toast.success(`Action rules exported successfully as ${filename}`)
-    } catch {
-      toast.error("Failed to export action rules")
-    }
-  }
-
-  const handleImport = async () => {
-    try {
-      const jsonData = await selectJsonFile()
-      const result = actionActions.importRules(jsonData)
-
-      if (result.success) {
-        toast.success(result.message)
-      } else {
-        toast.error(result.message)
-      }
-    } catch (error) {
-      if (error instanceof Error && error.message === "No file selected") {
-        // User cancelled file selection, don't show error
-        return
-      }
-      toast.error("Failed to import action rules")
-    }
-  }
-
-  const foloPrefix = "folo:actions#"
-  const handleCopyToClipboard = async () => {
-    try {
-      const jsonData = actionActions.exportRules()
-      const codecData = JsonObfuscatedCodec.encode(jsonData)
-
-      await copyToClipboard(`${foloPrefix}${codecData}`)
-      toast.success("Action rules copied to clipboard")
-    } catch (error) {
-      toast.error("Failed to copy action rules to clipboard")
-      console.error(error)
-    }
-  }
-
-  const handleImportFromClipboard = async () => {
-    try {
-      const clipboardData = await readFromClipboard()
-      if (!clipboardData.startsWith(foloPrefix)) {
-        toast.error("Invalid clipboard data")
-        return
-      }
-      const codecData = clipboardData.slice(foloPrefix.length)
-
-      const jsonData = JsonObfuscatedCodec.decode(codecData)
-
-      const result = actionActions.importRules(jsonData)
-
-      if (result.success) {
-        toast.success(result.message)
-      } else {
-        toast.error(result.message)
-      }
-    } catch (error) {
-      if (error instanceof Error && error.message.includes("clipboard")) {
-        toast.error(error.message)
-      } else {
-        toast.error("Failed to import from clipboard")
-      }
-      console.error(error)
-    }
-  }
 
   const hasActions = actionLength > 0
 
@@ -314,72 +359,5 @@ const ActionButtonGroup = ({ onCreateRule }: { onCreateRule: () => void }) => {
     }
   }, [setRightView, actionLength, hasActions, isDirty, mutation, onCreateRule, t])
 
-  return (
-    <div className="mb-6 flex w-full flex-wrap items-center justify-end gap-3 rounded-3xl border border-transparent bg-material-ultra-thin/80 p-4 shadow-sm @[960px]:justify-between">
-      <div className="hidden max-w-md flex-col gap-1 @[960px]:flex">
-        <p className="text-sm font-medium text-text">
-          {hasActions
-            ? t("actions.action_card.summary.rule_count", { count: actionLength })
-            : t("actions.action_card.summary.empty")}
-        </p>
-        <p className="text-xs text-text-tertiary">
-          {hasActions
-            ? t("actions.action_card.summary.helper")
-            : t("actions.action_card.empty.description")}
-        </p>
-      </div>
-
-      <div className="flex flex-wrap items-center gap-2">
-        <DropdownMenu>
-          <DropdownMenuTrigger asChild>
-            <Button variant="outline" size="sm">
-              {hasActions ? (
-                <i className="i-mgc-share-forward-cute-re mr-2 size-4" />
-              ) : (
-                <i className="i-mgc-file-import-cute-re mr-2 size-4" />
-              )}
-              {hasActions
-                ? t("actions.action_card.summary.share")
-                : t("actions.action_card.summary.import")}
-            </Button>
-          </DropdownMenuTrigger>
-          <DropdownMenuContent align="end" className="w-56">
-            <DropdownMenuItem onClick={handleExport} disabled={!hasActions}>
-              <i className="i-mgc-download-2-cute-re mr-3 size-4" />
-              {t("actions.action_card.summary.export")}
-            </DropdownMenuItem>
-            <DropdownMenuItem onClick={handleImport}>
-              <i className="i-mgc-file-upload-cute-re mr-3 size-4" />
-              {t("actions.action_card.summary.import_file")}
-            </DropdownMenuItem>
-            <DropdownMenuSeparator />
-            <DropdownMenuItem onClick={handleCopyToClipboard} disabled={!hasActions}>
-              <i className="i-mgc-copy-2-cute-re mr-3 size-4" />
-              {t("actions.action_card.summary.copy")}
-            </DropdownMenuItem>
-            <DropdownMenuItem onClick={handleImportFromClipboard}>
-              <i className="i-mgc-paste-cute-re mr-3 size-4" />
-              {t("actions.action_card.summary.import_clipboard")}
-            </DropdownMenuItem>
-          </DropdownMenuContent>
-        </DropdownMenu>
-
-        <Button
-          variant={actionLength === 0 ? "primary" : "outline"}
-          size="sm"
-          onClick={onCreateRule}
-        >
-          <i className="i-mingcute-add-line mr-2 size-4" />
-          {t("actions.newRule")}
-        </Button>
-
-        {hasActions && (
-          <Button onClick={() => mutation.mutate()} size="sm" disabled={!isDirty}>
-            <i className="i-mgc-check-circle-cute-re mr-2 size-4" />
-            {t("actions.save")}
-          </Button>
-        )}
-      </div>
-    </div>
-  )
+  return null
 }

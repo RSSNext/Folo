@@ -1,5 +1,6 @@
 import { Button } from "@follow/components/ui/button/index.js"
 import { Input } from "@follow/components/ui/input/index.js"
+import { SegmentGroup, SegmentItem } from "@follow/components/ui/segment/index.js"
 import {
   Select,
   SelectContent,
@@ -11,7 +12,6 @@ import { ResponsiveSelect } from "@follow/components/ui/select/responsive.js"
 import { filterFieldOptions, filterOperatorOptions } from "@follow/store/action/constant"
 import { useActionRule } from "@follow/store/action/hooks"
 import { actionActions } from "@follow/store/action/store"
-import { cn } from "@follow/utils/utils"
 import type { ActionFeedField, ActionOperation } from "@follow-app/client-sdk"
 import { Fragment } from "react"
 import { useTranslation } from "react-i18next"
@@ -20,10 +20,9 @@ import { ViewSelectContent } from "~/modules/feed/view-select-content"
 
 type WhenSectionProps = {
   index: number
-  variant?: "detail" | "compact"
 }
 
-export const WhenSection = ({ index, variant = "detail" }: WhenSectionProps) => {
+export const WhenSection = ({ index }: WhenSectionProps) => {
   const { t } = useTranslation("settings")
 
   const disabled = useActionRule(index, (a) => a.result.disabled)
@@ -42,44 +41,18 @@ export const WhenSection = ({ index, variant = "detail" }: WhenSectionProps) => 
   }
 
   return (
-    <section
-      className={cn(
-        "flex flex-col gap-4 rounded-2xl border border-fill-secondary/40 bg-material-ultra-thin/80 p-4 shadow-sm",
-        variant === "compact" && "bg-material-ultra-thin/70",
-      )}
-    >
+    <section className="flex flex-col gap-4">
       <div className="flex flex-wrap items-center justify-between gap-3">
-        <span className="text-xs font-semibold uppercase tracking-wide text-text-tertiary">
+        <span className="text-xs font-semibold uppercase tracking-wide text-text-secondary">
           {t("actions.action_card.when_feeds_match")}
         </span>
-        <div className="flex items-center gap-1 rounded-full bg-fill-tertiary/60 p-1 text-xs font-medium text-text-secondary">
-          <button
-            type="button"
-            className={cn(
-              "rounded-full px-3 py-1 transition-colors",
-              mode === "all"
-                ? "bg-fill-secondary text-text shadow-sm"
-                : "text-text-tertiary hover:text-text",
-            )}
-            disabled={disabled}
-            onClick={() => handleModeChange("all")}
-          >
-            {t("actions.action_card.all")}
-          </button>
-          <button
-            type="button"
-            className={cn(
-              "rounded-full px-3 py-1 transition-colors",
-              mode === "filter"
-                ? "bg-fill-secondary text-text shadow-sm"
-                : "text-text-tertiary hover:text-text",
-            )}
-            disabled={disabled}
-            onClick={() => handleModeChange("filter")}
-          >
-            {t("actions.action_card.custom_filters")}
-          </button>
-        </div>
+        <SegmentGroup
+          value={mode}
+          onValueChanged={(value) => handleModeChange(value as "all" | "filter")}
+        >
+          <SegmentItem value="all" label={t("actions.action_card.all")} />
+          <SegmentItem value="filter" label={t("actions.action_card.custom_filters")} />
+        </SegmentGroup>
       </div>
 
       {mode === "filter" && (
@@ -87,12 +60,12 @@ export const WhenSection = ({ index, variant = "detail" }: WhenSectionProps) => 
           {condition.map((orConditions, orConditionIdx) => {
             return (
               <Fragment key={orConditionIdx}>
-                <div className="flex flex-col gap-3 rounded-2xl border border-dashed border-fill-secondary/50 bg-fill-tertiary/40 p-4">
+                <div className="flex flex-col gap-3 rounded-lg border border-dashed border-fill-tertiary bg-transparent p-4">
                   {orConditions.map((item, conditionIdx) => {
                     const actionConditionIndex = {
                       ruleIndex: index,
                       groupIndex: orConditionIdx,
-                      conditionIndex,
+                      conditionIndex: conditionIdx,
                     }
 
                     const change = (key: string, value: string | number) => {
@@ -107,7 +80,7 @@ export const WhenSection = ({ index, variant = "detail" }: WhenSectionProps) => 
 
                     return (
                       <div key={conditionIdx} className="flex flex-col gap-2">
-                        <div className="flex flex-wrap items-center gap-2 rounded-xl bg-material-ultra-thin/90 p-3">
+                        <div className="flex flex-col gap-2 rounded-lg border border-fill-secondary bg-transparent p-3 @[800px]:flex-row @[800px]:items-center">
                           <ResponsiveSelect
                             placeholder="Select Field"
                             disabled={disabled}
@@ -117,7 +90,7 @@ export const WhenSection = ({ index, variant = "detail" }: WhenSectionProps) => 
                               ...option,
                               label: t(option.label),
                             }))}
-                            triggerClassName="h-9 min-w-[160px]"
+                            triggerClassName="h-9 min-w-[160px] @[800px]:flex-1"
                           />
                           <OperationSelect
                             type={type}
@@ -134,7 +107,7 @@ export const WhenSection = ({ index, variant = "detail" }: WhenSectionProps) => 
                           <button
                             type="button"
                             aria-label={t("actions.action_card.summary.delete")}
-                            className="flex size-9 items-center justify-center rounded-full border border-fill-secondary/40 text-text-tertiary transition-colors hover:border-fill-secondary hover:text-text disabled:opacity-50"
+                            className="flex size-9 shrink-0 items-center justify-center self-end rounded-lg border border-fill-secondary bg-transparent text-text-secondary transition-colors hover:border-fill hover:bg-fill-quinary hover:text-text disabled:opacity-50 @[800px]:self-center"
                             disabled={disabled}
                             onClick={() => {
                               actionActions.deleteConditionItem(actionConditionIndex)
@@ -144,8 +117,8 @@ export const WhenSection = ({ index, variant = "detail" }: WhenSectionProps) => 
                           </button>
                         </div>
                         {conditionIdx !== orConditions.length - 1 && (
-                          <div className="flex items-center text-xs text-text-tertiary">
-                            <span className="rounded-full bg-fill-quaternary px-2 py-0.5 uppercase tracking-wide">
+                          <div className="flex items-center text-xs text-text-secondary">
+                            <span className="rounded-md border border-fill-tertiary bg-fill-quaternary px-2 py-0.5 uppercase tracking-wide">
                               {t("actions.action_card.and")}
                             </span>
                           </div>
@@ -156,7 +129,7 @@ export const WhenSection = ({ index, variant = "detail" }: WhenSectionProps) => 
                   <Button
                     variant="outline"
                     size="sm"
-                    buttonClassName="w-fit border-dashed border-fill-secondary/60"
+                    buttonClassName="w-fit border-dashed border-fill-tertiary"
                     disabled={disabled}
                     onClick={() => {
                       actionActions.addConditionItem({
@@ -171,7 +144,7 @@ export const WhenSection = ({ index, variant = "detail" }: WhenSectionProps) => 
                 </div>
                 {orConditionIdx !== condition.length - 1 && (
                   <div className="flex items-center justify-center">
-                    <span className="rounded-full bg-fill-tertiary px-3 py-1 text-xs font-semibold uppercase tracking-wide text-text-tertiary">
+                    <span className="rounded-md border border-fill-tertiary bg-fill-quaternary px-3 py-1 text-xs font-semibold uppercase tracking-wide text-text-secondary">
                       {t("actions.action_card.or")}
                     </span>
                   </div>
@@ -182,7 +155,7 @@ export const WhenSection = ({ index, variant = "detail" }: WhenSectionProps) => 
           <Button
             variant="outline"
             size="sm"
-            buttonClassName="w-fit border-dashed border-fill-secondary/60"
+            buttonClassName="w-fit border-dashed border-fill-tertiary"
             onClick={() => {
               actionActions.addConditionGroup({ ruleIndex: index })
             }}

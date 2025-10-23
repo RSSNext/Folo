@@ -31,24 +31,18 @@ export const RuleCard = ({
   }
 
   return (
-    <div className="group/rule flex h-full flex-col gap-6 rounded-3xl border border-fill-secondary/40 bg-material-ultra-thin/90 p-6 shadow-lg @container">
-      <RuleCardToolbar index={index} variant="detail" />
-      <RuleCardContent index={index} variant="detail" />
+    <div className="group/rule flex h-full flex-col gap-5 rounded-lg border border-fill-secondary bg-transparent p-5 @container">
+      <RuleCardToolbar index={index} />
+      <RuleCardContent index={index} />
     </div>
   )
 }
 
-const RuleCardContent = ({ index, variant }: { index: number; variant: "detail" | "compact" }) => {
+const RuleCardContent = ({ index }: { index: number }) => {
   return (
-    <div
-      className={cn(
-        "flex flex-col gap-6",
-        variant === "detail" &&
-          "@[900px]:grid @[900px]:grid-cols-2 @[900px]:items-start @[900px]:gap-6",
-      )}
-    >
-      <WhenSection index={index} variant={variant} />
-      <ThenSection index={index} variant={variant} />
+    <div className="flex flex-col gap-6 @[900px]:grid @[900px]:grid-cols-2 @[900px]:items-start @[900px]:gap-6">
+      <WhenSection index={index} />
+      <ThenSection index={index} />
     </div>
   )
 }
@@ -84,11 +78,11 @@ const CompactRuleCard = ({
   const actionSummary = buildActionSummary(rule, t)
 
   return (
-    <div className="overflow-hidden rounded-3xl border border-fill-secondary/40 bg-material-ultra-thin/80 shadow-sm">
+    <div className="overflow-hidden rounded-lg border border-fill-secondary bg-transparent">
       <button
         type="button"
         onClick={toggle}
-        className="flex w-full items-start justify-between gap-3 px-4 py-3 text-left transition-colors hover:bg-fill-secondary/40"
+        className="flex w-full items-start justify-between gap-3 px-4 py-3 text-left transition-colors hover:bg-fill-quinary"
       >
         <div className="flex flex-col gap-1">
           <span className="text-sm font-semibold text-text">{displayName}</span>
@@ -97,7 +91,7 @@ const CompactRuleCard = ({
         </div>
         <div className="flex items-center gap-2">
           {disabled && (
-            <span className="rounded-full bg-fill-quaternary px-2 py-0.5 text-[10px] font-medium uppercase tracking-wide text-text-tertiary">
+            <span className="rounded-md border border-fill-secondary bg-fill-quaternary px-2 py-0.5 text-[10px] font-medium uppercase tracking-wide text-text-secondary">
               {t("actions.action_card.summary.disabled")}
             </span>
           )}
@@ -110,27 +104,22 @@ const CompactRuleCard = ({
         </div>
       </button>
       {open ? (
-        <div className="space-y-4 border-t border-fill-secondary/40 bg-material-ultra-thin/90 p-4">
-          <RuleCardToolbar index={index} variant="compact" />
-          <RuleCardContent index={index} variant="compact" />
+        <div className="space-y-4 border-t border-fill-tertiary bg-transparent p-4">
+          <RuleCardToolbar index={index} />
+          <RuleCardContent index={index} />
         </div>
       ) : null}
     </div>
   )
 }
 
-const RuleCardToolbar = ({ index, variant }: { index: number; variant: "detail" | "compact" }) => {
+const RuleCardToolbar = ({ index }: { index: number }) => {
   const { t } = useTranslation("settings")
   const name = useActionRule(index, (a) => a.name)
   const disabled = useActionRule(index, (a) => a.result.disabled)
   const ruleCount = useActionRules((s) => s.length)
   const mutation = useUpdateActionsMutation()
   const { ask } = useDialog()
-
-  const containerClass = cn(
-    "flex w-full flex-wrap items-center gap-3 rounded-2xl border border-fill-secondary/40 bg-fill-tertiary/50 p-4",
-    variant === "compact" && "rounded-2xl border border-fill-secondary/40 bg-fill-tertiary/40 p-4",
-  )
 
   const handleDelete = () => {
     if (ruleCount === 1) {
@@ -151,7 +140,7 @@ const RuleCardToolbar = ({ index, variant }: { index: number; variant: "detail" 
   }
 
   return (
-    <div className={containerClass}>
+    <div className={"flex w-full flex-wrap items-center gap-3"}>
       <Input
         value={name}
         placeholder={t("actions.action_card.name")}
@@ -161,7 +150,6 @@ const RuleCardToolbar = ({ index, variant }: { index: number; variant: "detail" 
         }}
       />
       <div className="flex items-center gap-3">
-        <StatusPill disabled={!!disabled} />
         <Switch
           checked={!disabled}
           onCheckedChange={(checked) => {
@@ -174,31 +162,12 @@ const RuleCardToolbar = ({ index, variant }: { index: number; variant: "detail" 
         <button
           type="button"
           aria-label={t("actions.action_card.summary.delete")}
-          className="flex size-9 items-center justify-center rounded-full border border-fill-secondary/60 bg-fill-tertiary/60 text-text-tertiary transition-colors hover:border-fill-secondary hover:text-text"
+          className="flex size-9 items-center justify-center rounded-lg border border-fill-secondary bg-transparent text-text-secondary transition-colors hover:border-fill hover:bg-fill-quinary hover:text-text"
           onClick={handleDelete}
         >
           <i className="i-mgc-delete-2-cute-re" />
         </button>
       </div>
     </div>
-  )
-}
-
-const StatusPill = ({ disabled }: { disabled: boolean }) => {
-  const { t } = useTranslation("settings")
-
-  return (
-    <span
-      className={cn(
-        "rounded-full px-2.5 py-1 text-[11px] font-semibold uppercase tracking-wide",
-        disabled
-          ? "bg-fill-quaternary text-text-tertiary"
-          : "bg-fill-secondary text-text-secondary",
-      )}
-    >
-      {disabled
-        ? t("actions.action_card.summary.disabled")
-        : t("actions.action_card.summary.active")}
-    </span>
   )
 }
