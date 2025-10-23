@@ -261,7 +261,10 @@ class AIPersistServiceStatic {
   /**
    * Ensure session exists (idempotent operation)
    */
-  async ensureSession(chatId: string, options: { title?: string } = {}): Promise<void> {
+  async ensureSession(
+    chatId: string,
+    options: { title?: string; createdAt?: Date; updatedAt?: Date } = {},
+  ): Promise<void> {
     const cachedExists = this.getSessionExistsFromCache(chatId)
     const shouldCheckDb = cachedExists !== true || options.title
 
@@ -301,13 +304,16 @@ class AIPersistServiceStatic {
     this.markSessionExists(chatId, true)
   }
 
-  async createSession(chatId: string, options: { title?: string } = {}) {
+  async createSession(
+    chatId: string,
+    options: { title?: string; createdAt?: Date; updatedAt?: Date } = {},
+  ) {
     const now = new Date()
     await db.insert(aiChatTable).values({
       chatId,
       title: this.resolveSessionTitle(chatId, options.title, { createdAt: now, updatedAt: now }),
-      createdAt: now,
-      updatedAt: now,
+      createdAt: options.createdAt ?? now,
+      updatedAt: options.updatedAt ?? now,
     })
     // Mark session as existing in cache
     this.markSessionExists(chatId, true)
