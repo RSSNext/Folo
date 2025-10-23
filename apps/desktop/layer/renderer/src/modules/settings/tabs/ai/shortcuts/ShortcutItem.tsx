@@ -1,7 +1,6 @@
 import { KbdCombined } from "@follow/components/ui/kbd/Kbd.js"
 import { DEFAULT_SUMMARIZE_TIMELINE_SHORTCUT_ID } from "@follow/shared/settings/defaults"
-import type { AIShortcut, AIShortcutTarget } from "@follow/shared/settings/interface"
-import { DEFAULT_SHORTCUT_TARGETS } from "@follow/shared/settings/interface"
+import type { AIShortcut } from "@follow/shared/settings/interface"
 import { useTranslation } from "react-i18next"
 
 import type { ActionButton } from "~/modules/ai-task/components/ai-item-actions"
@@ -16,11 +15,8 @@ interface ShortcutItemProps {
 
 export const ShortcutItem = ({ shortcut, onDelete, onToggle, onEdit }: ShortcutItemProps) => {
   const { t } = useTranslation("ai")
-  const isProtected = shortcut.id === DEFAULT_SUMMARIZE_TIMELINE_SHORTCUT_ID
-  const targets =
-    shortcut.displayTargets && shortcut.displayTargets.length > 0
-      ? (shortcut.displayTargets as AIShortcutTarget[])
-      : DEFAULT_SHORTCUT_TARGETS
+  const isProtected =
+    shortcut.defaultPrompt || shortcut.id === DEFAULT_SUMMARIZE_TIMELINE_SHORTCUT_ID
   const actions: ActionButton[] = [
     {
       icon: "i-mgc-edit-cute-re",
@@ -50,14 +46,11 @@ export const ShortcutItem = ({ shortcut, onDelete, onToggle, onEdit }: ShortcutI
               </KbdCombined>
             )}
           </div>
-          <p className="line-clamp-2 text-xs leading-relaxed text-text-secondary">
-            {shortcut.prompt}
-          </p>
           <div className="flex flex-wrap gap-1.5">
-            {targets.map((target) => (
+            {shortcut.displayTargets?.map((target) => (
               <span
                 key={target}
-                className="inline-flex items-center rounded-full bg-material-thin px-2 py-0.5 text-[11px] font-medium uppercase tracking-wide text-text-tertiary"
+                className="inline-flex items-center rounded-full bg-material-thin px-2 py-0.5 text-[11px] font-medium tracking-wide text-text-tertiary"
               >
                 {t(`shortcuts.targets.${target}`)}
               </span>

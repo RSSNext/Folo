@@ -9,15 +9,13 @@ import {
   PopoverTrigger,
 } from "@follow/components/ui/popover/index.js"
 import { Switch } from "@follow/components/ui/switch/index.jsx"
-import {
-  DEFAULT_SUMMARIZE_TIMELINE_PROMPT,
-  DEFAULT_SUMMARIZE_TIMELINE_SHORTCUT_ID,
-} from "@follow/shared/settings/defaults"
 import type { AIShortcut, AIShortcutTarget } from "@follow/shared/settings/interface"
 import { DEFAULT_SHORTCUT_TARGETS } from "@follow/shared/settings/interface"
 import { useEffect, useMemo, useState } from "react"
 import { useTranslation } from "react-i18next"
 import { toast } from "sonner"
+
+import { isServerShortcut } from "~/atoms/settings/ai"
 
 interface ShortcutModalContentProps {
   shortcut?: AIShortcut | null
@@ -28,14 +26,7 @@ interface ShortcutModalContentProps {
 export const ShortcutModalContent = ({ shortcut, onSave, onCancel }: ShortcutModalContentProps) => {
   const { t } = useTranslation("ai")
   const [name, setName] = useState(shortcut?.name || "")
-  const isDefaultSummarize = shortcut?.id === DEFAULT_SUMMARIZE_TIMELINE_SHORTCUT_ID
-  const resolvedPrompt = useMemo(() => {
-    if (isDefaultSummarize) {
-      return shortcut?.prompt?.trim() || DEFAULT_SUMMARIZE_TIMELINE_PROMPT
-    }
-    return shortcut?.prompt || ""
-  }, [isDefaultSummarize, shortcut?.prompt])
-  const [prompt, setPrompt] = useState(resolvedPrompt)
+  const [prompt, setPrompt] = useState(shortcut?.prompt || "")
   const [enabled, setEnabled] = useState(shortcut?.enabled ?? true)
   const [icon, setIcon] = useState<string>(shortcut?.icon || "i-mgc-hotkey-cute-re")
   const initialTargets = useMemo<AIShortcutTarget[]>(() => {
@@ -77,14 +68,11 @@ export const ShortcutModalContent = ({ shortcut, onSave, onCancel }: ShortcutMod
     ],
     [],
   )
+  const isServer = shortcut && isServerShortcut(shortcut)
 
   useEffect(() => {
     setDisplayTargets(initialTargets)
   }, [initialTargets])
-
-  useEffect(() => {
-    setPrompt(resolvedPrompt)
-  }, [resolvedPrompt])
 
   const handleTargetChange = (target: AIShortcutTarget, checked: boolean) => {
     setDisplayTargets((prev) => {
@@ -101,11 +89,15 @@ export const ShortcutModalContent = ({ shortcut, onSave, onCancel }: ShortcutMod
   const handleSave = () => {
     const trimmedName = name.trim()
     const trimmedPrompt = prompt.trim()
-    const finalPrompt =
-      trimmedPrompt || (isDefaultSummarize ? DEFAULT_SUMMARIZE_TIMELINE_PROMPT : "")
+    const effectivePrompt = trimmedPrompt || shortcut?.defaultPrompt
 
-    if (!trimmedName || !finalPrompt) {
-      toast.error(t("shortcuts.validation.required"))
+    if (!trimmedName) {
+      toast.error(t("shortcuts.validation.name_required"))
+      return
+    }
+
+    if (!effectivePrompt) {
+      toast.error(t("shortcuts.validation.prompt_required"))
       return
     }
     if (displayTargets.length === 0) {
@@ -115,7 +107,8 @@ export const ShortcutModalContent = ({ shortcut, onSave, onCancel }: ShortcutMod
 
     onSave({
       name: trimmedName,
-      prompt: finalPrompt,
+      prompt: trimmedPrompt,
+      defaultPrompt: shortcut?.defaultPrompt,
       enabled,
       icon,
       displayTargets,
@@ -168,14 +161,30 @@ export const ShortcutModalContent = ({ shortcut, onSave, onCancel }: ShortcutMod
         </Popover>
       </div>
 
-      <div className="space-y-2">
-        <Label className="text-xs text-text">{t("shortcuts.prompt")}</Label>
+      {isServer ? (
+        <div className="space-y-2">
+          <Label className="text-xs text-text">{t("shortcuts.default_prompt.label")}</Label>
+          <div className="select-text whitespace-pre-wrap rounded-md border border-border bg-material-thin px-3 py-2 text-xs leading-relaxed text-text">
+            {shortcut?.defaultPrompt}
+          </div>
+        </div>
+      ) : null}
+
+      <div className="space-y-1.5">
+        <Label className="text-xs text-text">
+          {t(isServer ? "shortcuts.custom_prompt.title" : "shortcuts.prompt")}
+        </Label>
         <TextArea
           value={prompt}
           onChange={(e) => setPrompt(e.target.value)}
-          placeholder={t("shortcuts.prompt_placeholder")}
+          placeholder={t(
+            isServer ? "shortcuts.custom_prompt_placeholder" : "shortcuts.prompt_placeholder",
+          )}
           className="min-h-[120px] resize-none py-2 text-sm"
         />
+        {isServer && (
+          <p className="text-xs text-text-tertiary">{t("shortcuts.custom_prompt.help")}</p>
+        )}
       </div>
 
       <div className="space-y-2">

@@ -190,6 +190,7 @@ export interface AIShortcut {
   id: string
   name: string
   prompt: string
+  defaultPrompt?: string
   enabled: boolean
   icon?: string
   hotkey?: string

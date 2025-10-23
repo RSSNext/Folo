@@ -2,6 +2,7 @@ import type { AIShortcut } from "@follow/shared/settings/interface"
 import type { FC } from "react"
 import { useTranslation } from "react-i18next"
 
+import { getShortcutEffectivePrompt } from "~/atoms/settings/ai"
 import {
   DropdownMenuContent,
   DropdownMenuItem,
@@ -34,7 +35,10 @@ export const ShortcutsMenuContent: FC<ShortcutsMenuContentProps> = ({
         <div className="p-3 text-center text-xs text-text-tertiary">{emptyMessage}</div>
       ) : (
         enabledShortcuts.map((shortcut) => (
-          <DropdownMenuItem key={shortcut.id} onClick={() => onSendShortcut?.(shortcut.prompt)}>
+          <DropdownMenuItem
+            key={shortcut.id}
+            onClick={() => onSendShortcut?.(getShortcutEffectivePrompt(shortcut))}
+          >
             <i className="i-mgc-magic-2-cute-re mr-1.5 size-3.5" />
             <span className="truncate">{shortcut.name}</span>
           </DropdownMenuItem>
