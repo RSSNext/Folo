@@ -13,11 +13,11 @@ export interface DateRange {
   end: Dayjs
 }
 
-export const formatRangeValue = (range: DateRange): string => {
+export const formatRangeValue = (range: DateRange, id?: string): string => {
   const startIso = range.start.format(MENTION_DATE_VALUE_FORMAT)
   const endIso = range.end.format(MENTION_DATE_VALUE_FORMAT)
 
-  return `<mention-date start="${startIso}" end="${endIso}"></mention-date>`
+  return `<mention-date start="${startIso}" end="${endIso}"${id ? ` id="${id}"` : ""}></mention-date>`
 }
 
 const DEFAULT_DATE_FORMAT: Intl.DateTimeFormatOptions = {
@@ -100,7 +100,7 @@ export const createDateMentionData = ({
   translate: LabelTranslator
   displayName?: string
 }): DateMentionData => {
-  const value = formatRangeValue(range)
+  const value = formatRangeValue(range, id || displayName)
   const text = value // Use the same value for text
 
   const resolvedName = displayName ?? resolveMentionLabel(label, translate) ?? value
