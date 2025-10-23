@@ -97,8 +97,8 @@ const DateItemInner: FC<DateItemInnerProps> = ({
     <div
       className={cn(
         className,
-        isSticky && "border-border bg-background",
-        "border-b border-transparent",
+        "border-b border-transparent bg-background",
+        isSticky && "border-border",
       )}
       onClick={stopPropagation}
       onMouseEnter={removeConfirm.cancel}

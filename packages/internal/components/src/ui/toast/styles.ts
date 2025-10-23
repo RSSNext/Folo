@@ -1,15 +1,22 @@
 export const toastStyles = {
   toast: tw`
-    group relative flex w-full items-center justify-between gap-3 rounded-2xl p-4 shadow-lg
-    backdrop-blur-background border border-border/50
-    bg-material-ultra-thick duration-300 ease-out
-    data-[type=success]:border-green/30 data-[type=success]:bg-green/20
-    data-[type=error]:border-red/30 data-[type=error]:bg-red/20
-    data-[type=warning]:border-orange/30 data-[type=warning]:bg-orange/20
-    data-[type=info]:border-blue/30 data-[type=info]:bg-blue/20
-    data-[type=loading]:border-gray/30 data-[type=loading]:bg-gray/20
+    group relative flex w-full items-center justify-between gap-3 rounded-2xl p-4
+    backdrop-blur-2xl duration-300 ease-out overflow-hidden
     max-w-md min-w-[320px]
     font-theme
+    [&]:border [&]:border-solid
+    [&]:data-[type=default]:border-[rgba(255,92,0,0.2)]
+    [&]:data-[type=success]:border-[rgba(40,205,65,0.2)]
+    [&]:data-[type=error]:border-[rgba(255,69,58,0.2)]
+    [&]:data-[type=warning]:border-[rgba(255,149,0,0.2)]
+    [&]:data-[type=info]:border-[rgba(0,122,255,0.2)]
+    [&]:data-[type=loading]:border-[rgba(142,142,147,0.2)]
+    [&]:shadow-[0_8px_32px_rgba(255,92,0,0.08),0_4px_16px_rgba(255,92,0,0.06),0_2px_8px_rgba(0,0,0,0.1)]
+    [&]:data-[type=success]:shadow-[0_8px_32px_rgba(40,205,65,0.08),0_4px_16px_rgba(40,205,65,0.06),0_2px_8px_rgba(0,0,0,0.1)]
+    [&]:data-[type=error]:shadow-[0_8px_32px_rgba(255,69,58,0.08),0_4px_16px_rgba(255,69,58,0.06),0_2px_8px_rgba(0,0,0,0.1)]
+    [&]:data-[type=warning]:shadow-[0_8px_32px_rgba(255,149,0,0.08),0_4px_16px_rgba(255,149,0,0.06),0_2px_8px_rgba(0,0,0,0.1)]
+    [&]:data-[type=info]:shadow-[0_8px_32px_rgba(0,122,255,0.08),0_4px_16px_rgba(0,122,255,0.06),0_2px_8px_rgba(0,0,0,0.1)]
+    [&]:data-[type=loading]:shadow-[0_8px_32px_rgba(142,142,147,0.08),0_4px_16px_rgba(142,142,147,0.06),0_2px_8px_rgba(0,0,0,0.1)]
   `,
   title: tw`
     text-sm font-medium text-text
@@ -25,7 +32,7 @@ export const toastStyles = {
   icon: tw`
     flex-shrink-0 mt-0.5 size-5
     [li[data-type="success"]_&]:text-green
-    [li[data-type="error"]_&]:text-red  
+    [li[data-type="error"]_&]:text-red
     [li[data-type="warning"]_&]:text-orange
     [li[data-type="info"]_&]:text-blue
     [li[data-type="loading"]_&]:text-gray
