@@ -105,7 +105,7 @@ const CompactRuleCard = ({
           <i
             className={cn(
               "size-4 text-text-tertiary transition-transform",
-              open ? "i-mgc-arrow-up-cute-re" : "i-mgc-arrow-down-cute-re",
+              open ? "i-mingcute-arrow-up-line" : "i-mingcute-arrow-down-line",
             )}
           />
         </div>
