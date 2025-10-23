@@ -29,7 +29,7 @@ export function PreFinish() {
         try {
           await subscriptionSyncService.subscribe({
             url,
-            view: FeedViewType.All,
+            view: feed.analytics.view ?? FeedViewType.Articles,
             category: null,
             isPrivate: false,
             hideFromTimeline: null,

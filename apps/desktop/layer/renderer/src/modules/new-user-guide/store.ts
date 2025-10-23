@@ -1,4 +1,5 @@
 import type { MediaModel } from "@follow/database/schemas/types"
+import type { FeedViewType } from "@follow-app/client-sdk"
 import { atom } from "jotai"
 import { splitAtom } from "jotai/utils"
 
@@ -22,6 +23,10 @@ export type FeedSelection = {
     title: string | null
     url: string | null
   }[]
+
+  analytics: {
+    view: FeedViewType | null
+  }
 }
 
 export const feedSelectionsAtom = atom<FeedSelection[]>([])
