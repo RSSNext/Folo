@@ -40,6 +40,7 @@ class AIChatSessionServiceStatic {
       const dbSession = await AIPersistService.getChatSession(session.chatId)
       const lastUpdatedAt = dbSession ? dbSession.updatedAt : new Date(0)
       if (lastUpdatedAt >= new Date(session.updatedAt)) {
+        // If local session is already up-to-date, skip fetching messages
         continue
       }
       try {
@@ -71,7 +72,13 @@ class AIChatSessionServiceStatic {
    *
    * Defensive in extracting the message array because the SDK response shape may evolve.
    */
-  async fetchAndPersistMessages(session: AIChatSession): Promise<BizUIMessage[]> {
+  async fetchAndPersistMessages(session: AIChatSession): Promise<void> {
+    const dbSession = await AIPersistService.getChatSession(session.chatId)
+    const lastUpdatedAt = dbSession ? dbSession.updatedAt : new Date(0)
+    if (lastUpdatedAt >= new Date(session.updatedAt)) {
+      // If local session is already up-to-date, skip fetching messages
+      return
+    }
     const unseenMessages = await this.fetchUnseenRemoteMessages(
       session.chatId,
       new Date(session.lastSeenAt),
@@ -96,7 +103,6 @@ class AIChatSessionServiceStatic {
       queryClient.invalidateQueries({ queryKey: aiChatSessionKeys.lists }),
       queryClient.invalidateQueries({ queryKey: aiChatSessionKeys.unread }),
     ])
-    return normalized
   }
 
   /**
