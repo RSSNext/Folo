@@ -20,7 +20,7 @@ export const defaultGeneralSettings: GeneralSettings = {
   hidePrivateSubscriptionsInTimeline: false,
 
   // view
-  unreadOnly: true,
+  unreadOnly: false,
   // mark unread
   scrollMarkUnread: true,
   hoverMarkUnread: true,

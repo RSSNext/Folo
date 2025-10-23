@@ -14,6 +14,7 @@ import { getUISettings, setUISetting, useUISettingKey } from "~/atoms/settings/u
 import { setSubscriptionColumnApronNode, useSubscriptionEntryPlaneVisible } from "~/atoms/sidebar"
 import { m } from "~/components/common/Motion"
 import { ROUTE_ENTRY_PENDING } from "~/constants"
+import { useFeature } from "~/hooks/biz/useFeature"
 import { useRouteParamsSelector } from "~/hooks/biz/useRouteParams"
 import { useShowEntryDetailsColumn } from "~/hooks/biz/useShowEntryDetailsColumn"
 import { AIChatRoot } from "~/modules/ai-chat/components/layouts/AIChatRoot"
@@ -290,10 +291,11 @@ const AIEnhancedTimelineLayoutImpl = () => {
 }
 
 export const AIEnhancedTimelineLayout = memo(function AIEnhancedTimelineLayout() {
+  const aiEnabled = useFeature("ai")
   return (
     <AIChatRoot wrapFocusable={false}>
       <AIEnhancedTimelineLayoutImpl />
-      <AIIndicator />
+      {aiEnabled && <AIIndicator />}
       <MainViewHotkeysProvider />
     </AIChatRoot>
   )
