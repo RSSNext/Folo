@@ -74,7 +74,7 @@ export const ThenSection = ({ index, variant: _variant = "detail" }: ThenSection
                       className="flex flex-col gap-3 rounded-lg bg-fill-quaternary p-4"
                     >
                       <div className="grid gap-3 @[520px]:grid-cols-2">
-                        <label className="text-xs font-medium uppercase tracking-wide text-text-tertiary">
+                        <label className="text-xs font-medium uppercase tracking-wide text-text-secondary">
                           {t("actions.action_card.from")}
                           <Input
                             disabled={disabled}
@@ -83,7 +83,7 @@ export const ThenSection = ({ index, variant: _variant = "detail" }: ThenSection
                             onChange={(event) => change("from", event.target.value)}
                           />
                         </label>
-                        <label className="text-xs font-medium uppercase tracking-wide text-text-tertiary">
+                        <label className="text-xs font-medium uppercase tracking-wide text-text-secondary">
                           {t("actions.action_card.to")}
                           <Input
                             disabled={disabled}
@@ -104,6 +104,7 @@ export const ThenSection = ({ index, variant: _variant = "detail" }: ThenSection
                         />
                         <IconButton
                           icon="i-mgc-delete-2-cute-re"
+                          className="hover:text-red"
                           ariaLabel={t("actions.action_card.summary.delete")}
                           disabled={disabled}
                           onClick={() => {
@@ -166,6 +167,7 @@ export const ThenSection = ({ index, variant: _variant = "detail" }: ThenSection
                         />
                         <IconButton
                           icon="i-mgc-delete-2-cute-re"
+                          className="hover:text-red"
                           ariaLabel={t("actions.action_card.summary.delete")}
                           disabled={disabled}
                           onClick={() => {
@@ -185,10 +187,17 @@ export const ThenSection = ({ index, variant: _variant = "detail" }: ThenSection
     return Object.values(extendedAvailableActionMap)
   }, [disabled, index, rewriteRules, t, webhooks])
 
-  const enabledActions = useMemo(
-    () => availableActions.filter((action) => !!result?.[action.value]),
-    [availableActions, result],
-  )
+  const enabledActions = useMemo(() => {
+    if (!result) return []
+
+    // Get the order of actions from the result object (insertion order)
+    const resultKeys = Object.keys(result).filter((key) => result[key as ActionId])
+
+    // Sort availableActions based on the order in result object
+    return resultKeys
+      .map((key) => availableActions.find((action) => action.value === key))
+      .filter((action): action is NonNullable<typeof action> => !!action)
+  }, [availableActions, result])
   const notEnabledActions = useMemo(
     () => availableActions.filter((action) => !result?.[action.value]),
     [availableActions, result],
@@ -251,27 +260,29 @@ export const ThenSection = ({ index, variant: _variant = "detail" }: ThenSection
                 <Fragment key={action.label}>
                   <div className="relative flex gap-4">
                     {/* Connection line and icon */}
-                    <div className="relative flex flex-col items-center">
+                    <div className="relative flex flex-col items-center pt-0.5">
                       <div className="flex size-9 shrink-0 items-center justify-center rounded-full bg-material-ultra-thick text-text shadow-sm">
                         <i className={cn(action.iconClassname, "text-base")} />
                       </div>
                       {!isLast && (
-                        <div className="absolute top-9 h-[calc(100%+0.75rem)] w-0.5 bg-gradient-to-b from-fill-secondary to-transparent" />
+                        <div className="absolute left-1/2 top-9 h-[calc(100%+0.75rem)] w-0.5 -translate-x-1/2 bg-gradient-to-b from-fill-secondary to-transparent" />
                       )}
                     </div>
 
                     {/* Action content */}
-                    <div className="flex min-w-0 flex-1 flex-col gap-3 pb-6">
+                    <div className="flex min-w-0 flex-1 flex-col gap-3 pb-6 pt-0.5">
                       <div className="flex items-center gap-4">
                         {/* Label */}
-                        <span className="text-sm font-medium text-text">{t(action.label)}</span>
+                        <span className="flex h-9 items-center text-sm font-medium text-text">
+                          {t(action.label)}
+                        </span>
 
                         {/* Spacer */}
                         <div className="flex-1" />
 
                         {/* Value selector or prefix element */}
                         {action.prefixElement && (
-                          <div className="text-xs text-text-secondary">{action.prefixElement}</div>
+                          <div className="text-xs">{action.prefixElement}</div>
                         )}
 
                         {/* Settings button */}
@@ -293,6 +304,7 @@ export const ThenSection = ({ index, variant: _variant = "detail" }: ThenSection
                           icon="i-mgc-delete-2-cute-re"
                           ariaLabel={t("actions.action_card.summary.delete")}
                           disabled={disabled}
+                          className="hover:text-red"
                           onClick={() => {
                             actionActions.deleteRuleAction(index, action.value)
                           }}
@@ -352,18 +364,23 @@ const IconButton = ({
   onClick,
   ariaLabel,
   disabled,
+  className,
 }: {
   icon: string
   onClick: () => void
   ariaLabel: string
   disabled?: boolean
+  className?: string
 }) => {
   return (
     <button
       type="button"
       aria-label={ariaLabel}
       disabled={disabled}
-      className="flex size-6 items-center justify-center rounded-md text-text-secondary transition-colors hover:bg-fill-quaternary hover:text-red disabled:opacity-50"
+      className={cn(
+        "flex size-6 items-center justify-center rounded-md text-text-secondary transition-colors hover:bg-fill-quaternary hover:text-text disabled:opacity-50",
+        className,
+      )}
       onClick={onClick}
     >
       <i className={icon} />

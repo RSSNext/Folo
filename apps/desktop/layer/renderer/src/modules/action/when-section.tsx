@@ -60,7 +60,7 @@ export const WhenSection = ({ index }: WhenSectionProps) => {
           {condition.map((orConditions, orConditionIdx) => {
             return (
               <Fragment key={orConditionIdx}>
-                <div className="flex flex-col gap-3 rounded-lg border border-dashed border-fill-tertiary bg-transparent p-4">
+                <div className="flex flex-col gap-3 rounded-lg border border-dashed border-border bg-transparent p-4">
                   {orConditions.map((item, conditionIdx) => {
                     const actionConditionIndex = {
                       ruleIndex: index,
@@ -118,7 +118,7 @@ export const WhenSection = ({ index }: WhenSectionProps) => {
                         </div>
                         {conditionIdx !== orConditions.length - 1 && (
                           <div className="flex items-center text-xs text-text-secondary">
-                            <span className="rounded-md border border-fill-tertiary bg-fill-quaternary px-2 py-0.5 uppercase tracking-wide">
+                            <span className="rounded-md border border-border bg-material-medium px-2 py-0.5 font-bold uppercase tracking-wide">
                               {t("actions.action_card.and")}
                             </span>
                           </div>
@@ -129,7 +129,7 @@ export const WhenSection = ({ index }: WhenSectionProps) => {
                   <Button
                     variant="outline"
                     size="sm"
-                    buttonClassName="w-fit border-dashed border-fill-tertiary"
+                    buttonClassName="w-fit border-dashed border-border "
                     disabled={disabled}
                     onClick={() => {
                       actionActions.addConditionItem({
@@ -144,7 +144,7 @@ export const WhenSection = ({ index }: WhenSectionProps) => {
                 </div>
                 {orConditionIdx !== condition.length - 1 && (
                   <div className="flex items-center justify-center">
-                    <span className="rounded-md border border-fill-tertiary bg-fill-quaternary px-3 py-1 text-xs font-semibold uppercase tracking-wide text-text-secondary">
+                    <span className="rounded-md border border-border bg-material-medium px-3 py-1 text-xs font-semibold uppercase tracking-wide text-text-secondary">
                       {t("actions.action_card.or")}
                     </span>
                   </div>
@@ -155,7 +155,7 @@ export const WhenSection = ({ index }: WhenSectionProps) => {
           <Button
             variant="outline"
             size="sm"
-            buttonClassName="w-fit border-dashed border-fill-tertiary"
+            buttonClassName="w-fit border-dashed border-border "
             onClick={() => {
               actionActions.addConditionGroup({ ruleIndex: index })
             }}

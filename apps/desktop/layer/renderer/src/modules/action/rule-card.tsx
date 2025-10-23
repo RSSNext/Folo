@@ -1,4 +1,5 @@
 import { Input } from "@follow/components/ui/input/index.js"
+import * as ScrollArea from "@follow/components/ui/scroll-area/ScrollArea.js"
 import { Switch } from "@follow/components/ui/switch/index.jsx"
 import { useActionRule, useActionRules, useUpdateActionsMutation } from "@follow/store/action/hooks"
 import { actionActions } from "@follow/store/action/store"
@@ -31,9 +32,15 @@ export const RuleCard = ({
   }
 
   return (
-    <div className="group/rule flex h-full flex-col gap-5 rounded-lg border border-fill-secondary bg-transparent p-5 @container">
-      <RuleCardToolbar index={index} />
-      <RuleCardContent index={index} />
+    <div className="group/rule flex size-full flex-col @container">
+      <div className="shrink-0 border-b border-fill-tertiary px-5 py-4">
+        <RuleCardToolbar index={index} />
+      </div>
+      <ScrollArea.ScrollArea rootClassName="flex-1" viewportClassName="h-full">
+        <div className="p-5">
+          <RuleCardContent index={index} />
+        </div>
+      </ScrollArea.ScrollArea>
     </div>
   )
 }

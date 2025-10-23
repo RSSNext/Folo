@@ -10,9 +10,9 @@ export function Component() {
   useSubViewTitle("words.actions")
 
   return (
-    <div className="flex size-full flex-col px-6 py-8">
+    <div className="-mt-6 flex size-full min-h-[calc(100vh-8rem)] flex-col px-6">
       {/* Simple Header */}
-      <div className="mx-auto mb-8 max-w-6xl text-center">
+      <div className="mx-auto max-w-6xl text-center">
         <h1 className="mb-4 text-3xl font-bold text-text">{t("words.actions")}</h1>
 
         {/* Documentation Link */}
@@ -28,7 +28,7 @@ export function Component() {
       </div>
 
       {/* Content */}
-      <div className="mx-auto w-full max-w-6xl">
+      <div className="relative mx-auto flex min-h-0 w-full max-w-6xl flex-1 flex-col @container">
         <ActionSetting />
       </div>
     </div>

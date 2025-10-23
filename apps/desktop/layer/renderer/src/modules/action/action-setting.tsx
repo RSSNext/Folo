@@ -1,5 +1,6 @@
 import { Button } from "@follow/components/ui/button/index.js"
 import { LoadingWithIcon } from "@follow/components/ui/loading/index.jsx"
+import * as ScrollArea from "@follow/components/ui/scroll-area/ScrollArea.js"
 import {
   useActionRules,
   useIsActionDataDirty,
@@ -119,10 +120,12 @@ export const ActionSetting = () => {
       <ActionButtonGroup onCreateRule={handleCreateRule} />
       <ShareImportSection />
       {hasActions ? (
-        <div className="flex w-full flex-col gap-6 @container">
-          <div className="hidden @[960px]:grid @[960px]:grid-cols-[minmax(0,260px)_minmax(0,1fr)] @[960px]:gap-6">
+        <div className="flex min-h-0 w-full flex-1 flex-col @[960px]:absolute @[960px]:inset-x-0 @[960px]:bottom-0 @[960px]:top-12">
+          <div className="hidden h-full flex-1 @[960px]:flex @[960px]:h-0 @[960px]:overflow-hidden @[960px]:rounded-lg @[960px]:border @[960px]:border-fill-secondary">
             <RuleList selectedIndex={selectedRuleIndex} onSelect={setSelectedRuleIndex} />
-            <RuleCard index={selectedRuleIndex} mode="detail" />
+            <div className="flex flex-1 border-l border-fill-secondary">
+              <RuleCard index={selectedRuleIndex} mode="detail" />
+            </div>
           </div>
           <div className="flex flex-col gap-3 @[960px]:hidden">
             {actions.map((_, actionIdx) => (
@@ -225,9 +228,9 @@ const ShareImportSection = () => {
       <DropdownMenu>
         <DropdownMenuTrigger asChild>
           <Button
-            variant="outline"
+            variant="ghost"
             size="sm"
-            className="size-9 p-0"
+            buttonClassName="size-9 p-0"
             aria-label={
               hasActions
                 ? t("actions.action_card.summary.share")
@@ -281,29 +284,33 @@ const RuleList = ({
   }
 
   return (
-    <div className="flex h-full flex-col gap-0 overflow-hidden rounded-lg border border-fill-secondary bg-material-opaque">
-      {rules.map((rule, index) => {
-        const isActive = index === selectedIndex
-        const displayName = getRuleDisplayName(rule, index, t)
-        const whenSummary = buildConditionSummary(rule, t)
-        const actionSummary = buildActionSummary(rule, t)
+    <div className="flex w-[260px] shrink-0 flex-col">
+      <ScrollArea.ScrollArea rootClassName="h-full" viewportClassName="h-full">
+        <div className="flex flex-col">
+          {rules.map((rule, index) => {
+            const isActive = index === selectedIndex
+            const displayName = getRuleDisplayName(rule, index, t)
+            const whenSummary = buildConditionSummary(rule, t)
+            const actionSummary = buildActionSummary(rule, t)
 
-        return (
-          <button
-            key={rule.index ?? index}
-            type="button"
-            onClick={() => onSelect(index)}
-            className={cn(
-              "flex flex-col gap-1 border-b border-fill-tertiary px-4 py-3 text-left transition-all last:border-b-0",
-              isActive ? "bg-fill-quaternary" : "hover:bg-fill-quinary",
-            )}
-          >
-            <span className="text-sm font-medium text-text">{displayName}</span>
-            <span className="line-clamp-2 text-xs text-text-secondary">{whenSummary}</span>
-            <span className="line-clamp-1 text-xs text-text-secondary">{actionSummary}</span>
-          </button>
-        )
-      })}
+            return (
+              <button
+                key={rule.index ?? index}
+                type="button"
+                onClick={() => onSelect(index)}
+                className={cn(
+                  "flex flex-col gap-1 border-b border-fill-tertiary px-4 py-3 text-left transition-all last:border-b-0",
+                  isActive ? "bg-fill-quaternary" : "hover:bg-fill-quinary",
+                )}
+              >
+                <span className="text-sm font-medium text-text">{displayName}</span>
+                <span className="line-clamp-2 text-xs text-text-secondary">{whenSummary}</span>
+                <span className="line-clamp-1 text-xs text-text-secondary">{actionSummary}</span>
+              </button>
+            )
+          })}
+        </div>
+      </ScrollArea.ScrollArea>
     </div>
   )
 }
