@@ -172,7 +172,6 @@ const RuleCardToolbar = ({ index }: { index: number }) => {
           size="sm"
           aria-label={t("actions.action_card.summary.delete")}
           buttonClassName="size-8 p-0"
-          // className="flex size-9 items-center justify-center rounded-lg border border-fill-secondary bg-transparent text-text-secondary transition-colors hover:border-fill hover:bg-fill-quinary hover:text-text"
           onClick={handleDelete}
         >
           <i className="i-mgc-delete-2-cute-re" />
