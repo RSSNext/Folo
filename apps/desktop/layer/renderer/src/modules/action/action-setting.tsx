@@ -7,7 +7,9 @@ import {
   usePrefetchActions,
   useUpdateActionsMutation,
 } from "@follow/store/action/hooks"
+import type { ActionItem } from "@follow/store/action/store"
 import { actionActions } from "@follow/store/action/store"
+import { nextFrame } from "@follow/utils"
 import { JsonObfuscatedCodec } from "@follow/utils/json-codec"
 import { cn } from "@follow/utils/utils"
 import { useQueryClient } from "@tanstack/react-query"
@@ -17,6 +19,7 @@ import { useTranslation } from "react-i18next"
 import { unstable_usePrompt } from "react-router"
 import { toast } from "sonner"
 
+import { MenuItemText, useShowContextMenu } from "~/atoms/context-menu"
 import { HeaderActionButton, HeaderActionGroup } from "~/components/ui/button/HeaderActionButton"
 import {
   DropdownMenu,
@@ -25,6 +28,8 @@ import {
   DropdownMenuSeparator,
   DropdownMenuTrigger,
 } from "~/components/ui/dropdown-menu/dropdown-menu.js"
+import { useDialog } from "~/components/ui/modal/stacked/hooks"
+import { useContextMenu } from "~/hooks/common/useContextMenu"
 import { copyToClipboard, readFromClipboard } from "~/lib/clipboard"
 import { downloadJsonFile, selectJsonFile } from "~/lib/export"
 import { RuleCard } from "~/modules/action/rule-card"
@@ -58,7 +63,7 @@ const EmptyActionPlaceholder = () => {
         </div>
       </div>
       <m.div
-        className="absolute -top-6 right-20"
+        className="fixed right-20 top-12 z-[1000]"
         animate={{
           x: [0, 8, 0],
           y: [0, -4, 0],
@@ -122,7 +127,20 @@ export const ActionSetting = () => {
       {hasActions ? (
         <div className="flex min-h-0 w-full flex-1 flex-col @[960px]:absolute @[960px]:inset-x-0 @[960px]:bottom-0 @[960px]:top-12">
           <div className="hidden h-full flex-1 @[960px]:flex @[960px]:h-0 @[960px]:overflow-hidden @[960px]:rounded-lg @[960px]:border @[960px]:border-fill-secondary">
-            <RuleList selectedIndex={selectedRuleIndex} onSelect={setSelectedRuleIndex} />
+            <RuleList
+              selectedIndex={selectedRuleIndex}
+              onSelect={setSelectedRuleIndex}
+              onDelete={(deletedIndex) => {
+                // Adjust selectedRuleIndex when a rule is deleted
+                if (deletedIndex === selectedRuleIndex) {
+                  // If deleting the selected rule, select the previous one or 0
+                  setSelectedRuleIndex(Math.max(0, deletedIndex - 1))
+                } else if (deletedIndex < selectedRuleIndex) {
+                  // If deleting a rule before the selected one, shift the index down
+                  setSelectedRuleIndex(selectedRuleIndex - 1)
+                }
+              }}
+            />
             <div className="flex flex-1 border-l border-fill-secondary">
               <RuleCard index={selectedRuleIndex} mode="detail" />
             </div>
@@ -272,12 +290,41 @@ const ShareImportSection = () => {
 const RuleList = ({
   selectedIndex,
   onSelect,
+  onDelete,
 }: {
   selectedIndex: number
   onSelect: (index: number) => void
+  onDelete: (index: number) => void
 }) => {
   const rules = useActionRules()
   const { t } = useTranslation("settings")
+  const ruleCount = useActionRules((s) => s.length)
+  const mutation = useUpdateActionsMutation()
+  const { ask } = useDialog()
+  const showContextMenu = useShowContextMenu()
+
+  const handleDeleteRule = useCallback(
+    (index: number) => {
+      if (ruleCount === 1) {
+        ask({
+          title: t("actions.action_card.summary.delete_title"),
+          variant: "danger",
+          message: t("actions.action_card.summary.delete_message"),
+          onConfirm: () => {
+            actionActions.deleteRule(index)
+            onDelete(index)
+            nextFrame(() => {
+              mutation.mutate()
+            })
+          },
+        })
+      } else {
+        actionActions.deleteRule(index)
+        onDelete(index)
+      }
+    },
+    [ruleCount, ask, t, mutation, onDelete],
+  )
 
   if (rules.length === 0) {
     return null
@@ -287,31 +334,73 @@ const RuleList = ({
     <div className="flex w-[260px] shrink-0 flex-col">
       <ScrollArea.ScrollArea rootClassName="h-full" viewportClassName="h-full">
         <div className="flex flex-col">
-          {rules.map((rule, index) => {
-            const isActive = index === selectedIndex
-            const displayName = getRuleDisplayName(rule, index, t)
-            const whenSummary = buildConditionSummary(rule, t)
-            const actionSummary = buildActionSummary(rule, t)
-
-            return (
-              <button
-                key={rule.index ?? index}
-                type="button"
-                onClick={() => onSelect(index)}
-                className={cn(
-                  "flex flex-col gap-1 border-b border-fill-tertiary px-4 py-3 text-left transition-all last:border-b-0",
-                  isActive ? "bg-fill-quaternary" : "hover:bg-fill-quinary",
-                )}
-              >
-                <span className="text-sm font-medium text-text">{displayName}</span>
-                <span className="line-clamp-2 text-xs text-text-secondary">{whenSummary}</span>
-                <span className="line-clamp-1 text-xs text-text-secondary">{actionSummary}</span>
-              </button>
-            )
-          })}
+          {rules.map((rule, index) => (
+            <RuleListItem
+              key={rule.index ?? index}
+              rule={rule}
+              index={index}
+              isActive={index === selectedIndex}
+              onSelect={onSelect}
+              handleDelete={handleDeleteRule}
+              showContextMenu={showContextMenu}
+            />
+          ))}
         </div>
       </ScrollArea.ScrollArea>
     </div>
+  )
+}
+
+const RuleListItem = ({
+  rule,
+  index,
+  isActive,
+  onSelect,
+  handleDelete,
+  showContextMenu,
+}: {
+  rule: ActionItem
+  index: number
+  isActive: boolean
+  onSelect: (index: number) => void
+  handleDelete: (index: number) => void
+  showContextMenu: ReturnType<typeof useShowContextMenu>
+}) => {
+  const { t } = useTranslation("settings")
+  const displayName = getRuleDisplayName(rule, index, t)
+  const whenSummary = buildConditionSummary(rule, t)
+  const actionSummary = buildActionSummary(rule, t)
+
+  const contextMenuProps = useContextMenu({
+    onContextMenu: async (e) => {
+      e.preventDefault()
+      await showContextMenu(
+        [
+          new MenuItemText({
+            label: t("actions.action_card.summary.delete"),
+            icon: <i className="i-mgc-delete-2-cute-re" />,
+            click: () => handleDelete(index),
+          }),
+        ],
+        e,
+      )
+    },
+  })
+
+  return (
+    <button
+      type="button"
+      onClick={() => onSelect(index)}
+      {...contextMenuProps}
+      className={cn(
+        "flex flex-col gap-1 border-b border-fill-tertiary px-4 py-3 text-left transition-all last:border-b-0",
+        isActive ? "bg-fill-quaternary" : "hover:bg-fill-quinary",
+      )}
+    >
+      <span className="text-sm font-medium text-text">{displayName}</span>
+      <span className="line-clamp-2 text-xs text-text-secondary">{whenSummary}</span>
+      <span className="line-clamp-1 text-xs text-text-secondary">{actionSummary}</span>
+    </button>
   )
 }
 
