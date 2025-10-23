@@ -27,8 +27,8 @@ import { StarIcon } from "../star-icon"
 import type { UniversalItemProps } from "../types"
 
 const entrySelector = (state: EntryModel) => {
-  const { feedId, inboxHandle, read } = state
-  const { authorAvatar, authorUrl, description, publishedAt, title } = state
+  /// keep-sorted
+  const { authorAvatar, authorUrl, description, feedId, inboxHandle, publishedAt, title } = state
 
   const audios = state.attachments?.filter((a) => a.mime_type?.startsWith("audio") && a.url)
   const firstAudio = audios?.[0]
@@ -36,23 +36,22 @@ const entrySelector = (state: EntryModel) => {
   const firstMedia = media?.[0]
   const photo = media.find((a) => a.type === "photo")
   const firstPhotoUrl = photo?.url
-  const iconEntry: FeedIconEntry = { firstPhotoUrl, authorAvatar }
 
-  const titleEntry = { authorUrl }
-
+  /// keep-sorted
   return {
+    authorAvatar,
+    authorUrl,
     description,
     feedId,
     firstAudio,
     firstMedia,
-    iconEntry,
+    firstPhotoUrl,
     inboxId: inboxHandle,
     publishedAt,
-    read,
     title,
-    titleEntry,
   }
 }
+
 export function ListItem({
   entryId,
   translation,
@@ -66,7 +65,7 @@ export function ListItem({
   const isInCollection = useIsEntryStarred(entryId)
   const collectionCreatedAt = useCollectionEntry(entryId)?.createdAt
 
-  const isRead = useEntryIsRead(entry)
+  const isRead = useEntryIsRead(entryId)
 
   const inInCollection = useRouteParamsSelector((s) => s.feedId === FEED_COLLECTION_LIST)
 
@@ -88,6 +87,22 @@ export function ListItem({
   const rid = `list-item-${entryId}`
 
   const bilingual = useGeneralSettingKey("translationMode") === "bilingual"
+
+  const iconEntry: FeedIconEntry = useMemo(
+    () => ({
+      firstPhotoUrl: entry?.firstPhotoUrl,
+      authorAvatar: entry?.authorAvatar,
+    }),
+    [entry?.firstPhotoUrl, entry?.authorAvatar],
+  )
+
+  const titleEntry = useMemo(
+    () => ({
+      authorUrl: entry?.authorUrl,
+    }),
+    [entry?.authorUrl],
+  )
+
   const lineClamp = useMemo(() => {
     const envIsSafari = isSafari()
     let lineClampTitle = 1
@@ -113,7 +128,14 @@ export function ListItem({
       title: envIsSafari ? `line-clamp-[${lineClampTitle}]` : "",
       description: envIsSafari ? `line-clamp-[${lineClampDescription}]` : "",
     }
-  }, [simple, translation?.description, translation?.title, bilingual])
+  }, [
+    simple,
+    translation?.description,
+    translation?.title,
+    entry?.description,
+    entry?.title,
+    bilingual,
+  ])
 
   const dimRead = useGeneralSettingKey("dimRead")
   // NOTE: prevent 0 height element, react virtuoso will not stop render any more
@@ -152,7 +174,7 @@ export function ListItem({
           "before:absolute before:-left-3 before:top-5 before:block before:size-2 before:rounded-full before:bg-accent",
       )}
     >
-      <FeedIcon target={related} fallback entry={entry?.iconEntry} size={24} />
+      <FeedIcon target={related} fallback entry={iconEntry} size={24} />
       <div
         className={cn("-mt-0.5 ml-1 h-fit flex-1 text-sm leading-tight", lineClamp.global)}
         style={{
@@ -170,7 +192,7 @@ export function ListItem({
           <EllipsisHorizontalTextWithTooltip className="truncate">
             <FeedTitle
               feed={related}
-              title={getPreferredTitle(related, entry?.titleEntry)}
+              title={getPreferredTitle(related, titleEntry)}
               className="space-x-0.5"
             />
           </EllipsisHorizontalTextWithTooltip>
@@ -230,7 +252,7 @@ export function ListItem({
                 <div className={clsx("bg-material-ultra-thick", "size-[80px]", "rounded")} />
               }
               target={feed || inbox}
-              entry={entry?.iconEntry}
+              entry={iconEntry}
               size={80}
               className="m-0 rounded"
               useMedia
