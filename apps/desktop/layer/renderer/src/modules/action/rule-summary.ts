@@ -41,11 +41,7 @@ export const buildConditionSummary = (rule: ActionItem | undefined, t: TFunction
           const { value } = condition
 
           const valueText =
-            typeof value === "number"
-              ? value.toString()
-              : typeof value === "string" && value.trim().length > 0
-                ? value
-                : undefined
+            typeof value === "string" && value.trim().length > 0 ? value : value?.toString() || ""
 
           const parts = [fieldLabel, operatorLabel, valueText].filter(Boolean)
           return parts.join(" ")
