@@ -1,5 +1,5 @@
+import { getEntry } from "@follow/store/entry/getter"
 import { useEntryIdsByView } from "@follow/store/entry/hooks"
-import { useEntryStore } from "@follow/store/entry/store"
 import { getFeedById } from "@follow/store/feed/getter"
 import { useAllFeedSubscription, useCategories } from "@follow/store/subscription/hooks"
 import type { IFuseOptions } from "fuse.js"
@@ -44,7 +44,6 @@ export const useFeedEntrySearchService = (options: SearchServiceOptions = {}) =>
   const allSubscriptions = useAllFeedSubscription()
   const categories = useCategories()
   const recentEntryIds = useEntryIdsByView(view, false)
-  const entryStore = useEntryStore((state) => state.data)
 
   const categoryItems = useMemo(() => {
     if (!categories?.length) return []
@@ -83,7 +82,7 @@ export const useFeedEntrySearchService = (options: SearchServiceOptions = {}) =>
 
     return recentEntryIds
       .map((entryId) => {
-        const entry = entryStore[entryId]
+        const entry = getEntry(entryId)
         return entry
           ? {
               id: entryId,
@@ -93,7 +92,7 @@ export const useFeedEntrySearchService = (options: SearchServiceOptions = {}) =>
           : null
       })
       .filter(Boolean) as SearchItem[]
-  }, [recentEntryIds, entryStore])
+  }, [recentEntryIds])
 
   // Combine all search items
   const allItems = useMemo(() => {
