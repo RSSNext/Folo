@@ -47,8 +47,8 @@ function EntryHeaderRootImpl({
       <m.div
         data-hide-in-print
         className={cn(
-          "relative flex min-w-0 items-center justify-between gap-3 overflow-hidden text-lg text-text-secondary duration-200 macos-left-column-hidden:pl-margin-macos-traffic-light-x",
-          shouldShowMeta && "border-b border-border",
+          "relative flex min-w-0 items-center justify-between gap-3 overflow-hidden border-b border-transparent text-lg text-text-secondary duration-200 macos-left-column-hidden:pl-margin-macos-traffic-light-x",
+          shouldShowMeta && "border-border",
           className,
         )}
         style={style}

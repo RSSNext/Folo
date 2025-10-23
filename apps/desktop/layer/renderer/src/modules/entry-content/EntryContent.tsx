@@ -246,6 +246,9 @@ const EntryScrollArea: Component<{
       scrollbarClassName="mr-[1.5px] print:hidden"
       ref={scrollerRef}
       viewportClassName={viewportClassName}
+      scrollbarProps={{
+        className: "mt-16 z-[999]",
+      }}
     >
       {children}
     </ScrollArea.ScrollArea>
