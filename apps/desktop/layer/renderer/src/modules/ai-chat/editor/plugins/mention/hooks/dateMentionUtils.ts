@@ -13,34 +13,24 @@ export interface DateRange {
   end: Dayjs
 }
 
-export const formatRangeValue = (range: DateRange, text?: string): string => {
+const formatRangeValue = (range: DateRange, text?: string): string => {
   const startIso = range.start.format(MENTION_DATE_VALUE_FORMAT)
   const endIso = range.end.format(MENTION_DATE_VALUE_FORMAT)
 
   return `<mention-date start="${startIso}" end="${endIso}"${text ? ` text="${text}"` : ""}></mention-date>`
 }
 
-const DEFAULT_DATE_FORMAT: Intl.DateTimeFormatOptions = {
-  year: "numeric",
-  month: "short",
-  day: "numeric",
-}
-
-export const formatLocalizedDate = (
-  date: Dayjs,
-  locale: string,
-  options: Intl.DateTimeFormatOptions = DEFAULT_DATE_FORMAT,
-): string => {
-  return new Intl.DateTimeFormat(locale, options).format(date.toDate())
+const formatLocalizedDate = (date: Dayjs, locale: string, template = "LLL"): string => {
+  return date.locale(locale).format(template)
 }
 
 export const formatLocalizedRange = (
   range: DateRange,
   locale: string,
-  options: Intl.DateTimeFormatOptions = DEFAULT_DATE_FORMAT,
+  template?: string,
 ): string => {
-  const startFormatted = formatLocalizedDate(range.start, locale, options)
-  const endFormatted = formatLocalizedDate(range.end, locale, options)
+  const startFormatted = formatLocalizedDate(range.start, locale, template)
+  const endFormatted = formatLocalizedDate(range.end, locale, template)
 
   if (startFormatted === endFormatted) {
     return startFormatted
@@ -103,7 +93,7 @@ export const createDateMentionData = ({
   const value = formatRangeValue(range, id || displayName)
   const text = value // Use the same value for text
 
-  const resolvedName = displayName ?? resolveMentionLabel(label, translate) ?? value
+  const resolvedName = displayName ?? (resolveMentionLabel(label, translate) || "")
 
   return {
     id: id ?? `date:${value}`,
@@ -161,5 +151,7 @@ export const getDateMentionDisplayName = (
     return translate(matched.labelKey)
   }
 
-  return asRange ? formatLocalizedRange(range, locale) : mention.name
+  return asRange
+    ? formatLocalizedRange(range, locale)
+    : mention.name || formatLocalizedRange(range, locale, "LL")
 }
