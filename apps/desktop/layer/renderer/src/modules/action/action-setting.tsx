@@ -8,9 +8,10 @@ import {
 } from "@follow/store/action/hooks"
 import { actionActions } from "@follow/store/action/store"
 import { JsonObfuscatedCodec } from "@follow/utils/json-codec"
+import { cn } from "@follow/utils/utils"
 import { useQueryClient } from "@tanstack/react-query"
 import { m } from "motion/react"
-import { useEffect } from "react"
+import { useEffect, useState } from "react"
 import { useTranslation } from "react-i18next"
 import { unstable_usePrompt } from "react-router"
 import { toast } from "sonner"
@@ -26,6 +27,11 @@ import {
 import { copyToClipboard, readFromClipboard } from "~/lib/clipboard"
 import { downloadJsonFile, selectJsonFile } from "~/lib/export"
 import { RuleCard } from "~/modules/action/rule-card"
+import {
+  buildActionSummary,
+  buildConditionSummary,
+  getRuleDisplayName,
+} from "~/modules/action/rule-summary"
 
 import { useSetSubViewRightView } from "../app-layout/subview/hooks"
 import { generateExportFilename } from "./utils"
@@ -74,8 +80,21 @@ const EmptyActionPlaceholder = () => {
 
 export const ActionSetting = () => {
   const actions = useActionRules()
+  const { t } = useTranslation("settings")
 
+  const [selectedRuleIndex, setSelectedRuleIndex] = useState(0)
   const actionQuery = usePrefetchActions()
+
+  useEffect(() => {
+    if (actions.length === 0) {
+      setSelectedRuleIndex(0)
+      return
+    }
+
+    if (selectedRuleIndex > actions.length - 1) {
+      setSelectedRuleIndex(actions.length - 1)
+    }
+  }, [actions.length, selectedRuleIndex])
 
   if (actionQuery.isPending) {
     return (
@@ -89,14 +108,36 @@ export const ActionSetting = () => {
 
   const hasActions = actions.length > 0
 
+  const handleCreateRule = () => {
+    const nextIndex = actions.length
+    actionActions.addRule((number) => t("actions.actionName", { number }))
+    setSelectedRuleIndex(nextIndex)
+  }
+
   return (
     <div className="flex w-full flex-col gap-6">
-      <ActionButtonGroup />
+      <ActionButtonGroup onCreateRule={handleCreateRule} />
       {hasActions ? (
         <div className="flex flex-col gap-6 @container">
-          {actions.map((_, actionIdx) => {
-            return <RuleCard key={actionIdx} index={actionIdx} />
-          })}
+          <div className="hidden @[960px]:grid @[960px]:grid-cols-[minmax(0,260px)_minmax(0,1fr)] @[960px]:gap-6">
+            <RuleList selectedIndex={selectedRuleIndex} onSelect={setSelectedRuleIndex} />
+            <RuleCard index={selectedRuleIndex} mode="detail" />
+          </div>
+          <div className="flex flex-col gap-3 @[960px]:hidden">
+            {actions.map((_, actionIdx) => (
+              <RuleCard
+                key={actionIdx}
+                index={actionIdx}
+                mode="compact"
+                defaultOpen={actionIdx === selectedRuleIndex}
+                onOpenChange={(open) => {
+                  if (open) {
+                    setSelectedRuleIndex(actionIdx)
+                  }
+                }}
+              />
+            ))}
+          </div>
         </div>
       ) : (
         <EmptyActionPlaceholder />
@@ -105,7 +146,51 @@ export const ActionSetting = () => {
   )
 }
 
-const ActionButtonGroup = () => {
+const RuleList = ({
+  selectedIndex,
+  onSelect,
+}: {
+  selectedIndex: number
+  onSelect: (index: number) => void
+}) => {
+  const rules = useActionRules()
+  const { t } = useTranslation("settings")
+
+  if (rules.length === 0) {
+    return null
+  }
+
+  return (
+    <div className="flex h-full flex-col gap-2 overflow-hidden rounded-3xl bg-material-ultra-thin/90 p-3 shadow-sm ring-1 ring-border/30">
+      {rules.map((rule, index) => {
+        const isActive = index === selectedIndex
+        const displayName = getRuleDisplayName(rule, index, t)
+        const whenSummary = buildConditionSummary(rule, t)
+        const actionSummary = buildActionSummary(rule, t)
+
+        return (
+          <button
+            key={rule.index ?? index}
+            type="button"
+            onClick={() => onSelect(index)}
+            className={cn(
+              "flex flex-col gap-1 rounded-2xl border border-transparent px-4 py-3 text-left transition-all",
+              isActive
+                ? "border-fill-secondary bg-fill-secondary/80 shadow-sm"
+                : "hover:border-fill-secondary/60 hover:bg-fill-secondary/40",
+            )}
+          >
+            <span className="text-sm font-medium text-text">{displayName}</span>
+            <span className="line-clamp-2 text-xs text-text-tertiary">{whenSummary}</span>
+            <span className="line-clamp-1 text-xs text-text-tertiary">{actionSummary}</span>
+          </button>
+        )
+      })}
+    </div>
+  )
+}
+
+const ActionButtonGroup = ({ onCreateRule }: { onCreateRule: () => void }) => {
   const queryClient = useQueryClient()
   const actionLength = useActionRules((actions) => actions.length)
   const isDirty = useIsActionDataDirty()
@@ -207,11 +292,7 @@ const ActionButtonGroup = () => {
   useEffect(() => {
     setRightView(
       <HeaderActionGroup>
-        <HeaderActionButton
-          variant="primary"
-          icon="i-mingcute-add-line"
-          onClick={() => actionActions.addRule((number) => t("actions.actionName", { number }))}
-        >
+        <HeaderActionButton variant="primary" icon="i-mingcute-add-line" onClick={onCreateRule}>
           {t("actions.newRule")}
         </HeaderActionButton>
 
@@ -231,22 +312,24 @@ const ActionButtonGroup = () => {
     return () => {
       setRightView(null)
     }
-  }, [setRightView, actionLength, hasActions, isDirty, mutation, t])
+  }, [setRightView, actionLength, hasActions, isDirty, mutation, onCreateRule, t])
 
   return (
-    <div className="mb-6 flex w-full items-center justify-end p-4 lg:justify-between">
-      {/* Left side - Simple status */}
-      <div className="hidden lg:block">
-        <h3 className="text-lg font-medium text-text">
-          {hasActions ? `${actionLength} Rules` : "No Rules"}
-        </h3>
-        <p className="text-sm text-text-secondary">
-          {hasActions ? "Active automation rules" : "Create your first automation rule"}
+    <div className="mb-6 flex w-full flex-wrap items-center justify-end gap-3 rounded-3xl border border-transparent bg-material-ultra-thin/80 p-4 shadow-sm @[960px]:justify-between">
+      <div className="hidden max-w-md flex-col gap-1 @[960px]:flex">
+        <p className="text-sm font-medium text-text">
+          {hasActions
+            ? t("actions.action_card.summary.rule_count", { count: actionLength })
+            : t("actions.action_card.summary.empty")}
+        </p>
+        <p className="text-xs text-text-tertiary">
+          {hasActions
+            ? t("actions.action_card.summary.helper")
+            : t("actions.action_card.empty.description")}
         </p>
       </div>
 
-      {/* Right side - Action buttons */}
-      <div className="flex items-center gap-2">
+      <div className="flex flex-wrap items-center gap-2">
         <DropdownMenu>
           <DropdownMenuTrigger asChild>
             <Button variant="outline" size="sm">
@@ -255,26 +338,28 @@ const ActionButtonGroup = () => {
               ) : (
                 <i className="i-mgc-file-import-cute-re mr-2 size-4" />
               )}
-              {hasActions ? "Share" : "Import"}
+              {hasActions
+                ? t("actions.action_card.summary.share")
+                : t("actions.action_card.summary.import")}
             </Button>
           </DropdownMenuTrigger>
           <DropdownMenuContent align="end" className="w-56">
             <DropdownMenuItem onClick={handleExport} disabled={!hasActions}>
               <i className="i-mgc-download-2-cute-re mr-3 size-4" />
-              Export to File
+              {t("actions.action_card.summary.export")}
             </DropdownMenuItem>
             <DropdownMenuItem onClick={handleImport}>
               <i className="i-mgc-file-upload-cute-re mr-3 size-4" />
-              Import from File
+              {t("actions.action_card.summary.import_file")}
             </DropdownMenuItem>
             <DropdownMenuSeparator />
             <DropdownMenuItem onClick={handleCopyToClipboard} disabled={!hasActions}>
               <i className="i-mgc-copy-2-cute-re mr-3 size-4" />
-              Copy to Clipboard
+              {t("actions.action_card.summary.copy")}
             </DropdownMenuItem>
             <DropdownMenuItem onClick={handleImportFromClipboard}>
               <i className="i-mgc-paste-cute-re mr-3 size-4" />
-              Import from Clipboard
+              {t("actions.action_card.summary.import_clipboard")}
             </DropdownMenuItem>
           </DropdownMenuContent>
         </DropdownMenu>
@@ -282,7 +367,7 @@ const ActionButtonGroup = () => {
         <Button
           variant={actionLength === 0 ? "primary" : "outline"}
           size="sm"
-          onClick={() => actionActions.addRule((number) => t("actions.actionName", { number }))}
+          onClick={onCreateRule}
         >
           <i className="i-mingcute-add-line mr-2 size-4" />
           {t("actions.newRule")}

@@ -1,6 +1,5 @@
 import { Button } from "@follow/components/ui/button/index.js"
 import { Input } from "@follow/components/ui/input/index.js"
-import { RadioGroup, RadioGroupItem } from "@follow/components/ui/radio-group/motion.js"
 import {
   Select,
   SelectContent,
@@ -12,58 +11,88 @@ import { ResponsiveSelect } from "@follow/components/ui/select/responsive.js"
 import { filterFieldOptions, filterOperatorOptions } from "@follow/store/action/constant"
 import { useActionRule } from "@follow/store/action/hooks"
 import { actionActions } from "@follow/store/action/store"
+import { cn } from "@follow/utils/utils"
 import type { ActionFeedField, ActionOperation } from "@follow-app/client-sdk"
 import { Fragment } from "react"
 import { useTranslation } from "react-i18next"
 
 import { ViewSelectContent } from "~/modules/feed/view-select-content"
 
-export const WhenSection = ({ index }: { index: number }) => {
+type WhenSectionProps = {
+  index: number
+  variant?: "detail" | "compact"
+}
+
+export const WhenSection = ({ index, variant = "detail" }: WhenSectionProps) => {
   const { t } = useTranslation("settings")
 
   const disabled = useActionRule(index, (a) => a.result.disabled)
   const condition = useActionRule(index, (a) => a.condition)
 
+  const mode = condition.length > 0 ? "filter" : "all"
+
+  const handleModeChange = (value: "all" | "filter") => {
+    if (value === "all" && condition.length > 0) {
+      actionActions.toggleRuleFilter(index)
+    }
+
+    if (value === "filter" && condition.length === 0) {
+      actionActions.toggleRuleFilter(index)
+    }
+  }
+
   return (
-    <div className="flex flex-col gap-3">
-      <h2 className="text-lg font-semibold">{t("actions.action_card.when_feeds_match")}</h2>
-      <div className="pl-2">
-        <RadioGroup
-          value={condition.length > 0 ? "filter" : "all"}
-          onValueChange={(value) => {
-            actionActions.patchRule(index, {
-              condition: value === "all" ? [] : [[{}]],
-            })
-          }}
-          className="flex gap-8"
-        >
-          <RadioGroupItem
-            labelClassName="text-sm"
+    <section
+      className={cn(
+        "flex flex-col gap-4 rounded-2xl border border-fill-secondary/40 bg-material-ultra-thin/80 p-4 shadow-sm",
+        variant === "compact" && "bg-material-ultra-thin/70",
+      )}
+    >
+      <div className="flex flex-wrap items-center justify-between gap-3">
+        <span className="text-xs font-semibold uppercase tracking-wide text-text-tertiary">
+          {t("actions.action_card.when_feeds_match")}
+        </span>
+        <div className="flex items-center gap-1 rounded-full bg-fill-tertiary/60 p-1 text-xs font-medium text-text-secondary">
+          <button
+            type="button"
+            className={cn(
+              "rounded-full px-3 py-1 transition-colors",
+              mode === "all"
+                ? "bg-fill-secondary text-text shadow-sm"
+                : "text-text-tertiary hover:text-text",
+            )}
             disabled={disabled}
-            label={t("actions.action_card.all")}
-            value="all"
-          />
-          <RadioGroupItem
-            labelClassName="text-sm"
+            onClick={() => handleModeChange("all")}
+          >
+            {t("actions.action_card.all")}
+          </button>
+          <button
+            type="button"
+            className={cn(
+              "rounded-full px-3 py-1 transition-colors",
+              mode === "filter"
+                ? "bg-fill-secondary text-text shadow-sm"
+                : "text-text-tertiary hover:text-text",
+            )}
             disabled={disabled}
-            label={t("actions.action_card.custom_filters")}
-            value="filter"
-          />
-        </RadioGroup>
+            onClick={() => handleModeChange("filter")}
+          >
+            {t("actions.action_card.custom_filters")}
+          </button>
+        </div>
       </div>
 
-      {condition.length > 0 && (
-        <div className="flex flex-col gap-4 pl-2 pt-4">
+      {mode === "filter" && (
+        <div className="flex flex-col gap-4">
           {condition.map((orConditions, orConditionIdx) => {
             return (
               <Fragment key={orConditionIdx}>
-                <div className="group/or relative flex flex-col gap-2 rounded-lg border p-2 pl-6 @[500px]:p-4">
-                  <div className="absolute left-3 top-9 h-[calc(100%-4.5rem)] w-px bg-border" />
-                  {orConditions.map((condition, conditionIdx) => {
+                <div className="flex flex-col gap-3 rounded-2xl border border-dashed border-fill-secondary/50 bg-fill-tertiary/40 p-4">
+                  {orConditions.map((item, conditionIdx) => {
                     const actionConditionIndex = {
                       ruleIndex: index,
                       groupIndex: orConditionIdx,
-                      conditionIndex: conditionIdx,
+                      conditionIndex,
                     }
 
                     const change = (key: string, value: string | number) => {
@@ -71,51 +100,52 @@ export const WhenSection = ({ index }: { index: number }) => {
                         [key]: value,
                       })
                     }
+
                     const type =
-                      filterFieldOptions.find((option) => option.value === condition.field)?.type ||
+                      filterFieldOptions.find((option) => option.value === item.field)?.type ||
                       "text"
+
                     return (
-                      <div className="flex flex-col gap-2" key={conditionIdx}>
-                        <div className="group/condition-item relative flex items-center gap-2">
-                          <div className="absolute -left-3.5 top-1/2 h-px w-3 -translate-y-1/2 bg-border" />
-                          <div className="absolute -left-3.5 top-1/2 size-1.5 -translate-y-1/2 rounded-full border bg-background" />
+                      <div key={conditionIdx} className="flex flex-col gap-2">
+                        <div className="flex flex-wrap items-center gap-2 rounded-xl bg-material-ultra-thin/90 p-3">
                           <ResponsiveSelect
                             placeholder="Select Field"
                             disabled={disabled}
-                            value={condition.field}
+                            value={item.field}
                             onValueChange={(value) => change("field", value as ActionFeedField)}
                             items={filterFieldOptions.map((option) => ({
                               ...option,
                               label: t(option.label),
                             }))}
-                            triggerClassName="h-8"
+                            triggerClassName="h-9 min-w-[160px]"
                           />
                           <OperationSelect
                             type={type}
                             disabled={disabled}
-                            value={condition.operator}
+                            value={item.operator}
                             onValueChange={(value) => change("operator", value)}
                           />
                           <ValueInput
                             type={type}
-                            value={condition.value}
+                            value={item.value}
                             onChange={(value) => change("value", value)}
                             disabled={disabled}
                           />
-                          <Button
-                            variant="ghost"
-                            buttonClassName="opacity-0 group-hover/condition-item:opacity-100"
+                          <button
+                            type="button"
+                            aria-label={t("actions.action_card.summary.delete")}
+                            className="flex size-9 items-center justify-center rounded-full border border-fill-secondary/40 text-text-tertiary transition-colors hover:border-fill-secondary hover:text-text disabled:opacity-50"
                             disabled={disabled}
                             onClick={() => {
                               actionActions.deleteConditionItem(actionConditionIndex)
                             }}
                           >
                             <i className="i-mgc-delete-2-cute-re" />
-                          </Button>
+                          </button>
                         </div>
                         {conditionIdx !== orConditions.length - 1 && (
-                          <div className="flex items-center pl-2">
-                            <span className="text-muted-foreground text-sm">
+                          <div className="flex items-center text-xs text-text-tertiary">
+                            <span className="rounded-full bg-fill-quaternary px-2 py-0.5 uppercase tracking-wide">
                               {t("actions.action_card.and")}
                             </span>
                           </div>
@@ -125,7 +155,8 @@ export const WhenSection = ({ index }: { index: number }) => {
                   })}
                   <Button
                     variant="outline"
-                    buttonClassName="mt-2"
+                    size="sm"
+                    buttonClassName="w-fit border-dashed border-fill-secondary/60"
                     disabled={disabled}
                     onClick={() => {
                       actionActions.addConditionItem({
@@ -139,9 +170,8 @@ export const WhenSection = ({ index }: { index: number }) => {
                   </Button>
                 </div>
                 {orConditionIdx !== condition.length - 1 && (
-                  <div className="relative flex h-8 w-full items-center justify-center">
-                    <div className="absolute left-0 top-1/2 h-px w-full bg-border" />
-                    <span className="text-muted-foreground z-[1] bg-background px-2 text-sm">
+                  <div className="flex items-center justify-center">
+                    <span className="rounded-full bg-fill-tertiary px-3 py-1 text-xs font-semibold uppercase tracking-wide text-text-tertiary">
                       {t("actions.action_card.or")}
                     </span>
                   </div>
@@ -151,6 +181,8 @@ export const WhenSection = ({ index }: { index: number }) => {
           })}
           <Button
             variant="outline"
+            size="sm"
+            buttonClassName="w-fit border-dashed border-fill-secondary/60"
             onClick={() => {
               actionActions.addConditionGroup({ ruleIndex: index })
             }}
@@ -161,7 +193,7 @@ export const WhenSection = ({ index }: { index: number }) => {
           </Button>
         </div>
       )}
-    </div>
+    </section>
   )
 }
 
@@ -192,9 +224,9 @@ const OperationSelect = ({
       placeholder="Select Operation"
       disabled={disabled}
       value={value}
-      onValueChange={(value) => onValueChange?.(value as ActionOperation)}
+      onValueChange={(nextValue) => onValueChange?.(nextValue as ActionOperation)}
       items={options}
-      triggerClassName="h-8"
+      triggerClassName="h-9 min-w-[150px]"
     />
   )
 }
@@ -215,7 +247,7 @@ const ValueInput = ({
       return (
         <Select
           disabled={disabled}
-          onValueChange={(value) => onChange(value)}
+          onValueChange={(nextValue) => onChange(nextValue)}
           value={value as string | undefined}
         >
           <CommonSelectTrigger />
@@ -230,7 +262,7 @@ const ValueInput = ({
       return (
         <Select
           disabled={disabled}
-          onValueChange={(value) => onChange(value)}
+          onValueChange={(nextValue) => onChange(nextValue)}
           value={value as string | undefined}
         >
           <CommonSelectTrigger />
@@ -247,8 +279,8 @@ const ValueInput = ({
           disabled={disabled}
           type="number"
           value={value}
-          className="h-8"
-          onChange={(e) => onChange(e.target.value)}
+          className="h-9"
+          onChange={(event) => onChange(event.target.value)}
         />
       )
     }
@@ -257,8 +289,8 @@ const ValueInput = ({
         <Input
           disabled={disabled}
           value={value as string | undefined}
-          className="h-8"
-          onChange={(e) => onChange(e.target.value)}
+          className="h-9"
+          onChange={(event) => onChange(event.target.value)}
         />
       )
     }
@@ -266,7 +298,7 @@ const ValueInput = ({
 }
 
 const CommonSelectTrigger = () => (
-  <SelectTrigger className="h-8">
+  <SelectTrigger className="h-9 min-w-[150px]">
     <SelectValue />
   </SelectTrigger>
 )
