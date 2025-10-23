@@ -1,4 +1,4 @@
-import type { AIChatMessage, AIChatSession } from "@follow-app/client-sdk"
+import type { AIChatMessage, AIChatSession, ListSessionsQuery } from "@follow-app/client-sdk"
 
 import { followApi } from "../../lib/api-client"
 import { queryClient } from "../../lib/query-client"
@@ -13,6 +13,51 @@ const MAX_PAGES = 10
  * Service for syncing AI chat session messages from remote API into local DB.
  */
 class AIChatSessionServiceStatic {
+  sync = false
+  /**
+   * List sessions from backend and ensure local DB has sessions and unseen messages.
+   * This does NOT mark sessions as seen on the server (non-destructive sync).
+   *
+   * Returns a small summary for observability.
+   */
+  async syncSessionsAndMessagesFromServer(filters?: ListSessionsQuery): Promise<{
+    sessions: number
+    messages: number
+    failures: number
+  }> {
+    if (this.sync) {
+      return { sessions: 0, messages: 0, failures: 0 }
+    }
+    this.sync = true
+    const res = await followApi.aiChatSessions.list(filters)
+    const sessions = res.data
+
+    let totalMessages = 0
+    let failures = 0
+
+    for (const session of sessions) {
+      try {
+        // Ensure session exists locally first
+        await AIPersistService.ensureSession(session.chatId, { title: session.title })
+
+        // Fetch unseen messages (newer than lastSeenAt) without changing read state remotely
+        const unseenMessages = await this.fetchUnseenRemoteMessages(
+          session.chatId,
+          session.lastSeenAt,
+        )
+        if (unseenMessages.length === 0) continue
+
+        const normalized = unseenMessages.map(this.normalizeRemoteMessage)
+        await AIPersistService.upsertMessages(session.chatId, normalized)
+        totalMessages += normalized.length
+      } catch (err) {
+        // Keep going even if a single session fails
+        console.error("syncSessionsAndMessagesFromServer: failed for session", session.chatId, err)
+        failures += 1
+      }
+    }
+    return { sessions: sessions.length, messages: totalMessages, failures }
+  }
   /**
    * Fetch messages for a chat session from the remote API and persist (upsert) them locally.
    * Returns the normalized BizUIMessage list that was persisted.
@@ -52,6 +97,7 @@ class AIChatSessionServiceStatic {
     chatId: string,
     lastSeenAt: string,
   ): Promise<AIChatMessage[]> {
+    // TODO fix fetch data that local db doesn't have yet
     const allMessages: AIChatMessage[] = []
     const lastSeenAtDate = new Date(lastSeenAt)
     let before: string | undefined
@@ -80,15 +126,12 @@ class AIChatSessionServiceStatic {
   private normalizeRemoteMessage = (msg: AIChatMessage): BizUIMessage => {
     const metadata =
       msg.metadata && typeof msg.metadata === "object" ? (msg.metadata as BizUIMetadata) : undefined
-
-    const normalizedParts = msg.messageParts.filter(
-      (i) => i.type === "text",
-    ) satisfies BizUIMessage["parts"]
-
     return {
       id: msg.id,
       role: msg.role satisfies BizUIMessage["role"],
-      parts: normalizedParts,
+      // Remove this comment once @follow-app/client-sdk updated
+      // @ts-expect-error TODO fix message part types
+      parts: msg.messageParts,
       metadata,
       createdAt: new Date(msg.createdAt),
     }
