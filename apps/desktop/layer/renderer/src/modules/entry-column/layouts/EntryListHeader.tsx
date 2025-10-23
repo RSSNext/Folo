@@ -8,7 +8,7 @@ import { getFeedById } from "@follow/store/feed/getter"
 import { useFeedById } from "@follow/store/feed/hooks"
 import { useWhoami } from "@follow/store/user/hooks"
 import { stopPropagation } from "@follow/utils/dom"
-import { cn, isBizId } from "@follow/utils/utils"
+import { clsx, cn, isBizId } from "@follow/utils/utils"
 import { useAtomValue } from "jotai"
 import type { FC } from "react"
 import { useTranslation } from "react-i18next"
@@ -51,8 +51,13 @@ export const EntryListHeader: FC<{
   const feedIcon = useFeedHeaderIcon()
 
   const titleInfo = !!headerTitle && (
-    <div className="flex min-w-0 items-center break-all text-lg font-bold leading-tight">
-      {feedIcon && <FeedIcon target={feedIcon} fallback size={20} />}
+    <div
+      className={clsx(
+        "flex min-w-0 items-center break-all text-lg font-bold leading-tight",
+        feedIcon && "-ml-3",
+      )}
+    >
+      {feedIcon && <FeedIcon target={feedIcon} fallback size={20} className="mr-4" />}
       <EllipsisHorizontalTextWithTooltip className="inline-block !w-auto max-w-full">
         {headerTitle}
       </EllipsisHorizontalTextWithTooltip>
