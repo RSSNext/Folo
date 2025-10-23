@@ -1,8 +1,13 @@
-import { getAISettings } from "~/atoms/settings/ai"
+import { getAISettings, getShortcutEffectivePrompt } from "~/atoms/settings/ai"
 
 import type { ShortcutData } from "../types"
 
 export function getShortcutTextValue(shortcutData: ShortcutData): string {
+  const allShortcuts = getAISettings().shortcuts ?? []
+  const matchedShortcut = allShortcuts.find((shortcut) => shortcut.id === shortcutData.id)
+  if (matchedShortcut) {
+    return getShortcutEffectivePrompt(matchedShortcut)
+  }
   return shortcutData.prompt
 }
 

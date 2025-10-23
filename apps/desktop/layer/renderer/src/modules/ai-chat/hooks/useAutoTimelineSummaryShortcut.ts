@@ -7,7 +7,7 @@ import { $createParagraphNode, $getRoot, createEditor } from "lexical"
 import { nanoid } from "nanoid"
 import { useEffect, useMemo, useRef } from "react"
 
-import { useAISettingValue } from "~/atoms/settings/ai"
+import { getShortcutEffectivePrompt, useAISettingValue } from "~/atoms/settings/ai"
 import { useGeneralSettingKey } from "~/atoms/settings/general"
 import { ROUTE_FEED_IN_FOLDER, ROUTE_FEED_PENDING } from "~/constants"
 import { useRouteParamsSelector } from "~/hooks/biz/useRouteParams"
@@ -105,10 +105,7 @@ export const useAutoTimelineSummaryShortcut = () => {
   const defaultShortcut = useMemo(() => {
     const shortcuts = aiSettings.shortcuts ?? []
     return shortcuts.find(
-      (shortcut) =>
-        shortcut.id === DEFAULT_SUMMARIZE_TIMELINE_SHORTCUT_ID &&
-        shortcut.enabled &&
-        shortcut.prompt,
+      (shortcut) => shortcut.id === DEFAULT_SUMMARIZE_TIMELINE_SHORTCUT_ID && shortcut.enabled,
     )
   }, [aiSettings.shortcuts])
 
@@ -217,10 +214,8 @@ export const useAutoTimelineSummaryShortcut = () => {
 
     const run = async () => {
       try {
-        const { prompt, id, name } = defaultShortcut
-        if (!prompt) {
-          return
-        }
+        const prompt = getShortcutEffectivePrompt(defaultShortcut)
+        const { id, name } = defaultShortcut
 
         const existingSession = await AIPersistService.findTimelineSummarySession({
           view,

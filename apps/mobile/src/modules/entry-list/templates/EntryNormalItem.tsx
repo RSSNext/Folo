@@ -59,7 +59,7 @@ export const EntryNormalItem = memo(
     const translation = useEntryTranslation({
       entryId,
       language: actionLanguage,
-      setting: enableTranslation,
+      enabled: enableTranslation,
     })
     const from = getInboxFrom(entry)
     const feed = useFeedById(entry?.feedId as string)

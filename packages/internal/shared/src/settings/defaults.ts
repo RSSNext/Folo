@@ -2,11 +2,6 @@ import type { AISettings, GeneralSettings, IntegrationSettings, UISettings } fro
 
 export const DEFAULT_SUMMARIZE_TIMELINE_SHORTCUT_ID = "default-summarize-timeline"
 
-export const DEFAULT_SUMMARIZE_TIMELINE_PROMPT = `Generate a concise timeline summary based on entries within the current timeline within 24 hours.
-Recap the day in a casual, conversational tone instead of a rigid report.
-Open with a few relaxed sentences or light bullets that call out standout topics or shifts.
-Wrap up by casually noting any other interesting threads; if nothing else stands out, say so naturally.`
-
 export const defaultGeneralSettings: GeneralSettings = {
   // App
   appLaunchOnStartup: false,
@@ -25,7 +20,7 @@ export const defaultGeneralSettings: GeneralSettings = {
   hidePrivateSubscriptionsInTimeline: false,
 
   // view
-  unreadOnly: true,
+  unreadOnly: false,
   // mark unread
   scrollMarkUnread: true,
   hoverMarkUnread: true,
@@ -165,23 +160,7 @@ export const defaultIntegrationSettings: IntegrationSettings = {
 
 export const defaultAISettings: AISettings = {
   personalizePrompt: "",
-  shortcuts: [
-    {
-      name: "Summarize",
-      prompt: DEFAULT_SUMMARIZE_TIMELINE_PROMPT,
-      enabled: true,
-      displayTargets: ["list"],
-      id: DEFAULT_SUMMARIZE_TIMELINE_SHORTCUT_ID,
-    },
-    {
-      name: "Analyze",
-      prompt:
-        "Analyze this content, looking for bias, patterns, trends, connections. Consider the author, the source. Research to fact check, if it seems beneficial. Research the broader setting. Try and think about what someone would want to know here.\n\nIf no content has been provided, ask about the relevant subject matter.",
-      enabled: true,
-      displayTargets: ["entry"],
-      id: "default-analyze",
-    },
-  ],
+  shortcuts: [],
 
   // MCP Services
   mcpEnabled: false,

@@ -13,36 +13,11 @@ export interface DateRange {
   end: Dayjs
 }
 
-export const clampRangeToPastMonth = (range: DateRange): DateRange | null => {
-  const today = dayjs().startOf("day")
-  const minAllowed = today.subtract(1, "month")
+export const formatRangeValue = (range: DateRange, id?: string): string => {
+  const startIso = range.start.format(MENTION_DATE_VALUE_FORMAT)
+  const endIso = range.end.format(MENTION_DATE_VALUE_FORMAT)
 
-  if (range.start.isAfter(today)) {
-    return null
-  }
-
-  const clampedEnd = range.end.isAfter(today) ? today : range.end
-  if (clampedEnd.isBefore(minAllowed)) {
-    return null
-  }
-
-  const clampedStart = range.start.isBefore(minAllowed) ? minAllowed : range.start
-
-  if (clampedStart.isAfter(clampedEnd)) {
-    return null
-  }
-
-  return { start: clampedStart.startOf("day"), end: clampedEnd.startOf("day") }
-}
-
-export const formatRangeValue = (range: DateRange): string => {
-  const rangeStart = range.start.startOf("day")
-  const startIso = rangeStart.format(MENTION_DATE_VALUE_FORMAT)
-
-  const endExclusive = range.end.add(1, "day").startOf("day")
-  const endIso = endExclusive.format(MENTION_DATE_VALUE_FORMAT)
-
-  return `<mention-date start="${startIso}" end="${endIso}"></mention-date>`
+  return `<mention-date start="${startIso}" end="${endIso}"${id ? ` id="${id}"` : ""}></mention-date>`
 }
 
 const DEFAULT_DATE_FORMAT: Intl.DateTimeFormatOptions = {
@@ -125,7 +100,7 @@ export const createDateMentionData = ({
   translate: LabelTranslator
   displayName?: string
 }): DateMentionData => {
-  const value = formatRangeValue(range)
+  const value = formatRangeValue(range, id || displayName)
   const text = value // Use the same value for text
 
   const resolvedName = displayName ?? resolveMentionLabel(label, translate) ?? value
@@ -146,18 +121,14 @@ export const parseRangeValue = (value: string): DateRange | null => {
   const match = value.match(/start="([^"]+)"\s+end="([^"]+)"/)
   if (!match) return null
 
-  const [, startIso, endIsoExclusive] = match
-  if (!startIso || !endIsoExclusive) return null
+  const [, startIso, endIso] = match
+  if (!startIso || !endIso) return null
 
   const start = dayjs(startIso, MENTION_DATE_VALUE_FORMAT, true)
-  const endExclusive = dayjs(endIsoExclusive, MENTION_DATE_VALUE_FORMAT, true)
-  if (!start.isValid() || !endExclusive.isValid()) return null
+  const end = dayjs(endIso, MENTION_DATE_VALUE_FORMAT, true)
+  if (!start.isValid() || !end.isValid()) return null
 
-  const end = endExclusive.subtract(1, "day")
-  return {
-    start: start.startOf("day"),
-    end: end.startOf("day"),
-  }
+  return { start, end }
 }
 
 export const getDateMentionDisplayName = (

@@ -1,10 +1,10 @@
-import * as chrono from "chrono-node"
 import dayjs from "dayjs"
 import type { IFuseOptions } from "fuse.js"
 import Fuse from "fuse.js"
 import type { TFunction } from "i18next"
 
 import type { MentionData, MentionLabelDescriptor } from "../types"
+import { parseNaturalLanguageDate } from "../utils/parseNaturalLanguageDate"
 import type { RelativeDateDefinition } from "./dateMentionConfig"
 import { RELATIVE_DATE_DEFINITIONS } from "./dateMentionConfig"
 import type { DateRange } from "./dateMentionUtils"
@@ -126,53 +126,6 @@ const normalizeQuery = (query: string): string => {
   if (!trimmed) return ""
 
   return trimmed.startsWith("@") ? trimmed.slice(1) : trimmed
-}
-
-/**
- * Get the appropriate chrono parser based on language
- */
-const getChronoParser = (language: string) => {
-  if (language === "zh-CN") {
-    return chrono.zh.hans
-  }
-  if (language === "zh-TW") {
-    return chrono.zh.hant
-  }
-  if (language === "ja") {
-    return chrono.ja
-  }
-  return chrono.en
-}
-
-/**
- * Parse natural language dates using chrono-node with language-specific parser
- * Returns a DateRange if the input can be parsed, otherwise null
- */
-const parseNaturalLanguageDate = (query: string, language: string): DateRange | null => {
-  if (!query.trim()) return null
-
-  try {
-    const parser = getChronoParser(language)
-    let parsed = parser.parse(query)
-    if ((!parsed || parsed.length === 0) && parser !== chrono.en) {
-      parsed = chrono.en.parse(query)
-    }
-
-    if (!parsed || parsed.length === 0) return null
-    const result = parsed[0]
-    if (!result) return null
-
-    const start = dayjs(result.start.date())
-    const end = result.end ? dayjs(result.end.date()) : dayjs()
-
-    if (!start.isValid() || !end.isValid()) return null
-    if (start.isAfter(end)) {
-      return { start: end, end: start }
-    }
-    return { start, end }
-  } catch {
-    return null
-  }
 }
 
 export const createDateMentionBuilder = (context: DateMentionBuilderContext) => {

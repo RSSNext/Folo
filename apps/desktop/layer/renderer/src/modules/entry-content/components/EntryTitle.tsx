@@ -74,7 +74,7 @@ export const EntryTitle = ({
   const translation = useEntryTranslation({
     entryId,
     language: actionLanguage,
-    setting: enableTranslation,
+    enabled: enableTranslation,
   })
 
   const dateFormat = useUISettingKey("dateFormat")

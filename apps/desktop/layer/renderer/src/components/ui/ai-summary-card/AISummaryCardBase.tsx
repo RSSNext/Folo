@@ -6,6 +6,7 @@ import { useTranslation } from "react-i18next"
 
 import { CopyButton } from "~/components/ui/button/CopyButton"
 import { Markdown } from "~/components/ui/markdown/Markdown"
+import { useFeature } from "~/hooks/biz/useFeature"
 
 interface AISummaryCardBaseProps {
   /** Summary content to display */
@@ -61,6 +62,7 @@ export const AISummaryCardBase: React.FC<AISummaryCardBaseProps> = ({
   onAskAI,
 }) => {
   const { t } = useTranslation("app")
+  const aiEnabled = useFeature("ai")
 
   const hasContent = !isLoading && content
 
@@ -123,7 +125,7 @@ export const AISummaryCardBase: React.FC<AISummaryCardBaseProps> = ({
         )}
 
         <div className="flex items-center gap-2">
-          {showAskAIButton && hasContent && onAskAI && (
+          {aiEnabled && showAskAIButton && hasContent && onAskAI && (
             <MotionButtonBase
               onClick={onAskAI}
               className={cn(

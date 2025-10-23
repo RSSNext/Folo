@@ -50,7 +50,7 @@ export const EntrySocialItem = memo(
     const translation = useEntryTranslation({
       entryId,
       language: actionLanguage,
-      setting: enableTranslation,
+      enabled: enableTranslation,
     })
     const { openLightbox } = useLightboxControls()
     const feed = useFeedById(entry?.feedId || "")

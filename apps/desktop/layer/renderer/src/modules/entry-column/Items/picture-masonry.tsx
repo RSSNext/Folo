@@ -283,7 +283,7 @@ const MasonryRender: React.ComponentType<
   const translation = useEntryTranslation({
     entryId: data.entryId,
     language: actionLanguage,
-    setting: enableTranslation,
+    enabled: enableTranslation,
   })
 
   if (data.entryId.startsWith("placeholder")) {

@@ -1,6 +1,6 @@
 import { useMemo } from "react"
 
-import { useAISettingValue } from "~/atoms/settings/ai"
+import { getShortcutEffectivePrompt, useAISettingValue } from "~/atoms/settings/ai"
 
 import type { ShortcutData } from "../types"
 
@@ -13,7 +13,7 @@ export const useShortcutSearchService = () => {
     const normalizedShortcuts: ShortcutData[] = shortcuts.map((shortcut) => ({
       id: shortcut.id,
       name: shortcut.name,
-      prompt: shortcut.prompt,
+      prompt: getShortcutEffectivePrompt(shortcut),
       hotkey: shortcut.hotkey,
       displayTargets: shortcut.displayTargets,
     }))
