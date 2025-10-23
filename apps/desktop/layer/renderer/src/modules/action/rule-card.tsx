@@ -1,3 +1,4 @@
+import { Button } from "@follow/components/ui/button/index.js"
 import { Input } from "@follow/components/ui/input/index.js"
 import * as ScrollArea from "@follow/components/ui/scroll-area/ScrollArea.js"
 import { Switch } from "@follow/components/ui/switch/index.jsx"
@@ -166,14 +167,16 @@ const RuleCardToolbar = ({ index }: { index: number }) => {
           }}
           aria-label={t("actions.action_card.summary.toggle")}
         />
-        <button
-          type="button"
+        <Button
+          variant="ghost"
+          size="sm"
           aria-label={t("actions.action_card.summary.delete")}
-          className="flex size-9 items-center justify-center rounded-lg border border-fill-secondary bg-transparent text-text-secondary transition-colors hover:border-fill hover:bg-fill-quinary hover:text-text"
+          buttonClassName="size-8 p-0"
+          // className="flex size-9 items-center justify-center rounded-lg border border-fill-secondary bg-transparent text-text-secondary transition-colors hover:border-fill hover:bg-fill-quinary hover:text-text"
           onClick={handleDelete}
         >
           <i className="i-mgc-delete-2-cute-re" />
-        </button>
+        </Button>
       </div>
     </div>
   )
