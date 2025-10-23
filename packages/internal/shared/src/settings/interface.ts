@@ -182,9 +182,9 @@ export interface CustomIntegration {
   enabled: boolean
 }
 
-export type AIShortcutTarget = "list" | "entry" | "ai-page"
+export type AIShortcutTarget = "list" | "entry"
 
-export const DEFAULT_SHORTCUT_TARGETS: readonly AIShortcutTarget[] = ["list", "entry", "ai-page"]
+export const DEFAULT_SHORTCUT_TARGETS: readonly AIShortcutTarget[] = ["list", "entry"]
 
 export interface AIShortcut {
   id: string

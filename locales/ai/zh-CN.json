@@ -183,7 +183,6 @@
   "shortcuts.prompt": "提示",
   "shortcuts.prompt_placeholder": "为AI编写清晰的指令...",
   "shortcuts.server_delete_disabled": "该快捷方式由服务端提供，无法删除",
-  "shortcuts.targets.ai-page": "AI 页面",
   "shortcuts.targets.entry": "条目详情",
   "shortcuts.targets.help": "选择适用场景以控制此快捷方式的展示位置。",
   "shortcuts.targets.label": "展示位置",

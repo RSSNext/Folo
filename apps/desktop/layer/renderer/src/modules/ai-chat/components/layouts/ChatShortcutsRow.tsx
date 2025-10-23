@@ -37,9 +37,7 @@ export const ChatShortcutsRow: React.FC<ChatShortcutsRowProps> = ({ onSelect }) 
       if (targets.includes("entry")) {
         entry.push(shortcut)
       }
-      if (targets.includes("ai-page")) {
-        aiPage.push(shortcut)
-      }
+      aiPage.push(shortcut)
     }
 
     if (mainEntryId) {

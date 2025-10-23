@@ -190,7 +190,6 @@
   "shortcuts.prompt": "Prompt",
   "shortcuts.prompt_placeholder": "Write a clear instruction for the AI...",
   "shortcuts.server_delete_disabled": "Server-provided shortcuts cannot be deleted",
-  "shortcuts.targets.ai-page": "AI Page",
   "shortcuts.targets.entry": "Entry Details",
   "shortcuts.targets.help": "Choose scenarios to control where this shortcut appears.",
   "shortcuts.targets.label": "Display location",
