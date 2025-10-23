@@ -13,7 +13,8 @@ const MAX_PAGES = 10
  * Service for syncing AI chat session messages from remote API into local DB.
  */
 class AIChatSessionServiceStatic {
-  sync = false
+  private sync = false
+
   /**
    * List sessions from backend and ensure local DB has sessions and unseen messages.
    * This does NOT mark sessions as seen on the server (non-destructive sync).
@@ -36,15 +37,21 @@ class AIChatSessionServiceStatic {
     let failures = 0
 
     for (const session of sessions) {
+      const dbSession = await AIPersistService.getChatSession(session.chatId)
+      const lastUpdatedAt = dbSession ? dbSession.updatedAt : new Date(0)
+      if (lastUpdatedAt >= new Date(session.updatedAt)) {
+        continue
+      }
       try {
         // Ensure session exists locally first
-        await AIPersistService.ensureSession(session.chatId, { title: session.title })
+        await AIPersistService.ensureSession(session.chatId, {
+          title: session.title,
+          createdAt: new Date(session.createdAt),
+          updatedAt: new Date(session.updatedAt),
+        })
 
         // Fetch unseen messages (newer than lastSeenAt) without changing read state remotely
-        const unseenMessages = await this.fetchUnseenRemoteMessages(
-          session.chatId,
-          session.lastSeenAt,
-        )
+        const unseenMessages = await this.fetchUnseenRemoteMessages(session.chatId, lastUpdatedAt)
         if (unseenMessages.length === 0) continue
 
         const normalized = unseenMessages.map(this.normalizeRemoteMessage)
@@ -65,10 +72,17 @@ class AIChatSessionServiceStatic {
    * Defensive in extracting the message array because the SDK response shape may evolve.
    */
   async fetchAndPersistMessages(session: AIChatSession): Promise<BizUIMessage[]> {
-    const unseenMessages = await this.fetchUnseenRemoteMessages(session.chatId, session.lastSeenAt)
+    const unseenMessages = await this.fetchUnseenRemoteMessages(
+      session.chatId,
+      new Date(session.lastSeenAt),
+    )
     const normalized = unseenMessages.map(this.normalizeRemoteMessage)
 
-    await AIPersistService.ensureSession(session.chatId, { title: session.title })
+    await AIPersistService.ensureSession(session.chatId, {
+      title: session.title,
+      createdAt: new Date(session.createdAt),
+      updatedAt: new Date(session.updatedAt),
+    })
     await AIPersistService.upsertMessages(session.chatId, normalized)
 
     await followApi.aiChatSessions.markSeen({
@@ -95,11 +109,9 @@ class AIChatSessionServiceStatic {
    */
   private async fetchUnseenRemoteMessages(
     chatId: string,
-    lastSeenAt: string,
+    lastSeenAt: Date,
   ): Promise<AIChatMessage[]> {
-    // TODO fix fetch data that local db doesn't have yet
     const allMessages: AIChatMessage[] = []
-    const lastSeenAtDate = new Date(lastSeenAt)
     let before: string | undefined
     for (let page = 0; page < MAX_PAGES; page++) {
       const resp = await followApi.aiChatSessions.messages.get(
@@ -110,7 +122,7 @@ class AIChatSessionServiceStatic {
       allMessages.push(...batch)
 
       const { nextBefore } = data
-      if (!nextBefore || new Date(nextBefore) <= lastSeenAtDate) {
+      if (!nextBefore || new Date(nextBefore) <= lastSeenAt) {
         break
       }
       before = nextBefore
