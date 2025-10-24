@@ -22,7 +22,7 @@ export const useTimelineList = (options?: {
     const savedHidden = (timelineTabs?.hidden ?? []).filter((id) => ids.includes(id))
     const extra = ids.filter((id) => !savedVisible.includes(id) && !savedHidden.includes(id))
 
-    const visible = [...savedVisible, ...extra].slice(0, 5)
+    const visible = [...savedVisible, ...extra]
     if (options?.visible) return visible
     const hidden = [...savedHidden, ...extra].filter((id) => !visible.includes(id))
     if (options?.hidden) return hidden
