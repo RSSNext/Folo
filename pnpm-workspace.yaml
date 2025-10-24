@@ -8,7 +8,7 @@ packages:
   - "!**/example/**"
 
 catalog:
-  "@follow-app/client-sdk": 0.3.71
+  "@follow-app/client-sdk": 0.3.73
   tailwindcss-uikit-colors: 1.0.0
   typescript: 5.9.3
 
