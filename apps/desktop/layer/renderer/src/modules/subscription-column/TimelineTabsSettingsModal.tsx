@@ -41,6 +41,9 @@ function ContainerDroppable({ id, children }: { id: "visible" | "hidden"; childr
   )
 }
 
+const areArraysEqual = (a: string[], b: string[]) =>
+  a.length === b.length && a.every((value, index) => value === b[index])
+
 function getViewMeta(timelineId: string) {
   const id = parseView(timelineId)
   if (typeof id !== "number") return { name: timelineId, icon: null }
@@ -95,6 +98,14 @@ function useResolvedTimelineTabs() {
 const TimelineTabsSettings = () => {
   const { visible, hidden } = useResolvedTimelineTabs()
 
+  const commitTimelineTabs = useCallback(
+    (nextVisible: string[], nextHidden: string[]) => {
+      if (areArraysEqual(nextVisible, visible) && areArraysEqual(nextHidden, hidden)) return
+      setUISetting("timelineTabs", { visible: nextVisible, hidden: nextHidden })
+    },
+    [hidden, visible],
+  )
+
   const sensors = useSensors(
     useSensor(PointerSensor),
     useSensor(KeyboardSensor, {
@@ -137,10 +148,11 @@ const TimelineTabsSettings = () => {
           activeId,
           ...targetList.slice(insertIndex),
         ]
-        setUISetting("timelineTabs", {
-          visible: targetKey === "visible" ? nextTarget : nextSource,
-          hidden: targetKey === "hidden" ? nextTarget : nextSource,
-        })
+        const nextVisible =
+          sourceKey === "visible" ? nextSource : targetKey === "visible" ? nextTarget : visible
+        const nextHidden =
+          sourceKey === "hidden" ? nextSource : targetKey === "hidden" ? nextTarget : hidden
+        commitTimelineTabs(nextVisible, nextHidden)
         return
       }
 
@@ -149,13 +161,13 @@ const TimelineTabsSettings = () => {
       const items = current(listKey)
       const oldIndex = items.indexOf(activeId)
       const newIndex = items.indexOf(overId)
-      if (oldIndex === -1 || newIndex === -1) return
-      setUISetting("timelineTabs", {
-        visible: listKey === "visible" ? arrayMove(items, oldIndex, newIndex) : visible,
-        hidden: listKey === "hidden" ? arrayMove(items, oldIndex, newIndex) : hidden,
-      })
+      if (oldIndex === -1 || newIndex === -1 || oldIndex === newIndex) return
+      const reordered = arrayMove(items, oldIndex, newIndex)
+      const nextVisible = listKey === "visible" ? reordered : visible
+      const nextHidden = listKey === "hidden" ? reordered : hidden
+      commitTimelineTabs(nextVisible, nextHidden)
     },
-    [visible, hidden],
+    [commitTimelineTabs, hidden, visible],
   )
 
   return (
