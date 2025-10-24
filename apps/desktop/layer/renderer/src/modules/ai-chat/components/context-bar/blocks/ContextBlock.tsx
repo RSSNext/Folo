@@ -29,8 +29,8 @@ const BlockContainer: FC<{
   return (
     <div
       className={clsx(
-        "group relative flex h-7 min-w-0 items-center gap-2 overflow-hidden rounded-lg px-2.5",
-        "border border-border bg-fill-tertiary",
+        "group relative flex h-7 min-w-0 items-center gap-2 overflow-hidden rounded-lg px-2",
+        "border border-border bg-fill-quaternary",
         disabled && "cursor-pointer border-dashed italic opacity-50",
         className,
       )}
@@ -66,7 +66,7 @@ const BlockContainer: FC<{
         <button
           type="button"
           onClick={onRemove}
-          className="absolute inset-y-0 right-2 flex-shrink-0 cursor-button text-text/90 opacity-0 transition-all ease-in hover:text-text group-hover:opacity-100"
+          className="absolute inset-y-0 right-1 flex-shrink-0 cursor-button text-text/90 opacity-0 transition-all ease-in hover:text-text group-hover:opacity-100"
         >
           <i className="i-mgc-close-cute-re size-3" />
         </button>
