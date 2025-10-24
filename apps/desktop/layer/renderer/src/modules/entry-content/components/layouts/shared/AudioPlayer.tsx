@@ -190,16 +190,17 @@ export const ArticleAudioPlayer: React.FC<AudioPlayerProps> = ({ entryId, classN
           {/* Progress Bar Container */}
           <div className="flex-1">
             <div
-              className="group relative h-2 w-full cursor-pointer overflow-hidden rounded-full bg-border"
+              className="group h-2 w-full cursor-pointer rounded-full bg-border"
               onClick={handleProgressClick}
             >
               <div
-                className="h-full rounded-full bg-accent transition-all duration-200"
+                className="relative h-full rounded-full bg-accent transition-all duration-200"
                 style={{ width: `${progressPercent}%` }}
-              />
-              {/* Hover indicator */}
-              <div className="absolute inset-y-0 right-0 w-3 opacity-0 transition-opacity duration-200 group-hover:opacity-100">
-                <div className="size-full rounded-full bg-accent/50" />
+              >
+                {/* Hover indicator */}
+                <div className="absolute right-0 top-1/2 size-4 -translate-y-1/2 translate-x-1/2 opacity-0 transition-opacity group-hover:opacity-100">
+                  <div className="size-full rounded-full bg-white" />
+                </div>
               </div>
             </div>
           </div>
