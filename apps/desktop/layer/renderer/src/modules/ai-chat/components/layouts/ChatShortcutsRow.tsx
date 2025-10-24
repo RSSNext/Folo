@@ -9,6 +9,7 @@ import { useCreateAIShortcutModal } from "~/modules/settings/tabs/ai/shortcuts/h
 import type { ShortcutData } from "../../editor/plugins/shortcut/types"
 import { useMainEntryId } from "../../hooks/useMainEntryId"
 import { AIShortcutButton } from "../ui/AIShortcutButton"
+import { ShortcutTooltip } from "../ui/ShortcutTooltip"
 
 interface ChatShortcutsRowProps {
   onSelect: (shortcutData: ShortcutData) => void
@@ -58,6 +59,7 @@ export const ChatShortcutsRow: React.FC<ChatShortcutsRowProps> = ({ onSelect }) 
     <div className="mb-3 px-1">
       <div className="flex flex-nowrap items-center gap-2 overflow-x-auto py-1">
         <AIShortcutButton
+          className="aspect-square rounded-full p-2"
           onClick={handleCustomize}
           animationDelay={0}
           size="sm"
@@ -69,22 +71,24 @@ export const ChatShortcutsRow: React.FC<ChatShortcutsRowProps> = ({ onSelect }) 
           </span>
         </AIShortcutButton>
         {shortcutsToDisplay.map((shortcut) => (
-          <AIShortcutButton
+          <ShortcutTooltip
+            asChild={false}
             key={shortcut.id}
-            onClick={() => onSelect(shortcut)}
-            animationDelay={0}
-            size="sm"
-            title={shortcut.hotkey ? `${shortcut.name} (${shortcut.hotkey})` : shortcut.name}
+            name={shortcut.name}
+            prompt={shortcut.prompt || shortcut.defaultPrompt}
+            hotkey={shortcut.hotkey}
           >
-            <span className="flex items-center gap-1">
-              {shortcut.icon ? (
-                <i className={shortcut.icon} />
-              ) : (
-                <i className="i-mgc-hotkey-cute-re" />
-              )}
-              <span>{shortcut.name}</span>
-            </span>
-          </AIShortcutButton>
+            <AIShortcutButton onClick={() => onSelect(shortcut)} animationDelay={0} size="sm">
+              <span className="flex items-center gap-1">
+                {shortcut.icon ? (
+                  <i className={shortcut.icon} />
+                ) : (
+                  <i className="i-mgc-hotkey-cute-re" />
+                )}
+                <span>{shortcut.name}</span>
+              </span>
+            </AIShortcutButton>
+          </ShortcutTooltip>
         ))}
       </div>
     </div>

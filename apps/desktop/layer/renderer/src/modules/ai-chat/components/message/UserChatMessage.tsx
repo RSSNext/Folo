@@ -152,7 +152,10 @@ export const UserChatMessage: React.FC<UserChatMessageProps> = React.memo(({ mes
           onMouseLeave={() => setIsHovered(false)}
         >
           <div className="relative flex max-w-[calc(100%-1rem)] flex-col gap-2 text-text">
-            <div ref={messageBubbleRef} className="rounded-2xl bg-fill px-4 py-2.5 text-text">
+            <div
+              ref={messageBubbleRef}
+              className="rounded-2xl bg-fill-tertiary px-4 py-2.5 text-text"
+            >
               <div className="flex select-text flex-col gap-2 text-sm">
                 <UserMessageParts message={message} />
               </div>
