@@ -12,6 +12,7 @@ import { useSubscriptionByFeedId } from "@follow/store/subscription/hooks"
 import { thenable } from "@follow/utils"
 import { stopPropagation } from "@follow/utils/dom"
 import { EventBus } from "@follow/utils/event-bus"
+import { springScrollTo } from "@follow/utils/scroller"
 import { cn } from "@follow/utils/utils"
 import type { JSAnimation } from "motion/react"
 import { useAnimationControls } from "motion/react"
@@ -104,11 +105,16 @@ const EntryContentImpl: Component<EntryContentProps> = ({
   useEffect(() => {
     animationController.set(contentVariants.exit)
     animationController.start(contentVariants.animate)
+
+    // Scroll to top
+    if (scrollerRef) {
+      springScrollTo(0, scrollerRef)
+    }
     focusableRef.current?.focus()
     return () => {
       animationController.stop()
     }
-  }, [animationController, entryId])
+  }, [animationController, entryId, scrollerRef])
 
   useEffect(() => {
     setEntryContentScrollToTop(true)
