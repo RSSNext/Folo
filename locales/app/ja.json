@@ -387,6 +387,8 @@
   "sidebar.feed_column.context_menu.rename_category_success": "カテゴリーのリネームに成功しました",
   "sidebar.feed_column.context_menu.title": "新規カテゴリーに移動する",
   "sidebar.select_sort_method": "並べ替え方法を選択",
+  "sidebar.timeline_tabs.customize": "ビュータブをカスタマイズ...",
+  "sidebar.timeline_tabs.hide_tab": "このビューを非表示にする",
   "signin.continue_with": "{{provider}} で続ける",
   "signin.sign_in_to": "サインイン",
   "signin.sign_up_to": "サインアップ",

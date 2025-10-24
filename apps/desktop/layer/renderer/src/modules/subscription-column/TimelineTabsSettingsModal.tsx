@@ -228,7 +228,7 @@ export const useShowTimelineTabsSettingsModal = () => {
   return useCallback(() => {
     present({
       id: "timeline-tabs-settings",
-      title: "Customize Timeline Tabs",
+      title: "Customize View Tabs",
       content: () => <TimelineTabsSettings />,
       overlay: true,
       clickOutsideToDismiss: true,
