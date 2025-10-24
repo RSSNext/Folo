@@ -86,8 +86,8 @@ function SortableTabItem({ id }: { id: UniqueIdentifier }) {
 }
 
 function useResolvedTimelineTabs() {
-  const timelineList = useTimelineList({ ordered: true, visible: true })
-  const timelineListHidden = useTimelineList({ ordered: true, hidden: true })
+  const timelineList = useTimelineList({ visible: true })
+  const timelineListHidden = useTimelineList({ hidden: true })
 
   return { visible: timelineList, hidden: timelineListHidden }
 }

@@ -50,7 +50,6 @@ export function SubscriptionColumn({
   const carouselRef = useRef<HTMLDivElement>(null)
   const timelineList = useTimelineList({
     withAll: true,
-    ordered: true,
     visible: true,
   })
 
@@ -190,7 +189,7 @@ const ApronNodeContainer: FC = () => {
 const SwipeWrapper: FC<{ active: string; children: React.JSX.Element[] }> = memo(
   ({ children, active }) => {
     const reduceMotion = useReduceMotion()
-    const timelineList = useTimelineList({ withAll: true, ordered: true, visible: true })
+    const timelineList = useTimelineList({ withAll: true, visible: true })
     const viewIndex = timelineList.indexOf(active)
 
     const feedColumnWidth = useUISettingKey("feedColWidth")
@@ -245,7 +244,7 @@ const SwipeWrapper: FC<{ active: string; children: React.JSX.Element[] }> = memo
 )
 
 const TabsRow: FC = () => {
-  const timelineList = useTimelineList({ withAll: true, ordered: true, visible: true })
+  const timelineList = useTimelineList({ withAll: true, visible: true })
 
   return (
     <div className="flex h-11 items-center px-1 text-xl text-text-secondary">
