@@ -97,7 +97,7 @@ export function SettingModalLayout(
         transition={Spring.presets.smooth}
         className={cn(
           "relative flex overflow-hidden rounded-xl rounded-br-none border border-border",
-          !overlay && "shadow-perfect",
+          !overlay && "shadow-modal",
         )}
         style={resizeableStyle}
         onContextMenu={preventDefault}
