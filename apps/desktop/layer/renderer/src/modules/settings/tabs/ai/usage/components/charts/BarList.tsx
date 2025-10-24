@@ -16,15 +16,15 @@ export const BarList = ({ data, suffix, format }: BarListProps) => {
         const left = format ? format(d.value) : `${Math.round(d.value)}${suffix ?? ""}`
         return (
           <div key={d.label} className="space-y-1">
-            <div className="text-text flex items-center justify-between text-sm">
+            <div className="flex items-center justify-between text-sm text-text">
               <span className="truncate" title={d.label}>
                 {d.label}
               </span>
-              <span className="text-text-tertiary text-xs">{d.right ?? left}</span>
+              <span className="text-xs text-text-tertiary">{d.right ?? left}</span>
             </div>
-            <div className="bg-fill-secondary relative h-2.5 overflow-hidden rounded">
+            <div className="relative h-2.5 overflow-hidden rounded bg-fill-secondary">
               <div
-                className="bg-accent/70 absolute inset-y-0 left-0 rounded"
+                className="absolute inset-y-0 left-0 rounded bg-accent/70"
                 style={{ width: `${pct}%` }}
               />
             </div>

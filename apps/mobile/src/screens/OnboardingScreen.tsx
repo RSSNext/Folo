@@ -54,7 +54,7 @@ export const OnboardingScreen: NavigationControllerView = () => {
   }, [])
   return (
     <View
-      className="bg-system-grouped-background flex-1 px-6"
+      className="flex-1 bg-system-grouped-background px-6"
       style={{
         paddingTop: insets.top,
         paddingBottom: insets.bottom,
@@ -83,7 +83,7 @@ export const OnboardingScreen: NavigationControllerView = () => {
       <View className="mb-6 px-6">
         <TouchableOpacity
           onPress={handleNext}
-          className="bg-accent w-full items-center rounded-xl py-4"
+          className="w-full items-center rounded-xl bg-accent py-4"
         >
           <Text className="text-lg font-bold text-white">
             {currentStep < totalSteps - 1

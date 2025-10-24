@@ -5,7 +5,6 @@ import { useCallback, useImperativeHandle, useMemo, useRef } from "react"
 import { View } from "react-native"
 
 import { useActionLanguage, useGeneralSettingKey } from "@/src/atoms/settings/general"
-import { checkLanguage } from "@/src/lib/translation"
 
 import { useEntries } from "../screen/atoms"
 import { TimelineSelectorList } from "../screen/TimelineSelectorList"
@@ -49,8 +48,7 @@ export const EntryListContentSocial = ({
   usePrefetchEntryTranslation({
     entryIds: active ? viewableItems.map((item) => item.key) : [],
     language: actionLanguage,
-    setting: translation,
-    checkLanguage,
+    enabled: translation,
   })
 
   // Show loading skeleton when entries are not ready and no data yet
@@ -92,21 +90,21 @@ export function EntryItemSkeleton() {
     <View className="flex flex-col gap-2 p-4">
       {/* Header row with avatar, author, and date */}
       <View className="flex flex-1 flex-row items-center gap-2">
-        <View className="bg-system-fill size-8 animate-pulse rounded-full" />
-        <View className="bg-system-fill h-4 w-24 animate-pulse rounded-md" />
-        <View className="bg-system-fill h-3 w-20 animate-pulse rounded-md" />
+        <View className="size-8 animate-pulse rounded-full bg-system-fill" />
+        <View className="h-4 w-24 animate-pulse rounded-md bg-system-fill" />
+        <View className="h-3 w-20 animate-pulse rounded-md bg-system-fill" />
       </View>
 
       {/* Description area */}
       <View className="ml-10 space-y-2">
-        <View className="bg-system-fill h-4 w-full animate-pulse rounded-md rounded-bl-none" />
-        <View className="bg-system-fill h-4 w-3/4 animate-pulse rounded-md rounded-tl-none" />
+        <View className="h-4 w-full animate-pulse rounded-md rounded-bl-none bg-system-fill" />
+        <View className="h-4 w-3/4 animate-pulse rounded-md rounded-tl-none bg-system-fill" />
       </View>
 
       {/* Media preview area */}
       <View className="ml-10 flex flex-row gap-2">
-        <View className="bg-system-fill size-20 animate-pulse rounded-md" />
-        <View className="bg-system-fill size-20 animate-pulse rounded-md" />
+        <View className="size-20 animate-pulse rounded-md bg-system-fill" />
+        <View className="size-20 animate-pulse rounded-md bg-system-fill" />
       </View>
     </View>
   )

@@ -1,3 +1,4 @@
+import { nanoid } from "nanoid"
 import { createWithEqualityFn } from "zustand/traditional"
 
 import type { ChatSlice } from "./chat-core/types"
@@ -12,9 +13,10 @@ export type AiChatStore = BlockSlice &
   }
 
 export const createAIChatStore = (initialState?: Partial<AIChatStoreInitial>) => {
+  const { blocks, chatId, generateId } = initialState || {}
   return createWithEqualityFn<AiChatStore>((...a) => {
-    const blockSlice = createBlockSlice(initialState?.blocks)(...a)
-    const chatSlice = createChatSlice(...a)
+    const blockSlice = createBlockSlice(blocks)(...a)
+    const chatSlice = createChatSlice({ chatId: chatId || nanoid(), generateId })(...a)
 
     return {
       ...blockSlice,

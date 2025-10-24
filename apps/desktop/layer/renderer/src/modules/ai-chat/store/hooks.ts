@@ -2,6 +2,7 @@ import type { BizUIMessage } from "@folo-services/ai-tools"
 import { useShallow } from "zustand/shallow"
 
 import { useAIChatStore } from "./AIChatContext"
+import type { BlockSlice } from "./slices/block.slice"
 
 /**
  * Hook to get the current room ID (chat ID) from the AI chat store
@@ -79,4 +80,17 @@ export const useChatStatus = () => {
 export const useChatError = () => {
   const store = useAIChatStore()
   return store((state) => state.error)
+}
+
+/**
+ * Hook to get the chat scene
+ */
+export const useChatScene = () => {
+  const store = useAIChatStore()
+  return store((state) => state.scene)
+}
+
+export const useChatBlockSelector = <T>(selector: (state: Pick<BlockSlice, "blocks">) => T) => {
+  const store = useAIChatStore()
+  return store(useShallow((state) => selector(state)))
 }

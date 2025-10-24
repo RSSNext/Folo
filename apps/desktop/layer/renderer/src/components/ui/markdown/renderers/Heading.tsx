@@ -24,7 +24,7 @@ export const createHeadingRenderer =
         {rest.children}
         <span
           className={cn(
-            "text-accent cursor-pointer select-none opacity-0 transition-opacity duration-200 group-hover:opacity-100",
+            "cursor-pointer select-none text-accent opacity-0 transition-opacity duration-200 group-hover:opacity-100",
             "relative ml-2",
             "@2xl:absolute @2xl:left-[-1.5em] @2xl:top-0 @2xl:opacity-0",
           )}

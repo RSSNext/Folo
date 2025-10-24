@@ -11,7 +11,7 @@ export const Text: FC<TextProps & { ref?: Ref<RNText> }> = (props) => {
   return (
     <RNText
       {...props}
-      className={cn("text-label text-base", props.className)}
+      className={cn("text-base text-label", props.className)}
       allowFontScaling={systemFontScaling}
     />
   )

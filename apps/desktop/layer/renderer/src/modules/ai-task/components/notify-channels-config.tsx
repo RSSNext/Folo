@@ -34,11 +34,11 @@ export const NotifyChannelsConfig = ({ value, onChange }: NotifyChannelsConfigPr
     <div className="space-y-3">
       <div className="flex items-center gap-3 rounded-md border p-3 text-sm">
         <div className="flex flex-1 flex-col gap-1">
-          <div className="text-text flex items-center gap-1 font-medium">
-            <i className={cn("text-text-secondary size-4", EMAIL_CHANNEL.icon)} />
+          <div className="flex items-center gap-1 font-medium text-text">
+            <i className={cn("size-4 text-text-secondary", EMAIL_CHANNEL.icon)} />
             {t(EMAIL_CHANNEL.labelKey)}
           </div>
-          <div className="text-text-tertiary text-xs leading-relaxed">
+          <div className="text-xs leading-relaxed text-text-tertiary">
             {t(EMAIL_CHANNEL.helperKey)}
           </div>
         </div>

@@ -36,13 +36,13 @@ export const LoginScreen: NavigationControllerView = () => {
       <HeaderCloseOnly />
       {!!whoami?.id && __DEV__ && (
         <TouchableOpacity
-          className="bg-system-fill bottom-safe-offset-8 absolute left-1/2 -translate-x-1/2 flex-row items-center justify-center rounded-xl p-2 px-4"
+          className="bottom-safe-offset-8 absolute left-1/2 -translate-x-1/2 flex-row items-center justify-center rounded-xl bg-system-fill p-2 px-4"
           activeOpacity={0.7}
           onPress={() => {
             exit()
           }}
         >
-          <Text className="text-secondary-label text-center font-semibold">
+          <Text className="text-center font-semibold text-secondary-label">
             Redirect to Home (DEV)
           </Text>
         </TouchableOpacity>

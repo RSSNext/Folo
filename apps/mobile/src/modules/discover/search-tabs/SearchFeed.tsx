@@ -30,7 +30,7 @@ export const SearchFeed = () => {
         width: windowWidth,
       }}
     >
-      <Text className="text-text/60 px-6 pt-4">Found {data.data?.length} feeds</Text>
+      <Text className="px-6 pt-4 text-text/60">Found {data.data?.length} feeds</Text>
       <View>
         {data.data?.map((item) => (
           <View key={item.feed?.id || Math.random().toString()}>

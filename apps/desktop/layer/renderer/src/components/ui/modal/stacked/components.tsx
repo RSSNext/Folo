@@ -10,7 +10,7 @@ export const ModalClose = () => {
   return (
     <MotionButtonBase
       aria-label={t("words.close")}
-      className="hover:bg-material-ultra-thick absolute right-6 top-6 flex size-8 items-center justify-center rounded-md duration-200"
+      className="absolute right-6 top-6 flex size-8 items-center justify-center rounded-md duration-200 hover:bg-material-ultra-thick"
       onClick={dismiss}
     >
       <i className="i-mgc-close-cute-re block" />

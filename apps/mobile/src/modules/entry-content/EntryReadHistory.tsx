@@ -22,7 +22,7 @@ export const EntryReadHistory = ({ entryId }: { entryId: string }) => {
                 userId: user.id,
               })
             }}
-            className="border-system-background bg-tertiary-system-background overflow-hidden rounded-full border-2"
+            className="overflow-hidden rounded-full border-2 border-system-background bg-tertiary-system-background"
             key={userId}
             style={{
               transform: [
@@ -37,7 +37,7 @@ export const EntryReadHistory = ({ entryId }: { entryId: string }) => {
               size={25}
               name={user.name!}
               image={user.image}
-              className="border-secondary-system-fill border"
+              className="border border-secondary-system-fill"
             />
           </NativePressable>
         )

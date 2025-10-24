@@ -1,19 +1,24 @@
 import type { LexicalRichEditorRef } from "@follow/components/ui/lexical-rich-editor/index.js"
 import { LexicalRichEditor } from "@follow/components/ui/lexical-rich-editor/index.js"
 import { ScrollArea } from "@follow/components/ui/scroll-area/ScrollArea.js"
-import { cn, stopPropagation } from "@follow/utils"
+import { cn, nextFrame, stopPropagation } from "@follow/utils"
 import type { VariantProps } from "class-variance-authority"
 import { cva } from "class-variance-authority"
-import { noop } from "es-toolkit"
 import type { EditorState, LexicalEditor } from "lexical"
 import { $getRoot } from "lexical"
-import { memo, use, useCallback, useRef, useState } from "react"
+import type { Ref } from "react"
+import { memo, use, useCallback, useImperativeHandle, useRef, useState } from "react"
+import { matchKeyBindingPress, parseKeybinding } from "tinykeys"
 
 import { AIChatContextBar } from "~/modules/ai-chat/components/layouts/AIChatContextBar"
+import { COMMAND_ID } from "~/modules/command/commands/id"
+import { getCommand } from "~/modules/command/hooks/use-command"
+import { useCommandShortcut } from "~/modules/command/hooks/use-command-binding"
 
-import { FileUploadPlugin, MentionPlugin } from "../../editor"
+import { FileUploadPlugin, MentionPlugin, ShortcutPlugin } from "../../editor"
+import { useMainEntryId } from "../../hooks/useMainEntryId"
 import { AIPanelRefsContext } from "../../store/AIChatContext"
-import { useChatActions, useChatStatus } from "../../store/hooks"
+import { useChatActions, useChatScene, useChatStatus } from "../../store/hooks"
 import { AIChatSendButton } from "./AIChatSendButton"
 import { AIModelIndicator } from "./AIModelIndicator"
 
@@ -38,103 +43,163 @@ const chatInputVariants = cva(
 
 interface ChatInputProps extends VariantProps<typeof chatInputVariants> {
   onSend: (message: EditorState | string, editor: LexicalEditor | null) => void
+  ref?: Ref<LexicalRichEditorRef | null>
+  initialDraftState?: EditorState
+  onEditorStateChange?: (editorState: EditorState) => void
 }
 
-export const ChatInput = memo(({ onSend, variant }: ChatInputProps) => {
-  const status = useChatStatus()
-  const chatActions = useChatActions()
+export const ChatInput = memo(
+  ({
+    onSend,
+    variant,
+    ref: forwardedRef,
+    initialDraftState,
+    onEditorStateChange,
+  }: ChatInputProps) => {
+    const status = useChatStatus()
+    const chatActions = useChatActions()
+    const mainEntryId = useMainEntryId()
 
-  const stop = useCallback(() => {
-    chatActions.stop()
-  }, [chatActions])
+    const stop = useCallback(() => {
+      chatActions.stop()
+    }, [chatActions])
 
-  const editorRef = useRef<LexicalRichEditorRef>(null)
+    const editorRef = useRef<LexicalRichEditorRef | null>(null)
 
-  const aiPanelRefs = use(AIPanelRefsContext)
-  if (editorRef.current) {
-    aiPanelRefs.inputRef.current = editorRef.current
-  }
-  const [isEmpty, setIsEmpty] = useState(true)
-  const [currentEditor, setCurrentEditor] = useState<LexicalEditor | null>(null)
+    useImperativeHandle<LexicalRichEditorRef | null, LexicalRichEditorRef | null>(
+      forwardedRef,
+      () => editorRef.current,
+      // eslint-disable-next-line react-hooks/exhaustive-deps
+      [editorRef.current],
+    )
 
-  const isProcessing = status === "submitted" || status === "streaming"
-
-  const handleSend = useCallback(() => {
-    if (currentEditor && editorRef.current && !editorRef.current.isEmpty()) {
-      onSend(currentEditor.getEditorState(), currentEditor)
-      editorRef.current.clear()
+    const aiPanelRefs = use(AIPanelRefsContext)
+    if (editorRef.current) {
+      aiPanelRefs.inputRef.current = editorRef.current
     }
-  }, [currentEditor, onSend])
 
-  const handleKeyDown = useCallback(
-    (event: KeyboardEvent) => {
-      if (event.key === "Enter" && !event.shiftKey) {
-        event.preventDefault()
-        if (isProcessing) {
-          return false
-        }
-        handleSend()
-        return true
+    const [isEmpty, setIsEmpty] = useState(true)
+    const [currentEditor, setCurrentEditor] = useState<LexicalEditor | null>(null)
+
+    const isProcessing = status === "submitted" || status === "streaming"
+
+    const handleEditorChange = useCallback(
+      (editorState: EditorState, editor: LexicalEditor) => {
+        setCurrentEditor(editor)
+
+        editorState.read(() => {
+          const textContent = $getRoot().getTextContent().trim()
+          setIsEmpty(textContent === "")
+        })
+
+        onEditorStateChange?.(editorState)
+      },
+      [onEditorStateChange],
+    )
+
+    const scene = useChatScene()
+
+    const handleSend = useCallback(async () => {
+      if (currentEditor && editorRef.current && !editorRef.current.isEmpty()) {
+        const editorState = currentEditor?.getEditorState()
+        nextFrame(() => {
+          onSend(editorState, currentEditor)
+        })
+        editorRef.current.clear()
       }
-      return false
-    },
-    [handleSend, isProcessing],
-  )
+    }, [currentEditor, onSend])
 
-  const handleEditorChange = useCallback((editorState: EditorState, editor: LexicalEditor) => {
-    setCurrentEditor(editor)
-    // Update isEmpty state based on editor content
-    editorState.read(() => {
-      const root = $getRoot()
-      const textContent = root.getTextContent().trim()
-      setIsEmpty(textContent === "")
-    })
-  }, [])
+    const handleSendClick = useCallback(() => {
+      void handleSend()
+    }, [handleSend])
 
-  return (
-    <div className={cn(chatInputVariants({ variant }))}>
-      {/* Input Area */}
-      <div className="relative z-10 flex items-end" onContextMenu={stopPropagation}>
-        <ScrollArea rootClassName="mx-5 my-3.5 mr-14 flex-1 overflow-auto">
-          <LexicalRichEditor
-            ref={editorRef}
-            placeholder="Message, @ for context"
-            className="w-full"
-            onChange={handleEditorChange}
-            onKeyDown={handleKeyDown}
-            autoFocus
-            plugins={[MentionPlugin, FileUploadPlugin]}
-            namespace="AIChatRichEditor"
-          />
-        </ScrollArea>
-        <div className="absolute right-3 top-3">
-          <AIChatSendButton
-            onClick={isProcessing ? stop : handleSend}
-            disabled={!isProcessing && isEmpty}
-            isProcessing={isProcessing}
-            size="sm"
-          />
-        </div>
-      </div>
+    const toggleAIChatShortcut = useCommandShortcut(COMMAND_ID.global.toggleAIChat)
 
-      {/* Context Bar - Always shown, positioned below the input area */}
-      <div className="border-border/20 relative z-10 border-t bg-transparent">
-        <div className="flex items-center justify-between px-4 py-2.5">
-          <div className="min-w-0 flex-1 shrink">
-            <AIChatContextBar
-              className="border-0 bg-transparent p-0"
-              onSendShortcut={(prompt) => onSend(prompt, null)}
+    const handleKeyDown = useCallback(
+      (event: KeyboardEvent) => {
+        // Check if the event matches the toggleAIChat shortcut using tinykeys utilities
+        // Handle comma-separated shortcuts (e.g., "meta+i, ctrl+i")
+        const shortcuts = toggleAIChatShortcut.split(",").map((s) => s.trim())
+
+        const matchesToggleShortcut = shortcuts.some((shortcut) => {
+          const presses = parseKeybinding(shortcut)
+
+          // For single key shortcuts (not sequences), check if the first press matches
+          return presses.length === 1 && presses[0] && matchKeyBindingPress(event, presses[0])
+        })
+
+        if (matchesToggleShortcut) {
+          event.preventDefault()
+          event.stopPropagation()
+
+          getCommand(COMMAND_ID.global.toggleAIChat)?.run()
+
+          return true
+        }
+
+        if (event.key === "Enter" && !event.shiftKey) {
+          event.preventDefault()
+          if (isProcessing) {
+            return false
+          }
+          void handleSend()
+          return true
+        }
+
+        return false
+      },
+      [handleSend, isProcessing, toggleAIChatShortcut],
+    )
+
+    return (
+      <div className={cn(chatInputVariants({ variant }))}>
+        {/* Input Area */}
+        <div className="relative z-10 flex items-end" onContextMenu={stopPropagation}>
+          <ScrollArea rootClassName="mr-14 flex-1 overflow-auto" viewportClassName="px-5 py-3.5">
+            <LexicalRichEditor
+              initalEditorState={initialDraftState}
+              ref={editorRef}
+              placeholder={
+                scene === "onboarding"
+                  ? "Enter your message"
+                  : `Ask anything about this ${mainEntryId ? "entry" : "timeline"}...`
+              }
+              className="h-14"
+              onChange={handleEditorChange}
+              onKeyDown={handleKeyDown}
+              autoFocus
+              plugins={
+                scene === "onboarding" ? [] : [MentionPlugin, ShortcutPlugin, FileUploadPlugin]
+              }
+              namespace="AIChatRichEditor"
+            />
+          </ScrollArea>
+          <div className="absolute right-3 top-3">
+            <AIChatSendButton
+              onClick={isProcessing ? stop : handleSendClick}
+              disabled={!isProcessing && isEmpty}
+              isProcessing={isProcessing}
+              size="sm"
             />
           </div>
-          <AIModelIndicator
-            className="-mr-1.5 ml-3 translate-y-[2px] self-start"
-            // Current not support switch model, will open this feature later
-            onModelChange={noop}
-          />
         </div>
+
+        {/* Context Bar - only shown in non-onboarding scene, positioned below the input area */}
+        {scene !== "onboarding" && (
+          <div className="relative z-10 border-t border-border/20 bg-transparent">
+            <div className="flex items-center justify-between px-4 py-2.5">
+              <div className="min-w-0 flex-1 shrink">
+                <AIChatContextBar className="border-0 bg-transparent p-0" />
+              </div>
+              <div className="flex items-center gap-3 self-start">
+                <AIModelIndicator className="-mr-1.5 ml-1 translate-y-[2px]" />
+              </div>
+            </div>
+          </div>
+        )}
       </div>
-    </div>
-  )
-})
+    )
+  },
+)
 
 ChatInput.displayName = "ChatInput"

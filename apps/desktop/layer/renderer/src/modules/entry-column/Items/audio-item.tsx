@@ -16,7 +16,7 @@ export const AudioItemSkeleton = (
     <div className="relative">
       <div className="group relative flex py-4">
         <div className="-mt-0.5 line-clamp-4 flex-1 text-sm leading-tight">
-          <div className="text-material-opaque flex gap-1 text-[10px] font-bold">
+          <div className="flex gap-1 text-[10px] font-bold text-material-opaque">
             <Skeleton className="h-3 w-20" />
             <span>·</span>
             <Skeleton className="h-3 w-10" />

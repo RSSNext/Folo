@@ -31,7 +31,7 @@ export const VideosLayout: React.FC<EntryLayoutProps> = ({
             className="w-full"
           />
         ) : (
-          <div className="center bg-material-medium text-text-secondary aspect-video w-full flex-col gap-1 rounded-md text-sm">
+          <div className="center aspect-video w-full flex-col gap-1 rounded-md bg-material-medium text-sm text-text-secondary">
             <i className="i-mgc-video-cute-fi mb-2 size-12" />
             Video content not available
           </div>
@@ -53,7 +53,7 @@ export const VideosLayout: React.FC<EntryLayoutProps> = ({
         {/* Description/Content or Transcript */}
         {showTranscript ? (
           <MediaTranscript
-            className="prose dark:prose-invert !max-w-full"
+            className="prose !max-w-full dark:prose-invert"
             srt={transcriptionData}
             entryId={entryId}
             type="subtitle"

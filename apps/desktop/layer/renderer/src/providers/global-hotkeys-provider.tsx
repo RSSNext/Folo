@@ -15,7 +15,7 @@ import { COMMAND_ID } from "~/modules/command/commands/id"
 import { useRunCommandFn } from "~/modules/command/hooks/use-command"
 import { useCommandBinding, useCommandShortcuts } from "~/modules/command/hooks/use-command-binding"
 
-const useRegisterGlobalHotkeys = () => {
+const useRegisterAppGlobalHotkeys = () => {
   const notInFloatingLayerScope = useGlobalFocusableScopeSelector(
     FocusablePresets.isNotFloatingLayerScope,
   )
@@ -38,14 +38,9 @@ const useRegisterGlobalHotkeys = () => {
     commandId: COMMAND_ID.global.quickSearch,
     when: notInFloatingLayerScope,
   })
-
-  useCommandBinding({
-    commandId: COMMAND_ID.global.toggleAIChat,
-    when: notInFloatingLayerScope,
-  })
 }
 export const GlobalHotkeysProvider = () => {
-  useRegisterGlobalHotkeys()
+  useRegisterAppGlobalHotkeys()
   useEventListener("keydown", (e) => {
     if (e.key === "Tab") {
       nextFrame(() => {

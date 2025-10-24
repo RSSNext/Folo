@@ -20,9 +20,9 @@ export const SettingsSidebarTitle = ({ path, className }: { path: string; classN
   return (
     <div className={cn("flex min-w-0 items-center gap-2 text-[0.94rem] font-medium", className)}>
       {typeof tab.icon === "string" ? (
-        <i className={`${tab.icon} text-accent shrink-0 text-[19px]`} />
+        <i className={`${tab.icon} shrink-0 text-[19px] text-accent`} />
       ) : (
-        <Slot className="text-accent shrink-0 text-[19px]">{tab.icon}</Slot>
+        <Slot className="shrink-0 text-[19px] text-accent">{tab.icon}</Slot>
       )}
       <EllipsisHorizontalTextWithTooltip>{t(tab.name as any)}</EllipsisHorizontalTextWithTooltip>
     </div>
@@ -55,7 +55,7 @@ export const SettingsTitle = ({
       className={cn(
         "flex items-center gap-2 pb-2 pt-6 text-xl font-bold",
         "sticky top-0 mb-4",
-        isInSettingIndependentWindow ? "bg-background z-[99]" : "",
+        isInSettingIndependentWindow ? "z-[99] bg-background" : "",
         className,
       )}
     >

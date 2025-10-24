@@ -66,7 +66,7 @@ export const InvitationScreen: NavigationControllerView = () => {
               onChangeText={(text) => {
                 setCode(text)
               }}
-              className="text-secondary-label w-full flex-1 text-left"
+              className="w-full flex-1 text-left text-secondary-label"
             />
           </GroupedInsetListCell>
         </GroupedInsetListCard>

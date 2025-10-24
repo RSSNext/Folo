@@ -62,7 +62,7 @@ export const MyWalletSection = ({ className }: { className?: string }) => {
       <div className="mb-2 flex items-center justify-between">
         <div>
           <div className="flex items-center gap-1">
-            <Balance className="text-folo text-xl font-bold">
+            <Balance className="text-xl font-bold text-folo">
               {BigInt(myWallet.powerToken || 0n)}
             </Balance>
             <Button

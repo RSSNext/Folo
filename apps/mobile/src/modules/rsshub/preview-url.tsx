@@ -26,14 +26,14 @@ export const PreviewUrl: FC<{
 
   const renderedPath = `rsshub://${routePrefix}${fullPath}`
   return (
-    <View className={cn("bg-gray-2/20 relative min-w-0 rounded-lg px-4 py-3", className)}>
+    <View className={cn("relative min-w-0 rounded-lg bg-gray-2/20 px-4 py-3", className)}>
       <ScrollView
         horizontal
         showsHorizontalScrollIndicator={false}
         contentContainerClassName="pr-12"
       >
         <MonoText
-          className="text-text/80 w-full whitespace-nowrap break-words text-sm"
+          className="w-full whitespace-nowrap break-words text-sm text-text/80"
           numberOfLines={1}
         >
           {renderedPath}

@@ -112,6 +112,7 @@ export const ModalInternal = memo(function Modal({
       setStack((p) => p.filter((modal) => modal.id !== item.id))
     }
 
+    item.onClose?.()
     onPropsClose?.(false)
   })
 
@@ -345,7 +346,7 @@ export const ModalInternal = memo(function Modal({
                   "bg-background",
                   "shadow-modal [transform-style:preserve-3d]",
                   max ? "h-[90vh] w-[90vw]" : "max-h-[90vh]",
-                  "border-border border",
+                  "border border-border",
                   modalClassName,
                 )}
                 tabIndex={-1}
@@ -370,10 +371,10 @@ export const ModalInternal = memo(function Modal({
                   defaultSize={resizeDefaultSize}
                   className="flex grow flex-col"
                 >
-                  <div className={"bg-background relative z-10 flex flex-col"}>
+                  <div className={"relative z-10 flex flex-col bg-background"}>
                     <div className={"flex items-center"}>
                       <Dialog.Title
-                        className="text-text flex w-0 max-w-full grow items-center gap-2 px-2 pb-1 pt-2 text-base font-medium"
+                        className="flex w-0 max-w-full grow items-center gap-2 px-2 pb-1 pt-2 text-base font-medium text-text"
                         onPointerDownCapture={handleDrag}
                         onPointerDown={relocateModal}
                       >
@@ -384,7 +385,7 @@ export const ModalInternal = memo(function Modal({
                       </Dialog.Title>
                       {canClose && (
                         <Dialog.DialogClose
-                          className="center hover:bg-fill-quaternary text-text-secondary hover:text-text z-[2] -mr-1 rounded-lg p-2"
+                          className="center z-[2] -mr-1 rounded-lg p-2 text-text-secondary hover:bg-fill-quaternary hover:text-text"
                           tabIndex={1}
                           onClick={close}
                         >
@@ -394,13 +395,13 @@ export const ModalInternal = memo(function Modal({
                     </div>
 
                     {(title || icon || canClose) && (
-                      <div className="bg-border mx-1 mt-1 h-px shrink-0" />
+                      <div className="mx-1 mt-1 h-px shrink-0 bg-border" />
                     )}
                   </div>
 
                   <div
                     className={cn(
-                      "text-text -mx-2 min-h-0 shrink grow overflow-auto overflow-x-hidden px-4 pb-4 pt-3 text-sm",
+                      "-mx-2 min-h-0 shrink grow overflow-auto overflow-x-hidden px-4 pb-4 pt-3 text-sm text-text",
                       modalContentClassName,
                     )}
                   >

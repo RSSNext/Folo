@@ -98,17 +98,17 @@ export const FeedSummary = ({
           />
         </View>
         <View className="flex-1">
-          <Text className="text-text text-lg font-semibold" numberOfLines={1}>
+          <Text className="text-lg font-semibold text-text" numberOfLines={1}>
             {feed.title}
           </Text>
-          <Text className="text-text text-sm leading-tight opacity-60" numberOfLines={1}>
+          <Text className="text-sm leading-tight text-text opacity-60" numberOfLines={1}>
             {feed.url}
           </Text>
         </View>
       </View>
       {!simple && !!feed.description && (
         <Text
-          className="text-text mt-3 pl-[39] pr-2 text-sm"
+          className="mt-3 pl-[39] pr-2 text-sm text-text"
           ellipsizeMode="tail"
           numberOfLines={2}
         >

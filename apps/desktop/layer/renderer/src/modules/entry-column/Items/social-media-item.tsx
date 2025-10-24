@@ -6,7 +6,7 @@ import { useEntry } from "@follow/store/entry/hooks"
 import { useFeedById } from "@follow/store/feed/hooks"
 import { LRUCache } from "@follow/utils/lru-cache"
 import { cn } from "@follow/utils/utils"
-import { useLayoutEffect, useRef, useState } from "react"
+import { useLayoutEffect, useMemo, useRef, useState } from "react"
 import { useTranslation } from "react-i18next"
 
 import { useGeneralSettingKey } from "~/atoms/settings/general"
@@ -29,34 +29,50 @@ import { MediaGallery } from "./media-gallery"
 
 export const SocialMediaItem: EntryListItemFC = ({ entryId, translation }) => {
   const entry = useEntry(entryId, (state) => {
-    const { feedId, read } = state
-    const { author, authorAvatar, authorUrl, content, description, guid, publishedAt, url } = state
-
-    const media = state.media || []
-    const photo = media.find((a) => a.type === "photo")
-    const firstPhotoUrl = photo?.url
-    const iconEntry: FeedIconEntry = {
-      firstPhotoUrl,
-      authorAvatar,
-    }
-
-    return {
+    /// keep-sorted
+    const {
       author,
+      authorAvatar,
       authorUrl,
       content,
       description,
       feedId,
       guid,
-      iconEntry,
       publishedAt,
-      read,
+      url,
+    } = state
+
+    const media = state.media || []
+    const photo = media.find((a) => a.type === "photo")
+    const firstPhotoUrl = photo?.url
+
+    /// keep-sorted
+    return {
+      author,
+      authorAvatar,
+      authorUrl,
+      content,
+      description,
+      feedId,
+      firstPhotoUrl,
+      guid,
+      publishedAt,
       url,
     }
   })
+
   const isInCollection = useIsEntryStarred(entryId)
 
-  const asRead = useEntryIsRead(entry)
+  const asRead = useEntryIsRead(entryId)
   const feed = useFeedById(entry?.feedId)
+
+  const iconEntry: FeedIconEntry = useMemo(
+    () => ({
+      firstPhotoUrl: entry?.firstPhotoUrl,
+      authorAvatar: entry?.authorAvatar,
+    }),
+    [entry?.firstPhotoUrl, entry?.authorAvatar],
+  )
 
   const ref = useRef<HTMLDivElement>(null)
 
@@ -84,10 +100,10 @@ export const SocialMediaItem: EntryListItemFC = ({ entryId, translation }) => {
         "relative flex py-4",
         "group",
         !asRead &&
-          "before:bg-accent before:absolute before:-left-3 before:top-8 before:block before:size-2 before:rounded-full",
+          "before:absolute before:-left-3 before:top-8 before:block before:size-2 before:rounded-full before:bg-accent",
       )}
     >
-      <FeedIcon fallback target={feed} entry={entry.iconEntry} size={32} className="mt-1" />
+      <FeedIcon fallback target={feed} entry={iconEntry} size={32} className="mt-1" />
       <div ref={ref} className="ml-2 min-w-0 flex-1">
         <div className="-mt-0.5 flex-1 text-sm">
           <div className="flex select-none flex-wrap space-x-1 leading-6" ref={titleRef}>
@@ -117,8 +133,8 @@ export const SocialMediaItem: EntryListItemFC = ({ entryId, translation }) => {
               <HTML
                 as="div"
                 className={cn(
-                  "prose dark:prose-invert align-middle",
-                  "prose-blockquote:mt-0 cursor-auto select-text text-sm leading-relaxed",
+                  "prose align-middle dark:prose-invert",
+                  "cursor-auto select-text text-sm leading-relaxed prose-blockquote:mt-0",
                 )}
                 noMedia
                 style={renderStyle}
@@ -135,7 +151,10 @@ export const SocialMediaItem: EntryListItemFC = ({ entryId, translation }) => {
   )
 }
 
-SocialMediaItem.wrapperClassName = readableContentMaxWidth
+SocialMediaItem.wrapperClassName = cn(
+  readableContentMaxWidth,
+  "pl-4 pr-3 @[700px]:pl-6 @[1024px]:pr-4",
+)
 
 export function SocialMediaItemStateLess({ entry, feed }: EntryItemStatelessProps) {
   return (
@@ -153,7 +172,7 @@ export function SocialMediaItemStateLess({ entry, feed }: EntryItemStatelessProp
             </span>
           </div>
           <div className="relative mt-1 text-base">
-            <div className="prose dark:prose-invert prose-blockquote:mt-0 cursor-auto select-text truncate align-middle text-sm leading-relaxed">
+            <div className="prose cursor-auto select-text truncate align-middle text-sm leading-relaxed dark:prose-invert prose-blockquote:mt-0">
               {entry.description}
             </div>
           </div>
@@ -252,7 +271,7 @@ const CollapsedSocialMediaItem: Component<{
               collapsedItemCache.put(entryId, true)
             }}
             aria-hidden
-            className="hover:text-text flex items-center justify-center text-xs duration-200"
+            className="flex items-center justify-center text-xs duration-200 hover:text-text"
           >
             <i className="i-mingcute-arrow-to-down-line" />
             <span className="ml-2">{t("words.show_more")}</span>

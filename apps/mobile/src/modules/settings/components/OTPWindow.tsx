@@ -123,7 +123,7 @@ export const OTPWindow = <T,>({ onSuccess, verifyFn, onDismiss }: OTPWindowProps
           className="pt-safe items-center justify-center"
         >
           <Animated.View
-            className="bg-system-background mx-5 overflow-hidden rounded-3xl"
+            className="mx-5 overflow-hidden rounded-3xl bg-system-background"
             style={[
               styles.window,
               {
@@ -137,10 +137,10 @@ export const OTPWindow = <T,>({ onSuccess, verifyFn, onDismiss }: OTPWindowProps
             ]}
           >
             <View className="px-6 pb-1 pt-6">
-              <Text className="text-label mb-1 text-center text-lg font-medium">
+              <Text className="mb-1 text-center text-lg font-medium text-label">
                 Verification Required
               </Text>
-              <Text className="text-secondary-label text-center text-base">
+              <Text className="text-center text-base text-secondary-label">
                 Please enter the code from your authenticator app.
               </Text>
             </View>
@@ -191,10 +191,10 @@ export const OTPWindow = <T,>({ onSuccess, verifyFn, onDismiss }: OTPWindowProps
               />
             </View>
 
-            <View className="border-non-opaque-separator border-t-hairline flex-row px-4 py-2">
+            <View className="border-t-hairline flex-row border-non-opaque-separator px-4 py-2">
               <View className="flex-1 items-center">
                 <Text
-                  className="text-accent px-5 py-2 text-base font-medium"
+                  className="px-5 py-2 text-base font-medium text-accent"
                   onPress={() => {
                     setUiShow(false)
                   }}

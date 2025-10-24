@@ -52,7 +52,7 @@ export function useWebViewEntry({
   const translation = useEntryTranslation({
     entryId,
     language,
-    setting: showTranslation ?? false,
+    enabled: showTranslation ?? false,
   })
 
   // UI Settings

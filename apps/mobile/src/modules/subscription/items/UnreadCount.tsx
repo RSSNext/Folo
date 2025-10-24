@@ -25,14 +25,14 @@ export function UnreadCount({
       allowFontScaling={false}
       numberOfLines={1}
       ellipsizeMode="clip"
-      className={cn("text-tertiary-label text-[12px]", className, textClassName)}
+      className={cn("text-[12px] text-tertiary-label", className, textClassName)}
       {...rest}
     >
       {unread > max ? `${max}+` : unread}
     </Text>
   ) : (
     <View
-      className={cn("bg-tertiary-label size-1 rounded-full", className, dotClassName)}
+      className={cn("size-1 rounded-full bg-tertiary-label", className, dotClassName)}
       {...rest}
     />
   )

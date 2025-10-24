@@ -1,6 +1,5 @@
 import { useCallback, useRef, useState, useTransition } from "react"
 
-import { DEFAULT_MAX_SUGGESTIONS } from "../constants"
 import type { MentionData, MentionSearchState, MentionType } from "../types"
 import { getMentionType, shouldTriggerMention } from "../utils/triggerDetection"
 
@@ -8,17 +7,14 @@ interface UseMentionSearchOptions {
   onSearch?: (
     query: string,
     type: MentionType | undefined,
+    maxSuggestions?: number,
   ) => Promise<MentionData[]> | MentionData[]
-  maxSuggestions?: number
 }
 
 // Default search function
 const defaultSearchFn = async (): Promise<MentionData[]> => []
 
-export const useMentionSearch = ({
-  onSearch = defaultSearchFn,
-  maxSuggestions = DEFAULT_MAX_SUGGESTIONS,
-}: UseMentionSearchOptions = {}) => {
+export const useMentionSearch = ({ onSearch = defaultSearchFn }: UseMentionSearchOptions = {}) => {
   const [searchState, setSearchState] = useState<MentionSearchState>({
     suggestions: [],
     selectedIndex: -1,
@@ -27,15 +23,13 @@ export const useMentionSearch = ({
 
   const [isPending, startTransition] = useTransition()
   const onSearchRef = useRef(onSearch)
-  const maxSuggestionsRef = useRef(maxSuggestions)
   const abortControllerRef = useRef<AbortController | null>(null)
 
   // Update refs when props change to avoid stale closures
   onSearchRef.current = onSearch
-  maxSuggestionsRef.current = maxSuggestions
 
   const searchMentions = useCallback(
-    async (query: string) => {
+    async (query: string, maxSuggestions?: number) => {
       // Cancel any pending search
       if (abortControllerRef.current) {
         abortControllerRef.current.abort()
@@ -63,7 +57,7 @@ export const useMentionSearch = ({
       try {
         const [mentionType, cleanQuery] = getMentionType(query)
 
-        const results = await onSearchRef.current(cleanQuery, mentionType)
+        const results = await onSearchRef.current(cleanQuery, mentionType, maxSuggestions)
 
         // Check if this search was aborted
         if (abortController.signal.aborted) {
@@ -72,7 +66,7 @@ export const useMentionSearch = ({
 
         startTransition(() => {
           setSearchState({
-            suggestions: results.slice(0, maxSuggestionsRef.current),
+            suggestions: results,
             selectedIndex: results.length > 0 ? 0 : -1,
             isLoading: false,
           })

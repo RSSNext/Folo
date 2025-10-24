@@ -57,8 +57,8 @@ export const AboutScreen = () => {
         <GroupedInsetListBaseCell className="flex-col py-6">
           <View className="flex-1 items-center justify-center">
             <Logo height={80} width={80} />
-            <Text className="text-label mt-4 text-2xl font-semibold">Folo</Text>
-            <Text className="text-tertiary-label font-mono text-sm">
+            <Text className="mt-4 text-2xl font-semibold text-label">Folo</Text>
+            <Text className="font-mono text-sm text-tertiary-label">
               {appVersion} ({buildId})
             </Text>
           </View>
@@ -67,7 +67,7 @@ export const AboutScreen = () => {
               ns="settings"
               i18nKey="about.feedbackInfo"
               parent={({ children }: { children: React.ReactNode }) => (
-                <Text className="text-label text-[15px]">{children}</Text>
+                <Text className="text-[15px] text-label">{children}</Text>
               )}
               values={{
                 appName: "Folo",
@@ -85,7 +85,7 @@ export const AboutScreen = () => {
               ns="settings"
               i18nKey="about.iconLibrary"
               parent={({ children }: { children: React.ReactNode }) => (
-                <Text className="text-label mt-4 text-[15px]">{children}</Text>
+                <Text className="mt-4 text-[15px] text-label">{children}</Text>
               )}
               components={{
                 IconLibraryLink: (
@@ -101,7 +101,7 @@ export const AboutScreen = () => {
               ns="settings"
               i18nKey="about.licenseInfo"
               parent={({ children }: { children: React.ReactNode }) => (
-                <Text className="text-label mt-4 text-[15px]">{children}</Text>
+                <Text className="mt-4 text-[15px] text-label">{children}</Text>
               )}
               values={{
                 currentYear: new Date().getFullYear(),

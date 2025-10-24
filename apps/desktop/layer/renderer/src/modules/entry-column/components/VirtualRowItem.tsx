@@ -85,7 +85,7 @@ export const VirtualRowItem: FC<VirtualRowItemProps> = memo(
           style={useMemo(
             () => ({
               transform,
-              paddingTop: isStickyItem ? "2.75rem" : undefined,
+              paddingTop: isStickyItem ? "2rem" : undefined,
             }),
             [transform, isStickyItem],
           )}

@@ -36,7 +36,7 @@ export function EntryPictureItem({ id }: { id: string }) {
           aspectRatio: 16 / 9,
         }}
       >
-        <Text className="text-label text-center">No media available</Text>
+        <Text className="text-center text-label">No media available</Text>
       </View>
     )
   }

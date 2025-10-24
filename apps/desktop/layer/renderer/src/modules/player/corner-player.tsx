@@ -226,7 +226,7 @@ const CornerPlayerImpl = ({ hideControls, rounded }: ControlButtonProps) => {
           >
             <button
               type="button"
-              className="center bg-theme-background hover:bg-accent size-10 rounded-full opacity-95 hover:text-white hover:opacity-100"
+              className="center size-10 rounded-full bg-theme-background opacity-95 hover:bg-accent hover:text-white hover:opacity-100"
               onClick={handleClickPlay}
             >
               <i
@@ -257,7 +257,7 @@ const CornerPlayerImpl = ({ hideControls, rounded }: ControlButtonProps) => {
           </Marquee>
           <div
             className={cn(
-              "text-text-secondary mt-0.5 overflow-hidden truncate text-xs",
+              "mt-0.5 overflow-hidden truncate text-xs text-text-secondary",
               !isMobile && "group-hover:opacity-0",
             )}
           >
@@ -273,7 +273,7 @@ const CornerPlayerImpl = ({ hideControls, rounded }: ControlButtonProps) => {
       {!hideControls && (
         <div
           className={cn(
-            "bg-theme-background absolute inset-x-0 top-0 z-[-1] flex justify-between border-t p-1 opacity-0 transition-all duration-200 ease-in-out",
+            "absolute inset-x-0 top-0 z-[-1] flex justify-between border-t bg-theme-background p-1 opacity-0 transition-all duration-200 ease-in-out",
             isMobile
               ? "-translate-y-full opacity-100"
               : "group-hover:-translate-y-full group-hover:opacity-100",
@@ -371,7 +371,7 @@ export const PlayerProgress = () => {
     <div className="relative mt-2">
       <div
         className={cn(
-          "text-theme-disabled absolute bottom-2 flex w-full items-center justify-between opacity-0 duration-150 ease-in-out",
+          "absolute bottom-2 flex w-full items-center justify-between text-theme-disabled opacity-0 duration-150 ease-in-out",
           isMobile ? "opacity-100" : "group-hover:opacity-100",
         )}
       >
@@ -393,12 +393,12 @@ export const PlayerProgress = () => {
           onValueCommit={(value) => AudioPlayer.seek(value[0]!)}
         >
           <Slider.Track className="relative h-1 w-full grow rounded bg-gray-200 duration-200 group-hover:bg-gray-300 dark:bg-neutral-700 group-hover:dark:bg-neutral-600">
-            <Slider.Range className="bg-accent/80 absolute h-1 rounded" />
+            <Slider.Range className="absolute h-1 rounded bg-accent/80" />
           </Slider.Track>
 
           {/* indicator */}
           <Slider.Thumb
-            className="bg-accent block h-2 w-[3px] rounded-[1px]"
+            className="block h-2 w-[3px] rounded-[1px] bg-accent"
             aria-label="Progress"
           />
         </Slider.Root>
@@ -424,7 +424,7 @@ const ActionIcon = ({
 }) => (
   <Tooltip delayDuration={labelDelayDuration}>
     <TooltipTrigger
-      className="center hover:bg-material-ultra-thick size-6 rounded-md text-zinc-500"
+      className="center size-6 rounded-md text-zinc-500 hover:bg-material-ultra-thick"
       onClick={onClick}
       asChild
     >
@@ -450,7 +450,7 @@ const PlaybackRateSelector = () => {
           key={rate}
           type="button"
           className={cn(
-            "center hover:bg-theme-item-hover rounded-md p-1 font-mono",
+            "center rounded-md p-1 font-mono hover:bg-theme-item-hover",
             playbackRate === rate && "bg-theme-item-hover text-text",
             playbackRate !== rate && "text-text-secondary",
           )}

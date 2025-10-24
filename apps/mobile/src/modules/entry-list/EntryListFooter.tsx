@@ -37,7 +37,7 @@ export const EntryListFooter = ({ fetchedTime }: { fetchedTime?: number }) => {
         }}
       >
         <CheckCircleCuteReIcon height={16} width={16} color={labelColor} />
-        <Text className="text-label ml-2 font-bold">
+        <Text className="ml-2 font-bold text-label">
           {t("operation.mark_all_as_read_which", {
             which: t("operation.mark_all_as_read_which_above"),
           })}
@@ -70,7 +70,7 @@ export const GridEntryListFooter = ({ fetchedTime }: { fetchedTime?: number }) =
       }}
     >
       <CheckCircleCuteReIcon height={16} width={16} />
-      <Text className="text-label font-bold">
+      <Text className="font-bold text-label">
         {t("operation.mark_all_as_read_which", {
           which: t("operation.mark_all_as_read_which_above"),
         })}

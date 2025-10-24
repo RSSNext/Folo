@@ -15,7 +15,7 @@ export const EfficiencyTab = ({ byModel }: EfficiencyTabProps) => {
   return (
     <Card className="mx-4">
       <CardHeader>
-        <CardTitle className="text-text text-base">
+        <CardTitle className="text-base text-text">
           {t("analytics.efficiency_analysis", { defaultValue: "Efficiency analysis" })}
         </CardTitle>
       </CardHeader>
@@ -33,7 +33,7 @@ export const EfficiencyTab = ({ byModel }: EfficiencyTabProps) => {
             format={(v) => formatTokenCountString(v)}
           />
         ) : (
-          <div className="text-text-tertiary py-8 text-center text-sm">
+          <div className="py-8 text-center text-sm text-text-tertiary">
             {t("analytics.no_data")}
           </div>
         )}

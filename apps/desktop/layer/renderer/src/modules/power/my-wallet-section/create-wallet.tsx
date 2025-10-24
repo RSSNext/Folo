@@ -14,7 +14,7 @@ export const CreateWallet = () => {
           i18nKey="wallet.create.description"
           ns="settings"
           components={{
-            PowerIcon: <i className="i-mgc-power text-folo translate-y-[2px]" />,
+            PowerIcon: <i className="i-mgc-power translate-y-[2px] text-folo" />,
             strong: <strong />,
           }}
         />

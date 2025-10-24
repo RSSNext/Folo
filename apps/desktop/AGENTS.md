@@ -107,6 +107,114 @@ import { Button, Modal } from "@follow/components"
 import { FeedList } from "~/modules/name/components"
 ```
 
+## Glassmorphic Depth Design System
+
+Follow uses a sophisticated glassmorphic depth design system for elevated UI components (modals, toasts, floating panels, etc.). This design provides visual hierarchy through layered transparency and subtle color accents.
+
+### Design Principles
+
+- **Multi-layer Depth**: Create visual depth through stacked transparent layers
+- **Subtle Color Accents**: Use brand colors at very low opacity (5-20%) for borders, glows, and backgrounds
+- **Refined Blur**: Heavy backdrop blur (backdrop-blur-2xl) for frosted glass effect
+- **Minimal Shadows**: Combine multiple soft shadows with accent colors for depth perception
+- **Smooth Animations**: Use Spring presets for all transitions
+
+### Color Usage
+
+- **Primary Accent**: `#FF5C00` (orange) at 5-20% opacity for borders, glows, and highlights
+- **Border**: `rgba(255, 92, 0, 0.2)` for main borders
+- **Inner Glow**: `rgba(255, 92, 0, 0.05)` for subtle radial/linear gradients inside containers
+- **Shadows**: Layered shadows with accent tint:
+  - `0 8px 32px rgba(255, 92, 0, 0.08)` - large soft glow
+  - `0 4px 16px rgba(255, 92, 0, 0.06)` - medium shadow
+  - `0 2px 8px rgba(0, 0, 0, 0.1)` - close depth
+
+### Component Structure
+
+```tsx
+<div
+  className="rounded-2xl backdrop-blur-2xl"
+  style={{
+    backgroundImage:
+      "linear-gradient(to bottom right, rgba(var(--color-background) / 0.98), rgba(var(--color-background) / 0.95))",
+    borderWidth: "1px",
+    borderStyle: "solid",
+    borderColor: "rgba(255, 92, 0, 0.2)",
+    boxShadow:
+      "0 8px 32px rgba(255, 92, 0, 0.08), 0 4px 16px rgba(255, 92, 0, 0.06), 0 2px 8px rgba(0, 0, 0, 0.1)",
+  }}
+>
+  {/* Inner glow layer */}
+  <div
+    className="absolute inset-0 rounded-2xl"
+    style={{
+      background:
+        "linear-gradient(to bottom right, rgba(255, 92, 0, 0.05), transparent, rgba(255, 92, 0, 0.05))",
+    }}
+  />
+
+  {/* Content */}
+  <div className="relative">{/* Your content here */}</div>
+</div>
+```
+
+### Interactive Elements
+
+For hover states on buttons or interactive areas within glass containers:
+
+```tsx
+<button
+  onMouseEnter={(e) => {
+    e.currentTarget.style.background =
+      "linear-gradient(to right, rgba(255, 92, 0, 0.08), rgba(255, 140, 0, 0.05))"
+  }}
+  onMouseLeave={(e) => {
+    e.currentTarget.style.background = "transparent"
+  }}
+>
+  {/* Subtle shine effect */}
+  <div className="via-gray/5 absolute inset-0 -translate-x-full bg-gradient-to-r from-transparent to-transparent transition-transform duration-700 group-hover:translate-x-full dark:via-white/5" />
+</button>
+```
+
+### Dividers
+
+Use gradient dividers within glass containers:
+
+```tsx
+<div
+  className="mx-4 h-px"
+  style={{
+    background: "linear-gradient(to right, transparent, rgba(255, 92, 0, 0.2), transparent)",
+  }}
+/>
+```
+
+### Animation Guidelines
+
+- Entry animations: `initial={{ y: 8, opacity: 0 }}` → `animate={{ y: 0, opacity: 1 }}`
+- Use `Spring.presets.snappy` for quick interactions
+- Use `Spring.presets.smooth` for larger movements
+- Keep scale animations subtle (1.0 ↔ 1.02)
+
+### When to Use
+
+Apply this design system to:
+
+- Toast notifications
+- Modal dialogs
+- Floating panels and popovers
+- Ambient UI prompts
+- Contextual menus
+- Elevated cards with actions
+
+### Accessibility
+
+- Ensure sufficient contrast for text over glass backgrounds
+- Maintain border visibility in both light and dark modes
+- Preserve keyboard focus indicators
+- Keep animations respectful of `prefers-reduced-motion`
+
 ## Build Outputs
 
 - Desktop: `apps/desktop/out/` for packaged applications

@@ -7,7 +7,6 @@ import { StyleSheet, View } from "react-native"
 
 import { useActionLanguage, useGeneralSettingKey } from "@/src/atoms/settings/general"
 import { useBottomTabBarHeight } from "@/src/components/layouts/tabbar/hooks"
-import { checkLanguage } from "@/src/lib/translation"
 import { useEntries } from "@/src/modules/screen/atoms"
 import { useHeaderHeight } from "@/src/modules/screen/hooks/useHeaderHeight"
 
@@ -37,8 +36,7 @@ export const EntryListContentVideo = ({
   usePrefetchEntryTranslation({
     entryIds: active ? viewableItems.map((item) => item.key) : [],
     language: actionLanguage,
-    setting: translation,
-    checkLanguage,
+    enabled: translation,
   })
 
   const ListFooterComponent = useMemo(
@@ -118,21 +116,21 @@ function EntryVideoItemSkeleton() {
     <View className="m-1 overflow-hidden rounded-md">
       {/* Video thumbnail */}
       <View
-        className="bg-system-fill h-32 w-full animate-pulse rounded-md"
+        className="h-32 w-full animate-pulse rounded-md bg-system-fill"
         style={{ aspectRatio: 16 / 9 }}
       />
 
       {/* Description and footer */}
       <View className="my-2 px-2">
         {/* Description */}
-        <View className="bg-system-fill mb-1 h-4 w-full animate-pulse rounded-md" />
-        <View className="bg-system-fill mb-3 h-4 w-3/4 animate-pulse rounded-md" />
+        <View className="mb-1 h-4 w-full animate-pulse rounded-md bg-system-fill" />
+        <View className="mb-3 h-4 w-3/4 animate-pulse rounded-md bg-system-fill" />
 
         {/* Footer with feed icon and metadata */}
         <View className="flex-row items-center gap-1">
-          <View className="bg-system-fill size-4 animate-pulse rounded-full" />
-          <View className="bg-system-fill h-3 w-24 animate-pulse rounded-md" />
-          <View className="bg-system-fill h-3 w-20 animate-pulse rounded-md" />
+          <View className="size-4 animate-pulse rounded-full bg-system-fill" />
+          <View className="h-3 w-24 animate-pulse rounded-md bg-system-fill" />
+          <View className="h-3 w-20 animate-pulse rounded-md bg-system-fill" />
         </View>
       </View>
     </View>
@@ -144,21 +142,21 @@ export function EntryItemSkeleton() {
     <View className="m-1 overflow-hidden rounded-md">
       {/* Video thumbnail */}
       <View
-        className="bg-system-fill h-32 w-full animate-pulse rounded-md"
+        className="h-32 w-full animate-pulse rounded-md bg-system-fill"
         style={{ aspectRatio: 16 / 9 }}
       />
 
       {/* Description and footer */}
       <View className="my-2 px-2">
         {/* Description */}
-        <View className="bg-system-fill mb-1 h-4 w-full animate-pulse rounded-md" />
-        <View className="bg-system-fill mb-3 h-4 w-3/4 animate-pulse rounded-md" />
+        <View className="mb-1 h-4 w-full animate-pulse rounded-md bg-system-fill" />
+        <View className="mb-3 h-4 w-3/4 animate-pulse rounded-md bg-system-fill" />
 
         {/* Footer with feed icon and metadata */}
         <View className="flex-row items-center gap-1">
-          <View className="bg-system-fill size-4 animate-pulse rounded-full" />
-          <View className="bg-system-fill h-3 w-24 animate-pulse rounded-md" />
-          <View className="bg-system-fill h-3 w-20 animate-pulse rounded-md" />
+          <View className="size-4 animate-pulse rounded-full bg-system-fill" />
+          <View className="h-3 w-24 animate-pulse rounded-md bg-system-fill" />
+          <View className="h-3 w-20 animate-pulse rounded-md bg-system-fill" />
         </View>
       </View>
     </View>

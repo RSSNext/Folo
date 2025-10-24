@@ -2,10 +2,9 @@ import * as React from "react"
 import { Suspense, useMemo } from "react"
 
 import { MentionDropdown } from "./components/MentionDropdown"
-import { DEFAULT_MAX_SUGGESTIONS } from "./constants"
-import { useMentionIntegration } from "./hooks/useMentionIntegration"
 import { useMentionKeyboard } from "./hooks/useMentionKeyboard"
 import { useMentionSearch } from "./hooks/useMentionSearch"
+import { useMentionSearchService } from "./hooks/useMentionSearchService"
 import { useMentionSelection } from "./hooks/useMentionSelection"
 import { useMentionTrigger } from "./hooks/useMentionTrigger"
 import { MentionNode } from "./MentionNode"
@@ -13,7 +12,7 @@ import { defaultTriggerFn } from "./utils/triggerDetection"
 
 export function MentionPlugin() {
   // Get integrated search and context block handling
-  const { searchMentions, handleMentionInsert } = useMentionIntegration()
+  const { searchMentions } = useMentionSearchService()
 
   // Hook for detecting mention triggers
   const { mentionMatch, isActive, clearMentionMatch } = useMentionTrigger({
@@ -31,13 +30,11 @@ export function MentionPlugin() {
     hasResults,
   } = useMentionSearch({
     onSearch: searchMentions,
-    maxSuggestions: DEFAULT_MAX_SUGGESTIONS,
   })
 
   // Hook for handling mention selection
   const { selectMention } = useMentionSelection({
     mentionMatch,
-    onMentionInsert: handleMentionInsert,
     onSelectionComplete: () => {
       clearMentionMatch()
       clearSuggestions()
@@ -103,6 +100,7 @@ export function MentionPlugin() {
       suggestions,
       selectedIndex,
       isLoading,
+      onSetSelectIndex: setSelectedIndex,
       onSelect: selectMention,
       onClose: handleEscapeKey,
       query: mentionMatch?.matchingString || "",
@@ -113,9 +111,10 @@ export function MentionPlugin() {
     suggestions,
     selectedIndex,
     isLoading,
+    setSelectedIndex,
     selectMention,
     handleEscapeKey,
-    mentionMatch,
+    mentionMatch?.matchingString,
   ])
 
   return dropdownProps ? (

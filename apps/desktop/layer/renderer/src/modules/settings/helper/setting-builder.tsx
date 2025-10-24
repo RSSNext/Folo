@@ -30,6 +30,7 @@ export type SettingItem<T, K extends keyof T = keyof T> = {
 type SectionSettingItem = {
   type: "title"
   value?: string
+  id?: string
 } & SharedSettingItem
 
 type ActionSettingItem = {
@@ -78,7 +79,13 @@ export const createSettingBuilder =
         !isEmptySection
 
       if (isValidTitle) {
-        return <SettingSectionTitle key={index} title={assertSetting.value} />
+        return (
+          <SettingSectionTitle
+            key={index}
+            title={assertSetting.value}
+            sectionId={assertSetting.id}
+          />
+        )
       }
       if ("type" in assertSetting && assertSetting.type === "title") {
         return null

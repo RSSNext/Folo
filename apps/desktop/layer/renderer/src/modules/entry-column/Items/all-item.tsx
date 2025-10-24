@@ -37,8 +37,8 @@ import type { EntryItemStatelessProps, UniversalItemProps } from "../types"
 const ViewTag = IN_ELECTRON ? "webview" : "iframe"
 
 const entrySelector = (state: EntryModel) => {
-  const { feedId, inboxHandle, read } = state
-  const { authorAvatar, authorUrl, description, publishedAt, title } = state
+  /// keep-sorted
+  const { authorAvatar, authorUrl, description, feedId, inboxHandle, publishedAt, title } = state
 
   const audios = state.attachments?.filter((a) => a.mime_type?.startsWith("audio") && a.url)
   const video = transformVideoUrl({
@@ -51,23 +51,22 @@ const entrySelector = (state: EntryModel) => {
   const media = state.media || []
   const photo = media.find((a) => a.type === "photo")
   const firstPhotoUrl = photo?.url
-  const iconEntry: FeedIconEntry = { firstPhotoUrl, authorAvatar }
 
-  const titleEntry = { authorUrl }
-
+  /// keep-sorted
   return {
+    authorAvatar,
+    authorUrl,
     description,
     feedId,
     firstAudio,
-    iconEntry,
+    firstPhotoUrl,
     inboxId: inboxHandle,
     publishedAt,
-    read,
     title,
-    titleEntry,
     video,
   }
 }
+
 export function AllItem({ entryId, translation, currentFeedTitle }: UniversalItemProps) {
   const entry = useEntry(entryId, entrySelector)
   const simple = true
@@ -75,7 +74,7 @@ export function AllItem({ entryId, translation, currentFeedTitle }: UniversalIte
   const isInCollection = useIsEntryStarred(entryId)
   const collectionCreatedAt = useCollectionEntry(entryId)?.createdAt
 
-  const isRead = useEntryIsRead(entry)
+  const isRead = useEntryIsRead(entryId)
 
   const inInCollection = useRouteParamsSelector((s) => s.feedId === FEED_COLLECTION_LIST)
 
@@ -94,6 +93,22 @@ export function AllItem({ entryId, translation, currentFeedTitle }: UniversalIte
   const inbox = useInboxById(entry?.inboxId)
 
   const bilingual = useGeneralSettingKey("translationMode") === "bilingual"
+
+  const iconEntry: FeedIconEntry = useMemo(
+    () => ({
+      firstPhotoUrl: entry?.firstPhotoUrl,
+      authorAvatar: entry?.authorAvatar,
+    }),
+    [entry?.firstPhotoUrl, entry?.authorAvatar],
+  )
+
+  const titleEntry = useMemo(
+    () => ({
+      authorUrl: entry?.authorUrl,
+    }),
+    [entry?.authorUrl],
+  )
+
   const lineClamp = useMemo(() => {
     const envIsSafari = isSafari()
     let lineClampTitle = 1
@@ -124,17 +139,17 @@ export function AllItem({ entryId, translation, currentFeedTitle }: UniversalIte
 
   const related = feed || inbox
 
-  const thisFeedTitle = getPreferredTitle(related, entry?.titleEntry)
+  const thisFeedTitle = getPreferredTitle(related, titleEntry)
   return (
     <div
       className={cn(
-        "cursor-menu group relative flex items-center py-2",
+        "group relative flex cursor-menu items-center py-2",
         !isRead &&
-          "before:bg-accent before:absolute before:-left-4 before:top-[14px] before:block before:size-2 before:rounded-full",
+          "before:absolute before:-left-4 before:top-[14px] before:block before:size-2 before:rounded-full before:bg-accent",
       )}
     >
       {currentFeedTitle !== thisFeedTitle && (
-        <FeedIcon target={related} fallback entry={entry?.iconEntry} size={16} />
+        <FeedIcon target={related} fallback entry={iconEntry} size={16} />
       )}
       <div className={cn("flex h-fit min-w-0 flex-1 items-center truncate text-sm leading-tight")}>
         {entry.firstAudio && <AudioIcon entryId={entryId} src={entry.firstAudio.url} />}
@@ -183,26 +198,26 @@ export function AllItem({ entryId, translation, currentFeedTitle }: UniversalIte
         </div>
       </div>
 
-      <div className="text-text-secondary ml-4 shrink-0 text-xs">
-        {!!displayTime && <RelativeTime date={displayTime} compact />}
+      <div className="ml-4 shrink-0 text-xs text-text-secondary">
+        {!!displayTime && <RelativeTime date={displayTime} postfix="" />}
       </div>
     </div>
   )
 }
 
-AllItem.wrapperClassName = "pl-7 pr-5"
+AllItem.wrapperClassName = "pl-5 pr-4 @[700px]:pl-6 @[1024px]:pr-5"
 
 export function AllItemStateLess({ entry, feed }: EntryItemStatelessProps) {
   return (
-    <div className="cursor-menu group relative flex py-4">
+    <div className="group relative flex cursor-menu py-4">
       <FeedIcon target={feed} fallback className="mr-2 size-5" />
       <div className="-mt-0.5 min-w-0 flex-1 text-sm leading-tight">
-        <div className="text-text-secondary flex gap-1 text-[10px] font-bold">
+        <div className="flex gap-1 text-[10px] font-bold text-text-secondary">
           <FeedTitle feed={feed} />
           <span>·</span>
           <span>{!!entry.publishedAt && <RelativeTime date={entry.publishedAt} />}</span>
         </div>
-        <div className="text-text relative my-0.5 truncate break-words font-medium">
+        <div className="relative my-0.5 truncate break-words font-medium text-text">
           {entry.title}
         </div>
       </div>
@@ -215,7 +230,7 @@ export const AllItemSkeleton = (
     <div className="group relative flex py-4">
       <Skeleton className="mr-2 size-5 shrink-0 overflow-hidden" />
       <div className="-mt-0.5 line-clamp-4 flex-1 text-sm leading-tight">
-        <div className="text-material-opaque flex gap-1 text-[10px] font-bold">
+        <div className="flex gap-1 text-[10px] font-bold text-material-opaque">
           <Skeleton className="h-3 w-32 truncate" />
           <span>·</span>
           <Skeleton className="h-3 w-12 shrink-0" />
@@ -276,7 +291,7 @@ function VideoIcon({ src }: { src: string }) {
     <Tooltip>
       <TooltipRoot>
         <TooltipTrigger asChild>
-          <i className="i-mgc-video-cute-fi text-text/90 mr-1 shrink-0 text-base" />
+          <i className="i-mgc-video-cute-fi mr-1 shrink-0 text-base text-text/90" />
         </TooltipTrigger>
         <TooltipPortal>
           <TooltipContent className="flex-col gap-1" side={"bottom"}>

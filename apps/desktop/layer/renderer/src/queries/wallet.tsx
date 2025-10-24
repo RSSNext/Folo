@@ -1,5 +1,5 @@
 import { tracker } from "@follow/tracker"
-import type { TipRequest, TransactionQuery } from "@follow-app/client-sdk"
+import type { TransactionQuery } from "@follow-app/client-sdk"
 import { useMutation } from "@tanstack/react-query"
 import { useNavigate } from "react-router"
 import { toast } from "sonner"
@@ -123,22 +123,3 @@ export const useClaimWalletDailyRewardMutation = () => {
     },
   })
 }
-
-export const useWalletTipMutation = () =>
-  useMutation({
-    mutationKey: ["walletTip"],
-    mutationFn: (data: TipRequest) => followClient.api.wallets.transactions.tip(data),
-    async onError(err) {
-      toastFetchError(err)
-    },
-    onSuccess(response, variables) {
-      wallet.get().invalidate()
-      wallet.transactions.get({}).invalidate()
-      tracker.tipSent({
-        amount: variables.amount,
-        entryId: variables.entryId!,
-        transactionId: response.data.txHash,
-      })
-      toast("🎉 Tipped.")
-    },
-  })

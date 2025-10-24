@@ -23,7 +23,7 @@ export const Markdown: Component<
     <MarkdownRenderContainerRefContext value={refElement}>
       <article
         className={cn(
-          "prose dark:prose-invert prose-th:text-left relative cursor-auto select-text",
+          "prose relative cursor-auto select-text dark:prose-invert prose-th:text-left",
           className,
         )}
         ref={setRefElement}

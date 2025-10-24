@@ -88,7 +88,7 @@ export const UserAvatar = ({
         {name ? (
           <Text
             allowFontScaling={false}
-            className="text-secondary-label p-2 text-center uppercase"
+            className="p-2 text-center uppercase text-secondary-label"
             style={{
               fontSize: size / 3,
             }}

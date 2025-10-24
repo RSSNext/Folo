@@ -61,7 +61,7 @@ const ButtonOverlay = () => {
     <Animated.View
       entering={fadeInAnimation}
       exiting={fadeOutAnimation}
-      className="bg-system-fill absolute inset-0 rounded-lg"
+      className="absolute inset-0 rounded-lg bg-system-fill"
     />
   )
 }

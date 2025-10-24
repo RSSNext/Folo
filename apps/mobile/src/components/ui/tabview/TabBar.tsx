@@ -171,7 +171,7 @@ export const TabBar = ({
         tabBarScrollX.current = event.nativeEvent.contentOffset.x
       }}
       showsHorizontalScrollIndicator={false}
-      className={cn("border-tertiary-system-background relative shrink-0 grow-0", tabbarClassName)}
+      className={cn("relative shrink-0 grow-0 border-tertiary-system-background", tabbarClassName)}
       horizontal
       ref={tabRef}
       contentContainerStyle={styles.tabScroller}

@@ -64,24 +64,24 @@ export const SettingAbout = () => {
           <Folo className="size-16" />
         </h1>
         {MODE !== ModeEnum.production && (
-          <span className="text-text-tertiary block -translate-y-2 text-sm font-normal">
+          <span className="block -translate-y-2 text-sm font-normal text-text-tertiary">
             {MODE}
           </span>
         )}
-        <p className="text-text-secondary mt-2 text-sm">
+        <p className="mt-2 text-sm text-text-secondary">
           {t("about.licenseInfo", { appName: APP_NAME, currentYear: new Date().getFullYear() })}
         </p>
 
         <div className="mt-6 flex flex-wrap items-center justify-center gap-2">
           {appVersion && (
-            <span className="bg-fill-secondary text-text-secondary inline-flex items-center rounded-full px-3 py-1 text-xs font-medium">
-              <span className="text-text-tertiary mr-1.5">App</span>
+            <span className="inline-flex items-center rounded-full bg-fill-secondary px-3 py-1 text-xs font-medium text-text-secondary">
+              <span className="mr-1.5 text-text-tertiary">App</span>
               {appVersion}
             </span>
           )}
           {rendererVersion && (
-            <span className="bg-fill-secondary text-text-secondary inline-flex items-center rounded-full px-3 py-1 text-xs font-medium">
-              <span className="text-text-tertiary mr-1.5">Renderer</span>
+            <span className="inline-flex items-center rounded-full bg-fill-secondary px-3 py-1 text-xs font-medium text-text-secondary">
+              <span className="mr-1.5 text-text-tertiary">Renderer</span>
               {rendererVersion}
             </span>
           )}
@@ -95,7 +95,7 @@ export const SettingAbout = () => {
               )
               toast.success(t("about.environmentCopied"))
             }}
-            className="text-text-tertiary hover:text-text-secondary hover:bg-fill-secondary inline-flex items-center rounded-full px-3 py-1 text-xs transition-colors"
+            className="inline-flex items-center rounded-full px-3 py-1 text-xs text-text-tertiary transition-colors hover:bg-fill-secondary hover:text-text-secondary"
           >
             <i className="i-mgc-copy-cute-re mr-1.5" />
             {t("about.copyEnvironment")}
@@ -110,31 +110,31 @@ export const SettingAbout = () => {
             type="button"
             onClick={handleCheckForUpdates}
             disabled={isCheckingUpdate}
-            className="hover:bg-fill-secondary group flex w-full items-center justify-between rounded-lg p-3 text-left transition-all hover:shadow-sm"
+            className="group flex w-full items-center justify-between rounded-lg p-3 text-left transition-all hover:bg-fill-secondary hover:shadow-sm"
           >
             <div className="flex items-center gap-3">
               <div>
                 <div className="text-sm font-medium">{t("about.checkForUpdates")}</div>
-                <div className="text-text-tertiary text-xs">{t("about.updateDescription")}</div>
+                <div className="text-xs text-text-tertiary">{t("about.updateDescription")}</div>
               </div>
             </div>
             {isCheckingUpdate ? (
               <i className="i-mgc-loading-3-cute-re animate-spin text-base" />
             ) : (
-              <i className="i-mgc-arrow-right-up-cute-re text-text-tertiary group-hover:text-accent text-base transition-all group-hover:-translate-y-0.5 group-hover:translate-x-0.5" />
+              <i className="i-mgc-arrow-right-up-cute-re text-base text-text-tertiary transition-all group-hover:-translate-y-0.5 group-hover:translate-x-0.5 group-hover:text-accent" />
             )}
           </button>
         )}
         <button
           type="button"
           onClick={() => window.open(`${repository.url}/releases`, "_blank")}
-          className="hover:bg-fill-secondary group flex w-full items-center justify-between rounded-lg p-3 text-left transition-all hover:shadow-sm"
+          className="group flex w-full items-center justify-between rounded-lg p-3 text-left transition-all hover:bg-fill-secondary hover:shadow-sm"
         >
           <div>
             <div className="text-sm font-medium">{t("about.changelog")}</div>
-            <div className="text-text-tertiary text-xs">{t("about.changelogDescription")}</div>
+            <div className="text-xs text-text-tertiary">{t("about.changelogDescription")}</div>
           </div>
-          <i className="i-mgc-external-link-cute-re text-text-tertiary group-hover:text-accent text-base transition-all group-hover:-translate-y-0.5 group-hover:translate-x-0.5" />
+          <i className="i-mgc-external-link-cute-re text-base text-text-tertiary transition-all group-hover:-translate-y-0.5 group-hover:translate-x-0.5 group-hover:text-accent" />
         </button>
       </div>
 
@@ -144,26 +144,26 @@ export const SettingAbout = () => {
         <button
           type="button"
           onClick={() => handleOpenLegal("tos")}
-          className="hover:bg-fill-secondary group flex w-full items-center justify-between rounded-lg p-3 text-left transition-all hover:shadow-sm"
+          className="group flex w-full items-center justify-between rounded-lg p-3 text-left transition-all hover:bg-fill-secondary hover:shadow-sm"
         >
           <span className="text-sm">{t("about.termsOfService")}</span>
-          <i className="i-mgc-external-link-cute-re text-text-tertiary group-hover:text-accent transition-all group-hover:-translate-y-0.5 group-hover:translate-x-0.5" />
+          <i className="i-mgc-external-link-cute-re text-text-tertiary transition-all group-hover:-translate-y-0.5 group-hover:translate-x-0.5 group-hover:text-accent" />
         </button>
         <button
           type="button"
           onClick={() => handleOpenLegal("privacy")}
-          className="hover:bg-fill-secondary group flex w-full items-center justify-between rounded-lg p-3 text-left transition-all hover:shadow-sm"
+          className="group flex w-full items-center justify-between rounded-lg p-3 text-left transition-all hover:bg-fill-secondary hover:shadow-sm"
         >
           <span className="text-sm">{t("about.privacyPolicy")}</span>
-          <i className="i-mgc-external-link-cute-re text-text-tertiary group-hover:text-accent transition-all group-hover:-translate-y-0.5 group-hover:translate-x-0.5" />
+          <i className="i-mgc-external-link-cute-re text-text-tertiary transition-all group-hover:-translate-y-0.5 group-hover:translate-x-0.5 group-hover:text-accent" />
         </button>
       </div>
 
       {/* Resources Section */}
       <div className="px-2">
-        <h2 className="text-text-secondary mb-4 text-sm font-semibold">{t("about.resources")}</h2>
+        <h2 className="mb-4 text-sm font-semibold text-text-secondary">{t("about.resources")}</h2>
         <div className="space-y-4">
-          <p className="text-text-secondary text-sm leading-relaxed">
+          <p className="text-sm leading-relaxed text-text-secondary">
             <Trans
               ns="settings"
               i18nKey="about.feedbackInfo"
@@ -181,10 +181,10 @@ export const SettingAbout = () => {
               }}
             />
           </p>
-          <p className="text-text-secondary text-sm leading-relaxed">
+          <p className="text-sm leading-relaxed text-text-secondary">
             {t("about.projectLicense", { appName: APP_NAME })}
           </p>
-          <p className="text-text-secondary text-sm leading-relaxed">
+          <p className="text-sm leading-relaxed text-text-secondary">
             <Trans
               ns="settings"
               i18nKey="about.iconLibrary"
@@ -207,13 +207,13 @@ export const SettingAbout = () => {
 
       {/* Social Links */}
       <div className="px-2">
-        <h2 className="text-text-secondary mb-4 text-sm font-semibold">{t("about.socialMedia")}</h2>
+        <h2 className="mb-4 text-sm font-semibold text-text-secondary">{t("about.socialMedia")}</h2>
         <div className="flex flex-wrap gap-6">
           {SocialMediaLinks.map((link) => (
             <a
               href={link.url}
               key={link.url}
-              className="hover:text-accent flex items-center gap-2 text-sm transition-colors"
+              className="flex items-center gap-2 text-sm transition-colors hover:text-accent"
               target="_blank"
               rel="noreferrer"
             >

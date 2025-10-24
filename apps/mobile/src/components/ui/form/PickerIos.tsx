@@ -55,7 +55,7 @@ export function PickerIos<T>({
       <Pressable onPress={() => setIsOpen(!isOpen)}>
         <View
           className={cn(
-            "border-system-fill/80 bg-system-fill/30 h-10 flex-row items-center rounded-lg border pl-4 pr-2",
+            "h-10 flex-row items-center rounded-lg border border-system-fill/80 bg-system-fill/30 pl-4 pr-2",
             wrapperClassName,
           )}
           style={wrapperStyle}

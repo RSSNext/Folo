@@ -83,7 +83,7 @@ export const GlobalFileDropZone: FC<GlobalFileDropZoneProps> = memo(({ children,
           <m.div className="pointer-events-none absolute inset-0 z-50 flex items-center justify-center">
             {/* Glass morphism backdrop */}
             <m.div
-              className="bg-material-thin/80 absolute inset-0 backdrop-blur-xl"
+              className="absolute inset-0 bg-material-thin/80 backdrop-blur-xl"
               initial={{ opacity: 0 }}
               animate={{ opacity: 1 }}
               exit={{ opacity: 0 }}
@@ -96,24 +96,24 @@ export const GlobalFileDropZone: FC<GlobalFileDropZoneProps> = memo(({ children,
               animate={{ scale: 1, y: 0, opacity: 1 }}
               exit={{ scale: 0.9, y: 20, opacity: 0 }}
               transition={Spring.presets.snappy}
-              className="bg-background/95 border-accent/20 shadow-accent/10 relative flex max-w-md flex-col items-center gap-4 rounded-2xl border p-8 shadow-2xl"
+              className="relative flex max-w-md flex-col items-center gap-4 rounded-2xl border border-accent/20 bg-background/95 p-8 shadow-2xl shadow-accent/10"
             >
               {isProcessing ? (
                 <>
-                  <div className="border-accent size-12 animate-spin rounded-full border-4 border-t-transparent" />
+                  <div className="size-12 animate-spin rounded-full border-4 border-accent border-t-transparent" />
                   <div className="text-center">
-                    <p className="text-text text-lg font-medium">Processing files...</p>
-                    <p className="text-text-secondary text-sm">
+                    <p className="text-lg font-medium text-text">Processing files...</p>
+                    <p className="text-sm text-text-secondary">
                       Please wait while we process your files
                     </p>
                   </div>
                 </>
               ) : (
                 <>
-                  <div className="text-accent relative">
+                  <div className="relative text-accent">
                     <i className="i-mgc-file-upload-cute-re size-16" />
                     <m.div
-                      className="text-accent absolute inset-0 blur-lg"
+                      className="absolute inset-0 text-accent blur-lg"
                       animate={{
                         scale: [1, 1.1, 1],
                         opacity: [0.5, 1, 0.5],
@@ -128,8 +128,8 @@ export const GlobalFileDropZone: FC<GlobalFileDropZoneProps> = memo(({ children,
                     </m.div>
                   </div>
                   <div className="text-center">
-                    <p className="text-text text-lg font-medium">Drop files to attach</p>
-                    <p className="text-text-secondary text-sm">
+                    <p className="text-lg font-medium text-text">Drop files to attach</p>
+                    <p className="text-sm text-text-secondary">
                       Images, PDFs, text files, and audio files are supported
                     </p>
                   </div>

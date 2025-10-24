@@ -5,7 +5,7 @@ import { LoadingCircle } from "@follow/components/ui/loading/index.jsx"
 import { useScrollViewElement } from "@follow/components/ui/scroll-area/hooks.js"
 import { ShrinkingFocusBorder } from "@follow/components/ui/shrinking-focus-border/index.js"
 import type { FeedViewType } from "@follow/constants"
-import { views } from "@follow/constants"
+import { getViewList } from "@follow/constants"
 import { useInputComposition, useRefValue } from "@follow/hooks"
 import { useFeedStore } from "@follow/store/feed/store"
 import { useOwnedListByView } from "@follow/store/list/hooks"
@@ -228,7 +228,7 @@ function FeedCategoryImpl({ data: ids, view, categoryOpenStateData }: FeedCatego
           MenuItemSeparator.default,
           new MenuItemText({
             label: t("sidebar.feed_column.context_menu.change_to_other_view"),
-            submenu: views
+            submenu: getViewList()
               .filter((v) => v.view !== view && v.switchable)
               .map(
                 (v) =>
@@ -305,7 +305,7 @@ function FeedCategoryImpl({ data: ids, view, categoryOpenStateData }: FeedCatego
                   onClick={() => {
                     setIsCategoryEditing(false)
                   }}
-                  className="center hover:bg-material-ultra-thick -ml-1 flex size-5 shrink-0 rounded-lg"
+                  className="center -ml-1 flex size-5 shrink-0 rounded-lg hover:bg-material-ultra-thick"
                 >
                   <i className="i-mgc-close-cute-re text-red" />
                 </MotionButtonBase>
@@ -454,13 +454,13 @@ const RenameCategoryForm: FC<{
           name="category"
           autoFocus
           defaultValue={currentCategory}
-          className="caret-accent w-full appearance-none bg-transparent px-2 py-1"
+          className="w-full appearance-none bg-transparent px-2 py-1 caret-accent"
           onFocus={() => setIsFocused(true)}
           onBlur={() => setIsFocused(false)}
         />
         <MotionButtonBase
           type="submit"
-          className="center hover:bg-material-ultra-thick text-green -mr-1 flex size-5 shrink-0 rounded-lg"
+          className="center -mr-1 flex size-5 shrink-0 rounded-lg text-green hover:bg-material-ultra-thick"
         >
           <i className="i-mgc-check-filled size-3" />
         </MotionButtonBase>

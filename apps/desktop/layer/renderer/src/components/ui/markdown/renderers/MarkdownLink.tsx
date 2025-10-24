@@ -51,7 +51,7 @@ export const MarkdownLink: Component<LinkProps> = (props) => {
         <a
           draggable="false"
           className={cn(
-            "text-text follow-link--underline font-semibold no-underline",
+            "follow-link--underline font-semibold text-text no-underline",
             props.className,
           )}
           href={populatedFullHref}

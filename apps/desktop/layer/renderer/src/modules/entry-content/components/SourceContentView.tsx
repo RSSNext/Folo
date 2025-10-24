@@ -60,7 +60,7 @@ export const SourceContentPanel = ({ src }: { src: string | null }) => {
   const showSourceContent = useShowSourceContent()
   if (!showSourceContent || !src) return null
   return (
-    <div data-hide-in-print className="bg-theme-background absolute left-0 top-0 z-[1] size-full">
+    <div data-hide-in-print className="absolute left-0 top-0 z-[1] size-full bg-theme-background">
       <SourceContentView src={src} />
     </div>
   )

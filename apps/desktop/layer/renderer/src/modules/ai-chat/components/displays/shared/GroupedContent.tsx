@@ -43,7 +43,7 @@ export const GroupedContent = <T,>({
       <div className="space-y-6">
         {sortedEntries.map(([groupName, groupData]) => (
           <div key={groupName}>
-            <h3 className="text-text mb-4 text-lg font-semibold">{groupName}</h3>
+            <h3 className="mb-4 text-lg font-semibold text-text">{groupName}</h3>
             {renderGroup(groupData, groupName)}
           </div>
         ))}

@@ -1,15 +1,209 @@
-import { withFeature } from "~/lib/features"
+import { Skeleton } from "@follow/components/ui/skeleton/index.jsx"
+import { IN_ELECTRON } from "@follow/shared/constants"
+import { useEntry } from "@follow/store/entry/hooks"
+import { formatDuration } from "@follow/utils/duration"
+import { transformVideoUrl } from "@follow/utils/url-for-video"
+import { cn } from "@follow/utils/utils"
+import { useHover } from "@use-gesture/react"
+import { useEffect, useMemo, useRef, useState } from "react"
 
-import {
-  VideoItem as VideoItemAI,
-  VideoItemStateLess as VideoItemAIStateLess,
-} from "./video-item.ai"
-import {
-  VideoItem as VideoItemLegacy,
-  VideoItemStateLess as VideoItemLegacyStateLess,
-} from "./video-item.legacy"
+import { RelativeTime } from "~/components/ui/datetime"
+import { Media } from "~/components/ui/media/Media"
+import { useRouteParamsSelector } from "~/hooks/biz/useRouteParams"
+import { FeedIcon } from "~/modules/feed/feed-icon"
+import { FeedTitle } from "~/modules/feed/feed-title"
 
-export const VideoItem = withFeature("ai")(VideoItemAI, VideoItemLegacy)
-export const VideoItemStateLess = withFeature("ai")(VideoItemAIStateLess, VideoItemLegacyStateLess)
+import { GridItem } from "../templates/grid-item-template"
+import type { EntryItemStatelessProps, UniversalItemProps } from "../types"
 
-export { VideoItemSkeleton } from "./video-item.ai"
+const ViewTag = IN_ELECTRON ? "webview" : "iframe"
+
+export function VideoItem({ entryId, translation }: UniversalItemProps) {
+  const entry = useEntry(entryId, (state) => {
+    const { id, url } = state
+
+    const attachments = state.attachments || []
+    const { duration_in_seconds } =
+      attachments?.find((attachment) => attachment.duration_in_seconds) ?? {}
+    const seconds = duration_in_seconds
+      ? Number.parseInt(duration_in_seconds.toString())
+      : undefined
+    const duration = formatDuration(seconds)
+
+    const media = state.media || []
+    const firstMedia = media[0]
+
+    return { attachments, duration, firstMedia, id, url, media }
+  })
+
+  const isActive = useRouteParamsSelector(({ entryId }) => entryId === entry?.id)
+
+  const [miniIframeSrc] = useMemo(
+    () => [
+      transformVideoUrl({
+        url: entry?.url ?? "",
+        mini: true,
+        isIframe: !IN_ELECTRON,
+        attachments: entry?.attachments,
+      }),
+      transformVideoUrl({
+        url: entry?.url ?? "",
+        isIframe: !IN_ELECTRON,
+        attachments: entry?.attachments,
+      }),
+    ],
+    [entry?.attachments, entry?.url],
+  )
+
+  const ref = useRef<HTMLDivElement>(null)
+  const [hovered, setHovered] = useState(false)
+  useHover(
+    (event) => {
+      setHovered(event.active)
+    },
+    {
+      target: ref,
+    },
+  )
+
+  const [showPreview, setShowPreview] = useState(false)
+  useEffect(() => {
+    if (hovered) {
+      const timer = setTimeout(() => {
+        setShowPreview(true)
+      }, 500)
+      return () => clearTimeout(timer)
+    } else {
+      setShowPreview(false)
+      return () => {}
+    }
+  }, [hovered])
+
+  if (!entry) return null
+  return (
+    <GridItem entryId={entryId} translation={translation}>
+      <div className="w-full cursor-card">
+        <div className="relative overflow-x-auto" ref={ref}>
+          {miniIframeSrc && showPreview ? (
+            <ViewTag
+              src={miniIframeSrc}
+              className={cn(
+                "pointer-events-none aspect-video w-full shrink-0 rounded-md bg-black object-cover",
+                isActive && "rounded-b-none",
+              )}
+            />
+          ) : entry.firstMedia ? (
+            <Media
+              key={entry.firstMedia.url}
+              src={entry.firstMedia.url}
+              type={entry.firstMedia.type}
+              previewImageUrl={entry.firstMedia.preview_image_url}
+              width={entry.firstMedia.width}
+              height={entry.firstMedia.height}
+              blurhash={entry.firstMedia.blurhash}
+              className={cn(
+                "aspect-video w-full shrink-0 rounded-md object-cover",
+                isActive && "rounded-b-none",
+              )}
+              loading="lazy"
+              proxy={{
+                width: 640,
+                height: 360,
+              }}
+              showFallback={true}
+              fitContainer
+            />
+          ) : (
+            <div className="center aspect-video w-full flex-col gap-1 rounded-md bg-material-medium text-xs text-text-secondary">
+              <i className="i-mgc-sad-cute-re size-6" />
+              No media available
+            </div>
+          )}
+          {!!entry.duration && (
+            <div className="absolute bottom-2 right-2 rounded-md bg-black/50 px-1 py-0.5 text-xs font-medium text-white">
+              {entry.duration}
+            </div>
+          )}
+        </div>
+      </div>
+    </GridItem>
+  )
+}
+
+export function VideoItemStateLess({ entry, feed }: EntryItemStatelessProps) {
+  return (
+    <div className="p-1.5">
+      <div className="w-full">
+        <div className="relative overflow-x-auto">
+          {entry.media?.[0] ? (
+            <Media
+              thumbnail
+              src={entry.media[0].url}
+              type={entry.media[0].type}
+              previewImageUrl={entry.media[0].preview_image_url}
+              className="aspect-video w-full shrink-0 rounded-md object-cover"
+              mediaContainerClassName="w-auto h-auto rounded"
+              loading="lazy"
+              proxy={{
+                width: 640,
+                height: 360,
+              }}
+              height={entry.media[0].height}
+              width={entry.media[0].width}
+              blurhash={entry.media[0].blurhash}
+              fitContainer
+            />
+          ) : (
+            <div className="center aspect-video w-full flex-col gap-1 rounded-md bg-material-medium text-xs text-text-secondary">
+              <i className="i-mgc-sad-cute-re size-6" />
+              No media available
+            </div>
+          )}
+        </div>
+      </div>
+      <div className="relative px-2 text-sm">
+        <div className="flex items-center">
+          <div className="mr-1 size-1.5 shrink-0 self-center rounded-full bg-accent duration-200" />
+          <div className="relative mb-1 mt-1.5 flex w-full items-center gap-1 truncate font-medium">
+            <span className="min-w-0 grow truncate">{entry.title}</span>
+          </div>
+        </div>
+        <div className="flex items-center gap-1 truncate text-[13px]">
+          <FeedIcon fallback noMargin className="flex" target={feed} size={18} />
+          <span className="min-w-0 truncate pl-1">
+            <FeedTitle feed={feed} />
+          </span>
+          <span className="text-zinc-500">·</span>
+          <span className="text-zinc-500">
+            {!!entry.publishedAt && <RelativeTime date={entry.publishedAt} />}
+          </span>
+        </div>
+      </div>
+    </div>
+  )
+}
+
+export const VideoItemSkeleton = (
+  <div className="relative mx-auto w-full max-w-lg rounded-md">
+    <div className="relative">
+      <div className="p-1.5">
+        <div className="w-full">
+          <div className="overflow-x-auto">
+            <Skeleton className="aspect-video w-full shrink-0 overflow-hidden" />
+          </div>
+        </div>
+        <div className="relative flex-1 px-2 pb-3 pt-1 text-sm">
+          <div className="relative mb-1 mt-1.5 truncate font-medium leading-none">
+            <Skeleton className="h-4 w-3/4" />
+          </div>
+          <div className="mt-1 flex items-center gap-1 truncate text-[13px]">
+            <Skeleton className="mr-0.5 size-4" />
+            <Skeleton className="h-3 w-1/2" />
+            <span className="text-material-opaque">·</span>
+            <Skeleton className="h-3 w-12" />
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+)

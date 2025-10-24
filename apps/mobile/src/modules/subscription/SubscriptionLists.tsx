@@ -262,7 +262,7 @@ const StarItem = () => {
       >
         <StarCuteFiIcon color="rgb(245, 158, 11)" height={20} width={20} />
         <Text
-          className="text-text ml-2 font-medium"
+          className="ml-2 font-medium text-text"
           style={{
             marginLeft: GROUPED_ICON_TEXT_GAP,
           }}

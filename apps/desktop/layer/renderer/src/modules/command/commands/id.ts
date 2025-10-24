@@ -14,7 +14,6 @@ export const COMMAND_ID = {
     copyTitle: "entry:copy-title",
     tts: "entry:tts",
     exportAsPDF: "entry:export-as-pdf",
-    tip: "entry:tip",
     delete: "entry:delete",
     share: "entry:share",
   },

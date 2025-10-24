@@ -63,8 +63,8 @@ export const EntryItemContextMenu = ({
         <ContextMenu.Preview size="STRETCH" onPress={handlePressPreview}>
           {() => (
             <PortalProvider>
-              <View className="bg-system-background flex-1">
-                <Text className="text-label mt-5 p-4 text-2xl font-semibold" numberOfLines={2}>
+              <View className="flex-1 bg-system-background">
+                <Text className="mt-5 p-4 text-2xl font-semibold text-label" numberOfLines={2}>
                   {entry.title?.trim()}
                 </Text>
                 <EntryContentWebView entryId={id} />

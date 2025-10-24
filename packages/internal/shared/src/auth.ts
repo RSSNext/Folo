@@ -3,7 +3,11 @@ import { IN_ELECTRON } from "@follow/shared"
 import type { AuthPlugins } from "@follow-app/client-sdk/auth"
 import type { BetterAuthClientPlugin, BetterFetchOption } from "better-auth/client"
 import { createAuthClient } from "better-auth/client"
-import { inferAdditionalFields, twoFactorClient } from "better-auth/client/plugins"
+import {
+  inferAdditionalFields,
+  lastLoginMethodClient,
+  twoFactorClient,
+} from "better-auth/client/plugins"
 
 type AuthPlugin = AuthPlugins[number]
 
@@ -47,6 +51,7 @@ export const baseAuthPlugins = [
   }),
   twoFactorClient(),
   stripeClient({ subscription: true }),
+  lastLoginMethodClient(),
 ] satisfies BetterAuthClientPlugin[]
 
 export type AuthClient<ExtraPlugins extends BetterAuthClientPlugin[] = []> = ReturnType<

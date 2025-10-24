@@ -1,3 +1,4 @@
+import { jotaiStore } from "@follow/utils"
 import { getStorageNS } from "@follow/utils/ns"
 import { transformShortcut } from "@follow/utils/utils"
 import { useAtomValue, useSetAtom } from "jotai"
@@ -37,7 +38,6 @@ export const defaultCommandShortcuts = {
   [COMMAND_ID.entry.read]: "M",
   [COMMAND_ID.entry.share]: transformShortcut("$mod+Alt+S"),
   [COMMAND_ID.entry.star]: "S",
-  [COMMAND_ID.entry.tip]: transformShortcut("Shift+$mod+T"),
   [COMMAND_ID.entry.tts]: transformShortcut("Shift+$mod+V"),
 
   // Entry render commands
@@ -100,23 +100,22 @@ export const allowCustomizeCommands = new Set([
   COMMAND_ID.entry.read,
   COMMAND_ID.entry.share,
   COMMAND_ID.entry.star,
-  COMMAND_ID.entry.tip,
   COMMAND_ID.entry.tts,
 ] as const)
 type ExtractSetType<T extends Set<unknown>> = T extends Set<infer U> ? U : never
 export type AllowCustomizeCommandId = ExtractSetType<typeof allowCustomizeCommands>
 export type BindingCommandId = keyof typeof defaultCommandShortcuts
 
+const __commandShortcutAtom = (commandId: BindingCommandId) =>
+  selectAtom(overrideCommandShortcutsAtom, (v) => {
+    return v[commandId] ?? defaultCommandShortcuts[commandId]
+  })
 export const useCommandShortcut = (commandId: BindingCommandId): string => {
-  return useAtomValue(
-    useMemo(
-      () =>
-        selectAtom(overrideCommandShortcutsAtom, (v) => {
-          return v[commandId] ?? defaultCommandShortcuts[commandId]
-        }),
-      [commandId],
-    ),
-  )
+  return useAtomValue(useMemo(() => __commandShortcutAtom(commandId), [commandId]))
+}
+
+export const getCommandShortcut = (commandId: BindingCommandId) => {
+  return jotaiStore.get(__commandShortcutAtom(commandId))
 }
 
 export const useSetCustomCommandShortcut = () => {

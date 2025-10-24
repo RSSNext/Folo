@@ -65,7 +65,7 @@ const pickUserData = <
 
 const ListCard = memo(({ list }: { list: ListWithStats }) => {
   return (
-    <div className="group/card border-fill bg-material-ultra-thin hover:border-fill-secondary relative overflow-hidden rounded-lg border transition-all duration-200">
+    <div className="group/card relative overflow-hidden rounded-lg border border-fill bg-material-ultra-thin transition-all duration-200 hover:border-fill-secondary">
       <a
         className="block h-full cursor-pointer"
         href={UrlBuilder.shareList(list.id)}
@@ -78,21 +78,21 @@ const ListCard = memo(({ list }: { list: ListWithStats }) => {
               <FeedIcon
                 fallback
                 target={list as any}
-                className="border-fill-secondary size-10 rounded-lg border"
+                className="size-10 rounded-lg border border-fill-secondary"
                 noMargin
               />
             </div>
             <div className="min-w-0 flex-1">
-              <h3 className="text-text group-hover/card:text-accent font-medium transition-colors duration-200">
+              <h3 className="font-medium text-text transition-colors duration-200 group-hover/card:text-accent">
                 {list.title}
               </h3>
               {list.description && (
-                <p className="text-text-secondary mt-1 line-clamp-2 text-sm">{list.description}</p>
+                <p className="mt-1 line-clamp-2 text-sm text-text-secondary">{list.description}</p>
               )}
             </div>
             {/* Hover indicator */}
             <div className="opacity-0 transition-opacity duration-200 group-hover/card:opacity-100">
-              <i className="i-mingcute-arrow-right-line text-text-tertiary size-4" />
+              <i className="i-mingcute-arrow-right-line size-4 text-text-tertiary" />
             </div>
           </div>
         </div>
@@ -100,10 +100,10 @@ const ListCard = memo(({ list }: { list: ListWithStats }) => {
         {/* Stats Footer */}
         {(typeof list.subscriptionCount === "number" ||
           (typeof list.fee === "number" && list.fee > 0)) && (
-          <div className="border-fill-secondary border-t px-4 py-2.5">
+          <div className="border-t border-fill-secondary px-4 py-2.5">
             <div className="flex items-center justify-between text-xs">
               {typeof list.subscriptionCount === "number" && (
-                <div className="text-text-secondary flex items-center gap-1.5">
+                <div className="flex items-center gap-1.5 text-text-secondary">
                   <i className="i-mingcute-group-2-line size-3" />
                   <span>
                     {list.subscriptionCount}
@@ -115,7 +115,7 @@ const ListCard = memo(({ list }: { list: ListWithStats }) => {
               )}
               {typeof list.fee === "number" && list.fee > 0 && (
                 <div className="flex items-center gap-1.5">
-                  <i className="i-mgc-power text-folo size-3" />
+                  <i className="i-mgc-power size-3 text-folo" />
                   <span className="font-medium">{list.fee}</span>
                 </div>
               )}
@@ -182,7 +182,7 @@ export const UserProfileModalContent: FC<SubscriptionModalContentProps> = ({ use
 
   return (
     <div
-      className={variant === "drawer" ? "h-full" : "center container h-full"}
+      className={variant === "drawer" ? "h-full" : "container center h-full"}
       onPointerDown={variant === "dialog" ? modal.dismiss : undefined}
       onClick={stopPropagation}
     >
@@ -196,7 +196,7 @@ export const UserProfileModalContent: FC<SubscriptionModalContentProps> = ({ use
         exit="exit"
         layout="size"
         className={cn(
-          "bg-theme-background relative flex flex-col overflow-hidden rounded-xl border",
+          "relative flex flex-col overflow-hidden rounded-xl border bg-theme-background",
           variant === "drawer"
             ? "shadow-drawer-to-left h-full w-[60ch] max-w-full"
             : "h-[80vh] w-[800px] max-w-full shadow lg:max-h-[calc(100vh-10rem)]",
@@ -237,13 +237,13 @@ const UserInfo = ({ userInfo }: { userInfo: PickedUser }) => {
   }
 
   return (
-    <div className="bg-material-medium relative flex flex-col p-8 pb-4">
+    <div className="relative flex flex-col bg-material-medium p-8 pb-4">
       <div className="flex flex-col space-y-4">
         <div className="flex items-center gap-4">
           <div className="relative">
             <Avatar className="size-14 shrink-0 shadow-lg ring-4 ring-white/10">
               <AvatarImage src={getAvatarUrl(userInfo)} className="bg-material-ultra-thick" />
-              <AvatarFallback className="from-blue to-purple bg-gradient-to-br text-2xl font-bold uppercase text-white">
+              <AvatarFallback className="bg-gradient-to-br from-blue to-purple text-2xl font-bold uppercase text-white">
                 {userInfo.name?.slice(0, 2)}
               </AvatarFallback>
             </Avatar>
@@ -264,12 +264,12 @@ const UserInfo = ({ userInfo }: { userInfo: PickedUser }) => {
             )}
           </div>
           <div className="flex-1">
-            <h1 className="text-text max-w-[200px] truncate text-xl font-bold tracking-tight">
+            <h1 className="max-w-[200px] truncate text-xl font-bold tracking-tight text-text">
               {userInfo.name}
             </h1>
             <p
               className={cn(
-                "text-text-secondary text-sm font-medium",
+                "text-sm font-medium text-text-secondary",
                 userInfo.handle ? "visible" : "hidden select-none",
               )}
             >
@@ -278,7 +278,7 @@ const UserInfo = ({ userInfo }: { userInfo: PickedUser }) => {
           </div>
         </div>
         {userInfo.bio && (
-          <p className="text-text-secondary text-sm leading-relaxed">{userInfo.bio}</p>
+          <p className="text-sm leading-relaxed text-text-secondary">{userInfo.bio}</p>
         )}
 
         <div className="flex flex-wrap gap-2">
@@ -287,7 +287,7 @@ const UserInfo = ({ userInfo }: { userInfo: PickedUser }) => {
               href={userInfo.website}
               target="_blank"
               rel="noopener noreferrer"
-              className="text-text-secondary hover:text-accent mr-auto inline-flex items-center gap-2 transition-colors"
+              className="mr-auto inline-flex items-center gap-2 text-text-secondary transition-colors hover:text-accent"
             >
               <i className="i-mgc-link-cute-re" />
               <span className="text-base leading-relaxed">
@@ -309,12 +309,12 @@ const UserInfo = ({ userInfo }: { userInfo: PickedUser }) => {
                           href={getSocialLink(platform as keyof typeof socialIconClassNames, id)}
                           target="_blank"
                           rel="noopener noreferrer"
-                          className="hover:bg-theme-item-hover group flex size-10 items-center justify-center rounded-lg transition-colors"
+                          className="group flex size-10 items-center justify-center rounded-lg transition-colors hover:bg-theme-item-hover"
                         >
                           <i
                             className={cn(
                               socialIconClassNames[platform as keyof typeof socialIconClassNames],
-                              "text-text-secondary text-base",
+                              "text-base text-text-secondary",
                             )}
                           />
                         </a>
@@ -340,7 +340,7 @@ const Subscriptions = ({ userId }: { userId: string }) => {
   return (
     <>
       <div className="-mb-4 flex items-center justify-between">
-        <h2 className="text-text text-lg font-semibold">{t("user_profile.subscriptions")}</h2>
+        <h2 className="text-lg font-semibold text-text">{t("user_profile.subscriptions")}</h2>
         <ActionButton
           tooltip={t("user_profile.toggle_item_style")}
           onClick={() => {
@@ -376,9 +376,9 @@ const Lists = ({ lists }: { lists: ListWithStats[] }) => {
   return (
     <div>
       <div className="mb-4 flex items-center justify-between">
-        <h2 className="text-text text-lg font-semibold">{t("user_profile.created_lists")}</h2>
+        <h2 className="text-lg font-semibold text-text">{t("user_profile.created_lists")}</h2>
       </div>
-      <div className="@[500px]:grid-cols-2 @[700px]:grid-cols-3 grid grid-cols-1 gap-4">
+      <div className="grid grid-cols-1 gap-4 @[500px]:grid-cols-2 @[700px]:grid-cols-3">
         {lists.map((list) => (
           <ListCard key={list.id} list={list} />
         ))}
@@ -397,7 +397,7 @@ const Content = ({ userInfo }: { userInfo: PickedUser }) => {
         viewportClassName="[&>div]:!flex [&>div]:flex-col"
       >
         {!lists.isLoading && (
-          <div className="@container flex flex-col space-y-4 px-8 py-6">
+          <div className="flex flex-col space-y-4 px-8 py-6 @container">
             {/* Lists Section */}
             {lists.data && lists.data.length > 0 && <Lists lists={lists.data} />}
             {/* Subscriptions Section */}

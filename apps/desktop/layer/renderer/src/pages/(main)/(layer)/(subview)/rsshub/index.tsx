@@ -53,8 +53,8 @@ export function Component() {
         <div className="mb-4 flex justify-center">
           <RSSHubLogo className="size-16" />
         </div>
-        <h1 className="text-text mb-4 text-3xl font-bold">{t("words.rsshub", { ns: "common" })}</h1>
-        <p className="text-text-secondary mx-auto max-w-2xl text-sm leading-relaxed">
+        <h1 className="mb-4 text-3xl font-bold text-text">{t("words.rsshub", { ns: "common" })}</h1>
+        <p className="mx-auto max-w-2xl text-sm leading-relaxed text-text-secondary">
           {t("rsshub.description")}
         </p>
       </div>
@@ -71,7 +71,7 @@ export function Component() {
         {/* Instances Section */}
         <div className="space-y-4">
           <div className="flex items-center justify-between">
-            <h2 className="text-text text-xl font-semibold">{t("rsshub.public_instances")}</h2>
+            <h2 className="text-xl font-semibold text-text">{t("rsshub.public_instances")}</h2>
           </div>
           <List data={list?.data} />
         </div>
@@ -125,21 +125,21 @@ const InstanceCard = memo(({ item }: { item: InstanceItem }) => {
   const tags = (
     <>
       {isOfficial && (
-        <span className="bg-accent/10 text-accent rounded px-1.5 py-0.5 text-xs">
+        <span className="rounded bg-accent/10 px-1.5 py-0.5 text-xs text-accent">
           {t("rsshub.table.official")}
         </span>
       )}
       {isInUse && (
-        <span className="bg-green/10 text-green rounded px-1.5 py-0.5 text-xs">
+        <span className="rounded bg-green/10 px-1.5 py-0.5 text-xs text-green">
           {t("rsshub.table.inuse")}
         </span>
       )}
       {isOwner && (
-        <span className="bg-purple/10 text-purple rounded px-1.5 py-0.5 text-xs">
+        <span className="rounded bg-purple/10 px-1.5 py-0.5 text-xs text-purple">
           {t("rsshub.table.yours")}
         </span>
       )}
-      {hasError && <span className="bg-red/10 text-red rounded px-1.5 py-0.5 text-xs">Error</span>}
+      {hasError && <span className="rounded bg-red/10 px-1.5 py-0.5 text-xs text-red">Error</span>}
     </>
   )
 
@@ -162,18 +162,18 @@ const InstanceCard = memo(({ item }: { item: InstanceItem }) => {
         <div className="flex items-center gap-2">
           {headerIcon}
           <div>
-            <h3 className="text-text text-sm font-semibold">{title}</h3>
+            <h3 className="text-sm font-semibold text-text">{title}</h3>
             <div className="flex items-center gap-1">{tags}</div>
           </div>
         </div>
         <div className="text-right">
           <div className="flex items-center gap-1 text-sm font-medium">
-            {formatNumber(price ?? 0)} <i className="i-mgc-power text-folo size-3" />
+            {formatNumber(price ?? 0)} <i className="i-mgc-power size-3 text-folo" />
           </div>
         </div>
       </div>
 
-      <p className="text-text-secondary mb-3 line-clamp-1 text-xs">{description}</p>
+      <p className="mb-3 line-clamp-1 text-xs text-text-secondary">{description}</p>
 
       <div className="flex items-center justify-between text-xs">
         <div className="flex gap-4">

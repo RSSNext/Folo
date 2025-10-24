@@ -15,7 +15,7 @@ export const AnalyticsMetrics = ({ metrics, className }: AnalyticsMetricsProps) 
     {metrics.map((metric, index) => (
       <li key={index} className="flex items-center justify-between">
         <span className="text-text-tertiary">{metric.label}</span>
-        <span className="text-text font-medium">{metric.value}</span>
+        <span className="font-medium text-text">{metric.value}</span>
       </li>
     ))}
   </ul>

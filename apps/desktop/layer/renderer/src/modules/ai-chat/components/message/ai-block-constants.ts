@@ -1,4 +1,4 @@
-import { views } from "@follow/constants"
+import { getView } from "@follow/constants"
 
 import type { AIChatContextBlock, FileAttachment } from "~/modules/ai-chat/store/types"
 import {
@@ -20,21 +20,6 @@ export const BLOCK_STYLES = {
     icon: "bg-orange/10 text-orange",
     label: "text-orange",
   },
-  referEntry: {
-    container: "from-blue/5 to-blue/10 border-blue/20 hover:border-blue/30",
-    icon: "bg-blue/10 text-blue",
-    label: "text-blue",
-  },
-  referFeed: {
-    container: "from-green/5 to-green/10 border-green/20 hover:border-green/30",
-    icon: "bg-green/10 text-green",
-    label: "text-green",
-  },
-  referDate: {
-    container: "from-purple/5 to-purple/10 border-purple/20 hover:border-purple/30",
-    icon: "bg-purple/10 text-purple",
-    label: "text-purple",
-  },
   selectedText: {
     container: "from-purple/5 to-purple/10 border-purple/20 hover:border-purple/30",
     icon: "bg-purple/10 text-purple",
@@ -44,6 +29,11 @@ export const BLOCK_STYLES = {
     container: "from-pink/5 to-pink/10 border-pink/20 hover:border-pink/30",
     icon: "bg-pink/10 text-pink",
     label: "text-pink",
+  },
+  unreadOnly: {
+    container: "from-green/5 to-green/10 border-green/20 hover:border-green/30",
+    icon: "bg-green/10 text-green",
+    label: "text-green",
   },
 } as const
 
@@ -62,11 +52,9 @@ export const DEFAULT_BLOCK_STYLES = {
 export const BLOCK_ICONS = {
   mainEntry: "i-mgc-star-cute-fi",
   mainFeed: "i-mgc-rss-cute-fi",
-  referEntry: "i-mgc-paper-cute-fi",
-  referFeed: "i-mgc-rss-cute-fi",
-  referDate: "i-mgc-calendar-time-add-cute-re",
   selectedText: "i-mgc-quill-pen-cute-re",
   fileAttachment: "i-mgc-file-upload-cute-re",
+  unreadOnly: "i-mgc-round-cute-fi",
 } as const
 
 /**
@@ -75,12 +63,10 @@ export const BLOCK_ICONS = {
 export const BLOCK_LABELS = {
   mainEntry: "Current",
   mainFeed: "Current",
-  referEntry: "Ref",
-  referFeed: "Feed",
-  referDate: "Date",
   selectedText: "Text",
   fileAttachment: "File",
   mainView: "View",
+  unreadOnly: "Filter",
 } as const
 
 /**
@@ -110,7 +96,7 @@ export function getBlockIcon(block: AIChatContextBlock): string {
   }
 
   if (block.type === "mainView") {
-    const viewIcon = views.find((v) => v.view === Number(block.value))?.icon.props.className
+    const viewIcon = getView(Number(block.value))?.icon.props.className
     return viewIcon
   }
 

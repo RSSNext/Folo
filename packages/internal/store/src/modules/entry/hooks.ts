@@ -189,7 +189,7 @@ export const useEntryIdsByView = (view: FeedViewType, excludePrivate: boolean | 
   )
 }
 
-export const useEntryIdsByFeedId = (feedId: string | undefined) => {
+export const useEntryIdsByFeedId = (feedId: string | undefined | null) => {
   return useEntryStore(useCallback((state) => getEntryIdsByFeedIdSelector(state)(feedId), [feedId]))
 }
 

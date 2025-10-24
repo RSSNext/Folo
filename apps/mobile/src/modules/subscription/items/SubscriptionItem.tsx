@@ -75,13 +75,13 @@ export const SubscriptionItem = memo(
                 })
               }}
             >
-              <View className="dark:border-tertiary-system-background size-5 items-center justify-center overflow-hidden rounded border border-transparent dark:bg-[#222]">
+              <View className="size-5 items-center justify-center overflow-hidden rounded border border-transparent dark:border-tertiary-system-background dark:bg-[#222]">
                 <FeedIcon feed={feed} />
               </View>
               <View className="flex-1 flex-row items-center gap-2">
                 <Text
                   numberOfLines={1}
-                  className={cn("text-text shrink font-medium", feed.errorAt && "text-red")}
+                  className={cn("shrink font-medium text-text", feed.errorAt && "text-red")}
                   style={{
                     marginLeft: GROUPED_ICON_TEXT_GAP,
                   }}

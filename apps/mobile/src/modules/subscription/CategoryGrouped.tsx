@@ -87,8 +87,8 @@ export const CategoryGrouped = memo(
                   <RightCuteFiIcon color={secondaryLabelColor} height={14} width={14} />
                 </Animated.View>
               </NativePressable>
-              <Text className="text-text ml-4 font-medium">{category}</Text>
-              <UnreadCount unread={unreadCounts} className="text-secondary-label ml-auto text-xs" />
+              <Text className="ml-4 font-medium text-text">{category}</Text>
+              <UnreadCount unread={unreadCounts} className="ml-auto text-xs text-secondary-label" />
             </ItemPressable>
           </SubscriptionFeedCategoryContextMenu>
         </View>

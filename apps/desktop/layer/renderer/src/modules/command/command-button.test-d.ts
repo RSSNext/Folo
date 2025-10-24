@@ -1,7 +1,7 @@
 import { assertType, test } from "vitest"
 
 import { CommandActionButton, CommandIdButton } from "./command-button"
-import type { OpenInBrowserCommand, TipCommand } from "./commands/entry"
+import type { CopyLinkCommand, OpenInBrowserCommand } from "./commands/entry"
 import { COMMAND_ID } from "./commands/id"
 
 test("CommandActionButton types", () => {
@@ -15,10 +15,9 @@ test("CommandActionButton types", () => {
 
   assertType(
     CommandActionButton({
-      command: {} as TipCommand,
+      command: {} as CopyLinkCommand,
       args: [
         {
-          feedId: "",
           // @ts-expect-error - invalid entryId type
           entryId: false,
         },

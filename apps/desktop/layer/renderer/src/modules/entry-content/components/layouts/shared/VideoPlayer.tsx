@@ -152,7 +152,7 @@ export const VideoPlayer: React.FC<VideoPlayerProps> = ({
             showFallback={true}
           />
         ) : (
-          <div className="center bg-material-medium text-text-secondary aspect-video w-full flex-col gap-1 rounded-md text-xs">
+          <div className="center aspect-video w-full flex-col gap-1 rounded-md bg-material-medium text-xs text-text-secondary">
             <i className="i-mgc-sad-cute-re size-6" />
             No video available
           </div>
@@ -202,7 +202,7 @@ const PreviewVideoModalContent: ModalContentComponent<{
         exit={{
           opacity: 0,
         }}
-        className="safe-inset-top-4 fixed right-4 flex items-center"
+        className="fixed right-4 flex items-center safe-inset-top-4"
       >
         <FixedModalCloseButton onClick={dismiss} />
       </m.div>
@@ -212,7 +212,7 @@ const PreviewVideoModalContent: ModalContentComponent<{
         <div className="bg-background p-10 pt-5 backdrop-blur-sm">
           <HTML
             as="div"
-            className="prose dark:prose-invert !max-w-full"
+            className="prose !max-w-full dark:prose-invert"
             noMedia
             style={renderStyle}
           >

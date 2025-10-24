@@ -1,5 +1,11 @@
 import { UserAvatar } from "@client/components/ui/user-avatar"
-import { loginHandler, oneTimeToken, signOut, twoFactor } from "@client/lib/auth"
+import {
+  getLastUsedLoginMethod,
+  loginHandler,
+  oneTimeToken,
+  signOut,
+  twoFactor,
+} from "@client/lib/auth"
 import { openInFollowApp } from "@client/lib/helper"
 import { queryClient } from "@client/lib/query-client"
 import { useSession } from "@client/query/auth"
@@ -66,6 +72,17 @@ export function Login() {
   const [callbackUrl, setCallbackUrl] = useState<string>()
   const callbackUrlWithScheme = callbackUrl ? `${DEEPLINK_SCHEME}${callbackUrl}` : undefined
 
+  const [lastMethod, setLastMethod] = useState<string | null>(null)
+  useEffect(() => {
+    let lastMethodValue = getLastUsedLoginMethod()
+    if (lastMethodValue === "email") {
+      lastMethodValue = "credential"
+    }
+    if (lastMethodValue) {
+      setLastMethod(lastMethodValue)
+    }
+  }, [lastMethod])
+
   const handleOpenApp = useCallback(async () => {
     const callbackUrl = await getCallbackUrl()
     if (!callbackUrl) return
@@ -113,7 +130,7 @@ export function Login() {
             <p className="mt-4 text-center">
               {t("redirect.successMessage", { app_name: APP_NAME })}
             </p>
-            <p className="text-text-secondary mt-2 text-center text-sm">
+            <p className="mt-2 text-center text-sm text-text-secondary">
               {t("redirect.instruction", { app_name: APP_NAME })}
             </p>
             <div className="center mt-8 flex flex-col gap-4 sm:flex-row">
@@ -126,7 +143,7 @@ export function Login() {
               </Button>
             </div>
             {openFailed && callbackUrlWithScheme && (
-              <div className="text-text mt-8 w-[31rem] space-y-2 text-center text-sm">
+              <div className="mt-8 w-[31rem] space-y-2 text-center text-sm text-text">
                 <p className="text-base">
                   <Trans
                     t={t}
@@ -137,7 +154,7 @@ export function Login() {
                   />
                 </p>
                 <p>{t("login.enter_token")}</p>
-                <p className="bg-fill-tertiary flex items-center justify-center gap-4 rounded-lg p-3">
+                <p className="flex items-center justify-center gap-4 rounded-lg bg-fill-tertiary p-3">
                   <span className="blur-sm hover:blur-none">{callbackUrlWithScheme}</span>
                   <i
                     className="i-mgc-copy-2-cute-re size-4 cursor-pointer"
@@ -168,7 +185,7 @@ export function Login() {
                         loginHandler(key, "app")
                       }
                     }}
-                    className="center hover:bg-material-medium relative w-full gap-2 rounded-xl border p-2.5 pl-5 font-semibold duration-200"
+                    className="center relative w-full gap-2 rounded-xl border py-3 pl-5 font-semibold duration-200 hover:bg-material-medium"
                   >
                     <img
                       className={cn(
@@ -179,6 +196,11 @@ export function Login() {
                       src={isDark ? provider.iconDark64 || provider.icon64 : provider.icon64}
                     />
                     <span>{t("login.continueWith", { provider: provider.name })}</span>
+                    {lastMethod === key && (
+                      <div className="absolute -right-2 -top-2 rounded-xl bg-accent px-2 py-0.5 text-sm text-white">
+                        {t("login.lastUsed")}
+                      </div>
+                    )}
                   </MotionButtonBase>
                 ))}
               </div>
@@ -219,6 +241,7 @@ export function Login() {
     openFailed,
     callbackUrl,
     isDark,
+    lastMethod,
   ])
   const Content = useMemo(() => {
     switch (true) {
@@ -340,7 +363,7 @@ function LoginWithPassword() {
                 {t("login.password")}
                 <Link
                   to="/forget-password"
-                  className="text-accent block py-1 text-xs hover:underline"
+                  className="block py-1 text-xs text-accent hover:underline"
                 >
                   {t("login.forget_password.note")}
                 </Link>

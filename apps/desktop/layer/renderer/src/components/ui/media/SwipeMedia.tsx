@@ -100,21 +100,21 @@ export function SwipeMedia({
           {emblaApi?.canScrollPrev() && (
             <button
               type="button"
-              className="center absolute left-2 top-1/2 size-6 -translate-y-1/2 rounded-full bg-gray-800 text-white opacity-0 duration-200 group-hover:opacity-100"
+              className="center absolute left-2 top-1/2 size-8 -translate-y-1/2 rounded-full border border-border bg-material-medium text-white opacity-0 backdrop-blur-background duration-200 group-hover:opacity-100"
               onClick={scrollPrev}
               onDoubleClick={stopPropagation}
             >
-              <i className="i-mingcute-arrow-left-line" />
+              <i className="i-mingcute-left-line" />
             </button>
           )}
           {emblaApi?.canScrollNext() && (
             <button
               type="button"
-              className="center absolute right-2 top-1/2 size-6 -translate-y-1/2 rounded-full bg-gray-800 text-white opacity-0 duration-200 group-hover:opacity-100"
+              className="center absolute right-2 top-1/2 size-8 -translate-y-1/2 rounded-full border border-border bg-material-medium text-white opacity-0 backdrop-blur-background duration-200 group-hover:opacity-100"
               onClick={scrollNext}
               onDoubleClick={stopPropagation}
             >
-              <i className="i-mingcute-arrow-right-line" />
+              <i className="i-mingcute-right-line" />
             </button>
           )}
         </div>

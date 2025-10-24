@@ -82,7 +82,7 @@ export const DebugButton = () => {
           Navigation.rootNavigation.pushControllerView(DebugScreen)
         }}
         style={animatedStyle}
-        className="bg-accent absolute right-0 top-[-20] z-[100] mt-5 flex size-8 items-center justify-center rounded-l-md"
+        className="absolute right-0 top-[-20] z-[100] mt-5 flex size-8 items-center justify-center rounded-l-md bg-accent"
       >
         <BugCuteReIcon height={24} width={24} color="#fff" />
       </ReAnimatedTouchableOpacity>
@@ -99,7 +99,7 @@ export const EnvProfileIndicator = () => {
     >
       <DropdownMenu.Root>
         <DropdownMenu.Trigger>
-          <View className="bg-accent rounded p-1">
+          <View className="rounded bg-accent p-1">
             <Text className="text-xs uppercase text-white">{envProfile}</Text>
           </View>
         </DropdownMenu.Trigger>

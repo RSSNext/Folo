@@ -1,5 +1,5 @@
 import type { FeedViewType } from "@follow/constants"
-import { getFolderFeedsByFeedId } from "@follow/store/subscription/getter"
+import { getCategoryFeedIds } from "@follow/store/subscription/getter"
 import { unreadSyncService } from "@follow/store/unread/store"
 
 import { getGeneralSettings } from "~/atoms/settings/general"
@@ -25,10 +25,7 @@ export const markAllByRoute = async (
   time?: MarkAllFilter,
 ) => {
   const { feedId, view, inboxId, listId, isAllFeeds } = data
-  const folderIds = getFolderFeedsByFeedId({
-    feedId,
-    view,
-  })
+  const folderIds = getCategoryFeedIds(feedId, view)
 
   if (!feedId) return
 

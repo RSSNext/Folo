@@ -72,14 +72,14 @@ export function Login() {
         <View className="mt-14">
           {isEmail ? (
             <Text
-              className="text-label pb-2 text-center text-lg font-medium"
+              className="pb-2 text-center text-lg font-medium text-label"
               onPress={() => setIsEmail(false)}
             >
               {t("login.back")}
             </Text>
           ) : (
             <TouchableOpacity onPress={() => setIsRegister(!isRegister)}>
-              <Text className="text-label pb-2 text-center text-lg font-medium">
+              <Text className="pb-2 text-center text-lg font-medium text-label">
                 <Trans
                   t={t}
                   i18nKey={isRegister ? "login.have_account" : "login.no_account"}
@@ -116,7 +116,7 @@ const TermsCheckBox = () => {
 const TermsText = () => {
   return (
     <View>
-      <Text className="text-secondary-label text-center text-sm">
+      <Text className="text-center text-sm text-secondary-label">
         By continuing, you agree to our{" "}
       </Text>
       <View className="flex-row items-center">

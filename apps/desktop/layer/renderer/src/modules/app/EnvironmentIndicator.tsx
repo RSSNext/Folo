@@ -40,17 +40,17 @@ const EnvironmentDebugModalContent = () => {
     <div className="flex flex-col gap-4">
       <div className="space-y-2">
         <div className="flex items-center justify-between">
-          <div className="text-text text-sm font-medium">Debug override features</div>
+          <div className="text-sm font-medium text-text">Debug override features</div>
           <Switch checked={overrideEnabled} onCheckedChange={handleToggleOverride} />
         </div>
-        <p className="text-text-secondary text-xs">
+        <p className="text-xs text-text-secondary">
           When enabled, the switches below override server feature flags locally.
         </p>
-        <div className="bg-material-medium rounded-md p-2">
+        <div className="rounded-md bg-material-medium p-2">
           <div className="grid grid-cols-1 gap-2">
             {featureKeys.map((key) => (
               <div key={key} className="flex items-center justify-between rounded-md p-2">
-                <span className="text-text text-sm">{key}</span>
+                <span className="text-sm text-text">{key}</span>
                 <Switch
                   checked={!!debugValues[key]}
                   onCheckedChange={(v) => handleToggleFeature(key, v)}
@@ -63,7 +63,7 @@ const EnvironmentDebugModalContent = () => {
       </div>
 
       <div className="space-y-2">
-        <div className="text-text text-sm font-medium">Debug actions</div>
+        <div className="text-sm font-medium text-text">Debug actions</div>
         <div className="flex flex-col gap-2">
           {Object.entries(actionMap).map(([key, action]) => (
             <div key={key} className="flex w-full items-center gap-2">
@@ -99,7 +99,7 @@ export const EnvironmentIndicator = () => {
             })
           }}
         >
-          <div className="center bg-folo fixed bottom-0 right-0 z-[99999] flex rounded-tl px-1 py-0.5 text-xs text-white">
+          <div className="center fixed bottom-0 right-0 z-[99999] flex rounded-tl bg-folo px-1 py-0.5 text-xs text-white">
             {role}:{DEV && <i className="i-mgc-bug-cute-re size-3" />}
             {MODE}
           </div>

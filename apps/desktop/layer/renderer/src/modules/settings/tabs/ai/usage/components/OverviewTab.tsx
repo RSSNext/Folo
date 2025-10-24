@@ -18,7 +18,7 @@ export const OverviewTab = ({ dailyTotals, peakDay }: OverviewTabProps) => {
       {dailyTotals.length > 0 ? (
         <Card>
           <CardHeader>
-            <CardTitle className="text-text text-base">
+            <CardTitle className="text-base text-text">
               {t("analytics.usage_trends", { defaultValue: "Usage trends" })}
             </CardTitle>
           </CardHeader>
@@ -26,7 +26,7 @@ export const OverviewTab = ({ dailyTotals, peakDay }: OverviewTabProps) => {
             <div className="h-44 w-full">
               <Sparkline data={dailyTotals} area color="#60a5fa" />
             </div>
-            <div className="text-text-tertiary mt-2 flex items-center justify-between text-xs">
+            <div className="mt-2 flex items-center justify-between text-xs text-text-tertiary">
               <span>
                 {t("analytics.points", { defaultValue: "Points" })}: {dailyTotals.length}
               </span>
@@ -49,7 +49,7 @@ export const OverviewTab = ({ dailyTotals, peakDay }: OverviewTabProps) => {
       ) : (
         <Card>
           <CardContent className="flex h-32 items-center justify-center">
-            <div className="text-text-secondary text-center text-sm">{t("analytics.no_data")}</div>
+            <div className="text-center text-sm text-text-secondary">{t("analytics.no_data")}</div>
           </CardContent>
         </Card>
       )}

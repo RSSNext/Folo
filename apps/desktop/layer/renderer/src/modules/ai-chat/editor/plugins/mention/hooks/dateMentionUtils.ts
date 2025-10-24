@@ -4,7 +4,7 @@ import type { TFunction } from "i18next"
 
 import { MENTION_DATE_VALUE_FORMAT } from "~/modules/ai-chat/utils/mentionDate"
 
-import type { MentionData, MentionLabelDescriptor, MentionLabelValue } from "../types"
+import type { DateMentionData, MentionLabelDescriptor, MentionLabelValue } from "../types"
 import type { RelativeDateDefinition } from "./dateMentionConfig"
 import { RELATIVE_DATE_DEFINITIONS } from "./dateMentionConfig"
 
@@ -13,59 +13,24 @@ export interface DateRange {
   end: Dayjs
 }
 
-export const clampRangeToPastMonth = (range: DateRange): DateRange | null => {
-  const today = dayjs().startOf("day")
-  const minAllowed = today.subtract(1, "month")
+const formatRangeValue = (range: DateRange, text?: string): string => {
+  const startIso = range.start.format(MENTION_DATE_VALUE_FORMAT)
+  const endIso = range.end.format(MENTION_DATE_VALUE_FORMAT)
 
-  if (range.start.isAfter(today)) {
-    return null
-  }
-
-  const clampedEnd = range.end.isAfter(today) ? today : range.end
-  if (clampedEnd.isBefore(minAllowed)) {
-    return null
-  }
-
-  const clampedStart = range.start.isBefore(minAllowed) ? minAllowed : range.start
-
-  if (clampedStart.isAfter(clampedEnd)) {
-    return null
-  }
-
-  return { start: clampedStart.startOf("day"), end: clampedEnd.startOf("day") }
+  return `<mention-date start="${startIso}" end="${endIso}"${text ? ` text="${text}"` : ""}></mention-date>`
 }
 
-export const formatRangeValue = (range: DateRange): string => {
-  const rangeStart = range.start.startOf("day")
-  const startIso = rangeStart.format(MENTION_DATE_VALUE_FORMAT)
-
-  const endExclusive = range.end.add(1, "day").startOf("day")
-  const endIso = endExclusive.format(MENTION_DATE_VALUE_FORMAT)
-
-  return `${startIso}..${endIso}`
-}
-
-const DEFAULT_DATE_FORMAT: Intl.DateTimeFormatOptions = {
-  year: "numeric",
-  month: "short",
-  day: "numeric",
-}
-
-export const formatLocalizedDate = (
-  date: Dayjs,
-  locale: string,
-  options: Intl.DateTimeFormatOptions = DEFAULT_DATE_FORMAT,
-): string => {
-  return new Intl.DateTimeFormat(locale, options).format(date.toDate())
+const formatLocalizedDate = (date: Dayjs, locale: string, template = "LLL"): string => {
+  return date.locale(locale).format(template)
 }
 
 export const formatLocalizedRange = (
   range: DateRange,
   locale: string,
-  options: Intl.DateTimeFormatOptions = DEFAULT_DATE_FORMAT,
+  template?: string,
 ): string => {
-  const startFormatted = formatLocalizedDate(range.start, locale, options)
-  const endFormatted = formatLocalizedDate(range.end, locale, options)
+  const startFormatted = formatLocalizedDate(range.start, locale, template)
+  const endFormatted = formatLocalizedDate(range.end, locale, template)
 
   if (startFormatted === endFormatted) {
     return startFormatted
@@ -116,60 +81,51 @@ export const createDateMentionData = ({
   label,
   labelOptions,
   translate,
-  locale,
-  withRangeKey,
   displayName,
 }: {
   id?: string
   range: DateRange
   label?: MentionLabelDescriptor
-  labelOptions?: MentionData["labelOptions"]
+  labelOptions?: DateMentionData["labelOptions"]
   translate: LabelTranslator
-  locale: string
-  withRangeKey: I18nKeysForAi
   displayName?: string
-}): MentionData => {
-  const value = formatRangeValue(range)
-  const baseLabel = displayName ?? resolveMentionLabel(label, translate) ?? value
-  let resolvedName = baseLabel
+}): DateMentionData => {
+  const value = formatRangeValue(range, id || displayName)
+  const text = value // Use the same value for text
 
-  if (labelOptions?.appendRange) {
-    resolvedName = translate(withRangeKey, {
-      label: baseLabel,
-      range: formatLocalizedRange(range, locale),
-    })
-  }
+  const resolvedName = displayName ?? (resolveMentionLabel(label, translate) || "")
 
   return {
     id: id ?? `date:${value}`,
     name: resolvedName,
     type: "date",
     value,
+    text,
     label,
     labelOptions,
   }
 }
 
 export const parseRangeValue = (value: string): DateRange | null => {
-  const [startIso, endIsoExclusive] = value.split("..", 2)
-  if (!startIso || !endIsoExclusive) return null
+  // Parse XML format: <mention-date start="YYYY-MM-DD" end="YYYY-MM-DD"></mention-date>
+  const match = value.match(/start="([^"]+)"\s+end="([^"]+)"/)
+  if (!match) return null
+
+  const [, startIso, endIso] = match
+  if (!startIso || !endIso) return null
 
   const start = dayjs(startIso, MENTION_DATE_VALUE_FORMAT, true)
-  const endExclusive = dayjs(endIsoExclusive, MENTION_DATE_VALUE_FORMAT, true)
-  if (!start.isValid() || !endExclusive.isValid()) return null
+  const end = dayjs(endIso, MENTION_DATE_VALUE_FORMAT, true)
+  if (!start.isValid() || !end.isValid()) return null
 
-  const end = endExclusive.subtract(1, "day")
-  return {
-    start: start.startOf("day"),
-    end: end.startOf("day"),
-  }
+  return { start, end }
 }
 
 export const getDateMentionDisplayName = (
-  mention: Pick<MentionData, "label" | "labelOptions" | "value" | "name">,
+  mention: Pick<DateMentionData, "label" | "labelOptions" | "value" | "name" | "id">,
   translate: LabelTranslator,
   locale: string,
-  withRangeKey: I18nKeysForAi,
+  asRange = false,
 ): string => {
   // Only rely on value range to determine the display name
   if (typeof mention.value !== "string") {
@@ -181,15 +137,9 @@ export const getDateMentionDisplayName = (
     return mention.name
   }
 
-  const today = dayjs().startOf("day")
-
-  const isSameDay = (a: Dayjs, b: Dayjs) => a.isSame(b, "day")
-
   const matchRelative = (): RelativeDateDefinition | null => {
     for (const def of RELATIVE_DATE_DEFINITIONS) {
-      const defRange = def.range(today)
-      if (!defRange) continue
-      if (isSameDay(defRange.start, range.start) && isSameDay(defRange.end, range.end)) {
+      if (def.id === mention.id) {
         return def
       }
     }
@@ -197,14 +147,11 @@ export const getDateMentionDisplayName = (
   }
 
   const matched = matchRelative()
-  if (matched) {
-    const label = translate(matched.labelKey)
-    return translate(withRangeKey, {
-      label,
-      range: formatLocalizedRange(range, locale),
-    })
+  if (matched && !asRange) {
+    return translate(matched.labelKey)
   }
 
-  // Fallback: show the localized date range only
-  return formatLocalizedRange(range, locale)
+  return asRange
+    ? formatLocalizedRange(range, locale)
+    : mention.name || formatLocalizedRange(range, locale, "LL")
 }

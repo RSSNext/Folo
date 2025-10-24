@@ -115,6 +115,8 @@ const VirtualGridImpl: FC<
     return Array.from({ length: columnCount }).fill(width / columnCount) as number[]
   }, [containerWidth])
 
+  const isImageOnly = useUISettingKey("pictureViewImageOnly")
+
   // Calculate rows based on entries
   const rows = useMemo(() => {
     const itemsPerRow = columns.length
@@ -149,7 +151,7 @@ const VirtualGridImpl: FC<
   const rowVirtualizer = useVirtualizer({
     count: rows.length + (hasNextPage ? 1 : 0) + (Footer ? 1 : 0),
     estimateSize: () => {
-      return columns[0]! / ratioMap[view] + 58
+      return columns[0]! / ratioMap[view] + (!isImageOnly ? 58 : 0)
     },
     overscan: 5,
     gap: 8,
@@ -189,7 +191,7 @@ const VirtualGridImpl: FC<
       columnVirtualizer.measure()
     }
     measureRef.current?.()
-  }, [columnVirtualizer, measureRef, rowVirtualizer])
+  }, [columnVirtualizer, measureRef, rowVirtualizer, isImageOnly])
 
   const virtualItems = rowVirtualizer.getVirtualItems()
   useEffect(() => {

@@ -50,7 +50,7 @@ const DropdownMenuSubTrigger = ({
   <DropdownMenuPrimitive.SubTrigger
     ref={ref}
     className={cn(
-      "cursor-menu focus:bg-theme-selection-active focus:text-theme-selection-foreground data-[state=open]:bg-theme-selection-active data-[state=open]:text-theme-selection-foreground flex select-none items-center rounded-[5px] px-2.5 py-1.5 outline-none",
+      "flex cursor-menu select-none items-center rounded-[5px] px-2.5 py-1.5 outline-none focus:bg-theme-selection-active focus:text-theme-selection-foreground data-[state=open]:bg-theme-selection-active data-[state=open]:text-theme-selection-foreground",
       inset && "pl-8",
       "center gap-2",
       className,
@@ -75,7 +75,7 @@ const DropdownMenuSubContent = ({
     <DropdownMenuPrimitive.SubContent
       ref={ref}
       className={cn(
-        "bg-material-medium backdrop-blur-background text-text text-body",
+        "bg-material-medium text-body text-text backdrop-blur-background",
         "min-w-32 overflow-hidden",
         "rounded-[6px] border p-1",
         "shadow-context-menu",
@@ -102,8 +102,8 @@ const DropdownMenuContent = ({
         ref={ref}
         sideOffset={sideOffset}
         className={cn(
-          "bg-material-medium backdrop-blur-background text-text shadow-context-menu z-[60] min-w-32 overflow-hidden rounded-[6px] border p-1",
-          "motion-scale-in-75 motion-duration-150 text-body lg:animate-none",
+          "shadow-context-menu z-[60] min-w-32 overflow-hidden rounded-[6px] border bg-material-medium p-1 text-text backdrop-blur-background",
+          "text-body motion-scale-in-75 motion-duration-150 lg:animate-none",
           className,
         )}
         {...props}
@@ -134,11 +134,11 @@ const DropdownMenuItem = ({
   <DropdownMenuPrimitive.Item
     ref={ref}
     className={cn(
-      "cursor-menu relative flex select-none items-center rounded-[5px] px-2.5 py-1 outline-none data-[disabled]:pointer-events-none data-[disabled]:opacity-50",
+      "relative flex cursor-menu select-none items-center rounded-[5px] px-2.5 py-1 outline-none data-[disabled]:pointer-events-none data-[disabled]:opacity-50",
       "focus-within:outline-transparent",
       highlightColor === "accent"
-        ? "data-[highlighted]:bg-theme-selection-hover focus:bg-theme-selection-active focus:text-theme-selection-foreground data-[highlighted]:text-theme-selection-foreground"
-        : "data-[highlighted]:bg-theme-item-hover focus:bg-theme-item-active",
+        ? "focus:bg-theme-selection-active focus:text-theme-selection-foreground data-[highlighted]:bg-theme-selection-hover data-[highlighted]:text-theme-selection-foreground"
+        : "focus:bg-theme-item-active data-[highlighted]:bg-theme-item-hover",
 
       "h-[28px]",
       inset && "pl-8",
@@ -187,7 +187,7 @@ const DropdownMenuCheckboxItem = ({
   <DropdownMenuPrimitive.CheckboxItem
     ref={ref}
     className={cn(
-      "cursor-checkbox focus:bg-theme-selection-active focus:text-theme-selection-foreground relative flex select-none items-center rounded-[5px] px-8 py-1.5 outline-none data-[disabled]:pointer-events-none data-[disabled]:opacity-50",
+      "relative flex cursor-checkbox select-none items-center rounded-[5px] px-8 py-1.5 outline-none focus:bg-theme-selection-active focus:text-theme-selection-foreground data-[disabled]:pointer-events-none data-[disabled]:opacity-50",
       "focus-within:outline-transparent",
       "h-[28px]",
       className,
@@ -215,7 +215,7 @@ const DropdownMenuLabel = ({
 } & { ref?: React.Ref<React.ElementRef<typeof DropdownMenuPrimitive.Label> | null> }) => (
   <DropdownMenuPrimitive.Label
     ref={ref}
-    className={cn("text-text px-2 py-1.5 font-semibold", inset && "pl-8", className)}
+    className={cn("px-2 py-1.5 font-semibold text-text", inset && "pl-8", className)}
     {...props}
   />
 )
@@ -228,7 +228,7 @@ const DropdownMenuSeparator = ({
   ref?: React.Ref<React.ElementRef<typeof DropdownMenuPrimitive.Separator> | null>
 }) => (
   <DropdownMenuPrimitive.Separator
-    className="backdrop-blur-background mx-2 my-1 h-px"
+    className="mx-2 my-1 h-px backdrop-blur-background"
     asChild
     ref={ref}
     {...props}

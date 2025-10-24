@@ -1,7 +1,7 @@
 import { usePrefetchEntryDetail } from "@follow/store/entry/hooks"
 
 import { Paper } from "~/components/ui/paper"
-import { EntryContent as EntryContentLegacy } from "~/modules/entry-content/components/entry-content/EntryContent.legacy"
+import { EntryContent as EntryContentLegacy } from "~/modules/entry-content/EntryContent.legacy"
 
 export const EntryModalPreview = ({ entryId }: { entryId: string }) => {
   const { isPending } = usePrefetchEntryDetail(entryId)
@@ -24,39 +24,39 @@ const PeekModalSkeleton = () => {
   return (
     <div className="animate-pulse p-5">
       <div className="mb-6 space-y-3">
-        <div className="bg-fill h-8 w-3/4 rounded-lg" />
+        <div className="h-8 w-3/4 rounded-lg bg-fill" />
         <div className="flex items-center space-x-4">
-          <div className="bg-fill-secondary h-4 w-20 rounded" />
-          <div className="bg-fill-secondary h-4 w-16 rounded" />
-          <div className="bg-fill-secondary h-4 w-24 rounded" />
+          <div className="h-4 w-20 rounded bg-fill-secondary" />
+          <div className="h-4 w-16 rounded bg-fill-secondary" />
+          <div className="h-4 w-24 rounded bg-fill-secondary" />
         </div>
       </div>
 
       <div className="space-y-4">
         <div className="space-y-3">
-          <div className="bg-fill-secondary h-4 w-full rounded" />
-          <div className="bg-fill-secondary h-4 w-5/6 rounded" />
-          <div className="bg-fill-secondary h-4 w-4/5 rounded" />
+          <div className="h-4 w-full rounded bg-fill-secondary" />
+          <div className="h-4 w-5/6 rounded bg-fill-secondary" />
+          <div className="h-4 w-4/5 rounded bg-fill-secondary" />
         </div>
 
         <div className="space-y-3">
-          <div className="bg-fill-secondary h-4 w-full rounded" />
-          <div className="bg-fill-secondary h-4 w-3/4 rounded" />
+          <div className="h-4 w-full rounded bg-fill-secondary" />
+          <div className="h-4 w-3/4 rounded bg-fill-secondary" />
         </div>
 
-        <div className="bg-fill my-6 h-48 w-full rounded-lg" />
+        <div className="my-6 h-48 w-full rounded-lg bg-fill" />
 
         <div className="space-y-3">
-          <div className="bg-fill-secondary h-4 w-full rounded" />
-          <div className="bg-fill-secondary h-4 w-5/6 rounded" />
-          <div className="bg-fill-secondary h-4 w-2/3 rounded" />
+          <div className="h-4 w-full rounded bg-fill-secondary" />
+          <div className="h-4 w-5/6 rounded bg-fill-secondary" />
+          <div className="h-4 w-2/3 rounded bg-fill-secondary" />
         </div>
       </div>
 
       <div className="mt-8 flex items-center space-x-3">
-        <div className="bg-fill h-8 w-16 rounded" />
-        <div className="bg-fill h-8 w-20 rounded" />
-        <div className="bg-fill h-8 w-16 rounded" />
+        <div className="h-8 w-16 rounded bg-fill" />
+        <div className="h-8 w-20 rounded bg-fill" />
+        <div className="h-8 w-16 rounded bg-fill" />
       </div>
     </div>
   )

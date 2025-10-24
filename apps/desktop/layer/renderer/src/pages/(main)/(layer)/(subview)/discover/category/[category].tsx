@@ -161,10 +161,10 @@ export const Component = () => {
           <div className="mb-4 text-6xl">
             <EmptyIcon />
           </div>
-          <p className="text-text text-title2">
+          <p className="text-title2 text-text">
             {t("common.noContent", { defaultValue: "No content found in this category" })}
           </p>
-          <p className="text-text-secondary text-body mt-2">
+          <p className="mt-2 text-body text-text-secondary">
             {t("discover.tryAnotherCategory", {
               defaultValue: "Try selecting another category or language",
             })}
@@ -241,9 +241,9 @@ const RecommendationListItem = memo(
     )
 
     return (
-      <Card className="shadow-background border-border overflow-hidden rounded-lg border transition-shadow duration-200 hover:shadow-md">
-        <div className="border-border flex items-center gap-3 border-b p-4">
-          <div className="bg-background size-8 overflow-hidden rounded-full">
+      <Card className="overflow-hidden rounded-lg border border-border shadow-background transition-shadow duration-200 hover:shadow-md">
+        <div className="flex items-center gap-3 border-b border-border p-4">
+          <div className="size-8 overflow-hidden rounded-full bg-background">
             <FeedIcon className="mr-0 size-8" size={32} siteUrl={`https://${data.url}`} />
           </div>
           <div className="flex w-full flex-1 justify-between">
@@ -264,7 +264,7 @@ const RecommendationListItem = memo(
                   to={`/discover/category/${c}`}
                   key={c}
                   className={cn(
-                    "bg-accent/10 cursor-pointer rounded-full px-2 py-0.5 leading-5 duration-200",
+                    "cursor-pointer rounded-full bg-accent/10 px-2 py-0.5 leading-5 duration-200",
                     !RSSHubCategories.includes(c) ? "pointer-events-none opacity-50" : "",
                   )}
                 >
@@ -277,7 +277,7 @@ const RecommendationListItem = memo(
           </div>
         </div>
         <div className="p-4 pt-2">
-          <ul className="text-text mb-3">
+          <ul className="mb-3 text-text">
             {routes.map((route) => (
               <RouteItem
                 key={route}
@@ -292,7 +292,7 @@ const RecommendationListItem = memo(
           </ul>
 
           {maintainers.length > 0 && (
-            <div className="text-text-secondary mt-2 flex items-center text-xs">
+            <div className="mt-2 flex items-center text-xs text-text-secondary">
               <i className="i-mgc-hammer-cute-re mr-1 shrink-0 translate-y-0.5 self-start" />
               <span>
                 {maintainers.map((m, i) => (
@@ -341,20 +341,20 @@ const RouteItem = memo(
 
     return (
       <li
-        className="hover:bg-material-opaque -mx-4 rounded p-3 px-5 transition-colors"
+        className="-mx-4 rounded p-3 px-5 transition-colors hover:bg-material-opaque"
         role="button"
         onClick={() => onRouteClick(route)}
       >
         <div className="w-full">
           <div className="flex w-full items-center gap-8">
             <div className="flex flex-1 items-center gap-2">
-              <div className="bg-accent mr-2 size-1.5 rounded-full" />
+              <div className="mr-2 size-1.5 rounded-full bg-accent" />
               <div className="relative h-5 grow">
-                <div className="text-title3 absolute inset-0 flex items-center gap-3 font-medium">
+                <div className="absolute inset-0 flex items-center gap-3 text-title3 font-medium">
                   <EllipsisHorizontalTextWithTooltip>
                     {routeData.name}
                   </EllipsisHorizontalTextWithTooltip>
-                  <EllipsisHorizontalTextWithTooltip className="text-text-secondary text-xs">{`rsshub://${routePrefix}${routeData.path}`}</EllipsisHorizontalTextWithTooltip>
+                  <EllipsisHorizontalTextWithTooltip className="text-xs text-text-secondary">{`rsshub://${routePrefix}${routeData.path}`}</EllipsisHorizontalTextWithTooltip>
                 </div>
               </div>
             </div>

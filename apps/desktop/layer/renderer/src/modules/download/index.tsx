@@ -28,21 +28,21 @@ export function DownloadPage() {
   }
 
   return (
-    <div className="bg-background flex min-h-screen flex-col items-center justify-center px-6">
+    <div className="flex min-h-screen flex-col items-center justify-center bg-background px-6">
       {/* Logo Section */}
       <div className="mb-8 flex flex-col items-center text-center">
         <div className="mb-4 flex items-center space-x-4">
           <Logo className="size-12" />
-          <Folo className="text-text w-12" />
+          <Folo className="w-12 text-text" />
         </div>
-        <p className="text-text-secondary text-base">Follow everything in one place</p>
+        <p className="text-base text-text-secondary">Follow everything in one place</p>
       </div>
 
       {/* Main Content */}
       <div className="w-full max-w-xs space-y-6 text-center">
         <div>
-          <h1 className="text-text mb-3 text-xl font-semibold">Download Folo</h1>
-          <p className="text-text-secondary text-sm">
+          <h1 className="mb-3 text-xl font-semibold text-text">Download Folo</h1>
+          <p className="text-sm text-text-secondary">
             {isMobile
               ? mobilePlatform
                 ? `Get the ${mobilePlatform} app for the best experience`
@@ -60,7 +60,7 @@ export function DownloadPage() {
         </Button>
 
         {/* Hint */}
-        <p className="text-text-tertiary text-xs">
+        <p className="text-xs text-text-tertiary">
           {isMobile
             ? mobilePlatform
               ? `Redirecting to ${mobilePlatform === "iOS" ? "App Store" : "Google Play"}...`

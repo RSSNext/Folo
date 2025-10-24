@@ -64,36 +64,36 @@ export const CustomIntegrationPreview = ({
       {isOpen && (
         <div className="space-y-3">
           {isLoading ? (
-            <div className="bg-material-medium flex items-center justify-center rounded-lg p-4">
+            <div className="flex items-center justify-center rounded-lg bg-material-medium p-4">
               <div className="flex items-center gap-2">
                 <i className="i-mgc-loading-3-cute-re animate-spin" />
-                <span className="text-text-tertiary text-sm">Generating preview...</span>
+                <span className="text-sm text-text-tertiary">Generating preview...</span>
               </div>
             </div>
           ) : preview ? (
-            <div className="bg-material-medium space-y-3 rounded-lg p-4">
+            <div className="space-y-3 rounded-lg bg-material-medium p-4">
               {/* Method and URL */}
               <div>
-                <h4 className="text-text-secondary mb-2 text-sm font-medium">Request</h4>
-                <div className="bg-material-medium flex items-center gap-2 rounded p-2 font-mono text-sm">
-                  <span className="bg-blue/10 text-blue rounded px-2 py-1 text-xs font-bold">
+                <h4 className="mb-2 text-sm font-medium text-text-secondary">Request</h4>
+                <div className="flex items-center gap-2 rounded bg-material-medium p-2 font-mono text-sm">
+                  <span className="rounded bg-blue/10 px-2 py-1 text-xs font-bold text-blue">
                     {preview.method}
                   </span>
-                  <span className="text-text-secondary break-all">{preview.url}</span>
+                  <span className="break-all text-text-secondary">{preview.url}</span>
                 </div>
               </div>
 
               {/* Headers */}
               {Object.keys(preview.headers).length > 0 && (
                 <div>
-                  <h4 className="text-text-secondary mb-2 text-sm font-medium">Headers</h4>
-                  <div className="bg-material-medium space-y-1 rounded p-2">
+                  <h4 className="mb-2 text-sm font-medium text-text-secondary">Headers</h4>
+                  <div className="space-y-1 rounded bg-material-medium p-2">
                     {Object.entries(preview.headers).map(([key, value]) => (
                       <div key={key} className="flex font-mono text-sm">
-                        <span className="text-text-secondary min-w-0 flex-shrink-0 pr-2">
+                        <span className="min-w-0 flex-shrink-0 pr-2 text-text-secondary">
                           {key}:
                         </span>
-                        <span className="text-text-tertiary min-w-0 flex-1 break-all">{value}</span>
+                        <span className="min-w-0 flex-1 break-all text-text-tertiary">{value}</span>
                       </div>
                     ))}
                   </div>
@@ -103,9 +103,9 @@ export const CustomIntegrationPreview = ({
               {/* Body */}
               {preview.body && (
                 <div>
-                  <h4 className="text-text-secondary mb-2 text-sm font-medium">Request Body</h4>
-                  <div className="bg-material-medium max-h-40 overflow-auto rounded p-2">
-                    <pre className="text-text-secondary whitespace-pre-wrap font-mono text-sm">
+                  <h4 className="mb-2 text-sm font-medium text-text-secondary">Request Body</h4>
+                  <div className="max-h-40 overflow-auto rounded bg-material-medium p-2">
+                    <pre className="whitespace-pre-wrap font-mono text-sm text-text-secondary">
                       {preview.body}
                     </pre>
                   </div>
@@ -113,23 +113,23 @@ export const CustomIntegrationPreview = ({
               )}
 
               {/* Placeholders Info */}
-              <div className="border-border border-t pt-3">
-                <h4 className="text-text-secondary mb-2 text-sm font-medium">
+              <div className="border-t border-border pt-3">
+                <h4 className="mb-2 text-sm font-medium text-text-secondary">
                   Available Placeholders
                 </h4>
                 <div className="grid grid-cols-2 gap-2 text-xs">
                   {CustomIntegrationManager.getAvailablePlaceholders().map((placeholder) => (
-                    <div key={placeholder.key} className="bg-material-opaque rounded p-2">
-                      <code className="text-text font-bold">{placeholder.key}</code>
-                      <div className="text-text-tertiary mt-1">{placeholder.description}</div>
+                    <div key={placeholder.key} className="rounded bg-material-opaque p-2">
+                      <code className="font-bold text-text">{placeholder.key}</code>
+                      <div className="mt-1 text-text-tertiary">{placeholder.description}</div>
                     </div>
                   ))}
                 </div>
               </div>
             </div>
           ) : (
-            <div className="bg-material-medium flex items-center justify-center rounded-lg p-4">
-              <span className="text-text-tertiary text-sm">Failed to generate preview</span>
+            <div className="flex items-center justify-center rounded-lg bg-material-medium p-4">
+              <span className="text-sm text-text-tertiary">Failed to generate preview</span>
             </div>
           )}
         </div>

@@ -50,7 +50,7 @@ export const EntrySocialItem = memo(
     const translation = useEntryTranslation({
       entryId,
       language: actionLanguage,
-      setting: enableTranslation,
+      enabled: enableTranslation,
     })
     const { openLightbox } = useLightboxControls()
     const feed = useFeedById(entry?.feedId || "")
@@ -118,7 +118,7 @@ export const EntrySocialItem = memo(
           onPress={handlePress}
         >
           {!entry.read && (
-            <View className="bg-red absolute left-1.5 top-[25] size-2 rounded-full" />
+            <View className="absolute left-1.5 top-[25] size-2 rounded-full bg-red" />
           )}
 
           <View className="flex flex-1 flex-row items-start gap-4">
@@ -137,19 +137,19 @@ export const EntrySocialItem = memo(
 
             <View className="flex-1 flex-row items-center gap-1.5">
               <NativePressable hitSlop={10} onPress={navigationToFeedEntryList}>
-                <Text numberOfLines={1} className="text-label shrink text-base font-semibold">
+                <Text numberOfLines={1} className="shrink text-base font-semibold text-label">
                   {entry.author || feed?.title}
                 </Text>
               </NativePressable>
               <Text className="text-secondary-label">·</Text>
-              <RelativeDateTime date={publishedAt} className="text-secondary-label text-[14px]" />
+              <RelativeDateTime date={publishedAt} className="text-[14px] text-secondary-label" />
             </View>
           </View>
 
           <View className="relative -mt-4">
             <EntryTranslation
               numberOfLines={autoExpandLongSocialMedia ? undefined : 7}
-              className="text-label ml-12 text-base"
+              className="ml-12 text-base text-label"
               source={description}
               target={translation?.description}
               showTranslation={!!entry?.translation}
@@ -229,7 +229,7 @@ const EntryMediaItem = memo(
               uri: imageUrl,
             }}
             blurhash={mediaItem.blurhash}
-            className="border-secondary-system-background w-full rounded-lg border"
+            className="w-full rounded-lg border border-secondary-system-background"
             aspectRatio={
               fullWidth && mediaItem.width && mediaItem.height
                 ? mediaItem.width / mediaItem.height

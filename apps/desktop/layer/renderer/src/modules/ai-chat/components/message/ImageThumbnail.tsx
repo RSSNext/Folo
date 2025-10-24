@@ -74,13 +74,13 @@ export const ImageThumbnail: React.FC<ImageThumbnailProps> = React.memo((props) 
       </HoverCard.Trigger>
       <HoverCard.Portal>
         <HoverCard.Content
-          className="bg-material-thick border-border w-fit rounded-md border shadow-lg"
+          className="w-fit rounded-md border border-border bg-material-thick shadow-lg"
           sideOffset={8}
         >
           <div className="relative overflow-hidden rounded-md">
             {contentImageError ? (
-              <div className="bg-fill-secondary border-border flex h-32 w-40 items-center justify-center rounded-md border">
-                <div className="text-text-tertiary flex flex-col items-center gap-2">
+              <div className="flex h-32 w-40 items-center justify-center rounded-md border border-border bg-fill-secondary">
+                <div className="flex flex-col items-center gap-2 text-text-tertiary">
                   <i className="i-mgc-photo-album-cute-fi size-6" />
                   <span className="text-xs">{computed.filename}</span>
                 </div>
@@ -125,11 +125,11 @@ const ImageThumbnailInner: React.FC<{ src: string; alt: string; className?: stri
     return (
       <div
         className={cn(
-          "bg-fill-secondary border-border flex items-center justify-center border",
+          "flex items-center justify-center border border-border bg-fill-secondary",
           className,
         )}
       >
-        <i className="i-mgc-photo-album-cute-re text-text-tertiary size-3" />
+        <i className="i-mgc-photo-album-cute-re size-3 text-text-tertiary" />
       </div>
     )
   }
@@ -139,10 +139,10 @@ const ImageThumbnailInner: React.FC<{ src: string; alt: string; className?: stri
       {!imageLoaded && (
         <div
           className={
-            "bg-fill-secondary border-border absolute inset-0 flex items-center justify-center border"
+            "absolute inset-0 flex items-center justify-center border border-border bg-fill-secondary"
           }
         >
-          <i className="i-mgc-loading-3-cute-re text-text-tertiary size-3 animate-spin" />
+          <i className="i-mgc-loading-3-cute-re size-3 animate-spin text-text-tertiary" />
         </div>
       )}
       <m.img

@@ -35,18 +35,18 @@ export const TokenUsagePill: React.FC<TokenUsagePillProps> = ({ metadata, childr
       <TooltipPortal>
         <TooltipContent side="top" className="p-2" align="center" sideOffset={8}>
           <div className="mb-2 flex flex-col gap-2">
-            <div className="text-text text-xs">Model Info</div>
-            <div className="text-text-secondary font-mono text-xs">
+            <div className="text-xs text-text">Model Info</div>
+            <div className="font-mono text-xs text-text-secondary">
               {metadata.modelUsed ?? "Unknown"}
             </div>
           </div>
           <div className="space-y-2 text-xs">
-            <div className="text-text font-medium">Token Usage</div>
+            <div className="font-medium text-text">Token Usage</div>
             <div className="grid grid-cols-2 gap-x-4 gap-y-1">
               {metadata.totalTokens != null && (
                 <div className="flex justify-between gap-2">
                   <span className="text-text-secondary">Total:</span>
-                  <span className="text-text font-mono">
+                  <span className="font-mono text-text">
                     {formatTokenCountString(metadata.totalTokens)}
                   </span>
                 </div>
@@ -54,7 +54,7 @@ export const TokenUsagePill: React.FC<TokenUsagePillProps> = ({ metadata, childr
               {metadata.billedTokens != null && (
                 <div className="flex justify-between gap-2">
                   <span className="text-text-secondary">Billed:</span>
-                  <span className="text-accent font-mono">
+                  <span className="font-mono text-accent">
                     {formatTokenCountString(metadata.billedTokens)}
                   </span>
                 </div>
@@ -62,7 +62,7 @@ export const TokenUsagePill: React.FC<TokenUsagePillProps> = ({ metadata, childr
               {metadata.contextTokens != null && (
                 <div className="flex justify-between gap-2">
                   <span className="text-text-secondary">Context:</span>
-                  <span className="text-text font-mono">
+                  <span className="font-mono text-text">
                     {formatTokenCountString(metadata.contextTokens)}
                   </span>
                 </div>
@@ -70,7 +70,7 @@ export const TokenUsagePill: React.FC<TokenUsagePillProps> = ({ metadata, childr
               {metadata.outputTokens != null && (
                 <div className="flex justify-between gap-2">
                   <span className="text-text-secondary">Output:</span>
-                  <span className="text-text font-mono">
+                  <span className="font-mono text-text">
                     {formatTokenCountString(metadata.outputTokens)}
                   </span>
                 </div>
@@ -78,7 +78,7 @@ export const TokenUsagePill: React.FC<TokenUsagePillProps> = ({ metadata, childr
               {hasReasoningTokens && (
                 <div className="flex justify-between gap-2">
                   <span className="text-text-secondary">Reasoning:</span>
-                  <span className="text-text font-mono">
+                  <span className="font-mono text-text">
                     {formatTokenCountString(metadata.reasoningTokens!)}
                   </span>
                 </div>
@@ -86,7 +86,7 @@ export const TokenUsagePill: React.FC<TokenUsagePillProps> = ({ metadata, childr
               {hasCachedInputTokens && (
                 <div className="flex justify-between gap-2">
                   <span className="text-text-secondary">Cached:</span>
-                  <span className="text-text font-mono">
+                  <span className="font-mono text-text">
                     {formatTokenCountString(metadata.cachedInputTokens!)}
                   </span>
                 </div>
@@ -99,7 +99,7 @@ export const TokenUsagePill: React.FC<TokenUsagePillProps> = ({ metadata, childr
                   {hasDuration && (
                     <div className="flex justify-between gap-2">
                       <span className="text-text-secondary">Duration:</span>
-                      <span className="text-text font-mono">
+                      <span className="font-mono text-text">
                         {formatDuration(metadata.duration!)}
                       </span>
                     </div>
@@ -107,7 +107,7 @@ export const TokenUsagePill: React.FC<TokenUsagePillProps> = ({ metadata, childr
                   {hasBillingMultiplier && (
                     <div className="flex justify-between gap-2">
                       <span className="text-text-secondary">Multiplier:</span>
-                      <span className="text-text font-mono">{metadata.billingMultiplier!}×</span>
+                      <span className="font-mono text-text">{metadata.billingMultiplier!}×</span>
                     </div>
                   )}
                 </div>

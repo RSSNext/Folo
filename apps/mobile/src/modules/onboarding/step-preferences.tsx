@@ -29,10 +29,10 @@ export const StepPreferences = () => {
     <OnboardingSectionScreenContainer>
       <View className="mb-10 flex items-center gap-4">
         <ListCheck2CuteReIcon height={80} width={80} color={accentColor} />
-        <Text className="text-text mt-2 text-center text-xl font-bold">
+        <Text className="mt-2 text-center text-xl font-bold text-text">
           {t("onboarding.preferences_title")}
         </Text>
-        <Text className="text-label text-center text-base">
+        <Text className="text-center text-base text-label">
           {t("onboarding.preferences_description")}
         </Text>
       </View>
@@ -47,7 +47,7 @@ export const StepPreferences = () => {
           }
         >
           <View className="flex flex-row items-center justify-between">
-            <Text className="text-text text-base font-medium">
+            <Text className="text-base font-medium text-text">
               {t("general.language.title", {
                 ns: "settings",
               })}
@@ -56,7 +56,7 @@ export const StepPreferences = () => {
               <LanguageSelect settingKey="language" />
             </View>
           </View>
-          <Text className="text-secondary-label text-sm">
+          <Text className="text-sm text-secondary-label">
             {t("onboarding.language_description")}
           </Text>
         </PreferenceCard>
@@ -72,7 +72,7 @@ export const StepPreferences = () => {
           onPress={importOpml}
         >
           <View className="flex-row">
-            <Text className="text-secondary-label flex-1">
+            <Text className="flex-1 text-secondary-label">
               {t("onboarding.import_description")}
             </Text>
           </View>
@@ -89,7 +89,7 @@ export const StepPreferences = () => {
             navigation.pushControllerView(EditProfileScreen)
           }}
         >
-          <Text className="text-secondary-label text-sm">
+          <Text className="text-sm text-secondary-label">
             {t("onboarding.edit_profile_description")}
           </Text>
         </PreferenceCard>
@@ -107,17 +107,17 @@ export const StepPreferences = () => {
           }}
         >
           {behavior === "radical" && (
-            <Text className="text-secondary-label text-sm">
+            <Text className="text-sm text-secondary-label">
               {t("onboarding.reading_radical_description")}
             </Text>
           )}
           {behavior === "balanced" && (
-            <Text className="text-secondary-label text-sm">
+            <Text className="text-sm text-secondary-label">
               {t("onboarding.reading_balanced_description")}
             </Text>
           )}
           {behavior === "conservative" && (
-            <Text className="text-secondary-label text-sm">
+            <Text className="text-sm text-secondary-label">
               {t("onboarding.reading_conservative_description")}
             </Text>
           )}
@@ -142,12 +142,12 @@ const PreferenceCard = ({
   const rightIconColor = useColor("tertiaryLabel")
   return (
     <Pressable
-      className="bg-secondary-system-grouped-background flex flex-row items-center gap-2 rounded-xl p-4"
+      className="flex flex-row items-center gap-2 rounded-xl bg-secondary-system-grouped-background p-4"
       onPress={onPress}
     >
       {icon}
       <View className="flex flex-1 flex-col gap-2">
-        {title && <Text className="text-text text-base font-medium">{title}</Text>}
+        {title && <Text className="text-base font-medium text-text">{title}</Text>}
         {children}
       </View>
       {showRightArrow && <MingcuteRightLine height={18} width={18} color={rightIconColor} />}

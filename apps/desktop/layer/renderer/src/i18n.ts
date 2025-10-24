@@ -13,6 +13,8 @@ import { jotaiStore } from "./lib/jotai"
 
 export const i18nAtom = atom(i18next)
 
+export const getI18n = () => jotaiStore.get(i18nAtom)
+
 export const langChain = new Chain()
 
 export class LocaleCache {

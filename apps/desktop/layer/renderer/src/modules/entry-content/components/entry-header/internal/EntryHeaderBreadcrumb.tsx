@@ -1,5 +1,6 @@
 import { ScrollArea } from "@follow/components/ui/scroll-area/index.js"
-import { views } from "@follow/constants"
+import { EllipsisHorizontalTextWithTooltip } from "@follow/components/ui/typography/EllipsisWithTooltip.js"
+import { getView } from "@follow/constants"
 import { getEntry, getEntryIdsByFeedId } from "@follow/store/entry/getter"
 import { useFeedById } from "@follow/store/feed/hooks"
 import { useListById } from "@follow/store/list/hooks"
@@ -25,13 +26,14 @@ import {
 } from "~/components/ui/dropdown-menu/dropdown-menu"
 import { useNavigateEntry } from "~/hooks/biz/useNavigateEntry"
 import { getRouteParams, useRouteParamsSelector } from "~/hooks/biz/useRouteParams"
+import { useShowEntryDetailsColumn } from "~/hooks/biz/useShowEntryDetailsColumn"
 import { getPreferredTitle } from "~/store/feed/hooks"
 
 import { useEntryTitleMeta } from "../../../atoms"
 import { useEntryHeaderContext } from "./context"
 
 const Slash = (
-  <i className="i-mingcute-line-line text-text-tertiary size-4 shrink-0 rotate-[-25deg]" />
+  <i className="i-mingcute-line-line size-4 shrink-0 rotate-[-25deg] text-text-tertiary" />
 )
 
 function ViewSubscriptionsDropdown({
@@ -79,7 +81,7 @@ function ViewSubscriptionsDropdown({
       <DropdownMenuTrigger asChild>
         <button
           type="button"
-          className="text-text-tertiary no-drag-region hover:text-text focus-visible:bg-fill/60 -ml-1 inline-flex size-6 items-center justify-center rounded transition-colors"
+          className="no-drag-region -ml-1 inline-flex size-6 items-center justify-center rounded text-text-tertiary transition-colors hover:text-text focus-visible:bg-fill/60"
           aria-label="Open subscriptions of this view"
         >
           <i className="i-mingcute-down-line size-4" />
@@ -99,7 +101,7 @@ function ViewSubscriptionsDropdown({
               <span className="truncate">All</span>
             </DropdownMenuItem>
             {listSubsRef.current && listSubsRef.current.length > 0 && (
-              <div className="text-text-tertiary px-2 py-1 text-xs">Lists</div>
+              <div className="px-2 py-1 text-xs text-text-tertiary">Lists</div>
             )}
             {listSubsRef.current?.map((s) =>
               s.listId ? (
@@ -113,7 +115,7 @@ function ViewSubscriptionsDropdown({
               ) : null,
             )}
             {feedSubsRef.current && feedSubsRef.current.length > 0 && (
-              <div className="text-text-tertiary px-2 py-1 text-xs">Feeds</div>
+              <div className="px-2 py-1 text-xs text-text-tertiary">Feeds</div>
             )}
             {feedSubsRef.current?.map((s) =>
               s.feedId ? (
@@ -188,7 +190,7 @@ function FeedEntriesDropdown({
       <DropdownMenuTrigger asChild>
         <button
           type="button"
-          className="text-text-tertiary no-drag-region hover:text-text focus-visible:bg-fill/60 -ml-2 inline-flex size-6 items-center justify-center rounded transition-colors"
+          className="no-drag-region -ml-2 inline-flex size-6 items-center justify-center rounded text-text-tertiary transition-colors hover:text-text focus-visible:bg-fill/60"
           aria-label="Open entries from this feed"
         >
           <i className="i-mingcute-down-line size-4" />
@@ -226,35 +228,42 @@ export function EntryHeaderBreadcrumb() {
 
   const { t } = useTranslation()
   const view = useRouteParamsSelector((s) => s.view)
-  const viewName = views.find((v) => v.view === view)?.name
-
+  const viewName = getView(view)?.name
+  const showEntryDetailsColumn = useShowEntryDetailsColumn()
+  if (showEntryDetailsColumn && meta?.entryTitle) {
+    return (
+      <EllipsisHorizontalTextWithTooltip className="min-w-0 truncate px-1.5 py-0.5 text-sm font-medium text-text">
+        {meta.entryTitle}
+      </EllipsisHorizontalTextWithTooltip>
+    )
+  }
   return (
     <div className="flex min-w-0 flex-1 overflow-hidden">
       <nav
         aria-label="Breadcrumb"
         className={
-          "text-text-secondary group/breadcrumb flex min-w-0 items-center gap-1 truncate leading-tight"
+          "group/breadcrumb flex min-w-0 items-center gap-1 truncate leading-tight text-text-secondary"
         }
       >
         <div className="flex min-w-0 items-center gap-1">
           {/* Return Back Button  */}
           <button
             type="button"
-            className="text-text-secondary no-drag-region hover:text-text hover:bg-fill/50 focus-visible:bg-fill/60 inline-flex shrink-0 items-center rounded-full bg-transparent p-2"
+            className="no-drag-region inline-flex shrink-0 items-center rounded-full bg-transparent p-2 text-text-secondary hover:bg-fill/50 hover:text-text focus-visible:bg-fill/60"
             onClick={() => navigate({ entryId: null, view })}
           >
             <i className="i-mingcute-close-line size-5" />
           </button>
           {viewName && (
-            <div className="flex items-center">
+            <div className="hidden items-center @[700px]:flex">
               <button
                 type="button"
                 className={cn(
-                  "text-text-secondary no-drag-region hover:text-text hover:bg-fill/50 focus-visible:bg-fill/60 inline-flex max-w-[40vw] items-center truncate rounded bg-transparent px-1.5 py-0.5 text-sm transition-colors",
+                  "no-drag-region inline-flex max-w-[40vw] items-center truncate rounded bg-transparent px-1.5 py-0.5 text-sm text-text-secondary transition-colors hover:bg-fill/50 hover:text-text focus-visible:bg-fill/60",
                 )}
                 onClick={() => navigate({ entryId: null, view })}
               >
-                <span className="text-text-secondary text-sm">{t(viewName, { ns: "common" })}</span>
+                <span className="text-sm text-text-secondary">{t(viewName, { ns: "common" })}</span>
               </button>
 
               <ViewSubscriptionsDropdown view={view} onNavigate={navigate} />
@@ -262,12 +271,12 @@ export function EntryHeaderBreadcrumb() {
           )}
           {meta && (
             <>
-              {Slash}
-              <div className="flex items-center">
+              <span className="hidden @[700px]:inline">{Slash}</span>
+              <div className="hidden min-w-0 shrink items-center @[700px]:flex">
                 <button
                   type="button"
                   className={cn(
-                    "text-text-secondary no-drag-region hover:text-text hover:bg-fill/50 focus-visible:bg-fill/60 inline-flex max-w-[40vw] items-center truncate rounded bg-transparent px-1.5 py-0.5 text-sm transition-colors",
+                    "no-drag-region inline-flex max-w-[40vw] items-center truncate rounded bg-transparent px-1.5 py-0.5 text-sm text-text-secondary transition-colors hover:bg-fill/50 hover:text-text focus-visible:bg-fill/60",
                   )}
                   onClick={() => navigate({ entryId: null, feedId: meta.feedId })}
                   title={meta.feedTitle}
@@ -284,9 +293,9 @@ export function EntryHeaderBreadcrumb() {
 
               {!!meta.entryTitle && (
                 <>
-                  {Slash}
+                  <span className="hidden shrink-0 @[700px]:inline">{Slash}</span>
                   <span
-                    className="text-text truncate px-1.5 py-0.5 text-sm"
+                    className="min-w-0 max-w-[30vw] truncate px-1.5 py-0.5 text-sm text-text"
                     title={meta.entryTitle}
                   >
                     {meta.entryTitle}

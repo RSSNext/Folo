@@ -408,7 +408,7 @@ const PreviewFeeds = (props: { id: string; view: FeedViewType }) => {
     [props.view],
   )
   return (
-    <View className="bg-system-background size-full flex-1">
+    <View className="size-full flex-1 bg-system-background">
       {isLoading && !entryIds?.length && (
         <PlatformActivityIndicator className="absolute inset-0 flex items-center justify-center" />
       )}

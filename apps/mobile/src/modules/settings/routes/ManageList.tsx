@@ -121,7 +121,7 @@ const ListImpl: React.FC<{
 const SeparatorComponent = () => {
   return (
     <View
-      className="bg-opaque-separator/70 ml-16"
+      className="ml-16 bg-opaque-separator/70"
       style={{
         height: StyleSheet.hairlineWidth,
       }}
@@ -159,7 +159,7 @@ const FeedCell = (props: { feedId: string; isSelected: boolean }) => {
               <FeedIcon feed={feed} size={24} />
             </View>
           </View>
-          <Text className="text-label flex-1" ellipsizeMode="middle" numberOfLines={1}>
+          <Text className="flex-1 text-label" ellipsizeMode="middle" numberOfLines={1}>
             {feed?.title || "Untitled Feed"}
           </Text>
         </View>

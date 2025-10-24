@@ -6,6 +6,7 @@ import { useTranslation } from "react-i18next"
 
 import { CopyButton } from "~/components/ui/button/CopyButton"
 import { Markdown } from "~/components/ui/markdown/Markdown"
+import { useFeature } from "~/hooks/biz/useFeature"
 
 interface AISummaryCardBaseProps {
   /** Summary content to display */
@@ -34,16 +35,16 @@ interface AISummaryCardBaseProps {
 
 const DefaultLoadingState = () => (
   <div className="space-y-2">
-    <div className="bg-material-ultra-thick h-3 w-full animate-pulse rounded-lg" />
-    <div className="bg-material-ultra-thick h-3 w-[92%] animate-pulse rounded-lg" />
-    <div className="bg-material-ultra-thick h-3 w-[85%] animate-pulse rounded-lg" />
+    <div className="h-3 w-full animate-pulse rounded-lg bg-material-ultra-thick" />
+    <div className="h-3 w-[92%] animate-pulse rounded-lg bg-material-ultra-thick" />
+    <div className="h-3 w-[85%] animate-pulse rounded-lg bg-material-ultra-thick" />
   </div>
 )
 
 const DefaultEmptyState = ({ message }: { message: string }) => (
   <div className="py-4 text-center">
-    <i className="i-mingcute-document-line text-text-tertiary mb-2 text-2xl" />
-    <p className="text-text-secondary text-sm">{message}</p>
+    <i className="i-mingcute-document-line mb-2 text-2xl text-text-tertiary" />
+    <p className="text-sm text-text-secondary">{message}</p>
   </div>
 )
 
@@ -61,6 +62,7 @@ export const AISummaryCardBase: React.FC<AISummaryCardBaseProps> = ({
   onAskAI,
 }) => {
   const { t } = useTranslation("app")
+  const aiEnabled = useFeature("ai")
 
   const hasContent = !isLoading && content
 
@@ -123,7 +125,7 @@ export const AISummaryCardBase: React.FC<AISummaryCardBaseProps> = ({
         )}
 
         <div className="flex items-center gap-2">
-          {showAskAIButton && hasContent && onAskAI && (
+          {aiEnabled && showAskAIButton && hasContent && onAskAI && (
             <MotionButtonBase
               onClick={onAskAI}
               className={cn(
@@ -164,7 +166,7 @@ export const AISummaryCardBase: React.FC<AISummaryCardBaseProps> = ({
         {isLoading ? (
           loadingComponent || <DefaultLoadingState />
         ) : hasContent ? (
-          <Markdown className="prose-sm prose-p:m-0 max-w-none">{String(content)}</Markdown>
+          <Markdown className="prose-sm max-w-none prose-p:m-0">{String(content)}</Markdown>
         ) : (
           emptyComponent || <DefaultEmptyState message={t("ai.summary_not_available")} />
         )}

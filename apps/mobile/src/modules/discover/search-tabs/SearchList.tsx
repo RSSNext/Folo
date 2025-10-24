@@ -43,7 +43,7 @@ export const SearchList = () => {
         width: windowWidth,
       }}
     >
-      <Text className="text-text/60 px-6 pt-4">Found {data.data?.length} lists</Text>
+      <Text className="px-6 pt-4 text-text/60">Found {data.data?.length} lists</Text>
       <View>
         {data.data?.map((item) => (
           <View key={item.feed?.id || Math.random().toString()}>
@@ -89,7 +89,7 @@ const SearchListCard = memo(({ item }: { item: SearchResultItem }) => {
         </View>
         <View className="flex-1">
           <Text
-            className="text-text text-lg font-semibold"
+            className="text-lg font-semibold text-text"
             ellipsizeMode="middle"
             numberOfLines={1}
           >
@@ -104,13 +104,13 @@ const SearchListCard = memo(({ item }: { item: SearchResultItem }) => {
         {/* Subscribe */}
         {isSubscribed ? (
           <View className="ml-auto">
-            <View className="bg-gray-5/60 rounded-lg px-3 py-2">
-              <Text className="text-gray-2 text-sm font-bold">Followed</Text>
+            <View className="rounded-lg bg-gray-5/60 px-3 py-2">
+              <Text className="text-sm font-bold text-gray-2">Followed</Text>
             </View>
           </View>
         ) : (
           <View className="ml-auto">
-            <View className="bg-accent rounded-lg px-3 py-2">
+            <View className="rounded-lg bg-accent px-3 py-2">
               <Text className="text-sm font-bold text-white">Follow</Text>
             </View>
           </View>
@@ -119,7 +119,7 @@ const SearchListCard = memo(({ item }: { item: SearchResultItem }) => {
 
       <View className="mt-3 flex-row items-center gap-1 pl-4 opacity-60">
         <RightCuteReIcon width={16} height={16} />
-        <Text className="text-text text-sm">{UrlBuilder.shareList(item.list?.id ?? "")}</Text>
+        <Text className="text-sm text-text">{UrlBuilder.shareList(item.list?.id ?? "")}</Text>
       </View>
 
       <View className="mt-4 flex-row items-center gap-6 pl-4 opacity-60">

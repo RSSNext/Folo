@@ -29,6 +29,8 @@ export interface DateTimePickerProps {
   rangePlaceholder?: string
   /** Class name for the content */
   contentClassName?: string
+  /** Custom trigger element. If provided, replaces the default button */
+  children?: React.ReactNode
 }
 
 /**
@@ -48,6 +50,7 @@ export const DateTimePicker = memo<DateTimePickerProps>(
     onRangeChange,
     rangePlaceholder = "Select date range",
     contentClassName,
+    children,
   }) => {
     const [isOpen, setIsOpen] = useState(false)
     const [viewMode, setViewMode] = useState<"days" | "months" | "years">("days")
@@ -161,24 +164,26 @@ export const DateTimePicker = memo<DateTimePickerProps>(
     return (
       <Popover open={isOpen} onOpenChange={setIsOpen}>
         <PopoverTrigger asChild>
-          <Button
-            variant="outline"
-            disabled={disabled}
-            buttonClassName={cn(
-              "w-full justify-start text-left font-normal px-2.5",
-              isRangeMode
-                ? !rangeStart && !rangeEnd && "text-text-tertiary"
-                : !value && "text-text-tertiary",
-              className,
-            )}
-          >
-            <i className="i-mgc-calendar-time-add-cute-re mr-2 size-4" />
-            {isRangeMode
-              ? formatRangeButtonLabel()
-              : value
-                ? currentDateTime.format("MMM DD, YYYY HH:mm")
-                : placeholder}
-          </Button>
+          {children || (
+            <Button
+              variant="outline"
+              disabled={disabled}
+              buttonClassName={cn(
+                "w-full justify-start text-left font-normal px-2.5",
+                isRangeMode
+                  ? !rangeStart && !rangeEnd && "text-text-tertiary"
+                  : !value && "text-text-tertiary",
+                className,
+              )}
+            >
+              <i className="i-mgc-calendar-time-add-cute-re mr-2 size-4" />
+              {isRangeMode
+                ? formatRangeButtonLabel()
+                : value
+                  ? currentDateTime.format("MMM DD, YYYY HH:mm")
+                  : placeholder}
+            </Button>
+          )}
         </PopoverTrigger>
 
         <PopoverContent

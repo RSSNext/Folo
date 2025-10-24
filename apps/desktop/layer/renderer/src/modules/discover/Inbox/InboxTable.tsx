@@ -19,9 +19,9 @@ export const InboxTable = () => {
   const inboxes = useInboxList()
   if (inboxes.length === 0)
     return (
-      <div className="center text-text-secondary mb-4 flex flex-col gap-2 text-sm">
+      <div className="center mb-4 flex flex-col gap-2 text-sm text-text-secondary">
         <i className="i-mingcute-empty-box-line text-3xl" />
-        <span className="center text-text-secondary max-w-sm text-balance text-center text-sm">
+        <span className="center max-w-sm text-balance text-center text-sm text-text-secondary">
           {t("discover.inbox.no_inbox")}
         </span>
       </div>

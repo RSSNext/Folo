@@ -44,7 +44,7 @@ export function PlayerTabBar({ className }: { className?: string }) {
   return (
     <Animated.View
       style={animatedStyle}
-      className={cn("border-opaque-separator/50 border-b-hairline px-2", className)}
+      className={cn("border-b-hairline border-opaque-separator/50 px-2", className)}
     >
       <Pressable
         onPress={() => {
@@ -59,7 +59,7 @@ export function PlayerTabBar({ className }: { className?: string }) {
             className="size-12 rounded-lg"
           />
           <View className="flex-1 overflow-hidden">
-            <Text className="text-label text-lg font-semibold" numberOfLines={1}>
+            <Text className="text-lg font-semibold text-label" numberOfLines={1}>
               {activeTrack?.title ?? ""}
             </Text>
           </View>

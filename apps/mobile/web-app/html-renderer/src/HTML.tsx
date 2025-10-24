@@ -66,7 +66,7 @@ export const HTML = <A extends keyof React.JSX.IntrinsicElements = "div">(props:
           {
             ...rest,
             ref: setRefElement,
-            className: clsx("prose mx-auto px-5 pb-8", "dark:prose-invert"),
+            className: clsx("prose mx-auto px-5 pb-8 [text-autospace:normal]", "dark:prose-invert"),
           },
           markdownElement,
         )}

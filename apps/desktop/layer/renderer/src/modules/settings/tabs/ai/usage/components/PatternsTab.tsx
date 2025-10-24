@@ -15,10 +15,10 @@ export const PatternsTab = ({ hourBuckets, maxHourCount, byOperation }: Patterns
   const { t } = useTranslation("ai")
 
   return (
-    <div className="@md:grid-cols-2 mx-4 grid grid-cols-1 gap-4">
+    <div className="mx-4 grid grid-cols-1 gap-4 @md:grid-cols-2">
       <Card>
         <CardHeader>
-          <CardTitle className="text-text text-base">
+          <CardTitle className="text-base text-text">
             {t("analytics.peak_hours", { defaultValue: "Peak hours" })}
           </CardTitle>
         </CardHeader>
@@ -30,7 +30,7 @@ export const PatternsTab = ({ hourBuckets, maxHourCount, byOperation }: Patterns
               highlightThreshold={(v) => v >= Math.max(1, Math.round(maxHourCount * 0.6))}
             />
           </div>
-          <div className="text-text-tertiary grid grid-cols-6 gap-1 text-[10px]">
+          <div className="grid grid-cols-6 gap-1 text-[10px] text-text-tertiary">
             <span>00</span>
             <span>04</span>
             <span>08</span>
@@ -43,7 +43,7 @@ export const PatternsTab = ({ hourBuckets, maxHourCount, byOperation }: Patterns
 
       <Card>
         <CardHeader>
-          <CardTitle className="text-text text-base">
+          <CardTitle className="text-base text-text">
             {t("analytics.by_operation", { defaultValue: "By operation" })}
           </CardTitle>
         </CardHeader>
@@ -59,7 +59,7 @@ export const PatternsTab = ({ hourBuckets, maxHourCount, byOperation }: Patterns
               suffix="%"
             />
           ) : (
-            <div className="text-text-tertiary py-8 text-center text-sm">
+            <div className="py-8 text-center text-sm text-text-tertiary">
               {t("analytics.no_data")}
             </div>
           )}

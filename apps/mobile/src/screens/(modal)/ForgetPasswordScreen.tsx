@@ -61,12 +61,12 @@ export const ForgetPasswordScreen: NavigationControllerView = () => {
           }}
         >
           <View className="items-center">
-            <Text className="text-text text-center text-4xl font-bold">Forgot password?</Text>
-            <Text className="text-text mx-10 mt-6 text-center text-lg">
+            <Text className="text-center text-4xl font-bold text-text">Forgot password?</Text>
+            <Text className="mx-10 mt-6 text-center text-lg text-text">
               Enter your email address that you use with your account to continue.
             </Text>
 
-            <View className="bg-secondary-system-background mt-6 gap-4 self-stretch rounded-2xl px-6 py-4">
+            <View className="mt-6 gap-4 self-stretch rounded-2xl bg-secondary-system-background px-6 py-4">
               <View className="flex-row">
                 <PlainTextField
                   autoCapitalize="none"
@@ -74,7 +74,7 @@ export const ForgetPasswordScreen: NavigationControllerView = () => {
                   keyboardType="email-address"
                   autoComplete="email"
                   placeholder="Email"
-                  className="text-text flex-1"
+                  className="flex-1 text-text"
                   value={email}
                   onChangeText={setEmail}
                   onSubmitEditing={() => forgetPasswordMutation.mutate(email)}

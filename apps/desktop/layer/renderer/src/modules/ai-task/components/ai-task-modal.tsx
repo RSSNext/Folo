@@ -6,17 +6,21 @@ import {
   FormItem,
   FormMessage,
 } from "@follow/components/ui/form/index.jsx"
-import { Input, TextArea } from "@follow/components/ui/input/index.js"
+import { Input } from "@follow/components/ui/input/index.js"
 import { Label } from "@follow/components/ui/label/index.jsx"
+import type { LexicalRichEditorRef } from "@follow/components/ui/lexical-rich-editor/index.js"
+import { LexicalRichEditorTextArea } from "@follow/components/ui/lexical-rich-editor/index.js"
 import type { AITask } from "@follow-app/client-sdk"
 import { zodResolver } from "@hookform/resolvers/zod"
 import dayjs from "dayjs"
+import { useRef, useState } from "react"
 import type { GlobalError } from "react-hook-form"
 import { useForm } from "react-hook-form"
 import { useTranslation } from "react-i18next"
 import { toast } from "sonner"
 
 import { useCurrentModal } from "~/components/ui/modal/stacked/hooks"
+import { MentionPlugin, ShortcutPlugin } from "~/modules/ai-chat/editor"
 import { AIPersistService } from "~/modules/ai-chat/services"
 import { useCreateAITaskMutation, useUpdateAITaskMutation } from "~/modules/ai-task/query"
 import type { ScheduleType, TaskFormData } from "~/modules/ai-task/types"
@@ -103,8 +107,7 @@ const getDefaultFormData = (task?: AITask, prompt?: string): TaskFormData => {
     name: task.name,
     prompt: task.prompt,
     schedule: formSchedule,
-    // @ts-expect-error --  Type fixed, remove this comment in next release
-    options: task.options ?? { notifyChannels: ["email"] },
+    options: { notifyChannels: ["email"], ...task.options },
   }
 }
 
@@ -124,6 +127,11 @@ export const AITaskModal = ({ task, prompt, showSettingsTip = false }: AITaskMod
 
   const scheduleValue = form.watch("schedule")
   const notifyChannelsValue = form.watch("options.notifyChannels")
+
+  // Uncontrolled prompt state handled outside react-hook-form
+  const initialPromptRef = useRef(form.getValues("prompt"))
+  const promptEditorRef = useRef<LexicalRichEditorRef | null>(null)
+  const [promptTextLength, setPromptTextLength] = useState(0)
 
   const handleScheduleChange = (newSchedule: ScheduleType) => {
     form.setValue("schedule", newSchedule)
@@ -167,19 +175,29 @@ export const AITaskModal = ({ task, prompt, showSettingsTip = false }: AITaskMod
 
   const currentMutation = isEditing ? updateAITaskMutation : createAITaskMutation
 
+  const onSubmit: React.FormEventHandler<HTMLFormElement> = (e) => {
+    if (!promptEditorRef.current) return
+    const promptValue = JSON.stringify(
+      promptEditorRef.current?.getEditor().getEditorState().toJSON(),
+    )
+
+    form.setValue("prompt", promptValue, { shouldDirty: true, shouldValidate: true })
+    return form.handleSubmit(handleSubmit)(e)
+  }
+
   return (
-    <div className="min-w-[400px] space-y-6">
+    <div className="w-[500px] max-w-full space-y-6">
       <Form {...form}>
-        <form onSubmit={form.handleSubmit(handleSubmit)} className="space-y-6">
+        <form onSubmit={onSubmit} className="space-y-6">
           {/* Task Basic Information Section */}
           <div className="space-y-4">
             <div className="flex items-center gap-2">
-              <i className="i-mgc-file-upload-cute-re text-text-secondary size-4" />
-              <h3 className="text-text text-sm font-medium">{t("tasks.section.info")}</h3>
+              <i className="i-mgc-file-upload-cute-re size-4 text-text-secondary" />
+              <h3 className="text-sm font-medium text-text">{t("tasks.section.info")}</h3>
             </div>
 
             <div className="space-y-2">
-              <Label className="text-text pl-2 text-sm font-medium">{t("tasks.name")}</Label>
+              <Label className="pl-2 text-sm font-medium text-text">{t("tasks.name")}</Label>
               <FormField
                 control={form.control}
                 name="name"
@@ -198,8 +216,8 @@ export const AITaskModal = ({ task, prompt, showSettingsTip = false }: AITaskMod
           {/* Schedule Configuration Section */}
           <div className="space-y-4">
             <div className="flex items-center gap-2">
-              <i className="i-mgc-calendar-time-add-cute-re text-text-secondary size-4" />
-              <h3 className="text-text text-sm font-medium">{t("tasks.section.schedule")}</h3>
+              <i className="i-mgc-calendar-time-add-cute-re size-4 text-text-secondary" />
+              <h3 className="text-sm font-medium text-text">{t("tasks.section.schedule")}</h3>
             </div>
 
             <ScheduleConfig
@@ -212,45 +230,44 @@ export const AITaskModal = ({ task, prompt, showSettingsTip = false }: AITaskMod
           {/* AI Prompt Section */}
           <div className="space-y-4">
             <div className="flex items-center gap-2">
-              <i className="i-mgc-magic-2-cute-re text-text-secondary size-4" />
-              <h3 className="text-text text-sm font-medium">{t("tasks.section.instructions")}</h3>
+              <i className="i-mgc-magic-2-cute-re size-4 text-text-secondary" />
+              <h3 className="text-sm font-medium text-text">{t("tasks.section.instructions")}</h3>
             </div>
 
             <div className="space-y-2">
-              <Label className="text-text pl-2 text-sm font-medium">{t("tasks.prompt")}</Label>
-              <FormField
-                control={form.control}
-                name="prompt"
-                render={({ field }) => (
-                  <FormItem>
-                    <FormControl>
-                      <TextArea
-                        placeholder={t("tasks.prompt_placeholder")}
-                        className="min-h-[120px] resize-none px-3 py-2 text-sm leading-relaxed"
-                        maxLength={2000}
-                        {...field}
-                      />
-                    </FormControl>
-                    <div className="flex items-center justify-between">
-                      <div className="text-text-tertiary text-xs">{t("tasks.prompt_helper")}</div>
-                      {field.value?.length > MAX_PROMPT_LENGTH * 0.8 && (
-                        <div className="text-text-secondary text-xs font-medium">
-                          {field.value.length}/{MAX_PROMPT_LENGTH}
-                        </div>
-                      )}
-                    </div>
-                    <FormMessage />
-                  </FormItem>
-                )}
+              <Label className="pl-2 text-sm font-medium text-text">{t("tasks.prompt")}</Label>
+              <LexicalRichEditorTextArea
+                initialValue={initialPromptRef.current}
+                ref={promptEditorRef}
+                onLengthChange={(textLength) => {
+                  setPromptTextLength(textLength)
+                }}
+                plugins={[MentionPlugin, ShortcutPlugin]}
+                namespace="AITaskPromptEditor"
+                placeholder={t("tasks.prompt_placeholder")}
+                className="min-h-[120px] resize-none text-sm leading-relaxed"
               />
+              <div className="flex items-center justify-between">
+                <div className="text-xs text-text-tertiary">{t("tasks.prompt_helper")}</div>
+                {promptTextLength > MAX_PROMPT_LENGTH * 0.8 && (
+                  <div className="text-xs font-medium text-text-secondary">
+                    {promptTextLength}/{MAX_PROMPT_LENGTH}
+                  </div>
+                )}
+              </div>
+              {(form.formState.errors.prompt as GlobalError | undefined)?.message && (
+                <div className="text-xs text-red">
+                  {(form.formState.errors.prompt as GlobalError).message}
+                </div>
+              )}
             </div>
           </div>
 
           {/* Notification Channels Section */}
           <div className="space-y-4">
             <div className="flex items-center gap-2">
-              <i className="i-mgc-notification-cute-re text-text-secondary size-4" />
-              <h3 className="text-text text-sm font-medium">{t("tasks.section.notifications")}</h3>
+              <i className="i-mgc-notification-cute-re size-4 text-text-secondary" />
+              <h3 className="text-sm font-medium text-text">{t("tasks.section.notifications")}</h3>
             </div>
             <NotifyChannelsConfig
               value={notifyChannelsValue}
@@ -265,7 +282,7 @@ export const AITaskModal = ({ task, prompt, showSettingsTip = false }: AITaskMod
               <button
                 type="button"
                 onClick={() => settingModalPresent("ai")}
-                className="text-text-tertiary hover:text-text-secondary mr-auto flex items-center gap-1 text-xs underline-offset-2 hover:underline disabled:opacity-50"
+                className="mr-auto flex items-center gap-1 text-xs text-text-tertiary underline-offset-2 hover:text-text-secondary hover:underline disabled:opacity-50"
                 disabled={currentMutation.isPending}
               >
                 <i className="i-mgc-settings-7-cute-re size-3" />

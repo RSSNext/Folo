@@ -1,15 +1,15 @@
 import { Spring } from "@follow/components/constants/spring.js"
-import { stopPropagation, thenable } from "@follow/utils"
+import { convertLexicalToMarkdown } from "@follow/components/ui/lexical-rich-editor/utils.js"
+import { nextFrame, stopPropagation, thenable } from "@follow/utils"
 import type { LexicalEditor, SerializedEditorState } from "lexical"
 import { AnimatePresence, m } from "motion/react"
 import * as React from "react"
 
+import { RelativeTime } from "~/components/ui/datetime"
 import { useEditingMessageId, useSetEditingMessageId } from "~/modules/ai-chat/atoms/session"
-import { useChatActions, useChatStatus } from "~/modules/ai-chat/store/hooks"
+import { useChatActions, useChatScene, useChatStatus } from "~/modules/ai-chat/store/hooks"
 import type { AIChatContextBlock, BizUIMessage } from "~/modules/ai-chat/store/types"
 
-import type { RichTextPart } from "../../types/ChatSession"
-import { convertLexicalToMarkdown } from "../../utils/lexical-markdown"
 import { AIDataBlockPart } from "./AIDataBlockPart"
 import { AIMessageIdContext } from "./AIMessageIdContext"
 import { EditableMessage } from "./EditableMessage"
@@ -54,9 +54,21 @@ export const UserChatMessage: React.FC<UserChatMessageProps> = React.memo(({ mes
     }
   }, [dataBlockParts.length, isEditing])
 
+  // Measure original message bubble height to initialize edit box height
+  const messageBubbleRef = React.useRef<HTMLDivElement>(null)
+  const [messageBubbleHeight, setMessageBubbleHeight] = React.useState(56)
+  // Only compute once before edit overlay appears
+
   const handleEdit = React.useCallback(() => {
-    setEditingMessageId(messageId)
-  }, [messageId, setEditingMessageId])
+    const el = messageBubbleRef.current
+    if (el) {
+      const { height } = el.getBoundingClientRect()
+      setMessageBubbleHeight(Math.max(56, Math.round(height)))
+    }
+    nextFrame(() => {
+      setEditingMessageId(messageId)
+    })
+  }, [messageId, setEditingMessageId, setMessageBubbleHeight])
 
   const handleSaveEdit = React.useCallback(
     (newState: SerializedEditorState, editor: LexicalEditor) => {
@@ -68,12 +80,10 @@ export const UserChatMessage: React.FC<UserChatMessageProps> = React.memo(({ mes
         const nextMessage = messages[messageIndex]!
         chatActions.setMessages(messagesToKeep)
 
-        const richTextPart = nextMessage.parts.find(
-          (part) => part.type === "data-rich-text",
-        ) as RichTextPart
+        const richTextPart = nextMessage.parts.find((part) => part.type === "data-rich-text")
         if (richTextPart) {
           richTextPart.data = {
-            state: newState,
+            state: JSON.stringify(newState),
             text: messageContent,
           }
         }
@@ -94,11 +104,13 @@ export const UserChatMessage: React.FC<UserChatMessageProps> = React.memo(({ mes
     chatActions.regenerate({ messageId })
   }, [chatActions, messageId])
 
+  const scene = useChatScene()
+
   return (
     <AIMessageIdContext value={messageId}>
       <div className="relative flex flex-col gap-3">
         {/* Render data-block parts separately, outside the chat bubble */}
-        {dataBlockParts.length > 0 && (
+        {dataBlockParts.length > 0 && scene !== "onboarding" && dataBlockParts.length > 0 && (
           <div ref={dataBlockRef} className="flex justify-end">
             <div className="max-w-[calc(100%-1rem)]">
               {dataBlockParts.map((part) => {
@@ -139,9 +151,8 @@ export const UserChatMessage: React.FC<UserChatMessageProps> = React.memo(({ mes
           onMouseEnter={() => setIsHovered(true)}
           onMouseLeave={() => setIsHovered(false)}
         >
-          <div className="text-text relative flex max-w-[calc(100%-1rem)] flex-col gap-2">
-            {/* Normal message display - always rendered to maintain layout */}
-            <div className="text-text bg-mix-accent/background-1/4 rounded-2xl px-4 py-2.5 backdrop-blur-sm">
+          <div className="relative flex max-w-[calc(100%-1rem)] flex-col gap-2 text-text">
+            <div ref={messageBubbleRef} className="rounded-2xl bg-fill px-4 py-2.5 text-text">
               <div className="flex select-text flex-col gap-2 text-sm">
                 <UserMessageParts message={message} />
               </div>
@@ -150,17 +161,20 @@ export const UserChatMessage: React.FC<UserChatMessageProps> = React.memo(({ mes
             {/* Action buttons - only show when not editing */}
             {!isEditing && (
               <m.div
-                className="absolute bottom-1 right-0 flex gap-1"
+                className="absolute bottom-1 right-0 flex items-center gap-1"
                 initial={{ opacity: 0 }}
                 animate={{
                   opacity: isHovered ? 1 : 0,
                 }}
                 transition={{ duration: 0.2, ease: "easeOut" }}
               >
+                <span className="whitespace-nowrap px-2 py-1 text-[11px] leading-none text-text-tertiary">
+                  <RelativeTime date={message.createdAt} />
+                </span>
                 <button
                   type="button"
                   onClick={handleEdit}
-                  className="text-text-secondary hover:bg-fill-secondary flex items-center gap-1 rounded-md px-2 py-1 text-xs transition-colors"
+                  className="flex items-center gap-1 rounded-md px-2 py-1 text-xs text-text-secondary transition-colors hover:bg-fill-secondary"
                   title="Edit message"
                 >
                   <i className="i-mgc-edit-cute-re size-3" />
@@ -169,7 +183,7 @@ export const UserChatMessage: React.FC<UserChatMessageProps> = React.memo(({ mes
                 <button
                   type="button"
                   onClick={handleRetry}
-                  className="text-text-secondary hover:bg-fill-secondary flex items-center gap-1 rounded-md px-2 py-1 text-xs transition-colors"
+                  className="flex items-center gap-1 rounded-md px-2 py-1 text-xs text-text-secondary transition-colors hover:bg-fill-secondary"
                   title="Retry"
                 >
                   <i className="i-mgc-refresh-2-cute-re size-3" />
@@ -201,7 +215,8 @@ export const UserChatMessage: React.FC<UserChatMessageProps> = React.memo(({ mes
                   parts={message.parts}
                   onSave={handleSaveEdit}
                   onCancel={handleCancelEdit}
-                  className="min-h-full w-full"
+                  className="w-full"
+                  initialHeight={messageBubbleHeight}
                 />
               </div>
             </m.div>

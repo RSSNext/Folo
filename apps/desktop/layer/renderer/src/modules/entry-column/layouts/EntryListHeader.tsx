@@ -2,13 +2,14 @@ import { ActionButton, MotionButtonBase } from "@follow/components/ui/button/ind
 import { DividerVertical } from "@follow/components/ui/divider/index.js"
 import { RotatingRefreshIcon } from "@follow/components/ui/loading/index.jsx"
 import { EllipsisHorizontalTextWithTooltip } from "@follow/components/ui/typography/index.js"
-import { FeedViewType, views } from "@follow/constants"
+import { FeedViewType, getView } from "@follow/constants"
 import { useIsOnline } from "@follow/hooks"
 import { getFeedById } from "@follow/store/feed/getter"
 import { useFeedById } from "@follow/store/feed/hooks"
 import { useWhoami } from "@follow/store/user/hooks"
 import { stopPropagation } from "@follow/utils/dom"
-import { cn, isBizId } from "@follow/utils/utils"
+import { clsx, cn, isBizId } from "@follow/utils/utils"
+import { useAtomValue } from "jotai"
 import type { FC } from "react"
 import { useTranslation } from "react-i18next"
 import { useNavigate } from "react-router"
@@ -17,7 +18,6 @@ import { previewBackPath } from "~/atoms/preview"
 import { useGeneralSettingKey } from "~/atoms/settings/general"
 import { useSubscriptionColumnShow } from "~/atoms/sidebar"
 import { ROUTE_ENTRY_PENDING } from "~/constants"
-import { useFeature } from "~/hooks/biz/useFeature"
 import { useFollow } from "~/hooks/biz/useFollow"
 import { getRouteParams, useRouteParams } from "~/hooks/biz/useRouteParams"
 import { COMMAND_ID } from "~/modules/command/commands/id"
@@ -30,9 +30,9 @@ import { useFeedHeaderIcon, useFeedHeaderTitle } from "~/store/feed/hooks"
 
 import { MarkAllReadButton } from "../components/mark-all-button"
 import { useIsPreviewFeed } from "../hooks/useIsPreviewFeed"
+import { useEntryRootState } from "../store/EntryColumnContext"
 import { AppendTaildingDivider } from "./AppendTaildingDivider"
 import { SwitchToMasonryButton } from "./buttons/SwitchToMasonryButton"
-import { WideModeButton } from "./buttons/WideModeButton"
 
 export const EntryListHeader: FC<{
   refetch: () => void
@@ -51,8 +51,13 @@ export const EntryListHeader: FC<{
   const feedIcon = useFeedHeaderIcon()
 
   const titleInfo = !!headerTitle && (
-    <div className="flex min-w-0 items-center break-all text-lg font-bold leading-tight">
-      {feedIcon && <FeedIcon target={feedIcon} fallback size={20} />}
+    <div
+      className={clsx(
+        "flex min-w-0 items-center break-all text-lg font-bold leading-tight",
+        feedIcon && "-ml-3",
+      )}
+    >
+      {feedIcon && <FeedIcon target={feedIcon} fallback size={20} className="mr-4" />}
       <EllipsisHorizontalTextWithTooltip className="inline-block !w-auto max-w-full">
         {headerTitle}
       </EllipsisHorizontalTextWithTooltip>
@@ -79,39 +84,40 @@ export const EntryListHeader: FC<{
   const toggleUnreadOnlyShortcut = useCommandShortcut(COMMAND_ID.timeline.unreadOnly)
   const runCmdFn = useRunCommandFn()
 
-  const aiEnabled = useFeature("ai")
+  const { isScrolledBeyondThreshold } = useEntryRootState()
+  const isScrolledBeyondThresholdValue = useAtomValue(isScrolledBeyondThreshold)
   return (
     <div
       className={cn(
-        "flex h-12 w-full flex-col pr-4 pt-2.5",
+        "flex h-top-header-with-border-b w-full flex-col pr-2.5 pt-2 @[700px]:pr-3 @[1024px]:pr-4",
         !feedColumnShow && "macos:mt-4 macos:pt-margin-macos-traffic-light-y",
         titleStyleBasedView[view],
-        isPreview && "px-4",
+        isPreview && "px-2.5 @[700px]:px-3 @[1024px]:px-4",
+        view === FeedViewType.All &&
+          "border-b border-transparent data-[scrolled-beyond-threshold=true]:border-b-border",
       )}
+      data-scrolled-beyond-threshold={isScrolledBeyondThresholdValue}
     >
       <div className={"flex w-full justify-between"}>
         {isPreview ? <PreviewHeaderInfoWrapper>{titleInfo}</PreviewHeaderInfoWrapper> : titleInfo}
         {!isPreview && (
           <div
             className={cn(
-              "text-text-secondary relative z-[1] flex items-center gap-2 self-baseline",
+              "relative z-[1] flex items-center gap-2 self-baseline text-text-secondary",
               !headerTitle && "opacity-0 [&_*]:!pointer-events-none",
 
               "translate-x-[6px]",
             )}
             onClick={stopPropagation}
           >
-            {views.find((v) => v.view === view)?.wideMode &&
-              entryId &&
-              entryId !== ROUTE_ENTRY_PENDING && (
-                <>
-                  <EntryHeader entryId={entryId} />
-                  <DividerVertical className="mx-2 w-px" />
-                </>
-              )}
+            {getView(view)?.wideMode && entryId && entryId !== ROUTE_ENTRY_PENDING && (
+              <>
+                <EntryHeader entryId={entryId} />
+                <DividerVertical className="mx-2 w-px" />
+              </>
+            )}
 
             <AppendTaildingDivider>
-              {!views.find((v) => v.view === view)?.wideMode && !aiEnabled && <WideModeButton />}
               {view === FeedViewType.Pictures && <SwitchToMasonryButton />}
             </AppendTaildingDivider>
 
@@ -184,7 +190,7 @@ const PreviewHeaderInfoWrapper: Component = ({ children }) => {
             e.stopPropagation()
             navigate(previewBackPath() || "/")
           }}
-          className="no-drag-region hover:text-accent mr-1 inline-flex items-center gap-1 whitespace-nowrap duration-200"
+          className="no-drag-region mr-1 inline-flex items-center gap-1 whitespace-nowrap duration-200 hover:text-accent"
         >
           <i className="i-mingcute-left-line" />
           <span className="text-sm font-medium">{tCommon("words.back")}</span>
@@ -195,7 +201,7 @@ const PreviewHeaderInfoWrapper: Component = ({ children }) => {
 
       <button
         type="button"
-        className="text-accent cursor-button from-accent/10 via-accent/15 to-accent/20 hover:bg-accent animate-gradient-x -mx-4 mt-3.5 flex place-items-center justify-center gap-1 bg-gradient-to-r px-3 py-2 font-semibold transition-all duration-300 hover:text-white"
+        className="-mx-4 mt-3.5 flex animate-gradient-x cursor-button place-items-center justify-center gap-1 bg-gradient-to-r from-accent/10 via-accent/15 to-accent/20 px-3 py-2 font-semibold text-accent transition-all duration-300 hover:bg-accent hover:text-white"
         onClick={() => {
           const { feedId, listId } = getRouteParams()
           const feed = getFeedById(feedId)

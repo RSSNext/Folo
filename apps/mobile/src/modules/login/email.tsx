@@ -77,7 +77,7 @@ export function EmailLogin() {
   const navigation = useNavigation()
   return (
     <View className="mx-auto flex w-full max-w-sm">
-      <View className="bg-secondary-system-background gap-4 rounded-2xl px-6 py-4">
+      <View className="gap-4 rounded-2xl bg-secondary-system-background px-6 py-4">
         <View className="flex-row">
           <PlainTextField
             onChangeText={(text) => {
@@ -90,14 +90,14 @@ export function EmailLogin() {
             keyboardType="email-address"
             autoComplete="email"
             placeholder="Email"
-            className="text-text flex-1"
+            className="flex-1 text-text"
             returnKeyType="next"
             onSubmitEditing={() => {
               KeyboardController.setFocusTo("next")
             }}
           />
         </View>
-        <View className="border-b-opaque-separator border-b-hairline" />
+        <View className="border-b-hairline border-b-opaque-separator" />
         <View className="flex-row">
           <PlainTextField
             onChangeText={(text) => {
@@ -109,7 +109,7 @@ export function EmailLogin() {
             autoCorrect={false}
             autoComplete="current-password"
             placeholder="Password"
-            className="text-text flex-1"
+            className="flex-1 text-text"
             secureTextEntry
             returnKeyType="go"
             onSubmitEditing={onLogin}
@@ -121,7 +121,7 @@ export function EmailLogin() {
         className="mx-auto my-5"
         onPress={() => navigation.presentControllerView(ForgetPasswordScreen)}
       >
-        <Text className="text-secondary-label text-sm">Forgot password?</Text>
+        <Text className="text-sm text-secondary-label">Forgot password?</Text>
       </TouchableOpacity>
       <SubmitButton isLoading={submitMutation.isPending} onPress={onLogin} title="Continue" />
     </View>
@@ -203,7 +203,7 @@ export function EmailSignUp() {
   })
   return (
     <View className="mx-auto flex w-full max-w-sm">
-      <View className="bg-secondary-system-background gap-4 rounded-2xl px-6 py-4">
+      <View className="gap-4 rounded-2xl bg-secondary-system-background px-6 py-4">
         <View className="flex-row">
           <SignupInput
             hitSlop={20}
@@ -214,14 +214,14 @@ export function EmailSignUp() {
             control={control}
             name="email"
             placeholder="Email"
-            className="text-text flex-1"
+            className="flex-1 text-text"
             returnKeyType="next"
             onSubmitEditing={() => {
               KeyboardController.setFocusTo("next")
             }}
           />
         </View>
-        <View className="border-b-opaque-separator border-b-hairline" />
+        <View className="border-b-hairline border-b-opaque-separator" />
         <View className="flex-row">
           <SignupInput
             hitSlop={20}
@@ -231,12 +231,12 @@ export function EmailSignUp() {
             control={control}
             name="password"
             placeholder="Password"
-            className="text-text flex-1"
+            className="flex-1 text-text"
             secureTextEntry
             returnKeyType="next"
           />
         </View>
-        <View className="border-b-opaque-separator border-b-hairline" />
+        <View className="border-b-hairline border-b-opaque-separator" />
         <View className="flex-row">
           <SignupInput
             hitSlop={20}
@@ -246,7 +246,7 @@ export function EmailSignUp() {
             control={control}
             name="confirmPassword"
             placeholder="Confirm Password"
-            className="text-text flex-1"
+            className="flex-1 text-text"
             secureTextEntry
             returnKeyType="go"
             onSubmitEditing={() => {
@@ -256,7 +256,7 @@ export function EmailSignUp() {
         </View>
         {serverConfigs?.REFERRAL_ENABLED && (
           <>
-            <View className="border-b-opaque-separator border-b-hairline" />
+            <View className="border-b-hairline border-b-opaque-separator" />
             <ReferralForm />
           </>
         )}

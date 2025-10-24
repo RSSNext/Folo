@@ -6,7 +6,7 @@ import { startTransition } from "react"
 
 import { AIPersistService } from "../../services"
 import { ChatStateEventEmitter } from "../event-system/event-emitter"
-import type { BizUIMessage } from "../types"
+import type { BizUIMessage, SendingUIMessage } from "../types"
 import type { ChatSlice } from "./types"
 
 // Zustand Chat State that implements AI SDK ChatState interface
@@ -76,6 +76,7 @@ export class ZustandChatState implements ChatState<BizUIMessage> {
     })
   }
 
+  //// AI SDK ChatState abstract override methods or properties
   get status(): ChatStatus {
     return this.#status
   }
@@ -113,8 +114,8 @@ export class ZustandChatState implements ChatState<BizUIMessage> {
     })
   }
 
-  pushMessage = (message: BizUIMessage) => {
-    this.messages = this.#messages.concat(message)
+  pushMessage = (message: SendingUIMessage) => {
+    this.messages = this.#messages.concat(this.#fillMessageCreatedAt(message))
   }
 
   popMessage = () => {
@@ -128,55 +129,24 @@ export class ZustandChatState implements ChatState<BizUIMessage> {
 
     this.messages = [
       ...this.#messages.slice(0, index),
-      // Deep clone the message to ensure React detects changes
-      this.snapshot(message),
+      this.snapshot(this.#fillMessageCreatedAt(message)),
       ...this.#messages.slice(index + 1),
     ]
   }
 
   snapshot = <T>(value: T): T => structuredClone(value)
+  //// AI SDK ChatState abstract override methods or properties
+  //// END
 
-  // Callback registration methods with proper AI SDK compatibility
-  registerMessagesCallback = (onChange: () => void, throttleWaitMs?: number): (() => void) => {
-    const callback = throttleWaitMs ? throttle(onChange, throttleWaitMs) : onChange
-
-    // Convert payload-based event to AI SDK expected callback format
-    return this.#eventEmitter.on("messages", () => callback())
-  }
-
-  registerStatusCallback = (onChange: () => void): (() => void) => {
-    // Convert payload-based event to AI SDK expected callback format
-    return this.#eventEmitter.on("status", () => onChange())
-  }
-
-  registerErrorCallback = (onChange: () => void): (() => void) => {
-    // Convert payload-based event to AI SDK expected callback format
-    return this.#eventEmitter.on("error", () => onChange())
-  }
-
-  // Internal event subscription with payload access
-  onMessagesChange = (listener: (messages: BizUIMessage[]) => void): (() => void) => {
-    return this.#eventEmitter.on("messages", ({ messages }) => listener(messages))
-  }
-
-  onStatusChange = (listener: (status: ChatStatus) => void): (() => void) => {
-    return this.#eventEmitter.on("status", ({ status }) => listener(status))
-  }
-
-  onErrorChange = (listener: (error: Error | undefined) => void): (() => void) => {
-    return this.#eventEmitter.on("error", ({ error }) => listener(error))
-  }
-
-  // Persistence methods
   #persistMessages = throttle(
     async () => {
       // Skip if no messages
       if (this.#messages.length === 0) return
 
       try {
-        await AIPersistService.ensureSession(this.chatId, "New Chat")
+        await AIPersistService.ensureSession(this.chatId)
         // Save messages using incremental updates
-        await AIPersistService.upsertMessages(this.chatId, this.#messages)
+        await AIPersistService.replaceAllMessages(this.chatId, this.#messages)
         // Update session time after successfully saving messages
         await AIPersistService.updateSessionTime(this.chatId)
       } catch (error) {
@@ -187,7 +157,26 @@ export class ZustandChatState implements ChatState<BizUIMessage> {
     { leading: true, trailing: true },
   )
 
-  // Cleanup method
+  #fillMessageCreatedAt(message: SendingUIMessage | BizUIMessage): BizUIMessage {
+    // we should directly edit the message object instead of creating a new one
+    const nextMessage = message as BizUIMessage
+
+    if (nextMessage.createdAt) return nextMessage
+    if (
+      nextMessage.role === "assistant" &&
+      nextMessage.metadata?.finishTime &&
+      nextMessage.metadata?.duration
+    ) {
+      nextMessage.createdAt = new Date(
+        new Date(nextMessage.metadata.finishTime).getTime() - nextMessage.metadata.duration,
+      )
+    } else {
+      nextMessage.createdAt = new Date()
+    }
+
+    return nextMessage
+  }
+
   destroy(): void {
     this.#eventEmitter.clear()
   }
