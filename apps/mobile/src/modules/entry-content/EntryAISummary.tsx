@@ -57,7 +57,7 @@ export const EntryAISummary: FC<{
   return (
     <ErrorBoundary
       fallbackRender={() => (
-        <Text className="text-label text-[16px] leading-[24px]">
+        <Text className="text-[16px] leading-[24px] text-label">
           Failed to generate summary. Rendering error.
         </Text>
       )}

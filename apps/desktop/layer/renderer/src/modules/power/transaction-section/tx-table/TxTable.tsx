@@ -36,7 +36,7 @@ export const TxTable = ({ className, type }: ComponentType<TxTableProps>) => {
   return (
     <div className={cn("w-fit min-w-0 grow overflow-x-auto", className)}>
       <Table className="w-full table-fixed">
-        <TableHeader className="bg-theme-background sticky top-0">
+        <TableHeader className="sticky top-0 bg-theme-background">
           <TableRow className="[&_*]:!pl-0 [&_*]:!font-semibold">
             <TableHead>{t("wallet.transactions.type")}</TableHead>
             <TableHead>{t("wallet.transactions.amount")}</TableHead>

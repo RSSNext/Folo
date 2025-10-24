@@ -11,8 +11,7 @@ import Fastify from "fastify"
 import { nanoid } from "nanoid"
 import { FetchError } from "ofetch"
 
-import { MetaError } from "~/meta-handler"
-
+import { MetaError } from "./src/meta-handler"
 import { globalRoute } from "./src/router/global"
 import { ogRoute } from "./src/router/og"
 

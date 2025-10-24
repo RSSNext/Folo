@@ -1,9 +1,14 @@
 import type { AsyncDb } from "@follow/database/db"
 import { db } from "@follow/database/db"
+import type { AiChatMessagesModel } from "@follow/database/schemas/index"
 import { aiChatMessagesTable, aiChatTable } from "@follow/database/schemas/index"
 import { asc, count, eq, inArray, sql } from "drizzle-orm"
 
-import type { BizUIMessage } from "../store/types"
+import { getI18n } from "~/i18n"
+import { followClient } from "~/lib/api-client"
+
+import { AI_CHAT_SPECIAL_ID_PREFIX } from "../constants"
+import type { BizUIMessage, BizUIMessagePart } from "../store/types"
 import { isDataBlockPart, isFileAttachmentBlock } from "../utils/extractor"
 
 class AIPersistServiceStatic {
@@ -27,7 +32,7 @@ class AIPersistServiceStatic {
     }
   }
 
-  async loadMessages(chatId: string) {
+  async loadMessages(chatId: string): Promise<AiChatMessagesModel[]> {
     return db.query.aiChatMessagesTable.findMany({
       where: eq(aiChatMessagesTable.chatId, chatId),
       orderBy: [asc(aiChatMessagesTable.createdAt)],
@@ -37,26 +42,16 @@ class AIPersistServiceStatic {
   /**
    * Convert enhanced database message to BizUIMessage format for compatibility
    */
-  private convertToUIMessage(dbMessage: any): BizUIMessage {
-    // Reconstruct UIMessage from database fields
+  private convertToUIMessage(dbMessage: AiChatMessagesModel): BizUIMessage {
     const uiMessage: BizUIMessage = {
       id: dbMessage.id,
       role: dbMessage.role,
-      parts: [], // AI SDK v5 uses parts array
+      createdAt: dbMessage.createdAt,
+      parts: [],
     }
 
-    // Add parts based on content format and data
     if (dbMessage.messageParts && dbMessage.messageParts.length > 0) {
-      // For assistant messages with complex parts (tools, reasoning, etc)
-      uiMessage.parts = dbMessage.messageParts
-    } else {
-      // For simple text messages, create a text part
-      uiMessage.parts = [
-        {
-          type: "text",
-          text: dbMessage.content,
-        },
-      ]
+      uiMessage.parts = dbMessage.messageParts as any[] as BizUIMessagePart[]
     }
 
     return uiMessage
@@ -75,7 +70,12 @@ class AIPersistServiceStatic {
    * Returns both session details and messages to avoid redundant queries
    */
   async loadSessionWithMessages(chatId: string): Promise<{
-    session: { chatId: string; title?: string; createdAt: Date; updatedAt: Date } | null
+    session: {
+      chatId: string
+      title?: string
+      createdAt: Date
+      updatedAt: Date
+    } | null
     messages: BizUIMessage[]
   }> {
     // Load both session and messages in parallel
@@ -85,63 +85,30 @@ class AIPersistServiceStatic {
     ])
 
     // Convert null title to undefined for type compatibility
-    const session = sessionRaw
-      ? {
-          ...sessionRaw,
-          title: sessionRaw.title || undefined,
-        }
-      : null
+    if (!sessionRaw) {
+      return { session: null, messages }
+    }
+
+    const resolvedTitle = this.resolveSessionTitle(sessionRaw.chatId, sessionRaw.title, {
+      createdAt: sessionRaw.createdAt,
+      updatedAt: sessionRaw.updatedAt,
+    })
+
+    if (resolvedTitle && sessionRaw.title !== resolvedTitle) {
+      await this.updateSessionTitle(sessionRaw.chatId, resolvedTitle)
+    }
+
+    const session = {
+      ...sessionRaw,
+      title: resolvedTitle ?? undefined,
+    }
 
     return { session, messages }
   }
 
-  async insertMessages(chatId: string, messages: BizUIMessage[]) {
-    if (messages.length === 0) {
-      return
-    }
-
-    await db
-      .insert(aiChatMessagesTable)
-      .values(
-        messages.map((message) => {
-          // Store parts as-is since they're stored as JSON and the UI can handle them
-          const convertedParts = message.parts as any[]
-          const createdAt =
-            message.metadata?.finishTime && typeof message.metadata?.duration === "number"
-              ? new Date(
-                  new Date(message.metadata.finishTime).getTime() - message.metadata.duration,
-                )
-              : new Date()
-
-          return {
-            id: message.id,
-            chatId,
-            role: message.role,
-            createdAt,
-            status: "completed" as const,
-            finishedAt: message.metadata?.finishTime
-              ? new Date(message.metadata.finishTime)
-              : undefined,
-            messageParts: convertedParts,
-            metadata: message.metadata,
-          } satisfies typeof aiChatMessagesTable.$inferInsert
-        }),
-      )
-      .onConflictDoUpdate({
-        target: [aiChatMessagesTable.id],
-        set: {
-          messageParts: sql`excluded.message_parts`,
-          metadata: sql`excluded.metadata`,
-          finishedAt: sql`excluded.finished_at`,
-          createdAt: sql`excluded.created_at`,
-          status: sql`excluded.status`,
-        },
-      })
-  }
-
   async replaceAllMessages(chatId: string, messages: BizUIMessage[]) {
     await db.delete(aiChatMessagesTable).where(eq(aiChatMessagesTable.chatId, chatId))
-    await this.insertMessages(chatId, messages)
+    await this.upsertMessages(chatId, messages)
   }
 
   /**
@@ -155,15 +122,11 @@ class AIPersistServiceStatic {
 
     // Ensure the chat session exists first to avoid foreign key constraint failure
     await this.ensureSession(chatId)
+
     const results = messages.reduce<(typeof aiChatMessagesTable.$inferInsert)[]>((acc, message) => {
       if (message.parts.length === 0) return acc
 
-      const createdAt = message.metadata?.finishTime
-        ? new Date(
-            new Date(message.metadata.finishTime).getTime() - (message.metadata.duration ?? 0),
-          )
-        : new Date()
-
+      const { createdAt } = message
       const cleanParts = [] as typeof message.parts
 
       for (const part of message.parts) {
@@ -190,7 +153,7 @@ class AIPersistServiceStatic {
         finishedAt: message.metadata?.finishTime
           ? new Date(message.metadata.finishTime)
           : undefined,
-        messageParts: cleanParts as (typeof aiChatMessagesTable.$inferInsert)["messageParts"],
+        messageParts: cleanParts,
         metadata: message.metadata,
       })
 
@@ -223,45 +186,160 @@ class AIPersistServiceStatic {
       .where(eq(aiChatMessagesTable.chatId, chatId) && inArray(aiChatMessagesTable.id, messageIds))
   }
 
+  private resolveSessionTitle(
+    chatId: string,
+    title?: string | null,
+    timestamps?: { createdAt?: Date; updatedAt?: Date },
+  ): string | undefined {
+    const trimmed = title?.trim()
+    if (trimmed) {
+      return trimmed
+    }
+
+    return this.getDefaultSessionTitle(chatId, timestamps)
+  }
+
+  private getDefaultSessionTitle(
+    chatId: string,
+    timestamps?: { createdAt?: Date; updatedAt?: Date },
+  ): string | undefined {
+    const i18n = getI18n()
+    const prefix = AI_CHAT_SPECIAL_ID_PREFIX.TIMELINE_SUMMARY
+
+    if (!chatId.startsWith(prefix)) {
+      const referenceDate = timestamps?.updatedAt ?? timestamps?.createdAt ?? new Date()
+      const formattedDateTime = this.formatDateTime(referenceDate, i18n.language)
+
+      return `${formattedDateTime} chat`
+    }
+
+    const datePart = chatId.slice(prefix.length)
+    const [yearStr, monthStr, dayStr] = datePart.split("-")
+
+    const now = new Date()
+    const year = Number.parseInt(yearStr ?? "", 10)
+    const month = Number.parseInt(monthStr ?? "", 10)
+    const day = Number.parseInt(dayStr ?? "", 10)
+
+    let targetDate = new Date(now)
+    if (!Number.isNaN(year) && !Number.isNaN(month) && !Number.isNaN(day)) {
+      const parsedDate = new Date(year, month - 1, day, now.getHours(), now.getMinutes())
+      if (!Number.isNaN(parsedDate.getTime())) {
+        targetDate = parsedDate
+      }
+    }
+
+    const formattedDateTime = this.formatDateTime(targetDate, i18n.language)
+
+    return `${formattedDateTime} timeline summary`
+  }
+
+  private formatDateTime(date: Date, locale?: string): string {
+    try {
+      const resolvedLocale = locale && locale.length > 0 ? locale : undefined
+      const timeFormatter = new Intl.DateTimeFormat(resolvedLocale, {
+        hour: "numeric",
+      })
+      const dateFormatter = new Intl.DateTimeFormat(resolvedLocale, {
+        dateStyle: "medium",
+      })
+
+      const formattedTime = timeFormatter.format(date)
+      const formattedDate = dateFormatter.format(date)
+
+      return `${formattedTime} ${formattedDate}`
+    } catch {
+      const pad = (value: number) => value.toString().padStart(2, "0")
+      const year = date.getFullYear()
+      const month = pad(date.getMonth() + 1)
+      const day = pad(date.getDate())
+      const hours = pad(date.getHours())
+      return `${hours} ${year}-${month}-${day}`
+    }
+  }
+
   /**
    * Ensure session exists (idempotent operation)
    */
-  async ensureSession(chatId: string, title?: string): Promise<void> {
-    // Check cache first to avoid database query
+  async ensureSession(
+    chatId: string,
+    options: { title?: string; createdAt?: Date; updatedAt?: Date } = {},
+  ): Promise<void> {
     const cachedExists = this.getSessionExistsFromCache(chatId)
+    const shouldCheckDb = cachedExists !== true || options.title
 
-    if (cachedExists === true) {
+    if (!shouldCheckDb) {
       return
     }
 
-    // Only query database if not in cache or cache shows it doesn't exist
-    if (cachedExists === undefined) {
-      const existing = await this.getChatSession(chatId)
+    const existing = await this.getChatSession(chatId)
 
-      if (existing) {
-        this.markSessionExists(chatId, true)
-        return
+    if (existing) {
+      this.markSessionExists(chatId, true)
+
+      const updates: Partial<typeof aiChatTable.$inferInsert> = {}
+      let shouldUpdate = false
+
+      const hasExistingTitle = existing.title?.trim().length
+      if (!hasExistingTitle) {
+        const resolvedTitle = this.resolveSessionTitle(chatId, options.title ?? existing.title, {
+          createdAt: existing.createdAt,
+          updatedAt: existing.updatedAt,
+        })
+        if (resolvedTitle && resolvedTitle !== existing.title) {
+          updates.title = resolvedTitle
+          shouldUpdate = true
+        }
       }
 
-      // Mark as not existing before creating
-      this.markSessionExists(chatId, false)
+      if (shouldUpdate) {
+        updates.updatedAt = new Date()
+        await db.update(aiChatTable).set(updates).where(eq(aiChatTable.chatId, chatId))
+      }
+      return
     }
 
     // Create new session
-    await this.createSession(chatId, title)
+    await this.createSession(chatId, options)
     this.markSessionExists(chatId, true)
   }
 
-  async createSession(chatId: string, title?: string) {
+  async createSession(
+    chatId: string,
+    options: { title?: string; createdAt?: Date; updatedAt?: Date } = {},
+  ) {
     const now = new Date()
     await db.insert(aiChatTable).values({
       chatId,
-      title,
-      createdAt: now,
-      updatedAt: now,
+      title: this.resolveSessionTitle(chatId, options.title, { createdAt: now, updatedAt: now }),
+      createdAt: options.createdAt ?? now,
+      updatedAt: options.updatedAt ?? now,
     })
     // Mark session as existing in cache
     this.markSessionExists(chatId, true)
+  }
+
+  async findTimelineSummarySession(criteria: {
+    view: number
+    feedId: string
+    timelineId?: string | null
+    unreadOnly: boolean
+  }) {
+    const timelineSegment = criteria.timelineId ?? "all"
+    const unreadSegment = criteria.unreadOnly ? "unread" : "all"
+    const prefix = `${AI_CHAT_SPECIAL_ID_PREFIX.TIMELINE_SUMMARY}${criteria.view}:${criteria.feedId}:${timelineSegment}:${unreadSegment}:`
+    return db.query.aiChatTable
+      .findFirst({
+        where: (table) => sql`${table.chatId} LIKE ${`${prefix}%`}`,
+        orderBy: (table, { desc }) => desc(table.updatedAt),
+        columns: {
+          chatId: true,
+          title: true,
+          createdAt: true,
+          updatedAt: true,
+        },
+      })
+      .then((session) => session ?? null)
   }
 
   async getChatSession(chatId: string) {
@@ -274,17 +352,7 @@ class AIPersistServiceStatic {
         updatedAt: true,
       },
     })
-
-    // Explicitly check if the result is valid
-    if (!result || !result.chatId) {
-      // Mark as not existing in cache
-      this.markSessionExists(chatId, false)
-      return null
-    }
-
-    // Mark as existing in cache
-    this.markSessionExists(chatId, true)
-    return result
+    return result?.chatId ? result : null
   }
 
   async getChatSessions(limit = 20) {
@@ -315,7 +383,25 @@ class AIPersistServiceStatic {
 
     const messageCountMap = new Map(messageCounts.map((item) => [item.chatId, item.messageCount]))
 
-    return chats
+    const normalizedChats = await Promise.all(
+      chats.map(async (chat) => {
+        const resolvedTitle = this.resolveSessionTitle(chat.chatId, chat.title, {
+          createdAt: chat.createdAt,
+          updatedAt: chat.updatedAt,
+        })
+
+        if (resolvedTitle && chat.title !== resolvedTitle) {
+          await this.updateSessionTitle(chat.chatId, resolvedTitle)
+        }
+
+        return {
+          ...chat,
+          title: resolvedTitle ?? chat.title ?? undefined,
+        }
+      }),
+    )
+
+    return normalizedChats
       .map((chat) => ({
         chatId: chat.chatId,
         title: chat.title,
@@ -331,6 +417,9 @@ class AIPersistServiceStatic {
     await db.delete(aiChatTable).where(eq(aiChatTable.chatId, chatId))
     // Clear session from cache
     this.clearSessionCache(chatId)
+    await followClient.api.aiChatSessions.delete({ chatId }).catch((error) => {
+      console.error("Failed to delete remote chat session:", error)
+    })
   }
 
   async updateSessionTitle(chatId: string, title: string) {

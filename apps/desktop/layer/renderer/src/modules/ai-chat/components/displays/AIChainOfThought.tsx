@@ -20,7 +20,7 @@ interface AIChainOfThoughtProps {
 }
 export const AIChainOfThought: React.FC<AIChainOfThoughtProps> = React.memo(
   ({ groups, isStreaming, className }) => {
-    const collapseId = React.useMemo(() => `chain-${Math.random().toString(36).slice(2)}`, [])
+    const collapseId = React.useId()
 
     const collapseRef = React.useRef<CollapseCssRef>(null)
 
@@ -36,10 +36,6 @@ export const AIChainOfThought: React.FC<AIChainOfThoughtProps> = React.memo(
         }
       }
 
-      const isEndWithTool = groups.at?.(-1)?.type.startsWith("tool-")
-      if (isEndWithTool) {
-        allDone = false
-      }
       return allDone
     }, [groups])
     const currentReasoningTitle = React.useMemo(() => {
@@ -58,7 +54,7 @@ export const AIChainOfThought: React.FC<AIChainOfThoughtProps> = React.memo(
     }, [groups, isStreaming])
 
     React.useEffect(() => {
-      collapseRef.current?.setIsOpened(!currentChainReasoningIsFinished)
+      if (currentChainReasoningIsFinished) collapseRef.current?.setIsOpened(false)
     }, [collapseRef, currentChainReasoningIsFinished])
 
     if (!groups || groups.length === 0) return null
@@ -66,7 +62,7 @@ export const AIChainOfThought: React.FC<AIChainOfThoughtProps> = React.memo(
     return (
       <div
         className={cn(
-          "border-border w-[calc(var(--ai-chat-message-container-width,65ch))] min-w-0 text-left",
+          "w-[calc(var(--ai-chat-message-container-width,65ch))] min-w-0 border-border text-left",
           className,
         )}
       >
@@ -114,7 +110,7 @@ export const AIChainOfThought: React.FC<AIChainOfThoughtProps> = React.memo(
             contentClassName="pb-2 pt-1"
           >
             <div className="relative">
-              <div aria-hidden className="border-fill absolute inset-y-0 left-2 border-l" />
+              <div aria-hidden className="absolute inset-y-0 left-2 border-l border-fill" />
               {groups.map((part, index) => {
                 const innerCollapseId = `${collapseId}-${index}`
                 if (isToolUIPart(part)) {
@@ -175,11 +171,11 @@ const AIInnerReasoningPart: React.FC<{
       defaultOpen
       title={
         <div className="group/inner flex h-6 min-w-0 flex-1 items-center py-0">
-          <div className="text-text-secondary flex items-center gap-2 text-xs">
+          <div className="flex items-center gap-2 text-xs text-text-secondary">
             {title ? (
               <span className="truncate">
                 {"Reason: "}
-                <span className="text-text font-medium">{title}</span>
+                <span className="font-medium text-text">{title}</span>
               </span>
             ) : (
               <span>{groupStreaming ? "Reasoning..." : "Reasoning"}</span>

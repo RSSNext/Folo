@@ -1,12 +1,13 @@
+import { clamp, cn } from "@follow/utils"
 import Spline from "@splinetool/react-spline"
 import { useCallback, useRef } from "react"
 
-const resolvedAIIconUrl = "https://cdn.follow.is/ai.splinecode"
+// TODO: use folo cdn
+const resolvedAIIconUrl = "https://prod.spline.design/n2hjp93nWReC-512/scene.splinecode"
 
-export const AISplineLoader = () => {
+export const AISplineLoader = ({ className }: { className?: string }) => {
   const containerRef = useRef<HTMLDivElement>(null)
   const headRef = useRef<any>(null)
-  const bodyRef = useRef<any>(null)
 
   // Angle conversion function: degrees to radians
   const degToRad = (degrees: number) => degrees * (Math.PI / 180)
@@ -27,10 +28,10 @@ export const AISplineLoader = () => {
 
       // Calculate head rotation angle based on relative position
       // Y-axis rotation (left-right): -70 to 70 degrees
-      const headRotationY = clampedX * 70
+      const headRotationY = clampedX * 20
 
       // X-axis rotation (up-down): -60 to 60 degrees
-      const headRotationX = clampedY * 60
+      const headRotationX = clampedY * 20
 
       return {
         x: degToRad(headRotationX),
@@ -40,101 +41,76 @@ export const AISplineLoader = () => {
     [],
   )
 
-  // Calculate body rotation angle (horizontal rotation only)
-  const calculateBodyRotation = useCallback((mouseX: number, containerRect: DOMRect) => {
-    const containerCenterX = containerRect.left + containerRect.width / 2
-
-    // Calculate mouse X position relative to container center (-1 to 1)
-    const relativeX = (mouseX - containerCenterX) / (window.innerWidth / 2)
-    const clampedX = Math.max(-1, Math.min(1, relativeX))
-
-    // Body Y-axis rotation: -30 to 30 degrees (smaller range than head rotation)
-    const bodyRotationY = clampedX * 30
-
-    return {
-      x: 0, // Body doesn't rotate up-down
-      y: degToRad(bodyRotationY),
-    }
-  }, [])
-
   const handleLoad = useCallback(
     (app: any) => {
-      const head = app.findObjectByName("Head")
-      const body = app.findObjectByName("Body")
+      const head = app.findObjectByName("Folo Character_V3")
 
-      if (!head || !body) {
+      if (!head) {
         console.warn("Cannot find Head or Body object")
         return
       }
 
       headRef.current = head
-      bodyRef.current = body
 
       const onMove = (e: MouseEvent) => {
-        if (!containerRef.current || !headRef.current || !bodyRef.current) return
+        if (!containerRef.current || !headRef.current) return
 
         const containerRect = containerRef.current.getBoundingClientRect()
 
         // Calculate head rotation
         const headRotation = calculateHeadRotation(e.clientX, e.clientY, containerRect)
-        headRef.current.rotation.x = headRotation.x
-        headRef.current.rotation.y = headRotation.y
-
-        // Calculate body rotation
-        const bodyRotation = calculateBodyRotation(e.clientX, containerRect)
-        bodyRef.current.rotation.x = bodyRotation.x
-        bodyRef.current.rotation.y = bodyRotation.y
+        headRef.current.rotation.x = clamp(headRotation.x, -0.5, 0.5)
+        headRef.current.rotation.y = clamp(headRotation.y, -0.5, 0.5)
       }
 
       // Reset to default position when mouse leaves
       const onMouseLeave = () => {
-        if (!headRef.current || !bodyRef.current) return
+        if (!headRef.current) return
 
         // Smooth transition back to default position
         const resetAnimation = () => {
-          if (!headRef.current || !bodyRef.current) return
+          if (!headRef.current) return
 
           const currentHeadX = headRef.current.rotation.x
           const currentHeadY = headRef.current.rotation.y
-          const currentBodyY = bodyRef.current.rotation.y
 
           // Simple linear interpolation to smoothly return rotation to 0
           headRef.current.rotation.x = currentHeadX * 0.9
           headRef.current.rotation.y = currentHeadY * 0.9
-          bodyRef.current.rotation.y = currentBodyY * 0.9
 
           // Continue animation if not fully returned to 0
-          if (
-            Math.abs(currentHeadX) > 0.01 ||
-            Math.abs(currentHeadY) > 0.01 ||
-            Math.abs(currentBodyY) > 0.01
-          ) {
+          if (Math.abs(currentHeadX) > 0.01 || Math.abs(currentHeadY) > 0.01) {
             requestAnimationFrame(resetAnimation)
           } else {
             // Complete reset to 0
             headRef.current.rotation.x = 0
             headRef.current.rotation.y = 0
-            bodyRef.current.rotation.x = 0
-            bodyRef.current.rotation.y = 0
           }
         }
 
         resetAnimation()
       }
 
+      const onClick = () => {
+        app.emitEvent("mouseDown", "Folo Character_V3")
+      }
+      onClick()
+
       window.addEventListener("pointermove", onMove)
       document.addEventListener("mouseleave", onMouseLeave)
+      window.addEventListener("click", onClick)
 
       return () => {
         window.removeEventListener("pointermove", onMove)
         document.removeEventListener("mouseleave", onMouseLeave)
+        window.removeEventListener("click", onClick)
       }
     },
-    [calculateHeadRotation, calculateBodyRotation],
+    [calculateHeadRotation],
   )
 
   return (
-    <div ref={containerRef} className={"!size-16"}>
+    <div ref={containerRef} className={cn("size-20", className)}>
       <Spline scene={resolvedAIIconUrl} onLoad={handleLoad} className="size-full" />
     </div>
   )

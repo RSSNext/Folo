@@ -52,13 +52,13 @@ export const UserAvatar = ({ className }: { className?: string }) => {
   return (
     <div
       className={cn(
-        "text-text-secondary flex h-20 items-center justify-center gap-8 px-10 py-4 text-2xl font-medium",
+        "flex h-20 items-center justify-center gap-8 px-10 py-4 text-2xl font-medium text-text-secondary",
         className,
       )}
     >
       <Avatar className="border">
         <AvatarImage
-          className="animate-in fade-in-0 aspect-square size-full duration-200"
+          className="aspect-square size-full duration-200 animate-in fade-in-0"
           src={image!}
         />
         <AvatarFallback style={colorfulStyle} className="text-sm">
@@ -66,7 +66,7 @@ export const UserAvatar = ({ className }: { className?: string }) => {
         </AvatarFallback>
       </Avatar>
 
-      <div className="text-text truncate">{name}</div>
+      <div className="truncate text-text">{name}</div>
     </div>
   )
 }

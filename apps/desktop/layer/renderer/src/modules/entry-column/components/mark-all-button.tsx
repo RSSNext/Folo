@@ -68,7 +68,7 @@ export const MarkAllReadButton = ({
           label: (
             <span className="flex items-center gap-1">
               {t("mark_all_read_button.undo")}
-              <Kbd className="border-border inline-flex items-center border bg-transparent text-white">
+              <Kbd className="inline-flex items-center border border-border bg-transparent text-white">
                 $mod+z
               </Kbd>
             </span>
@@ -117,7 +117,7 @@ const ConfirmMarkAllReadInfo = ({ undo }: { undo: () => any }) => {
   })
 
   return (
-    <div className="text-text flex flex-col">
+    <div className="flex flex-col text-text">
       <span>{t("mark_all_read_button.confirm_mark_all_info")}</span>
       <span className="text-text-secondary">
         {t("mark_all_read_button.auto_confirm_info", { countdown })}

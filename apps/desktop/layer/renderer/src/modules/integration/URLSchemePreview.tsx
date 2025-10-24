@@ -55,44 +55,44 @@ export const URLSchemePreview = ({ urlSchemeTemplate, className }: URLSchemePrev
       {isOpen && (
         <div className="space-y-3">
           {isLoading ? (
-            <div className="bg-material-medium flex items-center justify-center rounded-lg p-4">
+            <div className="flex items-center justify-center rounded-lg bg-material-medium p-4">
               <div className="flex items-center gap-2">
                 <i className="i-mgc-loading-3-cute-re animate-spin" />
-                <span className="text-text-tertiary text-sm">Generating preview...</span>
+                <span className="text-sm text-text-tertiary">Generating preview...</span>
               </div>
             </div>
           ) : preview ? (
-            <div className="bg-material-medium space-y-3 rounded-lg p-4">
+            <div className="space-y-3 rounded-lg bg-material-medium p-4">
               {/* URL Scheme Preview */}
               <div>
-                <h4 className="text-text-secondary mb-2 text-sm font-medium">
+                <h4 className="mb-2 text-sm font-medium text-text-secondary">
                   Generated URL Scheme
                 </h4>
-                <div className="bg-material-medium flex items-center gap-2 rounded p-2 font-mono text-sm">
-                  <span className="bg-green/10 text-green rounded px-2 py-1 text-xs font-bold">
+                <div className="flex items-center gap-2 rounded bg-material-medium p-2 font-mono text-sm">
+                  <span className="rounded bg-green/10 px-2 py-1 text-xs font-bold text-green">
                     SCHEME
                   </span>
-                  <span className="text-text-secondary break-all">{preview}</span>
+                  <span className="break-all text-text-secondary">{preview}</span>
                 </div>
               </div>
 
               {/* Protocol Info */}
               <div>
-                <h4 className="text-text-secondary mb-2 text-sm font-medium">
+                <h4 className="mb-2 text-sm font-medium text-text-secondary">
                   Protocol Information
                 </h4>
-                <div className="bg-material-medium space-y-1 rounded p-2">
+                <div className="space-y-1 rounded bg-material-medium p-2">
                   <div className="flex font-mono text-sm">
-                    <span className="text-text-secondary min-w-0 flex-shrink-0 pr-2">
+                    <span className="min-w-0 flex-shrink-0 pr-2 text-text-secondary">
                       Protocol:
                     </span>
-                    <span className="text-text-tertiary min-w-0 flex-1 break-all">
+                    <span className="min-w-0 flex-1 break-all text-text-tertiary">
                       {preview.split("://")[0]}://
                     </span>
                   </div>
                   <div className="flex font-mono text-sm">
-                    <span className="text-text-secondary min-w-0 flex-shrink-0 pr-2">Action:</span>
-                    <span className="text-text-tertiary min-w-0 flex-1 break-all">
+                    <span className="min-w-0 flex-shrink-0 pr-2 text-text-secondary">Action:</span>
+                    <span className="min-w-0 flex-1 break-all text-text-tertiary">
                       {preview.includes("?") ? "Open with parameters" : "Direct open"}
                     </span>
                   </div>
@@ -100,25 +100,25 @@ export const URLSchemePreview = ({ urlSchemeTemplate, className }: URLSchemePrev
               </div>
 
               {/* Placeholders Info */}
-              <div className="border-border border-t pt-3">
-                <h4 className="text-text-secondary mb-2 text-sm font-medium">
+              <div className="border-t border-border pt-3">
+                <h4 className="mb-2 text-sm font-medium text-text-secondary">
                   Available Placeholders for URL Schemes
                 </h4>
                 <div className="grid grid-cols-2 gap-2 text-xs">
                   {CustomIntegrationManager.getAvailablePlaceholders().map((placeholder) => (
-                    <div key={placeholder.key} className="bg-material-opaque rounded p-2">
-                      <code className="text-text font-bold">{placeholder.key}</code>
-                      <div className="text-text-tertiary mt-1">{placeholder.description}</div>
+                    <div key={placeholder.key} className="rounded bg-material-opaque p-2">
+                      <code className="font-bold text-text">{placeholder.key}</code>
+                      <div className="mt-1 text-text-tertiary">{placeholder.description}</div>
                     </div>
                   ))}
                 </div>
               </div>
 
               {/* Usage Note */}
-              <div className="bg-blue/10 border-blue/20 rounded border p-3">
+              <div className="rounded border border-blue/20 bg-blue/10 p-3">
                 <div className="flex items-start gap-2">
-                  <i className="i-mgc-information-cute-re text-blue mt-0.5 flex-shrink-0" />
-                  <div className="text-blue text-sm">
+                  <i className="i-mgc-information-cute-re mt-0.5 flex-shrink-0 text-blue" />
+                  <div className="text-sm text-blue">
                     <div className="mb-1 font-medium">URL Scheme Behavior</div>
                     <div className="text-blue/80">
                       URL schemes will attempt to open the target application with the provided
@@ -130,8 +130,8 @@ export const URLSchemePreview = ({ urlSchemeTemplate, className }: URLSchemePrev
               </div>
             </div>
           ) : (
-            <div className="bg-material-medium flex items-center justify-center rounded-lg p-4">
-              <span className="text-text-tertiary text-sm">Failed to generate preview</span>
+            <div className="flex items-center justify-center rounded-lg bg-material-medium p-4">
+              <span className="text-sm text-text-tertiary">Failed to generate preview</span>
             </div>
           )}
         </div>

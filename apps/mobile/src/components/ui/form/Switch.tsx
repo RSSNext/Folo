@@ -35,7 +35,7 @@ export const FormSwitch = ({
       <View className="flex-1 gap-1">
         <FormLabel className="pl-1" label={label} optional />
         {!!description && (
-          <Text className="text-secondary-label mb-1 pl-1 text-sm">{description}</Text>
+          <Text className="mb-1 pl-1 text-sm text-secondary-label">{description}</Text>
         )}
       </View>
       {Trigger}

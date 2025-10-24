@@ -5,22 +5,10 @@ import { ErrorBoundary } from "@sentry/react"
 import type { ReasoningUIPart, TextUIPart, ToolUIPart } from "ai"
 import * as React from "react"
 
-import type {
-  AIDisplayEntriesTool,
-  AIDisplayFeedTool,
-  AIDisplayFlowTool,
-  AIDisplaySubscriptionsTool,
-  BizUIMessage,
-  BizUITools,
-} from "~/modules/ai-chat/store/types"
+import type { AIDisplayFlowTool, BizUIMessage, BizUITools } from "~/modules/ai-chat/store/types"
 
 import { useChatStatus } from "../../store/hooks"
-import {
-  AIChainOfThought,
-  AIDisplayEntriesPart,
-  AIDisplayFeedPart,
-  AIDisplaySubscriptionsPart,
-} from "../displays"
+import { AIChainOfThought } from "../displays"
 import type { ChainReasoningPart } from "../displays/AIChainOfThought"
 import { AIMarkdownStreamingMessage } from "./AIMarkdownMessage"
 import { ToolInvocationComponent } from "./ToolInvocationComponent"
@@ -58,6 +46,7 @@ export const AIMessageParts: React.FC<AIMessagePartsProps> = React.memo(
       for (const part of message.parts) {
         const isReasoning = part.type === "reasoning" && !!(part as ReasoningUIPart).text
         const isTool = part.type.startsWith("tool-")
+        const isDisplayTool = isTool && part.type.startsWith("tool-display")
 
         if (isReasoning) {
           if (!chainReasoningParts) {
@@ -70,7 +59,7 @@ export const AIMessageParts: React.FC<AIMessagePartsProps> = React.memo(
         }
 
         if (isTool) {
-          if (chainReasoningParts && chainReasoningParts.length > 0) {
+          if (chainReasoningParts && chainReasoningParts.length > 0 && !isDisplayTool) {
             chainReasoningParts.push(part as ToolUIPart<BizUITools>)
           } else {
             parts.push(part as ToolUIPart<BizUITools>)
@@ -125,28 +114,13 @@ export const AIMessageParts: React.FC<AIMessagePartsProps> = React.memo(
               )
             }
 
-            case "tool-displayEntries": {
-              return <AIDisplayEntriesPart key={partKey} part={part as AIDisplayEntriesTool} />
-            }
-            case "tool-displaySubscriptions": {
-              return (
-                <AIDisplaySubscriptionsPart
-                  key={partKey}
-                  part={part as AIDisplaySubscriptionsTool}
-                />
-              )
-            }
-            case "tool-displayFeed": {
-              return <AIDisplayFeedPart key={partKey} part={part as AIDisplayFeedTool} />
-            }
-
-            case "tool-displayFlowChart": {
+            case "tool-display_flow_chart": {
               const loadingElement = (
-                <div className="bg-material-medium my-2 flex aspect-[4/3] w-[calc(var(--ai-chat-message-container-width,65ch))] max-w-full items-center justify-center rounded">
+                <div className="my-2 flex aspect-[4/3] w-[calc(var(--ai-chat-message-container-width,65ch))] max-w-full items-center justify-center rounded bg-material-medium">
                   <div className="flex flex-col items-center gap-4">
                     <div className="flex items-center gap-2">
-                      <i className="i-mgc-loading-3-cute-re text-text-secondary size-4 animate-spin" />
-                      <span className="text-text-secondary text-sm font-medium">
+                      <i className="i-mgc-loading-3-cute-re size-4 animate-spin text-text-secondary" />
+                      <span className="text-sm font-medium text-text-secondary">
                         Generating Flow Chart...
                       </span>
                     </div>

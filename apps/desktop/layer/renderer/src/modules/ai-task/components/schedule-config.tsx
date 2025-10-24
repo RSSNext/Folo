@@ -173,7 +173,7 @@ const TimelinePreview = memo<{ schedule: ScheduleType }>(({ schedule }) => {
 
   if (!nextExecution) {
     return (
-      <div className="text-text-tertiary flex items-center gap-2 text-xs">
+      <div className="flex items-center gap-2 text-xs text-text-tertiary">
         <div className="i-mgc-information-cute-re size-3" />
         <span>{t("schedule.no_upcoming")}</span>
       </div>
@@ -181,8 +181,8 @@ const TimelinePreview = memo<{ schedule: ScheduleType }>(({ schedule }) => {
   }
 
   return (
-    <div className="text-text-secondary flex items-center gap-2 text-xs">
-      <div className="i-mgc-time-cute-re text-accent size-3" />
+    <div className="flex items-center gap-2 text-xs text-text-secondary">
+      <div className="i-mgc-time-cute-re size-3 text-accent" />
       <span>
         {t("schedule.next_execution", {
           time: nextExecution.format("MMM D, h:mm A"),
@@ -211,7 +211,7 @@ export const ScheduleConfig = memo<ScheduleConfigProps>(
       <div className="space-y-4">
         {/* Quick Presets */}
         <div className="space-y-2">
-          <Label className="text-text pl-2 text-sm font-medium">
+          <Label className="pl-2 text-sm font-medium text-text">
             {t("schedule.presets_title")}
           </Label>
           <div className="flex gap-2">
@@ -220,7 +220,7 @@ export const ScheduleConfig = memo<ScheduleConfigProps>(
                 key={preset.label}
                 type="button"
                 onClick={() => onChange(preset.value)}
-                className="bg-material-opaque hover:bg-fill-tertiary border-border/50 hover:border-border text-text-secondary hover:text-text flex-1 rounded-md border px-2 py-1.5 text-xs transition-all duration-200"
+                className="flex-1 rounded-md border border-border/50 bg-material-opaque px-2 py-1.5 text-xs text-text-secondary transition-all duration-200 hover:border-border hover:bg-fill-tertiary hover:text-text"
               >
                 {t(preset.label)}
               </button>
@@ -231,7 +231,7 @@ export const ScheduleConfig = memo<ScheduleConfigProps>(
         {/* Frequency Selection */}
         <div className="space-y-3">
           <div className="flex items-center justify-between">
-            <Label className="text-text pl-2 text-sm font-medium">{t("schedule.title")}</Label>
+            <Label className="pl-2 text-sm font-medium text-text">{t("schedule.title")}</Label>
             <TimelinePreview schedule={value} />
           </div>
           <div className="grid grid-cols-4 gap-2">
@@ -266,8 +266,8 @@ export const ScheduleConfig = memo<ScheduleConfigProps>(
                 className={cn(
                   "flex flex-col items-center gap-1.5 rounded-lg border p-3 text-xs font-medium transition-all duration-200",
                   scheduleType === option.value
-                    ? "bg-accent/20 border-accent/30 text-accent"
-                    : "bg-background border-border hover:bg-material-opaque hover:border-border text-text-secondary hover:text-text",
+                    ? "border-accent/30 bg-accent/20 text-accent"
+                    : "border-border bg-background text-text-secondary hover:border-border hover:bg-material-opaque hover:text-text",
                 )}
               >
                 <div
@@ -281,13 +281,13 @@ export const ScheduleConfig = memo<ScheduleConfigProps>(
               </button>
             ))}
           </div>
-          {errors.type && <p className="text-red mt-2 text-sm">{errors.type.message}</p>}
+          {errors.type && <p className="mt-2 text-sm text-red">{errors.type.message}</p>}
         </div>
 
         {/* Time Configuration */}
         {scheduleType === "once" && (
           <div className="space-y-2">
-            <Label className="text-text pl-2 text-sm font-medium">
+            <Label className="pl-2 text-sm font-medium text-text">
               {t("schedule.date_time_label")}
             </Label>
             <DateTimePicker
@@ -301,13 +301,13 @@ export const ScheduleConfig = memo<ScheduleConfigProps>(
               }}
               placeholder={t("schedule.date_time_placeholder")}
             />
-            {errors.date && <p className="text-red mt-2 text-sm">{errors.date.message}</p>}
+            {errors.date && <p className="mt-2 text-sm text-red">{errors.date.message}</p>}
           </div>
         )}
 
         {scheduleType === "daily" && (
           <div className="space-y-2 pl-2">
-            <Label className="text-text text-sm font-medium">{t("schedule.time_label")}</Label>
+            <Label className="text-sm font-medium text-text">{t("schedule.time_label")}</Label>
             <TimeSelect
               value={dayjs(value.timeOfDay).format("HH:mm")}
               onChange={(time) => {
@@ -326,19 +326,19 @@ export const ScheduleConfig = memo<ScheduleConfigProps>(
               }}
             />
             {errors.timeOfDay && (
-              <p className="text-red mt-2 text-sm">{errors.timeOfDay.message}</p>
+              <p className="mt-2 text-sm text-red">{errors.timeOfDay.message}</p>
             )}
           </div>
         )}
 
         {scheduleType === "weekly" && (
           <div className="space-y-2 pl-2">
-            <Label className="text-text text-sm font-medium">
+            <Label className="text-sm font-medium text-text">
               {t("schedule.configuration_label")}
             </Label>
             <div className="grid grid-cols-2 gap-3">
               <div className="space-y-1">
-                <Label className="text-text-secondary text-xs">{t("schedule.day_label")}</Label>
+                <Label className="text-xs text-text-secondary">{t("schedule.day_label")}</Label>
                 <Select
                   onValueChange={(dayOfWeek) =>
                     updateSchedule({
@@ -349,7 +349,7 @@ export const ScheduleConfig = memo<ScheduleConfigProps>(
                   }
                   value={value.dayOfWeek.toString()}
                 >
-                  <SelectTrigger className="bg-material-opaque hover:bg-mix-accent/background-1/4 h-6 justify-between rounded-[4px] border-0 px-1.5 py-0 text-xs">
+                  <SelectTrigger className="h-6 justify-between rounded-[4px] border-0 bg-material-opaque px-1.5 py-0 text-xs hover:bg-mix-accent/background-1/4">
                     <SelectValue placeholder={t("schedule.day_placeholder")} />
                   </SelectTrigger>
                   <SelectContent position="item-aligned">
@@ -360,10 +360,10 @@ export const ScheduleConfig = memo<ScheduleConfigProps>(
                     ))}
                   </SelectContent>
                 </Select>
-                {errors.dayOfWeek && <p className="text-red text-sm">{errors.dayOfWeek.message}</p>}
+                {errors.dayOfWeek && <p className="text-sm text-red">{errors.dayOfWeek.message}</p>}
               </div>
               <div className="space-y-1">
-                <Label className="text-text-secondary text-xs">{t("schedule.time_label")}</Label>
+                <Label className="text-xs text-text-secondary">{t("schedule.time_label")}</Label>
                 <TimeSelect
                   value={dayjs(value.timeOfDay).format("HH:mm")}
                   onChange={(time) => {
@@ -382,7 +382,7 @@ export const ScheduleConfig = memo<ScheduleConfigProps>(
                     })
                   }}
                 />
-                {errors.timeOfDay && <p className="text-red text-sm">{errors.timeOfDay.message}</p>}
+                {errors.timeOfDay && <p className="text-sm text-red">{errors.timeOfDay.message}</p>}
               </div>
             </div>
           </div>
@@ -390,12 +390,12 @@ export const ScheduleConfig = memo<ScheduleConfigProps>(
 
         {scheduleType === "monthly" && (
           <div className="space-y-2 pl-2">
-            <Label className="text-text text-sm font-medium">
+            <Label className="text-sm font-medium text-text">
               {t("schedule.configuration_label")}
             </Label>
             <div className="grid grid-cols-2 gap-3">
               <div className="space-y-1">
-                <Label className="text-text-secondary text-xs">{t("schedule.day_label")}</Label>
+                <Label className="text-xs text-text-secondary">{t("schedule.day_label")}</Label>
                 <Select
                   onValueChange={(dayOfMonth) =>
                     updateSchedule({
@@ -406,7 +406,7 @@ export const ScheduleConfig = memo<ScheduleConfigProps>(
                   }
                   value={value.dayOfMonth.toString()}
                 >
-                  <SelectTrigger className="bg-material-opaque hover:bg-mix-accent/background-1/4 h-6 justify-between rounded-[4px] border-0 px-1.5 py-0 text-xs">
+                  <SelectTrigger className="h-6 justify-between rounded-[4px] border-0 bg-material-opaque px-1.5 py-0 text-xs hover:bg-mix-accent/background-1/4">
                     <SelectValue placeholder={t("schedule.day_placeholder")} />
                   </SelectTrigger>
                   <SelectContent position="item-aligned">
@@ -418,11 +418,11 @@ export const ScheduleConfig = memo<ScheduleConfigProps>(
                   </SelectContent>
                 </Select>
                 {errors.dayOfMonth && (
-                  <p className="text-red text-sm">{errors.dayOfMonth.message}</p>
+                  <p className="text-sm text-red">{errors.dayOfMonth.message}</p>
                 )}
               </div>
               <div className="space-y-1">
-                <Label className="text-text-secondary text-xs">{t("schedule.time_label")}</Label>
+                <Label className="text-xs text-text-secondary">{t("schedule.time_label")}</Label>
                 <TimeSelect
                   value={dayjs(value.timeOfDay).format("HH:mm")}
                   onChange={(time) => {
@@ -441,7 +441,7 @@ export const ScheduleConfig = memo<ScheduleConfigProps>(
                     })
                   }}
                 />
-                {errors.timeOfDay && <p className="text-red text-sm">{errors.timeOfDay.message}</p>}
+                {errors.timeOfDay && <p className="text-sm text-red">{errors.timeOfDay.message}</p>}
               </div>
             </div>
           </div>

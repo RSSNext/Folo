@@ -50,13 +50,13 @@ export const FABBase: FC<
             "mt-2 flex items-center justify-center",
             "size-9 text-lg md:text-base",
             "outline-accent hover:opacity-100 focus:opacity-100 focus:outline-none",
-            "hover:border-border bg-background relative rounded-xl border border-transparent",
+            "relative rounded-xl border border-transparent bg-background hover:border-border",
             "group duration-200",
             className,
           )}
           {...rest}
         >
-          <div className="shadow-perfect border-border/50 pointer-events-none absolute inset-0 rounded-xl border shadow-xl duration-200 group-hover:opacity-0" />
+          <div className="shadow-perfect pointer-events-none absolute inset-0 rounded-xl border border-border/50 shadow-xl duration-200 group-hover:opacity-0" />
           {children}
         </m.button>
       )}

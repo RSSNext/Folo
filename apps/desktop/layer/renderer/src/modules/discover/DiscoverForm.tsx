@@ -49,7 +49,7 @@ const FEED_DISCOVERY_INFO = {
         href={`${repository.url}/wiki/Folo-Flavored-Feed-Spec`}
         target="_blank"
         rel="noreferrer"
-        className="text-accent border-accent inline-flex w-auto items-center gap-1 rounded-full border px-2 py-px text-sm font-normal"
+        className="inline-flex w-auto items-center gap-1 rounded-full border border-accent px-2 py-px text-sm font-normal text-accent"
       >
         <i className="i-mgc-book-6-cute-re" />
         <span>Folo Flavored Feed Spec</span>
@@ -69,7 +69,7 @@ const FEED_DISCOVERY_INFO = {
         href="https://docs.rsshub.app/"
         target="_blank"
         rel="noreferrer"
-        className="text-accent border-accent inline-flex w-auto items-center gap-1 rounded-full border px-2 py-px text-sm font-normal"
+        className="inline-flex w-auto items-center gap-1 rounded-full border border-accent px-2 py-px text-sm font-normal text-accent"
       >
         <i className="i-mgc-book-6-cute-re" />
         <span>RSSHub Docs</span>
@@ -294,7 +294,7 @@ export function DiscoverForm({ type = "search" }: { type?: string }) {
               name="keyword"
               render={({ field }) => (
                 <FormItem className="mb-4">
-                  <FormLabel className="text-text text-headline mb-2 flex items-center gap-2 pl-2 font-bold">
+                  <FormLabel className="mb-2 flex items-center gap-2 pl-2 text-headline font-bold text-text">
                     {t(label)}
                     {labelSuffix}
                   </FormLabel>
@@ -318,7 +318,7 @@ export function DiscoverForm({ type = "search" }: { type?: string }) {
                 render={({ field }) => (
                   <FormItem className="mb-4 pl-2">
                     <div className="mb-2 flex items-center justify-between">
-                      <FormLabel className="text-text-secondary text-headline font-medium">
+                      <FormLabel className="text-headline font-medium text-text-secondary">
                         {t("discover.target.label")}
                       </FormLabel>
                       <FormControl>
@@ -371,7 +371,7 @@ export function DiscoverForm({ type = "search" }: { type?: string }) {
 
             {discoverSearchData && discoverSearchData.length > 0 && (
               <MotionButtonBase
-                className="hover:text-accent cursor-button flex items-center justify-between gap-2"
+                className="flex cursor-button items-center justify-between gap-2 hover:text-accent"
                 type="button"
                 onClick={() => {
                   jotaiStore.set(discoverSearchDataAtom, {

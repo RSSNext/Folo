@@ -1,14 +1,20 @@
+import { useEntry } from "@follow/store/entry/hooks"
+import type { EntryModel } from "@follow/store/entry/types"
+
 import { useRouteParamsSelector } from "./useRouteParams"
 
-export function useEntryIsRead<T extends { read: Nullable<boolean> }>(entry?: T | null) {
+const selector = (state: EntryModel) => state.read
+export function useEntryIsRead(entryId?: string) {
+  const entryRead = useEntry(entryId, selector)
+
   return useRouteParamsSelector(
     (params) => {
       if (params.isCollection) {
         return true
       }
-      if (!entry) return false
-      return entry.read
+      if (entryRead === undefined) return false
+      return entryRead
     },
-    [entry?.read],
+    [entryRead],
   )
 }

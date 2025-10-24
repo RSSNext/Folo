@@ -146,7 +146,7 @@ export function SimpleDiscoverModal({ dismiss }: { dismiss: () => void }) {
   return (
     <div className="flex min-h-[400px] w-[600px] flex-col">
       <div className="mb-6">
-        <p className="text-text-secondary text-sm">
+        <p className="text-sm text-text-secondary">
           {t("discover.find_feeds_description", "Find and add new feeds to your collection")}
         </p>
       </div>
@@ -166,7 +166,7 @@ export function SimpleDiscoverModal({ dismiss }: { dismiss: () => void }) {
                     <SegmentItem value="rsshub" label={t("words.rsshub")} />
                   </SegmentGroup>
                 </FormControl>
-                <div className="text-text-secondary absolute bottom-0 right-0 flex flex-col flex-wrap items-end gap-1 text-sm">
+                <div className="absolute bottom-0 right-0 flex flex-col flex-wrap items-end gap-1 text-sm text-text-secondary">
                   <div>
                     Or go to{" "}
                     <Link className="text-accent underline" to="/discover" onClick={dismiss}>
@@ -215,8 +215,8 @@ export function SimpleDiscoverModal({ dismiss }: { dismiss: () => void }) {
       {/* Search Results */}
       {discoverSearchData && discoverSearchData.length > 0 && (
         <div className="mt-6 flex-1">
-          <div className="border-border mb-4 border-b pb-2">
-            <h3 className="text-text font-medium">
+          <div className="mb-4 border-b border-border pb-2">
+            <h3 className="font-medium text-text">
               {t("discover.search_results", "Search Results")} ({discoverSearchData.length})
             </h3>
           </div>
@@ -231,7 +231,7 @@ export function SimpleDiscoverModal({ dismiss }: { dismiss: () => void }) {
       {/* Empty State */}
       {mutation.isSuccess && discoverSearchData && discoverSearchData.length === 0 && (
         <div className="mt-6 flex flex-1 items-center justify-center">
-          <div className="text-text-secondary text-center">
+          <div className="text-center text-text-secondary">
             <i className="i-mgc-search-3-cute-re mb-2 text-2xl" />
             <p>{t("discover.no_results", "No feeds found for your search.")}</p>
           </div>

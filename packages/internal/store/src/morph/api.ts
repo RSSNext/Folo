@@ -1,4 +1,5 @@
 import type { FeedSchema, InboxSchema } from "@follow/database/schemas/types"
+import { getDateISOString } from "@follow/utils/utils"
 import type {
   AddFeedsResponse,
   AuthUser,
@@ -75,7 +76,7 @@ class APIMorph {
       inboxHandle: "feeds" in data ? (data.feeds.type === "inbox" ? data.feeds.id : null) : null,
       read: false,
       sources: null,
-      settings: null,
+      settings: "settings" in data ? data.settings || null : null,
     }
   }
   toSubscription(
@@ -178,7 +179,7 @@ class APIMorph {
       }
       if (item.collections)
         collections.push({
-          createdAt: item.collections.createdAt,
+          createdAt: getDateISOString(item.collections.createdAt),
           entryId: item.entries.id,
           feedId: item.feeds.id,
           view,
@@ -239,7 +240,6 @@ class APIMorph {
       errorAt: data.errorAt,
       errorMessage: data.errorMessage,
       siteUrl: data.siteUrl,
-      tipUserIds: data.tipUsers ? data.tipUsers.map((user) => user.id) : [],
     }
   }
 
@@ -255,7 +255,6 @@ class APIMorph {
       errorAt: data.errorAt,
       errorMessage: data.errorMessage,
       siteUrl: data.siteUrl,
-      tipUserIds: data.tipUsers ? data.tipUsers.map((user) => user.id) : [],
     }
   }
 

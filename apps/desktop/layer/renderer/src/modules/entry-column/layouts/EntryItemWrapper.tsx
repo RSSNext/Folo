@@ -2,7 +2,7 @@ import { useGlobalFocusableScopeSelector } from "@follow/components/common/Focus
 import { useMobile } from "@follow/components/hooks/useMobile.js"
 import { getMousePosition } from "@follow/components/hooks/useMouse.js"
 import { ActionButton } from "@follow/components/ui/button/action-button.js"
-import { FeedViewType, views } from "@follow/constants"
+import { FeedViewType } from "@follow/constants"
 import { useEntry } from "@follow/store/entry/hooks"
 import { unreadSyncService } from "@follow/store/unread/store"
 import { cn } from "@follow/utils/utils"
@@ -24,9 +24,9 @@ import {
   useSortedEntryActions,
 } from "~/hooks/biz/useEntryActions"
 import { useEntryContextMenu } from "~/hooks/biz/useEntryContextMenu"
-import { useFeature } from "~/hooks/biz/useFeature"
 import { getNavigateEntryPath, useNavigateEntry } from "~/hooks/biz/useNavigateEntry"
 import { getRouteParams, useRouteParams, useRouteParamsSelector } from "~/hooks/biz/useRouteParams"
+import { useShowEntryDetailsColumn } from "~/hooks/biz/useShowEntryDetailsColumn"
 
 export const EntryItemWrapper: FC<
   {
@@ -37,9 +37,9 @@ export const EntryItemWrapper: FC<
   } & PropsWithChildren
 > = ({ entryId, view, children, itemClassName, style }) => {
   const entry = useEntry(entryId, (state) => {
-    const { feedId, inboxHandle, read } = state
+    const { feedId, inboxHandle } = state
     const { id, url } = state
-    return { feedId, id, inboxId: inboxHandle, read, url }
+    return { feedId, id, inboxId: inboxHandle, url }
   })
   const actionConfigs = useEntryActions({ entryId, view })
   const isMobile = useMobile()
@@ -47,8 +47,9 @@ export const EntryItemWrapper: FC<
   const isActive = useRouteParamsSelector(({ entryId }) => entryId === entry?.id, [entry?.id])
   const when = useGlobalFocusableScopeSelector(FocusablePresets.isTimeline)
   useContextMenuActionShortCutTrigger(actionConfigs, isActive && when)
+  const showEntryDetailsColumn = useShowEntryDetailsColumn()
 
-  const asRead = useEntryIsRead(entry)
+  const asRead = useEntryIsRead(entryId)
   const hoverMarkUnread = useGeneralSettingKey("hoverMarkUnread")
 
   const [showAction, setShowAction] = useState(false)
@@ -141,8 +142,7 @@ export const EntryItemWrapper: FC<
     feedId: entry?.feedId || entry?.inboxId || "",
   })
 
-  const aiEnabled = useFeature("ai")
-  const isWide = views.find((v) => v.view === view)?.wideMode || aiEnabled
+  const isWide = !showEntryDetailsColumn
 
   const Link = view === FeedViewType.SocialMedia ? "article" : NavLink
   const isAll = view === FeedViewType.All
@@ -151,8 +151,8 @@ export const EntryItemWrapper: FC<
       <Link
         to={navigationPath}
         className={cn(
-          "hover:bg-theme-item-hover cursor-button relative block overflow-visible duration-200",
-          isWide ? "@[650px]:rounded-md rounded-none" : "",
+          "relative block cursor-button overflow-visible duration-200 hover:bg-theme-item-hover",
+          isWide ? "rounded-none @[650px]:rounded-md" : "",
           isAll && "!rounded-none",
           (isActive || isContextMenuOpen) && "!bg-theme-item-active",
           itemClassName,

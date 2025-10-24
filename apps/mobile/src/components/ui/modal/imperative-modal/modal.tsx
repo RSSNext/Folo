@@ -100,7 +100,7 @@ const PromptModal = ({
           placeholder={placeholder}
         />
         <TouchableOpacity
-          className="bg-accent w-full rounded-xl px-6 py-3"
+          className="w-full rounded-xl bg-accent px-6 py-3"
           disabled={text.trim().length === 0}
           onPress={() => {
             onSave(text)

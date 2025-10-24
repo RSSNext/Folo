@@ -1,5 +1,2 @@
 export { AIChainOfThought } from "./AIChainOfThought"
-export { AIDisplayEntriesPart } from "./AIDisplayEntriesPart"
-export { AIDisplayFeedPart } from "./AIDisplayFeedsPart"
-export { AIDisplaySubscriptionsPart } from "./AIDisplaySubscriptionsPart"
 export { AIReasoningPart } from "./AIReasoningPart"

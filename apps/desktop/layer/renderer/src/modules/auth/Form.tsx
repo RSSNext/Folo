@@ -120,7 +120,7 @@ export function LoginWithPassword({
                   target="_blank"
                   rel="noreferrer"
                   tabIndex={-1}
-                  className="text-accent block py-1 text-xs hover:underline"
+                  className="block py-1 text-xs text-accent hover:underline"
                 >
                   {t("login.forget_password.note")}
                 </a>
@@ -153,7 +153,7 @@ export function LoginWithPassword({
         If you don't have an account,{" "}
         <button
           type="button"
-          className="text-accent flex cursor-pointer items-center gap-1 hover:underline"
+          className="flex cursor-pointer items-center gap-1 text-accent hover:underline"
           onClick={() => onLoginStateChange("register")}
         >
           Sign up
@@ -275,7 +275,7 @@ export function RegisterForm({
         If you already have an account,{" "}
         <button
           type="button"
-          className="text-accent flex cursor-pointer items-center gap-1 hover:underline"
+          className="flex cursor-pointer items-center gap-1 text-accent hover:underline"
           onClick={() => onLoginStateChange("login")}
         >
           Sign in

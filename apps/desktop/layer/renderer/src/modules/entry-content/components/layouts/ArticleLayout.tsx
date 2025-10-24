@@ -5,9 +5,9 @@ import { useFeedById } from "@follow/store/feed/hooks"
 import { useIsInbox } from "@follow/store/inbox/hooks"
 import { cn } from "@follow/utils"
 import { ErrorBoundary } from "@sentry/react"
-import { useCallback, useMemo, useRef, useState } from "react"
+import { useCallback, useEffect, useMemo, useRef, useState } from "react"
 
-import { AIChatPanelStyle, useAIChatPanelStyle } from "~/atoms/settings/ai"
+import { AIChatPanelStyle, useAIChatPanelStyle, useAIPanelVisibility } from "~/atoms/settings/ai"
 import { useUISettingKey } from "~/atoms/settings/ui"
 import { ShadowDOM } from "~/components/common/ShadowDOM"
 import type { TocRef } from "~/components/ui/markdown/components/Toc"
@@ -20,14 +20,13 @@ import { BlockSliceAction } from "~/modules/ai-chat/store/slices/block.slice"
 import { EntryContentHTMLRenderer } from "~/modules/renderer/html"
 import { WrappedElementProvider } from "~/providers/wrapped-element-provider"
 
-import { AISummary } from "../../AISummary"
 import { useEntryContent, useEntryMediaInfo } from "../../hooks"
+import { AISummary } from "../AISummary"
 import { ContainerToc } from "../entry-content/accessories/ContainerToc"
 import { EntryRenderError } from "../entry-content/EntryRenderError"
 import { ReadabilityNotice } from "../entry-content/ReadabilityNotice"
 import { EntryAttachments } from "../EntryAttachments"
 import { EntryTitle } from "../EntryTitle"
-import { SupportCreator } from "../SupportCreator"
 import { MediaTranscript, TranscriptToggle, useTranscription } from "./shared"
 import { ArticleAudioPlayer } from "./shared/AudioPlayer"
 import type { EntryLayoutProps } from "./types"
@@ -67,13 +66,14 @@ export const ArticleLayout: React.FC<EntryLayoutProps> = ({
   }, [removeBlock])
 
   const aiChatPanelStyle = useAIChatPanelStyle()
+  const isAIPanelVisible = useAIPanelVisibility()
 
-  const shouldShowAISummary = aiChatPanelStyle === AIChatPanelStyle.Floating
+  const shouldShowAISummary = aiChatPanelStyle === AIChatPanelStyle.Floating || !isAIPanelVisible
   if (!entry) return null
 
   return (
     <div className={cn(readableContentMaxWidthClassName, "mx-auto mt-1 px-4")}>
-      <EntryTitle entryId={entryId} compact={compact} />
+      <EntryTitle entryId={entryId} compact={compact} containerClassName="mt-12" />
 
       <ArticleAudioPlayer entryId={entryId} />
 
@@ -91,7 +91,7 @@ export const ArticleLayout: React.FC<EntryLayoutProps> = ({
             <ReadabilityNotice entryId={entryId} />
             {showTranscript ? (
               <MediaTranscript
-                className="prose dark:prose-invert !max-w-full"
+                className="prose !max-w-full dark:prose-invert"
                 srt={transcriptionData}
                 entryId={entryId}
                 type="transcription"
@@ -120,7 +120,6 @@ export const ArticleLayout: React.FC<EntryLayoutProps> = ({
       </WrappedElementProvider>
 
       <EntryAttachments entryId={entryId} />
-      <SupportCreator entryId={entryId} />
     </div>
   )
 }
@@ -150,6 +149,12 @@ const Renderer: React.FC<{
     [isInPeekModal],
   )
 
+  useEffect(() => {
+    if (tocRef) {
+      tocRef.current?.refreshItems()
+    }
+  }, [content, tocRef])
+
   return (
     <EntryContentHTMLRenderer
       view={view}
@@ -159,7 +164,7 @@ const Renderer: React.FC<{
       noMedia={noMedia}
       accessory={contentAccessories}
       as="article"
-      className="prose dark:prose-invert prose-h1:text-[1.6em] prose-h1:font-bold !max-w-full hyphens-auto"
+      className="autospace-normal prose !max-w-full hyphens-auto dark:prose-invert prose-h1:text-[1.6em] prose-h1:font-bold"
       style={stableRenderStyle}
       renderInlineStyle={readerRenderInlineStyle}
     >

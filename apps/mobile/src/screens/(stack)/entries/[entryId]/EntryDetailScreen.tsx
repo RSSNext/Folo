@@ -27,7 +27,6 @@ import { Eye2CuteReIcon } from "@/src/icons/eye_2_cute_re"
 import { openLink } from "@/src/lib/native"
 import { useNavigation } from "@/src/lib/navigation/hooks"
 import type { NavigationControllerView } from "@/src/lib/navigation/types"
-import { checkLanguage } from "@/src/lib/translation"
 import { EntryContentContext, useEntryContentContext } from "@/src/modules/entry-content/ctx"
 import { EntryAISummary } from "@/src/modules/entry-content/EntryAISummary"
 import { EntryNavigationHeader } from "@/src/modules/entry-content/EntryNavigationHeader"
@@ -155,8 +154,7 @@ const EntryContentWebViewWithContext = ({ entryId }: { entryId: string }) => {
     withContent: true,
     target: showReadabilityOnce && entry?.readabilityContent ? "readabilityContent" : "content",
     language: actionLanguage,
-    checkLanguage,
-    setting: translation,
+    enabled: translation,
   })
 
   // Auto toggle readability when content is empty
@@ -204,7 +202,7 @@ const EntryInfo = ({ entryId }: { entryId: string }) => {
       {feed && (
         <View className="flex shrink flex-row items-center gap-2">
           <FeedIcon feed={feed} />
-          <Text className="text-label shrink text-sm font-medium leading-tight" numberOfLines={1}>
+          <Text className="shrink text-sm font-medium leading-tight text-label" numberOfLines={1}>
             {feed.title?.trim()}
           </Text>
         </View>
@@ -213,13 +211,13 @@ const EntryInfo = ({ entryId }: { entryId: string }) => {
         <CalendarTimeAddCuteReIcon width={16} height={16} color={secondaryLabelColor} />
         <RelativeDateTime
           date={publishedAt}
-          className="text-secondary-label text-sm leading-tight"
+          className="text-sm leading-tight text-secondary-label"
         />
       </View>
       {!hideRecentReader && (
         <View className="flex flex-row items-center gap-1">
           <Eye2CuteReIcon width={16} height={16} color={secondaryLabelColor} />
-          <Text className="text-secondary-label text-sm leading-tight">{readCount}</Text>
+          <Text className="text-sm leading-tight text-secondary-label">{readCount}</Text>
         </View>
       )}
     </View>

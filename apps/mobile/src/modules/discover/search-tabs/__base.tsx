@@ -22,6 +22,6 @@ export const BaseSearchPageRootView = ({
 }
 
 const itemSeparator = (
-  <View className="bg-opaque-separator/70 h-px" style={{ transform: [{ scaleY: 0.5 }] }} />
+  <View className="h-px bg-opaque-separator/70" style={{ transform: [{ scaleY: 0.5 }] }} />
 )
 export const ItemSeparator = () => itemSeparator

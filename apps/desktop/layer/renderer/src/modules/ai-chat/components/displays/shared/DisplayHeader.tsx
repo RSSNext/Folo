@@ -10,7 +10,7 @@ export interface DisplayHeaderProps {
 
 export const DisplayHeader = ({ title, emoji, description, children }: DisplayHeaderProps) => (
   <CardHeader>
-    <CardTitle className="text-text flex items-center gap-2 text-xl font-semibold">
+    <CardTitle className="flex items-center gap-2 text-xl font-semibold text-text">
       <span className="text-lg">{emoji}</span>
       <span>{title}</span>
     </CardTitle>

@@ -69,7 +69,7 @@ export const ActionsScreen = () => {
             iconBackgroundColor="#9333EA"
           >
             <Link
-              className="text-accent border-accent center mt-4 w-44 rounded-full border py-0.5"
+              className="center mt-4 w-44 rounded-full border border-accent py-0.5 text-accent"
               href="https://github.com/RSSNext/Folo/wiki/Actions"
             >
               <View className="flex w-full flex-row items-center justify-center gap-1">
@@ -145,7 +145,7 @@ const SaveRuleButton = ({ disabled }: { disabled?: boolean }) => {
 const ItemSeparatorComponent = () => {
   return (
     <View
-      className="bg-opaque-separator/70 ml-24 h-px flex-1"
+      className="ml-24 h-px flex-1 bg-opaque-separator/70"
       collapsable={false}
       style={{
         transform: [
@@ -195,7 +195,7 @@ const ListItemCellImpl: ListRenderItem<ActionModel> = ({ item: rule }) => {
           })
         }
       >
-        <Text className="text-label text-base">{rule.name}</Text>
+        <Text className="text-base text-label">{rule.name}</Text>
         <Switch
           size="sm"
           value={!rule.result.disabled}

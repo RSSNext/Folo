@@ -2,8 +2,7 @@ import { getFeedIconSrc } from "@follow/components/utils/icon.js"
 import type { FollowClient } from "@follow-app/client-sdk"
 import * as React from "react"
 
-import { renderToImage } from "~/lib/og/render-to-image"
-
+import { renderToImage } from "../../lib/og/render-to-image"
 import { getImageBase64, OGAvatar, OGCanvas } from "./__base"
 
 export const renderListOG = async (apiClient: FollowClient, listId: string) => {

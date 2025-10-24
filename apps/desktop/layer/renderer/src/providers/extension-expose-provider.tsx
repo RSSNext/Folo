@@ -18,13 +18,14 @@ import { navigateEntry } from "~/hooks/biz/useNavigateEntry"
 import { oneTimeToken } from "~/lib/auth"
 import { queryClient } from "~/lib/query-client"
 import { usePresentUserProfileModal } from "~/modules/profile/hooks"
+import type { SettingModalOptions } from "~/modules/settings/modal/useSettingModal"
 import { useSettingModal } from "~/modules/settings/modal/useSettingModal"
 import { handleSessionChanges } from "~/queries/auth"
 import { clearDataIfLoginOtherAccount } from "~/store/utils/clear"
 
 declare module "@follow/components/providers/stable-router-provider.js" {
   interface CustomRoute {
-    showSettings: (path?: string) => void
+    showSettings: (options?: SettingModalOptions) => void
   }
 }
 

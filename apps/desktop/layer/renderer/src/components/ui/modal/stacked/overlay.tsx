@@ -20,7 +20,7 @@ export const ModalOverlay: FC<{
           id="modal-overlay"
           className={cn(
             // NOTE: pointer-events-none is required, if remove this, when modal is closing, you can not click element behind the modal
-            "bg-material-ultra-thick !pointer-events-none fixed inset-0 rounded-[var(--fo-window-radius)]",
+            "!pointer-events-none fixed inset-0 rounded-[var(--fo-window-radius)] bg-material-ultra-thick",
             blur && "backdrop-blur-sm",
             className,
           )}

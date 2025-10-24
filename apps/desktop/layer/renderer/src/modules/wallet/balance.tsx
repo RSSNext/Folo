@@ -36,7 +36,7 @@ export const Balance = ({
 
   const Content = (
     <span className={cn("tabular-nums", className)}>
-      {withSuffix && <i className="i-mgc-power text-folo mr-1 -translate-y-px align-middle" />}
+      {withSuffix && <i className="i-mgc-power mr-1 -translate-y-px align-middle text-folo" />}
       <span className="font-mono">
         {withTooltip ? toScientificNotation(n, scientificThreshold, locale) : formatted}
       </span>

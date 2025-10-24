@@ -11,7 +11,7 @@ export const EntryPlaceholderLogo = () => {
       data-hide-in-print
       onContextMenu={stopPropagation}
       className={
-        "text-text-secondary flex w-full min-w-0 flex-col items-center justify-center gap-1 px-12 pb-6 text-center text-lg font-medium duration-500"
+        "flex w-full min-w-0 flex-col items-center justify-center gap-2 px-12 pb-6 text-center text-lg font-medium text-text-secondary duration-500"
       }
     >
       <Logo className="size-16 opacity-40 grayscale" />

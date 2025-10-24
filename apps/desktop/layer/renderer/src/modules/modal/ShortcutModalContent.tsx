@@ -30,7 +30,7 @@ export const ShortcutModalContent = () => {
         cursor: "grabbing",
       }}
       className={clsx(
-        "center bg-background absolute inset-0 m-auto flex max-h-[80vh] w-[60ch] max-w-[90vw] flex-col rounded-xl border",
+        "center absolute inset-0 m-auto flex max-h-[80vh] w-[60ch] max-w-[90vw] flex-col rounded-xl border bg-background",
 
         !modalOverlay && "shadow-modal",
       )}

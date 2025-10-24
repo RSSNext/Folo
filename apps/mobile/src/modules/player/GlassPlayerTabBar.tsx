@@ -46,7 +46,7 @@ export function GlassPlayerTabBar({ className }: { className?: string }) {
               className="size-12 rounded-full"
             />
             <View className="flex-1 overflow-hidden">
-              <Text className="text-label text-lg font-semibold" numberOfLines={1}>
+              <Text className="text-lg font-semibold text-label" numberOfLines={1}>
                 {activeTrack?.title ?? ""}
               </Text>
             </View>

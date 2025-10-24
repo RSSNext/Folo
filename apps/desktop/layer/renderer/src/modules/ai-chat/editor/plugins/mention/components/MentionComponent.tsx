@@ -1,3 +1,4 @@
+import { DateTimePicker } from "@follow/components/ui/input/index.js"
 import {
   Tooltip,
   TooltipContent,
@@ -5,43 +6,75 @@ import {
   TooltipRoot,
   TooltipTrigger,
 } from "@follow/components/ui/tooltip/index.js"
+import { getView } from "@follow/constants"
 import { cn } from "@follow/utils"
+import dayjs from "dayjs"
+import type { LexicalEditor } from "lexical"
+import { $getNodeByKey } from "lexical"
 import * as React from "react"
 import { useTranslation } from "react-i18next"
 
-import { RANGE_WITH_LABEL_KEY } from "../hooks/dateMentionConfig"
-import { getDateMentionDisplayName } from "../hooks/dateMentionUtils"
+import { MentionLikePill } from "../../shared/components/MentionLikePill"
+import {
+  createDateMentionData,
+  getDateMentionDisplayName,
+  parseRangeValue,
+} from "../hooks/dateMentionUtils"
+import { $isMentionNode } from "../MentionNode"
 import type { MentionData } from "../types"
+import { getMentionDisplayTextValue } from "../utils/mentionTextValue"
 import { MentionTypeIcon } from "./shared/MentionTypeIcon"
 
 interface MentionComponentProps {
   mentionData: MentionData
   className?: string
+  nodeKey?: string
+  editor?: LexicalEditor
 }
 
-const MentionTooltipContent = ({
-  mentionData,
-  displayName,
-}: {
-  mentionData: MentionData
-  displayName: string
-}) => (
-  <div className="flex items-center gap-2 p-1">
-    <div
-      className={cn(
-        "flex size-5 items-center justify-center rounded text-white",
-        mentionData.type === "entry" && "bg-blue",
-        mentionData.type === "feed" && "bg-orange",
-        mentionData.type === "date" && "bg-purple",
-      )}
-    >
-      <MentionTypeIcon type={mentionData.type} className="size-3" />
-    </div>
-    <span className="text-text text-sm">{displayName}</span>
-  </div>
-)
+const MentionTooltipContent = ({ mentionData }: { mentionData: MentionData }) => {
+  const { t, i18n } = useTranslation("ai")
+  const language = i18n.language || i18n.resolvedLanguage || "en"
+  const displayValue = getMentionDisplayTextValue(mentionData, t, language)
 
-const getMentionStyles = (type: MentionData["type"]) => {
+  const getIconBgColor = () => {
+    if (mentionData.type === "view" && typeof mentionData.value === "number") {
+      const viewDef = getView(mentionData.value)
+      if (viewDef?.backgroundClassName) {
+        return viewDef.backgroundClassName
+      }
+    }
+
+    switch (mentionData.type) {
+      case "entry": {
+        return "bg-blue"
+      }
+      case "feed": {
+        return "bg-orange"
+      }
+      case "date": {
+        return "bg-purple"
+      }
+    }
+  }
+
+  return (
+    <div className="flex items-start gap-2 p-1">
+      <div
+        className={cn(
+          "flex size-5 shrink-0 items-center justify-center rounded text-white",
+          getIconBgColor(),
+        )}
+      >
+        <MentionTypeIcon type={mentionData.type} value={mentionData.value} className="size-3" />
+      </div>
+      <span className="text-sm text-text">{displayValue}</span>
+    </div>
+  )
+}
+
+const getMentionStyles = (mentionData: MentionData) => {
+  const { type, value } = mentionData
   const baseStyles = tw`
     inline items-center gap-1 px-2 py-0.5 rounded-md
     font-medium text-sm cursor-pointer select-none
@@ -76,37 +109,98 @@ const getMentionStyles = (type: MentionData["type"]) => {
         "hover:bg-purple/20 hover:border-purple/30",
       )
     }
+    case "view": {
+      const viewDef = getView(value as number)
+      return cn(baseStyles, viewDef!.mentionClassName)
+    }
   }
 }
-export const MentionComponent: React.FC<MentionComponentProps> = ({ mentionData, className }) => {
+
+export const MentionComponent: React.FC<MentionComponentProps> = ({
+  mentionData,
+  className,
+  nodeKey,
+  editor,
+}) => {
   const { t, i18n } = useTranslation("ai")
   const language = i18n.language || i18n.resolvedLanguage || "en"
 
   const displayName = React.useMemo(() => {
     if (mentionData.type === "date") {
-      return getDateMentionDisplayName(mentionData, t, language, RANGE_WITH_LABEL_KEY)
+      return getDateMentionDisplayName(mentionData, t, language)
     }
-    return mentionData.name
+    return `@${mentionData.name}`
   }, [mentionData, t, language])
 
-  const handleClick = (e: React.MouseEvent) => {
-    e.preventDefault()
-    // Handle mention click - could navigate to user profile, topic page, etc.
-    // TODO: Implement navigation logic for mentions
-  }
+  const handleDateRangeChange = React.useCallback(
+    (value: { start?: string; end?: string }) => {
+      if (!nodeKey || !value.start || !value.end || !editor) return
+
+      const startDate = dayjs(value.start).startOf("day")
+      const endDate = dayjs(value.end).startOf("day")
+      const range = { start: startDate, end: endDate }
+
+      const newMentionData = createDateMentionData({
+        range,
+        translate: t,
+      })
+
+      editor.update(() => {
+        const node = $getNodeByKey(nodeKey)
+        if ($isMentionNode(node)) {
+          node.setMentionData(newMentionData)
+        }
+      })
+    },
+    [nodeKey, editor, t],
+  )
+
+  const currentDateRange = React.useMemo(() => {
+    if (mentionData.type !== "date" || typeof mentionData.value !== "string") {
+      return
+    }
+    const range = parseRangeValue(mentionData.value)
+    if (!range) return
+
+    return {
+      start: range.start.toISOString(),
+      end: range.end.toISOString(),
+    }
+  }, [mentionData])
+
+  const mentionSpan = (
+    <TooltipTrigger asChild>
+      <MentionLikePill
+        className={cn(getMentionStyles(mentionData), className)}
+        icon={
+          <MentionTypeIcon type={mentionData.type} value={mentionData.value} className="size-3" />
+        }
+      >
+        {displayName}
+      </MentionLikePill>
+    </TooltipTrigger>
+  )
+
+  const isEditableDateMention = mentionData.type === "date" && nodeKey && editor
 
   return (
     <Tooltip>
       <TooltipRoot>
-        <TooltipTrigger asChild>
-          <span className={cn(getMentionStyles(mentionData.type), className)} onClick={handleClick}>
-            <MentionTypeIcon type={mentionData.type} className="mr-1 translate-y-[2px]" />
-            <span>@{displayName}</span>
-          </span>
-        </TooltipTrigger>
+        {isEditableDateMention ? (
+          <DateTimePicker
+            mode="range"
+            rangeValue={currentDateRange}
+            onRangeChange={handleDateRangeChange}
+            minDate={dayjs().subtract(1, "month").toISOString()}
+          >
+            {mentionSpan}
+          </DateTimePicker>
+        ) : (
+          mentionSpan
+        )}
         <TooltipPortal>
           <TooltipContent side="top" className="max-w-[300px]">
-            <MentionTooltipContent mentionData={mentionData} displayName={displayName} />
+            <MentionTooltipContent mentionData={mentionData} />
           </TooltipContent>
         </TooltipPortal>
       </TooltipRoot>

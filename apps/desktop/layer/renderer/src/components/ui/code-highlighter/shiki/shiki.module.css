@@ -77,7 +77,7 @@
 
       &::after {
         content: " +";
-        @apply text-green absolute left-0;
+        @apply absolute left-0 text-green;
       }
     }
 
@@ -90,7 +90,7 @@
 
       &::after {
         content: " -";
-        @apply text-red absolute left-0;
+        @apply absolute left-0 text-red;
       }
     }
 

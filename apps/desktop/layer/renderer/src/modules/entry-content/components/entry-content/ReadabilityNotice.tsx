@@ -32,7 +32,7 @@ export const ReadabilityNotice = ({ entryId }: { entryId: string }) => {
         <>
           {status === ReadabilityStatus.FAILURE ? (
             <div className="center mt-36 flex flex-col items-center gap-3">
-              <i className="i-mgc-warning-cute-re text-red text-4xl" />
+              <i className="i-mgc-warning-cute-re text-4xl text-red" />
               <span className="text-balance text-center text-sm">
                 {t("entry_content.fetching_content_failed")}
               </span>

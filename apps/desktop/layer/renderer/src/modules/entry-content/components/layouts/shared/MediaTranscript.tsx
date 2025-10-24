@@ -1,7 +1,10 @@
 import { useEntry } from "@follow/store/entry/hooks"
 import { cn } from "@follow/utils"
+import { checkLanguage } from "@follow/utils/language"
 
 import { AudioPlayer, useAudioPlayerAtomSelector } from "~/atoms/player"
+
+const MAX_PARAGRAPH_LENGTH = 300
 
 interface SubtitleItem {
   index: number
@@ -17,8 +20,6 @@ interface MediaTranscriptProps {
   srt: string | undefined
   entryId: string | undefined
   style?: React.CSSProperties
-  /** Optional: number of consecutive subtitle lines to merge together (default: no merging) */
-  mergeLines?: number
   /** Type of transcript: 'subtitle' disables jump and progress tracking, 'transcription' enables all features */
   type?: "subtitle" | "transcription"
 }
@@ -45,16 +46,206 @@ function srtTimeToSeconds(timeString: string): number {
 }
 
 /**
- * Parses SRT subtitle text and optionally merges consecutive lines
+ * Converts seconds to SRT time format (HH:MM:SS,mmm)
+ * @param seconds - Time in seconds
+ * @returns Time string in SRT format
+ */
+function formatTimeString(seconds: number): string {
+  const hours = Math.floor(seconds / 3600)
+  const minutes = Math.floor((seconds % 3600) / 60)
+  const secs = Math.floor(seconds % 60)
+  const millisecs = Math.floor((seconds % 1) * 1000)
+  return `${hours.toString().padStart(2, "0")}:${minutes.toString().padStart(2, "0")}:${secs.toString().padStart(2, "0")},${millisecs.toString().padStart(3, "0")}`
+}
+
+/**
+ * Processes English content by splitting into sentences and grouping by length
+ */
+function processEnglishContent(allText: string): string[] {
+  // First, temporarily replace ellipsis with a placeholder to avoid splitting on them
+  const textWithPlaceholders = allText.replaceAll(/\.{3,}/g, "___ELLIPSIS___")
+
+  // Split on sentence endings
+  const rawSentences = textWithPlaceholders
+    .split(/[.!?]+/)
+    .map((s) => s.trim())
+    .filter((s) => s.length > 0)
+    .map((s) => s.replaceAll("___ELLIPSIS___", "...")) // Restore ellipsis
+
+  // Restore sentence endings by detecting the original punctuation
+  const sentences = rawSentences.map((sentence) => {
+    // If sentence already ends with ellipsis, don't add additional punctuation
+    if (sentence.endsWith("...")) {
+      return sentence
+    }
+
+    const sentenceInText = allText.indexOf(sentence)
+    if (sentenceInText === -1) return `${sentence}.`
+
+    const afterSentence = allText.charAt(sentenceInText + sentence.length)
+    const endings = [".", "!", "?"]
+    const foundEnding = endings.find((ending) => afterSentence === ending)
+
+    return `${sentence}${foundEnding || "."}`
+  })
+
+  // Group sentences into paragraphs with reasonable length
+  const paragraphs: string[] = []
+  let currentParagraph = ""
+
+  for (const sentence of sentences) {
+    if (currentParagraph.length === 0) {
+      currentParagraph = sentence
+    } else if (currentParagraph.length + sentence.length + 1 <= MAX_PARAGRAPH_LENGTH) {
+      currentParagraph = `${currentParagraph} ${sentence}`
+    } else {
+      // Current paragraph is getting too long, start a new one
+      paragraphs.push(currentParagraph)
+      currentParagraph = sentence
+    }
+  }
+
+  // Don't forget the last paragraph
+  if (currentParagraph.length > 0) {
+    paragraphs.push(currentParagraph)
+  }
+
+  return paragraphs
+}
+
+/**
+ * Calculates timing for English content paragraphs using character position mapping
+ */
+function calculateEnglishTiming(
+  paragraphs: string[],
+  allText: string,
+  originalSubtitles: SubtitleItem[],
+): SubtitleItem[] {
+  // Create character position mapping
+  let charPosition = 0
+  const charToSubtitleMap: Array<{ charStart: number; charEnd: number; subtitle: SubtitleItem }> =
+    []
+
+  originalSubtitles.forEach((subtitle) => {
+    const textLength = subtitle.text.length
+    charToSubtitleMap.push({
+      charStart: charPosition,
+      charEnd: charPosition + textLength,
+      subtitle,
+    })
+    charPosition += textLength + 1 // +1 for the space we added when joining
+  })
+
+  const firstSubtitle = originalSubtitles[0]!
+  const lastSubtitle = originalSubtitles.at(-1)!
+  const reorganizedSubtitles: SubtitleItem[] = []
+  let textPosition = 0
+
+  paragraphs.forEach((paragraph, index) => {
+    const paragraphStart = allText.indexOf(paragraph, textPosition)
+    const paragraphEnd =
+      paragraphStart !== -1 ? paragraphStart + paragraph.length : textPosition + paragraph.length
+    const actualStart = paragraphStart !== -1 ? paragraphStart : textPosition
+    const actualEnd = paragraphEnd
+
+    // Find overlapping subtitles
+    const overlappingSubtitles = charToSubtitleMap.filter(
+      (mapping) =>
+        (actualStart >= mapping.charStart && actualStart < mapping.charEnd) ||
+        (actualEnd > mapping.charStart && actualEnd <= mapping.charEnd) ||
+        (actualStart <= mapping.charStart && actualEnd >= mapping.charEnd),
+    )
+
+    let startTimeInSeconds: number
+    let endTimeInSeconds: number
+
+    if (overlappingSubtitles.length > 0) {
+      const firstOverlapping = overlappingSubtitles[0]!
+      const lastOverlapping = overlappingSubtitles.at(-1)!
+
+      if (overlappingSubtitles.length === 1) {
+        // Single subtitle: interpolate within it
+        const sub = firstOverlapping.subtitle
+        const subTextLength = sub.text.length
+        const subDuration = sub.endTimeInSeconds - sub.startTimeInSeconds
+
+        if (subTextLength > 0 && subDuration > 0) {
+          const relativeStart = Math.max(0, actualStart - firstOverlapping.charStart)
+          const relativeEnd = Math.min(subTextLength, actualEnd - firstOverlapping.charStart)
+          const startRatio = relativeStart / subTextLength
+          const endRatio = relativeEnd / subTextLength
+
+          startTimeInSeconds = sub.startTimeInSeconds + startRatio * subDuration
+          endTimeInSeconds = sub.startTimeInSeconds + endRatio * subDuration
+        } else {
+          startTimeInSeconds = sub.startTimeInSeconds
+          endTimeInSeconds = sub.endTimeInSeconds
+        }
+      } else {
+        // Multiple subtitles: interpolate across the range
+        const firstOverlappingSub = firstOverlapping.subtitle
+        const lastOverlappingSub = lastOverlapping.subtitle
+
+        // Calculate the total character range across all overlapping subtitles
+        const totalCharStart = firstOverlapping.charStart
+        const totalCharEnd = lastOverlapping.charEnd
+        const totalCharLength = totalCharEnd - totalCharStart
+        const totalTimeDuration =
+          lastOverlappingSub.endTimeInSeconds - firstOverlappingSub.startTimeInSeconds
+
+        if (totalCharLength > 0 && totalTimeDuration > 0) {
+          // Calculate relative positions within the total overlapping range
+          const relativeStart = Math.max(0, actualStart - totalCharStart)
+          const relativeEnd = Math.min(totalCharLength, actualEnd - totalCharStart)
+          const startRatio = relativeStart / totalCharLength
+          const endRatio = relativeEnd / totalCharLength
+
+          startTimeInSeconds =
+            firstOverlappingSub.startTimeInSeconds + startRatio * totalTimeDuration
+          endTimeInSeconds = firstOverlappingSub.startTimeInSeconds + endRatio * totalTimeDuration
+        } else {
+          // Fallback to simple range if calculation fails
+          startTimeInSeconds = firstOverlappingSub.startTimeInSeconds
+          endTimeInSeconds = lastOverlappingSub.endTimeInSeconds
+        }
+      }
+    } else {
+      // Fallback: proportional calculation
+      const totalTextLength = allText.length
+      const totalDuration = lastSubtitle.endTimeInSeconds - firstSubtitle.startTimeInSeconds
+      const startRatio = actualStart / totalTextLength
+      const endRatio = actualEnd / totalTextLength
+
+      startTimeInSeconds = firstSubtitle.startTimeInSeconds + startRatio * totalDuration
+      endTimeInSeconds = firstSubtitle.startTimeInSeconds + endRatio * totalDuration
+    }
+
+    reorganizedSubtitles.push({
+      index: index + 1,
+      startTime: formatTimeString(startTimeInSeconds),
+      endTime: formatTimeString(endTimeInSeconds),
+      text: paragraph,
+      startTimeInSeconds,
+      endTimeInSeconds,
+    })
+
+    textPosition = actualEnd
+  })
+
+  return reorganizedSubtitles
+}
+
+/**
+ * Parses SRT subtitle text with optional sentence reorganization
  * @param srtText - The SRT format text to parse
- * @param mergeLines - Optional number of consecutive subtitle items to merge together
  * @returns Array of parsed subtitle items
  */
-function parseSrt(srtText: string, mergeLines?: number): SubtitleItem[] {
+function parseSrt(srtText: string): SubtitleItem[] {
   // Split by double newlines (with optional whitespace) to separate subtitle blocks
   const blocks = srtText.trim().split(/\n\s*\n/)
 
-  const subtitles = blocks
+  // First, parse all original subtitle blocks to extract text and timing info
+  const originalSubtitles = blocks
     .map((block) => {
       const lines = block.trim().split("\n")
 
@@ -102,35 +293,34 @@ function parseSrt(srtText: string, mergeLines?: number): SubtitleItem[] {
     })
     .filter((subtitle): subtitle is SubtitleItem => subtitle !== null)
 
-  // If mergeLines is specified and > 1, merge consecutive subtitles
-  if (mergeLines && mergeLines > 1) {
-    const mergedSubtitles: SubtitleItem[] = []
-
-    for (let i = 0; i < subtitles.length; i += mergeLines) {
-      const chunk = subtitles.slice(i, i + mergeLines)
-      if (chunk.length === 0) continue
-
-      const firstItem = chunk[0]
-      const lastItem = chunk.at(-1)
-
-      if (!firstItem || !lastItem) continue
-
-      const mergedText = chunk.map((item) => item.text).join(" ")
-
-      mergedSubtitles.push({
-        index: Math.floor(i / mergeLines) + 1,
-        startTime: firstItem.startTime,
-        endTime: lastItem.endTime,
-        text: mergedText,
-        startTimeInSeconds: firstItem.startTimeInSeconds,
-        endTimeInSeconds: lastItem.endTimeInSeconds,
-      })
-    }
-
-    return mergedSubtitles
+  if (originalSubtitles.length === 0) {
+    return []
   }
 
-  return subtitles
+  // Combine all text with timing information
+  const allText = originalSubtitles.map((sub) => sub.text).join(" ")
+
+  // Check if content is English to determine processing strategy
+  const isEnglish = checkLanguage({ content: allText, language: "en" })
+
+  // For non-English content, return original subtitles without any processing
+  if (!isEnglish) {
+    return originalSubtitles
+  }
+
+  // For English content: split by sentences and reorganize
+  const paragraphs = processEnglishContent(allText)
+
+  // Get timing information from first and last subtitles
+  const firstSubtitle = originalSubtitles[0]
+  const lastSubtitle = originalSubtitles.at(-1)
+
+  if (!firstSubtitle || !lastSubtitle) {
+    return []
+  }
+
+  // For English content: use character position mapping for precise timing
+  return calculateEnglishTiming(paragraphs, allText, originalSubtitles)
 }
 
 function formatTime(timeString: string): string {
@@ -156,7 +346,6 @@ export const MediaTranscript: React.FC<MediaTranscriptProps> = ({
   style,
   srt,
   entryId,
-  mergeLines,
   type = "transcription",
 }) => {
   // Determine if jump and progress tracking should be disabled based on type
@@ -178,16 +367,18 @@ export const MediaTranscript: React.FC<MediaTranscriptProps> = ({
 
   if (!srt) {
     return (
-      <div className={cn("text-secondary p-4 text-center", className)}>No transcript available</div>
+      <div className={cn("p-4 text-center text-text-secondary", className)}>
+        No transcript available
+      </div>
     )
   }
 
   let subtitles: SubtitleItem[]
   try {
-    subtitles = parseSrt(srt, mergeLines)
+    subtitles = parseSrt(srt)
   } catch (error) {
     return (
-      <div className={cn("text-red p-4 text-center", className)}>
+      <div className={cn("p-4 text-center text-red", className)}>
         Error parsing transcript:{" "}
         <span>{error instanceof Error ? error.message : "Unknown error"}</span>
       </div>
@@ -242,8 +433,8 @@ export const MediaTranscript: React.FC<MediaTranscriptProps> = ({
               "group relative rounded-lg border-l-4 px-3 py-2 transition-all duration-300 ease-out",
               !disableJump && "cursor-pointer",
               isActive
-                ? "bg-accent/5 border-accent shadow-sm"
-                : "hover:bg-fill-secondary border-transparent hover:shadow-sm",
+                ? "border-accent bg-accent/5 shadow-sm"
+                : "border-transparent hover:bg-fill-secondary hover:shadow-sm",
               isPast && "opacity-50",
             )}
             onClick={() => !disableJump && handleTimeJump(subtitle.startTimeInSeconds)}
@@ -261,7 +452,7 @@ export const MediaTranscript: React.FC<MediaTranscriptProps> = ({
                     className={cn(
                       "rounded-md px-2 py-1 font-mono text-xs leading-none transition-all duration-200",
                       isActive
-                        ? "text-accent bg-accent/10"
+                        ? "bg-accent/10 text-accent"
                         : "text-text-tertiary hover:bg-fill-tertiary hover:text-text-secondary",
                     )}
                     title="Jump to this time"
@@ -272,7 +463,7 @@ export const MediaTranscript: React.FC<MediaTranscriptProps> = ({
                   <span
                     className={cn(
                       "rounded-md px-2 py-1 font-mono text-xs leading-none",
-                      isActive ? "text-accent bg-accent/10" : "bg-fill-tertiary text-text-tertiary",
+                      isActive ? "bg-accent/10 text-accent" : "bg-fill-tertiary text-text-tertiary",
                     )}
                   >
                     {formatTime(subtitle.startTime)}
@@ -297,8 +488,8 @@ export const MediaTranscript: React.FC<MediaTranscriptProps> = ({
               {type === "transcription" && (
                 <div className="flex w-6 flex-shrink-0 items-center justify-center">
                   {isActive && (
-                    <div className="animate-in fade-in slide-in-from-right-2 duration-300">
-                      <div className="bg-accent size-2 animate-pulse rounded-full shadow-sm" />
+                    <div className="duration-300 animate-in fade-in slide-in-from-right-2">
+                      <div className="size-2 animate-pulse rounded-full bg-accent shadow-sm" />
                     </div>
                   )}
                 </div>

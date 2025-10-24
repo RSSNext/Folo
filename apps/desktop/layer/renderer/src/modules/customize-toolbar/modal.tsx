@@ -84,10 +84,10 @@ const CustomizeToolbar = () => {
       onPointerDown={(event) => event.stopPropagation()}
     >
       <div className="mb-4">
-        <h2 className="text-text text-title2 font-semibold">
+        <h2 className="text-title2 font-semibold text-text">
           {t("customizeToolbar.quick_actions.title")}
         </h2>
-        <p className="text-text-secondary text-headline">
+        <p className="text-headline text-text-secondary">
           {t("customizeToolbar.quick_actions.description")}
         </p>
       </div>
@@ -109,10 +109,10 @@ const CustomizeToolbar = () => {
 
           {/* More panel */}
           <div className="mb-4">
-            <h2 className="text-text text-title2 font-semibold">
+            <h2 className="text-title2 font-semibold text-text">
               {t("customizeToolbar.more_actions.title")}
             </h2>
-            <p className="text-text-secondary text-headline">
+            <p className="text-headline text-text-secondary">
               {t("customizeToolbar.more_actions.description")}
             </p>
           </div>

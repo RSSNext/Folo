@@ -82,9 +82,9 @@ const Card = ({
   return (
     <Pressable
       className={cn(
-        "bg-secondary-system-grouped-background mx-4 flex flex-row items-center gap-2 rounded-xl p-4",
+        "mx-4 flex flex-row items-center gap-2 rounded-xl bg-secondary-system-grouped-background p-4",
         "border-2 border-transparent",
-        isSelected && "border-accent border-2",
+        isSelected && "border-2 border-accent",
       )}
       onPress={onPress}
     >

@@ -3,7 +3,7 @@
  */
 
 import type { LinkProps } from "@follow/components/ui/link/LinkWithTooltip.js"
-import { isBizId } from "@follow/utils"
+import { cn, isBizId } from "@follow/utils"
 import * as React from "react"
 import type { Components } from "react-markdown"
 import ReactMarkdown from "react-markdown"
@@ -11,6 +11,7 @@ import rehypeRaw from "rehype-raw"
 import remarkGfm from "remark-gfm"
 
 import { MemoizedShikiCode } from "~/components/ui/code-highlighter"
+import { EntryPreviewCard, FeedPreviewCard } from "~/components/ui/hover-preview"
 import { MarkdownLink } from "~/components/ui/markdown/renderers"
 import { useNavigateEntry } from "~/hooks/biz/useNavigateEntry"
 import { usePeekModal } from "~/hooks/biz/usePeekModal"
@@ -74,7 +75,7 @@ const createAiMessageMarkdownElementsRender = (canAnimate: boolean) => {
         }
       }
 
-      return <pre className="text-text-secondary bg-material-medium">{children}</pre>
+      return <pre className="bg-material-medium text-text-secondary">{children}</pre>
     },
     a: ({ node, ...props }) => {
       return React.createElement(RelatedEntryLink, { ...props } as any)
@@ -113,11 +114,11 @@ const createAiMessageMarkdownElementsRender = (canAnimate: boolean) => {
 
     table: ({ children, ref, node, ...props }) => {
       return (
-        <div className="border-border bg-material-thin overflow-x-auto rounded-lg border">
+        <div className="overflow-x-auto rounded-lg border border-border bg-material-thin">
           <table
             {...props}
             style={ANIMATION_STYLE}
-            className="divide-border my-0 min-w-full divide-y text-sm"
+            className="my-0 min-w-full divide-y divide-border text-sm"
           >
             {children}
           </table>
@@ -135,7 +136,7 @@ const createAiMessageMarkdownElementsRender = (canAnimate: boolean) => {
       return (
         <th
           {...props}
-          className="text-text-secondary whitespace-nowrap px-4 py-3 text-left text-xs font-medium uppercase tracking-wider"
+          className="whitespace-nowrap px-4 py-3 text-left text-xs font-medium uppercase tracking-wider text-text-secondary"
         >
           {children}
         </th>
@@ -143,21 +144,21 @@ const createAiMessageMarkdownElementsRender = (canAnimate: boolean) => {
     },
     tbody: ({ children, ref, node, ...props }) => {
       return (
-        <tbody {...props} className="bg-material-ultra-thin divide-border divide-y">
+        <tbody {...props} className="divide-y divide-border bg-material-ultra-thin">
           {children}
         </tbody>
       )
     },
     tr: ({ children, ref, node, ...props }) => {
       return (
-        <tr {...props} className="hover:bg-material-thin transition-colors duration-150">
+        <tr {...props} className="transition-colors duration-150 hover:bg-material-thin">
           {textAnimator(children as any)}
         </tr>
       )
     },
     td: ({ children, ref, node, ...props }) => {
       return (
-        <td {...props} className="text-text whitespace-nowrap px-4 py-3 text-sm">
+        <td {...props} className="whitespace-nowrap px-4 py-3 text-sm text-text">
           {textAnimator(children as any)}
         </td>
       )
@@ -180,13 +181,17 @@ export const MarkdownAnimateText: React.FC<MarkdownAnimateTextProps> = ({
   )
 }
 
-const InlineFoloReference: React.FC<{
+type BaseInlineFoloReferenceProps = {
   type: "entry" | "feed"
-  children?: React.ReactNode
-  className?: string
-  style?: React.CSSProperties
   id?: string
-}> = ({ type, children, className, style, id }) => {
+}
+const InlineFoloReference: React.FC<
+  BaseInlineFoloReferenceProps & {
+    children?: React.ReactNode
+    className?: string
+    style?: React.CSSProperties
+  }
+> = ({ type, children, className, style, id }) => {
   const peekModal = usePeekModal()
   const navigateEntry = useNavigateEntry()
 
@@ -205,39 +210,53 @@ const InlineFoloReference: React.FC<{
     )
   }, [id, children])
 
-  const handleClick = React.useCallback(
-    (event: React.MouseEvent<HTMLButtonElement>) => {
-      event.preventDefault()
-      event.stopPropagation()
+  const handleClick = React.useCallback(() => {
+    if (!targetId) return
 
-      if (!targetId) return
-
-      if (type === "entry") {
-        peekModal(targetId, "modal")
-      } else {
-        navigateEntry({ feedId: targetId, entryId: null })
-      }
-    },
-    [navigateEntry, peekModal, targetId, type],
-  )
+    if (type === "entry") {
+      peekModal(targetId, "modal")
+    } else {
+      navigateEntry({ feedId: targetId, entryId: null })
+    }
+  }, [navigateEntry, peekModal, targetId, type])
 
   if (!targetId) return null
 
-  const baseClassName =
-    "inline-flex items-center align-middle cursor-pointer text-text-secondary mx-[0.15em] opacity-80 transition-opacity hover:opacity-100 hover:text-text"
-
-  return (
+  const isEntry = type === "entry"
+  const button = (
     <button
       type="button"
       aria-label={type === "entry" ? `Open entry ${targetId}` : `Open feed ${targetId}`}
       title={type === "entry" ? `Open entry ${targetId}` : `Open feed ${targetId}`}
-      className={className ? `${baseClassName} ${className}` : baseClassName}
+      className={cn(
+        "mx-[0.15em] inline-flex cursor-pointer items-center align-middle text-text-secondary opacity-80 transition-opacity hover:text-text hover:opacity-100",
+        "-translate-y-0.5",
+        className,
+      )}
       style={style}
       onClick={handleClick}
     >
-      <i className="i-mgc-docment-cute-re size-[1em]" />
+      {isEntry ? (
+        <i className="i-mgc-docment-cute-re size-[1em]" />
+      ) : (
+        <i className="i-mgc-rss-2-cute-fi size-[1em]" />
+      )}
     </button>
   )
+
+  if (isEntry) {
+    return (
+      <EntryPreviewCard entryId={targetId} onNavigate={handleClick}>
+        {button}
+      </EntryPreviewCard>
+    )
+  } else {
+    return (
+      <FeedPreviewCard feedId={targetId} onNavigate={handleClick}>
+        {button}
+      </FeedPreviewCard>
+    )
+  }
 }
 
 const RelatedEntryLink = (props: LinkProps) => {
@@ -251,7 +270,7 @@ const RelatedEntryLink = (props: LinkProps) => {
   return (
     <button
       type="button"
-      className="follow-link--underline text-text cursor-pointer font-semibold no-underline"
+      className="follow-link--underline cursor-pointer font-semibold text-text no-underline"
       onClick={() => {
         peekModal(entryId, "modal")
       }}

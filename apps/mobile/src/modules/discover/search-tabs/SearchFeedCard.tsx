@@ -20,7 +20,7 @@ export const SearchFeedCard = ({ item }: { item: TrendingFeedItem | DiscoveryIte
       <View className="mt-4 flex-row items-center gap-6">
         <View className="flex-row items-center gap-1.5">
           <User3CuteReIcon width={14} height={14} color={iconColor} />
-          <Text className="text-secondary-label text-sm">
+          <Text className="text-sm text-secondary-label">
             {formatNumber(item.analytics?.subscriptionCount || 0)} followers
           </Text>
         </View>
@@ -28,16 +28,16 @@ export const SearchFeedCard = ({ item }: { item: TrendingFeedItem | DiscoveryIte
           {item.analytics?.updatesPerWeek ? (
             <>
               <SafetyCertificateCuteReIcon width={14} height={14} color={iconColor} />
-              <Text className="text-secondary-label text-sm">
+              <Text className="text-sm text-secondary-label">
                 {item.analytics.updatesPerWeek} entries/week
               </Text>
             </>
           ) : item.analytics?.latestEntryPublishedAt ? (
             <>
               <SafeAlertCuteReIcon width={14} height={14} color={iconColor} />
-              <Text className="text-secondary-label text-sm">Updated</Text>
+              <Text className="text-sm text-secondary-label">Updated</Text>
               <RelativeDateTime
-                className="text-secondary-label text-sm"
+                className="text-sm text-secondary-label"
                 date={new Date(item.analytics.latestEntryPublishedAt)}
               />
             </>
@@ -46,10 +46,10 @@ export const SearchFeedCard = ({ item }: { item: TrendingFeedItem | DiscoveryIte
         <View className="ml-auto mr-4 mt-1">
           {isSubscribed ? (
             <View className="px-5 py-2">
-              <Text className="text-tertiary-label text-sm font-bold">Followed</Text>
+              <Text className="text-sm font-bold text-tertiary-label">Followed</Text>
             </View>
           ) : (
-            <View className="bg-accent rounded-full px-5 py-2">
+            <View className="rounded-full bg-accent px-5 py-2">
               <Text className="text-sm font-bold text-white">Follow</Text>
             </View>
           )}

@@ -13,6 +13,7 @@
   --fo-background: theme(colors.background);
 
   --background: 0 0% 100%;
+  --color-background: 255 255 255;
 
   --border: 20 5.9% 90%;
   --radius: 0.5rem;
@@ -37,7 +38,7 @@
     --fo-background: theme(colors.background);
 
     --background: 0 0% 7.1%;
-
+    --color-background: 18 18 18;
     --border: 0 0% 22.1%;
   }
 }

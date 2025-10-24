@@ -50,6 +50,7 @@
   "login.forget_password.note": "忘记了密码？",
   "login.forget_password.success": "邮件已成功发送。",
   "login.have_account": "已有账户？<strong>登录</strong>",
+  "login.lastUsed": "上次使用",
   "login.logInTo": "登录 ",
   "login.logInWithEmail": "使用邮件地址登录",
   "login.new_password.label": "新密码",

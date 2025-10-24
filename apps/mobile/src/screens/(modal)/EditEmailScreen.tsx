@@ -82,7 +82,7 @@ export const EditEmailScreen: NavigationControllerView = () => {
                 setIsDirty(true)
               }}
               placeholder="Enter your email"
-              className="text-secondary-label w-full flex-1 text-left"
+              className="w-full flex-1 text-left text-secondary-label"
             />
           </GroupedInsetListCell>
         </GroupedInsetListCard>

@@ -38,14 +38,14 @@ export const FileDropZone = memo(({ isVisible, isDragOver, className }: FileDrop
             exit={{ scale: 0.9, y: 10 }}
             transition={Spring.presets.snappy}
             className={cn(
-              "bg-background/95 rounded-xl border-2 border-dashed p-6 text-center transition-all duration-200",
+              "rounded-xl border-2 border-dashed bg-background/95 p-6 text-center transition-all duration-200",
               isDragOver
-                ? "border-accent bg-accent/5 shadow-accent/20 shadow-lg"
+                ? "border-accent bg-accent/5 shadow-lg shadow-accent/20"
                 : "border-border/50 shadow-sm",
             )}
           >
             <m.div
-              className="text-accent mb-3 flex justify-center"
+              className="mb-3 flex justify-center text-accent"
               animate={isDragOver ? { scale: [1, 1.1, 1] } : {}}
               transition={{
                 duration: 0.6,
@@ -56,11 +56,11 @@ export const FileDropZone = memo(({ isVisible, isDragOver, className }: FileDrop
               <i className="i-mgc-file-upload-cute-re size-8" />
             </m.div>
 
-            <p className={cn("text-text font-medium", isDragOver && "text-accent")}>
+            <p className={cn("font-medium text-text", isDragOver && "text-accent")}>
               {isDragOver ? "Drop files to upload" : "Drag files here to upload"}
             </p>
 
-            <p className="text-text-secondary mt-1 text-sm">
+            <p className="mt-1 text-sm text-text-secondary">
               Images, PDFs, and text files supported
             </p>
           </m.div>

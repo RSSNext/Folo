@@ -4,8 +4,9 @@ import Fuse from "fuse.js"
 import type { TFunction } from "i18next"
 
 import type { MentionData, MentionLabelDescriptor } from "../types"
+import { parseNaturalLanguageDate } from "../utils/parseNaturalLanguageDate"
 import type { RelativeDateDefinition } from "./dateMentionConfig"
-import { RANGE_WITH_LABEL_KEY, RELATIVE_DATE_DEFINITIONS } from "./dateMentionConfig"
+import { RELATIVE_DATE_DEFINITIONS } from "./dateMentionConfig"
 import type { DateRange } from "./dateMentionUtils"
 import {
   createDateMentionData,
@@ -117,8 +118,6 @@ const buildRangeMention = (
     label: candidate.label,
     labelOptions: appendRange ? { appendRange: true } : undefined,
     translate: context.t,
-    locale: context.language,
-    withRangeKey: RANGE_WITH_LABEL_KEY,
   })
 }
 
@@ -136,9 +135,22 @@ export const createDateMentionBuilder = (context: DateMentionBuilderContext) => 
   return (query: string): MentionData[] => {
     const normalized = normalizeQuery(query)
     const today = dayjs().startOf("day")
-    const bucket = normalized ? fuse.search(normalized).map((result) => result.item) : candidates
-
     const mentions: MentionData[] = []
+
+    if (normalized) {
+      const naturalDateRange = parseNaturalLanguageDate(normalized, context.language)
+      if (naturalDateRange) {
+        const chronoMention = createDateMentionData({
+          range: naturalDateRange,
+          translate: context.t,
+          displayName: query,
+        })
+        mentions.push(chronoMention)
+      }
+    }
+
+    // Add predefined relative date suggestions
+    const bucket = normalized ? fuse.search(normalized).map((result) => result.item) : candidates
 
     bucket.forEach((candidate) => {
       const range = candidate.definition.range(today)

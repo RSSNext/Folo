@@ -80,7 +80,7 @@ export const CSSEditor: Component<{
   if (!isSupportPlainTextOnly) {
     return (
       <div className="flex size-full flex-col">
-        <div className="text-text-tertiary -mt-2 mb-1 text-center text-sm">
+        <div className="-mt-2 mb-1 text-center text-sm text-text-tertiary">
           <i className="i-mingcute-warning-line mr-0.5 translate-y-[2px]" />
           Your browser does not support highlight CSS.
         </div>
@@ -101,11 +101,11 @@ export const CSSEditor: Component<{
       className={cn(
         "size-full",
 
-        "ring-accent/20 focus:border-accent/80 duration-200 focus:outline-none focus:ring-2",
+        "ring-accent/20 duration-200 focus:border-accent/80 focus:outline-none focus:ring-2",
         "focus:!bg-accent/5",
-        "border-border border",
+        "border border-border",
         "placeholder:text-text-tertiary dark:bg-zinc-700/[0.15] dark:text-zinc-200",
-        "hover:border-accent/60 overflow-auto whitespace-pre",
+        "overflow-auto whitespace-pre hover:border-accent/60",
         className,
       )}
       ref={ref}

@@ -17,7 +17,7 @@ export const TrendingFeedCard: FC<{
     <div>
       <FollowSummary simple feed={item.feed! as any} />
 
-      <div className="text-body text-text-secondary mt-2 flex items-center justify-between">
+      <div className="mt-2 flex items-center justify-between text-body text-text-secondary">
         {analytics?.subscriptionCount ? (
           <div className="flex items-center gap-1.5">
             <i className="i-mgc-user-3-cute-re" />

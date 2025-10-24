@@ -4,8 +4,10 @@ import { useEntry, useHasEntry } from "@follow/store/entry/hooks"
 import { useFeedById } from "@follow/store/feed/hooks"
 import { cn } from "@follow/utils/utils"
 import dayjs from "dayjs"
+import { useMemo } from "react"
 import { useTranslation } from "react-i18next"
 
+import { useUISettingKey } from "~/atoms/settings/ui"
 import { useEntryIsRead } from "~/hooks/biz/useAsRead"
 import { EntryTranslation } from "~/modules/entry-column/translation"
 import type { FeedIconEntry } from "~/modules/feed/feed-icon"
@@ -45,23 +47,18 @@ export const GridItemFooter = ({
 }) => {
   const entry = useEntry(entryId, (state) => {
     /// keep-sorted
-    const { feedId, read } = state
-    const { authorAvatar, publishedAt, title } = state
+    const { authorAvatar, feedId, publishedAt, title } = state
 
     const media = state.media || []
     const photo = media.find((a) => a.type === "photo")
     const firstPhotoUrl = photo?.url
-    const iconEntry: FeedIconEntry = {
-      firstPhotoUrl,
-      authorAvatar,
-    }
 
     /// keep-sorted
     return {
+      authorAvatar,
       feedId,
-      iconEntry,
+      firstPhotoUrl,
       publishedAt,
-      read,
       title,
     }
   })
@@ -70,9 +67,20 @@ export const GridItemFooter = ({
 
   const feeds = useFeedById(entry?.feedId)
 
-  const asRead = useEntryIsRead(entry)
+  const asRead = useEntryIsRead(entryId)
+
+  const iconEntry: FeedIconEntry = useMemo(
+    () => ({
+      firstPhotoUrl: entry?.firstPhotoUrl,
+      authorAvatar: entry?.authorAvatar,
+    }),
+    [entry?.firstPhotoUrl, entry?.authorAvatar],
+  )
 
   const { t } = useTranslation("common")
+
+  const isImageOnly = useUISettingKey("pictureViewImageOnly")
+  if (isImageOnly) return null
 
   if (!entry) return null
   return (
@@ -80,7 +88,7 @@ export const GridItemFooter = ({
       <div className="flex items-center">
         <div
           className={cn(
-            "bg-accent mr-1 size-1.5 shrink-0 self-center rounded-full duration-200",
+            "mr-1 size-1.5 shrink-0 self-center rounded-full bg-accent duration-200",
             asRead && "mr-0 w-0",
           )}
         />
@@ -101,14 +109,7 @@ export const GridItemFooter = ({
         </div>
       </div>
       <div className="flex items-center gap-1 truncate text-[13px]">
-        <FeedIcon
-          fallback
-          noMargin
-          className="flex"
-          target={feeds!}
-          entry={entry?.iconEntry}
-          size={18}
-        />
+        <FeedIcon fallback noMargin className="flex" target={feeds} entry={iconEntry} size={18} />
         <span className={cn("min-w-0 truncate pl-1", descriptionClassName)}>
           <FeedTitle feed={feeds} />
         </span>

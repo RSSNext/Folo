@@ -62,7 +62,7 @@ const Handler = memo(() => {
         <AnimatePresence>
           {popoverState.open && (
             <m.div
-              className="bg-material-ultra-thick backdrop-blur-background mr-2 rounded-xl border p-2 shadow-2xl"
+              className="mr-2 rounded-xl border bg-material-ultra-thick p-2 shadow-2xl backdrop-blur-background"
               initial={{ opacity: 0, scale: 0.95, y: -10 }}
               animate={{ opacity: 1, scale: 1, y: 0 }}
               exit={{ opacity: 0, scale: 0.95, y: -10 }}

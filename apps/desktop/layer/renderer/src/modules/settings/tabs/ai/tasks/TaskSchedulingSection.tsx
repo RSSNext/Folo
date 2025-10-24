@@ -1,6 +1,6 @@
 import { Button } from "@follow/components/ui/button/index.js"
-import { Label } from "@follow/components/ui/label/index.js"
 import { useCallback } from "react"
+import { useTranslation } from "react-i18next"
 
 import { useModalStack } from "~/components/ui/modal/stacked/hooks"
 import { AITaskList, AITaskModal, useCanCreateNewAITask } from "~/modules/ai-task"
@@ -8,25 +8,23 @@ import { AITaskList, AITaskModal, useCanCreateNewAITask } from "~/modules/ai-tas
 export const TaskSchedulingSection = () => {
   const { present } = useModalStack()
   const canCreateNewTask = useCanCreateNewAITask()
+  const { t } = useTranslation("ai")
 
   const handleCreateTask = useCallback(() => {
     present({
-      title: "New AI Task",
+      title: t("tasks.modal.new_title"),
       content: () => <AITaskModal />,
     })
-  }, [present])
+  }, [present, t])
 
   return (
-    <div className="space-y-4">
+    <div className="-mt-4 space-y-4">
       <div className="flex items-center justify-between">
         <div className="space-y-1">
-          <Label className="text-text text-sm font-medium">{"Schedule AI Tasks"}</Label>
-          <div className="text-text-secondary text-xs">
-            {"Create and manage automated AI tasks that run on your schedule."}
+          <div className="text-xs text-text-secondary">
+            {t("tasks.manage.desc")}
             {!canCreateNewTask && (
-              <span className="text-red">
-                {" (Limit reached: maximum number of tasks reached)"}
-              </span>
+              <span className="text-red"> {t("tasks.manage.limit_reached")}</span>
             )}
           </div>
         </div>
@@ -38,7 +36,7 @@ export const TaskSchedulingSection = () => {
           onClick={handleCreateTask}
         >
           <i className="i-mgc-add-cute-re mr-2 size-4" />
-          New Task
+          {t("tasks.actions.new_task")}
         </Button>
       </div>
 

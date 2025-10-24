@@ -250,7 +250,7 @@ const SubscriptionImpl = ({ ref, className, view, isSubscriptionLoading }: Subsc
         <StarredItem view={view} />
         {(hasListData || (isListPreview && listId)) && (
           <>
-            <div className="text-text-secondary mt-1 flex h-6 w-full shrink-0 items-center rounded-md px-2.5 text-xs font-semibold transition-colors">
+            <div className="mt-1 flex h-6 w-full shrink-0 items-center rounded-md px-2.5 text-xs font-semibold text-text-secondary transition-colors">
               {t("words.lists")}
             </div>
             {isListPreview && listId && (
@@ -266,7 +266,7 @@ const SubscriptionImpl = ({ ref, className, view, isSubscriptionLoading }: Subsc
         )}
         {hasInboxData && (
           <>
-            <div className="text-text-secondary mt-1 flex h-6 w-full shrink-0 items-center rounded-md px-2.5 text-xs font-semibold transition-colors">
+            <div className="mt-1 flex h-6 w-full shrink-0 items-center rounded-md px-2.5 text-xs font-semibold text-text-secondary transition-colors">
               {t("words.inbox")}
             </div>
             <SortByAlphabeticalInbox view={view} data={inboxSubIds} />
@@ -276,7 +276,7 @@ const SubscriptionImpl = ({ ref, className, view, isSubscriptionLoading }: Subsc
         {(hasListData || hasInboxData) && (
           <div
             className={cn(
-              "text-text-secondary mb-1 flex h-6 w-full shrink-0 items-center rounded-md px-2.5 text-xs font-semibold transition-colors",
+              "mb-1 flex h-6 w-full shrink-0 items-center rounded-md px-2.5 text-xs font-semibold text-text-secondary transition-colors",
               Object.keys(feedsData).length === 0 ? "mt-0" : "mt-1",
             )}
           >

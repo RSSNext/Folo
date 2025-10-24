@@ -5,7 +5,7 @@ import { useTranslation } from "react-i18next"
 import { ReadabilityStatus, useEntryInReadabilityStatus } from "~/atoms/readability"
 import { useShowSourceContent } from "~/atoms/source-content"
 
-import { ReadabilityAutoToggleEffect } from "../../ApplyEntryActions"
+import { ReadabilityAutoToggleEffect } from "../ApplyEntryActions"
 
 export const EntryNoContent: FC<{
   id: string

@@ -1,9 +1,8 @@
-import { cn } from "@follow/utils/utils"
 import * as React from "react"
 
+import { CombinedContextBlock, ContextBlock } from "~/modules/ai-chat/components/context-bar/blocks"
+import { useDisplayBlocks } from "~/modules/ai-chat/hooks/useDisplayBlocks"
 import type { AIChatContextBlock } from "~/modules/ai-chat/store/types"
-
-import { AIDataBlockItem } from "./AIDataBlockItem"
 
 interface AIDataBlockPartProps {
   blocks: AIChatContextBlock[]
@@ -14,30 +13,30 @@ interface AIDataBlockPartProps {
  * Displays various types of context (entries, feeds, text, files) with compact styling
  */
 export const AIDataBlockPart: React.FC<AIDataBlockPartProps> = React.memo(({ blocks }) => {
+  const displayBlocks = useDisplayBlocks(blocks)
+
   // Early return for empty blocks
-  if (!blocks?.length) {
+  if (displayBlocks.length === 0) {
     return null
   }
 
   return (
-    <div className="min-w-0 max-w-full text-left">
-      <div
-        className={cn(
-          "inline-flex flex-wrap items-center gap-1.5 rounded-lg py-1 pl-2 pr-1",
-          "bg-fill-secondary border-border/50 border",
-        )}
-      >
-        {/* Compact context indicator */}
-        <div className="text-text-secondary flex items-center gap-1">
-          <i className="i-mgc-link-cute-re size-3" />
-          <span className="text-xs">Context:</span>
-        </div>
+    <div className="flex items-center gap-2">
+      {displayBlocks.map((item) => {
+        if (item.kind === "combined") {
+          return (
+            <CombinedContextBlock
+              key={`combined-${item.viewBlock?.id}-${item.feedBlock?.id}-${item.unreadOnlyBlock?.id}`}
+              viewBlock={item.viewBlock}
+              feedBlock={item.feedBlock}
+              unreadOnlyBlock={item.unreadOnlyBlock}
+              readOnly
+            />
+          )
+        }
 
-        {/* Render individual block items */}
-        {blocks.map((block, index) => (
-          <AIDataBlockItem key={block.id} block={block} index={index} />
-        ))}
-      </div>
+        return <ContextBlock key={item.block.id} block={item.block} readOnly />
+      })}
     </div>
   )
 })

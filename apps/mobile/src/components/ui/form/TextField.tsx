@@ -39,11 +39,11 @@ const BaseField = ({
     <View className="w-full flex-1 gap-1">
       {!!label && <FormLabel className="pl-2.5" label={label} optional={!required} />}
       {!!description && (
-        <Text className="text-secondary-label mb-1 pl-2.5 text-sm">{description}</Text>
+        <Text className="mb-1 pl-2.5 text-sm text-secondary-label">{description}</Text>
       )}
       <View
         className={cn(
-          "bg-tertiary-system-fill relative h-10 flex-row items-center rounded-lg px-3",
+          "relative h-10 flex-row items-center rounded-lg bg-tertiary-system-fill px-3",
           wrapperClassName,
         )}
         style={wrapperStyle}
@@ -51,7 +51,7 @@ const BaseField = ({
         <TextInput
           selectionColor={accentColor}
           ref={ref}
-          className={cn("text-label placeholder:text-secondary-label w-full flex-1 p-0", className)}
+          className={cn("w-full flex-1 p-0 text-label placeholder:text-secondary-label", className)}
           style={StyleSheet.flatten([styles.textField, style])}
           {...rest}
         />
@@ -135,7 +135,7 @@ export const PlainTextField = ({
         onFocus={composeEventHandlers(props.onFocus, () => setIsFocused(true))}
         onBlur={composeEventHandlers(props.onBlur, () => setIsFocused(false))}
         selectionColor={accentColor}
-        className={cn("text-label placeholder:text-secondary-label w-full flex-1", props.className)}
+        className={cn("w-full flex-1 text-label placeholder:text-secondary-label", props.className)}
       />
 
       <Animated.View

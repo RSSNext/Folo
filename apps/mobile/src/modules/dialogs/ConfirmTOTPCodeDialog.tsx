@@ -16,13 +16,13 @@ export const ConfirmTOTPCodeDialog: DialogComponent<{
     <View>
       <View className="flex-row items-center gap-2">
         <Key2CuteReIcon color={label} height={20} width={20} />
-        <Text className="text-label text-base font-medium">Enter your TOTP code to continue</Text>
+        <Text className="text-base font-medium text-label">Enter your TOTP code to continue</Text>
       </View>
       <PlainTextField
         autoFocus
         autoCapitalize="none"
         secureTextEntry
-        className="bg-system-background text-text my-3 rounded-xl p-2 px-4"
+        className="my-3 rounded-xl bg-system-background p-2 px-4 text-text"
         placeholder="TOTP Code"
         onChangeText={(text) => (ctx.totpCode = text)}
         returnKeyType="done"

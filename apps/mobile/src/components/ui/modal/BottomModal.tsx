@@ -174,7 +174,7 @@ export function BottomModal({
 
           <Animated.View
             className={cn(
-              "bg-system-background mt-auto flex-1 overflow-hidden rounded-t-2xl",
+              "mt-auto flex-1 overflow-hidden rounded-t-2xl bg-system-background",
               className,
             )}
             style={modalContentStyle}

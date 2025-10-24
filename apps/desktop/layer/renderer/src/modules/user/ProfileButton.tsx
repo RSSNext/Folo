@@ -21,6 +21,7 @@ import {
   DropdownMenuSeparator,
   DropdownMenuTrigger,
 } from "~/components/ui/dropdown-menu/dropdown-menu"
+import { useFeature } from "~/hooks/biz/useFeature"
 import { UrlBuilder } from "~/lib/url-builder"
 import { useAchievementModal } from "~/modules/achievement/hooks"
 import { usePresentUserProfileModal } from "~/modules/profile/hooks"
@@ -45,6 +46,7 @@ export const ProfileButton: FC<ProfileButtonProps> = memo((props) => {
   const presentUserProfile = usePresentUserProfileModal("dialog")
   const presentAchievement = useAchievementModal()
   const { t } = useTranslation()
+  const aiEnabled = useFeature("ai")
 
   const [dropdown, setDropdown] = useState(false)
 
@@ -62,7 +64,7 @@ export const ProfileButton: FC<ProfileButtonProps> = memo((props) => {
     <DropdownMenu onOpenChange={setDropdown}>
       <DropdownMenuTrigger
         asChild
-        className="focus-visible:bg-theme-item-hover !outline-none data-[state=open]:bg-transparent"
+        className="!outline-none focus-visible:bg-theme-item-hover data-[state=open]:bg-transparent"
       >
         {props.animatedAvatar ? (
           <TransitionAvatar stage={dropdown ? "zoom-in" : ""} />
@@ -72,7 +74,7 @@ export const ProfileButton: FC<ProfileButtonProps> = memo((props) => {
       </DropdownMenuTrigger>
 
       <DropdownMenuContent
-        className="macos:bg-material-opaque min-w-[240px] overflow-visible px-1 pt-6"
+        className="min-w-[240px] overflow-visible px-1 pt-6 macos:bg-material-opaque"
         side="bottom"
         align="center"
       >
@@ -142,15 +144,17 @@ export const ProfileButton: FC<ProfileButtonProps> = memo((props) => {
           </DropdownMenuItem>
         )}
 
-        <DropdownMenuItem
-          className="pl-3"
-          onClick={() => {
-            navigate("/ai")
-          }}
-          icon={<i className="i-mgc-ai-cute-re" />}
-        >
-          {t("user_button.ai")}
-        </DropdownMenuItem>
+        {aiEnabled && (
+          <DropdownMenuItem
+            className="pl-3"
+            onClick={() => {
+              navigate("/ai")
+            }}
+            icon={<i className="i-mgc-ai-cute-re" />}
+          >
+            {t("user_button.ai")}
+          </DropdownMenuItem>
+        )}
 
         <DropdownMenuSeparator />
 

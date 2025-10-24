@@ -280,7 +280,7 @@ export const SettingsList: FC = () => {
   const marginTop = 44 / pixelRatio
 
   return (
-    <View className="bg-system-grouped-background flex-1 pb-4" style={{ marginTop }}>
+    <View className="flex-1 bg-system-grouped-background pb-4" style={{ marginTop }}>
       {filteredNavigationGroups.map((group, index) => (
         <Fragment key={`nav-group-${index}`}>
           <NavigationLinkGroup key={`nav-group-${index}`} links={group} />

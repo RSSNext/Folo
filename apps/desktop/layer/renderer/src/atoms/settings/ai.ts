@@ -1,17 +1,116 @@
 import { createSettingAtom } from "@follow/atoms/helper/setting.js"
 import { defaultAISettings } from "@follow/shared/settings/defaults"
-import type { AISettings, MCPService } from "@follow/shared/settings/interface"
+import type {
+  AISettings,
+  AIShortcut,
+  AIShortcutTarget,
+  MCPService,
+} from "@follow/shared/settings/interface"
+import { DEFAULT_SHORTCUT_TARGETS } from "@follow/shared/settings/interface"
 import { jotaiStore } from "@follow/utils"
+import type { ExtractResponseData, GetStatusConfigsResponse } from "@follow-app/client-sdk"
 import { clamp } from "es-toolkit"
 import { atom, useAtomValue } from "jotai"
+
+import { getFeature } from "~/hooks/biz/useFeature"
 
 export interface WebAISettings extends AISettings {
   panelStyle: AIChatPanelStyle
   showSplineButton: boolean
 }
 
+type ServerShortcutConfig = ExtractResponseData<GetStatusConfigsResponse>["AI_SHORTCUTS"][number]
+
+const FALLBACK_SHORTCUT_ICON = "i-mgc-hotkey-cute-re"
+const VALID_SHORTCUT_TARGETS = new Set<AIShortcutTarget>(DEFAULT_SHORTCUT_TARGETS)
+
+const isValidShortcutTarget = (target: string): target is AIShortcutTarget =>
+  VALID_SHORTCUT_TARGETS.has(target as AIShortcutTarget)
+
+const sanitizeShortcutTargets = (targets?: readonly string[]): AIShortcutTarget[] => {
+  if (!targets || targets.length === 0) {
+    return [...DEFAULT_SHORTCUT_TARGETS]
+  }
+
+  const filtered = targets.filter(isValidShortcutTarget) as AIShortcutTarget[]
+  return filtered.length > 0 ? [...filtered] : [...DEFAULT_SHORTCUT_TARGETS]
+}
+
+const normalizeShortcut = (shortcut: AIShortcut): AIShortcut => {
+  return {
+    ...shortcut,
+    displayTargets: sanitizeShortcutTargets(shortcut.displayTargets),
+    enabled: typeof shortcut.enabled === "boolean" ? shortcut.enabled : true,
+  }
+}
+
+const normalizeShortcuts = (shortcuts: readonly AIShortcut[] | undefined): AIShortcut[] =>
+  (shortcuts ?? []).map((shortcut) => normalizeShortcut({ ...shortcut }))
+
+const mergeWithServerShortcuts = (
+  localShortcuts: readonly AIShortcut[],
+  serverShortcuts: readonly ServerShortcutConfig[],
+): AIShortcut[] => {
+  const normalizedLocal = normalizeShortcuts(localShortcuts)
+  if (serverShortcuts.length === 0) {
+    return normalizedLocal
+  }
+
+  const serverShortcutMap = new Map<string, ServerShortcutConfig>()
+  serverShortcuts.forEach((shortcut) => {
+    serverShortcutMap.set(shortcut.id, shortcut)
+  })
+
+  const seenServerShortcutIds = new Set<string>()
+  const mergedShortcuts: AIShortcut[] = []
+
+  normalizedLocal.forEach((shortcut) => {
+    const serverShortcut = serverShortcutMap.get(shortcut.id)
+    if (!serverShortcut) {
+      mergedShortcuts.push(shortcut)
+      return
+    }
+
+    seenServerShortcutIds.add(serverShortcut.id)
+    const shouldClearPrompt = shortcut.prompt === serverShortcut.defaultPrompt
+
+    mergedShortcuts.push({
+      ...shortcut,
+      name: shortcut.name || serverShortcut.name,
+      prompt: shouldClearPrompt ? "" : shortcut.prompt,
+      defaultPrompt: serverShortcut.defaultPrompt,
+      displayTargets: sanitizeShortcutTargets(
+        shortcut.displayTargets || serverShortcut.displayTargets,
+      ),
+    })
+  })
+
+  serverShortcuts.forEach((serverShortcut) => {
+    if (seenServerShortcutIds.has(serverShortcut.id)) return
+
+    mergedShortcuts.push({
+      id: serverShortcut.id,
+      name: serverShortcut.name,
+      prompt: "",
+      defaultPrompt: serverShortcut.defaultPrompt,
+      enabled: true,
+      icon: FALLBACK_SHORTCUT_ICON,
+      displayTargets: sanitizeShortcutTargets(serverShortcut.displayTargets),
+    })
+  })
+
+  return mergedShortcuts
+}
+
+export const getShortcutEffectivePrompt = (shortcut: AIShortcut): string => {
+  return shortcut.prompt || shortcut.defaultPrompt || ""
+}
+
+export const isServerShortcut = (shortcut: AIShortcut) => !!shortcut.defaultPrompt
+
 export const createDefaultSettings = (): WebAISettings => ({
   ...defaultAISettings,
+  shortcuts: normalizeShortcuts(defaultAISettings.shortcuts),
   panelStyle: AIChatPanelStyle.Fixed,
   showSplineButton: true,
 })
@@ -27,6 +126,16 @@ export const {
   settingAtom: __aiSettingAtom,
 } = createSettingAtom("ai", createDefaultSettings)
 export const aiServerSyncWhiteListKeys = []
+
+export const syncServerShortcuts = (
+  serverShortcuts: readonly ServerShortcutConfig[] | null | undefined,
+) => {
+  const storedShortcuts = getAISettings().shortcuts ?? []
+  const serverShortcutList = Array.isArray(serverShortcuts) ? serverShortcuts : []
+  const mergedShortcuts = mergeWithServerShortcuts(storedShortcuts, serverShortcutList)
+
+  setAISetting("shortcuts", mergedShortcuts)
+}
 
 ////////// AI Panel Style
 export enum AIChatPanelStyle {
@@ -74,7 +183,10 @@ export const getFloatingPanelState = () => jotaiStore.get(floatingPanelStateAtom
 const aiPanelVisibilityAtom = atom<boolean>(false)
 export const useAIPanelVisibility = () => useAtomValue(aiPanelVisibilityAtom)
 export const setAIPanelVisibility = (visibility: boolean) => {
-  jotaiStore.set(aiPanelVisibilityAtom, visibility)
+  const aiEnabled = getFeature("ai")
+  if (aiEnabled) {
+    jotaiStore.set(aiPanelVisibilityAtom, visibility)
+  }
 }
 export const getAIPanelVisibility = () => jotaiStore.get(aiPanelVisibilityAtom)
 

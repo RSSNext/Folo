@@ -174,7 +174,7 @@ function FollowImpl(props: { feedId: string; defaultView?: FeedViewType }) {
           <View className="ml-11 mt-2 flex-row items-center gap-3 opacity-60">
             <View className="flex-row items-center gap-1">
               <User3CuteReIcon color={textLabelColor} width={12} height={12} />
-              <Text className="text-text text-sm">
+              <Text className="text-sm text-text">
                 {typeof feed.subscriptionCount === "number" ? (
                   formatNumber(feed.subscriptionCount || 0)
                 ) : (
@@ -188,7 +188,7 @@ function FollowImpl(props: { feedId: string; defaultView?: FeedViewType }) {
             {feed.updatesPerWeek ? (
               <View className="flex-row items-center gap-1">
                 <SafetyCertificateCuteReIcon color={textLabelColor} width={12} height={12} />
-                <Text className="text-text text-sm">
+                <Text className="text-sm text-text">
                   {tCommon("feed.entry_week", {
                     count: feed.updatesPerWeek,
                   })}
@@ -197,7 +197,7 @@ function FollowImpl(props: { feedId: string; defaultView?: FeedViewType }) {
             ) : feed.latestEntryPublishedAt ? (
               <View className="flex-row items-center gap-1">
                 <SafeAlertCuteReIcon color={textLabelColor} width={12} height={12} />
-                <Text className="text-text text-sm">
+                <Text className="text-sm text-text">
                   {tCommon("feed.updated_at")}
                   <RelativeDateTime date={feed.latestEntryPublishedAt} />
                 </Text>

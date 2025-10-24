@@ -191,7 +191,7 @@ export const OpmlSelectionModal = ({
         <h3 className="mb-2 text-lg font-semibold">
           {t("discover.import.select_feeds_to_import")}
         </h3>
-        <p className="text-text-secondary text-sm">
+        <p className="text-sm text-text-secondary">
           {t("discover.import.select_feeds_description")}
         </p>
       </div>
@@ -199,7 +199,7 @@ export const OpmlSelectionModal = ({
       {/* Quota Status */}
       <div
         className={cn(
-          "border-border bg-background mb-4 flex items-center justify-between rounded-lg border px-3 py-2",
+          "mb-4 flex items-center justify-between rounded-lg border border-border bg-background px-3 py-2",
           isQuotaExceeded
             ? "border-red-200 bg-red-50 dark:border-red-800 dark:bg-red-950"
             : selectedCount >= quotaWarningThreshold
@@ -281,7 +281,7 @@ export const OpmlSelectionModal = ({
               {t("discover.import.select_all_filtered", "Select all filtered")} (
               {filteredSelectedCount}/{filteredSubscriptions.length})
               {filteredSubscriptions.length < parsedData.subscriptions.length && (
-                <span className="text-text-secondary ml-1">
+                <span className="ml-1 text-text-secondary">
                   of {parsedData.subscriptions.length} total
                 </span>
               )}
@@ -298,7 +298,7 @@ export const OpmlSelectionModal = ({
       <ScrollArea.ScrollArea rootClassName="-mx-4 flex-1 px-2">
         <div className="space-y-2">
           {filteredSubscriptions.length === 0 && searchQuery.trim() ? (
-            <div className="text-text-secondary py-8 text-center">
+            <div className="py-8 text-center text-text-secondary">
               {t("discover.import.no_feeds_found", "No feeds found matching your search.")}
             </div>
           ) : (
@@ -311,7 +311,7 @@ export const OpmlSelectionModal = ({
                 <div
                   key={`${item.url}-${refIndex}`}
                   className={cn(
-                    "cursor-button hover:bg-material-medium flex items-center gap-3 rounded-lg border p-3 transition-colors",
+                    "flex cursor-button items-center gap-3 rounded-lg border p-3 transition-colors hover:bg-material-medium",
                     isSelected ? "border-material-thick bg-material-thick" : "border-background",
                     wouldExceedQuota && "cursor-not-allowed opacity-50",
                   )}
@@ -320,9 +320,9 @@ export const OpmlSelectionModal = ({
                   <Checkbox checked={isSelected} disabled={wouldExceedQuota} />
                   <div className="min-w-0 flex-1 shrink">
                     <div className="truncate font-medium">{item.title || "Untitled Feed"}</div>
-                    <div className="text-text-secondary truncate text-sm">{item.url}</div>
+                    <div className="truncate text-sm text-text-secondary">{item.url}</div>
                     {item.category && (
-                      <div className="text-text-secondary mt-1 text-xs opacity-80">
+                      <div className="mt-1 text-xs text-text-secondary opacity-80">
                         {item.category}
                       </div>
                     )}
@@ -353,4 +353,4 @@ export const OpmlSelectionModal = ({
   )
 }
 
-const NumberDisplay = ({ value }) => <span className="text-text font-bold">{value ?? 0}</span>
+const NumberDisplay = ({ value }) => <span className="font-bold text-text">{value ?? 0}</span>

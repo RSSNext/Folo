@@ -79,7 +79,7 @@ export const ListSubscriptionItem = memo(({ id, isFirst, isLast }: ListSubscript
             <View className="flex-1 flex-row items-center gap-2">
               <Text
                 numberOfLines={1}
-                className="text-text shrink font-medium"
+                className="shrink font-medium text-text"
                 style={{
                   marginLeft: GROUPED_ICON_TEXT_GAP,
                 }}

@@ -17,24 +17,24 @@ import {
 } from "@dnd-kit/sortable"
 import { CSS } from "@dnd-kit/utilities"
 import { Button } from "@follow/components/ui/button/index.js"
-import { views } from "@follow/constants"
+import { getView } from "@follow/constants"
 import type { CSSProperties, ReactNode } from "react"
 import { useCallback, useMemo } from "react"
 import { useTranslation } from "react-i18next"
 
-import { setUISetting, useUISettingKey } from "~/atoms/settings/ui"
+import { setUISetting } from "~/atoms/settings/ui"
 import { useModalStack } from "~/components/ui/modal/stacked/hooks"
-import { ROUTE_TIMELINE_OF_VIEW } from "~/constants"
+import { parseView } from "~/hooks/biz/useRouteParams"
 import { useTimelineList } from "~/hooks/biz/useTimelineList"
 
-const MAX_VISIBLE = 4
+const MAX_VISIBLE = 5
 
 function ContainerDroppable({ id, children }: { id: "visible" | "hidden"; children: ReactNode }) {
   const { setNodeRef, isOver } = useDroppable({ id, data: { container: id } })
   return (
     <div
       ref={setNodeRef}
-      className={`border-border bg-material-ultra-thin flex min-h-[120px] w-full flex-wrap items-center justify-center rounded-lg border p-2 pb-6 shadow-sm ${
+      className={`flex min-h-[120px] w-full flex-wrap items-center justify-center rounded-lg border border-border bg-material-ultra-thin p-2 pb-6 shadow-sm ${
         isOver ? "outline outline-1 outline-orange-400" : ""
       }`}
     >
@@ -44,9 +44,9 @@ function ContainerDroppable({ id, children }: { id: "visible" | "hidden"; childr
 }
 
 function getViewMeta(timelineId: string) {
-  if (!timelineId.startsWith(ROUTE_TIMELINE_OF_VIEW)) return { name: timelineId, icon: null }
-  const id = Number.parseInt(timelineId.slice(ROUTE_TIMELINE_OF_VIEW.length), 10)
-  const item = views.find((v) => v.view === id)
+  const id = parseView(timelineId)
+  if (typeof id !== "number") return { name: timelineId, icon: null }
+  const item = getView(id)
   return { name: item?.name ?? String(id), icon: item?.icon ?? null }
 }
 
@@ -54,9 +54,9 @@ function TabItem({ id }: { id: UniqueIdentifier }) {
   const meta = getViewMeta(String(id))
   const { t } = useTranslation()
   return (
-    <div className="hover:bg-material-opaque flex w-full items-center gap-2 rounded-md p-2">
+    <div className="flex w-full items-center gap-2 rounded-md p-2 hover:bg-material-opaque">
       <div className="flex size-6 items-center justify-center text-lg">{meta.icon}</div>
-      <div className="text-text-secondary text-callout">
+      <div className="text-callout text-text-secondary">
         {t(meta.name as any, { ns: "common" })}
       </div>
     </div>
@@ -88,27 +88,14 @@ function SortableTabItem({ id }: { id: UniqueIdentifier }) {
 }
 
 function useResolvedTimelineTabs() {
-  const timelineTabs = useUISettingKey("timelineTabs")
-  const timelineList = useTimelineList()
-  const first = timelineList[0]
-  const rest = timelineList.slice(1)
+  const timelineList = useTimelineList({ ordered: true, visible: true })
+  const timelineListHidden = useTimelineList({ ordered: true, hidden: true })
 
-  // Resolve visible: keep saved order, ensure they exist in rest, cap at MAX_VISIBLE
-  const savedVisible = (timelineTabs?.visible ?? []).filter((id) => rest.includes(id))
-  const filledVisible = [...savedVisible]
-  for (const id of rest) {
-    if (filledVisible.length >= MAX_VISIBLE) break
-    if (!filledVisible.includes(id)) filledVisible.push(id)
-  }
-
-  const hidden = rest.filter((id) => !filledVisible.includes(id))
-
-  return { first, visible: filledVisible, hidden }
+  return { visible: timelineList, hidden: timelineListHidden }
 }
 
 const TimelineTabsSettings = () => {
   const { visible, hidden } = useResolvedTimelineTabs()
-  const timelineListForReset = useTimelineList()
 
   const sensors = useSensors(
     useSensor(PointerSensor),
@@ -200,8 +187,8 @@ const TimelineTabsSettings = () => {
       onPointerDown={(e) => e.stopPropagation()}
     >
       <div className="mb-2">
-        <h2 className="text-text text-title2 font-semibold">Timeline Tabs</h2>
-        <p className="text-text-secondary text-headline">
+        <h2 className="text-title2 font-semibold text-text">Timeline Tabs</h2>
+        <p className="text-headline text-text-secondary">
           First tab is fixed. Drag to choose up to {MAX_VISIBLE} visible tabs.
         </p>
       </div>
@@ -213,7 +200,7 @@ const TimelineTabsSettings = () => {
       >
         <div className="space-y-4">
           <div>
-            <h3 className="text-text text-subheadline mb-2 font-medium">
+            <h3 className="mb-2 text-subheadline font-medium text-text">
               Visible ({visible.length}/{MAX_VISIBLE})
             </h3>
             <ContainerDroppable id="visible">
@@ -226,7 +213,7 @@ const TimelineTabsSettings = () => {
           </div>
 
           <div>
-            <h3 className="text-text text-subheadline mb-2 font-medium">Hidden</h3>
+            <h3 className="mb-2 text-subheadline font-medium text-text">Hidden</h3>
             <ContainerDroppable id="hidden">
               <SortableContext items={hidden} strategy={verticalListSortingStrategy}>
                 {hidden.map((id) => (
@@ -242,11 +229,9 @@ const TimelineTabsSettings = () => {
         <Button
           variant="outline"
           onClick={() => {
-            // reset to current timeline order: first 4 visible, rest hidden
-            const rest = timelineListForReset.slice(1)
             setUISetting("timelineTabs", {
-              visible: rest.slice(0, MAX_VISIBLE),
-              hidden: rest.slice(MAX_VISIBLE),
+              visible: [],
+              hidden: [],
             })
           }}
         >

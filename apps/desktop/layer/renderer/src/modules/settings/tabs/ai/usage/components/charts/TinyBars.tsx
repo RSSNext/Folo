@@ -18,7 +18,7 @@ export const TinyBars = ({ data, max, highlightThreshold }: TinyBarsProps) => {
           <div
             key={d.label}
             className={cn(
-              "bg-fill-secondary hover:bg-accent/20 relative w-full rounded-sm transition-colors",
+              "relative w-full rounded-sm bg-fill-secondary transition-colors hover:bg-accent/20",
               highlight && "bg-accent/40",
             )}
             style={{ height: `${Math.max(4, h)}%` }}

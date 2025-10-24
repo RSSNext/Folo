@@ -13,7 +13,7 @@ export const EntryListEmpty = () => {
       {unreadOnly ? (
         <>
           <CelebrateCuteReIcon height={30} width={30} color={color} />
-          <Text className="text-secondary-label text-lg font-medium">Zero Unread</Text>
+          <Text className="text-lg font-medium text-secondary-label">Zero Unread</Text>
         </>
       ) : (
         <Text className="text-secondary-label">No entries</Text>

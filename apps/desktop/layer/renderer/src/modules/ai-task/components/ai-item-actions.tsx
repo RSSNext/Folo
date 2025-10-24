@@ -74,7 +74,7 @@ export const ItemActions = ({ actions, enabled, onToggle }: ItemActionsProps) =>
       </div>
 
       {/* Switch area */}
-      <div className="border-fill-tertiary flex items-center gap-2 border-l pl-3">
+      <div className="flex items-center gap-2 border-l border-fill-tertiary pl-3">
         <Switch checked={enabled} onCheckedChange={onToggle} />
       </div>
     </div>

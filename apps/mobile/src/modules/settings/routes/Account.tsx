@@ -133,7 +133,7 @@ const AccountLinker: FC<{
         <Text
           ellipsizeMode="tail"
           numberOfLines={1}
-          className="text-secondary-label mr-1 max-w-[150px]"
+          className="mr-1 max-w-[150px] text-secondary-label"
         >
           {account?.profile?.email || account?.profile?.name || ""}
         </Text>

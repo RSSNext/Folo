@@ -25,7 +25,7 @@ export const RelativeTime: FC<{
   date: string | Date
   displayAbsoluteTimeAfterDay?: number
   dateFormatTemplate?: string
-  compact?: boolean
+  postfix?: string
 }> = (props) => {
   const { displayAbsoluteTimeAfterDay = 29, dateFormatTemplate = formatTemplateString } = props
   const nextDateFormatTemplate =
@@ -60,17 +60,14 @@ export const RelativeTime: FC<{
   if (formated === relative) {
     return <>{relative}</>
   }
+
+  const resolvedPostfix = props.postfix ?? t("space") + t("words.ago")
   return (
     <Tooltip>
       {/* https://github.com/radix-ui/primitives/issues/2248#issuecomment-2147056904 */}
       <TooltipTrigger tabIndex={-1} onFocusCapture={stopPropagation}>
         {relative}
-        {!props.compact && (
-          <>
-            {t("space")}
-            {t("words.ago")}
-          </>
-        )}
+        {resolvedPostfix}
       </TooltipTrigger>
 
       <TooltipPortal>

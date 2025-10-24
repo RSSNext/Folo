@@ -33,19 +33,19 @@ export const EntryGridFooter = ({
   const translation = useEntryTranslation({
     entryId,
     language: actionLanguage,
-    setting: enableTranslation,
+    enabled: enableTranslation,
   })
   const feed = useFeedById(entry?.feedId || "")
   if (!entry) return null
   return (
     <View className="gap-2 px-1 py-2">
       <View className="flex-row gap-1">
-        {!entry.read && <View className="bg-red mt-1.5 inline-block size-2 rounded-full" />}
+        {!entry.read && <View className="mt-1.5 inline-block size-2 rounded-full bg-red" />}
         {entry.title && (
           <EntryTranslation
             numberOfLines={2}
             className={cn(
-              "text-label shrink text-sm font-medium",
+              "shrink text-sm font-medium text-label",
               view === FeedViewType.Videos && "min-h-10",
               descriptionClassName,
             )}
@@ -58,10 +58,10 @@ export const EntryGridFooter = ({
       </View>
       <View className="flex-row items-center gap-1.5">
         <FeedIcon fallback feed={feed} size={14} />
-        <Text numberOfLines={1} className="text-label shrink text-xs font-medium">
+        <Text numberOfLines={1} className="shrink text-xs font-medium text-label">
           {feed?.title}
         </Text>
-        <RelativeDateTime className="text-secondary-label text-xs" date={entry.publishedAt} />
+        <RelativeDateTime className="text-xs text-secondary-label" date={entry.publishedAt} />
       </View>
     </View>
   )

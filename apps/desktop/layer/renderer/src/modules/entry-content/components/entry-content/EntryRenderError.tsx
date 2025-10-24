@@ -9,7 +9,7 @@ export const EntryRenderError: FallbackRender = ({ error }) => {
   const nextError = typeof error === "string" ? new Error(error) : (error as Error)
   return (
     <div className="center mt-16 flex flex-col gap-2">
-      <i className="i-mgc-close-cute-re text-red text-3xl" />
+      <i className="i-mgc-close-cute-re text-3xl text-red" />
       <span className="font-sans text-sm">
         {t("entry_content.render_error")} {nextError.message}
       </span>

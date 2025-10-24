@@ -1,1 +1,5 @@
+export { CodeHighlightingPlugin } from "./code-highlighting"
+export { ExitCodeBoundaryPlugin } from "./exit-code"
 export { KeyboardPlugin } from "./keyboard"
+export { StringLengthChangePlugin } from "./string-length-change"
+export { TripleBacktickTogglePlugin } from "./triple-backtick-toggle"

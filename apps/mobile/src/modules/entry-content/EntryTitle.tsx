@@ -21,7 +21,7 @@ export const EntryTitle = ({ title, entryId }: { title: string; entryId: string 
   const translation = useEntryTranslation({
     entryId,
     language: actionLanguage,
-    setting: enableTranslation,
+    enabled: enableTranslation,
   })
   const { titleHeightAtom } = use(EntryContentContext)
   const setTitleHeight = useSetAtom(titleHeightAtom)
@@ -32,7 +32,7 @@ export const EntryTitle = ({ title, entryId }: { title: string; entryId: string 
       }}
     >
       <EntryTranslation
-        className="text-label text-title1 px-5 font-bold leading-snug"
+        className="px-5 text-title1 font-bold leading-snug text-label"
         source={title}
         target={translation?.title}
         bilingual
@@ -56,7 +56,7 @@ export const EntrySocialTitle = ({ entryId }: { entryId: string }) => {
       ) : (
         feed && <FeedIcon feed={feed} size={28} />
       )}
-      <Text className="text-label text-[16px] font-semibold">
+      <Text className="text-[16px] font-semibold text-label">
         {entry?.author || feed?.title || ""}
       </Text>
     </View>

@@ -5,8 +5,9 @@ import { ScrollArea } from "@follow/components/ui/scroll-area/index.js"
 import { Routes } from "@follow/constants"
 import { ELECTRON_BUILD } from "@follow/shared/constants"
 import { springScrollTo } from "@follow/utils/scroller"
-import { cn, getOS } from "@follow/utils/utils"
+import { clsx, cn, getOS } from "@follow/utils/utils"
 import { m } from "framer-motion"
+import { LinearBlur } from "progressive-blur"
 import { isValidElement, useCallback, useEffect, useRef, useState } from "react"
 import { useHotkeys } from "react-hotkeys-hook"
 import { useTranslation } from "react-i18next"
@@ -27,7 +28,7 @@ import { useSubViewRightView, useSubViewTitleValue } from "./hooks"
  * This layout provides:
  * - Fullscreen overlay with enhanced header controls
  * - Smooth scroll behavior with progress indicators
- * - Glass morphism UI elements with backdrop blur effects
+ * - Progressive mask blur effects
  * - Back navigation with ESC key support
  * - Dynamic title display based on scroll position
  * - Configurable right-side action buttons
@@ -35,7 +36,7 @@ import { useSubViewRightView, useSubViewTitleValue } from "./hooks"
  * Layout Structure:
  * ```
  * SubviewLayout
- * ├── Fixed Header (glass, floating)
+ * ├── Fixed Header (progressive mask blur)
  * │   ├── Back Button (left)
  * │   ├── Title (center, fade in on scroll)
  * │   └── Action Buttons (right, configurable)
@@ -164,12 +165,8 @@ function SubviewLayoutInner() {
           isHeaderElevated && isElectronWindows && "-top-5",
         )}
       >
-        <m.div
-          className={cn(
-            "mx-4 mt-4 flex items-center gap-3",
-            "transition-all duration-300 ease-out",
-          )}
-        >
+        <m.div className={cn("flex items-center gap-3 p-4", "relative")}>
+          <LinearBlur className="absolute inset-0 z-[-1]" tint="var(--fo-background)" side="top" />
           {/* Left: Back button (circular, glass) */}
           <GlassButton
             description={t("words.back", { ns: "common" })}
@@ -187,15 +184,13 @@ function SubviewLayoutInner() {
           <div className="pointer-events-none flex min-h-10 flex-1 items-center justify-center">
             {title ? (
               <div
-                className={cn(
+                className={clsx(
                   "pointer-events-auto inline-flex max-w-[60%] items-center justify-center",
-                  "rounded-full border px-8 py-2 text-center",
-                  "bg-material-thin border-border/50 backdrop-blur-background shadow-sm duration-200",
-
+                  "px-8 py-2 text-center duration-200",
                   isTitleVisible ? "opacity-100" : "opacity-0",
                 )}
               >
-                <div className="text-text truncate font-semibold">{title}</div>
+                <div className="truncate font-semibold text-text">{title}</div>
               </div>
             ) : null}
           </div>
@@ -262,7 +257,8 @@ const SubViewHeaderRightView = ({ isHeaderElevated }: { isHeaderElevated: boolea
     return (
       <div
         className={cn(
-          "bg-fill backdrop-blur-background -mt-2 inline-flex items-center gap-1.5 rounded-full p-2 duration-200",
+          "-mt-2 inline-flex items-center gap-1.5 rounded-full bg-fill p-2 backdrop-blur-background duration-200",
+          "has-[:nth-child(1)]:bg-transparent",
           !isHeaderElevated && items.length > 1 ? "bg-material-ultra-thin" : "bg-material-medium",
         )}
       >
@@ -277,8 +273,8 @@ const SubViewHeaderRightView = ({ isHeaderElevated }: { isHeaderElevated: boolea
         "ml-auto inline-flex shrink-0 items-center gap-1.5 rounded-xl border p-1.5",
         "opacity-0 duration-200",
         isHeaderElevated
-          ? "bg-material-ultra-thin border-border/50 opacity-100 shadow-sm backdrop-blur-xl"
-          : "bg-material-medium border-transparent",
+          ? "border-border/50 bg-material-ultra-thin opacity-100 shadow-sm backdrop-blur-xl"
+          : "border-transparent bg-material-medium",
       )}
     >
       <div className="inline-flex items-center">{rightView}</div>
@@ -329,7 +325,7 @@ const ScrollProgressFAB = ({
           />
         </svg>
         <div className="absolute inset-0 flex items-center justify-center opacity-100 transition-opacity duration-200 group-hover/fab:opacity-0">
-          <span className="text-text-secondary text-xs font-medium">{Math.round(progress)}</span>
+          <span className="text-xs font-medium text-text-secondary">{Math.round(progress)}</span>
         </div>
         <button
           onClick={() => {

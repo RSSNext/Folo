@@ -60,7 +60,7 @@ export const InboxItem = memo(({ id, isFirst, isLast }: SubscriptionItemBaseProp
           </View>
 
           <Text
-            className="text-label font-medium"
+            className="font-medium text-label"
             style={{
               marginLeft: GROUPED_ICON_TEXT_GAP,
             }}

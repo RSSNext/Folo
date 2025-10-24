@@ -100,7 +100,7 @@ export const Header = () => {
               whileTap={{ scale: 0.98 }}
               className={cn(
                 "inline-flex items-center gap-2 rounded-full border px-6 font-medium",
-                "bg-fill/60 text-text hover:bg-fill/80 text-sm",
+                "bg-fill/60 text-sm text-text hover:bg-fill/80",
                 isCompact ? "h-8" : "h-10",
               )}
             >

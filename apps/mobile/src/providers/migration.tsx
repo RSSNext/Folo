@@ -15,9 +15,9 @@ export const MigrationProvider = ({ children }: { children: ReactNode }) => {
     return (
       <View className="flex-1 items-center justify-center">
         <BugCuteReIcon color="#ff0000" height={48} width={48} />
-        <Text className="text-text mt-5">Oops, something went wrong...</Text>
-        <View className="bg-system-background mt-2 rounded-md p-2">
-          <Text className="text-text font-mono">{error.message}</Text>
+        <Text className="mt-5 text-text">Oops, something went wrong...</Text>
+        <View className="mt-2 rounded-md bg-system-background p-2">
+          <Text className="font-mono text-text">{error.message}</Text>
         </View>
 
         <Button
@@ -36,7 +36,7 @@ export const MigrationProvider = ({ children }: { children: ReactNode }) => {
     return (
       <View className="flex-1 items-center justify-center">
         <PlatformActivityIndicator />
-        <Text className="text-label mt-4">Database Migrations...</Text>
+        <Text className="mt-4 text-label">Database Migrations...</Text>
       </View>
     )
   }

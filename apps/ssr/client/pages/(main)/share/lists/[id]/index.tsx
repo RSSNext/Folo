@@ -18,7 +18,7 @@ import { useParams } from "react-router"
 const FeedRow = memo<{ feed: FeedSchema }>(({ feed }) => {
   return (
     <a
-      className="border-border/40 bg-card hover:border-border group relative flex cursor-pointer items-start justify-between rounded-lg border p-4 transition-all duration-200 hover:shadow-sm hover:shadow-black/5 dark:hover:shadow-white/5"
+      className="bg-card group relative flex cursor-pointer items-start justify-between rounded-lg border border-border/40 p-4 transition-all duration-200 hover:border-border hover:shadow-sm hover:shadow-black/5 dark:hover:shadow-white/5"
       href={`/share/feeds/${feed.id}`}
       target="_blank"
       rel="noopener noreferrer"
@@ -29,7 +29,7 @@ const FeedRow = memo<{ feed: FeedSchema }>(({ feed }) => {
         </div>
         <div className="min-w-0 flex-1">
           <div className="flex items-center space-x-2">
-            <h3 className="group-hover:text-accent truncate font-medium text-zinc-900 transition-colors dark:text-zinc-100">
+            <h3 className="truncate font-medium text-zinc-900 transition-colors group-hover:text-accent dark:text-zinc-100">
               {feed.title}
             </h3>
             <FeedCertification feed={feed} />
@@ -100,7 +100,7 @@ export function Component() {
               <FeedIcon
                 fallback
                 target={list.data.list}
-                className="mask-squircle mask border-border border"
+                className="mask-squircle mask border border-border"
                 size={80}
                 noMargin
               />
@@ -109,7 +109,7 @@ export function Component() {
 
           {/* List Info */}
           <div className="space-y-4">
-            <h1 className="text-3xl font-semibold text-zinc-900 sm:text-4xl dark:text-zinc-100">
+            <h1 className="text-3xl font-semibold text-zinc-900 dark:text-zinc-100 sm:text-4xl">
               {list.data.list.title}
             </h1>
 
@@ -122,7 +122,7 @@ export function Component() {
                 className="flex items-center space-x-2 text-zinc-500 transition-colors hover:text-zinc-700 dark:text-zinc-400 dark:hover:text-zinc-300"
               >
                 <span className="text-sm">{t("feed.madeby")}</span>
-                <Avatar className="border-border/60 size-6 border">
+                <Avatar className="size-6 border border-border/60">
                   <AvatarImage src={list.data.list.owner?.image || undefined} />
                   <AvatarFallback className="text-xs">
                     {list.data.list.owner?.name?.slice(0, 2)}
@@ -140,7 +140,7 @@ export function Component() {
 
             {/* Stats */}
             <div className="!mt-8 flex justify-center">
-              <div className="divide-material-ultra-thick flex items-center divide-x">
+              <div className="flex items-center divide-x divide-material-ultra-thick">
                 <div className="px-4 text-center">
                   <div className="text-xl font-semibold text-zinc-900 dark:text-zinc-100">
                     {list.data.feedCount || 0}
@@ -182,7 +182,7 @@ export function Component() {
 
       {/* Feeds Section */}
       <div className="mx-auto max-w-6xl px-6 pb-8 sm:px-8">
-        <div className="border-border/40 mb-6 border-b pb-3">
+        <div className="mb-6 border-b border-border/40 pb-3">
           <h2 className="text-xl font-medium text-zinc-900 dark:text-zinc-100">
             Feeds in this List
           </h2>
@@ -199,7 +199,7 @@ export function Component() {
             <button
               type="button"
               onClick={handleOpenInFollowApp}
-              className="hover:text-accent text-sm text-zinc-500 transition-colors dark:text-zinc-400"
+              className="text-sm text-zinc-500 transition-colors hover:text-accent dark:text-zinc-400"
             >
               {t("feed.follow_to_view_all", {
                 count: list.data.feedCount || 0,
@@ -212,7 +212,7 @@ export function Component() {
       {/* Entries Preview */}
       {!!list.data.entries?.length && (
         <div className="mx-auto max-w-6xl px-6 pb-16 sm:px-8">
-          <div className="border-border/40 mb-6 border-b pb-3">
+          <div className="mb-6 border-b border-border/40 pb-3">
             <h2 className="text-xl font-medium text-zinc-900 dark:text-zinc-100">Recent Posts</h2>
           </div>
 

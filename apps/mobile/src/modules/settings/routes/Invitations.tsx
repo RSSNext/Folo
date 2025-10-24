@@ -82,7 +82,7 @@ export const InvitationsScreen: NavigationControllerView = () => {
               ns="settings"
               i18nKey="invitation.earlyAccess"
               parent={({ children }: { children: React.ReactNode }) => (
-                <Text className="text-label mt-3 text-left text-base leading-tight">
+                <Text className="mt-3 text-left text-base leading-tight text-label">
                   {children}
                 </Text>
               )}
@@ -94,7 +94,7 @@ export const InvitationsScreen: NavigationControllerView = () => {
               ns="settings"
               i18nKey="invitation.generateCost"
               parent={({ children }: { children: React.ReactNode }) => (
-                <Text className="text-label mt-3 text-left text-base leading-tight">
+                <Text className="mt-3 text-left text-base leading-tight text-label">
                   {children}
                 </Text>
               )}
@@ -124,7 +124,7 @@ export const InvitationsScreen: NavigationControllerView = () => {
               ns="settings"
               i18nKey="invitation.limitationMessage"
               parent={({ children }: { children: React.ReactNode }) => (
-                <Text className="text-label mt-3 text-base leading-tight">{children}</Text>
+                <Text className="mt-3 text-base leading-tight text-label">{children}</Text>
               )}
               values={{
                 limitation: numberFormatter.format(limitation ?? 0),
@@ -140,7 +140,7 @@ export const InvitationsScreen: NavigationControllerView = () => {
         {invitations?.map((invitation) => (
           <ContextMenu.Root key={invitation.code}>
             <ContextMenu.Trigger>
-              <GroupedInsetListBaseCell className="bg-secondary-system-grouped-background flex-1">
+              <GroupedInsetListBaseCell className="flex-1 bg-secondary-system-grouped-background">
                 <View className="mr-2 shrink flex-row items-center gap-4">
                   <UserAvatar
                     size={26}
@@ -155,7 +155,7 @@ export const InvitationsScreen: NavigationControllerView = () => {
                     >
                       {invitation.users?.name || (!invitation.users ? t("invitation.notUsed") : "")}
                     </Text>
-                    <Text className="text-secondary-label text-sm">
+                    <Text className="text-sm text-secondary-label">
                       {t("invitation.created_at")}{" "}
                       {dayjs(invitation.createdAt).format("YYYY/MM/DD")}
                     </Text>

@@ -49,7 +49,7 @@ export const ShortcutSetting = () => {
 
       {Object.entries(commandShortcuts).map(([type, commands]) => (
         <section key={type} className="mb-8">
-          <div className="text-text border-border mb-4 border-b pb-2 text-base font-medium">
+          <div className="mb-4 border-b border-border pb-2 text-base font-medium text-text">
             {t(type as CommandCategory)}
           </div>
           <div className="space-y-4">
@@ -91,13 +91,13 @@ const EditableCommandShortcutItem = memo(({ commandId }: { commandId: FollowComm
       }
     >
       <div className="flex min-w-0 flex-col gap-1">
-        <div className="text-text flex items-center gap-2 text-sm">
+        <div className="flex items-center gap-2 text-sm text-text">
           {command.label.title}
           {isUserCustomize && (
             <Tooltip>
               <TooltipTrigger asChild>
-                <div className="bg-accent/10 text-accent hover:bg-accent/20 inline-flex items-center rounded-full px-2 py-0.5 text-xs font-medium transition-all duration-200">
-                  <div className="bg-accent mr-1 size-2 rounded-full" />
+                <div className="inline-flex items-center rounded-full bg-accent/10 px-2 py-0.5 text-xs font-medium text-accent transition-all duration-200 hover:bg-accent/20">
+                  <div className="mr-1 size-2 rounded-full bg-accent" />
                   {t("settings.shortcuts.custom")}
                 </div>
               </TooltipTrigger>
@@ -106,7 +106,7 @@ const EditableCommandShortcutItem = memo(({ commandId }: { commandId: FollowComm
           )}
         </div>
         {!!command.label.description && (
-          <small className="text-text-secondary text-xs">{command.label.description}</small>
+          <small className="text-xs text-text-secondary">{command.label.description}</small>
         )}
       </div>
       <ShortcutInputWrapper
@@ -217,7 +217,7 @@ const ShortcutInputWrapper = memo(
               <div className="space-y-1">
                 <div className="font-medium text-red-400">{t("settings.shortcuts.conflict")}</div>
                 <div className="leading-6">
-                  <span className="text-text-secondary text-xs">
+                  <span className="text-xs text-text-secondary">
                     {t("settings.shortcuts.conflict_command")}
                   </span>
                   <p className="text-sm font-medium">{conflictCommand?.label.title}</p>

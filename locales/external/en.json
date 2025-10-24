@@ -50,6 +50,7 @@
   "login.forget_password.note": "Forgot your password?",
   "login.forget_password.success": "Email has been sent successfully",
   "login.have_account": "Already have an account? <strong>Sign in</strong>",
+  "login.lastUsed": "Last used",
   "login.logInTo": "Sign in to",
   "login.logInWithEmail": "Sign in with email",
   "login.new_password.label": "New Password",

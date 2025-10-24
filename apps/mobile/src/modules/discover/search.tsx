@@ -175,7 +175,7 @@ const SearchInput = () => {
           <Animated.View style={placeholderAnimatedStyle}>
             <Search2CuteReIcon color={placeholderTextColor} height={18} width={18} />
             {!searchValue && !tempSearchValue && (
-              <Text className="text-secondary-label ml-2" style={styles.searchPlaceholderText}>
+              <Text className="ml-2 text-secondary-label" style={styles.searchPlaceholderText}>
                 {t("words.search")}
               </Text>
             )}
@@ -206,7 +206,7 @@ const SearchInput = () => {
           <Search2CuteReIcon color={placeholderTextColor} height={18} width={18} />
           <Text
             allowFontScaling={false}
-            className="text-secondary-label ml-1"
+            className="ml-1 text-secondary-label"
             style={styles.searchPlaceholderText}
           >
             {t("words.search")}
@@ -227,7 +227,7 @@ const SearchInput = () => {
         <Text
           // Fix font scaling issues on Android
           allowFontScaling={false}
-          className="text-accent text-[16px] font-medium"
+          className="text-[16px] font-medium text-accent"
         >
           Cancel
         </Text>

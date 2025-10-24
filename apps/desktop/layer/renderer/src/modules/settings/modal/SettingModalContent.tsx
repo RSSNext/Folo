@@ -2,13 +2,23 @@ import { ScrollArea } from "@follow/components/ui/scroll-area/index.js"
 import { cn } from "@follow/utils"
 import { repository } from "@pkg"
 import type { FC } from "react"
-import { Suspense, useDeferredValue, useLayoutEffect, useState } from "react"
+import {
+  Suspense,
+  useCallback,
+  useDeferredValue,
+  useEffect,
+  useLayoutEffect,
+  useMemo,
+  useRef,
+  useState,
+} from "react"
 import { Trans } from "react-i18next"
 import { useLoaderData } from "react-router"
 
 import { ModalClose } from "~/components/ui/modal/stacked/components"
 import { SettingsTitle } from "~/modules/settings/title"
 
+import { SettingSectionHighlightContext } from "../section"
 import { getSettingPages } from "../settings-glob"
 import type { SettingPageConfig } from "../utils"
 import { useSettingTab } from "./context"
@@ -16,29 +26,98 @@ import { SettingModalLayout } from "./layout"
 
 export const SettingModalContent: FC<{
   initialTab?: string
-}> = ({ initialTab }) => {
+  initialSection?: string
+}> = ({ initialTab, initialSection }) => {
   const pages = getSettingPages()
+  const resolvedInitialTab = initialTab && initialTab in pages ? initialTab : undefined
+
   return (
-    <SettingModalLayout
-      initialTab={initialTab ? (initialTab in pages ? initialTab : undefined) : undefined}
-    >
-      <Content />
+    <SettingModalLayout initialTab={resolvedInitialTab}>
+      <Content initialTab={resolvedInitialTab} initialSection={initialSection} />
     </SettingModalLayout>
   )
 }
 
-const Content = () => {
+const Content: FC<{
+  initialTab?: string
+  initialSection?: string
+}> = ({ initialTab, initialSection }) => {
   const key = useDeferredValue(useSettingTab() || "general")
   const pages = getSettingPages()
   const { Component, loader } = pages[key]
 
   const [scroller, setScroller] = useState<HTMLDivElement | null>(null)
+  const sectionRefs = useRef(new Map<string, HTMLElement>())
+  const pendingSectionRef = useRef<string | null>(initialSection ?? null)
+  const hasAppliedInitialSectionRef = useRef(false)
+  const [highlightedSectionId, setHighlightedSectionId] = useState<string | undefined>()
+
+  useEffect(() => {
+    pendingSectionRef.current = initialSection ?? null
+    hasAppliedInitialSectionRef.current = false
+    setHighlightedSectionId(undefined)
+  }, [initialSection])
 
   useLayoutEffect(() => {
     if (scroller) {
       scroller.scrollTop = 0
     }
   }, [key])
+
+  const scrollToSection = useCallback((sectionId: string) => {
+    if (!sectionId) return false
+    const element = sectionRefs.current.get(sectionId)
+    if (!element) return false
+
+    element.scrollIntoView({
+      behavior: "smooth",
+      block: "start",
+    })
+
+    setHighlightedSectionId(sectionId)
+
+    return true
+  }, [])
+
+  const registerSection = useCallback(
+    (sectionId: string, element: HTMLElement | null) => {
+      if (!sectionId) return
+      if (element) {
+        sectionRefs.current.set(sectionId, element)
+        if (pendingSectionRef.current === sectionId) {
+          const handled = scrollToSection(sectionId)
+          if (handled) {
+            pendingSectionRef.current = null
+            hasAppliedInitialSectionRef.current = true
+          }
+        }
+      } else {
+        sectionRefs.current.delete(sectionId)
+      }
+    },
+    [scrollToSection],
+  )
+
+  useEffect(() => {
+    if (!initialSection || hasAppliedInitialSectionRef.current) return
+    if (initialTab && key !== initialTab) return
+
+    const handled = scrollToSection(initialSection)
+    if (handled) {
+      hasAppliedInitialSectionRef.current = true
+      pendingSectionRef.current = null
+    } else {
+      pendingSectionRef.current = initialSection
+    }
+  }, [initialSection, initialTab, key, scrollToSection])
+
+  const highlightContextValue = useMemo(
+    () => ({
+      highlightedSectionId: highlightedSectionId ?? undefined,
+      registerSection,
+    }),
+    [highlightedSectionId, registerSection],
+  )
 
   const config = (useLoaderData() || loader || {}) as SettingPageConfig
   if (!Component) return null
@@ -56,7 +135,9 @@ const Content = () => {
           config.viewportClassName,
         )}
       >
-        <Component />
+        <SettingSectionHighlightContext value={highlightContextValue}>
+          <Component />
+        </SettingSectionHighlightContext>
 
         <div className="h-16" />
         <p className="absolute inset-x-0 bottom-4 flex items-center justify-center gap-1 text-xs opacity-80">
@@ -67,7 +148,7 @@ const Content = () => {
               Link: (
                 <a
                   href={`${repository.url}`}
-                  className="text-accent font-semibold"
+                  className="font-semibold text-accent"
                   target="_blank"
                 />
               ),

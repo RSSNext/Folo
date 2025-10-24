@@ -30,7 +30,7 @@ function NormalListItemImpl({
   return (
     <div
       className={
-        "hover:before:bg-material-ultra-thick group relative mx-auto flex max-w-3xl gap-2 py-4 pl-3 pr-2 before:pointer-events-none before:absolute before:-inset-x-2 before:inset-y-0 before:z-[-1] before:scale-0 before:rounded-xl before:opacity-0 before:transition-all before:duration-200 hover:before:scale-100 hover:before:opacity-100"
+        "group relative mx-auto flex max-w-3xl gap-2 py-4 pl-3 pr-2 before:pointer-events-none before:absolute before:-inset-x-2 before:inset-y-0 before:z-[-1] before:scale-0 before:rounded-xl before:opacity-0 before:transition-all before:duration-200 hover:before:scale-100 hover:before:bg-material-ultra-thick hover:before:opacity-100"
       }
     >
       <FeedIcon target={feed} fallback entry={entry.entry} />
@@ -42,12 +42,12 @@ function NormalListItemImpl({
           <span>·</span>
           <span className="shrink-0">{!!displayTime && <RelativeTime date={displayTime} />}</span>
         </div>
-        <div className={cn("text-text relative my-0.5 line-clamp-1 break-words font-medium")}>
+        <div className={cn("relative my-0.5 line-clamp-1 break-words font-medium text-text")}>
           {entry.entry.title}
         </div>
         {withDetails && (
           <div className="flex gap-2">
-            <div className={cn("grow text-sm", "text-text-secondary line-clamp-3")}>
+            <div className={cn("grow text-sm", "line-clamp-3 text-text-secondary")}>
               {entry.entry.description}
             </div>
           </div>

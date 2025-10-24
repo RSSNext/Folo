@@ -66,7 +66,7 @@ export const HeaderActionButton = ({
       onClick={onClick}
       disabled={disabled || loading}
       className={cn(
-        "no-drag-region group relative flex items-center gap-2 rounded-lg px-3 py-2",
+        "group no-drag-region relative flex items-center gap-2 rounded-lg px-3 py-2",
         "text-sm font-medium transition-all duration-200",
         ...getVariantStyles(),
         className,

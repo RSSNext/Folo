@@ -1,3 +1,4 @@
+/* eslint-disable react-refresh/only-export-components */
 import type {
   DOMConversionMap,
   DOMConversionOutput,
@@ -10,8 +11,9 @@ import type {
 import { DecoratorNode } from "lexical"
 import * as React from "react"
 
-import { useAIMessageId } from "~/modules/ai-chat/components/message/AIMessageIdContext"
-import { useMessageByIdSelector } from "~/modules/ai-chat/store/hooks"
+import { useAIMessageOptionalId } from "~/modules/ai-chat/components/message/AIMessageIdContext"
+import { useChatBlockSelector, useMessageByIdSelector } from "~/modules/ai-chat/store/hooks"
+import type { FileAttachment } from "~/modules/ai-chat/store/types"
 import { findFileAttachmentBlock, isDataBlockPart } from "~/modules/ai-chat/utils/extractor"
 
 export type SerializedFileAttachmentNode = Spread<
@@ -110,34 +112,10 @@ interface FileAttachmentComponentProps {
   node: FileAttachmentNode
 }
 
-function FileAttachmentComponent({ node }: FileAttachmentComponentProps) {
-  const attachmentId = node.getAttachmentId()
-
-  const messageId = useAIMessageId()!
-
-  const fileAttachment = useMessageByIdSelector(messageId, (message) => {
-    for (const part of message.parts) {
-      if (!isDataBlockPart(part)) continue
-
-      const block = findFileAttachmentBlock(part, attachmentId)
-      if (block) {
-        return block.attachment
-      }
-    }
-  })
-
-  if (!fileAttachment) {
-    return (
-      <span className="bg-fill border-border text-gray inline-flex items-center gap-1 rounded border px-2 py-1 text-xs">
-        <i className="i-mgc-attachment-cute-re" />
-        <span className="max-w-32 truncate">File not found</span>
-      </span>
-    )
-  }
-
+function FileAttachmentPill({ attachment }: { attachment: FileAttachment }) {
   return (
     <span
-      className="bg-fill border-border inline-flex items-center gap-1 rounded border px-2 py-1 text-xs"
+      className="inline-flex items-center gap-1 rounded border border-border bg-fill px-2 py-1 text-xs"
       style={{
         backgroundColor: "var(--fill)",
         color: "var(--text)",
@@ -145,21 +123,73 @@ function FileAttachmentComponent({ node }: FileAttachmentComponentProps) {
       }}
     >
       <i className="i-mgc-attachment-cute-re" />
-      <span className="max-w-32 truncate" title={fileAttachment.name}>
-        {fileAttachment.name}
+      <span className="max-w-32 truncate" title={attachment.name}>
+        {attachment.name}
       </span>
-      {fileAttachment.uploadStatus === "uploading" && (
-        <i className="i-mgc-loading-3-cute-re text-accent animate-spin" />
+      {attachment.uploadStatus === "uploading" && (
+        <i className="i-mgc-loading-3-cute-re animate-spin text-accent" />
       )}
-      {fileAttachment.uploadStatus === "processing" && (
-        <i className="i-mgc-loading-3-cute-re text-accent animate-spin" />
+      {attachment.uploadStatus === "processing" && (
+        <i className="i-mgc-loading-3-cute-re animate-spin text-accent" />
       )}
-      {fileAttachment.uploadStatus === "error" && <i className="i-mgc-close-cute-re text-red" />}
-      {fileAttachment.uploadStatus === "completed" && (
-        <i className="i-mgc-check-cute-re text-green" />
-      )}
+      {attachment.uploadStatus === "error" && <i className="i-mgc-close-cute-re text-red" />}
+      {attachment.uploadStatus === "completed" && <i className="i-mgc-check-cute-re text-green" />}
     </span>
   )
+}
+
+function MissingFilePill() {
+  return (
+    <span className="inline-flex items-center gap-1 rounded border border-border bg-fill px-2 py-1 text-xs text-gray">
+      <i className="i-mgc-attachment-cute-re" />
+      <span className="max-w-32 truncate">File not found</span>
+    </span>
+  )
+}
+
+function BlockBasedAttachment({ attachmentId }: { attachmentId: string }) {
+  const block = useChatBlockSelector((state) =>
+    state.blocks.find(
+      (block) => block.type === "fileAttachment" && block.attachment.id === attachmentId,
+    ),
+  )
+
+  if (!block || block.type !== "fileAttachment") {
+    return <MissingFilePill />
+  }
+
+  return <FileAttachmentPill attachment={block.attachment} />
+}
+
+function MessageBasedAttachment({
+  attachmentId,
+  messageId,
+}: {
+  attachmentId: string
+  messageId: string
+}) {
+  const attachment = useMessageByIdSelector(messageId, (message) => {
+    for (const part of message.parts) {
+      if (!isDataBlockPart(part)) continue
+      const block = findFileAttachmentBlock(part, attachmentId)
+      if (block) return block.attachment
+    }
+  })
+
+  if (attachment) return <FileAttachmentPill attachment={attachment} />
+  // Fallback to block-based when message-based lookup fails
+  return <BlockBasedAttachment attachmentId={attachmentId} />
+}
+
+function FileAttachmentComponent({ node }: FileAttachmentComponentProps) {
+  const attachmentId = node.getAttachmentId()
+
+  const messageId = useAIMessageOptionalId()
+
+  if (messageId) {
+    return <MessageBasedAttachment attachmentId={attachmentId} messageId={messageId} />
+  }
+  return <BlockBasedAttachment attachmentId={attachmentId} />
 }
 
 export function $createFileAttachmentNode(attachmentId: string): FileAttachmentNode {
