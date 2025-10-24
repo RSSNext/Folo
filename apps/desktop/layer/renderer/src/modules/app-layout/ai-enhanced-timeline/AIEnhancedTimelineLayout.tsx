@@ -5,7 +5,8 @@ import { defaultUISettings } from "@follow/shared/settings/defaults"
 import { cn } from "@follow/utils"
 import { isSafari } from "@follow/utils/utils"
 import { AnimatePresence } from "motion/react"
-import { memo, startTransition, useCallback, useEffect, useMemo, useRef } from "react"
+import type { TransitionEvent } from "react"
+import { memo, startTransition, useCallback, useEffect, useMemo, useRef, useState } from "react"
 import { useResizable } from "react-resizable-layout"
 
 import { AIChatPanelStyle, useAIChatPanelStyle, useAIPanelVisibility } from "~/atoms/settings/ai"
@@ -71,6 +72,9 @@ const AIEnhancedTimelineLayoutImpl = () => {
   const showEntryDetailsColumn = useShowEntryDetailsColumn()
 
   const layoutContainerRef = useRef<HTMLDivElement>(null)
+  const hasMountedRef = useRef(false)
+  // Delay the details column until the timeline width animation finishes
+  const [shouldRenderDetailsColumn, setShouldRenderDetailsColumn] = useState(showEntryDetailsColumn)
   const feedColumnWidth = useUISettingKey("feedColWidth")
 
   // Timeline column resizable configuration (used when entry details column is visible)
@@ -160,6 +164,31 @@ const AIEnhancedTimelineLayoutImpl = () => {
     window.dispatchEvent(new Event("resize"))
   }, [resolvePreferredWidth])
 
+  const handleTimelineTransitionEnd = useCallback(
+    (event: TransitionEvent<HTMLDivElement>) => {
+      if (
+        event.propertyName !== "width" ||
+        event.target !== event.currentTarget ||
+        !showEntryDetailsColumn
+      ) {
+        return
+      }
+      setShouldRenderDetailsColumn(true)
+    },
+    [showEntryDetailsColumn],
+  )
+
+  useEffect(() => {
+    if (!hasMountedRef.current) {
+      hasMountedRef.current = true
+      setShouldRenderDetailsColumn(showEntryDetailsColumn)
+      return
+    }
+
+    // Defer rendering until the width transition signals completion
+    setShouldRenderDetailsColumn(false)
+  }, [showEntryDetailsColumn])
+
   const showCompactTimelineColumn = useGeneralSettingKey("showCompactTimelineInSub")
   return (
     <div ref={layoutContainerRef} className="relative flex min-w-0 grow">
@@ -168,11 +197,13 @@ const AIEnhancedTimelineLayoutImpl = () => {
           <div className="relative h-full">
             <div
               className={cn(
-                "absolute inset-y-0 left-0 min-w-[300px]",
-                showEntryDetailsColumn ? "border-r will-change-[width]" : "right-0",
+                "absolute inset-y-0 left-0 min-w-[300px] transition-[width] duration-200 ease-out",
+                showEntryDetailsColumn && "border-r will-change-[width]",
+                isTimelineDragging && "transition-none",
                 aiPanelStyle === AIChatPanelStyle.Fixed && !showEntryDetailsColumn && "border-r",
               )}
-              style={showEntryDetailsColumn ? { width: timelineColumnWidth } : undefined}
+              onTransitionEnd={handleTimelineTransitionEnd}
+              style={{ width: showEntryDetailsColumn ? timelineColumnWidth : "100%" }}
             >
               <div className="relative h-full">
                 {/* Entry list - always rendered to prevent animation */}
@@ -214,7 +245,7 @@ const AIEnhancedTimelineLayoutImpl = () => {
               </div>
             </div>
 
-            {showEntryDetailsColumn && (
+            {showEntryDetailsColumn && shouldRenderDetailsColumn && (
               <>
                 <div className="absolute inset-y-0 z-[2]" style={{ left: timelineColumnWidth }}>
                   <PanelSplitter
