@@ -146,7 +146,7 @@ export const AIChatContextBar: Component = memo(({ className }) => {
                 ? `combined-${item.viewBlock?.id}-${item.feedBlock?.id}-${item.unreadOnlyBlock?.id}`
                 : item.block.id
             }
-            className="max-w-[240px] shrink-0"
+            className="max-w-[min(240px,100%)] shrink-0"
           >
             {renderBlock(item)}
           </div>

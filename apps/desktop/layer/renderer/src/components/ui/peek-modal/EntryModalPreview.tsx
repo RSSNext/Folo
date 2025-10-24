@@ -1,7 +1,7 @@
 import { usePrefetchEntryDetail } from "@follow/store/entry/hooks"
 
 import { Paper } from "~/components/ui/paper"
-import { EntryContent as EntryContentLegacy } from "~/modules/entry-content/EntryContent.legacy"
+import { EntryContentForPreview } from "~/modules/entry-content/EntryContentForPreview"
 
 export const EntryModalPreview = ({ entryId }: { entryId: string }) => {
   const { isPending } = usePrefetchEntryDetail(entryId)
@@ -11,7 +11,7 @@ export const EntryModalPreview = ({ entryId }: { entryId: string }) => {
       {isPending ? (
         <PeekModalSkeleton />
       ) : (
-        <EntryContentLegacy
+        <EntryContentForPreview
           className="h-auto [&_#entry-action-header-bar]:!bg-transparent"
           entryId={entryId}
         />
