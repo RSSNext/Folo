@@ -50,11 +50,7 @@ export function LinearBlur({
           zIndex: 0,
           width: "100%",
           height: "100%",
-          // background: `linear-gradient(
-          //   to ${oppositeSide[side]},
-          //   rgb(from ${tint} r g b / alpha) 0%,
-          //   rgb(from ${tint} r g b / 0%) 100%
-          // )`,
+    
         }}
       >
         {/* Full blur at 100-falloffPercentage% */}
