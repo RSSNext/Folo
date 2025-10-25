@@ -1,13 +1,9 @@
 import { FeedViewType, getViewList } from "@follow/constants"
+import { useSubscriptionStore } from "@follow/store/subscription/store"
 import { useMemo } from "react"
 
 import { useUISettingKey } from "~/atoms/settings/ui"
 import { ROUTE_TIMELINE_OF_VIEW, ROUTE_VIEW_ALL } from "~/constants/app"
-
-const DEFAULT_HIDDEN_TIMELINE_IDS = new Set<string>([
-  `${ROUTE_TIMELINE_OF_VIEW}${FeedViewType.Audios}`,
-  `${ROUTE_TIMELINE_OF_VIEW}${FeedViewType.Notifications}`,
-])
 
 export const useTimelineList = (options?: {
   visible?: boolean
@@ -15,6 +11,16 @@ export const useTimelineList = (options?: {
   withAll?: boolean
 }) => {
   const timelineTabs = useUISettingKey("timelineTabs")
+  const hasAudiosSubscription = useSubscriptionStore(
+    (state) =>
+      state.feedIdByView[FeedViewType.Audios].size > 0 ||
+      state.listIdByView[FeedViewType.Audios].size > 0,
+  )
+  const hasNotificationsSubscription = useSubscriptionStore(
+    (state) =>
+      state.feedIdByView[FeedViewType.Notifications].size > 0 ||
+      state.listIdByView[FeedViewType.Notifications].size > 0,
+  )
 
   const allTimelineIds = useMemo(() => {
     return getViewList({ includeAll: true }).map((view) =>
@@ -31,8 +37,15 @@ export const useTimelineList = (options?: {
     let nextVisible = [...savedVisible]
     let nextHidden = [...savedHidden]
 
-    const extraVisible = extras.filter((id) => !DEFAULT_HIDDEN_TIMELINE_IDS.has(id))
-    const extraHidden = extras.filter((id) => DEFAULT_HIDDEN_TIMELINE_IDS.has(id))
+    const isDefaultHidden = (id: string) => {
+      if (id === `${ROUTE_TIMELINE_OF_VIEW}${FeedViewType.Audios}`) return !hasAudiosSubscription
+      if (id === `${ROUTE_TIMELINE_OF_VIEW}${FeedViewType.Notifications}`)
+        return !hasNotificationsSubscription
+      return false
+    }
+
+    const extraVisible = extras.filter((id) => !isDefaultHidden(id))
+    const extraHidden = extras.filter((id) => isDefaultHidden(id))
 
     const allConfigured =
       savedVisible.includes(ROUTE_VIEW_ALL) || savedHidden.includes(ROUTE_VIEW_ALL)
@@ -46,7 +59,13 @@ export const useTimelineList = (options?: {
     nextHidden = [...nextHidden, ...extraHidden].filter((id) => !nextVisible.includes(id))
 
     return { visible: nextVisible, hidden: nextHidden }
-  }, [allTimelineIds, timelineTabs?.hidden, timelineTabs?.visible])
+  }, [
+    allTimelineIds,
+    hasAudiosSubscription,
+    hasNotificationsSubscription,
+    timelineTabs?.hidden,
+    timelineTabs?.visible,
+  ])
 
   return useMemo(() => {
     let result: string[]
