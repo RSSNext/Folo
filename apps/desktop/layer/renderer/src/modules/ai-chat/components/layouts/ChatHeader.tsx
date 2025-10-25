@@ -83,7 +83,7 @@ const ChatHeaderLayout = ({
           <div className="mr-2 flex min-w-0 items-center">
             {hasMessages && (
               <div onClick={() => settingModalPresent("ai")}>
-                <AISpline className="-mx-1 -mb-1 mr-1 size-9" />
+                <AISpline className="no-drag-region -mx-1 -mb-1 mr-1 size-9" />
               </div>
             )}
             <ChatHistoryDropdown

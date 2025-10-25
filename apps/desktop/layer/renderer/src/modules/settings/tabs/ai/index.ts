@@ -1,3 +1,4 @@
+export { UserMemorySection } from "./memory/UserMemorySection"
 export { PanelStyleSection } from "./PanelStyleSection"
 export { PersonalizePromptSection } from "./PersonalizePromptSection"
 export { AIShortcutsSection } from "./shortcuts"

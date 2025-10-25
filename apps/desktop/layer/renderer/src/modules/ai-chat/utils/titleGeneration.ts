@@ -3,7 +3,7 @@ import { followClient } from "~/lib/api-client"
 import { AIPersistService } from "../services"
 import type { SendingUIMessage } from "../store/types"
 
-export const generateChatTitle = async (messages: SendingUIMessage[]) => {
+export const generateChatTitle = async (chatId: string, messages: SendingUIMessage[]) => {
   const relevantMessages = messages.map((msg) => {
     let content = ""
     if (msg.parts && Array.isArray(msg.parts)) {
@@ -29,6 +29,7 @@ export const generateChatTitle = async (messages: SendingUIMessage[]) => {
 
   const response = await followClient.api.ai
     .summaryTitle({
+      chatId,
       messages: relevantMessages,
     })
     .catch((error) => {
@@ -59,7 +60,7 @@ export const generateAndUpdateChatTitle = async (
     return null
   }
 
-  const title = await generateChatTitle(messages)
+  const title = await generateChatTitle(chatId, messages)
 
   if (title && chatId) {
     try {

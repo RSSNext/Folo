@@ -183,7 +183,7 @@ jobs:
         run: pnpm build:render
 
       - name: Upload file (macos-arm64-dmg)
-        uses: actions/upload-artifact@v4
+        uses: actions/upload-artifact@v5
         if: runner.os == 'macOS'
         with:
           name: macos-arm64-dmg
@@ -193,7 +193,7 @@ jobs:
           retention-days: 90
 
       - name: Upload file (macos-x64-dmg)
-        uses: actions/upload-artifact@v4
+        uses: actions/upload-artifact@v5
         if: runner.os == 'macOS'
         with:
           name: macos-x64-dmg
@@ -203,7 +203,7 @@ jobs:
           retention-days: 90
 
       - name: Upload file (macos-mas-pkg)
-        uses: actions/upload-artifact@v4
+        uses: actions/upload-artifact@v5
         if: runner.os == 'macOS'
         with:
           name: macos-mas-pkg
@@ -212,7 +212,7 @@ jobs:
           retention-days: 90
 
       - name: Upload file (windows-x64-exe unsigned)
-        uses: actions/upload-artifact@v4
+        uses: actions/upload-artifact@v5
         id: upload-unsigned-windows-x64-exe
         if: runner.os == 'windows'
         with:
@@ -222,7 +222,7 @@ jobs:
             apps/desktop/out/make/**/latest.yml
           retention-days: 90
 
-      - uses: signpath/github-action-submit-signing-request@v1.3
+      - uses: signpath/github-action-submit-signing-request@v2.0
         continue-on-error: true
         if: runner.os == 'windows' && env.RELEASE == 'true'
         with:
@@ -239,7 +239,7 @@ jobs:
         run: npx tsx apps/desktop/scripts/update-windows-yml.ts
 
       - name: Upload file (windows-x64-exe signed)
-        uses: actions/upload-artifact@v4
+        uses: actions/upload-artifact@v5
         if: runner.os == 'windows' && env.RELEASE == 'true'
         with:
           name: windows-x64-exe
@@ -250,7 +250,7 @@ jobs:
           overwrite: true
 
       - name: Upload file (windows-x64-appx)
-        uses: actions/upload-artifact@v4
+        uses: actions/upload-artifact@v5
         if: runner.os == 'windows'
         with:
           name: windows-x64-appx
@@ -259,7 +259,7 @@ jobs:
           retention-days: 90
 
       - name: Upload file (linux-x64-appimage)
-        uses: actions/upload-artifact@v4
+        uses: actions/upload-artifact@v5
         if: runner.os == 'linux'
         with:
           name: linux-x64-appimage

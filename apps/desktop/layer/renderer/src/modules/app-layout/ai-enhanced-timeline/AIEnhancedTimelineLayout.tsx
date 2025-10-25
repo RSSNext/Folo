@@ -5,13 +5,12 @@ import { defaultUISettings } from "@follow/shared/settings/defaults"
 import { cn } from "@follow/utils"
 import { isSafari } from "@follow/utils/utils"
 import { AnimatePresence } from "motion/react"
-import { memo, startTransition, useCallback, useEffect, useMemo, useRef } from "react"
+import type { TransitionEvent } from "react"
+import { memo, useCallback, useEffect, useMemo, useRef, useState } from "react"
 import { useResizable } from "react-resizable-layout"
 
 import { AIChatPanelStyle, useAIChatPanelStyle, useAIPanelVisibility } from "~/atoms/settings/ai"
-import { useGeneralSettingKey } from "~/atoms/settings/general"
 import { getUISettings, setUISetting, useUISettingKey } from "~/atoms/settings/ui"
-import { setSubscriptionColumnApronNode, useSubscriptionEntryPlaneVisible } from "~/atoms/sidebar"
 import { m } from "~/components/common/Motion"
 import { ROUTE_ENTRY_PENDING } from "~/constants"
 import { useFeature } from "~/hooks/biz/useFeature"
@@ -22,8 +21,6 @@ import { AIChatLayout } from "~/modules/app-layout/ai/AIChatLayout"
 import { AIIndicator } from "~/modules/app-layout/ai/AISplineButton"
 import { EntryContentPlaceholder } from "~/modules/app-layout/entry-content/EntryContentPlaceholder"
 import { EntryColumn } from "~/modules/entry-column"
-import { EntryPlaneToolbar } from "~/modules/entry-column/components/EntryPlaneToolbar"
-import { EntrySubscriptionList } from "~/modules/entry-column/EntrySubscriptionList"
 import { EntryContent } from "~/modules/entry-content/components/entry-content"
 import { AIEntryHeader } from "~/modules/entry-content/components/entry-header"
 import { AppLayoutGridContainerProvider } from "~/providers/app-grid-layout-container-provider"
@@ -71,6 +68,9 @@ const AIEnhancedTimelineLayoutImpl = () => {
   const showEntryDetailsColumn = useShowEntryDetailsColumn()
 
   const layoutContainerRef = useRef<HTMLDivElement>(null)
+  const hasMountedRef = useRef(false)
+  // Delay the details column until the timeline width animation finishes
+  const [shouldRenderDetailsColumn, setShouldRenderDetailsColumn] = useState(showEntryDetailsColumn)
   const feedColumnWidth = useUISettingKey("feedColWidth")
 
   // Timeline column resizable configuration (used when entry details column is visible)
@@ -160,7 +160,31 @@ const AIEnhancedTimelineLayoutImpl = () => {
     window.dispatchEvent(new Event("resize"))
   }, [resolvePreferredWidth])
 
-  const showCompactTimelineColumn = useGeneralSettingKey("showCompactTimelineInSub")
+  const handleTimelineTransitionEnd = useCallback(
+    (event: TransitionEvent<HTMLDivElement>) => {
+      if (
+        event.propertyName !== "width" ||
+        event.target !== event.currentTarget ||
+        !showEntryDetailsColumn
+      ) {
+        return
+      }
+      setShouldRenderDetailsColumn(true)
+    },
+    [showEntryDetailsColumn],
+  )
+
+  useEffect(() => {
+    if (!hasMountedRef.current) {
+      hasMountedRef.current = true
+      setShouldRenderDetailsColumn(showEntryDetailsColumn)
+      return
+    }
+
+    // Defer rendering until the width transition signals completion
+    setShouldRenderDetailsColumn(false)
+  }, [showEntryDetailsColumn])
+
   return (
     <div ref={layoutContainerRef} className="relative flex min-w-0 grow">
       <div className="relative min-w-0 flex-1">
@@ -168,11 +192,13 @@ const AIEnhancedTimelineLayoutImpl = () => {
           <div className="relative h-full">
             <div
               className={cn(
-                "absolute inset-y-0 left-0 min-w-[300px]",
-                showEntryDetailsColumn ? "border-r will-change-[width]" : "right-0",
+                "absolute inset-y-0 left-0 min-w-[300px] transition-[width] duration-200 ease-out",
+                showEntryDetailsColumn && "border-r will-change-[width]",
+                isTimelineDragging && "transition-none",
                 aiPanelStyle === AIChatPanelStyle.Fixed && !showEntryDetailsColumn && "border-r",
               )}
-              style={showEntryDetailsColumn ? { width: timelineColumnWidth } : undefined}
+              onTransitionEnd={handleTimelineTransitionEnd}
+              style={{ width: showEntryDetailsColumn ? timelineColumnWidth : "100%" }}
             >
               <div className="relative h-full">
                 {/* Entry list - always rendered to prevent animation */}
@@ -214,7 +240,7 @@ const AIEnhancedTimelineLayoutImpl = () => {
               </div>
             </div>
 
-            {showEntryDetailsColumn && (
+            {showEntryDetailsColumn && shouldRenderDetailsColumn && (
               <>
                 <div className="absolute inset-y-0 z-[2]" style={{ left: timelineColumnWidth }}>
                   <PanelSplitter
@@ -285,7 +311,6 @@ const AIEnhancedTimelineLayoutImpl = () => {
 
       {/* Floating panel - renders outside layout flow */}
       {aiPanelStyle === AIChatPanelStyle.Floating && <AIChatLayout key="ai-chat-layout" />}
-      {showCompactTimelineColumn && <SubscriptionColumnToggler />}
     </div>
   )
 }
@@ -301,57 +326,3 @@ export const AIEnhancedTimelineLayout = memo(function AIEnhancedTimelineLayout()
   )
 })
 AIEnhancedTimelineLayout.displayName = "AIEnhancedTimelineLayout"
-
-const SubscriptionColumnToggler = () => {
-  const isInEntry = useRouteParamsSelector((s) => s.entryId !== ROUTE_ENTRY_PENDING)
-
-  useEffect(() => {
-    if (isInEntry) {
-      startTransition(() => {
-        setSubscriptionColumnApronNode(<SubscriptionEntryListPlaneNode />)
-      })
-      return () => {
-        startTransition(() => {
-          setSubscriptionColumnApronNode(null)
-        })
-      }
-    }
-  }, [isInEntry])
-  return null
-}
-
-const SubscriptionEntryListPlaneNode = () => {
-  const entryId = useRouteParamsSelector((s) => s.entryId)
-  const isVisible = useSubscriptionEntryPlaneVisible()
-
-  return (
-    <m.div
-      className={cn(
-        "absolute left-0 top-12 z-[2] rounded-r-lg bg-sidebar backdrop-blur-background",
-        isVisible ? "bottom-0 flex w-feed-col flex-col" : "w-[40px]",
-      )}
-      id="subscription-entry-list-plane-node"
-      initial={false}
-      animate={{
-        width: isVisible ? "var(--fo-feed-col-w, 256px)" : "40px",
-      }}
-      transition={Spring.presets.smooth}
-    >
-      <EntryPlaneToolbar />
-      <AnimatePresence mode="popLayout">
-        {isVisible && (
-          <m.div
-            key="entry-list"
-            initial={{ opacity: 0 }}
-            animate={{ opacity: 1 }}
-            exit={{ opacity: 0 }}
-            transition={{ duration: 0.1 }}
-            className="flex w-feed-col flex-1 flex-col whitespace-pre"
-          >
-            <EntrySubscriptionList scrollToEntryId={entryId} />
-          </m.div>
-        )}
-      </AnimatePresence>
-    </m.div>
-  )
-}

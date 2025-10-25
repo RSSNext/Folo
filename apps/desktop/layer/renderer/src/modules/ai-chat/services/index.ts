@@ -5,6 +5,7 @@ import { aiChatMessagesTable, aiChatTable } from "@follow/database/schemas/index
 import { asc, count, eq, inArray, sql } from "drizzle-orm"
 
 import { getI18n } from "~/i18n"
+import { followClient } from "~/lib/api-client"
 
 import { AI_CHAT_SPECIAL_ID_PREFIX } from "../constants"
 import type { BizUIMessage, BizUIMessagePart } from "../store/types"
@@ -260,7 +261,10 @@ class AIPersistServiceStatic {
   /**
    * Ensure session exists (idempotent operation)
    */
-  async ensureSession(chatId: string, options: { title?: string } = {}): Promise<void> {
+  async ensureSession(
+    chatId: string,
+    options: { title?: string; createdAt?: Date; updatedAt?: Date } = {},
+  ): Promise<void> {
     const cachedExists = this.getSessionExistsFromCache(chatId)
     const shouldCheckDb = cachedExists !== true || options.title
 
@@ -300,13 +304,16 @@ class AIPersistServiceStatic {
     this.markSessionExists(chatId, true)
   }
 
-  async createSession(chatId: string, options: { title?: string } = {}) {
+  async createSession(
+    chatId: string,
+    options: { title?: string; createdAt?: Date; updatedAt?: Date } = {},
+  ) {
     const now = new Date()
     await db.insert(aiChatTable).values({
       chatId,
       title: this.resolveSessionTitle(chatId, options.title, { createdAt: now, updatedAt: now }),
-      createdAt: now,
-      updatedAt: now,
+      createdAt: options.createdAt ?? now,
+      updatedAt: options.updatedAt ?? now,
     })
     // Mark session as existing in cache
     this.markSessionExists(chatId, true)
@@ -410,6 +417,9 @@ class AIPersistServiceStatic {
     await db.delete(aiChatTable).where(eq(aiChatTable.chatId, chatId))
     // Clear session from cache
     this.clearSessionCache(chatId)
+    await followClient.api.aiChatSessions.delete({ chatId }).catch((error) => {
+      console.error("Failed to delete remote chat session:", error)
+    })
   }
 
   async updateSessionTitle(chatId: string, title: string) {

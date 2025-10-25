@@ -1,7 +1,7 @@
 import { createSettingAtom } from "@follow/atoms/helper/setting.js"
 import { defaultGeneralSettings } from "@follow/shared/settings/defaults"
 import { hookEnhancedSettings as baseHookEnhancedSettings } from "@follow/shared/settings/hook"
-import type { GeneralSettings as BaseGeneralSettings } from "@follow/shared/settings/interface"
+import type { GeneralSettings } from "@follow/shared/settings/interface"
 import type { SupportedLanguages } from "@follow-app/client-sdk"
 
 import { jotaiStore } from "~/lib/jotai"
@@ -9,13 +9,9 @@ import { getDefaultLanguage } from "~/lib/language"
 
 export const DEFAULT_ACTION_LANGUAGE = "default"
 
-export interface GeneralSettings extends BaseGeneralSettings {
-  showCompactTimelineInSub: boolean
-}
 export const createDefaultGeneralSettings = (): GeneralSettings => ({
   ...defaultGeneralSettings,
   language: getDefaultLanguage(),
-  showCompactTimelineInSub: false,
 })
 
 const {
@@ -93,7 +89,6 @@ export const generalServerSyncWhiteListKeys: (keyof GeneralSettings)[] = [
 export const enhancedGeneralSettingKeys = new Set<keyof GeneralSettings>([
   "groupByDate",
   "autoExpandLongSocialMedia",
-  "showCompactTimelineInSub",
 ])
 
 const [
