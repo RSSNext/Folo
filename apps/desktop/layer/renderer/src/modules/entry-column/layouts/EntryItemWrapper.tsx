@@ -37,9 +37,9 @@ export const EntryItemWrapper: FC<
   } & PropsWithChildren
 > = ({ entryId, view, children, itemClassName, style }) => {
   const entry = useEntry(entryId, (state) => {
-    const { feedId, inboxHandle, read } = state
+    const { feedId, inboxHandle } = state
     const { id, url } = state
-    return { feedId, id, inboxId: inboxHandle, read, url }
+    return { feedId, id, inboxId: inboxHandle, url }
   })
   const actionConfigs = useEntryActions({ entryId, view })
   const isMobile = useMobile()
@@ -49,7 +49,7 @@ export const EntryItemWrapper: FC<
   useContextMenuActionShortCutTrigger(actionConfigs, isActive && when)
   const showEntryDetailsColumn = useShowEntryDetailsColumn()
 
-  const asRead = useEntryIsRead(entry)
+  const asRead = useEntryIsRead(entryId)
   const hoverMarkUnread = useGeneralSettingKey("hoverMarkUnread")
 
   const [showAction, setShowAction] = useState(false)

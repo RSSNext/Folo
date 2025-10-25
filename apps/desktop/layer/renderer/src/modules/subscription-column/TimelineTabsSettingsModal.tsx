@@ -27,8 +27,6 @@ import { useModalStack } from "~/components/ui/modal/stacked/hooks"
 import { parseView } from "~/hooks/biz/useRouteParams"
 import { useTimelineList } from "~/hooks/biz/useTimelineList"
 
-const MAX_VISIBLE = 5
-
 function ContainerDroppable({ id, children }: { id: "visible" | "hidden"; children: ReactNode }) {
   const { setNodeRef, isOver } = useDroppable({ id, data: { container: id } })
   return (
@@ -42,6 +40,9 @@ function ContainerDroppable({ id, children }: { id: "visible" | "hidden"; childr
     </div>
   )
 }
+
+const areArraysEqual = (a: string[], b: string[]) =>
+  a.length === b.length && a.every((value, index) => value === b[index])
 
 function getViewMeta(timelineId: string) {
   const id = parseView(timelineId)
@@ -88,14 +89,22 @@ function SortableTabItem({ id }: { id: UniqueIdentifier }) {
 }
 
 function useResolvedTimelineTabs() {
-  const timelineList = useTimelineList({ ordered: true, visible: true })
-  const timelineListHidden = useTimelineList({ ordered: true, hidden: true })
+  const timelineList = useTimelineList({ visible: true })
+  const timelineListHidden = useTimelineList({ hidden: true })
 
   return { visible: timelineList, hidden: timelineListHidden }
 }
 
 const TimelineTabsSettings = () => {
   const { visible, hidden } = useResolvedTimelineTabs()
+
+  const commitTimelineTabs = useCallback(
+    (nextVisible: string[], nextHidden: string[]) => {
+      if (areArraysEqual(nextVisible, visible) && areArraysEqual(nextHidden, hidden)) return
+      setUISetting("timelineTabs", { visible: nextVisible, hidden: nextHidden })
+    },
+    [hidden, visible],
+  )
 
   const sensors = useSensors(
     useSensor(PointerSensor),
@@ -130,27 +139,6 @@ const TimelineTabsSettings = () => {
         const sourceList = current(sourceKey)
         const targetList = current(targetKey)
 
-        // If moving into visible and it's full, replace the hovered item
-        if (targetKey === "visible" && targetList.length >= MAX_VISIBLE) {
-          const replaceIndex = targetList.indexOf(overId)
-          if (replaceIndex === -1) return // container hover; ignore
-          const replacedId = targetList[replaceIndex]!
-
-          const nextVisible = [...targetList]
-          nextVisible[replaceIndex] = activeId
-
-          const activeIndexInSource = sourceList.indexOf(activeId)
-          const nextSource = sourceList.filter((i) => i !== activeId)
-          const insertIndex = activeIndexInSource !== -1 ? activeIndexInSource : nextSource.length
-          nextSource.splice(insertIndex, 0, replacedId)
-
-          setUISetting("timelineTabs", {
-            visible: nextVisible,
-            hidden: targetKey === "visible" ? nextSource : hidden,
-          })
-          return
-        }
-
         // Normal cross-container insert
         const newIndexOfOver = targetList.indexOf(overId)
         const insertIndex = newIndexOfOver !== -1 ? newIndexOfOver : targetList.length
@@ -160,10 +148,11 @@ const TimelineTabsSettings = () => {
           activeId,
           ...targetList.slice(insertIndex),
         ]
-        setUISetting("timelineTabs", {
-          visible: targetKey === "visible" ? nextTarget : nextSource,
-          hidden: targetKey === "hidden" ? nextTarget : nextSource,
-        })
+        const nextVisible =
+          sourceKey === "visible" ? nextSource : targetKey === "visible" ? nextTarget : visible
+        const nextHidden =
+          sourceKey === "hidden" ? nextSource : targetKey === "hidden" ? nextTarget : hidden
+        commitTimelineTabs(nextVisible, nextHidden)
         return
       }
 
@@ -172,26 +161,20 @@ const TimelineTabsSettings = () => {
       const items = current(listKey)
       const oldIndex = items.indexOf(activeId)
       const newIndex = items.indexOf(overId)
-      if (oldIndex === -1 || newIndex === -1) return
-      setUISetting("timelineTabs", {
-        visible: listKey === "visible" ? arrayMove(items, oldIndex, newIndex) : visible,
-        hidden: listKey === "hidden" ? arrayMove(items, oldIndex, newIndex) : hidden,
-      })
+      if (oldIndex === -1 || newIndex === -1 || oldIndex === newIndex) return
+      const reordered = arrayMove(items, oldIndex, newIndex)
+      const nextVisible = listKey === "visible" ? reordered : visible
+      const nextHidden = listKey === "hidden" ? reordered : hidden
+      commitTimelineTabs(nextVisible, nextHidden)
     },
-    [visible, hidden],
+    [commitTimelineTabs, hidden, visible],
   )
 
   return (
     <div
-      className="mx-auto w-[600px] max-w-full space-y-4 overflow-hidden"
+      className="mx-auto w-[600px] max-w-full space-y-4 overflow-hidden pt-2"
       onPointerDown={(e) => e.stopPropagation()}
     >
-      <div className="mb-2">
-        <h2 className="text-title2 font-semibold text-text">Timeline Tabs</h2>
-        <p className="text-headline text-text-secondary">
-          First tab is fixed. Drag to choose up to {MAX_VISIBLE} visible tabs.
-        </p>
-      </div>
       <DndContext
         sensors={sensors}
         collisionDetection={closestCenter}
@@ -200,9 +183,7 @@ const TimelineTabsSettings = () => {
       >
         <div className="space-y-4">
           <div>
-            <h3 className="mb-2 text-subheadline font-medium text-text">
-              Visible ({visible.length}/{MAX_VISIBLE})
-            </h3>
+            <h3 className="mb-2 text-subheadline font-medium text-text">Visible</h3>
             <ContainerDroppable id="visible">
               <SortableContext items={visible} strategy={verticalListSortingStrategy}>
                 {visible.map((id) => (
@@ -247,7 +228,7 @@ export const useShowTimelineTabsSettingsModal = () => {
   return useCallback(() => {
     present({
       id: "timeline-tabs-settings",
-      title: "Customize Timeline Tabs",
+      title: "Customize View Tabs",
       content: () => <TimelineTabsSettings />,
       overlay: true,
       clickOutsideToDismiss: true,

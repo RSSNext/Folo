@@ -14,9 +14,9 @@ import { JsonObfuscatedCodec } from "@follow/utils/json-codec"
 import { cn } from "@follow/utils/utils"
 import { useQueryClient } from "@tanstack/react-query"
 import { m } from "motion/react"
-import { useCallback, useEffect, useState } from "react"
+import { useCallback, useEffect, useRef, useState } from "react"
 import { useTranslation } from "react-i18next"
-import { unstable_usePrompt } from "react-router"
+import { useBlocker } from "react-router"
 import { toast } from "sonner"
 
 import { MenuItemText, useShowContextMenu } from "~/atoms/context-menu"
@@ -30,6 +30,7 @@ import {
 } from "~/components/ui/dropdown-menu/dropdown-menu.js"
 import { useDialog } from "~/components/ui/modal/stacked/hooks"
 import { useContextMenu } from "~/hooks/common/useContextMenu"
+import { getI18n } from "~/i18n"
 import { copyToClipboard, readFromClipboard } from "~/lib/clipboard"
 import { downloadJsonFile, selectJsonFile } from "~/lib/export"
 import { RuleCard } from "~/modules/action/rule-card"
@@ -409,11 +410,8 @@ const ActionButtonGroup = ({ onCreateRule }: { onCreateRule: () => void }) => {
   const actionLength = useActionRules((actions) => actions.length)
   const isDirty = useIsActionDataDirty()
   const { t } = useTranslation("settings")
-  unstable_usePrompt({
-    message: t("actions.navigate.prompt"),
-    when: ({ currentLocation, nextLocation }) =>
-      isDirty && currentLocation.pathname !== nextLocation.pathname,
-  })
+
+  useUnSavedBlocker(isDirty)
 
   const mutation = useUpdateActionsMutation({
     onSuccess: () => {
@@ -456,4 +454,45 @@ const ActionButtonGroup = ({ onCreateRule }: { onCreateRule: () => void }) => {
   }, [setRightView, actionLength, hasActions, isDirty, mutation, onCreateRule, t])
 
   return null
+}
+
+const useUnSavedBlocker = (isDirty: boolean) => {
+  const navigationBlocker = useBlocker(({ currentLocation, nextLocation }) => {
+    return isDirty && currentLocation.pathname !== nextLocation.pathname
+  })
+
+  const isRouterPromptOpenRef = useRef(false)
+  const { ask } = useDialog()
+  useEffect(() => {
+    if (navigationBlocker.state !== "blocked") {
+      isRouterPromptOpenRef.current = false
+      return
+    }
+    if (isRouterPromptOpenRef.current) {
+      return
+    }
+    isRouterPromptOpenRef.current = true
+    const { t } = getI18n()
+    ask({
+      title: t("common:words.unsaved_changes"),
+      message: t("settings:actions.navigate.prompt"),
+      variant: "ask",
+      onConfirm: () => navigationBlocker.proceed(),
+    })
+  }, [ask, navigationBlocker])
+
+  useEffect(() => {
+    const handleBeforeUnload = (event: BeforeUnloadEvent) => {
+      const hasUnsavedChanges = isDirty
+      if (!hasUnsavedChanges) {
+        return
+      }
+      event.preventDefault()
+      event.returnValue = ""
+    }
+    window.addEventListener("beforeunload", handleBeforeUnload)
+    return () => {
+      window.removeEventListener("beforeunload", handleBeforeUnload)
+    }
+  }, [isDirty])
 }

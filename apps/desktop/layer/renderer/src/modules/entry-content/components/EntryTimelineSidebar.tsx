@@ -44,9 +44,8 @@ const animateButton: TargetAndTransition = {
 const TimelineItem = ({ id }: { id: string }) => {
   const entry = useEntry(id, (e) => ({
     title: e.title,
-    read: e.read,
   }))
-  const asRead = useEntryIsRead(entry)
+  const asRead = useEntryIsRead(id)
   const navigate = useNavigateEntry()
 
   const isActive = useRouteParamsSelector((r) => r.entryId === id)

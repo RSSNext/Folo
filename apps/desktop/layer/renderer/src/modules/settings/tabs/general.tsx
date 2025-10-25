@@ -138,10 +138,6 @@ export const SettingGeneral = () => {
             label: t("general.dim_read.label"),
             description: t("general.dim_read.description"),
           }),
-          defineSettingItem("showCompactTimelineInSub", {
-            label: t("general.show_compact_timeline_in_sub.label"),
-            description: t("general.show_compact_timeline_in_sub.description"),
-          }),
 
           { type: "title", value: t("general.mark_as_read.title") },
 

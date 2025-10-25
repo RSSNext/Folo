@@ -104,11 +104,16 @@ const EntryContentImpl: Component<EntryContentProps> = ({
   useEffect(() => {
     animationController.set(contentVariants.exit)
     animationController.start(contentVariants.animate)
+
+    // Scroll to top
+    if (scrollerRef) {
+      scrollerRef.scrollTop = 0
+    }
     focusableRef.current?.focus()
     return () => {
       animationController.stop()
     }
-  }, [animationController, entryId])
+  }, [animationController, entryId, scrollerRef])
 
   useEffect(() => {
     setEntryContentScrollToTop(true)
@@ -246,6 +251,9 @@ const EntryScrollArea: Component<{
       scrollbarClassName="mr-[1.5px] print:hidden"
       ref={scrollerRef}
       viewportClassName={viewportClassName}
+      scrollbarProps={{
+        className: "mt-16 z-[999]",
+      }}
     >
       {children}
     </ScrollArea.ScrollArea>

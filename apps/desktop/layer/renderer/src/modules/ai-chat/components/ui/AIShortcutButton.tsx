@@ -44,6 +44,7 @@ export interface AIShortcutButtonProps extends VariantProps<typeof aiShortcutBut
   animationDelay?: number
   title?: string
   style?: React.CSSProperties
+  ref?: React.Ref<HTMLButtonElement>
 }
 
 export const AIShortcutButton: React.FC<AIShortcutButtonProps> = ({
@@ -56,6 +57,7 @@ export const AIShortcutButton: React.FC<AIShortcutButtonProps> = ({
   variant,
   disabled,
   style,
+  ref,
 }) => {
   return (
     <m.button
@@ -68,6 +70,7 @@ export const AIShortcutButton: React.FC<AIShortcutButtonProps> = ({
       title={title}
       className={cn(aiShortcutButtonVariants({ size, variant, disabled }), className)}
       style={style}
+      ref={ref}
     >
       {children}
     </m.button>

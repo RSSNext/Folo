@@ -6,7 +6,7 @@ import { useEntry } from "@follow/store/entry/hooks"
 import { useFeedById } from "@follow/store/feed/hooks"
 import { LRUCache } from "@follow/utils/lru-cache"
 import { cn } from "@follow/utils/utils"
-import { useLayoutEffect, useRef, useState } from "react"
+import { useLayoutEffect, useMemo, useRef, useState } from "react"
 import { useTranslation } from "react-i18next"
 
 import { useGeneralSettingKey } from "~/atoms/settings/general"
@@ -29,34 +29,50 @@ import { MediaGallery } from "./media-gallery"
 
 export const SocialMediaItem: EntryListItemFC = ({ entryId, translation }) => {
   const entry = useEntry(entryId, (state) => {
-    const { feedId, read } = state
-    const { author, authorAvatar, authorUrl, content, description, guid, publishedAt, url } = state
-
-    const media = state.media || []
-    const photo = media.find((a) => a.type === "photo")
-    const firstPhotoUrl = photo?.url
-    const iconEntry: FeedIconEntry = {
-      firstPhotoUrl,
-      authorAvatar,
-    }
-
-    return {
+    /// keep-sorted
+    const {
       author,
+      authorAvatar,
       authorUrl,
       content,
       description,
       feedId,
       guid,
-      iconEntry,
       publishedAt,
-      read,
+      url,
+    } = state
+
+    const media = state.media || []
+    const photo = media.find((a) => a.type === "photo")
+    const firstPhotoUrl = photo?.url
+
+    /// keep-sorted
+    return {
+      author,
+      authorAvatar,
+      authorUrl,
+      content,
+      description,
+      feedId,
+      firstPhotoUrl,
+      guid,
+      publishedAt,
       url,
     }
   })
+
   const isInCollection = useIsEntryStarred(entryId)
 
-  const asRead = useEntryIsRead(entry)
+  const asRead = useEntryIsRead(entryId)
   const feed = useFeedById(entry?.feedId)
+
+  const iconEntry: FeedIconEntry = useMemo(
+    () => ({
+      firstPhotoUrl: entry?.firstPhotoUrl,
+      authorAvatar: entry?.authorAvatar,
+    }),
+    [entry?.firstPhotoUrl, entry?.authorAvatar],
+  )
 
   const ref = useRef<HTMLDivElement>(null)
 
@@ -87,7 +103,7 @@ export const SocialMediaItem: EntryListItemFC = ({ entryId, translation }) => {
           "before:absolute before:-left-3 before:top-8 before:block before:size-2 before:rounded-full before:bg-accent",
       )}
     >
-      <FeedIcon fallback target={feed} entry={entry.iconEntry} size={32} className="mt-1" />
+      <FeedIcon fallback target={feed} entry={iconEntry} size={32} className="mt-1" />
       <div ref={ref} className="ml-2 min-w-0 flex-1">
         <div className="-mt-0.5 flex-1 text-sm">
           <div className="flex select-none flex-wrap space-x-1 leading-6" ref={titleRef}>

@@ -37,8 +37,8 @@ import type { EntryItemStatelessProps, UniversalItemProps } from "../types"
 const ViewTag = IN_ELECTRON ? "webview" : "iframe"
 
 const entrySelector = (state: EntryModel) => {
-  const { feedId, inboxHandle, read } = state
-  const { authorAvatar, authorUrl, description, publishedAt, title } = state
+  /// keep-sorted
+  const { authorAvatar, authorUrl, description, feedId, inboxHandle, publishedAt, title } = state
 
   const audios = state.attachments?.filter((a) => a.mime_type?.startsWith("audio") && a.url)
   const video = transformVideoUrl({
@@ -51,23 +51,22 @@ const entrySelector = (state: EntryModel) => {
   const media = state.media || []
   const photo = media.find((a) => a.type === "photo")
   const firstPhotoUrl = photo?.url
-  const iconEntry: FeedIconEntry = { firstPhotoUrl, authorAvatar }
 
-  const titleEntry = { authorUrl }
-
+  /// keep-sorted
   return {
+    authorAvatar,
+    authorUrl,
     description,
     feedId,
     firstAudio,
-    iconEntry,
+    firstPhotoUrl,
     inboxId: inboxHandle,
     publishedAt,
-    read,
     title,
-    titleEntry,
     video,
   }
 }
+
 export function AllItem({ entryId, translation, currentFeedTitle }: UniversalItemProps) {
   const entry = useEntry(entryId, entrySelector)
   const simple = true
@@ -75,7 +74,7 @@ export function AllItem({ entryId, translation, currentFeedTitle }: UniversalIte
   const isInCollection = useIsEntryStarred(entryId)
   const collectionCreatedAt = useCollectionEntry(entryId)?.createdAt
 
-  const isRead = useEntryIsRead(entry)
+  const isRead = useEntryIsRead(entryId)
 
   const inInCollection = useRouteParamsSelector((s) => s.feedId === FEED_COLLECTION_LIST)
 
@@ -94,6 +93,22 @@ export function AllItem({ entryId, translation, currentFeedTitle }: UniversalIte
   const inbox = useInboxById(entry?.inboxId)
 
   const bilingual = useGeneralSettingKey("translationMode") === "bilingual"
+
+  const iconEntry: FeedIconEntry = useMemo(
+    () => ({
+      firstPhotoUrl: entry?.firstPhotoUrl,
+      authorAvatar: entry?.authorAvatar,
+    }),
+    [entry?.firstPhotoUrl, entry?.authorAvatar],
+  )
+
+  const titleEntry = useMemo(
+    () => ({
+      authorUrl: entry?.authorUrl,
+    }),
+    [entry?.authorUrl],
+  )
+
   const lineClamp = useMemo(() => {
     const envIsSafari = isSafari()
     let lineClampTitle = 1
@@ -124,7 +139,7 @@ export function AllItem({ entryId, translation, currentFeedTitle }: UniversalIte
 
   const related = feed || inbox
 
-  const thisFeedTitle = getPreferredTitle(related, entry?.titleEntry)
+  const thisFeedTitle = getPreferredTitle(related, titleEntry)
   return (
     <div
       className={cn(
@@ -134,7 +149,7 @@ export function AllItem({ entryId, translation, currentFeedTitle }: UniversalIte
       )}
     >
       {currentFeedTitle !== thisFeedTitle && (
-        <FeedIcon target={related} fallback entry={entry?.iconEntry} size={16} />
+        <FeedIcon target={related} fallback entry={iconEntry} size={16} />
       )}
       <div className={cn("flex h-fit min-w-0 flex-1 items-center truncate text-sm leading-tight")}>
         {entry.firstAudio && <AudioIcon entryId={entryId} src={entry.firstAudio.url} />}

@@ -11,6 +11,7 @@ import { useChatStatus } from "../../store/hooks"
 import { AIChainOfThought } from "../displays"
 import type { ChainReasoningPart } from "../displays/AIChainOfThought"
 import { AIMarkdownStreamingMessage } from "./AIMarkdownMessage"
+import { SaveMemoryCard } from "./SaveMemoryCard"
 import { ToolInvocationComponent } from "./ToolInvocationComponent"
 
 const LazyAIDisplayFlowPart = React.lazy(() =>
@@ -39,14 +40,17 @@ export const AIMessageParts: React.FC<AIMessagePartsProps> = React.memo(
       return chatStatus === "streaming" && shouldStreamingAnimation && isLastMessage
     }, [chatStatus, isLastMessage, shouldStreamingAnimation])
 
-    const displayParts = React.useMemo(() => {
+    const chainThoughtParts = React.useMemo(() => {
       const parts = [] as (ChainReasoningPart[] | TextUIPart | ToolUIPart<BizUITools>)[]
+
+      const shouldBypass = (name: string) =>
+        name.startsWith("tool-") || name.startsWith("tool-save_user_memory")
 
       let chainReasoningParts: ChainReasoningPart[] | null = null
       for (const part of message.parts) {
         const isReasoning = part.type === "reasoning" && !!(part as ReasoningUIPart).text
         const isTool = part.type.startsWith("tool-")
-        const isDisplayTool = isTool && part.type.startsWith("tool-display")
+        const bypassedTool = isTool && shouldBypass(part.type)
 
         if (isReasoning) {
           if (!chainReasoningParts) {
@@ -59,7 +63,7 @@ export const AIMessageParts: React.FC<AIMessagePartsProps> = React.memo(
         }
 
         if (isTool) {
-          if (chainReasoningParts && chainReasoningParts.length > 0 && !isDisplayTool) {
+          if (chainReasoningParts && chainReasoningParts.length > 0 && !bypassedTool) {
             chainReasoningParts.push(part as ToolUIPart<BizUITools>)
           } else {
             parts.push(part as ToolUIPart<BizUITools>)
@@ -82,11 +86,11 @@ export const AIMessageParts: React.FC<AIMessagePartsProps> = React.memo(
 
     // console.info("displayParts", displayParts)
 
-    const lowPriorityParts = React.useDeferredValue(displayParts)
+    const lowPriorityChainParts = React.useDeferredValue(chainThoughtParts)
 
     return (
       <>
-        {lowPriorityParts.map((partOrParts, index) => {
+        {lowPriorityChainParts.map((partOrParts, index) => {
           const partKey = `${message.id}-${index}`
 
           if (Array.isArray(partOrParts)) {
@@ -133,6 +137,15 @@ export const AIMessageParts: React.FC<AIMessagePartsProps> = React.memo(
                     <LazyAIDisplayFlowPart part={part as AIDisplayFlowTool} />
                   </React.Suspense>
                 </ErrorBoundary>
+              )
+            }
+            case "tool-save_user_memory": {
+              return (
+                <SaveMemoryCard
+                  key={partKey}
+                  part={part as ToolUIPart<BizUITools>}
+                  variant="tight"
+                />
               )
             }
 

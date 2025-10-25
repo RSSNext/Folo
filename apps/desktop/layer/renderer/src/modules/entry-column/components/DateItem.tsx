@@ -40,7 +40,7 @@ const useParseDate = (date: string) =>
     }
   }, [date])
 
-const dateItemclassName = tw`relative flex items-center text-sm lg:text-base gap-1 px-3 font-bold text-text h-7`
+const dateItemclassName = tw`relative flex items-center text-sm lg:text-base gap-1 px-3 font-bold text-text h-9`
 export const DateItem = memo(({ date, view, isSticky }: DateItemProps) => {
   const showEntryDetailsColumn = useShowEntryDetailsColumn()
 
@@ -95,7 +95,11 @@ const DateItemInner: FC<DateItemInnerProps> = ({
   )
   return (
     <div
-      className={cn(className, isSticky && "border-b bg-background")}
+      className={cn(
+        className,
+        "border-b border-transparent bg-background",
+        isSticky && "border-border",
+      )}
       onClick={stopPropagation}
       onMouseEnter={removeConfirm.cancel}
       onMouseLeave={removeConfirm}

@@ -1,4 +1,4 @@
-import { FeedViewType } from "@follow/constants"
+import { getView } from "@follow/constants"
 
 import { AIChatPanelStyle, useAIChatPanelStyle, useAIPanelVisibility } from "~/atoms/settings/ai"
 import { useRouteParamsSelector } from "~/hooks/biz/useRouteParams"
@@ -12,7 +12,7 @@ export const useShowEntryDetailsColumn = () => {
   const isAIPanelVisible = useAIPanelVisibility()
 
   return (
-    (view === FeedViewType.All || view === FeedViewType.Articles) &&
+    !getView(view).wideMode &&
     (aiPanelStyle === AIChatPanelStyle.Floating || !isAIPanelVisible) &&
     isInEntry
   )

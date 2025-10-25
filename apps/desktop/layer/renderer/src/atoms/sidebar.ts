@@ -1,5 +1,4 @@
 import { atom } from "jotai"
-import type { ReactNode } from "react"
 
 import { createAtomHooks } from "~/lib/jotai"
 
@@ -26,21 +25,3 @@ export const [
   getSubscriptionColumnTempShow,
   setSubscriptionColumnTempShow,
 ] = createAtomHooks(atom(false))
-
-export const [
-  ,
-  ,
-  useSubscriptionColumnApronNode,
-  ,
-  getSubscriptionColumnApronNode,
-  setSubscriptionColumnApronNode,
-] = createAtomHooks(atom<ReactNode | null>(null))
-
-export const [
-  ,
-  ,
-  useSubscriptionEntryPlaneVisible,
-  ,
-  getSubscriptionEntryPlaneVisible,
-  setSubscriptionEntryPlaneVisible,
-] = createAtomHooks(atom(true))
