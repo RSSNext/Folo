@@ -288,8 +288,6 @@
   "general.rebuild_database.warning.line2": "您確定要繼續嗎？",
   "general.send_anonymous_data.description": "選擇傳送匿名使用資料，您將幫助改善 Folo 的整體使用體驗。",
   "general.send_anonymous_data.label": "傳送匿名資料",
-  "general.show_compact_timeline_in_sub.description": "進入文章內容頁時，在左側訂閱欄顯示時間軸項目以便快速選擇。",
-  "general.show_compact_timeline_in_sub.label": "閱讀時在訂閱欄顯示時間軸",
   "general.show_quick_timeline.description": "在 RSS 摘要列表頂部顯示快速時間軸。",
   "general.show_quick_timeline.label": "顯示 RSS 摘要列表時間軸",
   "general.sidebar_title": "一般",

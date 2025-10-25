@@ -6,13 +6,11 @@ import { cn } from "@follow/utils"
 import { isSafari } from "@follow/utils/utils"
 import { AnimatePresence } from "motion/react"
 import type { TransitionEvent } from "react"
-import { memo, startTransition, useCallback, useEffect, useMemo, useRef, useState } from "react"
+import { memo, useCallback, useEffect, useMemo, useRef, useState } from "react"
 import { useResizable } from "react-resizable-layout"
 
 import { AIChatPanelStyle, useAIChatPanelStyle, useAIPanelVisibility } from "~/atoms/settings/ai"
-import { useGeneralSettingKey } from "~/atoms/settings/general"
 import { getUISettings, setUISetting, useUISettingKey } from "~/atoms/settings/ui"
-import { setSubscriptionColumnApronNode, useSubscriptionEntryPlaneVisible } from "~/atoms/sidebar"
 import { m } from "~/components/common/Motion"
 import { ROUTE_ENTRY_PENDING } from "~/constants"
 import { useFeature } from "~/hooks/biz/useFeature"
@@ -23,8 +21,6 @@ import { AIChatLayout } from "~/modules/app-layout/ai/AIChatLayout"
 import { AIIndicator } from "~/modules/app-layout/ai/AISplineButton"
 import { EntryContentPlaceholder } from "~/modules/app-layout/entry-content/EntryContentPlaceholder"
 import { EntryColumn } from "~/modules/entry-column"
-import { EntryPlaneToolbar } from "~/modules/entry-column/components/EntryPlaneToolbar"
-import { EntrySubscriptionList } from "~/modules/entry-column/EntrySubscriptionList"
 import { EntryContent } from "~/modules/entry-content/components/entry-content"
 import { AIEntryHeader } from "~/modules/entry-content/components/entry-header"
 import { AppLayoutGridContainerProvider } from "~/providers/app-grid-layout-container-provider"
@@ -189,7 +185,6 @@ const AIEnhancedTimelineLayoutImpl = () => {
     setShouldRenderDetailsColumn(false)
   }, [showEntryDetailsColumn])
 
-  const showCompactTimelineColumn = useGeneralSettingKey("showCompactTimelineInSub")
   return (
     <div ref={layoutContainerRef} className="relative flex min-w-0 grow">
       <div className="relative min-w-0 flex-1">
@@ -316,7 +311,6 @@ const AIEnhancedTimelineLayoutImpl = () => {
 
       {/* Floating panel - renders outside layout flow */}
       {aiPanelStyle === AIChatPanelStyle.Floating && <AIChatLayout key="ai-chat-layout" />}
-      {showCompactTimelineColumn && <SubscriptionColumnToggler />}
     </div>
   )
 }
@@ -332,57 +326,3 @@ export const AIEnhancedTimelineLayout = memo(function AIEnhancedTimelineLayout()
   )
 })
 AIEnhancedTimelineLayout.displayName = "AIEnhancedTimelineLayout"
-
-const SubscriptionColumnToggler = () => {
-  const isInEntry = useRouteParamsSelector((s) => s.entryId !== ROUTE_ENTRY_PENDING)
-
-  useEffect(() => {
-    if (isInEntry) {
-      startTransition(() => {
-        setSubscriptionColumnApronNode(<SubscriptionEntryListPlaneNode />)
-      })
-      return () => {
-        startTransition(() => {
-          setSubscriptionColumnApronNode(null)
-        })
-      }
-    }
-  }, [isInEntry])
-  return null
-}
-
-const SubscriptionEntryListPlaneNode = () => {
-  const entryId = useRouteParamsSelector((s) => s.entryId)
-  const isVisible = useSubscriptionEntryPlaneVisible()
-
-  return (
-    <m.div
-      className={cn(
-        "absolute left-0 top-12 z-[2] rounded-r-lg bg-sidebar backdrop-blur-background",
-        isVisible ? "bottom-0 flex w-feed-col flex-col" : "w-[40px]",
-      )}
-      id="subscription-entry-list-plane-node"
-      initial={false}
-      animate={{
-        width: isVisible ? "var(--fo-feed-col-w, 256px)" : "40px",
-      }}
-      transition={Spring.presets.smooth}
-    >
-      <EntryPlaneToolbar />
-      <AnimatePresence mode="popLayout">
-        {isVisible && (
-          <m.div
-            key="entry-list"
-            initial={{ opacity: 0 }}
-            animate={{ opacity: 1 }}
-            exit={{ opacity: 0 }}
-            transition={{ duration: 0.1 }}
-            className="flex w-feed-col flex-1 flex-col whitespace-pre"
-          >
-            <EntrySubscriptionList scrollToEntryId={entryId} />
-          </m.div>
-        )}
-      </AnimatePresence>
-    </m.div>
-  )
-}
