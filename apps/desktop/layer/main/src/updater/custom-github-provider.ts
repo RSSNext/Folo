@@ -112,7 +112,7 @@ export class CustomGitHubProvider extends BaseGitHubProvider<GithubUpdateInfo> {
         }
 
         // This Release's Tag
-        const hrefTag = hrefElement[1]!
+        const hrefTag = decodeURIComponent(hrefElement[1]!)
         logger.debug(`Entry #${entryCount}: Processing tag: ${hrefTag}`)
 
         // Get Channel from this release's tag
