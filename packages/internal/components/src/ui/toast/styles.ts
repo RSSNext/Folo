@@ -68,7 +68,7 @@ export const toastStyles = {
     transition-all duration-200
     opacity-0 group-hover:opacity-100
     focus:outline-none focus:ring-2
-     group-data-[type=default]:focus:ring-[rgba(255,92,0,0.5)]
+    group-data-[type=default]:focus:ring-[rgba(255,92,0,0.5)]
     group-data-[type=success]:focus:ring-[rgba(40,205,65,0.5)]
     group-data-[type=error]:focus:ring-[rgba(255,69,58,0.5)]
     group-data-[type=warning]:focus:ring-[rgba(255,149,0,0.5)]
