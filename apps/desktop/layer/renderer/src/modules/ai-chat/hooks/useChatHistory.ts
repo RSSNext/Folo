@@ -15,7 +15,7 @@ export const useChatHistory = () => {
 
     const { t } = getI18n()
     try {
-      await AIChatSessionService.syncSessionsAndMessagesFromServer()
+      await AIChatSessionService.syncPromise.promise
       const result = await AIPersistService.getChatSessions()
       const sessions: ChatSession[] = result.map((row) => ({
         chatId: row.chatId,

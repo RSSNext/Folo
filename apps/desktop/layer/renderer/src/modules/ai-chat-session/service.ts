@@ -13,7 +13,8 @@ const MAX_PAGES = 10
  * Service for syncing AI chat session messages from remote API into local DB.
  */
 class AIChatSessionServiceStatic {
-  private sync = false
+  public syncPromise = Promise.withResolvers<void>()
+  private syncInProgressOrDone = false
 
   /**
    * List sessions from backend and ensure local DB has sessions and unseen messages.
@@ -21,27 +22,22 @@ class AIChatSessionServiceStatic {
    *
    * Returns a small summary for observability.
    */
-  async syncSessionsAndMessagesFromServer(filters?: ListSessionsQuery): Promise<{
-    sessions: number
-    messages: number
-    failures: number
-  }> {
-    if (this.sync) {
-      return { sessions: 0, messages: 0, failures: 0 }
-    }
-    this.sync = true
-    const res = await followApi.aiChatSessions.list(filters)
-    const sessions = res.data
+  async syncSessionsAndMessagesFromServer(filters?: ListSessionsQuery): Promise<void> {
+    if (this.syncInProgressOrDone) return
+    this.syncInProgressOrDone = true
 
-    let totalMessages = 0
-    let failures = 0
+    try {
+      const res = await followApi.aiChatSessions.list(filters)
+      const sessions = res.data
 
-    for (const session of sessions) {
-      const { messages, failure } = await this.syncSingleSession(session)
-      totalMessages += messages
-      if (failure) failures += 1
+      for (const session of sessions) {
+        await this.syncSingleSession(session)
+      }
+    } catch (error) {
+      console.error("AIChatSessionService: syncSessionsAndMessagesFromServer failed", error)
+    } finally {
+      this.syncPromise.resolve()
     }
-    return { sessions: sessions.length, messages: totalMessages, failures }
   }
 
   /**
@@ -165,3 +161,10 @@ class AIChatSessionServiceStatic {
 }
 
 export const AIChatSessionService = new AIChatSessionServiceStatic()
+
+requestIdleCallback(
+  () => {
+    AIChatSessionService.syncSessionsAndMessagesFromServer()
+  },
+  { timeout: 8_000 },
+)
