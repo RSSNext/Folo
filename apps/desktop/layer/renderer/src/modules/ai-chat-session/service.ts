@@ -37,35 +37,50 @@ class AIChatSessionServiceStatic {
     let failures = 0
 
     for (const session of sessions) {
-      const dbSession = await AIPersistService.getChatSession(session.chatId)
-      const lastUpdatedAt = dbSession ? dbSession.updatedAt : new Date(0)
-      if (lastUpdatedAt >= new Date(session.updatedAt)) {
-        // If local session is already up-to-date, skip fetching messages
-        continue
-      }
-      try {
-        // Ensure session exists locally first
-        await AIPersistService.ensureSession(session.chatId, {
-          title: session.title,
-          createdAt: new Date(session.createdAt),
-          updatedAt: new Date(session.updatedAt),
-        })
-
-        // Fetch unseen messages (newer than lastSeenAt) without changing read state remotely
-        const unseenMessages = await this.fetchUnseenRemoteMessages(session.chatId, lastUpdatedAt)
-        if (unseenMessages.length === 0) continue
-
-        const normalized = unseenMessages.map(this.normalizeRemoteMessage)
-        await AIPersistService.upsertMessages(session.chatId, normalized)
-        totalMessages += normalized.length
-      } catch (err) {
-        // Keep going even if a single session fails
-        console.error("syncSessionsAndMessagesFromServer: failed for session", session.chatId, err)
-        failures += 1
-      }
+      const { messages, failure } = await this.syncSingleSession(session)
+      totalMessages += messages
+      if (failure) failures += 1
     }
     return { sessions: sessions.length, messages: totalMessages, failures }
   }
+
+  /**
+   * Inner operation for a single session in the sync loop.
+   * Ensures local session exists and pulls unseen remote messages without
+   * mutating remote read state. Returns processed message count and failure flag.
+   */
+  async syncSingleSession(session: AIChatSession): Promise<{
+    messages: number
+    failure: boolean
+  }> {
+    const dbSession = await AIPersistService.getChatSession(session.chatId)
+    const lastUpdatedAt = dbSession ? dbSession.updatedAt : new Date(0)
+    if (lastUpdatedAt >= new Date(session.updatedAt)) {
+      // Local session already up-to-date, skip fetching messages
+      return { messages: 0, failure: false }
+    }
+    try {
+      // Ensure session exists locally first
+      await AIPersistService.ensureSession(session.chatId, {
+        title: session.title,
+        createdAt: new Date(session.createdAt),
+        updatedAt: new Date(session.updatedAt),
+      })
+
+      // Fetch unseen messages (newer than lastSeenAt) without changing read state remotely
+      const unseenMessages = await this.fetchUnseenRemoteMessages(session.chatId, lastUpdatedAt)
+      if (unseenMessages.length === 0) return { messages: 0, failure: false }
+
+      const normalized = unseenMessages.map(this.normalizeRemoteMessage)
+      await AIPersistService.upsertMessages(session.chatId, normalized)
+      return { messages: normalized.length, failure: false }
+    } catch (err) {
+      // Keep going even if a single session fails
+      console.error("syncSingleSession: failed for session", session.chatId, err)
+      return { messages: 0, failure: true }
+    }
+  }
+
   /**
    * Fetch messages for a chat session from the remote API and persist (upsert) them locally.
    * Returns the normalized BizUIMessage list that was persisted.
@@ -91,11 +106,6 @@ class AIChatSessionServiceStatic {
       updatedAt: new Date(session.updatedAt),
     })
     await AIPersistService.upsertMessages(session.chatId, normalized)
-
-    await followApi.aiChatSessions.markSeen({
-      chatId: session.chatId,
-      lastSeenAt: new Date().toISOString(),
-    })
 
     // Invalidate related queries so UI updates outside of hook-based mutation flows
     Promise.all([
@@ -147,8 +157,6 @@ class AIChatSessionServiceStatic {
     return {
       id: msg.id,
       role: msg.role satisfies BizUIMessage["role"],
-      // Remove this comment once @follow-app/client-sdk updated
-      // @ts-expect-error TODO fix message part types
       parts: msg.messageParts,
       metadata,
       createdAt: new Date(msg.createdAt),

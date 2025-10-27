@@ -17,10 +17,10 @@ import {
 import { useDialog, useModalStack } from "~/components/ui/modal/stacked/hooks"
 import { useTimelineSummaryAutoContext } from "~/modules/ai-chat/hooks/useTimelineSummaryAutoContext"
 import { useChatActions, useCurrentChatId } from "~/modules/ai-chat/store/hooks"
-import { AIChatSessionService } from "~/modules/ai-chat-session"
 import {
   useAIChatSessionListQuery,
   useDeleteAIChatSessionMutation,
+  useMarkChatSessionSeenMutation,
 } from "~/modules/ai-chat-session/query"
 import { AITaskModal, useCanCreateNewAITask } from "~/modules/ai-task"
 import { useSettingModal } from "~/modules/settings/modal/use-setting-modal-hack"
@@ -41,13 +41,19 @@ interface SessionItemProps {
 }
 
 // Helper to determine if a session has unread messages
-const isUnreadTaskSession = (session: AIChatSession): boolean => {
+const isTaskSession = (session: AIChatSession): boolean => {
   if (!session.lastSeenAt || !session.updatedAt) return false
   if (!session.chatId.startsWith("ai-task")) return false
+  return true
+}
+
+const isUnreadSession = (session: AIChatSession): boolean => {
   return new Date(session.updatedAt) > new Date(session.lastSeenAt)
 }
 
 const SessionItem = ({ session, onClick, onDelete, isLoading }: SessionItemProps) => {
+  const hasUnreadMessages = isUnreadSession(session)
+
   return (
     <DropdownMenuItem
       onClick={onClick}
@@ -55,6 +61,13 @@ const SessionItem = ({ session, onClick, onDelete, isLoading }: SessionItemProps
     >
       <div className="flex min-w-0 flex-1 justify-between">
         <div className="flex min-w-0 flex-1 items-center gap-2">
+          {hasUnreadMessages && (
+            <span
+              className="absolute -left-0.5 block size-2 shrink-0 rounded-full bg-accent"
+              aria-label="Unread"
+              role="status"
+            />
+          )}
           <p className="mb-0.5 truncate font-medium">{session.title || "Untitled Chat"}</p>
         </div>
         <div className="relative flex min-w-0 items-center">
@@ -100,12 +113,10 @@ export const TaskReportDropdown = ({ triggerElement, asChild = true }: TaskRepor
   const { t } = useTranslation("ai")
   const [loadingChatId, setLoadingChatId] = useState<string | null>(null)
   const showSettings = useSettingModal()
+  const markChatSessionSeenMutation = useMarkChatSessionSeenMutation()
 
   // Only keep unread sessions for display
-  const unreadSessions = useMemo(
-    () => (sessions || []).filter((s) => isUnreadTaskSession(s)),
-    [sessions],
-  )
+  const unreadSessions = useMemo(() => (sessions || []).filter((s) => isTaskSession(s)), [sessions])
 
   const hasUnreadSessions = unreadSessions.length > 0
 
@@ -128,19 +139,23 @@ export const TaskReportDropdown = ({ triggerElement, asChild = true }: TaskRepor
 
   const handleSessionSelect = useCallback(
     async (session: AIChatSession) => {
-      if (session.chatId === currentChatId) return
-      try {
-        await AIChatSessionService.fetchAndPersistMessages(session)
-      } catch (e) {
-        console.error("Failed to sync chat session messages:", e)
-        toast.error("Failed to load chat messages")
+      if (session.chatId === currentChatId) {
+        console.warn("Session already active, no action taken")
+        return
       }
       if (shouldDisableTimelineSummary) {
         chatActions.setTimelineSummaryManualOverride(true)
       }
+
       chatActions.switchToChat(session.chatId)
+      if (isUnreadSession(session)) {
+        markChatSessionSeenMutation.mutate({
+          chatId: session.chatId,
+          lastSeenAt: new Date().toISOString(),
+        })
+      }
     },
-    [chatActions, currentChatId],
+    [chatActions, currentChatId, markChatSessionSeenMutation, shouldDisableTimelineSummary],
   )
 
   const handleDeleteSession = useCallback(
