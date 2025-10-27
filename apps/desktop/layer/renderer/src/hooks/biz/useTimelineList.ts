@@ -1,9 +1,55 @@
 import { FeedViewType, getViewList } from "@follow/constants"
+import type { UISettings } from "@follow/shared/settings/interface"
 import { useSubscriptionStore } from "@follow/store/subscription/store"
 import { useMemo } from "react"
 
 import { useUISettingKey } from "~/atoms/settings/ui"
 import { ROUTE_TIMELINE_OF_VIEW, ROUTE_VIEW_ALL } from "~/constants/app"
+
+const ALL_TIMELINE_IDS = getViewList({ includeAll: true }).map((view) =>
+  view.view === FeedViewType.All ? ROUTE_VIEW_ALL : `${ROUTE_TIMELINE_OF_VIEW}${view.view}`,
+)
+
+export const computeTimelineTabLists = ({
+  timelineTabs,
+  hasAudiosSubscription,
+  hasNotificationsSubscription,
+}: {
+  timelineTabs?: UISettings["timelineTabs"]
+  hasAudiosSubscription: boolean
+  hasNotificationsSubscription: boolean
+}) => {
+  const savedVisible = (timelineTabs?.visible ?? []).filter((id) => ALL_TIMELINE_IDS.includes(id))
+  const savedHidden = (timelineTabs?.hidden ?? []).filter((id) => ALL_TIMELINE_IDS.includes(id))
+  const extras = ALL_TIMELINE_IDS.filter(
+    (id) => !savedVisible.includes(id) && !savedHidden.includes(id),
+  )
+
+  const isDefaultHidden = (id: string) => {
+    if (id === `${ROUTE_TIMELINE_OF_VIEW}${FeedViewType.Audios}`) return !hasAudiosSubscription
+    if (id === `${ROUTE_TIMELINE_OF_VIEW}${FeedViewType.Notifications}`)
+      return !hasNotificationsSubscription
+    return false
+  }
+
+  const extraVisible = extras.filter((id) => !isDefaultHidden(id))
+  const extraHidden = extras.filter((id) => isDefaultHidden(id))
+
+  const allConfigured =
+    savedVisible.includes(ROUTE_VIEW_ALL) || savedHidden.includes(ROUTE_VIEW_ALL)
+
+  let nextVisible = [...savedVisible]
+
+  if (!allConfigured && extraVisible.includes(ROUTE_VIEW_ALL)) {
+    nextVisible = [ROUTE_VIEW_ALL, ...nextVisible]
+  }
+
+  nextVisible = [...nextVisible, ...extraVisible.filter((id) => id !== ROUTE_VIEW_ALL)]
+
+  const nextHidden = [...savedHidden, ...extraHidden].filter((id) => !nextVisible.includes(id))
+
+  return { visible: nextVisible, hidden: nextHidden }
+}
 
 export const useTimelineList = (options?: {
   visible?: boolean
@@ -22,50 +68,15 @@ export const useTimelineList = (options?: {
       state.listIdByView[FeedViewType.Notifications].size > 0,
   )
 
-  const allTimelineIds = useMemo(() => {
-    return getViewList({ includeAll: true }).map((view) =>
-      view.view === FeedViewType.All ? ROUTE_VIEW_ALL : `${ROUTE_TIMELINE_OF_VIEW}${view.view}`,
-    )
-  }, [])
-
-  const { visible, hidden } = useMemo(() => {
-    const ids = allTimelineIds
-    const savedVisible = (timelineTabs?.visible ?? []).filter((id) => ids.includes(id))
-    const savedHidden = (timelineTabs?.hidden ?? []).filter((id) => ids.includes(id))
-    const extras = ids.filter((id) => !savedVisible.includes(id) && !savedHidden.includes(id))
-
-    let nextVisible = [...savedVisible]
-    let nextHidden = [...savedHidden]
-
-    const isDefaultHidden = (id: string) => {
-      if (id === `${ROUTE_TIMELINE_OF_VIEW}${FeedViewType.Audios}`) return !hasAudiosSubscription
-      if (id === `${ROUTE_TIMELINE_OF_VIEW}${FeedViewType.Notifications}`)
-        return !hasNotificationsSubscription
-      return false
-    }
-
-    const extraVisible = extras.filter((id) => !isDefaultHidden(id))
-    const extraHidden = extras.filter((id) => isDefaultHidden(id))
-
-    const allConfigured =
-      savedVisible.includes(ROUTE_VIEW_ALL) || savedHidden.includes(ROUTE_VIEW_ALL)
-
-    if (!allConfigured && extraVisible.includes(ROUTE_VIEW_ALL)) {
-      nextVisible = [ROUTE_VIEW_ALL, ...nextVisible]
-    }
-
-    nextVisible = [...nextVisible, ...extraVisible.filter((id) => id !== ROUTE_VIEW_ALL)]
-
-    nextHidden = [...nextHidden, ...extraHidden].filter((id) => !nextVisible.includes(id))
-
-    return { visible: nextVisible, hidden: nextHidden }
-  }, [
-    allTimelineIds,
-    hasAudiosSubscription,
-    hasNotificationsSubscription,
-    timelineTabs?.hidden,
-    timelineTabs?.visible,
-  ])
+  const { visible, hidden } = useMemo(
+    () =>
+      computeTimelineTabLists({
+        timelineTabs,
+        hasAudiosSubscription,
+        hasNotificationsSubscription,
+      }),
+    [hasAudiosSubscription, hasNotificationsSubscription, timelineTabs],
+  )
 
   return useMemo(() => {
     let result: string[]
