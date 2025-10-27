@@ -8,6 +8,7 @@
   "analytics.no_data": "所选期间没有可用的使用数据",
   "analytics.no_history": "没有可用的使用历史",
   "analytics.operation_types.chat": "聊天",
+  "analytics.operation_types.onboarding": "入门",
   "analytics.operation_types.task": "任务",
   "analytics.operation_types.title_generation": "标题生成",
   "analytics.patterns_placeholder": "模式分析将显示高峰使用时间和习惯",

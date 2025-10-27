@@ -8,6 +8,7 @@
   "analytics.no_data": "No usage data available for the selected period",
   "analytics.no_history": "No usage history available",
   "analytics.operation_types.chat": "Chat",
+  "analytics.operation_types.onboarding": "Onboarding",
   "analytics.operation_types.task": "Task",
   "analytics.operation_types.title_generation": "Title Generation",
   "analytics.patterns_placeholder": "Pattern analysis will show peak usage times and habits",

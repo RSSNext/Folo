@@ -8,6 +8,7 @@
   "analytics.no_data": "選択した期間に利用可能な使用データがありません",
   "analytics.no_history": "利用可能な使用履歴がありません",
   "analytics.operation_types.chat": "チャット",
+  "analytics.operation_types.onboarding": "オンボーディング",
   "analytics.operation_types.task": "タスク",
   "analytics.operation_types.title_generation": "タイトル生成",
   "analytics.patterns_placeholder": "パターン分析はピーク使用時間と習慣を表示します",
