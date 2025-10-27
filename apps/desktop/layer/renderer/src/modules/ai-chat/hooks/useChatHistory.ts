@@ -1,41 +1,42 @@
-import { useCallback, useState } from "react"
+import { useCallback, useMemo } from "react"
 
-import { getI18n } from "~/i18n"
-import { AIPersistService } from "~/modules/ai-chat/services/index"
 import { AIChatSessionService } from "~/modules/ai-chat-session/service"
-
-import type { ChatSession } from "../types/ChatSession"
+import { aiChatSessionStoreActions, useAIChatSessionStore } from "~/modules/ai-chat-session/store"
 
 export const useChatHistory = () => {
-  const [sessions, setSessions] = useState<ChatSession[]>([])
-  const [loading, setLoading] = useState(false)
+  const state = useAIChatSessionStore((s) => s)
+
+  const { sessions } = state
+  const loading = state.isLoading || state.isSyncing
 
   const loadHistory = useCallback(async () => {
-    setLoading(true)
+    if (loading) return
 
-    const { t } = getI18n()
+    aiChatSessionStoreActions.setLoading(true)
+    aiChatSessionStoreActions.clearError()
+
     try {
-      await AIChatSessionService.syncSessionsAndMessagesFromServer()
-      const result = await AIPersistService.getChatSessions()
-      const sessions: ChatSession[] = result.map((row) => ({
-        chatId: row.chatId,
-        title: row.title || t("ai:common.new_chat"),
-        createdAt: new Date(row.createdAt),
-        updatedAt: new Date(row.updatedAt),
-        messageCount: row.messageCount,
-      }))
+      aiChatSessionStoreActions.setSyncing(true)
 
-      setSessions(sessions)
+      await AIChatSessionService.syncSessionsAndMessagesFromServer()
     } catch (error) {
       console.error("Failed to load chat history:", error)
+      aiChatSessionStoreActions.setError(error instanceof Error ? error.message : "Unknown error")
     } finally {
-      setLoading(false)
+      aiChatSessionStoreActions.setSyncing(false)
+      aiChatSessionStoreActions.setLoading(false)
     }
-  }, [])
+  }, [loading])
 
-  return {
-    sessions,
-    loading,
-    loadHistory,
-  }
+  return useMemo(
+    () => ({
+      sessions,
+      loading,
+      loadHistory,
+      stats: state.stats,
+      lastSyncedAt: state.lastSyncedAt,
+      error: state.error,
+    }),
+    [sessions, loading, loadHistory, state.stats, state.lastSyncedAt, state.error],
+  )
 }

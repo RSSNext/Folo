@@ -1,10 +1,13 @@
 import type { AIChatMessage, AIChatSession, ListSessionsQuery } from "@follow-app/client-sdk"
 
+import { getI18n } from "~/i18n"
+
 import { followApi } from "../../lib/api-client"
 import { queryClient } from "../../lib/query-client"
 import { AIPersistService } from "../ai-chat/services"
 import type { BizUIMessage, BizUIMetadata } from "../ai-chat/store/types"
 import { aiChatSessionKeys } from "./query"
+import { aiChatSessionStoreActions } from "./store"
 
 // Hard cap on pagination to prevent excessive API calls while keeping initial sync fast.
 const MAX_PAGES = 10
@@ -29,42 +32,99 @@ class AIChatSessionServiceStatic {
     if (this.sync) {
       return { sessions: 0, messages: 0, failures: 0 }
     }
+
     this.sync = true
-    const res = await followApi.aiChatSessions.list(filters)
-    const sessions = res.data
 
-    let totalMessages = 0
-    let failures = 0
+    aiChatSessionStoreActions.setSyncing(true)
+    aiChatSessionStoreActions.clearError()
 
-    for (const session of sessions) {
-      const dbSession = await AIPersistService.getChatSession(session.chatId)
-      const lastUpdatedAt = dbSession ? dbSession.updatedAt : new Date(0)
-      if (lastUpdatedAt >= new Date(session.updatedAt)) {
-        // If local session is already up-to-date, skip fetching messages
-        continue
-      }
-      try {
-        // Ensure session exists locally first
-        await AIPersistService.ensureSession(session.chatId, {
-          title: session.title,
-          createdAt: new Date(session.createdAt),
-          updatedAt: new Date(session.updatedAt),
-        })
+    await this.loadSessionsFromDb().catch((error) => {
+      console.error("syncSessionsAndMessagesFromServer: failed to load local sessions", error)
+    })
 
-        // Fetch unseen messages (newer than lastSeenAt) without changing read state remotely
-        const unseenMessages = await this.fetchUnseenRemoteMessages(session.chatId, lastUpdatedAt)
-        if (unseenMessages.length === 0) continue
-
-        const normalized = unseenMessages.map(this.normalizeRemoteMessage)
-        await AIPersistService.upsertMessages(session.chatId, normalized)
-        totalMessages += normalized.length
-      } catch (err) {
-        // Keep going even if a single session fails
-        console.error("syncSessionsAndMessagesFromServer: failed for session", session.chatId, err)
-        failures += 1
-      }
+    let summary: { sessions: number; messages: number; failures: number } = {
+      sessions: 0,
+      messages: 0,
+      failures: 0,
     }
-    return { sessions: sessions.length, messages: totalMessages, failures }
+
+    try {
+      const res = await followApi.aiChatSessions.list(filters)
+      const sessions = res.data
+
+      let totalMessages = 0
+      let failures = 0
+
+      await Promise.allSettled(
+        sessions.map((session) =>
+          this.processSessionSync(session)
+            .then((count) => {
+              totalMessages += count
+            })
+            .catch((err) => {
+              console.error(
+                "syncSessionsAndMessagesFromServer: failed for session",
+                session.chatId,
+                err,
+              )
+              failures += 1
+            }),
+        ),
+      )
+
+      summary = { sessions: sessions.length, messages: totalMessages, failures }
+
+      await this.loadSessionsFromDb()
+      aiChatSessionStoreActions.setStats(summary)
+      aiChatSessionStoreActions.setLastSyncedAt(new Date())
+      return summary
+    } catch (error) {
+      aiChatSessionStoreActions.setError(
+        error instanceof Error ? error.message : "Failed to sync chat sessions",
+      )
+      throw error
+    } finally {
+      aiChatSessionStoreActions.setSyncing(false)
+      this.sync = false
+    }
+  }
+
+  private async processSessionSync(session: AIChatSession): Promise<number> {
+    const dbSession = await AIPersistService.getChatSession(session.chatId)
+    const lastUpdatedAt = dbSession ? dbSession.updatedAt : new Date(0)
+    if (lastUpdatedAt >= new Date(session.updatedAt)) {
+      return 0
+    }
+
+    await AIPersistService.ensureSession(session.chatId, {
+      title: session.title,
+      createdAt: new Date(session.createdAt),
+      updatedAt: new Date(session.updatedAt),
+    })
+
+    const unseenMessages = await this.fetchUnseenRemoteMessages(session.chatId, lastUpdatedAt)
+    if (unseenMessages.length === 0) {
+      return 0
+    }
+
+    const normalized = unseenMessages.map(this.normalizeRemoteMessage)
+    await AIPersistService.upsertMessages(session.chatId, normalized)
+
+    return normalized.length
+  }
+
+  async loadSessionsFromDb() {
+    const { t } = getI18n()
+    const rows = await AIPersistService.getChatSessions()
+    const normalized = rows.map((row) => ({
+      chatId: row.chatId,
+      title: row.title || t("ai:common.new_chat"),
+      createdAt: new Date(row.createdAt),
+      updatedAt: new Date(row.updatedAt),
+      messageCount: row.messageCount,
+    }))
+    aiChatSessionStoreActions.setSessions(normalized)
+    return normalized
   }
   /**
    * Fetch messages for a chat session from the remote API and persist (upsert) them locally.
@@ -96,6 +156,9 @@ class AIChatSessionServiceStatic {
       chatId: session.chatId,
       lastSeenAt: new Date().toISOString(),
     })
+
+    await this.loadSessionsFromDb()
+    aiChatSessionStoreActions.setLastSyncedAt(new Date())
 
     // Invalidate related queries so UI updates outside of hook-based mutation flows
     Promise.all([

@@ -95,7 +95,7 @@ export const ChatHistoryDropdown = ({
         {triggerElement || defaultTrigger}
       </DropdownMenuTrigger>
       <DropdownMenuContent align="start" className="max-h-96 w-72 overflow-y-auto">
-        {loading ? (
+        {loading && sessions.length === 0 ? (
           <div className="flex items-center justify-center py-8">
             <i className="i-mgc-loading-3-cute-re size-5 animate-spin text-text-secondary" />
           </div>
