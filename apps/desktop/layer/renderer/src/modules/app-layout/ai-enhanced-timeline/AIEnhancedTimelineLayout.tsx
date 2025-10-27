@@ -69,6 +69,7 @@ const AIEnhancedTimelineLayoutImpl = () => {
 
   const layoutContainerRef = useRef<HTMLDivElement>(null)
   const hasMountedRef = useRef(false)
+
   // Delay the details column until the timeline width animation finishes
   const [shouldRenderDetailsColumn, setShouldRenderDetailsColumn] = useState(showEntryDetailsColumn)
   const feedColumnWidth = useUISettingKey("feedColWidth")
@@ -158,7 +159,7 @@ const AIEnhancedTimelineLayoutImpl = () => {
     setAiPanelWidth(width)
     // Trigger layout update
     window.dispatchEvent(new Event("resize"))
-  }, [resolvePreferredWidth])
+  }, [resolvePreferredWidth, setAiPanelWidth])
 
   const handleTimelineTransitionEnd = useCallback(
     (event: TransitionEvent<HTMLDivElement>) => {
@@ -175,14 +176,17 @@ const AIEnhancedTimelineLayoutImpl = () => {
   )
 
   useEffect(() => {
+    if (!showEntryDetailsColumn) {
+      setShouldRenderDetailsColumn(false)
+    }
+  }, [showEntryDetailsColumn])
+
+  useEffect(() => {
     if (!hasMountedRef.current) {
       hasMountedRef.current = true
       setShouldRenderDetailsColumn(showEntryDetailsColumn)
       return
     }
-
-    // Defer rendering until the width transition signals completion
-    setShouldRenderDetailsColumn(false)
   }, [showEntryDetailsColumn])
 
   return (
