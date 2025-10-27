@@ -59,7 +59,7 @@ import { WelcomeScreen } from "./WelcomeScreen"
 const SCROLL_BOTTOM_THRESHOLD = 100
 
 const draftMessages = new Map<string, EditorState>()
-const ChatInterfaceContent = ({ centerInputOnEmpty, visualOffsetY }: ChatInterfaceProps) => {
+const ChatInterfaceContent = ({ centerInputOnEmpty }: ChatInterfaceProps) => {
   const hasMessages = useHasMessages()
   const status = useChatStatus()
   const chatActions = useChatActions()
@@ -343,16 +343,7 @@ const ChatInterfaceContent = ({ centerInputOnEmpty, visualOffsetY }: ChatInterfa
   const rateLimitExtraHeight = hasRateLimitError ? 40 : 0
 
   return (
-    <div
-      className="flex size-full flex-col @container"
-      style={
-        visualOffsetY
-          ? ({
-              transform: `translateY(${typeof visualOffsetY === "number" ? `${visualOffsetY}px` : visualOffsetY})`,
-            } as React.CSSProperties)
-          : undefined
-      }
-    >
+    <div className="flex size-full flex-col @container">
       <GlobalFileDropZone className="flex size-full flex-col @container">
         <div className="flex min-h-0 flex-1 flex-col" ref={scrollContainerParentRef}>
           <AnimatePresence>
@@ -424,6 +415,7 @@ const ChatInterfaceContent = ({ centerInputOnEmpty, visualOffsetY }: ChatInterfa
 
         <div
           ref={bottomPanelRef}
+          data-testid="chat-input-container"
           className={cn(
             "absolute z-10 mx-auto duration-500 ease-in-out",
             hasMessages && "inset-x-0 bottom-0 max-w-4xl px-4 pb-4",
@@ -496,7 +488,6 @@ const ChatInterfaceContent = ({ centerInputOnEmpty, visualOffsetY }: ChatInterfa
 
 interface ChatInterfaceProps {
   centerInputOnEmpty?: boolean
-  visualOffsetY?: string | number
 }
 export const ChatInterface = (props: ChatInterfaceProps) => (
   <ErrorBoundary fallback={AIErrorFallback}>

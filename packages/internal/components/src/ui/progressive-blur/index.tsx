@@ -44,27 +44,13 @@ export function LinearBlur({
         ...props.style,
       }}
     >
-      <div
-        style={{
-          position: "absolute",
-          zIndex: 0,
-          width: "100%",
-          height: "100%",
-        }}
-      >
+      <div className="absolute z-0 size-full">
         {/* Full blur at 100-falloffPercentage% */}
         {actualSteps > 1 && (
           <div
+            className="absolute inset-0 z-[2]"
             style={{
-              position: "absolute",
-              zIndex: 2,
-              inset: 0,
-              mask: `linear-gradient(
-                to ${oppositeSide[side]},
-                  rgba(0, 0, 0, 1) ${mainPercentage}%,
-                  rgba(0, 0, 0, 1) ${mainPercentage + step}%,
-                  rgba(0, 0, 0, 0) ${mainPercentage + step * 2}%
-                )`,
+              mask: `linear-gradient(to ${oppositeSide[side]}, rgba(0, 0, 0, 1) ${mainPercentage}%, rgba(0, 0, 0, 1) ${mainPercentage + step}%, rgba(0, 0, 0, 0) ${mainPercentage + step * 2}%)`,
               backdropFilter: getBackdropFilter(1),
               WebkitBackdropFilter: getBackdropFilter(1),
             }}
@@ -74,31 +60,19 @@ export function LinearBlur({
           Array.from({ length: actualSteps - 2 }).map((_, i) => (
             <div
               key={i}
+              className="absolute inset-0"
               style={{
-                position: "absolute",
                 zIndex: i + 2,
-                inset: 0,
-                mask: `linear-gradient(
-                    to ${oppositeSide[side]},
-                    rgba(0, 0, 0, 0) ${mainPercentage + i * step}%,
-                    rgba(0, 0, 0, 1) ${mainPercentage + (i + 1) * step}%,
-                    rgba(0, 0, 0, 1) ${mainPercentage + (i + 2) * step}%,
-                    rgba(0, 0, 0, 0) ${mainPercentage + (i + 3) * step}%
-                  )`,
+
+                mask: `linear-gradient(to ${oppositeSide[side]},rgba(0, 0, 0, 0) ${mainPercentage + i * step}%,rgba(0, 0, 0, 1) ${mainPercentage + (i + 1) * step}%,rgba(0, 0, 0, 1) ${mainPercentage + (i + 2) * step}%,rgba(0, 0, 0, 0) ${mainPercentage + (i + 3) * step}%)`,
                 backdropFilter: getBackdropFilter(i + 2),
                 WebkitBackdropFilter: getBackdropFilter(i + 2),
               }}
             />
           ))}
         <div
-          style={{
-            position: "absolute",
-            left: 0,
-            top: "-100%",
-            width: "100%",
-            height: "100%",
-            boxShadow: `0 0 60px ${tint}, 0 0 100px ${tint}`,
-          }}
+          className="absolute -top-full left-0 size-full"
+          style={{ boxShadow: `0 0 60px ${tint}, 0 0 100px ${tint}` }}
         />
       </div>
     </div>

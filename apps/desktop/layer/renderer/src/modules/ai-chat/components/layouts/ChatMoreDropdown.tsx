@@ -94,10 +94,9 @@ export const ChatMoreDropdown = ({
                   : "Switch to Fixed Panel"}
               </span>
             </DropdownMenuItem>
+            <DropdownMenuSeparator />
           </>
         )}
-
-        <DropdownMenuSeparator />
 
         <DropdownMenuItem onClick={() => settingModalPresent("ai")}>
           <i className="i-mgc-settings-1-cute-re mr-2 size-4" />

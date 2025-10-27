@@ -161,7 +161,7 @@ function SubviewLayoutInner() {
       {/* Enhanced Header with smooth transitions */}
       <div
         className={cn(
-          "absolute inset-x-0 top-0 z-10 transition-all duration-300 ease-out",
+          "absolute inset-x-0 top-0 z-10 overflow-hidden transition-all duration-300 ease-out",
           isHeaderElevated && isElectronWindows && "-top-5",
         )}
       >
