@@ -456,6 +456,11 @@ class AIPersistServiceStatic {
     if (emptySessions.length > 0) {
       const chatIdsToDelete = emptySessions.map((row) => row[0])
       await db.delete(aiChatTable).where(inArray(aiChatTable.chatId, chatIdsToDelete))
+      for (const chatId of chatIdsToDelete) {
+        await followClient.api.aiChatSessions.delete({ chatId }).catch((error) => {
+          console.error("Failed to delete remote chat sessions:", error)
+        })
+      }
 
       // Clear deleted sessions from cache
       chatIdsToDelete.forEach((chatId) => this.clearSessionCache(chatId))
