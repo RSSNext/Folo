@@ -41,8 +41,9 @@ interface SessionItemProps {
 }
 
 // Helper to determine if a session has unread messages
-const isSessionUnread = (session: AIChatSession): boolean => {
+const isUnreadTaskSession = (session: AIChatSession): boolean => {
   if (!session.lastSeenAt || !session.updatedAt) return false
+  if (!session.chatId.startsWith("ai-task")) return false
   return new Date(session.updatedAt) > new Date(session.lastSeenAt)
 }
 
@@ -102,7 +103,7 @@ export const TaskReportDropdown = ({ triggerElement, asChild = true }: TaskRepor
 
   // Only keep unread sessions for display
   const unreadSessions = useMemo(
-    () => (sessions || []).filter((s) => isSessionUnread(s)),
+    () => (sessions || []).filter((s) => isUnreadTaskSession(s)),
     [sessions],
   )
 
