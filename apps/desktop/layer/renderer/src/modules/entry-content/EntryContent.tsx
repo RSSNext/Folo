@@ -157,11 +157,8 @@ const EntryContentImpl: Component<EntryContentProps> = ({
             <>
               <div className="absolute inset-y-0 left-0 z-[9] flex w-12 items-center justify-center opacity-0 duration-200 hover:opacity-100 group-hover:opacity-40">
                 <GlassButton
-                  aria-label="Previous entry"
-                  description="Previous entry"
                   size="sm"
-                  variant="flat"
-                  className="!-translate-y-12"
+                  className="!-translate-y-12 !bg-material-opaque !opacity-100 hover:!bg-material-opaque"
                   onClick={() => {
                     EventBus.dispatch(COMMAND_ID.timeline.switchToPrevious)
                   }}
@@ -172,11 +169,8 @@ const EntryContentImpl: Component<EntryContentProps> = ({
 
               <div className="absolute inset-y-0 right-0 z-[9] flex w-12 items-center justify-center opacity-0 duration-200 hover:opacity-100 group-hover:opacity-40">
                 <GlassButton
-                  aria-label="Next entry"
-                  description="Next entry"
                   size="sm"
-                  variant="flat"
-                  className="!-translate-y-12"
+                  className="!-translate-y-12 !bg-material-opaque !opacity-100 hover:!bg-material-opaque"
                   onClick={() => {
                     EventBus.dispatch(COMMAND_ID.timeline.switchToNext)
                   }}
