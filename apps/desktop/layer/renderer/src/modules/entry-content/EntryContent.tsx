@@ -1,5 +1,4 @@
 import { Spring } from "@follow/components/constants/spring.js"
-import { MotionButtonBase } from "@follow/components/ui/button/index.js"
 import { RootPortal } from "@follow/components/ui/portal/index.js"
 import { ScrollArea } from "@follow/components/ui/scroll-area/index.js"
 import { FeedViewType } from "@follow/constants"
@@ -21,6 +20,7 @@ import { memo, useEffect, useRef, useState } from "react"
 import { useEntryIsInReadability } from "~/atoms/readability"
 import { Focusable } from "~/components/common/Focusable"
 import { m } from "~/components/common/Motion"
+import { GlassButton } from "~/components/ui/button/GlassButton"
 import { HotkeyScope } from "~/constants"
 import { useRouteParamsSelector } from "~/hooks/biz/useRouteParams"
 import { useFeedSafeUrl } from "~/hooks/common/useFeedSafeUrl"
@@ -156,26 +156,33 @@ const EntryContentImpl: Component<EntryContentProps> = ({
           {isInHasTimelineView && (
             <>
               <div className="absolute inset-y-0 left-0 z-[9] flex w-12 items-center justify-center opacity-0 duration-200 hover:opacity-100 group-hover:opacity-40">
-                <MotionButtonBase
-                  // -12： Visual center point
-                  className="absolute left-0 shrink-0 !-translate-y-12 cursor-pointer"
+                <GlassButton
+                  aria-label="Previous entry"
+                  description="Previous entry"
+                  size="sm"
+                  variant="flat"
+                  className="!-translate-y-12"
                   onClick={() => {
                     EventBus.dispatch(COMMAND_ID.timeline.switchToPrevious)
                   }}
                 >
-                  <i className="i-mgc-left-small-sharp size-16 text-text-secondary" />
-                </MotionButtonBase>
+                  <i className="i-mgc-left-small-sharp size-6" />
+                </GlassButton>
               </div>
 
               <div className="absolute inset-y-0 right-0 z-[9] flex w-12 items-center justify-center opacity-0 duration-200 hover:opacity-100 group-hover:opacity-40">
-                <MotionButtonBase
-                  className="absolute right-0 shrink-0 !-translate-y-12 cursor-pointer"
+                <GlassButton
+                  aria-label="Next entry"
+                  description="Next entry"
+                  size="sm"
+                  variant="flat"
+                  className="!-translate-y-12"
                   onClick={() => {
                     EventBus.dispatch(COMMAND_ID.timeline.switchToNext)
                   }}
                 >
-                  <i className="i-mgc-right-small-sharp size-16 text-text-secondary" />
-                </MotionButtonBase>
+                  <i className="i-mgc-right-small-sharp size-6" />
+                </GlassButton>
               </div>
             </>
           )}
