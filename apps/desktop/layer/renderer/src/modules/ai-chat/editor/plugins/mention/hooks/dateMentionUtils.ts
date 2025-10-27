@@ -14,14 +14,10 @@ export interface DateRange {
 }
 
 const formatRangeValue = (range: DateRange, text?: string): string => {
-  if (text) {
-    return `<mention-date text="${text}"></mention-date>`
-  }
-
   const startIso = range.start.format(MENTION_DATE_VALUE_FORMAT)
   const endIso = range.end.format(MENTION_DATE_VALUE_FORMAT)
 
-  return `<mention-date start="${startIso}" end="${endIso}"></mention-date>`
+  return `<mention-date start="${startIso}" end="${endIso}"${text ? ` text="${text}"` : ""}></mention-date>`
 }
 
 const formatLocalizedDate = (date: Dayjs, locale: string, template = "LLL"): string => {
