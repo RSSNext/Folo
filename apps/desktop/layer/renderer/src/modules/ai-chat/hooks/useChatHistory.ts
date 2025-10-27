@@ -1,24 +1,22 @@
-import { useCallback, useMemo } from "react"
+import { useMemo } from "react"
+import { useEventCallback } from "usehooks-ts"
 
-import { AIChatSessionService } from "~/modules/ai-chat-session/service"
 import { aiChatSessionStoreActions, useAIChatSessionStore } from "~/modules/ai-chat-session/store"
 
 export const useChatHistory = () => {
-  const state = useAIChatSessionStore((s) => s)
+  const state = useAIChatSessionStore()
 
   const { sessions } = state
   const loading = state.isLoading || state.isSyncing
 
-  const loadHistory = useCallback(async () => {
+  const loadHistory = useEventCallback(async () => {
     if (loading) return
 
     aiChatSessionStoreActions.setLoading(true)
     aiChatSessionStoreActions.clearError()
 
     try {
-      aiChatSessionStoreActions.setSyncing(true)
-
-      await AIChatSessionService.syncSessionsAndMessagesFromServer()
+      await aiChatSessionStoreActions.fetchRemoteSessions()
     } catch (error) {
       console.error("Failed to load chat history:", error)
       aiChatSessionStoreActions.setError(error instanceof Error ? error.message : "Unknown error")
@@ -26,7 +24,7 @@ export const useChatHistory = () => {
       aiChatSessionStoreActions.setSyncing(false)
       aiChatSessionStoreActions.setLoading(false)
     }
-  }, [loading])
+  })
 
   return useMemo(
     () => ({

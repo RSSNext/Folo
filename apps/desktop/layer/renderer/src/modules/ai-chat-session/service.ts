@@ -1,7 +1,5 @@
 import type { AIChatMessage, AIChatSession, ListSessionsQuery } from "@follow-app/client-sdk"
 
-import { getI18n } from "~/i18n"
-
 import { followApi } from "../../lib/api-client"
 import { queryClient } from "../../lib/query-client"
 import { AIPersistService } from "../ai-chat/services"
@@ -22,15 +20,11 @@ class AIChatSessionServiceStatic {
    * List sessions from backend and ensure local DB has sessions and unseen messages.
    * This does NOT mark sessions as seen on the server (non-destructive sync).
    *
-   * Returns a small summary for observability.
+   * Returns the list of sessions.
    */
-  async syncSessionsAndMessagesFromServer(filters?: ListSessionsQuery): Promise<{
-    sessions: number
-    messages: number
-    failures: number
-  }> {
+  async syncSessionsAndMessagesFromServer(filters?: ListSessionsQuery): Promise<AIChatSession[]> {
     if (this.sync) {
-      return { sessions: 0, messages: 0, failures: 0 }
+      return []
     }
 
     this.sync = true
@@ -38,46 +32,22 @@ class AIChatSessionServiceStatic {
     aiChatSessionStoreActions.setSyncing(true)
     aiChatSessionStoreActions.clearError()
 
-    await this.loadSessionsFromDb().catch((error) => {
-      console.error("syncSessionsAndMessagesFromServer: failed to load local sessions", error)
-    })
-
-    let summary: { sessions: number; messages: number; failures: number } = {
-      sessions: 0,
-      messages: 0,
-      failures: 0,
-    }
-
     try {
-      const res = await followApi.aiChatSessions.list(filters)
-      const sessions = res.data
+      const { data: sessions } = await followApi.aiChatSessions.list(filters)
 
-      let totalMessages = 0
-      let failures = 0
+      const summary = { sessions: sessions.length, messages: 0, failures: 0 }
 
-      await Promise.allSettled(
-        sessions.map((session) =>
-          this.processSessionSync(session)
-            .then((count) => {
-              totalMessages += count
-            })
-            .catch((err) => {
-              console.error(
-                "syncSessionsAndMessagesFromServer: failed for session",
-                session.chatId,
-                err,
-              )
-              failures += 1
-            }),
-        ),
-      )
-
-      summary = { sessions: sessions.length, messages: totalMessages, failures }
-
+      sessions.forEach(async (session) => {
+        await AIPersistService.ensureSession(session.chatId, {
+          title: session.title,
+          createdAt: new Date(session.createdAt),
+          updatedAt: new Date(session.updatedAt),
+        })
+      })
       await this.loadSessionsFromDb()
       aiChatSessionStoreActions.setStats(summary)
       aiChatSessionStoreActions.setLastSyncedAt(new Date())
-      return summary
+      return sessions
     } catch (error) {
       aiChatSessionStoreActions.setError(
         error instanceof Error ? error.message : "Failed to sync chat sessions",
@@ -89,42 +59,11 @@ class AIChatSessionServiceStatic {
     }
   }
 
-  private async processSessionSync(session: AIChatSession): Promise<number> {
-    const dbSession = await AIPersistService.getChatSession(session.chatId)
-    const lastUpdatedAt = dbSession ? dbSession.updatedAt : new Date(0)
-    if (lastUpdatedAt >= new Date(session.updatedAt)) {
-      return 0
-    }
-
-    await AIPersistService.ensureSession(session.chatId, {
-      title: session.title,
-      createdAt: new Date(session.createdAt),
-      updatedAt: new Date(session.updatedAt),
-    })
-
-    const unseenMessages = await this.fetchUnseenRemoteMessages(session.chatId, lastUpdatedAt)
-    if (unseenMessages.length === 0) {
-      return 0
-    }
-
-    const normalized = unseenMessages.map(this.normalizeRemoteMessage)
-    await AIPersistService.upsertMessages(session.chatId, normalized)
-
-    return normalized.length
-  }
-
   async loadSessionsFromDb() {
-    const { t } = getI18n()
     const rows = await AIPersistService.getChatSessions()
-    const normalized = rows.map((row) => ({
-      chatId: row.chatId,
-      title: row.title || t("ai:common.new_chat"),
-      createdAt: new Date(row.createdAt),
-      updatedAt: new Date(row.updatedAt),
-      messageCount: row.messageCount,
-    }))
-    aiChatSessionStoreActions.setSessions(normalized)
-    return normalized
+
+    aiChatSessionStoreActions.setSessions(rows)
+    return rows
   }
   /**
    * Fetch messages for a chat session from the remote API and persist (upsert) them locally.
@@ -132,10 +71,17 @@ class AIChatSessionServiceStatic {
    *
    * Defensive in extracting the message array because the SDK response shape may evolve.
    */
-  async fetchAndPersistMessages(session: AIChatSession): Promise<void> {
+  async fetchAndPersistMessages(
+    session: AIChatSession,
+    options?: {
+      force?: boolean
+    },
+  ): Promise<void> {
     const dbSession = await AIPersistService.getChatSession(session.chatId)
     const lastUpdatedAt = dbSession ? dbSession.updatedAt : new Date(0)
-    if (lastUpdatedAt >= new Date(session.updatedAt)) {
+    const hasUpToDateSession = lastUpdatedAt >= new Date(session.updatedAt)
+
+    if (!options?.force && hasUpToDateSession) {
       // If local session is already up-to-date, skip fetching messages
       return
     }
@@ -166,6 +112,28 @@ class AIChatSessionServiceStatic {
       queryClient.invalidateQueries({ queryKey: aiChatSessionKeys.lists }),
       queryClient.invalidateQueries({ queryKey: aiChatSessionKeys.unread }),
     ])
+  }
+
+  async syncSessionMessages(chatId: string) {
+    try {
+      const existingMessages = await AIPersistService.loadUIMessages(chatId)
+      if (existingMessages.length > 0) {
+        return existingMessages
+      }
+
+      const sessionResponse = await followApi.aiChatSessions.get({ chatId })
+      const session = sessionResponse.data
+
+      if (!session) {
+        return AIPersistService.loadUIMessages(chatId)
+      }
+
+      await this.fetchAndPersistMessages(session, { force: true })
+      return AIPersistService.loadUIMessages(chatId)
+    } catch (error) {
+      console.error("syncSessionMessages: failed", error)
+      throw error
+    }
   }
 
   /**

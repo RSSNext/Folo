@@ -140,7 +140,7 @@ export const TaskReportDropdown = ({ triggerElement, asChild = true }: TaskRepor
       }
       chatActions.switchToChat(session.chatId)
     },
-    [chatActions, currentChatId],
+    [chatActions, currentChatId, shouldDisableTimelineSummary],
   )
 
   const handleDeleteSession = useCallback(

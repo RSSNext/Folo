@@ -38,7 +38,7 @@ export const ChatHistoryDropdown = ({
     (open: boolean) => {
       if (open) {
         loadHistory()
-        AIPersistService.cleanupEmptySessions()
+        // AIPersistService.cleanupEmptySessions()
       }
     },
     [loadHistory],
@@ -108,15 +108,11 @@ export const ChatHistoryDropdown = ({
               <DropdownMenuItem
                 key={session.chatId}
                 onClick={() => startTransition(() => chatActions.switchToChat(session.chatId))}
-                className="group flex h-12 cursor-pointer items-center justify-between rounded-md px-2 py-3"
+                className="group flex h-8 cursor-pointer items-center justify-between rounded-md px-2 py-3"
               >
                 <div className="min-w-0 flex-1">
                   <p className="truncate text-sm font-medium">
                     {session.title || t("common.new_chat")}
-                  </p>
-                  <p className="mt-0.5 text-xs text-text-secondary group-data-[highlighted]:text-text-secondary-dark">
-                    <span>{session.messageCount}</span>
-                    <span> {session.messageCount === 1 ? "message" : "messages"}</span>
                   </p>
                 </div>
                 <div className="relative flex min-w-0 items-center">

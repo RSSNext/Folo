@@ -117,7 +117,7 @@ const ChatInterfaceContent = ({ centerInputOnEmpty }: ChatInterfaceProps) => {
     previousMinHeightRef.current = 0
   }, [currentChatId])
 
-  const { isLoading: isLoadingHistory } = useLoadMessages(currentChatId || "", {
+  const { isLoading: isLoadingHistory, isSyncingRemote } = useLoadMessages(currentChatId || "", {
     onLoad: () => {
       nextFrame(() => {
         const $scrollArea = scrollAreaRef
@@ -333,6 +333,8 @@ const ChatInterfaceContent = ({ centerInputOnEmpty }: ChatInterfaceProps) => {
   }, [status, resetScrollState, messageContainerMinHeight, scrollAreaRef])
 
   const shouldShowScrollToBottom = hasMessages && !isAtBottom && !isLoadingHistory
+  const shouldShowLoadingOverlay =
+    Boolean(currentChatId) && !hasMessages && (isLoadingHistory || isSyncingRemote)
 
   const { handleScroll } = useAttachScrollBeyond()
 
@@ -347,10 +349,22 @@ const ChatInterfaceContent = ({ centerInputOnEmpty }: ChatInterfaceProps) => {
       <GlobalFileDropZone className="flex size-full flex-col @container">
         <div className="flex min-h-0 flex-1 flex-col" ref={scrollContainerParentRef}>
           <AnimatePresence>
-            {!hasMessages && !isLoadingHistory ? (
+            {!hasMessages && !shouldShowLoadingOverlay ? (
               <WelcomeScreen centerInputOnEmpty={centerInputOnEmpty} />
             ) : (
               <>
+                {shouldShowLoadingOverlay ? (
+                  <div className="absolute inset-0 flex items-center justify-center">
+                    <div className="flex -translate-y-24 flex-col items-center space-y-2">
+                      <i className="i-mgc-loading-3-cute-re size-8 animate-spin text-text" />
+                      {isSyncingRemote && (
+                        <p className="text-sm text-text-secondary">
+                          Syncing messages from server...
+                        </p>
+                      )}
+                    </div>
+                  </div>
+                ) : null}
                 <ScrollArea
                   onScroll={handleScroll}
                   flex
@@ -369,26 +383,20 @@ const ChatInterfaceContent = ({ centerInputOnEmpty }: ChatInterfaceProps) => {
                   }}
                   viewportClassName={"pt-12"}
                 >
-                  {isLoadingHistory ? (
-                    <div className="flex min-h-96 items-center justify-center">
-                      <i className="i-mgc-loading-3-cute-re size-8 animate-spin text-text" />
-                    </div>
-                  ) : (
-                    <div
-                      className="mx-auto w-full max-w-4xl px-6 py-8"
-                      style={{
-                        minHeight: messageContainerMinHeight
-                          ? `${messageContainerMinHeight}px`
-                          : undefined,
-                      }}
-                    >
-                      <Messages contentRef={messagesContentRef as RefObject<HTMLDivElement>} />
+                  <div
+                    className="mx-auto w-full max-w-4xl px-6 py-8"
+                    style={{
+                      minHeight: messageContainerMinHeight
+                        ? `${messageContainerMinHeight}px`
+                        : undefined,
+                    }}
+                  >
+                    <Messages contentRef={messagesContentRef as RefObject<HTMLDivElement>} />
 
-                      {(status === "submitted" || status === "streaming") && (
-                        <AIChatWaitingIndicator />
-                      )}
-                    </div>
-                  )}
+                    {(status === "submitted" || status === "streaming") && (
+                      <AIChatWaitingIndicator />
+                    )}
+                  </div>
                 </ScrollArea>
               </>
             )}

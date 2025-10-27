@@ -1,8 +1,7 @@
-import type { AsyncDb } from "@follow/database/db"
 import { db } from "@follow/database/db"
 import type { AiChatMessagesModel } from "@follow/database/schemas/index"
 import { aiChatMessagesTable, aiChatTable } from "@follow/database/schemas/index"
-import { asc, count, eq, inArray, sql } from "drizzle-orm"
+import { asc, eq, inArray, sql } from "drizzle-orm"
 
 import { getI18n } from "~/i18n"
 import { followClient } from "~/lib/api-client"
@@ -371,18 +370,6 @@ class AIPersistServiceStatic {
       return []
     }
 
-    const chatIds = chats.map((chat) => chat.chatId)
-    const messageCounts = await (db as AsyncDb)
-      .select({
-        chatId: aiChatMessagesTable.chatId,
-        messageCount: count(aiChatMessagesTable.id),
-      })
-      .from(aiChatMessagesTable)
-      .where(inArray(aiChatMessagesTable.chatId, chatIds))
-      .groupBy(aiChatMessagesTable.chatId)
-
-    const messageCountMap = new Map(messageCounts.map((item) => [item.chatId, item.messageCount]))
-
     const normalizedChats = await Promise.all(
       chats.map(async (chat) => {
         const resolvedTitle = this.resolveSessionTitle(chat.chatId, chat.title, {
@@ -401,15 +388,12 @@ class AIPersistServiceStatic {
       }),
     )
 
-    return normalizedChats
-      .map((chat) => ({
-        chatId: chat.chatId,
-        title: chat.title,
-        createdAt: chat.createdAt,
-        updatedAt: chat.updatedAt,
-        messageCount: messageCountMap.get(chat.chatId) || 0,
-      }))
-      .filter((chat) => chat.messageCount > 0)
+    return normalizedChats.map((chat) => ({
+      chatId: chat.chatId,
+      title: chat.title,
+      createdAt: chat.createdAt,
+      updatedAt: chat.updatedAt,
+    }))
   }
 
   async deleteSession(chatId: string) {
