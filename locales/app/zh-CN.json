@@ -390,6 +390,8 @@
   "sidebar.feed_column.context_menu.rename_category_success": "分类重命名成功",
   "sidebar.feed_column.context_menu.title": "移动至新分类",
   "sidebar.select_sort_method": "选择排序方法",
+  "sidebar.timeline_tabs.customize": "自定义视图标签...",
+  "sidebar.timeline_tabs.hide_tab": "隐藏此视图",
   "signin.continue_with": "使用 {{provider}} 登录",
   "signin.sign_in_to": "登录",
   "signin.sign_up_to": "注册",

@@ -327,8 +327,6 @@
   "general.rebuild_database.warning.line2": "本当に続行しますか？",
   "general.send_anonymous_data.description": "匿名化されたテレメトリーデータを送信することにより、Folo の全体的なユーザーエクスペリエンスの向上に貢献します。",
   "general.send_anonymous_data.label": "匿名データを送信",
-  "general.show_compact_timeline_in_sub.description": "記事コンテンツを閲覧中、左側の購読カラムにタイムラインの項目を表示して素早く選択できるようにします。",
-  "general.show_compact_timeline_in_sub.label": "読書中に購読カラムへタイムラインを表示",
   "general.show_quick_timeline.description": "フィードリストの最上部にクイックタイムラインを表示する。",
   "general.show_quick_timeline.label": "フィードリストにタイムラインを表示する",
   "general.show_unread_on_launch.description": "アプリ起動時に未読コンテンツに自動的にフィルタリングします。",

@@ -3,6 +3,7 @@ export const transformVideoUrl = ({
   mini = false,
   isIframe = false,
   attachments,
+  lang,
 }: {
   url: string
   mini?: boolean
@@ -13,6 +14,7 @@ export const transformVideoUrl = ({
         mime_type?: string
       }[]
     | null
+  lang?: string
 }): string | null => {
   if (url?.match(/\/\/www.bilibili.com\/video\/BV\w+/)) {
     const player = isIframe
@@ -34,6 +36,8 @@ export const transformVideoUrl = ({
         controls: mini ? "0" : "1",
         autoplay: "1",
         mute: mini ? "1" : "0",
+        hl: lang ?? "en-US",
+        cc_lang_pref: lang ?? "en-US",
       },
     ).toString()}`
   }
