@@ -14,11 +14,13 @@ interface EntryItemProps {
   entryId: string
   view: FeedViewType
   currentFeedTitle?: string
+  isFirstItem?: boolean
 }
 const EntryItemImpl = memo(function EntryItemImpl({
   entryId,
   view,
   currentFeedTitle,
+  isFirstItem,
 }: EntryItemProps) {
   const enableTranslation = useGeneralSettingKey("translation")
   const actionLanguage = useActionLanguage()
@@ -37,7 +39,12 @@ const EntryItemImpl = memo(function EntryItemImpl({
   const Item: EntryListItemFC = getItemComponentByView(view)
 
   return (
-    <EntryItemWrapper itemClassName={Item.wrapperClassName} entryId={entryId} view={view}>
+    <EntryItemWrapper
+      itemClassName={Item.wrapperClassName}
+      entryId={entryId}
+      view={view}
+      isFirstItem={isFirstItem}
+    >
       <Item entryId={entryId} translation={translation} currentFeedTitle={currentFeedTitle} />
     </EntryItemWrapper>
   )
@@ -65,9 +72,16 @@ export const EntryVirtualListItem = ({
 
   if (!hasEntry) return <div ref={ref} {...props} style={undefined} />
 
+  const isFirstItem = props["data-index"] === 0
+
   return (
     <div className="absolute left-0 top-0 w-full will-change-transform" ref={ref} {...props}>
-      <EntryItemImpl entryId={entryId} view={view} currentFeedTitle={currentFeedTitle} />
+      <EntryItemImpl
+        entryId={entryId}
+        view={view}
+        currentFeedTitle={currentFeedTitle}
+        isFirstItem={isFirstItem}
+      />
     </div>
   )
 }
