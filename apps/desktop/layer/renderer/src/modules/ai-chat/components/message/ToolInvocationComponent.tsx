@@ -4,6 +4,7 @@ import type { ToolUIPart } from "ai"
 import { getToolName } from "ai"
 import clsx from "clsx"
 import * as React from "react"
+import { titleCase } from "title-case"
 
 interface ToolInvocationComponentProps {
   part: ToolUIPart
@@ -13,7 +14,8 @@ interface ToolInvocationComponentProps {
 
 export const ToolInvocationComponent: React.FC<ToolInvocationComponentProps> = React.memo(
   ({ part, variant }) => {
-    const toolName = getToolName(part)
+    const toolName = titleCase(getToolName(part).replaceAll("_", " "))
+
     const hasError = "errorText" in part && part.errorText
     const hasResult = "output" in part && part.output
     const hasArgs = "input" in part && part.input
