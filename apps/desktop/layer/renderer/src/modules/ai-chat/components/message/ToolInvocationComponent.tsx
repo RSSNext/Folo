@@ -27,7 +27,7 @@ export const ToolInvocationComponent: React.FC<ToolInvocationComponentProps> = R
       <div className={clsx("relative pl-8 last:pb-0", variant === "tight" ? "pb-0" : "pb-3")}>
         <div
           aria-hidden
-          className={`absolute left-2 top-2 size-2 -translate-x-1/2 rounded-full border border-fill bg-fill-vibrant ${hasError ? "text-red" : ""}`}
+          className={`absolute left-2 top-2 size-2 -translate-x-1/2 ${hasError ? "text-red" : ""}`}
         >
           <i className={`i-mgc-tool-cute-re absolute top-1/2 -translate-x-1/4 -translate-y-1/2`} />
         </div>
