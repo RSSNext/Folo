@@ -1,9 +1,15 @@
 import type { AIChatMessage, AIChatSession, ListSessionsQuery } from "@follow-app/client-sdk"
+import type { UIMessagePart } from "ai"
 
 import { followApi } from "../../lib/api-client"
 import { queryClient } from "../../lib/query-client"
 import { AIPersistService } from "../ai-chat/services"
-import type { BizUIMessage, BizUIMetadata } from "../ai-chat/store/types"
+import type {
+  BizUIDataTypes,
+  BizUIMessage,
+  BizUIMetadata,
+  BizUITools,
+} from "../ai-chat/store/types"
 import { aiChatSessionKeys } from "./query"
 import { aiChatSessionStoreActions } from "./store"
 
@@ -98,11 +104,6 @@ class AIChatSessionServiceStatic {
     })
     await AIPersistService.upsertMessages(session.chatId, normalized)
 
-    await followApi.aiChatSessions.markSeen({
-      chatId: session.chatId,
-      lastSeenAt: new Date().toISOString(),
-    })
-
     await this.loadSessionsFromDb()
     aiChatSessionStoreActions.setLastSyncedAt(new Date())
 
@@ -178,9 +179,7 @@ class AIChatSessionServiceStatic {
     return {
       id: msg.id,
       role: msg.role satisfies BizUIMessage["role"],
-      // Remove this comment once @follow-app/client-sdk updated
-      // @ts-expect-error TODO fix message part types
-      parts: msg.messageParts,
+      parts: msg.messageParts as UIMessagePart<BizUIDataTypes, BizUITools>[],
       metadata,
       createdAt: new Date(msg.createdAt),
     }
