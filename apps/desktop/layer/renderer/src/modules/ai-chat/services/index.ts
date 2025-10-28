@@ -443,6 +443,11 @@ class AIPersistServiceStatic {
 
       // Clear deleted sessions from cache
       chatIdsToDelete.forEach((chatId) => this.clearSessionCache(chatId))
+      for (const chatId of chatIdsToDelete) {
+        await followClient.api.aiChatSessions.delete({ chatId }).catch((error) => {
+          console.error("Failed to delete remote chat sessions:", error)
+        })
+      }
     }
   }
 }
