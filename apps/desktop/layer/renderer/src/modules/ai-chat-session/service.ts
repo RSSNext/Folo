@@ -98,11 +98,6 @@ class AIChatSessionServiceStatic {
     })
     await AIPersistService.upsertMessages(session.chatId, normalized)
 
-    await followApi.aiChatSessions.markSeen({
-      chatId: session.chatId,
-      lastSeenAt: new Date().toISOString(),
-    })
-
     await this.loadSessionsFromDb()
     aiChatSessionStoreActions.setLastSyncedAt(new Date())
 
@@ -178,8 +173,6 @@ class AIChatSessionServiceStatic {
     return {
       id: msg.id,
       role: msg.role satisfies BizUIMessage["role"],
-      // Remove this comment once @follow-app/client-sdk updated
-      // @ts-expect-error TODO fix message part types
       parts: msg.messageParts,
       metadata,
       createdAt: new Date(msg.createdAt),
