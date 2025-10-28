@@ -183,11 +183,14 @@ export const TaskItem = memo(({ task }: { task: AITask }) => {
           toast.success(t("tasks.toast.test_success"), {
             id: loadingId,
           })
+          // @ts-ignore -- Remove once SDK types are updated
           const { sessionId } = testRunResult.data
           if (sessionId) {
-            const session = await followApi.aiChatSessions.get({
-              chatId: sessionId,
-            })
+            const session = (
+              await followApi.aiChatSessions.get({
+                chatId: sessionId,
+              })
+            ).data
             await AIChatSessionService.fetchAndPersistMessages(session)
           }
         } catch (error) {

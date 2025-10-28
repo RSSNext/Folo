@@ -1,9 +1,15 @@
 import type { AIChatMessage, AIChatSession, ListSessionsQuery } from "@follow-app/client-sdk"
+import type { UIMessagePart } from "ai"
 
 import { followApi } from "../../lib/api-client"
 import { queryClient } from "../../lib/query-client"
 import { AIPersistService } from "../ai-chat/services"
-import type { BizUIMessage, BizUIMetadata } from "../ai-chat/store/types"
+import type {
+  BizUIDataTypes,
+  BizUIMessage,
+  BizUIMetadata,
+  BizUITools,
+} from "../ai-chat/store/types"
 import { aiChatSessionKeys } from "./query"
 import { aiChatSessionStoreActions } from "./store"
 
@@ -173,7 +179,7 @@ class AIChatSessionServiceStatic {
     return {
       id: msg.id,
       role: msg.role satisfies BizUIMessage["role"],
-      parts: msg.messageParts,
+      parts: msg.messageParts as UIMessagePart<BizUIDataTypes, BizUITools>[],
       metadata,
       createdAt: new Date(msg.createdAt),
     }
