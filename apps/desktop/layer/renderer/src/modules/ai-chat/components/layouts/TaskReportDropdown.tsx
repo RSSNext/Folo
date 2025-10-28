@@ -21,6 +21,7 @@ import { AIChatSessionService } from "~/modules/ai-chat-session"
 import {
   useAIChatSessionListQuery,
   useDeleteAIChatSessionMutation,
+  useMarkChatSessionSeenMutation,
 } from "~/modules/ai-chat-session/query"
 import { AITaskModal, useCanCreateNewAITask } from "~/modules/ai-task"
 import { useSettingModal } from "~/modules/settings/modal/use-setting-modal-hack"
@@ -40,14 +41,18 @@ interface SessionItemProps {
   isLoading?: boolean
 }
 
-// Helper to determine if a session has unread messages
-const isUnreadTaskSession = (session: AIChatSession): boolean => {
+const isTaskSession = (session: AIChatSession): boolean => {
   if (!session.lastSeenAt || !session.updatedAt) return false
   if (!session.chatId.startsWith("ai-task")) return false
-  return new Date(session.updatedAt) > new Date(session.lastSeenAt)
+  return true
 }
 
+// Helper to determine if a session has unread messages
+const isUnreadSession = (session: AIChatSession): boolean => {
+  return new Date(session.updatedAt) > new Date(session.lastSeenAt)
+}
 const SessionItem = ({ session, onClick, onDelete, isLoading }: SessionItemProps) => {
+  const hasUnreadMessages = isUnreadSession(session)
   return (
     <DropdownMenuItem
       onClick={onClick}
@@ -55,6 +60,13 @@ const SessionItem = ({ session, onClick, onDelete, isLoading }: SessionItemProps
     >
       <div className="flex min-w-0 flex-1 justify-between">
         <div className="flex min-w-0 flex-1 items-center gap-2">
+          {hasUnreadMessages && (
+            <span
+              className="absolute -left-0.5 block size-2 shrink-0 rounded-full bg-accent"
+              aria-label="Unread"
+              role="status"
+            />
+          )}
           <p className="mb-0.5 truncate font-medium">{session.title || "Untitled Chat"}</p>
         </div>
         <div className="relative flex min-w-0 items-center">
@@ -100,14 +112,10 @@ export const TaskReportDropdown = ({ triggerElement, asChild = true }: TaskRepor
   const { t } = useTranslation("ai")
   const [loadingChatId, setLoadingChatId] = useState<string | null>(null)
   const showSettings = useSettingModal()
-
-  // Only keep unread sessions for display
-  const unreadSessions = useMemo(
-    () => (sessions || []).filter((s) => isUnreadTaskSession(s)),
-    [sessions],
-  )
-
-  const hasUnreadSessions = unreadSessions.length > 0
+  const markChatSessionSeenMutation = useMarkChatSessionSeenMutation()
+  // Only keep task sessions for display
+  const taskSessions = useMemo(() => (sessions || []).filter((s) => isTaskSession(s)), [sessions])
+  const hasTaskSessions = taskSessions.length > 0
 
   const { present } = useModalStack()
   const canCreateNewTask = useCanCreateNewAITask()
@@ -128,7 +136,10 @@ export const TaskReportDropdown = ({ triggerElement, asChild = true }: TaskRepor
 
   const handleSessionSelect = useCallback(
     async (session: AIChatSession) => {
-      if (session.chatId === currentChatId) return
+      if (session.chatId === currentChatId) {
+        console.warn("Session already active, no action taken")
+        return
+      }
       try {
         await AIChatSessionService.fetchAndPersistMessages(session)
       } catch (e) {
@@ -139,8 +150,14 @@ export const TaskReportDropdown = ({ triggerElement, asChild = true }: TaskRepor
         chatActions.setTimelineSummaryManualOverride(true)
       }
       chatActions.switchToChat(session.chatId)
+      if (isUnreadSession(session)) {
+        markChatSessionSeenMutation.mutate({
+          chatId: session.chatId,
+          lastSeenAt: new Date().toISOString(),
+        })
+      }
     },
-    [chatActions, currentChatId, shouldDisableTimelineSummary],
+    [chatActions, currentChatId, markChatSessionSeenMutation, shouldDisableTimelineSummary],
   )
 
   const handleDeleteSession = useCallback(
@@ -194,7 +211,7 @@ export const TaskReportDropdown = ({ triggerElement, asChild = true }: TaskRepor
   const defaultTrigger = (
     <ActionButton tooltip="Task Reports" className="relative">
       <i className="i-mgc-calendar-time-add-cute-re size-5 text-text-secondary" />
-      {hasUnreadSessions && (
+      {hasTaskSessions && (
         <span
           className="absolute right-1 top-1 block size-2 rounded-full bg-accent shadow-[0_0_0_2px_var(--color-bg-default)] dark:shadow-[0_0_0_2px_var(--color-bg-default)]"
           aria-label="Unread task reports"
@@ -212,7 +229,7 @@ export const TaskReportDropdown = ({ triggerElement, asChild = true }: TaskRepor
       ) : (
         <DropdownMenuTrigger className="relative">
           {triggerElement || defaultTrigger}
-          {hasUnreadSessions && triggerElement && (
+          {hasTaskSessions && triggerElement && (
             <span
               className="absolute right-1 top-1 block size-2 rounded-full bg-accent shadow-[0_0_0_2px_var(--color-bg-default)] dark:shadow-[0_0_0_2px_var(--color-bg-default)]"
               aria-label="Unread task reports"
@@ -222,8 +239,8 @@ export const TaskReportDropdown = ({ triggerElement, asChild = true }: TaskRepor
       )}
 
       <DropdownMenuContent align="end" className="w-80">
-        {unreadSessions.length > 0 ? (
-          unreadSessions.map((session) => (
+        {taskSessions.length > 0 ? (
+          taskSessions.map((session) => (
             <SessionItem
               key={session.chatId}
               session={session}
