@@ -12,7 +12,9 @@ import {
   SimpleIconsReadwise,
   SimpleIconsZotero,
 } from "@follow/components/ui/platform-icon/icons.js"
+import { UserRole } from "@follow/constants"
 import { IN_ELECTRON } from "@follow/shared/constants"
+import { useUserRole } from "@follow/store/user/hooks"
 import { useCallback, useEffect, useMemo, useState } from "react"
 import { useTranslation } from "react-i18next"
 import { toast } from "sonner"
@@ -40,6 +42,9 @@ export const SettingIntegration = () => {
   const [searchQuery, setSearchQuery] = useState("")
   const settings = useIntegrationSettingValue()
 
+  const role = useUserRole()
+  const disabled = role === UserRole.Trial || role === UserRole.Free
+
   useEffect(() => {
     setSync(false)
     return () => {
@@ -63,6 +68,7 @@ export const SettingIntegration = () => {
             defineSettingItem("enableCubox", {
               label: t("integration.cubox.enable.label"),
               description: t("integration.cubox.enable.description"),
+              disabled,
             }),
             defineSettingItem("cuboxToken", {
               label: t("integration.cubox.token.label"),
@@ -98,6 +104,7 @@ export const SettingIntegration = () => {
             defineSettingItem("enableObsidian", {
               label: t("integration.obsidian.enable.label"),
               description: t("integration.obsidian.enable.description"),
+              disabled,
             }),
             defineSettingItem("obsidianVaultPath", {
               label: t("integration.obsidian.vaultPath.label"),
@@ -116,6 +123,7 @@ export const SettingIntegration = () => {
             defineSettingItem("enableOutline", {
               label: t("integration.outline.enable.label"),
               description: t("integration.outline.enable.description"),
+              disabled,
             }),
             defineSettingItem("outlineEndpoint", {
               label: t("integration.outline.endpoint.label"),
@@ -145,6 +153,7 @@ export const SettingIntegration = () => {
             defineSettingItem("enableReadwise", {
               label: t("integration.readwise.enable.label"),
               description: t("integration.readwise.enable.description"),
+              disabled,
             }),
             defineSettingItem("readwiseToken", {
               label: t("integration.readwise.token.label"),
@@ -177,6 +186,7 @@ export const SettingIntegration = () => {
             defineSettingItem("enableZotero", {
               label: t("integration.zotero.enable.label"),
               description: t("integration.zotero.enable.description"),
+              disabled,
             }),
             defineSettingItem("zoteroUserID", {
               label: t("integration.zotero.userID.label"),
@@ -234,6 +244,7 @@ export const SettingIntegration = () => {
             defineSettingItem("enableInstapaper", {
               label: t("integration.instapaper.enable.label"),
               description: t("integration.instapaper.enable.description"),
+              disabled,
             }),
             defineSettingItem("instapaperUsername", {
               label: t("integration.instapaper.username.label"),
@@ -256,6 +267,7 @@ export const SettingIntegration = () => {
             defineSettingItem("enableReadeck", {
               label: t("integration.readeck.enable.label"),
               description: t("integration.readeck.enable.description"),
+              disabled,
             }),
             defineSettingItem("readeckEndpoint", {
               label: t("integration.readeck.endpoint.label"),
@@ -288,6 +300,7 @@ export const SettingIntegration = () => {
             defineSettingItem("enableEagle", {
               label: t("integration.eagle.enable.label"),
               description: t("integration.eagle.enable.description"),
+              disabled,
             }),
           ],
         },
@@ -309,6 +322,7 @@ export const SettingIntegration = () => {
             defineSettingItem("enableQBittorrent", {
               label: t("integration.qbittorrent.enable.label"),
               description: t("integration.qbittorrent.enable.description"),
+              disabled,
             }),
             defineSettingItem("qbittorrentHost", {
               label: t("integration.qbittorrent.host.label"),
@@ -330,7 +344,7 @@ export const SettingIntegration = () => {
     }
 
     return [knowledgeManagement, readingServices, mediaTools, downloadTools]
-  }, [t, settings])
+  }, [t, settings, disabled])
 
   const filteredIntegrations = useMemo(() => {
     const allIntegrations = integrationCategories.flatMap((category) =>

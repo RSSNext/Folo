@@ -36,7 +36,12 @@ export const UserProvider = () => {
 
     const sessionRole = session.role as string
 
-    if (sessionRole && sessionRole !== UserRole.Pro && !isToastDismissed) {
+    if (
+      sessionRole &&
+      sessionRole !== UserRole.Pro &&
+      sessionRole !== UserRole.Plus &&
+      !isToastDismissed
+    ) {
       const message =
         sessionRole === UserRole.Free || sessionRole === UserRole.Trial
           ? `You are currently on the ${UserRoleName[UserRole.Free]} plan. Some features may be limited.`

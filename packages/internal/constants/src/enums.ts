@@ -15,6 +15,7 @@ export enum UserRole {
   // TODO: remove this
   Trial = "trial",
   Pro = "pro",
+  Plus = "plus",
 }
 
 export const UserRoleName: Record<UserRole, string> = {
@@ -27,4 +28,5 @@ export const UserRoleName: Record<UserRole, string> = {
    */
   [UserRole.Trial]: "Free",
   [UserRole.Pro]: "Pro",
+  [UserRole.Plus]: "Plus",
 } as const

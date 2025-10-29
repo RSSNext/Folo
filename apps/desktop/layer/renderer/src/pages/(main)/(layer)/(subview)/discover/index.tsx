@@ -41,7 +41,6 @@ const tabs: {
   {
     name: "words.inbox",
     value: "inbox",
-    disableForTrial: true,
   },
   {
     name: "words.user",

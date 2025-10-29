@@ -71,9 +71,9 @@ class UserSyncService {
       const user = apiMorph.toWhoami(res.user)
       immerSet((state) => {
         state.whoami = { ...user, emailVerified: res.user?.emailVerified ?? false }
-        state.role = res.user?.role as UserRole | null
-        if (res.user?.roleEndAt) {
-          state.roleEndAt = new Date(res.user?.roleEndAt)
+        state.role = res.role
+        if (res.roleEndAt) {
+          state.roleEndAt = new Date(res.roleEndAt)
         }
       })
       userActions.upsertMany([user])

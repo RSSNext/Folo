@@ -83,7 +83,7 @@ export const ProfileButton: FC<ProfileButtonProps> = memo((props) => {
             <EllipsisHorizontalTextWithTooltip className="mx-auto max-w-[20ch] truncate text-lg">
               {user?.name}
             </EllipsisHorizontalTextWithTooltip>
-            {serverConfig?.REFERRAL_ENABLED ? (
+            {serverConfig?.PAYMENT_ENABLED ? (
               <UserProBadge
                 role={role}
                 withText

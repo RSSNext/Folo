@@ -64,7 +64,7 @@ export const createSettingBuilder =
       const assertSetting = setting as SettingItem<T> | SectionSettingItem | ActionSettingItem
 
       if (!assertSetting) return null
-      if (assertSetting.disabled) return null
+      // if (assertSetting.disabled) return null
 
       const nextItem = filteredSettings[index + 1]
       // If has no next item or next item is also a title, then it is an empty section
@@ -110,6 +110,7 @@ export const createSettingBuilder =
                   assertSetting.onChange(checked as T[keyof T])
                 }}
                 label={assertSetting.label}
+                disabled={assertSetting.disabled}
               />
             )
             break

@@ -78,7 +78,7 @@ export const SettingGeneral = () => {
 
           defineSettingItem("appLaunchOnStartup", {
             label: t("general.launch_at_login"),
-            disabled: !ipcServices,
+            hide: !ipcServices,
             onChange(value) {
               saveLoginSetting(value)
             },

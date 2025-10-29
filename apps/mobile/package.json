@@ -21,6 +21,7 @@
     "@better-auth/expo": "1.3.28",
     "@expo/metro-runtime": "5.0.4",
     "@expo/react-native-action-sheet": "4.1.1",
+    "@follow-app/client-sdk": "catalog:",
     "@follow/components": "workspace:*",
     "@follow/constants": "workspace:*",
     "@follow/database": "workspace:*",

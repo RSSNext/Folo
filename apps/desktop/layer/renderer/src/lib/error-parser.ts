@@ -1,5 +1,6 @@
 import { DEV } from "@follow/shared/constants"
 import { cn } from "@follow/utils/utils"
+import { FollowAPIError } from "@follow-app/client-sdk"
 import { t } from "i18next"
 import { FetchError } from "ofetch"
 import { createElement } from "react"
@@ -25,6 +26,20 @@ export const getFetchErrorInfo = (
       const i18nMessage = t(i18nKey) === i18nKey ? message : t(i18nKey)
       return {
         message: `${i18nMessage}${reason ? `: ${reason}` : ""}`,
+        code,
+      }
+    } catch {
+      return { message: error.message }
+    }
+  }
+
+  if (error instanceof FollowAPIError && error.code) {
+    const code = Number(error.code)
+    try {
+      const i18nKey = `errors:${code}` as any
+      const i18nMessage = t(i18nKey) === i18nKey ? error.message : t(i18nKey)
+      return {
+        message: i18nMessage,
         code,
       }
     } catch {
@@ -73,6 +88,17 @@ export const toastFetchError = (
       if (reason) {
         _reason = reason
       }
+    } catch {
+      message = error.message
+    }
+  }
+
+  if (error instanceof FollowAPIError && error.code) {
+    code = Number(error.code)
+    try {
+      const tValue = t(`errors:${code}` as any)
+      const i18nMessage = tValue === code?.toString() ? error.message : tValue
+      message = i18nMessage
     } catch {
       message = error.message
     }
