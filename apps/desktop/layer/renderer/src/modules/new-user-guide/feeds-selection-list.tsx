@@ -1,3 +1,4 @@
+import { decode } from "@byjohann/toon"
 import {
   Card,
   CardContent,
@@ -42,14 +43,14 @@ export function FeedsSelectionList() {
 function FeedSelectionOperationScreen() {
   const chatMessages = useMessages()
 
-  const feedsToSelect: FeedToSelect[] = useMemo(
-    () =>
-      // find the last message that has the tool
-      chatMessages
-        .findLast((m) => m.parts?.some((p) => p.type === "tool-onboardingGetTrendingFeeds"))
-        ?.parts?.findLast((p) => p.type === "tool-onboardingGetTrendingFeeds")?.output ?? [],
-    [chatMessages],
-  )
+  const feedsToSelect: FeedToSelect[] = useMemo(() => {
+    // find the last message that has the tool
+    const output = chatMessages
+      .findLast((m) => m.parts?.some((p) => p.type === "tool-onboardingGetTrendingFeeds"))
+      ?.parts?.findLast((p) => p.type === "tool-onboardingGetTrendingFeeds")?.output
+
+    return output ? (decode(output) as FeedToSelect[]) : []
+  }, [chatMessages])
 
   const store = useStore()
   const atomList = useAtomValue(feedSelectionAtomsAtom)
