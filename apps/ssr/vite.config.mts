@@ -51,7 +51,7 @@ export default defineConfig({
   server: {
     proxy: {
       "/api": {
-        target: "https://api.follow.is",
+        target: "https://api.folo.is",
         changeOrigin: true,
         rewrite(path) {
           return path.replace("/api", "")
