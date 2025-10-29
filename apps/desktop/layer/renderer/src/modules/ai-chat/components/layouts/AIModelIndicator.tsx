@@ -1,10 +1,12 @@
 import { cn } from "@follow/utils"
-import { memo, useMemo } from "react"
+import { Fragment, memo, useMemo } from "react"
 
 import {
   DropdownMenu,
   DropdownMenuContent,
   DropdownMenuItem,
+  DropdownMenuLabel,
+  DropdownMenuSeparator,
   DropdownMenuTrigger,
 } from "~/components/ui/dropdown-menu/dropdown-menu"
 
@@ -25,17 +27,6 @@ const providerIcons: Record<ProviderType, string> = {
   deepseek: "i-mgc-deepseek-original",
 }
 
-const AIModelNameMapping = {
-  auto: "Auto",
-  "gpt-5": "GPT-5",
-  "gpt-5-mini": "GPT-5 mini",
-  "gpt-5-nano": "GPT-5 nano",
-  "gpt-4.1": "GPT-4.1",
-  "claude-sonnet-4.5": "Claude Sonnet 4.5",
-  "gemini-2.5-pro": "Gemini 2.5 Pro",
-  "deepseek-v3.2-exp-thinking": "DeepSeek V3.2 Exp Thinking",
-}
-
 const parseModelString = (modelString: string) => {
   if (!modelString || !modelString.includes("/") || modelString === "auto") {
     return { provider: "auto" as ProviderType, modelName: modelString || "Unknown" }
@@ -52,7 +43,7 @@ const parseModelString = (modelString: string) => {
 
 export const AIModelIndicator = memo(({ className, onModelChange }: AIModelIndicatorProps) => {
   const { data, changeModel } = useAIModel()
-  const { defaultModel, availableModels = [], currentModel } = data || {}
+  const { defaultModel, availableModels = [], currentModel, availableModelsMenu = [] } = data || {}
 
   const { provider, modelName } = useMemo(() => {
     return parseModelString(currentModel || defaultModel || "")
@@ -79,7 +70,7 @@ export const AIModelIndicator = memo(({ className, onModelChange }: AIModelIndic
     >
       <i className={cn("size-3", iconClass)} />
       <span className="hidden max-w-20 truncate @md:inline">
-        {AIModelNameMapping[modelName] || modelName}
+        {availableModelsMenu.find((item) => item.value === currentModel)?.label || modelName}
       </span>
       {hasMultipleModels && <i className="i-mingcute-down-line size-3 opacity-60" />}
     </div>
@@ -93,27 +84,36 @@ export const AIModelIndicator = memo(({ className, onModelChange }: AIModelIndic
     <DropdownMenu>
       <DropdownMenuTrigger asChild>{modelContent}</DropdownMenuTrigger>
       <DropdownMenuContent align="end" className="min-w-48">
-        {availableModels.map((model) => {
-          const { provider: itemProvider, modelName: itemModelName } = parseModelString(model)
-          const itemIconClass = providerIcons[itemProvider] || providerIcons.auto
-          const isSelected = model === (currentModel || defaultModel)
+        {availableModelsMenu.map(({ label, value }, index) => {
+          if (value) {
+            const { provider: itemProvider, modelName: itemModelName } = parseModelString(value)
+            const itemIconClass = providerIcons[itemProvider] || providerIcons.auto
+            const isSelected = value === (currentModel || defaultModel)
 
-          const handleModelSelect = () => {
-            changeModel(model)
-            onModelChange?.(model)
+            const handleModelSelect = () => {
+              changeModel(value)
+              onModelChange?.(value)
+            }
+
+            return (
+              <DropdownMenuItem
+                key={value}
+                className="gap-2"
+                onClick={handleModelSelect}
+                checked={isSelected}
+              >
+                <i className={cn("size-3", itemIconClass)} />
+                <span className="truncate">{label || itemModelName}</span>
+              </DropdownMenuItem>
+            )
+          } else {
+            return (
+              <Fragment key={label}>
+                {index > 0 && <DropdownMenuSeparator />}
+                <DropdownMenuLabel>{label}</DropdownMenuLabel>
+              </Fragment>
+            )
           }
-
-          return (
-            <DropdownMenuItem
-              key={model}
-              className="gap-2"
-              onClick={handleModelSelect}
-              checked={isSelected}
-            >
-              <i className={cn("size-3", itemIconClass)} />
-              <span className="truncate">{AIModelNameMapping[itemModelName] || itemModelName}</span>
-            </DropdownMenuItem>
-          )
         })}
       </DropdownMenuContent>
     </DropdownMenu>
