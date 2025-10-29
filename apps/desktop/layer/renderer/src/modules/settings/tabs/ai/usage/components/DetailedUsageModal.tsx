@@ -88,7 +88,7 @@ export const DetailedUsageModal = () => {
       <div className="space-y-6 px-4">
         <p className="text-sm text-text-secondary">
           {t("usage_analysis.detailed_description", {
-            defaultValue: "Track your AI token usage, patterns, and efficiency.",
+            defaultValue: "Track your AI credits usage, patterns, and efficiency.",
           })}
         </p>
 

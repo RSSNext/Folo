@@ -5,7 +5,7 @@ import { useModalStack } from "~/components/ui/modal/stacked/hooks"
 import { useAIConfiguration } from "~/modules/ai-chat/hooks/useAIConfiguration"
 
 import { DetailedUsageModal, UsageProgressRing, UsageWarningBanner } from "./components"
-import { formatTimeRemaining, formatTokenCountString } from "./utils"
+import { formatTokenCountString } from "./utils"
 
 export const UsageAnalysisSection = () => {
   const { t } = useTranslation("ai")
@@ -47,11 +47,6 @@ export const UsageAnalysisSection = () => {
 
               <div className="text-xs text-text-tertiary">
                 {formatTokenCountString(usage.used)} / {formatTokenCountString(usage.total)} used
-              </div>
-
-              <div className="text-xs text-text-secondary">
-                {t("usage_analysis.resets_in")}{" "}
-                {formatTimeRemaining(rateLimit.windowResetTime - Date.now())}
               </div>
             </div>
           </div>
