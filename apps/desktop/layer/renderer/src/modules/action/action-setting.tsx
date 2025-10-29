@@ -32,6 +32,7 @@ import { useDialog } from "~/components/ui/modal/stacked/hooks"
 import { useContextMenu } from "~/hooks/common/useContextMenu"
 import { getI18n } from "~/i18n"
 import { copyToClipboard, readFromClipboard } from "~/lib/clipboard"
+import { toastFetchError } from "~/lib/error-parser"
 import { downloadJsonFile, selectJsonFile } from "~/lib/export"
 import { RuleCard } from "~/modules/action/rule-card"
 import {
@@ -421,7 +422,7 @@ const ActionButtonGroup = ({ onCreateRule }: { onCreateRule: () => void }) => {
       toast(t("actions.saveSuccess"))
     },
     onError: (error) => {
-      toast.error(error)
+      toastFetchError(error)
     },
   })
 

@@ -1,6 +1,5 @@
 import type { ActionConditionIndex } from "@follow-app/client-sdk"
 import { useMutation, useQuery } from "@tanstack/react-query"
-import { FetchError } from "ofetch"
 import { useCallback } from "react"
 
 import type { GeneralMutationOptions } from "../../types"
@@ -16,19 +15,8 @@ export const usePrefetchActions = () => {
 
 export const useUpdateActionsMutation = (options?: GeneralMutationOptions) => {
   return useMutation({
+    ...options,
     mutationFn: () => actionSyncService.saveRules(),
-    onSuccess() {
-      options?.onSuccess?.()
-    },
-    onError(err) {
-      if (err instanceof FetchError && err.response?._data) {
-        const { message } = err.response._data
-        options?.onError?.(message)
-        return
-      }
-
-      options?.onError?.("Error saving actions")
-    },
   })
 }
 
