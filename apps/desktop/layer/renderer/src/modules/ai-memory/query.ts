@@ -42,6 +42,7 @@ export const useAIMemoryListQuery = (params: MemoryListQuery = {}) => {
       const response = await followApi.ai.memory.list({
         ...params,
         limit,
+        // @ts-expect-error TODO: fix type
         before: pageParam ?? undefined,
       })
 
