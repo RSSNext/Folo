@@ -74,6 +74,23 @@ const defaultState: SubscriptionState = {
   subscriptionIdSet: new Set(),
   categoryOpenStateByView: { ...emptyCategoryOpenStateByView },
 }
+
+const invalidateViews = (...views: (FeedViewType | undefined)[]) => {
+  const viewSet = new Set<FeedViewType>()
+
+  for (const view of views) {
+    if (view === undefined) continue
+    viewSet.add(view)
+  }
+
+  if (viewSet.size === 0) return
+
+  viewSet.add(FeedViewType.All)
+
+  invalidateEntriesQuery({
+    views: Array.from(viewSet),
+  })
+}
 export const useSubscriptionStore = createZustandStore<SubscriptionState>("subscription")(
   () => defaultState,
 )
@@ -259,7 +276,7 @@ class SubscriptionSyncService {
 
     await tx.run()
 
-    invalidateEntriesQuery({ views: [subscription.view] })
+    invalidateViews(subscription.view)
   }
 
   async subscribe(subscription: SubscriptionForm) {
@@ -303,7 +320,7 @@ class SubscriptionSyncService {
       },
     ])
 
-    invalidateEntriesQuery({ views: [subscription.view] })
+    invalidateViews(subscription.view)
   }
 
   async unsubscribe(id: string | undefined | null | (string | undefined | null)[]) {
@@ -380,9 +397,10 @@ class SubscriptionSyncService {
     })
 
     await tx.run()
-    invalidateEntriesQuery({
-      views: Array.from(new Set([...feedSubscriptions, ...listSubscriptions].map((i) => i.view))),
-    })
+    const affectedViews = Array.from(
+      new Set([...feedSubscriptions, ...listSubscriptions].map((i) => i.view)),
+    )
+    invalidateViews(...affectedViews)
 
     feedSubscriptions.forEach((i) => {
       unreadActions.updateById(i.feedId, 0)
@@ -585,9 +603,7 @@ class SubscriptionSyncService {
       view: newView,
     })
 
-    invalidateEntriesQuery({
-      views: [currentView, newView],
-    })
+    invalidateViews(currentView, newView)
   }
 
   async renameCategory({
