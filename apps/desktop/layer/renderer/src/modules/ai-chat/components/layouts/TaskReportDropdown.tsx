@@ -58,11 +58,11 @@ const SessionItem = ({ session, onClick, onDelete, isLoading }: SessionItemProps
       onClick={onClick}
       className={`group relative ${onClick ? "cursor-pointer" : "cursor-default"}`}
     >
-      <div className="flex min-w-0 flex-1 justify-between">
+      <div className="ml-1 flex min-w-0 flex-1 justify-between">
         <div className="flex min-w-0 flex-1 items-center gap-2">
           {hasUnreadMessages && (
             <span
-              className="absolute -left-0.5 block size-2 shrink-0 rounded-full bg-accent"
+              className="absolute left-0 block size-2 shrink-0 rounded-full bg-accent"
               aria-label="Unread"
               role="status"
             />
