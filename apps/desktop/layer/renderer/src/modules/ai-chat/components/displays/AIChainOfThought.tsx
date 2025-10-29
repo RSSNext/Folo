@@ -110,7 +110,7 @@ export const AIChainOfThought: React.FC<AIChainOfThoughtProps> = React.memo(
             contentClassName="pb-2 pt-1"
           >
             <div className="relative">
-              <div aria-hidden className="absolute inset-y-0 left-2 border-l border-fill" />
+              <div aria-hidden className="absolute inset-y-2 left-2 border-l border-fill" />
               {groups.map((part, index) => {
                 const innerCollapseId = `${collapseId}-${index}`
                 if (isToolUIPart(part)) {
@@ -125,13 +125,7 @@ export const AIChainOfThought: React.FC<AIChainOfThoughtProps> = React.memo(
 
                 return (
                   <div key={innerCollapseId} className="relative pb-3 pl-8 last:pb-0">
-                    <div
-                      aria-hidden
-                      className={cn(
-                        "absolute left-2 top-2 size-2 -translate-x-1/2 rounded-full border",
-                        "border-fill bg-fill-vibrant",
-                      )}
-                    >
+                    <div aria-hidden className={"absolute left-2 top-2 size-2 -translate-x-1/2"}>
                       <i className="i-mgc-brain-cute-re absolute top-1/2 -translate-x-1/4 -translate-y-1/2" />
                     </div>
 
