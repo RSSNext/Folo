@@ -25,6 +25,17 @@ export const ToolInvocationComponent: React.FC<ToolInvocationComponentProps> = R
     // Generate a unique value for this accordion item
     const accordionValue = `tool-${"toolCallId" in part ? part.toolCallId : Math.random()}`
 
+    const result = React.useMemo(() => {
+      if (hasResult) {
+        const string = JSON.stringify(part.output, null, 2)
+        if (string.length > 1000) {
+          return `${string.slice(0, 1000)}\n...`
+        } else {
+          return string
+        }
+      }
+    }, [hasResult, part])
+
     return (
       <div className={clsx("relative pl-8 last:pb-0", variant === "tight" ? "pb-0" : "pb-3")}>
         <div
@@ -74,7 +85,7 @@ export const ToolInvocationComponent: React.FC<ToolInvocationComponentProps> = R
                   <div className="mb-1 font-medium text-text-secondary">Result:</div>
                   <JsonHighlighter
                     className="overflow-x-auto rounded bg-fill-secondary p-2 text-[11px] text-text-tertiary"
-                    json={JSON.stringify(part.output, null, 2)}
+                    json={result!}
                   />
                 </div>
               ) : null}
