@@ -13,7 +13,7 @@ export const DEFAULT_VALUES = {
   },
   DEV: {
     API_URL: "https://api.dev.folo.is",
-    WEB_URL: "https://dev.follow.is",
+    WEB_URL: "https://dev.folo.is",
     INBOXES_EMAIL: "__dev@follow.re",
   },
   STAGING: {
