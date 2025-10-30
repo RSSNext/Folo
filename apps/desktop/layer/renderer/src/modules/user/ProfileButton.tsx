@@ -83,7 +83,7 @@ export const ProfileButton: FC<ProfileButtonProps> = memo((props) => {
             <EllipsisHorizontalTextWithTooltip className="mx-auto max-w-[20ch] truncate text-lg">
               {user?.name}
             </EllipsisHorizontalTextWithTooltip>
-            {serverConfig?.PAYMENT_ENABLED ? (
+            {!isInMASReview && serverConfig?.PAYMENT_ENABLED ? (
               <UserProBadge
                 role={role}
                 withText
@@ -132,15 +132,15 @@ export const ProfileButton: FC<ProfileButtonProps> = memo((props) => {
           {t("user_button.achievement")}
         </DropdownMenuItem>
 
-        {!isInMASReview && (
+        {!isInMASReview && serverConfig?.PAYMENT_ENABLED && (
           <DropdownMenuItem
             className="pl-3"
             onClick={() => {
-              navigate("/power")
+              settingModalPresent("plan")
             }}
             icon={<i className="i-mgc-power-outline" />}
           >
-            {t("user_button.power")}
+            {t("activation.plan.title")}
           </DropdownMenuItem>
         )}
 

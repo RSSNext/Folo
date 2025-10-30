@@ -33,7 +33,11 @@ const formatFeatureValue = (
     return "Unlimited"
   }
 
-  return value.toString()
+  return new Intl.NumberFormat("en", {
+    notation: "compact",
+    compactDisplay: "short",
+    maximumFractionDigits: 1,
+  }).format(value)
 }
 
 const useUpgradePlan = ({ plan, annual }: { plan: string | undefined; annual: boolean }) => {
@@ -206,9 +210,12 @@ const PlanCard = ({ plan, billingPeriod, isCurrentPlan, currentTier, daysLeft }:
   const cancelPlanMutation = useCancelPlan()
 
   // Calculate price and period based on billing period
-  const price = billingPeriod === "yearly" ? plan.priceInDollarsAnnual : plan.priceInDollars
+  const price =
+    billingPeriod === "yearly" && plan.priceInDollarsAnnual
+      ? (plan.priceInDollarsAnnual / 12).toFixed(2)
+      : plan.priceInDollars
   const formattedPrice = price === 0 ? "$0" : `$${price}`
-  const period = plan.role === UserRole.Free ? "" : billingPeriod === "yearly" ? "year" : "month"
+  const period = plan.role === UserRole.Free ? "" : "month"
 
   // Get plan description from i18n
   const planDescriptionKey = `plan.descriptions.${plan.role}` as const
@@ -218,11 +225,9 @@ const PlanCard = ({ plan, billingPeriod, isCurrentPlan, currentTier, daysLeft }:
     <div
       className={cn(
         "group relative flex h-full flex-col overflow-hidden rounded-xl border transition-all duration-200",
-        plan.isPopular
+        actionType === "upgrade"
           ? "border-accent"
           : "border-fill-tertiary bg-background hover:border-fill-secondary",
-        isCurrentPlan &&
-          "bg-gradient-to-b from-accent/5 to-transparent shadow-lg shadow-accent/10 ring-2 ring-accent ring-offset-2 ring-offset-background",
         plan.isComingSoon && "opacity-75",
       )}
     >
@@ -237,7 +242,6 @@ const PlanCard = ({ plan, billingPeriod, isCurrentPlan, currentTier, daysLeft }:
         />
 
         <PlanAction
-          isPopular={plan.isPopular || false}
           actionType={actionType}
           daysLeft={daysLeft}
           isLoading={upgradePlanMutation.isPending || cancelPlanMutation?.isPending}
@@ -301,14 +305,12 @@ const PlanHeader = ({
 )
 
 const PlanAction = ({
-  isPopular,
   actionType,
   onSelect,
   onCancel,
   isLoading,
   daysLeft,
 }: {
-  isPopular: boolean
   actionType: "current" | "upgrade" | "coming-soon" | "in-trial" | null
   onSelect?: () => void
   onCancel?: () => void
@@ -342,10 +344,8 @@ const PlanAction = ({
       case "upgrade": {
         return {
           text: "Upgrade",
-          variant: isPopular ? undefined : ("outline" as const),
-          className: isPopular
-            ? "bg-gradient-to-r from-accent to-accent/80 hover:from-accent/90 hover:to-accent/70"
-            : "",
+          className:
+            "bg-gradient-to-r from-accent to-accent/80 hover:from-accent/90 hover:to-accent/70",
           disabled: false,
         }
       }

@@ -551,7 +551,7 @@
   "notifications.token": "クライアントトークン",
   "plan.features.AI_CREDIT": "AI クレジット",
   "plan.features.AI_ENTRY_TRANSLATION": "AI エントリ翻訳",
-  "plan.features.BOOSTS": "パワーブースト",
+  "plan.features.BOOSTS": "購読フィードの加速",
   "plan.features.INTEGRATION_SUPPORTED": "サードパーティ統合",
   "plan.features.MAX_ACTIONS": "自動化アクション",
   "plan.features.MAX_AI_ENTRY_SUMMARY_PER_DAY": "1日あたりのAI要約数",
