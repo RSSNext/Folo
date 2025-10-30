@@ -3,12 +3,9 @@ import { userActions } from "@follow/store/user/store"
 import { createDesktopAPIHeaders } from "@follow/utils/headers"
 import { FollowClient } from "@follow-app/client-sdk"
 import PKG from "@pkg"
-import { createElement } from "react"
-import { toast } from "sonner"
 
 import { NetworkStatus, setApiStatus } from "~/atoms/network"
 import { setLoginModalShow } from "~/atoms/user"
-import { NeedActivationToast } from "~/modules/activation/NeedActivationToast"
 
 import { getClientId, getSessionId } from "./client-session"
 
@@ -77,25 +74,6 @@ followClient.addResponseInterceptor(async ({ response }) => {
     if (!isError) return response
     if (response.status === 400 && json.code === 1003) {
       router.navigate("/invitation")
-    }
-    if (json.code.toString().startsWith("11")) {
-      setTimeout(() => {
-        const toastId = toast.error(
-          createElement(NeedActivationToast, {
-            dimiss: () => {
-              toast.dismiss(toastId)
-            },
-          }),
-          {
-            closeButton: true,
-            duration: 10e4,
-
-            classNames: {
-              content: tw`w-full`,
-            },
-          },
-        )
-      }, 500)
     }
   } catch {
     // ignore
