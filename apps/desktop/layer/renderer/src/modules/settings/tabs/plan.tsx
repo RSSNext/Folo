@@ -210,12 +210,25 @@ const PlanCard = ({ plan, billingPeriod, isCurrentPlan, currentTier, daysLeft }:
   const cancelPlanMutation = useCancelPlan()
 
   // Calculate price and period based on billing period
-  const price =
-    billingPeriod === "yearly" && plan.priceInDollarsAnnual
-      ? (plan.priceInDollarsAnnual / 12).toFixed(2)
-      : plan.priceInDollars
-  const formattedPrice = price === 0 ? "$0" : `$${price}`
-  const period = plan.role === UserRole.Free ? "" : "month"
+  const regularPrice = billingPeriod === "yearly" ? plan.priceInDollarsAnnual : plan.priceInDollars
+  const discountPrice =
+    billingPeriod === "yearly" ? plan.priceInDollarsInDiscountAnnual : plan.priceInDollarsInDiscount
+  const period = plan.role === UserRole.Free ? "" : billingPeriod === "yearly" ? "year" : "month"
+
+  // Calculate discount percentage from prices
+  const hasDiscount =
+    discountPrice &&
+    discountPrice > 0 &&
+    discountPrice < regularPrice &&
+    discountPrice !== regularPrice
+  const discountPercentage = hasDiscount
+    ? Math.round(((regularPrice - discountPrice) / regularPrice) * 100)
+    : 0
+
+  // Use discount price if available, otherwise use regular price
+  const finalPrice = hasDiscount ? discountPrice : regularPrice
+  const formattedPrice = finalPrice === 0 ? "$0" : `$${finalPrice}`
+  const formattedRegularPrice = hasDiscount && regularPrice > 0 ? `$${regularPrice}` : undefined
 
   // Get plan description from i18n
   const planDescriptionKey = `plan.descriptions.${plan.role}` as const
@@ -237,8 +250,10 @@ const PlanCard = ({ plan, billingPeriod, isCurrentPlan, currentTier, daysLeft }:
         <PlanHeader
           title={plan.name}
           price={formattedPrice}
+          regularPrice={formattedRegularPrice}
           period={period}
           description={planDescription}
+          discountPercentage={discountPercentage}
         />
 
         <PlanAction
@@ -284,19 +299,33 @@ const PlanBadges = ({ isPopular }: { isPopular: boolean }) => (
 const PlanHeader = ({
   title,
   price,
+  regularPrice,
   period,
   description,
+  discountPercentage,
 }: {
   title: string
   price: string
+  regularPrice?: string
   period: string
   description?: string
+  discountPercentage?: number
 }) => (
   <div className="space-y-2">
     <h3 className="text-base font-semibold @md:text-lg">{title}</h3>
-    <div className="flex items-baseline gap-1">
-      <span className="text-xl font-bold">{price}</span>
-      {period && <span className="text-xs text-text-secondary @md:text-sm">/{period}</span>}
+    <div className="space-y-1">
+      <div className="flex items-baseline gap-2">
+        <span className="text-xl font-bold">{price}</span>
+        {period && <span className="text-xs text-text-secondary @md:text-sm">/{period}</span>}
+        {regularPrice && (
+          <span className="text-sm text-text-tertiary line-through">{regularPrice}</span>
+        )}
+      </div>
+      {discountPercentage && discountPercentage > 0 && (
+        <div className="inline-flex items-center gap-1.5 rounded-md bg-green/10 px-2 py-1">
+          <span className="text-xs font-semibold text-green">-{discountPercentage}% OFF</span>
+        </div>
+      )}
     </div>
     {description && (
       <p className="text-xs leading-relaxed text-text-secondary @md:text-sm">{description}</p>
