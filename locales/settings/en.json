@@ -212,6 +212,8 @@
   "appearance.use_pointer_cursor.label": "Use Hand Cursor",
   "appearance.words.customize": "Customize",
   "common.give_star": "<HeartIcon />Love our product? <Link>Give us a star on GitHub!</Link>",
+  "control.paid_badge.free_limited": "This feature is limited for free plan",
+  "control.paid_badge.plus_or_higher": "This feature requires a Plus plan or higher to use",
   "customizeToolbar.more_actions.description": "Will be shown in the dropdown menu.",
   "customizeToolbar.more_actions.title": "More Actions",
   "customizeToolbar.quick_actions.description": "Customize and reorder your frequently used actions.",

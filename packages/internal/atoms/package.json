@@ -17,7 +17,10 @@
   },
   "dependencies": {
     "@follow/configs": "workspace:*",
+    "@follow/constants": "workspace:*",
     "@follow/hooks": "workspace:*",
+    "@follow/shared": "workspace:*",
+    "@follow/store": "workspace:*",
     "@follow/types": "workspace:*",
     "@follow/utils": "workspace:*",
     "jotai": "2.15.0"

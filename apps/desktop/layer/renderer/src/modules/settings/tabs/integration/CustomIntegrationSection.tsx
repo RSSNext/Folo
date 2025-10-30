@@ -1,7 +1,5 @@
 import { Button } from "@follow/components/ui/button/index.js"
-import { UserRole } from "@follow/constants"
 import type { CustomIntegration } from "@follow/shared/settings/interface"
-import { useUserRole } from "@follow/store/user/hooks"
 import { nanoid } from "nanoid"
 import { memo, useCallback, useMemo } from "react"
 import { useTranslation } from "react-i18next"
@@ -15,6 +13,7 @@ import { SettingSectionTitle } from "../../section"
 import { CustomIntegrationModalContent } from "./CustomIntegrationModal"
 
 const { defineSettingItem, SettingBuilder } = createSetting(
+  "integration",
   useIntegrationSettingValue,
   setIntegrationSetting,
 )
@@ -24,8 +23,6 @@ interface CustomIntegrationSectionProps {
 }
 
 export const CustomIntegrationSection = memo(({ searchQuery }: CustomIntegrationSectionProps) => {
-  const role = useUserRole()
-  const disabled = role === UserRole.Trial || role === UserRole.Free
   const settings = useIntegrationSettingValue()
   const { present } = useModalStack()
 
@@ -161,7 +158,6 @@ export const CustomIntegrationSection = memo(({ searchQuery }: CustomIntegration
             defineSettingItem("enableCustomIntegration", {
               label: t("integration.custom_integrations.enable.label"),
               description: t("integration.custom_integrations.enable.description"),
-              disabled,
             }),
           ]}
         />
