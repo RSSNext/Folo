@@ -7,6 +7,7 @@ import { createElement } from "react"
 import type { ExternalToast } from "sonner"
 import { toast } from "sonner"
 
+import { getIsInMASReview } from "~/atoms/server-configs"
 import { CopyButton } from "~/components/ui/button/CopyButton"
 import { Markdown } from "~/components/ui/markdown/Markdown"
 import { DebugRegistry } from "~/modules/debug/registry"
@@ -122,7 +123,8 @@ export const toastFetchError = (
   if (!_reason) {
     const title = _title || message || "Unknown error occurred"
     toastOptions.description = _title ? message : ""
-    const needUpgradeError = code ? isNeedUpgradeError(code) : false
+    const isInMASReview = getIsInMASReview()
+    const needUpgradeError = code && !isInMASReview ? isNeedUpgradeError(code) : false
     if (needUpgradeError) {
       toastOptions.description = "Please upgrade your plan."
     }

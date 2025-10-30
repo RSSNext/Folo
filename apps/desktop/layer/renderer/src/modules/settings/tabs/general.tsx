@@ -14,6 +14,7 @@ import { useTranslation } from "react-i18next"
 import { currentSupportedLanguages } from "~/@types/constants"
 import { defaultResources } from "~/@types/default-resource"
 import { langLoadingLockMapAtom } from "~/atoms/lang"
+import { useIsInMASReview } from "~/atoms/server-configs"
 import {
   DEFAULT_ACTION_LANGUAGE,
   setGeneralSetting,
@@ -295,14 +296,15 @@ const TranslationModeSelector = () => {
   const { t } = useTranslation("settings")
   const translationMode = useGeneralSettingKey("translationMode")
   const role = useUserRole()
-  const disabledForRole = role === UserRole.Free
+  const isInMASReview = useIsInMASReview()
+  const disabledForRole = role === UserRole.Free && !isInMASReview
 
   return (
     <>
       <div className="mt-4 flex items-center justify-between">
         <span className="flex shrink-0 items-center gap-1 text-sm font-medium">
           <span>{t("general.translation_mode.label")}</span>
-          <PaidBadge paidLevel={SettingPaidLevels.Plus} />
+          {!isInMASReview && <PaidBadge paidLevel={SettingPaidLevels.Plus} />}
         </span>
         <ResponsiveSelect
           size="sm"

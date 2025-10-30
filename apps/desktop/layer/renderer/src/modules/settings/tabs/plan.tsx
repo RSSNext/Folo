@@ -10,7 +10,7 @@ import { useTranslation } from "react-i18next"
 import { toast } from "sonner"
 
 import type { PaymentFeature, PaymentPlan } from "~/atoms/server-configs"
-import { useServerConfigs } from "~/atoms/server-configs"
+import { useIsInMASReview, useServerConfigs } from "~/atoms/server-configs"
 import { subscription } from "~/lib/auth"
 
 const formatFeatureValue = (
@@ -104,6 +104,7 @@ const useCancelPlan = () => {
 }
 
 export function SettingPlan() {
+  const isInMASReview = useIsInMASReview()
   const role = useUserRole()
   const roleEndDate = useRoleEndAt()
   const [billingPeriod, setBillingPeriod] = useState<"monthly" | "yearly">("yearly")
@@ -128,6 +129,9 @@ export function SettingPlan() {
         return acc + savings
       }, 0) / plans.filter((plan) => plan.priceInDollars > 0).length,
   )
+  if (isInMASReview) {
+    return null
+  }
 
   return (
     <section className="mt-4 space-y-8">

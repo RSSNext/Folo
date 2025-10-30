@@ -28,3 +28,12 @@ export const useIsInMASReview = () => {
     serverConfigs?.MAS_IN_REVIEW_VERSION === PKG.version
   )
 }
+
+export const getIsInMASReview = () => {
+  const serverConfigs = getServerConfigs()
+  return (
+    typeof process !== "undefined" &&
+    process.mas &&
+    serverConfigs?.MAS_IN_REVIEW_VERSION === PKG.version
+  )
+}
