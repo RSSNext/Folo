@@ -321,7 +321,7 @@ const PlanHeader = ({
           <span className="text-sm text-text-tertiary line-through">{regularPrice}</span>
         )}
       </div>
-      {discountPercentage && discountPercentage > 0 && (
+      {!!discountPercentage && discountPercentage > 0 && (
         <div className="inline-flex items-center gap-1.5 rounded-md bg-green/10 px-2 py-1">
           <span className="text-xs font-semibold text-green">-{discountPercentage}% OFF</span>
         </div>
