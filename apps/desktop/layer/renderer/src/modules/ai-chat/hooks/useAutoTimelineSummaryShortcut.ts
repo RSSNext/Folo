@@ -21,7 +21,7 @@ import { BlockSliceAction } from "../store/slices/block.slice"
 import type { AIChatContextBlock, SendingUIMessage } from "../store/types"
 import { isTimelineSummaryAutoContext } from "./useTimelineSummaryAutoContext"
 
-const INTERVAL = 3 * 60 * 60 * 1000
+const INTERVAL = 5 * 60 * 60 * 1000
 
 const buildSummaryMessage = (
   editor: LexicalEditor,
