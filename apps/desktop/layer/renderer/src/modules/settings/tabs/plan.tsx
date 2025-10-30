@@ -229,10 +229,13 @@ const PlanCard = ({ plan, billingPeriod, isCurrentPlan, currentTier, daysLeft }:
   const cancelPlanMutation = useCancelPlan()
 
   // Calculate price and period based on billing period
-  const regularPrice = billingPeriod === "yearly" ? plan.priceInDollarsAnnual : plan.priceInDollars
+  const regularPrice =
+    billingPeriod === "yearly" ? plan.priceInDollarsAnnual / 12 : plan.priceInDollars
   const discountPrice =
-    billingPeriod === "yearly" ? plan.priceInDollarsInDiscountAnnual : plan.priceInDollarsInDiscount
-  const period = plan.role === UserRole.Free ? "" : billingPeriod === "yearly" ? "year" : "month"
+    billingPeriod === "yearly"
+      ? (plan.priceInDollarsInDiscountAnnual || 0) / 12
+      : plan.priceInDollarsInDiscount
+  const period = plan.role === UserRole.Free ? "" : "month"
 
   // Calculate discount percentage from prices
   const hasDiscount =
@@ -246,8 +249,9 @@ const PlanCard = ({ plan, billingPeriod, isCurrentPlan, currentTier, daysLeft }:
 
   // Use discount price if available, otherwise use regular price
   const finalPrice = hasDiscount ? discountPrice : regularPrice
-  const formattedPrice = finalPrice === 0 ? "$0" : `$${finalPrice}`
-  const formattedRegularPrice = hasDiscount && regularPrice > 0 ? `$${regularPrice}` : undefined
+  const formattedPrice = finalPrice === 0 ? "$0" : `$${finalPrice.toFixed(2)}`
+  const formattedRegularPrice =
+    hasDiscount && regularPrice > 0 ? `$${regularPrice.toFixed(2)}` : undefined
 
   // Get plan description from i18n
   const planDescriptionKey = `plan.descriptions.${plan.role}` as const
