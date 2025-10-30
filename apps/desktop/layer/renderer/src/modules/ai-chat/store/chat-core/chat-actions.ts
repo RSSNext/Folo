@@ -36,6 +36,7 @@ export class ChatSliceActions {
     private params: Parameters<StateCreator<ChatSlice, [], [], ChatSlice>>,
     private chatInstance: ZustandChat,
   ) {
+    this.chatInstance.resumeStream()
     return autoBindThis(this)
   }
 
@@ -280,6 +281,7 @@ export class ChatSliceActions {
         chatInstance: newChatInstance,
       }))
 
+      newChatInstance.resumeStream()
       // Update the reference
       this.chatInstance = newChatInstance
     } catch (error) {

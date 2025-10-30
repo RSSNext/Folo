@@ -26,7 +26,7 @@ function EntryHeaderImpl({ entryId, className, compact }: EntryHeaderProps) {
   return (
     <EntryHeaderRoot entryId={entryId} className={className} compact={compact}>
       <nav
-        className="relative z-10 flex h-top-header w-full items-center justify-between gap-3 bg-background px-4 @container"
+        className="group/header relative z-10 flex h-top-header w-full items-center justify-between gap-3 bg-background px-4 @container"
         data-at-top={isAtTop}
         data-hide-in-print
         ref={headerRef}
