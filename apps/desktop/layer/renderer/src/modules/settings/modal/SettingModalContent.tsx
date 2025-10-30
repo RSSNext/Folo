@@ -1,5 +1,5 @@
 import { ScrollArea } from "@follow/components/ui/scroll-area/index.js"
-import { cn } from "@follow/utils"
+import { clsx, cn } from "@follow/utils"
 import { repository } from "@pkg"
 import type { FC } from "react"
 import {
@@ -51,6 +51,7 @@ const Content: FC<{
   const pages = getSettingPages()
   const { Component, loader } = pages[key]
 
+  const [scrollerAtTop, setScrollerAtTop] = useState(true)
   const [scroller, setScroller] = useState<HTMLDivElement | null>(null)
 
   const pendingSectionRef = useRef<string | null>(initialSection ?? null)
@@ -66,6 +67,17 @@ const Content: FC<{
       scroller.scrollTop = 0
     }
   }, [key, scroller])
+
+  useEffect(() => {
+    if (!scroller) return
+    const handler = () => {
+      setScrollerAtTop(scroller.scrollTop < 20)
+    }
+    scroller.addEventListener("scroll", handler)
+    return () => {
+      scroller.removeEventListener("scroll", handler)
+    }
+  }, [scroller])
 
   const scrollToSection = useCallback(
     (sectionId: string) => {
@@ -99,7 +111,13 @@ const Content: FC<{
 
   return (
     <Suspense>
-      <SettingsTitle loader={loader} className="relative mb-0 px-8" />
+      <SettingsTitle
+        loader={loader}
+        className={clsx(
+          "relative mb-0 border-b border-transparent px-8 transition-colors duration-200",
+          !scrollerAtTop ? "border-border" : "",
+        )}
+      />
       <ModalClose />
       <ScrollArea.ScrollArea
         mask={false}
