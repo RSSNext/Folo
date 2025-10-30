@@ -86,8 +86,6 @@ export const AIMessageParts: React.FC<AIMessagePartsProps> = React.memo(
 
     // console.info("displayParts", displayParts)
 
-    console.info("chainThoughtParts", chainThoughtParts, message.parts)
-
     const lowPriorityChainParts = React.useDeferredValue(chainThoughtParts)
 
     return (

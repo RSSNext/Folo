@@ -18,10 +18,11 @@ import { useLoaderData } from "react-router"
 import { ModalClose } from "~/components/ui/modal/stacked/components"
 import { SettingsTitle } from "~/modules/settings/title"
 
+import { useAvailableSettings } from "../hooks/use-setting-ctx"
 import { SettingSectionHighlightContext } from "../section"
 import { getSettingPages } from "../settings-glob"
 import type { SettingPageConfig } from "../utils"
-import { useSettingTab } from "./context"
+import { SettingTabProvider, useSettingTab } from "./context"
 import { SettingModalLayout } from "./layout"
 
 export const SettingModalContent: FC<{
@@ -29,19 +30,24 @@ export const SettingModalContent: FC<{
   initialSection?: string
 }> = ({ initialTab, initialSection }) => {
   const pages = getSettingPages()
-  const resolvedInitialTab = initialTab && initialTab in pages ? initialTab : undefined
+
+  const availableSettings = useAvailableSettings()
+
+  const resolvedInitialTab =
+    initialTab && initialTab in pages ? initialTab : availableSettings[0]!.path
 
   return (
-    <SettingModalLayout initialTab={resolvedInitialTab}>
-      <Content initialTab={resolvedInitialTab} initialSection={initialSection} />
-    </SettingModalLayout>
+    <SettingTabProvider initialTab={resolvedInitialTab}>
+      <SettingModalLayout>
+        <Content initialSection={initialSection} />
+      </SettingModalLayout>
+    </SettingTabProvider>
   )
 }
 
 const Content: FC<{
-  initialTab?: string
   initialSection?: string
-}> = ({ initialTab, initialSection }) => {
+}> = ({ initialSection }) => {
   const key = useDeferredValue(useSettingTab() || "general")
   const pages = getSettingPages()
   const { Component, loader } = pages[key]
@@ -100,7 +106,6 @@ const Content: FC<{
 
   useEffect(() => {
     if (!initialSection || hasAppliedInitialSectionRef.current) return
-    if (initialTab && key !== initialTab) return
 
     const handled = scrollToSection(initialSection)
     if (handled) {
@@ -109,7 +114,7 @@ const Content: FC<{
     } else {
       pendingSectionRef.current = initialSection
     }
-  }, [initialSection, initialTab, key, scrollToSection])
+  }, [initialSection, key, scrollToSection])
 
   const highlightContextValue = useMemo(
     () => ({
