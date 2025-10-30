@@ -29,7 +29,7 @@ const formatFeatureValue = (
     return "⭐️".repeat(value)
   }
 
-  if (value === Number.MAX_SAFE_INTEGER || value === -1) {
+  if (value === Number.MAX_SAFE_INTEGER) {
     return "Unlimited"
   }
 
