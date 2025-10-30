@@ -197,9 +197,28 @@ interface PlanCardProps {
 
 const PlanCard = ({ plan, billingPeriod, isCurrentPlan, currentTier, daysLeft }: PlanCardProps) => {
   const { t } = useTranslation("settings")
-  const getPlanActionType = (): "current" | "upgrade" | "coming-soon" | "in-trial" | null => {
+  const getPlanActionType = ():
+    | "current"
+    | "upgrade"
+    | "coming-soon"
+    | "in-trial"
+    | "switch"
+    | null => {
     if (plan.isComingSoon) return "coming-soon"
-    return plan.tier > currentTier ? "upgrade" : isCurrentPlan ? "current" : null
+    switch (true) {
+      case isCurrentPlan: {
+        return "current"
+      }
+      case plan.tier > currentTier && !!plan.planID: {
+        return "upgrade"
+      }
+      // case plan.tier < currentTier && !!plan.planID: {
+      //   return "switch"
+      // }
+      default: {
+        return null
+      }
+    }
   }
 
   const actionType = getPlanActionType()
@@ -340,7 +359,7 @@ const PlanAction = ({
   isLoading,
   daysLeft,
 }: {
-  actionType: "current" | "upgrade" | "coming-soon" | "in-trial" | null
+  actionType: "current" | "upgrade" | "coming-soon" | "in-trial" | "switch" | null
   onSelect?: () => void
   onCancel?: () => void
   isLoading?: boolean
@@ -373,6 +392,14 @@ const PlanAction = ({
       case "upgrade": {
         return {
           text: "Upgrade",
+          className:
+            "bg-gradient-to-r from-accent to-accent/80 hover:from-accent/90 hover:to-accent/70",
+          disabled: false,
+        }
+      }
+      case "switch": {
+        return {
+          text: "Switch",
           className:
             "bg-gradient-to-r from-accent to-accent/80 hover:from-accent/90 hover:to-accent/70",
           disabled: false,
