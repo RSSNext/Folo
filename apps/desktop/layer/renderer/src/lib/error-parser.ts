@@ -1,6 +1,6 @@
 import { DEV } from "@follow/shared/constants"
 import { cn } from "@follow/utils/utils"
-import { FollowAPIError } from "@follow-app/client-sdk"
+import { FollowAPIError, isNeedUpgradeError } from "@follow-app/client-sdk"
 import { t } from "i18next"
 import { FetchError } from "ofetch"
 import { createElement } from "react"
@@ -93,7 +93,7 @@ export const toastFetchError = (
     }
   }
 
-  if (error instanceof FollowAPIError && error.code) {
+  if ("code" in error && error.code) {
     code = Number(error.code)
     try {
       const tValue = t(`errors:${code}` as any)
@@ -120,9 +120,23 @@ export const toastFetchError = (
   }
 
   if (!_reason) {
-    const title = _title || message
-    toastOptions.description = _title ? message : undefined
-    return toast.error(title, toastOptions)
+    const title = _title || message || "Unknown error occurred"
+    toastOptions.description = _title ? message : ""
+    const needUpgradeError = code ? isNeedUpgradeError(code) : false
+    if (needUpgradeError) {
+      toastOptions.description = "Please upgrade your plan."
+    }
+    return toast.error(title, {
+      ...toastOptions,
+      action: needUpgradeError
+        ? {
+            label: "Upgrade",
+            onClick: () => {
+              window.router.showSettings({ tab: "plan" })
+            },
+          }
+        : undefined,
+    })
   } else {
     return toast.error(message || _title, {
       duration: 5000,

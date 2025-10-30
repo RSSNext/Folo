@@ -2,6 +2,8 @@ import { cn } from "@follow/utils"
 import { m } from "motion/react"
 import * as React from "react"
 
+import { useSettingModal } from "~/modules/settings/modal/useSettingModal"
+
 import { parseAIError } from "../../utils/error"
 
 interface RateLimitNoticeProps {
@@ -16,6 +18,7 @@ interface RateLimitNoticeProps {
 export const RateLimitNotice: React.FC<RateLimitNoticeProps> = ({ error, className }) => {
   const parsedError = React.useMemo(() => parseAIError(error), [error])
   const { isRateLimitError, errorData } = parsedError
+  const settingModalPresent = useSettingModal()
 
   // Only render for rate limit errors
   if (!isRateLimitError || !errorData) {
@@ -57,7 +60,7 @@ export const RateLimitNotice: React.FC<RateLimitNoticeProps> = ({ error, classNa
         parts.push(`${remainingTokens.toLocaleString()} tokens left`)
       }
     } else {
-      parts.push("AI usage limit reached")
+      parts.push("Upgrade plan to get more AI credits.")
     }
 
     // Reset time
@@ -79,9 +82,10 @@ export const RateLimitNotice: React.FC<RateLimitNoticeProps> = ({ error, classNa
       exit={{ opacity: 0, y: -10 }}
       transition={{ duration: 0.2 }}
       className={cn("mb-3", className)}
+      onClick={() => settingModalPresent("plan")}
     >
       <div className="flex items-center gap-2 rounded-lg border border-border bg-fill/50 px-3 py-2 backdrop-blur-sm">
-        <i className="i-mgc-information-cute-re size-4 flex-shrink-0 text-text-tertiary" />
+        <i className="i-mgc-power size-4 flex-shrink-0 text-text" />
         <span className="min-w-0 flex-1 truncate text-xs text-text-secondary">
           {buildMessage()}
         </span>
