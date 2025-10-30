@@ -232,7 +232,7 @@ export function EntryHeaderBreadcrumb() {
   const showEntryDetailsColumn = useShowEntryDetailsColumn()
   if (showEntryDetailsColumn && meta?.entryTitle) {
     return (
-      <EllipsisHorizontalTextWithTooltip className="min-w-0 truncate px-1.5 py-0.5 text-sm font-medium text-text">
+      <EllipsisHorizontalTextWithTooltip className="min-w-0 truncate px-1.5 py-0.5 text-lg font-bold leading-tight text-text opacity-0 transition-opacity duration-200 group-data-[at-top=false]/header:opacity-100">
         {meta.entryTitle}
       </EllipsisHorizontalTextWithTooltip>
     )
