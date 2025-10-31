@@ -47,7 +47,8 @@ class AIChatSessionServiceStatic {
         await AIPersistService.ensureSession(session.chatId, {
           title: session.title,
           createdAt: new Date(session.createdAt),
-          updatedAt: new Date(session.updatedAt),
+          // Use createdAt for updatedAt as we are syncing session instead of messages
+          updatedAt: new Date(session.createdAt),
         })
       })
       await this.loadSessionsFromDb()
@@ -100,7 +101,9 @@ class AIChatSessionServiceStatic {
     await AIPersistService.ensureSession(session.chatId, {
       title: session.title,
       createdAt: new Date(session.createdAt),
-      updatedAt: new Date(session.updatedAt),
+      // Use createdAt for updatedAt
+      // Because we are fetching session data instead of messages
+      updatedAt: new Date(session.createdAt),
     })
     await AIPersistService.upsertMessages(session.chatId, normalized)
 
@@ -117,11 +120,6 @@ class AIChatSessionServiceStatic {
 
   async syncSessionMessages(chatId: string) {
     try {
-      const existingMessages = await AIPersistService.loadUIMessages(chatId)
-      if (existingMessages.length > 0) {
-        return existingMessages
-      }
-
       const sessionResponse = await followApi.aiChatSessions.get({ chatId })
       const session = sessionResponse.data
 
@@ -129,7 +127,7 @@ class AIChatSessionServiceStatic {
         return AIPersistService.loadUIMessages(chatId)
       }
 
-      await this.fetchAndPersistMessages(session, { force: true })
+      await this.fetchAndPersistMessages(session)
       return AIPersistService.loadUIMessages(chatId)
     } catch (error) {
       console.error("syncSessionMessages: failed", error)

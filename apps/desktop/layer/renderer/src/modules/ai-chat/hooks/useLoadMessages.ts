@@ -3,9 +3,8 @@ import { useEventCallback } from "usehooks-ts"
 
 import { AIChatSessionService } from "~/modules/ai-chat-session/service"
 
-import { AIPersistService } from "../services"
 import { useChatActions } from "../store/hooks"
-import type { BizUIMessage, BizUIMetadata } from "../store/types"
+import type { BizUIMessage } from "../store/types"
 
 export const useLoadMessages = (
   chatId: string,
@@ -24,35 +23,13 @@ export const useLoadMessages = (
     let mounted = true
     setIsLoading(true)
     setIsSyncingRemote(false)
-    AIPersistService.loadMessages(chatId)
+    AIChatSessionService.syncSessionMessages(chatId)
       .then(async (messages) => {
-        if (mounted) {
-          const messagesToSet: BizUIMessage[] = messages.map((message) => ({
-            id: message.id,
-            parts: message.messageParts as any[],
-            role: message.role,
-            metadata: message.metadata as BizUIMetadata,
-            createdAt: message.createdAt,
-          }))
-          const existingMessages = chatActions.getMessages()
-
-          if (messagesToSet.length === 0) {
-            if (existingMessages.length > 0) {
-              onLoadEventCallback(existingMessages)
-              return existingMessages
-            }
-
-            setIsSyncingRemote(true)
-            const syncedMessages = await AIChatSessionService.syncSessionMessages(chatId)
-            chatActions.setMessages(syncedMessages)
-            onLoadEventCallback(syncedMessages)
-            return syncedMessages
-          }
-
-          chatActions.setMessages(messagesToSet)
-          onLoadEventCallback(messagesToSet)
-          return messagesToSet
+        if (!mounted) {
+          return []
         }
+        chatActions.setMessages(messages)
+        onLoadEventCallback(messages)
         return messages
       })
       .catch((error) => {

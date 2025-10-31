@@ -129,6 +129,10 @@ class AIPersistServiceStatic {
       const cleanParts = [] as typeof message.parts
 
       for (const part of message.parts) {
+        // Skip streaming messages
+        if ("state" in part && part.state === "streaming") {
+          return acc
+        }
         if (isDataBlockPart(part)) {
           const nextPart = structuredClone(part)
           for (const block of nextPart.data) {
@@ -168,8 +172,24 @@ class AIPersistServiceStatic {
           metadata: sql`excluded.metadata`,
           finishedAt: sql`excluded.finished_at`,
           status: sql`excluded.status`,
+          createdAt: sql`excluded.created_at`,
         },
       })
+
+    const date = results.reduce<Date | null>((latest, msg) => {
+      const date = msg.createdAt ? new Date(msg.createdAt) : null
+      if (date === null) {
+        return latest
+      }
+      if (!latest || date > latest) {
+        return date
+      }
+      return latest
+    }, null)
+    if (date) {
+      // Update session time after successfully saving messages
+      await AIPersistService.updateSessionTime(chatId, date)
+    }
   }
 
   /**
@@ -416,11 +436,11 @@ class AIPersistServiceStatic {
       .where(eq(aiChatTable.chatId, chatId))
   }
 
-  async updateSessionTime(chatId: string) {
+  async updateSessionTime(chatId: string, date: Date = new Date()) {
     await db
       .update(aiChatTable)
       .set({
-        updatedAt: new Date(Date.now()),
+        updatedAt: date,
       })
       .where(eq(aiChatTable.chatId, chatId))
   }
