@@ -47,6 +47,8 @@ export const useLoadMessages = (
             chatActions.setMessages(syncedMessages)
             onLoadEventCallback(syncedMessages)
             return syncedMessages
+          } else {
+            await AIChatSessionService.syncSessionMessages(chatId)
           }
 
           chatActions.setMessages(messagesToSet)

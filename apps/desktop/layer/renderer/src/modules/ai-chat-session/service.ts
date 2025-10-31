@@ -117,11 +117,6 @@ class AIChatSessionServiceStatic {
 
   async syncSessionMessages(chatId: string) {
     try {
-      const existingMessages = await AIPersistService.loadUIMessages(chatId)
-      if (existingMessages.length > 0) {
-        return existingMessages
-      }
-
       const sessionResponse = await followApi.aiChatSessions.get({ chatId })
       const session = sessionResponse.data
 
@@ -129,7 +124,7 @@ class AIChatSessionServiceStatic {
         return AIPersistService.loadUIMessages(chatId)
       }
 
-      await this.fetchAndPersistMessages(session, { force: true })
+      await this.fetchAndPersistMessages(session)
       return AIPersistService.loadUIMessages(chatId)
     } catch (error) {
       console.error("syncSessionMessages: failed", error)
