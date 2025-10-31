@@ -30,6 +30,7 @@
     "@lexical/markdown": "0.33.1",
     "@lexical/react": "0.33.1",
     "@lottiefiles/dotlottie-react": "0.17.5",
+    "@number-flow/react": "0.5.10",
     "@openpanel/web": "1.0.1",
     "@radix-ui/react-avatar": "1.1.10",
     "@radix-ui/react-context-menu": "2.2.16",

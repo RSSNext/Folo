@@ -84,7 +84,7 @@ export const RateLimitNotice: React.FC<RateLimitNoticeProps> = ({ error, classNa
       className={cn("mb-3", className)}
       onClick={() => settingModalPresent("plan")}
     >
-      <div className="flex items-center gap-2 rounded-lg border border-border bg-fill/50 px-3 py-2 backdrop-blur-sm">
+      <div className="flex items-center gap-2 rounded-lg border border-border bg-material-ultra-thick px-3 py-2 backdrop-blur-background">
         <i className="i-mgc-power size-4 flex-shrink-0 text-text" />
         <span className="min-w-0 flex-1 truncate text-xs text-text-secondary">
           {buildMessage()}

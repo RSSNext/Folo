@@ -1,9 +1,11 @@
 import { Button } from "@follow/components/ui/button/index.js"
+import { SegmentGroup, SegmentItem } from "@follow/components/ui/segment/index.jsx"
 import { UserRole } from "@follow/constants"
 import { DEEPLINK_SCHEME, IN_ELECTRON } from "@follow/shared"
 import { env } from "@follow/shared/env.desktop"
 import { useUserRole, useWhoami } from "@follow/store/user/hooks"
 import { cn } from "@follow/utils/utils"
+import NumberFlow from "@number-flow/react"
 import { useMutation, useQuery } from "@tanstack/react-query"
 import { useState } from "react"
 import { useTranslation } from "react-i18next"
@@ -132,35 +134,23 @@ export function SettingPlan() {
     <section className="mt-4 space-y-8">
       {/* Billing Period Toggle */}
       <div className="flex justify-center">
-        <div className="inline-flex rounded-lg bg-fill-secondary p-1">
-          <button
-            type="button"
-            onClick={() => setBillingPeriod("monthly")}
-            className={cn(
-              "rounded-md px-4 py-2 text-sm font-medium transition-all",
-              billingPeriod === "monthly"
-                ? "bg-background text-text shadow-sm"
-                : "text-text-secondary hover:text-text",
-            )}
-          >
-            Monthly
-          </button>
-          <button
-            type="button"
-            onClick={() => setBillingPeriod("yearly")}
-            className={cn(
-              "rounded-md px-4 py-2 text-sm font-medium transition-all",
-              billingPeriod === "yearly"
-                ? "bg-background text-text shadow-sm"
-                : "text-text-secondary hover:text-text",
-            )}
-          >
-            <span>Yearly</span>
-            {averageSavings > 0 && (
-              <span className="ml-2 text-xs font-medium text-green">Save {averageSavings}%</span>
-            )}
-          </button>
-        </div>
+        <SegmentGroup
+          value={billingPeriod}
+          onValueChanged={(value) => setBillingPeriod(value as "monthly" | "yearly")}
+        >
+          <SegmentItem value="monthly" label="Monthly" />
+          <SegmentItem
+            value="yearly"
+            label={
+              <span className="flex items-center gap-2">
+                <span>Yearly</span>
+                {averageSavings > 0 && (
+                  <span className="text-xs font-semibold text-green">Save {averageSavings}%</span>
+                )}
+              </span>
+            }
+          />
+        </SegmentGroup>
       </div>
 
       {/* Plans Grid */}
@@ -243,9 +233,18 @@ const PlanCard = ({ plan, billingPeriod, isCurrentPlan, currentTier }: PlanCardP
 
   // Use discount price if available, otherwise use regular price
   const finalPrice = hasDiscount ? discountPrice : regularPrice
-  const formattedPrice = finalPrice === 0 ? "$0" : `$${finalPrice.toFixed(2)}`
-  const formattedRegularPrice =
-    hasDiscount && regularPrice > 0 ? `$${regularPrice.toFixed(2)}` : undefined
+  const regularPriceForStrike = hasDiscount && regularPrice > 0 ? regularPrice : undefined
+
+  // Calculate discount percentage
+  const discountPercentage = hasDiscount
+    ? Math.round(((regularPrice - discountPrice) / regularPrice) * 100)
+    : 0
+
+  // Create discount description
+  const discountDescription =
+    hasDiscount && discountPercentage > 0
+      ? `Early bird discount, ${discountPercentage}% off`
+      : undefined
 
   // Get plan description from i18n
   const planDescriptionKey = `plan.descriptions.${plan.role}` as const
@@ -256,9 +255,10 @@ const PlanCard = ({ plan, billingPeriod, isCurrentPlan, currentTier }: PlanCardP
       className={cn(
         "group relative flex h-full flex-col overflow-hidden rounded-xl border transition-all duration-200",
         actionType === "upgrade"
-          ? "border-accent"
+          ? "border-accent/40 bg-background shadow-sm hover:border-accent/60 hover:shadow-md"
           : "border-fill-tertiary bg-background hover:border-fill-secondary",
         plan.isComingSoon && "opacity-75",
+        isCurrentPlan && "border-blue/30",
       )}
     >
       <PlanBadges isPopular={plan.isPopular || false} />
@@ -266,11 +266,11 @@ const PlanCard = ({ plan, billingPeriod, isCurrentPlan, currentTier }: PlanCardP
       <div className="flex h-full flex-col justify-between gap-4 p-4 @md:p-5">
         <PlanHeader
           title={plan.name}
-          price={formattedPrice}
-          regularPrice={formattedRegularPrice}
+          price={finalPrice}
+          regularPrice={regularPriceForStrike}
           period={period}
           description={planDescription}
-          discountDescription={plan.discountDescription}
+          discountDescription={discountDescription}
         />
 
         <PlanAction
@@ -293,8 +293,10 @@ const PlanCard = ({ plan, billingPeriod, isCurrentPlan, currentTier }: PlanCardP
         />
       </div>
 
-      {/* Subtle gradient line at bottom */}
-      <div className="absolute inset-x-0 bottom-0 h-px bg-gradient-to-r from-transparent via-fill-tertiary to-transparent" />
+      {/* Subtle bottom accent line */}
+      {actionType === "upgrade" && (
+        <div className="absolute inset-x-0 bottom-0 h-px bg-gradient-to-r from-transparent via-accent/30 to-transparent" />
+      )}
     </div>
   )
 }
@@ -304,7 +306,7 @@ const PlanBadges = ({ isPopular }: { isPopular: boolean }) => (
   <>
     {isPopular && (
       <div className="absolute -top-px right-4 z-10">
-        <div className="rounded-b-lg bg-gradient-to-r from-accent to-accent/80 px-1.5 py-1 text-caption font-medium text-white shadow-sm">
+        <div className="rounded-b-lg bg-gradient-to-r from-accent to-accent/90 px-2.5 py-1 text-caption font-medium text-white shadow-sm">
           Most Popular
         </div>
       </div>
@@ -321,31 +323,45 @@ const PlanHeader = ({
   discountDescription,
 }: {
   title: string
-  price: string
-  regularPrice?: string
+  price: number
+  regularPrice?: number
   period: string
   description?: string
   discountDescription?: string
 }) => (
-  <div className="space-y-2">
-    <h3 className="text-base font-semibold @md:text-lg">{title}</h3>
-    <div className="space-y-1">
-      <div className="flex items-baseline gap-2">
-        <span className="text-xl font-bold">{price}</span>
+  <div className="space-y-2.5">
+    <h3 className="text-lg font-semibold">{title}</h3>
+    <div className="space-y-1.5">
+      <div className="flex items-baseline gap-1.5">
+        <NumberFlow
+          className="text-2xl font-bold"
+          value={price}
+          locales="en-US"
+          format={{ style: "currency", currency: "USD", trailingZeroDisplay: "stripIfInteger" }}
+        />
         {period && <span className="text-xs text-text-secondary @md:text-sm">/{period}</span>}
-        {regularPrice && (
-          <span className="text-sm text-text-tertiary line-through">{regularPrice}</span>
+
+        {typeof regularPrice === "number" && regularPrice > 0 && (
+          <span className="relative inline-block text-sm text-text-tertiary after:absolute after:inset-x-0 after:top-1/2 after:h-px after:w-full after:translate-y-1/2 after:bg-text-tertiary after:content-['']">
+            <NumberFlow
+              value={regularPrice}
+              locales="en-US"
+              format={{ style: "currency", currency: "USD", trailingZeroDisplay: "stripIfInteger" }}
+            />
+          </span>
         )}
       </div>
-      {discountDescription && (
-        <div className="inline-flex items-center gap-1.5 rounded-md bg-green/10 px-2 py-1">
-          <span className="text-xs font-semibold text-green">{discountDescription}</span>
+      {typeof regularPrice === "number" && regularPrice > 0 && (
+        <div className="flex items-center gap-2">
+          {discountDescription && (
+            <span className="inline-flex items-center gap-1 rounded-md bg-green/10 px-1.5 py-0.5 text-xs font-medium text-green">
+              {discountDescription}
+            </span>
+          )}
         </div>
       )}
     </div>
-    {description && (
-      <p className="text-xs leading-relaxed text-text-secondary @md:text-sm">{description}</p>
-    )}
+    {description && <p className="text-xs leading-relaxed text-text-secondary">{description}</p>}
   </div>
 )
 
@@ -365,6 +381,7 @@ const PlanAction = ({
       case "coming-soon": {
         return {
           text: "Coming Soon",
+          icon: "i-mgc-time-cute-re",
           variant: "outline" as const,
           disabled: true,
         }
@@ -372,6 +389,7 @@ const PlanAction = ({
       case "current": {
         return {
           text: `Current Plan${onCancel ? " | Cancel" : ""}`,
+          icon: undefined,
           variant: "outline" as const,
           className: onCancel ? "" : "text-text-secondary",
           disabled: onCancel ? false : true,
@@ -380,6 +398,7 @@ const PlanAction = ({
       case "in-trial": {
         return {
           text: "In Trial",
+          icon: "i-mgc-stopwatch-cute-re",
           variant: "outline" as const,
           disabled: false,
         }
@@ -387,16 +406,18 @@ const PlanAction = ({
       case "upgrade": {
         return {
           text: "Upgrade",
+          icon: "i-mgc-arrow-up-cute-re",
           className:
-            "bg-gradient-to-r from-accent to-accent/80 hover:from-accent/90 hover:to-accent/70",
+            "bg-gradient-to-r from-accent to-accent/90 text-white hover:from-accent/95 hover:to-accent/85",
           disabled: false,
         }
       }
       case "switch": {
         return {
-          text: "Switch",
+          text: "Switch Plan",
+          icon: "i-mgc-transfer-cute-re",
           className:
-            "bg-gradient-to-r from-accent to-accent/80 hover:from-accent/90 hover:to-accent/70",
+            "bg-gradient-to-r from-accent to-accent/90 text-white font-semibold hover:from-accent/95 hover:to-accent/85",
           disabled: false,
         }
       }
@@ -415,12 +436,18 @@ const PlanAction = ({
   return (
     <Button
       variant={buttonConfig.variant}
-      buttonClassName={cn("w-full h-9 @md:h-10 text-xs @md:text-sm", buttonConfig.className)}
+      buttonClassName={cn(
+        "w-full h-9 text-sm font-medium transition-all duration-200",
+        buttonConfig.className,
+      )}
       disabled={buttonConfig.disabled}
       onClick={buttonConfig.disabled ? undefined : (onCancel ?? onSelect)}
       isLoading={isLoading}
     >
-      {buttonConfig.text}
+      <span className="flex items-center justify-center gap-1.5">
+        {buttonConfig.icon && <i className={cn(buttonConfig.icon, "text-sm")} />}
+        <span>{buttonConfig.text}</span>
+      </span>
     </Button>
   )
 }
