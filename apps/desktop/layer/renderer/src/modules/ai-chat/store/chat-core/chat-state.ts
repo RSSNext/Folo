@@ -147,14 +147,12 @@ export class ZustandChatState implements ChatState<BizUIMessage> {
         await AIPersistService.ensureSession(this.chatId)
         // Save messages using incremental updates
         await AIPersistService.replaceAllMessages(this.chatId, this.#messages)
-        // Update session time after successfully saving messages
-        await AIPersistService.updateSessionTime(this.chatId)
       } catch (error) {
         console.error("Failed to persist messages:", error)
       }
     },
     100,
-    { leading: true, trailing: true },
+    { leading: false, trailing: true },
   )
 
   #fillMessageCreatedAt(message: SendingUIMessage | BizUIMessage): BizUIMessage {
