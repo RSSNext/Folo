@@ -5,7 +5,7 @@ import { nanoid } from "nanoid"
 import type { StateCreator } from "zustand"
 
 import { AIPersistService } from "../../services"
-import { createChatTransport } from "../transport"
+import { createChatTitleHandler, createChatTransport } from "../transport"
 import type { BizUIMessage, SendingUIMessage } from "../types"
 import { ZustandChat } from "./chat-instance"
 import type { ChatSlice } from "./types"
@@ -119,6 +119,16 @@ export class ChatSliceActions {
     return this.get().chatId
   }
 
+  private createTransportTitleHandler = (chatId: string) => {
+    return createChatTitleHandler({
+      chatId,
+      getActiveChatId: () => this.get().chatId,
+      onTitleChange: (title) => {
+        this.setCurrentTitle(title)
+      },
+    })
+  }
+
   // Edit chat title
   editChatTitle = async (newTitle: string) => {
     const currentChatId = this.getCurrentChatId()
@@ -225,7 +235,9 @@ export class ChatSliceActions {
       {
         id: newChatId,
         messages: [],
-        transport: createChatTransport(),
+        transport: createChatTransport({
+          titleHandler: this.createTransportTitleHandler(newChatId),
+        }),
       },
       this.set,
     )
@@ -264,7 +276,9 @@ export class ChatSliceActions {
         {
           id: chatId,
           messages,
-          transport: createChatTransport(),
+          transport: createChatTransport({
+            titleHandler: this.createTransportTitleHandler(chatId),
+          }),
         },
         this.set,
       )

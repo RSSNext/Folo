@@ -4,7 +4,7 @@ import type { StateCreator } from "zustand"
 import { ChatSliceActions } from "../chat-core/chat-actions"
 import { ZustandChat } from "../chat-core/chat-instance"
 import type { ChatSlice } from "../chat-core/types"
-import { createChatTransport } from "../transport"
+import { createChatTitleHandler, createChatTransport } from "../transport"
 
 export const createChatSlice: (options: {
   chatId: string
@@ -12,14 +12,24 @@ export const createChatSlice: (options: {
 }) => StateCreator<ChatSlice, [], [], ChatSlice> =
   (options) =>
   (...params) => {
-    const [set] = params
+    const [set, get] = params
     const { chatId, generateId } = options
 
     const chatInstance = new ZustandChat(
       {
         id: chatId,
         messages: [],
-        transport: createChatTransport(),
+        transport: createChatTransport({
+          titleHandler: createChatTitleHandler({
+            chatId,
+            getActiveChatId: () => get().chatId,
+            onTitleChange: (title) => {
+              set({
+                currentTitle: title,
+              })
+            },
+          }),
+        }),
         generateId,
       },
       set,

@@ -45,10 +45,9 @@ import {
 
 import { LexicalAIEditorNodes, ShortcutNode } from "../../editor"
 import { useAttachScrollBeyond } from "../../hooks/useAttachScrollBeyond"
-import { AIPanelRefsContext, useAIChatStore } from "../../store/AIChatContext"
+import { AIPanelRefsContext } from "../../store/AIChatContext"
 import type { AIChatContextBlock, BizUIMessage, SendingUIMessage } from "../../store/types"
 import { isRateLimitError } from "../../utils/error"
-import { generateAndUpdateChatTitle } from "../../utils/titleGeneration"
 import { GlobalFileDropZone } from "../file/GlobalFileDropZone"
 import { AIErrorFallback } from "./AIErrorFallback"
 import { ChatInput } from "./ChatInput"
@@ -195,8 +194,6 @@ const ChatInterfaceContent = ({ centerInputOnEmpty }: ChatInterfaceProps) => {
     })
   }, [])
 
-  const aiStore = useAIChatStore()
-
   const handleSendMessage = useEventCallback((message: string | EditorState) => {
     resetScrollState()
 
@@ -268,18 +265,6 @@ const ChatInterfaceContent = ({ centerInputOnEmpty }: ChatInterfaceProps) => {
       draftMessages.delete(currentChatId)
     }
 
-    ;(async () => {
-      const closureChatId = currentChatId
-      if (aiStore.getState().currentTitle) {
-        return
-      }
-
-      await generateAndUpdateChatTitle(closureChatId, [sendMessage], (title) => {
-        if (currentChatId === closureChatId) {
-          chatActions.setCurrentTitle(title)
-        }
-      })
-    })()
     nextFrame(() => {
       // Calculate and adjust scroll positioning immediately
       handleScrollPositioning()
