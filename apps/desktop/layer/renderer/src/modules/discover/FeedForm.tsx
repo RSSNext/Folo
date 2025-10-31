@@ -37,7 +37,7 @@ import { useTranslation } from "react-i18next"
 import { toast } from "sonner"
 import { z } from "zod"
 
-import { useIsInMASReview } from "~/atoms/server-configs"
+import { useIsPaymentEnabled } from "~/atoms/server-configs"
 import { Autocomplete } from "~/components/ui/auto-completion"
 import { useCurrentModal, useIsInModal } from "~/components/ui/modal/stacked/hooks"
 import { getRouteParams } from "~/hooks/biz/useRouteParams"
@@ -61,7 +61,7 @@ export type FeedFormDataValuesType = z.infer<typeof formSchema>
 export const PaidBadge = () => {
   const { t } = useTranslation("settings")
   const settingModalPresent = useSettingModal()
-  const isInMASReview = useIsInMASReview()
+  const isPaymentEnabled = useIsPaymentEnabled()
 
   const handleClick = useCallback(
     (e) => {
@@ -71,7 +71,7 @@ export const PaidBadge = () => {
     [settingModalPresent],
   )
 
-  if (isInMASReview) {
+  if (!isPaymentEnabled) {
     return null
   }
 
@@ -336,8 +336,8 @@ const FeedInnerForm = ({
   }, [feed.title, form])
 
   const role = useUserRole()
-  const isInMASReview = useIsInMASReview()
-  const disabledForRole = role === UserRole.Free && !isInMASReview
+  const isPaymentEnabled = useIsPaymentEnabled()
+  const disabledForRole = role === UserRole.Free && isPaymentEnabled
 
   return (
     <div className="flex flex-1 flex-col gap-y-4">

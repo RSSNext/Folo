@@ -16,7 +16,7 @@ import { useCallback, useId, useState } from "react"
 import { useTranslation } from "react-i18next"
 import { titleCase } from "title-case"
 
-import { useIsInMASReview } from "~/atoms/server-configs"
+import { useIsPaymentEnabled } from "~/atoms/server-configs"
 
 import { SettingPaidLevels } from "./helper/setting-builder"
 import { useSetSettingTab } from "./modal/context"
@@ -26,7 +26,7 @@ export const PaidBadge: Component<{
 }> = ({ paidLevel }) => {
   const { t } = useTranslation("settings")
   const setTab = useSetSettingTab()
-  const isInMASReview = useIsInMASReview()
+  const isPaymentEnabled = useIsPaymentEnabled()
 
   const handleClick = useCallback(
     (e) => {
@@ -36,7 +36,7 @@ export const PaidBadge: Component<{
     [setTab],
   )
 
-  if (isInMASReview) {
+  if (!isPaymentEnabled) {
     return null
   }
 

@@ -37,3 +37,15 @@ export const getIsInMASReview = () => {
     serverConfigs?.MAS_IN_REVIEW_VERSION === PKG.version
   )
 }
+
+export const useIsPaymentEnabled = () => {
+  const serverConfigs = useServerConfigs()
+  const isInMASReview = useIsInMASReview()
+  return !isInMASReview && serverConfigs?.PAYMENT_ENABLED
+}
+
+export const getIsPaymentEnabled = () => {
+  const serverConfigs = getServerConfigs()
+  const isInMASReview = getIsInMASReview()
+  return !isInMASReview && serverConfigs?.PAYMENT_ENABLED
+}

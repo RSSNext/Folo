@@ -5,7 +5,7 @@ import { isNeedUpgradeError } from "@follow-app/client-sdk"
 import type { ReactNode } from "react"
 import { useTranslation } from "react-i18next"
 
-import { useIsInMASReview } from "~/atoms/server-configs"
+import { useIsPaymentEnabled } from "~/atoms/server-configs"
 import { CopyButton } from "~/components/ui/button/CopyButton"
 import { Markdown } from "~/components/ui/markdown/Markdown"
 import { useFeature } from "~/hooks/biz/useFeature"
@@ -78,12 +78,12 @@ export const AISummaryCardBase: React.FC<AISummaryCardBaseProps> = ({
 }) => {
   const { t } = useTranslation("app")
   const aiEnabled = useFeature("ai")
-  const isInMASReview = useIsInMASReview()
+  const isPaymentEnabled = useIsPaymentEnabled()
 
   const hasContent = !isLoading && content
   const normalizedErrorCode = typeof errorCode === "number" ? errorCode : undefined
   const shouldSuggestUpgrade =
-    normalizedErrorCode !== undefined && !isInMASReview && isNeedUpgradeError(normalizedErrorCode)
+    normalizedErrorCode !== undefined && isPaymentEnabled && isNeedUpgradeError(normalizedErrorCode)
 
   return (
     <div

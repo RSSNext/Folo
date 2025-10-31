@@ -14,7 +14,7 @@ import { useTranslation } from "react-i18next"
 import { currentSupportedLanguages } from "~/@types/constants"
 import { defaultResources } from "~/@types/default-resource"
 import { langLoadingLockMapAtom } from "~/atoms/lang"
-import { useIsInMASReview } from "~/atoms/server-configs"
+import { useIsPaymentEnabled } from "~/atoms/server-configs"
 import {
   DEFAULT_ACTION_LANGUAGE,
   setGeneralSetting,
@@ -296,8 +296,8 @@ const TranslationModeSelector = () => {
   const { t } = useTranslation("settings")
   const translationMode = useGeneralSettingKey("translationMode")
   const role = useUserRole()
-  const isInMASReview = useIsInMASReview()
-  const disabledForRole = role === UserRole.Free && !isInMASReview
+  const isPaymentEnabled = useIsPaymentEnabled()
+  const disabledForRole = role === UserRole.Free && isPaymentEnabled
 
   return (
     <>
