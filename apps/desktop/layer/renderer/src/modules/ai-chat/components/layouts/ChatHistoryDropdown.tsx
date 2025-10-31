@@ -107,7 +107,12 @@ export const ChatHistoryDropdown = ({
             {sessions.map((session) => (
               <DropdownMenuItem
                 key={session.chatId}
-                onClick={() => startTransition(() => chatActions.switchToChat(session.chatId))}
+                onClick={() =>
+                  startTransition(() => {
+                    chatActions.setTimelineSummaryManualOverride(true)
+                    chatActions.switchToChat(session.chatId)
+                  })
+                }
                 className="group flex h-8 cursor-pointer items-center justify-between rounded-md px-2 py-3"
               >
                 <div className="min-w-0 flex-1">
