@@ -129,6 +129,10 @@ class AIPersistServiceStatic {
       const cleanParts = [] as typeof message.parts
 
       for (const part of message.parts) {
+        // Skip streaming messages
+        if ("state" in part && part.state === "streaming") {
+          return acc
+        }
         if (isDataBlockPart(part)) {
           const nextPart = structuredClone(part)
           for (const block of nextPart.data) {
