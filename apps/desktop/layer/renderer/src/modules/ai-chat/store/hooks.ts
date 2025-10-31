@@ -65,6 +65,21 @@ export const useHasMessages = () => {
   return store((state) => state.messages.length > 0)
 }
 
+export const useIsLocalChat = () => {
+  const store = useAIChatStore()
+  return store((state) => state.isLocal)
+}
+
+export const useSyncStatus = () => {
+  const store = useAIChatStore()
+  return store((state) => state.syncStatus)
+}
+
+export const useSyncStateActions = () => {
+  const store = useAIChatStore()
+  return store((state) => state.chatActions)
+}
+
 export const useChatBlockActions = () => useAIChatStore()((state) => state.blockActions)
 /**
  * Hook to get the chat status

@@ -61,11 +61,18 @@ export class ZustandChatState implements ChatState<BizUIMessage> {
     })
 
     this.#eventEmitter.on("status", ({ status }) => {
-      this.updateZustandState((state) => ({
-        ...state,
-        status,
-        isStreaming: status === "streaming",
-      }))
+      this.updateZustandState((state) => {
+        const isStreaming = status === "streaming"
+        if (isStreaming) {
+          void state.chatActions.markSessionSynced()
+        }
+
+        return {
+          ...state,
+          status,
+          isStreaming,
+        }
+      })
     })
 
     this.#eventEmitter.on("error", ({ error }) => {

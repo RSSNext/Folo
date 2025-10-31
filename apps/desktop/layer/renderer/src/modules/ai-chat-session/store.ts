@@ -82,6 +82,8 @@ export const aiChatSessionStoreActions = {
           title: session.title || t("ai:common.new_chat"),
           createdAt: new Date(session.createdAt),
           updatedAt: new Date(session.updatedAt),
+          isLocal: false,
+          syncStatus: "synced" as const,
         })),
       )
     } catch (error) {

@@ -246,6 +246,13 @@
       "when": 1753937164043,
       "tag": "0034_curly_darkstar",
       "breakpoints": true
+    },
+    {
+      "idx": 35,
+      "version": "6",
+      "when": 1761930812297,
+      "tag": "0035_last_valeria_richards",
+      "breakpoints": true
     }
   ]
 }

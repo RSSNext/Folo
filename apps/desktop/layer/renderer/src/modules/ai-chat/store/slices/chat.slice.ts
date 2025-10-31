@@ -9,11 +9,13 @@ import { createChatTitleHandler, createChatTransport } from "../transport"
 export const createChatSlice: (options: {
   chatId: string
   generateId?: IdGenerator
+  isLocal?: boolean
+  syncStatus?: "local" | "synced"
 }) => StateCreator<ChatSlice, [], [], ChatSlice> =
   (options) =>
   (...params) => {
     const [set, get] = params
-    const { chatId, generateId } = options
+    const { chatId, generateId, isLocal, syncStatus } = options
 
     const chatInstance = new ZustandChat(
       {
@@ -43,6 +45,8 @@ export const createChatSlice: (options: {
       status: "ready",
       error: undefined,
       isStreaming: false,
+      isLocal: isLocal ?? true,
+      syncStatus: syncStatus ?? (isLocal === false ? "synced" : "local"),
       currentTitle: undefined,
       chatInstance,
       chatActions,

@@ -48,6 +48,42 @@ export class ChatSliceActions {
     return this.params[1]
   }
 
+  private computeSyncStatus(isLocal: boolean): "local" | "synced" {
+    return isLocal ? "local" : "synced"
+  }
+
+  private setSyncState(isLocal: boolean) {
+    this.set((state) => {
+      const nextStatus = this.computeSyncStatus(isLocal)
+      if (state.isLocal === isLocal && state.syncStatus === nextStatus) {
+        return state
+      }
+      return {
+        isLocal,
+        syncStatus: nextStatus,
+      }
+    })
+  }
+
+  async markSessionSynced() {
+    const currentChatId = this.get().chatId
+    if (!currentChatId) {
+      return
+    }
+
+    if (!this.get().isLocal) {
+      return
+    }
+
+    this.setSyncState(false)
+
+    try {
+      await AIPersistService.markSessionSynced(currentChatId)
+    } catch (error) {
+      console.error("Failed to mark chat session as synced:", error)
+    }
+  }
+
   // Direct message management methods (delegating to chat instance state)
   setMessages = (
     messagesParam: BizUIMessage[] | ((messages: BizUIMessage[]) => BizUIMessage[]),
@@ -176,8 +212,8 @@ export class ChatSliceActions {
         },
         options,
       )
-      const response = await this.chatInstance.sendMessage(messageObj, finalOptions)
-      return response
+
+      return await this.chatInstance.sendMessage(messageObj, finalOptions)
     } catch (error) {
       this.setError(error as Error)
       throw error
@@ -193,8 +229,7 @@ export class ChatSliceActions {
         },
         options,
       )
-      const response = await this.chatInstance.regenerate({ messageId, ...finalOptions })
-      return response
+      return await this.chatInstance.regenerate({ messageId, ...finalOptions })
     } catch (error) {
       this.setError(error as Error)
       throw error
@@ -252,6 +287,8 @@ export class ChatSliceActions {
       isStreaming: false,
       currentTitle: undefined,
       chatInstance: newChatInstance,
+      isLocal: true,
+      syncStatus: "local",
     }))
 
     // Update the reference
@@ -293,6 +330,8 @@ export class ChatSliceActions {
         isStreaming: false,
         currentTitle: chatSession?.title || undefined,
         chatInstance: newChatInstance,
+        isLocal: chatSession ? chatSession.isLocal : true,
+        syncStatus: chatSession ? chatSession.syncStatus : "local",
       }))
 
       newChatInstance.resumeStream()
