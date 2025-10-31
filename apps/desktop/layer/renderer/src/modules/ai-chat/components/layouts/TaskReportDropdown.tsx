@@ -116,6 +116,10 @@ export const TaskReportDropdown = ({ triggerElement, asChild = true }: TaskRepor
   // Only keep task sessions for display
   const taskSessions = useMemo(() => (sessions || []).filter((s) => isTaskSession(s)), [sessions])
   const hasTaskSessions = taskSessions.length > 0
+  const hasUnreadSessions = useMemo(
+    () => taskSessions.some((s) => isUnreadSession(s)),
+    [taskSessions],
+  )
 
   const { present } = useModalStack()
   const canCreateNewTask = useCanCreateNewAITask()
@@ -211,7 +215,7 @@ export const TaskReportDropdown = ({ triggerElement, asChild = true }: TaskRepor
   const defaultTrigger = (
     <ActionButton tooltip="Task Reports" className="relative">
       <i className="i-mgc-calendar-time-add-cute-re size-5 text-text-secondary" />
-      {hasTaskSessions && (
+      {hasUnreadSessions && (
         <span
           className="absolute right-1 top-1 block size-2 rounded-full bg-accent shadow-[0_0_0_2px_var(--color-bg-default)] dark:shadow-[0_0_0_2px_var(--color-bg-default)]"
           aria-label="Unread task reports"
