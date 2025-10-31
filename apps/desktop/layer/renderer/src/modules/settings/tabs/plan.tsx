@@ -2,7 +2,7 @@ import { Button } from "@follow/components/ui/button/index.js"
 import { UserRole } from "@follow/constants"
 import { DEEPLINK_SCHEME, IN_ELECTRON } from "@follow/shared"
 import { env } from "@follow/shared/env.desktop"
-import { useRoleEndAt, useUserRole, useWhoami } from "@follow/store/user/hooks"
+import { useUserRole, useWhoami } from "@follow/store/user/hooks"
 import { cn } from "@follow/utils/utils"
 import { useMutation, useQuery } from "@tanstack/react-query"
 import { useState } from "react"
@@ -106,12 +106,7 @@ const useCancelPlan = () => {
 export function SettingPlan() {
   const isPaymentEnabled = useIsPaymentEnabled()
   const role = useUserRole()
-  const roleEndDate = useRoleEndAt()
   const [billingPeriod, setBillingPeriod] = useState<"monthly" | "yearly">("yearly")
-
-  const daysLeft = roleEndDate
-    ? Math.ceil((roleEndDate.getTime() - Date.now()) / (1000 * 60 * 60 * 24))
-    : null
 
   const serverConfig = useServerConfigs()
   const plans = serverConfig?.PAYMENT_PLAN_LIST || []
@@ -176,7 +171,6 @@ export function SettingPlan() {
               key={plan.name}
               plan={plan}
               billingPeriod={billingPeriod}
-              daysLeft={daysLeft}
               isCurrentPlan={role === plan.role}
               currentTier={currentTier}
             />
@@ -196,10 +190,9 @@ interface PlanCardProps {
   billingPeriod: "monthly" | "yearly"
   isCurrentPlan: boolean
   currentTier: number
-  daysLeft: number | null
 }
 
-const PlanCard = ({ plan, billingPeriod, isCurrentPlan, currentTier, daysLeft }: PlanCardProps) => {
+const PlanCard = ({ plan, billingPeriod, isCurrentPlan, currentTier }: PlanCardProps) => {
   const { t } = useTranslation("settings")
   const getPlanActionType = ():
     | "current"
@@ -247,9 +240,6 @@ const PlanCard = ({ plan, billingPeriod, isCurrentPlan, currentTier, daysLeft }:
     discountPrice > 0 &&
     discountPrice < regularPrice &&
     discountPrice !== regularPrice
-  const discountPercentage = hasDiscount
-    ? Math.round(((regularPrice - discountPrice) / regularPrice) * 100)
-    : 0
 
   // Use discount price if available, otherwise use regular price
   const finalPrice = hasDiscount ? discountPrice : regularPrice
@@ -280,12 +270,11 @@ const PlanCard = ({ plan, billingPeriod, isCurrentPlan, currentTier, daysLeft }:
           regularPrice={formattedRegularPrice}
           period={period}
           description={planDescription}
-          discountPercentage={discountPercentage}
+          discountDescription={plan.discountDescription}
         />
 
         <PlanAction
           actionType={actionType}
-          daysLeft={daysLeft}
           isLoading={upgradePlanMutation.isPending || cancelPlanMutation?.isPending}
           onSelect={
             !plan.isComingSoon && !isCurrentPlan
@@ -329,14 +318,14 @@ const PlanHeader = ({
   regularPrice,
   period,
   description,
-  discountPercentage,
+  discountDescription,
 }: {
   title: string
   price: string
   regularPrice?: string
   period: string
   description?: string
-  discountPercentage?: number
+  discountDescription?: string
 }) => (
   <div className="space-y-2">
     <h3 className="text-base font-semibold @md:text-lg">{title}</h3>
@@ -348,9 +337,9 @@ const PlanHeader = ({
           <span className="text-sm text-text-tertiary line-through">{regularPrice}</span>
         )}
       </div>
-      {!!discountPercentage && discountPercentage > 0 && (
+      {discountDescription && (
         <div className="inline-flex items-center gap-1.5 rounded-md bg-green/10 px-2 py-1">
-          <span className="text-xs font-semibold text-green">-{discountPercentage}% OFF</span>
+          <span className="text-xs font-semibold text-green">{discountDescription}</span>
         </div>
       )}
     </div>
@@ -365,13 +354,11 @@ const PlanAction = ({
   onSelect,
   onCancel,
   isLoading,
-  daysLeft,
 }: {
   actionType: "current" | "upgrade" | "coming-soon" | "in-trial" | "switch" | null
   onSelect?: () => void
   onCancel?: () => void
   isLoading?: boolean
-  daysLeft: number | null
 }) => {
   const getButtonConfig = () => {
     switch (actionType) {
@@ -384,7 +371,7 @@ const PlanAction = ({
       }
       case "current": {
         return {
-          text: `${typeof daysLeft === "number" ? `${daysLeft} days left` : "Current Plan"}${onCancel ? " | Cancel" : ""}`,
+          text: `Current Plan${onCancel ? " | Cancel" : ""}`,
           variant: "outline" as const,
           className: onCancel ? "" : "text-text-secondary",
           disabled: onCancel ? false : true,
@@ -392,7 +379,7 @@ const PlanAction = ({
       }
       case "in-trial": {
         return {
-          text: `In Trial (${daysLeft} days left)`,
+          text: "In Trial",
           variant: "outline" as const,
           disabled: false,
         }
