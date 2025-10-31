@@ -36,6 +36,8 @@ const updatePasswordFormSchema = z
 const UpdateExistingPasswordForm = () => {
   const { t } = useTranslation("settings")
 
+  const { t: tApp } = useTranslation("app")
+
   const form = useForm<z.infer<typeof updatePasswordFormSchema>>({
     resolver: zodResolver(updatePasswordFormSchema),
     defaultValues: {
@@ -119,7 +121,14 @@ const UpdateExistingPasswordForm = () => {
             </FormItem>
           )}
         />
-        <div className="text-right">
+        <div className="flex items-center justify-between pl-2">
+          <a
+            href={`${env.VITE_WEB_URL}/forget-password`}
+            className="text-sm duration-200 hover:text-accent hover:underline"
+            target="_blank"
+          >
+            {tApp("login.forget_password.note")}
+          </a>
           <Button type="submit" isLoading={updateMutation.isPending}>
             {t("profile.submit")}
           </Button>
