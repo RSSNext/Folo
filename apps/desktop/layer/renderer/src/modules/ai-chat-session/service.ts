@@ -47,7 +47,8 @@ class AIChatSessionServiceStatic {
         await AIPersistService.ensureSession(session.chatId, {
           title: session.title,
           createdAt: new Date(session.createdAt),
-          updatedAt: new Date(session.updatedAt),
+          // Use createdAt for updatedAt as we are syncing session instead of messages
+          updatedAt: new Date(session.createdAt),
         })
       })
       await this.loadSessionsFromDb()
@@ -100,7 +101,9 @@ class AIChatSessionServiceStatic {
     await AIPersistService.ensureSession(session.chatId, {
       title: session.title,
       createdAt: new Date(session.createdAt),
-      updatedAt: new Date(session.updatedAt),
+      // Use createdAt for updatedAt
+      // Because we are fetching session data instead of messages
+      updatedAt: new Date(session.createdAt),
     })
     await AIPersistService.upsertMessages(session.chatId, normalized)
 
