@@ -304,7 +304,7 @@ const TranslationModeSelector = () => {
       <div className="mt-4 flex items-center justify-between">
         <span className="flex shrink-0 items-center gap-1 text-sm font-medium">
           <span>{t("general.translation_mode.label")}</span>
-          {!isInMASReview && <PaidBadge paidLevel={SettingPaidLevels.Plus} />}
+          <PaidBadge paidLevel={SettingPaidLevels.Plus} />
         </span>
         <ResponsiveSelect
           size="sm"

@@ -26,6 +26,7 @@ export const PaidBadge: Component<{
 }> = ({ paidLevel }) => {
   const { t } = useTranslation("settings")
   const setTab = useSetSettingTab()
+  const isInMASReview = useIsInMASReview()
 
   const handleClick = useCallback(
     (e) => {
@@ -34,6 +35,10 @@ export const PaidBadge: Component<{
     },
     [setTab],
   )
+
+  if (isInMASReview) {
+    return null
+  }
 
   return (
     <Tooltip>
@@ -80,12 +85,11 @@ export const SettingSwitch: Component<{
   const handleCheckedChange = (checked: boolean) => {
     onCheckedChange(checked)
   }
-  const isInMASReview = useIsInMASReview()
   return (
     <div className={cn("mb-3 flex items-center justify-between gap-4", className)}>
       <Label htmlFor={id} className="flex items-center gap-1">
         <span>{titleCase(label)}</span>
-        {!!paidLevel && !isInMASReview && <PaidBadge paidLevel={paidLevel} />}
+        {!!paidLevel && <PaidBadge paidLevel={paidLevel} />}
       </Label>
       <Switch id={id} checked={checked} onCheckedChange={handleCheckedChange} disabled={disabled} />
     </div>
