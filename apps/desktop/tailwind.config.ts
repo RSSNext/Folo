@@ -50,6 +50,7 @@ export default extendConfig({
         // 2 + 0.625 * 2 = 3.25
         "top-header": "3.25rem",
         "top-header-with-border-b": "calc(3.25rem + 1px)",
+        "top-header-in-preview-with-border-b": "calc(3.25rem + 41px)",
       },
       colors: {
         sidebar: "hsl(var(--fo-sidebar) / <alpha-value>)",
