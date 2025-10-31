@@ -31,6 +31,7 @@ import { SettingSectionTitle } from "../../section"
 import { CustomIntegrationSection } from "./CustomIntegrationSection"
 
 const { defineSettingItem, SettingBuilder } = createSetting(
+  "integration",
   useIntegrationSettingValue,
   setIntegrationSetting,
 )

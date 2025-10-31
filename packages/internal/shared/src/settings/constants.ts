@@ -1,4 +1,57 @@
-import type { AccentColor } from "./interface"
+import type {
+  AccentColor,
+  AISettings,
+  GeneralSettings,
+  IntegrationSettings,
+  UISettings,
+} from "./interface"
+
+export enum SettingPaidLevels {
+  Free,
+  FreeLimited,
+  Plus,
+}
+
+type PartialRecord<K extends PropertyKey, V> = Partial<Record<K, V>>
+
+export const PAID_SETTINGS = {
+  general: {
+    summary: SettingPaidLevels.FreeLimited,
+    translation: SettingPaidLevels.Plus,
+    translationMode: SettingPaidLevels.Plus,
+    hidePrivateSubscriptionsInTimeline: SettingPaidLevels.Plus,
+  },
+  ui: {
+    hideExtraBadge: SettingPaidLevels.Plus,
+    hideRecentReader: SettingPaidLevels.Plus,
+  },
+  integration: {
+    enableCubox: SettingPaidLevels.Plus,
+    enableObsidian: SettingPaidLevels.Plus,
+    enableOutline: SettingPaidLevels.Plus,
+    enableReadwise: SettingPaidLevels.Plus,
+    enableZotero: SettingPaidLevels.Plus,
+    enableInstapaper: SettingPaidLevels.Plus,
+    enableReadeck: SettingPaidLevels.Plus,
+    enableEagle: SettingPaidLevels.Plus,
+    enableQBittorrent: SettingPaidLevels.Plus,
+    enableCustomIntegration: SettingPaidLevels.Plus,
+  },
+  ai: {},
+} as const satisfies {
+  general: PartialRecord<keyof GeneralSettings, SettingPaidLevels>
+  ui: PartialRecord<keyof UISettings, SettingPaidLevels>
+  integration: PartialRecord<keyof IntegrationSettings, SettingPaidLevels>
+  ai: PartialRecord<keyof AISettings, SettingPaidLevels>
+}
+
+export type SettingNamespace = keyof typeof PAID_SETTINGS
+
+export const getSettingPaidLevel = (namespace: string, key: string) => {
+  const group = PAID_SETTINGS[namespace as keyof typeof PAID_SETTINGS]
+  if (!group) return
+  return group[key as keyof typeof group]
+}
 
 const ACCENT_COLOR_MAP = {
   orange: {
@@ -40,5 +93,6 @@ export const getAccentColorValue = (color: AccentColor) => {
   if (color.startsWith("#")) {
     return { light: color, dark: color }
   }
-  return ACCENT_COLOR_MAP[color] || ACCENT_COLOR_MAP.orange
+  const preset = ACCENT_COLOR_MAP[color as keyof typeof ACCENT_COLOR_MAP]
+  return preset || ACCENT_COLOR_MAP.orange
 }

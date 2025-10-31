@@ -1,12 +1,15 @@
 import { AutoResizeHeight } from "@follow/components/ui/auto-resize-height/index.js"
 import { MotionButtonBase } from "@follow/components/ui/button/index.js"
 import { cn } from "@follow/utils/utils"
+import { isNeedUpgradeError } from "@follow-app/client-sdk"
 import type { ReactNode } from "react"
 import { useTranslation } from "react-i18next"
 
+import { useIsInMASReview } from "~/atoms/server-configs"
 import { CopyButton } from "~/components/ui/button/CopyButton"
 import { Markdown } from "~/components/ui/markdown/Markdown"
 import { useFeature } from "~/hooks/biz/useFeature"
+import { useSettingModal } from "~/modules/settings/modal/useSettingModal"
 
 interface AISummaryCardBaseProps {
   /** Summary content to display */
@@ -21,8 +24,6 @@ interface AISummaryCardBaseProps {
   footerContent?: ReactNode
   /** Custom loading state component */
   loadingComponent?: ReactNode
-  /** Custom empty state component */
-  emptyComponent?: ReactNode
   /** Title text for the AI Summary header */
   title?: string
   /** Whether to show the copy button */
@@ -31,6 +32,8 @@ interface AISummaryCardBaseProps {
   showAskAIButton?: boolean
   /** Callback when Ask AI button is clicked */
   onAskAI?: () => void
+  /** Error code returned when requesting the summary */
+  errorCode?: number
 }
 
 const DefaultLoadingState = () => (
@@ -41,12 +44,24 @@ const DefaultLoadingState = () => (
   </div>
 )
 
-const DefaultEmptyState = ({ message }: { message: string }) => (
-  <div className="py-4 text-center">
-    <i className="i-mingcute-document-line mb-2 text-2xl text-text-tertiary" />
-    <p className="text-sm text-text-secondary">{message}</p>
-  </div>
-)
+const DefaultEmptyState = ({
+  message,
+  shouldSuggestUpgrade,
+}: {
+  message: string
+  shouldSuggestUpgrade?: boolean
+}) => {
+  const settingModalPresent = useSettingModal()
+
+  return (
+    <div
+      className="text-center"
+      onClick={shouldSuggestUpgrade ? () => settingModalPresent("plan") : undefined}
+    >
+      <p className="text-sm text-text-secondary">{message}</p>
+    </div>
+  )
+}
 
 export const AISummaryCardBase: React.FC<AISummaryCardBaseProps> = ({
   content,
@@ -55,16 +70,20 @@ export const AISummaryCardBase: React.FC<AISummaryCardBaseProps> = ({
   headerContent,
   footerContent,
   loadingComponent,
-  emptyComponent,
   title = "AI Summary",
   showCopyButton = true,
   showAskAIButton = false,
   onAskAI,
+  errorCode,
 }) => {
   const { t } = useTranslation("app")
   const aiEnabled = useFeature("ai")
+  const isInMASReview = useIsInMASReview()
 
   const hasContent = !isLoading && content
+  const normalizedErrorCode = typeof errorCode === "number" ? errorCode : undefined
+  const shouldSuggestUpgrade =
+    normalizedErrorCode !== undefined && !isInMASReview && isNeedUpgradeError(normalizedErrorCode)
 
   return (
     <div
@@ -167,12 +186,16 @@ export const AISummaryCardBase: React.FC<AISummaryCardBaseProps> = ({
           loadingComponent || <DefaultLoadingState />
         ) : hasContent ? (
           <Markdown className="prose-sm max-w-none prose-p:m-0">{String(content)}</Markdown>
+        ) : shouldSuggestUpgrade ? (
+          <DefaultEmptyState
+            message={t("ai.summary_upgrade_required_title")}
+            shouldSuggestUpgrade
+          />
         ) : (
-          emptyComponent || <DefaultEmptyState message={t("ai.summary_not_available")} />
+          <DefaultEmptyState message={t("ai.summary_not_available")} />
         )}
       </AutoResizeHeight>
 
-      {/* Footer */}
       {footerContent}
     </div>
   )

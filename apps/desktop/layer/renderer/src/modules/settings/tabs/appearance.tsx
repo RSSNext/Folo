@@ -48,7 +48,7 @@ import { SettingItemGroup } from "../section"
 import { ContentFontSelector, UIFontSelector } from "../sections/fonts"
 
 const SettingBuilder = createSettingBuilder(useUISettingValue)
-const _defineItem = createDefineSettingItem(useUISettingValue, setUISetting)
+const _defineItem = createDefineSettingItem("ui", useUISettingValue, setUISetting)
 
 export const SettingAppearance = () => {
   const { t } = useTranslation("settings")

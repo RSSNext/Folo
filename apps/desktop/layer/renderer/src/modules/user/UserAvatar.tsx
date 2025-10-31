@@ -82,7 +82,7 @@ export const UserAvatar = ({
           {renderUserData?.name?.[0]}
         </AvatarFallback>
       </Avatar>
-      {serverConfig?.REFERRAL_ENABLED &&
+      {serverConfig?.PAYMENT_ENABLED &&
         !userId &&
         role !== UserRole.Free &&
         role !== UserRole.Trial && (

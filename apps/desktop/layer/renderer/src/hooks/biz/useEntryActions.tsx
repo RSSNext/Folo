@@ -357,7 +357,6 @@ export const useEntryActions = ({ entryId, view }: { entryId: string; view: Feed
             view,
           ),
         active: isShowAISummaryOnce,
-        disabled: userRole === UserRole.Free || userRole === UserRole.Trial,
         entryId,
       }),
       new EntryActionMenuItem({

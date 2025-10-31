@@ -4,10 +4,56 @@ import { Input, TextArea } from "@follow/components/ui/input/index.js"
 import { Label } from "@follow/components/ui/label/index.jsx"
 import { SegmentGroup, SegmentItem } from "@follow/components/ui/segment/index.jsx"
 import { Switch } from "@follow/components/ui/switch/index.jsx"
+import {
+  Tooltip,
+  TooltipContent,
+  TooltipPortal,
+  TooltipTrigger,
+} from "@follow/components/ui/tooltip/index.js"
 import { cn } from "@follow/utils/utils"
 import type { ChangeEventHandler, ReactNode } from "react"
-import { useId, useState } from "react"
+import { useCallback, useId, useState } from "react"
+import { useTranslation } from "react-i18next"
 import { titleCase } from "title-case"
+
+import { useIsInMASReview } from "~/atoms/server-configs"
+
+import { SettingPaidLevels } from "./helper/setting-builder"
+import { useSetSettingTab } from "./modal/context"
+
+export const PaidBadge: Component<{
+  paidLevel: SettingPaidLevels
+}> = ({ paidLevel }) => {
+  const { t } = useTranslation("settings")
+  const setTab = useSetSettingTab()
+  const isInMASReview = useIsInMASReview()
+
+  const handleClick = useCallback(
+    (e) => {
+      e.preventDefault()
+      setTab("plan")
+    },
+    [setTab],
+  )
+
+  if (isInMASReview) {
+    return null
+  }
+
+  return (
+    <Tooltip>
+      <TooltipTrigger asChild>
+        <i className="i-mgc-power block text-accent" onClick={handleClick} />
+      </TooltipTrigger>
+      <TooltipPortal>
+        <TooltipContent>
+          {paidLevel === SettingPaidLevels.FreeLimited && t("control.paid_badge.free_limited")}
+          {paidLevel === SettingPaidLevels.Plus && t("control.paid_badge.plus_or_higher")}
+        </TooltipContent>
+      </TooltipPortal>
+    </Tooltip>
+  )
+}
 
 export const SettingCheckbox: Component<{
   label: string
@@ -32,15 +78,20 @@ export const SettingSwitch: Component<{
   label: string
   checked: boolean
   onCheckedChange: (checked: boolean) => void
-}> = ({ checked, label, onCheckedChange, className }) => {
+  disabled?: boolean
+  paidLevel?: SettingPaidLevels
+}> = ({ checked, label, onCheckedChange, className, disabled, paidLevel }) => {
   const id = useId()
   const handleCheckedChange = (checked: boolean) => {
     onCheckedChange(checked)
   }
   return (
     <div className={cn("mb-3 flex items-center justify-between gap-4", className)}>
-      <Label htmlFor={id}>{titleCase(label)}</Label>
-      <Switch id={id} checked={checked} onCheckedChange={handleCheckedChange} />
+      <Label htmlFor={id} className="flex items-center gap-1">
+        <span>{titleCase(label)}</span>
+        {!!paidLevel && <PaidBadge paidLevel={paidLevel} />}
+      </Label>
+      <Switch id={id} checked={checked} onCheckedChange={handleCheckedChange} disabled={disabled} />
     </div>
   )
 }

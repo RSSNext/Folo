@@ -14,7 +14,7 @@ import { TaskSchedulingSection } from "./ai/tasks"
 import { UsageAnalysisSection } from "./ai/usage"
 
 const SettingBuilder = createSettingBuilder(useAISettingValue)
-const defineSettingItem = createDefineSettingItem(useAISettingValue, setAISetting)
+const defineSettingItem = createDefineSettingItem("ai", useAISettingValue, setAISetting)
 
 export const AI_SETTING_SECTION_IDS = {
   shortcuts: "settings-ai-shortcuts",

@@ -16,8 +16,21 @@ export const [, , useServerConfigs, , getServerConfigs, setServerConfigs] = crea
   ),
 )
 
+export type ServerConfigs = ExtractResponseData<GetStatusConfigsResponse>
+export type PaymentPlan = ServerConfigs["PAYMENT_PLAN_LIST"][number]
+export type PaymentFeature = PaymentPlan["limit"]
+
 export const useIsInMASReview = () => {
   const serverConfigs = useServerConfigs()
+  return (
+    typeof process !== "undefined" &&
+    process.mas &&
+    serverConfigs?.MAS_IN_REVIEW_VERSION === PKG.version
+  )
+}
+
+export const getIsInMASReview = () => {
+  const serverConfigs = getServerConfigs()
   return (
     typeof process !== "undefined" &&
     process.mas &&
