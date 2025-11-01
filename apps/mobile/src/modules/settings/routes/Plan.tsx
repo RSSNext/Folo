@@ -7,22 +7,17 @@ import type { ProductPurchase } from "expo-iap"
 import { useIAP } from "expo-iap"
 import { openURL } from "expo-linking"
 import { useEffect } from "react"
-import { Trans, useTranslation } from "react-i18next"
-import { Linking, Pressable, View } from "react-native"
+import { useTranslation } from "react-i18next"
+import { Pressable, View } from "react-native"
 
 import { useServerConfigs } from "@/src/atoms/server-configs"
 import {
   NavigationBlurEffectHeaderView,
   SafeNavigationScrollView,
 } from "@/src/components/layouts/views/SafeNavigationScrollView"
-import {
-  GroupedInformationCell,
-  GroupedInsetListCard,
-} from "@/src/components/ui/grouped/GroupedList"
 // Plan configuration types
 import { Text } from "@/src/components/ui/typography/Text"
 import { CheckLineIcon } from "@/src/icons/check_line"
-import { PowerOutlineIcon } from "@/src/icons/power_outline"
 import { TimeCuteReIcon } from "@/src/icons/time_cute_re"
 import { followClient } from "@/src/lib/api-client"
 import { authClient } from "@/src/lib/auth"
@@ -30,7 +25,6 @@ import { useNavigation } from "@/src/lib/navigation/hooks"
 import type { NavigationControllerView } from "@/src/lib/navigation/types"
 import { isIOS } from "@/src/lib/platform"
 import { proxyEnv } from "@/src/lib/proxy-env"
-import { accentColor } from "@/src/theme/colors"
 
 import { ReferralScreen } from "./Referral"
 
@@ -55,6 +49,7 @@ const PLAN_TIER_MAP: Record<UserRole, number> = {
   // Same as Free (deprecated)
   [UserRole.PreProTrial]: 2,
   [UserRole.Pro]: 3,
+  [UserRole.Plus]: 4,
 }
 
 // Plan configurations
@@ -129,7 +124,6 @@ export const PlanScreen: NavigationControllerView = () => {
   const navigation = useNavigation()
   const { t } = useTranslation("settings")
   const serverConfigs = useServerConfigs()
-  const ruleLink = serverConfigs?.REFERRAL_RULE_LINK
   const requiredInvitationsAmount = serverConfigs?.REFERRAL_REQUIRED_INVITATIONS || 3
   const { data: referralInfo } = useReferralInfoQuery()
   const validInvitationsAmount = referralInfo?.invitations.filter((i) => i.usedAt).length || 0
@@ -165,40 +159,6 @@ export const PlanScreen: NavigationControllerView = () => {
       className="bg-system-grouped-background"
       Header={<NavigationBlurEffectHeaderView title={t("titles.plan.long")} />}
     >
-      <View className="mt-6">
-        <GroupedInsetListCard>
-          <GroupedInformationCell
-            title={t("titles.plan.short")}
-            icon={<PowerOutlineIcon height={40} width={40} color="#fff" />}
-            iconBackgroundColor={accentColor}
-          >
-            <Trans
-              ns="settings"
-              i18nKey="plan.description"
-              parent={({ children }: { children: React.ReactNode }) => (
-                <Text className="mt-3 text-left text-base leading-tight text-label">
-                  {children}
-                </Text>
-              )}
-              components={{
-                Link: (
-                  <Text
-                    className="text-accent"
-                    onPress={() => {
-                      if (ruleLink) {
-                        Linking.openURL(ruleLink)
-                      }
-                    }}
-                  >
-                    Learn more
-                  </Text>
-                ),
-              }}
-            />
-          </GroupedInformationCell>
-        </GroupedInsetListCard>
-      </View>
-
       <View className="gap-4 p-4">
         {PLAN_CONFIGS.map((plan) => {
           const isProPreview = plan.id === "pro-preview"

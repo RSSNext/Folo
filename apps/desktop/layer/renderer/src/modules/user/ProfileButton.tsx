@@ -2,7 +2,6 @@ import { ActionButton } from "@follow/components/ui/button/index.js"
 import { RSSHubLogo } from "@follow/components/ui/platform-icon/icons.js"
 import { RootPortal } from "@follow/components/ui/portal/index.js"
 import { EllipsisHorizontalTextWithTooltip } from "@follow/components/ui/typography/EllipsisWithTooltip.js"
-import { UserRole } from "@follow/constants"
 import { useMeasure } from "@follow/hooks"
 import { useUserRole } from "@follow/store/user/hooks"
 import { cn } from "@follow/utils/utils"
@@ -28,7 +27,6 @@ import { usePresentUserProfileModal } from "~/modules/profile/hooks"
 import { useSettingModal } from "~/modules/settings/modal/use-setting-modal-hack"
 import { signOut, useSession } from "~/queries/auth"
 
-import { useActivationModal } from "../activation"
 import type { LoginProps } from "./LoginButton"
 import { LoginButton } from "./LoginButton"
 import { UserAvatar } from "./UserAvatar"
@@ -53,7 +51,6 @@ export const ProfileButton: FC<ProfileButtonProps> = memo((props) => {
   const navigate = useNavigate()
 
   const role = useUserRole()
-  const presentActivationModal = useActivationModal()
   const isInMASReview = useIsInMASReview()
 
   if (status === "unauthenticated") {
@@ -83,7 +80,7 @@ export const ProfileButton: FC<ProfileButtonProps> = memo((props) => {
             <EllipsisHorizontalTextWithTooltip className="mx-auto max-w-[20ch] truncate text-lg">
               {user?.name}
             </EllipsisHorizontalTextWithTooltip>
-            {serverConfig?.REFERRAL_ENABLED ? (
+            {!isInMASReview && serverConfig?.PAYMENT_ENABLED ? (
               <UserProBadge
                 role={role}
                 withText
@@ -121,26 +118,22 @@ export const ProfileButton: FC<ProfileButtonProps> = memo((props) => {
         <DropdownMenuItem
           className="pl-3"
           onClick={() => {
-            if (role !== UserRole.Trial && role !== UserRole.Free) {
-              presentAchievement()
-            } else {
-              presentActivationModal()
-            }
+            presentAchievement()
           }}
           icon={<i className="i-mgc-trophy-cute-re" />}
         >
           {t("user_button.achievement")}
         </DropdownMenuItem>
 
-        {!isInMASReview && (
+        {!isInMASReview && serverConfig?.PAYMENT_ENABLED && (
           <DropdownMenuItem
             className="pl-3"
             onClick={() => {
-              navigate("/power")
+              settingModalPresent("plan")
             }}
             icon={<i className="i-mgc-power-outline" />}
           >
-            {t("user_button.power")}
+            {t("activation.plan.title")}
           </DropdownMenuItem>
         )}
 

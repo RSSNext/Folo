@@ -61,6 +61,7 @@ const ChatHeaderLayout = ({
 
   const { isScrolledBeyondThreshold } = useAIRootState()
   const isScrolledBeyondThresholdValue = useAtomValue(isScrolledBeyondThreshold)
+
   return (
     <div
       className={cn(
@@ -81,7 +82,7 @@ const ChatHeaderLayout = ({
 
         <div className="relative z-10 flex h-full items-center justify-between px-4">
           <div className="mr-2 flex min-w-0 items-center">
-            {hasMessages && (
+            {(hasMessages || currentTitle) && (
               <div onClick={() => settingModalPresent("ai")}>
                 <AISpline className="no-drag-region -mx-1 -mb-1 mr-1 size-9" />
               </div>

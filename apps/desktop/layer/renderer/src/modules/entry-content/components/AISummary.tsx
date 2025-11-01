@@ -12,6 +12,7 @@ import {
 } from "~/atoms/settings/ai"
 import { useActionLanguage } from "~/atoms/settings/general"
 import { AISummaryCardBase } from "~/components/ui/ai-summary-card"
+import { getFetchErrorInfo } from "~/lib/error-parser"
 
 export function AISummary({ entryId }: { entryId: string }) {
   const { t } = useTranslation()
@@ -30,6 +31,8 @@ export function AISummary({ entryId }: { entryId: string }) {
     target: isInReadabilitySuccess ? "readabilityContent" : "content",
     enabled: showAISummary,
   })
+  const summaryErrorCode =
+    summary.error instanceof Error ? getFetchErrorInfo(summary.error).code : undefined
 
   // Show Ask AI button when:
   // 1. Panel style is floating AND panel is not visible
@@ -54,6 +57,7 @@ export function AISummary({ entryId }: { entryId: string }) {
       title={t("entry_content.ai_summary")}
       showAskAIButton={shouldShowAskAI}
       onAskAI={handleAskAI}
+      errorCode={summaryErrorCode}
     />
   )
 }

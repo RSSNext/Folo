@@ -9,7 +9,7 @@ import { atom, useAtomValue, useSetAtom } from "jotai"
 import type { BoundingBox } from "motion/react"
 import { Resizable } from "re-resizable"
 import type { PropsWithChildren } from "react"
-import { memo, Suspense, use, useCallback, useEffect, useMemo, useRef } from "react"
+import { memo, Suspense, use, useCallback, useMemo, useRef } from "react"
 import { createPortal } from "react-dom"
 
 import { useUISettingSelector } from "~/atoms/settings/ui"
@@ -29,14 +29,9 @@ import { DisableWhy } from "../utils"
 import { SettingModalContentPortalableContext, useSetSettingTab, useSettingTab } from "./context"
 import { defaultCtx, SettingContext } from "./hooks"
 
-export function SettingModalLayout(
-  props: PropsWithChildren<{
-    initialTab?: string
-  }>,
-) {
-  const { children, initialTab } = props
-  const setTab = useSetSettingTab()
-  const tab = useSettingTab()
+export function SettingModalLayout(props: PropsWithChildren) {
+  const { children } = props
+
   const elementRef = useRef<HTMLDivElement>(null)
   const edgeElementRef = useRef<HTMLDivElement>(null)
   const {
@@ -52,17 +47,6 @@ export function SettingModalLayout(
     resizeable: true,
     draggable: true,
   })
-
-  const availableSettings = useAvailableSettings()
-  useEffect(() => {
-    if (!tab) {
-      if (initialTab) {
-        setTab(initialTab)
-      } else {
-        setTab(availableSettings[0]!.path)
-      }
-    }
-  }, [availableSettings])
 
   const { draggable, overlay } = useUISettingSelector((state) => ({
     draggable: state.modalDraggable,

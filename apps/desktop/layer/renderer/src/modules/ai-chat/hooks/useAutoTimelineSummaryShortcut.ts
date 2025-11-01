@@ -21,7 +21,7 @@ import { BlockSliceAction } from "../store/slices/block.slice"
 import type { AIChatContextBlock, SendingUIMessage } from "../store/types"
 import { isTimelineSummaryAutoContext } from "./useTimelineSummaryAutoContext"
 
-const ONE_HOUR = 60 * 60 * 1000
+const INTERVAL = 5 * 60 * 60 * 1000
 
 const buildSummaryMessage = (
   editor: LexicalEditor,
@@ -100,7 +100,7 @@ export const useAutoTimelineSummaryShortcut = () => {
   })
   const previousContextKeyRef = useRef<string | null>(null)
 
-  const isAllTimeline = isTimelineSummaryAutoContext({ view, entryId })
+  const isAllTimeline = isTimelineSummaryAutoContext({ view, feedId, entryId })
 
   const defaultShortcut = useMemo(() => {
     const shortcuts = aiSettings.shortcuts ?? []
@@ -227,7 +227,7 @@ export const useAutoTimelineSummaryShortcut = () => {
 
         if (existingSession) {
           const lastUpdatedAt = existingSession.updatedAt?.getTime?.() ?? existingSession.updatedAt
-          if (typeof lastUpdatedAt === "number" && now - lastUpdatedAt < ONE_HOUR) {
+          if (typeof lastUpdatedAt === "number" && now - lastUpdatedAt < INTERVAL) {
             if (currentChatId !== existingSession.chatId) {
               await chatActions.switchToChat(existingSession.chatId)
             }

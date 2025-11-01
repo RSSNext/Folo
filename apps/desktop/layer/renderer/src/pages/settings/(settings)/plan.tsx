@@ -3,14 +3,14 @@ import { SettingsTitle } from "~/modules/settings/title"
 import { defineSettingPageData } from "~/modules/settings/utils"
 
 const iconName = "i-mgc-power-outline"
-const priority = (1000 << 2) + 30
+const priority = (1000 << 1) + 17
 
 export const loader = defineSettingPageData({
   icon: iconName,
   name: "titles.plan.short",
   title: "titles.plan.long",
   priority,
-  hideIf: (ctx, serverConfigs) => ctx.isInMASReview || !serverConfigs?.REFERRAL_ENABLED,
+  hideIf: (ctx, serverConfigs) => ctx.isInMASReview || !serverConfigs?.PAYMENT_ENABLED,
 })
 
 export function Component() {

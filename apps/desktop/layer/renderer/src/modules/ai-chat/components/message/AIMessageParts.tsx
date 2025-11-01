@@ -44,7 +44,7 @@ export const AIMessageParts: React.FC<AIMessagePartsProps> = React.memo(
       const parts = [] as (ChainReasoningPart[] | TextUIPart | ToolUIPart<BizUITools>)[]
 
       const shouldBypass = (name: string) =>
-        name.startsWith("tool-") || name.startsWith("tool-save_user_memory")
+        name.startsWith("tool-save_user_memory") || name.startsWith("tool-display")
 
       let chainReasoningParts: ChainReasoningPart[] | null = null
       for (const part of message.parts) {

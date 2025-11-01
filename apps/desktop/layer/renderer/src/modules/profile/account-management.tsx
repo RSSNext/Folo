@@ -1,4 +1,4 @@
-import { Button } from "@follow/components/ui/button/index.js"
+import { styledButtonVariant } from "@follow/components/ui/button/variants.js"
 import { authProvidersConfig } from "@follow/constants"
 import { IN_ELECTRON } from "@follow/shared/constants"
 import { cn } from "@follow/utils/utils"
@@ -32,9 +32,12 @@ function AuthProviderButton({ provider }: { provider: string }) {
   if (!account && IN_ELECTRON) return null
 
   return (
-    <Button
+    <button
+      type="button"
       key={provider}
-      variant={"outline"}
+      className={styledButtonVariant({
+        variant: "outline",
+      })}
       onClick={() => {
         if (!account) {
           linkSocial({
@@ -44,7 +47,7 @@ function AuthProviderButton({ provider }: { provider: string }) {
         }
         unlinkAccountMutation.mutate()
       }}
-      isLoading={unlinkAccountMutation.isPending}
+      disabled={unlinkAccountMutation.isPending}
     >
       <div className="flex items-center gap-2">
         <i className={cn("text-xl", authProvidersConfig[provider]?.iconClassName)} />
@@ -55,7 +58,7 @@ function AuthProviderButton({ provider }: { provider: string }) {
         </span>
         {account && <i className="i-mgc-delete-2-cute-re" />}
       </div>
-    </Button>
+    </button>
   )
 }
 

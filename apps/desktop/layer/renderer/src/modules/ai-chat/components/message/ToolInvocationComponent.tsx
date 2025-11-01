@@ -4,6 +4,7 @@ import type { ToolUIPart } from "ai"
 import { getToolName } from "ai"
 import clsx from "clsx"
 import * as React from "react"
+import { titleCase } from "title-case"
 
 interface ToolInvocationComponentProps {
   part: ToolUIPart
@@ -13,7 +14,8 @@ interface ToolInvocationComponentProps {
 
 export const ToolInvocationComponent: React.FC<ToolInvocationComponentProps> = React.memo(
   ({ part, variant }) => {
-    const toolName = getToolName(part)
+    const toolName = titleCase(getToolName(part).replaceAll("_", " "))
+
     const hasError = "errorText" in part && part.errorText
     const hasResult = "output" in part && part.output
     const hasArgs = "input" in part && part.input
@@ -23,11 +25,22 @@ export const ToolInvocationComponent: React.FC<ToolInvocationComponentProps> = R
     // Generate a unique value for this accordion item
     const accordionValue = `tool-${"toolCallId" in part ? part.toolCallId : Math.random()}`
 
+    const result = React.useMemo(() => {
+      if (hasResult) {
+        const string = JSON.stringify(part.output, null, 2)
+        if (string.length > 1000) {
+          return `${string.slice(0, 1000)}\n...`
+        } else {
+          return string
+        }
+      }
+    }, [hasResult, part])
+
     return (
       <div className={clsx("relative pl-8 last:pb-0", variant === "tight" ? "pb-0" : "pb-3")}>
         <div
           aria-hidden
-          className={`absolute left-2 top-2 size-2 -translate-x-1/2 rounded-full border border-fill bg-fill-vibrant ${hasError ? "text-red" : ""}`}
+          className={`absolute left-2 top-2 size-2 -translate-x-1/2 ${hasError ? "text-red" : ""}`}
         >
           <i className={`i-mgc-tool-cute-re absolute top-1/2 -translate-x-1/4 -translate-y-1/2`} />
         </div>
@@ -72,7 +85,7 @@ export const ToolInvocationComponent: React.FC<ToolInvocationComponentProps> = R
                   <div className="mb-1 font-medium text-text-secondary">Result:</div>
                   <JsonHighlighter
                     className="overflow-x-auto rounded bg-fill-secondary p-2 text-[11px] text-text-tertiary"
-                    json={JSON.stringify(part.output, null, 2)}
+                    json={result!}
                   />
                 </div>
               ) : null}

@@ -1,8 +1,7 @@
-import type { AsyncDb } from "@follow/database/db"
 import { db } from "@follow/database/db"
 import type { AiChatMessagesModel } from "@follow/database/schemas/index"
 import { aiChatMessagesTable, aiChatTable } from "@follow/database/schemas/index"
-import { asc, count, eq, inArray, sql } from "drizzle-orm"
+import { asc, eq, inArray, sql } from "drizzle-orm"
 
 import { getI18n } from "~/i18n"
 import { followClient } from "~/lib/api-client"
@@ -130,6 +129,10 @@ class AIPersistServiceStatic {
       const cleanParts = [] as typeof message.parts
 
       for (const part of message.parts) {
+        // Skip streaming messages
+        if ("state" in part && part.state === "streaming") {
+          return acc
+        }
         if (isDataBlockPart(part)) {
           const nextPart = structuredClone(part)
           for (const block of nextPart.data) {
@@ -169,8 +172,24 @@ class AIPersistServiceStatic {
           metadata: sql`excluded.metadata`,
           finishedAt: sql`excluded.finished_at`,
           status: sql`excluded.status`,
+          createdAt: sql`excluded.created_at`,
         },
       })
+
+    const date = results.reduce<Date | null>((latest, msg) => {
+      const date = msg.createdAt ? new Date(msg.createdAt) : null
+      if (date === null) {
+        return latest
+      }
+      if (!latest || date > latest) {
+        return date
+      }
+      return latest
+    }, null)
+    if (date) {
+      // Update session time after successfully saving messages
+      await AIPersistService.updateSessionTime(chatId, date)
+    }
   }
 
   /**
@@ -371,18 +390,6 @@ class AIPersistServiceStatic {
       return []
     }
 
-    const chatIds = chats.map((chat) => chat.chatId)
-    const messageCounts = await (db as AsyncDb)
-      .select({
-        chatId: aiChatMessagesTable.chatId,
-        messageCount: count(aiChatMessagesTable.id),
-      })
-      .from(aiChatMessagesTable)
-      .where(inArray(aiChatMessagesTable.chatId, chatIds))
-      .groupBy(aiChatMessagesTable.chatId)
-
-    const messageCountMap = new Map(messageCounts.map((item) => [item.chatId, item.messageCount]))
-
     const normalizedChats = await Promise.all(
       chats.map(async (chat) => {
         const resolvedTitle = this.resolveSessionTitle(chat.chatId, chat.title, {
@@ -401,15 +408,12 @@ class AIPersistServiceStatic {
       }),
     )
 
-    return normalizedChats
-      .map((chat) => ({
-        chatId: chat.chatId,
-        title: chat.title,
-        createdAt: chat.createdAt,
-        updatedAt: chat.updatedAt,
-        messageCount: messageCountMap.get(chat.chatId) || 0,
-      }))
-      .filter((chat) => chat.messageCount > 0)
+    return normalizedChats.map((chat) => ({
+      chatId: chat.chatId,
+      title: chat.title,
+      createdAt: chat.createdAt,
+      updatedAt: chat.updatedAt,
+    }))
   }
 
   async deleteSession(chatId: string) {
@@ -432,11 +436,11 @@ class AIPersistServiceStatic {
       .where(eq(aiChatTable.chatId, chatId))
   }
 
-  async updateSessionTime(chatId: string) {
+  async updateSessionTime(chatId: string, date: Date = new Date()) {
     await db
       .update(aiChatTable)
       .set({
-        updatedAt: new Date(Date.now()),
+        updatedAt: date,
       })
       .where(eq(aiChatTable.chatId, chatId))
   }
@@ -459,6 +463,11 @@ class AIPersistServiceStatic {
 
       // Clear deleted sessions from cache
       chatIdsToDelete.forEach((chatId) => this.clearSessionCache(chatId))
+      for (const chatId of chatIdsToDelete) {
+        await followClient.api.aiChatSessions.delete({ chatId }).catch((error) => {
+          console.error("Failed to delete remote chat sessions:", error)
+        })
+      }
     }
   }
 }

@@ -17,6 +17,7 @@ import { FixedModalCloseButton } from "~/components/ui/modal/components/close"
 import { PlainModal } from "~/components/ui/modal/stacked/custom-modal"
 import { useModalStack } from "~/components/ui/modal/stacked/hooks"
 import { useRenderStyle } from "~/hooks/biz/useRenderStyle"
+import { getDefaultLanguage } from "~/lib/language"
 
 const ViewTag = IN_ELECTRON ? "webview" : "iframe"
 
@@ -54,6 +55,7 @@ export const VideoPlayer: React.FC<VideoPlayerProps> = ({
     return { attachments, duration, firstMedia, url, media }
   })
 
+  const lang = getDefaultLanguage()
   const [miniIframeSrc, iframeSrc] = useMemo(
     () => [
       transformVideoUrl({
@@ -61,11 +63,13 @@ export const VideoPlayer: React.FC<VideoPlayerProps> = ({
         mini: true,
         isIframe: !IN_ELECTRON,
         attachments: entry?.attachments,
+        lang,
       }),
       transformVideoUrl({
         url: entry?.url ?? "",
         isIframe: !IN_ELECTRON,
         attachments: entry?.attachments,
+        lang,
       }),
     ],
     [entry?.attachments, entry?.url],

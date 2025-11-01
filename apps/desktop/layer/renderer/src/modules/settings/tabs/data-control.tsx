@@ -33,7 +33,7 @@ import { SettingActionItem, SettingDescription } from "../control"
 import { createSetting } from "../helper/builder"
 import { SettingItemGroup } from "../section"
 
-const { SettingBuilder } = createSetting(useGeneralSettingValue, setGeneralSetting)
+const { SettingBuilder } = createSetting("general", useGeneralSettingValue, setGeneralSetting)
 
 export const SettingDataControl = () => {
   const { t } = useTranslation("settings")

@@ -399,10 +399,6 @@ export const useRegisterEntryCommands = () => {
         icon: <i className="i-mgc-ai-cute-re" />,
         category,
         run: () => {
-          if (role === UserRole.Free || role === UserRole.Trial) {
-            presentActivationModal()
-            return
-          }
           toggleShowAISummaryOnce()
         },
       },

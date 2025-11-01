@@ -13,6 +13,7 @@
     "typecheck": "tsc --noEmit"
   },
   "dependencies": {
+    "@byjohann/toon": "0.4.0",
     "@dnd-kit/core": "6.3.1",
     "@dnd-kit/sortable": "10.0.0",
     "@electron-toolkit/preload": "3.0.2",
@@ -29,6 +30,7 @@
     "@lexical/markdown": "0.33.1",
     "@lexical/react": "0.33.1",
     "@lottiefiles/dotlottie-react": "0.17.5",
+    "@number-flow/react": "0.5.10",
     "@openpanel/web": "1.0.1",
     "@radix-ui/react-avatar": "1.1.10",
     "@radix-ui/react-context-menu": "2.2.16",
@@ -84,7 +86,6 @@
     "nanoid": "5.1.6",
     "ofetch": "1.4.1",
     "plain-shiki": "0.3.1",
-    "progressive-blur": "1.0.0",
     "re-resizable": "6.11.2",
     "react": "19.0.0",
     "react-blurhash": "0.3.0",
@@ -125,7 +126,7 @@
     "@follow/models": "workspace:*",
     "@follow/types": "workspace:*",
     "@follow/utils": "workspace:*",
-    "@folo-services/ai-tools": "0.2.47",
+    "@folo-services/ai-tools": "0.2.49",
     "@types/node": "24.8.1",
     "@vite-pwa/assets-generator": "1.0.2",
     "fake-indexeddb": "6.2.4",

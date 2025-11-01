@@ -68,7 +68,7 @@ jobs:
 
       - name: 📤 Upload apk Artifact
         if: github.event.inputs.profile != 'production'
-        uses: actions/upload-artifact@v4
+        uses: actions/upload-artifact@v5
         with:
           name: app-android
           path: ${{ github.workspace }}/build.apk
@@ -76,7 +76,7 @@ jobs:
 
       - name: 📤 Upload aab Artifact
         if: github.event.inputs.profile == 'production'
-        uses: actions/upload-artifact@v4
+        uses: actions/upload-artifact@v5
         with:
           name: aab-android
           path: ${{ github.workspace }}/build.aab

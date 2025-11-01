@@ -152,7 +152,7 @@ export const ChatInput = memo(
     )
 
     return (
-      <div className={cn(chatInputVariants({ variant }))}>
+      <div data-testid="chat-input" className={cn(chatInputVariants({ variant }))}>
         {/* Input Area */}
         <div className="relative z-10 flex items-end" onContextMenu={stopPropagation}>
           <ScrollArea rootClassName="mr-14 flex-1 overflow-auto" viewportClassName="px-5 py-3.5">

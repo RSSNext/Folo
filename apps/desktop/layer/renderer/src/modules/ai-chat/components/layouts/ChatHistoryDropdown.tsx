@@ -38,7 +38,7 @@ export const ChatHistoryDropdown = ({
     (open: boolean) => {
       if (open) {
         loadHistory()
-        AIPersistService.cleanupEmptySessions()
+        // AIPersistService.cleanupEmptySessions()
       }
     },
     [loadHistory],
@@ -95,7 +95,7 @@ export const ChatHistoryDropdown = ({
         {triggerElement || defaultTrigger}
       </DropdownMenuTrigger>
       <DropdownMenuContent align="start" className="max-h-96 w-72 overflow-y-auto">
-        {loading ? (
+        {loading && sessions.length === 0 ? (
           <div className="flex items-center justify-center py-8">
             <i className="i-mgc-loading-3-cute-re size-5 animate-spin text-text-secondary" />
           </div>
@@ -107,16 +107,17 @@ export const ChatHistoryDropdown = ({
             {sessions.map((session) => (
               <DropdownMenuItem
                 key={session.chatId}
-                onClick={() => startTransition(() => chatActions.switchToChat(session.chatId))}
-                className="group flex h-12 cursor-pointer items-center justify-between rounded-md px-2 py-3"
+                onClick={() =>
+                  startTransition(() => {
+                    chatActions.setTimelineSummaryManualOverride(true)
+                    chatActions.switchToChat(session.chatId)
+                  })
+                }
+                className="group flex h-8 cursor-pointer items-center justify-between rounded-md px-2 py-3"
               >
                 <div className="min-w-0 flex-1">
                   <p className="truncate text-sm font-medium">
                     {session.title || t("common.new_chat")}
-                  </p>
-                  <p className="mt-0.5 text-xs text-text-secondary group-data-[highlighted]:text-text-secondary-dark">
-                    <span>{session.messageCount}</span>
-                    <span> {session.messageCount === 1 ? "message" : "messages"}</span>
                   </p>
                 </div>
                 <div className="relative flex min-w-0 items-center">

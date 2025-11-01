@@ -36,7 +36,7 @@ const devPrint = (): PluginOption => ({
       )
       console.info(
         `  ${green("➜")}  ${dim("Development debug")}: ${cyan(
-          "https://dev.follow.is/__debug_proxy",
+          "https://dev.folo.is/__debug_proxy",
         )}`,
       )
     }

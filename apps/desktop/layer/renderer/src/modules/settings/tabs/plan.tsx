@@ -1,71 +1,54 @@
 import { Button } from "@follow/components/ui/button/index.js"
-import { UserRole, UserRoleName } from "@follow/constants"
+import { SegmentGroup, SegmentItem } from "@follow/components/ui/segment/index.jsx"
+import { UserRole } from "@follow/constants"
 import { DEEPLINK_SCHEME, IN_ELECTRON } from "@follow/shared"
 import { env } from "@follow/shared/env.desktop"
-import { useRoleEndAt, useUserRole, useWhoami } from "@follow/store/user/hooks"
+import { useUserRole, useWhoami } from "@follow/store/user/hooks"
 import { cn } from "@follow/utils/utils"
+import NumberFlow from "@number-flow/react"
 import { useMutation, useQuery } from "@tanstack/react-query"
 import { useState } from "react"
-import { Trans } from "react-i18next"
+import { useTranslation } from "react-i18next"
 import { toast } from "sonner"
 
+import type { PaymentFeature, PaymentPlan } from "~/atoms/server-configs"
+import { useIsPaymentEnabled, useServerConfigs } from "~/atoms/server-configs"
 import { subscription } from "~/lib/auth"
 
-// Plan configuration types
-interface Plan {
-  id: string
-  title: string
-  monthlyPrice: number
-  yearlyPrice: number
-  features: string[]
-  isPopular?: boolean
-  role: UserRole
-  isComingSoon?: boolean
-  tier: number // Add tier for hierarchy comparison
+const formatFeatureValue = (
+  key: keyof PaymentFeature,
+  value: number | boolean | null | undefined,
+): string => {
+  if (value == null || value === undefined) {
+    return "—"
+  }
+
+  if (typeof value === "boolean") {
+    return value ? "✓" : "—"
+  }
+
+  if (key === "PRIORITY_SUPPORT" && typeof value === "number") {
+    return "⭐️".repeat(value)
+  }
+
+  if (value === Number.MAX_SAFE_INTEGER) {
+    return "Unlimited"
+  }
+
+  return new Intl.NumberFormat("en", {
+    notation: "compact",
+    compactDisplay: "short",
+    maximumFractionDigits: 1,
+  }).format(value)
 }
 
-// Plan hierarchy: Free (1) < Pro Preview (2) < Pro (3)
-const PLAN_TIER_MAP: Record<UserRole, number> = {
-  [UserRole.Admin]: 4, // Admin has highest tier
-  [UserRole.Free]: 1,
-  [UserRole.Trial]: 1, // Same as Free (deprecated)
-  [UserRole.PreProTrial]: 2,
-  [UserRole.Pro]: 3,
-}
-
-// Plan configurations
-const PLAN_CONFIGS: Plan[] = [
-  {
-    id: "free",
-    title: UserRoleName[UserRole.Free],
-    monthlyPrice: 0,
-    yearlyPrice: 0,
-    features: ["50 feeds", "10 lists"],
-    isPopular: false,
-    role: UserRole.Free,
-    tier: PLAN_TIER_MAP[UserRole.Free],
-  },
-  {
-    id: "folo pro",
-    title: UserRoleName[UserRole.Pro],
-    monthlyPrice: 20,
-    yearlyPrice: 180,
-    features: [
-      "1000 feeds and lists",
-      "10 inboxes",
-      "10 actions",
-      "100 webhooks",
-      "Advanced AI features",
-    ],
-    isPopular: true,
-    role: UserRole.Pro,
-    tier: PLAN_TIER_MAP[UserRole.Pro],
-  },
-]
-
-const useUpgradePlan = ({ plan, annual }: { plan: string; annual: boolean }) => {
+const useUpgradePlan = ({ plan, annual }: { plan: string | undefined; annual: boolean }) => {
   return useMutation({
     mutationFn: async () => {
+      if (!plan) {
+        return
+      }
+
       const res = await subscription.upgrade({
         plan,
         annual,
@@ -86,22 +69,20 @@ const useActiveSubscription = () => {
     queryKey: ["activeSubscription"],
     queryFn: async () => {
       const { data } = await subscription.list()
-      return data
+      return data?.find((sub) => sub.status === "active" || sub.status === "trialing")
     },
     enabled: !!userId,
   })
 }
 
 const useCancelPlan = () => {
-  const activeSubscription = useActiveSubscription()
-  const latestSubscription = activeSubscription.data?.at(-1)
+  const { data: latestSubscription } = useActiveSubscription()
   const subscriptionId = latestSubscription?.id
   const cancelAtPeriodEnd = latestSubscription?.cancelAtPeriodEnd
 
   const cancelMutation = useMutation({
     mutationFn: async () => {
       if (!subscriptionId) {
-        toast.error("No active subscription found.")
         return
       }
 
@@ -117,7 +98,7 @@ const useCancelPlan = () => {
     },
   })
 
-  if (cancelAtPeriodEnd) {
+  if (cancelAtPeriodEnd || !subscriptionId) {
     return null
   } else {
     return cancelMutation
@@ -125,162 +106,175 @@ const useCancelPlan = () => {
 }
 
 export function SettingPlan() {
+  const isPaymentEnabled = useIsPaymentEnabled()
   const role = useUserRole()
-  const roleEndDate = useRoleEndAt()
   const [billingPeriod, setBillingPeriod] = useState<"monthly" | "yearly">("yearly")
 
-  const daysLeft = roleEndDate
-    ? Math.ceil((roleEndDate.getTime() - Date.now()) / (1000 * 60 * 60 * 24))
-    : null
+  const serverConfig = useServerConfigs()
+  const plans = serverConfig?.PAYMENT_PLAN_LIST || []
+  const currentPlan = plans.find((plan) => plan.role === role)
+  const currentTier = currentPlan?.tier || 0
+
+  // Calculate average savings percentage across all paid plans
+  const averageSavings = Math.round(
+    plans
+      .filter((plan) => plan.priceInDollars > 0 && plan.priceInDollarsAnnual > 0)
+      .reduce((acc, plan) => {
+        const monthlyTotal = plan.priceInDollars * 12
+        const yearlyTotal = plan.priceInDollarsAnnual
+        const savings = ((monthlyTotal - yearlyTotal) / monthlyTotal) * 100
+        return acc + savings
+      }, 0) / plans.filter((plan) => plan.priceInDollars > 0).length,
+  )
+  if (!isPaymentEnabled) {
+    return null
+  }
 
   return (
     <section className="mt-4 space-y-8">
-      {/* Description Section */}
-      <p className="mb-4 space-y-2 text-sm">
-        <Trans ns="settings" i18nKey="plan.description" />
-      </p>
-
       {/* Billing Period Toggle */}
       <div className="flex justify-center">
-        <div className="inline-flex rounded-lg bg-fill-secondary p-1">
-          <button
-            type="button"
-            onClick={() => setBillingPeriod("monthly")}
-            className={cn(
-              "rounded-md px-4 py-2 text-sm font-medium transition-all",
-              billingPeriod === "monthly"
-                ? "bg-background text-text shadow-sm"
-                : "text-text-secondary hover:text-text",
-            )}
-          >
-            Monthly
-          </button>
-          <button
-            type="button"
-            onClick={() => setBillingPeriod("yearly")}
-            className={cn(
-              "rounded-md px-4 py-2 text-sm font-medium transition-all",
-              billingPeriod === "yearly"
-                ? "bg-background text-text shadow-sm"
-                : "text-text-secondary hover:text-text",
-            )}
-          >
-            <span>Yearly</span>
-            <span className="ml-2 text-xs font-medium text-green">Save 25%</span>
-          </button>
-        </div>
+        <SegmentGroup
+          value={billingPeriod}
+          onValueChanged={(value) => setBillingPeriod(value as "monthly" | "yearly")}
+        >
+          <SegmentItem value="monthly" label="Monthly" />
+          <SegmentItem
+            value="yearly"
+            label={
+              <span className="flex items-center gap-2">
+                <span>Yearly</span>
+                {averageSavings > 0 && (
+                  <span className="text-xs font-semibold text-green">Save {averageSavings}%</span>
+                )}
+              </span>
+            }
+          />
+        </SegmentGroup>
       </div>
 
       {/* Plans Grid */}
       <div className="@container">
         <div className="grid grid-cols-1 gap-4 @md:grid-cols-2 @xl:grid-cols-3">
-          {PLAN_CONFIGS.map((plan) => (
+          {plans.map((plan) => (
             <PlanCard
-              key={plan.id}
+              key={plan.name}
               plan={plan}
               billingPeriod={billingPeriod}
-              currentUserRole={role || null}
-              daysLeft={daysLeft}
               isCurrentPlan={role === plan.role}
+              currentTier={currentTier}
             />
           ))}
         </div>
       </div>
+
+      {/* Comparison Table */}
+      <PlanComparisonTable plans={plans} />
     </section>
   )
 }
 
 // Reusable PlanCard Component
 interface PlanCardProps {
-  plan: Plan
+  plan: PaymentPlan
   billingPeriod: "monthly" | "yearly"
-  currentUserRole: UserRole | null
   isCurrentPlan: boolean
-  daysLeft: number | null
+  currentTier: number
 }
 
-const PlanCard = ({
-  plan,
-  billingPeriod,
-  currentUserRole,
-  isCurrentPlan,
-  daysLeft,
-}: PlanCardProps) => {
-  const getPlanActionType = (): "current" | "upgrade" | "coming-soon" | "in-trial" | null => {
+const PlanCard = ({ plan, billingPeriod, isCurrentPlan, currentTier }: PlanCardProps) => {
+  const { t } = useTranslation("settings")
+  const getPlanActionType = ():
+    | "current"
+    | "upgrade"
+    | "coming-soon"
+    | "in-trial"
+    | "switch"
+    | null => {
     if (plan.isComingSoon) return "coming-soon"
-
-    if (!currentUserRole) {
-      return plan.tier > PLAN_TIER_MAP[UserRole.Free] ? "upgrade" : "current"
-    }
-
-    const currentTier = PLAN_TIER_MAP[currentUserRole]
-    const targetTier = plan.tier
-
-    if (currentTier === targetTier) {
-      // if (currentUserRole === UserRole.PreProTrial) {
-      //   return "in-trial"
-      // } else {
-      //   return "current"
+    switch (true) {
+      case isCurrentPlan: {
+        return "current"
+      }
+      case plan.tier > currentTier && !!plan.planID: {
+        return "upgrade"
+      }
+      // case plan.tier < currentTier && !!plan.planID: {
+      //   return "switch"
       // }
-      return "current"
+      default: {
+        return null
+      }
     }
-    if (targetTier > currentTier) return "upgrade"
-    return null
   }
 
   const actionType = getPlanActionType()
   const upgradePlanMutation = useUpgradePlan({
-    plan: "folo pro",
+    plan: plan.planID,
     annual: billingPeriod === "yearly",
   })
   const cancelPlanMutation = useCancelPlan()
 
   // Calculate price and period based on billing period
-  const price = billingPeriod === "yearly" ? plan.yearlyPrice : plan.monthlyPrice
-  const formattedPrice = price === 0 ? "$0" : `$${price}`
-  const period = plan.role === UserRole.Free ? "" : billingPeriod === "yearly" ? "year" : "month"
+  const regularPrice =
+    billingPeriod === "yearly" ? plan.priceInDollarsAnnual / 12 : plan.priceInDollars
+  const discountPrice =
+    billingPeriod === "yearly"
+      ? (plan.priceInDollarsInDiscountAnnual || 0) / 12
+      : plan.priceInDollarsInDiscount
+  const period = plan.role === UserRole.Free ? "" : "month"
 
-  // Calculate savings for yearly plan
-  const yearlyTotalPrice = plan.yearlyPrice
-  const monthlyTotalPrice = plan.monthlyPrice * 12
-  const savingsPercentage =
-    plan.monthlyPrice > 0 && plan.yearlyPrice > 0
-      ? Math.round(((monthlyTotalPrice - yearlyTotalPrice) / monthlyTotalPrice) * 100)
-      : 0
+  // Calculate discount percentage from prices
+  const hasDiscount =
+    discountPrice &&
+    discountPrice > 0 &&
+    discountPrice < regularPrice &&
+    discountPrice !== regularPrice
+
+  // Use discount price if available, otherwise use regular price
+  const finalPrice = hasDiscount ? discountPrice : regularPrice
+  const regularPriceForStrike = hasDiscount && regularPrice > 0 ? regularPrice : undefined
+
+  // Calculate discount percentage
+  const discountPercentage = hasDiscount
+    ? Math.round(((regularPrice - discountPrice) / regularPrice) * 100)
+    : 0
+
+  // Create discount description
+  const discountDescription =
+    hasDiscount && discountPercentage > 0
+      ? `Early bird discount, ${discountPercentage}% off`
+      : undefined
+
+  // Get plan description from i18n
+  const planDescriptionKey = `plan.descriptions.${plan.role}` as const
+  const planDescription = t(planDescriptionKey, { defaultValue: "" })
 
   return (
     <div
       className={cn(
         "group relative flex h-full flex-col overflow-hidden rounded-xl border transition-all duration-200",
-        plan.isPopular
-          ? "border-accent"
+        actionType === "upgrade"
+          ? "border-accent/40 bg-background shadow-sm hover:border-accent/60 hover:shadow-md"
           : "border-fill-tertiary bg-background hover:border-fill-secondary",
-        isCurrentPlan &&
-          "bg-gradient-to-b from-accent/5 to-transparent shadow-lg shadow-accent/10 ring-2 ring-accent ring-offset-2 ring-offset-background",
         plan.isComingSoon && "opacity-75",
+        isCurrentPlan && "border-blue/30",
       )}
     >
       <PlanBadges isPopular={plan.isPopular || false} />
 
-      <div className="flex h-full flex-col p-4 @md:p-5">
-        <div className="flex-1 space-y-3 @md:space-y-4">
-          <PlanHeader
-            title={plan.title}
-            price={formattedPrice}
-            period={period}
-            billingPeriod={billingPeriod}
-            monthlyPrice={plan.monthlyPrice}
-            yearlyPrice={plan.yearlyPrice}
-            savingsPercentage={savingsPercentage}
-          />
-          <PlanFeatures features={plan.features} />
-          <div />
-        </div>
+      <div className="flex h-full flex-col justify-between gap-4 p-4 @md:p-5">
+        <PlanHeader
+          title={plan.name}
+          price={finalPrice}
+          regularPrice={regularPriceForStrike}
+          period={period}
+          description={planDescription}
+          discountDescription={discountDescription}
+        />
 
         <PlanAction
-          isPopular={plan.isPopular || false}
           actionType={actionType}
-          daysLeft={daysLeft}
           isLoading={upgradePlanMutation.isPending || cancelPlanMutation?.isPending}
           onSelect={
             !plan.isComingSoon && !isCurrentPlan
@@ -290,7 +284,7 @@ const PlanCard = ({
               : undefined
           }
           onCancel={
-            isCurrentPlan && plan.role !== UserRole.Free && cancelPlanMutation
+            isCurrentPlan && cancelPlanMutation
               ? () => {
                   cancelPlanMutation.mutate()
                 }
@@ -299,8 +293,10 @@ const PlanCard = ({
         />
       </div>
 
-      {/* Subtle gradient line at bottom */}
-      <div className="absolute inset-x-0 bottom-0 h-px bg-gradient-to-r from-transparent via-fill-tertiary to-transparent" />
+      {/* Subtle bottom accent line */}
+      {actionType === "upgrade" && (
+        <div className="absolute inset-x-0 bottom-0 h-px bg-gradient-to-r from-transparent via-accent/30 to-transparent" />
+      )}
     </div>
   )
 }
@@ -310,7 +306,7 @@ const PlanBadges = ({ isPopular }: { isPopular: boolean }) => (
   <>
     {isPopular && (
       <div className="absolute -top-px right-4 z-10">
-        <div className="rounded-b-lg bg-gradient-to-r from-accent to-accent/80 px-1.5 py-1 text-caption font-medium text-white shadow-sm">
+        <div className="rounded-b-lg bg-gradient-to-r from-accent to-accent/90 px-2.5 py-1 text-caption font-medium text-white shadow-sm">
           Most Popular
         </div>
       </div>
@@ -321,108 +317,107 @@ const PlanBadges = ({ isPopular }: { isPopular: boolean }) => (
 const PlanHeader = ({
   title,
   price,
+  regularPrice,
   period,
-  billingPeriod,
-  monthlyPrice,
-  yearlyPrice,
-  savingsPercentage,
+  description,
+  discountDescription,
 }: {
   title: string
-  price: string
+  price: number
+  regularPrice?: number
   period: string
-  billingPeriod: "monthly" | "yearly"
-  monthlyPrice: number
-  yearlyPrice: number
-  savingsPercentage: number
+  description?: string
+  discountDescription?: string
 }) => (
-  <div className="space-y-1">
-    <h3 className="text-base font-semibold @md:text-lg">{title}</h3>
-    <div className="flex items-baseline gap-1">
-      <span className="text-xl font-bold">{price}</span>
-      {period && <span className="text-xs text-text-secondary @md:text-sm">/{period}</span>}
-    </div>
-    <div className="h-7 space-y-0.5 @md:h-8">
-      {billingPeriod === "yearly" &&
-        monthlyPrice > 0 &&
-        yearlyPrice > 0 &&
-        savingsPercentage > 0 && (
-          <div className="flex items-center gap-2 text-xs">
-            <span className="text-text-tertiary line-through">
-              ${(monthlyPrice * 12).toFixed(0)}/year
-            </span>
-            <span className="font-medium text-green">Save {savingsPercentage}%</span>
-          </div>
+  <div className="space-y-2.5">
+    <h3 className="text-lg font-semibold">{title}</h3>
+    <div className="space-y-1.5">
+      <div className="flex items-baseline gap-1.5">
+        <NumberFlow
+          className="text-2xl font-bold"
+          value={price}
+          locales="en-US"
+          format={{ style: "currency", currency: "USD", trailingZeroDisplay: "stripIfInteger" }}
+        />
+        {period && <span className="text-xs text-text-secondary @md:text-sm">/{period}</span>}
+
+        {typeof regularPrice === "number" && regularPrice > 0 && (
+          <span className="relative inline-block text-sm text-text-tertiary after:absolute after:inset-x-0 after:top-1/2 after:h-px after:w-full after:translate-y-1/2 after:bg-text-tertiary after:content-['']">
+            <NumberFlow
+              value={regularPrice}
+              locales="en-US"
+              format={{ style: "currency", currency: "USD", trailingZeroDisplay: "stripIfInteger" }}
+            />
+          </span>
         )}
-      {billingPeriod === "yearly" && monthlyPrice > 0 && yearlyPrice > 0 && (
-        <div className="text-xs text-text-secondary">
-          ${(yearlyPrice / 12).toFixed(1)}/month billed annually
+      </div>
+      {typeof regularPrice === "number" && regularPrice > 0 && (
+        <div className="flex items-center gap-2">
+          {discountDescription && (
+            <span className="inline-flex items-center gap-1 rounded-md bg-green/10 px-1.5 py-0.5 text-xs font-medium text-green">
+              {discountDescription}
+            </span>
+          )}
         </div>
       )}
     </div>
-  </div>
-)
-
-const PlanFeatures = ({ features }: { features: string[] }) => (
-  <div className="space-y-1.5 @md:space-y-2">
-    {features.map((feature) => (
-      <div key={feature} className="flex items-start gap-2.5 @md:gap-3">
-        <div className="mt-0.5 flex size-3.5 items-center justify-center rounded-full bg-green/10 @md:size-4">
-          <i className="i-mgc-check-cute-re text-[10px] text-green @md:text-xs" />
-        </div>
-        <span className="text-xs leading-relaxed @md:text-sm">{feature}</span>
-      </div>
-    ))}
+    {description && <p className="text-xs leading-relaxed text-text-secondary">{description}</p>}
   </div>
 )
 
 const PlanAction = ({
-  isPopular,
   actionType,
   onSelect,
   onCancel,
   isLoading,
-  daysLeft,
 }: {
-  isPopular: boolean
-  actionType: "current" | "upgrade" | "coming-soon" | "in-trial" | null
+  actionType: "current" | "upgrade" | "coming-soon" | "in-trial" | "switch" | null
   onSelect?: () => void
   onCancel?: () => void
   isLoading?: boolean
-  daysLeft: number | null
 }) => {
   const getButtonConfig = () => {
     switch (actionType) {
       case "coming-soon": {
         return {
           text: "Coming Soon",
+          icon: "i-mgc-time-cute-re",
           variant: "outline" as const,
-          className: "w-full h-9 @md:h-10 text-xs @md:text-sm",
           disabled: true,
         }
       }
       case "current": {
         return {
-          text: typeof daysLeft === "number" ? `${daysLeft} days left` : "Current Plan",
+          text: `Current Plan${onCancel ? " | Cancel" : ""}`,
+          icon: undefined,
           variant: "outline" as const,
-          className: "w-full h-9 @md:h-10 text-xs @md:text-sm text-text-secondary",
-          disabled: true,
+          className: onCancel ? "" : "text-text-secondary",
+          disabled: onCancel ? false : true,
         }
       }
       case "in-trial": {
         return {
-          text: `In Trial (${daysLeft} days left)`,
+          text: "In Trial",
+          icon: "i-mgc-stopwatch-cute-re",
           variant: "outline" as const,
-          className: "w-full h-9 @md:h-10 text-xs @md:text-sm",
           disabled: false,
         }
       }
       case "upgrade": {
         return {
           text: "Upgrade",
-          variant: isPopular ? undefined : ("outline" as const),
-          className: isPopular
-            ? "w-full h-9 @md:h-10 text-xs @md:text-sm bg-gradient-to-r from-accent to-accent/80 hover:from-accent/90 hover:to-accent/70"
-            : "w-full h-9 @md:h-10 text-xs @md:text-sm",
+          icon: "i-mgc-arrow-up-cute-re",
+          className:
+            "bg-gradient-to-r from-accent to-accent/90 text-white hover:from-accent/95 hover:to-accent/85",
+          disabled: false,
+        }
+      }
+      case "switch": {
+        return {
+          text: "Switch Plan",
+          icon: "i-mgc-transfer-cute-re",
+          className:
+            "bg-gradient-to-r from-accent to-accent/90 text-white font-semibold hover:from-accent/95 hover:to-accent/85",
           disabled: false,
         }
       }
@@ -439,27 +434,98 @@ const PlanAction = ({
   }
 
   return (
-    <div className="space-y-2">
-      <Button
-        variant={buttonConfig.variant}
-        buttonClassName={buttonConfig.className}
-        disabled={buttonConfig.disabled}
-        onClick={buttonConfig.disabled ? undefined : onSelect}
-        isLoading={isLoading}
-      >
-        {buttonConfig.text}
-      </Button>
-
-      {actionType === "current" && typeof daysLeft === "number" && onCancel && (
-        <Button
-          variant="ghost"
-          buttonClassName="w-full h-8 text-xs text-text-tertiary hover:text-red"
-          onClick={onCancel}
-          disabled={isLoading}
-        >
-          Cancel
-        </Button>
+    <Button
+      variant={buttonConfig.variant}
+      buttonClassName={cn(
+        "w-full h-9 text-sm font-medium transition-all duration-200",
+        buttonConfig.className,
       )}
+      disabled={buttonConfig.disabled}
+      onClick={buttonConfig.disabled ? undefined : (onCancel ?? onSelect)}
+      isLoading={isLoading}
+    >
+      <span className="flex items-center justify-center gap-1.5">
+        {buttonConfig.icon && <i className={cn(buttonConfig.icon, "text-sm")} />}
+        <span>{buttonConfig.text}</span>
+      </span>
+    </Button>
+  )
+}
+
+const PlanComparisonTable = ({ plans }: { plans: PaymentPlan[] }) => {
+  const { t } = useTranslation("settings")
+
+  // Get all unique feature keys
+  const allFeatureKeys = Array.from(
+    new Set(plans.flatMap((plan) => Object.keys(plan.limit))),
+  ) as (keyof PaymentFeature)[]
+
+  // Filter out features that are all false/0/null
+  const visibleFeatureKeys = allFeatureKeys.filter((key) =>
+    plans.some((plan) => {
+      const value = plan.limit[key]
+      if (value == null) return false
+      if (typeof value === "boolean" && !value) return false
+      if (typeof value === "number" && value === 0) return false
+      return true
+    }),
+  )
+
+  return (
+    <div className="overflow-hidden rounded-xl border border-fill-tertiary bg-background">
+      <div className="overflow-x-auto">
+        <table className="w-full">
+          <thead>
+            <tr className="border-b border-fill-tertiary bg-fill-secondary/50">
+              <th className="sticky left-0 z-10 bg-fill-secondary/50 px-4 py-3 text-left text-sm font-semibold">
+                Features
+              </th>
+              {plans.map((plan) => (
+                <th key={plan.name} className="px-4 py-3 text-center text-sm font-semibold">
+                  {plan.name}
+                </th>
+              ))}
+            </tr>
+          </thead>
+          <tbody>
+            {visibleFeatureKeys.map((featureKey, index) => (
+              <tr
+                key={featureKey}
+                className={cn(
+                  "border-b border-fill-tertiary transition-colors hover:bg-fill-secondary/30",
+                  index % 2 === 0 ? "bg-background" : "bg-fill-secondary/20",
+                )}
+              >
+                <td className="sticky left-0 z-10 bg-inherit px-4 py-3 text-sm font-medium">
+                  {t(`plan.features.${featureKey}` as any)}
+                </td>
+                {plans.map((plan) => {
+                  const value = plan.limit[featureKey]
+                  const formattedValue = formatFeatureValue(featureKey, value)
+
+                  return (
+                    <td
+                      key={`${plan.name}-${featureKey}`}
+                      className="px-4 py-3 text-center text-sm"
+                    >
+                      <span
+                        className={cn(
+                          "font-medium",
+                          formattedValue === "—" && "text-text-tertiary",
+                          formattedValue === "✓" && "text-green",
+                          formattedValue === "Unlimited" && "text-accent",
+                        )}
+                      >
+                        {formattedValue}
+                      </span>
+                    </td>
+                  )
+                })}
+              </tr>
+            ))}
+          </tbody>
+        </table>
+      </div>
     </div>
   )
 }

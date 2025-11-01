@@ -278,6 +278,8 @@ class APIMorph {
       roleEndAt: data.roleEndAt,
       deleted: data.deleted,
       stripeCustomerId: data.stripeCustomerId,
+      inactive: data.inactive,
+      lastLoginMethod: data.lastLoginMethod,
     }
   }
 }

@@ -5,7 +5,6 @@ export interface ChatSession {
   title?: string
   createdAt: Date
   updatedAt: Date
-  messageCount: number
 }
 
 export type RichTextPart = {

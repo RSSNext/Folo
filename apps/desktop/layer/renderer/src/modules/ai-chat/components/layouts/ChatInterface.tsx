@@ -59,7 +59,7 @@ import { WelcomeScreen } from "./WelcomeScreen"
 const SCROLL_BOTTOM_THRESHOLD = 100
 
 const draftMessages = new Map<string, EditorState>()
-const ChatInterfaceContent = ({ centerInputOnEmpty, visualOffsetY }: ChatInterfaceProps) => {
+const ChatInterfaceContent = ({ centerInputOnEmpty }: ChatInterfaceProps) => {
   const hasMessages = useHasMessages()
   const status = useChatStatus()
   const chatActions = useChatActions()
@@ -117,7 +117,7 @@ const ChatInterfaceContent = ({ centerInputOnEmpty, visualOffsetY }: ChatInterfa
     previousMinHeightRef.current = 0
   }, [currentChatId])
 
-  const { isLoading: isLoadingHistory } = useLoadMessages(currentChatId || "", {
+  const { isLoading: isLoadingHistory, isSyncingRemote } = useLoadMessages(currentChatId || "", {
     onLoad: () => {
       nextFrame(() => {
         const $scrollArea = scrollAreaRef
@@ -333,6 +333,8 @@ const ChatInterfaceContent = ({ centerInputOnEmpty, visualOffsetY }: ChatInterfa
   }, [status, resetScrollState, messageContainerMinHeight, scrollAreaRef])
 
   const shouldShowScrollToBottom = hasMessages && !isAtBottom && !isLoadingHistory
+  const shouldShowLoadingOverlay =
+    Boolean(currentChatId) && !hasMessages && (isLoadingHistory || isSyncingRemote)
 
   const { handleScroll } = useAttachScrollBeyond()
 
@@ -343,23 +345,26 @@ const ChatInterfaceContent = ({ centerInputOnEmpty, visualOffsetY }: ChatInterfa
   const rateLimitExtraHeight = hasRateLimitError ? 40 : 0
 
   return (
-    <div
-      className="flex size-full flex-col @container"
-      style={
-        visualOffsetY
-          ? ({
-              transform: `translateY(${typeof visualOffsetY === "number" ? `${visualOffsetY}px` : visualOffsetY})`,
-            } as React.CSSProperties)
-          : undefined
-      }
-    >
+    <div className="flex size-full flex-col @container">
       <GlobalFileDropZone className="flex size-full flex-col @container">
         <div className="flex min-h-0 flex-1 flex-col" ref={scrollContainerParentRef}>
           <AnimatePresence>
-            {!hasMessages && !isLoadingHistory ? (
+            {!hasMessages && !shouldShowLoadingOverlay ? (
               <WelcomeScreen centerInputOnEmpty={centerInputOnEmpty} />
             ) : (
               <>
+                {shouldShowLoadingOverlay ? (
+                  <div className="absolute inset-0 flex items-center justify-center">
+                    <div className="flex -translate-y-24 flex-col items-center space-y-2">
+                      <i className="i-mgc-loading-3-cute-re size-8 animate-spin text-text" />
+                      {isSyncingRemote && (
+                        <p className="text-sm text-text-secondary">
+                          Syncing messages from server...
+                        </p>
+                      )}
+                    </div>
+                  </div>
+                ) : null}
                 <ScrollArea
                   onScroll={handleScroll}
                   flex
@@ -378,26 +383,20 @@ const ChatInterfaceContent = ({ centerInputOnEmpty, visualOffsetY }: ChatInterfa
                   }}
                   viewportClassName={"pt-12"}
                 >
-                  {isLoadingHistory ? (
-                    <div className="flex min-h-96 items-center justify-center">
-                      <i className="i-mgc-loading-3-cute-re size-8 animate-spin text-text" />
-                    </div>
-                  ) : (
-                    <div
-                      className="mx-auto w-full max-w-4xl px-6 py-8"
-                      style={{
-                        minHeight: messageContainerMinHeight
-                          ? `${messageContainerMinHeight}px`
-                          : undefined,
-                      }}
-                    >
-                      <Messages contentRef={messagesContentRef as RefObject<HTMLDivElement>} />
+                  <div
+                    className="mx-auto w-full max-w-4xl px-6 py-8"
+                    style={{
+                      minHeight: messageContainerMinHeight
+                        ? `${messageContainerMinHeight}px`
+                        : undefined,
+                    }}
+                  >
+                    <Messages contentRef={messagesContentRef as RefObject<HTMLDivElement>} />
 
-                      {(status === "submitted" || status === "streaming") && (
-                        <AIChatWaitingIndicator />
-                      )}
-                    </div>
-                  )}
+                    {(status === "submitted" || status === "streaming") && (
+                      <AIChatWaitingIndicator />
+                    )}
+                  </div>
                 </ScrollArea>
               </>
             )}
@@ -424,6 +423,7 @@ const ChatInterfaceContent = ({ centerInputOnEmpty, visualOffsetY }: ChatInterfa
 
         <div
           ref={bottomPanelRef}
+          data-testid="chat-input-container"
           className={cn(
             "absolute z-10 mx-auto duration-500 ease-in-out",
             hasMessages && "inset-x-0 bottom-0 max-w-4xl px-4 pb-4",
@@ -496,7 +496,6 @@ const ChatInterfaceContent = ({ centerInputOnEmpty, visualOffsetY }: ChatInterfa
 
 interface ChatInterfaceProps {
   centerInputOnEmpty?: boolean
-  visualOffsetY?: string | number
 }
 export const ChatInterface = (props: ChatInterfaceProps) => (
   <ErrorBoundary fallback={AIErrorFallback}>

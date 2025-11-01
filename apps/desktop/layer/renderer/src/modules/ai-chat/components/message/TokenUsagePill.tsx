@@ -41,7 +41,7 @@ export const TokenUsagePill: React.FC<TokenUsagePillProps> = ({ metadata, childr
             </div>
           </div>
           <div className="space-y-2 text-xs">
-            <div className="font-medium text-text">Token Usage</div>
+            <div className="font-medium text-text">AI Credits Usage</div>
             <div className="grid grid-cols-2 gap-x-4 gap-y-1">
               {metadata.totalTokens != null && (
                 <div className="flex justify-between gap-2">

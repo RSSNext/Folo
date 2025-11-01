@@ -32,10 +32,11 @@ export const EntryItemWrapper: FC<
   {
     entryId: string
     view: FeedViewType
+    isFirstItem?: boolean
     itemClassName?: string
     style?: React.CSSProperties
   } & PropsWithChildren
-> = ({ entryId, view, children, itemClassName, style }) => {
+> = ({ entryId, view, children, itemClassName, style, isFirstItem }) => {
   const entry = useEntry(entryId, (state) => {
     const { feedId, inboxHandle } = state
     const { id, url } = state
@@ -173,6 +174,7 @@ export const EntryItemWrapper: FC<
                 void openContextMenuAt(x, y)
               }}
               entryId={entryId}
+              isFirstItem={!!isFirstItem}
             />
           )}
         </AnimatePresence>
@@ -184,9 +186,11 @@ export const EntryItemWrapper: FC<
 const ActionBar = ({
   entryId,
   openContextMenu,
+  isFirstItem,
 }: {
   entryId: string
   openContextMenu: () => void
+  isFirstItem: boolean
 }) => {
   const { view } = useRouteParams()
 
@@ -196,6 +200,7 @@ const ActionBar = ({
     <div
       className={cn(
         "absolute -right-2 top-0 -translate-y-1/2 rounded-lg border border-gray-200 bg-white/90 p-1 shadow-sm backdrop-blur-sm dark:border-neutral-900 dark:bg-neutral-900",
+        isFirstItem && "-right-2 top-4",
         view === FeedViewType.All && "right-1 top-1/2",
       )}
       onClick={(e) => {
