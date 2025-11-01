@@ -293,12 +293,14 @@
   "usage_analysis.title": "令牌使用情况",
   "usage_analysis.tokens_remaining": "剩余令牌",
   "usage_analysis.tokens_used": "已使用令牌",
+  "usage_analysis.total_credits": "总额度",
   "usage_analysis.total_limit": "总限制",
   "usage_analysis.view_details": "查看详情",
   "usage_analysis.warning.general": "请考虑降低使用以避免达到限制",
   "usage_analysis.warning.projected": "预计在 {{eta}} 达到限制",
   "usage_analysis.warning.rate": "速率：{{rate}} 令牌/分钟",
   "usage_analysis.warning.title": "检测到较高的 AI 使用量",
+  "usage_analysis.window_remaining": "窗口内剩余额度",
   "welcome_description": "我在这里帮助您处理阅读需求。今天我能为您做些什么？",
   "welcome_description_contextual": "让我们一起讨论这个条目"
 }

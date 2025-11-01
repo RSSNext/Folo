@@ -57,10 +57,7 @@ export const DetailedUsageModal = () => {
   const byModel = analysis?.patterns?.byModel ?? []
 
   const dailyTotals = daily.map((d: any) => Number(d.totalTokens) || 0)
-  const avgDaily =
-    dailyTotals.length > 0
-      ? Math.round(dailyTotals.reduce((a, b) => a + b, 0) / dailyTotals.length)
-      : 0
+
   const peakDay = daily.reduce(
     (acc: any, cur: any) => (cur.totalTokens > (acc?.totalTokens ?? -1) ? cur : acc),
     null,
@@ -81,16 +78,11 @@ export const DetailedUsageModal = () => {
   const formattedUsageTokens = formatTokenCount(usage.used)
   const formattedRemainingTokens = formatTokenCount(rateLimit.remainingTokens)
   const formattedTotalTokens = formatTokenCount(usage.total)
-  const formattedAvgDaily = formatTokenCount(avgDaily)
 
   return (
     <div className="flex max-h-[80vh] min-h-[640px] w-[500px] max-w-full flex-col space-y-6 overflow-hidden">
       <div className="space-y-6 px-4">
-        <p className="text-sm text-text-secondary">
-          {t("usage_analysis.detailed_description", {
-            defaultValue: "Track your AI credits usage, patterns, and efficiency.",
-          })}
-        </p>
+        <p className="text-sm text-text-secondary">{t("usage_analysis.detailed_description")}</p>
 
         {rateLimit?.warningLevel && rateLimit.warningLevel !== "safe" && (
           <UsageWarningBanner
@@ -104,61 +96,41 @@ export const DetailedUsageModal = () => {
         {/* Layout Option 4: Asymmetric Modern */}
         <div className="space-y-4">
           <div className="grid grid-cols-5 gap-4">
-            <div className="col-span-2 flex items-center justify-center rounded-xl bg-gradient-to-br from-material-opaque/40 to-material-opaque/60 p-6">
+            <div className="col-span-2 flex items-center justify-center rounded-xl bg-fill-secondary/50 p-6">
               <UsageProgressRing percentage={usagePercentage} size={130} />
             </div>
-            <div className="col-span-3 space-y-4">
-              <div className="grid grid-cols-2 gap-4">
-                <div className="rounded-lg bg-fill-secondary/40 p-4">
+            <div className="col-span-3 flex h-full flex-col gap-3">
+              <div className="grid h-1/2 grid-cols-2 gap-4">
+                <div className="rounded-lg bg-fill-secondary/50 p-4">
                   <Metric
                     label={t("usage_analysis.tokens_used")}
                     value={formattedUsageTokens.value}
                     unit={formattedUsageTokens.unit}
                   />
                 </div>
-                <div className="rounded-lg bg-fill-secondary/40 p-4">
+                <div className="rounded-lg bg-fill-secondary/50 p-4">
                   <Metric
-                    label={t("usage_analysis.tokens_remaining")}
-                    value={formattedRemainingTokens.value}
-                    unit={formattedRemainingTokens.unit}
-                  />
-                </div>
-              </div>
-              <div className="grid grid-cols-2 gap-4">
-                <div className="rounded-lg bg-fill-secondary/20 p-3">
-                  <StatCompact
-                    label={t("usage_analysis.total_limit")}
+                    label={t("usage_analysis.total_credits")}
                     value={formattedTotalTokens.value}
                     unit={formattedTotalTokens.unit}
                   />
                 </div>
-                <div className="rounded-lg bg-fill-secondary/20 p-3">
+              </div>
+              <div className="grid h-1/2 grid-cols-2 gap-4">
+                <div className="rounded-lg bg-fill-secondary/30 p-3">
+                  <StatCompact
+                    label={t("usage_analysis.window_remaining")}
+                    value={formattedRemainingTokens.value}
+                    unit={formattedRemainingTokens.unit}
+                  />
+                </div>
+                <div className="rounded-lg bg-fill-secondary/30 p-3">
                   <StatCompact
                     label={t("usage_analysis.resets_in")}
                     value={formatTimeRemaining(rateLimit.windowResetTime - Date.now())}
                   />
                 </div>
               </div>
-            </div>
-          </div>
-          <div className="grid grid-cols-2 gap-4">
-            <div className="rounded-lg border border-fill-tertiary bg-fill-secondary/10 p-4">
-              <StatCompact
-                label={t("analytics.avg_per_day", { defaultValue: "Avg/day" })}
-                value={formattedAvgDaily.value}
-                unit={formattedAvgDaily.unit}
-              />
-            </div>
-            <div className="rounded-lg border border-fill-tertiary bg-fill-secondary/10 p-4">
-              <StatCompact
-                label={t("analytics.peak_day", { defaultValue: "Peak day" })}
-                value={peakDay?.date ? new Date(peakDay.date).toLocaleDateString() : "-"}
-                hint={
-                  peakDay?.peakHour != null
-                    ? t("analytics.at_hour", { defaultValue: "@ {{h}}:00", h: peakDay.peakHour })
-                    : undefined
-                }
-              />
             </div>
           </div>
         </div>

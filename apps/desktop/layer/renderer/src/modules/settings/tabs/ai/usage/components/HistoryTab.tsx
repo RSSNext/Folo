@@ -26,7 +26,7 @@ export const HistoryTab = ({ analysis }: HistoryTabProps) => {
           <div className="flex items-center gap-2">
             {t("analytics.event", { defaultValue: "Event" })}
           </div>
-          <div className="flex items-center justify-center gap-2">
+          <div className="ml-5 flex items-center justify-start gap-2">
             {t("analytics.tokens", { defaultValue: "Tokens" })}
           </div>
           <div className="flex items-center justify-end gap-2">
@@ -52,7 +52,7 @@ export const HistoryTab = ({ analysis }: HistoryTabProps) => {
               </div>
             </div>
 
-            <div className="flex justify-center">
+            <div className="flex justify-start">
               <span
                 className={cn(
                   "inline-flex items-center gap-1 rounded-md px-2 py-1 text-sm font-medium tabular-nums",

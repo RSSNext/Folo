@@ -300,12 +300,14 @@
   "usage_analysis.title": "AI Credits Usage",
   "usage_analysis.tokens_remaining": "credits remaining",
   "usage_analysis.tokens_used": "Credits Used",
+  "usage_analysis.total_credits": "Total Credits",
   "usage_analysis.total_limit": "Total Limit",
   "usage_analysis.view_details": "View Details",
   "usage_analysis.warning.general": "Consider reducing usage to avoid hitting limits",
   "usage_analysis.warning.projected": "Projected limit in {{eta}}",
   "usage_analysis.warning.rate": "Rate: {{rate}} tok/min",
   "usage_analysis.warning.title": "High AI usage detected",
+  "usage_analysis.window_remaining": "Window credits left",
   "welcome_description": "I'm here to help you with your reading needs. How can I assist you today?",
   "welcome_description_contextual": "Let's discuss this entry together"
 }
