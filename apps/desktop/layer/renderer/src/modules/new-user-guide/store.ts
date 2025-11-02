@@ -4,7 +4,13 @@ import { atom } from "jotai"
 import { splitAtom } from "jotai/utils"
 
 export const stepAtom = atom<
-  "intro" | "selecting-feeds" | "manual-import" | "pre-finish" | "finish"
+  | "intro"
+  | "selecting-feeds"
+  | "pre-finish"
+  | "finish"
+  | "manual-import"
+  | "manual-import-pre-finish"
+  | "manual-import-finish"
 >("intro")
 
 export type FeedSelection = {

@@ -18,7 +18,9 @@ export function DiscoverImportStep() {
           {t.app("new_user_guide.actions.back")}
         </Button>
 
-        <Button onClick={() => setStep("finish")}>{t.app("new_user_guide.actions.finish")}</Button>
+        <Button onClick={() => setStep("manual-import-pre-finish")}>
+          {t.app("new_user_guide.actions.finish")}
+        </Button>
       </div>
     </div>
   )

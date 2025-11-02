@@ -2,7 +2,7 @@ import { Progress } from "@follow/components/ui/progress/index.js"
 import { FeedViewType } from "@follow/constants"
 import { subscriptionSyncService } from "@follow/store/subscription/store"
 import Spline from "@splinetool/react-spline"
-import { useAtomValue, useSetAtom } from "jotai"
+import { useAtom, useAtomValue } from "jotai"
 import { useEffect, useMemo, useState } from "react"
 
 import { feedSelectionsAtom, stepAtom } from "./store"
@@ -13,7 +13,7 @@ const sleep = (ms: number) => new Promise((resolve) => setTimeout(resolve, ms))
 
 export function PreFinish() {
   const feedSelections = useAtomValue(feedSelectionsAtom)
-  const setStep = useSetAtom(stepAtom)
+  const [step, setStep] = useAtom(stepAtom)
   const selectedFeeds = useMemo(
     () => feedSelections.filter((feed) => feed.selected),
     [feedSelections],
@@ -81,7 +81,11 @@ export function PreFinish() {
       await Promise.allSettled(tasks)
 
       if (!disposed) {
-        setStep("finish")
+        if (step === "manual-import-pre-finish") {
+          setStep("manual-import-finish")
+        } else {
+          setStep("finish")
+        }
       }
     }
 
@@ -90,7 +94,7 @@ export function PreFinish() {
     return () => {
       disposed = true
     }
-  }, [selectedFeeds, setStep])
+  }, [selectedFeeds, setStep, step])
 
   return (
     <div className="relative h-[100vh] w-screen">

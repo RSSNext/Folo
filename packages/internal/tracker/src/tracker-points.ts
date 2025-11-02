@@ -97,7 +97,7 @@ export class TrackerPoints {
     this.track(TrackerMapper.Register, props)
   }
 
-  onBoarding(props: { step: string | number; done: boolean }) {
+  onBoarding(props: { step: number; done: boolean } | { stepV2: string; done: boolean }) {
     this.track(TrackerMapper.OnBoarding, props)
   }
 
