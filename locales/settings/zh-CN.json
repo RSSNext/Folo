@@ -558,6 +558,7 @@
   "plan.features.MAX_ACTIONS": "自动化操作",
   "plan.features.MAX_AI_ENTRY_SUMMARY_PER_DAY": "每日 AI 摘要次数",
   "plan.features.MAX_AI_REQUESTS_PER_DAY": "每日 AI 请求次数",
+  "plan.features.MAX_AI_REQUESTS_PER_MONTH": "每月 AI 请求次数",
   "plan.features.MAX_AI_TASKS": "AI 任务",
   "plan.features.MAX_INBOXES": "收件箱订阅源",
   "plan.features.MAX_LISTS": "自定义列表",
