@@ -1,4 +1,4 @@
-import { cn } from "@follow/utils/utils"
+import { cn, sleep } from "@follow/utils/utils"
 import type { AITask, TaskSchedule } from "@follow-app/client-sdk"
 import dayjs from "dayjs"
 import type { i18n, TFunction } from "i18next"
@@ -8,6 +8,7 @@ import { toast } from "sonner"
 
 import { setAIPanelVisibility } from "~/atoms/settings/ai"
 import { useDialog, useModalStack } from "~/components/ui/modal/stacked/hooks"
+import { toastFetchError } from "~/lib/error-parser"
 import { AIPersistService } from "~/modules/ai-chat/services"
 import { ChatSliceActions } from "~/modules/ai-chat/store/chat-core/chat-actions"
 import { AIChatSessionService } from "~/modules/ai-chat-session"
@@ -196,6 +197,7 @@ export const TaskItem = memo(({ task }: { task: AITask }) => {
           setAIPanelVisibility(true)
           const chatActions = ChatSliceActions.getActiveInstance()
           if (chatActions) {
+            await sleep(1500) // wait for backend stream to be ready
             chatActions.switchToChat(sessionId)
           }
 
@@ -204,9 +206,12 @@ export const TaskItem = memo(({ task }: { task: AITask }) => {
           })
         } catch (error) {
           console.error("Failed to run test:", error)
-          toast.error(t("tasks.toast.test_failed"), {
-            id: loadingId,
-          })
+          toast.dismiss(loadingId)
+          if (error instanceof Error) {
+            toastFetchError(error)
+            return
+          }
+          toast.error(t("tasks.toast.test_failed"))
         }
       },
       title: t("tasks.actions.test_run"),
