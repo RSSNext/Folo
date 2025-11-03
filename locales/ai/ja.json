@@ -234,7 +234,7 @@
   "tasks.toast.switch_to_chat": "レポートを見るにはチャットパネルに切り替えてください。",
   "tasks.toast.test_failed": "テスト実行に失敗しました。もう一度お試しください。",
   "tasks.toast.test_start": "テスト実行を開始…約1分かかる場合があります。結果はチャットパネルで確認できます。",
-  "tasks.toast.test_success": "テスト実行が完了しました。レポートはチャットパネルで確認できます。",
+  "tasks.toast.test_success": "テストは正常に実行されました。チャットパネルに切り替えてレポートを確認できます。",
   "tasks.toast.update_error": "AIタスクの更新に失敗しました。もう一度お試しください。",
   "tasks.toast.update_failed": "タスクの更新に失敗しました。もう一度お試しください。",
   "tasks.toast.updated": "AIタスクが正常に更新されました",
