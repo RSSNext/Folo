@@ -2,7 +2,6 @@ import { cn } from "@follow/utils/utils"
 import type { AITask, TaskSchedule } from "@follow-app/client-sdk"
 import dayjs from "dayjs"
 import type { i18n, TFunction } from "i18next"
-import { nanoid } from "nanoid"
 import { memo, useCallback, useMemo, useState } from "react"
 import { useTranslation } from "react-i18next"
 import { toast } from "sonner"
@@ -177,10 +176,13 @@ export const TaskItem = memo(({ task }: { task: AITask }) => {
       onClick: async () => {
         const loadingId = toast.loading(t("tasks.toast.test_start"))
         try {
-          const sessionId = `ai-task-${task.id}-test-${nanoid(6)}`
-          const testRunResult = await testRunMutation.mutateAsync({ id: task.id, sessionId })
+          const testRunResult = await testRunMutation.mutateAsync({ id: task.id })
           if (testRunResult.data.error) {
             throw new Error(testRunResult.data.error)
+          }
+          const { sessionId } = testRunResult.data
+          if (!sessionId) {
+            throw new Error("No session ID returned from test run")
           }
 
           // Ensure the session exists in local DB
