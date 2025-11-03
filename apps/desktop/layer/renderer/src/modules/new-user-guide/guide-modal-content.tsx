@@ -17,12 +17,12 @@ export function GuideModalContent({ onClose }: { onClose: () => void }) {
   useEffect(() => {
     tracker.onBoarding({
       stepV2: step,
-      done: step === "finish",
+      done: step === "finish" || step === "manual-import-finish",
     })
   }, [step])
 
   useEffect(() => {
-    if (step !== "finish") {
+    if (step !== "finish" && step !== "manual-import-finish") {
       return
     }
 
@@ -38,7 +38,7 @@ export function GuideModalContent({ onClose }: { onClose: () => void }) {
   }, [step])
 
   useEffect(() => {
-    if (step === "finish") {
+    if (step === "finish" || step === "manual-import-finish") {
       onClose()
     }
   }, [onClose, step])
