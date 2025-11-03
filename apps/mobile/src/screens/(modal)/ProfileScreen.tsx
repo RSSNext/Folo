@@ -13,7 +13,7 @@ import Animated, {
   useAnimatedStyle,
   useSharedValue,
 } from "react-native-reanimated"
-import { useSafeAreaFrame, useSafeAreaInsets } from "react-native-safe-area-context"
+import { useSafeAreaInsets } from "react-native-safe-area-context"
 
 import { ReAnimatedScrollView } from "@/src/components/common/AnimatedComponents"
 import { BlurEffect } from "@/src/components/common/BlurEffect"
@@ -22,7 +22,6 @@ import {
   InternalNavigationHeader,
   UINavigationHeaderActionButton,
 } from "@/src/components/layouts/header/NavigationHeader"
-import { getDefaultHeaderHeight } from "@/src/components/layouts/utils"
 import {
   GROUPED_ICON_TEXT_GAP,
   GROUPED_LIST_ITEM_PADDING,
@@ -101,12 +100,7 @@ function ProfileScreenImpl(props: { userId: string }) {
       title: `Folo | ${user.name}'s Profile`,
     })
   }, [user?.id, user?.name])
-  const frame = useSafeAreaFrame()
-  const headerHeight = getDefaultHeaderHeight({
-    landscape: frame.width > frame.height,
-    modalPresentation: false,
-    topInset: 0,
-  })
+
   const whoami = useWhoami()
   const isMyProfile = user?.id === whoami?.id
   const actionCtx = useMemo(
@@ -115,6 +109,7 @@ function ProfileScreenImpl(props: { userId: string }) {
     }),
     [removeItemById],
   )
+
   return (
     <View className="flex-1 bg-system-grouped-background">
       <Animated.View
@@ -142,8 +137,6 @@ function ProfileScreenImpl(props: { userId: string }) {
         onScroll={scrollHandler}
         contentContainerStyle={{
           paddingBottom: insets.bottom + 24,
-          paddingTop: headerHeight + 22,
-          marginTop: -22,
         }}
       >
         <UserHeaderBanner scrollY={scrollY} userId={props.userId} />

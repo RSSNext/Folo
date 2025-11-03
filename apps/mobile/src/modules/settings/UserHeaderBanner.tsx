@@ -23,7 +23,7 @@ import { PowerIcon } from "@/src/icons/power"
 import { TwitterCuteFiIcon } from "@/src/icons/twitter_cute_fi"
 import { WebCuteReIcon } from "@/src/icons/web_cute_re"
 import { YoutubeCuteFiIcon } from "@/src/icons/youtube_cute_fi"
-import { useNavigation } from "@/src/lib/navigation/hooks"
+import { useNavigation, useScreenIsInSheetModal } from "@/src/lib/navigation/hooks"
 import { LoginScreen } from "@/src/screens/(modal)/LoginScreen"
 import { usePrefetchImageColors } from "@/src/store/image/hooks"
 import { accentColor } from "@/src/theme/colors"
@@ -171,11 +171,14 @@ export const UserHeaderBanner = ({
     }
   })
   const navigation = useNavigation()
+
+  const sheetModal = useScreenIsInSheetModal()
   return (
     <View
-      className="relative items-center justify-center pt-[22px]"
+      className="relative items-center justify-center"
       style={{
-        marginTop: -insets.top - 22,
+        marginTop: sheetModal ? 0 : -insets.top - 22,
+        paddingTop: sheetModal ? 48 : 22,
       }}
     >
       <ReAnimated.View entering={FadeIn} className="absolute inset-0" style={styles}>
