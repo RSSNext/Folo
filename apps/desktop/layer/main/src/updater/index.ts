@@ -266,8 +266,9 @@ class FollowUpdater {
 
       case RendererEligibilityStatus.RequiresFullAppUpdate: {
         logger.info(
-          eligibility.reason ||
-            "Renderer payload requires main process update, delegating to app updater",
+          eligibility.reason,
+
+          "Renderer payload requires main process update, delegating to app updater",
         )
         if (payload.decision.app) {
           return this.handleAppDecision(payload)

@@ -261,16 +261,6 @@ class RendererHotUpdater {
 
 export const rendererUpdater = new RendererHotUpdater()
 
-export const extractRendererManifest = (payload: LatestReleasePayload | null) =>
-  rendererUpdater.extractManifest(payload)
-
-export const evaluateRendererUpdate = (manifest: RendererManifest | null) =>
-  rendererUpdater.evaluateManifest(manifest)
-
-export const applyRendererUpdate = async (manifest: RendererManifest) => {
-  await rendererUpdater.applyManifest(manifest)
-}
-
 export const getCurrentRendererManifest = () => rendererUpdater.getCurrentManifest()
 
 export const cleanupOldRenderer = async () => {
