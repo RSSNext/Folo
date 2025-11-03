@@ -3,6 +3,8 @@ import { fileURLToPath } from "node:url"
 import { callWindowExpose } from "@follow/shared/bridge"
 import { DEV } from "@follow/shared/constants"
 import type { LatestReleasePayload, PlatformUpdate } from "@follow-app/client-sdk"
+import { mainHash } from "@pkg"
+import log from "electron-log"
 import type { AppUpdater } from "electron-updater"
 import { autoUpdater as defaultAutoUpdater } from "electron-updater"
 import { join } from "pathe"
@@ -12,12 +14,12 @@ import type { RendererManifest } from "~/updater/hot-updater"
 import { RendererEligibilityStatus, rendererUpdater } from "~/updater/hot-updater"
 
 import { channel, isWindows } from "../env"
-import { logger } from "../logger"
 import { getUpdateInfo } from "./api"
 import { appUpdaterConfig } from "./configs"
 import { FollowUpdateProvider } from "./follow-update-provider"
 import { WindowsUpdater } from "./windows-updater"
 
+const logger = log.scope("app-updater")
 type UpdateCheckOptions = {
   refresh?: boolean
 }
@@ -66,6 +68,7 @@ class FollowUpdater {
     this.registerAutoUpdaterEvents()
 
     if (appUpdaterConfig.app.autoCheckUpdate) {
+      logger.info("Initial update check, mainHash:", mainHash)
       void this.checkForUpdates().catch((error) =>
         logger.error("Initial update check failed", error),
       )
@@ -324,9 +327,9 @@ class FollowUpdater {
       logger.info(`autoUpdater: download progress ${progress.percent.toFixed(2)}%`)
     })
 
-    this.autoUpdater.on("update-downloaded", () => {
+    this.autoUpdater.on("update-downloaded", (ev) => {
       this.downloadingUpdate = false
-      logger.info("autoUpdater: update downloaded")
+      logger.info("autoUpdater: update downloaded", ev.downloadedFile, ev.version)
 
       const mainWindow = WindowManager.getMainWindow()
       if (!mainWindow) return

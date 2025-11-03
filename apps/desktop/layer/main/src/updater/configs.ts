@@ -1,5 +1,7 @@
+// eslint-disable-next-line no-restricted-imports
+import path from "node:path"
+
 import { DEV, MICROSOFT_STORE_BUILD, MODE, ModeEnum } from "@follow/shared/constants"
-import path from "pathe"
 
 import { isWindows } from "../env"
 
@@ -13,7 +15,12 @@ export const appUpdaterConfig = {
     // If the process is not executed from the default installation path,
     // it is usually managed through a package manager like Scoop.
     // In this case, updates need to be disabled.
-    !(isWindows && path.resolve(process.execPath, "../../") !== process.env.LOCALAPPDATA),
+    !(
+      isWindows &&
+      process.env.LOCALAPPDATA &&
+      // DO NOT USE pathe.resolve here, it will be resolved to a wrong path on Windows
+      path.resolve(process.execPath, "../../") !== process.env.LOCALAPPDATA
+    ),
   // Disable app update will also disable renderer hot update and core update
   enableAppUpdate: !DEV,
 
