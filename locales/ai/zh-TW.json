@@ -252,7 +252,7 @@
   "tasks.toast.no_report": "此任務尚無報告。",
   "tasks.toast.switch_to_chat": "切換到聊天面板檢視報告。",
   "tasks.toast.test_failed": "測試執行失敗，請重試。",
-  "tasks.toast.test_start": "開始測試執行...大約需要 1 分鐘。您可以在聊天面板檢視結果。",
+  "tasks.toast.test_start": "開始執行...",
   "tasks.toast.test_success": "報測試已成功執行。您可以切換到聊天面板查看告。",
   "tasks.toast.update_error": "更新 AI 任務失敗，請重試。",
   "tasks.toast.update_failed": "更新任務失敗，請重試。",

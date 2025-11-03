@@ -261,7 +261,7 @@
   "tasks.toast.no_report": "此任务尚无报告会话。",
   "tasks.toast.switch_to_chat": "切换到聊天面板查看报告。",
   "tasks.toast.test_failed": "测试运行失败，请重试。",
-  "tasks.toast.test_start": "开始测试运行…大约需要 1 分钟。您可以在聊天面板查看结果。",
+  "tasks.toast.test_start": "正在运行…",
   "tasks.toast.test_success": "测试成功运行。您可以切换到聊天面板查看报告。",
   "tasks.toast.update_error": "更新 AI 任务失败，请重试。",
   "tasks.toast.update_failed": "更新任务失败，请重试。",
