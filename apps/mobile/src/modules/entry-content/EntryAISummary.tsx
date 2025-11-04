@@ -35,7 +35,7 @@ export const EntryAISummary: FC<{
   )
   const actionLanguage = useActionLanguage()
   const summary = useSummary(entryId, actionLanguage)
-  usePrefetchSummary({
+  const { error: summaryError, refetch: refetchSummary } = usePrefetchSummary({
     entryId,
     target: entry?.target || "content",
     actionLanguage,
@@ -53,6 +53,9 @@ export const EntryAISummary: FC<{
     actionLanguage,
     target: entry?.target || "content",
   })
+  const handleRetry = useCallback(() => {
+    refetchSummary()
+  }, [refetchSummary])
   if (!showAISummary) return null
   return (
     <ErrorBoundary
@@ -67,7 +70,8 @@ export const EntryAISummary: FC<{
         rawSummaryForCopy={maybeMarkdown}
         summary={summaryToShow}
         pending={status === SummaryGeneratingStatus.Pending}
-        error={status === SummaryGeneratingStatus.Error ? "Failed to generate summary" : undefined}
+        error={summaryError}
+        onRetry={status === SummaryGeneratingStatus.Error ? handleRetry : undefined}
       />
     </ErrorBoundary>
   )

@@ -41,9 +41,9 @@ import { GeneralScreen } from "./routes/General"
 import { InvitationsScreen } from "./routes/Invitations"
 import { ListsScreen } from "./routes/Lists"
 import { NotificationsScreen } from "./routes/Notifications"
+import { PlanScreen } from "./routes/Plan"
 import { PrivacyScreen } from "./routes/Privacy"
 import { ReferralScreen } from "./routes/Referral"
-import { SubscriptionScreen } from "./routes/Subscription"
 
 interface GroupNavigationLink {
   label: Extract<ParseKeys<"settings">, `titles.${string}`>
@@ -121,7 +121,7 @@ const ReferralGroupNavigationLinks: GroupNavigationLink[] = [
     label: "titles.subscription.short",
     icon: PowerOutlineIcon,
     onPress: ({ navigation }) => {
-      navigation.pushControllerView(SubscriptionScreen)
+      navigation.pushControllerView(PlanScreen)
     },
     iconBackgroundColor: accentColor,
     anonymous: false,
@@ -237,7 +237,7 @@ const NavigationLinkGroup: FC<{
               }
               onPress={() => {
                 if (link.trialNotAllowed && (role === UserRole.Free || role === UserRole.Trial)) {
-                  navigation.presentControllerView(SubscriptionScreen)
+                  navigation.presentControllerView(PlanScreen)
                 } else {
                   link.onPress({ navigation })
                 }

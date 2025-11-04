@@ -99,7 +99,7 @@ const isFeatureValueVisible = (value: PaymentFeature[keyof PaymentFeature] | nul
   return true
 }
 
-export const SubscriptionScreen: NavigationControllerView = () => {
+export const PlanScreen: NavigationControllerView = () => {
   const { t } = useTranslation("settings")
   const serverConfigs = useServerConfigs()
   const role = useUserRole()
@@ -267,7 +267,7 @@ const BillingToggle = ({
   averageSavings: number
 }) => {
   const { t } = useTranslation("settings")
-  const activeBackground = useColor("systemBackground")
+  const activeBackground = useColor("quaternarySystemFill")
   const indicatorTranslate = useRef(new Animated.Value(0)).current
   const indicatorWidth = useRef(new Animated.Value(0)).current
   const segmentLayouts = useRef<Partial<Record<BillingPeriod, SegmentLayout>>>({})
