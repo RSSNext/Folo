@@ -50,6 +50,7 @@
   "login.forget_password.note": "パスワードを忘れましたか？",
   "login.forget_password.success": "メールの送信に成功しました。",
   "login.have_account": "すでにアカウントをお持ちですか？ <strong>サインイン</strong>",
+  "login.lastUsed": "前回使用",
   "login.logInTo": "ログイン ",
   "login.logInWithEmail": "メールでログイン",
   "login.new_password.label": "新しいパスワード",
