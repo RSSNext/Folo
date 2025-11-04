@@ -41,9 +41,9 @@ import { GeneralScreen } from "./routes/General"
 import { InvitationsScreen } from "./routes/Invitations"
 import { ListsScreen } from "./routes/Lists"
 import { NotificationsScreen } from "./routes/Notifications"
-import { PlanScreen } from "./routes/Plan"
 import { PrivacyScreen } from "./routes/Privacy"
 import { ReferralScreen } from "./routes/Referral"
+import { SubscriptionScreen } from "./routes/Subscription"
 
 interface GroupNavigationLink {
   label: Extract<ParseKeys<"settings">, `titles.${string}`>
@@ -118,15 +118,14 @@ const BetaGroupNavigationLinks: GroupNavigationLink[] = [
 
 const ReferralGroupNavigationLinks: GroupNavigationLink[] = [
   {
-    label: "titles.plan.short",
+    label: "titles.subscription.short",
     icon: PowerOutlineIcon,
     onPress: ({ navigation }) => {
-      navigation.pushControllerView(PlanScreen)
+      navigation.pushControllerView(SubscriptionScreen)
     },
     iconBackgroundColor: accentColor,
     anonymous: false,
-    // TODO: support pay on mobile
-    hideIf: () => true,
+    hideIf: (serverConfigs) => !serverConfigs?.PAYMENT_ENABLED,
   },
   {
     label: "titles.referral.short",
@@ -238,7 +237,7 @@ const NavigationLinkGroup: FC<{
               }
               onPress={() => {
                 if (link.trialNotAllowed && (role === UserRole.Free || role === UserRole.Trial)) {
-                  navigation.presentControllerView(PlanScreen)
+                  navigation.presentControllerView(SubscriptionScreen)
                 } else {
                   link.onPress({ navigation })
                 }
@@ -272,7 +271,7 @@ export const SettingsList: FC = () => {
         if (filteredGroup.length === 0) return false
         return filteredGroup
       })
-      .filter((group) => group !== false)
+      .filter((group): group is GroupNavigationLink[] => group !== false)
   }, [whoami, serverConfigs])
 
   const pixelRatio = PixelRatio.get()
@@ -281,12 +280,15 @@ export const SettingsList: FC = () => {
 
   return (
     <View className="flex-1 bg-system-grouped-background pb-4" style={{ marginTop }}>
-      {filteredNavigationGroups.map((group, index) => (
-        <Fragment key={`nav-group-${index}`}>
-          <NavigationLinkGroup key={`nav-group-${index}`} links={group} />
-          {index < filteredNavigationGroups.length - 1 && <View style={{ height: groupGap }} />}
-        </Fragment>
-      ))}
+      {filteredNavigationGroups.map((group, index) => {
+        const groupKey = group.map((link) => link.label).join("-")
+        return (
+          <Fragment key={groupKey}>
+            <NavigationLinkGroup links={group} />
+            {index < filteredNavigationGroups.length - 1 && <View style={{ height: groupGap }} />}
+          </Fragment>
+        )
+      })}
     </View>
   )
 }
