@@ -1,5 +1,7 @@
+import { UserRole } from "@follow/constants"
 import { useTypeScriptHappyCallback } from "@follow/hooks"
 import { usePrefetchEntryTranslation } from "@follow/store/translation/hooks"
+import { useUserRole } from "@follow/store/user/hooks"
 import type { FlashListProps, FlashListRef } from "@shopify/flash-list"
 import type { ElementRef } from "react"
 import { useImperativeHandle, useMemo, useRef } from "react"
@@ -33,10 +35,12 @@ export const EntryListContentVideo = ({
 
   const translation = useGeneralSettingKey("translation")
   const actionLanguage = useActionLanguage()
+  const userRole = useUserRole()
+  const translationPrefetchEnabled = translation && userRole !== UserRole.Free
   usePrefetchEntryTranslation({
     entryIds: active ? viewableItems.map((item) => item.key) : [],
     language: actionLanguage,
-    enabled: translation,
+    enabled: translationPrefetchEnabled,
   })
 
   const ListFooterComponent = useMemo(

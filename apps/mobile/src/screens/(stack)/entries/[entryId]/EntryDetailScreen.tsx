@@ -1,9 +1,10 @@
-import { FeedViewType } from "@follow/constants"
+import { FeedViewType, UserRole } from "@follow/constants"
 import { useEntry, useEntryReadHistory, usePrefetchEntryDetail } from "@follow/store/entry/hooks"
 import { entrySyncServices } from "@follow/store/entry/store"
 import { useFeedById } from "@follow/store/feed/hooks"
 import { usePrefetchEntryTranslation } from "@follow/store/translation/hooks"
 import { useAutoMarkAsRead } from "@follow/store/unread/hooks"
+import { useUserRole } from "@follow/store/user/hooks"
 import { PortalProvider } from "@gorhom/portal"
 import * as WebBrowser from "expo-web-browser"
 import { atom, useAtomValue, useSetAtom } from "jotai"
@@ -143,7 +144,8 @@ const EntryContentWebViewWithContext = ({ entryId }: { entryId: string }) => {
   const translationSetting = useGeneralSettingKey("translation")
   const showTranslationOnce = useAtomValue(showAITranslationAtom)
   const actionLanguage = useActionLanguage()
-  const translation = useGeneralSettingKey("translation")
+  const userRole = useUserRole()
+  const translationPrefetchEnabled = translationSetting && userRole !== UserRole.Free
   const entry = useEntry(entryId, (state) => ({
     content: state.content,
     readabilityContent: state.readabilityContent,
@@ -154,7 +156,7 @@ const EntryContentWebViewWithContext = ({ entryId }: { entryId: string }) => {
     withContent: true,
     target: showReadabilityOnce && entry?.readabilityContent ? "readabilityContent" : "content",
     language: actionLanguage,
-    enabled: translation,
+    enabled: translationPrefetchEnabled,
   })
 
   // Auto toggle readability when content is empty
