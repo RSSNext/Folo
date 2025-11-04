@@ -23,7 +23,7 @@ import {
   useDeleteAIChatSessionMutation,
   useMarkChatSessionSeenMutation,
 } from "~/modules/ai-chat-session/query"
-import { AITaskModal, useCanCreateNewAITask } from "~/modules/ai-task"
+import { AITaskModal, useAITaskListQuery, useCanCreateNewAITask } from "~/modules/ai-task"
 import { useSettingModal } from "~/modules/settings/modal/use-setting-modal-hack"
 import { AI_SETTING_SECTION_IDS } from "~/modules/settings/tabs/ai"
 
@@ -103,7 +103,10 @@ const EmptyState = () => {
 }
 
 export const TaskReportDropdown = ({ triggerElement, asChild = true }: TaskReportDropdownProps) => {
-  const sessions = useAIChatSessionListQuery()
+  const tasks = useAITaskListQuery()
+  const sessions = useAIChatSessionListQuery({
+    refetchInterval: tasks?.length ? 1 * 60 * 1000 : false, // 1 minute
+  })
   const currentChatId = useCurrentChatId()
   const chatActions = useChatActions()
   const shouldDisableTimelineSummary = useTimelineSummaryAutoContext()
