@@ -46,7 +46,7 @@ export const registerAppGlobalShortcuts = () => {
   const handleKeydown = (e: KeyboardEvent) => {
     shortcuts.forEach(({ accelerator, action, inputBypass }) => {
       // Prevent on input, textarea, [contenteditable]
-      if (!inputBypass && detectIsEditableElement(e.target as HTMLElement)) {
+      if (!inputBypass && e.target instanceof HTMLElement && detectIsEditableElement(e.target)) {
         return
       }
 
