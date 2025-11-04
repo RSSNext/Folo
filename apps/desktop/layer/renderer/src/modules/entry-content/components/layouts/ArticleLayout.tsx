@@ -69,6 +69,7 @@ export const ArticleLayout: React.FC<EntryLayoutProps> = ({
   const isAIPanelVisible = useAIPanelVisibility()
 
   const shouldShowAISummary = aiChatPanelStyle === AIChatPanelStyle.Floating || !isAIPanelVisible
+
   if (!entry) return null
 
   return (
