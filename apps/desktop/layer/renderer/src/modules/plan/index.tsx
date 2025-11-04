@@ -5,7 +5,7 @@ import { useModalStack } from "~/components/ui/modal/stacked/hooks"
 
 import { UpgradePlanModalContent } from "./UpgradePlanModalContent"
 
-export const useActivationModal = () => {
+export const useUpgradePlanModal = () => {
   const { present } = useModalStack()
   const { t } = useTranslation()
   return useCallback(
@@ -13,7 +13,7 @@ export const useActivationModal = () => {
       present({
         title: t("activation.plan.title"),
         content: UpgradePlanModalContent,
-        id: "activation",
+        id: "upgrade-plan",
         autoFocus: false,
       }),
     [present, t],

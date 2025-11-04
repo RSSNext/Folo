@@ -57,7 +57,6 @@ followClient.addErrorInterceptor(async ({ error, response }) => {
 })
 
 followClient.addResponseInterceptor(async ({ response }) => {
-  const { router } = window
   if (response.status === 401) {
     // Or we can present LoginModal here.
     // router.navigate("/login")
@@ -68,13 +67,10 @@ followClient.addResponseInterceptor(async ({ response }) => {
   try {
     const isJSON = response.headers.get("content-type")?.includes("application/json")
     if (!isJSON) return response
-    const json = await response.clone().json()
+    const _json = await response.clone().json()
 
     const isError = response.status >= 400
     if (!isError) return response
-    if (response.status === 400 && json.code === 1003) {
-      router.navigate("/invitation")
-    }
   } catch {
     // ignore
   }

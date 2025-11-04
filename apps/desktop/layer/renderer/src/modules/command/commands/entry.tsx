@@ -29,9 +29,9 @@ import { getRouteParams } from "~/hooks/biz/useRouteParams"
 import { ipcServices } from "~/lib/client"
 import { copyToClipboard } from "~/lib/clipboard"
 import { parseHtml } from "~/lib/parse-html"
-import { useActivationModal } from "~/modules/activation"
 import { markAllByRoute } from "~/modules/entry-column/hooks/useMarkAll"
 import { useGalleryModal } from "~/modules/entry-content/hooks"
+import { useUpgradePlanModal } from "~/modules/plan"
 
 import { useRegisterFollowCommand } from "../hooks/use-register-command"
 import type { Command, CommandCategory } from "../types"
@@ -112,7 +112,7 @@ export const useRegisterEntryCommands = () => {
   const unread = useUnread()
 
   const role = useUserRole()
-  const presentActivationModal = useActivationModal()
+  const presentActivationModal = useUpgradePlanModal()
 
   const voice = useGeneralSettingKey("voice")
 
