@@ -88,6 +88,12 @@ export const useAutoTimelineSummaryShortcut = () => {
   const timelineSummaryManualOverride = useAIChatStore()(
     (state) => state.timelineSummaryManualOverride,
   )
+  const timelineSummaryWasInAutoContext = useAIChatStore()(
+    (state) => state.timelineSummaryWasInAutoContext,
+  )
+  const setTimelineSummaryWasInAutoContext = useAIChatStore()(
+    (state) => state.chatActions.setTimelineSummaryWasInAutoContext,
+  )
 
   const automationStateRef = useRef<{
     contextKey: string | null
@@ -128,12 +134,9 @@ export const useAutoTimelineSummaryShortcut = () => {
     }
   }, [chatActions, contextKey])
 
-  const previousIsAllTimelineRef = useRef(isAllTimeline)
-
   useEffect(() => {
-    const wasAllTimeline = previousIsAllTimelineRef.current
     if (
-      wasAllTimeline &&
+      timelineSummaryWasInAutoContext &&
       !isAllTimeline &&
       currentChatId &&
       currentChatId.startsWith(AI_CHAT_SPECIAL_ID_PREFIX.TIMELINE_SUMMARY)
@@ -141,8 +144,15 @@ export const useAutoTimelineSummaryShortcut = () => {
       blockActions.clearBlocks({ keepSpecialTypes: true })
       chatActions.newChat()
     }
-    previousIsAllTimelineRef.current = isAllTimeline
-  }, [blockActions, chatActions, currentChatId, isAllTimeline])
+    setTimelineSummaryWasInAutoContext(isAllTimeline)
+  }, [
+    blockActions,
+    chatActions,
+    currentChatId,
+    isAllTimeline,
+    setTimelineSummaryWasInAutoContext,
+    timelineSummaryWasInAutoContext,
+  ])
 
   const contextBlocks = useMemo<AIChatContextBlock[]>(() => {
     if (!isAllTimeline) return []

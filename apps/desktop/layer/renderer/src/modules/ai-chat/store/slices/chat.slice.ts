@@ -52,5 +52,6 @@ export const createChatSlice: (options: {
       chatActions,
       scene: "general",
       timelineSummaryManualOverride: false,
+      timelineSummaryWasInAutoContext: false,
     }
   }

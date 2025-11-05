@@ -361,4 +361,17 @@ export class ChatSliceActions {
   getTimelineSummaryManualOverride = () => {
     return this.get().timelineSummaryManualOverride
   }
+
+  setTimelineSummaryWasInAutoContext = (isInAutoContext: boolean) => {
+    this.set((state) => {
+      if (state.timelineSummaryWasInAutoContext === isInAutoContext) {
+        return state
+      }
+      return { ...state, timelineSummaryWasInAutoContext: isInAutoContext }
+    })
+  }
+
+  getTimelineSummaryWasInAutoContext = () => {
+    return this.get().timelineSummaryWasInAutoContext
+  }
 }
