@@ -100,7 +100,7 @@ export const useAutoTimelineSummaryShortcut = () => {
   })
   const previousContextKeyRef = useRef<string | null>(null)
 
-  const isAllTimeline = isTimelineSummaryAutoContext({ view, feedId, entryId })
+  const isAllTimeline = isTimelineSummaryAutoContext({ view, entryId })
 
   const defaultShortcut = useMemo(() => {
     const shortcuts = aiSettings.shortcuts ?? []
