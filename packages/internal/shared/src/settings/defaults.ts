@@ -46,7 +46,7 @@ export const defaultUISettings: UISettings = {
   accentColor: "orange",
 
   // Sidebar
-  entryColWidth: 356,
+  entryColWidth: 450,
   aiColWidth: 384,
   feedColWidth: 256,
   hideExtraBadge: false,

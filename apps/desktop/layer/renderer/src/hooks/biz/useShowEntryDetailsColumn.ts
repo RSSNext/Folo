@@ -4,16 +4,13 @@ import { AIChatPanelStyle, useAIChatPanelStyle, useAIPanelVisibility } from "~/a
 import { useRouteParamsSelector } from "~/hooks/biz/useRouteParams"
 
 export const useShowEntryDetailsColumn = () => {
-  const { view, isInEntry } = useRouteParamsSelector((s) => ({
+  const { view } = useRouteParamsSelector((s) => ({
     view: s.view,
-    isInEntry: s.entryId && !s.isPendingEntry,
   }))
   const aiPanelStyle = useAIChatPanelStyle()
   const isAIPanelVisible = useAIPanelVisibility()
 
   return (
-    !getView(view).wideMode &&
-    (aiPanelStyle === AIChatPanelStyle.Floating || !isAIPanelVisible) &&
-    isInEntry
+    !getView(view).wideMode && (aiPanelStyle === AIChatPanelStyle.Floating || !isAIPanelVisible)
   )
 }

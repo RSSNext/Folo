@@ -356,11 +356,11 @@ const AIEnhancedTimelineLayoutImpl = () => {
               {aiChatLayoutNode}
             </>
           )}
+
+          {/* Floating panel - renders outside layout flow */}
+          {aiPanelStyle === AIChatPanelStyle.Floating && <AIChatLayout key="ai-chat-layout" />}
         </>
       )}
-
-      {/* Floating panel - renders outside layout flow */}
-      {aiPanelStyle === AIChatPanelStyle.Floating && <AIChatLayout key="ai-chat-layout" />}
     </div>
   )
 }

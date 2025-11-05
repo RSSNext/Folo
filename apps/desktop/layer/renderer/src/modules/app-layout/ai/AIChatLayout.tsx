@@ -1,6 +1,8 @@
+import { FeedViewType } from "@follow/constants"
 import type { FC } from "react"
 
 import { AIChatPanelStyle, useAIChatPanelStyle } from "~/atoms/settings/ai"
+import { useRouteParamsSelector } from "~/hooks/biz/useRouteParams"
 
 import { AIChatFixedPanel } from "./AIChatFixedPanel"
 import { AIChatFloatingPanel } from "./AIChatFloatingPanel"
@@ -29,8 +31,11 @@ export interface AIChatLayoutProps
  */
 export const AIChatLayout: FC<AIChatLayoutProps> = ({ ...props }) => {
   const panelStyle = useAIChatPanelStyle()
+  const { isAllView } = useRouteParamsSelector((s) => ({
+    isAllView: s.view === FeedViewType.All,
+  }))
 
-  if (panelStyle === AIChatPanelStyle.Floating) {
+  if (panelStyle === AIChatPanelStyle.Floating && !isAllView) {
     return <AIChatFloatingPanel {...props} />
   }
   return <AIChatFixedPanel {...props} />
