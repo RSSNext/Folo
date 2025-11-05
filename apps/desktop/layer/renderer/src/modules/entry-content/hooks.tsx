@@ -1,4 +1,4 @@
-import { UserRole } from "@follow/constants"
+import { isFreeRole } from "@follow/constants"
 import { useEntry, usePrefetchEntryDetail } from "@follow/store/entry/hooks"
 import { useEntryTranslation, usePrefetchEntryTranslation } from "@follow/store/translation/hooks"
 import { useUserRole } from "@follow/store/user/hooks"
@@ -50,7 +50,7 @@ export const useEntryContent = (entryId: string) => {
 
   const enableTranslation = useShowAITranslation()
   const userRole = useUserRole()
-  const shouldPrefetchTranslation = enableTranslation && userRole !== UserRole.Free
+  const shouldPrefetchTranslation = enableTranslation && !isFreeRole(userRole)
   const actionLanguage = useActionLanguage()
   const contentTranslated = useEntryTranslation({
     entryId,

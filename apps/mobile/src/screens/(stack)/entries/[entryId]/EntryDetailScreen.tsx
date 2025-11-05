@@ -1,4 +1,4 @@
-import { FeedViewType, UserRole } from "@follow/constants"
+import { FeedViewType, isFreeRole } from "@follow/constants"
 import { useEntry, useEntryReadHistory, usePrefetchEntryDetail } from "@follow/store/entry/hooks"
 import { entrySyncServices } from "@follow/store/entry/store"
 import { useFeedById } from "@follow/store/feed/hooks"
@@ -145,7 +145,7 @@ const EntryContentWebViewWithContext = ({ entryId }: { entryId: string }) => {
   const showTranslationOnce = useAtomValue(showAITranslationAtom)
   const actionLanguage = useActionLanguage()
   const userRole = useUserRole()
-  const translationPrefetchEnabled = translationSetting && userRole !== UserRole.Free
+  const translationPrefetchEnabled = translationSetting && !isFreeRole(userRole)
   const entry = useEntry(entryId, (state) => ({
     content: state.content,
     readabilityContent: state.readabilityContent,

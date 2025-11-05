@@ -1,4 +1,4 @@
-import { UserRole } from "@follow/constants"
+import { isFreeRole } from "@follow/constants"
 import { usePrefetchEntryTranslation } from "@follow/store/translation/hooks"
 import { useUserRole } from "@follow/store/user/hooks"
 import type { FlashListRef, ListRenderItemInfo } from "@shopify/flash-list"
@@ -48,7 +48,7 @@ export const EntryListContentSocial = ({
   const translation = useGeneralSettingKey("translation")
   const actionLanguage = useActionLanguage()
   const userRole = useUserRole()
-  const translationPrefetchEnabled = translation && userRole !== UserRole.Free
+  const translationPrefetchEnabled = translation && !isFreeRole(userRole)
   usePrefetchEntryTranslation({
     entryIds: active ? viewableItems.map((item) => item.key) : [],
     language: actionLanguage,
