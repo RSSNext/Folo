@@ -40,6 +40,7 @@ import { RateLimitNotice } from "../ai-chat/components/layouts/RateLimitNotice"
 import { AIChatWaitingIndicator } from "../ai-chat/components/message/AIChatMessage"
 import { AIShortcutButton } from "../ai-chat/components/ui/AIShortcutButton"
 import { LexicalAIEditorNodes } from "../ai-chat/editor"
+import { useAIConfiguration } from "../ai-chat/hooks/useAIConfiguration"
 import { isRateLimitError } from "../ai-chat/utils/error"
 import { stepAtom } from "./store"
 
@@ -468,8 +469,12 @@ function AIChatInterface({ inputRef }: AIChatInterfaceProps) {
 
   const shouldShowScrollToBottom = hasMessages && !isAtBottom
 
+  const { data: configuration } = useAIConfiguration()
   // Check if error is a rate limit error
-  const hasRateLimitError = useMemo(() => isRateLimitError(error), [error])
+  const hasRateLimitError = useMemo(
+    () => isRateLimitError(error) || configuration?.usage.remaining === 0,
+    [configuration?.usage.remaining, error],
+  )
 
   // Additional height for rate limit notice (~40px)
   const rateLimitExtraHeight = hasRateLimitError ? 40 : 0
@@ -542,7 +547,7 @@ function AIChatInterface({ inputRef }: AIChatInterfaceProps) {
       )}
 
       <div ref={bottomPanelRef} className={"px-6"}>
-        {hasRateLimitError && error && <RateLimitNotice error={error} />}
+        {hasRateLimitError && <RateLimitNotice error={error} tokenUsage={configuration?.usage} />}
         <ChatInput
           ref={inputRef}
           onSend={handleSendMessage}

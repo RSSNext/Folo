@@ -1,4 +1,5 @@
 import { cn } from "@follow/utils"
+import type { TokenUsage } from "@follow-app/client-sdk"
 import { m } from "motion/react"
 import * as React from "react"
 
@@ -7,26 +8,71 @@ import { useSettingModal } from "~/modules/settings/modal/useSettingModal"
 import { parseAIError } from "../../utils/error"
 
 interface RateLimitNoticeProps {
-  error: Error | string
+  error?: Error | string
+  tokenUsage?: TokenUsage
   className?: string
+}
+
+interface NormalizedTokenData {
+  remainingTokens?: number
+  resetTime?: Date
+  isRateLimit: boolean
+}
+
+/**
+ * Normalize token data from error or direct usage input
+ */
+const normalizeTokenData = (
+  error?: Error | string,
+  tokenUsage?: TokenUsage,
+): NormalizedTokenData => {
+  // Prioritize direct token usage data
+  if (tokenUsage) {
+    return {
+      remainingTokens: tokenUsage.remaining,
+      resetTime: new Date(tokenUsage.resetAt),
+      isRateLimit: tokenUsage.remaining === 0,
+    }
+  }
+
+  // Fall back to error parsing
+  if (error) {
+    const parsedError = parseAIError(error)
+    if (parsedError.isRateLimitError && parsedError.errorData) {
+      return {
+        remainingTokens: parsedError.errorData.remainedTokens,
+        resetTime: parsedError.errorData.windowResetTime
+          ? new Date(parsedError.errorData.windowResetTime)
+          : undefined,
+        isRateLimit: true,
+      }
+    }
+  }
+
+  return { isRateLimit: false }
 }
 
 /**
  * RateLimitNotice component
  * Displays rate limit information above the input in a subtle, non-alarming way
  */
-export const RateLimitNotice: React.FC<RateLimitNoticeProps> = ({ error, className }) => {
-  const parsedError = React.useMemo(() => parseAIError(error), [error])
-  const { isRateLimitError, errorData } = parsedError
+export const RateLimitNotice: React.FC<RateLimitNoticeProps> = ({
+  error,
+  tokenUsage,
+  className,
+}) => {
+  const normalizedData = React.useMemo(
+    () => normalizeTokenData(error, tokenUsage),
+    [error, tokenUsage],
+  )
   const settingModalPresent = useSettingModal()
 
-  // Only render for rate limit errors
-  if (!isRateLimitError || !errorData) {
+  // Only render for rate limit errors or low token situations
+  if (!normalizedData.isRateLimit && !tokenUsage) {
     return null
   }
 
-  const formatResetTime = (windowResetTime: string) => {
-    const resetDate = new Date(windowResetTime)
+  const formatResetTime = (resetDate: Date) => {
     const now = new Date()
     const diffMs = resetDate.getTime() - now.getTime()
     const diffMinutes = Math.ceil(diffMs / (1000 * 60))
@@ -45,8 +91,8 @@ export const RateLimitNotice: React.FC<RateLimitNoticeProps> = ({ error, classNa
     return timeFormatter.format(resetDate)
   }
 
-  const remainingTokens = errorData.remainedTokens
-  const resetTime = errorData.windowResetTime ? formatResetTime(errorData.windowResetTime) : null
+  const { remainingTokens, resetTime } = normalizedData
+  const formattedResetTime = resetTime ? formatResetTime(resetTime) : null
 
   // Build compact message text
   const buildMessage = () => {
@@ -64,11 +110,11 @@ export const RateLimitNotice: React.FC<RateLimitNoticeProps> = ({ error, classNa
     }
 
     // Reset time
-    if (resetTime) {
-      if (resetTime.includes("minute")) {
-        parts.push(`resets in ${resetTime}`)
+    if (formattedResetTime) {
+      if (formattedResetTime.includes("minute")) {
+        parts.push(`resets in ${formattedResetTime}`)
       } else {
-        parts.push(`resets at ${resetTime}`)
+        parts.push(`resets at ${formattedResetTime}`)
       }
     }
 

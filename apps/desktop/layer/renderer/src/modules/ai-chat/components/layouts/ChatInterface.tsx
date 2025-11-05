@@ -44,6 +44,7 @@ import {
 } from "~/modules/ai-chat/store/hooks"
 
 import { LexicalAIEditorNodes, ShortcutNode } from "../../editor"
+import { useAIConfiguration } from "../../hooks/useAIConfiguration"
 import { useAttachScrollBeyond } from "../../hooks/useAttachScrollBeyond"
 import { AIPanelRefsContext } from "../../store/AIChatContext"
 import type { AIChatContextBlock, BizUIMessage, SendingUIMessage } from "../../store/types"
@@ -323,8 +324,12 @@ const ChatInterfaceContent = ({ centerInputOnEmpty }: ChatInterfaceProps) => {
 
   const { handleScroll } = useAttachScrollBeyond()
 
+  const { data: configuration } = useAIConfiguration()
   // Check if error is a rate limit error
-  const hasRateLimitError = useMemo(() => isRateLimitError(error), [error])
+  const hasRateLimitError = useMemo(
+    () => isRateLimitError(error) || configuration?.usage.remaining === 0,
+    [configuration?.usage.remaining, error],
+  )
 
   // Additional height for rate limit notice (~40px)
   const rateLimitExtraHeight = hasRateLimitError ? 40 : 0
@@ -417,7 +422,7 @@ const ChatInterfaceContent = ({ centerInputOnEmpty }: ChatInterfaceProps) => {
               "bottom-1/2 translate-y-[calc(100%+1rem)] duration-200",
           )}
         >
-          {hasRateLimitError && error && <RateLimitNotice error={error} />}
+          {hasRateLimitError && <RateLimitNotice error={error} tokenUsage={configuration?.usage} />}
           <ChatShortcutsRow
             onSelect={(shortcutData) => {
               const tempEditor = createEditor({
