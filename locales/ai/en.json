@@ -183,6 +183,8 @@
   "schedule.time_label": "Time",
   "schedule.time_placeholder": "Select time",
   "schedule.title": "Schedule",
+  "session.interrupted.message": "We lost connection before the assistant replied. Retry your last message.",
+  "session.interrupted.retry": "Retry",
   "settings.autoScrollWhenStreaming.description": "Automatically scroll to the bottom of the chat when streaming.",
   "settings.autoScrollWhenStreaming.label": "Auto scroll when streaming",
   "settings.description": "Configure your AI experience and create custom shortcuts.",

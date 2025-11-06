@@ -12,7 +12,7 @@ import { clsx, cn, detectIsEditableElement, nextFrame } from "@follow/utils"
 import { ErrorBoundary } from "@sentry/react"
 import type { EditorState } from "lexical"
 import { $createParagraphNode, $getRoot, createEditor } from "lexical"
-import { AnimatePresence } from "motion/react"
+import { AnimatePresence, m } from "motion/react"
 import { nanoid } from "nanoid"
 import type { FC, RefObject } from "react"
 import * as React from "react"
@@ -23,6 +23,7 @@ import { useAISettingKey } from "~/atoms/settings/ai"
 import { useActionLanguage } from "~/atoms/settings/general"
 import { ROUTE_FEED_IN_FOLDER } from "~/constants"
 import { getRouteParams } from "~/hooks/biz/useRouteParams"
+import { useI18n } from "~/hooks/common/useI18n"
 import {
   AIChatMessage,
   AIChatWaitingIndicator,
@@ -64,6 +65,8 @@ const ChatInterfaceContent = ({ centerInputOnEmpty }: ChatInterfaceProps) => {
   const status = useChatStatus()
   const chatActions = useChatActions()
   const error = useChatError()
+  const messages = useMessages()
+  const t = useI18n()
 
   useAutoTimelineSummaryShortcut()
 
@@ -134,6 +137,27 @@ const ChatInterfaceContent = ({ centerInputOnEmpty }: ChatInterfaceProps) => {
   })
 
   const autoScrollWhenStreaming = useAISettingKey("autoScrollWhenStreaming")
+
+  const { shouldShowInterruptionNotice, lastUserMessage } = useMemo(() => {
+    if (messages.length === 0) {
+      return {
+        shouldShowInterruptionNotice: false,
+        lastUserMessage: null as BizUIMessage | null,
+      }
+    }
+
+    const lastMessage = messages.at(-1)!
+    const shouldShow =
+      lastMessage.role === "user" &&
+      status !== "streaming" &&
+      status !== "error" &&
+      status !== "submitted"
+
+    return {
+      shouldShowInterruptionNotice: shouldShow,
+      lastUserMessage: shouldShow ? lastMessage : null,
+    }
+  }, [messages, status])
 
   const { resetScrollState } = useAutoScroll(
     scrollAreaRef,
@@ -268,6 +292,31 @@ const ChatInterfaceContent = ({ centerInputOnEmpty }: ChatInterfaceProps) => {
 
     nextFrame(() => {
       // Calculate and adjust scroll positioning immediately
+      handleScrollPositioning()
+    })
+  })
+
+  const handleRetryLastMessage = useEventCallback(() => {
+    if (!lastUserMessage) {
+      return
+    }
+
+    resetScrollState()
+
+    const clonedMessage = structuredClone(lastUserMessage)
+    const { createdAt: _createdAt, id: _originalId, ...rest } = clonedMessage
+    const retryMessage: SendingUIMessage = {
+      ...(rest as Omit<SendingUIMessage, "id">),
+      id: nanoid(),
+    }
+
+    scrollHeightBeforeSendingRef.current = messagesContentRef.current?.scrollHeight ?? 0
+
+    chatActions.popMessage()
+    void chatActions.sendMessage(retryMessage)
+    tracker.aiChatMessageSent()
+
+    nextFrame(() => {
       handleScrollPositioning()
     })
   })
@@ -424,6 +473,29 @@ const ChatInterfaceContent = ({ centerInputOnEmpty }: ChatInterfaceProps) => {
               "bottom-1/2 translate-y-[calc(100%+1rem)] duration-200",
           )}
         >
+          {shouldShowInterruptionNotice && (
+            <m.div
+              initial={{ opacity: 0, y: -10 }}
+              animate={{ opacity: 1, y: 0 }}
+              exit={{ opacity: 0, y: -10 }}
+              transition={{ duration: 0.2 }}
+              className="mb-3 flex w-full items-start gap-2 rounded-lg border border-border bg-material-ultra-thick px-3 py-2 text-xs text-text-secondary backdrop-blur-background"
+            >
+              <i className="i-mingcute-information-fill size-4 flex-shrink-0 text-text" />
+              <div className="flex flex-1 items-center justify-between gap-1">
+                <span>{t.ai("session.interrupted.message")}</span>
+                {!rateLimitMessage && (
+                  <button
+                    type="button"
+                    onClick={handleRetryLastMessage}
+                    className="cursor-button self-start text-xs text-accent duration-200 hover:opacity-80"
+                  >
+                    {t.ai("session.interrupted.retry")}
+                  </button>
+                )}
+              </div>
+            </m.div>
+          )}
           <RateLimitNotice message={rateLimitMessage} />
           {!isRateLimited && (
             <ChatShortcutsRow

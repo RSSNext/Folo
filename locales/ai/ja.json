@@ -140,6 +140,8 @@
   "quick_actions.questions": "質問をする",
   "quick_actions.simplify": "簡単にする",
   "quick_actions.takeaways": "重要なポイント",
+  "session.interrupted.message": "前回のリクエストが最後まで完了しませんでした。もう一度送信してください。",
+  "session.interrupted.retry": "再試行",
   "settings.autoScrollWhenStreaming.description": "ストリーミング中にチャットの一番下まで自動スクロールします。",
   "settings.autoScrollWhenStreaming.label": "ストリーミング時に自動スクロール",
   "settings.description": "AI の体験を設定し、カスタムショートカットを作成します。",

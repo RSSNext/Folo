@@ -178,6 +178,8 @@
   "schedule.time_label": "时间",
   "schedule.time_placeholder": "选择时间",
   "schedule.title": "计划",
+  "session.interrupted.message": "上次请求似乎未完成，请重试以继续。",
+  "session.interrupted.retry": "重新发送",
   "settings.autoScrollWhenStreaming.description": "在流式传输时自动滚动到聊天底部",
   "settings.autoScrollWhenStreaming.label": "流式传输时自动滚动",
   "settings.description": "配置您的 AI 体验并创建自定义快捷方式",
