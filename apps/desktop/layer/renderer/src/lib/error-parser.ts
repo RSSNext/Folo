@@ -1,4 +1,3 @@
-import { DEV } from "@follow/shared/constants"
 import { cn } from "@follow/utils/utils"
 import { FollowAPIError } from "@follow-app/client-sdk"
 import { t } from "i18next"
@@ -170,30 +169,28 @@ export const toastFetchError = (
     })
   }
 }
-if (DEV) {
-  DebugRegistry.add("Simulate request error", () => {
-    createErrorToaster(
-      "Simulated request error",
-      {},
-    )({
-      response: {
-        _data: JSON.stringify({
-          code: 1000,
-          message: "Simulated request error",
-          reason: "Simulated reason",
-        }),
-      },
-    } as any)
-  })
-
-  DebugRegistry.add("Simulate payment need upgrade error", () => {
-    createErrorToaster(
-      "Simulated payment need upgrade error",
-      {},
-    )(
-      new FollowAPIError("Simulated payment need upgrade error", 402, "1111", {
+DebugRegistry.add("Simulate request error", () => {
+  createErrorToaster(
+    "Simulated request error",
+    {},
+  )({
+    response: {
+      _data: JSON.stringify({
+        code: 1000,
+        message: "Simulated request error",
         reason: "Simulated reason",
       }),
-    )
-  })
-}
+    },
+  } as any)
+})
+
+DebugRegistry.add("Simulate payment need upgrade error", () => {
+  createErrorToaster(
+    "Simulated payment need upgrade error",
+    {},
+  )(
+    new FollowAPIError("Simulated payment need upgrade error", 402, "1111", {
+      reason: "Simulated reason",
+    }),
+  )
+})
