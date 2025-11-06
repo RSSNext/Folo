@@ -468,7 +468,6 @@ function AIChatInterface({ inputRef }: AIChatInterfaceProps) {
 
   const shouldShowScrollToBottom = hasMessages && !isAtBottom
 
-  // Check if error is a rate limit error
   const hasRateLimitError = useMemo(() => isRateLimitError(error), [error])
 
   // Additional height for rate limit notice (~40px)
@@ -542,7 +541,7 @@ function AIChatInterface({ inputRef }: AIChatInterfaceProps) {
       )}
 
       <div ref={bottomPanelRef} className={"px-6"}>
-        {hasRateLimitError && error && <RateLimitNotice error={error} />}
+        {hasRateLimitError && <RateLimitNotice error={error} />}
         <ChatInput
           ref={inputRef}
           onSend={handleSendMessage}
