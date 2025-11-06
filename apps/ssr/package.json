@@ -71,7 +71,7 @@
     "tsdown": "0.16.0",
     "tsx": "4.20.6",
     "typescript": "catalog:",
-    "vite": "7.2.0",
+    "vite": "7.1.11",
     "vite-plugin-route-builder": "0.4.1"
   }
 }

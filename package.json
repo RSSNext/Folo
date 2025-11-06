@@ -63,7 +63,7 @@
     "tsx": "4.20.6",
     "turbo": "2.6.0",
     "typescript": "catalog:",
-    "vite": "7.2.0",
+    "vite": "7.1.11",
     "vitest": "3.2.4"
   },
   "simple-git-hooks": {
