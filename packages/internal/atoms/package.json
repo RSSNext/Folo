@@ -23,6 +23,6 @@
     "@follow/store": "workspace:*",
     "@follow/types": "workspace:*",
     "@follow/utils": "workspace:*",
-    "jotai": "2.15.0"
+    "jotai": "2.15.1"
   }
 }
