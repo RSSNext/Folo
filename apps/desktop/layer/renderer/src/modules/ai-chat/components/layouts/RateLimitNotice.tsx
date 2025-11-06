@@ -77,8 +77,11 @@ export const RateLimitNotice: React.FC<RateLimitNoticeProps> = ({
     const diffMs = resetDate.getTime() - now.getTime()
     const diffMinutes = Math.ceil(diffMs / (1000 * 60))
 
+    if (diffMinutes < 0) {
+      return null
+    }
     // Show relative time if less than 60 minutes
-    if (diffMinutes < 60 && diffMinutes > 0) {
+    if (diffMinutes < 60) {
       return `${diffMinutes} minute${diffMinutes > 1 ? "s" : ""}`
     }
 
@@ -105,8 +108,6 @@ export const RateLimitNotice: React.FC<RateLimitNoticeProps> = ({
       } else {
         parts.push(`${remainingTokens.toLocaleString()} tokens left`)
       }
-    } else {
-      parts.push("Upgrade plan to get more AI credits.")
     }
 
     // Reset time
@@ -116,6 +117,9 @@ export const RateLimitNotice: React.FC<RateLimitNoticeProps> = ({
       } else {
         parts.push(`resets at ${formattedResetTime}`)
       }
+    }
+    if (parts.length < 2) {
+      parts.push("Upgrade plan to get more AI credits.")
     }
 
     return parts.join(" · ")
