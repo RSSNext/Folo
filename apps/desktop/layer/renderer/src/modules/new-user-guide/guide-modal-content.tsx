@@ -17,7 +17,7 @@ export function GuideModalContent({ onClose }: { onClose: () => void }) {
   useEffect(() => {
     tracker.onBoarding({
       stepV2: step,
-      done: step === "finish" || step === "manual-import-finish",
+      done: step === "finish" || step === "manual-import-finish" || step === "skip-finish",
     })
   }, [step])
 
@@ -38,7 +38,7 @@ export function GuideModalContent({ onClose }: { onClose: () => void }) {
   }, [step])
 
   useEffect(() => {
-    if (step === "finish" || step === "manual-import-finish") {
+    if (step === "finish" || step === "manual-import-finish" || step === "skip-finish") {
       onClose()
     }
   }, [onClose, step])
@@ -58,11 +58,13 @@ export function GuideModalContent({ onClose }: { onClose: () => void }) {
         return <DiscoverImportStep />
       }
       case "pre-finish":
-      case "manual-import-pre-finish": {
+      case "manual-import-pre-finish":
+      case "skip-pre-finish": {
         return <PreFinish />
       }
       case "finish":
-      case "manual-import-finish": {
+      case "manual-import-finish":
+      case "skip-finish": {
         return null
       }
       default: {

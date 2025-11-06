@@ -8,6 +8,8 @@ export const stepAtom = atom<
   | "selecting-feeds"
   | "pre-finish"
   | "finish"
+  | "skip-pre-finish"
+  | "skip-finish"
   | "manual-import"
   | "manual-import-pre-finish"
   | "manual-import-finish"

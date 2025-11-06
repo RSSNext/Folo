@@ -19,6 +19,7 @@ import type { RefObject } from "react"
 import { Fragment, useEffect, useLayoutEffect, useMemo, useRef, useState } from "react"
 import { useEventCallback } from "usehooks-ts"
 
+import { useDialog } from "~/components/ui/modal/stacked/hooks"
 import { useI18n } from "~/hooks/common"
 import { ChatInput } from "~/modules/ai-chat/components/layouts/ChatInput"
 import { Messages } from "~/modules/ai-chat/components/layouts/ChatInterface"
@@ -108,6 +109,7 @@ function AIChatPaneImpl() {
   const t = useI18n()
 
   const setStep = useSetAtom(stepAtom)
+  const dialog = useDialog()
 
   const hasMessages = useHasMessages()
   const chatInputRef = useRef<LexicalRichEditorRef | null>(null)
@@ -141,14 +143,33 @@ function AIChatPaneImpl() {
     })
   }
 
+  const handleSkip = useEventCallback(async () => {
+    const confirmed = await dialog.ask({
+      title: t.app("new_user_guide.confirm_skip.title") as string,
+      message: t.app("new_user_guide.confirm_skip.message") as string,
+      confirmText: t.app("new_user_guide.actions.skip") as string,
+    })
+
+    if (!confirmed) {
+      return
+    }
+
+    setStep("skip-pre-finish")
+  })
+
   return (
     <div className="relative flex h-full flex-col">
       <header className="flex w-full items-start justify-between px-5 pb-5">
         <Logo className="size-12" />
+        <div className="flex items-center gap-2">
+          <Button variant="ghost" onClick={handleSkip}>
+            {t.app("new_user_guide.actions.skip")}
+          </Button>
 
-        <Button variant="outline" onClick={() => setStep("manual-import")}>
-          {t.app("new_user_guide.actions.import_opml")}
-        </Button>
+          <Button variant="outline" onClick={() => setStep("manual-import")}>
+            {t.app("new_user_guide.actions.import_opml")}
+          </Button>
+        </div>
       </header>
 
       <AnimatePresence mode="popLayout">

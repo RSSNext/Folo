@@ -20,9 +20,10 @@ export function PreFinish() {
   )
   const [progress, setProgress] = useState(selectedFeeds.length === 0 ? 100 : 0)
   const [showProgress, setShowProgress] = useState(false)
+  const isSkipFlow = step === "skip-pre-finish"
 
   useEffect(() => {
-    setProgress(selectedFeeds.length === 0 ? 100 : 0)
+    setProgress(isSkipFlow || selectedFeeds.length === 0 ? 100 : 0)
     setShowProgress(false)
 
     const timer = window.setTimeout(() => setShowProgress(true), WAIT_DURATION_MS)
@@ -30,7 +31,7 @@ export function PreFinish() {
     return () => {
       window.clearTimeout(timer)
     }
-  }, [selectedFeeds])
+  }, [isSkipFlow, selectedFeeds])
 
   useEffect(() => {
     let disposed = false
@@ -75,7 +76,7 @@ export function PreFinish() {
 
     const run = async () => {
       const tasks: Promise<unknown>[] = [sleep(WAIT_DURATION_MS)]
-      if (selectedFeeds.length > 0) {
+      if (!isSkipFlow && selectedFeeds.length > 0) {
         tasks.push(subscribeSelectedFeeds())
       }
       await Promise.allSettled(tasks)
@@ -83,6 +84,8 @@ export function PreFinish() {
       if (!disposed) {
         if (step === "manual-import-pre-finish") {
           setStep("manual-import-finish")
+        } else if (step === "skip-pre-finish") {
+          setStep("skip-finish")
         } else {
           setStep("finish")
         }
@@ -94,7 +97,7 @@ export function PreFinish() {
     return () => {
       disposed = true
     }
-  }, [selectedFeeds, setStep, step])
+  }, [isSkipFlow, selectedFeeds, setStep, step])
 
   return (
     <div className="relative h-[100vh] w-screen">
