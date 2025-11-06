@@ -15,6 +15,7 @@ export class ZustandChatState implements ChatState<BizUIMessage> {
   #status: ChatStatus = "ready"
   #error: Error | undefined = undefined
   #eventEmitter = new ChatStateEventEmitter()
+  #isResumingStream = false
 
   constructor(
     initialMessages: BizUIMessage[] = [],
@@ -61,10 +62,22 @@ export class ZustandChatState implements ChatState<BizUIMessage> {
     })
 
     this.#eventEmitter.on("status", ({ status }) => {
+      // Suppress the transient "submitted" status emitted when resumeStream probes for an active stream.
+      if (this.#isResumingStream && status === "submitted") {
+        return
+      }
+
       this.updateZustandState((state) => {
         const isStreaming = status === "streaming"
         if (isStreaming) {
           void state.chatActions.markSessionSynced()
+        }
+
+        if (
+          this.#isResumingStream &&
+          (status === "ready" || status === "streaming" || status === "error")
+        ) {
+          this.#isResumingStream = false
         }
 
         return {
@@ -184,5 +197,9 @@ export class ZustandChatState implements ChatState<BizUIMessage> {
 
   destroy(): void {
     this.#eventEmitter.clear()
+  }
+
+  setResumingStream(isResuming: boolean) {
+    this.#isResumingStream = isResuming
   }
 }
