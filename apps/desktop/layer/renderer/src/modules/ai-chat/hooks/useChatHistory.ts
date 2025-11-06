@@ -1,6 +1,7 @@
 import { useMemo } from "react"
 import { useEventCallback } from "usehooks-ts"
 
+import { AIChatSessionService } from "~/modules/ai-chat-session/service"
 import { aiChatSessionStoreActions, useAIChatSessionStore } from "~/modules/ai-chat-session/store"
 
 export const useChatHistory = () => {
@@ -10,18 +11,20 @@ export const useChatHistory = () => {
   const loading = state.isLoading || state.isSyncing
 
   const loadHistory = useEventCallback(async () => {
-    if (loading) return
+    if (state.isLoading) return
 
     aiChatSessionStoreActions.setLoading(true)
     aiChatSessionStoreActions.clearError()
 
     try {
+      // 1) Always hydrate latest local first so UI updates immediately
+      await AIChatSessionService.loadSessionsFromDb()
+      // 2) Then sync remote → upsert into local DB → reload from DB inside service
       await aiChatSessionStoreActions.fetchRemoteSessions()
     } catch (error) {
       console.error("Failed to load chat history:", error)
       aiChatSessionStoreActions.setError(error instanceof Error ? error.message : "Unknown error")
     } finally {
-      aiChatSessionStoreActions.setSyncing(false)
       aiChatSessionStoreActions.setLoading(false)
     }
   })
