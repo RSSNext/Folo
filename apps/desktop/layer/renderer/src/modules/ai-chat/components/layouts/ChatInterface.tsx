@@ -48,7 +48,6 @@ import { useAIConfiguration } from "../../hooks/useAIConfiguration"
 import { useAttachScrollBeyond } from "../../hooks/useAttachScrollBeyond"
 import { AIPanelRefsContext } from "../../store/AIChatContext"
 import type { AIChatContextBlock, BizUIMessage, SendingUIMessage } from "../../store/types"
-import { isRateLimitError } from "../../utils/error"
 import { GlobalFileDropZone } from "../file/GlobalFileDropZone"
 import { AIErrorFallback } from "./AIErrorFallback"
 import { ChatInput } from "./ChatInput"
@@ -284,12 +283,15 @@ const ChatInterfaceContent = ({ centerInputOnEmpty }: ChatInterfaceProps) => {
 
   const [bottomPanelHeight, setBottomPanelHeight] = useState<number>(0)
   const bottomPanelRef = useRef<HTMLDivElement | null>(null)
+  const rateLimitNoticeRef = useRef<HTMLDivElement | null>(null)
 
   useLayoutEffect(() => {
-    if (!bottomPanelRef.current) {
+    if (!bottomPanelRef.current || !rateLimitNoticeRef.current) {
       return
     }
-    setBottomPanelHeight(bottomPanelRef.current.offsetHeight)
+    setBottomPanelHeight(
+      (bottomPanelRef.current?.offsetHeight ?? 0) + (rateLimitNoticeRef.current?.offsetHeight ?? 0),
+    )
 
     const resizeObserver = new ResizeObserver(() => {
       if (!bottomPanelRef.current) {
@@ -325,14 +327,6 @@ const ChatInterfaceContent = ({ centerInputOnEmpty }: ChatInterfaceProps) => {
   const { handleScroll } = useAttachScrollBeyond()
 
   const { data: configuration } = useAIConfiguration()
-  // Check if error is a rate limit error
-  const hasRateLimitError = useMemo(
-    () => isRateLimitError(error) || configuration?.usage.remaining === 0,
-    [configuration?.usage.remaining, error],
-  )
-
-  // Additional height for rate limit notice (~40px)
-  const rateLimitExtraHeight = hasRateLimitError ? 40 : 0
 
   return (
     <div className="flex size-full flex-col @container">
@@ -361,14 +355,14 @@ const ChatInterfaceContent = ({ centerInputOnEmpty }: ChatInterfaceProps) => {
                   scrollbarClassName="mt-12"
                   scrollbarProps={{
                     style: {
-                      marginBottom: Math.max(160, bottomPanelHeight) + rateLimitExtraHeight,
+                      marginBottom: Math.max(160, bottomPanelHeight),
                     },
                   }}
                   ref={setScrollAreaRef}
                   rootClassName="flex-1"
                   viewportProps={{
                     style: {
-                      paddingBottom: Math.max(128, bottomPanelHeight) + rateLimitExtraHeight,
+                      paddingBottom: Math.max(128, bottomPanelHeight),
                     },
                   }}
                   viewportClassName={"pt-12"}
@@ -422,7 +416,7 @@ const ChatInterfaceContent = ({ centerInputOnEmpty }: ChatInterfaceProps) => {
               "bottom-1/2 translate-y-[calc(100%+1rem)] duration-200",
           )}
         >
-          {hasRateLimitError && <RateLimitNotice error={error} tokenUsage={configuration?.usage} />}
+          <RateLimitNotice ref={rateLimitNoticeRef} error={error} chatConfig={configuration} />
           <ChatShortcutsRow
             onSelect={(shortcutData) => {
               const tempEditor = createEditor({
