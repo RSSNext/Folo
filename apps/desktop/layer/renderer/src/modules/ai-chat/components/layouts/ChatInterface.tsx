@@ -411,8 +411,7 @@ const ChatInterfaceContent = ({ centerInputOnEmpty }: ChatInterfaceProps) => {
           data-testid="chat-input-container"
           className={cn(
             "absolute z-10 mx-auto duration-500 ease-in-out",
-            hasMessages && "inset-x-0 bottom-0 max-w-4xl px-4 pb-4",
-            !hasMessages && "inset-x-0 bottom-0 max-w-3xl px-4 pb-4 duration-200",
+            "inset-x-0 bottom-0 max-w-4xl px-4 pb-4",
             centerInputOnEmpty &&
               !hasMessages &&
               "bottom-1/2 translate-y-[calc(100%+1rem)] duration-200",

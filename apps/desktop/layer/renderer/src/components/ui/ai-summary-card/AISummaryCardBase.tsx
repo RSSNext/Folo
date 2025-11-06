@@ -177,26 +177,6 @@ export const AISummaryCardBase: React.FC<AISummaryCardBaseProps> = ({
         )}
 
         <div className="flex items-center gap-2">
-          {aiEnabled && showAskAIButton && hasContent && onAskAI && (
-            <MotionButtonBase
-              onClick={onAskAI}
-              className={cn(
-                "flex h-7 items-center gap-1.5 rounded-lg px-3 text-sm font-medium",
-                "bg-gradient-to-r from-purple-500/10 to-blue-500/10",
-                "border border-purple-200/30 dark:border-purple-800/30",
-                "text-purple-600 dark:text-purple-400",
-                "hover:from-purple-500/20 hover:to-blue-500/20",
-                "hover:border-purple-300/50 dark:hover:border-purple-700/50",
-                "transition-all duration-200",
-                "backdrop-blur-sm",
-                "sm:opacity-0 sm:duration-300 sm:group-hover:translate-y-0 sm:group-hover:opacity-100",
-              )}
-            >
-              <i className="i-mingcute-ai-line text-base" />
-              <span>Ask AI</span>
-            </MotionButtonBase>
-          )}
-
           {showCopyButton && hasContent && (
             <CopyButton
               value={content}
@@ -209,6 +189,25 @@ export const AISummaryCardBase: React.FC<AISummaryCardBaseProps> = ({
                 "backdrop-blur-sm",
               )}
             />
+          )}
+          {aiEnabled && showAskAIButton && hasContent && onAskAI && (
+            <MotionButtonBase
+              onClick={onAskAI}
+              className={cn(
+                "flex h-7 items-center gap-1.5 rounded-lg px-3 text-sm font-medium",
+                "bg-gradient-to-r from-purple-500/10 to-blue-500/10",
+                "border border-purple-200/30 dark:border-purple-800/30",
+                "text-purple-600 dark:text-purple-400",
+                "hover:from-purple-500/20 hover:to-blue-500/20",
+                "hover:border-purple-300/50 dark:hover:border-purple-700/50",
+                "transition-all duration-200",
+                "backdrop-blur-sm",
+                "sm:duration-300 sm:group-hover:translate-y-0",
+              )}
+            >
+              <i className="i-mingcute-ai-line text-base" />
+              <span>Ask AI</span>
+            </MotionButtonBase>
           )}
         </div>
       </div>

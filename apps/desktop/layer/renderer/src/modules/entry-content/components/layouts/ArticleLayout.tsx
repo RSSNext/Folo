@@ -7,7 +7,6 @@ import { cn } from "@follow/utils"
 import { ErrorBoundary } from "@sentry/react"
 import { useCallback, useEffect, useMemo, useRef, useState } from "react"
 
-import { AIChatPanelStyle, useAIChatPanelStyle, useAIPanelVisibility } from "~/atoms/settings/ai"
 import { useUISettingKey } from "~/atoms/settings/ui"
 import { ShadowDOM } from "~/components/common/ShadowDOM"
 import type { TocRef } from "~/components/ui/markdown/components/Toc"
@@ -65,11 +64,6 @@ export const ArticleLayout: React.FC<EntryLayoutProps> = ({
     removeBlock(BlockSliceAction.SPECIAL_TYPES.selectedText)
   }, [removeBlock])
 
-  const aiChatPanelStyle = useAIChatPanelStyle()
-  const isAIPanelVisible = useAIPanelVisibility()
-
-  const shouldShowAISummary = aiChatPanelStyle === AIChatPanelStyle.Floating || !isAIPanelVisible
-
   if (!entry) return null
 
   return (
@@ -87,7 +81,7 @@ export const ArticleLayout: React.FC<EntryLayoutProps> = ({
 
       <WrappedElementProvider boundingDetection>
         <div className="mx-auto mb-32 mt-6 max-w-full cursor-auto text-[0.94rem]">
-          {shouldShowAISummary && <AISummary entryId={entryId} />}
+          <AISummary entryId={entryId} />
           <ErrorBoundary fallback={EntryRenderError}>
             <ReadabilityNotice entryId={entryId} />
             {showTranscript ? (

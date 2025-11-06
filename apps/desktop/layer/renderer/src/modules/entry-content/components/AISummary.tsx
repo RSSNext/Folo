@@ -4,12 +4,7 @@ import { useTranslation } from "react-i18next"
 
 import { useShowAISummary } from "~/atoms/ai-summary"
 import { useEntryIsInReadabilitySuccess } from "~/atoms/readability"
-import {
-  AIChatPanelStyle,
-  setAIPanelVisibility,
-  useAIChatPanelStyle,
-  useAIPanelVisibility,
-} from "~/atoms/settings/ai"
+import { setAIPanelVisibility } from "~/atoms/settings/ai"
 import { useActionLanguage } from "~/atoms/settings/general"
 import { AISummaryCardBase } from "~/components/ui/ai-summary-card"
 
@@ -21,23 +16,12 @@ export function AISummary({ entryId }: { entryId: string }) {
 
   const actionLanguage = useActionLanguage()
 
-  // AI Chat panel state
-  const aiChatPanelStyle = useAIChatPanelStyle()
-  const isAIPanelVisible = useAIPanelVisibility()
-
   const summary = usePrefetchSummary({
     actionLanguage,
     entryId,
     target: isInReadabilitySuccess ? "readabilityContent" : "content",
     enabled: showAISummary,
   })
-
-  // Show Ask AI button when:
-  // 1. Panel style is floating AND panel is not visible
-  // 2. OR panel style is fixed (since fixed panel can be toggled)
-  const shouldShowAskAI =
-    (aiChatPanelStyle === AIChatPanelStyle.Floating && !isAIPanelVisible) ||
-    aiChatPanelStyle === AIChatPanelStyle.Fixed
 
   const handleAskAI = () => {
     setAIPanelVisibility(true)
@@ -53,7 +37,7 @@ export function AISummary({ entryId }: { entryId: string }) {
       isLoading={summary.isLoading}
       className="my-8"
       title={t("entry_content.ai_summary")}
-      showAskAIButton={shouldShowAskAI}
+      showAskAIButton={true}
       onAskAI={handleAskAI}
       error={summary.error}
     />

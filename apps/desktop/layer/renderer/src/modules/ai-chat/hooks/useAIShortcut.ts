@@ -2,12 +2,7 @@ import { useGlobalFocusableScopeSelector } from "@follow/components/common/Focus
 import { useEffect } from "react"
 import { tinykeys } from "tinykeys"
 
-import {
-  AIChatPanelStyle,
-  getAIPanelVisibility,
-  getAISettings,
-  setAIPanelVisibility,
-} from "~/atoms/settings/ai"
+import { getAIPanelVisibility, setAIPanelVisibility } from "~/atoms/settings/ai"
 import { FocusablePresets } from "~/components/common/Focusable"
 import { getRouteParams } from "~/hooks/biz/useRouteParams"
 
@@ -24,14 +19,14 @@ export const useAIShortcut = () => {
       "$mod+n": (e) => {
         e.preventDefault()
         // New chat
-        const { view, entryId } = getRouteParams()
-        if (isTimelineSummaryAutoContext({ view, entryId })) {
+        const { entryId } = getRouteParams()
+        if (isTimelineSummaryAutoContext({ entryId })) {
           chatActions.setTimelineSummaryManualOverride(true)
         }
         chatActions.newChat()
       },
       "$mod+w": (e) => {
-        if (getAISettings().panelStyle === AIChatPanelStyle.Floating && getAIPanelVisibility()) {
+        if (getAIPanelVisibility()) {
           e.preventDefault()
           // close AI chat
           setAIPanelVisibility(false)

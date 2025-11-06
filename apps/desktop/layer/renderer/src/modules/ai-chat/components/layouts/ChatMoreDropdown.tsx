@@ -1,18 +1,11 @@
 import type { ReactNode } from "react"
-import { useCallback, useRef, useState } from "react"
+import { useCallback, useState } from "react"
 import { useTranslation } from "react-i18next"
 
-import {
-  AIChatPanelStyle,
-  setAIChatPanelStyle,
-  setAIPanelVisibility,
-  useAIChatPanelStyle,
-} from "~/atoms/settings/ai"
 import {
   DropdownMenu,
   DropdownMenuContent,
   DropdownMenuItem,
-  DropdownMenuSeparator,
   DropdownMenuTrigger,
 } from "~/components/ui/dropdown-menu/dropdown-menu"
 import { useSettingModal } from "~/modules/settings/modal/use-setting-modal-hack"
@@ -23,13 +16,10 @@ import { generateAndUpdateChatTitle } from "../../utils/titleGeneration"
 export const ChatMoreDropdown = ({
   triggerElement,
   asChild = true,
-  canToggleMode = true,
 }: {
   triggerElement: ReactNode
   asChild?: boolean
-  canToggleMode?: boolean
 }) => {
-  const panelStyle = useAIChatPanelStyle()
   const settingModalPresent = useSettingModal()
   const chatActions = useChatActions()
   const currentChatId = useCurrentChatId()
@@ -37,16 +27,6 @@ export const ChatMoreDropdown = ({
   const messages = useMessages()
   const [isGenerating, setIsGenerating] = useState(false)
   const { t } = useTranslation("ai")
-
-  const handleToggleMode = useCallback(() => {
-    const newStyle =
-      panelStyle === AIChatPanelStyle.Fixed ? AIChatPanelStyle.Floating : AIChatPanelStyle.Fixed
-    setAIChatPanelStyle(newStyle)
-  }, [panelStyle])
-
-  const handleCloseSidebar = useRef(() => {
-    setAIPanelVisibility(false)
-  }).current
 
   const handleGenerateTitle = useCallback(
     async (e: React.MouseEvent) => {
@@ -81,37 +61,10 @@ export const ChatMoreDropdown = ({
           <span>{isGenerating ? t("common.generating_title") : t("common.generate_title")}</span>
         </DropdownMenuItem>
 
-        <DropdownMenuSeparator />
-        {canToggleMode && (
-          <>
-            <DropdownMenuItem onClick={handleToggleMode}>
-              <i
-                className={`mr-2 size-4 ${panelStyle === AIChatPanelStyle.Fixed ? "i-mingcute-rectangle-vertical-line" : "i-mingcute-layout-right-line"}`}
-              />
-              <span>
-                {panelStyle === AIChatPanelStyle.Fixed
-                  ? "Switch to Floating Panel"
-                  : "Switch to Fixed Panel"}
-              </span>
-            </DropdownMenuItem>
-            <DropdownMenuSeparator />
-          </>
-        )}
-
         <DropdownMenuItem onClick={() => settingModalPresent("ai")}>
           <i className="i-mgc-settings-1-cute-re mr-2 size-4" />
           <span>AI Settings</span>
         </DropdownMenuItem>
-
-        {panelStyle !== AIChatPanelStyle.Floating && (
-          <>
-            <DropdownMenuSeparator />
-            <DropdownMenuItem onClick={handleCloseSidebar}>
-              <i className="i-mgc-close-cute-re mr-2 size-4" />
-              <span>Close Sidebar</span>
-            </DropdownMenuItem>
-          </>
-        )}
       </DropdownMenuContent>
     </DropdownMenu>
   )
