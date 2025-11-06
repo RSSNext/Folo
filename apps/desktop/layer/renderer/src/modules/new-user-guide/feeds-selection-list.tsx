@@ -20,16 +20,23 @@ import { useMessages } from "../ai-chat/store/hooks"
 import { SearchResultContent } from "../discover/DiscoverFeedCard"
 import { FeedIcon } from "../feed/feed-icon"
 import type { FeedSelection } from "./store"
-import { feedSelectionAtomsAtom, selectedFeedSelectionAtomsAtom } from "./store"
+import { feedSelectionAtomsAtom, selectedFeedSelectionAtomsAtom, stepAtom } from "./store"
 
 type FeedToSelect = Omit<FeedSelection, "selected">
 
 export function FeedsSelectionList() {
   const chatMessages = useMessages()
+  const setStep = useSetAtom(stepAtom)
 
   const hasFeedsSelection = chatMessages.some((msg) =>
     msg.parts.some((p) => p.type === "tool-onboardingGetTrendingFeeds" && p.output),
   )
+
+  useEffect(() => {
+    if (hasFeedsSelection) {
+      setStep("selecting-feeds")
+    }
+  }, [hasFeedsSelection, setStep])
 
   return (
     <div className="col-span-4 h-full overflow-hidden">
