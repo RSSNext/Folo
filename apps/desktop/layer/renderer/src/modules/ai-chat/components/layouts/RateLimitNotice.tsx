@@ -77,7 +77,7 @@ export const RateLimitNotice: React.FC<RateLimitNoticeProps> = ({
     const diffMs = resetDate.getTime() - now.getTime()
     const diffMinutes = Math.ceil(diffMs / (1000 * 60))
 
-    if (diffMinutes < 0) {
+    if (diffMinutes <= 1) {
       return null
     }
     // Show relative time if less than 60 minutes
