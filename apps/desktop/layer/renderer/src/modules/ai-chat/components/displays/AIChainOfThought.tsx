@@ -166,7 +166,7 @@ const AIInnerReasoningPart: React.FC<{
       title={
         <div className="group/inner flex h-6 min-w-0 flex-1 items-center py-0">
           <div className="flex items-center gap-2 text-xs text-text-secondary">
-            {title ? (
+            {title && !groupStreaming ? (
               <span className="truncate">
                 {"Reason: "}
                 <span className="font-medium text-text">{title}</span>
@@ -192,6 +192,7 @@ AIChainOfThought.displayName = "AIChainOfThought"
 const extractHeading = (text?: string): string | undefined => {
   if (!text) return
   const lines = text.split(/\r?\n/)
+  let lastHeading: string | undefined
   for (const raw of lines) {
     const line = raw.trim()
     if (!line) continue
@@ -200,12 +201,14 @@ const extractHeading = (text?: string): string | undefined => {
       while (idx < line.length && line.charAt(idx) === "#") idx++
       let content = line.slice(idx).trim()
       while (content.endsWith("#")) content = content.slice(0, -1).trim()
-      return content || undefined
+      if (content) lastHeading = content
+      continue
     }
     if (line.startsWith("**") && line.endsWith("**") && line.length > 4) {
-      return line.slice(2, -2).trim() || undefined
+      const content = line.slice(2, -2).trim()
+      if (content) lastHeading = content
+      continue
     }
-    break
   }
-  return
+  return lastHeading
 }
