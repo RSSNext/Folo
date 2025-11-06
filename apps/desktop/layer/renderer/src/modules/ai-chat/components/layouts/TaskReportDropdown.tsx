@@ -35,6 +35,7 @@ interface TaskReportDropdownProps {
 }
 
 interface SessionItemProps {
+  hasUnread?: boolean
   session: AIChatSession
   onClick?: () => void
   onDelete?: (e: React.MouseEvent) => void
@@ -51,7 +52,13 @@ const isTaskSession = (session: AIChatSession): boolean => {
 const isUnreadSession = (session: AIChatSession): boolean => {
   return new Date(session.updatedAt) > new Date(session.lastSeenAt)
 }
-const SessionItem = ({ session, onClick, onDelete, isLoading }: SessionItemProps) => {
+const SessionItem = ({
+  session,
+  onClick,
+  onDelete,
+  isLoading,
+  hasUnread = false,
+}: SessionItemProps) => {
   const hasUnreadMessages = isUnreadSession(session)
   return (
     <DropdownMenuItem
@@ -62,12 +69,14 @@ const SessionItem = ({ session, onClick, onDelete, isLoading }: SessionItemProps
         <div className="flex min-w-0 flex-1 items-center gap-2">
           {hasUnreadMessages && (
             <span
-              className="absolute left-0 block size-2 shrink-0 rounded-full bg-accent"
+              className="absolute left-2 block size-2 shrink-0 rounded-full bg-accent group-hover:bg-white"
               aria-label="Unread"
               role="status"
             />
           )}
-          <p className="mb-0.5 truncate font-medium">{session.title || "Untitled Chat"}</p>
+          <p className={`mb-0.5 truncate font-medium ${hasUnread ? "ml-2" : ""}`}>
+            {session.title || "Untitled Chat"}
+          </p>
         </div>
         <div className="relative flex min-w-0 items-center">
           <p className="ml-2 shrink-0 truncate text-xs text-text-secondary">
@@ -227,6 +236,10 @@ export const TaskReportDropdown = ({ triggerElement, asChild = true }: TaskRepor
     </ActionButton>
   )
 
+  const hasOneOfUnread = useMemo(() => {
+    return taskSessions.some((s) => isUnreadSession(s))
+  }, [taskSessions])
+
   return (
     <DropdownMenu>
       {asChild ? (
@@ -249,6 +262,7 @@ export const TaskReportDropdown = ({ triggerElement, asChild = true }: TaskRepor
         {taskSessions.length > 0 ? (
           taskSessions.map((session) => (
             <SessionItem
+              hasUnread={hasOneOfUnread}
               key={session.chatId}
               session={session}
               onClick={() => handleSessionSelect(session)}
