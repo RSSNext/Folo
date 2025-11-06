@@ -56,7 +56,7 @@ function FeedSelectionOperationScreen() {
       .findLast((m) => m.parts?.some((p) => p.type === "tool-onboardingGetTrendingFeeds"))
       ?.parts?.findLast((p) => p.type === "tool-onboardingGetTrendingFeeds")?.output
 
-    return typeof output === "string" ? (decode(output) as any[]) : []
+    return typeof output === "string" ? (decode(output) as any[]) : (output as any[])
   }, [chatMessages])
 
   const store = useStore()
