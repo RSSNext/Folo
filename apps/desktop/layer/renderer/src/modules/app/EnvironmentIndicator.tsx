@@ -19,7 +19,7 @@ import { featureConfigMap } from "~/lib/features"
 
 import { DebugRegistry } from "../debug/registry"
 
-const EnvironmentDebugModalContent = () => {
+export const EnvironmentDebugModalContent = () => {
   const actionMap = DebugRegistry.getAll()
   const debugValues = useDebugFeatureValue() as Record<string, boolean>
   const setDebugValues = useSetDebugFeatureValue()
