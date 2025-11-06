@@ -159,7 +159,6 @@ export const ChatPageHeader = () => {
 
           <div className="mx-2 h-5 w-px bg-border" />
           <ChatMoreDropdown
-            canToggleMode={false}
             triggerElement={
               <ActionButton tooltip="More">
                 <i className="i-mingcute-more-1-fill size-5 text-text-secondary" />
