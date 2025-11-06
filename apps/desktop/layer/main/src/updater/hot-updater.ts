@@ -49,31 +49,11 @@ class RendererHotUpdater {
       return null
     }
 
-    const { renderer } = decision
-    if (!renderer) {
-      this.logger.debug("Renderer decision payload missing renderer field")
-      return null
-    }
+    return this.toManifest(decision.renderer)
+  }
 
-    if (!renderer.downloadUrl) {
-      this.logger.warn("Renderer decision missing downloadUrl, skip renderer hot update")
-      return null
-    }
-
-    if (!renderer.filename) {
-      this.logger.warn("Renderer decision missing filename, skip renderer hot update")
-      return null
-    }
-
-    if (!renderer.hash) {
-      this.logger.warn("Renderer decision missing hash, skip renderer hot update")
-      return null
-    }
-
-    return {
-      ...renderer,
-      downloadUrl: renderer.downloadUrl,
-    }
+  extractManifestFromRendererUpdate(renderer: RendererUpdate | null): RendererManifest | null {
+    return this.toManifest(renderer)
   }
 
   evaluateManifest(manifest: RendererManifest | null): RendererEligibilityResult {
@@ -127,6 +107,33 @@ class RendererHotUpdater {
     return {
       status: RendererEligibilityStatus.Eligible,
       manifest,
+    }
+  }
+
+  private toManifest(renderer: RendererUpdate | null): RendererManifest | null {
+    if (!renderer) {
+      this.logger.debug("Renderer decision payload missing renderer field")
+      return null
+    }
+
+    if (!renderer.downloadUrl) {
+      this.logger.warn("Renderer decision missing downloadUrl, skip renderer hot update")
+      return null
+    }
+
+    if (!renderer.filename) {
+      this.logger.warn("Renderer decision missing filename, skip renderer hot update")
+      return null
+    }
+
+    if (!renderer.hash) {
+      this.logger.warn("Renderer decision missing hash, skip renderer hot update")
+      return null
+    }
+
+    return {
+      ...renderer,
+      downloadUrl: renderer.downloadUrl,
     }
   }
 

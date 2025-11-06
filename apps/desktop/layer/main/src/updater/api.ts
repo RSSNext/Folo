@@ -1,4 +1,8 @@
-import type { GetLatestReleaseQuery, LatestReleasePayload } from "@follow-app/client-sdk"
+import type {
+  DistributionStatusPayload,
+  GetLatestReleaseQuery,
+  LatestReleasePayload,
+} from "@follow-app/client-sdk"
 
 import { apiClient } from "~/lib/api-client"
 
@@ -12,4 +16,11 @@ export const getUpdateInfo = async (
   return cachedLatestRelease
 }
 
-export const getCachedUpdateInfo = () => cachedLatestRelease
+export const getDistributionUpdateInfo = async (): Promise<DistributionStatusPayload | null> => {
+  const distribution = process.mas ? "mas" : process.windowsStore ? "mss" : undefined
+  if (!distribution) {
+    return null
+  }
+  const response = await apiClient.updates.getDistributionStatus({ distribution })
+  return response.data
+}

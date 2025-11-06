@@ -82,6 +82,13 @@ export class AppService extends IpcService {
   }
 
   @IpcMethod()
+  async openExternal(_context: IpcContext, url: string): Promise<void> {
+    if (!url) return
+
+    await shell.openExternal(url)
+  }
+
+  @IpcMethod()
   windowAction(context: IpcContext, input: WindowActionInput): void {
     if (context.sender.getType() === "window") {
       const window: BrowserWindow | null = (context.sender as Sender).getOwnerBrowserWindow()

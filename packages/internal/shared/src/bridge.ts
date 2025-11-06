@@ -1,3 +1,4 @@
+import type { StoreDistribution } from "@follow-app/client-sdk"
 import type { BrowserWindow } from "electron"
 import { useEffect, useLayoutEffect, useRef } from "react"
 import type { toast } from "sonner"
@@ -23,6 +24,13 @@ export enum WindowState {
   MAXIMIZED = "maximized",
   NORMAL = "normal",
 }
+export interface DistributionUpdateNotice {
+  distribution: StoreDistribution
+  storeUrl: string
+  storeVersion: string | null
+  currentVersion: string | null
+}
+
 interface RenderGlobalContext {
   /// Access Settings
   showSetting: (path?: string) => void
@@ -63,6 +71,7 @@ interface RenderGlobalContext {
   // URL
   getWebUrl: () => string
   getApiUrl: () => string
+  distributionUpdateAvailable: (payload: DistributionUpdateNotice) => void
 
   // Utils
   invalidateQuery: (queryKey: string | string[]) => void

@@ -2,19 +2,25 @@ import { fileURLToPath } from "node:url"
 
 import { callWindowExpose } from "@follow/shared/bridge"
 import { DEV } from "@follow/shared/constants"
-import type { LatestReleasePayload, PlatformUpdate } from "@follow-app/client-sdk"
-import { mainHash } from "@pkg"
+import type {
+  DistributionStatusPayload,
+  LatestReleasePayload,
+  PlatformUpdate,
+  RendererUpdate,
+} from "@follow-app/client-sdk"
+import { mainHash, version as appVersion } from "@pkg"
 import log from "electron-log"
 import type { AppUpdater } from "electron-updater"
 import { autoUpdater as defaultAutoUpdater } from "electron-updater"
 import { join } from "pathe"
+import { gt, valid as isValidSemver } from "semver"
 
 import { WindowManager } from "~/manager/window"
 import type { RendererManifest } from "~/updater/hot-updater"
 import { RendererEligibilityStatus, rendererUpdater } from "~/updater/hot-updater"
 
 import { channel, isWindows } from "../env"
-import { getUpdateInfo } from "./api"
+import { getDistributionUpdateInfo, getUpdateInfo } from "./api"
 import { appUpdaterConfig } from "./configs"
 import { FollowUpdateProvider } from "./follow-update-provider"
 import { WindowsUpdater } from "./windows-updater"
@@ -78,7 +84,7 @@ class FollowUpdater {
       clearInterval(this.pollingTimer)
     }
 
-    this.pollingTimer = setInterval(() => {
+    const updatePollingHandler = async () => {
       if (!appUpdaterConfig.app.autoCheckUpdate) {
         return
       }
@@ -86,7 +92,9 @@ class FollowUpdater {
       void this.checkForUpdates().catch((error) => {
         logger.error("Scheduled update check failed", error)
       })
-    }, appUpdaterConfig.app.checkUpdateInterval)
+    }
+    updatePollingHandler()
+    this.pollingTimer = setInterval(updatePollingHandler, appUpdaterConfig.app.checkUpdateInterval)
   }
 
   async checkForUpdates(options: UpdateCheckOptions = {}): Promise<UpdateCheckResult> {
@@ -102,6 +110,11 @@ class FollowUpdater {
     this.checkingUpdate = true
 
     try {
+      if (appUpdaterConfig.enableDistributionStoreUpdate) {
+        logger.info("Distribution store update enabled, checking for distribution update")
+        return this.handleDistributionAppDecision()
+      }
+
       const payload = await getUpdateInfo(options.refresh ? { refresh: true } : {})
       const { decision } = payload
 
@@ -200,6 +213,7 @@ class FollowUpdater {
 
   private async handleAppDecision(payload: LatestReleasePayload): Promise<UpdateCheckResult> {
     const appDecision = payload.decision.app
+
     if (!appUpdaterConfig.enableCoreUpdate) {
       logger.info("Core app update disabled by configuration")
       return { hasUpdate: false }
@@ -239,6 +253,182 @@ class FollowUpdater {
     } finally {
       FollowUpdateProvider.clearContext()
     }
+
+    return { hasUpdate: true }
+  }
+
+  private async handleDistributionAppDecision(): Promise<UpdateCheckResult> {
+    try {
+      if (!appUpdaterConfig.enableDistributionStoreUpdate) {
+        return { hasUpdate: false }
+      }
+
+      const info = await getDistributionUpdateInfo()
+
+      if (!info) {
+        logger.info("Distribution update info unavailable for current build")
+        return { hasUpdate: false }
+      }
+
+      const rendererResult = await this.tryDistributionRendererUpdate(info.rendererUpdate)
+      if (rendererResult) {
+        return rendererResult
+      }
+
+      if (!this.shouldPromptDistributionStoreUpdate(info)) {
+        logger.info("Distribution update does not require store action")
+        return { hasUpdate: false }
+      }
+
+      logger.info("Distribution store update required")
+      return await this.notifyDistributionUpdate(info)
+    } catch (error) {
+      logger.error("Failed to handle distribution app update", error)
+      return {
+        hasUpdate: false,
+        error: error instanceof Error ? error.message : "Failed to handle distribution update",
+      }
+    }
+  }
+
+  private async tryDistributionRendererUpdate(
+    renderer: RendererUpdate | null,
+  ): Promise<UpdateCheckResult | null> {
+    if (!renderer) {
+      return null
+    }
+
+    if (!appUpdaterConfig.enableRenderHotUpdate) {
+      logger.info("Renderer hot update disabled for distribution build")
+      return null
+    }
+
+    const manifest = this.renderer.extractManifestFromRendererUpdate(renderer)
+    if (!manifest) {
+      logger.warn("Distribution renderer update missing manifest")
+      return null
+    }
+
+    const eligibility = this.renderer.evaluateManifest(manifest)
+
+    switch (eligibility.status) {
+      case RendererEligibilityStatus.NoManifest: {
+        if (eligibility.reason) {
+          logger.warn("Distribution renderer update missing manifest data", {
+            reason: eligibility.reason,
+          })
+        }
+        return null
+      }
+
+      case RendererEligibilityStatus.AlreadyCurrent: {
+        if (eligibility.reason) {
+          logger.info(eligibility.reason)
+        }
+        return { hasUpdate: false }
+      }
+
+      case RendererEligibilityStatus.RequiresFullAppUpdate: {
+        logger.info(
+          eligibility.reason ??
+            "Renderer payload requires main process update, delegating to distribution store flow",
+        )
+        return null
+      }
+
+      case RendererEligibilityStatus.Eligible: {
+        const manifestToApply = eligibility.manifest as RendererManifest | undefined
+        if (!manifestToApply) {
+          logger.warn("Distribution renderer update missing manifest payload")
+          return null
+        }
+
+        try {
+          await this.renderer.applyManifest(manifestToApply)
+          return { hasUpdate: true }
+        } catch (error) {
+          logger.error("Renderer hot update failed for distribution build", error)
+          return {
+            hasUpdate: false,
+            error: error instanceof Error ? error.message : "Renderer hot update failed",
+          }
+        }
+      }
+
+      default: {
+        return null
+      }
+    }
+  }
+
+  private shouldPromptDistributionStoreUpdate(info: DistributionStatusPayload): boolean {
+    if (!info.storeUrl) {
+      logger.info("Distribution store update skipped: missing store URL", {
+        distribution: info.distribution,
+      })
+      return false
+    }
+
+    const { storeVersion } = info
+
+    const currentVersion = appVersion
+
+    if (!storeVersion) {
+      logger.info("Distribution store update skipped: missing store version")
+      return false
+    }
+
+    if (!currentVersion) {
+      return true
+    }
+
+    const storeValid = isValidSemver(storeVersion)
+    const currentValid = isValidSemver(currentVersion)
+
+    if (storeValid && currentValid) {
+      const needsUpdate = gt(storeVersion, currentVersion)
+      if (!needsUpdate) {
+        logger.info("Distribution store version matches current version", {
+          storeVersion,
+          currentVersion,
+        })
+      }
+      return needsUpdate
+    }
+
+    if (storeVersion === currentVersion) {
+      logger.info("Distribution store version identical to current version", {
+        storeVersion,
+        currentVersion,
+      })
+      return false
+    }
+
+    return true
+  }
+
+  private async notifyDistributionUpdate(
+    info: DistributionStatusPayload,
+  ): Promise<UpdateCheckResult> {
+    const mainWindow = WindowManager.getMainWindow()
+    if (!mainWindow) {
+      logger.warn("Main window unavailable when notifying distribution update")
+      return { hasUpdate: true }
+    }
+
+    if (!info.storeUrl) {
+      logger.warn("Distribution update missing store URL", {
+        distribution: info.distribution,
+      })
+      return { hasUpdate: false }
+    }
+
+    await callWindowExpose(mainWindow).distributionUpdateAvailable({
+      distribution: info.distribution,
+      storeUrl: info.storeUrl,
+      storeVersion: info.storeVersion ?? null,
+      currentVersion: appVersion,
+    })
 
     return { hasUpdate: true }
   }
