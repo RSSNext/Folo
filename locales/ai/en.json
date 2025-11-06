@@ -309,5 +309,15 @@
   "usage_analysis.warning.title": "High AI usage detected",
   "usage_analysis.window_remaining": "Window credits left",
   "welcome_description": "I'm here to help you with your reading needs. How can I assist you today?",
-  "welcome_description_contextual": "Let's discuss this entry together"
+  "welcome_description_contextual": "Let's discuss this entry together",
+  "rate_limit.minute": "minute",
+  "rate_limit.minutes": "minutes",
+  "rate_limit.resets_in": "resets in {{value}}",
+  "rate_limit.resets_at": "resets at {{time}}",
+  "rate_limit.depleted": "AI credits depleted",
+  "rate_limit.credits_left": "{{count}} credits left",
+  "rate_limit.upgrade_to_get_more": "Upgrade plan to get more AI credits.",
+  "rate_limit.resets_tomorrow": "resets at tomorrow",
+  "rate_limit.resets_next_month": "resets at next month",
+  "rate_limit.upgrade_plan_button": "Upgrade Plan"
 }

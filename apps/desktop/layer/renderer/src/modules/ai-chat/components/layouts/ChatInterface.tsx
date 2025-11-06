@@ -54,6 +54,8 @@ import { ChatInput } from "./ChatInput"
 import { ChatShortcutsRow } from "./ChatShortcutsRow"
 import { RateLimitNotice } from "./RateLimitNotice"
 import { WelcomeScreen } from "./WelcomeScreen"
+import { computeIsRateLimited, computeRateLimitMessage } from "../../utils/rate-limit"
+import type { AIConfigLike } from "../../utils/rate-limit"
 
 const SCROLL_BOTTOM_THRESHOLD = 100
 
@@ -325,6 +327,16 @@ const ChatInterfaceContent = ({ centerInputOnEmpty }: ChatInterfaceProps) => {
 
   const { data: configuration } = useAIConfiguration()
 
+  const isRateLimited = useMemo(
+    () => computeIsRateLimited(error, (configuration as unknown) as AIConfigLike),
+    [error, configuration],
+  )
+
+  const rateLimitMessage = useMemo(
+    () => computeRateLimitMessage(error, (configuration as unknown) as AIConfigLike),
+    [error, configuration],
+  )
+
   return (
     <div className="flex size-full flex-col @container">
       <GlobalFileDropZone className="flex size-full flex-col @container">
@@ -413,36 +425,39 @@ const ChatInterfaceContent = ({ centerInputOnEmpty }: ChatInterfaceProps) => {
               "bottom-1/2 translate-y-[calc(100%+1rem)] duration-200",
           )}
         >
-          <RateLimitNotice error={error} chatConfig={configuration} />
-          <ChatShortcutsRow
-            onSelect={(shortcutData) => {
-              const tempEditor = createEditor({
-                nodes: LexicalAIEditorNodes,
-              })
+          <RateLimitNotice message={rateLimitMessage} />
+          {!isRateLimited && (
+            <ChatShortcutsRow
+              onSelect={(shortcutData) => {
+                const tempEditor = createEditor({
+                  nodes: LexicalAIEditorNodes,
+                })
 
-              tempEditor.update(
-                () => {
-                  const root = $getRoot()
-                  root.clear()
-                  const paragraph = $createParagraphNode()
-                  const shortcutNode = new ShortcutNode(shortcutData)
-                  paragraph.append(shortcutNode)
-                  root.append(paragraph)
-                },
-                {
-                  discrete: true,
-                },
-              )
+                tempEditor.update(
+                  () => {
+                    const root = $getRoot()
+                    root.clear()
+                    const paragraph = $createParagraphNode()
+                    const shortcutNode = new ShortcutNode(shortcutData)
+                    paragraph.append(shortcutNode)
+                    root.append(paragraph)
+                  },
+                  {
+                    discrete: true,
+                  },
+                )
 
-              const editorState = tempEditor.getEditorState()
-              handleSendMessage(editorState)
-            }}
-          />
+                const editorState = tempEditor.getEditorState()
+                handleSendMessage(editorState)
+              }}
+            />
+          )}
           <ChatInput
             onSend={handleSendMessage}
             variant={!hasMessages ? "minimal" : "default"}
             initialDraftState={initialDraft}
             onEditorStateChange={handleDraftChange}
+            submitDisabled={isRateLimited}
           />
 
           {(!centerInputOnEmpty || hasMessages) && (

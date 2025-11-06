@@ -46,6 +46,7 @@ interface ChatInputProps extends VariantProps<typeof chatInputVariants> {
   ref?: Ref<LexicalRichEditorRef | null>
   initialDraftState?: EditorState
   onEditorStateChange?: (editorState: EditorState) => void
+  submitDisabled?: boolean
 }
 
 export const ChatInput = memo(
@@ -55,6 +56,7 @@ export const ChatInput = memo(
     ref: forwardedRef,
     initialDraftState,
     onEditorStateChange,
+    submitDisabled,
   }: ChatInputProps) => {
     const status = useChatStatus()
     const chatActions = useChatActions()
@@ -82,6 +84,7 @@ export const ChatInput = memo(
     const [currentEditor, setCurrentEditor] = useState<LexicalEditor | null>(null)
 
     const isProcessing = status === "submitted" || status === "streaming"
+    const isSubmitDisabled = submitDisabled || (!isProcessing && isEmpty)
 
     const handleEditorChange = useCallback(
       (editorState: EditorState, editor: LexicalEditor) => {
@@ -100,6 +103,7 @@ export const ChatInput = memo(
     const scene = useChatScene()
 
     const handleSend = useCallback(async () => {
+      if (submitDisabled) return
       if (currentEditor && editorRef.current && !editorRef.current.isEmpty()) {
         const editorState = currentEditor?.getEditorState()
         nextFrame(() => {
@@ -107,7 +111,7 @@ export const ChatInput = memo(
         })
         editorRef.current.clear()
       }
-    }, [currentEditor, onSend])
+    }, [currentEditor, onSend, submitDisabled])
 
     const handleSendClick = useCallback(() => {
       void handleSend()
@@ -139,7 +143,7 @@ export const ChatInput = memo(
 
         if (event.key === "Enter" && !event.shiftKey) {
           event.preventDefault()
-          if (isProcessing) {
+          if (isProcessing || isSubmitDisabled) {
             return false
           }
           void handleSend()
@@ -148,7 +152,7 @@ export const ChatInput = memo(
 
         return false
       },
-      [handleSend, isProcessing, toggleAIChatShortcut],
+      [handleSend, isProcessing, toggleAIChatShortcut, isSubmitDisabled],
     )
 
     return (
@@ -177,7 +181,7 @@ export const ChatInput = memo(
           <div className="absolute right-3 top-3">
             <AIChatSendButton
               onClick={isProcessing ? stop : handleSendClick}
-              disabled={!isProcessing && isEmpty}
+              disabled={isSubmitDisabled}
               isProcessing={isProcessing}
               size="sm"
             />
