@@ -129,16 +129,17 @@ const buildTokenUsageMessage = (tokenUsage: TokenUsage) => {
   const resetTime = new Date(tokenUsage.resetAt)
   const formattedResetTime = resetTime ? formatResetTime(resetTime) : null
 
+  if (remainingTokens > 0) {
+    return
+  }
   // Build compact message text
   const parts: string[] = []
 
   // Tokens info
-  if (remainingTokens !== undefined) {
-    if (remainingTokens === 0) {
-      parts.push("AI credits depleted")
-    } else {
-      parts.push(`${remainingTokens.toLocaleString()} credits left`)
-    }
+  if (remainingTokens === 0) {
+    parts.push("AI credits depleted")
+  } else {
+    parts.push(`${remainingTokens.toLocaleString()} credits left`)
   }
 
   // Reset time
