@@ -283,15 +283,12 @@ const ChatInterfaceContent = ({ centerInputOnEmpty }: ChatInterfaceProps) => {
 
   const [bottomPanelHeight, setBottomPanelHeight] = useState<number>(0)
   const bottomPanelRef = useRef<HTMLDivElement | null>(null)
-  const rateLimitNoticeRef = useRef<HTMLDivElement | null>(null)
 
   useLayoutEffect(() => {
-    if (!bottomPanelRef.current || !rateLimitNoticeRef.current) {
+    if (!bottomPanelRef.current) {
       return
     }
-    setBottomPanelHeight(
-      (bottomPanelRef.current?.offsetHeight ?? 0) + (rateLimitNoticeRef.current?.offsetHeight ?? 0),
-    )
+    setBottomPanelHeight(bottomPanelRef.current.offsetHeight)
 
     const resizeObserver = new ResizeObserver(() => {
       if (!bottomPanelRef.current) {
@@ -416,7 +413,7 @@ const ChatInterfaceContent = ({ centerInputOnEmpty }: ChatInterfaceProps) => {
               "bottom-1/2 translate-y-[calc(100%+1rem)] duration-200",
           )}
         >
-          <RateLimitNotice ref={rateLimitNoticeRef} error={error} chatConfig={configuration} />
+          <RateLimitNotice error={error} chatConfig={configuration} />
           <ChatShortcutsRow
             onSelect={(shortcutData) => {
               const tempEditor = createEditor({

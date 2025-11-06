@@ -8,7 +8,6 @@ import { useSettingModal } from "~/modules/settings/modal/useSettingModal"
 import { parseAIError } from "../../utils/error"
 
 interface RateLimitNoticeProps {
-  ref?: React.Ref<HTMLDivElement>
   error?: Error
   chatConfig?: ConfigResponse
   className?: string
@@ -18,7 +17,7 @@ interface RateLimitNoticeProps {
  * RateLimitNotice component
  * Displays rate limit information above the input in a subtle, non-alarming way
  */
-export const RateLimitNotice = ({ ref, error, chatConfig, className }: RateLimitNoticeProps) => {
+export const RateLimitNotice = ({ error, chatConfig, className }: RateLimitNoticeProps) => {
   const message = React.useMemo(() => {
     if (error) {
       return buildErrorMessage(error)
@@ -40,7 +39,6 @@ export const RateLimitNotice = ({ ref, error, chatConfig, className }: RateLimit
 
   return (
     <m.div
-      ref={ref}
       initial={{ opacity: 0, y: -10 }}
       animate={{ opacity: 1, y: 0 }}
       exit={{ opacity: 0, y: -10 }}
