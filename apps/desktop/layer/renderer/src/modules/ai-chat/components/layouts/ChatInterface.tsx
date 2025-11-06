@@ -48,7 +48,6 @@ import { useAIConfiguration } from "../../hooks/useAIConfiguration"
 import { useAttachScrollBeyond } from "../../hooks/useAttachScrollBeyond"
 import { AIPanelRefsContext } from "../../store/AIChatContext"
 import type { AIChatContextBlock, BizUIMessage, SendingUIMessage } from "../../store/types"
-import type { AIConfigLike } from "../../utils/rate-limit"
 import { computeIsRateLimited, computeRateLimitMessage } from "../../utils/rate-limit"
 import { GlobalFileDropZone } from "../file/GlobalFileDropZone"
 import { AIErrorFallback } from "./AIErrorFallback"
@@ -328,12 +327,12 @@ const ChatInterfaceContent = ({ centerInputOnEmpty }: ChatInterfaceProps) => {
   const { data: configuration } = useAIConfiguration()
 
   const isRateLimited = useMemo(
-    () => computeIsRateLimited(error, configuration as unknown as AIConfigLike),
+    () => computeIsRateLimited(error, configuration),
     [error, configuration],
   )
 
   const rateLimitMessage = useMemo(
-    () => computeRateLimitMessage(error, configuration as unknown as AIConfigLike),
+    () => computeRateLimitMessage(error, configuration),
     [error, configuration],
   )
 

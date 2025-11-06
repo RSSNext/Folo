@@ -1,20 +1,11 @@
+import type { FreeQuota, TokenUsage } from "@follow-app/client-sdk"
+
 import { getI18n } from "~/i18n"
 
 import { parseAIError } from "./error"
 
-interface FreeQuota {
-  shouldCheckDailyLimit?: boolean
-  remainingRequests?: number | null
-  remainingMonthlyRequests?: number | null
-}
-
-interface Usage {
-  remaining?: number | null
-  resetAt?: string | Date
-}
-
 export interface AIConfigLike {
-  usage?: Usage
+  usage?: TokenUsage
   freeQuota?: FreeQuota
 }
 
