@@ -8,6 +8,7 @@ import { useSettingModal } from "~/modules/settings/modal/useSettingModal"
 import { parseAIError } from "../../utils/error"
 
 interface RateLimitNoticeProps {
+  ref?: React.Ref<HTMLDivElement>
   error?: Error
   chatConfig?: ConfigResponse
   className?: string
@@ -17,28 +18,29 @@ interface RateLimitNoticeProps {
  * RateLimitNotice component
  * Displays rate limit information above the input in a subtle, non-alarming way
  */
-export const RateLimitNotice: React.FC<RateLimitNoticeProps> = ({
-  error,
-  chatConfig,
-  className,
-}) => {
-  const message = React.useMemo(
-    () =>
-      chatConfig
+export const RateLimitNotice = ({ ref, error, chatConfig, className }: RateLimitNoticeProps) => {
+  const message = React.useMemo(() => {
+    if (error) {
+      return buildErrorMessage(error)
+    }
+    if (chatConfig) {
+      // @ts-expect-error Remove after the client-sdk update
+      return chatConfig.freeQuota.shouldCheckDailyLimit
         ? // @ts-expect-error Remove after the client-sdk update
-          buildFreeUsageMessage(chatConfig.freeQuota) || buildTokenUsageMessage(chatConfig.usage)
-        : error
-          ? buildErrorMessage(error)
-          : null,
-    [chatConfig, error],
-  )
+          buildFreeUsageMessage(chatConfig.freeQuota)
+        : buildTokenUsageMessage(chatConfig.usage)
+    }
+    return null
+  }, [chatConfig, error])
   const settingModalPresent = useSettingModal()
+
   if (!message) {
     return
   }
 
   return (
     <m.div
+      ref={ref}
       initial={{ opacity: 0, y: -10 }}
       animate={{ opacity: 1, y: 0 }}
       exit={{ opacity: 0, y: -10 }}
@@ -96,6 +98,9 @@ const buildErrorMessage = (error: Error) => {
       parts.push(`${remainingTokens.toLocaleString()} credits left`)
     }
   } else {
+    if (errorData.reason) {
+      parts.push(errorData.reason)
+    }
     parts.push("Upgrade plan to get more AI credits.")
   }
 
@@ -167,7 +172,7 @@ const buildFreeUsageMessage = (freeQuota: FreeQuota) => {
   if (!freeQuota.shouldCheckDailyLimit) {
     return
   }
-  if (freeQuota.remainingRequests || freeQuota.remainingMonthlyRequests) {
+  if (freeQuota.remainingRequests && freeQuota.remainingMonthlyRequests) {
     return
   }
   const parts: string[] = []
