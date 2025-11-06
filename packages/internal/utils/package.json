@@ -33,7 +33,7 @@
     "@follow/shared": "workspace:*",
     "@follow/types": "workspace:*",
     "@mozilla/readability": "0.6.0",
-    "chardet": "2.1.0",
+    "chardet": "2.1.1",
     "clsx": "2.1.1",
     "dompurify": "3.3.0",
     "motion": "12.23.24",
