@@ -2,8 +2,8 @@ import { cn } from "@follow/utils"
 import { m } from "motion/react"
 import * as React from "react"
 
-import { useSettingModal } from "~/modules/settings/modal/useSettingModal"
 import { useI18n } from "~/hooks/common/useI18n"
+import { useSettingModal } from "~/modules/settings/modal/useSettingModal"
 
 interface RateLimitNoticeProps {
   className?: string

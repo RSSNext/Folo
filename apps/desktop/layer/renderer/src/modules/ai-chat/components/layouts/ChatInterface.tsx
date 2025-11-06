@@ -48,14 +48,14 @@ import { useAIConfiguration } from "../../hooks/useAIConfiguration"
 import { useAttachScrollBeyond } from "../../hooks/useAttachScrollBeyond"
 import { AIPanelRefsContext } from "../../store/AIChatContext"
 import type { AIChatContextBlock, BizUIMessage, SendingUIMessage } from "../../store/types"
+import type { AIConfigLike } from "../../utils/rate-limit"
+import { computeIsRateLimited, computeRateLimitMessage } from "../../utils/rate-limit"
 import { GlobalFileDropZone } from "../file/GlobalFileDropZone"
 import { AIErrorFallback } from "./AIErrorFallback"
 import { ChatInput } from "./ChatInput"
 import { ChatShortcutsRow } from "./ChatShortcutsRow"
 import { RateLimitNotice } from "./RateLimitNotice"
 import { WelcomeScreen } from "./WelcomeScreen"
-import { computeIsRateLimited, computeRateLimitMessage } from "../../utils/rate-limit"
-import type { AIConfigLike } from "../../utils/rate-limit"
 
 const SCROLL_BOTTOM_THRESHOLD = 100
 
@@ -328,12 +328,12 @@ const ChatInterfaceContent = ({ centerInputOnEmpty }: ChatInterfaceProps) => {
   const { data: configuration } = useAIConfiguration()
 
   const isRateLimited = useMemo(
-    () => computeIsRateLimited(error, (configuration as unknown) as AIConfigLike),
+    () => computeIsRateLimited(error, configuration as unknown as AIConfigLike),
     [error, configuration],
   )
 
   const rateLimitMessage = useMemo(
-    () => computeRateLimitMessage(error, (configuration as unknown) as AIConfigLike),
+    () => computeRateLimitMessage(error, configuration as unknown as AIConfigLike),
     [error, configuration],
   )
 
