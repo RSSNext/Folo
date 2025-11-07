@@ -189,6 +189,7 @@ export const ChatHistoryDropdown = ({
                     })
                   }}
                   isLoading={loadingChatId === session.chatId}
+                  hasUnread={hasUnreadTaskSessions}
                 />
               ))}
               {canCreateNewTask && (
