@@ -1,7 +1,7 @@
 {
   "name": "Folo",
   "type": "module",
-  "version": "1.0.0",
+  "version": "1.1.0",
   "private": true,
   "description": "Follow everything in one place",
   "author": "Folo Team",
@@ -87,5 +87,5 @@
     "vite-tsconfig-paths": "5.1.4"
   },
   "productName": "Folo",
-  "mainHash": "f1dfc9d28134209d9561f5da2f735250b7c20d9e9759d0f7bc982b0790ad89f5"
+  "mainHash": "6019029dfdddbdac8acf0f2a64d1ce575d49bff7a1576b9785fcddacee5f3452"
 }
