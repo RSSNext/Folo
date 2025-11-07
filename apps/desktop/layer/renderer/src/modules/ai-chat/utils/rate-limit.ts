@@ -45,7 +45,7 @@ export function computeIsRateLimited(
 
   if (conf) {
     return (
-      conf?.freeQuota?.shouldCheckDailyLimit &&
+      !!conf?.freeQuota?.shouldCheckDailyLimit &&
       (!conf.freeQuota.remainingRequests || !conf.freeQuota.remainingMonthlyRequests)
     )
   }
