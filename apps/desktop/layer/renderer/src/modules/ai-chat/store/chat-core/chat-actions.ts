@@ -5,7 +5,7 @@ import { nanoid } from "nanoid"
 import type { StateCreator } from "zustand"
 
 import { AIPersistService } from "../../services"
-import { createChatTransport } from "../transport"
+import { createChatTitleHandler, createChatTransport } from "../transport"
 import type { BizUIMessage, SendingUIMessage } from "../types"
 import { ZustandChat } from "./chat-instance"
 import type { ChatSlice } from "./types"
@@ -46,6 +46,42 @@ export class ChatSliceActions {
 
   get get() {
     return this.params[1]
+  }
+
+  private computeSyncStatus(isLocal: boolean): "local" | "synced" {
+    return isLocal ? "local" : "synced"
+  }
+
+  private setSyncState(isLocal: boolean) {
+    this.set((state) => {
+      const nextStatus = this.computeSyncStatus(isLocal)
+      if (state.isLocal === isLocal && state.syncStatus === nextStatus) {
+        return state
+      }
+      return {
+        isLocal,
+        syncStatus: nextStatus,
+      }
+    })
+  }
+
+  async markSessionSynced() {
+    const currentChatId = this.get().chatId
+    if (!currentChatId) {
+      return
+    }
+
+    if (!this.get().isLocal) {
+      return
+    }
+
+    this.setSyncState(false)
+
+    try {
+      await AIPersistService.markSessionSynced(currentChatId)
+    } catch (error) {
+      console.error("Failed to mark chat session as synced:", error)
+    }
   }
 
   // Direct message management methods (delegating to chat instance state)
@@ -119,6 +155,16 @@ export class ChatSliceActions {
     return this.get().chatId
   }
 
+  private createTransportTitleHandler = (chatId: string) => {
+    return createChatTitleHandler({
+      chatId,
+      getActiveChatId: () => this.get().chatId,
+      onTitleChange: (title) => {
+        this.setCurrentTitle(title)
+      },
+    })
+  }
+
   // Edit chat title
   editChatTitle = async (newTitle: string) => {
     const currentChatId = this.getCurrentChatId()
@@ -166,8 +212,8 @@ export class ChatSliceActions {
         },
         options,
       )
-      const response = await this.chatInstance.sendMessage(messageObj, finalOptions)
-      return response
+
+      return await this.chatInstance.sendMessage(messageObj, finalOptions)
     } catch (error) {
       this.setError(error as Error)
       throw error
@@ -183,8 +229,7 @@ export class ChatSliceActions {
         },
         options,
       )
-      const response = await this.chatInstance.regenerate({ messageId, ...finalOptions })
-      return response
+      return await this.chatInstance.regenerate({ messageId, ...finalOptions })
     } catch (error) {
       this.setError(error as Error)
       throw error
@@ -225,7 +270,9 @@ export class ChatSliceActions {
       {
         id: newChatId,
         messages: [],
-        transport: createChatTransport(),
+        transport: createChatTransport({
+          titleHandler: this.createTransportTitleHandler(newChatId),
+        }),
       },
       this.set,
     )
@@ -240,6 +287,8 @@ export class ChatSliceActions {
       isStreaming: false,
       currentTitle: undefined,
       chatInstance: newChatInstance,
+      isLocal: true,
+      syncStatus: "local",
     }))
 
     // Update the reference
@@ -264,7 +313,9 @@ export class ChatSliceActions {
         {
           id: chatId,
           messages,
-          transport: createChatTransport(),
+          transport: createChatTransport({
+            titleHandler: this.createTransportTitleHandler(chatId),
+          }),
         },
         this.set,
       )
@@ -279,9 +330,11 @@ export class ChatSliceActions {
         isStreaming: false,
         currentTitle: chatSession?.title || undefined,
         chatInstance: newChatInstance,
+        isLocal: chatSession ? chatSession.isLocal : true,
+        syncStatus: chatSession ? chatSession.syncStatus : "local",
       }))
 
-      newChatInstance.resumeStream()
+      await newChatInstance.resumeStream()
       // Update the reference
       this.chatInstance = newChatInstance
     } catch (error) {
@@ -307,5 +360,18 @@ export class ChatSliceActions {
 
   getTimelineSummaryManualOverride = () => {
     return this.get().timelineSummaryManualOverride
+  }
+
+  setTimelineSummaryWasInAutoContext = (isInAutoContext: boolean) => {
+    this.set((state) => {
+      if (state.timelineSummaryWasInAutoContext === isInAutoContext) {
+        return state
+      }
+      return { ...state, timelineSummaryWasInAutoContext: isInAutoContext }
+    })
+  }
+
+  getTimelineSummaryWasInAutoContext = () => {
+    return this.get().timelineSummaryWasInAutoContext
   }
 }

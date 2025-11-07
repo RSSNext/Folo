@@ -185,7 +185,7 @@ export function AllItem({ entryId, translation, currentFeedTitle }: UniversalIte
         </div>
         <div
           className={cn(
-            "ml-2 truncate text-[13px]",
+            "ml-4 truncate text-[13px]",
             "text-text-secondary",
             isRead && dimRead && "text-text-tertiary",
           )}

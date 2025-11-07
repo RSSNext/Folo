@@ -17,7 +17,7 @@ import { m } from "~/components/common/Motion"
 import { resizableOnly } from "~/components/ui/modal"
 import { useModalResizeAndDrag } from "~/components/ui/modal/stacked/internal/use-drag"
 import { ElECTRON_CUSTOM_TITLEBAR_HEIGHT } from "~/constants"
-import { useActivationModal } from "~/modules/activation"
+import { useUpgradePlanModal } from "~/modules/plan"
 
 import { SETTING_MODAL_ID } from "../constants"
 import { EnhancedSettingsIndicator } from "../helper/EnhancedIndicator"
@@ -165,7 +165,7 @@ const SettingItemButtonImpl = (props: {
   const ctx = useSettingPageContext()
 
   const [disabled, why] = disableIf?.(ctx) || [false, DisableWhy.Noop]
-  const presentActivationModal = useActivationModal()
+  const presentActivationModal = useUpgradePlanModal()
 
   return (
     <button

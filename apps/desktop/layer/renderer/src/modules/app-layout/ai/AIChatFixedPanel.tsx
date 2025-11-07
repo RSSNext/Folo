@@ -17,7 +17,7 @@ export const AIChatFixedPanel: FC<AIChatFixedPanelProps> = ({ className, ...prop
       className={cn("relative flex h-full flex-col overflow-hidden bg-background", className)}
       {...props}
     >
-      <ChatHeader />
+      <ChatHeader isFixedMode />
       <ChatInterface />
     </Focusable>
   )

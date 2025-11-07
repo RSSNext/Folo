@@ -16,13 +16,13 @@ export function GuideModalContent({ onClose }: { onClose: () => void }) {
 
   useEffect(() => {
     tracker.onBoarding({
-      step,
-      done: step === "finish",
+      stepV2: step,
+      done: step === "finish" || step === "manual-import-finish" || step === "skip-finish",
     })
   }, [step])
 
   useEffect(() => {
-    if (step !== "finish") {
+    if (step !== "finish" && step !== "manual-import-finish") {
       return
     }
 
@@ -38,26 +38,45 @@ export function GuideModalContent({ onClose }: { onClose: () => void }) {
   }, [step])
 
   useEffect(() => {
-    if (step === "finish") {
+    if (step === "finish" || step === "manual-import-finish" || step === "skip-finish") {
       onClose()
     }
   }, [onClose, step])
 
+  const renderContent = () => {
+    switch (step) {
+      case "intro":
+      case "selecting-feeds": {
+        return (
+          <div className="grid h-screen w-screen grid-cols-1 divide-x overflow-hidden p-5 lg:grid-cols-10">
+            <FeedsSelectionList />
+            <AIChatPane />
+          </div>
+        )
+      }
+      case "manual-import": {
+        return <DiscoverImportStep />
+      }
+      case "pre-finish":
+      case "manual-import-pre-finish":
+      case "skip-pre-finish": {
+        return <PreFinish />
+      }
+      case "finish":
+      case "manual-import-finish":
+      case "skip-finish": {
+        return null
+      }
+      default: {
+        return null
+      }
+    }
+  }
+
   return (
     <AIChatRoot>
       <div className="flex h-screen w-screen flex-col items-center justify-center overflow-hidden bg-theme-background">
-        <div className="mx-auto flex flex-col gap-8">
-          {step === "manual-import" ? (
-            <DiscoverImportStep />
-          ) : step === "intro" || step === "selecting-feeds" ? (
-            <div className="grid h-screen w-screen grid-cols-1 divide-x overflow-hidden p-5 lg:grid-cols-10">
-              <FeedsSelectionList />
-              <AIChatPane />
-            </div>
-          ) : step === "pre-finish" ? (
-            <PreFinish />
-          ) : null}
-        </div>
+        <div className="mx-auto flex flex-col gap-8">{renderContent()}</div>
       </div>
     </AIChatRoot>
   )

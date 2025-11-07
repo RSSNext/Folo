@@ -31,6 +31,7 @@ export const UserChatMessage: React.FC<UserChatMessageProps> = React.memo(({ mes
   const setEditingMessageId = useSetEditingMessageId()
 
   const chatStatus = useChatStatus()
+
   const isStreaming = chatStatus === "submitted" || chatStatus === "streaming"
   const isEditing = editingMessageId === messageId
 

@@ -51,7 +51,7 @@ const EntryContentImpl: Component<EntryContentProps> = ({
   const view = useRouteParamsSelector((route) => route.view)
 
   return (
-    <div className="relative flex size-full flex-col overflow-hidden @container print:size-auto print:overflow-visible">
+    <div className="relative flex size-full flex-col @container print:size-auto print:overflow-visible">
       <article
         onContextMenu={stopPropagation}
         className={clsx("relative m-auto min-w-0 select-text", "w-full max-w-full")}

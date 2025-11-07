@@ -3,6 +3,7 @@ import { useEventCallback } from "usehooks-ts"
 
 import { AIChatSessionService } from "~/modules/ai-chat-session/service"
 
+import { AIPersistService } from "../services"
 import { useChatActions } from "../store/hooks"
 import type { BizUIMessage } from "../store/types"
 
@@ -20,6 +21,12 @@ export const useLoadMessages = (
   })
 
   useEffect(() => {
+    if (chatActions.get().isLocal) {
+      AIPersistService.loadUIMessages(chatId)
+      setIsLoading(false)
+
+      return
+    }
     let mounted = true
     setIsLoading(true)
     setIsSyncingRemote(false)

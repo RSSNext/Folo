@@ -1,4 +1,4 @@
-import { cn } from "@follow/utils/utils"
+import { cn, sleep } from "@follow/utils/utils"
 import type { AITask, TaskSchedule } from "@follow-app/client-sdk"
 import dayjs from "dayjs"
 import type { i18n, TFunction } from "i18next"
@@ -8,7 +8,8 @@ import { toast } from "sonner"
 
 import { setAIPanelVisibility } from "~/atoms/settings/ai"
 import { useDialog, useModalStack } from "~/components/ui/modal/stacked/hooks"
-import { followApi } from "~/lib/api-client"
+import { toastFetchError } from "~/lib/error-parser"
+import { AIPersistService } from "~/modules/ai-chat/services"
 import { ChatSliceActions } from "~/modules/ai-chat/store/chat-core/chat-actions"
 import { AIChatSessionService } from "~/modules/ai-chat-session"
 import { useAIChatSessionListQuery } from "~/modules/ai-chat-session/query"
@@ -180,24 +181,37 @@ export const TaskItem = memo(({ task }: { task: AITask }) => {
           if (testRunResult.data.error) {
             throw new Error(testRunResult.data.error)
           }
+          const { sessionId } = testRunResult.data
+          if (!sessionId) {
+            throw new Error("No session ID returned from test run")
+          }
+
+          // Ensure the session exists in local DB
+          await AIPersistService.ensureSession(sessionId, {
+            title: task.name,
+            createdAt: new Date(),
+            updatedAt: new Date(),
+          })
+
+          // Switch to the chat
+          setAIPanelVisibility(true)
+          const chatActions = ChatSliceActions.getActiveInstance()
+          if (chatActions) {
+            await sleep(1500) // wait for backend stream to be ready
+            chatActions.switchToChat(sessionId)
+          }
+
           toast.success(t("tasks.toast.test_success"), {
             id: loadingId,
           })
-          // @ts-ignore -- Remove once SDK types are updated
-          const { sessionId } = testRunResult.data
-          if (sessionId) {
-            const session = (
-              await followApi.aiChatSessions.get({
-                chatId: sessionId,
-              })
-            ).data
-            await AIChatSessionService.fetchAndPersistMessages(session)
-          }
         } catch (error) {
           console.error("Failed to run test:", error)
-          toast.error(t("tasks.toast.test_failed"), {
-            id: loadingId,
-          })
+          toast.dismiss(loadingId)
+          if (error instanceof Error) {
+            toastFetchError(error)
+            return
+          }
+          toast.error(t("tasks.toast.test_failed"))
         }
       },
       title: t("tasks.actions.test_run"),

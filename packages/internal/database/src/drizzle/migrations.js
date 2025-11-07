@@ -35,6 +35,7 @@ import m0031 from "./0031_kind_ikaris.sql"
 import m0032 from "./0032_orange_prima.sql"
 import m0033 from "./0033_shiny_sebastian_shaw.sql"
 import m0034 from "./0034_curly_darkstar.sql"
+import m0035 from "./0035_last_valeria_richards.sql"
 import journal from "./meta/_journal.json"
 
 export default {
@@ -75,5 +76,6 @@ export default {
     m0032,
     m0033,
     m0034,
+    m0035,
   },
 }

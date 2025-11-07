@@ -7,16 +7,19 @@ import { getCurrentEnvironment } from "@follow/utils/environment"
 import { cn } from "@follow/utils/utils"
 import PKG, { repository } from "@pkg"
 import { useQuery } from "@tanstack/react-query"
-import { useState } from "react"
+import { useEffect, useRef, useState } from "react"
 import { Trans, useTranslation } from "react-i18next"
 import { toast } from "sonner"
 
+import { useModalStack } from "~/components/ui/modal/stacked/hooks"
 import { ipcServices } from "~/lib/client"
 import { getNewIssueUrl } from "~/lib/issues"
+import { EnvironmentDebugModalContent } from "~/modules/app/EnvironmentIndicator"
 
 export const SettingAbout = () => {
   const { t } = useTranslation("settings")
   const [isCheckingUpdate, setIsCheckingUpdate] = useState(false)
+  const { present } = useModalStack()
   const currentEnvironment = getCurrentEnvironment().join("\n")
   const { data: appVersion } = useQuery({
     queryKey: ["appVersion"],
@@ -24,6 +27,17 @@ export const SettingAbout = () => {
   })
 
   const rendererVersion = PKG.version
+  const rendererClickCountRef = useRef(0)
+  const rendererClickResetTimerRef = useRef<number | null>(null)
+  const lastRendererClickTimestampRef = useRef(0)
+
+  useEffect(() => {
+    return () => {
+      if (rendererClickResetTimerRef.current) {
+        window.clearTimeout(rendererClickResetTimerRef.current)
+      }
+    }
+  }, [])
 
   const handleCheckForUpdates = async () => {
     if (isCheckingUpdate) return
@@ -45,6 +59,40 @@ export const SettingAbout = () => {
       toast.error(t("about.updateCheckFailed"), { id: toastId })
     } finally {
       setIsCheckingUpdate(false)
+    }
+  }
+
+  const handleRendererVersionClick = () => {
+    if (!rendererVersion) return
+
+    const now = Date.now()
+    if (now - lastRendererClickTimestampRef.current > 800) {
+      rendererClickCountRef.current = 0
+    }
+
+    rendererClickCountRef.current += 1
+    lastRendererClickTimestampRef.current = now
+
+    if (rendererClickResetTimerRef.current) {
+      window.clearTimeout(rendererClickResetTimerRef.current)
+    }
+
+    rendererClickResetTimerRef.current = window.setTimeout(() => {
+      rendererClickCountRef.current = 0
+      rendererClickResetTimerRef.current = null
+    }, 800)
+
+    if (rendererClickCountRef.current >= 10) {
+      rendererClickCountRef.current = 0
+      if (rendererClickResetTimerRef.current) {
+        window.clearTimeout(rendererClickResetTimerRef.current)
+        rendererClickResetTimerRef.current = null
+      }
+
+      present({
+        title: "Debug Actions",
+        content: EnvironmentDebugModalContent,
+      })
     }
   }
 
@@ -80,10 +128,14 @@ export const SettingAbout = () => {
             </span>
           )}
           {rendererVersion && (
-            <span className="inline-flex items-center rounded-full bg-fill-secondary px-3 py-1 text-xs font-medium text-text-secondary">
+            <button
+              type="button"
+              onClick={handleRendererVersionClick}
+              className="inline-flex items-center rounded-full bg-fill-secondary px-3 py-1 text-xs font-medium text-text-secondary transition-colors hover:bg-fill-tertiary"
+            >
               <span className="mr-1.5 text-text-tertiary">Renderer</span>
               {rendererVersion}
-            </span>
+            </button>
           )}
           <button
             type="button"

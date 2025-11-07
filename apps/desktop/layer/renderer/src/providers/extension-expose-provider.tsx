@@ -1,4 +1,5 @@
 import { Routes } from "@follow/constants"
+import type { DistributionUpdateNotice } from "@follow/shared/bridge"
 import { registerGlobalContext } from "@follow/shared/bridge"
 import { env } from "@follow/shared/env.desktop"
 import { invalidateUserSession } from "@follow/store/user/hooks"
@@ -39,6 +40,16 @@ export const ExtensionExposeProvider = () => {
         setUpdaterStatus({
           type: "app",
           status: "ready",
+        })
+      },
+      distributionUpdateAvailable(payload: DistributionUpdateNotice) {
+        setUpdaterStatus({
+          type: "distribution",
+          status: "ready",
+          distribution: payload.distribution,
+          storeUrl: payload.storeUrl,
+          storeVersion: payload.storeVersion,
+          currentVersion: payload.currentVersion,
         })
       },
     })

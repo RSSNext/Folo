@@ -4,8 +4,8 @@
   "private": true,
   "main": "./src/index.ts",
   "peerDependencies": {
-    "posthog-js": "^1.255.0",
-    "posthog-react-native": "^4.6.1"
+    "posthog-js": "1.255.0",
+    "posthog-react-native": "4.6.1"
   },
   "devDependencies": {
     "@follow-app/client-sdk": "catalog:",

@@ -6,7 +6,6 @@ import { nativeApplicationVersion } from "expo-application"
 import { Platform } from "react-native"
 import DeviceInfo from "react-native-device-info"
 
-import { PlanScreen } from "../modules/settings/routes/Plan"
 import { LoginScreen } from "../screens/(modal)/LoginScreen"
 import { getCookie } from "./auth"
 import { getClientId, getSessionId } from "./client-session"
@@ -65,16 +64,14 @@ followClient.addResponseInterceptor(async (ctx) => {
     userActions.removeCurrentUser()
     Navigation.rootNavigation.presentControllerView(LoginScreen)
   } else if (response.status >= 400) {
-    try {
-      const isJSON = response.headers.get("content-type")?.includes("application/json")
-      const json = isJSON ? await response.json() : null
-
-      if (isJSON && json?.code?.toString().startsWith("11")) {
-        Navigation.rootNavigation.presentControllerView(PlanScreen)
-      }
-    } catch (error) {
-      console.error(`Request failed with status ${response.status}`, error)
-    }
+    // try {
+    //   const isJSON = response.headers.get("content-type")?.includes("application/json")
+    //   const json = isJSON ? await response.json() : null
+    //   if (isJSON && json?.code?.toString().startsWith("11")) {
+    //   }
+    // } catch (error) {
+    //   console.error(`Request failed with status ${response.status}`, error)
+    // }
   }
 
   return ctx.response

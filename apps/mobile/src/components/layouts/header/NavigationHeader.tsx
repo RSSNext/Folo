@@ -33,6 +33,7 @@ import {
   useCanDismiss,
   useIsTopRouteInGroup,
   useNavigation,
+  useScreenIsInModal,
   useScreenIsInSheetModal,
 } from "@/src/lib/navigation/hooks"
 import { ScreenItemContext } from "@/src/lib/navigation/ScreenItemContext"
@@ -228,15 +229,19 @@ export const InternalNavigationHeader = ({
     defaultHeight,
     hideableBottomHeight,
   )
+
+  const isModal = useScreenIsInModal()
+
   const rootTitleBarStyle = useAnimatedStyle(() => {
     const styles = {
-      paddingTop: insets.top,
+      paddingTop: isModal ? 0 : insets.top,
       position: "relative",
       overflow: "hidden",
     } satisfies DefaultStyle
     if (hideableBottom) {
       ;(styles as DefaultStyle).height = largeHeaderHeight.value
     }
+
     return styles
   })
 

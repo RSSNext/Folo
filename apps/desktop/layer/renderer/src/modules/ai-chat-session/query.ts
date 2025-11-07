@@ -25,11 +25,14 @@ export const aiChatSessionKeys = {
 
 // Queries
 
-export const useAIChatSessionListQuery = (filters?: ListSessionsQuery) => {
+export const useAIChatSessionListQuery = ({
+  refetchInterval,
+  filters,
+}: { refetchInterval?: number | false; filters?: ListSessionsQuery } = {}) => {
   const { data } = useQuery({
     queryKey: aiChatSessionKeys.list(filters),
     queryFn: () => followApi.aiChatSessions.list(filters).then((res) => res.data),
-    refetchInterval: 1 * 60 * 1000, // 1 minute
+    refetchInterval,
   })
   return data
 }

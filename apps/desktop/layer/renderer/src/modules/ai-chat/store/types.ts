@@ -51,6 +51,8 @@ export interface AIChatStoreInitial {
   blocks: AIChatContextBlock[]
   chatId?: string
   generateId?: IdGenerator
+  isLocal?: boolean
+  syncStatus?: "local" | "synced"
 }
 
 export interface AIChatContextBlocks {

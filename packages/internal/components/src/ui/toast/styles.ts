@@ -3,6 +3,8 @@ export const toastStyles = {
     group relative flex w-full items-center justify-between gap-3 rounded-2xl p-4
     backdrop-blur-2xl duration-300 ease-out
     max-w-md min-w-[320px]
+    z-[9999999999]
+    pointer-events-auto
     font-theme
     [&]:border [&]:border-solid
     [&]:data-[type=default]:border-[rgba(255,92,0,0.2)]
@@ -17,6 +19,7 @@ export const toastStyles = {
     [&]:data-[type=warning]:shadow-[0_8px_32px_rgba(255,149,0,0.08),0_4px_16px_rgba(255,149,0,0.06),0_2px_8px_rgba(0,0,0,0.1)]
     [&]:data-[type=info]:shadow-[0_8px_32px_rgba(0,122,255,0.08),0_4px_16px_rgba(0,122,255,0.06),0_2px_8px_rgba(0,0,0,0.1)]
     [&]:data-[type=loading]:shadow-[0_8px_32px_rgba(142,142,147,0.08),0_4px_16px_rgba(142,142,147,0.06),0_2px_8px_rgba(0,0,0,0.1)]
+    [&_.sonner-loader]:relative
   `,
   title: tw`
     text-sm font-medium text-text

@@ -1,5 +1,4 @@
 import { useOnce } from "@follow/hooks"
-import { DEV } from "@follow/shared/constants"
 import { nextFrame } from "@follow/utils/dom"
 import { getStorageNS } from "@follow/utils/ns"
 import { repository } from "@pkg"
@@ -104,7 +103,7 @@ const AppNotificationContainer: FC = () => {
       setTimeout(toaster)
     }
 
-    DEV && DebugRegistry.add("App Upgraded Toast", toaster)
+    DebugRegistry.add("App Upgraded Toast", toaster)
   })
 
   return null

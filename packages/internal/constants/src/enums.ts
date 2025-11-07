@@ -30,3 +30,9 @@ export const UserRoleName: Record<UserRole, string> = {
   [UserRole.Pro]: "Pro",
   [UserRole.Plus]: "Plus",
 } as const
+
+export const isFreeRole = (role?: UserRole | null) => {
+  return role
+    ? role === UserRole.Free || role === UserRole.Trial || role === UserRole.PreProTrial
+    : true
+}

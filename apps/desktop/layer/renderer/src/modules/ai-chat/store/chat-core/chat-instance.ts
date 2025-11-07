@@ -17,6 +17,17 @@ export class ZustandChat extends AbstractChat<BizUIMessage> {
     const state = new ZustandChatState(messages, updateZustandState, init.id || "")
     super({ ...init, state })
     this.state = state
+
+    const baseResumeStream = this.resumeStream.bind(this)
+    // Track resume calls so the state can ignore the temporary "submitted" status when no stream exists.
+    this.resumeStream = async (...args) => {
+      this.state.setResumingStream(true)
+      try {
+        return await baseResumeStream(...args)
+      } finally {
+        this.state.setResumingStream(false)
+      }
+    }
   }
 
   // Public getter for state access

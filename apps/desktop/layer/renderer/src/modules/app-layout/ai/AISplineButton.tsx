@@ -3,18 +3,14 @@ import { clsx } from "@follow/utils"
 import { AnimatePresence, m } from "motion/react"
 import type { FC } from "react"
 
-import { setAIPanelVisibility, useAIPanelVisibility, useAISettingKey } from "~/atoms/settings/ai"
+import { setAIPanelVisibility, useAISettingKey } from "~/atoms/settings/ai"
 import { AISpline } from "~/modules/ai-chat/components/3d-models/AISpline"
 import { AISmartSidebar } from "~/modules/ai-chat/components/layouts/AISmartSidebar"
 
-export const AIIndicator: FC = () => {
-  const isVisible = useAIPanelVisibility()
-  const showSplineButton = useAISettingKey("showSplineButton")
+import { AIChatFloatingPanel } from "./AIChatFloatingPanel"
 
-  // Only show the spline button when:
-  // 1. Panel style is floating
-  // 2. Panel is currently not visible
-  const shouldShow = !isVisible
+export const AIIndicator: FC = () => {
+  const showSplineButton = useAISettingKey("showSplineButton")
 
   const handleClick = () => {
     setAIPanelVisibility(true)
@@ -22,8 +18,8 @@ export const AIIndicator: FC = () => {
 
   return (
     <AnimatePresence>
-      {shouldShow && !showSplineButton && <AISmartSidebar />}
-      {shouldShow && showSplineButton && (
+      {!showSplineButton && <AISmartSidebar />}
+      {showSplineButton && (
         <m.button
           key="ai-spline-button"
           initial={{ scale: 0, opacity: 0 }}
@@ -46,6 +42,7 @@ export const AIIndicator: FC = () => {
           <AISpline />
         </m.button>
       )}
+      <AIChatFloatingPanel />
     </AnimatePresence>
   )
 }

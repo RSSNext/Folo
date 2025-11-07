@@ -53,7 +53,11 @@ interface FeedCategoryProps {
   categoryOpenStateData: Record<string, boolean>
 }
 
-function FeedCategoryImpl({ data: ids, view, categoryOpenStateData }: FeedCategoryProps) {
+function FeedCategoryImpl({
+  data: ids,
+  view: viewOnRoute,
+  categoryOpenStateData,
+}: FeedCategoryProps) {
   const { t } = useTranslation()
 
   const sortByUnreadFeedList = useSortedIdsByUnread(ids)
@@ -61,6 +65,8 @@ function FeedCategoryImpl({ data: ids, view, categoryOpenStateData }: FeedCatego
   const navigate = useNavigateEntry()
 
   const subscription = useSubscriptionByFeedId(ids[0]!)!
+
+  const { view } = subscription
   const autoGroup = useGeneralSettingSelector((state) => state.autoGroup)
   const folderName =
     subscription?.category || (autoGroup ? getDefaultCategory(subscription) : subscription.feedId)
@@ -77,16 +83,17 @@ function FeedCategoryImpl({ data: ids, view, categoryOpenStateData }: FeedCatego
 
   const setOpen = useCallback(
     (next: boolean) => {
-      if (view !== undefined && folderName) {
-        subscriptionActions.changeCategoryOpenState(view, folderName, next)
+      if (viewOnRoute !== undefined && folderName) {
+        subscriptionActions.changeCategoryOpenState(viewOnRoute, folderName, next)
       }
     },
-    [folderName, view],
+    [folderName, viewOnRoute],
   )
 
   const shouldOpen = useRouteParamsSelector(
     (s) => typeof s.feedId === "string" && ids.includes(s.feedId),
   )
+
   const scroller = useScrollViewElement()
   const scrollerRef = useRefValue(scroller)
   useEffect(() => {
@@ -122,7 +129,7 @@ function FeedCategoryImpl({ data: ids, view, categoryOpenStateData }: FeedCatego
         setCategoryActive()
       }
       if (view !== undefined && folderName) {
-        subscriptionActions.toggleCategoryOpenState(view, folderName)
+        subscriptionActions.toggleCategoryOpenState(viewOnRoute, folderName)
       }
     },
   )
@@ -130,7 +137,7 @@ function FeedCategoryImpl({ data: ids, view, categoryOpenStateData }: FeedCatego
   const handleCollapseButtonClick = useEventCallback((e: React.MouseEvent<HTMLButtonElement>) => {
     e.stopPropagation()
     if (view !== undefined && folderName) {
-      subscriptionActions.toggleCategoryOpenState(view, folderName)
+      subscriptionActions.toggleCategoryOpenState(viewOnRoute, folderName)
     }
   })
 
@@ -139,7 +146,7 @@ function FeedCategoryImpl({ data: ids, view, categoryOpenStateData }: FeedCatego
       navigate({
         entryId: null,
         folderName,
-        view,
+        view: viewOnRoute,
       })
     }
   }

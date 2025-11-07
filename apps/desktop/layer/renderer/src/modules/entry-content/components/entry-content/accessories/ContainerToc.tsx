@@ -8,10 +8,8 @@ import { cn } from "@follow/utils/utils"
 import { useStore } from "jotai"
 import { memo, useEffect, useMemo, useState } from "react"
 
-import { AIChatPanelStyle, setAIPanelVisibility, useAIChatPanelStyle } from "~/atoms/settings/ai"
 import type { TocRef } from "~/components/ui/markdown/components/Toc"
 import { Toc } from "~/components/ui/markdown/components/Toc"
-import { useFeature } from "~/hooks/biz/useFeature"
 import { useWrappedElement, useWrappedElementSize } from "~/providers/wrapped-element-provider"
 
 const useReadPercent = () => {
@@ -48,10 +46,6 @@ const useReadPercent = () => {
 const BackTopIndicator: Component = memo(({ className }) => {
   const [readPercent] = useReadPercent()
   const scrollElement = useScrollViewElement()
-  const aiEnabled = useFeature("ai")
-
-  const panelStyle = useAIChatPanelStyle()
-  const isAiPanelOpen = panelStyle === AIChatPanelStyle.Fixed
 
   return (
     <span
@@ -60,23 +54,12 @@ const BackTopIndicator: Component = memo(({ className }) => {
         className,
       )}
     >
-      <div className="flex items-center gap-2 tabular-nums">
-        <CircleProgress percent={readPercent!} size={14} strokeWidth={2} />
-        <span>{readPercent}%</span>
-        <br />
-      </div>
-      {aiEnabled && !isAiPanelOpen && (
-        <MotionButtonBase
-          onClick={() => {
-            setAIPanelVisibility(true)
-          }}
-          className={cn(
-            "mt-1 flex flex-nowrap items-center gap-2 text-sm opacity-50 transition-all duration-500 hover:opacity-100",
-          )}
-        >
-          <i className="i-mgc-ai-cute-re" />
-          <span>Ask AI</span>
-        </MotionButtonBase>
+      {!!readPercent && (
+        <div className="flex items-center gap-2 tabular-nums">
+          <CircleProgress percent={readPercent!} size={14} strokeWidth={2} />
+          <span>{readPercent}%</span>
+          <br />
+        </div>
       )}
       <MotionButtonBase
         onClick={() => {

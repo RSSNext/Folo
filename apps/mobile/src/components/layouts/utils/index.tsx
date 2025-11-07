@@ -40,5 +40,5 @@ export function getDefaultHeaderHeight({
     headerHeight = 64
   }
 
-  return headerHeight + statusBarHeight
+  return headerHeight + (modalPresentation ? 0 : statusBarHeight)
 }

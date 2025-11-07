@@ -1,5 +1,7 @@
+import { isFreeRole } from "@follow/constants"
 import { useTypeScriptHappyCallback } from "@follow/hooks"
 import { usePrefetchEntryTranslation } from "@follow/store/translation/hooks"
+import { useUserRole } from "@follow/store/user/hooks"
 import type { FlashListProps, FlashListRef } from "@shopify/flash-list"
 import type { ElementRef } from "react"
 import { useImperativeHandle, useRef } from "react"
@@ -35,10 +37,12 @@ export const EntryListContentPicture = ({
   })
   const translation = useGeneralSettingKey("translation")
   const actionLanguage = useActionLanguage()
+  const userRole = useUserRole()
+  const translationPrefetchEnabled = translation && !isFreeRole(userRole)
   usePrefetchEntryTranslation({
     entryIds: active ? viewableItems.map((item) => item.key) : [],
     language: actionLanguage,
-    enabled: translation,
+    enabled: translationPrefetchEnabled,
   })
 
   const renderItem = useTypeScriptHappyCallback(({ item }: { item: string }) => {

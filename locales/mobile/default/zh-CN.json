@@ -1,4 +1,8 @@
 {
+  "ai.summary_not_available": "摘要不可用",
+  "ai.summary_upgrade_required_description": "升级到 Pro 计划，解锁无限 AI 摘要、翻译和更多智能功能。",
+  "ai.summary_upgrade_required_title": "升级计划以继续使用 AI 摘要",
+  "ai.summary_upgrade_view_plans": "查看计划",
   "entry.pull_up_to_next_entry": "继续上拉查看下一条内容",
   "entry.release_to_next_entry": "松开查看下一条内容",
   "login.back": "返回",

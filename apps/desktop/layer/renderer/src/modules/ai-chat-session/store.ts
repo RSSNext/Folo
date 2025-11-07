@@ -1,7 +1,5 @@
 import { createWithEqualityFn } from "zustand/traditional"
 
-import { getI18n } from "~/i18n"
-
 import type { ChatSession } from "../ai-chat/types/ChatSession"
 import { AIChatSessionService } from "./service"
 
@@ -74,16 +72,7 @@ export const aiChatSessionStoreActions = {
   // syncing
   fetchRemoteSessions: async () => {
     try {
-      const { t } = getI18n()
-      const sessions = await AIChatSessionService.syncSessionsAndMessagesFromServer()
-      aiChatSessionStoreActions.setSessions(
-        sessions.map((session) => ({
-          chatId: session.chatId,
-          title: session.title || t("ai:common.new_chat"),
-          createdAt: new Date(session.createdAt),
-          updatedAt: new Date(session.updatedAt),
-        })),
-      )
+      await AIChatSessionService.syncSessionsAndMessagesFromServer()
     } catch (error) {
       console.error("fetchRemoteSessionsAndMessages: failed", error)
       aiChatSessionStoreActions.setError(error instanceof Error ? error.message : "fetch_failed")

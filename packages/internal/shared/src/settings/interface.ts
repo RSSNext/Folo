@@ -56,7 +56,6 @@ export interface UISettings {
    * Dedicated AI panel width for `FeedViewType.All`.
    * If not set, the runtime default falls back to half of the window width.
    */
-  aiColWidthAll?: number
   feedColWidth: number
   opaqueSidebar: boolean
   sidebarShowUnreadCount: boolean

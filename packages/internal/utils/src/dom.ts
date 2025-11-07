@@ -15,6 +15,13 @@ export const nextFrame = (fn: (...args: any[]) => any) => {
     if (timer2) cancelAnimationFrame(timer2)
   }
 }
+export const asyncableNextFrame = <T>(fn: (...args: any[]) => Promise<T>, timeout = 0) => {
+  return new Promise((resolve) => {
+    setTimeout(() => {
+      fn().then(resolve)
+    }, timeout)
+  })
+}
 
 export const getElementTop = (element: HTMLElement) => {
   let actualTop = element.offsetTop

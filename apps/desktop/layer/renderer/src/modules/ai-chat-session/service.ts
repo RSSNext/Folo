@@ -49,6 +49,7 @@ class AIChatSessionServiceStatic {
           createdAt: new Date(session.createdAt),
           // Use createdAt for updatedAt as we are syncing session instead of messages
           updatedAt: new Date(session.createdAt),
+          isLocal: false,
         })
       })
       await this.loadSessionsFromDb()
@@ -84,11 +85,15 @@ class AIChatSessionServiceStatic {
       force?: boolean
     },
   ): Promise<void> {
-    const dbSession = await AIPersistService.getChatSession(session.chatId)
+    const [dbSession, hasPersistedMessages] = await Promise.all([
+      AIPersistService.getChatSession(session.chatId),
+      AIPersistService.hasPersistedMessages(session.chatId),
+    ])
+
     const lastUpdatedAt = dbSession ? dbSession.updatedAt : new Date(0)
     const hasUpToDateSession = lastUpdatedAt >= new Date(session.updatedAt)
 
-    if (!options?.force && hasUpToDateSession) {
+    if (!options?.force && hasUpToDateSession && hasPersistedMessages) {
       // If local session is already up-to-date, skip fetching messages
       return
     }
@@ -104,6 +109,7 @@ class AIChatSessionServiceStatic {
       // Use createdAt for updatedAt
       // Because we are fetching session data instead of messages
       updatedAt: new Date(session.createdAt),
+      isLocal: false,
     })
     await AIPersistService.upsertMessages(session.chatId, normalized)
 
@@ -120,6 +126,11 @@ class AIChatSessionServiceStatic {
 
   async syncSessionMessages(chatId: string) {
     try {
+      const sessionRecord = await AIPersistService.getChatSession(chatId)
+      if (sessionRecord?.isLocal) {
+        return AIPersistService.loadUIMessages(chatId)
+      }
+
       const sessionResponse = await followApi.aiChatSessions.get({ chatId })
       const session = sessionResponse.data
 

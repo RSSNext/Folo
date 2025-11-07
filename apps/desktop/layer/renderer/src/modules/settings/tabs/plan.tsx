@@ -497,7 +497,7 @@ const PlanComparisonTable = ({ plans }: { plans: PaymentPlan[] }) => {
                 )}
               >
                 <td className="sticky left-0 z-10 bg-inherit px-4 py-3 text-sm font-medium">
-                  {t(`plan.features.${featureKey}` as any)}
+                  {t(`plan.features.${featureKey}`, { defaultValue: featureKey })}
                 </td>
                 {plans.map((plan) => {
                   const value = plan.limit[featureKey]

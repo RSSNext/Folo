@@ -25,20 +25,21 @@ interface AIMessagePartsProps {
 
 export const AIMessageParts: React.FC<AIMessagePartsProps> = React.memo(
   ({ message, isLastMessage }) => {
-    const [shouldStreamingAnimation, setShouldStreamingAnimation] = React.useState(false)
+    // const [shouldStreamingAnimation, setShouldStreamingAnimation] = React.useState(false)
     const chatStatus = useChatStatus()
 
-    React.useEffect(() => {
-      // Delay 2s to set shouldStreamingAnimation
-      const timerId = setTimeout(() => {
-        setShouldStreamingAnimation(true)
-      }, 2000)
-      return () => clearTimeout(timerId)
-    }, [])
+    // React.useEffect(() => {
+    // I forgot why do this
+    //   // Delay 2s to set shouldStreamingAnimation
+    //   const timerId = setTimeout(() => {
+    //     setShouldStreamingAnimation(true)
+    //   }, 2000)
+    //   return () => clearTimeout(timerId)
+    // }, [])
 
     const shouldMessageAnimation = React.useMemo(() => {
-      return chatStatus === "streaming" && shouldStreamingAnimation && isLastMessage
-    }, [chatStatus, isLastMessage, shouldStreamingAnimation])
+      return chatStatus === "streaming" && isLastMessage // && shouldStreamingAnimation
+    }, [chatStatus, isLastMessage])
 
     const chainThoughtParts = React.useMemo(() => {
       const parts = [] as (ChainReasoningPart[] | TextUIPart | ToolUIPart<BizUITools>)[]

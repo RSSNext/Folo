@@ -2,6 +2,9 @@ import { FollowAPIError } from "@follow-app/client-sdk"
 import { t } from "i18next"
 import { FetchError } from "ofetch"
 
+import { getIsPaymentEnabled } from "@/src/atoms/server-configs"
+import { showUpgradeRequiredDialog } from "@/src/modules/dialogs/UpgradeRequiredDialog"
+
 import { toast } from "./toast"
 
 export const getFetchErrorInfo = (
@@ -55,41 +58,52 @@ export const createErrorToaster = (title?: string) => (err: Error) =>
   toastFetchError(err, { title })
 
 export const toastFetchError = (error: Error, { title: _title }: { title?: string } = {}) => {
-  let message = ""
+  const { message: fallbackMessage } = error
+  let message = fallbackMessage
   let _reason = ""
   let code: number | undefined
+  let status: number | undefined
 
   if (error instanceof FetchError) {
     try {
+      const resolvedStatus = error.statusCode ?? error.response?.status
+      if (resolvedStatus != null) {
+        status = Number(resolvedStatus)
+      }
       const json =
         typeof error.response?._data === "string"
           ? JSON.parse(error.response?._data)
           : error.response?._data
 
       const { reason, code: _code, message: _message } = json
-      code = _code
-      message = _message
+      if (_code != null) {
+        code = typeof _code === "number" ? _code : Number(_code)
+      }
+      message = typeof _message === "string" && _message.trim() ? _message : message
 
-      const i18nMessage = message
-
-      message = i18nMessage
-
-      if (reason) {
+      if (typeof reason === "string" && reason.trim()) {
         _reason = reason
       }
     } catch {
-      message = error.message
+      message = fallbackMessage
     }
   }
 
-  if (error instanceof FollowAPIError && error.code) {
-    code = Number(error.code)
+  if (error instanceof FollowAPIError) {
+    if (error.code) {
+      code = Number(error.code)
+    }
+    status = error.status ? Number(error.status) : status
     try {
-      const tValue = t(`errors:${code}` as any)
-      const i18nMessage = tValue === code?.toString() ? error.message : tValue
-      message = i18nMessage
+      if (error.code) {
+        const tValue = t(`errors:${code}` as any)
+        const i18nMessage = tValue === code?.toString() ? error.message : tValue
+        message = i18nMessage
+      } else {
+        message = fallbackMessage
+      }
     } catch {
-      message = error.message
+      message = fallbackMessage
     }
   }
 
@@ -98,8 +112,18 @@ export const toastFetchError = (error: Error, { title: _title }: { title?: strin
     return
   }
 
+  const needUpgradeError = status === 402 && getIsPaymentEnabled()
+
+  if (needUpgradeError) {
+    showUpgradeRequiredDialog({
+      title: _title || message,
+      message: _reason || message,
+    })
+    return
+  }
+
   if (!_reason) {
-    const title = _title || message
+    const title = _title || message || "Unknown error"
     return toast.error(title)
   } else {
     return toast.error(message || _title || "Unknown error")

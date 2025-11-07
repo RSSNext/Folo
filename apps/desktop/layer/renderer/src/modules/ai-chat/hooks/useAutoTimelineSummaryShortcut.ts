@@ -2,11 +2,13 @@ import { convertLexicalToMarkdown } from "@follow/components/ui/lexical-rich-edi
 import { FeedViewType } from "@follow/constants"
 import { DEFAULT_SUMMARIZE_TIMELINE_SHORTCUT_ID } from "@follow/shared/settings/defaults"
 import { getCategoryFeedIds } from "@follow/store/subscription/getter"
+import { asyncableNextFrame } from "@follow/utils"
 import type { LexicalEditor } from "lexical"
 import { $createParagraphNode, $getRoot, createEditor } from "lexical"
 import { nanoid } from "nanoid"
 import { useEffect, useMemo, useRef } from "react"
 
+import { useIsInMASReview } from "~/atoms/server-configs"
 import { getShortcutEffectivePrompt, useAISettingValue } from "~/atoms/settings/ai"
 import { useGeneralSettingKey } from "~/atoms/settings/general"
 import { ROUTE_FEED_IN_FOLDER, ROUTE_FEED_PENDING } from "~/constants"
@@ -74,6 +76,7 @@ const buildTimelineSummaryChatId = ({
 export const useAutoTimelineSummaryShortcut = () => {
   const aiSettings = useAISettingValue()
   const unreadOnly = useGeneralSettingKey("unreadOnly")
+  const isInMASReview = useIsInMASReview()
 
   const { view, feedId, entryId, timelineId } = useRouteParamsSelector((params) => ({
     view: params.view,
@@ -88,6 +91,12 @@ export const useAutoTimelineSummaryShortcut = () => {
   const timelineSummaryManualOverride = useAIChatStore()(
     (state) => state.timelineSummaryManualOverride,
   )
+  const timelineSummaryWasInAutoContext = useAIChatStore()(
+    (state) => state.timelineSummaryWasInAutoContext,
+  )
+  const setTimelineSummaryWasInAutoContext = useAIChatStore()(
+    (state) => state.chatActions.setTimelineSummaryWasInAutoContext,
+  )
 
   const automationStateRef = useRef<{
     contextKey: string | null
@@ -100,7 +109,7 @@ export const useAutoTimelineSummaryShortcut = () => {
   })
   const previousContextKeyRef = useRef<string | null>(null)
 
-  const isAllTimeline = isTimelineSummaryAutoContext({ view, feedId, entryId })
+  const isAllTimeline = isTimelineSummaryAutoContext({ entryId })
 
   const defaultShortcut = useMemo(() => {
     const shortcuts = aiSettings.shortcuts ?? []
@@ -128,12 +137,9 @@ export const useAutoTimelineSummaryShortcut = () => {
     }
   }, [chatActions, contextKey])
 
-  const previousIsAllTimelineRef = useRef(isAllTimeline)
-
   useEffect(() => {
-    const wasAllTimeline = previousIsAllTimelineRef.current
     if (
-      wasAllTimeline &&
+      timelineSummaryWasInAutoContext &&
       !isAllTimeline &&
       currentChatId &&
       currentChatId.startsWith(AI_CHAT_SPECIAL_ID_PREFIX.TIMELINE_SUMMARY)
@@ -141,8 +147,15 @@ export const useAutoTimelineSummaryShortcut = () => {
       blockActions.clearBlocks({ keepSpecialTypes: true })
       chatActions.newChat()
     }
-    previousIsAllTimelineRef.current = isAllTimeline
-  }, [blockActions, chatActions, currentChatId, isAllTimeline])
+    setTimelineSummaryWasInAutoContext(isAllTimeline)
+  }, [
+    blockActions,
+    chatActions,
+    currentChatId,
+    isAllTimeline,
+    setTimelineSummaryWasInAutoContext,
+    timelineSummaryWasInAutoContext,
+  ])
 
   const contextBlocks = useMemo<AIChatContextBlock[]>(() => {
     if (!isAllTimeline) return []
@@ -186,6 +199,10 @@ export const useAutoTimelineSummaryShortcut = () => {
   }, [isAllTimeline, normalizedFeedId, unreadOnly, view])
 
   useEffect(() => {
+    if (isInMASReview) {
+      return
+    }
+
     if (!contextKey || !defaultShortcut) {
       if (!contextKey) {
         automationStateRef.current = { contextKey: null, promise: null, failed: false }
@@ -249,33 +266,40 @@ export const useAutoTimelineSummaryShortcut = () => {
         })
 
         await chatActions.switchToChat(timelineSummaryChatId)
-        blockActions.clearBlocks({ keepSpecialTypes: true })
 
-        const tempEditor = createEditor({
-          nodes: LexicalAIEditorNodes,
+        await asyncableNextFrame(async () => {
+          // wait switch to chat completed
+          if (chatActions.get().chatId !== timelineSummaryChatId) {
+            return
+          }
+          blockActions.clearBlocks({ keepSpecialTypes: true })
+
+          const tempEditor = createEditor({
+            nodes: LexicalAIEditorNodes,
+          })
+
+          tempEditor.update(
+            () => {
+              const root = $getRoot()
+              root.clear()
+              const paragraph = $createParagraphNode()
+              const shortcutNode = new ShortcutNode({ id, name, prompt })
+              paragraph.append(shortcutNode)
+              root.append(paragraph)
+            },
+            {
+              discrete: true,
+            },
+          )
+
+          const message = buildSummaryMessage(tempEditor, contextBlocks, nanoid())
+
+          await chatActions.sendMessage(message, {
+            body: { scene: "general" },
+          })
+
+          automationStateRef.current.failed = false
         })
-
-        tempEditor.update(
-          () => {
-            const root = $getRoot()
-            root.clear()
-            const paragraph = $createParagraphNode()
-            const shortcutNode = new ShortcutNode({ id, name, prompt })
-            paragraph.append(shortcutNode)
-            root.append(paragraph)
-          },
-          {
-            discrete: true,
-          },
-        )
-
-        const message = buildSummaryMessage(tempEditor, contextBlocks, nanoid())
-
-        await chatActions.sendMessage(message, {
-          body: { scene: "general" },
-        })
-
-        automationStateRef.current.failed = false
       } catch (error) {
         automationStateRef.current.failed = true
         console.error("[AI Chat] Failed to auto-run timeline summary shortcut:", error)
@@ -300,5 +324,6 @@ export const useAutoTimelineSummaryShortcut = () => {
     unreadOnly,
     view,
     timelineSummaryManualOverride,
+    isInMASReview,
   ])
 }

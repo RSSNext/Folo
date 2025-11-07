@@ -6,7 +6,6 @@ import { useTranslation } from "react-i18next"
 import { useEntryIsInReadabilitySuccess } from "~/atoms/readability"
 import { useActionLanguage } from "~/atoms/settings/general"
 import { AISummaryCardBase } from "~/components/ui/ai-summary-card"
-import { getFetchErrorInfo } from "~/lib/error-parser"
 
 interface EntrySummaryCardProps {
   entryId: string
@@ -23,8 +22,6 @@ export const EntrySummaryCard: React.FC<EntrySummaryCardProps> = ({ entryId, cla
     actionLanguage,
     enabled: true,
   })
-  const summaryErrorCode =
-    summary.error instanceof Error ? getFetchErrorInfo(summary.error).code : undefined
 
   return (
     <m.div
@@ -38,7 +35,7 @@ export const EntrySummaryCard: React.FC<EntrySummaryCardProps> = ({ entryId, cla
         isLoading={summary.isLoading}
         className={className}
         title={t("ai_summary")}
-        errorCode={summaryErrorCode}
+        error={summary.error}
       />
     </m.div>
   )

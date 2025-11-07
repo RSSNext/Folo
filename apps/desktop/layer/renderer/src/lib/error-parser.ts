@@ -1,6 +1,5 @@
-import { DEV } from "@follow/shared/constants"
 import { cn } from "@follow/utils/utils"
-import { FollowAPIError, isNeedUpgradeError } from "@follow-app/client-sdk"
+import { FollowAPIError } from "@follow-app/client-sdk"
 import { t } from "i18next"
 import { FetchError } from "ofetch"
 import { createElement } from "react"
@@ -70,8 +69,10 @@ export const toastFetchError = (
   let _reason = ""
   let code: number | undefined
 
+  let status: number | undefined
   if (error instanceof FetchError) {
     try {
+      status = error.statusCode ? Number(error.statusCode) : undefined
       const json =
         typeof error.response?._data === "string"
           ? JSON.parse(error.response?._data)
@@ -92,6 +93,12 @@ export const toastFetchError = (
     } catch {
       message = error.message
     }
+  }
+
+  if (error instanceof FollowAPIError) {
+    code = error.code ? Number(error.code) : undefined
+    status = error.status ? Number(error.status) : undefined
+    message = error.message
   }
 
   if ("code" in error && error.code) {
@@ -124,7 +131,7 @@ export const toastFetchError = (
     const title = _title || message || "Unknown error occurred"
     toastOptions.description = _title ? message : ""
     const isPaymentEnabled = getIsPaymentEnabled()
-    const needUpgradeError = code && isPaymentEnabled ? isNeedUpgradeError(code) : false
+    const needUpgradeError = status && isPaymentEnabled ? status === 402 : false
     if (needUpgradeError) {
       toastOptions.description = "Please upgrade your plan."
     }
@@ -162,19 +169,28 @@ export const toastFetchError = (
     })
   }
 }
-if (DEV) {
-  DebugRegistry.add("Simulate request error", () => {
-    createErrorToaster(
-      "Simulated request error",
-      {},
-    )({
-      response: {
-        _data: JSON.stringify({
-          code: 1000,
-          message: "Simulated request error",
-          reason: "Simulated reason",
-        }),
-      },
-    } as any)
-  })
-}
+DebugRegistry.add("Simulate request error", () => {
+  createErrorToaster(
+    "Simulated request error",
+    {},
+  )({
+    response: {
+      _data: JSON.stringify({
+        code: 1000,
+        message: "Simulated request error",
+        reason: "Simulated reason",
+      }),
+    },
+  } as any)
+})
+
+DebugRegistry.add("Simulate payment need upgrade error", () => {
+  createErrorToaster(
+    "Simulated payment need upgrade error",
+    {},
+  )(
+    new FollowAPIError("Simulated payment need upgrade error", 402, "1111", {
+      reason: "Simulated reason",
+    }),
+  )
+})

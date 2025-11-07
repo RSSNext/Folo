@@ -58,12 +58,16 @@ export const LexicalRichEditorTextArea = ({
 
   // Create initial editor state from saved value
   const initialEditorState = useMemo(() => {
-    if (!initialValue) return null
+    if (initialValue === undefined) return null
 
     // Try to parse as JSON state first
     try {
-      JSON.parse(initialValue)
       // If successful, it's already a JSON state
+      const json = JSON.parse(initialValue)
+      // Check if it has root and children
+      if (!("root" in json) || !("children" in json.root) || json.root.children.length === 0) {
+        return getEditorStateJSONString("")
+      }
       return initialValue
     } catch {
       // If parsing fails, it's plain text, convert it
