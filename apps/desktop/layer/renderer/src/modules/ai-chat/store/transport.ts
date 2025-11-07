@@ -132,4 +132,13 @@ class ExtendChatTransport extends HttpChatTransport<BizUIMessage> {
       console.error("Failed to persist generated title:", error)
     }
   }
+
+  override reconnectToStream(
+    options: Parameters<HttpChatTransport<BizUIMessage>["reconnectToStream"]>[0],
+  ) {
+    if (options.chatId.includes("/")) {
+      options.chatId = encodeURIComponent(options.chatId)
+    }
+    return super.reconnectToStream(options)
+  }
 }
