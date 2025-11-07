@@ -2,6 +2,7 @@ import { convertLexicalToMarkdown } from "@follow/components/ui/lexical-rich-edi
 import { FeedViewType } from "@follow/constants"
 import { DEFAULT_SUMMARIZE_TIMELINE_SHORTCUT_ID } from "@follow/shared/settings/defaults"
 import { getCategoryFeedIds } from "@follow/store/subscription/getter"
+import { asyncableNextFrame } from "@follow/utils"
 import type { LexicalEditor } from "lexical"
 import { $createParagraphNode, $getRoot, createEditor } from "lexical"
 import { nanoid } from "nanoid"
@@ -259,33 +260,40 @@ export const useAutoTimelineSummaryShortcut = () => {
         })
 
         await chatActions.switchToChat(timelineSummaryChatId)
-        blockActions.clearBlocks({ keepSpecialTypes: true })
 
-        const tempEditor = createEditor({
-          nodes: LexicalAIEditorNodes,
+        await asyncableNextFrame(async () => {
+          // wait switch to chat completed
+          if (chatActions.get().chatId !== timelineSummaryChatId) {
+            return
+          }
+          blockActions.clearBlocks({ keepSpecialTypes: true })
+
+          const tempEditor = createEditor({
+            nodes: LexicalAIEditorNodes,
+          })
+
+          tempEditor.update(
+            () => {
+              const root = $getRoot()
+              root.clear()
+              const paragraph = $createParagraphNode()
+              const shortcutNode = new ShortcutNode({ id, name, prompt })
+              paragraph.append(shortcutNode)
+              root.append(paragraph)
+            },
+            {
+              discrete: true,
+            },
+          )
+
+          const message = buildSummaryMessage(tempEditor, contextBlocks, nanoid())
+
+          await chatActions.sendMessage(message, {
+            body: { scene: "general" },
+          })
+
+          automationStateRef.current.failed = false
         })
-
-        tempEditor.update(
-          () => {
-            const root = $getRoot()
-            root.clear()
-            const paragraph = $createParagraphNode()
-            const shortcutNode = new ShortcutNode({ id, name, prompt })
-            paragraph.append(shortcutNode)
-            root.append(paragraph)
-          },
-          {
-            discrete: true,
-          },
-        )
-
-        const message = buildSummaryMessage(tempEditor, contextBlocks, nanoid())
-
-        await chatActions.sendMessage(message, {
-          body: { scene: "general" },
-        })
-
-        automationStateRef.current.failed = false
       } catch (error) {
         automationStateRef.current.failed = true
         console.error("[AI Chat] Failed to auto-run timeline summary shortcut:", error)

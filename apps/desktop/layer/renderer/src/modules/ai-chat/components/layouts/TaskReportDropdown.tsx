@@ -117,6 +117,7 @@ export const TaskReportDropdown = ({ triggerElement, asChild = true }: TaskRepor
                 })
               }}
               isLoading={loadingChatId === session.chatId}
+              hasUnread={hasUnreadSessions}
             />
           ))
         ) : (

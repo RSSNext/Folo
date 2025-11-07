@@ -36,24 +36,20 @@ const formatResetTime = (windowResetTime: Date) => {
 
 export function computeIsRateLimited(
   error: Error | string | undefined,
-  configuration?: AIConfigLike | null,
+  conf?: AIConfigLike | null,
 ): boolean {
   if (error) {
     const parsed = parseAIError(error)
     if (parsed.isRateLimitError) return true
   }
-  if (configuration) {
-    const conf = configuration
-    if (typeof conf?.usage?.remaining === "number" && conf.usage.remaining <= 0) {
-      return true
-    }
-    if (
-      conf?.freeQuota?.shouldCheckDailyLimit &&
+
+  if (conf) {
+    return (
+      !!conf?.freeQuota?.shouldCheckDailyLimit &&
       (!conf.freeQuota.remainingRequests || !conf.freeQuota.remainingMonthlyRequests)
-    ) {
-      return true
-    }
+    )
   }
+
   return false
 }
 
@@ -96,45 +92,45 @@ export function computeRateLimitMessage(
     }
   }
 
-  if (configuration) {
-    const conf = configuration
+  if (!configuration) {
+    return null
+  }
 
-    if (conf?.freeQuota?.shouldCheckDailyLimit) {
-      const daily = conf.freeQuota.remainingRequests
-      const monthly = conf.freeQuota.remainingMonthlyRequests
-      if (!daily || !monthly) {
-        const parts: string[] = []
-        parts.push(t("rate_limit.depleted", aiNs))
-        if (!daily && monthly) {
-          parts.push(t("rate_limit.resets_tomorrow", aiNs))
-        } else {
-          parts.push(t("rate_limit.resets_next_month", aiNs))
-        }
-        parts.push(t("rate_limit.upgrade_to_get_more", aiNs))
-        return parts.join(" · ")
-      }
-      return null
-    }
-
-    const remaining = conf?.usage?.remaining
-    if (typeof remaining === "number") {
-      if (remaining > 0) return null
-      const resetAt = conf?.usage?.resetAt ? new Date(conf.usage.resetAt) : null
-      const formattedResetText = resetAt ? formatResetTime(resetAt) : null
+  if (configuration?.freeQuota?.shouldCheckDailyLimit) {
+    const daily = configuration.freeQuota.remainingRequests
+    const monthly = configuration.freeQuota.remainingMonthlyRequests
+    if (!daily || !monthly) {
       const parts: string[] = []
-      if (remaining === 0) {
-        parts.push(t("rate_limit.depleted", aiNs))
+      parts.push(t("rate_limit.depleted", aiNs))
+      if (!daily && monthly) {
+        parts.push(t("rate_limit.resets_tomorrow", aiNs))
       } else {
-        parts.push(t("rate_limit.credits_left", { ns: "ai", count: remaining }))
+        parts.push(t("rate_limit.resets_next_month", aiNs))
       }
-      if (formattedResetText) {
-        parts.push(formattedResetText)
-      }
-      if (parts.length < 2) {
-        parts.push(t("rate_limit.upgrade_to_get_more", aiNs))
-      }
+      parts.push(t("rate_limit.upgrade_to_get_more", aiNs))
       return parts.join(" · ")
     }
+  }
+
+  const remaining = configuration?.usage?.remaining
+
+  if (typeof remaining === "number") {
+    if (remaining > 0) return null
+    const resetAt = configuration?.usage?.resetAt ? new Date(configuration.usage.resetAt) : null
+    const formattedResetText = resetAt ? formatResetTime(resetAt) : null
+    const parts: string[] = []
+    if (remaining === 0) {
+      parts.push(t("rate_limit.depleted", aiNs))
+    } else {
+      parts.push(t("rate_limit.credits_left", { ns: "ai", count: remaining }))
+    }
+    if (formattedResetText) {
+      parts.push(formattedResetText)
+    }
+    if (parts.length < 2) {
+      parts.push(t("rate_limit.upgrade_to_get_more", aiNs))
+    }
+    return parts.join(" · ")
   }
 
   return null
