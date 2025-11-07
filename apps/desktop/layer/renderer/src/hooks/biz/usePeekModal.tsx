@@ -11,7 +11,7 @@ import { useModalStack } from "~/components/ui/modal/stacked/hooks"
 import { EntryModalPreview } from "~/components/ui/peek-modal/EntryModalPreview"
 import { EntryMoreActions } from "~/components/ui/peek-modal/EntryMoreActions"
 import { EntryToastPreview } from "~/components/ui/peek-modal/EntryToastPreview"
-import { getRouteParams } from "~/hooks/biz/useRouteParams"
+import { getRouteParams, getTimelineIdByView } from "~/hooks/biz/useRouteParams"
 
 export const usePeekModal = () => {
   const { present } = useModalStack()
@@ -42,7 +42,7 @@ export const usePeekModal = () => {
             const feedId = useEntry(entryId, (state) => state.feedId)
             const subscription = feedId ? getSubscriptionById(feedId) : undefined
             const view = subscription?.view ?? getRouteParams().view
-
+            const timelineId = getTimelineIdByView(view)
             return (
               <PeekModal
                 rightActions={[
@@ -52,7 +52,7 @@ export const usePeekModal = () => {
                     icon: <EntryMoreActions entryId={entryId} />,
                   },
                 ]}
-                to={feedId ? `/timeline/view-${view}/${feedId}/${entryId}` : undefined}
+                to={feedId ? `/timeline/${timelineId}/${feedId}/${entryId}` : undefined}
               >
                 {children}
               </PeekModal>
