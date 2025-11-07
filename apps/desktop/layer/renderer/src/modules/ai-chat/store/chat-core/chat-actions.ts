@@ -334,7 +334,7 @@ export class ChatSliceActions {
         syncStatus: chatSession ? chatSession.syncStatus : "local",
       }))
 
-      newChatInstance.resumeStream()
+      await newChatInstance.resumeStream()
       // Update the reference
       this.chatInstance = newChatInstance
     } catch (error) {

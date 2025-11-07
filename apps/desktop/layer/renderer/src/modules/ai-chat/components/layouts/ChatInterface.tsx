@@ -3,33 +3,21 @@ import {
   convertLexicalToMarkdown,
   getEditorStateJSONString,
 } from "@follow/components/ui/lexical-rich-editor/utils.js"
-import { ScrollArea } from "@follow/components/ui/scroll-area/ScrollArea.js"
-import { useElementWidth } from "@follow/hooks"
 import { getCategoryFeedIds } from "@follow/store/subscription/getter"
 import { usePrefetchSummary } from "@follow/store/summary/hooks"
 import { tracker } from "@follow/tracker"
-import { clsx, cn, detectIsEditableElement, nextFrame } from "@follow/utils"
+import { detectIsEditableElement, nextFrame } from "@follow/utils"
 import { ErrorBoundary } from "@sentry/react"
 import type { EditorState } from "lexical"
-import { $createParagraphNode, $getRoot, createEditor } from "lexical"
-import { AnimatePresence, m } from "motion/react"
+import { createEditor } from "lexical"
 import { nanoid } from "nanoid"
-import type { FC, RefObject } from "react"
-import * as React from "react"
-import { Suspense, use, useEffect, useLayoutEffect, useMemo, useRef, useState } from "react"
+import { use, useEffect, useMemo, useRef, useState } from "react"
 import { useEventCallback, useEventListener } from "usehooks-ts"
 
 import { useAISettingKey } from "~/atoms/settings/ai"
 import { useActionLanguage } from "~/atoms/settings/general"
 import { ROUTE_FEED_IN_FOLDER } from "~/constants"
 import { getRouteParams } from "~/hooks/biz/useRouteParams"
-import { useI18n } from "~/hooks/common/useI18n"
-import {
-  AIChatMessage,
-  AIChatWaitingIndicator,
-} from "~/modules/ai-chat/components/message/AIChatMessage"
-import { ErrorMessage } from "~/modules/ai-chat/components/message/ErrorMessage"
-import { UserChatMessage } from "~/modules/ai-chat/components/message/UserChatMessage"
 import { useAutoScroll } from "~/modules/ai-chat/hooks/useAutoScroll"
 import { useAutoTimelineSummaryShortcut } from "~/modules/ai-chat/hooks/useAutoTimelineSummaryShortcut"
 import { useLoadMessages } from "~/modules/ai-chat/hooks/useLoadMessages"
@@ -44,7 +32,7 @@ import {
   useMessages,
 } from "~/modules/ai-chat/store/hooks"
 
-import { LexicalAIEditorNodes, ShortcutNode } from "../../editor"
+import { LexicalAIEditorNodes } from "../../editor"
 import { useAIConfiguration } from "../../hooks/useAIConfiguration"
 import { useAttachScrollBeyond } from "../../hooks/useAttachScrollBeyond"
 import { AIPanelRefsContext } from "../../store/AIChatContext"
@@ -52,12 +40,8 @@ import type { AIChatContextBlock, BizUIMessage, SendingUIMessage } from "../../s
 import { computeIsRateLimited, computeRateLimitMessage } from "../../utils/rate-limit"
 import { GlobalFileDropZone } from "../file/GlobalFileDropZone"
 import { AIErrorFallback } from "./AIErrorFallback"
-import { ChatInput } from "./ChatInput"
-import { ChatShortcutsRow } from "./ChatShortcutsRow"
-import { RateLimitNotice } from "./RateLimitNotice"
-import { WelcomeScreen } from "./WelcomeScreen"
-
-const SCROLL_BOTTOM_THRESHOLD = 100
+import { ChatBottomPanel } from "./ChatBottomPanel"
+import { ChatMessageContainer } from "./ChatMessageContainer"
 
 const draftMessages = new Map<string, EditorState>()
 const ChatInterfaceContent = ({ centerInputOnEmpty }: ChatInterfaceProps) => {
@@ -66,15 +50,12 @@ const ChatInterfaceContent = ({ centerInputOnEmpty }: ChatInterfaceProps) => {
   const chatActions = useChatActions()
   const error = useChatError()
   const messages = useMessages()
-  const t = useI18n()
 
   useAutoTimelineSummaryShortcut()
 
   const isFocusWithIn = useFocusable()
 
   const aiPanelRefs = use(AIPanelRefsContext)
-
-  // Store draft messages for each chatId in memory during browser session
 
   useEventListener("keydown", (e) => {
     if (isFocusWithIn) {
@@ -109,13 +90,11 @@ const ChatInterfaceContent = ({ centerInputOnEmpty }: ChatInterfaceProps) => {
   })
 
   const [scrollAreaRef, setScrollAreaRef] = useState<HTMLDivElement | null>(null)
-  const [isAtBottom, setIsAtBottom] = useState(true)
   const [messageContainerMinHeight, setMessageContainerMinHeight] = useState<number | undefined>()
   const previousMinHeightRef = useRef<number>(0)
   const messagesContentRef = useRef<HTMLDivElement | null>(null)
 
   useEffect(() => {
-    setIsAtBottom(true)
     setMessageContainerMinHeight(undefined)
     previousMinHeightRef.current = 0
   }, [currentChatId])
@@ -131,7 +110,6 @@ const ChatInterfaceContent = ({ centerInputOnEmpty }: ChatInterfaceProps) => {
             top: scrollHeight,
           })
         }
-        setIsAtBottom(true)
       })
     },
   })
@@ -147,6 +125,7 @@ const ChatInterfaceContent = ({ centerInputOnEmpty }: ChatInterfaceProps) => {
     }
 
     const lastMessage = messages.at(-1)!
+
     const shouldShow =
       lastMessage.role === "user" &&
       status !== "streaming" &&
@@ -163,27 +142,6 @@ const ChatInterfaceContent = ({ centerInputOnEmpty }: ChatInterfaceProps) => {
     scrollAreaRef,
     autoScrollWhenStreaming && status === "streaming",
   )
-
-  useEffect(() => {
-    const scrollElement = scrollAreaRef
-
-    if (!scrollElement) return
-
-    const handleScroll = () => {
-      const { scrollTop, scrollHeight, clientHeight } = scrollElement
-      const distanceFromBottom = scrollHeight - scrollTop - clientHeight
-      const atBottom = distanceFromBottom <= SCROLL_BOTTOM_THRESHOLD
-      setIsAtBottom(atBottom)
-    }
-
-    scrollElement.addEventListener("scroll", handleScroll, { passive: true })
-
-    handleScroll()
-
-    return () => {
-      scrollElement.removeEventListener("scroll", handleScroll)
-    }
-  }, [scrollAreaRef])
 
   const blockActions = useBlockActions()
 
@@ -332,26 +290,6 @@ const ChatInterfaceContent = ({ centerInputOnEmpty }: ChatInterfaceProps) => {
   const initialDraft = currentChatId ? draftMessages.get(currentChatId) : undefined
 
   const [bottomPanelHeight, setBottomPanelHeight] = useState<number>(0)
-  const bottomPanelRef = useRef<HTMLDivElement | null>(null)
-
-  useLayoutEffect(() => {
-    if (!bottomPanelRef.current) {
-      return
-    }
-    setBottomPanelHeight(bottomPanelRef.current.offsetHeight)
-
-    const resizeObserver = new ResizeObserver(() => {
-      if (!bottomPanelRef.current) {
-        return
-      }
-      setBottomPanelHeight(bottomPanelRef.current.offsetHeight)
-    })
-    resizeObserver.observe(bottomPanelRef.current)
-
-    return () => {
-      resizeObserver.disconnect()
-    }
-  }, [])
 
   useEffect(() => {
     if (status === "submitted") {
@@ -366,10 +304,6 @@ const ChatInterfaceContent = ({ centerInputOnEmpty }: ChatInterfaceProps) => {
       // Keep the current minHeight unchanged to avoid CLS
     }
   }, [status, resetScrollState, messageContainerMinHeight, scrollAreaRef])
-
-  const shouldShowScrollToBottom = hasMessages && !isAtBottom && !isLoadingHistory
-  const shouldShowLoadingOverlay =
-    Boolean(currentChatId) && !hasMessages && (isLoadingHistory || isSyncingRemote)
 
   const { handleScroll } = useAttachScrollBeyond()
 
@@ -389,172 +323,34 @@ const ChatInterfaceContent = ({ centerInputOnEmpty }: ChatInterfaceProps) => {
     <div className="flex size-full flex-col @container">
       <GlobalFileDropZone className="flex size-full flex-col @container">
         <div className="flex min-h-0 flex-1 flex-col" ref={scrollContainerParentRef}>
-          <AnimatePresence>
-            {!hasMessages && !shouldShowLoadingOverlay ? (
-              <WelcomeScreen centerInputOnEmpty={centerInputOnEmpty} />
-            ) : (
-              <>
-                {shouldShowLoadingOverlay ? (
-                  <div className="absolute inset-0 flex items-center justify-center">
-                    <div className="flex -translate-y-24 flex-col items-center space-y-2">
-                      <i className="i-mgc-loading-3-cute-re size-8 animate-spin text-text" />
-                      {isSyncingRemote && (
-                        <p className="text-sm text-text-secondary">
-                          Syncing messages from server...
-                        </p>
-                      )}
-                    </div>
-                  </div>
-                ) : null}
-                <ScrollArea
-                  onScroll={handleScroll}
-                  flex
-                  scrollbarClassName="mt-12"
-                  scrollbarProps={{
-                    style: {
-                      marginBottom: Math.max(160, bottomPanelHeight),
-                    },
-                  }}
-                  ref={setScrollAreaRef}
-                  rootClassName="flex-1"
-                  viewportProps={{
-                    style: {
-                      paddingBottom: Math.max(128, bottomPanelHeight),
-                    },
-                  }}
-                  viewportClassName={"pt-12"}
-                >
-                  <div
-                    className="mx-auto w-full max-w-4xl px-6 py-8"
-                    style={{
-                      minHeight: messageContainerMinHeight
-                        ? `${messageContainerMinHeight}px`
-                        : undefined,
-                    }}
-                  >
-                    <Messages contentRef={messagesContentRef as RefObject<HTMLDivElement>} />
-
-                    {(status === "submitted" || status === "streaming") && (
-                      <AIChatWaitingIndicator />
-                    )}
-                  </div>
-                </ScrollArea>
-              </>
-            )}
-          </AnimatePresence>
-        </div>
-
-        {shouldShowScrollToBottom && (
-          <div
-            className={clsx("absolute right-1/2 z-40 translate-x-1/2", "bottom-48 -translate-y-2")}
-          >
-            <button
-              type="button"
-              onClick={() => resetScrollState()}
-              className={cn(
-                "group center flex size-8 items-center gap-2 rounded-full border backdrop-blur-background transition-all bg-mix-background/transparent-8/2",
-                "border-border",
-                "hover:border-border/60 active:scale-[0.98]",
-              )}
-            >
-              <i className="i-mingcute-arrow-down-line text-text/90" />
-            </button>
-          </div>
-        )}
-
-        <div
-          ref={bottomPanelRef}
-          data-testid="chat-input-container"
-          className={cn(
-            "absolute z-10 mx-auto duration-500 ease-in-out",
-            "inset-x-0 bottom-0 max-w-4xl px-4 pb-4",
-            centerInputOnEmpty &&
-              !hasMessages &&
-              "bottom-1/2 translate-y-[calc(100%+1rem)] duration-200",
-          )}
-        >
-          {shouldShowInterruptionNotice && (
-            <m.div
-              initial={{ opacity: 0, y: -10 }}
-              animate={{ opacity: 1, y: 0 }}
-              exit={{ opacity: 0, y: -10 }}
-              transition={{ duration: 0.2 }}
-              className="mb-3 flex w-full items-start gap-2 rounded-lg border border-border bg-material-ultra-thick px-3 py-2 text-xs text-text-secondary backdrop-blur-background"
-            >
-              <i className="i-mingcute-information-fill size-4 flex-shrink-0 text-text" />
-              <div className="flex flex-1 items-center justify-between gap-1">
-                <span>{t.ai("session.interrupted.message")}</span>
-                {!rateLimitMessage && (
-                  <button
-                    type="button"
-                    onClick={handleRetryLastMessage}
-                    className="cursor-button self-start text-xs text-accent duration-200 hover:opacity-80"
-                  >
-                    {t.ai("session.interrupted.retry")}
-                  </button>
-                )}
-              </div>
-            </m.div>
-          )}
-          <RateLimitNotice message={rateLimitMessage} />
-          {!isRateLimited && (
-            <ChatShortcutsRow
-              onSelect={(shortcutData) => {
-                const tempEditor = createEditor({
-                  nodes: LexicalAIEditorNodes,
-                })
-
-                tempEditor.update(
-                  () => {
-                    const root = $getRoot()
-                    root.clear()
-                    const paragraph = $createParagraphNode()
-                    const shortcutNode = new ShortcutNode(shortcutData)
-                    paragraph.append(shortcutNode)
-                    root.append(paragraph)
-                  },
-                  {
-                    discrete: true,
-                  },
-                )
-
-                const editorState = tempEditor.getEditorState()
-                handleSendMessage(editorState)
-              }}
-            />
-          )}
-          <ChatInput
-            onSend={handleSendMessage}
-            variant={!hasMessages ? "minimal" : "default"}
-            initialDraftState={initialDraft}
-            onEditorStateChange={handleDraftChange}
-            submitDisabled={isRateLimited}
+          <ChatMessageContainer
+            currentChatId={currentChatId}
+            hasMessages={hasMessages}
+            isLoadingHistory={isLoadingHistory}
+            isSyncingRemote={isSyncingRemote}
+            bottomPanelHeight={bottomPanelHeight}
+            messageContainerMinHeight={messageContainerMinHeight}
+            messagesContentRef={messagesContentRef}
+            onScroll={handleScroll}
+            setScrollAreaRef={setScrollAreaRef}
+            status={status}
+            centerInputOnEmpty={centerInputOnEmpty}
+            onScrollToBottom={resetScrollState}
           />
-
-          {(!centerInputOnEmpty || hasMessages) && (
-            <div className="absolute inset-x-0 bottom-0 isolate">
-              <div
-                className="pointer-events-none absolute inset-x-0 bottom-0 h-44 backdrop-blur-xl backdrop-brightness-110 dark:backdrop-brightness-75"
-                style={{
-                  maskImage:
-                    "linear-gradient(to top, black 0%, rgba(0, 0, 0, 0.6) 25%, transparent)",
-                  WebkitMaskImage:
-                    "linear-gradient(to top, black 0%, rgba(0, 0, 0, 0.6) 25%, transparent)",
-                }}
-              />
-
-              <div
-                className="pointer-events-none absolute inset-x-0 bottom-0 h-60 bg-gradient-to-b from-background/20 to-background/0"
-                style={{
-                  maskImage: "linear-gradient(to top, black 20%, transparent 70%)",
-                  WebkitMaskImage: "linear-gradient(to top, black 20%, transparent 70%)",
-                  backdropFilter: "blur(50px) saturate(130%)",
-                  WebkitBackdropFilter: "blur(50px) saturate(130%)",
-                }}
-              />
-            </div>
-          )}
         </div>
+
+        <ChatBottomPanel
+          hasMessages={hasMessages}
+          centerInputOnEmpty={centerInputOnEmpty}
+          shouldShowInterruptionNotice={shouldShowInterruptionNotice}
+          rateLimitMessage={rateLimitMessage}
+          isRateLimited={isRateLimited}
+          onRetryLastMessage={handleRetryLastMessage}
+          onSendMessage={handleSendMessage}
+          initialDraftState={initialDraft}
+          onDraftChange={handleDraftChange}
+          onHeightChange={setBottomPanelHeight}
+        />
       </GlobalFileDropZone>
     </div>
   )
@@ -568,38 +364,3 @@ export const ChatInterface = (props: ChatInterfaceProps) => (
     <ChatInterfaceContent {...props} />
   </ErrorBoundary>
 )
-
-export const Messages: FC<{ contentRef?: RefObject<HTMLDivElement> }> = ({ contentRef }) => {
-  const messages = useMessages()
-  const error = useChatError()
-  const fallbackRef = useRef<HTMLDivElement>(null)
-  const messageContainerWidth = useElementWidth(contentRef ?? fallbackRef)
-
-  return (
-    <div
-      ref={contentRef}
-      className="relative flex min-w-0 flex-1 flex-col"
-      style={
-        {
-          "--ai-chat-message-container-width": `${messageContainerWidth}px`,
-        } as React.CSSProperties
-      }
-    >
-      {!!messageContainerWidth &&
-        messages.map((message, index) => {
-          const isLastMessage = index === messages.length - 1
-          return (
-            <Suspense key={message.id}>
-              {message.role === "user" ? (
-                <UserChatMessage message={message} />
-              ) : (
-                <AIChatMessage message={message} isLastMessage={isLastMessage} />
-              )}
-            </Suspense>
-          )
-        })}
-      {/* Render error as the last message in the list */}
-      {!!messageContainerWidth && error && <ErrorMessage error={error} />}
-    </div>
-  )
-}
