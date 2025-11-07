@@ -1,4 +1,5 @@
 import { useEntry } from "@follow/store/entry/hooks"
+import { getSubscriptionById } from "@follow/store/subscription/getter"
 import { useCallback } from "react"
 
 import { disableShowAISummaryOnce } from "~/atoms/ai-summary"
@@ -39,6 +40,8 @@ export const usePeekModal = () => {
 
           CustomModalComponent: ({ children }) => {
             const feedId = useEntry(entryId, (state) => state.feedId)
+            const subscription = feedId ? getSubscriptionById(feedId) : undefined
+            const view = subscription?.view ?? getRouteParams().view
 
             return (
               <PeekModal
@@ -49,11 +52,7 @@ export const usePeekModal = () => {
                     icon: <EntryMoreActions entryId={entryId} />,
                   },
                 ]}
-                to={
-                  feedId
-                    ? `/timeline/view-${getRouteParams().view}/${feedId}/${entryId}`
-                    : undefined
-                }
+                to={feedId ? `/timeline/view-${view}/${feedId}/${entryId}` : undefined}
               >
                 {children}
               </PeekModal>
