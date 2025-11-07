@@ -43,13 +43,58 @@ export interface BizRouteParams {
   timelineId?: string
 }
 
+const VIEW_SLUG_BY_VIEW: Record<FeedViewType, string> = {
+  [FeedViewType.All]: ROUTE_VIEW_ALL,
+  [FeedViewType.Articles]: "articles",
+  [FeedViewType.SocialMedia]: "social-media",
+  [FeedViewType.Pictures]: "pictures",
+  [FeedViewType.Videos]: "videos",
+  [FeedViewType.Audios]: "audios",
+  [FeedViewType.Notifications]: "notifications",
+}
+
+const VIEW_PARAM_ALIAS_MAP: Record<string, FeedViewType> = Object.entries(VIEW_SLUG_BY_VIEW).reduce(
+  (acc, [view, slug]) => {
+    if (slug === ROUTE_VIEW_ALL) return acc
+    const numericView = Number(view)
+    if (Number.isNaN(numericView)) return acc
+    acc[slug] = numericView as FeedViewType
+    return acc
+  },
+  {} as Record<string, FeedViewType>,
+)
+
+const FEED_VIEW_VALUES = new Set<FeedViewType>(
+  Object.values(FeedViewType).filter((value): value is FeedViewType => typeof value === "number"),
+)
+
+const isFeedViewTypeValue = (value: number): value is FeedViewType =>
+  Number.isInteger(value) && FEED_VIEW_VALUES.has(value as FeedViewType)
+
+export const getTimelineIdByView = (view: FeedViewType) =>
+  VIEW_SLUG_BY_VIEW[view] ?? `${ROUTE_TIMELINE_OF_VIEW}${view}`
+
 export function parseView(input: string | undefined): FeedViewType | undefined {
-  if (input === ROUTE_VIEW_ALL) return FeedViewType.All
-  if (input?.startsWith(ROUTE_TIMELINE_OF_VIEW)) {
-    const view = Number.parseInt(input?.slice(ROUTE_TIMELINE_OF_VIEW.length), 10)
-    if (Object.values(FeedViewType).includes(view)) {
-      return view as FeedViewType
+  if (!input) return undefined
+
+  const normalizedInput = input.toLowerCase()
+
+  if (normalizedInput === ROUTE_VIEW_ALL) return FeedViewType.All
+
+  const aliasView = VIEW_PARAM_ALIAS_MAP[normalizedInput]
+  if (aliasView !== undefined) return aliasView
+
+  if (normalizedInput.startsWith(ROUTE_TIMELINE_OF_VIEW)) {
+    const view = Number.parseInt(normalizedInput.slice(ROUTE_TIMELINE_OF_VIEW.length), 10)
+    if (isFeedViewTypeValue(view)) {
+      return view
     }
+  }
+
+  const numericView = Number.parseInt(normalizedInput, 10)
+
+  if (isFeedViewTypeValue(numericView)) {
+    return numericView
   }
 }
 

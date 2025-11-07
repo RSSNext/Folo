@@ -4,11 +4,28 @@ import { useSubscriptionStore } from "@follow/store/subscription/store"
 import { useMemo } from "react"
 
 import { useUISettingKey } from "~/atoms/settings/ui"
-import { ROUTE_TIMELINE_OF_VIEW, ROUTE_VIEW_ALL } from "~/constants/app"
+import { ROUTE_VIEW_ALL } from "~/constants/app"
+
+import { getTimelineIdByView, parseView } from "./useRouteParams"
 
 const ALL_TIMELINE_IDS = getViewList({ includeAll: true }).map((view) =>
-  view.view === FeedViewType.All ? ROUTE_VIEW_ALL : `${ROUTE_TIMELINE_OF_VIEW}${view.view}`,
+  getTimelineIdByView(view.view),
 )
+
+const normalizeTimelineId = (id: string) => {
+  const view = parseView(id)
+  return view !== undefined ? getTimelineIdByView(view) : id
+}
+
+const filterKnownTimelineIds = (ids: string[]) => {
+  const seen = new Set<string>()
+  return ids.filter((id) => {
+    if (!ALL_TIMELINE_IDS.includes(id)) return false
+    if (seen.has(id)) return false
+    seen.add(id)
+    return true
+  })
+}
 
 export const computeTimelineTabLists = ({
   timelineTabs,
@@ -19,16 +36,17 @@ export const computeTimelineTabLists = ({
   hasAudiosSubscription: boolean
   hasNotificationsSubscription: boolean
 }) => {
-  const savedVisible = (timelineTabs?.visible ?? []).filter((id) => ALL_TIMELINE_IDS.includes(id))
-  const savedHidden = (timelineTabs?.hidden ?? []).filter((id) => ALL_TIMELINE_IDS.includes(id))
+  const savedVisible = filterKnownTimelineIds(
+    (timelineTabs?.visible ?? []).map(normalizeTimelineId),
+  )
+  const savedHidden = filterKnownTimelineIds((timelineTabs?.hidden ?? []).map(normalizeTimelineId))
   const extras = ALL_TIMELINE_IDS.filter(
     (id) => !savedVisible.includes(id) && !savedHidden.includes(id),
   )
 
   const isDefaultHidden = (id: string) => {
-    if (id === `${ROUTE_TIMELINE_OF_VIEW}${FeedViewType.Audios}`) return !hasAudiosSubscription
-    if (id === `${ROUTE_TIMELINE_OF_VIEW}${FeedViewType.Notifications}`)
-      return !hasNotificationsSubscription
+    if (id === getTimelineIdByView(FeedViewType.Audios)) return !hasAudiosSubscription
+    if (id === getTimelineIdByView(FeedViewType.Notifications)) return !hasNotificationsSubscription
     return false
   }
 
