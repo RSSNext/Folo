@@ -22,7 +22,6 @@ import { useEventCallback } from "usehooks-ts"
 import { useDialog } from "~/components/ui/modal/stacked/hooks"
 import { useI18n } from "~/hooks/common"
 import { ChatInput } from "~/modules/ai-chat/components/layouts/ChatInput"
-import { Messages } from "~/modules/ai-chat/components/layouts/ChatInterface"
 import { useAttachScrollBeyond } from "~/modules/ai-chat/hooks/useAttachScrollBeyond"
 import { useAutoScroll } from "~/modules/ai-chat/hooks/useAutoScroll"
 import {
@@ -36,6 +35,7 @@ import {
 } from "~/modules/ai-chat/store/hooks"
 import type { AIChatContextBlock, BizUIMessage } from "~/modules/ai-chat/store/types"
 
+import { Messages } from "../ai-chat/components/layouts/Messages"
 import { RateLimitNotice } from "../ai-chat/components/layouts/RateLimitNotice"
 import { AIChatWaitingIndicator } from "../ai-chat/components/message/AIChatMessage"
 import { AIShortcutButton } from "../ai-chat/components/ui/AIShortcutButton"
