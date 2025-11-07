@@ -136,9 +136,7 @@ class ExtendChatTransport extends HttpChatTransport<BizUIMessage> {
   override reconnectToStream(
     options: Parameters<HttpChatTransport<BizUIMessage>["reconnectToStream"]>[0],
   ) {
-    if (options.chatId.includes("/")) {
-      options.chatId = encodeURIComponent(options.chatId)
-    }
+    options.chatId = encodeURIComponent(options.chatId)
     return super.reconnectToStream(options)
   }
 }
