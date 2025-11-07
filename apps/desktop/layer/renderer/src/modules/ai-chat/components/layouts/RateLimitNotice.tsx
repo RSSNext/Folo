@@ -1,7 +1,7 @@
 import { cn } from "@follow/utils"
 import { m } from "motion/react"
-import * as React from "react"
 
+import { useIsInMASReview } from "~/atoms/server-configs"
 import { useI18n } from "~/hooks/common/useI18n"
 import { useSettingModal } from "~/modules/settings/modal/useSettingModal"
 
@@ -17,8 +17,9 @@ interface RateLimitNoticeProps {
 export const RateLimitNotice = ({ className, message }: RateLimitNoticeProps) => {
   const t = useI18n()
   const settingModalPresent = useSettingModal()
+  const isInMASReview = useIsInMASReview()
 
-  if (!message) {
+  if (!message || isInMASReview) {
     return
   }
 

@@ -8,6 +8,7 @@ import { $createParagraphNode, $getRoot, createEditor } from "lexical"
 import { nanoid } from "nanoid"
 import { useEffect, useMemo, useRef } from "react"
 
+import { useIsInMASReview } from "~/atoms/server-configs"
 import { getShortcutEffectivePrompt, useAISettingValue } from "~/atoms/settings/ai"
 import { useGeneralSettingKey } from "~/atoms/settings/general"
 import { ROUTE_FEED_IN_FOLDER, ROUTE_FEED_PENDING } from "~/constants"
@@ -75,6 +76,7 @@ const buildTimelineSummaryChatId = ({
 export const useAutoTimelineSummaryShortcut = () => {
   const aiSettings = useAISettingValue()
   const unreadOnly = useGeneralSettingKey("unreadOnly")
+  const isInMASReview = useIsInMASReview()
 
   const { view, feedId, entryId, timelineId } = useRouteParamsSelector((params) => ({
     view: params.view,
@@ -197,6 +199,10 @@ export const useAutoTimelineSummaryShortcut = () => {
   }, [isAllTimeline, normalizedFeedId, unreadOnly, view])
 
   useEffect(() => {
+    if (isInMASReview) {
+      return
+    }
+
     if (!contextKey || !defaultShortcut) {
       if (!contextKey) {
         automationStateRef.current = { contextKey: null, promise: null, failed: false }
@@ -318,5 +324,6 @@ export const useAutoTimelineSummaryShortcut = () => {
     unreadOnly,
     view,
     timelineSummaryManualOverride,
+    isInMASReview,
   ])
 }
