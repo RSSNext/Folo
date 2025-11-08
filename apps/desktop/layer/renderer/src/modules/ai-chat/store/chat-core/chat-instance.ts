@@ -36,7 +36,8 @@ export class ZustandChat extends AbstractChat<BizUIMessage> {
   }
 
   // Cleanup method
-  destroy(): void {
+  async destroy(): Promise<void> {
+    await this.stop()
     // Unsubscribe from AI SDK callbacks
     this.#unsubscribeFns.forEach((unsubscribe) => unsubscribe())
     this.#unsubscribeFns = []
