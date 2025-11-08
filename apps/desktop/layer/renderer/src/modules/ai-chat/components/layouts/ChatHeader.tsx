@@ -1,11 +1,13 @@
 import { ActionButton } from "@follow/components/ui/button/index.js"
 import { cn } from "@follow/utils"
+import { FeedViewType } from "@follow-app/client-sdk"
 import { useAtomValue } from "jotai"
 import type { FC, ReactNode } from "react"
 import { useCallback } from "react"
 import { useTranslation } from "react-i18next"
 
 import { setAIPanelVisibility } from "~/atoms/settings/ai"
+import { useRouteParamsSelector } from "~/hooks/biz/useRouteParams"
 import { useTimelineSummaryAutoContext } from "~/modules/ai-chat/hooks/useTimelineSummaryAutoContext"
 import {
   useBlockActions,
@@ -111,6 +113,8 @@ const ChatHeaderLayout = ({
 export const ChatHeader: FC<{ isFloating: boolean }> = ({ isFloating }) => {
   const { t } = useTranslation("ai")
 
+  const view = useRouteParamsSelector((state) => state.view)
+  const isAllView = view === FeedViewType.All
   return (
     <ChatHeaderLayout
       isFloating={isFloating}
@@ -123,6 +127,7 @@ export const ChatHeader: FC<{ isFloating: boolean }> = ({ isFloating }) => {
           <TaskReportDropdown />
 
           <ChatMoreDropdown
+            canClosePanel={!isAllView}
             triggerElement={
               <ActionButton tooltip="More">
                 <i className="i-mingcute-more-1-fill size-5 text-text-secondary" />
