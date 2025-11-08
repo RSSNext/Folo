@@ -177,19 +177,6 @@ export const AISummaryCardBase: React.FC<AISummaryCardBaseProps> = ({
         )}
 
         <div className="flex items-center gap-2">
-          {showCopyButton && hasContent && (
-            <CopyButton
-              value={content}
-              variant="outline"
-              className={cn(
-                "!bg-white/10 !text-purple-600 dark:!text-purple-400",
-                "hover:!bg-white/20 dark:hover:!bg-neutral-800/30",
-                "!border-purple-200/30 dark:!border-purple-800/30",
-                "sm:opacity-0 sm:duration-300 sm:group-hover:translate-y-0 sm:group-hover:opacity-100",
-                "backdrop-blur-sm",
-              )}
-            />
-          )}
           {aiEnabled && showAskAIButton && hasContent && onAskAI && (
             <MotionButtonBase
               onClick={onAskAI}
@@ -202,12 +189,26 @@ export const AISummaryCardBase: React.FC<AISummaryCardBaseProps> = ({
                 "hover:border-purple-300/50 dark:hover:border-purple-700/50",
                 "transition-all duration-200",
                 "backdrop-blur-sm",
-                "sm:duration-300 sm:group-hover:translate-y-0",
+                "sm:opacity-0 sm:duration-300 sm:group-hover:translate-y-0 sm:group-hover:opacity-100",
               )}
             >
               <i className="i-mingcute-ai-line text-base" />
               <span>Ask AI</span>
             </MotionButtonBase>
+          )}
+
+          {showCopyButton && hasContent && (
+            <CopyButton
+              value={content}
+              variant="outline"
+              className={cn(
+                "!bg-white/10 !text-purple-600 dark:!text-purple-400",
+                "hover:!bg-white/20 dark:hover:!bg-neutral-800/30",
+                "!border-purple-200/30 dark:!border-purple-800/30",
+                "sm:opacity-0 sm:duration-300 sm:group-hover:translate-y-0 sm:group-hover:opacity-100",
+                "backdrop-blur-sm",
+              )}
+            />
           )}
         </div>
       </div>

@@ -15,6 +15,7 @@ import { atom, useAtomValue } from "jotai"
 import { getFeature } from "~/hooks/biz/useFeature"
 
 export interface WebAISettings extends AISettings {
+  panelStyle: AIChatPanelStyle
   showSplineButton: boolean
 }
 
@@ -110,6 +111,7 @@ export const isServerShortcut = (shortcut: AIShortcut) => !!shortcut.defaultProm
 export const createDefaultSettings = (): WebAISettings => ({
   ...defaultAISettings,
   shortcuts: normalizeShortcuts(defaultAISettings.shortcuts),
+  panelStyle: AIChatPanelStyle.Fixed,
   showSplineButton: true,
 })
 
@@ -134,6 +136,18 @@ export const syncServerShortcuts = (
 
   setAISetting("shortcuts", mergedShortcuts)
 }
+
+////////// AI Panel Style
+export enum AIChatPanelStyle {
+  Fixed = "fixed",
+  Floating = "floating",
+}
+
+export const useAIChatPanelStyle = () => useAISettingKey("panelStyle")
+export const setAIChatPanelStyle = (style: AIChatPanelStyle) => {
+  setAISetting("panelStyle", style)
+}
+export const getAIChatPanelStyle = () => getAISettings().panelStyle
 
 // Floating panel state atoms
 interface FloatingPanelState {
@@ -210,4 +224,5 @@ export const removeMCPService = (id: string) => {
 //// Enhance Init Ai Settings
 export const initializeDefaultAISettings = () => {
   initializeDefaultSettings()
+  if (getAISettings().panelStyle === AIChatPanelStyle.Fixed) setAIPanelVisibility(true)
 }

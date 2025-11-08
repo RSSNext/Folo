@@ -7,6 +7,7 @@ import { createDefineSettingItem } from "../helper/builder"
 import { createSettingBuilder } from "../helper/setting-builder"
 import { MCPServicesSection } from "./ai/mcp/MCPServicesSection"
 import { UserMemorySection } from "./ai/memory"
+import { PanelStyleSection } from "./ai/PanelStyleSection"
 import { PersonalizePromptSection } from "./ai/PersonalizePromptSection"
 import { AIShortcutsSection } from "./ai/shortcuts/AIShortcutsSection"
 import { TaskSchedulingSection } from "./ai/tasks"
@@ -32,6 +33,7 @@ export const SettingAI = () => {
             value: t("features.title"),
           },
 
+          PanelStyleSection,
           defineSettingItem("showSplineButton", {
             label: t("settings.showSplineButton.label"),
             description: t("settings.showSplineButton.description"),
