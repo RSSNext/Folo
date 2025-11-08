@@ -103,7 +103,7 @@ const AIChatFloatingPanelInner: FC<AIChatFloatingPanelProps> = ({ className, ...
             )}
             {...props}
           >
-            <ChatHeader />
+            <ChatHeader isFloating />
             <ChatInterface />
           </Focusable>
         </Resizable>

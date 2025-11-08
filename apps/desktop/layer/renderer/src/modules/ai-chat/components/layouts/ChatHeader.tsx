@@ -1,11 +1,13 @@
 import { ActionButton } from "@follow/components/ui/button/index.js"
 import { cn } from "@follow/utils"
+import { FeedViewType } from "@follow-app/client-sdk"
 import { useAtomValue } from "jotai"
-import type { ReactNode } from "react"
+import type { FC, ReactNode } from "react"
 import { useCallback } from "react"
 import { useTranslation } from "react-i18next"
 
 import { setAIPanelVisibility } from "~/atoms/settings/ai"
+import { useRouteParamsSelector } from "~/hooks/biz/useRouteParams"
 import { useTimelineSummaryAutoContext } from "~/modules/ai-chat/hooks/useTimelineSummaryAutoContext"
 import {
   useBlockActions,
@@ -25,14 +27,14 @@ import { TaskReportDropdown } from "./TaskReportDropdown"
 // Base header layout with shared logic inside
 const ChatHeaderLayout = ({
   renderActions,
-  isFixedMode = false,
+  isFloating,
 }: {
   renderActions: (ctx: {
     onNewChatClick: () => void
     currentTitle: string | undefined
     displayTitle: string | undefined
   }) => ReactNode
-  isFixedMode?: boolean
+  isFloating: boolean
 }) => {
   const hasMessages = useHasMessages()
   const currentTitle = useCurrentTitle()
@@ -66,12 +68,12 @@ const ChatHeaderLayout = ({
     <div
       className={cn(
         "absolute inset-x-0 top-0 z-[1] border-b border-transparent duration-200",
-        isFixedMode && "bg-background data-[scrolled-beyond-threshold=true]:border-b-border",
+        !isFloating && "bg-background data-[scrolled-beyond-threshold=true]:border-b-border",
       )}
       data-scrolled-beyond-threshold={isScrolledBeyondThresholdValue}
     >
       <div className="h-top-header">
-        {!isFixedMode && (
+        {isFloating && (
           <div
             className="absolute inset-0 bg-background/70 backdrop-blur-background"
             style={{
@@ -108,12 +110,14 @@ const ChatHeaderLayout = ({
   )
 }
 
-export const ChatHeader = ({ isFixedMode = false }: { isFixedMode?: boolean }) => {
+export const ChatHeader: FC<{ isFloating: boolean }> = ({ isFloating }) => {
   const { t } = useTranslation("ai")
 
+  const view = useRouteParamsSelector((state) => state.view)
+  const isAllView = view === FeedViewType.All
   return (
     <ChatHeaderLayout
-      isFixedMode={isFixedMode}
+      isFloating={isFloating}
       renderActions={({ onNewChatClick }) => (
         <>
           <ActionButton tooltip={t("common.new_chat")} onClick={onNewChatClick}>
@@ -123,6 +127,7 @@ export const ChatHeader = ({ isFixedMode = false }: { isFixedMode?: boolean }) =
           <TaskReportDropdown />
 
           <ChatMoreDropdown
+            canClosePanel={!isAllView}
             triggerElement={
               <ActionButton tooltip="More">
                 <i className="i-mingcute-more-1-fill size-5 text-text-secondary" />
@@ -130,7 +135,7 @@ export const ChatHeader = ({ isFixedMode = false }: { isFixedMode?: boolean }) =
             }
           />
 
-          {!isFixedMode && (
+          {isFloating && (
             <>
               <div className="h-5 w-px bg-border" />
               <ActionButton tooltip="Close" onClick={() => setAIPanelVisibility(false)}>
@@ -149,6 +154,7 @@ export const ChatPageHeader = () => {
 
   return (
     <ChatHeaderLayout
+      isFloating={false}
       renderActions={({ onNewChatClick }) => (
         <>
           <ActionButton tooltip={t("common.new_chat")} onClick={onNewChatClick}>

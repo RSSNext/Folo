@@ -9,6 +9,12 @@ import type { CSSProperties } from "react"
 import { memo, useCallback, useEffect, useMemo, useRef } from "react"
 import { useResizable } from "react-resizable-layout"
 
+import {
+  AIChatPanelStyle,
+  setAIPanelVisibility,
+  useAIChatPanelStyle,
+  useAIPanelVisibility,
+} from "~/atoms/settings/ai"
 import { getUISettings, setUISetting, useUISettingKey } from "~/atoms/settings/ui"
 import { m } from "~/components/common/Motion"
 import { ROUTE_ENTRY_PENDING } from "~/constants"
@@ -34,6 +40,8 @@ const AIEnhancedTimelineLayoutImpl = () => {
 
   const realEntryId = entryId === ROUTE_ENTRY_PENDING ? "" : entryId
   const showEntryDetailsColumn = useShowEntryDetailsColumn()
+  const aiPanelStyle = useAIChatPanelStyle()
+  const isAIPanelVisible = useAIPanelVisibility()
   const hasSelectedEntry = Boolean(realEntryId)
 
   const layoutContainerRef = useRef<HTMLDivElement>(null)
@@ -114,8 +122,16 @@ const AIEnhancedTimelineLayoutImpl = () => {
     window.dispatchEvent(new Event("resize"))
   }, [resolvePreferredWidth, setAiPanelWidth])
 
+  useEffect(() => {
+    if (isAllView && !isAIPanelVisible) {
+      setAIPanelVisibility(true)
+    }
+  }, [isAllView, isAIPanelVisible])
+
+  const effectivePanelStyle = isAllView ? AIChatPanelStyle.Fixed : aiPanelStyle
   const showEntryContentOnRight = showEntryDetailsColumn && hasSelectedEntry
-  const shouldShowFixedAI = !showEntryContentOnRight
+  const isFixedPanelStyle = effectivePanelStyle === AIChatPanelStyle.Fixed
+  const shouldShowFixedAI = isAllView || (isFixedPanelStyle && isAIPanelVisible)
   const showEntryContentOnLeft = !showEntryDetailsColumn && hasSelectedEntry
 
   const shouldRenderRightColumn = showEntryDetailsColumn || shouldShowFixedAI
