@@ -180,6 +180,9 @@ class AIPersistServiceStatic {
 
       return acc
     }, [])
+    if (results.length === 0) {
+      return
+    }
     await db
       .insert(aiChatMessagesTable)
       .values(results)
