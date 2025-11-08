@@ -3,9 +3,8 @@ import "./AISmartSidebar.css"
 
 import { useGlobalFocusableScopeSelector } from "@follow/components/common/Focusable/hooks.js"
 import { Spring } from "@follow/components/constants/spring.js"
-import { useMousePosition } from "@follow/components/hooks/useMouse.js"
 import { KbdCombined } from "@follow/components/ui/kbd/Kbd.js"
-import { AnimatePresence, m } from "motion/react"
+import { AnimatePresence, m, useSpring, useTransform } from "motion/react"
 import * as React from "react"
 import { useEffect, useState } from "react"
 
@@ -15,43 +14,118 @@ import { COMMAND_ID } from "~/modules/command/commands/id"
 import { useCommandShortcut } from "~/modules/command/hooks/use-command-binding"
 
 const AIAmbientSidebar: React.FC<{ onExpand: () => void }> = ({ onExpand }) => {
-  const [intensity, setIntensity] = useState(0)
   const [showPrompt, setShowPrompt] = useState(false)
   const isShowPromptRef = React.useRef(false)
-  const mousePosition = useMousePosition()
+  const intensity = useSpring(0, Spring.presets.smooth)
+
+  const layer3Width = useTransform(intensity, (value) => (value > 0.1 ? 1 + value * 3 : 0))
+  const layer3Opacity = useTransform(intensity, (value) => value * 0.15)
+  const layer3X = useTransform(intensity, (value) => value * -8)
+
+  const layer2Width = useTransform(intensity, (value) => (value > 0.2 ? 1.5 + value * 4 : 0))
+  const layer2Opacity = useTransform(intensity, (value) => value * 0.25)
+  const layer2BoxShadow = useTransform(intensity, (value) =>
+    value > 0.3 ? `0 0 ${12 + value * 20}px rgba(255, 92, 0, ${value * 0.15})` : "none",
+  )
+  const layer2X = useTransform(intensity, (value) => value * -4)
+
+  const layer1Width = useTransform(intensity, (value) => (value > 0 ? 2 + value * 6 : 1))
+  const layer1Opacity = useTransform(intensity, (value) => value * 0.6)
+  const layer1BoxShadow = useTransform(intensity, (value) =>
+    value > 0.5 ? `0 0 ${16 + value * 24}px rgba(255, 92, 0, ${value * 0.25})` : "none",
+  )
+  const layer1Background = useTransform(intensity, (value) => {
+    const primaryAlpha = Math.min(1, Math.max(0, value * 0.4))
+    const secondaryAlpha = Math.min(1, Math.max(0, value * 0.2))
+    return `linear-gradient(to left, rgba(255, 92, 0, ${primaryAlpha}), rgba(255, 140, 0, ${secondaryAlpha}), transparent)`
+  })
+
+  const glowOpacity = useTransform(intensity, (value) => (value <= 0.4 ? 0 : (value - 0.4) * 0.3))
+  const glowBackground = useTransform(intensity, (value) => {
+    const alpha = value <= 0.4 ? 0 : (value - 0.4) * 0.12
+    return `radial-gradient(ellipse at center, rgba(255, 92, 0, ${alpha}) 0%, transparent 70%)`
+  })
+  const glowX = useTransform(intensity, (value) => value * -20)
 
   const canShowPrompt = useGlobalFocusableScopeSelector(FocusablePresets.isNotFloatingLayerScope)
   useEffect(() => {
-    if (!canShowPrompt) return
-    const rightEdgeDistance = window.innerWidth - mousePosition.x
+    if (!canShowPrompt) {
+      intensity.set(0)
+      if (isShowPromptRef.current) {
+        isShowPromptRef.current = false
+        setShowPrompt(false)
+      }
+      return
+    }
+
     const maxDistance = 500
     const threshold = 80
     const showedThreshold = 300
     const topBoundary = 100
+    const frameRef = { current: null as number | null }
 
-    if (mousePosition.y <= topBoundary) {
-      setIntensity(0)
-      setShowPrompt(false)
-      isShowPromptRef.current = false
-      return
+    const hidePrompt = () => {
+      intensity.set(0)
+      if (isShowPromptRef.current) {
+        isShowPromptRef.current = false
+        setShowPrompt(false)
+      }
     }
 
-    if (isShowPromptRef.current && rightEdgeDistance <= showedThreshold) {
-      return
+    const handlePointerMove = (event: PointerEvent) => {
+      if (frameRef.current !== null) {
+        cancelAnimationFrame(frameRef.current)
+      }
+
+      const { clientX, clientY } = event
+      frameRef.current = window.requestAnimationFrame(() => {
+        frameRef.current = null
+
+        const rightEdgeDistance = window.innerWidth - clientX
+
+        if (clientY <= topBoundary) {
+          hidePrompt()
+          return
+        }
+
+        if (rightEdgeDistance <= maxDistance) {
+          const newIntensity = Math.max(0, (maxDistance - rightEdgeDistance) / maxDistance)
+          intensity.set(newIntensity)
+
+          if (isShowPromptRef.current && rightEdgeDistance <= showedThreshold) {
+            return
+          }
+
+          const shouldShow = rightEdgeDistance <= threshold
+          if (shouldShow !== isShowPromptRef.current) {
+            isShowPromptRef.current = shouldShow
+            setShowPrompt(shouldShow)
+          }
+        } else {
+          hidePrompt()
+        }
+      })
     }
 
-    if (rightEdgeDistance <= maxDistance) {
-      const newIntensity = Math.max(0, (maxDistance - rightEdgeDistance) / maxDistance)
-      setIntensity(newIntensity)
-      const shouldShow = rightEdgeDistance <= threshold
-      setShowPrompt(shouldShow)
-      isShowPromptRef.current = shouldShow
-    } else {
-      setIntensity(0)
-      setShowPrompt(false)
-      isShowPromptRef.current = false
+    const handlePointerLeave = () => {
+      if (frameRef.current !== null) {
+        cancelAnimationFrame(frameRef.current)
+        frameRef.current = null
+      }
+      hidePrompt()
     }
-  }, [canShowPrompt, mousePosition])
+
+    window.addEventListener("pointermove", handlePointerMove, { passive: true })
+    window.addEventListener("pointerleave", handlePointerLeave)
+
+    return () => {
+      if (frameRef.current !== null) {
+        cancelAnimationFrame(frameRef.current)
+      }
+      window.removeEventListener("pointermove", handlePointerMove)
+      window.removeEventListener("pointerleave", handlePointerLeave)
+    }
+  }, [canShowPrompt, intensity])
 
   const toggleAIChatShortcut = useCommandShortcut(COMMAND_ID.global.toggleAIChat)
   if (!canShowPrompt) return null
@@ -64,10 +138,10 @@ const AIAmbientSidebar: React.FC<{ onExpand: () => void }> = ({ onExpand }) => {
         <m.div
           className="ai-glass-layer-3 absolute right-0 top-0 h-full"
           style={{
-            width: intensity > 0.1 ? 1 + intensity * 3 : 0,
-            opacity: intensity * 0.15,
+            width: layer3Width,
+            opacity: layer3Opacity,
             background: "linear-gradient(to left, rgba(255, 92, 0, 0.15), transparent)",
-            transform: `translateX(${intensity * -8}px)`,
+            x: layer3X,
           }}
         />
 
@@ -75,14 +149,11 @@ const AIAmbientSidebar: React.FC<{ onExpand: () => void }> = ({ onExpand }) => {
         <m.div
           className="ai-glass-layer-2 absolute right-0 top-0 h-full"
           style={{
-            width: intensity > 0.2 ? 1.5 + intensity * 4 : 0,
-            opacity: intensity * 0.25,
+            width: layer2Width,
+            opacity: layer2Opacity,
             background: "linear-gradient(to left, rgba(255, 92, 0, 0.2), transparent)",
-            transform: `translateX(${intensity * -4}px)`,
-            boxShadow:
-              intensity > 0.3
-                ? `0 0 ${12 + intensity * 20}px rgba(255, 92, 0, ${intensity * 0.15})`
-                : "none",
+            x: layer2X,
+            boxShadow: layer2BoxShadow,
           }}
         />
 
@@ -90,36 +161,23 @@ const AIAmbientSidebar: React.FC<{ onExpand: () => void }> = ({ onExpand }) => {
         <m.div
           className="ai-glass-layer-1 absolute right-0 top-0 h-full"
           style={{
-            width: intensity > 0 ? 2 + intensity * 6 : 1,
-            opacity: intensity * 0.6,
-            background: `linear-gradient(to left,
-              rgba(255, 92, 0, ${intensity * 0.4}),
-              rgba(255, 140, 0, ${intensity * 0.2}),
-              transparent)`,
-            boxShadow:
-              intensity > 0.5
-                ? `0 0 ${16 + intensity * 24}px rgba(255, 92, 0, ${intensity * 0.25})`
-                : "none",
+            width: layer1Width,
+            opacity: layer1Opacity,
+            background: layer1Background,
+            boxShadow: layer1BoxShadow,
           }}
         />
 
         {/* Subtle ambient glow */}
-        {intensity > 0.4 && (
-          <m.div
-            initial={{ opacity: 0 }}
-            animate={{ opacity: 1 }}
-            exit={{ opacity: 0 }}
-            className="absolute right-0 top-1/2 size-32 -translate-y-1/2"
-            style={{
-              opacity: (intensity - 0.4) * 0.3,
-              background: `radial-gradient(ellipse at center,
-                rgba(255, 92, 0, ${(intensity - 0.4) * 0.12}) 0%,
-                transparent 70%)`,
-              filter: "blur(30px)",
-              transform: `translateY(-50%) translateX(${intensity * -20}px)`,
-            }}
-          />
-        )}
+        <m.div
+          className="absolute right-0 top-1/2 size-32 -translate-y-1/2"
+          style={{
+            opacity: glowOpacity,
+            background: glowBackground,
+            filter: "blur(30px)",
+            x: glowX,
+          }}
+        />
       </div>
 
       <AnimatePresence>
@@ -130,9 +188,6 @@ const AIAmbientSidebar: React.FC<{ onExpand: () => void }> = ({ onExpand }) => {
             exit={{ opacity: 0, x: 30, scale: 0.95 }}
             transition={Spring.presets.smooth}
             className="fixed bottom-12 right-6 z-50 flex flex-col items-end gap-3"
-            style={{
-              transform: `translateX(${intensity * -3}px)`,
-            }}
           >
             {/* Unified glass card with integrated button */}
             <m.div
