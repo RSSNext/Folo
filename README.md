@@ -53,8 +53,8 @@ Feel free to try it using the following methods:
 
 You can also install using the following methods maintained by our community:
 
-- If you are using Arch Linux, you can install package [folo-appimage](https://aur.archlinux.org/packages/folo-appimage) that maintained by [timochan](https://github.com/ttimochan) and [grtsinry43](https://github.com/grtsinry43).
-- If you are using Nix, you can install package [follow](https://github.com/NixOS/nixpkgs/blob/master/pkgs/by-name/fo/follow/package.nix) that maintained by [iosmanthus](https://github.com/iosmanthus).
+- If you are using Arch Linux, you can install the package [folo-appimage](https://aur.archlinux.org/packages/folo-appimage) that is maintained by [timochan](https://github.com/ttimochan) and [grtsinry43](https://github.com/grtsinry43).
+- If you are using Nix, you can install the package [follow](https://github.com/NixOS/nixpkgs/blob/master/pkgs/by-name/fo/follow/package.nix) that is maintained by [iosmanthus](https://github.com/iosmanthus).
 - If you are using macOS with [Homebrew](https://brew.sh), you can install cask [folo](https://formulae.brew.sh/cask/folo) that maintained by [realSunyz](https://github.com/realSunyz).
 - If you are using Windows with [Scoop](https://scoop.sh), you can install manifest [folo](https://github.com/cscnk52/cetacea/blob/master/bucket/folo.json) that maintained by [cscnk52](https://github.com/cscnk52).
 
@@ -107,9 +107,9 @@ You are welcome to join the open source community to build together, please chec
 
 ## 🔏 Code signing policy
 
-Folo for Windows uses free code signing provided by [SignPath.io](https://about.signpath.io/), certificate by [SignPath Foundation](https://signpath.org/).
+Folo for Windows uses free code signing provided by [SignPath.io](https://about.signpath.io/), a certificate by [SignPath Foundation](https://signpath.org/).
 
-Folo for macOS and iOS are signed and notarized by [Apple Developer Program](https://developer.apple.com/programs/).
+Folo for macOS and iOS is signed and notarized by [Apple Developer Program](https://developer.apple.com/programs/).
 
 All released files are verified with [GitHub artifact attestations](https://github.com/RSSNext/Folo/attestations) to ensure their provenance and integrity.
 
