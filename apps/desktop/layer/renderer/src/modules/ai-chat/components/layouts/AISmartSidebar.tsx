@@ -45,7 +45,8 @@ const AIAmbientSidebar: React.FC<{ onExpand: () => void }> = ({ onExpand }) => {
     const alpha = value <= 0.4 ? 0 : (value - 0.4) * 0.12
     return `radial-gradient(ellipse at center, rgba(255, 92, 0, ${alpha}) 0%, transparent 70%)`
   })
-  const glowX = useTransform(intensity, (value) => value * -20)
+  const glowX = useTransform(intensity, (value) => value * -12)
+  const glowY = useTransform(intensity, (value) => value * -24)
 
   const canShowPrompt = useGlobalFocusableScopeSelector(FocusablePresets.isNotFloatingLayerScope)
   useEffect(() => {
@@ -58,13 +59,15 @@ const AIAmbientSidebar: React.FC<{ onExpand: () => void }> = ({ onExpand }) => {
       return
     }
 
-    const maxDistance = 500
-    const threshold = 80
-    const showedThreshold = 300
-    const topBoundary = 100
+    const effectWidth = 220
+    const effectHeight = 220
+    const activationWidth = 50
+    const activationHeight = 50
+    const releaseWidth = 90
+    const releaseHeight = 90
     const frameRef = { current: null as number | null }
 
-    const hidePrompt = () => {
+    const resetState = () => {
       intensity.set(0)
       if (isShowPromptRef.current) {
         isShowPromptRef.current = false
@@ -82,27 +85,31 @@ const AIAmbientSidebar: React.FC<{ onExpand: () => void }> = ({ onExpand }) => {
         frameRef.current = null
 
         const rightEdgeDistance = window.innerWidth - clientX
+        const bottomEdgeDistance = window.innerHeight - clientY
+        const withinEffectZone =
+          rightEdgeDistance <= effectWidth && bottomEdgeDistance <= effectHeight
 
-        if (clientY <= topBoundary) {
-          hidePrompt()
+        if (!withinEffectZone) {
+          resetState()
           return
         }
 
-        if (rightEdgeDistance <= maxDistance) {
-          const newIntensity = Math.max(0, (maxDistance - rightEdgeDistance) / maxDistance)
-          intensity.set(newIntensity)
+        const normalizedX = 1 - Math.min(1, rightEdgeDistance / effectWidth)
+        const normalizedY = 1 - Math.min(1, bottomEdgeDistance / effectHeight)
+        const newIntensity = Math.max(normalizedX, normalizedY)
+        intensity.set(newIntensity)
 
-          if (isShowPromptRef.current && rightEdgeDistance <= showedThreshold) {
-            return
-          }
+        const withinActivation =
+          rightEdgeDistance <= activationWidth && bottomEdgeDistance <= activationHeight
+        const withinRelease =
+          rightEdgeDistance <= releaseWidth && bottomEdgeDistance <= releaseHeight
 
-          const shouldShow = rightEdgeDistance <= threshold
-          if (shouldShow !== isShowPromptRef.current) {
-            isShowPromptRef.current = shouldShow
-            setShowPrompt(shouldShow)
-          }
-        } else {
-          hidePrompt()
+        if (withinActivation && !isShowPromptRef.current) {
+          isShowPromptRef.current = true
+          setShowPrompt(true)
+        } else if (isShowPromptRef.current && !withinRelease) {
+          isShowPromptRef.current = false
+          setShowPrompt(false)
         }
       })
     }
@@ -112,7 +119,7 @@ const AIAmbientSidebar: React.FC<{ onExpand: () => void }> = ({ onExpand }) => {
         cancelAnimationFrame(frameRef.current)
         frameRef.current = null
       }
-      hidePrompt()
+      resetState()
     }
 
     window.addEventListener("pointermove", handlePointerMove, { passive: true })
@@ -133,10 +140,10 @@ const AIAmbientSidebar: React.FC<{ onExpand: () => void }> = ({ onExpand }) => {
   return (
     <>
       {/* Multi-layer glass edge with depth */}
-      <div className="pointer-events-none fixed right-0 top-0 z-40 h-full">
+      <div className="pointer-events-none fixed inset-y-0 right-0 z-40">
         {/* Background layer - deepest */}
         <m.div
-          className="ai-glass-layer-3 absolute right-0 top-0 h-full"
+          className="ai-glass-layer-3 absolute inset-y-0 right-0 h-full"
           style={{
             width: layer3Width,
             opacity: layer3Opacity,
@@ -147,7 +154,7 @@ const AIAmbientSidebar: React.FC<{ onExpand: () => void }> = ({ onExpand }) => {
 
         {/* Middle layer */}
         <m.div
-          className="ai-glass-layer-2 absolute right-0 top-0 h-full"
+          className="ai-glass-layer-2 absolute inset-y-0 right-0 h-full"
           style={{
             width: layer2Width,
             opacity: layer2Opacity,
@@ -159,7 +166,7 @@ const AIAmbientSidebar: React.FC<{ onExpand: () => void }> = ({ onExpand }) => {
 
         {/* Front layer - most prominent */}
         <m.div
-          className="ai-glass-layer-1 absolute right-0 top-0 h-full"
+          className="ai-glass-layer-1 absolute inset-y-0 right-0 h-full"
           style={{
             width: layer1Width,
             opacity: layer1Opacity,
@@ -170,12 +177,13 @@ const AIAmbientSidebar: React.FC<{ onExpand: () => void }> = ({ onExpand }) => {
 
         {/* Subtle ambient glow */}
         <m.div
-          className="absolute right-0 top-1/2 size-32 -translate-y-1/2"
+          className="absolute bottom-6 right-6 size-32"
           style={{
             opacity: glowOpacity,
             background: glowBackground,
             filter: "blur(30px)",
             x: glowX,
+            y: glowY,
           }}
         />
       </div>
@@ -187,7 +195,7 @@ const AIAmbientSidebar: React.FC<{ onExpand: () => void }> = ({ onExpand }) => {
             animate={{ opacity: 1, x: 0, scale: 1 }}
             exit={{ opacity: 0, x: 30, scale: 0.95 }}
             transition={Spring.presets.smooth}
-            className="fixed bottom-12 right-6 z-50 flex flex-col items-end gap-3"
+            className="fixed bottom-6 right-6 z-50 flex flex-col items-end gap-3"
           >
             {/* Unified glass card with integrated button */}
             <m.div
