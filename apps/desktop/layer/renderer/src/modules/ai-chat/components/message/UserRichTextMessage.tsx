@@ -96,14 +96,27 @@ const ListenableContentChangedPlugin = ({ state }: { state: string }) => {
   const [editor] = useLexicalComposerContext()
   React.useEffect(() => {
     const editorState = editor.getEditorState()
+    let timeoutId: number | null = null
+
     editorState.read(() => {
       const text = editorState.toJSON()
 
       if (isEqual(text, state)) {
         return
       }
-      editor.setEditorState(editor.parseEditorState(state))
+      // Move setEditorState to a timeout to avoid flushSync during render
+      // Related to https://github.com/facebook/lexical/discussions/3536
+      timeoutId && clearTimeout(timeoutId)
+      timeoutId = setTimeout(() => {
+        editor.setEditorState(editor.parseEditorState(state))
+      }, 0)
     })
+
+    return () => {
+      if (timeoutId) {
+        clearTimeout(timeoutId)
+      }
+    }
   }, [editor, state])
   return null
 }
