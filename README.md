@@ -55,8 +55,8 @@ You can also install using the following methods maintained by our community:
 
 - If you are using Arch Linux, you can install the package [folo-appimage](https://aur.archlinux.org/packages/folo-appimage) that is maintained by [timochan](https://github.com/ttimochan) and [grtsinry43](https://github.com/grtsinry43).
 - If you are using Nix, you can install the package [follow](https://github.com/NixOS/nixpkgs/blob/master/pkgs/by-name/fo/follow/package.nix) that is maintained by [iosmanthus](https://github.com/iosmanthus).
-- If you are using macOS with [Homebrew](https://brew.sh), you can install cask [folo](https://formulae.brew.sh/cask/folo) that maintained by [realSunyz](https://github.com/realSunyz).
-- If you are using Windows with [Scoop](https://scoop.sh), you can install manifest [folo](https://github.com/cscnk52/cetacea/blob/master/bucket/folo.json) that maintained by [cscnk52](https://github.com/cscnk52).
+- If you are using macOS with [Homebrew](https://brew.sh), you can install the cask [folo](https://formulae.brew.sh/cask/folo) that is maintained by [realSunyz](https://github.com/realSunyz).
+- If you are using Windows with [Scoop](https://scoop.sh), you can install the manifest [folo](https://github.com/cscnk52/cetacea/blob/master/bucket/folo.json) that is maintained by [cscnk52](https://github.com/cscnk52).
 
 | [![Discord](https://img.shields.io/badge/dynamic/json?url=https%3A%2F%2Fdiscord.com%2Fapi%2Finvites%2Ffollowapp%3Fwith_counts%3Dtrue&query=approximate_member_count&color=5865F2&label=Discord&labelColor=black&logo=discord&logoColor=white&style=flat-square)](https://discord.gg/followapp) | Join our Discord server to connect with developers, request features, and receive support. |
 | :--------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | :----------------------------------------------------------------------------------------- |
