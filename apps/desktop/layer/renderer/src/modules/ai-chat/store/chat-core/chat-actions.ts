@@ -260,10 +260,10 @@ export class ChatSliceActions {
     this.setCurrentTitle(undefined)
   }
 
-  newChat = () => {
+  newChat = async () => {
     const newChatId = nanoid()
     // Cleanup old chat instance
-    this.chatInstance.destroy()
+    await this.chatInstance.destroy()
 
     // Create new chat instance
     const newChatInstance = new ZustandChat(
@@ -297,6 +297,8 @@ export class ChatSliceActions {
 
   switchToChat = async (chatId: string) => {
     try {
+      // Cleanup old chat instance
+      await this.chatInstance.destroy()
       // Set loading state (using ready as there's no loading status in ChatStatus)
       this.setStatus("ready")
       this.setError(undefined)
@@ -304,9 +306,6 @@ export class ChatSliceActions {
       // Load session and messages in parallel to reduce database queries
       const { session: chatSession, messages } =
         await AIPersistService.loadSessionWithMessages(chatId)
-
-      // Cleanup old chat instance
-      this.chatInstance.destroy()
 
       // Create new chat instance with loaded messages
       const newChatInstance = new ZustandChat(

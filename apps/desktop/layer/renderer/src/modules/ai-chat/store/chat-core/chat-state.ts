@@ -12,9 +12,9 @@ import type { ChatSlice } from "./types"
 // Zustand Chat State that implements AI SDK ChatState interface
 export class ZustandChatState implements ChatState<BizUIMessage> {
   #messages: BizUIMessage[]
-  #status: ChatStatus = "ready"
-  #error: Error | undefined = undefined
-  #eventEmitter = new ChatStateEventEmitter()
+  #status: ChatStatus
+  #error: Error | undefined
+  #eventEmitter: ChatStateEventEmitter
   #isResumingStream = false
 
   constructor(
@@ -22,7 +22,10 @@ export class ZustandChatState implements ChatState<BizUIMessage> {
     private updateZustandState: (updater: (state: ChatSlice) => ChatSlice) => void,
     private chatId: string,
   ) {
+    this.#eventEmitter = new ChatStateEventEmitter()
     this.#messages = initialMessages
+    this.#status = "ready"
+    this.#error = undefined
     this.#setupEventHandlers()
   }
 
