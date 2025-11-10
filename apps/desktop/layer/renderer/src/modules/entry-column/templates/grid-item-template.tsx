@@ -1,4 +1,5 @@
 import { TitleMarquee } from "@follow/components/ui/marquee/index.jsx"
+import { FeedViewType } from "@follow/constants"
 import { useIsEntryStarred } from "@follow/store/collection/hooks"
 import { useEntry, useHasEntry } from "@follow/store/entry/hooks"
 import { useFeedById } from "@follow/store/feed/hooks"
@@ -9,6 +10,7 @@ import { useTranslation } from "react-i18next"
 
 import { useUISettingKey } from "~/atoms/settings/ui"
 import { useEntryIsRead } from "~/hooks/biz/useAsRead"
+import { useRouteParamsSelector } from "~/hooks/biz/useRouteParams"
 import { EntryTranslation } from "~/modules/entry-column/translation"
 import type { FeedIconEntry } from "~/modules/feed/feed-icon"
 import { FeedIcon } from "~/modules/feed/feed-icon"
@@ -80,7 +82,9 @@ export const GridItemFooter = ({
   const { t } = useTranslation("common")
 
   const isImageOnly = useUISettingKey("pictureViewImageOnly")
-  if (isImageOnly) return null
+  const view = useRouteParamsSelector(({ view }) => view)
+  const shouldHideFooter = view === FeedViewType.Pictures && isImageOnly
+  if (shouldHideFooter) return null
 
   if (!entry) return null
   return (
