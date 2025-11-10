@@ -2,7 +2,7 @@ import { ActionButton } from "@follow/components/ui/button/index.js"
 import { FeedViewType } from "@follow/constants"
 import { useIsListSubscription } from "@follow/store/subscription/hooks"
 import { stopPropagation } from "@follow/utils/dom"
-import { cn } from "@follow/utils/utils"
+import { clsx, cn } from "@follow/utils/utils"
 import type { FC, PropsWithChildren } from "react"
 import { memo, useMemo, useRef, useState } from "react"
 import { Trans } from "react-i18next"
@@ -15,6 +15,7 @@ import { getRouteParams, useRouteParams } from "~/hooks/biz/useRouteParams"
 import { useShowEntryDetailsColumn } from "~/hooks/biz/useShowEntryDetailsColumn"
 
 import { markAllByRoute } from "../hooks/useMarkAll"
+import { readableContentMaxWidth } from "../styles"
 
 interface DateItemInnerProps {
   date: Date
@@ -54,7 +55,7 @@ const UniversalDateItem = ({ date, className, isSticky }: Omit<DateItemProps, "v
 
   return (
     <DateItemInner
-      className={className}
+      className={clsx(className, readableContentMaxWidth)}
       date={dateObj}
       startTime={startOfDay}
       endTime={endOfDay}

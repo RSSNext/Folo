@@ -143,7 +143,12 @@ export const FlatMarkAllReadButton: FC<
     <button
       type="button"
       disabled={status === "done"}
-      className={cn(styledButtonVariant({ variant: "ghost" }), className, buttonClassName)}
+      className={cn(
+        styledButtonVariant({ variant: "ghost" }),
+        "rounded-none",
+        className,
+        buttonClassName,
+      )}
       onClick={() => {
         markAllByRoute(getRouteParams(), filter)
           .then(() => setStatus("done"))
