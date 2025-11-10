@@ -18,7 +18,7 @@ export const UserGallery = ({ users, limit = 18 }: UserGalleryProps) => {
           <UserAvatar
             className="h-auto p-0"
             avatarClassName="size-8"
-            userId={user?.id}
+            userId={user.id}
             enableModal={true}
             hideName={true}
           />
