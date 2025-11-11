@@ -14,6 +14,7 @@ import { toast } from "sonner"
 import type { PaymentFeature, PaymentPlan } from "~/atoms/server-configs"
 import { useIsPaymentEnabled, useServerConfigs } from "~/atoms/server-configs"
 import { subscription } from "~/lib/auth"
+import { ipcServices } from "~/lib/client"
 
 const formatFeatureValue = (
   key: keyof PaymentFeature,
@@ -105,6 +106,32 @@ const useCancelPlan = () => {
   }
 }
 
+const useIAPProduct = (id: string | undefined) => {
+  return useQuery({
+    queryKey: ["iap-products", id],
+    queryFn: async () => {
+      if (!id) {
+        return null
+      }
+      const res = await ipcServices?.iap.getProducts([id])
+      return res?.at(0) || null
+    },
+  })
+}
+
+const usePurchaseIAPProduct = () => {
+  const userId = useWhoami()?.id
+  return useMutation({
+    mutationFn: async (productId: string) => {
+      if (!userId) {
+        toast.error("User not logged in")
+        return
+      }
+      await ipcServices?.iap.purchaseProduct(productId, { username: userId })
+    },
+  })
+}
+
 export function SettingPlan() {
   const isPaymentEnabled = useIsPaymentEnabled()
   const role = useUserRole()
@@ -183,6 +210,10 @@ interface PlanCardProps {
 }
 
 const PlanCard = ({ plan, billingPeriod, isCurrentPlan, currentTier }: PlanCardProps) => {
+  const { data: iapProduct } = useIAPProduct(
+    billingPeriod === "yearly" ? plan.appleProductIdentifierAnnual : plan.appleProductIdentifier,
+  )
+  const purchaseIAPMutation = usePurchaseIAPProduct()
   const { t } = useTranslation("settings")
   const getPlanActionType = ():
     | "current"
@@ -275,10 +306,18 @@ const PlanCard = ({ plan, billingPeriod, isCurrentPlan, currentTier }: PlanCardP
 
         <PlanAction
           actionType={actionType}
-          isLoading={upgradePlanMutation.isPending || cancelPlanMutation?.isPending}
+          isLoading={
+            upgradePlanMutation.isPending ||
+            purchaseIAPMutation.isPending ||
+            cancelPlanMutation?.isPending
+          }
           onSelect={
             !plan.isComingSoon && !isCurrentPlan
               ? () => {
+                  if (iapProduct) {
+                    purchaseIAPMutation.mutate(iapProduct.productIdentifier)
+                    return
+                  }
                   upgradePlanMutation.mutate()
                 }
               : undefined

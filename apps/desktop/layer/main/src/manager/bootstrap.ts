@@ -7,7 +7,7 @@ import { env } from "@follow/shared/env.desktop"
 import { createBuildSafeHeaders } from "@follow/utils/headers"
 import { IMAGE_PROXY_URL } from "@follow/utils/img-proxy"
 import { parse } from "cookie-es"
-import { app, BrowserWindow, net, protocol, session } from "electron"
+import { app, BrowserWindow, inAppPurchase, net, protocol, session } from "electron"
 import { join } from "pathe"
 
 import { WindowManager } from "~/manager/window"
@@ -42,6 +42,67 @@ export class BootstrapManager {
   }
 
   private static registerAppEvents() {
+    inAppPurchase.on("transactions-updated", (event, transactions) => {
+      if (!Array.isArray(transactions)) {
+        return
+      }
+
+      // Check each transaction.
+      for (const transaction of transactions) {
+        console.info("Transaction updated:", transaction)
+        const { payment } = transaction
+
+        switch (transaction.transactionState) {
+          case "purchasing": {
+            console.info(`Purchasing ${payment.productIdentifier}...`)
+            break
+          }
+
+          case "purchased": {
+            console.info(`${payment.productIdentifier} purchased.`)
+
+            // Get the receipt url.
+            const receiptURL = inAppPurchase.getReceiptURL()
+
+            console.info(`Receipt URL: ${receiptURL}`)
+
+            // Submit the receipt file to the server and check if it is valid.
+            // @see https://developer.apple.com/library/content/releasenotes/General/ValidateAppStoreReceipt/Chapters/ValidateRemotely.html
+            // ...
+            // If the receipt is valid, the product is purchased
+            // ...
+
+            // Finish the transaction.
+            inAppPurchase.finishTransactionByDate(transaction.transactionDate)
+
+            break
+          }
+
+          case "failed": {
+            console.info(`Failed to purchase ${payment.productIdentifier}.`)
+
+            // Finish the transaction.
+            inAppPurchase.finishTransactionByDate(transaction.transactionDate)
+
+            break
+          }
+          case "restored": {
+            console.info(`The purchase of ${payment.productIdentifier} has been restored.`)
+
+            break
+          }
+          case "deferred": {
+            console.info(`The purchase of ${payment.productIdentifier} has been deferred.`)
+
+            break
+          }
+          default: {
+            break
+          }
+        }
+      }
+    })
+
     app.on("second-instance", (_, commandLine) => {
       const mainWindow = WindowManager.getMainWindow()
       if (mainWindow) {
