@@ -9,7 +9,7 @@ export const appUpdaterConfig = {
 
   // Disable app update will also disable renderer hot update and core update
   enableAppUpdate: true,
-  enableDistributionStoreUpdate: true,
+  enableDistributionStoreUpdate: isStoreDistribution,
 
   app: {
     autoCheckUpdate: true,
