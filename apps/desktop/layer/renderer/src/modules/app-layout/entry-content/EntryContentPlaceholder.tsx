@@ -1,8 +1,11 @@
 import { AnimatePresence, LayoutGroup, m } from "motion/react"
 
+import { useSummarizeTimeline } from "~/modules/ai-chat/hooks/useSummarizeTimeline"
 import { EntryPlaceholderLogo } from "~/modules/entry-content/components/EntryPlaceholderLogo"
 
 export const EntryContentPlaceholder = () => {
+  const { summarizeTimeline } = useSummarizeTimeline()
+
   return (
     <LayoutGroup>
       <AnimatePresence>
@@ -11,7 +14,7 @@ export const EntryContentPlaceholder = () => {
           initial={{ opacity: 0.01, y: 300 }}
           animate={{ opacity: 1, y: 0 }}
         >
-          <EntryPlaceholderLogo />
+          <EntryPlaceholderLogo onAskAI={summarizeTimeline} />
         </m.div>
       </AnimatePresence>
     </LayoutGroup>

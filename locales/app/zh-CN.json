@@ -186,6 +186,7 @@
   "entry_list_header.refresh": "刷新",
   "entry_list_header.show_all": "显示全部",
   "entry_list_header.show_unread_only": "仅显示未读",
+  "entry_list_header.timeline_summary": "总结时间线",
   "entry_list_header.unread": "未读",
   "feed.actions.follow": "订阅",
   "feed.actions.followed": "已订阅",

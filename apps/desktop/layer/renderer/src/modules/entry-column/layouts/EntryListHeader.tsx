@@ -18,8 +18,10 @@ import { previewBackPath } from "~/atoms/preview"
 import { useGeneralSettingKey } from "~/atoms/settings/general"
 import { useSubscriptionColumnShow } from "~/atoms/sidebar"
 import { ROUTE_ENTRY_PENDING } from "~/constants"
+import { useFeature } from "~/hooks/biz/useFeature"
 import { useFollow } from "~/hooks/biz/useFollow"
 import { getRouteParams, useRouteParams } from "~/hooks/biz/useRouteParams"
+import { useSummarizeTimeline } from "~/modules/ai-chat/hooks/useSummarizeTimeline"
 import { COMMAND_ID } from "~/modules/command/commands/id"
 import { useRunCommandFn } from "~/modules/command/hooks/use-command"
 import { useCommandShortcut } from "~/modules/command/hooks/use-command-binding"
@@ -43,9 +45,11 @@ export const EntryListHeader: FC<{
   const { t } = useTranslation()
 
   const unreadOnly = useGeneralSettingKey("unreadOnly")
+  const aiEnabled = useFeature("ai")
 
   const { feedId, entryId, view, isCollection } = routerParams
   const isPreview = useIsPreviewFeed()
+  const isWideMode = !!getView(view)?.wideMode
 
   const headerTitle = useFeedHeaderTitle()
   const feedIcon = useFeedHeaderIcon()
@@ -86,6 +90,10 @@ export const EntryListHeader: FC<{
 
   const { isScrolledBeyondThreshold } = useEntryRootState()
   const isScrolledBeyondThresholdValue = useAtomValue(isScrolledBeyondThreshold)
+  const { summarizeTimeline } = useSummarizeTimeline()
+  const showEntryHeader = isWideMode && !!entryId && entryId !== ROUTE_ENTRY_PENDING
+  const showTimelineSummaryButton = isWideMode && aiEnabled
+
   return (
     <div
       className={cn(
@@ -112,9 +120,17 @@ export const EntryListHeader: FC<{
             )}
             onClick={stopPropagation}
           >
-            {getView(view)?.wideMode && entryId && entryId !== ROUTE_ENTRY_PENDING && (
+            {isWideMode && (showEntryHeader || showTimelineSummaryButton) && (
               <>
-                <EntryHeader entryId={entryId} />
+                {showEntryHeader && <EntryHeader entryId={entryId} />}
+                {showTimelineSummaryButton && (
+                  <ActionButton
+                    tooltip={t("entry_list_header.timeline_summary")}
+                    onClick={summarizeTimeline}
+                  >
+                    <i className="i-mingcute-ai-line text-purple-600 dark:text-purple-400" />
+                  </ActionButton>
+                )}
                 <DividerVertical className="mx-2 w-px" />
               </>
             )}

@@ -481,7 +481,7 @@ const PlanComparisonTable = ({ plans }: { plans: PaymentPlan[] }) => {
         <table className="w-full">
           <thead>
             <tr className="border-b border-fill-tertiary bg-fill-secondary/50">
-              <th className="sticky left-0 z-10 bg-fill-secondary/50 px-4 py-3 text-left text-sm font-semibold">
+              <th className="sticky left-0 z-10 w-48 bg-fill-secondary/50 px-4 py-3 text-left text-sm font-semibold">
                 Features
               </th>
               {plans.map((plan) => (

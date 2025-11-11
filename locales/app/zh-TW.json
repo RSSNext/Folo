@@ -184,6 +184,7 @@
   "entry_list_header.refresh": "重新整理",
   "entry_list_header.show_all": "顯示全部",
   "entry_list_header.show_unread_only": "僅顯示未讀",
+  "entry_list_header.timeline_summary": "摘要時間線",
   "entry_list_header.unread": "未讀",
   "feed.actions.follow": "跟隨",
   "feed.actions.followed": "已跟隨",
