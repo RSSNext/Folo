@@ -159,16 +159,18 @@ export function SettingPlan() {
 
       {/* Plans Grid */}
       <div className="@container">
-        <div className="grid grid-cols-1 gap-4 @md:grid-cols-2 @4xl:grid-cols-4">
-          {plans.map((plan) => (
-            <PlanCard
-              key={plan.name}
-              plan={plan}
-              billingPeriod={billingPeriod}
-              isCurrentPlan={role === plan.role}
-              currentTier={currentTier}
-            />
-          ))}
+        <div className="grid grid-cols-1 gap-4 @md:grid-cols-3">
+          {plans
+            .filter((plan) => plan.priceInDollars > 0)
+            .map((plan) => (
+              <PlanCard
+                key={plan.name}
+                plan={plan}
+                billingPeriod={billingPeriod}
+                isCurrentPlan={role === plan.role}
+                currentTier={currentTier}
+              />
+            ))}
         </div>
       </div>
 
