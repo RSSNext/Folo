@@ -19,7 +19,7 @@ const formatFeatureValue = (
   key: keyof PaymentFeature,
   value: number | boolean | string | string[] | null | undefined,
 ): string => {
-  if (value == null || value === undefined || value === 0) {
+  if (value == null || value === undefined) {
     return "—"
   }
 
@@ -40,7 +40,7 @@ const formatFeatureValue = (
   }
 
   if (Array.isArray(value)) {
-    return value.length > 0 ? value.join(", ") : "—"
+    return value.length > 0 ? value.join(" ") : "—"
   }
 
   return value
@@ -520,6 +520,7 @@ const PlanComparisonTable = ({ plans }: { plans: PaymentPlan[] }) => {
                           formattedValue === "—" && "text-text-tertiary",
                           formattedValue === "✓" && "text-green",
                           formattedValue === "Unlimited" && "text-accent",
+                          formattedValue.length > 10 && "text-xs",
                         )}
                       >
                         {formattedValue}
