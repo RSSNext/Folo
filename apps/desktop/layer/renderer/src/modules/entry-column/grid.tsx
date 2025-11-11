@@ -115,7 +115,8 @@ const VirtualGridImpl: FC<
     return Array.from({ length: columnCount }).fill(width / columnCount) as number[]
   }, [containerWidth])
 
-  const isImageOnly = useUISettingKey("pictureViewImageOnly")
+  const pictureViewImageOnly = useUISettingKey("pictureViewImageOnly")
+  const isImageOnly = view === FeedViewType.Pictures && pictureViewImageOnly
 
   // Calculate rows based on entries
   const rows = useMemo(() => {
