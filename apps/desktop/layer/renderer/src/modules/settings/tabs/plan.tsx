@@ -17,7 +17,7 @@ import { subscription } from "~/lib/auth"
 
 const formatFeatureValue = (
   key: keyof PaymentFeature,
-  value: number | boolean | null | undefined,
+  value: number | boolean | string | string[] | null | undefined,
 ): string => {
   if (value == null || value === undefined || value === 0) {
     return "—"
@@ -27,19 +27,23 @@ const formatFeatureValue = (
     return value ? "✓" : "—"
   }
 
-  if (key === "PRIORITY_SUPPORT" && typeof value === "number") {
-    return "⭐️".repeat(value)
-  }
-
   if (value === Number.MAX_SAFE_INTEGER) {
     return "Unlimited"
   }
 
-  return new Intl.NumberFormat("en", {
-    notation: "compact",
-    compactDisplay: "short",
-    maximumFractionDigits: 1,
-  }).format(value)
+  if (typeof value === "number") {
+    return new Intl.NumberFormat("en", {
+      notation: "compact",
+      compactDisplay: "short",
+      maximumFractionDigits: 1,
+    }).format(value)
+  }
+
+  if (Array.isArray(value)) {
+    return value.length > 0 ? value.join(", ") : "—"
+  }
+
+  return value
 }
 
 const useUpgradePlan = ({ plan, annual }: { plan: string | undefined; annual: boolean }) => {
