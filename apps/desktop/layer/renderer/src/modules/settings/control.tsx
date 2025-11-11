@@ -48,7 +48,7 @@ export const PaidBadge: Component<{
       <TooltipPortal>
         <TooltipContent>
           {paidLevel === SettingPaidLevels.FreeLimited && t("control.paid_badge.free_limited")}
-          {paidLevel === SettingPaidLevels.Plus && t("control.paid_badge.plus_or_higher")}
+          {paidLevel === SettingPaidLevels.Basic && t("control.paid_badge.basic_or_higher")}
         </TooltipContent>
       </TooltipPortal>
     </Tooltip>

@@ -9,7 +9,7 @@ import type {
 export enum SettingPaidLevels {
   Free,
   FreeLimited,
-  Plus,
+  Basic,
 }
 
 type PartialRecord<K extends PropertyKey, V> = Partial<Record<K, V>>
@@ -17,25 +17,25 @@ type PartialRecord<K extends PropertyKey, V> = Partial<Record<K, V>>
 export const PAID_SETTINGS = {
   general: {
     summary: SettingPaidLevels.FreeLimited,
-    translation: SettingPaidLevels.Plus,
-    translationMode: SettingPaidLevels.Plus,
-    hidePrivateSubscriptionsInTimeline: SettingPaidLevels.Plus,
+    translation: SettingPaidLevels.Basic,
+    translationMode: SettingPaidLevels.Basic,
+    hidePrivateSubscriptionsInTimeline: SettingPaidLevels.Basic,
   },
   ui: {
-    hideExtraBadge: SettingPaidLevels.Plus,
-    hideRecentReader: SettingPaidLevels.Plus,
+    hideExtraBadge: SettingPaidLevels.Basic,
+    hideRecentReader: SettingPaidLevels.Basic,
   },
   integration: {
-    enableCubox: SettingPaidLevels.Plus,
-    enableObsidian: SettingPaidLevels.Plus,
-    enableOutline: SettingPaidLevels.Plus,
-    enableReadwise: SettingPaidLevels.Plus,
-    enableZotero: SettingPaidLevels.Plus,
-    enableInstapaper: SettingPaidLevels.Plus,
-    enableReadeck: SettingPaidLevels.Plus,
-    enableEagle: SettingPaidLevels.Plus,
-    enableQBittorrent: SettingPaidLevels.Plus,
-    enableCustomIntegration: SettingPaidLevels.Plus,
+    enableCubox: SettingPaidLevels.Basic,
+    enableObsidian: SettingPaidLevels.Basic,
+    enableOutline: SettingPaidLevels.Basic,
+    enableReadwise: SettingPaidLevels.Basic,
+    enableZotero: SettingPaidLevels.Basic,
+    enableInstapaper: SettingPaidLevels.Basic,
+    enableReadeck: SettingPaidLevels.Basic,
+    enableEagle: SettingPaidLevels.Basic,
+    enableQBittorrent: SettingPaidLevels.Basic,
+    enableCustomIntegration: SettingPaidLevels.Basic,
   },
   ai: {},
 } as const satisfies {

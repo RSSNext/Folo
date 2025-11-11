@@ -81,7 +81,7 @@ export const PaidBadge = () => {
         <i className="i-mgc-power block text-accent" onClick={handleClick} />
       </TooltipTrigger>
       <TooltipPortal>
-        <TooltipContent>{t("control.paid_badge.plus_or_higher")}</TooltipContent>
+        <TooltipContent>{t("control.paid_badge.basic_or_higher")}</TooltipContent>
       </TooltipPortal>
     </Tooltip>
   )
