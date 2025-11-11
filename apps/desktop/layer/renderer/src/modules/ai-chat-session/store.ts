@@ -95,5 +95,3 @@ export const hydrateSessionsFromLocalDb = async () => {
     aiChatSessionStoreActions.setError(error instanceof Error ? error.message : "hydrate_failed")
   }
 }
-
-void hydrateSessionsFromLocalDb()

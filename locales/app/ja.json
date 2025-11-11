@@ -186,6 +186,7 @@
   "entry_list_header.refresh": "更新",
   "entry_list_header.show_all": "すべて表示",
   "entry_list_header.show_unread_only": "未読のみ表示",
+  "entry_list_header.timeline_summary": "タイムラインを要約",
   "entry_list_header.unread": "未読",
   "feed.actions.follow": "フォロー",
   "feed.actions.followed": "フォロー済み",

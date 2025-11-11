@@ -1,7 +1,7 @@
 import { getReadonlyRoute, getStableRouterNavigate } from "@follow/components/atoms/route.js"
 import { useMobile } from "@follow/components/hooks/useMobile.js"
 import { useSheetContext } from "@follow/components/ui/sheet/context.js"
-import { FeedViewType } from "@follow/constants"
+import type { FeedViewType } from "@follow/constants"
 import { getEntry } from "@follow/store/entry/getter"
 import { getSubscriptionByFeedId } from "@follow/store/subscription/getter"
 import { tracker } from "@follow/tracker"
@@ -18,11 +18,9 @@ import {
   ROUTE_FEED_IN_INBOX,
   ROUTE_FEED_IN_LIST,
   ROUTE_FEED_PENDING,
-  ROUTE_TIMELINE_OF_VIEW,
-  ROUTE_VIEW_ALL,
 } from "~/constants"
 
-import { useRouteParamsSelector } from "./useRouteParams"
+import { getTimelineIdByView, useRouteParamsSelector } from "./useRouteParams"
 
 export type NavigateEntryOptions = Partial<{
   timelineId: string
@@ -86,8 +84,7 @@ const parseNavigateEntryOptions = (options: NavigateEntryOptions): ParsedNavigat
   finalFeedId = encodeURIComponent(finalFeedId)
 
   if (finalView !== undefined && !timelineId) {
-    finalTimelineId =
-      finalView === FeedViewType.All ? ROUTE_VIEW_ALL : `${ROUTE_TIMELINE_OF_VIEW}${finalView}`
+    finalTimelineId = getTimelineIdByView(finalView)
   }
 
   return {
@@ -109,7 +106,7 @@ export function getNavigateEntryPath(options: NavigateEntryOptions | ParsedNavig
 
 /*
  * /timeline/:timelineId/:feedId/:entryId
- * timelineId: view-1
+ * timelineId: articles | social-media | view-1 (legacy) | ...
  * feedId: xxx, folder-xxx, list-xxx, inbox-xxx
  * entryId: xxx
  */

@@ -7,10 +7,8 @@ import { cn } from "@follow/utils/utils"
 import { useServerConfigs } from "~/atoms/server-configs"
 import { replaceImgUrlIfNeed } from "~/lib/img-proxy"
 import { usePresentUserProfileModal } from "~/modules/profile/hooks"
-import { useSession } from "~/queries/auth"
 
 import type { LoginProps } from "./LoginButton"
-import { LoginButton } from "./LoginButton"
 import { UserProBadge } from "./UserProBadge"
 
 export const UserAvatar = ({
@@ -32,20 +30,12 @@ export const UserAvatar = ({
 } & LoginProps &
   React.HTMLAttributes<HTMLDivElement> & { ref?: React.Ref<HTMLDivElement | null> }) => {
   const serverConfig = useServerConfigs()
-
-  const { status } = useSession({
-    enabled: !userId,
-  })
   const whoami = useWhoami()
   const role = useUserRole()
   const presentUserProfile = usePresentUserProfileModal("drawer")
 
   usePrefetchUser(userId)
   const profile = useUserById(userId)
-
-  if (!userId && status !== "authenticated") {
-    return <LoginButton {...props} />
-  }
 
   const renderUserData = userId ? profile : whoami
   const randomColor = stringToHue(renderUserData?.name || "")

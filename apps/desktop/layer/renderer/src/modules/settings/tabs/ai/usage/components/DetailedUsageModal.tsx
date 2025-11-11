@@ -10,7 +10,7 @@ import { useTranslation } from "react-i18next"
 import { followApi } from "~/lib/api-client"
 import { useAIConfiguration } from "~/modules/ai-chat/hooks/useAIConfiguration"
 
-import { formatTimeRemaining, formatTokenCount } from "../utils"
+import { formatTokenCount } from "../utils"
 import { EfficiencyTab } from "./EfficiencyTab"
 import { HistoryTab } from "./HistoryTab"
 import { OverviewTab } from "./OverviewTab"
@@ -76,7 +76,6 @@ export const DetailedUsageModal = () => {
   const maxHourCount = Math.max(1, ...hourBuckets)
 
   const formattedUsageTokens = formatTokenCount(usage.used)
-  const formattedRemainingTokens = formatTokenCount(rateLimit.remainingTokens)
   const formattedTotalTokens = formatTokenCount(usage.total)
 
   return (
@@ -93,44 +92,27 @@ export const DetailedUsageModal = () => {
           />
         )}
 
-        {/* Layout Option 4: Asymmetric Modern */}
-        <div className="space-y-4">
-          <div className="grid grid-cols-5 gap-4">
-            <div className="col-span-2 flex items-center justify-center rounded-xl bg-fill-secondary/50 p-6">
-              <UsageProgressRing percentage={usagePercentage} size={130} />
+        {/* Unified Usage Overview Card */}
+        <div className="overflow-hidden rounded-xl border border-border bg-fill-secondary/30 backdrop-blur-sm">
+          <div className="flex items-center gap-4 p-4">
+            {/* Progress Ring Section */}
+            <div className="shrink-0">
+              <UsageProgressRing percentage={usagePercentage} size={80} />
             </div>
-            <div className="col-span-3 flex h-full flex-col gap-3">
-              <div className="grid h-1/2 grid-cols-2 gap-4">
-                <div className="rounded-lg bg-fill-secondary/50 p-4">
-                  <Metric
-                    label={t("usage_analysis.tokens_used")}
-                    value={formattedUsageTokens.value}
-                    unit={formattedUsageTokens.unit}
-                  />
-                </div>
-                <div className="rounded-lg bg-fill-secondary/50 p-4">
-                  <Metric
-                    label={t("usage_analysis.total_credits")}
-                    value={formattedTotalTokens.value}
-                    unit={formattedTotalTokens.unit}
-                  />
-                </div>
-              </div>
-              <div className="grid h-1/2 grid-cols-2 gap-4">
-                <div className="rounded-lg bg-fill-secondary/30 p-3">
-                  <StatCompact
-                    label={t("usage_analysis.window_remaining")}
-                    value={formattedRemainingTokens.value}
-                    unit={formattedRemainingTokens.unit}
-                  />
-                </div>
-                <div className="rounded-lg bg-fill-secondary/30 p-3">
-                  <StatCompact
-                    label={t("usage_analysis.resets_in")}
-                    value={formatTimeRemaining(rateLimit.windowResetTime - Date.now())}
-                  />
-                </div>
-              </div>
+
+            {/* Metrics Section */}
+            <div className="ml-6 flex flex-1 gap-6">
+              <Metric
+                label={t("usage_analysis.tokens_used")}
+                value={formattedUsageTokens.value}
+                unit={formattedUsageTokens.unit}
+              />
+              <div className="h-px bg-border/50" />
+              <Metric
+                label={t("usage_analysis.total_credits")}
+                value={formattedTotalTokens.value}
+                unit={formattedTotalTokens.unit}
+              />
             </div>
           </div>
         </div>
@@ -177,29 +159,6 @@ function Metric({ label, value, unit }: { label: string; value: string; unit?: s
         {value}
         {unit ? <span className="ml-1 text-sm text-text-tertiary">{unit}</span> : null}
       </div>
-    </div>
-  )
-}
-
-function StatCompact({
-  label,
-  value,
-  unit,
-  hint,
-}: {
-  label: string
-  value: string
-  unit?: string
-  hint?: string
-}) {
-  return (
-    <div>
-      <div className="mb-1 text-[11px] uppercase tracking-wide text-text-secondary">{label}</div>
-      <div className="text-base font-medium text-text">
-        {value}
-        {unit ? <span className="ml-1 text-xs text-text-tertiary">{unit}</span> : null}
-      </div>
-      {hint ? <div className="mt-0.5 text-[11px] text-text-tertiary">{hint}</div> : null}
     </div>
   )
 }

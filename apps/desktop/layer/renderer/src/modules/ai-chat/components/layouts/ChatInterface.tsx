@@ -19,7 +19,6 @@ import { useActionLanguage } from "~/atoms/settings/general"
 import { ROUTE_FEED_IN_FOLDER } from "~/constants"
 import { getRouteParams } from "~/hooks/biz/useRouteParams"
 import { useAutoScroll } from "~/modules/ai-chat/hooks/useAutoScroll"
-import { useAutoTimelineSummaryShortcut } from "~/modules/ai-chat/hooks/useAutoTimelineSummaryShortcut"
 import { useLoadMessages } from "~/modules/ai-chat/hooks/useLoadMessages"
 import { useMainEntryId } from "~/modules/ai-chat/hooks/useMainEntryId"
 import {
@@ -50,8 +49,6 @@ const ChatInterfaceContent = ({ centerInputOnEmpty }: ChatInterfaceProps) => {
   const chatActions = useChatActions()
   const error = useChatError()
   const messages = useMessages()
-
-  useAutoTimelineSummaryShortcut()
 
   const isFocusWithIn = useFocusable()
 

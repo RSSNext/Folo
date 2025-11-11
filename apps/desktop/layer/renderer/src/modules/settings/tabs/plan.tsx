@@ -17,7 +17,7 @@ import { subscription } from "~/lib/auth"
 
 const formatFeatureValue = (
   key: keyof PaymentFeature,
-  value: number | boolean | null | undefined,
+  value: number | boolean | string | string[] | null | undefined,
 ): string => {
   if (value == null || value === undefined) {
     return "—"
@@ -27,19 +27,23 @@ const formatFeatureValue = (
     return value ? "✓" : "—"
   }
 
-  if (key === "PRIORITY_SUPPORT" && typeof value === "number") {
-    return "⭐️".repeat(value)
-  }
-
   if (value === Number.MAX_SAFE_INTEGER) {
     return "Unlimited"
   }
 
-  return new Intl.NumberFormat("en", {
-    notation: "compact",
-    compactDisplay: "short",
-    maximumFractionDigits: 1,
-  }).format(value)
+  if (typeof value === "number") {
+    return new Intl.NumberFormat("en", {
+      notation: "compact",
+      compactDisplay: "short",
+      maximumFractionDigits: 1,
+    }).format(value)
+  }
+
+  if (Array.isArray(value)) {
+    return value.length > 0 ? value.join(" ") : "—"
+  }
+
+  return value
 }
 
 const useUpgradePlan = ({ plan, annual }: { plan: string | undefined; annual: boolean }) => {
@@ -155,16 +159,18 @@ export function SettingPlan() {
 
       {/* Plans Grid */}
       <div className="@container">
-        <div className="grid grid-cols-1 gap-4 @md:grid-cols-2 @xl:grid-cols-3">
-          {plans.map((plan) => (
-            <PlanCard
-              key={plan.name}
-              plan={plan}
-              billingPeriod={billingPeriod}
-              isCurrentPlan={role === plan.role}
-              currentTier={currentTier}
-            />
-          ))}
+        <div className="grid grid-cols-1 gap-4 @md:grid-cols-3">
+          {plans
+            .filter((plan) => plan.priceInDollars > 0)
+            .map((plan) => (
+              <PlanCard
+                key={plan.name}
+                plan={plan}
+                billingPeriod={billingPeriod}
+                isCurrentPlan={role === plan.role}
+                currentTier={currentTier}
+              />
+            ))}
         </div>
       </div>
 
@@ -477,7 +483,7 @@ const PlanComparisonTable = ({ plans }: { plans: PaymentPlan[] }) => {
         <table className="w-full">
           <thead>
             <tr className="border-b border-fill-tertiary bg-fill-secondary/50">
-              <th className="sticky left-0 z-10 bg-fill-secondary/50 px-4 py-3 text-left text-sm font-semibold">
+              <th className="sticky left-0 z-10 w-48 bg-fill-secondary/50 px-4 py-3 text-left text-sm font-semibold">
                 Features
               </th>
               {plans.map((plan) => (
@@ -514,6 +520,7 @@ const PlanComparisonTable = ({ plans }: { plans: PaymentPlan[] }) => {
                           formattedValue === "—" && "text-text-tertiary",
                           formattedValue === "✓" && "text-green",
                           formattedValue === "Unlimited" && "text-accent",
+                          formattedValue.length > 10 && "text-xs",
                         )}
                       >
                         {formattedValue}
