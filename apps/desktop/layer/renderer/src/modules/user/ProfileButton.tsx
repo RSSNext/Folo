@@ -53,7 +53,7 @@ export const ProfileButton: FC<ProfileButtonProps> = memo((props) => {
   const role = useUserRole()
   const isInMASReview = useIsInMASReview()
 
-  if (status === "unauthenticated") {
+  if (status !== "authenticated") {
     return <LoginButton {...props} />
   }
 

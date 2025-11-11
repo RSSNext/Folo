@@ -171,7 +171,6 @@ const ShortcutMenuButton: React.FC<ShortcutMenuButtonProps> = ({
   return (
     <div {...contextMenuProps}>
       <ShortcutTooltip
-        asChild={false}
         name={shortcut.name}
         prompt={shortcut.prompt || shortcut.defaultPrompt}
         hotkey={shortcut.hotkey}
