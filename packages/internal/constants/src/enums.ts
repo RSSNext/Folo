@@ -16,6 +16,7 @@ export enum UserRole {
   Trial = "trial",
   Pro = "pro",
   Plus = "plus",
+  Basic = "basic",
 }
 
 export const UserRoleName: Record<UserRole, string> = {
@@ -29,6 +30,7 @@ export const UserRoleName: Record<UserRole, string> = {
   [UserRole.Trial]: "Free",
   [UserRole.Pro]: "Pro",
   [UserRole.Plus]: "Plus",
+  [UserRole.Basic]: "Basic",
 } as const
 
 export const isFreeRole = (role?: UserRole | null) => {
