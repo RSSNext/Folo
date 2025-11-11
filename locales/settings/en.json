@@ -555,6 +555,7 @@
   "notifications.test": "Test Notification",
   "notifications.test_success": "Test notification sent successfully.",
   "notifications.token": "Client Token",
+  "plan.descriptions.basic": "More feeds without AI features.",
   "plan.descriptions.free": "Great for beginners.",
   "plan.descriptions.plus": "Unlock AI features and more feeds.",
   "plan.descriptions.pro": "Full access to the best of Folo.",

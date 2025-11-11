@@ -19,7 +19,7 @@ const formatFeatureValue = (
   key: keyof PaymentFeature,
   value: number | boolean | null | undefined,
 ): string => {
-  if (value == null || value === undefined) {
+  if (value == null || value === undefined || value === 0) {
     return "—"
   }
 
@@ -155,7 +155,7 @@ export function SettingPlan() {
 
       {/* Plans Grid */}
       <div className="@container">
-        <div className="grid grid-cols-1 gap-4 @md:grid-cols-2 @xl:grid-cols-3">
+        <div className="grid grid-cols-1 gap-4 @md:grid-cols-2 @4xl:grid-cols-4">
           {plans.map((plan) => (
             <PlanCard
               key={plan.name}
