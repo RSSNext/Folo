@@ -5,7 +5,6 @@ import { useTranslation } from "react-i18next"
 import type { ModalActionsInternal } from "~/components/ui/modal"
 import { useCurrentModal } from "~/components/ui/modal/stacked/hooks"
 
-import { useSetSettingTab } from "../settings/modal/context"
 import { useSettingModal } from "../settings/modal/useSettingModal"
 
 export const UpgradePlanModalContent = ({
@@ -16,7 +15,6 @@ export const UpgradePlanModalContent = ({
   const { t } = useTranslation()
   const settingModalPresent = useSettingModal()
   const { dismiss } = useCurrentModal()
-  const setSettingTab = useSetSettingTab()
 
   return (
     <div
@@ -27,7 +25,6 @@ export const UpgradePlanModalContent = ({
         buttonClassName="w-fit self-end"
         onClick={() => {
           settingModalPresent("plan")
-          setSettingTab("plan")
           dismiss()
         }}
       >

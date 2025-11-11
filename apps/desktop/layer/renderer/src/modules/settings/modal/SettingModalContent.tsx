@@ -8,6 +8,7 @@ import {
   useDeferredValue,
   useEffect,
   useLayoutEffect,
+  useMemo,
   useRef,
   useState,
 } from "react"
@@ -21,7 +22,7 @@ import { useAvailableSettings } from "../hooks/use-setting-ctx"
 import { SettingSectionHighlightIdContext } from "../section"
 import { getSettingPages } from "../settings-glob"
 import type { SettingPageConfig } from "../utils"
-import { SettingTabProvider, useSettingTab } from "./context"
+import { SettingTabProvider, useSetSettingTab, useSettingTab } from "./context"
 import { SettingModalLayout } from "./layout"
 
 export const SettingModalContent: FC<{
@@ -32,8 +33,18 @@ export const SettingModalContent: FC<{
 
   const availableSettings = useAvailableSettings()
 
-  const resolvedInitialTab =
-    initialTab && initialTab in pages ? initialTab : availableSettings[0]!.path
+  const fallbackTab = availableSettings[0]?.path
+  const availablePaths = useMemo(
+    () => new Set(availableSettings.map((setting) => setting.path)),
+    [availableSettings],
+  )
+  const canUseInitialTab =
+    typeof initialTab === "string" && initialTab in pages && availablePaths.has(initialTab)
+  const resolvedInitialTab = canUseInitialTab ? initialTab : fallbackTab
+
+  if (!resolvedInitialTab) {
+    return null
+  }
 
   return (
     <SettingTabProvider initialTab={resolvedInitialTab}>
@@ -47,9 +58,33 @@ export const SettingModalContent: FC<{
 const Content: FC<{
   initialSection?: string | null
 }> = ({ initialSection }) => {
-  const key = useDeferredValue(useSettingTab() || "general")
+  const availableSettings = useAvailableSettings()
+  const tab = useSettingTab()
+  const setTab = useSetSettingTab()
+
+  useEffect(() => {
+    if (availableSettings.length === 0) return
+    if (!tab || !availableSettings.some((setting) => setting.path === tab)) {
+      setTab(availableSettings[0]!.path)
+    }
+  }, [availableSettings, setTab, tab])
+
+  const activeSetting = useMemo(() => {
+    if (availableSettings.length === 0) return
+    if (tab) {
+      const matched = availableSettings.find((setting) => setting.path === tab)
+      if (matched) {
+        return matched
+      }
+    }
+    return availableSettings[0]
+  }, [availableSettings, tab])
+
+  const key = useDeferredValue(activeSetting?.path ?? "")
   const pages = getSettingPages()
-  const { Component, loader } = pages[key]
+  const page = key ? pages[key] : undefined
+  const Component = page?.Component
+  const loader = page?.loader
 
   const [scrollerAtTop, setScrollerAtTop] = useState(true)
   const [scroller, setScroller] = useState<HTMLDivElement | null>(null)
@@ -107,7 +142,7 @@ const Content: FC<{
   }, [initialSection, scrollToSection])
 
   const config = (useLoaderData() || loader || {}) as SettingPageConfig
-  if (!Component) return null
+  if (!Component || !activeSetting) return null
 
   return (
     <Suspense>
