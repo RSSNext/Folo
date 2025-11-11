@@ -183,7 +183,6 @@ const SwipeWrapper: FC<{ active: string; children: React.JSX.Element[] }> = memo
     const viewIndex = timelineList.indexOf(active)
 
     const feedColumnWidth = useUISettingKey("feedColWidth")
-    const containerRef = useRef<HTMLDivElement>(null)
 
     const orderIndex = timelineList.indexOf(active)
 
@@ -210,7 +209,7 @@ const SwipeWrapper: FC<{ active: string; children: React.JSX.Element[] }> = memo
     }, [orderIndex, viewIndex])
 
     if (reduceMotion) {
-      return <div ref={containerRef}>{children[currentAnimtedActive]}</div>
+      return <div>{children[currentAnimtedActive]}</div>
     }
 
     return (
@@ -224,7 +223,6 @@ const SwipeWrapper: FC<{ active: string; children: React.JSX.Element[] }> = memo
           animate={{ x: 0 }}
           exit={{ x: direction === "right" ? -feedColumnWidth : feedColumnWidth }}
           transition={Spring.presets.snappy}
-          ref={containerRef}
         >
           {children[currentAnimtedActive]}
         </m.div>
