@@ -116,31 +116,36 @@ class FollowUpdater {
       }
 
       const payload = await getUpdateInfo(options.refresh ? { refresh: true } : {})
-      const { decision } = payload
 
-      if (!decision || decision.type === "none") {
-        logger.info("Update decision: none")
-        return { hasUpdate: false }
-      }
-
-      if (decision.type === "renderer") {
-        logger.info("Update decision: renderer")
-        return await this.handleRendererDecision(payload)
-      }
-
-      if (decision.type === "app") {
-        logger.info("Update decision: app")
-        return await this.handleAppDecision(payload)
-      }
-
-      logger.warn("Unknown update decision type", { type: decision.type })
-      return { hasUpdate: false }
+      return this.handleDirectAppDecision(payload)
     } catch (error) {
       logger.error("Failed to check for updates", error)
       return { hasUpdate: false, error: error instanceof Error ? error.message : "Unknown error" }
     } finally {
       this.checkingUpdate = false
     }
+  }
+
+  async handleDirectAppDecision(payload: LatestReleasePayload): Promise<UpdateCheckResult> {
+    const { decision } = payload
+
+    if (!decision || decision.type === "none") {
+      logger.info("Update decision: none")
+      return { hasUpdate: false }
+    }
+
+    if (decision.type === "renderer") {
+      logger.info("Update decision: renderer")
+      return await this.handleRendererDecision(payload)
+    }
+
+    if (decision.type === "app") {
+      logger.info("Update decision: app")
+      return await this.handleAppDecision(payload)
+    }
+
+    logger.warn("Unknown update decision type", { type: decision.type })
+    return { hasUpdate: false }
   }
 
   async downloadAppUpdate(): Promise<void> {
@@ -266,8 +271,11 @@ class FollowUpdater {
       const info = await getDistributionUpdateInfo()
 
       if (!info) {
-        logger.info("Distribution update info unavailable for current build")
-        return { hasUpdate: false }
+        logger.info(
+          "Distribution update info unavailable for current build, falling back to direct app decision",
+        )
+        const payload = await getUpdateInfo()
+        return this.handleDirectAppDecision(payload)
       }
 
       const rendererResult = await this.tryDistributionRendererUpdate(info.rendererUpdate)
