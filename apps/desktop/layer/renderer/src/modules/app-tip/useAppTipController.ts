@@ -6,12 +6,7 @@ import { useNavigate } from "react-router"
 import { useAuthQuery } from "~/hooks/common/useBizQuery"
 import { settings } from "~/queries/settings"
 
-import {
-  APP_TIP_DEBUG_EVENT,
-  APP_TIP_PREVIEW_VIDEO_POSTER,
-  APP_TIP_PREVIEW_VIDEO_SRC,
-  APP_TIP_STORAGE_PREFIX,
-} from "./constants"
+import { APP_TIP_DEBUG_EVENT, APP_TIP_STORAGE_PREFIX } from "./constants"
 import type { AppTipDebugOpenEventDetail, AppTipStep } from "./types"
 
 export function useAppTipController() {
@@ -107,11 +102,7 @@ export function useAppTipController() {
           t("new_user_dialog.overview.highlight_2"),
           t("new_user_dialog.overview.highlight_3"),
         ],
-        media: {
-          src: APP_TIP_PREVIEW_VIDEO_SRC,
-          poster: APP_TIP_PREVIEW_VIDEO_POSTER,
-          caption: t("new_user_dialog.video_caption"),
-        },
+
         primaryActionLabel: t("new_user_dialog.overview.primary"),
         onPrimaryAction: () => handleNavigateAndClose("/discover?type=search"),
       },
@@ -124,11 +115,7 @@ export function useAppTipController() {
           t("new_user_dialog.ai.highlight_2"),
           t("new_user_dialog.ai.highlight_3"),
         ],
-        media: {
-          src: APP_TIP_PREVIEW_VIDEO_SRC,
-          poster: APP_TIP_PREVIEW_VIDEO_POSTER,
-          caption: t("new_user_dialog.video_caption"),
-        },
+
         primaryActionLabel: t("new_user_dialog.ai.primary"),
         onPrimaryAction: handleLaunchAiGuide,
       },
@@ -141,11 +128,7 @@ export function useAppTipController() {
           t("new_user_dialog.import.highlight_2"),
           t("new_user_dialog.import.highlight_3"),
         ],
-        media: {
-          src: APP_TIP_PREVIEW_VIDEO_SRC,
-          poster: APP_TIP_PREVIEW_VIDEO_POSTER,
-          caption: t("new_user_dialog.video_caption"),
-        },
+
         primaryActionLabel: t("new_user_dialog.import.primary"),
         onPrimaryAction: () => handleNavigateAndClose("/discover?type=import"),
       },

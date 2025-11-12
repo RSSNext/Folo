@@ -47,12 +47,6 @@ export function AppTipMediaPreview({ media }: AppTipMediaPreviewProps) {
     return (
       <div className="absolute inset-0 flex flex-col items-center justify-center bg-fill px-6 py-10 text-center">
         <i className="i-mgc-video-cute-re mb-3 text-2xl text-text-tertiary" />
-        <p className="text-base font-semibold text-text">
-          {t("new_user_dialog.video_placeholder.title")}
-        </p>
-        <p className="mt-1 text-sm text-text-secondary">
-          {t("new_user_dialog.video_placeholder.description")}
-        </p>
       </div>
     )
   }
