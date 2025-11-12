@@ -1,28 +1,48 @@
-import { Logo } from "@follow/components/icons/logo.jsx"
-import { MotionButtonBase } from "@follow/components/ui/button/index.js"
+import { Button } from "@follow/components/ui/button/index.js"
+import {
+  DEFAULT_RECOMMEND_FEEDS_SHORTCUT_ID,
+  DEFAULT_SUMMARIZE_TIMELINE_SHORTCUT_ID,
+} from "@follow/shared/settings/defaults"
 import { stopPropagation } from "@follow/utils/dom"
-import { cn } from "@follow/utils/utils"
+import { useCallback } from "react"
 
-import { setAIPanelVisibility } from "~/atoms/settings/ai"
-import { useFeature } from "~/hooks/biz/useFeature"
-import { useFeedHeaderTitle } from "~/store/feed/hooks"
+import { useSendAIShortcut } from "~/modules/ai-chat/hooks/useSendAIShortcut"
+import { useSettingModal } from "~/modules/settings/modal/use-setting-modal-hack"
 
-interface EntryPlaceholderLogoProps {
-  onAskAI?: () => void
-}
+export const EntryPlaceholderLogo = () => {
+  const { sendAIShortcut } = useSendAIShortcut()
+  const settingModalPresent = useSettingModal()
+  const handleSummarizeTimeline = useCallback(() => {
+    void sendAIShortcut({
+      shortcutId: DEFAULT_SUMMARIZE_TIMELINE_SHORTCUT_ID,
+      ensureNewChat: true,
+    })
+  }, [sendAIShortcut])
+  const handleRecommendFeeds = useCallback(() => {
+    void sendAIShortcut({
+      shortcutId: DEFAULT_RECOMMEND_FEEDS_SHORTCUT_ID,
+      ensureNewChat: true,
+    })
+  }, [sendAIShortcut])
 
-export const EntryPlaceholderLogo = ({ onAskAI }: EntryPlaceholderLogoProps) => {
-  const title = useFeedHeaderTitle()
-  const aiEnabled = useFeature("ai")
-
-  const handleAskAI = () => {
-    if (onAskAI) {
-      onAskAI()
-      return
-    }
-
-    setAIPanelVisibility(true)
-  }
+  const buttons = [
+    {
+      label: "Personalize my Folo AI",
+      onClick: () => settingModalPresent("ai"),
+    },
+    {
+      label: "Summarize the current timeline",
+      onClick: handleSummarizeTimeline,
+    },
+    {
+      label: "Sort the timeline by importance",
+      // onClick: handleSummarizeTimeline,
+    },
+    {
+      label: "Suggest me some new feeds",
+      onClick: handleRecommendFeeds,
+    },
+  ]
 
   return (
     <div
@@ -32,28 +52,25 @@ export const EntryPlaceholderLogo = ({ onAskAI }: EntryPlaceholderLogoProps) => 
         "flex w-full min-w-0 flex-col items-center justify-center gap-2 px-12 pb-6 text-center text-lg font-medium text-text-secondary duration-500"
       }
     >
-      <Logo className="size-14 opacity-40 grayscale" />
-      <div className="line-clamp-3 w-[60ch] max-w-full opacity-70">{title}</div>
-
-      {aiEnabled && (
-        <MotionButtonBase
-          onClick={handleAskAI}
-          className={cn(
-            "mt-8 flex h-10 items-center gap-1.5 rounded-xl px-4 text-sm font-medium",
-            "bg-gradient-to-r from-purple-500/10 to-blue-500/10",
-            "border border-purple-200/30 dark:border-purple-800/30",
-            "text-purple-600 dark:text-purple-400",
-            "hover:from-purple-500/20 hover:to-blue-500/20",
-            "hover:border-purple-300/50 dark:hover:border-purple-700/50",
-            "transition-all duration-200",
-            "backdrop-blur-sm",
-            "sm:duration-300 sm:group-hover:translate-y-0",
-          )}
-        >
-          <i className="i-mingcute-ai-line text-base" />
-          <span>Summarize the current timeline</span>
-        </MotionButtonBase>
-      )}
+      <i className="i-mgc-folo-bot-original size-16 text-text-tertiary" />
+      <div>Where are we off to first?</div>
+      <div className="mt-4 flex flex-col gap-2">
+        {buttons.map((button) => (
+          <Button
+            key={button.label}
+            type="button"
+            onClick={button.onClick}
+            buttonClassName="justify-start"
+            textClassName="flex items-center gap-2 text-purple-600 dark:text-purple-400"
+            variant="ghost"
+          >
+            <i className="i-mingcute-ai-line text-base" />
+            <span className="bg-gradient-to-r from-purple-600 to-blue-600 bg-clip-text text-transparent dark:from-purple-400 dark:to-blue-400">
+              {button.label}
+            </span>
+          </Button>
+        ))}
+      </div>
     </div>
   )
 }

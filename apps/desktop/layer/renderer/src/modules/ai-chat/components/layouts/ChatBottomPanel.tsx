@@ -1,6 +1,5 @@
 import { cn } from "@follow/utils"
 import type { EditorState } from "lexical"
-import { $createParagraphNode, $getRoot, createEditor } from "lexical"
 import { m } from "motion/react"
 import { useCallback, useLayoutEffect, useRef } from "react"
 
@@ -10,7 +9,7 @@ import { ChatShortcutsRow } from "~/modules/ai-chat/components/layouts/ChatShort
 import { RateLimitNotice } from "~/modules/ai-chat/components/layouts/RateLimitNotice"
 
 import type { ShortcutData } from "../../editor"
-import { LexicalAIEditorNodes, ShortcutNode } from "../../editor"
+import { useSendAIShortcut } from "../../hooks/useSendAIShortcut"
 
 interface ChatBottomPanelProps {
   hasMessages: boolean
@@ -39,6 +38,7 @@ export const ChatBottomPanel = ({
 }: ChatBottomPanelProps) => {
   const panelRef = useRef<HTMLDivElement | null>(null)
   const t = useI18n()
+  const { sendAIShortcut } = useSendAIShortcut()
 
   useLayoutEffect(() => {
     const element = panelRef.current
@@ -64,28 +64,16 @@ export const ChatBottomPanel = ({
 
   const handleShortcutSelect = useCallback(
     (shortcutData: ShortcutData) => {
-      const tempEditor = createEditor({
-        nodes: LexicalAIEditorNodes,
+      void sendAIShortcut({
+        shortcut: shortcutData,
+        behavior: "send",
+        openPanel: false,
+        onSend: (editorState) => {
+          onSendMessage(editorState)
+        },
       })
-
-      tempEditor.update(
-        () => {
-          const root = $getRoot()
-          root.clear()
-          const paragraph = $createParagraphNode()
-          const shortcutNode = new ShortcutNode(shortcutData)
-          paragraph.append(shortcutNode)
-          root.append(paragraph)
-        },
-        {
-          discrete: true,
-        },
-      )
-
-      const editorState = tempEditor.getEditorState()
-      onSendMessage(editorState)
     },
-    [onSendMessage],
+    [onSendMessage, sendAIShortcut],
   )
 
   return (
