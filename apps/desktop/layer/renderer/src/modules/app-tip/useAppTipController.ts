@@ -1,54 +1,33 @@
-import { useWhoami } from "@follow/store/user/hooks"
 import { useCallback, useEffect, useMemo, useState } from "react"
 import { useTranslation } from "react-i18next"
 import { useNavigate } from "react-router"
 
-import { useAuthQuery } from "~/hooks/common/useBizQuery"
-import { settings } from "~/queries/settings"
-
-import { APP_TIP_DEBUG_EVENT, APP_TIP_STORAGE_PREFIX } from "./constants"
+import { APP_TIP_DEBUG_EVENT } from "./constants"
 import type { AppTipDebugOpenEventDetail, AppTipStep } from "./types"
+import { useNewUserGuideState } from "./useNewUserGuideState"
 
 export function useAppTipController() {
-  const user = useWhoami()
-  const { data: remoteSettings, isLoading } = useAuthQuery(settings.get(), {})
+  const {
+    eligibleForGuide,
+    hasDismissed,
+    setHasDismissed,
+    persistDismissState,
+    shouldShowNewUserGuide,
+  } = useNewUserGuideState()
   const navigate = useNavigate()
   const { t } = useTranslation()
-
-  const dismissKey = user ? `${APP_TIP_STORAGE_PREFIX}:${user.id}` : null
-  const [hasDismissed, setHasDismissed] = useState(() => readDismissed(dismissKey))
-
-  useEffect(() => {
-    setHasDismissed(readDismissed(dismissKey))
-  }, [dismissKey])
 
   const [activeStep, setActiveStep] = useState(0)
   const [showAiGuide, setShowAiGuide] = useState(false)
   const [forceOpen, setForceOpen] = useState(false)
 
-  const isNewUser =
-    !isLoading && remoteSettings && Object.keys(remoteSettings.updated ?? {}).length === 0
-  const eligibleForGuide = Boolean(user && isNewUser)
-  const shouldShowDialog = (eligibleForGuide && !hasDismissed) || forceOpen
+  const shouldShowDialog = shouldShowNewUserGuide || forceOpen
 
   useEffect(() => {
     if (eligibleForGuide && !hasDismissed) {
       setActiveStep(0)
     }
   }, [eligibleForGuide, hasDismissed])
-
-  const persistDismissState = useCallback(
-    (next: boolean) => {
-      if (!dismissKey || typeof window === "undefined") return
-
-      if (next) {
-        window.localStorage.setItem(dismissKey, "1")
-      } else {
-        window.localStorage.removeItem(dismissKey)
-      }
-    },
-    [dismissKey],
-  )
 
   const completeOnboarding = useCallback(
     (options?: { skipPersistence?: boolean }) => {
@@ -58,7 +37,7 @@ export function useAppTipController() {
       }
       setForceOpen(false)
     },
-    [persistDismissState],
+    [persistDismissState, setHasDismissed],
   )
 
   const handleDismiss = useCallback(() => {
@@ -164,14 +143,5 @@ export function useAppTipController() {
     activeStepIndex: activeStep,
     handleDismiss,
     setActiveStep,
-  }
-}
-
-function readDismissed(key: string | null) {
-  if (!key || typeof window === "undefined") return false
-  try {
-    return window.localStorage.getItem(key) === "1"
-  } catch {
-    return false
   }
 }
