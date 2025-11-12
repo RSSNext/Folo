@@ -7,6 +7,7 @@ export type AppTipStepMedia = {
   src?: string
   poster?: string
   caption?: string
+  kind?: "video" | "image"
 }
 
 export type AppTipStep = {
