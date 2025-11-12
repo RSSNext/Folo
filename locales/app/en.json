@@ -373,7 +373,7 @@
   "sidebar.feed_actions.edit_list": "Edit List",
   "sidebar.feed_actions.feed_owned_by_you": "This feed is owned by you",
   "sidebar.feed_actions.list_owned_by_you": "This List is owned by you",
-  "sidebar.feed_actions.mark_all_as_read": "Mark All as Read",
+  "sidebar.feed_actions.mark_all_as_read": "Mark as Read",
   "sidebar.feed_actions.navigate_to_feed": "Navigate to Feed",
   "sidebar.feed_actions.navigate_to_list": "Navigate to List",
   "sidebar.feed_actions.new_inbox": "New Inbox",

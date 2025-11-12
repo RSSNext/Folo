@@ -19,6 +19,7 @@ import { memo, useCallback, useEffect, useLayoutEffect, useMemo, useRef, useStat
 import { useTranslation } from "react-i18next"
 
 import { useRootContainerElement } from "~/atoms/dom"
+import { useIsInMASReview } from "~/atoms/server-configs"
 import { useUISettingKey } from "~/atoms/settings/ui"
 import { setTimelineColumnShow, useSubscriptionColumnShow } from "~/atoms/sidebar"
 import { Focusable } from "~/components/common/Focusable"
@@ -253,6 +254,7 @@ const SubscriptionLimitNotice: FC = () => {
   const feedSubscriptions = useAllFeedSubscription()
   const { feedLimit, rsshubLimit } = useUserSubscriptionLimit()
   const openSettings = useSettingModal()
+  const isInMASReview = useIsInMASReview()
 
   const feedIds = useMemo(
     () =>
@@ -276,6 +278,9 @@ const SubscriptionLimitNotice: FC = () => {
   const exceededFeed = typeof feedLimit === "number" && feedCount > feedLimit
   const exceededRSSHub = typeof rsshubLimit === "number" && rsshubCount > rsshubLimit
   if (!exceededFeed && !exceededRSSHub) {
+    return null
+  }
+  if (isInMASReview) {
     return null
   }
 
