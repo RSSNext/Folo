@@ -5,6 +5,7 @@ import {
 } from "@follow/shared/settings/defaults"
 import { stopPropagation } from "@follow/utils/dom"
 import { useCallback } from "react"
+import { toast } from "sonner"
 
 import { useSendAIShortcut } from "~/modules/ai-chat/hooks/useSendAIShortcut"
 import { useSettingModal } from "~/modules/settings/modal/use-setting-modal-hack"
@@ -35,12 +36,14 @@ export const EntryPlaceholderLogo = () => {
       onClick: handleSummarizeTimeline,
     },
     {
-      label: "Sort the timeline by importance",
-      // onClick: handleSummarizeTimeline,
-    },
-    {
       label: "Suggest me some new feeds",
       onClick: handleRecommendFeeds,
+    },
+    {
+      label: "Sort the timeline by importance",
+      onClick: () => {
+        toast.success("Coming soon!")
+      },
     },
   ]
 
