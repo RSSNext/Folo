@@ -4,6 +4,7 @@ import { RotatingRefreshIcon } from "@follow/components/ui/loading/index.jsx"
 import { EllipsisHorizontalTextWithTooltip } from "@follow/components/ui/typography/index.js"
 import { FeedViewType, getView } from "@follow/constants"
 import { useIsOnline } from "@follow/hooks"
+import { DEFAULT_SUMMARIZE_TIMELINE_SHORTCUT_ID } from "@follow/shared/settings/defaults"
 import { getFeedById } from "@follow/store/feed/getter"
 import { useFeedById } from "@follow/store/feed/hooks"
 import { useWhoami } from "@follow/store/user/hooks"
@@ -11,6 +12,7 @@ import { stopPropagation } from "@follow/utils/dom"
 import { clsx, cn, isBizId } from "@follow/utils/utils"
 import { useAtomValue } from "jotai"
 import type { FC } from "react"
+import { useCallback } from "react"
 import { useTranslation } from "react-i18next"
 import { useNavigate } from "react-router"
 
@@ -21,7 +23,7 @@ import { ROUTE_ENTRY_PENDING } from "~/constants"
 import { useFeature } from "~/hooks/biz/useFeature"
 import { useFollow } from "~/hooks/biz/useFollow"
 import { getRouteParams, useRouteParams } from "~/hooks/biz/useRouteParams"
-import { useSummarizeTimeline } from "~/modules/ai-chat/hooks/useSummarizeTimeline"
+import { useSendAIShortcut } from "~/modules/ai-chat/hooks/useSendAIShortcut"
 import { COMMAND_ID } from "~/modules/command/commands/id"
 import { useRunCommandFn } from "~/modules/command/hooks/use-command"
 import { useCommandShortcut } from "~/modules/command/hooks/use-command-binding"
@@ -90,7 +92,13 @@ export const EntryListHeader: FC<{
 
   const { isScrolledBeyondThreshold } = useEntryRootState()
   const isScrolledBeyondThresholdValue = useAtomValue(isScrolledBeyondThreshold)
-  const { summarizeTimeline } = useSummarizeTimeline()
+  const { sendAIShortcut } = useSendAIShortcut()
+  const summarizeTimeline = useCallback(() => {
+    void sendAIShortcut({
+      shortcutId: DEFAULT_SUMMARIZE_TIMELINE_SHORTCUT_ID,
+      ensureNewChat: true,
+    })
+  }, [sendAIShortcut])
   const showEntryHeader = isWideMode && !!entryId && entryId !== ROUTE_ENTRY_PENDING
   const showTimelineSummaryButton = isWideMode && aiEnabled
 
@@ -128,7 +136,7 @@ export const EntryListHeader: FC<{
                     tooltip={t("entry_list_header.timeline_summary")}
                     onClick={summarizeTimeline}
                   >
-                    <i className="i-mingcute-ai-line text-purple-600 dark:text-purple-400" />
+                    <i className="i-mgc-paint-brush-ai-cute-re text-purple-600 dark:text-purple-400" />
                   </ActionButton>
                 )}
                 <DividerVertical className="mx-2 w-px" />
