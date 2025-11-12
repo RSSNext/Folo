@@ -47,6 +47,7 @@ export const EntryEmptyList = ({
 }
 
 export type EntryListProps = {
+  syncType: "remote" | "local"
   feedId: string
   entriesIds: string[]
   view: FeedViewType
@@ -87,6 +88,7 @@ export const EntryList: FC<EntryListProps> = memo(
     listRef,
     onRangeChange,
     gap,
+    syncType,
   }) => {
     const scrollRef = useScrollViewElement()
 
@@ -163,7 +165,7 @@ export const EntryList: FC<EntryListProps> = memo(
       if (isPlaceholderRow && hasNextPage) {
         fetchNextPage()
       }
-    }, [entriesIds.length, fetchNextPage, hasNextPage, virtualItems])
+    }, [entriesIds.length, fetchNextPage, hasNextPage, virtualItems, syncType])
 
     const [isScrollTop, setIsScrollTop] = useState(true)
 
