@@ -95,6 +95,13 @@ export const useFeedActions = ({
     const isFeedOwner = related.ownerUserId === whoami()?.id
 
     const items: MenuItemInput[] = [
+      new MenuItemText({
+        label: t("sidebar.feed_actions.mark_all_as_read"),
+        shortcut: shortcuts[COMMAND_ID.subscription.markAllAsRead],
+        disabled: isEntryList,
+        click: () => unreadSyncService.markFeedAsRead(isMultipleSelection ? feedIds : [feedId]),
+        supportMultipleSelection: true,
+      }),
       new MenuItemSeparator(isEntryList),
       new MenuItemText({
         label: isEntryList ? t("sidebar.feed_actions.edit_feed") : t("sidebar.feed_actions.edit"),
@@ -124,14 +131,6 @@ export const useFeedActions = ({
           }
           deleteSubscription.mutate({ subscription })
         },
-      }),
-      new MenuItemSeparator(isEntryList),
-      new MenuItemText({
-        label: t("sidebar.feed_actions.mark_all_as_read"),
-        shortcut: shortcuts[COMMAND_ID.subscription.markAllAsRead],
-        disabled: isEntryList,
-        click: () => unreadSyncService.markFeedAsRead(isMultipleSelection ? feedIds : [feedId]),
-        supportMultipleSelection: true,
       }),
       new MenuItemSeparator(isEntryList),
       new MenuItemText({
