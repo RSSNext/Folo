@@ -1,4 +1,6 @@
 {
+  "about.appTip": "App 功能",
+  "about.appTipDescription": "App 功能介绍与使用指南。",
   "about.changelog": "更新日志",
   "about.changelogDescription": "查看每个版本的新功能",
   "about.checkForUpdates": "检查更新",

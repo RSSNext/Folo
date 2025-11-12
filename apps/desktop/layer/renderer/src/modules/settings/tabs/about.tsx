@@ -15,6 +15,7 @@ import { useModalStack } from "~/components/ui/modal/stacked/hooks"
 import { ipcServices } from "~/lib/client"
 import { getNewIssueUrl } from "~/lib/issues"
 import { EnvironmentDebugModalContent } from "~/modules/app/EnvironmentIndicator"
+import { APP_TIP_DEBUG_EVENT } from "~/modules/app-tip"
 
 export const SettingAbout = () => {
   const { t } = useTranslation("settings")
@@ -99,6 +100,14 @@ export const SettingAbout = () => {
   const handleOpenLegal = (type: "privacy" | "tos") => {
     const path = type === "privacy" ? "privacy-policy" : "terms-of-service"
     window.open(`https://folo.is/${path}`, "_blank")
+  }
+
+  const handleOpenAiOnboarding = () => {
+    window.dispatchEvent(
+      new CustomEvent(APP_TIP_DEBUG_EVENT, {
+        detail: { step: 0 },
+      }),
+    )
   }
 
   return (
@@ -187,6 +196,17 @@ export const SettingAbout = () => {
             <div className="text-xs text-text-tertiary">{t("about.changelogDescription")}</div>
           </div>
           <i className="i-mgc-external-link-cute-re text-base text-text-tertiary transition-all group-hover:-translate-y-0.5 group-hover:translate-x-0.5 group-hover:text-accent" />
+        </button>
+        <button
+          type="button"
+          onClick={handleOpenAiOnboarding}
+          className="group flex w-full items-center justify-between rounded-lg p-3 text-left transition-all hover:bg-fill-secondary hover:shadow-sm"
+        >
+          <div>
+            <div className="text-sm font-medium">{t("about.appTip")}</div>
+            <div className="text-xs text-text-tertiary">{t("about.appTipDescription")}</div>
+          </div>
+          <i className="i-mingcute-sparkles-2-line text-base text-text-tertiary transition-all group-hover:-translate-y-0.5 group-hover:translate-x-0.5 group-hover:text-accent" />
         </button>
       </div>
 

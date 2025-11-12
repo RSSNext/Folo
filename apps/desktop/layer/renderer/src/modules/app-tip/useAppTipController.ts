@@ -114,8 +114,6 @@ export function useAppTipController() {
         },
         primaryActionLabel: t("new_user_dialog.overview.primary"),
         onPrimaryAction: () => handleNavigateAndClose("/discover?type=search"),
-        secondaryActionLabel: t("new_user_dialog.actions.next_step"),
-        onSecondaryAction: () => setActiveStep(1),
       },
       {
         id: "ai",
@@ -133,8 +131,6 @@ export function useAppTipController() {
         },
         primaryActionLabel: t("new_user_dialog.ai.primary"),
         onPrimaryAction: handleLaunchAiGuide,
-        secondaryActionLabel: t("new_user_dialog.actions.next_step"),
-        onSecondaryAction: () => setActiveStep(2),
       },
       {
         id: "import",
@@ -152,8 +148,6 @@ export function useAppTipController() {
         },
         primaryActionLabel: t("new_user_dialog.import.primary"),
         onPrimaryAction: () => handleNavigateAndClose("/discover?type=import"),
-        secondaryActionLabel: t("new_user_dialog.actions.previous_step"),
-        onSecondaryAction: () => setActiveStep(1),
       },
     ]
   }, [handleLaunchAiGuide, handleNavigateAndClose, t])

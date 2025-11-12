@@ -29,6 +29,7 @@ export function AppTip() {
         activeStepIndex={activeStepIndex}
         onSelectStep={(idx) => setActiveStep(idx)}
         onDismiss={handleDismiss}
+        hasNextStep={activeStepIndex < steps.length - 1}
       />
 
       {showAiGuide && (

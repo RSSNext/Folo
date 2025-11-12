@@ -10,6 +10,7 @@ import { AppTipMediaPreview } from "./AppTipMediaPreview"
 import type { AppTipStep } from "./types"
 
 type AppTipDialogProps = {
+  hasNextStep: boolean
   steps: AppTipStep[]
   activeStep: AppTipStep
   activeStepIndex: number
@@ -25,8 +26,18 @@ export function AppTipDialog({
   onSelectStep,
   onDismiss,
   open,
+  hasNextStep,
 }: AppTipDialogProps) {
   const { t } = useTranslation()
+
+  const handleNextStep = () => {
+    if (hasNextStep) {
+      onSelectStep(activeStepIndex + 1)
+    } else {
+      onDismiss()
+    }
+  }
+
   return (
     <DeclarativeModal
       id="ai-onboarding"
@@ -91,18 +102,19 @@ export function AppTipDialog({
               </div>
 
               <div className="flex items-center gap-2">
-                {activeStep.secondaryActionLabel && activeStep.onSecondaryAction && (
-                  <Button
-                    variant="outline"
-                    size="sm"
-                    buttonClassName="h-8"
-                    onClick={activeStep.onSecondaryAction}
-                  >
-                    {activeStep.secondaryActionLabel}
-                  </Button>
-                )}
-                <Button size="sm" buttonClassName="h-8" onClick={activeStep.onPrimaryAction}>
+                <Button
+                  size="sm"
+                  variant={"outline"}
+                  buttonClassName="h-8"
+                  onClick={activeStep.onPrimaryAction}
+                >
                   {activeStep.primaryActionLabel}
+                </Button>
+
+                <Button size="sm" buttonClassName="h-8" onClick={handleNextStep}>
+                  {hasNextStep
+                    ? t("words.next", { ns: "common" })
+                    : t("new_user_dialog.actions.finish")}
                 </Button>
               </div>
             </div>
