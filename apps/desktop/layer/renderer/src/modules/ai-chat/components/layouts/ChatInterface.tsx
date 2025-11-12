@@ -37,6 +37,11 @@ import { useAttachScrollBeyond } from "../../hooks/useAttachScrollBeyond"
 import { AIPanelRefsContext } from "../../store/AIChatContext"
 import type { AIChatContextBlock, BizUIMessage, SendingUIMessage } from "../../store/types"
 import { computeIsRateLimited, computeRateLimitMessage } from "../../utils/rate-limit"
+import {
+  extractShortcutIdFromMessageParts,
+  extractShortcutIdFromSerializedState,
+  prefixMessageIdWithShortcut,
+} from "../../utils/shortcut"
 import { GlobalFileDropZone } from "../file/GlobalFileDropZone"
 import { AIErrorFallback } from "./AIErrorFallback"
 import { ChatBottomPanel } from "./ChatBottomPanel"
@@ -211,6 +216,8 @@ const ChatInterfaceContent = ({ centerInputOnEmpty }: ChatInterfaceProps) => {
       },
     ]
 
+    let shortcutIdFromMessage: string | undefined
+
     if (typeof message === "string") {
       parts.push({
         type: "data-rich-text",
@@ -221,10 +228,12 @@ const ChatInterfaceContent = ({ centerInputOnEmpty }: ChatInterfaceProps) => {
       })
     } else {
       staticEditor.setEditorState(message)
+      const serializedState = message.toJSON()
+      shortcutIdFromMessage = extractShortcutIdFromSerializedState(serializedState)
       parts.push({
         type: "data-rich-text",
         data: {
-          state: JSON.stringify(message.toJSON()),
+          state: JSON.stringify(serializedState),
           text: convertLexicalToMarkdown(staticEditor),
         },
       })
@@ -232,10 +241,11 @@ const ChatInterfaceContent = ({ centerInputOnEmpty }: ChatInterfaceProps) => {
 
     // Capture actual content height (messages container), not including reserved minHeight
     scrollHeightBeforeSendingRef.current = messagesContentRef.current?.scrollHeight ?? 0
+    const messageId = prefixMessageIdWithShortcut(nanoid(), shortcutIdFromMessage)
     const sendMessage: SendingUIMessage = {
       parts,
       role: "user",
-      id: nanoid(),
+      id: messageId,
     }
     chatActions.sendMessage(sendMessage)
     tracker.aiChatMessageSent()
@@ -264,6 +274,8 @@ const ChatInterfaceContent = ({ centerInputOnEmpty }: ChatInterfaceProps) => {
       ...(rest as Omit<SendingUIMessage, "id">),
       id: nanoid(),
     }
+    const retryShortcutId = extractShortcutIdFromMessageParts(retryMessage.parts)
+    retryMessage.id = prefixMessageIdWithShortcut(retryMessage.id, retryShortcutId)
 
     scrollHeightBeforeSendingRef.current = messagesContentRef.current?.scrollHeight ?? 0
 
