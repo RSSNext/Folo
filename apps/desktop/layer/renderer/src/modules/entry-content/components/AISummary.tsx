@@ -43,7 +43,7 @@ export function AISummary({ entryId }: { entryId: string }) {
     setAIPanelVisibility(true)
   }
 
-  if (!showAISummary || (!summary.isLoading && !summary.data)) {
+  if (!showAISummary) {
     return null
   }
 

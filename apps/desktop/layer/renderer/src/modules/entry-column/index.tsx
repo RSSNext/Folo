@@ -33,6 +33,7 @@ import { EntryRootStateContext } from "./store/EntryColumnContext"
 function EntryColumnContent() {
   const listRef = useRef<Virtualizer<HTMLElement, Element>>(undefined)
   const state = useEntriesState()
+
   const actions = useEntriesActions()
   // Register reset handler to keep scroll behavior when data resets
   useEffect(() => {
@@ -177,6 +178,7 @@ function EntryColumnContent() {
             fetchNextPage={fetchNextPage}
             refetch={actions.refetch}
             groupCounts={groupedCounts}
+            syncType={state.type}
             Footer={
               isCollection ? void 0 : <FooterMarkItem view={view} fetchedTime={state.fetchedTime} />
             }

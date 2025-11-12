@@ -52,6 +52,15 @@ export const useRoleEndAt = () => {
   return useUserStore((state) => state.roleEndAt)
 }
 
+export const useUserSubscriptionLimit = () => {
+  const rsshubLimit = useUserStore((state) => state.rsshubSubscriptionLimit)
+  const feedLimit = useUserStore((state) => state.feedSubscriptionLimit)
+  return {
+    rsshubLimit,
+    feedLimit,
+  }
+}
+
 export const useUserById = (userId: string | undefined) => {
   return useUserStore((state) => (userId ? state.users[userId] : undefined))
 }

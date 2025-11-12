@@ -280,6 +280,7 @@ class APIMorph {
       stripeCustomerId: data.stripeCustomerId,
       inactive: data.inactive,
       lastLoginMethod: data.lastLoginMethod,
+      appleAppAccountToken: data.appleAppAccountToken,
     }
   }
 }

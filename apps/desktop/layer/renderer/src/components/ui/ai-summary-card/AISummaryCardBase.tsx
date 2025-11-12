@@ -192,7 +192,7 @@ export const AISummaryCardBase: React.FC<AISummaryCardBaseProps> = ({
                 "sm:opacity-0 sm:duration-300 sm:group-hover:translate-y-0 sm:group-hover:opacity-100",
               )}
             >
-              <i className="i-mingcute-ai-line text-base" />
+              <i className="i-mgc-ai-cute-re text-base" />
               <span>Ask AI</span>
             </MotionButtonBase>
           )}

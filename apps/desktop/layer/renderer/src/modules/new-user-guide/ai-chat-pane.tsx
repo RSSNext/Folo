@@ -41,6 +41,10 @@ import { AIChatWaitingIndicator } from "../ai-chat/components/message/AIChatMess
 import { AIShortcutButton } from "../ai-chat/components/ui/AIShortcutButton"
 import { LexicalAIEditorNodes } from "../ai-chat/editor"
 import { computeRateLimitMessage } from "../ai-chat/utils/rate-limit"
+import {
+  extractShortcutIdFromSerializedState,
+  prefixMessageIdWithShortcut,
+} from "../ai-chat/utils/shortcut"
 import { stepAtom } from "./store"
 
 const SUGGESTION_KEYS = [
@@ -396,6 +400,8 @@ function AIChatInterface({ inputRef }: AIChatInterfaceProps) {
       },
     ]
 
+    let shortcutIdFromMessage: string | undefined
+
     if (typeof message === "string") {
       parts.push({
         type: "data-rich-text",
@@ -406,10 +412,12 @@ function AIChatInterface({ inputRef }: AIChatInterfaceProps) {
       })
     } else {
       staticEditor.setEditorState(message)
+      const serializedState = message.toJSON()
+      shortcutIdFromMessage = extractShortcutIdFromSerializedState(serializedState)
       parts.push({
         type: "data-rich-text",
         data: {
-          state: JSON.stringify(message.toJSON()),
+          state: JSON.stringify(serializedState),
           text: convertLexicalToMarkdown(staticEditor),
         },
       })
@@ -420,7 +428,7 @@ function AIChatInterface({ inputRef }: AIChatInterfaceProps) {
     chatActions.sendMessage({
       parts,
       role: "user",
-      id: nanoid(),
+      id: prefixMessageIdWithShortcut(nanoid(), shortcutIdFromMessage),
     })
     tracker.aiChatMessageSent()
 

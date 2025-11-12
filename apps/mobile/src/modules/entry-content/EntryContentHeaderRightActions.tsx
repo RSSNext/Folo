@@ -4,7 +4,6 @@ import { useEntry } from "@follow/store/entry/hooks"
 import { entrySyncServices } from "@follow/store/entry/store"
 import { useFeedById } from "@follow/store/feed/hooks"
 import { useSubscriptionById } from "@follow/store/subscription/hooks"
-import { summaryActions, summarySyncService } from "@follow/store/summary/store"
 import { translationSyncService } from "@follow/store/translation/store"
 import { setStringAsync } from "expo-clipboard"
 import { useAtom } from "jotai"
@@ -19,14 +18,13 @@ import type { MenuItemIconProps } from "zeego/lib/typescript/menu"
 import { getActionLanguage, useGeneralSettingKey } from "@/src/atoms/settings/general"
 import { ActionBarItem } from "@/src/components/ui/action-bar/ActionBarItem"
 import { DropdownMenu } from "@/src/components/ui/context-menu"
-import { AiCuteReIcon } from "@/src/icons/ai_cute_re"
 import { DocmentCuteReIcon } from "@/src/icons/docment_cute_re"
 import { More1CuteReIcon } from "@/src/icons/more_1_cute_re"
 import { ShareForwardCuteReIcon } from "@/src/icons/share_forward_cute_re"
 import { StarCuteFiIcon } from "@/src/icons/star_cute_fi"
 import { StarCuteReIcon } from "@/src/icons/star_cute_re"
 import { Translate2CuteReIcon } from "@/src/icons/translate_2_cute_re"
-import { hideIntelligenceGlowEffect, openLink, showIntelligenceGlowEffect } from "@/src/lib/native"
+import { hideIntelligenceGlowEffect, openLink } from "@/src/lib/native"
 import { toast } from "@/src/lib/toast"
 
 import { useEntryContentContext } from "./ctx"
@@ -74,11 +72,9 @@ const HeaderRightActionsImpl = ({
       },
   )
 
-  const { showAISummaryAtom, showReadabilityAtom, showAITranslationAtom } = useEntryContentContext()
-  const [showAISummary, setShowAISummary] = useAtom(showAISummaryAtom)
+  const { showReadabilityAtom, showAITranslationAtom } = useEntryContentContext()
   const [showTranslation, setShowTranslation] = useAtom(showAITranslationAtom)
   const [showReadability, setShowReadability] = useAtom(showReadabilityAtom)
-  const showAISummarySetting = useGeneralSettingKey("summary") || !!entry?.settings?.summary
   const showAITranslationSetting =
     useGeneralSettingKey("translation") || !!entry?.settings?.translation
   const showReadabilitySetting = !!entry?.settings?.readability
@@ -103,29 +99,6 @@ const HeaderRightActionsImpl = ({
       message: entry.url,
       title: entry.title,
       url: entry.url,
-    })
-  }
-
-  const toggleAISummary = () => {
-    if (!entry) return
-
-    const getCachedOrGenerateSummary = async () => {
-      const hasSummary = summaryActions.getSummary(entryId, getActionLanguage())
-      if (hasSummary) return
-
-      const hideGlowEffect = showIntelligenceGlowEffect()
-      await summarySyncService.generateSummary({
-        entryId,
-        target: showReadability ? "readabilityContent" : "content",
-        actionLanguage: getActionLanguage(),
-      })
-      hideGlowEffect()
-    }
-
-    setShowAISummary((prev) => {
-      const newValue = !prev
-      if (newValue) getCachedOrGenerateSummary()
-      return newValue
     })
   }
 
@@ -182,16 +155,6 @@ const HeaderRightActionsImpl = ({
       active: showReadability,
       isCheckbox: true,
       // inMenu: true,
-    },
-    !showAISummarySetting && {
-      key: "GenerateSummary",
-      title: "Generate Summary",
-      icon: <AiCuteReIcon />,
-      iconIOS: { name: "sparkles" },
-      onPress: toggleAISummary,
-      active: showAISummary,
-      isCheckbox: true,
-      inMenu: true,
     },
     !showAITranslationSetting && {
       key: "ShowTranslation",

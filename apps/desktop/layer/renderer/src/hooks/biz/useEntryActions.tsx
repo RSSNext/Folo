@@ -207,8 +207,12 @@ const entrySelector = (state: EntryModel) => {
 }
 export const HIDE_ACTIONS_IN_ENTRY_CONTEXT_MENU: FollowCommandId[] = [
   COMMAND_ID.entry.viewSourceContent,
-  COMMAND_ID.entry.toggleAISummary,
+  COMMAND_ID.entry.copyTitle,
+  COMMAND_ID.entry.copyLink,
+  COMMAND_ID.entry.exportAsPDF,
+  COMMAND_ID.entry.imageGallery,
   COMMAND_ID.entry.toggleAITranslation,
+  COMMAND_ID.entry.share,
 
   COMMAND_ID.settings.customizeToolbar,
   COMMAND_ID.entry.readability,
@@ -349,17 +353,6 @@ export const useEntryActions = ({ entryId, view }: { entryId: string; view: Feed
         entryId,
       }),
       new EntryActionMenuItem({
-        id: COMMAND_ID.entry.toggleAISummary,
-        onClick: runCmdFn(COMMAND_ID.entry.toggleAISummary, []),
-        hide:
-          isShowAISummaryAuto ||
-          ([FeedViewType.SocialMedia, FeedViewType.Videos] as (number | undefined)[]).includes(
-            view,
-          ),
-        active: isShowAISummaryOnce,
-        entryId,
-      }),
-      new EntryActionMenuItem({
         id: COMMAND_ID.entry.toggleAITranslation,
         onClick: runCmdFn(COMMAND_ID.entry.toggleAITranslation, []),
         hide:
@@ -372,10 +365,11 @@ export const useEntryActions = ({ entryId, view }: { entryId: string; view: Feed
         entryId,
       }),
       new EntryActionMenuItem({
-        id: COMMAND_ID.entry.share,
-        onClick: runCmdFn(COMMAND_ID.entry.share, [{ entryId }]),
-        hide: !entry.url,
-        shortcut: shortcuts[COMMAND_ID.entry.share],
+        id: COMMAND_ID.entry.read,
+        onClick: runCmdFn(COMMAND_ID.entry.read, [{ entryId }]),
+        hide: !!isCollection,
+        active: !!entry.read,
+        shortcut: shortcuts[COMMAND_ID.entry.read],
         entryId,
       }),
       new EntryActionMenuItem({
@@ -385,17 +379,16 @@ export const useEntryActions = ({ entryId, view }: { entryId: string; view: Feed
         entryId,
       }),
       new EntryActionMenuItem({
-        id: COMMAND_ID.entry.read,
-        onClick: runCmdFn(COMMAND_ID.entry.read, [{ entryId }]),
-        hide: !!isCollection,
-        active: !!entry.read,
-        shortcut: shortcuts[COMMAND_ID.entry.read],
-        entryId,
-      }),
-      new EntryActionMenuItem({
         id: COMMAND_ID.entry.readBelow,
         onClick: runCmdFn(COMMAND_ID.entry.readBelow, [{ publishedAt: entry.publishedAt }]),
         hide: !!isCollection,
+        entryId,
+      }),
+      new EntryActionMenuItem({
+        id: COMMAND_ID.entry.share,
+        onClick: runCmdFn(COMMAND_ID.entry.share, [{ entryId }]),
+        hide: !entry.url,
+        shortcut: shortcuts[COMMAND_ID.entry.share],
         entryId,
       }),
       MENU_ITEM_SEPARATOR,

@@ -21,6 +21,8 @@ type UserStore = {
   whoami: MeModel | null
   role: UserRole | null
   roleEndAt: Date | null
+  rsshubSubscriptionLimit?: number | null
+  feedSubscriptionLimit?: number | null
 }
 
 const defaultState: UserStore = {
@@ -75,6 +77,8 @@ class UserSyncService {
         if (res.user?.roleEndAt) {
           state.roleEndAt = new Date(res.user?.roleEndAt)
         }
+        state.rsshubSubscriptionLimit = res.rsshubSubscriptionLimit ?? null
+        state.feedSubscriptionLimit = res.feedSubscriptionLimit ?? null
       })
       userActions.upsertMany([user])
 

@@ -22,7 +22,6 @@ import {
 } from "~/components/ui/dropdown-menu/dropdown-menu"
 import { useFeature } from "~/hooks/biz/useFeature"
 import { UrlBuilder } from "~/lib/url-builder"
-import { useAchievementModal } from "~/modules/achievement/hooks"
 import { usePresentUserProfileModal } from "~/modules/profile/hooks"
 import { useSettingModal } from "~/modules/settings/modal/use-setting-modal-hack"
 import { signOut, useSession } from "~/queries/auth"
@@ -42,7 +41,6 @@ export const ProfileButton: FC<ProfileButtonProps> = memo((props) => {
   const { user } = session || {}
   const settingModalPresent = useSettingModal()
   const presentUserProfile = usePresentUserProfileModal("dialog")
-  const presentAchievement = useAchievementModal()
   const { t } = useTranslation()
   const aiEnabled = useFeature("ai")
 
@@ -105,26 +103,6 @@ export const ProfileButton: FC<ProfileButtonProps> = memo((props) => {
 
         <DropdownMenuSeparator />
 
-        <DropdownMenuItem
-          className="pl-3"
-          onClick={() => {
-            presentUserProfile(user?.id)
-          }}
-          icon={<i className="i-mgc-user-3-cute-re" />}
-        >
-          {t("user_button.profile")}
-        </DropdownMenuItem>
-
-        <DropdownMenuItem
-          className="pl-3"
-          onClick={() => {
-            presentAchievement()
-          }}
-          icon={<i className="i-mgc-trophy-cute-re" />}
-        >
-          {t("user_button.achievement")}
-        </DropdownMenuItem>
-
         {!isInMASReview && serverConfig?.PAYMENT_ENABLED && (
           <DropdownMenuItem
             className="pl-3"
@@ -149,6 +127,28 @@ export const ProfileButton: FC<ProfileButtonProps> = memo((props) => {
           </DropdownMenuItem>
         )}
 
+        <DropdownMenuItem
+          className="pl-3"
+          onClick={() => {
+            presentUserProfile(user?.id)
+          }}
+          icon={<i className="i-mgc-user-3-cute-re" />}
+        >
+          {t("user_button.profile")}
+        </DropdownMenuItem>
+
+        <DropdownMenuSeparator />
+        <DropdownMenuItem
+          className="pl-3"
+          onClick={() => {
+            settingModalPresent()
+          }}
+          icon={<i className="i-mgc-settings-7-cute-re" />}
+          shortcut={"$mod+,"}
+        >
+          {t("user_button.preferences")}
+        </DropdownMenuItem>
+
         <DropdownMenuSeparator />
 
         <DropdownMenuItem
@@ -171,18 +171,6 @@ export const ProfileButton: FC<ProfileButtonProps> = memo((props) => {
             {t("words.rsshub")}
           </DropdownMenuItem>
         )}
-
-        <DropdownMenuSeparator />
-        <DropdownMenuItem
-          className="pl-3"
-          onClick={() => {
-            settingModalPresent()
-          }}
-          icon={<i className="i-mgc-settings-7-cute-re" />}
-          shortcut={"$mod+,"}
-        >
-          {t("user_button.preferences")}
-        </DropdownMenuItem>
         <DropdownMenuSeparator />
         {!window.electron && (
           <>

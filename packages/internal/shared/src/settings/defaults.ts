@@ -1,6 +1,7 @@
 import type { AISettings, GeneralSettings, IntegrationSettings, UISettings } from "./interface"
 
 export const DEFAULT_SUMMARIZE_TIMELINE_SHORTCUT_ID = "default-summarize-timeline"
+export const DEFAULT_RECOMMEND_FEEDS_SHORTCUT_ID = "default-recommend-feeds"
 
 export const defaultGeneralSettings: GeneralSettings = {
   // App
