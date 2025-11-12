@@ -5,15 +5,18 @@ import { RootPortal } from "@follow/components/ui/portal/index.js"
 import { FeedViewType } from "@follow/constants"
 import { useTypeScriptHappyCallback } from "@follow/hooks"
 import { ELECTRON_BUILD } from "@follow/shared/constants"
-import { usePrefetchSubscription } from "@follow/store/subscription/hooks"
+import { useFeedsByIds } from "@follow/store/feed/hooks"
+import { useAllFeedSubscription, usePrefetchSubscription } from "@follow/store/subscription/hooks"
 import { usePrefetchUnread } from "@follow/store/unread/hooks"
+import { useUserSubscriptionLimit } from "@follow/store/user/hooks"
 import { EventBus } from "@follow/utils/event-bus"
 import { clamp, cn } from "@follow/utils/utils"
 import { useWheel } from "@use-gesture/react"
 import { Lethargy } from "lethargy"
 import { AnimatePresence, m } from "motion/react"
 import type { FC, PropsWithChildren } from "react"
-import { memo, useCallback, useEffect, useLayoutEffect, useRef, useState } from "react"
+import { memo, useCallback, useEffect, useLayoutEffect, useMemo, useRef, useState } from "react"
+import { useTranslation } from "react-i18next"
 
 import { useRootContainerElement } from "~/atoms/dom"
 import { useUISettingKey } from "~/atoms/settings/ui"
@@ -24,6 +27,7 @@ import { useBackHome } from "~/hooks/biz/useNavigateEntry"
 import { useReduceMotion } from "~/hooks/biz/useReduceMotion"
 import { parseView, useRouteParamsSelector } from "~/hooks/biz/useRouteParams"
 import { useTimelineList } from "~/hooks/biz/useTimelineList"
+import { useSettingModal } from "~/modules/settings/modal/useSettingModal"
 
 import { WindowUnderBlur } from "../../components/ui/background"
 import { COMMAND_ID } from "../command/commands/id"
@@ -144,6 +148,7 @@ export function SubscriptionColumn({
       <div className="relative mb-2 mt-3">
         <TabsRow />
       </div>
+      <SubscriptionLimitNotice />
       <div
         className={cn("relative mt-1 flex size-full", !shouldFreeUpSpace && "overflow-hidden")}
         ref={carouselRef}
@@ -239,6 +244,58 @@ const TabsRow: FC = () => {
       {timelineList.map((timelineId, index) => (
         <SubscriptionTabButton key={timelineId} timelineId={timelineId} shortcut={`${index + 1}`} />
       ))}
+    </div>
+  )
+}
+
+const SubscriptionLimitNotice: FC = () => {
+  const { t } = useTranslation("app")
+  const feedSubscriptions = useAllFeedSubscription()
+  const { feedLimit, rsshubLimit } = useUserSubscriptionLimit()
+  const openSettings = useSettingModal()
+
+  const feedIds = useMemo(
+    () =>
+      feedSubscriptions
+        .map((subscription) => subscription?.feedId)
+        .filter((feedId): feedId is string => typeof feedId === "string" && feedId.length > 0),
+    [feedSubscriptions],
+  )
+
+  const feeds = useFeedsByIds(feedIds)
+
+  const feedCount = feedSubscriptions.length
+  const rsshubCount = useMemo(() => {
+    if (!feeds || feeds.length === 0) return 0
+    return feeds.reduce((count, feed) => {
+      if (!feed?.url) return count
+      return feed.url.startsWith("rsshub://") ? count + 1 : count
+    }, 0)
+  }, [feeds])
+
+  const exceededFeed = typeof feedLimit === "number" && feedCount > feedLimit
+  const exceededRSSHub = typeof rsshubLimit === "number" && rsshubCount > rsshubLimit
+  if (!exceededFeed && !exceededRSSHub) {
+    return null
+  }
+
+  return (
+    <div className="px-3">
+      <button
+        type="button"
+        onClick={() => openSettings("plan")}
+        className="-mx-3 my-1 flex items-start gap-2 border-y border-red/30 bg-red/10 px-1.5 py-2 text-left text-xs leading-snug text-red transition-colors hover:border-red hover:bg-red/15 focus:outline-none focus-visible:ring-2 focus-visible:ring-red/40"
+      >
+        <i className="i-mgc-warning-circle-cute-re mt-0.5 shrink-0 text-base" aria-hidden />
+        <p>
+          {t("subscription_limit_warning", {
+            feedCount,
+            rsshubCount,
+            feedLimit,
+            rsshubLimit,
+          })}
+        </p>
+      </button>
     </div>
   )
 }

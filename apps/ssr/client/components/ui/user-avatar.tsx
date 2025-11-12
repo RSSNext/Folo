@@ -44,6 +44,7 @@ export const UserAvatar = ({ className }: { className?: string }) => {
         deleted: false,
         inactive: false,
         lastLoginMethod: "github",
+        appleAppAccountToken: null,
       }
     } else {
       return null
