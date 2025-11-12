@@ -28,6 +28,7 @@ import { getCommand, useRunCommandFn } from "~/modules/command/hooks/use-command
 import { useCommandShortcuts } from "~/modules/command/hooks/use-command-binding"
 import type { FollowCommandId } from "~/modules/command/types"
 import { useToolbarOrderMap } from "~/modules/customize-toolbar/hooks"
+import { isOnboardingEntryUrl } from "~/modules/entry-content/utils/onboarding"
 
 import { useRouteParams } from "./useRouteParams"
 
@@ -253,6 +254,7 @@ export const useEntryActions = ({ entryId, view }: { entryId: string; view: Feed
   const shortcuts = useCommandShortcuts()
 
   const isCurrentVisitEntry = routeEntryId === entryId
+  const isOnboardingEntry = isOnboardingEntryUrl(entry?.url)
 
   const actionConfigs: EntryActionItem[] = useMemo(() => {
     if (!hasEntry) return []
@@ -322,6 +324,7 @@ export const useEntryActions = ({ entryId, view }: { entryId: string; view: Feed
         onClick: runCmdFn(COMMAND_ID.entry.copyLink, [{ entryId }]),
         hide: !entry.url,
         shortcut: shortcuts[COMMAND_ID.entry.copyLink],
+        disabled: isOnboardingEntry,
         entryId,
       }),
       new EntryActionMenuItem({
@@ -334,6 +337,7 @@ export const useEntryActions = ({ entryId, view }: { entryId: string; view: Feed
         id: COMMAND_ID.entry.imageGallery,
         hide: entry.imagesLength <= 5,
         onClick: runCmdFn(COMMAND_ID.entry.imageGallery, [{ entryId }]),
+        disabled: isOnboardingEntry,
         entryId,
       }),
       new EntryActionMenuItem({
@@ -341,6 +345,7 @@ export const useEntryActions = ({ entryId, view }: { entryId: string; view: Feed
         hide: !entry.url,
         onClick: runCmdFn(COMMAND_ID.entry.openInBrowser, [{ entryId }]),
         shortcut: shortcuts[COMMAND_ID.entry.openInBrowser],
+        disabled: isOnboardingEntry,
         entryId,
       }),
       new EntryActionMenuItem({
@@ -350,6 +355,7 @@ export const useEntryActions = ({ entryId, view }: { entryId: string; view: Feed
         ]),
         hide: isMobile() || !entry.url,
         active: isShowSourceContent,
+        disabled: isOnboardingEntry,
         entryId,
       }),
       new EntryActionMenuItem({
@@ -412,6 +418,7 @@ export const useEntryActions = ({ entryId, view }: { entryId: string; view: Feed
         hide: !!entry.readability || (view && getView(view)?.wideMode) || !entry.url,
         active: isEntryInReadability,
         notice: !entry.doesContentContainsHTMLTags && !isEntryInReadability,
+        disabled: isOnboardingEntry,
         entryId,
       }),
 
@@ -481,6 +488,7 @@ export const useEntryActions = ({ entryId, view }: { entryId: string; view: Feed
     isEntryInReadability,
     integrationSettings.customIntegration,
     integrationSettings.enableCustomIntegration,
+    isOnboardingEntry,
   ])
 
   return actionConfigs

@@ -1,6 +1,5 @@
 import { MemoedDangerousHTMLStyle } from "@follow/components/common/MemoedDangerousHTMLStyle.js"
 import { FeedViewType } from "@follow/constants"
-import { getEntry } from "@follow/store/entry/getter"
 import { useEntry } from "@follow/store/entry/hooks"
 import { useFeedById } from "@follow/store/feed/hooks"
 import { useIsInbox } from "@follow/store/inbox/hooks"
@@ -23,6 +22,7 @@ import { EntryContentMarkdownRenderer } from "~/modules/renderer/markdown"
 import { WrappedElementProvider } from "~/providers/wrapped-element-provider"
 
 import { useEntryContent, useEntryMediaInfo } from "../../hooks"
+import { isOnboardingEntry } from "../../utils/onboarding"
 import { AISummary } from "../AISummary"
 import { ContainerToc } from "../entry-content/accessories/ContainerToc"
 import { EntryRenderError } from "../entry-content/EntryRenderError"
@@ -143,7 +143,7 @@ const Renderer: React.FC<{
 }> = ({ entryId, view, feedId, noMedia = false, content = "", translation }) => {
   const mediaInfo = useEntryMediaInfo(entryId)
   const isMarkdownEntry = useMemo(() => {
-    return getEntry(entryId)?.url?.startsWith("follow://onboarding")
+    return isOnboardingEntry(entryId)
   }, [entryId])
   const readerRenderInlineStyle = useUISettingKey("readerRenderInlineStyle")
   const stableRenderStyle = useRenderStyle()
