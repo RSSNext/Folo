@@ -16,6 +16,7 @@ import { PlainModal } from "~/components/ui/modal/stacked/custom-modal"
 import { DeclarativeModal } from "~/components/ui/modal/stacked/declarative-modal"
 import { ROOT_CONTAINER_ID } from "~/constants/dom"
 import { EnvironmentIndicator } from "~/modules/app/EnvironmentIndicator"
+import { APP_TIP_DEBUG_EVENT, AppTip } from "~/modules/app-tip"
 import { LoginModalContent } from "~/modules/auth/LoginModalContent"
 import { DebugRegistry } from "~/modules/debug/registry"
 import { EntriesProvider } from "~/modules/entry-column/context/EntriesContext"
@@ -24,7 +25,6 @@ import { SearchCmdK } from "~/modules/panel/cmdk"
 import { CmdNTrigger } from "~/modules/panel/cmdn"
 import { AppNotificationContainer } from "~/modules/upgrade/lazy/index"
 
-import { NewUserGuide } from "./subscription-column/components/NewUserGuide"
 import { SubscriptionColumnContainer } from "./subscription-column/SubscriptionColumn"
 
 const errorTypes = [
@@ -166,7 +166,7 @@ export function MainDestopLayout() {
         </main>
       </EntriesProvider>
 
-      <NewUserGuide />
+      <AppTip />
 
       {isAuthFail && !user && (
         <RootPortal>
@@ -233,12 +233,20 @@ const RootContainer = ({
   )
 }
 
-DebugRegistry.add("New User Guide", () => {
-  import("~/modules/new-user-guide/guide-modal-content").then((m) => {
+DebugRegistry.add("App Tip Dialog", () => {
+  window.dispatchEvent(
+    new CustomEvent(APP_TIP_DEBUG_EVENT, {
+      detail: { step: 0 },
+    }),
+  )
+})
+
+DebugRegistry.add("AI Onboarding", () => {
+  import("~/modules/ai-onboarding/ai-onboarding-modal-content").then((m) => {
     window.presentModal({
-      title: "New User Guide",
+      title: "AI Onboarding",
       content: ({ dismiss }) => (
-        <m.GuideModalContent
+        <m.AiOnboardingModalContent
           onClose={() => {
             dismiss()
           }}

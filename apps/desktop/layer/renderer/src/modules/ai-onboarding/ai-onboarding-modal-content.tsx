@@ -10,7 +10,7 @@ import { DiscoverImportStep } from "./discover-import-step"
 import { FeedsSelectionList } from "./feeds-selection-list"
 import { stepAtom } from "./store"
 
-export function GuideModalContent({ onClose }: { onClose: () => void }) {
+export function AiOnboardingModalContent({ onClose }: { onClose: () => void }) {
   const step = useAtomValue(stepAtom)
 
   useEffect(() => {

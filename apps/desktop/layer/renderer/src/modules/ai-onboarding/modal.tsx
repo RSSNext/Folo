@@ -4,15 +4,15 @@ import { useState } from "react"
 import { PlainModal } from "~/components/ui/modal/stacked/custom-modal"
 import { DeclarativeModal } from "~/components/ui/modal/stacked/declarative-modal"
 
-import { GuideModalContent } from "./guide-modal-content"
+import { AiOnboardingModalContent } from "./ai-onboarding-modal-content"
 
-export const NewUserGuideModal = () => {
+export const AiOnboardingModal = () => {
   const [open, setOpen] = useState(true)
   return (
     <RootPortal>
       <DeclarativeModal
-        id="new-user-guide"
-        title="New User Guide"
+        id="ai-onboarding"
+        title="AI Onboarding"
         CustomModalComponent={PlainModal}
         modalContainerClassName="flex items-center justify-center"
         open={open}
@@ -20,7 +20,7 @@ export const NewUserGuideModal = () => {
         clickOutsideToDismiss={false}
         overlay
       >
-        <GuideModalContent onClose={() => setOpen(false)} />
+        <AiOnboardingModalContent onClose={() => setOpen(false)} />
       </DeclarativeModal>
     </RootPortal>
   )
