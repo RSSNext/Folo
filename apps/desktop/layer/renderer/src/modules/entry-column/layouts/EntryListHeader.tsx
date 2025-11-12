@@ -136,7 +136,7 @@ export const EntryListHeader: FC<{
                     tooltip={t("entry_list_header.timeline_summary")}
                     onClick={summarizeTimeline}
                   >
-                    <i className="i-mingcute-ai-line text-purple-600 dark:text-purple-400" />
+                    <i className="i-mgc-paint-brush-ai-cute-re text-purple-600 dark:text-purple-400" />
                   </ActionButton>
                 )}
                 <DividerVertical className="mx-2 w-px" />

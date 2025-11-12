@@ -28,22 +28,26 @@ export const EntryPlaceholderLogo = () => {
 
   const buttons = [
     {
-      label: "Personalize my Folo AI",
-      onClick: () => settingModalPresent("ai"),
-    },
-    {
       label: "Summarize the current timeline",
       onClick: handleSummarizeTimeline,
+      icon: <i className="i-mgc-paint-brush-ai-cute-re text-base" />,
     },
     {
       label: "Suggest me some new feeds",
       onClick: handleRecommendFeeds,
+      icon: <i className="i-mgc-search-ai-cute-re text-base" />,
     },
     {
       label: "Sort the timeline by importance",
       onClick: () => {
         toast.success("Coming soon!")
       },
+      icon: <i className="i-mgc-refresh-4-ai-cute-re text-base" />,
+    },
+    {
+      label: "Personalize my Folo AI",
+      onClick: () => settingModalPresent("ai"),
+      icon: <i className="i-mgc-ai-cute-re text-base" />,
     },
   ]
 
@@ -67,7 +71,7 @@ export const EntryPlaceholderLogo = () => {
             textClassName="flex items-center gap-2 text-purple-600 dark:text-purple-400"
             variant="ghost"
           >
-            <i className="i-mingcute-ai-line text-base" />
+            {button.icon}
             <span className="bg-gradient-to-r from-purple-600 to-blue-600 bg-clip-text text-transparent dark:from-purple-400 dark:to-blue-400">
               {button.label}
             </span>
