@@ -1,7 +1,11 @@
+import { Label } from "@follow/components/ui/label/index.jsx"
+import { Switch } from "@follow/components/ui/switch/index.jsx"
 import { useCallback, useEffect, useMemo, useState } from "react"
-import { jsx } from "react/jsx-runtime"
+import { jsx, jsxs } from "react/jsx-runtime"
 import { useTranslation } from "react-i18next"
 import { useNavigate } from "react-router"
+
+import { setAISetting, useAISettingKey } from "~/atoms/settings/ai"
 
 import { OpmlAbstractGraphic } from "../discover/OpmlAbstractGraphic"
 import { APP_TIP_DEBUG_EVENT } from "./constants"
@@ -72,6 +76,38 @@ export function useAppTipController() {
     setShowAiGuide(true)
   }, [completeOnboarding, forceOpen, setShowAiGuide])
 
+  const AiSplineIndicatorToggle = () => {
+    const { t } = useTranslation("ai")
+    const showSplineButton = useAISettingKey("showSplineButton")
+    return jsxs("div", {
+      className: "border-t pt-4",
+      children: [
+        jsxs("div", {
+          className: "flex items-center justify-between gap-4",
+          children: [
+            jsxs("div", {
+              className: "space-y-1",
+              children: [
+                jsx(Label, {
+                  className: "text-sm font-medium text-text",
+                  children: t("settings.showSplineButton.label"),
+                }),
+                jsx("p", {
+                  className: "text-xs leading-relaxed text-text-secondary",
+                  children: t("settings.showSplineButton.description"),
+                }),
+              ],
+            }),
+            jsx(Switch, {
+              checked: showSplineButton,
+              onCheckedChange: (v: boolean) => setAISetting("showSplineButton", v),
+            }),
+          ],
+        }),
+      ],
+    })
+  }
+
   const steps = useMemo<AppTipStep[]>(() => {
     return [
       {
@@ -99,6 +135,7 @@ export function useAppTipController() {
 
         primaryActionLabel: t("new_user_dialog.ai.primary"),
         onPrimaryAction: handleLaunchAiGuide,
+        extra: jsx(AiSplineIndicatorToggle, {}),
       },
       {
         id: "import",

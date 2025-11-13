@@ -85,6 +85,8 @@ export function AppTipDialog({
                 </li>
               ))}
             </ul>
+
+            {activeStep.extra}
           </div>
 
           <div className="border-t border-border p-4">

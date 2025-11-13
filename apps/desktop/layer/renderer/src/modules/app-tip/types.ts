@@ -22,4 +22,5 @@ export type AppTipStep = {
   onPrimaryAction: () => void
   secondaryActionLabel?: string
   onSecondaryAction?: () => void
+  extra?: React.ReactNode
 }
