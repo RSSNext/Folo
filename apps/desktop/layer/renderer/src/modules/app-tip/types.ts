@@ -8,6 +8,8 @@ export type AppTipStepMedia = {
   poster?: string
   caption?: string
   kind?: "video" | "image"
+
+  reactNode?: React.ReactNode
 }
 
 export type AppTipStep = {

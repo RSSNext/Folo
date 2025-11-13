@@ -52,7 +52,13 @@ export function AppTipDialog({
     >
       <section className="shadow-modal relative grid min-h-[500px] overflow-hidden rounded-lg border border-border bg-background text-text lg:grid-cols-[1.2fr,1fr]">
         <div className="relative flex aspect-square items-center justify-center overflow-hidden bg-background">
-          <AppTipMediaPreview media={activeStep.media} />
+          {activeStep.media?.reactNode ? (
+            <div className="absolute inset-0 aspect-square w-full overflow-hidden bg-material-medium">
+              {activeStep.media?.reactNode}
+            </div>
+          ) : (
+            <AppTipMediaPreview media={activeStep.media} />
+          )}
         </div>
 
         <div className="relative flex w-[500px] flex-col border-t border-border bg-background lg:border-l lg:border-t-0">

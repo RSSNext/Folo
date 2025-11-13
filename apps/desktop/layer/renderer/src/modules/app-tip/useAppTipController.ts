@@ -1,7 +1,9 @@
 import { useCallback, useEffect, useMemo, useState } from "react"
+import { jsx } from "react/jsx-runtime"
 import { useTranslation } from "react-i18next"
 import { useNavigate } from "react-router"
 
+import { OpmlAbstractGraphic } from "../discover/OpmlAbstractGraphic"
 import { APP_TIP_DEBUG_EVENT } from "./constants"
 import type { AppTipDebugOpenEventDetail, AppTipStep } from "./types"
 import { useNewUserGuideState } from "./useNewUserGuideState"
@@ -107,6 +109,9 @@ export function useAppTipController() {
           t("new_user_dialog.import.highlight_2"),
           t("new_user_dialog.import.highlight_3"),
         ],
+        media: {
+          reactNode: jsx(OpmlAbstractGraphic, {}),
+        },
 
         primaryActionLabel: t("new_user_dialog.import.primary"),
         onPrimaryAction: () => handleNavigateAndClose("/discover?type=import"),
