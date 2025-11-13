@@ -32,11 +32,19 @@ export class ChatSliceActions {
     this._current = instance
   }
 
+  private chatInstance: ZustandChat
   constructor(
     private params: Parameters<StateCreator<ChatSlice, [], [], ChatSlice>>,
-    private chatInstance: ZustandChat,
+
+    options: {
+      chatInstance: ZustandChat
+      hasChatId: boolean
+    },
   ) {
-    this.chatInstance.resumeStream()
+    if (options.hasChatId) {
+      options.chatInstance.resumeStream()
+    }
+    this.chatInstance = options.chatInstance
     return autoBindThis(this)
   }
 
