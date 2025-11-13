@@ -8,7 +8,7 @@ import { ELECTRON_BUILD } from "@follow/shared/constants"
 import { useFeedsByIds } from "@follow/store/feed/hooks"
 import { useAllFeedSubscription, usePrefetchSubscription } from "@follow/store/subscription/hooks"
 import { usePrefetchUnread } from "@follow/store/unread/hooks"
-import { useUserSubscriptionLimit } from "@follow/store/user/hooks"
+import { useIsLoggedIn, useUserSubscriptionLimit } from "@follow/store/user/hooks"
 import { EventBus } from "@follow/utils/event-bus"
 import { clamp, cn } from "@follow/utils/utils"
 import { useWheel } from "@use-gesture/react"
@@ -23,11 +23,14 @@ import { useIsInMASReview } from "~/atoms/server-configs"
 import { useUISettingKey } from "~/atoms/settings/ui"
 import { setTimelineColumnShow, useSubscriptionColumnShow } from "~/atoms/sidebar"
 import { Focusable } from "~/components/common/Focusable"
+import { PlainModal } from "~/components/ui/modal/stacked/custom-modal"
+import { useModalStack } from "~/components/ui/modal/stacked/hooks"
 import { HotkeyScope } from "~/constants"
 import { useBackHome } from "~/hooks/biz/useNavigateEntry"
 import { useReduceMotion } from "~/hooks/biz/useReduceMotion"
 import { parseView, useRouteParamsSelector } from "~/hooks/biz/useRouteParams"
 import { useTimelineList } from "~/hooks/biz/useTimelineList"
+import { LoginModalContent } from "~/modules/auth/LoginModalContent"
 import { useSettingModal } from "~/modules/settings/modal/useSettingModal"
 
 import { WindowUnderBlur } from "../../components/ui/background"
@@ -149,6 +152,7 @@ export function SubscriptionColumn({
       <div className="relative mb-2 mt-3">
         <TabsRow />
       </div>
+      <NotLoggedInNotice />
       <SubscriptionLimitNotice />
       <div
         className={cn("relative mt-1 flex size-full", !shouldFreeUpSpace && "overflow-hidden")}
@@ -300,6 +304,45 @@ const SubscriptionLimitNotice: FC = () => {
               feedLimit,
               rsshubLimit,
             }}
+            components={{
+              b: <b key="b" />,
+              br: <br key="br" />,
+            }}
+          />
+        </p>
+      </button>
+    </div>
+  )
+}
+
+const NotLoggedInNotice: FC = () => {
+  const isLoggedIn = useIsLoggedIn()
+  const modalStack = useModalStack()
+  const isInMASReview = useIsInMASReview()
+
+  if (isLoggedIn || isInMASReview) {
+    return null
+  }
+
+  return (
+    <div className="px-3">
+      <button
+        type="button"
+        onClick={() => {
+          modalStack.present({
+            CustomModalComponent: PlainModal,
+            title: "Login",
+            id: "login",
+            content: () => <LoginModalContent runtime={window.electron ? "app" : "browser"} />,
+            clickOutsideToDismiss: true,
+          })
+        }}
+        className="-mx-3 my-1 flex items-start gap-2 border-blue/30 bg-blue/10 px-1.5 py-2 text-left text-xs leading-snug text-blue transition-colors hover:border-blue hover:bg-blue/15 focus:outline-none focus-visible:ring-2 focus-visible:ring-blue/40"
+      >
+        <span className="ml-1 text-lg">👤</span>
+        <p>
+          <Trans
+            i18nKey="not_logged_in_notice"
             components={{
               b: <b key="b" />,
               br: <br key="br" />,
