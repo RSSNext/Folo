@@ -16,7 +16,7 @@ import { Lethargy } from "lethargy"
 import { AnimatePresence, m } from "motion/react"
 import type { FC, PropsWithChildren } from "react"
 import { memo, useCallback, useEffect, useLayoutEffect, useMemo, useRef, useState } from "react"
-import { useTranslation } from "react-i18next"
+import { Trans } from "react-i18next"
 
 import { useRootContainerElement } from "~/atoms/dom"
 import { useIsInMASReview } from "~/atoms/server-configs"
@@ -250,7 +250,6 @@ const TabsRow: FC = () => {
 }
 
 const SubscriptionLimitNotice: FC = () => {
-  const { t } = useTranslation("app")
   const feedSubscriptions = useAllFeedSubscription()
   const { feedLimit, rsshubLimit } = useUserSubscriptionLimit()
   const openSettings = useSettingModal()
@@ -289,16 +288,31 @@ const SubscriptionLimitNotice: FC = () => {
       <button
         type="button"
         onClick={() => openSettings("plan")}
-        className="-mx-3 my-1 flex items-start gap-2 border-y border-red/30 bg-red/10 px-1.5 py-2 text-left text-xs leading-snug text-red transition-colors hover:border-red hover:bg-red/15 focus:outline-none focus-visible:ring-2 focus-visible:ring-red/40"
+        className="-mx-3 my-1 flex items-start gap-2 border-red/30 bg-red/10 px-1.5 py-2 text-left text-xs leading-snug text-red transition-colors hover:border-red hover:bg-red/15 focus:outline-none focus-visible:ring-2 focus-visible:ring-red/40"
       >
-        <i className="i-mgc-warning-circle-cute-re mt-0.5 shrink-0 text-base" aria-hidden />
+        <i className="i-mgc-warning-cute-re mt-0.5 shrink-0 text-base" aria-hidden />
         <p>
-          {t("subscription_limit_warning", {
+          {/* {t("subscription_limit_warning", {
             feedCount,
             rsshubCount,
             feedLimit,
             rsshubLimit,
-          })}
+
+
+          })} */}
+          <Trans
+            i18nKey="subscription_limit_warning"
+            values={{
+              feedCount,
+              rsshubCount,
+              feedLimit,
+              rsshubLimit,
+            }}
+            components={{
+              b: <b key="b" />,
+              br: <br key="br" />,
+            }}
+          />
         </p>
       </button>
     </div>
