@@ -1,7 +1,7 @@
 import { Label } from "@follow/components/ui/label/index.jsx"
 import { Switch } from "@follow/components/ui/switch/index.jsx"
 import { useCallback, useEffect, useMemo, useState } from "react"
-import { jsx, jsxs } from "react/jsx-runtime"
+import { jsx } from "react/jsx-runtime"
 import { useTranslation } from "react-i18next"
 import { useNavigate } from "react-router"
 
@@ -76,38 +76,6 @@ export function useAppTipController() {
     setShowAiGuide(true)
   }, [completeOnboarding, forceOpen, setShowAiGuide])
 
-  const AiSplineIndicatorToggle = () => {
-    const { t } = useTranslation("ai")
-    const showSplineButton = useAISettingKey("showSplineButton")
-    return jsxs("div", {
-      className: "border-t pt-4",
-      children: [
-        jsxs("div", {
-          className: "flex items-center justify-between gap-4",
-          children: [
-            jsxs("div", {
-              className: "space-y-1",
-              children: [
-                jsx(Label, {
-                  className: "text-sm font-medium text-text",
-                  children: t("settings.showSplineButton.label"),
-                }),
-                jsx("p", {
-                  className: "text-xs leading-relaxed text-text-secondary",
-                  children: t("settings.showSplineButton.description"),
-                }),
-              ],
-            }),
-            jsx(Switch, {
-              checked: showSplineButton,
-              onCheckedChange: (v: boolean) => setAISetting("showSplineButton", v),
-            }),
-          ],
-        }),
-      ],
-    })
-  }
-
   const steps = useMemo<AppTipStep[]>(() => {
     return [
       {
@@ -173,7 +141,7 @@ export function useAppTipController() {
     return () => {
       window.removeEventListener(APP_TIP_DEBUG_EVENT, listener)
     }
-  }, [steps.length])
+  }, [setHasDismissed, steps.length])
 
   const activeStepData = steps[activeStep] ?? steps[0] ?? null
 
@@ -186,4 +154,29 @@ export function useAppTipController() {
     handleDismiss,
     setActiveStep,
   }
+}
+
+const AiSplineIndicatorToggle = () => {
+  const { t } = useTranslation("ai")
+  const showSplineButton = useAISettingKey("showSplineButton")
+
+  return (
+    <div className="border-t pt-4">
+      <div className="flex items-center justify-between gap-4">
+        <div className="space-y-1">
+          <Label className="text-sm font-medium text-text">
+            {t("settings.showSplineButton.label")}
+          </Label>
+          <p className="text-xs leading-relaxed text-text-secondary">
+            {t("settings.showSplineButton.description")}
+          </p>
+        </div>
+
+        <Switch
+          checked={showSplineButton}
+          onCheckedChange={(v) => setAISetting("showSplineButton", v)}
+        />
+      </div>
+    </div>
+  )
 }
