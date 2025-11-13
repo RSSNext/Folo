@@ -139,6 +139,7 @@ const errorTypes = [
  */
 export function MainDestopLayout() {
   const isAuthFail = useLoginModalShow()
+  const [open, setOpen] = useState(true)
   const user = useWhoami()
 
   const containerRef = useRef<HTMLDivElement | null>(null)
@@ -173,13 +174,17 @@ export function MainDestopLayout() {
           <DeclarativeModal
             id="login"
             CustomModalComponent={PlainModal}
-            open
+            open={open}
             overlay
             title="Login"
-            canClose={false}
-            clickOutsideToDismiss={false}
+            canClose={true}
+            clickOutsideToDismiss={true}
           >
-            <LoginModalContent canClose={false} runtime={IN_ELECTRON ? "app" : "browser"} />
+            <LoginModalContent
+              onClose={() => setOpen(false)}
+              canClose={true}
+              runtime={IN_ELECTRON ? "app" : "browser"}
+            />
           </DeclarativeModal>
         </RootPortal>
       )}

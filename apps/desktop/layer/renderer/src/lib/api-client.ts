@@ -56,8 +56,8 @@ followClient.addErrorInterceptor(async ({ error, response }) => {
   return error
 })
 
-followClient.addResponseInterceptor(async ({ response }) => {
-  if (response.status === 401) {
+followClient.addResponseInterceptor(async ({ response, options }) => {
+  if (response.status === 401 && options.method !== "GET") {
     // Or we can present LoginModal here.
     // router.navigate("/login")
     // If any response status is 401, we can set auth fail. Maybe some bug, but if navigate to login page, had same issues

@@ -24,6 +24,7 @@ import { TokenModalContent } from "./TokenModal"
 interface LoginModalContentProps {
   runtime: LoginRuntime
   canClose?: boolean
+  onClose?: () => void
 }
 
 export const LoginModalContent = (props: LoginModalContentProps) => {
@@ -192,7 +193,17 @@ export const LoginModalContent = (props: LoginModalContentProps) => {
   }
 
   return (
-    <div className="center flex h-full" onClick={canClose ? modal.dismiss : undefined}>
+    <div
+      className="center flex h-full"
+      onClick={
+        canClose
+          ? () => {
+              modal.dismiss()
+              props.onClose?.()
+            }
+          : undefined
+      }
+    >
       <m.div
         initial={{ opacity: 0, y: 10 }}
         animate={{ opacity: 1, y: 0 }}

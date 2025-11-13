@@ -27,7 +27,6 @@ import { useSettingModal } from "~/modules/settings/modal/use-setting-modal-hack
 import { signOut, useSession } from "~/queries/auth"
 
 import type { LoginProps } from "./LoginButton"
-import { LoginButton } from "./LoginButton"
 import { UserAvatar } from "./UserAvatar"
 import { UserProBadge } from "./UserProBadge"
 
@@ -37,7 +36,7 @@ export type ProfileButtonProps = LoginProps & {
 
 export const ProfileButton: FC<ProfileButtonProps> = memo((props) => {
   const serverConfig = useServerConfigs()
-  const { status, session } = useSession()
+  const { session } = useSession()
   const { user } = session || {}
   const settingModalPresent = useSettingModal()
   const presentUserProfile = usePresentUserProfileModal("dialog")
@@ -50,10 +49,6 @@ export const ProfileButton: FC<ProfileButtonProps> = memo((props) => {
 
   const role = useUserRole()
   const isInMASReview = useIsInMASReview()
-
-  if (status !== "authenticated") {
-    return <LoginButton {...props} />
-  }
 
   return (
     <DropdownMenu onOpenChange={setDropdown}>

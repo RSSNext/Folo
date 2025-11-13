@@ -2,6 +2,7 @@ import { initializeDayjs } from "@follow/components/dayjs"
 import { registerGlobalContext } from "@follow/shared/bridge"
 import { DEV, ELECTRON_BUILD, IN_ELECTRON } from "@follow/shared/constants"
 import { hydrateDatabaseToStore } from "@follow/store/hydrate"
+import { whoami } from "@follow/store/user/getters"
 import { tracker } from "@follow/tracker"
 import { repository } from "@pkg"
 import { enableMapSet } from "immer"
@@ -86,8 +87,10 @@ export const initializeApp = async () => {
   await apm("i18n", initI18n)
 
   apm("setting sync", () => {
-    settingSyncQueue.init()
-    settingSyncQueue.syncLocal()
+    if (whoami()) {
+      settingSyncQueue.init()
+      settingSyncQueue.syncLocal()
+    }
   })
 
   await apm("initAnalytics", initAnalytics)

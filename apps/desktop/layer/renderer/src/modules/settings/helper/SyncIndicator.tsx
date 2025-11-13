@@ -4,6 +4,7 @@ import { PhCloudX } from "@follow/components/icons/PhCloudX.jsx"
 import { RootPortal } from "@follow/components/ui/portal/index.js"
 import { Tooltip, TooltipContent, TooltipTrigger } from "@follow/components/ui/tooltip/index.jsx"
 import { useIsOnline } from "@follow/hooks"
+import { useWhoami } from "@follow/store/user/hooks"
 import { useEffect, useMemo, useRef } from "react"
 import { useTranslation } from "react-i18next"
 
@@ -17,11 +18,13 @@ export const SettingSyncIndicator = () => {
   const { t } = useTranslation()
   const { data: remoteSettings, isLoading } = useAuthQuery(settings.get(), {})
   const canSync = useSettingContextSelector((s) => s.canSync)
+  const whoami = useWhoami()
+  const hasUser = !!whoami
 
   const isOnline = useIsOnline()
   const onceRef = useRef(false)
   useEffect(() => {
-    if (!isLoading && remoteSettings && !onceRef.current) {
+    if (!isLoading && remoteSettings && !onceRef.current && hasUser) {
       const hasSetting = JSON.stringify(remoteSettings.settings) !== "{}"
       onceRef.current = true
       if (hasSetting) {
@@ -30,7 +33,7 @@ export const SettingSyncIndicator = () => {
       // Replace local to remote
       settingSyncQueue.replaceRemote()
     }
-  }, [remoteSettings, isLoading])
+  }, [remoteSettings, isLoading, hasUser])
 
   const metaInfo: {
     icon: React.FC<React.SVGProps<SVGSVGElement>>
