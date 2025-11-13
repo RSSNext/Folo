@@ -290,16 +290,8 @@ const SubscriptionLimitNotice: FC = () => {
         onClick={() => openSettings("plan")}
         className="-mx-3 my-1 flex items-start gap-2 border-red/30 bg-red/10 px-1.5 py-2 text-left text-xs leading-snug text-red transition-colors hover:border-red hover:bg-red/15 focus:outline-none focus-visible:ring-2 focus-visible:ring-red/40"
       >
-        <i className="i-mgc-warning-cute-re mt-0.5 shrink-0 text-base" aria-hidden />
+        <span className="ml-1 text-lg">😢</span>
         <p>
-          {/* {t("subscription_limit_warning", {
-            feedCount,
-            rsshubCount,
-            feedLimit,
-            rsshubLimit,
-
-
-          })} */}
           <Trans
             i18nKey="subscription_limit_warning"
             values={{

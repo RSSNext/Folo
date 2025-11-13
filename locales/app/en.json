@@ -424,7 +424,7 @@
   "signin.continue_with": "Continue with {{provider}}",
   "signin.sign_in_to": "Sign in to",
   "signin.sign_up_to": "Sign up to",
-  "subscription_limit_warning": "😢 Subscription limit reached: <br /><b>{{feedCount}}/{{feedLimit}} feeds</b>, <br /><b>{{rsshubCount}}/{{rsshubLimit}} RSSHub</b>. <br /> Please upgrade plan or clean up unused feeds.",
+  "subscription_limit_warning": "Subscription limit reached: <br /><b>{{feedCount}}/{{feedLimit}} feeds</b>, <br /><b>{{rsshubCount}}/{{rsshubLimit}} RSSHub</b>. <br /> Please upgrade plan or clean up unused feeds.",
   "sync_indicator.disabled": "Due to security reasons, sync is disabled.",
   "sync_indicator.offline": "Offline",
   "sync_indicator.synced": "Synced with server",
