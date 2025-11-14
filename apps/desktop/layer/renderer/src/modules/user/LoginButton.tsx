@@ -24,7 +24,7 @@ export const LoginButton: FC<LoginProps> = (props) => {
       }
       tooltip={t("words.login")}
     >
-      <LucideLogIn className="size-4" />
+      <LucideLogIn className="size-5 text-text-secondary" />
     </ActionButton>
   )
   return method === "modal" ? Content : <a href="/login">{Content}</a>

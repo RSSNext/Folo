@@ -187,24 +187,59 @@ const ShikiCode: FC<
   return (
     <div
       className={cn(
-        "my-4 border",
+        "group relative my-4 overflow-hidden rounded-lg border backdrop-blur-sm",
         styles["shiki-wrapper"],
         transparent ? styles["transparent"] : null,
         className,
       )}
+      style={{
+        borderColor: "hsl(var(--fo-a) / 0.3)",
+        backgroundColor: "hsl(var(--fo-background) / 0.6)",
+      }}
     >
-      <div className="flex items-center justify-between border-b p-2">
+      {/* Inner subtle glow */}
+      <div
+        className="pointer-events-none absolute inset-0 opacity-50"
+        style={{
+          background: "radial-gradient(circle at 50% 0%, hsl(var(--fo-a) / 0.03), transparent 50%)",
+        }}
+      />
+
+      {/* Compact Header */}
+      <div
+        className="relative flex items-center justify-between border-b py-0 pl-3 pr-1"
+        style={{
+          borderColor: "hsl(var(--fo-a) / 0.3)",
+          backgroundColor: "hsl(var(--fo-a) / 0.05)",
+        }}
+      >
         {language === "plaintext" ? (
-          <div />
+          <div className="h-4" />
         ) : (
-          <span className="center flex gap-1 text-xs uppercase opacity-80 dark:text-white">
-            <span className="center [&_svg]:size-4">{getLanguageIcon(language)}</span>
+          <div className="flex items-center gap-1.5 text-xs font-medium uppercase text-accent">
+            <span className="center [&_svg]:size-3.5">{getLanguageIcon(language)}</span>
             <span>{language}</span>
-          </span>
+          </div>
         )}
-        <CopyButton variant="outline" value={code} className={showCopy ? "" : "invisible"} />
+
+        <CopyButton
+          variant="outline"
+          value={code}
+          className={cn(
+            "scale-90 !bg-transparent transition-opacity duration-200",
+            showCopy ? "opacity-100" : "pointer-events-none opacity-0",
+          )}
+        />
       </div>
-      <div dangerouslySetInnerHTML={{ __html: rendered }} data-language={language} />
+
+      {/* Code content */}
+      <div className="relative">
+        <div
+          dangerouslySetInnerHTML={{ __html: rendered }}
+          data-language={language}
+          className="relative"
+        />
+      </div>
     </div>
   )
 }

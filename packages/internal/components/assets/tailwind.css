@@ -67,3 +67,10 @@ i {
     text-autospace: normal;
   }
 }
+
+@supports (corner-shape: squircle) {
+  .shape-squircle {
+    corner-shape: squircle;
+    border-radius: 5%;
+  }
+}
