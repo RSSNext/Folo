@@ -25,7 +25,7 @@ import type { FeedModel } from "@follow/store/feed/types"
 import { useCategories, useSubscriptionByFeedId } from "@follow/store/subscription/hooks"
 import { subscriptionSyncService } from "@follow/store/subscription/store"
 import { whoami } from "@follow/store/user/getters"
-import { useUserRole } from "@follow/store/user/hooks"
+import { useIsLoggedIn, useUserRole } from "@follow/store/user/hooks"
 import { tracker } from "@follow/tracker"
 import { cn } from "@follow/utils/utils"
 import type { FeedAnalyticsModel, ParsedEntry } from "@follow-app/client-sdk"
@@ -318,6 +318,8 @@ const FeedInnerForm = ({
 
   const t = useI18n()
 
+  const isLoggedIn = useIsLoggedIn()
+
   const categories = useCategories()
 
   const suggestions = useMemo(
@@ -477,6 +479,7 @@ const FeedInnerForm = ({
         <div className="flex items-center justify-end gap-4 pt-2">
           {isSubscribed && (
             <Button
+              disabled={!isLoggedIn}
               type="button"
               variant="ghost"
               onClick={() => {
@@ -486,7 +489,12 @@ const FeedInnerForm = ({
               {t.common("words.cancel")}
             </Button>
           )}
-          <Button form="feed-form" type="submit" isLoading={followMutation.isPending}>
+          <Button
+            disabled={!isLoggedIn}
+            form="feed-form"
+            type="submit"
+            isLoading={followMutation.isPending}
+          >
             {isSubscribed ? t("feed_form.update") : t("feed_form.follow")}
           </Button>
         </div>
