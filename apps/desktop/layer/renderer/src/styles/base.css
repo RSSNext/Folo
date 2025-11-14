@@ -63,3 +63,7 @@ button {
 #react-scan-toolbar {
   @apply no-drag-region max-lg:!hidden;
 }
+
+.grecaptcha-badge {
+  visibility: hidden !important;
+}
