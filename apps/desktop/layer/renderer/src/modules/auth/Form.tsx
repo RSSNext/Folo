@@ -11,9 +11,7 @@ import {
 import { Input } from "@follow/components/ui/input/Input.js"
 import type { LoginRuntime } from "@follow/shared/auth"
 import { env } from "@follow/shared/env.desktop"
-import HCaptcha from "@hcaptcha/react-hcaptcha"
 import { zodResolver } from "@hookform/resolvers/zod"
-import { useRef } from "react"
 import { useForm } from "react-hook-form"
 import { useTranslation } from "react-i18next"
 import { toast } from "sonner"
@@ -21,6 +19,7 @@ import { z } from "zod"
 
 import { useServerConfigs } from "~/atoms/server-configs"
 import { useModalStack } from "~/components/ui/modal/stacked/hooks"
+import { useRecaptchaToken } from "~/hooks/common"
 import { loginHandler, signUp, twoFactor } from "~/lib/auth"
 import { handleSessionChanges } from "~/queries/auth"
 
@@ -51,17 +50,18 @@ export function LoginWithPassword({
   })
 
   const { present } = useModalStack()
-
-  const captchaRef = useRef<HCaptcha>(null)
+  const requestRecaptchaToken = useRecaptchaToken()
 
   async function onSubmit(values: z.infer<typeof formSchema>) {
-    const response = await captchaRef.current?.execute({ async: true })
+    const recaptchaToken = await requestRecaptchaToken("desktop_login")
     const res = await loginHandler("credential", runtime, {
       email: values.email,
       password: values.password,
-      headers: {
-        "x-token": `hc:${response?.response}`,
-      },
+      headers: recaptchaToken
+        ? {
+            "x-token": `r3:${recaptchaToken}`,
+          }
+        : undefined,
     })
     if (res?.error) {
       toast.error(res.error.message)
@@ -133,9 +133,6 @@ export function LoginWithPassword({
           )}
         />
         <div className="flex flex-col space-y-3">
-          {!import.meta.env.DEV && (
-            <HCaptcha sitekey={env.VITE_HCAPTCHA_SITE_KEY} ref={captchaRef} size="invisible" />
-          )}
           <Button
             type="submit"
             isLoading={form.formState.isSubmitting}
@@ -193,11 +190,10 @@ export function RegisterForm({
   })
 
   const serverConfigs = useServerConfigs()
-
-  const captchaRef = useRef<HCaptcha>(null)
+  const requestRecaptchaToken = useRecaptchaToken()
 
   async function onSubmit(values: z.infer<typeof registerFormSchema>) {
-    const response = await captchaRef.current?.execute({ async: true })
+    const recaptchaToken = await requestRecaptchaToken("desktop_register")
     return signUp.email({
       email: values.email,
       password: values.password,
@@ -210,9 +206,11 @@ export function RegisterForm({
         onError(context) {
           toast.error(context.error.message)
         },
-        headers: {
-          "x-token": `hc:${response?.response}`,
-        },
+        headers: recaptchaToken
+          ? {
+              "x-token": `r3:${recaptchaToken}`,
+            }
+          : undefined,
       },
     })
   }
@@ -261,9 +259,6 @@ export function RegisterForm({
             )}
           />
           {serverConfigs?.REFERRAL_ENABLED && <ReferralForm className="mb-4 w-full" align="left" />}
-          {!import.meta.env.DEV && (
-            <HCaptcha sitekey={env.VITE_HCAPTCHA_SITE_KEY} ref={captchaRef} size="invisible" />
-          )}
           <Button type="submit" buttonClassName="w-full" size="lg">
             {t("register.submit")}
           </Button>
