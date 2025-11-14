@@ -27,6 +27,7 @@ import { useEntryContextMenu } from "~/hooks/biz/useEntryContextMenu"
 import { getNavigateEntryPath, useNavigateEntry } from "~/hooks/biz/useNavigateEntry"
 import { getRouteParams, useRouteParams, useRouteParamsSelector } from "~/hooks/biz/useRouteParams"
 import { useShowEntryDetailsColumn } from "~/hooks/biz/useShowEntryDetailsColumn"
+import { useRequireLogin } from "~/hooks/common/useRequireLogin"
 
 export const EntryItemWrapper: FC<
   {
@@ -195,6 +196,7 @@ const ActionBar = ({
   const { view } = useRouteParams()
 
   const { mainAction } = useSortedEntryActions({ entryId, view })
+  const { withLoginGuard } = useRequireLogin()
 
   return (
     <div
@@ -215,9 +217,12 @@ const ActionBar = ({
               item instanceof EntryActionMenuItem &&
               !HIDE_ACTIONS_IN_ENTRY_TOOLBAR_ACTIONS.includes(item.id),
           ) as EntryActionMenuItem[]
-        ).map((item) => (
-          <CommandActionButton key={item.id} onClick={item.onClick} size="xs" commandId={item.id} />
-        ))}
+        ).map((item) => {
+          const handler = item.requiresLogin ? withLoginGuard(item.onClick) : item.onClick
+          return (
+            <CommandActionButton key={item.id} onClick={handler} size="xs" commandId={item.id} />
+          )
+        })}
 
         <ActionButton
           onClick={openContextMenu}

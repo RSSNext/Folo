@@ -1,7 +1,7 @@
 import { ActionButton } from "@follow/components/ui/button/index.js"
 import { RootPortal } from "@follow/components/ui/portal/index.js"
 import type { FeedViewType } from "@follow/constants"
-import { useMemo } from "react"
+import { useCallback, useMemo } from "react"
 
 import { MenuItemText } from "~/atoms/context-menu"
 import {
@@ -19,6 +19,7 @@ import {
   EntryActionMenuItem,
   useSortedEntryActions,
 } from "~/hooks/biz/useEntryActions"
+import { useRequireLogin } from "~/hooks/common/useRequireLogin"
 import { COMMAND_ID } from "~/modules/command/commands/id"
 import { hasCommand, useCommand, useRunCommandFn } from "~/modules/command/hooks/use-command"
 import type { FollowCommandId } from "~/modules/command/types"
@@ -35,6 +36,12 @@ export const MoreActions = ({
   hideCustomizeToolbar?: boolean
 }) => {
   const { moreAction, mainAction } = useSortedEntryActions({ entryId, view })
+  const { withLoginGuard } = useRequireLogin()
+  const resolveClick = useCallback(
+    (action: MenuItemText | EntryActionDropdownItem | EntryActionMenuItem) =>
+      action.requiresLogin ? withLoginGuard(action.onClick) : action.onClick,
+    [withLoginGuard],
+  )
 
   const actionConfigs = useMemo(
     () =>
@@ -87,11 +94,12 @@ export const MoreActions = ({
               {mainAction
                 .filter((config) => config instanceof MenuItemText)
                 .map((config) => {
+                  const handler = resolveClick(config)
                   return (
                     <CommandDropdownMenuItem
                       key={config.id}
                       commandId={config.id}
-                      onClick={config.onClick!}
+                      onClick={handler!}
                       active={config.active}
                     />
                   )
@@ -108,7 +116,7 @@ export const MoreActions = ({
                   <DropdownMenuSubTrigger>
                     <CommandDropdownMenuItem
                       commandId={config.id}
-                      onClick={config.onClick!}
+                      onClick={resolveClick(config)!}
                       active={config.active}
                       asSubTrigger
                     />
@@ -118,7 +126,7 @@ export const MoreActions = ({
                       <CommandDropdownMenuItem
                         key={child.id}
                         commandId={child.id}
-                        onClick={child.onClick!}
+                        onClick={resolveClick(child)!}
                         active={child.active}
                       />
                     ))}
@@ -129,11 +137,12 @@ export const MoreActions = ({
 
             // Handle regular MenuItemText
             if (config instanceof MenuItemText) {
+              const handler = resolveClick(config)
               return (
                 <CommandDropdownMenuItem
                   key={config.id}
                   commandId={config.id}
-                  onClick={config.onClick!}
+                  onClick={handler!}
                   active={config.active}
                 />
               )
@@ -148,7 +157,7 @@ export const MoreActions = ({
               <CommandDropdownMenuItem
                 key={config.id}
                 commandId={config.id}
-                onClick={config.onClick!}
+                onClick={resolveClick(config)!}
                 active={config.active}
               />
             ))}
