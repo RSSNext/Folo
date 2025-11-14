@@ -8,6 +8,7 @@ import { useNavigate } from "react-router"
 import { setAISetting, useAISettingKey } from "~/atoms/settings/ai"
 
 import { OpmlAbstractGraphic } from "../discover/OpmlAbstractGraphic"
+import { AICopilotMedia } from "./AICopilotMedia"
 import { APP_TIP_DEBUG_EVENT } from "./constants"
 import type { AppTipDebugOpenEventDetail, AppTipStep } from "./types"
 import { useNewUserGuideState } from "./useNewUserGuideState"
@@ -100,6 +101,10 @@ export function useAppTipController() {
           t("new_user_dialog.ai.highlight_2"),
           t("new_user_dialog.ai.highlight_3"),
         ],
+
+        media: {
+          reactNode: jsx(AICopilotMedia, {}),
+        },
 
         primaryActionLabel: t("new_user_dialog.ai.primary"),
         onPrimaryAction: handleLaunchAiGuide,

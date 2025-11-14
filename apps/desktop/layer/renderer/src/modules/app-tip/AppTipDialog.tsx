@@ -64,6 +64,7 @@ export function AppTipDialog({
         <div className="relative flex w-[500px] flex-col border-t border-border bg-background lg:border-l lg:border-t-0">
           <GlassButton
             onClick={onDismiss}
+            variant="flat"
             className="absolute right-4 top-4 z-10"
             aria-label={t("new_user_dialog.actions.close")}
           >
