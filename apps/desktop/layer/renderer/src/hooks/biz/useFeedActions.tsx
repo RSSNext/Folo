@@ -35,7 +35,6 @@ import { useCategoryCreationModal } from "~/modules/settings/tabs/lists/hooks"
 import { ListCreationModalContent } from "~/modules/settings/tabs/lists/modals"
 import { useResetFeed } from "~/queries/feed"
 
-import { useNavigateEntry } from "./useNavigateEntry"
 import { useBatchUpdateSubscription, useDeleteSubscription } from "./useSubscriptionActions"
 
 export const useFeedActions = ({
@@ -72,7 +71,6 @@ export const useFeedActions = ({
   const deleteSubscription = useDeleteSubscription({})
   const claimFeed = useFeedClaimModal()
 
-  const navigateEntry = useNavigateEntry()
   const isEntryList = type === "entryList"
 
   const { mutateAsync: addFeedToListMutation } = useAddFeedToFeedList()
@@ -95,6 +93,14 @@ export const useFeedActions = ({
     const isFeedOwner = related.ownerUserId === whoami()?.id
 
     const items: MenuItemInput[] = [
+      new MenuItemText({
+        label: t("sidebar.feed_actions.mark_all_as_read"),
+        shortcut: shortcuts[COMMAND_ID.subscription.markAllAsRead],
+        disabled: isEntryList,
+        click: () => unreadSyncService.markFeedAsRead(isMultipleSelection ? feedIds : [feedId]),
+        supportMultipleSelection: true,
+        requiresLogin: true,
+      }),
       new MenuItemSeparator(isEntryList),
       new MenuItemText({
         label: isEntryList ? t("sidebar.feed_actions.edit_feed") : t("sidebar.feed_actions.edit"),
@@ -107,6 +113,7 @@ export const useFeedActions = ({
             content: ({ dismiss }) => <FeedForm id={feedId} onSuccess={dismiss} />,
           })
         },
+        requiresLogin: true,
       }),
       new MenuItemText({
         label: isMultipleSelection
@@ -124,20 +131,14 @@ export const useFeedActions = ({
           }
           deleteSubscription.mutate({ subscription })
         },
-      }),
-      new MenuItemSeparator(isEntryList),
-      new MenuItemText({
-        label: t("sidebar.feed_actions.mark_all_as_read"),
-        shortcut: shortcuts[COMMAND_ID.subscription.markAllAsRead],
-        disabled: isEntryList,
-        click: () => unreadSyncService.markFeedAsRead(isMultipleSelection ? feedIds : [feedId]),
-        supportMultipleSelection: true,
+        requiresLogin: true,
       }),
       new MenuItemSeparator(isEntryList),
       new MenuItemText({
         label: t("sidebar.feed_column.context_menu.add_feeds_to_list"),
         disabled: isInbox,
         supportMultipleSelection: true,
+        requiresLogin: true,
         submenu: [
           ...listByView.map((list) => {
             const isIncluded = list.feedIds.includes(feedId)
@@ -165,6 +166,7 @@ export const useFeedActions = ({
                   })
                 }
               },
+              requiresLogin: true,
             })
           }),
           listByView.length > 0 && new MenuItemSeparator(),
@@ -177,6 +179,7 @@ export const useFeedActions = ({
                 content: () => <ListCreationModalContent />,
               })
             },
+            requiresLogin: true,
           }),
         ],
       }),
@@ -184,6 +187,7 @@ export const useFeedActions = ({
         label: t("sidebar.feed_column.context_menu.add_feeds_to_category"),
         disabled: isInbox,
         supportMultipleSelection: true,
+        requiresLogin: true,
         submenu: [
           ...Array.from(categories.values()).map((category) => {
             const isIncluded = isMultipleSelection
@@ -199,6 +203,7 @@ export const useFeedActions = ({
                   view: view!,
                 })
               },
+              requiresLogin: true,
             })
           }),
           listByView.length > 0 && MenuItemSeparator.default,
@@ -208,6 +213,7 @@ export const useFeedActions = ({
             click() {
               presentCategoryCreationModal(view!, isMultipleSelection ? feedIds : [feedId])
             },
+            requiresLogin: true,
           }),
         ],
       }),
@@ -223,6 +229,7 @@ export const useFeedActions = ({
             claimFeed({ feedId })
           },
           disabled: isEntryList,
+          requiresLogin: true,
         }),
       ...(isFeedOwner
         ? [
@@ -236,6 +243,7 @@ export const useFeedActions = ({
               click: () => {
                 resetFeed(feedId)
               },
+              requiresLogin: true,
             }),
             MenuItemSeparator.default,
           ]
@@ -294,7 +302,6 @@ export const useFeedActions = ({
     isInbox,
     isMultipleSelection,
     listByView,
-    navigateEntry,
     present,
     presentCategoryCreationModal,
     presentDeleteSubscription,
@@ -319,7 +326,6 @@ export const useListActions = ({ listId, view }: { listId: string; view?: FeedVi
   const { mutateAsync: deleteSubscription } = useDeleteSubscription({})
 
   const shortcuts = useCommandShortcuts()
-  const navigateEntry = useNavigateEntry()
 
   const items = useMemo(() => {
     if (!list) return []
@@ -334,11 +340,13 @@ export const useListActions = ({ listId, view }: { listId: string; view?: FeedVi
             content: ({ dismiss }) => <ListForm id={listId} onSuccess={dismiss} />,
           })
         },
+        requiresLogin: true,
       }),
       new MenuItemText({
         label: t("sidebar.feed_actions.unfollow"),
         shortcut: "$mod+Backspace",
         click: () => deleteSubscription({ subscription }),
+        requiresLogin: true,
       }),
       MenuItemSeparator.default,
       new MenuItemText({
@@ -347,6 +355,7 @@ export const useListActions = ({ listId, view }: { listId: string; view?: FeedVi
         click: () => {
           unreadSyncService.markFeedAsRead(list.feedIds)
         },
+        requiresLogin: true,
       }),
       MenuItemSeparator.default,
       ...(list.ownerUserId === whoami()?.id
@@ -383,7 +392,7 @@ export const useListActions = ({ listId, view }: { listId: string; view?: FeedVi
     ]
 
     return items
-  }, [list, t, shortcuts, listId, present, deleteSubscription, subscription, navigateEntry, view])
+  }, [list, t, shortcuts, listId, present, deleteSubscription, subscription, view])
 
   return items
 }
@@ -406,6 +415,7 @@ export const useInboxActions = ({ inboxId }: { inboxId: string }) => {
             content: () => <InboxForm asWidget id={inboxId} />,
           })
         },
+        requiresLogin: true,
       }),
       MenuItemSeparator.default,
       new MenuItemText({

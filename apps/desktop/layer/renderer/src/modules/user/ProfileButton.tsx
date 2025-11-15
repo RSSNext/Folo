@@ -25,6 +25,7 @@ import { UrlBuilder } from "~/lib/url-builder"
 import { usePresentUserProfileModal } from "~/modules/profile/hooks"
 import { useSettingModal } from "~/modules/settings/modal/use-setting-modal-hack"
 import { signOut, useSession } from "~/queries/auth"
+import { useWallet } from "~/queries/wallet"
 
 import type { LoginProps } from "./LoginButton"
 import { LoginButton } from "./LoginButton"
@@ -43,6 +44,8 @@ export const ProfileButton: FC<ProfileButtonProps> = memo((props) => {
   const presentUserProfile = usePresentUserProfileModal("dialog")
   const { t } = useTranslation()
   const aiEnabled = useFeature("ai")
+  const wallet = useWallet()
+  const hasPowerToken = !!wallet.data?.[0]?.powerToken
 
   const [dropdown, setDropdown] = useState(false)
 
@@ -127,6 +130,17 @@ export const ProfileButton: FC<ProfileButtonProps> = memo((props) => {
           </DropdownMenuItem>
         )}
 
+        {!isInMASReview && hasPowerToken && (
+          <DropdownMenuItem
+            className="pl-3"
+            onClick={() => {
+              navigate("/power")
+            }}
+            icon={<i className="i-mgc-power-outline" />}
+          >
+            {t("user_button.power")}
+          </DropdownMenuItem>
+        )}
         <DropdownMenuItem
           className="pl-3"
           onClick={() => {

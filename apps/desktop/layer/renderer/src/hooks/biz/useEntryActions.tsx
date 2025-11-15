@@ -26,6 +26,7 @@ import { ipcServices } from "~/lib/client"
 import { COMMAND_ID } from "~/modules/command/commands/id"
 import { getCommand, useRunCommandFn } from "~/modules/command/hooks/use-command"
 import { useCommandShortcuts } from "~/modules/command/hooks/use-command-binding"
+import { isMutationCommandId } from "~/modules/command/mutation-command-ids"
 import type { FollowCommandId } from "~/modules/command/types"
 import { useToolbarOrderMap } from "~/modules/customize-toolbar/hooks"
 
@@ -76,6 +77,7 @@ interface EntryActionMenuItemConfig {
   disabled?: boolean
   notice?: boolean
   entryId: string
+  requiresLogin?: boolean
 }
 
 export class EntryActionMenuItem extends MenuItemText {
@@ -83,14 +85,19 @@ export class EntryActionMenuItem extends MenuItemText {
 
   constructor(config: EntryActionMenuItemConfig) {
     const cmd = getCommand(config.id) || null
+    const requiresLogin = config.requiresLogin ?? isMutationCommandId(config.id)
     super({
       ...config,
       label: cmd?.label.title || "",
       click: () => config.onClick?.(),
       hide: !cmd || config.hide,
+      requiresLogin,
     })
 
-    this.privateConfig = config
+    this.privateConfig = {
+      ...config,
+      requiresLogin,
+    }
   }
 
   public get id() {
@@ -123,14 +130,19 @@ export class EntryActionDropdownItem extends MenuItemText {
 
   constructor(config: EntryActionMenuItemConfig & { children?: EntryActionMenuItem[] }) {
     const cmd = getCommand(config.id) || null
+    const requiresLogin = config.requiresLogin ?? isMutationCommandId(config.id)
     super({
       ...config,
       label: cmd?.label.title || "",
       click: () => config.onClick?.(),
       hide: !cmd || config.hide,
+      requiresLogin,
     })
 
-    this.privateConfig = config
+    this.privateConfig = {
+      ...config,
+      requiresLogin,
+    }
     this.children = config.children || []
   }
 

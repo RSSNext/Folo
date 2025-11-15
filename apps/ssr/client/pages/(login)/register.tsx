@@ -1,4 +1,5 @@
 import { useServerConfigs } from "@client/atoms/server-configs"
+import { useRecaptchaToken } from "@client/hooks/useRecaptchaToken"
 import { loginHandler, signUp } from "@client/lib/auth"
 import { ReferralForm } from "@client/modules/referral"
 import { useAuthProviders } from "@client/query/users"
@@ -15,12 +16,10 @@ import {
 } from "@follow/components/ui/form/index.jsx"
 import { Input } from "@follow/components/ui/input/index.js"
 import { useIsDark } from "@follow/hooks"
-import { env } from "@follow/shared/env.ssr"
 import { tracker } from "@follow/tracker"
 import { cn } from "@follow/utils/utils"
-import HCaptcha from "@hcaptcha/react-hcaptcha"
 import { zodResolver } from "@hookform/resolvers/zod"
-import { useRef, useState } from "react"
+import { useState } from "react"
 import * as React from "react"
 import { useForm } from "react-hook-form"
 import { Trans, useTranslation } from "react-i18next"
@@ -53,7 +52,7 @@ function RegisterForm() {
   const { t } = useTranslation()
   const [isSubmitting, setIsSubmitting] = useState(false)
   const navigate = useNavigate()
-  const captchaRef = useRef<HCaptcha>(null)
+  const requestRecaptchaToken = useRecaptchaToken()
 
   const form = useForm<z.infer<typeof formSchema>>({
     resolver: zodResolver(formSchema),
@@ -72,12 +71,7 @@ function RegisterForm() {
     setIsSubmitting(true)
 
     try {
-      const response = await captchaRef.current?.execute({ async: true })
-
-      if (!response?.response) {
-        return
-      }
-
+      const recaptchaToken = await requestRecaptchaToken("ssr_register")
       await signUp.email({
         email: values.email,
         password: values.password,
@@ -93,9 +87,11 @@ function RegisterForm() {
           onError(context) {
             toast.error(context.error.message)
           },
-          headers: {
-            "x-token": `hc:${response?.response}`,
-          },
+          headers: recaptchaToken
+            ? {
+                "x-token": `r3:${recaptchaToken}`,
+              }
+            : undefined,
         },
       })
     } finally {
@@ -151,7 +147,6 @@ function RegisterForm() {
               )}
             />
             {serverConfigs?.REFERRAL_ENABLED && <ReferralForm align="left" />}
-            <HCaptcha ref={captchaRef} sitekey={env.VITE_HCAPTCHA_SITE_KEY} size="invisible" />
             <Button
               isLoading={isSubmitting}
               disabled={isSubmitting}

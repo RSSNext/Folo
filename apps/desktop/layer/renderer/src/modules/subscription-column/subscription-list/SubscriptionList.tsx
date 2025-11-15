@@ -64,9 +64,6 @@ const SubscriptionImpl = ({ ref, className, view, isSubscriptionLoading }: Subsc
 
   const { t } = useTranslation()
 
-  // Data prefetch
-  // useAuthQuery(Queries.lists.list())
-
   const hasListData = listSubIds.length > 0
   const hasInboxData = inboxSubIds.length > 0
 

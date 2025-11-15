@@ -18,6 +18,7 @@ import { useAISettingKey } from "~/atoms/settings/ai"
 import { useActionLanguage } from "~/atoms/settings/general"
 import { ROUTE_FEED_IN_FOLDER } from "~/constants"
 import { getRouteParams } from "~/hooks/biz/useRouteParams"
+import { useRequireLogin } from "~/hooks/common/useRequireLogin"
 import { useAutoScroll } from "~/modules/ai-chat/hooks/useAutoScroll"
 import { useLoadMessages } from "~/modules/ai-chat/hooks/useLoadMessages"
 import { useMainEntryId } from "~/modules/ai-chat/hooks/useMainEntryId"
@@ -54,6 +55,7 @@ const ChatInterfaceContent = ({ centerInputOnEmpty }: ChatInterfaceProps) => {
   const chatActions = useChatActions()
   const error = useChatError()
   const messages = useMessages()
+  const { ensureLogin } = useRequireLogin()
 
   const isFocusWithIn = useFocusable()
 
@@ -180,6 +182,9 @@ const ChatInterfaceContent = ({ centerInputOnEmpty }: ChatInterfaceProps) => {
   }, [])
 
   const handleSendMessage = useEventCallback((message: string | EditorState) => {
+    if (!ensureLogin()) {
+      return
+    }
     resetScrollState()
 
     const blocks = [] as AIChatContextBlock[]
@@ -262,6 +267,9 @@ const ChatInterfaceContent = ({ centerInputOnEmpty }: ChatInterfaceProps) => {
   })
 
   const handleRetryLastMessage = useEventCallback(() => {
+    if (!ensureLogin()) {
+      return
+    }
     if (!lastUserMessage) {
       return
     }

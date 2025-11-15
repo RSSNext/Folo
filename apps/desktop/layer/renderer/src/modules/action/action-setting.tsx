@@ -382,6 +382,7 @@ const RuleListItem = ({
             label: t("actions.action_card.summary.delete"),
             icon: <i className="i-mgc-delete-2-cute-re" />,
             click: () => handleDelete(index),
+            requiresLogin: true,
           }),
         ],
         e,

@@ -1,4 +1,5 @@
 import type { IdGenerator } from "ai"
+import { nanoid } from "nanoid"
 import type { StateCreator } from "zustand"
 
 import { ChatSliceActions } from "../chat-core/chat-actions"
@@ -7,7 +8,7 @@ import type { ChatSlice } from "../chat-core/types"
 import { createChatTitleHandler, createChatTransport } from "../transport"
 
 export const createChatSlice: (options: {
-  chatId: string
+  chatId?: string
   generateId?: IdGenerator
   isLocal?: boolean
   syncStatus?: "local" | "synced"
@@ -17,13 +18,14 @@ export const createChatSlice: (options: {
     const [set, get] = params
     const { chatId, generateId, isLocal, syncStatus } = options
 
+    const nextChatId = chatId || nanoid()
     const chatInstance = new ZustandChat(
       {
-        id: chatId,
+        id: nextChatId,
         messages: [],
         transport: createChatTransport({
           titleHandler: createChatTitleHandler({
-            chatId,
+            chatId: nextChatId,
             getActiveChatId: () => get().chatId,
             onTitleChange: (title) => {
               set({
@@ -37,10 +39,13 @@ export const createChatSlice: (options: {
       set,
     )
 
-    const chatActions = new ChatSliceActions(params, chatInstance)
+    const chatActions = new ChatSliceActions(params, {
+      chatInstance,
+      hasChatId: !!chatId,
+    })
 
     return {
-      chatId,
+      chatId: nextChatId,
       messages: [],
       status: "ready",
       error: undefined,

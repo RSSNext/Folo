@@ -1,6 +1,6 @@
 import { RootPortal } from "@follow/components/ui/portal/index.js"
 import type { FeedViewType } from "@follow/constants"
-import { memo } from "react"
+import { memo, useCallback } from "react"
 
 import { MenuItemText } from "~/atoms/context-menu"
 import { CommandActionButton } from "~/components/ui/button/CommandActionButton"
@@ -11,15 +11,23 @@ import {
   DropdownMenuTrigger,
 } from "~/components/ui/dropdown-menu/dropdown-menu"
 import { EntryActionDropdownItem, useSortedEntryActions } from "~/hooks/biz/useEntryActions"
+import { useRequireLogin } from "~/hooks/common/useRequireLogin"
 import { useCommand } from "~/modules/command/hooks/use-command"
 import type { FollowCommandId } from "~/modules/command/types"
 
 export const EntryHeaderActions = ({ entryId, view }: { entryId: string; view: FeedViewType }) => {
   const { mainAction: actionConfigs } = useSortedEntryActions({ entryId, view })
+  const { withLoginGuard } = useRequireLogin()
+  const resolveClick = useCallback(
+    (action: MenuItemText | EntryActionDropdownItem) =>
+      action.requiresLogin ? withLoginGuard(action.onClick) : action.onClick,
+    [withLoginGuard],
+  )
 
   return actionConfigs
     .filter((item) => item instanceof MenuItemText || item instanceof EntryActionDropdownItem)
     .map((config) => {
+      const clickHandler = resolveClick(config)
       const baseTrigger = (
         <CommandActionButton
           active={config.active}
@@ -27,7 +35,7 @@ export const EntryHeaderActions = ({ entryId, view }: { entryId: string; view: F
           // Handle shortcut globally
           disableTriggerShortcut
           commandId={config.id}
-          onClick={config.onClick!}
+          onClick={clickHandler}
           shortcut={config.shortcut!}
           clickableDisabled={config.disabled}
           highlightMotion={config.notice}
@@ -45,7 +53,7 @@ export const EntryHeaderActions = ({ entryId, view }: { entryId: string; view: F
                   <CommandDropdownMenuItem
                     key={child.id}
                     commandId={child.id}
-                    onClick={child.onClick!}
+                    onClick={resolveClick(child)!}
                     active={child.active}
                   />
                 ))}

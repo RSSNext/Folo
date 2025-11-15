@@ -118,10 +118,12 @@ const useSubscriptionTabContextMenu = ({
             label: t("sidebar.timeline_tabs.hide_tab"),
             click: handleHide,
             disabled: !canHide,
+            requiresLogin: true,
           }),
           new MenuItemText({
             label: t("sidebar.timeline_tabs.customize"),
             click: showTimelineTabsSettingsModal,
+            requiresLogin: true,
           }),
         ],
         event,

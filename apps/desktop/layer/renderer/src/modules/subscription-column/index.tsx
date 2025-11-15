@@ -8,7 +8,7 @@ import { ELECTRON_BUILD } from "@follow/shared/constants"
 import { useFeedsByIds } from "@follow/store/feed/hooks"
 import { useAllFeedSubscription, usePrefetchSubscription } from "@follow/store/subscription/hooks"
 import { usePrefetchUnread } from "@follow/store/unread/hooks"
-import { useUserSubscriptionLimit } from "@follow/store/user/hooks"
+import { useIsLoggedIn, useUserSubscriptionLimit } from "@follow/store/user/hooks"
 import { EventBus } from "@follow/utils/event-bus"
 import { clamp, cn } from "@follow/utils/utils"
 import { useWheel } from "@use-gesture/react"
@@ -16,7 +16,7 @@ import { Lethargy } from "lethargy"
 import { AnimatePresence, m } from "motion/react"
 import type { FC, PropsWithChildren } from "react"
 import { memo, useCallback, useEffect, useLayoutEffect, useMemo, useRef, useState } from "react"
-import { useTranslation } from "react-i18next"
+import { Trans } from "react-i18next"
 
 import { useRootContainerElement } from "~/atoms/dom"
 import { useIsInMASReview } from "~/atoms/server-configs"
@@ -28,6 +28,7 @@ import { useBackHome } from "~/hooks/biz/useNavigateEntry"
 import { useReduceMotion } from "~/hooks/biz/useReduceMotion"
 import { parseView, useRouteParamsSelector } from "~/hooks/biz/useRouteParams"
 import { useTimelineList } from "~/hooks/biz/useTimelineList"
+import { useLoginModal } from "~/hooks/common"
 import { useSettingModal } from "~/modules/settings/modal/useSettingModal"
 
 import { WindowUnderBlur } from "../../components/ui/background"
@@ -149,6 +150,7 @@ export function SubscriptionColumn({
       <div className="relative mb-2 mt-3">
         <TabsRow />
       </div>
+      <NotLoggedInNotice />
       <SubscriptionLimitNotice />
       <div
         className={cn("relative mt-1 flex size-full", !shouldFreeUpSpace && "overflow-hidden")}
@@ -250,7 +252,6 @@ const TabsRow: FC = () => {
 }
 
 const SubscriptionLimitNotice: FC = () => {
-  const { t } = useTranslation("app")
   const feedSubscriptions = useAllFeedSubscription()
   const { feedLimit, rsshubLimit } = useUserSubscriptionLimit()
   const openSettings = useSettingModal()
@@ -285,23 +286,60 @@ const SubscriptionLimitNotice: FC = () => {
   }
 
   return (
-    <div className="px-3">
-      <button
-        type="button"
-        onClick={() => openSettings("plan")}
-        className="-mx-3 my-1 flex items-start gap-2 border-y border-red/30 bg-red/10 px-1.5 py-2 text-left text-xs leading-snug text-red transition-colors hover:border-red hover:bg-red/15 focus:outline-none focus-visible:ring-2 focus-visible:ring-red/40"
-      >
-        <i className="i-mgc-warning-circle-cute-re mt-0.5 shrink-0 text-base" aria-hidden />
-        <p>
-          {t("subscription_limit_warning", {
+    <button
+      type="button"
+      onClick={() => openSettings("plan")}
+      className="my-1 flex items-start gap-2 border-red/30 bg-red/10 px-1.5 py-2 text-left text-xs leading-snug text-red transition-colors hover:border-red hover:bg-red/15 focus:outline-none focus-visible:ring-2 focus-visible:ring-red/40"
+    >
+      <span className="ml-1 text-lg">😢</span>
+      <p>
+        <Trans
+          i18nKey="subscription_limit_warning"
+          values={{
             feedCount,
             rsshubCount,
             feedLimit,
             rsshubLimit,
-          })}
-        </p>
-      </button>
-    </div>
+          }}
+          components={{
+            b: <b key="b" />,
+            br: <br key="br" />,
+          }}
+        />
+      </p>
+    </button>
+  )
+}
+
+const NotLoggedInNotice: FC = () => {
+  const isLoggedIn = useIsLoggedIn()
+
+  const isInMASReview = useIsInMASReview()
+
+  const presentLoginModal = useLoginModal()
+  if (isLoggedIn || isInMASReview) {
+    return null
+  }
+
+  return (
+    <button
+      type="button"
+      onClick={() => {
+        presentLoginModal()
+      }}
+      className="my-1 flex items-start gap-2 border-blue/30 bg-blue/10 px-1.5 py-2 text-left text-xs leading-snug text-blue transition-colors hover:border-blue hover:bg-blue/15 focus:outline-none focus-visible:ring-2 focus-visible:ring-blue/40"
+    >
+      <span className="ml-1 text-lg">👤</span>
+      <p>
+        <Trans
+          i18nKey="not_logged_in_notice"
+          components={{
+            b: <b key="b" />,
+            br: <br key="br" />,
+          }}
+        />
+      </p>
+    </button>
   )
 }
 

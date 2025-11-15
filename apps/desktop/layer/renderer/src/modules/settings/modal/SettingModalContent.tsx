@@ -1,4 +1,5 @@
 import { ScrollArea } from "@follow/components/ui/scroll-area/index.js"
+import { useIsLoggedIn } from "@follow/store/user/hooks"
 import { clsx, cn } from "@follow/utils"
 import { repository } from "@pkg"
 import type { FC } from "react"
@@ -16,8 +17,10 @@ import { Trans } from "react-i18next"
 import { useLoaderData } from "react-router"
 
 import { ModalClose } from "~/components/ui/modal/stacked/components"
+import { useRequireLogin } from "~/hooks/common/useRequireLogin"
 import { SettingsTitle } from "~/modules/settings/title"
 
+import { isGuestAccessibleSettingTab } from "../constants"
 import { useAvailableSettings } from "../hooks/use-setting-ctx"
 import { SettingSectionHighlightIdContext } from "../section"
 import { getSettingPages } from "../settings-glob"
@@ -61,6 +64,8 @@ const Content: FC<{
   const availableSettings = useAvailableSettings()
   const tab = useSettingTab()
   const setTab = useSetSettingTab()
+  const isLoggedIn = useIsLoggedIn()
+  const { ensureLogin } = useRequireLogin()
 
   useEffect(() => {
     if (availableSettings.length === 0) return
@@ -68,6 +73,12 @@ const Content: FC<{
       setTab(availableSettings[0]!.path)
     }
   }, [availableSettings, setTab, tab])
+
+  useEffect(() => {
+    if (!isLoggedIn && tab && !isGuestAccessibleSettingTab(tab)) {
+      ensureLogin()
+    }
+  }, [ensureLogin, isLoggedIn, tab])
 
   const activeSetting = useMemo(() => {
     if (availableSettings.length === 0) return
@@ -79,6 +90,9 @@ const Content: FC<{
     }
     return availableSettings[0]
   }, [availableSettings, tab])
+
+  const tabAccessible =
+    !!activeSetting && (isLoggedIn || isGuestAccessibleSettingTab(activeSetting.path))
 
   const key = useDeferredValue(activeSetting?.path ?? "")
   const pages = getSettingPages()
@@ -143,6 +157,28 @@ const Content: FC<{
 
   const config = (useLoaderData() || loader || {}) as SettingPageConfig
   if (!Component || !activeSetting) return null
+
+  if (!tabAccessible) {
+    return (
+      <>
+        <SettingsTitle
+          loader={loader}
+          className={clsx(
+            "relative mb-0 border-b border-transparent px-8 transition-colors duration-200",
+            !scrollerAtTop ? "border-border" : "",
+          )}
+        />
+        <ModalClose />
+        <button
+          type="button"
+          className="flex flex-1 items-center justify-center px-12 text-center text-text-secondary"
+          onClick={ensureLogin}
+        >
+          Please log in to access this setting.
+        </button>
+      </>
+    )
+  }
 
   return (
     <Suspense>

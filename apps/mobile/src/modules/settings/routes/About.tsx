@@ -38,7 +38,7 @@ const links = [
   {
     title: "Discord",
     icon: DiscordCuteFiIcon,
-    url: "https://discord.gg/followapp",
+    url: "https://discord.gg/AwWcAQ7euc",
     iconBackgroundColor: "#5865F2",
     iconColor: "#FFFFFF",
   },
