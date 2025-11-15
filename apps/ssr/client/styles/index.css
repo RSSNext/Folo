@@ -31,3 +31,7 @@ button {
 [data-theme="dark"] {
   --bg-opacity: rgba(29, 29, 31, 0.72);
 }
+
+.grecaptcha-badge {
+  visibility: hidden !important;
+}

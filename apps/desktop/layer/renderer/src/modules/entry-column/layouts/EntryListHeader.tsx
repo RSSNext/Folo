@@ -7,7 +7,7 @@ import { useIsOnline } from "@follow/hooks"
 import { DEFAULT_SUMMARIZE_TIMELINE_SHORTCUT_ID } from "@follow/shared/settings/defaults"
 import { getFeedById } from "@follow/store/feed/getter"
 import { useFeedById } from "@follow/store/feed/hooks"
-import { useWhoami } from "@follow/store/user/hooks"
+import { useIsLoggedIn, useWhoami } from "@follow/store/user/hooks"
 import { stopPropagation } from "@follow/utils/dom"
 import { clsx, cn, isBizId } from "@follow/utils/utils"
 import { useAtomValue } from "jotai"
@@ -23,6 +23,7 @@ import { ROUTE_ENTRY_PENDING } from "~/constants"
 import { useFeature } from "~/hooks/biz/useFeature"
 import { useFollow } from "~/hooks/biz/useFollow"
 import { getRouteParams, useRouteParams } from "~/hooks/biz/useRouteParams"
+import { useLoginModal } from "~/hooks/common"
 import { useSendAIShortcut } from "~/modules/ai-chat/hooks/useSendAIShortcut"
 import { COMMAND_ID } from "~/modules/command/commands/id"
 import { useRunCommandFn } from "~/modules/command/hooks/use-command"
@@ -208,6 +209,9 @@ const PreviewHeaderInfoWrapper: Component = ({ children }) => {
   const follow = useFollow()
 
   const navigate = useNavigate()
+  const isLoggedIn = useIsLoggedIn()
+  const presentLoginModal = useLoginModal()
+
   return (
     <div className="flex w-full flex-col pt-1.5">
       <div className="grid w-full grid-cols-[1fr_auto_1fr] items-center gap-2">
@@ -229,6 +233,10 @@ const PreviewHeaderInfoWrapper: Component = ({ children }) => {
         type="button"
         className="-mx-4 mt-3.5 flex animate-gradient-x cursor-button place-items-center justify-center gap-1 bg-gradient-to-r from-accent/10 via-accent/15 to-accent/20 px-3 py-2 font-semibold text-accent transition-all duration-300 hover:bg-accent hover:text-white"
         onClick={() => {
+          if (!isLoggedIn) {
+            presentLoginModal()
+            return
+          }
           const { feedId, listId } = getRouteParams()
           const feed = getFeedById(feedId)
           follow({

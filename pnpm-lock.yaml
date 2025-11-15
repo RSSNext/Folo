@@ -479,9 +479,6 @@ importers:
       '@fontsource/sn-pro':
         specifier: 5.2.5
         version: 5.2.5
-      '@hcaptcha/react-hcaptcha':
-        specifier: 1.14.0
-        version: 1.14.0(react-dom@19.0.0(react@19.0.0))(react@19.0.0)
       '@headlessui/react':
         specifier: 2.2.9
         version: 2.2.9(react-dom@19.0.0(react@19.0.0))(react@19.0.0)
@@ -683,6 +680,9 @@ importers:
       react-fast-marquee:
         specifier: 1.6.5
         version: 1.6.5(react-dom@19.0.0(react@19.0.0))(react@19.0.0)
+      react-google-recaptcha-v3:
+        specifier: 1.11.0
+        version: 1.11.0(react-dom@19.0.0(react@19.0.0))(react@19.0.0)
       react-hook-form:
         specifier: 7.66.0
         version: 7.66.0(react@19.0.0)
@@ -1203,9 +1203,6 @@ importers:
       '@fontsource/sn-pro':
         specifier: 5.2.5
         version: 5.2.5
-      '@hcaptcha/react-hcaptcha':
-        specifier: 1.14.0
-        version: 1.14.0(react-dom@19.0.0(react@19.0.0))(react@19.0.0)
       '@openpanel/web':
         specifier: 1.0.1
         version: 1.0.1
@@ -1260,6 +1257,9 @@ importers:
       react-dom:
         specifier: 19.0.0
         version: 19.0.0(react@19.0.0)
+      react-google-recaptcha-v3:
+        specifier: 1.11.0
+        version: 1.11.0(react-dom@19.0.0(react@19.0.0))(react@19.0.0)
       react-hook-form:
         specifier: 7.66.0
         version: 7.66.0(react@19.0.0)
@@ -4565,15 +4565,6 @@ packages:
 
   '@hapi/topo@5.1.0':
     resolution: {integrity: sha512-foQZKJig7Ob0BMAYBfcJk8d77QtOe7Wo4ox7ff1lQYoNNAb6jwcY1ncdoy2e9wQZzvNy7ODZCYJkK8kzmcAnAg==}
-
-  '@hcaptcha/loader@2.2.0':
-    resolution: {integrity: sha512-LAd0XRt1Mu0hLpUpWAx5OS9FS0d6V+V0aCSYUKFAz0a6tTDHeAuwm5iO81mp2HIEhXFOSSB8AwCCOU9zq695lg==}
-
-  '@hcaptcha/react-hcaptcha@1.14.0':
-    resolution: {integrity: sha512-XHFhmRjw4L6spgRfTEUj/uW4cN4iWTp7BxLHyheF5zEle6g65fIHUCmqKMrIA/6OKLzBSElUKyc1IuDU+V8RaQ==}
-    peerDependencies:
-      react: 19.0.0
-      react-dom: 19.0.0
 
   '@headlessui/react@2.2.9':
     resolution: {integrity: sha512-Mb+Un58gwBn0/yWZfyrCh0TJyurtT+dETj7YHleylHk5od3dv2XqETPGWMyQ5/7sYN7oWdyM1u9MvC0OC8UmzQ==}
@@ -14241,6 +14232,12 @@ packages:
     peerDependencies:
       react: 19.0.0
 
+  react-google-recaptcha-v3@1.11.0:
+    resolution: {integrity: sha512-kLQqpz/77m8+trpBwzqcxNtvWZYoZ/YO6Vm2cVTHW8hs80BWUfDpC7RDwuAvpswwtSYApWfaSpIDFWAIBNIYxQ==}
+    peerDependencies:
+      react: 19.0.0
+      react-dom: 19.0.0
+
   react-hook-form@7.66.0:
     resolution: {integrity: sha512-xXBqsWGKrY46ZqaHDo+ZUYiMUgi8suYu5kdrS20EG8KiL7VRQitEbNjm+UcrDYrNi1YLyfpmAeGjCZYXLT9YBw==}
     engines: {node: '>=18.0.0'}
@@ -21436,15 +21433,6 @@ snapshots:
   '@hapi/topo@5.1.0':
     dependencies:
       '@hapi/hoek': 9.3.0
-
-  '@hcaptcha/loader@2.2.0': {}
-
-  '@hcaptcha/react-hcaptcha@1.14.0(react-dom@19.0.0(react@19.0.0))(react@19.0.0)':
-    dependencies:
-      '@babel/runtime': 7.28.4
-      '@hcaptcha/loader': 2.2.0
-      react: 19.0.0
-      react-dom: 19.0.0(react@19.0.0)
 
   '@headlessui/react@2.2.9(react-dom@19.0.0(react@19.0.0))(react@19.0.0)':
     dependencies:
@@ -33165,6 +33153,12 @@ snapshots:
   react-freeze@1.0.4(react@19.0.0):
     dependencies:
       react: 19.0.0
+
+  react-google-recaptcha-v3@1.11.0(react-dom@19.0.0(react@19.0.0))(react@19.0.0):
+    dependencies:
+      hoist-non-react-statics: 3.3.2
+      react: 19.0.0
+      react-dom: 19.0.0(react@19.0.0)
 
   react-hook-form@7.66.0(react@19.0.0):
     dependencies:

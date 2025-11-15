@@ -22,7 +22,7 @@ export const env = createEnv({
     VITE_POSTHOG_KEY: z.string().optional().default(DEFAULT_VALUES.PROD.POSTHOG_KEY),
     VITE_POSTHOG_HOST: z.string().url().optional().default(DEFAULT_VALUES.PROD.POSTHOG_HOST),
 
-    VITE_HCAPTCHA_SITE_KEY: z.string().default(DEFAULT_VALUES.PROD.HCAPTCHA_SITE_KEY),
+    VITE_RECAPTCHA_V3_SITE_KEY: z.string().default(DEFAULT_VALUES.PROD.RECAPTCHA_V3_SITE_KEY),
   },
 
   emptyStringAsUndefined: true,

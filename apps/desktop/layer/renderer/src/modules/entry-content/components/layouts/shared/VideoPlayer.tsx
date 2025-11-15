@@ -148,6 +148,7 @@ export const VideoPlayer: React.FC<VideoPlayerProps> = ({
             type={entry.firstMedia.type}
             previewImageUrl={entry.firstMedia.preview_image_url}
             className="aspect-video w-full rounded-md object-cover"
+            videoClassName="object-contain"
             loading="lazy"
             proxy={{
               width: 640,

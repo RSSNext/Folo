@@ -1,4 +1,5 @@
 import { UserAvatar } from "@client/components/ui/user-avatar"
+import { useRecaptchaToken } from "@client/hooks/useRecaptchaToken"
 import {
   getLastUsedLoginMethod,
   loginHandler,
@@ -25,9 +26,7 @@ import { Input } from "@follow/components/ui/input/index.js"
 import { LoadingCircle } from "@follow/components/ui/loading/index.jsx"
 import { useIsDark } from "@follow/hooks"
 import { DEEPLINK_SCHEME } from "@follow/shared/constants"
-import { env } from "@follow/shared/env.ssr"
 import { cn } from "@follow/utils/utils"
-import HCaptcha from "@hcaptcha/react-hcaptcha"
 import { zodResolver } from "@hookform/resolvers/zod"
 import { useCallback, useEffect, useMemo, useRef, useState } from "react"
 import * as React from "react"
@@ -287,7 +286,7 @@ function LoginWithPassword() {
   const [needTwoFactor, setNeedTwoFactor] = useState(false)
   const [isButtonLoading, setIsButtonLoading] = useState(false)
 
-  const captchaRef = useRef<HCaptcha>(null)
+  const requestRecaptchaToken = useRecaptchaToken()
 
   async function onSubmit(values: z.infer<typeof formSchema>) {
     setIsButtonLoading(true)
@@ -303,17 +302,14 @@ function LoginWithPassword() {
         return
       }
 
-      const response = await captchaRef.current?.execute({ async: true })
-      if (!response?.response) {
-        setIsButtonLoading(false)
-        return
-      }
-
+      const recaptchaToken = await requestRecaptchaToken("ssr_login")
       const res = await loginHandler("credential", "app", {
         ...values,
-        headers: {
-          "x-token": `hc:${response?.response}`,
-        },
+        headers: recaptchaToken
+          ? {
+              "x-token": `r3:${recaptchaToken}`,
+            }
+          : undefined,
       })
 
       if (res?.error) {
@@ -390,7 +386,6 @@ function LoginWithPassword() {
             )}
           />
         )}
-        <HCaptcha ref={captchaRef} sitekey={env.VITE_HCAPTCHA_SITE_KEY} size="invisible" />
         <Button
           type="submit"
           buttonClassName="!mt-3 w-full"

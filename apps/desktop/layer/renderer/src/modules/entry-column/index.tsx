@@ -4,6 +4,7 @@ import { useEntry } from "@follow/store/entry/hooks"
 import { useFeedById } from "@follow/store/feed/hooks"
 import { useSubscriptionByFeedId } from "@follow/store/subscription/hooks"
 import { unreadSyncService } from "@follow/store/unread/store"
+import { useIsLoggedIn } from "@follow/store/user/hooks"
 import { isBizId } from "@follow/utils/utils"
 import type { Range, Virtualizer } from "@tanstack/react-virtual"
 import { atom } from "jotai"
@@ -62,6 +63,7 @@ function EntryColumnContent() {
   const feed = useFeedById(routeFeedId)
   const title = useFeedHeaderTitle()
   useTitle(title)
+  const isLoggedIn = useIsLoggedIn()
 
   useEffect(() => {
     if (!activeEntryId) return
@@ -69,8 +71,9 @@ function EntryColumnContent() {
     if (isCollection || isPendingEntry) return
     if (!entry?.feedId) return
 
+    if (!isLoggedIn) return
     unreadSyncService.markEntryAsRead(activeEntryId)
-  }, [activeEntryId, entry?.feedId, isCollection, isPendingEntry])
+  }, [activeEntryId, entry?.feedId, isCollection, isPendingEntry, isLoggedIn])
 
   const isInteracted = useRef(false)
 
