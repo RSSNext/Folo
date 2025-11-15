@@ -55,6 +55,7 @@ export const EntryHeaderActions = ({ entryId, view }: { entryId: string; view: F
                     commandId={child.id}
                     onClick={resolveClick(child)!}
                     active={child.active}
+                    disabled={child.disabled}
                   />
                 ))}
               </DropdownMenuContent>
@@ -76,10 +77,12 @@ const CommandDropdownMenuItem = memo(
     commandId,
     onClick,
     active,
+    disabled,
   }: {
     commandId: FollowCommandId
     onClick: () => void
     active?: boolean
+    disabled?: boolean
   }) => {
     const command = useCommand(commandId)
 
@@ -90,8 +93,9 @@ const CommandDropdownMenuItem = memo(
         key={command.id}
         className="pl-3"
         icon={command.icon}
-        onSelect={onClick}
+        onSelect={disabled ? undefined : onClick}
         active={active}
+        disabled={disabled}
       >
         {command.label.title}
       </DropdownMenuItem>

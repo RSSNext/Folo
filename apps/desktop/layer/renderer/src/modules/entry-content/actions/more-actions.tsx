@@ -101,6 +101,7 @@ export const MoreActions = ({
                       commandId={config.id}
                       onClick={handler!}
                       active={config.active}
+                      disabled={config.disabled}
                     />
                   )
                 })}
@@ -113,12 +114,13 @@ export const MoreActions = ({
             if (config instanceof EntryActionDropdownItem && config.hasChildren) {
               return (
                 <DropdownMenuSub key={config.id}>
-                  <DropdownMenuSubTrigger>
+                  <DropdownMenuSubTrigger disabled={config.disabled}>
                     <CommandDropdownMenuItem
                       commandId={config.id}
                       onClick={resolveClick(config)!}
                       active={config.active}
                       asSubTrigger
+                      disabled={config.disabled}
                     />
                   </DropdownMenuSubTrigger>
                   <DropdownMenuSubContent>
@@ -128,6 +130,7 @@ export const MoreActions = ({
                         commandId={child.id}
                         onClick={resolveClick(child)!}
                         active={child.active}
+                        disabled={child.disabled}
                       />
                     ))}
                   </DropdownMenuSubContent>
@@ -144,6 +147,7 @@ export const MoreActions = ({
                   commandId={config.id}
                   onClick={handler!}
                   active={config.active}
+                  disabled={config.disabled}
                 />
               )
             }
@@ -159,6 +163,7 @@ export const MoreActions = ({
                 commandId={config.id}
                 onClick={resolveClick(config)!}
                 active={config.active}
+                disabled={config.disabled}
               />
             ))}
         </DropdownMenuContent>
@@ -172,11 +177,13 @@ export const CommandDropdownMenuItem = ({
   onClick,
   active,
   asSubTrigger = false,
+  disabled = false,
 }: {
   commandId: FollowCommandId | string
   onClick: () => void
   active?: boolean
   asSubTrigger?: boolean
+  disabled?: boolean
 }) => {
   const command = useCommand(commandId as any)
 
@@ -194,7 +201,13 @@ export const CommandDropdownMenuItem = ({
     }
 
     return (
-      <DropdownMenuItem key={commandId} className="pl-3" onSelect={onClick} active={active}>
+      <DropdownMenuItem
+        key={commandId}
+        className="pl-3"
+        onSelect={disabled ? undefined : onClick}
+        active={active}
+        disabled={disabled}
+      >
         {content}
       </DropdownMenuItem>
     )
@@ -218,8 +231,9 @@ export const CommandDropdownMenuItem = ({
       key={command.id}
       className="pl-3"
       icon={command.icon}
-      onSelect={onClick}
+      onSelect={disabled ? undefined : onClick}
       active={active}
+      disabled={disabled}
     >
       {command.label.title}
     </DropdownMenuItem>

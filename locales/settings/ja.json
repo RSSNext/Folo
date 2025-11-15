@@ -1,4 +1,7 @@
 {
+  "about.aiOnboardingDescription": "インタラクティブなオンボーディングをもう一度体験できます。",
+  "about.appTip": "App 機能",
+  "about.appTipDescription": "App 機能紹介と使用ガイド。",
   "about.changelog": "変更履歴",
   "about.changelogDescription": "各バージョンの新機能を確認",
   "about.checkForUpdates": "アップデートを確認",

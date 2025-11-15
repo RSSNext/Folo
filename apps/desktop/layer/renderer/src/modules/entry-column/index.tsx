@@ -27,6 +27,7 @@ import { EntryColumnGrid } from "./grid"
 import { useAttachScrollBeyond } from "./hooks/useAttachScrollBeyond"
 import { useSnapEntryIdList } from "./hooks/useEntryIdListSnap"
 import { useEntryMarkReadHandler } from "./hooks/useEntryMarkReadHandler"
+import { useNavigateFirstEntry } from "./hooks/useNavigateFirstEntry"
 import { EntryListHeader } from "./layouts/EntryListHeader"
 import { EntryEmptyList, EntryList } from "./list"
 import { EntryRootStateContext } from "./store/EntryColumnContext"
@@ -107,6 +108,7 @@ function EntryColumnContent() {
   )
 
   const navigate = useNavigateEntry()
+
   const rangeQueueRef = useRef<Range[]>([])
   const isRefreshing = state.isFetching && !state.isFetchingNextPage
   const renderAsRead = useGeneralSettingKey("renderMarkUnread")
@@ -138,6 +140,8 @@ function EntryColumnContent() {
   }, [actions, state.hasNextPage, state.isFetchingNextPage])
 
   const ListComponent = getView(view)?.gridMode ? EntryColumnGrid : EntryList
+
+  useNavigateFirstEntry(entriesIds, activeEntryId, view, navigate)
 
   return (
     <Focusable

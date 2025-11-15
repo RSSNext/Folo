@@ -18,9 +18,11 @@ import type { TextSelectionEvent } from "~/lib/simple-text-selection"
 import { useBlockActions } from "~/modules/ai-chat/store/hooks"
 import { BlockSliceAction } from "~/modules/ai-chat/store/slices/block.slice"
 import { EntryContentHTMLRenderer } from "~/modules/renderer/html"
+import { EntryContentMarkdownRenderer } from "~/modules/renderer/markdown"
 import { WrappedElementProvider } from "~/providers/wrapped-element-provider"
 
 import { useEntryContent, useEntryMediaInfo } from "../../hooks"
+import { isOnboardingEntry } from "../../utils/onboarding"
 import { AISummary } from "../AISummary"
 import { ContainerToc } from "../entry-content/accessories/ContainerToc"
 import { EntryRenderError } from "../entry-content/EntryRenderError"
@@ -140,6 +142,9 @@ const Renderer: React.FC<{
   textSelectionEnabled?: boolean
 }> = ({ entryId, view, feedId, noMedia = false, content = "", translation }) => {
   const mediaInfo = useEntryMediaInfo(entryId)
+  const isMarkdownEntry = useMemo(() => {
+    return isOnboardingEntry(entryId)
+  }, [entryId])
   const readerRenderInlineStyle = useUISettingKey("readerRenderInlineStyle")
   const stableRenderStyle = useRenderStyle()
   const isInPeekModal = useInPeekModal()
@@ -156,8 +161,11 @@ const Renderer: React.FC<{
     }
   }, [content, tocRef])
 
+  const ContentRenderer = useMemo(() => {
+    return isMarkdownEntry ? EntryContentMarkdownRenderer : EntryContentHTMLRenderer
+  }, [isMarkdownEntry])
   return (
-    <EntryContentHTMLRenderer
+    <ContentRenderer
       view={view}
       feedId={feedId}
       entryId={entryId}
@@ -170,6 +178,6 @@ const Renderer: React.FC<{
       renderInlineStyle={readerRenderInlineStyle}
     >
       {translation?.content || content}
-    </EntryContentHTMLRenderer>
+    </ContentRenderer>
   )
 }

@@ -1,28 +1,29 @@
 import { FeedViewType } from "@follow/constants"
 import { useEntry } from "@follow/store/entry/hooks"
 import { getFeedById } from "@follow/store/feed/getter"
+import type { ComponentProps } from "react"
 import { useMemo } from "react"
-import type { JSX } from "react/jsx-runtime"
 
 import {
   MarkdownImageRecordContext,
   MarkdownRenderActionContext,
 } from "~/components/ui/markdown/context"
-import type { HTMLProps } from "~/components/ui/markdown/HTML"
-import { HTML } from "~/components/ui/markdown/HTML"
+import { Markdown } from "~/components/ui/markdown/Markdown"
 import type { MarkdownImage, MarkdownRenderActions } from "~/components/ui/markdown/types"
 
 import { TimeStamp } from "./components/TimeStamp"
 import { EntryInfoContext } from "./context"
 import type { EntryContentRendererProps } from "./types"
 
-export function EntryContentHTMLRenderer<AS extends keyof JSX.IntrinsicElements = "div">({
+type MarkdownProps = Omit<ComponentProps<typeof Markdown>, "children">
+
+export function EntryContentMarkdownRenderer({
   view,
   feedId,
   entryId,
   children,
   ...props
-}: EntryContentRendererProps & HTMLProps<AS>) {
+}: EntryContentRendererProps & MarkdownProps) {
   const entry = useEntry(entryId, (state) => {
     const images =
       state.media?.reduce(
@@ -62,13 +63,13 @@ export function EntryContentHTMLRenderer<AS extends keyof JSX.IntrinsicElements 
       ensureAndRenderTimeStamp,
     }
   }, [entry, feedId, view])
+
   return (
     // eslint-disable-next-line @eslint-react/no-context-provider
     <MarkdownImageRecordContext.Provider value={images}>
       <MarkdownRenderActionContext value={actions}>
         <EntryInfoContext value={useMemo(() => ({ feedId, entryId }), [feedId, entryId])}>
-          {/*  @ts-expect-error */}
-          <HTML {...props}>{children}</HTML>
+          <Markdown {...props}>{children ?? ""}</Markdown>
         </EntryInfoContext>
       </MarkdownRenderActionContext>
     </MarkdownImageRecordContext.Provider>

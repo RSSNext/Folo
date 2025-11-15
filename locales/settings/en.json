@@ -1,4 +1,7 @@
 {
+  "about.aiOnboardingDescription": "Revisit the interactive onboarding tour.",
+  "about.appTip": "App Features",
+  "about.appTipDescription": "App features introduction and usage guide.",
   "about.changelog": "Changelog",
   "about.changelogDescription": "See what's new in each version",
   "about.checkForUpdates": "Check for Updates",

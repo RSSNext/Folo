@@ -3,17 +3,7 @@ import type { FeedViewType } from "@follow-app/client-sdk"
 import { atom } from "jotai"
 import { splitAtom } from "jotai/utils"
 
-export const stepAtom = atom<
-  | "intro"
-  | "selecting-feeds"
-  | "pre-finish"
-  | "finish"
-  | "skip-pre-finish"
-  | "skip-finish"
-  | "manual-import"
-  | "manual-import-pre-finish"
-  | "manual-import-finish"
->("intro")
+export const stepAtom = atom<"intro" | "selecting-feeds" | "finish">("intro")
 
 export type FeedSelection = {
   description: string | null
