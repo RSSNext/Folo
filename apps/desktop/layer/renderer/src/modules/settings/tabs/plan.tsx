@@ -8,6 +8,7 @@ import { useUserRole, useWhoami } from "@follow/store/user/hooks"
 import { cn } from "@follow/utils/utils"
 import NumberFlow from "@number-flow/react"
 import { useMutation, useQuery } from "@tanstack/react-query"
+import type { TFunction } from "i18next"
 import { useState } from "react"
 import { useTranslation } from "react-i18next"
 import { toast } from "sonner"
@@ -16,12 +17,36 @@ import type { PaymentFeature, PaymentPlan } from "~/atoms/server-configs"
 import { useIsPaymentEnabled, useServerConfigs } from "~/atoms/server-configs"
 import { subscription } from "~/lib/auth"
 
+const AI_MODEL_SELECTION_VALUE_LABELS = {
+  none: {
+    translationKey: "plan.featureValues.AI_MODEL_SELECTION.none",
+    fallback: "—",
+  },
+  curated: {
+    translationKey: "plan.featureValues.AI_MODEL_SELECTION.curated",
+    fallback: "Curated best-value models",
+  },
+  high_performance: {
+    translationKey: "plan.featureValues.AI_MODEL_SELECTION.high_performance",
+    fallback: "All high-performance models",
+  },
+} as const
+
 const formatFeatureValue = (
   key: keyof PaymentFeature,
-  value: number | boolean | string | string[] | null | undefined,
+  value: PaymentFeature[keyof PaymentFeature] | null | undefined,
+  t?: TFunction<"settings">,
 ): string => {
   if (value == null || value === undefined) {
     return "—"
+  }
+
+  if (key === "AI_MODEL_SELECTION" && typeof value === "string") {
+    const selectionValue =
+      AI_MODEL_SELECTION_VALUE_LABELS[value as keyof typeof AI_MODEL_SELECTION_VALUE_LABELS]
+    if (selectionValue) {
+      return t?.(selectionValue.translationKey) ?? selectionValue.fallback
+    }
   }
 
   if (typeof value === "boolean") {
@@ -542,7 +567,7 @@ const PlanComparisonTable = ({ plans }: { plans: PaymentPlan[] }) => {
                 </td>
                 {plans.map((plan) => {
                   const value = plan.limit[featureKey]
-                  const formattedValue = formatFeatureValue(featureKey, value)
+                  const formattedValue = formatFeatureValue(featureKey, value, t)
 
                   return (
                     <td
