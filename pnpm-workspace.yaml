@@ -20,7 +20,6 @@ minimumReleaseAge: 1440
 minimumReleaseAgeExclude:
   - "@follow-app/*"
   - "@folo-services/*"
-  - "@byjohann/toon"
 
 onlyBuiltDependencies:
   - "@firebase/util"

@@ -1,4 +1,3 @@
-import { decode } from "@byjohann/toon"
 import {
   Card,
   CardContent,
@@ -8,6 +7,7 @@ import {
 import { ScrollArea } from "@follow/components/ui/scroll-area/ScrollArea.js"
 import { Tooltip, TooltipContent, TooltipTrigger } from "@follow/components/ui/tooltip/index.js"
 import { cn } from "@follow/utils/utils"
+import { decode } from "@toon-format/toon"
 import type { PrimitiveAtom } from "jotai"
 import { useAtom, useAtomValue, useSetAtom, useStore } from "jotai"
 import { AnimatePresence, m } from "motion/react"
