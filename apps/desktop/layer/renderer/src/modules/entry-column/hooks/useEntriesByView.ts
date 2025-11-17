@@ -85,7 +85,7 @@ const useRemoteEntries = (): UseEntriesReturn => {
       fetchedTime: fetchedTime!,
     }),
     {
-      refetchInterval: 1000 * 60,
+      refetchInterval: 1000 * 60 * 5,
       enabled: !!fetchedTime && !pauseQuery,
       notifyOnChangeProps: ["data"],
     },
