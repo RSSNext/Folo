@@ -10,6 +10,7 @@ import { setAISetting, useAISettingKey } from "~/atoms/settings/ai"
 import { OpmlAbstractGraphic } from "../discover/OpmlAbstractGraphic"
 import { AICopilotMedia } from "./AICopilotMedia"
 import { APP_TIP_DEBUG_EVENT } from "./constants"
+import { OverviewMedia } from "./OverviewMedia"
 import type { AppTipDebugOpenEventDetail, AppTipStep } from "./types"
 import { useNewUserGuideState } from "./useNewUserGuideState"
 
@@ -88,7 +89,9 @@ export function useAppTipController() {
           t("new_user_dialog.overview.highlight_2"),
           t("new_user_dialog.overview.highlight_3"),
         ],
-
+        media: {
+          reactNode: jsx(OverviewMedia, {}),
+        },
         primaryActionLabel: t("new_user_dialog.overview.primary"),
         onPrimaryAction: () => handleNavigateAndClose("/discover?type=search"),
       },
