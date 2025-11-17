@@ -5,6 +5,7 @@ import { setAISetting, useAISettingValue } from "~/atoms/settings/ai"
 
 import { createDefineSettingItem } from "../helper/builder"
 import { createSettingBuilder } from "../helper/setting-builder"
+import { ByokSection } from "./ai/byok"
 import { MCPServicesSection } from "./ai/mcp/MCPServicesSection"
 import { UserMemorySection } from "./ai/memory"
 import { PanelStyleSection } from "./ai/PanelStyleSection"
@@ -75,6 +76,12 @@ export const SettingAI = () => {
             value: t("integration.title"),
           },
           MCPServicesSection,
+
+          {
+            type: "title",
+            value: t("byok.title"),
+          },
+          ByokSection,
 
           {
             type: "title",

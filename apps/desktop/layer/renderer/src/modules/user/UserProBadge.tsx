@@ -27,8 +27,8 @@ export const UserProBadge = ({
       )}
       onClick={onClick}
     >
-      <i className={cn("i-mgc-power block", iconClassName)} />
-      {withText && <span className="text-xs">{UserRoleName[role]}</span>}
+      <i className={cn("i-mgc-power block text-folo", iconClassName)} />
+      {withText && <span className="text-xs text-folo">{UserRoleName[role]}</span>}
     </div>
   )
 }
