@@ -3,9 +3,17 @@ import { useMobile } from "@follow/components/hooks/useMobile.js"
 import { MotionButtonBase } from "@follow/components/ui/button/index.js"
 import { LoadingCircle } from "@follow/components/ui/loading/index.jsx"
 import { useScrollViewElement } from "@follow/components/ui/scroll-area/hooks.js"
+import {
+  Tooltip,
+  TooltipContent,
+  TooltipPortal,
+  TooltipTrigger,
+} from "@follow/components/ui/tooltip/index.jsx"
 import type { FeedViewType } from "@follow/constants"
 import { getViewList } from "@follow/constants"
 import { useRefValue } from "@follow/hooks"
+import { isOnboardingFeedUrl } from "@follow/store/constants/onboarding"
+import { useFeedsByIds } from "@follow/store/feed/hooks"
 import { useOwnedListByView } from "@follow/store/list/hooks"
 import {
   useSubscriptionByFeedId,
@@ -178,6 +186,10 @@ function FeedCategoryImpl({
   const subscriptionCategoryExist = useSubscriptionCategoryExist(folderName)
   const isAutoGroupedCategory = !!folderName && !subscriptionCategoryExist
 
+  // Check if any feed in this category is an onboarding feed
+  const feeds = useFeedsByIds(ids, (feed) => feed.url)
+  const hasOnboardingFeed = useMemo(() => feeds.some((url) => isOnboardingFeedUrl(url)), [feeds])
+
   const { isOver, setNodeRef } = useDroppable({
     id: `category-${folderName}`,
     disabled: isAutoGroupedCategory,
@@ -299,7 +311,8 @@ function FeedCategoryImpl({
           ref={setNodeRef}
           data-active={isActive || isContextMenuOpen}
           className={cn(
-            isOver && "border-orange-400 bg-orange-400/60",
+            isOver && "border-folo bg-folo/60",
+
             "my-px px-2.5",
             feedColumnStyles.item,
           )}
@@ -312,7 +325,10 @@ function FeedCategoryImpl({
           }}
           {...contextMenuProps}
         >
-          <div className="flex w-full min-w-0 items-center" onDoubleClick={toggleCategoryOpenState}>
+          <div
+            className={cn("flex w-full min-w-0 items-center", hasOnboardingFeed && "text-folo")}
+            onDoubleClick={toggleCategoryOpenState}
+          >
             <button
               data-type="collapse"
               type="button"
@@ -349,7 +365,16 @@ function FeedCategoryImpl({
             ) : (
               <Fragment>
                 <span className="grow truncate">{folderName}</span>
-
+                {hasOnboardingFeed && (
+                  <Tooltip delayDuration={300}>
+                    <TooltipTrigger>
+                      <i className="i-mingcute-sparkles-line ml-1 shrink-0 text-base text-folo" />
+                    </TooltipTrigger>
+                    <TooltipPortal>
+                      <TooltipContent>{t("feed_category.onboarding_feed")}</TooltipContent>
+                    </TooltipPortal>
+                  </Tooltip>
+                )}
                 <UnreadNumber unread={unread} className="ml-2" />
               </Fragment>
             )}

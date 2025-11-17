@@ -10,6 +10,7 @@ import {
 } from "@follow/components/ui/tooltip/index.jsx"
 import { EllipsisHorizontalTextWithTooltip } from "@follow/components/ui/typography/index.js"
 import type { FeedViewType } from "@follow/constants"
+import { isOnboardingFeedUrl } from "@follow/store/constants/onboarding"
 import { useFeedById } from "@follow/store/feed/hooks"
 import { useInboxById } from "@follow/store/inbox/hooks"
 import { useListById } from "@follow/store/list/hooks"
@@ -171,6 +172,7 @@ const FeedItemImpl = ({ view, feedId, className, isPreview }: FeedItemProps) => 
   if (!feed) return null
 
   const isFeed = feed.type === "feed" || !feed.type
+  const isOnboardingFeed = isOnboardingFeedUrl(feed.url)
 
   return (
     <DraggableItemWrapper
@@ -186,21 +188,38 @@ const FeedItemImpl = ({ view, feedId, className, isPreview }: FeedItemProps) => 
         feedColumnStyles.item,
         isFeed ? "py-0.5" : "py-1.5",
         "justify-between py-0.5",
+
         className,
       )}
       onClick={handleClick}
       onDoubleClick={handleDoubleClick}
       {...contextMenuProps}
     >
-      <div className={cn("flex min-w-0 items-center", isFeed && feed.errorAt && "text-red")}>
+      <div
+        className={cn(
+          "flex min-w-0 items-center",
+          isFeed && feed.errorAt && !isOnboardingFeed && "text-red",
+          isOnboardingFeed && "text-folo",
+        )}
+      >
         <FeedIcon fallback target={feed} size={16} />
         <FeedTitle feed={feed} />
-        {isFeed && (
+        {isOnboardingFeed && (
+          <Tooltip delayDuration={300}>
+            <TooltipTrigger>
+              <i className="i-mingcute-sparkles-line ml-1 size-3 shrink-0 translate-y-0.5 text-base text-folo" />
+            </TooltipTrigger>
+            <TooltipPortal>
+              <TooltipContent>{t("feed_item.onboarding_feed")}</TooltipContent>
+            </TooltipPortal>
+          </Tooltip>
+        )}
+        {isFeed && !isOnboardingFeed && (
           <ErrorTooltip errorAt={feed.errorAt} errorMessage={feed.errorMessage}>
             <i className="i-mingcute-close-circle-fill ml-1 shrink-0 text-base" />
           </ErrorTooltip>
         )}
-        {subscription?.isPrivate && (
+        {subscription?.isPrivate && !isOnboardingFeed && (
           <Tooltip delayDuration={300}>
             <TooltipTrigger>
               <OouiUserAnonymous className="ml-1 shrink-0 text-base" />

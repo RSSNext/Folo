@@ -6,24 +6,21 @@ import { AIChatRoot } from "~/modules/ai-chat/components/layouts/AIChatRoot"
 
 import { settingSyncQueue } from "../settings/helper/sync-queue"
 import { AIChatPane } from "./ai-chat-pane"
-import { DiscoverImportStep } from "./discover-import-step"
 import { FeedsSelectionList } from "./feeds-selection-list"
 import { stepAtom } from "./store"
 
-export function GuideModalContent({ onClose }: { onClose: () => void }) {
+export function AiOnboardingModalContent({ onClose }: { onClose: () => void }) {
   const step = useAtomValue(stepAtom)
 
   useEffect(() => {
     tracker.onBoarding({
       stepV2: step,
-      done: step === "finish" || step === "manual-import-finish" || step === "skip-finish",
+      done: step === "finish",
     })
   }, [step])
 
   useEffect(() => {
-    if (step !== "finish" && step !== "manual-import-finish") {
-      return
-    }
+    if (step !== "finish") return
 
     const syncSettings = async () => {
       try {
@@ -37,7 +34,7 @@ export function GuideModalContent({ onClose }: { onClose: () => void }) {
   }, [step])
 
   useEffect(() => {
-    if (step === "finish" || step === "manual-import-finish" || step === "skip-finish") {
+    if (step === "finish") {
       onClose()
     }
   }, [onClose, step])
@@ -47,25 +44,29 @@ export function GuideModalContent({ onClose }: { onClose: () => void }) {
       case "intro":
       case "selecting-feeds": {
         return (
-          <div className="grid h-screen w-screen grid-cols-1 divide-x overflow-hidden bg-theme-background p-5 lg:grid-cols-10">
-            <FeedsSelectionList />
-            <AIChatPane />
+          <div className="relative flex size-full flex-col overflow-hidden lg:flex-row">
+            {/* Left side - Feed Selection (45% width on large screens) */}
+            <div className="overflow-hidden lg:w-2/5">
+              <FeedsSelectionList />
+            </div>
+
+            {/* Gradient divider */}
+            <div
+              className="hidden w-px flex-shrink-0 lg:block"
+              style={{
+                background:
+                  "linear-gradient(to bottom, transparent, rgba(255, 92, 0, 0.2), transparent)",
+              }}
+            />
+
+            {/* Right side - AI Chat (55% width on large screens) */}
+            <div className="flex-1 overflow-hidden lg:w-[55%]">
+              <AIChatPane />
+            </div>
           </div>
         )
       }
-      case "manual-import": {
-        return <DiscoverImportStep />
-      }
-      case "pre-finish":
-      case "manual-import-pre-finish":
-      case "skip-pre-finish": {
-        return null
-      }
-      case "finish":
-      case "manual-import-finish":
-      case "skip-finish": {
-        return null
-      }
+
       default: {
         return null
       }
@@ -76,8 +77,8 @@ export function GuideModalContent({ onClose }: { onClose: () => void }) {
 
   return (
     <AIChatRoot>
-      <div className="flex h-screen w-screen flex-col items-center justify-center overflow-hidden">
-        <div className="mx-auto flex flex-col gap-8">{content}</div>
+      <div className="absolute inset-8 flex flex-col overflow-hidden rounded-xl bg-background">
+        {content}
       </div>
     </AIChatRoot>
   )
