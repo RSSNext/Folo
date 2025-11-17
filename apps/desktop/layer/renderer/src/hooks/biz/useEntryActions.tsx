@@ -420,7 +420,6 @@ export const useEntryActions = ({ entryId, view }: { entryId: string; view: Feed
       new EntryActionMenuItem({
         id: COMMAND_ID.entry.tts,
         onClick: runCmdFn(COMMAND_ID.entry.tts, [{ entryId }]),
-        hide: !IN_ELECTRON || !entry.hasContent,
         shortcut: shortcuts[COMMAND_ID.entry.tts],
         entryId,
       }),
