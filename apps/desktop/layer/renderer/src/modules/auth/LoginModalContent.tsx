@@ -12,6 +12,7 @@ import { useEffect, useState } from "react"
 import { Trans, useTranslation } from "react-i18next"
 
 import { useServerConfigs } from "~/atoms/server-configs"
+import { GlassButton } from "~/components/ui/button/GlassButton"
 import { useCurrentModal, useModalStack } from "~/components/ui/modal/stacked/hooks"
 import { authClient, loginHandler } from "~/lib/auth"
 import { useAuthProviders } from "~/queries/users"
@@ -119,6 +120,14 @@ export const LoginModalContent = (props: LoginModalContentProps) => {
         </m.div>
       </div>
 
+      <GlassButton
+        variant="flat"
+        className="absolute -right-2 -top-2 bg-material-medium"
+        onClick={modal.dismiss}
+      >
+        <i className="i-mgc-close-cute-re size-4" />
+      </GlassButton>
+
       {isEmail ? (
         <m.div
           initial={{ opacity: 0, y: 10 }}
@@ -134,7 +143,7 @@ export const LoginModalContent = (props: LoginModalContentProps) => {
       ) : (
         <div className="flex flex-col gap-6">
           {/* Login Providers */}
-          <div className="flex flex-col gap-3 overflow-hidden">
+          <div className="flex flex-col gap-3">
             {isLoading
               ? // Skeleton loaders to prevent CLS
                 Array.from({ length: 4 })
@@ -142,7 +151,7 @@ export const LoginModalContent = (props: LoginModalContentProps) => {
                   .map((_, index) => (
                     <div
                       key={`skeleton-${index}`}
-                      className="relative h-12 w-full animate-pulse rounded-xl border border-fill-secondary bg-fill"
+                      className="relative h-12 w-full animate-pulse rounded-xl border border-fill-secondary bg-material-medium"
                     />
                   ))
               : providers.map(([key, provider], index) => (
@@ -161,18 +170,8 @@ export const LoginModalContent = (props: LoginModalContentProps) => {
                           loginHandler(key, "app")
                         }
                       }}
-                      className="group center relative w-full gap-2 rounded-xl border border-border bg-fill/50 py-3.5 pl-5 font-medium shadow-sm backdrop-blur-sm transition-all duration-200 hover:border-folo/30 hover:shadow-md"
-                      onMouseEnter={(e) => {
-                        e.currentTarget.style.background =
-                          "linear-gradient(to right, rgba(255, 92, 0, 0.08), rgba(255, 140, 0, 0.05))"
-                      }}
-                      onMouseLeave={(e) => {
-                        e.currentTarget.style.background = ""
-                      }}
+                      className="group center relative w-full gap-2 rounded-xl border border-border bg-material-medium py-3.5 pl-5 font-medium backdrop-blur-sm transition-all duration-200 hover:border-folo/30 hover:bg-folo/10"
                     >
-                      {/* Subtle shine effect */}
-                      <div className="absolute inset-0 -translate-x-full rounded-xl bg-gradient-to-r from-transparent via-gray/5 to-transparent transition-transform duration-700 group-hover:translate-x-full dark:via-white/5" />
-
                       <img
                         className={cn(
                           "absolute left-7 size-5 object-contain",
@@ -185,9 +184,10 @@ export const LoginModalContent = (props: LoginModalContentProps) => {
                       <span className="relative z-10">
                         {t("login.continueWith", { provider: provider.name })}
                       </span>
+
                       {lastMethod === key && (
                         <m.div
-                          className="absolute -right-2 -top-2 z-20 rounded-lg bg-accent px-2.5 py-1 text-xs font-medium text-white shadow-lg"
+                          className="absolute -right-2 -top-2 z-20 rounded-lg bg-accent px-2.5 py-1 text-xs font-medium text-white"
                           initial={{ scale: 0, opacity: 0 }}
                           animate={{ scale: 1, opacity: 1 }}
                           transition={Spring.presets.bouncy}

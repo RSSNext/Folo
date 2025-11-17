@@ -66,6 +66,7 @@ export const TokenModalContent = () => {
               <FormItem className="flex flex-col items-center gap-2 md:block">
                 <FormControl>
                   <Input
+                    autoFocus
                     className="mt-1 dark:text-zinc-200"
                     placeholder="folo://auth?token=xxx"
                     {...field}

@@ -13,7 +13,6 @@
     "typecheck": "tsc --noEmit"
   },
   "dependencies": {
-    "@byjohann/toon": "0.6.0",
     "@dnd-kit/core": "6.3.1",
     "@dnd-kit/sortable": "10.0.0",
     "@electron-toolkit/preload": "3.0.2",
@@ -48,6 +47,7 @@
     "@tanstack/react-query-devtools": "5.90.2",
     "@tanstack/react-query-persist-client": "5.90.8",
     "@tanstack/react-virtual": "3.13.12",
+    "@toon-format/toon": "1.0.0",
     "@use-gesture/react": "10.3.1",
     "@welldone-software/why-did-you-render": "10.0.1",
     "@xyflow/react": "12.9.2",
