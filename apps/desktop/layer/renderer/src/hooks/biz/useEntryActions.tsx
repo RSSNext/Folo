@@ -2,6 +2,7 @@ import { isMobile } from "@follow/components/hooks/useMobile.js"
 import { FeedViewType, getView, UserRole } from "@follow/constants"
 import { IN_ELECTRON } from "@follow/shared/constants"
 import { useIsEntryStarred } from "@follow/store/collection/hooks"
+import { isOnboardingEntryUrl } from "@follow/store/constants/onboarding"
 import { useEntry } from "@follow/store/entry/hooks"
 import { entrySyncServices } from "@follow/store/entry/store"
 import type { EntryModel } from "@follow/store/entry/types"
@@ -29,7 +30,6 @@ import { useCommandShortcuts } from "~/modules/command/hooks/use-command-binding
 import { isMutationCommandId } from "~/modules/command/mutation-command-ids"
 import type { FollowCommandId } from "~/modules/command/types"
 import { useToolbarOrderMap } from "~/modules/customize-toolbar/hooks"
-import { isOnboardingEntryUrl } from "~/modules/entry-content/utils/onboarding"
 
 import { useRouteParams } from "./useRouteParams"
 
