@@ -13,7 +13,6 @@ import { toast } from "sonner"
 
 import { AudioPlayer, getAudioPlayerAtomValue } from "~/atoms/player"
 import { showPopover } from "~/atoms/popover"
-import { useGeneralSettingKey } from "~/atoms/settings/general"
 import {
   getShowSourceContent,
   toggleShowSourceContent,
@@ -23,18 +22,16 @@ import { SharePanel } from "~/components/common/SharePanel"
 import { toggleEntryReadability } from "~/hooks/biz/useEntryActions"
 import { navigateEntry } from "~/hooks/biz/useNavigateEntry"
 import { getRouteParams } from "~/hooks/biz/useRouteParams"
-import { ipcServices } from "~/lib/client"
 import { copyToClipboard } from "~/lib/clipboard"
-import { parseHtml } from "~/lib/parse-html"
 import { markAllByRoute } from "~/modules/entry-column/hooks/useMarkAll"
 import { useGalleryModal } from "~/modules/entry-content/hooks"
+import { playEntryTts } from "~/modules/player/entry-tts"
 
 import { useRegisterFollowCommand } from "../hooks/use-register-command"
 import type { Command, CommandCategory } from "../types"
 import { COMMAND_ID } from "./id"
 
 const category: CommandCategory = "category.entry"
-
 const useCollect = () => {
   const { t } = useTranslation()
   return useMutation({
@@ -106,8 +103,6 @@ export const useRegisterEntryCommands = () => {
   const openGalleryModal = useGalleryModal()
   const read = useRead()
   const unread = useUnread()
-
-  const voice = useGeneralSettingKey("voice")
 
   useRegisterFollowCommand(
     [
@@ -342,25 +337,12 @@ export const useRegisterEntryCommands = () => {
         run: async ({ entryId }) => {
           if (getAudioPlayerAtomValue().entryId === entryId) {
             AudioPlayer.togglePlayAndPause()
-          } else {
-            const entryContent = getEntry(entryId)?.content
-            if (!entryContent) {
-              return
-            }
-            const filePath = await ipcServices?.reader.tts({
-              id: entryId,
-              text: parseHtml(entryContent).toText(),
-              voice,
-            })
-            if (filePath) {
-              AudioPlayer.mount({
-                type: "audio",
-                entryId,
-                src: `file://${filePath}`,
-                currentTime: 0,
-              })
-            }
+            return
           }
+
+          await playEntryTts(entryId, {
+            toastTitle: t("entry_content.header.play_tts"),
+          })
         },
       },
       {
