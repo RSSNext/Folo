@@ -61,6 +61,7 @@ patchedDependencies:
   "@mozilla/readability@0.6.0": patches/@mozilla__readability@0.6.0.patch
   "@pengx17/electron-forge-maker-appimage": patches/@pengx17__electron-forge-maker-appimage.patch
   "@sentry/electron": patches/@sentry__electron.patch
+  better-auth: patches/better-auth.patch
   daisyui@4.12.24: patches/daisyui@4.12.24.patch
   jsonpointer: patches/jsonpointer.patch
   re-resizable@6.11.2: patches/re-resizable@6.11.2.patch
