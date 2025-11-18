@@ -10,7 +10,6 @@ import { useMutation, useQuery } from "@tanstack/react-query"
 import type { TFunction } from "i18next"
 import { useState } from "react"
 import { useTranslation } from "react-i18next"
-import { toast } from "sonner"
 
 import type { PaymentFeature, PaymentPlan } from "~/atoms/server-configs"
 import { useIsPaymentEnabled, useServerConfigs } from "~/atoms/server-configs"
@@ -98,42 +97,13 @@ const useActiveSubscription = () => {
     queryKey: ["activeSubscription"],
     queryFn: async () => {
       const { data } = await subscription.list()
+      // We used to allow one time purchases, so we need to check for active subscriptions
       return data?.find(
         (sub) => (sub.status === "active" || sub.status === "trialing") && sub.stripeSubscriptionId,
       )
     },
     enabled: !!userId,
   })
-}
-
-const useCancelPlan = () => {
-  const { data: latestSubscription } = useActiveSubscription()
-  const subscriptionId = latestSubscription?.id
-  const cancelAtPeriodEnd = latestSubscription?.cancelAtPeriodEnd
-
-  const cancelMutation = useMutation({
-    mutationFn: async () => {
-      if (!subscriptionId) {
-        return
-      }
-
-      await subscription.cancel({
-        subscriptionId,
-        returnUrl: IN_ELECTRON ? `${DEEPLINK_SCHEME}refresh` : env.VITE_WEB_URL,
-        fetchOptions: {
-          onError(context) {
-            toast.error(context.error.message)
-          },
-        },
-      })
-    },
-  })
-
-  if (cancelAtPeriodEnd || !subscriptionId) {
-    return null
-  } else {
-    return cancelMutation
-  }
 }
 
 export function SettingPlan() {
@@ -250,7 +220,6 @@ const PlanCard = ({ plan, billingPeriod, isCurrentPlan, currentTier }: PlanCardP
     plan: plan.planID,
     annual: billingPeriod === "yearly",
   })
-  const cancelPlanMutation = useCancelPlan()
 
   // Calculate price and period based on billing period
   const regularPrice =
@@ -302,18 +271,11 @@ const PlanCard = ({ plan, billingPeriod, isCurrentPlan, currentTier }: PlanCardP
         <PlanAction
           actionType={actionType}
           upgradeButtonText={plan.upgradeButtonText}
-          isLoading={upgradePlanMutation.isPending || cancelPlanMutation?.isPending}
+          isLoading={upgradePlanMutation.isPending}
           onSelect={
             !plan.isComingSoon && !isCurrentPlan
               ? () => {
                   upgradePlanMutation.mutate()
-                }
-              : undefined
-          }
-          onCancel={
-            isCurrentPlan && cancelPlanMutation
-              ? () => {
-                  cancelPlanMutation.mutate()
                 }
               : undefined
           }
@@ -392,15 +354,18 @@ const PlanAction = ({
   actionType,
   upgradeButtonText,
   onSelect,
-  onCancel,
   isLoading,
 }: {
   actionType: "current" | "upgrade" | "coming-soon" | "in-trial" | "switch" | "new" | null
   upgradeButtonText?: string
   onSelect?: () => void
-  onCancel?: () => void
   isLoading?: boolean
 }) => {
+  const { data: activeSubscription } = useActiveSubscription()
+  const serverConfig = useServerConfigs()
+  const stripePortalLink = serverConfig?.STRIPE_PORTAL_LINK
+  const canManageSubscription = !!activeSubscription && !!stripePortalLink
+
   const getButtonConfig = () => {
     switch (actionType) {
       case "coming-soon": {
@@ -413,11 +378,11 @@ const PlanAction = ({
       }
       case "current": {
         return {
-          text: `Current Plan${onCancel ? " | Cancel" : ""}`,
+          text: canManageSubscription ? "Manage Subscription" : "Current Plan",
           icon: undefined,
           variant: "outline" as const,
-          className: onCancel ? "" : "text-text-secondary",
-          disabled: onCancel ? false : true,
+          className: !canManageSubscription ? "text-text-secondary" : undefined,
+          disabled: !canManageSubscription,
         }
       }
       case "in-trial": {
@@ -475,7 +440,11 @@ const PlanAction = ({
         buttonConfig.className,
       )}
       disabled={buttonConfig.disabled}
-      onClick={buttonConfig.disabled ? undefined : (onCancel ?? onSelect)}
+      onClick={
+        actionType === "current" && canManageSubscription
+          ? () => window.open(stripePortalLink, "_blank")
+          : onSelect
+      }
       isLoading={isLoading}
     >
       <span className="flex items-center justify-center gap-1.5">
