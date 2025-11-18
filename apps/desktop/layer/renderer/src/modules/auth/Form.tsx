@@ -28,7 +28,7 @@ import { ReferralForm } from "./ReferralForm"
 
 const formSchema = z.object({
   email: z.string().email(),
-  password: z.string().min(8).max(128),
+  password: z.string().min(8).max(128).or(z.literal("")),
 })
 
 export function LoginWithPassword({
@@ -54,14 +54,32 @@ export function LoginWithPassword({
 
   async function onSubmit(values: z.infer<typeof formSchema>) {
     const recaptchaToken = await requestRecaptchaToken("desktop_login")
+    const headers = recaptchaToken
+      ? {
+          "x-token": `r3:${recaptchaToken}`,
+        }
+      : undefined
+
+    if (!values.password || values.password.trim() === "") {
+      const result = await loginHandler("magicLink", runtime, {
+        email: values.email,
+        headers,
+      })
+
+      if (result?.error) {
+        toast.error(result.error.message)
+        return
+      }
+
+      toast.success(t("login.magic_link_sent"))
+      return
+    }
+
+    // Use password authentication
     const res = await loginHandler("credential", runtime, {
       email: values.email,
       password: values.password,
-      headers: recaptchaToken
-        ? {
-            "x-token": `r3:${recaptchaToken}`,
-          }
-        : undefined,
+      headers,
     })
     if (res?.error) {
       toast.error(res.error.message)
@@ -114,7 +132,7 @@ export function LoginWithPassword({
           render={({ field }) => (
             <FormItem className="mt-4">
               <FormLabel className="flex items-center justify-between">
-                <span>{t("login.password")}</span>
+                <span>{`${t("login.password")} (${t("login.password_optional")})`}</span>
                 <a
                   href={`${env.VITE_WEB_URL}/forget-password`}
                   target="_blank"
@@ -139,7 +157,9 @@ export function LoginWithPassword({
             disabled={!form.formState.isValid}
             size="lg"
           >
-            {t("login.continueWith", { provider: t("words.email") })}
+            {!form.watch("password") || form.watch("password")?.trim() === ""
+              ? t("login.send_magic_link")
+              : t("login.continueWith", { provider: t("words.email") })}
           </Button>
         </div>
       </form>
@@ -164,8 +184,8 @@ export function LoginWithPassword({
 const registerFormSchema = z
   .object({
     email: z.string().email(),
-    password: z.string().min(8).max(128),
-    confirmPassword: z.string(),
+    password: z.string().min(8).max(128).or(z.literal("")),
+    confirmPassword: z.string().or(z.literal("")),
   })
   .refine((data) => data.password === data.confirmPassword, {
     message: "Passwords don't match",
@@ -173,8 +193,10 @@ const registerFormSchema = z
   })
 
 export function RegisterForm({
+  runtime,
   onLoginStateChange,
 }: {
+  runtime: LoginRuntime
   onLoginStateChange: (state: "register" | "login") => void
 }) {
   const { t } = useTranslation("app")
@@ -194,6 +216,27 @@ export function RegisterForm({
 
   async function onSubmit(values: z.infer<typeof registerFormSchema>) {
     const recaptchaToken = await requestRecaptchaToken("desktop_register")
+    const headers = recaptchaToken
+      ? {
+          "x-token": `r3:${recaptchaToken}`,
+        }
+      : undefined
+
+    if (!values.password || values.password.trim() === "") {
+      const result = await loginHandler("magicLink", runtime, {
+        email: values.email,
+        headers,
+      })
+
+      if (result?.error) {
+        toast.error(result.error.message)
+        return
+      }
+
+      toast.success(t("register.magic_link_sent"))
+      return
+    }
+
     return signUp.email({
       email: values.email,
       password: values.password,
@@ -206,11 +249,7 @@ export function RegisterForm({
         onError(context) {
           toast.error(context.error.message)
         },
-        headers: recaptchaToken
-          ? {
-              "x-token": `r3:${recaptchaToken}`,
-            }
-          : undefined,
+        headers,
       },
     })
   }
@@ -237,7 +276,7 @@ export function RegisterForm({
             name="password"
             render={({ field }) => (
               <FormItem>
-                <FormLabel>{t("register.password")}</FormLabel>
+                <FormLabel>{`${t("register.password")} (${t("register.password_optional")})`}</FormLabel>
                 <FormControl>
                   <Input type="password" {...field} />
                 </FormControl>
@@ -250,7 +289,9 @@ export function RegisterForm({
             name="confirmPassword"
             render={({ field }) => (
               <FormItem>
-                <FormLabel>{t("register.confirm_password")}</FormLabel>
+                <FormLabel>
+                  {`${t("register.confirm_password")} (${t("register.password_optional")})`}
+                </FormLabel>
                 <FormControl>
                   <Input type="password" {...field} />
                 </FormControl>
@@ -259,8 +300,16 @@ export function RegisterForm({
             )}
           />
           {serverConfigs?.REFERRAL_ENABLED && <ReferralForm className="mb-4 w-full" align="left" />}
-          <Button type="submit" buttonClassName="w-full" size="lg">
-            {t("register.submit")}
+          <Button
+            type="submit"
+            buttonClassName="w-full"
+            size="lg"
+            isLoading={form.formState.isSubmitting}
+            disabled={!form.formState.isValid}
+          >
+            {!form.watch("password") || form.watch("password")?.trim() === ""
+              ? t("register.send_magic_link")
+              : t("register.submit")}
           </Button>
         </form>
       </Form>
