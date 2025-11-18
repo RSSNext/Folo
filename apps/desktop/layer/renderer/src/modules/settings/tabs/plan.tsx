@@ -255,14 +255,18 @@ const PlanCard = ({
     | "coming-soon"
     | "in-trial"
     | "switch"
+    | "new"
     | null => {
     if (plan.isComingSoon) return "coming-soon"
     switch (true) {
       case isCurrentPlan: {
         return "current"
       }
-      case plan.tier > currentTier && !!plan.planID: {
+      case plan.tier > currentTier && !!plan.planID && currentTier !== 0: {
         return "upgrade"
+      }
+      case plan.tier > currentTier && !!plan.planID && currentTier === 0: {
+        return "new"
       }
       // case plan.tier < currentTier && !!plan.planID: {
       //   return "switch"
@@ -424,7 +428,7 @@ const PlanAction = ({
   onCancel,
   isLoading,
 }: {
-  actionType: "current" | "upgrade" | "coming-soon" | "in-trial" | "switch" | null
+  actionType: "current" | "upgrade" | "coming-soon" | "in-trial" | "switch" | "new" | null
   upgradeButtonText?: string
   onSelect?: () => void
   onCancel?: () => void
@@ -457,9 +461,18 @@ const PlanAction = ({
           disabled: false,
         }
       }
-      case "upgrade": {
+      case "new": {
         return {
           text: upgradeButtonText || "Upgrade",
+          icon: "i-mgc-arrow-up-cute-re",
+          className:
+            "bg-gradient-to-r from-accent to-accent/90 text-white hover:from-accent/95 hover:to-accent/85",
+          disabled: false,
+        }
+      }
+      case "upgrade": {
+        return {
+          text: "Upgrade",
           icon: "i-mgc-arrow-up-cute-re",
           className:
             "bg-gradient-to-r from-accent to-accent/90 text-white hover:from-accent/95 hover:to-accent/85",
