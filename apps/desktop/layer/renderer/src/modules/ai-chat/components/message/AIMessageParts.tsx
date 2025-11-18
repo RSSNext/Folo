@@ -11,6 +11,7 @@ import { useChatStatus } from "../../store/hooks"
 import { AIChainOfThought } from "../displays"
 import type { ChainReasoningPart } from "../displays/AIChainOfThought"
 import { AIMarkdownStreamingMessage } from "./AIMarkdownMessage"
+import { ManageMemoryCard } from "./ManageMemoryCard"
 import { SaveMemoryCard } from "./SaveMemoryCard"
 import { ToolInvocationComponent } from "./ToolInvocationComponent"
 
@@ -23,35 +24,26 @@ interface AIMessagePartsProps {
   isLastMessage: boolean
 }
 
+const bypassedToolNames = new Set(["tool-save_user_memory", "tool-manage_user_memory"])
+const shouldBypassMergeToolName = (name: string) =>
+  bypassedToolNames.has(name) || name.startsWith("tool-display")
+
 export const AIMessageParts: React.FC<AIMessagePartsProps> = React.memo(
   ({ message, isLastMessage }) => {
-    // const [shouldStreamingAnimation, setShouldStreamingAnimation] = React.useState(false)
     const chatStatus = useChatStatus()
 
-    // React.useEffect(() => {
-    // I forgot why do this
-    //   // Delay 2s to set shouldStreamingAnimation
-    //   const timerId = setTimeout(() => {
-    //     setShouldStreamingAnimation(true)
-    //   }, 2000)
-    //   return () => clearTimeout(timerId)
-    // }, [])
-
     const shouldMessageAnimation = React.useMemo(() => {
-      return chatStatus === "streaming" && isLastMessage // && shouldStreamingAnimation
+      return chatStatus === "streaming" && isLastMessage
     }, [chatStatus, isLastMessage])
 
     const chainThoughtParts = React.useMemo(() => {
       const parts = [] as (ChainReasoningPart[] | TextUIPart | ToolUIPart<BizUITools>)[]
 
-      const shouldBypass = (name: string) =>
-        name.startsWith("tool-save_user_memory") || name.startsWith("tool-display")
-
       let chainReasoningParts: ChainReasoningPart[] | null = null
       for (const part of message.parts) {
         const isReasoning = part.type === "reasoning" && !!(part as ReasoningUIPart).text
         const isTool = part.type.startsWith("tool-")
-        const bypassedTool = isTool && shouldBypass(part.type)
+        const bypassedTool = isTool && shouldBypassMergeToolName(part.type)
 
         if (isReasoning) {
           if (!chainReasoningParts) {
@@ -143,6 +135,15 @@ export const AIMessageParts: React.FC<AIMessagePartsProps> = React.memo(
             case "tool-save_user_memory": {
               return (
                 <SaveMemoryCard
+                  key={partKey}
+                  part={part as ToolUIPart<BizUITools>}
+                  variant="tight"
+                />
+              )
+            }
+            case "tool-manage_user_memory": {
+              return (
+                <ManageMemoryCard
                   key={partKey}
                   part={part as ToolUIPart<BizUITools>}
                   variant="tight"
