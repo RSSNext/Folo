@@ -121,12 +121,12 @@ Follow uses a sophisticated glassmorphic depth design system for elevated UI com
 
 ### Color Usage
 
-- **Primary Accent**: `#FF5C00` (orange) at 5-20% opacity for borders, glows, and highlights
-- **Border**: `rgba(255, 92, 0, 0.2)` for main borders
-- **Inner Glow**: `rgba(255, 92, 0, 0.05)` for subtle radial/linear gradients inside containers
+- **Primary Accent**: Use CSS variable `--fo-a` (HSL: `331.7 84% 67%`) at 5-20% opacity for borders, glows, and highlights
+- **Border**: `hsl(var(--fo-a) / 0.2)` for main borders
+- **Inner Glow**: `hsl(var(--fo-a) / 0.05)` for subtle radial/linear gradients inside containers
 - **Shadows**: Layered shadows with accent tint:
-  - `0 8px 32px rgba(255, 92, 0, 0.08)` - large soft glow
-  - `0 4px 16px rgba(255, 92, 0, 0.06)` - medium shadow
+  - `0 8px 32px hsl(var(--fo-a) / 0.08)` - large soft glow
+  - `0 4px 16px hsl(var(--fo-a) / 0.06)` - medium shadow
   - `0 2px 8px rgba(0, 0, 0, 0.1)` - close depth
 
 ### Component Structure
@@ -139,9 +139,9 @@ Follow uses a sophisticated glassmorphic depth design system for elevated UI com
       "linear-gradient(to bottom right, rgba(var(--color-background) / 0.98), rgba(var(--color-background) / 0.95))",
     borderWidth: "1px",
     borderStyle: "solid",
-    borderColor: "rgba(255, 92, 0, 0.2)",
+    borderColor: "hsl(var(--fo-a) / 0.2)",
     boxShadow:
-      "0 8px 32px rgba(255, 92, 0, 0.08), 0 4px 16px rgba(255, 92, 0, 0.06), 0 2px 8px rgba(0, 0, 0, 0.1)",
+      "0 8px 32px hsl(var(--fo-a) / 0.08), 0 4px 16px hsl(var(--fo-a) / 0.06), 0 2px 8px rgba(0, 0, 0, 0.1)",
   }}
 >
   {/* Inner glow layer */}
@@ -149,7 +149,7 @@ Follow uses a sophisticated glassmorphic depth design system for elevated UI com
     className="absolute inset-0 rounded-2xl"
     style={{
       background:
-        "linear-gradient(to bottom right, rgba(255, 92, 0, 0.05), transparent, rgba(255, 92, 0, 0.05))",
+        "linear-gradient(to bottom right, hsl(var(--fo-a) / 0.05), transparent, hsl(var(--fo-a) / 0.05))",
     }}
   />
 
@@ -166,7 +166,7 @@ For hover states on buttons or interactive areas within glass containers:
 <button
   onMouseEnter={(e) => {
     e.currentTarget.style.background =
-      "linear-gradient(to right, rgba(255, 92, 0, 0.08), rgba(255, 140, 0, 0.05))"
+      "linear-gradient(to right, hsl(var(--fo-a) / 0.08), hsl(var(--fo-a) / 0.05))"
   }}
   onMouseLeave={(e) => {
     e.currentTarget.style.background = "transparent"
@@ -185,7 +185,7 @@ Use gradient dividers within glass containers:
 <div
   className="mx-4 h-px"
   style={{
-    background: "linear-gradient(to right, transparent, rgba(255, 92, 0, 0.2), transparent)",
+    background: "linear-gradient(to right, transparent, hsl(var(--fo-a) / 0.2), transparent)",
   }}
 />
 ```

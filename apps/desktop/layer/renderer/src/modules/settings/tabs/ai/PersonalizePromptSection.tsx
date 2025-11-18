@@ -88,22 +88,47 @@ export const PersonalizePromptSection = () => {
         {hasChanges && (
           <SettingModalContentPortal>
             <m.div
-              initial={{ y: 20 }}
-              animate={{ y: 0 }}
-              exit={{ y: 20, opacity: 0 }}
+              initial={{ opacity: 0, y: 20 }}
+              animate={{ opacity: 1, y: 0 }}
+              exit={{ opacity: 0, y: 20 }}
               transition={Spring.presets.snappy}
               className="absolute inset-x-0 bottom-3 z-10 flex justify-center px-3"
             >
-              <div className="shadow-perfect flex w-fit max-w-[92%] items-center justify-between gap-3 rounded-full border border-border bg-material-medium py-2 pl-5 pr-2 backdrop-blur-background">
-                <span className="text-xs text-text-secondary sm:text-sm">Unsaved changes</span>
-                <Button
-                  buttonClassName="bg-accent rounded-full"
-                  size="sm"
-                  onClick={handleSave}
-                  disabled={isSaving || isOverLimit}
-                >
-                  {isSaving ? "Saving..." : "Save"}
-                </Button>
+              <div
+                className="relative overflow-hidden rounded-full backdrop-blur-2xl"
+                style={{
+                  backgroundImage:
+                    "linear-gradient(to bottom right, rgba(var(--color-background) / 0.98), rgba(var(--color-background) / 0.95))",
+                  borderWidth: "1px",
+                  borderStyle: "solid",
+                  borderColor: "hsl(var(--fo-a) / 0.2)",
+                  boxShadow:
+                    "0 8px 32px hsl(var(--fo-a) / 0.08), 0 4px 16px hsl(var(--fo-a) / 0.06), 0 2px 8px rgba(0, 0, 0, 0.1)",
+                }}
+              >
+                {/* Inner glow layer */}
+                <div
+                  className="absolute inset-0 rounded-2xl"
+                  style={{
+                    background:
+                      "linear-gradient(to bottom right, hsl(var(--fo-a) / 0.05), transparent, hsl(var(--fo-a) / 0.05))",
+                  }}
+                />
+
+                {/* Content */}
+                <div className="relative flex w-fit max-w-full items-center justify-between gap-3 px-5 py-3">
+                  <span className="whitespace-nowrap text-xs text-text-secondary sm:text-sm">
+                    Unsaved changes
+                  </span>
+                  <Button
+                    buttonClassName="bg-accent rounded-full"
+                    size="sm"
+                    onClick={handleSave}
+                    disabled={isSaving || isOverLimit}
+                  >
+                    {isSaving ? "Saving..." : "Save"}
+                  </Button>
+                </div>
               </div>
             </m.div>
           </SettingModalContentPortal>

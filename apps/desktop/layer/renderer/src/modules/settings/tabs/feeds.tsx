@@ -3,6 +3,7 @@ import { MotionButtonBase } from "@follow/components/ui/button/index.js"
 import { Checkbox } from "@follow/components/ui/checkbox/index.js"
 import { Divider } from "@follow/components/ui/divider/index.js"
 import { LoadingCircle } from "@follow/components/ui/loading/index.jsx"
+import { RSSHubLogo } from "@follow/components/ui/platform-icon/icons.js"
 import { useScrollViewElement } from "@follow/components/ui/scroll-area/hooks.js"
 import { ScrollArea } from "@follow/components/ui/scroll-area/index.js"
 import {
@@ -49,6 +50,7 @@ import { useAuthQuery } from "~/hooks/common"
 import { UrlBuilder } from "~/lib/url-builder"
 import { FeedIcon } from "~/modules/feed/feed-icon"
 import { useConfirmUnsubscribeSubscriptionModal } from "~/modules/modal/hooks/useConfirmUnsubscribeSubscriptionModal"
+import { SettingModalContentPortal } from "~/modules/settings/modal/layout"
 import { Balance } from "~/modules/wallet/balance"
 import { Queries } from "~/queries"
 
@@ -65,7 +67,7 @@ export const SettingFeeds = () => {
   )
 }
 
-const GRID_COLS_CLASSNAME = tw`grid-cols-[30px_auto_100px_150px_60px_60px]`
+const GRID_COLS_CLASSNAME = "grid-cols-[30px_auto_100px_150px_60px_60px]"
 
 const SubscriptionFeedsSection = () => {
   const { t } = useTranslation("settings")
@@ -122,16 +124,16 @@ const SubscriptionFeedsSection = () => {
       <h2 className="mb-2 text-lg font-semibold">{t("feeds.subscription")}</h2>
 
       {allFeeds.length > 0 && (
-        <div className="mt-8 space-y-1">
+        <div className="mt-6 space-y-0.5">
           {/* Header - Sticky */}
           <div
             className={clsx(
-              "sticky top-0 z-20 grid h-8 gap-4 border-b bg-background px-1 pb-2 text-sm font-medium text-text-secondary",
+              "sticky top-0 z-20 grid h-7 gap-3 border-b border-border bg-background/80 px-1 pb-1.5 text-xs font-medium text-text-secondary backdrop-blur-sm",
               GRID_COLS_CLASSNAME,
             )}
           >
             <div className="flex items-center justify-center">
-              <Checkbox checked={isAllSelected} onCheckedChange={handleSelectAll} />
+              <Checkbox size="sm" checked={isAllSelected} onCheckedChange={handleSelectAll} />
             </div>
             <button
               type="button"
@@ -195,40 +197,70 @@ const SubscriptionFeedsSection = () => {
               onSelect={handleSelectFeed}
             />
           </div>
+        </div>
+      )}
 
-          {/* Sticky Action Bar at bottom when scrolled */}
-          <AnimatePresence>
-            {selectedFeeds.size > 0 && (
-              <>
-                <m.div
-                  initial={{ opacity: 0, transform: "translateY(10px)" }}
-                  animate={{ opacity: 1, transform: "translateY(0)" }}
-                  exit={{ opacity: 0, transform: "translateY(10px)" }}
-                  transition={Spring.presets.smooth}
-                  className="sticky bottom-16 mt-4 flex justify-center"
-                >
-                  <div className="rounded-md bg-material-opaque px-4 py-2 text-sm text-text-secondary">
+      {/* Sticky Action Bar at bottom when scrolled */}
+      <AnimatePresence>
+        {selectedFeeds.size > 0 && (
+          <SettingModalContentPortal>
+            <m.div
+              initial={{ opacity: 0, y: 20 }}
+              animate={{ opacity: 1, y: 0 }}
+              exit={{ opacity: 0, y: 20 }}
+              transition={Spring.presets.smooth}
+              className="absolute inset-x-0 bottom-3 z-10 flex justify-center px-3"
+            >
+              <div
+                className="relative overflow-hidden rounded-2xl backdrop-blur-2xl"
+                style={{
+                  backgroundImage:
+                    "linear-gradient(to bottom right, rgba(var(--color-background) / 0.98), rgba(var(--color-background) / 0.95))",
+                  borderWidth: "1px",
+                  borderStyle: "solid",
+                  borderColor: "hsl(var(--fo-a) / 0.2)",
+                  boxShadow:
+                    "0 8px 32px hsl(var(--fo-a) / 0.08), 0 4px 16px hsl(var(--fo-a) / 0.06), 0 2px 8px rgba(0, 0, 0, 0.1)",
+                }}
+              >
+                {/* Inner glow layer */}
+                <div
+                  className="absolute inset-0 rounded-2xl"
+                  style={{
+                    background:
+                      "linear-gradient(to bottom right, hsl(var(--fo-a) / 0.05), transparent, hsl(var(--fo-a) / 0.05))",
+                  }}
+                />
+
+                {/* Content */}
+                <div className="relative flex items-center justify-between gap-4 px-5 py-3">
+                  <span className="text-sm text-text-secondary">
                     {t("feeds.tableSelected.item", { count: selectedFeeds.size })}
+                  </span>
+
+                  <div className="flex items-center gap-3">
                     <button
-                      className="ml-3 cursor-button text-xs text-accent"
+                      className="cursor-button text-xs text-accent transition-colors hover:text-accent/80"
                       type="button"
                       onClick={() => setSelectedFeeds(new Set())}
                     >
                       {t("feeds.tableSelected.clear")}
                     </button>
-                  </div>
-                </m.div>
-                <m.div
-                  initial={{ opacity: 0, transform: "translateY(10px)" }}
-                  animate={{ opacity: 1, transform: "translateY(0)" }}
-                  exit={{ opacity: 0, transform: "translateY(10px)" }}
-                  transition={Spring.presets.smooth}
-                  className="sticky bottom-4 flex justify-center"
-                >
-                  <div className="flex items-center gap-2 rounded bg-material-opaque px-4 py-2">
+
+                    <div
+                      className="h-4 w-px"
+                      style={{
+                        background:
+                          "linear-gradient(to bottom, transparent, hsl(var(--fo-a) / 0.2), transparent)",
+                      }}
+                    />
+
                     <DropdownMenu>
                       <DropdownMenuTrigger asChild>
-                        <MotionButtonBase className="text-xs text-accent" type="button">
+                        <MotionButtonBase
+                          className="text-xs text-accent transition-colors hover:text-accent/80"
+                          type="button"
+                        >
                           {t("feeds.tableSelected.moveToView.action")}
                         </MotionButtonBase>
                       </DropdownMenuTrigger>
@@ -238,19 +270,19 @@ const SubscriptionFeedsSection = () => {
                     </DropdownMenu>
 
                     <MotionButtonBase
-                      className="text-xs text-red"
+                      className="text-xs text-red transition-colors hover:text-red/80"
                       type="button"
                       onClick={handleBatchUnsubscribe}
                     >
                       {t("feeds.tableSelected.unsubscribe")}
                     </MotionButtonBase>
                   </div>
-                </m.div>
-              </>
-            )}
-          </AnimatePresence>
-        </div>
-      )}
+                </div>
+              </div>
+            </m.div>
+          </SettingModalContentPortal>
+        )}
+      </AnimatePresence>
     </section>
   )
 }
@@ -336,7 +368,7 @@ const SortedFeedsList: FC<{
   const rowVirtualizer = useVirtualizer({
     count: sortedFeedIds.length,
     getScrollElement: () => scrollContainerElement,
-    estimateSize: () => 44, // Estimated height of each feed item (h-10 = 40px + 4px gap)
+    estimateSize: () => 38, // Estimated height of each feed item (h-9 = 36px + 2px gap)
     overscan: 5,
   })
 
@@ -357,7 +389,7 @@ const SortedFeedsList: FC<{
 
   return (
     <div
-      className="space-y-1"
+      className="space-y-0.5"
       style={{
         height: `${rowVirtualizer.getTotalSize()}px`,
         width: "100%",
@@ -432,6 +464,7 @@ const FeedListItem = memo(
     const feed = useFeedById(id)
     const isCustomizeName = subscription?.title && feed?.title !== subscription?.title
     const { t: tCommon } = useTranslation("common")
+    const isRSSHub = Boolean(feed?.url?.startsWith("rsshub://"))
 
     if (!subscription) return null
 
@@ -441,50 +474,72 @@ const FeedListItem = memo(
         role="button"
         tabIndex={-1}
         className={clsx(
-          "grid h-10 w-full items-center gap-4 rounded px-1 hover:bg-material-medium",
-          "content-visibility-auto contain-intrinsic-size-[auto_2.5rem]",
+          "group relative grid h-9 w-full items-center gap-3 rounded-md px-1.5 transition-all",
+          "content-visibility-auto contain-intrinsic-size-[auto_2.25rem]",
           GRID_COLS_CLASSNAME,
+          "hover:bg-material-medium",
+
+          selected && "bg-material-thick",
         )}
         onClick={() => onSelect(id, !selected)}
       >
         <div className="flex items-center justify-center">
-          <Checkbox checked={selected} onCheckedChange={(checked) => onSelect(id, !!checked)} />
+          <Checkbox
+            size="sm"
+            checked={selected}
+            onCheckedChange={(checked) => onSelect(id, !!checked)}
+          />
         </div>
-        <div className="flex min-w-0 items-center gap-1">
-          <FeedIcon target={feed} size={16} />
-          <div className="flex min-w-0 flex-col">
-            {feed?.errorAt ? (
-              <Tooltip>
-                <TooltipTrigger>
-                  <EllipsisHorizontalTextWithTooltip className="font-medium leading-4 text-red">
-                    {subscription.title || feed?.title}
-                  </EllipsisHorizontalTextWithTooltip>
-                </TooltipTrigger>
-                <TooltipPortal>
-                  <TooltipContent>
-                    {feed?.errorMessage || "Feed has encountered an error"}
-                  </TooltipContent>
-                </TooltipPortal>
-              </Tooltip>
-            ) : (
-              <EllipsisHorizontalTextWithTooltip className="font-medium leading-4 text-text">
-                {subscription.title || feed?.title}
-              </EllipsisHorizontalTextWithTooltip>
-            )}
+        <div className="flex min-w-0 items-center gap-1.5">
+          <FeedIcon target={feed} size={14} />
+          <div className="flex min-w-0 flex-1 flex-col">
+            <div className="flex items-center gap-1">
+              {feed?.errorAt ? (
+                <Tooltip>
+                  <TooltipTrigger>
+                    <EllipsisHorizontalTextWithTooltip className="text-sm font-medium leading-tight text-red">
+                      {subscription.title || feed?.title}
+                    </EllipsisHorizontalTextWithTooltip>
+                  </TooltipTrigger>
+                  <TooltipPortal>
+                    <TooltipContent>
+                      {feed?.errorMessage || "Feed has encountered an error"}
+                    </TooltipContent>
+                  </TooltipPortal>
+                </Tooltip>
+              ) : (
+                <EllipsisHorizontalTextWithTooltip className="text-sm font-medium leading-tight text-text">
+                  {subscription.title || feed?.title}
+                </EllipsisHorizontalTextWithTooltip>
+              )}
+              {isRSSHub && (
+                <Tooltip>
+                  <TooltipTrigger asChild>
+                    <div className="inline-flex shrink-0 items-center gap-0.5 rounded bg-orange/20 px-1 py-0.5 text-[9px] font-semibold text-orange shadow-sm ring-1 ring-orange/30">
+                      <RSSHubLogo className="size-2.5" />
+                      <span>RSSHub</span>
+                    </div>
+                  </TooltipTrigger>
+                  <TooltipPortal>
+                    <TooltipContent>This feed is powered by RSSHub</TooltipContent>
+                  </TooltipPortal>
+                </Tooltip>
+              )}
+            </div>
             {isCustomizeName && (
-              <EllipsisHorizontalTextWithTooltip className="text-left text-sm text-text-secondary">
+              <EllipsisHorizontalTextWithTooltip className="text-left text-xs leading-tight text-text-secondary">
                 {feed?.title}
               </EllipsisHorizontalTextWithTooltip>
             )}
           </div>
         </div>
 
-        <div className="flex items-center gap-1 text-sm text-text opacity-80">
+        <div className="flex items-center gap-0.5 text-xs text-text opacity-80">
           {getView(subscription.view)!.icon}
-          <span>{tCommon(getView(subscription.view)!.name)}</span>
+          <span className="leading-tight">{tCommon(getView(subscription.view)!.name)}</span>
         </div>
         {!!subscription.createdAt && (
-          <div className="whitespace-nowrap pr-1 text-center text-sm">
+          <div className="whitespace-nowrap pr-1 text-center text-xs">
             <RelativeDay date={new Date(subscription.createdAt)} />
           </div>
         )}
@@ -492,9 +547,11 @@ const FeedListItem = memo(
           {feed?.subscriptionCount ? (
             <Tooltip>
               <TooltipTrigger asChild>
-                <div className="flex items-center justify-center gap-1 text-text-secondary">
-                  <i className="i-mgc-user-3-cute-re" />
-                  <span className="tabular-nums">{formatNumber(feed.subscriptionCount)}</span>
+                <div className="flex items-center justify-center gap-0.5 text-text-secondary">
+                  <i className="i-mgc-user-3-cute-re text-[10px]" />
+                  <span className="text-[11px] tabular-nums">
+                    {formatNumber(feed.subscriptionCount)}
+                  </span>
                 </div>
               </TooltipTrigger>
               <TooltipPortal>
@@ -502,17 +559,17 @@ const FeedListItem = memo(
               </TooltipPortal>
             </Tooltip>
           ) : (
-            <div className="text-text-secondary">--</div>
+            <div className="text-[11px] text-text-secondary">--</div>
           )}
         </div>
         <div className="text-center text-xs">
           {feed?.updatesPerWeek ? (
-            <div className="flex justify-center gap-1">
+            <div className="flex justify-center gap-0.5">
               <Tooltip>
                 <TooltipTrigger asChild>
-                  <div className="flex items-center justify-center gap-1 text-text-secondary">
-                    <i className="i-mgc-safety-certificate-cute-re" />
-                    <span className="tabular-nums">
+                  <div className="flex items-center justify-center gap-0.5 text-text-secondary">
+                    <i className="i-mgc-safety-certificate-cute-re text-[10px]" />
+                    <span className="text-[11px] tabular-nums">
                       {Math.round(feed.updatesPerWeek)}
                       {"/w"}
                     </span>
@@ -525,7 +582,7 @@ const FeedListItem = memo(
               {feed.latestEntryPublishedAt && (
                 <Tooltip>
                   <TooltipTrigger asChild>
-                    <div className="text-text-secondary">
+                    <div className="text-[10px] text-text-secondary">
                       <i className="i-mgc-calendar-time-add-cute-re" />
                       <RelativeDay date={new Date(feed.latestEntryPublishedAt)} />
                     </div>
@@ -535,7 +592,7 @@ const FeedListItem = memo(
               )}
             </div>
           ) : (
-            <div className="text-text-secondary">--</div>
+            <div className="text-[11px] text-text-secondary">--</div>
           )}
         </div>
       </div>
