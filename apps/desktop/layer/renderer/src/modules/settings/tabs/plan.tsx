@@ -301,17 +301,6 @@ const PlanCard = ({
   const finalPrice = hasDiscount ? discountPrice : regularPrice
   const regularPriceForStrike = hasDiscount && regularPrice > 0 ? regularPrice : undefined
 
-  // Calculate discount percentage
-  const discountPercentage = hasDiscount
-    ? Math.round(((regularPrice - discountPrice) / regularPrice) * 100)
-    : 0
-
-  // Create discount description
-  const discountDescription =
-    hasDiscount && discountPercentage > 0
-      ? `Early bird discount, ${discountPercentage}% off`
-      : undefined
-
   // Get plan description from i18n
   const planDescriptionKey = `plan.descriptions.${plan.role}` as const
   const planDescription = t(planDescriptionKey, { defaultValue: "" })
@@ -336,11 +325,12 @@ const PlanCard = ({
           regularPrice={regularPriceForStrike}
           period={period}
           description={planDescription}
-          discountDescription={discountDescription}
+          discountDescription={plan.discountDescription}
         />
 
         <PlanAction
           actionType={actionType}
+          upgradeButtonText={plan.upgradeButtonText}
           isLoading={upgradePlanMutation.isPending || cancelPlanMutation?.isPending}
           onSelect={
             !plan.isComingSoon && !isCurrentPlan
@@ -417,14 +407,10 @@ const PlanHeader = ({
           </span>
         )}
       </div>
-      {typeof regularPrice === "number" && regularPrice > 0 && (
-        <div className="flex items-center gap-2">
-          {discountDescription && (
-            <span className="inline-flex items-center gap-1 rounded-md bg-green/10 px-1.5 py-0.5 text-xs font-medium text-green">
-              {discountDescription}
-            </span>
-          )}
-        </div>
+      {typeof regularPrice === "number" && regularPrice > 0 && !!discountDescription && (
+        <span className="inline-flex items-center gap-1 rounded-md bg-green/10 px-1.5 py-0.5 text-xs font-medium text-green">
+          {discountDescription}
+        </span>
       )}
     </div>
     {description && <p className="text-xs leading-relaxed text-text-secondary">{description}</p>}
@@ -433,11 +419,13 @@ const PlanHeader = ({
 
 const PlanAction = ({
   actionType,
+  upgradeButtonText,
   onSelect,
   onCancel,
   isLoading,
 }: {
   actionType: "current" | "upgrade" | "coming-soon" | "in-trial" | "switch" | null
+  upgradeButtonText?: string
   onSelect?: () => void
   onCancel?: () => void
   isLoading?: boolean
@@ -471,7 +459,7 @@ const PlanAction = ({
       }
       case "upgrade": {
         return {
-          text: "Upgrade",
+          text: upgradeButtonText || "Upgrade",
           icon: "i-mgc-arrow-up-cute-re",
           className:
             "bg-gradient-to-r from-accent to-accent/90 text-white hover:from-accent/95 hover:to-accent/85",
