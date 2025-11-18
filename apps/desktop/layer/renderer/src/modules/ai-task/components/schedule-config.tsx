@@ -352,7 +352,7 @@ export const ScheduleConfig = memo<ScheduleConfigProps>(
                   <SelectTrigger className="h-6 justify-between rounded-[4px] border-0 bg-material-opaque px-1.5 py-0 text-xs hover:bg-mix-accent/background-1/4">
                     <SelectValue placeholder={t("schedule.day_placeholder")} />
                   </SelectTrigger>
-                  <SelectContent position="item-aligned">
+                  <SelectContent>
                     {dayOfWeekOptions.map((option) => (
                       <SelectItem key={option.value} value={option.value}>
                         {t(option.label)}
@@ -409,7 +409,7 @@ export const ScheduleConfig = memo<ScheduleConfigProps>(
                   <SelectTrigger className="h-6 justify-between rounded-[4px] border-0 bg-material-opaque px-1.5 py-0 text-xs hover:bg-mix-accent/background-1/4">
                     <SelectValue placeholder={t("schedule.day_placeholder")} />
                   </SelectTrigger>
-                  <SelectContent position="item-aligned">
+                  <SelectContent>
                     {dayOfMonthOptions.map((option) => (
                       <SelectItem key={option.value} value={option.value}>
                         {option.label}

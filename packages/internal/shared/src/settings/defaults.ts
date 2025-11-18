@@ -169,6 +169,12 @@ export const defaultAISettings: AISettings = {
 
   // Features
   autoScrollWhenStreaming: true,
+
+  // BYOK (Bring Your Own Key)
+  byok: {
+    enabled: false,
+    providers: [],
+  },
 }
 
 export const defaultSettings = {
