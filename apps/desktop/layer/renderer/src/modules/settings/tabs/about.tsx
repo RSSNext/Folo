@@ -11,11 +11,12 @@ import { useEffect, useRef, useState } from "react"
 import { Trans, useTranslation } from "react-i18next"
 import { toast } from "sonner"
 
+import { PlainWithAnimationModal } from "~/components/ui/modal/stacked/custom-modal"
 import { useModalStack } from "~/components/ui/modal/stacked/hooks"
 import { ipcServices } from "~/lib/client"
 import { getNewIssueUrl } from "~/lib/issues"
 import { EnvironmentDebugModalContent } from "~/modules/app/EnvironmentIndicator"
-import { APP_TIP_DEBUG_EVENT } from "~/modules/app-tip"
+import { AppTipModalContent } from "~/modules/app-tip"
 
 export const SettingAbout = () => {
   const { t } = useTranslation("settings")
@@ -103,11 +104,16 @@ export const SettingAbout = () => {
   }
 
   const handleOpenAiOnboarding = () => {
-    window.dispatchEvent(
-      new CustomEvent(APP_TIP_DEBUG_EVENT, {
-        detail: { step: 0 },
-      }),
-    )
+    present({
+      title: "App Tip",
+      content: () => <AppTipModalContent />,
+      CustomModalComponent: PlainWithAnimationModal,
+      modalContainerClassName: "flex items-center justify-center",
+      modalClassName: "w-full max-w-5xl",
+      canClose: true,
+      clickOutsideToDismiss: false,
+      overlay: false,
+    })
   }
 
   return (
