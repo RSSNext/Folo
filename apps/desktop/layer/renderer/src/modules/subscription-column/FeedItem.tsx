@@ -9,7 +9,7 @@ import {
   TooltipTrigger,
 } from "@follow/components/ui/tooltip/index.jsx"
 import { EllipsisHorizontalTextWithTooltip } from "@follow/components/ui/typography/index.js"
-import type { FeedViewType } from "@follow/constants"
+import { FeedViewType } from "@follow/constants"
 import { isOnboardingFeedUrl } from "@follow/store/constants/onboarding"
 import { useFeedById } from "@follow/store/feed/hooks"
 import { useInboxById } from "@follow/store/inbox/hooks"
@@ -75,7 +75,7 @@ const FeedItemImpl = ({ view, feedId, className, isPreview }: FeedItemProps) => 
 
   // Use current route view for navigation to stay in current view (e.g., All view)
   const currentRouteView = useRouteParamsSelector((s) => s.view)
-  const navigationView = currentRouteView ?? view
+  const navigationView = currentRouteView === FeedViewType.All ? currentRouteView : view
   const feed = useFeedById(feedId, (feed) => {
     return {
       type: feed.type,
