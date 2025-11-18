@@ -96,6 +96,10 @@ export const EntryTitle = ({
     [entry?.authorUrl],
   )
 
+  const LinkTarget = populatedFullHref ? "a" : "span"
+  const linkProps = populatedFullHref
+    ? { href: populatedFullHref, target: "_blank", rel: "noopener noreferrer" }
+    : {}
   if (!entry) return null
 
   return compact ? (
@@ -113,11 +117,14 @@ export const EntryTitle = ({
   ) : (
     <div className={cn("group relative block min-w-0", containerClassName)}>
       <div className="flex flex-col gap-3">
-        <a
-          href={populatedFullHref ?? "#"}
-          target="_blank"
-          rel="noopener noreferrer"
-          className="inline-block cursor-link select-text break-words text-[1.7rem] font-bold leading-normal duration-200 hover:multi-[scale-[1.01];opacity-95]"
+        <LinkTarget
+          {...linkProps}
+          className={cn(
+            "inline-block cursor-link select-text break-words text-[1.7rem] font-bold leading-normal duration-200",
+            populatedFullHref
+              ? "cursor-link hover:multi-[scale-[1.01];opacity-95]"
+              : "cursor-default",
+          )}
         >
           <EntryTranslation
             source={titleCase(entry.title ?? "")}
@@ -126,7 +133,7 @@ export const EntryTitle = ({
             inline={false}
             bilingual
           />
-        </a>
+        </LinkTarget>
 
         {/* Meta Information with improved layout */}
         <div className="flex flex-wrap items-center gap-x-6 gap-y-2 text-sm">

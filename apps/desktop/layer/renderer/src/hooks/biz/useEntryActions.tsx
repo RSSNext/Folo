@@ -12,7 +12,6 @@ import { useUserRole } from "@follow/store/user/hooks"
 import { doesTextContainHTML } from "@follow/utils/utils"
 import { useMemo } from "react"
 
-import { useShowAISummaryAuto, useShowAISummaryOnce } from "~/atoms/ai-summary"
 import { useShowAITranslationAuto, useShowAITranslationOnce } from "~/atoms/ai-translation"
 import { MENU_ITEM_SEPARATOR, MenuItemSeparator, MenuItemText } from "~/atoms/context-menu"
 import {
@@ -252,8 +251,7 @@ export const useEntryActions = ({ entryId, view }: { entryId: string; view: Feed
 
   const isInbox = useIsInbox(entry?.inboxId)
   const isShowSourceContent = useShowSourceContent()
-  const isShowAISummaryAuto = useShowAISummaryAuto(entry?.summary)
-  const isShowAISummaryOnce = useShowAISummaryOnce()
+
   const isShowAITranslationAuto = useShowAITranslationAuto(!!entry?.translation)
   const isShowAITranslationOnce = useShowAITranslationOnce()
 
@@ -478,11 +476,8 @@ export const useEntryActions = ({ entryId, view }: { entryId: string; view: Feed
     entry?.imagesLength,
     entry?.publishedAt,
     entry?.read,
-    entry?.hasContent,
     entry?.readability,
     entry?.doesContentContainsHTMLTags,
-    feed?.id,
-    feed?.ownerUserId,
     feed?.siteUrl,
     isInbox,
     shortcuts,
@@ -490,8 +485,6 @@ export const useEntryActions = ({ entryId, view }: { entryId: string; view: Feed
     isInCollection,
     isCurrentVisitEntry,
     isShowSourceContent,
-    isShowAISummaryAuto,
-    isShowAISummaryOnce,
     userRole,
     isShowAITranslationAuto,
     isShowAITranslationOnce,

@@ -219,6 +219,16 @@ const FeedItemImpl = ({ view, feedId, className, isPreview }: FeedItemProps) => 
           </Tooltip>
         )}
       </div>
+      {isOnboardingFeed && (
+        <Tooltip delayDuration={300}>
+          <TooltipTrigger>
+            <i className="i-mingcute-sparkles-line shrink-0 text-base text-text-tertiary" />
+          </TooltipTrigger>
+          <TooltipPortal>
+            <TooltipContent>{t("feed_item.onboarding_feed")}</TooltipContent>
+          </TooltipPortal>
+        </Tooltip>
+      )}
       {isPreview ? (
         <Button
           size="sm"
