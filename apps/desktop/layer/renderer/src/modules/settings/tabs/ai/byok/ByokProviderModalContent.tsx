@@ -12,27 +12,35 @@ import type { ByokProviderName, UserByokProviderConfig } from "@follow/shared/se
 import { useState } from "react"
 import { useTranslation } from "react-i18next"
 
+import { PROVIDER_OPTIONS } from "./constants"
+
 interface ByokProviderModalContentProps {
   provider: UserByokProviderConfig | null
+  configuredProviders?: ByokProviderName[]
   onSave: (provider: UserByokProviderConfig) => void
   onCancel: () => void
 }
 
-const PROVIDER_OPTIONS: { value: ByokProviderName; label: string }[] = [
-  { value: "openai", label: "OpenAI" },
-  { value: "google", label: "Google" },
-  { value: "vercel-ai-gateway", label: "Vercel AI Gateway" },
-  { value: "openrouter", label: "OpenRouter" },
-]
+const EMPTY_CONFIGURED_PROVIDERS: ByokProviderName[] = []
 
 export const ByokProviderModalContent = ({
   provider,
+  configuredProviders = EMPTY_CONFIGURED_PROVIDERS,
   onSave,
   onCancel,
 }: ByokProviderModalContentProps) => {
   const { t } = useTranslation("ai")
+
+  // Filter out already configured providers, but keep the current one if editing
+  const availableProviders = PROVIDER_OPTIONS.filter(
+    (option) => !configuredProviders.includes(option.value) || option.value === provider?.provider,
+  )
+
+  // Get the first available provider or fallback to the current one
+  const defaultProvider = availableProviders[0]?.value ?? provider?.provider ?? "openai"
+
   const [formData, setFormData] = useState<UserByokProviderConfig>({
-    provider: provider?.provider ?? "openai",
+    provider: provider?.provider ?? defaultProvider,
     baseURL: provider?.baseURL ?? null,
     apiKey: provider?.apiKey ?? null,
     headers: provider?.headers ?? {},
@@ -52,6 +60,7 @@ export const ByokProviderModalContent = ({
         <Label htmlFor="provider">{t("byok.providers.form.provider")}</Label>
         <Select
           value={formData.provider}
+          disabled={availableProviders.length === 0}
           onValueChange={(value) =>
             setFormData({ ...formData, provider: value as ByokProviderName })
           }
@@ -60,7 +69,7 @@ export const ByokProviderModalContent = ({
             <SelectValue />
           </SelectTrigger>
           <SelectContent>
-            {PROVIDER_OPTIONS.map((option) => (
+            {availableProviders.map((option) => (
               <SelectItem key={option.value} value={option.value}>
                 {option.label}
               </SelectItem>

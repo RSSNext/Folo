@@ -562,7 +562,7 @@ const PlanComparisonTable = ({ plans }: { plans: PaymentPlan[] }) => {
                   index % 2 === 0 ? "bg-background" : "bg-fill-secondary/20",
                 )}
               >
-                <td className="sticky left-0 z-10 bg-inherit px-4 py-3 text-xs font-medium">
+                <td className="sticky left-0 z-10 bg-inherit px-4 py-3 text-sm font-medium">
                   {t(`plan.features.${featureKey}`, { defaultValue: featureKey })}
                 </td>
                 {plans.map((plan) => {

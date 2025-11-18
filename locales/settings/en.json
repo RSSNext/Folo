@@ -562,6 +562,7 @@
   "plan.featureValues.AI_MODEL_SELECTION.curated": "Curated models",
   "plan.featureValues.AI_MODEL_SELECTION.high_performance": "All high-end models",
   "plan.featureValues.AI_MODEL_SELECTION.none": "—",
+  "plan.features.AI_BRING_YOUR_OWN_KEY": "AI Bring Your Own Key",
   "plan.features.AI_CREDIT": "AI Chat Credits",
   "plan.features.AI_MODEL_SELECTION": "AI Model Selection",
   "plan.features.BOOSTS": "Feed Refresh Acceleration",
