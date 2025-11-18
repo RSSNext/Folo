@@ -488,9 +488,6 @@ importers:
       '@lexical/react':
         specifier: 0.38.2
         version: 0.38.2(react-dom@19.0.0(react@19.0.0))(react@19.0.0)(yjs@13.6.27)
-      '@lottiefiles/dotlottie-react':
-        specifier: 0.17.6
-        version: 0.17.6(react@19.0.0)
       '@number-flow/react':
         specifier: 0.5.10
         version: 0.5.10(react-dom@19.0.0(react@19.0.0))(react@19.0.0)
@@ -5030,14 +5027,6 @@ packages:
     engines: {node: '>=18.0.0'}
     peerDependencies:
       '@inquirer/prompts': '>= 3 < 8'
-
-  '@lottiefiles/dotlottie-react@0.17.6':
-    resolution: {integrity: sha512-YIa3QYZGPoB+qTdPlpt4cBypdIj2umK/ptD6duaztanbIE8bI+gsqdI8roLPSnNUmIdNwrNM+5zLB7Ly9fu3EA==}
-    peerDependencies:
-      react: 19.0.0
-
-  '@lottiefiles/dotlottie-web@0.55.0':
-    resolution: {integrity: sha512-MYpRPxc0630GruhmL5ufTNvjobi9SZG1Zgdr1mr7KCYV1WwMYEO4DobGnR5E+Wbvgp1ChY+7hBKynYobCculGw==}
 
   '@malept/cross-spawn-promise@1.1.1':
     resolution: {integrity: sha512-RTBGWL5FWQcg9orDOCcp4LvItNzUPcyEU9bwaeJX0rJ1IQxzucC48Y0/sQLp/g6t99IQgAlGIaesJS+gTn7tVQ==}
@@ -22204,13 +22193,6 @@ snapshots:
     dependencies:
       '@inquirer/prompts': 6.0.1
       '@inquirer/type': 1.5.5
-
-  '@lottiefiles/dotlottie-react@0.17.6(react@19.0.0)':
-    dependencies:
-      '@lottiefiles/dotlottie-web': 0.55.0
-      react: 19.0.0
-
-  '@lottiefiles/dotlottie-web@0.55.0': {}
 
   '@malept/cross-spawn-promise@1.1.1':
     dependencies:

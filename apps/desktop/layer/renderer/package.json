@@ -27,7 +27,6 @@
     "@hookform/resolvers": "5.2.2",
     "@lexical/markdown": "0.38.2",
     "@lexical/react": "0.38.2",
-    "@lottiefiles/dotlottie-react": "0.17.6",
     "@number-flow/react": "0.5.10",
     "@openpanel/web": "1.0.1",
     "@radix-ui/react-avatar": "1.1.11",
