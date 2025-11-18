@@ -9,6 +9,19 @@ import * as React from "react"
 
 import { HotkeyScope } from "~/constants"
 
+const styles = {
+  content: {
+    backgroundImage:
+      "linear-gradient(to bottom right, rgba(var(--color-background) / 0.98), rgba(var(--color-background) / 0.95))",
+    boxShadow:
+      "0 6px 20px rgba(0, 0, 0, 0.08), 0 4px 12px rgba(0, 0, 0, 0.05), 0 2px 6px rgba(0, 0, 0, 0.04), 0 4px 16px hsl(var(--fo-a) / 0.06), 0 2px 8px hsl(var(--fo-a) / 0.04), 0 1px 3px rgba(0, 0, 0, 0.03)",
+  } as React.CSSProperties,
+  innerGlow: {
+    background:
+      "linear-gradient(to bottom right, hsl(var(--fo-a) / 0.05), transparent, hsl(var(--fo-a) / 0.05))",
+  } as React.CSSProperties,
+}
+
 const DropdownMenu: typeof DropdownMenuPrimitive.Root = (props) => {
   const setGlobalFocusableScope = useSetGlobalFocusableScope()
   return (
@@ -50,7 +63,7 @@ const DropdownMenuSubTrigger = ({
   <DropdownMenuPrimitive.SubTrigger
     ref={ref}
     className={cn(
-      "flex cursor-menu select-none items-center rounded-[5px] px-2.5 py-1.5 outline-none focus:bg-theme-selection-active focus:text-theme-selection-foreground data-[state=open]:bg-theme-selection-active data-[state=open]:text-theme-selection-foreground",
+      "flex cursor-menu select-none items-center rounded-[5px] px-2.5 py-1.5 outline-none focus:bg-accent/30 data-[state=open]:bg-accent/30",
       inset && "pl-8",
       "center gap-2",
       className,
@@ -75,15 +88,26 @@ const DropdownMenuSubContent = ({
     <DropdownMenuPrimitive.SubContent
       ref={ref}
       className={cn(
-        "bg-material-medium text-body text-text backdrop-blur-background",
+        "text-body text-text",
         "min-w-32 overflow-hidden",
-        "rounded-[6px] border p-1",
-        "shadow-context-menu",
+        "rounded-[6px] p-1",
+        "backdrop-blur-2xl",
         "z-[61]",
+        "relative",
+        "dark:border dark:border-border/50",
         className,
       )}
+      style={styles.content}
       {...props}
-    />
+    >
+      {/* Inner glow layer */}
+      <div
+        className="pointer-events-none absolute inset-0 rounded-[6px]"
+        style={styles.innerGlow}
+      />
+      {/* Content wrapper */}
+      <div className="relative">{props.children}</div>
+    </DropdownMenuPrimitive.SubContent>
   </RootPortal>
 )
 DropdownMenuSubContent.displayName = DropdownMenuPrimitive.SubContent.displayName
@@ -102,12 +126,24 @@ const DropdownMenuContent = ({
         ref={ref}
         sideOffset={sideOffset}
         className={cn(
-          "shadow-context-menu z-[60] min-w-32 overflow-hidden rounded-[6px] border bg-material-medium p-1 text-text backdrop-blur-background",
+          "z-[60] min-w-32 overflow-hidden rounded-[6px] p-1 text-text",
+          "backdrop-blur-2xl",
           "text-body motion-scale-in-75 motion-duration-150 lg:animate-none",
+          "relative",
+          "dark:border dark:border-border/50",
           className,
         )}
+        style={styles.content}
         {...props}
-      />
+      >
+        {/* Inner glow layer */}
+        <div
+          className="pointer-events-none absolute inset-0 rounded-[6px]"
+          style={styles.innerGlow}
+        />
+        {/* Content wrapper */}
+        <div className="relative">{props.children}</div>
+      </DropdownMenuPrimitive.Content>
     </RootPortal>
   )
 }
@@ -119,7 +155,7 @@ const DropdownMenuItem = ({
   inset,
   icon,
   active,
-  highlightColor = "accent",
+
   shortcut,
   checked,
   ...props
@@ -127,19 +163,15 @@ const DropdownMenuItem = ({
   inset?: boolean
   icon?: React.ReactNode | ((props?: { isActive?: boolean }) => React.ReactNode)
   active?: boolean
-  highlightColor?: "accent" | "gray"
+
   shortcut?: string
   checked?: boolean
 } & { ref?: React.Ref<React.ElementRef<typeof DropdownMenuPrimitive.Item> | null> }) => (
   <DropdownMenuPrimitive.Item
     ref={ref}
     className={cn(
-      "relative flex cursor-menu select-none items-center rounded-[5px] px-2.5 py-1 outline-none data-[disabled]:pointer-events-none data-[disabled]:opacity-50",
-      "focus-within:outline-transparent",
-      highlightColor === "accent"
-        ? "focus:bg-theme-selection-active focus:text-theme-selection-foreground data-[highlighted]:bg-theme-selection-hover data-[highlighted]:text-theme-selection-foreground"
-        : "focus:bg-theme-item-active data-[highlighted]:bg-theme-item-hover",
-
+      "relative flex cursor-menu select-none items-center rounded-[5px] px-2.5 py-1 outline-none focus:bg-accent/30 data-[disabled]:pointer-events-none data-[disabled]:opacity-50",
+      "focus-within:outline-transparent data-[highlighted]:bg-mix-background/accent-5/1",
       "h-[28px]",
       inset && "pl-8",
       className,
@@ -187,7 +219,7 @@ const DropdownMenuCheckboxItem = ({
   <DropdownMenuPrimitive.CheckboxItem
     ref={ref}
     className={cn(
-      "relative flex cursor-checkbox select-none items-center rounded-[5px] px-8 py-1.5 outline-none focus:bg-theme-selection-active focus:text-theme-selection-foreground data-[disabled]:pointer-events-none data-[disabled]:opacity-50",
+      "relative flex cursor-checkbox select-none items-center rounded-[5px] px-8 py-1.5 outline-none focus:bg-accent/30 data-[disabled]:pointer-events-none data-[disabled]:opacity-50",
       "focus-within:outline-transparent",
       "h-[28px]",
       className,
