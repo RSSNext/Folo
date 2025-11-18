@@ -13,6 +13,7 @@ const PROVIDER_LABELS: Record<string, string> = {
   openai: "OpenAI",
   google: "Google",
   "vercel-ai-gateway": "Vercel AI Gateway",
+  openrouter: "OpenRouter",
 }
 
 export const ByokProviderItem = ({ provider, onEdit, onDelete }: ByokProviderItemProps) => {
@@ -22,30 +23,13 @@ export const ByokProviderItem = ({ provider, onEdit, onDelete }: ByokProviderIte
 
   return (
     <div className="group -ml-3 rounded-lg border border-border p-3 transition-colors hover:bg-material-medium">
-      <div className="flex items-start justify-between">
-        <div className="flex-1 space-y-2">
+      <div className="flex items-center justify-between">
+        <div className="flex-1">
           <div className="flex items-center gap-2">
             <h4 className="text-sm font-medium text-text">{providerLabel}</h4>
-            <div className="rounded-full bg-blue/10 px-2 py-1 text-xs text-blue">
-              {provider.provider}
-            </div>
-          </div>
-          <div className="space-y-1">
-            {provider.baseURL && (
-              <p className="text-xs text-text-secondary">
-                <span className="text-text-tertiary">Base URL:</span> {provider.baseURL}
-              </p>
-            )}
-            <p className="text-xs text-text-secondary">
-              <span className="text-text-tertiary">API Key:</span>{" "}
-              {provider.apiKey ? "••••••••" : t("byok.providers.no_api_key")}
-            </p>
-            {provider.headers && Object.keys(provider.headers).length > 0 && (
-              <p className="text-xs text-text-secondary">
-                <span className="text-text-tertiary">Custom Headers:</span>{" "}
-                {Object.keys(provider.headers).length} {t("byok.providers.headers_count")}
-              </p>
-            )}
+            <span className="inline-flex rounded-full bg-accent/10 px-2 py-1 text-xs text-accent">
+              {t("byok.providers.configured")}
+            </span>
           </div>
         </div>
 

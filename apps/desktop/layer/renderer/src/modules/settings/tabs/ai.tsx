@@ -103,12 +103,10 @@ const AISecurityDisclosureSection = () => {
       <div className="space-y-2">
         <div className="flex items-center gap-2">
           <i className="i-mgc-safety-certificate-cute-re size-4 text-green" />
-          <Label className="text-sm font-medium text-text">
-            {t("integration.mcp.security.title")}
-          </Label>
+          <Label className="text-sm font-medium text-text">{t("integration.security.title")}</Label>
         </div>
         <p className="text-xs leading-relaxed text-text-secondary">
-          {t("integration.mcp.security.description")}
+          {t("integration.security.description")}
         </p>
       </div>
     </div>
