@@ -1,6 +1,5 @@
 import { Button } from "@follow/components/ui/button/index.js"
 import { SegmentGroup, SegmentItem } from "@follow/components/ui/segment/index.jsx"
-import { Switch } from "@follow/components/ui/switch/index.js"
 import { UserRole } from "@follow/constants"
 import { DEEPLINK_SCHEME, IN_ELECTRON } from "@follow/shared"
 import { env } from "@follow/shared/env.desktop"
@@ -72,15 +71,7 @@ const formatFeatureValue = (
   return value
 }
 
-const useUpgradePlan = ({
-  plan,
-  annual,
-  useOneTimePayment = false,
-}: {
-  plan: string | undefined
-  annual: boolean
-  useOneTimePayment?: boolean
-}) => {
+const useUpgradePlan = ({ plan, annual }: { plan: string | undefined; annual: boolean }) => {
   return useMutation({
     mutationFn: async () => {
       if (!plan) {
@@ -93,7 +84,6 @@ const useUpgradePlan = ({
         successUrl: IN_ELECTRON ? `${DEEPLINK_SCHEME}refresh` : env.VITE_WEB_URL,
         cancelUrl: env.VITE_WEB_URL,
         disableRedirect: IN_ELECTRON,
-        ...(useOneTimePayment && { payment: true }),
       })
       if (IN_ELECTRON && res.data?.url) {
         window.open(res.data.url, "_blank")
@@ -149,9 +139,6 @@ const useCancelPlan = () => {
 export function SettingPlan() {
   const isPaymentEnabled = useIsPaymentEnabled()
   const role = useUserRole()
-  const { i18n } = useTranslation()
-  const showOneTimePaymentOption = i18n.language === "zh-CN"
-  const [useOneTimePayment, setUseOneTimePayment] = useState(false)
   const [billingPeriod, setBillingPeriod] = useState<"monthly" | "yearly">("yearly")
 
   const serverConfig = useServerConfigs()
@@ -209,22 +196,10 @@ export function SettingPlan() {
                 billingPeriod={billingPeriod}
                 isCurrentPlan={role === plan.role}
                 currentTier={currentTier}
-                useOneTimePayment={useOneTimePayment}
               />
             ))}
         </div>
       </div>
-
-      {showOneTimePaymentOption && (
-        <div className="flex items-center justify-center gap-2">
-          <Switch
-            size="sm"
-            checked={useOneTimePayment}
-            onCheckedChange={(checked) => setUseOneTimePayment(checked)}
-          />
-          <span className="text-sm text-text-secondary">使用微信/支付宝进行一次性付款</span>
-        </div>
-      )}
 
       {/* Comparison Table */}
       <PlanComparisonTable plans={plans} />
@@ -238,16 +213,9 @@ interface PlanCardProps {
   billingPeriod: "monthly" | "yearly"
   isCurrentPlan: boolean
   currentTier: number
-  useOneTimePayment?: boolean
 }
 
-const PlanCard = ({
-  plan,
-  billingPeriod,
-  isCurrentPlan,
-  currentTier,
-  useOneTimePayment = false,
-}: PlanCardProps) => {
+const PlanCard = ({ plan, billingPeriod, isCurrentPlan, currentTier }: PlanCardProps) => {
   const { t } = useTranslation("settings")
   const getPlanActionType = ():
     | "current"
@@ -281,7 +249,6 @@ const PlanCard = ({
   const upgradePlanMutation = useUpgradePlan({
     plan: plan.planID,
     annual: billingPeriod === "yearly",
-    useOneTimePayment,
   })
   const cancelPlanMutation = useCancelPlan()
 
