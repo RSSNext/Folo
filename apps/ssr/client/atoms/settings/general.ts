@@ -17,7 +17,7 @@ const createDefaultSettings = (): Partial<GeneralSettings> => ({
   renderMarkUnread: false,
   // UX
   // autoHideFeedColumn: true,
-  groupByDate: true,
+  groupByDate: false,
   // Secure
   jumpOutLinkWarn: true,
   voice: "",

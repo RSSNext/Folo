@@ -16,7 +16,7 @@ import { PlainModal } from "~/components/ui/modal/stacked/custom-modal"
 import { DeclarativeModal } from "~/components/ui/modal/stacked/declarative-modal"
 import { ROOT_CONTAINER_ID } from "~/constants/dom"
 import { EnvironmentIndicator } from "~/modules/app/EnvironmentIndicator"
-import { APP_TIP_DEBUG_EVENT, AppTip } from "~/modules/app-tip"
+import { APP_TIP_DEBUG_EVENT } from "~/modules/app-tip"
 import { LoginModalContent } from "~/modules/auth/LoginModalContent"
 import { DebugRegistry } from "~/modules/debug/registry"
 import { EntriesProvider } from "~/modules/entry-column/context/EntriesContext"
@@ -165,8 +165,6 @@ export function MainDestopLayout() {
           </AppErrorBoundary>
         </main>
       </EntriesProvider>
-
-      <AppTip />
 
       {isAuthFail && !user && (
         <RootPortal>

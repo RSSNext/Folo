@@ -3,7 +3,6 @@ import { useMobile } from "@follow/components/hooks/useMobile.js"
 import { getMousePosition } from "@follow/components/hooks/useMouse.js"
 import { ActionButton } from "@follow/components/ui/button/action-button.js"
 import { FeedViewType } from "@follow/constants"
-import { isOnboardingEntryUrl } from "@follow/store/constants/onboarding"
 import { useEntry } from "@follow/store/entry/hooks"
 import { unreadSyncService } from "@follow/store/unread/store"
 import { cn } from "@follow/utils/utils"
@@ -44,7 +43,6 @@ export const EntryItemWrapper: FC<
     const { id, url } = state
     return { feedId, id, inboxId: inboxHandle, url }
   })
-  const isOnboardingEntry = isOnboardingEntryUrl(entry?.url)
   const actionConfigs = useEntryActions({ entryId, view })
   const isMobile = useMobile()
 
@@ -159,7 +157,6 @@ export const EntryItemWrapper: FC<
           !isWide ? "rounded-none @[650px]:rounded-md" : "rounded-md",
           isAll && "!rounded-none",
           (isActive || isContextMenuOpen) && "!bg-theme-item-active",
-          isOnboardingEntry && "border-l-2 border-l-orange-500 bg-orange-500/10",
           itemClassName,
         )}
         onClick={handleClick}

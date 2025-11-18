@@ -199,21 +199,10 @@ const FeedItemImpl = ({ view, feedId, className, isPreview }: FeedItemProps) => 
         className={cn(
           "flex min-w-0 items-center",
           isFeed && feed.errorAt && !isOnboardingFeed && "text-red",
-          isOnboardingFeed && "text-folo",
         )}
       >
         <FeedIcon fallback target={feed} size={16} />
         <FeedTitle feed={feed} />
-        {isOnboardingFeed && (
-          <Tooltip delayDuration={300}>
-            <TooltipTrigger>
-              <i className="i-mingcute-sparkles-line ml-1 size-3 shrink-0 translate-y-0.5 text-base text-folo" />
-            </TooltipTrigger>
-            <TooltipPortal>
-              <TooltipContent>{t("feed_item.onboarding_feed")}</TooltipContent>
-            </TooltipPortal>
-          </Tooltip>
-        )}
         {isFeed && !isOnboardingFeed && (
           <ErrorTooltip errorAt={feed.errorAt} errorMessage={feed.errorMessage}>
             <i className="i-mingcute-close-circle-fill ml-1 shrink-0 text-base" />

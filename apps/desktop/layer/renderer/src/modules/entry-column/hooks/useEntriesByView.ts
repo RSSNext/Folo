@@ -1,5 +1,6 @@
 import { FeedViewType, getView } from "@follow/constants"
 import { useCollectionEntryList } from "@follow/store/collection/hooks"
+import { isOnboardingEntryUrl } from "@follow/store/constants/onboarding"
 import {
   useEntriesQuery,
   useEntryIdsByFeedId,
@@ -281,6 +282,9 @@ export const useEntriesByView = ({ onReset }: { onReset?: () => void }) => {
     for (const id of entryIds) {
       const entry = entriesId2Map[id]
       if (!entry) {
+        continue
+      }
+      if (isOnboardingEntryUrl(entry.url)) {
         continue
       }
       const date = new Date(listId ? entry.insertedAt : entry.publishedAt).toDateString()

@@ -27,7 +27,7 @@ export const defaultGeneralSettings: GeneralSettings = {
   hoverMarkUnread: false,
   renderMarkUnread: false,
   // timeline
-  groupByDate: true,
+  groupByDate: false,
   autoExpandLongSocialMedia: false,
   dimRead: false,
 
