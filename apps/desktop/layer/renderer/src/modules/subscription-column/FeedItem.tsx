@@ -229,23 +229,27 @@ const FeedItemImpl = ({ view, feedId, className, isPreview }: FeedItemProps) => 
           </TooltipPortal>
         </Tooltip>
       )}
-      {isPreview ? (
-        <Button
-          size="sm"
-          variant="ghost"
-          buttonClassName="!p-1 mr-0.5"
-          onClick={() => {
-            follow({
-              isList: false,
-              id: feedId,
-              url: feed.url,
-            })
-          }}
-        >
-          <i className="i-mgc-add-cute-re text-base text-accent" />
-        </Button>
-      ) : (
-        <UnreadNumber unread={feedUnread} className="ml-2" />
+      {!isOnboardingFeed && (
+        <>
+          {isPreview ? (
+            <Button
+              size="sm"
+              variant="ghost"
+              buttonClassName="!p-1 mr-0.5"
+              onClick={() => {
+                follow({
+                  isList: false,
+                  id: feedId,
+                  url: feed.url,
+                })
+              }}
+            >
+              <i className="i-mgc-add-cute-re text-base text-accent" />
+            </Button>
+          ) : (
+            <UnreadNumber unread={feedUnread} className="ml-2" />
+          )}
+        </>
       )}
     </DraggableItemWrapper>
   )
