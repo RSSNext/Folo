@@ -1,0 +1,212 @@
+.ai-timeline-loading {
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  overflow: hidden;
+  border-radius: inherit;
+}
+
+.ai-timeline-loading__backdrop {
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(
+    135deg,
+    rgba(255, 255, 255, 0.02),
+    rgba(255, 92, 0, 0.08),
+    rgba(0, 0, 0, 0.1)
+  );
+  opacity: 0.75;
+  animation: aiTimelineGlassPulse 2.6s ease-in-out infinite;
+}
+
+.ai-timeline-loading__glow {
+  position: absolute;
+  inset: 10% 8% 16% 8%;
+  border-radius: 48px;
+  background: radial-gradient(
+    circle at 70% 25%,
+    rgba(255, 92, 0, 0.35),
+    rgba(255, 140, 0, 0.15),
+    transparent 65%
+  );
+  filter: blur(42px);
+  opacity: 0.8;
+  animation: aiTimelineGlow 3.4s ease-in-out infinite;
+}
+
+.ai-timeline-loading__beam {
+  position: absolute;
+  top: -5%;
+  bottom: -5%;
+  width: 32%;
+  border-radius: 999px;
+  background: linear-gradient(
+    120deg,
+    rgba(255, 255, 255, 0.2),
+    rgba(255, 92, 0, 0.15),
+    rgba(255, 92, 0, 0)
+  );
+  filter: blur(18px);
+  opacity: 0;
+  animation: aiTimelineBeam 2.8s cubic-bezier(0.4, 0, 0.2, 1) infinite;
+}
+
+.ai-timeline-loading__beam--left {
+  left: -15%;
+  animation-delay: 0s;
+}
+
+.ai-timeline-loading__beam--right {
+  right: -15%;
+  animation-delay: -1.2s;
+}
+
+.ai-timeline-loading__sparkles {
+  position: absolute;
+  inset: 0;
+  filter: blur(0.5px);
+}
+
+.ai-timeline-loading__sparkles span {
+  position: absolute;
+  width: 10px;
+  height: 10px;
+  border-radius: 999px;
+  background: rgba(255, 255, 255, 0.45);
+  box-shadow:
+    0 0 18px rgba(255, 92, 0, 0.4),
+    0 0 8px rgba(255, 255, 255, 0.3);
+  opacity: 0;
+  animation: aiTimelineSparkle 3s ease-in-out infinite;
+}
+
+.ai-timeline-loading__sparkles span:nth-child(1) {
+  top: 25%;
+  left: 32%;
+  animation-delay: 0s;
+}
+
+.ai-timeline-loading__sparkles span:nth-child(2) {
+  top: 55%;
+  left: 62%;
+  animation-delay: -0.9s;
+}
+
+.ai-timeline-loading__sparkles span:nth-child(3) {
+  top: 38%;
+  left: 78%;
+  animation-delay: -1.8s;
+}
+
+.ai-timeline-loading__badge {
+  position: absolute;
+  right: 1.25rem;
+  bottom: 1.5rem;
+  padding: 0.5rem 1rem;
+  border-radius: 999px;
+  background: linear-gradient(
+    120deg,
+    rgba(16, 16, 16, 0.85),
+    rgba(32, 24, 20, 0.85),
+    rgba(255, 92, 0, 0.25)
+  );
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  box-shadow:
+    0 15px 40px rgba(0, 0, 0, 0.35),
+    inset 0 1px 1px rgba(255, 255, 255, 0.15);
+  backdrop-filter: blur(12px) saturate(140%);
+  -webkit-backdrop-filter: blur(12px) saturate(140%);
+  animation: aiTimelineBadgePulse 2.2s ease-in-out infinite;
+}
+
+.ai-timeline-loading__badge::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  border-radius: inherit;
+  background: linear-gradient(
+    120deg,
+    rgba(255, 255, 255, 0.05),
+    rgba(255, 92, 0, 0.35),
+    rgba(255, 255, 255, 0.05)
+  );
+  opacity: 0.35;
+  pointer-events: none;
+}
+
+.ai-timeline-loading__badge span {
+  color: rgba(255, 255, 255, 0.9);
+  text-shadow: 0 1px 8px rgba(0, 0, 0, 0.25);
+}
+
+@keyframes aiTimelineGlassPulse {
+  0%,
+  100% {
+    opacity: 0.65;
+  }
+  50% {
+    opacity: 0.85;
+  }
+}
+
+@keyframes aiTimelineGlow {
+  0%,
+  100% {
+    transform: scale(0.95);
+    opacity: 0.6;
+  }
+  50% {
+    transform: scale(1.05);
+    opacity: 0.85;
+  }
+}
+
+@keyframes aiTimelineBeam {
+  0% {
+    opacity: 0;
+    transform: translateX(-35%) scaleX(0.8);
+  }
+  40% {
+    opacity: 0.4;
+  }
+  70% {
+    opacity: 0.65;
+    transform: translateX(20%) scaleX(1.05);
+  }
+  100% {
+    opacity: 0;
+    transform: translateX(30%) scaleX(1.2);
+  }
+}
+
+@keyframes aiTimelineSparkle {
+  0%,
+  100% {
+    opacity: 0;
+    transform: scale(0.4) translate3d(0, 0, 0);
+  }
+  35% {
+    opacity: 0.85;
+    transform: scale(1) translate3d(4px, -6px, 0);
+  }
+  65% {
+    opacity: 0.35;
+    transform: scale(0.6) translate3d(-4px, 6px, 0);
+  }
+}
+
+@keyframes aiTimelineBadgePulse {
+  0%,
+  100% {
+    transform: translateY(0);
+    box-shadow:
+      0 15px 40px rgba(0, 0, 0, 0.35),
+      inset 0 1px 1px rgba(255, 255, 255, 0.15);
+  }
+  50% {
+    transform: translateY(-3px);
+    box-shadow:
+      0 20px 45px rgba(0, 0, 0, 0.4),
+      inset 0 1px 1px rgba(255, 255, 255, 0.25);
+  }
+}

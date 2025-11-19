@@ -7,8 +7,9 @@ import { unreadSyncService } from "@follow/store/unread/store"
 import { useIsLoggedIn } from "@follow/store/user/hooks"
 import { isBizId } from "@follow/utils/utils"
 import type { Range, Virtualizer } from "@tanstack/react-virtual"
-import { atom } from "jotai"
+import { atom, useAtomValue } from "jotai"
 import { memo, useCallback, useEffect, useMemo, useRef } from "react"
+import { useTranslation } from "react-i18next"
 
 import { useGeneralSettingKey } from "~/atoms/settings/general"
 import { Focusable } from "~/components/common/Focusable"
@@ -19,6 +20,8 @@ import { useRouteParams, useRouteParamsSelector } from "~/hooks/biz/useRoutePara
 import { useFeedQuery } from "~/queries/feed"
 import { useFeedHeaderTitle } from "~/store/feed/hooks"
 
+import { aiTimelineEnabledAtom } from "./atoms/ai-timeline"
+import { AITimelineLoadingOverlay } from "./components/ai-timeline-loading/AITimelineLoadingOverlay"
 import { EntryColumnWrapper } from "./components/entry-column-wrapper/EntryColumnWrapper"
 import { FooterMarkItem } from "./components/FooterMarkItem"
 import { useEntriesActions, useEntriesState } from "./context/EntriesContext"
@@ -34,6 +37,7 @@ import { EntryRootStateContext } from "./store/EntryColumnContext"
 
 function EntryColumnContent() {
   const listRef = useRef<Virtualizer<HTMLElement, Element>>(undefined)
+  const { t } = useTranslation()
   const state = useEntriesState()
 
   const actions = useEntriesActions()
@@ -111,6 +115,8 @@ function EntryColumnContent() {
 
   const rangeQueueRef = useRef<Range[]>([])
   const isRefreshing = state.isFetching && !state.isFetchingNextPage
+  const aiTimelineEnabled = useAtomValue(aiTimelineEnabledAtom)
+  const showAiTimelineLoading = aiTimelineEnabled && state.isLoading && !state.isFetchingNextPage
   const renderAsRead = useGeneralSettingKey("renderMarkUnread")
   const handleRangeChange = useCallback(
     (e: Range) => {
@@ -192,6 +198,11 @@ function EntryColumnContent() {
           />
         )}
       </EntryColumnWrapper>
+
+      <AITimelineLoadingOverlay
+        visible={showAiTimelineLoading}
+        label={t("entry_list_header.ai_timeline_loading")}
+      />
     </Focusable>
   )
 }
