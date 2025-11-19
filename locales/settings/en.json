@@ -576,6 +576,7 @@
   "plan.features.MAX_AI_REQUESTS_PER_DAY": "AI Chats Per Day",
   "plan.features.MAX_AI_REQUESTS_PER_MONTH": "AI Chats Per Month",
   "plan.features.MAX_AI_TASKS": "AI Tasks",
+  "plan.features.MAX_AI_TEXT_TO_SPEECH_PER_DAY": "AI Text-to-Speech Per Day",
   "plan.features.MAX_INBOXES": "Inbox",
   "plan.features.MAX_LISTS": "List",
   "plan.features.MAX_RSSHUB_SUBSCRIPTIONS": "RSSHub Subscriptions",

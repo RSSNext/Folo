@@ -198,10 +198,10 @@ export function MainDestopLayout() {
             CustomModalComponent={PlainModal}
             overlay
             title="Login"
-            canClose={!IN_ELECTRON}
-            clickOutsideToDismiss={!IN_ELECTRON}
+            canClose={true}
+            clickOutsideToDismiss={true}
           >
-            <LoginModalContent canClose={!IN_ELECTRON} runtime={IN_ELECTRON ? "app" : "browser"} />
+            <LoginModalContent canClose={true} runtime={IN_ELECTRON ? "app" : "browser"} />
           </DeclarativeModal>
         </RootPortal>
       )}

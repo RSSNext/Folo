@@ -10,6 +10,7 @@ import {
 } from "@follow/components/ui/form/index.js"
 import { Input } from "@follow/components/ui/input/Input.js"
 import type { LoginRuntime } from "@follow/shared/auth"
+import { IN_ELECTRON } from "@follow/shared/constants"
 import { env } from "@follow/shared/env.desktop"
 import { zodResolver } from "@hookform/resolvers/zod"
 import { useForm } from "react-hook-form"
@@ -28,7 +29,7 @@ import { ReferralForm } from "./ReferralForm"
 
 const formSchema = z.object({
   email: z.string().email(),
-  password: z.string().min(8).max(128).or(z.literal("")),
+  password: IN_ELECTRON ? z.string().min(8).max(128) : z.string().min(8).max(128).or(z.literal("")),
 })
 
 export function LoginWithPassword({
@@ -60,7 +61,7 @@ export function LoginWithPassword({
         }
       : undefined
 
-    if (!values.password || values.password.trim() === "") {
+    if (!IN_ELECTRON && (!values.password || values.password.trim() === "")) {
       const result = await loginHandler("magicLink", runtime, {
         email: values.email,
         headers,
@@ -132,7 +133,11 @@ export function LoginWithPassword({
           render={({ field }) => (
             <FormItem className="mt-4">
               <FormLabel className="flex items-center justify-between">
-                <span>{`${t("login.password")} (${t("login.password_optional")})`}</span>
+                <span>
+                  {IN_ELECTRON
+                    ? t("login.password")
+                    : `${t("login.password")} (${t("login.password_optional")})`}
+                </span>
                 <a
                   href={`${env.VITE_WEB_URL}/forget-password`}
                   target="_blank"
@@ -157,9 +162,9 @@ export function LoginWithPassword({
             disabled={!form.formState.isValid}
             size="lg"
           >
-            {!form.watch("password") || form.watch("password")?.trim() === ""
-              ? t("login.send_magic_link")
-              : t("login.continueWith", { provider: t("words.email") })}
+            {IN_ELECTRON || (form.watch("password") && form.watch("password")?.trim() !== "")
+              ? t("login.continueWith", { provider: t("words.email") })
+              : t("login.send_magic_link")}
           </Button>
         </div>
       </form>
@@ -184,8 +189,10 @@ export function LoginWithPassword({
 const registerFormSchema = z
   .object({
     email: z.string().email(),
-    password: z.string().min(8).max(128).or(z.literal("")),
-    confirmPassword: z.string().or(z.literal("")),
+    password: IN_ELECTRON
+      ? z.string().min(8).max(128)
+      : z.string().min(8).max(128).or(z.literal("")),
+    confirmPassword: IN_ELECTRON ? z.string() : z.string().or(z.literal("")),
   })
   .refine((data) => data.password === data.confirmPassword, {
     message: "Passwords don't match",
@@ -222,7 +229,7 @@ export function RegisterForm({
         }
       : undefined
 
-    if (!values.password || values.password.trim() === "") {
+    if (!IN_ELECTRON && (!values.password || values.password.trim() === "")) {
       const result = await loginHandler("magicLink", runtime, {
         email: values.email,
         headers,
@@ -276,7 +283,11 @@ export function RegisterForm({
             name="password"
             render={({ field }) => (
               <FormItem>
-                <FormLabel>{`${t("register.password")} (${t("register.password_optional")})`}</FormLabel>
+                <FormLabel>
+                  {IN_ELECTRON
+                    ? t("register.password")
+                    : `${t("register.password")} (${t("register.password_optional")})`}
+                </FormLabel>
                 <FormControl>
                   <Input type="password" {...field} />
                 </FormControl>
@@ -290,7 +301,9 @@ export function RegisterForm({
             render={({ field }) => (
               <FormItem>
                 <FormLabel>
-                  {`${t("register.confirm_password")} (${t("register.password_optional")})`}
+                  {IN_ELECTRON
+                    ? t("register.confirm_password")
+                    : `${t("register.confirm_password")} (${t("register.password_optional")})`}
                 </FormLabel>
                 <FormControl>
                   <Input type="password" {...field} />
@@ -307,9 +320,9 @@ export function RegisterForm({
             isLoading={form.formState.isSubmitting}
             disabled={!form.formState.isValid}
           >
-            {!form.watch("password") || form.watch("password")?.trim() === ""
-              ? t("register.send_magic_link")
-              : t("register.submit")}
+            {IN_ELECTRON || (form.watch("password") && form.watch("password")?.trim() !== "")
+              ? t("register.submit")
+              : t("register.send_magic_link")}
           </Button>
         </form>
       </Form>

@@ -22,13 +22,13 @@ export const UserProBadge = ({
     <div
       className={cn(
         "flex items-center gap-1",
-        role === UserRole.Trial || role === UserRole.Free ? "text-text-secondary" : "text-accent",
+        role === UserRole.Trial || role === UserRole.Free ? "text-text-secondary" : "text-folo",
         className,
       )}
       onClick={onClick}
     >
-      <i className={cn("i-mgc-power block text-folo", iconClassName)} />
-      {withText && <span className="text-xs text-folo">{UserRoleName[role]}</span>}
+      <i className={cn("i-mgc-power block", iconClassName)} />
+      {withText && <span className="text-xs">{UserRoleName[role]}</span>}
     </div>
   )
 }
