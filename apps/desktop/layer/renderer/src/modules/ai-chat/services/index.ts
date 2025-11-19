@@ -1,7 +1,7 @@
 import { db } from "@follow/database/db"
 import type { AiChatMessagesModel } from "@follow/database/schemas/index"
 import { aiChatMessagesTable, aiChatTable } from "@follow/database/schemas/index"
-import { asc, eq, inArray, sql } from "drizzle-orm"
+import { and, asc, eq, inArray, isNull, sql } from "drizzle-orm"
 
 import { getI18n } from "~/i18n"
 import { followClient } from "~/lib/api-client"
@@ -47,6 +47,21 @@ class AIPersistServiceStatic {
     })
 
     return Boolean(existingMessage?.id === chatId)
+  }
+
+  async hasAssistantMessagesMissingMetadata(chatId: string): Promise<boolean> {
+    const missingMetadataMessage = await db.query.aiChatMessagesTable.findFirst({
+      where: and(
+        eq(aiChatMessagesTable.chatId, chatId),
+        eq(aiChatMessagesTable.role, "assistant"),
+        isNull(aiChatMessagesTable.metadata),
+      ),
+      columns: {
+        id: true,
+      },
+    })
+
+    return Boolean(missingMetadataMessage?.id)
   }
 
   /**
