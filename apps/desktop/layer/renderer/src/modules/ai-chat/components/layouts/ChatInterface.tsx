@@ -3,8 +3,10 @@ import {
   convertLexicalToMarkdown,
   getEditorStateJSONString,
 } from "@follow/components/ui/lexical-rich-editor/utils.js"
+import { isFreeRole } from "@follow/constants"
 import { getCategoryFeedIds } from "@follow/store/subscription/getter"
 import { usePrefetchSummary } from "@follow/store/summary/hooks"
+import { useUserRole } from "@follow/store/user/hooks"
 import { tracker } from "@follow/tracker"
 import { detectIsEditableElement, nextFrame } from "@follow/utils"
 import { ErrorBoundary } from "@sentry/react"
@@ -56,6 +58,7 @@ const ChatInterfaceContent = ({ centerInputOnEmpty }: ChatInterfaceProps) => {
   const error = useChatError()
   const messages = useMessages()
   const { ensureLogin } = useRequireLogin()
+  const userRole = useUserRole()
 
   const isFocusWithIn = useFocusable()
 
@@ -325,6 +328,7 @@ const ChatInterfaceContent = ({ centerInputOnEmpty }: ChatInterfaceProps) => {
   const { handleScroll } = useAttachScrollBeyond()
 
   const { data: configuration } = useAIConfiguration()
+  const shouldHideResetDetails = userRole ? isFreeRole(userRole) : false
 
   const isRateLimited = useMemo(
     () => computeIsRateLimited(error, configuration),
@@ -332,8 +336,11 @@ const ChatInterfaceContent = ({ centerInputOnEmpty }: ChatInterfaceProps) => {
   )
 
   const rateLimitMessage = useMemo(
-    () => computeRateLimitMessage(error, configuration),
-    [error, configuration],
+    () =>
+      computeRateLimitMessage(error, configuration, {
+        hideResetDetails: shouldHideResetDetails,
+      }),
+    [error, configuration, shouldHideResetDetails],
   )
 
   return (

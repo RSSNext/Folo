@@ -4,6 +4,8 @@ import {
   TooltipPortal,
   TooltipTrigger,
 } from "@follow/components/ui/tooltip/index.js"
+import { isFreeRole } from "@follow/constants"
+import { useUserRole } from "@follow/store/user/hooks"
 import type { BizUIMetadata } from "@folo-services/ai-tools"
 import * as React from "react"
 
@@ -21,7 +23,15 @@ const formatDuration = (ms: number): string => {
 }
 
 export const TokenUsagePill: React.FC<TokenUsagePillProps> = ({ metadata, children }) => {
+  const userRole = useUserRole()
   if (!metadata) return null
+  const isFreeUser = userRole ? isFreeRole(userRole) : false
+  const summarizedTokens =
+    metadata.billedTokens ??
+    metadata.totalTokens ??
+    metadata.outputTokens ??
+    metadata.contextTokens ??
+    null
 
   const hasReasoningTokens = metadata.reasoningTokens != null && metadata.reasoningTokens > 0
   const hasCachedInputTokens = metadata.cachedInputTokens != null && metadata.cachedInputTokens > 0
@@ -42,75 +52,88 @@ export const TokenUsagePill: React.FC<TokenUsagePillProps> = ({ metadata, childr
           </div>
           <div className="space-y-2 text-xs">
             <div className="font-medium text-text">AI Credits Usage</div>
-            <div className="grid grid-cols-2 gap-x-4 gap-y-1">
-              {metadata.totalTokens != null && (
-                <div className="flex justify-between gap-2">
-                  <span className="text-text-secondary">Total:</span>
-                  <span className="font-mono text-text">
-                    {formatTokenCountString(metadata.totalTokens)}
-                  </span>
-                </div>
-              )}
-              {metadata.billedTokens != null && (
-                <div className="flex justify-between gap-2">
-                  <span className="text-text-secondary">Billed:</span>
-                  <span className="font-mono text-accent">
-                    {formatTokenCountString(metadata.billedTokens)}
-                  </span>
-                </div>
-              )}
-              {metadata.contextTokens != null && (
-                <div className="flex justify-between gap-2">
-                  <span className="text-text-secondary">Context:</span>
-                  <span className="font-mono text-text">
-                    {formatTokenCountString(metadata.contextTokens)}
-                  </span>
-                </div>
-              )}
-              {metadata.outputTokens != null && (
-                <div className="flex justify-between gap-2">
-                  <span className="text-text-secondary">Output:</span>
-                  <span className="font-mono text-text">
-                    {formatTokenCountString(metadata.outputTokens)}
-                  </span>
-                </div>
-              )}
-              {hasReasoningTokens && (
-                <div className="flex justify-between gap-2">
-                  <span className="text-text-secondary">Reasoning:</span>
-                  <span className="font-mono text-text">
-                    {formatTokenCountString(metadata.reasoningTokens!)}
-                  </span>
-                </div>
-              )}
-              {hasCachedInputTokens && (
-                <div className="flex justify-between gap-2">
-                  <span className="text-text-secondary">Cached:</span>
-                  <span className="font-mono text-text">
-                    {formatTokenCountString(metadata.cachedInputTokens!)}
-                  </span>
-                </div>
-              )}
-            </div>
-            {(hasDuration || hasBillingMultiplier) && (
+            {isFreeUser ? (
+              <div className="flex items-center justify-between gap-2 rounded-md border border-border px-3 py-2">
+                <span className="text-text-secondary">Credits:</span>
+                <span className="font-mono text-text">
+                  {summarizedTokens != null ? formatTokenCountString(summarizedTokens) : "—"}
+                </span>
+              </div>
+            ) : (
               <>
-                <hr className="border-fill-secondary" />
                 <div className="grid grid-cols-2 gap-x-4 gap-y-1">
-                  {hasDuration && (
+                  {metadata.totalTokens != null && (
                     <div className="flex justify-between gap-2">
-                      <span className="text-text-secondary">Duration:</span>
+                      <span className="text-text-secondary">Total:</span>
                       <span className="font-mono text-text">
-                        {formatDuration(metadata.duration!)}
+                        {formatTokenCountString(metadata.totalTokens)}
                       </span>
                     </div>
                   )}
-                  {hasBillingMultiplier && (
+                  {metadata.billedTokens != null && (
                     <div className="flex justify-between gap-2">
-                      <span className="text-text-secondary">Multiplier:</span>
-                      <span className="font-mono text-text">{metadata.billingMultiplier!}×</span>
+                      <span className="text-text-secondary">Billed:</span>
+                      <span className="font-mono text-accent">
+                        {formatTokenCountString(metadata.billedTokens)}
+                      </span>
+                    </div>
+                  )}
+                  {metadata.contextTokens != null && (
+                    <div className="flex justify-between gap-2">
+                      <span className="text-text-secondary">Context:</span>
+                      <span className="font-mono text-text">
+                        {formatTokenCountString(metadata.contextTokens)}
+                      </span>
+                    </div>
+                  )}
+                  {metadata.outputTokens != null && (
+                    <div className="flex justify-between gap-2">
+                      <span className="text-text-secondary">Output:</span>
+                      <span className="font-mono text-text">
+                        {formatTokenCountString(metadata.outputTokens)}
+                      </span>
+                    </div>
+                  )}
+                  {hasReasoningTokens && (
+                    <div className="flex justify-between gap-2">
+                      <span className="text-text-secondary">Reasoning:</span>
+                      <span className="font-mono text-text">
+                        {formatTokenCountString(metadata.reasoningTokens!)}
+                      </span>
+                    </div>
+                  )}
+                  {hasCachedInputTokens && (
+                    <div className="flex justify-between gap-2">
+                      <span className="text-text-secondary">Cached:</span>
+                      <span className="font-mono text-text">
+                        {formatTokenCountString(metadata.cachedInputTokens!)}
+                      </span>
                     </div>
                   )}
                 </div>
+                {(hasDuration || hasBillingMultiplier) && (
+                  <>
+                    <hr className="border-fill-secondary" />
+                    <div className="grid grid-cols-2 gap-x-4 gap-y-1">
+                      {hasDuration && (
+                        <div className="flex justify-between gap-2">
+                          <span className="text-text-secondary">Duration:</span>
+                          <span className="font-mono text-text">
+                            {formatDuration(metadata.duration!)}
+                          </span>
+                        </div>
+                      )}
+                      {hasBillingMultiplier && (
+                        <div className="flex justify-between gap-2">
+                          <span className="text-text-secondary">Multiplier:</span>
+                          <span className="font-mono text-text">
+                            {metadata.billingMultiplier!}×
+                          </span>
+                        </div>
+                      )}
+                    </div>
+                  </>
+                )}
               </>
             )}
           </div>
