@@ -1,4 +1,3 @@
-import { decode } from "@byjohann/toon"
 import {
   Card,
   CardContent,
@@ -8,6 +7,7 @@ import {
 import { ScrollArea } from "@follow/components/ui/scroll-area/ScrollArea.js"
 import { Tooltip, TooltipContent, TooltipTrigger } from "@follow/components/ui/tooltip/index.js"
 import { cn } from "@follow/utils/utils"
+import { decode } from "@toon-format/toon"
 import type { PrimitiveAtom } from "jotai"
 import { useAtom, useAtomValue, useSetAtom, useStore } from "jotai"
 import { AnimatePresence, m } from "motion/react"
@@ -39,7 +39,7 @@ export function FeedsSelectionList() {
   }, [hasFeedsSelection, setStep])
 
   return (
-    <div className="col-span-4 h-full overflow-hidden">
+    <div className="h-full overflow-hidden">
       <AnimatePresence mode="popLayout">
         {hasFeedsSelection ? <FeedSelectionOperationScreen /> : <FeedSelectionFirstScreen />}
       </AnimatePresence>
@@ -49,6 +49,7 @@ export function FeedsSelectionList() {
 
 function FeedSelectionOperationScreen() {
   const chatMessages = useMessages()
+  const t = useI18n()
 
   const feedsToSelect: FeedToSelect[] = useMemo(() => {
     // find the last message that has the tool
@@ -99,6 +100,21 @@ function FeedSelectionOperationScreen() {
     () => selectedAtoms.map((atom) => ({ atom, id: store.get(atom).id })),
     [selectedAtoms, store],
   )
+
+  if (items.length === 0) {
+    return (
+      <div className="flex h-full flex-col items-center justify-center px-8 text-center">
+        <i className="i-mgc-inbox-cute-re mb-4 text-6xl text-text-secondary" aria-hidden />
+
+        <p className="text-base font-semibold text-text">
+          {t.app("new_user_guide.selection.empty_title")}
+        </p>
+        <p className="mt-2 max-w-sm text-sm text-text-secondary">
+          {t.app("new_user_guide.selection.empty_description")}
+        </p>
+      </div>
+    )
+  }
 
   return (
     <ScrollArea flex rootClassName="h-full" viewportClassName="px-3 flex min-h-0 grow">
@@ -187,11 +203,11 @@ function FeedSelectionFirstScreen() {
 
   return (
     <m.div
-      className="relative mr-4 h-full overflow-hidden rounded-3xl border border-zinc-200/50 bg-material-thin p-8 backdrop-blur-xl dark:border-zinc-800/50"
+      className="relative h-full overflow-hidden p-8"
       aria-hidden="true"
-      initial={{ opacity: 0, y: 20 }}
-      animate={{ opacity: 1, y: 0 }}
-      exit={{ opacity: 0, y: -20 }}
+      initial={{ opacity: 0, x: -20 }}
+      animate={{ opacity: 1, x: 0 }}
+      exit={{ opacity: 0, x: -20 }}
       transition={{ duration: 0.5, ease: "easeOut" }}
     >
       {/* Grid background - consistent with app patterns */}
@@ -203,7 +219,7 @@ function FeedSelectionFirstScreen() {
         <m.div
           initial={{ scale: 0.8, opacity: 0 }}
           animate={{ scale: 1, opacity: 1 }}
-          transition={{ delay: 0.1, duration: 0.6, type: "spring" }}
+          transition={{ delay: 0.2, duration: 0.6, type: "spring" }}
           className="mb-6"
         >
           <div className="mx-auto mb-4 flex items-center justify-center">
@@ -215,7 +231,7 @@ function FeedSelectionFirstScreen() {
         <m.div
           initial={{ y: 20, opacity: 0 }}
           animate={{ y: 0, opacity: 1 }}
-          transition={{ delay: 0.3, duration: 0.6, ease: "easeOut" }}
+          transition={{ delay: 0.4, duration: 0.6, ease: "easeOut" }}
           className="mb-4"
         >
           <h1 className="bg-gradient-to-r from-zinc-800 to-zinc-600 bg-clip-text text-4xl font-bold text-transparent dark:from-zinc-100 dark:to-zinc-300">
@@ -227,8 +243,8 @@ function FeedSelectionFirstScreen() {
         <m.div
           initial={{ y: 20, opacity: 0 }}
           animate={{ y: 0, opacity: 1 }}
-          transition={{ delay: 0.5, duration: 0.6, ease: "easeOut" }}
-          className="mb-8 max-w-sm"
+          transition={{ delay: 0.6, duration: 0.6, ease: "easeOut" }}
+          className="mb-8 max-w-md"
         >
           <p className="text-lg leading-relaxed text-text-secondary">
             {t.app("new_user_guide.intro.description")}

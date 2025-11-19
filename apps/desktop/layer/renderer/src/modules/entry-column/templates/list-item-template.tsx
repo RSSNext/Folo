@@ -269,7 +269,10 @@ export function ListItem({
           type={entry.firstMedia.type}
           previewImageUrl={entry.firstMedia.preview_image_url}
           className={cn("center ml-2 flex shrink-0 rounded", "size-20")}
-          mediaContainerClassName={"w-auto h-auto rounded"}
+          mediaContainerClassName={cn(
+            "size-auto rounded",
+            thumbnailRatio === "square" && "aspect-square object-cover",
+          )}
           loading="lazy"
           key={`${rid}-media-${thumbnailRatio}`}
           proxy={{

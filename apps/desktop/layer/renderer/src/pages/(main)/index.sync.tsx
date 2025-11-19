@@ -28,7 +28,7 @@ export const loader = () => {
     hasNotificationsSubscription,
   })
 
-  const firstTimeline = visible[0] ?? ROUTE_VIEW_ALL
+  const firstTimeline = visible.find((id) => id !== ROUTE_VIEW_ALL) ?? ROUTE_VIEW_ALL
 
   return redirect(`/timeline/${firstTimeline}/${ROUTE_FEED_PENDING}/${ROUTE_ENTRY_PENDING}`)
 }

@@ -204,17 +204,7 @@ const SettingItemButtonImpl = (props: {
         }
         setTab(path)
         onChange?.(path)
-      }, [
-        disabled,
-        disabledByConfig,
-        ensureLogin,
-        guestLocked,
-        onChange,
-        path,
-        presentActivationModal,
-        setTab,
-        why,
-      ])}
+      }, [disabled, ensureLogin, guestLocked, onChange, path, presentActivationModal, setTab, why])}
     >
       <SettingsSidebarTitle path={path} className="text-[0.94rem] font-medium" />
     </button>

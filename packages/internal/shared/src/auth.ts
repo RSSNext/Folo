@@ -6,6 +6,7 @@ import { createAuthClient } from "better-auth/client"
 import {
   inferAdditionalFields,
   lastLoginMethodClient,
+  magicLinkClient,
   twoFactorClient,
 } from "better-auth/client/plugins"
 
@@ -52,6 +53,7 @@ export const baseAuthPlugins = [
   twoFactorClient(),
   stripeClient({ subscription: true }),
   lastLoginMethodClient(),
+  magicLinkClient(),
 ] satisfies BetterAuthClientPlugin[]
 
 export type AuthClient<ExtraPlugins extends BetterAuthClientPlugin[] = []> = ReturnType<
@@ -102,7 +104,8 @@ export class Auth {
     },
   ) => {
     const { email, password, headers } = args ?? {}
-    if (IN_ELECTRON && provider !== "credential") {
+    const callbackURL = runtime === "app" ? `${this.options.webURL}/login` : this.options.webURL
+    if (IN_ELECTRON && provider !== "credential" && provider !== "magicLink") {
       window.open(`${this.options.webURL}/login?provider=${provider}`)
     } else {
       if (provider === "credential") {
@@ -113,9 +116,24 @@ export class Auth {
         return this.authClient.signIn.email({ email, password }, { headers })
       }
 
+      if (provider === "magicLink") {
+        if (!email) {
+          window.location.href = "/login"
+          return
+        }
+        return this.authClient.signIn.magicLink(
+          {
+            email,
+            name: email.split("@")[0]!,
+            callbackURL,
+          },
+          { headers },
+        )
+      }
+
       this.authClient.signIn.social({
         provider: provider as "google" | "github" | "apple",
-        callbackURL: runtime === "app" ? `${this.options.webURL}/login` : this.options.webURL,
+        callbackURL,
       })
     }
   }

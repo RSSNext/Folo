@@ -20,6 +20,7 @@ type PlayerAtomValue = {
   playbackRate?: number
   /** the listId from the route to indicate that the audio is triggered from a list */
   listId?: string
+  isStream?: boolean
 }
 
 const playerInitialValue: PlayerAtomValue = {
@@ -27,6 +28,7 @@ const playerInitialValue: PlayerAtomValue = {
   volume: 0.8,
   duration: 0,
   playbackRate: 1,
+  isStream: false,
 }
 
 const jsonStorage = createJSONStorage<PlayerAtomValue>()
@@ -35,9 +37,13 @@ const patchedLocalStorage: SyncStorage<PlayerAtomValue> = {
   setItem: jsonStorage.setItem,
   getItem: (key, initialValue) => {
     const value = jsonStorage.getItem(key, initialValue)
+    if (value.isStream) {
+      return playerInitialValue
+    }
     if (value && !hydrationDone) {
       // patch status to `paused` when hydration
       value.status = "paused"
+      value.isStream = false
       hydrationDone = true
     }
     return value
@@ -80,6 +86,7 @@ export const AudioPlayer = {
       status: "loading",
       show: true,
       listId: routeParams.listId,
+      isStream: false,
     })
     const currentUrl = parseSafeUrl(this.audio.src)?.toString() ?? this.audio.src
     const newUrl = parseSafeUrl(v.src)?.toString() ?? v.src
@@ -127,6 +134,15 @@ export const AudioPlayer = {
     ++this.__currentActionId
     const curV = getAudioPlayerAtomValue()
 
+    if (curV.isStream) {
+      void this.audio.play().catch(noop)
+      setAudioPlayerAtomValue({
+        ...curV,
+        status: "playing",
+      })
+      return
+    }
+
     this.mount(curV)
   },
   pause() {
@@ -146,6 +162,15 @@ export const AudioPlayer = {
   },
   togglePlayAndPause() {
     const curV = getAudioPlayerAtomValue()
+    if (curV.isStream) {
+      if (curV.status === "playing") {
+        return this.pause()
+      }
+      if (curV.status === "paused") {
+        return this.play()
+      }
+      return this.pause()
+    }
     if (curV.status === "playing") {
       return this.pause()
     } else if (curV.status === "paused") {
@@ -159,11 +184,15 @@ export const AudioPlayer = {
       ...getAudioPlayerAtomValue(),
       show: false,
       status: "paused",
+      isStream: false,
     })
 
     this.teardown()
   },
   seek(time: number) {
+    if (getAudioPlayerAtomValue().isStream) {
+      return
+    }
     this.audio.currentTime = time
     setAudioPlayerAtomValue({
       ...getAudioPlayerAtomValue(),
@@ -171,6 +200,9 @@ export const AudioPlayer = {
     })
   },
   setPlaybackRate(speed: number) {
+    if (getAudioPlayerAtomValue().isStream) {
+      return
+    }
     this.audio.playbackRate = speed
     setAudioPlayerAtomValue({
       ...getAudioPlayerAtomValue(),
@@ -178,9 +210,15 @@ export const AudioPlayer = {
     })
   },
   back(time: number) {
+    if (getAudioPlayerAtomValue().isStream) {
+      return
+    }
     this.seek(Math.max(this.audio.currentTime - time, 0))
   },
   forward(time: number) {
+    if (getAudioPlayerAtomValue().isStream) {
+      return
+    }
     this.seek(Math.min(this.audio.currentTime + time, this.audio.duration))
   },
   toggleMute() {

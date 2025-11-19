@@ -1,4 +1,6 @@
 {
+  "about.appTip": "App 功能",
+  "about.appTipDescription": "App 功能介绍与使用指南。",
   "about.changelog": "更新日志",
   "about.changelogDescription": "查看每个版本的新功能",
   "about.checkForUpdates": "检查更新",
@@ -557,6 +559,7 @@
   "plan.descriptions.pro": "完整享受 Folo 的最佳功能。",
   "plan.featureValues.AI_MODEL_SELECTION.curated": "精选模型",
   "plan.featureValues.AI_MODEL_SELECTION.high_performance": "全部高性能模型",
+  "plan.features.AI_BRING_YOUR_OWN_KEY": "AI 自定义 API 密钥",
   "plan.features.AI_CREDIT": "AI Chat 积分",
   "plan.features.AI_MODEL_SELECTION": "AI 模型选择",
   "plan.features.BOOSTS": "订阅源更新加速",
@@ -567,6 +570,7 @@
   "plan.features.MAX_AI_REQUESTS_PER_DAY": "每日 AI 对话次数",
   "plan.features.MAX_AI_REQUESTS_PER_MONTH": "每月 AI 对话次数",
   "plan.features.MAX_AI_TASKS": "AI 任务",
+  "plan.features.MAX_AI_TEXT_TO_SPEECH_PER_DAY": "每日 AI 语音合成次数",
   "plan.features.MAX_INBOXES": "收件箱订阅源",
   "plan.features.MAX_LISTS": "自定义列表",
   "plan.features.MAX_RSSHUB_SUBSCRIPTIONS": "RSSHub 订阅",

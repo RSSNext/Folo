@@ -135,7 +135,7 @@ export const LoginModalContent = (props: LoginModalContentProps) => {
           transition={Spring.presets.smooth}
         >
           {isRegister ? (
-            <RegisterForm onLoginStateChange={handleLoginStateChange} />
+            <RegisterForm runtime={runtime} onLoginStateChange={handleLoginStateChange} />
           ) : (
             <LoginWithPassword runtime={runtime} onLoginStateChange={handleLoginStateChange} />
           )}

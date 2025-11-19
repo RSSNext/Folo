@@ -27,6 +27,7 @@ import { useEntryContextMenu } from "~/hooks/biz/useEntryContextMenu"
 import { getNavigateEntryPath, useNavigateEntry } from "~/hooks/biz/useNavigateEntry"
 import { getRouteParams, useRouteParams, useRouteParamsSelector } from "~/hooks/biz/useRouteParams"
 import { useShowEntryDetailsColumn } from "~/hooks/biz/useShowEntryDetailsColumn"
+import { useFeedSafeUrl } from "~/hooks/common/useFeedSafeUrl"
 import { useRequireLogin } from "~/hooks/common/useRequireLogin"
 
 export const EntryItemWrapper: FC<
@@ -107,15 +108,19 @@ export const EntryItemWrapper: FC<
     })
   }, [entry?.id])
 
+  const populatedFullHref = useFeedSafeUrl(entryId)
+
   const handleDoubleClick = useCallback(
     (e: MouseEvent<HTMLElement>) => {
       e.preventDefault()
       e.stopPropagation()
       if (!entry?.url) return
       if (!entry?.id) return
-      window.open(entry?.url, "_blank", "noopener,noreferrer")
+
+      if (!populatedFullHref) return
+      window.open(populatedFullHref, "_blank", "noopener,noreferrer")
     },
-    [entry?.id, entry?.url],
+    [entry?.id, entry?.url, populatedFullHref],
   )
 
   const handleClick = useCallback(

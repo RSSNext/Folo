@@ -125,7 +125,7 @@ export function Component() {
           <Divider />
 
           <div>
-            <h2 className="mb-6 text-center text-xl font-semibold text-text">Recommendations</h2>
+            <h2 className="mb-6 text-center text-xl font-semibold text-text">RSSHub</h2>
             <AppErrorBoundary errorType={ErrorComponentType.RSSHubDiscoverError}>
               <Recommendations />
             </AppErrorBoundary>

@@ -1,6 +1,5 @@
 import { Button } from "@follow/components/ui/button/index.js"
 import { SegmentGroup, SegmentItem } from "@follow/components/ui/segment/index.jsx"
-import { Switch } from "@follow/components/ui/switch/index.js"
 import { UserRole } from "@follow/constants"
 import { DEEPLINK_SCHEME, IN_ELECTRON } from "@follow/shared"
 import { env } from "@follow/shared/env.desktop"
@@ -11,7 +10,6 @@ import { useMutation, useQuery } from "@tanstack/react-query"
 import type { TFunction } from "i18next"
 import { useState } from "react"
 import { useTranslation } from "react-i18next"
-import { toast } from "sonner"
 
 import type { PaymentFeature, PaymentPlan } from "~/atoms/server-configs"
 import { useIsPaymentEnabled, useServerConfigs } from "~/atoms/server-configs"
@@ -72,15 +70,7 @@ const formatFeatureValue = (
   return value
 }
 
-const useUpgradePlan = ({
-  plan,
-  annual,
-  useOneTimePayment = false,
-}: {
-  plan: string | undefined
-  annual: boolean
-  useOneTimePayment?: boolean
-}) => {
+const useUpgradePlan = ({ plan, annual }: { plan: string | undefined; annual: boolean }) => {
   return useMutation({
     mutationFn: async () => {
       if (!plan) {
@@ -93,7 +83,6 @@ const useUpgradePlan = ({
         successUrl: IN_ELECTRON ? `${DEEPLINK_SCHEME}refresh` : env.VITE_WEB_URL,
         cancelUrl: env.VITE_WEB_URL,
         disableRedirect: IN_ELECTRON,
-        ...(useOneTimePayment && { payment: true }),
       })
       if (IN_ELECTRON && res.data?.url) {
         window.open(res.data.url, "_blank")
@@ -108,6 +97,7 @@ const useActiveSubscription = () => {
     queryKey: ["activeSubscription"],
     queryFn: async () => {
       const { data } = await subscription.list()
+      // We used to allow one time purchases, so we need to check for active subscriptions
       return data?.find(
         (sub) => (sub.status === "active" || sub.status === "trialing") && sub.stripeSubscriptionId,
       )
@@ -116,42 +106,9 @@ const useActiveSubscription = () => {
   })
 }
 
-const useCancelPlan = () => {
-  const { data: latestSubscription } = useActiveSubscription()
-  const subscriptionId = latestSubscription?.id
-  const cancelAtPeriodEnd = latestSubscription?.cancelAtPeriodEnd
-
-  const cancelMutation = useMutation({
-    mutationFn: async () => {
-      if (!subscriptionId) {
-        return
-      }
-
-      await subscription.cancel({
-        subscriptionId,
-        returnUrl: IN_ELECTRON ? `${DEEPLINK_SCHEME}refresh` : env.VITE_WEB_URL,
-        fetchOptions: {
-          onError(context) {
-            toast.error(context.error.message)
-          },
-        },
-      })
-    },
-  })
-
-  if (cancelAtPeriodEnd || !subscriptionId) {
-    return null
-  } else {
-    return cancelMutation
-  }
-}
-
 export function SettingPlan() {
   const isPaymentEnabled = useIsPaymentEnabled()
   const role = useUserRole()
-  const { i18n } = useTranslation()
-  const showOneTimePaymentOption = i18n.language === "zh-CN"
-  const [useOneTimePayment, setUseOneTimePayment] = useState(false)
   const [billingPeriod, setBillingPeriod] = useState<"monthly" | "yearly">("yearly")
 
   const serverConfig = useServerConfigs()
@@ -209,22 +166,10 @@ export function SettingPlan() {
                 billingPeriod={billingPeriod}
                 isCurrentPlan={role === plan.role}
                 currentTier={currentTier}
-                useOneTimePayment={useOneTimePayment}
               />
             ))}
         </div>
       </div>
-
-      {showOneTimePaymentOption && (
-        <div className="flex items-center justify-center gap-2">
-          <Switch
-            size="sm"
-            checked={useOneTimePayment}
-            onCheckedChange={(checked) => setUseOneTimePayment(checked)}
-          />
-          <span className="text-sm text-text-secondary">使用微信/支付宝进行一次性付款</span>
-        </div>
-      )}
 
       {/* Comparison Table */}
       <PlanComparisonTable plans={plans} />
@@ -238,16 +183,9 @@ interface PlanCardProps {
   billingPeriod: "monthly" | "yearly"
   isCurrentPlan: boolean
   currentTier: number
-  useOneTimePayment?: boolean
 }
 
-const PlanCard = ({
-  plan,
-  billingPeriod,
-  isCurrentPlan,
-  currentTier,
-  useOneTimePayment = false,
-}: PlanCardProps) => {
+const PlanCard = ({ plan, billingPeriod, isCurrentPlan, currentTier }: PlanCardProps) => {
   const { t } = useTranslation("settings")
   const getPlanActionType = ():
     | "current"
@@ -255,14 +193,18 @@ const PlanCard = ({
     | "coming-soon"
     | "in-trial"
     | "switch"
+    | "new"
     | null => {
     if (plan.isComingSoon) return "coming-soon"
     switch (true) {
       case isCurrentPlan: {
         return "current"
       }
-      case plan.tier > currentTier && !!plan.planID: {
+      case plan.tier > currentTier && !!plan.planID && currentTier !== 0: {
         return "upgrade"
+      }
+      case plan.tier > currentTier && !!plan.planID && currentTier === 0: {
+        return "new"
       }
       // case plan.tier < currentTier && !!plan.planID: {
       //   return "switch"
@@ -277,9 +219,7 @@ const PlanCard = ({
   const upgradePlanMutation = useUpgradePlan({
     plan: plan.planID,
     annual: billingPeriod === "yearly",
-    useOneTimePayment,
   })
-  const cancelPlanMutation = useCancelPlan()
 
   // Calculate price and period based on billing period
   const regularPrice =
@@ -300,17 +240,6 @@ const PlanCard = ({
   // Use discount price if available, otherwise use regular price
   const finalPrice = hasDiscount ? discountPrice : regularPrice
   const regularPriceForStrike = hasDiscount && regularPrice > 0 ? regularPrice : undefined
-
-  // Calculate discount percentage
-  const discountPercentage = hasDiscount
-    ? Math.round(((regularPrice - discountPrice) / regularPrice) * 100)
-    : 0
-
-  // Create discount description
-  const discountDescription =
-    hasDiscount && discountPercentage > 0
-      ? `Early bird discount, ${discountPercentage}% off`
-      : undefined
 
   // Get plan description from i18n
   const planDescriptionKey = `plan.descriptions.${plan.role}` as const
@@ -336,23 +265,17 @@ const PlanCard = ({
           regularPrice={regularPriceForStrike}
           period={period}
           description={planDescription}
-          discountDescription={discountDescription}
+          discountDescription={plan.discountDescription}
         />
 
         <PlanAction
           actionType={actionType}
-          isLoading={upgradePlanMutation.isPending || cancelPlanMutation?.isPending}
+          upgradeButtonText={plan.upgradeButtonText}
+          isLoading={upgradePlanMutation.isPending}
           onSelect={
             !plan.isComingSoon && !isCurrentPlan
               ? () => {
                   upgradePlanMutation.mutate()
-                }
-              : undefined
-          }
-          onCancel={
-            isCurrentPlan && cancelPlanMutation
-              ? () => {
-                  cancelPlanMutation.mutate()
                 }
               : undefined
           }
@@ -417,14 +340,10 @@ const PlanHeader = ({
           </span>
         )}
       </div>
-      {typeof regularPrice === "number" && regularPrice > 0 && (
-        <div className="flex items-center gap-2">
-          {discountDescription && (
-            <span className="inline-flex items-center gap-1 rounded-md bg-green/10 px-1.5 py-0.5 text-xs font-medium text-green">
-              {discountDescription}
-            </span>
-          )}
-        </div>
+      {typeof regularPrice === "number" && regularPrice > 0 && !!discountDescription && (
+        <span className="inline-flex items-center gap-1 rounded-md bg-green/10 px-1.5 py-0.5 text-xs font-medium text-green">
+          {discountDescription}
+        </span>
       )}
     </div>
     {description && <p className="text-xs leading-relaxed text-text-secondary">{description}</p>}
@@ -433,15 +352,20 @@ const PlanHeader = ({
 
 const PlanAction = ({
   actionType,
+  upgradeButtonText,
   onSelect,
-  onCancel,
   isLoading,
 }: {
-  actionType: "current" | "upgrade" | "coming-soon" | "in-trial" | "switch" | null
+  actionType: "current" | "upgrade" | "coming-soon" | "in-trial" | "switch" | "new" | null
+  upgradeButtonText?: string
   onSelect?: () => void
-  onCancel?: () => void
   isLoading?: boolean
 }) => {
+  const { data: activeSubscription } = useActiveSubscription()
+  const serverConfig = useServerConfigs()
+  const stripePortalLink = serverConfig?.STRIPE_PORTAL_LINK
+  const canManageSubscription = !!activeSubscription && !!stripePortalLink
+
   const getButtonConfig = () => {
     switch (actionType) {
       case "coming-soon": {
@@ -454,11 +378,11 @@ const PlanAction = ({
       }
       case "current": {
         return {
-          text: `Current Plan${onCancel ? " | Cancel" : ""}`,
+          text: canManageSubscription ? "Manage Subscription" : "Current Plan",
           icon: undefined,
           variant: "outline" as const,
-          className: onCancel ? "" : "text-text-secondary",
-          disabled: onCancel ? false : true,
+          className: !canManageSubscription ? "text-text-secondary" : undefined,
+          disabled: !canManageSubscription,
         }
       }
       case "in-trial": {
@@ -466,6 +390,15 @@ const PlanAction = ({
           text: "In Trial",
           icon: "i-mgc-stopwatch-cute-re",
           variant: "outline" as const,
+          disabled: false,
+        }
+      }
+      case "new": {
+        return {
+          text: upgradeButtonText || "Upgrade",
+          icon: "i-mgc-arrow-up-cute-re",
+          className:
+            "bg-gradient-to-r from-accent to-accent/90 text-white hover:from-accent/95 hover:to-accent/85",
           disabled: false,
         }
       }
@@ -507,7 +440,11 @@ const PlanAction = ({
         buttonConfig.className,
       )}
       disabled={buttonConfig.disabled}
-      onClick={buttonConfig.disabled ? undefined : (onCancel ?? onSelect)}
+      onClick={
+        actionType === "current" && canManageSubscription
+          ? () => window.open(stripePortalLink, "_blank")
+          : onSelect
+      }
       isLoading={isLoading}
     >
       <span className="flex items-center justify-center gap-1.5">
@@ -562,7 +499,7 @@ const PlanComparisonTable = ({ plans }: { plans: PaymentPlan[] }) => {
                   index % 2 === 0 ? "bg-background" : "bg-fill-secondary/20",
                 )}
               >
-                <td className="sticky left-0 z-10 bg-inherit px-4 py-3 text-xs font-medium">
+                <td className="sticky left-0 z-10 bg-inherit px-4 py-3 text-sm font-medium">
                   {t(`plan.features.${featureKey}`, { defaultValue: featureKey })}
                 </td>
                 {plans.map((plan) => {

@@ -118,5 +118,3 @@ All released files are verified with [GitHub artifact attestations](https://gith
 Folo is licensed under the GNU General Public License version 3 with the addition of the following special exception:
 
 All content in the `icons/mgc` directory is copyrighted by https://mgc.mingcute.com/ and cannot be redistributed.
-
-All content in the `lottie` directory is distributed under the [Lottie Simple License](https://lottiefiles.com/page/license).

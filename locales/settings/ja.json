@@ -1,4 +1,7 @@
 {
+  "about.aiOnboardingDescription": "インタラクティブなオンボーディングをもう一度体験できます。",
+  "about.appTip": "App 機能",
+  "about.appTipDescription": "App 機能紹介と使用ガイド。",
   "about.changelog": "変更履歴",
   "about.changelogDescription": "各バージョンの新機能を確認",
   "about.checkForUpdates": "アップデートを確認",
@@ -557,6 +560,7 @@
   "plan.descriptions.pro": "Foloの最高の機能すべてにアクセス。",
   "plan.featureValues.AI_MODEL_SELECTION.curated": "厳選モデル",
   "plan.featureValues.AI_MODEL_SELECTION.high_performance": "高性能すべて",
+  "plan.features.AI_BRING_YOUR_OWN_KEY": "AI Bring Your Own Key",
   "plan.features.AI_CREDIT": "AI Chat クレジット",
   "plan.features.AI_MODEL_SELECTION": "AI モデル選択",
   "plan.features.BOOSTS": "購読フィードの加速",
@@ -567,6 +571,7 @@
   "plan.features.MAX_AI_REQUESTS_PER_DAY": "1日あたりのAIリクエスト数",
   "plan.features.MAX_AI_REQUESTS_PER_MONTH": "1ヶ月あたりのAIリクエスト数",
   "plan.features.MAX_AI_TASKS": "AI タスク",
+  "plan.features.MAX_AI_TEXT_TO_SPEECH_PER_DAY": "1日あたりのAI音声合成数",
   "plan.features.MAX_INBOXES": "受信トレイフィード",
   "plan.features.MAX_LISTS": "カスタムリスト",
   "plan.features.MAX_RSSHUB_SUBSCRIPTIONS": "RSSHub サブスクリプション",

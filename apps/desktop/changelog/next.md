@@ -2,10 +2,9 @@
 
 ## Shiny new things
 
-## Improvements
-
-## No longer broken
-
-## Thanks
-
-Special thanks to volunteer contributors @ for their valuable contributions
+- Onboarding: Re-designed the onboarding flow
+- AI:
+  - Supports BYOK (Bring Your Own Key)
+  - AI Memory tool has been improved, now can update your past memories
+- UI:
+  - The design system of some UI components has been improved

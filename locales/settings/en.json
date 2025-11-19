@@ -1,4 +1,7 @@
 {
+  "about.aiOnboardingDescription": "Revisit the interactive onboarding tour.",
+  "about.appTip": "App Features",
+  "about.appTipDescription": "App features introduction and usage guide.",
   "about.changelog": "Changelog",
   "about.changelogDescription": "See what's new in each version",
   "about.checkForUpdates": "Check for Updates",
@@ -562,6 +565,7 @@
   "plan.featureValues.AI_MODEL_SELECTION.curated": "Curated models",
   "plan.featureValues.AI_MODEL_SELECTION.high_performance": "All high-end models",
   "plan.featureValues.AI_MODEL_SELECTION.none": "—",
+  "plan.features.AI_BRING_YOUR_OWN_KEY": "AI Bring Your Own Key",
   "plan.features.AI_CREDIT": "AI Chat Credits",
   "plan.features.AI_MODEL_SELECTION": "AI Model Selection",
   "plan.features.BOOSTS": "Feed Refresh Acceleration",
@@ -572,6 +576,7 @@
   "plan.features.MAX_AI_REQUESTS_PER_DAY": "AI Chats Per Day",
   "plan.features.MAX_AI_REQUESTS_PER_MONTH": "AI Chats Per Month",
   "plan.features.MAX_AI_TASKS": "AI Tasks",
+  "plan.features.MAX_AI_TEXT_TO_SPEECH_PER_DAY": "AI Text-to-Speech Per Day",
   "plan.features.MAX_INBOXES": "Inbox",
   "plan.features.MAX_LISTS": "List",
   "plan.features.MAX_RSSHUB_SUBSCRIPTIONS": "RSSHub Subscriptions",

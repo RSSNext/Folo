@@ -1,5 +1,6 @@
 import { FeedViewType, getView } from "@follow/constants"
 import { useCollectionEntryList } from "@follow/store/collection/hooks"
+import { isOnboardingEntryUrl } from "@follow/store/constants/onboarding"
 import {
   useEntriesQuery,
   useEntryIdsByFeedId,
@@ -85,7 +86,7 @@ const useRemoteEntries = (): UseEntriesReturn => {
       fetchedTime: fetchedTime!,
     }),
     {
-      refetchInterval: 1000 * 60,
+      refetchInterval: 1000 * 60 * 5,
       enabled: !!fetchedTime && !pauseQuery,
       notifyOnChangeProps: ["data"],
     },
@@ -281,6 +282,9 @@ export const useEntriesByView = ({ onReset }: { onReset?: () => void }) => {
     for (const id of entryIds) {
       const entry = entriesId2Map[id]
       if (!entry) {
+        continue
+      }
+      if (isOnboardingEntryUrl(entry.url)) {
         continue
       }
       const date = new Date(listId ? entry.insertedAt : entry.publishedAt).toDateString()

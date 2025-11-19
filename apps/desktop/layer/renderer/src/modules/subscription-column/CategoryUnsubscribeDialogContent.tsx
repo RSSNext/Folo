@@ -36,7 +36,7 @@ export function CategoryUnsubscribeDialogContent({
   const { dismiss } = useCurrentModal()
 
   return (
-    <div className="flex w-[65ch] max-w-full flex-col gap-4">
+    <div className="flex w-[45ch] max-w-full flex-col gap-4">
       <p className="text-text">
         {t("sidebar.category_unsubscribe_dialog.description", {
           category,

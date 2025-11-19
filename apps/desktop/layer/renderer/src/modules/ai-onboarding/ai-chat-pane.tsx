@@ -1,4 +1,4 @@
-import { Logo } from "@follow/components/icons/logo.jsx"
+import { Folo } from "@follow/components/icons/folo.js"
 import { Button } from "@follow/components/ui/button/index.js"
 import type { LexicalRichEditorRef } from "@follow/components/ui/lexical-rich-editor/index.js"
 import {
@@ -10,7 +10,7 @@ import { useIsDark } from "@follow/hooks"
 import { tracker } from "@follow/tracker"
 import { nextFrame } from "@follow/utils"
 import { cn } from "@follow/utils/utils"
-import { AnimatePresence } from "framer-motion"
+import { AnimatePresence, m } from "framer-motion"
 import { useSetAtom } from "jotai"
 import type { EditorState } from "lexical"
 import { $getRoot, $getSelection, $isRangeSelection, createEditor } from "lexical"
@@ -19,7 +19,7 @@ import type { RefObject } from "react"
 import { Fragment, useEffect, useLayoutEffect, useMemo, useRef, useState } from "react"
 import { useEventCallback } from "usehooks-ts"
 
-import { useDialog } from "~/components/ui/modal/stacked/hooks"
+import { GlassButton } from "~/components/ui/button/GlassButton"
 import { useI18n } from "~/hooks/common"
 import { ChatInput } from "~/modules/ai-chat/components/layouts/ChatInput"
 import { useAttachScrollBeyond } from "~/modules/ai-chat/hooks/useAttachScrollBeyond"
@@ -103,17 +103,14 @@ function pickSuggestionKeys(previous?: readonly SuggestionKey[]): SuggestionKey[
 
 export function AIChatPane() {
   return (
-    <div className="flex h-full flex-col justify-between gap-8 overflow-hidden bg-background p-2 lg:col-span-6">
+    <div className="flex h-full flex-col justify-between gap-8 overflow-hidden p-2">
       <AIChatPaneImpl />
     </div>
   )
 }
 
 function AIChatPaneImpl() {
-  const t = useI18n()
-
   const setStep = useSetAtom(stepAtom)
-  const dialog = useDialog()
 
   const hasMessages = useHasMessages()
   const chatInputRef = useRef<LexicalRichEditorRef | null>(null)
@@ -148,32 +145,18 @@ function AIChatPaneImpl() {
   }
 
   const handleSkip = useEventCallback(async () => {
-    const confirmed = await dialog.ask({
-      title: t.app("new_user_guide.confirm_skip.title") as string,
-      message: t.app("new_user_guide.confirm_skip.message") as string,
-      confirmText: t.app("new_user_guide.actions.skip") as string,
-    })
-
-    if (!confirmed) {
-      return
-    }
-
-    setStep("skip-pre-finish")
+    setStep("finish")
   })
 
   return (
     <div className="relative flex h-full flex-col">
-      <header className="flex w-full items-start justify-between px-5 pb-5">
-        <Logo className="size-12" />
+      <header className="flex w-full items-start justify-between px-4 pb-4 pt-2">
         <div className="flex items-center gap-2">
-          <Button variant="ghost" onClick={handleSkip}>
-            {t.app("new_user_guide.actions.skip")}
-          </Button>
-
-          <Button variant="outline" onClick={() => setStep("manual-import")}>
-            {t.app("new_user_guide.actions.import_opml")}
-          </Button>
+          <Folo className="size-9" /> <span className="text-xl font-semibold">AI</span>
         </div>
+        <GlassButton onClick={handleSkip} variant="flat">
+          <i className="i-mgc-close-cute-re" />
+        </GlassButton>
       </header>
 
       <AnimatePresence mode="popLayout">
@@ -205,10 +188,16 @@ function Welcome({ onSuggestionClick }: WelcomeProps) {
   })
 
   return (
-    <div className="flex flex-col items-start gap-5 p-5">
-      <div className="flex flex-col items-start gap-5">
-        <div className="space-y-4">
-          <p className="text-2xl leading-snug">
+    <m.div
+      initial={{ opacity: 0, x: 20 }}
+      animate={{ opacity: 1, x: 0 }}
+      exit={{ opacity: 0, x: 20 }}
+      transition={{ duration: 0.5, ease: "easeOut" }}
+      className="flex flex-col items-start gap-4 px-4 py-3"
+    >
+      <div className="flex flex-col items-start gap-4">
+        <div className="space-y-3">
+          <p className="text-xl leading-snug">
             {(t.app("new_user_guide.ai_chat.intro") as string).split("\n").map((line) => (
               <Fragment key={line}>
                 {line}
@@ -219,7 +208,7 @@ function Welcome({ onSuggestionClick }: WelcomeProps) {
         </div>
       </div>
 
-      <div className="space-y-3">
+      <div className="w-full space-y-3">
         <div className="flex flex-wrap items-center justify-between gap-2">
           <p className="text-xs font-medium uppercase text-text-secondary">
             {t.app("new_user_guide.ai_chat.you_can_say")}
@@ -237,7 +226,7 @@ function Welcome({ onSuggestionClick }: WelcomeProps) {
               <AIShortcutButton
                 key={suggestionKey}
                 onClick={() => onClickSuggestion(suggestionText)}
-                animationDelay={index * 0.05}
+                animationDelay={index * 0.05 + 0.2}
                 className="font-normal text-text"
                 style={{ background: gradient }}
               >
@@ -249,11 +238,11 @@ function Welcome({ onSuggestionClick }: WelcomeProps) {
       </div>
 
       <FinishListener />
-    </div>
+    </m.div>
   )
 }
 
-// if the chat response has `tool-onboardingGetTrendingFeedsTool`, set the step to pre-finish
+// if the chat response has `tool-onboardingGetTrendingFeedsTool`, mark the flow as finished
 function FinishListener() {
   const chatMessages = useMessages()
   const setStep = useSetAtom(stepAtom)
@@ -262,7 +251,7 @@ function FinishListener() {
       msg.parts.some((p) => p.type === "tool-onboardingGetTrendingFeeds"),
     )
     if (hasCalledConfirmTool) {
-      setStep("pre-finish")
+      setStep("finish")
     }
   }, [chatMessages, setStep])
 
@@ -521,8 +510,8 @@ function AIChatInterface({ inputRef }: AIChatInterfaceProps) {
             status === "ready" &&
             hasFeedsSelection && (
               <div>
-                <Button onClick={() => setStep("pre-finish")}>
-                  {t.app("new_user_guide.actions.next")}
+                <Button onClick={() => setStep("finish")}>
+                  {t.app("new_user_guide.actions.finish")}
                 </Button>
               </div>
             )}

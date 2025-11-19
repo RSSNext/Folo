@@ -2,6 +2,7 @@ import { isMobile } from "@follow/components/hooks/useMobile.js"
 import { FeedViewType, getView, UserRole } from "@follow/constants"
 import { IN_ELECTRON } from "@follow/shared/constants"
 import { useIsEntryStarred } from "@follow/store/collection/hooks"
+import { isOnboardingEntryUrl } from "@follow/store/constants/onboarding"
 import { useEntry } from "@follow/store/entry/hooks"
 import { entrySyncServices } from "@follow/store/entry/store"
 import type { EntryModel } from "@follow/store/entry/types"
@@ -11,7 +12,6 @@ import { useUserRole } from "@follow/store/user/hooks"
 import { doesTextContainHTML } from "@follow/utils/utils"
 import { useMemo } from "react"
 
-import { useShowAISummaryAuto, useShowAISummaryOnce } from "~/atoms/ai-summary"
 import { useShowAITranslationAuto, useShowAITranslationOnce } from "~/atoms/ai-translation"
 import { MENU_ITEM_SEPARATOR, MenuItemSeparator, MenuItemText } from "~/atoms/context-menu"
 import {
@@ -251,8 +251,7 @@ export const useEntryActions = ({ entryId, view }: { entryId: string; view: Feed
 
   const isInbox = useIsInbox(entry?.inboxId)
   const isShowSourceContent = useShowSourceContent()
-  const isShowAISummaryAuto = useShowAISummaryAuto(entry?.summary)
-  const isShowAISummaryOnce = useShowAISummaryOnce()
+
   const isShowAITranslationAuto = useShowAITranslationAuto(!!entry?.translation)
   const isShowAITranslationOnce = useShowAITranslationOnce()
 
@@ -265,6 +264,7 @@ export const useEntryActions = ({ entryId, view }: { entryId: string; view: Feed
   const shortcuts = useCommandShortcuts()
 
   const isCurrentVisitEntry = routeEntryId === entryId
+  const isOnboardingEntry = isOnboardingEntryUrl(entry?.url)
 
   const actionConfigs: EntryActionItem[] = useMemo(() => {
     if (!hasEntry) return []
@@ -334,6 +334,7 @@ export const useEntryActions = ({ entryId, view }: { entryId: string; view: Feed
         onClick: runCmdFn(COMMAND_ID.entry.copyLink, [{ entryId }]),
         hide: !entry.url,
         shortcut: shortcuts[COMMAND_ID.entry.copyLink],
+        disabled: isOnboardingEntry,
         entryId,
       }),
       new EntryActionMenuItem({
@@ -346,6 +347,7 @@ export const useEntryActions = ({ entryId, view }: { entryId: string; view: Feed
         id: COMMAND_ID.entry.imageGallery,
         hide: entry.imagesLength <= 5,
         onClick: runCmdFn(COMMAND_ID.entry.imageGallery, [{ entryId }]),
+        disabled: isOnboardingEntry,
         entryId,
       }),
       new EntryActionMenuItem({
@@ -353,6 +355,7 @@ export const useEntryActions = ({ entryId, view }: { entryId: string; view: Feed
         hide: !entry.url,
         onClick: runCmdFn(COMMAND_ID.entry.openInBrowser, [{ entryId }]),
         shortcut: shortcuts[COMMAND_ID.entry.openInBrowser],
+        disabled: isOnboardingEntry,
         entryId,
       }),
       new EntryActionMenuItem({
@@ -362,6 +365,7 @@ export const useEntryActions = ({ entryId, view }: { entryId: string; view: Feed
         ]),
         hide: isMobile() || !entry.url,
         active: isShowSourceContent,
+        disabled: isOnboardingEntry,
         entryId,
       }),
       new EntryActionMenuItem({
@@ -414,7 +418,6 @@ export const useEntryActions = ({ entryId, view }: { entryId: string; view: Feed
       new EntryActionMenuItem({
         id: COMMAND_ID.entry.tts,
         onClick: runCmdFn(COMMAND_ID.entry.tts, [{ entryId }]),
-        hide: !IN_ELECTRON || !entry.hasContent,
         shortcut: shortcuts[COMMAND_ID.entry.tts],
         entryId,
       }),
@@ -424,6 +427,7 @@ export const useEntryActions = ({ entryId, view }: { entryId: string; view: Feed
         hide: !!entry.readability || (view && getView(view)?.wideMode) || !entry.url,
         active: isEntryInReadability,
         notice: !entry.doesContentContainsHTMLTags && !isEntryInReadability,
+        disabled: isOnboardingEntry,
         entryId,
       }),
 
@@ -472,11 +476,8 @@ export const useEntryActions = ({ entryId, view }: { entryId: string; view: Feed
     entry?.imagesLength,
     entry?.publishedAt,
     entry?.read,
-    entry?.hasContent,
     entry?.readability,
     entry?.doesContentContainsHTMLTags,
-    feed?.id,
-    feed?.ownerUserId,
     feed?.siteUrl,
     isInbox,
     shortcuts,
@@ -484,8 +485,6 @@ export const useEntryActions = ({ entryId, view }: { entryId: string; view: Feed
     isInCollection,
     isCurrentVisitEntry,
     isShowSourceContent,
-    isShowAISummaryAuto,
-    isShowAISummaryOnce,
     userRole,
     isShowAITranslationAuto,
     isShowAITranslationOnce,
@@ -493,6 +492,7 @@ export const useEntryActions = ({ entryId, view }: { entryId: string; view: Feed
     isEntryInReadability,
     integrationSettings.customIntegration,
     integrationSettings.enableCustomIntegration,
+    isOnboardingEntry,
   ])
 
   return actionConfigs

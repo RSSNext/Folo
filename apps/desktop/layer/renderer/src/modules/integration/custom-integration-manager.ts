@@ -116,6 +116,7 @@ export class CustomIntegrationManager {
     options: {
       urlEncode?: boolean
       htmlEscape?: boolean
+      jsonEscape?: boolean
     } = {},
   ): string {
     let result = template
@@ -149,6 +150,11 @@ export class CustomIntegrationManager {
           .replaceAll("'", "&#x27;")
       }
 
+      if (options.jsonEscape) {
+        // Learn more https://stackoverflow.com/questions/4253367/how-to-escape-a-json-string-containing-newline-characters-using-javascript
+        processedValue = JSON.stringify(processedValue).slice(1, -1)
+      }
+
       result = result.replaceAll(placeholder, processedValue)
     })
 
@@ -175,13 +181,15 @@ export class CustomIntegrationManager {
     Object.entries(fetchTemplate.headers).forEach(([key, value]) => {
       const processedKey = this.replacePlaceholders(key, context)
       const processedValue = this.replacePlaceholders(value, context)
-      processedHeaders[processedKey] = processedValue
+      // Field names are case-insensitive.
+      processedHeaders[processedKey.toLowerCase()] = processedValue
     })
 
     // Process body without URL encoding
     let processedBody: string | undefined
     if (fetchTemplate.body) {
-      processedBody = this.replacePlaceholders(fetchTemplate.body, context)
+      const jsonEscape = fetchTemplate.headers["content-type"]?.toLowerCase() === "application/json"
+      processedBody = this.replacePlaceholders(fetchTemplate.body, context, { jsonEscape })
     }
 
     return {

@@ -325,6 +325,38 @@ export const CustomIntegrationModalContent = ({
     [form],
   )
 
+  const handleMethodChange = useCallback(
+    (onChange: (value: string) => void) => (value: string) => {
+      onChange(value)
+
+      const currentHeaders: Record<string, string> = form.getValues("fetchTemplate.headers") || {}
+
+      if (value !== "GET") {
+        // Add default Content-Type header for non-GET methods
+        const hasContentType = Object.keys(currentHeaders).some(
+          (key) => key.toLowerCase() === "content-type",
+        )
+
+        if (!hasContentType) {
+          form.setValue("fetchTemplate.headers", {
+            ...currentHeaders,
+            "Content-Type": "application/json",
+          })
+        }
+      } else {
+        // Remove Content-Type: application/json header for GET method
+        const filteredHeaders: Record<string, string> = {}
+        Object.entries(currentHeaders).forEach(([key, value]) => {
+          if (key.toLowerCase() !== "content-type" || value.toLowerCase() !== "application/json") {
+            filteredHeaders[key] = value
+          }
+        })
+        form.setValue("fetchTemplate.headers", filteredHeaders)
+      }
+    },
+    [form],
+  )
+
   // Memoized items
   const integrationTypeItems = useMemo(
     () => [
@@ -455,7 +487,7 @@ export const CustomIntegrationModalContent = ({
                           <FormControl>
                             <MethodSelector
                               value={field.value}
-                              onChange={field.onChange}
+                              onChange={handleMethodChange(field.onChange)}
                               items={httpMethodItems}
                             />
                           </FormControl>

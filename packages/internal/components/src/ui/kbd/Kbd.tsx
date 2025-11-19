@@ -345,9 +345,8 @@ export const Kbd: FC<{
   const KbdElement = (
     <kbd
       className={cn(
-        "kbd text-text box-border h-5 space-x-1 font-sans text-[0.7rem] tabular-nums transition-[border] duration-200",
-
-        wrapButton && (isKeyPressed ? "" : "border-b-2 hover:border-b"),
+        "kbd text-text box-border h-5 space-x-1 font-sans text-[0.7rem] tabular-nums transition-all duration-200",
+        wrapButton && isKeyPressed && "scale-95 opacity-80",
         className,
       )}
       {...(abbr && { title: abbr })}
