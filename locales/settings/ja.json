@@ -571,6 +571,7 @@
   "plan.features.MAX_AI_REQUESTS_PER_DAY": "1日あたりのAIリクエスト数",
   "plan.features.MAX_AI_REQUESTS_PER_MONTH": "1ヶ月あたりのAIリクエスト数",
   "plan.features.MAX_AI_TASKS": "AI タスク",
+  "plan.features.MAX_AI_TEXT_TO_SPEECH_PER_DAY": "1日あたりのAI音声合成数",
   "plan.features.MAX_INBOXES": "受信トレイフィード",
   "plan.features.MAX_LISTS": "カスタムリスト",
   "plan.features.MAX_RSSHUB_SUBSCRIPTIONS": "RSSHub サブスクリプション",
