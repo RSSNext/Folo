@@ -332,6 +332,15 @@ export const useListActions = ({ listId, view }: { listId: string; view?: FeedVi
 
     const items: MenuItemInput[] = [
       new MenuItemText({
+        label: t("sidebar.feed_actions.mark_all_as_read"),
+        shortcut: shortcuts[COMMAND_ID.subscription.markAllAsRead],
+        click: () => {
+          unreadSyncService.markFeedAsRead(list.feedIds)
+        },
+        requiresLogin: true,
+      }),
+      MenuItemSeparator.default,
+      new MenuItemText({
         label: t("sidebar.feed_actions.edit"),
         shortcut: "E",
         click: () => {
@@ -346,15 +355,6 @@ export const useListActions = ({ listId, view }: { listId: string; view?: FeedVi
         label: t("sidebar.feed_actions.unfollow"),
         shortcut: "$mod+Backspace",
         click: () => deleteSubscription({ subscription }),
-        requiresLogin: true,
-      }),
-      MenuItemSeparator.default,
-      new MenuItemText({
-        label: t("sidebar.feed_actions.mark_all_as_read"),
-        shortcut: shortcuts[COMMAND_ID.subscription.markAllAsRead],
-        click: () => {
-          unreadSyncService.markFeedAsRead(list.feedIds)
-        },
         requiresLogin: true,
       }),
       MenuItemSeparator.default,
