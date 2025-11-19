@@ -160,8 +160,7 @@ export const ChatHistoryDropdown = ({
                     session={session}
                     onClick={() => handleSessionSelect(session)}
                     onDelete={(e) => {
-                      setLoadingChatId(session.chatId)
-                      handleDeleteSession(session.chatId, e).finally(() => {
+                      handleDeleteSession(session.chatId, { event: e }).finally(() => {
                         setLoadingChatId(null)
                       })
                     }}
@@ -183,8 +182,10 @@ export const ChatHistoryDropdown = ({
                   session={session}
                   onClick={() => handleSessionSelect(session)}
                   onDelete={(e) => {
-                    setLoadingChatId(session.chatId)
-                    handleDeleteSession(session.chatId, e).finally(() => {
+                    handleDeleteSession(session.chatId, {
+                      event: e,
+                      onBeforeDelete: () => setLoadingChatId(session.chatId),
+                    }).finally(() => {
                       setLoadingChatId(null)
                     })
                   }}
