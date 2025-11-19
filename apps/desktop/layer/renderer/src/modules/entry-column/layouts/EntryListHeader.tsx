@@ -10,13 +10,15 @@ import { useFeedById } from "@follow/store/feed/hooks"
 import { useIsLoggedIn, useWhoami } from "@follow/store/user/hooks"
 import { stopPropagation } from "@follow/utils/dom"
 import { clsx, cn, isBizId } from "@follow/utils/utils"
-import { useAtomValue } from "jotai"
+import { useAtom, useAtomValue } from "jotai"
 import type { FC } from "react"
 import { useCallback } from "react"
 import { useTranslation } from "react-i18next"
 import { useNavigate } from "react-router"
+import { toast } from "sonner"
 
 import { previewBackPath } from "~/atoms/preview"
+import { useAISettingKey } from "~/atoms/settings/ai"
 import { useGeneralSettingKey } from "~/atoms/settings/general"
 import { useSubscriptionColumnShow } from "~/atoms/sidebar"
 import { ROUTE_ENTRY_PENDING } from "~/constants"
@@ -30,9 +32,12 @@ import { useRunCommandFn } from "~/modules/command/hooks/use-command"
 import { useCommandShortcut } from "~/modules/command/hooks/use-command-binding"
 import { EntryHeader } from "~/modules/entry-content/components/entry-header"
 import { FeedIcon } from "~/modules/feed/feed-icon"
+import { useSettingModal } from "~/modules/settings/modal/useSettingModal"
+import { AI_SETTING_SECTION_IDS } from "~/modules/settings/tabs/ai"
 import { useRefreshFeedMutation } from "~/queries/feed"
 import { useFeedHeaderIcon, useFeedHeaderTitle } from "~/store/feed/hooks"
 
+import { aiTimelineEnabledAtom } from "../atoms/ai-timeline"
 import { MarkAllReadButton } from "../components/mark-all-button"
 import { useIsPreviewFeed } from "../hooks/useIsPreviewFeed"
 import { useEntryRootState } from "../store/EntryColumnContext"
@@ -48,7 +53,10 @@ export const EntryListHeader: FC<{
   const { t } = useTranslation()
 
   const unreadOnly = useGeneralSettingKey("unreadOnly")
+  const [aiTimelineEnabled, setAiTimelineEnabled] = useAtom(aiTimelineEnabledAtom)
   const aiEnabled = useFeature("ai")
+  const aiTimelinePrompt = useAISettingKey("aiTimelinePrompt")
+  const showSettings = useSettingModal()
 
   const { feedId, entryId, view, isCollection } = routerParams
   const isPreview = useIsPreviewFeed()
@@ -102,6 +110,45 @@ export const EntryListHeader: FC<{
   }, [sendAIShortcut])
   const showEntryHeader = isWideMode && !!entryId && entryId !== ROUTE_ENTRY_PENDING
   const showTimelineSummaryButton = isWideMode && aiEnabled
+  const showAiTimelineToggle = aiEnabled
+
+  const handleAiTimelineButtonClick = useCallback(() => {
+    const hasTimelinePrompt = !!aiTimelinePrompt?.trim()
+
+    if (!aiTimelineEnabled && !hasTimelinePrompt) {
+      toast.info(t("entry_list_header.ai_timeline_prompt_required"))
+      showSettings({ tab: "ai", section: AI_SETTING_SECTION_IDS.timelinePrompt })
+      return
+    }
+
+    setAiTimelineEnabled((prev) => !prev)
+  }, [aiTimelineEnabled, aiTimelinePrompt, setAiTimelineEnabled, showSettings, t])
+
+  const renderAiTimelineButton = () => {
+    if (!showAiTimelineToggle) return null
+    return (
+      <ActionButton
+        tooltip={t("entry_list_header.ai_timeline")}
+        active={aiTimelineEnabled}
+        onClick={handleAiTimelineButtonClick}
+      >
+        {aiTimelineEnabled ? (
+          <i className="i-mgc-refresh-4-ai-cute-re text-purple-600 dark:text-purple-400" />
+        ) : (
+          <i className="i-mgc-refresh-4-ai-cute-re text-purple-600 dark:text-purple-400" />
+        )}
+      </ActionButton>
+    )
+  }
+
+  const renderTimelineSummaryButton = () => {
+    if (!showTimelineSummaryButton) return null
+    return (
+      <ActionButton tooltip={t("entry_list_header.timeline_summary")} onClick={summarizeTimeline}>
+        <i className="i-mgc-paint-brush-ai-cute-re text-purple-600 dark:text-purple-400" />
+      </ActionButton>
+    )
+  }
 
   return (
     <div
@@ -129,20 +176,21 @@ export const EntryListHeader: FC<{
             )}
             onClick={stopPropagation}
           >
-            {isWideMode && (showEntryHeader || showTimelineSummaryButton) && (
-              <>
-                {showEntryHeader && <EntryHeader entryId={entryId} />}
-                {showTimelineSummaryButton && (
-                  <ActionButton
-                    tooltip={t("entry_list_header.timeline_summary")}
-                    onClick={summarizeTimeline}
-                  >
-                    <i className="i-mgc-paint-brush-ai-cute-re text-purple-600 dark:text-purple-400" />
-                  </ActionButton>
-                )}
-                <DividerVertical className="mx-2 w-px" />
-              </>
-            )}
+            {isWideMode &&
+              (showEntryHeader || showTimelineSummaryButton || showAiTimelineToggle) && (
+                <>
+                  {showEntryHeader && <EntryHeader entryId={entryId} />}
+                  {(showAiTimelineToggle || showTimelineSummaryButton) && (
+                    <div className="flex items-center gap-2">
+                      {renderAiTimelineButton()}
+                      {renderTimelineSummaryButton()}
+                    </div>
+                  )}
+                  <DividerVertical className="mx-2 w-px" />
+                </>
+              )}
+
+            {!isWideMode && renderAiTimelineButton()}
 
             <AppendTaildingDivider>
               {view === FeedViewType.Pictures && <SwitchToMasonryButton />}

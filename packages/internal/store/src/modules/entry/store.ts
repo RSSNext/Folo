@@ -474,6 +474,7 @@ class EntrySyncServices {
       isCollection,
       feedIdList,
       excludePrivate,
+      aiSort,
     } = props
     const params = getEntriesParams({
       feedId,
@@ -490,6 +491,7 @@ class EntrySyncServices {
           limit,
           isCollection,
           inboxId: params.inboxId,
+          ...(aiSort && { aiSort }),
           ...params,
         })
       : await api().entries.list({
@@ -498,6 +500,7 @@ class EntrySyncServices {
           limit,
           isCollection,
           excludePrivate,
+          ...(aiSort && { aiSort }),
           ...params,
         })
 

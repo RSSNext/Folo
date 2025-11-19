@@ -63,6 +63,7 @@ export const useEntriesQuery = (
     isCollection,
     unreadOnly,
     hidePrivateSubscriptionsInTimeline,
+    aiSort,
   } = props || {}
 
   const fetchUnread = unreadOnly
@@ -82,6 +83,7 @@ export const useEntriesQuery = (
       isCollection,
       unreadOnly,
       hidePrivateSubscriptionsInTimeline,
+      aiSort,
     ],
     [
       feedId,
@@ -93,6 +95,7 @@ export const useEntriesQuery = (
       isCollection,
       unreadOnly,
       hidePrivateSubscriptionsInTimeline,
+      aiSort,
     ],
   )
 

@@ -173,6 +173,8 @@
   "entry_content.report_issue": "報告問題",
   "entry_content.web_app_notice": "Web 應用程式不支援此類型內容。您可以下載桌面應用程式。",
   "entry_list.zero_unread": "全部已讀",
+  "entry_list_header.ai_timeline": "AI 時間線",
+  "entry_list_header.ai_timeline_prompt_required": "請先設定 AI 時間線排序提示",
   "entry_list_header.grid": "格線佈局",
   "entry_list_header.image_only": "僅圖片",
   "entry_list_header.items": "內容",

@@ -18,14 +18,17 @@ import { nextFrame } from "@follow/utils"
 import { isBizId } from "@follow/utils/utils"
 import { useMutation } from "@tanstack/react-query"
 import { debounce } from "es-toolkit/compat"
+import { useAtomValue } from "jotai"
 import { useCallback, useEffect, useMemo, useState } from "react"
 
 import { useGeneralSettingKey } from "~/atoms/settings/general"
 import { ROUTE_FEED_PENDING } from "~/constants/app"
+import { useFeature } from "~/hooks/biz/useFeature"
 import { useRouteParams } from "~/hooks/biz/useRouteParams"
 import { useAuthQuery } from "~/hooks/common"
 import { entries } from "~/queries/entries"
 
+import { aiTimelineEnabledAtom } from "../atoms/ai-timeline"
 import { useIsPreviewFeed } from "./useIsPreviewFeed"
 
 const useRemoteEntries = (): UseEntriesReturn => {
@@ -36,6 +39,8 @@ const useRemoteEntries = (): UseEntriesReturn => {
   const hidePrivateSubscriptionsInTimeline = useGeneralSettingKey(
     "hidePrivateSubscriptionsInTimeline",
   )
+  const aiTimelineEnabled = useAtomValue(aiTimelineEnabledAtom)
+  const aiEnabled = useFeature("ai")
 
   const folderIds = useFolderFeedsByFeedId({
     feedId,
@@ -53,6 +58,7 @@ const useRemoteEntries = (): UseEntriesReturn => {
         hidePrivateSubscriptionsInTimeline: true,
       }),
       ...(view === FeedViewType.All && { limit: 40 }),
+      ...(aiTimelineEnabled && aiEnabled && { aiSort: true }),
     }
 
     if (feedId && listId && isBizId(feedId)) {
@@ -69,6 +75,8 @@ const useRemoteEntries = (): UseEntriesReturn => {
     isPreview,
     view,
     hidePrivateSubscriptionsInTimeline,
+    aiTimelineEnabled,
+    aiEnabled,
   ])
   const query = useEntriesQuery(entriesOptions)
 

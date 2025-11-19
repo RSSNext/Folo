@@ -216,6 +216,7 @@ export interface MCPService {
 
 export interface AISettings {
   personalizePrompt: string
+  aiTimelinePrompt: string
   shortcuts: AIShortcut[]
 
   // MCP Services (stored locally, actual connections managed via server API)

@@ -175,6 +175,8 @@
   "entry_content.report_issue": "問題を報告",
   "entry_content.web_app_notice": "このコンテンツタイプはウェブアプリではサポートされていないかもしれません。デスクトップアプリをダウンロードしてください。",
   "entry_list.zero_unread": "未読ゼロ",
+  "entry_list_header.ai_timeline": "AIタイムライン",
+  "entry_list_header.ai_timeline_prompt_required": "AIタイムラインの並び替えプロンプトを先に設定してください",
   "entry_list_header.grid": "グリッド",
   "entry_list_header.image_only": "イメージのみ",
   "entry_list_header.items": "項目",

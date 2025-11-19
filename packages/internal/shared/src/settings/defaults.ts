@@ -161,6 +161,7 @@ export const defaultIntegrationSettings: IntegrationSettings = {
 
 export const defaultAISettings: AISettings = {
   personalizePrompt: "",
+  aiTimelinePrompt: "",
   shortcuts: [],
 
   // MCP Services
