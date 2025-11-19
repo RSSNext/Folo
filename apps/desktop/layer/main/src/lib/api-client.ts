@@ -12,7 +12,7 @@ import { logger } from "../logger"
 
 export const followClient = new FollowClient({
   credentials: "include",
-  timeout: 30000,
+  timeout: 10000,
 
   baseURL: env.VITE_API_URL,
   fetch: async (input, options = {}) =>
