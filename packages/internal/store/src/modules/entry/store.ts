@@ -494,15 +494,22 @@ class EntrySyncServices {
           ...(aiSort && { aiSort }),
           ...params,
         })
-      : await api().entries.list({
-          publishedAfter: pageParam,
-          read,
-          limit,
-          isCollection,
-          excludePrivate,
-          ...(aiSort && { aiSort }),
-          ...params,
-        })
+      : await api().entries.list(
+          {
+            publishedAfter: pageParam,
+            read,
+            limit,
+            isCollection,
+            excludePrivate,
+            ...(aiSort && { aiSort }),
+            ...params,
+          },
+          aiSort
+            ? {
+                timeout: 3 * 60 * 1000,
+              }
+            : undefined,
+        )
 
     // Mark feed unread dirty, so re-fetch the unread data when view feed unread entires in the next time
     if (read === false) {

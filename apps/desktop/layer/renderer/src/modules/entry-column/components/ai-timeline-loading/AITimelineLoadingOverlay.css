@@ -106,8 +106,8 @@
   border-radius: 999px;
   background: linear-gradient(
     120deg,
-    rgba(16, 16, 16, 0.85),
-    rgba(32, 24, 20, 0.85),
+    rgba(16, 16, 16, 0.65),
+    rgba(32, 24, 20, 0.65),
     rgba(255, 92, 0, 0.25)
   );
   border: 1px solid rgba(255, 255, 255, 0.08);
