@@ -15,7 +15,7 @@ import { COMMAND_ID } from "~/modules/command/commands/id"
 import { getCommand } from "~/modules/command/hooks/use-command"
 import { useCommandShortcut } from "~/modules/command/hooks/use-command-binding"
 
-import { FileUploadPlugin, MentionPlugin, ShortcutPlugin } from "../../editor"
+import { FileUploadPlugin, MentionPlugin, SelectedTextPlugin, ShortcutPlugin } from "../../editor"
 import { useMainEntryId } from "../../hooks/useMainEntryId"
 import { AIPanelRefsContext } from "../../store/AIChatContext"
 import { useChatActions, useChatScene, useChatStatus } from "../../store/hooks"
@@ -173,7 +173,9 @@ export const ChatInput = memo(
               onKeyDown={handleKeyDown}
               autoFocus
               plugins={
-                scene === "onboarding" ? [] : [MentionPlugin, ShortcutPlugin, FileUploadPlugin]
+                scene === "onboarding"
+                  ? []
+                  : [MentionPlugin, ShortcutPlugin, FileUploadPlugin, SelectedTextPlugin]
               }
               namespace="AIChatRichEditor"
             />
