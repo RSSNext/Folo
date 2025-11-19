@@ -188,7 +188,7 @@ export class CustomIntegrationManager {
     // Process body without URL encoding
     let processedBody: string | undefined
     if (fetchTemplate.body) {
-      const jsonEscape = fetchTemplate.headers["content-type"]?.toLowerCase() === "application/json"
+      const jsonEscape = processedHeaders["content-type"]?.toLowerCase() === "application/json"
       processedBody = this.replacePlaceholders(fetchTemplate.body, context, { jsonEscape })
     }
 
