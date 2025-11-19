@@ -577,6 +577,7 @@
   "plan.features.MAX_SUBSCRIPTIONS": "订阅源数量",
   "plan.features.PRIORITY_SUPPORT": "优先支持",
   "plan.features.PRIVATE_SUBSCRIPTION": "私有订阅",
+  "plan.features.SECURE_IMAGE_PROXY": "安全图片代理",
   "privacy.privacy": "隐私政策",
   "privacy.terms": "服务条款",
   "profile.avatar.cropInstructions": "拖动裁剪区域以调整头像",

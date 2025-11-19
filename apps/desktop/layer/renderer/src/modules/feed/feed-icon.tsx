@@ -2,12 +2,13 @@
 import { PlatformIcon } from "@follow/components/ui/platform-icon/index.jsx"
 import type { FeedModel } from "@follow/store/feed/types"
 import { getBackgroundGradient } from "@follow/utils/color"
-import { getImageProxyUrl } from "@follow/utils/img-proxy"
 import { cn, getUrlIcon } from "@follow/utils/utils"
 import * as AvatarPrimitive from "@radix-ui/react-avatar"
 import { m } from "motion/react"
 import type { ReactNode } from "react"
 import { useMemo } from "react"
+
+import { getImageProxyUrl } from "~/lib/img-proxy"
 
 const { Avatar, AvatarFallback, AvatarImage } = AvatarPrimitive
 

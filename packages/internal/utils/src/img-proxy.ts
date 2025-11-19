@@ -1,5 +1,10 @@
 export const IMAGE_PROXY_URL = "https://webp.follow.is"
 
+const canUseImageProxy = (userRole?: string | null): boolean => {
+  if (!userRole) return false
+  return userRole === "plus" || userRole === "pro"
+}
+
 export const imageRefererMatches = [
   {
     url: /^https:\/\/\w+\.sinaimg\.cn/,
@@ -40,15 +45,28 @@ export const getImageProxyUrl = ({
   url,
   width,
   height,
+  userRole,
 }: {
   url: string
   width?: number
   height?: number
+  userRole?: string | null
 }) => {
+  if (!canUseImageProxy(userRole)) {
+    return url
+  }
   return `${IMAGE_PROXY_URL}?url=${encodeURIComponent(url)}&width=${width ? Math.round(width) : ""}&height=${height ? Math.round(height) : ""}`
 }
 
-export const replaceImgUrlIfNeed = ({ url, inBrowser }: { url?: string; inBrowser?: boolean }) => {
+export const replaceImgUrlIfNeed = ({
+  url,
+  inBrowser,
+  userRole,
+}: {
+  url?: string
+  inBrowser?: boolean
+  userRole?: string | null
+}) => {
   if (!url) return url
 
   for (const rule of webpCloudPublicServicesMatches) {
@@ -59,7 +77,7 @@ export const replaceImgUrlIfNeed = ({ url, inBrowser }: { url?: string; inBrowse
 
   for (const rule of imageRefererMatches) {
     if ((inBrowser || rule.force) && rule.url.test(url)) {
-      return getImageProxyUrl({ url, width: 0, height: 0 })
+      return getImageProxyUrl({ url, width: 0, height: 0, userRole })
     }
   }
   return url

@@ -583,6 +583,7 @@
   "plan.features.MAX_SUBSCRIPTIONS": "訂閱源數量",
   "plan.features.PRIORITY_SUPPORT": "優先支援",
   "plan.features.PRIVATE_SUBSCRIPTION": "私有訂閱",
+  "plan.features.SECURE_IMAGE_PROXY": "安全圖片代理",
   "privacy.privacy": "隱私政策",
   "privacy.terms": "服務條款",
   "profile.avatar.cropInstructions": "拖曳裁切區域以調整你的頭像",

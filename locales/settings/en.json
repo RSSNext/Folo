@@ -583,6 +583,7 @@
   "plan.features.MAX_SUBSCRIPTIONS": "Feed Subscriptions",
   "plan.features.PRIORITY_SUPPORT": "Priority Support",
   "plan.features.PRIVATE_SUBSCRIPTION": "Private Subscriptions",
+  "plan.features.SECURE_IMAGE_PROXY": "Secure Image Proxy",
   "privacy.privacy": "Privacy",
   "privacy.terms": "Terms",
   "profile.avatar.cropInstructions": "Drag the crop area to adjust your avatar",
