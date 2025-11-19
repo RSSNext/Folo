@@ -7,7 +7,7 @@ import { getI18n } from "~/i18n"
 import { followClient } from "~/lib/api-client"
 
 import { AI_CHAT_SPECIAL_ID_PREFIX } from "../constants"
-import type { BizUIMessage, BizUIMessagePart } from "../store/types"
+import type { BizUIMessage, BizUIMessagePart, BizUIMetadata } from "../store/types"
 import { isDataBlockPart, isFileAttachmentBlock } from "../utils/extractor"
 
 class AIPersistServiceStatic {
@@ -58,6 +58,7 @@ class AIPersistServiceStatic {
       role: dbMessage.role,
       createdAt: dbMessage.createdAt,
       parts: [],
+      metadata: (dbMessage.metadata ?? undefined) as BizUIMetadata | undefined,
     }
 
     if (dbMessage.messageParts && dbMessage.messageParts.length > 0) {
