@@ -8,8 +8,8 @@ packages:
   - "!**/example/**"
 
 catalog:
-  "@follow-app/client-sdk": 0.3.90
-  "@folo-services/ai-tools": 0.2.61
+  "@follow-app/client-sdk": 0.3.92
+  "@folo-services/ai-tools": 0.2.63
   tailwindcss-uikit-colors: 1.0.0
   typescript: 5.9.3
 

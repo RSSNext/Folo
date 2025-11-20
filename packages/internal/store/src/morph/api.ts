@@ -197,6 +197,7 @@ class APIMorph {
   toEntryList(data?: InboxListEntry[] | EntryWithFeed[]): EntryModel[] {
     const entries: EntryModel[] = []
     for (const item of data ?? []) {
+      const resolvedTags = "tags" in item.entries ? item.entries.tags : null
       entries.push({
         id: item.entries.id,
         title: item.entries.title,
@@ -213,7 +214,7 @@ class APIMorph {
         media: item.entries.media ?? null,
         categories: item.entries.categories ?? null,
         attachments: item.entries.attachments ?? null,
-        tags: item.entries.tags ?? null,
+        tags: resolvedTags,
         extra: item.entries.extra
           ? {
               links: item.entries.extra.links ?? undefined,
