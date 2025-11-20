@@ -13,7 +13,6 @@ import { useEffect, useState } from "react"
 import { Trans, useTranslation } from "react-i18next"
 
 import { useServerConfigs } from "~/atoms/server-configs"
-import { GlassButton } from "~/components/ui/button/GlassButton"
 import { useCurrentModal, useModalStack } from "~/components/ui/modal/stacked/hooks"
 import { authClient, loginHandler } from "~/lib/auth"
 import { useAuthProviders } from "~/queries/users"
@@ -121,13 +120,13 @@ export const LoginModalContent = (props: LoginModalContentProps) => {
         </m.div>
       </div>
       {!IN_ELECTRON && (
-        <GlassButton
-          variant="flat"
-          className="absolute -right-2 -top-2 bg-material-medium bg-transparent"
+        <button
+          type="button"
+          className="absolute -right-2 -top-2 flex size-8 items-center justify-center rounded-lg border-0 bg-transparent hover:bg-fill/20"
           onClick={modal.dismiss}
         >
           <i className="i-mgc-close-cute-re size-4" />
-        </GlassButton>
+        </button>
       )}
       {isEmail ? (
         <m.div

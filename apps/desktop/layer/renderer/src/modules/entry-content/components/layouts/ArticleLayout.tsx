@@ -143,6 +143,7 @@ export const ArticleLayout: React.FC<EntryLayoutProps> = ({
           selection={textSelection}
           onRequestClose={handleSelectionClear}
           onAskAI={handleAskAI}
+          entryId={entryId}
         />
       </WrappedElementProvider>
 

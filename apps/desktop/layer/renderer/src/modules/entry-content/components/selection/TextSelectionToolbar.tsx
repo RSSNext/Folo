@@ -6,8 +6,12 @@ import type { CSSProperties, MouseEventHandler } from "react"
 import { useCallback, useEffect, useLayoutEffect, useMemo, useRef, useState } from "react"
 import { useTranslation } from "react-i18next"
 
+import { PlainModal } from "~/components/ui/modal/stacked/custom-modal"
+import { useModalStack } from "~/components/ui/modal/stacked/hooks"
 import { copyToClipboard } from "~/lib/clipboard"
 import type { TextSelectionEvent } from "~/lib/simple-text-selection"
+
+import { SharePosterModal } from "./SharePosterModal"
 
 const styles = {
   toolbar: {
@@ -26,6 +30,7 @@ type TextSelectionToolbarProps = {
   selection: TextSelectionEvent | null
   onRequestClose: () => void
   onAskAI?: (selection: TextSelectionEvent) => void
+  entryId?: string
 }
 
 const DEFAULT_DIMENSIONS = {
@@ -39,8 +44,10 @@ export function TextSelectionToolbar({
   selection,
   onRequestClose,
   onAskAI,
+  entryId,
 }: TextSelectionToolbarProps) {
   const { t } = useTranslation()
+  const { present } = useModalStack()
   const toolbarRef = useRef<HTMLDivElement | null>(null)
   const [toolbarSize, setToolbarSize] = useState(DEFAULT_DIMENSIONS)
   const [copied, setCopied] = useState(false)
@@ -104,6 +111,18 @@ export function TextSelectionToolbar({
     setCopied(true)
   }, [selection])
 
+  const handleShare = useCallback(() => {
+    if (!selection || !entryId) return
+    present({
+      CustomModalComponent: PlainModal,
+      title: t("entry_content.selection_toolbar.share_poster"),
+      id: "share-poster",
+      content: () => <SharePosterModal selectedText={selection.selectedText} entryId={entryId} />,
+      clickOutsideToDismiss: true,
+    })
+    onRequestClose()
+  }, [selection, entryId, present, onRequestClose, t])
+
   const handleMouseDown: MouseEventHandler<HTMLDivElement> = (event) => {
     event.preventDefault()
   }
@@ -139,6 +158,13 @@ export function TextSelectionToolbar({
             onClick={handleCopy}
             active={copied}
           />
+          {entryId ? (
+            <ToolbarButton
+              iconClassName="i-mgc-share-forward-cute-re"
+              label={t("entry_content.selection_toolbar.share")}
+              onClick={handleShare}
+            />
+          ) : null}
           {onAskAI ? (
             <ToolbarButton
               iconClassName="i-mingcute-sparkles-2-line"
@@ -165,7 +191,7 @@ function ToolbarButton({ iconClassName, label, onClick, active }: ToolbarButtonP
       type="button"
       onClick={onClick}
       className={cn(
-        "flex items-center gap-1.5 rounded-xl px-3 py-1.5 text-sm transition-all duration-200",
+        "flex shrink-0 items-center gap-1.5 rounded-full px-3 py-1.5 text-sm transition-all duration-200",
         active
           ? "bg-fill/80 text-text shadow-sm"
           : "text-text-secondary hover:bg-fill/60 hover:text-text active:scale-95",
