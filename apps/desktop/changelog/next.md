@@ -8,6 +8,10 @@
   - Reduced the “guiding tone” in **AI Summary** so summaries feel more natural and personal.
   - Introduced **AI Timeline Sort (Beta)**: your timeline can now rearrange itself based on your reading preferences.
 
+![](https://cdn.follow.is/ai-memory.mp4)
+
+![](https://cdn.follow.is/share.mp4)
+
 - **UI**
   - Several UI components have been refined with an improved design system for a cleaner, more consistent feel.
 
