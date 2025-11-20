@@ -15,10 +15,8 @@ import type { FC } from "react"
 import { useCallback } from "react"
 import { useTranslation } from "react-i18next"
 import { useNavigate } from "react-router"
-import { toast } from "sonner"
 
 import { previewBackPath } from "~/atoms/preview"
-import { useAISettingKey } from "~/atoms/settings/ai"
 import { useGeneralSettingKey } from "~/atoms/settings/general"
 import { useSubscriptionColumnShow } from "~/atoms/sidebar"
 import { ROUTE_ENTRY_PENDING } from "~/constants"
@@ -32,8 +30,6 @@ import { useRunCommandFn } from "~/modules/command/hooks/use-command"
 import { useCommandShortcut } from "~/modules/command/hooks/use-command-binding"
 import { EntryHeader } from "~/modules/entry-content/components/entry-header"
 import { FeedIcon } from "~/modules/feed/feed-icon"
-import { useSettingModal } from "~/modules/settings/modal/useSettingModal"
-import { AI_SETTING_SECTION_IDS } from "~/modules/settings/tabs/ai"
 import { useRefreshFeedMutation } from "~/queries/feed"
 import { useFeedHeaderIcon, useFeedHeaderTitle } from "~/store/feed/hooks"
 
@@ -55,8 +51,6 @@ export const EntryListHeader: FC<{
   const unreadOnly = useGeneralSettingKey("unreadOnly")
   const [aiTimelineEnabled, setAiTimelineEnabled] = useAtom(aiTimelineEnabledAtom)
   const aiEnabled = useFeature("ai")
-  const aiTimelinePrompt = useAISettingKey("aiTimelinePrompt")
-  const showSettings = useSettingModal()
 
   const { feedId, entryId, view, isCollection } = routerParams
   const isPreview = useIsPreviewFeed()
@@ -113,16 +107,8 @@ export const EntryListHeader: FC<{
   const showAiTimelineToggle = aiEnabled
 
   const handleAiTimelineButtonClick = useCallback(() => {
-    const hasTimelinePrompt = !!aiTimelinePrompt?.trim()
-
-    if (!aiTimelineEnabled && !hasTimelinePrompt) {
-      toast.info(t("entry_list_header.ai_timeline_prompt_required"))
-      showSettings({ tab: "ai", section: AI_SETTING_SECTION_IDS.timelinePrompt })
-      return
-    }
-
     setAiTimelineEnabled((prev) => !prev)
-  }, [aiTimelineEnabled, aiTimelinePrompt, setAiTimelineEnabled, showSettings, t])
+  }, [setAiTimelineEnabled])
 
   const renderAiTimelineButton = () => {
     if (!showAiTimelineToggle) return null
@@ -182,7 +168,7 @@ export const EntryListHeader: FC<{
                   {showEntryHeader && <EntryHeader entryId={entryId} />}
                   {(showAiTimelineToggle || showTimelineSummaryButton) && (
                     <div className="flex items-center gap-2">
-                      {renderAiTimelineButton()}
+                      {aiTimelineEnabled && renderAiTimelineButton()}
                       {renderTimelineSummaryButton()}
                     </div>
                   )}
@@ -190,7 +176,7 @@ export const EntryListHeader: FC<{
                 </>
               )}
 
-            {!isWideMode && renderAiTimelineButton()}
+            {!isWideMode && aiTimelineEnabled && renderAiTimelineButton()}
 
             <AppendTaildingDivider>
               {view === FeedViewType.Pictures && <SwitchToMasonryButton />}

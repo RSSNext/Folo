@@ -104,12 +104,13 @@ export const useEntriesQuery = (
     queryFn: ({ pageParam }) =>
       entrySyncServices.fetchEntries({
         ...props,
+        limit: aiSort ? 100 : limit,
         pageParam,
         read: unreadOnly ? false : undefined,
         excludePrivate: hidePrivateSubscriptionsInTimeline,
       }),
 
-    getNextPageParam: (lastPage) => lastPage.data?.at(-1)?.entries.publishedAt,
+    getNextPageParam: (lastPage) => (aiSort ? null : lastPage.data?.at(-1)?.entries.publishedAt),
     initialPageParam: undefined as undefined | string,
     refetchOnWindowFocus: false,
     refetchOnReconnect: false,

@@ -9,10 +9,8 @@ import { ByokSection } from "./ai/byok"
 import { MCPServicesSection } from "./ai/mcp/MCPServicesSection"
 import { UserMemorySection } from "./ai/memory"
 import { PanelStyleSection } from "./ai/PanelStyleSection"
-import { PersonalizePromptSection } from "./ai/PersonalizePromptSection"
 import { AIShortcutsSection } from "./ai/shortcuts/AIShortcutsSection"
 import { TaskSchedulingSection } from "./ai/tasks"
-import { TimelinePromptSection } from "./ai/TimelinePromptSection"
 import { UsageAnalysisSection } from "./ai/usage"
 
 const SettingBuilder = createSettingBuilder(useAISettingValue)
@@ -50,14 +48,6 @@ export const SettingAI = () => {
             type: "title",
             value: t("personalize.title"),
           },
-
-          PersonalizePromptSection,
-          {
-            type: "title",
-            value: t("timeline_prompt.title"),
-            id: AI_SETTING_SECTION_IDS.timelinePrompt,
-          },
-          TimelinePromptSection,
 
           {
             type: "title",
