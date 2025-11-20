@@ -33,8 +33,6 @@ export const TokenUsagePill: React.FC<TokenUsagePillProps> = ({ metadata, childr
     metadata.contextTokens ??
     null
 
-  const hasReasoningTokens = metadata.reasoningTokens != null && metadata.reasoningTokens > 0
-  const hasCachedInputTokens = metadata.cachedInputTokens != null && metadata.cachedInputTokens > 0
   const hasBillingMultiplier =
     metadata.billingMultiplier != null && metadata.billingMultiplier !== 1
   const hasDuration = metadata.duration != null
@@ -73,40 +71,8 @@ export const TokenUsagePill: React.FC<TokenUsagePillProps> = ({ metadata, childr
                   {metadata.billedTokens != null && (
                     <div className="flex justify-between gap-2">
                       <span className="text-text-secondary">Billed:</span>
-                      <span className="font-mono text-accent">
+                      <span className="font-mono">
                         {formatTokenCountString(metadata.billedTokens)}
-                      </span>
-                    </div>
-                  )}
-                  {metadata.contextTokens != null && (
-                    <div className="flex justify-between gap-2">
-                      <span className="text-text-secondary">Context:</span>
-                      <span className="font-mono text-text">
-                        {formatTokenCountString(metadata.contextTokens)}
-                      </span>
-                    </div>
-                  )}
-                  {metadata.outputTokens != null && (
-                    <div className="flex justify-between gap-2">
-                      <span className="text-text-secondary">Output:</span>
-                      <span className="font-mono text-text">
-                        {formatTokenCountString(metadata.outputTokens)}
-                      </span>
-                    </div>
-                  )}
-                  {hasReasoningTokens && (
-                    <div className="flex justify-between gap-2">
-                      <span className="text-text-secondary">Reasoning:</span>
-                      <span className="font-mono text-text">
-                        {formatTokenCountString(metadata.reasoningTokens!)}
-                      </span>
-                    </div>
-                  )}
-                  {hasCachedInputTokens && (
-                    <div className="flex justify-between gap-2">
-                      <span className="text-text-secondary">Cached:</span>
-                      <span className="font-mono text-text">
-                        {formatTokenCountString(metadata.cachedInputTokens!)}
                       </span>
                     </div>
                   )}

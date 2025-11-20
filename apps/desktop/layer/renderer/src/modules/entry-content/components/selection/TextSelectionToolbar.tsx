@@ -119,7 +119,7 @@ export function TextSelectionToolbar({
           left: position.left,
           ...styles.toolbar,
         }}
-        className="pointer-events-auto fixed z-[70] rounded-full border border-border/50 bg-material-ultra-thick px-1.5 py-1 backdrop-blur-background"
+        className="pointer-events-auto fixed z-[70] rounded-xl border border-border/50 bg-material-ultra-thick p-px backdrop-blur-background"
         onMouseDown={handleMouseDown}
         layout="position"
         initial={{ opacity: 0, y: 4, scale: 0.95 }}
@@ -127,10 +127,7 @@ export function TextSelectionToolbar({
         transition={Spring.presets.smooth}
       >
         {/* Inner glow layer */}
-        <div
-          className="pointer-events-none absolute inset-0 rounded-full"
-          style={styles.innerGlow}
-        />
+        <div className="pointer-events-none absolute inset-0 rounded-xl" style={styles.innerGlow} />
         <div className="relative flex items-center gap-1 text-[0.85rem] font-medium text-text">
           <ToolbarButton
             iconClassName={copied ? "i-mgc-check-cute-re" : "i-mgc-copy-cute-re"}
@@ -168,7 +165,7 @@ function ToolbarButton({ iconClassName, label, onClick, active }: ToolbarButtonP
       type="button"
       onClick={onClick}
       className={cn(
-        "flex items-center gap-1.5 rounded-full px-3 py-1.5 text-sm transition-all duration-200",
+        "flex items-center gap-1.5 rounded-xl px-3 py-1.5 text-sm transition-all duration-200",
         active
           ? "bg-fill/80 text-text shadow-sm"
           : "text-text-secondary hover:bg-fill/60 hover:text-text active:scale-95",
