@@ -20,6 +20,7 @@ const defineSettingItem = createDefineSettingItem("ai", useAISettingValue, setAI
 export const AI_SETTING_SECTION_IDS = {
   shortcuts: "settings-ai-shortcuts",
   tasks: "settings-ai-tasks",
+  timelinePrompt: "settings-ai-timeline-prompt",
 } as const
 
 export const SettingAI = () => {

@@ -140,11 +140,6 @@ export function useContextBlockPresentation(block: AIChatContextBlock): ContextB
         )
         break
       }
-      case "selectedText": {
-        displayContent = `"${block.value}"`
-        title = block.value
-        break
-      }
       case "unreadOnly": {
         displayContent = "Unread Only"
         title = "Unread Only"

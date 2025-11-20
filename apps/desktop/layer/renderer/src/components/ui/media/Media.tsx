@@ -1,5 +1,4 @@
 import { nextFrame } from "@follow/utils/dom"
-import { getImageProxyUrl } from "@follow/utils/img-proxy"
 import { cn } from "@follow/utils/utils"
 import { ErrorBoundary } from "@sentry/react"
 import { useForceUpdate } from "motion/react"
@@ -9,6 +8,7 @@ import { memo, use, useEffect, useMemo, useRef, useState } from "react"
 import { Blurhash, BlurhashCanvas } from "react-blurhash"
 import { useEventCallback } from "usehooks-ts"
 
+import { useGetImageProxyUrl } from "~/lib/img-proxy"
 import { saveImageDimensionsToDb } from "~/store/image/db"
 
 import { useMediaContainerWidth, usePreviewMedia } from "./hooks"
@@ -77,6 +77,7 @@ const MediaImpl: FC<MediaProps> = ({
     videoClassName,
     ...rest
   } = props
+  const getImageProxyUrl = useGetImageProxyUrl()
 
   const ctxMediaInfo = use(MediaInfoRecordContext)
   const ctxHeight = ctxMediaInfo[src!]?.height
@@ -121,7 +122,7 @@ const MediaImpl: FC<MediaProps> = ({
     }
 
     return sources
-  }, [src, proxy, preferOrigin])
+  }, [src, proxy, preferOrigin, getImageProxyUrl])
 
   const [currentSourceIndex, setCurrentSourceIndex] = useState(0)
   const [isError, setIsError] = useState(false)

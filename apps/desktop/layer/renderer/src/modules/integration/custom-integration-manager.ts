@@ -182,13 +182,13 @@ export class CustomIntegrationManager {
       const processedKey = this.replacePlaceholders(key, context)
       const processedValue = this.replacePlaceholders(value, context)
       // Field names are case-insensitive.
-      processedHeaders[processedKey.toLowerCase()] = processedValue
+      processedHeaders[processedKey.toLowerCase().trim()] = processedValue.trim()
     })
 
     // Process body without URL encoding
     let processedBody: string | undefined
     if (fetchTemplate.body) {
-      const jsonEscape = fetchTemplate.headers["content-type"]?.toLowerCase() === "application/json"
+      const jsonEscape = processedHeaders["content-type"]?.toLowerCase() === "application/json"
       processedBody = this.replacePlaceholders(fetchTemplate.body, context, { jsonEscape })
     }
 

@@ -179,39 +179,13 @@ export const CommandDropdownMenuItem = ({
   asSubTrigger = false,
   disabled = false,
 }: {
-  commandId: FollowCommandId | string
+  commandId: FollowCommandId
   onClick: () => void
   active?: boolean
   asSubTrigger?: boolean
   disabled?: boolean
 }) => {
-  const command = useCommand(commandId as any)
-
-  // For custom integration items
-  if (typeof commandId === "string" && commandId.startsWith("integration:custom:")) {
-    const content = (
-      <>
-        <i className="i-mgc-webhook-cute-re mr-2" />
-        Custom Integration
-      </>
-    )
-
-    if (asSubTrigger) {
-      return content
-    }
-
-    return (
-      <DropdownMenuItem
-        key={commandId}
-        className="pl-3"
-        onSelect={disabled ? undefined : onClick}
-        active={active}
-        disabled={disabled}
-      >
-        {content}
-      </DropdownMenuItem>
-    )
-  }
+  const command = useCommand(commandId)
 
   if (!command) return null
 

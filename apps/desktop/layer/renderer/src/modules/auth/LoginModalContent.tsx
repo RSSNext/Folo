@@ -4,6 +4,7 @@ import { Folo } from "@follow/components/icons/folo.js"
 import { Logo } from "@follow/components/icons/logo.js"
 import { MotionButtonBase } from "@follow/components/ui/button/index.js"
 import { useIsDark } from "@follow/hooks"
+import { IN_ELECTRON } from "@follow/shared"
 import type { LoginRuntime } from "@follow/shared/auth"
 import { stopPropagation } from "@follow/utils/dom"
 import { cn } from "@follow/utils/utils"
@@ -12,7 +13,6 @@ import { useEffect, useState } from "react"
 import { Trans, useTranslation } from "react-i18next"
 
 import { useServerConfigs } from "~/atoms/server-configs"
-import { GlassButton } from "~/components/ui/button/GlassButton"
 import { useCurrentModal, useModalStack } from "~/components/ui/modal/stacked/hooks"
 import { authClient, loginHandler } from "~/lib/auth"
 import { useAuthProviders } from "~/queries/users"
@@ -119,15 +119,15 @@ export const LoginModalContent = (props: LoginModalContentProps) => {
           <Folo className="size-12" />
         </m.div>
       </div>
-
-      <GlassButton
-        variant="flat"
-        className="absolute -right-2 -top-2 bg-material-medium"
-        onClick={modal.dismiss}
-      >
-        <i className="i-mgc-close-cute-re size-4" />
-      </GlassButton>
-
+      {!IN_ELECTRON && (
+        <button
+          type="button"
+          className="absolute -right-2 -top-2 flex size-8 items-center justify-center rounded-lg border-0 bg-transparent hover:bg-fill/20"
+          onClick={modal.dismiss}
+        >
+          <i className="i-mgc-close-cute-re size-4" />
+        </button>
+      )}
       {isEmail ? (
         <m.div
           initial={{ opacity: 0, y: 10 }}

@@ -13,6 +13,7 @@ export type FetchEntriesProps = {
   pageParam?: string
   isCollection?: boolean
   excludePrivate?: boolean
+  aiSort?: boolean
 }
 
 export type FetchEntriesPropsSettings = {

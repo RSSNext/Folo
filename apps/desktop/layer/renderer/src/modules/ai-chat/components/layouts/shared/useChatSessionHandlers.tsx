@@ -63,9 +63,15 @@ export const useChatSessionHandlers = ({ sessions = [] }: UseChatSessionHandlers
   )
 
   const handleDeleteSession = useCallback(
-    async (chatId: string, e: React.MouseEvent) => {
-      e.stopPropagation()
-      e.preventDefault()
+    async (
+      chatId: string,
+      options: {
+        event?: React.MouseEvent
+        onBeforeDelete?: () => void
+      } = {},
+    ) => {
+      options.event?.stopPropagation()
+      options.event?.preventDefault()
 
       const session = sessions?.find((s) => s.chatId === chatId)
       if (!session) return
@@ -77,6 +83,7 @@ export const useChatSessionHandlers = ({ sessions = [] }: UseChatSessionHandlers
       })
 
       if (!confirm) return
+      options.onBeforeDelete?.()
 
       try {
         // Only delete AI chat sessions through the mutation

@@ -8,7 +8,12 @@ import { cn } from "@follow/utils"
 import { ErrorBoundary } from "@sentry/react"
 import { useCallback, useEffect, useMemo, useRef, useState } from "react"
 
-import { AIChatPanelStyle, useAIChatPanelStyle, useAIPanelVisibility } from "~/atoms/settings/ai"
+import {
+  AIChatPanelStyle,
+  setAIPanelVisibility,
+  useAIChatPanelStyle,
+  useAIPanelVisibility,
+} from "~/atoms/settings/ai"
 import { useUISettingKey } from "~/atoms/settings/ui"
 import { ShadowDOM } from "~/components/common/ShadowDOM"
 import type { TocRef } from "~/components/ui/markdown/components/Toc"
@@ -16,8 +21,7 @@ import { useInPeekModal } from "~/components/ui/modal/inspire/InPeekModal"
 import { readableContentMaxWidthClassName } from "~/constants/ui"
 import { useRenderStyle } from "~/hooks/biz/useRenderStyle"
 import type { TextSelectionEvent } from "~/lib/simple-text-selection"
-import { useBlockActions } from "~/modules/ai-chat/store/hooks"
-import { BlockSliceAction } from "~/modules/ai-chat/store/slices/block.slice"
+import { queueSelectedTextInsertion } from "~/modules/ai-chat/editor/plugins/selection/selectedTextBridge"
 import { EntryContentHTMLRenderer } from "~/modules/renderer/html"
 import { EntryContentMarkdownRenderer } from "~/modules/renderer/markdown"
 import { WrappedElementProvider } from "~/providers/wrapped-element-provider"
@@ -29,6 +33,7 @@ import { EntryRenderError } from "../entry-content/EntryRenderError"
 import { ReadabilityNotice } from "../entry-content/ReadabilityNotice"
 import { EntryAttachments } from "../EntryAttachments"
 import { EntryTitle } from "../EntryTitle"
+import { TextSelectionToolbar } from "../selection/TextSelectionToolbar"
 import { MediaTranscript, TranscriptToggle, useTranscription } from "./shared"
 import { ArticleAudioPlayer } from "./shared/AudioPlayer"
 import type { EntryLayoutProps } from "./types"
@@ -48,29 +53,43 @@ export const ArticleLayout: React.FC<EntryLayoutProps> = ({
   const feed = useFeedById(entry?.feedId)
   const isInbox = useIsInbox(entry?.inboxId)
   const [showTranscript, setShowTranscript] = useState(false)
+  const [textSelection, setTextSelection] = useState<TextSelectionEvent | null>(null)
 
   const { content } = useEntryContent(entryId)
   const customCSS = useUISettingKey("customCSS")
 
-  const { addOrUpdateBlock, removeBlock } = useBlockActions()
-  const handleTextSelect = useCallback(
-    (event: TextSelectionEvent) => {
-      addOrUpdateBlock({
-        id: BlockSliceAction.SPECIAL_TYPES.selectedText,
-        type: "selectedText",
-        value: event.selectedText,
-      })
-    },
-    [addOrUpdateBlock],
-  )
+  const handleTextSelect = useCallback((event: TextSelectionEvent) => {
+    setTextSelection(event)
+  }, [])
   const handleSelectionClear = useCallback(() => {
-    removeBlock(BlockSliceAction.SPECIAL_TYPES.selectedText)
-  }, [removeBlock])
+    setTextSelection(null)
+  }, [])
 
   const aiChatPanelStyle = useAIChatPanelStyle()
   const isAIPanelVisible = useAIPanelVisibility()
 
   const shouldShowAISummary = aiChatPanelStyle === AIChatPanelStyle.Floating || !isAIPanelVisible
+
+  const handleAskAI = useCallback(
+    (selectionEvent?: TextSelectionEvent) => {
+      const pendingSelection = selectionEvent ?? textSelection
+      if (!pendingSelection?.selectedText) return
+
+      queueSelectedTextInsertion({
+        text: pendingSelection.selectedText,
+        sourceEntryId: entryId,
+        timestamp: pendingSelection.timestamp,
+      })
+      setAIPanelVisibility(true)
+      handleSelectionClear()
+    },
+    [entryId, handleSelectionClear, textSelection],
+  )
+
+  useEffect(() => {
+    if (!showTranscript) return
+    handleSelectionClear()
+  }, [showTranscript, handleSelectionClear])
 
   if (!entry) return null
 
@@ -120,6 +139,12 @@ export const ArticleLayout: React.FC<EntryLayoutProps> = ({
             )}
           </ErrorBoundary>
         </div>
+        <TextSelectionToolbar
+          selection={textSelection}
+          onRequestClose={handleSelectionClear}
+          onAskAI={handleAskAI}
+          entryId={entryId}
+        />
       </WrappedElementProvider>
 
       <EntryAttachments entryId={entryId} />

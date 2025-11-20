@@ -10,7 +10,7 @@ import { useFeedById } from "@follow/store/feed/hooks"
 import { useIsLoggedIn, useWhoami } from "@follow/store/user/hooks"
 import { stopPropagation } from "@follow/utils/dom"
 import { clsx, cn, isBizId } from "@follow/utils/utils"
-import { useAtomValue } from "jotai"
+import { useAtom, useAtomValue } from "jotai"
 import type { FC } from "react"
 import { useCallback } from "react"
 import { useTranslation } from "react-i18next"
@@ -33,6 +33,7 @@ import { FeedIcon } from "~/modules/feed/feed-icon"
 import { useRefreshFeedMutation } from "~/queries/feed"
 import { useFeedHeaderIcon, useFeedHeaderTitle } from "~/store/feed/hooks"
 
+import { aiTimelineEnabledAtom } from "../atoms/ai-timeline"
 import { MarkAllReadButton } from "../components/mark-all-button"
 import { useIsPreviewFeed } from "../hooks/useIsPreviewFeed"
 import { useEntryRootState } from "../store/EntryColumnContext"
@@ -48,6 +49,7 @@ export const EntryListHeader: FC<{
   const { t } = useTranslation()
 
   const unreadOnly = useGeneralSettingKey("unreadOnly")
+  const [aiTimelineEnabled, setAiTimelineEnabled] = useAtom(aiTimelineEnabledAtom)
   const aiEnabled = useFeature("ai")
 
   const { feedId, entryId, view, isCollection } = routerParams
@@ -102,6 +104,37 @@ export const EntryListHeader: FC<{
   }, [sendAIShortcut])
   const showEntryHeader = isWideMode && !!entryId && entryId !== ROUTE_ENTRY_PENDING
   const showTimelineSummaryButton = isWideMode && aiEnabled
+  const showAiTimelineToggle = aiEnabled
+
+  const handleAiTimelineButtonClick = useCallback(() => {
+    setAiTimelineEnabled((prev) => !prev)
+  }, [setAiTimelineEnabled])
+
+  const renderAiTimelineButton = () => {
+    if (!showAiTimelineToggle) return null
+    return (
+      <ActionButton
+        tooltip={t("entry_list_header.ai_timeline")}
+        active={aiTimelineEnabled}
+        onClick={handleAiTimelineButtonClick}
+      >
+        {aiTimelineEnabled ? (
+          <i className="i-mgc-refresh-4-ai-cute-re text-purple-600 dark:text-purple-400" />
+        ) : (
+          <i className="i-mgc-refresh-4-ai-cute-re text-purple-600 dark:text-purple-400" />
+        )}
+      </ActionButton>
+    )
+  }
+
+  const renderTimelineSummaryButton = () => {
+    if (!showTimelineSummaryButton) return null
+    return (
+      <ActionButton tooltip={t("entry_list_header.timeline_summary")} onClick={summarizeTimeline}>
+        <i className="i-mgc-paint-brush-ai-cute-re text-purple-600 dark:text-purple-400" />
+      </ActionButton>
+    )
+  }
 
   return (
     <div
@@ -129,20 +162,21 @@ export const EntryListHeader: FC<{
             )}
             onClick={stopPropagation}
           >
-            {isWideMode && (showEntryHeader || showTimelineSummaryButton) && (
-              <>
-                {showEntryHeader && <EntryHeader entryId={entryId} />}
-                {showTimelineSummaryButton && (
-                  <ActionButton
-                    tooltip={t("entry_list_header.timeline_summary")}
-                    onClick={summarizeTimeline}
-                  >
-                    <i className="i-mgc-paint-brush-ai-cute-re text-purple-600 dark:text-purple-400" />
-                  </ActionButton>
-                )}
-                <DividerVertical className="mx-2 w-px" />
-              </>
-            )}
+            {isWideMode &&
+              (showEntryHeader || showTimelineSummaryButton || showAiTimelineToggle) && (
+                <>
+                  {showEntryHeader && <EntryHeader entryId={entryId} />}
+                  {(showAiTimelineToggle || showTimelineSummaryButton) && (
+                    <div className="flex items-center gap-2">
+                      {aiTimelineEnabled && renderAiTimelineButton()}
+                      {renderTimelineSummaryButton()}
+                    </div>
+                  )}
+                  <DividerVertical className="mx-2 w-px" />
+                </>
+              )}
+
+            {!isWideMode && aiTimelineEnabled && renderAiTimelineButton()}
 
             <AppendTaildingDivider>
               {view === FeedViewType.Pictures && <SwitchToMasonryButton />}

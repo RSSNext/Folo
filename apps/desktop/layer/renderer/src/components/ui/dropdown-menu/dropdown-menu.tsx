@@ -18,7 +18,7 @@ const styles = {
   } as React.CSSProperties,
   innerGlow: {
     background:
-      "linear-gradient(to bottom right, hsl(var(--fo-a) / 0.05), transparent, hsl(var(--fo-a) / 0.05))",
+      "linear-gradient(to bottom right, hsl(var(--fo-a) / 0.01), transparent, hsl(var(--fo-a) / 0.01))",
   } as React.CSSProperties,
 }
 

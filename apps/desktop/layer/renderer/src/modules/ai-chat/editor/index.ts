@@ -1,6 +1,6 @@
 import { LexicalRichEditorNodes } from "@follow/components/ui/lexical-rich-editor/nodes.js"
 
-import { FileAttachmentNode, MentionNode, ShortcutNode } from "./plugins"
+import { FileAttachmentNode, MentionNode, SelectedTextNode, ShortcutNode } from "./plugins"
 
 export * from "./plugins"
 
@@ -9,4 +9,5 @@ export const LexicalAIEditorNodes = [
   MentionNode,
   ShortcutNode,
   FileAttachmentNode,
+  SelectedTextNode,
 ]

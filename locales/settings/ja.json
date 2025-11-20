@@ -578,6 +578,7 @@
   "plan.features.MAX_SUBSCRIPTIONS": "フィードサブスクリプション",
   "plan.features.PRIORITY_SUPPORT": "優先サポート",
   "plan.features.PRIVATE_SUBSCRIPTION": "プライベートサブスクリプション",
+  "plan.features.SECURE_IMAGE_PROXY": "セキュア画像プロキシ",
   "privacy.privacy": "プライバシー",
   "privacy.terms": "利用規約",
   "profile.avatar.cropInstructions": "ドラッグしてトリミングエリアを調整します",

@@ -85,21 +85,23 @@ class AIChatSessionServiceStatic {
       force?: boolean
     },
   ): Promise<void> {
-    const [dbSession, hasPersistedMessages] = await Promise.all([
+    const [dbSession, hasPersistedMessages, needsMetadataBackfill] = await Promise.all([
       AIPersistService.getChatSession(session.chatId),
       AIPersistService.hasPersistedMessages(session.chatId),
+      AIPersistService.hasAssistantMessagesMissingMetadata(session.chatId),
     ])
 
     const lastUpdatedAt = dbSession ? dbSession.updatedAt : new Date(0)
     const hasUpToDateSession = lastUpdatedAt >= new Date(session.updatedAt)
 
-    if (!options?.force && hasUpToDateSession && hasPersistedMessages) {
+    if (!options?.force && hasUpToDateSession && hasPersistedMessages && !needsMetadataBackfill) {
       // If local session is already up-to-date, skip fetching messages
       return
     }
+    const referenceLastSeenAt = session.lastSeenAt ? new Date(session.lastSeenAt) : new Date(0)
     const unseenMessages = await this.fetchUnseenRemoteMessages(
       session.chatId,
-      new Date(session.lastSeenAt),
+      needsMetadataBackfill ? new Date(0) : referenceLastSeenAt,
     )
     const normalized = unseenMessages.map(this.normalizeRemoteMessage)
 

@@ -369,14 +369,6 @@ export const ModalInternal = memo(function Modal({
                   cursor: "grabbing",
                 }}
               >
-                {/* Inner glow layer */}
-                <div
-                  className="pointer-events-none absolute inset-0 rounded-xl"
-                  style={{
-                    background:
-                      "linear-gradient(to bottom right, hsl(var(--fo-a) / 0.05), transparent, hsl(var(--fo-a) / 0.05))",
-                  }}
-                />
                 <ResizeSwitch
                   // enable={resizableOnly("bottomRight")}
                   onResizeStart={handleResizeStart}

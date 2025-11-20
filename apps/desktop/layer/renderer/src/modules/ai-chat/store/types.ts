@@ -20,12 +20,7 @@ interface BaseContextBlock {
   disabled?: boolean
 }
 
-export type ValueContextBlockType =
-  | "mainView"
-  | "mainEntry"
-  | "mainFeed"
-  | "selectedText"
-  | "unreadOnly"
+export type ValueContextBlockType = "mainView" | "mainEntry" | "mainFeed" | "unreadOnly"
 export interface AbstractValueContextBlock<T extends string> extends BaseContextBlock {
   type: T
   value: string

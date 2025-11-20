@@ -1,13 +1,13 @@
 import { db } from "@follow/database/db"
 import type { AiChatMessagesModel } from "@follow/database/schemas/index"
 import { aiChatMessagesTable, aiChatTable } from "@follow/database/schemas/index"
-import { asc, eq, inArray, sql } from "drizzle-orm"
+import { and, asc, eq, inArray, isNull, sql } from "drizzle-orm"
 
 import { getI18n } from "~/i18n"
 import { followClient } from "~/lib/api-client"
 
 import { AI_CHAT_SPECIAL_ID_PREFIX } from "../constants"
-import type { BizUIMessage, BizUIMessagePart } from "../store/types"
+import type { BizUIMessage, BizUIMessagePart, BizUIMetadata } from "../store/types"
 import { isDataBlockPart, isFileAttachmentBlock } from "../utils/extractor"
 
 class AIPersistServiceStatic {
@@ -49,6 +49,21 @@ class AIPersistServiceStatic {
     return Boolean(existingMessage?.id === chatId)
   }
 
+  async hasAssistantMessagesMissingMetadata(chatId: string): Promise<boolean> {
+    const missingMetadataMessage = await db.query.aiChatMessagesTable.findFirst({
+      where: and(
+        eq(aiChatMessagesTable.chatId, chatId),
+        eq(aiChatMessagesTable.role, "assistant"),
+        isNull(aiChatMessagesTable.metadata),
+      ),
+      columns: {
+        id: true,
+      },
+    })
+
+    return Boolean(missingMetadataMessage?.id)
+  }
+
   /**
    * Convert enhanced database message to BizUIMessage format for compatibility
    */
@@ -58,6 +73,7 @@ class AIPersistServiceStatic {
       role: dbMessage.role,
       createdAt: dbMessage.createdAt,
       parts: [],
+      metadata: (dbMessage.metadata ?? undefined) as BizUIMetadata | undefined,
     }
 
     if (dbMessage.messageParts && dbMessage.messageParts.length > 0) {

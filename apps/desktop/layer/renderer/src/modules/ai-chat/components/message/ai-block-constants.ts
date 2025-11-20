@@ -20,11 +20,6 @@ export const BLOCK_STYLES = {
     icon: "bg-orange/10 text-orange",
     label: "text-orange",
   },
-  selectedText: {
-    container: "from-purple/5 to-purple/10 border-purple/20 hover:border-purple/30",
-    icon: "bg-purple/10 text-purple",
-    label: "text-purple",
-  },
   fileAttachment: {
     container: "from-pink/5 to-pink/10 border-pink/20 hover:border-pink/30",
     icon: "bg-pink/10 text-pink",
@@ -52,7 +47,6 @@ export const DEFAULT_BLOCK_STYLES = {
 export const BLOCK_ICONS = {
   mainEntry: "i-mgc-star-cute-fi",
   mainFeed: "i-mgc-rss-cute-fi",
-  selectedText: "i-mgc-quill-pen-cute-re",
   fileAttachment: "i-mgc-file-upload-cute-re",
   unreadOnly: "i-mgc-round-cute-fi",
 } as const
@@ -63,7 +57,6 @@ export const BLOCK_ICONS = {
 export const BLOCK_LABELS = {
   mainEntry: "Current",
   mainFeed: "Current",
-  selectedText: "Text",
   fileAttachment: "File",
   mainView: "View",
   unreadOnly: "Filter",

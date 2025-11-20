@@ -137,7 +137,7 @@ const Content: FC<{
 
       const elementTop = element.offsetTop
       const scrollerTop = scroller.scrollTop
-      const delta = elementTop - scrollerTop
+      const delta = elementTop - scrollerTop - 20
 
       scroller.scrollTo({
         top: delta,

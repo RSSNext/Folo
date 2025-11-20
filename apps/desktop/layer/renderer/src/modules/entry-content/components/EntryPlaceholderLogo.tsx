@@ -4,14 +4,16 @@ import {
   DEFAULT_SUMMARIZE_TIMELINE_SHORTCUT_ID,
 } from "@follow/shared/settings/defaults"
 import { stopPropagation } from "@follow/utils/dom"
+import { useSetAtom } from "jotai"
 import { useCallback } from "react"
-import { toast } from "sonner"
 
 import { useSendAIShortcut } from "~/modules/ai-chat/hooks/useSendAIShortcut"
+import { aiTimelineEnabledAtom } from "~/modules/entry-column/atoms/ai-timeline"
 import { useSettingModal } from "~/modules/settings/modal/use-setting-modal-hack"
 
 export const EntryPlaceholderLogo = () => {
   const { sendAIShortcut } = useSendAIShortcut()
+  const setAiTimelineEnabled = useSetAtom(aiTimelineEnabledAtom)
   const settingModalPresent = useSettingModal()
   const handleSummarizeTimeline = useCallback(() => {
     void sendAIShortcut({
@@ -25,6 +27,9 @@ export const EntryPlaceholderLogo = () => {
       ensureNewChat: true,
     })
   }, [sendAIShortcut])
+  const handleToggleAiTimeline = useCallback(() => {
+    setAiTimelineEnabled((prev) => !prev)
+  }, [setAiTimelineEnabled])
 
   const buttons = [
     {
@@ -39,9 +44,7 @@ export const EntryPlaceholderLogo = () => {
     },
     {
       label: "Sort the timeline by importance",
-      onClick: () => {
-        toast.success("Coming soon!")
-      },
+      onClick: handleToggleAiTimeline,
       icon: <i className="i-mgc-refresh-4-ai-cute-re text-base" />,
     },
     {

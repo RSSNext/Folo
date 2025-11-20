@@ -9,6 +9,10 @@ export interface AIConfigLike {
   freeQuota?: FreeQuota
 }
 
+export interface RateLimitMessageOptions {
+  hideResetDetails?: boolean
+}
+
 const formatResetTime = (windowResetTime: Date) => {
   const i18n = getI18n()
   const { t } = i18n
@@ -56,9 +60,11 @@ export function computeIsRateLimited(
 export function computeRateLimitMessage(
   error: Error | string | undefined,
   configuration?: AIConfigLike | null,
+  options?: RateLimitMessageOptions,
 ): string | null {
   const i18n = getI18n()
   const { t } = i18n
+  const hideResetDetails = options?.hideResetDetails ?? false
 
   const aiNs = { ns: "ai" } as const
   if (error) {
@@ -84,7 +90,7 @@ export function computeRateLimitMessage(
         parts.push(t("rate_limit.upgrade_to_get_more", aiNs))
       }
 
-      if (resetText) {
+      if (resetText && !hideResetDetails) {
         parts.push(resetText)
       }
 
@@ -101,11 +107,12 @@ export function computeRateLimitMessage(
     const monthly = configuration.freeQuota.remainingMonthlyRequests
     if (!daily || !monthly) {
       const parts: string[] = []
-      parts.push(t("rate_limit.depleted", aiNs))
-      if (!daily && monthly) {
-        parts.push(t("rate_limit.resets_tomorrow", aiNs))
-      } else {
-        parts.push(t("rate_limit.resets_next_month", aiNs))
+      if (!hideResetDetails) {
+        if (!daily && monthly) {
+          parts.push(t("rate_limit.resets_tomorrow", aiNs))
+        } else {
+          parts.push(t("rate_limit.resets_next_month", aiNs))
+        }
       }
       parts.push(t("rate_limit.upgrade_to_get_more", aiNs))
       return parts.join(" · ")
@@ -124,7 +131,7 @@ export function computeRateLimitMessage(
     } else {
       parts.push(t("rate_limit.credits_left", { ns: "ai", count: remaining }))
     }
-    if (formattedResetText) {
+    if (formattedResetText && !hideResetDetails) {
       parts.push(formattedResetText)
     }
     if (parts.length < 2) {

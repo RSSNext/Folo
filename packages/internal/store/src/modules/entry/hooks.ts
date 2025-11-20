@@ -63,6 +63,7 @@ export const useEntriesQuery = (
     isCollection,
     unreadOnly,
     hidePrivateSubscriptionsInTimeline,
+    aiSort,
   } = props || {}
 
   const fetchUnread = unreadOnly
@@ -82,6 +83,7 @@ export const useEntriesQuery = (
       isCollection,
       unreadOnly,
       hidePrivateSubscriptionsInTimeline,
+      aiSort,
     ],
     [
       feedId,
@@ -93,6 +95,7 @@ export const useEntriesQuery = (
       isCollection,
       unreadOnly,
       hidePrivateSubscriptionsInTimeline,
+      aiSort,
     ],
   )
 
@@ -101,12 +104,13 @@ export const useEntriesQuery = (
     queryFn: ({ pageParam }) =>
       entrySyncServices.fetchEntries({
         ...props,
+        limit: aiSort ? 100 : limit,
         pageParam,
         read: unreadOnly ? false : undefined,
         excludePrivate: hidePrivateSubscriptionsInTimeline,
       }),
 
-    getNextPageParam: (lastPage) => lastPage.data?.at(-1)?.entries.publishedAt,
+    getNextPageParam: (lastPage) => (aiSort ? null : lastPage.data?.at(-1)?.entries.publishedAt),
     initialPageParam: undefined as undefined | string,
     refetchOnWindowFocus: false,
     refetchOnReconnect: false,
@@ -213,6 +217,37 @@ export const useEntryIdsByCategory = (category: string) => {
 
 export const useEntryIdsByListId = (listId: string | undefined) => {
   return useEntryStore(useCallback((state) => getEntryIdsByListIdSelector(state)(listId), [listId]))
+}
+
+export const useEntryTagsQuery = ({
+  feedId,
+  tag,
+  match = "any",
+  withContent,
+}: {
+  feedId?: string | null
+  tag?: { kind: "schemaOrgCategory" | "mediaTopic"; value: string }
+  match?: "any" | "all"
+  withContent?: boolean
+}) => {
+  const schemaOrgCategories = tag?.kind === "schemaOrgCategory" ? [tag.value] : undefined
+  const mediaTopics = tag?.kind === "mediaTopic" ? [tag.value] : undefined
+
+  return useQuery({
+    queryKey: ["entry-tags", feedId, tag?.kind, tag?.value, match, withContent],
+    enabled: !!feedId && !!tag?.value,
+    queryFn: () =>
+      entrySyncServices.fetchEntriesByTags({
+        feedId: feedId ?? undefined,
+        match,
+        tags: {
+          schemaOrgCategories,
+          mediaTopics,
+        },
+        withContent,
+      }),
+    select: (res) => res.data?.map((entry) => entry.entries.id) ?? [],
+  })
 }
 
 export const useEntryIsInbox = (entryId: string) => {

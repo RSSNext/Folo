@@ -27,7 +27,7 @@ import { COMMAND_ID } from "~/modules/command/commands/id"
 import { getCommand, useRunCommandFn } from "~/modules/command/hooks/use-command"
 import { useCommandShortcuts } from "~/modules/command/hooks/use-command-binding"
 import { isMutationCommandId } from "~/modules/command/mutation-command-ids"
-import type { FollowCommandId } from "~/modules/command/types"
+import type { FollowCommandId, UnknownCommand } from "~/modules/command/types"
 import { useToolbarOrderMap } from "~/modules/customize-toolbar/hooks"
 
 import { useRouteParams } from "./useRouteParams"
@@ -446,7 +446,7 @@ export const useEntryActions = ({ entryId, view }: { entryId: string; view: Feed
             onClick: runCmdFn(COMMAND_ID.integration.custom, [{ entryId }]),
             entryId,
             children: enabledIntegrations.map((integration) => {
-              const virtualId = `integration:custom:${integration.id}` as FollowCommandId
+              const virtualId = `integration:custom:${integration.id}` as UnknownCommand["id"]
               return new EntryActionMenuItem({
                 id: virtualId,
                 onClick: () => {

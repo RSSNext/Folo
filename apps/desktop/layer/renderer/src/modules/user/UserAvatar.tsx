@@ -5,7 +5,7 @@ import { getColorScheme, stringToHue } from "@follow/utils/color"
 import { cn } from "@follow/utils/utils"
 
 import { useServerConfigs } from "~/atoms/server-configs"
-import { replaceImgUrlIfNeed } from "~/lib/img-proxy"
+import { useReplaceImgUrlIfNeed } from "~/lib/img-proxy"
 import { usePresentUserProfileModal } from "~/modules/profile/hooks"
 
 import type { LoginProps } from "./LoginButton"
@@ -29,6 +29,7 @@ export const UserAvatar = ({
   enableModal?: boolean
 } & LoginProps &
   React.HTMLAttributes<HTMLDivElement> & { ref?: React.Ref<HTMLDivElement | null> }) => {
+  const replaceImgUrlIfNeed = useReplaceImgUrlIfNeed()
   const serverConfig = useServerConfigs()
   const whoami = useWhoami()
   const role = useUserRole()

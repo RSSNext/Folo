@@ -1,4 +1,6 @@
 import { autoBindThis } from "@follow/utils/bind-this"
+import { createDesktopAPIHeaders } from "@follow/utils/headers"
+import PKG from "@pkg"
 import type { ChatRequestOptions, ChatStatus } from "ai"
 import { merge } from "es-toolkit/compat"
 import { nanoid } from "nanoid"
@@ -217,6 +219,7 @@ export class ChatSliceActions {
       const finalOptions = merge(
         {
           body: { scene: this.get().scene },
+          headers: createDesktopAPIHeaders({ version: PKG.version }),
         },
         options,
       )
