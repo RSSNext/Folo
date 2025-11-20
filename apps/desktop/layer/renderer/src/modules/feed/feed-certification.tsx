@@ -11,7 +11,7 @@ import { useUserById, useWhoami } from "@follow/store/user/hooks"
 import { cn } from "@follow/utils/utils"
 import { useTranslation } from "react-i18next"
 
-import { replaceImgUrlIfNeed } from "~/lib/img-proxy"
+import { useReplaceImgUrlIfNeed } from "~/lib/img-proxy"
 import { usePresentUserProfileModal } from "~/modules/profile/hooks"
 
 export const FeedCertification = ({
@@ -76,6 +76,7 @@ export const FeedCertification = ({
 }
 
 const FeedCertificateAvatar = ({ userId }: { userId: string }) => {
+  const replaceImgUrlIfNeed = useReplaceImgUrlIfNeed()
   const user = useUserById(userId)
   const presentUserProfile = usePresentUserProfileModal("drawer")
   if (!user) return null

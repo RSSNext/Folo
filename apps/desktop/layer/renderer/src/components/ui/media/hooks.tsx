@@ -1,8 +1,6 @@
 import { isMobile } from "@follow/components/hooks/useMobile.js"
 import { use, useCallback } from "react"
 
-import { replaceImgUrlIfNeed } from "~/lib/img-proxy"
-
 import { PlainModal } from "../modal/stacked/custom-modal"
 import { useModalStack } from "../modal/stacked/hooks"
 import { MediaContainerWidthContext } from "./MediaContainerWidthContext"
@@ -17,7 +15,7 @@ export const usePreviewMedia = (children?: React.ReactNode) => {
         return
       }
       if (isMobile()) {
-        window.open(replaceImgUrlIfNeed(media[initialIndex]!.url))
+        window.open(media[initialIndex]!.url)
         return
       }
       present({
