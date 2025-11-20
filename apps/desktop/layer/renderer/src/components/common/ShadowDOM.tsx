@@ -4,16 +4,7 @@ import { getAccentColorValue } from "@follow/shared/settings/constants"
 import { hexToHslString } from "@follow/utils"
 import { nanoid } from "nanoid"
 import type { FC, PropsWithChildren, ReactNode } from "react"
-import {
-  createContext,
-  createElement,
-  use,
-  useCallback,
-  useLayoutEffect,
-  useMemo,
-  useRef,
-  useState,
-} from "react"
+import { createContext, createElement, use, useLayoutEffect, useMemo, useState } from "react"
 import root from "react-shadow"
 
 import { useUISettingKeys } from "~/atoms/settings/ui"
@@ -87,15 +78,16 @@ export const ShadowDOM: FC<
     injectHostStyles ? cloneStylesElement() : [],
   )
 
-  const shadowRootRef = useRef<ShadowRoot | null>(null)
+  const [el, setEl] = useState<{ shadowRoot: ShadowRoot } | null>(null)
 
   useLayoutEffect(() => {
-    if (!textSelectionEnabled || !shadowRootRef.current || !onTextSelect) return
+    if (!el) return
+    const { shadowRoot } = el
 
-    const cleanup = addTextSelectionListener(shadowRootRef.current, onTextSelect, onSelectionClear)
+    if (!textSelectionEnabled || !shadowRoot || !onTextSelect) return
 
-    return cleanup
-  }, [textSelectionEnabled, onTextSelect, onSelectionClear])
+    return addTextSelectionListener(shadowRoot, onTextSelect, onSelectionClear)
+  }, [textSelectionEnabled, onTextSelect, onSelectionClear, el])
 
   useLayoutEffect(() => {
     if (!injectHostStyles) return
@@ -123,14 +115,7 @@ export const ShadowDOM: FC<
 
   return (
     // @ts-expect-error
-    <root.div
-      {...rest}
-      ref={useCallback((element) => {
-        if (element) {
-          shadowRootRef.current = element.shadowRoot
-        }
-      }, [])}
-    >
+    <root.div {...rest} ref={setEl}>
       <ShadowDOMContext value={true}>
         <div
           style={useMemo(
