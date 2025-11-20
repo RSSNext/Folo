@@ -2,9 +2,35 @@
 
 ## Shiny new things
 
-- Onboarding: Re-designed the onboarding flow
-- AI:
-  - Supports BYOK (Bring Your Own Key)
-  - AI Memory tool has been improved, now can update your past memories
-- UI:
-  - The design system of some UI components has been improved
+- **AI**
+  - Added **BYOK (Bring Your Own Key)** support — choose your own AI provider freely.
+  - Improved **AI Memory**: you can now update or refine past memories whenever you need.
+  - Reduced the “guiding tone” in **AI Summary** so summaries feel more natural and personal.
+  - Introduced **AI Timeline Sort (Beta)**: your timeline can now rearrange itself based on your reading preferences.
+
+- **UI**
+  - Several UI components have been refined with an improved design system for a cleaner, more consistent feel.
+
+- **Subscription**
+  - Added a new **Basic Plan (non-AI version)** for users who prefer a lighter subscription option.
+
+- **Selection**
+  - Added **underline sharing** and **Ask AI** directly from selected text to make reading actions smoother.
+
+## Improvements
+
+- **Feed**
+  - RSSHub subscriptions now include a clear identifier, making source management easier.
+
+- **Web**
+  - You can now browse recommended content without logging in — explore before committing.
+
+- **Onboarding**
+  - The onboarding flow has been fully redesigned for a smoother, more intuitive first-time experience.
+
+- **Entry**
+  - Entries now come with AI-generated labels to help you sort and revisit content effortlessly.
+
+## No longer broken
+
+We fixed several bugs to make everything feel more stable and reliable.
