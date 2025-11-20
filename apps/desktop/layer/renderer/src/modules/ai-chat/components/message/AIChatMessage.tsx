@@ -129,16 +129,14 @@ export const AIChatMessage: React.FC<AIChatMessageProps> = React.memo(
                 <span>Copy</span>
               </button>
 
-              {message.metadata && (
-                <TokenUsagePill metadata={message.metadata}>
-                  <button
-                    type="button"
-                    className="absolute right-0 flex items-center gap-1 rounded-md px-2 py-1 text-xs text-text-secondary transition-colors hover:bg-fill-tertiary"
-                  >
-                    <i className="i-mgc-information-cute-re size-3" />
-                  </button>
-                </TokenUsagePill>
-              )}
+              <TokenUsagePill metadata={originalMessage.metadata}>
+                <button
+                  type="button"
+                  className="absolute right-0 flex items-center gap-1 rounded-md px-2 py-1 text-xs text-text-secondary transition-colors hover:bg-fill-tertiary"
+                >
+                  <i className="i-mgc-information-cute-re size-3" />
+                </button>
+              </TokenUsagePill>
             </div>
           )}
           <div className="h-6" />

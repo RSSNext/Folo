@@ -9,7 +9,7 @@ packages:
 
 catalog:
   "@follow-app/client-sdk": 0.3.92
-  "@folo-services/ai-tools": 0.2.63
+  "@folo-services/ai-tools": 0.2.65
   tailwindcss-uikit-colors: 1.0.0
   typescript: 5.9.3
 
