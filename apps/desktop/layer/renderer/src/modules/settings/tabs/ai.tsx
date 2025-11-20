@@ -9,6 +9,7 @@ import { ByokSection } from "./ai/byok"
 import { MCPServicesSection } from "./ai/mcp/MCPServicesSection"
 import { UserMemorySection } from "./ai/memory"
 import { PanelStyleSection } from "./ai/PanelStyleSection"
+import { PersonalizePromptSection } from "./ai/PersonalizePromptSection"
 import { AIShortcutsSection } from "./ai/shortcuts/AIShortcutsSection"
 import { TaskSchedulingSection } from "./ai/tasks"
 import { UsageAnalysisSection } from "./ai/usage"
@@ -48,6 +49,8 @@ export const SettingAI = () => {
             type: "title",
             value: t("personalize.title"),
           },
+
+          PersonalizePromptSection,
 
           {
             type: "title",
