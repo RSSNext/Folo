@@ -143,6 +143,7 @@ export const ArticleLayout: React.FC<EntryLayoutProps> = ({
             )}
           </ErrorBoundary>
         </div>
+
         <TextSelectionToolbar
           selection={textSelection}
           onRequestClose={handleSelectionClear}
