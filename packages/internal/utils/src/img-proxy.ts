@@ -1,8 +1,7 @@
 export const IMAGE_PROXY_URL = "https://webp.follow.is"
 
 const canUseImageProxy = (userRole?: string | null): boolean => {
-  if (!userRole) return false
-  return userRole === "plus" || userRole === "pro"
+  return userRole === "plus" || userRole === "pro" || userRole === "basic" || !userRole
 }
 
 export const imageRefererMatches = [
