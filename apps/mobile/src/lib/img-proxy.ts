@@ -1,23 +1,22 @@
-import { role as getUserRole } from "@follow/store/user/getters"
 import {
   getImageProxyUrl as getImageProxyUrlUtils,
   replaceImgUrlIfNeed as replaceImgUrlIfNeedUtils,
 } from "@follow/utils/img-proxy"
 
 export const getImageProxyUrl = (
-  params: Omit<Parameters<typeof getImageProxyUrlUtils>[0], "userRole">,
+  params: Omit<Parameters<typeof getImageProxyUrlUtils>[0], "canUseProxy">,
 ) => {
   return getImageProxyUrlUtils({
     ...params,
-    userRole: getUserRole(),
+    canUseProxy: true,
   })
 }
 
 export const replaceImgUrlIfNeed = (
-  params: Omit<Parameters<typeof replaceImgUrlIfNeedUtils>[0], "userRole">,
+  params: Omit<Parameters<typeof replaceImgUrlIfNeedUtils>[0], "canUseProxy">,
 ) => {
   return replaceImgUrlIfNeedUtils({
     ...params,
-    userRole: getUserRole(),
+    canUseProxy: true,
   })
 }

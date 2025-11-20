@@ -28,6 +28,7 @@ const getFeedIconSrc = ({
           url: src,
           width: proxy.width,
           height: proxy.height,
+          canUseProxy: true,
         }),
         "",
       ]

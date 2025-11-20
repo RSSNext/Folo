@@ -18,7 +18,7 @@ import { m } from "~/components/common/Motion"
 import { GlassButton } from "~/components/ui/button/GlassButton"
 import { COPY_MAP } from "~/constants"
 import { ipcServices } from "~/lib/client"
-import { replaceImgUrlIfNeed } from "~/lib/img-proxy"
+import { useReplaceImgUrlIfNeed } from "~/lib/img-proxy"
 
 import { useCurrentModal } from "../modal/stacked/hooks"
 import type { VideoPlayerRef } from "./VideoPlayer"
@@ -421,6 +421,7 @@ const FallbackableImage: FC<
     onZoomChange?: (isZoomed: boolean) => void
   }
 > = ({ src, fallbackUrl, containerClassName, onZoomChange, loading }) => {
+  const replaceImgUrlIfNeed = useReplaceImgUrlIfNeed()
   const [currentSrc, setCurrentSrc] = useState(() => replaceImgUrlIfNeed(src))
   const [isAllError, setIsAllError] = useState(false)
 

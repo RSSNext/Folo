@@ -4,7 +4,7 @@ import { useMemo } from "react"
 
 import { usePreviewMedia } from "~/components/ui/media/hooks"
 import { Media } from "~/components/ui/media/Media"
-import { getImageProxyUrl } from "~/lib/img-proxy"
+import { useGetImageProxyUrl } from "~/lib/img-proxy"
 import { jotaiStore } from "~/lib/jotai"
 
 import { socialMediaContentWidthAtom } from "../atoms/social-media-content-width"
@@ -16,6 +16,7 @@ export const MediaGallery = ({
   entryId: string
   containerWidth?: number
 }) => {
+  const getImageProxyUrl = useGetImageProxyUrl()
   const entry = useEntry(entryId, (state) => ({ media: state.media }))
   const media = useMemo(() => entry?.media || [], [entry?.media])
 
