@@ -107,7 +107,6 @@ export function computeRateLimitMessage(
     const monthly = configuration.freeQuota.remainingMonthlyRequests
     if (!daily || !monthly) {
       const parts: string[] = []
-      parts.push(t("rate_limit.depleted", aiNs))
       if (!hideResetDetails) {
         if (!daily && monthly) {
           parts.push(t("rate_limit.resets_tomorrow", aiNs))
