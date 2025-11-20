@@ -38,7 +38,8 @@ const ViewTag = IN_ELECTRON ? "webview" : "iframe"
 
 const entrySelector = (state: EntryModel) => {
   /// keep-sorted
-  const { authorAvatar, authorUrl, description, feedId, inboxHandle, publishedAt, title } = state
+  const { authorAvatar, authorUrl, description, feedId, inboxHandle, publishedAt, tags, title } =
+    state
 
   const audios = state.attachments?.filter((a) => a.mime_type?.startsWith("audio") && a.url)
   const video = transformVideoUrl({
@@ -62,6 +63,7 @@ const entrySelector = (state: EntryModel) => {
     firstPhotoUrl,
     inboxId: inboxHandle,
     publishedAt,
+    tags: tags ?? null,
     title,
     video,
   }

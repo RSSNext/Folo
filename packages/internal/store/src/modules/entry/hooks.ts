@@ -219,6 +219,37 @@ export const useEntryIdsByListId = (listId: string | undefined) => {
   return useEntryStore(useCallback((state) => getEntryIdsByListIdSelector(state)(listId), [listId]))
 }
 
+export const useEntryTagsQuery = ({
+  feedId,
+  tag,
+  match = "any",
+  withContent,
+}: {
+  feedId?: string | null
+  tag?: { kind: "schemaOrgCategory" | "mediaTopic"; value: string }
+  match?: "any" | "all"
+  withContent?: boolean
+}) => {
+  const schemaOrgCategories = tag?.kind === "schemaOrgCategory" ? [tag.value] : undefined
+  const mediaTopics = tag?.kind === "mediaTopic" ? [tag.value] : undefined
+
+  return useQuery({
+    queryKey: ["entry-tags", feedId, tag?.kind, tag?.value, match, withContent],
+    enabled: !!feedId && !!tag?.value,
+    queryFn: () =>
+      entrySyncServices.fetchEntriesByTags({
+        feedId: feedId ?? undefined,
+        match,
+        tags: {
+          schemaOrgCategories,
+          mediaTopics,
+        },
+        withContent,
+      }),
+    select: (res) => res.data?.map((entry) => entry.entries.id) ?? [],
+  })
+}
+
 export const useEntryIsInbox = (entryId: string) => {
   return useEntryStore(useCallback((state) => getEntryIsInboxSelector(state)(entryId), [entryId]))
 }

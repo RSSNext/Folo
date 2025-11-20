@@ -9,7 +9,10 @@ class DbStoreMorph {
   }
 
   toEntryModel(entry: EntrySchema): EntryModel {
-    return entry
+    return {
+      ...entry,
+      tags: entry.tags ?? null,
+    }
   }
 }
 

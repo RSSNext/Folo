@@ -17,6 +17,7 @@ import type { FeedIconEntry } from "~/modules/feed/feed-icon"
 import { FeedIcon } from "~/modules/feed/feed-icon"
 import { getPreferredTitle } from "~/store/feed/hooks"
 
+import { EntryTags } from "../../entry/EntryTags"
 import { EntryTranslation } from "../../entry-column/translation"
 import { EntryReadHistory } from "./entry-read-history"
 
@@ -37,7 +38,8 @@ export const EntryTitle = ({
     entryId,
     useShallow((state) => {
       /// keep-sorted
-      const { author, authorAvatar, authorUrl, feedId, inboxHandle, publishedAt, title } = state
+      const { author, authorAvatar, authorUrl, feedId, inboxHandle, publishedAt, tags, title } =
+        state
 
       const attachments = state.attachments || []
       const { duration_in_seconds } =
@@ -59,6 +61,7 @@ export const EntryTitle = ({
         firstPhotoUrl,
         inboxId: inboxHandle,
         publishedAt,
+        tags: tags ?? null,
         title,
       }
     }),
@@ -183,6 +186,7 @@ export const EntryTitle = ({
             )}
           </div>
         </div>
+        <EntryTags tags={entry.tags} feedId={entry.feedId} className="mt-1" />
         {/* Recent Readers */}
         {!noRecentReader && !hideRecentReader && <EntryReadHistory entryId={entryId} />}
       </div>

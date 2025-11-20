@@ -253,6 +253,13 @@
       "when": 1761930812297,
       "tag": "0035_last_valeria_richards",
       "breakpoints": true
+    },
+    {
+      "idx": 36,
+      "version": "6",
+      "when": 1761930812300,
+      "tag": "0036_entry_tag_summary",
+      "breakpoints": true
     }
   ]
 }

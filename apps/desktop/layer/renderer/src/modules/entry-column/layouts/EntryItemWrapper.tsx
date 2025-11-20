@@ -41,6 +41,7 @@ export const EntryItemWrapper: FC<
 > = ({ entryId, view, children, itemClassName, style, isFirstItem }) => {
   const entry = useEntry(entryId, (state) => {
     const { feedId, inboxHandle } = state
+
     const { id, url } = state
     return { feedId, id, inboxId: inboxHandle, url }
   })
