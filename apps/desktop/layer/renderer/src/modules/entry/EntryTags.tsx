@@ -62,12 +62,12 @@ const TagEntriesModal = ({ tag, feedId }: { tag: TagItem; feedId?: string | null
       </div>
 
       {isLoading ? (
-        <div className="space-y-2">
+        <div className="h-[70vh] space-y-2">
           <EntryItemSkeleton view={FeedViewType.All} count={3} />
         </div>
       ) : entryIds.length === 0 ? (
-        <div className="flex flex-col items-center justify-center gap-2 py-6 text-sm text-text-secondary">
-          <i className="i-mgc-inbox-cute-re text-xl" />
+        <div className="flex h-[70vh] flex-col items-center justify-center gap-2 py-6 text-sm text-text-secondary">
+          <i className="i-mgc-inbox-cute-re text-3xl" />
           <span>No entries found for this tag.</span>
         </div>
       ) : (
