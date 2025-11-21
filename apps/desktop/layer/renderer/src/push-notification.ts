@@ -1,4 +1,5 @@
 import { env } from "@follow/shared/env.desktop"
+import { whoami } from "@follow/store/user/getters"
 import { initializeApp } from "firebase/app"
 import { getMessaging, getToken } from "firebase/messaging"
 
@@ -13,6 +14,10 @@ export async function registerWebPushNotifications() {
     return
   }
   try {
+    const user = whoami()
+    if (!user) {
+      return
+    }
     const actions = await followClient.api.actions.get()
     const rules = actions.data?.rules
     const hasPushNotificationRule = rules?.some(
