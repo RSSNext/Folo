@@ -235,7 +235,7 @@ export const useEntryTagsQuery = ({
 
   return useQuery({
     queryKey: ["entry-tags", feedId, tag?.kind, tag?.value, match, withContent],
-    enabled: !!feedId && !!tag?.value,
+    enabled: !!tag?.value,
     queryFn: () =>
       entrySyncServices.fetchEntriesByTags({
         feedId: feedId ?? undefined,

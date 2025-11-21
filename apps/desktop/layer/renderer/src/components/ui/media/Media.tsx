@@ -143,7 +143,7 @@ const MediaImpl: FC<MediaProps> = ({
       })
     }
     return previewImageUrl
-  }, [previewImageUrl, proxy, currentSource?.type])
+  }, [previewImageUrl, proxy, currentSource?.type, getImageProxyUrl])
 
   // When image source list changes, reset to the first source
   const prevImageSources = useRef(imageSources)
@@ -306,21 +306,22 @@ const MediaImpl: FC<MediaProps> = ({
       }
     }
   }, [
-    errorHandle,
-    handleClick,
-    handleOnLoad,
-    imgSrc,
-    mediaContainerClassName,
+    type,
+    rest,
     finalHeight,
     finalWidth,
-    mediaLoadState,
-    popper,
-    previewImageSrc,
-    rest,
-    src,
-    thumbnail,
-    type,
+    errorHandle,
     inline,
+    popper,
+    mediaLoadState,
+    mediaContainerClassName,
+    imgSrc,
+    handleOnLoad,
+    handleClick,
+    src,
+    previewImageSrc,
+    thumbnail,
+    videoClassName,
   ])
 
   if (!type || !src) return null

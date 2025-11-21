@@ -17,7 +17,6 @@ import { Media } from "~/components/ui/media/Media"
 import { FEED_COLLECTION_LIST } from "~/constants"
 import { useEntryIsRead } from "~/hooks/biz/useAsRead"
 import { useRouteParamsSelector } from "~/hooks/biz/useRouteParams"
-import { EntryTags } from "~/modules/entry/EntryTags"
 import { EntryTranslation } from "~/modules/entry-column/translation"
 import type { FeedIconEntry } from "~/modules/feed/feed-icon"
 import { FeedIcon } from "~/modules/feed/feed-icon"
@@ -241,7 +240,6 @@ export function ListItem({
             />
           </div>
         )}
-        <EntryTags tags={entry.tags} feedId={entry.feedId} size="sm" className="mt-1" />
       </div>
 
       {hasAudio && entry.firstAudio && (

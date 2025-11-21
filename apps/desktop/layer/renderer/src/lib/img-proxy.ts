@@ -4,6 +4,7 @@ import {
   getImageProxyUrl as getImageProxyUrlUtils,
   replaceImgUrlIfNeed as replaceImgUrlIfNeedUtils,
 } from "@follow/utils/img-proxy"
+import { useCallback } from "react"
 
 import { useServerConfigs } from "~/atoms/server-configs"
 
@@ -19,22 +20,28 @@ export const useCanUseImageProxy = () => {
 export const useReplaceImgUrlIfNeed = () => {
   const canUseProxy = useCanUseImageProxy()
 
-  return (url?: string) => {
-    return replaceImgUrlIfNeedUtils({
-      url,
-      inBrowser: WEB_BUILD,
-      canUseProxy,
-    })
-  }
+  return useCallback(
+    (url?: string) => {
+      return replaceImgUrlIfNeedUtils({
+        url,
+        inBrowser: WEB_BUILD,
+        canUseProxy,
+      })
+    },
+    [canUseProxy],
+  )
 }
 
 export const useGetImageProxyUrl = () => {
   const canUseProxy = useCanUseImageProxy()
 
-  return (params: Omit<Parameters<typeof getImageProxyUrlUtils>[0], "canUseProxy">) => {
-    return getImageProxyUrlUtils({
-      canUseProxy,
-      ...params,
-    })
-  }
+  return useCallback(
+    (params: Omit<Parameters<typeof getImageProxyUrlUtils>[0], "canUseProxy">) => {
+      return getImageProxyUrlUtils({
+        canUseProxy,
+        ...params,
+      })
+    },
+    [canUseProxy],
+  )
 }

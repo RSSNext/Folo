@@ -1,10 +1,11 @@
-import { Button } from "@follow/components/ui/button/index.js"
 import { ScrollArea } from "@follow/components/ui/scroll-area/ScrollArea.js"
+import { SegmentGroup, SegmentItem } from "@follow/components/ui/segment/index.js"
 import { FeedViewType } from "@follow/constants"
 import type { EntryTagSummary } from "@follow/database/schemas/types"
 import { useEntryTagsQuery } from "@follow/store/entry/hooks"
 import { cn } from "@follow/utils"
-import { useMemo } from "react"
+import { useMemo, useState } from "react"
+import { useTranslation } from "react-i18next"
 import { titleCase } from "title-case"
 
 import { useModalStack } from "~/components/ui/modal/stacked/hooks"
@@ -31,8 +32,12 @@ const chipClassName: Record<NonNullable<EntryTagsProps["size"]>, string> = {
 type TagItem = { label: string; kind: TagKind }
 
 const TagEntriesModal = ({ tag, feedId }: { tag: TagItem; feedId?: string | null }) => {
-  const { data, isLoading, isFetching, refetch } = useEntryTagsQuery({
-    feedId,
+  const { t } = useTranslation()
+  const [scope, setScope] = useState<"current" | "all">("current")
+  const currentFeedId = scope === "current" ? feedId : undefined
+
+  const { data, isLoading } = useEntryTagsQuery({
+    feedId: currentFeedId,
     tag:
       tag.kind === "category"
         ? { kind: "schemaOrgCategory", value: tag.label }
@@ -43,19 +48,17 @@ const TagEntriesModal = ({ tag, feedId }: { tag: TagItem; feedId?: string | null
 
   return (
     <div className="-mx-4 -mb-4 w-[min(720px,calc(100vw-2rem))] space-y-4">
-      <div className="flex items-center justify-between gap-2 px-4">
-        <div className="min-w-0 text-sm text-text-secondary">
-          Entries tagged with {normalizeLabel(tag.label)}
+      <div className="flex flex-col gap-3 px-4 sm:flex-row sm:items-center sm:justify-between">
+        <div className="text-sm text-text-secondary">
+          Entries tagged with{" "}
+          <span className="font-medium text-text">{normalizeLabel(tag.label)}</span>
         </div>
-        <Button size="sm" variant="ghost" onClick={() => refetch()} disabled={isFetching}>
-          <i
-            className={cn(
-              "i-mingcute-loading-line mr-1 size-4",
-              isFetching && "animate-spin text-text-secondary",
-            )}
-          />
-          Refresh
-        </Button>
+        {feedId && (
+          <SegmentGroup value={scope} onValueChanged={(v) => setScope(v as "current" | "all")}>
+            <SegmentItem value="current" label={t("entry_tags.current_feed")} />
+            <SegmentItem value="all" label={t("entry_tags.all_feeds")} />
+          </SegmentGroup>
+        )}
       </div>
 
       {isLoading ? (
@@ -123,9 +126,9 @@ export const EntryTags = ({
     <div
       className={cn("flex min-w-0 flex-wrap items-center gap-1.5 text-text-secondary", className)}
     >
-      {items.map((item, index) => (
+      {items.map((item) => (
         <button
-          key={`${item.kind}-${item.label}-${index}`}
+          key={`${item.kind}-${item.label}`}
           type="button"
           onClick={(event) => handleClick(item, event)}
           className={cn(
