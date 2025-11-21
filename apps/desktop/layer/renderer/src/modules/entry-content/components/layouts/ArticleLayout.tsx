@@ -91,6 +91,10 @@ export const ArticleLayout: React.FC<EntryLayoutProps> = ({
     handleSelectionClear()
   }, [showTranscript, handleSelectionClear])
 
+  useEffect(() => {
+    handleSelectionClear()
+  }, [entryId, handleSelectionClear])
+
   if (!entry) return null
 
   return (
@@ -139,6 +143,7 @@ export const ArticleLayout: React.FC<EntryLayoutProps> = ({
             )}
           </ErrorBoundary>
         </div>
+
         <TextSelectionToolbar
           selection={textSelection}
           onRequestClose={handleSelectionClear}
