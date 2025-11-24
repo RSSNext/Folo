@@ -8,4 +8,5 @@ export const Component = withResponsiveComponent(
     const { default: DownloadPage } = await import("~/modules/download")
     return { default: DownloadPage }
   },
+  (w) => w < 768,
 )
