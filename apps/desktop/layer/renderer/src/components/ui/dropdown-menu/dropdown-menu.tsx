@@ -171,7 +171,7 @@ const DropdownMenuItem = ({
     ref={ref}
     className={cn(
       "relative flex cursor-menu select-none items-center rounded-[5px] px-2.5 py-1 outline-none focus:bg-accent/30 data-[disabled]:pointer-events-none data-[disabled]:opacity-50",
-      "focus-within:outline-transparent data-[highlighted]:bg-mix-background/accent-5/1",
+      "focus-within:outline-transparent data-[highlighted]:text-accent data-[highlighted]:bg-mix-background/accent-9/1",
       "h-[28px]",
       inset && "pl-8",
       className,
