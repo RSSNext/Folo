@@ -19,7 +19,6 @@ const auth = new Auth({
 export const {
   changeEmail,
   changePassword,
-  forgetPassword,
   getAccountInfo,
   getLastUsedLoginMethod,
   getProviders,
@@ -27,6 +26,7 @@ export const {
   linkSocial,
   listAccounts,
   oneTimeToken,
+  requestPasswordReset,
   resetPassword,
   sendVerificationEmail,
   signIn,

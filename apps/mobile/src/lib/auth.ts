@@ -88,12 +88,12 @@ export const authClient = createAuthClient({
 export const {
   changeEmail,
   changePassword,
-  forgetPassword,
   getAccountInfo,
   getCookie,
   getProviders,
   linkSocial,
   oneTimeToken,
+  requestPasswordReset,
   sendVerificationEmail,
   signIn,
   signUp,

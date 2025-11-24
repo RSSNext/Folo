@@ -26,10 +26,10 @@ import { GoogleCuteFiIcon } from "@/src/icons/google_cute_fi"
 import type { AuthProvider } from "@/src/lib/auth"
 import {
   deleteUser,
-  forgetPassword,
   getAccountInfo,
   getProviders,
   linkSocial,
+  requestPasswordReset,
   unlinkAccount,
 } from "@/src/lib/auth"
 import { Dialog } from "@/src/lib/dialog"
@@ -232,7 +232,7 @@ const SecuritySection = () => {
               return
             }
             if (!hasPassword) {
-              forgetPassword({
+              requestPasswordReset({
                 email,
               })
               toast.success("We have sent you an email with instructions to reset your password.")

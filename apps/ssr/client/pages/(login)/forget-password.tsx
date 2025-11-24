@@ -1,5 +1,5 @@
 import { useRecaptchaToken } from "@client/hooks/useRecaptchaToken"
-import { forgetPassword } from "@client/lib/auth"
+import { requestPasswordReset } from "@client/lib/auth"
 import { Button } from "@follow/components/ui/button/index.jsx"
 import {
   Card,
@@ -54,7 +54,7 @@ export function Component() {
   const updateMutation = useMutation({
     mutationFn: async (values: z.infer<typeof EmailSchema>) => {
       const recaptchaToken = await requestRecaptchaToken("ssr_forget_password")
-      const res = await forgetPassword(
+      const res = await requestPasswordReset(
         {
           email: values.email,
           redirectTo: `${env.VITE_WEB_URL}/reset-password`,
