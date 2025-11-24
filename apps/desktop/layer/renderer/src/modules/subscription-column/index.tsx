@@ -327,7 +327,7 @@ const NotLoggedInNotice: FC = () => {
       onClick={() => {
         presentLoginModal()
       }}
-      className="my-1 flex items-start gap-2 border-blue/30 bg-blue/10 px-1.5 py-2 text-left text-xs leading-snug text-blue transition-colors hover:border-blue hover:bg-blue/15 focus:outline-none focus-visible:ring-2 focus-visible:ring-blue/40"
+      className="my-1 flex items-start gap-2 border-accent/30 bg-accent/10 px-1.5 py-2 text-left text-xs leading-snug text-accent transition-colors hover:border-accent hover:bg-accent/15 focus:outline-none focus-visible:ring-2 focus-visible:ring-accent/40"
     >
       <span className="ml-1 text-lg">👤</span>
       <p>
