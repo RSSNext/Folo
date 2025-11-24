@@ -1,7 +1,6 @@
 import { stripeClient } from "@better-auth/stripe/client"
 import { IN_ELECTRON } from "@follow/shared"
 import type { AuthPlugins } from "@follow-app/client-sdk/auth"
-import type {} from "better-auth"
 import type { BetterAuthClientPlugin, BetterFetchOption } from "better-auth/client"
 import { createAuthClient } from "better-auth/client"
 import {
@@ -30,6 +29,7 @@ export const baseAuthPlugins = [
     id: "oneTimeToken",
     $InferServerPlugin: {} as Extract<AuthPlugin, { id: "oneTimeToken" }>,
   },
+
   inferAdditionalFields({
     user: {
       handle: {
