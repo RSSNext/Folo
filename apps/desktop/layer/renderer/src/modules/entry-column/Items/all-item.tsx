@@ -299,6 +299,7 @@ function VideoIcon({ src }: { src: string }) {
           <TooltipContent className="flex-col gap-1" side={"bottom"}>
             <div className="flex items-center gap-1">
               <ViewTag
+                referrerPolicy="strict-origin-when-cross-origin"
                 src={src}
                 className={cn(
                   "pointer-events-none aspect-video w-[575px] shrink-0 rounded-md bg-black object-cover",
