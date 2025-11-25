@@ -9,7 +9,7 @@ import {
   TooltipTrigger,
 } from "@follow/components/ui/tooltip/index.jsx"
 import { EllipsisHorizontalTextWithTooltip } from "@follow/components/ui/typography/index.js"
-import { FeedViewType } from "@follow/constants"
+import { FeedViewType, getViewList } from "@follow/constants"
 import { isOnboardingFeedUrl } from "@follow/store/constants/onboarding"
 import { useFeedById } from "@follow/store/feed/hooks"
 import { useInboxById } from "@follow/store/inbox/hooks"
@@ -30,6 +30,7 @@ import { useFeedActions, useInboxActions, useListActions } from "~/hooks/biz/use
 import { useFollow } from "~/hooks/biz/useFollow"
 import { useNavigateEntry } from "~/hooks/biz/useNavigateEntry"
 import { useRouteParamsSelector } from "~/hooks/biz/useRouteParams"
+import { useBatchUpdateSubscription } from "~/hooks/biz/useSubscriptionActions"
 import { useContextMenu } from "~/hooks/common/useContextMenu"
 import { getNewIssueUrl } from "~/lib/issues"
 import { UrlBuilder } from "~/lib/url-builder"
@@ -131,6 +132,8 @@ const FeedItemImpl = ({ view, feedId, className, isPreview }: FeedItemProps) => 
   const whenTrigger = when && isActive
   useContextMenuActionShortCutTrigger(items, whenTrigger)
 
+  const { mutate: changeFeedView } = useBatchUpdateSubscription()
+
   const [isContextMenuOpen, setIsContextMenuOpen] = useState(false)
   const showContextMenu = useShowContextMenu()
   const contextMenuProps = useContextMenu({
@@ -138,6 +141,8 @@ const FeedItemImpl = ({ view, feedId, className, isPreview }: FeedItemProps) => 
       const nextItems = items.concat()
 
       if (!feed) return
+
+      const isFeed = feed.type === "feed" || !feed.type
       if (isFeed && feed.errorAt && feed.errorMessage) {
         nextItems.push(
           MenuItemSeparator.default,
@@ -159,6 +164,35 @@ const FeedItemImpl = ({ view, feedId, className, isPreview }: FeedItemProps) => 
           }),
         )
       }
+
+      // Add "Switch to Another View" menu item
+      if (subscription && typeof subscription.view === "number") {
+        nextItems.push(
+          MenuItemSeparator.default,
+          new MenuItemText({
+            label: t("sidebar.feed_column.context_menu.change_to_other_view"),
+            submenu: getViewList()
+              .filter((v) => v.view !== subscription.view && v.switchable)
+              .map(
+                (v) =>
+                  new MenuItemText({
+                    label: t(v.name, { ns: "common" }),
+                    shortcut: (v.view + 1).toString(),
+                    icon: v.icon,
+                    click() {
+                      return changeFeedView({
+                        feedIdList: [feedId],
+                        view: v.view,
+                      })
+                    },
+                    requiresLogin: true,
+                  }),
+              ),
+            requiresLogin: true,
+          }),
+        )
+      }
+
       setIsContextMenuOpen(true)
       await showContextMenu(nextItems, e)
       setIsContextMenuOpen(false)

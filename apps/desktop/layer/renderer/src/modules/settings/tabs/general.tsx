@@ -268,6 +268,9 @@ export const LanguageSelector = ({
           setGeneralSetting("language", value as string)
           dayjs.locale(value)
         }}
+        renderValue={useTypeScriptHappyCallback((item) => {
+          return <span>{defaultResources[item.value].lang.name}</span>
+        }, [])}
         renderItem={useTypeScriptHappyCallback((item) => {
           const lang = item.value
           const percent = I18N_COMPLETENESS_MAP[lang]

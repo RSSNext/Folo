@@ -99,25 +99,44 @@ export const LoginModalContent = (props: LoginModalContentProps) => {
       )}
 
       {/* Header Section */}
-      <div className="mb-8 flex flex-col items-center gap-4">
+      <div className="mb-6 flex flex-col items-center gap-3">
         <m.div
           initial={{ scale: 0.9, opacity: 0 }}
           animate={{ scale: 1, opacity: 1 }}
           transition={Spring.presets.smooth}
         >
-          <Logo className="size-20" />
+          <Logo className="size-16" />
         </m.div>
-        <m.div
-          className="flex items-center gap-2"
-          initial={{ y: 10, opacity: 0 }}
-          animate={{ y: 0, opacity: 1 }}
-          transition={Spring.presets.smooth}
-        >
-          <span className="text-2xl font-semibold">
-            {isRegister ? t("signin.sign_up_to") : t("signin.sign_in_to")}
-          </span>
-          <Folo className="size-12" />
-        </m.div>
+        {isRegister ? (
+          <m.div
+            className="flex flex-col items-center gap-2"
+            initial={{ y: 10, opacity: 0 }}
+            animate={{ y: 0, opacity: 1 }}
+            transition={Spring.presets.smooth}
+          >
+            <h1 className="text-2xl font-semibold">{t("login.title")}</h1>
+            <p className="text-balance text-center text-sm text-text-secondary">
+              {t("login.subtitle")}
+            </p>
+            {/* Benefits - single line */}
+            <div className="mt-1 flex items-center gap-3 text-xs text-text-tertiary">
+              <span className="text-accent">✦</span>
+              <span>{t("login.benefit_1")}</span>
+              <span className="text-text-quaternary">·</span>
+              <span>{t("login.benefit_2")}</span>
+            </div>
+          </m.div>
+        ) : (
+          <m.div
+            className="flex items-center gap-2"
+            initial={{ y: 10, opacity: 0 }}
+            animate={{ y: 0, opacity: 1 }}
+            transition={Spring.presets.smooth}
+          >
+            <span className="text-2xl font-semibold">{t("signin.sign_in_to")}</span>
+            <Folo className="size-12" />
+          </m.div>
+        )}
       </div>
       {!IN_ELECTRON && (
         <button
@@ -141,19 +160,17 @@ export const LoginModalContent = (props: LoginModalContentProps) => {
           )}
         </m.div>
       ) : (
-        <div className="flex flex-col gap-6">
+        <div className="flex flex-col gap-4">
           {/* Login Providers */}
-          <div className="flex flex-col gap-3">
+          <div className="flex flex-col gap-2.5">
             {isLoading
               ? // Skeleton loaders to prevent CLS
-                Array.from({ length: 4 })
-                  .fill(0)
-                  .map((_, index) => (
-                    <div
-                      key={`skeleton-${index}`}
-                      className="relative h-12 w-full animate-pulse rounded-xl border border-fill-secondary bg-material-medium"
-                    />
-                  ))
+                Array.from({ length: 4 }, (_, index) => (
+                  <div
+                    key={`login-skeleton-${index}`}
+                    className="relative h-12 w-full animate-pulse rounded-xl border border-fill-secondary bg-material-medium"
+                  />
+                ))
               : providers.map(([key, provider], index) => (
                   <m.div
                     key={key}
@@ -198,6 +215,17 @@ export const LoginModalContent = (props: LoginModalContentProps) => {
                     </button>
                   </m.div>
                 ))}
+            {/* Quick start hint */}
+            {isRegister && providers.length > 0 && !isLoading && (
+              <m.p
+                className="mt-1 text-center text-xs text-text-tertiary"
+                initial={{ opacity: 0 }}
+                animate={{ opacity: 1 }}
+                transition={{ ...Spring.presets.smooth, delay: 0.15 }}
+              >
+                {t("login.quick_start")}
+              </m.p>
+            )}
           </div>
 
           {/* Referral Form */}
@@ -212,7 +240,7 @@ export const LoginModalContent = (props: LoginModalContentProps) => {
           )}
 
           {/* Footer Links */}
-          <div className="flex flex-col gap-3">
+          <div className="flex flex-col gap-2">
             <div className="text-center text-xs leading-relaxed text-text-tertiary">
               <button
                 type="button"
@@ -249,16 +277,28 @@ export const LoginModalContent = (props: LoginModalContentProps) => {
         <>
           {/* Gradient Divider */}
           <div
-            className="my-6 h-px"
+            className="my-4 h-px"
             style={{
               background:
                 "linear-gradient(to right, transparent, rgba(255, 92, 0, 0.2), transparent)",
             }}
           />
 
+          {/* View Demo Button */}
+          {isRegister && (
+            <m.button
+              className="mb-2 w-full cursor-pointer text-center text-xs text-text-tertiary transition-colors hover:text-text-secondary"
+              onClick={() => modal.dismiss()}
+              whileHover={{ scale: 1.02 }}
+              whileTap={{ scale: 0.98 }}
+            >
+              {t("login.view_demo")}
+            </m.button>
+          )}
+
           {/* Switch Account Type */}
           <m.button
-            className="group w-full cursor-pointer pb-4 text-center text-sm font-medium transition-colors"
+            className="group w-full cursor-pointer pb-2 text-center text-sm font-medium transition-colors"
             onClick={() => setIsRegister(!isRegister)}
             whileHover={{ scale: 1.02 }}
             whileTap={{ scale: 0.98 }}
@@ -292,7 +332,7 @@ export const LoginModalContent = (props: LoginModalContentProps) => {
         <div
           onClick={stopPropagation}
           tabIndex={-1}
-          className="relative w-[28rem] overflow-hidden rounded-2xl border border-folo/20 bg-background p-8 shadow-2xl shadow-folo/10 backdrop-blur-xl"
+          className="relative w-[28rem] overflow-hidden rounded-2xl border border-folo/20 bg-background p-6 shadow-2xl shadow-folo/10 backdrop-blur-xl"
         >
           {/* Inner glow layer */}
           <div

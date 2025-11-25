@@ -36,7 +36,8 @@ const ContextMenuSubTrigger = ({
   <ContextMenuPrimitive.SubTrigger
     ref={ref}
     className={cn(
-      "cursor-menu focus:bg-accent/30 data-[state=open]:bg-accent/30 flex select-none items-center rounded-[5px] px-2.5 py-1.5 outline-none",
+      "cursor-menu data-[state=open]:bg-mix-background/accent-9/1 data-[state=open]:text-accent data-[highlighted]:text-accent data-[highlighted]:bg-mix-background/accent-9/1 flex select-none items-center rounded-[5px] px-2.5 py-1.5 outline-none",
+      "h-[28px]",
       inset && "pl-8",
       "center gap-2",
       className,
@@ -129,8 +130,8 @@ const ContextMenuItem = ({
   <ContextMenuPrimitive.Item
     ref={ref}
     className={cn(
-      "cursor-menu focus:bg-accent/30 relative flex select-none items-center rounded-[5px] px-2.5 py-1 outline-none data-[disabled]:pointer-events-none data-[disabled]:opacity-50",
-      "data-[highlighted]:bg-mix-background/accent-5/1 focus-within:outline-transparent",
+      "cursor-menu focus:bg-accent/30 relative flex select-none items-center rounded-[5px] px-2.5 py-1.5 outline-none data-[disabled]:pointer-events-none data-[disabled]:opacity-50",
+      "data-[highlighted]:text-accent data-[highlighted]:bg-mix-background/accent-9/1 focus-within:outline-transparent",
       "h-[28px]",
       inset && "pl-8",
       className,
@@ -153,7 +154,7 @@ const ContextMenuCheckboxItem = ({
     ref={ref}
     className={cn(
       "cursor-checkbox focus:bg-accent/30 relative flex select-none items-center rounded-[5px] px-8 py-1.5 outline-none data-[disabled]:pointer-events-none data-[disabled]:opacity-50",
-      "focus-within:outline-transparent",
+      "data-[highlighted]:text-accent data-[highlighted]:bg-mix-background/accent-9/1 focus-within:text-accent focus-within:outline-transparent",
       "h-[28px]",
       className,
     )}

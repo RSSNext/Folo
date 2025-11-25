@@ -63,7 +63,7 @@ export const EntryListHeader: FC<{
     <div
       className={clsx(
         "flex min-w-0 items-center break-all text-lg font-bold leading-tight",
-        feedIcon && "-ml-3",
+        "-ml-3",
       )}
     >
       {feedIcon && <FeedIcon target={feedIcon} fallback size={20} className="mr-4" />}
