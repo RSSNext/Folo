@@ -66,7 +66,7 @@ export function DiscoverImport() {
   return (
     <div className="flex flex-col">
       <div className="mb-2 font-medium">1. {t("discover.import.opml_step1")}</div>
-      <div className="mb-6 w-[500px]">
+      <div className="mb-6">
         <CollapseCssGroup defaultOpenId="inoreader">
           <CollapseCss
             collapseId="inoreader"
@@ -163,7 +163,7 @@ export function DiscoverImport() {
 
       <div className="mb-4 font-medium">2. {t("discover.import.opml_step2")}</div>
       <Form {...form}>
-        <form onSubmit={form.handleSubmit(onSubmit)} className="w-full max-w-[540px] space-y-8">
+        <form onSubmit={form.handleSubmit(onSubmit)} className="w-full space-y-8">
           <FormField
             control={form.control}
             name="file"

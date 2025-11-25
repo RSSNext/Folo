@@ -1,145 +1,63 @@
-import { Divider } from "@follow/components/ui/divider/Divider.js"
-import { useScrollElementUpdate } from "@follow/components/ui/scroll-area/hooks.js"
-import { ScrollArea } from "@follow/components/ui/scroll-area/index.js"
-import { Tabs, TabsContent, TabsList, TabsTrigger } from "@follow/components/ui/tabs/index.jsx"
-import { createElement } from "react"
+import { cn } from "@follow/utils/utils"
+import type { ReactNode } from "react"
 import { useTranslation } from "react-i18next"
 import { useSearchParams } from "react-router"
 
 import { AppErrorBoundary } from "~/components/common/AppErrorBoundary"
 import { ErrorComponentType } from "~/components/errors/enum"
 import { useSubViewTitle } from "~/modules/app-layout/subview/hooks"
-import { DiscoverForm } from "~/modules/discover/DiscoverForm"
-import { DiscoverImport } from "~/modules/discover/DiscoverImport"
-import { DiscoverInboxList } from "~/modules/discover/DiscoverInboxList"
-import { DiscoverTransform } from "~/modules/discover/DiscoverTransform"
-import { DiscoverUser } from "~/modules/discover/DiscoverUser"
-import { Recommendations } from "~/modules/discover/recommendations"
-import { Trending } from "~/modules/trending"
+import { DiscoveryContent } from "~/modules/discover/DiscoveryContent"
+import { UnifiedDiscoverForm } from "~/modules/discover/UnifiedDiscoverForm"
 
-const tabs: {
-  name: I18nKeys
-  value: string
-}[] = [
-  {
-    name: "words.search",
-    value: "search",
-  },
-  {
-    name: "words.rss",
-    value: "rss",
-  },
-  {
-    name: "words.rsshub",
-    value: "rsshub",
-  },
-  {
-    name: "words.inbox",
-    value: "inbox",
-  },
-  {
-    name: "words.user",
-    value: "user",
-  },
-  {
-    name: "words.transform",
-    value: "transform",
-  },
-  {
-    name: "words.import",
-    value: "import",
-  },
-]
+// ============================================================================
+// Section Components
+// ============================================================================
+
+interface SectionProps {
+  children: ReactNode
+  className?: string
+}
+
+function Section({ children, className }: SectionProps) {
+  return <section className={cn("mx-auto w-full max-w-6xl", className)}>{children}</section>
+}
+
+// ============================================================================
+// Main Component
+// ============================================================================
 
 export function Component() {
-  const [search, setSearch] = useSearchParams()
   const { t } = useTranslation()
+  const [searchParams] = useSearchParams()
+  const keyword = searchParams.get("keyword")
+  const isSearching = !!keyword?.trim()
   useSubViewTitle("words.discover")
-
-  const { onUpdateMaxScroll } = useScrollElementUpdate()
 
   return (
     <div className="flex size-full flex-col px-6 py-8">
-      {/* Simple Header */}
-      <div className="mx-auto mb-8 max-w-6xl text-center">
-        <h1 className="mb-4 text-3xl font-bold text-text">{t("words.discover")}</h1>
-      </div>
-
-      <div className="mx-auto w-full max-w-6xl">
-        <Tabs
-          value={search.get("type") || "search"}
-          onValueChange={(val) => {
-            setSearch(
-              (search) => {
-                search.set("type", val)
-                search.delete("keyword")
-                return new URLSearchParams(search)
-              },
-              { replace: true },
-            )
-          }}
-          className="w-full"
-        >
-          {/* Tab Navigation */}
-          <div className="mb-8">
-            <ScrollArea.ScrollArea flex orientation="horizontal" rootClassName="w-full">
-              <TabsList className="relative flex w-full">
-                {tabs.map((tab) => (
-                  <TabsTrigger
-                    key={tab.name}
-                    value={tab.value}
-                    onClick={() => {
-                      onUpdateMaxScroll?.()
-                    }}
-                  >
-                    {t(tab.name)}
-                  </TabsTrigger>
-                ))}
-              </TabsList>
-            </ScrollArea.ScrollArea>
-          </div>
-
-          {/* Tab Content */}
-          <div className="space-y-8">
-            {tabs.map((tab) => (
-              <TabsContent key={tab.name} value={tab.value} className="mt-0">
-                <div className={tab.value === "inbox" ? "" : "flex flex-col items-center"}>
-                  {createElement(TabComponent[tab.value]! || TabComponent.default, {
-                    type: tab.value,
-                  })}
-                </div>
-              </TabsContent>
-            ))}
-          </div>
-        </Tabs>
-
-        {/* Additional Content Sections */}
-        <div className="mt-12 space-y-8">
-          <Divider />
-
-          <div>
-            <h2 className="mb-6 text-center text-xl font-semibold text-text">Trending</h2>
-            <Trending center />
-          </div>
-
-          <Divider />
-
-          <div>
-            <h2 className="mb-6 text-center text-xl font-semibold text-text">RSSHub</h2>
-            <AppErrorBoundary errorType={ErrorComponentType.RSSHubDiscoverError}>
-              <Recommendations />
-            </AppErrorBoundary>
-          </div>
+      {/* Hero Section */}
+      <Section className="mb-12">
+        <div className="text-center">
+          <h1 className="mb-2 text-3xl font-bold text-text">{t("words.discover")}</h1>
+          <p className="text-sm text-text-secondary">{t("discover.tips.search_keyword")}</p>
         </div>
-      </div>
+      </Section>
+
+      {/* Search Section */}
+      <Section className="mb-12">
+        <div className="flex flex-col items-center">
+          <UnifiedDiscoverForm />
+        </div>
+      </Section>
+
+      {/* Discovery Section - Hide when searching */}
+      {!isSearching && (
+        <Section>
+          <AppErrorBoundary errorType={ErrorComponentType.RSSHubDiscoverError}>
+            <DiscoveryContent />
+          </AppErrorBoundary>
+        </Section>
+      )}
     </div>
   )
-}
-
-const TabComponent: Record<string, React.FC<{ type?: string; isInit?: boolean }>> = {
-  import: DiscoverImport,
-  inbox: DiscoverInboxList,
-  user: DiscoverUser,
-  default: DiscoverForm,
-  transform: DiscoverTransform,
 }
