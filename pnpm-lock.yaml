@@ -802,8 +802,8 @@ importers:
   apps/mobile:
     dependencies:
       '@better-auth/expo':
-        specifier: https://pkg.pr.new/better-auth/better-auth/@better-auth/expo@6230
-        version: https://pkg.pr.new/better-auth/better-auth/@better-auth/expo@6230(2089e4804a8c40712b403ab543430e3e)
+        specifier: 1.4.2-beta.4
+        version: 1.4.2-beta.4(ae9a4dc93fb1057b383f223bd80ed5e7)
       '@expo/metro-runtime':
         specifier: 5.0.4
         version: 5.0.4(react-native@0.79.6(@babel/core@7.28.5)(@types/react@19.2.2)(bufferutil@4.0.9)(react@19.0.0))
@@ -895,8 +895,8 @@ importers:
         specifier: 1.5.5
         version: 1.5.5
       better-auth:
-        specifier: https://pkg.pr.new/better-auth/better-auth@6230
-        version: https://pkg.pr.new/better-auth/better-auth@6230(react-dom@19.0.0(react@19.0.0))(react@19.0.0)
+        specifier: 1.4.2-beta.4
+        version: 1.4.2-beta.4(react-dom@19.0.0(react@19.0.0))(react@19.0.0)
       camelcase-keys:
         specifier: 10.0.1
         version: 10.0.1
@@ -1793,8 +1793,8 @@ importers:
   packages/internal/shared:
     dependencies:
       '@better-auth/stripe':
-        specifier: https://pkg.pr.new/better-auth/better-auth/@better-auth/stripe@6230
-        version: https://pkg.pr.new/better-auth/better-auth/@better-auth/stripe@6230(@better-auth/core@1.4.2-beta.1(@better-auth/utils@0.3.0)(@better-fetch/fetch@1.1.18)(better-call@1.1.0)(jose@6.1.0)(kysely@0.28.8)(nanostores@1.0.1))(better-auth@https://pkg.pr.new/better-auth/better-auth@6230(react-dom@19.0.0(react@19.0.0))(react@19.0.0))(stripe@19.1.0(@types/node@24.10.0))
+        specifier: 1.4.2-beta.4
+        version: 1.4.2-beta.4(@better-auth/core@1.4.2-beta.4(@better-auth/utils@0.3.0)(@better-fetch/fetch@1.1.18)(better-call@1.1.0)(jose@6.1.0)(kysely@0.28.8)(nanostores@1.0.1))(better-auth@1.4.2-beta.4(react-dom@19.0.0(react@19.0.0))(react@19.0.0))(stripe@19.1.0(@types/node@24.10.0))
       '@electron-toolkit/preload':
         specifier: 3.0.2
         version: 3.0.2(electron@38.3.0)
@@ -1814,8 +1814,8 @@ importers:
         specifier: 5.0.87
         version: 5.0.87(zod@3.25.75)
       better-auth:
-        specifier: https://pkg.pr.new/better-auth/better-auth@6230
-        version: https://pkg.pr.new/better-auth/better-auth@6230(react-dom@19.0.0(react@19.0.0))(react@19.0.0)
+        specifier: 1.4.2-beta.4
+        version: 1.4.2-beta.4(react-dom@19.0.0(react@19.0.0))(react@19.0.0)
       drizzle-orm:
         specifier: 0.44.7
         version: 0.44.7(@opentelemetry/api@1.9.0)(@types/pg@8.15.5)(better-sqlite3@12.4.1)(expo-sqlite@15.2.12(expo@53.0.12(@babel/core@7.28.5)(@expo/metro-runtime@5.0.4(react-native@0.79.6(@babel/core@7.28.5)(@types/react@19.2.2)(bufferutil@4.0.9)(react@19.0.0)))(bufferutil@4.0.9)(graphql@16.8.1)(react-native-webview@13.16.0(react-native@0.79.6(@babel/core@7.28.5)(@types/react@19.2.2)(bufferutil@4.0.9)(react@19.0.0))(react@19.0.0))(react-native@0.79.6(@babel/core@7.28.5)(@types/react@19.2.2)(bufferutil@4.0.9)(react@19.0.0))(react@19.0.0))(react-native@0.79.6(@babel/core@7.28.5)(@types/react@19.2.2)(bufferutil@4.0.9)(react@19.0.0))(react@19.0.0))(kysely@0.28.8)(pg@8.16.3)
@@ -2830,8 +2830,8 @@ packages:
       kysely: ^0.28.5
       nanostores: ^1.0.1
 
-  '@better-auth/core@1.4.2-beta.1':
-    resolution: {integrity: sha512-7bvqw0h4jJruu7iu29Ijux3Dob+b/MswZM08qufL2EhpLrKNouDH1ySUUh587Zw6i4itX1sKyWDdA60221d1mQ==}
+  '@better-auth/core@1.4.2-beta.4':
+    resolution: {integrity: sha512-7m4qppsiaBNJ8kKsiBUEFDSyVCpjoJLIzA4csg5D9+M12oF545c8M53xo4SSxhXUv30pf2UEAdWJCd4bygG0gA==}
     peerDependencies:
       '@better-auth/utils': 0.3.0
       '@better-fetch/fetch': 1.1.18
@@ -2840,22 +2840,10 @@ packages:
       kysely: ^0.28.5
       nanostores: ^1.0.1
 
-  '@better-auth/core@https://pkg.pr.new/better-auth/better-auth/@better-auth/core@9145da710ebe69f8c16bca14e77ae512f4321bb6':
-    resolution: {tarball: https://pkg.pr.new/better-auth/better-auth/@better-auth/core@9145da710ebe69f8c16bca14e77ae512f4321bb6}
-    version: 1.4.1-beta.1
+  '@better-auth/expo@1.4.2-beta.4':
+    resolution: {integrity: sha512-STqnLNEbSfNgWxjn3c/7ZdCQbISyx71qZ2zNyjqBweurwIjb5GRr0kPENbPhw9Qo4j9Ziy1rNmIoea6e5y4wFw==}
     peerDependencies:
-      '@better-auth/utils': 0.3.0
-      '@better-fetch/fetch': 1.1.18
-      better-call: 1.1.0
-      jose: ^6.1.0
-      kysely: ^0.28.5
-      nanostores: ^1.0.1
-
-  '@better-auth/expo@https://pkg.pr.new/better-auth/better-auth/@better-auth/expo@6230':
-    resolution: {tarball: https://pkg.pr.new/better-auth/better-auth/@better-auth/expo@6230}
-    version: 1.4.1-beta.1
-    peerDependencies:
-      '@better-auth/core': 1.4.1-beta.1
+      '@better-auth/core': 1.4.2-beta.4
       expo-constants: '>=17.0.0'
       expo-linking: '>=7.0.0'
       expo-network: ^8.0.7
@@ -2870,22 +2858,20 @@ packages:
       expo-web-browser:
         optional: true
 
-  '@better-auth/stripe@https://pkg.pr.new/better-auth/better-auth/@better-auth/stripe@6230':
-    resolution: {tarball: https://pkg.pr.new/better-auth/better-auth/@better-auth/stripe@6230}
-    version: 1.4.1-beta.1
+  '@better-auth/stripe@1.4.2-beta.4':
+    resolution: {integrity: sha512-hUTkCMUSDEeXJLIHNbCiaUgh3lePibKWQ15m9MhSzOBGjlyYrWFqxHBlcYoBh6P5bWM53pqMWCo5gU64oz7IGg==}
     peerDependencies:
-      '@better-auth/core': 1.4.1-beta.1
-      better-auth: 1.4.1-beta.1
+      '@better-auth/core': 1.4.2-beta.4
+      better-auth: 1.4.2-beta.4
       stripe: ^18 || ^19 || ^20
 
   '@better-auth/telemetry@1.3.28':
     resolution: {integrity: sha512-qZtV82IFuyQZc2c37VkiDgO/qfqPnJuWIyeC/iFK1AA5N8RSuC2+CVIH1sNDytPXUAthbYeOzcOCW2YEkgz1Ow==}
 
-  '@better-auth/telemetry@https://pkg.pr.new/better-auth/better-auth/@better-auth/telemetry@9145da710ebe69f8c16bca14e77ae512f4321bb6':
-    resolution: {tarball: https://pkg.pr.new/better-auth/better-auth/@better-auth/telemetry@9145da710ebe69f8c16bca14e77ae512f4321bb6}
-    version: 1.4.1-beta.1
+  '@better-auth/telemetry@1.4.2-beta.4':
+    resolution: {integrity: sha512-HiALXVMVIIwpVncZEGwsP22c+tIyy9MLdXjgc+qSS55gUExaeRE2KurLw4jP6zDkBPyY56qW32nfE0XUUTtKDg==}
     peerDependencies:
-      '@better-auth/core': 1.4.1-beta.1
+      '@better-auth/core': 1.4.2-beta.4
 
   '@better-auth/utils@0.3.0':
     resolution: {integrity: sha512-W+Adw6ZA6mgvnSnhOki270rwJ42t4XzSK6YWGF//BbVXL6SwCLWfyzBc1lN2m/4RM28KubdBKQ4X5VMoLRNPQw==}
@@ -8426,9 +8412,8 @@ packages:
       vue:
         optional: true
 
-  better-auth@https://pkg.pr.new/better-auth/better-auth@6230:
-    resolution: {tarball: https://pkg.pr.new/better-auth/better-auth@6230}
-    version: 1.4.1-beta.1
+  better-auth@1.4.2-beta.4:
+    resolution: {integrity: sha512-IW2BcnMr2dTH6pz8M2kYlWXssr9Z5wthLTVkhhSgVG4Z7KVI1ypFp+9g9RZX6tmlLXLBThtrBmc/Z7rUlS1xjQ==}
     peerDependencies:
       '@lynx-js/react': '*'
       '@sveltejs/kit': '*'
@@ -18691,7 +18676,7 @@ snapshots:
       nanostores: 1.0.1
       zod: 4.1.12
 
-  '@better-auth/core@1.4.2-beta.1(@better-auth/utils@0.3.0)(@better-fetch/fetch@1.1.18)(better-call@1.1.0)(jose@6.1.0)(kysely@0.28.8)(nanostores@1.0.1)':
+  '@better-auth/core@1.4.2-beta.4(@better-auth/utils@0.3.0)(@better-fetch/fetch@1.1.18)(better-call@1.1.0)(jose@6.1.0)(kysely@0.28.8)(nanostores@1.0.1)':
     dependencies:
       '@better-auth/utils': 0.3.0
       '@better-fetch/fetch': 1.1.18
@@ -18702,20 +18687,9 @@ snapshots:
       nanostores: 1.0.1
       zod: 4.1.12
 
-  '@better-auth/core@https://pkg.pr.new/better-auth/better-auth/@better-auth/core@9145da710ebe69f8c16bca14e77ae512f4321bb6(@better-auth/utils@0.3.0)(@better-fetch/fetch@1.1.18)(better-call@1.1.0)(jose@6.1.0)(kysely@0.28.8)(nanostores@1.0.1)':
+  '@better-auth/expo@1.4.2-beta.4(ae9a4dc93fb1057b383f223bd80ed5e7)':
     dependencies:
-      '@better-auth/utils': 0.3.0
-      '@better-fetch/fetch': 1.1.18
-      '@standard-schema/spec': 1.0.0
-      better-call: 1.1.0
-      jose: 6.1.0
-      kysely: 0.28.8
-      nanostores: 1.0.1
-      zod: 4.1.12
-
-  '@better-auth/expo@https://pkg.pr.new/better-auth/better-auth/@better-auth/expo@6230(2089e4804a8c40712b403ab543430e3e)':
-    dependencies:
-      '@better-auth/core': 1.4.2-beta.1(@better-auth/utils@0.3.0)(@better-fetch/fetch@1.1.18)(better-call@1.1.0)(jose@6.1.0)(kysely@0.28.8)(nanostores@1.0.1)
+      '@better-auth/core': 1.4.2-beta.4(@better-auth/utils@0.3.0)(@better-fetch/fetch@1.1.18)(better-call@1.1.0)(jose@6.1.0)(kysely@0.28.8)(nanostores@1.0.1)
       '@better-fetch/fetch': 1.1.18
       better-call: 1.1.0
       zod: 4.1.12
@@ -18724,10 +18698,10 @@ snapshots:
       expo-linking: 7.1.5(expo@53.0.12(@babel/core@7.28.5)(@expo/metro-runtime@5.0.4(react-native@0.79.6(@babel/core@7.28.5)(@types/react@19.2.2)(bufferutil@4.0.9)(react@19.0.0)))(bufferutil@4.0.9)(graphql@16.8.1)(react-native-webview@13.15.0(react-native@0.79.6(@babel/core@7.28.5)(@types/react@19.2.2)(bufferutil@4.0.9)(react@19.0.0))(react@19.0.0))(react-native@0.79.6(@babel/core@7.28.5)(@types/react@19.2.2)(bufferutil@4.0.9)(react@19.0.0))(react@19.0.0))(react-native@0.79.6(@babel/core@7.28.5)(@types/react@19.2.2)(bufferutil@4.0.9)(react@19.0.0))(react@19.0.0)
       expo-web-browser: 14.2.0(expo@53.0.12(@babel/core@7.28.5)(@expo/metro-runtime@5.0.4(react-native@0.79.6(@babel/core@7.28.5)(@types/react@19.2.2)(bufferutil@4.0.9)(react@19.0.0)))(bufferutil@4.0.9)(graphql@16.8.1)(react-native-webview@13.15.0(react-native@0.79.6(@babel/core@7.28.5)(@types/react@19.2.2)(bufferutil@4.0.9)(react@19.0.0))(react@19.0.0))(react-native@0.79.6(@babel/core@7.28.5)(@types/react@19.2.2)(bufferutil@4.0.9)(react@19.0.0))(react@19.0.0))(react-native@0.79.6(@babel/core@7.28.5)(@types/react@19.2.2)(bufferutil@4.0.9)(react@19.0.0))
 
-  '@better-auth/stripe@https://pkg.pr.new/better-auth/better-auth/@better-auth/stripe@6230(@better-auth/core@1.4.2-beta.1(@better-auth/utils@0.3.0)(@better-fetch/fetch@1.1.18)(better-call@1.1.0)(jose@6.1.0)(kysely@0.28.8)(nanostores@1.0.1))(better-auth@https://pkg.pr.new/better-auth/better-auth@6230(react-dom@19.0.0(react@19.0.0))(react@19.0.0))(stripe@19.1.0(@types/node@24.10.0))':
+  '@better-auth/stripe@1.4.2-beta.4(@better-auth/core@1.4.2-beta.4(@better-auth/utils@0.3.0)(@better-fetch/fetch@1.1.18)(better-call@1.1.0)(jose@6.1.0)(kysely@0.28.8)(nanostores@1.0.1))(better-auth@1.4.2-beta.4(react-dom@19.0.0(react@19.0.0))(react@19.0.0))(stripe@19.1.0(@types/node@24.10.0))':
     dependencies:
-      '@better-auth/core': 1.4.2-beta.1(@better-auth/utils@0.3.0)(@better-fetch/fetch@1.1.18)(better-call@1.1.0)(jose@6.1.0)(kysely@0.28.8)(nanostores@1.0.1)
-      better-auth: https://pkg.pr.new/better-auth/better-auth@6230(react-dom@19.0.0(react@19.0.0))(react@19.0.0)
+      '@better-auth/core': 1.4.2-beta.4(@better-auth/utils@0.3.0)(@better-fetch/fetch@1.1.18)(better-call@1.1.0)(jose@6.1.0)(kysely@0.28.8)(nanostores@1.0.1)
+      better-auth: 1.4.2-beta.4(react-dom@19.0.0(react@19.0.0))(react@19.0.0)
       defu: 6.1.4
       stripe: 19.1.0(@types/node@24.10.0)
       zod: 4.1.12
@@ -18744,9 +18718,9 @@ snapshots:
       - kysely
       - nanostores
 
-  '@better-auth/telemetry@https://pkg.pr.new/better-auth/better-auth/@better-auth/telemetry@9145da710ebe69f8c16bca14e77ae512f4321bb6(@better-auth/core@https://pkg.pr.new/better-auth/better-auth/@better-auth/core@9145da710ebe69f8c16bca14e77ae512f4321bb6(@better-auth/utils@0.3.0)(@better-fetch/fetch@1.1.18)(better-call@1.1.0)(jose@6.1.0)(kysely@0.28.8)(nanostores@1.0.1))':
+  '@better-auth/telemetry@1.4.2-beta.4(@better-auth/core@1.4.2-beta.4(@better-auth/utils@0.3.0)(@better-fetch/fetch@1.1.18)(better-call@1.1.0)(jose@6.1.0)(kysely@0.28.8)(nanostores@1.0.1))':
     dependencies:
-      '@better-auth/core': https://pkg.pr.new/better-auth/better-auth/@better-auth/core@9145da710ebe69f8c16bca14e77ae512f4321bb6(@better-auth/utils@0.3.0)(@better-fetch/fetch@1.1.18)(better-call@1.1.0)(jose@6.1.0)(kysely@0.28.8)(nanostores@1.0.1)
+      '@better-auth/core': 1.4.2-beta.4(@better-auth/utils@0.3.0)(@better-fetch/fetch@1.1.18)(better-call@1.1.0)(jose@6.1.0)(kysely@0.28.8)(nanostores@1.0.1)
       '@better-auth/utils': 0.3.0
       '@better-fetch/fetch': 1.1.18
 
@@ -23808,7 +23782,7 @@ snapshots:
       debug: 2.6.9
       invariant: 2.2.4
       metro: 0.82.4(bufferutil@4.0.9)(utf-8-validate@6.0.5)
-      metro-config: 0.82.4(bufferutil@4.0.9)(utf-8-validate@6.0.5)
+      metro-config: 0.82.4(bufferutil@4.0.9)
       metro-core: 0.82.4
       semver: 7.7.3
     transitivePeerDependencies:
@@ -26255,10 +26229,10 @@ snapshots:
     transitivePeerDependencies:
       - better-sqlite3
 
-  better-auth@https://pkg.pr.new/better-auth/better-auth@6230(react-dom@19.0.0(react@19.0.0))(react@19.0.0):
+  better-auth@1.4.2-beta.4(react-dom@19.0.0(react@19.0.0))(react@19.0.0):
     dependencies:
-      '@better-auth/core': https://pkg.pr.new/better-auth/better-auth/@better-auth/core@9145da710ebe69f8c16bca14e77ae512f4321bb6(@better-auth/utils@0.3.0)(@better-fetch/fetch@1.1.18)(better-call@1.1.0)(jose@6.1.0)(kysely@0.28.8)(nanostores@1.0.1)
-      '@better-auth/telemetry': https://pkg.pr.new/better-auth/better-auth/@better-auth/telemetry@9145da710ebe69f8c16bca14e77ae512f4321bb6(@better-auth/core@https://pkg.pr.new/better-auth/better-auth/@better-auth/core@9145da710ebe69f8c16bca14e77ae512f4321bb6(@better-auth/utils@0.3.0)(@better-fetch/fetch@1.1.18)(better-call@1.1.0)(jose@6.1.0)(kysely@0.28.8)(nanostores@1.0.1))
+      '@better-auth/core': 1.4.2-beta.4(@better-auth/utils@0.3.0)(@better-fetch/fetch@1.1.18)(better-call@1.1.0)(jose@6.1.0)(kysely@0.28.8)(nanostores@1.0.1)
+      '@better-auth/telemetry': 1.4.2-beta.4(@better-auth/core@1.4.2-beta.4(@better-auth/utils@0.3.0)(@better-fetch/fetch@1.1.18)(better-call@1.1.0)(jose@6.1.0)(kysely@0.28.8)(nanostores@1.0.1))
       '@better-auth/utils': 0.3.0
       '@better-fetch/fetch': 1.1.18
       '@noble/ciphers': 2.0.1
@@ -31664,22 +31638,6 @@ snapshots:
       - supports-color
       - utf-8-validate
 
-  metro-config@0.82.4(bufferutil@4.0.9)(utf-8-validate@6.0.5):
-    dependencies:
-      connect: 3.7.0
-      cosmiconfig: 5.2.1
-      flow-enums-runtime: 0.0.6
-      jest-validate: 29.7.0
-      metro: 0.82.4(bufferutil@4.0.9)(utf-8-validate@6.0.5)
-      metro-cache: 0.82.4
-      metro-core: 0.82.4
-      metro-runtime: 0.82.4
-    transitivePeerDependencies:
-      - bufferutil
-      - supports-color
-      - utf-8-validate
-    optional: true
-
   metro-core@0.82.4:
     dependencies:
       flow-enums-runtime: 0.0.6
@@ -31865,7 +31823,7 @@ snapshots:
       metro-babel-transformer: 0.82.4
       metro-cache: 0.82.4
       metro-cache-key: 0.82.4
-      metro-config: 0.82.4(bufferutil@4.0.9)(utf-8-validate@6.0.5)
+      metro-config: 0.82.4(bufferutil@4.0.9)
       metro-core: 0.82.4
       metro-file-map: 0.82.4
       metro-resolver: 0.82.4
