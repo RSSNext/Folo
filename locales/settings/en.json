@@ -240,6 +240,8 @@
   "discoverFilters.title": "Discover Filters",
   "feeds.claim": "Claim Feeds",
   "feeds.claimTips": "To claim your feeds and receive tips, right-click on the feed in your subscription list and select Claim.",
+  "feeds.filter.all": "All ({{count}})",
+  "feeds.filter.rsshub": "RSSHub ({{count}})",
   "feeds.noFeeds": "No claimed feeds",
   "feeds.subscription": "Subscribed Feeds",
   "feeds.tableHeaders.date": "Subscribed Date",

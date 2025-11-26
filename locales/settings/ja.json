@@ -236,6 +236,8 @@
   "discoverFilters.title": "発見フィルタ",
   "feeds.claim": "フィードを認証",
   "feeds.claimTips": "フィードを認証してチップを受け取るには、購読リストのフィードを右クリックして「フィードをクレーム」を選択してください。",
+  "feeds.filter.all": "すべて ({{count}})",
+  "feeds.filter.rsshub": "RSSHub ({{count}})",
   "feeds.noFeeds": "認証されたフィードはありません",
   "feeds.subscription": "購読済みフィード",
   "feeds.tableHeaders.date": "購読日",

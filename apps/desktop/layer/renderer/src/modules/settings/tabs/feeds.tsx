@@ -6,6 +6,7 @@ import { LoadingCircle } from "@follow/components/ui/loading/index.jsx"
 import { RSSHubLogo } from "@follow/components/ui/platform-icon/icons.js"
 import { useScrollViewElement } from "@follow/components/ui/scroll-area/hooks.js"
 import { ScrollArea } from "@follow/components/ui/scroll-area/index.js"
+import { ResponsiveSelect } from "@follow/components/ui/select/responsive.js"
 import {
   Table,
   TableBody,
@@ -33,7 +34,7 @@ import { clsx, formatNumber, sortByAlphabet } from "@follow/utils/utils"
 import { useVirtualizer } from "@tanstack/react-virtual"
 import { AnimatePresence, m } from "motion/react"
 import type { FC } from "react"
-import { memo, useCallback, useMemo, useState } from "react"
+import { memo, useCallback, useEffect, useMemo, useState } from "react"
 import { useTranslation } from "react-i18next"
 
 import { useIsInMASReview } from "~/atoms/server-configs"
@@ -56,6 +57,7 @@ import { Queries } from "~/queries"
 
 type SortField = "name" | "view" | "date" | "subscriptionCount" | "updatesPerWeek"
 type SortDirection = "asc" | "desc"
+type FeedFilter = "all" | "rsshub"
 
 export const SettingFeeds = () => {
   const inMas = useIsInMASReview()
@@ -75,6 +77,42 @@ const SubscriptionFeedsSection = () => {
   const [selectedFeeds, setSelectedFeeds] = useState<Set<string>>(() => new Set())
   const [sortField, setSortField] = useState<SortField>("name")
   const [sortDirection, setSortDirection] = useState<SortDirection>("asc")
+  const [filter, setFilter] = useState<FeedFilter>("all")
+
+  // Calculate RSSHub feeds count
+  const rsshubFeedsCount = useMemo(() => {
+    return allFeeds.filter((feedId) => {
+      const feed = getFeedById(feedId)
+      return Boolean(feed?.url?.startsWith("rsshub://"))
+    }).length
+  }, [allFeeds])
+
+  // Filter feeds based on selected filter
+  const filteredFeeds = useMemo(() => {
+    if (filter === "all") {
+      return allFeeds
+    }
+    return allFeeds.filter((feedId) => {
+      const feed = getFeedById(feedId)
+      return Boolean(feed?.url?.startsWith("rsshub://"))
+    })
+  }, [allFeeds, filter])
+
+  // Clean up selectedFeeds when filter changes
+  const filteredFeedsSet = useMemo(() => new Set(filteredFeeds), [filteredFeeds])
+
+  // Clean selected feeds that are not in current filter
+  useEffect(() => {
+    setSelectedFeeds((prev) => {
+      const cleaned = new Set<string>()
+      prev.forEach((feedId) => {
+        if (filteredFeedsSet.has(feedId)) {
+          cleaned.add(feedId)
+        }
+      })
+      return cleaned
+    })
+  }, [filteredFeedsSet])
 
   const handleSort = useCallback(
     (field: SortField) => {
@@ -91,12 +129,12 @@ const SubscriptionFeedsSection = () => {
   const handleSelectAll = useCallback(
     (checked: boolean) => {
       if (checked) {
-        setSelectedFeeds(new Set(allFeeds))
+        setSelectedFeeds(new Set(filteredFeeds))
       } else {
         setSelectedFeeds(new Set())
       }
     },
-    [allFeeds],
+    [filteredFeeds],
   )
 
   const handleSelectFeed = useCallback((feedId: string, checked: boolean) => {
@@ -111,7 +149,7 @@ const SubscriptionFeedsSection = () => {
     })
   }, [])
 
-  const isAllSelected = allFeeds.length > 0 && selectedFeeds.size === allFeeds.length
+  const isAllSelected = filteredFeeds.length > 0 && selectedFeeds.size === filteredFeeds.length
 
   const presentDeleteSubscription = useConfirmUnsubscribeSubscriptionModal()
   const handleBatchUnsubscribe = useCallback(() => {
@@ -121,9 +159,29 @@ const SubscriptionFeedsSection = () => {
 
   return (
     <section className="relative mt-4">
-      <h2 className="mb-2 text-lg font-semibold">{t("feeds.subscription")}</h2>
+      <div className="mb-2 flex items-center justify-between gap-4">
+        <h2 className="text-lg font-semibold">{t("feeds.subscription")}</h2>
+        {allFeeds.length > 0 && (
+          <ResponsiveSelect
+            size="sm"
+            triggerClassName="w-36"
+            value={filter}
+            onValueChange={(value) => setFilter(value as FeedFilter)}
+            items={[
+              {
+                label: t("feeds.filter.all", { count: allFeeds.length }),
+                value: "all",
+              },
+              {
+                label: t("feeds.filter.rsshub", { count: rsshubFeedsCount }),
+                value: "rsshub",
+              },
+            ]}
+          />
+        )}
+      </div>
 
-      {allFeeds.length > 0 && (
+      {filteredFeeds.length > 0 && (
         <div className="mt-6 space-y-0.5">
           {/* Header - Sticky */}
           <div
@@ -190,7 +248,7 @@ const SubscriptionFeedsSection = () => {
           {/* Feed List */}
           <div className="relative">
             <SortedFeedsList
-              feeds={allFeeds}
+              feeds={filteredFeeds}
               sortField={sortField}
               sortDirection={sortDirection}
               selectedFeeds={selectedFeeds}
