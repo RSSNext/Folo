@@ -1,11 +1,11 @@
 import { cn } from "@follow/utils/utils"
 import type { ReactNode } from "react"
 import { useTranslation } from "react-i18next"
-import { useSearchParams } from "react-router"
 
 import { AppErrorBoundary } from "~/components/common/AppErrorBoundary"
 import { ErrorComponentType } from "~/components/errors/enum"
 import { useSubViewTitle } from "~/modules/app-layout/subview/hooks"
+import { useHasDiscoverSearchData } from "~/modules/discover/atoms/discover"
 import { DiscoveryContent } from "~/modules/discover/DiscoveryContent"
 import { UnifiedDiscoverForm } from "~/modules/discover/UnifiedDiscoverForm"
 
@@ -28,10 +28,9 @@ function Section({ children, className }: SectionProps) {
 
 export function Component() {
   const { t } = useTranslation()
-  const [searchParams] = useSearchParams()
-  const keyword = searchParams.get("keyword")
-  const isSearching = !!keyword?.trim()
+
   useSubViewTitle("words.discover")
+  const hasSearchData = useHasDiscoverSearchData()
 
   return (
     <div className="flex size-full flex-col px-6 py-8">
@@ -51,7 +50,7 @@ export function Component() {
       </Section>
 
       {/* Discovery Section - Hide when searching */}
-      {!isSearching && (
+      {!hasSearchData && (
         <Section>
           <AppErrorBoundary errorType={ErrorComponentType.RSSHubDiscoverError}>
             <DiscoveryContent />
