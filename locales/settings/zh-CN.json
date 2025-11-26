@@ -235,6 +235,8 @@
   "discoverFilters.title": "发现筛选",
   "feeds.claim": "认证订阅源",
   "feeds.claimTips": "要认证你的订阅源并接收打赏，请在订阅列表中右键点击订阅源并选择「认证」。",
+  "feeds.filter.all": "全部 ({{count}})",
+  "feeds.filter.rsshub": "RSSHub ({{count}})",
   "feeds.noFeeds": "没有已认证的订阅源",
   "feeds.subscription": "已订阅的订阅源",
   "feeds.tableHeaders.date": "订阅日期",
