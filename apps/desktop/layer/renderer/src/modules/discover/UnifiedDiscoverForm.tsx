@@ -19,7 +19,7 @@ import { useMutation } from "@tanstack/react-query"
 import { produce } from "immer"
 import { atom, useAtomValue, useStore } from "jotai"
 import type { ChangeEvent, CompositionEvent } from "react"
-import { startTransition, useCallback, useEffect, useMemo } from "react"
+import { startTransition, useCallback, useEffect, useMemo, useRef } from "react"
 import { useForm } from "react-hook-form"
 import { useTranslation } from "react-i18next"
 import { useSearchParams } from "react-router"
@@ -120,7 +120,7 @@ export function UnifiedDiscoverForm() {
 
   const { watch, trigger } = form
   const target = watch("target")
-  const atomKey = keywordFromSearch + target
+  const atomKey = useRef(keywordFromSearch + target)
 
   // Validate default value from search params
   useEffect(() => {
@@ -130,7 +130,7 @@ export function UnifiedDiscoverForm() {
     trigger("keyword")
   }, [trigger, keywordFromSearch])
 
-  const discoverSearchData = useAtomValue(discoverSearchDataAtom)?.[atomKey] || []
+  const discoverSearchData = useAtomValue(discoverSearchDataAtom)?.[atomKey.current] || []
 
   const mutation = useMutation({
     mutationFn: async ({ keyword, target }: { keyword: string; target: "feeds" | "lists" }) => {
@@ -172,7 +172,7 @@ export function UnifiedDiscoverForm() {
 
       jotaiStore.set(discoverSearchDataAtom, (prev) => ({
         ...prev,
-        [atomKey]: data,
+        [atomKey.current]: data,
       }))
 
       return data
@@ -238,7 +238,7 @@ export function UnifiedDiscoverForm() {
       jotaiStore.set(
         discoverSearchDataAtom,
         produce(currentData, (draft) => {
-          const sub = (draft[atomKey] || []).find((i) => {
+          const sub = (draft[atomKey.current] || []).find((i) => {
             if (item.feed) {
               return i.feed?.id === item.feed.id
             }
@@ -262,7 +262,7 @@ export function UnifiedDiscoverForm() {
       jotaiStore.set(
         discoverSearchDataAtom,
         produce(currentData, (draft) => {
-          const sub = (draft[atomKey] || []).find(
+          const sub = (draft[atomKey.current] || []).find(
             (i) => i.feed?.id === item.feed?.id || i.list?.id === item.list?.id,
           )
           if (!sub) return
@@ -286,6 +286,7 @@ export function UnifiedDiscoverForm() {
     if (!ensureLogin()) {
       return
     }
+    atomKey.current = values.keyword + values.target
     mutation.mutate({ keyword: values.keyword, target: values.target })
   }
 
@@ -473,7 +474,7 @@ export function UnifiedDiscoverForm() {
                 onClick={() => {
                   jotaiStore.set(discoverSearchDataAtom, {
                     ...jotaiStore.get(discoverSearchDataAtom),
-                    [atomKey]: [],
+                    [atomKey.current]: [],
                   })
                   mutation.reset()
                 }}
