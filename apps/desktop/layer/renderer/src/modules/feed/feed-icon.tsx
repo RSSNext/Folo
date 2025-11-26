@@ -9,6 +9,8 @@ import { m } from "motion/react"
 import type { ReactNode } from "react"
 import { useMemo } from "react"
 
+import { useCanUseImageProxy } from "~/lib/img-proxy"
+
 const { Avatar, AvatarFallback, AvatarImage } = AvatarPrimitive
 
 // Size-responsive border radius utility function
@@ -27,9 +29,19 @@ type GetIconPropsProps = {
   fallbackUrl?: string
   fallback?: boolean
   size?: number
+  canUseProxy?: boolean
 }
 function getIconProps(props: GetIconPropsProps) {
-  const { target, entry, useMedia, siteUrl: propSiteUrl, fallbackUrl, fallback, size = 20 } = props
+  const {
+    target,
+    entry,
+    useMedia,
+    siteUrl: propSiteUrl,
+    fallbackUrl,
+    fallback,
+    size = 20,
+    canUseProxy,
+  } = props
   const image =
     (useMedia ? entry?.firstPhotoUrl || entry?.authorAvatar : entry?.authorAvatar) || target?.image
   const siteUrl = (target as FeedModel)?.siteUrl || fallbackUrl
@@ -37,6 +49,7 @@ function getIconProps(props: GetIconPropsProps) {
   if (propSiteUrl && !target) {
     const [src] = getFeedIconSrc({
       siteUrl: propSiteUrl,
+      canUseProxy,
     })
     return {
       type: "image" as const,
@@ -52,6 +65,7 @@ function getIconProps(props: GetIconPropsProps) {
         url: image,
         width: size * 2,
         height: size * 2,
+        canUseProxy,
       }),
       platformUrl: image,
       fallbackSrc: "",
@@ -66,6 +80,7 @@ function getIconProps(props: GetIconPropsProps) {
         width: size * 2,
         height: size * 2,
       },
+      canUseProxy,
     })
     return {
       type: "image" as const,
@@ -96,11 +111,13 @@ const getFeedIconSrc = ({
   siteUrl,
   fallback,
   proxy,
+  canUseProxy,
 }: {
   src?: string
   siteUrl?: string
   fallback?: boolean
   proxy?: { height: number; width: number }
+  canUseProxy?: boolean
 } = {}) => {
   if (src) {
     if (proxy) {
@@ -109,6 +126,7 @@ const getFeedIconSrc = ({
           url: src,
           width: proxy.width,
           height: proxy.height,
+          canUseProxy,
         }),
         "",
       ]
@@ -200,7 +218,17 @@ export function FeedIcon({
   noMargin?: boolean
 }) {
   const marginClassName = cn(noMargin ? "" : "mr-2", className)
-  const iconProps = getIconProps({ target, entry, useMedia, siteUrl, fallbackUrl, fallback, size })
+  const canUseProxy = useCanUseImageProxy()
+  const iconProps = getIconProps({
+    target,
+    entry,
+    useMedia,
+    siteUrl,
+    fallbackUrl,
+    fallback,
+    size,
+    canUseProxy,
+  })
 
   const colors = useMemo(
     () => getBackgroundGradient(target?.title || (target as FeedModel)?.url || siteUrl || ""),

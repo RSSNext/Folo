@@ -5,6 +5,7 @@ import { useCallback } from "react"
 
 import { useEntry, useEntryList } from "../entry/hooks"
 import type { EntryModel } from "../entry/types"
+import { useIsLoggedIn } from "../user/hooks"
 import { translationSyncService, useTranslationStore } from "./store"
 
 export const usePrefetchEntryTranslation = ({
@@ -24,24 +25,27 @@ export const usePrefetchEntryTranslation = ({
     (entry) => entry !== null && (enabled || !!entry?.settings?.translation),
   ) || []) as EntryModel[]
 
+  const isLoggedIn = useIsLoggedIn()
   return useQueries({
-    queries: entryList.map((entry) => {
-      const entryId = entry.id
-      const targetContent =
-        target === "readabilityContent" ? entry.readabilityContent : entry.content
-      const finalWithContent = withContent && !!targetContent
+    queries: isLoggedIn
+      ? entryList.map((entry) => {
+          const entryId = entry.id
+          const targetContent =
+            target === "readabilityContent" ? entry.readabilityContent : entry.content
+          const finalWithContent = withContent && !!targetContent
 
-      return {
-        queryKey: ["translation", entryId, language, finalWithContent, target],
-        queryFn: () =>
-          translationSyncService.generateTranslation({
-            entryId,
-            language,
-            withContent: finalWithContent,
-            target,
-          }),
-      }
-    }),
+          return {
+            queryKey: ["translation", entryId, language, finalWithContent, target],
+            queryFn: () =>
+              translationSyncService.generateTranslation({
+                entryId,
+                language,
+                withContent: finalWithContent,
+                target,
+              }),
+          }
+        })
+      : [],
   })
 }
 

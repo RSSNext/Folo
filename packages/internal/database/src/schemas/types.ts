@@ -60,6 +60,11 @@ export type ExtraModel = {
   title_keyword?: string
 }
 
+export type EntryTagSummary = {
+  schemaOrgCategory: string | null
+  mediaTopics: string[]
+}
+
 // export { ImageColorsResult } from "react-native-image-colors"
 
 interface AndroidImageColors {

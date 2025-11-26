@@ -33,7 +33,6 @@ export class BlockSliceAction {
     mainView: "mainView",
     mainEntry: "mainEntry",
     mainFeed: "mainFeed",
-    selectedText: "selectedText",
     unreadOnly: "unreadOnly",
   }
   get set() {

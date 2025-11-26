@@ -153,6 +153,7 @@ export default ({ mode }) => {
           injectRegister: false,
 
           injectManifest: {
+            injectionPoint: undefined,
             globPatterns: [
               "**/*.{js,json,css,html,txt,svg,png,ico,webp,woff,woff2,ttf,eot,otf,wasm}",
             ],

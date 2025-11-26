@@ -28,7 +28,8 @@ import type { UniversalItemProps } from "../types"
 
 const entrySelector = (state: EntryModel) => {
   /// keep-sorted
-  const { authorAvatar, authorUrl, description, feedId, inboxHandle, publishedAt, title } = state
+  const { authorAvatar, authorUrl, description, feedId, inboxHandle, publishedAt, tags, title } =
+    state
 
   const audios = state.attachments?.filter((a) => a.mime_type?.startsWith("audio") && a.url)
   const firstAudio = audios?.[0]
@@ -48,6 +49,7 @@ const entrySelector = (state: EntryModel) => {
     firstPhotoUrl,
     inboxId: inboxHandle,
     publishedAt,
+    tags: tags ?? null,
     title,
   }
 }
@@ -183,7 +185,7 @@ export function ListItem({
       >
         <div
           className={cn(
-            "flex gap-1 text-[10px] font-bold",
+            "flex min-w-0 items-center gap-1 text-[10px] font-bold",
             "text-text-secondary",
             isInCollection && "text-text-secondary",
             isRead && dimRead && "text-text-tertiary",
@@ -196,7 +198,7 @@ export function ListItem({
               className="space-x-0.5"
             />
           </EllipsisHorizontalTextWithTooltip>
-          <span>·</span>
+          <span className="shrink-0">·</span>
           <span className="shrink-0">{!!displayTime && <RelativeTime date={displayTime} />}</span>
         </div>
         <div
@@ -269,7 +271,10 @@ export function ListItem({
           type={entry.firstMedia.type}
           previewImageUrl={entry.firstMedia.preview_image_url}
           className={cn("center ml-2 flex shrink-0 rounded", "size-20")}
-          mediaContainerClassName={"w-auto h-auto rounded"}
+          mediaContainerClassName={cn(
+            "size-auto rounded",
+            thumbnailRatio === "square" && "aspect-square object-cover",
+          )}
           loading="lazy"
           key={`${rid}-media-${thumbnailRatio}`}
           proxy={{

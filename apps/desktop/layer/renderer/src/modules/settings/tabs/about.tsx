@@ -11,10 +11,12 @@ import { useEffect, useRef, useState } from "react"
 import { Trans, useTranslation } from "react-i18next"
 import { toast } from "sonner"
 
+import { PlainWithAnimationModal } from "~/components/ui/modal/stacked/custom-modal"
 import { useModalStack } from "~/components/ui/modal/stacked/hooks"
 import { ipcServices } from "~/lib/client"
 import { getNewIssueUrl } from "~/lib/issues"
 import { EnvironmentDebugModalContent } from "~/modules/app/EnvironmentIndicator"
+import { AppTipModalContent } from "~/modules/app-tip"
 
 export const SettingAbout = () => {
   const { t } = useTranslation("settings")
@@ -99,6 +101,19 @@ export const SettingAbout = () => {
   const handleOpenLegal = (type: "privacy" | "tos") => {
     const path = type === "privacy" ? "privacy-policy" : "terms-of-service"
     window.open(`https://folo.is/${path}`, "_blank")
+  }
+
+  const handleOpenAiOnboarding = () => {
+    present({
+      title: "App Tip",
+      content: () => <AppTipModalContent />,
+      CustomModalComponent: PlainWithAnimationModal,
+      modalContainerClassName: "flex items-center justify-center",
+      modalClassName: "w-full max-w-5xl",
+      canClose: true,
+      clickOutsideToDismiss: false,
+      overlay: false,
+    })
   }
 
   return (
@@ -187,6 +202,17 @@ export const SettingAbout = () => {
             <div className="text-xs text-text-tertiary">{t("about.changelogDescription")}</div>
           </div>
           <i className="i-mgc-external-link-cute-re text-base text-text-tertiary transition-all group-hover:-translate-y-0.5 group-hover:translate-x-0.5 group-hover:text-accent" />
+        </button>
+        <button
+          type="button"
+          onClick={handleOpenAiOnboarding}
+          className="group flex w-full items-center justify-between rounded-lg p-3 text-left transition-all hover:bg-fill-secondary hover:shadow-sm"
+        >
+          <div>
+            <div className="text-sm font-medium">{t("about.appTip")}</div>
+            <div className="text-xs text-text-tertiary">{t("about.appTipDescription")}</div>
+          </div>
+          <i className="i-mingcute-sparkles-2-line text-base text-text-tertiary transition-all group-hover:-translate-y-0.5 group-hover:translate-x-0.5 group-hover:text-accent" />
         </button>
       </div>
 

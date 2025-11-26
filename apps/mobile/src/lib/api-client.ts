@@ -15,7 +15,7 @@ import { proxyEnv } from "./proxy-env"
 
 export const followClient = new FollowClient({
   credentials: "omit",
-  timeout: 10000,
+  timeout: 30000,
   baseURL: proxyEnv.API_URL,
   fetch: async (input, options = {}) => fetch(input.toString(), options as any) as any,
 })

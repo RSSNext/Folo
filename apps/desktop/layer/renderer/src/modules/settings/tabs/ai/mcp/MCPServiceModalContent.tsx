@@ -93,7 +93,7 @@ export const MCPServiceModalContent = ({
               <SelectTrigger>
                 <SelectValue placeholder="Select transport type" />
               </SelectTrigger>
-              <SelectContent position="item-aligned">
+              <SelectContent>
                 <SelectItem value="streamable-http">Streamable HTTP</SelectItem>
                 <SelectItem value="sse">Server-Sent Events</SelectItem>
               </SelectContent>

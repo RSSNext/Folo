@@ -1,9 +1,10 @@
 import { Spring } from "@follow/components/constants/spring.js"
 import { useEntry } from "@follow/store/entry/hooks"
 import { cn } from "@follow/utils/utils"
+import * as Slider from "@radix-ui/react-slider"
 import dayjs from "dayjs"
 import { AnimatePresence, m } from "motion/react"
-import { useCallback, useMemo } from "react"
+import { useCallback, useMemo, useState } from "react"
 
 import { AudioPlayer, useAudioPlayerAtomSelector } from "~/atoms/player"
 
@@ -55,6 +56,10 @@ export const ArticleAudioPlayer: React.FC<AudioPlayerProps> = ({ entryId, classN
   const isPlaying = isCurrentAudio && status === "playing"
   const isLoading = isCurrentAudio && status === "loading"
 
+  // Slider drag state
+  const [isDragging, setIsDragging] = useState(false)
+  const [dragValue, setDragValue] = useState(0)
+
   const handlePlayAudio = useCallback(() => {
     if (!audioAttachment) return
 
@@ -96,132 +101,202 @@ export const ArticleAudioPlayer: React.FC<AudioPlayerProps> = ({ entryId, classN
   const displayHasValidDuration =
     displayDuration && displayDuration > 0 && displayDuration !== Infinity
 
-  const handleProgressClick = useCallback(
-    (event: React.MouseEvent<HTMLDivElement>) => {
+  const handleSliderValueChange = useCallback(
+    (value: number[]) => {
       if (!isCurrentAudio || !displayHasValidDuration) return
-
-      const rect = event.currentTarget.getBoundingClientRect()
-      const clickX = event.clientX - rect.left
-      const progressPercent = clickX / rect.width
-      const newTime = progressPercent * displayDuration
-
-      AudioPlayer.seek(newTime)
+      setDragValue(value[0]!)
     },
-    [isCurrentAudio, displayHasValidDuration, displayDuration],
+    [isCurrentAudio, displayHasValidDuration],
   )
 
-  const currentTimeDisplay = formatDuration(displayCurrentTime)
-  const durationDisplay = formatDuration(displayDuration)
+  const handleSliderValueCommit = useCallback(
+    (value: number[]) => {
+      if (!isCurrentAudio || !displayHasValidDuration) return
+      AudioPlayer.seek(value[0]!)
+      setIsDragging(false)
+    },
+    [isCurrentAudio, displayHasValidDuration],
+  )
 
   // Don't render if no audio attachment
   if (!audioAttachment) {
     return null
   }
 
-  const progressPercent = displayHasValidDuration ? (displayCurrentTime / displayDuration) * 100 : 0
+  // Calculate slider value - use drag value when dragging, otherwise use current time
+  const sliderValue = isDragging ? dragValue : displayCurrentTime
+  const currentTimeDisplay = formatDuration(sliderValue)
+  const durationDisplay = formatDuration(displayDuration)
 
   return (
     <AnimatePresence>
       <m.div
-        initial={{ opacity: 0, scale: 0.95 }}
-        animate={{ opacity: 1, scale: 1 }}
-        exit={{ opacity: 0, scale: 0.95 }}
+        initial={{ opacity: 0, y: 8 }}
+        animate={{ opacity: 1, y: 0 }}
+        exit={{ opacity: 0, y: 8 }}
         transition={Spring.presets.smooth}
-        className={cn(
-          "rounded-lg border border-border bg-theme-background p-4 shadow-sm",
-          "my-4 w-full",
-          className,
-        )}
+        className={cn("relative my-4 w-full rounded-2xl border backdrop-blur-2xl", className)}
+        style={{
+          backgroundImage:
+            "linear-gradient(to bottom right, rgba(var(--color-background) / 0.98), rgba(var(--color-background) / 0.95))",
+          borderColor: "hsl(var(--fo-a) / 0.2)",
+        }}
       >
-        {/* Control buttons and progress bar */}
-        <div className="flex items-center gap-3">
-          {/* Control buttons */}
-          <div className="flex shrink-0 items-center gap-1">
-            {/* Skip Back 10s */}
-            <button
-              type="button"
-              onClick={handleBack}
-              disabled={!isCurrentAudio}
-              className={cn(
-                "flex size-8 items-center justify-center rounded-full transition-colors hover:bg-theme-item-hover",
-                !isCurrentAudio && "cursor-not-allowed opacity-50",
-              )}
-              title="Back 10s"
-            >
-              <i className="i-mgc-back-2-cute-re size-4" />
-            </button>
+        {/* Inner glow layer */}
+        <div
+          className="pointer-events-none absolute inset-0 rounded-2xl"
+          style={{
+            background:
+              "linear-gradient(to bottom right, hsl(var(--fo-a) / 0.05), transparent, hsl(var(--fo-a) / 0.05))",
+          }}
+        />
 
-            {/* Play/Pause Button */}
-            <button
-              type="button"
-              onClick={handlePlayAudio}
-              disabled={!audioAttachment}
-              className={cn(
-                "flex size-10 items-center justify-center rounded-full bg-accent text-white transition-all duration-200 hover:bg-accent/90",
-                "shadow-md hover:shadow-lg",
-                !audioAttachment && "cursor-not-allowed opacity-50",
-              )}
-              title={isPlaying ? "Pause" : "Play"}
-            >
-              {isLoading ? (
-                <i className="i-mgc-loading-3-cute-re size-5 animate-spin" />
-              ) : isPlaying ? (
-                <i className="i-mgc-pause-cute-fi size-5" />
-              ) : (
-                <i className="i-mgc-play-cute-fi size-5" />
-              )}
-            </button>
-
-            {/* Skip Forward 10s */}
-            <button
-              type="button"
-              onClick={handleForward}
-              disabled={!isCurrentAudio}
-              className={cn(
-                "flex size-8 items-center justify-center rounded-full transition-colors hover:bg-theme-item-hover",
-                !isCurrentAudio && "cursor-not-allowed opacity-50",
-              )}
-              title="Forward 10s"
-            >
-              <i className="i-mgc-forward-2-cute-re size-4" />
-            </button>
-          </div>
-
-          {/* Progress Bar Container */}
-          <div className="flex-1">
-            <div
-              className="group h-2 w-full cursor-pointer rounded-full bg-border"
-              onClick={handleProgressClick}
-            >
-              <div
-                className="relative h-full rounded-full bg-accent transition-all duration-200"
-                style={{ width: `${progressPercent}%` }}
+        {/* Content */}
+        <div className="relative p-5">
+          {/* Control buttons and progress bar */}
+          <div className="flex items-center gap-4">
+            {/* Control buttons */}
+            <div className="flex shrink-0 items-center gap-2">
+              {/* Skip Back 10s */}
+              <button
+                type="button"
+                onClick={handleBack}
+                disabled={!isCurrentAudio}
+                className={cn(
+                  "group relative flex size-9 items-center justify-center rounded-full border",
+                  "transition-all duration-300",
+                  !isCurrentAudio && "cursor-not-allowed bg-transparent opacity-40",
+                  isCurrentAudio &&
+                    "hover:[background:linear-gradient(to_right,hsl(var(--fo-a)/0.08),hsl(var(--fo-a)/0.05))_!important] hover:[border-color:hsl(var(--fo-a)/0.25)_!important]",
+                )}
+                style={{
+                  background: !isCurrentAudio
+                    ? undefined
+                    : "linear-gradient(to bottom right, rgba(var(--color-background) / 0.6), rgba(var(--color-background) / 0.4))",
+                  borderColor: "hsl(var(--fo-a) / 0.15)",
+                }}
+                title="Back 10s"
               >
-                {/* Hover indicator */}
-                <div className="absolute right-0 top-1/2 size-4 -translate-y-1/2 translate-x-1/2 opacity-0 transition-opacity group-hover:opacity-100">
-                  <div className="size-full rounded-full bg-white" />
-                </div>
+                <i className="i-mgc-back-2-cute-re size-4 text-text-secondary transition-colors group-hover:text-text" />
+              </button>
+
+              {/* Play/Pause Button */}
+              <button
+                type="button"
+                onClick={handlePlayAudio}
+                disabled={!audioAttachment}
+                className={cn(
+                  "group relative flex size-12 items-center justify-center rounded-full border",
+                  "transition-all duration-300",
+                  !audioAttachment && "cursor-not-allowed opacity-50",
+                )}
+                style={{
+                  background:
+                    "linear-gradient(135deg, hsl(var(--fo-a) / 0.9), hsl(var(--fo-a) / 0.75))",
+                  borderColor: "hsl(var(--fo-a) / 0.4)",
+                }}
+                title={isPlaying ? "Pause" : "Play"}
+              >
+                {isLoading ? (
+                  <i className="i-mgc-loading-3-cute-re size-6 animate-spin text-white" />
+                ) : isPlaying ? (
+                  <i className="i-mgc-pause-cute-fi size-6 text-white" />
+                ) : (
+                  <i className="i-mgc-play-cute-fi size-6 text-white" />
+                )}
+              </button>
+
+              {/* Skip Forward 10s */}
+              <button
+                type="button"
+                onClick={handleForward}
+                disabled={!isCurrentAudio}
+                className={cn(
+                  "group relative flex size-9 items-center justify-center rounded-full border",
+                  "transition-all duration-300",
+                  !isCurrentAudio && "cursor-not-allowed bg-transparent opacity-40",
+                  isCurrentAudio &&
+                    "hover:[background:linear-gradient(to_right,hsl(var(--fo-a)/0.08),hsl(var(--fo-a)/0.05))_!important] hover:[border-color:hsl(var(--fo-a)/0.25)_!important]",
+                )}
+                style={{
+                  background: !isCurrentAudio
+                    ? undefined
+                    : "linear-gradient(to bottom right, rgba(var(--color-background) / 0.6), rgba(var(--color-background) / 0.4))",
+                  borderColor: "hsl(var(--fo-a) / 0.15)",
+                }}
+                title="Forward 10s"
+              >
+                <i className="i-mgc-forward-2-cute-re size-4 text-text-secondary transition-colors group-hover:text-text" />
+              </button>
+            </div>
+
+            {/* Progress Bar Container */}
+            <div className="flex-1">
+              {displayHasValidDuration ? (
+                <Slider.Root
+                  className="group relative flex h-2.5 w-full touch-none select-none items-center"
+                  min={0}
+                  max={displayDuration}
+                  step={0.1}
+                  value={[sliderValue]}
+                  disabled={!isCurrentAudio}
+                  onPointerDown={() => {
+                    if (isCurrentAudio) {
+                      setIsDragging(true)
+                      setDragValue(displayCurrentTime)
+                    }
+                  }}
+                  onValueChange={handleSliderValueChange}
+                  onValueCommit={handleSliderValueCommit}
+                >
+                  <Slider.Track className="relative h-2.5 w-full grow overflow-hidden rounded-full border border-fill bg-fill-secondary">
+                    <Slider.Range className="absolute inset-y-0 rounded-full bg-accent" />
+                  </Slider.Track>
+
+                  <Slider.Thumb
+                    className="block size-3.5 rounded-full border-2 border-white bg-accent opacity-0 transition-opacity focus-visible:opacity-100 focus-visible:outline-none group-hover:opacity-100"
+                    aria-label="Progress"
+                  />
+                </Slider.Root>
+              ) : (
+                <div
+                  className="relative h-2.5 w-full overflow-hidden rounded-full border"
+                  style={{
+                    background:
+                      "linear-gradient(to right, hsl(var(--fo-a) / 0.1), hsl(var(--fo-a) / 0.08))",
+                    borderColor: "hsl(var(--fo-a) / 0.15)",
+                  }}
+                />
+              )}
+            </div>
+
+            {/* Time Display and Download */}
+            <div className="flex shrink-0 items-center gap-3">
+              <div className="flex gap-1.5 text-xs">
+                <span className="font-mono text-text-secondary">{currentTimeDisplay}</span>
+                <span className="text-text-tertiary">/</span>
+                <span className="font-mono text-text-secondary">{durationDisplay}</span>
               </div>
-            </div>
-          </div>
 
-          {/* Time Display and Download */}
-          <div className="flex shrink-0 items-center gap-2">
-            <div className="flex gap-1 text-xs">
-              <span className="font-mono text-text-secondary">{currentTimeDisplay}</span>
-              <span className="text-text-secondary">/</span>
-              <span className="font-mono text-text-secondary">{durationDisplay}</span>
-            </div>
+              {/* Divider */}
+              <div
+                className="h-12 w-px"
+                style={{
+                  background:
+                    "linear-gradient(to bottom, transparent, hsl(var(--fo-a) / 0.2), transparent)",
+                }}
+              />
 
-            {/* Download Button */}
-            <button
-              type="button"
-              onClick={handleDownload}
-              className="flex size-7 items-center justify-center rounded-full text-text-secondary transition-colors hover:text-text"
-              title="Download"
-            >
-              <i className="i-mgc-download-2-cute-re size-3.5" />
-            </button>
+              {/* Download Button */}
+              <button
+                type="button"
+                onClick={handleDownload}
+                className="group relative flex size-8 items-center justify-center rounded-full bg-transparent transition-all duration-300 hover:[background:linear-gradient(to_right,hsl(var(--fo-a)/0.08),hsl(var(--fo-a)/0.05))] hover:[border-color:hsl(var(--fo-a)/0.25)]"
+                title="Download"
+              >
+                <i className="i-mgc-download-2-cute-re size-4 text-text-secondary transition-colors group-hover:text-text" />
+              </button>
+            </div>
           </div>
         </div>
       </m.div>

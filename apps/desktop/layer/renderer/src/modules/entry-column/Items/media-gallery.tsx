@@ -1,10 +1,10 @@
 import { useEntry } from "@follow/store/entry/hooks"
-import { getImageProxyUrl } from "@follow/utils/img-proxy"
 import { cn } from "@follow/utils/utils"
 import { useMemo } from "react"
 
 import { usePreviewMedia } from "~/components/ui/media/hooks"
 import { Media } from "~/components/ui/media/Media"
+import { useGetImageProxyUrl } from "~/lib/img-proxy"
 import { jotaiStore } from "~/lib/jotai"
 
 import { socialMediaContentWidthAtom } from "../atoms/social-media-content-width"
@@ -16,6 +16,7 @@ export const MediaGallery = ({
   entryId: string
   containerWidth?: number
 }) => {
+  const getImageProxyUrl = useGetImageProxyUrl()
   const entry = useEntry(entryId, (state) => ({ media: state.media }))
   const media = useMemo(() => entry?.media || [], [entry?.media])
 

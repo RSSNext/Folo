@@ -1,35 +1,33 @@
 import { Button } from "@follow/components/ui/button/index.js"
 import { Tooltip, TooltipContent, TooltipTrigger } from "@follow/components/ui/tooltip/index.jsx"
-import { env } from "@follow/shared/env.desktop"
-import HCaptcha from "@hcaptcha/react-hcaptcha"
-import { useRef } from "react"
 import { Trans, useTranslation } from "react-i18next"
 
 import { useServerConfigs } from "~/atoms/server-configs"
+import { useRecaptchaToken } from "~/hooks/common"
 import { useClaimCheck, useClaimWalletDailyRewardMutation } from "~/queries/wallet"
 
 export const ClaimDailyReward = () => {
   const mutation = useClaimWalletDailyRewardMutation()
-  const { t } = useTranslation("settings")
+  const { t } = useTranslation(["settings", "app"])
 
   const check = useClaimCheck()
   const canClaim = check.data?.data
 
   const serverConfigs = useServerConfigs()
 
-  const captchaRef = useRef<HCaptcha>(null)
+  const requestRecaptchaToken = useRecaptchaToken()
 
   return (
     <Tooltip>
       <TooltipTrigger asChild>
         <>
-          <HCaptcha ref={captchaRef} sitekey={env.VITE_HCAPTCHA_SITE_KEY} size="invisible" />
           <Button
             variant="primary"
             isLoading={mutation.isPending}
             onClick={async () => {
-              const response = await captchaRef.current?.execute({ async: true })
-              mutation.mutate({ tokenV2: response?.response })
+              const recaptchaToken = await requestRecaptchaToken("desktop_wallet_daily_reward")
+
+              mutation.mutate({ tokenV3: recaptchaToken })
             }}
             disabled={!canClaim}
           >

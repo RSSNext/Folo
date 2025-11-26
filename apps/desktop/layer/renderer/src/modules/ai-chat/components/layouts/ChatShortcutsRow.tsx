@@ -151,15 +151,18 @@ const ShortcutMenuButton: React.FC<ShortcutMenuButtonProps> = ({
           new MenuItemText({
             label: t("shortcuts.actions.edit"),
             click: () => onEdit(shortcut),
+            requiresLogin: true,
           }),
           new MenuItemText({
             label: t("shortcuts.actions.disable"),
             click: () => onDisable(shortcut.id),
+            requiresLogin: true,
           }),
           !isProtected
             ? new MenuItemText({
                 label: t("shortcuts.actions.delete"),
                 click: () => onDelete(shortcut.id),
+                requiresLogin: true,
               })
             : null,
         ],
@@ -171,7 +174,6 @@ const ShortcutMenuButton: React.FC<ShortcutMenuButtonProps> = ({
   return (
     <div {...contextMenuProps}>
       <ShortcutTooltip
-        asChild={false}
         name={shortcut.name}
         prompt={shortcut.prompt || shortcut.defaultPrompt}
         hotkey={shortcut.hotkey}

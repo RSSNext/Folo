@@ -42,7 +42,7 @@ export const FeedClaimModalContent: FC<{
 
   if (isLoading) {
     return (
-      <div className="center h-32 lg:w-[650px]">
+      <div className="center h-32 w-[650px]">
         <LoadingCircle size="large" />
       </div>
     )
@@ -53,7 +53,7 @@ export const FeedClaimModalContent: FC<{
   }
 
   return (
-    <div className="mx-auto w-full max-w-[650px]">
+    <div className="mx-auto w-[650px]">
       <Card className="mb-2">
         <CardHeader>
           <FollowSummary feed={feed} />

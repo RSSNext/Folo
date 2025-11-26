@@ -1,4 +1,5 @@
 import { ScrollArea } from "@follow/components/ui/scroll-area/index.js"
+import { useIsLoggedIn } from "@follow/store/user/hooks"
 import { clsx, cn } from "@follow/utils"
 import { repository } from "@pkg"
 import type { FC } from "react"
@@ -8,6 +9,7 @@ import {
   useDeferredValue,
   useEffect,
   useLayoutEffect,
+  useMemo,
   useRef,
   useState,
 } from "react"
@@ -15,13 +17,15 @@ import { Trans } from "react-i18next"
 import { useLoaderData } from "react-router"
 
 import { ModalClose } from "~/components/ui/modal/stacked/components"
+import { useRequireLogin } from "~/hooks/common/useRequireLogin"
 import { SettingsTitle } from "~/modules/settings/title"
 
+import { isGuestAccessibleSettingTab } from "../constants"
 import { useAvailableSettings } from "../hooks/use-setting-ctx"
 import { SettingSectionHighlightIdContext } from "../section"
 import { getSettingPages } from "../settings-glob"
 import type { SettingPageConfig } from "../utils"
-import { SettingTabProvider, useSettingTab } from "./context"
+import { SettingTabProvider, useSetSettingTab, useSettingTab } from "./context"
 import { SettingModalLayout } from "./layout"
 
 export const SettingModalContent: FC<{
@@ -32,8 +36,18 @@ export const SettingModalContent: FC<{
 
   const availableSettings = useAvailableSettings()
 
-  const resolvedInitialTab =
-    initialTab && initialTab in pages ? initialTab : availableSettings[0]!.path
+  const fallbackTab = availableSettings[0]?.path
+  const availablePaths = useMemo(
+    () => new Set(availableSettings.map((setting) => setting.path)),
+    [availableSettings],
+  )
+  const canUseInitialTab =
+    typeof initialTab === "string" && initialTab in pages && availablePaths.has(initialTab)
+  const resolvedInitialTab = canUseInitialTab ? initialTab : fallbackTab
+
+  if (!resolvedInitialTab) {
+    return null
+  }
 
   return (
     <SettingTabProvider initialTab={resolvedInitialTab}>
@@ -47,9 +61,44 @@ export const SettingModalContent: FC<{
 const Content: FC<{
   initialSection?: string | null
 }> = ({ initialSection }) => {
-  const key = useDeferredValue(useSettingTab() || "general")
+  const availableSettings = useAvailableSettings()
+  const tab = useSettingTab()
+  const setTab = useSetSettingTab()
+  const isLoggedIn = useIsLoggedIn()
+  const { ensureLogin } = useRequireLogin()
+
+  useEffect(() => {
+    if (availableSettings.length === 0) return
+    if (!tab || !availableSettings.some((setting) => setting.path === tab)) {
+      setTab(availableSettings[0]!.path)
+    }
+  }, [availableSettings, setTab, tab])
+
+  useEffect(() => {
+    if (!isLoggedIn && tab && !isGuestAccessibleSettingTab(tab)) {
+      ensureLogin()
+    }
+  }, [ensureLogin, isLoggedIn, tab])
+
+  const activeSetting = useMemo(() => {
+    if (availableSettings.length === 0) return
+    if (tab) {
+      const matched = availableSettings.find((setting) => setting.path === tab)
+      if (matched) {
+        return matched
+      }
+    }
+    return availableSettings[0]
+  }, [availableSettings, tab])
+
+  const tabAccessible =
+    !!activeSetting && (isLoggedIn || isGuestAccessibleSettingTab(activeSetting.path))
+
+  const key = useDeferredValue(activeSetting?.path ?? "")
   const pages = getSettingPages()
-  const { Component, loader } = pages[key]
+  const page = key ? pages[key] : undefined
+  const Component = page?.Component
+  const loader = page?.loader
 
   const [scrollerAtTop, setScrollerAtTop] = useState(true)
   const [scroller, setScroller] = useState<HTMLDivElement | null>(null)
@@ -88,7 +137,7 @@ const Content: FC<{
 
       const elementTop = element.offsetTop
       const scrollerTop = scroller.scrollTop
-      const delta = elementTop - scrollerTop
+      const delta = elementTop - scrollerTop - 20
 
       scroller.scrollTo({
         top: delta,
@@ -107,7 +156,29 @@ const Content: FC<{
   }, [initialSection, scrollToSection])
 
   const config = (useLoaderData() || loader || {}) as SettingPageConfig
-  if (!Component) return null
+  if (!Component || !activeSetting) return null
+
+  if (!tabAccessible) {
+    return (
+      <>
+        <SettingsTitle
+          loader={loader}
+          className={clsx(
+            "relative mb-0 border-b border-transparent px-8 transition-colors duration-200",
+            !scrollerAtTop ? "border-border" : "",
+          )}
+        />
+        <ModalClose />
+        <button
+          type="button"
+          className="flex flex-1 items-center justify-center px-12 text-center text-text-secondary"
+          onClick={ensureLogin}
+        >
+          Please log in to access this setting.
+        </button>
+      </>
+    )
+  }
 
   return (
     <Suspense>

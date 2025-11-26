@@ -28,7 +28,7 @@ export function CategoryRemoveDialogContent({
   const { dismiss } = useCurrentModal()
 
   return (
-    <div className="flex w-[65ch] max-w-full flex-col gap-4">
+    <div className="flex w-[45ch] max-w-full flex-col gap-4">
       <Trans i18nKey="sidebar.category_remove_dialog.description">
         <p>
           This operation will delete your category, but the feeds it contains will be retained and

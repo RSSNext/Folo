@@ -87,6 +87,7 @@ export function VideoItem({ entryId, translation }: UniversalItemProps) {
           {miniIframeSrc && showPreview ? (
             <ViewTag
               src={miniIframeSrc}
+              referrerPolicy="strict-origin-when-cross-origin"
               className={cn(
                 "pointer-events-none aspect-video w-full shrink-0 rounded-md bg-black object-cover",
                 isActive && "rounded-b-none",

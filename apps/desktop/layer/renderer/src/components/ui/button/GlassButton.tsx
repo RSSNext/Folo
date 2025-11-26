@@ -38,7 +38,7 @@ const glassButtonVariants = cva(
   [
     // Base styles - perfect 1:1 circle
     "pointer-events-auto relative flex items-center justify-center rounded-full",
-    "transition-all duration-300 ease-out",
+    "transition-all duration-300 ease-out no-drag-region",
   ],
   {
     variants: {

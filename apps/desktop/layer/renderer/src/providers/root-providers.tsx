@@ -4,11 +4,13 @@ import { EventProvider } from "@follow/components/providers/event-provider.js"
 import { StableRouterProvider } from "@follow/components/providers/stable-router-provider.js"
 import { Toaster } from "@follow/components/ui/toast/index.jsx"
 import { IN_ELECTRON } from "@follow/shared/constants"
+import { env } from "@follow/shared/env.desktop"
 import { ReactQueryDevtools } from "@tanstack/react-query-devtools"
 import { PersistQueryClientProvider } from "@tanstack/react-query-persist-client"
 import { Provider } from "jotai"
 import type { FC, PropsWithChildren } from "react"
 import { Suspense } from "react"
+import { GoogleReCaptchaProvider } from "react-google-recaptcha-v3"
 
 import { LCPEndDetector } from "~/components/common/LCPEndDetector"
 import { ModalStackProvider } from "~/components/ui/modal"
@@ -23,7 +25,6 @@ import {
   LazyContextMenuProvider,
   LazyExtensionExposeProvider,
   LazyExternalJumpInProvider,
-  LazyLottieRenderContainer,
   LazyPopoverProvider,
   LazyPWAPrompt,
   LazyReloadPrompt,
@@ -34,44 +35,45 @@ import { UserProvider } from "./user-provider"
 
 export const RootProviders: FC<PropsWithChildren> = ({ children }) => (
   <Provider store={jotaiStore}>
-    <MotionProvider>
-      <PersistQueryClientProvider persistOptions={persistConfig} client={queryClient}>
-        <GlobalFocusableProvider>
-          <HotkeyProvider>
-            <I18nProvider>
-              <ModalStackProvider>
-                <Toaster />
-                <EventProvider />
+    <RecaptchaProvider>
+      <MotionProvider>
+        <PersistQueryClientProvider persistOptions={persistConfig} client={queryClient}>
+          <GlobalFocusableProvider>
+            <HotkeyProvider>
+              <I18nProvider>
+                <ModalStackProvider>
+                  <Toaster />
+                  <EventProvider />
 
-                <UserProvider />
-                <ServerConfigsProvider />
+                  <UserProvider />
+                  <ServerConfigsProvider />
 
-                <StableRouterProvider />
-                <SettingSync />
-                <FollowCommandManager />
+                  <StableRouterProvider />
+                  <SettingSync />
+                  <FollowCommandManager />
 
-                {import.meta.env.DEV && <Devtools />}
+                  {import.meta.env.DEV && <Devtools />}
 
-                {children}
-                <Suspense>
-                  <LCPEndDetector />
-                  <LazyExtensionExposeProvider />
-                  <LazyContextMenuProvider />
-                  <LazyPopoverProvider />
-                  <LazyLottieRenderContainer />
-                  <LazyExternalJumpInProvider />
-                  <LazyReloadPrompt />
-                  {!IN_ELECTRON && <LazyPWAPrompt />}
-                </Suspense>
-                {/* <FocusableGuardProvider /> */}
-              </ModalStackProvider>
-            </I18nProvider>
-          </HotkeyProvider>
-        </GlobalFocusableProvider>
+                  {children}
+                  <Suspense>
+                    <LCPEndDetector />
+                    <LazyExtensionExposeProvider />
+                    <LazyContextMenuProvider />
+                    <LazyPopoverProvider />
+                    <LazyExternalJumpInProvider />
+                    <LazyReloadPrompt />
+                    {!IN_ELECTRON && <LazyPWAPrompt />}
+                  </Suspense>
+                  {/* <FocusableGuardProvider /> */}
+                </ModalStackProvider>
+              </I18nProvider>
+            </HotkeyProvider>
+          </GlobalFocusableProvider>
 
-        <InvalidateQueryProvider />
-      </PersistQueryClientProvider>
-    </MotionProvider>
+          <InvalidateQueryProvider />
+        </PersistQueryClientProvider>
+      </MotionProvider>
+    </RecaptchaProvider>
   </Provider>
 )
 
@@ -81,3 +83,20 @@ const Devtools = () =>
       <ReactQueryDevtools buttonPosition="bottom-left" client={queryClient} />
     </div>
   )
+
+const RecaptchaProvider: FC<PropsWithChildren> = ({ children }) => {
+  const siteKey = env.VITE_RECAPTCHA_V3_SITE_KEY
+
+  if (!siteKey) {
+    return children
+  }
+
+  return (
+    <GoogleReCaptchaProvider
+      reCaptchaKey={siteKey}
+      scriptProps={{ async: true, defer: true, appendTo: "body" }}
+    >
+      {children}
+    </GoogleReCaptchaProvider>
+  )
+}

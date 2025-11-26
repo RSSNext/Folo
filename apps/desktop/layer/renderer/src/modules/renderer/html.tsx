@@ -14,6 +14,7 @@ import type { MarkdownImage, MarkdownRenderActions } from "~/components/ui/markd
 
 import { TimeStamp } from "./components/TimeStamp"
 import { EntryInfoContext } from "./context"
+import type { EntryContentRendererProps } from "./types"
 
 export function EntryContentHTMLRenderer<AS extends keyof JSX.IntrinsicElements = "div">({
   view,
@@ -21,12 +22,7 @@ export function EntryContentHTMLRenderer<AS extends keyof JSX.IntrinsicElements 
   entryId,
   children,
   ...props
-}: {
-  view: FeedViewType
-  feedId: string
-  entryId: string
-  children: Nullable<string>
-} & HTMLProps<AS>) {
+}: EntryContentRendererProps & HTMLProps<AS>) {
   const entry = useEntry(entryId, (state) => {
     const images =
       state.media?.reduce(

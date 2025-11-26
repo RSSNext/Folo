@@ -4,7 +4,7 @@ import { entrySyncServices } from "@follow/store/entry/store"
 import { useFeedById } from "@follow/store/feed/hooks"
 import { usePrefetchEntryTranslation } from "@follow/store/translation/hooks"
 import { useAutoMarkAsRead } from "@follow/store/unread/hooks"
-import { useUserRole } from "@follow/store/user/hooks"
+import { useIsLoggedIn, useUserRole } from "@follow/store/user/hooks"
 import { PortalProvider } from "@gorhom/portal"
 import * as WebBrowser from "expo-web-browser"
 import { atom, useAtomValue, useSetAtom } from "jotai"
@@ -50,7 +50,8 @@ export const EntryDetailScreen: NavigationControllerView<{
     readability: state.settings?.readability,
     sourceContent: state.settings?.sourceContent,
   }))
-  useAutoMarkAsRead(entryId, !!entry)
+  const isLoggedIn = useIsLoggedIn()
+  useAutoMarkAsRead(entryId, !!entry && isLoggedIn)
   const insets = useSafeAreaInsets()
   const ctxValue = useMemo(
     () => ({

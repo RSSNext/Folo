@@ -38,7 +38,7 @@ export const UsageAnalysisSection = () => {
             <div className="flex-1 space-y-2">
               <div className="flex items-baseline gap-2">
                 <span className="text-lg font-semibold text-text">
-                  {formatTokenCountString(rateLimit.remainingTokens)}
+                  {formatTokenCountString(usage.total - usage.used)}
                 </span>
                 <span className="text-sm text-text-secondary">
                   {t("usage_analysis.tokens_remaining")}

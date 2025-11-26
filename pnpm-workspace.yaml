@@ -8,8 +8,8 @@ packages:
   - "!**/example/**"
 
 catalog:
-  "@follow-app/client-sdk": 0.3.83
-  "@folo-services/ai-tools": 0.2.55
+  "@follow-app/client-sdk": 0.3.92
+  "@folo-services/ai-tools": 0.2.65
   tailwindcss-uikit-colors: 1.0.0
   typescript: 5.9.3
 
@@ -20,7 +20,6 @@ minimumReleaseAge: 1440
 minimumReleaseAgeExclude:
   - "@follow-app/*"
   - "@folo-services/*"
-  - "@byjohann/toon"
 
 onlyBuiltDependencies:
   - "@firebase/util"
@@ -62,6 +61,7 @@ patchedDependencies:
   "@mozilla/readability@0.6.0": patches/@mozilla__readability@0.6.0.patch
   "@pengx17/electron-forge-maker-appimage": patches/@pengx17__electron-forge-maker-appimage.patch
   "@sentry/electron": patches/@sentry__electron.patch
+  better-auth: patches/better-auth.patch
   daisyui@4.12.24: patches/daisyui@4.12.24.patch
   jsonpointer: patches/jsonpointer.patch
   re-resizable@6.11.2: patches/re-resizable@6.11.2.patch

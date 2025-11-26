@@ -9,7 +9,8 @@ import {
   TooltipTrigger,
 } from "@follow/components/ui/tooltip/index.jsx"
 import { EllipsisHorizontalTextWithTooltip } from "@follow/components/ui/typography/index.js"
-import type { FeedViewType } from "@follow/constants"
+import { FeedViewType, getViewList } from "@follow/constants"
+import { isOnboardingFeedUrl } from "@follow/store/constants/onboarding"
 import { useFeedById } from "@follow/store/feed/hooks"
 import { useInboxById } from "@follow/store/inbox/hooks"
 import { useListById } from "@follow/store/list/hooks"
@@ -29,6 +30,7 @@ import { useFeedActions, useInboxActions, useListActions } from "~/hooks/biz/use
 import { useFollow } from "~/hooks/biz/useFollow"
 import { useNavigateEntry } from "~/hooks/biz/useNavigateEntry"
 import { useRouteParamsSelector } from "~/hooks/biz/useRouteParams"
+import { useBatchUpdateSubscription } from "~/hooks/biz/useSubscriptionActions"
 import { useContextMenu } from "~/hooks/common/useContextMenu"
 import { getNewIssueUrl } from "~/lib/issues"
 import { UrlBuilder } from "~/lib/url-builder"
@@ -74,7 +76,7 @@ const FeedItemImpl = ({ view, feedId, className, isPreview }: FeedItemProps) => 
 
   // Use current route view for navigation to stay in current view (e.g., All view)
   const currentRouteView = useRouteParamsSelector((s) => s.view)
-  const navigationView = currentRouteView ?? view
+  const navigationView = currentRouteView === FeedViewType.All ? currentRouteView : view
   const feed = useFeedById(feedId, (feed) => {
     return {
       type: feed.type,
@@ -130,6 +132,8 @@ const FeedItemImpl = ({ view, feedId, className, isPreview }: FeedItemProps) => 
   const whenTrigger = when && isActive
   useContextMenuActionShortCutTrigger(items, whenTrigger)
 
+  const { mutate: changeFeedView } = useBatchUpdateSubscription()
+
   const [isContextMenuOpen, setIsContextMenuOpen] = useState(false)
   const showContextMenu = useShowContextMenu()
   const contextMenuProps = useContextMenu({
@@ -137,6 +141,8 @@ const FeedItemImpl = ({ view, feedId, className, isPreview }: FeedItemProps) => 
       const nextItems = items.concat()
 
       if (!feed) return
+
+      const isFeed = feed.type === "feed" || !feed.type
       if (isFeed && feed.errorAt && feed.errorMessage) {
         nextItems.push(
           MenuItemSeparator.default,
@@ -158,6 +164,35 @@ const FeedItemImpl = ({ view, feedId, className, isPreview }: FeedItemProps) => 
           }),
         )
       }
+
+      // Add "Switch to Another View" menu item
+      if (subscription && typeof subscription.view === "number") {
+        nextItems.push(
+          MenuItemSeparator.default,
+          new MenuItemText({
+            label: t("sidebar.feed_column.context_menu.change_to_other_view"),
+            submenu: getViewList()
+              .filter((v) => v.view !== subscription.view && v.switchable)
+              .map(
+                (v) =>
+                  new MenuItemText({
+                    label: t(v.name, { ns: "common" }),
+                    shortcut: (v.view + 1).toString(),
+                    icon: v.icon,
+                    click() {
+                      return changeFeedView({
+                        feedIdList: [feedId],
+                        view: v.view,
+                      })
+                    },
+                    requiresLogin: true,
+                  }),
+              ),
+            requiresLogin: true,
+          }),
+        )
+      }
+
       setIsContextMenuOpen(true)
       await showContextMenu(nextItems, e)
       setIsContextMenuOpen(false)
@@ -171,6 +206,7 @@ const FeedItemImpl = ({ view, feedId, className, isPreview }: FeedItemProps) => 
   if (!feed) return null
 
   const isFeed = feed.type === "feed" || !feed.type
+  const isOnboardingFeed = isOnboardingFeedUrl(feed.url)
 
   return (
     <DraggableItemWrapper
@@ -186,21 +222,27 @@ const FeedItemImpl = ({ view, feedId, className, isPreview }: FeedItemProps) => 
         feedColumnStyles.item,
         isFeed ? "py-0.5" : "py-1.5",
         "justify-between py-0.5",
+
         className,
       )}
       onClick={handleClick}
       onDoubleClick={handleDoubleClick}
       {...contextMenuProps}
     >
-      <div className={cn("flex min-w-0 items-center", isFeed && feed.errorAt && "text-red")}>
+      <div
+        className={cn(
+          "flex min-w-0 items-center",
+          isFeed && feed.errorAt && !isOnboardingFeed && "text-red",
+        )}
+      >
         <FeedIcon fallback target={feed} size={16} />
         <FeedTitle feed={feed} />
-        {isFeed && (
+        {isFeed && !isOnboardingFeed && (
           <ErrorTooltip errorAt={feed.errorAt} errorMessage={feed.errorMessage}>
             <i className="i-mingcute-close-circle-fill ml-1 shrink-0 text-base" />
           </ErrorTooltip>
         )}
-        {subscription?.isPrivate && (
+        {subscription?.isPrivate && !isOnboardingFeed && (
           <Tooltip delayDuration={300}>
             <TooltipTrigger>
               <OouiUserAnonymous className="ml-1 shrink-0 text-base" />
@@ -211,23 +253,37 @@ const FeedItemImpl = ({ view, feedId, className, isPreview }: FeedItemProps) => 
           </Tooltip>
         )}
       </div>
-      {isPreview ? (
-        <Button
-          size="sm"
-          variant="ghost"
-          buttonClassName="!p-1 mr-0.5"
-          onClick={() => {
-            follow({
-              isList: false,
-              id: feedId,
-              url: feed.url,
-            })
-          }}
-        >
-          <i className="i-mgc-add-cute-re text-base text-accent" />
-        </Button>
-      ) : (
-        <UnreadNumber unread={feedUnread} className="ml-2" />
+      {isOnboardingFeed && (
+        <Tooltip delayDuration={300}>
+          <TooltipTrigger>
+            <i className="i-mingcute-sparkles-line shrink-0 text-base text-text-tertiary" />
+          </TooltipTrigger>
+          <TooltipPortal>
+            <TooltipContent>{t("feed_item.onboarding_feed")}</TooltipContent>
+          </TooltipPortal>
+        </Tooltip>
+      )}
+      {!isOnboardingFeed && (
+        <>
+          {isPreview ? (
+            <Button
+              size="sm"
+              variant="ghost"
+              buttonClassName="!p-1 mr-0.5"
+              onClick={() => {
+                follow({
+                  isList: false,
+                  id: feedId,
+                  url: feed.url,
+                })
+              }}
+            >
+              <i className="i-mgc-add-cute-re text-base text-accent" />
+            </Button>
+          ) : (
+            <UnreadNumber unread={feedUnread} className="ml-2" />
+          )}
+        </>
       )}
     </DraggableItemWrapper>
   )

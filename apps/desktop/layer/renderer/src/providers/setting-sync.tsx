@@ -1,4 +1,4 @@
-import { isMobile } from "@follow/components/hooks/useMobile.js"
+import { useMobile } from "@follow/components/hooks/useMobile.js"
 import { useIsDark } from "@follow/hooks"
 import { getAccentColorValue } from "@follow/shared/settings/constants"
 import type { UISettings } from "@follow/shared/settings/interface"
@@ -47,12 +47,12 @@ const useUpdateDockBadge = (setting: UISettings) => {
 }
 const useUISettingSync = () => {
   const setting = useUISettingValue()
-  const mobile = isMobile()
+  const mobile = useMobile()
   useSyncTheme()
   useInsertionEffect(() => {
     const root = document.documentElement
-    root.style.fontSize = `${setting.uiTextSize * (mobile ? 1.125 : 1)}px`
-  }, [setting.uiTextSize])
+    root.style.fontSize = `${setting.uiTextSize * (mobile ? 0.875 : 1)}px`
+  }, [setting.uiTextSize, mobile])
 
   const isDark = useIsDark()
   useInsertionEffect(() => {

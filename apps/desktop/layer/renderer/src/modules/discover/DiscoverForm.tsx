@@ -26,6 +26,7 @@ import { z } from "zod"
 
 import { useIsInMASReview } from "~/atoms/server-configs"
 import { useModalStack } from "~/components/ui/modal/stacked/hooks"
+import { useRequireLogin } from "~/hooks/common/useRequireLogin"
 import { followClient } from "~/lib/api-client"
 
 import { DiscoverFeedCard } from "./DiscoverFeedCard"
@@ -127,6 +128,7 @@ export function DiscoverForm({ type = "search" }: { type?: string }) {
   const atomKey = keywordFromSearch + target
   const { t } = useTranslation()
   const isInMASReview = useIsInMASReview()
+  const { ensureLogin } = useRequireLogin()
 
   const jotaiStore = useStore()
   const mutation = useMutation({
@@ -153,6 +155,9 @@ export function DiscoverForm({ type = "search" }: { type?: string }) {
   const { present, dismissAll } = useModalStack()
 
   function onSubmit(values: z.infer<typeof formSchema>) {
+    if (!ensureLogin()) {
+      return
+    }
     if (FEED_DISCOVERY_INFO[type]!.showModal) {
       present({
         title: t("feed_form.add_feed"),

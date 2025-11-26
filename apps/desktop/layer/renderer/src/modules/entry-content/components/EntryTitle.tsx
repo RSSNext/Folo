@@ -17,6 +17,7 @@ import type { FeedIconEntry } from "~/modules/feed/feed-icon"
 import { FeedIcon } from "~/modules/feed/feed-icon"
 import { getPreferredTitle } from "~/store/feed/hooks"
 
+import { EntryTags } from "../../entry/EntryTags"
 import { EntryTranslation } from "../../entry-column/translation"
 import { EntryReadHistory } from "./entry-read-history"
 
@@ -37,7 +38,8 @@ export const EntryTitle = ({
     entryId,
     useShallow((state) => {
       /// keep-sorted
-      const { author, authorAvatar, authorUrl, feedId, inboxHandle, publishedAt, title } = state
+      const { author, authorAvatar, authorUrl, feedId, inboxHandle, publishedAt, tags, title } =
+        state
 
       const attachments = state.attachments || []
       const { duration_in_seconds } =
@@ -59,6 +61,7 @@ export const EntryTitle = ({
         firstPhotoUrl,
         inboxId: inboxHandle,
         publishedAt,
+        tags: tags ?? null,
         title,
       }
     }),
@@ -96,6 +99,10 @@ export const EntryTitle = ({
     [entry?.authorUrl],
   )
 
+  const LinkTarget = populatedFullHref ? "a" : "span"
+  const linkProps = populatedFullHref
+    ? { href: populatedFullHref, target: "_blank", rel: "noopener noreferrer" }
+    : {}
   if (!entry) return null
 
   return compact ? (
@@ -113,11 +120,14 @@ export const EntryTitle = ({
   ) : (
     <div className={cn("group relative block min-w-0", containerClassName)}>
       <div className="flex flex-col gap-3">
-        <a
-          href={populatedFullHref ?? "#"}
-          target="_blank"
-          rel="noopener noreferrer"
-          className="inline-block cursor-link select-text break-words text-[1.7rem] font-bold leading-normal duration-200 hover:multi-[scale-[1.01];opacity-95]"
+        <LinkTarget
+          {...linkProps}
+          className={cn(
+            "inline-block cursor-link select-text break-words text-[1.7rem] font-bold leading-normal duration-200",
+            populatedFullHref
+              ? "cursor-link hover:multi-[scale-[1.01];opacity-95]"
+              : "cursor-default",
+          )}
         >
           <EntryTranslation
             source={titleCase(entry.title ?? "")}
@@ -126,7 +136,7 @@ export const EntryTitle = ({
             inline={false}
             bilingual
           />
-        </a>
+        </LinkTarget>
 
         {/* Meta Information with improved layout */}
         <div className="flex flex-wrap items-center gap-x-6 gap-y-2 text-sm">
@@ -176,6 +186,7 @@ export const EntryTitle = ({
             )}
           </div>
         </div>
+        <EntryTags tags={entry.tags} feedId={entry.feedId} className="mt-1" />
         {/* Recent Readers */}
         {!noRecentReader && !hideRecentReader && <EntryReadHistory entryId={entryId} />}
       </div>

@@ -21,12 +21,12 @@ export interface EmptyStateProps {
   icon?: ReactNode
 }
 
-// Components
 export const SessionItem = ({
   session,
   onClick,
   onDelete,
-  isLoading,
+
+  isLoading = false,
   hasUnread = false,
 }: SessionItemProps) => {
   const hasUnreadMessages = isUnreadSession(session)
@@ -56,8 +56,8 @@ export const SessionItem = ({
             <button
               type="button"
               onClick={onDelete}
-              className="absolute inset-y-0 right-0 flex items-center bg-accent px-2 py-1 text-white opacity-0 shadow-lg backdrop-blur-sm group-data-[highlighted]:text-white group-data-[highlighted]:opacity-100"
               disabled={isLoading}
+              className="absolute inset-y-0 right-0 flex items-center rounded-md bg-accent px-2 py-1 text-white opacity-0 group-data-[highlighted]:text-white group-data-[highlighted]:opacity-100"
             >
               {isLoading ? (
                 <i className="i-mgc-loading-3-cute-re size-4 animate-spin" />

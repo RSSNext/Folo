@@ -5,6 +5,7 @@ import { setAISetting, useAISettingValue } from "~/atoms/settings/ai"
 
 import { createDefineSettingItem } from "../helper/builder"
 import { createSettingBuilder } from "../helper/setting-builder"
+import { ByokSection } from "./ai/byok"
 import { MCPServicesSection } from "./ai/mcp/MCPServicesSection"
 import { UserMemorySection } from "./ai/memory"
 import { PanelStyleSection } from "./ai/PanelStyleSection"
@@ -19,6 +20,7 @@ const defineSettingItem = createDefineSettingItem("ai", useAISettingValue, setAI
 export const AI_SETTING_SECTION_IDS = {
   shortcuts: "settings-ai-shortcuts",
   tasks: "settings-ai-tasks",
+  timelinePrompt: "settings-ai-timeline-prompt",
 } as const
 
 export const SettingAI = () => {
@@ -78,6 +80,12 @@ export const SettingAI = () => {
 
           {
             type: "title",
+            value: t("byok.title"),
+          },
+          ByokSection,
+
+          {
+            type: "title",
             value: t("usage_analysis.title"),
           },
           UsageAnalysisSection,
@@ -96,12 +104,10 @@ const AISecurityDisclosureSection = () => {
       <div className="space-y-2">
         <div className="flex items-center gap-2">
           <i className="i-mgc-safety-certificate-cute-re size-4 text-green" />
-          <Label className="text-sm font-medium text-text">
-            {t("integration.mcp.security.title")}
-          </Label>
+          <Label className="text-sm font-medium text-text">{t("integration.security.title")}</Label>
         </div>
         <p className="text-xs leading-relaxed text-text-secondary">
-          {t("integration.mcp.security.description")}
+          {t("integration.security.description")}
         </p>
       </div>
     </div>

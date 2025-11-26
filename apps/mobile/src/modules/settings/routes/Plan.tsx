@@ -76,11 +76,19 @@ const formatFeatureValue = (
     return "Unlimited"
   }
 
-  return new Intl.NumberFormat("en", {
-    notation: "compact",
-    compactDisplay: "short",
-    maximumFractionDigits: 1,
-  }).format(value)
+  if (typeof value === "number") {
+    return new Intl.NumberFormat("en", {
+      notation: "compact",
+      compactDisplay: "short",
+      maximumFractionDigits: 1,
+    }).format(value)
+  }
+
+  if (Array.isArray(value)) {
+    return value.length > 0 ? value.join(" ") : "—"
+  }
+
+  return value
 }
 
 const isFeatureValueVisible = (value: PaymentFeature[keyof PaymentFeature] | null | undefined) => {

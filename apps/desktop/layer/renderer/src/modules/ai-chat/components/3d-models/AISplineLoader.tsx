@@ -109,7 +109,7 @@ export const AISplineLoader = ({ className }: { className?: string }) => {
   )
 
   return (
-    <div ref={containerRef} className={cn("size-20", className)}>
+    <div ref={containerRef} className={cn("size-16", className)}>
       <Spline scene={resolvedAIIconUrl} onLoad={handleLoad} className="size-full" />
     </div>
   )

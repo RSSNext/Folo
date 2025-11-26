@@ -4,7 +4,7 @@ import * as TooltipPrimitive from "@radix-ui/react-tooltip"
 import { m } from "motion/react"
 import * as React from "react"
 
-import { tooltipStyle } from "./styles"
+import { tooltipStyle, tooltipStyles } from "./styles"
 
 const TooltipProvider = TooltipPrimitive.Provider
 const TooltipRoot = TooltipPrimitive.Root
@@ -36,10 +36,19 @@ const TooltipContent = ({
       initial={{ opacity: 0.82, scale: 0.95 }}
       animate={{ opacity: 1, scale: 1 }}
       transition={Spring.snappy(0.1)}
+      style={tooltipStyles.container}
     >
+      {/* Inner glow layer */}
+      <div
+        className="pointer-events-none absolute inset-0 rounded-lg"
+        style={tooltipStyles.innerGlow}
+      />
       {/* https://github.com/radix-ui/primitives/discussions/868 */}
-      <TooltipPrimitive.Arrow className="z-50 fill-white [clip-path:inset(0_-10px_-10px_-10px)] dark:fill-neutral-950 dark:drop-shadow-[0_0_1px_theme(colors.white/0.5)]" />
-      {props.children}
+      <TooltipPrimitive.Arrow
+        className="z-50 [clip-path:inset(0_-10px_-10px_-10px)]"
+        style={tooltipStyles.arrow}
+      />
+      <div className="relative">{props.children}</div>
     </m.div>
   </TooltipPrimitive.Content>
 )

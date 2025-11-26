@@ -111,7 +111,7 @@ export const isServerShortcut = (shortcut: AIShortcut) => !!shortcut.defaultProm
 export const createDefaultSettings = (): WebAISettings => ({
   ...defaultAISettings,
   shortcuts: normalizeShortcuts(defaultAISettings.shortcuts),
-  panelStyle: AIChatPanelStyle.Fixed,
+  panelStyle: AIChatPanelStyle.Floating,
   showSplineButton: true,
 })
 
@@ -224,5 +224,4 @@ export const removeMCPService = (id: string) => {
 //// Enhance Init Ai Settings
 export const initializeDefaultAISettings = () => {
   initializeDefaultSettings()
-  if (getAISettings().panelStyle === AIChatPanelStyle.Fixed) setAIPanelVisibility(true)
 }

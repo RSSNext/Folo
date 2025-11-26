@@ -111,8 +111,10 @@ export const TaskReportDropdown = ({ triggerElement, asChild = true }: TaskRepor
               session={session}
               onClick={() => handleSessionSelect(session)}
               onDelete={(e) => {
-                setLoadingChatId(session.chatId)
-                handleDeleteSession(session.chatId, e).finally(() => {
+                handleDeleteSession(session.chatId, {
+                  event: e,
+                  onBeforeDelete: () => setLoadingChatId(session.chatId),
+                }).finally(() => {
                   setLoadingChatId(null)
                 })
               }}

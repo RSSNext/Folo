@@ -111,6 +111,7 @@ function SubviewLayoutInner() {
       location.pathname === Routes.Discover &&
       scrollRef
     ) {
+      if (scrollRef.scrollTop === 0) return
       springScrollTo(0, scrollRef)
     }
 

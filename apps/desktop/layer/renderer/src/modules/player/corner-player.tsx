@@ -347,7 +347,8 @@ export const PlayerProgress = () => {
 
   useEffect(() => {
     if (isDraggingProgress) return
-    if (duration > 0 && currentTime >= duration) {
+    const playerState = getAudioPlayerAtomValue()
+    if (duration > 0 && currentTime >= duration && !playerState.isStream) {
       AudioPlayer?.pause()
       AudioPlayer?.seek(duration)
       return

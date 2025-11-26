@@ -6,7 +6,12 @@ import type { FC, ReactNode } from "react"
 import { useCallback } from "react"
 import { useTranslation } from "react-i18next"
 
-import { setAIPanelVisibility } from "~/atoms/settings/ai"
+import {
+  AIChatPanelStyle,
+  setAIChatPanelStyle,
+  setAIPanelVisibility,
+  useAIChatPanelStyle,
+} from "~/atoms/settings/ai"
 import { useRouteParamsSelector } from "~/hooks/biz/useRouteParams"
 import { useTimelineSummaryAutoContext } from "~/modules/ai-chat/hooks/useTimelineSummaryAutoContext"
 import {
@@ -33,6 +38,8 @@ const ChatHeaderLayout = ({
     onNewChatClick: () => void
     currentTitle: string | undefined
     displayTitle: string | undefined
+    panelStyle: AIChatPanelStyle
+    onTogglePanelStyle: () => void
   }) => ReactNode
   isFloating: boolean
 }) => {
@@ -43,6 +50,7 @@ const ChatHeaderLayout = ({
   const { t } = useTranslation("ai")
   const shouldDisableTimelineSummary = useTimelineSummaryAutoContext()
   const settingModalPresent = useSettingModal()
+  const panelStyle = useAIChatPanelStyle()
 
   const displayTitle = currentTitle
 
@@ -60,6 +68,12 @@ const ChatHeaderLayout = ({
     chatActions.newChat()
     blockActions.clearBlocks({ keepSpecialTypes: true })
   }, [chatActions, blockActions, shouldDisableTimelineSummary])
+
+  const handleTogglePanelStyle = useCallback(() => {
+    const newStyle =
+      panelStyle === AIChatPanelStyle.Fixed ? AIChatPanelStyle.Floating : AIChatPanelStyle.Fixed
+    setAIChatPanelStyle(newStyle)
+  }, [panelStyle])
 
   const { isScrolledBeyondThreshold } = useAIRootState()
   const isScrolledBeyondThresholdValue = useAtomValue(isScrolledBeyondThreshold)
@@ -102,6 +116,8 @@ const ChatHeaderLayout = ({
               onNewChatClick: handleNewChatClick,
               currentTitle,
               displayTitle,
+              panelStyle,
+              onTogglePanelStyle: handleTogglePanelStyle,
             })}
           </div>
         </div>
@@ -118,13 +134,27 @@ export const ChatHeader: FC<{ isFloating: boolean }> = ({ isFloating }) => {
   return (
     <ChatHeaderLayout
       isFloating={isFloating}
-      renderActions={({ onNewChatClick }) => (
+      renderActions={({ onNewChatClick, panelStyle, onTogglePanelStyle }) => (
         <>
           <ActionButton tooltip={t("common.new_chat")} onClick={onNewChatClick}>
             <i className="i-mgc-edit-cute-re size-5 text-text-secondary" />
           </ActionButton>
-
-          <TaskReportDropdown />
+          <ActionButton
+            tooltip={
+              panelStyle === AIChatPanelStyle.Fixed
+                ? "Switch to Floating Panel"
+                : "Switch to Fixed Panel"
+            }
+            onClick={onTogglePanelStyle}
+          >
+            <i
+              className={`size-5 text-text-secondary ${
+                panelStyle === AIChatPanelStyle.Fixed
+                  ? "i-mingcute-rectangle-vertical-line"
+                  : "i-mingcute-layout-right-line"
+              }`}
+            />
+          </ActionButton>
 
           <ChatMoreDropdown
             canClosePanel={!isAllView}
@@ -155,10 +185,26 @@ export const ChatPageHeader = () => {
   return (
     <ChatHeaderLayout
       isFloating={false}
-      renderActions={({ onNewChatClick }) => (
+      renderActions={({ onNewChatClick, panelStyle, onTogglePanelStyle }) => (
         <>
           <ActionButton tooltip={t("common.new_chat")} onClick={onNewChatClick}>
             <i className="i-mgc-edit-cute-re size-5 text-text-secondary" />
+          </ActionButton>
+          <ActionButton
+            tooltip={
+              panelStyle === AIChatPanelStyle.Fixed
+                ? "Switch to Floating Panel"
+                : "Switch to Fixed Panel"
+            }
+            onClick={onTogglePanelStyle}
+          >
+            <i
+              className={`size-5 text-text-secondary ${
+                panelStyle === AIChatPanelStyle.Fixed
+                  ? "i-mingcute-rectangle-vertical-line"
+                  : "i-mingcute-layout-right-line"
+              }`}
+            />
           </ActionButton>
 
           <TaskReportDropdown />

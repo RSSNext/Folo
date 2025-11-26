@@ -1,3 +1,4 @@
+import { isOnboardingEntryUrl } from "@follow/store/constants/onboarding"
 import { useEntry } from "@follow/store/entry/hooks"
 import { useFeedById } from "@follow/store/feed/hooks"
 import { useIsInbox } from "@follow/store/inbox/hooks"
@@ -23,11 +24,15 @@ export const useFeedSafeUrl = (entryId: string) => {
   return useMemo(() => {
     if (isInbox) return entry?.authorUrl
     const href = entry?.url
-    if (!href) return "#"
+    if (!href) return null
+
+    if (isOnboardingEntryUrl(href)) {
+      return null
+    }
 
     if (href.startsWith("http")) {
       const domain = new URL(href).hostname
-      if (domain === "localhost") return "#"
+      if (domain === "localhost") return null
 
       return href
     }

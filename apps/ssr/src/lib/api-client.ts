@@ -62,7 +62,7 @@ export const createFollowClient = () => {
 
   const client = new FollowClient({
     credentials: "include",
-    timeout: 10000,
+    timeout: 30000,
     baseURL,
     fetch: async (input: any, options = {}) => fetch(input.toString(), options),
   })

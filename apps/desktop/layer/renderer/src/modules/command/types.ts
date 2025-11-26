@@ -66,4 +66,4 @@ export type UnknownCommand = Command<{
 }>
 
 export type FollowCommandId = FollowCommand["id"]
-export type FollowCommand = BasicCommand // | UnknownCommand
+export type FollowCommand = BasicCommand | UnknownCommand
