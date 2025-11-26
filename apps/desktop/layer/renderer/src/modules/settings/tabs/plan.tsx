@@ -10,6 +10,7 @@ import { useMutation, useQuery } from "@tanstack/react-query"
 import type { TFunction } from "i18next"
 import { useState } from "react"
 import { useTranslation } from "react-i18next"
+import { toast } from "sonner"
 
 import type { PaymentFeature, PaymentPlan } from "~/atoms/server-configs"
 import { useIsPaymentEnabled, useServerConfigs } from "~/atoms/server-configs"
@@ -121,14 +122,14 @@ const useIAPProduct = (id: string | undefined) => {
 }
 
 const usePurchaseIAPProduct = () => {
-  const userId = useWhoami()?.id
+  const appleAppAccountToken = useWhoami()?.appleAppAccountToken
   return useMutation({
     mutationFn: async (productId: string) => {
-      if (!userId) {
-        toast.error("User not logged in")
+      if (!appleAppAccountToken) {
+        toast.error("Unable to purchase: missing account token.")
         return
       }
-      await ipcServices?.iap.purchaseProduct(productId, { username: userId })
+      await ipcServices?.iap.purchaseProduct(productId, { username: appleAppAccountToken })
     },
   })
 }
@@ -302,12 +303,7 @@ const PlanCard = ({ plan, billingPeriod, isCurrentPlan, currentTier }: PlanCardP
         <PlanAction
           actionType={actionType}
           upgradeButtonText={plan.upgradeButtonText}
-          isLoading={upgradePlanMutation.isPending}
-          isLoading={
-            upgradePlanMutation.isPending ||
-            purchaseIAPMutation.isPending ||
-            cancelPlanMutation?.isPending
-          }
+          isLoading={upgradePlanMutation.isPending || purchaseIAPMutation.isPending}
           onSelect={
             !plan.isComingSoon && !isCurrentPlan
               ? () => {
