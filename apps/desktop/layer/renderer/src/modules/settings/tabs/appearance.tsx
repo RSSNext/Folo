@@ -376,7 +376,7 @@ const CustomCSS = () => {
         }}
         buttonText={t("appearance.custom_css.button")}
       />
-      <SettingDescription className="-mt-3">
+      <SettingDescription className="-mt-2">
         {t("appearance.custom_css.description")}
       </SettingDescription>
     </>

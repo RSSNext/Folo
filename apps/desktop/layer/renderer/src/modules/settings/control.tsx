@@ -211,7 +211,7 @@ export const SettingActionItem = ({
   action: () => void
   buttonText: string
 }) => (
-  <div className={cn("relative mb-3 mt-4 flex items-center justify-between gap-4")}>
+  <div className={cn("relative mb-2 mt-4 flex items-center justify-between gap-4")}>
     <div className="text-sm font-medium">
       {typeof label === "string" ? titleCase(label) : label}
     </div>
