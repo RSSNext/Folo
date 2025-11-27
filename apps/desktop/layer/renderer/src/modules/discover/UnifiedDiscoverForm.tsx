@@ -131,7 +131,7 @@ export function UnifiedDiscoverForm() {
     trigger("keyword")
   }, [trigger, keywordFromSearch])
 
-  const discoverSearchData = useDiscoverSearchData()?.[atomKey] || []
+  const discoverSearchData = useDiscoverSearchData()?.[atomKey.current] || []
 
   const mutation = useMutation({
     mutationFn: async ({ keyword, target }: { keyword: string; target: "feeds" | "lists" }) => {
