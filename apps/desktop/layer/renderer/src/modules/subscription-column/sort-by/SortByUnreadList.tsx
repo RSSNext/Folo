@@ -1,7 +1,7 @@
 import { isOnboardingFeedUrl } from "@follow/store/constants/onboarding"
 import { useFeedStore } from "@follow/store/feed/store"
 import { useSortedCategoriesByUnread } from "@follow/store/unread/hooks"
-import { Fragment, useCallback } from "react"
+import { Fragment } from "react"
 
 import { useFeedListSortSelector } from "../atom"
 import { FeedCategoryAutoHideUnread } from "../FeedCategory"
@@ -12,31 +12,26 @@ export const SortByUnreadFeedList = ({ view, data, categoryOpenStateData }: Feed
   const sortedByUnread = useSortedCategoriesByUnread(data, isDesc)
 
   // Separate categories with onboarding feeds and regular categories
-  const sortedList = useFeedStore(
-    useCallback(
-      (state) => {
-        if (!sortedByUnread) return []
-        const onboardingCategories: [string, string[]][] = []
-        const regularCategories: [string, string[]][] = []
+  const sortedList = useFeedStore((state) => {
+    if (!sortedByUnread) return []
+    const onboardingCategories: [string, string[]][] = []
+    const regularCategories: [string, string[]][] = []
 
-        for (const [category, ids] of sortedByUnread) {
-          const hasOnboardingFeed = ids.some((id) => {
-            const feed = state.feeds[id]
-            return feed && isOnboardingFeedUrl(feed.url)
-          })
+    for (const [category, ids] of sortedByUnread) {
+      const hasOnboardingFeed = ids.some((id) => {
+        const feed = state.feeds[id]
+        return feed && isOnboardingFeedUrl(feed.url)
+      })
 
-          if (hasOnboardingFeed) {
-            onboardingCategories.push([category, ids])
-          } else {
-            regularCategories.push([category, ids])
-          }
-        }
+      if (hasOnboardingFeed) {
+        onboardingCategories.push([category, ids])
+      } else {
+        regularCategories.push([category, ids])
+      }
+    }
 
-        return [...onboardingCategories, ...regularCategories]
-      },
-      [sortedByUnread],
-    ),
-  )
+    return [...onboardingCategories, ...regularCategories]
+  })
 
   return (
     <Fragment>
