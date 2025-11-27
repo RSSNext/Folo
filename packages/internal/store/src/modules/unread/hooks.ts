@@ -134,7 +134,7 @@ export const useSortedCategoriesByUnread = (
         Object.keys(folderUnread)
           .sort((a, b) => folderUnread[b]! - folderUnread[a]!)
           .forEach((key) => {
-            sortedList.push([key, categories[key]!])
+            sortedList.push([key, categories[key]!.concat()])
           })
 
         if (!isDesc) {

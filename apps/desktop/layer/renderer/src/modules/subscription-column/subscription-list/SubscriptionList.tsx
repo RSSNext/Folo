@@ -49,6 +49,7 @@ import type { SubscriptionProps } from "./SubscriptionListGuard"
 const SubscriptionImpl = ({ ref, className, view, isSubscriptionLoading }: SubscriptionProps) => {
   const autoGroup = useGeneralSettingKey("autoGroup")
   const feedsData = useFeedsGroupedData(view, autoGroup)
+
   const listSubIds = useSubscriptionListIds(view)
   const inboxSubIds = useInboxList(
     useCallback(
