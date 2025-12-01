@@ -18,7 +18,7 @@
     "web": "expo start --web"
   },
   "dependencies": {
-    "@better-auth/expo": "1.3.28",
+    "@better-auth/expo": "1.4.2-beta.4",
     "@expo/metro-runtime": "5.0.4",
     "@expo/react-native-action-sheet": "4.1.1",
     "@follow-app/client-sdk": "catalog:",
@@ -49,7 +49,7 @@
     "@tanstack/react-query": "5.90.6",
     "@tanstack/react-query-persist-client": "5.90.8",
     "@types/qrcode": "1.5.5",
-    "better-auth": "1.3.28",
+    "better-auth": "1.4.2-beta.4",
     "camelcase-keys": "10.0.1",
     "dayjs": "1.11.19",
     "dnum": "2.15.0",
