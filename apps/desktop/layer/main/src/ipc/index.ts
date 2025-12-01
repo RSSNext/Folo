@@ -5,6 +5,7 @@ import { AppService } from "./services/app"
 import { AuthService } from "./services/auth"
 import { DebugService } from "./services/debug"
 import { DockService } from "./services/dock"
+import { IAPService } from "./services/iap"
 import { IntegrationService } from "./services/integration"
 import { MenuService } from "./services/menu"
 import { ReaderService } from "./services/reader"
@@ -16,6 +17,7 @@ const services = createServices([
   AuthService,
   DebugService,
   DockService,
+  IAPService,
   MenuService,
   ReaderService,
   SettingService,
