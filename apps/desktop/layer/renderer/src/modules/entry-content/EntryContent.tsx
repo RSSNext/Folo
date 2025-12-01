@@ -18,8 +18,10 @@ import * as React from "react"
 import { memo, useEffect, useRef, useState } from "react"
 
 import { useEntryIsInReadability } from "~/atoms/readability"
+import { AppErrorBoundary } from "~/components/common/AppErrorBoundary"
 import { Focusable } from "~/components/common/Focusable"
 import { m } from "~/components/common/Motion"
+import { ErrorComponentType } from "~/components/errors/enum"
 import { GlassButton } from "~/components/ui/button/GlassButton"
 import { HotkeyScope } from "~/constants"
 import { useRouteParamsSelector } from "~/hooks/biz/useRouteParams"
@@ -229,9 +231,11 @@ const EntryContentImpl: Component<EntryContentProps> = ({
 }
 export const EntryContent: Component<EntryContentProps> = memo((props) => {
   return (
-    <EntryContentFallback entryId={props.entryId}>
-      <EntryContentImpl {...props} />
-    </EntryContentFallback>
+    <AppErrorBoundary errorType={ErrorComponentType.EntryNotFound}>
+      <EntryContentFallback entryId={props.entryId}>
+        <EntryContentImpl {...props} />
+      </EntryContentFallback>
+    </AppErrorBoundary>
   )
 })
 

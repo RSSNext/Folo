@@ -1,4 +1,5 @@
 import { Spring } from "@follow/components/constants/spring.js"
+import { useMobile } from "@follow/components/hooks/useMobile.js"
 import { PanelSplitter } from "@follow/components/ui/divider/index.js"
 import { FeedViewType } from "@follow/constants"
 import { defaultUISettings } from "@follow/shared/settings/defaults"
@@ -25,6 +26,8 @@ import { AIEntryHeader } from "~/modules/entry-content/components/entry-header"
 import { AppLayoutGridContainerProvider } from "~/providers/app-grid-layout-container-provider"
 import { MainViewHotkeysProvider } from "~/providers/main-view-hotkeys-provider"
 
+import { MobileTimelineLayout } from "./MobileTimelineLayout"
+
 const MIN_ENTRY_WIDTH = isSafari() ? 356 : 300
 
 const AIEnhancedTimelineLayoutImpl = () => {
@@ -38,6 +41,19 @@ const AIEnhancedTimelineLayoutImpl = () => {
   const aiPanelStyle = useAIChatPanelStyle()
   const isAIPanelVisible = useAIPanelVisibility()
   const hasSelectedEntry = Boolean(realEntryId)
+  const isMobile = useMobile()
+
+  // Compute derived values first
+  const showEntryContentOnRight = showEntryDetailsColumn && hasSelectedEntry
+  const isFixedPanelStyle = aiPanelStyle === AIChatPanelStyle.Fixed
+  const shouldShowFixedAI = isFixedPanelStyle && isAIPanelVisible
+  const showEntryContentOnLeft = !showEntryDetailsColumn && hasSelectedEntry
+  const shouldRenderRightColumn = showEntryDetailsColumn || shouldShowFixedAI
+  const shouldShowEntryBorder = showEntryDetailsColumn || shouldShowFixedAI
+
+  // Mobile-specific logic: disable resizing and hide splitters
+  const shouldDisableResize = isMobile
+  const shouldShowSplitter = !isMobile && shouldRenderRightColumn
 
   const layoutContainerRef = useRef<HTMLDivElement>(null)
   const feedColumnWidth = useUISettingKey("feedColWidth")
@@ -62,6 +78,7 @@ const AIEnhancedTimelineLayoutImpl = () => {
     max: timelineMaxWidth,
     initial: entryColumnInitialWidth,
     containerRef: layoutContainerRef as React.RefObject<HTMLElement>,
+    disabled: shouldDisableResize,
     onResizeStart({ position }) {
       timelineStartDragPosition.current = position
     },
@@ -101,6 +118,7 @@ const AIEnhancedTimelineLayoutImpl = () => {
     initial: resolvePreferredWidth(),
     reverse: true,
     containerRef: layoutContainerRef as React.RefObject<HTMLElement>,
+    disabled: shouldDisableResize,
     onResizeStart({ position }) {
       aiPanelStartDragPosition.current = position
     },
@@ -117,32 +135,36 @@ const AIEnhancedTimelineLayoutImpl = () => {
     window.dispatchEvent(new Event("resize"))
   }, [resolvePreferredWidth, setAiPanelWidth])
 
-  const showEntryContentOnRight = showEntryDetailsColumn && hasSelectedEntry
-  const isFixedPanelStyle = aiPanelStyle === AIChatPanelStyle.Fixed
-  const shouldShowFixedAI = isFixedPanelStyle && isAIPanelVisible
-  const showEntryContentOnLeft = !showEntryDetailsColumn && hasSelectedEntry
-
-  const shouldRenderRightColumn = showEntryDetailsColumn || shouldShowFixedAI
-  const shouldShowEntryBorder = showEntryDetailsColumn || shouldShowFixedAI
-
-  const entryColumnStyle: CSSProperties = showEntryDetailsColumn
+  const entryColumnStyle: CSSProperties = isMobile
     ? {
-        flexBasis: timelineColumnWidth,
-        minWidth: MIN_ENTRY_WIDTH,
+        width: "100%",
+        minWidth: "100%",
+        flexBasis: "100%",
       }
-    : {
-        minWidth: MIN_ENTRY_WIDTH,
-      }
+    : showEntryDetailsColumn
+      ? {
+          flexBasis: timelineColumnWidth,
+          minWidth: MIN_ENTRY_WIDTH,
+        }
+      : {
+          minWidth: MIN_ENTRY_WIDTH,
+        }
 
-  const rightColumnStyle: CSSProperties = showEntryDetailsColumn
+  const rightColumnStyle: CSSProperties = isMobile
     ? {
-        minWidth: 0,
+        width: "100%",
+        minWidth: "100%",
+        flexBasis: "100%",
       }
-    : {
-        width: aiPanelWidth,
-        minWidth: 0,
-        flexBasis: aiPanelWidth,
-      }
+    : showEntryDetailsColumn
+      ? {
+          minWidth: 0,
+        }
+      : {
+          width: aiPanelWidth,
+          minWidth: 0,
+          flexBasis: aiPanelWidth,
+        }
 
   const resetTimelineWidth = useCallback(() => {
     setUISetting("entryColWidth", defaultUISettings.entryColWidth)
@@ -157,7 +179,7 @@ const AIEnhancedTimelineLayoutImpl = () => {
     window.dispatchEvent(new Event("resize"))
   }, [clampWidth, setAiPanelWidth])
 
-  const splitter =
+  const splitter = shouldShowSplitter ? (
     shouldRenderRightColumn && showEntryDetailsColumn ? (
       <PanelSplitter
         {...timelineSeparatorProps}
@@ -173,6 +195,12 @@ const AIEnhancedTimelineLayoutImpl = () => {
         onDoubleClick={resetAiWidth}
       />
     ) : null
+  ) : null
+
+  // Mobile layout: stacked with view switching
+  if (isMobile) {
+    return <MobileTimelineLayout entryId={realEntryId} hasSelectedEntry={hasSelectedEntry} />
+  }
 
   return (
     <div

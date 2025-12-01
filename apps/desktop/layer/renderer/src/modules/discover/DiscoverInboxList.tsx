@@ -13,7 +13,7 @@ export function DiscoverInboxList() {
   const { present } = useModalStack()
 
   return (
-    <div className="mx-auto w-full max-w-[540px] rounded-lg border bg-material-ultra-thin p-5 shadow-sm">
+    <div className="mx-auto w-full">
       <div className="mb-4 flex flex-wrap items-center gap-2 text-sm text-zinc-500">
         <span>{t("discover.inbox.description")}</span>
         <a

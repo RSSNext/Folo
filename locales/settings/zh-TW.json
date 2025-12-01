@@ -240,6 +240,8 @@
   "discoverFilters.title": "發現篩選",
   "feeds.claim": "認領 RSS 摘要",
   "feeds.claimTips": "要認領您的 RSS 摘要並接收贊助，請在您的訂閱列表中右鍵點擊該 RSS 摘要，然後選擇「認領」。",
+  "feeds.filter.all": "全部 ({{count}})",
+  "feeds.filter.rsshub": "RSSHub ({{count}})",
   "feeds.noFeeds": "沒有已認領的 RSS 摘要",
   "feeds.subscription": "已訂閱的 RSS 摘要",
   "feeds.tableHeaders.date": "訂閱日期",

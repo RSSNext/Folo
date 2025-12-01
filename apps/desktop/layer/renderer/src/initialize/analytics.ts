@@ -1,5 +1,6 @@
 import { env } from "@follow/shared/env.desktop"
 import { setFirebaseTracker, setPostHogTracker, tracker } from "@follow/tracker"
+import { captureAttributionFromURL, getAttributionForAnalytics } from "@follow/utils"
 import type { AuthSessionResponse } from "@follow-app/client-sdk"
 import posthog from "posthog-js"
 
@@ -8,11 +9,18 @@ import { QUERY_PERSIST_KEY } from "~/constants/app"
 import { ga4 } from "../lib/ga4"
 
 export const initAnalytics = async () => {
+  // Capture attribution data from URL (preserves first attribution)
+  captureAttributionFromURL()
+
+  // Get attribution data for analytics
+  const attributionData = getAttributionForAnalytics()
+
   tracker.manager.appendUserProperties({
     build: ELECTRON ? "electron" : "web",
     version: APP_VERSION,
     hash: GIT_COMMIT_SHA,
     language: navigator.language,
+    ...attributionData,
   })
 
   setFirebaseTracker(ga4)

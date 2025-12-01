@@ -1,61 +1,13 @@
 import { Card, CardContent } from "@follow/components/ui/card/index.jsx"
-import { ResponsiveSelect } from "@follow/components/ui/select/responsive.js"
 import { CategoryMap, RSSHubCategories } from "@follow/constants"
 import { useTranslation } from "react-i18next"
 import { Link } from "react-router"
 
-import { setUISetting, useUISettingKey } from "~/atoms/settings/ui"
-
-const LanguageOptions = [
-  {
-    label: "words.all",
-    value: "all",
-  },
-  {
-    label: "words.english",
-    value: "eng",
-  },
-  {
-    label: "words.chinese",
-    value: "cmn",
-  },
-]
-
-type Language = "all" | "eng" | "cmn"
-
 export function Recommendations() {
   const { t } = useTranslation()
-  const { t: tCommon } = useTranslation("common")
-
-  const lang = useUISettingKey("discoverLanguage")
-
-  const handleLangChange = (value: string) => {
-    setUISetting("discoverLanguage", value as Language)
-  }
 
   return (
     <div className="mx-auto mt-4 w-full max-w-[800px] space-y-6">
-      <div className="flex items-center justify-between">
-        <div className="flex items-center justify-center gap-2 text-center text-xl font-bold">
-          <i className="i-mgc-grid-2-cute-re text-xl" />
-          <span>{t("words.categories")}</span>
-        </div>
-        <div className="center flex justify-center">
-          <div className="flex items-center gap-2">
-            <span className="shrink-0 text-sm font-medium text-text">{t("words.language")}</span>
-            <ResponsiveSelect
-              value={lang}
-              onValueChange={handleLangChange}
-              triggerClassName="h-8 rounded border-0"
-              size="sm"
-              items={LanguageOptions}
-              renderItem={(item) => tCommon(item.label as any)}
-              renderValue={(item) => tCommon(item.label as any)}
-            />
-          </div>
-        </div>
-      </div>
-
       <div className="grid grid-cols-2 gap-4 sm:grid-cols-3 md:grid-cols-4">
         {RSSHubCategories.map((cat) => (
           <Link to={`/discover/category/${cat}`} key={cat}>

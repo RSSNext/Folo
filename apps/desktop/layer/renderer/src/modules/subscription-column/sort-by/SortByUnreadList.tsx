@@ -1,13 +1,13 @@
 import { isOnboardingFeedUrl } from "@follow/store/constants/onboarding"
 import { useFeedStore } from "@follow/store/feed/store"
 import { useSortedCategoriesByUnread } from "@follow/store/unread/hooks"
-import { Fragment, useCallback } from "react"
+import { Fragment, memo, useCallback } from "react"
 
 import { useFeedListSortSelector } from "../atom"
 import { FeedCategoryAutoHideUnread } from "../FeedCategory"
 import type { FeedListProps } from "./types"
 
-export const SortByUnreadFeedList = ({ view, data, categoryOpenStateData }: FeedListProps) => {
+export const SortByUnreadFeedList = memo(({ view, data, categoryOpenStateData }: FeedListProps) => {
   const isDesc = useFeedListSortSelector((s) => s.order === "desc")
   const sortedByUnread = useSortedCategoriesByUnread(data, isDesc)
 
@@ -26,9 +26,9 @@ export const SortByUnreadFeedList = ({ view, data, categoryOpenStateData }: Feed
           })
 
           if (hasOnboardingFeed) {
-            onboardingCategories.push([category, ids])
+            onboardingCategories.push([category, ids.concat()])
           } else {
-            regularCategories.push([category, ids])
+            regularCategories.push([category, ids.concat()])
           }
         }
 
@@ -50,4 +50,4 @@ export const SortByUnreadFeedList = ({ view, data, categoryOpenStateData }: Feed
       ))}
     </Fragment>
   )
-}
+})
