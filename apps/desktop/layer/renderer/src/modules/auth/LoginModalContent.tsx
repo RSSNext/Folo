@@ -115,16 +115,6 @@ export const LoginModalContent = (props: LoginModalContentProps) => {
             transition={Spring.presets.smooth}
           >
             <h1 className="text-2xl font-semibold">{t("login.title")}</h1>
-            <p className="text-balance text-center text-sm text-text-secondary">
-              {t("login.subtitle")}
-            </p>
-            {/* Benefits - single line */}
-            <div className="mt-1 flex items-center gap-3 text-xs text-text-tertiary">
-              <span className="text-accent">✦</span>
-              <span>{t("login.benefit_1")}</span>
-              <span className="text-text-quaternary">·</span>
-              <span>{t("login.benefit_2")}</span>
-            </div>
           </m.div>
         ) : (
           <m.div
@@ -215,17 +205,6 @@ export const LoginModalContent = (props: LoginModalContentProps) => {
                     </button>
                   </m.div>
                 ))}
-            {/* Quick start hint */}
-            {isRegister && providers.length > 0 && !isLoading && (
-              <m.p
-                className="mt-1 text-center text-xs text-text-tertiary"
-                initial={{ opacity: 0 }}
-                animate={{ opacity: 1 }}
-                transition={{ ...Spring.presets.smooth, delay: 0.15 }}
-              >
-                {t("login.quick_start")}
-              </m.p>
-            )}
           </div>
 
           {/* Referral Form */}
@@ -283,18 +262,6 @@ export const LoginModalContent = (props: LoginModalContentProps) => {
                 "linear-gradient(to right, transparent, rgba(255, 92, 0, 0.2), transparent)",
             }}
           />
-
-          {/* View Demo Button */}
-          {isRegister && (
-            <m.button
-              className="mb-2 w-full cursor-pointer text-center text-xs text-text-tertiary transition-colors hover:text-text-secondary"
-              onClick={() => modal.dismiss()}
-              whileHover={{ scale: 1.02 }}
-              whileTap={{ scale: 0.98 }}
-            >
-              {t("login.view_demo")}
-            </m.button>
-          )}
 
           {/* Switch Account Type */}
           <m.button
