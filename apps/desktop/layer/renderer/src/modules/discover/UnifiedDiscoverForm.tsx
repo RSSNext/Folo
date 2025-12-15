@@ -24,7 +24,6 @@ import { useTranslation } from "react-i18next"
 import { useSearchParams } from "react-router"
 import { z } from "zod"
 
-import { useIsInMASReview } from "~/atoms/server-configs"
 import { useModalStack } from "~/components/ui/modal/stacked/hooks"
 import { useRequireLogin } from "~/hooks/common/useRequireLogin"
 import { followClient } from "~/lib/api-client"
@@ -96,7 +95,6 @@ export function UnifiedDiscoverForm() {
   const [searchParams, setSearchParams] = useSearchParams()
   const keywordFromSearch = searchParams.get("keyword") || ""
   const { t } = useTranslation()
-  const isInMASReview = useIsInMASReview()
   const { ensureLogin } = useRequireLogin()
   const { present, dismissAll } = useModalStack()
   const isMobile = useMobile()
@@ -163,13 +161,10 @@ export function UnifiedDiscoverForm() {
       }
 
       // For search, perform discovery
-      let { data } = await followClient.api.discover.discover({
+      const { data } = await followClient.api.discover.discover({
         keyword: keyword.trim(),
         target,
       })
-      if (isInMASReview) {
-        data = data.filter((item) => !item.list?.fee)
-      }
 
       setDiscoverSearchData((prev) => ({
         ...prev,

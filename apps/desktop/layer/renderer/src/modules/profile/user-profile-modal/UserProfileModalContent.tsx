@@ -98,27 +98,18 @@ const ListCard = memo(({ list }: { list: ListWithStats }) => {
         </div>
 
         {/* Stats Footer */}
-        {(typeof list.subscriptionCount === "number" ||
-          (typeof list.fee === "number" && list.fee > 0)) && (
+        {typeof list.subscriptionCount === "number" && (
           <div className="border-t border-fill-secondary px-4 py-2.5">
             <div className="flex items-center justify-between text-xs">
-              {typeof list.subscriptionCount === "number" && (
-                <div className="flex items-center gap-1.5 text-text-secondary">
-                  <i className="i-mingcute-group-2-line size-3" />
-                  <span>
-                    {list.subscriptionCount}
-                    <span className="ml-1 hidden sm:inline">
-                      {list.subscriptionCount > 1 ? "subscribers" : "subscriber"}
-                    </span>
+              <div className="flex items-center gap-1.5 text-text-secondary">
+                <i className="i-mingcute-group-2-line size-3" />
+                <span>
+                  {list.subscriptionCount}
+                  <span className="ml-1 hidden sm:inline">
+                    {list.subscriptionCount > 1 ? "subscribers" : "subscriber"}
                   </span>
-                </div>
-              )}
-              {typeof list.fee === "number" && list.fee > 0 && (
-                <div className="flex items-center gap-1.5">
-                  <i className="i-mgc-power size-3 text-folo" />
-                  <span className="font-medium">{list.fee}</span>
-                </div>
-              )}
+                </span>
+              </div>
             </div>
           </div>
         )}

@@ -217,12 +217,6 @@ const Lists = ({ userId }: { userId: string }) => {
                     </span>
                   </div>
                 )}
-                {typeof list.fee === "number" && list.fee > 0 && (
-                  <div className="flex items-center space-x-1">
-                    <i className="i-mingcute-copper-coin-line" />
-                    <span>{list.fee}</span>
-                  </div>
-                )}
               </div>
             </div>
             <div className="absolute bottom-4 right-4">

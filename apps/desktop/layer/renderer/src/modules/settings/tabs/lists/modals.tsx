@@ -4,7 +4,6 @@ import { Divider } from "@follow/components/ui/divider/index.js"
 import {
   Form,
   FormControl,
-  FormDescription,
   FormField,
   FormItem,
   FormLabel,
@@ -50,7 +49,6 @@ const formSchema = z.object({
   title: z.string().min(1),
   description: z.string().optional(),
   image: z.string().optional(),
-  fee: z.number().min(0),
 })
 
 export const ListCreationModalContent = ({ id }: { id?: string }) => {
@@ -63,7 +61,6 @@ export const ListCreationModalContent = ({ id }: { id?: string }) => {
     resolver: zodResolver(formSchema),
     defaultValues: {
       view: list?.view.toString() || FeedViewType.Articles.toString(),
-      fee: list?.fee || 0,
       title: list?.title || "",
       description: list?.description || "",
       image: list?.image || "",
@@ -168,32 +165,6 @@ export const ListCreationModalContent = ({ id }: { id?: string }) => {
               <FormLabel>{t("lists.view")}</FormLabel>
 
               <ViewSelectorRadioGroup {...form.register("view")} />
-              <FormMessage />
-            </FormItem>
-          )}
-        />
-        <FormField
-          control={form.control}
-          name="fee"
-          render={({ field }) => (
-            <FormItem>
-              <div>
-                <FormLabel>{t("lists.fee.label")}</FormLabel>
-                <FormDescription>{t("lists.fee.description")}</FormDescription>
-              </div>
-              <FormControl>
-                <div className="flex items-center">
-                  <Input
-                    {...field}
-                    type="number"
-                    inputMode="numeric"
-                    pattern="[0-9]*"
-                    min={0}
-                    onChange={(value) => field.onChange(value.target.valueAsNumber)}
-                  />
-                  <i className="i-mgc-power ml-4 shrink-0 text-xl text-folo" />
-                </div>
-              </FormControl>
               <FormMessage />
             </FormItem>
           )}
