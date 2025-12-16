@@ -8,7 +8,7 @@ import { SubmitButton } from "@/src/components/common/SubmitButton"
 import { HeaderCloseOnly } from "@/src/components/layouts/header/HeaderElements"
 import { PlainTextField } from "@/src/components/ui/form/TextField"
 import { Text } from "@/src/components/ui/typography/Text"
-import { forgetPassword } from "@/src/lib/auth"
+import { requestPasswordReset } from "@/src/lib/auth"
 import { useNavigation } from "@/src/lib/navigation/hooks"
 import type { NavigationControllerView } from "@/src/lib/navigation/types"
 import { toast } from "@/src/lib/toast"
@@ -20,7 +20,7 @@ export const ForgetPasswordScreen: NavigationControllerView = () => {
   const navigation = useNavigation()
   const forgetPasswordMutation = useMutation({
     mutationFn: async (email: string) => {
-      const res = await forgetPassword(
+      const res = await requestPasswordReset(
         {
           email,
         },

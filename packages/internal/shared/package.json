@@ -31,14 +31,14 @@
     "typecheck": "tsc --noEmit"
   },
   "dependencies": {
-    "@better-auth/stripe": "1.3.28",
+    "@better-auth/stripe": "1.4.2-beta.4",
     "@electron-toolkit/preload": "3.0.2",
     "@electron-toolkit/tsconfig": "2.0.0",
     "@follow-app/client-sdk": "catalog:",
     "@folo-services/drizzle": "0.1.41",
     "@t3-oss/env-core": "0.13.8",
     "ai": "5.0.87",
-    "better-auth": "1.3.28",
+    "better-auth": "1.4.2-beta.4",
     "drizzle-orm": "0.44.7",
     "sonner": "2.0.7",
     "stripe": "19.1.0",
