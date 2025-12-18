@@ -256,15 +256,7 @@ const ListInnerForm = ({
 
   return (
     <div className="flex flex-1 flex-col gap-y-4">
-      <FeedSummary
-        isLoading={isLoading}
-        feed={{
-          ...list,
-          fee: list.fee || 0,
-        }}
-        analytics={analytics}
-        showAnalytics
-      />
+      <FeedSummary isLoading={isLoading} feed={list} analytics={analytics} showAnalytics />
       <Form {...form}>
         <form onSubmit={form.handleSubmit(onSubmit)} className="flex flex-1 flex-col gap-y-4">
           <FormField
@@ -343,18 +335,6 @@ const ListInnerForm = ({
               </FormItem>
             )}
           />
-          {!!list.fee && !isSubscribed && (
-            <div>
-              <FormLabel className="flex items-center gap-1">
-                {t("feed_form.fee")}{" "}
-                <div className="ml-2 flex scale-[0.85] items-center gap-1">
-                  {list.fee}
-                  <i className="i-mgc-power size-4 text-folo" />
-                </div>
-              </FormLabel>
-              <FormDescription className="mt-0.5">{t("feed_form.fee_description")}</FormDescription>
-            </div>
-          )}
           <div className="flex flex-1 items-center justify-end gap-4">
             {isSubscribed && (
               <Button
@@ -369,13 +349,7 @@ const ListInnerForm = ({
               </Button>
             )}
             <Button ref={buttonRef} type="submit" isLoading={followMutation.isPending}>
-              {isSubscribed
-                ? t("feed_form.update")
-                : list.fee
-                  ? t("feed_form.follow_with_fee", {
-                      fee: list.fee,
-                    })
-                  : t("feed_form.follow")}
+              {isSubscribed ? t("feed_form.update") : t("feed_form.follow")}
             </Button>
           </div>
         </form>

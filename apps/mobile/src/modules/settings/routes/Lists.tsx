@@ -7,7 +7,6 @@ import { Image, StyleSheet, View } from "react-native"
 import Animated, { LinearTransition } from "react-native-reanimated"
 import { useColor, useColors } from "react-native-uikit-colors"
 
-import { Balance } from "@/src/components/common/Balance"
 import { UINavigationHeaderActionButton } from "@/src/components/layouts/header/NavigationHeader"
 import {
   NavigationBlurEffectHeaderView,
@@ -23,10 +22,8 @@ import { ItemPressable } from "@/src/components/ui/pressable/ItemPressable"
 import { Text } from "@/src/components/ui/typography/Text"
 import { views } from "@/src/constants/views"
 import { AddCuteReIcon } from "@/src/icons/add_cute_re"
-import { PowerIcon } from "@/src/icons/power"
 import { RadaCuteFiIcon } from "@/src/icons/rada_cute_fi"
 import { UserAdd2CuteFiIcon } from "@/src/icons/user_add_2_cute_fi"
-import { Wallet2CuteFiIcon } from "@/src/icons/wallet_2_cute_fi"
 import { useNavigation } from "@/src/lib/navigation/hooks"
 import { ListScreen } from "@/src/screens/(modal)/ListScreen"
 import { accentColor } from "@/src/theme/colors"
@@ -141,6 +138,7 @@ const ListItemCellImpl: ListRenderItem<ListModel> = ({ item: list }) => {
   const listData = use(ListContext)[list.id]
   const navigation = useNavigation()
   const colors = useColors()
+  const subscriptionCount = listData?.subscriptionCount ?? list.subscriptionCount ?? 0
   return (
     <SwipeableItem
       swipeRightToCallAction
@@ -211,34 +209,11 @@ const ListItemCellImpl: ListRenderItem<ListModel> = ({ item: list }) => {
                 {t(views.find((v) => v.view === list.view)!.name)}
               </Text>
             )}
-          </View>
-        </View>
-
-        <View
-          className="mx-4 h-full bg-opaque-separator"
-          style={{
-            width: StyleSheet.hairlineWidth,
-          }}
-        />
-        <View className="w-16 gap-1">
-          <View className="flex-row items-center gap-1">
-            <PowerIcon height={16} width={16} color={accentColor} />
-            <Text className="text-sm text-secondary-label">{list.fee}</Text>
-          </View>
-
-          <View className="flex-row items-center gap-1">
-            <UserAdd2CuteFiIcon height={16} width={16} color={accentColor} />
-            <Text className="text-sm text-secondary-label">{listData?.subscriptionCount || 0}</Text>
-          </View>
-
-          {!!listData?.purchaseAmount && (
-            <View className="flex-row items-center gap-1">
-              <Wallet2CuteFiIcon height={16} width={16} color={accentColor} />
-              <Balance className="text-sm text-secondary-label">
-                {BigInt(listData.purchaseAmount)}
-              </Balance>
+            <View className="ml-1 flex-row items-center gap-1">
+              <UserAdd2CuteFiIcon height={16} width={16} color={accentColor} />
+              <Text className="text-sm text-secondary-label">{subscriptionCount}</Text>
             </View>
-          )}
+          </View>
         </View>
       </ItemPressable>
     </SwipeableItem>

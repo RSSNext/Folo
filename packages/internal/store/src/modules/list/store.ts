@@ -99,7 +99,7 @@ class ListSyncServices {
       description: params.list.description,
       image: params.list.image,
       view: params.list.view,
-      fee: params.list.fee || 0,
+      fee: 0,
     })
     await listActions.upsertMany([apiMorph.toList(res.data)])
     await subscriptionActions.upsertMany([
@@ -126,7 +126,6 @@ class ListSyncServices {
       description: params.list.description,
       image: params.list.image,
       view: params.list.view,
-      fee: params.list.fee || 0,
       listId: params.listId,
     }
 

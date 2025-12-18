@@ -62,6 +62,28 @@ export function createChatTransport({ onValue, titleHandler }: CreateChatTranspo
   })
 }
 
+const coerceFinishChunk = (chunk: ParseResult<UIMessageChunk>): UIMessageChunk | null => {
+  const { rawValue } = chunk
+  if (!rawValue || typeof rawValue !== "object" || Array.isArray(rawValue)) {
+    return null
+  }
+
+  if ((rawValue as { type?: unknown }).type !== "finish") {
+    return null
+  }
+
+  const { finishReason, messageMetadata } = rawValue as {
+    finishReason?: unknown
+    messageMetadata?: unknown
+  }
+
+  return {
+    type: "finish",
+    finishReason: typeof finishReason === "string" ? finishReason : undefined,
+    messageMetadata,
+  } as UIMessageChunk
+}
+
 class ExtendChatTransport extends HttpChatTransport<BizUIMessage> {
   constructor(
     private options: HttpChatTransportInitOptions<BizUIMessage> & {
@@ -83,13 +105,14 @@ class ExtendChatTransport extends HttpChatTransport<BizUIMessage> {
     }).pipeThrough(
       new TransformStream<ParseResult<UIMessageChunk>, UIMessageChunk>({
         async transform(chunk, controller) {
-          if (!chunk.success) {
+          const parsedChunk = chunk.success ? chunk.value : coerceFinishChunk(chunk)
+          if (!parsedChunk) {
             throw chunk.error
           }
 
-          await handleGeneratedTitle(chunk.value)
-          onValue?.(chunk.value)
-          controller.enqueue(chunk.value)
+          await handleGeneratedTitle(parsedChunk)
+          onValue?.(parsedChunk)
+          controller.enqueue(parsedChunk)
         },
       }),
     )

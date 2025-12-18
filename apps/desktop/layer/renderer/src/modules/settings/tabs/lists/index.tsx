@@ -28,7 +28,6 @@ import { toast } from "sonner"
 import { useCurrentModal, useModalStack } from "~/components/ui/modal/stacked/hooks"
 import { useI18n } from "~/hooks/common"
 import { UrlBuilder } from "~/lib/url-builder"
-import { Balance } from "~/modules/wallet/balance"
 
 import { ListCreationModalContent, ListFeedsModalContent } from "./modals"
 
@@ -75,7 +74,6 @@ export const SettingLists = () => {
         acc[curr.id] = {
           id: curr.id,
           subscriptionCount: curr.subscriptionCount,
-          purchaseAmount: Number(curr.purchaseAmount || 0),
         }
         return acc
       },
@@ -84,7 +82,6 @@ export const SettingLists = () => {
         {
           id: string
           subscriptionCount: number | null | undefined
-          purchaseAmount: number | null | undefined
         }
       >,
     )
@@ -126,9 +123,7 @@ export const SettingLists = () => {
                     <TableRow className="[&_*]:!font-semibold">
                       <TableHead size="sm">{t.settings("lists.title")}</TableHead>
                       <TableHead size="sm">{t.settings("lists.view")}</TableHead>
-                      <TableHead size="sm">{t.settings("lists.fee.label")}</TableHead>
                       <TableHead size="sm">{t.settings("lists.subscriptions")}</TableHead>
-                      <TableHead size="sm">{t.settings("lists.earnings")}</TableHead>
                       <TableHead size="sm" className="center">
                         {t.common("words.actions")}
                       </TableHead>
@@ -172,17 +167,8 @@ export const SettingLists = () => {
                             </TooltipPortal>
                           </Tooltip>
                         </TableCell>
-                        <TableCell size="sm">
-                          <div className="flex items-center gap-1 tabular-nums">
-                            {row.fee}
-                            <i className="i-mgc-power shrink-0 text-lg text-folo" />
-                          </div>
-                        </TableCell>
                         <TableCell size="sm" className="tabular-nums">
                           {formatNumber(listDataMap[row.id]?.subscriptionCount || 0)}
-                        </TableCell>
-                        <TableCell size="sm" className="tabular-nums">
-                          <Balance>{BigInt(listDataMap[row.id]?.purchaseAmount || 0n)}</Balance>
                         </TableCell>
                         <TableCell size="sm" className="center">
                           <Tooltip>
