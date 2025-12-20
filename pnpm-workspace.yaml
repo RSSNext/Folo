@@ -15,11 +15,11 @@ catalog:
 
 ignorePatchFailures: false
 
-minimumReleaseAge: 1440
+# minimumReleaseAge: 1440
 
-minimumReleaseAgeExclude:
-  - "@follow-app/*"
-  - "@folo-services/*"
+# minimumReleaseAgeExclude:
+#   - "@follow-app/*"
+#   - "@folo-services/*"
 
 onlyBuiltDependencies:
   - "@firebase/util"
