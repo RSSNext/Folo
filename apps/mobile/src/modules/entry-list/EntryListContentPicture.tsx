@@ -36,6 +36,7 @@ export const EntryListContentPicture = ({
     disabled: active === false || isFetching,
   })
   const translation = useGeneralSettingKey("translation")
+  const translationMode = useGeneralSettingKey("translationMode")
   const actionLanguage = useActionLanguage()
   const userRole = useUserRole()
   const translationPrefetchEnabled = translation && !isFreeRole(userRole)
@@ -43,6 +44,7 @@ export const EntryListContentPicture = ({
     entryIds: active ? viewableItems.map((item) => item.key) : [],
     language: actionLanguage,
     enabled: translationPrefetchEnabled,
+    mode: translationMode,
   })
 
   const renderItem = useTypeScriptHappyCallback(({ item }: { item: string }) => {

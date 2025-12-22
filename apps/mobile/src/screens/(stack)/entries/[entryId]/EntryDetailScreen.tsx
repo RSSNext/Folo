@@ -143,6 +143,7 @@ const EntryContentWebViewWithContext = ({ entryId }: { entryId: string }) => {
     useEntryContentContext()
   const showReadabilityOnce = useAtomValue(showReadabilityAtom)
   const translationSetting = useGeneralSettingKey("translation")
+  const translationMode = useGeneralSettingKey("translationMode")
   const showTranslationOnce = useAtomValue(showAITranslationAtom)
   const actionLanguage = useActionLanguage()
   const userRole = useUserRole()
@@ -158,6 +159,7 @@ const EntryContentWebViewWithContext = ({ entryId }: { entryId: string }) => {
     target: showReadabilityOnce && entry?.readabilityContent ? "readabilityContent" : "content",
     language: actionLanguage,
     enabled: translationPrefetchEnabled,
+    mode: translationMode,
   })
 
   // Auto toggle readability when content is empty
