@@ -137,6 +137,7 @@ export class BootstrapManager {
         details.requestHeaders = buildSafeHeaders({
           url: details.url,
           headers: details.requestHeaders,
+          method: details.method,
         })
 
         callback({ cancel: false, requestHeaders: details.requestHeaders })
