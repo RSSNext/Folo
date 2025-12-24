@@ -162,6 +162,7 @@ class TranslationSyncService {
       for (const [, group] of grouped) {
         if (this.currentMode && this.currentMode !== group.mode) {
           for (const id of group.ids) {
+            if (!group.keyById[id]) continue
             results[group.keyById[id]] = null
           }
           continue
