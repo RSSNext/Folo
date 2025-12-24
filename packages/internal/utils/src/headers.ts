@@ -4,15 +4,7 @@ import { imageRefererMatches } from "./img-proxy"
 
 export const createBuildSafeHeaders =
   (webUrl: string, selfRefererMatches: string[]) =>
-  ({
-    url,
-    headers = {},
-    method,
-  }: {
-    url: string
-    headers?: Record<string, string>
-    method?: string
-  }) => {
+  ({ url, headers = {} }: { url: string; headers?: Record<string, string> }) => {
     // user agent
     if (headers["User-Agent"]) {
       headers["User-Agent"] = headers["User-Agent"]
@@ -21,12 +13,6 @@ export const createBuildSafeHeaders =
     } else {
       headers["User-Agent"] =
         "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/133.0.0.0 Safari/537.36"
-    }
-
-    if (method?.toUpperCase() === "OPTIONS") {
-      headers.Referer = "app://folo.is"
-      headers.Origin = "app://folo.is"
-      return headers
     }
 
     // referer and origin
