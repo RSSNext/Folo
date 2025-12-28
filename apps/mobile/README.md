@@ -71,4 +71,4 @@ src/
 
 ## License
 
-This project is licensed under the GNU General Public License version 3. See the main project repository for full license details.
+This project is licensed under the GNU Affero General Public License version 3. See the main project repository for full license details.

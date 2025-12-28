@@ -15,7 +15,7 @@
   "about.licenseInfo": "版權所有 © {{currentYear}} {{appName}}。保留所有權利。",
   "about.noUpdateAvailable": "已是最新版本",
   "about.privacyPolicy": "隱私政策",
-  "about.projectLicense": "{{appName}} 採用 GNU 通用公共授權條款第3版授權，並附有額外的例外條款。",
+  "about.projectLicense": "{{appName}} 採用 GNU Affero 通用公共授權條款第3版授權，並附有額外的例外條款。",
   "about.resources": "資源與貢獻",
   "about.sidebar_title": "關於",
   "about.socialMedia": "社群媒體",

@@ -15,7 +15,7 @@
   "about.licenseInfo": "Copyright © {{currentYear}} {{appName}}. All rights reserved.",
   "about.noUpdateAvailable": "You're on the latest version",
   "about.privacyPolicy": "Privacy Policy",
-  "about.projectLicense": "{{appName}} is licensed under the GNU General Public License version 3 with additional exceptions.",
+  "about.projectLicense": "{{appName}} is licensed under the GNU Affero General Public License version 3 with additional exceptions.",
   "about.resources": "Resources & Contributions",
   "about.sidebar_title": "About",
   "about.socialMedia": "Social Media",
