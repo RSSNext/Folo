@@ -32,6 +32,16 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
+      - name: 🧹 Claim disk space
+        run: |
+          df -h /
+          sudo rm -rf /usr/share/dotnet
+          sudo rm -rf /usr/local/.ghcup
+          sudo rm -rf /opt/hostedtoolcache/CodeQL
+          sudo rm -rf /usr/share/swift
+          sudo rm -rf /usr/local/julia*
+          df -h /
+
       - name: 📦 Checkout code
         uses: actions/checkout@v6
 
