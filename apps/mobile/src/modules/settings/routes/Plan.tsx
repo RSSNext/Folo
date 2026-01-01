@@ -17,6 +17,7 @@ import {
 } from "@/src/components/layouts/views/SafeNavigationScrollView"
 import { Text } from "@/src/components/ui/typography/Text"
 import { CheckLineIcon } from "@/src/icons/check_line"
+import { followClient } from "@/src/lib/api-client"
 import { authClient } from "@/src/lib/auth"
 import type { NavigationControllerView } from "@/src/lib/navigation/types"
 import { proxyEnv } from "@/src/lib/proxy-env"
@@ -209,15 +210,13 @@ export const PlanScreen: NavigationControllerView = () => {
 
   const billingPortalMutation = useMutation({
     mutationFn: async () => {
-      const res = await fetch(`${proxyEnv.API_URL}/billing/portal`, {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
+      const data = await followClient.request<{ code: number; data?: { url: string } }>(
+        "/billing/portal",
+        {
+          method: "POST",
+          body: { returnUrl: proxyEnv.WEB_URL },
         },
-        credentials: "include",
-        body: JSON.stringify({ returnUrl: proxyEnv.WEB_URL }),
-      })
-      const data = await res.json()
+      )
       if (data.code === 0 && data.data?.url) {
         await openURL(data.data.url)
       }
