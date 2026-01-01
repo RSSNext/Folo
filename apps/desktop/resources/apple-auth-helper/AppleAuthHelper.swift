@@ -7,8 +7,8 @@ import Foundation
 /// Outputs JSON with the authentication result or error.
 
 class AppleSignInHelper: NSObject, ASAuthorizationControllerDelegate, ASAuthorizationControllerPresentationContextProviding {
-    private var completion: ((Result<AppleAuthResult, Error>) -> Void)?
-    private let dispatchGroup = DispatchGroup()
+    private var result: Result<AppleAuthResult, Error>?
+    private var isComplete = false
 
     struct AppleAuthResult: Codable {
         let identityToken: String
@@ -44,9 +44,6 @@ class AppleSignInHelper: NSObject, ASAuthorizationControllerDelegate, ASAuthoriz
     }
 
     func performSignIn() -> Result<AppleAuthResult, Error> {
-        dispatchGroup.enter()
-        var result: Result<AppleAuthResult, Error> = .failure(AppleSignInError.unknown)
-
         let appleIDProvider = ASAuthorizationAppleIDProvider()
         let request = appleIDProvider.createRequest()
         request.requestedScopes = [.fullName, .email]
@@ -56,33 +53,37 @@ class AppleSignInHelper: NSObject, ASAuthorizationControllerDelegate, ASAuthoriz
         authorizationController.presentationContextProvider = self
         authorizationController.performRequests()
 
-        self.completion = { res in
-            result = res
-            self.dispatchGroup.leave()
+        // Use RunLoop to wait for the result without blocking delegate callbacks
+        // This allows the main thread to continue processing events (including delegate callbacks)
+        while !isComplete {
+            RunLoop.current.run(mode: .default, before: Date(timeIntervalSinceNow: 0.1))
         }
 
-        // Wait for the result
-        dispatchGroup.wait()
-        return result
+        return result ?? .failure(AppleSignInError.unknown)
+    }
+
+    private func complete(with result: Result<AppleAuthResult, Error>) {
+        self.result = result
+        self.isComplete = true
     }
 
     // MARK: - ASAuthorizationControllerDelegate
 
     func authorizationController(controller: ASAuthorizationController, didCompleteWithAuthorization authorization: ASAuthorization) {
         guard let appleIDCredential = authorization.credential as? ASAuthorizationAppleIDCredential else {
-            completion?(.failure(AppleSignInError.invalidCredential))
+            complete(with: .failure(AppleSignInError.invalidCredential))
             return
         }
 
         guard let identityTokenData = appleIDCredential.identityToken,
               let identityToken = String(data: identityTokenData, encoding: .utf8) else {
-            completion?(.failure(AppleSignInError.failed("Failed to get identity token")))
+            complete(with: .failure(AppleSignInError.failed("Failed to get identity token")))
             return
         }
 
         guard let authorizationCodeData = appleIDCredential.authorizationCode,
               let authorizationCode = String(data: authorizationCodeData, encoding: .utf8) else {
-            completion?(.failure(AppleSignInError.failed("Failed to get authorization code")))
+            complete(with: .failure(AppleSignInError.failed("Failed to get authorization code")))
             return
         }
 
@@ -94,7 +95,7 @@ class AppleSignInHelper: NSObject, ASAuthorizationControllerDelegate, ASAuthoriz
             )
         }
 
-        let result = AppleAuthResult(
+        let authResult = AppleAuthResult(
             identityToken: identityToken,
             authorizationCode: authorizationCode,
             user: appleIDCredential.user,
@@ -102,30 +103,30 @@ class AppleSignInHelper: NSObject, ASAuthorizationControllerDelegate, ASAuthoriz
             fullName: fullName
         )
 
-        completion?(.success(result))
+        complete(with: .success(authResult))
     }
 
     func authorizationController(controller: ASAuthorizationController, didCompleteWithError error: Error) {
         if let authError = error as? ASAuthorizationError {
             switch authError.code {
             case .canceled:
-                completion?(.failure(AppleSignInError.canceled))
+                complete(with: .failure(AppleSignInError.canceled))
             case .failed:
-                completion?(.failure(AppleSignInError.failed(error.localizedDescription)))
+                complete(with: .failure(AppleSignInError.failed(error.localizedDescription)))
             case .invalidResponse:
-                completion?(.failure(AppleSignInError.failed("Invalid response from Apple")))
+                complete(with: .failure(AppleSignInError.failed("Invalid response from Apple")))
             case .notHandled:
-                completion?(.failure(AppleSignInError.failed("Request not handled")))
+                complete(with: .failure(AppleSignInError.failed("Request not handled")))
             case .notInteractive:
-                completion?(.failure(AppleSignInError.failed("Not interactive")))
+                complete(with: .failure(AppleSignInError.failed("Not interactive")))
             case .unknown, .matchedExcludedCredential, .credentialImport, .credentialExport,
                  .preferSignInWithApple, .deviceNotConfiguredForPasskeyCreation:
-                completion?(.failure(AppleSignInError.unknown))
+                complete(with: .failure(AppleSignInError.unknown))
             @unknown default:
-                completion?(.failure(AppleSignInError.unknown))
+                complete(with: .failure(AppleSignInError.unknown))
             }
         } else {
-            completion?(.failure(AppleSignInError.failed(error.localizedDescription)))
+            complete(with: .failure(AppleSignInError.failed(error.localizedDescription)))
         }
     }
 
@@ -156,46 +157,35 @@ struct OutputResult: Codable {
     let error: String?
 }
 
-// Ensure we have access to the main thread for UI operations
-if Thread.isMainThread {
-    runSignIn()
+// Start the NSApplication to get access to windows and enable UI
+let app = NSApplication.shared
+app.setActivationPolicy(.accessory)
+
+let helper = AppleSignInHelper()
+
+// performSignIn uses RunLoop to wait without blocking delegate callbacks
+let result = helper.performSignIn()
+
+let output: OutputResult
+switch result {
+case .success(let authResult):
+    output = OutputResult(success: true, data: authResult, error: nil)
+case .failure(let error):
+    output = OutputResult(success: false, data: nil, error: error.localizedDescription)
+}
+
+// Output JSON to stdout
+let encoder = JSONEncoder()
+encoder.outputFormatting = .prettyPrinted
+if let jsonData = try? encoder.encode(output),
+   let jsonString = String(data: jsonData, encoding: .utf8) {
+    print(jsonString)
 } else {
-    DispatchQueue.main.sync {
-        runSignIn()
-    }
+    print("{\"success\": false, \"error\": \"Failed to encode result\"}")
 }
 
-func runSignIn() {
-    // Start the NSApplication to get access to windows
-    let app = NSApplication.shared
-    app.setActivationPolicy(.accessory)
-
-    let helper = AppleSignInHelper()
-
-    // Run the sign in on a background queue and wait
-    let result = helper.performSignIn()
-
-    let output: OutputResult
-    switch result {
-    case .success(let authResult):
-        output = OutputResult(success: true, data: authResult, error: nil)
-    case .failure(let error):
-        output = OutputResult(success: false, data: nil, error: error.localizedDescription)
-    }
-
-    // Output JSON to stdout
-    let encoder = JSONEncoder()
-    encoder.outputFormatting = .prettyPrinted
-    if let jsonData = try? encoder.encode(output),
-       let jsonString = String(data: jsonData, encoding: .utf8) {
-        print(jsonString)
-    } else {
-        print("{\"success\": false, \"error\": \"Failed to encode result\"}")
-    }
-
-    // Exit
-    exit(result.isSuccess ? 0 : 1)
-}
+// Exit with appropriate code
+exit(result.isSuccess ? 0 : 1)
 
 extension Result {
     var isSuccess: Bool {
