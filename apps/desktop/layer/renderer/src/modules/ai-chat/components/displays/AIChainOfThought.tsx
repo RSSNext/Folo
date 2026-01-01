@@ -5,7 +5,7 @@ import { ShinyText } from "@follow/components/ui/shiny-text/ShinyText.js"
 import { cn } from "@follow/utils"
 import type { BizUITools } from "@folo-services/ai-tools"
 import type { ReasoningUIPart, ToolUIPart } from "ai"
-import { isToolUIPart } from "ai"
+import { isStaticToolUIPart } from "ai"
 import { AnimatePresence, m } from "motion/react"
 import * as React from "react"
 
@@ -27,7 +27,7 @@ export const AIChainOfThought: React.FC<AIChainOfThoughtProps> = React.memo(
     const currentChainReasoningIsFinished = React.useMemo(() => {
       let allDone = true
       for (const part of groups) {
-        if (isToolUIPart(part)) {
+        if (isStaticToolUIPart(part)) {
           continue
         }
         if (part.state !== "done") {
@@ -45,7 +45,7 @@ export const AIChainOfThought: React.FC<AIChainOfThoughtProps> = React.memo(
 
       if (!lastPart) return null
 
-      if (isToolUIPart(lastPart)) {
+      if (isStaticToolUIPart(lastPart)) {
         return `Calling [${lastPart.type.replace("tool-", "")}]`
       }
 
@@ -113,7 +113,7 @@ export const AIChainOfThought: React.FC<AIChainOfThoughtProps> = React.memo(
               <div aria-hidden className="absolute inset-y-2 left-2 border-l border-fill" />
               {groups.map((part, index) => {
                 const innerCollapseId = `${collapseId}-${index}`
-                if (isToolUIPart(part)) {
+                if (isStaticToolUIPart(part)) {
                   return (
                     <ToolInvocationComponent variant="loose" key={innerCollapseId} part={part} />
                   )
