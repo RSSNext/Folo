@@ -10,12 +10,10 @@ import { useMutation, useQuery } from "@tanstack/react-query"
 import type { TFunction } from "i18next"
 import { useState } from "react"
 import { useTranslation } from "react-i18next"
-import { toast } from "sonner"
 
 import type { PaymentFeature, PaymentPlan } from "~/atoms/server-configs"
 import { useIsPaymentEnabled, useServerConfigs } from "~/atoms/server-configs"
 import { subscription } from "~/lib/auth"
-import { ipcServices } from "~/lib/client"
 
 const AI_MODEL_SELECTION_VALUE_LABELS = {
   none: {
@@ -108,32 +106,6 @@ const useActiveSubscription = () => {
   })
 }
 
-const useIAPProduct = (id: string | undefined) => {
-  return useQuery({
-    queryKey: ["iap-products", id],
-    queryFn: async () => {
-      if (!id) {
-        return null
-      }
-      const res = await ipcServices?.iap.getProducts([id])
-      return res?.at(0) || null
-    },
-  })
-}
-
-const usePurchaseIAPProduct = () => {
-  const appleAppAccountToken = useWhoami()?.appleAppAccountToken
-  return useMutation({
-    mutationFn: async (productId: string) => {
-      if (!appleAppAccountToken) {
-        toast.error("Unable to purchase: missing account token.")
-        return
-      }
-      await ipcServices?.iap.purchaseProduct(productId, { username: appleAppAccountToken })
-    },
-  })
-}
-
 export function SettingPlan() {
   const isPaymentEnabled = useIsPaymentEnabled()
   const role = useUserRole()
@@ -214,10 +186,6 @@ interface PlanCardProps {
 }
 
 const PlanCard = ({ plan, billingPeriod, isCurrentPlan, currentTier }: PlanCardProps) => {
-  const { data: iapProduct } = useIAPProduct(
-    billingPeriod === "yearly" ? plan.appleProductIdentifierAnnual : plan.appleProductIdentifier,
-  )
-  const purchaseIAPMutation = usePurchaseIAPProduct()
   const { t } = useTranslation("settings")
   const getPlanActionType = ():
     | "current"
@@ -303,14 +271,10 @@ const PlanCard = ({ plan, billingPeriod, isCurrentPlan, currentTier }: PlanCardP
         <PlanAction
           actionType={actionType}
           upgradeButtonText={plan.upgradeButtonText}
-          isLoading={upgradePlanMutation.isPending || purchaseIAPMutation.isPending}
+          isLoading={upgradePlanMutation.isPending}
           onSelect={
             !plan.isComingSoon && !isCurrentPlan
               ? () => {
-                  if (iapProduct) {
-                    purchaseIAPMutation.mutate(iapProduct.productIdentifier)
-                    return
-                  }
                   upgradePlanMutation.mutate()
                 }
               : undefined
