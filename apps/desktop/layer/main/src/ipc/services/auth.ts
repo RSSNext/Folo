@@ -80,14 +80,25 @@ export class AuthService extends IpcService {
     } catch (error) {
       logger.error("Failed to execute AppleAuthHelper", { error })
 
-      if (error instanceof Error) {
-        // Check if user canceled
-        if (error.message.includes("canceled")) {
-          return {
-            success: false,
-            error: "User canceled the Sign in with Apple request",
+      // When the helper exits with non-zero status, execFileAsync rejects
+      // but the error object still contains stdout with the JSON result
+      if (error && typeof error === "object" && "stdout" in error) {
+        const { stdout } = error as { stdout?: string }
+        if (stdout) {
+          try {
+            const result = JSON.parse(stdout) as NativeAppleAuthResult
+            logger.info("AppleAuthHelper result from error.stdout", {
+              success: result.success,
+              error: result.error,
+            })
+            return result
+          } catch {
+            // Failed to parse stdout, fall through to generic error handling
           }
         }
+      }
+
+      if (error instanceof Error) {
         return {
           success: false,
           error: error.message,
