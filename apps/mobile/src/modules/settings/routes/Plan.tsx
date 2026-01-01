@@ -1,8 +1,8 @@
 import { UserRole, UserRoleName } from "@follow/constants"
-import { useRoleEndAt, useUserRole } from "@follow/store/user/hooks"
+import { useRoleEndAt, useUserRole, useWhoami } from "@follow/store/user/hooks"
 import { cn } from "@follow/utils"
 import type { StatusConfigs } from "@follow-app/client-sdk"
-import { useMutation } from "@tanstack/react-query"
+import { useMutation, useQuery } from "@tanstack/react-query"
 import dayjs from "dayjs"
 import { openURL } from "expo-linking"
 import { useCallback, useEffect, useMemo, useRef, useState } from "react"
@@ -17,6 +17,7 @@ import {
 } from "@/src/components/layouts/views/SafeNavigationScrollView"
 import { Text } from "@/src/components/ui/typography/Text"
 import { CheckLineIcon } from "@/src/icons/check_line"
+import { followClient } from "@/src/lib/api-client"
 import { authClient } from "@/src/lib/auth"
 import type { NavigationControllerView } from "@/src/lib/navigation/types"
 import { proxyEnv } from "@/src/lib/proxy-env"
@@ -183,6 +184,48 @@ export const PlanScreen: NavigationControllerView = () => {
     },
   })
 
+  const userId = useWhoami()?.id
+  const activeSubscriptionQuery = useQuery({
+    queryKey: ["activeSubscription"],
+    queryFn: async () => {
+      const response = await authClient.subscription.list()
+      const { data } = response
+      return data?.find(
+        (sub: {
+          status: string
+          stripeSubscriptionId?: string | null
+          periodEnd?: Date | null
+        }) => {
+          if (!sub.stripeSubscriptionId) return false
+          if (sub.status === "active" || sub.status === "trialing") return true
+          if (sub.status === "canceled" && sub.periodEnd) {
+            return new Date(sub.periodEnd) > new Date()
+          }
+          return false
+        },
+      )
+    },
+    enabled: !!userId,
+  })
+
+  const billingPortalMutation = useMutation({
+    mutationFn: async () => {
+      const data = await followClient.request<{ code: number; data?: { url: string } }>(
+        "/billing/portal",
+        {
+          method: "POST",
+          body: { returnUrl: proxyEnv.WEB_URL },
+        },
+      )
+      if (data.code === 0 && data.data?.url) {
+        await openURL(data.data.url)
+      }
+    },
+    onError: () => {
+      toast.error(t("subscription.actions.manage_error"))
+    },
+  })
+
   if (!isPaymentEnabled || sortedPlans.length === 0) {
     return (
       <SafeNavigationScrollView
@@ -255,7 +298,10 @@ export const PlanScreen: NavigationControllerView = () => {
                         })
                     : undefined
                 }
+                onManageSubscription={() => billingPortalMutation.mutate()}
                 isProcessing={isProcessing}
+                isManaging={billingPortalMutation.isPending}
+                activeSubscription={activeSubscriptionQuery.data}
               />
             )
           })}
@@ -390,18 +436,30 @@ const BillingToggle = ({
   )
 }
 
+type ActiveSubscription = {
+  status: string
+  stripeSubscriptionId?: string | null
+  periodEnd?: Date | null
+}
+
 const PlanCard = ({
   plan,
   billingPeriod,
   isCurrentPlan,
   onUpgrade,
+  onManageSubscription,
   isProcessing,
+  isManaging,
+  activeSubscription,
 }: {
   plan: PaymentPlan
   billingPeriod: BillingPeriod
   isCurrentPlan: boolean
   onUpgrade?: () => void
+  onManageSubscription?: () => void
   isProcessing?: boolean
+  isManaging?: boolean
+  activeSubscription?: ActiveSubscription
 }) => {
   const { t } = useTranslation("settings")
 
@@ -568,7 +626,14 @@ const PlanCard = ({
         })}
       </View>
 
-      <PlanAction actionType={actionType} onUpgrade={onUpgrade} isProcessing={isProcessing} />
+      <PlanAction
+        actionType={actionType}
+        onUpgrade={onUpgrade}
+        onManageSubscription={onManageSubscription}
+        isProcessing={isProcessing}
+        isManaging={isManaging}
+        activeSubscription={activeSubscription}
+      />
     </View>
   )
 }
@@ -576,13 +641,23 @@ const PlanCard = ({
 const PlanAction = ({
   actionType,
   onUpgrade,
+  onManageSubscription,
   isProcessing,
+  isManaging,
+  activeSubscription,
 }: {
   actionType: "current" | "upgrade" | "coming-soon" | null
   onUpgrade?: () => void
+  onManageSubscription?: () => void
   isProcessing?: boolean
+  isManaging?: boolean
+  activeSubscription?: ActiveSubscription
 }) => {
   const { t } = useTranslation("settings")
+
+  const canManageSubscription = !!activeSubscription?.stripeSubscriptionId
+  const isCanceled = activeSubscription?.status === "canceled"
+  const periodEnd = activeSubscription?.periodEnd ? new Date(activeSubscription.periodEnd) : null
 
   if (actionType === "coming-soon") {
     return (
@@ -594,9 +669,64 @@ const PlanAction = ({
 
   if (actionType === "current") {
     return (
-      <Text className="mt-5 rounded-full border border-opaque-separator/60 px-4 py-2 text-center text-sm text-secondary-label">
-        {t("subscription.actions.current")}
-      </Text>
+      <View className="mt-5 gap-1.5">
+        {canManageSubscription && (
+          <View className="flex-row items-center justify-center gap-1.5">
+            <View
+              className={cn(
+                "size-1.5 rounded-full",
+                isCanceled
+                  ? "bg-yellow"
+                  : activeSubscription?.status === "trialing"
+                    ? "bg-blue"
+                    : "bg-green",
+              )}
+            />
+            <Text className="text-xs text-secondary-label">
+              {isCanceled
+                ? t("plan.canceled_expires", {
+                    date: periodEnd?.toLocaleDateString(undefined, {
+                      year: "numeric",
+                      month: "short",
+                      day: "numeric",
+                    }),
+                  })
+                : activeSubscription?.status === "trialing"
+                  ? t("plan.trial_ends", {
+                      date: periodEnd?.toLocaleDateString(undefined, {
+                        year: "numeric",
+                        month: "short",
+                        day: "numeric",
+                      }),
+                    })
+                  : t("plan.renews", {
+                      date: periodEnd?.toLocaleDateString(undefined, {
+                        year: "numeric",
+                        month: "short",
+                        day: "numeric",
+                      }),
+                    })}
+            </Text>
+          </View>
+        )}
+        <Pressable
+          accessibilityRole="button"
+          onPress={onManageSubscription}
+          disabled={!canManageSubscription || isManaging}
+          className={cn(
+            "h-11 items-center justify-center rounded-full border border-opaque-separator/60",
+            !canManageSubscription && "opacity-50",
+          )}
+        >
+          {isManaging ? (
+            <ActivityIndicator />
+          ) : (
+            <Text className="text-base font-medium text-label">
+              {canManageSubscription ? t("plan.manage_subscription") : t("plan.current_plan")}
+            </Text>
+          )}
+        </Pressable>
+      </View>
     )
   }
 
