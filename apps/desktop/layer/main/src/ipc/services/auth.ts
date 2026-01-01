@@ -59,9 +59,11 @@ export class AuthService extends IpcService {
       const __dirname = fileURLToPath(new URL(".", import.meta.url))
       // In production, the helper is in the Resources directory
       // In development, we need to find it relative to the source
+      // Path from: apps/desktop/layer/main/src/ipc/services/
+      // To:        apps/desktop/resources/apple-auth-helper/
       const helperPath = app.isPackaged
         ? path.join(process.resourcesPath, "apple-auth-helper", "AppleAuthHelper")
-        : path.resolve(__dirname, "../../../../resources/apple-auth-helper/AppleAuthHelper")
+        : path.resolve(__dirname, "../../../../../resources/apple-auth-helper/AppleAuthHelper")
 
       logger.info("Executing AppleAuthHelper", { helperPath })
 
