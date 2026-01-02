@@ -43,8 +43,38 @@ rm "${OUTPUT_DIR}/${OUTPUT_NAME}-arm64" "${OUTPUT_DIR}/${OUTPUT_NAME}-x86_64"
 # Remove old standalone binary if exists
 rm -f "${OUTPUT_DIR}/${OUTPUT_NAME}"
 
-# Copy Info.plist to bundle
-cp "${SCRIPT_DIR}/Info.plist" "${APP_BUNDLE}/Contents/"
+# Generate Info.plist directly in the bundle
+# (Do NOT keep Info.plist at the directory level, or Apple will treat the whole directory as a bundle)
+cat > "${APP_BUNDLE}/Contents/Info.plist" << 'PLIST'
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
+<plist version="1.0">
+<dict>
+    <key>CFBundleDevelopmentRegion</key>
+    <string>en</string>
+    <key>CFBundleExecutable</key>
+    <string>AppleAuthHelper</string>
+    <key>CFBundleIdentifier</key>
+    <string>is.follow.AppleAuthHelper</string>
+    <key>CFBundleInfoDictionaryVersion</key>
+    <string>6.0</string>
+    <key>CFBundleName</key>
+    <string>AppleAuthHelper</string>
+    <key>CFBundlePackageType</key>
+    <string>APPL</string>
+    <key>CFBundleShortVersionString</key>
+    <string>1.0</string>
+    <key>CFBundleVersion</key>
+    <string>1</string>
+    <key>LSMinimumSystemVersion</key>
+    <string>11.0</string>
+    <key>LSUIElement</key>
+    <true/>
+    <key>NSHighResolutionCapable</key>
+    <true/>
+</dict>
+</plist>
+PLIST
 
 # Make executable
 chmod +x "${APP_BUNDLE}/Contents/MacOS/${OUTPUT_NAME}"
