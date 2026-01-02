@@ -9,6 +9,7 @@ import Foundation
 class AppleSignInHelper: NSObject, ASAuthorizationControllerDelegate, ASAuthorizationControllerPresentationContextProviding {
     private var result: Result<AppleAuthResult, Error>?
     private var isComplete = false
+    private var presentationWindow: NSWindow?
 
     struct AppleAuthResult: Codable {
         let identityToken: String
@@ -144,16 +145,27 @@ class AppleSignInHelper: NSObject, ASAuthorizationControllerDelegate, ASAuthoriz
     func presentationAnchor(for controller: ASAuthorizationController) -> ASPresentationAnchor {
         // Return the key window or create a new window if needed
         if let window = NSApplication.shared.keyWindow {
+            fputs("[AppleAuthHelper] Using existing key window\n", stderr)
             return window
         }
-        // Create a temporary window for the authorization UI
+
+        // Create and keep a reference to the window for the authorization UI
+        // The window needs to be visible and properly styled for the system dialog to appear
         let window = NSWindow(
-            contentRect: NSRect(x: 0, y: 0, width: 1, height: 1),
-            styleMask: [],
+            contentRect: NSRect(x: 0, y: 0, width: 400, height: 300),
+            styleMask: [.titled, .closable],
             backing: .buffered,
             defer: false
         )
+        window.title = "Sign in with Apple"
+        window.center()
+        window.isReleasedWhenClosed = false
         window.makeKeyAndOrderFront(nil)
+
+        // Keep a strong reference to prevent deallocation
+        self.presentationWindow = window
+
+        fputs("[AppleAuthHelper] Created presentation window\n", stderr)
         return window
     }
 }
@@ -166,14 +178,24 @@ struct OutputResult: Codable {
     let error: String?
 }
 
+fputs("[AppleAuthHelper] Starting...\n", stderr)
+
 // Start the NSApplication to get access to windows and enable UI
+// Use .regular to allow the app to show UI and become active
 let app = NSApplication.shared
-app.setActivationPolicy(.accessory)
+app.setActivationPolicy(.regular)
+
+// Activate the app to bring it to front (required for system dialogs)
+app.activate(ignoringOtherApps: true)
+
+fputs("[AppleAuthHelper] App activated, starting sign in...\n", stderr)
 
 let helper = AppleSignInHelper()
 
 // performSignIn uses RunLoop to wait without blocking delegate callbacks
 let result = helper.performSignIn()
+
+fputs("[AppleAuthHelper] Sign in completed\n", stderr)
 
 let output: OutputResult
 switch result {
