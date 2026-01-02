@@ -7,7 +7,7 @@ import type { IpcContext } from "electron-ipc-decorator"
 import { IpcMethod, IpcService } from "electron-ipc-decorator"
 import path from "pathe"
 
-import { isMacOS } from "../../env"
+import { isMAS } from "../../env"
 import { deleteNotificationsToken, updateNotificationsToken } from "../../lib/user"
 import { logger } from "../../logger"
 
@@ -43,15 +43,15 @@ export class AuthService extends IpcService {
 
   /**
    * Performs native Sign in with Apple using the macOS AuthenticationServices framework.
-   * This is available on all macOS builds (both DMG and MAS).
+   * This is only available on Mac App Store (MAS) builds.
    * Returns the Apple ID credential including the identity token for server-side verification.
    */
   @IpcMethod()
   async signInWithApple(_context: IpcContext): Promise<NativeAppleAuthResult> {
-    if (!isMacOS) {
+    if (!isMAS) {
       return {
         success: false,
-        error: "Native Sign in with Apple is only available on macOS",
+        error: "Native Sign in with Apple is only available on Mac App Store builds",
       }
     }
 
@@ -116,10 +116,10 @@ export class AuthService extends IpcService {
 
   /**
    * Check if native Sign in with Apple is available.
-   * This is true on all macOS builds (both DMG and MAS).
+   * This is only true on Mac App Store (MAS) builds.
    */
   @IpcMethod()
   isNativeAppleAuthAvailable(_context: IpcContext): boolean {
-    return isMacOS
+    return isMAS
   }
 }

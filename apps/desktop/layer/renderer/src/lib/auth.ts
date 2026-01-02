@@ -42,9 +42,10 @@ export const {
 } = auth.authClient
 
 /**
- * Enhanced login handler that supports native Sign in with Apple on macOS.
- * For Apple provider on macOS (both DMG and MAS), it uses the native AuthenticationServices
+ * Enhanced login handler that supports native Sign in with Apple on Mac App Store builds.
+ * For Apple provider on MAS builds, it uses the native AuthenticationServices
  * framework to get an identity token, then authenticates with the server using the idToken flow.
+ * Non-MAS builds (DMG) use web-based Apple Sign In.
  */
 export const loginHandler = async (
   provider: string,
@@ -55,9 +56,8 @@ export const loginHandler = async (
     headers?: Record<string, string>
   },
 ) => {
-  // Check if we should use native Apple Sign In
-  // Available on all macOS builds (DMG and MAS) with IPC services
-  if (provider === "apple" && window.platform === "darwin" && ipcServices) {
+  // Check if we should use native Apple Sign In (only available on MAS builds)
+  if (provider === "apple" && ipcServices) {
     try {
       const isNativeAvailable = await ipcServices.auth.isNativeAppleAuthAvailable()
 
