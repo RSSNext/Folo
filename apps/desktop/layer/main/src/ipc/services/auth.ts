@@ -61,9 +61,20 @@ export class AuthService extends IpcService {
       // In development, we need to find it relative to the source
       // Path from: apps/desktop/layer/main/src/ipc/services/
       // To:        apps/desktop/resources/apple-auth-helper/
+      // The helper is packaged as an .app bundle to have a proper Bundle ID for Sign in with Apple
       const helperPath = app.isPackaged
-        ? path.join(process.resourcesPath, "apple-auth-helper", "AppleAuthHelper")
-        : path.resolve(__dirname, "../../../../../resources/apple-auth-helper/AppleAuthHelper")
+        ? path.join(
+            process.resourcesPath,
+            "apple-auth-helper",
+            "AppleAuthHelper.app",
+            "Contents",
+            "MacOS",
+            "AppleAuthHelper",
+          )
+        : path.resolve(
+            __dirname,
+            "../../../../../resources/apple-auth-helper/AppleAuthHelper.app/Contents/MacOS/AppleAuthHelper",
+          )
 
       logger.info("Executing AppleAuthHelper", { helperPath })
 
