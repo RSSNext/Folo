@@ -92,24 +92,21 @@ jobs:
           BUILD_CERTIFICATE_MASPKG_BASE64: ${{ secrets.BUILD_CERTIFICATE_MASPKG_BASE64 }}
           P12_PASSWORD: ${{ secrets.P12_PASSWORD }}
           BUILD_PROVISION_PROFILE_BASE64: ${{ secrets.BUILD_PROVISION_PROFILE_BASE64 }}
-          BUILD_PROVISION_PROFILE_DEV_ID_BASE64: ${{ secrets.BUILD_PROVISION_PROFILE_DEV_ID_BASE64 }}
           KEYCHAIN_PASSWORD: ${{ secrets.KEYCHAIN_PASSWORD }}
-        if: runner.os == 'macOS' && env.BUILD_CERTIFICATE_BASE64 != '' && env.BUILD_CERTIFICATE_MAS_BASE64 != '' && env.BUILD_CERTIFICATE_MASPKG_BASE64 != '' && env.BUILD_PROVISION_PROFILE_BASE64 != '' && env.BUILD_PROVISION_PROFILE_DEV_ID_BASE64 != ''
+        if: runner.os == 'macOS' && env.BUILD_CERTIFICATE_BASE64 != '' && env.BUILD_CERTIFICATE_MAS_BASE64 != '' && env.BUILD_CERTIFICATE_MASPKG_BASE64 != '' && env.BUILD_PROVISION_PROFILE_BASE64 != ''
         run: |
           # create variables
           CERTIFICATE_PATH=$RUNNER_TEMP/build_certificate.p12
           CERTIFICATE_MAS_PATH=$RUNNER_TEMP/build_certificate_mas.p12
           CERTIFICATE_MASPKG_PATH=$RUNNER_TEMP/build_certificate_maspkg.p12
-          PP_MAS_PATH=$RUNNER_TEMP/build_pp_mas.provisionprofile
-          PP_DEV_ID_PATH=$RUNNER_TEMP/build_pp_dev_id.provisionprofile
+          PP_PATH=$RUNNER_TEMP/build_pp.provisionprofile
           KEYCHAIN_PATH=$RUNNER_TEMP/app-signing.keychain-db
 
           # import certificate and provisioning profile from secrets
           echo -n "$BUILD_CERTIFICATE_BASE64" | base64 --decode -o $CERTIFICATE_PATH
           echo -n "$BUILD_CERTIFICATE_MAS_BASE64" | base64 --decode -o $CERTIFICATE_MAS_PATH
           echo -n "$BUILD_CERTIFICATE_MASPKG_BASE64" | base64 --decode -o $CERTIFICATE_MASPKG_PATH
-          echo -n "$BUILD_PROVISION_PROFILE_BASE64" | base64 --decode -o $PP_MAS_PATH
-          echo -n "$BUILD_PROVISION_PROFILE_DEV_ID_BASE64" | base64 --decode -o $PP_DEV_ID_PATH
+          echo -n "$BUILD_PROVISION_PROFILE_BASE64" | base64 --decode -o $PP_PATH
 
           # create temporary keychain
           security create-keychain -p "$KEYCHAIN_PASSWORD" $KEYCHAIN_PATH
@@ -126,8 +123,7 @@ jobs:
 
           # apply provisioning profile
           mkdir -p ~/Library/MobileDevice/Provisioning\ Profiles
-          cp $PP_MAS_PATH ~/Library/MobileDevice/Provisioning\ Profiles
-          cp $PP_DEV_ID_PATH ~/Library/MobileDevice/Provisioning\ Profiles
+          cp $PP_PATH ~/Library/MobileDevice/Provisioning\ Profiles
 
       - name: Install dependencies
         run: pnpm i
@@ -156,7 +152,6 @@ jobs:
           APPLE_TEAM_ID: ${{ secrets.APPLE_TEAM_ID }}
           OSX_SIGN_KEYCHAIN_PATH: ${{ runner.temp }}/app-signing.keychain-db
           OSX_SIGN_IDENTITY: ${{ secrets.OSX_SIGN_IDENTITY }}
-          OSX_SIGN_PROVISIONING_PROFILE_PATH: ${{ runner.temp }}/build_pp_dev_id.provisionprofile
         uses: nick-fields/retry@v3
         with:
           max_attempts: 3
@@ -172,7 +167,7 @@ jobs:
         env:
           OSX_SIGN_KEYCHAIN_PATH: ${{ runner.temp }}/app-signing.keychain-db
           OSX_SIGN_IDENTITY: ${{ secrets.OSX_SIGN_IDENTITY_MAS }}
-          OSX_SIGN_PROVISIONING_PROFILE_PATH: ${{ runner.temp }}/build_pp_mas.provisionprofile
+          OSX_SIGN_PROVISIONING_PROFILE_PATH: ${{ runner.temp }}/build_pp.provisionprofile
           BUILD_VERSION: ${{ github.event.inputs.build_version }}
         working-directory: apps/desktop
         run: pnpm build:electron-forge:mas
