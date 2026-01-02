@@ -3,13 +3,13 @@ import Foundation
 
 // MARK: - Apple Sign In Helper for Electron
 
-/// A command-line tool that performs native Sign in with Apple authentication.
+/// A helper tool that performs native Sign in with Apple authentication.
 /// Outputs JSON with the authentication result or error.
 
 class AppleSignInHelper: NSObject, ASAuthorizationControllerDelegate, ASAuthorizationControllerPresentationContextProviding {
     private var result: Result<AppleAuthResult, Error>?
-    private var isComplete = false
     private var presentationWindow: NSWindow?
+    private var authController: ASAuthorizationController?
 
     struct AppleAuthResult: Codable {
         let identityToken: String
@@ -44,33 +44,45 @@ class AppleSignInHelper: NSObject, ASAuthorizationControllerDelegate, ASAuthoriz
         }
     }
 
-    func performSignIn() -> Result<AppleAuthResult, Error> {
+    func startSignIn() {
+        fputs("[AppleAuthHelper] Creating authorization request...\n", stderr)
+
         let appleIDProvider = ASAuthorizationAppleIDProvider()
         let request = appleIDProvider.createRequest()
         request.requestedScopes = [.fullName, .email]
 
-        let authorizationController = ASAuthorizationController(authorizationRequests: [request])
-        authorizationController.delegate = self
-        authorizationController.presentationContextProvider = self
-        authorizationController.performRequests()
+        let controller = ASAuthorizationController(authorizationRequests: [request])
+        controller.delegate = self
+        controller.presentationContextProvider = self
 
-        // Use RunLoop to wait for the result without blocking delegate callbacks
-        // This allows the main thread to continue processing events (including delegate callbacks)
-        while !isComplete {
-            RunLoop.current.run(mode: .default, before: Date(timeIntervalSinceNow: 0.1))
-        }
+        // Keep a strong reference to prevent premature deallocation
+        self.authController = controller
 
-        return result ?? .failure(AppleSignInError.unknown)
+        fputs("[AppleAuthHelper] Performing authorization request...\n", stderr)
+        controller.performRequests()
     }
 
     private func complete(with result: Result<AppleAuthResult, Error>) {
+        fputs("[AppleAuthHelper] Completing with result...\n", stderr)
         self.result = result
-        self.isComplete = true
+
+        // Close the presentation window and stop the app on the main thread
+        DispatchQueue.main.async {
+            self.presentationWindow?.close()
+            self.presentationWindow = nil
+            NSApp.stop(nil)
+        }
+    }
+
+    func getResult() -> Result<AppleAuthResult, Error> {
+        return result ?? .failure(AppleSignInError.unknown)
     }
 
     // MARK: - ASAuthorizationControllerDelegate
 
     func authorizationController(controller: ASAuthorizationController, didCompleteWithAuthorization authorization: ASAuthorization) {
+        fputs("[AppleAuthHelper] Authorization completed successfully\n", stderr)
+
         guard let appleIDCredential = authorization.credential as? ASAuthorizationAppleIDCredential else {
             complete(with: .failure(AppleSignInError.invalidCredential))
             return
@@ -108,6 +120,8 @@ class AppleSignInHelper: NSObject, ASAuthorizationControllerDelegate, ASAuthoriz
     }
 
     func authorizationController(controller: ASAuthorizationController, didCompleteWithError error: Error) {
+        fputs("[AppleAuthHelper] Authorization failed with error: \(error.localizedDescription)\n", stderr)
+
         if let authError = error as? ASAuthorizationError {
             switch authError.code {
             case .canceled:
@@ -143,29 +157,31 @@ class AppleSignInHelper: NSObject, ASAuthorizationControllerDelegate, ASAuthoriz
     // MARK: - ASAuthorizationControllerPresentationContextProviding
 
     func presentationAnchor(for controller: ASAuthorizationController) -> ASPresentationAnchor {
-        // Return the key window or create a new window if needed
+        fputs("[AppleAuthHelper] Creating presentation anchor...\n", stderr)
+
+        // Return an existing window if available
         if let window = NSApplication.shared.keyWindow {
             fputs("[AppleAuthHelper] Using existing key window\n", stderr)
             return window
         }
 
-        // Create and keep a reference to the window for the authorization UI
-        // The window needs to be visible and properly styled for the system dialog to appear
+        // Create a minimal transparent window as the anchor for the Sign in with Apple sheet
+        // The system's Sign in with Apple UI appears as a popover anchored to this window
         let window = NSWindow(
-            contentRect: NSRect(x: 0, y: 0, width: 400, height: 300),
-            styleMask: [.titled, .closable],
+            contentRect: NSRect(x: 0, y: 0, width: 1, height: 1),
+            styleMask: [],  // No title bar, no decorations
             backing: .buffered,
             defer: false
         )
-        window.title = "Sign in with Apple"
+        window.isOpaque = false
+        window.backgroundColor = .clear
+        window.hasShadow = false
+        window.level = .modalPanel
         window.center()
-        window.isReleasedWhenClosed = false
-        window.makeKeyAndOrderFront(nil)
+        window.orderFrontRegardless()
 
-        // Keep a strong reference to prevent deallocation
         self.presentationWindow = window
-
-        fputs("[AppleAuthHelper] Created presentation window\n", stderr)
+        fputs("[AppleAuthHelper] Created minimal transparent window\n", stderr)
         return window
     }
 }
@@ -180,22 +196,31 @@ struct OutputResult: Codable {
 
 fputs("[AppleAuthHelper] Starting...\n", stderr)
 
-// Start the NSApplication to get access to windows and enable UI
-// Use .regular to allow the app to show UI and become active
+// Initialize the application
 let app = NSApplication.shared
-app.setActivationPolicy(.regular)
 
-// Activate the app to bring it to front (required for system dialogs)
+// Use .accessory so the app doesn't appear in the Dock
+// but can still present system UI elements like Sign in with Apple
+app.setActivationPolicy(.accessory)
+
+// Activate the app to allow system dialogs to appear
 app.activate(ignoringOtherApps: true)
 
-fputs("[AppleAuthHelper] App activated, starting sign in...\n", stderr)
+fputs("[AppleAuthHelper] App initialized with accessory policy, starting sign in...\n", stderr)
 
 let helper = AppleSignInHelper()
+helper.startSignIn()
 
-// performSignIn uses RunLoop to wait without blocking delegate callbacks
-let result = helper.performSignIn()
+// Run the standard Cocoa event loop
+// This properly handles all events including Touch ID authentication
+// The loop exits when NSApp.stop() is called from the completion handler
+fputs("[AppleAuthHelper] Running app event loop...\n", stderr)
+app.run()
 
-fputs("[AppleAuthHelper] Sign in completed\n", stderr)
+fputs("[AppleAuthHelper] App event loop ended\n", stderr)
+
+// Get the result after the run loop exits
+let result = helper.getResult()
 
 let output: OutputResult
 switch result {
@@ -214,6 +239,8 @@ if let jsonData = try? encoder.encode(output),
 } else {
     print("{\"success\": false, \"error\": \"Failed to encode result\"}")
 }
+
+fputs("[AppleAuthHelper] Done\n", stderr)
 
 // Exit with appropriate code
 exit(result.isSuccess ? 0 : 1)
