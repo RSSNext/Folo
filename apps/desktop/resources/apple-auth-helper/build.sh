@@ -55,7 +55,7 @@ cat > "${APP_BUNDLE}/Contents/Info.plist" << 'PLIST'
     <key>CFBundleExecutable</key>
     <string>AppleAuthHelper</string>
     <key>CFBundleIdentifier</key>
-    <string>is.follow.AppleAuthHelper</string>
+    <string>is.follow</string>
     <key>CFBundleInfoDictionaryVersion</key>
     <string>6.0</string>
     <key>CFBundleName</key>
