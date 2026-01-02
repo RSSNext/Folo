@@ -112,21 +112,30 @@ class AppleSignInHelper: NSObject, ASAuthorizationControllerDelegate, ASAuthoriz
             case .canceled:
                 complete(with: .failure(AppleSignInError.canceled))
             case .failed:
-                complete(with: .failure(AppleSignInError.failed(error.localizedDescription)))
+                complete(with: .failure(AppleSignInError.failed("Authorization failed: \(error.localizedDescription)")))
             case .invalidResponse:
-                complete(with: .failure(AppleSignInError.failed("Invalid response from Apple")))
+                complete(with: .failure(AppleSignInError.failed("Invalid response from Apple: \(error.localizedDescription)")))
             case .notHandled:
-                complete(with: .failure(AppleSignInError.failed("Request not handled")))
+                complete(with: .failure(AppleSignInError.failed("Request not handled: \(error.localizedDescription)")))
             case .notInteractive:
-                complete(with: .failure(AppleSignInError.failed("Not interactive")))
-            case .unknown, .matchedExcludedCredential, .credentialImport, .credentialExport,
-                 .preferSignInWithApple, .deviceNotConfiguredForPasskeyCreation:
-                complete(with: .failure(AppleSignInError.unknown))
+                complete(with: .failure(AppleSignInError.failed("Not interactive: \(error.localizedDescription)")))
+            case .unknown:
+                complete(with: .failure(AppleSignInError.failed("Unknown error (code: \(authError.code.rawValue)): \(error.localizedDescription)")))
+            case .matchedExcludedCredential:
+                complete(with: .failure(AppleSignInError.failed("Matched excluded credential: \(error.localizedDescription)")))
+            case .credentialImport:
+                complete(with: .failure(AppleSignInError.failed("Credential import error: \(error.localizedDescription)")))
+            case .credentialExport:
+                complete(with: .failure(AppleSignInError.failed("Credential export error: \(error.localizedDescription)")))
+            case .preferSignInWithApple:
+                complete(with: .failure(AppleSignInError.failed("Prefer Sign in with Apple: \(error.localizedDescription)")))
+            case .deviceNotConfiguredForPasskeyCreation:
+                complete(with: .failure(AppleSignInError.failed("Device not configured for passkey creation: \(error.localizedDescription)")))
             @unknown default:
-                complete(with: .failure(AppleSignInError.unknown))
+                complete(with: .failure(AppleSignInError.failed("Unknown authorization error (code: \(authError.code.rawValue)): \(error.localizedDescription)")))
             }
         } else {
-            complete(with: .failure(AppleSignInError.failed(error.localizedDescription)))
+            complete(with: .failure(AppleSignInError.failed("Non-authorization error: \(error.localizedDescription)")))
         }
     }
 
