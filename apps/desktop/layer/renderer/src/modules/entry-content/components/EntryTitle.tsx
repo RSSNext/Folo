@@ -134,7 +134,6 @@ export const EntryTitle = ({
             target={titleCase(translation?.title ?? "")}
             className="autospace-normal inline-block select-text hyphens-auto text-text duration-200"
             inline={false}
-            bilingual
           />
         </LinkTarget>
 

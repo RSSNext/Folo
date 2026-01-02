@@ -160,4 +160,4 @@ We look forward to your contributions!
 
 ## License
 
-By contributing to Folo, you agree that your contributions will be licensed under the GNU General Public License version 3, with the special exceptions noted in the `README.md`.
+By contributing to Folo, you agree that your contributions will be licensed under the GNU Affero General Public License version 3, with the special exceptions noted in the `README.md`.

@@ -5,7 +5,7 @@
   "packageManager": "pnpm@10.17.0",
   "description": "Follow everything in one place",
   "author": "Folo Team",
-  "license": "GPL-3.0-only",
+  "license": "AGPL-3.0-only",
   "homepage": "https://github.com/RSSNext",
   "repository": {
     "url": "https://github.com/RSSNext/follow",
@@ -16,6 +16,7 @@
     "build:web": "turbo run Folo#build:web",
     "dedupe:locales": "eslint --fix locales/**",
     "depcheck": "npx depcheck --quiet",
+    "dev:web": "turbo run @follow/web#dev @follow/ssr#dev",
     "format": "prettier --write .",
     "format:check": "prettier --check .",
     "icons:sync": "tsx scripts/svg-to-rn.ts && prettier --write apps/mobile/src/icons/**/*.tsx && eslint --fix apps/mobile/src/icons/**/*.tsx",

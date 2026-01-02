@@ -97,12 +97,44 @@ const useActiveSubscription = () => {
     queryKey: ["activeSubscription"],
     queryFn: async () => {
       const { data } = await subscription.list()
-      // We used to allow one time purchases, so we need to check for active subscriptions
-      return data?.find(
-        (sub) => (sub.status === "active" || sub.status === "trialing") && sub.stripeSubscriptionId,
-      )
+      // Find subscription: active, trialing, or canceled with valid period end
+      return data?.find((sub) => {
+        if (!sub.stripeSubscriptionId) return false
+
+        // Active or trialing subscriptions
+        if (sub.status === "active" || sub.status === "trialing") {
+          return true
+        }
+
+        // Canceled subscriptions that haven't expired yet
+        if (sub.status === "canceled" && sub.periodEnd) {
+          return new Date(sub.periodEnd) > new Date()
+        }
+
+        return false
+      })
     },
     enabled: !!userId,
+  })
+}
+
+const useBillingPortal = () => {
+  return useMutation({
+    mutationFn: async () => {
+      const returnUrl = IN_ELECTRON ? env.VITE_WEB_URL : window.location.href
+      const res = await fetch(`${env.VITE_API_URL}/billing/portal`, {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        credentials: "include",
+        body: JSON.stringify({ returnUrl }),
+      })
+      const data = await res.json()
+      if (data.code === 0 && data.data?.url) {
+        window.open(data.data.url, "_blank")
+      }
+    },
   })
 }
 
@@ -361,10 +393,14 @@ const PlanAction = ({
   onSelect?: () => void
   isLoading?: boolean
 }) => {
+  const { t } = useTranslation("settings")
   const { data: activeSubscription } = useActiveSubscription()
-  const serverConfig = useServerConfigs()
-  const stripePortalLink = serverConfig?.STRIPE_PORTAL_LINK
-  const canManageSubscription = !!activeSubscription && !!stripePortalLink
+  const billingPortalMutation = useBillingPortal()
+  const canManageSubscription = !!activeSubscription?.stripeSubscriptionId
+
+  // Determine subscription status info
+  const isCanceled = activeSubscription?.status === "canceled"
+  const periodEnd = activeSubscription?.periodEnd ? new Date(activeSubscription.periodEnd) : null
 
   const getButtonConfig = () => {
     switch (actionType) {
@@ -378,7 +414,7 @@ const PlanAction = ({
       }
       case "current": {
         return {
-          text: canManageSubscription ? "Manage Subscription" : "Current Plan",
+          text: canManageSubscription ? t("plan.manage_subscription") : t("plan.current_plan"),
           icon: undefined,
           variant: "outline" as const,
           className: !canManageSubscription ? "text-text-secondary" : undefined,
@@ -433,25 +469,67 @@ const PlanAction = ({
   }
 
   return (
-    <Button
-      variant={buttonConfig.variant}
-      buttonClassName={cn(
-        "w-full h-9 text-sm font-medium transition-all duration-200",
-        buttonConfig.className,
+    <div className="flex flex-col gap-1.5">
+      {/* Subscription status info for current plan */}
+      {actionType === "current" && canManageSubscription && (
+        <div className="flex items-center justify-center gap-1.5 text-xs text-text-secondary">
+          <span
+            className={cn(
+              "inline-block size-1.5 rounded-full",
+              isCanceled
+                ? "bg-yellow"
+                : activeSubscription?.status === "trialing"
+                  ? "bg-blue"
+                  : "bg-green",
+            )}
+          />
+          <span>
+            {isCanceled
+              ? t("plan.canceled_expires", {
+                  date: periodEnd?.toLocaleDateString(undefined, {
+                    year: "numeric",
+                    month: "short",
+                    day: "numeric",
+                  }),
+                })
+              : activeSubscription?.status === "trialing"
+                ? t("plan.trial_ends", {
+                    date: periodEnd?.toLocaleDateString(undefined, {
+                      year: "numeric",
+                      month: "short",
+                      day: "numeric",
+                    }),
+                  })
+                : t("plan.renews", {
+                    date: periodEnd?.toLocaleDateString(undefined, {
+                      year: "numeric",
+                      month: "short",
+                      day: "numeric",
+                    }),
+                  })}
+          </span>
+        </div>
       )}
-      disabled={buttonConfig.disabled}
-      onClick={
-        actionType === "current" && canManageSubscription
-          ? () => window.open(stripePortalLink, "_blank")
-          : onSelect
-      }
-      isLoading={isLoading}
-    >
-      <span className="flex items-center justify-center gap-1.5">
-        {buttonConfig.icon && <i className={cn(buttonConfig.icon, "text-sm")} />}
-        <span>{buttonConfig.text}</span>
-      </span>
-    </Button>
+      <Button
+        variant={buttonConfig.variant}
+        buttonClassName={cn(
+          "w-full h-9 text-sm font-medium transition-all duration-200",
+          buttonConfig.className,
+        )}
+        disabled={buttonConfig.disabled}
+        onClick={
+          actionType === "current" && canManageSubscription
+            ? () => billingPortalMutation.mutate()
+            : onSelect
+        }
+        isLoading={isLoading || billingPortalMutation.isPending}
+      >
+        <span className="flex items-center justify-center gap-1.5">
+          {buttonConfig.icon && <i className={cn(buttonConfig.icon, "text-sm")} />}
+          <span>{buttonConfig.text}</span>
+        </span>
+      </Button>
+    </div>
   )
 }
 

@@ -51,6 +51,12 @@ pnpm run test
 
 - Run the above at the root, or use per-package variants as needed.
 - Follow this order strictly: typecheck → lint → test.
+- After every modification, run the following checks to catch errors early:
+
+```bash
+npm exec turbo run format:check typecheck lint
+npm exec turbo run test
+```
 
 ## Code style and conventions
 

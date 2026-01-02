@@ -3,7 +3,6 @@ import type { LexicalRichEditorRef } from "@follow/components/ui/lexical-rich-ed
 import { LexicalRichEditor } from "@follow/components/ui/lexical-rich-editor/index.js"
 import { ScrollArea } from "@follow/components/ui/scroll-area/ScrollArea.js"
 import { cn, nextFrame } from "@follow/utils"
-import type { BizUIMessage } from "@folo-services/ai-tools"
 import { isEqual } from "es-toolkit"
 import type { EditorState, LexicalEditor, SerializedEditorState } from "lexical"
 import { $getRoot } from "lexical"
@@ -11,6 +10,7 @@ import { useCallback, useEffect, useMemo, useRef, useState } from "react"
 
 import { useEditingMessageId, useSetEditingMessageId } from "~/modules/ai-chat/atoms/session"
 import { useChatStatus } from "~/modules/ai-chat/store/hooks"
+import type { BizUIMessage } from "~/modules/ai-chat/store/types"
 
 import { MentionPlugin, ShortcutPlugin } from "../../editor"
 

@@ -1,7 +1,7 @@
 import { CollapseCss, CollapseCssGroup } from "@follow/components/ui/collapse/index.js"
 import { JsonHighlighter } from "@follow/components/ui/json-highlighter/index.js"
 import type { ToolUIPart } from "ai"
-import { getToolName } from "ai"
+import { getStaticToolName } from "ai"
 import clsx from "clsx"
 import * as React from "react"
 import { titleCase } from "title-case"
@@ -14,7 +14,7 @@ interface ToolInvocationComponentProps {
 
 export const ToolInvocationComponent: React.FC<ToolInvocationComponentProps> = React.memo(
   ({ part, variant }) => {
-    const toolName = titleCase(getToolName(part).replaceAll("_", " "))
+    const toolName = titleCase(getStaticToolName(part).replaceAll("_", " "))
 
     const hasError = "errorText" in part && part.errorText
     const hasResult = "output" in part && part.output

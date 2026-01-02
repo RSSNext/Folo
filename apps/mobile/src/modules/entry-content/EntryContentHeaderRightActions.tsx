@@ -77,6 +77,7 @@ const HeaderRightActionsImpl = ({
   const [showReadability, setShowReadability] = useAtom(showReadabilityAtom)
   const showAITranslationSetting =
     useGeneralSettingKey("translation") || !!entry?.settings?.translation
+  const translationMode = useGeneralSettingKey("translationMode")
   const showReadabilitySetting = !!entry?.settings?.readability
 
   const feed = useFeedById(entry?.feedId as string, (feed) => feed && { feedId: feed.id })
@@ -108,6 +109,7 @@ const HeaderRightActionsImpl = ({
       language: getActionLanguage(),
       withContent: true,
       target: showReadability ? "readabilityContent" : "content",
+      mode: translationMode,
     })
     setShowTranslation((prev) => !prev)
   }

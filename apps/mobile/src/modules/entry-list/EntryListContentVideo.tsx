@@ -34,6 +34,7 @@ export const EntryListContentVideo = ({
   })
 
   const translation = useGeneralSettingKey("translation")
+  const translationMode = useGeneralSettingKey("translationMode")
   const actionLanguage = useActionLanguage()
   const userRole = useUserRole()
   const translationPrefetchEnabled = translation && !isFreeRole(userRole)
@@ -41,6 +42,7 @@ export const EntryListContentVideo = ({
     entryIds: active ? viewableItems.map((item) => item.key) : [],
     language: actionLanguage,
     enabled: translationPrefetchEnabled,
+    mode: translationMode,
   })
 
   const ListFooterComponent = useMemo(
