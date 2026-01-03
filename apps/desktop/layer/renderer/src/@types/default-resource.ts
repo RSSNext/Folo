@@ -12,6 +12,8 @@ import lang_zhCN from "@locales/lang/zh-CN.json"
 import lang_zhTW from "@locales/lang/zh-TW.json"
 import settings_en from "@locales/settings/en.json"
 import shortcuts_en from "@locales/shortcuts/en.json"
+import common_frFR from "@locales/common/fr-FR.json"
+import lang_frFR from "@locales/lang/fr-FR.json"
 
 import type { ns, RendererSupportedLanguages } from "./constants"
 
@@ -42,6 +44,7 @@ export const defaultResources = {
     common: common_ja,
   },
   "zh-TW": { lang: lang_zhTW, common: common_zhTW },
+  "fr-FR": { lang: lang_frFR, common: common_frFR },
 } satisfies Record<
   RendererSupportedLanguages,
   Partial<Record<(typeof ns)[number], Record<string, string>>>
