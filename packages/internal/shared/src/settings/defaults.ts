@@ -156,7 +156,7 @@ export const defaultIntegrationSettings: IntegrationSettings = {
   customIntegration: [],
 
   // fetch preferences (Electron only)
-  useBrowserFetch: true,
+  useBrowserFetch: false,
 }
 
 export const defaultAISettings: AISettings = {

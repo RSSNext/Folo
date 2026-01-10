@@ -24,6 +24,7 @@ const EntryItemImpl = memo(function EntryItemImpl({
   isFirstItem,
 }: EntryItemProps) {
   const enableTranslation = useGeneralSettingKey("translation")
+  const translationMode = useGeneralSettingKey("translationMode")
   const actionLanguage = useActionLanguage()
   const userRole = useUserRole()
   const shouldPrefetchTranslation = enableTranslation && !isFreeRole(userRole)
@@ -37,6 +38,7 @@ const EntryItemImpl = memo(function EntryItemImpl({
     enabled: shouldPrefetchTranslation,
     language: actionLanguage,
     withContent: view === FeedViewType.SocialMedia,
+    mode: translationMode,
   })
 
   const Item: EntryListItemFC = getItemComponentByView(view)

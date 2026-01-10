@@ -51,7 +51,7 @@
     "@welldone-software/why-did-you-render": "10.0.1",
     "@xyflow/react": "12.9.2",
     "@yornaath/batshit": "0.11.1",
-    "ai": "5.0.87",
+    "ai": "6.0.5",
     "camelcase-keys": "10.0.1",
     "chrono-node": "2.9.0",
     "class-variance-authority": "0.7.1",
@@ -113,7 +113,7 @@
     "use-context-selector": "2.0.0",
     "use-sync-external-store": "1.6.0",
     "usehooks-ts": "3.1.1",
-    "zod": "3.25.75",
+    "zod": "3.25.76",
     "zustand": "5.0.8"
   },
   "devDependencies": {

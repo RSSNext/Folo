@@ -9,7 +9,7 @@ import { toast } from "sonner"
 
 import { useShowAITranslation } from "~/atoms/ai-translation"
 import { useEntryIsInReadability, useEntryIsInReadabilitySuccess } from "~/atoms/readability"
-import { useActionLanguage } from "~/atoms/settings/general"
+import { useActionLanguage, useGeneralSettingKey } from "~/atoms/settings/general"
 import { useModalStack } from "~/components/ui/modal/stacked/hooks"
 
 import { ImageGalleryContent } from "./components/ImageGalleryContent"
@@ -52,6 +52,7 @@ export const useEntryContent = (entryId: string) => {
   const userRole = useUserRole()
   const shouldPrefetchTranslation = enableTranslation && !isFreeRole(userRole)
   const actionLanguage = useActionLanguage()
+  const translationMode = useGeneralSettingKey("translationMode")
   const contentTranslated = useEntryTranslation({
     entryId,
     language: actionLanguage,
@@ -63,6 +64,7 @@ export const useEntryContent = (entryId: string) => {
     language: actionLanguage,
     withContent: true,
     target: isReadabilitySuccess ? "readabilityContent" : "content",
+    mode: translationMode,
   })
 
   return useMemo(() => {

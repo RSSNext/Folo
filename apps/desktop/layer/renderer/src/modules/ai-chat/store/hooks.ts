@@ -1,8 +1,8 @@
-import type { BizUIMessage } from "@folo-services/ai-tools"
 import { useShallow } from "zustand/shallow"
 
 import { useAIChatStore } from "./AIChatContext"
 import type { BlockSlice } from "./slices/block.slice"
+import type { BizUIMessage } from "./types"
 
 /**
  * Hook to get the current room ID (chat ID) from the AI chat store

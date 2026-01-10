@@ -1,11 +1,10 @@
-import type { ParseResult } from "@ai-sdk/provider-utils"
 import { env } from "@follow/shared/env.desktop"
-import type { BizUIMessage } from "@folo-services/ai-tools"
 import type { HttpChatTransportInitOptions, UIMessageChunk } from "ai"
 import { HttpChatTransport, parseJsonEventStream, uiMessageChunkSchema } from "ai"
 
 import { getAIModelState } from "../atoms/session"
 import { AIPersistService } from "../services"
+import type { BizUIMessage } from "./types"
 
 type TitleHandlerPersistOption = boolean | ((title: string) => void | Promise<void>)
 
@@ -62,6 +61,33 @@ export function createChatTransport({ onValue, titleHandler }: CreateChatTranspo
   })
 }
 
+type UIMessageChunkParseResult =
+  ReturnType<typeof parseJsonEventStream<UIMessageChunk>> extends ReadableStream<infer T>
+    ? T
+    : never
+
+const coerceFinishChunk = (chunk: UIMessageChunkParseResult): UIMessageChunk | null => {
+  const { rawValue } = chunk
+  if (!rawValue || typeof rawValue !== "object" || Array.isArray(rawValue)) {
+    return null
+  }
+
+  if ((rawValue as { type?: unknown }).type !== "finish") {
+    return null
+  }
+
+  const { finishReason, messageMetadata } = rawValue as {
+    finishReason?: unknown
+    messageMetadata?: unknown
+  }
+
+  return {
+    type: "finish",
+    finishReason: typeof finishReason === "string" ? finishReason : undefined,
+    messageMetadata,
+  } as UIMessageChunk
+}
+
 class ExtendChatTransport extends HttpChatTransport<BizUIMessage> {
   constructor(
     private options: HttpChatTransportInitOptions<BizUIMessage> & {
@@ -81,15 +107,16 @@ class ExtendChatTransport extends HttpChatTransport<BizUIMessage> {
       stream,
       schema: uiMessageChunkSchema,
     }).pipeThrough(
-      new TransformStream<ParseResult<UIMessageChunk>, UIMessageChunk>({
+      new TransformStream<UIMessageChunkParseResult, UIMessageChunk>({
         async transform(chunk, controller) {
-          if (!chunk.success) {
+          const parsedChunk = chunk.success ? chunk.value : coerceFinishChunk(chunk)
+          if (!parsedChunk) {
             throw chunk.error
           }
 
-          await handleGeneratedTitle(chunk.value)
-          onValue?.(chunk.value)
-          controller.enqueue(chunk.value)
+          await handleGeneratedTitle(parsedChunk)
+          onValue?.(parsedChunk)
+          controller.enqueue(parsedChunk)
         },
       }),
     )

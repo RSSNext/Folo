@@ -3,7 +3,7 @@
   "type": "module",
   "private": true,
   "author": "Folo Team",
-  "license": "GPL-3.0-only",
+  "license": "AGPL-3.0-only",
   "homepage": "https://github.com/RSSNext",
   "repository": {
     "url": "https://github.com/RSSNext/follow",
@@ -36,7 +36,7 @@
     "@follow/constants": "workspace:*",
     "@follow/models": "workspace:*",
     "@follow/shared": "workspace:*",
-    "ai": "5.0.87",
+    "ai": "6.0.5",
     "drizzle-orm": "0.44.7",
     "expo-sqlite": "15.2.12",
     "sqlocal": "npm:@hyoban/sqlocal@0.14.1-fork.4",

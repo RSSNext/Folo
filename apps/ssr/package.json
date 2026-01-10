@@ -43,7 +43,7 @@
     "sonner": "2.0.7",
     "use-context-selector": "2.0.0",
     "xss": "1.0.15",
-    "zod": "3.25.75"
+    "zod": "3.25.76"
   },
   "devDependencies": {
     "@follow/components": "workspace:*",
