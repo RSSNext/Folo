@@ -7,11 +7,15 @@ import {
   TooltipTrigger,
 } from "@follow/components/ui/tooltip/index.jsx"
 import { useCorrectZIndex } from "@follow/components/ui/z-index/ctx.js"
-import { cn, stopPropagation } from "@follow/utils"
+import { env } from "@follow/shared/env.desktop"
+import { feedSyncServices } from "@follow/store/feed/store"
+import { cn, parseSafeUrl, stopPropagation } from "@follow/utils"
+import type { MouseEvent } from "react"
 import { use, useCallback } from "react"
 import { useTranslation } from "react-i18next"
 import { toast } from "sonner"
 
+import { navigateEntry } from "~/hooks/biz/useNavigateEntry"
 import { copyToClipboard } from "~/lib/clipboard"
 
 import { MarkdownRenderActionContext } from "../context"
@@ -21,6 +25,7 @@ export const MarkdownLink: Component<LinkProps> = (props) => {
   const { t } = useTranslation()
 
   const populatedFullHref = transformUrl(props.href)
+  const shareFeedInfo = parseShareFeedInfo(populatedFullHref)
 
   const handleCopyLink = useCallback(async () => {
     try {
@@ -33,6 +38,24 @@ export const MarkdownLink: Component<LinkProps> = (props) => {
       toast.error(t("share.copy_failed"))
     }
   }, [populatedFullHref, t])
+
+  const handleShareFeedClick = useCallback(
+    async (event: MouseEvent<HTMLAnchorElement>) => {
+      if (!shareFeedInfo) {
+        return
+      }
+      event.preventDefault()
+      stopPropagation(event)
+
+      const view = await resolveShareFeedView(shareFeedInfo)
+      navigateEntry({
+        feedId: shareFeedInfo.id,
+        entryId: null,
+        view,
+      })
+    },
+    [shareFeedInfo],
+  )
 
   const parseTimeStamp = isAudio(populatedFullHref)
   const zIndex = useCorrectZIndex(0)
@@ -58,7 +81,7 @@ export const MarkdownLink: Component<LinkProps> = (props) => {
           title={props.title}
           target="_blank"
           rel="noreferrer"
-          onClick={stopPropagation}
+          onClick={shareFeedInfo ? handleShareFeedClick : undefined}
         >
           {props.children}
 
@@ -92,4 +115,47 @@ export const MarkdownLink: Component<LinkProps> = (props) => {
       )}
     </Tooltip>
   )
+}
+
+const parseShareFeedInfo = (href?: string) => {
+  if (!href) return null
+
+  const baseUrl = parseSafeUrl(env.VITE_WEB_URL)
+  if (!baseUrl) return null
+
+  let parsedUrl: URL
+  try {
+    parsedUrl = new URL(href, baseUrl)
+  } catch {
+    return null
+  }
+
+  if (parsedUrl.host !== baseUrl.host) return null
+
+  const pathParts = parsedUrl.pathname.split("/").filter(Boolean)
+  if (pathParts.length !== 3 || pathParts[0] !== "share" || pathParts[1] !== "feeds") {
+    return null
+  }
+
+  const viewParam = parsedUrl.searchParams.get("view")
+  const view = viewParam ? Number.parseInt(viewParam, 10) : undefined
+
+  return {
+    id: pathParts[2]!,
+    view: Number.isNaN(view) ? undefined : view,
+  }
+}
+
+const resolveShareFeedView = async (info: { id: string; view?: number }) => {
+  if (typeof info.view === "number") {
+    return info.view
+  }
+
+  const data = await feedSyncServices.fetchFeedById({ id: info.id }).catch(() => {})
+  const analyticsView = data?.analytics?.view
+  if (typeof analyticsView === "number") {
+    return analyticsView
+  }
+
+  return 0
 }
