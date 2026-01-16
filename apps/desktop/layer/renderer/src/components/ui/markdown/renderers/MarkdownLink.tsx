@@ -81,7 +81,7 @@ export const MarkdownLink: Component<LinkProps> = (props) => {
           title={props.title}
           target="_blank"
           rel="noreferrer"
-          onClick={shareFeedInfo ? handleShareFeedClick : undefined}
+          onClick={shareFeedInfo ? handleShareFeedClick : stopPropagation}
         >
           {props.children}
 
