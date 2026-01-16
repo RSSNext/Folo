@@ -39,9 +39,10 @@ export const MarkdownLink: Component<LinkProps> = (props) => {
     }
   }, [populatedFullHref, t])
 
-  const handleShareFeedClick = useCallback(
+  const handleClickLink = useCallback(
     async (event: MouseEvent<HTMLAnchorElement>) => {
       stopPropagation(event)
+
       if (!shareFeedInfo) {
         return
       }
@@ -81,7 +82,7 @@ export const MarkdownLink: Component<LinkProps> = (props) => {
           title={props.title}
           target="_blank"
           rel="noreferrer"
-          onClick={shareFeedInfo ? handleShareFeedClick : stopPropagation}
+          onClick={handleClickLink}
         >
           {props.children}
 
