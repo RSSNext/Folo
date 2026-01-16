@@ -41,11 +41,11 @@ export const MarkdownLink: Component<LinkProps> = (props) => {
 
   const handleShareFeedClick = useCallback(
     async (event: MouseEvent<HTMLAnchorElement>) => {
+      stopPropagation(event)
       if (!shareFeedInfo) {
         return
       }
       event.preventDefault()
-      stopPropagation(event)
 
       const view = await resolveShareFeedView(shareFeedInfo)
       navigateEntry({
