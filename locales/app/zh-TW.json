@@ -199,8 +199,6 @@
   "entry_list_header.show_unread_only": "僅顯示未讀",
   "entry_list_header.timeline_summary": "摘要時間線",
   "entry_list_header.unread": "未讀",
-  "entry_tags.all_feeds": "全部訂閱源",
-  "entry_tags.current_feed": "當前訂閱源",
   "feed.actions.follow": "跟隨",
   "feed.actions.followed": "已跟隨",
   "feed.followsAndFeeds": "在 {{appName}} 上有 {{subscriptionCount}} 個 {{subscriptionNoun}} 和 {{feedsCount}} 個 {{feedsNoun}}",
