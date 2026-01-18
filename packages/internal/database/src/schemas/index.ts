@@ -4,13 +4,7 @@ import type { EntrySettings } from "@follow-app/client-sdk"
 import { sql } from "drizzle-orm"
 import { index, integer, sqliteTable, text, uniqueIndex } from "drizzle-orm/sqlite-core"
 
-import type {
-  AttachmentsModel,
-  EntryTagSummary,
-  ExtraModel,
-  ImageColorsResult,
-  MediaModel,
-} from "./types"
+import type { AttachmentsModel, ExtraModel, ImageColorsResult, MediaModel } from "./types"
 
 export const feedsTable = sqliteTable("feeds", {
   id: text("id").primaryKey(),
@@ -107,7 +101,6 @@ export const entriesTable = sqliteTable("entries", {
   attachments: text("attachments", { mode: "json" }).$type<AttachmentsModel[]>(),
   extra: text("extra", { mode: "json" }).$type<ExtraModel>(),
   language: text("language"),
-  tags: text("tags", { mode: "json" }).$type<EntryTagSummary>(),
 
   feedId: text("feed_id"),
 

@@ -209,8 +209,6 @@
   "entry_list_header.show_unread_only": "Show unread Only",
   "entry_list_header.timeline_summary": "Summarize timeline",
   "entry_list_header.unread": "unread",
-  "entry_tags.all_feeds": "All Feeds",
-  "entry_tags.current_feed": "Current Feed",
   "feed.actions.follow": "Follow",
   "feed.actions.followed": "Followed",
   "feed.followsAndFeeds": "{{subscriptionCount}} {{subscriptionNoun}} and {{feedsCount}} {{feedsNoun}} on {{appName}}",
