@@ -12,13 +12,11 @@ import { m } from "motion/react"
 import { useEffect, useState } from "react"
 import { Trans, useTranslation } from "react-i18next"
 
-import { useServerConfigs } from "~/atoms/server-configs"
 import { useCurrentModal, useModalStack } from "~/components/ui/modal/stacked/hooks"
 import { authClient, loginHandler } from "~/lib/auth"
 import { useAuthProviders } from "~/queries/users"
 
 import { LoginWithPassword, RegisterForm } from "./Form"
-import { ReferralForm } from "./ReferralForm"
 import { TokenModalContent } from "./TokenModal"
 
 interface LoginModalContentProps {
@@ -27,8 +25,6 @@ interface LoginModalContentProps {
 }
 
 export const LoginModalContent = (props: LoginModalContentProps) => {
-  const serverConfigs = useServerConfigs()
-
   const modal = useCurrentModal()
   const { present } = useModalStack()
 
@@ -206,17 +202,6 @@ export const LoginModalContent = (props: LoginModalContentProps) => {
                   </m.div>
                 ))}
           </div>
-
-          {/* Referral Form */}
-          {isRegister && serverConfigs?.REFERRAL_ENABLED && (
-            <m.div
-              initial={{ opacity: 0, y: 10 }}
-              animate={{ opacity: 1, y: 0 }}
-              transition={{ ...Spring.presets.smooth, delay: 0.2 }}
-            >
-              <ReferralForm className="w-full" />
-            </m.div>
-          )}
 
           {/* Footer Links */}
           <div className="flex flex-col gap-2">

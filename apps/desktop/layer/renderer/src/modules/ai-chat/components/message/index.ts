@@ -1,5 +1,3 @@
 export { AIMarkdownStreamingMessage } from "./AIMarkdownMessage"
 export { AIMessageParts } from "./AIMessageParts"
-export { ManageMemoryCard } from "./ManageMemoryCard"
-export { SaveMemoryCard } from "./SaveMemoryCard"
 export { ToolInvocationComponent } from "./ToolInvocationComponent"
