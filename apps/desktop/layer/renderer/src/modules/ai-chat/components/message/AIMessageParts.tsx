@@ -11,8 +11,6 @@ import { useChatStatus } from "../../store/hooks"
 import { AIChainOfThought } from "../displays"
 import type { ChainReasoningPart } from "../displays/AIChainOfThought"
 import { AIMarkdownStreamingMessage } from "./AIMarkdownMessage"
-import { ManageMemoryCard } from "./ManageMemoryCard"
-import { SaveMemoryCard } from "./SaveMemoryCard"
 import { ToolInvocationComponent } from "./ToolInvocationComponent"
 
 const LazyAIDisplayFlowPart = React.lazy(() =>
@@ -24,9 +22,7 @@ interface AIMessagePartsProps {
   isLastMessage: boolean
 }
 
-const bypassedToolNames = new Set(["tool-save_user_memory", "tool-manage_user_memory"])
-const shouldBypassMergeToolName = (name: string) =>
-  bypassedToolNames.has(name) || name.startsWith("tool-display")
+const shouldBypassMergeToolName = (name: string) => name.startsWith("tool-display")
 
 export const AIMessageParts: React.FC<AIMessagePartsProps> = React.memo(
   ({ message, isLastMessage }) => {
@@ -130,24 +126,6 @@ export const AIMessageParts: React.FC<AIMessagePartsProps> = React.memo(
                     <LazyAIDisplayFlowPart part={part as AIDisplayFlowTool} />
                   </React.Suspense>
                 </ErrorBoundary>
-              )
-            }
-            case "tool-save_user_memory": {
-              return (
-                <SaveMemoryCard
-                  key={partKey}
-                  part={part as ToolUIPart<BizUITools>}
-                  variant="tight"
-                />
-              )
-            }
-            case "tool-manage_user_memory": {
-              return (
-                <ManageMemoryCard
-                  key={partKey}
-                  part={part as ToolUIPart<BizUITools>}
-                  variant="tight"
-                />
               )
             }
 

@@ -1,7 +1,5 @@
-import { useServerConfigs } from "@client/atoms/server-configs"
 import { useRecaptchaToken } from "@client/hooks/useRecaptchaToken"
 import { loginHandler, signUp } from "@client/lib/auth"
-import { ReferralForm } from "@client/modules/referral"
 import { useAuthProviders } from "@client/query/users"
 import { Logo } from "@follow/components/icons/logo.jsx"
 import { Button, MotionButtonBase } from "@follow/components/ui/button/index.jsx"
@@ -48,7 +46,6 @@ const formSchema = z
   })
 
 function RegisterForm() {
-  const serverConfigs = useServerConfigs()
   const { t } = useTranslation()
   const [isSubmitting, setIsSubmitting] = useState(false)
   const navigate = useNavigate()
@@ -146,7 +143,6 @@ function RegisterForm() {
                 </FormItem>
               )}
             />
-            {serverConfigs?.REFERRAL_ENABLED && <ReferralForm align="left" />}
             <Button
               isLoading={isSubmitting}
               disabled={isSubmitting}
@@ -182,7 +178,6 @@ function RegisterForm() {
               <span>{t("login.continueWith", { provider: provider.name })}</span>
             </MotionButtonBase>
           ))}
-          {serverConfigs?.REFERRAL_ENABLED && <ReferralForm />}
         </div>
       )}
       <Divider className="my-7" />
