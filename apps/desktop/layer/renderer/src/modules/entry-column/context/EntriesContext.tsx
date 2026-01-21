@@ -15,7 +15,6 @@ type EntriesStateContextValue = {
   isLoading: boolean
   error: unknown | null
   view: FeedViewType
-  hasUpdate: boolean
   fetchedTime?: number
 }
 
@@ -112,7 +111,6 @@ export const EntriesProvider: React.FC<React.PropsWithChildren> = ({ children })
       isLoading: entries.isLoading,
       error: entries.error ?? null,
       view: view!,
-      hasUpdate: entries.hasUpdate,
       fetchedTime: entries.fetchedTime,
     }),
     [entries, view, syncType],
