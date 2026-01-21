@@ -224,7 +224,7 @@ export const resolveUrlWithBase = (url: string, baseUrl: string) => {
   }
 }
 
-export const getUrlIcon = (url: string, fallback?: boolean | undefined) => {
+export const getUrlIcon = (url: string, _fallback?: boolean | undefined) => {
   let src: string
   let fallbackUrl = ""
 
@@ -234,7 +234,7 @@ export const getUrlIcon = (url: string, fallback?: boolean | undefined) => {
     fallbackUrl = `https://avatar.vercel.sh/${pureDomain}.svg?text=${pureDomain
       ?.slice(0, 2)
       .toUpperCase()}`
-    src = `https://unavatar.webp.se/${host}?fallback=${fallback || false}`
+    src = `https://icons.folo.is/${host}`
   } catch {
     const pureDomain = parse(url).domainWithoutSuffix
     src = `https://avatar.vercel.sh/${pureDomain}.svg?text=${pureDomain?.slice(0, 2).toUpperCase()}`

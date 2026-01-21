@@ -186,7 +186,6 @@ function useRemoteEntries(props?: UseEntriesProps): UseEntriesReturn {
   return {
     entriesIds: query.entriesIds,
     hasNext: query.hasNextPage,
-    hasUpdate: false,
     refetch,
     fetchNextPage,
     isLoading: query.isFetching,
@@ -299,7 +298,6 @@ function useLocalEntries(props?: UseEntriesProps): UseEntriesReturn {
   return {
     entriesIds: entries,
     hasNext,
-    hasUpdate: false,
     refetch,
     fetchNextPage,
     isLoading: false,

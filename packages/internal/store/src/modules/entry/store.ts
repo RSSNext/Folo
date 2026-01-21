@@ -318,26 +318,6 @@ class EntryActions implements Hydratable, Resetable {
     await tx.run()
   }
 
-  updateEntryTagsInSession({ entryId, tags }: { entryId: EntryId; tags: EntryModel["tags"] }) {
-    immerSet((draft) => {
-      const entry = draft.data[entryId]
-      if (!entry) return
-      entry.tags = tags ?? null
-    })
-  }
-
-  async updateEntryTags({ entryId, tags }: { entryId: EntryId; tags: EntryModel["tags"] }) {
-    const tx = createTransaction()
-    const nextTags = tags ?? null
-    tx.store(() => {
-      this.updateEntryTagsInSession({ entryId, tags: nextTags })
-    })
-
-    tx.persist(() => EntryService.patch({ id: entryId, tags: nextTags }))
-
-    await tx.run()
-  }
-
   markEntryReadStatusInSession({
     entryIds,
     ids,
@@ -554,9 +534,6 @@ class EntrySyncServices {
         entry.content = entryInDB.content
         entry.readabilityContent = entryInDB.readabilityContent
         entry.readabilityUpdatedAt = entryInDB.readabilityUpdatedAt
-        if (!entry.tags && entryInDB.tags) {
-          entry.tags = entryInDB.tags
-        }
       }
     }
 
@@ -569,56 +546,6 @@ class EntrySyncServices {
       })
       await collectionActions.delete(entryIdsNotInCollections)
     }
-
-    const dataFeeds = res.data?.map((e) => e.feeds).filter((f) => f.type === "feed")
-    const feeds = dataFeeds?.map((f) => apiMorph.toFeed(f)) ?? []
-    feedActions.upsertMany(feeds)
-
-    return res
-  }
-
-  async fetchEntriesByTags({
-    feedId,
-    tags,
-    match = "any",
-    limit = 30,
-    cursor,
-    withContent,
-  }: {
-    feedId?: string
-    tags: {
-      schemaOrgCategories?: string[]
-      mediaTopics?: string[]
-    }
-    match?: "any" | "all"
-    limit?: number
-    cursor?: string
-    withContent?: boolean
-  }) {
-    const res = await api().entries.tagsQuery({
-      feedId,
-      tags,
-      match,
-      limit,
-      cursor,
-      withContent,
-    })
-
-    const entries = apiMorph.toEntryList(res.data)
-    const entriesInDB = await EntryService.getEntryMany(entries.map((e) => e.id))
-    for (const entry of entries) {
-      const entryInDB = entriesInDB.find((e) => e.id === entry.id)
-      if (entryInDB) {
-        entry.content = entryInDB.content
-        entry.readabilityContent = entryInDB.readabilityContent
-        entry.readabilityUpdatedAt = entryInDB.readabilityUpdatedAt
-        if (!entry.tags && entryInDB.tags) {
-          entry.tags = entryInDB.tags
-        }
-      }
-    }
-
-    await entryActions.upsertMany(entries)
 
     const dataFeeds = res.data?.map((e) => e.feeds).filter((f) => f.type === "feed")
     const feeds = dataFeeds?.map((f) => apiMorph.toFeed(f)) ?? []
@@ -649,15 +576,6 @@ class EntrySyncServices {
         await entryActions.updateEntryContent({
           entryId,
           readabilityContent: entry.readabilityContent,
-        })
-      }
-
-      const apiTags = entry?.tags ?? null
-      const storedTags = currentEntry?.tags ?? null
-      if (JSON.stringify(storedTags) !== JSON.stringify(apiTags)) {
-        await entryActions.updateEntryTags({
-          entryId,
-          tags: apiTags,
         })
       }
     }

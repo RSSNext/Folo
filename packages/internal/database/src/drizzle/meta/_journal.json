@@ -260,6 +260,13 @@
       "when": 1761930812300,
       "tag": "0036_entry_tag_summary",
       "breakpoints": true
+    },
+    {
+      "idx": 37,
+      "version": "6",
+      "when": 1768727702017,
+      "tag": "0037_bored_the_leader",
+      "breakpoints": true
     }
   ]
 }
