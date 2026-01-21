@@ -166,11 +166,7 @@ function EntryColumnContent() {
         !state.error &&
         (!feed || feed?.type === "feed") && <AddFeedHelper />}
 
-      <EntryListHeader
-        refetch={actions.refetch}
-        isRefreshing={isRefreshing}
-        hasUpdate={state.hasUpdate}
-      />
+      <EntryListHeader refetch={actions.refetch} isRefreshing={isRefreshing} />
 
       <EntryColumnWrapper onScroll={handleCombinedScroll} key={`${routeFeedId}-${view}`}>
         {entriesIds.length === 0 ? (
