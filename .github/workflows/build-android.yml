@@ -7,28 +7,21 @@ on:
     paths:
       - "apps/mobile/**"
       - "pnpm-lock.yaml"
+      - ".github/workflows/build-android.yml"
   workflow_dispatch:
     inputs:
-      profile:
-        type: choice
-        default: preview
-        options:
-          - preview
-          - production
-        description: "Build profile"
       release:
         type: boolean
         default: false
         description: "Create a release draft for the build"
 
 concurrency:
-  group: ${{ github.workflow }}-${{ github.ref }}-${{ github.event.inputs.profile }}
+  group: ${{ github.workflow }}-${{ github.ref }}
   cancel-in-progress: true
 
 jobs:
   build:
-    name: Build Android apk for device
-    if: github.secret_source != 'None'
+    name: Build Android APK (no Expo account)
     runs-on: ubuntu-latest
 
     steps:
@@ -63,39 +56,26 @@ jobs:
       - name: Setup Android SDK
         uses: android-actions/setup-android@v3
 
-      - name: 📱 Setup EAS
-        uses: expo/expo-github-action@v8
-        with:
-          eas-version: latest
-          token: ${{ secrets.EXPO_TOKEN }}
-
       - name: Install dependencies
         run: pnpm install
 
-      - name: 🔨 Build Android app
+      - name: Generate native Android project
         working-directory: apps/mobile
-        run: eas build --platform android --profile ${{ github.event.inputs.profile || 'preview' }} --local --output=${{ github.workspace }}/build.${{ github.event.inputs.profile == 'production' && 'aab' || 'apk' }}
+        env:
+          CI: "1"
+          PROFILE: preview
+        run: pnpm exec expo prebuild --platform android --non-interactive --no-install --clean
 
-      - name: 📤 Upload apk Artifact
-        if: github.event.inputs.profile != 'production'
+      - name: 🔨 Build debug APK via Gradle
+        working-directory: apps/mobile/android
+        run: ./gradlew --no-daemon assembleDebug
+
+      - name: 📤 Upload APK artifact
         uses: actions/upload-artifact@v6
         with:
-          name: app-android
-          path: ${{ github.workspace }}/build.apk
+          name: app-android-debug
+          path: apps/mobile/android/app/build/outputs/apk/debug/app-debug.apk
           retention-days: 90
-
-      - name: 📤 Upload aab Artifact
-        if: github.event.inputs.profile == 'production'
-        uses: actions/upload-artifact@v6
-        with:
-          name: aab-android
-          path: ${{ github.workspace }}/build.aab
-          retention-days: 90
-
-      - name: Submit to Google Play
-        if: github.event.inputs.profile == 'production'
-        working-directory: apps/mobile
-        run: eas submit --platform android --path ${{ github.workspace }}/build.aab --non-interactive
 
       - name: Setup Version
         if: github.event.inputs.release == 'true'
@@ -112,5 +92,4 @@ jobs:
           draft: false
           prerelease: true
           tag_name: mobile/v${{ steps.version.outputs.APP_VERSION }}
-          # .aab cannot be installed directly on your Android Emulator or device.
-          files: ${{ github.workspace }}/build.apk
+          files: apps/mobile/android/app/build/outputs/apk/debug/app-debug.apk
