@@ -33,6 +33,7 @@ import { accentColor } from "@/src/theme/colors"
 import { AboutScreen } from "./routes/About"
 import { AccountScreen } from "./routes/Account"
 import { ActionsScreen } from "./routes/Actions"
+import { AIScreen } from "./routes/AI"
 import { AppearanceScreen } from "./routes/Appearance"
 import { DataScreen } from "./routes/Data"
 import { FeedsScreen } from "./routes/Feeds"
@@ -79,6 +80,15 @@ const SettingGroupNavigationLinks: GroupNavigationLink[] = [
       navigation.pushControllerView(AppearanceScreen)
     },
     iconBackgroundColor: "#8B5CF6",
+  },
+  {
+    label: "titles.ai",
+    icon: Magic2CuteFiIcon,
+    onPress: ({ navigation }) => {
+      navigation.pushControllerView(AIScreen)
+    },
+    iconBackgroundColor: "#9333EA",
+    anonymous: false,
   },
   {
     label: "titles.data_control",

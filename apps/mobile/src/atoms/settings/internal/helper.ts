@@ -119,7 +119,7 @@ export const createSettingAtom = <T extends object>(
     const updated = Date.now()
 
     EventBus.dispatch("SETTING_CHANGE_EVENT", {
-      key: settingKey as "general" | "ui",
+      key: settingKey as "general" | "ui" | "ai",
       payload: {
         [key]: value,
       },
