@@ -1,6 +1,6 @@
 export const DEFAULT_VALUES = {
   PROD: {
-    API_URL: "https://api.follow.is",
+    API_URL: "https://api.folo.is",
     WEB_URL: "https://app.folo.is",
     INBOXES_EMAIL: "@follow.re",
     OPENPANEL_CLIENT_ID: "4382168f-b8d2-40c1-9a26-133a312d072b",
@@ -16,7 +16,7 @@ export const DEFAULT_VALUES = {
     INBOXES_EMAIL: "__dev@follow.re",
   },
   STAGING: {
-    API_URL: "https://api.follow.is",
+    API_URL: "https://api.folo.is",
     WEB_URL: "https://staging.follow.is",
     INBOXES_EMAIL: "@follow.re",
     OPENPANEL_CLIENT_ID: "4382168f-b8d2-40c1-9a26-133a312d072b",
