@@ -3,6 +3,7 @@ import { hydrateDatabaseToStore } from "@follow/store/hydrate"
 import { tracker } from "@follow/tracker"
 import { nativeApplicationVersion } from "expo-application"
 
+import { migrateLegacyApiSession } from "../lib/auth-cookie-migration"
 import { settingSyncQueue } from "../modules/settings/sync-queue"
 import { initAnalytics } from "./analytics"
 import { initializeAppCheck } from "./app-check"
@@ -24,6 +25,9 @@ export const initializeApp = async () => {
 
   await initDeviceType()
   await initializeDB()
+  void apm("migrateLegacyApiSession", migrateLegacyApiSession).catch((error) => {
+    console.error("migrateLegacyApiSession failed", error)
+  })
 
   await apm("migrateDatabase", migrateDatabase)
   initializeDayjs()
