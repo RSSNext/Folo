@@ -25,7 +25,9 @@ export const initializeApp = async () => {
 
   await initDeviceType()
   await initializeDB()
-  await apm("migrateLegacyApiSession", migrateLegacyApiSession)
+  void apm("migrateLegacyApiSession", migrateLegacyApiSession).catch((error) => {
+    console.error("migrateLegacyApiSession failed", error)
+  })
 
   await apm("migrateDatabase", migrateDatabase)
   initializeDayjs()

@@ -7,6 +7,10 @@ import { logger } from "../logger"
 const LEGACY_PROD_API_URL = "https://api.follow.is"
 const BETTER_AUTH_SESSION_DATA_COOKIE_NAME = "better-auth.session_data"
 
+const isBetterAuthSessionTokenCookie = (cookieName: string) => {
+  return cookieName.includes(BETTER_AUTH_COOKIE_NAME_SESSION_TOKEN)
+}
+
 const isBetterAuthSessionCookie = (cookieName: string) => {
   return (
     cookieName.includes(BETTER_AUTH_COOKIE_NAME_SESSION_TOKEN) ||
@@ -55,10 +59,10 @@ export const migrateAuthCookiesToNewApiDomain = async (
   const currentDomainCookies = await cookieSession.cookies.get({
     domain: currentHost,
   })
-  const hasCurrentDomainSessionCookie = currentDomainCookies.some((cookie) =>
-    isBetterAuthSessionCookie(cookie.name),
+  const hasCurrentDomainSessionTokenCookie = currentDomainCookies.some((cookie) =>
+    isBetterAuthSessionTokenCookie(cookie.name),
   )
-  if (hasCurrentDomainSessionCookie) {
+  if (hasCurrentDomainSessionTokenCookie) {
     return
   }
 
