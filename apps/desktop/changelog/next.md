@@ -3,6 +3,7 @@
 ## Shiny new things
 
 - Supported French localization.
+
 ## Improvements
 
 ## No longer broken
