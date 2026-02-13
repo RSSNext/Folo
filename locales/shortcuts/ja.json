@@ -18,6 +18,8 @@
   "command.entry.scroll_up.title": "上にスクロール",
   "command.global.quick_add.description": "新しいフィードやその他をフォローするためのクイック追加パネルを開きます。",
   "command.global.quick_add.title": "クイック追加",
+  "command.global.quick_search.description": "クイック検索パネルを開きます。",
+  "command.global.quick_search.title": "クイック検索",
   "command.global.show_shortcuts.description": "ショートカットガイドラインモーダルを表示します",
   "command.global.show_shortcuts.title": "ショートカットを表示",
   "command.global.toggle_ai_chat.description": "AI チャットパネルを切り替えます",
