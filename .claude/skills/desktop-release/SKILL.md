@@ -86,44 +86,39 @@ Present your analysis to the user with:
 - Your recommendation (update or skip mainHash)
 - Ask for explicit confirmation
 
-## Step 4: Prepare bump config
+## Step 4: Save old mainHash and execute bump
 
-Based on the mainHash decision:
-
-**If mainHash should NOT be updated:**
-
-Temporarily modify `apps/desktop/bump.config.ts` to remove the `generate-main-hash.ts` step from the `leading` array. Remove this line:
-
-```
-"tsx plugins/vite/generate-main-hash.ts",
-```
-
-Remember to restore it after the bump completes.
-
-**If mainHash should be updated:**
-
-No changes needed to `bump.config.ts` - the default behavior calculates and updates mainHash automatically.
-
-## Step 5: Execute bump
-
-1. Change directory to `apps/desktop/`:
+1. Save the current mainHash from `apps/desktop/package.json` for later comparison.
+2. Change directory to `apps/desktop/` and run the bump:
    ```bash
    cd apps/desktop && pnpm bump
    ```
-2. This command will:
+3. This command will:
    - Pull latest changes
    - Apply changelog (rename next.md to {version}.md, create new next.md)
-   - Optionally recalculate mainHash (if not removed in Step 4)
+   - Recalculate mainHash and write to package.json
    - Format package.json
    - Bump minor version
    - Commit with message `release(desktop): release v{NEW_VERSION}`
    - Create branch `release/desktop/{NEW_VERSION}`
    - Push branch and create PR to `main`
 
-3. If bump.config.ts was modified in Step 4, restore it now:
+## Step 5: Restore mainHash if skipping update
+
+If Step 3 decided mainHash should NOT be updated, restore the old value now. The bump has already committed, pushed, and created the PR on a new release branch, so we amend the commit and force push. This is safe because the release branch was just created.
+
+1. Ensure you are on the `release/desktop/{NEW_VERSION}` branch (bump should have switched to it).
+2. Replace the recalculated mainHash with the saved old value in `apps/desktop/package.json`.
+3. Stage and amend the release commit:
    ```bash
-   git checkout apps/desktop/bump.config.ts
+   git add apps/desktop/package.json && git commit --amend --no-edit
    ```
+4. Force push the release branch:
+   ```bash
+   git push --force origin release/desktop/{NEW_VERSION}
+   ```
+
+If Step 3 decided mainHash SHOULD be updated, skip this step entirely — the bump already wrote the correct new value.
 
 ## Step 6: Verify
 
