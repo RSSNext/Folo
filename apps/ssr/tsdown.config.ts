@@ -11,6 +11,7 @@ export default defineConfig({
   clean: true,
   format: ["esm"],
   external: ["lightningcss", "vite"],
+  inlineOnly: false,
   treeshake: true,
 
   define: {
