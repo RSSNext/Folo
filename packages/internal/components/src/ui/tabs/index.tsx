@@ -104,8 +104,9 @@ const tabsTriggerVariants = cva("", {
   },
 })
 
-export interface TabsTriggerProps
-  extends React.ComponentPropsWithoutRef<typeof TabsPrimitive.Trigger> {}
+export interface TabsTriggerProps extends React.ComponentPropsWithoutRef<
+  typeof TabsPrimitive.Trigger
+> {}
 const TabsTrigger = ({
   ref,
   className,

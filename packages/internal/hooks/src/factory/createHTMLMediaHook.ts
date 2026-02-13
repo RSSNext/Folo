@@ -21,8 +21,7 @@ function parseTimeRanges(ranges: TimeRanges) {
   return result
 }
 export interface HTMLMediaProps
-  extends React.AudioHTMLAttributes<any>,
-    React.VideoHTMLAttributes<any> {
+  extends React.AudioHTMLAttributes<any>, React.VideoHTMLAttributes<any> {
   src: string
 }
 
