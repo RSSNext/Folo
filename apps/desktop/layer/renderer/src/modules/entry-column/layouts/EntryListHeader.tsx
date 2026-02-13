@@ -43,8 +43,7 @@ import { SwitchToMasonryButton } from "./buttons/SwitchToMasonryButton"
 export const EntryListHeader: FC<{
   refetch: () => void
   isRefreshing: boolean
-  hasUpdate: boolean
-}> = ({ refetch, isRefreshing, hasUpdate }) => {
+}> = ({ refetch, isRefreshing }) => {
   const routerParams = useRouteParams()
   const { t } = useTranslation()
 
@@ -196,19 +195,12 @@ export const EntryListHeader: FC<{
                 </ActionButton>
               ) : (
                 <ActionButton
-                  tooltip={
-                    hasUpdate
-                      ? t("entry_list_header.new_entries_available")
-                      : t("entry_list_header.refetch")
-                  }
+                  tooltip={t("entry_list_header.refetch")}
                   onClick={() => {
                     refetch()
                   }}
                 >
-                  <RotatingRefreshIcon
-                    className={cn(hasUpdate && "text-accent")}
-                    isRefreshing={isRefreshing}
-                  />
+                  <RotatingRefreshIcon isRefreshing={isRefreshing} />
                 </ActionButton>
               ))}
             {!isCollection && (

@@ -28,8 +28,7 @@ import type { UniversalItemProps } from "../types"
 
 const entrySelector = (state: EntryModel) => {
   /// keep-sorted
-  const { authorAvatar, authorUrl, description, feedId, inboxHandle, publishedAt, tags, title } =
-    state
+  const { authorAvatar, authorUrl, description, feedId, inboxHandle, publishedAt, title } = state
 
   const audios = state.attachments?.filter((a) => a.mime_type?.startsWith("audio") && a.url)
   const firstAudio = audios?.[0]
@@ -49,7 +48,6 @@ const entrySelector = (state: EntryModel) => {
     firstPhotoUrl,
     inboxId: inboxHandle,
     publishedAt,
-    tags: tags ?? null,
     title,
   }
 }

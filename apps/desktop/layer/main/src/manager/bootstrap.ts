@@ -13,6 +13,7 @@ import { join } from "pathe"
 import { WindowManager } from "~/manager/window"
 
 import { isMacOS } from "../env"
+import { migrateAuthCookiesToNewApiDomain } from "../lib/auth-cookie-migration"
 import { handleUrlRouting } from "../lib/router"
 import { store } from "../lib/store"
 import { updateNotificationsToken } from "../lib/user"
@@ -79,6 +80,10 @@ export class BootstrapManager {
         })
 
         callback({ cancel: false, requestHeaders: details.requestHeaders })
+      })
+
+      await migrateAuthCookiesToNewApiDomain(session.defaultSession, {
+        currentApiURL: env.VITE_API_URL,
       })
 
       // Bypass CORS for PostHog analytics

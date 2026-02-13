@@ -37,6 +37,7 @@ import m0033 from "./0033_shiny_sebastian_shaw.sql"
 import m0034 from "./0034_curly_darkstar.sql"
 import m0035 from "./0035_last_valeria_richards.sql"
 import m0036 from "./0036_entry_tag_summary.sql"
+import m0037 from "./0037_bored_the_leader.sql"
 import journal from "./meta/_journal.json"
 
 export default {
@@ -79,5 +80,6 @@ export default {
     m0034,
     m0035,
     m0036,
+    m0037,
   },
 }

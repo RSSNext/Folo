@@ -1,4 +1,4 @@
-export const IMAGE_PROXY_URL = "https://webp.follow.is"
+export const IMAGE_PROXY_URL = "https://img.folo.is"
 
 export const imageRefererMatches = [
   {

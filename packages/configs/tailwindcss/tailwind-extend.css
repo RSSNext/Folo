@@ -92,7 +92,6 @@
       rgba(var(--color-background) / 0.95),
       rgba(var(--color-background) / 0.92)
     );
-    backdrop-filter: blur(12px);
     @apply rounded-[4px] px-1 text-[0.5em];
     @apply inline-flex items-center justify-center;
     box-shadow:

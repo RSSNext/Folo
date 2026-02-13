@@ -11,7 +11,6 @@ class DbStoreMorph {
   toEntryModel(entry: EntrySchema): EntryModel {
     return {
       ...entry,
-      tags: entry.tags ?? null,
     }
   }
 }

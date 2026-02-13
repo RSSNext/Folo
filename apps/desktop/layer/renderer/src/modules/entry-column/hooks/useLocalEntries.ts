@@ -131,7 +131,6 @@ export const useLocalEntries = ({
   return {
     entriesIds: entries,
     hasNext,
-    hasUpdate: false,
     refetch,
     fetchNextPage,
     isLoading: false,
