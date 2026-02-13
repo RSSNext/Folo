@@ -34,3 +34,16 @@ export const ACTION_LANGUAGE_MAP: Record<
   },
 }
 export const ACTION_LANGUAGE_KEYS = Object.keys(ACTION_LANGUAGE_MAP) as SupportedActionLanguage[]
+
+export type ApiSupportedActionLanguage = Exclude<SupportedActionLanguage, "fr-FR">
+
+export const toApiSupportedActionLanguage = (
+  language: SupportedActionLanguage,
+): ApiSupportedActionLanguage => {
+  if (language === "fr-FR") {
+    // Server-side AI language enum does not include French yet.
+    return "en"
+  }
+
+  return language
+}

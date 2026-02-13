@@ -95,6 +95,7 @@ export const AISummary: FC<{
   const upgradeTitle = t("ai.summary_upgrade_required_title")
   const upgradeDescription = t("ai.summary_upgrade_required_description")
   const upgradeCTA = t("ai.summary_upgrade_view_plans")
+  const summaryTitle = t("entry_actions.toggle_ai_summary")
   const handleUpgradePress = () => {
     void Haptics.selectionAsync()
     void navigateToPlanScreen()
@@ -163,12 +164,12 @@ export const AISummary: FC<{
           <MaskedView
             maskElement={
               <View className="bg-transparent">
-                <Text className="text-[15px] font-semibold">AI Summary</Text>
+                <Text className="text-[15px] font-semibold">{summaryTitle}</Text>
               </View>
             }
           >
             <LinearGradient colors={["#9333ea", "#2563eb"]} start={[0, 0]} end={[1, 0]}>
-              <Text className="text-[15px] font-semibold text-transparent">AI Summary</Text>
+              <Text className="text-[15px] font-semibold text-transparent">{summaryTitle}</Text>
             </LinearGradient>
           </MaskedView>
         </View>
@@ -177,7 +178,7 @@ export const AISummary: FC<{
             onPress={() => {
               Clipboard.setString(summaryTextForSheet)
               Haptics.notificationAsync(Haptics.NotificationFeedbackType.Success)
-              toast.success("Copied to clipboard")
+              toast.success(t("app.copied_to_clipboard", { ns: "common" }))
             }}
             onLongPress={() => setSheetOpen(true)}
             className="rounded-full bg-quaternary-system-fill p-1.5 active:opacity-70"
@@ -230,6 +231,7 @@ const ErrorContent = ({
   message: string
   onRetry?: () => void
 }) => {
+  const { t } = useTranslation()
   return (
     <View className="mt-3">
       <View className="flex-row items-center gap-2">
@@ -238,14 +240,18 @@ const ErrorContent = ({
       {onRetry &&
         (forMeasurement ? (
           <View className="mt-3 self-start rounded-full bg-quaternary-system-fill px-4 py-2">
-            <Text className="text-[14px] font-medium text-label">Retry</Text>
+            <Text className="text-[14px] font-medium text-label">
+              {t("retry", { ns: "common" })}
+            </Text>
           </View>
         ) : (
           <Pressable
             onPress={onRetry}
             className="mt-3 self-start rounded-full bg-quaternary-system-fill px-4 py-2"
           >
-            <Text className="text-[14px] font-medium text-label">Retry</Text>
+            <Text className="text-[14px] font-medium text-label">
+              {t("retry", { ns: "common" })}
+            </Text>
           </Pressable>
         ))}
     </View>
@@ -312,6 +318,7 @@ const SelectableTextSheet: FC<{
   onClose: () => void
   text: string
 }> = ({ visible, onClose, text }) => {
+  const { t } = useTranslation()
   const insets = useSafeAreaInsets()
   const textColor = useColor("label")
   const handleCopyAll = () => {
@@ -334,7 +341,9 @@ const SelectableTextSheet: FC<{
           >
             <CopyCuteReIcon width={18} height={18} color={textColor} />
           </TouchableOpacity>
-          <Text className="text-lg font-semibold text-label">AI Summary</Text>
+          <Text className="text-lg font-semibold text-label">
+            {t("entry_actions.toggle_ai_summary")}
+          </Text>
           <TouchableOpacity
             onPress={onClose}
             className="rounded-full bg-zinc-100 p-2 active:opacity-80 dark:bg-zinc-800"

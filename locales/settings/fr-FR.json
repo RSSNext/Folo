@@ -560,6 +560,8 @@
   "notifications.test": "Notification de test",
   "notifications.test_success": "Notification de test envoyée avec succès.",
   "notifications.token": "Jeton client",
+  "plan.canceled_expires": "Annulé - Expire le {{date}}",
+  "plan.current_plan": "Forfait actuel",
   "plan.descriptions.basic": "Plus de flux sans fonctionnalités IA.",
   "plan.descriptions.free": "Idéal pour les débutants.",
   "plan.descriptions.plus": "Débloquez les fonctionnalités IA et plus de flux.",
@@ -586,6 +588,9 @@
   "plan.features.PRIORITY_SUPPORT": "Support prioritaire",
   "plan.features.PRIVATE_SUBSCRIPTION": "Abonnements privés",
   "plan.features.SECURE_IMAGE_PROXY": "Proxy d'image sécurisé",
+  "plan.manage_subscription": "Gérer l'abonnement",
+  "plan.renews": "Renouvellement le {{date}}",
+  "plan.trial_ends": "L'essai se termine le {{date}}",
   "privacy.privacy": "Confidentialité",
   "privacy.terms": "Conditions",
   "profile.avatar.cropInstructions": "Faites glisser la zone de recadrage pour ajuster votre avatar",
@@ -698,6 +703,7 @@
   "rsshub.useModal.useWith": "Utiliser avec {{amount}} <Power />",
   "subscription.actions.comingSoon": "Bientôt disponible",
   "subscription.actions.current": "Plan actuel",
+  "subscription.actions.manage_error": "Une erreur s'est produite lors de l'ouverture de la gestion de l'abonnement.",
   "subscription.actions.upgrade": "Mettre à niveau",
   "subscription.actions.upgrade_error": "Une erreur s'est produite lors du démarrage du paiement.",
   "subscription.badge.popular": "Le plus populaire",
@@ -794,5 +800,4 @@
   "wallet.withdraw.submitButton": "Soumettre",
   "wallet.withdraw.success": "Retrait réussi !",
   "wallet.withdraw.toRss3Label": "Retirer en tant que RSS3"
-
 }

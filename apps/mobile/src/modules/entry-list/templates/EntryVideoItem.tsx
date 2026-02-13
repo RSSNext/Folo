@@ -4,6 +4,7 @@ import { unreadSyncService } from "@follow/store/unread/store"
 import { tracker } from "@follow/tracker"
 import { formatDuration, transformVideoUrl } from "@follow/utils"
 import { memo, useMemo } from "react"
+import { useTranslation } from "react-i18next"
 import { Linking, View } from "react-native"
 
 import { getGeneralSettings } from "@/src/atoms/settings/general"
@@ -18,6 +19,7 @@ import { VideoContextMenu } from "../../context-menu/video"
 import { EntryGridFooter } from "../../entry-content/EntryGridFooter"
 
 export const EntryVideoItem = memo(({ id }: { id: string }) => {
+  const { t } = useTranslation()
   const item = useEntry(id, (state) => ({
     attachments: state.attachments,
     media: state.media,
@@ -49,7 +51,7 @@ export const EntryVideoItem = memo(({ id }: { id: string }) => {
               entryId: id,
             })
             if (!item.url) {
-              toast.error("No video URL found")
+              toast.error(t("entry_content.no_video_url"))
               return
             }
             openVideo(item.url)
@@ -68,7 +70,7 @@ export const EntryVideoItem = memo(({ id }: { id: string }) => {
                 }}
               />
             ) : (
-              <FallbackMedia />
+              <FallbackMedia text={t("entry_content.no_content")} />
             )}
             {!!duration && (
               <Text className="absolute bottom-2 right-2 rounded-md bg-black/50 px-1 py-0.5 text-xs font-medium text-white">
@@ -83,14 +85,14 @@ export const EntryVideoItem = memo(({ id }: { id: string }) => {
   )
 })
 EntryVideoItem.displayName = "EntryVideoItem"
-const FallbackMedia = () => (
+const FallbackMedia = ({ text }: { text: string }) => (
   <View
     className="w-full items-center justify-center rounded-lg bg-tertiary-system-fill"
     style={{
       aspectRatio: 16 / 9,
     }}
   >
-    <Text className="text-center text-label">No media available</Text>
+    <Text className="text-center text-label">{text}</Text>
   </View>
 )
 const parseSchemeLink = (url: string) => {

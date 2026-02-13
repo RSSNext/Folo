@@ -15,6 +15,7 @@ import {
 
 export const DiscoverSettingsScreen = () => {
   const { t } = useTranslation("settings")
+  const { t: tCommon } = useTranslation("common")
   const discoverLanguage = useUISettingKey("discoverLanguage")
 
   return (
@@ -25,16 +26,17 @@ export const DiscoverSettingsScreen = () => {
       <GroupedInsetListSectionHeader label={t("discoverFilters.filters")} marginSize="small" />
       <GroupedInsetListCard className="flex-row">
         <GroupedInsetListCell label={t("discoverFilters.language")}>
-          <View className="w-[100px]">
+          <View className="w-[120px]">
             <Select
               options={[
-                { label: "All", value: "all" },
-                { label: "English", value: "eng" },
-                { label: "中文", value: "cmn" },
+                { label: tCommon("words.all"), value: "all" },
+                { label: tCommon("words.english"), value: "eng" },
+                { label: tCommon("words.chinese"), value: "cmn" },
+                { label: tCommon("words.french"), value: "fra" },
               ]}
               value={discoverLanguage}
               onValueChange={(val) => {
-                setUISetting("discoverLanguage", val as "all" | "eng" | "cmn")
+                setUISetting("discoverLanguage", val as "all" | "eng" | "cmn" | "fra")
               }}
             />
           </View>

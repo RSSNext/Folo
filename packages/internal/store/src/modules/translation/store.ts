@@ -2,6 +2,7 @@ import { UserRole } from "@follow/constants"
 import type { TranslationSchema } from "@follow/database/schemas/types"
 import { TranslationService } from "@follow/database/services/translation"
 import type { SupportedActionLanguage } from "@follow/shared"
+import { toApiSupportedActionLanguage } from "@follow/shared"
 import { checkLanguage } from "@follow/utils/language"
 import { create, indexedResolver, windowScheduler } from "@yornaath/batshit"
 
@@ -171,7 +172,7 @@ class TranslationSyncService {
         try {
           const request: TranslationBatchRequest & { mode?: TranslationMode } = {
             ids: group.ids,
-            language: group.language,
+            language: toApiSupportedActionLanguage(group.language),
             fields: group.fields,
             mode: group.mode,
           }
