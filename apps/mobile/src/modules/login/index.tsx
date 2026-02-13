@@ -114,24 +114,23 @@ const TermsCheckBox = () => {
   )
 }
 const TermsText = () => {
+  const { t } = useTranslation()
   return (
     <View>
-      <Text className="text-center text-sm text-secondary-label">
-        By continuing, you agree to our{" "}
-      </Text>
+      <Text className="text-center text-sm text-secondary-label">{t("login.agree_to")} </Text>
       <View className="flex-row items-center">
         <Pressable
           onPress={() => Linking.openURL("https://folo.is/terms-of-service")}
           className="text-secondary-label"
         >
-          <Text className="font-semibold">Terms of Service</Text>
+          <Text className="font-semibold">{t("login.terms")}</Text>
         </Pressable>
         <Text className="text-secondary-label">&nbsp;&&nbsp;</Text>
         <Pressable
           onPress={() => Linking.openURL("https://folo.is/privacy-policy")}
           className="text-secondary-label"
         >
-          <Text className="font-semibold">Privacy Policy</Text>
+          <Text className="font-semibold">{t("login.privacy")}</Text>
         </Pressable>
       </View>
     </View>

@@ -26,6 +26,7 @@ const LanguageMap = {
   all: "all",
   eng: "en",
   cmn: "zh-CN",
+  fra: "fr-FR",
 } as const
 
 export const Component = () => {
@@ -134,7 +135,7 @@ export const Component = () => {
       ) : items.length > 0 ? (
         <div className="w-full px-8 pb-8 pt-4">
           <Input
-            placeholder="Search"
+            placeholder={t("words.search", { ns: "common" })}
             className="mb-4"
             value={search}
             onChange={(e) => {
@@ -162,12 +163,10 @@ export const Component = () => {
             <EmptyIcon />
           </div>
           <p className="text-title2 text-text">
-            {t("common.noContent", { defaultValue: "No content found in this category" })}
+            {t("discover.empty.no_content", { ns: "common" })}
           </p>
           <p className="mt-2 text-body text-text-secondary">
-            {t("discover.tryAnotherCategory", {
-              defaultValue: "Try selecting another category or language",
-            })}
+            {t("discover.empty.try_another_category_or_language", { ns: "common" })}
           </p>
         </div>
       )}

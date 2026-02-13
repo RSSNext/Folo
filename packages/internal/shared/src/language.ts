@@ -1,4 +1,4 @@
-export type SupportedActionLanguage = "en" | "ja" | "zh-CN" | "zh-TW"
+export type SupportedActionLanguage = "en" | "ja" | "zh-CN" | "zh-TW" | "fr-FR"
 export const ACTION_LANGUAGE_MAP: Record<
   SupportedActionLanguage,
   {
@@ -27,5 +27,23 @@ export const ACTION_LANGUAGE_MAP: Record<
     value: "ja",
     code: "jpn",
   },
+  "fr-FR": {
+    label: "Français (France)",
+    value: "fr-FR",
+    code: "fra",
+  },
 }
 export const ACTION_LANGUAGE_KEYS = Object.keys(ACTION_LANGUAGE_MAP) as SupportedActionLanguage[]
+
+export type ApiSupportedActionLanguage = Exclude<SupportedActionLanguage, "fr-FR">
+
+export const toApiSupportedActionLanguage = (
+  language: SupportedActionLanguage,
+): ApiSupportedActionLanguage => {
+  if (language === "fr-FR") {
+    // Server-side AI language enum does not include French yet.
+    return "en"
+  }
+
+  return language
+}

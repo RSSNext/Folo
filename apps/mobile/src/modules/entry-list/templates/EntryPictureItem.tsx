@@ -8,6 +8,7 @@ import { uniqBy } from "es-toolkit/compat"
 import type { ImageSource } from "expo-image"
 import type { Ref } from "react"
 import { useMemo } from "react"
+import { useTranslation } from "react-i18next"
 import { View } from "react-native"
 import { measure, runOnJS, runOnUI, useAnimatedRef } from "react-native-reanimated"
 
@@ -16,6 +17,7 @@ import { useLightboxControls } from "@/src/components/ui/lightbox/lightboxState"
 import { Text } from "@/src/components/ui/typography/Text"
 
 export function EntryPictureItem({ id }: { id: string }) {
+  const { t } = useTranslation()
   const { openLightbox } = useLightboxControls()
   const aviRef = useAnimatedRef<View>()
   const item = useEntry(id, (state) => ({
@@ -36,7 +38,7 @@ export function EntryPictureItem({ id }: { id: string }) {
           aspectRatio: 16 / 9,
         }}
       >
-        <Text className="text-center text-label">No media available</Text>
+        <Text className="text-center text-label">{t("entry_content.no_content")}</Text>
       </View>
     )
   }
