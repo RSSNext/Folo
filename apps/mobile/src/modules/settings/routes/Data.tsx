@@ -1,4 +1,4 @@
-import * as FileSystem from "expo-file-system"
+import * as FileSystem from "expo-file-system/legacy"
 import { useTranslation } from "react-i18next"
 import { Alert } from "react-native"
 

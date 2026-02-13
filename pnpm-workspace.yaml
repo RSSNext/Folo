@@ -43,6 +43,7 @@ onlyBuiltDependencies:
 
 overrides:
   "@electron/node-gyp": 10.2.0-electron.2
+  "@types/react": 19.1.17
   "@floating-ui/core": 1.7.2
   "@floating-ui/dom": 1.7.2
   "@floating-ui/react": 0.27.14

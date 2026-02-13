@@ -1,7 +1,7 @@
 import { createBuildSafeHeaders } from "@follow/utils/headers"
 import { IMAGE_PROXY_URL } from "@follow/utils/img-proxy"
 import ImageEditor from "@react-native-community/image-editor"
-import * as FileSystem from "expo-file-system"
+import * as FileSystem from "expo-file-system/legacy"
 import type { ImageProps, ImageSource } from "expo-image"
 import { saveToLibraryAsync, usePermissions } from "expo-media-library"
 import * as Sharing from "expo-sharing"
