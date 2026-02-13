@@ -2,10 +2,11 @@
 
 ## Shiny new things
 
+- Supported French localization.
 ## Improvements
 
 ## No longer broken
 
 ## Thanks
 
-Special thanks to volunteer contributors @ for their valuable contributions
+Special thanks to volunteer contributors @AnthonyMahe for their valuable contributions
