@@ -96,7 +96,7 @@ export interface UISettings {
   showUnreadCountBadgeMobile: boolean
 
   // Discover
-  discoverLanguage: "all" | "eng" | "cmn"
+  discoverLanguage: "all" | "eng" | "cmn" | "fra"
 
   // Desktop: Timeline tabs preset (excluding the first fixed tab)
   timelineTabs: {

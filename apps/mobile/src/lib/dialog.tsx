@@ -183,43 +183,41 @@ class DialogStatic {
       <DefaultHeader title={props.title} headerIcon={props.headerIcon} />
     ) : null
     const siblings = new RootSiblings(
-      (
-        <NavigationInstanceContext value={Navigation.rootNavigation}>
-          <FullWindowOverlay>
-            <Overlay onPress={handleClose} />
-            <Animated.View
-              className="absolute inset-x-0 -top-8 z-10 bg-system-background pt-8"
-              entering={entering}
-              exiting={exiting}
-            >
-              <SafeInsetTop />
-              <DialogDynamicButtonActionProvider>
-                {Header}
-                <View className={cn("px-6 pb-4", Header ? "pt-4" : "pt-0")}>
-                  <DialogContext value={reactCtx}>{children}</DialogContext>
-                </View>
+      <NavigationInstanceContext value={Navigation.rootNavigation}>
+        <FullWindowOverlay>
+          <Overlay onPress={handleClose} />
+          <Animated.View
+            className="absolute inset-x-0 -top-8 z-10 bg-system-background pt-8"
+            entering={entering}
+            exiting={exiting}
+          >
+            <SafeInsetTop />
+            <DialogDynamicButtonActionProvider>
+              {Header}
+              <View className={cn("px-6 pb-4", Header ? "pt-4" : "pt-0")}>
+                <DialogContext value={reactCtx}>{children}</DialogContext>
+              </View>
 
-                <View className="flex-row gap-4 px-6 pb-4">
-                  <DialogDynamicButtonAction
-                    fallbackCaller={handleClose}
-                    text={override?.cancelText ?? props.cancelText ?? t("common:words.cancel")}
-                    type="cancel"
-                    textClassName={cn(props.variant === "destructive" && "font-bold")}
-                  />
+              <View className="flex-row gap-4 px-6 pb-4">
+                <DialogDynamicButtonAction
+                  fallbackCaller={handleClose}
+                  text={override?.cancelText ?? props.cancelText ?? t("common:words.cancel")}
+                  type="cancel"
+                  textClassName={cn(props.variant === "destructive" && "font-bold")}
+                />
 
-                  <DialogDynamicButtonAction
-                    fallbackCaller={handleConfirm}
-                    text={override?.confirmText ?? props.confirmText ?? t("common:words.confirm")}
-                    type="confirm"
-                    className={props.variant === "destructive" ? "bg-red" : "bg-accent"}
-                    textClassName={cn("text-white", props.variant !== "destructive" && "font-bold")}
-                  />
-                </View>
-              </DialogDynamicButtonActionProvider>
-            </Animated.View>
-          </FullWindowOverlay>
-        </NavigationInstanceContext>
-      ),
+                <DialogDynamicButtonAction
+                  fallbackCaller={handleConfirm}
+                  text={override?.confirmText ?? props.confirmText ?? t("common:words.confirm")}
+                  type="confirm"
+                  className={props.variant === "destructive" ? "bg-red" : "bg-accent"}
+                  textClassName={cn("text-white", props.variant !== "destructive" && "font-bold")}
+                />
+              </View>
+            </DialogDynamicButtonActionProvider>
+          </Animated.View>
+        </FullWindowOverlay>
+      </NavigationInstanceContext>,
     )
     this.currentStackedDialogs.add(props.id)
     return siblings

@@ -51,7 +51,7 @@ export class PostHogAdapter implements TrackerAdapter {
 
     try {
       if ("setPersonProperties" in this.posthogInstance) {
-        this.posthogInstance.setPersonProperties(properties)
+        this.posthogInstance.setPersonProperties(properties as any)
       } else {
         ;(this.posthogInstance as PostHogReactNative).setPersonPropertiesForFlags(properties as any)
       }

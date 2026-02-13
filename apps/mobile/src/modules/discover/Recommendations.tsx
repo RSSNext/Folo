@@ -131,11 +131,6 @@ export const Recommendations = () => {
     </View>
   )
 }
-const LanguageMap = {
-  all: "all",
-  eng: "en",
-  cmn: "zh-CN",
-} as const
 export const RecommendationTab: TabComponent<{
   contentContainerStyle?: StyleProp<ViewStyle>
   insets?: {
@@ -151,11 +146,11 @@ export const RecommendationTab: TabComponent<{
   insets: customInsets,
   ...rest
 }) => {
+  const { t } = useTranslation("common")
   const discoverLanguage = useUISettingKey("discoverLanguage")
   const { data, isLoading } = useQuery({
     queryKey: ["rsshub-popular", tab.value, discoverLanguage],
-    queryFn: () =>
-      fetchRsshubPopular(tab.value, LanguageMap[discoverLanguage]).then((res) => res.data),
+    queryFn: () => fetchRsshubPopular(tab.value, discoverLanguage).then((res) => res.data),
     staleTime: 1000 * 60 * 60 * 24,
     // 1 day
     meta: {
@@ -164,7 +159,7 @@ export const RecommendationTab: TabComponent<{
   })
   const { data: analysisData, isLoading: isAnalysisLoading } = useQuery({
     queryKey: ["rsshub-analysis", discoverLanguage],
-    queryFn: () => fetchRsshubAnalysis(LanguageMap[discoverLanguage]).then((res) => res.data),
+    queryFn: () => fetchRsshubAnalysis(discoverLanguage).then((res) => res.data),
     staleTime: 1000 * 60 * 60 * 24,
     // 1 day
     meta: {
@@ -259,7 +254,7 @@ export const RecommendationTab: TabComponent<{
   if (keys.length === 0) {
     return (
       <View className="flex-1 items-center justify-center">
-        <Text className="text-secondary-label">This is a barren wasteland of knowledge.</Text>
+        <Text className="text-secondary-label">{t("search.empty.no_results")}</Text>
       </View>
     )
   }

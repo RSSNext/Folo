@@ -47,9 +47,7 @@ export function getPieceSquarePathData(x: number, y: number, size: number): stri
 }
 
 export interface SVGQRCodeStyledProps
-  extends QRCodeOptions,
-    PieceOptions,
-    Omit<SvgProps, "children"> {
+  extends QRCodeOptions, PieceOptions, Omit<SvgProps, "children"> {
   data?: QRCodeMessage
   onChangeSize?: (size: number) => void
   pieceLiquidRadius?: number

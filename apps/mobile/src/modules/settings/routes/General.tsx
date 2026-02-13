@@ -28,7 +28,9 @@ export function LanguageSelect({ settingKey }: { settingKey: "language" | "actio
     const languageKeys =
       settingKey === "language"
         ? (currentSupportedLanguages as MobileSupportedLanguages[])
-        : ACTION_LANGUAGE_KEYS.sort(
+        : ACTION_LANGUAGE_KEYS.filter(
+            (key): key is MobileSupportedLanguages => key in defaultResources,
+          ).sort(
             (a, b) => currentSupportedLanguages.indexOf(a) - currentSupportedLanguages.indexOf(b),
           )
 

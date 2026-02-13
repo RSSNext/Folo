@@ -80,6 +80,10 @@
   "register.label": "创建 {{app_name}} 账户",
   "register.login": "登录",
   "register.password": "密码",
+  "register.referral.days": "使用此推荐码注册可获得 {{days}} 天 Pro 预览",
+  "register.referral.description": "使用推荐码注册可获得额外的 Pro 预览天数。",
+  "register.referral.invalid": "无效的推荐码",
+  "register.referral.label": "推荐码",
   "register.submit": "创建账户",
   "words.email": "邮件地址"
 }

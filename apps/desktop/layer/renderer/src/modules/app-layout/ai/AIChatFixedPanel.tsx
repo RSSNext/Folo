@@ -6,8 +6,10 @@ import { HotkeyScope } from "~/constants"
 import { ChatHeader } from "~/modules/ai-chat/components/layouts/ChatHeader"
 import { ChatInterface } from "~/modules/ai-chat/components/layouts/ChatInterface"
 
-export interface AIChatFixedPanelProps
-  extends React.DetailedHTMLProps<React.HTMLAttributes<HTMLDivElement>, HTMLDivElement> {}
+export interface AIChatFixedPanelProps extends React.DetailedHTMLProps<
+  React.HTMLAttributes<HTMLDivElement>,
+  HTMLDivElement
+> {}
 
 export const AIChatFixedPanel: FC<AIChatFixedPanelProps> = ({ className, ...props }) => {
   return (

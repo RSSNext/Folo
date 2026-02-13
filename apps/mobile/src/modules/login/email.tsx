@@ -1,9 +1,11 @@
 import { tracker } from "@follow/tracker"
 import { zodResolver } from "@hookform/resolvers/zod"
 import { useMutation } from "@tanstack/react-query"
+import i18next from "i18next"
 import { useCallback, useRef } from "react"
 import type { Control } from "react-hook-form"
 import { useController, useForm } from "react-hook-form"
+import { useTranslation } from "react-i18next"
 import type { TextInputProps } from "react-native"
 import { Alert, TouchableOpacity, View } from "react-native"
 import { KeyboardController } from "react-native-keyboard-controller"
@@ -30,7 +32,7 @@ async function onSubmit(values: FormValue) {
   const result = formSchema.safeParse(values)
   if (!result.success) {
     const issue = result.error.issues[0]
-    Alert.alert("Invalid email or password", issue?.message)
+    Alert.alert(i18next.t("login.invalid_email_or_password"), issue?.message)
     return
   }
   await signIn
@@ -60,6 +62,7 @@ async function onSubmit(values: FormValue) {
   })
 }
 export function EmailLogin() {
+  const { t } = useTranslation()
   const emailValueRef = useRef("")
   const passwordValueRef = useRef("")
   const submitMutation = useMutation({
@@ -86,7 +89,7 @@ export function EmailLogin() {
             autoCorrect={false}
             keyboardType="email-address"
             autoComplete="email"
-            placeholder="Email"
+            placeholder={t("login.email")}
             className="flex-1 text-text"
             returnKeyType="next"
             onSubmitEditing={() => {
@@ -105,7 +108,7 @@ export function EmailLogin() {
             autoCapitalize="none"
             autoCorrect={false}
             autoComplete="current-password"
-            placeholder="Password"
+            placeholder={t("login.password")}
             className="flex-1 text-text"
             secureTextEntry
             returnKeyType="go"
@@ -118,9 +121,13 @@ export function EmailLogin() {
         className="mx-auto my-5"
         onPress={() => navigation.presentControllerView(ForgetPasswordScreen)}
       >
-        <Text className="text-sm text-secondary-label">Forgot password?</Text>
+        <Text className="text-sm text-secondary-label">{t("login.forget_password.note")}</Text>
       </TouchableOpacity>
-      <SubmitButton isLoading={submitMutation.isPending} onPress={onLogin} title="Continue" />
+      <SubmitButton
+        isLoading={submitMutation.isPending}
+        onPress={onLogin}
+        title={t("login.submit")}
+      />
     </View>
   )
 }
@@ -134,7 +141,7 @@ const signupFormSchema = z
     confirmPassword: z.string(),
   })
   .refine((data) => data.password === data.confirmPassword, {
-    message: "Passwords don't match",
+    message: i18next.t("login.passwords_do_not_match"),
     path: ["confirmPassword"],
   })
 type SignupFormValue = z.infer<typeof signupFormSchema>
@@ -160,6 +167,7 @@ function SignupInput({
   )
 }
 export function EmailSignUp() {
+  const { t } = useTranslation()
   const { control, handleSubmit, formState } = useForm<SignupFormValue>({
     resolver: zodResolver(signupFormSchema),
     defaultValues: {
@@ -185,7 +193,7 @@ export function EmailSignUp() {
           if (res.error?.message) {
             toast.error(res.error.message)
           } else {
-            toast.success("Sign up successful")
+            toast.success(i18next.t("login.sign_up_successful"))
             tracker.register({
               type: "email",
             })
@@ -209,7 +217,7 @@ export function EmailSignUp() {
             autoComplete="email"
             control={control}
             name="email"
-            placeholder="Email"
+            placeholder={t("login.email")}
             className="flex-1 text-text"
             returnKeyType="next"
             onSubmitEditing={() => {
@@ -226,7 +234,7 @@ export function EmailSignUp() {
             autoComplete="password-new"
             control={control}
             name="password"
-            placeholder="Password"
+            placeholder={t("login.password")}
             className="flex-1 text-text"
             secureTextEntry
             returnKeyType="next"
@@ -241,7 +249,7 @@ export function EmailSignUp() {
             autoComplete="password-new"
             control={control}
             name="confirmPassword"
-            placeholder="Confirm Password"
+            placeholder={t("login.confirm_password.label")}
             className="flex-1 text-text"
             secureTextEntry
             returnKeyType="go"
@@ -255,7 +263,7 @@ export function EmailSignUp() {
         disabled={submitMutation.isPending || !formState.isValid}
         isLoading={submitMutation.isPending}
         onPress={signup}
-        title="Continue"
+        title={t("login.submit")}
         className="mt-8"
       />
     </View>

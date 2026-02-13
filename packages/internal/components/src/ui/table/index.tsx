@@ -67,8 +67,7 @@ const TableRow = ({
 TableRow.displayName = "TableRow"
 
 export interface TableHeadProps
-  extends React.ThHTMLAttributes<HTMLTableCellElement>,
-    VariantProps<typeof tableHeadVariants> {}
+  extends React.ThHTMLAttributes<HTMLTableCellElement>, VariantProps<typeof tableHeadVariants> {}
 
 const TableHead = ({
   ref,
@@ -88,8 +87,7 @@ const TableHead = ({
 TableHead.displayName = "TableHead"
 
 export interface TableCellProps
-  extends React.TdHTMLAttributes<HTMLTableCellElement>,
-    VariantProps<typeof tableHeadVariants> {}
+  extends React.TdHTMLAttributes<HTMLTableCellElement>, VariantProps<typeof tableHeadVariants> {}
 
 const TableCell = ({
   ref,

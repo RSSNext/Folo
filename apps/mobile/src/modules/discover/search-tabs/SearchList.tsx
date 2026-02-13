@@ -3,6 +3,7 @@ import { formatNumber } from "@follow/utils"
 import { useQuery } from "@tanstack/react-query"
 import { useAtomValue } from "jotai"
 import { memo } from "react"
+import { useTranslation } from "react-i18next"
 import { useWindowDimensions, View } from "react-native"
 
 import { FallbackIcon } from "@/src/components/ui/icon/fallback-icon"
@@ -26,6 +27,7 @@ type SearchResultItem = Awaited<
   ReturnType<typeof followClient.api.discover.discover>
 >["data"][number]
 export const SearchList = () => {
+  const { t } = useTranslation("common")
   const { searchValueAtom } = useSearchPageContext()
   const searchValue = useAtomValue(searchValueAtom)
   const windowWidth = useWindowDimensions().width
@@ -37,13 +39,18 @@ export const SearchList = () => {
   const skeleton = useDataSkeleton(isLoading, data)
   if (skeleton) return skeleton
   if (data === undefined) return null
+  const resultCount = data.data?.length ?? 0
+  const resultLabel =
+    resultCount === 0
+      ? t("discover.search.results_zero")
+      : t("discover.search.results_other", { count: resultCount })
   return (
     <View
       style={{
         width: windowWidth,
       }}
     >
-      <Text className="px-6 pt-4 text-text/60">Found {data.data?.length} lists</Text>
+      <Text className="px-6 pt-4 text-text/60">{resultLabel}</Text>
       <View>
         {data.data?.map((item) => (
           <View key={item.feed?.id || Math.random().toString()}>
@@ -56,9 +63,11 @@ export const SearchList = () => {
   )
 }
 const SearchListCard = memo(({ item }: { item: SearchResultItem }) => {
+  const { t } = useTranslation("common")
   const isSubscribed = useSubscriptionByListId(item.list?.id ?? "")
   const navigation = useNavigation()
   const iconColor = useColor("text")
+  const followerCount = item.analytics?.subscriptionCount || 0
   return (
     <ItemPressable
       itemStyle={ItemPressableStyle.Plain}
@@ -105,13 +114,13 @@ const SearchListCard = memo(({ item }: { item: SearchResultItem }) => {
         {isSubscribed ? (
           <View className="ml-auto">
             <View className="rounded-lg bg-gray-5/60 px-3 py-2">
-              <Text className="text-sm font-bold text-gray-2">Followed</Text>
+              <Text className="text-sm font-bold text-gray-2">{t("feed.actions.followed")}</Text>
             </View>
           </View>
         ) : (
           <View className="ml-auto">
             <View className="rounded-lg bg-accent px-3 py-2">
-              <Text className="text-sm font-bold text-white">Follow</Text>
+              <Text className="text-sm font-bold text-white">{t("feed.actions.follow")}</Text>
             </View>
           </View>
         )}
@@ -126,7 +135,7 @@ const SearchListCard = memo(({ item }: { item: SearchResultItem }) => {
         <View className="flex-row items-center gap-2">
           <User3CuteReIcon width={16} height={16} color={iconColor} />
           <Text className="text-text">
-            {formatNumber(item.analytics?.subscriptionCount || 0)} followers
+            {formatNumber(followerCount)} {t("feed.follower_other")}
           </Text>
         </View>
       </View>
