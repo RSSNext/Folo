@@ -2,15 +2,10 @@
 
 ## Shiny new things
 
-- Markdown link supports open share feed link directly in the app
+## Improvements
 
 ## No longer broken
 
-- Fix preserve session when switching API domain
-- Fix handle invalid URL parsing in useFeedSafeUrl hook
-- Fix shortcuts page freeze
-- Fix icon service URL and image proxy URL
-
 ## Thanks
 
-Special thanks to volunteer contributors @cuikaipeng @yjl9903 for their valuable contributions
+Special thanks to volunteer contributors @ for their valuable contributions
