@@ -45,7 +45,7 @@
   },
   "devDependencies": {
     "@follow/configs": "workspace:*",
-    "react-native": "0.79.6",
+    "react-native": "0.81.5",
     "vite-tsconfig-paths": "6.1.1"
   }
 }

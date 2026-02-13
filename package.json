@@ -58,6 +58,7 @@
     "react": "19.0.0",
     "react-dom": "19.0.0",
     "rimraf": "6.1.2",
+    "serialize-error": "2.1.0",
     "simple-git-hooks": "2.13.1",
     "svg-parser": "2.0.4",
     "tar": "7.5.7",
