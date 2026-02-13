@@ -1,5 +1,5 @@
-import { sql } from "drizzle-orm"
 import type { SQL } from "drizzle-orm"
+import { sql } from "drizzle-orm"
 import type { SQLiteDatabase } from "expo-sqlite"
 
 interface MigrationConfig {
@@ -40,9 +40,8 @@ interface SQLiteMigrationRow {
   created_at: number | string
 }
 
-const ADD_COLUMN_RE = /^ALTER TABLE\s+[`"]?([A-Za-z0-9_]+)[`"]?\s+ADD\s+[`"]?([A-Za-z0-9_]+)[`"]?\s+/i
-const DROP_COLUMN_RE =
-  /^ALTER TABLE\s+[`"]?([A-Za-z0-9_]+)[`"]?\s+DROP COLUMN\s+[`"]?([A-Za-z0-9_]+)[`"]?\s*;?$/i
+const ADD_COLUMN_RE = /^ALTER TABLE\s+[`"]?(\w+)[`"]?\s+ADD\s+[`"]?(\w+)[`"]?\s+/i
+const DROP_COLUMN_RE = /^ALTER TABLE\s+[`"]?(\w+)[`"]?\s+DROP COLUMN\s+[`"]?(\w+)[`"]?\s*;?$/i
 
 // https://github.com/drizzle-team/drizzle-orm/blob/main/drizzle-orm/src/expo-sqlite/migrator.ts
 async function readMigrationFiles({
@@ -78,10 +77,10 @@ async function readMigrationFiles({
 }
 
 // https://github.com/drizzle-team/drizzle-orm/blob/main/drizzle-orm/src/sqlite-proxy/migrator.ts
-export async function migrate<TSchema extends Record<string, unknown>>(
+export async function migrate<_TSchema extends Record<string, unknown>>(
   db: {
-    run(query: SQL): MaybePromise<unknown>
-    values<TResult extends unknown[]>(query: SQL): MaybePromise<TResult[]>
+    run: (query: SQL) => MaybePromise<unknown>
+    values: <TResult extends unknown[]>(query: SQL) => MaybePromise<TResult[]>
   },
   config: MigrationConfig,
 ) {

@@ -25,11 +25,7 @@ config.resolver.extraNodeModules = {
 }
 
 config.watchFolders = Array.from(
-  new Set([
-    ...config.watchFolders,
-    workspaceRoot,
-    path.resolve(workspaceRoot, "locales"),
-  ]),
+  new Set([...config.watchFolders, workspaceRoot, path.resolve(workspaceRoot, "locales")]),
 )
 
 config.resolver.resolveRequest = (context, moduleName, platform) => {
