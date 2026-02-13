@@ -107,13 +107,17 @@ Present your analysis to the user with:
 
 If Step 3 decided mainHash should NOT be updated, restore the old value now. The bump has already committed, pushed, and created the PR on a new release branch, so we amend the commit and force push. This is safe because the release branch was just created.
 
-1. Ensure you are on the `release/desktop/{NEW_VERSION}` branch (bump should have switched to it).
-2. Replace the recalculated mainHash with the saved old value in `apps/desktop/package.json`.
-3. Stage and amend the release commit:
+1. Change back to the repo root first (Step 4 left the working directory at `apps/desktop/`):
+   ```bash
+   cd ../..
+   ```
+2. Ensure you are on the `release/desktop/{NEW_VERSION}` branch (bump should have switched to it).
+3. Replace the recalculated mainHash with the saved old value in `apps/desktop/package.json`.
+4. Stage and amend the release commit:
    ```bash
    git add apps/desktop/package.json && git commit --amend --no-edit
    ```
-4. Force push the release branch:
+5. Force push the release branch:
    ```bash
    git push --force origin release/desktop/{NEW_VERSION}
    ```
