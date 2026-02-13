@@ -33,7 +33,7 @@ export const Component = () => {
   const lang = useUISettingKey("discoverLanguage")
   const category = useParams().category as (typeof RSSHubCategories)[number]
   const title = t(`discover.category.${category}`, { ns: "common" })
-  useSubViewTitle(title)
+  useSubViewTitle(title as I18nKeys)
 
   const rsshubPopular = useAuthQuery(
     Queries.discover.rsshubCategory({

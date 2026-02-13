@@ -14,9 +14,9 @@
     "@follow/configs": "workspace:*",
     "@follow/types": "workspace:*",
     "clsx": "2.1.1",
-    "foxact": "0.2.49",
-    "jotai": "2.15.1",
-    "motion": "12.23.24",
+    "foxact": "0.2.52",
+    "jotai": "2.17.1",
+    "motion": "12.34.0",
     "react": "19.0.0",
     "react-blurhash": "0.3.0"
   }
