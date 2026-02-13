@@ -39,8 +39,12 @@ Update in two phases to isolate issues:
 
 **Phase 1 — Patch and minor updates (safer):**
 
-1. Frontend: Run `pnpm update --recursive` in the repo root (updates within semver range).
-2. Backend: Run `pnpm update --recursive` in `BACKEND_DIR`.
+From the `pnpm outdated` output, identify all dependencies where the update is a patch or minor version bump. Update them in batch:
+
+1. Frontend: For each patch/minor outdated package, run `pnpm update <package>@latest --recursive` in the repo root.
+2. Backend: For each patch/minor outdated package, run `pnpm update <package>@latest --recursive` in `BACKEND_DIR`.
+
+> **Why `@latest`?** Both projects use `save-exact=true`, so versions are pinned without `^` or `~`. Without `--latest`, `pnpm update` only resolves within the existing range, which for exact versions is a no-op.
 
 **Phase 2 — Major updates (requires careful review):**
 
