@@ -2,8 +2,6 @@
 
 ## Shiny new things
 
-- markdown link supports open share feed link directly in the app
-
 ## Improvements
 
 ## No longer broken
