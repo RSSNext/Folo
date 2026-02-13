@@ -42,7 +42,7 @@ onlyBuiltDependencies:
   - utf-8-validate
 
 overrides:
-  "@react-native-menu/menu": 1.2.2
+  "@react-native-menu/menu": 2.0.0
   drizzle-orm: 0.45.1
   "@electron/node-gyp": 10.2.0-electron.2
   "@types/react": 19.1.17

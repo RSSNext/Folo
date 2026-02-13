@@ -41,7 +41,7 @@
     "@react-native-firebase/app-check": "22.2.1",
     "@react-native-firebase/messaging": "22.2.1",
     "@react-native-masked-view/masked-view": "0.3.2",
-    "@react-native-menu/menu": "1.2.3",
+    "@react-native-menu/menu": "2.0.0",
     "@react-native-picker/picker": "2.11.1",
     "@sentry/react-native": "7.2.0",
     "@shopify/flash-list": "2.0.2",
