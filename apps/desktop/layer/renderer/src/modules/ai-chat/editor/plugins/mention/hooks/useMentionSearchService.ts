@@ -63,7 +63,6 @@ export const useMentionSearchService = () => {
       const lowerQuery = trimmedQuery.toLowerCase()
 
       const firstView = views.find((view) => {
-        // @ts-expect-error
         const viewName = t(view.name, { ns: "common" }).toLowerCase()
         return viewName.includes(lowerQuery) || lowerQuery === ""
       })

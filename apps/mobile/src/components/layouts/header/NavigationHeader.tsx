@@ -141,8 +141,7 @@ const useHideableBottom = (
   }
 }
 export interface InternalNavigationHeaderProps
-  extends Omit<AnimatedProps<ViewProps>, "children">,
-    PropsWithChildren {
+  extends Omit<AnimatedProps<ViewProps>, "children">, PropsWithChildren {
   headerLeft?:
     | FC<{
         canGoBack: boolean

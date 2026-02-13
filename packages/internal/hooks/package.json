@@ -15,8 +15,8 @@
     "@follow/shared": "workspace:*",
     "@follow/types": "workspace:*",
     "@follow/utils": "workspace:*",
-    "foxact": "0.2.49",
-    "jotai": "2.15.1",
+    "foxact": "0.2.52",
+    "jotai": "2.17.1",
     "usehooks-ts": "3.1.1"
   },
   "devDependencies": {

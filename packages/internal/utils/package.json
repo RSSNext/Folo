@@ -35,17 +35,17 @@
     "@mozilla/readability": "0.6.0",
     "chardet": "2.1.1",
     "clsx": "2.1.1",
-    "dompurify": "3.3.0",
-    "motion": "12.23.24",
+    "dompurify": "3.3.1",
+    "motion": "12.34.0",
     "nanoid": "5.1.6",
     "path-to-regexp": "8.3.0",
-    "tailwind-merge": "3.3.1",
-    "tldts": "7.0.17",
+    "tailwind-merge": "3.4.0",
+    "tldts": "7.0.23",
     "uniqolor": "1.1.1"
   },
   "devDependencies": {
     "@follow/configs": "workspace:*",
     "react-native": "0.79.6",
-    "vite-tsconfig-paths": "5.1.4"
+    "vite-tsconfig-paths": "6.1.1"
   }
 }

@@ -20,7 +20,8 @@ export const ErrorBoundary = ({
   return (
     <ReactErrorBoundary
       fallbackRender={useTypeScriptHappyCallback(
-        ({ error, resetErrorBoundary }) => {
+        ({ error: rawError, resetErrorBoundary }) => {
+          const error = rawError instanceof Error ? rawError : new Error(String(rawError))
           return (
             <>
               {typeof fallbackRender === "function"

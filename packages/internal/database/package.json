@@ -36,14 +36,14 @@
     "@follow/constants": "workspace:*",
     "@follow/models": "workspace:*",
     "@follow/shared": "workspace:*",
-    "ai": "6.0.5",
-    "drizzle-orm": "0.44.7",
+    "ai": "6.0.85",
+    "drizzle-orm": "0.45.1",
     "expo-sqlite": "15.2.12",
     "sqlocal": "npm:@hyoban/sqlocal@0.14.1-fork.4",
     "wa-sqlite": "git+https://github.com/rhashimoto/wa-sqlite.git#v1.0.8"
   },
   "devDependencies": {
     "@follow/configs": "workspace:*",
-    "drizzle-kit": "0.31.6"
+    "drizzle-kit": "0.31.9"
   }
 }
