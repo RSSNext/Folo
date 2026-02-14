@@ -23,7 +23,7 @@ export const SearchFeedCard = ({ item }: { item: TrendingFeedItem | DiscoveryIte
       <View className="mt-4 flex-row items-center gap-6">
         <View className="flex-row items-center gap-1.5">
           <User3CuteReIcon width={14} height={14} color={iconColor} />
-          <Text className="text-sm text-secondary-label">
+          <Text className="text-xs text-secondary-label">
             {formatNumber(followerCount)} {t("feed.follower_other")}
           </Text>
         </View>
@@ -31,16 +31,16 @@ export const SearchFeedCard = ({ item }: { item: TrendingFeedItem | DiscoveryIte
           {item.analytics?.updatesPerWeek ? (
             <>
               <SafetyCertificateCuteReIcon width={14} height={14} color={iconColor} />
-              <Text className="text-sm text-secondary-label">
+              <Text className="text-xs text-secondary-label">
                 {t("feed.entry_week_other", { count: item.analytics.updatesPerWeek })}
               </Text>
             </>
           ) : item.analytics?.latestEntryPublishedAt ? (
             <>
               <SafeAlertCuteReIcon width={14} height={14} color={iconColor} />
-              <Text className="text-sm text-secondary-label">{t("feed.updated_at")}</Text>
+              <Text className="text-xs text-secondary-label">{t("feed.updated_at")}</Text>
               <RelativeDateTime
-                className="text-sm text-secondary-label"
+                className="text-xs text-secondary-label"
                 date={new Date(item.analytics.latestEntryPublishedAt)}
               />
             </>

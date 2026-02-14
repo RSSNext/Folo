@@ -137,19 +137,19 @@ export const EntrySocialItem = memo(
 
             <View className="flex-1 flex-row items-center gap-1.5">
               <NativePressable hitSlop={10} onPress={navigationToFeedEntryList}>
-                <Text numberOfLines={1} className="shrink text-base font-semibold text-label">
+                <Text numberOfLines={1} className="shrink text-sm font-semibold text-label">
                   {entry.author || feed?.title}
                 </Text>
               </NativePressable>
-              <Text className="text-secondary-label">·</Text>
-              <RelativeDateTime date={publishedAt} className="text-[14px] text-secondary-label" />
+              <Text className="text-xs text-tertiary-label">·</Text>
+              <RelativeDateTime date={publishedAt} className="text-xs text-tertiary-label" />
             </View>
           </View>
 
           <View className="relative -mt-4">
             <EntryTranslation
               numberOfLines={autoExpandLongSocialMedia ? undefined : 7}
-              className="ml-12 text-base text-label"
+              className="ml-12 text-[15px] leading-[22px] text-label"
               source={description}
               target={translation?.description}
               showTranslation={!!entry?.translation}

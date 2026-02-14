@@ -32,7 +32,7 @@ export const EntryTitle = ({ title, entryId }: { title: string; entryId: string 
       }}
     >
       <EntryTranslation
-        className="px-5 text-title1 font-bold leading-snug text-label"
+        className="px-5 text-title2 font-bold leading-snug text-label"
         source={title}
         target={translation?.title}
         bilingual
@@ -56,7 +56,7 @@ export const EntrySocialTitle = ({ entryId }: { entryId: string }) => {
       ) : (
         feed && <FeedIcon feed={feed} size={28} />
       )}
-      <Text className="text-[16px] font-semibold text-label">
+      <Text className="text-[15px] font-semibold text-label">
         {entry?.author || feed?.title || ""}
       </Text>
     </View>

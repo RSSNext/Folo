@@ -237,14 +237,14 @@ export const UserHeaderBanner = ({
             <Text
               numberOfLines={1}
               className={cn(
-                "px-8 text-2xl font-bold",
+                "px-8 text-xl font-bold",
                 gradientLight ? "text-black" : "text-white/95",
               )}
             >
               {user.name}
             </Text>
           ) : (
-            <Text className="text-2xl font-bold text-text">Folo Account</Text>
+            <Text className="text-xl font-bold text-text">Folo Account</Text>
           )}
 
           {!!role && serverConfigs?.REFERRAL_ENABLED && (
@@ -267,7 +267,7 @@ export const UserHeaderBanner = ({
                       ? "text-black/70"
                       : "text-white/70"
                     : "text-accent",
-                  "font-semibold",
+                  "text-sm font-semibold",
                 )}
               >
                 {UserRoleName[role]}
@@ -276,7 +276,7 @@ export const UserHeaderBanner = ({
           )}
 
           {user?.handle ? (
-            <Text className={cn(gradientLight ? "text-black/70" : "text-white/70")}>
+            <Text className={cn("text-sm", gradientLight ? "text-black/70" : "text-white/70")}>
               @{user.handle}
             </Text>
           ) : !user ? (
@@ -284,7 +284,7 @@ export const UserHeaderBanner = ({
               className="mx-auto"
               onPress={() => navigation.presentControllerView(LoginScreen)}
             >
-              <Text className="m-[6] text-[16px] text-accent">Sign in to your account</Text>
+              <Text className="m-[6] text-sm text-accent">Sign in to your account</Text>
             </TouchableOpacity>
           ) : null}
         </View>
@@ -292,7 +292,7 @@ export const UserHeaderBanner = ({
           <Text
             numberOfLines={3}
             className={cn(
-              "mt-2 px-8 text-center",
+              "mt-2 px-8 text-center text-sm",
               gradientLight ? "text-black/80" : "text-white/80",
             )}
           >
@@ -311,7 +311,10 @@ export const UserHeaderBanner = ({
                 color={gradientLight ? "rgba(0,0,0,0.7)" : "rgba(255,255,255,0.7)"}
               />
               <Text
-                className={cn("font-semibold", gradientLight ? "text-black/70" : "text-white/70")}
+                className={cn(
+                  "text-sm font-semibold",
+                  gradientLight ? "text-black/70" : "text-white/70",
+                )}
               >
                 {user.website.replace(/^(https?:\/\/)?(www\.)?/, "")}
               </Text>
