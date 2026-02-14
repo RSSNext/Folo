@@ -30,18 +30,34 @@ const plugins = [
     storagePrefix,
     storage: {
       setItem(key, value) {
-        SecureStore.setItem(key, value)
+        try {
+          SecureStore.setItem(key, value)
+        } catch (e) {
+          console.warn("SecureStore.setItem failed:", e)
+          return
+        }
 
         if (key === cookieKey) {
           if (__DEV__) {
             const env = getEnvProfile()
-            SecureStore.setItem(`${cookieKey}_${env}`, value)
+            try {
+              SecureStore.setItem(`${cookieKey}_${env}`, value)
+            } catch {
+              // Keychain may be unavailable in background
+            }
           }
           queryClient.invalidateQueries({ queryKey: whoamiQueryKey })
           queryClient.invalidateQueries({ queryKey: isNewUserQueryKey })
         }
       },
-      getItem: SecureStore.getItem,
+      getItem(key) {
+        try {
+          return SecureStore.getItem(key)
+        } catch (e) {
+          console.warn("SecureStore.getItem failed:", e)
+          return null
+        }
+      },
     },
   }),
 ]

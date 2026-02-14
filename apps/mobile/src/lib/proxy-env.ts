@@ -37,16 +37,20 @@ export const setEnvProfile = (profile: keyof typeof envProfileMap) => {
   const currentProfile = getEnvProfile()
   if (currentProfile === profile) return
   _setEnvProfile(profile)
-  const input = SecureStore.getItem(`${cookieKey}_${profile}`)
-  if (input) {
-    SecureStore.setItem(
-      cookieKey,
-      JSON.stringify({
-        [sessionTokenKey]: {
-          value: input,
-        },
-      }),
-    )
+  try {
+    const input = SecureStore.getItem(`${cookieKey}_${profile}`)
+    if (input) {
+      SecureStore.setItem(
+        cookieKey,
+        JSON.stringify({
+          [sessionTokenKey]: {
+            value: input,
+          },
+        }),
+      )
+    }
+  } catch (e) {
+    console.warn("SecureStore access failed during env profile switch:", e)
   }
 
   reloadAppAsync()
