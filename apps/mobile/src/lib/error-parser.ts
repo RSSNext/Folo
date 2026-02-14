@@ -112,7 +112,13 @@ export const toastFetchError = (error: Error, { title: _title }: { title?: strin
     return
   }
 
-  const needUpgradeError = status === 402 && getIsPaymentEnabled()
+  const isPaymentFeatureEnabled = getIsPaymentEnabled()
+
+  if (status === 402 && !isPaymentFeatureEnabled) {
+    return toast.error(t("errors:1004"))
+  }
+
+  const needUpgradeError = status === 402 && isPaymentFeatureEnabled
 
   if (needUpgradeError) {
     showUpgradeRequiredDialog({
