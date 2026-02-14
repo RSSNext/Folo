@@ -4,6 +4,7 @@ const { wrapWithReanimatedMetroConfig } = require("react-native-reanimated/metro
 const { getSentryExpoConfig } = require("@sentry/react-native/metro")
 
 const config = getSentryExpoConfig(__dirname, { isCSSEnabled: true })
+const workspaceRoot = path.resolve(__dirname, "../..")
 config.resolver.sourceExts.push("sql")
 
 config.transformer.getTransformOptions = async () => ({
@@ -15,7 +16,7 @@ config.transformer.getTransformOptions = async () => ({
 
 config.resolver.nodeModulesPaths = [
   path.resolve(__dirname, "./node_modules"),
-  path.resolve(__dirname, "../../node_modules"),
+  path.resolve(workspaceRoot, "node_modules"),
 ]
 
 config.resolver.extraNodeModules = {
@@ -23,7 +24,9 @@ config.resolver.extraNodeModules = {
   "@locales": path.resolve(__dirname, "../../locales"),
 }
 
-config.watchFolders = [...config.watchFolders, path.resolve(__dirname, "../../locales")]
+config.watchFolders = Array.from(
+  new Set([...config.watchFolders, workspaceRoot, path.resolve(workspaceRoot, "locales")]),
+)
 
 config.resolver.resolveRequest = (context, moduleName, platform) => {
   const result = context.resolveRequest(context, moduleName, platform)

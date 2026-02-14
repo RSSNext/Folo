@@ -1,10 +1,10 @@
 import type { ExpoSQLiteDatabase } from "drizzle-orm/expo-sqlite"
 import { drizzle } from "drizzle-orm/expo-sqlite"
-import { migrate } from "drizzle-orm/expo-sqlite/migrator"
 import * as SQLite from "expo-sqlite"
 
 import { SQLITE_DB_NAME } from "./constant"
 import migrations from "./drizzle/migrations"
+import { migrateExpoSQLite } from "./migrator"
 import * as schema from "./schemas"
 
 export let sqlite = SQLite.openDatabaseSync(SQLITE_DB_NAME)
@@ -23,13 +23,13 @@ export { db }
 
 export async function migrateDB(): Promise<void> {
   try {
-    await migrate(db, migrations)
+    await migrateExpoSQLite(sqlite, migrations)
   } catch (error) {
     console.error("Failed to migrate database:", error)
     await deleteDB()
     sqlite = SQLite.openDatabaseSync(SQLITE_DB_NAME)
     initializeDB()
-    await migrate(db, migrations)
+    await migrateExpoSQLite(sqlite, migrations)
   }
 }
 
@@ -37,9 +37,9 @@ export async function getDBFile() {}
 export async function exportDB() {}
 export async function deleteDB() {
   try {
-    await sqlite.closeAsync()
+    sqlite.closeSync()
   } catch {
     /* empty */
   }
-  await SQLite.deleteDatabaseAsync(SQLITE_DB_NAME)
+  SQLite.deleteDatabaseSync(SQLITE_DB_NAME)
 }

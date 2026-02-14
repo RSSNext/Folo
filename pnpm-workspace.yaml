@@ -42,7 +42,10 @@ onlyBuiltDependencies:
   - utf-8-validate
 
 overrides:
+  "@react-native-menu/menu": 2.0.0
+  drizzle-orm: 0.45.1
   "@electron/node-gyp": 10.2.0-electron.2
+  "@types/react": 19.1.17
   "@floating-ui/core": 1.7.2
   "@floating-ui/dom": 1.7.2
   "@floating-ui/react": 0.27.14
@@ -51,10 +54,12 @@ overrides:
   isarray: npm:@nolyfill/isarray@1.0.44
   lan-network@<0.1.7: 0.1.7
   nativewind>react-native-css-interop: 0.1.22
-  react: 19.0.0
-  react-dom: 19.0.0
-  react-native-ios-context-menu: 3.1.1
-  react-native-ios-utilities: 5.1.5
+  react: 19.1.0
+  react-dom: 19.1.0
+  react-native-ios-context-menu: 3.2.1
+  react-native-ios-utilities: 5.2.0
+  serialize-error: 2.1.0
+  global-agent>serialize-error: 7.0.1
 
 patchedDependencies:
   "@microflash/remark-callout-directives": patches/@microflash__remark-callout-directives.patch
@@ -65,8 +70,6 @@ patchedDependencies:
   daisyui@4.12.24: patches/daisyui@4.12.24.patch
   jsonpointer: patches/jsonpointer.patch
   re-resizable@6.11.2: patches/re-resizable@6.11.2.patch
-  react-native-ios-utilities: patches/react-native-ios-utilities.patch
-  react-native-screens: patches/react-native-screens.patch
   react-native-sheet-transitions: patches/react-native-sheet-transitions.patch
-  react-native-track-player: patches/react-native-track-player.patch
+  react-native-track-player@4.1.1: patches/react-native-track-player@4.1.1.patch
   workbox-precaching: patches/workbox-precaching.patch
