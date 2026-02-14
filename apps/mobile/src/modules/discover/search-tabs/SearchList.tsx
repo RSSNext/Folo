@@ -98,14 +98,14 @@ const SearchListCard = memo(({ item }: { item: SearchResultItem }) => {
         </View>
         <View className="flex-1">
           <Text
-            className="text-lg font-semibold text-text"
+            className="text-base font-semibold text-text"
             ellipsizeMode="middle"
             numberOfLines={1}
           >
             {item.list?.title}
           </Text>
           {!!item.list?.description && (
-            <Text className="text-text/60" ellipsizeMode="tail" numberOfLines={1}>
+            <Text className="text-sm text-text/60" ellipsizeMode="tail" numberOfLines={1}>
               {item.list?.description}
             </Text>
           )}
@@ -134,7 +134,7 @@ const SearchListCard = memo(({ item }: { item: SearchResultItem }) => {
       <View className="mt-4 flex-row items-center gap-6 pl-4 opacity-60">
         <View className="flex-row items-center gap-2">
           <User3CuteReIcon width={16} height={16} color={iconColor} />
-          <Text className="text-text">
+          <Text className="text-sm text-text">
             {formatNumber(followerCount)} {t("feed.follower_other")}
           </Text>
         </View>

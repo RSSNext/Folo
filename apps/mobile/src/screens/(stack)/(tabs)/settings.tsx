@@ -94,7 +94,7 @@ const EditProfileButton = () => {
       onPress={() => navigation.pushControllerView(EditProfileScreen)}
     >
       <BlurEffect />
-      <Text className="text-sm font-medium text-label">{t("words.edit")}</Text>
+      <Text className="text-xs font-medium text-label">{t("words.edit")}</Text>
     </TouchableOpacity>
   )
 }

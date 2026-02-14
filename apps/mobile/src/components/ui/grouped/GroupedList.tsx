@@ -37,7 +37,7 @@ interface BaseCellClassNames {
 export const GroupedOutlineDescription: FC<{
   description: string
 }> = ({ description }) => {
-  return <Text className="mx-9 mt-2 text-sm text-secondary-label">{description}</Text>
+  return <Text className="mx-9 mt-2 text-xs text-secondary-label">{description}</Text>
 }
 export const GroupedInsetListCard: FC<
   PropsWithChildren & ViewProps & GroupedInsetListCardProps
@@ -116,7 +116,7 @@ export const GroupedInsetListSectionHeader: FC<{
         marginBottom: GROUPED_SECTION_BOTTOM_MARGIN,
       }}
     >
-      <Text className="text-secondary-label" ellipsizeMode="tail" numberOfLines={1}>
+      <Text className="text-sm text-secondary-label" ellipsizeMode="tail" numberOfLines={1}>
         {label}
       </Text>
     </View>
@@ -163,7 +163,7 @@ export const GroupedInsetListNavigationLink: FC<
           <View className={cn("flex-1 flex-row items-center justify-between", leftClassName)}>
             <View className="flex-row items-center">
               {icon}
-              <Text className={"text-label"}>{label}</Text>
+              <Text className={"text-sm text-label"}>{label}</Text>
             </View>
             <View className={cn("-mr-2 ml-4 flex-row", rightClassName)}>
               {postfix}
@@ -214,10 +214,10 @@ export const GroupedInsetListCell: FC<
       <View className={cn("flex-1 gap-1", leftClassName)}>
         <View className="flex-row items-center gap-2">
           {!!icon && <SymbolView name={icon} size={20} tintColor="black" />}
-          <Text className="text-label">{titleCase(label)}</Text>
+          <Text className="text-sm text-label">{titleCase(label)}</Text>
         </View>
         {!!description && (
-          <Text className="text-sm leading-tight text-secondary-label">{description}</Text>
+          <Text className="text-xs leading-tight text-secondary-label">{description}</Text>
         )}
       </View>
 
@@ -239,9 +239,9 @@ export const GroupedInsetListActionCellRadio: FC<{
           className={cn(pressed ? "bg-system-fill" : undefined, disabled && "opacity-40")}
         >
           <View className="flex-1">
-            <Text className="text-label">{label}</Text>
+            <Text className="text-sm text-label">{label}</Text>
             {!!description && (
-              <Text className="text-sm leading-tight text-secondary-label">{description}</Text>
+              <Text className="text-xs leading-tight text-secondary-label">{description}</Text>
             )}
           </View>
 
@@ -299,10 +299,10 @@ export const GroupedInsetListActionCell: FC<{
           <View className="flex-1">
             <View className="flex-row items-center gap-2">
               {!!icon && <SymbolView name={icon} size={20} tintColor="black" />}
-              <Text className="text-label">{label}</Text>
+              <Text className="text-sm text-label">{label}</Text>
             </View>
             {!!description && (
-              <Text className="text-sm leading-tight text-secondary-label">{description}</Text>
+              <Text className="text-xs leading-tight text-secondary-label">{description}</Text>
             )}
           </View>
 
@@ -327,7 +327,7 @@ export const GroupedInsetButtonCell: FC<{
           className={cn(pressed ? "bg-system-fill" : undefined, disabled && "opacity-40")}
         >
           <View className="flex-1 items-center justify-center">
-            <Text className={`${style === "destructive" ? "text-red" : "text-label"}`}>
+            <Text className={`text-sm ${style === "destructive" ? "text-red" : "text-label"}`}>
               {label}
             </Text>
           </View>
@@ -355,9 +355,9 @@ export const GroupedInformationCell: FC<{
           {icon}
         </View>
       )}
-      <Text className="text-3xl font-bold text-label">{title}</Text>
+      <Text className="text-2xl font-bold text-label">{title}</Text>
       {!!description && (
-        <Text className="mt-3 text-balance text-center text-base leading-tight text-label">
+        <Text className="mt-3 text-balance text-center text-sm leading-tight text-label">
           {description}
         </Text>
       )}
@@ -373,7 +373,7 @@ export const GroupedPlainButtonCell: FC<
 > = ({ label, textClassName, ...props }) => {
   return (
     <GroupedInsetListBaseCell as={OverlayInterectionPressable} {...(props as any)}>
-      <Text className={cn("text-center text-accent", textClassName)}>{label}</Text>
+      <Text className={cn("text-center text-sm text-accent", textClassName)}>{label}</Text>
     </GroupedInsetListBaseCell>
   )
 }

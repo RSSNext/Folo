@@ -36,7 +36,7 @@ export const RecommendationListItem: FC<{
       <View className="mt-1.5 flex-row justify-between overflow-hidden px-6">
         <View className="flex-row items-center gap-3">
           <FeedIcon siteUrl={`https://${data.url}`} size={24} />
-          <Text className="text-lg font-medium text-text">{data.name}</Text>
+          <Text className="text-base font-medium text-text">{data.name}</Text>
         </View>
         <View className="flex-row items-center justify-between gap-4">
           {/* Tags */}
@@ -76,7 +76,7 @@ export const RecommendationListItem: FC<{
                     <Text
                       ellipsizeMode="middle"
                       numberOfLines={1}
-                      className="whitespace-pre text-sm text-text/70"
+                      className="whitespace-pre text-xs text-text/70"
                     >
                       {data.routes[route]!.heat}
                     </Text>
