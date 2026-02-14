@@ -3,6 +3,7 @@ import { useEffect } from "react"
 import { useTranslation } from "react-i18next"
 import { View } from "react-native"
 
+import { getIsPaymentEnabled } from "@/src/atoms/server-configs"
 import { Text } from "@/src/components/ui/typography/Text"
 import type { DialogComponent } from "@/src/lib/dialog"
 import { Dialog } from "@/src/lib/dialog"
@@ -20,6 +21,10 @@ let currentPayload: UpgradeDialogPayload = defaultPayload
 const getPayload = () => currentPayload
 
 export const showUpgradeRequiredDialog = (payload?: UpgradeDialogPayload) => {
+  if (!getIsPaymentEnabled()) {
+    return
+  }
+
   currentPayload = {
     title: payload?.title,
     message: payload?.message,

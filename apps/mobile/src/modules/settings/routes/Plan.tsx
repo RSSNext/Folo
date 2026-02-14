@@ -10,7 +10,7 @@ import { useTranslation } from "react-i18next"
 import type { LayoutChangeEvent } from "react-native"
 import { ActivityIndicator, Animated, Easing, Pressable, StyleSheet, View } from "react-native"
 
-import { useServerConfigs } from "@/src/atoms/server-configs"
+import { useIsPaymentEnabled, useServerConfigs } from "@/src/atoms/server-configs"
 import {
   NavigationBlurEffectHeaderView,
   SafeNavigationScrollView,
@@ -111,11 +111,11 @@ const isFeatureValueVisible = (value: PaymentFeature[keyof PaymentFeature] | nul
 export const PlanScreen: NavigationControllerView = () => {
   const { t } = useTranslation("settings")
   const serverConfigs = useServerConfigs()
+  const isPaymentEnabled = useIsPaymentEnabled()
   const role = useUserRole()
   const roleEndAt = useRoleEndAt()
 
   const plans = useMemo(() => serverConfigs?.PAYMENT_PLAN_LIST ?? [], [serverConfigs])
-  const isPaymentEnabled = serverConfigs?.PAYMENT_ENABLED
 
   const defaultBillingPeriod: BillingPeriod = "yearly"
   const [billingPeriod, setBillingPeriod] = useState<BillingPeriod>(defaultBillingPeriod)
