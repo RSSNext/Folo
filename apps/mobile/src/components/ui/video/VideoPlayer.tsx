@@ -39,9 +39,13 @@ export function VideoPlayer({
     setIsFullScreen(true)
     // Ensure the nativeControls is ready before entering fullscreen for Android
     setTimeout(() => {
-      videoViewRef.current?.enterFullscreen()
-      player.muted = false
-      player.play()
+      try {
+        videoViewRef.current?.enterFullscreen()
+        player.muted = false
+        player.play()
+      } catch (e) {
+        console.warn("VideoPlayer fullscreen failed:", e)
+      }
     }, 0)
   }, [player])
 
@@ -66,8 +70,12 @@ export function VideoPlayer({
         }}
         onFullscreenExit={() => {
           setIsFullScreen(false)
-          player.muted = true
-          player.pause()
+          try {
+            player.muted = true
+            player.pause()
+          } catch (e) {
+            console.warn("VideoPlayer pause failed:", e)
+          }
         }}
       />
       {status !== "readyToPlay" && <View className="absolute inset-0">{placeholder}</View>}

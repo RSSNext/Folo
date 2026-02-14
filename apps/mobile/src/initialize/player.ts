@@ -1,7 +1,19 @@
-import { sleep } from "@follow/utils"
+import { AppState, Platform } from "react-native"
 import TrackPlayer, { Capability, Event } from "react-native-track-player"
 
 export let PlayerRegistered = false
+
+function waitForForeground(): Promise<void> {
+  if (AppState.currentState === "active") return Promise.resolve()
+  return new Promise((resolve) => {
+    const sub = AppState.addEventListener("change", (state) => {
+      if (state === "active") {
+        sub.remove()
+        resolve()
+      }
+    })
+  })
+}
 
 export async function initializePlayer() {
   TrackPlayer.registerPlaybackService(() => async () => {
@@ -13,9 +25,16 @@ export async function initializePlayer() {
     TrackPlayer.addEventListener(Event.RemoteSeek, ({ position }) => TrackPlayer.seekTo(position))
   })
 
-  const setup = async (retry = 60) => {
+  // On Android, setupPlayer must be called in the foreground to avoid
+  // ForegroundServiceStartNotAllowedException
+  if (Platform.OS === "android") {
+    await waitForForeground()
+  }
+
+  const setup = async (retry = 10) => {
     if (retry <= 0) {
       console.error("Failed to setup player after multiple attempts")
+      return
     }
     try {
       await TrackPlayer.setupPlayer()
@@ -24,14 +43,8 @@ export async function initializePlayer() {
       const err = _err as Error & { code?: string }
       console.error("Failed to setup player:", "Code:", err.code, err.message)
 
-      // `setupPlayer` must be called when app is in the foreground, otherwise,
-      // an `'android_cannot_setup_player_in_background'` error will be thrown.
-      // Learn more: https://rntp.dev/docs/api/functions/lifecycle#setupplayeroptions-playeroptions
       if (err.code === "android_cannot_setup_player_in_background") {
-        // Timeouts will only execute when the app is in the foreground. If
-        // it somehow executes in the background, the promise will be rejected
-        // and we'll try this again.
-        await sleep(1000)
+        await waitForForeground()
         await setup(retry - 1)
       }
     }
@@ -39,8 +52,9 @@ export async function initializePlayer() {
 
   await setup()
 
+  if (!PlayerRegistered) return
+
   await TrackPlayer.updateOptions({
-    // Media controls capabilities
     capabilities: [
       Capability.Play,
       Capability.Pause,
@@ -49,8 +63,6 @@ export async function initializePlayer() {
       Capability.Stop,
       Capability.SeekTo,
     ],
-
-    // Capabilities that will show up when the notification is in the compact form on Android
     compactCapabilities: [Capability.Play, Capability.Pause],
   })
 }

@@ -34,14 +34,19 @@ export const TabRoot: FC<PropsWithChildren> = ({ children }) => {
       style={StyleSheet.absoluteFill}
       onTabIndexChange={useCallback(
         (e) => {
-          setTabIndex(e.nativeEvent.index)
+          const index = e.nativeEvent?.index
+          if (index != null) {
+            setTabIndex(index)
+          }
         },
         [setTabIndex],
       )}
       onTabItemPress={useTypeScriptHappyCallback(
         (e) => {
-          const { index, currentIndex } = e.nativeEvent
-          if (index === currentIndex) {
+          const { nativeEvent } = e
+          if (!nativeEvent) return
+          const { index, currentIndex } = nativeEvent
+          if (index != null && index === currentIndex) {
             scrollToTop()
           }
         },
