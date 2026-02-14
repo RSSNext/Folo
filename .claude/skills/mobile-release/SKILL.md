@@ -17,13 +17,13 @@ Perform a regular mobile release. This skill handles the full release workflow f
 
 ## Step 1: Gather changes since last release
 
-1. Find the last release tag:
+1. Find the last release tag (both old `mobile@` and new `mobile/v` prefixes exist):
    ```bash
-   git tag --sort=-creatordate | grep '^mobile@' | head -1
+   git tag --sort=-creatordate | grep -E '^mobile[@/]' | head -1
    ```
-2. If no tag found, find the last release commit:
+2. If no tag found, find the last release commit by matching only the subject line:
    ```bash
-   git log --oneline --grep="release(mobile):" -1
+   git log --format="%H %s" | grep "^[a-f0-9]* release(mobile): release v" | head -1 | awk '{print $1}'
    ```
 3. Get all commits since the last release on the current branch:
    ```bash
