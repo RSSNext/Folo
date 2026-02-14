@@ -20,14 +20,15 @@ catalogs:
       version: 5.9.3
 
 overrides:
-  '@react-native-menu/menu': 2.0.0
-  drizzle-orm: 0.45.1
   '@electron/node-gyp': 10.2.0-electron.2
-  '@types/react': 19.1.17
   '@floating-ui/core': 1.7.2
   '@floating-ui/dom': 1.7.2
   '@floating-ui/react': 0.27.14
   '@floating-ui/react-dom': 2.1.4
+  '@react-native-menu/menu': 2.0.0
+  '@types/react': 19.1.17
+  drizzle-orm: 0.45.1
+  global-agent>serialize-error: 7.0.1
   is-core-module: npm:@nolyfill/is-core-module@1.0.39
   isarray: npm:@nolyfill/isarray@1.0.44
   lan-network@<0.1.7: 0.1.7
@@ -37,7 +38,6 @@ overrides:
   react-native-ios-context-menu: 3.2.1
   react-native-ios-utilities: 5.2.0
   serialize-error: 2.1.0
-  global-agent>serialize-error: 7.0.1
 
 patchedDependencies:
   '@microflash/remark-callout-directives':
@@ -67,9 +67,9 @@ patchedDependencies:
   react-native-sheet-transitions:
     hash: 4db5ed53b31f4349d609d7dd2d0e053b6ee4c27e8d6d72c90ee74015ae18235f
     path: patches/react-native-sheet-transitions.patch
-  react-native-track-player:
-    hash: d011fdd16d124609523059323ac7614e3999174a9c7b21074c1124d7075650fb
-    path: patches/react-native-track-player.patch
+  react-native-track-player@4.1.1:
+    hash: 2c57d5761841aa05de8d70bc9280dc087dc8caec93c67d2f8fcab1af18088703
+    path: patches/react-native-track-player@4.1.1.patch
   workbox-precaching:
     hash: 51e57c78af317e292b43fca4b72f57b247b7b1a1faa8b03c8881ddb798c7c52f
     path: patches/workbox-precaching.patch
@@ -1117,7 +1117,7 @@ importers:
         version: 15.12.1(react-native@0.81.5(@babel/core@7.29.0)(@types/react@19.1.17)(bufferutil@4.1.0)(react@19.1.0)(utf-8-validate@6.0.5))(react@19.1.0)
       react-native-track-player:
         specifier: 4.1.1
-        version: 4.1.1(patch_hash=d011fdd16d124609523059323ac7614e3999174a9c7b21074c1124d7075650fb)(react-native@0.81.5(@babel/core@7.29.0)(@types/react@19.1.17)(bufferutil@4.1.0)(react@19.1.0)(utf-8-validate@6.0.5))(react@19.1.0)
+        version: 4.1.1(patch_hash=2c57d5761841aa05de8d70bc9280dc087dc8caec93c67d2f8fcab1af18088703)(react-native@0.81.5(@babel/core@7.29.0)(@types/react@19.1.17)(bufferutil@4.1.0)(react@19.1.0)(utf-8-validate@6.0.5))(react@19.1.0)
       react-native-uikit-colors:
         specifier: 0.6.2
         version: 0.6.2(2efcb19112481cc1f378fc9a0a3b7146)
@@ -33592,7 +33592,7 @@ snapshots:
       react-native: 0.81.5(@babel/core@7.29.0)(@types/react@19.1.17)(bufferutil@4.1.0)(react@19.1.0)(utf-8-validate@6.0.5)
       warn-once: 0.1.1
 
-  react-native-track-player@4.1.1(patch_hash=d011fdd16d124609523059323ac7614e3999174a9c7b21074c1124d7075650fb)(react-native@0.81.5(@babel/core@7.29.0)(@types/react@19.1.17)(bufferutil@4.1.0)(react@19.1.0)(utf-8-validate@6.0.5))(react@19.1.0):
+  react-native-track-player@4.1.1(patch_hash=2c57d5761841aa05de8d70bc9280dc087dc8caec93c67d2f8fcab1af18088703)(react-native@0.81.5(@babel/core@7.29.0)(@types/react@19.1.17)(bufferutil@4.1.0)(react@19.1.0)(utf-8-validate@6.0.5))(react@19.1.0):
     dependencies:
       react: 19.1.0
       react-native: 0.81.5(@babel/core@7.29.0)(@types/react@19.1.17)(bufferutil@4.1.0)(react@19.1.0)(utf-8-validate@6.0.5)

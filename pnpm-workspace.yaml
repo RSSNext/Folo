@@ -71,5 +71,5 @@ patchedDependencies:
   jsonpointer: patches/jsonpointer.patch
   re-resizable@6.11.2: patches/re-resizable@6.11.2.patch
   react-native-sheet-transitions: patches/react-native-sheet-transitions.patch
-  react-native-track-player: patches/react-native-track-player.patch
+  react-native-track-player@4.1.1: patches/react-native-track-player@4.1.1.patch
   workbox-precaching: patches/workbox-precaching.patch
