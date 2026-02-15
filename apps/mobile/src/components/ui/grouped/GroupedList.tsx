@@ -4,7 +4,7 @@ import type { FC, PropsWithChildren } from "react"
 import * as React from "react"
 import { Fragment } from "react"
 import type { PressableProps, ViewProps } from "react-native"
-import { Pressable, StyleSheet, TouchableOpacity, View } from "react-native"
+import { Pressable, StyleSheet, View } from "react-native"
 import Animated, { FadeIn, FadeOut } from "react-native-reanimated"
 import type { SFSymbol } from "sf-symbols-typescript"
 import { titleCase } from "title-case"
@@ -204,7 +204,7 @@ export const GroupedInsetListCell: FC<
   return (
     <GroupedInsetListBaseCell
       className={cn("flex flex-1 bg-secondary-system-grouped-background", className)}
-      as={onPress ? TouchableOpacity : undefined}
+      as={onPress ? Pressable : undefined}
       {...(onPress
         ? {
             onPress,

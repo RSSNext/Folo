@@ -11,7 +11,7 @@ import { zodResolver } from "@hookform/resolvers/zod"
 import { memo, useEffect, useMemo, useState } from "react"
 import type { FieldErrors } from "react-hook-form"
 import { Controller, useForm } from "react-hook-form"
-import { KeyboardAvoidingView, Linking, TouchableOpacity, View } from "react-native"
+import { KeyboardAvoidingView, Linking, Pressable, View } from "react-native"
 import { z } from "zod"
 
 import { HeaderSubmitTextButton } from "@/src/components/layouts/header/HeaderElements"
@@ -221,9 +221,9 @@ const Maintainers = ({ maintainers }: { maintainers?: string[] }) => {
         This feed is provided by RSSHub, with credit to{" "}
       </Text>
       {maintainers.map((m) => (
-        <TouchableOpacity key={m} onPress={() => Linking.openURL(`https://github.com/${m}`)}>
+        <Pressable key={m} onPress={() => Linking.openURL(`https://github.com/${m}`)}>
           <Text className="text-xs text-accent/90">@{m}</Text>
-        </TouchableOpacity>
+        </Pressable>
       ))}
     </View>
   )

@@ -41,11 +41,12 @@ export const Recommendations = () => {
       animated: true,
     })
   }, [ref, currentTab, windowWidth])
-  const [loadedTabIndex, setLoadedTabIndex] = useState(() => new Set())
+  const [loadedTabIndex, setLoadedTabIndex] = useState(() => new Set([0]))
   useEffect(() => {
     setLoadedTabIndex((prev) => {
-      prev.add(currentTab)
-      return new Set(prev)
+      const next = new Set(prev)
+      next.add(currentTab)
+      return next
     })
   }, [currentTab])
   const insets = useSafeAreaInsets()

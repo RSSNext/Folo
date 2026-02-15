@@ -2,7 +2,7 @@ import { UserRole } from "@follow/constants"
 import { cn } from "@follow/utils/utils"
 import type { Image as ExpoImage } from "expo-image"
 import { useCallback } from "react"
-import { Text, TouchableOpacity, View } from "react-native"
+import { Pressable, Text, View } from "react-native"
 import { measure, runOnJS, runOnUI, useAnimatedRef } from "react-native-reanimated"
 
 import { PowerIcon } from "@/src/icons/power"
@@ -123,9 +123,5 @@ export const UserAvatar = ({
       {avatarBadge}
     </View>
   )
-  return preview ? (
-    <TouchableOpacity onPress={onPreview}>{imageContent}</TouchableOpacity>
-  ) : (
-    imageContent
-  )
+  return preview ? <Pressable onPress={onPreview}>{imageContent}</Pressable> : imageContent
 }

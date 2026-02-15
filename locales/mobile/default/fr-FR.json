@@ -1,4 +1,5 @@
 {
+  "ai.summary_generating": "Génération du résumé IA...",
   "ai.summary_not_available": "Résumé non disponible",
   "ai.summary_upgrade_required_description": "Débloquez des résumés, des traductions et des fonctionnalités intelligentes illimités avec le plan Pro.",
   "ai.summary_upgrade_required_title": "Commencez l'essai gratuit pour continuer à utiliser le résumé IA",
@@ -6,6 +7,7 @@
   "entry.pull_up_to_next_entry": "Tirez vers le haut pour passer à l'entrée suivante",
   "entry.release_to_next_entry": "Relâchez pour passer à l'entrée suivante",
   "entry_actions.toggle_ai_summary": "Résumé IA",
+  "entry_content.ai_summary": "Résumé IA",
   "entry_content.no_content": "Aucun média disponible",
   "entry_content.no_video_url": "Aucune URL vidéo trouvée",
   "entry_list.zero_unread": "Zéro non lu",

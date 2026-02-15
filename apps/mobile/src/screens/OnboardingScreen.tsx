@@ -2,7 +2,7 @@ import { isNewUserQueryKey, isOnboardingFinishedStorageKey } from "@follow/store
 import { tracker } from "@follow/tracker"
 import { useCallback, useEffect, useState } from "react"
 import { useTranslation } from "react-i18next"
-import { TouchableOpacity, View } from "react-native"
+import { Pressable, View } from "react-native"
 import Animated, { FadeInRight, FadeOutLeft } from "react-native-reanimated"
 import { useSafeAreaInsets } from "react-native-safe-area-context"
 
@@ -17,11 +17,13 @@ import { StepInterests } from "../modules/onboarding/step-interests"
 import { StepPreferences } from "../modules/onboarding/step-preferences"
 import { StepWelcome } from "../modules/onboarding/step-welcome"
 
+const ONBOARDING_STEPS = [1, 2, 3, 4]
+
 export const OnboardingScreen: NavigationControllerView = () => {
   const { t } = useTranslation("common")
   const insets = useSafeAreaInsets()
   const [currentStep, setCurrentStep] = useState(1)
-  const totalSteps = 4
+  const totalSteps = ONBOARDING_STEPS.length
   const navigation = useNavigation()
   const handleNext = useCallback(() => {
     if (currentStep < totalSteps) {
@@ -45,7 +47,7 @@ export const OnboardingScreen: NavigationControllerView = () => {
           navigation.back()
         })
     }
-  }, [currentStep, navigation])
+  }, [currentStep, navigation, totalSteps])
   useEffect(() => {
     tracker.onBoarding({
       step: 0,
@@ -62,7 +64,7 @@ export const OnboardingScreen: NavigationControllerView = () => {
     >
       <ProgressIndicator
         currentStep={currentStep}
-        totalSteps={totalSteps}
+        steps={ONBOARDING_STEPS}
         setCurrentStep={setCurrentStep}
       />
 
@@ -81,10 +83,7 @@ export const OnboardingScreen: NavigationControllerView = () => {
 
       {/* Navigation buttons */}
       <View className="mb-6 px-6">
-        <TouchableOpacity
-          onPress={handleNext}
-          className="w-full items-center rounded-xl bg-accent py-4"
-        >
+        <Pressable onPress={handleNext} className="w-full items-center rounded-xl bg-accent py-4">
           <Text className="text-lg font-bold text-white">
             {currentStep < totalSteps - 1
               ? t("words.next")
@@ -92,35 +91,33 @@ export const OnboardingScreen: NavigationControllerView = () => {
                 ? t("words.finishSetup")
                 : t("words.letsGo")}
           </Text>
-        </TouchableOpacity>
+        </Pressable>
       </View>
     </View>
   )
 }
 function ProgressIndicator({
   currentStep,
-  totalSteps,
+  steps,
   setCurrentStep,
 }: {
   currentStep: number
-  totalSteps: number
+  steps: number[]
   setCurrentStep: (step: number) => void
 }) {
   return (
     <View className="mb-6 mt-4 flex flex-row justify-center gap-2">
-      {Array.from({
-        length: totalSteps,
-      }).map((_, index) => (
-        <TouchableOpacity
-          key={`step-${index}-indicator`}
+      {steps.map((step) => (
+        <Pressable
+          key={`step-${step}-indicator`}
           onPress={() => {
-            setCurrentStep(index + 1)
+            setCurrentStep(step)
           }}
         >
           <View
-            className={`mx-1 h-2 w-10 rounded-full ${currentStep >= index + 1 ? "bg-accent" : "bg-gray-300"}`}
+            className={`mx-1 h-2 w-10 rounded-full ${currentStep >= step ? "bg-accent" : "bg-tertiary-system-fill"}`}
           />
-        </TouchableOpacity>
+        </Pressable>
       ))}
     </View>
   )

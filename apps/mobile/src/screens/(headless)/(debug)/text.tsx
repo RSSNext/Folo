@@ -1,4 +1,4 @@
-import { SafeAreaView, Switch, Text as RNText, View } from "react-native"
+import { SafeAreaView, StyleSheet, Switch, Text as RNText, View } from "react-native"
 
 import { setUISetting, useUISettingKey } from "@/src/atoms/settings/ui"
 import { Slider } from "@/src/components/ui/slider"
@@ -31,9 +31,7 @@ export const TextDebugScreen: NavigationControllerView = () => {
           <RNText className="font-medium text-label">{fontScaling.toFixed(2)}</RNText>
         </View>
         <Slider
-          style={{
-            marginTop: 16,
-          }}
+          style={styles.slider}
           maximumValue={1.5}
           minimumValue={0.8}
           value={fontScaling}
@@ -67,3 +65,9 @@ export const TextDebugScreen: NavigationControllerView = () => {
     </SafeAreaView>
   )
 }
+
+const styles = StyleSheet.create({
+  slider: {
+    marginTop: 16,
+  },
+})

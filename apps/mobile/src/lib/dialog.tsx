@@ -12,7 +12,7 @@ import {
   useMemo,
   useState,
 } from "react"
-import { TouchableOpacity, View } from "react-native"
+import { Pressable, View } from "react-native"
 import Animated, { SlideInUp, SlideOutUp } from "react-native-reanimated"
 import RootSiblings from "react-native-root-siblings"
 import { useSafeAreaInsets } from "react-native-safe-area-context"
@@ -272,7 +272,7 @@ const DialogDynamicButtonAction = (props: {
       cancel: onCancel,
     }[props.type] || props.fallbackCaller
   return (
-    <TouchableOpacity
+    <Pressable
       className={cn(
         "flex-1 items-center justify-center rounded-full bg-system-fill px-6 py-3",
         props.className,
@@ -282,7 +282,7 @@ const DialogDynamicButtonAction = (props: {
       <Text className={cn("text-base font-medium text-label", props.textClassName)}>
         {props.text}
       </Text>
-    </TouchableOpacity>
+    </Pressable>
   )
 }
 const DialogDynamicButtonActionProvider = (props: { children: ReactNode }) => {

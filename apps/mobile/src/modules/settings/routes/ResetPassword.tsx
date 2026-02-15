@@ -16,27 +16,50 @@ import {
 import { PlatformActivityIndicator } from "@/src/components/ui/loading/PlatformActivityIndicator"
 import { CheckLineIcon } from "@/src/icons/check_line"
 import { changePassword } from "@/src/lib/auth"
+import { useNavigation } from "@/src/lib/navigation/hooks"
+import { toast } from "@/src/lib/toast"
 
 export const ResetPassword = () => {
   const labelColor = useColor("label")
+  const navigation = useNavigation()
 
   const [currentPassword, setCurrentPassword] = useState("")
   const [newPassword, setNewPassword] = useState("")
   const [confirmNewPassword, setConfirmNewPassword] = useState("")
 
-  const { mutateAsync: changePasswordAsync, isPending } = useMutation({
-    mutationFn: () => {
-      return changePassword({
+  const isFormValid =
+    !!currentPassword && !!newPassword && !!confirmNewPassword && newPassword === confirmNewPassword
+
+  const { mutate: submitChangePassword, isPending } = useMutation({
+    mutationFn: async () => {
+      const res = await changePassword({
         currentPassword,
         newPassword,
         revokeOtherSessions: true,
       })
+      if (res.error) {
+        throw new Error(res.error.message)
+      }
+    },
+    onSuccess: () => {
+      toast.success("Password updated")
+      navigation.back()
+    },
+    onError: (error) => {
+      toast.error(error instanceof Error ? error.message : "Failed to update password")
     },
   })
 
   const handleSave = useCallback(() => {
-    return changePasswordAsync()
-  }, [changePasswordAsync])
+    if (isPending) return
+    if (!isFormValid) {
+      if (newPassword && confirmNewPassword && newPassword !== confirmNewPassword) {
+        toast.error("New passwords do not match")
+      }
+      return
+    }
+    submitChangePassword()
+  }, [confirmNewPassword, isFormValid, isPending, newPassword, submitChangePassword])
 
   return (
     <SafeNavigationScrollView
@@ -55,16 +78,11 @@ export const ResetPassword = () => {
                     <CheckLineIcon height={18} width={18} color={labelColor} />
                   )
                 }
-                disabled={
-                  !currentPassword ||
-                  !newPassword ||
-                  !confirmNewPassword ||
-                  newPassword !== confirmNewPassword
-                }
+                disabled={!isFormValid || isPending}
                 onPress={handleSave}
               />
             ),
-            [confirmNewPassword, currentPassword, handleSave, isPending, labelColor, newPassword],
+            [handleSave, isFormValid, isPending, labelColor],
           )}
         />
       }

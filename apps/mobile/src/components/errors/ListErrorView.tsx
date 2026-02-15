@@ -1,5 +1,5 @@
 import { useTranslation } from "react-i18next"
-import { TouchableOpacity, View } from "react-native"
+import { Pressable, View } from "react-native"
 import { useColor } from "react-native-uikit-colors"
 
 import { Text } from "@/src/components/ui/typography/Text"
@@ -26,9 +26,9 @@ export const ListErrorView = ({ error, resetError }: { error: Error; resetError:
           {error.message || t("error_screen.unknown")}
         </MonoText>
 
-        <TouchableOpacity className="w-full rounded-xl bg-accent px-6 py-3" onPress={resetError}>
+        <Pressable className="w-full rounded-xl bg-accent px-6 py-3" onPress={resetError}>
           <Text className="text-center text-base font-semibold text-white">{t("retry")}</Text>
-        </TouchableOpacity>
+        </Pressable>
       </View>
     </View>
   )

@@ -1,6 +1,6 @@
 import { unreadSyncService } from "@follow/store/unread/store"
 import { useTranslation } from "react-i18next"
-import { TouchableOpacity } from "react-native"
+import { Pressable } from "react-native"
 
 import { getHideAllReadSubscriptions } from "@/src/atoms/settings/general"
 import { Text } from "@/src/components/ui/typography/Text"
@@ -18,7 +18,7 @@ export const EntryListFooter = ({ fetchedTime }: { fetchedTime?: number }) => {
   return (
     <>
       <ItemSeparator />
-      <TouchableOpacity
+      <Pressable
         className="flex-row items-center justify-center gap-1.5 py-6 pl-6"
         onPress={() => {
           if (typeof selectedView === "number") {
@@ -42,7 +42,7 @@ export const EntryListFooter = ({ fetchedTime }: { fetchedTime?: number }) => {
             which: t("operation.mark_all_as_read_which_above"),
           })}
         </Text>
-      </TouchableOpacity>
+      </Pressable>
     </>
   )
 }
@@ -51,7 +51,7 @@ export const GridEntryListFooter = ({ fetchedTime }: { fetchedTime?: number }) =
   const selectedView = useSelectedView()
   const selectedFeed = useSelectedFeed()
   return (
-    <TouchableOpacity
+    <Pressable
       className="flex-row items-center justify-center gap-1.5 py-6"
       onPress={() => {
         if (typeof selectedView === "number") {
@@ -75,6 +75,6 @@ export const GridEntryListFooter = ({ fetchedTime }: { fetchedTime?: number }) =
           which: t("operation.mark_all_as_read_which_above"),
         })}
       </Text>
-    </TouchableOpacity>
+    </Pressable>
   )
 }

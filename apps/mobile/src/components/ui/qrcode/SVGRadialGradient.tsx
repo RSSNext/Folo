@@ -3,6 +3,12 @@ import { RadialGradient, Stop } from "react-native-svg"
 
 import type { GradientOrigin, RadialGradientProps } from "./types"
 
+const DEFAULT_ORIGIN: GradientOrigin = [0, 0]
+const DEFAULT_CENTER: GradientOrigin = [0.5, 0.5]
+const DEFAULT_RADIUS: GradientOrigin = [1, 1]
+const DEFAULT_COLORS: string[] = ["black", "white"]
+const DEFAULT_LOCATIONS: number[] = [0, 1]
+
 interface SVGRadialGradientProps extends RadialGradientProps {
   id: string
   size: number
@@ -12,11 +18,11 @@ interface SVGRadialGradientProps extends RadialGradientProps {
 export function SVGRadialGradient({
   id,
   size,
-  origin = [0, 0],
-  center = [0.5, 0.5],
-  radius = [1, 1],
-  colors = ["black", "white"],
-  locations = [0, 1],
+  origin = DEFAULT_ORIGIN,
+  center = DEFAULT_CENTER,
+  radius = DEFAULT_RADIUS,
+  colors = DEFAULT_COLORS,
+  locations = DEFAULT_LOCATIONS,
 }: SVGRadialGradientProps) {
   return (
     <RadialGradient
@@ -27,9 +33,17 @@ export function SVGRadialGradient({
       rx={radius[0] * size}
       ry={radius[1] * size}
     >
-      {colors?.map((c, i) => (
-        <Stop key={i} offset={locations?.[i]} stopColor={c} stopOpacity="1" />
-      ))}
+      {colors?.map((color, colorIndex) => {
+        const offset = locations?.[colorIndex]
+        return (
+          <Stop
+            key={`${String(color)}-${String(offset)}`}
+            offset={offset}
+            stopColor={color}
+            stopOpacity="1"
+          />
+        )
+      })}
     </RadialGradient>
   )
 }

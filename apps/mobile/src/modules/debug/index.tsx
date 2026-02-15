@@ -7,7 +7,7 @@ import { Gesture, GestureDetector } from "react-native-gesture-handler"
 import { runOnJS, useAnimatedStyle, useSharedValue, withSpring } from "react-native-reanimated"
 import { useSafeAreaInsets } from "react-native-safe-area-context"
 
-import { ReAnimatedTouchableOpacity } from "@/src/components/common/AnimatedComponents"
+import { ReAnimatedPressable } from "@/src/components/common/AnimatedComponents"
 import { DropdownMenu } from "@/src/components/ui/context-menu"
 import { Text } from "@/src/components/ui/typography/Text"
 import { BugCuteReIcon } from "@/src/icons/bug_cute_re"
@@ -77,7 +77,7 @@ export const DebugButton = () => {
   })
   return (
     <GestureDetector gesture={gestureEvent}>
-      <ReAnimatedTouchableOpacity
+      <ReAnimatedPressable
         onPress={() => {
           Navigation.rootNavigation.pushControllerView(DebugScreen)
         }}
@@ -85,7 +85,7 @@ export const DebugButton = () => {
         className="absolute right-0 top-[-20] z-[100] mt-5 flex size-8 items-center justify-center rounded-l-md bg-accent"
       >
         <BugCuteReIcon height={24} width={24} color="#fff" />
-      </ReAnimatedTouchableOpacity>
+      </ReAnimatedPressable>
     </GestureDetector>
   )
 }

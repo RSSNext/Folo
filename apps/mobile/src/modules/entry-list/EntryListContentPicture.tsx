@@ -19,6 +19,13 @@ import { useOnViewableItemsChanged } from "./hooks"
 // import type { MasonryItem } from "./templates/EntryGridItem"
 import { EntryPictureItem } from "./templates/EntryPictureItem"
 
+const PICTURE_SKELETON_COLUMN_KEYS = [
+  "picture-skeleton-1",
+  "picture-skeleton-2",
+  "picture-skeleton-3",
+  "picture-skeleton-4",
+] as const
+
 export const EntryListContentPicture = ({
   ref: forwardRef,
   entryIds,
@@ -63,13 +70,16 @@ export const EntryListContentPicture = ({
       >
         <View className="flex-row">
           <View className="mr-1 flex-1">
-            {Array.from({ length: 4 }).map((_, index) => (
-              <EntryPictureItemSkeleton key={`left-${index}`} />
+            {PICTURE_SKELETON_COLUMN_KEYS.map((key, index) => (
+              <EntryPictureItemSkeleton key={`left-${key}`} variantIndex={index} />
             ))}
           </View>
           <View className="ml-1 flex-1">
-            {Array.from({ length: 4 }).map((_, index) => (
-              <EntryPictureItemSkeleton key={`right-${index}`} />
+            {PICTURE_SKELETON_COLUMN_KEYS.map((key, index) => (
+              <EntryPictureItemSkeleton
+                key={`right-${key}`}
+                variantIndex={index + PICTURE_SKELETON_COLUMN_KEYS.length}
+              />
             ))}
           </View>
         </View>
@@ -104,28 +114,40 @@ export const EntryListContentPicture = ({
   )
 }
 
-function EntryPictureItemSkeleton() {
-  const heights = [120, 160, 140, 180, 100, 200] // Different heights for variety
-  const randomHeight = heights[Math.floor(Math.random() * heights.length)]
+function EntryPictureItemSkeleton({ variantIndex }: { variantIndex: number }) {
+  const imageHeightStyle =
+    PICTURE_SKELETON_HEIGHT_STYLES[variantIndex % PICTURE_SKELETON_HEIGHT_STYLES.length]
 
   return (
     <View className="mx-1 mb-2">
       {/* Image placeholder */}
-      <View className="animate-pulse rounded-md bg-system-fill" style={{ height: randomHeight }} />
+      <View className="animate-pulse rounded-md bg-system-fill" style={imageHeightStyle} />
 
       {/* Footer content */}
       <View className="gap-2 px-1 py-2">
         {/* Title lines */}
         <View className="gap-1">
-          <View className="h-3 animate-pulse rounded-md bg-system-fill" style={{ width: "90%" }} />
-          <View className="h-3 animate-pulse rounded-md bg-system-fill" style={{ width: "70%" }} />
+          <View
+            className="h-3 animate-pulse rounded-md bg-system-fill"
+            style={styles.titleLinePrimary}
+          />
+          <View
+            className="h-3 animate-pulse rounded-md bg-system-fill"
+            style={styles.titleLineSecondary}
+          />
         </View>
 
         {/* Feed info */}
         <View className="flex-row items-center gap-1.5">
           <View className="size-3.5 animate-pulse rounded-full bg-system-fill" />
-          <View className="h-3 animate-pulse rounded-md bg-system-fill" style={{ width: "40%" }} />
-          <View className="h-3 animate-pulse rounded-md bg-system-fill" style={{ width: "30%" }} />
+          <View
+            className="h-3 animate-pulse rounded-md bg-system-fill"
+            style={styles.feedLinePrimary}
+          />
+          <View
+            className="h-3 animate-pulse rounded-md bg-system-fill"
+            style={styles.feedLineSecondary}
+          />
         </View>
       </View>
     </View>
@@ -136,7 +158,46 @@ const styles = StyleSheet.create({
   contentContainer: {
     paddingHorizontal: 8,
   },
+  skeletonHeight120: {
+    height: 120,
+  },
+  skeletonHeight160: {
+    height: 160,
+  },
+  skeletonHeight140: {
+    height: 140,
+  },
+  skeletonHeight180: {
+    height: 180,
+  },
+  skeletonHeight100: {
+    height: 100,
+  },
+  skeletonHeight200: {
+    height: 200,
+  },
+  titleLinePrimary: {
+    width: "90%",
+  },
+  titleLineSecondary: {
+    width: "70%",
+  },
+  feedLinePrimary: {
+    width: "40%",
+  },
+  feedLineSecondary: {
+    width: "30%",
+  },
 })
+
+const PICTURE_SKELETON_HEIGHT_STYLES = [
+  styles.skeletonHeight120,
+  styles.skeletonHeight160,
+  styles.skeletonHeight140,
+  styles.skeletonHeight180,
+  styles.skeletonHeight100,
+  styles.skeletonHeight200,
+] as const
 
 const defaultKeyExtractor = (item: string) => {
   return item

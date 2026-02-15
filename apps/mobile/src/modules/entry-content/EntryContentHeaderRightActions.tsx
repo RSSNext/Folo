@@ -9,7 +9,7 @@ import { setStringAsync } from "expo-clipboard"
 import { useAtom } from "jotai"
 import { useCallback, useEffect, useState } from "react"
 import { useTranslation } from "react-i18next"
-import { Share, TouchableOpacity, View } from "react-native"
+import { Pressable, Share, View } from "react-native"
 import type { SharedValue } from "react-native-reanimated"
 import Animated, { interpolate, useAnimatedStyle } from "react-native-reanimated"
 import { useColor } from "react-native-uikit-colors"
@@ -224,9 +224,9 @@ const HeaderRightActionsImpl = ({
 
       <DropdownMenu.Root>
         <DropdownMenu.Trigger>
-          <TouchableOpacity hitSlop={10} accessibilityLabel="More Actions">
+          <Pressable hitSlop={10} accessibilityLabel="More Actions">
             <More1CuteReIcon color={labelColor} />
-          </TouchableOpacity>
+          </Pressable>
         </DropdownMenu.Trigger>
 
         <DropdownMenu.Content>

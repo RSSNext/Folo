@@ -84,7 +84,7 @@ export const RelativeDateTime = ({
         setMode((mode) => (mode === "relative" ? "absolute" : "relative"))
       }}
     >
-      <Text {...props} key={mode}>
+      <Text key={mode} {...props}>
         {mode === "relative"
           ? `${relative}${t("space")}${postfixText ?? t("words.ago")}`
           : memoizedFormatTime}

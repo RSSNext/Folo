@@ -198,7 +198,7 @@ const EntryInfo = ({ entryId }: { entryId: string }) => {
   }))
   const feed = useFeedById(entry?.feedId)
   const secondaryLabelColor = useColor("secondaryLabel")
-  const readCount = useEntryReadHistory(entryId)?.entryReadHistories?.readCount
+  const readCount = useEntryReadHistory(entryId)?.entryReadHistories?.readCount ?? 0
   const hideRecentReader = useUISettingKey("hideRecentReader")
   if (!entry) return null
   const { publishedAt } = entry
@@ -236,7 +236,7 @@ const EntryInfoSocial = ({ entryId }: { entryId: string }) => {
   return (
     <View className="mt-3 px-4">
       <Text className="text-sm text-secondary-label">
-        {entry.publishedAt.toLocaleString("en-US", {
+        {entry.publishedAt.toLocaleString(undefined, {
           dateStyle: "medium",
           timeStyle: "short",
         })}

@@ -30,6 +30,8 @@ import { SafetyCertificateCuteReIcon } from "@/src/icons/safety_certificate_cute
 import { User3CuteReIcon } from "@/src/icons/user_3_cute_re"
 import { useCanDismiss, useNavigation } from "@/src/lib/navigation/hooks"
 import { useSetModalScreenOptions } from "@/src/lib/navigation/ScreenOptionsContext"
+import { getBizFetchErrorMessage } from "@/src/lib/parse-api-error"
+import { toast } from "@/src/lib/toast"
 import { FeedSummary } from "@/src/modules/discover/FeedSummary"
 import { FeedViewSelector } from "@/src/modules/feed/view-selector"
 import { useColor } from "@/src/theme/colors"
@@ -104,6 +106,7 @@ function FollowImpl(props: { feedId: string; defaultView?: FeedViewType }) {
   const navigate = useNavigation()
   const canDismiss = useCanDismiss()
   const submit = async () => {
+    if (isLoading) return
     setIsLoading(true)
     const values = form.getValues()
     const body: SubscriptionForm = {
@@ -116,24 +119,25 @@ function FollowImpl(props: { feedId: string; defaultView?: FeedViewType }) {
       feedId: feed?.id,
       listId: undefined,
     }
-    if (isSubscribed) {
-      await subscriptionSyncService
-        .edit({
+    try {
+      if (isSubscribed) {
+        await subscriptionSyncService.edit({
           ...subscription,
           ...body,
         })
-        .finally(() => {
-          setIsLoading(false)
-        })
-    } else {
-      await subscriptionSyncService.subscribe(body).finally(() => {
-        setIsLoading(false)
-      })
-    }
-    if (canDismiss) {
-      navigate.dismiss()
-    } else {
-      navigate.back()
+      } else {
+        await subscriptionSyncService.subscribe(body)
+      }
+      toast.success(isSubscribed ? "Feed updated" : "Feed followed")
+      if (canDismiss) {
+        navigate.dismiss()
+      } else {
+        navigate.back()
+      }
+    } catch (error) {
+      toast.error(error instanceof Error ? getBizFetchErrorMessage(error) : "Failed to update feed")
+    } finally {
+      setIsLoading(false)
     }
   }
   const insets = useSafeAreaInsets()

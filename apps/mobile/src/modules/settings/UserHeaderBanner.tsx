@@ -5,7 +5,7 @@ import { cn, getLuminance } from "@follow/utils"
 import { LinearGradient } from "expo-linear-gradient"
 import type { FC } from "react"
 import { useMemo } from "react"
-import { Linking, StyleSheet, TouchableOpacity, View } from "react-native"
+import { Linking, Pressable, StyleSheet, View } from "react-native"
 import type { SharedValue } from "react-native-reanimated"
 import ReAnimated, { FadeIn, FadeOut, interpolate, useAnimatedStyle } from "react-native-reanimated"
 import { useSafeAreaInsets } from "react-native-safe-area-context"
@@ -173,14 +173,21 @@ export const UserHeaderBanner = ({
   const navigation = useNavigation()
 
   const sheetModal = useScreenIsInSheetModal()
+  const bannerContainerStyle = useMemo(
+    () => ({
+      marginTop: sheetModal ? 0 : -insets.top - 22,
+      paddingTop: sheetModal ? 48 : 22,
+    }),
+    [insets.top, sheetModal],
+  )
+  const bannerContentStyle = useMemo(
+    () => ({
+      paddingTop: insets.top,
+    }),
+    [insets.top],
+  )
   return (
-    <View
-      className="relative items-center justify-center"
-      style={{
-        marginTop: sheetModal ? 0 : -insets.top - 22,
-        paddingTop: sheetModal ? 48 : 22,
-      }}
-    >
+    <View className="relative items-center justify-center" style={bannerContainerStyle}>
       <ReAnimated.View entering={FadeIn} className="absolute inset-0" style={styles}>
         <LinearGradient
           colors={defaultGradientColors as [string, string, ...string[]]}
@@ -215,12 +222,7 @@ export const UserHeaderBanner = ({
           </ReAnimated.View>
         )}
       </ReAnimated.View>
-      <View
-        className="items-center px-4 pb-[24px]"
-        style={{
-          paddingTop: insets.top,
-        }}
-      >
+      <View className="items-center px-4 pb-[24px]" style={bannerContentStyle}>
         <ReAnimated.View style={avatarStyles} className="rounded-full bg-system-background">
           <UserAvatar
             image={user?.image}
@@ -280,12 +282,12 @@ export const UserHeaderBanner = ({
               @{user.handle}
             </Text>
           ) : !user ? (
-            <TouchableOpacity
+            <Pressable
               className="mx-auto"
               onPress={() => navigation.presentControllerView(LoginScreen)}
             >
               <Text className="m-[6] text-sm text-accent">Sign in to your account</Text>
-            </TouchableOpacity>
+            </Pressable>
           ) : null}
         </View>
         {user?.bio ? (
@@ -301,9 +303,13 @@ export const UserHeaderBanner = ({
         ) : null}
         <View className="mt-4 flex-row flex-wrap items-center justify-center gap-x-6 gap-y-2 px-8">
           {user?.website && (
-            <TouchableOpacity
+            <Pressable
               className="flex-row items-center gap-1"
-              onPress={() => user.website && Linking.openURL(user.website)}
+              onPress={() => {
+                if (user.website) {
+                  void Linking.openURL(user.website)
+                }
+              }}
             >
               <WebCuteReIcon
                 height={16}
@@ -318,7 +324,7 @@ export const UserHeaderBanner = ({
               >
                 {user.website.replace(/^(https?:\/\/)?(www\.)?/, "")}
               </Text>
-            </TouchableOpacity>
+            </Pressable>
           )}
           {socialLinks.map(({ platform, link }) => {
             const platformInfo = PlatformInfoMap[platform as keyof typeof PlatformInfoMap]
@@ -331,9 +337,14 @@ export const UserHeaderBanner = ({
                 ? "rgba(0,0,0,0.8)"
                 : "rgba(255,255,255,0.8)"
             return (
-              <TouchableOpacity key={platform} onPress={() => Linking.openURL(link)}>
+              <Pressable
+                key={platform}
+                onPress={() => {
+                  void Linking.openURL(link)
+                }}
+              >
                 <IconComponent height={22} width={22} color={color} />
-              </TouchableOpacity>
+              </Pressable>
             )
           })}
         </View>
