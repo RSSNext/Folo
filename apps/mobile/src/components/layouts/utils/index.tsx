@@ -1,4 +1,3 @@
-import Constants from "expo-constants"
 import { Platform } from "react-native"
 
 import { isIOS } from "@/src/lib/platform"
@@ -11,6 +10,7 @@ import { isIOS } from "@/src/lib/platform"
 export function getDefaultHeaderHeight({
   landscape,
   modalPresentation,
+  topInset,
 }: {
   landscape: boolean
   modalPresentation: boolean
@@ -18,9 +18,8 @@ export function getDefaultHeaderHeight({
 }): number {
   let headerHeight
 
-  const { statusBarHeight } = Constants
   // On models with Dynamic Island the status bar height is smaller than the safe area top inset.
-  const hasDynamicIsland = isIOS && statusBarHeight > 50
+  const hasDynamicIsland = isIOS && topInset > 50
 
   if (Platform.OS === "ios") {
     if (Platform.isPad || Platform.isTV) {
@@ -40,5 +39,5 @@ export function getDefaultHeaderHeight({
     headerHeight = 64
   }
 
-  return headerHeight + (modalPresentation ? 0 : statusBarHeight)
+  return headerHeight + (modalPresentation ? 0 : topInset)
 }
