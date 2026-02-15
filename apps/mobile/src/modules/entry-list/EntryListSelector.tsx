@@ -72,6 +72,21 @@ function EntryListSelectorImpl({ entryIds, viewId, active = true }: EntryListSel
     }
   }, [isRefetching, ref])
 
+  useEffect(() => {
+    if (!active) return
+
+    const frameId = requestAnimationFrame(() => {
+      ref?.current?.scrollToOffset({
+        offset: 0,
+        animated: false,
+      })
+    })
+
+    return () => {
+      cancelAnimationFrame(frameId)
+    }
+  }, [active, ref, viewId])
+
   useAutoScrollToEntryAfterPullUpToNext(ref, entryIds || [])
 
   return <ContentComponent ref={ref} entryIds={entryIds} active={active} view={viewId} />
