@@ -1,6 +1,6 @@
 ---
 name: installing-mobile-preview-builds
-description: Builds and installs the iOS preview build for apps/mobile using EAS and devicectl. Use when the user asks to install a preview/internal iOS build on a connected iPhone for production-like testing.
+description: Builds and installs the iOS preview build for apps/mobile using EAS local build and devicectl. Use when the user asks to install a preview/internal iOS build on a connected iPhone for production-like testing.
 disable-model-invocation: true
 allowed-tools: Bash, Read, Glob, Grep
 argument-hint: "[device-udid-or-name(optional)]"
@@ -8,7 +8,7 @@ argument-hint: "[device-udid-or-name(optional)]"
 
 # Install Mobile Preview Build (iOS)
 
-Use this skill to create a fresh `preview` iOS build and install it on a connected iPhone.
+Use this skill to create a fresh local `preview` iOS build and install it on a connected iPhone.
 
 ## Inputs
 
@@ -19,7 +19,7 @@ Use this skill to create a fresh `preview` iOS build and install it on a connect
 
 1. Validate repo and tooling.
    - Run from repo root and ensure `apps/mobile` exists.
-   - Verify `pnpm`, `xcrun`, and `eas-cli` are available.
+   - Verify `pnpm`, `xcrun`, `xcodebuild`, and `eas-cli` are available.
    - Verify EAS login:
      ```bash
      cd apps/mobile
@@ -33,30 +33,24 @@ Use this skill to create a fresh `preview` iOS build and install it on a connect
    - Choose device in this order:
      - `$ARGUMENTS` if provided and matches exactly one device.
      - Otherwise, first paired iPhone.
-3. Trigger `preview` iOS build.
-   ```bash
-   cd apps/mobile
-   pnpm dlx eas-cli build -p ios --profile preview --non-interactive
-   ```
+3. Trigger local `preview` iOS build.
 
-   - Capture build ID from output (URL suffix `/builds/<id>`).
-   - Poll until status becomes `FINISHED` or `ERRORED`:
-     ```bash
-     cd apps/mobile
-     pnpm dlx eas-cli build:view <build-id> --json
-     ```
-4. On success, resolve artifact URL.
-   - Use `artifacts.applicationArchiveUrl`.
-   - If absent, fallback to `artifacts.buildUrl`.
-5. Install to device locally.
    ```bash
    mkdir -p .context/preview-install
-   curl -fL "<ipa-url>" -o .context/preview-install/folo-preview.ipa
+   cd apps/mobile
+   pnpm dlx eas-cli build -p ios --profile preview --non-interactive --local --output=./build-preview.ipa
+   cd ../..
+   cp apps/mobile/build-preview.ipa .context/preview-install/folo-preview.ipa
+   ```
+
+4. Install to device locally.
+   ```bash
    unzip -q -o .context/preview-install/folo-preview.ipa -d .context/preview-install/unpacked
    APP_PATH=$(find .context/preview-install/unpacked/Payload -maxdepth 1 -name '*.app' -type d | head -n 1)
    xcrun devicectl device install app --device "<device-id>" "$APP_PATH"
    ```
-6. Try launching app.
+5. Try launching app.
+
    ```bash
    xcrun devicectl device process launch --device "<device-id>" is.follow --activate
    ```
@@ -65,10 +59,10 @@ Use this skill to create a fresh `preview` iOS build and install it on a connect
 
 ## Failure Handling
 
-- If build status is `ERRORED`, report:
-  - build ID
-  - `error.message`
-  - build page URL
+- If local build fails, report:
+  - build mode (`local`)
+  - failing command
+  - key error message from command output
 - If app config fails with `Assets source directory not found ... /out/rn-web`, prebuild assets then retry once:
   ```bash
   pnpm --filter @follow/rn-micro-web-app build --outDir out/rn-web/html-renderer
@@ -78,8 +72,8 @@ Use this skill to create a fresh `preview` iOS build and install it on a connect
 
 Always return:
 
-1. Build ID and final status.
-2. Build page URL and IPA URL.
+1. Build mode (`local`) and final status.
+2. Local IPA path.
 3. Target device identifier.
 4. Install result (`installed` or `failed`) and launch result.
 5. Next action for the user if manual action is required.
