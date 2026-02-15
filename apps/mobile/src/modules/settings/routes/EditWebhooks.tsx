@@ -21,7 +21,12 @@ export const EditWebhooksScreen: NavigationControllerView<{
 }> = ({ index }) => {
   const { t } = useTranslation("settings")
   const rule = useActionRule(index)
-  const webhookKeyCounter = new Map<string, number>()
+  const webhooks =
+    rule?.result.webhooks?.map((webhook, webhookIndex) => ({
+      webhook,
+      webhookIndex,
+      rowKey: `webhook-${webhookIndex}`,
+    })) ?? []
   return (
     <SafeNavigationScrollView
       className="bg-system-grouped-background"
@@ -29,12 +34,9 @@ export const EditWebhooksScreen: NavigationControllerView<{
     >
       <GroupedInsetListSectionHeader label={t("actions.action_card.webhooks")} marginSize="small" />
       <GroupedInsetListCard>
-        {rule?.result.webhooks?.map((webhook, webhookIndex) => {
-          const baseKey = webhook || "empty-webhook"
-          const duplicateCount = (webhookKeyCounter.get(baseKey) ?? 0) + 1
-          webhookKeyCounter.set(baseKey, duplicateCount)
+        {webhooks.map(({ webhook, webhookIndex, rowKey }) => {
           return (
-            <GroupedInsetListBaseCell className="flex-row" key={`${baseKey}-${duplicateCount}`}>
+            <GroupedInsetListBaseCell className="flex-row" key={rowKey}>
               <PlainTextField
                 placeholder="https://"
                 inputMode="url"

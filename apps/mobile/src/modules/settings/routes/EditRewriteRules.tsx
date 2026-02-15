@@ -21,7 +21,12 @@ export const EditRewriteRulesScreen: NavigationControllerView<{
 }> = ({ index }) => {
   const { t } = useTranslation("settings")
   const rule = useActionRule(index)
-  const rewriteRuleKeyCounter = new Map<string, number>()
+  const rewriteRules =
+    rule?.result.rewriteRules?.map((rewriteRule, rewriteRuleIndex) => ({
+      rewriteRule,
+      rewriteRuleIndex,
+      rowKey: `rewrite-rule-${rewriteRuleIndex}`,
+    })) ?? []
   return (
     <SafeNavigationScrollView
       className="bg-system-grouped-background"
@@ -31,12 +36,9 @@ export const EditRewriteRulesScreen: NavigationControllerView<{
         label={t("actions.action_card.rewrite_rules")}
         marginSize="small"
       />
-      {rule?.result.rewriteRules?.map((rewriteRule, rewriteRuleIndex) => {
-        const baseKey = `${rewriteRule.from}-${rewriteRule.to}`
-        const duplicateCount = (rewriteRuleKeyCounter.get(baseKey) ?? 0) + 1
-        rewriteRuleKeyCounter.set(baseKey, duplicateCount)
+      {rewriteRules.map(({ rewriteRule, rewriteRuleIndex, rowKey }) => {
         return (
-          <GroupedInsetListCard key={`${baseKey}-${duplicateCount}`} className="mb-4">
+          <GroupedInsetListCard key={rowKey} className="mb-4">
             <GroupedInsetListBaseCell className="flex-row">
               <Text className="text-label">{t("actions.action_card.from")}</Text>
               <PlainTextField
