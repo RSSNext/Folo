@@ -9,12 +9,10 @@ export async function getTokenHeaders() {
     const appCheckToken = await getLimitedUseToken(appCheck)
     token = appCheckToken.token
   } catch (error) {
-    console.error("error", error)
+    console.warn("[app-check] failed to get limited-use token, fallback to synthetic token", error)
   }
 
-  return token
-    ? {
-        "x-token": `ac:${token}`,
-      }
-    : undefined
+  return {
+    "x-token": `ac:${token || "fallback"}`,
+  }
 }
