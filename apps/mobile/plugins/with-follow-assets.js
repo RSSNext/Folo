@@ -20,10 +20,11 @@ const isAssetReady = (assetsPath) => {
 
 const withFollowAssets = (config, props) => {
   if (!isAssetReady(props.assetsPath)) {
-    // TODO move to props
-    const cmd = `pnpm --filter @follow/rn-micro-web-app build --outDir ${path.resolve(props.assetsPath, "html-renderer")}`
+    // Build the web renderer directly to avoid workspace filter resolution issues on EAS workers.
+    const webAppDir = path.resolve(__dirname, "..", "web-app")
+    const cmd = `pnpm --dir ${webAppDir} build --outDir ${path.resolve(props.assetsPath, "html-renderer")}`
     console.info(`Assets source directory not found! Running \`${cmd}\` to generate assets.`)
-    execSync(cmd)
+    execSync(cmd, { stdio: "inherit" })
   }
   if (!isAssetReady(props.assetsPath)) {
     throw new Error(
