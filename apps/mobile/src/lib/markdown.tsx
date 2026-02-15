@@ -13,13 +13,17 @@ const wrapText = (children: any): any => {
     return <Text className="text-base text-label">{children}</Text>
   }
   if (Array.isArray(children)) {
-    return children.map((child, index) => {
+    const textKeyCounter = new Map<string, number>()
+    return children.map((child) => {
       if (typeof child === "string") {
-        if (child.trim() === "") {
+        const normalizedText = child.trim()
+        if (normalizedText === "") {
           return null
         }
+        const duplicateCount = (textKeyCounter.get(normalizedText) ?? 0) + 1
+        textKeyCounter.set(normalizedText, duplicateCount)
         return (
-          <Text key={index} className="text-base text-label">
+          <Text key={`${normalizedText}-${duplicateCount}`} className="text-base text-label">
             {child}
           </Text>
         )
@@ -50,13 +54,17 @@ const renderTextChildren = (children: any): any => {
     return children
   }
   if (Array.isArray(children)) {
-    return children.map((child, index) => {
+    const elementKeyCounter = new Map<string, number>()
+    return children.map((child) => {
       if (typeof child === "string") {
         return child
       }
       if (React.isValidElement(child)) {
         // If it's already a React element, render it as is
-        return <React.Fragment key={index}>{child}</React.Fragment>
+        const baseKey = child.key != null ? String(child.key) : String(child.type)
+        const duplicateCount = (elementKeyCounter.get(baseKey) ?? 0) + 1
+        elementKeyCounter.set(baseKey, duplicateCount)
+        return <React.Fragment key={`${baseKey}-${duplicateCount}`}>{child}</React.Fragment>
       }
       return String(child)
     })

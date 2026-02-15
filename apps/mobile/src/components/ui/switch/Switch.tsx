@@ -51,7 +51,7 @@ export const Switch = ({
       damping: 15,
       stiffness: 200,
     })
-  }, [value])
+  }, [animatedValue, value])
 
   useImperativeHandle(ref, () => ({
     value: value || false,

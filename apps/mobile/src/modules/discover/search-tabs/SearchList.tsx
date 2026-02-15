@@ -52,8 +52,8 @@ export const SearchList = () => {
     >
       <Text className="px-6 pt-4 text-text/60">{resultLabel}</Text>
       <View>
-        {data.data?.map((item) => (
-          <View key={item.feed?.id || Math.random().toString()}>
+        {data.data?.map((item, index) => (
+          <View key={item.list?.id ?? item.feed?.id ?? `list-${index}`}>
             <SearchListCard item={item} />
             <ItemSeparator />
           </View>

@@ -1,4 +1,5 @@
 {
+  "ai.summary_generating": "Generating AI summary...",
   "ai.summary_not_available": "Summary not available",
   "ai.summary_upgrade_required_description": "Unlock unlimited AI summaries, translations, and more intelligent features with Pro plan.",
   "ai.summary_upgrade_required_title": "Start free trial to continue using AI summary",
@@ -6,6 +7,7 @@
   "entry.pull_up_to_next_entry": "Pull up to go to the next entry",
   "entry.release_to_next_entry": "Release to go to the next entry",
   "entry_actions.toggle_ai_summary": "AI Summary",
+  "entry_content.ai_summary": "AI Summary",
   "entry_content.no_content": "No media available",
   "entry_content.no_video_url": "No video URL found",
   "entry_list.zero_unread": "Zero Unread",

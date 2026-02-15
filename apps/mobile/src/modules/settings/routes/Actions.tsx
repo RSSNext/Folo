@@ -9,7 +9,7 @@ import { actionActions } from "@follow/store/action/store"
 import { useCallback } from "react"
 import { useTranslation } from "react-i18next"
 import type { ListRenderItem } from "react-native"
-import { View } from "react-native"
+import { StyleSheet, View } from "react-native"
 import Animated, { LinearTransition } from "react-native-reanimated"
 import { useColors } from "react-native-uikit-colors"
 
@@ -146,19 +146,13 @@ const SaveRuleButton = ({ disabled }: { disabled?: boolean }) => {
 const ItemSeparatorComponent = () => {
   return (
     <View
-      className="ml-24 h-px flex-1 bg-opaque-separator/70"
+      className="ml-24 flex-1 bg-opaque-separator/70"
       collapsable={false}
-      style={{
-        transform: [
-          {
-            scaleY: 0.5,
-          },
-        ],
-      }}
+      style={styles.itemSeparator}
     />
   )
 }
-const keyExtractor = (_item: ActionModel, index: number) => index.toString()
+const keyExtractor = (item: ActionModel) => item.index.toString()
 const ListItemCell: ListRenderItem<ActionModel> = (props) => {
   return <ListItemCellImpl {...props} />
 }
@@ -212,3 +206,9 @@ const ListItemCellImpl: ListRenderItem<ActionModel> = ({ item: rule }) => {
     </SwipeableItem>
   )
 }
+
+const styles = StyleSheet.create({
+  itemSeparator: {
+    height: StyleSheet.hairlineWidth,
+  },
+})

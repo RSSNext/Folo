@@ -58,7 +58,7 @@ export const EntrySocialItem = memo(
     const handlePress = useCallback(() => {
       unreadSyncService.markEntryAsRead(entryId)
       tracker.navigateEntry({
-        feedId: entry?.feedId!,
+        feedId: entry?.feedId ?? "",
         entryId,
       })
       navigation.pushControllerView(EntryDetailScreen, {
@@ -69,12 +69,11 @@ export const EntrySocialItem = memo(
     }, [entry?.feedId, entryId, extraData.entryIds, navigation])
     const autoExpandLongSocialMedia = useGeneralSettingKey("autoExpandLongSocialMedia")
     const navigationToFeedEntryList = useCallback(() => {
-      if (!entry) return
-      if (!entry.feedId) return
+      if (!entry?.feedId) return
       navigation.pushControllerView(FeedScreen, {
         feedId: entry.feedId,
       })
-    }, [entry, navigation])
+    }, [entry?.feedId, navigation])
     const onPreviewImage = useCallback(
       (index: number, rect: MeasuredDimensions | null, placeholder: ImageSource | undefined) => {
         "worklet"

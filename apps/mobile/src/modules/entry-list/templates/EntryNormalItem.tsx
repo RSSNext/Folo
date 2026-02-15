@@ -37,10 +37,12 @@ export const EntryNormalItem = memo(
     entryId,
     extraData,
     view,
+    hasTopSeparator = false,
   }: {
     entryId: string
     extraData: EntryExtraData
     view: FeedViewType
+    hasTopSeparator?: boolean
   }) => {
     const entry = useEntry(entryId, (state) => ({
       id: state.id,
@@ -98,6 +100,13 @@ export const EntryNormalItem = memo(
           )}
           onPress={handlePress}
         >
+          {hasTopSeparator && (
+            <View
+              className="absolute left-4 right-0 top-0 h-px bg-opaque-separator/70"
+              style={{ transform: [{ scaleY: 0.5 }] }}
+              pointerEvents="none"
+            />
+          )}
           {!entry.read && (
             <View
               className={cn(

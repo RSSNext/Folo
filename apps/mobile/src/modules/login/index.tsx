@@ -1,6 +1,6 @@
 import { useState } from "react"
 import { Trans, useTranslation } from "react-i18next"
-import { Linking, Pressable, TouchableOpacity, TouchableWithoutFeedback, View } from "react-native"
+import { Linking, Pressable, TouchableWithoutFeedback, View } from "react-native"
 import { KeyboardAvoidingView, KeyboardController } from "react-native-keyboard-controller"
 import Animated, { useAnimatedStyle, useSharedValue } from "react-native-reanimated"
 import { useSafeAreaInsets } from "react-native-safe-area-context"
@@ -78,7 +78,7 @@ export function Login() {
               {t("login.back")}
             </Text>
           ) : (
-            <TouchableOpacity onPress={() => setIsRegister(!isRegister)}>
+            <Pressable onPress={() => setIsRegister(!isRegister)}>
               <Text className="pb-2 text-center text-lg font-medium text-label">
                 <Trans
                   t={t}
@@ -88,7 +88,7 @@ export function Login() {
                   }}
                 />
               </Text>
-            </TouchableOpacity>
+            </Pressable>
           )}
         </View>
       </KeyboardAvoidingView>

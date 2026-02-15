@@ -30,6 +30,9 @@ interface SwipeableItemProps {
   disabled?: boolean
   swipeRightToCallAction?: boolean
 }
+const getActionKey = (side: "left" | "right", action: Action) => {
+  return `${side}-${action.label}-${action.backgroundColor ?? ""}-${action.color ?? ""}`
+}
 const styles = StyleSheet.create({
   absoluteFill: {
     ...StyleSheet.absoluteFillObject,
@@ -83,7 +86,7 @@ export const SwipeableItem: React.FC<SwipeableItemProps> = ({
         >
           {leftActions?.map((action, index) => (
             <LeftActionItem
-              key={index}
+              key={getActionKey("left", action)}
               index={index}
               action={action}
               progress={progress}
@@ -118,7 +121,7 @@ export const SwipeableItem: React.FC<SwipeableItemProps> = ({
             return (
               <RightRectButton
                 endDragCallerRef={endDragCallerRef}
-                key={index}
+                key={getActionKey("right", action)}
                 index={index}
                 action={action}
                 length={rightActions?.length ?? 1}

@@ -3,7 +3,7 @@ import { useSubscriptionById } from "@follow/store/subscription/hooks"
 import { useUnreadByListId } from "@follow/store/unread/hooks"
 import { cn } from "@follow/utils"
 import { memo } from "react"
-import { View } from "react-native"
+import { StyleSheet, View } from "react-native"
 import Animated, { FadeOutUp } from "react-native-reanimated"
 import { useColor } from "react-native-uikit-colors"
 
@@ -35,9 +35,7 @@ export const ListSubscriptionItem = memo(({ id, isFirst, isLast }: ListSubscript
     <>
       <Animated.View
         exiting={FadeOutUp}
-        style={{
-          marginHorizontal: GROUPED_LIST_MARGIN,
-        }}
+        style={styles.container}
         className={cn("overflow-hidden", {
           "rounded-t-[10px]": isFirst,
           "rounded-b-[10px]": isLast,
@@ -64,10 +62,7 @@ export const ListSubscriptionItem = memo(({ id, isFirst, isLast }: ListSubscript
                     width: 20,
                     height: 20,
                   }}
-                  style={{
-                    height: 20,
-                    width: 20,
-                  }}
+                  style={styles.listImage}
                   source={{
                     uri: list.image,
                   }}
@@ -80,9 +75,7 @@ export const ListSubscriptionItem = memo(({ id, isFirst, isLast }: ListSubscript
               <Text
                 numberOfLines={1}
                 className="shrink text-sm font-medium text-text"
-                style={{
-                  marginLeft: GROUPED_ICON_TEXT_GAP,
-                }}
+                style={styles.titleSpacing}
               >
                 {subscription?.title || list.title}
               </Text>
@@ -99,4 +92,17 @@ export const ListSubscriptionItem = memo(({ id, isFirst, isLast }: ListSubscript
       {!isLast && <ItemSeparator />}
     </>
   )
+})
+
+const styles = StyleSheet.create({
+  container: {
+    marginHorizontal: GROUPED_LIST_MARGIN,
+  },
+  listImage: {
+    height: 20,
+    width: 20,
+  },
+  titleSpacing: {
+    marginLeft: GROUPED_ICON_TEXT_GAP,
+  },
 })

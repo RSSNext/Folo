@@ -1,7 +1,7 @@
 import { applicationName } from "expo-application"
 import * as React from "react"
 import { useTranslation } from "react-i18next"
-import { TouchableOpacity, View } from "react-native"
+import { Pressable, View } from "react-native"
 
 import { Text } from "@/src/components/ui/typography/Text"
 
@@ -22,12 +22,9 @@ export const GlobalErrorScreen: React.FC<GlobalErrorScreenProps> = ({ error, res
           {error?.message || t("error_screen.unexpected")}
         </Text>
         {resetError && (
-          <TouchableOpacity
-            className="min-w-[160px] rounded-xl bg-accent px-6 py-3"
-            onPress={resetError}
-          >
+          <Pressable className="min-w-[160px] rounded-xl bg-accent px-6 py-3" onPress={resetError}>
             <Text className="text-center text-[17px] font-semibold text-white">{t("retry")}</Text>
-          </TouchableOpacity>
+          </Pressable>
         )}
       </View>
     </View>

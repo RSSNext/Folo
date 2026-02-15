@@ -1,6 +1,6 @@
 import * as React from "react"
 import { useTranslation } from "react-i18next"
-import { TouchableOpacity, View } from "react-native"
+import { Pressable, View } from "react-native"
 
 import { Text } from "@/src/components/ui/typography/Text"
 import { useCanBack, useNavigation } from "@/src/lib/navigation/hooks"
@@ -26,14 +26,14 @@ export const ScreenErrorScreen: React.FC<ScreenErrorScreenProps> = ({ error }) =
 
         <View className="flex-row gap-4">
           {canGoBack && (
-            <TouchableOpacity
+            <Pressable
               className="min-w-[160px] rounded-xl bg-accent px-6 py-3"
               onPress={() => navigation.back()}
             >
               <Text className="text-center text-[17px] font-semibold text-white">
                 {t("words.back")}
               </Text>
-            </TouchableOpacity>
+            </Pressable>
           )}
         </View>
       </View>

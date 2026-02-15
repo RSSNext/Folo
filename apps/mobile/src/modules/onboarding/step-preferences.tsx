@@ -147,7 +147,7 @@ const PreferenceCard = ({
     >
       {icon}
       <View className="flex flex-1 flex-col gap-2">
-        {title && <Text className="text-base font-medium text-text">{title}</Text>}
+        {title ? <Text className="text-base font-medium text-text">{title}</Text> : null}
         {children}
       </View>
       {showRightArrow && <MingcuteRightLine height={18} width={18} color={rightIconColor} />}

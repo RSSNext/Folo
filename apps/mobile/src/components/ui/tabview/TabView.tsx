@@ -1,7 +1,7 @@
 import { cn } from "@follow/utils"
 import type { FC } from "react"
 import { memo, useCallback, useEffect, useRef, useState } from "react"
-import type { ScrollView, StyleProp, TouchableOpacityProps, ViewStyle } from "react-native"
+import type { PressableProps, ScrollView, StyleProp, ViewStyle } from "react-native"
 import {
   Animated as RnAnimated,
   Pressable,
@@ -27,7 +27,7 @@ export type TabComponent<T extends {} = {}> = FC<
 interface TabViewProps {
   tabs: Tab[]
   Tab?: TabComponent
-  TabItem?: FC<{ isSelected: boolean; tab: Tab } & Pick<TouchableOpacityProps, "onLayout">>
+  TabItem?: FC<{ isSelected: boolean; tab: Tab } & Pick<PressableProps, "onLayout">>
   initialTab?: number
   onTabChange?: (tab: number) => void
 

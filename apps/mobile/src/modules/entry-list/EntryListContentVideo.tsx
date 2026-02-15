@@ -17,6 +17,8 @@ import { GridEntryListFooter } from "./EntryListFooter"
 import { useOnViewableItemsChanged } from "./hooks"
 import { EntryVideoItem } from "./templates/EntryVideoItem"
 
+const VIDEO_SKELETON_KEYS = ["video-skeleton-1", "video-skeleton-2", "video-skeleton-3"] as const
+
 export const EntryListContentVideo = ({
   ref: forwardRef,
   entryIds,
@@ -74,13 +76,13 @@ export const EntryListContentVideo = ({
       >
         <View className="flex-row">
           <View className="mr-1 flex-1">
-            {Array.from({ length: 3 }).map((_, index) => (
-              <EntryVideoItemSkeleton key={`left-${index}`} />
+            {VIDEO_SKELETON_KEYS.map((key) => (
+              <EntryVideoItemSkeleton key={`left-${key}`} />
             ))}
           </View>
           <View className="ml-1 flex-1">
-            {Array.from({ length: 3 }).map((_, index) => (
-              <EntryVideoItemSkeleton key={`right-${index}`} />
+            {VIDEO_SKELETON_KEYS.map((key) => (
+              <EntryVideoItemSkeleton key={`right-${key}`} />
             ))}
           </View>
         </View>

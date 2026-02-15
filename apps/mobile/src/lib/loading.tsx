@@ -1,7 +1,7 @@
 import { BlurView } from "expo-blur"
 import type { FC } from "react"
 import { useEffect, useRef, useState } from "react"
-import { Platform, Pressable, StyleSheet, TouchableOpacity, View } from "react-native"
+import { Platform, Pressable, StyleSheet, View } from "react-native"
 import RootSiblings from "react-native-root-siblings"
 
 import { FullWindowOverlay } from "../components/common/FullWindowOverlay"
@@ -61,11 +61,11 @@ const LoadingContainer: FC<{
         </View>
         {showCancelButton && (
           <View className="absolute inset-x-0 bottom-24 flex-row justify-center">
-            <TouchableOpacity onPress={cancel}>
+            <Pressable onPress={cancel}>
               <View className="rounded-full border-2 border-opaque-separator p-2">
                 <CloseCuteReIcon color="gray" height={20} width={20} />
               </View>
-            </TouchableOpacity>
+            </Pressable>
           </View>
         )}
       </Pressable>

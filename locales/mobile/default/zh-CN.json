@@ -1,4 +1,5 @@
 {
+  "ai.summary_generating": "正在生成 AI 摘要...",
   "ai.summary_not_available": "摘要不可用",
   "ai.summary_upgrade_required_description": "升级到 Pro 计划，解锁无限 AI 摘要、翻译和更多智能功能。",
   "ai.summary_upgrade_required_title": "开启免费试用以继续使用 AI 摘要",
@@ -6,6 +7,7 @@
   "entry.pull_up_to_next_entry": "继续上拉查看下一条内容",
   "entry.release_to_next_entry": "松开查看下一条内容",
   "entry_actions.toggle_ai_summary": "切换 AI 总结",
+  "entry_content.ai_summary": "AI 摘要",
   "entry_content.no_content": "没有内容",
   "entry_content.no_video_url": "未找到视频链接",
   "entry_list.zero_unread": "全部已读",

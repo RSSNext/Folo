@@ -30,7 +30,9 @@ export const SearchContent = () => {
     }
   }, [searchType])
 
-  const [loadedContentSet, setLoadedContentSet] = useState(() => new Set())
+  const [loadedContentSet, setLoadedContentSet] = useState<Set<SearchType>>(
+    () => new Set([searchType]),
+  )
 
   useEffect(() => {
     setLoadedContentSet((prev) => {

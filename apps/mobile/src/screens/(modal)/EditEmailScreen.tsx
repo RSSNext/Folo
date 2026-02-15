@@ -40,6 +40,9 @@ export const EditEmailScreen: NavigationControllerView = () => {
     mutationFn: async () => {
       await userSyncService.updateEmail(email)
     },
+    onError: (error) => {
+      toast.error(error instanceof Error ? error.message : "Failed to update email")
+    },
     onSuccess: () => {
       toast.info("Please check your email inbox to verify your new email")
       navigation.dismiss()
@@ -47,6 +50,7 @@ export const EditEmailScreen: NavigationControllerView = () => {
   })
 
   const [isSendingVerificationEmail, setIsSendingVerificationEmail] = useState(false)
+  const [hasSentVerificationEmail, setHasSentVerificationEmail] = useState(false)
 
   return (
     <SafeNavigationScrollView
@@ -99,13 +103,28 @@ export const EditEmailScreen: NavigationControllerView = () => {
             <GroupedPlainButtonCell
               disabled={isSendingVerificationEmail}
               label={
-                isSendingVerificationEmail ? "Verification Email Sent" : "Send Verification Email"
+                isSendingVerificationEmail
+                  ? "Sending Verification Email..."
+                  : hasSentVerificationEmail
+                    ? "Verification Email Sent"
+                    : "Send Verification Email"
               }
               onPress={() => {
                 setIsSendingVerificationEmail(true)
-                userSyncService.sendVerificationEmail().then(() => {
-                  toast.success("Verification email sent")
-                })
+                userSyncService
+                  .sendVerificationEmail()
+                  .then(() => {
+                    setHasSentVerificationEmail(true)
+                    toast.success("Verification email sent")
+                  })
+                  .catch((error) => {
+                    toast.error(
+                      error instanceof Error ? error.message : "Failed to send verification email",
+                    )
+                  })
+                  .finally(() => {
+                    setIsSendingVerificationEmail(false)
+                  })
               }}
             />
           </GroupedInsetListCard>

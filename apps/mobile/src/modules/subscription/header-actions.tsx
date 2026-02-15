@@ -1,5 +1,5 @@
 import { useMemo } from "react"
-import { TouchableOpacity } from "react-native"
+import { Pressable } from "react-native"
 import * as DropdownMenu from "zeego/dropdown-menu"
 
 import { ListExpansionCuteReIcon } from "@/src/icons/list_expansion_cute_re"
@@ -71,9 +71,9 @@ export const SortActionButton = () => {
   return (
     <DropdownMenu.Root>
       <DropdownMenu.Trigger asChild>
-        <TouchableOpacity className="size-5 rounded-full">
+        <Pressable className="size-5 rounded-full">
           <ListExpansionCuteReIcon width={20} height={20} />
-        </TouchableOpacity>
+        </Pressable>
       </DropdownMenu.Trigger>
 
       <DropdownMenu.Content>

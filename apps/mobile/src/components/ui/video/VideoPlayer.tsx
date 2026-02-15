@@ -2,7 +2,8 @@ import { FeedViewType } from "@follow/constants"
 import { useEvent } from "expo"
 import type { VideoSource } from "expo-video"
 import { useVideoPlayer, VideoView } from "expo-video"
-import { useCallback, useRef, useState } from "react"
+import { useCallback, useMemo, useRef, useState } from "react"
+import type { ViewStyle } from "react-native"
 import { View } from "react-native"
 
 import { isIOS } from "@/src/lib/platform"
@@ -48,16 +49,20 @@ export function VideoPlayer({
       }
     }, 0)
   }, [player])
+  const videoStyle = useMemo<ViewStyle>(
+    () => ({
+      width: view === FeedViewType.Pictures ? width : "100%",
+      height: view === FeedViewType.Pictures ? height : undefined,
+      aspectRatio: width && height ? width / height : 1,
+    }),
+    [height, view, width],
+  )
 
   return (
     <View className="flex flex-1">
       <VideoView
         ref={videoViewRef}
-        style={{
-          width: view === FeedViewType.Pictures ? width : "100%",
-          height: view === FeedViewType.Pictures ? height : undefined,
-          aspectRatio: width && height ? width / height : 1,
-        }}
+        style={videoStyle}
         contentFit={isFullScreen ? "contain" : "cover"}
         player={player}
         allowsFullscreen

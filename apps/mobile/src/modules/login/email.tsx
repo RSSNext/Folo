@@ -7,7 +7,7 @@ import type { Control } from "react-hook-form"
 import { useController, useForm } from "react-hook-form"
 import { useTranslation } from "react-i18next"
 import type { TextInputProps } from "react-native"
-import { Alert, TouchableOpacity, View } from "react-native"
+import { Alert, Pressable, View } from "react-native"
 import { KeyboardController } from "react-native-keyboard-controller"
 import { z } from "zod"
 
@@ -117,12 +117,12 @@ export function EmailLogin() {
         </View>
       </View>
 
-      <TouchableOpacity
+      <Pressable
         className="mx-auto my-5"
         onPress={() => navigation.presentControllerView(ForgetPasswordScreen)}
       >
         <Text className="text-sm text-secondary-label">{t("login.forget_password.note")}</Text>
-      </TouchableOpacity>
+      </Pressable>
       <SubmitButton
         isLoading={submitMutation.isPending}
         onPress={onLogin}
