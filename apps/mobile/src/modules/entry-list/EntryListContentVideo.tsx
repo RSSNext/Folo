@@ -1,3 +1,4 @@
+import type { FeedViewType } from "@follow/constants"
 import { isFreeRole } from "@follow/constants"
 import { useTypeScriptHappyCallback } from "@follow/hooks"
 import { usePrefetchEntryTranslation } from "@follow/store/translation/hooks"
@@ -23,14 +24,18 @@ export const EntryListContentVideo = ({
   ref: forwardRef,
   entryIds,
   active,
+  view,
   ...rest
-}: { entryIds: string[] | null; active?: boolean } & Omit<
+}: { entryIds: string[] | null; active?: boolean; view: FeedViewType } & Omit<
   FlashListProps<string>,
   "data" | "renderItem"
 > & { ref?: React.Ref<ElementRef<typeof TimelineSelectorMasonryList> | null> }) => {
   const ref = useRef<FlashListRef<any>>(null)
   useImperativeHandle(forwardRef, () => ref.current!)
-  const { fetchNextPage, refetch, isRefetching, isFetching, hasNextPage, isReady } = useEntries()
+  const { fetchNextPage, refetch, isRefetching, isFetching, hasNextPage, isReady } = useEntries({
+    viewId: view,
+    active,
+  })
   const { onViewableItemsChanged, onScroll, viewableItems } = useOnViewableItemsChanged({
     disabled: active === false || isFetching,
   })
