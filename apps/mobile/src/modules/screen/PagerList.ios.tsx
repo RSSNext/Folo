@@ -31,6 +31,7 @@ export function PagerList({
   )
   const [initialPageIndex] = useState(activeViewIndex)
   const pagerRef = useRef<PagerRef>(null)
+  const lastProgressRef = useRef(activeViewIndex)
   const rid = useId()
   const dragProgress = useTimelineSelectorDragProgress()
 
@@ -39,11 +40,22 @@ export function PagerList({
       if (data.target !== rid) {
         const targetIndex = activeViews.indexOf(data.view.viewId)
         pagerRef.current?.setPage(targetIndex)
+        lastProgressRef.current = targetIndex
         dragProgress.set(withTiming(targetIndex))
       }
     })
   }, [activeViews, dragProgress, pagerRef, rid])
   const [dragging, setDragging] = useState(false)
+  const updateDragProgress = useCallback(
+    (nextProgress: number) => {
+      if (Math.abs(nextProgress - lastProgressRef.current) < 0.001) {
+        return
+      }
+      lastProgressRef.current = nextProgress
+      dragProgress.set(nextProgress)
+    },
+    [dragProgress],
+  )
 
   return (
     <PagerView
@@ -56,12 +68,16 @@ export function PagerList({
           0,
           activeViews.length - 1,
         )
-        dragProgress.set(progress)
+        updateDragProgress(progress)
       }}
-      onScrollBegin={useCallback(() => setDragging(true), [])}
+      onScrollBegin={useCallback(() => {
+        setDragging(true)
+        lastProgressRef.current = activeViewIndex
+      }, [activeViewIndex])}
       onScrollEnd={useCallback(
         (index: number) => {
           setDragging(false)
+          lastProgressRef.current = index
           dragProgress.set(withTiming(index))
         },
         [dragProgress],

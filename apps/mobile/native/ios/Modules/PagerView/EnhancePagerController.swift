@@ -114,7 +114,6 @@ class EnhancePagerController: UIPageViewController, UIScrollViewDelegate {
 
   func scrollViewWillBeginDragging(_ scrollView: UIScrollView) {
     startOffset = scrollView.contentOffset.x
-    debugPrint(scrollView.contentOffset.x)
     isDragging = true
     onScrollStart?(currentPageIndex)
   }
@@ -128,12 +127,14 @@ class EnhancePagerController: UIPageViewController, UIScrollViewDelegate {
       direction = .left
     }
 
+    guard view.frame.width > 0 else { return }
     let positionFromStartOfCurrentPage = abs(startOffset - scrollView.contentOffset.x)
     let percent = positionFromStartOfCurrentPage / view.frame.width
     let position = currentPageIndex
 
-    debugPrint(percent, direction, position)
-    onScroll?(percent, direction, position)
+    if direction != .none || percent > 0 {
+      onScroll?(percent, direction, position)
+    }
   }
 
   public func scrollViewDidEndDragging(
