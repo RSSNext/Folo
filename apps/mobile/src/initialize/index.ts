@@ -13,15 +13,12 @@ import { initDeviceType } from "./device"
 import { hydrateQueryClient, hydrateSettings } from "./hydrate"
 import { migrateDatabase } from "./migration"
 import { initializePlayer } from "./player"
-import { initializeSentry } from "./sentry"
 
 /* eslint-disable no-console */
 export const initializeApp = async () => {
   console.log(`Initialize...`)
 
   const now = Date.now()
-
-  initializeSentry()
 
   await initDeviceType()
   await initializeDB()

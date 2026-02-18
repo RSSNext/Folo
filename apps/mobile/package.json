@@ -43,7 +43,6 @@
     "@react-native-masked-view/masked-view": "0.3.2",
     "@react-native-menu/menu": "2.0.0",
     "@react-native-picker/picker": "2.11.1",
-    "@sentry/react-native": "7.2.0",
     "@shopify/flash-list": "2.0.2",
     "@tanstack/query-sync-storage-persister": "5.90.22",
     "@tanstack/react-query": "5.90.21",

@@ -1,14 +1,8 @@
 import { app, protocol } from "electron"
 import path from "pathe"
 
-import { initializeSentry } from "./sentry"
-
 if (import.meta.env.DEV) app.setPath("userData", path.join(app.getPath("appData"), "Folo(dev)"))
 protocol.registerSchemesAsPrivileged([
-  {
-    scheme: "sentry-ipc",
-    privileges: { bypassCSP: true, corsEnabled: true, supportFetchAPI: true, secure: true },
-  },
   {
     scheme: "app",
     privileges: {
@@ -19,5 +13,3 @@ protocol.registerSchemesAsPrivileged([
     },
   },
 ])
-// Solve Sentry SDK should be initialized before the Electron app 'ready' event is fired
-initializeSentry()

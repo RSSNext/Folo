@@ -1,7 +1,6 @@
 import { Logo } from "@follow/components/icons/logo.jsx"
 import { Button } from "@follow/components/ui/button/index.js"
 import { ELECTRON_BUILD } from "@follow/shared/constants"
-import { captureException } from "@sentry/react"
 import { useEffect } from "react"
 import type { Location } from "react-router"
 import { Navigate, useLocation, useNavigate } from "react-router"
@@ -33,7 +32,7 @@ export const NotFound = () => {
     if (!ELECTRON_BUILD) {
       return
     }
-    captureException(
+    console.error(
       new AccessNotFoundError(
         "Electron app got to a 404 page, this should not happen",
         location.pathname,

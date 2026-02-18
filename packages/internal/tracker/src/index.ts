@@ -10,6 +10,7 @@ export const setProxyTracker = improvedTrackManager.setProxyTracker.bind(improve
 export const tracker = new TrackerPoints()
 
 export {
+  type CaptureExceptionPayload,
   FirebaseAdapter,
   type FirebaseAdapterConfig,
   type IdentifyPayload,

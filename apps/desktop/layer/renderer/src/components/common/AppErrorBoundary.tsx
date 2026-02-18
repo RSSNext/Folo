@@ -1,11 +1,11 @@
-import type { FallbackRender } from "@sentry/react"
-import { ErrorBoundary } from "@sentry/react"
 import type { FC, PropsWithChildren } from "react"
 import { createElement, Suspense, useCallback } from "react"
 
 import { getErrorFallback } from "../errors"
 import type { ErrorComponentType } from "../errors/enum"
 import PageErrorFallback from "../errors/PageError"
+import type { FallbackRender } from "./ErrorBoundary"
+import { ErrorBoundary } from "./ErrorBoundary"
 
 export interface AppErrorBoundaryProps extends PropsWithChildren {
   height?: number | string

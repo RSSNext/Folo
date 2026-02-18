@@ -16,7 +16,6 @@ import { appLog } from "../lib/log"
 import { initAnalytics } from "./analytics"
 import { registerHistoryStack } from "./history"
 import { doMigration } from "./migrates"
-import { initSentry } from "./sentry"
 import { initializeSettings } from "./settings"
 
 declare global {
@@ -82,7 +81,6 @@ export const initializeApp = async () => {
 
   apm("initializeSettings", initializeSettings)
 
-  initSentry()
   await apm("i18n", initI18n)
 
   apm("setting sync", () => {

@@ -285,7 +285,7 @@ export default ({ mode }) => {
         ],
         ["tldts"],
 
-        ["@sentry/react", "@openpanel/web"],
+        ["@openpanel/web"],
         ["zod", "react-hook-form", "@hookform/resolvers"],
       ]),
 
