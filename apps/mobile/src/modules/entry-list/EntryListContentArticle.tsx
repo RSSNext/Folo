@@ -39,7 +39,7 @@ export const EntryListContentArticle = ({
   const extraData: EntryExtraData = useMemo(() => ({ entryIds }), [entryIds])
 
   const { fetchNextPage, isFetching, refetch, isRefetching, hasNextPage, fetchedTime, isReady } =
-    useEntries()
+    useEntries({ viewId: view, active })
 
   const renderItem = useCallback(
     ({ item: id, extraData, index }: ListRenderItemInfo<string>) => (
