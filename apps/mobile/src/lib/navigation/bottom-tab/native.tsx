@@ -6,6 +6,7 @@ import type { IconNativeValues } from "@/src/constants/native-images"
 import type { TabbarIconProps, TabBarRootWrapperProps } from "./types"
 
 export { View as TabBarPortalWrapper } from "react-native"
+export { View as TabBarBottomAccessoryWrapper } from "react-native"
 export type TabScreenNativeProps = React.ComponentProps<typeof View> & {
   title?: string
   icon?: FC<TabbarIconProps> | IconNativeValues

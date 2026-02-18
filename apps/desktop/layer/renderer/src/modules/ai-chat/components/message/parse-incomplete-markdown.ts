@@ -34,6 +34,157 @@ const isWordChar = (char: string): boolean => {
   return letterNumberUnderscorePattern.test(char)
 }
 
+// Detect custom inline reference tags
+const mentionTagStartPattern = /<\s*mention-(?:entry|feed)\b/gi
+const mentionTagCompletePattern = /^<\s*(mention-(?:entry|feed))/i
+
+// Finds the end index of a mention tag (self-closing or paired) starting at `startIndex`.
+// Returns the index of the closing `>` when found outside of quotes; otherwise -1.
+const findMentionTagEnd = (text: string, startIndex: number): number => {
+  // Don't process if inside a complete code block
+  if (hasCompleteCodeBlock(text)) return -1
+
+  let inQuote: '"' | "'" | null = null
+  let openingTagEnd = -1
+  for (let i = startIndex; i < text.length; i++) {
+    const char = text[i]
+    if (inQuote) {
+      if (char === inQuote && text[i - 1] !== "\\") {
+        inQuote = null
+      }
+      continue
+    }
+    if (char === '"' || char === "'") {
+      inQuote = char
+      continue
+    }
+    if (char === "/" && text[i + 1] === ">") {
+      return i + 1 // index of '>' in `/>`
+    }
+    if (char === ">") {
+      openingTagEnd = i
+      break
+    }
+  }
+
+  if (openingTagEnd === -1) {
+    return -1
+  }
+
+  const openingTag = text.substring(startIndex, openingTagEnd + 1)
+  const tagNameMatch = openingTag.match(mentionTagCompletePattern)
+  if (!tagNameMatch) {
+    return -1
+  }
+
+  // If the tag is already self-closing (allow whitespace before `/`)
+  if (/\/\s*>$/.test(openingTag)) {
+    return openingTagEnd
+  }
+
+  const tagName = (tagNameMatch[1] ?? "").toLowerCase()
+  if (!tagName) {
+    return -1
+  }
+  const afterOpening = text.substring(openingTagEnd + 1)
+  const closingTagPattern = new RegExp(`<\\s*/\\s*${tagName}\\s*>`, "i")
+  const closingMatch = closingTagPattern.exec(afterOpening)
+
+  if (!closingMatch) {
+    return -1
+  }
+
+  return openingTagEnd + 1 + closingMatch.index + closingMatch[0].length - 1
+}
+
+// Trims trailing, incomplete `<mention-entry ...>` or `<mention-feed ...>` tags to avoid
+// injecting broken raw HTML into markdown while streaming.
+const handleIncompleteMentionTags = (text: string): string => {
+  // Don't process if inside a complete code block
+  if (hasCompleteCodeBlock(text)) {
+    return text
+  }
+
+  let cutIndex: number | null = null
+  let match: RegExpExecArray | null
+  mentionTagStartPattern.lastIndex = 0
+  while ((match = mentionTagStartPattern.exec(text))) {
+    const start = match.index
+    const end = findMentionTagEnd(text, start)
+    if (end === -1) {
+      cutIndex = start
+      break
+    } else {
+      // continue scanning after this complete tag
+      mentionTagStartPattern.lastIndex = end + 1
+    }
+  }
+
+  if (cutIndex !== null) {
+    const nextNewlineIndex = text.indexOf("\n", cutIndex)
+    if (nextNewlineIndex !== -1) {
+      // Remove only the incomplete tag segment and preserve following lines
+      return text.substring(0, cutIndex) + text.substring(nextNewlineIndex)
+    }
+    // No newline after the incomplete tag; drop the trailing incomplete segment
+    return text.substring(0, cutIndex)
+  }
+  return text
+}
+
+// Handles `<Use: ...>` wrappers that contain mention tags (self-closing or paired) by:
+// - Replacing the whole wrapper with only the inner `<mention-...>` when complete
+// - Trimming from `<Use:` if the inner mention tag is incomplete while streaming
+const handleUseWrapper = (text: string): string => {
+  // Don't process if inside a complete code block
+  if (hasCompleteCodeBlock(text)) return text
+
+  const usePattern = /<\s*Use:\s*/gi
+  let result = text
+  let match: RegExpExecArray | null
+  usePattern.lastIndex = 0
+
+  // We rebuild iteratively in case of multiple occurrences
+  while ((match = usePattern.exec(result))) {
+    const useStart = match.index
+    const mentionStart = result.indexOf("<mention-", useStart)
+    if (mentionStart === -1) {
+      // Incomplete `<Use:` without a mention yet → remove only the incomplete segment
+      const nextNewlineIndex = result.indexOf("\n", useStart)
+      return nextNewlineIndex !== -1
+        ? result.substring(0, useStart) + result.substring(nextNewlineIndex)
+        : result.substring(0, useStart)
+    }
+
+    // Ensure mention is the immediate content of the Use wrapper (allow whitespace)
+    const between = result.substring(useStart + match[0].length, mentionStart)
+    if (!/^\s*$/.test(between)) {
+      // Unexpected content between Use and mention → treat as plain text, continue
+      continue
+    }
+
+    const mentionEnd = findMentionTagEnd(result, mentionStart)
+    if (mentionEnd === -1) {
+      // Mention not finished yet → remove only the incomplete wrapper segment
+      const nextNewlineIndex = result.indexOf("\n", useStart)
+      return nextNewlineIndex !== -1
+        ? result.substring(0, useStart) + result.substring(nextNewlineIndex)
+        : result.substring(0, useStart)
+    }
+
+    // Replace `<Use: <mention-...>` with `<mention-...>`
+    const before = result.substring(0, useStart)
+    const mentionTag = result.substring(mentionStart, mentionEnd + 1)
+    const after = result.substring(mentionEnd + 1)
+    result = before + mentionTag + after
+
+    // Reset the regex lastIndex to continue scanning after the replaced tag
+    usePattern.lastIndex = before.length + mentionTag.length
+  }
+
+  return result
+}
+
 // Helper function to check if we have a complete code block
 const hasCompleteCodeBlock = (text: string): boolean => {
   const tripleBackticks = (text.match(/```/g) || []).length
@@ -611,6 +762,24 @@ const handleIncompleteStrikethrough = (text: string): string => {
   return text
 }
 
+// Counts single dollar signs that are not part of double dollar signs and not escaped
+const _countSingleDollarSigns = (text: string): number => {
+  return text.split("").reduce((acc, char, index) => {
+    if (char === "$") {
+      const prevChar = text[index - 1]
+      const nextChar = text[index + 1]
+      // Skip if escaped with backslash
+      if (prevChar === "\\") {
+        return acc
+      }
+      if (prevChar !== "$" && nextChar !== "$") {
+        return acc + 1
+      }
+    }
+    return acc
+  }, 0)
+}
+
 // Completes incomplete block KaTeX formatting ($$)
 const handleIncompleteBlockKatex = (text: string): string => {
   // Count all $$ pairs in the text
@@ -717,6 +886,10 @@ export const parseIncompleteMarkdown = (text: string): string => {
   // Handle various formatting completions
   // Handle triple asterisks first (most specific)
   result = handleIncompleteBoldItalic(result)
+  // Normalize and guard the `<Use:` wrapper first so inner tags are handled correctly
+  result = handleUseWrapper(result)
+  // Handle custom mention tags trimming before other single-character completions
+  result = handleIncompleteMentionTags(result)
   result = handleIncompleteBold(result)
   result = handleIncompleteDoubleUnderscoreItalic(result)
   result = handleIncompleteSingleAsteriskItalic(result)

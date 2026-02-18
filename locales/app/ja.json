@@ -319,6 +319,7 @@
   "new_user_dialog.title": "Folo へようこそ",
   "new_user_guide.actions.back": "戻る",
   "new_user_guide.actions.finish": "完了",
+  "new_user_guide.actions.import_opml": "OPML をインポート",
   "new_user_guide.actions.next": "次へ",
   "new_user_guide.ai_chat.intro": "Folo へようこそ。Folo は AI がインターネットを読み解いてくれるリーダーです。\n\nあなたについて教えてください。",
   "new_user_guide.ai_chat.reroll": "入れ替える",

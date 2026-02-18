@@ -304,6 +304,7 @@ const ChatInterfaceContent = ({ centerInputOnEmpty }: ChatInterfaceProps) => {
 
 interface ChatInterfaceProps {
   centerInputOnEmpty?: boolean
+  visualOffsetY?: string | number
 }
 export const ChatInterface = (props: ChatInterfaceProps) => (
   <ErrorBoundary fallback={AIErrorFallback}>

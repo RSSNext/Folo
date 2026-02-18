@@ -319,6 +319,7 @@
   "new_user_dialog.title": "Welcome to Folo",
   "new_user_guide.actions.back": "Back",
   "new_user_guide.actions.finish": "Finish",
+  "new_user_guide.actions.import_opml": "Import OPML",
   "new_user_guide.actions.next": "Next",
   "new_user_guide.ai_chat.intro": "Welcome to Folo, the AI reader that reads the Internet for you.\n\nTell me something about you.",
   "new_user_guide.ai_chat.reroll": "Reroll",

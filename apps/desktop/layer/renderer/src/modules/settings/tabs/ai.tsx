@@ -22,6 +22,11 @@ export const AI_SETTING_SECTION_IDS = {
   timelinePrompt: "settings-ai-timeline-prompt",
 } as const
 
+export const AI_SETTING_SECTION_IDS = {
+  shortcuts: "settings-ai-shortcuts",
+  tasks: "settings-ai-tasks",
+} as const
+
 export const SettingAI = () => {
   const { t } = useTranslation("ai")
 
