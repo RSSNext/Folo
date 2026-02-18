@@ -1,7 +1,7 @@
 import type { PostHog } from "posthog-js"
 import type PostHogReactNative from "posthog-react-native"
 
-import type { IdentifyPayload, TrackerAdapter, TrackPayload } from "./base"
+import type { CaptureExceptionPayload, IdentifyPayload, TrackerAdapter, TrackPayload } from "./base"
 
 export interface PostHogAdapterConfig {
   instance: PostHog | PostHogReactNative
@@ -28,6 +28,19 @@ export class PostHogAdapter implements TrackerAdapter {
       this.posthogInstance.capture(eventName, properties as any)
     } catch (error) {
       console.error(`[PostHog] Failed to track event "${eventName}":`, error)
+    }
+  }
+
+  async captureException({ error, properties }: CaptureExceptionPayload): Promise<void> {
+    if (!this.isEnabled()) return
+
+    try {
+      this.posthogInstance.captureException(
+        error,
+        properties as Parameters<typeof this.posthogInstance.captureException>[1],
+      )
+    } catch (captureError) {
+      console.error("[PostHog] Failed to capture exception:", captureError)
     }
   }
 

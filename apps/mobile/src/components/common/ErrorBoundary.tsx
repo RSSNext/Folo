@@ -1,5 +1,5 @@
 import { useTypeScriptHappyCallback } from "@follow/hooks"
-import { captureException } from "@sentry/react-native"
+import { tracker } from "@follow/tracker"
 import type { FC } from "react"
 import { createElement, useEffect } from "react"
 import { ErrorBoundary as ReactErrorBoundary } from "react-error-boundary"
@@ -52,8 +52,10 @@ const defaultFallbackRender = ({ error }: { error: Error }) => {
 }
 const ErrorReport = ({ error }: { error: Error }) => {
   useEffect(() => {
-    captureException(error)
     console.error(error)
+    void tracker.manager.captureException(error, {
+      source: "mobile_error_boundary",
+    })
   }, [error])
   return null
 }

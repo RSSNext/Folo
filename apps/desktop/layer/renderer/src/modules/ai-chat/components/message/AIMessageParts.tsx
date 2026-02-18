@@ -1,10 +1,10 @@
 import "@xyflow/react/dist/style.css"
 
 import { alwaysFalse } from "@follow/utils"
-import { ErrorBoundary } from "@sentry/react"
 import type { ReasoningUIPart, TextUIPart, ToolUIPart } from "ai"
 import * as React from "react"
 
+import { ErrorBoundary } from "~/components/common/ErrorBoundary"
 import type { AIDisplayFlowTool, BizUIMessage, BizUITools } from "~/modules/ai-chat/store/types"
 
 import { useChatStatus } from "../../store/hooks"

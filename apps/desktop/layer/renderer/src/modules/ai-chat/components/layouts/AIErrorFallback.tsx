@@ -1,6 +1,6 @@
 import { Button } from "@follow/components/ui/button/index.js"
-import type { FallbackRender } from "@sentry/react"
 
+import type { FallbackRender } from "~/components/common/ErrorBoundary"
 import { attachOpenInEditor } from "~/lib/dev"
 
 import { FeedbackIssue } from "../../../../components/common/ErrorElement"

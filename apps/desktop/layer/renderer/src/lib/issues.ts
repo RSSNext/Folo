@@ -32,7 +32,7 @@ export const getNewIssueUrl = ({
   if (title) searchParams.set("title", title)
 
   if (error && "traceId" in error && error.traceId) {
-    nextBody += `\n\n### Sentry Trace ID\n${error.traceId}`
+    nextBody += `\n\n### Trace ID\n${error.traceId}`
   }
 
   searchParams.set("body", nextBody)
