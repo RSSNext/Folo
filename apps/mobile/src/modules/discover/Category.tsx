@@ -18,6 +18,7 @@ import { DiscoverSettingsScreen } from "@/src/screens/(modal)/DiscoverSettingsSc
 import { RecommendationCategoryScreen } from "@/src/screens/(stack)/recommendation/RecommendationCategoryScreen"
 
 export const Category = () => {
+  const { t } = useTranslation("common")
   const navigation = useNavigation()
   const label = useColor("label")
   return (
@@ -25,7 +26,9 @@ export const Category = () => {
       <View className="mt-4 flex-row items-center justify-between pb-1 pl-6 pr-5 pt-4">
         <View className="flex-row items-center gap-2">
           <Grid2CuteReIcon width={24} height={24} color={label} />
-          <Text className="pb-2 text-2xl font-bold leading-[1.1] text-label">Categories</Text>
+          <Text className="pb-2 text-xl font-bold leading-[1.1] text-label">
+            {t("words.categories")}
+          </Text>
         </View>
         <ItemPressable
           className="rounded-lg p-1"
@@ -79,7 +82,7 @@ const CategoryItem = memo(({ category }: { category: RSSHubCategory }) => {
       >
         <View className="flex-1">
           <Text className="absolute right-2 top-2 text-4xl">{CategoryMap[category].emoji}</Text>
-          <Text className="absolute bottom-0 left-2 text-xl font-bold text-white">{name}</Text>
+          <Text className="absolute bottom-0 left-2 text-lg font-bold text-white">{name}</Text>
         </View>
       </LinearGradient>
     </Pressable>

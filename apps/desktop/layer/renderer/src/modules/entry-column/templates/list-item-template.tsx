@@ -169,7 +169,7 @@ export function ListItem({
   return (
     <div
       className={cn(
-        "group relative flex cursor-menu py-3",
+        "group relative flex cursor-menu py-3.5",
         !isRead &&
           "before:absolute before:-left-3 before:top-5 before:block before:size-2 before:rounded-full before:bg-accent",
       )}
@@ -183,7 +183,7 @@ export function ListItem({
       >
         <div
           className={cn(
-            "flex gap-1 text-[10px] font-bold",
+            "flex min-w-0 items-center gap-1 text-[10px] font-bold",
             "text-text-secondary",
             isInCollection && "text-text-secondary",
             isRead && dimRead && "text-text-tertiary",
@@ -196,7 +196,7 @@ export function ListItem({
               className="space-x-0.5"
             />
           </EllipsisHorizontalTextWithTooltip>
-          <span>·</span>
+          <span className="shrink-0">·</span>
           <span className="shrink-0">{!!displayTime && <RelativeTime date={displayTime} />}</span>
         </div>
         <div
@@ -269,7 +269,10 @@ export function ListItem({
           type={entry.firstMedia.type}
           previewImageUrl={entry.firstMedia.preview_image_url}
           className={cn("center ml-2 flex shrink-0 rounded", "size-20")}
-          mediaContainerClassName={"w-auto h-auto rounded"}
+          mediaContainerClassName={cn(
+            "size-auto rounded",
+            thumbnailRatio === "square" && "aspect-square object-cover",
+          )}
           loading="lazy"
           key={`${rid}-media-${thumbnailRatio}`}
           proxy={{

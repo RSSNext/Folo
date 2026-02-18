@@ -1,10 +1,5 @@
 import { createElement, lazy, Suspense, useState } from "react"
 
-const LazyLottieRenderContainer = lazy(() =>
-  import("../../components/ui/lottie-container").then((res) => ({
-    default: res.LottieRenderContainer,
-  })),
-)
 const LazyContextMenuProvider = lazy(() =>
   import("./../context-menu-provider").then((res) => ({
     default: res.ContextMenuProvider,
@@ -51,7 +46,6 @@ const LazyPWAPrompt = () => {
 export {
   LazyContextMenuProvider,
   LazyExtensionExposeProvider,
-  LazyLottieRenderContainer,
   LazyPopoverProvider,
   LazyPWAPrompt,
   LazyReloadPrompt,

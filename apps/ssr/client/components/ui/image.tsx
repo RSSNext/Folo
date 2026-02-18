@@ -41,6 +41,7 @@ export const LazyImage = ({
       url: src,
       width: proxy?.width,
       height: proxy?.height,
+      canUseProxy: true,
     })
   }, [src, proxy?.height, proxy?.width])
   return (

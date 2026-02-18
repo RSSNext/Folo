@@ -1,11 +1,12 @@
-import { DEV } from "@follow/shared/constants"
 import { cn } from "@follow/utils/utils"
+import { FollowAPIError } from "@follow-app/client-sdk"
 import { t } from "i18next"
 import { FetchError } from "ofetch"
 import { createElement } from "react"
 import type { ExternalToast } from "sonner"
 import { toast } from "sonner"
 
+import { getIsPaymentEnabled } from "~/atoms/server-configs"
 import { CopyButton } from "~/components/ui/button/CopyButton"
 import { Markdown } from "~/components/ui/markdown/Markdown"
 import { DebugRegistry } from "~/modules/debug/registry"
@@ -25,6 +26,20 @@ export const getFetchErrorInfo = (
       const i18nMessage = t(i18nKey) === i18nKey ? message : t(i18nKey)
       return {
         message: `${i18nMessage}${reason ? `: ${reason}` : ""}`,
+        code,
+      }
+    } catch {
+      return { message: error.message }
+    }
+  }
+
+  if (error instanceof FollowAPIError && error.code) {
+    const code = Number(error.code)
+    try {
+      const i18nKey = `errors:${code}` as any
+      const i18nMessage = t(i18nKey) === i18nKey ? error.message : t(i18nKey)
+      return {
+        message: i18nMessage,
         code,
       }
     } catch {
@@ -54,8 +69,10 @@ export const toastFetchError = (
   let _reason = ""
   let code: number | undefined
 
+  let status: number | undefined
   if (error instanceof FetchError) {
     try {
+      status = error.statusCode ? Number(error.statusCode) : undefined
       const json =
         typeof error.response?._data === "string"
           ? JSON.parse(error.response?._data)
@@ -78,6 +95,23 @@ export const toastFetchError = (
     }
   }
 
+  if (error instanceof FollowAPIError) {
+    code = error.code ? Number(error.code) : undefined
+    status = error.status ? Number(error.status) : undefined
+    message = error.message
+  }
+
+  if ("code" in error && error.code) {
+    code = Number(error.code)
+    try {
+      const tValue = t(`errors:${code}` as any)
+      const i18nMessage = tValue === code?.toString() ? error.message : tValue
+      message = i18nMessage
+    } catch {
+      message = error.message
+    }
+  }
+
   // 2fa errors are handled by the form
   if (code === 4007 || code === 4008) {
     return
@@ -94,9 +128,24 @@ export const toastFetchError = (
   }
 
   if (!_reason) {
-    const title = _title || message
-    toastOptions.description = _title ? message : undefined
-    return toast.error(title, toastOptions)
+    const title = _title || message || "Unknown error occurred"
+    toastOptions.description = _title ? message : ""
+    const isPaymentEnabled = getIsPaymentEnabled()
+    const needUpgradeError = status && isPaymentEnabled ? status === 402 : false
+    if (needUpgradeError) {
+      toastOptions.description = "Please upgrade your plan."
+    }
+    return toast.error(title, {
+      ...toastOptions,
+      action: needUpgradeError
+        ? {
+            label: "Upgrade",
+            onClick: () => {
+              window.router.showSettings({ tab: "plan" })
+            },
+          }
+        : undefined,
+    })
   } else {
     return toast.error(message || _title, {
       duration: 5000,
@@ -120,19 +169,28 @@ export const toastFetchError = (
     })
   }
 }
-if (DEV) {
-  DebugRegistry.add("Simulate request error", () => {
-    createErrorToaster(
-      "Simulated request error",
-      {},
-    )({
-      response: {
-        _data: JSON.stringify({
-          code: 1000,
-          message: "Simulated request error",
-          reason: "Simulated reason",
-        }),
-      },
-    } as any)
-  })
-}
+DebugRegistry.add("Simulate request error", () => {
+  createErrorToaster(
+    "Simulated request error",
+    {},
+  )({
+    response: {
+      _data: JSON.stringify({
+        code: 1000,
+        message: "Simulated request error",
+        reason: "Simulated reason",
+      }),
+    },
+  } as any)
+})
+
+DebugRegistry.add("Simulate payment need upgrade error", () => {
+  createErrorToaster(
+    "Simulated payment need upgrade error",
+    {},
+  )(
+    new FollowAPIError("Simulated payment need upgrade error", 402, "1111", {
+      reason: "Simulated reason",
+    }),
+  )
+})

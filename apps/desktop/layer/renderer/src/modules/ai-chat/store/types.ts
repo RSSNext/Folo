@@ -20,12 +20,7 @@ interface BaseContextBlock {
   disabled?: boolean
 }
 
-export type ValueContextBlockType =
-  | "mainView"
-  | "mainEntry"
-  | "mainFeed"
-  | "selectedText"
-  | "unreadOnly"
+export type ValueContextBlockType = "mainView" | "mainEntry" | "mainFeed" | "unreadOnly"
 export interface AbstractValueContextBlock<T extends string> extends BaseContextBlock {
   type: T
   value: string
@@ -51,6 +46,8 @@ export interface AIChatStoreInitial {
   blocks: AIChatContextBlock[]
   chatId?: string
   generateId?: IdGenerator
+  isLocal?: boolean
+  syncStatus?: "local" | "synced"
 }
 
 export interface AIChatContextBlocks {

@@ -1,85 +1,71 @@
 import { Spring } from "@follow/components/constants/spring.js"
+import { useMobile } from "@follow/components/hooks/useMobile.js"
 import { PanelSplitter } from "@follow/components/ui/divider/index.js"
 import { FeedViewType } from "@follow/constants"
 import { defaultUISettings } from "@follow/shared/settings/defaults"
 import { cn } from "@follow/utils"
 import { isSafari } from "@follow/utils/utils"
 import { AnimatePresence } from "motion/react"
-import { memo, startTransition, useCallback, useEffect, useMemo, useRef } from "react"
+import type { CSSProperties } from "react"
+import { memo, useCallback, useEffect, useMemo, useRef } from "react"
 import { useResizable } from "react-resizable-layout"
 
 import { AIChatPanelStyle, useAIChatPanelStyle, useAIPanelVisibility } from "~/atoms/settings/ai"
-import { useGeneralSettingKey } from "~/atoms/settings/general"
 import { getUISettings, setUISetting, useUISettingKey } from "~/atoms/settings/ui"
-import { setSubscriptionColumnApronNode, useSubscriptionEntryPlaneVisible } from "~/atoms/sidebar"
 import { m } from "~/components/common/Motion"
 import { ROUTE_ENTRY_PENDING } from "~/constants"
-import { useFeature } from "~/hooks/biz/useFeature"
 import { useRouteParamsSelector } from "~/hooks/biz/useRouteParams"
 import { useShowEntryDetailsColumn } from "~/hooks/biz/useShowEntryDetailsColumn"
 import { AIChatRoot } from "~/modules/ai-chat/components/layouts/AIChatRoot"
-import { AIChatLayout } from "~/modules/app-layout/ai/AIChatLayout"
+import { AIChatFixedPanel } from "~/modules/app-layout/ai/AIChatFixedPanel"
 import { AIIndicator } from "~/modules/app-layout/ai/AISplineButton"
 import { EntryContentPlaceholder } from "~/modules/app-layout/entry-content/EntryContentPlaceholder"
 import { EntryColumn } from "~/modules/entry-column"
-import { EntryPlaneToolbar } from "~/modules/entry-column/components/EntryPlaneToolbar"
-import { EntrySubscriptionList } from "~/modules/entry-column/EntrySubscriptionList"
 import { EntryContent } from "~/modules/entry-content/components/entry-content"
 import { AIEntryHeader } from "~/modules/entry-content/components/entry-header"
 import { AppLayoutGridContainerProvider } from "~/providers/app-grid-layout-container-provider"
 import { MainViewHotkeysProvider } from "~/providers/main-view-hotkeys-provider"
 
-/**
- * AIEnhancedTimelineLayout Component
- *
- * An advanced timeline layout that integrates AI chat functionality with entry browsing.
- * This layout provides:
- * - Entry list display with animated content overlay
- * - Integrated AI chat panel (Fixed/Floating modes)
- * - Dynamic subscription column toggling
- * - Smooth animations for entry transitions
- * - Resizable AI panel with persistent settings
- *
- * Layout Structure:
- * ```
- * AIEnhancedTimelineLayout
- * ├── Main Content Area
- * │   ├── EntryColumn (entry list)
- * │   ├── AIEntryHeader (animated overlay)
- * │   └── EntryContent (animated overlay)
- * ├── AI Chat Panel (resizable, optional)
- * │   ├── Fixed Panel (docked to right)
- * │   └── Floating Panel (draggable overlay)
- * └── Subscription Column Toggler
- * ```
- *
- * @component
- * @example
- * // Used in AI-enabled timeline routes
- * // Provides enhanced timeline experience with AI assistance
- */
-const AIEnhancedTimelineLayoutImpl = () => {
-  const aiPanelStyle = useAIChatPanelStyle()
-  const isAIPanelVisible = useAIPanelVisibility()
-  const aiSidebarVisible = aiPanelStyle === AIChatPanelStyle.Fixed && isAIPanelVisible
+import { MobileTimelineLayout } from "./MobileTimelineLayout"
 
-  const { view, entryId } = useRouteParamsSelector((s) => ({
-    view: s.view,
-    entryId: s.entryId,
+const MIN_ENTRY_WIDTH = isSafari() ? 356 : 300
+
+const AIEnhancedTimelineLayoutImpl = () => {
+  const { view, entryId } = useRouteParamsSelector((state) => ({
+    view: state.view,
+    entryId: state.entryId,
   }))
+
   const realEntryId = entryId === ROUTE_ENTRY_PENDING ? "" : entryId
   const showEntryDetailsColumn = useShowEntryDetailsColumn()
+  const aiPanelStyle = useAIChatPanelStyle()
+  const isAIPanelVisible = useAIPanelVisibility()
+  const hasSelectedEntry = Boolean(realEntryId)
+  const isMobile = useMobile()
+
+  // Compute derived values first
+  const showEntryContentOnRight = showEntryDetailsColumn && hasSelectedEntry
+  const isFixedPanelStyle = aiPanelStyle === AIChatPanelStyle.Fixed
+  const shouldShowFixedAI = isFixedPanelStyle && isAIPanelVisible
+  const showEntryContentOnLeft = !showEntryDetailsColumn && hasSelectedEntry
+  const shouldRenderRightColumn = showEntryDetailsColumn || shouldShowFixedAI
+  const shouldShowEntryBorder = showEntryDetailsColumn || shouldShowFixedAI
+
+  // Mobile-specific logic: disable resizing and hide splitters
+  const shouldDisableResize = isMobile
+  const shouldShowSplitter = !isMobile && shouldRenderRightColumn
 
   const layoutContainerRef = useRef<HTMLDivElement>(null)
   const feedColumnWidth = useUISettingKey("feedColWidth")
 
-  // Timeline column resizable configuration (used when entry details column is visible)
-  const entryColumnInitialWidth = useMemo(() => getUISettings().entryColWidth, [])
   const timelineMaxWidth = useMemo(() => {
     if (typeof window === "undefined") return 600
     return Math.max((window.innerWidth - feedColumnWidth) / 2, 600)
   }, [feedColumnWidth])
+
+  const entryColumnInitialWidth = useMemo(() => getUISettings().entryColWidth, [])
   const timelineStartDragPosition = useRef(0)
+
   const {
     position: timelineColumnWidth,
     separatorProps: timelineSeparatorProps,
@@ -88,22 +74,21 @@ const AIEnhancedTimelineLayoutImpl = () => {
     setPosition: setTimelineColumnWidth,
   } = useResizable({
     axis: "x",
-    min: isSafari() ? 356 : 300,
+    min: MIN_ENTRY_WIDTH,
     max: timelineMaxWidth,
     initial: entryColumnInitialWidth,
     containerRef: layoutContainerRef as React.RefObject<HTMLElement>,
+    disabled: shouldDisableResize,
     onResizeStart({ position }) {
       timelineStartDragPosition.current = position
     },
     onResizeEnd({ position }) {
       if (position === timelineStartDragPosition.current) return
       setUISetting("entryColWidth", position)
-      // TODO: Remove this after useMeasure can get bounds in time
       window.dispatchEvent(new Event("resize"))
     },
   })
 
-  // AI chat resizable panel configuration
   const isAllView = view === FeedViewType.All
   const widthRange: [number, number] = isAllView ? [500, timelineMaxWidth] : [300, timelineMaxWidth]
   const [minWidth, maxWidth] = widthRange
@@ -113,21 +98,13 @@ const AIEnhancedTimelineLayoutImpl = () => {
     [minWidth, maxWidth],
   )
 
-  const getHalfScreenWidth = useCallback(
-    () => clampWidth(typeof window !== "undefined" ? window.innerWidth * 0.5 : 800),
-    [clampWidth],
-  )
-
   const resolvePreferredWidth = useCallback(() => {
     const ui = getUISettings()
-    const halfScreen = getHalfScreenWidth()
-    return Math.min(isAllView ? (ui.aiColWidthAll ?? halfScreen) : ui.aiColWidth, timelineMaxWidth)
-  }, [getHalfScreenWidth, isAllView, timelineMaxWidth])
+    const preferred = ui.aiColWidth ?? defaultUISettings.aiColWidth
+    return clampWidth(preferred)
+  }, [clampWidth])
 
-  // Calculate initial width depending on view
-  const initialAiWidth = useMemo(() => resolvePreferredWidth(), [resolvePreferredWidth])
   const aiPanelStartDragPosition = useRef(0)
-
   const {
     position: aiPanelWidth,
     separatorProps: aiSeparatorProps,
@@ -138,111 +115,193 @@ const AIEnhancedTimelineLayoutImpl = () => {
     axis: "x",
     min: minWidth,
     max: maxWidth,
-    initial: initialAiWidth,
+    initial: resolvePreferredWidth(),
     reverse: true,
+    containerRef: layoutContainerRef as React.RefObject<HTMLElement>,
+    disabled: shouldDisableResize,
     onResizeStart({ position }) {
       aiPanelStartDragPosition.current = position
     },
     onResizeEnd({ position }) {
       if (position === aiPanelStartDragPosition.current) return
-      // Persist per-view width
-      setUISetting(isAllView ? "aiColWidthAll" : "aiColWidth", position)
-      // TODO: Remove this after useMeasure can get bounds in time
+      setUISetting("aiColWidth", position)
       window.dispatchEvent(new Event("resize"))
     },
   })
 
-  // When view changes, switch to the saved width for that view
   useEffect(() => {
     const width = resolvePreferredWidth()
     setAiPanelWidth(width)
-    // Trigger layout update
     window.dispatchEvent(new Event("resize"))
-  }, [resolvePreferredWidth])
+  }, [resolvePreferredWidth, setAiPanelWidth])
 
-  const showCompactTimelineColumn = useGeneralSettingKey("showCompactTimelineInSub")
+  const entryColumnStyle: CSSProperties = isMobile
+    ? {
+        width: "100%",
+        minWidth: "100%",
+        flexBasis: "100%",
+      }
+    : showEntryDetailsColumn
+      ? {
+          flexBasis: timelineColumnWidth,
+          minWidth: MIN_ENTRY_WIDTH,
+        }
+      : {
+          minWidth: MIN_ENTRY_WIDTH,
+        }
+
+  const rightColumnStyle: CSSProperties = isMobile
+    ? {
+        width: "100%",
+        minWidth: "100%",
+        flexBasis: "100%",
+      }
+    : showEntryDetailsColumn
+      ? {
+          minWidth: 0,
+        }
+      : {
+          width: aiPanelWidth,
+          minWidth: 0,
+          flexBasis: aiPanelWidth,
+        }
+
+  const resetTimelineWidth = useCallback(() => {
+    setUISetting("entryColWidth", defaultUISettings.entryColWidth)
+    setTimelineColumnWidth(defaultUISettings.entryColWidth)
+    window.dispatchEvent(new Event("resize"))
+  }, [setTimelineColumnWidth])
+
+  const resetAiWidth = useCallback(() => {
+    const resetWidth = clampWidth(defaultUISettings.aiColWidth)
+    setUISetting("aiColWidth", resetWidth)
+    setAiPanelWidth(resetWidth)
+    window.dispatchEvent(new Event("resize"))
+  }, [clampWidth, setAiPanelWidth])
+
+  const splitter = shouldShowSplitter ? (
+    shouldRenderRightColumn && showEntryDetailsColumn ? (
+      <PanelSplitter
+        {...timelineSeparatorProps}
+        cursor={timelineSeparatorCursor}
+        isDragging={isTimelineDragging}
+        onDoubleClick={resetTimelineWidth}
+      />
+    ) : shouldShowFixedAI ? (
+      <PanelSplitter
+        {...aiSeparatorProps}
+        cursor={aiSeparatorCursor}
+        isDragging={isAiPanelDragging}
+        onDoubleClick={resetAiWidth}
+      />
+    ) : null
+  ) : null
+
+  // Mobile layout: stacked with view switching
+  if (isMobile) {
+    return <MobileTimelineLayout entryId={realEntryId} hasSelectedEntry={hasSelectedEntry} />
+  }
+
   return (
-    <div ref={layoutContainerRef} className="relative flex min-w-0 grow">
-      <div className="relative min-w-0 flex-1">
+    <div
+      className={cn(
+        "relative h-full min-w-0 grow",
+        isAllView ? "flex flex-col overflow-y-auto scroll-smooth" : "flex",
+      )}
+    >
+      <div
+        className={cn(
+          "relative h-full min-w-0",
+          isAllView ? "min-h-full w-full flex-none" : "flex-1",
+        )}
+      >
         <AppLayoutGridContainerProvider>
-          <div className="relative h-full">
+          <div ref={layoutContainerRef} className="flex h-full min-w-0">
             <div
               className={cn(
-                "absolute inset-y-0 left-0 min-w-[300px]",
-                showEntryDetailsColumn ? "border-r will-change-[width]" : "right-0",
-                aiPanelStyle === AIChatPanelStyle.Fixed && !showEntryDetailsColumn && "border-r",
+                "relative flex h-full flex-col overflow-hidden",
+                shouldShowEntryBorder && "border-r",
+                showEntryDetailsColumn
+                  ? "flex-none transition-[flex-basis] duration-200 ease-out will-change-[flex-basis]"
+                  : "min-w-0 flex-1",
+                showEntryDetailsColumn && isTimelineDragging && "transition-none",
               )}
-              style={showEntryDetailsColumn ? { width: timelineColumnWidth } : undefined}
+              style={entryColumnStyle}
             >
-              <div className="relative h-full">
-                {/* Entry list - always rendered to prevent animation */}
-                <EntryColumn key="entry-list" />
-                {!showEntryDetailsColumn && (
-                  <>
-                    <AnimatePresence>
-                      {realEntryId && (
+              <EntryColumn />
+
+              {showEntryContentOnLeft && (
+                <>
+                  <AnimatePresence>
+                    {realEntryId && (
+                      <m.div
+                        key="entry-header"
+                        className="absolute inset-x-0 top-0 z-10"
+                        initial={{ translateY: "-50px", opacity: 0 }}
+                        animate={{ translateY: 0, opacity: 1 }}
+                        exit={{ translateY: "-50px", opacity: 0 }}
+                        transition={Spring.smooth(0.3)}
+                      >
+                        <AIEntryHeader entryId={realEntryId} />
+                      </m.div>
+                    )}
+                  </AnimatePresence>
+
+                  <AnimatePresence>
+                    {realEntryId && (
+                      <div className="pointer-events-none absolute inset-0 z-[9] flex flex-col overflow-hidden">
                         <m.div
-                          className="absolute inset-x-0 top-0 z-10"
-                          initial={{ translateY: "-50px", opacity: 0 }}
-                          animate={{ translateY: 0, opacity: 1 }}
-                          exit={{ translateY: "-50px", opacity: 0 }}
+                          key="entry-content"
+                          lcpOptimization
+                          initial={{ translateY: "50px", opacity: 0, scale: 0.98 }}
+                          animate={{ translateY: 0, opacity: 1, scale: 1 }}
+                          exit={{ translateY: "50px", opacity: 0, scale: 0.98 }}
                           transition={Spring.smooth(0.3)}
+                          className="pointer-events-auto relative flex h-0 flex-1 flex-col bg-theme-background"
                         >
-                          <AIEntryHeader entryId={realEntryId} />
+                          <EntryContent entryId={realEntryId} className="h-full" />
                         </m.div>
-                      )}
-                    </AnimatePresence>
-                    {/* Entry content overlay with exit animation */}
-                    <AnimatePresence>
-                      {realEntryId && (
-                        <div className="pointer-events-none absolute inset-0 z-[9] flex flex-col overflow-hidden">
-                          <m.div
-                            lcpOptimization
-                            initial={{ translateY: "50px", opacity: 0, scale: 0.98 }}
-                            animate={{ translateY: 0, opacity: 1, scale: 1 }}
-                            exit={{ translateY: "50px", opacity: 0, scale: 0.98 }}
-                            transition={Spring.smooth(0.3)}
-                            className="pointer-events-auto relative flex h-0 flex-1 flex-col bg-theme-background"
-                          >
-                            <EntryContent entryId={realEntryId} className="h-full" />
-                          </m.div>
-                        </div>
-                      )}
-                    </AnimatePresence>
-                  </>
-                )}
-              </div>
+                      </div>
+                    )}
+                  </AnimatePresence>
+                </>
+              )}
             </div>
 
-            {showEntryDetailsColumn && (
+            {shouldRenderRightColumn && (
               <>
-                <div className="absolute inset-y-0 z-[2]" style={{ left: timelineColumnWidth }}>
-                  <PanelSplitter
-                    {...timelineSeparatorProps}
-                    cursor={timelineSeparatorCursor}
-                    isDragging={isTimelineDragging}
-                    onDoubleClick={() => {
-                      setUISetting("entryColWidth", defaultUISettings.entryColWidth)
-                      setTimelineColumnWidth(defaultUISettings.entryColWidth)
-                      window.dispatchEvent(new Event("resize"))
-                    }}
-                  />
-                </div>
+                {splitter}
+
                 <div
-                  className="absolute inset-y-0 right-0 flex min-w-0 flex-1 flex-col overflow-hidden bg-theme-background"
-                  style={{ left: timelineColumnWidth }}
+                  className={cn(
+                    "relative flex h-full min-w-0 flex-col overflow-hidden bg-theme-background",
+                    showEntryDetailsColumn ? "flex-1" : "flex-none",
+                  )}
+                  style={rightColumnStyle}
                 >
-                  {realEntryId ? (
-                    <>
+                  {showEntryContentOnRight && realEntryId ? (
+                    <div className="flex h-full flex-col overflow-hidden">
                       <div className="absolute inset-x-0 top-0 z-10">
                         <AIEntryHeader entryId={realEntryId} />
                       </div>
-                      <div className="pointer-events-none absolute inset-0 z-[9] flex flex-col overflow-hidden">
-                        <div className="pointer-events-auto relative flex h-0 flex-1 flex-col bg-theme-background">
-                          <EntryContent entryId={realEntryId} className="h-full" />
-                        </div>
+                      <div className="flex h-0 flex-1 flex-col overflow-hidden">
+                        <EntryContent entryId={realEntryId} className="h-full" />
                       </div>
-                    </>
+                    </div>
+                  ) : shouldShowFixedAI ? (
+                    <div className="flex h-full flex-1 items-center justify-center">
+                      <AIChatFixedPanel
+                        key="ai-chat-layout"
+                        style={
+                          {
+                            width: showEntryDetailsColumn ? "100%" : aiPanelWidth,
+                            "--ai-chat-layout-width": showEntryDetailsColumn
+                              ? "100%"
+                              : `${aiPanelWidth}px`,
+                          } as CSSProperties
+                        }
+                      />
+                    </div>
                   ) : (
                     <div className="flex flex-1 items-center justify-center px-8">
                       <EntryContentPlaceholder />
@@ -254,104 +313,17 @@ const AIEnhancedTimelineLayoutImpl = () => {
           </div>
         </AppLayoutGridContainerProvider>
       </div>
-
-      {/* Fixed panel layout */}
-      {aiSidebarVisible && (
-        <>
-          <PanelSplitter
-            {...aiSeparatorProps}
-            cursor={aiSeparatorCursor}
-            isDragging={isAiPanelDragging}
-            onDoubleClick={() => {
-              const resetWidth = isAllView
-                ? getHalfScreenWidth()
-                : clampWidth(defaultUISettings.aiColWidth)
-              setUISetting(isAllView ? "aiColWidthAll" : "aiColWidth", resetWidth)
-              setAiPanelWidth(resetWidth)
-              window.dispatchEvent(new Event("resize"))
-            }}
-          />
-          <AIChatLayout
-            key="ai-chat-layout"
-            style={
-              {
-                width: aiPanelWidth,
-                "--ai-chat-layout-width": `${aiPanelWidth}px`,
-              } as React.CSSProperties
-            }
-          />
-        </>
-      )}
-
-      {/* Floating panel - renders outside layout flow */}
-      {aiPanelStyle === AIChatPanelStyle.Floating && <AIChatLayout key="ai-chat-layout" />}
-      {showCompactTimelineColumn && <SubscriptionColumnToggler />}
+      {!shouldShowFixedAI && <AIIndicator />}
     </div>
   )
 }
 
 export const AIEnhancedTimelineLayout = memo(function AIEnhancedTimelineLayout() {
-  const aiEnabled = useFeature("ai")
   return (
     <AIChatRoot wrapFocusable={false}>
       <AIEnhancedTimelineLayoutImpl />
-      {aiEnabled && <AIIndicator />}
       <MainViewHotkeysProvider />
     </AIChatRoot>
   )
 })
 AIEnhancedTimelineLayout.displayName = "AIEnhancedTimelineLayout"
-
-const SubscriptionColumnToggler = () => {
-  const isInEntry = useRouteParamsSelector((s) => s.entryId !== ROUTE_ENTRY_PENDING)
-
-  useEffect(() => {
-    if (isInEntry) {
-      startTransition(() => {
-        setSubscriptionColumnApronNode(<SubscriptionEntryListPlaneNode />)
-      })
-      return () => {
-        startTransition(() => {
-          setSubscriptionColumnApronNode(null)
-        })
-      }
-    }
-  }, [isInEntry])
-  return null
-}
-
-const SubscriptionEntryListPlaneNode = () => {
-  const entryId = useRouteParamsSelector((s) => s.entryId)
-  const isVisible = useSubscriptionEntryPlaneVisible()
-
-  return (
-    <m.div
-      className={cn(
-        "absolute left-0 top-12 z-[2] rounded-r-lg bg-sidebar backdrop-blur-background",
-        isVisible ? "bottom-0 flex w-feed-col flex-col" : "w-[40px]",
-      )}
-      id="subscription-entry-list-plane-node"
-      initial={false}
-      animate={{
-        width: isVisible ? "var(--fo-feed-col-w, 256px)" : "40px",
-      }}
-      transition={Spring.presets.smooth}
-    >
-      <EntryPlaneToolbar />
-      <AnimatePresence mode="popLayout">
-        {isVisible && (
-          <m.div
-            key="entry-list"
-            initial={{ opacity: 0 }}
-            animate={{ opacity: 1 }}
-            exit={{ opacity: 0 }}
-            transition={{ duration: 0.1 }}
-            className="flex w-feed-col flex-1 flex-col whitespace-pre"
-          >
-            <EntrySubscriptionList scrollToEntryId={entryId} />
-          </m.div>
-        )}
-      </AnimatePresence>
-    </m.div>
-  )
-}

@@ -4,7 +4,7 @@
 .ai-glass-layer-1,
 .ai-glass-layer-2,
 .ai-glass-layer-3 {
-  transform-origin: right center;
+  transform-origin: right bottom;
   transition:
     width 0.5s cubic-bezier(0.23, 1, 0.32, 1),
     opacity 0.5s cubic-bezier(0.23, 1, 0.32, 1),

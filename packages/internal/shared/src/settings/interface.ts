@@ -56,7 +56,6 @@ export interface UISettings {
    * Dedicated AI panel width for `FeedViewType.All`.
    * If not set, the runtime default falls back to half of the window width.
    */
-  aiColWidthAll?: number
   feedColWidth: number
   opaqueSidebar: boolean
   sidebarShowUnreadCount: boolean
@@ -97,7 +96,7 @@ export interface UISettings {
   showUnreadCountBadgeMobile: boolean
 
   // Discover
-  discoverLanguage: "all" | "eng" | "cmn"
+  discoverLanguage: "all" | "eng" | "cmn" | "fra"
 
   // Desktop: Timeline tabs preset (excluding the first fixed tab)
   timelineTabs: {
@@ -217,6 +216,7 @@ export interface MCPService {
 
 export interface AISettings {
   personalizePrompt: string
+  aiTimelinePrompt: string
   shortcuts: AIShortcut[]
 
   // MCP Services (stored locally, actual connections managed via server API)
@@ -225,4 +225,20 @@ export interface AISettings {
 
   // Features
   autoScrollWhenStreaming: boolean
+
+  byok: UserByokSettings
+}
+
+export type ByokProviderName = "openai" | "google" | "vercel-ai-gateway" | "openrouter"
+
+export type UserByokProviderConfig = {
+  provider: ByokProviderName
+  baseURL?: string | null
+  apiKey?: string | null
+  headers?: Record<string, string>
+}
+
+export type UserByokSettings = {
+  enabled: boolean
+  providers: UserByokProviderConfig[]
 }

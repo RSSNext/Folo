@@ -3,6 +3,7 @@ import { hydrateDatabaseToStore } from "@follow/store/hydrate"
 import { tracker } from "@follow/tracker"
 import { nativeApplicationVersion } from "expo-application"
 
+import { migrateLegacyApiSession } from "../lib/auth-cookie-migration"
 import { settingSyncQueue } from "../modules/settings/sync-queue"
 import { initAnalytics } from "./analytics"
 import { initializeAppCheck } from "./app-check"
@@ -12,7 +13,6 @@ import { initDeviceType } from "./device"
 import { hydrateQueryClient, hydrateSettings } from "./hydrate"
 import { migrateDatabase } from "./migration"
 import { initializePlayer } from "./player"
-import { initializeSentry } from "./sentry"
 
 /* eslint-disable no-console */
 export const initializeApp = async () => {
@@ -20,10 +20,11 @@ export const initializeApp = async () => {
 
   const now = Date.now()
 
-  initializeSentry()
-
   await initDeviceType()
   await initializeDB()
+  void apm("migrateLegacyApiSession", migrateLegacyApiSession).catch((error) => {
+    console.error("migrateLegacyApiSession failed", error)
+  })
 
   await apm("migrateDatabase", migrateDatabase)
   initializeDayjs()

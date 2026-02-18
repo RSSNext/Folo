@@ -10,9 +10,19 @@ import { proxyEnv } from "../lib/proxy-env"
 export const initAnalytics = async () => {
   setFirebaseTracker(getAnalytics())
 
-  const user = whoami()
-  if (user) {
-    tracker.identify(user as AuthUser)
+  if (proxyEnv.POSTHOG_KEY) {
+    setPostHogTracker(
+      new PostHog(proxyEnv.POSTHOG_KEY, {
+        host: proxyEnv.POSTHOG_HOST,
+        errorTracking: {
+          autocapture: {
+            uncaughtExceptions: true,
+            unhandledRejections: true,
+            console: false,
+          },
+        },
+      }),
+    )
   }
 
   tracker.manager.appendUserProperties({
@@ -21,8 +31,9 @@ export const initAnalytics = async () => {
     buildId: nativeBuildVersion,
   })
 
-  if (proxyEnv.POSTHOG_KEY) {
-    setPostHogTracker(new PostHog(proxyEnv.POSTHOG_KEY))
+  const user = whoami()
+  if (user) {
+    tracker.identify(user as AuthUser)
   }
 
   // op.setGlobalProperties({

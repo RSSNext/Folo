@@ -338,15 +338,20 @@ export const ModalInternal = memo(function Modal({
 
               <m.div
                 ref={modalElementRef}
-                style={modalStyle}
+                style={{
+                  ...modalStyle,
+                  backgroundImage:
+                    "linear-gradient(to bottom right, rgba(var(--color-background) / 0.98), rgba(var(--color-background) / 0.95))",
+                  boxShadow:
+                    "0 6px 20px rgba(0, 0, 0, 0.08), 0 4px 12px rgba(0, 0, 0, 0.05), 0 2px 6px rgba(0, 0, 0, 0.04), 0 4px 16px hsl(var(--fo-a) / 0.06), 0 2px 8px hsl(var(--fo-a) / 0.04), 0 1px 3px rgba(0, 0, 0, 0.03)",
+                }}
                 {...modalMontionConfig}
                 animate={animateController}
                 className={cn(
                   "relative flex flex-col overflow-hidden rounded-xl px-2 pt-1",
-                  "bg-background",
-                  "shadow-modal [transform-style:preserve-3d]",
+                  "backdrop-blur-2xl [transform-style:preserve-3d]",
                   max ? "h-[90vh] w-[90vw]" : "max-h-[90vh]",
-                  "border border-border",
+                  "dark:border dark:border-border/50",
                   modalClassName,
                 )}
                 tabIndex={-1}
@@ -369,9 +374,9 @@ export const ModalInternal = memo(function Modal({
                   onResizeStart={handleResizeStart}
                   onResizeStop={handleResizeStop}
                   defaultSize={resizeDefaultSize}
-                  className="flex grow flex-col"
+                  className="relative z-10 flex grow flex-col"
                 >
-                  <div className={"relative z-10 flex flex-col bg-background"}>
+                  <div className={"relative flex flex-col"}>
                     <div className={"flex items-center"}>
                       <Dialog.Title
                         className="flex w-0 max-w-full grow items-center gap-2 px-2 pb-1 pt-2 text-base font-medium text-text"

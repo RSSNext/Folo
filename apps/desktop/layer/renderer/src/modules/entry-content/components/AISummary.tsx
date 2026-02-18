@@ -18,6 +18,7 @@ export function AISummary({ entryId }: { entryId: string }) {
   const summarySetting = useEntry(entryId, (state) => state.settings?.summary)
   const isInReadabilitySuccess = useEntryIsInReadabilitySuccess(entryId)
   const showAISummary = useShowAISummary(summarySetting)
+
   const actionLanguage = useActionLanguage()
 
   // AI Chat panel state
@@ -42,7 +43,7 @@ export function AISummary({ entryId }: { entryId: string }) {
     setAIPanelVisibility(true)
   }
 
-  if (!showAISummary || (!summary.isLoading && !summary.data)) {
+  if (!showAISummary) {
     return null
   }
 
@@ -54,6 +55,7 @@ export function AISummary({ entryId }: { entryId: string }) {
       title={t("entry_content.ai_summary")}
       showAskAIButton={shouldShowAskAI}
       onAskAI={handleAskAI}
+      error={summary.error}
     />
   )
 }

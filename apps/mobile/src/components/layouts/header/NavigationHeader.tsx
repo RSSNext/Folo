@@ -12,7 +12,7 @@ import {
   useState,
 } from "react"
 import type { LayoutChangeEvent, StyleProp, ViewStyle } from "react-native"
-import { Alert, StyleSheet, TouchableOpacity, View } from "react-native"
+import { Alert, Pressable, StyleSheet, View } from "react-native"
 import type { AnimatedProps } from "react-native-reanimated"
 import Animated, {
   useAnimatedReaction,
@@ -33,6 +33,7 @@ import {
   useCanDismiss,
   useIsTopRouteInGroup,
   useNavigation,
+  useScreenIsInModal,
   useScreenIsInSheetModal,
 } from "@/src/lib/navigation/hooks"
 import { ScreenItemContext } from "@/src/lib/navigation/ScreenItemContext"
@@ -140,8 +141,7 @@ const useHideableBottom = (
   }
 }
 export interface InternalNavigationHeaderProps
-  extends Omit<AnimatedProps<ViewProps>, "children">,
-    PropsWithChildren {
+  extends Omit<AnimatedProps<ViewProps>, "children">, PropsWithChildren {
   headerLeft?:
     | FC<{
         canGoBack: boolean
@@ -228,15 +228,19 @@ export const InternalNavigationHeader = ({
     defaultHeight,
     hideableBottomHeight,
   )
+
+  const isModal = useScreenIsInModal()
+
   const rootTitleBarStyle = useAnimatedStyle(() => {
     const styles = {
-      paddingTop: insets.top,
+      paddingTop: isModal ? 0 : insets.top,
       position: "relative",
       overflow: "hidden",
     } satisfies DefaultStyle
     if (hideableBottom) {
       ;(styles as DefaultStyle).height = largeHeaderHeight.value
     }
+
     return styles
   })
 
@@ -445,7 +449,7 @@ export const UINavigationHeaderActionButton = ({
   style?: StyleProp<ViewStyle>
 }) => {
   return (
-    <TouchableOpacity
+    <Pressable
       hitSlop={5}
       className={cn("p-2", className)}
       onPress={onPress}
@@ -453,7 +457,7 @@ export const UINavigationHeaderActionButton = ({
       style={style}
     >
       {children}
-    </TouchableOpacity>
+    </Pressable>
   )
 }
 const Noop = () => null

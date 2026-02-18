@@ -3,7 +3,7 @@ import { FeedViewType } from "@follow/constants"
 import { getListById } from "@follow/store/list/getters"
 import { useListById } from "@follow/store/list/hooks"
 import { listSyncServices } from "@follow/store/list/store"
-import type { CreateListModel, ListModel } from "@follow/store/list/types"
+import type { CreateListModel } from "@follow/store/list/types"
 import { zodResolver } from "@hookform/resolvers/zod"
 import { memo, useEffect, useState } from "react"
 import { Controller, useForm } from "react-hook-form"
@@ -18,19 +18,17 @@ import {
 } from "@/src/components/layouts/views/SafeNavigationScrollView"
 import { FormProvider, useFormContext } from "@/src/components/ui/form/FormProvider"
 import { FormLabel } from "@/src/components/ui/form/Label"
-import { NumberField, TextField } from "@/src/components/ui/form/TextField"
+import { TextField } from "@/src/components/ui/form/TextField"
 import {
   GroupedInsetButtonCell,
   GroupedInsetListCard,
 } from "@/src/components/ui/grouped/GroupedList"
-import { PowerIcon } from "@/src/icons/power"
 import { useNavigation } from "@/src/lib/navigation/hooks"
 import { useSetModalScreenOptions } from "@/src/lib/navigation/ScreenOptionsContext"
 import type { NavigationControllerView } from "@/src/lib/navigation/types"
 import { getBizFetchErrorMessage } from "@/src/lib/parse-api-error"
 import { toast } from "@/src/lib/toast"
 import { FeedViewSelector } from "@/src/modules/feed/view-selector"
-import { accentColor } from "@/src/theme/colors"
 
 const listSchema = z.object({
   title: z.string().min(1),
@@ -41,8 +39,6 @@ const listSchema = z.object({
     .nullable()
     .optional()
     .transform((val) => (val === "" ? null : val)),
-
-  fee: z.number().min(0).nullable().optional(),
   view: z.number().int(),
 })
 
@@ -50,16 +46,22 @@ const defaultValues = {
   title: "",
   description: null,
   image: null,
-  fee: 0,
   view: FeedViewType.Articles,
-} as ListModel
+} satisfies z.infer<typeof listSchema>
 export const ListScreen: NavigationControllerView<{
   listId?: string
 }> = ({ listId }) => {
   const { t } = useTranslation("settings")
   const list = useListById(listId || "")
-  const form = useForm({
-    defaultValues: list || defaultValues,
+  const form = useForm<z.infer<typeof listSchema>>({
+    defaultValues: list
+      ? {
+          title: list.title ?? "",
+          description: list.description ?? null,
+          image: list.image ?? null,
+          view: list.view ?? FeedViewType.Articles,
+        }
+      : defaultValues,
     resolver: zodResolver(listSchema),
     mode: "all",
   })
@@ -144,26 +146,6 @@ export const ListScreen: NavigationControllerView<{
               )}
             />
           </View>
-
-          <View className="mt-4">
-            <Controller
-              name="fee"
-              control={form.control}
-              render={({ field: { onChange, onBlur, ref, value } }) => (
-                <NumberField
-                  label={t("lists.fee.label")}
-                  wrapperClassName="mt-2"
-                  placeholder="0"
-                  onBlur={onBlur}
-                  onChangeNumber={onChange}
-                  defaultValue={list?.fee ?? 0}
-                  value={value ?? 0}
-                  inputPostfixElement={<PowerIcon color={accentColor} />}
-                  ref={ref}
-                />
-              )}
-            />
-          </View>
         </GroupedInsetListCard>
 
         {isEditing && (
@@ -226,42 +208,48 @@ const ScreenOptions = memo(({ title, listId }: ScreenOptionsProps) => {
           <HeaderSubmitButton
             isValid={isValid}
             isLoading={isLoading}
-            onPress={form.handleSubmit((values) => {
+            onPress={form.handleSubmit(async (values) => {
               if (!isEditing) {
                 setIsLoading(true)
-                listSyncServices
-                  .createList({
+                try {
+                  await listSyncServices.createList({
                     list: values as CreateListModel,
                   })
-                  .catch((error) => {
-                    toast.error(getBizFetchErrorMessage(error))
-                    console.error(error)
-                  })
-                  .finally(() => {
-                    setIsLoading(false)
-                    navigation.dismiss()
-                  })
+                  toast.success("List created")
+                  navigation.dismiss()
+                } catch (error) {
+                  toast.error(
+                    error instanceof Error
+                      ? getBizFetchErrorMessage(error)
+                      : "Failed to create list",
+                  )
+                  console.error(error)
+                } finally {
+                  setIsLoading(false)
+                }
                 return
               }
               const list = getListById(listId!)
               if (!list) return
               setIsLoading(true)
-              listSyncServices
-                .updateList({
+              try {
+                await listSyncServices.updateList({
                   listId: listId!,
                   list: {
                     ...list,
                     ...values,
                   },
                 })
-                .catch((error) => {
-                  toast.error(getBizFetchErrorMessage(error))
-                  console.error(error)
-                })
-                .finally(() => {
-                  setIsLoading(false)
-                  navigation.dismiss()
-                })
+                toast.success("List updated")
+                navigation.dismiss()
+              } catch (error) {
+                toast.error(
+                  error instanceof Error ? getBizFetchErrorMessage(error) : "Failed to update list",
+                )
+                console.error(error)
+              } finally {
+                setIsLoading(false)
+              }
             })}
           />
         </FormProvider>

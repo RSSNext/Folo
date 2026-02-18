@@ -4,16 +4,17 @@ import type { ListModel } from "@follow/store/list/types"
 import { getSubscriptionById } from "@follow/store/subscription/getter"
 import { subscriptionSyncService } from "@follow/store/subscription/store"
 import { usePrefetchUser, useUserById, useWhoami } from "@follow/store/user/hooks"
+import { Image as ExpoImage } from "expo-image"
 import { createContext, Fragment, use, useCallback, useEffect, useMemo } from "react"
 import { useTranslation } from "react-i18next"
-import { Alert, FlatList, Image, Share, TouchableOpacity, View } from "react-native"
+import { Alert, FlatList, Pressable, Share, View } from "react-native"
 import Animated, {
   interpolate,
   useAnimatedScrollHandler,
   useAnimatedStyle,
   useSharedValue,
 } from "react-native-reanimated"
-import { useSafeAreaFrame, useSafeAreaInsets } from "react-native-safe-area-context"
+import { useSafeAreaInsets } from "react-native-safe-area-context"
 
 import { ReAnimatedScrollView } from "@/src/components/common/AnimatedComponents"
 import { BlurEffect } from "@/src/components/common/BlurEffect"
@@ -22,7 +23,6 @@ import {
   InternalNavigationHeader,
   UINavigationHeaderActionButton,
 } from "@/src/components/layouts/header/NavigationHeader"
-import { getDefaultHeaderHeight } from "@/src/components/layouts/utils"
 import {
   GROUPED_ICON_TEXT_GAP,
   GROUPED_LIST_ITEM_PADDING,
@@ -101,12 +101,7 @@ function ProfileScreenImpl(props: { userId: string }) {
       title: `Folo | ${user.name}'s Profile`,
     })
   }, [user?.id, user?.name])
-  const frame = useSafeAreaFrame()
-  const headerHeight = getDefaultHeaderHeight({
-    landscape: frame.width > frame.height,
-    modalPresentation: false,
-    topInset: 0,
-  })
+
   const whoami = useWhoami()
   const isMyProfile = user?.id === whoami?.id
   const actionCtx = useMemo(
@@ -115,6 +110,7 @@ function ProfileScreenImpl(props: { userId: string }) {
     }),
     [removeItemById],
   )
+
   return (
     <View className="flex-1 bg-system-grouped-background">
       <Animated.View
@@ -142,8 +138,6 @@ function ProfileScreenImpl(props: { userId: string }) {
         onScroll={scrollHandler}
         contentContainerStyle={{
           paddingBottom: insets.bottom + 24,
-          paddingTop: headerHeight + 22,
-          marginTop: -22,
         }}
       >
         <UserHeaderBanner scrollY={scrollY} userId={props.userId} />
@@ -151,7 +145,9 @@ function ProfileScreenImpl(props: { userId: string }) {
         {isLoading && <PlatformActivityIndicator className="mt-24" size={28} />}
         <IsMyProfileContext value={isMyProfile}>
           <ActionContext value={actionCtx}>
-            {!isLoading && subscriptions && <SubscriptionList subscriptions={subscriptions.data} />}
+            {!isLoading && subscriptions ? (
+              <SubscriptionList subscriptions={subscriptions.data} />
+            ) : null}
           </ActionContext>
         </IsMyProfileContext>
       </ReAnimatedScrollView>
@@ -164,9 +160,9 @@ function ProfileScreenImpl(props: { userId: string }) {
         className="absolute flex w-full flex-row items-center justify-between px-4"
       >
         <View />
-        <TouchableOpacity onPress={openShareUrl}>
+        <Pressable onPress={openShareUrl}>
           <ShareForwardCuteReIcon color="#fff" />
-        </TouchableOpacity>
+        </Pressable>
       </Animated.View>
     </View>
   )
@@ -261,18 +257,22 @@ const SubscriptionList = ({ subscriptions }: { subscriptions: Subscription[] }) 
             </Fragment>
           ))}
 
-          <GroupedInsetListSectionHeader
-            label={t("profile.uncategorized_feeds")}
-            marginSize="small"
-          />
-          <GroupedInsetListCard>
-            <FlatList
-              scrollEnabled={false}
-              data={feeds}
-              renderItem={renderFeedItems}
-              ItemSeparatorComponent={ItemSeparator}
-            />
-          </GroupedInsetListCard>
+          {feeds.length > 0 && (
+            <>
+              <GroupedInsetListSectionHeader
+                label={t("profile.uncategorized_feeds")}
+                marginSize="small"
+              />
+              <GroupedInsetListCard>
+                <FlatList
+                  scrollEnabled={false}
+                  data={feeds}
+                  renderItem={renderFeedItems}
+                  ItemSeparatorComponent={ItemSeparator}
+                />
+              </GroupedInsetListCard>
+            </>
+          )}
         </View>
       )}
     </View>
@@ -299,13 +299,12 @@ const renderListItems = ({ item }: { item: PickedListModel }) => (
   >
     <View className="overflow-hidden rounded">
       {!!item.image && (
-        <Image
+        <ExpoImage
           source={{
             uri: item.image,
-            width: 24,
-            height: 24,
           }}
-          resizeMode="cover"
+          contentFit="cover"
+          className="size-6"
         />
       )}
       {!item.image && <FallbackIcon title={item.title} size={24} />}

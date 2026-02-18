@@ -2,8 +2,8 @@ import { Spring } from "@follow/components/constants/spring.js"
 import { cn } from "@follow/utils/utils"
 import type { VariantProps } from "class-variance-authority"
 import { cva } from "class-variance-authority"
+import type { HTMLMotionProps } from "motion/react"
 import { m } from "motion/react"
-import type { ReactNode } from "react"
 
 const aiShortcutButtonVariants = cva(
   [
@@ -38,25 +38,21 @@ const aiShortcutButtonVariants = cva(
 )
 
 export interface AIShortcutButtonProps extends VariantProps<typeof aiShortcutButtonVariants> {
-  children: ReactNode
-  onClick: () => void
-  className?: string
   animationDelay?: number
-  title?: string
-  style?: React.CSSProperties
 }
 
-export const AIShortcutButton: React.FC<AIShortcutButtonProps> = ({
+export const AIShortcutButton = ({
   children,
   onClick,
   className,
   animationDelay = 0,
-  title,
   size,
   variant,
   disabled,
   style,
-}) => {
+  ref,
+  ...rest
+}: AIShortcutButtonProps & HTMLMotionProps<"button">) => {
   return (
     <m.button
       initial={{ opacity: 0, scale: 0.9 }}
@@ -65,11 +61,13 @@ export const AIShortcutButton: React.FC<AIShortcutButtonProps> = ({
       transition={{ delay: animationDelay, ...Spring.presets.snappy }}
       onClick={onClick}
       disabled={disabled ?? false}
-      title={title}
       className={cn(aiShortcutButtonVariants({ size, variant, disabled }), className)}
-      style={style}
+      ref={ref}
+      {...rest}
     >
       {children}
     </m.button>
   )
 }
+
+AIShortcutButton.displayName = "AIShortcutButton"

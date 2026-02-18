@@ -36,7 +36,10 @@ export const FeedScreen: NavigationControllerView<{
           <FeedScreenEntryList />
           {!isSubscribed && isBizId(feedIdentifier) && (
             <Pressable
-              className="absolute bottom-10 left-1/2 z-10 m-2 mx-auto -translate-x-1/2 overflow-hidden rounded-full px-8 py-2"
+              className="absolute left-1/2 z-10 m-2 mx-auto -translate-x-1/2 rounded-full bg-accent px-4 py-2"
+              style={{
+                bottom: Math.max(20, insets.bottom + 12),
+              }}
               onPress={() => {
                 navigation.presentControllerView(FollowScreen, {
                   id: feedIdentifier,

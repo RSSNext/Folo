@@ -21,6 +21,12 @@ export const EditRewriteRulesScreen: NavigationControllerView<{
 }> = ({ index }) => {
   const { t } = useTranslation("settings")
   const rule = useActionRule(index)
+  const rewriteRules =
+    rule?.result.rewriteRules?.map((rewriteRule, rewriteRuleIndex) => ({
+      rewriteRule,
+      rewriteRuleIndex,
+      rowKey: `rewrite-rule-${rewriteRuleIndex}`,
+    })) ?? []
   return (
     <SafeNavigationScrollView
       className="bg-system-grouped-background"
@@ -30,40 +36,42 @@ export const EditRewriteRulesScreen: NavigationControllerView<{
         label={t("actions.action_card.rewrite_rules")}
         marginSize="small"
       />
-      {rule?.result.rewriteRules?.map((rewriteRule, rewriteRuleIndex) => (
-        <GroupedInsetListCard key={rewriteRuleIndex} className="mb-4">
-          <GroupedInsetListBaseCell className="flex-row">
-            <Text className="text-label">{t("actions.action_card.from")}</Text>
-            <PlainTextField
-              className="w-full flex-1 text-right"
-              value={rewriteRule.from}
-              onChangeText={(value) => {
-                actionActions.updateRewriteRule({
-                  index,
-                  rewriteRuleIndex,
-                  key: "from",
-                  value,
-                })
-              }}
-            />
-          </GroupedInsetListBaseCell>
-          <GroupedInsetListBaseCell className="flex-row">
-            <Text className="text-label">{t("actions.action_card.to")}</Text>
-            <PlainTextField
-              className="w-full flex-1 text-right"
-              value={rewriteRule.to}
-              onChangeText={(value) => {
-                actionActions.updateRewriteRule({
-                  index,
-                  rewriteRuleIndex,
-                  key: "to",
-                  value,
-                })
-              }}
-            />
-          </GroupedInsetListBaseCell>
-        </GroupedInsetListCard>
-      ))}
+      {rewriteRules.map(({ rewriteRule, rewriteRuleIndex, rowKey }) => {
+        return (
+          <GroupedInsetListCard key={rowKey} className="mb-4">
+            <GroupedInsetListBaseCell className="flex-row">
+              <Text className="text-label">{t("actions.action_card.from")}</Text>
+              <PlainTextField
+                className="w-full flex-1 text-right"
+                value={rewriteRule.from}
+                onChangeText={(value) => {
+                  actionActions.updateRewriteRule({
+                    index,
+                    rewriteRuleIndex,
+                    key: "from",
+                    value,
+                  })
+                }}
+              />
+            </GroupedInsetListBaseCell>
+            <GroupedInsetListBaseCell className="flex-row">
+              <Text className="text-label">{t("actions.action_card.to")}</Text>
+              <PlainTextField
+                className="w-full flex-1 text-right"
+                value={rewriteRule.to}
+                onChangeText={(value) => {
+                  actionActions.updateRewriteRule({
+                    index,
+                    rewriteRuleIndex,
+                    key: "to",
+                    value,
+                  })
+                }}
+              />
+            </GroupedInsetListBaseCell>
+          </GroupedInsetListCard>
+        )
+      })}
       <GroupedInsetListCard>
         <GroupedPlainButtonCell
           label={t("actions.action_card.add")}

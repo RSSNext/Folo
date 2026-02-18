@@ -125,12 +125,12 @@ export const WrappedScreenItem: FC<
       <ScreenItemContext value={ctxValue}>
         <ScreenOptionsContext value={screenOptionsCtxValue}>
           <ScreenStackItem
+            key={screenId}
             {...combinedLifecycleEvents}
             headerConfig={{
               ...defaultHeaderConfig,
               ...headerConfig,
             }}
-            key={screenId}
             screenId={screenId}
             ref={ref}
             stackPresentation={stackPresentation}

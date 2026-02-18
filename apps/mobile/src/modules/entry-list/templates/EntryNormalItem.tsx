@@ -37,10 +37,12 @@ export const EntryNormalItem = memo(
     entryId,
     extraData,
     view,
+    hasTopSeparator = false,
   }: {
     entryId: string
     extraData: EntryExtraData
     view: FeedViewType
+    hasTopSeparator?: boolean
   }) => {
     const entry = useEntry(entryId, (state) => ({
       id: state.id,
@@ -98,39 +100,46 @@ export const EntryNormalItem = memo(
           )}
           onPress={handlePress}
         >
+          {hasTopSeparator && (
+            <View
+              className="absolute left-4 right-0 top-0 h-px bg-opaque-separator/70"
+              style={{ transform: [{ scaleY: 0.5 }] }}
+              pointerEvents="none"
+            />
+          )}
           {!entry.read && (
             <View
               className={cn(
                 "absolute left-2 size-2 rounded-full bg-red",
-                view === FeedViewType.Notifications ? "top-[35]" : "top-[43]",
+                view === FeedViewType.Notifications ? "top-[32]" : "top-[40]",
               )}
             />
           )}
           <View className="flex-1 space-y-2 self-start">
             <View className="mb-1 flex-row items-center gap-1.5 pr-2">
               <FeedIcon fallback feed={feed} size={view === FeedViewType.Notifications ? 14 : 16} />
-              <Text numberOfLines={1} className="shrink text-sm font-medium text-secondary-label">
+              <Text numberOfLines={1} className="shrink text-xs font-medium text-secondary-label">
                 {feed?.title || from || "Unknown feed"}
               </Text>
-              <Text className="text-xs font-medium text-secondary-label">·</Text>
+              <Text className="text-xs font-medium text-tertiary-label">·</Text>
               {estimatedMins ? (
                 <>
                   <Text className="text-xs font-medium text-secondary-label">
                     {formatEstimatedMins(estimatedMins)}
                   </Text>
-                  <Text className="text-xs font-medium text-secondary-label">·</Text>
+                  <Text className="text-xs font-medium text-tertiary-label">·</Text>
                 </>
               ) : null}
               <RelativeDateTime
                 date={entry.publishedAt}
-                className="text-xs font-medium text-secondary-label"
+                className="text-xs font-medium text-tertiary-label"
               />
             </View>
             {!!entry.title && (
               <EntryTranslation
                 numberOfLines={2}
                 className={cn(
-                  view === FeedViewType.Notifications ? "text-base" : "text-lg",
+                  view === FeedViewType.Notifications ? "text-sm" : "text-base",
                   "font-semibold text-label",
                 )}
                 source={entry.title}
@@ -142,7 +151,7 @@ export const EntryNormalItem = memo(
             {view !== FeedViewType.Notifications && !!entry.description && (
               <EntryTranslation
                 numberOfLines={2}
-                className="my-0 text-sm text-secondary-label"
+                className="my-0 text-subheadline text-secondary-label"
                 source={entry.description}
                 target={translation?.description}
                 showTranslation={!!entry.translation}

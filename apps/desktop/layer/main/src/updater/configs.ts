@@ -1,21 +1,15 @@
 import { DEV, MICROSOFT_STORE_BUILD, MODE, ModeEnum } from "@follow/shared/constants"
-import path from "pathe"
 
-import { isWindows } from "../env"
+const isStoreDistribution = Boolean(process.mas || MICROSOFT_STORE_BUILD)
 
 export const appUpdaterConfig = {
   // Disable renderer hot update will trigger app update when available
   enableRenderHotUpdate: !DEV && MODE !== ModeEnum.staging,
-  enableCoreUpdate:
-    !process.mas &&
-    !MICROSOFT_STORE_BUILD &&
-    // Disable core update if platfrom is windows and application is't executing from default installion path.
-    // If the process is not executed from the default installation path,
-    // it is usually managed through a package manager like Scoop.
-    // In this case, updates need to be disabled.
-    !(isWindows && path.resolve(process.execPath, "../../") !== process.env.LOCALAPPDATA),
+  enableCoreUpdate: !isStoreDistribution,
+
   // Disable app update will also disable renderer hot update and core update
-  enableAppUpdate: !DEV,
+  enableAppUpdate: true,
+  enableDistributionStoreUpdate: isStoreDistribution,
 
   app: {
     autoCheckUpdate: true,

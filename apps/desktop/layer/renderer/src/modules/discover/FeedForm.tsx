@@ -13,12 +13,19 @@ import { LoadingCircle } from "@follow/components/ui/loading/index.jsx"
 import { RootPortal } from "@follow/components/ui/portal/index.js"
 import { ScrollArea } from "@follow/components/ui/scroll-area/index.js"
 import { Switch } from "@follow/components/ui/switch/index.jsx"
-import { FeedViewType } from "@follow/constants"
+import {
+  Tooltip,
+  TooltipContent,
+  TooltipPortal,
+  TooltipTrigger,
+} from "@follow/components/ui/tooltip/index.js"
+import { FeedViewType, UserRole } from "@follow/constants"
 import { useFeedByIdOrUrl } from "@follow/store/feed/hooks"
 import type { FeedModel } from "@follow/store/feed/types"
 import { useCategories, useSubscriptionByFeedId } from "@follow/store/subscription/hooks"
 import { subscriptionSyncService } from "@follow/store/subscription/store"
 import { whoami } from "@follow/store/user/getters"
+import { useIsLoggedIn, useUserRole } from "@follow/store/user/hooks"
 import { tracker } from "@follow/tracker"
 import { cn } from "@follow/utils/utils"
 import type { FeedAnalyticsModel, ParsedEntry } from "@follow-app/client-sdk"
@@ -30,11 +37,13 @@ import { useTranslation } from "react-i18next"
 import { toast } from "sonner"
 import { z } from "zod"
 
+import { useIsPaymentEnabled } from "~/atoms/server-configs"
 import { Autocomplete } from "~/components/ui/auto-completion"
 import { useCurrentModal, useIsInModal } from "~/components/ui/modal/stacked/hooks"
 import { getRouteParams } from "~/hooks/biz/useRouteParams"
 import { useI18n } from "~/hooks/common"
 import { toastFetchError } from "~/lib/error-parser"
+import { useSettingModal } from "~/modules/settings/modal/useSettingModal"
 import { feed as feedQuery, useFeedQuery } from "~/queries/feed"
 
 import { ViewSelectorRadioGroup } from "../shared/ViewSelectorRadioGroup"
@@ -48,6 +57,35 @@ const formSchema = z.object({
   title: z.string().optional(),
 })
 export type FeedFormDataValuesType = z.infer<typeof formSchema>
+
+export const PaidBadge = () => {
+  const { t } = useTranslation("settings")
+  const settingModalPresent = useSettingModal()
+  const isPaymentEnabled = useIsPaymentEnabled()
+
+  const handleClick = useCallback(
+    (e) => {
+      e.preventDefault()
+      settingModalPresent("plan")
+    },
+    [settingModalPresent],
+  )
+
+  if (!isPaymentEnabled) {
+    return null
+  }
+
+  return (
+    <Tooltip>
+      <TooltipTrigger asChild>
+        <i className="i-mgc-power block text-accent" onClick={handleClick} />
+      </TooltipTrigger>
+      <TooltipPortal>
+        <TooltipContent>{t("control.paid_badge.basic_or_higher")}</TooltipContent>
+      </TooltipPortal>
+    </Tooltip>
+  )
+}
 
 export const FeedForm: Component<{
   url?: string
@@ -280,6 +318,8 @@ const FeedInnerForm = ({
 
   const t = useI18n()
 
+  const isLoggedIn = useIsLoggedIn()
+
   const categories = useCategories()
 
   const suggestions = useMemo(
@@ -296,6 +336,10 @@ const FeedInnerForm = ({
   const fillDefaultTitle = useCallback(() => {
     form.setValue("title", feed.title || "")
   }, [feed.title, form])
+
+  const role = useUserRole()
+  const isPaymentEnabled = useIsPaymentEnabled()
+  const disabledForRole = role === UserRole.Free && isPaymentEnabled
 
   return (
     <div className="flex flex-1 flex-col gap-y-4">
@@ -367,7 +411,10 @@ const FeedInnerForm = ({
               <FormItem>
                 <div className="flex items-center justify-between">
                   <div>
-                    <FormLabel>{t("feed_form.private_follow")}</FormLabel>
+                    <FormLabel className="flex items-center gap-1">
+                      <span>{t("feed_form.private_follow")}</span>
+                      <PaidBadge />
+                    </FormLabel>
                     <FormDescription>{t("feed_form.private_follow_description")}</FormDescription>
                   </div>
                   <FormControl>
@@ -375,6 +422,7 @@ const FeedInnerForm = ({
                       className="shrink-0"
                       checked={field.value}
                       onCheckedChange={field.onChange}
+                      disabled={disabledForRole}
                     />
                   </FormControl>
                 </div>
@@ -388,7 +436,10 @@ const FeedInnerForm = ({
               <FormItem>
                 <div className="flex items-center justify-between">
                   <div>
-                    <FormLabel>{t("feed_form.hide_from_timeline")}</FormLabel>
+                    <FormLabel className="flex items-center gap-1">
+                      <span>{t("feed_form.hide_from_timeline")}</span>
+                      <PaidBadge />
+                    </FormLabel>
                     <FormDescription>
                       {t("feed_form.hide_from_timeline_description")}
                     </FormDescription>
@@ -398,6 +449,7 @@ const FeedInnerForm = ({
                       className="shrink-0"
                       checked={field.value}
                       onCheckedChange={field.onChange}
+                      disabled={disabledForRole}
                     />
                   </FormControl>
                 </div>
@@ -427,6 +479,7 @@ const FeedInnerForm = ({
         <div className="flex items-center justify-end gap-4 pt-2">
           {isSubscribed && (
             <Button
+              disabled={!isLoggedIn}
               type="button"
               variant="ghost"
               onClick={() => {
@@ -436,7 +489,12 @@ const FeedInnerForm = ({
               {t.common("words.cancel")}
             </Button>
           )}
-          <Button form="feed-form" type="submit" isLoading={followMutation.isPending}>
+          <Button
+            disabled={!isLoggedIn}
+            form="feed-form"
+            type="submit"
+            isLoading={followMutation.isPending}
+          >
             {isSubscribed ? t("feed_form.update") : t("feed_form.follow")}
           </Button>
         </div>

@@ -146,7 +146,7 @@ export const AIChatContextBar: Component = memo(({ className }) => {
                 ? `combined-${item.viewBlock?.id}-${item.feedBlock?.id}-${item.unreadOnlyBlock?.id}`
                 : item.block.id
             }
-            className="max-w-[240px] shrink-0"
+            className="max-w-[min(240px,100%)] shrink-0"
           >
             {renderBlock(item)}
           </div>
@@ -158,7 +158,7 @@ export const AIChatContextBar: Component = memo(({ className }) => {
             <PopoverTrigger asChild>
               <button
                 type="button"
-                className="flex h-7 shrink-0 items-center gap-1.5 rounded-lg border border-border bg-fill-tertiary px-2.5 text-xs text-text-secondary transition-colors hover:bg-fill-secondary hover:text-text"
+                className="flex h-7 shrink-0 items-center gap-1.5 rounded-lg border border-border bg-material-medium px-2.5 text-xs text-text-secondary transition-colors hover:bg-fill-secondary hover:text-text"
               >
                 <i className="i-mgc-more-1-cute-re size-3.5" />
                 <span>+{hiddenBlocks.length}</span>

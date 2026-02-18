@@ -1,13 +1,13 @@
 import { useOwnedLists, usePrefetchLists } from "@follow/store/list/hooks"
 import type { ListModel } from "@follow/store/list/types"
-import { createContext, createElement, use, useCallback, useMemo } from "react"
+import { Image as ExpoImage } from "expo-image"
+import { createContext, createElement, use, useMemo } from "react"
 import { useTranslation } from "react-i18next"
 import type { ListRenderItem } from "react-native"
-import { Image, StyleSheet, View } from "react-native"
+import { StyleSheet, View } from "react-native"
 import Animated, { LinearTransition } from "react-native-reanimated"
 import { useColor, useColors } from "react-native-uikit-colors"
 
-import { Balance } from "@/src/components/common/Balance"
 import { UINavigationHeaderActionButton } from "@/src/components/layouts/header/NavigationHeader"
 import {
   NavigationBlurEffectHeaderView,
@@ -23,10 +23,8 @@ import { ItemPressable } from "@/src/components/ui/pressable/ItemPressable"
 import { Text } from "@/src/components/ui/typography/Text"
 import { views } from "@/src/constants/views"
 import { AddCuteReIcon } from "@/src/icons/add_cute_re"
-import { PowerIcon } from "@/src/icons/power"
 import { RadaCuteFiIcon } from "@/src/icons/rada_cute_fi"
 import { UserAdd2CuteFiIcon } from "@/src/icons/user_add_2_cute_fi"
-import { Wallet2CuteFiIcon } from "@/src/icons/wallet_2_cute_fi"
 import { useNavigation } from "@/src/lib/navigation/hooks"
 import { ListScreen } from "@/src/screens/(modal)/ListScreen"
 import { accentColor } from "@/src/theme/colors"
@@ -46,12 +44,7 @@ export const ListsScreen = () => {
       Header={
         <NavigationBlurEffectHeaderView
           title={t("titles.lists")}
-          headerRight={useCallback(
-            () => (
-              <AddListButton />
-            ),
-            [],
-          )}
+          headerRight={() => <AddListButton />}
         />
       }
     >
@@ -119,15 +112,9 @@ const AddListButton = () => {
 const ItemSeparatorComponent = () => {
   return (
     <View
-      className="ml-24 h-px flex-1 bg-opaque-separator/50"
+      className="ml-24 flex-1 bg-opaque-separator/50"
       collapsable={false}
-      style={{
-        transform: [
-          {
-            scaleY: 0.5,
-          },
-        ],
-      }}
+      style={styles.itemSeparator}
     />
   )
 }
@@ -141,6 +128,8 @@ const ListItemCellImpl: ListRenderItem<ListModel> = ({ item: list }) => {
   const listData = use(ListContext)[list.id]
   const navigation = useNavigation()
   const colors = useColors()
+  const viewConfig = useMemo(() => views.find((view) => view.view === list.view), [list.view])
+  const subscriptionCount = listData?.subscriptionCount ?? list.subscriptionCount ?? 0
   return (
     <SwipeableItem
       swipeRightToCallAction
@@ -175,11 +164,11 @@ const ListItemCellImpl: ListRenderItem<ListModel> = ({ item: list }) => {
       >
         <View className="size-16 overflow-hidden rounded-lg">
           {list.image ? (
-            <Image
+            <ExpoImage
               source={{
                 uri: list.image,
               }}
-              resizeMode="cover"
+              contentFit="cover"
               className="size-full"
             />
           ) : (
@@ -200,45 +189,20 @@ const ListItemCellImpl: ListRenderItem<ListModel> = ({ item: list }) => {
             </Text>
           )}
           <View className="flex-row items-center gap-1">
-            {!!views.find((v) => v.view === list.view)?.icon &&
-              createElement(views.find((v) => v.view === list.view)!.icon, {
-                color: views.find((v) => v.view === list.view)!.activeColor,
+            {!!viewConfig?.icon &&
+              createElement(viewConfig.icon, {
+                color: viewConfig.activeColor,
                 height: 16,
                 width: 16,
               })}
-            {!!views.find((v) => v.view === list.view)?.name && (
-              <Text className="text-base text-secondary-label">
-                {t(views.find((v) => v.view === list.view)!.name)}
-              </Text>
+            {!!viewConfig?.name && (
+              <Text className="text-base text-secondary-label">{t(viewConfig.name)}</Text>
             )}
-          </View>
-        </View>
-
-        <View
-          className="mx-4 h-full bg-opaque-separator"
-          style={{
-            width: StyleSheet.hairlineWidth,
-          }}
-        />
-        <View className="w-16 gap-1">
-          <View className="flex-row items-center gap-1">
-            <PowerIcon height={16} width={16} color={accentColor} />
-            <Text className="text-sm text-secondary-label">{list.fee}</Text>
-          </View>
-
-          <View className="flex-row items-center gap-1">
-            <UserAdd2CuteFiIcon height={16} width={16} color={accentColor} />
-            <Text className="text-sm text-secondary-label">{listData?.subscriptionCount || 0}</Text>
-          </View>
-
-          {!!listData?.purchaseAmount && (
-            <View className="flex-row items-center gap-1">
-              <Wallet2CuteFiIcon height={16} width={16} color={accentColor} />
-              <Balance className="text-sm text-secondary-label">
-                {BigInt(listData.purchaseAmount)}
-              </Balance>
+            <View className="ml-1 flex-row items-center gap-1">
+              <UserAdd2CuteFiIcon height={16} width={16} color={accentColor} />
+              <Text className="text-sm text-secondary-label">{subscriptionCount}</Text>
             </View>
-          )}
+          </View>
         </View>
       </ItemPressable>
     </SwipeableItem>
@@ -248,5 +212,8 @@ const styles = StyleSheet.create({
   title: {
     fontSize: 20,
     fontWeight: "semibold",
+  },
+  itemSeparator: {
+    height: StyleSheet.hairlineWidth,
   },
 })

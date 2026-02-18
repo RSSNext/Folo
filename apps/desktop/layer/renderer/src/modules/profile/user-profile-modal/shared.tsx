@@ -21,7 +21,7 @@ import { useEventCallback } from "usehooks-ts"
 import { m } from "~/components/common/Motion"
 import { useFollow } from "~/hooks/biz/useFollow"
 import { useI18n } from "~/hooks/common"
-import { replaceImgUrlIfNeed } from "~/lib/img-proxy"
+import { useReplaceImgUrlIfNeed } from "~/lib/img-proxy"
 import { FeedIcon } from "~/modules/feed/feed-icon"
 import { useUserSubscriptionsQuery } from "~/modules/profile/hooks"
 
@@ -39,6 +39,7 @@ export const SubscriptionItems = ({
   userId: string
   itemStyle: ItemVariant
 }) => {
+  const replaceImgUrlIfNeed = useReplaceImgUrlIfNeed()
   const profile = usePrefetchUser(userId)
   const userInfo = useUserById(userId)
   const subscriptions = useUserSubscriptionsQuery(userId)

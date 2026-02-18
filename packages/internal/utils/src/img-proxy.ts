@@ -1,4 +1,4 @@
-export const IMAGE_PROXY_URL = "https://webp.follow.is"
+export const IMAGE_PROXY_URL = "https://img.folo.is"
 
 export const imageRefererMatches = [
   {
@@ -40,15 +40,28 @@ export const getImageProxyUrl = ({
   url,
   width,
   height,
+  canUseProxy,
 }: {
   url: string
   width?: number
   height?: number
+  canUseProxy?: boolean
 }) => {
+  if (!canUseProxy) {
+    return url
+  }
   return `${IMAGE_PROXY_URL}?url=${encodeURIComponent(url)}&width=${width ? Math.round(width) : ""}&height=${height ? Math.round(height) : ""}`
 }
 
-export const replaceImgUrlIfNeed = ({ url, inBrowser }: { url?: string; inBrowser?: boolean }) => {
+export const replaceImgUrlIfNeed = ({
+  url,
+  inBrowser,
+  canUseProxy,
+}: {
+  url?: string
+  inBrowser?: boolean
+  canUseProxy?: boolean
+}) => {
   if (!url) return url
 
   for (const rule of webpCloudPublicServicesMatches) {
@@ -59,7 +72,7 @@ export const replaceImgUrlIfNeed = ({ url, inBrowser }: { url?: string; inBrowse
 
   for (const rule of imageRefererMatches) {
     if ((inBrowser || rule.force) && rule.url.test(url)) {
-      return getImageProxyUrl({ url, width: 0, height: 0 })
+      return getImageProxyUrl({ url, width: 0, height: 0, canUseProxy })
     }
   }
   return url

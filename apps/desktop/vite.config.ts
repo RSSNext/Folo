@@ -36,7 +36,7 @@ const devPrint = (): PluginOption => ({
       )
       console.info(
         `  ${green("➜")}  ${dim("Development debug")}: ${cyan(
-          "https://dev.follow.is/__debug_proxy",
+          "https://dev.folo.is/__debug_proxy",
         )}`,
       )
     }
@@ -153,6 +153,7 @@ export default ({ mode }) => {
           injectRegister: false,
 
           injectManifest: {
+            injectionPoint: undefined,
             globPatterns: [
               "**/*.{js,json,css,html,txt,svg,png,ico,webp,woff,woff2,ttf,eot,otf,wasm}",
             ],
@@ -284,7 +285,7 @@ export default ({ mode }) => {
         ],
         ["tldts"],
 
-        ["@sentry/react", "@openpanel/web"],
+        ["@openpanel/web"],
         ["zod", "react-hook-form", "@hookform/resolvers"],
       ]),
 

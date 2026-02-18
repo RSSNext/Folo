@@ -9,13 +9,7 @@ import { titleCase } from "title-case"
 
 import { SettingActionItem, SettingDescription, SettingSwitch } from "./control"
 
-type SettingSectionHighlightContextValue = {
-  highlightedSectionId?: string
-  registerSection: (sectionId: string, element: HTMLElement | null) => void
-}
-
-export const SettingSectionHighlightContext =
-  createContext<SettingSectionHighlightContextValue | null>(null)
+export const SettingSectionHighlightIdContext = createContext<string | null>(null)
 
 export const SettingSectionTitle: FC<{
   title: string | ReactNode
@@ -23,32 +17,59 @@ export const SettingSectionTitle: FC<{
   margin?: "compact" | "normal"
   sectionId?: string
 }> = ({ title, margin, className, sectionId }) => {
-  const highlightCtx = use(SettingSectionHighlightContext)
+  const highlightedSectionId = use(SettingSectionHighlightIdContext)
   const elementRef = useRef<HTMLDivElement | null>(null)
 
+  const isHighlighted = !!sectionId && highlightedSectionId === sectionId && !!elementRef.current
+
   useEffect(() => {
-    if (!sectionId || !highlightCtx) return
-    highlightCtx.registerSection(sectionId, elementRef.current)
-    return () => {
-      highlightCtx.registerSection(sectionId, null)
+    if (!isHighlighted) {
+      return
     }
-  }, [highlightCtx, sectionId])
 
-  const isHighlighted =
-    !!sectionId && highlightCtx?.highlightedSectionId === sectionId && !!elementRef.current
+    let rollingAnimation: Animation | null = null
 
+    const timer = setTimeout(() => {
+      const highlightedElement = elementRef.current?.querySelector(
+        "[data-highlighted-element]",
+      ) as HTMLElement
+      if (!highlightedElement) {
+        clearTimeout(timer)
+        return
+      }
+      const keyframeEffect = new KeyframeEffect(
+        highlightedElement,
+        [
+          {
+            backgroundColor: "color-mix(in srgb, hsl(var(--fo-a)) 33%, hsl(var(--background)) 67%)",
+          },
+          { backgroundColor: "transparent" },
+        ],
+        {
+          duration: 1000,
+          easing: "ease-in-out",
+        },
+      )
+      rollingAnimation = new Animation(keyframeEffect, document.timeline)
+      rollingAnimation.play()
+    }, 500)
+    return () => {
+      rollingAnimation?.cancel()
+      clearTimeout(timer)
+    }
+  }, [isHighlighted])
   return (
     <div
       ref={elementRef}
       data-setting-section={sectionId}
       data-highlighted={isHighlighted ? "true" : undefined}
       className={cn(
-        "shrink-0 text-headline font-bold text-text opacity-50 transition-colors duration-300 first:mt-0",
+        "relative shrink-0 text-headline font-bold text-text/60 first:mt-0",
         margin === "compact" ? "mb-2 mt-8" : "mb-4 mt-10",
-        isHighlighted && "-ml-3 rounded-lg border border-folo px-3 py-1.5 opacity-100",
         className,
       )}
     >
+      {isHighlighted && <div className="absolute -inset-4 rounded-lg" data-highlighted-element />}
       {typeof title === "string" ? titleCase(title) : title}
     </div>
   )

@@ -1,6 +1,7 @@
 import { getReadonlyRoute } from "@follow/components/atoms/route.js"
 import { useGlobalFocusableHasScope } from "@follow/components/common/Focusable/hooks.js"
 import { RootPortal } from "@follow/components/ui/portal/index.js"
+import { LinearBlur } from "@follow/components/ui/progressive-blur/index.js"
 import { ScrollArea } from "@follow/components/ui/scroll-area/index.js"
 import { Routes } from "@follow/constants"
 import { ELECTRON_BUILD } from "@follow/shared/constants"
@@ -111,6 +112,7 @@ function SubviewLayoutInner() {
       location.pathname === Routes.Discover &&
       scrollRef
     ) {
+      if (scrollRef.scrollTop === 0) return
       springScrollTo(0, scrollRef)
     }
 
@@ -161,7 +163,7 @@ function SubviewLayoutInner() {
       {/* Enhanced Header with smooth transitions */}
       <div
         className={cn(
-          "absolute inset-x-0 top-0 z-10 transition-all duration-300 ease-out",
+          "absolute inset-x-0 top-0 z-10 overflow-hidden transition-all duration-300 ease-out",
           isHeaderElevated && isElectronWindows && "-top-5",
         )}
       >

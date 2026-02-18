@@ -42,6 +42,9 @@ export const UserAvatar = ({ className }: { className?: string }) => {
         updatedAt: new Date().toISOString(),
         twoFactorEnabled: false,
         deleted: false,
+        inactive: false,
+        lastLoginMethod: "github",
+        appleAppAccountToken: null,
       }
     } else {
       return null

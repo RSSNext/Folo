@@ -8,7 +8,7 @@ import { TimelineHeader } from "@/src/modules/screen/TimelineSelectorProvider"
 import { EntryListSelector } from "./EntryListSelector"
 
 const renderViewItem = (view: FeedViewType, active: boolean) => (
-  <ViewEntryList key={view} viewId={view} active={active} />
+  <ViewEntryList key={`${view}-${active ? "active" : "inactive"}`} viewId={view} active={active} />
 )
 export function EntryList() {
   const selectedFeed = useSelectedFeed()

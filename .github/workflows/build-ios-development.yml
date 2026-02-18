@@ -40,7 +40,7 @@ jobs:
 
     steps:
       - name: 📦 Checkout code
-        uses: actions/checkout@v5
+        uses: actions/checkout@v6
 
       - name: 📱 Setup EAS
         uses: expo/expo-github-action@v8
@@ -60,7 +60,7 @@ jobs:
 
       # Optional: Upload artifact
       - name: 📤 Upload IPA
-        uses: actions/upload-artifact@v4
+        uses: actions/upload-artifact@v6
         with:
           name: app-ios-development-device
           path: apps/mobile/build.ipa
@@ -78,7 +78,7 @@ jobs:
 
     steps:
       - name: 📦 Checkout code
-        uses: actions/checkout@v5
+        uses: actions/checkout@v6
 
       - name: 🔧 Setup Xcode
         uses: ./.github/actions/setup-xcode
@@ -109,7 +109,7 @@ jobs:
           SENTRY_AUTH_TOKEN: ${{ secrets.RN_SENTRY_AUTH_TOKEN }}
       # Optional: Upload artifact
       - name: 📤 Upload IPA
-        uses: actions/upload-artifact@v4
+        uses: actions/upload-artifact@v6
         with:
           name: app-ios-development-device
           path: apps/mobile/build.ipa
@@ -122,7 +122,7 @@ jobs:
 
     steps:
       - name: 📦 Checkout code
-        uses: actions/checkout@v5
+        uses: actions/checkout@v6
 
       - name: 🔧 Setup Xcode
         uses: ./.github/actions/setup-xcode
@@ -153,7 +153,7 @@ jobs:
           SENTRY_AUTH_TOKEN: ${{ secrets.RN_SENTRY_AUTH_TOKEN }}
       # Optional: Upload artifact
       - name: 📤 Upload IPA
-        uses: actions/upload-artifact@v4
+        uses: actions/upload-artifact@v6
         with:
           name: app-ios-development-simulator
           path: apps/mobile/build-simulator.ipa

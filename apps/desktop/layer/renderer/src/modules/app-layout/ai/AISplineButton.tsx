@@ -7,6 +7,8 @@ import { setAIPanelVisibility, useAIPanelVisibility, useAISettingKey } from "~/a
 import { AISpline } from "~/modules/ai-chat/components/3d-models/AISpline"
 import { AISmartSidebar } from "~/modules/ai-chat/components/layouts/AISmartSidebar"
 
+import { AIChatFloatingPanel } from "./AIChatFloatingPanel"
+
 export const AIIndicator: FC = () => {
   const isVisible = useAIPanelVisibility()
   const showSplineButton = useAISettingKey("showSplineButton")
@@ -21,31 +23,34 @@ export const AIIndicator: FC = () => {
   }
 
   return (
-    <AnimatePresence>
-      {shouldShow && !showSplineButton && <AISmartSidebar />}
-      {shouldShow && showSplineButton && (
-        <m.button
-          key="ai-spline-button"
-          initial={{ scale: 0, opacity: 0 }}
-          animate={{ scale: 1, opacity: 1 }}
-          exit={{ scale: 0, opacity: 0 }}
-          whileHover={{ scale: 1.05 }}
-          whileTap={{ scale: 0.95 }}
-          transition={Spring.presets.smooth}
-          onClick={handleClick}
-          className={clsx(
-            "fixed bottom-8 right-8 z-40",
-            "rounded-2xl",
-            "hover:scale-105",
-            "active:scale-95",
-            "flex items-center justify-center",
-            "transition-all duration-300 ease-out",
-          )}
-          title="Open AI Chat"
-        >
-          <AISpline />
-        </m.button>
-      )}
-    </AnimatePresence>
+    <>
+      <AnimatePresence>
+        {shouldShow && !showSplineButton && <AISmartSidebar />}
+        {shouldShow && showSplineButton && (
+          <m.button
+            key="ai-spline-button"
+            initial={{ scale: 0, opacity: 0 }}
+            animate={{ scale: 1, opacity: 1 }}
+            exit={{ scale: 0, opacity: 0 }}
+            whileHover={{ scale: 1.05 }}
+            whileTap={{ scale: 0.95 }}
+            transition={Spring.presets.smooth}
+            onClick={handleClick}
+            className={clsx(
+              "fixed bottom-8 right-8 z-40",
+              "rounded-2xl",
+              "hover:scale-105",
+              "active:scale-95",
+              "flex items-center justify-center",
+              "transition-all duration-300 ease-out",
+            )}
+            title="Open AI Chat"
+          >
+            <AISpline />
+          </m.button>
+        )}
+      </AnimatePresence>
+      <AIChatFloatingPanel />
+    </>
   )
 }

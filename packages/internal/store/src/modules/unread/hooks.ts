@@ -5,14 +5,17 @@ import { useCallback, useEffect } from "react"
 import { getEntry } from "../entry/getter"
 import { useListFeedIds } from "../list/hooks"
 import { useSubscriptionIdsByView } from "../subscription/hooks"
+import { useIsLoggedIn } from "../user/hooks"
 import { unreadCountAllSelector, unreadCountIdSelector, unreadCountIdsSelector } from "./selectors"
 import { unreadSyncService, useUnreadStore } from "./store"
 
 export const usePrefetchUnread = () => {
+  const isLoggedIn = useIsLoggedIn()
   return useQuery({
     queryKey: ["unread"],
     queryFn: () => unreadSyncService.resetFromRemote(),
     staleTime: 5 * 1000 * 60, // 5 minutes
+    enabled: isLoggedIn,
   })
 }
 
@@ -131,7 +134,7 @@ export const useSortedCategoriesByUnread = (
         Object.keys(folderUnread)
           .sort((a, b) => folderUnread[b]! - folderUnread[a]!)
           .forEach((key) => {
-            sortedList.push([key, categories[key]!])
+            sortedList.push([key, categories[key]!.concat()])
           })
 
         if (!isDesc) {

@@ -6,21 +6,20 @@ export interface NavigationPushOptions<T> {
   element?: React.ReactElement
 }
 
-export interface NavigationControllerViewExtraProps
-  extends Pick<
-    ScreenProps,
-    | "sheetAllowedDetents"
-    | "sheetCornerRadius"
-    | "sheetExpandsWhenScrolledToEdge"
-    | "sheetElevation"
-    | "sheetGrabberVisible"
-    | "sheetInitialDetentIndex"
-    | "sheetLargestUndimmedDetentIndex"
-    // Transition-related props
-    | "stackAnimation"
-    | "replaceAnimation"
-    | "transitionDuration"
-  > {
+export interface NavigationControllerViewExtraProps extends Pick<
+  ScreenProps,
+  | "sheetAllowedDetents"
+  | "sheetCornerRadius"
+  | "sheetExpandsWhenScrolledToEdge"
+  | "sheetElevation"
+  | "sheetGrabberVisible"
+  | "sheetInitialDetentIndex"
+  | "sheetLargestUndimmedDetentIndex"
+  // Transition-related props
+  | "stackAnimation"
+  | "replaceAnimation"
+  | "transitionDuration"
+> {
   /**
    * Unique identifier for the view.
    */

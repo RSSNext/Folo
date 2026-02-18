@@ -94,6 +94,33 @@ export class TrackerManager {
   }
 
   /**
+   * Capture an exception across all enabled adapters
+   */
+  async captureException(error: unknown, properties?: Record<string, unknown>): Promise<void> {
+    const enabledAdapters = this.getEnabledAdapters()
+
+    if (enabledAdapters.length === 0) {
+      console.warn("[TrackerManager] No enabled adapters found for exception capture")
+      return
+    }
+
+    const promises = enabledAdapters.map(async (adapter) => {
+      if (!adapter.captureException) return
+
+      try {
+        await Promise.resolve(adapter.captureException({ error, properties }))
+      } catch (captureError) {
+        console.error(
+          `[TrackerManager] Failed to capture exception with adapter "${adapter.getName()}":`,
+          captureError,
+        )
+      }
+    })
+
+    await Promise.allSettled(promises)
+  }
+
+  /**
    * Identify a user across all enabled adapters
    */
   async identify(payload: IdentifyPayload): Promise<void> {

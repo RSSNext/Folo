@@ -10,7 +10,7 @@ import Animated, {
 } from "react-native-reanimated"
 import { useSafeAreaFrame, useSafeAreaInsets } from "react-native-safe-area-context"
 
-import { ReAnimatedTouchableOpacity } from "@/src/components/common/AnimatedComponents"
+import { ReAnimatedPressable } from "@/src/components/common/AnimatedComponents"
 import { BlurEffect } from "@/src/components/common/BlurEffect"
 import { getDefaultHeaderHeight } from "@/src/components/layouts/utils"
 import { SetNavigationHeaderHeightContext } from "@/src/components/layouts/views/NavigationHeaderContext"
@@ -214,7 +214,7 @@ const SearchInput = () => {
         </Animated.View>
       </View>
 
-      <ReAnimatedTouchableOpacity
+      <ReAnimatedPressable
         hitSlop={10}
         onPress={() => {
           setIsFocused(false)
@@ -231,7 +231,7 @@ const SearchInput = () => {
         >
           Cancel
         </Text>
-      </ReAnimatedTouchableOpacity>
+      </ReAnimatedPressable>
     </Animated.View>
   )
 }

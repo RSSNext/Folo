@@ -1,5 +1,8 @@
+import type { FeedViewType } from "@follow/constants"
+import { isFreeRole } from "@follow/constants"
 import { useTypeScriptHappyCallback } from "@follow/hooks"
 import { usePrefetchEntryTranslation } from "@follow/store/translation/hooks"
+import { useUserRole } from "@follow/store/user/hooks"
 import type { FlashListProps, FlashListRef } from "@shopify/flash-list"
 import type { ElementRef } from "react"
 import { useImperativeHandle, useMemo, useRef } from "react"
@@ -15,28 +18,38 @@ import { GridEntryListFooter } from "./EntryListFooter"
 import { useOnViewableItemsChanged } from "./hooks"
 import { EntryVideoItem } from "./templates/EntryVideoItem"
 
+const VIDEO_SKELETON_KEYS = ["video-skeleton-1", "video-skeleton-2", "video-skeleton-3"] as const
+
 export const EntryListContentVideo = ({
   ref: forwardRef,
   entryIds,
   active,
+  view,
   ...rest
-}: { entryIds: string[] | null; active?: boolean } & Omit<
+}: { entryIds: string[] | null; active?: boolean; view: FeedViewType } & Omit<
   FlashListProps<string>,
   "data" | "renderItem"
 > & { ref?: React.Ref<ElementRef<typeof TimelineSelectorMasonryList> | null> }) => {
   const ref = useRef<FlashListRef<any>>(null)
   useImperativeHandle(forwardRef, () => ref.current!)
-  const { fetchNextPage, refetch, isRefetching, isFetching, hasNextPage, isReady } = useEntries()
+  const { fetchNextPage, refetch, isRefetching, isFetching, hasNextPage, isReady } = useEntries({
+    viewId: view,
+    active,
+  })
   const { onViewableItemsChanged, onScroll, viewableItems } = useOnViewableItemsChanged({
     disabled: active === false || isFetching,
   })
 
   const translation = useGeneralSettingKey("translation")
+  const translationMode = useGeneralSettingKey("translationMode")
   const actionLanguage = useActionLanguage()
+  const userRole = useUserRole()
+  const translationPrefetchEnabled = translation && !isFreeRole(userRole)
   usePrefetchEntryTranslation({
     entryIds: active ? viewableItems.map((item) => item.key) : [],
     language: actionLanguage,
-    enabled: translation,
+    enabled: translationPrefetchEnabled,
+    mode: translationMode,
   })
 
   const ListFooterComponent = useMemo(
@@ -68,13 +81,13 @@ export const EntryListContentVideo = ({
       >
         <View className="flex-row">
           <View className="mr-1 flex-1">
-            {Array.from({ length: 3 }).map((_, index) => (
-              <EntryVideoItemSkeleton key={`left-${index}`} />
+            {VIDEO_SKELETON_KEYS.map((key) => (
+              <EntryVideoItemSkeleton key={`left-${key}`} />
             ))}
           </View>
           <View className="ml-1 flex-1">
-            {Array.from({ length: 3 }).map((_, index) => (
-              <EntryVideoItemSkeleton key={`right-${index}`} />
+            {VIDEO_SKELETON_KEYS.map((key) => (
+              <EntryVideoItemSkeleton key={`right-${key}`} />
             ))}
           </View>
         </View>

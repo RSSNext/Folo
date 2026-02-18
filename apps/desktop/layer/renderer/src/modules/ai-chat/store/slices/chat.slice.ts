@@ -1,42 +1,62 @@
 import type { IdGenerator } from "ai"
+import { nanoid } from "nanoid"
 import type { StateCreator } from "zustand"
 
 import { ChatSliceActions } from "../chat-core/chat-actions"
 import { ZustandChat } from "../chat-core/chat-instance"
 import type { ChatSlice } from "../chat-core/types"
-import { createChatTransport } from "../transport"
+import { createChatTitleHandler, createChatTransport } from "../transport"
 
 export const createChatSlice: (options: {
-  chatId: string
+  chatId?: string
   generateId?: IdGenerator
+  isLocal?: boolean
+  syncStatus?: "local" | "synced"
 }) => StateCreator<ChatSlice, [], [], ChatSlice> =
   (options) =>
   (...params) => {
-    const [set] = params
-    const { chatId, generateId } = options
+    const [set, get] = params
+    const { chatId, generateId, isLocal, syncStatus } = options
 
+    const nextChatId = chatId || nanoid()
     const chatInstance = new ZustandChat(
       {
-        id: chatId,
+        id: nextChatId,
         messages: [],
-        transport: createChatTransport(),
+        transport: createChatTransport({
+          titleHandler: createChatTitleHandler({
+            chatId: nextChatId,
+            getActiveChatId: () => get().chatId,
+            onTitleChange: (title) => {
+              set({
+                currentTitle: title,
+              })
+            },
+          }),
+        }),
         generateId,
       },
       set,
     )
 
-    const chatActions = new ChatSliceActions(params, chatInstance)
+    const chatActions = new ChatSliceActions(params, {
+      chatInstance,
+      hasChatId: !!chatId,
+    })
 
     return {
-      chatId,
+      chatId: nextChatId,
       messages: [],
       status: "ready",
       error: undefined,
       isStreaming: false,
+      isLocal: isLocal ?? true,
+      syncStatus: syncStatus ?? (isLocal === false ? "synced" : "local"),
       currentTitle: undefined,
       chatInstance,
       chatActions,
       scene: "general",
       timelineSummaryManualOverride: false,
+      timelineSummaryWasInAutoContext: false,
     }
   }

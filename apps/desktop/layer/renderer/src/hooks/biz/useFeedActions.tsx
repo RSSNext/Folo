@@ -35,8 +35,6 @@ import { useCategoryCreationModal } from "~/modules/settings/tabs/lists/hooks"
 import { ListCreationModalContent } from "~/modules/settings/tabs/lists/modals"
 import { useResetFeed } from "~/queries/feed"
 
-import { useNavigateEntry } from "./useNavigateEntry"
-import { getRouteParams } from "./useRouteParams"
 import { useBatchUpdateSubscription, useDeleteSubscription } from "./useSubscriptionActions"
 
 export const useFeedActions = ({
@@ -73,7 +71,6 @@ export const useFeedActions = ({
   const deleteSubscription = useDeleteSubscription({})
   const claimFeed = useFeedClaimModal()
 
-  const navigateEntry = useNavigateEntry()
   const isEntryList = type === "entryList"
 
   const { mutateAsync: addFeedToListMutation } = useAddFeedToFeedList()
@@ -102,40 +99,46 @@ export const useFeedActions = ({
         disabled: isEntryList,
         click: () => unreadSyncService.markFeedAsRead(isMultipleSelection ? feedIds : [feedId]),
         supportMultipleSelection: true,
+        requiresLogin: true,
       }),
-      !related.ownerUserId &&
-        !!isBizId(related.id) &&
-        related.type === "feed" &&
-        new MenuItemText({
-          label: isEntryList
-            ? t("sidebar.feed_actions.claim_feed")
-            : t("sidebar.feed_actions.claim"),
-          shortcut: "C",
-          click: () => {
-            claimFeed({ feedId })
-          },
-        }),
-      ...(isFeedOwner
-        ? [
-            MenuItemSeparator.default,
-            new MenuItemText({
-              label: t("sidebar.feed_actions.feed_owned_by_you"),
-              disabled: true,
-            }),
-            new MenuItemText({
-              label: t("sidebar.feed_actions.reset_feed"),
-              click: () => {
-                resetFeed(feedId)
-              },
-            }),
-            MenuItemSeparator.default,
-          ]
-        : []),
+      new MenuItemSeparator(isEntryList),
+      new MenuItemText({
+        label: isEntryList ? t("sidebar.feed_actions.edit_feed") : t("sidebar.feed_actions.edit"),
+        shortcut: "E",
+        disabled: isInbox,
+        click: () => {
+          present({
+            modalContentClassName: "overflow-visible",
+            title: t("sidebar.feed_actions.edit_feed"),
+            content: ({ dismiss }) => <FeedForm id={feedId} onSuccess={dismiss} />,
+          })
+        },
+        requiresLogin: true,
+      }),
+      new MenuItemText({
+        label: isMultipleSelection
+          ? t("sidebar.feed_actions.unfollow_feed_many")
+          : isEntryList
+            ? t("sidebar.feed_actions.unfollow_feed")
+            : t("sidebar.feed_actions.unfollow"),
+        shortcut: "$mod+Backspace",
+        disabled: isInbox,
+        supportMultipleSelection: true,
+        click: () => {
+          if (isMultipleSelection) {
+            presentDeleteSubscription(feedIds)
+            return
+          }
+          deleteSubscription.mutate({ subscription })
+        },
+        requiresLogin: true,
+      }),
       new MenuItemSeparator(isEntryList),
       new MenuItemText({
         label: t("sidebar.feed_column.context_menu.add_feeds_to_list"),
         disabled: isInbox,
         supportMultipleSelection: true,
+        requiresLogin: true,
         submenu: [
           ...listByView.map((list) => {
             const isIncluded = list.feedIds.includes(feedId)
@@ -163,6 +166,7 @@ export const useFeedActions = ({
                   })
                 }
               },
+              requiresLogin: true,
             })
           }),
           listByView.length > 0 && new MenuItemSeparator(),
@@ -175,6 +179,7 @@ export const useFeedActions = ({
                 content: () => <ListCreationModalContent />,
               })
             },
+            requiresLogin: true,
           }),
         ],
       }),
@@ -182,6 +187,7 @@ export const useFeedActions = ({
         label: t("sidebar.feed_column.context_menu.add_feeds_to_category"),
         disabled: isInbox,
         supportMultipleSelection: true,
+        requiresLogin: true,
         submenu: [
           ...Array.from(categories.values()).map((category) => {
             const isIncluded = isMultipleSelection
@@ -197,6 +203,7 @@ export const useFeedActions = ({
                   view: view!,
                 })
               },
+              requiresLogin: true,
             })
           }),
           listByView.length > 0 && MenuItemSeparator.default,
@@ -206,47 +213,41 @@ export const useFeedActions = ({
             click() {
               presentCategoryCreationModal(view!, isMultipleSelection ? feedIds : [feedId])
             },
+            requiresLogin: true,
           }),
         ],
       }),
-      new MenuItemSeparator(isEntryList),
-      new MenuItemText({
-        label: isEntryList ? t("sidebar.feed_actions.edit_feed") : t("sidebar.feed_actions.edit"),
-        shortcut: "E",
-        disabled: isInbox,
-        click: () => {
-          present({
-            modalContentClassName: "overflow-visible",
-            title: t("sidebar.feed_actions.edit_feed"),
-            content: ({ dismiss }) => <FeedForm id={feedId} onSuccess={dismiss} />,
-          })
-        },
-      }),
-      new MenuItemText({
-        label: isMultipleSelection
-          ? t("sidebar.feed_actions.unfollow_feed_many")
-          : isEntryList
-            ? t("sidebar.feed_actions.unfollow_feed")
-            : t("sidebar.feed_actions.unfollow"),
-        shortcut: "$mod+Backspace",
-        disabled: isInbox,
-        supportMultipleSelection: true,
-        click: () => {
-          if (isMultipleSelection) {
-            presentDeleteSubscription(feedIds)
-            return
-          }
-          deleteSubscription.mutate({ subscription })
-        },
-      }),
-      new MenuItemText({
-        label: t("sidebar.feed_actions.navigate_to_feed"),
-        shortcut: "$mod+G",
-        disabled: getRouteParams().feedId === feedId,
-        click: () => {
-          navigateEntry({ feedId })
-        },
-      }),
+      !related.ownerUserId &&
+        !!isBizId(related.id) &&
+        related.type === "feed" &&
+        new MenuItemText({
+          label: isEntryList
+            ? t("sidebar.feed_actions.claim_feed")
+            : t("sidebar.feed_actions.claim"),
+          shortcut: "C",
+          click: () => {
+            claimFeed({ feedId })
+          },
+          disabled: isEntryList,
+          requiresLogin: true,
+        }),
+      ...(isFeedOwner
+        ? [
+            MenuItemSeparator.default,
+            new MenuItemText({
+              label: t("sidebar.feed_actions.feed_owned_by_you"),
+              disabled: true,
+            }),
+            new MenuItemText({
+              label: t("sidebar.feed_actions.reset_feed"),
+              click: () => {
+                resetFeed(feedId)
+              },
+              requiresLogin: true,
+            }),
+            MenuItemSeparator.default,
+          ]
+        : []),
       new MenuItemSeparator(isEntryList),
       new MenuItemText({
         label: t("sidebar.feed_actions.open_feed_in_browser", {
@@ -269,33 +270,12 @@ export const useFeedActions = ({
           }
         },
       }),
-      new MenuItemSeparator(isEntryList),
-      new MenuItemText({
-        label: t("sidebar.feed_actions.copy_feed_url"),
-        disabled: isEntryList,
-        shortcut: "$mod+C",
-        click: () => {
-          const { url, siteUrl } = feed || {}
-          const copied = url || siteUrl
-          if (!copied) return
-          copyToClipboard(copied)
-        },
-      }),
       new MenuItemText({
         label: t("sidebar.feed_actions.copy_feed_id"),
         shortcut: "$mod+Shift+C",
         disabled: isEntryList,
         click: () => {
           copyToClipboard(feedId)
-        },
-      }),
-      new MenuItemText({
-        label: t("sidebar.feed_actions.copy_feed_badge"),
-        disabled: isEntryList,
-        click: () => {
-          copyToClipboard(
-            `https://badge.folo.is/feed/${feedId}?color=FF5C00&labelColor=black&style=flat-square`,
-          )
         },
       }),
     ]
@@ -322,7 +302,6 @@ export const useFeedActions = ({
     isInbox,
     isMultipleSelection,
     listByView,
-    navigateEntry,
     present,
     presentCategoryCreationModal,
     presentDeleteSubscription,
@@ -347,28 +326,18 @@ export const useListActions = ({ listId, view }: { listId: string; view?: FeedVi
   const { mutateAsync: deleteSubscription } = useDeleteSubscription({})
 
   const shortcuts = useCommandShortcuts()
-  const navigateEntry = useNavigateEntry()
 
   const items = useMemo(() => {
     if (!list) return []
 
     const items: MenuItemInput[] = [
-      ...(list.ownerUserId === whoami()?.id
-        ? [
-            new MenuItemText({
-              label: t("sidebar.feed_actions.list_owned_by_you"),
-              disabled: true,
-            }),
-            MenuItemSeparator.default,
-          ]
-        : []),
-
       new MenuItemText({
         label: t("sidebar.feed_actions.mark_all_as_read"),
         shortcut: shortcuts[COMMAND_ID.subscription.markAllAsRead],
         click: () => {
           unreadSyncService.markFeedAsRead(list.feedIds)
         },
+        requiresLogin: true,
       }),
       MenuItemSeparator.default,
       new MenuItemText({
@@ -380,21 +349,25 @@ export const useListActions = ({ listId, view }: { listId: string; view?: FeedVi
             content: ({ dismiss }) => <ListForm id={listId} onSuccess={dismiss} />,
           })
         },
+        requiresLogin: true,
       }),
       new MenuItemText({
         label: t("sidebar.feed_actions.unfollow"),
         shortcut: "$mod+Backspace",
         click: () => deleteSubscription({ subscription }),
-      }),
-      new MenuItemText({
-        label: t("sidebar.feed_actions.navigate_to_list"),
-        shortcut: "$mod+G",
-        disabled: getRouteParams().feedId === listId,
-        click: () => {
-          navigateEntry({ listId })
-        },
+        requiresLogin: true,
       }),
       MenuItemSeparator.default,
+      ...(list.ownerUserId === whoami()?.id
+        ? [
+            new MenuItemText({
+              label: t("sidebar.feed_actions.list_owned_by_you"),
+              disabled: true,
+            }),
+            MenuItemSeparator.default,
+          ]
+        : []),
+
       new MenuItemText({
         label: t("sidebar.feed_actions.open_list_in_browser", {
           which: t(IN_ELECTRON ? "words.browser" : "words.newTab"),
@@ -402,7 +375,6 @@ export const useListActions = ({ listId, view }: { listId: string; view?: FeedVi
         shortcut: shortcuts[COMMAND_ID.subscription.openInBrowser],
         click: () => window.open(UrlBuilder.shareList(listId, view), "_blank"),
       }),
-      MenuItemSeparator.default,
       new MenuItemText({
         label: t("sidebar.feed_actions.copy_list_url"),
         shortcut: "$mod+C",
@@ -420,7 +392,7 @@ export const useListActions = ({ listId, view }: { listId: string; view?: FeedVi
     ]
 
     return items
-  }, [list, t, shortcuts, listId, present, deleteSubscription, subscription, navigateEntry, view])
+  }, [list, t, shortcuts, listId, present, deleteSubscription, subscription, view])
 
   return items
 }
@@ -443,6 +415,7 @@ export const useInboxActions = ({ inboxId }: { inboxId: string }) => {
             content: () => <InboxForm asWidget id={inboxId} />,
           })
         },
+        requiresLogin: true,
       }),
       MenuItemSeparator.default,
       new MenuItemText({

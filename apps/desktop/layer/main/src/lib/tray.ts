@@ -113,7 +113,7 @@ const destroyAppTray = () => {
   }
 }
 
-const DEFAULT_MINIMIZE_TO_TRAY = isMacOS ? false : true
+const DEFAULT_MINIMIZE_TO_TRAY = false
 
 export const getTrayConfig = () => store.get("minimizeToTray") ?? DEFAULT_MINIMIZE_TO_TRAY
 

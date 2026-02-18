@@ -5,7 +5,8 @@ export interface ChatSession {
   title?: string
   createdAt: Date
   updatedAt: Date
-  messageCount: number
+  isLocal: boolean
+  syncStatus: "local" | "synced"
 }
 
 export type RichTextPart = {

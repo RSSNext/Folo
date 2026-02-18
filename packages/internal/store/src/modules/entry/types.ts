@@ -13,6 +13,7 @@ export type FetchEntriesProps = {
   pageParam?: string
   isCollection?: boolean
   excludePrivate?: boolean
+  aiSort?: boolean
 }
 
 export type FetchEntriesPropsSettings = {
@@ -28,7 +29,6 @@ export type UseEntriesProps = {
 export type UseEntriesReturn = {
   entriesIds: string[]
   hasNext: boolean
-  hasUpdate: boolean
   refetch: () => Promise<void>
   fetchNextPage: () => Promise<void> | void
   isLoading: boolean

@@ -1,5 +1,5 @@
 import { RootPortal } from "@follow/components/ui/portal/index.jsx"
-import { DEV, IN_ELECTRON, PROD } from "@follow/shared/constants"
+import { IN_ELECTRON, PROD } from "@follow/shared/constants"
 import { useWhoami } from "@follow/store/user/hooks"
 import { preventDefault } from "@follow/utils/dom"
 import type { PropsWithChildren } from "react"
@@ -12,7 +12,7 @@ import { useUISettingKey } from "~/atoms/settings/ui"
 import { useLoginModalShow } from "~/atoms/user"
 import { AppErrorBoundary } from "~/components/common/AppErrorBoundary"
 import { ErrorComponentType } from "~/components/errors/enum"
-import { PlainModal } from "~/components/ui/modal/stacked/custom-modal"
+import { PlainModal, PlainWithAnimationModal } from "~/components/ui/modal/stacked/custom-modal"
 import { DeclarativeModal } from "~/components/ui/modal/stacked/declarative-modal"
 import { ROOT_CONTAINER_ID } from "~/constants/dom"
 import { EnvironmentIndicator } from "~/modules/app/EnvironmentIndicator"
@@ -24,7 +24,6 @@ import { SearchCmdK } from "~/modules/panel/cmdk"
 import { CmdNTrigger } from "~/modules/panel/cmdn"
 import { AppNotificationContainer } from "~/modules/upgrade/lazy/index"
 
-import { NewUserGuide } from "./subscription-column/components/NewUserGuide"
 import { SubscriptionColumnContainer } from "./subscription-column/SubscriptionColumn"
 
 const errorTypes = [
@@ -143,6 +142,31 @@ export function MainDestopLayout() {
 
   const containerRef = useRef<HTMLDivElement | null>(null)
 
+  // const { shouldShowNewUserGuide } = useNewUserGuideState()
+  // // Auto-trigger new user guide modal
+  // useEffect(() => {
+  //   if (!shouldShowNewUserGuide) return
+
+  //   import("~/modules/app-tip/AppTipModalContent").then((m) => {
+  //     window.presentModal({
+  //       title: getI18n().t("new_user_dialog.title"),
+  //       content: ({ dismiss }) => (
+  //         <m.AppTipModalContent
+  //           onClose={() => {
+  //             dismiss()
+  //           }}
+  //         />
+  //       ),
+  //       CustomModalComponent: PlainWithAnimationModal,
+  //       modalContainerClassName: "flex items-center justify-center",
+  //       modalClassName: "w-full max-w-5xl",
+  //       canClose: false,
+  //       clickOutsideToDismiss: false,
+  //       overlay: false,
+  //     })
+  //   })
+  // }, [shouldShowNewUserGuide])
+
   return (
     <RootContainer ref={containerRef}>
       {!PROD && <EnvironmentIndicator />}
@@ -166,20 +190,18 @@ export function MainDestopLayout() {
         </main>
       </EntriesProvider>
 
-      <NewUserGuide />
-
       {isAuthFail && !user && (
         <RootPortal>
           <DeclarativeModal
             id="login"
+            defaultOpen
             CustomModalComponent={PlainModal}
-            open
             overlay
             title="Login"
-            canClose={false}
-            clickOutsideToDismiss={false}
+            canClose={true}
+            clickOutsideToDismiss={true}
           >
-            <LoginModalContent canClose={false} runtime={IN_ELECTRON ? "app" : "browser"} />
+            <LoginModalContent canClose={true} runtime={IN_ELECTRON ? "app" : "browser"} />
           </DeclarativeModal>
         </RootPortal>
       )}
@@ -233,26 +255,39 @@ const RootContainer = ({
   )
 }
 
-if (DEV) {
-  DebugRegistry.add("New User Guide", () => {
-    import("~/modules/new-user-guide/guide-modal-content").then((m) => {
-      window.presentModal({
-        title: "New User Guide",
-        content: ({ dismiss }) => (
-          <m.GuideModalContent
-            onClose={() => {
-              dismiss()
-            }}
-          />
-        ),
-
-        CustomModalComponent: PlainModal,
-        modalContainerClassName: "flex items-center justify-center",
-
-        canClose: false,
-        clickOutsideToDismiss: false,
-        overlay: true,
-      })
+DebugRegistry.add("App Tip Dialog", () => {
+  import("~/modules/app-tip/AppTipModalContent").then((m) => {
+    window.presentModal({
+      title: "App Tip",
+      content: () => <m.AppTipModalContent />,
+      CustomModalComponent: PlainWithAnimationModal,
+      modalContainerClassName: "flex items-center justify-center",
+      modalClassName: "w-full max-w-5xl",
+      canClose: true,
+      clickOutsideToDismiss: false,
+      overlay: false,
     })
   })
-}
+})
+
+DebugRegistry.add("AI Onboarding", () => {
+  import("~/modules/ai-onboarding/ai-onboarding-modal-content").then((m) => {
+    window.presentModal({
+      title: "AI Onboarding",
+      content: ({ dismiss }) => (
+        <m.AiOnboardingModalContent
+          onClose={() => {
+            dismiss()
+          }}
+        />
+      ),
+
+      CustomModalComponent: PlainModal,
+      modalContainerClassName: "flex items-center justify-center",
+
+      canClose: false,
+      clickOutsideToDismiss: false,
+      overlay: true,
+    })
+  })
+})

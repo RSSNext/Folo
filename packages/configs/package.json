@@ -11,15 +11,15 @@
     "tailwindcss": ">=3 || <4"
   },
   "dependencies": {
-    "@egoist/tailwindcss-icons": "1.9.0",
-    "@iconify-json/logos": "1.2.9",
-    "@iconify-json/mingcute": "1.2.5",
-    "@iconify-json/simple-icons": "1.2.54",
+    "@egoist/tailwindcss-icons": "1.9.2",
+    "@iconify-json/logos": "1.2.10",
+    "@iconify-json/mingcute": "1.2.7",
+    "@iconify-json/simple-icons": "1.2.70",
     "@iconify/tools": "4.1.4",
-    "@iconify/utils": "3.0.2",
+    "@iconify/utils": "3.1.0",
     "@tailwindcss/container-queries": "0.1.1",
     "@tailwindcss/typography": "0.5.19",
-    "es-toolkit": "1.40.0",
+    "es-toolkit": "1.44.0",
     "tailwindcss-animate": "1.0.7",
     "tailwindcss-motion": "1.1.1",
     "tailwindcss-multi": "0.4.6",
@@ -28,7 +28,7 @@
   },
   "devDependencies": {
     "postcss": "8.5.6",
-    "postcss-js": "5.0.1",
+    "postcss-js": "5.0.3",
     "workspace-root": "3.3.1"
   }
 }

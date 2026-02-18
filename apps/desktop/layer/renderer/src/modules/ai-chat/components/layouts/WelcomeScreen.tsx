@@ -62,15 +62,17 @@ const DefaultWelcomeHeader = ({ description }: { description: string }) => (
     animate={{ opacity: 1, y: 0 }}
     className="space-y-6 text-center"
   >
-    <div className="center">
-      <AISpline />
-    </div>
-    <div className="flex flex-col gap-2">
-      <h1 className="flex items-center justify-center gap-2 text-2xl font-semibold text-text">
-        <Folo className="size-11" /> AI
-      </h1>
+    <div data-testid="welcome-screen-header">
+      <div className="center">
+        <AISpline />
+      </div>
+      <div className="flex flex-col gap-2">
+        <h1 className="flex items-center justify-center gap-2 text-2xl font-semibold text-text">
+          <Folo className="size-11" /> AI
+        </h1>
 
-      <p className="text-balance text-sm text-text-secondary">{description}</p>
+        <p className="text-balance text-sm text-text-secondary">{description}</p>
+      </div>
     </div>
   </m.div>
 )

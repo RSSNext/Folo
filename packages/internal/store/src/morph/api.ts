@@ -149,7 +149,7 @@ class APIMorph {
             image: list.image!,
             ownerUserId: list.owner.id,
             feedIds: list.feedIds!,
-            fee: list.fee!,
+            fee: list.fee ?? 0,
             subscriptionCount: null,
             purchaseAmount: null,
             type: "list",
@@ -278,6 +278,9 @@ class APIMorph {
       roleEndAt: data.roleEndAt,
       deleted: data.deleted,
       stripeCustomerId: data.stripeCustomerId,
+      inactive: data.inactive,
+      lastLoginMethod: data.lastLoginMethod,
+      appleAppAccountToken: data.appleAppAccountToken,
     }
   }
 }

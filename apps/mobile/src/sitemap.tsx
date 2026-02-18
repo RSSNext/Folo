@@ -7,19 +7,16 @@ import { NavigationSitemapRegistry } from "./lib/navigation/sitemap/registry"
 import type { NavigationControllerView } from "./lib/navigation/types"
 import { OTPWindow } from "./modules/settings/components/OTPWindow"
 import { ForgetPasswordScreen } from "./screens/(modal)/ForgetPasswordScreen"
-import { InvitationScreen } from "./screens/(modal)/InvitationScreen"
 import { LoginScreen } from "./screens/(modal)/LoginScreen"
 import { TwoFactorAuthScreen } from "./screens/(modal)/TwoFactorAuthScreen"
 import { OnboardingScreen } from "./screens/OnboardingScreen"
 
 export function registerSitemap() {
-  ;[LoginScreen, InvitationScreen, ForgetPasswordScreen, TwoFactorAuthScreen].forEach(
-    (Component) => {
-      NavigationSitemapRegistry.registerByComponent(Component, void 0, {
-        stackPresentation: "modal",
-      })
-    },
-  )
+  ;[LoginScreen, ForgetPasswordScreen, TwoFactorAuthScreen].forEach((Component) => {
+    NavigationSitemapRegistry.registerByComponent(Component, void 0, {
+      stackPresentation: "modal",
+    })
+  })
   ;[OnboardingScreen].forEach((Component) => {
     NavigationSitemapRegistry.registerByComponent(Component, void 0, {
       stackPresentation: "fullScreenModal",

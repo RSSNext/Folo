@@ -1,7 +1,5 @@
 import type { FeedViewType } from "@follow/constants"
 import { getView } from "@follow/constants"
-import { useCategoryOpenStateByView } from "@follow/store/subscription/hooks"
-import { subscriptionActions } from "@follow/store/subscription/store"
 import { useUnreadByView } from "@follow/store/unread/hooks"
 import { stopPropagation } from "@follow/utils"
 import { useTranslation } from "react-i18next"
@@ -13,8 +11,6 @@ import { SortButton } from "./SortButton"
 
 export const ListHeader = ({ view }: { view: FeedViewType }) => {
   const { t } = useTranslation()
-  const categoryOpenStateData = useCategoryOpenStateByView(view)
-  const expansion = Object.values(categoryOpenStateData).every((value) => value === true)
 
   const totalUnread = useUnreadByView(view)
 
@@ -43,17 +39,6 @@ export const ListHeader = ({ view }: { view: FeedViewType }) => {
       </div>
       <div className="ml-2 flex items-center gap-3 text-base text-text-secondary lg:text-sm">
         <SortButton />
-        {expansion ? (
-          <i
-            className="i-mgc-list-collapse-cute-re"
-            onClick={() => subscriptionActions.expandCategoryOpenStateByView(view, false)}
-          />
-        ) : (
-          <i
-            className="i-mgc-list-expansion-cute-re"
-            onClick={() => subscriptionActions.expandCategoryOpenStateByView(view, true)}
-          />
-        )}
         <UnreadNumber unread={totalUnread} className="text-xs !text-inherit" />
       </div>
     </div>

@@ -15,7 +15,7 @@ import { COMMAND_ID } from "~/modules/command/commands/id"
 import { getCommand } from "~/modules/command/hooks/use-command"
 import { useCommandShortcut } from "~/modules/command/hooks/use-command-binding"
 
-import { FileUploadPlugin, MentionPlugin, ShortcutPlugin } from "../../editor"
+import { FileUploadPlugin, MentionPlugin, SelectedTextPlugin, ShortcutPlugin } from "../../editor"
 import { useMainEntryId } from "../../hooks/useMainEntryId"
 import { AIPanelRefsContext } from "../../store/AIChatContext"
 import { useChatActions, useChatScene, useChatStatus } from "../../store/hooks"
@@ -46,6 +46,7 @@ interface ChatInputProps extends VariantProps<typeof chatInputVariants> {
   ref?: Ref<LexicalRichEditorRef | null>
   initialDraftState?: EditorState
   onEditorStateChange?: (editorState: EditorState) => void
+  submitDisabled?: boolean
 }
 
 export const ChatInput = memo(
@@ -55,6 +56,7 @@ export const ChatInput = memo(
     ref: forwardedRef,
     initialDraftState,
     onEditorStateChange,
+    submitDisabled,
   }: ChatInputProps) => {
     const status = useChatStatus()
     const chatActions = useChatActions()
@@ -82,6 +84,7 @@ export const ChatInput = memo(
     const [currentEditor, setCurrentEditor] = useState<LexicalEditor | null>(null)
 
     const isProcessing = status === "submitted" || status === "streaming"
+    const isSubmitDisabled = submitDisabled || (!isProcessing && isEmpty)
 
     const handleEditorChange = useCallback(
       (editorState: EditorState, editor: LexicalEditor) => {
@@ -100,6 +103,7 @@ export const ChatInput = memo(
     const scene = useChatScene()
 
     const handleSend = useCallback(async () => {
+      if (submitDisabled) return
       if (currentEditor && editorRef.current && !editorRef.current.isEmpty()) {
         const editorState = currentEditor?.getEditorState()
         nextFrame(() => {
@@ -107,7 +111,7 @@ export const ChatInput = memo(
         })
         editorRef.current.clear()
       }
-    }, [currentEditor, onSend])
+    }, [currentEditor, onSend, submitDisabled])
 
     const handleSendClick = useCallback(() => {
       void handleSend()
@@ -139,7 +143,7 @@ export const ChatInput = memo(
 
         if (event.key === "Enter" && !event.shiftKey) {
           event.preventDefault()
-          if (isProcessing) {
+          if (isProcessing || isSubmitDisabled) {
             return false
           }
           void handleSend()
@@ -148,11 +152,11 @@ export const ChatInput = memo(
 
         return false
       },
-      [handleSend, isProcessing, toggleAIChatShortcut],
+      [handleSend, isProcessing, toggleAIChatShortcut, isSubmitDisabled],
     )
 
     return (
-      <div className={cn(chatInputVariants({ variant }))}>
+      <div data-testid="chat-input" className={cn(chatInputVariants({ variant }))}>
         {/* Input Area */}
         <div className="relative z-10 flex items-end" onContextMenu={stopPropagation}>
           <ScrollArea rootClassName="mr-14 flex-1 overflow-auto" viewportClassName="px-5 py-3.5">
@@ -169,7 +173,9 @@ export const ChatInput = memo(
               onKeyDown={handleKeyDown}
               autoFocus
               plugins={
-                scene === "onboarding" ? [] : [MentionPlugin, ShortcutPlugin, FileUploadPlugin]
+                scene === "onboarding"
+                  ? []
+                  : [MentionPlugin, ShortcutPlugin, FileUploadPlugin, SelectedTextPlugin]
               }
               namespace="AIChatRichEditor"
             />
@@ -177,7 +183,7 @@ export const ChatInput = memo(
           <div className="absolute right-3 top-3">
             <AIChatSendButton
               onClick={isProcessing ? stop : handleSendClick}
-              disabled={!isProcessing && isEmpty}
+              disabled={isSubmitDisabled}
               isProcessing={isProcessing}
               size="sm"
             />

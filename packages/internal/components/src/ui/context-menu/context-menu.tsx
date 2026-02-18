@@ -5,6 +5,19 @@ import * as React from "react"
 import { Divider } from "../divider/Divider.js"
 import { RootPortal } from "../portal/index.jsx"
 
+const styles = {
+  content: {
+    backgroundImage:
+      "linear-gradient(to bottom right, rgba(var(--color-background) / 0.98), rgba(var(--color-background) / 0.95))",
+    boxShadow:
+      "0 6px 20px rgba(0, 0, 0, 0.08), 0 4px 12px rgba(0, 0, 0, 0.05), 0 2px 6px rgba(0, 0, 0, 0.04), 0 4px 16px hsl(var(--fo-a) / 0.06), 0 2px 8px hsl(var(--fo-a) / 0.04), 0 1px 3px rgba(0, 0, 0, 0.03)",
+  } as React.CSSProperties,
+  innerGlow: {
+    background:
+      "linear-gradient(to bottom right, hsl(var(--fo-a) / 0.01), transparent, hsl(var(--fo-a) / 0.01))",
+  } as React.CSSProperties,
+}
+
 const ContextMenu = ContextMenuPrimitive.Root
 const ContextMenuTrigger = ContextMenuPrimitive.Trigger
 const ContextMenuGroup = ContextMenuPrimitive.Group
@@ -23,7 +36,8 @@ const ContextMenuSubTrigger = ({
   <ContextMenuPrimitive.SubTrigger
     ref={ref}
     className={cn(
-      "cursor-menu focus:bg-theme-selection-active focus:text-theme-selection-foreground data-[state=open]:bg-theme-selection-active data-[state=open]:text-theme-selection-foreground flex select-none items-center rounded-[5px] px-2.5 py-1.5 outline-none",
+      "cursor-menu data-[state=open]:bg-mix-background/accent-9/1 data-[state=open]:text-accent data-[highlighted]:text-accent data-[highlighted]:bg-mix-background/accent-9/1 flex select-none items-center rounded-[5px] px-2.5 py-1.5 outline-none",
+      "h-[28px]",
       inset && "pl-8",
       "center gap-2",
       className,
@@ -48,15 +62,26 @@ const ContextMenuSubContent = ({
     <ContextMenuPrimitive.SubContent
       ref={ref}
       className={cn(
-        "bg-material-medium backdrop-blur-background text-text text-body",
+        "text-text text-body",
         "min-w-32 overflow-hidden",
-        "rounded-[6px] border p-1",
-        "shadow-context-menu",
+        "rounded-[6px] p-1",
+        "backdrop-blur-2xl",
         "z-[61]",
+        "relative",
+        "dark:border-border/50 dark:border",
         className,
       )}
+      style={styles.content}
       {...props}
-    />
+    >
+      {/* Inner glow layer */}
+      <div
+        className="pointer-events-none absolute inset-0 rounded-[6px]"
+        style={styles.innerGlow}
+      />
+      {/* Content wrapper */}
+      <div className="relative">{props.children}</div>
+    </ContextMenuPrimitive.SubContent>
   </RootPortal>
 )
 ContextMenuSubContent.displayName = ContextMenuPrimitive.SubContent.displayName
@@ -72,12 +97,24 @@ const ContextMenuContent = ({
     <ContextMenuPrimitive.Content
       ref={ref}
       className={cn(
-        "bg-material-medium backdrop-blur-background text-text shadow-context-menu z-[60] min-w-32 overflow-hidden rounded-[6px] border p-1",
+        "text-text z-[60] min-w-32 overflow-hidden rounded-[6px] p-1",
+        "backdrop-blur-2xl",
         "motion-scale-in-75 motion-duration-150 text-body lg:animate-none",
+        "relative",
+        "dark:border-border/50 dark:border",
         className,
       )}
+      style={styles.content}
       {...props}
-    />
+    >
+      {/* Inner glow layer */}
+      <div
+        className="pointer-events-none absolute inset-0 rounded-[6px]"
+        style={styles.innerGlow}
+      />
+      {/* Content wrapper */}
+      <div className="relative">{props.children}</div>
+    </ContextMenuPrimitive.Content>
   </RootPortal>
 )
 ContextMenuContent.displayName = ContextMenuPrimitive.Content.displayName
@@ -93,8 +130,8 @@ const ContextMenuItem = ({
   <ContextMenuPrimitive.Item
     ref={ref}
     className={cn(
-      "cursor-menu focus:bg-theme-selection-active focus:text-theme-selection-foreground relative flex select-none items-center rounded-[5px] px-2.5 py-1 outline-none data-[disabled]:pointer-events-none data-[disabled]:opacity-50",
-      "data-[highlighted]:bg-theme-selection-hover focus-within:outline-transparent",
+      "cursor-menu focus:bg-accent/30 relative flex select-none items-center rounded-[5px] px-2.5 py-1.5 outline-none data-[disabled]:pointer-events-none data-[disabled]:opacity-50",
+      "data-[highlighted]:text-accent data-[highlighted]:bg-mix-background/accent-9/1 focus-within:outline-transparent",
       "h-[28px]",
       inset && "pl-8",
       className,
@@ -116,8 +153,8 @@ const ContextMenuCheckboxItem = ({
   <ContextMenuPrimitive.CheckboxItem
     ref={ref}
     className={cn(
-      "cursor-checkbox focus:bg-theme-selection-active focus:text-theme-selection-foreground relative flex select-none items-center rounded-[5px] px-8 py-1.5 outline-none data-[disabled]:pointer-events-none data-[disabled]:opacity-50",
-      "focus-within:outline-transparent",
+      "cursor-checkbox focus:bg-accent/30 relative flex select-none items-center rounded-[5px] px-8 py-1.5 outline-none data-[disabled]:pointer-events-none data-[disabled]:opacity-50",
+      "data-[highlighted]:text-accent data-[highlighted]:bg-mix-background/accent-9/1 focus-within:text-accent focus-within:outline-transparent",
       "h-[28px]",
       className,
     )}

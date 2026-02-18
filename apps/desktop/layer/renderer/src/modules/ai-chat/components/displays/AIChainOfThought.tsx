@@ -5,7 +5,7 @@ import { ShinyText } from "@follow/components/ui/shiny-text/ShinyText.js"
 import { cn } from "@follow/utils"
 import type { BizUITools } from "@folo-services/ai-tools"
 import type { ReasoningUIPart, ToolUIPart } from "ai"
-import { isToolUIPart } from "ai"
+import { isStaticToolUIPart } from "ai"
 import { AnimatePresence, m } from "motion/react"
 import * as React from "react"
 
@@ -27,7 +27,7 @@ export const AIChainOfThought: React.FC<AIChainOfThoughtProps> = React.memo(
     const currentChainReasoningIsFinished = React.useMemo(() => {
       let allDone = true
       for (const part of groups) {
-        if (isToolUIPart(part)) {
+        if (isStaticToolUIPart(part)) {
           continue
         }
         if (part.state !== "done") {
@@ -45,7 +45,7 @@ export const AIChainOfThought: React.FC<AIChainOfThoughtProps> = React.memo(
 
       if (!lastPart) return null
 
-      if (isToolUIPart(lastPart)) {
+      if (isStaticToolUIPart(lastPart)) {
         return `Calling [${lastPart.type.replace("tool-", "")}]`
       }
 
@@ -110,10 +110,10 @@ export const AIChainOfThought: React.FC<AIChainOfThoughtProps> = React.memo(
             contentClassName="pb-2 pt-1"
           >
             <div className="relative">
-              <div aria-hidden className="absolute inset-y-0 left-2 border-l border-fill" />
+              <div aria-hidden className="absolute inset-y-2 left-2 border-l border-fill" />
               {groups.map((part, index) => {
                 const innerCollapseId = `${collapseId}-${index}`
-                if (isToolUIPart(part)) {
+                if (isStaticToolUIPart(part)) {
                   return (
                     <ToolInvocationComponent variant="loose" key={innerCollapseId} part={part} />
                   )
@@ -125,13 +125,7 @@ export const AIChainOfThought: React.FC<AIChainOfThoughtProps> = React.memo(
 
                 return (
                   <div key={innerCollapseId} className="relative pb-3 pl-8 last:pb-0">
-                    <div
-                      aria-hidden
-                      className={cn(
-                        "absolute left-2 top-2 size-2 -translate-x-1/2 rounded-full border",
-                        "border-fill bg-fill-vibrant",
-                      )}
-                    >
+                    <div aria-hidden className={"absolute left-2 top-2 size-2 -translate-x-1/2"}>
                       <i className="i-mgc-brain-cute-re absolute top-1/2 -translate-x-1/4 -translate-y-1/2" />
                     </div>
 
@@ -172,7 +166,7 @@ const AIInnerReasoningPart: React.FC<{
       title={
         <div className="group/inner flex h-6 min-w-0 flex-1 items-center py-0">
           <div className="flex items-center gap-2 text-xs text-text-secondary">
-            {title ? (
+            {title && !groupStreaming ? (
               <span className="truncate">
                 {"Reason: "}
                 <span className="font-medium text-text">{title}</span>
@@ -198,6 +192,7 @@ AIChainOfThought.displayName = "AIChainOfThought"
 const extractHeading = (text?: string): string | undefined => {
   if (!text) return
   const lines = text.split(/\r?\n/)
+  let lastHeading: string | undefined
   for (const raw of lines) {
     const line = raw.trim()
     if (!line) continue
@@ -206,12 +201,14 @@ const extractHeading = (text?: string): string | undefined => {
       while (idx < line.length && line.charAt(idx) === "#") idx++
       let content = line.slice(idx).trim()
       while (content.endsWith("#")) content = content.slice(0, -1).trim()
-      return content || undefined
+      if (content) lastHeading = content
+      continue
     }
     if (line.startsWith("**") && line.endsWith("**") && line.length > 4) {
-      return line.slice(2, -2).trim() || undefined
+      const content = line.slice(2, -2).trim()
+      if (content) lastHeading = content
+      continue
     }
-    break
   }
-  return
+  return lastHeading
 }

@@ -1,11 +1,16 @@
-import type { SVGAttributes } from "react"
+import type { SVGProps } from "react"
 
-export function UserArrowLeftIcon(props: SVGAttributes<SVGElement>) {
+export function LucideLogIn(props: SVGProps<SVGSVGElement>) {
   return (
     <svg xmlns="http://www.w3.org/2000/svg" width="1em" height="1em" viewBox="0 0 24 24" {...props}>
+      {/* Icon from Lucide by Lucide Contributors - https://github.com/lucide-icons/lucide/blob/main/LICENSE */}
       <path
-        fill="currentColor"
-        d="M11 2.5C8.52 2.5 6.5 4.52 6.5 7s2.02 4.5 4.5 4.5 4.5-2.02 4.5-4.5-2.02-4.5-4.5-4.5m0 1c1.939 0 3.5 1.561 3.5 3.5s-1.561 3.5-3.5 3.5A3.49 3.49 0 0 1 7.5 7c0-1.939 1.561-3.5 3.5-3.5m5.574 9.1a10.5 10.5 0 0 0-1.857 1.789.975.975 0 0 0 0 1.222c.543.67 1.166 1.271 1.857 1.79l.6-.801c-.425-.319-.776-.716-1.14-1.1H21v-1h-4.967c.365-.384.716-.781 1.14-1.1zM7 14.5c-2.48 0-4.5 2.02-4.5 4.5 0 1.375 1.125 2.5 2.5 2.5h10v-1H5c-.834 0-1.5-.666-1.5-1.5 0-1.939 1.561-3.5 3.5-3.5h4v-1z"
+        fill="none"
+        stroke="currentColor"
+        strokeLinecap="round"
+        strokeLinejoin="round"
+        strokeWidth="2"
+        d="m10 17l5-5l-5-5m5 5H3m12-9h4a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2h-4"
       />
     </svg>
   )

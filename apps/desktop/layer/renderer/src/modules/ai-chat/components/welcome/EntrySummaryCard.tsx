@@ -35,6 +35,7 @@ export const EntrySummaryCard: React.FC<EntrySummaryCardProps> = ({ entryId, cla
         isLoading={summary.isLoading}
         className={className}
         title={t("ai_summary")}
+        error={summary.error}
       />
     </m.div>
   )

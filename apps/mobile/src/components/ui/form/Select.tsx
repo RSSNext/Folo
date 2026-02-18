@@ -44,9 +44,6 @@ export function Select<T>({
       return acc
     }, new Map<T, string>())
   }, [options])
-  useEffect(() => {
-    onValueChange(currentValue)
-  }, [])
   const grayColor = useColor("gray")
   const Trigger = (
     <DropdownMenu.Root>

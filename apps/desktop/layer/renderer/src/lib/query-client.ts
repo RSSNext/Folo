@@ -1,3 +1,4 @@
+import { FollowAPIError } from "@follow-app/client-sdk"
 import { createSyncStoragePersister } from "@tanstack/query-sync-storage-persister"
 import type { OmitKeyof } from "@tanstack/react-query"
 import { QueryClient } from "@tanstack/react-query"
@@ -7,7 +8,7 @@ import { FetchError } from "ofetch"
 import { QUERY_PERSIST_KEY } from "../constants/app"
 
 const defaultStaleTime = 600_000 // 10min
-const DO_NOT_RETRY_CODES = new Set([400, 401, 403, 404, 422])
+const DO_NOT_RETRY_CODES = new Set([400, 401, 403, 404, 422, 402])
 const queryClient = new QueryClient({
   defaultOptions: {
     queries: {
@@ -15,11 +16,14 @@ const queryClient = new QueryClient({
       retryDelay: 1000,
       staleTime: defaultStaleTime,
       retry(failureCount, error) {
-        console.error(error)
         if (
           error instanceof FetchError &&
           (error.statusCode === undefined || DO_NOT_RETRY_CODES.has(error.statusCode))
         ) {
+          return false
+        }
+
+        if (error instanceof FollowAPIError && DO_NOT_RETRY_CODES.has(error.status)) {
           return false
         }
 

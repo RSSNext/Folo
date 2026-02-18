@@ -1,11 +1,13 @@
 import { autoBindThis } from "@follow/utils/bind-this"
+import { createDesktopAPIHeaders } from "@follow/utils/headers"
+import PKG from "@pkg"
 import type { ChatRequestOptions, ChatStatus } from "ai"
 import { merge } from "es-toolkit/compat"
 import { nanoid } from "nanoid"
 import type { StateCreator } from "zustand"
 
 import { AIPersistService } from "../../services"
-import { createChatTransport } from "../transport"
+import { createChatTitleHandler, createChatTransport } from "../transport"
 import type { BizUIMessage, SendingUIMessage } from "../types"
 import { ZustandChat } from "./chat-instance"
 import type { ChatSlice } from "./types"
@@ -32,10 +34,19 @@ export class ChatSliceActions {
     this._current = instance
   }
 
+  private chatInstance: ZustandChat
   constructor(
     private params: Parameters<StateCreator<ChatSlice, [], [], ChatSlice>>,
-    private chatInstance: ZustandChat,
+
+    options: {
+      chatInstance: ZustandChat
+      hasChatId: boolean
+    },
   ) {
+    if (options.hasChatId) {
+      options.chatInstance.resumeStream()
+    }
+    this.chatInstance = options.chatInstance
     return autoBindThis(this)
   }
 
@@ -45,6 +56,42 @@ export class ChatSliceActions {
 
   get get() {
     return this.params[1]
+  }
+
+  private computeSyncStatus(isLocal: boolean): "local" | "synced" {
+    return isLocal ? "local" : "synced"
+  }
+
+  private setSyncState(isLocal: boolean) {
+    this.set((state) => {
+      const nextStatus = this.computeSyncStatus(isLocal)
+      if (state.isLocal === isLocal && state.syncStatus === nextStatus) {
+        return state
+      }
+      return {
+        isLocal,
+        syncStatus: nextStatus,
+      }
+    })
+  }
+
+  async markSessionSynced() {
+    const currentChatId = this.get().chatId
+    if (!currentChatId) {
+      return
+    }
+
+    if (!this.get().isLocal) {
+      return
+    }
+
+    this.setSyncState(false)
+
+    try {
+      await AIPersistService.markSessionSynced(currentChatId)
+    } catch (error) {
+      console.error("Failed to mark chat session as synced:", error)
+    }
   }
 
   // Direct message management methods (delegating to chat instance state)
@@ -118,6 +165,16 @@ export class ChatSliceActions {
     return this.get().chatId
   }
 
+  private createTransportTitleHandler = (chatId: string) => {
+    return createChatTitleHandler({
+      chatId,
+      getActiveChatId: () => this.get().chatId,
+      onTitleChange: (title) => {
+        this.setCurrentTitle(title)
+      },
+    })
+  }
+
   // Edit chat title
   editChatTitle = async (newTitle: string) => {
     const currentChatId = this.getCurrentChatId()
@@ -162,11 +219,12 @@ export class ChatSliceActions {
       const finalOptions = merge(
         {
           body: { scene: this.get().scene },
+          headers: createDesktopAPIHeaders({ version: PKG.version }),
         },
         options,
       )
-      const response = await this.chatInstance.sendMessage(messageObj, finalOptions)
-      return response
+
+      return await this.chatInstance.sendMessage(messageObj, finalOptions)
     } catch (error) {
       this.setError(error as Error)
       throw error
@@ -182,8 +240,7 @@ export class ChatSliceActions {
         },
         options,
       )
-      const response = await this.chatInstance.regenerate({ messageId, ...finalOptions })
-      return response
+      return await this.chatInstance.regenerate({ messageId, ...finalOptions })
     } catch (error) {
       this.setError(error as Error)
       throw error
@@ -214,17 +271,19 @@ export class ChatSliceActions {
     this.setCurrentTitle(undefined)
   }
 
-  newChat = () => {
+  newChat = async () => {
     const newChatId = nanoid()
     // Cleanup old chat instance
-    this.chatInstance.destroy()
+    await this.chatInstance.destroy()
 
     // Create new chat instance
     const newChatInstance = new ZustandChat(
       {
         id: newChatId,
         messages: [],
-        transport: createChatTransport(),
+        transport: createChatTransport({
+          titleHandler: this.createTransportTitleHandler(newChatId),
+        }),
       },
       this.set,
     )
@@ -239,6 +298,8 @@ export class ChatSliceActions {
       isStreaming: false,
       currentTitle: undefined,
       chatInstance: newChatInstance,
+      isLocal: true,
+      syncStatus: "local",
     }))
 
     // Update the reference
@@ -247,6 +308,8 @@ export class ChatSliceActions {
 
   switchToChat = async (chatId: string) => {
     try {
+      // Cleanup old chat instance
+      await this.chatInstance.destroy()
       // Set loading state (using ready as there's no loading status in ChatStatus)
       this.setStatus("ready")
       this.setError(undefined)
@@ -255,15 +318,14 @@ export class ChatSliceActions {
       const { session: chatSession, messages } =
         await AIPersistService.loadSessionWithMessages(chatId)
 
-      // Cleanup old chat instance
-      this.chatInstance.destroy()
-
       // Create new chat instance with loaded messages
       const newChatInstance = new ZustandChat(
         {
           id: chatId,
           messages,
-          transport: createChatTransport(),
+          transport: createChatTransport({
+            titleHandler: this.createTransportTitleHandler(chatId),
+          }),
         },
         this.set,
       )
@@ -278,8 +340,11 @@ export class ChatSliceActions {
         isStreaming: false,
         currentTitle: chatSession?.title || undefined,
         chatInstance: newChatInstance,
+        isLocal: chatSession ? chatSession.isLocal : true,
+        syncStatus: chatSession ? chatSession.syncStatus : "local",
       }))
 
+      await newChatInstance.resumeStream()
       // Update the reference
       this.chatInstance = newChatInstance
     } catch (error) {
@@ -305,5 +370,18 @@ export class ChatSliceActions {
 
   getTimelineSummaryManualOverride = () => {
     return this.get().timelineSummaryManualOverride
+  }
+
+  setTimelineSummaryWasInAutoContext = (isInAutoContext: boolean) => {
+    this.set((state) => {
+      if (state.timelineSummaryWasInAutoContext === isInAutoContext) {
+        return state
+      }
+      return { ...state, timelineSummaryWasInAutoContext: isInAutoContext }
+    })
+  }
+
+  getTimelineSummaryWasInAutoContext = () => {
+    return this.get().timelineSummaryWasInAutoContext
   }
 }

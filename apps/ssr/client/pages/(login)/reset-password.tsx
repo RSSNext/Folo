@@ -1,5 +1,5 @@
 import { resetPassword } from "@client/lib/auth"
-import { Button, MotionButtonBase } from "@follow/components/ui/button/index.jsx"
+import { Button } from "@follow/components/ui/button/index.jsx"
 import {
   Card,
   CardContent,
@@ -77,17 +77,9 @@ export function Component() {
 
   return (
     <div className="flex h-full items-center justify-center">
-      <Card className="w-[350px] max-w-full">
+      <Card className="w-[500px] max-w-full">
         <CardHeader>
           <CardTitle className="flex items-center gap-2">
-            <MotionButtonBase
-              onClick={() => {
-                history.length > 1 ? history.back() : navigate("/login")
-              }}
-              className="-ml-1 inline-flex cursor-pointer items-center"
-            >
-              <i className="i-mingcute-left-line" />
-            </MotionButtonBase>
             <span>{t("login.forget_password.label")}</span>
           </CardTitle>
         </CardHeader>

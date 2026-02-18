@@ -1,6 +1,6 @@
 import { useWhoami } from "@follow/store/user/hooks"
 import { Fragment, useEffect } from "react"
-import { ScrollView, TouchableOpacity } from "react-native"
+import { Pressable, ScrollView } from "react-native"
 
 import { HeaderCloseOnly } from "@/src/components/layouts/header/HeaderElements"
 import { Text } from "@/src/components/ui/typography/Text"
@@ -35,9 +35,8 @@ export const LoginScreen: NavigationControllerView = () => {
       </Container>
       <HeaderCloseOnly />
       {!!whoami?.id && __DEV__ && (
-        <TouchableOpacity
+        <Pressable
           className="bottom-safe-offset-8 absolute left-1/2 -translate-x-1/2 flex-row items-center justify-center rounded-xl bg-system-fill p-2 px-4"
-          activeOpacity={0.7}
           onPress={() => {
             exit()
           }}
@@ -45,7 +44,7 @@ export const LoginScreen: NavigationControllerView = () => {
           <Text className="text-center font-semibold text-secondary-label">
             Redirect to Home (DEV)
           </Text>
-        </TouchableOpacity>
+        </Pressable>
       )}
     </>
   )

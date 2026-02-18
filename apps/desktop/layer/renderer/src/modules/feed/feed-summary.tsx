@@ -1,3 +1,10 @@
+import { RSSHubLogo } from "@follow/components/ui/platform-icon/icons.js"
+import {
+  Tooltip,
+  TooltipContent,
+  TooltipPortal,
+  TooltipTrigger,
+} from "@follow/components/ui/tooltip/index.js"
 import { EllipsisHorizontalTextWithTooltip } from "@follow/components/ui/typography/EllipsisWithTooltip.js"
 import { env } from "@follow/shared/env.desktop"
 import type { FeedModel } from "@follow/store/feed/types"
@@ -21,6 +28,7 @@ export function FollowSummary({
   simple?: boolean
 }) {
   let feedText: string | undefined
+  let isRSSHub = false
 
   switch (feed.type) {
     case "list": {
@@ -33,6 +41,7 @@ export function FollowSummary({
     }
     default: {
       feedText = feed.url || docs
+      isRSSHub = Boolean(feedText?.startsWith("rsshub://"))
       break
     }
   }
@@ -46,8 +55,11 @@ export function FollowSummary({
           className="mask-squircle mask shrink-0 rounded-none"
           size={32}
         />
-        <div className="min-w-0 leading-tight">
-          <FeedTitle feed={feed} className="mb-0.5 text-[15px] font-semibold" />
+        <div className="min-w-0 flex-1 leading-tight">
+          <div className="mb-0.5 flex items-center gap-1.5">
+            <FeedTitle feed={feed} className="text-[15px] font-semibold" />
+            {isRSSHub && <RSSHubIndicator />}
+          </div>
           <EllipsisHorizontalTextWithTooltip className="truncate text-xs font-normal text-text-secondary duration-200">
             {feedText}
           </EllipsisHorizontalTextWithTooltip>
@@ -59,5 +71,21 @@ export function FollowSummary({
         </EllipsisHorizontalTextWithTooltip>
       )}
     </div>
+  )
+}
+
+const RSSHubIndicator = () => {
+  return (
+    <Tooltip>
+      <TooltipTrigger>
+        <div className="inline-flex shrink-0 items-center gap-1 rounded bg-orange/10 px-1.5 py-0.5 text-xs text-orange">
+          <RSSHubLogo className="size-2.5" />
+          <span>RSSHub</span>
+        </div>
+      </TooltipTrigger>
+      <TooltipPortal>
+        <TooltipContent>This feed is powered by RSSHub.</TooltipContent>
+      </TooltipPortal>
+    </Tooltip>
   )
 }

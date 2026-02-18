@@ -1,7 +1,7 @@
 import { cn } from "@follow/utils"
 import { cssInterop } from "nativewind"
 import type { FC, ReactNode, Ref } from "react"
-import { useImperativeHandle, useRef, useState } from "react"
+import { useImperativeHandle, useMemo, useRef, useState } from "react"
 import type { StyleProp, ViewStyle } from "react-native"
 import { StyleSheet } from "react-native"
 
@@ -48,6 +48,10 @@ export const PagerView: FC<PagerViewProps> = ({
   ref,
 }) => {
   const [currentPage, setCurrentPage] = useState(page ?? 0)
+  const pageKeys = useMemo(
+    () => Array.from({ length: pageTotal }, (_, pageIndex) => `page-${pageIndex}`),
+    [pageTotal],
+  )
 
   const nativeRef = useRef<PagerRef>(null)
   useImperativeHandle(ref, () => ({
@@ -83,15 +87,21 @@ export const PagerView: FC<PagerViewProps> = ({
       style={containerStyle}
       ref={nativeRef}
     >
-      {Array.from({ length: pageTotal }).map((_, index) => (
+      {pageKeys.map((pageKey, pageIndex) => (
         <EnhancePageView
-          key={index}
+          key={pageKey}
           className={cn("flex-1", pageContainerClassName)}
-          style={{ ...StyleSheet.absoluteFillObject, ...pageContainerStyle }}
+          style={[styles.pageContainer, pageContainerStyle]}
         >
-          {renderPage?.(index)}
+          {renderPage?.(pageIndex)}
         </EnhancePageView>
       ))}
     </EnhancePagerView>
   )
 }
+
+const styles = StyleSheet.create({
+  pageContainer: {
+    ...StyleSheet.absoluteFillObject,
+  },
+})

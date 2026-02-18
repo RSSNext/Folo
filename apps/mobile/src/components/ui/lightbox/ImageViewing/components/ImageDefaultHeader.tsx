@@ -6,7 +6,7 @@
  *
  */
 import type { ViewStyle } from "react-native"
-import { StyleSheet, TouchableOpacity, View } from "react-native"
+import { Pressable, StyleSheet, View } from "react-native"
 import { useSafeAreaInsets } from "react-native-safe-area-context"
 
 import { CloseCuteReIcon } from "@/src/icons/close_cute_re"
@@ -37,7 +37,7 @@ const ImageDefaultHeader = ({
     >
       {/* Left side - Close button */}
       <View style={styles.leftActions}>
-        <TouchableOpacity
+        <Pressable
           style={[styles.actionButton, styles.blurredBackground]}
           onPress={onRequestClose}
           hitSlop={16}
@@ -47,14 +47,14 @@ const ImageDefaultHeader = ({
           onAccessibilityEscape={onRequestClose}
         >
           <CloseCuteReIcon color="#fff" width={20} height={20} />
-        </TouchableOpacity>
+        </Pressable>
       </View>
 
       {/* Right side - Save and Share buttons */}
       <View style={styles.rightActions}>
         {currentImageUri && (
           <>
-            <TouchableOpacity
+            <Pressable
               style={[styles.actionButton, styles.blurredBackground]}
               onPress={() => onPressSave(currentImageUri)}
               hitSlop={16}
@@ -63,9 +63,9 @@ const ImageDefaultHeader = ({
               accessibilityHint="Saves image to photo library"
             >
               <Download2CuteReIcon color="#fff" width={20} height={20} />
-            </TouchableOpacity>
+            </Pressable>
 
-            <TouchableOpacity
+            <Pressable
               style={[styles.actionButton, styles.blurredBackground]}
               onPress={() => onPressShare(currentImageUri)}
               hitSlop={16}
@@ -74,7 +74,7 @@ const ImageDefaultHeader = ({
               accessibilityHint="Shares image with other apps"
             >
               <ShareForwardCuteReIcon color="#fff" width={20} height={20} />
-            </TouchableOpacity>
+            </Pressable>
           </>
         )}
       </View>

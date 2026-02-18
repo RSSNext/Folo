@@ -153,11 +153,11 @@ To develop native iOS modules, follow these steps:
 
 Join our community to discuss ideas, ask questions, and share your contributions:
 
-- [Discord](https://discord.gg/followapp)
+- [Discord](https://discord.gg/AwWcAQ7euc)
 - [Twitter](https://x.com/intent/follow?screen_name=folo_is)
 
 We look forward to your contributions!
 
 ## License
 
-By contributing to Folo, you agree that your contributions will be licensed under the GNU General Public License version 3, with the special exceptions noted in the `README.md`.
+By contributing to Folo, you agree that your contributions will be licensed under the GNU Affero General Public License version 3, with the special exceptions noted in the `README.md`.

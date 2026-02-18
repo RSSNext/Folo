@@ -4,10 +4,12 @@ import { useEntry } from "@follow/store/entry/hooks"
 import { useFeedById } from "@follow/store/feed/hooks"
 import { useSubscriptionByFeedId } from "@follow/store/subscription/hooks"
 import { unreadSyncService } from "@follow/store/unread/store"
+import { useIsLoggedIn } from "@follow/store/user/hooks"
 import { isBizId } from "@follow/utils/utils"
 import type { Range, Virtualizer } from "@tanstack/react-virtual"
-import { atom } from "jotai"
+import { atom, useAtomValue } from "jotai"
 import { memo, useCallback, useEffect, useMemo, useRef } from "react"
+import { useTranslation } from "react-i18next"
 
 import { useGeneralSettingKey } from "~/atoms/settings/general"
 import { Focusable } from "~/components/common/Focusable"
@@ -18,6 +20,8 @@ import { useRouteParams, useRouteParamsSelector } from "~/hooks/biz/useRoutePara
 import { useFeedQuery } from "~/queries/feed"
 import { useFeedHeaderTitle } from "~/store/feed/hooks"
 
+import { aiTimelineEnabledAtom } from "./atoms/ai-timeline"
+import { AITimelineLoadingOverlay } from "./components/ai-timeline-loading/AITimelineLoadingOverlay"
 import { EntryColumnWrapper } from "./components/entry-column-wrapper/EntryColumnWrapper"
 import { FooterMarkItem } from "./components/FooterMarkItem"
 import { useEntriesActions, useEntriesState } from "./context/EntriesContext"
@@ -26,13 +30,16 @@ import { EntryColumnGrid } from "./grid"
 import { useAttachScrollBeyond } from "./hooks/useAttachScrollBeyond"
 import { useSnapEntryIdList } from "./hooks/useEntryIdListSnap"
 import { useEntryMarkReadHandler } from "./hooks/useEntryMarkReadHandler"
+import { useNavigateFirstEntry } from "./hooks/useNavigateFirstEntry"
 import { EntryListHeader } from "./layouts/EntryListHeader"
 import { EntryEmptyList, EntryList } from "./list"
 import { EntryRootStateContext } from "./store/EntryColumnContext"
 
 function EntryColumnContent() {
   const listRef = useRef<Virtualizer<HTMLElement, Element>>(undefined)
+  const { t } = useTranslation()
   const state = useEntriesState()
+
   const actions = useEntriesActions()
   // Register reset handler to keep scroll behavior when data resets
   useEffect(() => {
@@ -60,6 +67,7 @@ function EntryColumnContent() {
   const feed = useFeedById(routeFeedId)
   const title = useFeedHeaderTitle()
   useTitle(title)
+  const isLoggedIn = useIsLoggedIn()
 
   useEffect(() => {
     if (!activeEntryId) return
@@ -67,8 +75,9 @@ function EntryColumnContent() {
     if (isCollection || isPendingEntry) return
     if (!entry?.feedId) return
 
+    if (!isLoggedIn) return
     unreadSyncService.markEntryAsRead(activeEntryId)
-  }, [activeEntryId, entry?.feedId, isCollection, isPendingEntry])
+  }, [activeEntryId, entry?.feedId, isCollection, isPendingEntry, isLoggedIn])
 
   const isInteracted = useRef(false)
 
@@ -103,8 +112,11 @@ function EntryColumnContent() {
   )
 
   const navigate = useNavigateEntry()
+
   const rangeQueueRef = useRef<Range[]>([])
   const isRefreshing = state.isFetching && !state.isFetchingNextPage
+  const aiTimelineEnabled = useAtomValue(aiTimelineEnabledAtom)
+  const showAiTimelineLoading = aiTimelineEnabled && state.isLoading && !state.isFetchingNextPage
   const renderAsRead = useGeneralSettingKey("renderMarkUnread")
   const handleRangeChange = useCallback(
     (e: Range) => {
@@ -135,6 +147,8 @@ function EntryColumnContent() {
 
   const ListComponent = getView(view)?.gridMode ? EntryColumnGrid : EntryList
 
+  useNavigateFirstEntry(entriesIds, activeEntryId, view, navigate)
+
   return (
     <Focusable
       scope={HotkeyScope.Timeline}
@@ -152,11 +166,7 @@ function EntryColumnContent() {
         !state.error &&
         (!feed || feed?.type === "feed") && <AddFeedHelper />}
 
-      <EntryListHeader
-        refetch={actions.refetch}
-        isRefreshing={isRefreshing}
-        hasUpdate={state.hasUpdate}
-      />
+      <EntryListHeader refetch={actions.refetch} isRefreshing={isRefreshing} />
 
       <EntryColumnWrapper onScroll={handleCombinedScroll} key={`${routeFeedId}-${view}`}>
         {entriesIds.length === 0 ? (
@@ -177,12 +187,18 @@ function EntryColumnContent() {
             fetchNextPage={fetchNextPage}
             refetch={actions.refetch}
             groupCounts={groupedCounts}
+            syncType={state.type}
             Footer={
               isCollection ? void 0 : <FooterMarkItem view={view} fetchedTime={state.fetchedTime} />
             }
           />
         )}
       </EntryColumnWrapper>
+
+      <AITimelineLoadingOverlay
+        visible={showAiTimelineLoading}
+        label={t("entry_list_header.ai_timeline_loading")}
+      />
     </Focusable>
   )
 }

@@ -72,7 +72,7 @@ export const TimeSelect = memo<TimeSelectProps>(
           >
             <SelectValue />
           </SelectTrigger>
-          <SelectContent position="item-aligned" className="max-h-[50vh] w-16 p-1">
+          <SelectContent className="max-h-[50vh] w-16 p-1">
             {hours.map((h) => (
               <SelectItem key={h.value} value={h.value} className="h-6 text-xs">
                 {h.label}
@@ -88,7 +88,7 @@ export const TimeSelect = memo<TimeSelectProps>(
           >
             <SelectValue />
           </SelectTrigger>
-          <SelectContent position="item-aligned" className="max-h-[50vh] w-16 p-1">
+          <SelectContent className="max-h-[50vh] w-16 p-1">
             {minutes.map((m) => (
               <SelectItem key={m.value} value={m.value} className="h-6 text-xs">
                 {m.label}

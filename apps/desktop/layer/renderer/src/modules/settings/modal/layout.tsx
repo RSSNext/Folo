@@ -3,13 +3,14 @@ import { Folo } from "@follow/components/icons/folo.js"
 import { Logo } from "@follow/components/icons/logo.jsx"
 import { LetsIconsResizeDownRightLight } from "@follow/components/icons/resize.jsx"
 import { IN_ELECTRON } from "@follow/shared/constants"
+import { useIsLoggedIn } from "@follow/store/user/hooks"
 import { preventDefault } from "@follow/utils/dom"
 import { cn, getOS } from "@follow/utils/utils"
 import { atom, useAtomValue, useSetAtom } from "jotai"
 import type { BoundingBox } from "motion/react"
 import { Resizable } from "re-resizable"
 import type { PropsWithChildren } from "react"
-import { memo, Suspense, use, useCallback, useEffect, useMemo, useRef } from "react"
+import { memo, Suspense, use, useCallback, useMemo, useRef } from "react"
 import { createPortal } from "react-dom"
 
 import { useUISettingSelector } from "~/atoms/settings/ui"
@@ -17,9 +18,10 @@ import { m } from "~/components/common/Motion"
 import { resizableOnly } from "~/components/ui/modal"
 import { useModalResizeAndDrag } from "~/components/ui/modal/stacked/internal/use-drag"
 import { ElECTRON_CUSTOM_TITLEBAR_HEIGHT } from "~/constants"
-import { useActivationModal } from "~/modules/activation"
+import { useRequireLogin } from "~/hooks/common/useRequireLogin"
+import { useUpgradePlanModal } from "~/modules/plan"
 
-import { SETTING_MODAL_ID } from "../constants"
+import { isGuestAccessibleSettingTab, SETTING_MODAL_ID } from "../constants"
 import { EnhancedSettingsIndicator } from "../helper/EnhancedIndicator"
 import { SettingSyncIndicator } from "../helper/SyncIndicator"
 import { useAvailableSettings, useSettingPageContext } from "../hooks/use-setting-ctx"
@@ -29,14 +31,9 @@ import { DisableWhy } from "../utils"
 import { SettingModalContentPortalableContext, useSetSettingTab, useSettingTab } from "./context"
 import { defaultCtx, SettingContext } from "./hooks"
 
-export function SettingModalLayout(
-  props: PropsWithChildren<{
-    initialTab?: string
-  }>,
-) {
-  const { children, initialTab } = props
-  const setTab = useSetSettingTab()
-  const tab = useSettingTab()
+export function SettingModalLayout(props: PropsWithChildren) {
+  const { children } = props
+
   const elementRef = useRef<HTMLDivElement>(null)
   const edgeElementRef = useRef<HTMLDivElement>(null)
   const {
@@ -52,17 +49,6 @@ export function SettingModalLayout(
     resizeable: true,
     draggable: true,
   })
-
-  const availableSettings = useAvailableSettings()
-  useEffect(() => {
-    if (!tab) {
-      if (initialTab) {
-        setTab(initialTab)
-      } else {
-        setTab(availableSettings[0]!.path)
-      }
-    }
-  }, [availableSettings])
 
   const { draggable, overlay } = useUISettingSelector((state) => ({
     draggable: state.modalDraggable,
@@ -97,7 +83,7 @@ export function SettingModalLayout(
         transition={Spring.presets.smooth}
         className={cn(
           "relative flex overflow-hidden rounded-xl rounded-br-none border border-border",
-          !overlay && "shadow-perfect",
+          !overlay && "shadow-modal",
         )}
         style={resizeableStyle}
         onContextMenu={preventDefault}
@@ -174,14 +160,21 @@ const SettingItemButtonImpl = (props: {
   path: string
   isActive: boolean
   onChange?: (tab: string) => void
+  guestLocked?: boolean
 }) => {
-  const { setTab, item, path, onChange, isActive } = props
+  const { setTab, item, path, onChange, isActive, guestLocked = false } = props
   const { disableIf } = item
 
   const ctx = useSettingPageContext()
+  const { ensureLogin } = useRequireLogin()
 
-  const [disabled, why] = disableIf?.(ctx) || [false, DisableWhy.Noop]
-  const presentActivationModal = useActivationModal()
+  const [disabledByConfig, whyFromConfig = DisableWhy.Noop] = disableIf?.(ctx) || [
+    false,
+    DisableWhy.Noop,
+  ]
+  const disabled = guestLocked || disabledByConfig
+  const why = disabledByConfig ? whyFromConfig : DisableWhy.Noop
+  const presentActivationModal = useUpgradePlanModal()
 
   return (
     <button
@@ -189,10 +182,15 @@ const SettingItemButtonImpl = (props: {
         "my-0.5 flex w-full items-center rounded-lg px-2.5 py-0.5 leading-loose text-text",
         isActive && "!bg-theme-item-active !text-text",
         !IN_ELECTRON && "duration-200 hover:bg-theme-item-hover",
-        disabled && "cursor-not-allowed opacity-50",
+        disabled && "opacity-50",
+        disabledByConfig && "cursor-not-allowed",
       )}
       type="button"
       onClick={useCallback(() => {
+        if (guestLocked) {
+          ensureLogin()
+          return
+        }
         if (disabled) {
           switch (why) {
             case DisableWhy.NotActivation: {
@@ -206,7 +204,7 @@ const SettingItemButtonImpl = (props: {
         }
         setTab(path)
         onChange?.(path)
-      }, [disabled, why, presentActivationModal, setTab, path, onChange])}
+      }, [disabled, ensureLogin, guestLocked, onChange, path, presentActivationModal, setTab, why])}
     >
       <SettingsSidebarTitle path={path} className="text-[0.94rem] font-medium" />
     </button>
@@ -220,8 +218,11 @@ export const SidebarItems = memo((props: { onChange?: (tab: string) => void }) =
   const setTab = useSetSettingTab()
   const tab = useSettingTab()
   const availableSettings = useAvailableSettings()
+  const isLoggedIn = useIsLoggedIn()
+
   return availableSettings.map((t) => {
     const isActive = tab === t.path
+    const guestLocked = !isLoggedIn && !isGuestAccessibleSettingTab(t.path)
     return (
       <SettingItemButton
         key={t.path}
@@ -230,6 +231,7 @@ export const SidebarItems = memo((props: { onChange?: (tab: string) => void }) =
         item={t}
         path={t.path}
         onChange={onChange}
+        guestLocked={guestLocked}
       />
     )
   })

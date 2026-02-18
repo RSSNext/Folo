@@ -3,6 +3,7 @@ import { getOS, transformShortcut } from "@follow/utils/utils"
 import { atom } from "jotai"
 import { useCallback } from "react"
 
+import { useRequireLogin } from "~/hooks/common/useRequireLogin"
 import { ipcServices } from "~/lib/client"
 import { createAtomHooks } from "~/lib/jotai"
 import type { ElectronMenuItem } from "~/lib/native-menu"
@@ -136,10 +137,32 @@ export enum MenuItemType {
 
 export const useShowContextMenu = () => {
   const showWebContextMenu = useShowWebContextMenu()
+  const { withLoginGuard } = useRequireLogin()
+
+  const guardMenuItems = useCallback(
+    (items: FollowMenuItem[]): FollowMenuItem[] =>
+      items.map((item) => {
+        if (item instanceof MenuItemSeparator) {
+          return item
+        }
+
+        const nextSubmenu = item.submenu.length > 0 ? guardMenuItems(item.submenu) : item.submenu
+        let nextItem = nextSubmenu !== item.submenu ? item.extend({ submenu: nextSubmenu }) : item
+
+        if (item.requiresLogin) {
+          nextItem = nextItem.extend({
+            click: withLoginGuard(nextItem.click),
+          })
+        }
+
+        return nextItem
+      }),
+    [withLoginGuard],
+  )
 
   const showContextMenu = useCallback(
     async (inputMenu: Array<MenuItemInput>, e: MouseEvent | React.MouseEvent) => {
-      const menuItems = filterNullableMenuItems(inputMenu)
+      const menuItems = guardMenuItems(filterNullableMenuItems(inputMenu))
       // only show native menu on macOS electron, because in other platform, the native ui is not good
       if (IN_ELECTRON && getOS() === "macOS") {
         withDebugMenu(menuItems, e)
@@ -148,7 +171,7 @@ export const useShowContextMenu = () => {
       }
       await showWebContextMenu(menuItems, e)
     },
-    [showWebContextMenu],
+    [guardMenuItems, showWebContextMenu],
   )
 
   return showContextMenu
@@ -170,6 +193,7 @@ export type BaseMenuItemTextConfig = {
   disabled?: boolean
   checked?: boolean
   supportMultipleSelection?: boolean
+  requiresLogin?: boolean
 }
 
 export class BaseMenuItemText {
@@ -212,6 +236,10 @@ export class BaseMenuItemText {
 
   public get supportMultipleSelection() {
     return this.configs.supportMultipleSelection
+  }
+
+  public get requiresLogin() {
+    return this.configs.requiresLogin || false
   }
 }
 

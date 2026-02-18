@@ -1,5 +1,6 @@
 import { FeedViewType, getView } from "@follow/constants"
 import { useCollectionEntryList } from "@follow/store/collection/hooks"
+import { isOnboardingEntryUrl } from "@follow/store/constants/onboarding"
 import {
   useEntriesQuery,
   useEntryIdsByFeedId,
@@ -17,14 +18,15 @@ import { nextFrame } from "@follow/utils"
 import { isBizId } from "@follow/utils/utils"
 import { useMutation } from "@tanstack/react-query"
 import { debounce } from "es-toolkit/compat"
+import { useAtomValue } from "jotai"
 import { useCallback, useEffect, useMemo, useState } from "react"
 
 import { useGeneralSettingKey } from "~/atoms/settings/general"
 import { ROUTE_FEED_PENDING } from "~/constants/app"
+import { useFeature } from "~/hooks/biz/useFeature"
 import { useRouteParams } from "~/hooks/biz/useRouteParams"
-import { useAuthQuery } from "~/hooks/common"
-import { entries } from "~/queries/entries"
 
+import { aiTimelineEnabledAtom } from "../atoms/ai-timeline"
 import { useIsPreviewFeed } from "./useIsPreviewFeed"
 
 const useRemoteEntries = (): UseEntriesReturn => {
@@ -35,6 +37,8 @@ const useRemoteEntries = (): UseEntriesReturn => {
   const hidePrivateSubscriptionsInTimeline = useGeneralSettingKey(
     "hidePrivateSubscriptionsInTimeline",
   )
+  const aiTimelineEnabled = useAtomValue(aiTimelineEnabledAtom)
+  const aiEnabled = useFeature("ai")
 
   const folderIds = useFolderFeedsByFeedId({
     feedId,
@@ -52,6 +56,7 @@ const useRemoteEntries = (): UseEntriesReturn => {
         hidePrivateSubscriptionsInTimeline: true,
       }),
       ...(view === FeedViewType.All && { limit: 40 }),
+      ...(aiTimelineEnabled && aiEnabled && { aiSort: true }),
     }
 
     if (feedId && listId && isBizId(feedId)) {
@@ -68,6 +73,8 @@ const useRemoteEntries = (): UseEntriesReturn => {
     isPreview,
     view,
     hidePrivateSubscriptionsInTimeline,
+    aiTimelineEnabled,
+    aiEnabled,
   ])
   const query = useEntriesQuery(entriesOptions)
 
@@ -78,27 +85,6 @@ const useRemoteEntries = (): UseEntriesReturn => {
     }
   }, [query.isFetching])
 
-  const [pauseQuery, setPauseQuery] = useState(false)
-  const hasNewQuery = useAuthQuery(
-    entries.checkNew({
-      ...entriesOptions,
-      fetchedTime: fetchedTime!,
-    }),
-    {
-      refetchInterval: 1000 * 60,
-      enabled: !!fetchedTime && !pauseQuery,
-      notifyOnChangeProps: ["data"],
-    },
-  )
-  const hasUpdate = useMemo(
-    () => !!(fetchedTime && hasNewQuery?.data?.data?.has_new),
-    [hasNewQuery?.data?.data?.has_new, fetchedTime],
-  )
-
-  useEffect(() => {
-    setPauseQuery(hasUpdate)
-  }, [hasUpdate])
-
   const refetch = useCallback(async () => void query.refetch(), [query])
   const fetchNextPage = useCallback(async () => void query.fetchNextPage(), [query])
 
@@ -108,7 +94,6 @@ const useRemoteEntries = (): UseEntriesReturn => {
   return {
     entriesIds: query.entriesIds,
     hasNext: query.hasNextPage,
-    hasUpdate,
     refetch,
 
     fetchNextPage,
@@ -225,7 +210,6 @@ const useLocalEntries = (): UseEntriesReturn => {
   return {
     entriesIds: entries,
     hasNext,
-    hasUpdate: false,
     refetch,
     fetchNextPage: fetchNextPage as () => Promise<void>,
     isLoading: false,
@@ -283,6 +267,9 @@ export const useEntriesByView = ({ onReset }: { onReset?: () => void }) => {
       if (!entry) {
         continue
       }
+      if (isOnboardingEntryUrl(entry.url)) {
+        continue
+      }
       const date = new Date(listId ? entry.insertedAt : entry.publishedAt).toDateString()
       if (date !== lastDate) {
         counts.push(1)
@@ -299,7 +286,7 @@ export const useEntriesByView = ({ onReset }: { onReset?: () => void }) => {
   return {
     ...query,
 
-    hasUpdate: query.hasUpdate,
+    type: remoteQuery.isReady ? ("remote" as const) : ("local" as const),
     refetch: useCallback(() => {
       const promise = query.refetch()
       unreadSyncService.resetFromRemote()

@@ -5,7 +5,7 @@ import { cn, getLuminance } from "@follow/utils"
 import { LinearGradient } from "expo-linear-gradient"
 import type { FC } from "react"
 import { useMemo } from "react"
-import { Linking, StyleSheet, TouchableOpacity, View } from "react-native"
+import { Linking, Pressable, StyleSheet, View } from "react-native"
 import type { SharedValue } from "react-native-reanimated"
 import ReAnimated, { FadeIn, FadeOut, interpolate, useAnimatedStyle } from "react-native-reanimated"
 import { useSafeAreaInsets } from "react-native-safe-area-context"
@@ -23,7 +23,7 @@ import { PowerIcon } from "@/src/icons/power"
 import { TwitterCuteFiIcon } from "@/src/icons/twitter_cute_fi"
 import { WebCuteReIcon } from "@/src/icons/web_cute_re"
 import { YoutubeCuteFiIcon } from "@/src/icons/youtube_cute_fi"
-import { useNavigation } from "@/src/lib/navigation/hooks"
+import { useNavigation, useScreenIsInSheetModal } from "@/src/lib/navigation/hooks"
 import { LoginScreen } from "@/src/screens/(modal)/LoginScreen"
 import { usePrefetchImageColors } from "@/src/store/image/hooks"
 import { accentColor } from "@/src/theme/colors"
@@ -171,13 +171,23 @@ export const UserHeaderBanner = ({
     }
   })
   const navigation = useNavigation()
+
+  const sheetModal = useScreenIsInSheetModal()
+  const bannerContainerStyle = useMemo(
+    () => ({
+      marginTop: sheetModal ? 0 : -insets.top - 22,
+      paddingTop: sheetModal ? 48 : 22,
+    }),
+    [insets.top, sheetModal],
+  )
+  const bannerContentStyle = useMemo(
+    () => ({
+      paddingTop: insets.top,
+    }),
+    [insets.top],
+  )
   return (
-    <View
-      className="relative items-center justify-center pt-[22px]"
-      style={{
-        marginTop: -insets.top - 22,
-      }}
-    >
+    <View className="relative items-center justify-center" style={bannerContainerStyle}>
       <ReAnimated.View entering={FadeIn} className="absolute inset-0" style={styles}>
         <LinearGradient
           colors={defaultGradientColors as [string, string, ...string[]]}
@@ -212,12 +222,7 @@ export const UserHeaderBanner = ({
           </ReAnimated.View>
         )}
       </ReAnimated.View>
-      <View
-        className="items-center px-4 pb-[24px]"
-        style={{
-          paddingTop: insets.top,
-        }}
-      >
+      <View className="items-center px-4 pb-[24px]" style={bannerContentStyle}>
         <ReAnimated.View style={avatarStyles} className="rounded-full bg-system-background">
           <UserAvatar
             image={user?.image}
@@ -234,14 +239,14 @@ export const UserHeaderBanner = ({
             <Text
               numberOfLines={1}
               className={cn(
-                "px-8 text-2xl font-bold",
+                "px-8 text-xl font-bold",
                 gradientLight ? "text-black" : "text-white/95",
               )}
             >
               {user.name}
             </Text>
           ) : (
-            <Text className="text-2xl font-bold text-text">Folo Account</Text>
+            <Text className="text-xl font-bold text-text">Folo Account</Text>
           )}
 
           {!!role && serverConfigs?.REFERRAL_ENABLED && (
@@ -264,7 +269,7 @@ export const UserHeaderBanner = ({
                       ? "text-black/70"
                       : "text-white/70"
                     : "text-accent",
-                  "font-semibold",
+                  "text-sm font-semibold",
                 )}
               >
                 {UserRoleName[role]}
@@ -273,23 +278,23 @@ export const UserHeaderBanner = ({
           )}
 
           {user?.handle ? (
-            <Text className={cn(gradientLight ? "text-black/70" : "text-white/70")}>
+            <Text className={cn("text-sm", gradientLight ? "text-black/70" : "text-white/70")}>
               @{user.handle}
             </Text>
           ) : !user ? (
-            <TouchableOpacity
+            <Pressable
               className="mx-auto"
               onPress={() => navigation.presentControllerView(LoginScreen)}
             >
-              <Text className="m-[6] text-[16px] text-accent">Sign in to your account</Text>
-            </TouchableOpacity>
+              <Text className="m-[6] text-sm text-accent">Sign in to your account</Text>
+            </Pressable>
           ) : null}
         </View>
         {user?.bio ? (
           <Text
             numberOfLines={3}
             className={cn(
-              "mt-2 px-8 text-center",
+              "mt-2 px-8 text-center text-sm",
               gradientLight ? "text-black/80" : "text-white/80",
             )}
           >
@@ -298,9 +303,13 @@ export const UserHeaderBanner = ({
         ) : null}
         <View className="mt-4 flex-row flex-wrap items-center justify-center gap-x-6 gap-y-2 px-8">
           {user?.website && (
-            <TouchableOpacity
+            <Pressable
               className="flex-row items-center gap-1"
-              onPress={() => user.website && Linking.openURL(user.website)}
+              onPress={() => {
+                if (user.website) {
+                  void Linking.openURL(user.website)
+                }
+              }}
             >
               <WebCuteReIcon
                 height={16}
@@ -308,11 +317,14 @@ export const UserHeaderBanner = ({
                 color={gradientLight ? "rgba(0,0,0,0.7)" : "rgba(255,255,255,0.7)"}
               />
               <Text
-                className={cn("font-semibold", gradientLight ? "text-black/70" : "text-white/70")}
+                className={cn(
+                  "text-sm font-semibold",
+                  gradientLight ? "text-black/70" : "text-white/70",
+                )}
               >
                 {user.website.replace(/^(https?:\/\/)?(www\.)?/, "")}
               </Text>
-            </TouchableOpacity>
+            </Pressable>
           )}
           {socialLinks.map(({ platform, link }) => {
             const platformInfo = PlatformInfoMap[platform as keyof typeof PlatformInfoMap]
@@ -325,9 +337,14 @@ export const UserHeaderBanner = ({
                 ? "rgba(0,0,0,0.8)"
                 : "rgba(255,255,255,0.8)"
             return (
-              <TouchableOpacity key={platform} onPress={() => Linking.openURL(link)}>
+              <Pressable
+                key={platform}
+                onPress={() => {
+                  void Linking.openURL(link)
+                }}
+              >
                 <IconComponent height={22} width={22} color={color} />
-              </TouchableOpacity>
+              </Pressable>
             )
           })}
         </View>

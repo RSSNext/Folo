@@ -81,7 +81,7 @@ export const SubscriptionItem = memo(
               <View className="flex-1 flex-row items-center gap-2">
                 <Text
                   numberOfLines={1}
-                  className={cn("shrink font-medium text-text", feed.errorAt && "text-red")}
+                  className={cn("shrink text-sm font-medium text-text", feed.errorAt && "text-red")}
                   style={{
                     marginLeft: GROUPED_ICON_TEXT_GAP,
                   }}

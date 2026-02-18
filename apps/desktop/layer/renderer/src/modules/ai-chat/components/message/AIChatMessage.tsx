@@ -105,9 +105,9 @@ export const AIChatMessage: React.FC<AIChatMessageProps> = React.memo(
 
     return (
       <div onContextMenu={stopPropagation} className="group flex justify-start">
-        <div className="relative flex max-w-full flex-col gap-2 text-text">
+        <div className="relative flex w-full max-w-full flex-col gap-2 text-text">
           {/* Normal message display */}
-          <div className="text-text">
+          <div className="w-full text-text">
             <div className="flex cursor-text select-text flex-col gap-2 text-sm">
               <AIMessageParts message={message} isLastMessage={isLastMessage} />
             </div>
@@ -129,16 +129,14 @@ export const AIChatMessage: React.FC<AIChatMessageProps> = React.memo(
                 <span>Copy</span>
               </button>
 
-              {message.metadata && (
-                <TokenUsagePill metadata={message.metadata}>
-                  <button
-                    type="button"
-                    className="absolute right-0 flex items-center gap-1 rounded-md px-2 py-1 text-xs text-text-secondary transition-colors hover:bg-fill-tertiary"
-                  >
-                    <i className="i-mgc-information-cute-re size-3" />
-                  </button>
-                </TokenUsagePill>
-              )}
+              <TokenUsagePill metadata={originalMessage.metadata}>
+                <button
+                  type="button"
+                  className="absolute right-0 flex items-center gap-1 rounded-md px-2 py-1 text-xs text-text-secondary transition-colors hover:bg-fill-tertiary"
+                >
+                  <i className="i-mgc-information-cute-re size-3" />
+                </button>
+              </TokenUsagePill>
             </div>
           )}
           <div className="h-6" />

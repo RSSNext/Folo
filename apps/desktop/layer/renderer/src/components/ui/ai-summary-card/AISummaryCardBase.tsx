@@ -1,12 +1,15 @@
 import { AutoResizeHeight } from "@follow/components/ui/auto-resize-height/index.js"
 import { MotionButtonBase } from "@follow/components/ui/button/index.js"
 import { cn } from "@follow/utils/utils"
+import { FollowAPIError } from "@follow-app/client-sdk"
 import type { ReactNode } from "react"
 import { useTranslation } from "react-i18next"
 
+import { useIsPaymentEnabled } from "~/atoms/server-configs"
 import { CopyButton } from "~/components/ui/button/CopyButton"
 import { Markdown } from "~/components/ui/markdown/Markdown"
 import { useFeature } from "~/hooks/biz/useFeature"
+import { useSettingModal } from "~/modules/settings/modal/useSettingModal"
 
 interface AISummaryCardBaseProps {
   /** Summary content to display */
@@ -21,8 +24,6 @@ interface AISummaryCardBaseProps {
   footerContent?: ReactNode
   /** Custom loading state component */
   loadingComponent?: ReactNode
-  /** Custom empty state component */
-  emptyComponent?: ReactNode
   /** Title text for the AI Summary header */
   title?: string
   /** Whether to show the copy button */
@@ -31,6 +32,8 @@ interface AISummaryCardBaseProps {
   showAskAIButton?: boolean
   /** Callback when Ask AI button is clicked */
   onAskAI?: () => void
+
+  error?: Error | null
 }
 
 const DefaultLoadingState = () => (
@@ -41,12 +44,55 @@ const DefaultLoadingState = () => (
   </div>
 )
 
-const DefaultEmptyState = ({ message }: { message: string }) => (
-  <div className="py-4 text-center">
-    <i className="i-mingcute-document-line mb-2 text-2xl text-text-tertiary" />
-    <p className="text-sm text-text-secondary">{message}</p>
-  </div>
-)
+const DefaultEmptyState = ({
+  message,
+  shouldSuggestUpgrade,
+}: {
+  message: string
+  shouldSuggestUpgrade?: boolean
+}) => {
+  const settingModalPresent = useSettingModal()
+  const { t } = useTranslation("app")
+
+  if (shouldSuggestUpgrade) {
+    return (
+      <button
+        type="button"
+        onClick={() => settingModalPresent("plan")}
+        className="group/upgrade relative flex items-start gap-3 text-left"
+      >
+        {/* Icon with glow */}
+        <div className="relative flex-shrink-0">
+          <div className="center relative size-9 rounded-lg bg-gradient-to-br from-purple-500 to-blue-500">
+            <i className="i-mgc-power-mono text-xl text-white" />
+          </div>
+        </div>
+
+        <div className="flex-1 space-y-2">
+          {/* Title */}
+          <h3 className="text-sm font-medium leading-snug text-text">{message}</h3>
+
+          {/* Description */}
+          <p className="text-xs leading-relaxed text-text-tertiary">
+            {t("ai.summary_upgrade_required_description")}
+          </p>
+
+          {/* CTA */}
+          <div className="flex items-center gap-1 text-xs font-medium text-purple-600 dark:text-purple-400">
+            <span>{t("ai.summary_upgrade_view_plans")}</span>
+            <i className="i-mgc-right-cute-re text-sm" />
+          </div>
+        </div>
+      </button>
+    )
+  }
+
+  return (
+    <div className="text-center">
+      <p className="text-sm text-text-secondary">{message}</p>
+    </div>
+  )
+}
 
 export const AISummaryCardBase: React.FC<AISummaryCardBaseProps> = ({
   content,
@@ -55,23 +101,26 @@ export const AISummaryCardBase: React.FC<AISummaryCardBaseProps> = ({
   headerContent,
   footerContent,
   loadingComponent,
-  emptyComponent,
   title = "AI Summary",
   showCopyButton = true,
   showAskAIButton = false,
   onAskAI,
+  error,
 }) => {
   const { t } = useTranslation("app")
   const aiEnabled = useFeature("ai")
 
   const hasContent = !isLoading && content
+  const shouldSuggestUpgrade =
+    useIsPaymentEnabled() && error instanceof FollowAPIError ? error.status === 402 : undefined
 
   return (
     <div
       className={cn(
-        "group relative overflow-hidden rounded-2xl border border-neutral-200/50 p-5 backdrop-blur-xl",
-        "bg-gradient-to-b from-neutral-50/80 to-white/40 dark:from-neutral-900/80 dark:to-neutral-900/40",
-        "dark:border-neutral-800/50",
+        "group relative overflow-hidden rounded-2xl border p-5 shadow-sm backdrop-blur-xl transition-shadow duration-300",
+        "border-purple-200/30 bg-gradient-to-b from-purple-50/30 via-white/50 to-blue-50/20",
+        "dark:border-purple-800/30 dark:from-purple-950/30 dark:via-neutral-900/50 dark:to-blue-950/20",
+        "hover:shadow-md hover:shadow-purple-100/20 dark:hover:shadow-purple-900/10",
 
         isLoading &&
           "before:absolute before:inset-0 before:-z-10 before:animate-[pulse_2s_cubic-bezier(0.4,0,0.6,1)_infinite] before:bg-gradient-to-r before:from-purple-100/0 before:via-purple-300/10 before:to-purple-100/0 dark:before:from-purple-900/0 dark:before:via-purple-600/10 dark:before:to-purple-900/0",
@@ -81,12 +130,15 @@ export const AISummaryCardBase: React.FC<AISummaryCardBaseProps> = ({
       {/* Animated background gradient */}
       <div
         className={cn(
-          "absolute inset-0 -z-10 bg-gradient-to-br opacity-50",
-          "from-purple-100/20 via-transparent to-blue-100/20",
-          "dark:from-purple-900/20 dark:to-blue-900/20",
+          "absolute inset-0 -z-10 bg-gradient-to-br opacity-40",
+          "from-purple-100/30 via-transparent to-blue-100/30",
+          "dark:from-purple-900/30 dark:to-blue-900/30",
           isLoading && "animate-[glow_4s_ease-in-out_infinite]",
         )}
       />
+
+      {/* Subtle shine effect on hover */}
+      <div className="absolute inset-0 -z-10 bg-gradient-to-r from-transparent via-white/10 to-transparent opacity-0 transition-opacity duration-500 group-hover:opacity-100 dark:via-white/5" />
 
       {/* Header */}
       <div className="flex items-center justify-between">
@@ -140,7 +192,7 @@ export const AISummaryCardBase: React.FC<AISummaryCardBaseProps> = ({
                 "sm:opacity-0 sm:duration-300 sm:group-hover:translate-y-0 sm:group-hover:opacity-100",
               )}
             >
-              <i className="i-mingcute-ai-line text-base" />
+              <i className="i-mgc-ai-cute-re text-base" />
               <span>Ask AI</span>
             </MotionButtonBase>
           )}
@@ -167,12 +219,16 @@ export const AISummaryCardBase: React.FC<AISummaryCardBaseProps> = ({
           loadingComponent || <DefaultLoadingState />
         ) : hasContent ? (
           <Markdown className="prose-sm max-w-none prose-p:m-0">{String(content)}</Markdown>
+        ) : shouldSuggestUpgrade ? (
+          <DefaultEmptyState
+            message={t("ai.summary_upgrade_required_title")}
+            shouldSuggestUpgrade
+          />
         ) : (
-          emptyComponent || <DefaultEmptyState message={t("ai.summary_not_available")} />
+          <DefaultEmptyState message={t("ai.summary_not_available")} />
         )}
       </AutoResizeHeight>
 
-      {/* Footer */}
       {footerContent}
     </div>
   )

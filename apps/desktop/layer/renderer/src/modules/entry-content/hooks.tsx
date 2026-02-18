@@ -1,5 +1,7 @@
+import { isFreeRole } from "@follow/constants"
 import { useEntry, usePrefetchEntryDetail } from "@follow/store/entry/hooks"
 import { useEntryTranslation, usePrefetchEntryTranslation } from "@follow/store/translation/hooks"
+import { useUserRole } from "@follow/store/user/hooks"
 import { tracker } from "@follow/tracker"
 import { createElement, useCallback, useMemo } from "react"
 import { useTranslation } from "react-i18next"
@@ -7,7 +9,7 @@ import { toast } from "sonner"
 
 import { useShowAITranslation } from "~/atoms/ai-translation"
 import { useEntryIsInReadability, useEntryIsInReadabilitySuccess } from "~/atoms/readability"
-import { useActionLanguage } from "~/atoms/settings/general"
+import { useActionLanguage, useGeneralSettingKey } from "~/atoms/settings/general"
 import { useModalStack } from "~/components/ui/modal/stacked/hooks"
 
 import { ImageGalleryContent } from "./components/ImageGalleryContent"
@@ -47,7 +49,10 @@ export const useEntryContent = (entryId: string) => {
   const isReadabilitySuccess = useEntryIsInReadabilitySuccess(entryId)
 
   const enableTranslation = useShowAITranslation()
+  const userRole = useUserRole()
+  const shouldPrefetchTranslation = enableTranslation && !isFreeRole(userRole)
   const actionLanguage = useActionLanguage()
+  const translationMode = useGeneralSettingKey("translationMode")
   const contentTranslated = useEntryTranslation({
     entryId,
     language: actionLanguage,
@@ -55,10 +60,11 @@ export const useEntryContent = (entryId: string) => {
   })
   usePrefetchEntryTranslation({
     entryIds: [entryId],
-    enabled: enableTranslation,
+    enabled: shouldPrefetchTranslation,
     language: actionLanguage,
     withContent: true,
     target: isReadabilitySuccess ? "readabilityContent" : "content",
+    mode: translationMode,
   })
 
   return useMemo(() => {

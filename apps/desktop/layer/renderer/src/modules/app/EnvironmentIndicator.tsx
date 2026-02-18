@@ -19,7 +19,7 @@ import { featureConfigMap } from "~/lib/features"
 
 import { DebugRegistry } from "../debug/registry"
 
-const EnvironmentDebugModalContent = () => {
+export const EnvironmentDebugModalContent = () => {
   const actionMap = DebugRegistry.getAll()
   const debugValues = useDebugFeatureValue() as Record<string, boolean>
   const setDebugValues = useSetDebugFeatureValue()
@@ -114,58 +114,56 @@ export const EnvironmentIndicator = () => {
   )
 }
 
-if (DEV) {
-  const sqliteOnlineWebsite = "https://sqlite-online.vercel.app"
+const sqliteOnlineWebsite = "https://sqlite-online.vercel.app"
 
-  DebugRegistry.add("SQLite Online", () => {
-    window.presentModal({
-      title: "SQLite Online",
-      content: ({ dismiss }) => (
-        <div className="h-full p-16" onClick={dismiss}>
-          <iframe
-            id="sql-viewer"
-            src={sqliteOnlineWebsite}
-            className="size-full"
-            onLoad={() => {
-              const iframe = document.querySelector("#sql-viewer") as HTMLIFrameElement
-              if (!iframe) return
-              const win = iframe.contentWindow
-              if (!win) return
+DebugRegistry.add("SQLite Online", () => {
+  window.presentModal({
+    title: "SQLite Online",
+    content: ({ dismiss }) => (
+      <div className="h-full p-16" onClick={dismiss}>
+        <iframe
+          id="sql-viewer"
+          src={sqliteOnlineWebsite}
+          className="size-full"
+          onLoad={() => {
+            const iframe = document.querySelector("#sql-viewer") as HTMLIFrameElement
+            if (!iframe) return
+            const win = iframe.contentWindow
+            if (!win) return
 
-              const eventHandler = (event: MessageEvent) => {
-                if (event.origin !== sqliteOnlineWebsite) {
-                  console.warn("Blocked message from unauthorized origin:", event.origin)
-                  return
-                }
-
-                if (event.data.type === "loadDatabaseBufferReady") {
-                  getDBFile()
-                    .then(async (blob) => {
-                      const arrayBuffer = await blob.arrayBuffer()
-
-                      win.postMessage(
-                        {
-                          type: "invokeLoadDatabaseBuffer",
-                          buffer: arrayBuffer,
-                        },
-                        sqliteOnlineWebsite,
-                      )
-
-                      window.removeEventListener("message", eventHandler)
-                    })
-                    .catch((error) => {
-                      console.error("Failed to load database file into SQLite Online", error)
-                    })
-                }
+            const eventHandler = (event: MessageEvent) => {
+              if (event.origin !== sqliteOnlineWebsite) {
+                console.warn("Blocked message from unauthorized origin:", event.origin)
+                return
               }
 
-              window.addEventListener("message", eventHandler)
-            }}
-          />
-        </div>
-      ),
+              if (event.data.type === "loadDatabaseBufferReady") {
+                getDBFile()
+                  .then(async (blob) => {
+                    const arrayBuffer = await blob.arrayBuffer()
 
-      CustomModalComponent: PlainModal,
-    })
+                    win.postMessage(
+                      {
+                        type: "invokeLoadDatabaseBuffer",
+                        buffer: arrayBuffer,
+                      },
+                      sqliteOnlineWebsite,
+                    )
+
+                    window.removeEventListener("message", eventHandler)
+                  })
+                  .catch((error) => {
+                    console.error("Failed to load database file into SQLite Online", error)
+                  })
+              }
+            }
+
+            window.addEventListener("message", eventHandler)
+          }}
+        />
+      </div>
+    ),
+
+    CustomModalComponent: PlainModal,
   })
-}
+})

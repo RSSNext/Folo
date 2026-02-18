@@ -1,8 +1,8 @@
-import type { BizUIMessage } from "@folo-services/ai-tools"
 import { useShallow } from "zustand/shallow"
 
 import { useAIChatStore } from "./AIChatContext"
 import type { BlockSlice } from "./slices/block.slice"
+import type { BizUIMessage } from "./types"
 
 /**
  * Hook to get the current room ID (chat ID) from the AI chat store
@@ -63,6 +63,21 @@ export const useMessageByIdSelector = <T>(
 export const useHasMessages = () => {
   const store = useAIChatStore()
   return store((state) => state.messages.length > 0)
+}
+
+export const useIsLocalChat = () => {
+  const store = useAIChatStore()
+  return store((state) => state.isLocal)
+}
+
+export const useSyncStatus = () => {
+  const store = useAIChatStore()
+  return store((state) => state.syncStatus)
+}
+
+export const useSyncStateActions = () => {
+  const store = useAIChatStore()
+  return store((state) => state.chatActions)
 }
 
 export const useChatBlockActions = () => useAIChatStore()((state) => state.blockActions)

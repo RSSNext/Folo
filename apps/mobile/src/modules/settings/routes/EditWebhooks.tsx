@@ -21,6 +21,12 @@ export const EditWebhooksScreen: NavigationControllerView<{
 }> = ({ index }) => {
   const { t } = useTranslation("settings")
   const rule = useActionRule(index)
+  const webhooks =
+    rule?.result.webhooks?.map((webhook, webhookIndex) => ({
+      webhook,
+      webhookIndex,
+      rowKey: `webhook-${webhookIndex}`,
+    })) ?? []
   return (
     <SafeNavigationScrollView
       className="bg-system-grouped-background"
@@ -28,22 +34,24 @@ export const EditWebhooksScreen: NavigationControllerView<{
     >
       <GroupedInsetListSectionHeader label={t("actions.action_card.webhooks")} marginSize="small" />
       <GroupedInsetListCard>
-        {rule?.result.webhooks?.map((webhook, webhookIndex) => (
-          <GroupedInsetListBaseCell className="flex-row" key={webhookIndex}>
-            <PlainTextField
-              placeholder="https://"
-              inputMode="url"
-              value={webhook}
-              onChangeText={(value) => {
-                actionActions.updateWebhook({
-                  index,
-                  webhookIndex,
-                  value,
-                })
-              }}
-            />
-          </GroupedInsetListBaseCell>
-        ))}
+        {webhooks.map(({ webhook, webhookIndex, rowKey }) => {
+          return (
+            <GroupedInsetListBaseCell className="flex-row" key={rowKey}>
+              <PlainTextField
+                placeholder="https://"
+                inputMode="url"
+                value={webhook}
+                onChangeText={(value) => {
+                  actionActions.updateWebhook({
+                    index,
+                    webhookIndex,
+                    value,
+                  })
+                }}
+              />
+            </GroupedInsetListBaseCell>
+          )
+        })}
         <GroupedInsetButtonCell
           label={t("actions.action_card.add")}
           onPress={() => {

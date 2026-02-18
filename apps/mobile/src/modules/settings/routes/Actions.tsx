@@ -9,7 +9,7 @@ import { actionActions } from "@follow/store/action/store"
 import { useCallback } from "react"
 import { useTranslation } from "react-i18next"
 import type { ListRenderItem } from "react-native"
-import { View } from "react-native"
+import { StyleSheet, View } from "react-native"
 import Animated, { LinearTransition } from "react-native-reanimated"
 import { useColors } from "react-native-uikit-colors"
 
@@ -31,6 +31,7 @@ import { Switch } from "@/src/components/ui/switch/Switch"
 import { Text } from "@/src/components/ui/typography/Text"
 import { Book6CuteReIcon } from "@/src/icons/book_6_cute_re"
 import { Magic2CuteFiIcon } from "@/src/icons/magic_2_cute_fi"
+import { toastFetchError } from "@/src/lib/error-parser"
 import { useNavigation } from "@/src/lib/navigation/hooks"
 import { toast } from "@/src/lib/toast"
 import { accentColor } from "@/src/theme/colors"
@@ -129,8 +130,8 @@ const SaveRuleButton = ({ disabled }: { disabled?: boolean }) => {
       navigation.back()
       toast.success("Actions saved")
     },
-    onError(errorMessage) {
-      toast.error(errorMessage)
+    onError(error) {
+      toastFetchError(error)
     },
   })
   return (
@@ -145,19 +146,13 @@ const SaveRuleButton = ({ disabled }: { disabled?: boolean }) => {
 const ItemSeparatorComponent = () => {
   return (
     <View
-      className="ml-24 h-px flex-1 bg-opaque-separator/70"
+      className="ml-24 flex-1 bg-opaque-separator/70"
       collapsable={false}
-      style={{
-        transform: [
-          {
-            scaleY: 0.5,
-          },
-        ],
-      }}
+      style={styles.itemSeparator}
     />
   )
 }
-const keyExtractor = (_item: ActionModel, index: number) => index.toString()
+const keyExtractor = (item: ActionModel) => item.index.toString()
 const ListItemCell: ListRenderItem<ActionModel> = (props) => {
   return <ListItemCellImpl {...props} />
 }
@@ -211,3 +206,9 @@ const ListItemCellImpl: ListRenderItem<ActionModel> = ({ item: rule }) => {
     </SwipeableItem>
   )
 }
+
+const styles = StyleSheet.create({
+  itemSeparator: {
+    height: StyleSheet.hairlineWidth,
+  },
+})

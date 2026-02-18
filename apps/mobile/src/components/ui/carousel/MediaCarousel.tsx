@@ -19,6 +19,9 @@ import { getAllSources } from "../image/utils"
 import { NativePressable } from "../pressable/NativePressable"
 import { VideoPlayer } from "../video/VideoPlayer"
 
+const getMediaKey = (mediaItem: MediaModel) =>
+  mediaItem.url || mediaItem.preview_image_url || `${mediaItem.type}-media`
+
 export const MediaCarousel = ({
   ref,
   entryId,
@@ -49,10 +52,9 @@ export const MediaCarousel = ({
     >
       <View ref={ref} className="relative overflow-hidden rounded-md">
         <ScrollView
-          onScroll={(e) => {
+          onMomentumScrollEnd={(e) => {
             setActiveIndex(Math.round(e.nativeEvent.contentOffset.x / containerWidth))
           }}
-          scrollEventThrottle={16}
           scrollEnabled={hasMany}
           horizontal
           showsHorizontalScrollIndicator={false}
@@ -121,8 +123,12 @@ export const MediaCarousel = ({
         {/* Indicators */}
         {hasMany && (
           <View className="absolute inset-x-0 bottom-0 flex-row items-center justify-center gap-1">
-            {media.map((_, index) => (
-              <Indicator key={index} index={index} activeIndex={activeIndex} />
+            {media.map((mediaItem, mediaIndex) => (
+              <Indicator
+                key={`indicator-${getMediaKey(mediaItem)}`}
+                index={mediaIndex}
+                activeIndex={activeIndex}
+              />
             ))}
           </View>
         )}

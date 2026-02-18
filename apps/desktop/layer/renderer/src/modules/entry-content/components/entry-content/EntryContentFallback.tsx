@@ -17,7 +17,7 @@ interface EntryContentFallbackProps {
  * 3. Error boundary for entry not found cases
  */
 export const EntryContentFallback = memo(({ entryId, children }: EntryContentFallbackProps) => {
-  const { data: realEntry, isLoading: loadingRemoteEntry } = usePrefetchEntryDetail(entryId)
+  const { data: realEntry, isPending: loadingRemoteEntry } = usePrefetchEntryDetail(entryId)
 
   if (!loadingRemoteEntry && !realEntry) {
     // 404

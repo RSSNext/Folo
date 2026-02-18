@@ -1,5 +1,5 @@
 .shiki-wrapper {
-  @apply overflow-hidden rounded-md;
+  @apply overflow-hidden;
 
   pre {
     @apply bg-transparent;
@@ -16,7 +16,7 @@
 
   :global {
     .shiki {
-      @apply !m-0 !px-0;
+      @apply !m-0 !bg-transparent !px-0;
 
       font-family:
         "OperatorMonoSSmLig Nerd Font",
@@ -36,9 +36,27 @@
     }
 
     pre {
-      @apply !m-0 overflow-auto p-4;
+      @apply !m-0 overflow-auto px-4 py-3;
 
       font-size: 0.875em;
+      line-height: 1.6;
+
+      /* Custom scrollbar */
+      &::-webkit-scrollbar {
+        @apply h-1.5 w-1.5;
+      }
+
+      &::-webkit-scrollbar-track {
+        @apply bg-transparent;
+      }
+
+      &::-webkit-scrollbar-thumb {
+        @apply rounded-full bg-fill-tertiary transition-colors;
+
+        &:hover {
+          @apply bg-fill-secondary;
+        }
+      }
     }
 
     pre code {
@@ -46,15 +64,20 @@
     }
 
     .line {
-      @apply block px-5;
+      @apply block px-4 transition-colors duration-100;
 
       & > span:last-child {
-        @apply mr-5;
+        @apply mr-4;
       }
 
       /* Expand the row without content */
       &::after {
         content: " ";
+      }
+
+      /* Subtle hover effect on lines */
+      &:hover {
+        @apply bg-fill/10;
       }
     }
 
@@ -63,13 +86,13 @@
       @apply relative break-all;
 
       &::before {
-        @apply absolute left-0 top-0 h-full w-[2px];
+        @apply absolute left-0 top-0 h-full w-0.5;
         content: "";
       }
     }
 
     .diff.add {
-      @apply bg-green-100 dark:bg-green-900;
+      @apply bg-green/10;
 
       &::before {
         @apply bg-green;
@@ -77,25 +100,25 @@
 
       &::after {
         content: " +";
-        @apply absolute left-0 text-green;
+        @apply absolute left-1.5 text-xs font-semibold text-green;
       }
     }
 
     .diff.remove {
-      @apply bg-red-100 dark:bg-red-900;
+      @apply bg-red/10;
 
       &::before {
-        @apply bg-red-500;
+        @apply bg-red;
       }
 
       &::after {
         content: " -";
-        @apply absolute left-0 text-red;
+        @apply absolute left-1.5 text-xs font-semibold text-red;
       }
     }
 
     .highlighted {
-      @apply bg-accent/20;
+      @apply bg-accent/10;
 
       &::before {
         @apply bg-accent;

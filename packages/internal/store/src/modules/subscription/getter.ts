@@ -103,8 +103,8 @@ const sortUngroupedSubscriptionByAlphabet = (
 
   if (!leftFeed || !rightFeed) return 0
 
-  const comparedLeftTitle = leftSubscription.title || leftFeed.title!
-  const comparedRightTitle = rightSubscription.title || rightFeed.title!
+  const comparedLeftTitle = leftSubscription.title ?? leftFeed.title ?? ""
+  const comparedRightTitle = rightSubscription.title ?? rightFeed.title ?? ""
 
   return sortByAlphabet(comparedLeftTitle, comparedRightTitle)
 }
@@ -273,7 +273,7 @@ export const getSortedFeedSubscriptionByAlphabetSelector =
       const leftFeed = getFeedById(a)
       const rightFeed = getFeedById(b)
       if (!leftFeed || !rightFeed) return 0
-      return sortByAlphabet(leftFeed.title!, rightFeed.title!)
+      return sortByAlphabet(leftFeed.title ?? "", rightFeed.title ?? "")
     })
   }
 

@@ -6,6 +6,14 @@ const defaultConfig = {
     background: "hsl(var(--background))",
     accent: "hsl(var(--fo-a))",
     red: "rgb(var(--color-red))",
+    green: "rgb(var(--color-green))",
+    blue: "rgb(var(--color-blue))",
+    purple: "rgb(var(--color-purple))",
+    yellow: "rgb(var(--color-yellow))",
+    orange: "rgb(var(--color-orange))",
+    gray: "rgb(var(--color-gray))",
+    pink: "rgb(var(--color-pink))",
+
     transparent: "transparent",
     // Map to existing theme colors from UIKit
   },

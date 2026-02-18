@@ -316,7 +316,7 @@ class WindowManagerStatic {
     } else {
       // Production entry
       const dynamicRenderEntry = loadDynamicRenderEntry()
-      logger.info("load dynamic render entry", dynamicRenderEntry)
+      if (dynamicRenderEntry) logger.info("load dynamic render entry", dynamicRenderEntry)
       const appLoadFileEntry =
         dynamicRenderEntry || path.resolve(__dirname, "../renderer/index.html")
 

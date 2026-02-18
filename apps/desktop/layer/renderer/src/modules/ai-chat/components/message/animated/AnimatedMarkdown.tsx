@@ -3,6 +3,7 @@
  */
 
 import type { LinkProps } from "@follow/components/ui/link/LinkWithTooltip.js"
+import { getSubscriptionById } from "@follow/store/subscription/getter"
 import { cn, isBizId } from "@follow/utils"
 import * as React from "react"
 import type { Components } from "react-markdown"
@@ -216,7 +217,9 @@ const InlineFoloReference: React.FC<
     if (type === "entry") {
       peekModal(targetId, "modal")
     } else {
-      navigateEntry({ feedId: targetId, entryId: null })
+      const subscription = getSubscriptionById(targetId)
+      const view = subscription?.view
+      navigateEntry({ feedId: targetId, entryId: null, view })
     }
   }, [navigateEntry, peekModal, targetId, type])
 

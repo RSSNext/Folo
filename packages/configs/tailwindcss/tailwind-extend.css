@@ -87,15 +87,27 @@
 /* KBD */
 @layer components {
   .kbd {
-    background-color: oklch(0.984625 0.001706 247.839);
-    /* @apply shadow-[0px_2px_0px_0px_rgba(255,255,255,0.5)] dark:shadow-[0px_2px_0px_0px_rgba(0,0,0,0.6)]; */
+    background-image: linear-gradient(
+      to bottom right,
+      rgba(var(--color-background) / 0.95),
+      rgba(var(--color-background) / 0.92)
+    );
     @apply rounded-[4px] px-1 text-[0.5em];
-    @apply border border-zinc-300 font-mono dark:border-neutral-700;
     @apply inline-flex items-center justify-center;
+    box-shadow:
+      0 2px 8px rgba(0, 0, 0, 0.06),
+      0 1px 4px rgba(0, 0, 0, 0.04),
+      0 1px 6px hsl(var(--fo-a) / 0.04),
+      0 0 2px rgba(0, 0, 0, 0.02);
   }
 
   [data-theme="dark"] .kbd {
-    background-color: oklch(0.232607 0.013807 253.101);
+    border: 1px solid hsl(var(--border) / 0.5);
+    box-shadow:
+      0 2px 8px rgba(0, 0, 0, 0.12),
+      0 1px 4px rgba(0, 0, 0, 0.08),
+      0 1px 6px hsl(var(--fo-a) / 0.06),
+      0 0 2px rgba(0, 0, 0, 0.04);
   }
 }
 
@@ -175,10 +187,26 @@
 /* Shadow */
 @layer components {
   .shadow-context-menu {
+    --shadow-color: rgba(0, 0, 0, 0.067);
     box-shadow:
-      rgba(0, 0, 0, 0.067) 0px 3px 8px,
-      rgba(0, 0, 0, 0.067) 0px 2px 5px,
-      rgba(0, 0, 0, 0.067) 0px 1px 1px;
+      var(--shadow-color) 0px 3px 8px,
+      var(--shadow-color) 0px 2px 5px,
+      var(--shadow-color) 0px 1px 1px;
+  }
+
+  [data-theme="dark"] .shadow-context-menu {
+    --shadow-color: rgba(255, 255, 255, 0.07);
+  }
+
+  .shadow-ai-chat-floating-panel {
+    --shadow-color: rgba(0, 0, 0, 0.08);
+    box-shadow:
+      -5px -6px 20px 0px var(--shadow-color),
+      10px -5px 20px 0px var(--shadow-color),
+      0px 10px 20px 0px var(--shadow-color);
+  }
+  [data-theme="dark"] .shadow-ai-chat-floating-panel {
+    --shadow-color: rgba(255, 255, 255, 0.04);
   }
 
   [data-theme="dark"] .shadow-context-menu {

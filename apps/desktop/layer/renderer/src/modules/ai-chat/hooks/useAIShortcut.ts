@@ -24,8 +24,8 @@ export const useAIShortcut = () => {
       "$mod+n": (e) => {
         e.preventDefault()
         // New chat
-        const { view, entryId } = getRouteParams()
-        if (isTimelineSummaryAutoContext({ view, entryId })) {
+        const { entryId } = getRouteParams()
+        if (isTimelineSummaryAutoContext({ entryId })) {
           chatActions.setTimelineSummaryManualOverride(true)
         }
         chatActions.newChat()

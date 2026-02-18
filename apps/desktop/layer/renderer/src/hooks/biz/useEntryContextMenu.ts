@@ -12,7 +12,6 @@ import { HIDE_ACTIONS_IN_ENTRY_CONTEXT_MENU, useEntryActions } from "~/hooks/biz
 import { useFeedActions } from "~/hooks/biz/useFeedActions"
 import { useContextMenu } from "~/hooks/common/useContextMenu"
 import { copyToClipboard } from "~/lib/clipboard"
-import { COMMAND_ID } from "~/modules/command/commands/id"
 
 export function useEntryContextMenu({
   entryId,
@@ -45,12 +44,6 @@ export function useEntryContextMenu({
         return item && !item.disabled
       }),
       MENU_ITEM_SEPARATOR,
-      // Copy section
-      ...actionConfigs.filter((item) => {
-        if (item instanceof MenuItemSeparator) return false
-        // @ts-expect-error id exists
-        return [COMMAND_ID.entry.copyTitle, COMMAND_ID.entry.copyLink].includes(item.id)
-      }),
       new MenuItemText({
         label: `${t("words.copy")}${t("space")}${t("words.entry")} ${t("words.id")}`,
         click: () => copyToClipboard(entryId),

@@ -12,16 +12,20 @@ import type { ChatSlice } from "./types"
 // Zustand Chat State that implements AI SDK ChatState interface
 export class ZustandChatState implements ChatState<BizUIMessage> {
   #messages: BizUIMessage[]
-  #status: ChatStatus = "ready"
-  #error: Error | undefined = undefined
-  #eventEmitter = new ChatStateEventEmitter()
+  #status: ChatStatus
+  #error: Error | undefined
+  #eventEmitter: ChatStateEventEmitter
+  #isResumingStream = false
 
   constructor(
     initialMessages: BizUIMessage[] = [],
     private updateZustandState: (updater: (state: ChatSlice) => ChatSlice) => void,
     private chatId: string,
   ) {
+    this.#eventEmitter = new ChatStateEventEmitter()
     this.#messages = initialMessages
+    this.#status = "ready"
+    this.#error = undefined
     this.#setupEventHandlers()
   }
 
@@ -61,11 +65,30 @@ export class ZustandChatState implements ChatState<BizUIMessage> {
     })
 
     this.#eventEmitter.on("status", ({ status }) => {
-      this.updateZustandState((state) => ({
-        ...state,
-        status,
-        isStreaming: status === "streaming",
-      }))
+      // Suppress the transient "submitted" status emitted when resumeStream probes for an active stream.
+      if (this.#isResumingStream && status === "submitted") {
+        return
+      }
+
+      this.updateZustandState((state) => {
+        const isStreaming = status === "streaming"
+        if (isStreaming) {
+          void state.chatActions.markSessionSynced()
+        }
+
+        if (
+          this.#isResumingStream &&
+          (status === "ready" || status === "streaming" || status === "error")
+        ) {
+          this.#isResumingStream = false
+        }
+
+        return {
+          ...state,
+          status,
+          isStreaming,
+        }
+      })
     })
 
     this.#eventEmitter.on("error", ({ error }) => {
@@ -147,14 +170,12 @@ export class ZustandChatState implements ChatState<BizUIMessage> {
         await AIPersistService.ensureSession(this.chatId)
         // Save messages using incremental updates
         await AIPersistService.replaceAllMessages(this.chatId, this.#messages)
-        // Update session time after successfully saving messages
-        await AIPersistService.updateSessionTime(this.chatId)
       } catch (error) {
         console.error("Failed to persist messages:", error)
       }
     },
     100,
-    { leading: true, trailing: true },
+    { leading: false, trailing: true },
   )
 
   #fillMessageCreatedAt(message: SendingUIMessage | BizUIMessage): BizUIMessage {
@@ -179,5 +200,9 @@ export class ZustandChatState implements ChatState<BizUIMessage> {
 
   destroy(): void {
     this.#eventEmitter.clear()
+  }
+
+  setResumingStream(isResuming: boolean) {
+    this.#isResumingStream = isResuming
   }
 }

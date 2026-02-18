@@ -52,6 +52,7 @@ export const useAIModel = () => {
     data: {
       defaultModel: configuration?.defaultModel,
       availableModels: configuration?.availableModels,
+      availableModelsMenu: configuration?.availableModelsMenu,
       currentModel,
     },
     isLoading,

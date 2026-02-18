@@ -52,6 +52,13 @@ export class DatabaseSource {
     try {
       const buffer = new Uint8Array(Math.min(this.#bytesRemaining, 65536))
       await check(this.#vfs.jRead(this.#fileId, buffer, this.#iOffset))
+
+      // The stream may have been cancelled between the async read and now
+      if (controller.desiredSize === null) {
+        this.#reject(new Error("Stream cancelled during pull"))
+        return
+      }
+
       controller.enqueue(buffer)
 
       this.#iOffset += buffer.byteLength
@@ -61,7 +68,11 @@ export class DatabaseSource {
         this.#resolve()
       }
     } catch (e) {
-      controller.error(e)
+      try {
+        controller.error(e)
+      } catch {
+        // Controller may already be in error/closed state
+      }
       this.#reject(e)
     }
   }

@@ -1,50 +1,19 @@
 import { Button } from "@follow/components/ui/button/index.js"
-import { UserRole } from "@follow/constants"
-import { useUserRole } from "@follow/store/user/hooks"
 import { repository } from "@pkg"
 import { useTranslation } from "react-i18next"
-import { useEventCallback } from "usehooks-ts"
 
 import { useModalStack } from "~/components/ui/modal/stacked/hooks"
-import { CustomSafeError } from "~/errors/CustomSafeError"
 
-import { useActivationModal } from "../activation"
 import { InboxTable } from "./Inbox"
 import { InboxForm } from "./InboxForm"
 
-const useCanCreateMoreInboxAndNotify = () => {
-  const role = useUserRole()
-  const presentActivationModal = useActivationModal()
-
-  return useEventCallback(() => {
-    if (role === UserRole.Free || role === UserRole.Trial) {
-      const can = false
-      if (!can) {
-        presentActivationModal()
-
-        throw new CustomSafeError(`Trial user cannot create more inboxes`, true)
-      }
-      return can
-    } else {
-      // const can = currentInboxCount < MAX_INBOX_COUNT
-      // if (!can) {
-      //   //  TODO
-      // }
-      // return can
-
-      return true
-    }
-  })
-}
 export function DiscoverInboxList() {
   const { t } = useTranslation()
 
   const { present } = useModalStack()
 
-  const preCheck = useCanCreateMoreInboxAndNotify()
-
   return (
-    <div className="mx-auto w-full max-w-[540px] rounded-lg border bg-material-ultra-thin p-5 shadow-sm">
+    <div className="mx-auto w-full">
       <div className="mb-4 flex flex-wrap items-center gap-2 text-sm text-zinc-500">
         <span>{t("discover.inbox.description")}</span>
         <a
@@ -63,7 +32,6 @@ export function DiscoverInboxList() {
         <Button
           textClassName="flex items-center gap-2"
           onClick={() =>
-            preCheck() &&
             present({
               title: t("sidebar.feed_actions.new_inbox"),
               content: () => <InboxForm asWidget />,

@@ -6,6 +6,7 @@ import { useRouteParams } from "~/hooks/biz/useRouteParams"
 import { useEntriesByView } from "../hooks/useEntriesByView"
 
 type EntriesStateContextValue = {
+  type: "remote" | "local"
   entriesIds: string[]
   groupedCounts?: number[]
   hasNextPage: boolean
@@ -14,7 +15,6 @@ type EntriesStateContextValue = {
   isLoading: boolean
   error: unknown | null
   view: FeedViewType
-  hasUpdate: boolean
   fetchedTime?: number
 }
 
@@ -42,6 +42,8 @@ export const EntriesProvider: React.FC<React.PropsWithChildren> = ({ children })
       onResetRef.current?.()
     },
   })
+
+  const { type: syncType } = entries
 
   const idToIndex = useMemo(() => {
     const map = new Map<string, number>()
@@ -100,6 +102,7 @@ export const EntriesProvider: React.FC<React.PropsWithChildren> = ({ children })
 
   const stateValue: EntriesStateContextValue = useMemo(
     () => ({
+      type: syncType,
       entriesIds: entries.entriesIds,
       groupedCounts: entries.groupedCounts,
       hasNextPage: entries.hasNextPage,
@@ -108,10 +111,9 @@ export const EntriesProvider: React.FC<React.PropsWithChildren> = ({ children })
       isLoading: entries.isLoading,
       error: entries.error ?? null,
       view: view!,
-      hasUpdate: entries.hasUpdate,
       fetchedTime: entries.fetchedTime,
     }),
-    [entries, view],
+    [entries, view, syncType],
   )
 
   const actionsValue: EntriesActionsContextValue = useMemo(

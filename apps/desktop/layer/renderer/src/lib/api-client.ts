@@ -3,18 +3,15 @@ import { userActions } from "@follow/store/user/store"
 import { createDesktopAPIHeaders } from "@follow/utils/headers"
 import { FollowClient } from "@follow-app/client-sdk"
 import PKG from "@pkg"
-import { createElement } from "react"
-import { toast } from "sonner"
 
 import { NetworkStatus, setApiStatus } from "~/atoms/network"
 import { setLoginModalShow } from "~/atoms/user"
-import { NeedActivationToast } from "~/modules/activation/NeedActivationToast"
 
 import { getClientId, getSessionId } from "./client-session"
 
 export const followClient = new FollowClient({
   credentials: "include",
-  timeout: 10000,
+  timeout: 30000,
   baseURL: env.VITE_API_URL,
   fetch: async (input, options = {}) =>
     fetch(input.toString(), {
@@ -60,7 +57,6 @@ followClient.addErrorInterceptor(async ({ error, response }) => {
 })
 
 followClient.addResponseInterceptor(async ({ response }) => {
-  const { router } = window
   if (response.status === 401) {
     // Or we can present LoginModal here.
     // router.navigate("/login")
@@ -71,32 +67,10 @@ followClient.addResponseInterceptor(async ({ response }) => {
   try {
     const isJSON = response.headers.get("content-type")?.includes("application/json")
     if (!isJSON) return response
-    const json = await response.clone().json()
+    const _json = await response.clone().json()
 
     const isError = response.status >= 400
     if (!isError) return response
-    if (response.status === 400 && json.code === 1003) {
-      router.navigate("/invitation")
-    }
-    if (json.code.toString().startsWith("11")) {
-      setTimeout(() => {
-        const toastId = toast.error(
-          createElement(NeedActivationToast, {
-            dimiss: () => {
-              toast.dismiss(toastId)
-            },
-          }),
-          {
-            closeButton: true,
-            duration: 10e4,
-
-            classNames: {
-              content: tw`w-full`,
-            },
-          },
-        )
-      }, 500)
-    }
   } catch {
     // ignore
   }

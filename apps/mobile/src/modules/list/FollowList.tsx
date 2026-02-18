@@ -5,10 +5,10 @@ import { useSubscriptionByListId } from "@follow/store/subscription/hooks"
 import { subscriptionSyncService } from "@follow/store/subscription/store"
 import { zodResolver } from "@hookform/resolvers/zod"
 import { useQuery } from "@tanstack/react-query"
-import { useEffect } from "react"
+import { useEffect, useState } from "react"
 import { Controller, useForm } from "react-hook-form"
 import { useTranslation } from "react-i18next"
-import { Alert, StyleSheet, View } from "react-native"
+import { StyleSheet, View } from "react-native"
 import { z } from "zod"
 
 import { HeaderSubmitTextButton } from "@/src/components/layouts/header/HeaderElements"
@@ -24,11 +24,10 @@ import { GroupedInsetListCard } from "@/src/components/ui/grouped/GroupedList"
 import { IconWithFallback } from "@/src/components/ui/icon/fallback-icon"
 import { PlatformActivityIndicator } from "@/src/components/ui/loading/PlatformActivityIndicator"
 import { Text } from "@/src/components/ui/typography/Text"
-import { PowerIcon } from "@/src/icons/power"
 import { useNavigation, useScreenIsInSheetModal } from "@/src/lib/navigation/hooks"
 import { useSetModalScreenOptions } from "@/src/lib/navigation/ScreenOptionsContext"
+import { getBizFetchErrorMessage } from "@/src/lib/parse-api-error"
 import { toast } from "@/src/lib/toast"
-import { accentColor } from "@/src/theme/colors"
 
 import { FeedViewSelector } from "../feed/view-selector"
 
@@ -77,10 +76,13 @@ const Impl = (props: { id: string }) => {
   const { isValid, isDirty } = form.formState
   const isModal = useScreenIsInSheetModal()
   const navigation = useNavigation()
+  const [isLoading, setIsLoading] = useState(false)
   const submit = async () => {
     if (!list) return
+    if (isLoading) return
+    setIsLoading(true)
     const payload = form.getValues()
-    const subscribeOrUpdate = async () => {
+    try {
       const body = {
         listId: list.id,
         view: list.view,
@@ -99,36 +101,18 @@ const Impl = (props: { id: string }) => {
       } else {
         await subscriptionSyncService.subscribe(body)
       }
+      toast.success(isSubscribed ? "List updated" : "List followed")
       if (isModal) {
         navigation.dismiss()
       } else {
         navigation.back()
       }
-      toast.success(isSubscribed ? "List updated" : "List followed")
-    }
-    if (list.fee && !isSubscribed) {
-      Alert.alert(
-        `Follow List - ${list.title}`,
-        `To follow this list, you must pay a fee to the list creator. Press OK to pay ${list.fee} power to follow this list.`,
-        [
-          {
-            text: "Cancel",
-            style: "cancel",
-          },
-          {
-            text: "OK",
-            onPress: () => {
-              subscribeOrUpdate()
-            },
-            isPreferred: true,
-          },
-        ],
-      )
-    } else {
-      subscribeOrUpdate()
+    } catch (error) {
+      toast.error(error instanceof Error ? getBizFetchErrorMessage(error) : "Failed to update list")
+    } finally {
+      setIsLoading(false)
     }
   }
-  const isLoading = false
   const setModalOptions = useSetModalScreenOptions()
   useEffect(() => {
     setModalOptions({
@@ -230,21 +214,6 @@ const Impl = (props: { id: string }) => {
               )}
             />
           </View>
-
-          {!!list.fee && (
-            <View className="ml-1">
-              <View className="flex-row">
-                <FormLabel label="Follow fee" optional />
-                <View className="ml-1 flex-row items-center gap-x-0.5">
-                  <PowerIcon height={14} width={14} color={accentColor} />
-                  <Text className="text-sm font-semibold text-label">{list.fee}</Text>
-                </View>
-              </View>
-              <Text className="text-sm text-secondary-label">
-                To follow this list, you must pay a fee to the list creator.
-              </Text>
-            </View>
-          )}
         </FormProvider>
       </GroupedInsetListCard>
     </SafeNavigationScrollView>

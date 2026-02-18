@@ -1,5 +1,6 @@
 import { createHash } from "node:crypto"
 import fs from "node:fs/promises"
+import { fileURLToPath } from "node:url"
 
 import fg from "fast-glob"
 import path from "pathe"
@@ -34,13 +35,25 @@ export async function calculateMainHash(
 
 async function main() {
   const cwd = process.cwd()
-  const hash = await calculateMainHash(path.resolve(cwd, "layer/main"), [
-    path.resolve(cwd, "package.json"),
-  ])
+  const packageJsonPath = path.resolve(cwd, "package.json")
+  const hash = await calculateMainHash(path.resolve(cwd, "layer/main"), [packageJsonPath])
 
-  const packageJson = JSON.parse(await fs.readFile(path.resolve(cwd, "package.json"), "utf-8"))
+  const packageJson = JSON.parse(await fs.readFile(packageJsonPath, "utf-8"))
   packageJson.mainHash = hash
-  await fs.writeFile(path.resolve(cwd, "package.json"), JSON.stringify(packageJson, null, 2))
+
+  const nextPackageJson = `${JSON.stringify(packageJson, null, 2)}\n`
+  const tempPackageJsonPath = `${packageJsonPath}.tmp`
+  await fs.writeFile(tempPackageJsonPath, nextPackageJson, "utf-8")
+  await fs.rename(tempPackageJsonPath, packageJsonPath)
 }
 
-main()
+const isExecutedDirectly = process.argv[1]
+  ? path.resolve(process.argv[1]) === fileURLToPath(import.meta.url)
+  : false
+
+if (isExecutedDirectly) {
+  void main().catch((error) => {
+    console.error(error)
+    process.exitCode = 1
+  })
+}

@@ -27,17 +27,21 @@ import { useEntryContextMenu } from "~/hooks/biz/useEntryContextMenu"
 import { getNavigateEntryPath, useNavigateEntry } from "~/hooks/biz/useNavigateEntry"
 import { getRouteParams, useRouteParams, useRouteParamsSelector } from "~/hooks/biz/useRouteParams"
 import { useShowEntryDetailsColumn } from "~/hooks/biz/useShowEntryDetailsColumn"
+import { useFeedSafeUrl } from "~/hooks/common/useFeedSafeUrl"
+import { useRequireLogin } from "~/hooks/common/useRequireLogin"
 
 export const EntryItemWrapper: FC<
   {
     entryId: string
     view: FeedViewType
+    isFirstItem?: boolean
     itemClassName?: string
     style?: React.CSSProperties
   } & PropsWithChildren
-> = ({ entryId, view, children, itemClassName, style }) => {
+> = ({ entryId, view, children, itemClassName, style, isFirstItem }) => {
   const entry = useEntry(entryId, (state) => {
     const { feedId, inboxHandle } = state
+
     const { id, url } = state
     return { feedId, id, inboxId: inboxHandle, url }
   })
@@ -105,15 +109,19 @@ export const EntryItemWrapper: FC<
     })
   }, [entry?.id])
 
+  const populatedFullHref = useFeedSafeUrl(entryId)
+
   const handleDoubleClick = useCallback(
     (e: MouseEvent<HTMLElement>) => {
       e.preventDefault()
       e.stopPropagation()
       if (!entry?.url) return
       if (!entry?.id) return
-      window.open(entry?.url, "_blank", "noopener,noreferrer")
+
+      if (!populatedFullHref) return
+      window.open(populatedFullHref, "_blank", "noopener,noreferrer")
     },
-    [entry?.id, entry?.url],
+    [entry?.id, entry?.url, populatedFullHref],
   )
 
   const handleClick = useCallback(
@@ -152,7 +160,7 @@ export const EntryItemWrapper: FC<
         to={navigationPath}
         className={cn(
           "relative block cursor-button overflow-visible duration-200 hover:bg-theme-item-hover",
-          isWide ? "rounded-none @[650px]:rounded-md" : "",
+          !isWide ? "rounded-none @[650px]:rounded-md" : "rounded-md",
           isAll && "!rounded-none",
           (isActive || isContextMenuOpen) && "!bg-theme-item-active",
           itemClassName,
@@ -173,6 +181,7 @@ export const EntryItemWrapper: FC<
                 void openContextMenuAt(x, y)
               }}
               entryId={entryId}
+              isFirstItem={!!isFirstItem}
             />
           )}
         </AnimatePresence>
@@ -184,18 +193,22 @@ export const EntryItemWrapper: FC<
 const ActionBar = ({
   entryId,
   openContextMenu,
+  isFirstItem,
 }: {
   entryId: string
   openContextMenu: () => void
+  isFirstItem: boolean
 }) => {
   const { view } = useRouteParams()
 
   const { mainAction } = useSortedEntryActions({ entryId, view })
+  const { withLoginGuard } = useRequireLogin()
 
   return (
     <div
       className={cn(
         "absolute -right-2 top-0 -translate-y-1/2 rounded-lg border border-gray-200 bg-white/90 p-1 shadow-sm backdrop-blur-sm dark:border-neutral-900 dark:bg-neutral-900",
+        isFirstItem && "-right-2 top-4",
         view === FeedViewType.All && "right-1 top-1/2",
       )}
       onClick={(e) => {
@@ -210,9 +223,12 @@ const ActionBar = ({
               item instanceof EntryActionMenuItem &&
               !HIDE_ACTIONS_IN_ENTRY_TOOLBAR_ACTIONS.includes(item.id),
           ) as EntryActionMenuItem[]
-        ).map((item) => (
-          <CommandActionButton key={item.id} onClick={item.onClick} size="xs" commandId={item.id} />
-        ))}
+        ).map((item) => {
+          const handler = item.requiresLogin ? withLoginGuard(item.onClick) : item.onClick
+          return (
+            <CommandActionButton key={item.id} onClick={handler} size="xs" commandId={item.id} />
+          )
+        })}
 
         <ActionButton
           onClick={openContextMenu}

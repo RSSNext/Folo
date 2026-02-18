@@ -6,6 +6,7 @@ import path from "pathe"
 import * as tar from "tar"
 import type { Plugin } from "vite"
 
+import rendererVersion from "../../package.json"
 import { calculateMainHash } from "./generate-main-hash"
 
 async function compressDirectory(sourceDir: string, outputFile: string) {
@@ -41,14 +42,7 @@ function compressAndFingerprintPlugin(outDir: string): Plugin {
       // Calculate main hash
       const mainHash = await calculateMainHash(path.resolve(process.cwd(), "layer/main"))
 
-      // Get the current git tag version
-      let version = "unknown"
-      try {
-        version = execSync("git describe --tags").toString().trim().replace("desktop/", "")
-      } catch (error) {
-        console.warn("Could not retrieve git tag version:", error)
-      }
-
+      const { version } = rendererVersion
       // Write the manifest file
       const manifestContent = `
 version: ${version.startsWith("v") ? version.slice(1) : version}

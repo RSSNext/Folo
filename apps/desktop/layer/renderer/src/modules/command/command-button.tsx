@@ -10,8 +10,9 @@ interface CommandButtonProps<T extends FollowCommand> extends ActionButtonProps 
   shortcut?: string
 }
 
-export interface CommandIdButtonProps<T extends FollowCommandId = FollowCommandId>
-  extends ActionButtonProps {
+export interface CommandIdButtonProps<
+  T extends FollowCommandId = FollowCommandId,
+> extends ActionButtonProps {
   commandId: T
   args: Parameters<FollowCommandMap[T]["run"]>
   shortcut?: string

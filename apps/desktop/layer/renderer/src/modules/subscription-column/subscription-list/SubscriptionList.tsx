@@ -49,6 +49,7 @@ import type { SubscriptionProps } from "./SubscriptionListGuard"
 const SubscriptionImpl = ({ ref, className, view, isSubscriptionLoading }: SubscriptionProps) => {
   const autoGroup = useGeneralSettingKey("autoGroup")
   const feedsData = useFeedsGroupedData(view, autoGroup)
+
   const listSubIds = useSubscriptionListIds(view)
   const inboxSubIds = useInboxList(
     useCallback(
@@ -63,9 +64,6 @@ const SubscriptionImpl = ({ ref, className, view, isSubscriptionLoading }: Subsc
     Object.keys(feedsData).length > 0 || listSubIds.length > 0 || inboxSubIds.length > 0
 
   const { t } = useTranslation()
-
-  // Data prefetch
-  // useAuthQuery(Queries.lists.list())
 
   const hasListData = listSubIds.length > 0
   const hasInboxData = inboxSubIds.length > 0

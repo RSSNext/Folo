@@ -1,5 +1,7 @@
 import type { FeedViewType } from "@follow/constants"
+import { isFreeRole } from "@follow/constants"
 import { usePrefetchEntryTranslation } from "@follow/store/translation/hooks"
+import { useUserRole } from "@follow/store/user/hooks"
 import type { FlashListRef, ListRenderItemInfo } from "@shopify/flash-list"
 import type { ElementRef } from "react"
 import { useCallback, useImperativeHandle, useMemo, useRef } from "react"
@@ -13,9 +15,18 @@ import { useEntries } from "../screen/atoms"
 import { TimelineSelectorList } from "../screen/TimelineSelectorList"
 import { EntryListFooter } from "./EntryListFooter"
 import { useOnViewableItemsChanged } from "./hooks"
-import { ItemSeparator } from "./ItemSeparator"
 import { EntryNormalItem } from "./templates/EntryNormalItem"
 import type { EntryExtraData } from "./types"
+
+const ARTICLE_SKELETON_KEYS = [
+  "article-skeleton-1",
+  "article-skeleton-2",
+  "article-skeleton-3",
+  "article-skeleton-4",
+  "article-skeleton-5",
+  "article-skeleton-6",
+  "article-skeleton-7",
+] as const
 
 export const EntryListContentArticle = ({
   ref: forwardRef,
@@ -28,11 +39,16 @@ export const EntryListContentArticle = ({
   const extraData: EntryExtraData = useMemo(() => ({ entryIds }), [entryIds])
 
   const { fetchNextPage, isFetching, refetch, isRefetching, hasNextPage, fetchedTime, isReady } =
-    useEntries()
+    useEntries({ viewId: view, active })
 
   const renderItem = useCallback(
-    ({ item: id, extraData }: ListRenderItemInfo<string>) => (
-      <EntryNormalItem entryId={id} extraData={extraData as EntryExtraData} view={view} />
+    ({ item: id, extraData, index }: ListRenderItemInfo<string>) => (
+      <EntryNormalItem
+        entryId={id}
+        extraData={extraData as EntryExtraData}
+        view={view}
+        hasTopSeparator={index > 0}
+      />
     ),
     [view],
   )
@@ -51,11 +67,15 @@ export const EntryListContentArticle = ({
   useImperativeHandle(forwardRef, () => ref.current!)
 
   const translation = useGeneralSettingKey("translation")
+  const translationMode = useGeneralSettingKey("translationMode")
   const actionLanguage = useActionLanguage()
+  const userRole = useUserRole()
+  const translationPrefetchEnabled = translation && !isFreeRole(userRole)
   usePrefetchEntryTranslation({
     entryIds: active ? viewableItems.map((item) => item.key) : [],
     language: actionLanguage,
-    enabled: translation,
+    enabled: translationPrefetchEnabled,
+    mode: translationMode,
   })
 
   const headerHeight = useHeaderHeight()
@@ -65,8 +85,8 @@ export const EntryListContentArticle = ({
   if (!isReady && (!entryIds || entryIds.length === 0)) {
     return (
       <View className="flex-1" style={{ paddingTop: headerHeight, paddingBottom: tabBarHeight }}>
-        {Array.from({ length: 7 }).map((_, index) => (
-          <EntryItemSkeleton key={index} />
+        {ARTICLE_SKELETON_KEYS.map((key) => (
+          <EntryItemSkeleton key={key} />
         ))}
       </View>
     )
@@ -84,7 +104,6 @@ export const EntryListContentArticle = ({
       onEndReached={fetchNextPage}
       onScroll={onScroll}
       onViewableItemsChanged={onViewableItemsChanged}
-      ItemSeparatorComponent={ItemSeparator}
       ListFooterComponent={ListFooterComponent}
     />
   )

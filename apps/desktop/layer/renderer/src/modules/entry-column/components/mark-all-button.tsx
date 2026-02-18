@@ -14,6 +14,7 @@ import { toast } from "sonner"
 import { HotkeyScope } from "~/constants"
 import { getRouteParams } from "~/hooks/biz/useRouteParams"
 import { useI18n } from "~/hooks/common"
+import { useRequireLogin } from "~/hooks/common/useRequireLogin"
 import { COMMAND_ID } from "~/modules/command/commands/id"
 import { useCommandBinding, useCommandShortcuts } from "~/modules/command/hooks/use-command-binding"
 
@@ -34,6 +35,7 @@ export const MarkAllReadButton = ({
 }: MarkAllButtonProps & { ref?: React.Ref<HTMLButtonElement | null> }) => {
   const { t } = useTranslation()
   const { t: commonT } = useTranslation("common")
+  const { ensureLogin } = useRequireLogin()
 
   // const activeScope = useGlobalFocusableScope()
   const when = useGlobalFocusableScopeSelector(
@@ -50,6 +52,9 @@ export const MarkAllReadButton = ({
 
   useEffect(() => {
     return EventBus.subscribe(COMMAND_ID.subscription.markAllAsRead, () => {
+      if (!ensureLogin()) {
+        return
+      }
       let cancel = false
       const undo = () => {
         toast.dismiss(id)
@@ -77,7 +82,7 @@ export const MarkAllReadButton = ({
         },
       })
     })
-  }, [t])
+  }, [ensureLogin, t])
 
   const markAllAsReadShortcut = useCommandShortcuts()[COMMAND_ID.subscription.markAllAsRead]
   return (
@@ -100,6 +105,7 @@ export const MarkAllReadButton = ({
       className={className}
       ref={ref}
       onClick={() => {
+        if (!ensureLogin()) return
         markAllByRoute(getRouteParams())
       }}
     >
@@ -135,6 +141,7 @@ export const FlatMarkAllReadButton: FC<
   }
 > = (props) => {
   const t = useI18n()
+  const { ensureLogin } = useRequireLogin()
 
   const { className, filter, which, buttonClassName, iconClassName } = props
   const [status, setStatus] = useState<"initial" | "confirm" | "done">("initial")
@@ -143,8 +150,14 @@ export const FlatMarkAllReadButton: FC<
     <button
       type="button"
       disabled={status === "done"}
-      className={cn(styledButtonVariant({ variant: "ghost" }), className, buttonClassName)}
+      className={cn(
+        styledButtonVariant({ variant: "ghost" }),
+        "rounded-none",
+        className,
+        buttonClassName,
+      )}
       onClick={() => {
+        if (!ensureLogin()) return
         markAllByRoute(getRouteParams(), filter)
           .then(() => setStatus("done"))
           .catch(() => setStatus("initial"))

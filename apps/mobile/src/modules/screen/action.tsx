@@ -5,7 +5,7 @@ import * as Haptics from "expo-haptics"
 import type { PropsWithChildren } from "react"
 import { useCallback } from "react"
 import { useTranslation } from "react-i18next"
-import { Share, TouchableOpacity, View } from "react-native"
+import { Pressable, Share, View } from "react-native"
 
 import { setGeneralSetting, useGeneralSettingKey } from "@/src/atoms/settings/general"
 import { UserAvatar } from "@/src/components/ui/avatar/UserAvatar"
@@ -42,7 +42,7 @@ export function HomeLeftAction() {
 
   return (
     <ActionGroup className="ml-2">
-      <TouchableOpacity onPress={handlePress}>
+      <Pressable onPress={handlePress}>
         <UserAvatar
           image={user?.image}
           name={user?.name}
@@ -50,7 +50,7 @@ export function HomeLeftAction() {
           color={accentColor}
           preview={false}
         />
-      </TouchableOpacity>
+      </Pressable>
     </ActionGroup>
   )
 }

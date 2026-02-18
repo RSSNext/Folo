@@ -169,6 +169,7 @@ export const aiChatTable = sqliteTable(
       .integer("updated_at", { mode: "timestamp_ms" })
       .notNull()
       .default(sql`(unixepoch() * 1000)`),
+    isLocal: t.integer("is_local", { mode: "boolean" }).notNull().default(false),
   }),
   (table) => [index("idx_ai_chat_sessions_updated_at").on(table.updatedAt)],
 )

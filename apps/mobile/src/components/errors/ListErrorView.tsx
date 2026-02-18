@@ -1,4 +1,5 @@
-import { TouchableOpacity, View } from "react-native"
+import { useTranslation } from "react-i18next"
+import { Pressable, View } from "react-native"
 import { useColor } from "react-native-uikit-colors"
 
 import { Text } from "@/src/components/ui/typography/Text"
@@ -7,6 +8,7 @@ import { AlertCuteFiIcon } from "@/src/icons/alert_cute_fi"
 import { MonoText } from "../ui/typography/MonoText"
 
 export const ListErrorView = ({ error, resetError }: { error: Error; resetError: () => void }) => {
+  const { t } = useTranslation("common")
   const red = useColor("red")
   return (
     <View className="flex-1 items-center justify-center p-4">
@@ -15,18 +17,18 @@ export const ListErrorView = ({ error, resetError }: { error: Error; resetError:
           <AlertCuteFiIcon color={red} height={48} width={48} />
         </View>
         <Text className="mb-2 text-center text-lg font-semibold text-label">
-          Unable to Load Content
+          {t("error_screen.list_unable_to_load")}
         </Text>
         <Text className="mb-2 text-center text-base text-secondary-label">
-          There was a problem loading the list. Please try again later.
+          {t("error_screen.list_try_later")}
         </Text>
         <MonoText className="mb-4 text-center text-base text-secondary-label">
-          {error.message || "Unknown Error"}
+          {error.message || t("error_screen.unknown")}
         </MonoText>
 
-        <TouchableOpacity className="w-full rounded-xl bg-accent px-6 py-3" onPress={resetError}>
-          <Text className="text-center text-base font-semibold text-white">Try Again</Text>
-        </TouchableOpacity>
+        <Pressable className="w-full rounded-xl bg-accent px-6 py-3" onPress={resetError}>
+          <Text className="text-center text-base font-semibold text-white">{t("retry")}</Text>
+        </Pressable>
       </View>
     </View>
   )

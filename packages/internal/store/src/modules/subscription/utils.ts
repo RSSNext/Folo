@@ -1,3 +1,4 @@
+import { isOnboardingFeedUrl } from "@follow/store/constants/onboarding"
 import { capitalizeFirstLetter, parseUrl } from "@follow/utils/utils"
 
 import { getFeedById } from "../feed/getter"
@@ -29,6 +30,11 @@ export const getDefaultCategory = (subscription?: SubscriptionModel) => {
   if (!subscription) return null
   const { feedId } = subscription
   if (!feedId) return null
+
+  const feed = getFeedById(feedId)
+  if (!feed) return null
+  const isOnboardingFeed = isOnboardingFeedUrl(feed.url)
+  if (isOnboardingFeed) return "Onboarding Feeds"
   const siteUrl = getFeedById(feedId)?.siteUrl
   if (!siteUrl) return null
   const parsed = parseUrl(siteUrl)

@@ -49,10 +49,14 @@ export async function initializeDB() {
       try {
         const rows = await query(dbSqlite3, sql)
         if (method === "get") {
-          return { rows: rows[0] || [] }
-        } else {
-          return { rows }
+          if (rows.length > 0) {
+            return { rows: rows[0] }
+          }
+
+          return { rows: undefined }
         }
+
+        return { rows }
       } catch (error) {
         console.error(`Error executing SQL: ${sql} with params:${params}`, error)
         return { rows: [] }

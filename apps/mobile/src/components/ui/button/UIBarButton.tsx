@@ -1,6 +1,6 @@
 import { cn } from "@follow/utils"
 import type { PressableProps } from "react-native"
-import { Pressable, TouchableOpacity } from "react-native"
+import { Pressable } from "react-native"
 import Animated, { FadeIn, FadeOut } from "react-native-reanimated"
 
 interface UIBarButtonProps extends PressableProps {
@@ -24,16 +24,13 @@ export const UIBarButton = ({
 
   ...props
 }: UIBarButtonProps) => {
-  const hasDifferentIcon = selectedIcon && normalIcon
-
-  const ButtonComponent = hasDifferentIcon ? Pressable : TouchableOpacity
+  const hasDifferentIcon = !!selectedIcon
   return (
-    <ButtonComponent
+    <Pressable
       className={cn(
         "relative flex size-10 items-center justify-center",
         props.disabled && "opacity-50",
       )}
-      // @ts-expect-error
       onPress={onPress}
       aria-label={label}
       {...props}
@@ -49,7 +46,7 @@ export const UIBarButton = ({
           current={selected ? "icon2" : "icon1"}
         />
       )}
-    </ButtonComponent>
+    </Pressable>
   )
 }
 

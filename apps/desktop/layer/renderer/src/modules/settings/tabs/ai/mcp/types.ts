@@ -65,4 +65,21 @@ export const MCP_PRESETS: MCPPreset[] = [
       url: "https://api.githubcopilot.com/mcp",
     },
   },
+
+  {
+    id: "fabric",
+    name: "fabric",
+    displayName: "Fabric",
+    icon: tw`i-simple-icons-modelcontextprotocol`,
+    description: "Connect your Fabric AI workspace",
+    features: ["Read & search workspaces", "Create new notes", "Update existing notes"],
+
+    quickSetup: true,
+    authRequired: true,
+    configTemplate: {
+      name: "Fabric AI",
+      transportType: "streamable-http",
+      url: "https://mcp.api.fabric.so/mcp",
+    },
+  },
 ]

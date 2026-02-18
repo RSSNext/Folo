@@ -2,7 +2,7 @@ import { FeedViewType } from "@follow/constants"
 import { useWhoami } from "@follow/store/user/hooks"
 import type { FlashListRef } from "@shopify/flash-list"
 import type { RefObject } from "react"
-import { useEffect } from "react"
+import { useEffect, useRef } from "react"
 
 import { useGeneralSettingKey } from "@/src/atoms/settings/general"
 import { withErrorBoundary } from "@/src/components/common/ErrorBoundary"
@@ -60,17 +60,48 @@ function EntryListSelectorImpl({ entryIds, viewId, active = true }: EntryListSel
   useEffect(() => {
     ref?.current?.scrollToOffset({
       offset: 0,
+      animated: false,
     })
   }, [unreadOnly, ref])
 
-  const { isRefetching } = useEntries()
+  const { isReady } = useEntries({ viewId, active })
+  const hasResetAfterReadyRef = useRef(false)
   useEffect(() => {
-    if (isRefetching) {
+    if (!active) return
+    if (!isReady) {
+      hasResetAfterReadyRef.current = false
+      return
+    }
+    if (!entryIds?.length) return
+    if (hasResetAfterReadyRef.current) return
+
+    const frameId = requestAnimationFrame(() => {
       ref?.current?.scrollToOffset({
         offset: 0,
+        animated: false,
       })
+    })
+    hasResetAfterReadyRef.current = true
+
+    return () => {
+      cancelAnimationFrame(frameId)
     }
-  }, [isRefetching, ref])
+  }, [active, entryIds, isReady, ref, viewId])
+
+  useEffect(() => {
+    if (!active) return
+
+    const frameId = requestAnimationFrame(() => {
+      ref?.current?.scrollToOffset({
+        offset: 0,
+        animated: false,
+      })
+    })
+
+    return () => {
+      cancelAnimationFrame(frameId)
+    }
+  }, [active, ref, viewId])
 
   useAutoScrollToEntryAfterPullUpToNext(ref, entryIds || [])
 

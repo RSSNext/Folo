@@ -8,7 +8,7 @@ import { cn } from "@follow/utils/utils"
 import { useStore } from "jotai"
 import { memo, useEffect, useMemo, useState } from "react"
 
-import { AIChatPanelStyle, setAIPanelVisibility, useAIChatPanelStyle } from "~/atoms/settings/ai"
+import { setAIPanelVisibility } from "~/atoms/settings/ai"
 import type { TocRef } from "~/components/ui/markdown/components/Toc"
 import { Toc } from "~/components/ui/markdown/components/Toc"
 import { useFeature } from "~/hooks/biz/useFeature"
@@ -50,9 +50,6 @@ const BackTopIndicator: Component = memo(({ className }) => {
   const scrollElement = useScrollViewElement()
   const aiEnabled = useFeature("ai")
 
-  const panelStyle = useAIChatPanelStyle()
-  const isAiPanelOpen = panelStyle === AIChatPanelStyle.Fixed
-
   return (
     <span
       className={cn(
@@ -65,7 +62,7 @@ const BackTopIndicator: Component = memo(({ className }) => {
         <span>{readPercent}%</span>
         <br />
       </div>
-      {aiEnabled && !isAiPanelOpen && (
+      {aiEnabled && (
         <MotionButtonBase
           onClick={() => {
             setAIPanelVisibility(true)

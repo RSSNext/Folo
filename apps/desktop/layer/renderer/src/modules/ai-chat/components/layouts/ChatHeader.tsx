@@ -1,11 +1,18 @@
 import { ActionButton } from "@follow/components/ui/button/index.js"
 import { cn } from "@follow/utils"
+import { FeedViewType } from "@follow-app/client-sdk"
 import { useAtomValue } from "jotai"
-import type { ReactNode } from "react"
+import type { FC, ReactNode } from "react"
 import { useCallback } from "react"
 import { useTranslation } from "react-i18next"
 
-import { AIChatPanelStyle, setAIPanelVisibility, useAIChatPanelStyle } from "~/atoms/settings/ai"
+import {
+  AIChatPanelStyle,
+  setAIChatPanelStyle,
+  setAIPanelVisibility,
+  useAIChatPanelStyle,
+} from "~/atoms/settings/ai"
+import { useRouteParamsSelector } from "~/hooks/biz/useRouteParams"
 import { useTimelineSummaryAutoContext } from "~/modules/ai-chat/hooks/useTimelineSummaryAutoContext"
 import {
   useBlockActions,
@@ -25,12 +32,16 @@ import { TaskReportDropdown } from "./TaskReportDropdown"
 // Base header layout with shared logic inside
 const ChatHeaderLayout = ({
   renderActions,
+  isFloating,
 }: {
   renderActions: (ctx: {
     onNewChatClick: () => void
     currentTitle: string | undefined
     displayTitle: string | undefined
+    panelStyle: AIChatPanelStyle
+    onTogglePanelStyle: () => void
   }) => ReactNode
+  isFloating: boolean
 }) => {
   const hasMessages = useHasMessages()
   const currentTitle = useCurrentTitle()
@@ -39,6 +50,7 @@ const ChatHeaderLayout = ({
   const { t } = useTranslation("ai")
   const shouldDisableTimelineSummary = useTimelineSummaryAutoContext()
   const settingModalPresent = useSettingModal()
+  const panelStyle = useAIChatPanelStyle()
 
   const displayTitle = currentTitle
 
@@ -57,7 +69,11 @@ const ChatHeaderLayout = ({
     blockActions.clearBlocks({ keepSpecialTypes: true })
   }, [chatActions, blockActions, shouldDisableTimelineSummary])
 
-  const isFloating = useAIChatPanelStyle() === AIChatPanelStyle.Floating
+  const handleTogglePanelStyle = useCallback(() => {
+    const newStyle =
+      panelStyle === AIChatPanelStyle.Fixed ? AIChatPanelStyle.Floating : AIChatPanelStyle.Fixed
+    setAIChatPanelStyle(newStyle)
+  }, [panelStyle])
 
   const { isScrolledBeyondThreshold } = useAIRootState()
   const isScrolledBeyondThresholdValue = useAtomValue(isScrolledBeyondThreshold)
@@ -81,9 +97,9 @@ const ChatHeaderLayout = ({
 
         <div className="relative z-10 flex h-full items-center justify-between px-4">
           <div className="mr-2 flex min-w-0 items-center">
-            {hasMessages && (
+            {(hasMessages || currentTitle) && (
               <div onClick={() => settingModalPresent("ai")}>
-                <AISpline className="-mx-1 -mb-1 mr-1 size-9" />
+                <AISpline className="no-drag-region -mx-1 -mb-1 mr-1 size-9" />
               </div>
             )}
             <ChatHistoryDropdown
@@ -99,6 +115,8 @@ const ChatHeaderLayout = ({
               onNewChatClick: handleNewChatClick,
               currentTitle,
               displayTitle,
+              panelStyle,
+              onTogglePanelStyle: handleTogglePanelStyle,
             })}
           </div>
         </div>
@@ -107,21 +125,38 @@ const ChatHeaderLayout = ({
   )
 }
 
-export const ChatHeader = () => {
-  const panelStyle = useAIChatPanelStyle()
+export const ChatHeader: FC<{ isFloating: boolean }> = ({ isFloating }) => {
   const { t } = useTranslation("ai")
 
+  const view = useRouteParamsSelector((state) => state.view)
+  const isAllView = view === FeedViewType.All
   return (
     <ChatHeaderLayout
-      renderActions={({ onNewChatClick }) => (
+      isFloating={isFloating}
+      renderActions={({ onNewChatClick, panelStyle, onTogglePanelStyle }) => (
         <>
           <ActionButton tooltip={t("common.new_chat")} onClick={onNewChatClick}>
             <i className="i-mgc-edit-cute-re size-5 text-text-secondary" />
           </ActionButton>
-
-          <TaskReportDropdown />
+          <ActionButton
+            tooltip={
+              panelStyle === AIChatPanelStyle.Fixed
+                ? "Switch to Floating Panel"
+                : "Switch to Fixed Panel"
+            }
+            onClick={onTogglePanelStyle}
+          >
+            <i
+              className={`size-5 text-text-secondary ${
+                panelStyle === AIChatPanelStyle.Fixed
+                  ? "i-mingcute-rectangle-vertical-line"
+                  : "i-mingcute-layout-right-line"
+              }`}
+            />
+          </ActionButton>
 
           <ChatMoreDropdown
+            canClosePanel={!isAllView}
             triggerElement={
               <ActionButton tooltip="More">
                 <i className="i-mingcute-more-1-fill size-5 text-text-secondary" />
@@ -129,7 +164,7 @@ export const ChatHeader = () => {
             }
           />
 
-          {panelStyle === AIChatPanelStyle.Floating && (
+          {isFloating && (
             <>
               <div className="h-5 w-px bg-border" />
               <ActionButton tooltip="Close" onClick={() => setAIPanelVisibility(false)}>
@@ -148,17 +183,33 @@ export const ChatPageHeader = () => {
 
   return (
     <ChatHeaderLayout
-      renderActions={({ onNewChatClick }) => (
+      isFloating={false}
+      renderActions={({ onNewChatClick, panelStyle, onTogglePanelStyle }) => (
         <>
           <ActionButton tooltip={t("common.new_chat")} onClick={onNewChatClick}>
             <i className="i-mgc-edit-cute-re size-5 text-text-secondary" />
+          </ActionButton>
+          <ActionButton
+            tooltip={
+              panelStyle === AIChatPanelStyle.Fixed
+                ? "Switch to Floating Panel"
+                : "Switch to Fixed Panel"
+            }
+            onClick={onTogglePanelStyle}
+          >
+            <i
+              className={`size-5 text-text-secondary ${
+                panelStyle === AIChatPanelStyle.Fixed
+                  ? "i-mingcute-rectangle-vertical-line"
+                  : "i-mingcute-layout-right-line"
+              }`}
+            />
           </ActionButton>
 
           <TaskReportDropdown />
 
           <div className="mx-2 h-5 w-px bg-border" />
           <ChatMoreDropdown
-            canToggleMode={false}
             triggerElement={
               <ActionButton tooltip="More">
                 <i className="i-mingcute-more-1-fill size-5 text-text-secondary" />

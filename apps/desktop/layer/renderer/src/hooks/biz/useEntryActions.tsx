@@ -2,6 +2,7 @@ import { isMobile } from "@follow/components/hooks/useMobile.js"
 import { FeedViewType, getView, UserRole } from "@follow/constants"
 import { IN_ELECTRON } from "@follow/shared/constants"
 import { useIsEntryStarred } from "@follow/store/collection/hooks"
+import { isOnboardingEntryUrl } from "@follow/store/constants/onboarding"
 import { useEntry } from "@follow/store/entry/hooks"
 import { entrySyncServices } from "@follow/store/entry/store"
 import type { EntryModel } from "@follow/store/entry/types"
@@ -11,7 +12,6 @@ import { useUserRole } from "@follow/store/user/hooks"
 import { doesTextContainHTML } from "@follow/utils/utils"
 import { useMemo } from "react"
 
-import { useShowAISummaryAuto, useShowAISummaryOnce } from "~/atoms/ai-summary"
 import { useShowAITranslationAuto, useShowAITranslationOnce } from "~/atoms/ai-translation"
 import { MENU_ITEM_SEPARATOR, MenuItemSeparator, MenuItemText } from "~/atoms/context-menu"
 import {
@@ -26,7 +26,8 @@ import { ipcServices } from "~/lib/client"
 import { COMMAND_ID } from "~/modules/command/commands/id"
 import { getCommand, useRunCommandFn } from "~/modules/command/hooks/use-command"
 import { useCommandShortcuts } from "~/modules/command/hooks/use-command-binding"
-import type { FollowCommandId } from "~/modules/command/types"
+import { isMutationCommandId } from "~/modules/command/mutation-command-ids"
+import type { FollowCommandId, UnknownCommand } from "~/modules/command/types"
 import { useToolbarOrderMap } from "~/modules/customize-toolbar/hooks"
 
 import { useRouteParams } from "./useRouteParams"
@@ -76,6 +77,7 @@ interface EntryActionMenuItemConfig {
   disabled?: boolean
   notice?: boolean
   entryId: string
+  requiresLogin?: boolean
 }
 
 export class EntryActionMenuItem extends MenuItemText {
@@ -83,14 +85,19 @@ export class EntryActionMenuItem extends MenuItemText {
 
   constructor(config: EntryActionMenuItemConfig) {
     const cmd = getCommand(config.id) || null
+    const requiresLogin = config.requiresLogin ?? isMutationCommandId(config.id)
     super({
       ...config,
       label: cmd?.label.title || "",
       click: () => config.onClick?.(),
       hide: !cmd || config.hide,
+      requiresLogin,
     })
 
-    this.privateConfig = config
+    this.privateConfig = {
+      ...config,
+      requiresLogin,
+    }
   }
 
   public get id() {
@@ -123,14 +130,19 @@ export class EntryActionDropdownItem extends MenuItemText {
 
   constructor(config: EntryActionMenuItemConfig & { children?: EntryActionMenuItem[] }) {
     const cmd = getCommand(config.id) || null
+    const requiresLogin = config.requiresLogin ?? isMutationCommandId(config.id)
     super({
       ...config,
       label: cmd?.label.title || "",
       click: () => config.onClick?.(),
       hide: !cmd || config.hide,
+      requiresLogin,
     })
 
-    this.privateConfig = config
+    this.privateConfig = {
+      ...config,
+      requiresLogin,
+    }
     this.children = config.children || []
   }
 
@@ -207,8 +219,12 @@ const entrySelector = (state: EntryModel) => {
 }
 export const HIDE_ACTIONS_IN_ENTRY_CONTEXT_MENU: FollowCommandId[] = [
   COMMAND_ID.entry.viewSourceContent,
-  COMMAND_ID.entry.toggleAISummary,
+  COMMAND_ID.entry.copyTitle,
+  COMMAND_ID.entry.copyLink,
+  COMMAND_ID.entry.exportAsPDF,
+  COMMAND_ID.entry.imageGallery,
   COMMAND_ID.entry.toggleAITranslation,
+  COMMAND_ID.entry.share,
 
   COMMAND_ID.settings.customizeToolbar,
   COMMAND_ID.entry.readability,
@@ -235,8 +251,7 @@ export const useEntryActions = ({ entryId, view }: { entryId: string; view: Feed
 
   const isInbox = useIsInbox(entry?.inboxId)
   const isShowSourceContent = useShowSourceContent()
-  const isShowAISummaryAuto = useShowAISummaryAuto(entry?.summary)
-  const isShowAISummaryOnce = useShowAISummaryOnce()
+
   const isShowAITranslationAuto = useShowAITranslationAuto(!!entry?.translation)
   const isShowAITranslationOnce = useShowAITranslationOnce()
 
@@ -249,6 +264,7 @@ export const useEntryActions = ({ entryId, view }: { entryId: string; view: Feed
   const shortcuts = useCommandShortcuts()
 
   const isCurrentVisitEntry = routeEntryId === entryId
+  const isOnboardingEntry = isOnboardingEntryUrl(entry?.url)
 
   const actionConfigs: EntryActionItem[] = useMemo(() => {
     if (!hasEntry) return []
@@ -318,6 +334,7 @@ export const useEntryActions = ({ entryId, view }: { entryId: string; view: Feed
         onClick: runCmdFn(COMMAND_ID.entry.copyLink, [{ entryId }]),
         hide: !entry.url,
         shortcut: shortcuts[COMMAND_ID.entry.copyLink],
+        disabled: isOnboardingEntry,
         entryId,
       }),
       new EntryActionMenuItem({
@@ -330,6 +347,7 @@ export const useEntryActions = ({ entryId, view }: { entryId: string; view: Feed
         id: COMMAND_ID.entry.imageGallery,
         hide: entry.imagesLength <= 5,
         onClick: runCmdFn(COMMAND_ID.entry.imageGallery, [{ entryId }]),
+        disabled: isOnboardingEntry,
         entryId,
       }),
       new EntryActionMenuItem({
@@ -337,6 +355,7 @@ export const useEntryActions = ({ entryId, view }: { entryId: string; view: Feed
         hide: !entry.url,
         onClick: runCmdFn(COMMAND_ID.entry.openInBrowser, [{ entryId }]),
         shortcut: shortcuts[COMMAND_ID.entry.openInBrowser],
+        disabled: isOnboardingEntry,
         entryId,
       }),
       new EntryActionMenuItem({
@@ -346,18 +365,7 @@ export const useEntryActions = ({ entryId, view }: { entryId: string; view: Feed
         ]),
         hide: isMobile() || !entry.url,
         active: isShowSourceContent,
-        entryId,
-      }),
-      new EntryActionMenuItem({
-        id: COMMAND_ID.entry.toggleAISummary,
-        onClick: runCmdFn(COMMAND_ID.entry.toggleAISummary, []),
-        hide:
-          isShowAISummaryAuto ||
-          ([FeedViewType.SocialMedia, FeedViewType.Videos] as (number | undefined)[]).includes(
-            view,
-          ),
-        active: isShowAISummaryOnce,
-        disabled: userRole === UserRole.Free || userRole === UserRole.Trial,
+        disabled: isOnboardingEntry,
         entryId,
       }),
       new EntryActionMenuItem({
@@ -373,10 +381,11 @@ export const useEntryActions = ({ entryId, view }: { entryId: string; view: Feed
         entryId,
       }),
       new EntryActionMenuItem({
-        id: COMMAND_ID.entry.share,
-        onClick: runCmdFn(COMMAND_ID.entry.share, [{ entryId }]),
-        hide: !entry.url,
-        shortcut: shortcuts[COMMAND_ID.entry.share],
+        id: COMMAND_ID.entry.read,
+        onClick: runCmdFn(COMMAND_ID.entry.read, [{ entryId }]),
+        hide: !!isCollection,
+        active: !!entry.read,
+        shortcut: shortcuts[COMMAND_ID.entry.read],
         entryId,
       }),
       new EntryActionMenuItem({
@@ -386,17 +395,16 @@ export const useEntryActions = ({ entryId, view }: { entryId: string; view: Feed
         entryId,
       }),
       new EntryActionMenuItem({
-        id: COMMAND_ID.entry.read,
-        onClick: runCmdFn(COMMAND_ID.entry.read, [{ entryId }]),
-        hide: !!isCollection,
-        active: !!entry.read,
-        shortcut: shortcuts[COMMAND_ID.entry.read],
-        entryId,
-      }),
-      new EntryActionMenuItem({
         id: COMMAND_ID.entry.readBelow,
         onClick: runCmdFn(COMMAND_ID.entry.readBelow, [{ publishedAt: entry.publishedAt }]),
         hide: !!isCollection,
+        entryId,
+      }),
+      new EntryActionMenuItem({
+        id: COMMAND_ID.entry.share,
+        onClick: runCmdFn(COMMAND_ID.entry.share, [{ entryId }]),
+        hide: !entry.url,
+        shortcut: shortcuts[COMMAND_ID.entry.share],
         entryId,
       }),
       MENU_ITEM_SEPARATOR,
@@ -410,7 +418,6 @@ export const useEntryActions = ({ entryId, view }: { entryId: string; view: Feed
       new EntryActionMenuItem({
         id: COMMAND_ID.entry.tts,
         onClick: runCmdFn(COMMAND_ID.entry.tts, [{ entryId }]),
-        hide: !IN_ELECTRON || !entry.hasContent,
         shortcut: shortcuts[COMMAND_ID.entry.tts],
         entryId,
       }),
@@ -420,6 +427,7 @@ export const useEntryActions = ({ entryId, view }: { entryId: string; view: Feed
         hide: !!entry.readability || (view && getView(view)?.wideMode) || !entry.url,
         active: isEntryInReadability,
         notice: !entry.doesContentContainsHTMLTags && !isEntryInReadability,
+        disabled: isOnboardingEntry,
         entryId,
       }),
 
@@ -438,7 +446,7 @@ export const useEntryActions = ({ entryId, view }: { entryId: string; view: Feed
             onClick: runCmdFn(COMMAND_ID.integration.custom, [{ entryId }]),
             entryId,
             children: enabledIntegrations.map((integration) => {
-              const virtualId = `integration:custom:${integration.id}` as FollowCommandId
+              const virtualId = `integration:custom:${integration.id}` as UnknownCommand["id"]
               return new EntryActionMenuItem({
                 id: virtualId,
                 onClick: () => {
@@ -468,11 +476,8 @@ export const useEntryActions = ({ entryId, view }: { entryId: string; view: Feed
     entry?.imagesLength,
     entry?.publishedAt,
     entry?.read,
-    entry?.hasContent,
     entry?.readability,
     entry?.doesContentContainsHTMLTags,
-    feed?.id,
-    feed?.ownerUserId,
     feed?.siteUrl,
     isInbox,
     shortcuts,
@@ -480,8 +485,6 @@ export const useEntryActions = ({ entryId, view }: { entryId: string; view: Feed
     isInCollection,
     isCurrentVisitEntry,
     isShowSourceContent,
-    isShowAISummaryAuto,
-    isShowAISummaryOnce,
     userRole,
     isShowAITranslationAuto,
     isShowAITranslationOnce,
@@ -489,6 +492,7 @@ export const useEntryActions = ({ entryId, view }: { entryId: string; view: Feed
     isEntryInReadability,
     integrationSettings.customIntegration,
     integrationSettings.enableCustomIntegration,
+    isOnboardingEntry,
   ])
 
   return actionConfigs

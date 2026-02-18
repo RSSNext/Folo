@@ -1,6 +1,8 @@
+import { UserRole } from "@follow/constants"
 import type { TranslationSchema } from "@follow/database/schemas/types"
 import { TranslationService } from "@follow/database/services/translation"
 import type { SupportedActionLanguage } from "@follow/shared"
+import { toApiSupportedActionLanguage } from "@follow/shared"
 import { checkLanguage } from "@follow/utils/language"
 import { create, indexedResolver, windowScheduler } from "@yornaath/batshit"
 
@@ -9,10 +11,12 @@ import type { Hydratable, Resetable } from "../../lib/base"
 import { createImmerSetter, createTransaction, createZustandStore } from "../../lib/helper"
 import { readNdjsonStream } from "../../lib/stream"
 import { getEntry } from "../entry/getter"
-import type { EntryTranslation, TranslationFieldArray } from "./types"
+import { useUserStore } from "../user/store"
+import type { EntryTranslation, TranslationFieldArray, TranslationMode } from "./types"
 import { translationFields } from "./types"
 
 type TranslationModel = Omit<TranslationSchema, "createdAt">
+type TranslationBatchRequest = Parameters<ReturnType<typeof api>["ai"]["translationBatch"]>[0]
 
 interface TranslationState {
   data: Record<string, Partial<Record<SupportedActionLanguage, EntryTranslation>>>
@@ -86,35 +90,52 @@ class TranslationActions implements Hydratable, Resetable {
 export const translationActions = new TranslationActions()
 
 class TranslationSyncService {
+  private currentMode?: TranslationMode
+
+  private async ensureMode(mode: TranslationMode) {
+    if (!this.currentMode) {
+      this.currentMode = mode
+      return
+    }
+
+    if (this.currentMode === mode) return
+
+    this.currentMode = mode
+    await translationActions.reset()
+  }
+
   private translationBatcher = create({
     fetcher: async (keys: string[]) => {
-      // key format: `${entryId}|${language}|${target}|${fields}`
+      // key format: `${entryId}|${language}|${target}|${fields}|${mode}`
       type KeyParts = {
         entryId: string
         language: SupportedActionLanguage
         target: "content" | "readabilityContent"
         fields: string
+        mode: TranslationMode
       }
 
       const parseKey = (key: string): KeyParts => {
-        const [entryId, language, target, fields] = key.split("|") as [
+        const [entryId, language, target, fields, mode] = key.split("|") as [
           string,
           SupportedActionLanguage,
           "content" | "readabilityContent",
           string,
+          TranslationMode | undefined,
         ]
-        return { entryId, language, target, fields }
+        return { entryId, language, target, fields, mode: mode ?? "bilingual" }
       }
 
       const requests = keys.map(parseKey)
 
-      // Group by language + fields to minimize stream calls
-      const groupKey = (r: KeyParts) => `${r.language}#${r.fields}`
+      // Group by language + fields + mode to minimize stream calls
+      const groupKey = (r: KeyParts) => `${r.language}#${r.fields}#${r.mode}`
       const grouped = new Map<
         string,
         {
           language: SupportedActionLanguage
           fields: string
+          mode: TranslationMode
           ids: string[]
           keyById: Record<string, string>
         }
@@ -123,23 +144,39 @@ class TranslationSyncService {
       for (const r of requests) {
         const gk = groupKey(r)
         if (!grouped.has(gk)) {
-          grouped.set(gk, { language: r.language, fields: r.fields, ids: [], keyById: {} })
+          grouped.set(gk, {
+            language: r.language,
+            fields: r.fields,
+            mode: r.mode,
+            ids: [],
+            keyById: {},
+          })
         }
         const g = grouped.get(gk)!
         g.ids.push(r.entryId)
-        g.keyById[r.entryId] = `${r.entryId}|${r.language}|${r.target}|${r.fields}`
+        g.keyById[r.entryId] = `${r.entryId}|${r.language}|${r.target}|${r.fields}|${r.mode}`
       }
 
       const results: Record<string, TranslationModel | null> = {}
 
       // Execute each group sequentially to keep memory small; groups are already windowed by scheduler
       for (const [, group] of grouped) {
+        if (this.currentMode && this.currentMode !== group.mode) {
+          for (const id of group.ids) {
+            if (!group.keyById[id]) continue
+            results[group.keyById[id]] = null
+          }
+          continue
+        }
+
         try {
-          const response = await api().ai.translationBatch({
+          const request: TranslationBatchRequest & { mode?: TranslationMode } = {
             ids: group.ids,
-            language: group.language,
+            language: toApiSupportedActionLanguage(group.language),
             fields: group.fields,
-          })
+            mode: group.mode,
+          }
+          const response = await api().ai.translationBatch(request)
 
           await readNdjsonStream<{
             id: string
@@ -147,6 +184,8 @@ class TranslationSyncService {
           }>(response, async (json) => {
             const key = group.keyById[json.id]
             if (!key) return
+
+            if (this.currentMode && this.currentMode !== group.mode) return
 
             const translation: TranslationModel = {
               entryId: json.id,
@@ -183,12 +222,20 @@ class TranslationSyncService {
     language,
     withContent,
     target,
+    mode,
   }: {
     entryId: string
     language: SupportedActionLanguage
     withContent?: boolean
     target: "content" | "readabilityContent"
+    mode?: TranslationMode
   }) {
+    const userRole = useUserStore.getState().role
+
+    if (userRole === UserRole.Free) return null
+    const translationMode = mode ?? "bilingual"
+    await this.ensureMode(translationMode)
+
     const entry = getEntry(entryId)
 
     if (!entry) return
@@ -210,7 +257,7 @@ class TranslationSyncService {
 
     if (fields.length === 0) return null
 
-    const key = `${entryId}|${language}|${target}|${fields.join(",")}`
+    const key = `${entryId}|${language}|${target}|${fields.join(",")}|${translationMode}`
     const result = await this.translationBatcher.fetch(key)
     return result || null
   }

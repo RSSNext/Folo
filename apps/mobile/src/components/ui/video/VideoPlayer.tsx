@@ -2,7 +2,8 @@ import { FeedViewType } from "@follow/constants"
 import { useEvent } from "expo"
 import type { VideoSource } from "expo-video"
 import { useVideoPlayer, VideoView } from "expo-video"
-import { useCallback, useRef, useState } from "react"
+import { useCallback, useMemo, useRef, useState } from "react"
+import type { ViewStyle } from "react-native"
 import { View } from "react-native"
 
 import { isIOS } from "@/src/lib/platform"
@@ -39,21 +40,29 @@ export function VideoPlayer({
     setIsFullScreen(true)
     // Ensure the nativeControls is ready before entering fullscreen for Android
     setTimeout(() => {
-      videoViewRef.current?.enterFullscreen()
-      player.muted = false
-      player.play()
+      try {
+        videoViewRef.current?.enterFullscreen()
+        player.muted = false
+        player.play()
+      } catch (e) {
+        console.warn("VideoPlayer fullscreen failed:", e)
+      }
     }, 0)
   }, [player])
+  const videoStyle = useMemo<ViewStyle>(
+    () => ({
+      width: view === FeedViewType.Pictures ? width : "100%",
+      height: view === FeedViewType.Pictures ? height : undefined,
+      aspectRatio: width && height ? width / height : 1,
+    }),
+    [height, view, width],
+  )
 
   return (
     <View className="flex flex-1">
       <VideoView
         ref={videoViewRef}
-        style={{
-          width: view === FeedViewType.Pictures ? width : "100%",
-          height: view === FeedViewType.Pictures ? height : undefined,
-          aspectRatio: width && height ? width / height : 1,
-        }}
+        style={videoStyle}
         contentFit={isFullScreen ? "contain" : "cover"}
         player={player}
         allowsFullscreen
@@ -66,8 +75,12 @@ export function VideoPlayer({
         }}
         onFullscreenExit={() => {
           setIsFullScreen(false)
-          player.muted = true
-          player.pause()
+          try {
+            player.muted = true
+            player.pause()
+          } catch (e) {
+            console.warn("VideoPlayer pause failed:", e)
+          }
         }}
       />
       {status !== "readyToPlay" && <View className="absolute inset-0">{placeholder}</View>}

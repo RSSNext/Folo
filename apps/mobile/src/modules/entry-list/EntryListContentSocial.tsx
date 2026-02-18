@@ -1,4 +1,7 @@
+import type { FeedViewType } from "@follow/constants"
+import { isFreeRole } from "@follow/constants"
 import { usePrefetchEntryTranslation } from "@follow/store/translation/hooks"
+import { useUserRole } from "@follow/store/user/hooks"
 import type { FlashListRef, ListRenderItemInfo } from "@shopify/flash-list"
 import type { ElementRef } from "react"
 import { useCallback, useImperativeHandle, useMemo, useRef } from "react"
@@ -18,10 +21,14 @@ export const EntryListContentSocial = ({
   ref: forwardRef,
   entryIds,
   active,
-}: { entryIds: string[] | null; active?: boolean } & {
+  view,
+}: { entryIds: string[] | null; active?: boolean; view: FeedViewType } & {
   ref?: React.Ref<ElementRef<typeof TimelineSelectorList> | null>
 }) => {
-  const { fetchNextPage, isFetching, refetch, isRefetching, hasNextPage, isReady } = useEntries()
+  const { fetchNextPage, isFetching, refetch, isRefetching, hasNextPage, isReady } = useEntries({
+    viewId: view,
+    active,
+  })
   const extraData: EntryExtraData = useMemo(() => ({ entryIds }), [entryIds])
 
   const ref = useRef<FlashListRef<any>>(null)
@@ -44,11 +51,15 @@ export const EntryListContentSocial = ({
   })
 
   const translation = useGeneralSettingKey("translation")
+  const translationMode = useGeneralSettingKey("translationMode")
   const actionLanguage = useActionLanguage()
+  const userRole = useUserRole()
+  const translationPrefetchEnabled = translation && !isFreeRole(userRole)
   usePrefetchEntryTranslation({
     entryIds: active ? viewableItems.map((item) => item.key) : [],
     language: actionLanguage,
-    enabled: translation,
+    enabled: translationPrefetchEnabled,
+    mode: translationMode,
   })
 
   // Show loading skeleton when entries are not ready and no data yet

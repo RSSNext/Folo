@@ -1,6 +1,6 @@
 import { clsx } from "@follow/utils"
 import { cloneElement } from "react"
-import { TouchableOpacity } from "react-native"
+import { Pressable } from "react-native"
 import { useColor } from "react-native-uikit-colors"
 
 interface ActiionBarItemProps {
@@ -21,7 +21,7 @@ export const ActionBarItem = ({
 }: ActiionBarItemProps) => {
   const labelColor = useColor("label")
   return (
-    <TouchableOpacity
+    <Pressable
       hitSlop={10}
       onPress={onPress}
       accessibilityLabel={label}
@@ -33,6 +33,6 @@ export const ActionBarItem = ({
       )}
     >
       {cloneElement(children, { color: iconColor || labelColor, height: 20, width: 20 })}
-    </TouchableOpacity>
+    </Pressable>
   )
 }

@@ -3,7 +3,7 @@
   "type": "module",
   "private": true,
   "author": "Folo Team",
-  "license": "GPL-3.0-only",
+  "license": "AGPL-3.0-only",
   "homepage": "https://github.com/RSSNext",
   "repository": {
     "url": "https://github.com/RSSNext/follow",
@@ -36,14 +36,14 @@
     "@follow/constants": "workspace:*",
     "@follow/models": "workspace:*",
     "@follow/shared": "workspace:*",
-    "ai": "5.0.76",
-    "drizzle-orm": "0.44.6",
-    "expo-sqlite": "15.2.12",
+    "ai": "6.0.85",
+    "drizzle-orm": "0.45.1",
+    "expo-sqlite": "16.0.10",
     "sqlocal": "npm:@hyoban/sqlocal@0.14.1-fork.4",
     "wa-sqlite": "git+https://github.com/rhashimoto/wa-sqlite.git#v1.0.8"
   },
   "devDependencies": {
     "@follow/configs": "workspace:*",
-    "drizzle-kit": "0.31.5"
+    "drizzle-kit": "0.31.9"
   }
 }

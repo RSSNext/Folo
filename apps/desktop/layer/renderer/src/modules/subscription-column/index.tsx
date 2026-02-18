@@ -5,29 +5,30 @@ import { RootPortal } from "@follow/components/ui/portal/index.js"
 import { FeedViewType } from "@follow/constants"
 import { useTypeScriptHappyCallback } from "@follow/hooks"
 import { ELECTRON_BUILD } from "@follow/shared/constants"
-import { usePrefetchSubscription } from "@follow/store/subscription/hooks"
+import { useFeedsByIds } from "@follow/store/feed/hooks"
+import { useAllFeedSubscription, usePrefetchSubscription } from "@follow/store/subscription/hooks"
 import { usePrefetchUnread } from "@follow/store/unread/hooks"
+import { useUserSubscriptionLimit } from "@follow/store/user/hooks"
 import { EventBus } from "@follow/utils/event-bus"
 import { clamp, cn } from "@follow/utils/utils"
 import { useWheel } from "@use-gesture/react"
 import { Lethargy } from "lethargy"
 import { AnimatePresence, m } from "motion/react"
 import type { FC, PropsWithChildren } from "react"
-import { memo, useCallback, useEffect, useLayoutEffect, useRef, useState } from "react"
+import { memo, useCallback, useEffect, useLayoutEffect, useMemo, useRef, useState } from "react"
+import { Trans } from "react-i18next"
 
 import { useRootContainerElement } from "~/atoms/dom"
+import { useIsInMASReview } from "~/atoms/server-configs"
 import { useUISettingKey } from "~/atoms/settings/ui"
-import {
-  setTimelineColumnShow,
-  useSubscriptionColumnApronNode,
-  useSubscriptionColumnShow,
-} from "~/atoms/sidebar"
+import { setTimelineColumnShow, useSubscriptionColumnShow } from "~/atoms/sidebar"
 import { Focusable } from "~/components/common/Focusable"
 import { HotkeyScope } from "~/constants"
 import { useBackHome } from "~/hooks/biz/useNavigateEntry"
 import { useReduceMotion } from "~/hooks/biz/useReduceMotion"
 import { parseView, useRouteParamsSelector } from "~/hooks/biz/useRouteParams"
 import { useTimelineList } from "~/hooks/biz/useTimelineList"
+import { useSettingModal } from "~/modules/settings/modal/useSettingModal"
 
 import { WindowUnderBlur } from "../../components/ui/background"
 import { COMMAND_ID } from "../command/commands/id"
@@ -50,7 +51,6 @@ export function SubscriptionColumn({
   const carouselRef = useRef<HTMLDivElement>(null)
   const timelineList = useTimelineList({
     withAll: true,
-    ordered: true,
     visible: true,
   })
 
@@ -149,6 +149,7 @@ export function SubscriptionColumn({
       <div className="relative mb-2 mt-3">
         <TabsRow />
       </div>
+      <SubscriptionLimitNotice />
       <div
         className={cn("relative mt-1 flex size-full", !shouldFreeUpSpace && "overflow-hidden")}
         ref={carouselRef}
@@ -176,25 +177,18 @@ export function SubscriptionColumn({
         </SwipeWrapper>
       </div>
 
-      <ApronNodeContainer />
-
       {children}
     </WindowUnderBlur>
   )
 }
 
-const ApronNodeContainer: FC = () => {
-  return useSubscriptionColumnApronNode()
-}
-
 const SwipeWrapper: FC<{ active: string; children: React.JSX.Element[] }> = memo(
   ({ children, active }) => {
     const reduceMotion = useReduceMotion()
-    const timelineList = useTimelineList({ withAll: true, ordered: true, visible: true })
+    const timelineList = useTimelineList({ withAll: true, visible: true })
     const viewIndex = timelineList.indexOf(active)
 
     const feedColumnWidth = useUISettingKey("feedColWidth")
-    const containerRef = useRef<HTMLDivElement>(null)
 
     const orderIndex = timelineList.indexOf(active)
 
@@ -221,7 +215,7 @@ const SwipeWrapper: FC<{ active: string; children: React.JSX.Element[] }> = memo
     }, [orderIndex, viewIndex])
 
     if (reduceMotion) {
-      return <div ref={containerRef}>{children[currentAnimtedActive]}</div>
+      return <div>{children[currentAnimtedActive]}</div>
     }
 
     return (
@@ -235,7 +229,6 @@ const SwipeWrapper: FC<{ active: string; children: React.JSX.Element[] }> = memo
           animate={{ x: 0 }}
           exit={{ x: direction === "right" ? -feedColumnWidth : feedColumnWidth }}
           transition={Spring.presets.snappy}
-          ref={containerRef}
         >
           {children[currentAnimtedActive]}
         </m.div>
@@ -245,7 +238,7 @@ const SwipeWrapper: FC<{ active: string; children: React.JSX.Element[] }> = memo
 )
 
 const TabsRow: FC = () => {
-  const timelineList = useTimelineList({ withAll: true, ordered: true, visible: true })
+  const timelineList = useTimelineList({ withAll: true, visible: true })
 
   return (
     <div className="flex h-11 items-center px-1 text-xl text-text-secondary">
@@ -253,6 +246,66 @@ const TabsRow: FC = () => {
         <SubscriptionTabButton key={timelineId} timelineId={timelineId} shortcut={`${index + 1}`} />
       ))}
     </div>
+  )
+}
+
+const SubscriptionLimitNotice: FC = () => {
+  const feedSubscriptions = useAllFeedSubscription()
+  const { feedLimit, rsshubLimit } = useUserSubscriptionLimit()
+  const openSettings = useSettingModal()
+  const isInMASReview = useIsInMASReview()
+
+  const feedIds = useMemo(
+    () =>
+      feedSubscriptions
+        .map((subscription) => subscription?.feedId)
+        .filter((feedId): feedId is string => typeof feedId === "string" && feedId.length > 0),
+    [feedSubscriptions],
+  )
+
+  const feeds = useFeedsByIds(feedIds)
+
+  const feedCount = feedSubscriptions.length
+  const rsshubCount = useMemo(() => {
+    if (!feeds || feeds.length === 0) return 0
+    return feeds.reduce((count, feed) => {
+      if (!feed?.url) return count
+      return feed.url.startsWith("rsshub://") ? count + 1 : count
+    }, 0)
+  }, [feeds])
+
+  const exceededFeed = typeof feedLimit === "number" && feedCount > feedLimit
+  const exceededRSSHub = typeof rsshubLimit === "number" && rsshubCount > rsshubLimit
+  if (!exceededFeed && !exceededRSSHub) {
+    return null
+  }
+  if (isInMASReview) {
+    return null
+  }
+
+  return (
+    <button
+      type="button"
+      onClick={() => openSettings("plan")}
+      className="my-1 flex items-start gap-2 border-red/30 bg-red/10 px-1.5 py-2 text-left text-xs leading-snug text-red transition-colors hover:border-red hover:bg-red/15 focus:outline-none focus-visible:ring-2 focus-visible:ring-red/40"
+    >
+      <span className="ml-1 text-lg">😢</span>
+      <p>
+        <Trans
+          i18nKey="subscription_limit_warning"
+          values={{
+            feedCount,
+            rsshubCount,
+            feedLimit,
+            rsshubLimit,
+          }}
+          components={{
+            b: <b key="b" />,
+            br: <br key="br" />,
+          }}
+        />
+      </p>
+    </button>
   )
 }
 

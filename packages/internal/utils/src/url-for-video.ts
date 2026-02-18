@@ -3,6 +3,7 @@ export const transformVideoUrl = ({
   mini = false,
   isIframe = false,
   attachments,
+  lang,
 }: {
   url: string
   mini?: boolean
@@ -13,6 +14,7 @@ export const transformVideoUrl = ({
         mime_type?: string
       }[]
     | null
+  lang?: string
 }): string | null => {
   if (url?.match(/\/\/www.bilibili.com\/video\/BV\w+/)) {
     const player = isIframe
@@ -28,14 +30,15 @@ export const transformVideoUrl = ({
     }).toString()}`
   }
 
-  if (url?.match(/\/\/www.youtube.com\/watch\?v=[-\w]+/)) {
-    return `https://www.youtube-nocookie.com/embed/${url.match(/\/\/www.youtube.com\/watch\?v=([-\w]+)/)?.[1]}?${new URLSearchParams(
-      {
-        controls: mini ? "0" : "1",
-        autoplay: "1",
-        mute: mini ? "1" : "0",
-      },
-    ).toString()}`
+  if (url?.match(/\/\/www.youtube.com\/(watch\?v=|shorts\/)[-\w]+/)) {
+    const videoId = url.match(/\/\/www.youtube.com\/(?:watch\?v=|shorts\/)([-\w]+)/)?.[1]
+    return `https://www.youtube-nocookie.com/embed/${videoId}?${new URLSearchParams({
+      controls: mini ? "0" : "1",
+      autoplay: "1",
+      mute: mini ? "1" : "0",
+      hl: lang ?? "en-US",
+      cc_lang_pref: lang ?? "en-US",
+    }).toString()}`
   }
 
   if (url?.match(/\/\/www.pornhub.com\/view_video.php\?viewkey=\w+/)) {

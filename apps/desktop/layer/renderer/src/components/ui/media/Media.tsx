@@ -1,7 +1,5 @@
 import { nextFrame } from "@follow/utils/dom"
-import { getImageProxyUrl } from "@follow/utils/img-proxy"
 import { cn } from "@follow/utils/utils"
-import { ErrorBoundary } from "@sentry/react"
 import { useForceUpdate } from "motion/react"
 import type { FC, ImgHTMLAttributes, VideoHTMLAttributes } from "react"
 import * as React from "react"
@@ -9,8 +7,10 @@ import { memo, use, useEffect, useMemo, useRef, useState } from "react"
 import { Blurhash, BlurhashCanvas } from "react-blurhash"
 import { useEventCallback } from "usehooks-ts"
 
+import { useGetImageProxyUrl } from "~/lib/img-proxy"
 import { saveImageDimensionsToDb } from "~/store/image/db"
 
+import { ErrorBoundary } from "../../common/ErrorBoundary"
 import { useMediaContainerWidth, usePreviewMedia } from "./hooks"
 import { MediaInfoRecordContext } from "./MediaInfoRecordContext"
 import type { VideoPlayerRef } from "./VideoPlayer"
@@ -77,6 +77,7 @@ const MediaImpl: FC<MediaProps> = ({
     videoClassName,
     ...rest
   } = props
+  const getImageProxyUrl = useGetImageProxyUrl()
 
   const ctxMediaInfo = use(MediaInfoRecordContext)
   const ctxHeight = ctxMediaInfo[src!]?.height
@@ -121,7 +122,7 @@ const MediaImpl: FC<MediaProps> = ({
     }
 
     return sources
-  }, [src, proxy, preferOrigin])
+  }, [src, proxy, preferOrigin, getImageProxyUrl])
 
   const [currentSourceIndex, setCurrentSourceIndex] = useState(0)
   const [isError, setIsError] = useState(false)
@@ -142,7 +143,7 @@ const MediaImpl: FC<MediaProps> = ({
       })
     }
     return previewImageUrl
-  }, [previewImageUrl, proxy, currentSource?.type])
+  }, [previewImageUrl, proxy, currentSource?.type, getImageProxyUrl])
 
   // When image source list changes, reset to the first source
   const prevImageSources = useRef(imageSources)
@@ -305,21 +306,22 @@ const MediaImpl: FC<MediaProps> = ({
       }
     }
   }, [
-    errorHandle,
-    handleClick,
-    handleOnLoad,
-    imgSrc,
-    mediaContainerClassName,
+    type,
+    rest,
     finalHeight,
     finalWidth,
-    mediaLoadState,
-    popper,
-    previewImageSrc,
-    rest,
-    src,
-    thumbnail,
-    type,
+    errorHandle,
     inline,
+    popper,
+    mediaLoadState,
+    mediaContainerClassName,
+    imgSrc,
+    handleOnLoad,
+    handleClick,
+    src,
+    previewImageSrc,
+    thumbnail,
+    videoClassName,
   ])
 
   if (!type || !src) return null

@@ -1,6 +1,7 @@
 import { cn } from "@follow/utils"
-import { ErrorBoundary } from "@sentry/react"
 import { createElement, lazy, Suspense } from "react"
+
+import { ErrorBoundary } from "~/components/common/ErrorBoundary"
 
 const AISplineLoader = lazy(() =>
   import("./AISplineLoader").then((res) => ({ default: res.AISplineLoader })),

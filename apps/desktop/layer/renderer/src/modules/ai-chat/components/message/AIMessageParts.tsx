@@ -1,10 +1,10 @@
 import "@xyflow/react/dist/style.css"
 
 import { alwaysFalse } from "@follow/utils"
-import { ErrorBoundary } from "@sentry/react"
 import type { ReasoningUIPart, TextUIPart, ToolUIPart } from "ai"
 import * as React from "react"
 
+import { ErrorBoundary } from "~/components/common/ErrorBoundary"
 import type { AIDisplayFlowTool, BizUIMessage, BizUITools } from "~/modules/ai-chat/store/types"
 
 import { useChatStatus } from "../../store/hooks"
@@ -22,31 +22,24 @@ interface AIMessagePartsProps {
   isLastMessage: boolean
 }
 
+const shouldBypassMergeToolName = (name: string) => name.startsWith("tool-display")
+
 export const AIMessageParts: React.FC<AIMessagePartsProps> = React.memo(
   ({ message, isLastMessage }) => {
-    const [shouldStreamingAnimation, setShouldStreamingAnimation] = React.useState(false)
     const chatStatus = useChatStatus()
 
-    React.useEffect(() => {
-      // Delay 2s to set shouldStreamingAnimation
-      const timerId = setTimeout(() => {
-        setShouldStreamingAnimation(true)
-      }, 2000)
-      return () => clearTimeout(timerId)
-    }, [])
-
     const shouldMessageAnimation = React.useMemo(() => {
-      return chatStatus === "streaming" && shouldStreamingAnimation && isLastMessage
-    }, [chatStatus, isLastMessage, shouldStreamingAnimation])
+      return chatStatus === "streaming" && isLastMessage
+    }, [chatStatus, isLastMessage])
 
-    const displayParts = React.useMemo(() => {
+    const chainThoughtParts = React.useMemo(() => {
       const parts = [] as (ChainReasoningPart[] | TextUIPart | ToolUIPart<BizUITools>)[]
 
       let chainReasoningParts: ChainReasoningPart[] | null = null
       for (const part of message.parts) {
         const isReasoning = part.type === "reasoning" && !!(part as ReasoningUIPart).text
         const isTool = part.type.startsWith("tool-")
-        const isDisplayTool = isTool && part.type.startsWith("tool-display")
+        const bypassedTool = isTool && shouldBypassMergeToolName(part.type)
 
         if (isReasoning) {
           if (!chainReasoningParts) {
@@ -59,7 +52,7 @@ export const AIMessageParts: React.FC<AIMessagePartsProps> = React.memo(
         }
 
         if (isTool) {
-          if (chainReasoningParts && chainReasoningParts.length > 0 && !isDisplayTool) {
+          if (chainReasoningParts && chainReasoningParts.length > 0 && !bypassedTool) {
             chainReasoningParts.push(part as ToolUIPart<BizUITools>)
           } else {
             parts.push(part as ToolUIPart<BizUITools>)
@@ -82,11 +75,11 @@ export const AIMessageParts: React.FC<AIMessagePartsProps> = React.memo(
 
     // console.info("displayParts", displayParts)
 
-    const lowPriorityParts = React.useDeferredValue(displayParts)
+    const lowPriorityChainParts = React.useDeferredValue(chainThoughtParts)
 
     return (
       <>
-        {lowPriorityParts.map((partOrParts, index) => {
+        {lowPriorityChainParts.map((partOrParts, index) => {
           const partKey = `${message.id}-${index}`
 
           if (Array.isArray(partOrParts)) {

@@ -51,6 +51,12 @@ pnpm run test
 
 - Run the above at the root, or use per-package variants as needed.
 - Follow this order strictly: typecheck → lint → test.
+- After every modification, run the following checks to catch errors early:
+
+```bash
+npm exec turbo run format:check typecheck lint
+npm exec turbo run test
+```
 
 ## Code style and conventions
 
@@ -58,6 +64,7 @@ pnpm run test
 - Prefer CSS transitions/animations for simple UI interactions. Use JS-driven motion only when necessary to avoid frame drops.
 - Imports: use `pathe` instead of `node:path` for cross‑platform paths.
 - Organize shared, reusable UI in `packages/internal/components`; app-specific UI stays in its app.
+- **Style extraction**: Avoid inline styles in JSX. Extract complex styles (especially those using CSS variables, gradients, or multiple properties) to external style objects similar to React Native's `StyleSheet.create`. Place style objects in a `styles.ts` file alongside the component, using `CSSProperties` type for type safety.
 
 ## Team preferences
 

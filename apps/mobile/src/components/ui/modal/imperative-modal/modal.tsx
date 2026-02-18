@@ -2,7 +2,7 @@ import { nanoid } from "nanoid/non-secure"
 import type { ReactNode } from "react"
 import { cloneElement, useState } from "react"
 import { useTranslation } from "react-i18next"
-import { TouchableOpacity, View } from "react-native"
+import { Pressable, View } from "react-native"
 import RootSiblings from "react-native-root-siblings"
 
 import { HeaderSubmitTextButton } from "@/src/components/layouts/header/HeaderElements"
@@ -99,7 +99,7 @@ const PromptModal = ({
           onChangeText={setText}
           placeholder={placeholder}
         />
-        <TouchableOpacity
+        <Pressable
           className="w-full rounded-xl bg-accent px-6 py-3"
           disabled={text.trim().length === 0}
           onPress={() => {
@@ -112,7 +112,7 @@ const PromptModal = ({
               ns: "common",
             })}
           </Text>
-        </TouchableOpacity>
+        </Pressable>
       </View>
     </View>
   )

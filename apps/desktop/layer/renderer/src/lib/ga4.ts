@@ -1,3 +1,5 @@
+import { whoami } from "@follow/store/user/getters"
+
 import { getClientId, getSessionId } from "~/lib/client-session"
 
 import { followClient } from "./api-client"
@@ -47,9 +49,10 @@ class Analytics4 {
       user_properties: this.userProperties,
     }
 
-    return followClient.api.data.sendAnalytics({
-      ...payload,
-    })
+    if (whoami())
+      return followClient.api.data.sendAnalytics({
+        ...payload,
+      })
   }
 }
 

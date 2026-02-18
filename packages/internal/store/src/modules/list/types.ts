@@ -1,6 +1,6 @@
 import type { ListSchema } from "@follow/database/schemas/types"
 
-export type CreateListModel = Pick<ListModel, "description" | "image" | "view" | "fee"> & {
+export type CreateListModel = Pick<ListModel, "description" | "image" | "view"> & {
   title: string
 }
 

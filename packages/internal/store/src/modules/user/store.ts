@@ -16,11 +16,13 @@ export type MeModel = AuthUser & {
   emailVerified?: boolean
   twoFactorEnabled?: boolean | null
 }
-type UserStore = {
+export type UserStore = {
   users: Record<string, UserModel>
   whoami: MeModel | null
   role: UserRole | null
   roleEndAt: Date | null
+  rsshubSubscriptionLimit?: number | null
+  feedSubscriptionLimit?: number | null
 }
 
 const defaultState: UserStore = {
@@ -64,24 +66,40 @@ class UserSyncService {
   })
 
   async whoami() {
-    const res = await api().auth.getSession()
-
-    if (res) {
-      if (!res.user) return res
-      const user = apiMorph.toWhoami(res.user)
-      immerSet((state) => {
-        state.whoami = { ...user, emailVerified: res.user?.emailVerified ?? false }
-        state.role = res.user?.role as UserRole | null
-        if (res.user?.roleEndAt) {
-          state.roleEndAt = new Date(res.user?.roleEndAt)
+    const res = await api()
+      .auth.getSession()
+      .catch((err) => {
+        if (err?.message.includes("Failed to fetch")) {
+          throw err
         }
+        return null
       })
-      userActions.upsertMany([user])
 
-      return res
-    } else {
+    if (!res) {
+      immerSet((state) => {
+        state.whoami = null
+        state.role = null
+        state.roleEndAt = null
+        state.rsshubSubscriptionLimit = null
+        state.feedSubscriptionLimit = null
+      })
       return null
     }
+
+    if (!res.user) return res
+    const user = apiMorph.toWhoami(res.user)
+    immerSet((state) => {
+      state.whoami = { ...user, emailVerified: res.user?.emailVerified ?? false }
+      state.role = res.user?.role as UserRole | null
+      if (res.user?.roleEndAt) {
+        state.roleEndAt = new Date(res.user?.roleEndAt)
+      }
+      state.rsshubSubscriptionLimit = res.rsshubSubscriptionLimit ?? null
+      state.feedSubscriptionLimit = res.feedSubscriptionLimit ?? null
+    })
+    userActions.upsertMany([user])
+
+    return res
   }
 
   async updateProfile(data: Partial<UserProfileEditable>) {

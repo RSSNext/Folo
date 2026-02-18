@@ -45,7 +45,7 @@ export const EntryGridFooter = ({
           <EntryTranslation
             numberOfLines={2}
             className={cn(
-              "shrink text-sm font-medium text-label",
+              "shrink text-xs font-medium text-label",
               view === FeedViewType.Videos && "min-h-10",
               descriptionClassName,
             )}
@@ -58,10 +58,10 @@ export const EntryGridFooter = ({
       </View>
       <View className="flex-row items-center gap-1.5">
         <FeedIcon fallback feed={feed} size={14} />
-        <Text numberOfLines={1} className="shrink text-xs font-medium text-label">
+        <Text numberOfLines={1} className="shrink text-xs font-medium text-secondary-label">
           {feed?.title}
         </Text>
-        <RelativeDateTime className="text-xs text-secondary-label" date={entry.publishedAt} />
+        <RelativeDateTime className="text-xs text-tertiary-label" date={entry.publishedAt} />
       </View>
     </View>
   )

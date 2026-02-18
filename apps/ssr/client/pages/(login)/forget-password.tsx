@@ -1,5 +1,6 @@
+import { useRecaptchaToken } from "@client/hooks/useRecaptchaToken"
 import { forgetPassword } from "@client/lib/auth"
-import { Button, MotionButtonBase } from "@follow/components/ui/button/index.jsx"
+import { Button } from "@follow/components/ui/button/index.jsx"
 import {
   Card,
   CardContent,
@@ -17,14 +18,11 @@ import {
 } from "@follow/components/ui/form/index.jsx"
 import { Input } from "@follow/components/ui/input/index.js"
 import { env } from "@follow/shared/env.ssr"
-import HCaptcha from "@hcaptcha/react-hcaptcha"
 import { zodResolver } from "@hookform/resolvers/zod"
 import { useMutation } from "@tanstack/react-query"
-import { useRef } from "react"
 import * as React from "react"
 import { useForm } from "react-hook-form"
 import { useTranslation } from "react-i18next"
-import { useNavigate } from "react-router"
 import { toast } from "sonner"
 import { z } from "zod"
 
@@ -38,8 +36,8 @@ const createEmailSchema = (t: any) =>
 
 export function Component() {
   const { t } = useTranslation()
-  const navigate = useNavigate()
-  const captchaRef = useRef<HCaptcha>(null)
+
+  const requestRecaptchaToken = useRecaptchaToken()
 
   const EmailSchema = createEmailSchema(t)
 
@@ -55,16 +53,18 @@ export function Component() {
   const { isValid } = form.formState
   const updateMutation = useMutation({
     mutationFn: async (values: z.infer<typeof EmailSchema>) => {
-      const response = await captchaRef.current?.execute({ async: true })
+      const recaptchaToken = await requestRecaptchaToken("ssr_forget_password")
       const res = await forgetPassword(
         {
           email: values.email,
           redirectTo: `${env.VITE_WEB_URL}/reset-password`,
         },
         {
-          headers: {
-            "x-token": `hc:${response?.response}`,
-          },
+          headers: recaptchaToken
+            ? {
+                "x-token": `r3:${recaptchaToken}`,
+              }
+            : undefined,
         },
       )
       if (res.error) {
@@ -85,17 +85,9 @@ export function Component() {
 
   return (
     <div className="flex h-full items-center justify-center">
-      <Card className="w-[350px] max-w-full">
+      <Card className="w-[500px] max-w-full">
         <CardHeader>
           <CardTitle className="flex items-center gap-2">
-            <MotionButtonBase
-              onClick={() => {
-                history.length > 1 ? history.back() : navigate("/login")
-              }}
-              className="-ml-1 inline-flex cursor-pointer items-center"
-            >
-              <i className="i-mingcute-left-line" />
-            </MotionButtonBase>
             <span>{t("login.forget_password.label")}</span>
           </CardTitle>
         </CardHeader>
@@ -118,7 +110,6 @@ export function Component() {
                   </FormItem>
                 )}
               />
-              <HCaptcha ref={captchaRef} sitekey={env.VITE_HCAPTCHA_SITE_KEY} size="invisible" />
               <div className="text-right">
                 <Button
                   disabled={!isValid || updateMutation.isPending}

@@ -17,8 +17,10 @@ import { HotkeyScope } from "~/constants"
 import { ChatHeader } from "~/modules/ai-chat/components/layouts/ChatHeader"
 import { ChatInterface } from "~/modules/ai-chat/components/layouts/ChatInterface"
 
-export interface AIChatFloatingPanelProps
-  extends React.DetailedHTMLProps<React.HTMLAttributes<HTMLDivElement>, HTMLDivElement> {}
+export interface AIChatFloatingPanelProps extends React.DetailedHTMLProps<
+  React.HTMLAttributes<HTMLDivElement>,
+  HTMLDivElement
+> {}
 
 const AIChatFloatingPanelInner: FC<AIChatFloatingPanelProps> = ({ className, ...props }) => {
   const floatingState = useFloatingPanelState()
@@ -103,7 +105,7 @@ const AIChatFloatingPanelInner: FC<AIChatFloatingPanelProps> = ({ className, ...
             )}
             {...props}
           >
-            <ChatHeader />
+            <ChatHeader isFloating />
             <ChatInterface />
           </Focusable>
         </Resizable>

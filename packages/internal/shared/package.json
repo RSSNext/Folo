@@ -3,7 +3,7 @@
   "type": "module",
   "private": true,
   "author": "Folo Team",
-  "license": "GPL-3.0-only",
+  "license": "AGPL-3.0-only",
   "homepage": "https://github.com/RSSNext",
   "repository": {
     "url": "https://github.com/RSSNext/follow",
@@ -35,13 +35,13 @@
     "@electron-toolkit/preload": "3.0.2",
     "@electron-toolkit/tsconfig": "2.0.0",
     "@follow-app/client-sdk": "catalog:",
-    "@folo-services/drizzle": "0.1.29",
-    "@t3-oss/env-core": "0.13.8",
-    "ai": "5.0.76",
+    "@folo-services/drizzle": "0.1.44",
+    "@t3-oss/env-core": "0.13.10",
+    "ai": "6.0.85",
     "better-auth": "1.3.28",
-    "drizzle-orm": "0.44.6",
+    "drizzle-orm": "0.45.1",
     "sonner": "2.0.7",
-    "stripe": "19.1.0",
-    "zod": "3.25.75"
+    "stripe": "20.3.1",
+    "zod": "3.25.76"
   }
 }
