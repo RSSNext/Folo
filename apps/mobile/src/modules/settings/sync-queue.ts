@@ -1,10 +1,11 @@
-import type { GeneralSettings, UISettings } from "@follow/shared/settings/interface"
+import type { AISettings, GeneralSettings, UISettings } from "@follow/shared/settings/interface"
 import { isEmptyObject, jotaiStore, sleep } from "@follow/utils"
 import { EventBus } from "@follow/utils/event-bus"
 import type { SettingsTab } from "@follow-app/client-sdk"
 import { omit } from "es-toolkit/compat"
 import type { PrimitiveAtom } from "jotai"
 
+import { __aiSettingAtom, aiServerSyncWhiteListKeys, getAISettings } from "@/src/atoms/settings/ai"
 import {
   __generalSettingAtom,
   generalServerSyncWhiteListKeys,
@@ -17,6 +18,7 @@ import { kv } from "@/src/lib/kv"
 type SettingMapping = {
   appearance: UISettings
   general: GeneralSettings
+  ai: AISettings
 }
 
 const omitKeys: string[] = []
@@ -24,6 +26,7 @@ const omitKeys: string[] = []
 const localSettingGetterMap = {
   appearance: () => omit(getUISettings(), uiServerSyncWhiteListKeys, omitKeys),
   general: () => omit(getGeneralSettings(), generalServerSyncWhiteListKeys, omitKeys),
+  ai: () => omit(getAISettings(), aiServerSyncWhiteListKeys, omitKeys),
 }
 
 const createInternalSetter =
@@ -36,15 +39,18 @@ const createInternalSetter =
 const localSettingSetterMap = {
   appearance: createInternalSetter(__uiSettingAtom),
   general: createInternalSetter(__generalSettingAtom),
+  ai: createInternalSetter(__aiSettingAtom),
 }
 const settingWhiteListMap = {
   appearance: uiServerSyncWhiteListKeys,
   general: generalServerSyncWhiteListKeys,
+  ai: aiServerSyncWhiteListKeys,
 }
 
 const bizSettingKeyToTabMapping = {
   ui: "appearance",
   general: "general",
+  ai: "ai",
 }
 
 export type SettingSyncTab = keyof SettingMapping
@@ -58,7 +64,7 @@ declare module "@follow/utils/event-bus" {
   interface CustomEvent {
     SETTING_CHANGE_EVENT: {
       key: keyof typeof bizSettingKeyToTabMapping
-      payload: any
+      payload: Partial<GeneralSettings> | Partial<UISettings> | Partial<AISettings>
     }
   }
 }
