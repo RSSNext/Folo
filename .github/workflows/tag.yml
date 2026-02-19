@@ -1,18 +1,24 @@
-name: 🏷️ Tag on SemVer Commit
+name: 🏷️ Release Orchestrator
 
 on:
   push:
     branches:
       - main
+      - mobile-main
+
+permissions:
+  contents: write
+  actions: write
 
 jobs:
   create_tag:
     name: Create Release Tag
     runs-on: ubuntu-latest
     outputs:
-      tag_version: ${{ env.tag_version }}
-      platform: ${{ env.platform }}
-      version: ${{ env.version }}
+      tag_version: ${{ steps.release_info.outputs.tag_version }}
+      platform: ${{ steps.release_info.outputs.platform }}
+      version: ${{ steps.release_info.outputs.version }}
+      ref_name: ${{ steps.release_info.outputs.ref_name }}
 
     steps:
       - name: Checkout repository
@@ -30,36 +36,82 @@ jobs:
       - name: Extract release information
         id: extract_info
         run: .github/scripts/extract-release-info.mjs
-        continue-on-error: false
+        continue-on-error: true
+
+      - name: Expose release outputs
+        id: release_info
+        run: |
+          echo "tag_version=${tag_version:-}" >> "$GITHUB_OUTPUT"
+          echo "platform=${platform:-}" >> "$GITHUB_OUTPUT"
+          echo "version=${version:-}" >> "$GITHUB_OUTPUT"
+          echo "ref_name=${GITHUB_REF_NAME}" >> "$GITHUB_OUTPUT"
 
       - name: Validate git configuration
-        if: env.tag_version
+        if: steps.release_info.outputs.tag_version != ''
         run: |
           git config --global user.name "github-actions[bot]"
           git config --global user.email "github-actions[bot]@users.noreply.github.com"
 
       - name: Create and push tag
-        if: env.tag_version
+        if: steps.release_info.outputs.tag_version != ''
         run: |
-          echo "Creating tag: ${{ env.tag_version }}"
-          if git rev-parse "${{ env.tag_version }}" >/dev/null 2>&1; then
-            echo "Tag ${{ env.tag_version }} already exists, skipping creation"
+          git fetch --tags --force
+          echo "Creating tag: ${{ steps.release_info.outputs.tag_version }}"
+          if git rev-parse "${{ steps.release_info.outputs.tag_version }}" >/dev/null 2>&1; then
+            echo "Tag ${{ steps.release_info.outputs.tag_version }} already exists, skipping creation"
             exit 0
           fi
 
-          git tag "${{ env.tag_version }}"
-          git push origin "${{ env.tag_version }}"
-          echo "Successfully created and pushed tag: ${{ env.tag_version }}"
+          git tag "${{ steps.release_info.outputs.tag_version }}"
+          git push origin "${{ steps.release_info.outputs.tag_version }}"
+          echo "Successfully created and pushed tag: ${{ steps.release_info.outputs.tag_version }}"
 
   trigger_builds:
     name: Trigger Platform Builds
     needs: create_tag
-    if: needs.create_tag.outputs.tag_version
+    if: needs.create_tag.outputs.tag_version != ''
     runs-on: ubuntu-latest
 
     steps:
+      - name: Checkout repository
+        if: needs.create_tag.outputs.platform == 'desktop' && needs.create_tag.outputs.ref_name == 'main'
+        uses: actions/checkout@v6
+        with:
+          fetch-depth: 0
+
+      - name: Configure Git
+        if: needs.create_tag.outputs.platform == 'desktop' && needs.create_tag.outputs.ref_name == 'main'
+        run: |
+          git config --global user.name "github-actions[bot]"
+          git config --global user.email "github-actions[bot]@users.noreply.github.com"
+
+      - name: Resolve desktop build version
+        id: desktop_build_version
+        if: needs.create_tag.outputs.platform == 'desktop' && needs.create_tag.outputs.ref_name == 'main'
+        run: |
+          git fetch --tags --force
+          latest_tag="$(git tag -l 'desktop-build/v*' --sort=-v:refname | head -n 1)"
+          if [ -z "$latest_tag" ]; then
+            last_build=110
+          else
+            last_build="${latest_tag#desktop-build/v}"
+          fi
+
+          next_build=$((last_build + 1))
+          build_tag="desktop-build/v${next_build}"
+
+          if git rev-parse "$build_tag" >/dev/null 2>&1; then
+            echo "Build tag $build_tag already exists."
+            exit 1
+          fi
+
+          git tag "$build_tag"
+          git push origin "$build_tag"
+          echo "build_version=${next_build}" >> "$GITHUB_OUTPUT"
+          echo "Desktop build version: ${next_build}"
+
       - name: Trigger Desktop Build
-        if: needs.create_tag.outputs.platform == 'desktop'
+        if: needs.create_tag.outputs.platform == 'desktop' && needs.create_tag.outputs.ref_name == 'main'
         uses: actions/github-script@v8
         with:
           github-token: ${{ secrets.GITHUB_TOKEN }}
@@ -70,13 +122,15 @@ jobs:
               workflow_id: 'build-desktop.yml',
               ref: 'main',
               inputs: {
-                tag_version: 'true'
+                tag_version: 'true',
+                store: 'true',
+                build_version: '${{ steps.desktop_build_version.outputs.build_version }}'
               }
             });
             console.log('Desktop build triggered successfully');
 
-      - name: Trigger Mobile Build
-        if: needs.create_tag.outputs.platform == 'mobile'
+      - name: Trigger Mobile Preview Release Build
+        if: needs.create_tag.outputs.platform == 'mobile' && needs.create_tag.outputs.ref_name == 'mobile-main'
         uses: actions/github-script@v8
         with:
           github-token: ${{ secrets.GITHUB_TOKEN }}
@@ -85,9 +139,45 @@ jobs:
               owner: context.repo.owner,
               repo: context.repo.repo,
               workflow_id: 'build-android.yml',
-              ref: 'main',
+              ref: 'mobile-main',
               inputs: {
+                profile: 'preview',
                 release: 'true'
               }
             });
-            console.log('Mobile build triggered successfully');
+            console.log('Mobile preview release build triggered successfully');
+
+      - name: Trigger Mobile Production Android Build
+        if: needs.create_tag.outputs.platform == 'mobile' && needs.create_tag.outputs.ref_name == 'mobile-main'
+        uses: actions/github-script@v8
+        with:
+          github-token: ${{ secrets.GITHUB_TOKEN }}
+          script: |
+            const response = await github.rest.actions.createWorkflowDispatch({
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              workflow_id: 'build-android.yml',
+              ref: 'mobile-main',
+              inputs: {
+                profile: 'production',
+                release: 'false'
+              }
+            });
+            console.log('Mobile production Android build triggered successfully');
+
+      - name: Trigger Mobile Production iOS Build
+        if: needs.create_tag.outputs.platform == 'mobile' && needs.create_tag.outputs.ref_name == 'mobile-main'
+        uses: actions/github-script@v8
+        with:
+          github-token: ${{ secrets.GITHUB_TOKEN }}
+          script: |
+            const response = await github.rest.actions.createWorkflowDispatch({
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              workflow_id: 'build-ios.yml',
+              ref: 'mobile-main',
+              inputs: {
+                profile: 'production'
+              }
+            });
+            console.log('Mobile production iOS build triggered successfully');
