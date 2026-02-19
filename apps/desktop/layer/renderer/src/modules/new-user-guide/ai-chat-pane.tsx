@@ -21,7 +21,6 @@ import { useEventCallback } from "usehooks-ts"
 
 import { useI18n } from "~/hooks/common"
 import { ChatInput } from "~/modules/ai-chat/components/layouts/ChatInput"
-import { Messages } from "~/modules/ai-chat/components/layouts/ChatInterface"
 import { useAttachScrollBeyond } from "~/modules/ai-chat/hooks/useAttachScrollBeyond"
 import { useAutoScroll } from "~/modules/ai-chat/hooks/useAutoScroll"
 import {
@@ -35,11 +34,12 @@ import {
 } from "~/modules/ai-chat/store/hooks"
 import type { AIChatContextBlock, BizUIMessage } from "~/modules/ai-chat/store/types"
 
+import { Messages } from "../ai-chat/components/layouts/Messages"
 import { RateLimitNotice } from "../ai-chat/components/layouts/RateLimitNotice"
 import { AIChatWaitingIndicator } from "../ai-chat/components/message/AIChatMessage"
 import { AIShortcutButton } from "../ai-chat/components/ui/AIShortcutButton"
 import { LexicalAIEditorNodes } from "../ai-chat/editor"
-import { isRateLimitError } from "../ai-chat/utils/error"
+import { computeRateLimitMessage } from "../ai-chat/utils/rate-limit"
 import { stepAtom } from "./store"
 
 const SUGGESTION_KEYS = [
@@ -447,11 +447,10 @@ function AIChatInterface({ inputRef }: AIChatInterfaceProps) {
 
   const shouldShowScrollToBottom = hasMessages && !isAtBottom
 
-  // Check if error is a rate limit error
-  const hasRateLimitError = useMemo(() => isRateLimitError(error), [error])
+  const rateLimitMessage = useMemo(() => computeRateLimitMessage(error, null), [error])
 
   // Additional height for rate limit notice (~40px)
-  const rateLimitExtraHeight = hasRateLimitError ? 40 : 0
+  const rateLimitExtraHeight = rateLimitMessage ? 40 : 0
 
   const messages = useMessages()
   const setStep = useSetAtom(stepAtom)
@@ -521,7 +520,7 @@ function AIChatInterface({ inputRef }: AIChatInterfaceProps) {
       )}
 
       <div ref={bottomPanelRef} className={"px-6"}>
-        {hasRateLimitError && error && <RateLimitNotice error={error} />}
+        {rateLimitMessage && <RateLimitNotice message={rateLimitMessage} />}
         <ChatInput
           ref={inputRef}
           onSend={handleSendMessage}

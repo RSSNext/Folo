@@ -7,6 +7,7 @@ import {
 import { ScrollArea } from "@follow/components/ui/scroll-area/ScrollArea.js"
 import { Tooltip, TooltipContent, TooltipTrigger } from "@follow/components/ui/tooltip/index.js"
 import { cn } from "@follow/utils/utils"
+import { decode } from "@toon-format/toon"
 import type { PrimitiveAtom } from "jotai"
 import { useAtom, useAtomValue, useSetAtom, useStore } from "jotai"
 import { AnimatePresence, m } from "motion/react"
@@ -22,6 +23,22 @@ import type { FeedSelection } from "./store"
 import { feedSelectionAtomsAtom, selectedFeedSelectionAtomsAtom } from "./store"
 
 type FeedToSelect = Omit<FeedSelection, "selected">
+
+const extractFeedsToSelect = (output: unknown): FeedToSelect[] => {
+  if (!output) {
+    return []
+  }
+
+  if (typeof output === "string") {
+    return decode(output) as unknown as FeedToSelect[]
+  }
+
+  if (Array.isArray(output)) {
+    return output as unknown as FeedToSelect[]
+  }
+
+  return []
+}
 
 export function FeedsSelectionList() {
   const chatMessages = useMessages()
@@ -42,14 +59,14 @@ export function FeedsSelectionList() {
 function FeedSelectionOperationScreen() {
   const chatMessages = useMessages()
 
-  const feedsToSelect: FeedToSelect[] = useMemo(
-    () =>
-      // find the last message that has the tool
-      chatMessages
-        .findLast((m) => m.parts?.some((p) => p.type === "tool-onboardingGetTrendingFeeds"))
-        ?.parts?.findLast((p) => p.type === "tool-onboardingGetTrendingFeeds")?.output ?? [],
-    [chatMessages],
-  )
+  const feedsToSelect: FeedToSelect[] = useMemo(() => {
+    // find the last message that has the tool
+    const output = chatMessages
+      .findLast((m) => m.parts?.some((p) => p.type === "tool-onboardingGetTrendingFeeds"))
+      ?.parts?.findLast((p) => p.type === "tool-onboardingGetTrendingFeeds")?.output
+
+    return extractFeedsToSelect(output)
+  }, [chatMessages])
 
   const store = useStore()
   const atomList = useAtomValue(feedSelectionAtomsAtom)
