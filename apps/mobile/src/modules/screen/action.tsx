@@ -25,7 +25,7 @@ import { accentColor, useColor } from "@/src/theme/colors"
 import { MarkAllAsReadDialog } from "../dialogs/MarkAllAsReadDialog"
 
 export const ActionGroup = ({ children, className }: PropsWithChildren<{ className?: string }>) => {
-  return <View className={cn("flex flex-row items-center gap-2", className)}>{children}</View>
+  return <View className={cn("flex flex-row items-center gap-1", className)}>{children}</View>
 }
 
 export function HomeLeftAction() {
@@ -59,7 +59,7 @@ interface HeaderActionButtonProps {
   variant?: "primary" | "secondary"
 }
 
-export const MarkAllAsReadActionButton = ({ variant = "primary" }: HeaderActionButtonProps) => {
+export const MarkAllAsReadActionButton = ({ variant = "secondary" }: HeaderActionButtonProps) => {
   const { t } = useTranslation()
   const { size, color } = useButtonVariant({ variant })
 
@@ -76,11 +76,11 @@ export const MarkAllAsReadActionButton = ({ variant = "primary" }: HeaderActionB
 
 const useButtonVariant = ({ variant = "primary" }: HeaderActionButtonProps) => {
   const label = useColor("label")
-  const size = 24
+  const size = 20
   const color = variant === "primary" ? accentColor : label
   return { size, color }
 }
-export const UnreadOnlyActionButton = ({ variant = "primary" }: HeaderActionButtonProps) => {
+export const UnreadOnlyActionButton = ({ variant = "secondary" }: HeaderActionButtonProps) => {
   const { t } = useTranslation()
   const unreadOnly = useGeneralSettingKey("unreadOnly")
   const { size, color } = useButtonVariant({ variant })
@@ -110,7 +110,7 @@ export const UnreadOnlyActionButton = ({ variant = "primary" }: HeaderActionButt
 
 export const FeedShareActionButton = ({
   feedId,
-  variant = "primary",
+  variant = "secondary",
 }: { feedId?: string } & HeaderActionButtonProps) => {
   const { t } = useTranslation()
   const { size, color } = useButtonVariant({ variant })

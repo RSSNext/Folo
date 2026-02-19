@@ -15,7 +15,7 @@ export const Component = () => {
     >
       <AIChatRoot>
         <ChatPageHeader />
-        <ChatInterface centerInputOnEmpty />
+        <ChatInterface centerInputOnEmpty visualOffsetY="clamp(-10vh, -8vh, -6vh)" />
       </AIChatRoot>
     </div>
   )

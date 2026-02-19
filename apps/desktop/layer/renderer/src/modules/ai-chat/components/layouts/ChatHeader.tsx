@@ -77,7 +77,6 @@ const ChatHeaderLayout = ({
 
   const { isScrolledBeyondThreshold } = useAIRootState()
   const isScrolledBeyondThresholdValue = useAtomValue(isScrolledBeyondThreshold)
-
   return (
     <div
       className={cn(

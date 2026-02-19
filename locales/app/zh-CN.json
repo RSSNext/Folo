@@ -319,6 +319,7 @@
   "new_user_dialog.title": "欢迎使用 Folo",
   "new_user_guide.actions.back": "上一步",
   "new_user_guide.actions.finish": "完成",
+  "new_user_guide.actions.import_opml": "导入 OPML",
   "new_user_guide.actions.next": "下一步",
   "new_user_guide.ai_chat.intro": "欢迎来到 Folo，这款 AI 阅读器可以替你阅读整个互联网。\n\n告诉我一些关于你的事情。",
   "new_user_guide.ai_chat.reroll": "换一批",

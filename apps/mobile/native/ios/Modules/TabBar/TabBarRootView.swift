@@ -10,8 +10,9 @@ import Foundation
 import SnapKit
 import UIKit
 
-class TabBarRootView: ExpoView {
-  private lazy var tabBarController = {
+@MainActor
+enum CustomTabbarController {
+  static var tabBarController = {
     let tabBarController = UITabBarController()
     if #available(iOS 16.0, *), UIDevice.current.userInterfaceIdiom == .pad {
       tabBarController.tabBar.isTranslucent = false
@@ -27,18 +28,26 @@ class TabBarRootView: ExpoView {
     if #available(iOS 26.0, *) {
       tabBarController.isTabBarHidden = false
       tabBarController.tabBarMinimizeBehavior = .onScrollDown
+
     }
 
     tabBarController.tabBar.tintColor = Utils.accentColor
 
     return tabBarController
   }()
+}
+
+class TabBarRootView: ExpoView {
+  private var tabBarController = CustomTabbarController.tabBarController
 
   private let vc = UIViewController()
   private var tabViewControllers: [UIViewController] = []
+  private var bottomAccessoryView: UIView?
 
   private let onTabIndexChange = EventDispatcher()
   private let onTabItemPress = EventDispatcher()
+
+
 
   required init(appContext: AppContext? = nil) {
     super.init(appContext: appContext)
@@ -118,6 +127,7 @@ class TabBarRootView: ExpoView {
       let tabBarView = tabBarController.view!
       tabBarView.addSubview(tabBarPortalView)
     }
+
   }
 
   override func willRemoveSubview(_ subview: UIView) {
@@ -129,6 +139,7 @@ class TabBarRootView: ExpoView {
       tabBarController.viewControllers = tabViewControllers
       tabBarController.didMove(toParent: vc)
     }
+
   }
 }
 
