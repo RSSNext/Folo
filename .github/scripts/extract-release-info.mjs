@@ -16,9 +16,9 @@ const RELEASE_PATTERNS = {
 
 const EXIT_CODES = {
   SUCCESS: 0,
-  NO_RELEASE_FOUND: 1,
   GIT_ERROR: 2,
   ENV_ERROR: 3,
+  OUTPUT_ERROR: 4,
 }
 
 /**
@@ -35,6 +35,23 @@ function setGitHubEnv(key, value) {
   } catch (error) {
     console.error(`Failed to set environment variable ${key}:`, error.message)
     process.exit(EXIT_CODES.ENV_ERROR)
+  }
+}
+
+/**
+ * Write output variable to GitHub Output
+ * @param {string} key - Output key
+ * @param {string} value - Output value
+ */
+function setGitHubOutput(key, value) {
+  try {
+    if (!process.env.GITHUB_OUTPUT) {
+      return
+    }
+    appendFileSync(process.env.GITHUB_OUTPUT, `${key}=${value}\n`)
+  } catch (error) {
+    console.error(`Failed to set output variable ${key}:`, error.message)
+    process.exit(EXIT_CODES.OUTPUT_ERROR)
   }
 }
 
@@ -88,7 +105,7 @@ function main() {
 
     if (!releaseInfo) {
       console.info("No desktop or mobile release found in commit message.")
-      process.exit(EXIT_CODES.NO_RELEASE_FOUND)
+      process.exit(EXIT_CODES.SUCCESS)
     }
 
     const { platform, version, tagName } = releaseInfo
@@ -97,6 +114,9 @@ function main() {
     setGitHubEnv("tag_version", tagName)
     setGitHubEnv("platform", platform)
     setGitHubEnv("version", version)
+    setGitHubOutput("tag_version", tagName)
+    setGitHubOutput("platform", platform)
+    setGitHubOutput("version", version)
 
     console.info(`Found ${platform} release: ${version}`)
     console.info(`Tag will be created: ${tagName}`)

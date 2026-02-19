@@ -23,6 +23,7 @@ concurrency:
 
 jobs:
   check-runner:
+    if: github.secret_source != 'None' && (github.event_name != 'push' || !startsWith(github.event.head_commit.message || '', 'release(mobile):'))
     runs-on: ubuntu-latest
     outputs:
       runner-label: ${{ steps.set-runner.outputs.runner-label }}
@@ -41,7 +42,7 @@ jobs:
 
   build-ipa-self-hosted:
     name: Build iOS IPA (self-hosted)
-    if: github.secret_source != 'None' && needs.check-runner.outputs.runner-label == 'self-hosted'
+    if: needs.check-runner.outputs.runner-label == 'self-hosted'
     needs: check-runner
     runs-on: [self-hosted, macOS]
 
@@ -84,7 +85,7 @@ jobs:
 
   build-ipa-github:
     name: Build iOS IPA (GitHub)
-    if: github.secret_source != 'None' && needs.check-runner.outputs.runner-label == 'macos-latest'
+    if: needs.check-runner.outputs.runner-label == 'macos-latest'
     needs: check-runner
     runs-on: macos-latest
 
