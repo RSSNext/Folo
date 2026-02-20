@@ -215,7 +215,7 @@ jobs:
       - name: Upload file (windows-x64-exe unsigned)
         uses: actions/upload-artifact@v6
         id: upload-unsigned-windows-x64-exe
-        if: runner.os == 'windows'
+        if: runner.os == 'windows' && github.event.inputs.store != 'true'
         with:
           name: windows-x64-exe
           path: |
@@ -225,7 +225,7 @@ jobs:
 
       - uses: signpath/github-action-submit-signing-request@v2.0
         continue-on-error: true
-        if: runner.os == 'windows' && env.RELEASE == 'true'
+        if: runner.os == 'windows' && env.RELEASE == 'true' && github.event.inputs.store != 'true'
         with:
           api-token: "${{ secrets.SIGNPATH_API_TOKEN }}"
           organization-id: "8c651516-fdaf-40a1-9fea-001dffde850e"
@@ -236,12 +236,12 @@ jobs:
           output-artifact-directory: "apps/desktop/out/make/"
 
       - name: Update latest.yml
-        if: runner.os == 'windows' && env.RELEASE == 'true'
+        if: runner.os == 'windows' && env.RELEASE == 'true' && github.event.inputs.store != 'true'
         run: npx tsx apps/desktop/scripts/update-windows-yml.ts
 
       - name: Upload file (windows-x64-exe signed)
         uses: actions/upload-artifact@v6
-        if: runner.os == 'windows' && env.RELEASE == 'true'
+        if: runner.os == 'windows' && env.RELEASE == 'true' && github.event.inputs.store != 'true'
         with:
           name: windows-x64-exe
           path: |
@@ -286,6 +286,8 @@ jobs:
       - run: npx changelogithub
         if: env.RELEASE == 'true'
         continue-on-error: true
+        env:
+          GITHUB_TOKEN: ${{ github.token }}
 
       - name: Setup Version
         if: env.RELEASE == 'true'
@@ -297,6 +299,7 @@ jobs:
       - name: Prepare Release Notes
         if: env.RELEASE == 'true'
         id: release_notes
+        shell: bash
         run: |
           version="${{ steps.version.outputs.APP_VERSION }}"
           changelog_file="apps/desktop/changelog/${version}.md"
