@@ -82,19 +82,24 @@ class WindowManagerStatic {
       refreshBound(window, this.config.refreshBoundDelay)
     })
 
-    window.webContents.setWindowOpenHandler((details) => {
-      shell.openExternal(details.url)
-      return { action: "deny" }
-    })
-
-    const handleExternalProtocol = async (e: Event, url: string, window: BrowserWindow) => {
-      const { protocol } = new URL(url)
-
-      if (this.config.ignoreProtocols.includes(protocol.slice(0, -1) as any)) {
-        return
+    const parseProtocol = (url: string) => {
+      try {
+        return new URL(url).protocol.slice(0, -1)
+      } catch {
+        logger.warn("Blocked external URL with invalid format", { url })
+        return null
       }
-      e.preventDefault()
+    }
 
+    const isIgnoredProtocol = (
+      protocol: string,
+    ): protocol is (typeof this.config.ignoreProtocols)[number] => {
+      return this.config.ignoreProtocols.includes(
+        protocol as (typeof this.config.ignoreProtocols)[number],
+      )
+    }
+
+    const confirmAndOpenExternalProtocol = async (url: string) => {
       const caller = callWindowExpose(window)
       const confirm = await caller.dialog.ask({
         title: t("dialog.openExternalApp.title"),
@@ -108,15 +113,57 @@ class WindowManagerStatic {
       if (!confirm) {
         return
       }
-      shell.openExternal(url)
+      void shell.openExternal(url)
+    }
+
+    window.webContents.setWindowOpenHandler((details) => {
+      const protocol = parseProtocol(details.url)
+      if (!protocol) {
+        return { action: "deny" }
+      }
+
+      if (protocol === "http" || protocol === "https") {
+        void shell.openExternal(details.url)
+        return { action: "deny" }
+      }
+
+      if (isIgnoredProtocol(protocol)) {
+        logger.warn("Blocked window.open for ignored protocol", {
+          protocol,
+          url: details.url,
+        })
+        return { action: "deny" }
+      }
+
+      void confirmAndOpenExternalProtocol(details.url)
+      return { action: "deny" }
+    })
+
+    const handleExternalProtocol = async (e: Event, url: string) => {
+      const protocol = parseProtocol(url)
+      if (!protocol) {
+        e.preventDefault()
+        return
+      }
+
+      if (isIgnoredProtocol(protocol)) {
+        return
+      }
+      e.preventDefault()
+
+      await confirmAndOpenExternalProtocol(url)
     }
 
     // Handle main window external links
-    window.webContents.on("will-navigate", (e, url) => handleExternalProtocol(e, url, window))
+    window.webContents.on("will-navigate", (e, url) => {
+      void handleExternalProtocol(e, url)
+    })
 
     // Handle webview external links
     window.webContents.on("did-attach-webview", (_, webContents) => {
-      webContents.on("will-navigate", (e, url) => handleExternalProtocol(e, url, window))
+      webContents.on("will-navigate", (e, url) => {
+        void handleExternalProtocol(e, url)
+      })
     })
 
     if (isWindows) {
