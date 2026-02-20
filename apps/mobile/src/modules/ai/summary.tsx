@@ -1,21 +1,11 @@
 import { cn } from "@follow/utils"
 import { FollowAPIError } from "@follow-app/client-sdk"
-import MaskedView from "@react-native-masked-view/masked-view"
 import * as Haptics from "expo-haptics"
-import { LinearGradient } from "expo-linear-gradient"
 import type { FC, ReactNode } from "react"
 import * as React from "react"
 import { useTranslation } from "react-i18next"
 import type { LayoutChangeEvent } from "react-native"
-import {
-  Clipboard,
-  Pressable,
-  ScrollView,
-  StyleSheet,
-  TextInput,
-  TouchableOpacity,
-  View,
-} from "react-native"
+import { Clipboard, Pressable, ScrollView, StyleSheet, TextInput, View } from "react-native"
 import Animated, {
   useAnimatedStyle,
   useSharedValue,
@@ -64,6 +54,8 @@ export const AISummary: FC<{
         ),
         -1,
       )
+    } else {
+      opacity.value = 1
     }
   }, [opacity, pending])
   const animatedContentStyle = useAnimatedStyle(() => ({
@@ -75,6 +67,9 @@ export const AISummary: FC<{
             duration: 200,
           }),
     overflow: "hidden",
+  }))
+  const loadingPulseStyle = useAnimatedStyle(() => ({
+    opacity: opacity.value,
   }))
   const [contentHeight, setContentHeight] = React.useState(0)
   const measureContent = (event: LayoutChangeEvent) => {
@@ -95,6 +90,8 @@ export const AISummary: FC<{
   const upgradeTitle = t("ai.summary_upgrade_required_title")
   const upgradeDescription = t("ai.summary_upgrade_required_description")
   const upgradeCTA = t("ai.summary_upgrade_view_plans")
+  const loadingTitle = t("ai.summary_generating")
+  const summaryTitle = t("entry_content.ai_summary")
   const handleUpgradePress = () => {
     void Haptics.selectionAsync()
     void navigateToPlanScreen()
@@ -103,9 +100,34 @@ export const AISummary: FC<{
   // Check if summary is a React element or string
   const isReactElement = React.isValidElement(summary)
   const summaryText = typeof summary === "string" ? summary : ""
-  const summaryTextForSheet = rawSummaryForCopy || summaryText
-  if (pending || (!summary && !error)) return null
+  const summaryTextForSheet = (rawSummaryForCopy || summaryText).trim()
+  if (!pending && !summary && !error) return null
   const renderSummaryContent = (forMeasurement: boolean) => {
+    if (pending) {
+      return (
+        <View className="mt-2 gap-3">
+          <View className="flex-row items-center gap-2">
+            <Animated.View className="size-2.5 rounded-full bg-purple" style={loadingPulseStyle} />
+            <Text className="text-[13px] text-secondary-label">{loadingTitle}</Text>
+          </View>
+          <View className="gap-2">
+            <Animated.View
+              className="h-3 rounded-full bg-quaternary-system-fill"
+              style={[styles.loadingLine, styles.loadingLinePrimary, loadingPulseStyle]}
+            />
+            <Animated.View
+              className="h-3 rounded-full bg-quaternary-system-fill"
+              style={[styles.loadingLine, styles.loadingLineSecondary, loadingPulseStyle]}
+            />
+            <Animated.View
+              className="h-3 rounded-full bg-quaternary-system-fill"
+              style={[styles.loadingLine, styles.loadingLineTertiary, loadingPulseStyle]}
+            />
+          </View>
+        </View>
+      )
+    }
+
     if (shouldSuggestUpgrade) {
       return (
         <UpgradePrompt
@@ -129,21 +151,10 @@ export const AISummary: FC<{
       return <View className="mt-2">{summary}</View>
     }
 
-    if (forMeasurement) {
-      return (
-        <Text className="mt-2 text-[14px] leading-[22px] text-label" selectable>
-          {summaryText?.trim()}
-        </Text>
-      )
-    }
-
     return (
-      <TextInput
-        readOnly
-        multiline
-        className="text-[14px] leading-[22px] text-label"
-        value={summaryText?.trim()}
-      />
+      <Text className="mt-2 text-[13px] leading-5 text-label" selectable={!forMeasurement}>
+        {summaryText.trim()}
+      </Text>
     )
   }
   const mainContent = (
@@ -160,24 +171,14 @@ export const AISummary: FC<{
       <View className="mb-2 flex-row items-center justify-between">
         <View className="flex-row items-center gap-2">
           <AiCuteReIcon height={16} width={16} color={purpleColor} />
-          <MaskedView
-            maskElement={
-              <View className="bg-transparent">
-                <Text className="text-[15px] font-semibold">AI Summary</Text>
-              </View>
-            }
-          >
-            <LinearGradient colors={["#9333ea", "#2563eb"]} start={[0, 0]} end={[1, 0]}>
-              <Text className="text-[15px] font-semibold text-transparent">AI Summary</Text>
-            </LinearGradient>
-          </MaskedView>
+          <Text className="text-[15px] font-semibold text-label">{summaryTitle}</Text>
         </View>
         {summaryTextForSheet && (
-          <TouchableOpacity
+          <Pressable
             onPress={() => {
               Clipboard.setString(summaryTextForSheet)
               Haptics.notificationAsync(Haptics.NotificationFeedbackType.Success)
-              toast.success("Copied to clipboard")
+              toast.success(t("app.copied_to_clipboard", { ns: "common" }))
             }}
             onLongPress={() => setSheetOpen(true)}
             className="rounded-full bg-quaternary-system-fill p-1.5 active:opacity-70"
@@ -189,7 +190,7 @@ export const AISummary: FC<{
             }}
           >
             <CopyCuteReIcon width={14} height={14} color={purpleColor} />
-          </TouchableOpacity>
+          </Pressable>
         )}
       </View>
       <Animated.View style={animatedContentStyle}>
@@ -230,6 +231,7 @@ const ErrorContent = ({
   message: string
   onRetry?: () => void
 }) => {
+  const { t } = useTranslation()
   return (
     <View className="mt-3">
       <View className="flex-row items-center gap-2">
@@ -238,14 +240,18 @@ const ErrorContent = ({
       {onRetry &&
         (forMeasurement ? (
           <View className="mt-3 self-start rounded-full bg-quaternary-system-fill px-4 py-2">
-            <Text className="text-[14px] font-medium text-label">Retry</Text>
+            <Text className="text-[14px] font-medium text-label">
+              {t("retry", { ns: "common" })}
+            </Text>
           </View>
         ) : (
           <Pressable
             onPress={onRetry}
             className="mt-3 self-start rounded-full bg-quaternary-system-fill px-4 py-2"
           >
-            <Text className="text-[14px] font-medium text-label">Retry</Text>
+            <Text className="text-[14px] font-medium text-label">
+              {t("retry", { ns: "common" })}
+            </Text>
           </Pressable>
         ))}
     </View>
@@ -292,7 +298,7 @@ const UpgradePrompt = ({
             </Text>
           </View>
         ) : (
-          <TouchableOpacity
+          <Pressable
             onPress={onPress}
             className="mt-1 flex-row items-center gap-1 self-start active:opacity-70"
           >
@@ -300,7 +306,7 @@ const UpgradePrompt = ({
               {ctaLabel}
             </Text>
             <RightCuteReIcon width={14} height={14} color={iconColor} />
-          </TouchableOpacity>
+          </Pressable>
         )}
       </View>
     </View>
@@ -312,6 +318,7 @@ const SelectableTextSheet: FC<{
   onClose: () => void
   text: string
 }> = ({ visible, onClose, text }) => {
+  const { t } = useTranslation()
   const insets = useSafeAreaInsets()
   const textColor = useColor("label")
   const handleCopyAll = () => {
@@ -328,19 +335,19 @@ const SelectableTextSheet: FC<{
         }}
       >
         <View className="mb-4 flex-row items-center justify-between">
-          <TouchableOpacity
+          <Pressable
             onPress={handleCopyAll}
             className="rounded-full bg-zinc-100 p-2 active:opacity-80 dark:bg-zinc-800"
           >
             <CopyCuteReIcon width={18} height={18} color={textColor} />
-          </TouchableOpacity>
-          <Text className="text-lg font-semibold text-label">AI Summary</Text>
-          <TouchableOpacity
+          </Pressable>
+          <Text className="text-lg font-semibold text-label">{t("entry_content.ai_summary")}</Text>
+          <Pressable
             onPress={onClose}
             className="rounded-full bg-zinc-100 p-2 active:opacity-80 dark:bg-zinc-800"
           >
             <CloseCuteReIcon width={18} height={18} color={textColor} />
-          </TouchableOpacity>
+          </Pressable>
         </View>
         <ScrollView showsVerticalScrollIndicator={false}>
           <SelectableText className="text-base leading-6 text-label">{text}</SelectableText>
@@ -374,5 +381,17 @@ const styles = StyleSheet.create({
   card: {
     borderWidth: 0.5,
     elevation: 2,
+  },
+  loadingLine: {
+    borderRadius: 999,
+  },
+  loadingLinePrimary: {
+    width: "100%",
+  },
+  loadingLineSecondary: {
+    width: "86%",
+  },
+  loadingLineTertiary: {
+    width: "72%",
   },
 })

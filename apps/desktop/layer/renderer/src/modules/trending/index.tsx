@@ -25,9 +25,13 @@ const LanguageOptions = [
     label: "words.chinese",
     value: "cmn",
   },
+  {
+    label: "words.french",
+    value: "fra",
+  },
 ]
 
-type Language = "all" | "eng" | "cmn"
+type Language = "all" | "eng" | "cmn" | "fra"
 
 type View = "all" | string
 
@@ -64,6 +68,7 @@ export function Trending({
   const { t: tCommon } = useTranslation("common")
   const lang = useUISettingKey("discoverLanguage")
   const { onUpdateMaxScroll } = useScrollElementUpdate()
+  const trendingLanguage = lang === "fra" ? "eng" : lang
 
   const [selectedView, setSelectedView] = useState<View>("all")
   const viewOptions = useMemo(() => buildViewOptions(), [])
@@ -72,7 +77,7 @@ export function Trending({
     queryKey: ["trending", lang, selectedView],
     queryFn: async () => {
       return await followClient.api.trending.getFeeds({
-        language: lang === "all" ? undefined : lang,
+        language: trendingLanguage === "all" ? undefined : trendingLanguage,
         view: selectedView === "all" ? undefined : Number(selectedView),
         limit,
       })

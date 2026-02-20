@@ -185,9 +185,12 @@ export const omitObjectUndefinedValue = (obj: Record<string, any>) => {
   return newObj
 }
 
-export const sortByAlphabet = (a: string, b: string) => {
-  const isALetter = /^[a-z]/i.test(a)
-  const isBLetter = /^[a-z]/i.test(b)
+export const sortByAlphabet = (a: string | null | undefined, b: string | null | undefined) => {
+  const safeA = String(a ?? "")
+  const safeB = String(b ?? "")
+
+  const isALetter = /^[a-z]/i.test(safeA)
+  const isBLetter = /^[a-z]/i.test(safeB)
 
   if (isALetter && !isBLetter) {
     return -1
@@ -197,10 +200,10 @@ export const sortByAlphabet = (a: string, b: string) => {
   }
 
   if (isALetter && isBLetter) {
-    return a.localeCompare(b)
+    return safeA.localeCompare(safeB)
   }
 
-  return a.localeCompare(b, "zh-CN")
+  return safeA.localeCompare(safeB, "zh-CN")
 }
 
 export const isEmptyObject = (obj: Record<string, any>) => Object.keys(obj).length === 0

@@ -327,11 +327,7 @@ const TabItem = memo(
           selected: focused,
         }}
       >
-        <Animated.View style={animatedStyle}>
-          {useMemo(() => {
-            return originalRenderIcon(scene)
-          }, [JSON.stringify(scene), originalRenderIcon])}
-        </Animated.View>
+        <Animated.View style={animatedStyle}>{originalRenderIcon(scene)}</Animated.View>
         {originalRenderLabel(scene)}
       </Pressable>
     )

@@ -39,17 +39,15 @@ export class ToastManager {
 
   mount() {
     this.portal = new RootSiblings(
-      (
-        <FullWindowOverlay>
-          <Provider store={jotaiStore}>
-            <ToastContainerContext value={this.stackAtom}>
-              <ToastActionContext value={{ register: this.register.bind(this) }}>
-                <ToastContainer />
-              </ToastActionContext>
-            </ToastContainerContext>
-          </Provider>
-        </FullWindowOverlay>
-      ),
+      <FullWindowOverlay>
+        <Provider store={jotaiStore}>
+          <ToastContainerContext value={this.stackAtom}>
+            <ToastActionContext value={{ register: this.register.bind(this) }}>
+              <ToastContainer />
+            </ToastActionContext>
+          </ToastContainerContext>
+        </Provider>
+      </FullWindowOverlay>,
     )
   }
 

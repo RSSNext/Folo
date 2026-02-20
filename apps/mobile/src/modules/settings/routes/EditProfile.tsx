@@ -8,8 +8,8 @@ import { useState } from "react"
 import { useTranslation } from "react-i18next"
 import {
   KeyboardAvoidingView,
+  Pressable,
   TextInput,
-  TouchableOpacity,
   TouchableWithoutFeedback,
   View,
 } from "react-native"
@@ -105,9 +105,9 @@ const AvatarSection: FC<{
         className={!whoami?.name || !whoami.image ? "bg-system-background" : ""}
       />
 
-      <TouchableOpacity className="mt-2" hitSlop={10} onPress={setAvatar}>
+      <Pressable className="mt-2" hitSlop={10} onPress={setAvatar}>
         <Text className="text-lg text-accent">{t("profile.set_avatar")}</Text>
-      </TouchableOpacity>
+      </Pressable>
     </View>
   )
 }

@@ -2,7 +2,7 @@ import { tracker } from "@follow/tracker"
 import * as AppleAuthentication from "expo-apple-authentication"
 import { useColorScheme } from "nativewind"
 import { useTranslation } from "react-i18next"
-import { TouchableOpacity, View } from "react-native"
+import { Pressable, View } from "react-native"
 
 import { Image } from "@/src/components/ui/image/Image"
 import { PlatformActivityIndicator } from "@/src/components/ui/loading/PlatformActivityIndicator"
@@ -25,7 +25,7 @@ export function SocialLogin({ onPressEmail }: { isRegister: boolean; onPressEmai
     <View className="flex w-screen items-center justify-center gap-4 px-6">
       {providers.map(([key, provider]) => {
         return (
-          <TouchableOpacity
+          <Pressable
             key={key}
             hitSlop={20}
             className="border-hairline flex w-full flex-row items-center justify-center gap-2 rounded-xl border-opaque-separator py-4 pl-5"
@@ -83,7 +83,7 @@ export function SocialLogin({ onPressEmail }: { isRegister: boolean; onPressEmai
                 provider: provider.name,
               })}
             </Text>
-          </TouchableOpacity>
+          </Pressable>
         )
       })}
     </View>

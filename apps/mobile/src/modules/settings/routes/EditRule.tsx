@@ -38,6 +38,9 @@ import { EditConditionScreen } from "./EditCondition"
 import { EditRewriteRulesScreen } from "./EditRewriteRules"
 import { EditWebhooksScreen } from "./EditWebhooks"
 
+const createConditionKey = (item: ActionFilterItem) =>
+  `${String(item.field)}-${String(item.operator)}-${String(item.value)}`
+
 export const EditRuleScreen: NavigationControllerView<{
   index: number
 }> = ({ index }) => {
@@ -150,24 +153,31 @@ const ConditionSection: React.FC<{
     <View>
       <GroupedInsetListSectionHeader label={t("actions.conditions")} marginSize="small" />
 
-      {(filter as any[]).map((group: any, groupIndex: number) => {
-        if (!Array.isArray(group)) {
-          group = [group]
-        }
+      {(filter as (ActionFilterItem | ActionFilterItem[])[]).map((group, groupIndex) => {
+        const groupItems = Array.isArray(group) ? group : [group]
+        const groupKey = groupItems.map(createConditionKey).join("|") || "group-empty"
+        const keyCounter = new Map<string, number>()
         return (
-          <GroupedInsetListCard key={groupIndex} className="mb-6">
-            {(group as any[]).map((item: any, itemIndex: number) => {
+          <GroupedInsetListCard key={groupKey} className="mb-6">
+            {groupItems.map((item, itemIndex) => {
+              const itemBaseKey = createConditionKey(item)
+              const itemDuplicateCount = (keyCounter.get(itemBaseKey) ?? 0) + 1
+              keyCounter.set(itemBaseKey, itemDuplicateCount)
+              const itemKey = `${itemBaseKey}-${itemDuplicateCount}`
               const currentField = filterFieldOptions.find((field) => field.value === item.field)
               const currentOperator = filterOperatorOptions.find(
                 (field) => field.value === item.operator,
               )
+              const currentView = views.find((view) => view.view === Number(item.value))
               const currentValue =
                 currentField?.type === "view"
-                  ? tCommon(views.find((view) => view.view === Number(item.value))?.name!)
+                  ? currentView?.name
+                    ? tCommon(currentView.name)
+                    : String(item.value ?? "")
                   : item.value
               return (
                 <SwipeableItem
-                  key={`${groupIndex}-${itemIndex}-${item.field}-${item.operator}-${item.value}`}
+                  key={itemKey}
                   swipeRightToCallAction
                   rightActions={[
                     {
@@ -226,7 +236,7 @@ const ConditionSection: React.FC<{
                   navigation.pushControllerView(EditConditionScreen, {
                     ruleIndex: index,
                     groupIndex,
-                    conditionIndex: group.length,
+                    conditionIndex: groupItems.length,
                   })
                 }, 0)
               }}

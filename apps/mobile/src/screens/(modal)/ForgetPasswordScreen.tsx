@@ -1,6 +1,6 @@
 import { useMutation } from "@tanstack/react-query"
 import { useState } from "react"
-import { TouchableWithoutFeedback, View } from "react-native"
+import { StyleSheet, TouchableWithoutFeedback, View } from "react-native"
 import { KeyboardAvoidingView, KeyboardController } from "react-native-keyboard-controller"
 import { useSafeAreaInsets } from "react-native-safe-area-context"
 
@@ -47,17 +47,12 @@ export const ForgetPasswordScreen: NavigationControllerView = () => {
       }}
       accessible={false}
     >
-      <KeyboardAvoidingView
-        behavior="padding"
-        style={{
-          flex: 1,
-        }}
-      >
+      <KeyboardAvoidingView behavior="padding" style={styles.keyboardContainer}>
         <HeaderCloseOnly />
         <View
           className="flex-1 justify-between px-5"
           style={{
-            paddingTop: insets.bottom + 56,
+            paddingTop: insets.top + 56,
           }}
         >
           <View className="items-center">
@@ -98,3 +93,9 @@ export const ForgetPasswordScreen: NavigationControllerView = () => {
     </TouchableWithoutFeedback>
   )
 }
+
+const styles = StyleSheet.create({
+  keyboardContainer: {
+    flex: 1,
+  },
+})

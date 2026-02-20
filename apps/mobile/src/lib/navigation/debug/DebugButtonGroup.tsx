@@ -1,6 +1,6 @@
 /* eslint-disable no-console */
 import { useEffect, useRef } from "react"
-import { Button, SafeAreaView, ScrollView, TouchableOpacity, View } from "react-native"
+import { Button, Pressable, SafeAreaView, ScrollView, View } from "react-native"
 
 import { FullWindowOverlay } from "@/src/components/common/FullWindowOverlay"
 import { Text } from "@/src/components/ui/typography/Text"
@@ -9,6 +9,8 @@ import { CloseCuteReIcon } from "@/src/icons/close_cute_re"
 import { useNavigation } from "../hooks"
 import { Navigation } from "../Navigation"
 import type { NavigationControllerView } from "../types"
+
+const TEST_SCREEN_ROWS = Array.from({ length: 100 }, (_, row) => `test-screen-row-${row}`)
 
 export const DebugButtonGroup = () => {
   useEffect(() => {
@@ -105,14 +107,14 @@ const TestScreen3: NavigationControllerView = () => {
   const navigation = useNavigation()
   return (
     <View className="flex-1 bg-white">
-      <TouchableOpacity
+      <Pressable
         className="absolute right-5 top-12 z-10 p-4"
         onPress={() => {
           navigation.back()
         }}
       >
         <CloseCuteReIcon height={20} width={20} color="black" />
-      </TouchableOpacity>
+      </Pressable>
 
       <Text>TestScreen3</Text>
       <Text>Hello2</Text>
@@ -133,20 +135,18 @@ const TestScreen: NavigationControllerView = () => {
   const navigation = useNavigation()
   return (
     <View className="flex-1">
-      <TouchableOpacity
+      <Pressable
         className="absolute right-5 top-12 z-10 p-4"
         onPress={() => {
           navigation.back()
         }}
       >
         <CloseCuteReIcon height={20} width={20} color="black" />
-      </TouchableOpacity>
+      </Pressable>
       <ScrollView className="flex-1 bg-white">
-        {Array.from({
-          length: 100,
-        }).map((_, index) => {
+        {TEST_SCREEN_ROWS.map((rowKey) => {
           return (
-            <Text key={index} className="text-black">
+            <Text key={rowKey} className="text-black">
               TestScreen
             </Text>
           )

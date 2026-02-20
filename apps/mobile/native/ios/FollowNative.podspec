@@ -29,10 +29,10 @@ Pod::Spec.new do |s|
     'OTHER_SWIFT_FLAGS' => "$(inherited) #{new_arch_enabled ? '-DRCT_NEW_ARCH_ENABLED' : ''}",
   }
 
-  s.source_files = "**/*.{h,m,mm,swift,hpp,cpp,js}"
+  s.source_files = "**/*.{h,m,mm,swift,hpp,cpp}"
 
   s.resource_bundles = {
-    'js' => ['Modules/SharedWebView/injected/**/*'],
+    'js' => ['Modules/SharedWebView/Injected/**/*'],
     'FollowNative' => ['Media.xcassets'],
   }
 

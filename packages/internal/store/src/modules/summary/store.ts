@@ -1,6 +1,7 @@
 import type { SummarySchema } from "@follow/database/schemas/types"
 import { summaryService } from "@follow/database/services/summary"
 import type { SupportedActionLanguage } from "@follow/shared"
+import { toApiSupportedActionLanguage } from "@follow/shared"
 
 import { api } from "../../context"
 import type { Hydratable, Resetable } from "../../lib/base"
@@ -172,7 +173,7 @@ class SummarySyncService {
     const pendingPromise = api()
       .ai.summary({
         id: entryId,
-        language: actionLanguage,
+        language: toApiSupportedActionLanguage(actionLanguage),
         target,
       })
       .then((summary) => {

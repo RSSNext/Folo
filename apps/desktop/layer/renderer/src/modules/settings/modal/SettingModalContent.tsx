@@ -10,7 +10,6 @@ import {
   useEffect,
   useLayoutEffect,
   useMemo,
-  useRef,
   useState,
 } from "react"
 import { Trans } from "react-i18next"
@@ -102,14 +101,6 @@ const Content: FC<{
 
   const [scrollerAtTop, setScrollerAtTop] = useState(true)
   const [scroller, setScroller] = useState<HTMLDivElement | null>(null)
-
-  const pendingSectionRef = useRef<string | null>(initialSection ?? null)
-  const hasAppliedInitialSectionRef = useRef(false)
-
-  useEffect(() => {
-    pendingSectionRef.current = initialSection ?? null
-    hasAppliedInitialSectionRef.current = false
-  }, [initialSection])
 
   useLayoutEffect(() => {
     if (scroller) {

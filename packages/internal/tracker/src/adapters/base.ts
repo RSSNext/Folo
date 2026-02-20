@@ -11,6 +11,11 @@ export type TrackPayload = {
   properties?: Record<string, unknown>
 }
 
+export type CaptureExceptionPayload = {
+  error: unknown
+  properties?: Record<string, unknown>
+}
+
 export interface TrackerAdapter {
   /**
    * Initialize the tracker adapter
@@ -21,6 +26,11 @@ export interface TrackerAdapter {
    * Track an event
    */
   track: (payload: TrackPayload) => Promise<void> | void
+
+  /**
+   * Capture an exception
+   */
+  captureException?: (payload: CaptureExceptionPayload) => Promise<void> | void
 
   /**
    * Identify a user

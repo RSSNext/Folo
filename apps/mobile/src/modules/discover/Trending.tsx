@@ -1,5 +1,6 @@
 import { cn, formatNumber } from "@follow/utils"
 import { useQuery } from "@tanstack/react-query"
+import { useTranslation } from "react-i18next"
 import { View } from "react-native"
 import { useColor } from "react-native-uikit-colors"
 
@@ -24,13 +25,15 @@ export const Trending = ({
   className?: string
   itemClassName?: string
 }) => {
+  const { t } = useTranslation("common")
   const label = useColor("label")
   const discoverLanguage = useUISettingKey("discoverLanguage")
+  const trendingLanguage = discoverLanguage === "fra" ? "eng" : discoverLanguage
   const { data, isLoading } = useQuery({
     queryKey: ["trending", "feeds", discoverLanguage],
     queryFn: () =>
       fetchFeedTrending({
-        lang: discoverLanguage === "all" ? undefined : discoverLanguage,
+        lang: trendingLanguage === "all" ? undefined : trendingLanguage,
         limit: 20,
       }).then((res) => res.data),
     meta: {
@@ -43,7 +46,9 @@ export const Trending = ({
       <View className={cn("flex-row items-center justify-between pb-1 pt-4", itemClassName)}>
         <View className="flex-row items-center gap-2">
           <TrendingUpCuteReIcon width={24} height={24} color={label} />
-          <Text className="pb-2 text-2xl font-bold leading-[1.1] text-label">Trending</Text>
+          <Text className="pb-2 text-xl font-bold leading-[1.1] text-label">
+            {t("words.trending")}
+          </Text>
         </View>
         <ItemPressable
           className="rounded-lg p-1"
@@ -92,7 +97,7 @@ export const Trending = ({
             >
               <View className="flex flex-row items-center gap-1 opacity-60">
                 <User3CuteReIcon width={13} height={13} color={label} />
-                <Text className="text-sm text-text">
+                <Text className="text-xs text-text">
                   {formatNumber(item.analytics.subscriptionCount || 0)}
                 </Text>
               </View>

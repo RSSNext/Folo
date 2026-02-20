@@ -37,7 +37,7 @@ export function CustomRefreshControl({ refreshing, pullProgress }: CustomRefresh
       cancelAnimation(rotation)
       rotation.value = 0
     }
-  }, [refreshing])
+  }, [refreshing, rotation])
 
   const animatedStyle = useAnimatedStyle(() => {
     return {

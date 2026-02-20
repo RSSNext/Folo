@@ -1,5 +1,5 @@
 import { cn } from "@follow/utils"
-import { StyleSheet, TouchableOpacity, View } from "react-native"
+import { Pressable, StyleSheet, View } from "react-native"
 import { Slider } from "react-native-awesome-slider"
 import { FadeOut, useDerivedValue, useSharedValue, ZoomIn } from "react-native-reanimated"
 import * as DropdownMenu from "zeego/dropdown-menu"
@@ -60,7 +60,7 @@ export function SeekButton({
   const label = useColor("label")
   return (
     <View className={className}>
-      <TouchableOpacity
+      <Pressable
         onPress={() => {
           player.seekBy(offset)
         }}
@@ -74,7 +74,7 @@ export function SeekButton({
         ) : (
           <Back2CuteReIcon color={color ?? label} width={size} height={size} />
         )}
-      </TouchableOpacity>
+      </Pressable>
     </View>
   )
 }
@@ -113,7 +113,7 @@ export function StopButton({ size = 24, className, color }: ControlButtonProps) 
   const label = useColor("label")
   const navigation = useNavigation()
   return (
-    <TouchableOpacity
+    <Pressable
       className={className}
       onPress={() => {
         player.reset()
@@ -121,7 +121,7 @@ export function StopButton({ size = 24, className, color }: ControlButtonProps) 
       }}
     >
       <StopCircleCuteFiIcon color={color ?? label} width={size} height={size} />
-    </TouchableOpacity>
+    </Pressable>
   )
 }
 export function ControlGroup() {
@@ -164,10 +164,7 @@ export function ProgressBar() {
         minimumValue={min}
         maximumValue={max}
         thumbWidth={0}
-        containerStyle={{
-          height: 7,
-          borderRadius: 16,
-        }}
+        containerStyle={styles.sliderTrack}
         renderBubble={() => null}
         theme={{
           minimumTrackTintColor: "rgba(255,255,255,0.6)",
@@ -225,10 +222,7 @@ export function VolumeBar() {
           <Slider
             progress={progress}
             minimumValue={min}
-            containerStyle={{
-              height: 7,
-              borderRadius: 16,
-            }}
+            containerStyle={styles.sliderTrack}
             onValueChange={(value) => {
               updateVolume(value)
             }}
@@ -249,5 +243,9 @@ export function VolumeBar() {
 const styles = StyleSheet.create({
   text: {
     fontVariant: ["tabular-nums"],
+  },
+  sliderTrack: {
+    height: 7,
+    borderRadius: 16,
   },
 })

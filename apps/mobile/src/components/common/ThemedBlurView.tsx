@@ -16,9 +16,18 @@ import { isIos26 } from "@/src/lib/platform"
 export const ThemedBlurView = ({
   ref,
   tint,
+
+  tintColor,
   useGlass,
   ...rest
-}: BlurViewProps & { ref?: React.Ref<BlurView | null>; useGlass?: boolean }) => {
+}: BlurViewProps & {
+  ref?: React.Ref<BlurView | null>
+  useGlass?: boolean
+  /**
+   * The tint color of the glass view, only works when `useGlass` is true
+   */
+  tintColor?: string
+}) => {
   const { colorScheme } = useColorScheme()
 
   const background = useColor("systemBackground")
@@ -26,15 +35,20 @@ export const ThemedBlurView = ({
   const useBlurView = Platform.OS === "ios" || "experimentalBlurMethod" in rest
 
   if (isIos26 && useGlass) {
-    return <GlassView style={rest.style} glassEffectStyle="regular" />
+    return <GlassView style={rest.style} glassEffectStyle="regular" tintColor={tintColor} />
   }
   return useBlurView ? (
-    <BlurView
-      ref={ref}
-      intensity={100}
-      tint={colorScheme === "light" ? "systemChromeMaterialLight" : "systemChromeMaterialDark"}
-      {...rest}
-    />
+    <>
+      <BlurView
+        ref={ref}
+        intensity={100}
+        tint={colorScheme === "light" ? "systemChromeMaterialLight" : "systemChromeMaterialDark"}
+        {...rest}
+      />
+      {tintColor && (
+        <View style={[StyleSheet.absoluteFillObject, { backgroundColor: tintColor }]} />
+      )}
+    </>
   ) : (
     <View
       ref={ref as any}
@@ -42,7 +56,7 @@ export const ThemedBlurView = ({
       style={StyleSheet.flatten([
         rest.style,
         {
-          backgroundColor: background,
+          backgroundColor: tintColor ?? background,
           opacity: 1,
         },
       ])}

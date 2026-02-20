@@ -2,7 +2,7 @@ import { cn } from "@follow/utils/utils"
 import { FlashList } from "@shopify/flash-list"
 import { useCallback, useState } from "react"
 import type { StyleProp, ViewStyle } from "react-native"
-import { StyleSheet, TouchableOpacity, View } from "react-native"
+import { Pressable, StyleSheet, View } from "react-native"
 import { useSafeAreaInsets } from "react-native-safe-area-context"
 
 import { Text } from "@/src/components/ui/typography/Text"
@@ -67,8 +67,7 @@ export function Select<T>({
       const isSelected = value === item.value
       return (
         <>
-          <TouchableOpacity
-            activeOpacity={0.7}
+          <Pressable
             onPress={() => handleSelectOption(item.value)}
             className="flex-row items-center justify-between p-4"
             disabled={disabled}
@@ -88,7 +87,7 @@ export function Select<T>({
                 <CheckFilledIcon color={accentColor} height={20} width={20} />
               </View>
             )}
-          </TouchableOpacity>
+          </Pressable>
           <View
             className={cn("mb-px ml-4 bg-opaque-separator/70")}
             style={{
@@ -101,7 +100,7 @@ export function Select<T>({
     [handleSelectOption, value, disabled],
   )
   const Trigger = (
-    <TouchableOpacity
+    <Pressable
       className={cn(
         "min-w-24 flex-1 shrink flex-row items-center rounded-lg pl-3",
         disabled ? "opacity-50" : "",
@@ -122,13 +121,13 @@ export function Select<T>({
       <View className="ml-auto shrink-0 pl-1">
         <MingcuteDownLineIcon color={disabled ? grayColor : accentColor} height={18} width={18} />
       </View>
-    </TouchableOpacity>
+    </Pressable>
   )
   const SelectModal = (
     <BottomModal visible={isModalVisible} onClose={closeModal}>
       <View className="border-b-hairline flex-row items-center justify-between border-opaque-separator p-4">
         <Text className="text-xl font-semibold text-label">Select an option</Text>
-        <TouchableOpacity onPress={closeModal}>
+        <Pressable onPress={closeModal}>
           <Text
             style={{
               color: accentColor,
@@ -137,7 +136,7 @@ export function Select<T>({
           >
             Done
           </Text>
-        </TouchableOpacity>
+        </Pressable>
       </View>
 
       <FlashList

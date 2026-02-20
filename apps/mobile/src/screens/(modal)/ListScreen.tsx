@@ -208,42 +208,48 @@ const ScreenOptions = memo(({ title, listId }: ScreenOptionsProps) => {
           <HeaderSubmitButton
             isValid={isValid}
             isLoading={isLoading}
-            onPress={form.handleSubmit((values) => {
+            onPress={form.handleSubmit(async (values) => {
               if (!isEditing) {
                 setIsLoading(true)
-                listSyncServices
-                  .createList({
+                try {
+                  await listSyncServices.createList({
                     list: values as CreateListModel,
                   })
-                  .catch((error) => {
-                    toast.error(getBizFetchErrorMessage(error))
-                    console.error(error)
-                  })
-                  .finally(() => {
-                    setIsLoading(false)
-                    navigation.dismiss()
-                  })
+                  toast.success("List created")
+                  navigation.dismiss()
+                } catch (error) {
+                  toast.error(
+                    error instanceof Error
+                      ? getBizFetchErrorMessage(error)
+                      : "Failed to create list",
+                  )
+                  console.error(error)
+                } finally {
+                  setIsLoading(false)
+                }
                 return
               }
               const list = getListById(listId!)
               if (!list) return
               setIsLoading(true)
-              listSyncServices
-                .updateList({
+              try {
+                await listSyncServices.updateList({
                   listId: listId!,
                   list: {
                     ...list,
                     ...values,
                   },
                 })
-                .catch((error) => {
-                  toast.error(getBizFetchErrorMessage(error))
-                  console.error(error)
-                })
-                .finally(() => {
-                  setIsLoading(false)
-                  navigation.dismiss()
-                })
+                toast.success("List updated")
+                navigation.dismiss()
+              } catch (error) {
+                toast.error(
+                  error instanceof Error ? getBizFetchErrorMessage(error) : "Failed to update list",
+                )
+                console.error(error)
+              } finally {
+                setIsLoading(false)
+              }
             })}
           />
         </FormProvider>

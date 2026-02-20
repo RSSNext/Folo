@@ -54,7 +54,7 @@ export const baseAuthPlugins = [
   stripeClient({ subscription: true }),
   lastLoginMethodClient(),
   magicLinkClient(),
-] satisfies BetterAuthClientPlugin[]
+]
 
 export type AuthClient<ExtraPlugins extends BetterAuthClientPlugin[] = []> = ReturnType<
   typeof createAuthClient<{

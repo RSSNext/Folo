@@ -138,14 +138,6 @@ export default ({ config }: ConfigContext): ExpoConfig => {
       "expo-secure-store",
       "@react-native-firebase/app",
       [
-        "@sentry/react-native/expo",
-        {
-          url: "https://sentry.io/",
-          project: "react-native",
-          organization: "follow-rg",
-        },
-      ],
-      [
         "expo-image-picker",
         {
           photosPermission: "Allow $(PRODUCT_NAME) to access your photos.",

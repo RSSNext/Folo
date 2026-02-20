@@ -32,7 +32,7 @@
 	<key>CFBundlePackageType</key>
 	<string>$(PRODUCT_BUNDLE_PACKAGE_TYPE)</string>
 	<key>CFBundleShortVersionString</key>
-	<string>0.2.9</string>
+	<string>0.3.0</string>
 	<key>CFBundleSignature</key>
 	<string>????</string>
 	<key>CFBundleURLTypes</key>
@@ -53,7 +53,7 @@
 		</dict>
 	</array>
 	<key>CFBundleVersion</key>
-	<string>136</string>
+	<string>138</string>
 	<key>ITSAppUsesNonExemptEncryption</key>
 	<false/>
 	<key>LSApplicationCategoryType</key>
@@ -84,6 +84,8 @@
 	<string>Allow $(PRODUCT_NAME) to save photos.</string>
 	<key>NSPhotoLibraryUsageDescription</key>
 	<string>Allow $(PRODUCT_NAME) to access your photos.</string>
+	<key>RCTNewArchEnabled</key>
+	<true/>
 	<key>UIBackgroundModes</key>
 	<array>
 		<string>audio</string>

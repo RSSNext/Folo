@@ -1,5 +1,5 @@
 import * as React from "react"
-import { useCallback, useImperativeHandle } from "react"
+import { useCallback, useImperativeHandle, useMemo } from "react"
 import type { StyleProp, ViewStyle } from "react-native"
 import { Pressable, StyleSheet, View } from "react-native"
 import { Gesture, GestureDetector } from "react-native-gesture-handler"
@@ -98,6 +98,14 @@ export const Slider = ({
   const activeColor = accentColor
   const inactiveColor = useColor("gray4")
   const thumbColor = "#FFFFFF"
+  const thumbDimensionsStyle = useMemo(
+    () => ({
+      width: thumbWidth,
+      height: thumbWidth,
+      backgroundColor: thumbColor,
+    }),
+    [thumbWidth],
+  )
 
   // Calculate thumb position based on value
   const getThumbPosition = useCallback(
@@ -107,31 +115,28 @@ export const Slider = ({
       const percentage = (clampedValue - minimumValue) / (maximumValue - minimumValue)
       return percentage * (trackWidth.value - thumbWidth)
     },
-    [minimumValue, maximumValue, thumbWidth],
+    [maximumValue, minimumValue, thumbWidth, trackWidth],
   )
 
   // Calculate value based on thumb position
-  const getValue = useCallback(
-    (position: number) => {
-      "worklet"
-      const percentage = position / (trackWidth.value - thumbWidth)
-      let val = minimumValue + percentage * (maximumValue - minimumValue)
+  const getValue = (position: number) => {
+    "worklet"
+    const percentage = position / (trackWidth.value - thumbWidth)
+    let val = minimumValue + percentage * (maximumValue - minimumValue)
 
-      if (step) {
-        val = Math.round(val / step) * step
-      }
+    if (step) {
+      val = Math.round(val / step) * step
+    }
 
-      return Math.max(minimumValue, Math.min(maximumValue, val))
-    },
-    [minimumValue, maximumValue, thumbWidth, step],
-  )
+    return Math.max(minimumValue, Math.min(maximumValue, val))
+  }
 
   // Update thumb position when value changes
   React.useEffect(() => {
     if (!isSliding.value) {
       thumbPosition.value = withSpring(getThumbPosition(value))
     }
-  }, [value, getThumbPosition])
+  }, [getThumbPosition, isSliding, thumbPosition, thumbWidth, trackWidth, value])
 
   useImperativeHandle(ref, () => ({
     setValue: (newValue: number) => {
@@ -248,12 +253,8 @@ export const Slider = ({
           <Animated.View
             style={[
               styles.thumb,
-              {
-                width: thumbWidth,
-                height: thumbWidth,
-                backgroundColor: thumbColor,
-                opacity: disabled ? 0.6 : 1,
-              },
+              thumbDimensionsStyle,
+              disabled && styles.thumbDisabled,
               thumbAnimatedStyle,
             ]}
           />
@@ -291,5 +292,8 @@ const styles = StyleSheet.create({
     shadowOpacity: 0.15,
     shadowRadius: 3,
     elevation: 3,
+  },
+  thumbDisabled: {
+    opacity: 0.6,
   },
 })

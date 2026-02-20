@@ -1,10 +1,18 @@
-import { useTypeScriptHappyCallback } from "@follow/hooks"
 import { impactAsync, ImpactFeedbackStyle } from "expo-haptics"
 import { atom, useAtomValue, useSetAtom } from "jotai"
 import { selectAtom } from "jotai/utils"
 import * as React from "react"
-import { Animated, StyleSheet, View } from "react-native"
-import { RectButton, Swipeable } from "react-native-gesture-handler"
+import { StyleSheet, View } from "react-native"
+import { RectButton } from "react-native-gesture-handler"
+import type { SwipeableMethods } from "react-native-gesture-handler/ReanimatedSwipeable"
+import ReanimatedSwipeable from "react-native-gesture-handler/ReanimatedSwipeable"
+import type { SharedValue } from "react-native-reanimated"
+import Animated, {
+  interpolate,
+  runOnJS,
+  useAnimatedReaction,
+  useAnimatedStyle,
+} from "react-native-reanimated"
 
 import { Text } from "@/src/components/ui/typography/Text"
 
@@ -21,6 +29,9 @@ interface SwipeableItemProps {
   rightActions?: Action[]
   disabled?: boolean
   swipeRightToCallAction?: boolean
+}
+const getActionKey = (side: "left" | "right", action: Action) => {
+  return `${side}-${action.label}-${action.backgroundColor ?? ""}-${action.color ?? ""}`
 }
 const styles = StyleSheet.create({
   absoluteFill: {
@@ -51,9 +62,9 @@ export const SwipeableItem: React.FC<SwipeableItemProps> = ({
   disabled,
   swipeRightToCallAction,
 }) => {
-  const itemRef = React.useRef<Swipeable | null>(null)
+  const itemRef = React.useRef<SwipeableMethods | null>(null)
   const endDragCallerRef = React.useRef<() => void>(() => {})
-  const renderLeftActions = (progress: Animated.AnimatedInterpolation<number>) => {
+  const renderLeftActions = (progress: SharedValue<number>) => {
     const width = leftActions?.length ? leftActions.length * rectButtonWidth : rectButtonWidth
     return (
       <>
@@ -73,56 +84,20 @@ export const SwipeableItem: React.FC<SwipeableItemProps> = ({
             },
           ]}
         >
-          {leftActions?.map((action, index) => {
-            const trans = progress.interpolate({
-              inputRange: [0, 1],
-              outputRange: [-rectButtonWidth * (leftActions?.length ?? 1), 0],
-            })
-            return (
-              <Animated.View
-                key={index}
-                style={[
-                  styles.animatedContainer,
-                  {
-                    transform: [
-                      {
-                        translateX: trans,
-                      },
-                    ],
-                    width: rectButtonWidth,
-                    left: index * rectButtonWidth,
-                  },
-                ]}
-              >
-                <RectButton
-                  style={[
-                    styles.actionContainer,
-                    {
-                      backgroundColor: action.backgroundColor ?? "#fff",
-                    },
-                  ]}
-                  onPress={action.onPress}
-                >
-                  {action.icon}
-                  <Text
-                    style={[
-                      styles.actionText,
-                      {
-                        color: action.color ?? "#fff",
-                      },
-                    ]}
-                  >
-                    {action.label}
-                  </Text>
-                </RectButton>
-              </Animated.View>
-            )
-          })}
+          {leftActions?.map((action, index) => (
+            <LeftActionItem
+              key={getActionKey("left", action)}
+              index={index}
+              action={action}
+              progress={progress}
+              length={leftActions?.length ?? 1}
+            />
+          ))}
         </Animated.View>
       </>
     )
   }
-  const renderRightActions = (progress: Animated.AnimatedInterpolation<number>) => {
+  const renderRightActions = (progress: SharedValue<number>, translation: SharedValue<number>) => {
     const width = rightActions?.length ? rightActions.length * rectButtonWidth : rectButtonWidth
     return (
       <>
@@ -146,11 +121,12 @@ export const SwipeableItem: React.FC<SwipeableItemProps> = ({
             return (
               <RightRectButton
                 endDragCallerRef={endDragCallerRef}
-                key={index}
+                key={getActionKey("right", action)}
                 index={index}
                 action={action}
                 length={rightActions?.length ?? 1}
                 progress={progress}
+                translation={translation}
                 swipeRightToCallAction={
                   swipeRightToCallAction && index === rightActions?.length - 1
                 }
@@ -176,22 +152,20 @@ export const SwipeableItem: React.FC<SwipeableItemProps> = ({
     }
   }, [isOpened])
   return (
-    <Swipeable
+    <ReanimatedSwipeable
       ref={itemRef}
       enabled={!disabled}
       friction={1}
       onSwipeableWillOpen={() => {
         setAtom(id)
+        if (swipeRightToCallAction && endDragCallerRef.current) {
+          endDragCallerRef.current()
+          endDragCallerRef.current = () => {}
+        }
       }}
       leftThreshold={37}
       rightThreshold={37}
       enableTrackpadTwoFingerGesture
-      useNativeAnimations
-      onEnded={useTypeScriptHappyCallback(() => {
-        if (swipeRightToCallAction && endDragCallerRef.current) {
-          endDragCallerRef.current()
-        }
-      }, [swipeRightToCallAction, endDragCallerRef])}
       renderLeftActions={leftActions?.length ? renderLeftActions : undefined}
       renderRightActions={rightActions?.length ? renderRightActions : undefined}
       overshootLeft={leftActions?.length ? leftActions?.length >= 1 : undefined}
@@ -199,7 +173,7 @@ export const SwipeableItem: React.FC<SwipeableItemProps> = ({
       overshootFriction={swipeRightToCallAction ? 1 : 10}
     >
       {children}
-    </Swipeable>
+    </ReanimatedSwipeable>
   )
 }
 const SwipeableGroupContext = React.createContext({
@@ -214,6 +188,63 @@ export const SwipeableGroupProvider = ({ children }: { children: React.ReactNode
   )
   return <SwipeableGroupContext value={ctx}>{children}</SwipeableGroupContext>
 }
+
+const LeftActionItem = React.memo(
+  ({
+    index,
+    action,
+    progress,
+    length = 1,
+  }: {
+    index: number
+    action: Action
+    progress: SharedValue<number>
+    length: number
+  }) => {
+    const animStyle = useAnimatedStyle(() => ({
+      transform: [
+        {
+          translateX: interpolate(progress.value, [0, 1], [-rectButtonWidth * length, 0]),
+        },
+      ],
+    }))
+    return (
+      <Animated.View
+        style={[
+          styles.animatedContainer,
+          {
+            width: rectButtonWidth,
+            left: index * rectButtonWidth,
+          },
+          animStyle,
+        ]}
+      >
+        <RectButton
+          style={[
+            styles.actionContainer,
+            {
+              backgroundColor: action.backgroundColor ?? "#fff",
+            },
+          ]}
+          onPress={action.onPress}
+        >
+          {action.icon}
+          <Text
+            style={[
+              styles.actionText,
+              {
+                color: action.color ?? "#fff",
+              },
+            ]}
+          >
+            {action.label}
+          </Text>
+        </RectButton>
+      </Animated.View>
+    )
+  },
+)
+
 const rightActionThreshold = -100
 const RightRectButton = React.memo(
   ({
@@ -221,66 +252,72 @@ const RightRectButton = React.memo(
     action,
     length = 1,
     progress,
+    translation,
     swipeRightToCallAction,
     endDragCallerRef,
   }: {
-    progress: Animated.AnimatedInterpolation<number>
+    progress: SharedValue<number>
+    translation: SharedValue<number>
     index: number
     action: Action
     length: number
     swipeRightToCallAction?: boolean
     endDragCallerRef: React.MutableRefObject<() => void>
   }) => {
-    const trans = React.useMemo(
-      () =>
-        progress.interpolate({
-          inputRange: [0, 1, 1.2],
-          outputRange: [rectButtonWidth * length, 0, -40],
-        }),
-      [progress, length],
-    )
-    const parallaxX = React.useMemo(
-      () =>
-        progress.interpolate({
-          inputRange: [0, 1, 1.2],
-          outputRange: [0, 0, 10],
-        }),
-      [progress],
-    )
     const hapticOnce = React.useRef(false)
-    React.useEffect(() => {
-      if (!swipeRightToCallAction) return
-      const id = trans.addListener(({ value }) => {
-        if (value <= rightActionThreshold) {
-          if (hapticOnce.current) return
-          hapticOnce.current = true
-          impactAsync(ImpactFeedbackStyle.Light)
-          endDragCallerRef.current = () => {
-            action.onPress?.()
+
+    const setEndDragCaller = React.useCallback(
+      (shouldCall: boolean) => {
+        if (shouldCall) {
+          if (!hapticOnce.current) {
+            hapticOnce.current = true
+            impactAsync(ImpactFeedbackStyle.Light)
+            endDragCallerRef.current = () => {
+              action.onPress?.()
+            }
           }
         } else {
           hapticOnce.current = false
           endDragCallerRef.current = () => {}
         }
-      })
-      return () => {
-        trans.removeListener(id)
-      }
-    }, [action, endDragCallerRef, swipeRightToCallAction, trans])
+      },
+      [action, endDragCallerRef],
+    )
+
+    useAnimatedReaction(
+      () => translation.value,
+      (value) => {
+        if (!swipeRightToCallAction) return
+        runOnJS(setEndDragCaller)(value <= rightActionThreshold)
+      },
+      [swipeRightToCallAction, setEndDragCaller],
+    )
+
+    const animStyle = useAnimatedStyle(() => ({
+      transform: [
+        {
+          translateX: interpolate(progress.value, [0, 1, 1.2], [rectButtonWidth * length, 0, -40]),
+        },
+      ],
+    }))
+
+    const textAnimStyle = useAnimatedStyle(() => ({
+      transform: [
+        {
+          translateX: interpolate(progress.value, [0, 1, 1.2], [0, 0, 10]),
+        },
+      ],
+    }))
+
     return (
       <Animated.View
-        key={index}
         style={[
           styles.animatedContainer,
           {
-            transform: [
-              {
-                translateX: trans,
-              },
-            ],
             width: rectButtonWidth,
             left: index * rectButtonWidth,
           },
+          animStyle,
         ]}
       >
         <RectButton
@@ -299,13 +336,7 @@ const RightRectButton = React.memo(
               {
                 color: action.color ?? "#fff",
               },
-              {
-                transform: [
-                  {
-                    translateX: parallaxX,
-                  },
-                ],
-              },
+              textAnimStyle,
             ]}
           >
             {action.label}

@@ -119,6 +119,9 @@ const AccountLinker: FC<{
       queryClient.invalidateQueries({
         queryKey: accountInfoKey,
       })
+      queryClient.invalidateQueries({
+        queryKey: userProviderKey,
+      })
     },
     onError: (error) => {
       toast.error(error.message)
@@ -140,22 +143,24 @@ const AccountLinker: FC<{
       }
       onPress={() => {
         if (!account) {
-          linkSocial({
-            provider: provider as any,
-          }).then((res) => {
-            if (res.data) {
+          linkSocial({ provider: provider as any })
+            .then((res) => {
+              if (!res.data?.url) {
+                toast.error("Failed to link account")
+                return
+              }
               openLink(res.data.url, () => {
                 queryClient.invalidateQueries({
-                  queryKey: [accountInfoKey],
+                  queryKey: accountInfoKey,
                 })
                 queryClient.invalidateQueries({
-                  queryKey: [userProviderKey],
+                  queryKey: userProviderKey,
                 })
               })
-            } else {
-              toast.error("Failed to link account")
-            }
-          })
+            })
+            .catch((error) => {
+              toast.error(error instanceof Error ? error.message : "Failed to link account")
+            })
           return
         }
         Alert.alert("Unlink account", "Are you sure you want to unlink your account?", [
@@ -182,13 +187,11 @@ const AuthenticationSection = () => {
     queryFn: async () => (await getProviders()).data as Record<string, AuthProvider>,
   })
   const providerToAccountMap = useMemo(() => {
-    return Object.keys(providers || {}).reduce(
-      (acc, provider) => {
-        acc[provider] = accounts?.data?.find((account) => account.provider === provider)!
-        return acc
-      },
-      {} as Record<string, Account>,
-    )
+    const providerMap: Record<string, Account | undefined> = {}
+    for (const provider of Object.keys(providers || {})) {
+      providerMap[provider] = accounts?.data?.find((account) => account.provider === provider)
+    }
+    return providerMap
   }, [accounts?.data, providers])
   return (
     <>

@@ -1,6 +1,6 @@
 import { useState } from "react"
 import { Trans, useTranslation } from "react-i18next"
-import { Linking, Pressable, TouchableOpacity, TouchableWithoutFeedback, View } from "react-native"
+import { Linking, Pressable, TouchableWithoutFeedback, View } from "react-native"
 import { KeyboardAvoidingView, KeyboardController } from "react-native-keyboard-controller"
 import Animated, { useAnimatedStyle, useSharedValue } from "react-native-reanimated"
 import { useSafeAreaInsets } from "react-native-safe-area-context"
@@ -78,7 +78,7 @@ export function Login() {
               {t("login.back")}
             </Text>
           ) : (
-            <TouchableOpacity onPress={() => setIsRegister(!isRegister)}>
+            <Pressable onPress={() => setIsRegister(!isRegister)}>
               <Text className="pb-2 text-center text-lg font-medium text-label">
                 <Trans
                   t={t}
@@ -88,7 +88,7 @@ export function Login() {
                   }}
                 />
               </Text>
-            </TouchableOpacity>
+            </Pressable>
           )}
         </View>
       </KeyboardAvoidingView>
@@ -114,24 +114,23 @@ const TermsCheckBox = () => {
   )
 }
 const TermsText = () => {
+  const { t } = useTranslation()
   return (
     <View>
-      <Text className="text-center text-sm text-secondary-label">
-        By continuing, you agree to our{" "}
-      </Text>
+      <Text className="text-center text-sm text-secondary-label">{t("login.agree_to")} </Text>
       <View className="flex-row items-center">
         <Pressable
           onPress={() => Linking.openURL("https://folo.is/terms-of-service")}
           className="text-secondary-label"
         >
-          <Text className="font-semibold">Terms of Service</Text>
+          <Text className="font-semibold">{t("login.terms")}</Text>
         </Pressable>
         <Text className="text-secondary-label">&nbsp;&&nbsp;</Text>
         <Pressable
           onPress={() => Linking.openURL("https://folo.is/privacy-policy")}
           className="text-secondary-label"
         >
-          <Text className="font-semibold">Privacy Policy</Text>
+          <Text className="font-semibold">{t("login.privacy")}</Text>
         </Pressable>
       </View>
     </View>

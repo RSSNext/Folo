@@ -12,7 +12,21 @@ interface GridProps {
   style?: StyleProp<ViewStyle>
   className?: string
 }
-const placeholder = <View className="flex-1 shrink-0" />
+type GridCell = {
+  key: string
+  node: React.ReactNode
+}
+
+type GridRow = {
+  key: string
+  cells: GridCell[]
+}
+
+const createPlaceholderCell = (key: string): GridCell => ({
+  key,
+  node: <View className="flex-1 shrink-0" />,
+})
+
 export const Grid = ({
   columns,
   gap,
@@ -23,27 +37,54 @@ export const Grid = ({
   if (columns < 1) {
     throw new Error("Columns must be greater than 0")
   }
-  const rowsChildren = useMemo(() => {
-    const childrenArray = React.Children.toArray(children)
-    const rows = []
-    for (let i = 0; i < childrenArray.length; i += columns) {
-      const row = childrenArray.slice(i, i + columns)
+  const rows = useMemo<GridRow[]>(() => {
+    const cells: GridCell[] = []
+    let fallbackCellIndex = 0
 
-      // Fill row if columns is greater than row length
-      if (row.length < columns) {
-        row.push(...Array.from({ length: columns - row.length }, () => placeholder))
+    const appendChild = (child: React.ReactNode) => {
+      if (Array.isArray(child)) {
+        for (const childItem of child) {
+          appendChild(childItem)
+        }
+        return
       }
-      rows.push(row)
+      if (child === null || child === undefined) return
+      const key =
+        React.isValidElement(child) && child.key != null
+          ? String(child.key)
+          : `cell-${fallbackCellIndex++}`
+      cells.push({
+        key,
+        node: child,
+      })
     }
-    return rows
+
+    appendChild(children)
+
+    if (cells.length === 0) return []
+
+    const nextRows: GridRow[] = []
+    let placeholderIndex = 0
+    for (let start = 0; start < cells.length; start += columns) {
+      const rowCells = cells.slice(start, start + columns)
+      while (rowCells.length < columns) {
+        rowCells.push(createPlaceholderCell(`placeholder-${placeholderIndex++}`))
+      }
+      nextRows.push({
+        key: `row-${rowCells.map((cell) => cell.key).join("-")}`,
+        cells: rowCells,
+      })
+    }
+    return nextRows
   }, [children, columns])
+
   return (
     <View className={cn("w-full flex-1", className)} style={[{ gap }, style]}>
-      {rowsChildren.map((row, index) => (
-        <View key={index} className="flex flex-row" style={{ gap }}>
-          {row.map((child, index) => (
-            <View key={index} className="flex-1 shrink-0">
-              {child}
+      {rows.map((row) => (
+        <View key={row.key} className="flex flex-row" style={{ gap }}>
+          {row.cells.map((cell) => (
+            <View key={cell.key} className="flex-1 shrink-0">
+              {cell.node}
             </View>
           ))}
         </View>

@@ -5,7 +5,7 @@ import * as Haptics from "expo-haptics"
 import type { PropsWithChildren } from "react"
 import { useCallback } from "react"
 import { useTranslation } from "react-i18next"
-import { Share, TouchableOpacity, View } from "react-native"
+import { Pressable, Share, View } from "react-native"
 
 import { setGeneralSetting, useGeneralSettingKey } from "@/src/atoms/settings/general"
 import { UserAvatar } from "@/src/components/ui/avatar/UserAvatar"
@@ -25,7 +25,7 @@ import { accentColor, useColor } from "@/src/theme/colors"
 import { MarkAllAsReadDialog } from "../dialogs/MarkAllAsReadDialog"
 
 export const ActionGroup = ({ children, className }: PropsWithChildren<{ className?: string }>) => {
-  return <View className={cn("flex flex-row items-center gap-2", className)}>{children}</View>
+  return <View className={cn("flex flex-row items-center gap-1", className)}>{children}</View>
 }
 
 export function HomeLeftAction() {
@@ -42,7 +42,7 @@ export function HomeLeftAction() {
 
   return (
     <ActionGroup className="ml-2">
-      <TouchableOpacity onPress={handlePress}>
+      <Pressable onPress={handlePress}>
         <UserAvatar
           image={user?.image}
           name={user?.name}
@@ -50,7 +50,7 @@ export function HomeLeftAction() {
           color={accentColor}
           preview={false}
         />
-      </TouchableOpacity>
+      </Pressable>
     </ActionGroup>
   )
 }
@@ -59,7 +59,7 @@ interface HeaderActionButtonProps {
   variant?: "primary" | "secondary"
 }
 
-export const MarkAllAsReadActionButton = ({ variant = "primary" }: HeaderActionButtonProps) => {
+export const MarkAllAsReadActionButton = ({ variant = "secondary" }: HeaderActionButtonProps) => {
   const { t } = useTranslation()
   const { size, color } = useButtonVariant({ variant })
 
@@ -76,11 +76,11 @@ export const MarkAllAsReadActionButton = ({ variant = "primary" }: HeaderActionB
 
 const useButtonVariant = ({ variant = "primary" }: HeaderActionButtonProps) => {
   const label = useColor("label")
-  const size = 24
+  const size = 20
   const color = variant === "primary" ? accentColor : label
   return { size, color }
 }
-export const UnreadOnlyActionButton = ({ variant = "primary" }: HeaderActionButtonProps) => {
+export const UnreadOnlyActionButton = ({ variant = "secondary" }: HeaderActionButtonProps) => {
   const { t } = useTranslation()
   const unreadOnly = useGeneralSettingKey("unreadOnly")
   const { size, color } = useButtonVariant({ variant })
@@ -110,7 +110,7 @@ export const UnreadOnlyActionButton = ({ variant = "primary" }: HeaderActionButt
 
 export const FeedShareActionButton = ({
   feedId,
-  variant = "primary",
+  variant = "secondary",
 }: { feedId?: string } & HeaderActionButtonProps) => {
   const { t } = useTranslation()
   const { size, color } = useButtonVariant({ variant })

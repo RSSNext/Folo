@@ -2,7 +2,7 @@ import { useWhoami } from "@follow/store/user/hooks"
 import { use } from "react"
 import { useTranslation } from "react-i18next"
 import type { ScrollView } from "react-native"
-import { TouchableOpacity, View } from "react-native"
+import { Pressable, View } from "react-native"
 import type { SharedValue } from "react-native-reanimated"
 import Animated, { useAnimatedStyle } from "react-native-reanimated"
 import { useSafeAreaFrame, useSafeAreaInsets } from "react-native-safe-area-context"
@@ -88,14 +88,13 @@ const EditProfileButton = () => {
   const { t } = useTranslation("common")
   const navigation = useNavigation()
   return (
-    <TouchableOpacity
-      activeOpacity={0.7}
+    <Pressable
       className="absolute bottom-2 right-4 overflow-hidden rounded-full px-3 py-1.5"
       onPress={() => navigation.pushControllerView(EditProfileScreen)}
     >
       <BlurEffect />
-      <Text className="text-sm font-medium text-label">{t("words.edit")}</Text>
-    </TouchableOpacity>
+      <Text className="text-xs font-medium text-label">{t("words.edit")}</Text>
+    </Pressable>
   )
 }
 export const SettingsTabScreen: TabScreenComponent = Settings

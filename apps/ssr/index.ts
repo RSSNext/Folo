@@ -46,8 +46,8 @@ export const createApp = async () => {
     } else if (err instanceof MetaError) {
       reply.status(err.status).send({ ok: false, traceId, message: err.metaMessage })
     } else {
-      const message = err.message || "Internal Server Error"
-      const status = Number.parseInt(err.code as string) || 500
+      const message = (err as any).message || "Internal Server Error"
+      const status = Number.parseInt((err as any).code as string) || 500
       reply.status(status).send({ ok: false, message, traceId })
     }
   })

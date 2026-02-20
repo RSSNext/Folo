@@ -5,7 +5,6 @@ import { useEntry } from "@follow/store/entry/hooks"
 import { useFeedById } from "@follow/store/feed/hooks"
 import { useIsInbox } from "@follow/store/inbox/hooks"
 import { cn } from "@follow/utils"
-import { ErrorBoundary } from "@sentry/react"
 import { useCallback, useEffect, useMemo, useRef, useState } from "react"
 
 import {
@@ -15,6 +14,7 @@ import {
   useAIPanelVisibility,
 } from "~/atoms/settings/ai"
 import { useUISettingKey } from "~/atoms/settings/ui"
+import { ErrorBoundary } from "~/components/common/ErrorBoundary"
 import { ShadowDOM } from "~/components/common/ShadowDOM"
 import type { TocRef } from "~/components/ui/markdown/components/Toc"
 import { useInPeekModal } from "~/components/ui/modal/inspire/InPeekModal"

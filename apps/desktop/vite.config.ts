@@ -5,7 +5,7 @@ import type { env as EnvType } from "@follow/shared/env.desktop"
 import legacy from "@vitejs/plugin-legacy"
 import { minify as htmlMinify } from "html-minifier-terser"
 import { cyan, dim, green } from "kolorist"
-import { parseHTML } from "linkedom"
+import { parseHTML } from "linkedom/worker"
 import { join, resolve } from "pathe"
 import type { PluginOption, ResolvedConfig, ViteDevServer } from "vite"
 import { defineConfig, loadEnv } from "vite"
@@ -285,7 +285,7 @@ export default ({ mode }) => {
         ],
         ["tldts"],
 
-        ["@sentry/react", "@openpanel/web"],
+        ["@openpanel/web"],
         ["zod", "react-hook-form", "@hookform/resolvers"],
       ]),
 

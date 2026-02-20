@@ -68,6 +68,7 @@ enum TransitionStyle: String, Enumerable {
 
 private class EnhancePagerView: ExpoView, UIGestureRecognizerDelegate {
   fileprivate var pageController: EnhancePagerController?
+  private var isInitialized = false
 
   private let onScroll = EventDispatcher()
   private let onScrollBegin = EventDispatcher()
@@ -104,6 +105,11 @@ private class EnhancePagerView: ExpoView, UIGestureRecognizerDelegate {
   var transitionStyle: TransitionStyle = .scroll
   var panGestureRecognizer: UIGestureRecognizer?
   func initialize() {
+    if isInitialized {
+      return
+    }
+    isInitialized = true
+
     let panGestureRecognizer = UIPanGestureRecognizer()
     panGestureRecognizer.delegate = self
     self.panGestureRecognizer = panGestureRecognizer

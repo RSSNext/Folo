@@ -28,24 +28,22 @@ export const useTOTPModalWrapper = <T extends { TOTPCode?: string }>(
         }
 
         const root = new Siblings(
-          (
-            <OTPWindow
-              verifyFn={async (TOTPCode) => {
-                await callback({
-                  ...input,
-                  TOTPCode,
-                })
+          <OTPWindow
+            verifyFn={async (TOTPCode) => {
+              await callback({
+                ...input,
+                TOTPCode,
+              })
 
-                root.destroy()
-              }}
-              onDismiss={() => {
-                root.destroy()
-              }}
-              onSuccess={async () => {
-                root.destroy()
-              }}
-            />
-          ),
+              root.destroy()
+            }}
+            onDismiss={() => {
+              root.destroy()
+            }}
+            onSuccess={async () => {
+              root.destroy()
+            }}
+          />,
         )
       }
 

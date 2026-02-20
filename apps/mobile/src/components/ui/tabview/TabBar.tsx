@@ -5,8 +5,8 @@ import { memo, useCallback, useEffect, useImperativeHandle, useRef, useState } f
 import type {
   Animated as AnimatedNative,
   LayoutChangeEvent,
+  PressableProps,
   StyleProp,
-  TouchableOpacityProps,
   ViewStyle,
 } from "react-native"
 import { Pressable, ScrollView, StyleSheet, View } from "react-native"
@@ -25,7 +25,7 @@ interface TabBarProps {
     {
       isSelected: boolean
       tab: Tab
-    } & Pick<TouchableOpacityProps, "onLayout">
+    } & Pick<PressableProps, "onLayout">
   >
   onTabItemPress?: (index: number) => void
   currentTab?: number
@@ -74,10 +74,13 @@ export const TabBar = ({
     }
   }, [pagerOffsetX, sharedPagerOffsetX])
   const tabRef = useRef<ScrollView>(null)
-  const handleChangeTabIndex = useCallback((index: number) => {
-    setCurrentTab(index)
-    onTabItemPress?.(index)
-  }, [])
+  const handleChangeTabIndex = useCallback(
+    (index: number) => {
+      setCurrentTab(index)
+      onTabItemPress?.(index)
+    },
+    [onTabItemPress],
+  )
   useEffect(() => {
     if (!pagerOffsetX) return
     const listener = pagerOffsetX.addListener(
@@ -231,7 +234,7 @@ const TarBarItem: FC<{
     {
       isSelected: boolean
       tab: Tab
-    } & Pick<TouchableOpacityProps, "onLayout">
+    } & Pick<PressableProps, "onLayout">
   >
   onTabItemPress: (index: number) => void
   isSelected: boolean

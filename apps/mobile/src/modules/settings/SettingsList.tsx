@@ -7,7 +7,7 @@ import { Fragment, useMemo } from "react"
 import { useTranslation } from "react-i18next"
 import { Alert, PixelRatio, View } from "react-native"
 
-import { useServerConfigs } from "@/src/atoms/server-configs"
+import { getIsPaymentEnabled, useServerConfigs } from "@/src/atoms/server-configs"
 import {
   GroupedInsetListCard,
   GroupedInsetListNavigationLink,
@@ -28,6 +28,7 @@ import { UserSettingCuteFiIcon } from "@/src/icons/user_setting_cute_fi"
 import { signOut } from "@/src/lib/auth"
 import { useNavigation } from "@/src/lib/navigation/hooks"
 import type { Navigation } from "@/src/lib/navigation/Navigation"
+import { isPaymentFeatureEnabled } from "@/src/lib/payment"
 import { accentColor } from "@/src/theme/colors"
 
 import { AboutScreen } from "./routes/About"
@@ -109,7 +110,7 @@ const SubscriptionGroupNavigationLinks: GroupNavigationLink[] = [
     },
     iconBackgroundColor: accentColor,
     anonymous: false,
-    hideIf: (serverConfigs) => !serverConfigs?.PAYMENT_ENABLED,
+    hideIf: (serverConfigs) => !isPaymentFeatureEnabled(serverConfigs?.PAYMENT_ENABLED),
   },
 ]
 
@@ -210,7 +211,11 @@ const NavigationLinkGroup: FC<{
                 </GroupedInsetListNavigationLinkIcon>
               }
               onPress={() => {
-                if (link.trialNotAllowed && (role === UserRole.Free || role === UserRole.Trial)) {
+                if (
+                  link.trialNotAllowed &&
+                  (role === UserRole.Free || role === UserRole.Trial) &&
+                  getIsPaymentEnabled()
+                ) {
                   navigation.presentControllerView(PlanScreen)
                 } else {
                   link.onPress({ navigation })

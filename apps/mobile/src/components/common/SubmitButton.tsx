@@ -28,7 +28,7 @@ export function SubmitButton({
   useEffect(() => {
     cancelAnimation(disabledValue)
     disabledValue.value = withTiming(disabled ? 1 : 0)
-  }, [disabled])
+  }, [disabled, disabledValue])
 
   const buttonStyle = useAnimatedStyle(() => ({
     backgroundColor: interpolateColor(disabledValue.value, [1, 0], [disableColor, accentColor]),

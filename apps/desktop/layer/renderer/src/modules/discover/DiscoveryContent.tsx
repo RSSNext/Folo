@@ -19,12 +19,16 @@ const LanguageOptions = [
     value: "eng",
   },
   {
+    label: "words.french",
+    value: "fra",
+  },
+  {
     label: "words.chinese",
     value: "cmn",
   },
 ] satisfies ResponsiveSelectItem[]
 
-type Language = "all" | "eng" | "cmn"
+type Language = "all" | "eng" | "cmn" | "fra"
 type DiscoveryView = "trending" | "categories"
 
 export function DiscoveryContent() {

@@ -3,7 +3,7 @@ import { whoami } from "@follow/store/user/getters"
 import { sleep } from "@follow/utils"
 import { requireNativeModule } from "expo"
 import * as Clipboard from "expo-clipboard"
-import * as FileSystem from "expo-file-system"
+import * as FileSystem from "expo-file-system/legacy"
 import * as SecureStore from "expo-secure-store"
 import type { FC } from "react"
 import * as React from "react"
@@ -15,7 +15,6 @@ import {
   ScrollView,
   StyleSheet,
   TextInput,
-  TouchableOpacity,
   View,
 } from "react-native"
 import { useSafeAreaInsets } from "react-native-safe-area-context"
@@ -225,40 +224,42 @@ export const DebugScreen: NavigationControllerView = () => {
           }}
         />
       </View>
-      {menuSections.map((section) => (
-        <View key={section.title}>
-          <Text className="mt-4 px-8 text-2xl font-medium text-white">{section.title}</Text>
-          <View style={styles.container}>
-            <View style={styles.itemContainer}>
-              {section.items.map((item, index) => {
-                if (typeof item === "function") {
-                  return React.createElement(item, {
-                    key: index,
-                  })
-                }
-                return (
-                  <TouchableOpacity
-                    key={item.title}
-                    style={styles.itemPressable}
-                    onPress={item.onPress}
-                  >
-                    <Text style={styles.filename} className={item.textClassName}>
-                      {item.title}
-                    </Text>
-                  </TouchableOpacity>
-                )
-              })}
+      {menuSections.map((section) => {
+        const functionItemKeyCounter = new Map<string, number>()
+        return (
+          <View key={section.title}>
+            <Text className="mt-4 px-8 text-2xl font-medium text-white">{section.title}</Text>
+            <View style={styles.container}>
+              <View style={styles.itemContainer}>
+                {section.items.map((item) => {
+                  if (typeof item === "function") {
+                    const baseKey = item.displayName || item.name || "anonymous-debug-item"
+                    const duplicateCount = (functionItemKeyCounter.get(baseKey) ?? 0) + 1
+                    functionItemKeyCounter.set(baseKey, duplicateCount)
+                    return React.createElement(item, {
+                      key: `${baseKey}-${duplicateCount}`,
+                    })
+                  }
+                  return (
+                    <Pressable key={item.title} style={styles.itemPressable} onPress={item.onPress}>
+                      <Text style={styles.filename} className={item.textClassName}>
+                        {item.title}
+                      </Text>
+                    </Pressable>
+                  )
+                })}
+              </View>
             </View>
           </View>
-        </View>
-      ))}
+        )
+      })}
 
       <Text className="mt-4 px-8 text-2xl font-medium text-white">Sitemap</Text>
       <View style={styles.container}>
         <View style={styles.itemContainer}>
           {NavigationSitemapRegistry.entries().map(([title, register]) => {
             return (
-              <TouchableOpacity
+              <Pressable
                 key={title}
                 style={styles.itemPressable}
                 onPress={() => {
@@ -271,7 +272,7 @@ export const DebugScreen: NavigationControllerView = () => {
                 }}
               >
                 <Text style={styles.filename}>{title}</Text>
-              </TouchableOpacity>
+              </Pressable>
             )
           })}
         </View>
@@ -299,7 +300,7 @@ const UserSessionSetting = () => {
         value={input}
         onChangeText={setInput}
       />
-      <TouchableOpacity
+      <Pressable
         className="ml-2"
         onPress={() => {
           SecureStore.setItem(
@@ -314,7 +315,7 @@ const UserSessionSetting = () => {
         }}
       >
         <Text className="font-medium text-white">Save</Text>
-      </TouchableOpacity>
+      </Pressable>
     </Pressable>
   )
 }

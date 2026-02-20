@@ -30,6 +30,11 @@ export const initAnalytics = async () => {
       api_host: env.VITE_POSTHOG_HOST,
       person_profiles: "identified_only",
       defaults: "2025-05-24",
+      capture_exceptions: {
+        capture_unhandled_errors: true,
+        capture_unhandled_rejections: true,
+        capture_console_errors: false,
+      },
     }),
   )
 

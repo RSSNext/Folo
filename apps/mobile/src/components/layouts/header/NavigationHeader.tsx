@@ -12,7 +12,7 @@ import {
   useState,
 } from "react"
 import type { LayoutChangeEvent, StyleProp, ViewStyle } from "react-native"
-import { Alert, StyleSheet, TouchableOpacity, View } from "react-native"
+import { Alert, Pressable, StyleSheet, View } from "react-native"
 import type { AnimatedProps } from "react-native-reanimated"
 import Animated, {
   useAnimatedReaction,
@@ -141,8 +141,7 @@ const useHideableBottom = (
   }
 }
 export interface InternalNavigationHeaderProps
-  extends Omit<AnimatedProps<ViewProps>, "children">,
-    PropsWithChildren {
+  extends Omit<AnimatedProps<ViewProps>, "children">, PropsWithChildren {
   headerLeft?:
     | FC<{
         canGoBack: boolean
@@ -450,7 +449,7 @@ export const UINavigationHeaderActionButton = ({
   style?: StyleProp<ViewStyle>
 }) => {
   return (
-    <TouchableOpacity
+    <Pressable
       hitSlop={5}
       className={cn("p-2", className)}
       onPress={onPress}
@@ -458,7 +457,7 @@ export const UINavigationHeaderActionButton = ({
       style={style}
     >
       {children}
-    </TouchableOpacity>
+    </Pressable>
   )
 }
 const Noop = () => null

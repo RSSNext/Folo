@@ -121,7 +121,7 @@ const config: ForgeConfig = {
     asar: true,
     ignore: [ignorePattern],
 
-    prune: true,
+    prune: false,
     extendInfo: {
       ITSAppUsesNonExemptEncryption: false,
     },

@@ -28,7 +28,7 @@ concurrency:
 jobs:
   build:
     name: Build Android apk for device
-    if: github.secret_source != 'None'
+    if: github.secret_source != 'None' && (github.event_name != 'push' || !startsWith(github.event.head_commit.message || '', 'release(mobile):'))
     runs-on: ubuntu-latest
 
     steps:
@@ -104,13 +104,34 @@ jobs:
         with:
           type: "mobile"
 
+      - name: Prepare Release Notes
+        if: github.event.inputs.release == 'true'
+        id: release_notes
+        run: |
+          version="${{ steps.version.outputs.APP_VERSION }}"
+          changelog_file="apps/mobile/changelog/${version}.md"
+          release_notes_file="$RUNNER_TEMP/mobile-release-notes.md"
+
+          if [ -f "$changelog_file" ]; then
+            cp "$changelog_file" "$release_notes_file"
+          else
+            {
+              echo "# What's New in v${version}"
+              echo
+              echo "- No changelog file found at ${changelog_file}."
+            } > "$release_notes_file"
+          fi
+
+          echo "body_path=${release_notes_file}" >> "$GITHUB_OUTPUT"
+
       - name: Create Release Draft
         if: github.event.inputs.release == 'true'
         uses: softprops/action-gh-release@v2
         with:
           name: Mobile v${{ steps.version.outputs.APP_VERSION }}
-          draft: false
+          draft: true
           prerelease: true
           tag_name: mobile/v${{ steps.version.outputs.APP_VERSION }}
+          body_path: ${{ steps.release_notes.outputs.body_path }}
           # .aab cannot be installed directly on your Android Emulator or device.
           files: ${{ github.workspace }}/build.apk

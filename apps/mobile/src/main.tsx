@@ -2,7 +2,6 @@ import "./global.css"
 import "./polyfill"
 
 import { apiContext, authClientContext, queryClientContext } from "@follow/store/context"
-import * as Sentry from "@sentry/react-native"
 import { registerRootComponent } from "expo"
 import { Image } from "expo-image"
 import { LinearGradient } from "expo-linear-gradient"
@@ -45,7 +44,7 @@ enableFreeze(true)
 initializeApp()
 registerSitemap()
 initializeI18n()
-registerRootComponent(Sentry.wrap(RootComponent))
+registerRootComponent(RootComponent)
 
 function RootComponent() {
   const { t } = useTranslation()

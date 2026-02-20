@@ -6,7 +6,7 @@ import { createMobileAPIHeaders } from "@follow/utils/headers"
 import { useQuery } from "@tanstack/react-query"
 import { createAuthClient } from "better-auth/react"
 import { nativeApplicationVersion } from "expo-application"
-import * as FileSystem from "expo-file-system"
+import * as FileSystem from "expo-file-system/legacy"
 import * as SecureStore from "expo-secure-store"
 import Storage from "expo-sqlite/kv-store"
 import { Platform } from "react-native"
@@ -30,18 +30,34 @@ const plugins = [
     storagePrefix,
     storage: {
       setItem(key, value) {
-        SecureStore.setItem(key, value)
+        try {
+          SecureStore.setItem(key, value)
+        } catch (e) {
+          console.warn("SecureStore.setItem failed:", e)
+          return
+        }
 
         if (key === cookieKey) {
           if (__DEV__) {
             const env = getEnvProfile()
-            SecureStore.setItem(`${cookieKey}_${env}`, value)
+            try {
+              SecureStore.setItem(`${cookieKey}_${env}`, value)
+            } catch {
+              // Keychain may be unavailable in background
+            }
           }
           queryClient.invalidateQueries({ queryKey: whoamiQueryKey })
           queryClient.invalidateQueries({ queryKey: isNewUserQueryKey })
         }
       },
-      getItem: SecureStore.getItem,
+      getItem(key) {
+        try {
+          return SecureStore.getItem(key)
+        } catch (e) {
+          console.warn("SecureStore.getItem failed:", e)
+          return null
+        }
+      },
     },
   }),
 ]

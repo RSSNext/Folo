@@ -1,3 +1,4 @@
+import type { FeedViewType } from "@follow/constants"
 import { isFreeRole } from "@follow/constants"
 import { usePrefetchEntryTranslation } from "@follow/store/translation/hooks"
 import { useUserRole } from "@follow/store/user/hooks"
@@ -20,10 +21,14 @@ export const EntryListContentSocial = ({
   ref: forwardRef,
   entryIds,
   active,
-}: { entryIds: string[] | null; active?: boolean } & {
+  view,
+}: { entryIds: string[] | null; active?: boolean; view: FeedViewType } & {
   ref?: React.Ref<ElementRef<typeof TimelineSelectorList> | null>
 }) => {
-  const { fetchNextPage, isFetching, refetch, isRefetching, hasNextPage, isReady } = useEntries()
+  const { fetchNextPage, isFetching, refetch, isRefetching, hasNextPage, isReady } = useEntries({
+    viewId: view,
+    active,
+  })
   const extraData: EntryExtraData = useMemo(() => ({ entryIds }), [entryIds])
 
   const ref = useRef<FlashListRef<any>>(null)

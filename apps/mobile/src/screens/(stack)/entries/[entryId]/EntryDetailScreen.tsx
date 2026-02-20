@@ -198,7 +198,7 @@ const EntryInfo = ({ entryId }: { entryId: string }) => {
   }))
   const feed = useFeedById(entry?.feedId)
   const secondaryLabelColor = useColor("secondaryLabel")
-  const readCount = useEntryReadHistory(entryId)?.entryReadHistories?.readCount
+  const readCount = useEntryReadHistory(entryId)?.entryReadHistories?.readCount ?? 0
   const hideRecentReader = useUISettingKey("hideRecentReader")
   if (!entry) return null
   const { publishedAt } = entry
@@ -207,7 +207,7 @@ const EntryInfo = ({ entryId }: { entryId: string }) => {
       {feed && (
         <View className="flex shrink flex-row items-center gap-2">
           <FeedIcon feed={feed} />
-          <Text className="shrink text-sm font-medium leading-tight text-label" numberOfLines={1}>
+          <Text className="shrink text-xs font-medium leading-tight text-label" numberOfLines={1}>
             {feed.title?.trim()}
           </Text>
         </View>
@@ -216,13 +216,13 @@ const EntryInfo = ({ entryId }: { entryId: string }) => {
         <CalendarTimeAddCuteReIcon width={16} height={16} color={secondaryLabelColor} />
         <RelativeDateTime
           date={publishedAt}
-          className="text-sm leading-tight text-secondary-label"
+          className="text-xs leading-tight text-secondary-label"
         />
       </View>
       {!hideRecentReader && (
         <View className="flex flex-row items-center gap-1">
           <Eye2CuteReIcon width={16} height={16} color={secondaryLabelColor} />
-          <Text className="text-sm leading-tight text-secondary-label">{readCount}</Text>
+          <Text className="text-xs leading-tight text-secondary-label">{readCount}</Text>
         </View>
       )}
     </View>
@@ -235,8 +235,8 @@ const EntryInfoSocial = ({ entryId }: { entryId: string }) => {
   if (!entry) return null
   return (
     <View className="mt-3 px-4">
-      <Text className="text-secondary-label">
-        {entry.publishedAt.toLocaleString("en-US", {
+      <Text className="text-sm text-secondary-label">
+        {entry.publishedAt.toLocaleString(undefined, {
           dateStyle: "medium",
           timeStyle: "short",
         })}
