@@ -64,13 +64,31 @@ Perform a regular mobile release. This skill handles the full release workflow f
 
 5. Keep `NEXT_VERSION` as the placeholder - it will be replaced by `apply-changelog.ts` during bump.
 
-## Step 3: Execute bump
+## Step 3: Commit changelog updates before bump
 
-1. Change directory to `apps/mobile/` and run the bump:
+`nbump` requires a clean working tree. Commit changelog edits before running bump.
+
+1. Stage the changelog update:
+   ```bash
+   git add apps/mobile/changelog/next.md
+   ```
+2. Commit it on `dev`:
+   ```bash
+   git commit -m "docs(mobile): prepare release changelog"
+   ```
+3. If there are no changes to commit, continue without creating an extra commit.
+
+## Step 4: Execute bump
+
+1. Verify working tree is clean before bump:
+   ```bash
+   git status --short
+   ```
+2. Change directory to `apps/mobile/` and run the bump:
    ```bash
    cd apps/mobile && pnpm bump
    ```
-2. This is an interactive `nbump` command that prompts for version selection. It will:
+3. This is an interactive `nbump` command that prompts for version selection. It will:
    - Pull latest changes
    - Apply changelog (rename next.md to {version}.md, create new next.md from template)
    - Format package.json with eslint + prettier
@@ -82,7 +100,7 @@ Perform a regular mobile release. This skill handles the full release workflow f
    - Create branch `release/mobile/{NEW_VERSION}`
    - Push branch and create PR to `mobile-main`
 
-## Step 4: Verify
+## Step 5: Verify
 
 1. Confirm the PR was created successfully by checking the output.
 2. Report the new version number and PR URL to the user.

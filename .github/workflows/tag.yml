@@ -110,7 +110,7 @@ jobs:
           echo "build_version=${next_build}" >> "$GITHUB_OUTPUT"
           echo "Desktop build version: ${next_build}"
 
-      - name: Trigger Desktop Build
+      - name: Trigger Desktop Tag Version Build
         if: needs.create_tag.outputs.platform == 'desktop' && needs.create_tag.outputs.ref_name == 'main'
         uses: actions/github-script@v8
         with:
@@ -123,11 +123,29 @@ jobs:
               ref: 'main',
               inputs: {
                 tag_version: 'true',
+                store: 'false'
+              }
+            });
+            console.log('Desktop Tag Version build triggered successfully');
+
+      - name: Trigger Desktop Store Build
+        if: needs.create_tag.outputs.platform == 'desktop' && needs.create_tag.outputs.ref_name == 'main'
+        uses: actions/github-script@v8
+        with:
+          github-token: ${{ secrets.GITHUB_TOKEN }}
+          script: |
+            const response = await github.rest.actions.createWorkflowDispatch({
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              workflow_id: 'build-desktop.yml',
+              ref: 'main',
+              inputs: {
+                tag_version: 'false',
                 store: 'true',
                 build_version: '${{ steps.desktop_build_version.outputs.build_version }}'
               }
             });
-            console.log('Desktop build triggered successfully');
+            console.log('Desktop store build triggered successfully');
 
       - name: Trigger Mobile Preview Release Build
         if: needs.create_tag.outputs.platform == 'mobile' && needs.create_tag.outputs.ref_name == 'mobile-main'

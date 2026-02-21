@@ -60,7 +60,21 @@ Perform a regular desktop release. This skill handles the full release workflow 
 
 5. Keep `NEXT_VERSION` as the placeholder - it will be replaced by `apply-changelog.ts` during bump.
 
-## Step 3: Evaluate mainHash
+## Step 3: Commit changelog updates before bump
+
+`nbump` requires a clean working tree. Commit changelog edits before running bump.
+
+1. Stage the changelog update:
+   ```bash
+   git add apps/desktop/changelog/next.md
+   ```
+2. Commit it on `dev`:
+   ```bash
+   git commit -m "docs(desktop): prepare release changelog"
+   ```
+3. If there are no changes to commit, continue without creating an extra commit.
+
+## Step 4: Evaluate mainHash
 
 This is critical for determining whether users need a full app update or can use the lightweight renderer hot update.
 
@@ -86,14 +100,18 @@ Present your analysis to the user with:
 - Your recommendation (update or skip mainHash)
 - Ask for explicit confirmation
 
-## Step 4: Save old mainHash and execute bump
+## Step 5: Save old mainHash and execute bump
 
 1. Save the current mainHash from `apps/desktop/package.json` for later comparison.
-2. Change directory to `apps/desktop/` and run the bump:
+2. Verify working tree is clean before bump:
+   ```bash
+   git status --short
+   ```
+3. Change directory to `apps/desktop/` and run the bump:
    ```bash
    cd apps/desktop && pnpm bump
    ```
-3. This command will:
+4. This command will:
    - Pull latest changes
    - Apply changelog (rename next.md to {version}.md, create new next.md)
    - Recalculate mainHash and write to package.json
@@ -103,11 +121,11 @@ Present your analysis to the user with:
    - Create branch `release/desktop/{NEW_VERSION}`
    - Push branch and create PR to `main`
 
-## Step 5: Restore mainHash if skipping update
+## Step 6: Restore mainHash if skipping update
 
-If Step 3 decided mainHash should NOT be updated, restore the old value now. The bump has already committed, pushed, and created the PR on a new release branch, so we amend the commit and force push. This is safe because the release branch was just created.
+If Step 4 decided mainHash should NOT be updated, restore the old value now. The bump has already committed, pushed, and created the PR on a new release branch, so we amend the commit and force push. This is safe because the release branch was just created.
 
-1. Change back to the repo root first (Step 4 left the working directory at `apps/desktop/`):
+1. Change back to the repo root first (Step 5 left the working directory at `apps/desktop/`):
    ```bash
    cd ../..
    ```
@@ -122,9 +140,9 @@ If Step 3 decided mainHash should NOT be updated, restore the old value now. The
    git push --force origin release/desktop/{NEW_VERSION}
    ```
 
-If Step 3 decided mainHash SHOULD be updated, skip this step entirely — the bump already wrote the correct new value.
+If Step 4 decided mainHash SHOULD be updated, skip this step entirely — the bump already wrote the correct new value.
 
-## Step 6: Verify
+## Step 7: Verify
 
 1. Confirm the PR was created successfully by checking the output.
 2. Report the new version number and PR URL to the user.
