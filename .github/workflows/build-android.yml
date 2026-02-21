@@ -28,7 +28,7 @@ concurrency:
 jobs:
   build:
     name: Build Android apk for device
-    if: github.secret_source != 'None' && (github.event_name != 'push' || !startsWith(github.event.head_commit.message || '', 'release(mobile):'))
+    if: github.secret_source != 'None' && (github.event_name != 'push' || !contains(github.event.head_commit.message || '', 'release(mobile):'))
     runs-on: ubuntu-latest
 
     steps:
