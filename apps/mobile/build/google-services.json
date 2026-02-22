@@ -1,26 +1,36 @@
 {
   "project_info": {
-    "project_number": "194977404578",
-    "project_id": "follow-428106",
-    "storage_bucket": "follow-428106.firebasestorage.app"
+    "project_number": "992336953943",
+    "project_id": "diygod-folo",
+    "storage_bucket": "diygod-folo.firebasestorage.app"
   },
   "client": [
     {
       "client_info": {
-        "mobilesdk_app_id": "1:194977404578:android:b160305b94681dcb3669fb",
+        "mobilesdk_app_id": "1:992336953943:android:7e45e76b1a8986e1c11912",
         "android_client_info": {
           "package_name": "is.follow"
         }
       },
-      "oauth_client": [],
+      "oauth_client": [
+        {
+          "client_id": "992336953943-3rja1g44ep4tmsmv84mkaa6itv9ejrsi.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
       "api_key": [
         {
-          "current_key": "AIzaSyA8knDQi334H3YBPflxfrYuod7AGZFQt64"
+          "current_key": "AIzaSyC7X-OdrxXWogeQwVDIFNkZzy81TINa7Fs"
         }
       ],
       "services": {
         "appinvite_service": {
-          "other_platform_oauth_client": []
+          "other_platform_oauth_client": [
+            {
+              "client_id": "992336953943-3rja1g44ep4tmsmv84mkaa6itv9ejrsi.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
         }
       }
     }
