@@ -11,6 +11,7 @@ export default defineConfig({
   format: ["esm"],
   external: ["node:*", /\.wasm$/],
   noExternal: ["**"],
+  inlineOnly: false,
   treeshake: true,
   splitting: false,
 
