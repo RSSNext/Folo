@@ -1,0 +1,74 @@
+{
+  "$schema": "./node_modules/wrangler/config-schema.json",
+  "name": "folo-ssr",
+  "main": "dist/worker/worker-entry.mjs",
+  "compatibility_date": "2026-02-01",
+  "compatibility_flags": ["nodejs_compat"],
+  "account_id": "1f1d1678a2413a54c944b3081bab5c84",
+  "placement": {
+    "mode": "smart",
+  },
+  "limits": {
+    "cpu_ms": 30000,
+  },
+  "rules": [
+    {
+      "type": "CompiledWasm",
+      "globs": ["**/*.wasm"],
+      "fallthrough": true,
+    },
+  ],
+  "assets": {
+    "directory": "../desktop/out/web",
+    "not_found_handling": "none",
+    "html_handling": "none",
+    "binding": "ASSETS",
+  },
+  "workers_dev": true,
+  "routes": [
+    {
+      "pattern": "app.folo.is/*",
+      "zone_id": "115ea8e6a7865dbfc1cf4530d5f87f63",
+    },
+  ],
+  "r2_buckets": [
+    {
+      "binding": "FONTS_BUCKET",
+      "bucket_name": "follow",
+    },
+  ],
+  "vars": {
+    "VITE_API_URL": "https://api.folo.is",
+    "VITE_WEB_URL": "https://app.folo.is",
+    "VITE_EXTERNAL_DEV_API_URL": "https://api.dev.folo.is",
+    "VITE_EXTERNAL_PROD_API_URL": "https://api.folo.is",
+    "VITE_WEB_DEV_URL": "https://dev.folo.is",
+    "VITE_SENTRY_DSN": "https://e5bccf7428aa4e881ed5cb713fdff181@o4507542488023040.ingest.us.sentry.io/4507570439979008",
+  },
+  "env": {
+    "dev": {
+      "name": "folo-ssr-dev",
+      "workers_dev": true,
+      "routes": [
+        {
+          "pattern": "dev.folo.is/*",
+          "zone_id": "115ea8e6a7865dbfc1cf4530d5f87f63",
+        },
+      ],
+      "r2_buckets": [
+        {
+          "binding": "FONTS_BUCKET",
+          "bucket_name": "follow",
+        },
+      ],
+      "vars": {
+        "VITE_API_URL": "https://api.dev.folo.is",
+        "VITE_WEB_URL": "https://dev.folo.is",
+        "VITE_EXTERNAL_DEV_API_URL": "https://api.dev.folo.is",
+        "VITE_EXTERNAL_PROD_API_URL": "https://api.folo.is",
+        "VITE_WEB_DEV_URL": "https://dev.folo.is",
+        "VITE_SENTRY_DSN": "https://e5bccf7428aa4e881ed5cb713fdff181@o4507542488023040.ingest.us.sentry.io/4507570439979008",
+      },
+    },
+  },
+}
