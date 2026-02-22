@@ -1,4 +1,4 @@
-import { dirname } from "pathe"
+import { dirname, resolve } from "pathe"
 import { defineConfig } from "tsdown"
 
 const __dirname = dirname(import.meta.url.replace("file://", ""))
@@ -19,7 +19,7 @@ export default defineConfig({
     "./src/lib/og/fonts": "./src/lib/og/fonts.worker",
     "../../lib/og/render-to-image": "../../lib/og/render-to-image.worker",
     "./src/lib/load-env": "./src/lib/load-env.worker",
-    "@fastify/request-context": path.resolve(__dirname, "src/lib/worker-request-context.ts"),
+    "@fastify/request-context": resolve(__dirname, "src/lib/worker-request-context.ts"),
   },
 
   define: {
