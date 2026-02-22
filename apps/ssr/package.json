@@ -4,6 +4,9 @@
   "private": true,
   "scripts": {
     "build": "cross-env NODE_ENV=production vite build && tsx scripts/prepare-vercel-build.ts && tsdown && tsx scripts/cleanup-vercel-build.ts",
+    "build:worker": "cross-env NODE_ENV=production vite build && tsx scripts/prepare-vercel-build.ts && tsx scripts/generate-font-data.ts && tsdown --config tsdown.worker.config.ts && tsx scripts/patch-worker-build.ts && cp -r dist/dist-external ../desktop/out/web/dist-external",
+    "deploy:dev": "wrangler deploy --env dev",
+    "deploy:prod": "wrangler deploy",
     "dev": "cross-env NODE_ENV=development tsx watch --include \"src/**/*.ts\" --exclude \"./*.ts\" --exclude \"./*.mjs\" index.ts",
     "meta": "tsx helper/meta-map.ts --watch",
     "start": "tsx index.ts",
@@ -54,6 +57,7 @@
     "@follow/shared": "workspace:*",
     "@follow/types": "workspace:*",
     "@follow/utils": "workspace:*",
+    "@resvg/resvg-wasm": "2.6.2",
     "@types/html-minifier-terser": "7.0.2",
     "chokidar": "4.0.3",
     "code-inspector-plugin": "1.4.2",
@@ -62,6 +66,7 @@
     "es-toolkit": "1.44.0",
     "fast-glob": "3.3.3",
     "foxact": "0.2.52",
+    "hono": "4.12.1",
     "html-minifier-terser": "7.2.0",
     "lightningcss": "1.31.1",
     "masonic": "4.1.0",
@@ -72,6 +77,7 @@
     "tsx": "4.21.0",
     "typescript": "catalog:",
     "vite": "7.3.1",
-    "vite-plugin-route-builder": "0.4.1"
+    "vite-plugin-route-builder": "0.4.1",
+    "wrangler": "4.67.0"
   }
 }
