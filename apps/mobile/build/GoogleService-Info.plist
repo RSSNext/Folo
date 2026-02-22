@@ -3,17 +3,17 @@
 <plist version="1.0">
 <dict>
 	<key>API_KEY</key>
-	<string>AIzaSyBD8lePDcfuPeJpJkvY1Egc_5sLX5lrtpg</string>
+	<string>AIzaSyBl6-TXvw5F0CX1r-935w0x_xPbVr0SSbQ</string>
 	<key>GCM_SENDER_ID</key>
-	<string>194977404578</string>
+	<string>992336953943</string>
 	<key>PLIST_VERSION</key>
 	<string>1</string>
 	<key>BUNDLE_ID</key>
 	<string>is.follow</string>
 	<key>PROJECT_ID</key>
-	<string>follow-428106</string>
+	<string>diygod-folo</string>
 	<key>STORAGE_BUCKET</key>
-	<string>follow-428106.firebasestorage.app</string>
+	<string>diygod-folo.firebasestorage.app</string>
 	<key>IS_ADS_ENABLED</key>
 	<false></false>
 	<key>IS_ANALYTICS_ENABLED</key>
@@ -25,6 +25,6 @@
 	<key>IS_SIGNIN_ENABLED</key>
 	<true></true>
 	<key>GOOGLE_APP_ID</key>
-	<string>1:194977404578:ios:f26373d7487896293669fb</string>
+	<string>1:992336953943:ios:75a436f716af190dc11912</string>
 </dict>
 </plist>

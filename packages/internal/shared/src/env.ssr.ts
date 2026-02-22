@@ -14,7 +14,7 @@ export const env = createEnv({
     VITE_DEV_PROXY: z.string().optional(),
     VITE_SENTRY_DSN: z.string().optional(),
     VITE_INBOXES_EMAIL: z.string().default(DEFAULT_VALUES.PROD.INBOXES_EMAIL),
-    VITE_FIREBASE_CONFIG: z.string().optional(),
+    VITE_FIREBASE_CONFIG: z.string().default(DEFAULT_VALUES.PROD.FIREBASE_CONFIG),
 
     VITE_OPENPANEL_CLIENT_ID: z.string().optional(),
     VITE_OPENPANEL_API_URL: z.string().url().optional(),
