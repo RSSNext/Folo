@@ -38,9 +38,6 @@ interface Env {
   ASSETS: Fetcher
   VITE_API_URL: string
   VITE_WEB_URL: string
-  VITE_EXTERNAL_DEV_API_URL: string
-  VITE_EXTERNAL_PROD_API_URL: string
-  VITE_WEB_DEV_URL: string
   VITE_SENTRY_DSN: string
 }
 
@@ -75,12 +72,9 @@ app.use("*", async (c, next) => {
   }
 
   return runWithRequestContext(async () => {
-    // Determine upstream env from host
     const host = c.req.header("host") || ""
     const forwardedHost = c.req.header("x-forwarded-host")
     const finalHost = forwardedHost || host
-    const upstreamEnv =
-      finalHost === "dev.folo.is" || finalHost?.includes("folo-ssr-dev") ? "dev" : "prod"
 
     // Create a req-like proxy for compatibility with existing modules
     const headers: Record<string, string> = {}
@@ -95,12 +89,6 @@ app.use("*", async (c, next) => {
 
     // Set request context values
     requestContext.set("req", reqProxy)
-    requestContext.set("upstreamEnv", upstreamEnv)
-    if (upstreamEnv === "prod") {
-      requestContext.set("upstreamOrigin", env.VITE_WEB_PROD_URL || env.VITE_WEB_URL)
-    } else {
-      requestContext.set("upstreamOrigin", env.VITE_WEB_DEV_URL || env.VITE_WEB_URL)
-    }
 
     await next()
 
@@ -231,32 +219,17 @@ export default app
 
 // Helper: inject env vars into HTML document
 function injectEnvToDocument(document: any) {
-  const upstreamEnv = requestContext.get("upstreamEnv") as string
-  const upstreamOrigin = requestContext.get("upstreamOrigin") as string
-
-  if (upstreamEnv) {
-    document.head.prepend(document.createComment(`upstreamEnv: ${upstreamEnv}`))
-
-    const injectScript = (apiUrl: string) => {
-      const scriptContent = `function injectEnv(env2) {
+  const scriptContent = `function injectEnv(env2) {
     for (const key in env2) {
       if (env2[key] === void 0) continue;
       globalThis["__followEnv"] ??= {};
       globalThis["__followEnv"][key] = env2[key];
     }
   }
-injectEnv({"VITE_API_URL":"${apiUrl}","VITE_EXTERNAL_API_URL":"${apiUrl}","VITE_WEB_URL":"${upstreamOrigin}"})`
-      const $script = document.createElement("script")
-      $script.innerHTML = scriptContent
-      document.head.prepend($script)
-    }
-    if (upstreamEnv === "dev" && env.VITE_EXTERNAL_DEV_API_URL) {
-      injectScript(env.VITE_EXTERNAL_DEV_API_URL)
-    }
-    if (upstreamEnv === "prod" && env.VITE_EXTERNAL_PROD_API_URL) {
-      injectScript(env.VITE_EXTERNAL_PROD_API_URL)
-    }
-  }
+injectEnv({"VITE_API_URL":"${env.VITE_API_URL}","VITE_WEB_URL":"${env.VITE_WEB_URL}"})`
+  const $script = document.createElement("script")
+  $script.innerHTML = scriptContent
+  document.head.prepend($script)
 }
 
 // Helper: inject meta tags into HTML document

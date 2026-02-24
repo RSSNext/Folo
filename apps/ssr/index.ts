@@ -5,7 +5,6 @@ import os from "node:os"
 
 import middie from "@fastify/middie"
 import { fastifyRequestContext } from "@fastify/request-context"
-import { env } from "@follow/shared/env.ssr"
 import type { FastifyRequest } from "fastify"
 import Fastify from "fastify"
 import { nanoid } from "nanoid"
@@ -20,9 +19,6 @@ const isVercel = process.env.VERCEL === "1"
 declare module "@fastify/request-context" {
   interface RequestContextData {
     req: FastifyRequest
-
-    upstreamEnv: "prod" | "dev"
-    upstreamOrigin: string
   }
 }
 
@@ -60,13 +56,6 @@ export const createApp = async () => {
     const forwardedHost = req.headers["x-forwarded-host"]
     const finalHost = forwardedHost || host
 
-    const upstreamEnv = finalHost?.includes("dev") ? "dev" : "prod"
-    if (!__DEV__) req.requestContext.set("upstreamEnv", upstreamEnv)
-    if (upstreamEnv === "prod") {
-      req.requestContext.set("upstreamOrigin", env.VITE_WEB_PROD_URL || env.VITE_WEB_URL)
-    } else {
-      req.requestContext.set("upstreamOrigin", env.VITE_WEB_DEV_URL || env.VITE_WEB_URL)
-    }
     reply.header("x-handled-host", finalHost)
     done()
   })

@@ -1,3 +1,4 @@
+import { env } from "@follow/shared/env.ssr"
 import type { FollowClient } from "@follow-app/client-sdk"
 import type { FastifyReply, FastifyRequest } from "fastify"
 import { match } from "path-to-regexp"
@@ -41,12 +42,12 @@ export async function injectMetaHandler(
   res: FastifyReply,
 ): Promise<MetaTag[]> {
   const apiClient = createFollowClient()
-  const upstreamOrigin = req.requestContext.get("upstreamOrigin")
+  const webOrigin = env.VITE_WEB_URL
   const url = req.originalUrl
 
   for (const [pattern, handler] of Object.entries(importer)) {
     const matchFn = match(pattern, { decode: decodeURIComponent })
-    const parsedUrl = new URL(url, upstreamOrigin)
+    const parsedUrl = new URL(url, webOrigin)
     const result = matchFn(parsedUrl.pathname)
 
     if (result) {
@@ -56,7 +57,7 @@ export async function injectMetaHandler(
         url: parsedUrl,
         req,
         apiClient,
-        origin: upstreamOrigin || "",
+        origin: webOrigin,
         setStatus(status) {
           res.status(status)
         },
