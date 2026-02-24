@@ -91,6 +91,18 @@ class SettingSyncQueue {
     return whoami()?.id ?? null
   }
 
+  private bindQueueOwner(currentUserId: string) {
+    if (this.ownerUserId === null) {
+      this.ownerUserId = currentUserId
+      return
+    }
+
+    if (this.ownerUserId !== currentUserId) {
+      this.ownerUserId = currentUserId
+      this.queue = []
+    }
+  }
+
   private reportSyncError(stage: "flush" | "syncLocal", error: unknown) {
     void tracker.manager.captureException(error, {
       module: "setting_sync",
@@ -108,10 +120,7 @@ class SettingSyncQueue {
       const currentUserId = this.getCurrentUserId()
       if (!currentUserId) return
 
-      if (this.ownerUserId !== currentUserId) {
-        this.ownerUserId = currentUserId
-        this.queue = []
-      }
+      this.bindQueueOwner(currentUserId)
 
       const tab = bizSettingKeyToTabMapping[data.key]
       if (!tab) return
@@ -188,10 +197,11 @@ class SettingSyncQueue {
       /* empty */
     }
 
-    if (!currentUserId || this.ownerUserId !== currentUserId) {
-      this.queue = []
-      this.ownerUserId = currentUserId
+    if (!currentUserId) {
+      return
     }
+
+    this.bindQueueOwner(currentUserId)
   }
 
   private chain = Promise.resolve()
@@ -205,10 +215,7 @@ class SettingSyncQueue {
       return
     }
 
-    if (this.ownerUserId !== currentUserId) {
-      this.ownerUserId = currentUserId
-      this.queue = []
-    }
+    this.bindQueueOwner(currentUserId)
 
     const now = Date.now()
     if (isEmptyObject(payload)) {
@@ -229,16 +236,10 @@ class SettingSyncQueue {
   private async flush() {
     const currentUserId = this.getCurrentUserId()
     if (!currentUserId) {
-      this.queue = []
-      this.ownerUserId = null
       return
     }
 
-    if (this.ownerUserId !== currentUserId) {
-      this.queue = []
-      this.ownerUserId = currentUserId
-      return
-    }
+    this.bindQueueOwner(currentUserId)
 
     if (navigator.onLine === false) {
       return
@@ -306,10 +307,7 @@ class SettingSyncQueue {
       return this.chain
     }
 
-    if (this.ownerUserId !== currentUserId) {
-      this.queue = []
-      this.ownerUserId = currentUserId
-    }
+    this.bindQueueOwner(currentUserId)
 
     if (!tab) {
       const promises = [] as Promise<any>[]
@@ -344,10 +342,7 @@ class SettingSyncQueue {
     const currentUserId = this.getCurrentUserId()
     if (!currentUserId) return
 
-    if (this.ownerUserId !== currentUserId) {
-      this.queue = []
-      this.ownerUserId = currentUserId
-    }
+    this.bindQueueOwner(currentUserId)
 
     const remoteSettings = await settings
       .get()
