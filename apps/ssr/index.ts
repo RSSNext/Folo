@@ -10,6 +10,7 @@ import Fastify from "fastify"
 import { nanoid } from "nanoid"
 import { FetchError } from "ofetch"
 
+import { APPLE_APP_SITE_ASSOCIATION } from "./src/lib/apple-app-site-association"
 import { MetaError } from "./src/meta-handler"
 import { globalRoute } from "./src/router/global"
 import { ogRoute } from "./src/router/og"
@@ -58,6 +59,20 @@ export const createApp = async () => {
 
     reply.header("x-handled-host", finalHost)
     done()
+  })
+
+  app.get("/.well-known/apple-app-site-association", async (_req, reply) => {
+    return reply
+      .type("application/json")
+      .header("Cache-Control", "public, max-age=300")
+      .send(APPLE_APP_SITE_ASSOCIATION)
+  })
+
+  app.get("/apple-app-site-association", async (_req, reply) => {
+    return reply
+      .type("application/json")
+      .header("Cache-Control", "public, max-age=300")
+      .send(APPLE_APP_SITE_ASSOCIATION)
   })
 
   if (__DEV__) {

@@ -31,7 +31,7 @@ const meta = defineMetadata(async ({ params, apiClient, origin }) => {
     {
       type: "meta",
       property: "apple-itunes-app",
-      content: `app-id=${APPLE_APP_STORE_ID}, app-argument=follow://add?id=${feedId}&type=feed`,
+      content: `app-id=${APPLE_APP_STORE_ID}, app-argument=folo://add?id=${feedId}&type=feed`,
     },
   ] as const
 })

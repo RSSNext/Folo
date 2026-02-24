@@ -12,6 +12,7 @@ import xss from "xss"
 import resvgWasm from "./resvg.wasm"
 // OG image rendering
 import { createFollowClient } from "./src/lib/api-client"
+import { APPLE_APP_SITE_ASSOCIATION } from "./src/lib/apple-app-site-association"
 import { NotFoundError } from "./src/lib/not-found"
 import { setFontsBucket } from "./src/lib/og/fonts.worker"
 import { setWasmModule } from "./src/lib/og/resvg-wasm-shim"
@@ -54,6 +55,18 @@ app.get("/list/:id", (c) => {
 })
 app.get("/profile/:path{.*}", (c) => {
   return c.redirect(`/share/users/${c.req.param("path")}`, 301)
+})
+
+app.get("/.well-known/apple-app-site-association", (c) => {
+  return c.json(APPLE_APP_SITE_ASSOCIATION, 200, {
+    "Cache-Control": "public, max-age=300",
+  })
+})
+
+app.get("/apple-app-site-association", (c) => {
+  return c.json(APPLE_APP_SITE_ASSOCIATION, 200, {
+    "Cache-Control": "public, max-age=300",
+  })
 })
 
 // Middleware: set up env vars and request context

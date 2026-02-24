@@ -49,6 +49,7 @@ export default ({ config }: ConfigContext): ExpoConfig => {
     ios: {
       supportsTablet: true,
       bundleIdentifier: "is.follow",
+      associatedDomains: ["applinks:folo.is", "applinks:app.folo.is", "applinks:dev.folo.is"],
       usesAppleSignIn: true,
       infoPlist: {
         LSApplicationCategoryType: "public.app-category.news",

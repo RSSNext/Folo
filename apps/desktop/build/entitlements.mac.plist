@@ -4,5 +4,11 @@
   <dict>
     <key>com.apple.security.cs.allow-jit</key>
     <true/>
+    <key>com.apple.developer.associated-domains</key>
+    <array>
+      <string>applinks:folo.is</string>
+      <string>applinks:app.folo.is</string>
+      <string>applinks:dev.folo.is</string>
+    </array>
   </dict>
 </plist>

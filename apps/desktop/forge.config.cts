@@ -124,6 +124,7 @@ const config: ForgeConfig = {
     prune: false,
     extendInfo: {
       ITSAppUsesNonExemptEncryption: false,
+      NSUserActivityTypes: ["NSUserActivityTypeBrowsingWeb"],
     },
     osxSign: {
       optionsForFile:
