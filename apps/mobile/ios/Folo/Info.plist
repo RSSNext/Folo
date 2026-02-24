@@ -26,6 +26,7 @@
 		<string>ja</string>
 		<string>zh-CN</string>
 		<string>zh-TW</string>
+		<string>fr-FR</string>
 	</array>
 	<key>CFBundleName</key>
 	<string>$(PRODUCT_NAME)</string>
