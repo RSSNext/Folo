@@ -1,8 +1,11 @@
 import type { AISettings, GeneralSettings, UISettings } from "@follow/shared/settings/interface"
+import { whoami } from "@follow/store/user/getters"
+import { tracker } from "@follow/tracker"
 import { EventBus } from "@follow/utils/event-bus"
 import { getStorageNS } from "@follow/utils/ns"
 import { isEmptyObject, sleep } from "@follow/utils/utils"
 import type { SettingsTab } from "@follow-app/client-sdk"
+import { FollowAPIError } from "@follow-app/client-sdk"
 import { omit } from "es-toolkit/compat"
 import type { PrimitiveAtom } from "jotai"
 
@@ -56,14 +59,44 @@ const bizSettingKeyToTabMapping = {
   ai: "ai",
 }
 
+const isUnauthorizedError = (error: unknown) => {
+  if (error instanceof FollowAPIError) {
+    return error.status === 401
+  }
+
+  if (error && typeof error === "object" && "status" in error) {
+    return Number((error as { status?: unknown }).status) === 401
+  }
+
+  return false
+}
+
 export type SettingSyncTab = keyof SettingMapping
 export interface SettingSyncQueueItem<T extends SettingSyncTab = SettingSyncTab> {
   tab: T
   payload: Partial<SettingMapping[T]>
   date: number
 }
+
+interface PersistedSettingSyncQueue {
+  ownerUserId: string | null
+  queue: SettingSyncQueueItem[]
+}
+
 class SettingSyncQueue {
   queue: SettingSyncQueueItem[] = []
+  private ownerUserId: string | null = null
+
+  private getCurrentUserId() {
+    return whoami()?.id ?? null
+  }
+
+  private reportSyncError(stage: "flush" | "syncLocal", error: unknown) {
+    void tracker.manager.captureException(error, {
+      module: "setting_sync",
+      stage,
+    })
+  }
 
   private disposers: (() => void)[] = []
   async init() {
@@ -72,6 +105,14 @@ class SettingSyncQueue {
     this.load()
 
     const d1 = EventBus.subscribe("SETTING_CHANGE_EVENT", (data) => {
+      const currentUserId = this.getCurrentUserId()
+      if (!currentUserId) return
+
+      if (this.ownerUserId !== currentUserId) {
+        this.ownerUserId = currentUserId
+        this.queue = []
+      }
+
       const tab = bizSettingKeyToTabMapping[data.key]
       if (!tab) return
 
@@ -97,14 +138,21 @@ class SettingSyncQueue {
       disposer()
     }
     this.queue = []
+    this.ownerUserId = null
   }
 
   private readonly storageKey = getStorageNS("setting_sync_queue")
   private persist() {
     if (this.queue.length === 0) {
+      localStorage.removeItem(this.storageKey)
       return
     }
-    localStorage.setItem(this.storageKey, JSON.stringify(this.queue))
+
+    const payload: PersistedSettingSyncQueue = {
+      ownerUserId: this.ownerUserId,
+      queue: this.queue,
+    }
+    localStorage.setItem(this.storageKey, JSON.stringify(payload))
   }
 
   private load() {
@@ -115,9 +163,24 @@ class SettingSyncQueue {
     }
 
     try {
-      this.queue = JSON.parse(queue)
+      const parsed = JSON.parse(queue) as unknown
+      if (!parsed || Array.isArray(parsed) || typeof parsed !== "object") {
+        this.queue = []
+        this.ownerUserId = null
+        return
+      }
+
+      const payload = parsed as Partial<PersistedSettingSyncQueue>
+      this.queue = Array.isArray(payload.queue) ? payload.queue : []
+      this.ownerUserId = typeof payload.ownerUserId === "string" ? payload.ownerUserId : null
     } catch {
       /* empty */
+    }
+
+    const currentUserId = this.getCurrentUserId()
+    if (!currentUserId || this.ownerUserId !== currentUserId) {
+      this.queue = []
+      this.ownerUserId = currentUserId
     }
   }
 
@@ -127,6 +190,16 @@ class SettingSyncQueue {
   private enqueueTime = Date.now()
 
   async enqueue<T extends SettingSyncTab>(tab: T, payload: Partial<SettingMapping[T]>) {
+    const currentUserId = this.getCurrentUserId()
+    if (!currentUserId) {
+      return
+    }
+
+    if (this.ownerUserId !== currentUserId) {
+      this.ownerUserId = currentUserId
+      this.queue = []
+    }
+
     const now = Date.now()
     if (isEmptyObject(payload)) {
       return
@@ -144,6 +217,19 @@ class SettingSyncQueue {
   }
 
   private async flush() {
+    const currentUserId = this.getCurrentUserId()
+    if (!currentUserId) {
+      this.queue = []
+      this.ownerUserId = null
+      return
+    }
+
+    if (this.ownerUserId !== currentUserId) {
+      this.queue = []
+      this.ownerUserId = currentUserId
+      return
+    }
+
     if (navigator.onLine === false) {
       return
     }
@@ -191,10 +277,30 @@ class SettingSyncQueue {
       promises.push(promise)
     }
 
-    await Promise.all(promises)
+    try {
+      await Promise.all(promises)
+    } catch (error) {
+      if (isUnauthorizedError(error)) {
+        this.queue = []
+        this.ownerUserId = currentUserId
+        return
+      }
+
+      this.reportSyncError("flush", error)
+    }
   }
 
   replaceRemote(tab?: SettingSyncTab) {
+    const currentUserId = this.getCurrentUserId()
+    if (!currentUserId) {
+      return this.chain
+    }
+
+    if (this.ownerUserId !== currentUserId) {
+      this.queue = []
+      this.ownerUserId = currentUserId
+    }
+
     if (!tab) {
       const promises = [] as Promise<any>[]
       for (const tab in localSettingGetterMap) {
@@ -225,7 +331,27 @@ class SettingSyncQueue {
   }
 
   async syncLocal() {
-    const remoteSettings = await settings.get().prefetch()
+    const currentUserId = this.getCurrentUserId()
+    if (!currentUserId) return
+
+    if (this.ownerUserId !== currentUserId) {
+      this.queue = []
+      this.ownerUserId = currentUserId
+    }
+
+    const remoteSettings = await settings
+      .get()
+      .prefetch()
+      .catch((error) => {
+        if (isUnauthorizedError(error)) {
+          this.queue = []
+          this.ownerUserId = currentUserId
+          return null
+        }
+
+        this.reportSyncError("syncLocal", error)
+        return null
+      })
 
     if (!remoteSettings) return
 

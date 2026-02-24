@@ -2,6 +2,8 @@ import { initializeDayjs } from "@follow/components/dayjs"
 import { registerGlobalContext } from "@follow/shared/bridge"
 import { DEV, ELECTRON_BUILD, IN_ELECTRON } from "@follow/shared/constants"
 import { hydrateDatabaseToStore } from "@follow/store/hydrate"
+import { whoami } from "@follow/store/user/getters"
+import { userSyncService } from "@follow/store/user/store"
 import { tracker } from "@follow/tracker"
 import { repository } from "@pkg"
 import { enableMapSet } from "immer"
@@ -82,13 +84,24 @@ export const initializeApp = async () => {
   apm("initializeSettings", initializeSettings)
 
   await apm("i18n", initI18n)
-
-  apm("setting sync", () => {
-    settingSyncQueue.init()
-    settingSyncQueue.syncLocal()
-  })
-
   await apm("initAnalytics", initAnalytics)
+
+  void apm("setting sync", async () => {
+    await userSyncService.whoami().catch(() => null)
+
+    await settingSyncQueue.init()
+
+    if (!whoami()) {
+      return
+    }
+    await settingSyncQueue.syncLocal()
+  }).catch((error) => {
+    appLog("setting sync failed", error)
+    void tracker.manager.captureException(error, {
+      module: "setting_sync",
+      stage: "bootstrap",
+    })
+  })
 
   const loadingTime = Date.now() - now
   appLog(`Initialize ${APP_NAME} done,`, `${loadingTime}ms`)
