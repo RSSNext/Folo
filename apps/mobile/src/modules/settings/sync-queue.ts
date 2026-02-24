@@ -155,22 +155,32 @@ class SettingSyncQueue {
       return
     }
 
+    const currentUserId = this.getCurrentUserId()
+
     try {
       const parsed = JSON.parse(queue) as unknown
-      if (!parsed || Array.isArray(parsed) || typeof parsed !== "object") {
+      if (Array.isArray(parsed)) {
+        // Backward compatibility: legacy versions persisted the queue array directly.
+        this.queue = parsed
+        this.ownerUserId = currentUserId
+      } else if (!parsed || typeof parsed !== "object") {
         this.queue = []
         this.ownerUserId = null
         return
+      } else {
+        const payload = parsed as Partial<PersistedSettingSyncQueue>
+        this.queue = Array.isArray(payload.queue) ? payload.queue : []
+        if (typeof payload.ownerUserId === "string" || payload.ownerUserId === null) {
+          this.ownerUserId = payload.ownerUserId
+        } else {
+          // Backward compatibility for payloads without owner information.
+          this.ownerUserId = currentUserId
+        }
       }
-
-      const payload = parsed as Partial<PersistedSettingSyncQueue>
-      this.queue = Array.isArray(payload.queue) ? payload.queue : []
-      this.ownerUserId = typeof payload.ownerUserId === "string" ? payload.ownerUserId : null
     } catch {
       /* empty */
     }
 
-    const currentUserId = this.getCurrentUserId()
     if (!currentUserId || this.ownerUserId !== currentUserId) {
       this.queue = []
       this.ownerUserId = currentUserId
