@@ -110,6 +110,12 @@ class SettingSyncQueue {
     })
   }
 
+  private async clearQueueAndPersist(ownerUserId: string | null) {
+    this.queue = []
+    this.ownerUserId = ownerUserId
+    await kv.delete(this.storageKey)
+  }
+
   private disposers: (() => void)[] = []
   async init() {
     this.teardown()
@@ -129,7 +135,7 @@ class SettingSyncQueue {
       if (isEmptyObject(nextPayload)) return
       this.enqueue(tab, nextPayload)
 
-      this.persist()
+      void this.persist()
     })
 
     this.disposers.push(d1)
@@ -289,8 +295,7 @@ class SettingSyncQueue {
       await Promise.all(promises)
     } catch (error) {
       if (isUnauthorizedError(error)) {
-        this.queue = []
-        this.ownerUserId = currentUserId
+        await this.clearQueueAndPersist(currentUserId)
         return
       }
 
@@ -356,16 +361,18 @@ class SettingSyncQueue {
 
     this.bindQueueOwner(currentUserId)
 
-    const remoteSettings = await this.fetchSettingRemote().catch((error) => {
+    let remoteSettings: Awaited<ReturnType<typeof this.fetchSettingRemote>> | null = null
+    try {
+      remoteSettings = await this.fetchSettingRemote()
+    } catch (error) {
       if (isUnauthorizedError(error)) {
-        this.queue = []
-        this.ownerUserId = currentUserId
-        return null
+        await this.clearQueueAndPersist(currentUserId)
+        return
       }
 
       this.reportSyncError("syncLocal", error)
-      return null
-    })
+      return
+    }
 
     if (!remoteSettings) return
     if (__DEV__) {
