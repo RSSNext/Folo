@@ -40,9 +40,6 @@
   "vars": {
     "VITE_API_URL": "https://api.folo.is",
     "VITE_WEB_URL": "https://app.folo.is",
-    "VITE_EXTERNAL_DEV_API_URL": "https://api.dev.folo.is",
-    "VITE_EXTERNAL_PROD_API_URL": "https://api.folo.is",
-    "VITE_WEB_DEV_URL": "https://dev.folo.is",
     "VITE_SENTRY_DSN": "https://e5bccf7428aa4e881ed5cb713fdff181@o4507542488023040.ingest.us.sentry.io/4507570439979008",
   },
   "env": {
@@ -64,9 +61,6 @@
       "vars": {
         "VITE_API_URL": "https://api.dev.folo.is",
         "VITE_WEB_URL": "https://dev.folo.is",
-        "VITE_EXTERNAL_DEV_API_URL": "https://api.dev.folo.is",
-        "VITE_EXTERNAL_PROD_API_URL": "https://api.folo.is",
-        "VITE_WEB_DEV_URL": "https://dev.folo.is",
         "VITE_SENTRY_DSN": "https://e5bccf7428aa4e881ed5cb713fdff181@o4507542488023040.ingest.us.sentry.io/4507570439979008",
       },
     },
