@@ -60,9 +60,9 @@ export const initializeApp = async () => {
   await initAnalytics()
 
   void apm("setting sync", async () => {
-    await userSyncService.whoami().catch(() => null)
-
     await settingSyncQueue.init()
+
+    await userSyncService.whoami().catch(() => null)
 
     if (!whoami()) {
       return
