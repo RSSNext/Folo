@@ -1,5 +1,7 @@
 import { initializeDB } from "@follow/database/db"
 import { hydrateDatabaseToStore } from "@follow/store/hydrate"
+import { whoami } from "@follow/store/user/getters"
+import { userSyncService } from "@follow/store/user/store"
 import { tracker } from "@follow/tracker"
 import { nativeApplicationVersion } from "expo-application"
 
@@ -13,6 +15,20 @@ import { initDeviceType } from "./device"
 import { hydrateQueryClient, hydrateSettings } from "./hydrate"
 import { migrateDatabase } from "./migration"
 import { initializePlayer } from "./player"
+
+type RequestIdleCallback = (callback: () => void, options?: { timeout?: number }) => number
+
+const runWhenIdle = (callback: () => void) => {
+  const requestIdle = (globalThis as { requestIdleCallback?: RequestIdleCallback })
+    .requestIdleCallback
+
+  if (requestIdle) {
+    requestIdle(callback, { timeout: 5000 })
+    return
+  }
+
+  setTimeout(callback, 0)
+}
 
 /* eslint-disable no-console */
 export const initializeApp = async () => {
@@ -38,19 +54,27 @@ export const initializeApp = async () => {
   dataHydratedTime = Date.now() - dataHydratedTime
   await apm("hydrateQueryClient", hydrateQueryClient)
   await apm("initializeAppCheck", initializeAppCheck)
-  requestIdleCallback(
-    () => {
-      apm("initializePlayer", initializePlayer)
-    },
-    { timeout: 5000 }, // Max delay of 5 seconds
-  )
-
-  apm("setting sync", () => {
-    settingSyncQueue.init()
-    settingSyncQueue.syncLocal()
+  runWhenIdle(() => {
+    apm("initializePlayer", initializePlayer)
   })
-
   await initAnalytics()
+
+  void apm("setting sync", async () => {
+    await settingSyncQueue.init()
+
+    await userSyncService.whoami().catch(() => null)
+
+    if (!whoami()) {
+      return
+    }
+    await settingSyncQueue.syncLocal()
+  }).catch((error) => {
+    console.error("setting sync failed", error)
+    void tracker.manager.captureException(error, {
+      module: "setting_sync",
+      stage: "bootstrap",
+    })
+  })
   const loadingTime = Date.now() - now
   tracker.appInit({
     rn: true,
