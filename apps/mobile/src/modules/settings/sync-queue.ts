@@ -120,7 +120,7 @@ class SettingSyncQueue {
   async init() {
     this.teardown()
 
-    this.load()
+    const loadPromise = this.load()
 
     const d1 = EventBus.subscribe("SETTING_CHANGE_EVENT", (data) => {
       const currentUserId = this.getCurrentUserId()
@@ -139,6 +139,8 @@ class SettingSyncQueue {
     })
 
     this.disposers.push(d1)
+
+    await loadPromise
   }
 
   teardown() {
@@ -165,36 +167,44 @@ class SettingSyncQueue {
 
   private async load() {
     const queue = await kv.get(this.storageKey)
-    kv.delete(this.storageKey)
+    await kv.delete(this.storageKey)
     if (!queue) {
       return
     }
 
     const currentUserId = this.getCurrentUserId()
+    let nextQueue: SettingSyncQueueItem[] = []
+    let nextOwnerUserId: string | null = null
 
     try {
       const parsed = JSON.parse(queue) as unknown
       if (Array.isArray(parsed)) {
         // Backward compatibility: legacy versions persisted the queue array directly.
-        this.queue = parsed
-        this.ownerUserId = currentUserId
+        nextQueue = parsed
+        nextOwnerUserId = currentUserId
       } else if (!parsed || typeof parsed !== "object") {
-        this.queue = []
-        this.ownerUserId = null
         return
       } else {
         const payload = parsed as Partial<PersistedSettingSyncQueue>
-        this.queue = Array.isArray(payload.queue) ? payload.queue : []
+        nextQueue = Array.isArray(payload.queue) ? payload.queue : []
         if (typeof payload.ownerUserId === "string" || payload.ownerUserId === null) {
-          this.ownerUserId = payload.ownerUserId
+          nextOwnerUserId = payload.ownerUserId
         } else {
           // Backward compatibility for payloads without owner information.
-          this.ownerUserId = currentUserId
+          nextOwnerUserId = currentUserId
         }
       }
     } catch {
-      /* empty */
+      return
     }
+
+    // If queue state has already changed after init starts, keep the newer in-memory state.
+    if (this.queue.length > 0 || this.ownerUserId !== null) {
+      return
+    }
+
+    this.queue = nextQueue
+    this.ownerUserId = nextOwnerUserId
 
     if (!currentUserId) {
       return
