@@ -16,7 +16,7 @@ export const DEFAULT_VALUES = {
     FIREBASE_CONFIG: FIREBASE_CONFIG_DEFAULT,
     OPENPANEL_CLIENT_ID: "4382168f-b8d2-40c1-9a26-133a312d072b",
     OPENPANEL_API_URL: "https://openpanel.follow.is/api",
-    RECAPTCHA_V3_SITE_KEY: "6LeNhgwsAAAAAHO1dhunH0a-FI1YvOc9Ny98Oast",
+    RECAPTCHA_V3_SITE_KEY: "6LeGa3csAAAAALi_WqhlWoaGaqd_kke4HRGvNE0C",
 
     POSTHOG_KEY: "phc_EZGEvBt830JgBHTiwpHqJAEbWnbv63m5UpreojwEWNL",
     POSTHOG_HOST: "https://us.posthog.com",
