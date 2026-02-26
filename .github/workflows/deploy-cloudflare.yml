@@ -70,7 +70,7 @@ jobs:
           apiToken: ${{ secrets.CLOUDFLARE_API_TOKEN }}
           accountId: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
           workingDirectory: apps/landing
-          command: deploy --env dev
+          command: deploy --env dev --name landing-next-dev --routes landing.dev.folo.is/*
 
       - name: Deploy to Cloudflare (prod)
         if: github.ref == 'refs/heads/main'
