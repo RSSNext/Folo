@@ -1,17 +1,14 @@
-import NextBundleAnalyzer from '@next/bundle-analyzer'
-import { codeInspectorPlugin } from 'code-inspector-plugin'
 import { config } from 'dotenv'
-import type { NextConfig } from 'next'
 import createNextIntlPlugin from 'next-intl/plugin'
 
-process.title = 'Folo Landing (NextJS)'
+process.title = 'Folo Landing (vinext)'
 
 const env = config().parsed || {}
 const isProd = process.env.NODE_ENV === 'production'
 
 const withNextIntl = createNextIntlPlugin('./src/i18n/request.ts')
 
-let nextConfig: NextConfig = {
+const nextConfig = {
   reactStrictMode: false,
   productionBrowserSourceMaps: true,
   output: 'standalone',
@@ -46,18 +43,6 @@ let nextConfig: NextConfig = {
       ],
     }
   },
-  turbopack: {
-    rules: codeInspectorPlugin({
-      bundler: 'turbopack',
-      hotKeys: ['altKey'],
-    }),
-  },
-}
-
-if (process.env.ANALYZE === 'true') {
-  nextConfig = NextBundleAnalyzer({
-    enabled: true,
-  })(nextConfig)
 }
 
 export default withNextIntl(nextConfig)

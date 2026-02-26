@@ -1,13 +1,13 @@
 @import 'tailwindcss';
 @import 'tailwindcss-safe-area';
+@import './pastel-theme-oklch.css';
 
 @plugin "@tailwindcss/typography";
 @plugin '@egoist/tailwindcss-icons';
 @plugin "tailwind-scrollbar";
 @plugin 'tailwindcss-animate';
-@import './pastel-theme-oklch.css';
 
-@source "./src/**/*.{js,jsx,ts,tsx}";
+@source "../**/*.{js,jsx,ts,tsx}";
 @custom-variant dark (&:where([data-theme='dark'], [data-theme='dark'] *));
 
 @theme {

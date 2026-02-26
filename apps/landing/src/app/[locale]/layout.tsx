@@ -8,7 +8,7 @@ import { Root } from '~/components/layout/root/Root'
 import { LightRays } from '~/components/ui/light-rays'
 import { LandingHeader } from '~/components/widgets/landing/Header'
 import { siteInfo } from '~/constants/site'
-import { locales } from '~/i18n/routing'
+import { defaultLocale, locales } from '~/i18n/routing'
 import { sansFont } from '~/lib/fonts'
 
 import { Providers } from '../../providers/root'
@@ -18,14 +18,30 @@ import { InitInClient } from '../InitInClient'
 
 init()
 
+type LocaleParams = { locale?: string }
+
+type MaybeAsyncLocaleParams = LocaleParams | Promise<LocaleParams> | undefined
+
+const localeSet = new Set(locales)
+
+const resolveLocale = async (params: MaybeAsyncLocaleParams) => {
+  const locale = params ? (await params).locale : undefined
+
+  if (locale && localeSet.has(locale as (typeof locales)[number])) {
+    return locale
+  }
+
+  return defaultLocale
+}
+
 export function generateStaticParams() {
   return locales.map((locale) => ({ locale }))
 }
 
-export async function generateMetadata(
-  params: Promise<{ locale: string }>,
-): Promise<Metadata> {
-  const { locale } = await params
+export async function generateMetadata(props: {
+  params: MaybeAsyncLocaleParams
+}): Promise<Metadata> {
+  const locale = await resolveLocale(props.params)
   const t = await getTranslations({ locale, namespace: 'metadata' })
 
   const title = t('title', { defaultValue: siteInfo.title })
@@ -107,10 +123,10 @@ export default async function LocaleLayout({
   params,
 }: {
   children: React.ReactNode
-  params: Promise<{ locale: string }>
+  params: MaybeAsyncLocaleParams
 }) {
-  const { locale } = await params
-  const messages = await getMessages()
+  const locale = await resolveLocale(params)
+  const messages = await getMessages({ locale })
 
   return (
     <>
