@@ -189,7 +189,7 @@ importers:
     dependencies:
       '@follow-app/client-sdk':
         specifier: 'catalog:'
-        version: 0.3.92(@opentelemetry/api@1.9.0)(better-sqlite3@12.6.2)(expo-sqlite@16.0.10(expo@54.0.33)(react-native@0.81.5(@babel/core@7.29.0)(@types/react@19.1.17)(bufferutil@4.1.0)(react@19.1.0))(react@19.1.0))(hono@4.12.1)(kysely@0.28.11)(pg@8.16.3)(react-dom@19.1.0(react@19.1.0))(react@19.1.0)
+        version: 0.3.92(@opentelemetry/api@1.9.0)(better-sqlite3@12.6.2)(expo-sqlite@16.0.10(expo@54.0.33)(react-native@0.81.5(@babel/core@7.29.0)(@types/react@19.1.17)(bufferutil@4.1.0)(react@19.1.0))(react@19.1.0))(hono@4.12.1)(kysely@0.28.11)(next@16.0.11(@babel/core@7.29.0)(@opentelemetry/api@1.9.0)(babel-plugin-react-compiler@1.0.0)(react-dom@19.1.0(react@19.1.0))(react@19.1.0))(pg@8.16.3)(react-dom@19.1.0(react@19.1.0))(react@19.1.0)
       commander:
         specifier: 14.0.1
         version: 14.0.1
@@ -21877,7 +21877,7 @@ snapshots:
       prettier-package-json: 2.8.0
       prettier-plugin-autocorrect: 0.4.3(prettier@3.8.1)
       prettier-plugin-sh: 0.18.0(prettier@3.8.1)
-      prettier-plugin-tailwindcss: 0.6.14(@ianvs/prettier-plugin-sort-imports@4.4.2(prettier@3.6.2))(prettier@3.8.1)
+      prettier-plugin-tailwindcss: 0.6.14(@ianvs/prettier-plugin-sort-imports@4.4.2(prettier@3.8.1))(prettier@3.8.1)
     transitivePeerDependencies:
       - '@prettier/plugin-hermes'
       - '@prettier/plugin-oxc'
@@ -33082,7 +33082,7 @@ snapshots:
       prettier: 3.8.1
       sh-syntax: 0.5.8
 
-  prettier-plugin-tailwindcss@0.6.14(@ianvs/prettier-plugin-sort-imports@4.4.2(prettier@3.6.2))(prettier@3.8.1):
+  prettier-plugin-tailwindcss@0.6.14(@ianvs/prettier-plugin-sort-imports@4.4.2(prettier@3.8.1))(prettier@3.8.1):
     dependencies:
       prettier: 3.8.1
     optionalDependencies:
