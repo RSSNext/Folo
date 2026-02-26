@@ -1,6 +1,9 @@
 node_modules
 dist
 out
+.next
+.open-next
+next-env.d.ts
 .DS_Store
 *.log*
 .env
