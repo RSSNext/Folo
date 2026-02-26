@@ -68,7 +68,7 @@ jobs:
 
       # Optional: Upload artifact
       - name: 📤 Upload IPA
-        uses: actions/upload-artifact@v6
+        uses: actions/upload-artifact@v7
         with:
           name: app-ios
           path: apps/mobile/build.ipa
@@ -122,7 +122,7 @@ jobs:
           SENTRY_AUTH_TOKEN: ${{ secrets.RN_SENTRY_AUTH_TOKEN }}
       # Optional: Upload artifact
       - name: 📤 Upload IPA
-        uses: actions/upload-artifact@v6
+        uses: actions/upload-artifact@v7
         with:
           name: app-ios
           path: apps/mobile/build.ipa
