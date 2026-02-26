@@ -51,6 +51,9 @@ jobs:
       - name: Copy WASM file
         run: cp node_modules/@resvg/resvg-wasm/index_bg.wasm apps/ssr/dist/worker/resvg.wasm
 
+      - name: Build Landing Worker
+        run: pnpm exec turbo run @follow/landing#cf:build
+
       - name: Deploy to Cloudflare (dev)
         if: github.ref == 'refs/heads/dev'
         uses: cloudflare/wrangler-action@v3
@@ -60,6 +63,15 @@ jobs:
           workingDirectory: apps/ssr
           command: deploy --env dev
 
+      - name: Deploy Landing to Cloudflare (dev)
+        if: github.ref == 'refs/heads/dev'
+        uses: cloudflare/wrangler-action@v3
+        with:
+          apiToken: ${{ secrets.CLOUDFLARE_API_TOKEN }}
+          accountId: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
+          workingDirectory: apps/landing
+          command: deploy --env dev
+
       - name: Deploy to Cloudflare (prod)
         if: github.ref == 'refs/heads/main'
         uses: cloudflare/wrangler-action@v3
@@ -67,4 +79,13 @@ jobs:
           apiToken: ${{ secrets.CLOUDFLARE_API_TOKEN }}
           accountId: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
           workingDirectory: apps/ssr
+          command: deploy
+
+      - name: Deploy Landing to Cloudflare (prod)
+        if: github.ref == 'refs/heads/main'
+        uses: cloudflare/wrangler-action@v3
+        with:
+          apiToken: ${{ secrets.CLOUDFLARE_API_TOKEN }}
+          accountId: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
+          workingDirectory: apps/landing
           command: deploy

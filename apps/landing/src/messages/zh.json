@@ -1,0 +1,92 @@
+{
+  "metadata": {
+    "title": "Folo",
+    "description": "AI 驱动的 RSS 阅读器，具备上下文 AI，带来深度、无噪的阅读体验。",
+    "keywords": "Folo, AI RSS 阅读器, RSS, 摘要, 翻译, 研究, 开源, 内容发现, 信息浏览器"
+  },
+  "common": {
+    "actions": {
+      "getStarted": "立即体验",
+      "download": "下载",
+      "tryOnWeb": "网页版试用",
+      "viewOnTwitter": "在 X 上查看",
+      "switchLanguage": "切换语言"
+    },
+    "error": {
+      "title": "出错了！",
+      "action": "重试"
+    }
+  },
+  "landing": {
+    "hero": {
+      "eyebrow": "AI 阅读器 · 洁净时间线",
+      "title": "<brand>Folo</brand> 是你的 <highlight>AI</highlight> 阅读器",
+      "bodyLine1": "这款 AI 为你读遍全网，",
+      "bodyLine2": "穿透噪音，只呈现你真正关心的洞见。"
+    },
+    "features": {
+      "headline": "在 AI 时代重新定义阅读",
+      "discover": {
+        "label": "发现",
+        "titleStrong": "AI 从海量信息中筛选最佳来源",
+        "titleRest": "覆盖全网数百万站点，而你始终掌握选择权。"
+      },
+      "twin": {
+        "label": "数字分身",
+        "titleStrong": "你在 Folo 的一切都在训练你的 AI",
+        "titleRest": "它会记住、理解，并随每次更新与你共同进化。"
+      },
+      "vibe": {
+        "label": "氛围阅读",
+        "titleStrong": "让 AI 读完所有内容。",
+        "titleRest": "放松沉浸，只在真正重要的洞察或信号出现时收到提醒。"
+      }
+    },
+    "builtOpen": {
+      "title": "开放共建",
+      "body": "透明、可信，并由社区共同打造。快来浏览源码、提交 Issue，与我们一起塑造全新的阅读体验。",
+      "note": "基于现代原子化组件构建：无障碍、键盘友好、性能优先。欢迎 PR。"
+    },
+    "repoStats": {
+      "githubStars": "GitHub 星标",
+      "license": "许可证",
+      "licenseValue": "GPL-3.0",
+      "repository": "代码仓库",
+      "repoDescriptionMobile": "基于现代原子化组件构建：无障碍、键盘友好、性能优先。欢迎 PR。",
+      "repoAriaLabel": "在 GitHub 打开 Folo 仓库"
+    },
+    "socialProof": {
+      "eyebrow": "好奇者热爱 Folo",
+      "headline": "在 AI 时代，好奇的人用 Folo 阅读。"
+    }
+  },
+  "download": {
+    "metadata": {
+      "title": "下载 Folo",
+      "description": "下载 Folo 桌面端或直接在 Web 上体验。支持 macOS、Windows 和 Linux。"
+    },
+    "hero": {
+      "title": "下载 <brand>Folo</brand>",
+      "subtitle": "在桌面端体验完整的 AI 阅读能力，或直接通过 Web 即刻使用。"
+    },
+    "platforms": {
+      "macOS": {
+        "label": "macOS",
+        "store": "Mac App Store"
+      },
+      "Windows": {
+        "label": "Windows",
+        "store": "Microsoft Store"
+      },
+      "Linux": {
+        "label": "Linux",
+        "store": "GitHub"
+      },
+      "web": {
+        "title": "网页版",
+        "subtitle": "无需安装，随时开启阅读"
+      },
+      "footer": "下载即表示你同意我们的 <terms>服务条款</terms> 和 <privacy>隐私政策</privacy>。"
+    }
+  }
+}

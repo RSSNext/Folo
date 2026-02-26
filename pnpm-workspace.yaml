@@ -42,17 +42,30 @@ overrides:
   "@floating-ui/react-dom": 2.1.4
   "@react-native-menu/menu": 2.0.0
   "@types/react": 19.1.17
+  array-includes: npm:@nolyfill/array-includes@latest
+  array.prototype.findlastindex: npm:@nolyfill/array.prototype.findlastindex@latest
+  array.prototype.flat: npm:@nolyfill/array.prototype.flat@latest
+  array.prototype.flatmap: npm:@nolyfill/array.prototype.flatmap@latest
+  array.prototype.tosorted: npm:@nolyfill/array.prototype.tosorted@latest
   drizzle-orm: 0.45.1
   global-agent>serialize-error: 7.0.1
+  has: npm:@nolyfill/has@latest
   is-core-module: npm:@nolyfill/is-core-module@1.0.39
   isarray: npm:@nolyfill/isarray@1.0.44
   lan-network@<0.1.7: 0.1.7
   nativewind>react-native-css-interop: 0.2.1
+  object.assign: npm:@nolyfill/object.assign@latest
+  object.entries: npm:@nolyfill/object.entries@latest
+  object.fromentries: npm:@nolyfill/object.fromentries@latest
+  object.groupby: npm:@nolyfill/object.groupby@latest
+  object.hasown: npm:@nolyfill/object.hasown@latest
+  object.values: npm:@nolyfill/object.values@latest
   react: 19.1.0
   react-dom: 19.1.0
   react-native-ios-context-menu: 3.2.1
   react-native-ios-utilities: 5.2.0
   serialize-error: 2.1.0
+  string.prototype.matchall: npm:@nolyfill/string.prototype.matchall@latest
 
 patchedDependencies:
   "@microflash/remark-callout-directives": patches/@microflash__remark-callout-directives.patch
