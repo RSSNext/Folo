@@ -1,12 +1,15 @@
 import type { Command } from "commander"
 
+import { parsePositiveInt } from "../args"
+import { loginWithBrowser } from "../browser-login"
 import { getGlobalOptions } from "../client"
 import { runCommand } from "../command"
 import { clearToken, getConfigPath, updateConfig } from "../config"
 import { CLIError } from "../output"
 
 interface AuthLoginOptions {
-  token: string
+  token?: string
+  timeout?: number
 }
 
 export const registerAuthCommand = (program: Command) => {
@@ -14,15 +17,28 @@ export const registerAuthCommand = (program: Command) => {
 
   authCommand
     .command("login")
-    .description("Save session token and verify authentication")
+    .description("Sign in via browser (or save a provided token) and verify authentication")
     .option("--token <token>", "Session token from Folo")
+    .option(
+      "--timeout <seconds>",
+      "Browser login timeout in seconds (default: 180)",
+      parsePositiveInt,
+    )
     .action(async function (this: Command, options: AuthLoginOptions) {
       await runCommand(
         this,
         async ({ client, options: globalOptions }) => {
-          const token = options.token ?? getGlobalOptions(this).token
+          let token = options.token ?? getGlobalOptions(this).token
           if (!token) {
-            throw new CLIError("INVALID_ARGUMENT", "Missing token. Use --token <token>.")
+            const timeoutMs = (options.timeout ?? 180) * 1000
+            const browserLogin = await loginWithBrowser({
+              apiUrl: globalOptions.apiUrl,
+              timeoutMs,
+              onStatus: (message) => {
+                console.error(`[auth] ${message}`)
+              },
+            })
+            token = browserLogin.token
           }
 
           client.setAuthToken(token)

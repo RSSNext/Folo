@@ -4,6 +4,7 @@ import {
   getLastUsedLoginMethod,
   loginHandler,
   oneTimeToken,
+  signIn,
   signOut,
   twoFactor,
 } from "@client/lib/auth"
@@ -36,6 +37,37 @@ import { Link, useLocation, useNavigate } from "react-router"
 import { toast } from "sonner"
 import { z } from "zod"
 
+const parseCliCallbackUrl = (search: string): URL | null => {
+  const params = new URLSearchParams(search)
+  const rawCliCallback = params.get("cli_callback")
+  if (!rawCliCallback) {
+    return null
+  }
+
+  try {
+    const url = new URL(rawCliCallback)
+    const isAllowedProtocol = url.protocol === "http:"
+    const isAllowedHost = url.hostname === "127.0.0.1" || url.hostname === "localhost"
+
+    if (!isAllowedProtocol || !isAllowedHost) {
+      return null
+    }
+
+    return url
+  } catch {
+    return null
+  }
+}
+
+const parseTokenFromDeepLinkPath = (path: string): string | null => {
+  try {
+    const url = new URL(path, window.location.origin)
+    return url.searchParams.get("token")
+  } catch {
+    return null
+  }
+}
+
 export function Login() {
   const { status, refetch } = useSession()
 
@@ -47,17 +79,33 @@ export function Login() {
   const urlParams = new URLSearchParams(location.search)
   const provider = urlParams.get("provider")
   const isCredentialProvider = provider === "credential"
+  const cliCallbackUrl = useMemo(() => parseCliCallbackUrl(location.search), [location.search])
 
   const isAuthenticated = status === "authenticated"
 
   const { t } = useTranslation()
 
+  const startSocialLogin = useCallback(
+    (providerName: string) => {
+      if (cliCallbackUrl) {
+        void signIn.social({
+          provider: providerName as "google" | "github" | "apple",
+          callbackURL: window.location.href,
+        })
+        return
+      }
+
+      loginHandler(providerName, "app")
+    },
+    [cliCallbackUrl],
+  )
+
   useEffect(() => {
     if (provider && !isCredentialProvider && status === "unauthenticated") {
-      loginHandler(provider, "app")
+      startSocialLogin(provider)
       setRedirecting(true)
     }
-  }, [isCredentialProvider, provider, status])
+  }, [isCredentialProvider, provider, startSocialLogin, status])
 
   const getCallbackUrl = useCallback(async () => {
     const { data } = await oneTimeToken.generate()
@@ -94,13 +142,37 @@ export function Login() {
     })
   }, [getCallbackUrl])
 
+  const handleCliCallback = useCallback(async () => {
+    if (!cliCallbackUrl) {
+      return
+    }
+
+    const callbackUrl = await getCallbackUrl()
+    if (!callbackUrl) {
+      return
+    }
+
+    const token = parseTokenFromDeepLinkPath(callbackUrl.url)
+    if (!token) {
+      return
+    }
+
+    const redirectUrl = new URL(cliCallbackUrl.toString())
+    redirectUrl.searchParams.set("token", token)
+    window.location.replace(redirectUrl.toString())
+  }, [cliCallbackUrl, getCallbackUrl])
+
   const onceRef = useRef(false)
   useEffect(() => {
     if (isAuthenticated && !onceRef.current) {
-      handleOpenApp()
+      if (cliCallbackUrl) {
+        void handleCliCallback()
+      } else {
+        void handleOpenApp()
+      }
     }
     onceRef.current = true
-  }, [handleOpenApp, isAuthenticated])
+  }, [cliCallbackUrl, handleCliCallback, handleOpenApp, isAuthenticated])
 
   const navigate = useNavigate()
 
@@ -181,7 +253,7 @@ export function Login() {
                       if (key === "credential") {
                         setIsEmail(true)
                       } else {
-                        loginHandler(key, "app")
+                        startSocialLogin(key)
                       }
                     }}
                     className="center relative w-full gap-2 rounded-xl border py-3 pl-5 font-semibold duration-200 hover:bg-material-medium"
@@ -232,6 +304,7 @@ export function Login() {
   }, [
     authProviders,
     handleOpenApp,
+    startSocialLogin,
     isAuthenticated,
     refetch,
     t,
