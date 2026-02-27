@@ -16,7 +16,8 @@ Use this skill when a user asks to:
 
 1. Folo CLI is installed and executable as `folo`.
 2. Authentication is configured:
-   - `folo auth login --token <session-token>`
+   - `folo auth login` (recommended, opens browser and auto-logins)
+   - or `folo auth login --token <session-token>`
    - or set `FOLO_TOKEN=<token>`
 
 ## Output Contract
@@ -113,7 +114,7 @@ Loop until `hasNext` is `false`:
 
 ## Command Reference
 
-- `folo auth login --token <token>`
+- `folo auth login [--timeout <seconds>] [--token <token>]`
 - `folo auth logout`
 - `folo auth whoami`
 
@@ -163,7 +164,8 @@ Loop until `hasNext` is `false`:
 ## Error Recovery
 
 - `UNAUTHORIZED`
-  - Re-login: `folo auth login --token <token>`
+  - Re-login: `folo auth login`
+  - or `folo auth login --token <token>`
   - Or set `FOLO_TOKEN`
 - `HTTP_4xx` / `HTTP_5xx`
   - Retry with `--verbose` for request details
