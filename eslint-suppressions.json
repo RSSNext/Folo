@@ -1751,25 +1751,11 @@
       "count": 1
     }
   },
-  "apps/landing/eslint.config.mjs": {
-    "style/operator-linebreak": {
-      "count": 1
-    },
-    "style/quotes": {
-      "count": 1
-    }
-  },
   "apps/landing/global.d.ts": {
     "@typescript-eslint/method-signature-style": {
       "count": 1
     },
     "@typescript-eslint/no-empty-object-type": {
-      "count": 1
-    },
-    "style/indent-binary-ops": {
-      "count": 1
-    },
-    "style/operator-linebreak": {
       "count": 1
     },
     "ts/method-signature-style": {
@@ -1782,22 +1768,6 @@
   "apps/landing/next.config.mjs": {
     "node/prefer-global/process": {
       "count": 2
-    },
-    "style/quotes": {
-      "count": 1
-    }
-  },
-  "apps/landing/plugins/eslint-recursive-sort.mjs": {
-    "style/arrow-parens": {
-      "count": 1
-    },
-    "style/brace-style": {
-      "count": 1
-    }
-  },
-  "apps/landing/src/app/[locale]/download/page.tsx": {
-    "style/operator-linebreak": {
-      "count": 2
     }
   },
   "apps/landing/src/app/[locale]/error.tsx": {
@@ -1805,37 +1775,8 @@
       "count": 1
     }
   },
-  "apps/landing/src/app/[locale]/layout.tsx": {
-    "style/arrow-parens": {
-      "count": 2
-    },
-    "style/quote-props": {
-      "count": 2
-    }
-  },
-  "apps/landing/src/app/[locale]/privacy-policy/page.tsx": {
-    "style/quotes": {
-      "count": 3
-    }
-  },
-  "apps/landing/src/app/[locale]/terms-of-service/page.tsx": {
-    "style/quotes": {
-      "count": 3
-    }
-  },
   "apps/landing/src/atoms/viewport.ts": {
-    "style/arrow-parens": {
-      "count": 1
-    },
-    "style/quote-props": {
-      "count": 6
-    },
     "ts/ban-ts-comment": {
-      "count": 1
-    }
-  },
-  "apps/landing/src/components/common/ClientOnly.tsx": {
-    "curly": {
       "count": 1
     }
   },
@@ -1844,65 +1785,8 @@
       "count": 1
     }
   },
-  "apps/landing/src/components/common/Lazyload.tsx": {
-    "react-hooks-extra/no-direct-set-state-in-use-effect": {
-      "count": 1
-    }
-  },
   "apps/landing/src/components/common/LightRays.tsx": {
-    "curly": {
-      "count": 10
-    },
     "no-useless-return": {
-      "count": 1
-    },
-    "style/brace-style": {
-      "count": 2
-    },
-    "style/member-delimiter-style": {
-      "count": 1
-    },
-    "style/operator-linebreak": {
-      "count": 7
-    }
-  },
-  "apps/landing/src/components/common/ScrollTop.tsx": {
-    "curly": {
-      "count": 1
-    }
-  },
-  "apps/landing/src/components/hoc/with-no-ssr.tsx": {
-    "curly": {
-      "count": 1
-    }
-  },
-  "apps/landing/src/components/layout/footer/Footer.tsx": {
-    "style/arrow-parens": {
-      "count": 2
-    },
-    "style/jsx-one-expression-per-line": {
-      "count": 2
-    },
-    "style/member-delimiter-style": {
-      "count": 3
-    }
-  },
-  "apps/landing/src/components/ui/3d-models/AISpline.ts": {
-    "style/arrow-parens": {
-      "count": 1
-    },
-    "style/exp-list-style": {
-      "count": 1
-    }
-  },
-  "apps/landing/src/components/ui/3d-models/AISplineLoader.tsx": {
-    "curly": {
-      "count": 3
-    },
-    "style/brace-style": {
-      "count": 1
-    },
-    "style/operator-linebreak": {
       "count": 1
     }
   },
@@ -1914,131 +1798,13 @@
       "count": 2
     }
   },
-  "apps/landing/src/components/ui/border-beam.tsx": {
-    "style/quote-props": {
-      "count": 2
-    }
-  },
-  "apps/landing/src/components/ui/button/Button.tsx": {
-    "style/indent": {
-      "count": 2
-    },
-    "style/multiline-ternary": {
-      "count": 2
-    }
-  },
-  "apps/landing/src/components/ui/checkbox/Checkbox.tsx": {
-    "curly": {
-      "count": 1
-    },
-    "react-hooks-extra/no-direct-set-state-in-use-effect": {
-      "count": 1
-    },
-    "style/operator-linebreak": {
-      "count": 2
-    }
-  },
   "apps/landing/src/components/ui/collapse/CollapseCss.tsx": {
     "ts/no-use-before-define": {
       "count": 2
     }
   },
-  "apps/landing/src/components/ui/dialog/Dialog.tsx": {
-    "curly": {
-      "count": 1
-    },
-    "react-hooks-extra/no-direct-set-state-in-use-effect": {
-      "count": 1
-    },
-    "style/indent-binary-ops": {
-      "count": 1
-    },
-    "style/operator-linebreak": {
-      "count": 1
-    }
-  },
-  "apps/landing/src/components/ui/dropdown-menu/DropdownMenu.tsx": {
-    "style/operator-linebreak": {
-      "count": 3
-    }
-  },
   "apps/landing/src/components/ui/effects/GridGuides.tsx": {
     "no-multi-str": {
-      "count": 1
-    }
-  },
-  "apps/landing/src/components/ui/effects/TiltCard.tsx": {
-    "curly": {
-      "count": 1
-    },
-    "style/arrow-parens": {
-      "count": 2
-    },
-    "style/multiline-ternary": {
-      "count": 2
-    },
-    "style/quote-props": {
-      "count": 2
-    }
-  },
-  "apps/landing/src/components/ui/glass/index.tsx": {
-    "curly": {
-      "count": 3
-    },
-    "style/brace-style": {
-      "count": 4
-    },
-    "style/operator-linebreak": {
-      "count": 2
-    },
-    "style/quote-props": {
-      "count": 3
-    }
-  },
-  "apps/landing/src/components/ui/highlighter.tsx": {
-    "curly": {
-      "count": 2
-    },
-    "style/operator-linebreak": {
-      "count": 1
-    }
-  },
-  "apps/landing/src/components/ui/input/Input.tsx": {
-    "curly": {
-      "count": 1
-    },
-    "react-hooks-extra/no-direct-set-state-in-use-effect": {
-      "count": 2
-    },
-    "style/indent": {
-      "count": 2
-    },
-    "style/multiline-ternary": {
-      "count": 4
-    },
-    "style/operator-linebreak": {
-      "count": 4
-    }
-  },
-  "apps/landing/src/components/ui/json-highlighter/index.tsx": {
-    "style/brace-style": {
-      "count": 4
-    },
-    "style/multiline-ternary": {
-      "count": 2
-    },
-    "style/operator-linebreak": {
-      "count": 2
-    }
-  },
-  "apps/landing/src/components/ui/light-rays.tsx": {
-    "curly": {
-      "count": 1
-    },
-    "react-hooks-extra/no-direct-set-state-in-use-effect": {
-      "count": 1
-    },
-    "style/arrow-parens": {
       "count": 1
     }
   },
@@ -2048,29 +1814,10 @@
     },
     "react-refresh/only-export-components": {
       "count": 1
-    },
-    "style/brace-style": {
-      "count": 1
     }
   },
   "apps/landing/src/components/ui/modal/ModalContainer.tsx": {
-    "curly": {
-      "count": 1
-    },
-    "style/arrow-parens": {
-      "count": 2
-    },
     "ts/no-use-before-define": {
-      "count": 1
-    }
-  },
-  "apps/landing/src/components/ui/modal/ModalManager.ts": {
-    "style/arrow-parens": {
-      "count": 2
-    }
-  },
-  "apps/landing/src/components/ui/panel/PanelSplitter.tsx": {
-    "curly": {
       "count": 1
     }
   },
@@ -2079,120 +1826,18 @@
       "count": 1
     }
   },
-  "apps/landing/src/components/ui/prompts/BasePrompt.tsx": {
-    "style/brace-style": {
-      "count": 2
-    },
-    "style/multiline-ternary": {
-      "count": 2
-    }
-  },
-  "apps/landing/src/components/ui/prompts/InputPrompt.tsx": {
-    "style/arrow-parens": {
-      "count": 1
-    },
-    "style/brace-style": {
-      "count": 3
-    },
-    "style/multiline-ternary": {
-      "count": 2
-    }
-  },
-  "apps/landing/src/components/ui/radio/index.tsx": {
-    "style/operator-linebreak": {
-      "count": 1
-    }
-  },
   "apps/landing/src/components/ui/relative-time/RelativeTime.tsx": {
-    "react-hooks-extra/no-direct-set-state-in-use-effect": {
-      "count": 2
-    },
-    "style/operator-linebreak": {
-      "count": 1
-    },
     "ts/ban-ts-comment": {
       "count": 1
     }
   },
-  "apps/landing/src/components/ui/scroll-areas/ScrollArea.tsx": {
-    "style/multiline-ternary": {
-      "count": 2
-    }
-  },
-  "apps/landing/src/components/ui/segment-tab/SegmentTab.tsx": {
-    "style/multiline-ternary": {
-      "count": 2
-    }
-  },
-  "apps/landing/src/components/ui/select/ComboboxSelect.tsx": {
-    "style/arrow-parens": {
-      "count": 1
-    },
-    "style/multiline-ternary": {
-      "count": 2
-    }
-  },
-  "apps/landing/src/components/ui/select/MultiSelect.tsx": {
-    "curly": {
-      "count": 2
-    },
-    "style/arrow-parens": {
-      "count": 3
-    },
-    "style/multiline-ternary": {
-      "count": 2
-    },
-    "style/operator-linebreak": {
-      "count": 1
-    }
-  },
-  "apps/landing/src/components/ui/select/Select.tsx": {
-    "style/indent-binary-ops": {
-      "count": 1
-    },
-    "style/multiline-ternary": {
-      "count": 2
-    },
-    "style/operator-linebreak": {
-      "count": 2
-    }
-  },
   "apps/landing/src/components/ui/sheet/Sheet.tsx": {
-    "curly": {
-      "count": 1
-    },
     "react-refresh/only-export-components": {
-      "count": 1
-    },
-    "style/arrow-parens": {
-      "count": 1
-    }
-  },
-  "apps/landing/src/components/ui/switch/index.tsx": {
-    "curly": {
-      "count": 1
-    },
-    "react-hooks-extra/no-direct-set-state-in-use-effect": {
-      "count": 1
-    },
-    "style/jsx-curly-brace-presence": {
-      "count": 1
-    },
-    "style/multiline-ternary": {
-      "count": 4
-    },
-    "style/operator-linebreak": {
       "count": 1
     }
   },
   "apps/landing/src/components/ui/theme-switcher/ThemeSwitcher.tsx": {
     "@eslint-react/dom/no-flush-sync": {
-      "count": 1
-    },
-    "curly": {
-      "count": 2
-    },
-    "react-dom/no-flush-sync": {
       "count": 1
     },
     "ts/no-use-before-define": {
@@ -2204,408 +1849,82 @@
       "count": 1
     }
   },
-  "apps/landing/src/components/ui/viewport/OnlyDesktop.tsx": {
-    "curly": {
-      "count": 2
-    }
-  },
-  "apps/landing/src/components/ui/viewport/OnlyMobile.tsx": {
-    "curly": {
-      "count": 2
-    }
-  },
-  "apps/landing/src/components/widgets/download/DownloadHero.tsx": {
-    "style/arrow-parens": {
-      "count": 1
-    }
-  },
-  "apps/landing/src/components/widgets/download/PlatformDownloads.tsx": {
-    "style/arrow-parens": {
-      "count": 4
-    }
-  },
-  "apps/landing/src/components/widgets/landing/Audience.tsx": {
-    "curly": {
-      "count": 1
-    },
-    "style/arrow-parens": {
-      "count": 2
-    },
-    "style/brace-style": {
-      "count": 1
-    },
-    "style/jsx-one-expression-per-line": {
-      "count": 5
-    }
-  },
   "apps/landing/src/components/widgets/landing/BuiltOpen.tsx": {
-    "style/arrow-parens": {
+    "tailwindcss/no-unnecessary-whitespace": {
       "count": 1
-    },
-    "style/multiline-ternary": {
-      "count": 2
     },
     "ts/no-use-before-define": {
       "count": 12
-    }
-  },
-  "apps/landing/src/components/widgets/landing/Features.tsx": {
-    "style/jsx-one-expression-per-line": {
-      "count": 1
-    },
-    "style/jsx-wrap-multilines": {
-      "count": 3
-    },
-    "style/multiline-ternary": {
-      "count": 2
-    }
-  },
-  "apps/landing/src/components/widgets/landing/Header.tsx": {
-    "style/arrow-parens": {
-      "count": 1
-    },
-    "style/jsx-curly-brace-presence": {
-      "count": 1
     }
   },
   "apps/landing/src/components/widgets/landing/Hero.tsx": {
     "no-useless-rename": {
       "count": 1
     },
-    "style/arrow-parens": {
-      "count": 2
+    "tailwindcss/no-unnecessary-whitespace": {
+      "count": 1
     },
     "ts/no-use-before-define": {
       "count": 1
     }
   },
-  "apps/landing/src/components/widgets/landing/PromptDemo.tsx": {
-    "style/arrow-parens": {
-      "count": 2
-    }
-  },
-  "apps/landing/src/components/widgets/landing/SocialProof.tsx": {
-    "curly": {
-      "count": 1
-    },
-    "style/quotes": {
-      "count": 5
-    }
-  },
-  "apps/landing/src/components/widgets/landing/ViewsShowcase.tsx": {
-    "style/arrow-parens": {
-      "count": 1
-    },
-    "style/member-delimiter-style": {
-      "count": 1
-    }
-  },
   "apps/landing/src/components/widgets/landing/WindowChrome.tsx": {
-    "style/multiline-ternary": {
-      "count": 2
+    "tailwindcss/no-unnecessary-whitespace": {
+      "count": 1
     }
   },
   "apps/landing/src/components/widgets/simulators/EntryPage.tsx": {
-    "style/jsx-one-expression-per-line": {
-      "count": 3
-    },
     "ts/no-use-before-define": {
       "count": 1
     }
   },
   "apps/landing/src/components/widgets/simulators/ListDemo.tsx": {
-    "style/arrow-parens": {
-      "count": 1
-    },
     "ts/no-use-before-define": {
       "count": 1
-    }
-  },
-  "apps/landing/src/components/widgets/simulators/components/SimulatorReaders.tsx": {
-    "style/jsx-one-expression-per-line": {
-      "count": 2
     }
   },
   "apps/landing/src/components/widgets/simulators/components/ai/AIChainOfThought.tsx": {
-    "curly": {
-      "count": 7
-    },
     "no-useless-return": {
       "count": 1
     },
-    "style/jsx-one-expression-per-line": {
-      "count": 1
-    },
-    "style/jsx-wrap-multilines": {
-      "count": 2
-    },
-    "style/multiline-ternary": {
-      "count": 4
-    },
     "ts/no-use-before-define": {
-      "count": 3
-    }
-  },
-  "apps/landing/src/components/widgets/simulators/components/ai/AIReasoningPart.tsx": {
-    "curly": {
-      "count": 1
-    },
-    "react-hooks-extra/no-direct-set-state-in-use-effect": {
-      "count": 3
-    }
-  },
-  "apps/landing/src/components/widgets/simulators/components/ai/ToolInvocationComponent.tsx": {
-    "style/jsx-curly-brace-presence": {
-      "count": 4
-    },
-    "style/jsx-wrap-multilines": {
-      "count": 1
-    },
-    "style/multiline-ternary": {
-      "count": 4
-    },
-    "style/operator-linebreak": {
-      "count": 1
-    }
-  },
-  "apps/landing/src/components/widgets/simulators/components/ai/animated/AnimatedMarkdown.tsx": {
-    "style/brace-style": {
-      "count": 4
-    },
-    "style/quote-props": {
-      "count": 18
-    }
-  },
-  "apps/landing/src/components/widgets/simulators/components/ai/animated/TokenizedText.tsx": {
-    "curly": {
-      "count": 2
-    },
-    "style/brace-style": {
-      "count": 3
-    },
-    "style/operator-linebreak": {
       "count": 3
     }
   },
   "apps/landing/src/components/widgets/simulators/components/ai/parse-incomplete-markdown.ts": {
-    "curly": {
-      "count": 2
-    },
     "no-cond-assign": {
-      "count": 2
-    },
-    "style/brace-style": {
-      "count": 2
-    },
-    "style/operator-linebreak": {
-      "count": 19
-    },
-    "style/quotes": {
       "count": 2
     },
     "ts/no-use-before-define": {
       "count": 3
     }
   },
-  "apps/landing/src/components/widgets/simulators/components/chat/AiMockMessage.tsx": {
-    "react-hooks-extra/no-direct-set-state-in-use-effect": {
-      "count": 3
-    },
-    "style/arrow-parens": {
-      "count": 3
-    },
-    "style/indent": {
-      "count": 4
-    },
-    "style/indent-binary-ops": {
-      "count": 2
-    },
-    "style/member-delimiter-style": {
-      "count": 6
-    },
-    "style/multiline-ternary": {
-      "count": 4
-    },
-    "style/operator-linebreak": {
-      "count": 1
-    }
-  },
-  "apps/landing/src/components/widgets/simulators/components/chat/ListChatPlayer.tsx": {
-    "curly": {
-      "count": 5
-    },
-    "style/arrow-parens": {
-      "count": 9
-    },
-    "style/brace-style": {
-      "count": 2
-    },
-    "style/jsx-curly-brace-presence": {
-      "count": 1
-    },
-    "style/jsx-one-expression-per-line": {
-      "count": 3
-    },
-    "style/jsx-wrap-multilines": {
-      "count": 1
-    },
-    "style/member-delimiter-style": {
-      "count": 2
-    },
-    "style/multiline-ternary": {
-      "count": 12
-    },
-    "style/operator-linebreak": {
-      "count": 1
-    }
-  },
-  "apps/landing/src/components/widgets/simulators/components/chat/stream.ts": {
-    "style/brace-style": {
-      "count": 1
-    },
-    "style/operator-linebreak": {
-      "count": 1
-    }
-  },
-  "apps/landing/src/components/widgets/simulators/mocks.tsx": {
-    "style/quotes": {
-      "count": 3
-    }
-  },
-  "apps/landing/src/constants/download.ts": {
-    "style/member-delimiter-style": {
-      "count": 1
-    }
-  },
   "apps/landing/src/constants/env.ts": {
-    "curly": {
-      "count": 1
-    },
     "node/prefer-global/process": {
       "count": 5
-    }
-  },
-  "apps/landing/src/constants/site.ts": {
-    "style/quote-props": {
-      "count": 2
-    }
-  },
-  "apps/landing/src/hooks/biz/use-github-star.ts": {
-    "style/brace-style": {
-      "count": 1
     }
   },
   "apps/landing/src/hooks/common/use-click-away.ts": {
     "@typescript-eslint/no-unsafe-function-type": {
       "count": 1
     },
-    "style/indent-binary-ops": {
-      "count": 1
-    },
-    "style/operator-linebreak": {
-      "count": 2
-    },
     "ts/no-unsafe-function-type": {
       "count": 2
     }
   },
-  "apps/landing/src/hooks/common/use-is-client.ts": {
-    "react-hooks-extra/no-direct-set-state-in-use-effect": {
-      "count": 1
-    }
-  },
-  "apps/landing/src/hooks/common/use-is-mounted.ts": {
-    "react-hooks-extra/no-direct-set-state-in-use-effect": {
-      "count": 1
-    }
-  },
-  "apps/landing/src/hooks/common/use-sync-effect.ts": {
-    "curly": {
-      "count": 1
-    }
-  },
   "apps/landing/src/hooks/common/useMeasure.ts": {
-    "curly": {
-      "count": 4
-    },
-    "style/arrow-parens": {
-      "count": 4
-    },
-    "style/exp-list-style": {
-      "count": 2
-    },
-    "style/member-delimiter-style": {
-      "count": 1
-    },
-    "style/operator-linebreak": {
-      "count": 1
-    },
     "ts/no-use-before-define": {
       "count": 1
     }
   },
-  "apps/landing/src/hooks/shared/use-mask-scrollarea.ts": {
-    "curly": {
-      "count": 2
-    },
-    "react-hooks-extra/no-direct-set-state-in-use-effect": {
-      "count": 20
-    },
-    "style/arrow-parens": {
-      "count": 1
-    },
-    "style/brace-style": {
-      "count": 1
-    }
-  },
-  "apps/landing/src/i18n/request.ts": {
-    "style/operator-linebreak": {
-      "count": 1
-    }
-  },
-  "apps/landing/src/i18n/routing.ts": {
-    "style/operator-linebreak": {
-      "count": 1
-    }
-  },
   "apps/landing/src/legal/privacy.md": {
-    "hyoban/md-one-sentence-per-line": {
-      "count": 17
-    },
     "md/no-curly-quote": {
       "count": 12
     }
   },
   "apps/landing/src/legal/tos.md": {
-    "hyoban/md-one-sentence-per-line": {
-      "count": 38
-    },
     "md/no-curly-quote": {
       "count": 19
-    }
-  },
-  "apps/landing/src/lib/color.ts": {
-    "style/arrow-parens": {
-      "count": 1
-    },
-    "style/brace-style": {
-      "count": 1
-    },
-    "style/operator-linebreak": {
-      "count": 4
-    }
-  },
-  "apps/landing/src/lib/datetime.ts": {
-    "style/brace-style": {
-      "count": 5
-    }
-  },
-  "apps/landing/src/lib/dom.ts": {
-    "style/arrow-parens": {
-      "count": 2
-    },
-    "style/brace-style": {
-      "count": 1
     }
   },
   "apps/landing/src/lib/env.ts": {
@@ -2618,37 +1937,9 @@
       "count": 1
     }
   },
-  "apps/landing/src/lib/jotai.ts": {
-    "style/arrow-parens": {
-      "count": 1
-    }
-  },
-  "apps/landing/src/lib/platform.ts": {
-    "style/brace-style": {
-      "count": 2
-    }
-  },
   "apps/landing/src/lib/scroller.ts": {
-    "style/operator-linebreak": {
-      "count": 1
-    },
     "ts/no-use-before-define": {
       "count": 2
-    }
-  },
-  "apps/landing/src/lib/sleep.ts": {
-    "style/arrow-parens": {
-      "count": 1
-    }
-  },
-  "apps/landing/src/providers/root/event-provider.tsx": {
-    "style/brace-style": {
-      "count": 1
-    }
-  },
-  "apps/landing/src/providers/root/index.tsx": {
-    "style/arrow-parens": {
-      "count": 1
     }
   },
   "apps/landing/src/providers/root/page-scroll-info-provider.tsx": {
@@ -2659,26 +1950,7 @@
       "count": 1
     }
   },
-  "apps/landing/src/providers/root/react-query-provider.tsx": {
-    "curly": {
-      "count": 1
-    },
-    "style/brace-style": {
-      "count": 1
-    },
-    "style/operator-linebreak": {
-      "count": 1
-    }
-  },
-  "apps/landing/src/providers/shared/LayoutRightSideProvider.tsx": {
-    "curly": {
-      "count": 2
-    }
-  },
   "apps/landing/src/providers/shared/WrappedElementProvider.tsx": {
-    "curly": {
-      "count": 2
-    },
     "react-refresh/only-export-components": {
       "count": 5
     },
@@ -2686,26 +1958,8 @@
       "count": 4
     }
   },
-  "apps/landing/src/proxy.ts": {
-    "style/arrow-parens": {
-      "count": 1
-    },
-    "style/operator-linebreak": {
-      "count": 1
-    }
-  },
   "apps/landing/tsconfig.json": {
     "jsonc/sort-keys": {
-      "count": 9
-    }
-  },
-  "apps/landing/worker/index.js": {
-    "style/arrow-parens": {
-      "count": 1
-    }
-  },
-  "apps/landing/wrangler.jsonc": {
-    "jsonc/comma-dangle": {
       "count": 9
     }
   },
