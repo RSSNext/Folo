@@ -189,7 +189,7 @@ const ShikiCode: FC<
       className={cn(
         "group relative my-4 overflow-hidden rounded-lg border backdrop-blur-sm",
         styles["shiki-wrapper"],
-        transparent ? styles["transparent"] : null,
+        transparent ? styles.transparent : null,
         className,
       )}
       style={{

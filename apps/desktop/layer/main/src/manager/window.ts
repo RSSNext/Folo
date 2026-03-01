@@ -357,9 +357,9 @@ class WindowManagerStatic {
 
     // HMR for renderer base on electron-vite cli.
     // Load the remote URL for development or the local html file for production.
-    if (is.dev && process.env["ELECTRON_RENDERER_URL"]) {
-      window.loadURL(process.env["ELECTRON_RENDERER_URL"] + (options?.extraPath || ""))
-      logger.log(process.env["ELECTRON_RENDERER_URL"] + (options?.extraPath || ""))
+    if (is.dev && process.env.ELECTRON_RENDERER_URL) {
+      window.loadURL(process.env.ELECTRON_RENDERER_URL + (options?.extraPath || ""))
+      logger.log(process.env.ELECTRON_RENDERER_URL + (options?.extraPath || ""))
     } else {
       // Production entry
       const dynamicRenderEntry = loadDynamicRenderEntry()
@@ -450,7 +450,6 @@ class WindowManagerStatic {
       this.windows.mainWindow.show()
 
       callWindowExpose(this.windows.mainWindow).showSetting(path)
-      return
     } else {
       this.windows.mainWindow = this.createMainWindow()
       this.windows.mainWindow.show()

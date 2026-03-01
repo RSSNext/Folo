@@ -40,7 +40,7 @@ export const createApiFetch = () => {
     },
     onRequestError(context) {
       if (context.error.name === "AbortError") {
-        return
+        /* empty */
       }
     },
     baseURL,

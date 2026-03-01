@@ -392,7 +392,6 @@ void main() {
           animationIdRef.current = requestAnimationFrame(loop)
         } catch (error) {
           console.warn('WebGL rendering error:', error)
-          return
         }
       }
 

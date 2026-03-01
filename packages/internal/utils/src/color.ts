@@ -125,8 +125,8 @@ export const getBackgroundGradient = (seed?: string | null | undefined) => {
 }
 
 export function getDominantColor(imageObject: HTMLImageElement) {
-  const canvas = document.createElement("canvas"),
-    ctx = canvas.getContext("2d")!
+  const canvas = document.createElement("canvas")
+  const ctx = canvas.getContext("2d")!
 
   canvas.width = 1
   canvas.height = 1

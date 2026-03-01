@@ -2,17 +2,17 @@
   "extends": "@electron-toolkit/tsconfig/tsconfig.node.json",
   "compilerOptions": {
     "composite": false,
-    "types": ["electron-vite/node"],
-    "moduleResolution": "Bundler",
-    "noImplicitReturns": false,
-    "noUnusedLocals": false,
-    "noUnusedParameters": false,
     "baseUrl": ".",
+    "moduleResolution": "Bundler",
     "paths": {
       "@shared/*": ["./src/*"],
       "@pkg": ["../../package.json"],
       "@locales/*": ["../../../../locales/*"],
       "~/*": ["./src/*"]
-    }
+    },
+    "types": ["electron-vite/node"],
+    "noImplicitReturns": false,
+    "noUnusedLocals": false,
+    "noUnusedParameters": false
   }
 }

@@ -196,7 +196,6 @@ export default function createHTMLMediaHook<T extends HTMLAudioElement | HTMLVid
 
           return promise
         }
-        return
       },
       pause: () => {
         const el = ref.current

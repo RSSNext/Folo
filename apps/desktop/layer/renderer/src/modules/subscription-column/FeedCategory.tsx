@@ -397,9 +397,7 @@ function FilterReadFeedCategory(props: FeedCategoryProps) {
   return <FeedCategoryImpl {...props} />
 }
 
-export const FeedCategoryAutoHideUnread = memo(function FeedCategoryAutoHideUnread(
-  props: FeedCategoryProps,
-) {
+export const FeedCategoryAutoHideUnread = memo((props: FeedCategoryProps) => {
   const hideAllReadSubscriptions = useHideAllReadSubscriptions()
   if (hideAllReadSubscriptions) {
     return <FilterReadFeedCategory {...props} />

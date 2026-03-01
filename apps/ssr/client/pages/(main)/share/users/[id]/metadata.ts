@@ -7,8 +7,8 @@ import { defineMetadata } from "../../../../../../src/meta-handler"
 export default defineMetadata(async ({ params, apiClient, origin }): Promise<MetaTag[]> => {
   const userIdOrHandle = params.id
 
-  let handle = undefined
-  let userId = undefined
+  let handle
+  let userId
 
   if (!userIdOrHandle) {
     throw new Error("User ID or handle is required")

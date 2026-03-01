@@ -13,7 +13,7 @@ This file provides concise, agent-focused guidance for working in this monorepo.
 
 ## Setup commands
 
-```bash
+```sh
 # Install deps
 pnpm install
 
@@ -38,7 +38,7 @@ pnpm run build:web
 
 ## Quality gates (must-pass before commit/PR)
 
-```bash
+```sh
 # 1) Typecheck first (required)
 pnpm run typecheck
 
@@ -53,7 +53,7 @@ pnpm run test
 - Follow this order strictly: typecheck → lint → test.
 - After every modification, run the following checks to catch errors early:
 
-```bash
+```sh
 npm exec turbo run format:check typecheck lint
 npm exec turbo run test
 ```

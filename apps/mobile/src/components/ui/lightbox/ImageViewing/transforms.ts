@@ -59,15 +59,15 @@ export function prependScale(t: TransformMatrix, value: number) {
 export function prependTransform(ta: TransformMatrix, tb: TransformMatrix) {
   "worklet"
   // In-place matrix multiplication.
-  const a00 = ta[0],
-    a01 = ta[1],
-    a02 = ta[2]
-  const a10 = ta[3],
-    a11 = ta[4],
-    a12 = ta[5]
-  const a20 = ta[6],
-    a21 = ta[7],
-    a22 = ta[8]
+  const a00 = ta[0]
+  const a01 = ta[1]
+  const a02 = ta[2]
+  const a10 = ta[3]
+  const a11 = ta[4]
+  const a12 = ta[5]
+  const a20 = ta[6]
+  const a21 = ta[7]
+  const a22 = ta[8]
   ta[0] = a00 * tb[0] + a01 * tb[3] + a02 * tb[6]
   ta[1] = a00 * tb[1] + a01 * tb[4] + a02 * tb[7]
   ta[2] = a00 * tb[2] + a01 * tb[5] + a02 * tb[8]

@@ -12,7 +12,7 @@ To add support for a new language:
 
 1. Run the following command in the project root:
 
-   ```bash
+   ```sh
    npm run generator:i18n-template
    ```
 

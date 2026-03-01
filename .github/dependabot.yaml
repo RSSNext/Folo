@@ -33,15 +33,15 @@ updates:
 
       # filter not work
       - dependency-name: unplugin-ast
-        versions: ["0.14.5"]
+        versions: [0.14.5]
 
     open-pull-requests-limit: 100
     groups:
       minor-and-patch:
         applies-to: version-updates
         update-types:
-          - "minor"
-          - "patch"
+          - minor
+          - patch
       pathed:
         patterns:
           - immer

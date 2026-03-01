@@ -6,10 +6,10 @@ export const clsxm = (...args: any[]) => {
 }
 
 export const escapeHTMLTag = (html: string) => {
-  const lt = /</g,
-    gt = />/g,
-    ap = /'/g,
-    ic = /"/g
+  const lt = /</g
+  const gt = />/g
+  const ap = /'/g
+  const ic = /"/g
   return html
     .toString()
     .replaceAll(lt, '&lt;')

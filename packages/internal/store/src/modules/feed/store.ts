@@ -122,7 +122,7 @@ class FeedSyncServices {
       latestEntryPublishedAt: res.data.analytics?.latestEntryPublishedAt,
     } as FeedModel
     if (!finalData.id) {
-      finalData["nonce"] = nonce
+      finalData.nonce = nonce
     }
     feedActions.upsertMany([finalData])
 
@@ -147,8 +147,8 @@ class FeedSyncServices {
       latestEntryPublishedAt: res.data.analytics?.latestEntryPublishedAt,
     } as FeedModel
     if (!finalData.id) {
-      finalData["nonce"] = nonce
-      finalData["id"] = nonce
+      finalData.nonce = nonce
+      finalData.id = nonce
     }
     feedActions.upsertMany([finalData])
 

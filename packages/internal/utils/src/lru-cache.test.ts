@@ -2,7 +2,7 @@ import { describe, expect, it } from "vitest"
 
 import { LRUCache } from "./lru-cache"
 
-describe("LRUCache", () => {
+describe("lRUCache", () => {
   it("should create cache with given capacity", () => {
     const cache = new LRUCache<string, number>(2)
     expect(cache.size()).toBe(0)

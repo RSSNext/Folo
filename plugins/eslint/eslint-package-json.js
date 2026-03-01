@@ -63,28 +63,27 @@ export default {
         })
 
         return {
-          "Program > JSONExpressionStatement > JSONObjectExpression > JSONProperty > JSONObjectExpression > JSONProperty"(
-            node,
-          ) {
-            const parent = node?.parent?.parent
-            if (!parent) return
-            const packageCategory = parent.key.value
-            if (!dependencyKeys.includes(packageCategory)) return
-            const packageName = node.key.value
-            const packageVersion = node.value.value
+          "Program > JSONExpressionStatement > JSONObjectExpression > JSONProperty > JSONObjectExpression > JSONProperty":
+            function (node) {
+              const parent = node?.parent?.parent
+              if (!parent) return
+              const packageCategory = parent.key.value
+              if (!dependencyKeys.includes(packageCategory)) return
+              const packageName = node.key.value
+              const packageVersion = node.value.value
 
-            const versions = packageVersionMap.get(packageName)
-            if (!versions || versions.find((v) => v.version === packageVersion)) return
+              const versions = packageVersionMap.get(packageName)
+              if (!versions || versions.find((v) => v.version === packageVersion)) return
 
-            context.report({
-              node,
-              message: `Inconsistent versions of ${packageName}: ${Array.from(new Set(versions.map((v) => v.version))).join(", ")}`,
-              suggest: versions.map((version) => ({
-                desc: `Follow the version ${version.version} in ${version.filePath}`,
-                fix: (fixer) => fixer.replaceText(node.value, `"${version.version}"`),
-              })),
-            })
-          },
+              context.report({
+                node,
+                message: `Inconsistent versions of ${packageName}: ${Array.from(new Set(versions.map((v) => v.version))).join(", ")}`,
+                suggest: versions.map((version) => ({
+                  desc: `Follow the version ${version.version} in ${version.filePath}`,
+                  fix: (fixer) => fixer.replaceText(node.value, `"${version.version}"`),
+                })),
+              })
+            },
         }
       },
     },
@@ -123,25 +122,24 @@ export default {
         })
 
         return {
-          "Program > JSONExpressionStatement > JSONObjectExpression > JSONProperty > JSONObjectExpression > JSONProperty"(
-            node,
-          ) {
-            const parent = node?.parent?.parent
-            if (!parent) return
-            const packageCategory = parent.key.value
-            if (!dependencyKeys.includes(packageCategory)) return
-            const packageName = node.key.value
+          "Program > JSONExpressionStatement > JSONObjectExpression > JSONProperty > JSONObjectExpression > JSONProperty":
+            function (node) {
+              const parent = node?.parent?.parent
+              if (!parent) return
+              const packageCategory = parent.key.value
+              if (!dependencyKeys.includes(packageCategory)) return
+              const packageName = node.key.value
 
-            dependencyKeys.forEach((key) => {
-              if (key === packageCategory) return
-              if (!dependencyMap.get(key)?.has(packageName)) return
+              dependencyKeys.forEach((key) => {
+                if (key === packageCategory) return
+                if (!dependencyMap.get(key)?.has(packageName)) return
 
-              context.report({
-                node,
-                message: `Duplicated package ${packageName} in ${key}`,
+                context.report({
+                  node,
+                  message: `Duplicated package ${packageName} in ${key}`,
+                })
               })
-            })
-          },
+            },
         }
       },
     },

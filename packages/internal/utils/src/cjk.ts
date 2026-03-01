@@ -1,5 +1,4 @@
 export const isCJKChar = (char: string): boolean => {
-  // eslint-disable-next-line unicorn/prefer-code-point
   const code = char.charCodeAt(0)
   return (
     (code >= 0x4e00 && code <= 0x9fff) || // CJK Unified Ideographs

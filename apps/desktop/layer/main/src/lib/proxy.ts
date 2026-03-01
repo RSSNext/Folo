@@ -51,9 +51,7 @@ const normalizeProxyUri = (userProxy: string) => {
     // There are multiple ways to specify a proxy in Electron,
     // but for security reasons, we only support simple proxy URLs for now.
     return `${proxyUrl.protocol}//${proxyUrl.hostname}${proxyUrl.port ? `:${proxyUrl.port}` : ""}`
-  } catch {
-    return
-  }
+  } catch {}
 }
 
 const BYPASS_RULES = ["<local>"].join(";")

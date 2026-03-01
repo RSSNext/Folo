@@ -17,7 +17,7 @@ The renderer is the **primary web application** - a Vite + React SPA that can ru
 
 ## Development Commands
 
-```bash
+```sh
 # Recommended: Browser development (faster)
 pnpm run dev:web
 

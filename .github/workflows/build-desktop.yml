@@ -7,16 +7,16 @@ on:
     paths:
       - "apps/desktop/**"
       - "packages/**"
-      - "pnpm-lock.yaml"
-      - ".github/workflows/build-desktop.yml"
+      - pnpm-lock.yaml
+      - .github/workflows/build-desktop.yml
   workflow_dispatch:
     inputs:
       tag_version:
         type: boolean
-        description: "Tag Version"
+        description: Tag Version
       store:
         type: boolean
-        description: "Build for Mac App Store and Microsoft Store"
+        description: Build for Mac App Store and Microsoft Store
       build_version:
         type: string
         description: "Build Version, only available when mas is true"
@@ -76,7 +76,7 @@ jobs:
         uses: actions/setup-node@v6
         with:
           node-version: 22
-          cache: "pnpm"
+          cache: pnpm
 
       - name: Install Python setuptools
         if: runner.os == 'macOS'
@@ -228,12 +228,12 @@ jobs:
         if: runner.os == 'windows' && env.RELEASE == 'true' && github.event.inputs.store != 'true'
         with:
           api-token: "${{ secrets.SIGNPATH_API_TOKEN }}"
-          organization-id: "8c651516-fdaf-40a1-9fea-001dffde850e"
-          project-slug: "Folo"
-          signing-policy-slug: "release-signing"
-          artifact-configuration-slug: "github"
+          organization-id: 8c651516-fdaf-40a1-9fea-001dffde850e
+          project-slug: Folo
+          signing-policy-slug: release-signing
+          artifact-configuration-slug: github
           github-artifact-id: "${{ steps.upload-unsigned-windows-x64-exe.outputs.artifact-id }}"
-          output-artifact-directory: "apps/desktop/out/make/"
+          output-artifact-directory: apps/desktop/out/make/
 
       - name: Update latest.yml
         if: runner.os == 'windows' && env.RELEASE == 'true' && github.event.inputs.store != 'true'
@@ -294,7 +294,7 @@ jobs:
         id: version
         uses: ./.github/actions/setup-version
         with:
-          type: "desktop"
+          type: desktop
 
       - name: Prepare Release Notes
         if: env.RELEASE == 'true'

@@ -1,19 +1,19 @@
 {
   "compilerOptions": {
     "target": "esnext",
-    "module": "esnext",
-    "sourceMap": false,
     "jsx": "preserve",
-    "esModuleInterop": true,
+    "module": "esnext",
     "moduleResolution": "Bundler",
     "resolveJsonModule": true,
-    "isolatedModules": true,
-    "forceConsistentCasingInFileNames": true,
-    "skipLibCheck": true,
-    "noEmit": true,
+    "allowJs": true,
     "strict": true,
-    "noUncheckedIndexedAccess": true,
     "noImplicitOverride": true,
-    "allowJs": true
+    "noUncheckedIndexedAccess": true,
+    "noEmit": true,
+    "sourceMap": false,
+    "esModuleInterop": true,
+    "forceConsistentCasingInFileNames": true,
+    "isolatedModules": true,
+    "skipLibCheck": true
   }
 }

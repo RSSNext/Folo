@@ -1,13 +1,13 @@
-name: "Setup Xcode"
-description: "Setup specific Xcode version for iOS builds"
+name: Setup Xcode
+description: Setup specific Xcode version for iOS builds
 inputs:
   xcode-version:
-    description: "Xcode version to use"
+    description: Xcode version to use
     required: false
-    default: "26.0.1"
+    default: 26.0.1
 
 runs:
-  using: "composite"
+  using: composite
   steps:
     - uses: maxim-lobanov/setup-xcode@v1
       with:

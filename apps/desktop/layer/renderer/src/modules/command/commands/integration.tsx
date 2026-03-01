@@ -777,7 +777,6 @@ const useRegisterQBittorrentCommands = () => {
               toast.error(
                 `${t("entry_actions.failed_to_save_to_qbittorrent")}: ${errorObj.message || ""}`,
               )
-              return
             }
           },
         }),

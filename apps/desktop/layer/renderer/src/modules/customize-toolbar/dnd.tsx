@@ -40,7 +40,7 @@ const SortableItem = ({ id, children }: { id: UniqueIdentifier; children: ReactN
     <div
       ref={setNodeRef}
       style={style}
-      className={` ${isDragging ? "cursor-grabbing opacity-90" : "cursor-grab"} transition-colors duration-200`}
+      className={`${isDragging ? "cursor-grabbing opacity-90" : "cursor-grab"} transition-colors duration-200`}
       {...attributes}
       {...listeners}
     >

@@ -2,8 +2,8 @@
   "extends": "@electron-toolkit/tsconfig/tsconfig.node.json",
   "compilerOptions": {
     "target": "ES2022",
-    "noUncheckedIndexedAccess": true,
-    "noImplicitOverride": true
+    "noImplicitOverride": true,
+    "noUncheckedIndexedAccess": true
   },
   "exclude": ["apps", "packages"]
 }

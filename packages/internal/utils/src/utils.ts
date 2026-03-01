@@ -67,10 +67,10 @@ export const getOS = once((): OS => {
     }
   }
 
-  const { userAgent } = window.navigator,
-    macosPlatforms = ["Macintosh", "MacIntel", "MacPPC", "Mac68K"],
-    windowsPlatforms = ["Win32", "Win64", "Windows", "WinCE"],
-    iosPlatforms = ["iPhone", "iPad", "iPod"]
+  const { userAgent } = window.navigator
+  const macosPlatforms = ["Macintosh", "MacIntel", "MacPPC", "Mac68K"]
+  const windowsPlatforms = ["Win32", "Win64", "Windows", "WinCE"]
+  const iosPlatforms = ["iPhone", "iPad", "iPod"]
   // @ts-expect-error
   const platform = window.navigator.userAgentData?.platform || window.navigator.platform
   let os = platform
@@ -328,7 +328,7 @@ export const toScientificNotation = (
     })
 
     // Convert bigint to number with correct decimal places
-    const asNumber = Number(value) / Math.pow(10, decimals)
+    const asNumber = Number(value) / 10 ** decimals
     return formatter.format(asNumber)
   }
 

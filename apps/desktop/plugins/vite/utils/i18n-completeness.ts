@@ -45,7 +45,7 @@ function calculateCompleteness(localesDir: string): LanguageCompletion {
     })
   })
 
-  const enCount = keyCount["en"] || 0
+  const enCount = keyCount.en || 0
   const completeness: LanguageCompletion = {}
 
   languages.forEach((lang) => {

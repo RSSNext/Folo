@@ -29,7 +29,7 @@ export const SYSTEM_CAN_UNDER_BLUR_WINDOW = globalThis?.window?.electron
   ? globalThis?.window.api?.canWindowBlur
   : false
 
-export const IN_ELECTRON = !!globalThis["electron"]
+export const IN_ELECTRON = !!globalThis.electron
 
 declare const ELECTRON: boolean
 /**

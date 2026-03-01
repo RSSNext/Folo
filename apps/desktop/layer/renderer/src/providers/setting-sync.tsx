@@ -28,7 +28,6 @@ const useUpdateDockBadge = (setting: UISettings) => {
         ipcServices?.dock.setDockBadge(0)
       })
     }
-    return
   }, [setting.showDockBadge])
 
   const prevCount = useRef<null | number>(null)

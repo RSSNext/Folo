@@ -21,13 +21,13 @@ Use this skill to create a fresh local `preview` iOS build and install it on a c
    - Run from repo root and ensure `apps/mobile` exists.
    - Verify `pnpm`, `xcrun`, `xcodebuild`, and `eas-cli` are available.
    - Verify EAS login:
-     ```bash
+     ```sh
      cd apps/mobile
      pnpm dlx eas-cli whoami
      ```
 2. Resolve target device.
    - List paired devices:
-     ```bash
+     ```sh
      xcrun devicectl list devices
      ```
    - Choose device in this order:
@@ -35,7 +35,7 @@ Use this skill to create a fresh local `preview` iOS build and install it on a c
      - Otherwise, first paired iPhone.
 3. Trigger local `preview` iOS build.
 
-   ```bash
+   ```sh
    mkdir -p .context/preview-install
    cd apps/mobile
    pnpm dlx eas-cli build -p ios --profile preview --non-interactive --local --output=./build-preview.ipa
@@ -44,14 +44,14 @@ Use this skill to create a fresh local `preview` iOS build and install it on a c
    ```
 
 4. Install to device locally.
-   ```bash
+   ```sh
    unzip -q -o .context/preview-install/folo-preview.ipa -d .context/preview-install/unpacked
    APP_PATH=$(find .context/preview-install/unpacked/Payload -maxdepth 1 -name '*.app' -type d | head -n 1)
    xcrun devicectl device install app --device "<device-id>" "$APP_PATH"
    ```
 5. Try launching app.
 
-   ```bash
+   ```sh
    xcrun devicectl device process launch --device "<device-id>" is.follow --activate
    ```
 
@@ -64,7 +64,7 @@ Use this skill to create a fresh local `preview` iOS build and install it on a c
   - failing command
   - key error message from command output
 - If app config fails with `Assets source directory not found ... /out/rn-web`, prebuild assets then retry once:
-  ```bash
+  ```sh
   pnpm --filter @follow/rn-micro-web-app build --outDir out/rn-web/html-renderer
   ```
 

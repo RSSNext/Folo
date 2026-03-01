@@ -28,7 +28,7 @@ export function LinearBlur({
 
   const factor = 0.5
 
-  const base = Math.pow(strength / factor, 1 / (actualSteps - 1))
+  const base = (strength / factor) ** (1 / (actualSteps - 1))
 
   const mainPercentage = 100 - falloffPercentage
 

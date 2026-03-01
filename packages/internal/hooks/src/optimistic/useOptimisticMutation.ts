@@ -75,6 +75,6 @@ export function useOptimisticMutation<
     // Configure retry behavior
     retry: config.errorConfig?.retryable ? (config.errorConfig.maxRetries ?? 2) : false,
 
-    retryDelay: (attemptIndex) => Math.min(1000 * Math.pow(2, attemptIndex), 5000),
+    retryDelay: (attemptIndex) => Math.min(1000 * 2 ** attemptIndex, 5000),
   })
 }

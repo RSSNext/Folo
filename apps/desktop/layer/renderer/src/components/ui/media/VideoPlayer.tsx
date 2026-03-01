@@ -103,7 +103,7 @@ export const VideoPlayer = ({
       rest.onClick?.(e)
       handleClick(e)
     },
-    muted: isPlayer ? false : true,
+    muted: !isPlayer,
     onDoubleClick(e) {
       rest.onDoubleClick?.(e)
       if (!isPlayer) return

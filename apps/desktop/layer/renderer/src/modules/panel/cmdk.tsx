@@ -151,7 +151,7 @@ export const SearchCmdK: React.FC = () => {
           onCompositionStart={onCompositionStart}
           onCompositionEnd={onCompositionEnd}
         />
-        <div className={cn(styles["status-bar"], isPending && styles["loading"])} />
+        <div className={cn(styles["status-bar"], isPending && styles.loading)} />
 
         <div className="flex flex-1 flex-col overflow-y-hidden">
           <ScrollArea.ScrollArea
@@ -238,49 +238,51 @@ type SearchListType = {
   view?: FeedViewType
 }
 
-const SearchItem = memo(function Item({
-  id,
-  title,
-  entryId,
-  feedId,
+const SearchItem = memo(
+  ({
+    id,
+    title,
+    entryId,
+    feedId,
 
-  subtitle,
-  view,
-}: {} & SearchListType) {
-  const navigateEntry = useNavigateEntry()
+    subtitle,
+    view,
+  }: {} & SearchListType) => {
+    const navigateEntry = useNavigateEntry()
 
-  const feed = getFeedById(feedId!)
+    const feed = getFeedById(feedId!)
 
-  return (
-    <Command.Item
-      className={clsx(
-        "relative flex w-full justify-between px-1 text-[0.9rem]",
-        `before:absolute before:inset-0 before:rounded-md before:content-[""]`,
-        "hover:before:bg-zinc-200/60 dark:hover:before:bg-zinc-800/80",
-        "data-[selected=true]:before:bg-zinc-200/60 data-[selected=true]:dark:before:bg-zinc-800/80",
-        "min-w-0 max-w-full",
-        styles["content-visually"],
-      )}
-      key={`${id}-${feedId}-${entryId}`}
-      value={`${id}-${feedId}-${entryId}`}
-      onSelect={() => {
-        navigateEntry({
-          feedId: feedId!,
-          entryId,
-          view,
-        })
-      }}
-    >
-      <div className="relative flex w-full items-center justify-between px-1 py-2">
-        {feed && <FeedIcon className="mr-2 size-5 shrink-0 rounded" target={feed} />}
-        <span className="block min-w-0 flex-1 shrink-0 truncate">{title}</span>
-        <span className="block min-w-0 shrink-0 grow-0 text-xs font-medium text-zinc-800 opacity-60 dark:text-slate-200/80">
-          {subtitle}
-        </span>
-      </div>
-    </Command.Item>
-  )
-})
+    return (
+      <Command.Item
+        className={clsx(
+          "relative flex w-full justify-between px-1 text-[0.9rem]",
+          `before:absolute before:inset-0 before:rounded-md before:content-[""]`,
+          "hover:before:bg-zinc-200/60 dark:hover:before:bg-zinc-800/80",
+          "data-[selected=true]:before:bg-zinc-200/60 data-[selected=true]:dark:before:bg-zinc-800/80",
+          "min-w-0 max-w-full",
+          styles["content-visually"],
+        )}
+        key={`${id}-${feedId}-${entryId}`}
+        value={`${id}-${feedId}-${entryId}`}
+        onSelect={() => {
+          navigateEntry({
+            feedId: feedId!,
+            entryId,
+            view,
+          })
+        }}
+      >
+        <div className="relative flex w-full items-center justify-between px-1 py-2">
+          {feed && <FeedIcon className="mr-2 size-5 shrink-0 rounded" target={feed} />}
+          <span className="block min-w-0 flex-1 shrink-0 truncate">{title}</span>
+          <span className="block min-w-0 shrink-0 grow-0 text-xs font-medium text-zinc-800 opacity-60 dark:text-slate-200/80">
+            {subtitle}
+          </span>
+        </div>
+      </Command.Item>
+    )
+  },
+)
 
 const SearchGroupHeading: FC<{ icon: string; title: string }> = ({ icon, title }) => (
   <div className="mb-2 flex items-center gap-2">

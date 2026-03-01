@@ -15,18 +15,18 @@ This is the mobile client for [Folo](https://app.folo.is), built with [Expo](htt
 
 1. Enable Corepack (if not already enabled)
 
-   ```bash
+   ```sh
    corepack enable
    ```
 
 2. Install dependencies
 
-   ```bash
+   ```sh
    pnpm install
    ```
 
 3. Start the development server
-   ```bash
+   ```sh
    pnpm run dev
    ```
 

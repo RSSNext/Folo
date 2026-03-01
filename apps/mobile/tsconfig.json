@@ -1,18 +1,18 @@
 {
   "extends": "expo/tsconfig.base",
   "compilerOptions": {
-    "strict": true,
-    "noUncheckedIndexedAccess": true,
-    "skipLibCheck": true,
-    "noImplicitOverride": true,
-    "allowImportingTsExtensions": true,
+    "jsx": "preserve",
     "baseUrl": ".",
     "paths": {
       "@/*": ["./*"],
       "@locales/*": ["../../locales/*"]
     },
-    "jsx": "preserve",
-    "types": ["@follow/types/global", "vite/client"]
+    "types": ["@follow/types/global", "vite/client"],
+    "allowImportingTsExtensions": true,
+    "strict": true,
+    "noImplicitOverride": true,
+    "noUncheckedIndexedAccess": true,
+    "skipLibCheck": true
   },
   "include": ["**/*.ts", "**/*.tsx", "nativewind-env.d.ts"],
   "exclude": ["./native", "./web-app", "../../node_modules"]

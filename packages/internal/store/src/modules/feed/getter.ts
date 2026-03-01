@@ -17,5 +17,4 @@ export const getFeedByIdOrUrl = ({ id, url }: { id?: string; url?: string }) => 
   if (url) {
     return getFeedByUrl(url)
   }
-  return
 }

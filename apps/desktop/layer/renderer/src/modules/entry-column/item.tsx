@@ -17,12 +17,7 @@ interface EntryItemProps {
   currentFeedTitle?: string
   isFirstItem?: boolean
 }
-const EntryItemImpl = memo(function EntryItemImpl({
-  entryId,
-  view,
-  currentFeedTitle,
-  isFirstItem,
-}: EntryItemProps) {
+const EntryItemImpl = memo(({ entryId, view, currentFeedTitle, isFirstItem }: EntryItemProps) => {
   const enableTranslation = useGeneralSettingKey("translation")
   const translationMode = useGeneralSettingKey("translationMode")
   const actionLanguage = useActionLanguage()

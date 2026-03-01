@@ -29,7 +29,7 @@ export function WindowChrome({
             href="https://app.folo.is"
             target="_blank"
             rel="noreferrer"
-            className="ml-auto text-xs  pointer-events-auto text-text-secondary cursor-pointer hover:text-text transition-colors"
+            className="ml-auto text-xs pointer-events-auto text-text-secondary cursor-pointer hover:text-text transition-colors"
           >
             {actionsT('tryOnWeb')}
           </a>

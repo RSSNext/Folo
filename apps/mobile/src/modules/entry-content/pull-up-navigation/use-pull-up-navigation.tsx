@@ -43,7 +43,6 @@ export const usePullUpToNext = ({
         isOverThreshold.current = false
         setRefreshing(false)
       }
-      return
     },
     [dragging, onRefresh, progressViewOffset],
   )

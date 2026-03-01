@@ -1,55 +1,14 @@
 {
   ".claude/skills/desktop-release/SKILL.md": {
-    "md/code-lang-shorthand": {
-      "count": 12
-    },
     "md/no-irregular-dash": {
       "count": 1
-    }
-  },
-  ".claude/skills/installing-mobile-preview-builds/SKILL.md": {
-    "md/code-lang-shorthand": {
-      "count": 6
-    }
-  },
-  ".claude/skills/mobile-release/SKILL.md": {
-    "md/code-lang-shorthand": {
-      "count": 8
     }
   },
   ".claude/skills/update-deps/SKILL.md": {
     "markdown/fenced-code-language": {
       "count": 1
     },
-    "md/code-lang-shorthand": {
-      "count": 2
-    },
     "md/no-irregular-dash": {
-      "count": 3
-    }
-  },
-  ".github/ISSUE_TEMPLATE/i18n.yml": {
-    "yaml/plain-scalar": {
-      "count": 2
-    }
-  },
-  ".github/actions/setup-version/action.yml": {
-    "yaml/plain-scalar": {
-      "count": 5
-    }
-  },
-  ".github/actions/setup-xcode/action.yml": {
-    "yaml/plain-scalar": {
-      "count": 5
-    }
-  },
-  ".github/advanced-issue-labeler.yml": {
-    "yaml/plain-scalar": {
-      "count": 9
-    }
-  },
-  ".github/dependabot.yaml": {
-    "yaml/plain-scalar": {
       "count": 3
     }
   },
@@ -58,50 +17,7 @@
       "count": 10
     }
   },
-  ".github/workflows/build-android.yml": {
-    "yaml/plain-scalar": {
-      "count": 6
-    }
-  },
-  ".github/workflows/build-desktop.yml": {
-    "yaml/plain-scalar": {
-      "count": 11
-    }
-  },
-  ".github/workflows/build-ios-development.yml": {
-    "yaml/plain-scalar": {
-      "count": 4
-    }
-  },
-  ".github/workflows/build-ios.yml": {
-    "yaml/plain-scalar": {
-      "count": 3
-    }
-  },
-  ".github/workflows/build-web.yml": {
-    "yaml/plain-scalar": {
-      "count": 1
-    }
-  },
-  ".github/workflows/deploy-cloudflare.yml": {
-    "yaml/plain-scalar": {
-      "count": 1
-    }
-  },
-  ".github/workflows/lint.yml": {
-    "yaml/plain-scalar": {
-      "count": 1
-    }
-  },
-  ".github/workflows/translator.yml": {
-    "yaml/plain-scalar": {
-      "count": 1
-    }
-  },
   "AGENTS.md": {
-    "md/code-lang-shorthand": {
-      "count": 3
-    },
     "md/no-irregular-dash": {
       "count": 4
     }
@@ -117,9 +33,6 @@
   "README.md": {
     "markdown/require-alt-text": {
       "count": 17
-    },
-    "md/no-curly-quote": {
-      "count": 2
     },
     "md/no-irregular-dash": {
       "count": 3
@@ -167,16 +80,8 @@
       "count": 3
     }
   },
-  "apps/cli/tsconfig.json": {
-    "jsonc/sort-keys": {
-      "count": 1
-    }
-  },
   "apps/desktop/AGENTS.md": {
     "markdown/fenced-code-language": {
-      "count": 1
-    },
-    "md/code-lang-shorthand": {
       "count": 1
     }
   },
@@ -196,42 +101,18 @@
     }
   },
   "apps/desktop/changelog/0.4.3.md": {
-    "md/no-curly-quote": {
-      "count": 2
-    },
     "md/no-irregular-dash": {
       "count": 5
     }
   },
   "apps/desktop/changelog/0.4.5.md": {
-    "md/no-curly-quote": {
-      "count": 4
-    },
     "md/no-irregular-dash": {
       "count": 2
     }
   },
-  "apps/desktop/changelog/0.4.6.md": {
-    "md/no-curly-quote": {
-      "count": 1
-    }
-  },
   "apps/desktop/changelog/0.4.8.md": {
-    "md/no-curly-quote": {
-      "count": 5
-    },
     "md/no-irregular-dash": {
       "count": 3
-    }
-  },
-  "apps/desktop/changelog/0.5.0.md": {
-    "md/no-curly-quote": {
-      "count": 6
-    }
-  },
-  "apps/desktop/changelog/0.6.2.md": {
-    "md/no-curly-quote": {
-      "count": 9
     }
   },
   "apps/desktop/changelog/0.6.3.md": {
@@ -239,26 +120,13 @@
       "count": 1
     }
   },
-  "apps/desktop/changelog/0.9.0.md": {
-    "md/no-curly-quote": {
-      "count": 3
-    }
-  },
   "apps/desktop/changelog/1.0.0.md": {
     "md/no-irregular-dash": {
       "count": 1
     }
   },
-  "apps/desktop/changelog/1.1.0.md": {
-    "md/no-curly-quote": {
-      "count": 2
-    }
-  },
   "apps/desktop/changelog/1.2.2.md": {
     "markdown/require-alt-text": {
-      "count": 2
-    },
-    "md/no-curly-quote": {
       "count": 2
     },
     "md/no-irregular-dash": {
@@ -316,11 +184,6 @@
       "count": 2
     }
   },
-  "apps/desktop/layer/main/src/ipc/services/integration.ts": {
-    "no-useless-return": {
-      "count": 1
-    }
-  },
   "apps/desktop/layer/main/src/lib/api-client.ts": {
     "node/prefer-global/process": {
       "count": 1
@@ -337,17 +200,11 @@
     }
   },
   "apps/desktop/layer/main/src/lib/proxy.ts": {
-    "no-useless-return": {
-      "count": 1
-    },
     "ts/no-use-before-define": {
       "count": 2
     }
   },
   "apps/desktop/layer/main/src/lib/router.ts": {
-    "no-useless-return": {
-      "count": 1
-    },
     "ts/no-use-before-define": {
       "count": 6
     }
@@ -363,9 +220,6 @@
     }
   },
   "apps/desktop/layer/main/src/manager/bootstrap.ts": {
-    "dot-notation": {
-      "count": 1
-    },
     "no-console": {
       "count": 2
     },
@@ -379,12 +233,6 @@
     }
   },
   "apps/desktop/layer/main/src/manager/window.ts": {
-    "dot-notation": {
-      "count": 3
-    },
-    "no-useless-return": {
-      "count": 1
-    },
     "node/prefer-global/process": {
       "count": 4
     }
@@ -409,19 +257,9 @@
       "count": 8
     }
   },
-  "apps/desktop/layer/main/tsconfig.json": {
-    "jsonc/sort-keys": {
-      "count": 7
-    }
-  },
   "apps/desktop/layer/renderer/setup-file.ts": {
     "ts/ban-ts-comment": {
       "count": 1
-    }
-  },
-  "apps/desktop/layer/renderer/src/@types/constants.ts": {
-    "no-useless-computed-key": {
-      "count": 4
     }
   },
   "apps/desktop/layer/renderer/src/App.tsx": {
@@ -432,11 +270,6 @@
   "apps/desktop/layer/renderer/src/atoms/context-menu.ts": {
     "ts/no-use-before-define": {
       "count": 2
-    }
-  },
-  "apps/desktop/layer/renderer/src/atoms/player.ts": {
-    "no-useless-return": {
-      "count": 1
     }
   },
   "apps/desktop/layer/renderer/src/atoms/readability.ts": {
@@ -483,9 +316,6 @@
     }
   },
   "apps/desktop/layer/renderer/src/components/common/ShadowDOM.tsx": {
-    "no-useless-computed-key": {
-      "count": 1
-    },
     "ts/ban-ts-comment": {
       "count": 1
     }
@@ -506,16 +336,8 @@
     }
   },
   "apps/desktop/layer/renderer/src/components/ui/code-highlighter/shiki/Shiki.tsx": {
-    "dot-notation": {
-      "count": 1
-    },
     "ts/no-use-before-define": {
       "count": 1
-    }
-  },
-  "apps/desktop/layer/renderer/src/components/ui/crop/AvatarUploadModal.tsx": {
-    "one-var": {
-      "count": 2
     }
   },
   "apps/desktop/layer/renderer/src/components/ui/keyboard-recorder/KeyRecorder.tsx": {
@@ -564,9 +386,6 @@
     "@eslint-react/no-use-context": {
       "count": 2
     },
-    "no-unneeded-ternary": {
-      "count": 1
-    },
     "ts/no-use-before-define": {
       "count": 19
     }
@@ -593,9 +412,6 @@
   },
   "apps/desktop/layer/renderer/src/components/ui/modal/stacked/modal.tsx": {
     "@eslint-react/no-context-provider": {
-      "count": 1
-    },
-    "prefer-arrow-callback": {
       "count": 1
     },
     "ts/no-use-before-define": {
@@ -733,11 +549,6 @@
       "count": 1
     }
   },
-  "apps/desktop/layer/renderer/src/modules/ai-chat/components/layouts/ChatTitle.tsx": {
-    "no-useless-computed-key": {
-      "count": 1
-    }
-  },
   "apps/desktop/layer/renderer/src/modules/ai-chat/components/layouts/WelcomeScreen.tsx": {
     "ts/no-use-before-define": {
       "count": 1
@@ -776,18 +587,8 @@
       "count": 1
     }
   },
-  "apps/desktop/layer/renderer/src/modules/ai-chat/editor/plugins/mention/constants.ts": {
-    "unicorn/escape-case": {
-      "count": 1
-    }
-  },
   "apps/desktop/layer/renderer/src/modules/ai-chat/editor/plugins/mention/hooks/dateMentionUtils.ts": {
     "ts/no-use-before-define": {
-      "count": 1
-    }
-  },
-  "apps/desktop/layer/renderer/src/modules/ai-chat/editor/plugins/shortcut/constants.ts": {
-    "unicorn/escape-case": {
       "count": 1
     }
   },
@@ -798,16 +599,6 @@
   },
   "apps/desktop/layer/renderer/src/modules/ai-chat/store/AIChatContext.ts": {
     "ts/no-redeclare": {
-      "count": 1
-    }
-  },
-  "apps/desktop/layer/renderer/src/modules/ai-chat/utils/extractor.ts": {
-    "no-useless-return": {
-      "count": 1
-    }
-  },
-  "apps/desktop/layer/renderer/src/modules/ai-chat/utils/file-validation.ts": {
-    "prefer-exponentiation-operator": {
       "count": 1
     }
   },
@@ -825,16 +616,6 @@
   "apps/desktop/layer/renderer/src/modules/app-layout/MainDestopLayout.tsx": {
     "ts/no-use-before-define": {
       "count": 2
-    }
-  },
-  "apps/desktop/layer/renderer/src/modules/app-layout/ai-enhanced-timeline/AIEnhancedTimelineLayout.tsx": {
-    "prefer-arrow-callback": {
-      "count": 1
-    }
-  },
-  "apps/desktop/layer/renderer/src/modules/app-layout/ai-enhanced-timeline/MobileTimelineLayout.tsx": {
-    "prefer-arrow-callback": {
-      "count": 1
     }
   },
   "apps/desktop/layer/renderer/src/modules/app-layout/ai/AIChatFloatingPanel.tsx": {
@@ -873,11 +654,6 @@
       "count": 1
     }
   },
-  "apps/desktop/layer/renderer/src/modules/app-tip/OverviewMedia.tsx": {
-    "unicorn/number-literal-case": {
-      "count": 1
-    }
-  },
   "apps/desktop/layer/renderer/src/modules/app/EnvironmentIndicator.tsx": {
     "@eslint-react/dom/no-missing-iframe-sandbox": {
       "count": 1
@@ -889,9 +665,6 @@
     }
   },
   "apps/desktop/layer/renderer/src/modules/command/commands/integration.tsx": {
-    "no-useless-return": {
-      "count": 1
-    },
     "ts/no-use-before-define": {
       "count": 13
     }
@@ -918,11 +691,6 @@
   },
   "apps/desktop/layer/renderer/src/modules/command/shortcuts/SettingShortcuts.tsx": {
     "ts/no-use-before-define": {
-      "count": 1
-    }
-  },
-  "apps/desktop/layer/renderer/src/modules/customize-toolbar/dnd.tsx": {
-    "tailwindcss/no-unnecessary-whitespace": {
       "count": 1
     }
   },
@@ -977,11 +745,6 @@
       "count": 3
     }
   },
-  "apps/desktop/layer/renderer/src/modules/discover/OpmlAbstractGraphic.tsx": {
-    "unicorn/number-literal-case": {
-      "count": 1
-    }
-  },
   "apps/desktop/layer/renderer/src/modules/discover/OpmlSelectionModal.tsx": {
     "ts/no-use-before-define": {
       "count": 8
@@ -1023,9 +786,6 @@
     }
   },
   "apps/desktop/layer/renderer/src/modules/entry-column/Items/picture-item.tsx": {
-    "prefer-arrow-callback": {
-      "count": 1
-    },
     "ts/no-use-before-define": {
       "count": 2
     }
@@ -1084,19 +844,9 @@
       "count": 1
     }
   },
-  "apps/desktop/layer/renderer/src/modules/entry-column/hooks/useEntryMarkReadHandler.tsx": {
-    "no-useless-return": {
-      "count": 1
-    }
-  },
   "apps/desktop/layer/renderer/src/modules/entry-column/index.tsx": {
     "ts/no-use-before-define": {
       "count": 2
-    }
-  },
-  "apps/desktop/layer/renderer/src/modules/entry-column/item.tsx": {
-    "prefer-arrow-callback": {
-      "count": 1
     }
   },
   "apps/desktop/layer/renderer/src/modules/entry-column/layouts/EntryItemWrapper.tsx": {
@@ -1184,11 +934,6 @@
       "count": 1
     }
   },
-  "apps/desktop/layer/renderer/src/modules/entry-content/components/selection/SharePosterModal.tsx": {
-    "unicorn/escape-case": {
-      "count": 1
-    }
-  },
   "apps/desktop/layer/renderer/src/modules/entry-content/components/selection/TextSelectionToolbar.tsx": {
     "ts/no-use-before-define": {
       "count": 1
@@ -1220,12 +965,6 @@
     }
   },
   "apps/desktop/layer/renderer/src/modules/panel/cmdk.tsx": {
-    "dot-notation": {
-      "count": 1
-    },
-    "prefer-arrow-callback": {
-      "count": 1
-    },
     "ts/no-use-before-define": {
       "count": 9
     }
@@ -1428,9 +1167,6 @@
     }
   },
   "apps/desktop/layer/renderer/src/modules/subscription-column/FeedCategory.tsx": {
-    "prefer-arrow-callback": {
-      "count": 1
-    },
     "ts/no-use-before-define": {
       "count": 3
     }
@@ -1460,9 +1196,6 @@
       "count": 1
     },
     "@eslint-react/web-api/no-leaked-timeout": {
-      "count": 1
-    },
-    "no-useless-return": {
       "count": 1
     },
     "ts/no-use-before-define": {
@@ -1600,11 +1333,6 @@
       "count": 3
     }
   },
-  "apps/desktop/layer/renderer/src/providers/setting-sync.tsx": {
-    "no-useless-return": {
-      "count": 1
-    }
-  },
   "apps/desktop/layer/renderer/src/providers/wrapped-element-provider.tsx": {
     "ts/no-use-before-define": {
       "count": 5
@@ -1621,17 +1349,11 @@
     }
   },
   "apps/desktop/layer/renderer/src/router.tsx": {
-    "dot-notation": {
-      "count": 1
-    },
     "ts/ban-ts-comment": {
       "count": 1
     }
   },
   "apps/desktop/layer/renderer/src/router.web.tsx": {
-    "dot-notation": {
-      "count": 1
-    },
     "ts/ban-ts-comment": {
       "count": 1
     }
@@ -1651,19 +1373,9 @@
       "count": 1
     }
   },
-  "apps/desktop/layer/renderer/src/store/utils/helper.ts": {
-    "no-useless-return": {
-      "count": 1
-    }
-  },
   "apps/desktop/layer/renderer/src/wdyr.ts": {
     "antfu/no-top-level-await": {
       "count": 1
-    }
-  },
-  "apps/desktop/layer/renderer/tsconfig.json": {
-    "jsonc/sort-keys": {
-      "count": 7
     }
   },
   "apps/desktop/layer/renderer/vitest.config.ts": {
@@ -1700,16 +1412,6 @@
     },
     "node/prefer-global/process": {
       "count": 2
-    }
-  },
-  "apps/desktop/plugins/vite/html-inject.ts": {
-    "dot-notation": {
-      "count": 2
-    }
-  },
-  "apps/desktop/plugins/vite/utils/i18n-completeness.ts": {
-    "dot-notation": {
-      "count": 1
     }
   },
   "apps/desktop/postcss.config.cjs": {
@@ -1785,11 +1487,6 @@
       "count": 1
     }
   },
-  "apps/landing/src/components/common/LightRays.tsx": {
-    "no-useless-return": {
-      "count": 1
-    }
-  },
   "apps/landing/src/components/ui/accordion/Accordion.tsx": {
     "react-refresh/only-export-components": {
       "count": 1
@@ -1850,26 +1547,12 @@
     }
   },
   "apps/landing/src/components/widgets/landing/BuiltOpen.tsx": {
-    "tailwindcss/no-unnecessary-whitespace": {
-      "count": 1
-    },
     "ts/no-use-before-define": {
       "count": 12
     }
   },
   "apps/landing/src/components/widgets/landing/Hero.tsx": {
-    "no-useless-rename": {
-      "count": 1
-    },
-    "tailwindcss/no-unnecessary-whitespace": {
-      "count": 1
-    },
     "ts/no-use-before-define": {
-      "count": 1
-    }
-  },
-  "apps/landing/src/components/widgets/landing/WindowChrome.tsx": {
-    "tailwindcss/no-unnecessary-whitespace": {
       "count": 1
     }
   },
@@ -1884,9 +1567,6 @@
     }
   },
   "apps/landing/src/components/widgets/simulators/components/ai/AIChainOfThought.tsx": {
-    "no-useless-return": {
-      "count": 1
-    },
     "ts/no-use-before-define": {
       "count": 3
     }
@@ -1917,23 +1597,8 @@
       "count": 1
     }
   },
-  "apps/landing/src/legal/privacy.md": {
-    "md/no-curly-quote": {
-      "count": 12
-    }
-  },
-  "apps/landing/src/legal/tos.md": {
-    "md/no-curly-quote": {
-      "count": 19
-    }
-  },
   "apps/landing/src/lib/env.ts": {
     "node/prefer-global/process": {
-      "count": 1
-    }
-  },
-  "apps/landing/src/lib/helper.ts": {
-    "one-var": {
       "count": 1
     }
   },
@@ -1958,22 +1623,9 @@
       "count": 4
     }
   },
-  "apps/landing/tsconfig.json": {
-    "jsonc/sort-keys": {
-      "count": 9
-    }
-  },
-  "apps/mobile/AGENTS.md": {
-    "md/code-lang-shorthand": {
-      "count": 1
-    }
-  },
   "apps/mobile/README.md": {
     "markdown/fenced-code-language": {
       "count": 1
-    },
-    "md/code-lang-shorthand": {
-      "count": 3
     },
     "md/no-url-trailing-slash": {
       "count": 4
@@ -1988,9 +1640,6 @@
     }
   },
   "apps/mobile/changelog/0.1.6.md": {
-    "md/no-curly-quote": {
-      "count": 1
-    },
     "md/no-irregular-dash": {
       "count": 6
     },
@@ -1999,26 +1648,8 @@
     }
   },
   "apps/mobile/changelog/0.1.8.md": {
-    "md/no-curly-quote": {
-      "count": 2
-    },
     "md/no-irregular-dash": {
       "count": 1
-    }
-  },
-  "apps/mobile/changelog/0.1.9.md": {
-    "md/no-curly-quote": {
-      "count": 1
-    }
-  },
-  "apps/mobile/changelog/0.2.0.md": {
-    "md/no-curly-quote": {
-      "count": 1
-    }
-  },
-  "apps/mobile/changelog/0.2.1.md": {
-    "md/no-curly-quote": {
-      "count": 4
     }
   },
   "apps/mobile/changelog/0.2.4.md": {
@@ -2051,11 +1682,6 @@
     },
     "ts/ban-ts-comment": {
       "count": 1
-    }
-  },
-  "apps/mobile/src/@types/constants.ts": {
-    "no-useless-computed-key": {
-      "count": 4
     }
   },
   "apps/mobile/src/App.tsx": {
@@ -2109,11 +1735,6 @@
   "apps/mobile/src/components/layouts/tabbar/Tabbar.tsx": {
     "ts/no-use-before-define": {
       "count": 11
-    }
-  },
-  "apps/mobile/src/components/layouts/tabbar/hooks.ts": {
-    "no-useless-return": {
-      "count": 1
     }
   },
   "apps/mobile/src/components/native/PagerView/index.tsx": {
@@ -2208,11 +1829,6 @@
       "count": 8
     }
   },
-  "apps/mobile/src/components/ui/lightbox/ImageViewing/transforms.ts": {
-    "one-var": {
-      "count": 3
-    }
-  },
   "apps/mobile/src/components/ui/lightbox/lightboxState.tsx": {
     "react-refresh/only-export-components": {
       "count": 2
@@ -2233,11 +1849,6 @@
   },
   "apps/mobile/src/components/ui/qrcode/QRCode.tsx": {
     "react-refresh/only-export-components": {
-      "count": 1
-    }
-  },
-  "apps/mobile/src/components/ui/qrcode/useQRCodeData.ts": {
-    "no-useless-return": {
       "count": 1
     }
   },
@@ -2303,9 +1914,6 @@
     }
   },
   "apps/mobile/src/hooks/useIntentHandler.ts": {
-    "no-useless-return": {
-      "count": 1
-    },
     "ts/no-use-before-define": {
       "count": 1
     }
@@ -2317,16 +1925,6 @@
   },
   "apps/mobile/src/initialize/player.ts": {
     "import/no-mutable-exports": {
-      "count": 1
-    }
-  },
-  "apps/mobile/src/lib/api-client.ts": {
-    "dot-notation": {
-      "count": 1
-    }
-  },
-  "apps/mobile/src/lib/client-session.ts": {
-    "one-var": {
       "count": 1
     }
   },
@@ -2408,16 +2006,8 @@
     }
   },
   "apps/mobile/src/modules/context-menu/feeds.tsx": {
-    "no-useless-return": {
-      "count": 1
-    },
     "ts/no-use-before-define": {
       "count": 3
-    }
-  },
-  "apps/mobile/src/modules/context-menu/video.tsx": {
-    "no-useless-return": {
-      "count": 1
     }
   },
   "apps/mobile/src/modules/debug/index.tsx": {
@@ -2475,11 +2065,6 @@
   },
   "apps/mobile/src/modules/entry-content/pull-up-navigation/use-pull-up-navigation.android.tsx": {
     "react-refresh/only-export-components": {
-      "count": 1
-    }
-  },
-  "apps/mobile/src/modules/entry-content/pull-up-navigation/use-pull-up-navigation.tsx": {
-    "no-useless-return": {
       "count": 1
     }
   },
@@ -2723,11 +2308,6 @@
       "count": 2
     }
   },
-  "apps/mobile/tsconfig.json": {
-    "jsonc/sort-keys": {
-      "count": 6
-    }
-  },
   "apps/mobile/web-app/html-renderer/src/common/WrappedElementProvider.tsx": {
     "react-refresh/only-export-components": {
       "count": 4
@@ -2737,9 +2317,6 @@
     }
   },
   "apps/mobile/web-app/html-renderer/src/components/shiki/Shiki.tsx": {
-    "dot-notation": {
-      "count": 1
-    },
     "ts/no-use-before-define": {
       "count": 1
     }
@@ -2754,19 +2331,9 @@
       "count": 1
     }
   },
-  "apps/mobile/web-app/html-renderer/tsconfig.json": {
-    "jsonc/sort-keys": {
-      "count": 6
-    }
-  },
   "apps/ssr/api/index.ts": {
     "ts/ban-ts-comment": {
       "count": 1
-    }
-  },
-  "apps/ssr/client/@types/constants.ts": {
-    "no-useless-computed-key": {
-      "count": 3
     }
   },
   "apps/ssr/client/atoms/settings/helper.ts": {
@@ -2806,15 +2373,7 @@
     "no-console": {
       "count": 1
     },
-    "no-useless-return": {
-      "count": 1
-    },
     "ts/no-use-before-define": {
-      "count": 1
-    }
-  },
-  "apps/ssr/client/modules/login/index.tsx": {
-    "no-useless-return": {
       "count": 1
     }
   },
@@ -2829,9 +2388,6 @@
     }
   },
   "apps/ssr/client/pages/(main)/share/users/[id]/metadata.ts": {
-    "no-undef-init": {
-      "count": 2
-    },
     "prefer-promise-reject-errors": {
       "count": 2
     }
@@ -2841,15 +2397,7 @@
       "count": 2
     }
   },
-  "apps/ssr/client/query/entries.ts": {
-    "dot-notation": {
-      "count": 1
-    }
-  },
   "apps/ssr/client/router.tsx": {
-    "dot-notation": {
-      "count": 1
-    },
     "ts/ban-ts-comment": {
       "count": 1
     }
@@ -2882,9 +2430,6 @@
   },
   "apps/ssr/src/lib/api-client.ts": {
     "no-console": {
-      "count": 1
-    },
-    "no-useless-return": {
       "count": 1
     },
     "ts/no-use-before-define": {
@@ -2937,11 +2482,6 @@
       "count": 1
     }
   },
-  "apps/ssr/tsconfig.json": {
-    "jsonc/sort-keys": {
-      "count": 10
-    }
-  },
   "apps/ssr/tsdown.config.ts": {
     "node/prefer-global/process": {
       "count": 2
@@ -2973,24 +2513,9 @@
       "count": 6
     }
   },
-  "packages/configs/tsconfig.extend.json": {
-    "jsonc/sort-keys": {
-      "count": 9
-    }
-  },
-  "packages/internal/atoms/package.json": {
-    "jsonc/sort-keys": {
-      "count": 2
-    }
-  },
   "packages/internal/atoms/src/helper/setting.ts": {
     "ts/ban-ts-comment": {
       "count": 1
-    }
-  },
-  "packages/internal/atoms/tsconfig.json": {
-    "jsonc/sort-keys": {
-      "count": 2
     }
   },
   "packages/internal/components/src/common/Focusable/Focusable.tsx": {
@@ -3067,11 +2592,6 @@
       "count": 1
     }
   },
-  "packages/internal/components/src/ui/progressive-blur/index.tsx": {
-    "prefer-exponentiation-operator": {
-      "count": 1
-    }
-  },
   "packages/internal/components/src/ui/radio-group/context.ts": {
     "ts/no-redeclare": {
       "count": 1
@@ -3082,29 +2602,9 @@
       "count": 1
     }
   },
-  "packages/internal/components/src/ui/shrinking-focus-border/index.tsx": {
-    "prefer-exponentiation-operator": {
-      "count": 2
-    }
-  },
   "packages/internal/components/src/utils/parse-markdown.tsx": {
     "ts/ban-ts-comment": {
       "count": 1
-    }
-  },
-  "packages/internal/components/tsconfig.json": {
-    "jsonc/sort-keys": {
-      "count": 3
-    }
-  },
-  "packages/internal/constants/tsconfig.json": {
-    "jsonc/sort-keys": {
-      "count": 2
-    }
-  },
-  "packages/internal/database/package.json": {
-    "jsonc/sort-keys": {
-      "count": 3
     }
   },
   "packages/internal/database/src/db.desktop.ts": {
@@ -3117,21 +2617,6 @@
   },
   "packages/internal/database/src/db.rn.ts": {
     "import/no-mutable-exports": {
-      "count": 2
-    }
-  },
-  "packages/internal/hooks/src/factory/createHTMLMediaHook.ts": {
-    "no-useless-return": {
-      "count": 1
-    }
-  },
-  "packages/internal/hooks/src/optimistic/useOptimisticMutation.ts": {
-    "prefer-exponentiation-operator": {
-      "count": 1
-    }
-  },
-  "packages/internal/hooks/src/useLongPress.ts": {
-    "prefer-exponentiation-operator": {
       "count": 2
     }
   },
@@ -3148,36 +2633,6 @@
       "count": 1
     }
   },
-  "packages/internal/hooks/src/useSmoothScroll.ts": {
-    "prefer-exponentiation-operator": {
-      "count": 1
-    }
-  },
-  "packages/internal/hooks/tsconfig.json": {
-    "jsonc/sort-keys": {
-      "count": 4
-    }
-  },
-  "packages/internal/logger/tsconfig.json": {
-    "jsonc/sort-keys": {
-      "count": 3
-    }
-  },
-  "packages/internal/models/package.json": {
-    "jsonc/sort-keys": {
-      "count": 1
-    }
-  },
-  "packages/internal/models/tsconfig.json": {
-    "jsonc/sort-keys": {
-      "count": 3
-    }
-  },
-  "packages/internal/shared/package.json": {
-    "jsonc/sort-keys": {
-      "count": 3
-    }
-  },
   "packages/internal/shared/src/auth.ts": {
     "ts/no-use-before-define": {
       "count": 1
@@ -3189,9 +2644,6 @@
     }
   },
   "packages/internal/shared/src/constants.ts": {
-    "dot-notation": {
-      "count": 1
-    },
     "no-shadow-restricted-names": {
       "count": 1
     },
@@ -3228,21 +2680,8 @@
       "count": 1
     }
   },
-  "packages/internal/shared/tsconfig.json": {
-    "jsonc/sort-keys": {
-      "count": 3
-    }
-  },
-  "packages/internal/store/package.json": {
-    "jsonc/sort-keys": {
-      "count": 17
-    }
-  },
   "packages/internal/store/src/lib/helper.ts": {
     "no-shadow-restricted-names": {
-      "count": 1
-    },
-    "no-useless-return": {
       "count": 1
     }
   },
@@ -3261,20 +2700,12 @@
       "count": 9
     }
   },
-  "packages/internal/store/src/modules/feed/getter.ts": {
-    "no-useless-return": {
-      "count": 1
-    }
-  },
   "packages/internal/store/src/modules/feed/hooks.ts": {
     "ts/ban-ts-comment": {
       "count": 2
     }
   },
   "packages/internal/store/src/modules/feed/store.ts": {
-    "dot-notation": {
-      "count": 3
-    },
     "ts/no-use-before-define": {
       "count": 6
     }
@@ -3322,9 +2753,6 @@
   "packages/internal/tracker/src/manager.ts": {
     "no-console": {
       "count": 1
-    },
-    "prefer-exponentiation-operator": {
-      "count": 1
     }
   },
   "packages/internal/tracker/src/op/index.ts": {
@@ -3340,27 +2768,9 @@
       "count": 1
     }
   },
-  "packages/internal/utils/package.json": {
-    "jsonc/sort-keys": {
-      "count": 4
-    }
-  },
   "packages/internal/utils/src/chain.ts": {
     "no-throw-literal": {
       "count": 1
-    }
-  },
-  "packages/internal/utils/src/cjk.ts": {
-    "unicorn/number-literal-case": {
-      "count": 8
-    }
-  },
-  "packages/internal/utils/src/color.ts": {
-    "one-var": {
-      "count": 1
-    },
-    "unicorn/number-literal-case": {
-      "count": 3
     }
   },
   "packages/internal/utils/src/event-bus.rn.ts": {
@@ -3383,15 +2793,7 @@
       "count": 1
     }
   },
-  "packages/internal/utils/src/lru-cache.test.ts": {
-    "test/prefer-lowercase-title": {
-      "count": 1
-    }
-  },
   "packages/internal/utils/src/path-parser.test.ts": {
-    "test/consistent-test-it": {
-      "count": 26
-    },
     "test/no-identical-title": {
       "count": 1
     }
@@ -3406,25 +2808,9 @@
       "count": 2
     }
   },
-  "packages/internal/utils/src/utils.spec.ts": {
-    "test/consistent-test-it": {
-      "count": 5
-    }
-  },
   "packages/internal/utils/src/utils.ts": {
-    "one-var": {
-      "count": 1
-    },
-    "prefer-exponentiation-operator": {
-      "count": 1
-    },
     "ts/ban-ts-comment": {
       "count": 1
-    }
-  },
-  "packages/internal/utils/tsconfig.json": {
-    "jsonc/sort-keys": {
-      "count": 2
     }
   },
   "packages/internal/utils/vitest.config.ts": {
@@ -3443,29 +2829,9 @@
       "count": 2
     }
   },
-  "packages/readability/tsconfig.json": {
-    "jsonc/sort-keys": {
-      "count": 1
-    }
-  },
-  "plugins/eslint/eslint-package-json.js": {
-    "object-shorthand": {
-      "count": 2
-    }
-  },
   "scripts/svg-to-rn.ts": {
     "node/prefer-global/process": {
       "count": 2
-    }
-  },
-  "tsconfig.json": {
-    "jsonc/sort-keys": {
-      "count": 1
-    }
-  },
-  "wiki/contribute-i18n.md": {
-    "md/code-lang-shorthand": {
-      "count": 1
     }
   }
 }

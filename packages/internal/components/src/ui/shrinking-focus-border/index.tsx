@@ -129,7 +129,7 @@ export const ShrinkingFocusBorder: FC<ShrinkingFocusBorderProps> = ({
             borderY = canvas.height / 2 - borderHeight / 2
           } else {
             // Initial shrinking animation in progress
-            const easeOutCubic = (t: number) => 1 - Math.pow(1 - t, 3)
+            const easeOutCubic = (t: number) => 1 - (1 - t) ** 3
             const progress = Math.min(elapsed / duration, 1)
             const easedProgress = easeOutCubic(progress)
 
@@ -149,7 +149,7 @@ export const ShrinkingFocusBorder: FC<ShrinkingFocusBorderProps> = ({
           if (transitionElapsed <= transitionDuration) {
             const progress = Math.min(transitionElapsed / transitionDuration, 1)
             const easeInOutCubic = (t: number) =>
-              t < 0.5 ? 4 * t * t * t : 1 - Math.pow(-2 * t + 2, 3) / 2
+              t < 0.5 ? 4 * t * t * t : 1 - (-2 * t + 2) ** 3 / 2
             const easedProgress = easeInOutCubic(progress)
 
             const prevRect = previousRectRef.current
