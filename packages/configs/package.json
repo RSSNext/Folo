@@ -29,6 +29,7 @@
   "devDependencies": {
     "postcss": "8.5.6",
     "postcss-js": "5.0.3",
+    "tailwindcss": "3.4.17",
     "workspace-root": "3.3.1"
   }
 }
