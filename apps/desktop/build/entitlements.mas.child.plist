@@ -6,5 +6,9 @@
     <true/>
     <key>com.apple.security.inherit</key>
     <true/>
+    <key>com.apple.developer.applesignin</key>
+    <array>
+      <string>Default</string>
+    </array>
   </dict>
 </plist>

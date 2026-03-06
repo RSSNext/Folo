@@ -95,6 +95,9 @@ const noopAfterCopy = (_buildPath, _electronVersion, _platform, _arch, callback)
 
 const ignorePattern = new RegExp(`^/node_modules/(?!${[...keepModules].join("|")})`)
 
+// For MAS builds, include the Apple Auth Helper (native Sign in with Apple is only available on MAS)
+const isMAS = platform === "mas"
+
 const config: ForgeConfig = {
   packagerConfig: {
     name: isStaging ? "Folo Staging" : "Folo",
@@ -102,7 +105,11 @@ const config: ForgeConfig = {
     buildVersion: process.env.BUILD_VERSION || undefined,
     appBundleId: "is.follow",
     icon: isStaging ? "resources/icon-staging" : "resources/icon",
-    extraResource: ["./resources/app-update.yml"],
+    extraResource: [
+      "./resources/app-update.yml",
+      // Include Apple Auth Helper only for MAS builds (native Sign in with Apple)
+      ...(isMAS ? ["./resources/apple-auth-helper"] : []),
+    ],
     protocols: [
       {
         name: "Folo",
