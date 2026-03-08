@@ -1,6 +1,7 @@
 import { execSync } from "node:child_process"
 import { existsSync, lstatSync, readlinkSync } from "node:fs"
 import { unlink, writeFile } from "node:fs/promises"
+import { tmpdir } from "node:os"
 
 import { app } from "electron"
 import type { IpcContext } from "electron-ipc-decorator"
@@ -34,6 +35,13 @@ const getCliInstallPath = (): string => {
   return path.join(getDefaultInstallDir(), CLI_BINARY_NAME)
 }
 
+/** Check whether the CLI is present at the given path (also checks .cmd on Windows). */
+const cliExistsAt = (installPath: string): boolean => {
+  if (existsSync(installPath)) return true
+  if (process.platform === "win32" && existsSync(`${installPath}.cmd`)) return true
+  return false
+}
+
 export interface CliInstallStatus {
   installed: boolean
   installPath: string | null
@@ -50,19 +58,20 @@ export class CliService extends IpcService {
     const cliSourceAvailable = existsSync(cliSourcePath)
 
     try {
-      if (!existsSync(installPath)) {
+      if (!cliExistsAt(installPath)) {
         return { installed: false, installPath: null, cliSourceAvailable }
       }
 
-      const stats = lstatSync(installPath)
-      if (stats.isSymbolicLink()) {
-        const target = readlinkSync(installPath)
-        // Check if the symlink points to our CLI
-        const isOurs = target.includes("Folo") || target.includes("cli/index.js")
-        return { installed: isOurs, installPath, cliSourceAvailable }
+      if (existsSync(installPath)) {
+        const stats = lstatSync(installPath)
+        if (stats.isSymbolicLink()) {
+          const target = readlinkSync(installPath)
+          const isOurs = target.includes("Folo") || target.includes("cli/index.js")
+          return { installed: isOurs, installPath, cliSourceAvailable }
+        }
       }
 
-      // Exists as a regular file - could be our wrapper script
+      // Exists as a regular file (wrapper script or .cmd on Windows)
       return { installed: true, installPath, cliSourceAvailable }
     } catch {
       return { installed: false, installPath: null, cliSourceAvailable }
@@ -89,37 +98,31 @@ export class CliService extends IpcService {
       logger.info(`CLI installed at ${installPath}`)
       return { success: true }
     } catch {
-      // Needs elevated permissions, use osascript on macOS
-      if (process.platform === "darwin") {
-        try {
-          const escapedContent = wrapperContent.replaceAll('"', '\\"')
-          execSync(
-            `osascript -e 'do shell script "printf \\"${escapedContent}\\" > ${installPath} && chmod +x ${installPath}" with administrator privileges'`,
-          )
-          logger.info(`CLI installed at ${installPath} (with admin privileges)`)
-          return { success: true }
-        } catch (err) {
-          logger.error("Failed to install CLI with admin privileges:", err)
-          return {
-            success: false,
-            error: err instanceof Error ? err.message : "Failed to install CLI",
-          }
-        }
-      }
-
-      // Linux: try with pkexec
+      // Write to a temp file first, then use admin privileges to copy it.
+      // This avoids shell-expansion issues with $@ in the wrapper content.
+      const tmpFile = path.join(tmpdir(), `folo-cli-wrapper-${Date.now()}`)
       try {
-        execSync(
-          `pkexec sh -c 'printf "${wrapperContent.replaceAll('"', '\\"')}" > ${installPath} && chmod +x ${installPath}'`,
-        )
-        logger.info(`CLI installed at ${installPath} (with pkexec)`)
+        await writeFile(tmpFile, wrapperContent, { mode: 0o755 })
+
+        if (process.platform === "darwin") {
+          execSync(
+            `osascript -e 'do shell script "cp \\"${tmpFile}\\" \\"${installPath}\\" && chmod +x \\"${installPath}\\"" with administrator privileges'`,
+          )
+        } else {
+          // Linux: use pkexec
+          execSync(`pkexec sh -c 'cp "${tmpFile}" "${installPath}" && chmod +x "${installPath}"'`)
+        }
+
+        logger.info(`CLI installed at ${installPath} (with elevated privileges)`)
         return { success: true }
       } catch (err) {
-        logger.error("Failed to install CLI:", err)
+        logger.error("Failed to install CLI with elevated privileges:", err)
         return {
           success: false,
           error: err instanceof Error ? err.message : "Failed to install CLI",
         }
+      } finally {
+        await unlink(tmpFile).catch(() => {})
       }
     }
   }
@@ -128,7 +131,7 @@ export class CliService extends IpcService {
   async uninstallCli(_context: IpcContext): Promise<{ success: boolean; error?: string }> {
     const installPath = getCliInstallPath()
 
-    if (!existsSync(installPath)) {
+    if (!cliExistsAt(installPath)) {
       return { success: true }
     }
 
@@ -145,7 +148,7 @@ export class CliService extends IpcService {
       if (process.platform === "darwin") {
         try {
           execSync(
-            `osascript -e 'do shell script "rm -f ${installPath}" with administrator privileges'`,
+            `osascript -e 'do shell script "rm -f \\"${installPath}\\"" with administrator privileges'`,
           )
           logger.info(`CLI uninstalled from ${installPath} (with admin privileges)`)
           return { success: true }
@@ -159,7 +162,7 @@ export class CliService extends IpcService {
       }
 
       try {
-        execSync(`pkexec rm -f ${installPath}`)
+        execSync(`pkexec rm -f "${installPath}"`)
         logger.info(`CLI uninstalled from ${installPath} (with pkexec)`)
         return { success: true }
       } catch (err) {
