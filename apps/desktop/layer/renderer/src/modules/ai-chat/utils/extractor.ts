@@ -26,5 +26,4 @@ export const findFileAttachmentBlock = (
       return block
     }
   }
-  return
 }

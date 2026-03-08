@@ -11,7 +11,7 @@ import recursiveSort from "./plugins/eslint/eslint-recursive-sort.js"
 
 export default defineConfig(
   {
-    formatting: false,
+    stylistic: false,
     lessOpinionated: true,
     ignores: [
       "resources/**",
@@ -21,9 +21,14 @@ export default defineConfig(
       "apps/mobile/native/build/**",
       "**/generated-routes.ts",
     ],
-    preferESM: false,
-    tailwindCSS: {
-      order: false,
+    hyoban: false,
+    tailwindcss: {
+      overrides: {
+        "tailwindcss/enforce-consistent-class-order": "off",
+      },
+      settings: {
+        tailwindConfig: path.join(import.meta.dirname, "apps/desktop/tailwind.config.ts"),
+      },
     },
   },
   {
@@ -37,10 +42,10 @@ export default defineConfig(
     },
     rules: {
       "no-debug/no-debug-stack": "error",
-      "@eslint-react/no-clone-element": 0,
-      "@eslint-react/hooks-extra/no-direct-set-state-in-use-effect": 0,
-      "@eslint-react/dom/no-flush-sync": 1,
-      "@eslint-react/hooks-extra/no-unnecessary-use-callback": "warn",
+      "react/no-clone-element": 0,
+      "react-hooks-extra/no-direct-set-state-in-use-effect": 0,
+      "react-dom/no-flush-sync": 1,
+      "react/no-unnecessary-use-callback": "warn",
       "unicorn/no-array-callback-reference": 0,
       "no-restricted-syntax": 0,
       "no-restricted-globals": [
@@ -75,35 +80,35 @@ export default defineConfig(
   },
   // use correct tailwind config for eslint
   {
-    settings: {
-      tailwindcss: {
-        config: path.join(import.meta.dirname, "apps/desktop/tailwind.config.ts"),
-      },
-    },
-  },
-  {
     files: ["apps/ssr/**/*"],
     settings: {
-      tailwindcss: {
-        config: path.join(import.meta.dirname, "apps/ssr/tailwind.config.ts"),
+      "better-tailwindcss": {
+        tailwindConfig: path.join(import.meta.dirname, "apps/ssr/tailwind.config.ts"),
       },
     },
   },
   {
     files: ["apps/mobile/**/*"],
     settings: {
-      tailwindcss: {
-        config: path.join(import.meta.dirname, "apps/mobile/tailwind.config.ts"),
+      "better-tailwindcss": {
+        tailwindConfig: path.join(import.meta.dirname, "apps/mobile/tailwind.config.ts"),
       },
     },
   },
   {
-    files: ["**/*.tsx"],
-    rules: {
-      "@stylistic/jsx-self-closing-comp": "error",
+    files: ["apps/landing/**/*"],
+    settings: {
+      "better-tailwindcss": {
+        tailwindConfig: path.join(import.meta.dirname, "apps/landing/src/styles/globals.css"),
+      },
     },
   },
-  // @ts-expect-error
+  // {
+  //   files: ["**/*.tsx"],
+  //   rules: {
+  //     "@stylistic/jsx-self-closing-comp": "error",
+  //   },
+  // },
   {
     files: ["locales/**/*.json"],
     plugins: {
@@ -149,7 +154,7 @@ export default defineConfig(
       // @ts-expect-error
       "react-native": fixupPluginRules(reactNative),
     },
-    files: ["apps/mobile/**/*"],
+    files: ["apps/mobile/**/*.{js,ts,tsx}"],
     rules: {
       "react-native/no-inline-styles": "warn",
     },

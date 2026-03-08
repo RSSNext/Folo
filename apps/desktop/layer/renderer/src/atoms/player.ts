@@ -158,7 +158,6 @@ export const AudioPlayer = {
       currentTime: this.audio.currentTime,
     })
     this.teardown()
-    return
   },
   togglePlayAndPause() {
     const curV = getAudioPlayerAtomValue()

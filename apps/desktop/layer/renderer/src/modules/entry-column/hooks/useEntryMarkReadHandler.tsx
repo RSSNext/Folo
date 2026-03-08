@@ -40,7 +40,6 @@ export const useEntryMarkReadHandler = (entriesIds: string[]) => {
     if (scrollMarkUnread) {
       return handleRenderAsRead
     }
-    return
   }, [feedView, handleRenderAsRead, renderAsRead, scrollMarkUnread])
 }
 

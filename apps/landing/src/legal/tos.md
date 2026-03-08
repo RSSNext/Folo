@@ -6,7 +6,7 @@ Last Updated：2025-09-03
 
 This version of the Terms of Service is the most recent update and supersedes all prior versions. These Terms may be revised from time to time, and continued use of the Service constitutes acceptance of the latest version.
 
-The Folo platform (“Folo” or the “Service”) is owned, operated, and provided by NATURAL SELECTION LABS PTE. LTD.. All references to “we,” “our,” or “us” in these Terms refer to NATURAL SELECTION LABS PTE. LTD..By accessing or using Folo, you agree to be bound by these Terms of Service and all applicable laws and regulations. If you do not agree, you must not use the Service. You also confirm that you are of the legal age of majority in your jurisdiction.
+The Folo platform ("Folo" or the "Service") is owned, operated, and provided by NATURAL SELECTION LABS PTE. LTD.. All references to "we," "our," or "us" in these Terms refer to NATURAL SELECTION LABS PTE. LTD..By accessing or using Folo, you agree to be bound by these Terms of Service and all applicable laws and regulations. If you do not agree, you must not use the Service. You also confirm that you are of the legal age of majority in your jurisdiction.
 
 ## Eligibility
 
@@ -17,7 +17,7 @@ You must be at least 16 years of age, or the age of majority in your jurisdictio
 - Are not barred from using the Service under any applicable laws or regulations; and
 - Will use the Service only in compliance with these Terms and all applicable laws.
 
-If you are accessing the Service on behalf of a company, organization, or other legal entity, you represent and warrant that you have the authority to bind such entity to these Terms, in which case “you” will refer to that entity.
+If you are accessing the Service on behalf of a company, organization, or other legal entity, you represent and warrant that you have the authority to bind such entity to these Terms, in which case "you" will refer to that entity.
 
 ## Service Description
 
@@ -93,7 +93,7 @@ Upon termination or suspension, your right to access the Service will immediatel
 
 ## Disclaimers
 
-The Service is provided on an “as is” and “as available” basis. Folo makes no warranties of any kind, whether express, implied, statutory, or otherwise, including but not limited to warranties of merchantability, fitness for a particular purpose, accuracy, or non-infringement.
+The Service is provided on an "as is" and "as available" basis. Folo makes no warranties of any kind, whether express, implied, statutory, or otherwise, including but not limited to warranties of merchantability, fitness for a particular purpose, accuracy, or non-infringement.
 
 Folo does not guarantee uninterrupted, secure, or error-free access to the Service. You acknowledge and accept that your use of the Service is at your own risk.
 
@@ -101,7 +101,7 @@ Folo does not guarantee uninterrupted, secure, or error-free access to the Servi
 
 To the maximum extent permitted by law, Folo and its affiliates, officers, and employees shall not be liable for any indirect, incidental, special, consequential, or punitive damages, including but not limited to loss of profits, data, business opportunities, or goodwill.
 
-Folo’s total aggregate liability for any claim arising out of or in connection with the Service shall not exceed the total amount you paid (if any) to access or use the Service during the twelve (12) months preceding the claim.
+Folo's total aggregate liability for any claim arising out of or in connection with the Service shall not exceed the total amount you paid (if any) to access or use the Service during the twelve (12) months preceding the claim.
 
 These limitations apply regardless of the form of action, whether in contract, tort, strict liability, or otherwise, except where prohibited by applicable law.
 
@@ -121,7 +121,7 @@ You agree that any dispute, claim, or controversy arising out of or in connectio
 
 ## Changes to the Terms
 
-Folo may revise or update these Terms at any time. Any changes will become effective upon posting the revised Terms to our website with a new “Last Updated” date. Continued use of the Service after such posting constitutes your acceptance of the updated Terms. You are responsible for reviewing the Terms periodically.
+Folo may revise or update these Terms at any time. Any changes will become effective upon posting the revised Terms to our website with a new "Last Updated" date. Continued use of the Service after such posting constitutes your acceptance of the updated Terms. You are responsible for reviewing the Terms periodically.
 
 ## Contact Us
 

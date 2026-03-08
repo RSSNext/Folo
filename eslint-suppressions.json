@@ -1,0 +1,2837 @@
+{
+  ".claude/skills/desktop-release/SKILL.md": {
+    "md/no-irregular-dash": {
+      "count": 1
+    }
+  },
+  ".claude/skills/update-deps/SKILL.md": {
+    "markdown/fenced-code-language": {
+      "count": 1
+    },
+    "md/no-irregular-dash": {
+      "count": 3
+    }
+  },
+  ".github/scripts/extract-release-info.mjs": {
+    "node/prefer-global/process": {
+      "count": 10
+    }
+  },
+  "AGENTS.md": {
+    "md/no-irregular-dash": {
+      "count": 4
+    }
+  },
+  "CONTRIBUTING.md": {
+    "markdown/fenced-code-language": {
+      "count": 1
+    },
+    "markdown/require-alt-text": {
+      "count": 1
+    }
+  },
+  "README.md": {
+    "markdown/require-alt-text": {
+      "count": 17
+    },
+    "md/no-irregular-dash": {
+      "count": 3
+    },
+    "md/no-url-trailing-slash": {
+      "count": 5
+    }
+  },
+  "api/vercel_webhook.ts": {
+    "no-console": {
+      "count": 4
+    },
+    "node/prefer-global/buffer": {
+      "count": 1
+    },
+    "node/prefer-global/process": {
+      "count": 2
+    }
+  },
+  "apps/cli/src/browser-login.ts": {
+    "node/prefer-global/process": {
+      "count": 2
+    },
+    "ts/no-use-before-define": {
+      "count": 1
+    }
+  },
+  "apps/cli/src/client.ts": {
+    "node/prefer-global/process": {
+      "count": 1
+    }
+  },
+  "apps/cli/src/command.ts": {
+    "node/prefer-global/process": {
+      "count": 1
+    }
+  },
+  "apps/cli/src/commands/opml.ts": {
+    "node/prefer-global/buffer": {
+      "count": 1
+    }
+  },
+  "apps/cli/src/index.ts": {
+    "node/prefer-global/process": {
+      "count": 3
+    }
+  },
+  "apps/desktop/AGENTS.md": {
+    "markdown/fenced-code-language": {
+      "count": 1
+    }
+  },
+  "apps/desktop/changelog/0.2.5.md": {
+    "markdown/require-alt-text": {
+      "count": 1
+    }
+  },
+  "apps/desktop/changelog/0.2.7.md": {
+    "markdown/require-alt-text": {
+      "count": 3
+    }
+  },
+  "apps/desktop/changelog/0.3.6.md": {
+    "markdown/require-alt-text": {
+      "count": 1
+    }
+  },
+  "apps/desktop/changelog/0.4.3.md": {
+    "md/no-irregular-dash": {
+      "count": 5
+    }
+  },
+  "apps/desktop/changelog/0.4.5.md": {
+    "md/no-irregular-dash": {
+      "count": 2
+    }
+  },
+  "apps/desktop/changelog/0.4.8.md": {
+    "md/no-irregular-dash": {
+      "count": 3
+    }
+  },
+  "apps/desktop/changelog/0.6.3.md": {
+    "md/no-irregular-dash": {
+      "count": 1
+    }
+  },
+  "apps/desktop/changelog/1.0.0.md": {
+    "md/no-irregular-dash": {
+      "count": 1
+    }
+  },
+  "apps/desktop/changelog/1.2.2.md": {
+    "markdown/require-alt-text": {
+      "count": 2
+    },
+    "md/no-irregular-dash": {
+      "count": 2
+    }
+  },
+  "apps/desktop/configs/vite.electron-render.config.ts": {
+    "node/prefer-global/process": {
+      "count": 2
+    }
+  },
+  "apps/desktop/configs/vite.render.config.ts": {
+    "node/prefer-global/process": {
+      "count": 5
+    }
+  },
+  "apps/desktop/forge.config.cts": {
+    "node/prefer-global/process": {
+      "count": 16
+    },
+    "ts/ban-ts-comment": {
+      "count": 1
+    }
+  },
+  "apps/desktop/layer/main/preload/index.ts": {
+    "node/prefer-global/process": {
+      "count": 5
+    },
+    "ts/ban-ts-comment": {
+      "count": 3
+    }
+  },
+  "apps/desktop/layer/main/src/bootstrap.ts": {
+    "no-console": {
+      "count": 1
+    }
+  },
+  "apps/desktop/layer/main/src/constants/app.ts": {
+    "node/prefer-global/process": {
+      "count": 2
+    }
+  },
+  "apps/desktop/layer/main/src/env.ts": {
+    "node/prefer-global/process": {
+      "count": 2
+    }
+  },
+  "apps/desktop/layer/main/src/ipc/index.ts": {
+    "no-console": {
+      "count": 1
+    }
+  },
+  "apps/desktop/layer/main/src/ipc/services/app.ts": {
+    "node/prefer-global/process": {
+      "count": 2
+    }
+  },
+  "apps/desktop/layer/main/src/lib/api-client.ts": {
+    "node/prefer-global/process": {
+      "count": 1
+    }
+  },
+  "apps/desktop/layer/main/src/lib/cleaner.ts": {
+    "ts/no-use-before-define": {
+      "count": 1
+    }
+  },
+  "apps/desktop/layer/main/src/lib/download.ts": {
+    "node/prefer-global/buffer": {
+      "count": 1
+    }
+  },
+  "apps/desktop/layer/main/src/lib/proxy.ts": {
+    "ts/no-use-before-define": {
+      "count": 2
+    }
+  },
+  "apps/desktop/layer/main/src/lib/router.ts": {
+    "ts/no-use-before-define": {
+      "count": 6
+    }
+  },
+  "apps/desktop/layer/main/src/lib/tray.ts": {
+    "ts/no-use-before-define": {
+      "count": 5
+    }
+  },
+  "apps/desktop/layer/main/src/manager/app.ts": {
+    "node/prefer-global/process": {
+      "count": 4
+    }
+  },
+  "apps/desktop/layer/main/src/manager/bootstrap.ts": {
+    "no-console": {
+      "count": 2
+    },
+    "node/prefer-global/process": {
+      "count": 1
+    }
+  },
+  "apps/desktop/layer/main/src/manager/lifecycle.ts": {
+    "node/prefer-global/process": {
+      "count": 1
+    }
+  },
+  "apps/desktop/layer/main/src/manager/window.ts": {
+    "node/prefer-global/process": {
+      "count": 4
+    }
+  },
+  "apps/desktop/layer/main/src/updater/api.ts": {
+    "node/prefer-global/process": {
+      "count": 2
+    }
+  },
+  "apps/desktop/layer/main/src/updater/configs.ts": {
+    "node/prefer-global/process": {
+      "count": 1
+    }
+  },
+  "apps/desktop/layer/main/src/updater/follow-update-provider.ts": {
+    "node/prefer-global/process": {
+      "count": 8
+    }
+  },
+  "apps/desktop/layer/main/src/updater/index.ts": {
+    "node/prefer-global/process": {
+      "count": 8
+    }
+  },
+  "apps/desktop/layer/renderer/setup-file.ts": {
+    "ts/ban-ts-comment": {
+      "count": 1
+    }
+  },
+  "apps/desktop/layer/renderer/src/App.tsx": {
+    "ts/no-use-before-define": {
+      "count": 2
+    }
+  },
+  "apps/desktop/layer/renderer/src/atoms/context-menu.ts": {
+    "ts/no-use-before-define": {
+      "count": 2
+    }
+  },
+  "apps/desktop/layer/renderer/src/atoms/readability.ts": {
+    "ts/no-use-before-define": {
+      "count": 1
+    }
+  },
+  "apps/desktop/layer/renderer/src/atoms/server-configs.ts": {
+    "node/prefer-global/process": {
+      "count": 4
+    }
+  },
+  "apps/desktop/layer/renderer/src/atoms/settings/ai.ts": {
+    "ts/no-use-before-define": {
+      "count": 1
+    }
+  },
+  "apps/desktop/layer/renderer/src/atoms/settings/general.ts": {
+    "ts/no-use-before-define": {
+      "count": 2
+    }
+  },
+  "apps/desktop/layer/renderer/src/components/common/AppErrorBoundary.tsx": {
+    "ts/no-use-before-define": {
+      "count": 4
+    }
+  },
+  "apps/desktop/layer/renderer/src/components/common/ErrorElement.tsx": {
+    "ts/no-use-before-define": {
+      "count": 1
+    }
+  },
+  "apps/desktop/layer/renderer/src/components/common/Focusable.tsx": {
+    "react-refresh/only-export-components": {
+      "count": 1
+    }
+  },
+  "apps/desktop/layer/renderer/src/components/common/ImpressionTracker.tsx": {
+    "ts/ban-ts-comment": {
+      "count": 1
+    },
+    "ts/no-use-before-define": {
+      "count": 1
+    }
+  },
+  "apps/desktop/layer/renderer/src/components/common/ShadowDOM.tsx": {
+    "ts/ban-ts-comment": {
+      "count": 1
+    }
+  },
+  "apps/desktop/layer/renderer/src/components/errors/EntryNotFound.tsx": {
+    "react-refresh/only-export-components": {
+      "count": 1
+    }
+  },
+  "apps/desktop/layer/renderer/src/components/errors/FeedNotFound.tsx": {
+    "react-refresh/only-export-components": {
+      "count": 1
+    }
+  },
+  "apps/desktop/layer/renderer/src/components/ui/auto-completion/AutoCompletion.tsx": {
+    "ts/no-use-before-define": {
+      "count": 1
+    }
+  },
+  "apps/desktop/layer/renderer/src/components/ui/code-highlighter/shiki/Shiki.tsx": {
+    "ts/no-use-before-define": {
+      "count": 1
+    }
+  },
+  "apps/desktop/layer/renderer/src/components/ui/keyboard-recorder/KeyRecorder.tsx": {
+    "no-console": {
+      "count": 1
+    },
+    "ts/no-use-before-define": {
+      "count": 1
+    }
+  },
+  "apps/desktop/layer/renderer/src/components/ui/markdown/components/Toc.tsx": {
+    "ts/no-use-before-define": {
+      "count": 4
+    }
+  },
+  "apps/desktop/layer/renderer/src/components/ui/markdown/components/TocItem.tsx": {
+    "ts/no-use-before-define": {
+      "count": 1
+    }
+  },
+  "apps/desktop/layer/renderer/src/components/ui/markdown/renderers/MarkdownLink.tsx": {
+    "ts/no-use-before-define": {
+      "count": 2
+    }
+  },
+  "apps/desktop/layer/renderer/src/components/ui/media/Media.tsx": {
+    "no-console": {
+      "count": 2
+    },
+    "ts/ban-ts-comment": {
+      "count": 1
+    },
+    "ts/no-use-before-define": {
+      "count": 4
+    }
+  },
+  "apps/desktop/layer/renderer/src/components/ui/media/PreviewMediaContent.tsx": {
+    "ts/no-use-before-define": {
+      "count": 4
+    }
+  },
+  "apps/desktop/layer/renderer/src/components/ui/media/VideoPlayer.tsx": {
+    "@eslint-react/no-context-provider": {
+      "count": 1
+    },
+    "@eslint-react/no-use-context": {
+      "count": 2
+    },
+    "ts/no-use-before-define": {
+      "count": 19
+    }
+  },
+  "apps/desktop/layer/renderer/src/components/ui/modal/helper/useAsyncModal.tsx": {
+    "ts/no-use-before-define": {
+      "count": 2
+    }
+  },
+  "apps/desktop/layer/renderer/src/components/ui/modal/stacked/declarative-modal.tsx": {
+    "react-refresh/only-export-components": {
+      "count": 3
+    }
+  },
+  "apps/desktop/layer/renderer/src/components/ui/modal/stacked/helper.tsx": {
+    "react-refresh/only-export-components": {
+      "count": 1
+    }
+  },
+  "apps/desktop/layer/renderer/src/components/ui/modal/stacked/hooks.tsx": {
+    "ts/no-use-before-define": {
+      "count": 1
+    }
+  },
+  "apps/desktop/layer/renderer/src/components/ui/modal/stacked/modal.tsx": {
+    "@eslint-react/no-context-provider": {
+      "count": 1
+    },
+    "ts/no-use-before-define": {
+      "count": 4
+    }
+  },
+  "apps/desktop/layer/renderer/src/components/ui/peek-modal/EntryModalPreview.tsx": {
+    "ts/no-use-before-define": {
+      "count": 1
+    }
+  },
+  "apps/desktop/layer/renderer/src/components/ux/transition/icon.tsx": {
+    "react-refresh/only-export-components": {
+      "count": 2
+    }
+  },
+  "apps/desktop/layer/renderer/src/hooks/biz/useEntryActions.tsx": {
+    "ts/no-use-before-define": {
+      "count": 1
+    }
+  },
+  "apps/desktop/layer/renderer/src/hooks/biz/useFeedActions.tsx": {
+    "ts/no-use-before-define": {
+      "count": 2
+    }
+  },
+  "apps/desktop/layer/renderer/src/hooks/biz/useNavigateEntry.ts": {
+    "ts/no-use-before-define": {
+      "count": 1
+    }
+  },
+  "apps/desktop/layer/renderer/src/hooks/biz/useSubscriptionActions.tsx": {
+    "react-refresh/only-export-components": {
+      "count": 1
+    },
+    "ts/no-use-before-define": {
+      "count": 2
+    }
+  },
+  "apps/desktop/layer/renderer/src/hooks/common/useBizQuery.ts": {
+    "ts/ban-ts-comment": {
+      "count": 1
+    }
+  },
+  "apps/desktop/layer/renderer/src/i18n.ts": {
+    "no-console": {
+      "count": 1
+    }
+  },
+  "apps/desktop/layer/renderer/src/initialize/index.ts": {
+    "ts/no-use-before-define": {
+      "count": 6
+    }
+  },
+  "apps/desktop/layer/renderer/src/lib/dev.tsx": {
+    "ts/no-use-before-define": {
+      "count": 2
+    }
+  },
+  "apps/desktop/layer/renderer/src/lib/error-parser.ts": {
+    "ts/no-use-before-define": {
+      "count": 1
+    }
+  },
+  "apps/desktop/layer/renderer/src/lib/load-language.ts": {
+    "no-eval": {
+      "count": 1
+    }
+  },
+  "apps/desktop/layer/renderer/src/lib/log.ts": {
+    "no-console": {
+      "count": 1
+    }
+  },
+  "apps/desktop/layer/renderer/src/lib/parse-html.ts": {
+    "ts/ban-ts-comment": {
+      "count": 1
+    },
+    "ts/no-use-before-define": {
+      "count": 3
+    }
+  },
+  "apps/desktop/layer/renderer/src/lib/utils.ts": {
+    "ts/no-non-null-asserted-optional-chain": {
+      "count": 6
+    }
+  },
+  "apps/desktop/layer/renderer/src/main.tsx": {
+    "@eslint-react/dom/no-flush-sync": {
+      "count": 1
+    }
+  },
+  "apps/desktop/layer/renderer/src/modules/action/action-setting.tsx": {
+    "ts/no-use-before-define": {
+      "count": 5
+    }
+  },
+  "apps/desktop/layer/renderer/src/modules/action/constants.tsx": {
+    "react-refresh/only-export-components": {
+      "count": 1
+    }
+  },
+  "apps/desktop/layer/renderer/src/modules/action/rule-card.tsx": {
+    "ts/no-use-before-define": {
+      "count": 4
+    }
+  },
+  "apps/desktop/layer/renderer/src/modules/action/then-section.tsx": {
+    "ts/no-use-before-define": {
+      "count": 5
+    }
+  },
+  "apps/desktop/layer/renderer/src/modules/action/when-section.tsx": {
+    "ts/no-use-before-define": {
+      "count": 4
+    }
+  },
+  "apps/desktop/layer/renderer/src/modules/ai-chat/components/displays/AIChainOfThought.tsx": {
+    "ts/no-use-before-define": {
+      "count": 3
+    }
+  },
+  "apps/desktop/layer/renderer/src/modules/ai-chat/components/displays/AIDisplayFlowPart.tsx": {
+    "react-refresh/only-export-components": {
+      "count": 1
+    }
+  },
+  "apps/desktop/layer/renderer/src/modules/ai-chat/components/layouts/ChatInterface.tsx": {
+    "ts/no-use-before-define": {
+      "count": 7
+    }
+  },
+  "apps/desktop/layer/renderer/src/modules/ai-chat/components/layouts/ChatShortcutsRow.tsx": {
+    "ts/no-use-before-define": {
+      "count": 1
+    }
+  },
+  "apps/desktop/layer/renderer/src/modules/ai-chat/components/layouts/WelcomeScreen.tsx": {
+    "ts/no-use-before-define": {
+      "count": 1
+    }
+  },
+  "apps/desktop/layer/renderer/src/modules/ai-chat/components/message/ImageThumbnail.tsx": {
+    "ts/no-use-before-define": {
+      "count": 1
+    }
+  },
+  "apps/desktop/layer/renderer/src/modules/ai-chat/components/message/UserRichTextMessage.tsx": {
+    "ts/no-use-before-define": {
+      "count": 1
+    }
+  },
+  "apps/desktop/layer/renderer/src/modules/ai-chat/components/message/animated/AnimatedMarkdown.tsx": {
+    "ts/no-use-before-define": {
+      "count": 5
+    }
+  },
+  "apps/desktop/layer/renderer/src/modules/ai-chat/components/message/parse-incomplete-markdown.ts": {
+    "no-cond-assign": {
+      "count": 2
+    },
+    "ts/no-use-before-define": {
+      "count": 3
+    }
+  },
+  "apps/desktop/layer/renderer/src/modules/ai-chat/editor/plugins/index.tsx": {
+    "react-refresh/only-export-components": {
+      "count": 4
+    }
+  },
+  "apps/desktop/layer/renderer/src/modules/ai-chat/editor/plugins/mention/MentionNode.tsx": {
+    "ts/no-use-before-define": {
+      "count": 1
+    }
+  },
+  "apps/desktop/layer/renderer/src/modules/ai-chat/editor/plugins/mention/hooks/dateMentionUtils.ts": {
+    "ts/no-use-before-define": {
+      "count": 1
+    }
+  },
+  "apps/desktop/layer/renderer/src/modules/ai-chat/services/index.ts": {
+    "ts/no-use-before-define": {
+      "count": 1
+    }
+  },
+  "apps/desktop/layer/renderer/src/modules/ai-chat/store/AIChatContext.ts": {
+    "ts/no-redeclare": {
+      "count": 1
+    }
+  },
+  "apps/desktop/layer/renderer/src/modules/app-layout/LAYOUT_ARCHITECTURE.md": {
+    "markdown/fenced-code-language": {
+      "count": 3
+    },
+    "react-hooks/rules-of-hooks": {
+      "count": 1
+    },
+    "react-refresh/only-export-components": {
+      "count": 1
+    }
+  },
+  "apps/desktop/layer/renderer/src/modules/app-layout/MainDestopLayout.tsx": {
+    "ts/no-use-before-define": {
+      "count": 2
+    }
+  },
+  "apps/desktop/layer/renderer/src/modules/app-layout/ai/AIChatFloatingPanel.tsx": {
+    "ts/ban-ts-comment": {
+      "count": 1
+    }
+  },
+  "apps/desktop/layer/renderer/src/modules/app-layout/subscription-column/SubscriptionColumn.tsx": {
+    "@eslint-react/hooks-extra/no-unnecessary-use-callback": {
+      "count": 1
+    },
+    "ts/ban-ts-comment": {
+      "count": 1
+    },
+    "ts/no-use-before-define": {
+      "count": 2
+    }
+  },
+  "apps/desktop/layer/renderer/src/modules/app-layout/subscription-column/components/PodcastButton.tsx": {
+    "ts/no-use-before-define": {
+      "count": 5
+    }
+  },
+  "apps/desktop/layer/renderer/src/modules/app-layout/subview/SubviewLayout.tsx": {
+    "ts/no-use-before-define": {
+      "count": 2
+    }
+  },
+  "apps/desktop/layer/renderer/src/modules/app-tip/AICopilotMedia.tsx": {
+    "ts/no-use-before-define": {
+      "count": 2
+    }
+  },
+  "apps/desktop/layer/renderer/src/modules/app-tip/AppTipModalContent.tsx": {
+    "ts/no-use-before-define": {
+      "count": 1
+    }
+  },
+  "apps/desktop/layer/renderer/src/modules/app/EnvironmentIndicator.tsx": {
+    "@eslint-react/dom/no-missing-iframe-sandbox": {
+      "count": 1
+    }
+  },
+  "apps/desktop/layer/renderer/src/modules/claim/feed-claim-modal.tsx": {
+    "ts/no-use-before-define": {
+      "count": 4
+    }
+  },
+  "apps/desktop/layer/renderer/src/modules/command/commands/integration.tsx": {
+    "ts/no-use-before-define": {
+      "count": 13
+    }
+  },
+  "apps/desktop/layer/renderer/src/modules/command/commands/settings.tsx": {
+    "ts/no-use-before-define": {
+      "count": 2
+    }
+  },
+  "apps/desktop/layer/renderer/src/modules/command/hooks/use-command-binding.ts": {
+    "ts/no-use-before-define": {
+      "count": 1
+    }
+  },
+  "apps/desktop/layer/renderer/src/modules/command/hooks/use-register-hotkey.ts": {
+    "ts/ban-ts-comment": {
+      "count": 1
+    }
+  },
+  "apps/desktop/layer/renderer/src/modules/command/registry/command.test-d.ts": {
+    "no-console": {
+      "count": 1
+    }
+  },
+  "apps/desktop/layer/renderer/src/modules/command/shortcuts/SettingShortcuts.tsx": {
+    "ts/no-use-before-define": {
+      "count": 1
+    }
+  },
+  "apps/desktop/layer/renderer/src/modules/customize-toolbar/modal.tsx": {
+    "react-refresh/only-export-components": {
+      "count": 1
+    }
+  },
+  "apps/desktop/layer/renderer/src/modules/discover/DiscoverFeedCard.tsx": {
+    "ts/no-use-before-define": {
+      "count": 2
+    }
+  },
+  "apps/desktop/layer/renderer/src/modules/discover/DiscoverFeedForm.tsx": {
+    "no-console": {
+      "count": 1
+    },
+    "ts/no-non-null-asserted-optional-chain": {
+      "count": 1
+    },
+    "ts/no-use-before-define": {
+      "count": 2
+    }
+  },
+  "apps/desktop/layer/renderer/src/modules/discover/DiscoverImport.tsx": {
+    "ts/no-use-before-define": {
+      "count": 1
+    }
+  },
+  "apps/desktop/layer/renderer/src/modules/discover/DiscoverTransform.tsx": {
+    "ts/no-non-null-asserted-optional-chain": {
+      "count": 1
+    }
+  },
+  "apps/desktop/layer/renderer/src/modules/discover/FeedForm.tsx": {
+    "ts/no-use-before-define": {
+      "count": 3
+    }
+  },
+  "apps/desktop/layer/renderer/src/modules/discover/Inbox/InboxTable.tsx": {
+    "ts/no-use-before-define": {
+      "count": 1
+    }
+  },
+  "apps/desktop/layer/renderer/src/modules/discover/InboxForm.tsx": {
+    "ts/no-use-before-define": {
+      "count": 1
+    }
+  },
+  "apps/desktop/layer/renderer/src/modules/discover/ListForm.tsx": {
+    "ts/no-use-before-define": {
+      "count": 3
+    }
+  },
+  "apps/desktop/layer/renderer/src/modules/discover/OpmlSelectionModal.tsx": {
+    "ts/no-use-before-define": {
+      "count": 8
+    }
+  },
+  "apps/desktop/layer/renderer/src/modules/editor/css-editor.tsx": {
+    "ts/no-use-before-define": {
+      "count": 1
+    }
+  },
+  "apps/desktop/layer/renderer/src/modules/entry-column/EntryItemSkeleton.tsx": {
+    "@eslint-react/no-array-index-key": {
+      "count": 1
+    }
+  },
+  "apps/desktop/layer/renderer/src/modules/entry-column/Items/all-item.tsx": {
+    "react-refresh/only-export-components": {
+      "count": 1
+    }
+  },
+  "apps/desktop/layer/renderer/src/modules/entry-column/Items/article-item.tsx": {
+    "react-refresh/only-export-components": {
+      "count": 1
+    }
+  },
+  "apps/desktop/layer/renderer/src/modules/entry-column/Items/audio-item.tsx": {
+    "react-refresh/only-export-components": {
+      "count": 1
+    }
+  },
+  "apps/desktop/layer/renderer/src/modules/entry-column/Items/notification-item.tsx": {
+    "react-refresh/only-export-components": {
+      "count": 1
+    }
+  },
+  "apps/desktop/layer/renderer/src/modules/entry-column/Items/picture-item-stateless.tsx": {
+    "@eslint-react/no-context-provider": {
+      "count": 1
+    }
+  },
+  "apps/desktop/layer/renderer/src/modules/entry-column/Items/picture-item.tsx": {
+    "ts/no-use-before-define": {
+      "count": 2
+    }
+  },
+  "apps/desktop/layer/renderer/src/modules/entry-column/Items/picture-masonry.tsx": {
+    "@eslint-react/no-context-provider": {
+      "count": 1
+    },
+    "ts/no-use-before-define": {
+      "count": 3
+    }
+  },
+  "apps/desktop/layer/renderer/src/modules/entry-column/Items/social-media-item.tsx": {
+    "react-refresh/only-export-components": {
+      "count": 1
+    },
+    "ts/no-use-before-define": {
+      "count": 1
+    }
+  },
+  "apps/desktop/layer/renderer/src/modules/entry-column/Items/video-item.tsx": {
+    "react-refresh/only-export-components": {
+      "count": 1
+    }
+  },
+  "apps/desktop/layer/renderer/src/modules/entry-column/components/DateItem.tsx": {
+    "ts/no-use-before-define": {
+      "count": 3
+    }
+  },
+  "apps/desktop/layer/renderer/src/modules/entry-column/components/FooterMarkItem.tsx": {
+    "ts/no-use-before-define": {
+      "count": 3
+    }
+  },
+  "apps/desktop/layer/renderer/src/modules/entry-column/components/mark-all-button.tsx": {
+    "@eslint-react/hooks-extra/no-unnecessary-use-callback": {
+      "count": 1
+    },
+    "ts/no-use-before-define": {
+      "count": 2
+    }
+  },
+  "apps/desktop/layer/renderer/src/modules/entry-column/context/EntriesContext.tsx": {
+    "react-refresh/only-export-components": {
+      "count": 2
+    }
+  },
+  "apps/desktop/layer/renderer/src/modules/entry-column/grid.tsx": {
+    "ts/no-use-before-define": {
+      "count": 3
+    }
+  },
+  "apps/desktop/layer/renderer/src/modules/entry-column/hooks/useEntriesByView.ts": {
+    "ts/no-use-before-define": {
+      "count": 1
+    }
+  },
+  "apps/desktop/layer/renderer/src/modules/entry-column/index.tsx": {
+    "ts/no-use-before-define": {
+      "count": 2
+    }
+  },
+  "apps/desktop/layer/renderer/src/modules/entry-column/layouts/EntryItemWrapper.tsx": {
+    "ts/no-use-before-define": {
+      "count": 1
+    }
+  },
+  "apps/desktop/layer/renderer/src/modules/entry-column/layouts/EntryListHeader.tsx": {
+    "ts/no-use-before-define": {
+      "count": 2
+    }
+  },
+  "apps/desktop/layer/renderer/src/modules/entry-column/list.tsx": {
+    "ts/no-use-before-define": {
+      "count": 2
+    }
+  },
+  "apps/desktop/layer/renderer/src/modules/entry-column/store/EntryColumnContext.ts": {
+    "ts/no-redeclare": {
+      "count": 1
+    }
+  },
+  "apps/desktop/layer/renderer/src/modules/entry-column/templates/grid-item-template.tsx": {
+    "ts/no-use-before-define": {
+      "count": 1
+    }
+  },
+  "apps/desktop/layer/renderer/src/modules/entry-content/EntryContent.tsx": {
+    "ts/no-use-before-define": {
+      "count": 3
+    }
+  },
+  "apps/desktop/layer/renderer/src/modules/entry-content/EntryContentForPreview.tsx": {
+    "ts/no-use-before-define": {
+      "count": 1
+    }
+  },
+  "apps/desktop/layer/renderer/src/modules/entry-content/actions/header-actions.tsx": {
+    "ts/no-use-before-define": {
+      "count": 1
+    }
+  },
+  "apps/desktop/layer/renderer/src/modules/entry-content/actions/more-actions.tsx": {
+    "ts/no-use-before-define": {
+      "count": 5
+    }
+  },
+  "apps/desktop/layer/renderer/src/modules/entry-content/actions/picture-gallery.tsx": {
+    "@eslint-react/no-context-provider": {
+      "count": 1
+    }
+  },
+  "apps/desktop/layer/renderer/src/modules/entry-content/components/ApplyEntryActions.tsx": {
+    "ts/no-use-before-define": {
+      "count": 2
+    }
+  },
+  "apps/desktop/layer/renderer/src/modules/entry-content/components/EntryTimelineSidebar.tsx": {
+    "ts/no-use-before-define": {
+      "count": 1
+    }
+  },
+  "apps/desktop/layer/renderer/src/modules/entry-content/components/WarnGoToExternalLink.tsx": {
+    "react-refresh/only-export-components": {
+      "count": 1
+    }
+  },
+  "apps/desktop/layer/renderer/src/modules/entry-content/components/entry-header/internal/EntryHeaderBreadcrumb.tsx": {
+    "ts/no-use-before-define": {
+      "count": 2
+    }
+  },
+  "apps/desktop/layer/renderer/src/modules/entry-content/components/entry-header/internal/context.tsx": {
+    "react-refresh/only-export-components": {
+      "count": 1
+    }
+  },
+  "apps/desktop/layer/renderer/src/modules/entry-content/components/layouts/ArticleLayout.tsx": {
+    "ts/no-use-before-define": {
+      "count": 1
+    }
+  },
+  "apps/desktop/layer/renderer/src/modules/entry-content/components/layouts/shared/VideoPlayer.tsx": {
+    "ts/no-use-before-define": {
+      "count": 1
+    }
+  },
+  "apps/desktop/layer/renderer/src/modules/entry-content/components/selection/TextSelectionToolbar.tsx": {
+    "ts/no-use-before-define": {
+      "count": 1
+    }
+  },
+  "apps/desktop/layer/renderer/src/modules/feed/feed-certification.tsx": {
+    "ts/no-use-before-define": {
+      "count": 1
+    }
+  },
+  "apps/desktop/layer/renderer/src/modules/feed/feed-icon.tsx": {
+    "ts/no-use-before-define": {
+      "count": 2
+    }
+  },
+  "apps/desktop/layer/renderer/src/modules/feed/feed-summary.tsx": {
+    "ts/no-use-before-define": {
+      "count": 1
+    }
+  },
+  "apps/desktop/layer/renderer/src/modules/integration/custom-integration-manager.ts": {
+    "no-new": {
+      "count": 2
+    }
+  },
+  "apps/desktop/layer/renderer/src/modules/panel/cmdf.tsx": {
+    "ts/no-use-before-define": {
+      "count": 3
+    }
+  },
+  "apps/desktop/layer/renderer/src/modules/panel/cmdk.tsx": {
+    "ts/no-use-before-define": {
+      "count": 9
+    }
+  },
+  "apps/desktop/layer/renderer/src/modules/player/corner-player.tsx": {
+    "ts/no-use-before-define": {
+      "count": 14
+    }
+  },
+  "apps/desktop/layer/renderer/src/modules/player/entry-tts.ts": {
+    "no-unmodified-loop-condition": {
+      "count": 2
+    },
+    "ts/no-use-before-define": {
+      "count": 2
+    }
+  },
+  "apps/desktop/layer/renderer/src/modules/power/my-wallet-section/withdraw.tsx": {
+    "ts/no-use-before-define": {
+      "count": 1
+    }
+  },
+  "apps/desktop/layer/renderer/src/modules/profile/update-password-form.tsx": {
+    "ts/no-use-before-define": {
+      "count": 1
+    }
+  },
+  "apps/desktop/layer/renderer/src/modules/profile/user-profile-modal/UserProfileModalContent.tsx": {
+    "ts/no-use-before-define": {
+      "count": 1
+    }
+  },
+  "apps/desktop/layer/renderer/src/modules/profile/user-profile-modal/shared.tsx": {
+    "ts/no-non-null-asserted-optional-chain": {
+      "count": 1
+    },
+    "ts/no-use-before-define": {
+      "count": 2
+    }
+  },
+  "apps/desktop/layer/renderer/src/modules/renderer/components/TimeStamp.tsx": {
+    "ts/no-use-before-define": {
+      "count": 1
+    }
+  },
+  "apps/desktop/layer/renderer/src/modules/renderer/context.tsx": {
+    "@eslint-react/no-context-provider": {
+      "count": 1
+    },
+    "react-refresh/only-export-components": {
+      "count": 2
+    },
+    "ts/no-redeclare": {
+      "count": 2
+    }
+  },
+  "apps/desktop/layer/renderer/src/modules/renderer/html.tsx": {
+    "@eslint-react/no-context-provider": {
+      "count": 1
+    },
+    "ts/ban-ts-comment": {
+      "count": 1
+    },
+    "ts/no-use-before-define": {
+      "count": 3
+    }
+  },
+  "apps/desktop/layer/renderer/src/modules/renderer/markdown.tsx": {
+    "@eslint-react/no-context-provider": {
+      "count": 1
+    },
+    "ts/no-use-before-define": {
+      "count": 3
+    }
+  },
+  "apps/desktop/layer/renderer/src/modules/settings/control.tsx": {
+    "ts/no-use-before-define": {
+      "count": 2
+    }
+  },
+  "apps/desktop/layer/renderer/src/modules/settings/helper/setting-builder.tsx": {
+    "@eslint-react/no-array-index-key": {
+      "count": 1
+    },
+    "react-refresh/only-export-components": {
+      "count": 1
+    }
+  },
+  "apps/desktop/layer/renderer/src/modules/settings/helper/withSettingEnable.tsx": {
+    "ts/ban-ts-comment": {
+      "count": 2
+    }
+  },
+  "apps/desktop/layer/renderer/src/modules/settings/modal/SettingModalContent.tsx": {
+    "ts/no-use-before-define": {
+      "count": 1
+    }
+  },
+  "apps/desktop/layer/renderer/src/modules/settings/modal/context.tsx": {
+    "react-refresh/only-export-components": {
+      "count": 3
+    }
+  },
+  "apps/desktop/layer/renderer/src/modules/settings/modal/hooks.ts": {
+    "ts/ban-ts-comment": {
+      "count": 1
+    }
+  },
+  "apps/desktop/layer/renderer/src/modules/settings/modal/layout.tsx": {
+    "@eslint-react/no-context-provider": {
+      "count": 1
+    },
+    "ts/no-use-before-define": {
+      "count": 2
+    }
+  },
+  "apps/desktop/layer/renderer/src/modules/settings/section.tsx": {
+    "@eslint-react/no-children-map": {
+      "count": 1
+    },
+    "@eslint-react/no-children-to-array": {
+      "count": 1
+    },
+    "react-refresh/only-export-components": {
+      "count": 1
+    },
+    "ts/ban-ts-comment": {
+      "count": 2
+    },
+    "ts/no-use-before-define": {
+      "count": 1
+    }
+  },
+  "apps/desktop/layer/renderer/src/modules/settings/sections/fonts.tsx": {
+    "ts/no-use-before-define": {
+      "count": 2
+    }
+  },
+  "apps/desktop/layer/renderer/src/modules/settings/tabs/ai.tsx": {
+    "react-refresh/only-export-components": {
+      "count": 1
+    },
+    "ts/no-use-before-define": {
+      "count": 1
+    }
+  },
+  "apps/desktop/layer/renderer/src/modules/settings/tabs/ai/mcp/MCPServiceModalContent.tsx": {
+    "no-new": {
+      "count": 1
+    }
+  },
+  "apps/desktop/layer/renderer/src/modules/settings/tabs/ai/mcp/MCPServicesSection.tsx": {
+    "ts/no-use-before-define": {
+      "count": 3
+    }
+  },
+  "apps/desktop/layer/renderer/src/modules/settings/tabs/appearance.tsx": {
+    "ts/no-use-before-define": {
+      "count": 11
+    }
+  },
+  "apps/desktop/layer/renderer/src/modules/settings/tabs/data-control.tsx": {
+    "ts/no-use-before-define": {
+      "count": 4
+    }
+  },
+  "apps/desktop/layer/renderer/src/modules/settings/tabs/feeds.tsx": {
+    "ts/no-use-before-define": {
+      "count": 5
+    }
+  },
+  "apps/desktop/layer/renderer/src/modules/settings/tabs/general.tsx": {
+    "ts/no-use-before-define": {
+      "count": 6
+    }
+  },
+  "apps/desktop/layer/renderer/src/modules/settings/tabs/integration/CustomIntegrationSection.tsx": {
+    "ts/no-use-before-define": {
+      "count": 1
+    }
+  },
+  "apps/desktop/layer/renderer/src/modules/settings/tabs/integration/index.tsx": {
+    "ts/no-use-before-define": {
+      "count": 1
+    }
+  },
+  "apps/desktop/layer/renderer/src/modules/settings/tabs/lists/modals.tsx": {
+    "ts/no-use-before-define": {
+      "count": 1
+    }
+  },
+  "apps/desktop/layer/renderer/src/modules/settings/tabs/plan.tsx": {
+    "ts/no-use-before-define": {
+      "count": 5
+    }
+  },
+  "apps/desktop/layer/renderer/src/modules/settings/tabs/shortcut.tsx": {
+    "ts/no-use-before-define": {
+      "count": 2
+    }
+  },
+  "apps/desktop/layer/renderer/src/modules/subscription-column/FeedCategory.tsx": {
+    "ts/no-use-before-define": {
+      "count": 3
+    }
+  },
+  "apps/desktop/layer/renderer/src/modules/subscription-column/SortedFeedItems.tsx": {
+    "ts/no-use-before-define": {
+      "count": 3
+    }
+  },
+  "apps/desktop/layer/renderer/src/modules/subscription-column/SubscriptionColumnHeader.tsx": {
+    "ts/no-use-before-define": {
+      "count": 3
+    }
+  },
+  "apps/desktop/layer/renderer/src/modules/subscription-column/SubscriptionTabButton.tsx": {
+    "ts/no-use-before-define": {
+      "count": 2
+    }
+  },
+  "apps/desktop/layer/renderer/src/modules/subscription-column/TimelineTabsSettingsModal.tsx": {
+    "react-refresh/only-export-components": {
+      "count": 4
+    }
+  },
+  "apps/desktop/layer/renderer/src/modules/subscription-column/index.tsx": {
+    "@eslint-react/hooks-extra/no-unnecessary-use-callback": {
+      "count": 1
+    },
+    "@eslint-react/web-api/no-leaked-timeout": {
+      "count": 1
+    },
+    "ts/no-use-before-define": {
+      "count": 5
+    }
+  },
+  "apps/desktop/layer/renderer/src/modules/subscription-column/subscription-list/SubscriptionList.tsx": {
+    "ts/no-use-before-define": {
+      "count": 2
+    }
+  },
+  "apps/desktop/layer/renderer/src/modules/upgrade/container.tsx": {
+    "react/no-nested-component-definitions": {
+      "count": 1
+    },
+    "ts/no-use-before-define": {
+      "count": 1
+    }
+  },
+  "apps/desktop/layer/renderer/src/modules/user/ProfileButton.tsx": {
+    "ts/no-use-before-define": {
+      "count": 1
+    }
+  },
+  "apps/desktop/layer/renderer/src/pages/(main)/(layer)/(subview)/discover/category/[category].tsx": {
+    "ts/no-use-before-define": {
+      "count": 2
+    }
+  },
+  "apps/desktop/layer/renderer/src/pages/(main)/(layer)/timeline/[timelineId]/[feedId]/index.tsx": {
+    "react-refresh/only-export-components": {
+      "count": 1
+    }
+  },
+  "apps/desktop/layer/renderer/src/pages/(main)/(layer)/timeline/[timelineId]/layout.tsx": {
+    "react-refresh/only-export-components": {
+      "count": 1
+    }
+  },
+  "apps/desktop/layer/renderer/src/pages/(main)/index.sync.tsx": {
+    "react-refresh/only-export-components": {
+      "count": 1
+    }
+  },
+  "apps/desktop/layer/renderer/src/pages/settings/(settings)/about.tsx": {
+    "react-refresh/only-export-components": {
+      "count": 1
+    }
+  },
+  "apps/desktop/layer/renderer/src/pages/settings/(settings)/appearance.tsx": {
+    "react-refresh/only-export-components": {
+      "count": 1
+    }
+  },
+  "apps/desktop/layer/renderer/src/pages/settings/(settings)/data-control.tsx": {
+    "react-refresh/only-export-components": {
+      "count": 1
+    }
+  },
+  "apps/desktop/layer/renderer/src/pages/settings/(settings)/feeds.tsx": {
+    "react-refresh/only-export-components": {
+      "count": 1
+    }
+  },
+  "apps/desktop/layer/renderer/src/pages/settings/(settings)/general.tsx": {
+    "react-refresh/only-export-components": {
+      "count": 1
+    }
+  },
+  "apps/desktop/layer/renderer/src/pages/settings/(settings)/integration.tsx": {
+    "react-refresh/only-export-components": {
+      "count": 1
+    }
+  },
+  "apps/desktop/layer/renderer/src/pages/settings/(settings)/list.tsx": {
+    "react-refresh/only-export-components": {
+      "count": 1
+    }
+  },
+  "apps/desktop/layer/renderer/src/pages/settings/(settings)/notifications.tsx": {
+    "react-refresh/only-export-components": {
+      "count": 1
+    }
+  },
+  "apps/desktop/layer/renderer/src/pages/settings/(settings)/plan.tsx": {
+    "react-refresh/only-export-components": {
+      "count": 1
+    }
+  },
+  "apps/desktop/layer/renderer/src/pages/settings/(settings)/profile.tsx": {
+    "react-refresh/only-export-components": {
+      "count": 1
+    }
+  },
+  "apps/desktop/layer/renderer/src/pages/settings/(settings)/shortcuts.tsx": {
+    "react-refresh/only-export-components": {
+      "count": 1
+    }
+  },
+  "apps/desktop/layer/renderer/src/providers/app-grid-layout-container-provider.tsx": {
+    "react-refresh/only-export-components": {
+      "count": 1
+    }
+  },
+  "apps/desktop/layer/renderer/src/providers/context-menu-provider.tsx": {
+    "ts/no-use-before-define": {
+      "count": 2
+    }
+  },
+  "apps/desktop/layer/renderer/src/providers/extension-expose-provider.tsx": {
+    "ts/ban-ts-comment": {
+      "count": 1
+    },
+    "ts/no-use-before-define": {
+      "count": 1
+    }
+  },
+  "apps/desktop/layer/renderer/src/providers/inject-styles-provider.tsx": {
+    "react-refresh/only-export-components": {
+      "count": 1
+    }
+  },
+  "apps/desktop/layer/renderer/src/providers/invalidate-query-provider.tsx": {
+    "react-refresh/only-export-components": {
+      "count": 2
+    }
+  },
+  "apps/desktop/layer/renderer/src/providers/popover-provider.tsx": {
+    "ts/no-use-before-define": {
+      "count": 1
+    }
+  },
+  "apps/desktop/layer/renderer/src/providers/root-providers.tsx": {
+    "ts/no-use-before-define": {
+      "count": 3
+    }
+  },
+  "apps/desktop/layer/renderer/src/providers/wrapped-element-provider.tsx": {
+    "ts/no-use-before-define": {
+      "count": 5
+    }
+  },
+  "apps/desktop/layer/renderer/src/push-notification.ts": {
+    "ts/no-use-before-define": {
+      "count": 1
+    }
+  },
+  "apps/desktop/layer/renderer/src/queries/rsshub.ts": {
+    "ts/no-use-before-define": {
+      "count": 5
+    }
+  },
+  "apps/desktop/layer/renderer/src/router.tsx": {
+    "ts/ban-ts-comment": {
+      "count": 1
+    }
+  },
+  "apps/desktop/layer/renderer/src/router.web.tsx": {
+    "ts/ban-ts-comment": {
+      "count": 1
+    }
+  },
+  "apps/desktop/layer/renderer/src/store/image/index.ts": {
+    "ts/no-use-before-define": {
+      "count": 1
+    }
+  },
+  "apps/desktop/layer/renderer/src/store/search/constants.ts": {
+    "ts/no-redeclare": {
+      "count": 1
+    }
+  },
+  "apps/desktop/layer/renderer/src/store/search/types.ts": {
+    "ts/ban-ts-comment": {
+      "count": 1
+    }
+  },
+  "apps/desktop/layer/renderer/src/wdyr.ts": {
+    "antfu/no-top-level-await": {
+      "count": 1
+    }
+  },
+  "apps/desktop/layer/renderer/vitest.config.ts": {
+    "node/prefer-global/process": {
+      "count": 2
+    }
+  },
+  "apps/desktop/plugins/vite/ast.ts": {
+    "ts/ban-ts-comment": {
+      "count": 1
+    }
+  },
+  "apps/desktop/plugins/vite/cleanup.ts": {
+    "no-console": {
+      "count": 1
+    }
+  },
+  "apps/desktop/plugins/vite/compress.ts": {
+    "no-console": {
+      "count": 3
+    },
+    "node/prefer-global/process": {
+      "count": 1
+    }
+  },
+  "apps/desktop/plugins/vite/generate-main-hash.ts": {
+    "node/prefer-global/process": {
+      "count": 4
+    }
+  },
+  "apps/desktop/plugins/vite/hmr.ts": {
+    "no-console": {
+      "count": 1
+    },
+    "node/prefer-global/process": {
+      "count": 2
+    }
+  },
+  "apps/desktop/postcss.config.cjs": {
+    "node/prefer-global/process": {
+      "count": 3
+    }
+  },
+  "apps/desktop/scripts/apply-changelog.ts": {
+    "node/prefer-global/process": {
+      "count": 1
+    }
+  },
+  "apps/desktop/scripts/generate-appx-manifest.ts": {
+    "node/prefer-global/process": {
+      "count": 5
+    }
+  },
+  "apps/desktop/scripts/update-windows-yml.ts": {
+    "node/no-deprecated-api": {
+      "count": 1
+    }
+  },
+  "apps/desktop/tailwind.config.ts": {
+    "ts/no-require-imports": {
+      "count": 2
+    }
+  },
+  "apps/desktop/vite.config.ts": {
+    "no-alert": {
+      "count": 1
+    },
+    "node/prefer-global/buffer": {
+      "count": 1
+    },
+    "node/prefer-global/process": {
+      "count": 6
+    },
+    "ts/no-use-before-define": {
+      "count": 1
+    }
+  },
+  "apps/landing/global.d.ts": {
+    "@typescript-eslint/method-signature-style": {
+      "count": 1
+    },
+    "@typescript-eslint/no-empty-object-type": {
+      "count": 1
+    },
+    "ts/method-signature-style": {
+      "count": 3
+    },
+    "ts/no-empty-object-type": {
+      "count": 4
+    }
+  },
+  "apps/landing/next.config.mjs": {
+    "node/prefer-global/process": {
+      "count": 2
+    }
+  },
+  "apps/landing/src/app/[locale]/error.tsx": {
+    "react-refresh/only-export-components": {
+      "count": 1
+    }
+  },
+  "apps/landing/src/atoms/viewport.ts": {
+    "ts/ban-ts-comment": {
+      "count": 1
+    }
+  },
+  "apps/landing/src/components/common/HydrationEndDetector.tsx": {
+    "react-refresh/only-export-components": {
+      "count": 1
+    }
+  },
+  "apps/landing/src/components/ui/accordion/Accordion.tsx": {
+    "react-refresh/only-export-components": {
+      "count": 1
+    },
+    "ts/no-use-before-define": {
+      "count": 2
+    }
+  },
+  "apps/landing/src/components/ui/collapse/CollapseCss.tsx": {
+    "ts/no-use-before-define": {
+      "count": 2
+    }
+  },
+  "apps/landing/src/components/ui/effects/GridGuides.tsx": {
+    "no-multi-str": {
+      "count": 1
+    }
+  },
+  "apps/landing/src/components/ui/markdown/index.tsx": {
+    "node/prefer-global/process": {
+      "count": 1
+    },
+    "react-refresh/only-export-components": {
+      "count": 1
+    }
+  },
+  "apps/landing/src/components/ui/modal/ModalContainer.tsx": {
+    "ts/no-use-before-define": {
+      "count": 1
+    }
+  },
+  "apps/landing/src/components/ui/portal/provider.tsx": {
+    "ts/no-use-before-define": {
+      "count": 1
+    }
+  },
+  "apps/landing/src/components/ui/relative-time/RelativeTime.tsx": {
+    "ts/ban-ts-comment": {
+      "count": 1
+    }
+  },
+  "apps/landing/src/components/ui/sheet/Sheet.tsx": {
+    "react-refresh/only-export-components": {
+      "count": 1
+    }
+  },
+  "apps/landing/src/components/ui/theme-switcher/ThemeSwitcher.tsx": {
+    "@eslint-react/dom/no-flush-sync": {
+      "count": 1
+    },
+    "ts/no-use-before-define": {
+      "count": 2
+    }
+  },
+  "apps/landing/src/components/ui/transition/TextUpTransitionView.tsx": {
+    "ts/ban-ts-comment": {
+      "count": 1
+    }
+  },
+  "apps/landing/src/components/widgets/landing/BuiltOpen.tsx": {
+    "ts/no-use-before-define": {
+      "count": 12
+    }
+  },
+  "apps/landing/src/components/widgets/landing/Hero.tsx": {
+    "ts/no-use-before-define": {
+      "count": 1
+    }
+  },
+  "apps/landing/src/components/widgets/simulators/EntryPage.tsx": {
+    "ts/no-use-before-define": {
+      "count": 1
+    }
+  },
+  "apps/landing/src/components/widgets/simulators/ListDemo.tsx": {
+    "ts/no-use-before-define": {
+      "count": 1
+    }
+  },
+  "apps/landing/src/components/widgets/simulators/components/ai/AIChainOfThought.tsx": {
+    "ts/no-use-before-define": {
+      "count": 3
+    }
+  },
+  "apps/landing/src/components/widgets/simulators/components/ai/parse-incomplete-markdown.ts": {
+    "no-cond-assign": {
+      "count": 2
+    },
+    "ts/no-use-before-define": {
+      "count": 3
+    }
+  },
+  "apps/landing/src/constants/env.ts": {
+    "node/prefer-global/process": {
+      "count": 5
+    }
+  },
+  "apps/landing/src/hooks/common/use-click-away.ts": {
+    "@typescript-eslint/no-unsafe-function-type": {
+      "count": 1
+    },
+    "ts/no-unsafe-function-type": {
+      "count": 2
+    }
+  },
+  "apps/landing/src/hooks/common/useMeasure.ts": {
+    "ts/no-use-before-define": {
+      "count": 1
+    }
+  },
+  "apps/landing/src/lib/env.ts": {
+    "node/prefer-global/process": {
+      "count": 1
+    }
+  },
+  "apps/landing/src/lib/scroller.ts": {
+    "ts/no-use-before-define": {
+      "count": 2
+    }
+  },
+  "apps/landing/src/providers/root/page-scroll-info-provider.tsx": {
+    "react-refresh/only-export-components": {
+      "count": 5
+    },
+    "ts/no-use-before-define": {
+      "count": 1
+    }
+  },
+  "apps/landing/src/providers/shared/WrappedElementProvider.tsx": {
+    "react-refresh/only-export-components": {
+      "count": 5
+    },
+    "ts/no-use-before-define": {
+      "count": 4
+    }
+  },
+  "apps/mobile/README.md": {
+    "markdown/fenced-code-language": {
+      "count": 1
+    },
+    "md/no-url-trailing-slash": {
+      "count": 4
+    }
+  },
+  "apps/mobile/app.config.ts": {
+    "node/prefer-global/process": {
+      "count": 3
+    },
+    "ts/no-require-imports": {
+      "count": 4
+    }
+  },
+  "apps/mobile/changelog/0.1.6.md": {
+    "md/no-irregular-dash": {
+      "count": 6
+    },
+    "md/no-irregular-whitespace": {
+      "count": 2
+    }
+  },
+  "apps/mobile/changelog/0.1.8.md": {
+    "md/no-irregular-dash": {
+      "count": 1
+    }
+  },
+  "apps/mobile/changelog/0.2.4.md": {
+    "md/no-irregular-dash": {
+      "count": 2
+    }
+  },
+  "apps/mobile/native/README.md": {
+    "markdown/fenced-code-language": {
+      "count": 1
+    },
+    "markdown/heading-increment": {
+      "count": 1
+    },
+    "markdown/no-multiple-h1": {
+      "count": 4
+    },
+    "md/no-url-trailing-slash": {
+      "count": 4
+    }
+  },
+  "apps/mobile/plugins/with-follow-assets.js": {
+    "no-console": {
+      "count": 1
+    }
+  },
+  "apps/mobile/scripts/apply-changelog.ts": {
+    "node/prefer-global/process": {
+      "count": 1
+    },
+    "ts/ban-ts-comment": {
+      "count": 1
+    }
+  },
+  "apps/mobile/src/App.tsx": {
+    "ts/no-use-before-define": {
+      "count": 3
+    }
+  },
+  "apps/mobile/src/atoms/settings/internal/helper.ts": {
+    "ts/ban-ts-comment": {
+      "count": 2
+    }
+  },
+  "apps/mobile/src/components/common/BlurEffect.tsx": {
+    "ts/no-use-before-define": {
+      "count": 2
+    }
+  },
+  "apps/mobile/src/components/common/ErrorBoundary.tsx": {
+    "react-refresh/only-export-components": {
+      "count": 1
+    },
+    "ts/no-use-before-define": {
+      "count": 2
+    }
+  },
+  "apps/mobile/src/components/common/RefreshControl.tsx": {
+    "ts/no-use-before-define": {
+      "count": 2
+    }
+  },
+  "apps/mobile/src/components/common/SwipeableItem.tsx": {
+    "ts/no-use-before-define": {
+      "count": 3
+    }
+  },
+  "apps/mobile/src/components/layouts/header/FakeNativeHeaderTitle.tsx": {
+    "ts/no-use-before-define": {
+      "count": 1
+    }
+  },
+  "apps/mobile/src/components/layouts/header/NavigationHeader.tsx": {
+    "ts/no-use-before-define": {
+      "count": 4
+    }
+  },
+  "apps/mobile/src/components/layouts/tabbar/ReactNativeTab.ios.tsx": {
+    "ts/no-use-before-define": {
+      "count": 1
+    }
+  },
+  "apps/mobile/src/components/layouts/tabbar/Tabbar.tsx": {
+    "ts/no-use-before-define": {
+      "count": 11
+    }
+  },
+  "apps/mobile/src/components/native/PagerView/index.tsx": {
+    "ts/no-use-before-define": {
+      "count": 1
+    }
+  },
+  "apps/mobile/src/components/native/webview/hooks.ts": {
+    "ts/no-require-imports": {
+      "count": 1
+    }
+  },
+  "apps/mobile/src/components/native/webview/native-webview.android.tsx": {
+    "react-refresh/only-export-components": {
+      "count": 1
+    },
+    "ts/no-use-before-define": {
+      "count": 3
+    }
+  },
+  "apps/mobile/src/components/ui/accordion/AccordionItem.tsx": {
+    "ts/no-use-before-define": {
+      "count": 2
+    }
+  },
+  "apps/mobile/src/components/ui/button/UIBarButton.tsx": {
+    "ts/no-use-before-define": {
+      "count": 2
+    }
+  },
+  "apps/mobile/src/components/ui/carousel/MediaCarousel.tsx": {
+    "ts/no-use-before-define": {
+      "count": 1
+    }
+  },
+  "apps/mobile/src/components/ui/context-menu/index.tsx": {
+    "react-refresh/only-export-components": {
+      "count": 1
+    }
+  },
+  "apps/mobile/src/components/ui/form/FormProvider.tsx": {
+    "react-refresh/only-export-components": {
+      "count": 1
+    }
+  },
+  "apps/mobile/src/components/ui/form/PickerIos.tsx": {
+    "@eslint-react/no-array-index-key": {
+      "count": 1
+    }
+  },
+  "apps/mobile/src/components/ui/form/TextField.tsx": {
+    "ts/no-use-before-define": {
+      "count": 1
+    }
+  },
+  "apps/mobile/src/components/ui/grouped/GroupedList.tsx": {
+    "@typescript-eslint/no-unsafe-function-type": {
+      "count": 1
+    },
+    "ts/no-unsafe-function-type": {
+      "count": 1
+    },
+    "ts/no-use-before-define": {
+      "count": 1
+    }
+  },
+  "apps/mobile/src/components/ui/icon/fallback-icon.tsx": {
+    "ts/no-use-before-define": {
+      "count": 2
+    }
+  },
+  "apps/mobile/src/components/ui/lightbox/ImageViewing/components/ImageDefaultHeader.tsx": {
+    "ts/no-use-before-define": {
+      "count": 9
+    }
+  },
+  "apps/mobile/src/components/ui/lightbox/ImageViewing/components/ImageItem/ImageItem.android.tsx": {
+    "ts/no-use-before-define": {
+      "count": 2
+    }
+  },
+  "apps/mobile/src/components/ui/lightbox/ImageViewing/components/ImageItem/ImageItem.ios.tsx": {
+    "ts/ban-ts-comment": {
+      "count": 2
+    },
+    "ts/no-use-before-define": {
+      "count": 2
+    }
+  },
+  "apps/mobile/src/components/ui/lightbox/ImageViewing/index.tsx": {
+    "ts/no-use-before-define": {
+      "count": 8
+    }
+  },
+  "apps/mobile/src/components/ui/lightbox/lightboxState.tsx": {
+    "react-refresh/only-export-components": {
+      "count": 2
+    }
+  },
+  "apps/mobile/src/components/ui/modal/imperative-modal/index.tsx": {
+    "react-refresh/only-export-components": {
+      "count": 2
+    }
+  },
+  "apps/mobile/src/components/ui/modal/imperative-modal/modal.tsx": {
+    "react-refresh/only-export-components": {
+      "count": 1
+    },
+    "ts/no-use-before-define": {
+      "count": 1
+    }
+  },
+  "apps/mobile/src/components/ui/qrcode/QRCode.tsx": {
+    "react-refresh/only-export-components": {
+      "count": 1
+    }
+  },
+  "apps/mobile/src/components/ui/slider/Slider.tsx": {
+    "ts/no-use-before-define": {
+      "count": 6
+    }
+  },
+  "apps/mobile/src/components/ui/slider/index.tsx": {
+    "react-refresh/only-export-components": {
+      "count": 1
+    }
+  },
+  "apps/mobile/src/components/ui/switch/Switch.tsx": {
+    "ts/no-use-before-define": {
+      "count": 3
+    }
+  },
+  "apps/mobile/src/components/ui/tabview/TabBar.tsx": {
+    "ts/no-use-before-define": {
+      "count": 4
+    }
+  },
+  "apps/mobile/src/components/ui/tabview/TabView.tsx": {
+    "@typescript-eslint/no-empty-object-type": {
+      "count": 1
+    },
+    "ts/no-empty-object-type": {
+      "count": 2
+    },
+    "ts/no-redeclare": {
+      "count": 1
+    }
+  },
+  "apps/mobile/src/components/ui/toast/CenteredToast.tsx": {
+    "ts/no-use-before-define": {
+      "count": 4
+    }
+  },
+  "apps/mobile/src/components/ui/toast/ctx.tsx": {
+    "ts/no-redeclare": {
+      "count": 1
+    }
+  },
+  "apps/mobile/src/components/ui/toast/manager.tsx": {
+    "ts/ban-ts-comment": {
+      "count": 1
+    }
+  },
+  "apps/mobile/src/components/ui/typography/MonoText.tsx": {
+    "ts/no-use-before-define": {
+      "count": 1
+    }
+  },
+  "apps/mobile/src/database/index.ts": {
+    "no-console": {
+      "count": 1
+    }
+  },
+  "apps/mobile/src/hooks/useBackHandler.ts": {
+    "@eslint-react/web-api/no-leaked-event-listener": {
+      "count": 1
+    }
+  },
+  "apps/mobile/src/hooks/useIntentHandler.ts": {
+    "ts/no-use-before-define": {
+      "count": 1
+    }
+  },
+  "apps/mobile/src/initialize/index.ts": {
+    "ts/no-use-before-define": {
+      "count": 8
+    }
+  },
+  "apps/mobile/src/initialize/player.ts": {
+    "import/no-mutable-exports": {
+      "count": 1
+    }
+  },
+  "apps/mobile/src/lib/dialog.tsx": {
+    "react-refresh/only-export-components": {
+      "count": 4
+    },
+    "ts/no-use-before-define": {
+      "count": 9
+    }
+  },
+  "apps/mobile/src/lib/error-parser.ts": {
+    "ts/no-use-before-define": {
+      "count": 1
+    }
+  },
+  "apps/mobile/src/lib/image.ts": {
+    "ts/no-use-before-define": {
+      "count": 2
+    }
+  },
+  "apps/mobile/src/lib/loading.tsx": {
+    "react-refresh/only-export-components": {
+      "count": 1
+    },
+    "ts/no-use-before-define": {
+      "count": 1
+    }
+  },
+  "apps/mobile/src/lib/native/index.ios.ts": {
+    "ts/no-use-before-define": {
+      "count": 1
+    }
+  },
+  "apps/mobile/src/lib/native/index.ts": {
+    "ts/no-use-before-define": {
+      "count": 1
+    }
+  },
+  "apps/mobile/src/lib/navigation/StackNavigation.tsx": {
+    "ts/no-use-before-define": {
+      "count": 14
+    }
+  },
+  "apps/mobile/src/lib/navigation/WrappedScreenItem.tsx": {
+    "ts/no-use-before-define": {
+      "count": 2
+    }
+  },
+  "apps/mobile/src/lib/navigation/bottom-tab/TabBarPortal.tsx": {
+    "ts/no-use-before-define": {
+      "count": 1
+    }
+  },
+  "apps/mobile/src/lib/navigation/debug/DebugButtonGroup.tsx": {
+    "ts/no-use-before-define": {
+      "count": 10
+    }
+  },
+  "apps/mobile/src/lib/navigation/types.ts": {
+    "@typescript-eslint/no-empty-object-type": {
+      "count": 1
+    },
+    "ts/no-empty-object-type": {
+      "count": 1
+    }
+  },
+  "apps/mobile/src/main.tsx": {
+    "react-refresh/only-export-components": {
+      "count": 1
+    },
+    "ts/ban-ts-comment": {
+      "count": 3
+    }
+  },
+  "apps/mobile/src/modules/ai/summary.tsx": {
+    "ts/no-use-before-define": {
+      "count": 10
+    }
+  },
+  "apps/mobile/src/modules/context-menu/feeds.tsx": {
+    "ts/no-use-before-define": {
+      "count": 3
+    }
+  },
+  "apps/mobile/src/modules/debug/index.tsx": {
+    "ts/ban-ts-comment": {
+      "count": 1
+    }
+  },
+  "apps/mobile/src/modules/dialogs/UpgradeRequiredDialog.tsx": {
+    "react-refresh/only-export-components": {
+      "count": 1
+    },
+    "ts/no-use-before-define": {
+      "count": 1
+    }
+  },
+  "apps/mobile/src/modules/discover/Category.tsx": {
+    "ts/no-use-before-define": {
+      "count": 2
+    }
+  },
+  "apps/mobile/src/modules/discover/Recommendations.tsx": {
+    "ts/no-use-before-define": {
+      "count": 2
+    }
+  },
+  "apps/mobile/src/modules/discover/SearchContent.tsx": {
+    "ts/no-use-before-define": {
+      "count": 2
+    }
+  },
+  "apps/mobile/src/modules/discover/ctx.tsx": {
+    "react-refresh/only-export-components": {
+      "count": 5
+    }
+  },
+  "apps/mobile/src/modules/discover/search-tabs/SearchList.tsx": {
+    "ts/no-use-before-define": {
+      "count": 1
+    }
+  },
+  "apps/mobile/src/modules/discover/search.tsx": {
+    "ts/no-use-before-define": {
+      "count": 6
+    }
+  },
+  "apps/mobile/src/modules/entry-content/EntryContentHeaderRightActions.tsx": {
+    "ts/no-use-before-define": {
+      "count": 1
+    }
+  },
+  "apps/mobile/src/modules/entry-content/EntryNavigationHeader.tsx": {
+    "ts/no-use-before-define": {
+      "count": 1
+    }
+  },
+  "apps/mobile/src/modules/entry-content/pull-up-navigation/use-pull-up-navigation.android.tsx": {
+    "react-refresh/only-export-components": {
+      "count": 1
+    }
+  },
+  "apps/mobile/src/modules/entry-list/EntryListContentArticle.tsx": {
+    "ts/no-use-before-define": {
+      "count": 1
+    }
+  },
+  "apps/mobile/src/modules/entry-list/EntryListContentPicture.tsx": {
+    "ts/no-use-before-define": {
+      "count": 8
+    }
+  },
+  "apps/mobile/src/modules/entry-list/EntryListContentSocial.tsx": {
+    "@eslint-react/hooks-extra/no-unnecessary-use-callback": {
+      "count": 1
+    }
+  },
+  "apps/mobile/src/modules/entry-list/EntryListContentVideo.tsx": {
+    "ts/no-use-before-define": {
+      "count": 2
+    }
+  },
+  "apps/mobile/src/modules/entry-list/EntryListSelector.tsx": {
+    "react-refresh/only-export-components": {
+      "count": 2
+    },
+    "ts/no-use-before-define": {
+      "count": 1
+    }
+  },
+  "apps/mobile/src/modules/entry-list/index.tsx": {
+    "ts/no-use-before-define": {
+      "count": 2
+    }
+  },
+  "apps/mobile/src/modules/entry-list/templates/EntryNormalItem.tsx": {
+    "ts/no-use-before-define": {
+      "count": 4
+    }
+  },
+  "apps/mobile/src/modules/entry-list/templates/EntryPictureItem.tsx": {
+    "ts/no-use-before-define": {
+      "count": 1
+    }
+  },
+  "apps/mobile/src/modules/entry-list/templates/EntrySocialItem.tsx": {
+    "ts/no-use-before-define": {
+      "count": 1
+    }
+  },
+  "apps/mobile/src/modules/entry-list/templates/EntryVideoItem.tsx": {
+    "ts/no-use-before-define": {
+      "count": 2
+    }
+  },
+  "apps/mobile/src/modules/list/FollowList.tsx": {
+    "ts/no-use-before-define": {
+      "count": 2
+    }
+  },
+  "apps/mobile/src/modules/login/email.tsx": {
+    "ts/ban-ts-comment": {
+      "count": 1
+    }
+  },
+  "apps/mobile/src/modules/login/index.tsx": {
+    "ts/no-use-before-define": {
+      "count": 2
+    }
+  },
+  "apps/mobile/src/modules/onboarding/step-preferences.tsx": {
+    "ts/no-use-before-define": {
+      "count": 8
+    }
+  },
+  "apps/mobile/src/modules/player/GlassPlayerTabBar.tsx": {
+    "ts/no-use-before-define": {
+      "count": 1
+    }
+  },
+  "apps/mobile/src/modules/player/control.tsx": {
+    "ts/no-use-before-define": {
+      "count": 4
+    }
+  },
+  "apps/mobile/src/modules/rsshub/preview-url.tsx": {
+    "no-console": {
+      "count": 1
+    }
+  },
+  "apps/mobile/src/modules/screen/PagerList.tsx": {
+    "ts/no-use-before-define": {
+      "count": 1
+    }
+  },
+  "apps/mobile/src/modules/screen/TimelineSelectorProvider.tsx": {
+    "ts/no-use-before-define": {
+      "count": 1
+    }
+  },
+  "apps/mobile/src/modules/screen/action.tsx": {
+    "ts/no-use-before-define": {
+      "count": 1
+    }
+  },
+  "apps/mobile/src/modules/screen/atoms.ts": {
+    "ts/no-use-before-define": {
+      "count": 1
+    }
+  },
+  "apps/mobile/src/modules/settings/components/OTPWindow.tsx": {
+    "ts/no-use-before-define": {
+      "count": 2
+    }
+  },
+  "apps/mobile/src/modules/settings/routes/Account.tsx": {
+    "ts/no-use-before-define": {
+      "count": 2
+    }
+  },
+  "apps/mobile/src/modules/settings/routes/Actions.tsx": {
+    "ts/no-use-before-define": {
+      "count": 7
+    }
+  },
+  "apps/mobile/src/modules/settings/routes/EditProfile.tsx": {
+    "ts/no-use-before-define": {
+      "count": 2
+    }
+  },
+  "apps/mobile/src/modules/settings/routes/EditRule.tsx": {
+    "ts/no-use-before-define": {
+      "count": 5
+    }
+  },
+  "apps/mobile/src/modules/settings/routes/Lists.tsx": {
+    "ts/no-use-before-define": {
+      "count": 7
+    }
+  },
+  "apps/mobile/src/modules/settings/routes/ManageList.tsx": {
+    "ts/no-use-before-define": {
+      "count": 3
+    }
+  },
+  "apps/mobile/src/modules/settings/routes/Plan.tsx": {
+    "ts/no-use-before-define": {
+      "count": 3
+    }
+  },
+  "apps/mobile/src/modules/subscription/SubscriptionLists.tsx": {
+    "ts/no-use-before-define": {
+      "count": 5
+    }
+  },
+  "apps/mobile/src/modules/subscription/items/ListSubscriptionItem.tsx": {
+    "ts/no-use-before-define": {
+      "count": 3
+    }
+  },
+  "apps/mobile/src/providers/ServerConfigsLoader.tsx": {
+    "ts/no-use-before-define": {
+      "count": 1
+    }
+  },
+  "apps/mobile/src/providers/index.tsx": {
+    "@eslint-react/no-missing-key": {
+      "count": 1
+    },
+    "react/no-missing-key": {
+      "count": 13
+    },
+    "ts/no-use-before-define": {
+      "count": 1
+    }
+  },
+  "apps/mobile/src/screens/(headless)/(debug)/text.tsx": {
+    "ts/no-use-before-define": {
+      "count": 1
+    }
+  },
+  "apps/mobile/src/screens/(headless)/DebugScreen.tsx": {
+    "ts/no-use-before-define": {
+      "count": 15
+    }
+  },
+  "apps/mobile/src/screens/(modal)/ForgetPasswordScreen.tsx": {
+    "ts/no-use-before-define": {
+      "count": 1
+    }
+  },
+  "apps/mobile/src/screens/(modal)/ListScreen.tsx": {
+    "ts/no-use-before-define": {
+      "count": 1
+    }
+  },
+  "apps/mobile/src/screens/(modal)/ProfileScreen.tsx": {
+    "ts/no-use-before-define": {
+      "count": 8
+    }
+  },
+  "apps/mobile/src/screens/(modal)/RsshubFormScreen.tsx": {
+    "no-console": {
+      "count": 1
+    },
+    "ts/no-use-before-define": {
+      "count": 5
+    }
+  },
+  "apps/mobile/src/screens/(modal)/onboarding/SelectReadingModeScreen.tsx": {
+    "ts/no-use-before-define": {
+      "count": 6
+    }
+  },
+  "apps/mobile/src/screens/(stack)/(tabs)/settings.tsx": {
+    "ts/no-use-before-define": {
+      "count": 2
+    }
+  },
+  "apps/mobile/src/screens/(stack)/(tabs)/subscriptions.tsx": {
+    "ts/no-use-before-define": {
+      "count": 1
+    }
+  },
+  "apps/mobile/src/screens/(stack)/entries/[entryId]/EntryDetailScreen.tsx": {
+    "ts/no-use-before-define": {
+      "count": 3
+    }
+  },
+  "apps/mobile/src/sitemap.tsx": {
+    "react-refresh/only-export-components": {
+      "count": 1
+    },
+    "ts/no-use-before-define": {
+      "count": 1
+    }
+  },
+  "apps/mobile/tailwind.config.ts": {
+    "ts/no-require-imports": {
+      "count": 2
+    }
+  },
+  "apps/mobile/web-app/html-renderer/src/common/WrappedElementProvider.tsx": {
+    "react-refresh/only-export-components": {
+      "count": 4
+    },
+    "ts/no-use-before-define": {
+      "count": 3
+    }
+  },
+  "apps/mobile/web-app/html-renderer/src/components/shiki/Shiki.tsx": {
+    "ts/no-use-before-define": {
+      "count": 1
+    }
+  },
+  "apps/mobile/web-app/html-renderer/src/managers/webview-bridge.ts": {
+    "ts/ban-ts-comment": {
+      "count": 2
+    }
+  },
+  "apps/mobile/web-app/html-renderer/src/parser.tsx": {
+    "react-refresh/only-export-components": {
+      "count": 1
+    }
+  },
+  "apps/ssr/api/index.ts": {
+    "ts/ban-ts-comment": {
+      "count": 1
+    }
+  },
+  "apps/ssr/client/atoms/settings/helper.ts": {
+    "ts/ban-ts-comment": {
+      "count": 1
+    }
+  },
+  "apps/ssr/client/components/items/grid.tsx": {
+    "ts/no-use-before-define": {
+      "count": 1
+    }
+  },
+  "apps/ssr/client/components/items/index.tsx": {
+    "ts/no-use-before-define": {
+      "count": 1
+    }
+  },
+  "apps/ssr/client/components/items/picture.tsx": {
+    "@eslint-react/no-context-provider": {
+      "count": 1
+    },
+    "ts/no-use-before-define": {
+      "count": 3
+    }
+  },
+  "apps/ssr/client/i18n.ts": {
+    "no-console": {
+      "count": 1
+    }
+  },
+  "apps/ssr/client/initialize/sentry.ts": {
+    "ts/no-use-before-define": {
+      "count": 1
+    }
+  },
+  "apps/ssr/client/lib/helper.ts": {
+    "no-console": {
+      "count": 1
+    },
+    "ts/no-use-before-define": {
+      "count": 1
+    }
+  },
+  "apps/ssr/client/pages/(login)/layout.tsx": {
+    "ts/no-use-before-define": {
+      "count": 1
+    }
+  },
+  "apps/ssr/client/pages/(main)/share/users/[id]/index.tsx": {
+    "ts/no-use-before-define": {
+      "count": 3
+    }
+  },
+  "apps/ssr/client/pages/(main)/share/users/[id]/metadata.ts": {
+    "prefer-promise-reject-errors": {
+      "count": 2
+    }
+  },
+  "apps/ssr/client/providers/root-providers.tsx": {
+    "ts/no-use-before-define": {
+      "count": 2
+    }
+  },
+  "apps/ssr/client/router.tsx": {
+    "ts/ban-ts-comment": {
+      "count": 1
+    }
+  },
+  "apps/ssr/global.ts": {
+    "node/prefer-global/process": {
+      "count": 1
+    }
+  },
+  "apps/ssr/helper/meta-map.ts": {
+    "no-console": {
+      "count": 5
+    },
+    "node/prefer-global/process": {
+      "count": 3
+    }
+  },
+  "apps/ssr/index.ts": {
+    "no-console": {
+      "count": 2
+    },
+    "node/prefer-global/process": {
+      "count": 1
+    }
+  },
+  "apps/ssr/postcss.config.cjs": {
+    "node/prefer-global/process": {
+      "count": 1
+    }
+  },
+  "apps/ssr/src/lib/api-client.ts": {
+    "no-console": {
+      "count": 1
+    },
+    "ts/no-use-before-define": {
+      "count": 1
+    }
+  },
+  "apps/ssr/src/lib/dev-vite.ts": {
+    "ts/ban-ts-comment": {
+      "count": 1
+    }
+  },
+  "apps/ssr/src/lib/og/fonts.ts": {
+    "import/no-mutable-exports": {
+      "count": 1
+    }
+  },
+  "apps/ssr/src/router/global.ts": {
+    "ts/ban-ts-comment": {
+      "count": 1
+    }
+  },
+  "apps/ssr/src/router/og/__base.tsx": {
+    "node/prefer-global/buffer": {
+      "count": 1
+    },
+    "react-refresh/only-export-components": {
+      "count": 1
+    }
+  },
+  "apps/ssr/src/router/og/feed.tsx": {
+    "no-throw-literal": {
+      "count": 1
+    }
+  },
+  "apps/ssr/src/router/og/index.ts": {
+    "node/prefer-global/buffer": {
+      "count": 1
+    },
+    "ts/no-use-before-define": {
+      "count": 1
+    }
+  },
+  "apps/ssr/src/router/og/list.tsx": {
+    "no-throw-literal": {
+      "count": 1
+    }
+  },
+  "apps/ssr/src/router/og/user.tsx": {
+    "no-throw-literal": {
+      "count": 1
+    }
+  },
+  "apps/ssr/tsdown.config.ts": {
+    "node/prefer-global/process": {
+      "count": 2
+    }
+  },
+  "apps/ssr/worker-entry.ts": {
+    "node/prefer-global/buffer": {
+      "count": 1
+    },
+    "node/prefer-global/process": {
+      "count": 1
+    },
+    "ts/ban-ts-comment": {
+      "count": 1
+    }
+  },
+  "changelogithub.config.ts": {
+    "node/prefer-global/process": {
+      "count": 1
+    }
+  },
+  "packages/configs/tailwindcss/tw-css-plugin.js": {
+    "node/no-deprecated-api": {
+      "count": 1
+    }
+  },
+  "packages/configs/tailwindcss/web.ts": {
+    "ts/no-require-imports": {
+      "count": 6
+    }
+  },
+  "packages/internal/atoms/src/helper/setting.ts": {
+    "ts/ban-ts-comment": {
+      "count": 1
+    }
+  },
+  "packages/internal/components/src/common/Focusable/Focusable.tsx": {
+    "no-console": {
+      "count": 1
+    },
+    "ts/no-use-before-define": {
+      "count": 1
+    }
+  },
+  "packages/internal/components/src/common/Focusable/GlobalFocusableProvider.tsx": {
+    "no-console": {
+      "count": 1
+    }
+  },
+  "packages/internal/components/src/common/Focusable/hooks.ts": {
+    "ts/no-use-before-define": {
+      "count": 1
+    }
+  },
+  "packages/internal/components/src/providers/stable-router-provider.tsx": {
+    "@typescript-eslint/no-empty-object-type": {
+      "count": 1
+    }
+  },
+  "packages/internal/components/src/ui/button/action-button.tsx": {
+    "ts/no-use-before-define": {
+      "count": 2
+    }
+  },
+  "packages/internal/components/src/ui/collapse/Collapse.tsx": {
+    "ts/no-use-before-define": {
+      "count": 2
+    }
+  },
+  "packages/internal/components/src/ui/collapse/CollapseCss.tsx": {
+    "ts/no-use-before-define": {
+      "count": 2
+    }
+  },
+  "packages/internal/components/src/ui/form/index.tsx": {
+    "react-refresh/only-export-components": {
+      "count": 1
+    },
+    "ts/no-use-before-define": {
+      "count": 1
+    }
+  },
+  "packages/internal/components/src/ui/input/TextAreaWrapper.tsx": {
+    "react-refresh/only-export-components": {
+      "count": 1
+    }
+  },
+  "packages/internal/components/src/ui/kbd/Kbd.tsx": {
+    "ts/ban-ts-comment": {
+      "count": 2
+    },
+    "ts/no-use-before-define": {
+      "count": 4
+    }
+  },
+  "packages/internal/components/src/ui/navigation-menu/index.tsx": {
+    "ts/no-use-before-define": {
+      "count": 1
+    }
+  },
+  "packages/internal/components/src/ui/platform-icon/utils.tsx": {
+    "ts/no-use-before-define": {
+      "count": 1
+    }
+  },
+  "packages/internal/components/src/ui/portal/provider.tsx": {
+    "ts/no-use-before-define": {
+      "count": 1
+    }
+  },
+  "packages/internal/components/src/ui/radio-group/context.ts": {
+    "ts/no-redeclare": {
+      "count": 1
+    }
+  },
+  "packages/internal/components/src/ui/segment/index.tsx": {
+    "@eslint-react/no-context-provider": {
+      "count": 1
+    }
+  },
+  "packages/internal/components/src/utils/parse-markdown.tsx": {
+    "ts/ban-ts-comment": {
+      "count": 1
+    }
+  },
+  "packages/internal/database/src/db.desktop.ts": {
+    "import/no-mutable-exports": {
+      "count": 1
+    },
+    "ts/ban-ts-comment": {
+      "count": 3
+    }
+  },
+  "packages/internal/database/src/db.rn.ts": {
+    "import/no-mutable-exports": {
+      "count": 2
+    }
+  },
+  "packages/internal/hooks/src/useMeasure.ts": {
+    "ts/no-use-before-define": {
+      "count": 1
+    }
+  },
+  "packages/internal/hooks/src/useRefValue.ts": {
+    "@typescript-eslint/no-unsafe-function-type": {
+      "count": 1
+    },
+    "ts/no-unsafe-function-type": {
+      "count": 1
+    }
+  },
+  "packages/internal/shared/src/auth.ts": {
+    "ts/no-use-before-define": {
+      "count": 1
+    }
+  },
+  "packages/internal/shared/src/bridge.ts": {
+    "ts/ban-ts-comment": {
+      "count": 3
+    }
+  },
+  "packages/internal/shared/src/constants.ts": {
+    "no-shadow-restricted-names": {
+      "count": 1
+    },
+    "node/prefer-global/process": {
+      "count": 5
+    }
+  },
+  "packages/internal/shared/src/env.desktop.ts": {
+    "no-shadow-restricted-names": {
+      "count": 1
+    },
+    "node/prefer-global/process": {
+      "count": 3
+    },
+    "ts/no-use-before-define": {
+      "count": 1
+    }
+  },
+  "packages/internal/shared/src/env.rn.ts": {
+    "node/prefer-global/process": {
+      "count": 1
+    },
+    "ts/no-use-before-define": {
+      "count": 1
+    }
+  },
+  "packages/internal/shared/src/env.ssr.ts": {
+    "node/prefer-global/process": {
+      "count": 3
+    }
+  },
+  "packages/internal/shared/src/event.ts": {
+    "ts/no-use-before-define": {
+      "count": 1
+    }
+  },
+  "packages/internal/store/src/lib/helper.ts": {
+    "no-shadow-restricted-names": {
+      "count": 1
+    }
+  },
+  "packages/internal/store/src/modules/action/store.ts": {
+    "ts/no-use-before-define": {
+      "count": 3
+    }
+  },
+  "packages/internal/store/src/modules/collection/store.ts": {
+    "ts/no-use-before-define": {
+      "count": 5
+    }
+  },
+  "packages/internal/store/src/modules/entry/store.ts": {
+    "ts/no-use-before-define": {
+      "count": 9
+    }
+  },
+  "packages/internal/store/src/modules/feed/hooks.ts": {
+    "ts/ban-ts-comment": {
+      "count": 2
+    }
+  },
+  "packages/internal/store/src/modules/feed/store.ts": {
+    "ts/no-use-before-define": {
+      "count": 6
+    }
+  },
+  "packages/internal/store/src/modules/image/store.ts": {
+    "ts/no-use-before-define": {
+      "count": 1
+    }
+  },
+  "packages/internal/store/src/modules/inbox/store.ts": {
+    "ts/no-use-before-define": {
+      "count": 7
+    }
+  },
+  "packages/internal/store/src/modules/list/store.ts": {
+    "ts/no-use-before-define": {
+      "count": 1
+    }
+  },
+  "packages/internal/store/src/modules/subscription/store.ts": {
+    "ts/no-use-before-define": {
+      "count": 3
+    }
+  },
+  "packages/internal/store/src/modules/translation/store.ts": {
+    "ts/no-use-before-define": {
+      "count": 1
+    }
+  },
+  "packages/internal/store/src/modules/unread/store.ts": {
+    "ts/no-use-before-define": {
+      "count": 8
+    }
+  },
+  "packages/internal/store/src/modules/user/store.ts": {
+    "ts/no-use-before-define": {
+      "count": 4
+    }
+  },
+  "packages/internal/store/src/morph/store-db.ts": {
+    "ts/no-use-before-define": {
+      "count": 1
+    }
+  },
+  "packages/internal/tracker/src/manager.ts": {
+    "no-console": {
+      "count": 1
+    }
+  },
+  "packages/internal/tracker/src/op/index.ts": {
+    "node/prefer-global/process": {
+      "count": 1
+    },
+    "ts/ban-ts-comment": {
+      "count": 1
+    }
+  },
+  "packages/internal/tracker/src/utils.ts": {
+    "ts/no-use-before-define": {
+      "count": 1
+    }
+  },
+  "packages/internal/utils/src/chain.ts": {
+    "no-throw-literal": {
+      "count": 1
+    }
+  },
+  "packages/internal/utils/src/event-bus.rn.ts": {
+    "@typescript-eslint/no-empty-object-type": {
+      "count": 1
+    }
+  },
+  "packages/internal/utils/src/event-bus.ts": {
+    "@typescript-eslint/no-empty-object-type": {
+      "count": 1
+    }
+  },
+  "packages/internal/utils/src/headers.ts": {
+    "node/prefer-global/process": {
+      "count": 3
+    }
+  },
+  "packages/internal/utils/src/jotai.ts": {
+    "ts/no-use-before-define": {
+      "count": 1
+    }
+  },
+  "packages/internal/utils/src/path-parser.test.ts": {
+    "test/no-identical-title": {
+      "count": 1
+    }
+  },
+  "packages/internal/utils/src/path-parser.ts": {
+    "ts/no-use-before-define": {
+      "count": 1
+    }
+  },
+  "packages/internal/utils/src/scroller.ts": {
+    "ts/no-use-before-define": {
+      "count": 2
+    }
+  },
+  "packages/internal/utils/src/utils.ts": {
+    "ts/ban-ts-comment": {
+      "count": 1
+    }
+  },
+  "packages/internal/utils/vitest.config.ts": {
+    "node/prefer-global/process": {
+      "count": 2
+    }
+  },
+  "packages/readability/src/index.ts": {
+    "node/prefer-global/buffer": {
+      "count": 1
+    },
+    "node/prefer-global/process": {
+      "count": 1
+    },
+    "ts/no-use-before-define": {
+      "count": 2
+    }
+  },
+  "scripts/svg-to-rn.ts": {
+    "node/prefer-global/process": {
+      "count": 2
+    }
+  }
+}

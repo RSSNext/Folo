@@ -320,7 +320,7 @@ export class TrackerManager {
 
     while (attempts < maxRetries) {
       try {
-        await new Promise((resolve) => setTimeout(resolve, 1000 * Math.pow(2, attempts))) // Exponential backoff
+        await new Promise((resolve) => setTimeout(resolve, 1000 * 2 ** attempts)) // Exponential backoff
         await operation()
         return
       } catch (error) {

@@ -18,15 +18,15 @@ Perform a regular mobile release. This skill handles the full release workflow f
 ## Step 1: Gather changes since last release
 
 1. Find the last release tag (both old `mobile@` and new `mobile/v` prefixes exist):
-   ```bash
+   ```sh
    git tag --sort=-creatordate | grep -E '^mobile[@/]' | head -1
    ```
 2. If no tag found, find the last release commit by matching only the subject line:
-   ```bash
+   ```sh
    git log --format="%H %s" | grep "^[a-f0-9]* release(mobile): release v" | head -1 | awk '{print $1}'
    ```
 3. Get all commits since the last release on the current branch:
-   ```bash
+   ```sh
    git log <last-tag-or-commit>..HEAD --oneline --no-merges
    ```
 4. Categorize commits into:
@@ -42,7 +42,7 @@ Perform a regular mobile release. This skill handles the full release workflow f
 3. Wait for user confirmation or edits before writing.
 4. Write the final content to `apps/mobile/changelog/next.md`, following the template format:
 
-   ```markdown
+   ```md
    # What's New in vNEXT_VERSION
 
    ## Shiny new things
@@ -69,11 +69,11 @@ Perform a regular mobile release. This skill handles the full release workflow f
 `nbump` requires a clean working tree. Commit changelog edits before running bump.
 
 1. Stage the changelog update:
-   ```bash
+   ```sh
    git add apps/mobile/changelog/next.md
    ```
 2. Commit it on `dev`:
-   ```bash
+   ```sh
    git commit -m "docs(mobile): prepare release changelog"
    ```
 3. If there are no changes to commit, continue without creating an extra commit.
@@ -81,11 +81,11 @@ Perform a regular mobile release. This skill handles the full release workflow f
 ## Step 4: Execute bump
 
 1. Verify working tree is clean before bump:
-   ```bash
+   ```sh
    git status --short
    ```
 2. Change directory to `apps/mobile/` and run the bump:
-   ```bash
+   ```sh
    cd apps/mobile && pnpm bump
    ```
 3. This is an interactive `nbump` command that prompts for version selection. It will:

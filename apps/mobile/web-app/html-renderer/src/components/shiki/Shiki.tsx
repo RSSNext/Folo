@@ -163,7 +163,7 @@ const ShikiCode: FC<
       className={clsx(
         "group relative -mx-3 my-4",
         styles["shiki-wrapper"],
-        transparent ? styles["transparent"] : null,
+        transparent ? styles.transparent : null,
         className,
       )}
     >

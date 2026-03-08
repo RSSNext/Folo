@@ -80,8 +80,7 @@ export function useLongPress({
     const currentY = touch.clientY + window.scrollY
 
     const moveOffset = Math.sqrt(
-      Math.pow(currentX - startPosition.current.x, 2) +
-        Math.pow(currentY - startPosition.current.y, 2),
+      (currentX - startPosition.current.x) ** 2 + (currentY - startPosition.current.y) ** 2,
     )
 
     if (moveOffset > 10) {

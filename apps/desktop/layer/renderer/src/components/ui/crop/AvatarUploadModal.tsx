@@ -168,8 +168,8 @@ export const AvatarUploadModal = ({
       const imageAspectRatio = img.naturalWidth / img.naturalHeight
       const containerAspectRatio = containerWidth / containerHeight
 
-      let displayWidth = 0,
-        displayHeight = 0
+      let displayWidth = 0
+      let displayHeight = 0
 
       if (imageAspectRatio > containerAspectRatio) {
         // The image is wider, use the container width
@@ -342,10 +342,10 @@ export const AvatarUploadModal = ({
     const imageAspectRatio = img.naturalWidth / img.naturalHeight
     const containerAspectRatio = containerWidth / containerHeight
 
-    let displayWidth = 0,
-      displayHeight = 0,
-      offsetX = 0,
-      offsetY = 0
+    let displayWidth = 0
+    let displayHeight = 0
+    let offsetX = 0
+    let offsetY = 0
 
     if (imageAspectRatio > containerAspectRatio) {
       // The image is wider, use the container width

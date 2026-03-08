@@ -13,88 +13,88 @@
   "exports": {
     "./action/*": {
       "types": "./src/modules/action/*.ts",
-      "require": "./src/modules/action/*.ts",
-      "import": "./src/modules/action/*.ts"
+      "import": "./src/modules/action/*.ts",
+      "require": "./src/modules/action/*.ts"
     },
     "./collection/*": {
       "types": "./src/modules/collection/*.ts",
-      "require": "./src/modules/collection/*.ts",
-      "import": "./src/modules/collection/*.ts"
+      "import": "./src/modules/collection/*.ts",
+      "require": "./src/modules/collection/*.ts"
     },
     "./constants/*": {
       "types": "./src/constants/*.ts",
-      "require": "./src/constants/*.ts",
-      "import": "./src/constants/*.ts"
+      "import": "./src/constants/*.ts",
+      "require": "./src/constants/*.ts"
     },
     "./context": {
       "types": "./src/context.ts",
-      "require": "./src/context.ts",
-      "import": "./src/context.ts"
+      "import": "./src/context.ts",
+      "require": "./src/context.ts"
     },
     "./entry/*": {
       "types": "./src/modules/entry/*.ts",
-      "require": "./src/modules/entry/*.ts",
-      "import": "./src/modules/entry/*.ts"
+      "import": "./src/modules/entry/*.ts",
+      "require": "./src/modules/entry/*.ts"
     },
     "./feed/*": {
       "types": "./src/modules/feed/*.ts",
-      "require": "./src/modules/feed/*.ts",
-      "import": "./src/modules/feed/*.ts"
+      "import": "./src/modules/feed/*.ts",
+      "require": "./src/modules/feed/*.ts"
     },
     "./hydrate": {
       "types": "./src/hydrate.ts",
-      "require": "./src/hydrate.ts",
-      "import": "./src/hydrate.ts"
+      "import": "./src/hydrate.ts",
+      "require": "./src/hydrate.ts"
     },
     "./image/*": {
       "types": "./src/modules/image/*.ts",
-      "require": "./src/modules/image/*.ts",
-      "import": "./src/modules/image/*.ts"
+      "import": "./src/modules/image/*.ts",
+      "require": "./src/modules/image/*.ts"
     },
     "./inbox/*": {
       "types": "./src/modules/inbox/*.ts",
-      "require": "./src/modules/inbox/*.ts",
-      "import": "./src/modules/inbox/*.ts"
+      "import": "./src/modules/inbox/*.ts",
+      "require": "./src/modules/inbox/*.ts"
     },
     "./list/*": {
       "types": "./src/modules/list/*.ts",
-      "require": "./src/modules/list/*.ts",
-      "import": "./src/modules/list/*.ts"
+      "import": "./src/modules/list/*.ts",
+      "require": "./src/modules/list/*.ts"
     },
     "./morph": {
       "types": "./src/morph/*.ts",
-      "require": "./src/morph/*.ts",
-      "import": "./src/morph/*.ts"
+      "import": "./src/morph/*.ts",
+      "require": "./src/morph/*.ts"
     },
     "./reset": {
       "types": "./src/reset.ts",
-      "require": "./src/reset.ts",
-      "import": "./src/reset.ts"
+      "import": "./src/reset.ts",
+      "require": "./src/reset.ts"
     },
     "./subscription/*": {
       "types": "./src/modules/subscription/*.ts",
-      "require": "./src/modules/subscription/*.ts",
-      "import": "./src/modules/subscription/*.ts"
+      "import": "./src/modules/subscription/*.ts",
+      "require": "./src/modules/subscription/*.ts"
     },
     "./summary/*": {
       "types": "./src/modules/summary/*.ts",
-      "require": "./src/modules/summary/*.ts",
-      "import": "./src/modules/summary/*.ts"
+      "import": "./src/modules/summary/*.ts",
+      "require": "./src/modules/summary/*.ts"
     },
     "./translation/*": {
       "types": "./src/modules/translation/*.ts",
-      "require": "./src/modules/translation/*.ts",
-      "import": "./src/modules/translation/*.ts"
+      "import": "./src/modules/translation/*.ts",
+      "require": "./src/modules/translation/*.ts"
     },
     "./unread/*": {
       "types": "./src/modules/unread/*.ts",
-      "require": "./src/modules/unread/*.ts",
-      "import": "./src/modules/unread/*.ts"
+      "import": "./src/modules/unread/*.ts",
+      "require": "./src/modules/unread/*.ts"
     },
     "./user/*": {
       "types": "./src/modules/user/*.ts",
-      "require": "./src/modules/user/*.ts",
-      "import": "./src/modules/user/*.ts"
+      "import": "./src/modules/user/*.ts",
+      "require": "./src/modules/user/*.ts"
     }
   },
   "scripts": {

@@ -40,7 +40,7 @@ followClient.addRequestInterceptor(async (ctx) => {
   header["X-Client-Id"] = getClientId()
   header["X-Session-Id"] = getSessionId()
   header["User-Agent"] = await getUserAgent()
-  header["cookie"] = getCookie()
+  header.cookie = getCookie()
 
   const apiHeader = createMobileAPIHeaders({
     version: nativeApplicationVersion || "",

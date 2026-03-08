@@ -12,8 +12,8 @@ export function htmlInjectPlugin(env: typeof EnvType): PluginOption {
       ${function injectEnv(env: any) {
         for (const key in env) {
           if (env[key] === undefined) continue
-          globalThis["__followEnv"] ??= {}
-          globalThis["__followEnv"][key] = env[key]
+          globalThis.__followEnv ??= {}
+          globalThis.__followEnv[key] = env[key]
         }
       }.toString()}
       injectEnv(${JSON.stringify({

@@ -28,7 +28,6 @@ export function useIntentHandler() {
 
       if (searchParams === "refresh") {
         invalidateUserSession()
-        return
       } else {
         navigation.presentControllerView(FollowScreen, {
           id: searchParams.id ?? undefined,

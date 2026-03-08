@@ -88,7 +88,6 @@ export const VideoContextMenu = ({ entryId, children }: VideoContextMenuProps) =
               url: entry.url,
               title: entry.title || "Shared Video",
             })
-            return
           }}
         >
           <ContextMenu.ItemIcon

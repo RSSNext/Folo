@@ -2,9 +2,9 @@
   "extends": "@follow/configs/tsconfig.extend.json",
   "compilerOptions": {
     "baseUrl": ".",
+    "paths": {},
     "declaration": true,
-    "esModuleInterop": true,
-    "paths": {}
+    "esModuleInterop": true
   },
   "include": ["src/**/*"]
 }

@@ -95,7 +95,6 @@ export const openInFollowApp = ({
           window.location.href = fallbackUrl
         }
         resolve(false)
-        return
       }
     }, timeout)
   })

@@ -57,7 +57,7 @@ export const BuiltOpen: Component = () => {
 
             {/* Tech stack chips */}
             <div className="flex flex-col mt-6">
-              <div className=" flex flex-row">
+              <div className="flex flex-row">
                 <DesignGuideLine axis="x" />
                 <ul className="flex flex-wrap gap-2 text-xs text-text-secondary">
                   {STACK.map((s) => (

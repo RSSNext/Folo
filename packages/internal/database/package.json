@@ -13,18 +13,18 @@
   "exports": {
     "./*": {
       "types": "./src/*.ts",
-      "require": "./src/*.ts",
-      "import": "./src/*.ts"
+      "import": "./src/*.ts",
+      "require": "./src/*.ts"
     },
     "./schemas/*": {
       "types": "./src/schemas/*.ts",
-      "require": "./src/schemas/*.ts",
-      "import": "./src/schemas/*.ts"
+      "import": "./src/schemas/*.ts",
+      "require": "./src/schemas/*.ts"
     },
     "./services/*": {
       "types": "./src/services/*.ts",
-      "require": "./src/services/*.ts",
-      "import": "./src/services/*.ts"
+      "import": "./src/services/*.ts",
+      "require": "./src/services/*.ts"
     }
   },
   "scripts": {

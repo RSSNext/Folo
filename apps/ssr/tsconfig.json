@@ -1,31 +1,31 @@
 {
   "compilerOptions": {
-    "lib": ["dom", "dom.iterable", "esnext"],
-    "target": "ES2022",
-    "allowJs": true,
-    "skipLibCheck": true,
-    "strict": true,
-    "noUncheckedIndexedAccess": true,
-    "noImplicitOverride": true,
-    "noEmit": true,
-    "moduleResolution": "Bundler",
-    "esModuleInterop": true,
-    "module": "esnext",
-    "resolveJsonModule": true,
-    "isolatedModules": true,
-    "jsx": "react",
     "incremental": true,
-    "types": ["vite/client", "@follow/types/react", "@follow/types/global"],
-    "plugins": [
-      {
-        "name": "next"
-      }
-    ],
+    "target": "ES2022",
+    "jsx": "react",
+    "lib": ["dom", "dom.iterable", "esnext"],
+    "module": "esnext",
+    "moduleResolution": "Bundler",
     "paths": {
       "@src/*": ["./src/*"],
       "@client/*": ["./client/*"],
       "@locales/*": ["../../locales/*"]
-    }
+    },
+    "resolveJsonModule": true,
+    "types": ["vite/client", "@follow/types/react", "@follow/types/global"],
+    "allowJs": true,
+    "strict": true,
+    "noImplicitOverride": true,
+    "noUncheckedIndexedAccess": true,
+    "noEmit": true,
+    "esModuleInterop": true,
+    "isolatedModules": true,
+    "skipLibCheck": true,
+    "plugins": [
+      {
+        "name": "next"
+      }
+    ]
   },
   "include": [
     "./src/**/*.ts",

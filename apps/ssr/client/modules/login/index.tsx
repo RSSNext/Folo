@@ -396,7 +396,6 @@ function LoginWithPassword() {
         form.setValue("code", "")
         setTimeout(() => form.setFocus("code"), 0)
         setIsButtonLoading(false)
-        return
       } else {
         queryClient.invalidateQueries({ queryKey: ["auth", "session"] })
       }

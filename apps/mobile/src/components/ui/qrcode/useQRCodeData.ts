@@ -11,9 +11,7 @@ export default function useQRCodeData(
   const QRCodeData = useMemo(() => {
     try {
       return createQRCode(data, options)
-    } catch {
-      return
-    }
+    } catch {}
   }, [data, options])
 
   const { size: qrCodeSize = 0, bitMatrix = [] } = QRCodeData || {}

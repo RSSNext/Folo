@@ -209,7 +209,6 @@ const generateSubscriptionContextMenu = (navigation: Navigation, id: string) => 
               if (!feed) return
               setStringAsync(feed.url)
               toast.success(t("operation.copy_which_success", { which: t("operation.copy.link") }))
-              return
             }
           }
         }}

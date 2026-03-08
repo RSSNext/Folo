@@ -18,11 +18,11 @@ Perform a regular desktop release. This skill handles the full release workflow 
 ## Step 1: Gather changes since last release
 
 1. Find the last release tag:
-   ```bash
+   ```sh
    git tag --sort=-creatordate | grep '^desktop/v' | head -1
    ```
 2. Get all commits since that tag on the current branch:
-   ```bash
+   ```sh
    git log <last-tag>..HEAD --oneline --no-merges
    ```
 3. Categorize commits into:
@@ -38,7 +38,7 @@ Perform a regular desktop release. This skill handles the full release workflow 
 3. Wait for user confirmation or edits before writing.
 4. Write the final content to `apps/desktop/changelog/next.md`, following the template format:
 
-   ```markdown
+   ```md
    # What's new in vNEXT_VERSION
 
    ## Shiny new things
@@ -65,11 +65,11 @@ Perform a regular desktop release. This skill handles the full release workflow 
 `nbump` requires a clean working tree. Commit changelog edits before running bump.
 
 1. Stage the changelog update:
-   ```bash
+   ```sh
    git add apps/desktop/changelog/next.md
    ```
 2. Commit it on `dev`:
-   ```bash
+   ```sh
    git commit -m "docs(desktop): prepare release changelog"
    ```
 3. If there are no changes to commit, continue without creating an extra commit.
@@ -79,11 +79,11 @@ Perform a regular desktop release. This skill handles the full release workflow 
 This is critical for determining whether users need a full app update or can use the lightweight renderer hot update.
 
 1. Check what files changed in `apps/desktop/layer/main/` since the last release tag:
-   ```bash
+   ```sh
    git diff <last-tag>..HEAD --name-only -- apps/desktop/layer/main/
    ```
 2. Also check changes to `apps/desktop/package.json` fields other than version/mainHash (since package.json is included in the hash calculation):
-   ```bash
+   ```sh
    git diff <last-tag>..HEAD -- apps/desktop/package.json
    ```
 
@@ -104,11 +104,11 @@ Present your analysis to the user with:
 
 1. Save the current mainHash from `apps/desktop/package.json` for later comparison.
 2. Verify working tree is clean before bump:
-   ```bash
+   ```sh
    git status --short
    ```
 3. Change directory to `apps/desktop/` and run the bump:
-   ```bash
+   ```sh
    cd apps/desktop && pnpm bump
    ```
 4. This command will:
@@ -126,17 +126,17 @@ Present your analysis to the user with:
 If Step 4 decided mainHash should NOT be updated, restore the old value now. The bump has already committed, pushed, and created the PR on a new release branch, so we amend the commit and force push. This is safe because the release branch was just created.
 
 1. Change back to the repo root first (Step 5 left the working directory at `apps/desktop/`):
-   ```bash
+   ```sh
    cd ../..
    ```
 2. Ensure you are on the `release/desktop/{NEW_VERSION}` branch (bump should have switched to it).
 3. Replace the recalculated mainHash with the saved old value in `apps/desktop/package.json`.
 4. Stage and amend the release commit:
-   ```bash
+   ```sh
    git add apps/desktop/package.json && git commit --amend --no-edit
    ```
 5. Force push the release branch:
-   ```bash
+   ```sh
    git push --force origin release/desktop/{NEW_VERSION}
    ```
 

@@ -486,7 +486,7 @@ function wrapText(ctx: CanvasRenderingContext2D, text: string, maxWidth: number)
   const lines: string[] = []
 
   // Check if text contains Chinese/Japanese/Korean characters
-  const hasCJK = /[\u4e00-\u9fff\u3040-\u309f\u30a0-\u30ff\uac00-\ud7af]/.test(text)
+  const hasCJK = /[\u4E00-\u9FFF\u3040-\u309F\u30A0-\u30FF\uAC00-\uD7AF]/.test(text)
 
   if (hasCJK) {
     // For CJK text, split by character and build lines

@@ -59,76 +59,78 @@ const proxySize = {
   height: 0,
 }
 
-export const PictureWaterFallItem = memo(function PictureWaterFallItem({
-  entryId,
-  translation,
-  index,
-  className,
-}: UniversalItemProps & { index: number; className?: string }) {
-  const entry = useEntry(entryId, (state) => ({
-    media: state.media,
-    id: state.id,
-  }))
+export const PictureWaterFallItem = memo(
+  ({
+    entryId,
+    translation,
+    index,
+    className,
+  }: UniversalItemProps & { index: number; className?: string }) => {
+    const entry = useEntry(entryId, (state) => ({
+      media: state.media,
+      id: state.id,
+    }))
 
-  const isActive = useRouteParamsSelector(({ entryId }) => entryId === entry?.id)
-  const itemWidth = useMasonryItemWidth()
-  const isImageOnly = useUISettingKey("pictureViewImageOnly")
+    const isActive = useRouteParamsSelector(({ entryId }) => entryId === entry?.id)
+    const itemWidth = useMasonryItemWidth()
+    const isImageOnly = useUISettingKey("pictureViewImageOnly")
 
-  const [ref, setRef] = useState<HTMLDivElement | null>(null)
-  const intersectionObserver = use(MasonryIntersectionContext)
+    const [ref, setRef] = useState<HTMLDivElement | null>(null)
+    const intersectionObserver = use(MasonryIntersectionContext)
 
-  useEffect(() => {
-    if (!ref || !intersectionObserver) return
+    useEffect(() => {
+      if (!ref || !intersectionObserver) return
 
-    intersectionObserver.observe(ref)
+      intersectionObserver.observe(ref)
 
-    return () => {
-      intersectionObserver.unobserve(ref)
-    }
-  }, [ref, intersectionObserver])
+      return () => {
+        intersectionObserver.unobserve(ref)
+      }
+    }, [ref, intersectionObserver])
 
-  const media = entry?.media || []
+    const media = entry?.media || []
 
-  if (media?.length === 0) return null
-  if (!entry) return null
+    if (media?.length === 0) return null
+    if (!entry) return null
 
-  return (
-    <div ref={setRef} data-entry-id={entryId} data-index={index} className={className}>
-      <EntryItemWrapper
-        view={FeedViewType.Pictures}
-        entryId={entryId}
-        itemClassName="group rounded-md hover:bg-transparent"
-        style={{
-          width: itemWidth,
-        }}
-      >
-        {media && media.length > 0 ? (
-          <MasonryItemFixedDimensionWrapper url={media[0]!.url}>
-            <SwipeMedia
-              media={media}
-              className={cn(
-                "w-full grow rounded-md after:pointer-events-none after:absolute after:inset-0 after:bg-transparent after:transition-colors after:duration-300 group-hover:after:bg-black/20",
-                isActive && "rounded-b-none",
+    return (
+      <div ref={setRef} data-entry-id={entryId} data-index={index} className={className}>
+        <EntryItemWrapper
+          view={FeedViewType.Pictures}
+          entryId={entryId}
+          itemClassName="group rounded-md hover:bg-transparent"
+          style={{
+            width: itemWidth,
+          }}
+        >
+          {media && media.length > 0 ? (
+            <MasonryItemFixedDimensionWrapper url={media[0]!.url}>
+              <SwipeMedia
+                media={media}
+                className={cn(
+                  "w-full grow rounded-md after:pointer-events-none after:absolute after:inset-0 after:bg-transparent after:transition-colors after:duration-300 group-hover:after:bg-black/20",
+                  isActive && "rounded-b-none",
+                )}
+                proxySize={proxySize}
+                imgClassName="object-cover"
+              />
+              {!isImageOnly && (
+                <div className="z-[3] shrink-0 overflow-hidden rounded-b-md pb-1">
+                  <GridItemFooter entryId={entryId} translation={translation} />
+                </div>
               )}
-              proxySize={proxySize}
-              imgClassName="object-cover"
-            />
-            {!isImageOnly && (
-              <div className="z-[3] shrink-0 overflow-hidden rounded-b-md pb-1">
-                <GridItemFooter entryId={entryId} translation={translation} />
-              </div>
-            )}
-          </MasonryItemFixedDimensionWrapper>
-        ) : (
-          <div className="center aspect-video flex-col gap-1 rounded-md bg-material-medium text-xs text-text-secondary">
-            <i className="i-mgc-sad-cute-re size-6" />
-            No media available
-          </div>
-        )}
-      </EntryItemWrapper>
-    </div>
-  )
-})
+            </MasonryItemFixedDimensionWrapper>
+          ) : (
+            <div className="center aspect-video flex-col gap-1 rounded-md bg-material-medium text-xs text-text-secondary">
+              <i className="i-mgc-sad-cute-re size-6" />
+              No media available
+            </div>
+          )}
+        </EntryItemWrapper>
+      </div>
+    )
+  },
+)
 
 const MasonryItemFixedDimensionWrapper = (
   props: PropsWithChildren<{

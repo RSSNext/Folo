@@ -50,7 +50,6 @@ export const useNavigationScrollToTop = (
         animated: true,
       })
     }
-    return
   }, [attachNavigationScrollViewRef, overrideScrollerRef])
 }
 

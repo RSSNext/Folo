@@ -1,9 +1,9 @@
-import { describe, expect, test } from "vitest"
+import { describe, expect, it } from "vitest"
 
 import { doesTextContainHTML, isBizId, omitShallow, toScientificNotation } from "./utils"
 
 describe("utils", () => {
-  test("isBizId", () => {
+  it("isBizId", () => {
     expect(isBizId("1712546615000")).toBe(true)
     expect(isBizId("17125466150000")).toBe(true)
     expect(isBizId("171254661500000")).toBe(true)
@@ -27,7 +27,7 @@ describe("utils", () => {
     expect(isBizId("12345678901234567890")).toBe(false)
   })
 
-  test("toScientificNotation", () => {
+  it("toScientificNotation", () => {
     // Test numbers below threshold (should return original number)
     expect(toScientificNotation(123n, 3)).toBe("123.00")
     expect(toScientificNotation(999n, 3)).toBe("999.00")
@@ -79,14 +79,14 @@ describe("utils", () => {
     expect(toScientificNotation([60386874408275410679920n, 18], 6)).toBe("60,386.87")
   })
 
-  test("omitShallow", () => {
+  it("omitShallow", () => {
     expect(omitShallow({ a: 1, b: 2, c: 3 }, "a", "b")).toEqual({ c: 3 })
     expect(omitShallow(null)).toEqual(null)
     expect(omitShallow(void 0)).toEqual(void 0)
     expect(omitShallow([1, 2])).toEqual([1, 2])
   })
 
-  test("does text contain html", () => {
+  it("does text contain html", () => {
     expect(doesTextContainHTML("a<div>b</div>")).toBe(true)
     expect(doesTextContainHTML("Test")).toBe(false)
     expect(doesTextContainHTML("<p> </p>")).toBe(false)

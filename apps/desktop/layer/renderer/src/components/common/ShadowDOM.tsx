@@ -48,7 +48,7 @@ const cloneStylesElement = () => {
         createElement(MemoedDangerousHTMLStyle, {
           key,
           children: style.cssText,
-          ["data-href"]: style.ref.href,
+          "data-href": style.ref.href,
         }),
       )
     }

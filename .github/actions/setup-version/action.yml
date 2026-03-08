@@ -1,18 +1,18 @@
 name: Setup Version
-description: "Setup Version"
+description: Setup Version
 inputs:
   type:
     required: true
     description: "Type of the app, either 'desktop' or 'mobile'"
-    default: "desktop"
+    default: desktop
 outputs:
   APP_VERSION:
-    description: "App Version"
+    description: App Version
     value: ${{ steps.version.outputs.APP_VERSION }}
 runs:
-  using: "composite"
+  using: composite
   steps:
-    - name: "Write Version"
+    - name: Write Version
       id: version
       shell: bash
       run: |

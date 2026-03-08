@@ -92,7 +92,7 @@ export function SubscriptionColumn({
             setActive((_, i) => timelineList[clamp(i + dx, 0, timelineList.length - 1)]!)
             return true
           } else {
-            return
+            /* empty */
           }
         } else {
           return false

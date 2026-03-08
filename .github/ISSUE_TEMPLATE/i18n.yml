@@ -1,7 +1,7 @@
 name: 🌐 Internationalization (i18n)
 description: Contribute to or report issues with translations
 title: "[i18n]: "
-labels: ["i18n", "triage"]
+labels: [i18n, triage]
 body:
   - type: markdown
     attributes:

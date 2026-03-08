@@ -34,7 +34,7 @@
   </p>
 </div>
 
-As they say, your thoughts are what you read—and we’ve been consuming noisy feeds for too long! Folo organizes content into one timeline, keeping you updated on what matters, noise-free. Share lists, explore collections, and enjoy distraction-free browsing.
+As they say, your thoughts are what you read—and we've been consuming noisy feeds for too long! Folo organizes content into one timeline, keeping you updated on what matters, noise-free. Share lists, explore collections, and enjoy distraction-free browsing.
 
 ## 👋🏻 Getting Started & Join Our Community
 
@@ -97,7 +97,7 @@ Because we know content is more than just text. From articles to videos, images 
 
 ### More Than Just An App
 
-This isn’t just another app. Folo is a community — introducing a new era of openness and community-driven experience.
+This isn't just another app. Folo is a community — introducing a new era of openness and community-driven experience.
 
 ![](https://github.com/user-attachments/assets/62004a04-eaea-4f5d-bfbf-4e68b6b90286)
 

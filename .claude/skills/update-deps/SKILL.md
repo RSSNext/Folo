@@ -108,7 +108,7 @@ After all updates are applied:
 
 Run these commands sequentially in the repo root and capture results:
 
-```bash
+```sh
 pnpm install
 pnpm typecheck
 pnpm test
@@ -119,7 +119,7 @@ pnpm lint
 
 Run these commands sequentially in `BACKEND_DIR` and capture results:
 
-```bash
+```sh
 pnpm install
 pnpm typecheck
 pnpm test

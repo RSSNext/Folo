@@ -16,7 +16,7 @@ export const AIHeaderTitle = ({
   ...buttonProps
 }: AIHeaderTitleProps & { ref?: React.RefObject<HTMLButtonElement | null> }) => {
   const displayTitle = title || placeholder
-  const { ["aria-label"]: ariaLabelProp, ...restButtonProps } = buttonProps
+  const { "aria-label": ariaLabelProp, ...restButtonProps } = buttonProps
   const ariaLabel = ariaLabelProp ?? displayTitle
 
   return (

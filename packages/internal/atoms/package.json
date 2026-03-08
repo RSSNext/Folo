@@ -4,12 +4,12 @@
   "sideEffects": false,
   "exports": {
     "./atoms/*": {
-      "import": "./src/atoms/*",
-      "types": "./src/atoms/*"
+      "types": "./src/atoms/*",
+      "import": "./src/atoms/*"
     },
     "./helper/*": {
-      "import": "./src/helper/*",
-      "types": "./src/helper/*"
+      "types": "./src/helper/*",
+      "import": "./src/helper/*"
     }
   },
   "scripts": {

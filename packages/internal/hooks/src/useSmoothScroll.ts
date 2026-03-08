@@ -32,7 +32,7 @@ export const useSmoothScroll = () => {
 
       // Easing function similar to Vimium's smooth scrolling - ease out cubic for natural feel
       const easeOutCubic = (t: number): number => {
-        return 1 - Math.pow(1 - t, 3)
+        return 1 - (1 - t) ** 3
       }
 
       let animationId: number

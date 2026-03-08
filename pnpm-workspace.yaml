@@ -48,6 +48,7 @@ overrides:
   array.prototype.flatmap: npm:@nolyfill/array.prototype.flatmap@latest
   array.prototype.tosorted: npm:@nolyfill/array.prototype.tosorted@latest
   drizzle-orm: 0.45.1
+  eslint-plugin-react-hooks>zod-validation-error: 4.0.2
   global-agent>serialize-error: 7.0.1
   has: npm:@nolyfill/has@latest
   is-core-module: npm:@nolyfill/is-core-module@1.0.39

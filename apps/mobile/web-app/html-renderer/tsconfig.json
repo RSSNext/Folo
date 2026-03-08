@@ -1,20 +1,20 @@
 {
   "extends": "@follow/configs/tsconfig.extend.json",
   "compilerOptions": {
+    "target": "ES2022",
     "jsx": "react-jsx",
     "moduleResolution": "Bundler",
-    "target": "ES2022",
-    "noUnusedLocals": false,
-    "noUnusedParameters": false,
-    "strict": true,
-    "noUncheckedIndexedAccess": true,
-    "noImplicitOverride": true,
-    "noImplicitReturns": false,
-    "noEmit": true,
-    "skipLibCheck": true,
-    "types": ["vite/client", "@follow/types/global", "@follow/types/react"],
     "paths": {
       "~/*": ["./src/*"]
-    }
+    },
+    "types": ["vite/client", "@follow/types/global", "@follow/types/react"],
+    "strict": true,
+    "noImplicitOverride": true,
+    "noImplicitReturns": false,
+    "noUncheckedIndexedAccess": true,
+    "noUnusedLocals": false,
+    "noUnusedParameters": false,
+    "noEmit": true,
+    "skipLibCheck": true
   }
 }

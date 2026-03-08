@@ -99,7 +99,6 @@ export const handleUrlRouting = (url: string) => {
           minHeight: 600,
           resizable,
         })
-        return
       }
     }
   } catch (err) {

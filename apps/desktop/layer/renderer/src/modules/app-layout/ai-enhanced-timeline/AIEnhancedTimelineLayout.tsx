@@ -318,7 +318,7 @@ const AIEnhancedTimelineLayoutImpl = () => {
   )
 }
 
-export const AIEnhancedTimelineLayout = memo(function AIEnhancedTimelineLayout() {
+export const AIEnhancedTimelineLayout = memo(() => {
   return (
     <AIChatRoot wrapFocusable={false}>
       <AIEnhancedTimelineLayoutImpl />

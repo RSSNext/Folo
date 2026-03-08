@@ -36,7 +36,6 @@ export const createZustandStore =
                 },
               })
             }
-            return
           },
         },
       )

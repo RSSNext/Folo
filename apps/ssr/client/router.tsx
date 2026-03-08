@@ -12,7 +12,7 @@ declare global {
     __DEBUG_PROXY__: boolean
   }
 }
-let routerCreator = window["__DEBUG_PROXY__"] ? createHashRouter : createBrowserRouter
+let routerCreator = window.__DEBUG_PROXY__ ? createHashRouter : createBrowserRouter
 if (window.SENTRY_RELEASE) {
   routerCreator = wrapCreateBrowserRouterV7(routerCreator)
 }

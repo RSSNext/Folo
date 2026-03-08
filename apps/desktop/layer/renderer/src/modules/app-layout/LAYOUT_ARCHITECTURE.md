@@ -8,7 +8,7 @@ The Follow application uses a sophisticated nested layout system built on React 
 
 The application's layout system follows a hierarchical structure where each level handles specific responsibilities:
 
-```mermaid
+```mmd
 graph TD
     A[App.tsx - Root] --> B[AppLayer with Outlet]
     B --> C[MainLayout - pages/main/layout.tsx]
@@ -33,7 +33,7 @@ graph TD
 **Purpose**: Root application wrapper  
 **Outlet Usage**: `<Outlet />` renders the main layout tree
 
-```typescript
+```tsx
 // App.tsx structure
 <RootProviders>
   <Titlebar /> // Electron only
@@ -55,7 +55,7 @@ graph TD
 - Global error boundaries
 - App-wide panels (search, commands)
 
-```typescript
+```tsx
 // MainDestopLayout structure
 <RootContainer>
   <EntriesProvider>
@@ -81,10 +81,10 @@ graph TD
 - Wide mode support
 - Persistent column width settings
 
-```typescript
+```tsx
 // TimelineEntryTwoColumnLayout structure
 <div className="flex min-w-0 grow">
-  <div style={{width: position}}>
+  <div style={{ width: position }}>
     <EntryColumn /> // Left: Entry list
   </div>
   <PanelSplitter /> // Resizable divider
@@ -103,7 +103,7 @@ graph TD
 - Progress indicator FAB
 - Smooth scroll behavior
 
-```typescript
+```tsx
 // SubviewLayout structure
 <Focusable>
   <div className="relative flex size-full">
@@ -128,17 +128,17 @@ graph TD
 - Smooth entry transition animations
 - Resizable AI panel with persistent settings
 
-```typescript
+```tsx
 // AIEnhancedTimelineLayout structure
 <div className="relative flex min-w-0 grow">
   <div className="h-full flex-1">
     <EntryColumn /> // Entry list - always visible
     <AnimatedOverlays>
       <AIEntryHeader /> // Animated header overlay
-      <EntryContent />  // Animated content overlay
+      <EntryContent /> // Animated content overlay
     </AnimatedOverlays>
   </div>
-  <AIChatPanel />   // Optional resizable AI panel
+  <AIChatPanel /> // Optional resizable AI panel
   <SubscriptionToggler /> // Dynamic subscription control
 </div>
 ```
@@ -159,7 +159,7 @@ The routing system connects URLs to specific layouts through the generated route
 
 ### Route Structure Analysis
 
-```typescript
+```tsx
 // From generated-routes.ts
 export const routes: RouteObject[] = [
   {
@@ -248,7 +248,7 @@ App (Outlet)
 
 Each layout level uses `<Outlet />` to render child routes, creating a flexible composition system:
 
-```typescript
+```tsx
 // Parent Layout
 function ParentLayout() {
   return (
@@ -266,9 +266,9 @@ function ParentLayout() {
 
 Layouts adapt based on route parameters and user preferences:
 
-```typescript
+```tsx
 // TimelineEntryTwoColumnLayout
-const inWideMode = views.find(v => v.view === view)?.wideMode || false
+const inWideMode = views.find((v) => v.view === view)?.wideMode || false
 return (
   <div className="flex">
     <EntryColumn />
@@ -282,7 +282,7 @@ return (
 
 Layouts provide context to their children:
 
-```typescript
+```tsx
 // MainDestopLayout
 <EntriesProvider>
   <SubscriptionColumnContainer />
@@ -318,7 +318,7 @@ Layouts provide context to their children:
 
 ### Mobile Layout (via `withResponsiveComponent`)
 
-```typescript
+```tsx
 export const Component = withResponsiveComponent(
   () => Promise.resolve({ default: MainDestopLayout }),
   async () => {
@@ -332,7 +332,7 @@ export const Component = withResponsiveComponent(
 
 ### Layout-Level Error Handling
 
-```typescript
+```tsx
 // MainDestopLayout
 const errorTypes = [
   ErrorComponentType.Page,
@@ -340,7 +340,7 @@ const errorTypes = [
   ErrorComponentType.FeedNotFound,
 ] as ErrorComponentType[]
 
-<AppErrorBoundary errorType={errorTypes}>
+;<AppErrorBoundary errorType={errorTypes}>
   <Outlet />
 </AppErrorBoundary>
 ```
@@ -351,7 +351,7 @@ const errorTypes = [
 
 All major layouts use React Router's lazy loading:
 
-```typescript
+```tsx
 const lazy16 = () => import("./pages/(main)/layout")
 ```
 
@@ -359,7 +359,7 @@ const lazy16 = () => import("./pages/(main)/layout")
 
 Critical layout dimensions are memoized:
 
-```typescript
+```tsx
 const entryColWidth = useMemo(() => getUISettings().entryColWidth, [])
 ```
 
@@ -367,7 +367,7 @@ const entryColWidth = useMemo(() => getUISettings().entryColWidth, [])
 
 Scroll and resize handlers use passive listeners and debouncing:
 
-```typescript
+```tsx
 $scroll.addEventListener("scroll", handler, { passive: true })
 ```
 
@@ -382,7 +382,7 @@ $scroll.addEventListener("scroll", handler, { passive: true })
 
 ### Layout Component Structure
 
-````typescript
+````tsx
 /**
  * LayoutName Component
  *

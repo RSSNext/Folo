@@ -127,7 +127,7 @@ const PreviewAppDemo = () => {
   const {
     position: columnWidth,
     separatorProps,
-    isDragging: isDragging,
+    isDragging,
   } = useResizable({
     axis: 'x',
     min: 300,
@@ -158,7 +158,7 @@ const PreviewAppDemo = () => {
               <PanelSplitter {...separatorProps} isDragging={isDragging} />
             </div>
             <div
-              className="absolute lg:right-0 inset-0 border-t lg:border-t-0  lg:top-0 top-1/6 lg:border-l"
+              className="absolute lg:right-0 inset-0 border-t lg:border-t-0 lg:top-0 top-1/6 lg:border-l"
               style={{ left: isMobile ? undefined : columnWidth }}
             >
               {isMobile && (

@@ -241,5 +241,4 @@ const extractHeading = (text?: string): string | undefined => {
     }
     break
   }
-  return
 }

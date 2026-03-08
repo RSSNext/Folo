@@ -21,7 +21,7 @@ import { logger } from "../logger"
 import { cleanupOldRender } from "../updater/hot-updater"
 import { AppManager } from "./app"
 
-const apiURL = process.env["VITE_API_URL"] || import.meta.env.VITE_API_URL
+const apiURL = process.env.VITE_API_URL || import.meta.env.VITE_API_URL
 const buildSafeHeaders = createBuildSafeHeaders(env.VITE_WEB_URL, [
   env.VITE_OPENPANEL_API_URL || "",
   IMAGE_PROXY_URL,

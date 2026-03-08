@@ -8,7 +8,7 @@ import { NotFound } from "./components/common/NotFound"
 import { routes as tree } from "./generated-routes"
 
 const routerCreator =
-  IN_ELECTRON || globalThis["__DEBUG_PROXY__"] ? createHashRouter : createBrowserRouter
+  IN_ELECTRON || globalThis.__DEBUG_PROXY__ ? createHashRouter : createBrowserRouter
 
 export const router = routerCreator([
   {

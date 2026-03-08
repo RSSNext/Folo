@@ -155,7 +155,6 @@ ${content}
     }
 
     store.set("qbittorrentSID", match[1])
-    return
   }
 
   async checkQBittorrentAuth(context: IpcContext, input: CheckQBittorrentAuthInput) {

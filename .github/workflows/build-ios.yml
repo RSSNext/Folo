@@ -6,7 +6,7 @@ on:
       - "**"
     paths:
       - "apps/mobile/**"
-      - "pnpm-lock.yaml"
+      - pnpm-lock.yaml
   workflow_dispatch:
     inputs:
       profile:
@@ -15,7 +15,7 @@ on:
         options:
           - preview
           - production
-        description: "Build profile"
+        description: Build profile
 
 concurrency:
   group: ${{ github.workflow }}-${{ github.ref }}-${{ github.event.inputs.profile }}
@@ -103,7 +103,7 @@ jobs:
         uses: actions/setup-node@v6
         with:
           node-version: 22
-          cache: "pnpm"
+          cache: pnpm
 
       - name: 📱 Setup EAS
         uses: expo/expo-github-action@v8

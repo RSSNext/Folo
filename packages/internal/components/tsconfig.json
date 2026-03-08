@@ -1,14 +1,14 @@
 {
   "extends": "@follow/configs/tsconfig.extend.json",
   "compilerOptions": {
-    "baseUrl": ".",
     "jsx": "preserve",
-    "declaration": true,
-    "types": ["@follow/types/react", "@follow/types/global", "vite/client"],
+    "baseUrl": ".",
     "paths": {
       "@follow/components/*": ["./src/*"],
       "@pkg": ["../../package.json"]
-    }
+    },
+    "types": ["@follow/types/react", "@follow/types/global", "vite/client"],
+    "declaration": true
   },
   "include": ["src/**/*"]
 }

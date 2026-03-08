@@ -11,7 +11,7 @@ This file provides specific guidance for developing the React Native mobile appl
 
 ## Development Commands
 
-```bash
+```sh
 # Start Expo development server
 pnpm run dev
 

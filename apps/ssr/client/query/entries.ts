@@ -16,7 +16,7 @@ export const useEntriesPreview = ({ id }: { id?: string }) => {
     queryKey: ["entries-preview", id],
     queryFn: () => fetchEntriesPreview({ id }),
     enabled: !!id,
-    initialData: getHydrateData(`feeds.$get,query:id=${id}`)?.["entries"],
+    initialData: getHydrateData(`feeds.$get,query:id=${id}`)?.entries,
   })
 }
 

@@ -2,7 +2,7 @@
 
 **Last Updated: 2025-09-03**
 
-This is the privacy policy of NATURAL SELECTION LABS PTE. LTD. (“Company,” “we,” or “Folo”). This Privacy Policy explains how we collect, use, share, store, and protect your personal data when you use our website <https://folo.is> and the Folo application (collectively, the “Service”). By accessing or using the Service, you agree to this Privacy Policy and the Terms of Service. If you do not agree, please discontinue use immediately.
+This is the privacy policy of NATURAL SELECTION LABS PTE. LTD. ("Company," "we," or "Folo"). This Privacy Policy explains how we collect, use, share, store, and protect your personal data when you use our website <https://folo.is> and the Folo application (collectively, the "Service"). By accessing or using the Service, you agree to this Privacy Policy and the Terms of Service. If you do not agree, please discontinue use immediately.
 
 We may update this Privacy Policy from time to time. Any changes will be reflected on our Site with a new Last Updated date. Continued use of the Service after updates constitutes acceptance of the revised Privacy Policy.
 
@@ -35,7 +35,7 @@ We use your data to provide, improve, and personalize the Service.
 
 - **Service Delivery**: Manage your account, display RSS feeds, and enable features like AI-powered translation, summarization, and recommendations.
 - **Personalization**: Tailor content and recommendations based on your subscriptions and usage patterns.
-- **Analytics and Improvement**: Analyze usage trends, troubleshoot issues, and enhance the Service’s functionality and user experience.
+- **Analytics and Improvement**: Analyze usage trends, troubleshoot issues, and enhance the Service's functionality and user experience.
 - **Security**: Detect and prevent fraud, unauthorized access, or malicious activities .
 - **Communication**: Respond to your inquiries, send service-related notification.
 - **Legal Compliance**: Comply with applicable laws, regulations, or legal requests .
@@ -88,7 +88,7 @@ While these jurisdictions may have different data protection laws, we implement 
 
 By using the Service, you consent to such international transfers, subject to the protections described in this Privacy Policy.
 
-## Children’s Privacy
+## Children's Privacy
 
 To use the Service, you must be of legal age to enter into a binding agreement in your jurisdiction. We do not knowingly collect personal data from children. If you believe that a child has provided data to us, please contact us immediately, and we will take appropriate steps to delete such information.
 
@@ -98,7 +98,7 @@ The Service incorporates third-party RSS feeds and may contain links to external
 
 ## AI Features and Data Use
 
-Folo provides AI-powered functionalities such as summarization, translation, and categorization. These features process input data solely to generate requested outputs.We will not use your personal data to train or improve AI models without your explicit consent. All AI-generated outputs are provided “as is”, and users are advised to verify accuracy before reliance.
+Folo provides AI-powered functionalities such as summarization, translation, and categorization. These features process input data solely to generate requested outputs.We will not use your personal data to train or improve AI models without your explicit consent. All AI-generated outputs are provided "as is", and users are advised to verify accuracy before reliance.
 
 ## Governing Law and Dispute Resolution
 
