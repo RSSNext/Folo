@@ -3,6 +3,7 @@ import { createServices } from "electron-ipc-decorator"
 
 import { AppService } from "./services/app"
 import { AuthService } from "./services/auth"
+import { CliService } from "./services/cli"
 import { DebugService } from "./services/debug"
 import { DockService } from "./services/dock"
 import { IntegrationService } from "./services/integration"
@@ -14,6 +15,7 @@ import { SettingService } from "./services/setting"
 const services = createServices([
   AppService,
   AuthService,
+  CliService,
   DebugService,
   DockService,
   MenuService,

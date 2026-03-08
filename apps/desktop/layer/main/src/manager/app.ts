@@ -11,6 +11,7 @@ import { WindowManager } from "~/manager/window"
 import { getIconPath } from "../helper"
 import { initializeIpcServices } from "../ipc"
 import { checkAndCleanCodeCache, clearCacheCronJob } from "../lib/cleaner"
+import { getSessionTokenFromCookies, syncSessionToCliConfig } from "../lib/cli-session-sync"
 import { t } from "../lib/i18n"
 import { updateProxy } from "../lib/proxy"
 import { store } from "../lib/store"
@@ -47,6 +48,18 @@ class AppManagerStatic {
     updateProxy()
     registerUpdater()
     registerAppTray()
+
+    // Sync session to CLI config after window and cookies are ready
+    setTimeout(async () => {
+      try {
+        const token = await getSessionTokenFromCookies()
+        if (token) {
+          await syncSessionToCliConfig(token)
+        }
+      } catch (err) {
+        logger.error("Failed to sync session to CLI on startup:", err)
+      }
+    }, 5000)
   }
 
   private registerProtocols() {
