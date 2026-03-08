@@ -46,7 +46,7 @@ export const getSessionTokenFromCookies = async (): Promise<string | undefined> 
   return sessionCookie?.value
 }
 
-export const syncSessionToCliConfig = async (token: string | undefined): Promise<void> => {
+export const syncSessionToCliConfig = async (token?: string): Promise<void> => {
   const config = await readCliConfig()
 
   if (token) {
