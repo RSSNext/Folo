@@ -29,6 +29,7 @@ buildServer.json
 **/**/generated-routes.ts
 
 apps/desktop/build/appxmanifest.xml
+apps/desktop/resources/cli
 
 .claude/settings.local.json
 .serena
