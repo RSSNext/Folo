@@ -59,8 +59,7 @@ test.describe("web core flows", () => {
       })
 
       await test.step("re-subscribes onboarding feed", async () => {
-        await activePage.getByTestId("feed-form-submit").click()
-        await expect(activePage.getByTestId("feed-form-cancel")).toBeVisible({ timeout: 15_000 })
+        await followOnboardingFeed(activePage, env)
         await dismissFeedForm(activePage)
       })
 

@@ -354,7 +354,7 @@ export const openOnboardingFeedForm = async (
   await expect(discoverInput).toBeVisible({ timeout: 15_000 })
   await discoverInput.fill(ONBOARDING_FEED_URL)
   await page.getByTestId("discover-form-submit").click()
-  await expect(page.getByTestId("feed-form")).toBeVisible({ timeout: 15_000 })
+  await expect(page.getByText("Welcome to Folo").first()).toBeVisible({ timeout: 15_000 })
 }
 
 export const followOnboardingFeed = async (
@@ -363,29 +363,22 @@ export const followOnboardingFeed = async (
   options?: { electron?: boolean },
 ) => {
   await openOnboardingFeedForm(page, env, options)
-  await page.getByTestId("feed-form-submit").click()
-  await expect
-    .poll(
-      async () => {
-        const cancelVisible = await visibleByTestId(page, "feed-form-cancel")
-          .isVisible()
-          .catch(() => false)
-        const onboardingVisible = await page
-          .locator("[data-feed-id]")
-          .filter({ hasText: "Welcome to Folo" })
-          .first()
-          .isVisible()
-          .catch(() => false)
-        return cancelVisible || onboardingVisible
-      },
-      { timeout: 15_000 },
-    )
-    .toBe(true)
+  const followButton = page.getByRole("button", { name: /Follow(ed)?/i }).last()
+  await expect(followButton).toBeVisible({ timeout: 15_000 })
+  if ((await followButton.textContent())?.trim().toLowerCase() === "follow") {
+    await followButton.click({ force: true })
+  }
+  await expect(page.getByText("Welcome to Folo").first()).toBeVisible({ timeout: 15_000 })
 }
 
 export const dismissFeedForm = async (page: Page) => {
   const cancelButton = visibleByTestId(page, "feed-form-cancel")
+  const dialog = page.locator('[role="dialog"]').last()
+
   if (!(await cancelButton.isVisible().catch(() => false))) {
+    if (await dialog.isVisible().catch(() => false)) {
+      await page.keyboard.press("Escape").catch(() => {})
+    }
     return
   }
 
@@ -397,7 +390,10 @@ export const dismissFeedForm = async (page: Page) => {
     })
     .catch(() => {})
 
-  if (await cancelButton.isVisible().catch(() => false)) {
+  if (
+    (await cancelButton.isVisible().catch(() => false)) ||
+    (await dialog.isVisible().catch(() => false))
+  ) {
     await page.keyboard.press("Escape").catch(() => {})
   }
 }
