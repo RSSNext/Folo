@@ -498,10 +498,18 @@ export const expectTimelineSwitchAndEntryReadFlow = async (
   const readToggleButton = visibleByTestId(page, "command-action-entry-read")
   const readStateAfterOpen = (await onboardingEntry.getAttribute("data-read")) ?? "false"
   const toggledReadState = readStateAfterOpen === "true" ? "false" : "true"
-  await readToggleButton.click({ force: true })
+  if (options?.electron && !(await isVisible(readToggleButton))) {
+    await page.keyboard.press("m")
+  } else {
+    await readToggleButton.click({ force: true })
+  }
   await expect(onboardingEntry).toHaveAttribute("data-read", toggledReadState)
   await page.waitForTimeout(1_000)
-  await visibleByTestId(page, "command-action-entry-read").click({ force: true })
+  if (options?.electron && !(await isVisible(readToggleButton))) {
+    await page.keyboard.press("m")
+  } else {
+    await visibleByTestId(page, "command-action-entry-read").click({ force: true })
+  }
   await expect(onboardingEntry).toHaveAttribute("data-read", readStateAfterOpen)
 
   if (onboardingEntryId) {
