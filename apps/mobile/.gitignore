@@ -42,6 +42,8 @@ app-example
 
 ios/Pods
 android
+!e2e/flows/android/
+!e2e/flows/android/**
 Podfile.lock
 
 buildServer.json
