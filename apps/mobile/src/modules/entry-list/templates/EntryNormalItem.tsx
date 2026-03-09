@@ -38,11 +38,13 @@ export const EntryNormalItem = memo(
     extraData,
     view,
     hasTopSeparator = false,
+    testID,
   }: {
     entryId: string
     extraData: EntryExtraData
     view: FeedViewType
     hasTopSeparator?: boolean
+    testID?: string
   }) => {
     const entry = useEntry(entryId, (state) => ({
       id: state.id,
@@ -93,6 +95,7 @@ export const EntryNormalItem = memo(
     return (
       <EntryItemContextMenu id={entryId} view={view}>
         <ItemPressable
+          testID={testID ?? `entry-item-${entryId}`}
           itemStyle={ItemPressableStyle.Plain}
           className={cn(
             view === FeedViewType.Notifications ? "p-2" : "p-4",

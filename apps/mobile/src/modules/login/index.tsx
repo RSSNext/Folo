@@ -24,6 +24,7 @@ export function Login() {
   const [isEmail, setIsEmail] = useState(false)
   return (
     <View
+      testID="login-screen"
       className="pb-safe-or-2 flex-1 justify-between"
       style={{
         paddingTop: insets.top + 56,
@@ -73,12 +74,13 @@ export function Login() {
           {isEmail ? (
             <Text
               className="pb-2 text-center text-lg font-medium text-label"
+              testID="auth-back"
               onPress={() => setIsEmail(false)}
             >
               {t("login.back")}
             </Text>
           ) : (
-            <Pressable onPress={() => setIsRegister(!isRegister)}>
+            <Pressable testID="auth-toggle-mode" onPress={() => setIsRegister(!isRegister)}>
               <Text className="pb-2 text-center text-lg font-medium text-label">
                 <Trans
                   t={t}

@@ -12,8 +12,18 @@ import {
 import { defaultResources } from "@/src/@types/default-resource"
 
 import { getGeneralSettings } from "../atoms/settings/general"
+import { getE2ELanguage } from "./e2e-config"
 
 const fallbackLanguage = "en"
+
+const getForcedLanguage = () => {
+  const language = getE2ELanguage()
+  if (!language) {
+    return null
+  }
+
+  return currentSupportedLanguages.includes(language) ? language : null
+}
 
 export const updateDayjsLocale = async (lang: string) => {
   if (!(lang in dayjsLocaleImportMap)) return
@@ -24,7 +34,8 @@ export const updateDayjsLocale = async (lang: string) => {
 }
 
 export async function initializeI18n() {
-  const { language } = getGeneralSettings()
+  const { language: storedLanguage } = getGeneralSettings()
+  const language = getForcedLanguage() ?? storedLanguage
 
   return Promise.all([
     updateDayjsLocale(language),

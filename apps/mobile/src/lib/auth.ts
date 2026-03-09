@@ -1,13 +1,13 @@
-import { expoClient } from "@better-auth/expo/client"
+import { expoClient, getSetCookie, hasBetterAuthCookies } from "@better-auth/expo/client"
 import { baseAuthPlugins } from "@follow/shared/auth"
 import { isNewUserQueryKey } from "@follow/store/user/constants"
 import { whoamiQueryKey } from "@follow/store/user/hooks"
 import { createMobileAPIHeaders } from "@follow/utils/headers"
 import { useQuery } from "@tanstack/react-query"
 import { createAuthClient } from "better-auth/react"
+import { fetch as expoFetch } from "expo/fetch"
 import { nativeApplicationVersion } from "expo-application"
 import * as FileSystem from "expo-file-system/legacy"
-import * as SecureStore from "expo-secure-store"
 import Storage from "expo-sqlite/kv-store"
 import { Platform } from "react-native"
 import DeviceInfo from "react-native-device-info"
@@ -18,10 +18,20 @@ import { getClientId, getSessionId } from "./client-session"
 import { getUserAgent } from "./native/user-agent"
 import { getEnvProfile, proxyEnv } from "./proxy-env"
 import { queryClient } from "./query-client"
+import { safeSecureStore } from "./secure-store"
 
 const storagePrefix = "follow_auth"
 export const cookieKey = `${storagePrefix}_cookie`
 export const sessionTokenKey = "__Secure-better-auth.session_token"
+
+let authStateRevision = 0
+
+export const getAuthStateRevision = () => authStateRevision
+
+const bumpAuthStateRevision = () => {
+  authStateRevision += 1
+  return authStateRevision
+}
 
 const plugins = [
   ...baseAuthPlugins,
@@ -31,7 +41,7 @@ const plugins = [
     storage: {
       setItem(key, value) {
         try {
-          SecureStore.setItem(key, value)
+          safeSecureStore.setItem(key, value)
         } catch (e) {
           console.warn("SecureStore.setItem failed:", e)
           return
@@ -41,18 +51,19 @@ const plugins = [
           if (__DEV__) {
             const env = getEnvProfile()
             try {
-              SecureStore.setItem(`${cookieKey}_${env}`, value)
+              safeSecureStore.setItem(`${cookieKey}_${env}`, value)
             } catch {
               // Keychain may be unavailable in background
             }
           }
+          bumpAuthStateRevision()
           queryClient.invalidateQueries({ queryKey: whoamiQueryKey })
           queryClient.invalidateQueries({ queryKey: isNewUserQueryKey })
         }
       },
       getItem(key) {
         try {
-          return SecureStore.getItem(key)
+          return safeSecureStore.getItem(key)
         } catch (e) {
           console.warn("SecureStore.getItem failed:", e)
           return null
@@ -62,10 +73,48 @@ const plugins = [
   }),
 ]
 
+const updateCookieStorage = (serializedCookie: string) => {
+  try {
+    safeSecureStore.setItem(cookieKey, serializedCookie)
+  } catch (error) {
+    console.warn("SecureStore.setItem failed during auth cookie persistence:", error)
+    return false
+  }
+
+  const env = getEnvProfile()
+  try {
+    safeSecureStore.setItem(`${cookieKey}_${env}`, serializedCookie)
+  } catch {
+    // Keychain may be unavailable in background
+  }
+
+  bumpAuthStateRevision()
+  queryClient.invalidateQueries({ queryKey: whoamiQueryKey })
+  queryClient.invalidateQueries({ queryKey: isNewUserQueryKey })
+  return true
+}
+
+export const persistAuthCookieHeader = (setCookie: string | null | undefined) => {
+  if (!setCookie || !hasBetterAuthCookies(setCookie, "better-auth")) {
+    return false
+  }
+
+  let previousCookie: string | undefined
+  try {
+    previousCookie = safeSecureStore.getItem(cookieKey) ?? undefined
+  } catch (error) {
+    console.warn("SecureStore.getItem failed during auth cookie persistence:", error)
+  }
+
+  const serializedCookie = getSetCookie(setCookie, previousCookie)
+  return updateCookieStorage(serializedCookie)
+}
+
 export const authClient = createAuthClient({
   baseURL: `${proxyEnv.API_URL}/better-auth`,
   fetchOptions: {
     cache: "no-store",
+    customFetchImpl: async (input, init) => expoFetch(input.toString(), init as any) as any,
     // Learn more: https://better-fetch.vercel.app/docs/hooks
     onRequest: async (ctx) => {
       const headers = createMobileAPIHeaders({
@@ -149,6 +198,7 @@ export function isAuthCodeValid(authCode: string) {
 
 export const signOut = async () => {
   await authClient.signOut()
+  bumpAuthStateRevision()
   const dbPath = getDbPath()
   await FileSystem.deleteAsync(dbPath)
   await expo.reloadAppAsync("User sign out")

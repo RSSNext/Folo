@@ -1,0 +1,250 @@
+name: ✅ E2E
+
+on:
+  pull_request:
+    paths:
+      - "apps/desktop/**"
+      - "apps/mobile/**"
+      - "packages/**"
+      - "pnpm-lock.yaml"
+      - ".github/workflows/e2e.yml"
+  push:
+    branches:
+      - main
+      - dev
+    paths:
+      - "apps/desktop/**"
+      - "apps/mobile/**"
+      - "packages/**"
+      - "pnpm-lock.yaml"
+      - ".github/workflows/e2e.yml"
+  workflow_dispatch:
+
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: ${{ github.ref != 'refs/heads/main' && github.ref != 'refs/heads/dev' }}
+
+env:
+  NODE_OPTIONS: --max-old-space-size=8192
+
+jobs:
+  desktop-web:
+    name: Desktop Web
+    runs-on: ubuntu-latest
+    env:
+      FOLO_E2E_PROFILE: prod
+      FOLO_E2E_WEB_DEBUG_PROXY_PATH: /__debug_proxy.html
+      FOLO_E2E_WEB_DEV_API_URL: https://api.folo.is
+      FOLO_E2E_WEB_DEV_WEB_URL: https://app.folo.is
+    steps:
+      - name: 📦 Checkout code
+        uses: actions/checkout@v6
+
+      - name: 📦 Setup pnpm
+        uses: pnpm/action-setup@v4
+
+      - name: 🏗 Setup Node.js
+        uses: actions/setup-node@v6
+        with:
+          node-version: 22
+          cache: pnpm
+
+      - name: Install dependencies
+        run: pnpm install
+
+      - name: Install Playwright browsers
+        working-directory: apps/desktop
+        run: pnpm exec playwright install --with-deps chromium
+
+      - name: Run web E2E
+        working-directory: apps/desktop
+        run: pnpm run e2e:web
+
+      - name: Upload desktop web artifacts
+        if: always()
+        uses: actions/upload-artifact@v7
+        with:
+          name: desktop-web-e2e
+          path: |
+            apps/desktop/e2e/playwright-report
+            apps/desktop/e2e/test-results
+          retention-days: 14
+
+  desktop-electron:
+    name: Desktop Electron
+    runs-on: macos-latest
+    env:
+      FOLO_E2E_PROFILE: prod
+    steps:
+      - name: 📦 Checkout code
+        uses: actions/checkout@v6
+
+      - name: 📦 Setup pnpm
+        uses: pnpm/action-setup@v4
+
+      - name: 🏗 Setup Node.js
+        uses: actions/setup-node@v6
+        with:
+          node-version: 22
+          cache: pnpm
+
+      - name: Install dependencies
+        run: pnpm install
+
+      - name: Run electron E2E
+        working-directory: apps/desktop
+        run: pnpm run e2e:electron
+
+      - name: Upload desktop electron artifacts
+        if: always()
+        uses: actions/upload-artifact@v7
+        with:
+          name: desktop-electron-e2e
+          path: |
+            apps/desktop/e2e/playwright-report
+            apps/desktop/e2e/test-results
+          retention-days: 14
+
+  mobile-android:
+    name: Mobile Android
+    if: github.secret_source != 'None'
+    runs-on: ubuntu-latest
+    steps:
+      - name: 📦 Checkout code
+        uses: actions/checkout@v6
+
+      - name: 📦 Setup pnpm
+        uses: pnpm/action-setup@v4
+
+      - name: 🏗 Setup Node.js
+        uses: actions/setup-node@v6
+        with:
+          node-version: 22
+          cache: pnpm
+
+      - name: Set up JDK 17
+        uses: actions/setup-java@v5
+        with:
+          java-version: "17"
+          distribution: "zulu"
+
+      - name: Setup Android SDK
+        uses: android-actions/setup-android@v3
+
+      - name: 📱 Setup EAS
+        uses: expo/expo-github-action@v8
+        with:
+          eas-version: latest
+          token: ${{ secrets.EXPO_TOKEN }}
+
+      - name: Install Maestro CLI
+        run: |
+          curl -Ls "https://get.maestro.mobile.dev" | bash
+          echo "$HOME/.maestro/bin" >> "$GITHUB_PATH"
+
+      - name: Install dependencies
+        run: pnpm install
+
+      - name: Build Android E2E app
+        working-directory: apps/mobile
+        run: eas build --platform android --profile e2e-android --local --output=${{ runner.temp }}/folo-e2e.apk
+
+      - name: Run Android E2E
+        uses: reactivecircus/android-emulator-runner@v2
+        with:
+          api-level: 35
+          arch: x86_64
+          profile: pixel_7
+          emulator-options: -no-window -no-audio -no-boot-anim -gpu swiftshader_indirect
+          script: |
+            adb install -r "${{ runner.temp }}/folo-e2e.apk"
+            export MAESTRO_DEBUG_OUTPUT="${{ github.workspace }}/apps/mobile/e2e/artifacts/android"
+            cd apps/mobile
+            pnpm run e2e:android
+
+      - name: Upload mobile android artifacts
+        if: always()
+        uses: actions/upload-artifact@v7
+        with:
+          name: mobile-android-e2e
+          path: |
+            apps/mobile/e2e/artifacts/android
+            apps/mobile/report.xml
+          retention-days: 14
+
+  mobile-ios:
+    name: Mobile iOS
+    if: github.secret_source != 'None'
+    runs-on: macos-latest
+    steps:
+      - name: 📦 Checkout code
+        uses: actions/checkout@v6
+
+      - name: 📦 Setup pnpm
+        uses: pnpm/action-setup@v4
+
+      - name: 🏗 Setup Node.js
+        uses: actions/setup-node@v6
+        with:
+          node-version: 22
+          cache: pnpm
+
+      - name: 📱 Setup EAS
+        uses: expo/expo-github-action@v8
+        with:
+          eas-version: latest
+          token: ${{ secrets.EXPO_TOKEN }}
+
+      - name: Install Maestro CLI
+        run: |
+          curl -Ls "https://get.maestro.mobile.dev" | bash
+          echo "$HOME/.maestro/bin" >> "$GITHUB_PATH"
+
+      - name: Install dependencies
+        run: pnpm install
+
+      - name: Boot iOS simulator
+        run: |
+          device_name="$(xcrun simctl list devices available | awk -F '[()]' '/iPhone/ && $2 ~ /^[A-F0-9-]+$/ { gsub(/[[:space:]]+$/, "", $1); print $1; exit }')"
+          device_id="$(xcrun simctl list devices available | awk -F '[()]' '/iPhone/ && $2 ~ /^[A-F0-9-]+$/ { print $2; exit }')"
+          if [ -z "$device_id" ]; then
+            echo "No available iPhone simulator found"
+            xcrun simctl list devices available
+            exit 1
+          fi
+          echo "Using simulator: ${device_name} (${device_id})"
+          echo "MAESTRO_IOS_DEVICE_ID=${device_id}" >> "$GITHUB_ENV"
+          xcrun simctl boot "$device_id" || true
+          xcrun simctl bootstatus "$device_id" -b
+
+      - name: Build iOS simulator E2E app
+        working-directory: apps/mobile
+        run: eas build --platform ios --profile e2e-ios-simulator --local --output=${{ runner.temp }}/folo-e2e-ios.tar.gz
+
+      - name: Install iOS app on simulator
+        run: |
+          mkdir -p "${{ runner.temp }}/ios-app"
+          tar -xzf "${{ runner.temp }}/folo-e2e-ios.tar.gz" -C "${{ runner.temp }}/ios-app"
+          app_path="$(find "${{ runner.temp }}/ios-app" -maxdepth 2 -name '*.app' | head -n 1)"
+          if [ -z "$app_path" ]; then
+            echo "Unable to find built .app bundle"
+            exit 1
+          fi
+          echo "MAESTRO_IOS_APP_PATH=$app_path" >> "$GITHUB_ENV"
+          xcrun simctl install booted "$app_path"
+
+      - name: Run iOS E2E
+        run: |
+          export MAESTRO_DEBUG_OUTPUT="${{ github.workspace }}/apps/mobile/e2e/artifacts/ios"
+          cd apps/mobile
+          pnpm run e2e:ios
+
+      - name: Upload mobile ios artifacts
+        if: always()
+        uses: actions/upload-artifact@v7
+        with:
+          name: mobile-ios-e2e
+          path: |
+            apps/mobile/e2e/artifacts/ios
+            apps/mobile/report.xml
+          retention-days: 14

@@ -67,6 +67,7 @@ function ItemWrapper({
   onPress,
   style,
   className,
+  testID,
 }: {
   children: React.ReactNode
   index: number
@@ -75,6 +76,7 @@ function ItemWrapper({
   onPress: () => void
   className?: string
   style?: Exclude<StyleProp<ViewStyle>, number>
+  testID?: string
 }) {
   const { width: windowWidth } = useWindowDimensions()
   const activeViews = useViewWithSubscription()
@@ -86,6 +88,7 @@ function ItemWrapper({
   const bgColor = useColor("gray5")
   return (
     <ReAnimatedPressable
+      testID={testID}
       className={cn(
         "relative flex h-12 flex-row items-center justify-center gap-2 overflow-hidden rounded-[1.2rem] pl-2",
         className,
@@ -158,6 +161,7 @@ function ViewItem({
           isActive={isActive}
           index={index}
           activeColor={view.activeColor}
+          testID={`timeline-view-${view.name.replace("feed_view_type.", "").replaceAll("_", "-")}`}
           onPress={() =>
             selectTimeline({
               type: "view",

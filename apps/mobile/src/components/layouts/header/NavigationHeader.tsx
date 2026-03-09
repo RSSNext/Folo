@@ -399,6 +399,7 @@ export const DefaultHeaderBackButton = ({
   if (!canGoBack && !canDismiss) return null
   return (
     <UINavigationHeaderActionButton
+      testID="navigation-back"
       onPress={() => {
         const leave = () => {
           if (canGoBack) {
@@ -441,16 +442,19 @@ export const UINavigationHeaderActionButton = ({
   disabled,
   className,
   style,
+  testID,
 }: {
   children: ReactNode
   onPress?: () => void
   disabled?: boolean
   className?: string
   style?: StyleProp<ViewStyle>
+  testID?: string
 }) => {
   return (
     <Pressable
       hitSlop={5}
+      testID={testID}
       className={cn("p-2", className)}
       onPress={onPress}
       disabled={disabled}

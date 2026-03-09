@@ -1,0 +1,23 @@
+appId: is.follow
+---
+- tapOn:
+    text: Settings
+- scrollUntilVisible:
+    element:
+      id: settings-sign-out
+    direction: DOWN
+    timeout: 10000
+    centerElement: false
+- tapOn:
+    id: settings-sign-out
+- extendedWaitUntil:
+    visible: Sign out
+    timeout: 10000
+- tapOn:
+    point: "275,487"
+- extendedWaitUntil:
+    visible:
+      id: login-screen
+    timeout: 30000
+- assertVisible:
+    id: login-screen

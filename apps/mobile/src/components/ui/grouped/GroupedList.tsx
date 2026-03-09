@@ -151,11 +151,22 @@ export const GroupedInsetListNavigationLink: FC<
     onPress: () => void
     disabled?: boolean
     postfix?: React.ReactNode
+    testID?: string
   } & BaseCellClassNames
-> = ({ label, icon, onPress, disabled, className, leftClassName, rightClassName, postfix }) => {
+> = ({
+  label,
+  icon,
+  onPress,
+  disabled,
+  className,
+  leftClassName,
+  rightClassName,
+  postfix,
+  testID,
+}) => {
   const rightIconColor = useColor("tertiaryLabel")
   return (
-    <Pressable onPress={onPress} disabled={disabled} className={className}>
+    <Pressable testID={testID} onPress={onPress} disabled={disabled} className={className}>
       {({ pressed }) => (
         <GroupedInsetListBaseCell
           className={cn(pressed ? "bg-system-fill" : undefined, disabled && "opacity-40")}

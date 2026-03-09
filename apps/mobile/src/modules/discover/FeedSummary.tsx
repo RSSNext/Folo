@@ -12,7 +12,7 @@ import { FeedScreen } from "@/src/screens/(stack)/feeds/[feedId]/FeedScreen"
 import { selectFeed, selectTimeline } from "../screen/atoms"
 
 type FeedSummaryFeed = {
-  id: string
+  id?: string | null
   title?: Nullable<string>
   url?: Nullable<string>
   image?: Nullable<string>
@@ -28,6 +28,7 @@ export const FeedSummary = ({
   children,
   preChildren,
   className,
+  testID,
   simple,
   view,
   preview,
@@ -36,6 +37,7 @@ export const FeedSummary = ({
   children?: React.ReactNode
   preChildren?: React.ReactNode
   className?: string
+  testID?: string
   simple?: boolean
   view?: number | null
   preview?: boolean
@@ -75,6 +77,7 @@ export const FeedSummary = ({
         }
       }}
       className={className}
+      testID={testID}
     >
       {preChildren}
       {/* Headline */}

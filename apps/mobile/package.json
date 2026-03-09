@@ -7,6 +7,9 @@
     "android": "expo run:android",
     "bump": "vv",
     "dev": "npm run start",
+    "e2e:android": "sh ./e2e/run-maestro.sh android",
+    "e2e:doctor": "sh -c 'for f in e2e/flows/shared/*.yaml e2e/flows/android/*.yaml e2e/flows/ios/*.yaml; do maestro check-syntax $f; done'",
+    "e2e:ios": "sh ./e2e/run-maestro.sh ios",
     "eas-build-post-install": "rm -rf $TMPDIR/metro-cache",
     "eas-build-pre-install": "command -v pod >/dev/null 2>&1 && pod repo update || echo 'CocoaPods not found, skipping pod repo update'",
     "ios": "expo run:ios",
@@ -151,6 +154,20 @@
   "expo": {
     "autolinking": {
       "nativeModulesDir": "./native"
+    },
+    "doctor": {
+      "appConfigFieldsNotSyncedCheck": {
+        "enabled": false
+      },
+      "reactNativeDirectoryCheck": {
+        "enabled": true,
+        "exclude": [
+          "react-native-track-player",
+          "follow-native",
+          "react-native-color-matrix-image-filters"
+        ],
+        "listUnknownPackages": false
+      }
     }
   }
 }

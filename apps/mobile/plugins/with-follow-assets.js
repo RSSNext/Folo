@@ -23,8 +23,8 @@ const withFollowAssets = (config, props) => {
     // Build the web renderer directly to avoid workspace filter resolution issues on EAS workers.
     const webAppDir = path.resolve(__dirname, "..", "web-app")
     const cmd = `pnpm --dir ${webAppDir} build --outDir ${path.resolve(props.assetsPath, "html-renderer")}`
-    console.info(`Assets source directory not found! Running \`${cmd}\` to generate assets.`)
-    execSync(cmd, { stdio: "inherit" })
+    console.error(`Assets source directory not found! Running \`${cmd}\` to generate assets.`)
+    execSync(cmd, { stdio: ["ignore", "ignore", "inherit"] })
   }
   if (!isAssetReady(props.assetsPath)) {
     throw new Error(

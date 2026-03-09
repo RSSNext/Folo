@@ -6,8 +6,10 @@ import { NotFound } from "./components/common/NotFound"
 // @ts-ignore
 import { routes as tree } from "./generated-routes"
 
-const routerCreator =
-  IN_ELECTRON || globalThis["__DEBUG_PROXY__"] ? createHashRouter : createBrowserRouter
+const isDebugProxyRuntime =
+  !!globalThis["__DEBUG_PROXY__"] || globalThis.location?.pathname?.startsWith("/__debug_proxy")
+
+const routerCreator = IN_ELECTRON || isDebugProxyRuntime ? createHashRouter : createBrowserRouter
 
 export const router = routerCreator([
   {

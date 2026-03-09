@@ -178,6 +178,7 @@ const SettingItemButtonImpl = (props: {
 
   return (
     <button
+      data-testid={`settings-tab-${path}`}
       className={cn(
         "my-0.5 flex w-full items-center rounded-lg px-2.5 py-0.5 leading-loose text-text",
         isActive && "!bg-theme-item-active !text-text",

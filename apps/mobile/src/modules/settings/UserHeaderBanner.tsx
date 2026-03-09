@@ -284,6 +284,7 @@ export const UserHeaderBanner = ({
           ) : !user ? (
             <Pressable
               className="mx-auto"
+              testID="settings-sign-in"
               onPress={() => navigation.presentControllerView(LoginScreen)}
             >
               <Text className="m-[6] text-sm text-accent">Sign in to your account</Text>

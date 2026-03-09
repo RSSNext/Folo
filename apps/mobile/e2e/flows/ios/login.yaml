@@ -1,0 +1,37 @@
+appId: is.follow
+---
+- runFlow: ../shared/open-auth.yaml
+- tapOn:
+    id: auth-toggle-mode
+- extendedWaitUntil:
+    visible: Don't have an account? Sign up
+    timeout: 10000
+- tapOn:
+    text: Continue with Email
+- extendedWaitUntil:
+    visible:
+      id: login-email-input
+    timeout: 15000
+- tapOn:
+    id: login-email-input
+- inputText: ${E2E_EMAIL}
+- tapOn:
+    id: login-password-input
+- setClipboard: ${E2E_PASSWORD}
+- pasteText
+- pressKey: Enter
+- extendedWaitUntil:
+    notVisible:
+      id: login-screen
+    timeout: 30000
+- launchApp
+- runFlow:
+    when:
+      notVisible:
+        id: timeline-view-articles
+    commands:
+      - launchApp
+- extendedWaitUntil:
+    visible:
+      id: timeline-view-articles
+    timeout: 30000

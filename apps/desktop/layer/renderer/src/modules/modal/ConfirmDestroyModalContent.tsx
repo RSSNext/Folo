@@ -8,7 +8,7 @@ export const ConfirmDestroyModalContent = ({ onConfirm }: { onConfirm: () => voi
     <div className="w-[540px]">
       <div className="mb-4 text-sm">{t("sidebar.feed_actions.unfollow_feed_many_warning")}</div>
       <div className="flex justify-end">
-        <Button buttonClassName="bg-red" onClick={onConfirm}>
+        <Button data-testid="confirm-destroy" buttonClassName="bg-red" onClick={onConfirm}>
           {t("words.confirm")}
         </Button>
       </div>
