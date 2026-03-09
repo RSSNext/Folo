@@ -144,7 +144,7 @@ jobs:
           PROFILE: e2e-android
           EXPO_PUBLIC_E2E_ENV_PROFILE: prod
           EXPO_PUBLIC_E2E_LANGUAGE: en
-        run: cd apps/mobile/android && gradle app:assembleRelease
+        run: cd "${{ github.workspace }}/apps/mobile/android" && gradle app:assembleRelease
 
       - name: Run Android E2E
         uses: reactivecircus/android-emulator-runner@v2
