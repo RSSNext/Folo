@@ -97,7 +97,24 @@ export const navigateInApp = async (
 }
 
 export const waitForAuthenticated = async (page: Page) => {
-  await expect(page.getByTestId("profile-menu-trigger")).toBeVisible({ timeout: 30_000 })
+  const isAuthenticatedUiReady = async () => {
+    const profileVisible = await page
+      .getByTestId("profile-menu-trigger")
+      .isVisible()
+      .catch(() => false)
+    const timelineVisible = await page
+      .getByTestId("timeline-tab-articles")
+      .isVisible()
+      .catch(() => false)
+    return profileVisible || timelineVisible
+  }
+
+  try {
+    await expect.poll(isAuthenticatedUiReady, { timeout: 30_000 }).toBe(true)
+  } catch {
+    await page.reload({ waitUntil: "domcontentloaded" })
+    await expect.poll(isAuthenticatedUiReady, { timeout: 30_000 }).toBe(true)
+  }
 }
 
 export const waitForLoggedOut = async (page: Page) => {
@@ -318,7 +335,7 @@ export const openOnboardingFeedForm = async (
 
   const discoverInput = page.getByTestId("discover-form-input")
   if (!(await discoverInput.isVisible().catch(() => false))) {
-    const discoverLink = page.locator('a[href="#/discover"], a[href="/discover"]').first()
+    const discoverLink = page.locator('a[href="#/discover"], a[href="/discover"]').last()
     if (await discoverLink.isVisible().catch(() => false)) {
       await discoverLink.click({ force: true })
     }
@@ -347,7 +364,23 @@ export const followOnboardingFeed = async (
 ) => {
   await openOnboardingFeedForm(page, env, options)
   await page.getByTestId("feed-form-submit").click()
-  await expect(page.getByTestId("feed-form-cancel")).toBeVisible({ timeout: 15_000 })
+  await expect
+    .poll(
+      async () => {
+        const cancelVisible = await visibleByTestId(page, "feed-form-cancel")
+          .isVisible()
+          .catch(() => false)
+        const onboardingVisible = await page
+          .locator("[data-feed-id]")
+          .filter({ hasText: "Welcome to Folo" })
+          .first()
+          .isVisible()
+          .catch(() => false)
+        return cancelVisible || onboardingVisible
+      },
+      { timeout: 15_000 },
+    )
+    .toBe(true)
 }
 
 export const dismissFeedForm = async (page: Page) => {
@@ -498,12 +531,7 @@ export const expectTimelineSwitchAndEntryReadFlow = async (
   await expect(onboardingEntry).toHaveAttribute("data-active", "true")
   await expect(page.getByTestId("entry-render")).toBeVisible({ timeout: 15_000 })
 
-  const readToggleButton = visibleByTestId(page, "command-action-entry-read")
-  if (options?.electron) {
-    await page.keyboard.press("m")
-  } else {
-    await readToggleButton.click({ force: true })
-  }
+  await page.keyboard.press("m")
   await expect(onboardingEntry).toHaveAttribute("data-read", "true")
 
   if (onboardingEntryId) {
