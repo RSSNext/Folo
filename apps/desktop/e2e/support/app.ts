@@ -289,10 +289,21 @@ export const logoutFromProfileMenu = async (page: Page) => {
 }
 
 export const openSettings = async (page: Page) => {
+  const settingsTab = page.getByTestId("settings-tab-general")
+  const languageSelect = page.getByTestId("settings-language-select")
+  const settingsModal = page.locator("#setting-modal").first()
+
+  if (await settingsModal.isVisible().catch(() => false)) {
+    await page.keyboard.press("Escape").catch(() => {})
+    await expect
+      .poll(async () => settingsModal.isVisible().catch(() => false), { timeout: 10_000 })
+      .toBe(false)
+  }
+
   await page.getByTestId("profile-menu-trigger").click()
   await page.getByTestId("profile-menu-preferences").click()
-  await expect(page.getByTestId("settings-tab-general")).toBeVisible({ timeout: 10_000 })
-  await expect(page.getByTestId("settings-language-select")).toBeVisible({ timeout: 10_000 })
+  await expect(settingsTab).toBeVisible({ timeout: 10_000 })
+  await expect(languageSelect).toBeVisible({ timeout: 10_000 })
 }
 
 export const openSettingsTab = async (page: Page, tab: "general" | "feeds") => {
@@ -363,7 +374,11 @@ export const followOnboardingFeed = async (
   options?: { electron?: boolean },
 ) => {
   await openOnboardingFeedForm(page, env, options)
-  const followButton = page.getByRole("button", { name: /^Follow$/i }).last()
+  const onboardingDiscoverCard = page
+    .locator("[data-feed-id]")
+    .filter({ hasText: "Welcome to Folo" })
+    .first()
+  const followButton = onboardingDiscoverCard.getByRole("button", { name: /^Follow$/i })
   if (await followButton.isVisible().catch(() => false)) {
     await followButton.click({ force: true })
   }
