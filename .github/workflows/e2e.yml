@@ -131,6 +131,12 @@ jobs:
       - name: Setup Android SDK
         uses: android-actions/setup-android@v3
 
+      - name: 📱 Setup EAS
+        uses: expo/expo-github-action@v8
+        with:
+          eas-version: latest
+          token: ${{ secrets.EXPO_TOKEN }}
+
       - name: Install Maestro CLI
         run: |
           curl -Ls "https://get.maestro.mobile.dev" | bash
@@ -140,11 +146,8 @@ jobs:
         run: pnpm install
 
       - name: Build Android E2E app
-        env:
-          PROFILE: e2e-android
-          EXPO_PUBLIC_E2E_ENV_PROFILE: prod
-          EXPO_PUBLIC_E2E_LANGUAGE: en
-        run: cd "${{ github.workspace }}/apps/mobile/android" && gradle app:assembleRelease
+        working-directory: apps/mobile
+        run: eas build --platform android --profile e2e-android --local --output=${{ runner.temp }}/folo-e2e.apk
 
       - name: Run Android E2E
         uses: reactivecircus/android-emulator-runner@v2
@@ -154,7 +157,7 @@ jobs:
           profile: pixel_7
           emulator-options: -no-window -no-audio -no-boot-anim -gpu swiftshader_indirect
           script: |
-            adb install -r "${{ github.workspace }}/apps/mobile/android/app/build/outputs/apk/release/app-release.apk"
+            adb install -r "${{ runner.temp }}/folo-e2e.apk"
             bash -lc 'cd apps/mobile && MAESTRO_DEBUG_OUTPUT="${{ github.workspace }}/apps/mobile/e2e/artifacts/android" pnpm run e2e:android'
 
       - name: Upload mobile android artifacts
