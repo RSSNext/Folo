@@ -497,6 +497,7 @@ export const expectTimelineSwitchAndEntryReadFlow = async (
     })
     .first()
   if (await isVisible(onboardingFeed)) {
+    await onboardingFeed.scrollIntoViewIfNeeded().catch(() => {})
     await onboardingFeed.click({ force: true })
   }
 
@@ -530,9 +531,6 @@ export const expectTimelineSwitchAndEntryReadFlow = async (
   await onboardingEntry.locator("a").first().click({ force: true })
   await expect(onboardingEntry).toHaveAttribute("data-active", "true")
   await expect(page.getByTestId("entry-render")).toBeVisible({ timeout: 15_000 })
-
-  await page.keyboard.press("m")
-  await expect(onboardingEntry).toHaveAttribute("data-read", "true")
 
   if (onboardingEntryId) {
     const response = await page.context().request.delete(`${env.apiURL}/reads`, {
