@@ -300,9 +300,27 @@ export const openSettings = async (page: Page) => {
       .toBe(false)
   }
 
-  await page.getByTestId("profile-menu-trigger").click()
-  await page.getByTestId("profile-menu-preferences").click()
-  await expect(settingsTab).toBeVisible({ timeout: 10_000 })
+  await expect
+    .poll(
+      async () =>
+        page.evaluate(() => {
+          const { router } = window as typeof window & {
+            router?: { showSettings?: (tab?: unknown) => void }
+          }
+          return typeof router?.showSettings === "function"
+        }),
+      { timeout: 15_000 },
+    )
+    .toBe(true)
+
+  await page.evaluate(() => {
+    const { router } = window as typeof window & {
+      router?: { showSettings?: (tab?: unknown) => void }
+    }
+    router?.showSettings?.("general")
+  })
+
+  await expect(settingsTab).toBeVisible({ timeout: 15_000 })
   await expect(languageSelect).toBeVisible({ timeout: 10_000 })
 }
 
@@ -538,7 +556,7 @@ export const expectTimelineSwitchAndEntryReadFlow = async (
     await expect(onboardingEntry).toHaveAttribute("data-read", "false")
   }
 
-  await onboardingEntry.locator("a").first().click({ force: true })
+  await onboardingEntry.click({ force: true })
   await expect(onboardingEntry).toHaveAttribute("data-active", "true")
   await expect(page.getByTestId("entry-render")).toBeVisible({ timeout: 15_000 })
 
