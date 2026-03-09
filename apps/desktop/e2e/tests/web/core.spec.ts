@@ -39,10 +39,6 @@ test.describe("web core flows", () => {
         await dismissFeedForm(activePage)
       })
 
-      await test.step("switches timeline, opens an entry, and toggles read state", async () => {
-        await expectTimelineSwitchAndEntryReadFlow(activePage, env)
-      })
-
       await test.step("logs out and logs back in", async () => {
         await logoutFromProfileMenu(activePage)
 
@@ -50,6 +46,10 @@ test.describe("web core flows", () => {
         activePage = await loginContext.newPage()
         await openWebApp(activePage, env)
         await loginWithCredential(activePage, account)
+      })
+
+      await test.step("switches timeline, opens an entry, and toggles read state", async () => {
+        await expectTimelineSwitchAndEntryReadFlow(activePage, env)
       })
 
       await test.step("unsubscribes onboarding feed from settings", async () => {

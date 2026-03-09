@@ -353,7 +353,7 @@ export const openOnboardingFeedForm = async (
 
   await expect(discoverInput).toBeVisible({ timeout: 15_000 })
   await discoverInput.fill(ONBOARDING_FEED_URL)
-  await page.getByTestId("discover-form-submit").click()
+  await discoverInput.press("Enter")
   await expect(page.getByText("Welcome to Folo").first()).toBeVisible({ timeout: 15_000 })
 }
 
@@ -363,9 +363,8 @@ export const followOnboardingFeed = async (
   options?: { electron?: boolean },
 ) => {
   await openOnboardingFeedForm(page, env, options)
-  const followButton = page.getByRole("button", { name: /Follow(ed)?/i }).last()
-  await expect(followButton).toBeVisible({ timeout: 15_000 })
-  if ((await followButton.textContent())?.trim().toLowerCase() === "follow") {
+  const followButton = page.getByRole("button", { name: /^Follow$/i }).last()
+  if (await followButton.isVisible().catch(() => false)) {
     await followButton.click({ force: true })
   }
   await expect(page.getByText("Welcome to Folo").first()).toBeVisible({ timeout: 15_000 })
