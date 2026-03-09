@@ -158,9 +158,7 @@ jobs:
           emulator-options: -no-window -no-audio -no-boot-anim -gpu swiftshader_indirect
           script: |
             adb install -r "${{ runner.temp }}/folo-e2e.apk"
-            export MAESTRO_DEBUG_OUTPUT="${{ github.workspace }}/apps/mobile/e2e/artifacts/android"
-            cd apps/mobile
-            pnpm run e2e:android
+            bash -lc 'cd apps/mobile && MAESTRO_DEBUG_OUTPUT="${{ github.workspace }}/apps/mobile/e2e/artifacts/android" pnpm run e2e:android'
 
       - name: Upload mobile android artifacts
         if: always()
