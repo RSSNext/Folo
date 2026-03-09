@@ -86,7 +86,7 @@ export const navigateInApp = async (
   route: string,
   options?: { electron?: boolean },
 ) => {
-  if (options?.electron || env.webUsesHashRouter) {
+  if (options?.electron) {
     await page.evaluate((nextRoute) => {
       window.location.hash = nextRoute
     }, buildHashRoute(route))
