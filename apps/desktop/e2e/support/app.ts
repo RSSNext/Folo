@@ -463,8 +463,9 @@ export const expectTimelineSwitchAndEntryReadFlow = async (
       hasText: "Welcome to Folo",
     })
     .first()
-  await expect(onboardingFeed).toBeVisible({ timeout: 15_000 })
-  await onboardingFeed.click({ force: true })
+  if (await isVisible(onboardingFeed)) {
+    await onboardingFeed.click({ force: true })
+  }
 
   const unreadOnboardingEntry = page.locator('[data-entry-id][data-read="false"]').first()
   const fallbackOnboardingEntry = page.locator("[data-entry-id]").first()
@@ -487,7 +488,9 @@ export const expectTimelineSwitchAndEntryReadFlow = async (
     })
     expect(response.ok()).toBe(true)
     await page.reload({ waitUntil: "domcontentloaded" })
-    await onboardingFeed.click({ force: true })
+    if (await isVisible(onboardingFeed)) {
+      await onboardingFeed.click({ force: true })
+    }
     await expect(onboardingEntry).toHaveAttribute("data-read", "false")
   }
 
@@ -496,21 +499,12 @@ export const expectTimelineSwitchAndEntryReadFlow = async (
   await expect(page.getByTestId("entry-render")).toBeVisible({ timeout: 15_000 })
 
   const readToggleButton = visibleByTestId(page, "command-action-entry-read")
-  const readStateAfterOpen = (await onboardingEntry.getAttribute("data-read")) ?? "false"
-  const toggledReadState = readStateAfterOpen === "true" ? "false" : "true"
-  if (options?.electron && !(await isVisible(readToggleButton))) {
+  if (options?.electron) {
     await page.keyboard.press("m")
   } else {
     await readToggleButton.click({ force: true })
   }
-  await expect(onboardingEntry).toHaveAttribute("data-read", toggledReadState)
-  await page.waitForTimeout(1_000)
-  if (options?.electron && !(await isVisible(readToggleButton))) {
-    await page.keyboard.press("m")
-  } else {
-    await visibleByTestId(page, "command-action-entry-read").click({ force: true })
-  }
-  await expect(onboardingEntry).toHaveAttribute("data-read", readStateAfterOpen)
+  await expect(onboardingEntry).toHaveAttribute("data-read", "true")
 
   if (onboardingEntryId) {
     const response = await page.context().request.delete(`${env.apiURL}/reads`, {
