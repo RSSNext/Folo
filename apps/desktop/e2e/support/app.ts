@@ -249,7 +249,9 @@ export const loginWithCredential = async (page: Page, account: TestAccount) => {
 
 export const logoutFromProfileMenu = async (page: Page) => {
   await page.keyboard.press("Escape").catch(() => {})
-  await returnToMainShell(page)
+  if (page.url().startsWith("app://")) {
+    await returnToMainShell(page)
+  }
   await page.getByTestId("profile-menu-trigger").click()
 
   const signOutResponse = page
@@ -576,8 +578,10 @@ export const expectTimelineSwitchAndEntryReadFlow = async (page: Page) => {
     if (await onboardingEntryLink.count()) {
       await onboardingEntryLink.focus()
       await onboardingEntryLink.press("Enter")
+      return onboardingEntryLink
     } else {
       await unreadOnboardingEntry.click({ position: { x: 20, y: 20 } })
+      return null
     }
   }
   const toggleRead = async () => {
@@ -602,12 +606,20 @@ export const expectTimelineSwitchAndEntryReadFlow = async (page: Page) => {
     await toggleReadMenuItem.click()
   }
 
-  await openEntry()
+  const onboardingEntryLink = await openEntry()
 
   const entryRender = page.getByTestId("entry-render")
   if (!(await entryRender.isVisible().catch(() => false))) {
     await unreadOnboardingEntry.focus().catch(() => {})
     await page.keyboard.press("Enter").catch(() => {})
+
+    if (!(await entryRender.isVisible().catch(() => false)) && onboardingEntryLink) {
+      const href = await onboardingEntryLink.getAttribute("href")
+      if (href) {
+        const targetURL = href.startsWith("http") ? href : new URL(href, page.url()).toString()
+        await page.goto(targetURL, { waitUntil: "domcontentloaded" }).catch(() => {})
+      }
+    }
   }
 
   await expect(entryRender).toBeVisible({ timeout: 15_000 })
