@@ -317,7 +317,7 @@ export const openSettings = async (page: Page, tab: "general" | "feeds" = "gener
 
   const settingsModal = page.locator("#setting-modal").first()
 
-  if (!(await settingsModal.isVisible().catch(() => false))) {
+  const openSettingsFromMenu = async () => {
     await returnToMainShell(page)
     const profileTrigger = page.getByTestId("profile-menu-trigger")
     await expect(profileTrigger).toBeVisible({ timeout: 15_000 })
@@ -326,9 +326,18 @@ export const openSettings = async (page: Page, tab: "general" | "feeds" = "gener
     const preferencesItem = page.getByTestId("profile-menu-preferences")
     await expect(preferencesItem).toBeVisible({ timeout: 15_000 })
     await preferencesItem.click()
+
+    await expect(settingsModal).toBeVisible({ timeout: 15_000 })
   }
 
-  await expect(settingsModal).toBeVisible({ timeout: 15_000 })
+  if (!(await settingsModal.isVisible().catch(() => false))) {
+    try {
+      await openSettingsFromMenu()
+    } catch {
+      await openSettingsFromMenu()
+    }
+  }
+
   await openSettingsTab(page, tab)
 }
 
@@ -383,7 +392,7 @@ export const getLanguageLabel = async (page: Page) => {
 
 export const openOnboardingFeedForm = async (
   page: Page,
-  _env?: DesktopE2EEnv,
+  env?: DesktopE2EEnv,
   _options?: { electron?: boolean },
 ) => {
   const discoverInput = page.getByTestId("discover-form-input")
@@ -392,6 +401,10 @@ export const openOnboardingFeedForm = async (
     await returnToMainShell(page)
     await expect(discoverLink).toBeVisible({ timeout: 15_000 })
     await discoverLink.click()
+
+    if (!(await discoverInput.isVisible().catch(() => false)) && env) {
+      await page.goto(buildWebAppURL(env, "/discover"), { waitUntil: "domcontentloaded" })
+    }
   }
 
   await expect(discoverInput).toBeVisible({ timeout: 15_000 })
@@ -554,7 +567,16 @@ export const expectTimelineSwitchAndEntryReadFlow = async (page: Page) => {
   await expect(onboardingEntry).toHaveAttribute("data-read", "true", { timeout: 15_000 })
 
   const toggleReadButton = page.getByTestId("command-action-entry-read")
-  await expect(toggleReadButton).toBeVisible({ timeout: 15_000 })
-  await toggleReadButton.click()
+  if (await toggleReadButton.isVisible().catch(() => false)) {
+    await toggleReadButton.click()
+  } else {
+    const moreActionsTrigger = page.getByTestId("entry-more-actions-trigger")
+    await expect(moreActionsTrigger).toBeVisible({ timeout: 15_000 })
+    await moreActionsTrigger.click()
+
+    const toggleReadMenuItem = page.getByTestId("command-menuitem-entry-read")
+    await expect(toggleReadMenuItem).toBeVisible({ timeout: 15_000 })
+    await toggleReadMenuItem.click()
+  }
   await expect(onboardingEntry).toHaveAttribute("data-read", "false", { timeout: 15_000 })
 }

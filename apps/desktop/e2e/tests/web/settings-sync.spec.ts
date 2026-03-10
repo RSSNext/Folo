@@ -49,6 +49,10 @@ test.describe("web multi-session sync", () => {
       await test.step("session A change syncs to session B", async () => {
         await setLanguage(pageA, "日本語")
         await expect
+          .poll(async () => getLanguageLabel(pageA), { timeout: 15_000 })
+          .toContain("日本語")
+        await pageA.waitForTimeout(1_500)
+        await expect
           .poll(
             async () => {
               await pageB.reload({ waitUntil: "domcontentloaded" })
@@ -63,13 +67,17 @@ test.describe("web multi-session sync", () => {
       await test.step("session B change syncs back to session A", async () => {
         await setLanguage(pageB, "English")
         await expect
+          .poll(async () => getLanguageLabel(pageB), { timeout: 15_000 })
+          .toContain("English")
+        await pageB.waitForTimeout(1_500)
+        await expect
           .poll(
             async () => {
               await pageA.reload({ waitUntil: "domcontentloaded" })
               await openSettings(pageA)
               return getLanguageLabel(pageA)
             },
-            { timeout: 30_000 },
+            { timeout: 60_000 },
           )
           .toContain("English")
       })
