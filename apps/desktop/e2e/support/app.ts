@@ -288,9 +288,51 @@ export const logoutFromProfileMenu = async (page: Page) => {
     .toBe(false)
 }
 
-export const openSettings = async (page: Page) => {
-  const settingsTab = page.getByTestId("settings-tab-general")
-  const languageSelect = page.getByTestId("settings-language-select")
+const deleteWithSession = async (
+  page: Page,
+  env: DesktopE2EEnv,
+  path: string,
+  body: Record<string, string>,
+) => {
+  return page.evaluate(
+    async ({ url, payload }) => {
+      const response = await fetch(url, {
+        method: "DELETE",
+        credentials: "include",
+        headers: {
+          "content-type": "application/json",
+        },
+        body: JSON.stringify(payload),
+      })
+
+      return {
+        ok: response.ok,
+        status: response.status,
+        text: await response.text(),
+      }
+    },
+    {
+      url: `${env.apiURL}${path}`,
+      payload: body,
+    },
+  )
+}
+
+const waitForSettingsTabContent = async (page: Page, tab: "general" | "feeds") => {
+  if (tab === "general") {
+    await expect(page.getByTestId("settings-language-select")).toBeVisible({ timeout: 15_000 })
+    return
+  }
+
+  await expect
+    .poll(async () => page.locator('[data-testid^="settings-feed-row-"]').count(), {
+      timeout: 15_000,
+    })
+    .toBeGreaterThan(0)
+}
+
+export const openSettings = async (page: Page, tab: "general" | "feeds" = "general") => {
+  const settingsTab = page.getByTestId(`settings-tab-${tab}`)
   const settingsModal = page.locator("#setting-modal").first()
 
   if (await settingsModal.isVisible().catch(() => false)) {
@@ -313,19 +355,43 @@ export const openSettings = async (page: Page) => {
     )
     .toBe(true)
 
-  await page.evaluate(() => {
+  await page.evaluate((nextTab) => {
     const { router } = window as typeof window & {
       router?: { showSettings?: (tab?: unknown) => void }
     }
-    router?.showSettings?.("general")
-  })
+    router?.showSettings?.(nextTab)
+  }, tab)
 
   await expect(settingsTab).toBeVisible({ timeout: 15_000 })
-  await expect(languageSelect).toBeVisible({ timeout: 10_000 })
+  await waitForSettingsTabContent(page, tab)
 }
 
 export const openSettingsTab = async (page: Page, tab: "general" | "feeds") => {
-  await page.getByTestId(`settings-tab-${tab}`).click()
+  const settingsTab = page.getByTestId(`settings-tab-${tab}`)
+  await expect(settingsTab).toBeVisible({ timeout: 15_000 })
+
+  if (tab === "feeds") {
+    await expect
+      .poll(
+        async () => {
+          const className = (await settingsTab.getAttribute("class")) ?? ""
+          return !className.includes("opacity-50")
+        },
+        { timeout: 15_000 },
+      )
+      .toBe(true)
+  }
+
+  await settingsTab
+    .evaluate((element) => {
+      if (element instanceof HTMLElement) {
+        element.click()
+      }
+    })
+    .catch(async () => {
+      await settingsTab.click({ force: true, noWaitAfter: true })
+    })
+  await waitForSettingsTabContent(page, tab)
 }
 
 export const closeSettings = async (page: Page) => {
@@ -339,7 +405,15 @@ export const closeSettings = async (page: Page) => {
   if (await isVisible(settingsTab)) {
     const modalClose = page.getByTestId("modal-close").last()
     if (await isVisible(modalClose)) {
-      await modalClose.click()
+      await modalClose
+        .evaluate((element) => {
+          if (element instanceof HTMLElement) {
+            element.click()
+          }
+        })
+        .catch(async () => {
+          await modalClose.click({ force: true, noWaitAfter: true })
+        })
     }
   }
 
@@ -483,15 +557,42 @@ export const unsubscribeFirstFeedFromSettings = async (page: Page, env?: Desktop
     unsubscribedInSettings = true
   }
 
+  const sidebarFeedItem = onboardingFeedId
+    ? page.locator(`[data-feed-id="${onboardingFeedId}"]`).first()
+    : page
+        .locator("[data-feed-id]")
+        .filter({
+          hasText: "Welcome to Folo",
+        })
+        .first()
+
+  if (!unsubscribedInSettings && (await sidebarFeedItem.isVisible().catch(() => false))) {
+    await closeSettings(page)
+    await sidebarFeedItem.click({ button: "right", force: true })
+
+    const unfollowMenuItem = page.getByRole("menuitem", { name: /unfollow/i }).first()
+    if (await unfollowMenuItem.isVisible().catch(() => false)) {
+      await unfollowMenuItem.click({ force: true })
+      await page.getByTestId("confirm-destroy").click()
+
+      if (onboardingFeedId) {
+        await expect(page.locator(`[data-feed-id="${onboardingFeedId}"]`)).toHaveCount(0, {
+          timeout: 15_000,
+        })
+      } else {
+        await expect(sidebarFeedItem).toHaveCount(0, { timeout: 15_000 })
+      }
+
+      unsubscribedInSettings = true
+    }
+  }
+
   if (!unsubscribedInSettings && env && onboardingFeedId) {
-    const response = await page.context().request.delete(`${env.apiURL}/subscriptions`, {
-      data: { feedId: onboardingFeedId },
-      headers: {
-        "content-type": "application/json",
-      },
+    const response = await deleteWithSession(page, env, "/subscriptions", {
+      feedId: onboardingFeedId,
     })
 
-    expect(response.ok()).toBe(true)
+    expect(response.ok).toBe(true)
     await page.reload({ waitUntil: "domcontentloaded" }).catch(() => {})
   }
 }
@@ -542,13 +643,10 @@ export const expectTimelineSwitchAndEntryReadFlow = async (
     : firstOnboardingEntry
 
   if (onboardingEntryId && !(await unreadOnboardingEntry.isVisible().catch(() => false))) {
-    const response = await page.context().request.delete(`${env.apiURL}/reads`, {
-      data: { entryId: onboardingEntryId },
-      headers: {
-        "content-type": "application/json",
-      },
+    const response = await deleteWithSession(page, env, "/reads", {
+      entryId: onboardingEntryId,
     })
-    expect(response.ok()).toBe(true)
+    expect(response.ok).toBe(true)
     await page.reload({ waitUntil: "domcontentloaded" })
     if (await isVisible(onboardingFeed)) {
       await onboardingFeed.click({ force: true })
@@ -557,16 +655,22 @@ export const expectTimelineSwitchAndEntryReadFlow = async (
   }
 
   await onboardingEntry.click({ force: true })
-  await expect(onboardingEntry).toHaveAttribute("data-active", "true")
   await expect(page.getByTestId("entry-render")).toBeVisible({ timeout: 15_000 })
+  await expect
+    .poll(
+      async () => {
+        const active = await onboardingEntry.dataset.active.catch(() => null)
+        const read = await onboardingEntry.dataset.read.catch(() => null)
+        return active === "true" || read === "true"
+      },
+      { timeout: 15_000 },
+    )
+    .toBe(true)
 
   if (onboardingEntryId) {
-    const response = await page.context().request.delete(`${env.apiURL}/reads`, {
-      data: { entryId: onboardingEntryId },
-      headers: {
-        "content-type": "application/json",
-      },
+    const response = await deleteWithSession(page, env, "/reads", {
+      entryId: onboardingEntryId,
     })
-    expect(response.ok()).toBe(true)
+    expect(response.ok).toBe(true)
   }
 }

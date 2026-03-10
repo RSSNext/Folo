@@ -36,16 +36,16 @@ test.describe("electron core flows", () => {
         await expectTimelineSwitchAndEntryReadFlow(electronApp.page, env, { electron: true })
       })
 
+      await test.step("unsubscribes onboarding feed from settings", async () => {
+        await unsubscribeFirstFeedFromSettings(electronApp.page, env)
+        await closeSettings(electronApp.page)
+      })
+
       await test.step("logs out and logs back in", async () => {
         await logoutFromProfileMenu(electronApp.page)
         await closeElectronApp(electronApp)
         electronApp = await launchElectronApp(env)
         await loginWithCredential(electronApp.page, account)
-      })
-
-      await test.step("unsubscribes onboarding feed from settings", async () => {
-        await unsubscribeFirstFeedFromSettings(electronApp.page, env)
-        await closeSettings(electronApp.page)
       })
 
       const cleanup = await tryDeleteCurrentUser(electronApp.page, env)
