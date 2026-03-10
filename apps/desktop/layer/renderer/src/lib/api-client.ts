@@ -1,5 +1,6 @@
 import { IN_ELECTRON } from "@follow/shared/constants"
 import { env } from "@follow/shared/env.desktop"
+import { whoami } from "@follow/store/user/getters"
 import { userActions } from "@follow/store/user/store"
 import { createDesktopAPIHeaders } from "@follow/utils/headers"
 import { FollowClient } from "@follow-app/client-sdk"
@@ -100,6 +101,12 @@ followClient.addErrorInterceptor(async ({ error, response }) => {
 
 followClient.addResponseInterceptor(async ({ response }) => {
   if (response.status === 401) {
+    const shouldPromptForLogin = response.url.includes("/better-auth/get-session") || !whoami()
+
+    if (!shouldPromptForLogin) {
+      return response
+    }
+
     if (IN_ELECTRON && getAuthSessionToken()) {
       return response
     }

@@ -291,6 +291,15 @@ const returnToMainShell = async (page: Page) => {
     const backButton = page.getByTestId("subview-back")
     await expect(backButton).toBeVisible({ timeout: 15_000 })
     await backButton.click()
+
+    if (await discoverInput.isVisible().catch(() => false)) {
+      const currentURL = page.url()
+      const rootURL = currentURL.includes("#")
+        ? `${currentURL.split("#")[0]}#/`
+        : new URL("/", currentURL).toString()
+      await page.goto(rootURL, { waitUntil: "domcontentloaded" }).catch(() => {})
+    }
+
     await expect
       .poll(async () => discoverInput.isVisible().catch(() => false), { timeout: 15_000 })
       .toBe(false)
