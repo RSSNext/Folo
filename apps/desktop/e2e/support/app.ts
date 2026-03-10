@@ -550,7 +550,10 @@ export const unsubscribeFirstFeedFromSettings = async (page: Page, env?: Desktop
       hasText: "Welcome to Folo",
     })
     .first()
-  const onboardingFeedId = await onboardingFeedItem.getAttribute("data-feed-id")
+  const onboardingFeedId =
+    (await onboardingFeedItem.count()) > 0
+      ? await onboardingFeedItem.getAttribute("data-feed-id")
+      : null
   let unsubscribedInSettings = false
 
   await openSettings(page)
