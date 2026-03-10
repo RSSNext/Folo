@@ -585,6 +585,8 @@ export const expectTimelineSwitchAndEntryReadFlow = async (page: Page) => {
     }
   }
   const toggleRead = async () => {
+    await page.keyboard.press("m").catch(() => {})
+
     const toggleReadButton = page.getByTestId("command-action-entry-read").last()
     if (await toggleReadButton.isVisible().catch(() => false)) {
       await toggleReadButton.click()
