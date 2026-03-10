@@ -1,11 +1,21 @@
 import { useCallback } from "react"
 import { useGoogleReCaptcha } from "react-google-recaptcha-v3"
 
+type FoloE2EWindow = Window &
+  typeof globalThis & {
+    __FOLO_E2E_RECAPTCHA_TOKEN__?: string
+  }
+
 export const useRecaptchaToken = () => {
   const { executeRecaptcha } = useGoogleReCaptcha()
 
   return useCallback(
     async (action: string) => {
+      const e2eToken = (window as FoloE2EWindow).__FOLO_E2E_RECAPTCHA_TOKEN__
+      if (e2eToken) {
+        return e2eToken
+      }
+
       if (!executeRecaptcha) {
         return null
       }

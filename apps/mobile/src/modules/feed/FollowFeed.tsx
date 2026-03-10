@@ -8,7 +8,7 @@ import { zodResolver } from "@hookform/resolvers/zod"
 import { useEffect, useMemo, useState } from "react"
 import { Controller, useForm } from "react-hook-form"
 import { useTranslation } from "react-i18next"
-import { View } from "react-native"
+import { Alert, View } from "react-native"
 import { useSafeAreaInsets } from "react-native-safe-area-context"
 import { z } from "zod"
 
@@ -140,6 +140,40 @@ function FollowImpl(props: { feedId: string; defaultView?: FeedViewType }) {
       setIsLoading(false)
     }
   }
+
+  const handleUnfollow = () => {
+    if (!subscription?.feedId || isLoading) return
+
+    Alert.alert("Unsubscribe?", "This will remove the feed from your subscriptions", [
+      {
+        text: "Cancel",
+        style: "cancel",
+      },
+      {
+        text: t("operation.unfollow"),
+        style: "destructive",
+        onPress: async () => {
+          try {
+            setIsLoading(true)
+            await subscriptionSyncService.unsubscribe(subscription.feedId)
+            toast.success("Feed unfollowed")
+            if (canDismiss) {
+              navigate.dismiss()
+            } else {
+              navigate.back()
+            }
+          } catch (error) {
+            toast.error(
+              error instanceof Error ? getBizFetchErrorMessage(error) : "Failed to update feed",
+            )
+          } finally {
+            setIsLoading(false)
+          }
+        },
+      },
+    ])
+  }
+
   const insets = useSafeAreaInsets()
   const { isValid, isDirty } = form.formState
   const setScreenOptions = useSetModalScreenOptions()
@@ -161,14 +195,15 @@ function FollowImpl(props: { feedId: string; defaultView?: FeedViewType }) {
       Header={
         <NavigationBlurEffectHeaderView
           title={`${isSubscribed ? tCommon("words.edit") : tCommon("words.follow")} - ${feed?.title}`}
-          headerRight={
+          headerRight={() => (
             <HeaderSubmitTextButton
               isValid={isValid}
               onPress={form.handleSubmit(submit)}
               isLoading={isLoading}
               label={isSubscribed ? tCommon("words.save") : tCommon("words.follow")}
+              testID="follow-submit"
             />
-          }
+          )}
         />
       }
     >
@@ -201,15 +236,29 @@ function FollowImpl(props: { feedId: string; defaultView?: FeedViewType }) {
             ) : feed.latestEntryPublishedAt ? (
               <View className="flex-row items-center gap-1">
                 <SafeAlertCuteReIcon color={textLabelColor} width={12} height={12} />
-                <Text className="text-sm text-text">
-                  {tCommon("feed.updated_at")}
-                  <RelativeDateTime date={feed.latestEntryPublishedAt} />
-                </Text>
+                <Text className="text-sm text-text">{tCommon("feed.updated_at")}</Text>
+                <RelativeDateTime
+                  className="text-sm text-text"
+                  date={feed.latestEntryPublishedAt}
+                />
               </View>
             ) : null}
           </View>
         </FeedSummary>
       </GroupedInsetListCard>
+      {isSubscribed && (
+        <GroupedInsetListCard className="p-4">
+          <View className="items-start">
+            <Text
+              className="text-base font-medium text-red"
+              testID="follow-unfollow"
+              onPress={handleUnfollow}
+            >
+              {t("operation.unfollow")}
+            </Text>
+          </View>
+        </GroupedInsetListCard>
+      )}
       {/* Group 2 */}
       <GroupedInsetListCard className="gap-y-4 p-4">
         <FormProvider form={form}>

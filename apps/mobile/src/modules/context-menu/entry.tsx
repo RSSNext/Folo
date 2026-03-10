@@ -57,7 +57,7 @@ export const EntryItemContextMenu = ({
   if (!entry) return null
   return (
     <ContextMenu.Root>
-      <ContextMenu.Trigger>{children}</ContextMenu.Trigger>
+      <ContextMenu.Trigger asChild>{children}</ContextMenu.Trigger>
 
       <ContextMenu.Content>
         <ContextMenu.Preview size="STRETCH" onPress={handlePressPreview}>

@@ -6,7 +6,6 @@ import { getStorageNS } from "@follow/utils/ns"
 import { isEmptyObject, sleep } from "@follow/utils/utils"
 import type { SettingsTab } from "@follow-app/client-sdk"
 import { FollowAPIError } from "@follow-app/client-sdk"
-import { omit } from "es-toolkit/compat"
 import type { PrimitiveAtom } from "jotai"
 
 import { __aiSettingAtom, aiServerSyncWhiteListKeys, getAISettings } from "~/atoms/settings/ai"
@@ -26,17 +25,28 @@ type SettingMapping = {
   ai: AISettings
 }
 
-const omitKeys = []
+const pickSyncPayload = <T extends object>(payload: T, keys: readonly (keyof T | string)[]) => {
+  const nextPayload = {} as Partial<T>
+  const record = payload as Record<string, unknown>
+
+  for (const key of keys) {
+    if (Object.prototype.hasOwnProperty.call(record, key)) {
+      nextPayload[key as keyof T] = record[key as string] as T[keyof T]
+    }
+  }
+
+  return nextPayload
+}
 
 const localSettingGetterMap = {
-  appearance: () => omit(getUISettings(), uiServerSyncWhiteListKeys, omitKeys),
-  general: () => omit(getGeneralSettings(), generalServerSyncWhiteListKeys, omitKeys),
-  ai: () => omit(getAISettings(), aiServerSyncWhiteListKeys, omitKeys),
+  appearance: () => getUISettings(),
+  general: () => getGeneralSettings(),
+  ai: () => getAISettings(),
 }
 
 const createInternalSetter =
   <T>(atom: PrimitiveAtom<T>) =>
-  (payload: T) => {
+  (payload: Partial<T>) => {
     const current = jotaiStore.get(atom)
     jotaiStore.set(atom, { ...current, ...payload })
   }
@@ -125,7 +135,7 @@ class SettingSyncQueue {
       const tab = bizSettingKeyToTabMapping[data.key]
       if (!tab) return
 
-      const nextPayload = omit(data.payload, omitKeys, settingWhiteListMap[tab])
+      const nextPayload = pickSyncPayload(data.payload, settingWhiteListMap[tab])
       if (isEmptyObject(nextPayload)) return
       this.enqueue(tab, nextPayload)
     })
@@ -207,7 +217,7 @@ class SettingSyncQueue {
   private chain = Promise.resolve()
 
   private threshold = 1000
-  private enqueueTime = Date.now()
+  private flushScheduled = false
 
   async enqueue<T extends SettingSyncTab>(tab: T, payload: Partial<SettingMapping[T]>) {
     const currentUserId = this.getCurrentUserId()
@@ -227,10 +237,20 @@ class SettingSyncQueue {
       date: now,
     })
 
-    if (now - this.enqueueTime > this.threshold) {
-      this.chain = this.chain.then(() => sleep(this.threshold)).finally(() => this.flush())
-      this.enqueueTime = Date.now()
+    if (this.flushScheduled) {
+      return
     }
+
+    this.flushScheduled = true
+    this.chain = this.chain
+      .finally(() => sleep(this.threshold))
+      .finally(async () => {
+        try {
+          await this.flush()
+        } finally {
+          this.flushScheduled = false
+        }
+      })
   }
 
   private async flush() {
@@ -264,7 +284,7 @@ class SettingSyncQueue {
 
     const promises = [] as Promise<any>[]
     for (const tab in groupedTab) {
-      const json = omit(groupedTab[tab], omitKeys, settingWhiteListMap[tab])
+      const json = pickSyncPayload(groupedTab[tab], settingWhiteListMap[tab])
 
       if (isEmptyObject(json)) {
         continue
@@ -312,7 +332,7 @@ class SettingSyncQueue {
     if (!tab) {
       const promises = [] as Promise<any>[]
       for (const tab in localSettingGetterMap) {
-        const payload = localSettingGetterMap[tab]()
+        const payload = pickSyncPayload(localSettingGetterMap[tab](), settingWhiteListMap[tab])
 
         const promise = followClient.api.settings.update({
           tab: tab as SettingsTab,
@@ -325,7 +345,7 @@ class SettingSyncQueue {
       this.chain = this.chain.finally(() => Promise.all(promises))
       return this.chain
     } else {
-      const payload = localSettingGetterMap[tab]()
+      const payload = pickSyncPayload(localSettingGetterMap[tab](), settingWhiteListMap[tab])
 
       this.chain = this.chain.finally(() =>
         followClient.api.settings.update({
@@ -377,7 +397,7 @@ class SettingSyncQueue {
 
       if (!localSettingsUpdated || remoteUpdatedDate > localSettingsUpdated) {
         // Use remote and update local
-        const nextPayload = omit(remoteSettingPayload, omitKeys, settingWhiteListMap[tab])
+        const nextPayload = pickSyncPayload(remoteSettingPayload, settingWhiteListMap[tab])
 
         if (isEmptyObject(nextPayload)) {
           continue

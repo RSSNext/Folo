@@ -48,6 +48,7 @@ export const EntryListContentArticle = ({
         extraData={extraData as EntryExtraData}
         view={view}
         hasTopSeparator={index > 0}
+        testID={index === 0 ? "timeline-entry-first" : undefined}
       />
     ),
     [view],

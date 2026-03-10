@@ -182,6 +182,7 @@ const SearchInput = () => {
           </Animated.View>
         )}
         <TextInput
+          testID="discover-search-input"
           allowFontScaling={false}
           textAlignVertical="center"
           enterKeyHint="search"
@@ -215,6 +216,7 @@ const SearchInput = () => {
       </View>
 
       <ReAnimatedPressable
+        testID="discover-search-cancel"
         hitSlop={10}
         onPress={() => {
           setIsFocused(false)

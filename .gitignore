@@ -35,3 +35,16 @@ apps/desktop/resources/cli
 .serena
 
 .wrangler
+
+# Local agent artifacts
+.codex/
+
+# E2E outputs
+/apps/desktop/e2e/playwright-report/
+/apps/desktop/e2e/test-results/
+/apps/mobile/e2e/artifacts/
+/apps/mobile/report.xml
+/report.xml
+
+# Mobile local E2E build artifacts
+apps/mobile/build-*.tar.gz

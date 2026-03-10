@@ -1,0 +1,9 @@
+appId: is.follow
+---
+- runFlow: register.yaml
+- runFlow: sign-out.yaml
+- runFlow: login.yaml
+- runFlow: ensure-onboarding-unfollowed.yaml
+- runFlow: follow-onboarding.yaml
+- runFlow: timeline-entry.yaml
+- runFlow: unfollow-onboarding.yaml

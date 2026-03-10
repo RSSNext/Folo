@@ -1,0 +1,11 @@
+appId: is.follow
+name: iOS content journey
+---
+- runFlow:
+    file: ./ensure-onboarding-unfollowed.yaml
+- runFlow:
+    file: ./follow-onboarding.yaml
+- runFlow:
+    file: ./timeline-entry.yaml
+- runFlow:
+    file: ./unfollow-onboarding.yaml

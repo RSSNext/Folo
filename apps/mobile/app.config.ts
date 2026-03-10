@@ -25,6 +25,8 @@ export default ({ config }: ConfigContext): ExpoConfig => {
       eas: {
         projectId: "a6335b14-fb84-45aa-ba80-6f6ab8926920",
       },
+      e2eEnvProfile: process.env.EXPO_PUBLIC_E2E_ENV_PROFILE ?? null,
+      e2eLanguage: process.env.EXPO_PUBLIC_E2E_LANGUAGE ?? null,
     },
     owner: "follow",
     // disable expo updates for now, https://github.com/expo/expo/issues/29630

@@ -1,0 +1,48 @@
+appId: is.follow
+---
+- runFlow: ../shared/open-auth.yaml
+- tapOn:
+    text: Continue with Email
+- extendedWaitUntil:
+    visible:
+      id: register-email-input
+    timeout: 15000
+- tapOn:
+    id: register-email-input
+- inputText: ${E2E_EMAIL}
+- tapOn:
+    id: register-password-input
+- waitForAnimationToEnd
+- tapOn:
+    point: "352,580"
+- tapOn:
+    id: register-password-input
+- setClipboard: ${E2E_PASSWORD}
+- pasteText
+- tapOn:
+    id: register-confirm-password-input
+- waitForAnimationToEnd
+- tapOn:
+    point: "352,580"
+- tapOn:
+    id: register-confirm-password-input
+- setClipboard: ${E2E_PASSWORD}
+- pasteText
+- pressKey: Enter
+- runFlow:
+    when:
+      visible:
+        id: onboarding-next
+    commands:
+      - tapOn:
+          id: onboarding-next
+      - tapOn:
+          id: onboarding-next
+      - tapOn:
+          id: onboarding-next
+      - tapOn:
+          id: onboarding-next
+- extendedWaitUntil:
+    visible:
+      id: timeline-view-articles
+    timeout: 30000

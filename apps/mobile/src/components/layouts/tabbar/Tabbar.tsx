@@ -82,11 +82,12 @@ export const Tabbar: FC<{
       <Grid columns={renderTabScreens.length} gap={10} className="mt-[7]">
         {renderTabScreens.map((route, index) => {
           const focused = index === selectedIndex
-          const label = route.title
+          const label = route.title ?? ""
           return (
             <MemoedTabItem
               key={route.tabScreenIndex}
               focused={focused}
+              identifier={route.identifier ?? String(route.tabScreenIndex)}
               index={index}
               label={label}
               renderIcon={route.icon}
@@ -100,55 +101,59 @@ export const Tabbar: FC<{
 }
 const MemoedTabItem: FC<{
   focused: boolean
+  identifier: string
   index: number
   label: string
   renderIcon?: (options: TabbarIconProps) => React.ReactNode
   onPress: (index: number) => void
-}> = memo(({ focused, index, label, renderIcon: renderIconFn, onPress: onPressProp }) => {
-  const inactiveTintColor = "#999"
-  const onPress = () => {
-    onPressProp?.(index)
-  }
-  const accessibilityLabel =
-    typeof label === "string" && Platform.OS === "ios" ? `${label}, tab` : undefined
-  const renderIcon = useCallback(
-    ({ focused }: { focused: boolean }) => {
-      const iconSize = ICON_SIZE_ROUND
-      return (
-        <TabIcon
-          focused={focused}
-          iconSize={iconSize}
-          inactiveTintColor={inactiveTintColor}
-          renderIcon={renderIconFn || noop}
-        />
-      )
-    },
-    [renderIconFn],
-  )
-  const renderLabel = useCallback(
-    ({ focused }: { focused: boolean }) => {
-      return (
-        <TextLabel
-          focused={focused}
-          accessibilityLabel={accessibilityLabel}
-          label={label}
-          inactiveTintColor={inactiveTintColor}
-          style={styles.labelBeneath}
-        />
-      )
-    },
-    [label, accessibilityLabel, inactiveTintColor],
-  )
-  return (
-    <TabItem
-      focused={focused}
-      onPress={onPress}
-      originalRenderIcon={renderIcon}
-      originalRenderLabel={renderLabel}
-      accessibilityLabel={accessibilityLabel}
-    />
-  )
-})
+}> = memo(
+  ({ focused, identifier, index, label, renderIcon: renderIconFn, onPress: onPressProp }) => {
+    const inactiveTintColor = "#999"
+    const onPress = () => {
+      onPressProp?.(index)
+    }
+    const accessibilityLabel =
+      typeof label === "string" && Platform.OS === "ios" ? `${label}, tab` : undefined
+    const renderIcon = useCallback(
+      ({ focused }: { focused: boolean }) => {
+        const iconSize = ICON_SIZE_ROUND
+        return (
+          <TabIcon
+            focused={focused}
+            iconSize={iconSize}
+            inactiveTintColor={inactiveTintColor}
+            renderIcon={renderIconFn || noop}
+          />
+        )
+      },
+      [renderIconFn],
+    )
+    const renderLabel = useCallback(
+      ({ focused }: { focused: boolean }) => {
+        return (
+          <TextLabel
+            focused={focused}
+            accessibilityLabel={accessibilityLabel}
+            label={label}
+            inactiveTintColor={inactiveTintColor}
+            style={styles.labelBeneath}
+          />
+        )
+      },
+      [label, accessibilityLabel, inactiveTintColor],
+    )
+    return (
+      <TabItem
+        focused={focused}
+        testID={`tab-${identifier}`}
+        onPress={onPress}
+        originalRenderIcon={renderIcon}
+        originalRenderLabel={renderLabel}
+        accessibilityLabel={accessibilityLabel}
+      />
+    )
+  },
+)
 const TextLabel = (props: {
   focused: boolean
   accessibilityLabel: string | undefined
@@ -286,12 +291,14 @@ const TabItem = memo(
     originalRenderIcon,
     originalRenderLabel,
     accessibilityLabel,
+    testID,
   }: {
     focused: boolean
     onPress: () => void
     originalRenderIcon: (scene: { focused: boolean }) => React.ReactNode
     originalRenderLabel: (scene: { focused: boolean }) => React.ReactNode
     accessibilityLabel?: string
+    testID?: string
   }) => {
     const pressed = useSharedValue(0)
     const animatedStyle = useAnimatedStyle(() => {
@@ -308,6 +315,7 @@ const TabItem = memo(
     }
     return (
       <Pressable
+        testID={testID}
         onPress={() => {
           onPress()
           cancelAnimation(pressed)

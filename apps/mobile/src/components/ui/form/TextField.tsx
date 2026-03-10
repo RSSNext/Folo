@@ -132,6 +132,8 @@ export const PlainTextField = ({
       <TextInput
         {...props}
         ref={textInputRef}
+        onChange={props.onChange}
+        onChangeText={props.onChangeText}
         onFocus={composeEventHandlers(props.onFocus, () => setIsFocused(true))}
         onBlur={composeEventHandlers(props.onBlur, () => setIsFocused(false))}
         selectionColor={accentColor}

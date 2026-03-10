@@ -1,7 +1,6 @@
 import { UserRole } from "@follow/constants"
 import { useUserRole, useWhoami } from "@follow/store/user/hooks"
 import type { StatusConfigs as ServerConfigs } from "@follow-app/client-sdk"
-import type { ParseKeys } from "i18next"
 import type { FC } from "react"
 import { Fragment, useMemo } from "react"
 import { useTranslation } from "react-i18next"
@@ -43,28 +42,53 @@ import { NotificationsScreen } from "./routes/Notifications"
 import { PlanScreen } from "./routes/Plan"
 import { PrivacyScreen } from "./routes/Privacy"
 
-interface GroupNavigationLink {
-  label: Extract<ParseKeys<"settings">, `titles.${string}`>
+type SettingsNavigationTranslationKey =
+  | "titles.general"
+  | "titles.notifications"
+  | "titles.appearance"
+  | "titles.data_control"
+  | "titles.account"
+  | "titles.subscription.short"
+  | "titles.actions"
+  | "titles.feeds"
+  | "titles.lists"
+  | "titles.privacy"
+  | "titles.about"
+  | "titles.sign_out"
+
+interface GroupNavigationLinkBase {
   icon: React.ElementType
   onPress: (data: { navigation: Navigation }) => void
   iconBackgroundColor: string
   trialNotAllowed?: boolean
-
   anonymous?: boolean
   todo?: boolean
   hideIf?: (serverConfigs?: ServerConfigs | null) => boolean
+  testID?: string
 }
+
+type GroupNavigationLink =
+  | (GroupNavigationLinkBase & {
+      translationKey: SettingsNavigationTranslationKey
+      label?: never
+    })
+  | (GroupNavigationLinkBase & {
+      label: string
+      translationKey?: never
+    })
+
 const SettingGroupNavigationLinks: GroupNavigationLink[] = [
   {
-    label: "titles.general",
+    translationKey: "titles.general",
     icon: Settings1CuteFiIcon,
     onPress: ({ navigation }) => {
       navigation.pushControllerView(GeneralScreen)
     },
     iconBackgroundColor: "#F43F5E",
+    testID: "settings-general-link",
   },
   {
-    label: "titles.notifications",
+    translationKey: "titles.notifications",
     icon: NotificationCuteReIcon,
     onPress: ({ navigation }) => {
       navigation.pushControllerView(NotificationsScreen)
@@ -74,7 +98,7 @@ const SettingGroupNavigationLinks: GroupNavigationLink[] = [
     anonymous: false,
   },
   {
-    label: "titles.appearance",
+    translationKey: "titles.appearance",
     icon: PaletteCuteFiIcon,
     onPress: ({ navigation }) => {
       navigation.pushControllerView(AppearanceScreen)
@@ -82,7 +106,7 @@ const SettingGroupNavigationLinks: GroupNavigationLink[] = [
     iconBackgroundColor: "#8B5CF6",
   },
   {
-    label: "titles.data_control",
+    translationKey: "titles.data_control",
     icon: DatabaseIcon,
     onPress: ({ navigation }) => {
       navigation.pushControllerView(DataScreen)
@@ -91,19 +115,20 @@ const SettingGroupNavigationLinks: GroupNavigationLink[] = [
     anonymous: false,
   },
   {
-    label: "titles.account",
+    translationKey: "titles.account",
     icon: UserSettingCuteFiIcon,
     onPress: ({ navigation }) => {
       navigation.pushControllerView(AccountScreen)
     },
     iconBackgroundColor: "#F97316",
     anonymous: false,
+    testID: "settings-account-link",
   },
 ]
 
 const SubscriptionGroupNavigationLinks: GroupNavigationLink[] = [
   {
-    label: "titles.subscription.short",
+    translationKey: "titles.subscription.short",
     icon: PowerOutlineIcon,
     onPress: ({ navigation }) => {
       navigation.pushControllerView(PlanScreen)
@@ -116,7 +141,7 @@ const SubscriptionGroupNavigationLinks: GroupNavigationLink[] = [
 
 const DataGroupNavigationLinks: GroupNavigationLink[] = [
   {
-    label: "titles.actions",
+    translationKey: "titles.actions",
     icon: Magic2CuteFiIcon,
     onPress: ({ navigation }) => {
       navigation.pushControllerView(ActionsScreen)
@@ -127,7 +152,7 @@ const DataGroupNavigationLinks: GroupNavigationLink[] = [
   },
 
   {
-    label: "titles.feeds",
+    translationKey: "titles.feeds",
     icon: CertificateCuteFiIcon,
     onPress: ({ navigation }) => {
       navigation.pushControllerView(FeedsScreen)
@@ -136,9 +161,10 @@ const DataGroupNavigationLinks: GroupNavigationLink[] = [
     todo: true,
     anonymous: false,
     trialNotAllowed: true,
+    testID: "settings-feeds-link",
   },
   {
-    label: "titles.lists",
+    translationKey: "titles.lists",
     icon: RadaCuteFiIcon,
     onPress: ({ navigation }) => {
       navigation.pushControllerView(ListsScreen)
@@ -151,7 +177,7 @@ const DataGroupNavigationLinks: GroupNavigationLink[] = [
 
 const PrivacyGroupNavigationLinks: GroupNavigationLink[] = [
   {
-    label: "titles.privacy",
+    translationKey: "titles.privacy",
     icon: SafeLockFilledIcon,
     onPress: ({ navigation }) => {
       navigation.pushControllerView(PrivacyScreen)
@@ -159,7 +185,7 @@ const PrivacyGroupNavigationLinks: GroupNavigationLink[] = [
     iconBackgroundColor: "#6366F1",
   },
   {
-    label: "titles.about",
+    translationKey: "titles.about",
     icon: StarCuteFiIcon,
     onPress: ({ navigation }) => {
       navigation.pushControllerView(AboutScreen)
@@ -170,7 +196,7 @@ const PrivacyGroupNavigationLinks: GroupNavigationLink[] = [
 
 const ActionGroupNavigationLinks: GroupNavigationLink[] = [
   {
-    label: "titles.sign_out",
+    translationKey: "titles.sign_out",
     icon: ExitCuteFiIcon,
     onPress: () => {
       Alert.alert("Sign out", "Are you sure you want to sign out?", [
@@ -186,6 +212,7 @@ const ActionGroupNavigationLinks: GroupNavigationLink[] = [
     },
     iconBackgroundColor: "#DC2626",
     anonymous: false,
+    testID: "settings-sign-out",
   },
 ]
 
@@ -201,15 +228,19 @@ const NavigationLinkGroup: FC<{
       {links
         .filter((link) => !link.todo)
         .map((link) => {
+          const label = link.translationKey ? String(t(link.translationKey)) : link.label
+          const key = link.testID ?? link.translationKey ?? link.label
+
           return (
             <GroupedInsetListNavigationLink
-              key={link.label}
-              label={t(link.label)}
+              key={key}
+              label={label}
               icon={
                 <GroupedInsetListNavigationLinkIcon backgroundColor={link.iconBackgroundColor}>
                   <link.icon height={18} width={18} color="#fff" />
                 </GroupedInsetListNavigationLinkIcon>
               }
+              testID={link.testID}
               onPress={() => {
                 if (
                   link.trialNotAllowed &&
@@ -246,11 +277,12 @@ export const SettingsList: FC = () => {
         const filteredGroup = group
           .filter((link) => link.anonymous !== !!whoami)
           .filter((link) => !link.hideIf?.(serverConfigs))
+
         if (filteredGroup.length === 0) return false
         return filteredGroup
       })
       .filter((group): group is GroupNavigationLink[] => group !== false)
-  }, [whoami, serverConfigs])
+  }, [serverConfigs, whoami])
 
   const pixelRatio = PixelRatio.get()
   const groupGap = 100 / pixelRatio
