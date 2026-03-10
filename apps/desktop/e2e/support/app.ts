@@ -402,8 +402,21 @@ export const openOnboardingFeedForm = async (
     await expect(discoverLink).toBeVisible({ timeout: 15_000 })
     await discoverLink.click()
 
-    if (!(await discoverInput.isVisible().catch(() => false)) && env) {
-      await page.goto(buildWebAppURL(env, "/discover"), { waitUntil: "domcontentloaded" })
+    if (!(await discoverInput.isVisible().catch(() => false))) {
+      const electronDiscoverURL = (() => {
+        const currentURL = page.url()
+        if (!currentURL.startsWith("app://")) {
+          return null
+        }
+
+        const [baseURL] = currentURL.split("#")
+        return `${baseURL}#/discover`
+      })()
+
+      const discoverURL = electronDiscoverURL ?? (env ? buildWebAppURL(env, "/discover") : null)
+      if (discoverURL) {
+        await page.goto(discoverURL, { waitUntil: "domcontentloaded" })
+      }
     }
   }
 
