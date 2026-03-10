@@ -9,6 +9,7 @@ export const ModalClose = () => {
 
   return (
     <MotionButtonBase
+      data-testid="modal-close"
       aria-label={t("words.close")}
       className="absolute right-6 top-6 flex size-8 items-center justify-center rounded-md duration-200 hover:bg-material-ultra-thick"
       onClick={dismiss}

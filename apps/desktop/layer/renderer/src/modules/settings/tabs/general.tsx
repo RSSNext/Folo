@@ -260,6 +260,7 @@ export const LanguageSelector = ({
       <ResponsiveSelect
         size="sm"
         triggerClassName="w-48"
+        triggerTestId="settings-language-select"
         contentClassName={contentClassName}
         defaultValue={finalRenderLanguage}
         value={finalRenderLanguage}

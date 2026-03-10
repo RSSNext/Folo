@@ -1,0 +1,24 @@
+appId: is.follow
+---
+- tapOn:
+    id: tab-SubscriptionsTabScreen
+- extendedWaitUntil:
+    visible:
+      id: subscription-feed-url-folo-onboarding
+    timeout: 20000
+- longPressOn:
+    id: subscription-feed-url-folo-onboarding
+- extendedWaitUntil:
+    visible: Unfollow
+    timeout: 10000
+- tapOn: Unfollow
+- tapOn:
+    text: Unfollow
+- extendedWaitUntil:
+    notVisible:
+      id: subscription-feed-url-folo-onboarding
+    timeout: 20000
+- assertNotVisible:
+    id: subscription-feed-url-folo-onboarding
+- assertVisible:
+    id: tab-IndexTabScreen

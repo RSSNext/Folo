@@ -85,6 +85,7 @@ export const LoginModalContent = (props: LoginModalContentProps) => {
           transition={Spring.presets.smooth}
         >
           <MotionButtonBase
+            data-testid="auth-back"
             className="flex cursor-button items-center gap-1.5 rounded-lg px-3 py-1.5 text-sm font-medium duration-200 hover:bg-fill-secondary"
             onClick={() => setIsEmail(false)}
           >
@@ -165,6 +166,7 @@ export const LoginModalContent = (props: LoginModalContentProps) => {
                     transition={{ ...Spring.presets.smooth, delay: index * 0.05 }}
                   >
                     <button
+                      data-testid={`login-provider-${key}`}
                       type="button"
                       onClick={() => {
                         if (key === "credential") {
@@ -250,6 +252,7 @@ export const LoginModalContent = (props: LoginModalContentProps) => {
 
           {/* Switch Account Type */}
           <m.button
+            data-testid={isRegister ? "register-switch-login" : "login-switch-register"}
             className="group w-full cursor-pointer pb-2 text-center text-sm font-medium transition-colors"
             onClick={() => setIsRegister(!isRegister)}
             whileHover={{ scale: 1.02 }}
@@ -284,6 +287,7 @@ export const LoginModalContent = (props: LoginModalContentProps) => {
         <div
           onClick={stopPropagation}
           tabIndex={-1}
+          data-testid="login-modal"
           className="relative w-[28rem] overflow-hidden rounded-2xl border border-folo/20 bg-background p-6 shadow-2xl shadow-folo/10 backdrop-blur-xl"
         >
           {/* Inner glow layer */}

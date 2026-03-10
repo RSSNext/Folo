@@ -15,15 +15,21 @@ export interface ModalHeaderSubmitButtonProps {
   isValid: boolean
   onPress: () => void
   isLoading?: boolean
+  testID?: string
 }
 export const HeaderSubmitButton = ({
   isValid,
   onPress,
   isLoading,
+  testID,
 }: ModalHeaderSubmitButtonProps) => {
   const label = useColor("label")
   return (
-    <UINavigationHeaderActionButton onPress={onPress} disabled={!isValid || isLoading}>
+    <UINavigationHeaderActionButton
+      onPress={onPress}
+      disabled={!isValid || isLoading}
+      testID={testID}
+    >
       {isLoading ? (
         <PlatformActivityIndicator size="small" color={withOpacity(label, 0.5)} />
       ) : (
@@ -37,13 +43,18 @@ export const HeaderSubmitTextButton = ({
   onPress,
   isLoading,
   label,
+  testID,
 }: ModalHeaderSubmitButtonProps & {
   label?: string
 }) => {
   const { t } = useTranslation("common")
   const labelColor = useColor("label")
   return (
-    <UINavigationHeaderActionButton onPress={onPress} disabled={!isValid || isLoading}>
+    <UINavigationHeaderActionButton
+      onPress={onPress}
+      disabled={!isValid || isLoading}
+      testID={testID}
+    >
       {isLoading && (
         <View className="absolute inset-y-0 right-2 items-center justify-center">
           <PlatformActivityIndicator size="small" color={withOpacity(labelColor, 0.5)} />
@@ -69,6 +80,7 @@ export const HeaderCloseOnly = () => {
   return (
     <StackScreenHeaderPortal>
       <UINavigationHeaderActionButton
+        testID="auth-back"
         className="absolute"
         style={{
           top: insets.top,

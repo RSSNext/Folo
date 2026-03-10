@@ -40,13 +40,18 @@ import { DiscoverTransform } from "./DiscoverTransform"
 import { DiscoverUser } from "./DiscoverUser"
 import { FeedForm } from "./FeedForm"
 
+const isFeedLikeUrl = (value: string) => {
+  const trimmed = value.trim()
+  return /^(?:https?:\/\/|rsshub:\/\/|folo:\/\/|follow:\/\/)/.test(trimmed)
+}
+
 // Auto-detect input type
 function detectInputType(value: string): "rss" | "rsshub" | "search" {
   const trimmed = value.trim()
   if (trimmed.startsWith("rsshub://")) {
     return "rsshub"
   }
-  if (trimmed.startsWith("https://") || trimmed.startsWith("http://")) {
+  if (isFeedLikeUrl(trimmed) && !trimmed.startsWith("rsshub://")) {
     return "rss"
   }
   return "search"
@@ -58,7 +63,9 @@ const searchSchema = z.object({
 })
 
 const rssSchema = z.object({
-  keyword: z.string().url().startsWith("https://"),
+  keyword: z.string().refine(isFeedLikeUrl, {
+    message: "Invalid RSS URL",
+  }),
 })
 
 const rsshubSchema = z.object({
@@ -306,6 +313,7 @@ export function UnifiedDiscoverForm() {
                   <FormControl>
                     <Input
                       autoFocus
+                      data-testid="discover-form-input"
                       {...field}
                       value={field.value || ""}
                       onChange={handleKeywordChange}
@@ -397,6 +405,7 @@ export function UnifiedDiscoverForm() {
             )}
             <div className="center flex flex-col gap-3" data-testid="discover-form-actions">
               <Button
+                data-testid="discover-form-submit"
                 disabled={!form.formState.isValid}
                 type="submit"
                 isLoading={mutation.isPending}

@@ -9,6 +9,7 @@ import { Logo } from "../ui/logo"
 export function NoLoginInfo({ target }: { target: "timeline" | "subscriptions" }) {
   return (
     <Pressable
+      testID={`no-login-${target}`}
       className="flex-1 items-center justify-center gap-3"
       onPress={() => destination.Login()}
     >

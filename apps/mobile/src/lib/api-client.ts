@@ -7,7 +7,7 @@ import { Platform } from "react-native"
 import DeviceInfo from "react-native-device-info"
 
 import { LoginScreen } from "../screens/(modal)/LoginScreen"
-import { getCookie } from "./auth"
+import { getAuthStateRevision, getCookie } from "./auth"
 import { getClientId, getSessionId } from "./client-session"
 import { getUserAgent } from "./native/user-agent"
 import { Navigation } from "./navigation/Navigation"
@@ -36,6 +36,9 @@ followClient.addRequestInterceptor(async (ctx) => {
 })
 followClient.addRequestInterceptor(async (ctx) => {
   const { options } = ctx
+  ;(options as typeof options & { __followAuthRevision?: number }).__followAuthRevision =
+    getAuthStateRevision()
+
   const header = options.headers || {}
   header["X-Client-Id"] = getClientId()
   header["X-Session-Id"] = getSessionId()
@@ -58,9 +61,43 @@ followClient.addRequestInterceptor(async (ctx) => {
   return ctx
 })
 
+const getRequestCookie = (headers: HeadersInit | undefined) => {
+  if (!headers) {
+    return
+  }
+
+  if (headers instanceof Headers) {
+    return headers.get("cookie") ?? undefined
+  }
+
+  if (Array.isArray(headers)) {
+    return headers.find(([key]) => key.toLowerCase() === "cookie")?.[1]
+  }
+
+  return Object.entries(headers).find(([key]) => key.toLowerCase() === "cookie")?.[1]
+}
+
+const getRequestAuthRevision = (options: Record<string, unknown>) => {
+  const revision = options.__followAuthRevision
+  return typeof revision === "number" ? revision : undefined
+}
+
 followClient.addResponseInterceptor(async (ctx) => {
-  const { response } = ctx
+  const { options, response } = ctx
   if (response.status === 401) {
+    const currentCookie = getCookie()
+    const requestCookie = getRequestCookie(options.headers)
+    const requestAuthRevision = getRequestAuthRevision(options as Record<string, unknown>)
+    const currentAuthRevision = getAuthStateRevision()
+
+    if (typeof requestAuthRevision === "number" && requestAuthRevision < currentAuthRevision) {
+      return ctx.response
+    }
+
+    if (currentCookie && requestCookie !== currentCookie) {
+      return ctx.response
+    }
+
     userActions.removeCurrentUser()
     Navigation.rootNavigation.presentControllerView(LoginScreen)
   } else if (response.status >= 400) {

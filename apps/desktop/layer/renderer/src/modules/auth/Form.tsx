@@ -111,7 +111,7 @@ export function LoginWithPassword({
 
   return (
     <Form {...form}>
-      <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-4">
+      <form data-testid="login-form" onSubmit={form.handleSubmit(onSubmit)} className="space-y-4">
         <FormField
           control={form.control}
           name="email"
@@ -119,7 +119,7 @@ export function LoginWithPassword({
             <FormItem>
               <FormLabel>{t("login.email")}</FormLabel>
               <FormControl>
-                <Input type="email" {...field} />
+                <Input data-testid="login-email-input" type="email" {...field} />
               </FormControl>
               <FormMessage />
             </FormItem>
@@ -147,7 +147,7 @@ export function LoginWithPassword({
                 </a>
               </FormLabel>
               <FormControl>
-                <Input type="password" {...field} />
+                <Input data-testid="login-password-input" type="password" {...field} />
               </FormControl>
               <FormMessage />
             </FormItem>
@@ -155,6 +155,7 @@ export function LoginWithPassword({
         />
         <div className="flex flex-col space-y-3">
           <Button
+            data-testid="login-submit"
             type="submit"
             isLoading={form.formState.isSubmitting}
             disabled={!form.formState.isValid}
@@ -172,6 +173,7 @@ export function LoginWithPassword({
       <div className="flex items-center justify-center gap-1 pb-2 text-center text-sm">
         If you don't have an account,{" "}
         <button
+          data-testid="login-switch-register"
           type="button"
           className="flex cursor-pointer items-center gap-1 text-accent hover:underline"
           onClick={() => onLoginStateChange("register")}
@@ -261,7 +263,11 @@ export function RegisterForm({
   return (
     <div className="relative">
       <Form {...form}>
-        <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-4">
+        <form
+          data-testid="register-form"
+          onSubmit={form.handleSubmit(onSubmit)}
+          className="space-y-4"
+        >
           <FormField
             control={form.control}
             name="email"
@@ -269,7 +275,7 @@ export function RegisterForm({
               <FormItem>
                 <FormLabel>{t("register.email")}</FormLabel>
                 <FormControl>
-                  <Input type="email" {...field} />
+                  <Input data-testid="register-email-input" type="email" {...field} />
                 </FormControl>
                 <FormMessage />
               </FormItem>
@@ -286,7 +292,7 @@ export function RegisterForm({
                     : `${t("register.password")} (${t("register.password_optional")})`}
                 </FormLabel>
                 <FormControl>
-                  <Input type="password" {...field} />
+                  <Input data-testid="register-password-input" type="password" {...field} />
                 </FormControl>
                 <FormMessage />
               </FormItem>
@@ -303,13 +309,14 @@ export function RegisterForm({
                     : `${t("register.confirm_password")} (${t("register.password_optional")})`}
                 </FormLabel>
                 <FormControl>
-                  <Input type="password" {...field} />
+                  <Input data-testid="register-confirm-password-input" type="password" {...field} />
                 </FormControl>
                 <FormMessage />
               </FormItem>
             )}
           />
           <Button
+            data-testid="register-submit"
             type="submit"
             buttonClassName="w-full"
             size="lg"
@@ -327,6 +334,7 @@ export function RegisterForm({
       <div className="flex items-center justify-center gap-1 pb-2 text-center text-sm">
         If you already have an account,{" "}
         <button
+          data-testid="register-switch-login"
           type="button"
           className="flex cursor-pointer items-center gap-1 text-accent hover:underline"
           onClick={() => onLoginStateChange("login")}

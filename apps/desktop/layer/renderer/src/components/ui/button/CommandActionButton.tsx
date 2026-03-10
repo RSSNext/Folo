@@ -21,6 +21,8 @@ export const CommandActionButton = ({
     <ActionButton
       ref={ref}
       {...rest}
+      data-command-id={commandId}
+      data-testid={`command-action-${commandId.replaceAll(":", "-")}`}
       tooltip={label.title}
       tooltipDescription={label.description}
       icon={icon}

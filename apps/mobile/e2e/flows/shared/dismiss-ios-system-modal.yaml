@@ -1,0 +1,9 @@
+appId: is.follow
+---
+- runFlow:
+    when:
+      visible:
+        text: Siri, Dictation & Privacy
+    commands:
+      - tapOn:
+          point: "8%,8%"

@@ -27,6 +27,7 @@ export function SocialLogin({ onPressEmail }: { isRegister: boolean; onPressEmai
         return (
           <Pressable
             key={key}
+            testID={`login-provider-${provider.id}`}
             hitSlop={20}
             className="border-hairline flex w-full flex-row items-center justify-center gap-2 rounded-xl border-opaque-separator py-4 pl-5"
             onPress={async () => {

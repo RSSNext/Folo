@@ -1,32 +1,48 @@
 import { useWhoami } from "@follow/store/user/hooks"
-import { Fragment, useEffect } from "react"
+import { Fragment, useCallback, useEffect } from "react"
 import { Pressable, ScrollView } from "react-native"
 
 import { HeaderCloseOnly } from "@/src/components/layouts/header/HeaderElements"
 import { Text } from "@/src/components/ui/typography/Text"
+import { useSession } from "@/src/lib/auth"
+import { useSwitchTab } from "@/src/lib/navigation/bottom-tab/hooks"
+import { useCanDismiss } from "@/src/lib/navigation/hooks"
 import { Navigation } from "@/src/lib/navigation/Navigation"
 import type { NavigationControllerView } from "@/src/lib/navigation/types"
 import { useIsiPad } from "@/src/lib/platform"
 import { Login } from "@/src/modules/login"
 
-function exit() {
-  const router = Navigation.rootNavigation
-  if (router.canGoBack()) {
-    router.back()
-  } else {
-    router.popToRoot()
-  }
-}
 export const LoginScreen: NavigationControllerView = () => {
   const whoami = useWhoami()
-  useEffect(() => {
-    if (whoami?.id && !__DEV__) {
-      exit()
+  const { data: session } = useSession()
+  const canDismiss = useCanDismiss()
+  const switchTab = useSwitchTab()
+
+  const exit = useCallback(() => {
+    if (canDismiss) {
+      Navigation.rootNavigation.dismiss()
+      return
     }
-  }, [whoami])
+
+    Navigation.rootNavigation.popToRoot()
+  }, [canDismiss])
+
+  useEffect(() => {
+    if (!(session?.user?.id || whoami?.id) || __DEV__) {
+      return
+    }
+
+    switchTab(0)
+    const timer = setTimeout(() => {
+      exit()
+    }, 300)
+
+    return () => {
+      clearTimeout(timer)
+    }
+  }, [exit, session?.user?.id, switchTab, whoami?.id])
   const isiPad = useIsiPad()
   const Container = isiPad ? ScrollView : Fragment
-
   // For development purposes, we don't want to redirect to the home page automatically
   return (
     <>

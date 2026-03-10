@@ -14,6 +14,7 @@ export const LoginButton: FC<LoginProps> = (props) => {
   const { t } = useTranslation()
   const Content = (
     <ActionButton
+      data-testid="login-button"
       className="relative z-[1]"
       onClick={
         method === "modal"

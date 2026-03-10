@@ -83,7 +83,11 @@ export const OnboardingScreen: NavigationControllerView = () => {
 
       {/* Navigation buttons */}
       <View className="mb-6 px-6">
-        <Pressable onPress={handleNext} className="w-full items-center rounded-xl bg-accent py-4">
+        <Pressable
+          testID="onboarding-next"
+          onPress={handleNext}
+          className="w-full items-center rounded-xl bg-accent py-4"
+        >
           <Text className="text-lg font-bold text-white">
             {currentStep < totalSteps - 1
               ? t("words.next")

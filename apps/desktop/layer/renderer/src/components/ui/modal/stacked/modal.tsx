@@ -390,6 +390,7 @@ export const ModalInternal = memo(function Modal({
                       </Dialog.Title>
                       {canClose && (
                         <Dialog.DialogClose
+                          data-testid="modal-close"
                           className="center z-[2] -mr-1 rounded-lg p-2 text-text-secondary hover:bg-fill-quaternary hover:text-text"
                           tabIndex={1}
                           onClick={close}
