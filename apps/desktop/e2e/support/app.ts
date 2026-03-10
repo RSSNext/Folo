@@ -395,15 +395,15 @@ export const openSettingsTab = async (page: Page, tab: "general" | "feeds") => {
 }
 
 export const closeSettings = async (page: Page) => {
-  const settingsTab = page.getByTestId("settings-tab-general")
-  if (!(await isVisible(settingsTab))) {
+  const settingsModal = page.locator("#setting-modal").first()
+  if (!(await settingsModal.isVisible().catch(() => false))) {
     return
   }
 
   await page.keyboard.press("Escape").catch(() => {})
 
-  if (await isVisible(settingsTab)) {
-    const modalClose = page.getByTestId("modal-close").last()
+  if (await settingsModal.isVisible().catch(() => false)) {
+    const modalClose = settingsModal.getByTestId("modal-close").first()
     if (await isVisible(modalClose)) {
       await modalClose
         .evaluate((element) => {
@@ -417,7 +417,9 @@ export const closeSettings = async (page: Page) => {
     }
   }
 
-  await expect.poll(async () => isVisible(settingsTab), { timeout: 10_000 }).toBe(false)
+  await expect
+    .poll(async () => settingsModal.isVisible().catch(() => false), { timeout: 10_000 })
+    .toBe(false)
 }
 
 export const setLanguage = async (page: Page, label: string) => {
