@@ -562,11 +562,11 @@ export const expectTimelineSwitchAndEntryReadFlow = async (page: Page) => {
       return
     }
 
-    const moreActionsTrigger = page.getByTestId("entry-more-actions-trigger")
+    const moreActionsTrigger = page.getByTestId("entry-more-actions-trigger").last()
     await expect(moreActionsTrigger).toBeVisible({ timeout: 15_000 })
     await moreActionsTrigger.click()
 
-    const toggleReadMenuItem = page.getByTestId("command-menuitem-entry-read")
+    const toggleReadMenuItem = page.getByTestId("command-menuitem-entry-read").last()
     await expect(toggleReadMenuItem).toBeVisible({ timeout: 15_000 })
     await toggleReadMenuItem.click()
   }
