@@ -1,4 +1,3 @@
-import { userSyncService } from "@follow/store/user/store"
 import { tracker } from "@follow/tracker"
 import { zodResolver } from "@hookform/resolvers/zod"
 import { useMutation } from "@tanstack/react-query"
@@ -15,7 +14,7 @@ import { z } from "zod"
 import { SubmitButton } from "@/src/components/common/SubmitButton"
 import { PlainTextField } from "@/src/components/ui/form/TextField"
 import { Text } from "@/src/components/ui/typography/Text"
-import { authClient, persistAuthCookieHeader } from "@/src/lib/auth"
+import { signIn, signUp } from "@/src/lib/auth"
 import { useNavigation } from "@/src/lib/navigation/hooks"
 import { Navigation } from "@/src/lib/navigation/Navigation"
 import { toast } from "@/src/lib/toast"
@@ -30,134 +29,6 @@ const formSchema = z.object({
 })
 type FormValue = z.infer<typeof formSchema>
 
-const getAuthErrorMessage = (value: unknown) => {
-  if (!value || typeof value !== "object" || !("error" in value)) {
-    return
-  }
-
-  const { error } = value
-  if (!error || typeof error !== "object" || !("message" in error)) {
-    return
-  }
-
-  return typeof error.message === "string" ? error.message : undefined
-}
-
-const getAuthData = (value: unknown) => {
-  if (!value || typeof value !== "object" || !("data" in value)) {
-    return
-  }
-
-  return value.data && typeof value.data === "object" ? value.data : undefined
-}
-
-const getResponseSetCookie = (response: Response) => {
-  const directValue =
-    response.headers.get("x-better-auth-set-cookie") ??
-    response.headers.get("set-cookie") ??
-    response.headers.get("Set-Cookie")
-  if (directValue) {
-    return directValue
-  }
-
-  const rawHeaders = (response as Response & { _rawHeaders?: unknown })._rawHeaders
-  if (!Array.isArray(rawHeaders)) {
-    return null
-  }
-
-  const values = rawHeaders
-    .filter(
-      (header): header is [string, string] =>
-        Array.isArray(header) &&
-        header.length >= 2 &&
-        typeof header[0] === "string" &&
-        typeof header[1] === "string",
-    )
-    .filter(([key]) => key.toLowerCase() === "set-cookie")
-    .map(([, value]) => value)
-
-  return values.length > 0 ? values.join(", ") : null
-}
-
-const hasTwoFactorRedirect = (value: unknown) => {
-  const data = getAuthData(value)
-  if (data && "twoFactorRedirect" in data) {
-    return Boolean(data.twoFactorRedirect)
-  }
-
-  if (!value || typeof value !== "object" || !("response" in value)) {
-    return false
-  }
-
-  const { response } = value
-  if (!response || typeof response !== "object" || !("twoFactorRedirect" in response)) {
-    return false
-  }
-
-  return Boolean(response.twoFactorRedirect)
-}
-
-const requestCredentialAuth = async ({
-  path,
-  body,
-}: {
-  path: "/sign-in/email" | "/sign-up/email"
-  body: Record<string, string>
-}) => {
-  let setCookie: string | null = null
-
-  const result = await authClient.$fetch(path, {
-    method: "POST",
-    body,
-    headers: await getTokenHeaders(),
-    throw: false,
-    onResponse(context) {
-      setCookie = getResponseSetCookie(context.response)
-    },
-  })
-
-  const persistedCookie = setCookie ? persistAuthCookieHeader(setCookie) : false
-
-  return {
-    result,
-    persistedCookie,
-  }
-}
-
-const establishCredentialSession = async ({
-  email,
-  password,
-  onTwoFactorRedirect,
-}: {
-  email: string
-  password: string
-  onTwoFactorRedirect?: () => void
-}) => {
-  const { result, persistedCookie } = await requestCredentialAuth({
-    path: "/sign-in/email",
-    body: {
-      email,
-      password,
-    },
-  })
-
-  const errorMessage = getAuthErrorMessage(result)
-  if (errorMessage) {
-    throw new Error(errorMessage)
-  }
-
-  if (hasTwoFactorRedirect(result)) {
-    onTwoFactorRedirect?.()
-    return null
-  }
-
-  const session = persistedCookie ? await userSyncService.whoami().catch(() => null) : null
-  if (!session?.user?.id) {
-    return null
-  }
-
-  return session
-}
 async function onSubmit(values: FormValue) {
   const result = formSchema.safeParse(values)
   if (!result.success) {
@@ -166,21 +37,28 @@ async function onSubmit(values: FormValue) {
     return false
   }
 
-  let session = null
   try {
-    session = await establishCredentialSession({
-      email: result.data.email,
-      password: result.data.password,
-      onTwoFactorRedirect: () => {
-        Navigation.rootNavigation.presentControllerView(TwoFactorAuthScreen)
+    const res = await signIn.email(
+      {
+        email: result.data.email,
+        password: result.data.password,
       },
-    })
+      {
+        headers: await getTokenHeaders(),
+      },
+    )
+
+    if (res.error) {
+      throw new Error(res.error.message)
+    }
+
+    // @ts-expect-error better-auth response type omits twoFactorRedirect
+    if (res.data?.twoFactorRedirect) {
+      Navigation.rootNavigation.presentControllerView(TwoFactorAuthScreen)
+      return false
+    }
   } catch (error) {
     Alert.alert(error instanceof Error ? error.message : "Unable to sign in")
-    return false
-  }
-
-  if (!session?.user?.id) {
     return false
   }
 
@@ -189,6 +67,7 @@ async function onSubmit(values: FormValue) {
   })
   return true
 }
+
 export function EmailLogin() {
   const { t } = useTranslation()
   const [emailValue, setEmailValue] = useState("")
@@ -314,44 +193,28 @@ export function EmailSignUp() {
   })
   const submitMutation = useMutation({
     mutationFn: async (values: SignupFormValue) => {
-      try {
-        const { result, persistedCookie } = await requestCredentialAuth({
-          path: "/sign-up/email",
-          body: {
+      await signUp
+        .email(
+          {
             email: values.email,
             password: values.password,
             name: values.email.split("@")[0] ?? "",
           },
+          {
+            headers: await getTokenHeaders(),
+          },
+        )
+        .then((res) => {
+          if (res.error?.message) {
+            toast.error(res.error.message)
+          } else {
+            toast.success(i18next.t("login.sign_up_successful"))
+            tracker.register({
+              type: "email",
+            })
+            Navigation.rootNavigation.back()
+          }
         })
-
-        const errorMessage = getAuthErrorMessage(result)
-        if (errorMessage) {
-          toast.error(errorMessage)
-          return false
-        }
-
-        let session = persistedCookie ? await userSyncService.whoami().catch(() => null) : null
-        if (!session?.user?.id) {
-          session = await establishCredentialSession({
-            email: values.email,
-            password: values.password,
-          })
-        }
-
-        if (!session?.user?.id) {
-          toast.error("Unable to establish session after sign up")
-          return false
-        }
-
-        toast.success(i18next.t("login.sign_up_successful"))
-        tracker.register({
-          type: "email",
-        })
-        return true
-      } catch (error) {
-        toast.error(error instanceof Error ? error.message : "Unable to sign up")
-        return false
-      }
     },
   })
   const signup = handleSubmit((values) => {

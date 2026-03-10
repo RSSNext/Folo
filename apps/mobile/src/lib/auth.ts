@@ -1,11 +1,10 @@
-import { expoClient, getSetCookie, hasBetterAuthCookies } from "@better-auth/expo/client"
+import { expoClient } from "@better-auth/expo/client"
 import { baseAuthPlugins } from "@follow/shared/auth"
 import { isNewUserQueryKey } from "@follow/store/user/constants"
 import { whoamiQueryKey } from "@follow/store/user/hooks"
 import { createMobileAPIHeaders } from "@follow/utils/headers"
 import { useQuery } from "@tanstack/react-query"
 import { createAuthClient } from "better-auth/react"
-import { fetch as expoFetch } from "expo/fetch"
 import { nativeApplicationVersion } from "expo-application"
 import * as FileSystem from "expo-file-system/legacy"
 import Storage from "expo-sqlite/kv-store"
@@ -73,48 +72,10 @@ const plugins = [
   }),
 ]
 
-const updateCookieStorage = (serializedCookie: string) => {
-  try {
-    safeSecureStore.setItem(cookieKey, serializedCookie)
-  } catch (error) {
-    console.warn("SecureStore.setItem failed during auth cookie persistence:", error)
-    return false
-  }
-
-  const env = getEnvProfile()
-  try {
-    safeSecureStore.setItem(`${cookieKey}_${env}`, serializedCookie)
-  } catch {
-    // Keychain may be unavailable in background
-  }
-
-  bumpAuthStateRevision()
-  queryClient.invalidateQueries({ queryKey: whoamiQueryKey })
-  queryClient.invalidateQueries({ queryKey: isNewUserQueryKey })
-  return true
-}
-
-export const persistAuthCookieHeader = (setCookie: string | null | undefined) => {
-  if (!setCookie || !hasBetterAuthCookies(setCookie, "better-auth")) {
-    return false
-  }
-
-  let previousCookie: string | undefined
-  try {
-    previousCookie = safeSecureStore.getItem(cookieKey) ?? undefined
-  } catch (error) {
-    console.warn("SecureStore.getItem failed during auth cookie persistence:", error)
-  }
-
-  const serializedCookie = getSetCookie(setCookie, previousCookie)
-  return updateCookieStorage(serializedCookie)
-}
-
 export const authClient = createAuthClient({
   baseURL: `${proxyEnv.API_URL}/better-auth`,
   fetchOptions: {
     cache: "no-store",
-    customFetchImpl: async (input, init) => expoFetch(input.toString(), init as any) as any,
     // Learn more: https://better-fetch.vercel.app/docs/hooks
     onRequest: async (ctx) => {
       const headers = createMobileAPIHeaders({
