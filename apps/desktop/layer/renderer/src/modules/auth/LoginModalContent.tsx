@@ -9,11 +9,12 @@ import type { LoginRuntime } from "@follow/shared/auth"
 import { stopPropagation } from "@follow/utils/dom"
 import { cn } from "@follow/utils/utils"
 import { m } from "motion/react"
-import { useEffect, useState } from "react"
+import { useEffect, useMemo, useState } from "react"
 import { Trans, useTranslation } from "react-i18next"
 
 import { useCurrentModal, useModalStack } from "~/components/ui/modal/stacked/hooks"
 import { authClient, loginHandler } from "~/lib/auth"
+import { useSession } from "~/queries/auth"
 import { useAuthProviders } from "~/queries/users"
 
 import { LoginWithPassword, RegisterForm } from "./Form"
@@ -32,10 +33,34 @@ export const LoginModalContent = (props: LoginModalContentProps) => {
 
   const { t } = useTranslation()
   const { data: authProviders, isLoading } = useAuthProviders()
+  const { status } = useSession()
 
   const isMobile = useMobile()
 
-  const providers = Object.entries(authProviders || [])
+  const providers = Object.entries(authProviders || {})
+  const effectiveProviders = useMemo(() => {
+    if (providers.some(([key]) => key === "credential")) {
+      return providers
+    }
+
+    return providers.concat([
+      [
+        "credential",
+        {
+          name: t("words.email"),
+          id: "credential",
+          color: "",
+          icon: "",
+          icon64: "",
+        },
+      ],
+    ])
+  }, [providers, t])
+  const visibleProviders = useMemo(
+    () =>
+      isLoading ? effectiveProviders.filter(([key]) => key === "credential") : effectiveProviders,
+    [effectiveProviders, isLoading],
+  )
 
   const [isRegister, setIsRegister] = useState(true)
   const [isEmail, setIsEmail] = useState(false)
@@ -74,6 +99,12 @@ export const LoginModalContent = (props: LoginModalContentProps) => {
       setLastMethod(lastMethodValue)
     }
   }, [lastMethod])
+
+  useEffect(() => {
+    if (status === "authenticated") {
+      modal.dismiss()
+    }
+  }, [modal, status])
 
   const Inner = (
     <>
@@ -150,59 +181,55 @@ export const LoginModalContent = (props: LoginModalContentProps) => {
         <div className="flex flex-col gap-4">
           {/* Login Providers */}
           <div className="flex flex-col gap-2.5">
-            {isLoading
-              ? // Skeleton loaders to prevent CLS
-                Array.from({ length: 4 }, (_, index) => (
-                  <div
-                    key={`login-skeleton-${index}`}
-                    className="relative h-12 w-full animate-pulse rounded-xl border border-fill-secondary bg-material-medium"
-                  />
-                ))
-              : providers.map(([key, provider], index) => (
-                  <m.div
-                    key={key}
-                    initial={{ opacity: 0, y: 10 }}
-                    animate={{ opacity: 1, y: 0 }}
-                    transition={{ ...Spring.presets.smooth, delay: index * 0.05 }}
-                  >
-                    <button
-                      data-testid={`login-provider-${key}`}
-                      type="button"
-                      onClick={() => {
-                        if (key === "credential") {
-                          setIsEmail(true)
-                        } else {
-                          loginHandler(key, "app")
-                        }
-                      }}
-                      className="group center relative w-full gap-2 rounded-xl border border-border bg-material-medium py-3.5 pl-5 font-medium backdrop-blur-sm transition-all duration-200 hover:border-folo/30 hover:bg-folo/10"
-                    >
-                      <img
-                        className={cn(
-                          "absolute left-7 size-5 object-contain",
-                          !provider.iconDark64 &&
-                            "dark:brightness-[0.85] dark:hue-rotate-180 dark:invert",
-                        )}
-                        src={isDark ? provider.iconDark64 || provider.icon64 : provider.icon64}
-                        alt={provider.name}
-                      />
-                      <span className="relative z-10">
-                        {t("login.continueWith", { provider: provider.name })}
-                      </span>
-
-                      {lastMethod === key && (
-                        <m.div
-                          className="absolute -right-2 -top-2 z-20 rounded-lg bg-accent px-2.5 py-1 text-xs font-medium text-white"
-                          initial={{ scale: 0, opacity: 0 }}
-                          animate={{ scale: 1, opacity: 1 }}
-                          transition={Spring.presets.bouncy}
-                        >
-                          {t("login.lastUsed")}
-                        </m.div>
+            {visibleProviders.map(([key, provider], index) => (
+              <m.div
+                key={key}
+                initial={{ opacity: 0, y: 10 }}
+                animate={{ opacity: 1, y: 0 }}
+                transition={{ ...Spring.presets.smooth, delay: index * 0.05 }}
+              >
+                <button
+                  data-testid={`login-provider-${key}`}
+                  type="button"
+                  onClick={() => {
+                    if (key === "credential") {
+                      setIsEmail(true)
+                    } else {
+                      loginHandler(key, "app")
+                    }
+                  }}
+                  className="group center relative w-full gap-2 rounded-xl border border-border bg-material-medium py-3.5 pl-5 font-medium backdrop-blur-sm transition-all duration-200 hover:border-folo/30 hover:bg-folo/10"
+                >
+                  {provider.icon64 ? (
+                    <img
+                      className={cn(
+                        "absolute left-7 size-5 object-contain",
+                        !provider.iconDark64 &&
+                          "dark:brightness-[0.85] dark:hue-rotate-180 dark:invert",
                       )}
-                    </button>
-                  </m.div>
-                ))}
+                      src={isDark ? provider.iconDark64 || provider.icon64 : provider.icon64}
+                      alt={provider.name}
+                    />
+                  ) : (
+                    <i className="i-mgc-mail-cute-re absolute left-7 size-5 text-text-secondary" />
+                  )}
+                  <span className="relative z-10">
+                    {t("login.continueWith", { provider: provider.name })}
+                  </span>
+
+                  {lastMethod === key && (
+                    <m.div
+                      className="absolute -right-2 -top-2 z-20 rounded-lg bg-accent px-2.5 py-1 text-xs font-medium text-white"
+                      initial={{ scale: 0, opacity: 0 }}
+                      animate={{ scale: 1, opacity: 1 }}
+                      transition={Spring.presets.bouncy}
+                    >
+                      {t("login.lastUsed")}
+                    </m.div>
+                  )}
+                </button>
+              </m.div>
+            ))}
           </div>
 
           {/* Footer Links */}

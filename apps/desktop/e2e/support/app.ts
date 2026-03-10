@@ -3,7 +3,7 @@ import { expect } from "@playwright/test"
 
 import type { TestAccount } from "./account"
 import type { DesktopE2EEnv } from "./env"
-import { buildHashRoute, buildWebAppURL } from "./env"
+import { buildWebAppURL } from "./env"
 
 const ONBOARDING_FEED_URL = "folo://onboarding"
 
@@ -80,41 +80,21 @@ export const openWebApp = async (page: Page, env: DesktopE2EEnv, route = "/") =>
   await page.goto(buildWebAppURL(env, route), { waitUntil: "domcontentloaded" })
 }
 
-export const navigateInApp = async (
-  page: Page,
-  env: DesktopE2EEnv,
-  route: string,
-  options?: { electron?: boolean },
-) => {
-  if (options?.electron) {
-    await page.evaluate((nextRoute) => {
-      window.location.hash = nextRoute
-    }, buildHashRoute(route))
-    return
-  }
-
-  await page.goto(buildWebAppURL(env, route), { waitUntil: "domcontentloaded" })
-}
-
 export const waitForAuthenticated = async (page: Page) => {
   const isAuthenticatedUiReady = async () => {
     const profileVisible = await page
       .getByTestId("profile-menu-trigger")
       .isVisible()
       .catch(() => false)
-    const timelineVisible = await page
-      .getByTestId("timeline-tab-articles")
+    const loginModalVisible = await page
+      .getByTestId("login-modal")
       .isVisible()
       .catch(() => false)
-    return profileVisible || timelineVisible
+
+    return profileVisible && !loginModalVisible
   }
 
-  try {
-    await expect.poll(isAuthenticatedUiReady, { timeout: 30_000 }).toBe(true)
-  } catch {
-    await page.reload({ waitUntil: "domcontentloaded" })
-    await expect.poll(isAuthenticatedUiReady, { timeout: 30_000 }).toBe(true)
-  }
+  await expect.poll(isAuthenticatedUiReady, { timeout: 30_000 }).toBe(true)
 }
 
 export const waitForLoggedOut = async (page: Page) => {
@@ -182,140 +162,141 @@ export const ensureLoginModal = async (page: Page) => {
 }
 
 const ensureCredentialForm = async (page: Page, mode: "register" | "login") => {
-  const attemptEnsureCredentialForm = async () => {
-    await ensureLoginModal(page)
+  await ensureLoginModal(page)
 
-    const targetInput = visibleByTestId(
-      page,
-      mode === "register" ? "register-email-input" : "login-email-input",
-    )
-    const loginButton = visibleByTestId(page, "login-button")
-    const loginModal = visibleByTestId(page, "login-modal")
-    const credentialProvider = visibleByTestId(page, "login-provider-credential")
-    const targetForm = visibleByTestId(page, mode === "register" ? "register-form" : "login-form")
-    const oppositeForm = visibleByTestId(page, mode === "register" ? "login-form" : "register-form")
-    const oppositeFormSwitcher = visibleByTestId(
-      page,
-      mode === "register" ? "login-switch-register" : "register-switch-login",
-    )
+  const targetInput = visibleByTestId(
+    page,
+    mode === "register" ? "register-email-input" : "login-email-input",
+  )
+  const loginButton = visibleByTestId(page, "login-button")
+  const loginModal = visibleByTestId(page, "login-modal")
+  const activeDialog = page.locator('[role="dialog"]:visible').last()
+  const credentialProvider = visibleByTestId(page, "login-provider-credential")
+  const targetForm = visibleByTestId(page, mode === "register" ? "register-form" : "login-form")
+  const oppositeForm = visibleByTestId(page, mode === "register" ? "login-form" : "register-form")
+  const oppositeFormSwitcher = visibleByTestId(
+    page,
+    mode === "register" ? "login-switch-register" : "register-switch-login",
+  )
 
-    if (await isVisible(targetInput)) {
-      return
-    }
-
-    if ((await isVisible(loginButton)) && !(await isVisible(loginModal))) {
-      await loginButton.click({ force: true })
-    }
-
-    if (await isVisible(targetInput)) {
-      return
-    }
-
-    if (!(await isVisible(targetForm)) && !(await isVisible(oppositeForm))) {
-      await credentialProvider.click({ force: true, timeout: 30_000 })
-      await expect
-        .poll(async () => (await isVisible(targetForm)) || (await isVisible(oppositeForm)), {
-          timeout: 30_000,
-        })
-        .toBe(true)
-    }
-
-    if (await isVisible(oppositeForm)) {
-      await oppositeFormSwitcher.click({ force: true, timeout: 30_000 })
-    }
-
-    await expect(targetInput).toBeVisible({ timeout: 30_000 })
+  if (await isVisible(targetInput)) {
+    return
   }
 
-  let lastError: unknown
-  for (let attempt = 0; attempt < 3; attempt += 1) {
-    try {
-      await attemptEnsureCredentialForm()
-      return
-    } catch (error) {
-      lastError = error
-      if (attempt === 2) {
-        throw error
-      }
-
-      await page.keyboard.press("Escape").catch(() => {})
-      await page.reload({ waitUntil: "domcontentloaded" }).catch(() => {})
-    }
+  if (
+    (await isVisible(loginButton)) &&
+    !(await isVisible(loginModal)) &&
+    !(await isVisible(activeDialog))
+  ) {
+    await expect(loginButton).toBeVisible({ timeout: 30_000 })
+    await loginButton.click({ noWaitAfter: true })
   }
 
-  throw lastError
+  if (await isVisible(targetInput)) {
+    return
+  }
+
+  if (!(await isVisible(targetForm)) && !(await isVisible(oppositeForm))) {
+    await expect(credentialProvider).toBeVisible({ timeout: 30_000 })
+    await credentialProvider.click({ timeout: 30_000, noWaitAfter: true })
+    await expect
+      .poll(async () => (await isVisible(targetForm)) || (await isVisible(oppositeForm)), {
+        timeout: 30_000,
+      })
+      .toBe(true)
+  }
+
+  if (await isVisible(oppositeForm)) {
+    await expect(oppositeFormSwitcher).toBeVisible({ timeout: 30_000 })
+    await oppositeFormSwitcher.click({ timeout: 30_000, noWaitAfter: true })
+  }
+
+  await expect(targetInput).toBeVisible({ timeout: 30_000 })
 }
 
 export const registerWithCredential = async (page: Page, account: TestAccount) => {
   await ensureCredentialForm(page, "register")
   await visibleByTestId(page, "register-email-input").fill(account.email)
   await visibleByTestId(page, "register-password-input").fill(account.password)
-  await visibleByTestId(page, "register-confirm-password-input").fill(account.password)
-  await visibleByTestId(page, "register-submit").click({ force: true })
+  const confirmPasswordInput = visibleByTestId(page, "register-confirm-password-input")
+  await confirmPasswordInput.fill(account.password)
+  const submit = visibleByTestId(page, "register-submit")
+  await expect(submit).toBeEnabled({ timeout: 30_000 })
+
+  if (page.url().startsWith("app://")) {
+    await confirmPasswordInput.press("Enter")
+  } else {
+    await submit.click()
+  }
   await waitForAuthenticated(page)
 }
 
 export const loginWithCredential = async (page: Page, account: TestAccount) => {
   await ensureCredentialForm(page, "login")
   await visibleByTestId(page, "login-email-input").fill(account.email)
-  await visibleByTestId(page, "login-password-input").fill(account.password)
-  await visibleByTestId(page, "login-submit").click({ force: true })
+  const passwordInput = visibleByTestId(page, "login-password-input")
+  await passwordInput.fill(account.password)
+  const submit = visibleByTestId(page, "login-submit")
+  await expect(submit).toBeEnabled({ timeout: 30_000 })
+
+  if (page.url().startsWith("app://")) {
+    await passwordInput.press("Enter")
+  } else {
+    await submit.click()
+  }
   await waitForAuthenticated(page)
 }
 
 export const logoutFromProfileMenu = async (page: Page) => {
   await page.keyboard.press("Escape").catch(() => {})
+  await returnToMainShell(page)
   await page.getByTestId("profile-menu-trigger").click()
 
-  const signOutResponse = page.waitForResponse(
-    (response) =>
-      response.request().method() === "POST" && response.url().includes("/better-auth/sign-out"),
-    { timeout: 30_000 },
-  )
+  const signOutResponse = page
+    .waitForResponse(
+      (response) =>
+        response.request().method() === "POST" && response.url().includes("/better-auth/sign-out"),
+      { timeout: 30_000 },
+    )
+    .catch(() => null)
 
   await page.getByTestId("profile-menu-logout").click()
   await signOutResponse
-
-  await expect
-    .poll(
-      async () =>
-        page
-          .getByTestId("profile-menu-trigger")
-          .isVisible()
-          .catch(() => false),
-      { timeout: 30_000 },
-    )
-    .toBe(false)
+  await waitForLoggedOut(page)
 }
 
-const deleteWithSession = async (
-  page: Page,
-  env: DesktopE2EEnv,
-  path: string,
-  body: Record<string, string>,
-) => {
-  return page.evaluate(
-    async ({ url, payload }) => {
-      const response = await fetch(url, {
-        method: "DELETE",
-        credentials: "include",
-        headers: {
-          "content-type": "application/json",
-        },
-        body: JSON.stringify(payload),
-      })
+const waitForMainShell = async (page: Page) => {
+  await expect
+    .poll(
+      async () => {
+        const profileVisible = await page
+          .getByTestId("profile-menu-trigger")
+          .isVisible()
+          .catch(() => false)
+        const timelineVisible = await page
+          .getByTestId("timeline-tab-articles")
+          .isVisible()
+          .catch(() => false)
 
-      return {
-        ok: response.ok,
-        status: response.status,
-        text: await response.text(),
-      }
-    },
-    {
-      url: `${env.apiURL}${path}`,
-      payload: body,
-    },
-  )
+        return profileVisible || timelineVisible
+      },
+      { timeout: 30_000 },
+    )
+    .toBe(true)
+}
+
+const returnToMainShell = async (page: Page) => {
+  const discoverInput = page.getByTestId("discover-form-input")
+  if (await discoverInput.isVisible().catch(() => false)) {
+    const backButton = page.getByTestId("subview-back")
+    await expect(backButton).toBeVisible({ timeout: 15_000 })
+    await backButton.click()
+    await expect
+      .poll(async () => discoverInput.isVisible().catch(() => false), { timeout: 15_000 })
+      .toBe(false)
+  }
+
+  await waitForMainShell(page)
 }
 
 const waitForSettingsTabContent = async (page: Page, tab: "general" | "feeds") => {
@@ -332,38 +313,23 @@ const waitForSettingsTabContent = async (page: Page, tab: "general" | "feeds") =
 }
 
 export const openSettings = async (page: Page, tab: "general" | "feeds" = "general") => {
-  const settingsTab = page.getByTestId(`settings-tab-${tab}`)
+  await waitForAuthenticated(page)
+
   const settingsModal = page.locator("#setting-modal").first()
 
-  if (await settingsModal.isVisible().catch(() => false)) {
-    await page.keyboard.press("Escape").catch(() => {})
-    await expect
-      .poll(async () => settingsModal.isVisible().catch(() => false), { timeout: 10_000 })
-      .toBe(false)
+  if (!(await settingsModal.isVisible().catch(() => false))) {
+    await returnToMainShell(page)
+    const profileTrigger = page.getByTestId("profile-menu-trigger")
+    await expect(profileTrigger).toBeVisible({ timeout: 15_000 })
+    await profileTrigger.click()
+
+    const preferencesItem = page.getByTestId("profile-menu-preferences")
+    await expect(preferencesItem).toBeVisible({ timeout: 15_000 })
+    await preferencesItem.click()
   }
 
-  await expect
-    .poll(
-      async () =>
-        page.evaluate(() => {
-          const { router } = window as typeof window & {
-            router?: { showSettings?: (tab?: unknown) => void }
-          }
-          return typeof router?.showSettings === "function"
-        }),
-      { timeout: 15_000 },
-    )
-    .toBe(true)
-
-  await page.evaluate((nextTab) => {
-    const { router } = window as typeof window & {
-      router?: { showSettings?: (tab?: unknown) => void }
-    }
-    router?.showSettings?.(nextTab)
-  }, tab)
-
-  await expect(settingsTab).toBeVisible({ timeout: 15_000 })
-  await waitForSettingsTabContent(page, tab)
+  await expect(settingsModal).toBeVisible({ timeout: 15_000 })
+  await openSettingsTab(page, tab)
 }
 
 export const openSettingsTab = async (page: Page, tab: "general" | "feeds") => {
@@ -382,15 +348,7 @@ export const openSettingsTab = async (page: Page, tab: "general" | "feeds") => {
       .toBe(true)
   }
 
-  await settingsTab
-    .evaluate((element) => {
-      if (element instanceof HTMLElement) {
-        element.click()
-      }
-    })
-    .catch(async () => {
-      await settingsTab.click({ force: true, noWaitAfter: true })
-    })
+  await settingsTab.click()
   await waitForSettingsTabContent(page, tab)
 }
 
@@ -405,15 +363,7 @@ export const closeSettings = async (page: Page) => {
   if (await settingsModal.isVisible().catch(() => false)) {
     const modalClose = settingsModal.getByTestId("modal-close").first()
     if (await isVisible(modalClose)) {
-      await modalClose
-        .evaluate((element) => {
-          if (element instanceof HTMLElement) {
-            element.click()
-          }
-        })
-        .catch(async () => {
-          await modalClose.click({ force: true, noWaitAfter: true })
-        })
+      await modalClose.click()
     }
   }
 
@@ -433,27 +383,15 @@ export const getLanguageLabel = async (page: Page) => {
 
 export const openOnboardingFeedForm = async (
   page: Page,
-  env: DesktopE2EEnv,
-  options?: { electron?: boolean },
+  _env?: DesktopE2EEnv,
+  _options?: { electron?: boolean },
 ) => {
-  await navigateInApp(page, env, "/discover", options)
-
   const discoverInput = page.getByTestId("discover-form-input")
   if (!(await discoverInput.isVisible().catch(() => false))) {
     const discoverLink = page.locator('a[href="#/discover"], a[href="/discover"]').last()
-    if (await discoverLink.isVisible().catch(() => false)) {
-      await discoverLink.click({ force: true })
-    }
-  }
-
-  if (!(await discoverInput.isVisible().catch(() => false))) {
-    await page.evaluate(() => {
-      const nextRoute = "/discover"
-      const { router } = window as typeof window & {
-        router?: { navigate?: (route: string) => void }
-      }
-      router?.navigate?.(nextRoute)
-    })
+    await returnToMainShell(page)
+    await expect(discoverLink).toBeVisible({ timeout: 15_000 })
+    await discoverLink.click()
   }
 
   await expect(discoverInput).toBeVisible({ timeout: 15_000 })
@@ -474,7 +412,8 @@ export const followOnboardingFeed = async (
     .first()
   const followButton = onboardingDiscoverCard.getByRole("button", { name: /^Follow$/i })
   if (await followButton.isVisible().catch(() => false)) {
-    await followButton.click({ force: true })
+    await expect(followButton).toBeEnabled({ timeout: 15_000 })
+    await followButton.click()
   }
   await expect(page.getByText("Welcome to Folo").first()).toBeVisible({ timeout: 15_000 })
 }
@@ -490,13 +429,7 @@ export const dismissFeedForm = async (page: Page) => {
     return
   }
 
-  await cancelButton
-    .evaluate((element) => {
-      if (element instanceof HTMLElement) {
-        element.click()
-      }
-    })
-    .catch(() => {})
+  await cancelButton.click()
 
   if (
     (await cancelButton.isVisible().catch(() => false)) ||
@@ -543,7 +476,7 @@ const findSettingsFeedRow = async (page: Page, onboardingFeedId: string | null) 
   return targetedFeedRow && (await targetedFeedRow.count()) > 0 ? targetedFeedRow : fallbackFeedRow
 }
 
-export const unsubscribeFirstFeedFromSettings = async (page: Page, env?: DesktopE2EEnv) => {
+export const unsubscribeFirstFeedFromSettings = async (page: Page, _env?: DesktopE2EEnv) => {
   const onboardingFeedItem = page
     .locator("[data-feed-id]")
     .filter({
@@ -554,71 +487,39 @@ export const unsubscribeFirstFeedFromSettings = async (page: Page, env?: Desktop
     (await onboardingFeedItem.count()) > 0
       ? await onboardingFeedItem.getAttribute("data-feed-id")
       : null
-  let unsubscribedInSettings = false
 
   await openSettings(page)
   await openSettingsTab(page, "feeds")
   const feedRow = await findSettingsFeedRow(page, onboardingFeedId)
 
-  if (await feedRow.isVisible().catch(() => false)) {
-    await feedRow.scrollIntoViewIfNeeded().catch(() => {})
-    const feedRowTestId = await feedRow.getAttribute("data-testid")
-    await feedRow.click()
-    await expect(page.getByTestId("feeds-batch-unsubscribe")).toBeVisible({ timeout: 15_000 })
-    await page.getByTestId("feeds-batch-unsubscribe").click()
-    await page.getByTestId("confirm-destroy").click()
+  await expect(feedRow).toBeVisible({ timeout: 15_000 })
+  await feedRow.scrollIntoViewIfNeeded().catch(() => {})
+  const feedRowTestId = await feedRow.getAttribute("data-testid")
+  await feedRow.click()
 
-    if (feedRowTestId) {
-      await expect(page.getByTestId(feedRowTestId)).toHaveCount(0, { timeout: 15_000 })
-    } else {
-      await expect
-        .poll(
-          async () =>
-            page
-              .getByTestId("feeds-batch-unsubscribe")
-              .isVisible()
-              .catch(() => false),
-          {
-            timeout: 15_000,
-          },
-        )
-        .toBe(false)
-    }
+  const unsubscribeButton = page.getByTestId("feeds-batch-unsubscribe")
+  await expect(unsubscribeButton).toBeVisible({ timeout: 15_000 })
+  await unsubscribeButton.click()
+  await page.getByTestId("confirm-destroy").click()
 
-    unsubscribedInSettings = true
-  }
-
-  const isElectronApp = page.url().startsWith("app://")
-
-  if (!unsubscribedInSettings && !isElectronApp && env && onboardingFeedId) {
-    const response = await deleteWithSession(page, env, "/subscriptions", {
-      feedId: onboardingFeedId,
-    })
-
-    expect(response.ok).toBe(true)
-    await page.reload({ waitUntil: "domcontentloaded" }).catch(() => {})
-  }
-
-  if (isElectronApp) {
-    expect(unsubscribedInSettings).toBe(true)
+  if (feedRowTestId) {
+    await expect(page.getByTestId(feedRowTestId)).toHaveCount(0, { timeout: 15_000 })
+  } else {
+    await expect(feedRow).toHaveCount(0, { timeout: 15_000 })
   }
 }
 
 export const expectOnboardingFeedUnsubscribed = async (
   page: Page,
-  env: DesktopE2EEnv,
-  options?: { electron?: boolean },
+  _env?: DesktopE2EEnv,
+  _options?: { electron?: boolean },
 ) => {
-  await openOnboardingFeedForm(page, env, options)
+  await openOnboardingFeedForm(page)
   await expect(page.getByTestId("feed-form-cancel")).toHaveCount(0)
 }
 
-export const expectTimelineSwitchAndEntryReadFlow = async (
-  page: Page,
-  env: DesktopE2EEnv,
-  options?: { electron?: boolean },
-) => {
-  await navigateInApp(page, env, "/", options)
+export const expectTimelineSwitchAndEntryReadFlow = async (page: Page) => {
+  await returnToMainShell(page)
 
   await page.getByTestId("timeline-tab-videos").click()
   await expect.poll(async () => page.locator("[data-entry-id]").count()).toBe(0)
@@ -632,42 +533,28 @@ export const expectTimelineSwitchAndEntryReadFlow = async (
       hasText: "Welcome to Folo",
     })
     .first()
-  if (await isVisible(onboardingFeed)) {
+  if (
+    (await isVisible(onboardingFeed)) &&
+    ((await onboardingFeed.getAttribute("aria-disabled")) ?? "false") !== "true"
+  ) {
     await onboardingFeed.scrollIntoViewIfNeeded().catch(() => {})
-    await onboardingFeed.click({ force: true })
+    await onboardingFeed.click()
   }
 
-  const unreadOnboardingEntry = page.locator('[data-entry-id][data-read="false"]').first()
-  const fallbackOnboardingEntry = page.locator("[data-entry-id]").first()
-  const firstOnboardingEntry = (await unreadOnboardingEntry.isVisible().catch(() => false))
-    ? unreadOnboardingEntry
-    : fallbackOnboardingEntry
-  await expect(firstOnboardingEntry).toBeVisible({ timeout: 15_000 })
+  const unreadOnboardingEntry = page.locator('[data-entry-id][data-read="false"]:visible').first()
+  await expect(unreadOnboardingEntry).toBeVisible({ timeout: 15_000 })
 
-  const onboardingEntryId = await firstOnboardingEntry.getAttribute("data-entry-id")
-  const onboardingEntry = onboardingEntryId
-    ? page.locator(`[data-entry-id="${onboardingEntryId}"]`)
-    : firstOnboardingEntry
+  const onboardingEntryId = await unreadOnboardingEntry.getAttribute("data-entry-id")
+  expect(onboardingEntryId).toBeTruthy()
 
-  if (onboardingEntryId && !(await unreadOnboardingEntry.isVisible().catch(() => false))) {
-    const response = await deleteWithSession(page, env, "/reads", {
-      entryId: onboardingEntryId,
-    })
-    expect(response.ok).toBe(true)
-    await page.reload({ waitUntil: "domcontentloaded" })
-    if (await isVisible(onboardingFeed)) {
-      await onboardingFeed.click({ force: true })
-    }
-    await expect(onboardingEntry).toHaveAttribute("data-read", "false")
-  }
+  const onboardingEntry = page.locator(`[data-entry-id="${onboardingEntryId}"]`)
 
-  await onboardingEntry.click({ force: true })
+  await unreadOnboardingEntry.click()
   await expect(page.getByTestId("entry-render")).toBeVisible({ timeout: 15_000 })
+  await expect(onboardingEntry).toHaveAttribute("data-read", "true", { timeout: 15_000 })
 
-  if (onboardingEntryId) {
-    const response = await deleteWithSession(page, env, "/reads", {
-      entryId: onboardingEntryId,
-    })
-    expect(response.ok).toBe(true)
-  }
+  const toggleReadButton = page.getByTestId("command-action-entry-read")
+  await expect(toggleReadButton).toBeVisible({ timeout: 15_000 })
+  await toggleReadButton.click()
+  await expect(onboardingEntry).toHaveAttribute("data-read", "false", { timeout: 15_000 })
 }

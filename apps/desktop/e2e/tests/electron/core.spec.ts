@@ -34,16 +34,16 @@ test.describe("electron core flows", () => {
       })
 
       await test.step("follows onboarding feed", async () => {
-        await followOnboardingFeed(electronApp.page, env, { electron: true })
+        await followOnboardingFeed(electronApp.page, env)
         await dismissFeedForm(electronApp.page)
       })
 
       await test.step("switches timeline, opens an entry, and toggles read state", async () => {
-        await expectTimelineSwitchAndEntryReadFlow(electronApp.page, env, { electron: true })
+        await expectTimelineSwitchAndEntryReadFlow(electronApp.page)
       })
 
       await test.step("unsubscribes onboarding feed from settings", async () => {
-        await unsubscribeFirstFeedFromSettings(electronApp.page, env)
+        await unsubscribeFirstFeedFromSettings(electronApp.page)
       })
 
       const cleanup = await tryDeleteCurrentUser(electronApp.page, env)
