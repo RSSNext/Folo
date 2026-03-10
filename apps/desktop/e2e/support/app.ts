@@ -584,7 +584,7 @@ export const expectTimelineSwitchAndEntryReadFlow = async (page: Page) => {
 
   const onboardingEntry = page.locator(`[data-entry-id="${onboardingEntryId}"]`)
 
-  await unreadOnboardingEntry.click()
+  await unreadOnboardingEntry.click({ position: { x: 20, y: 20 } })
   await expect(page.getByTestId("entry-render")).toBeVisible({ timeout: 15_000 })
   await expect(onboardingEntry).toHaveAttribute("data-read", "true", { timeout: 15_000 })
 
