@@ -223,11 +223,7 @@ export const registerWithCredential = async (page: Page, account: TestAccount) =
   const submit = visibleByTestId(page, "register-submit")
   await expect(submit).toBeEnabled({ timeout: 30_000 })
 
-  if (page.url().startsWith("app://")) {
-    await confirmPasswordInput.press("Enter")
-  } else {
-    await submit.click()
-  }
+  await submit.click()
   await waitForAuthenticated(page)
 }
 
@@ -239,11 +235,7 @@ export const loginWithCredential = async (page: Page, account: TestAccount) => {
   const submit = visibleByTestId(page, "login-submit")
   await expect(submit).toBeEnabled({ timeout: 30_000 })
 
-  if (page.url().startsWith("app://")) {
-    await passwordInput.press("Enter")
-  } else {
-    await submit.click()
-  }
+  await submit.click()
   await waitForAuthenticated(page)
 }
 
@@ -290,11 +282,17 @@ const waitForMainShell = async (page: Page) => {
 const returnToMainShell = async (page: Page) => {
   const discoverInput = page.getByTestId("discover-form-input")
   if (await discoverInput.isVisible().catch(() => false)) {
-    const currentURL = page.url()
-    const rootURL = currentURL.includes("#")
-      ? `${currentURL.split("#")[0]}#/`
-      : new URL("/", currentURL).toString()
-    await page.goto(rootURL, { waitUntil: "domcontentloaded" }).catch(() => {})
+    const backButton = page.getByTestId("subview-back")
+
+    if (await backButton.isVisible().catch(() => false)) {
+      await backButton.click()
+    } else {
+      await page.keyboard.press("Escape").catch(() => {})
+    }
+
+    if (await discoverInput.isVisible().catch(() => false)) {
+      await page.keyboard.press("Escape").catch(() => {})
+    }
 
     await expect
       .poll(async () => discoverInput.isVisible().catch(() => false), { timeout: 15_000 })
@@ -314,9 +312,9 @@ const returnToMainShell = async (page: Page) => {
       }
     }
 
-    if (await activeDialog.isVisible().catch(() => false)) {
-      await page.waitForTimeout(500)
-    }
+    await expect
+      .poll(async () => activeDialog.isVisible().catch(() => false), { timeout: 10_000 })
+      .toBe(false)
   }
 }
 
@@ -413,21 +411,15 @@ export const getLanguageLabel = async (page: Page) => {
 
 export const openOnboardingFeedForm = async (
   page: Page,
-  env?: DesktopE2EEnv,
+  _env?: DesktopE2EEnv,
   _options?: { electron?: boolean },
 ) => {
   const discoverInput = page.getByTestId("discover-form-input")
   if (!(await discoverInput.isVisible().catch(() => false))) {
     await returnToMainShell(page)
-    const currentURL = page.url()
-    const electronDiscoverURL = currentURL.startsWith("app://")
-      ? `${currentURL.split("#")[0]}#/discover`
-      : null
-
-    const discoverURL = electronDiscoverURL ?? (env ? buildWebAppURL(env, "/discover") : null)
-    if (discoverURL) {
-      await page.goto(discoverURL, { waitUntil: "domcontentloaded" })
-    }
+    const discoverTrigger = page.getByTestId("subscription-discover-trigger")
+    await expect(discoverTrigger).toBeVisible({ timeout: 15_000 })
+    await discoverTrigger.click()
   }
 
   await expect(discoverInput).toBeVisible({ timeout: 15_000 })
@@ -573,61 +565,24 @@ export const expectTimelineSwitchAndEntryReadFlow = async (page: Page) => {
   expect(onboardingEntryId).toBeTruthy()
 
   const onboardingEntry = page.locator(`[data-entry-id="${onboardingEntryId}"]`)
-  const openEntry = async () => {
-    const onboardingEntryLink = unreadOnboardingEntry.locator("a[href]").first()
-    if (await onboardingEntryLink.count()) {
-      await onboardingEntryLink.focus()
-      await onboardingEntryLink.press("Enter")
-      return onboardingEntryLink
-    } else {
-      await unreadOnboardingEntry.click({ position: { x: 20, y: 20 } })
-      return null
-    }
-  }
-  const toggleRead = async () => {
-    await page.keyboard.press("m").catch(() => {})
+  const onboardingEntryLink = unreadOnboardingEntry.locator("a[href]").first()
 
-    const toggleReadButton = page.getByTestId("command-action-entry-read").last()
-    if (await toggleReadButton.isVisible().catch(() => false)) {
-      await toggleReadButton.click()
-      return
-    }
-
-    const toggleReadNamedButton = page.getByRole("button", { name: /Mark as Read/i }).last()
-    if (await toggleReadNamedButton.isVisible().catch(() => false)) {
-      await toggleReadNamedButton.click()
-      return
-    }
-
-    const moreActionsTrigger = page.getByTestId("entry-more-actions-trigger").last()
-    await expect(moreActionsTrigger).toBeVisible({ timeout: 15_000 })
-    await moreActionsTrigger.click()
-
-    const toggleReadMenuItem = page.getByTestId("command-menuitem-entry-read").last()
-    await expect(toggleReadMenuItem).toBeVisible({ timeout: 15_000 })
-    await toggleReadMenuItem.click()
-  }
-
-  const onboardingEntryLink = await openEntry()
+  await unreadOnboardingEntry.scrollIntoViewIfNeeded().catch(() => {})
+  await expect(onboardingEntryLink).toBeVisible({ timeout: 15_000 })
+  await onboardingEntryLink.click()
 
   const entryRender = page.getByTestId("entry-render")
-  if (!(await entryRender.isVisible().catch(() => false))) {
-    await unreadOnboardingEntry.focus().catch(() => {})
-    await page.keyboard.press("Enter").catch(() => {})
-
-    if (!(await entryRender.isVisible().catch(() => false)) && onboardingEntryLink) {
-      const href = await onboardingEntryLink.getAttribute("href")
-      if (href) {
-        const targetURL = href.startsWith("http") ? href : new URL(href, page.url()).toString()
-        await page.goto(targetURL, { waitUntil: "domcontentloaded" }).catch(() => {})
-      }
-    }
-  }
-
   await expect(entryRender).toBeVisible({ timeout: 15_000 })
+  await expect(onboardingEntry).toHaveAttribute("data-active", "true", { timeout: 15_000 })
+  await expect(onboardingEntry).toHaveAttribute("data-read", "true", { timeout: 15_000 })
 
-  await toggleRead()
-  await expect(onboardingEntry).toHaveAttribute("data-read", "true", { timeout: 30_000 })
-  await toggleRead()
-  await expect(onboardingEntry).toHaveAttribute("data-read", "false", { timeout: 30_000 })
+  const toggleReadButton = page.getByTestId("command-action-entry-read").last()
+  await expect(toggleReadButton).toBeVisible({ timeout: 15_000 })
+  await expect(toggleReadButton).toBeEnabled({ timeout: 15_000 })
+
+  await toggleReadButton.click()
+  await expect(onboardingEntry).toHaveAttribute("data-read", "false", { timeout: 15_000 })
+
+  await toggleReadButton.click()
+  await expect(onboardingEntry).toHaveAttribute("data-read", "true", { timeout: 15_000 })
 }

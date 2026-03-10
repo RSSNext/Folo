@@ -85,10 +85,7 @@ export const MoreActions = ({
   return (
     <DropdownMenu>
       <DropdownMenuTrigger asChild>
-        <ActionButton
-          data-testid="entry-more-actions-trigger"
-          icon={<i className="i-mingcute-more-1-fill" />}
-        />
+        <ActionButton icon={<i className="i-mingcute-more-1-fill" />} />
       </DropdownMenuTrigger>
       <RootPortal>
         <DropdownMenuContent align="end">
@@ -206,7 +203,6 @@ export const CommandDropdownMenuItem = ({
   return (
     <DropdownMenuItem
       key={command.id}
-      data-testid={`command-menuitem-${command.id.replaceAll(":", "-")}`}
       className="pl-3"
       icon={command.icon}
       onSelect={disabled ? undefined : onClick}

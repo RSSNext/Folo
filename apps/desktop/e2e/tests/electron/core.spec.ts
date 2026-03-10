@@ -15,7 +15,7 @@ import { resolveDesktopE2EEnv } from "../../support/env"
 
 test.describe("electron core flows", () => {
   test("covers registration, login, follow, unfollow, timeline and read state", async () => {
-    test.setTimeout(420_000)
+    test.setTimeout(240_000)
 
     const env = resolveDesktopE2EEnv()
     const account = createTestAccount("electron-core")

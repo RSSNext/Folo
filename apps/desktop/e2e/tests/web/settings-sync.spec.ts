@@ -51,7 +51,6 @@ test.describe("web multi-session sync", () => {
         await expect
           .poll(async () => getLanguageLabel(pageA), { timeout: 15_000 })
           .toContain("日本語")
-        await pageA.waitForTimeout(1_500)
         await expect
           .poll(
             async () => {
@@ -69,7 +68,6 @@ test.describe("web multi-session sync", () => {
         await expect
           .poll(async () => getLanguageLabel(pageB), { timeout: 15_000 })
           .toContain("English")
-        await pageB.waitForTimeout(1_500)
         await expect
           .poll(
             async () => {
