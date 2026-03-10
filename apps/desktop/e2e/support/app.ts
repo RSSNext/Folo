@@ -288,16 +288,21 @@ const waitForMainShell = async (page: Page) => {
 const returnToMainShell = async (page: Page) => {
   const discoverInput = page.getByTestId("discover-form-input")
   if (await discoverInput.isVisible().catch(() => false)) {
-    const backButton = page.getByTestId("subview-back")
-    await expect(backButton).toBeVisible({ timeout: 15_000 })
-    await backButton.click()
+    const currentURL = page.url()
+    const rootURL = currentURL.includes("#")
+      ? `${currentURL.split("#")[0]}#/`
+      : new URL("/", currentURL).toString()
 
-    if (await discoverInput.isVisible().catch(() => false)) {
-      const currentURL = page.url()
-      const rootURL = currentURL.includes("#")
-        ? `${currentURL.split("#")[0]}#/`
-        : new URL("/", currentURL).toString()
+    if (currentURL.startsWith("app://")) {
       await page.goto(rootURL, { waitUntil: "domcontentloaded" }).catch(() => {})
+    } else {
+      const backButton = page.getByTestId("subview-back")
+      await expect(backButton).toBeVisible({ timeout: 15_000 })
+      await backButton.click()
+
+      if (await discoverInput.isVisible().catch(() => false)) {
+        await page.goto(rootURL, { waitUntil: "domcontentloaded" }).catch(() => {})
+      }
     }
 
     await expect
@@ -583,6 +588,21 @@ export const expectTimelineSwitchAndEntryReadFlow = async (page: Page) => {
   expect(onboardingEntryId).toBeTruthy()
 
   const onboardingEntry = page.locator(`[data-entry-id="${onboardingEntryId}"]`)
+  const toggleRead = async () => {
+    const toggleReadButton = page.getByTestId("command-action-entry-read")
+    if (await toggleReadButton.isVisible().catch(() => false)) {
+      await toggleReadButton.click()
+      return
+    }
+
+    const moreActionsTrigger = page.getByTestId("entry-more-actions-trigger")
+    await expect(moreActionsTrigger).toBeVisible({ timeout: 15_000 })
+    await moreActionsTrigger.click()
+
+    const toggleReadMenuItem = page.getByTestId("command-menuitem-entry-read")
+    await expect(toggleReadMenuItem).toBeVisible({ timeout: 15_000 })
+    await toggleReadMenuItem.click()
+  }
 
   const onboardingEntryLink = unreadOnboardingEntry.locator("a[href]").first()
   if (await onboardingEntryLink.count()) {
@@ -592,19 +612,12 @@ export const expectTimelineSwitchAndEntryReadFlow = async (page: Page) => {
     await unreadOnboardingEntry.click({ position: { x: 20, y: 20 } })
   }
   await expect(page.getByTestId("entry-render")).toBeVisible({ timeout: 15_000 })
-  await expect(onboardingEntry).toHaveAttribute("data-read", "true", { timeout: 15_000 })
 
-  const toggleReadButton = page.getByTestId("command-action-entry-read")
-  if (await toggleReadButton.isVisible().catch(() => false)) {
-    await toggleReadButton.click()
-  } else {
-    const moreActionsTrigger = page.getByTestId("entry-more-actions-trigger")
-    await expect(moreActionsTrigger).toBeVisible({ timeout: 15_000 })
-    await moreActionsTrigger.click()
-
-    const toggleReadMenuItem = page.getByTestId("command-menuitem-entry-read")
-    await expect(toggleReadMenuItem).toBeVisible({ timeout: 15_000 })
-    await toggleReadMenuItem.click()
+  if (((await onboardingEntry.getAttribute("data-read")) ?? "false") !== "true") {
+    await toggleRead()
+    await expect(onboardingEntry).toHaveAttribute("data-read", "true", { timeout: 15_000 })
   }
+
+  await toggleRead()
   await expect(onboardingEntry).toHaveAttribute("data-read", "false", { timeout: 15_000 })
 }
