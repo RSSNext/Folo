@@ -81,4 +81,23 @@ export const safeSecureStore = {
       throw error
     }
   },
+  removeItem(key: string) {
+    Storage.removeItemSync(getFallbackKey(key))
+
+    if (forceFallback) {
+      return
+    }
+
+    void SecureStore.deleteItemAsync(key).catch((error) => {
+      if (isSecureStoreUnavailable(error)) {
+        forceFallback = true
+        warnFallback("setItem", key, error)
+        return
+      }
+
+      console.warn(
+        `[auth-storage] SecureStore removeItem failed for ${key}: ${error instanceof Error ? error.message : String(error)}`,
+      )
+    })
+  },
 }

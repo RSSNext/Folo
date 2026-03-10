@@ -1,8 +1,6 @@
 appId: is.follow
 name: iOS auth journey
 ---
-- launchApp:
-    clearState: true
 - runFlow:
     file: ./register.yaml
 - runFlow:

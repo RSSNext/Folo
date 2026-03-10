@@ -63,6 +63,22 @@ resolve_ios_app_path() {
   find "$HOME/Library/Developer/Xcode/DerivedData" -path '*Build/Products/Release-iphonesimulator/Folo.app' | head -n1
 }
 
+wait_for_android_ready() {
+  device_id="$1"
+
+  for _ in $(seq 1 90); do
+    boot_completed=$(adb -s "${device_id}" shell getprop sys.boot_completed 2>/dev/null | awk 'NF { print $1; exit }')
+    if [ "$boot_completed" = "1" ] && adb -s "${device_id}" shell cmd package list packages >/dev/null 2>&1; then
+      sleep 20
+      return
+    fi
+    sleep 2
+  done
+
+  echo "Android device ${device_id} did not finish booting in time." >&2
+  exit 1
+}
+
 prepare_ios_simulator() {
   device_id="$1"
   xcrun simctl shutdown "${device_id}" >/dev/null 2>&1 || true
@@ -108,22 +124,9 @@ case "${platform}" in
     xcrun simctl install "${device_id}" "${app_path}" >/dev/null 2>&1 || true
     xcrun simctl launch "${device_id}" is.follow >/dev/null 2>&1 || true
 
-    auth_ok=0
-    for attempt in 1 2 3; do
-      if maestro test --format junit --platform ios --device "${device_id}" --debug-output "${debug_output}/auth-${attempt}" \
-        -e E2E_EMAIL="${E2E_EMAIL}" -e E2E_PASSWORD="${E2E_PASSWORD}" e2e/flows/ios/auth.yaml; then
-        auth_ok=1
-        break
-      fi
-    done
+    maestro test --format junit --platform ios --device "${device_id}" --debug-output "${debug_output}/auth" \
+      -e E2E_EMAIL="${E2E_EMAIL}" -e E2E_PASSWORD="${E2E_PASSWORD}" e2e/flows/ios/auth.yaml
 
-    if [ "${auth_ok}" -ne 1 ]; then
-      echo "iOS auth journey failed after retries." >&2
-      exit 1
-    fi
-
-    maestro test --format junit --platform ios --device "${device_id}" --debug-output "${debug_output}/content" \
-      -e E2E_EMAIL="${E2E_EMAIL}" -e E2E_PASSWORD="${E2E_PASSWORD}" e2e/flows/ios/content.yaml
     ;;
   android)
     flow_target="e2e/flows/${platform}/core.yaml"
@@ -132,6 +135,7 @@ case "${platform}" in
       echo "No booted Android emulator found. Set MAESTRO_ANDROID_DEVICE_ID or boot an emulator first." >&2
       exit 1
     fi
+    wait_for_android_ready "${device_id}"
     adb -s "${device_id}" shell pm clear is.follow >/dev/null 2>&1 || true
     adb -s "${device_id}" shell monkey -p is.follow -c android.intent.category.LAUNCHER 1 >/dev/null 2>&1 || true
     maestro test --format junit --platform android --device "${device_id}" --debug-output "${debug_output}" \

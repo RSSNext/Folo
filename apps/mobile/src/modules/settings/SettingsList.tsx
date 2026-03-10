@@ -4,7 +4,7 @@ import type { StatusConfigs as ServerConfigs } from "@follow-app/client-sdk"
 import type { FC } from "react"
 import { Fragment, useMemo } from "react"
 import { useTranslation } from "react-i18next"
-import { Alert, PixelRatio, View } from "react-native"
+import { PixelRatio, View } from "react-native"
 
 import { getIsPaymentEnabled, useServerConfigs } from "@/src/atoms/server-configs"
 import {
@@ -12,6 +12,7 @@ import {
   GroupedInsetListNavigationLink,
   GroupedInsetListNavigationLinkIcon,
 } from "@/src/components/ui/grouped/GroupedList"
+import { Text } from "@/src/components/ui/typography/Text"
 import { CertificateCuteFiIcon } from "@/src/icons/certificate_cute_fi"
 import { DatabaseIcon } from "@/src/icons/database"
 import { ExitCuteFiIcon } from "@/src/icons/exit_cute_fi"
@@ -25,6 +26,7 @@ import { Settings1CuteFiIcon } from "@/src/icons/settings_1_cute_fi"
 import { StarCuteFiIcon } from "@/src/icons/star_cute_fi"
 import { UserSettingCuteFiIcon } from "@/src/icons/user_setting_cute_fi"
 import { signOut } from "@/src/lib/auth"
+import { Dialog } from "@/src/lib/dialog"
 import { useNavigation } from "@/src/lib/navigation/hooks"
 import type { Navigation } from "@/src/lib/navigation/Navigation"
 import { isPaymentFeatureEnabled } from "@/src/lib/payment"
@@ -199,16 +201,21 @@ const ActionGroupNavigationLinks: GroupNavigationLink[] = [
     translationKey: "titles.sign_out",
     icon: ExitCuteFiIcon,
     onPress: () => {
-      Alert.alert("Sign out", "Are you sure you want to sign out?", [
-        { text: "Cancel", style: "cancel" },
-        {
-          text: "Sign out",
-          style: "destructive",
-          onPress: async () => {
-            await signOut()
-          },
+      Dialog.show({
+        id: "settings-sign-out-dialog",
+        title: "Confirm sign out",
+        content: (
+          <View>
+            <Text className="text-label">Are you sure you want to sign out?</Text>
+          </View>
+        ),
+        variant: "destructive",
+        confirmText: "Sign out",
+        cancelText: "Cancel",
+        onConfirm: async () => {
+          await signOut()
         },
-      ])
+      })
     },
     iconBackgroundColor: "#DC2626",
     anonymous: false,

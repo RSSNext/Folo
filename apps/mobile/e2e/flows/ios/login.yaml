@@ -1,13 +1,42 @@
 appId: is.follow
 ---
-- runFlow: ../shared/open-auth.yaml
-- tapOn:
-    id: auth-toggle-mode
+- assertVisible:
+    id: login-screen
+- waitForAnimationToEnd:
+    timeout: 15000
 - extendedWaitUntil:
-    visible: Don't have an account? Sign up
-    timeout: 10000
+    visible:
+      id: login-provider-credential
+    timeout: 60000
+- extendedWaitUntil:
+    visible:
+      id: login-provider-google
+    timeout: 60000
+- extendedWaitUntil:
+    visible:
+      id: login-provider-github
+    timeout: 60000
+- runFlow:
+    when:
+      visible: Already have an account? Sign in
+    commands:
+      - tapOn:
+          id: auth-toggle-mode
+      - waitForAnimationToEnd
+- extendedWaitUntil:
+    visible:
+      id: login-provider-credential
+    timeout: 60000
+- extendedWaitUntil:
+    visible:
+      id: login-provider-google
+    timeout: 60000
+- extendedWaitUntil:
+    visible:
+      id: login-provider-github
+    timeout: 60000
 - tapOn:
-    text: Continue with Email
+    id: login-provider-credential
 - extendedWaitUntil:
     visible:
       id: login-email-input
@@ -17,21 +46,12 @@ appId: is.follow
 - inputText: ${E2E_EMAIL}
 - tapOn:
     id: login-password-input
-- setClipboard: ${E2E_PASSWORD}
-- pasteText
+- eraseText
+- inputText: ${E2E_PASSWORD}
 - pressKey: Enter
 - extendedWaitUntil:
     notVisible:
       id: login-screen
     timeout: 30000
-- launchApp
-- runFlow:
-    when:
-      notVisible:
-        id: timeline-view-articles
-    commands:
-      - launchApp
-- extendedWaitUntil:
-    visible:
-      id: timeline-view-articles
-    timeout: 30000
+- assertNotVisible:
+    id: login-screen

@@ -1,3 +1,4 @@
+import { userSyncService } from "@follow/store/user/store"
 import { tracker } from "@follow/tracker"
 import { zodResolver } from "@hookform/resolvers/zod"
 import { useMutation } from "@tanstack/react-query"
@@ -14,7 +15,7 @@ import { z } from "zod"
 import { SubmitButton } from "@/src/components/common/SubmitButton"
 import { PlainTextField } from "@/src/components/ui/form/TextField"
 import { Text } from "@/src/components/ui/typography/Text"
-import { signIn, signUp } from "@/src/lib/auth"
+import { getCookie, signIn, signUp } from "@/src/lib/auth"
 import { useNavigation } from "@/src/lib/navigation/hooks"
 import { Navigation } from "@/src/lib/navigation/Navigation"
 import { toast } from "@/src/lib/toast"
@@ -30,6 +31,16 @@ const formSchema = z.object({
 type FormValue = z.infer<typeof formSchema>
 
 async function onSubmit(values: FormValue) {
+  return signInWithEmail(values)
+}
+
+async function signInWithEmail(
+  values: FormValue,
+  options: {
+    trackLogin?: boolean
+  } = {},
+) {
+  const { trackLogin = true } = options
   const result = formSchema.safeParse(values)
   if (!result.success) {
     const issue = result.error.issues[0]
@@ -62,9 +73,13 @@ async function onSubmit(values: FormValue) {
     return false
   }
 
-  tracker.userLogin({
-    type: "email",
-  })
+  await userSyncService.whoami()
+
+  if (trackLogin) {
+    tracker.userLogin({
+      type: "email",
+    })
+  }
   return true
 }
 
@@ -181,7 +196,7 @@ function SignupInput({
 }
 export function EmailSignUp() {
   const { t } = useTranslation()
-  const { control, handleSubmit, formState } = useForm<SignupFormValue>({
+  const { control, handleSubmit } = useForm<SignupFormValue>({
     resolver: zodResolver(signupFormSchema),
     mode: "onChange",
     reValidateMode: "onChange",
@@ -193,28 +208,43 @@ export function EmailSignUp() {
   })
   const submitMutation = useMutation({
     mutationFn: async (values: SignupFormValue) => {
-      await signUp
-        .email(
+      const res = await signUp.email(
+        {
+          email: values.email,
+          password: values.password,
+          name: values.email.split("@")[0] ?? "",
+        },
+        {
+          headers: await getTokenHeaders(),
+        },
+      )
+
+      if (res.error?.message) {
+        toast.error(res.error.message)
+        return
+      }
+
+      if (!getCookie()) {
+        const signedIn = await signInWithEmail(
           {
             email: values.email,
             password: values.password,
-            name: values.email.split("@")[0] ?? "",
           },
           {
-            headers: await getTokenHeaders(),
+            trackLogin: false,
           },
         )
-        .then((res) => {
-          if (res.error?.message) {
-            toast.error(res.error.message)
-          } else {
-            toast.success(i18next.t("login.sign_up_successful"))
-            tracker.register({
-              type: "email",
-            })
-            Navigation.rootNavigation.back()
-          }
-        })
+
+        if (!signedIn) {
+          return
+        }
+      }
+
+      toast.success(i18next.t("login.sign_up_successful"))
+      tracker.register({
+        type: "email",
+      })
+      Navigation.rootNavigation.back()
     },
   })
   const signup = handleSubmit((values) => {
@@ -285,7 +315,7 @@ export function EmailSignUp() {
         </View>
       </View>
       <SubmitButton
-        disabled={submitMutation.isPending || !formState.isValid}
+        disabled={submitMutation.isPending}
         isLoading={submitMutation.isPending}
         testID="register-submit"
         onPress={signup}

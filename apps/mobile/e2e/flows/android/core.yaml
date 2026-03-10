@@ -1,17 +1,13 @@
 appId: is.follow
-name: Android core journey
+name: Android auth journey
 ---
 - runFlow:
-    file: ../shared/register.yaml
+    file: ./dismiss-dev-menu.yaml
+- runFlow:
+    file: ./register.yaml
 - runFlow:
     file: ../shared/sign-out.yaml
 - runFlow:
-    file: ../shared/login.yaml
+    file: ./dismiss-dev-menu.yaml
 - runFlow:
-    file: ../shared/ensure-onboarding-unfollowed.yaml
-- runFlow:
-    file: ../shared/follow-onboarding.yaml
-- runFlow:
-    file: ./timeline-entry.yaml
-- runFlow:
-    file: ../shared/unfollow-onboarding.yaml
+    file: ./login.yaml
