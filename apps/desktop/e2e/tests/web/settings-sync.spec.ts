@@ -48,16 +48,30 @@ test.describe("web multi-session sync", () => {
 
       await test.step("session A change syncs to session B", async () => {
         await setLanguage(pageA, "日本語")
-        await pageB.reload({ waitUntil: "domcontentloaded" })
-        await openSettings(pageB)
-        await expect(await getLanguageLabel(pageB)).toContain("日本語")
+        await expect
+          .poll(
+            async () => {
+              await pageB.reload({ waitUntil: "domcontentloaded" })
+              await openSettings(pageB)
+              return getLanguageLabel(pageB)
+            },
+            { timeout: 30_000 },
+          )
+          .toContain("日本語")
       })
 
       await test.step("session B change syncs back to session A", async () => {
         await setLanguage(pageB, "English")
-        await pageA.reload({ waitUntil: "domcontentloaded" })
-        await openSettings(pageA)
-        await expect(await getLanguageLabel(pageA)).toContain("English")
+        await expect
+          .poll(
+            async () => {
+              await pageA.reload({ waitUntil: "domcontentloaded" })
+              await openSettings(pageA)
+              return getLanguageLabel(pageA)
+            },
+            { timeout: 30_000 },
+          )
+          .toContain("English")
       })
 
       const cleanup = await tryDeleteCurrentUser(pageA, env)
