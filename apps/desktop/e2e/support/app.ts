@@ -393,7 +393,7 @@ export const closeSettings = async (page: Page) => {
   if (await settingsModal.isVisible().catch(() => false)) {
     const modalClose = settingsModal.getByTestId("modal-close").first()
     if (await isVisible(modalClose)) {
-      await modalClose.click()
+      await modalClose.click().catch(() => {})
     }
   }
 
