@@ -300,6 +300,22 @@ const returnToMainShell = async (page: Page) => {
   }
 
   await waitForMainShell(page)
+
+  const activeDialog = page.locator('[role="dialog"]:visible').last()
+  if (await activeDialog.isVisible().catch(() => false)) {
+    await page.keyboard.press("Escape").catch(() => {})
+
+    if (await activeDialog.isVisible().catch(() => false)) {
+      const modalClose = activeDialog.getByTestId("modal-close").first()
+      if (await modalClose.isVisible().catch(() => false)) {
+        await modalClose.click().catch(() => {})
+      }
+    }
+
+    await expect
+      .poll(async () => activeDialog.isVisible().catch(() => false), { timeout: 10_000 })
+      .toBe(false)
+  }
 }
 
 const waitForSettingsTabContent = async (page: Page, tab: "general" | "feeds") => {
@@ -556,9 +572,15 @@ export const expectTimelineSwitchAndEntryReadFlow = async (page: Page) => {
 
   const onboardingEntry = page.locator(`[data-entry-id="${onboardingEntryId}"]`)
   const toggleRead = async () => {
-    const toggleReadButton = page.getByTestId("command-action-entry-read")
+    const toggleReadButton = page.getByTestId("command-action-entry-read").last()
     if (await toggleReadButton.isVisible().catch(() => false)) {
       await toggleReadButton.click()
+      return
+    }
+
+    const toggleReadNamedButton = page.getByRole("button", { name: /Mark as Read/i }).last()
+    if (await toggleReadNamedButton.isVisible().catch(() => false)) {
+      await toggleReadNamedButton.click()
       return
     }
 
@@ -580,11 +602,8 @@ export const expectTimelineSwitchAndEntryReadFlow = async (page: Page) => {
   }
   await expect(page.getByTestId("entry-render")).toBeVisible({ timeout: 15_000 })
 
-  if (((await onboardingEntry.getAttribute("data-read")) ?? "false") !== "true") {
-    await toggleRead()
-    await expect(onboardingEntry).toHaveAttribute("data-read", "true", { timeout: 15_000 })
-  }
-
+  await toggleRead()
+  await expect(onboardingEntry).toHaveAttribute("data-read", "true", { timeout: 15_000 })
   await toggleRead()
   await expect(onboardingEntry).toHaveAttribute("data-read", "false", { timeout: 15_000 })
 }
