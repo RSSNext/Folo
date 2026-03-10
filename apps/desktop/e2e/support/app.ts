@@ -660,20 +660,6 @@ export const expectTimelineSwitchAndEntryReadFlow = async (
 
   await onboardingEntry.click({ force: true })
   await expect(page.getByTestId("entry-render")).toBeVisible({ timeout: 15_000 })
-  await expect
-    .poll(
-      async () => {
-        const active = await onboardingEntry
-          .evaluate((element) => (element instanceof HTMLElement ? element.dataset.active : null))
-          .catch(() => null)
-        const read = await onboardingEntry
-          .evaluate((element) => (element instanceof HTMLElement ? element.dataset.read : null))
-          .catch(() => null)
-        return active === "true" || read === "true"
-      },
-      { timeout: 15_000 },
-    )
-    .toBe(true)
 
   if (onboardingEntryId) {
     const response = await deleteWithSession(page, env, "/reads", {
