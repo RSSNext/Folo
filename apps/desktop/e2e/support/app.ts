@@ -504,6 +504,43 @@ export const dismissFeedForm = async (page: Page) => {
   }
 }
 
+const findSettingsFeedRow = async (page: Page, onboardingFeedId: string | null) => {
+  const targetedFeedRow = onboardingFeedId
+    ? page.getByTestId(`settings-feed-row-${onboardingFeedId}`)
+    : null
+  const fallbackFeedRow = page
+    .locator('[data-testid^="settings-feed-row-"]')
+    .filter({
+      hasText: "Welcome to Folo",
+    })
+    .first()
+  const settingsViewport = page.locator("#setting-modal [data-radix-scroll-area-viewport]").first()
+
+  await settingsViewport
+    .evaluate((element) => {
+      if (element instanceof HTMLElement) {
+        element.scrollTop = 0
+      }
+    })
+    .catch(() => {})
+
+  for (let attempt = 0; attempt < 24; attempt++) {
+    if (targetedFeedRow && (await targetedFeedRow.isVisible().catch(() => false))) {
+      return targetedFeedRow
+    }
+
+    if (await fallbackFeedRow.isVisible().catch(() => false)) {
+      return fallbackFeedRow
+    }
+
+    await settingsViewport.hover().catch(() => {})
+    await page.mouse.wheel(0, 1200)
+    await page.waitForTimeout(150)
+  }
+
+  return targetedFeedRow && (await targetedFeedRow.count()) > 0 ? targetedFeedRow : fallbackFeedRow
+}
+
 export const unsubscribeFirstFeedFromSettings = async (page: Page, env?: DesktopE2EEnv) => {
   const onboardingFeedItem = page
     .locator("[data-feed-id]")
@@ -516,21 +553,10 @@ export const unsubscribeFirstFeedFromSettings = async (page: Page, env?: Desktop
 
   await openSettings(page)
   await openSettingsTab(page, "feeds")
-  const targetedFeedRow = onboardingFeedId
-    ? page.getByTestId(`settings-feed-row-${onboardingFeedId}`)
-    : null
-  const fallbackFeedRow = page
-    .locator('[data-testid^="settings-feed-row-"]')
-    .filter({
-      hasText: "Welcome to Folo",
-    })
-    .first()
-  const feedRow =
-    targetedFeedRow && (await targetedFeedRow.isVisible().catch(() => false))
-      ? targetedFeedRow
-      : fallbackFeedRow
+  const feedRow = await findSettingsFeedRow(page, onboardingFeedId)
 
   if (await feedRow.isVisible().catch(() => false)) {
+    await feedRow.scrollIntoViewIfNeeded().catch(() => {})
     const feedRowTestId = await feedRow.getAttribute("data-testid")
     await feedRow.click()
     await expect(page.getByTestId("feeds-batch-unsubscribe")).toBeVisible({ timeout: 15_000 })
@@ -557,43 +583,19 @@ export const unsubscribeFirstFeedFromSettings = async (page: Page, env?: Desktop
     unsubscribedInSettings = true
   }
 
-  const sidebarFeedItem = onboardingFeedId
-    ? page.locator(`[data-feed-id="${onboardingFeedId}"]`).first()
-    : page
-        .locator("[data-feed-id]")
-        .filter({
-          hasText: "Welcome to Folo",
-        })
-        .first()
+  const isElectronApp = page.url().startsWith("app://")
 
-  if (!unsubscribedInSettings && (await sidebarFeedItem.isVisible().catch(() => false))) {
-    await closeSettings(page)
-    await sidebarFeedItem.click({ button: "right", force: true })
-
-    const unfollowMenuItem = page.getByRole("menuitem", { name: /unfollow/i }).first()
-    if (await unfollowMenuItem.isVisible().catch(() => false)) {
-      await unfollowMenuItem.click({ force: true })
-      await page.getByTestId("confirm-destroy").click()
-
-      if (onboardingFeedId) {
-        await expect(page.locator(`[data-feed-id="${onboardingFeedId}"]`)).toHaveCount(0, {
-          timeout: 15_000,
-        })
-      } else {
-        await expect(sidebarFeedItem).toHaveCount(0, { timeout: 15_000 })
-      }
-
-      unsubscribedInSettings = true
-    }
-  }
-
-  if (!unsubscribedInSettings && env && onboardingFeedId) {
+  if (!unsubscribedInSettings && !isElectronApp && env && onboardingFeedId) {
     const response = await deleteWithSession(page, env, "/subscriptions", {
       feedId: onboardingFeedId,
     })
 
     expect(response.ok).toBe(true)
     await page.reload({ waitUntil: "domcontentloaded" }).catch(() => {})
+  }
+
+  if (isElectronApp) {
+    expect(unsubscribedInSettings).toBe(true)
   }
 }
 
