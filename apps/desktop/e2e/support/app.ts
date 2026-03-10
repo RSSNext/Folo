@@ -663,8 +663,12 @@ export const expectTimelineSwitchAndEntryReadFlow = async (
   await expect
     .poll(
       async () => {
-        const active = await onboardingEntry.dataset.active.catch(() => null)
-        const read = await onboardingEntry.dataset.read.catch(() => null)
+        const active = await onboardingEntry
+          .evaluate((element) => (element instanceof HTMLElement ? element.dataset.active : null))
+          .catch(() => null)
+        const read = await onboardingEntry
+          .evaluate((element) => (element instanceof HTMLElement ? element.dataset.read : null))
+          .catch(() => null)
         return active === "true" || read === "true"
       },
       { timeout: 15_000 },
