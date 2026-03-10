@@ -292,18 +292,7 @@ const returnToMainShell = async (page: Page) => {
     const rootURL = currentURL.includes("#")
       ? `${currentURL.split("#")[0]}#/`
       : new URL("/", currentURL).toString()
-
-    if (currentURL.startsWith("app://")) {
-      await page.goto(rootURL, { waitUntil: "domcontentloaded" }).catch(() => {})
-    } else {
-      const backButton = page.getByTestId("subview-back")
-      await expect(backButton).toBeVisible({ timeout: 15_000 })
-      await backButton.click()
-
-      if (await discoverInput.isVisible().catch(() => false)) {
-        await page.goto(rootURL, { waitUntil: "domcontentloaded" }).catch(() => {})
-      }
-    }
+    await page.goto(rootURL, { waitUntil: "domcontentloaded" }).catch(() => {})
 
     await expect
       .poll(async () => discoverInput.isVisible().catch(() => false), { timeout: 15_000 })
@@ -411,26 +400,15 @@ export const openOnboardingFeedForm = async (
 ) => {
   const discoverInput = page.getByTestId("discover-form-input")
   if (!(await discoverInput.isVisible().catch(() => false))) {
-    const discoverLink = page.locator('a[href="#/discover"], a[href="/discover"]').last()
     await returnToMainShell(page)
-    await expect(discoverLink).toBeVisible({ timeout: 15_000 })
-    await discoverLink.click()
+    const currentURL = page.url()
+    const electronDiscoverURL = currentURL.startsWith("app://")
+      ? `${currentURL.split("#")[0]}#/discover`
+      : null
 
-    if (!(await discoverInput.isVisible().catch(() => false))) {
-      const electronDiscoverURL = (() => {
-        const currentURL = page.url()
-        if (!currentURL.startsWith("app://")) {
-          return null
-        }
-
-        const [baseURL] = currentURL.split("#")
-        return `${baseURL}#/discover`
-      })()
-
-      const discoverURL = electronDiscoverURL ?? (env ? buildWebAppURL(env, "/discover") : null)
-      if (discoverURL) {
-        await page.goto(discoverURL, { waitUntil: "domcontentloaded" })
-      }
+    const discoverURL = electronDiscoverURL ?? (env ? buildWebAppURL(env, "/discover") : null)
+    if (discoverURL) {
+      await page.goto(discoverURL, { waitUntil: "domcontentloaded" })
     }
   }
 
@@ -567,21 +545,10 @@ export const expectTimelineSwitchAndEntryReadFlow = async (page: Page) => {
   await page.getByTestId("timeline-tab-articles").click()
   await expect.poll(async () => page.locator("[data-entry-id]").count()).toBeGreaterThan(0)
 
-  const onboardingFeed = page
-    .locator("[data-feed-id]")
-    .filter({
-      hasText: "Welcome to Folo",
-    })
+  const unreadOnboardingEntry = page
+    .locator('[data-entry-id][data-read="false"]:visible')
+    .filter({ has: page.locator("a[href]") })
     .first()
-  if (
-    (await isVisible(onboardingFeed)) &&
-    ((await onboardingFeed.getAttribute("aria-disabled")) ?? "false") !== "true"
-  ) {
-    await onboardingFeed.scrollIntoViewIfNeeded().catch(() => {})
-    await onboardingFeed.click()
-  }
-
-  const unreadOnboardingEntry = page.locator('[data-entry-id][data-read="false"]:visible').first()
   await expect(unreadOnboardingEntry).toBeVisible({ timeout: 15_000 })
 
   const onboardingEntryId = await unreadOnboardingEntry.getAttribute("data-entry-id")
