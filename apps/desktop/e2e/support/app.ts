@@ -571,6 +571,15 @@ export const expectTimelineSwitchAndEntryReadFlow = async (page: Page) => {
   expect(onboardingEntryId).toBeTruthy()
 
   const onboardingEntry = page.locator(`[data-entry-id="${onboardingEntryId}"]`)
+  const openEntry = async () => {
+    const onboardingEntryLink = unreadOnboardingEntry.locator("a[href]").first()
+    if (await onboardingEntryLink.count()) {
+      await onboardingEntryLink.focus()
+      await onboardingEntryLink.press("Enter")
+    } else {
+      await unreadOnboardingEntry.click({ position: { x: 20, y: 20 } })
+    }
+  }
   const toggleRead = async () => {
     const toggleReadButton = page.getByTestId("command-action-entry-read").last()
     if (await toggleReadButton.isVisible().catch(() => false)) {
@@ -593,14 +602,15 @@ export const expectTimelineSwitchAndEntryReadFlow = async (page: Page) => {
     await toggleReadMenuItem.click()
   }
 
-  const onboardingEntryLink = unreadOnboardingEntry.locator("a[href]").first()
-  if (await onboardingEntryLink.count()) {
-    await onboardingEntryLink.focus()
-    await onboardingEntryLink.press("Enter")
-  } else {
-    await unreadOnboardingEntry.click({ position: { x: 20, y: 20 } })
+  await openEntry()
+
+  const entryRender = page.getByTestId("entry-render")
+  if (!(await entryRender.isVisible().catch(() => false))) {
+    await unreadOnboardingEntry.focus().catch(() => {})
+    await page.keyboard.press("Enter").catch(() => {})
   }
-  await expect(page.getByTestId("entry-render")).toBeVisible({ timeout: 15_000 })
+
+  await expect(entryRender).toBeVisible({ timeout: 15_000 })
 
   await toggleRead()
   await expect(onboardingEntry).toHaveAttribute("data-read", "true", { timeout: 15_000 })

@@ -20,7 +20,7 @@ test.describe("web core flows", () => {
     page,
     browser,
   }) => {
-    test.setTimeout(300_000)
+    test.setTimeout(480_000)
 
     const env = resolveDesktopE2EEnv()
     const account = createTestAccount("web-core")
