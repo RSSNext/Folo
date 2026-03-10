@@ -79,6 +79,7 @@ export class Auth {
       plugins: baseAuthPlugins,
       fetchOptions: {
         ...this.options.fetchOptions,
+        credentials: "include",
         cache: "no-store",
         onRequest: (context) => {
           const referralCode = localStorage.getItem(getStorageNS("referral-code"))

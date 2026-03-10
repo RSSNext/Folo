@@ -21,6 +21,8 @@ import { z } from "zod"
 import { useModalStack } from "~/components/ui/modal/stacked/hooks"
 import { useRecaptchaToken } from "~/hooks/common"
 import { loginHandler, signUp, twoFactor } from "~/lib/auth"
+import { ipcServices } from "~/lib/client"
+import { setAuthSessionToken } from "~/lib/client-session"
 import { handleSessionChanges } from "~/queries/auth"
 
 import { TOTPForm } from "../profile/two-factor"
@@ -29,6 +31,87 @@ const formSchema = z.object({
   email: z.string().email(),
   password: IN_ELECTRON ? z.string().min(8).max(128) : z.string().min(8).max(128).or(z.literal("")),
 })
+
+const getAuthTokenFromResult = (result: unknown) => {
+  if (!result || typeof result !== "object") {
+    return null
+  }
+
+  if ("sessionToken" in result && typeof result.sessionToken === "string") {
+    return result.sessionToken
+  }
+
+  if ("token" in result && typeof result.token === "string") {
+    return result.token
+  }
+
+  if (
+    "data" in result &&
+    result.data &&
+    typeof result.data === "object" &&
+    ("sessionToken" in result.data || "token" in result.data)
+  ) {
+    const { sessionToken, token } = result.data as { sessionToken?: unknown; token?: unknown }
+    if (typeof sessionToken === "string") {
+      return sessionToken
+    }
+    return typeof token === "string" ? token : null
+  }
+
+  return null
+}
+
+type ElectronAuthResult = {
+  data?: Record<string, unknown>
+  error?: {
+    message: string
+    status?: number
+  } | null
+}
+
+const normalizeElectronAuthResult = (result: unknown): ElectronAuthResult => {
+  if (!result || typeof result !== "object") {
+    return {}
+  }
+
+  return result as ElectronAuthResult
+}
+
+const setElectronSessionToken = async (token: string) => {
+  if (!ipcServices) {
+    return
+  }
+
+  const authService = ipcServices.auth as
+    | (typeof ipcServices.auth & {
+        setSessionToken?: (token: string) => Promise<void>
+      })
+    | undefined
+
+  await authService?.setSessionToken?.(token)
+}
+
+const getElectronAuthService = () => {
+  if (!ipcServices) {
+    return null
+  }
+
+  return ipcServices.auth as typeof ipcServices.auth & {
+    setSessionToken?: (token: string) => Promise<void>
+    signInWithCredential?: (payload: {
+      email: string
+      password: string
+      headers?: Record<string, string>
+    }) => Promise<unknown>
+    signUpWithCredential?: (payload: {
+      email: string
+      password: string
+      name: string
+      callbackURL: string
+      headers?: Record<string, string>
+    }) => Promise<unknown>
+  }
+}
 
 export function LoginWithPassword({
   runtime,
@@ -75,11 +158,19 @@ export function LoginWithPassword({
     }
 
     // Use password authentication
-    const res = await loginHandler("credential", runtime, {
-      email: values.email,
-      password: values.password,
-      headers,
-    })
+    const res = IN_ELECTRON
+      ? normalizeElectronAuthResult(
+          await getElectronAuthService()?.signInWithCredential?.({
+            email: values.email,
+            password: values.password,
+            headers,
+          }),
+        )
+      : await loginHandler("credential", runtime, {
+          email: values.email,
+          password: values.password,
+          headers,
+        })
     if (res?.error) {
       toast.error(res.error.message)
       return
@@ -105,6 +196,13 @@ export function LoginWithPassword({
         },
       })
     } else {
+      if (IN_ELECTRON) {
+        const token = getAuthTokenFromResult(res)
+        if (token) {
+          setAuthSessionToken(token)
+          void setElectronSessionToken(token)
+        }
+      }
       handleSessionChanges()
     }
   }
@@ -243,21 +341,44 @@ export function RegisterForm({
       return
     }
 
-    return signUp.email({
-      email: values.email,
-      password: values.password,
-      name: values.email.split("@")[0]!,
-      callbackURL: "/",
-      fetchOptions: {
-        onSuccess() {
-          handleSessionChanges()
-        },
-        onError(context) {
-          toast.error(context.error.message)
-        },
-        headers,
-      },
-    })
+    const result = IN_ELECTRON
+      ? normalizeElectronAuthResult(
+          await getElectronAuthService()?.signUpWithCredential?.({
+            email: values.email,
+            password: values.password,
+            name: values.email.split("@")[0]!,
+            callbackURL: "/",
+            headers,
+          }),
+        )
+      : await signUp.email({
+          email: values.email,
+          password: values.password,
+          name: values.email.split("@")[0]!,
+          callbackURL: "/",
+          fetchOptions: {
+            onError(context) {
+              toast.error(context.error.message)
+            },
+            headers,
+          },
+        })
+
+    if (result?.error) {
+      return result
+    }
+
+    if (IN_ELECTRON) {
+      const token = getAuthTokenFromResult(result)
+      if (token) {
+        setAuthSessionToken(token)
+        void setElectronSessionToken(token)
+      }
+    }
+
+    handleSessionChanges()
+
+    return result
   }
 
   return (

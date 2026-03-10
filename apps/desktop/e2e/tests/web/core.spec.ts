@@ -49,11 +49,11 @@ test.describe("web core flows", () => {
       })
 
       await test.step("switches timeline, opens an entry, and toggles read state", async () => {
-        await expectTimelineSwitchAndEntryReadFlow(activePage, env)
+        await expectTimelineSwitchAndEntryReadFlow(activePage)
       })
 
       await test.step("unsubscribes onboarding feed from settings", async () => {
-        await unsubscribeFirstFeedFromSettings(activePage, env)
+        await unsubscribeFirstFeedFromSettings(activePage)
         await closeSettings(activePage)
         await expectOnboardingFeedUnsubscribed(activePage, env)
       })

@@ -170,6 +170,7 @@ function SubviewLayoutInner() {
           <LinearBlur className="absolute inset-0 z-[-1]" tint="var(--fo-background)" side="top" />
           {/* Left: Back button (circular, glass) */}
           <GlassButton
+            testId="subview-back"
             description={t("words.back", { ns: "common" })}
             onClick={backHandler}
             className={cn(

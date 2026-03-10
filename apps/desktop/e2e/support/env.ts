@@ -8,7 +8,7 @@ const DESKTOP_E2E_PROFILES = {
   local: {
     apiURL: "http://localhost:3000",
     webURL: "http://localhost:2233",
-    webBaseURL: "http://127.0.0.1:2233",
+    webBaseURL: "http://localhost:2233",
     webUsesHashRouter: false,
   },
   prod: {
@@ -45,7 +45,7 @@ export const resolveDesktopE2EEnv = (): DesktopE2EEnv => {
   const profile = (process.env.FOLO_E2E_PROFILE ?? "local") as DesktopE2EProfile
   const resolvedProfile = profile in DESKTOP_E2E_PROFILES ? profile : "local"
   const profileConfig = DESKTOP_E2E_PROFILES[resolvedProfile]
-  const webDevServerURL = process.env.FOLO_E2E_WEB_DEV_SERVER_URL ?? "http://127.0.0.1:2233"
+  const webDevServerURL = process.env.FOLO_E2E_WEB_DEV_SERVER_URL ?? "http://localhost:2233"
   const debugProxyPath = process.env.FOLO_E2E_WEB_DEBUG_PROXY_PATH ?? "/__debug_proxy.html"
 
   const webBaseURL =
