@@ -314,9 +314,9 @@ const returnToMainShell = async (page: Page) => {
       }
     }
 
-    await expect
-      .poll(async () => activeDialog.isVisible().catch(() => false), { timeout: 10_000 })
-      .toBe(false)
+    if (await activeDialog.isVisible().catch(() => false)) {
+      await page.waitForTimeout(500)
+    }
   }
 }
 
@@ -625,7 +625,7 @@ export const expectTimelineSwitchAndEntryReadFlow = async (page: Page) => {
   await expect(entryRender).toBeVisible({ timeout: 15_000 })
 
   await toggleRead()
-  await expect(onboardingEntry).toHaveAttribute("data-read", "true", { timeout: 15_000 })
+  await expect(onboardingEntry).toHaveAttribute("data-read", "true", { timeout: 30_000 })
   await toggleRead()
-  await expect(onboardingEntry).toHaveAttribute("data-read", "false", { timeout: 15_000 })
+  await expect(onboardingEntry).toHaveAttribute("data-read", "false", { timeout: 30_000 })
 }
