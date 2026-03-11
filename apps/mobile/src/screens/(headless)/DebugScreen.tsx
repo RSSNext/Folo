@@ -31,6 +31,10 @@ import type { NavigationControllerView } from "@/src/lib/navigation/types"
 import { setEnvProfile, useEnvProfile } from "@/src/lib/proxy-env"
 import { toast } from "@/src/lib/toast"
 import { showUpgradeRequiredDialog } from "@/src/modules/dialogs/UpgradeRequiredDialog"
+import {
+  openMobileReviewPromptDebug,
+  resetMobileReviewPromptDebug,
+} from "@/src/modules/review-prompt/debug"
 
 import { ProfileScreen } from "../(modal)/ProfileScreen"
 import { MarkdownScreen } from "./(debug)/markdown"
@@ -182,6 +186,19 @@ export const DebugScreen: NavigationControllerView = () => {
               title: "Upgrade Required",
               message: "Please upgrade to continue",
             })
+          },
+        },
+        {
+          title: "Trigger Review Prompt",
+          onPress: async () => {
+            await openMobileReviewPromptDebug()
+          },
+        },
+        {
+          title: "Reset Review Prompt State",
+          onPress: () => {
+            resetMobileReviewPromptDebug()
+            Alert.alert("Review prompt state reset")
           },
         },
       ],

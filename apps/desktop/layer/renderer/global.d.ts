@@ -3,7 +3,7 @@ import type { ElectronAPI } from "@electron-toolkit/preload"
 declare global {
   interface Window {
     electron?: ElectronAPI
-    api?: { canWindowBlur: boolean }
+    api?: { canWindowBlur: boolean; isWindowsStore: boolean }
     platform: NodeJS.Platform
   }
   export const APP_NAME = "Folo"
