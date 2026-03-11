@@ -6,7 +6,6 @@ export enum Routes {
 
 export enum UserRole {
   Admin = "admin",
-  PreProTrial = "pre_pro_trial",
   Free = "free",
   /**
    * @deprecated
@@ -21,7 +20,6 @@ export enum UserRole {
 
 export const UserRoleName: Record<UserRole, string> = {
   [UserRole.Admin]: "Admin",
-  [UserRole.PreProTrial]: "Pro Preview Trial",
   [UserRole.Free]: "Free",
   /**
    * @deprecated
@@ -38,13 +36,10 @@ export const UserRolePriority: Record<UserRole, number> = {
   [UserRole.Pro]: 3,
   [UserRole.Plus]: 2,
   [UserRole.Basic]: 1,
-  [UserRole.PreProTrial]: 0,
   [UserRole.Free]: 0,
   [UserRole.Trial]: 0,
 } as const
 
 export const isFreeRole = (role?: UserRole | null) => {
-  return role
-    ? role === UserRole.Free || role === UserRole.Trial || role === UserRole.PreProTrial
-    : true
+  return role ? role === UserRole.Free || role === UserRole.Trial : true
 }
