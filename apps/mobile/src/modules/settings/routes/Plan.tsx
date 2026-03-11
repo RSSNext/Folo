@@ -144,6 +144,8 @@ const isFeatureValueVisible = (value: PaymentFeature[keyof PaymentFeature] | nul
   return true
 }
 
+const isAppleProductId = (value: string | undefined): value is string => typeof value === "string"
+
 export const PlanScreen: NavigationControllerView = () => {
   const { t } = useTranslation("settings")
   const serverConfigs = useServerConfigs()
@@ -167,7 +169,7 @@ export const PlanScreen: NavigationControllerView = () => {
     () =>
       plans
         .flatMap((plan) => [plan.appleProductIdentifier, plan.appleProductIdentifierAnnual])
-        .filter(Boolean),
+        .filter(isAppleProductId),
     [plans],
   )
   const appleProductsById = useMemo(
