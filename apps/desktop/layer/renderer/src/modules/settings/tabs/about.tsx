@@ -17,12 +17,20 @@ import { ipcServices } from "~/lib/client"
 import { getNewIssueUrl } from "~/lib/issues"
 import { EnvironmentDebugModalContent } from "~/modules/app/EnvironmentIndicator"
 import { AppTipModalContent } from "~/modules/app-tip"
+import { useDesktopReviewPromptState } from "~/modules/review-prompt/use-review-prompt-state"
+import {
+  openDesktopFeedbackEmail,
+  openDesktopStoreReview,
+  persistDesktopReviewOutcome,
+  readDesktopReviewPromptState,
+} from "~/modules/review-prompt/utils"
 
 export const SettingAbout = () => {
   const { t } = useTranslation("settings")
   const [isCheckingUpdate, setIsCheckingUpdate] = useState(false)
   const { present } = useModalStack()
   const currentEnvironment = getCurrentEnvironment().join("\n")
+  const { distribution, platform, rateTarget, storageKey, userId } = useDesktopReviewPromptState()
   const { data: appVersion } = useQuery({
     queryKey: ["appVersion"],
     queryFn: () => ipcServices?.app.getAppVersion(),
@@ -114,6 +122,36 @@ export const SettingAbout = () => {
       clickOutsideToDismiss: false,
       overlay: false,
     })
+  }
+
+  const handleRateFolo = async () => {
+    if (!rateTarget) {
+      return
+    }
+
+    persistDesktopReviewOutcome({
+      appVersion: APP_VERSION,
+      distribution,
+      outcome: "positive_store_redirect",
+      platform,
+      source: "manual",
+      state: readDesktopReviewPromptState(storageKey),
+      storageKey,
+    })
+    await openDesktopStoreReview(rateTarget)
+  }
+
+  const handleSendFeedback = async () => {
+    persistDesktopReviewOutcome({
+      appVersion: APP_VERSION,
+      distribution,
+      outcome: "negative_feedback",
+      platform,
+      source: "manual",
+      state: readDesktopReviewPromptState(storageKey),
+      storageKey,
+    })
+    await openDesktopFeedbackEmail({ distribution, userId })
   }
 
   return (
@@ -213,6 +251,34 @@ export const SettingAbout = () => {
             <div className="text-xs text-text-tertiary">{t("about.appTipDescription")}</div>
           </div>
           <i className="i-mingcute-sparkles-2-line text-base text-text-tertiary transition-all group-hover:-translate-y-0.5 group-hover:translate-x-0.5 group-hover:text-accent" />
+        </button>
+        {rateTarget && (
+          <button
+            type="button"
+            onClick={() => {
+              void handleRateFolo()
+            }}
+            className="group flex w-full items-center justify-between rounded-lg p-3 text-left transition-all hover:bg-fill-secondary hover:shadow-sm"
+          >
+            <div>
+              <div className="text-sm font-medium">{t("about.rateFolo")}</div>
+              <div className="text-xs text-text-tertiary">{t("about.rateFoloDescription")}</div>
+            </div>
+            <i className="i-mgc-star-cute-re text-base text-text-tertiary transition-all group-hover:-translate-y-0.5 group-hover:translate-x-0.5 group-hover:text-accent" />
+          </button>
+        )}
+        <button
+          type="button"
+          onClick={() => {
+            void handleSendFeedback()
+          }}
+          className="group flex w-full items-center justify-between rounded-lg p-3 text-left transition-all hover:bg-fill-secondary hover:shadow-sm"
+        >
+          <div>
+            <div className="text-sm font-medium">{t("about.sendFeedback")}</div>
+            <div className="text-xs text-text-tertiary">{t("about.sendFeedbackDescription")}</div>
+          </div>
+          <i className="i-mgc-mail-cute-re text-base text-text-tertiary transition-all group-hover:-translate-y-0.5 group-hover:translate-x-0.5 group-hover:text-accent" />
         </button>
       </div>
 

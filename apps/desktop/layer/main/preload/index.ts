@@ -29,6 +29,7 @@ export const isWindows11 = detectingWindows11()
 // Custom APIs for renderer
 const api = {
   canWindowBlur: process.platform === "darwin" || (process.platform === "win32" && isWindows11),
+  isWindowsStore: Boolean((process as typeof process & { windowsStore?: boolean }).windowsStore),
 }
 
 // Use `contextBridge` APIs to expose Electron APIs to

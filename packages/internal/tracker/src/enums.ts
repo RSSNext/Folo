@@ -17,6 +17,14 @@ export enum TrackerMapper {
   FeedClaimed = 2012,
   DailyRewardClaimed = 2013,
   SubscribeModalOpened = 2015,
+  ReviewPromptEligible = 2016,
+  ReviewPromptShown = 2017,
+  ReviewPromptDismissed = 2018,
+  ReviewPromptPositive = 2019,
+  ReviewPromptNegative = 2020,
+  ReviewPromptFeedbackOpened = 2021,
+  ReviewPromptStoreOpened = 2022,
+  ReviewPromptNativeRequested = 2023,
 
   // https://docs.google.com/spreadsheets/d/1XlUxTxiXWIQDHFYa2eoPBeuosR1t2h8VFIjXEOqmjhY/edit?gid=0#gid=0
   Register = 3000,

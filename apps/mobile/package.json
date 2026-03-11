@@ -84,6 +84,7 @@
     "expo-splash-screen": "31.0.13",
     "expo-sqlite": "16.0.10",
     "expo-status-bar": "3.0.9",
+    "expo-store-review": "~9.0.9",
     "expo-symbols": "1.0.8",
     "expo-system-ui": "6.0.9",
     "expo-task-manager": "14.0.9",
