@@ -30,6 +30,18 @@ This skill extends `../mobile-e2e/SKILL.md`. Read that skill first for the basel
 - Default to **local API mode** when the task also involves local server changes, backend debugging, or modified files in `/Users/diygod/Code/Projects/follow-server`.
 - Keep `EXPO_PUBLIC_E2E_LANGUAGE=en` unless the user explicitly wants another language. The existing Maestro flows assume English UI.
 
+## Simulator and emulator isolation
+
+This section overrides the shared device-selection guidance from `../mobile-e2e/SKILL.md`.
+
+Self-test runs must be isolated because other agents may be using simulators or emulators on the same machine.
+
+- Always create a dedicated temporary simulator or emulator for the current run.
+- Never reuse `booted`, an already-running simulator, or a generic Android serial such as `emulator-5554`.
+- Record the temporary device name and identifier immediately after creation, then use only that stored identifier for build, install, launch, screenshots, and Maestro.
+- Register cleanup before booting the device so the temporary simulator or emulator is deleted even if the test fails midway.
+- If cleanup fails, report the leftover device name and identifier in the final response.
+
 ## Decide API mode first
 
 Use this decision order:
@@ -101,7 +113,38 @@ export EXPO_PUBLIC_E2E_LANGUAGE=en
 
 ## iOS workflow
 
-Reuse the simulator selection and boot process from `../mobile-e2e/SKILL.md`.
+Do not attach to an existing simulator from `../mobile-e2e/SKILL.md`. Create a dedicated temporary simulator for this run and keep using only its UDID.
+
+### Create a dedicated temporary simulator
+
+Pick the latest available iOS runtime and a recent iPhone device type, then create a temporary simulator.
+
+```bash
+IOS_SIM_NAME="CodexSelfTest-$(date +%Y%m%d-%H%M%S)"
+IOS_RUNTIME_ID="<latest available iOS runtime identifier from `xcrun simctl list runtimes`>"
+IOS_DEVICE_TYPE_ID="<recent iPhone device type identifier from `xcrun simctl list devicetypes`>"
+
+IOS_UDID="$(xcrun simctl create "$IOS_SIM_NAME" "$IOS_DEVICE_TYPE_ID" "$IOS_RUNTIME_ID")"
+
+cleanup_ios_simulator() {
+  xcrun simctl shutdown "$IOS_UDID" >/dev/null 2>&1 || true
+  xcrun simctl delete "$IOS_UDID" >/dev/null 2>&1 || true
+}
+
+trap cleanup_ios_simulator EXIT
+```
+
+Do not switch to another simulator after `IOS_UDID` is created.
+
+### Boot the dedicated simulator
+
+```bash
+xcrun simctl boot "$IOS_UDID"
+xcrun simctl bootstatus "$IOS_UDID" -b
+open -a Simulator --args -CurrentDeviceUDID "$IOS_UDID"
+```
+
+If other simulators are already booted, leave them alone and continue using only `IOS_UDID`.
 
 ### Build release simulator app
 
@@ -116,7 +159,7 @@ xcodebuild -workspace Folo.xcworkspace \
   -scheme Folo \
   -configuration Release \
   -sdk iphonesimulator \
-  -destination 'id=<IOS_UDID>' \
+  -destination "id=$IOS_UDID" \
   clean build
 ```
 
@@ -129,21 +172,58 @@ Expected output pattern:
 ### Install app on simulator
 
 ```bash
-xcrun simctl install <IOS_UDID> <PATH_TO_Folo.app>
-xcrun simctl launch <IOS_UDID> is.follow
+xcrun simctl install "$IOS_UDID" <PATH_TO_Folo.app>
+xcrun simctl launch "$IOS_UDID" is.follow
 ```
 
 ## Android workflow
 
 Reuse the Java and Android SDK setup from `../mobile-e2e/SKILL.md`.
 
-If no emulator is booted yet, start one before installing the APK.
+Do not attach to a shared emulator. Create a dedicated temporary AVD for this run and keep using only its recorded serial.
+
+### Create a dedicated temporary AVD
+
+Create a fresh AVD backed by an installed phone system image.
 
 ```bash
-emulator -list-avds
-emulator @<AVD_NAME>
-adb wait-for-device
+ANDROID_AVD_NAME="codex-self-test-$(date +%Y%m%d-%H%M%S)"
+ANDROID_AVD_PACKAGE="<installed Android system image package>"
+ANDROID_AVD_DEVICE="<phone hardware profile>"
+
+avdmanager create avd -n "$ANDROID_AVD_NAME" -k "$ANDROID_AVD_PACKAGE" -d "$ANDROID_AVD_DEVICE" --force
+
+ANDROID_EMULATOR_PORT=""
+for port in 5554 5556 5558 5560 5562 5564; do
+  if ! lsof -nP -iTCP:$port >/dev/null 2>&1 && ! lsof -nP -iTCP:$((port + 1)) >/dev/null 2>&1; then
+    ANDROID_EMULATOR_PORT="$port"
+    break
+  fi
+done
+
+[ -n "$ANDROID_EMULATOR_PORT" ] || {
+  echo "No free Android emulator port found"
+  exit 1
+}
+
+ANDROID_DEVICE_ID="emulator-$ANDROID_EMULATOR_PORT"
+
+cleanup_android_emulator() {
+  adb -s "$ANDROID_DEVICE_ID" emu kill >/dev/null 2>&1 || true
+  avdmanager delete avd -n "$ANDROID_AVD_NAME" >/dev/null 2>&1 || true
+}
+
+trap cleanup_android_emulator EXIT
 ```
+
+### Boot the dedicated emulator
+
+```bash
+emulator @"$ANDROID_AVD_NAME" -port "$ANDROID_EMULATOR_PORT" -no-snapshot -wipe-data &
+adb -s "$ANDROID_DEVICE_ID" wait-for-device
+```
+
+If other emulators are already booted, ignore them and continue using only `ANDROID_DEVICE_ID`.
 
 If `apps/mobile/android` does not exist locally, generate it first.
 
@@ -172,9 +252,29 @@ apps/mobile/android/app/build/outputs/apk/release/app-release.apk
 ### Install app on emulator
 
 ```bash
-adb -s <ANDROID_DEVICE_ID> install -r apps/mobile/android/app/build/outputs/apk/release/app-release.apk
-adb -s <ANDROID_DEVICE_ID> shell monkey -p is.follow -c android.intent.category.LAUNCHER 1
+adb -s "$ANDROID_DEVICE_ID" install -r apps/mobile/android/app/build/outputs/apk/release/app-release.apk
+adb -s "$ANDROID_DEVICE_ID" shell monkey -p is.follow -c android.intent.category.LAUNCHER 1
 ```
+
+## Cleanup is mandatory
+
+Delete the temporary simulator or emulator created for the run before returning control to the user.
+
+### iOS cleanup
+
+```bash
+xcrun simctl shutdown "$IOS_UDID" >/dev/null 2>&1 || true
+xcrun simctl delete "$IOS_UDID" >/dev/null 2>&1 || true
+```
+
+### Android cleanup
+
+```bash
+adb -s "$ANDROID_DEVICE_ID" emu kill >/dev/null 2>&1 || true
+avdmanager delete avd -n "$ANDROID_AVD_NAME" >/dev/null 2>&1 || true
+```
+
+Do not leave temporary devices behind for other agents.
 
 ## Choose the auth strategy
 
@@ -203,7 +303,7 @@ export E2E_EMAIL="folo-self-test-$(date +%Y%m%d%H%M%S)@example.com"
 
 ```bash
 cd apps/mobile
-maestro test --format junit --platform ios --device <IOS_UDID> \
+maestro test --format junit --platform ios --device "$IOS_UDID" \
   --debug-output e2e/artifacts/ios/register-bootstrap \
   -e E2E_EMAIL="$E2E_EMAIL" \
   -e E2E_PASSWORD="$E2E_PASSWORD" \
@@ -214,7 +314,7 @@ maestro test --format junit --platform ios --device <IOS_UDID> \
 
 ```bash
 cd apps/mobile
-maestro test --format junit --platform android --device <ANDROID_DEVICE_ID> \
+maestro test --format junit --platform android --device "$ANDROID_DEVICE_ID" \
   --debug-output e2e/artifacts/android/register-bootstrap \
   -e E2E_EMAIL="$E2E_EMAIL" \
   -e E2E_PASSWORD="$E2E_PASSWORD" \
@@ -261,13 +361,13 @@ Capture screenshots after each meaningful checkpoint.
 ### iOS screenshot command
 
 ```bash
-xcrun simctl io <IOS_UDID> screenshot "$ARTIFACT_DIR/<name>.png"
+xcrun simctl io "$IOS_UDID" screenshot "$ARTIFACT_DIR/<name>.png"
 ```
 
 ### Android screenshot command
 
 ```bash
-adb -s <ANDROID_DEVICE_ID> exec-out screencap -p > "$ARTIFACT_DIR/<name>.png"
+adb -s "$ANDROID_DEVICE_ID" exec-out screencap -p > "$ARTIFACT_DIR/<name>.png"
 ```
 
 Minimum screenshot set for a complete self-test:
@@ -297,7 +397,8 @@ If the UI or behavior is ambiguous, capture another screenshot instead of guessi
 The final response must include:
 
 - API mode used and why it was chosen
-- platform and simulator/emulator used
+- platform and dedicated simulator/emulator name plus identifier used
+- cleanup result for the temporary simulator/emulator
 - whether the local server was reused or started, plus log path if started
 - build command used
 - whether auth bootstrap was automated or fully visual
