@@ -1,6 +1,8 @@
 appId: is.follow
 ---
-- runFlow: open-auth.yaml
+- runFlow:
+    file: ./dismiss-system-dialogs.yaml
+- runFlow: ../shared/open-auth.yaml
 - tapOn:
     id: login-provider-credential
 - extendedWaitUntil:
@@ -9,15 +11,19 @@ appId: is.follow
     timeout: 15000
 - tapOn:
     id: register-email-input
-- inputText: ${E2E_EMAIL}
+- eraseText
+- setClipboard: ${E2E_EMAIL}
+- pasteText
 - tapOn:
     id: register-password-input
 - eraseText
-- inputText: ${E2E_PASSWORD}
+- setClipboard: ${E2E_PASSWORD}
+- pasteText
 - tapOn:
     id: register-confirm-password-input
 - eraseText
-- inputText: ${E2E_PASSWORD}
+- setClipboard: ${E2E_PASSWORD}
+- pasteText
 - pressKey: Enter
 - runFlow:
     when:
@@ -34,5 +40,5 @@ appId: is.follow
           id: onboarding-next
 - extendedWaitUntil:
     visible:
-      id: timeline-view-articles
+      id: timeline-entry-first
     timeout: 30000

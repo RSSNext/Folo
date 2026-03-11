@@ -3,71 +3,27 @@ appId: is.follow
 - waitForAnimationToEnd:
     timeout: 15000
 - runFlow:
-    when:
-      visible:
-        id: onboarding-next
-    commands:
-      - tapOn:
-          id: onboarding-next
-      - tapOn:
-          id: onboarding-next
-      - tapOn:
-          id: onboarding-next
-      - tapOn:
-          id: onboarding-next
+    file: dismiss-ios-system-modal.yaml
 - runFlow:
     when:
-      notVisible:
-        text: Continue with Email
+      visible:
+        id: no-login-timeline
     commands:
-      - runFlow:
-          when:
-            visible:
-              id: no-login-timeline
-          commands:
-            - tapOn:
-                id: no-login-timeline
-      - runFlow:
-          when:
-            notVisible:
-              id: no-login-timeline
-          commands:
-            - runFlow:
-                when:
-                  visible:
-                    id: home-avatar-trigger
-                commands:
-                  - tapOn:
-                      id: home-avatar-trigger
-            - runFlow:
-                when:
-                  notVisible:
-                    id: home-avatar-trigger
-                commands:
-                  - runFlow:
-                      when:
-                        visible:
-                          id: tab-SettingsTabScreen
-                      commands:
-                        - tapOn:
-                            id: tab-SettingsTabScreen
-                  - runFlow:
-                      when:
-                        notVisible:
-                          id: tab-SettingsTabScreen
-                      commands:
-                        - tapOn:
-                            text: Settings
-                  - runFlow:
-                      when:
-                        visible:
-                          id: settings-sign-in
-                      commands:
-                        - tapOn:
-                            id: settings-sign-in
-      - extendedWaitUntil:
-          visible:
-            text: Continue with Email
-          timeout: 15000
-- assertVisible:
-    text: Continue with Email
+      - tapOn:
+          id: no-login-timeline
+- extendedWaitUntil:
+    visible:
+      id: login-screen
+    timeout: 30000
+- extendedWaitUntil:
+    visible:
+      id: login-provider-credential
+    timeout: 60000
+- extendedWaitUntil:
+    visible:
+      id: login-provider-google
+    timeout: 60000
+- extendedWaitUntil:
+    visible:
+      id: login-provider-github
+    timeout: 60000

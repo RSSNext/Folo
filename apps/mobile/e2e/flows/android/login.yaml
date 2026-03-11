@@ -1,5 +1,7 @@
 appId: is.follow
 ---
+- runFlow:
+    file: ./dismiss-system-dialogs.yaml
 - assertVisible:
     id: login-screen
 - tapOn:
@@ -7,6 +9,10 @@ appId: is.follow
 - extendedWaitUntil:
     visible: Don't have an account? Sign up
     timeout: 10000
+- extendedWaitUntil:
+    visible:
+      id: login-provider-credential
+    timeout: 15000
 - tapOn:
     id: login-provider-credential
 - extendedWaitUntil:
@@ -15,15 +21,20 @@ appId: is.follow
     timeout: 15000
 - tapOn:
     id: login-email-input
-- inputText: ${E2E_EMAIL}
+- eraseText
+- setClipboard: ${E2E_EMAIL}
+- pasteText
 - tapOn:
     id: login-password-input
 - eraseText
-- inputText: ${E2E_PASSWORD}
+- setClipboard: ${E2E_PASSWORD}
+- pasteText
 - pressKey: Enter
 - extendedWaitUntil:
     notVisible:
       id: login-screen
     timeout: 30000
-- assertNotVisible:
-    id: login-screen
+- extendedWaitUntil:
+    visible:
+      id: timeline-entry-first
+    timeout: 30000

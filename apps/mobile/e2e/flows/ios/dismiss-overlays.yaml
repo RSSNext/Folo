@@ -1,0 +1,23 @@
+appId: is.follow
+---
+- runFlow:
+    when:
+      visible: Close image
+    commands:
+      - tapOn:
+          point: "5%,10%"
+      - waitForAnimationToEnd
+- runFlow:
+    when:
+      visible: Move to Category
+    commands:
+      - tapOn:
+          point: "50%,18%"
+      - waitForAnimationToEnd
+- runFlow:
+    when:
+      visible: Mark all as read
+    commands:
+      - tapOn:
+          point: "50%,18%"
+      - waitForAnimationToEnd

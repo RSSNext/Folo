@@ -7,7 +7,7 @@ import { Platform } from "react-native"
 import DeviceInfo from "react-native-device-info"
 
 import { LoginScreen } from "../screens/(modal)/LoginScreen"
-import { getAuthStateRevision, getCookie } from "./auth"
+import { getAuthStateRevision, getCookie, getLastAuthStateChangeAt } from "./auth"
 import { getClientId, getSessionId } from "./client-session"
 import { getUserAgent } from "./native/user-agent"
 import { Navigation } from "./navigation/Navigation"
@@ -95,6 +95,14 @@ followClient.addResponseInterceptor(async (ctx) => {
     }
 
     if (currentCookie && requestCookie !== currentCookie) {
+      return ctx.response
+    }
+
+    if (currentCookie) {
+      return ctx.response
+    }
+
+    if (Date.now() - getLastAuthStateChangeAt() < 10_000) {
       return ctx.response
     }
 

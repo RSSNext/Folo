@@ -1,4 +1,4 @@
-import { isNewUserQueryKey, isOnboardingFinishedStorageKey } from "@follow/store/user/constants"
+import { isNewUserQueryKey } from "@follow/store/user/constants"
 import { tracker } from "@follow/tracker"
 import { useCallback, useEffect, useState } from "react"
 import { useTranslation } from "react-i18next"
@@ -8,9 +8,9 @@ import { useSafeAreaInsets } from "react-native-safe-area-context"
 
 import { Text } from "@/src/components/ui/typography/Text"
 
-import { kv } from "../lib/kv"
 import { useNavigation } from "../lib/navigation/hooks"
 import type { NavigationControllerView } from "../lib/navigation/types"
+import { markOnboardingFinished } from "../lib/onboarding"
 import { queryClient } from "../lib/query-client"
 import { StepFinished } from "../modules/onboarding/step-finished"
 import { StepInterests } from "../modules/onboarding/step-interests"
@@ -38,7 +38,7 @@ export const OnboardingScreen: NavigationControllerView = () => {
         step: currentStep,
         done: true,
       })
-      kv.set(isOnboardingFinishedStorageKey, "true")
+      void markOnboardingFinished()
       queryClient
         .invalidateQueries({
           queryKey: isNewUserQueryKey,
