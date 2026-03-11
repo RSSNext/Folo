@@ -33,14 +33,13 @@ import {
   useCanDismiss,
   useIsTopRouteInGroup,
   useNavigation,
-  useScreenIsInModal,
   useScreenIsInSheetModal,
 } from "@/src/lib/navigation/hooks"
 import { ScreenItemContext } from "@/src/lib/navigation/ScreenItemContext"
 
 import { ThemedBlurView } from "../../common/ThemedBlurView"
 import { PlatformActivityIndicator } from "../../ui/loading/PlatformActivityIndicator"
-import { getDefaultHeaderHeight } from "../utils"
+import { getNavigationHeaderLayout } from "../utils"
 import { SetNavigationHeaderHeightContext } from "../views/NavigationHeaderContext"
 import { FakeNativeHeaderTitle } from "./FakeNativeHeaderTitle"
 
@@ -185,12 +184,12 @@ export const InternalNavigationHeader = ({
   const frame = useSafeAreaFrame()
 
   const sheetModal = useScreenIsInSheetModal()
-  const defaultHeight = useMemo(
+  const { headerHeight: defaultHeight, headerTopInset } = useMemo(
     () =>
-      getDefaultHeaderHeight({
+      getNavigationHeaderLayout({
         landscape: frame.width > frame.height,
-        modalPresentation: sheetModal,
-        topInset: sheetModal ? 0 : insets.top,
+        sheetModal,
+        topInset: insets.top,
       }),
     [frame, insets.top, sheetModal],
   )
@@ -229,11 +228,9 @@ export const InternalNavigationHeader = ({
     hideableBottomHeight,
   )
 
-  const isModal = useScreenIsInModal()
-
   const rootTitleBarStyle = useAnimatedStyle(() => {
     const styles = {
-      paddingTop: isModal ? 0 : insets.top,
+      paddingTop: headerTopInset,
       position: "relative",
       overflow: "hidden",
     } satisfies DefaultStyle
@@ -302,7 +299,7 @@ export const InternalNavigationHeader = ({
         style={{
           marginLeft: insets.left,
           marginRight: insets.right,
-          height: !sheetModal ? defaultHeight - insets.top : defaultHeight,
+          height: defaultHeight - headerTopInset,
           paddingHorizontal: titlebarPaddingHorizontal,
         }}
         pointerEvents={"box-none"}

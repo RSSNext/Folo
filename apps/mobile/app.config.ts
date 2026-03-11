@@ -136,6 +136,7 @@ export default ({ config }: ConfigContext): ExpoConfig => {
       ],
 
       require("./plugins/with-gradle-jvm-heap-size-increase.js"),
+      require("./plugins/with-android-jdk-21.js"),
       require("./plugins/with-android-manifest-plugin.js"),
       "expo-secure-store",
       "@react-native-firebase/app",
