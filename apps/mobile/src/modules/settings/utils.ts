@@ -5,8 +5,8 @@ import * as Sharing from "expo-sharing"
 
 import { getDbPath } from "@/src/database"
 import { followApi } from "@/src/lib/api-client"
+import { toastFetchError } from "@/src/lib/error-parser"
 import { pickImage } from "@/src/lib/native/picker"
-import { getBizFetchErrorMessage } from "@/src/lib/parse-api-error"
 import { toast } from "@/src/lib/toast"
 
 export const setAvatar = async () => {
@@ -22,7 +22,7 @@ export const setAvatar = async () => {
       file: formData.get("file") as any,
     } as any)
     .catch((err) => {
-      toast.error(getBizFetchErrorMessage(err))
+      toastFetchError(err)
       throw err
     })
 
@@ -34,7 +34,7 @@ export const setAvatar = async () => {
       toast.success("Avatar updated")
     })
     .catch((err) => {
-      toast.error(getBizFetchErrorMessage(err))
+      toastFetchError(err)
     })
 }
 
@@ -74,8 +74,7 @@ export const importOpml = async () => {
       `Import successful, ${successfulItems.length} feeds were imported, ${conflictItems.length} feeds were already subscribed, and ${parsedErrorItems.length} feeds failed to import.`,
     )
   } catch (error) {
-    const bizError = getBizFetchErrorMessage(error as Error)
-    toast.error(`Import failed${bizError ? `: ${bizError}` : ""}`)
+    toastFetchError(error as Error)
     console.error(error)
   }
 }

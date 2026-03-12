@@ -23,10 +23,10 @@ import {
   GroupedInsetButtonCell,
   GroupedInsetListCard,
 } from "@/src/components/ui/grouped/GroupedList"
+import { toastFetchError } from "@/src/lib/error-parser"
 import { useNavigation } from "@/src/lib/navigation/hooks"
 import { useSetModalScreenOptions } from "@/src/lib/navigation/ScreenOptionsContext"
 import type { NavigationControllerView } from "@/src/lib/navigation/types"
-import { getBizFetchErrorMessage } from "@/src/lib/parse-api-error"
 import { toast } from "@/src/lib/toast"
 import { FeedViewSelector } from "@/src/modules/feed/view-selector"
 
@@ -218,11 +218,7 @@ const ScreenOptions = memo(({ title, listId }: ScreenOptionsProps) => {
                   toast.success("List created")
                   navigation.dismiss()
                 } catch (error) {
-                  toast.error(
-                    error instanceof Error
-                      ? getBizFetchErrorMessage(error)
-                      : "Failed to create list",
-                  )
+                  toastFetchError(error as Error)
                   console.error(error)
                 } finally {
                   setIsLoading(false)
@@ -243,9 +239,7 @@ const ScreenOptions = memo(({ title, listId }: ScreenOptionsProps) => {
                 toast.success("List updated")
                 navigation.dismiss()
               } catch (error) {
-                toast.error(
-                  error instanceof Error ? getBizFetchErrorMessage(error) : "Failed to update list",
-                )
+                toastFetchError(error as Error)
                 console.error(error)
               } finally {
                 setIsLoading(false)
