@@ -163,6 +163,15 @@ xcodebuild -workspace Folo.xcworkspace \
   clean build
 ```
 
+On Apple Silicon Macs, when the build is only for the dedicated simulator created for the current self-test run, prefer compiling only the active `arm64` simulator architecture:
+
+```bash
+ONLY_ACTIVE_ARCH=YES \
+ARCHS=arm64
+```
+
+Do not use that optimization when you need a universal simulator bundle for other machines or when the host Mac is Intel.
+
 Expected output pattern:
 
 ```bash
@@ -298,6 +307,15 @@ Generate a unique test account before running the flow:
 export E2E_PASSWORD='Password123!'
 export E2E_EMAIL="folo-self-test-$(date +%Y%m%d%H%M%S)@example.com"
 ```
+
+For non-auth iOS self-tests, bootstrap auth through the standard iOS runner mode after the app has been installed and launched once:
+
+```bash
+cd apps/mobile
+pnpm run e2e:ios:bootstrap
+```
+
+This bootstrap path is the default for `prod` and `local` self-tests. Only skip it when the feature under test is login, registration, sign-out, session restoration, or another auth-specific flow that must be validated visually end-to-end.
 
 #### iOS registration bootstrap
 

@@ -2,6 +2,7 @@
 set -eu
 
 platform="${1:?platform is required}"
+mode="${2:-full}"
 debug_output="${MAESTRO_DEBUG_OUTPUT:-e2e/artifacts/${platform}}"
 run_suffix="$(date +%s)-$$"
 
@@ -40,6 +41,7 @@ extract_ios_app_from_tar() {
 }
 
 resolve_ios_app_path() {
+  device_id="$1"
   if [ -n "${MAESTRO_IOS_APP_PATH:-}" ]; then
     if [ -d "${MAESTRO_IOS_APP_PATH}" ]; then
       printf '%s' "${MAESTRO_IOS_APP_PATH}"
@@ -60,7 +62,13 @@ resolve_ios_app_path() {
     return
   fi
 
-  find "$HOME/Library/Developer/Xcode/DerivedData" -path '*Build/Products/Release-iphonesimulator/Folo.app' | head -n1
+  existing_path="$(find "$HOME/Library/Developer/Xcode/DerivedData" -path '*Build/Products/Release-iphonesimulator/Folo.app' | head -n1)"
+  if [ -n "${existing_path}" ]; then
+    printf '%s' "${existing_path}"
+    return
+  fi
+
+  build_ios_simulator_app "${device_id}"
 }
 
 wait_for_android_ready() {
@@ -106,6 +114,48 @@ prepare_ios_simulator() {
   xcrun simctl bootstatus "${device_id}" -b >/dev/null 2>&1 || true
 }
 
+append_ios_arch_args() {
+  arch="$(uname -m)"
+  if [ "${arch}" = "arm64" ]; then
+    printf '%s\n' "ONLY_ACTIVE_ARCH=YES" "ARCHS=arm64"
+  fi
+}
+
+build_ios_simulator_app() {
+  device_id="$1"
+  (
+    cd ios
+    pod install
+    set -- $(append_ios_arch_args)
+    PROFILE=e2e-ios-simulator \
+    EXPO_PUBLIC_E2E_ENV_PROFILE="${EXPO_PUBLIC_E2E_ENV_PROFILE:-}" \
+    EXPO_PUBLIC_E2E_LANGUAGE="${EXPO_PUBLIC_E2E_LANGUAGE:-en}" \
+    xcodebuild -workspace Folo.xcworkspace \
+      -scheme Folo \
+      -configuration Release \
+      -sdk iphonesimulator \
+      -destination "id=${device_id}" \
+      build \
+      "$@"
+  )
+
+  find "$HOME/Library/Developer/Xcode/DerivedData" -path '*Build/Products/Release-iphonesimulator/Folo.app' | head -n1
+}
+
+run_ios_bootstrap_auth() {
+  device_id="$1"
+
+  case "${EXPO_PUBLIC_E2E_ENV_PROFILE:-prod}" in
+    prod|local)
+      pnpm run e2e:bootstrap:ios:prod-auth -- --udid "${device_id}"
+      ;;
+    *)
+      maestro test --format junit --platform ios --device "${device_id}" --debug-output "${debug_output}/bootstrap-auth" \
+        -e E2E_EMAIL="${E2E_EMAIL}" -e E2E_PASSWORD="${E2E_PASSWORD}" e2e/flows/ios/register.yaml
+      ;;
+  esac
+}
+
 case "${platform}" in
   ios)
     device_id="$(resolve_ios_device)"
@@ -114,7 +164,7 @@ case "${platform}" in
       exit 1
     fi
 
-    app_path="$(resolve_ios_app_path)"
+    app_path="$(resolve_ios_app_path "${device_id}")"
     if [ -z "${app_path}" ] || [ ! -d "${app_path}" ]; then
       echo "Unable to resolve a built iOS .app bundle. Set MAESTRO_IOS_APP_PATH or place a build-*.tar.gz in apps/mobile." >&2
       exit 1
@@ -124,8 +174,19 @@ case "${platform}" in
     xcrun simctl install "${device_id}" "${app_path}" >/dev/null 2>&1 || true
     xcrun simctl launch "${device_id}" is.follow >/dev/null 2>&1 || true
 
-    maestro test --format junit --platform ios --device "${device_id}" --debug-output "${debug_output}/auth" \
-      -e E2E_EMAIL="${E2E_EMAIL}" -e E2E_PASSWORD="${E2E_PASSWORD}" e2e/flows/ios/auth.yaml
+    case "${mode}" in
+      full)
+        maestro test --format junit --platform ios --device "${device_id}" --debug-output "${debug_output}/auth" \
+          -e E2E_EMAIL="${E2E_EMAIL}" -e E2E_PASSWORD="${E2E_PASSWORD}" e2e/flows/ios/auth.yaml
+        ;;
+      bootstrap-auth)
+        run_ios_bootstrap_auth "${device_id}"
+        ;;
+      *)
+        echo "Unsupported iOS runner mode: ${mode}" >&2
+        exit 1
+        ;;
+    esac
 
     ;;
   android)

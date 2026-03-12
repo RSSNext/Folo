@@ -70,6 +70,18 @@ xcodebuild -workspace Folo.xcworkspace \
   build
 ```
 
+### Apple Silicon simulator optimization
+
+When running on an Apple Silicon Mac and building only for the simulator used in the current run, prefer compiling only the active `arm64` simulator architecture:
+
+```bash
+xcodebuild ... \
+  ONLY_ACTIVE_ARCH=YES \
+  ARCHS=arm64
+```
+
+Use this optimization only for local self-test / e2e simulator builds tied to the current machine. Do not use it when you need a universal simulator app for other machines or when running on Intel Macs.
+
 Expected output pattern:
 
 ```bash
