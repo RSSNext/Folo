@@ -192,6 +192,117 @@ const isFeatureValueVisible = (value: PaymentFeature[keyof PaymentFeature] | nul
 
 const isAppleProductId = (value: string | undefined): value is string => typeof value === "string"
 
+const BILLING_PERIOD_RANK: Record<BillingPeriod, number> = {
+  monthly: 0,
+  yearly: 1,
+}
+
+type PlanActionType = "current" | "upgrade" | "new" | "coming-soon" | null
+
+const matchesPlanIdentifier = (
+  plan: PaymentPlan,
+  identifier: string | null | undefined,
+): boolean => {
+  if (!identifier) {
+    return false
+  }
+
+  return plan.planID === identifier || plan.role === identifier
+}
+
+const getAppleProductIdForBillingPeriod = (
+  plan: PaymentPlan,
+  billingPeriod: BillingPeriod,
+): string | null => {
+  const productId =
+    billingPeriod === "yearly" ? plan.appleProductIdentifierAnnual : plan.appleProductIdentifier
+
+  return productId ?? null
+}
+
+const inferBillingPeriodFromProductId = (
+  productId: string | null | undefined,
+  plan: PaymentPlan,
+): BillingPeriod | null => {
+  if (!productId) {
+    return null
+  }
+
+  if (productId === plan.appleProductIdentifierAnnual) {
+    return "yearly"
+  }
+
+  if (productId === plan.appleProductIdentifier) {
+    return "monthly"
+  }
+
+  const normalizedProductId = productId.toLowerCase()
+
+  if (normalizedProductId.includes("annual") || normalizedProductId.includes("year")) {
+    return "yearly"
+  }
+
+  if (normalizedProductId.includes("month")) {
+    return "monthly"
+  }
+
+  return null
+}
+
+const getPlanActionType = ({
+  plan,
+  billingPeriod,
+  currentPlan,
+  activeSubscription,
+  hasExistingSubscription,
+}: {
+  plan: PaymentPlan
+  billingPeriod: BillingPeriod
+  currentPlan: PaymentPlan | null
+  activeSubscription?: ActiveSubscription
+  hasExistingSubscription: boolean
+}): PlanActionType => {
+  if (plan.isComingSoon) {
+    return "coming-soon"
+  }
+
+  const hasCheckout = !!plan.planID
+  const targetTier = plan.tier ?? 0
+  const currentTier = currentPlan?.tier ?? 0
+  const isSamePlan =
+    matchesPlanIdentifier(plan, activeSubscription?.plan) ||
+    (!!currentPlan && plan.role === currentPlan.role)
+
+  if (isSamePlan) {
+    if (!hasExistingSubscription) {
+      return "current"
+    }
+
+    const currentBillingPeriod = inferBillingPeriodFromProductId(
+      activeSubscription?.productId,
+      plan,
+    )
+    if (
+      currentBillingPeriod &&
+      BILLING_PERIOD_RANK[billingPeriod] > BILLING_PERIOD_RANK[currentBillingPeriod]
+    ) {
+      return "upgrade"
+    }
+
+    return "current"
+  }
+
+  if (!hasCheckout) {
+    return null
+  }
+
+  if (!hasExistingSubscription) {
+    return currentTier === 0 ? "new" : targetTier > currentTier ? "upgrade" : null
+  }
+
+  return targetTier > currentTier ? "upgrade" : null
+}
+
 export const PlanScreen: NavigationControllerView = () => {
   const { t } = useTranslation("settings")
   const serverConfigs = useServerConfigs()
@@ -245,6 +356,42 @@ export const PlanScreen: NavigationControllerView = () => {
     return sortedPlans.find((plan) => plan.role === role) ?? null
   }, [sortedPlans, role])
 
+  const billingSubscriptionQuery = useQuery({
+    queryKey: ["billingSubscription"],
+    queryFn: async () => {
+      const response = await followClient.request<{ code: number; data: ActiveSubscription }>(
+        "/billing/subscription",
+      )
+      return response.data
+    },
+    enabled: !!whoami?.id,
+  })
+
+  const activeSubscription = billingSubscriptionQuery.data
+  const subscribedPlan = useMemo(() => {
+    if (!activeSubscription?.plan) {
+      return currentPlan
+    }
+
+    return (
+      sortedPlans.find((plan) => matchesPlanIdentifier(plan, activeSubscription.plan)) ??
+      currentPlan
+    )
+  }, [activeSubscription?.plan, currentPlan, sortedPlans])
+
+  const hasExistingSubscription = useMemo(() => {
+    if (activeSubscription) {
+      return Boolean(
+        activeSubscription.plan ||
+        activeSubscription.source ||
+        activeSubscription.productId ||
+        activeSubscription.status,
+      )
+    }
+
+    return role != null && role !== UserRole.Free
+  }, [activeSubscription, role])
+
   const daysLeft = useMemo(() => {
     if (!roleEndAt) {
       return null
@@ -278,8 +425,9 @@ export const PlanScreen: NavigationControllerView = () => {
 
   const upgradeMutation = useMutation<void, Error, UpgradeVariables>({
     mutationFn: async ({ planId, annual }) => {
-      if (Platform.OS === "ios") {
-        const selectedPlan = plans.find((plan) => plan.planID === planId)
+      const selectedPlan = plans.find((plan) => plan.planID === planId)
+
+      if (Platform.OS === "ios" && activeSubscription?.source !== "stripe") {
         const productId = annual
           ? selectedPlan?.appleProductIdentifierAnnual
           : selectedPlan?.appleProductIdentifier
@@ -318,17 +466,6 @@ export const PlanScreen: NavigationControllerView = () => {
     },
   })
 
-  const billingSubscriptionQuery = useQuery({
-    queryKey: ["billingSubscription"],
-    queryFn: async () => {
-      const response = await followClient.request<{ code: number; data: ActiveSubscription }>(
-        "/billing/subscription",
-      )
-      return response.data
-    },
-    enabled: !!whoami?.id,
-  })
-
   const billingPortalMutation = useMutation({
     mutationFn: async () => {
       const data = await followClient.request<{ code: number; data?: { url: string } }>(
@@ -348,7 +485,7 @@ export const PlanScreen: NavigationControllerView = () => {
   })
 
   const handleManageSubscription = useCallback(() => {
-    if (billingSubscriptionQuery.data?.source === "apple") {
+    if (activeSubscription?.source === "apple") {
       void openSubscriptionManagement().catch(() => {
         toast.error(t("subscription.actions.manage_error"))
       })
@@ -356,7 +493,7 @@ export const PlanScreen: NavigationControllerView = () => {
     }
 
     billingPortalMutation.mutate()
-  }, [billingPortalMutation, billingSubscriptionQuery.data?.source, openSubscriptionManagement, t])
+  }, [activeSubscription?.source, billingPortalMutation, openSubscriptionManagement, t])
 
   if (!isPaymentEnabled || sortedPlans.length === 0) {
     return (
@@ -378,8 +515,9 @@ export const PlanScreen: NavigationControllerView = () => {
     )
   }
 
-  const summaryTitle = currentPlan
-    ? t("subscription.summary.current", { plan: currentPlan.name })
+  const summaryPlan = subscribedPlan ?? currentPlan
+  const summaryTitle = summaryPlan
+    ? t("subscription.summary.current", { plan: summaryPlan.name })
     : t("subscription.summary.free")
 
   let summarySubtitle = t("subscription.summary.free_description")
@@ -388,7 +526,7 @@ export const PlanScreen: NavigationControllerView = () => {
       date: dayjs(roleEndAt).format("MMMM D, YYYY"),
       days: daysLeft,
     })
-  } else if (currentPlan && currentPlan.role !== UserRole.Free) {
+  } else if (summaryPlan && summaryPlan.role !== UserRole.Free) {
     summarySubtitle = t("subscription.summary.active")
   }
 
@@ -421,27 +559,38 @@ export const PlanScreen: NavigationControllerView = () => {
 
         <View className="gap-4">
           {sortedPlans.map((plan) => {
-            const isCurrentPlan = plan.role === role
+            const isCurrentPlan =
+              matchesPlanIdentifier(plan, activeSubscription?.plan) || plan.role === role
             const isProcessing =
               upgradeMutation.isPending && upgradeMutation.variables?.planId === plan.planID
+            const actionType = getPlanActionType({
+              plan,
+              billingPeriod,
+              currentPlan: subscribedPlan ?? currentPlan,
+              activeSubscription,
+              hasExistingSubscription,
+            })
 
             return (
               <PlanCard
                 key={plan.planID ?? plan.name}
                 plan={plan}
                 billingPeriod={billingPeriod}
+                actionType={actionType}
                 isCurrentPlan={isCurrentPlan}
                 storeProduct={
                   Platform.OS === "ios"
                     ? appleProductsById.get(
-                        billingPeriod === "yearly"
-                          ? (plan.appleProductIdentifierAnnual ?? "")
-                          : (plan.appleProductIdentifier ?? ""),
+                        getAppleProductIdForBillingPeriod(plan, billingPeriod) ?? "",
                       )
                     : undefined
                 }
                 onUpgrade={
-                  plan.planID
+                  plan.planID &&
+                  actionType &&
+                  actionType !== "current" &&
+                  actionType !== "coming-soon" &&
+                  (!hasExistingSubscription || billingSubscriptionQuery.isFetched)
                     ? () =>
                         upgradeMutation.mutate({
                           planId: plan.planID as string,
@@ -608,6 +757,7 @@ const BillingToggle = ({
 const PlanCard = ({
   plan,
   billingPeriod,
+  actionType,
   isCurrentPlan,
   storeProduct,
   onUpgrade,
@@ -619,6 +769,7 @@ const PlanCard = ({
 }: {
   plan: PaymentPlan
   billingPeriod: BillingPeriod
+  actionType: PlanActionType
   isCurrentPlan: boolean
   storeProduct?: { displayPrice?: string } | null
   onUpgrade?: () => void
@@ -705,19 +856,6 @@ const PlanCard = ({
       .filter(([, value]) => isFeatureValueVisible(value))
       .slice(0, 6)
   }, [plan.limit])
-
-  const actionType = useMemo(() => {
-    if (plan.isComingSoon) {
-      return "coming-soon" as const
-    }
-    if (isCurrentPlan) {
-      return "current" as const
-    }
-    if (plan.planID) {
-      return "upgrade" as const
-    }
-    return null
-  }, [plan.isComingSoon, plan.planID, isCurrentPlan])
 
   const planNameFallback = plan.name || (plan.role ? UserRoleName[plan.role as UserRole] : "")
 
@@ -822,7 +960,7 @@ const PlanAction = ({
   activeSubscription,
   upgradeButtonText,
 }: {
-  actionType: "current" | "upgrade" | "coming-soon" | null
+  actionType: "current" | "upgrade" | "new" | "coming-soon" | null
   onUpgrade?: () => void
   onManageSubscription?: () => void
   isProcessing?: boolean
@@ -908,7 +1046,7 @@ const PlanAction = ({
     )
   }
 
-  if (actionType === "upgrade" && onUpgrade) {
+  if ((actionType === "upgrade" || actionType === "new") && onUpgrade) {
     return (
       <Pressable
         accessibilityRole="button"
@@ -920,7 +1058,9 @@ const PlanAction = ({
           <ActivityIndicator color="white" />
         ) : (
           <Text className="text-base font-semibold text-white">
-            {upgradeButtonText || t("subscription.actions.upgrade")}
+            {actionType === "new"
+              ? (upgradeButtonText ?? t("subscription.actions.upgrade"))
+              : t("subscription.actions.upgrade")}
           </Text>
         )}
       </Pressable>
