@@ -4,6 +4,7 @@ import { useEntry } from "@follow/store/entry/hooks"
 import { useFeedById } from "@follow/store/feed/hooks"
 import { useEntryTranslation } from "@follow/store/translation/hooks"
 import { unreadSyncService } from "@follow/store/unread/store"
+import { useIsLoggedIn } from "@follow/store/user/hooks"
 import { tracker } from "@follow/tracker"
 import type { ImageSource } from "expo-image"
 import { memo, useCallback } from "react"
@@ -54,9 +55,12 @@ export const EntrySocialItem = memo(
     })
     const { openLightbox } = useLightboxControls()
     const feed = useFeedById(entry?.feedId || "")
+    const isLoggedIn = useIsLoggedIn()
     const navigation = useNavigation()
     const handlePress = useCallback(() => {
-      unreadSyncService.markEntryAsRead(entryId)
+      if (isLoggedIn) {
+        unreadSyncService.markEntryAsRead(entryId)
+      }
       tracker.navigateEntry({
         feedId: entry?.feedId ?? "",
         entryId,
@@ -66,7 +70,7 @@ export const EntrySocialItem = memo(
         entryIds: extraData.entryIds ?? [],
         view: FeedViewType.SocialMedia,
       })
-    }, [entry?.feedId, entryId, extraData.entryIds, navigation])
+    }, [entry?.feedId, entryId, extraData.entryIds, isLoggedIn, navigation])
     const autoExpandLongSocialMedia = useGeneralSettingKey("autoExpandLongSocialMedia")
     const navigationToFeedEntryList = useCallback(() => {
       if (!entry?.feedId) return

@@ -13,14 +13,20 @@ import { useNavigation } from "@/src/lib/navigation/hooks"
 import { EntryListContentPicture } from "@/src/modules/entry-list/EntryListContentPicture"
 import { EntryDetailScreen } from "@/src/screens/(stack)/entries/[entryId]/EntryDetailScreen"
 
-import { useEntries } from "../screen/atoms"
+import { useEntries, useEntryListContext } from "../screen/atoms"
 import { EntryListContentArticle } from "./EntryListContentArticle"
 import { EntryListContentSocial } from "./EntryListContentSocial"
 import { EntryListContentVideo } from "./EntryListContentVideo"
 
 const NoLoginGuard = ({ children }: { children: React.ReactNode }) => {
   const whoami = useWhoami()
-  return whoami ? children : <NoLoginInfo target="timeline" />
+  const screenType = useEntryListContext().type
+
+  if (whoami || screenType !== "subscriptions") {
+    return children
+  }
+
+  return <NoLoginInfo target="subscriptions" />
 }
 
 type EntryListSelectorProps = {

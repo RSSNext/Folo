@@ -5,6 +5,7 @@ import { entrySyncServices } from "@follow/store/entry/store"
 import { useFeedById } from "@follow/store/feed/hooks"
 import { useSubscriptionById } from "@follow/store/subscription/hooks"
 import { translationSyncService } from "@follow/store/translation/store"
+import { useIsLoggedIn } from "@follow/store/user/hooks"
 import { setStringAsync } from "expo-clipboard"
 import { useAtom } from "jotai"
 import { useCallback, useEffect, useState } from "react"
@@ -58,6 +59,7 @@ const HeaderRightActionsImpl = ({
 }: HeaderRightActionsProps) => {
   const { t } = useTranslation()
   const labelColor = useColor("label")
+  const isLoggedIn = useIsLoggedIn()
   const isStarred = useIsEntryStarred(entryId)
   const [extraActionContainerWidth, setExtraActionContainerWidth] = useState(0)
 
@@ -136,18 +138,19 @@ const HeaderRightActionsImpl = ({
 
   // Define action items for reuse
   const actionItems = [
-    subscription && {
-      key: "Star",
-      title: isStarred ? t("operation.unstar") : t("operation.star"),
-      icon: isStarred ? <StarCuteFiIcon /> : <StarCuteReIcon />,
-      iconIOS: {
-        name: isStarred ? "star.fill" : "star",
-        paletteColors: isStarred ? ["#facc15"] : undefined,
+    isLoggedIn &&
+      subscription && {
+        key: "Star",
+        title: isStarred ? t("operation.unstar") : t("operation.star"),
+        icon: isStarred ? <StarCuteFiIcon /> : <StarCuteReIcon />,
+        iconIOS: {
+          name: isStarred ? "star.fill" : "star",
+          paletteColors: isStarred ? ["#facc15"] : undefined,
+        },
+        onPress: handleToggleStar,
+        active: isStarred,
+        iconColor: isStarred ? "#facc15" : undefined,
       },
-      onPress: handleToggleStar,
-      active: isStarred,
-      iconColor: isStarred ? "#facc15" : undefined,
-    },
     !showReadabilitySetting && {
       key: "ShowReadability",
       title: "Show Readability",
@@ -158,16 +161,17 @@ const HeaderRightActionsImpl = ({
       isCheckbox: true,
       // inMenu: true,
     },
-    !showAITranslationSetting && {
-      key: "ShowTranslation",
-      title: "Show Translation",
-      icon: <Translate2CuteReIcon />,
-      iconIOS: { name: "globe" },
-      onPress: toggleAITranslation,
-      active: showTranslation,
-      isCheckbox: true,
-      inMenu: true,
-    },
+    isLoggedIn &&
+      !showAITranslationSetting && {
+        key: "ShowTranslation",
+        title: "Show Translation",
+        icon: <Translate2CuteReIcon />,
+        iconIOS: { name: "globe" },
+        onPress: toggleAITranslation,
+        active: showTranslation,
+        isCheckbox: true,
+        inMenu: true,
+      },
     {
       key: "Share",
       title: t("operation.share"),

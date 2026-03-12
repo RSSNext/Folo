@@ -3,6 +3,7 @@ import type { MediaModel } from "@follow/database/schemas/types"
 import { useEntry } from "@follow/store/entry/hooks"
 import { getFeedById } from "@follow/store/feed/getter"
 import { unreadSyncService } from "@follow/store/unread/store"
+import { useIsLoggedIn } from "@follow/store/user/hooks"
 import { tracker } from "@follow/tracker"
 import { uniqBy } from "es-toolkit/compat"
 import type { ImageSource } from "expo-image"
@@ -19,6 +20,7 @@ import { Text } from "@/src/components/ui/typography/Text"
 export function EntryPictureItem({ id }: { id: string }) {
   const { t } = useTranslation()
   const { openLightbox } = useLightboxControls()
+  const isLoggedIn = useIsLoggedIn()
   const aviRef = useAnimatedRef<View>()
   const item = useEntry(id, (state) => ({
     media: state.media,
@@ -81,7 +83,9 @@ export function EntryPictureItem({ id }: { id: string }) {
             })
           })()
 
-          unreadSyncService.markEntryAsRead(id)
+          if (isLoggedIn) {
+            unreadSyncService.markEntryAsRead(id)
+          }
         }}
       />
     </View>

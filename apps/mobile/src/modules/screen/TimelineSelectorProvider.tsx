@@ -1,3 +1,4 @@
+import { useIsLoggedIn } from "@follow/store/user/hooks"
 import type { FC } from "react"
 import { useEffect, useMemo, useRef, useState } from "react"
 import { View } from "react-native"
@@ -27,6 +28,7 @@ import { useEntries, useEntryListContext, useSelectedFeedTitle } from "./atoms"
 export function TimelineHeader({ feedId }: { feedId?: string }) {
   const viewTitle = useSelectedFeedTitle()
   const screenType = useEntryListContext().type
+  const isLoggedIn = useIsLoggedIn()
 
   const isFeed = screenType === "feed"
   const isTimeline = screenType === "timeline"
@@ -49,13 +51,13 @@ export function TimelineHeader({ feedId }: { feedId?: string }) {
         return () => (
           <View className="flex-row items-center justify-end">
             <ActionGroup>
-              <UnreadOnlyActionButton />
-              <MarkAllAsReadActionButton />
+              {isLoggedIn && <UnreadOnlyActionButton />}
+              {isLoggedIn && <MarkAllAsReadActionButton />}
               <FeedShareActionButton feedId={feedId} />
             </ActionGroup>
           </View>
         )
-      }, [feedId])}
+      }, [feedId, isLoggedIn])}
       headerHideableBottom={isTimeline || isSubscriptions ? TimelineViewSelector : undefined}
       headerHideableBottomHeight={TIMELINE_VIEW_SELECTOR_HEIGHT}
     />
