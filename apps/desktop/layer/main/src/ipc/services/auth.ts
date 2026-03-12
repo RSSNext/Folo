@@ -5,7 +5,6 @@ import type { IpcContext } from "electron-ipc-decorator"
 import { IpcMethod, IpcService } from "electron-ipc-decorator"
 
 import { BETTER_AUTH_COOKIE_NAME_SESSION_TOKEN } from "~/constants/app"
-import { apiClient } from "~/lib/api-client"
 import { WindowManager } from "~/manager/window"
 
 import { getSessionTokenFromCookies, syncSessionToCliConfig } from "../../lib/cli-session-sync"
@@ -133,49 +132,6 @@ export class AuthService extends IpcService {
     }).catch(() => {})
 
     await this.clearSessionToken()
-  }
-
-  @IpcMethod()
-  async getSession(_context: IpcContext) {
-    return apiClient.auth.getSession()
-  }
-
-  @IpcMethod()
-  async getSessionByToken(_context: IpcContext, token: string) {
-    const response = await fetch(`${env.VITE_API_URL}/better-auth/get-session`, {
-      headers: {
-        ...createDesktopAPIHeaders({ version: PKG.version }),
-        Cookie: `__Secure-better-auth.session_token=${token}; better-auth.session_token=${token}`,
-      },
-    })
-
-    return response.json().catch(async () => ({ message: await response.text() }))
-  }
-
-  @IpcMethod()
-  async request(
-    _context: IpcContext,
-    payload: {
-      input: string
-      init?: {
-        method?: string
-        headers?: Record<string, string>
-        body?: string
-      }
-    },
-  ) {
-    const response = await fetch(payload.input, {
-      method: payload.init?.method,
-      headers: payload.init?.headers,
-      body: payload.init?.body,
-      cache: "no-store",
-    })
-
-    return {
-      status: response.status,
-      headers: Object.fromEntries(response.headers.entries()),
-      body: await response.text(),
-    }
   }
 
   @IpcMethod()
