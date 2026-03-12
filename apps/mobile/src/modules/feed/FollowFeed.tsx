@@ -28,9 +28,9 @@ import { Text } from "@/src/components/ui/typography/Text"
 import { SafeAlertCuteReIcon } from "@/src/icons/safe_alert_cute_re"
 import { SafetyCertificateCuteReIcon } from "@/src/icons/safety_certificate_cute_re"
 import { User3CuteReIcon } from "@/src/icons/user_3_cute_re"
+import { toastFetchError } from "@/src/lib/error-parser"
 import { useCanDismiss, useNavigation } from "@/src/lib/navigation/hooks"
 import { useSetModalScreenOptions } from "@/src/lib/navigation/ScreenOptionsContext"
-import { getBizFetchErrorMessage } from "@/src/lib/parse-api-error"
 import { toast } from "@/src/lib/toast"
 import { FeedSummary } from "@/src/modules/discover/FeedSummary"
 import { FeedViewSelector } from "@/src/modules/feed/view-selector"
@@ -135,7 +135,7 @@ function FollowImpl(props: { feedId: string; defaultView?: FeedViewType }) {
         navigate.back()
       }
     } catch (error) {
-      toast.error(error instanceof Error ? getBizFetchErrorMessage(error) : "Failed to update feed")
+      toastFetchError(error as Error)
     } finally {
       setIsLoading(false)
     }
@@ -163,9 +163,7 @@ function FollowImpl(props: { feedId: string; defaultView?: FeedViewType }) {
               navigate.back()
             }
           } catch (error) {
-            toast.error(
-              error instanceof Error ? getBizFetchErrorMessage(error) : "Failed to update feed",
-            )
+            toastFetchError(error as Error)
           } finally {
             setIsLoading(false)
           }

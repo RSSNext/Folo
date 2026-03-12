@@ -2,6 +2,7 @@ import type { SummarySchema } from "@follow/database/schemas/types"
 import { summaryService } from "@follow/database/services/summary"
 import type { SupportedActionLanguage } from "@follow/shared"
 import { toApiSupportedActionLanguage } from "@follow/shared"
+import { FollowAPIError } from "@follow-app/client-sdk"
 
 import { api } from "../../context"
 import type { Hydratable, Resetable } from "../../lib/base"
@@ -177,6 +178,10 @@ class SummarySyncService {
         target,
       })
       .then((summary) => {
+        if (!summary.data) {
+          throw new FollowAPIError("AI summary limit exceeded. Please try again later.", 402)
+        }
+
         immerSet((state) => {
           if (!state.data[entryId]) {
             state.data[entryId] = {}

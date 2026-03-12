@@ -6,6 +6,7 @@ import { useMutation, useQuery } from "@tanstack/react-query"
 import dayjs from "dayjs"
 import type { SubscriptionProduct } from "expo-iap"
 import { openURL } from "expo-linking"
+import type { TFunction } from "i18next"
 import { useCallback, useEffect, useMemo, useRef, useState } from "react"
 import { useTranslation } from "react-i18next"
 import type { LayoutChangeEvent } from "react-native"
@@ -38,6 +39,41 @@ import { useColor } from "@/src/theme/colors"
 type PaymentPlan = NonNullable<StatusConfigs["PAYMENT_PLAN_LIST"]>[number]
 type PaymentFeature = PaymentPlan["limit"]
 type BillingPeriod = "monthly" | "yearly"
+
+const AI_MODEL_SELECTION_VALUE_LABELS = {
+  none: {
+    translationKey: "plan.featureValues.AI_MODEL_SELECTION.none",
+    fallback: "—",
+  },
+  curated: {
+    translationKey: "plan.featureValues.AI_MODEL_SELECTION.curated",
+    fallback: "Curated models",
+  },
+  high_performance: {
+    translationKey: "plan.featureValues.AI_MODEL_SELECTION.high_performance",
+    fallback: "All high-end models",
+  },
+} as const
+
+const PLAN_FEATURE_ORDER: Array<keyof PaymentFeature> = [
+  "MAX_SUBSCRIPTIONS",
+  "MAX_LISTS",
+  "MAX_INBOXES",
+  "MAX_ACTIONS",
+  "MAX_AI_ENTRY_SUMMARY_PER_DAY",
+  "MAX_AI_ENTRY_TRANSLATION_PER_DAY",
+  "MAX_AI_TEXT_TO_SPEECH_PER_DAY",
+  "AI_MODEL_SELECTION",
+  "AI_BRING_YOUR_OWN_KEY",
+  "BOOSTS",
+  "PRIORITY_SUPPORT",
+  "PRIVATE_SUBSCRIPTION",
+  "MAX_RSSHUB_SUBSCRIPTIONS",
+  "SECURE_IMAGE_PROXY",
+  "INTEGRATION_SUPPORTED",
+  "AI_CREDIT",
+  "MAX_AI_TASKS",
+]
 
 const BILLING_SEGMENTS: BillingPeriod[] = ["monthly", "yearly"]
 
@@ -96,9 +132,19 @@ const formatCurrency = (value: number) => currencyFormatter.format(value)
 const formatFeatureValue = (
   key: keyof PaymentFeature,
   value: PaymentFeature[keyof PaymentFeature] | undefined | null,
+  t?: TFunction<"settings">,
 ): string => {
   if (value == null) {
     return "—"
+  }
+
+  if (key === "AI_MODEL_SELECTION" && typeof value === "string") {
+    const selectionValue =
+      AI_MODEL_SELECTION_VALUE_LABELS[value as keyof typeof AI_MODEL_SELECTION_VALUE_LABELS]
+
+    if (selectionValue) {
+      return t?.(selectionValue.translationKey) ?? selectionValue.fallback
+    }
   }
 
   if (typeof value === "boolean") {
@@ -337,13 +383,13 @@ export const PlanScreen: NavigationControllerView = () => {
     : t("subscription.summary.free")
 
   let summarySubtitle = t("subscription.summary.free_description")
-  if (role === UserRole.Pro || role === UserRole.Plus) {
-    summarySubtitle = t("subscription.summary.active")
-  } else if (daysLeft && daysLeft > 0 && role && role !== UserRole.Free) {
+  if (daysLeft && daysLeft > 0 && role && role !== UserRole.Free) {
     summarySubtitle = t("subscription.summary.trial_expiring", {
       date: dayjs(roleEndAt).format("MMMM D, YYYY"),
       days: daysLeft,
     })
+  } else if (currentPlan && currentPlan.role !== UserRole.Free) {
+    summarySubtitle = t("subscription.summary.active")
   }
 
   return (
@@ -407,6 +453,7 @@ export const PlanScreen: NavigationControllerView = () => {
                 isProcessing={isProcessing || isPurchasing || isProcessingPurchase}
                 isManaging={billingPortalMutation.isPending}
                 activeSubscription={billingSubscriptionQuery.data}
+                upgradeButtonText={plan.upgradeButtonText}
               />
             )
           })}
@@ -568,6 +615,7 @@ const PlanCard = ({
   isProcessing,
   isManaging,
   activeSubscription,
+  upgradeButtonText,
 }: {
   plan: PaymentPlan
   billingPeriod: BillingPeriod
@@ -578,6 +626,7 @@ const PlanCard = ({
   isProcessing?: boolean
   isManaging?: boolean
   activeSubscription?: ActiveSubscription
+  upgradeButtonText?: string
 }) => {
   const { t } = useTranslation("settings")
 
@@ -645,11 +694,14 @@ const PlanCard = ({
   const planDescription = t(`plan.descriptions.${plan.role}` as const, { defaultValue: "" })
 
   const features = useMemo(() => {
-    return (
-      Object.entries(plan.limit || {}) as Array<
-        [keyof PaymentFeature, PaymentFeature[keyof PaymentFeature]]
-      >
-    )
+    const fallbackFeatureOrder = Object.keys(plan.limit || {}) as Array<keyof PaymentFeature>
+    const orderedFeatureKeys = [
+      ...PLAN_FEATURE_ORDER,
+      ...fallbackFeatureOrder.filter((featureKey) => !PLAN_FEATURE_ORDER.includes(featureKey)),
+    ]
+
+    return orderedFeatureKeys
+      .map((featureKey) => [featureKey, plan.limit?.[featureKey]] as const)
       .filter(([, value]) => isFeatureValueVisible(value))
       .slice(0, 6)
   }, [plan.limit])
@@ -719,7 +771,7 @@ const PlanCard = ({
 
       <View className="mt-4 gap-2">
         {features.map(([featureKey, value]) => {
-          const formattedValue = formatFeatureValue(featureKey, value)
+          const formattedValue = formatFeatureValue(featureKey, value, t)
           const showValue = !(typeof value === "boolean" && value)
           return (
             <View key={featureKey as string} className="flex-row items-center gap-3">
@@ -755,6 +807,7 @@ const PlanCard = ({
         isProcessing={isProcessing}
         isManaging={isManaging}
         activeSubscription={activeSubscription}
+        upgradeButtonText={upgradeButtonText}
       />
     </View>
   )
@@ -767,6 +820,7 @@ const PlanAction = ({
   isProcessing,
   isManaging,
   activeSubscription,
+  upgradeButtonText,
 }: {
   actionType: "current" | "upgrade" | "coming-soon" | null
   onUpgrade?: () => void
@@ -774,6 +828,7 @@ const PlanAction = ({
   isProcessing?: boolean
   isManaging?: boolean
   activeSubscription?: ActiveSubscription
+  upgradeButtonText?: string
 }) => {
   const { t } = useTranslation("settings")
 
@@ -865,7 +920,7 @@ const PlanAction = ({
           <ActivityIndicator color="white" />
         ) : (
           <Text className="text-base font-semibold text-white">
-            {t("subscription.actions.upgrade")}
+            {upgradeButtonText || t("subscription.actions.upgrade")}
           </Text>
         )}
       </Pressable>
