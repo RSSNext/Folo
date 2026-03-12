@@ -1,9 +1,10 @@
 import type { RSSHubCategory } from "@follow/constants"
 import { CategoryMap, RSSHubCategories } from "@follow/constants"
+import { Image } from "expo-image"
 import { LinearGradient } from "expo-linear-gradient"
-import { memo } from "react"
+import { memo, useMemo, useState } from "react"
 import { useTranslation } from "react-i18next"
-import { Pressable, StyleSheet, View } from "react-native"
+import { Platform, Pressable, StyleSheet, View } from "react-native"
 import { useColor } from "react-native-uikit-colors"
 
 import { Grid } from "@/src/components/ui/grid"
@@ -49,10 +50,46 @@ export const Category = () => {
     </>
   )
 }
+
+const emojiCdnBaseUrl = "https://cdn.jsdelivr.net/gh/twitter/twemoji@14.0.2/assets/72x72"
+
+const getEmojiImageUrl = (emoji: string) => {
+  const codePoints = Array.from(emoji)
+    .map((character) => character.codePointAt(0)?.toString(16))
+    .filter((value): value is string => Boolean(value) && value !== "fe0f")
+
+  return `${emojiCdnBaseUrl}/${codePoints.join("-")}.png`
+}
+
+const CategoryEmoji = ({ emoji }: { emoji: string }) => {
+  const [useTextFallback, setUseTextFallback] = useState(false)
+  const emojiImageUrl = useMemo(() => getEmojiImageUrl(emoji), [emoji])
+
+  return (
+    <View style={styles.emojiContainer}>
+      {useTextFallback ? (
+        <Text allowFontScaling={false} style={styles.emojiText}>
+          {emoji}
+        </Text>
+      ) : (
+        <Image
+          allowDownscaling
+          cachePolicy="memory-disk"
+          contentFit="contain"
+          onError={() => setUseTextFallback(true)}
+          source={emojiImageUrl}
+          style={styles.emojiImage}
+        />
+      )}
+    </View>
+  )
+}
+
 const CategoryItem = memo(({ category }: { category: RSSHubCategory }) => {
   const { t } = useTranslation("common")
   const name = t(`discover.category.${category}`)
   const navigation = useNavigation()
+  const { emoji } = CategoryMap[category]
   return (
     <Pressable
       className="overflow-hidden rounded-2xl"
@@ -81,7 +118,7 @@ const CategoryItem = memo(({ category }: { category: RSSHubCategory }) => {
         style={styles.cardItem}
       >
         <View className="flex-1">
-          <Text className="absolute right-2 top-2 text-4xl">{CategoryMap[category].emoji}</Text>
+          <CategoryEmoji emoji={emoji} />
           <Text className="absolute bottom-0 left-2 text-lg font-bold text-white">{name}</Text>
         </View>
       </LinearGradient>
@@ -91,5 +128,28 @@ const CategoryItem = memo(({ category }: { category: RSSHubCategory }) => {
 const styles = StyleSheet.create({
   cardItem: {
     aspectRatio: 16 / 9,
+  },
+  emojiContainer: {
+    position: "absolute",
+    right: 8,
+    top: 8,
+    width: 56,
+    height: 56,
+    alignItems: "center",
+    justifyContent: "center",
+  },
+  emojiText: {
+    fontSize: 40,
+    lineHeight: 48,
+    textAlign: "center",
+    ...(Platform.OS === "android"
+      ? {
+          includeFontPadding: false,
+        }
+      : {}),
+  },
+  emojiImage: {
+    width: 40,
+    height: 40,
   },
 })

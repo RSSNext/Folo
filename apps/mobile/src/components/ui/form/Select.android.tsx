@@ -113,7 +113,7 @@ export function Select<T>({
     >
       <Text
         className={cn("flex-1 text-right font-semibold", disabled ? "text-gray" : "text-accent")}
-        ellipsizeMode="middle"
+        ellipsizeMode="tail"
         numberOfLines={1}
       >
         {displayValue || selectedOption?.label || "Select"}
