@@ -6,6 +6,7 @@ import fg from "fast-glob"
 import path from "pathe"
 
 const dependencyKeys = ["dependencies", "devDependencies"]
+const ignoredEnsureVersionFiles = new Set(["apps/landing/package.json"])
 
 /** @type {import("eslint").ESLint.Plugin} */
 export default {
@@ -25,6 +26,9 @@ export default {
         if (!context.filename.endsWith("package.json")) return {}
 
         const cwd = process.cwd()
+        const currentFilePath = path.relative(cwd, context.filename).replaceAll("\\", "/")
+        if (ignoredEnsureVersionFiles.has(currentFilePath)) return {}
+
         const packageJsonFilePaths = fg.globSync(
           ["packages/*/package.json", "apps/*/package.json", "package.json"],
           {
@@ -37,6 +41,7 @@ export default {
         const packageVersionMap = new Map()
 
         packageJsonFilePaths.forEach((filePath) => {
+          if (ignoredEnsureVersionFiles.has(filePath)) return
           if (filePath === path.relative(cwd, context.filename)) return
 
           const packageJson = JSON.parse(fs.readFileSync(filePath, "utf-8"))

@@ -10,6 +10,7 @@ import {
 import {
   GroupedInsetListBaseCell,
   GroupedInsetListCard,
+  GroupedInsetListCell,
   GroupedInsetListNavigationLink,
   GroupedInsetListNavigationLinkIcon,
   GroupedInsetListSectionHeader,
@@ -19,6 +20,15 @@ import { Text } from "@/src/components/ui/typography/Text"
 import { DiscordCuteFiIcon } from "@/src/icons/discord_cute_fi"
 import { GithubCuteFiIcon } from "@/src/icons/github_cute_fi"
 import { SocialXCuteReIcon } from "@/src/icons/social_x_cute_re"
+import { useMobileReviewPromptState } from "@/src/modules/review-prompt/use-review-prompt-state"
+import {
+  isMobileNativeReviewAvailable,
+  openMobileFeedbackEmail,
+  openMobileStoreReview,
+  persistMobileNegativeFeedback,
+  readMobileReviewPromptState,
+  requestMobileNativeReview,
+} from "@/src/modules/review-prompt/utils"
 
 const links = [
   {
@@ -47,6 +57,47 @@ export const AboutScreen = () => {
   const { t } = useTranslation("settings")
   const buildId = nativeBuildVersion
   const appVersion = nativeApplicationVersion
+  const { distribution, platform, rateTarget, storageKey, userId } = useMobileReviewPromptState()
+
+  const handleRateFolo = async () => {
+    const latestState = readMobileReviewPromptState(storageKey)
+
+    if (await isMobileNativeReviewAvailable(distribution)) {
+      await requestMobileNativeReview({
+        appVersion: appVersion ?? "unknown",
+        distribution,
+        platform,
+        source: "manual",
+        state: latestState,
+        storageKey,
+        trackPositive: true,
+      })
+      return
+    }
+
+    await openMobileStoreReview({
+      appVersion: appVersion ?? "unknown",
+      distribution,
+      platform,
+      source: "manual",
+      state: latestState,
+      storageKey,
+      target: rateTarget,
+    })
+  }
+
+  const handleSendFeedback = async () => {
+    persistMobileNegativeFeedback({
+      appVersion: appVersion ?? "unknown",
+      distribution,
+      platform,
+      source: "manual",
+      state: readMobileReviewPromptState(storageKey),
+      storageKey,
+    })
+    await openMobileFeedbackEmail({ distribution, userId })
+  }
+
   return (
     <SafeNavigationScrollView
       Header={<NavigationBlurEffectHeaderView title={t("titles.about")} />}
@@ -110,6 +161,24 @@ export const AboutScreen = () => {
             />
           </View>
         </GroupedInsetListBaseCell>
+      </GroupedInsetListCard>
+
+      <GroupedInsetListSectionHeader label={t("about.support")} />
+      <GroupedInsetListCard>
+        <GroupedInsetListCell
+          label={t("about.rateFolo")}
+          description={t("about.rateFoloDescription")}
+          onPress={() => {
+            void handleRateFolo()
+          }}
+        />
+        <GroupedInsetListCell
+          label={t("about.sendFeedback")}
+          description={t("about.sendFeedbackDescription")}
+          onPress={() => {
+            void handleSendFeedback()
+          }}
+        />
       </GroupedInsetListCard>
 
       <GroupedInsetListSectionHeader label={t("about.socialMedia")} />

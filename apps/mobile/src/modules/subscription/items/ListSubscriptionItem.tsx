@@ -45,6 +45,7 @@ export const ListSubscriptionItem = memo(({ id, isFirst, isLast }: ListSubscript
           <ItemPressable
             itemStyle={ItemPressableStyle.Grouped}
             className="h-12 flex-row items-center px-3"
+            testID={`subscription-list-${id}`}
             onPress={() => {
               selectFeed({
                 type: "list",

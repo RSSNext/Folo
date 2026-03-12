@@ -41,3 +41,26 @@ export function getDefaultHeaderHeight({
 
   return headerHeight + (modalPresentation ? 0 : topInset)
 }
+
+export function getNavigationHeaderLayout({
+  landscape,
+  sheetModal,
+  topInset,
+}: {
+  landscape: boolean
+  sheetModal: boolean
+  topInset: number
+}) {
+  const effectiveModalPresentation = isIOS && sheetModal
+  const headerTopInset = effectiveModalPresentation ? 0 : topInset
+
+  return {
+    headerTopInset,
+    effectiveModalPresentation,
+    headerHeight: getDefaultHeaderHeight({
+      landscape,
+      modalPresentation: effectiveModalPresentation,
+      topInset: headerTopInset,
+    }),
+  }
+}

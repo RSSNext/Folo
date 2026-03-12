@@ -17,6 +17,9 @@
     "@follow/ssr#build": {
       "outputs": ["dist/**"]
     },
+    "@follow/landing#cf:build": {
+      "outputs": [".open-next/**", ".next/**"]
+    },
     "build": {
       "outputs": ["dist/**"]
     },

@@ -1,0 +1,19 @@
+appId: is.follow
+name: iOS core journey
+---
+- launchApp:
+    clearState: true
+- runFlow:
+    file: ./register.yaml
+- runFlow:
+    file: ./sign-out.yaml
+- runFlow:
+    file: ./login.yaml
+- runFlow:
+    file: ./ensure-onboarding-unfollowed.yaml
+- runFlow:
+    file: ./follow-onboarding.yaml
+- runFlow:
+    file: ./timeline-entry.yaml
+- runFlow:
+    file: ./unfollow-onboarding.yaml

@@ -1,0 +1,36 @@
+appId: is.follow
+---
+- waitForAnimationToEnd:
+    timeout: 15000
+- runFlow:
+    file: dismiss-ios-system-modal.yaml
+- runFlow:
+    when:
+      visible:
+        id: no-login-timeline
+    commands:
+      - tapOn:
+          id: no-login-timeline
+- runFlow:
+    when:
+      visible:
+        id: home-avatar-trigger
+    commands:
+      - tapOn:
+          id: home-avatar-trigger
+- extendedWaitUntil:
+    visible:
+      id: login-screen
+    timeout: 30000
+- extendedWaitUntil:
+    visible:
+      id: login-provider-credential
+    timeout: 60000
+- extendedWaitUntil:
+    visible:
+      id: login-provider-google
+    timeout: 60000
+- extendedWaitUntil:
+    visible:
+      id: login-provider-github
+    timeout: 60000

@@ -1,0 +1,24 @@
+{
+  "permissions": {
+    "allow": [
+      "Bash(gh pr view:*)",
+      "Bash(pnpm bump:*)",
+      "Bash(git add:*)",
+      "Bash(git commit:*)",
+      "Bash(ls:*)",
+      "Bash(npx:*)",
+      "Bash(git stash:*)",
+      "Bash(git show:*)",
+      "Bash(git -C /Users/diygod/Code/Projects/Folo status --short)",
+      "Bash(git -C /Users/diygod/Code/Projects/Folo add apps/mobile/changelog/next.md)",
+      "Bash(git -C /Users/diygod/Code/Projects/Folo commit:*)",
+      "Bash(git checkout:*)",
+      "Bash(git fetch:*)",
+      "Bash(git merge:*)",
+      "Bash(git rm:*)",
+      "Bash(git push:*)",
+      "Bash(gh api:*)",
+      "Bash(pnpm exec vv:*)"
+    ]
+  }
+}

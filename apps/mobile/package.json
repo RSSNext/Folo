@@ -1,12 +1,18 @@
 {
   "name": "@follow/mobile",
-  "version": "0.3.0",
+  "version": "0.4.0",
   "private": true,
   "main": "src/main.tsx",
   "scripts": {
     "android": "expo run:android",
     "bump": "vv",
     "dev": "npm run start",
+    "e2e:android": "sh ./e2e/run-maestro.sh android",
+    "e2e:bootstrap:ios:auth": "tsx scripts/e2e-prod-ios-auth-bootstrap.ts",
+    "e2e:bootstrap:ios:prod-auth": "pnpm run e2e:bootstrap:ios:auth",
+    "e2e:doctor": "sh -c 'for f in e2e/flows/shared/*.yaml e2e/flows/android/*.yaml e2e/flows/ios/*.yaml; do maestro check-syntax $f; done'",
+    "e2e:ios": "sh ./e2e/run-maestro.sh ios",
+    "e2e:ios:bootstrap": "sh ./e2e/run-maestro.sh ios bootstrap-auth",
     "eas-build-post-install": "rm -rf $TMPDIR/metro-cache",
     "eas-build-pre-install": "command -v pod >/dev/null 2>&1 && pod repo update || echo 'CocoaPods not found, skipping pod repo update'",
     "ios": "expo run:ios",
@@ -81,6 +87,7 @@
     "expo-splash-screen": "31.0.13",
     "expo-sqlite": "16.0.10",
     "expo-status-bar": "3.0.9",
+    "expo-store-review": "~9.0.9",
     "expo-symbols": "1.0.8",
     "expo-system-ui": "6.0.9",
     "expo-task-manager": "14.0.9",
@@ -151,6 +158,20 @@
   "expo": {
     "autolinking": {
       "nativeModulesDir": "./native"
+    },
+    "doctor": {
+      "appConfigFieldsNotSyncedCheck": {
+        "enabled": false
+      },
+      "reactNativeDirectoryCheck": {
+        "enabled": true,
+        "exclude": [
+          "react-native-track-player",
+          "follow-native",
+          "react-native-color-matrix-image-filters"
+        ],
+        "listUnknownPackages": false
+      }
     }
   }
 }

@@ -42,40 +42,17 @@ const prodHandler = (app: FastifyInstance) => {
     const { document } = parseHTML(template)
     await safeInjectMetaToTemplate(document, req, reply)
 
-    const isInVercelReverseProxy = req.headers["x-middleware-subrequest"]
-
-    const upstreamEnv = req.requestContext.get("upstreamEnv")
-    if (isInVercelReverseProxy || upstreamEnv === "prod") {
-      const upstreamEnv = req.requestContext.get("upstreamEnv")
-
-      if (upstreamEnv) {
-        document.head.prepend(document.createComment(`upstreamEnv: ${upstreamEnv}`))
-
-        // override client side api url
-
-        const upstreamOrigin = req.requestContext.get("upstreamOrigin")
-
-        const injectScript = (apiUrl: string) => {
-          const template = `function injectEnv(env2) {
+    const scriptContent = `function injectEnv(env2) {
     for (const key in env2) {
       if (env2[key] === void 0) continue;
       globalThis["__followEnv"] ??= {};
       globalThis["__followEnv"][key] = env2[key];
     }
   }
-injectEnv({"VITE_API_URL":"${apiUrl}","VITE_EXTERNAL_API_URL":"${apiUrl}","VITE_WEB_URL":"${upstreamOrigin}"})`
-          const $script = document.createElement("script")
-          $script.innerHTML = template
-          document.head.prepend($script)
-        }
-        if (upstreamEnv === "dev" && env.VITE_EXTERNAL_DEV_API_URL) {
-          injectScript(env.VITE_EXTERNAL_DEV_API_URL)
-        }
-        if (upstreamEnv === "prod" && env.VITE_EXTERNAL_PROD_API_URL) {
-          injectScript(env.VITE_EXTERNAL_PROD_API_URL)
-        }
-      }
-    }
+injectEnv({"VITE_API_URL":"${env.VITE_API_URL}","VITE_WEB_URL":"${env.VITE_WEB_URL}"})`
+    const $script = document.createElement("script")
+    $script.innerHTML = scriptContent
+    document.head.prepend($script)
 
     reply.type("text/html")
     reply.send(

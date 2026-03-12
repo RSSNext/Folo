@@ -11,18 +11,10 @@ import PKG from "../../../desktop/package.json"
 const getBaseURL = () => {
   const req = requestContext.get("req")!
   const { host } = req.headers
-  let baseURL = env.VITE_EXTERNAL_API_URL || env.VITE_API_URL
+  let baseURL = env.VITE_API_URL
 
-  if (env.VITE_EXTERNAL_API_URL?.startsWith("/")) {
-    baseURL = `http://${host}${env.VITE_EXTERNAL_API_URL}`
-  }
-
-  const upstreamEnv = req.requestContext.get("upstreamEnv")
-  if (upstreamEnv === "dev" && env.VITE_EXTERNAL_DEV_API_URL) {
-    baseURL = env.VITE_EXTERNAL_DEV_API_URL
-  }
-  if (upstreamEnv === "prod" && env.VITE_EXTERNAL_PROD_API_URL) {
-    baseURL = env.VITE_EXTERNAL_PROD_API_URL
+  if (env.VITE_API_URL.startsWith("/")) {
+    baseURL = `http://${host}${env.VITE_API_URL}`
   }
   return baseURL
 }

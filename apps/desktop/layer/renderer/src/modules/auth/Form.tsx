@@ -21,6 +21,8 @@ import { z } from "zod"
 import { useModalStack } from "~/components/ui/modal/stacked/hooks"
 import { useRecaptchaToken } from "~/hooks/common"
 import { loginHandler, signUp, twoFactor } from "~/lib/auth"
+import { ipcServices } from "~/lib/client"
+import { setAuthSessionToken } from "~/lib/client-session"
 import { handleSessionChanges } from "~/queries/auth"
 
 import { TOTPForm } from "../profile/two-factor"
@@ -29,6 +31,87 @@ const formSchema = z.object({
   email: z.string().email(),
   password: IN_ELECTRON ? z.string().min(8).max(128) : z.string().min(8).max(128).or(z.literal("")),
 })
+
+const getAuthTokenFromResult = (result: unknown) => {
+  if (!result || typeof result !== "object") {
+    return null
+  }
+
+  if ("sessionToken" in result && typeof result.sessionToken === "string") {
+    return result.sessionToken
+  }
+
+  if ("token" in result && typeof result.token === "string") {
+    return result.token
+  }
+
+  if (
+    "data" in result &&
+    result.data &&
+    typeof result.data === "object" &&
+    ("sessionToken" in result.data || "token" in result.data)
+  ) {
+    const { sessionToken, token } = result.data as { sessionToken?: unknown; token?: unknown }
+    if (typeof sessionToken === "string") {
+      return sessionToken
+    }
+    return typeof token === "string" ? token : null
+  }
+
+  return null
+}
+
+type ElectronAuthResult = {
+  data?: Record<string, unknown>
+  error?: {
+    message: string
+    status?: number
+  } | null
+}
+
+const normalizeElectronAuthResult = (result: unknown): ElectronAuthResult => {
+  if (!result || typeof result !== "object") {
+    return {}
+  }
+
+  return result as ElectronAuthResult
+}
+
+const setElectronSessionToken = async (token: string) => {
+  if (!ipcServices) {
+    return
+  }
+
+  const authService = ipcServices.auth as
+    | (typeof ipcServices.auth & {
+        setSessionToken?: (token: string) => Promise<void>
+      })
+    | undefined
+
+  await authService?.setSessionToken?.(token)
+}
+
+const getElectronAuthService = () => {
+  if (!ipcServices) {
+    return null
+  }
+
+  return ipcServices.auth as typeof ipcServices.auth & {
+    setSessionToken?: (token: string) => Promise<void>
+    signInWithCredential?: (payload: {
+      email: string
+      password: string
+      headers?: Record<string, string>
+    }) => Promise<unknown>
+    signUpWithCredential?: (payload: {
+      email: string
+      password: string
+      name: string
+      callbackURL: string
+      headers?: Record<string, string>
+    }) => Promise<unknown>
+  }
+}
 
 export function LoginWithPassword({
   runtime,
@@ -75,11 +158,19 @@ export function LoginWithPassword({
     }
 
     // Use password authentication
-    const res = await loginHandler("credential", runtime, {
-      email: values.email,
-      password: values.password,
-      headers,
-    })
+    const res = IN_ELECTRON
+      ? normalizeElectronAuthResult(
+          await getElectronAuthService()?.signInWithCredential?.({
+            email: values.email,
+            password: values.password,
+            headers,
+          }),
+        )
+      : await loginHandler("credential", runtime, {
+          email: values.email,
+          password: values.password,
+          headers,
+        })
     if (res?.error) {
       toast.error(res.error.message)
       return
@@ -105,13 +196,20 @@ export function LoginWithPassword({
         },
       })
     } else {
+      if (IN_ELECTRON) {
+        const token = getAuthTokenFromResult(res)
+        if (token) {
+          setAuthSessionToken(token)
+          void setElectronSessionToken(token)
+        }
+      }
       handleSessionChanges()
     }
   }
 
   return (
     <Form {...form}>
-      <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-4">
+      <form data-testid="login-form" onSubmit={form.handleSubmit(onSubmit)} className="space-y-4">
         <FormField
           control={form.control}
           name="email"
@@ -119,7 +217,7 @@ export function LoginWithPassword({
             <FormItem>
               <FormLabel>{t("login.email")}</FormLabel>
               <FormControl>
-                <Input type="email" {...field} />
+                <Input data-testid="login-email-input" type="email" {...field} />
               </FormControl>
               <FormMessage />
             </FormItem>
@@ -147,7 +245,7 @@ export function LoginWithPassword({
                 </a>
               </FormLabel>
               <FormControl>
-                <Input type="password" {...field} />
+                <Input data-testid="login-password-input" type="password" {...field} />
               </FormControl>
               <FormMessage />
             </FormItem>
@@ -155,6 +253,7 @@ export function LoginWithPassword({
         />
         <div className="flex flex-col space-y-3">
           <Button
+            data-testid="login-submit"
             type="submit"
             isLoading={form.formState.isSubmitting}
             disabled={!form.formState.isValid}
@@ -172,6 +271,7 @@ export function LoginWithPassword({
       <div className="flex items-center justify-center gap-1 pb-2 text-center text-sm">
         If you don't have an account,{" "}
         <button
+          data-testid="login-switch-register"
           type="button"
           className="flex cursor-pointer items-center gap-1 text-accent hover:underline"
           onClick={() => onLoginStateChange("register")}
@@ -241,27 +341,54 @@ export function RegisterForm({
       return
     }
 
-    return signUp.email({
-      email: values.email,
-      password: values.password,
-      name: values.email.split("@")[0]!,
-      callbackURL: "/",
-      fetchOptions: {
-        onSuccess() {
-          handleSessionChanges()
-        },
-        onError(context) {
-          toast.error(context.error.message)
-        },
-        headers,
-      },
-    })
+    const result = IN_ELECTRON
+      ? normalizeElectronAuthResult(
+          await getElectronAuthService()?.signUpWithCredential?.({
+            email: values.email,
+            password: values.password,
+            name: values.email.split("@")[0]!,
+            callbackURL: "/",
+            headers,
+          }),
+        )
+      : await signUp.email({
+          email: values.email,
+          password: values.password,
+          name: values.email.split("@")[0]!,
+          callbackURL: "/",
+          fetchOptions: {
+            onError(context) {
+              toast.error(context.error.message)
+            },
+            headers,
+          },
+        })
+
+    if (result?.error) {
+      return result
+    }
+
+    if (IN_ELECTRON) {
+      const token = getAuthTokenFromResult(result)
+      if (token) {
+        setAuthSessionToken(token)
+        void setElectronSessionToken(token)
+      }
+    }
+
+    handleSessionChanges()
+
+    return result
   }
 
   return (
     <div className="relative">
       <Form {...form}>
-        <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-4">
+        <form
+          data-testid="register-form"
+          onSubmit={form.handleSubmit(onSubmit)}
+          className="space-y-4"
+        >
           <FormField
             control={form.control}
             name="email"
@@ -269,7 +396,7 @@ export function RegisterForm({
               <FormItem>
                 <FormLabel>{t("register.email")}</FormLabel>
                 <FormControl>
-                  <Input type="email" {...field} />
+                  <Input data-testid="register-email-input" type="email" {...field} />
                 </FormControl>
                 <FormMessage />
               </FormItem>
@@ -286,7 +413,7 @@ export function RegisterForm({
                     : `${t("register.password")} (${t("register.password_optional")})`}
                 </FormLabel>
                 <FormControl>
-                  <Input type="password" {...field} />
+                  <Input data-testid="register-password-input" type="password" {...field} />
                 </FormControl>
                 <FormMessage />
               </FormItem>
@@ -303,13 +430,14 @@ export function RegisterForm({
                     : `${t("register.confirm_password")} (${t("register.password_optional")})`}
                 </FormLabel>
                 <FormControl>
-                  <Input type="password" {...field} />
+                  <Input data-testid="register-confirm-password-input" type="password" {...field} />
                 </FormControl>
                 <FormMessage />
               </FormItem>
             )}
           />
           <Button
+            data-testid="register-submit"
             type="submit"
             buttonClassName="w-full"
             size="lg"
@@ -327,6 +455,7 @@ export function RegisterForm({
       <div className="flex items-center justify-center gap-1 pb-2 text-center text-sm">
         If you already have an account,{" "}
         <button
+          data-testid="register-switch-login"
           type="button"
           className="flex cursor-pointer items-center gap-1 text-accent hover:underline"
           onClick={() => onLoginStateChange("login")}

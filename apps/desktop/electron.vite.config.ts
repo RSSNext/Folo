@@ -18,6 +18,7 @@ export default defineConfig({
         "@pkg": resolve("./package.json"),
         "@locales": resolve("../../locales"),
         "~": resolve("./layer/main/src"),
+        "utf-8-validate": resolve("./layer/main/src/shims/utf-8-validate.cjs"),
       },
     },
     define: {

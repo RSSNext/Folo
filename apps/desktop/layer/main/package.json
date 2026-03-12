@@ -11,9 +11,11 @@
   },
   "exports": {
     ".": {
-      "import": "./export.js"
+      "types": "./dist/export.d.ts",
+      "import": "./dist/export.js"
     }
   },
+  "types": "./dist/export.d.ts",
   "scripts": {
     "build": "tsc",
     "test": "vitest",

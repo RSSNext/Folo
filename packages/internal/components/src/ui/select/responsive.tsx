@@ -22,6 +22,8 @@ export interface ResponsiveSelectProps {
   disabled?: boolean
   triggerClassName?: string
   contentClassName?: string
+  triggerTestId?: string
+  nativeSelectTestId?: string
 }
 export const ResponsiveSelect = ({
   defaultValue,
@@ -35,6 +37,8 @@ export const ResponsiveSelect = ({
   triggerClassName,
   contentClassName,
   placeholder,
+  triggerTestId,
+  nativeSelectTestId,
 }: ResponsiveSelectProps) => {
   const [valueInner] = useControlled(value, defaultValue ?? "", onValueChange)
 
@@ -57,6 +61,7 @@ export const ResponsiveSelect = ({
     return (
       <button
         type="button"
+        data-testid={triggerTestId}
         onClick={() => realSelectRef?.click()}
         className={cn(
           "placeholder:text-text-secondary flex w-full items-center justify-between whitespace-nowrap rounded-md bg-transparent disabled:cursor-not-allowed disabled:opacity-50 [&>span]:line-clamp-1",
@@ -77,6 +82,7 @@ export const ResponsiveSelect = ({
         <i className="i-mingcute-down-line ml-2 size-4 shrink-0 opacity-50" />
         <select
           ref={setRealSelectRef}
+          data-testid={nativeSelectTestId}
           className="absolute inset-0 opacity-0"
           value={valueInner}
           onChange={(e) => onValueChange?.(e.target.value)}
@@ -98,7 +104,7 @@ export const ResponsiveSelect = ({
       value={valueInner}
       onValueChange={onValueChange}
     >
-      <SelectTrigger size={size} className={triggerClassName}>
+      <SelectTrigger size={size} className={triggerClassName} data-testid={triggerTestId}>
         <SelectValue />
       </SelectTrigger>
       <SelectContent className={contentClassName} position="item-aligned">

@@ -13,7 +13,20 @@ import { useTranslation } from "react-i18next"
 
 import type { PaymentFeature, PaymentPlan } from "~/atoms/server-configs"
 import { useIsPaymentEnabled, useServerConfigs } from "~/atoms/server-configs"
+import { followClient } from "~/lib/api-client"
 import { subscription } from "~/lib/auth"
+
+const APPLE_SUBSCRIPTION_MANAGEMENT_URL = "https://apps.apple.com/account/subscriptions"
+
+type ActiveSubscription = {
+  source: "stripe" | "apple" | null
+  plan: string | null
+  status: string | null
+  productId: string | null
+  periodEnd: string | null
+  trialEnd: string | null
+  canManage: boolean
+}
 
 const AI_MODEL_SELECTION_VALUE_LABELS = {
   none: {
@@ -94,25 +107,12 @@ const useUpgradePlan = ({ plan, annual }: { plan: string | undefined; annual: bo
 const useActiveSubscription = () => {
   const userId = useWhoami()?.id
   return useQuery({
-    queryKey: ["activeSubscription"],
+    queryKey: ["billingSubscription"],
     queryFn: async () => {
-      const { data } = await subscription.list()
-      // Find subscription: active, trialing, or canceled with valid period end
-      return data?.find((sub) => {
-        if (!sub.stripeSubscriptionId) return false
-
-        // Active or trialing subscriptions
-        if (sub.status === "active" || sub.status === "trialing") {
-          return true
-        }
-
-        // Canceled subscriptions that haven't expired yet
-        if (sub.status === "canceled" && sub.periodEnd) {
-          return new Date(sub.periodEnd) > new Date()
-        }
-
-        return false
-      })
+      const response = await followClient.request<{ code: number; data: ActiveSubscription }>(
+        "/billing/subscription",
+      )
+      return response.data
     },
     enabled: !!userId,
   })
@@ -396,11 +396,13 @@ const PlanAction = ({
   const { t } = useTranslation("settings")
   const { data: activeSubscription } = useActiveSubscription()
   const billingPortalMutation = useBillingPortal()
-  const canManageSubscription = !!activeSubscription?.stripeSubscriptionId
+  const canManageSubscription = !!activeSubscription?.canManage
+  const isAppleSubscription = activeSubscription?.source === "apple"
 
   // Determine subscription status info
   const isCanceled = activeSubscription?.status === "canceled"
-  const periodEnd = activeSubscription?.periodEnd ? new Date(activeSubscription.periodEnd) : null
+  const periodEnd = activeSubscription?.trialEnd ?? activeSubscription?.periodEnd
+  const effectivePeriodEnd = periodEnd ? new Date(periodEnd) : null
 
   const getButtonConfig = () => {
     switch (actionType) {
@@ -486,7 +488,7 @@ const PlanAction = ({
           <span>
             {isCanceled
               ? t("plan.canceled_expires", {
-                  date: periodEnd?.toLocaleDateString(undefined, {
+                  date: effectivePeriodEnd?.toLocaleDateString(undefined, {
                     year: "numeric",
                     month: "short",
                     day: "numeric",
@@ -494,14 +496,14 @@ const PlanAction = ({
                 })
               : activeSubscription?.status === "trialing"
                 ? t("plan.trial_ends", {
-                    date: periodEnd?.toLocaleDateString(undefined, {
+                    date: effectivePeriodEnd?.toLocaleDateString(undefined, {
                       year: "numeric",
                       month: "short",
                       day: "numeric",
                     }),
                   })
                 : t("plan.renews", {
-                    date: periodEnd?.toLocaleDateString(undefined, {
+                    date: effectivePeriodEnd?.toLocaleDateString(undefined, {
                       year: "numeric",
                       month: "short",
                       day: "numeric",
@@ -519,7 +521,14 @@ const PlanAction = ({
         disabled={buttonConfig.disabled}
         onClick={
           actionType === "current" && canManageSubscription
-            ? () => billingPortalMutation.mutate()
+            ? () => {
+                if (isAppleSubscription) {
+                  window.open(APPLE_SUBSCRIPTION_MANAGEMENT_URL, "_blank")
+                  return
+                }
+
+                billingPortalMutation.mutate()
+              }
             : onSelect
         }
         isLoading={isLoading || billingPortalMutation.isPending}

@@ -37,6 +37,12 @@ export const SubscriptionItem = memo(
       enabled: !subscription && !feed,
     })
     const navigation = useNavigation()
+    const feedTestID = feed?.url
+      ? `subscription-feed-url-${feed.url
+          .replaceAll(/[^a-z0-9]+/gi, "-")
+          .replaceAll(/^-+|-+$/g, "")
+          .toLowerCase()}`
+      : `subscription-feed-${id}`
     if (isLoading) {
       return (
         <View className="mt-24 flex-1 flex-row items-start justify-center">
@@ -65,6 +71,7 @@ export const SubscriptionItem = memo(
                 inGrouped ? "pl-8 pr-4" : "px-4",
                 className,
               )}
+              testID={feedTestID}
               onPress={() => {
                 selectFeed({
                   type: "feed",

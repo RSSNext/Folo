@@ -28,6 +28,25 @@
         "PROFILE": "preview"
       }
     },
+    "e2e-android": {
+      "extends": "preview",
+      "env": {
+        "PROFILE": "e2e-android",
+        "EXPO_PUBLIC_E2E_ENV_PROFILE": "prod",
+        "EXPO_PUBLIC_E2E_LANGUAGE": "en"
+      }
+    },
+    "e2e-ios-simulator": {
+      "extends": "preview",
+      "ios": {
+        "simulator": true
+      },
+      "env": {
+        "PROFILE": "e2e-ios-simulator",
+        "EXPO_PUBLIC_E2E_ENV_PROFILE": "prod",
+        "EXPO_PUBLIC_E2E_LANGUAGE": "en"
+      }
+    },
     "production": {
       "autoIncrement": true,
       "channel": "production",

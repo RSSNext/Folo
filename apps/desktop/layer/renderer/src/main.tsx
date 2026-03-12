@@ -11,6 +11,8 @@ import ReactDOM from "react-dom/client"
 import { RouterProvider } from "react-router/dom"
 
 import { authClient } from "~/lib/auth"
+import { ipcServices } from "~/lib/client"
+import { getAuthSessionToken } from "~/lib/client-session"
 
 import { setAppIsReady } from "./atoms/app"
 import { ElECTRON_CUSTOM_TITLEBAR_HEIGHT } from "./constants"
@@ -22,7 +24,35 @@ import { router } from "./router"
 
 authClientContext.provide(authClient)
 queryClientContext.provide(queryClient)
-apiContext.provide(followApi)
+
+const providedApi = IN_ELECTRON
+  ? {
+      ...followApi,
+      auth: {
+        ...followApi.auth,
+        getSession: async (...args: Parameters<typeof followApi.auth.getSession>) => {
+          const authService = ipcServices?.auth as
+            | (typeof followApi.auth & {
+                getSession?: () => ReturnType<typeof followApi.auth.getSession>
+                getSessionByToken?: (token: string) => ReturnType<typeof followApi.auth.getSession>
+              })
+            | undefined
+          const authSessionToken = getAuthSessionToken()
+          const session = authSessionToken
+            ? await authService?.getSessionByToken?.(authSessionToken)
+            : await authService?.getSession?.()
+
+          if (session) {
+            return session
+          }
+
+          return followApi.auth.getSession(...args)
+        },
+      },
+    }
+  : followApi
+
+apiContext.provide(providedApi)
 
 initializeApp().finally(() => {
   import("./push-notification").then(({ registerWebPushNotifications }) => {

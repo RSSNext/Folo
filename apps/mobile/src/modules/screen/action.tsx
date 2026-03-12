@@ -42,7 +42,7 @@ export function HomeLeftAction() {
 
   return (
     <ActionGroup className="ml-2">
-      <Pressable onPress={handlePress}>
+      <Pressable testID="home-avatar-trigger" onPress={handlePress}>
         <UserAvatar
           image={user?.image}
           name={user?.name}

@@ -347,6 +347,7 @@ const FeedInnerForm = ({
       <Form {...form}>
         <form
           id="feed-form"
+          data-testid="feed-form"
           onSubmit={form.handleSubmit(onSubmit)}
           className="flex flex-1 flex-col gap-y-4 px-1"
         >
@@ -361,7 +362,11 @@ const FeedInnerForm = ({
                 </div>
                 <FormControl>
                   <div className="flex gap-2">
-                    <Input placeholder={feed.title || undefined} {...field} />
+                    <Input
+                      data-testid="feed-form-title-input"
+                      placeholder={feed.title || undefined}
+                      {...field}
+                    />
                     <Button
                       buttonClassName="shrink-0"
                       type="button"
@@ -480,6 +485,7 @@ const FeedInnerForm = ({
           {isSubscribed && (
             <Button
               disabled={!isLoggedIn}
+              data-testid="feed-form-cancel"
               type="button"
               variant="ghost"
               onClick={() => {
@@ -491,6 +497,7 @@ const FeedInnerForm = ({
           )}
           <Button
             disabled={!isLoggedIn}
+            data-testid="feed-form-submit"
             form="feed-form"
             type="submit"
             isLoading={followMutation.isPending}

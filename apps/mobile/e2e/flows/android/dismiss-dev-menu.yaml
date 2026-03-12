@@ -1,0 +1,16 @@
+appId: is.follow
+---
+- runFlow:
+    when:
+      visible: Continue
+    commands:
+      - tapOn:
+          text: Continue
+      - waitForAnimationToEnd
+- runFlow:
+    when:
+      visible: Reload
+    commands:
+      - tapOn:
+          point: "92%,7%"
+      - waitForAnimationToEnd

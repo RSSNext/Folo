@@ -1,20 +1,25 @@
 import common_en from "@locales/common/en.json"
+import common_frFR from "@locales/common/fr-FR.json"
 import common_ja from "@locales/common/ja.json"
 import common_zhCN from "@locales/common/zh-CN.json"
 import common_zhTW from "@locales/common/zh-TW.json"
 import errors_en from "@locales/errors/en.json"
+import errors_frFR from "@locales/errors/fr-FR.json"
 import errors_ja from "@locales/errors/ja.json"
 import errors_zhCN from "@locales/errors/zh-CN.json"
 import errors_zhTW from "@locales/errors/zh-TW.json"
 import lang_en from "@locales/lang/en.json"
+import lang_frFR from "@locales/lang/fr-FR.json"
 import lang_ja from "@locales/lang/ja.json"
 import lang_zhCN from "@locales/lang/zh-CN.json"
 import lang_zhTW from "@locales/lang/zh-TW.json"
 import en from "@locales/mobile/default/en.json"
+import frFR from "@locales/mobile/default/fr-FR.json"
 import ja from "@locales/mobile/default/ja.json"
 import zhCN from "@locales/mobile/default/zh-CN.json"
 import zhTW from "@locales/mobile/default/zh-TW.json"
 import settings_en from "@locales/settings/en.json"
+import settings_frFR from "@locales/settings/fr-FR.json"
 import settings_ja from "@locales/settings/ja.json"
 import settings_zhCN from "@locales/settings/zh-CN.json"
 import settings_zhTW from "@locales/settings/zh-TW.json"
@@ -23,6 +28,13 @@ import type { MobileSupportedLanguages, ns } from "./constants"
 
 // @keep-sorted
 export const defaultResources = {
+  "fr-FR": {
+    common: common_frFR,
+    default: frFR,
+    errors: errors_frFR,
+    lang: lang_frFR,
+    settings: settings_frFR,
+  },
   // @keep-sorted
   "zh-CN": {
     common: common_zhCN,

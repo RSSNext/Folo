@@ -1,8 +1,9 @@
+import { userSyncService } from "@follow/store/user/store"
 import { tracker } from "@follow/tracker"
 import { zodResolver } from "@hookform/resolvers/zod"
 import { useMutation } from "@tanstack/react-query"
 import i18next from "i18next"
-import { useCallback, useRef } from "react"
+import { useCallback, useState } from "react"
 import type { Control } from "react-hook-form"
 import { useController, useForm } from "react-hook-form"
 import { useTranslation } from "react-i18next"
@@ -14,7 +15,7 @@ import { z } from "zod"
 import { SubmitButton } from "@/src/components/common/SubmitButton"
 import { PlainTextField } from "@/src/components/ui/form/TextField"
 import { Text } from "@/src/components/ui/typography/Text"
-import { signIn, signUp } from "@/src/lib/auth"
+import { getCookie, signIn, signUp } from "@/src/lib/auth"
 import { useNavigation } from "@/src/lib/navigation/hooks"
 import { Navigation } from "@/src/lib/navigation/Navigation"
 import { toast } from "@/src/lib/toast"
@@ -28,15 +29,27 @@ const formSchema = z.object({
   password: z.string().min(8).max(128),
 })
 type FormValue = z.infer<typeof formSchema>
+
 async function onSubmit(values: FormValue) {
+  return signInWithEmail(values)
+}
+
+async function signInWithEmail(
+  values: FormValue,
+  options: {
+    trackLogin?: boolean
+  } = {},
+) {
+  const { trackLogin = true } = options
   const result = formSchema.safeParse(values)
   if (!result.success) {
     const issue = result.error.issues[0]
     Alert.alert(i18next.t("login.invalid_email_or_password"), issue?.message)
-    return
+    return false
   }
-  await signIn
-    .email(
+
+  try {
+    const res = await signIn.email(
       {
         email: result.data.email,
         password: result.data.password,
@@ -45,50 +58,62 @@ async function onSubmit(values: FormValue) {
         headers: await getTokenHeaders(),
       },
     )
-    .then((res) => {
-      if (res.error) {
-        throw new Error(res.error.message)
-      }
-      // @ts-expect-error
-      if (res.data.twoFactorRedirect) {
-        Navigation.rootNavigation.presentControllerView(TwoFactorAuthScreen)
-      }
+
+    if (res.error) {
+      throw new Error(res.error.message)
+    }
+
+    // @ts-expect-error better-auth response type omits twoFactorRedirect
+    if (res.data?.twoFactorRedirect) {
+      Navigation.rootNavigation.presentControllerView(TwoFactorAuthScreen)
+      return false
+    }
+  } catch (error) {
+    Alert.alert(error instanceof Error ? error.message : "Unable to sign in")
+    return false
+  }
+
+  await userSyncService.whoami()
+
+  if (trackLogin) {
+    tracker.userLogin({
+      type: "email",
     })
-    .catch((error) => {
-      Alert.alert(error.message)
-    })
-  tracker.userLogin({
-    type: "email",
-  })
+  }
+  return true
 }
+
 export function EmailLogin() {
   const { t } = useTranslation()
-  const emailValueRef = useRef("")
-  const passwordValueRef = useRef("")
+  const [emailValue, setEmailValue] = useState("")
+  const [passwordValue, setPasswordValue] = useState("")
   const submitMutation = useMutation({
     mutationFn: onSubmit,
   })
   const onLogin = useCallback(() => {
     submitMutation.mutate({
-      email: emailValueRef.current,
-      password: passwordValueRef.current,
+      email: emailValue,
+      password: passwordValue,
     })
-  }, [submitMutation])
+  }, [emailValue, passwordValue, submitMutation])
   const navigation = useNavigation()
+
   return (
     <View className="mx-auto flex w-full max-w-sm">
       <View className="gap-4 rounded-2xl bg-secondary-system-background px-6 py-4">
         <View className="flex-row">
           <PlainTextField
-            onChangeText={(text) => {
-              emailValueRef.current = text
-            }}
+            testID="login-email-input"
+            value={emailValue}
+            onChangeText={setEmailValue}
             selectionColor={accentColor}
             hitSlop={20}
             autoCapitalize="none"
             autoCorrect={false}
             keyboardType="email-address"
             autoComplete="email"
+            textContentType="emailAddress"
+            importantForAutofill="auto"
             placeholder={t("login.email")}
             className="flex-1 text-text"
             returnKeyType="next"
@@ -100,14 +125,16 @@ export function EmailLogin() {
         <View className="border-b-hairline border-b-opaque-separator" />
         <View className="flex-row">
           <PlainTextField
-            onChangeText={(text) => {
-              passwordValueRef.current = text
-            }}
+            testID="login-password-input"
+            value={passwordValue}
+            onChangeText={setPasswordValue}
             selectionColor={accentColor}
             hitSlop={20}
             autoCapitalize="none"
             autoCorrect={false}
             autoComplete="current-password"
+            textContentType="password"
+            importantForAutofill="auto"
             placeholder={t("login.password")}
             className="flex-1 text-text"
             secureTextEntry
@@ -125,6 +152,7 @@ export function EmailLogin() {
       </Pressable>
       <SubmitButton
         isLoading={submitMutation.isPending}
+        testID="login-submit"
         onPress={onLogin}
         title={t("login.submit")}
       />
@@ -168,8 +196,10 @@ function SignupInput({
 }
 export function EmailSignUp() {
   const { t } = useTranslation()
-  const { control, handleSubmit, formState } = useForm<SignupFormValue>({
+  const { control, handleSubmit } = useForm<SignupFormValue>({
     resolver: zodResolver(signupFormSchema),
+    mode: "onChange",
+    reValidateMode: "onChange",
     defaultValues: {
       email: "",
       password: "",
@@ -178,43 +208,62 @@ export function EmailSignUp() {
   })
   const submitMutation = useMutation({
     mutationFn: async (values: SignupFormValue) => {
-      await signUp
-        .email(
+      const res = await signUp.email(
+        {
+          email: values.email,
+          password: values.password,
+          name: values.email.split("@")[0] ?? "",
+        },
+        {
+          headers: await getTokenHeaders(),
+        },
+      )
+
+      if (res.error?.message) {
+        toast.error(res.error.message)
+        return
+      }
+
+      if (!getCookie()) {
+        const signedIn = await signInWithEmail(
           {
             email: values.email,
             password: values.password,
-            name: values.email.split("@")[0] ?? "",
           },
           {
-            headers: await getTokenHeaders(),
+            trackLogin: false,
           },
         )
-        .then((res) => {
-          if (res.error?.message) {
-            toast.error(res.error.message)
-          } else {
-            toast.success(i18next.t("login.sign_up_successful"))
-            tracker.register({
-              type: "email",
-            })
-            Navigation.rootNavigation.back()
-          }
-        })
+
+        if (!signedIn) {
+          return
+        }
+      }
+
+      toast.success(i18next.t("login.sign_up_successful"))
+      tracker.register({
+        type: "email",
+      })
+      Navigation.rootNavigation.back()
     },
   })
   const signup = handleSubmit((values) => {
     submitMutation.mutate(values)
   })
+
   return (
     <View className="mx-auto flex w-full max-w-sm">
       <View className="gap-4 rounded-2xl bg-secondary-system-background px-6 py-4">
         <View className="flex-row">
           <SignupInput
+            testID="register-email-input"
             hitSlop={20}
             autoCapitalize="none"
             autoCorrect={false}
             keyboardType="email-address"
             autoComplete="email"
+            textContentType="emailAddress"
+            importantForAutofill="auto"
             control={control}
             name="email"
             placeholder={t("login.email")}
@@ -228,10 +277,13 @@ export function EmailSignUp() {
         <View className="border-b-hairline border-b-opaque-separator" />
         <View className="flex-row">
           <SignupInput
+            testID="register-password-input"
             hitSlop={20}
             autoCapitalize="none"
             autoCorrect={false}
             autoComplete="password-new"
+            textContentType="newPassword"
+            importantForAutofill="auto"
             control={control}
             name="password"
             placeholder={t("login.password")}
@@ -243,10 +295,13 @@ export function EmailSignUp() {
         <View className="border-b-hairline border-b-opaque-separator" />
         <View className="flex-row">
           <SignupInput
+            testID="register-confirm-password-input"
             hitSlop={20}
             autoCapitalize="none"
             autoCorrect={false}
             autoComplete="password-new"
+            textContentType="newPassword"
+            importantForAutofill="auto"
             control={control}
             name="confirmPassword"
             placeholder={t("login.confirm_password.label")}
@@ -260,8 +315,9 @@ export function EmailSignUp() {
         </View>
       </View>
       <SubmitButton
-        disabled={submitMutation.isPending || !formState.isValid}
+        disabled={submitMutation.isPending}
         isLoading={submitMutation.isPending}
+        testID="register-submit"
         onPress={signup}
         title={t("login.submit")}
         className="mt-8"

@@ -5,7 +5,7 @@ import type { env as EnvType } from "@follow/shared/env.desktop"
 import legacy from "@vitejs/plugin-legacy"
 import { minify as htmlMinify } from "html-minifier-terser"
 import { cyan, dim, green } from "kolorist"
-import { parseHTML } from "linkedom"
+import { parseHTML } from "linkedom/worker"
 import { join, resolve } from "pathe"
 import type { PluginOption, ResolvedConfig, ViteDevServer } from "vite"
 import { defineConfig, loadEnv } from "vite"
@@ -32,11 +32,11 @@ const devPrint = (): PluginOption => ({
     server.printUrls = () => {
       _printUrls()
       console.info(
-        `  ${green("➜")}  ${dim("Production debug")}: ${cyan("https://app.folo.is/__debug_proxy")}`,
+        `  ${green("➜")}  ${dim("Production debug")}: ${cyan("https://app.folo.is/__debug_proxy.html")}`,
       )
       console.info(
         `  ${green("➜")}  ${dim("Development debug")}: ${cyan(
-          "https://dev.folo.is/__debug_proxy",
+          "https://dev.folo.is/__debug_proxy.html",
         )}`,
       )
     }
@@ -111,6 +111,12 @@ export default ({ mode }) => {
         ignored: ["**/dist/**", "**/out/**", "**/public/**", ".git/**"],
       },
       cors: true,
+      headers: {
+        "Access-Control-Allow-Origin": "*",
+        "Access-Control-Allow-Methods": "*",
+        "Access-Control-Allow-Headers": "*",
+        "Access-Control-Allow-Private-Network": "true",
+      },
       proxy: {
         "/login": proxyConfig,
         "/forget-password": proxyConfig,
@@ -328,11 +334,15 @@ const htmlPlugin: (env: any) => PluginOption = (env) => {
       if (existsSync(debugProxyHtml)) {
         const content = readFileSync(debugProxyHtml, "utf-8")
 
-        mkdirSync(dist, { recursive: true })
-        writeFileSync(
-          join(dist, "__debug_proxy.html"),
-          content.replace("import.meta.env.VITE_API_URL", `"${env.VITE_API_URL}"`),
+        const debugProxyContent = content.replace(
+          "import.meta.env.VITE_API_URL",
+          `"${env.VITE_API_URL}"`,
         )
+
+        mkdirSync(dist, { recursive: true })
+        mkdirSync(join(dist, "__debug_proxy"), { recursive: true })
+        writeFileSync(join(dist, "__debug_proxy.html"), debugProxyContent)
+        writeFileSync(join(dist, "__debug_proxy", "index.html"), debugProxyContent)
       }
     },
     transformIndexHtml(html) {

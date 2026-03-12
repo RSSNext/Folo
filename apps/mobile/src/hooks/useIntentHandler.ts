@@ -5,53 +5,64 @@ import { useEffect } from "react"
 import { useNavigation } from "../lib/navigation/hooks"
 import { FollowScreen } from "../screens/(modal)/FollowScreen"
 
-// This needs to stay outside of react to persist between account switches
 let previousIntentUrl = ""
 export const resetIntentUrl = () => {
   previousIntentUrl = ""
 }
 
-export function useIntentHandler() {
-  const incomingUrl = Linking.useURL()
+type DeepLinkParams =
+  | { id: string | null; type: string | null; url?: string | null; view?: string | null }
+  | "refresh"
+  | null
 
+const handleIncomingUrl = (
+  incomingUrl: string | null,
+  navigation: ReturnType<typeof useNavigation>,
+) => {
+  if (!incomingUrl || incomingUrl === previousIntentUrl) {
+    return
+  }
+
+  previousIntentUrl = incomingUrl
+
+  const searchParams = extractParamsFromDeepLink(incomingUrl)
+  if (!searchParams) {
+    console.warn("No valid params found in deep link:", incomingUrl)
+    return
+  }
+
+  if (searchParams === "refresh") {
+    invalidateUserSession()
+    return
+  }
+
+  navigation.presentControllerView(FollowScreen, {
+    id: searchParams.id ?? undefined,
+    type: (searchParams.type as "url" | "feed" | "list") ?? undefined,
+    url: searchParams.url ?? undefined,
+    view: searchParams.view ?? undefined,
+  })
+}
+
+export function useIntentHandler() {
   const navigation = useNavigation()
 
   useEffect(() => {
-    if (incomingUrl && incomingUrl !== previousIntentUrl) {
-      previousIntentUrl = incomingUrl
+    void Linking.getInitialURL().then((url) => {
+      handleIncomingUrl(url, navigation)
+    })
 
-      const searchParams = extractParamsFromDeepLink(incomingUrl)
-      if (!searchParams) {
-        console.warn("No valid params found in deep link:", incomingUrl)
-        return
-      }
+    const subscription = Linking.addEventListener("url", ({ url }) => {
+      handleIncomingUrl(url, navigation)
+    })
 
-      if (searchParams === "refresh") {
-        invalidateUserSession()
-        return
-      } else {
-        navigation.presentControllerView(FollowScreen, {
-          id: searchParams.id ?? undefined,
-          type: (searchParams.type as "url" | "feed" | "list") ?? undefined,
-          url: searchParams.url ?? undefined,
-          view: searchParams.view ?? undefined,
-        })
-      }
+    return () => {
+      subscription.remove()
     }
-  }, [incomingUrl, navigation])
+  }, [navigation])
 }
 
-// follow://add?id=41147805276726272
-// follow://add?type=list&id=60580187699502080
-// follow://add?type=url&url=rsshub://rsshub/routes/en
-// follow://list?id=60580187699502080
-// follow://feed?id=60580187699502080&view=1
-const extractParamsFromDeepLink = (
-  incomingUrl: string | null,
-):
-  | { id: string | null; type: string | null; url?: string | null; view?: string | null }
-  | "refresh"
-  | null => {
+const extractParamsFromDeepLink = (incomingUrl: string | null): DeepLinkParams => {
   if (!incomingUrl) return null
 
   try {

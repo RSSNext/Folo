@@ -1,7 +1,7 @@
 import { Readability } from "@mozilla/readability"
 import chardet from "chardet"
 import DOMPurify from "dompurify"
-import { parseHTML } from "linkedom"
+import { parseHTML } from "linkedom/worker"
 
 const isDev = process.env.NODE_ENV === "development"
 

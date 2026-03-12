@@ -1,0 +1,38 @@
+appId: is.follow
+---
+- runFlow: open-auth.yaml
+- tapOn:
+    id: login-provider-credential
+- extendedWaitUntil:
+    visible:
+      id: register-email-input
+    timeout: 15000
+- tapOn:
+    id: register-email-input
+- inputText: ${E2E_EMAIL}
+- tapOn:
+    id: register-password-input
+- eraseText
+- inputText: ${E2E_PASSWORD}
+- tapOn:
+    id: register-confirm-password-input
+- eraseText
+- inputText: ${E2E_PASSWORD}
+- pressKey: Enter
+- runFlow:
+    when:
+      visible:
+        id: onboarding-next
+    commands:
+      - tapOn:
+          id: onboarding-next
+      - tapOn:
+          id: onboarding-next
+      - tapOn:
+          id: onboarding-next
+      - tapOn:
+          id: onboarding-next
+- extendedWaitUntil:
+    visible:
+      id: timeline-view-articles
+    timeout: 30000

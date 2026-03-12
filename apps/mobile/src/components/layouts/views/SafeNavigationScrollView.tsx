@@ -20,7 +20,7 @@ import { ReAnimatedScrollView } from "../../common/AnimatedComponents"
 import type { InternalNavigationHeaderProps } from "../header/NavigationHeader"
 import { InternalNavigationHeader } from "../header/NavigationHeader"
 import { BottomTabBarBackgroundContext } from "../tabbar/contexts/BottomTabBarBackgroundContext"
-import { getDefaultHeaderHeight } from "../utils"
+import { getNavigationHeaderLayout } from "../utils"
 import {
   NavigationHeaderHeightContext,
   SetNavigationHeaderHeightContext,
@@ -64,12 +64,13 @@ export const SafeNavigationScrollView = ({
 
   const frame = useSafeAreaFrame()
   const sheetModal = useScreenIsInSheetModal()
-  const [headerHeight, setHeaderHeight] = useState(() =>
-    getDefaultHeaderHeight({
-      landscape: frame.width > frame.height,
-      modalPresentation: sheetModal,
-      topInset: insets.top,
-    }),
+  const [headerHeight, setHeaderHeight] = useState(
+    () =>
+      getNavigationHeaderLayout({
+        landscape: frame.width > frame.height,
+        sheetModal,
+        topInset: insets.top,
+      }).headerHeight,
   )
   const screenCtxValue = use(ScreenItemContext)
 

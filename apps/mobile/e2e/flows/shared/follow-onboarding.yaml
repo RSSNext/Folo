@@ -1,0 +1,27 @@
+appId: is.follow
+---
+- tapOn:
+    id: tab-DiscoverTabScreen
+- tapOn:
+    id: discover-search-input
+- inputText: folo://onboarding
+- pressKey: Enter
+- extendedWaitUntil:
+    visible: Welcome to Folo
+    timeout: 20000
+- tapOn:
+    id: discover-feed-follow-action
+- extendedWaitUntil:
+    visible:
+      id: follow-submit
+    timeout: 20000
+- tapOn:
+    id: follow-submit
+- tapOn:
+    id: tab-SubscriptionsTabScreen
+- extendedWaitUntil:
+    visible: Welcome to Folo
+    timeout: 20000
+- assertVisible: Welcome to Folo
+- assertVisible:
+    id: tab-IndexTabScreen

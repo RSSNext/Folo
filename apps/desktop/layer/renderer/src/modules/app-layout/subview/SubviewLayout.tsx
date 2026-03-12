@@ -8,7 +8,6 @@ import { ELECTRON_BUILD } from "@follow/shared/constants"
 import { springScrollTo } from "@follow/utils/scroller"
 import { clsx, cn, getOS } from "@follow/utils/utils"
 import { m } from "framer-motion"
-import { LinearBlur } from "progressive-blur"
 import { isValidElement, useCallback, useEffect, useRef, useState } from "react"
 import { useHotkeys } from "react-hotkeys-hook"
 import { useTranslation } from "react-i18next"
@@ -171,6 +170,7 @@ function SubviewLayoutInner() {
           <LinearBlur className="absolute inset-0 z-[-1]" tint="var(--fo-background)" side="top" />
           {/* Left: Back button (circular, glass) */}
           <GlassButton
+            testId="subview-back"
             description={t("words.back", { ns: "common" })}
             onClick={backHandler}
             className={cn(

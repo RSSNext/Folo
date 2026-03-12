@@ -14,6 +14,7 @@ export interface GlassButtonProps {
   description?: string
   onClick?: () => void
   className?: string
+  testId?: string
   children: ReactNode
   /**
    * Custom animation variants for hover and tap states
@@ -157,6 +158,7 @@ export const GlassButton: FC<GlassButtonProps> = ({
   description,
   onClick,
   className,
+  testId,
   children,
   hoverScale = 1.1,
   tapScale = 0.95,
@@ -168,6 +170,7 @@ export const GlassButton: FC<GlassButtonProps> = ({
     <Tooltip>
       <TooltipTrigger asChild>
         <m.button
+          data-testid={testId}
           type="button"
           onClick={(e) => {
             e.stopPropagation()

@@ -1,0 +1,13 @@
+appId: is.follow
+name: Android auth journey
+---
+- runFlow:
+    file: ./dismiss-dev-menu.yaml
+- runFlow:
+    file: ./register.yaml
+- runFlow:
+    file: ../shared/sign-out.yaml
+- runFlow:
+    file: ./dismiss-dev-menu.yaml
+- runFlow:
+    file: ./login.yaml

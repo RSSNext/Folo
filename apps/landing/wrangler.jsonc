@@ -1,0 +1,33 @@
+{
+  "$schema": "./node_modules/wrangler/config-schema.json",
+  "name": "landing-vinext",
+  "main": "./worker/index.js",
+  "compatibility_date": "2026-02-01",
+  "compatibility_flags": ["nodejs_compat"],
+  "account_id": "1f1d1678a2413a54c944b3081bab5c84",
+  "assets": {
+    "directory": "./dist/client",
+    "binding": "ASSETS",
+    "not_found_handling": "none",
+  },
+  "images": {
+    "binding": "IMAGES",
+  },
+  "routes": [
+    {
+      "pattern": "folo.is/*",
+      "zone_id": "115ea8e6a7865dbfc1cf4530d5f87f63",
+    },
+  ],
+  "env": {
+    "dev": {
+      "name": "landing-next-dev",
+      "routes": [
+        {
+          "pattern": "landing.dev.folo.is/*",
+          "zone_id": "115ea8e6a7865dbfc1cf4530d5f87f63",
+        },
+      ],
+    },
+  },
+}

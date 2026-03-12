@@ -1,4 +1,4 @@
-import { FeedViewType, isFreeRole } from "@follow/constants"
+import { FeedViewType, UserRole } from "@follow/constants"
 import { useEntry, useEntryReadHistory, usePrefetchEntryDetail } from "@follow/store/entry/hooks"
 import { entrySyncServices } from "@follow/store/entry/store"
 import { useFeedById } from "@follow/store/feed/hooks"
@@ -147,7 +147,10 @@ const EntryContentWebViewWithContext = ({ entryId }: { entryId: string }) => {
   const showTranslationOnce = useAtomValue(showAITranslationAtom)
   const actionLanguage = useActionLanguage()
   const userRole = useUserRole()
-  const translationPrefetchEnabled = translationSetting && !isFreeRole(userRole)
+  const showTranslation = translationSetting || showTranslationOnce
+  const translationPrefetchEnabled =
+    showTranslation &&
+    (userRole == null || (userRole !== UserRole.Free && userRole !== UserRole.Trial))
   const entry = useEntry(entryId, (state) => ({
     content: state.content,
     readabilityContent: state.readabilityContent,
@@ -187,7 +190,7 @@ const EntryContentWebViewWithContext = ({ entryId }: { entryId: string }) => {
     <EntryContentWebView
       entryId={entryId}
       showReadability={showReadabilityOnce}
-      showTranslation={translationSetting || showTranslationOnce}
+      showTranslation={showTranslation}
     />
   )
 }
@@ -196,9 +199,10 @@ const EntryInfo = ({ entryId }: { entryId: string }) => {
     publishedAt: state.publishedAt,
     feedId: state.feedId,
   }))
+  const isLoggedIn = useIsLoggedIn()
   const feed = useFeedById(entry?.feedId)
   const secondaryLabelColor = useColor("secondaryLabel")
-  const readCount = useEntryReadHistory(entryId)?.entryReadHistories?.readCount ?? 0
+  const readCount = useEntryReadHistory(entryId, 20, isLoggedIn)?.entryReadHistories?.readCount ?? 0
   const hideRecentReader = useUISettingKey("hideRecentReader")
   if (!entry) return null
   const { publishedAt } = entry
@@ -219,7 +223,7 @@ const EntryInfo = ({ entryId }: { entryId: string }) => {
           className="text-xs leading-tight text-secondary-label"
         />
       </View>
-      {!hideRecentReader && (
+      {isLoggedIn && !hideRecentReader && (
         <View className="flex flex-row items-center gap-1">
           <Eye2CuteReIcon width={16} height={16} color={secondaryLabelColor} />
           <Text className="text-xs leading-tight text-secondary-label">{readCount}</Text>

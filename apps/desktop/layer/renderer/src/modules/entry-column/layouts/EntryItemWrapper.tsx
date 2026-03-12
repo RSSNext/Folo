@@ -155,7 +155,12 @@ export const EntryItemWrapper: FC<
   const Link = view === FeedViewType.SocialMedia ? "article" : NavLink
   const isAll = view === FeedViewType.All
   return (
-    <div data-entry-id={entry?.id} style={style}>
+    <div
+      data-entry-id={entry?.id}
+      data-read={asRead ? "true" : "false"}
+      data-active={isActive ? "true" : "false"}
+      style={style}
+    >
       <Link
         to={navigationPath}
         className={cn(

@@ -1,0 +1,23 @@
+appId: is.follow
+---
+- tapOn:
+    id: tab-SubscriptionsTabScreen
+- runFlow:
+    when:
+      visible:
+        id: subscription-feed-url-folo-onboarding
+    commands:
+      - longPressOn:
+          id: subscription-feed-url-folo-onboarding
+      - extendedWaitUntil:
+          visible: Unfollow
+          timeout: 10000
+      - tapOn: Unfollow
+      - tapOn:
+          text: Unfollow
+      - extendedWaitUntil:
+          notVisible:
+            id: subscription-feed-url-folo-onboarding
+          timeout: 20000
+- assertVisible:
+    id: tab-IndexTabScreen

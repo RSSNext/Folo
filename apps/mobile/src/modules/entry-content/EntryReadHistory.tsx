@@ -1,4 +1,5 @@
 import { useEntryReadHistory } from "@follow/store/entry/hooks"
+import { useIsLoggedIn } from "@follow/store/user/hooks"
 import { View } from "react-native"
 
 import { UserAvatar } from "@/src/components/ui/avatar/UserAvatar"
@@ -7,9 +8,10 @@ import { useNavigation } from "@/src/lib/navigation/hooks"
 import { ProfileScreen } from "@/src/screens/(modal)/ProfileScreen"
 
 export const EntryReadHistory = ({ entryId }: { entryId: string }) => {
-  const data = useEntryReadHistory(entryId, 6)
+  const isLoggedIn = useIsLoggedIn()
+  const data = useEntryReadHistory(entryId, 6, isLoggedIn)
   const navigation = useNavigation()
-  if (!data?.entryReadHistories) return null
+  if (!isLoggedIn || !data?.entryReadHistories) return null
   return (
     <View className="flex-row items-center justify-center">
       {data?.entryReadHistories.userIds.map((userId, index) => {

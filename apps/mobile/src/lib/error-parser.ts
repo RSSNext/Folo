@@ -80,6 +80,12 @@ export const toastFetchError = (error: Error, { title: _title }: { title?: strin
         code = typeof _code === "number" ? _code : Number(_code)
       }
       message = typeof _message === "string" && _message.trim() ? _message : message
+      if (code != null) {
+        const tValue = t(`errors:${code}` as any)
+        if (tValue !== `${code}`) {
+          message = tValue
+        }
+      }
 
       if (typeof reason === "string" && reason.trim()) {
         _reason = reason
@@ -122,8 +128,8 @@ export const toastFetchError = (error: Error, { title: _title }: { title?: strin
 
   if (needUpgradeError) {
     showUpgradeRequiredDialog({
-      title: _title || message,
-      message: _reason || message,
+      title: message || t("settings:subscription.actions.upgrade"),
+      message: t("settings:subscription.summary.free_description"),
     })
     return
   }

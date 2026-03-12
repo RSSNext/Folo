@@ -24,9 +24,9 @@ import { GroupedInsetListCard } from "@/src/components/ui/grouped/GroupedList"
 import { IconWithFallback } from "@/src/components/ui/icon/fallback-icon"
 import { PlatformActivityIndicator } from "@/src/components/ui/loading/PlatformActivityIndicator"
 import { Text } from "@/src/components/ui/typography/Text"
+import { toastFetchError } from "@/src/lib/error-parser"
 import { useNavigation, useScreenIsInSheetModal } from "@/src/lib/navigation/hooks"
 import { useSetModalScreenOptions } from "@/src/lib/navigation/ScreenOptionsContext"
-import { getBizFetchErrorMessage } from "@/src/lib/parse-api-error"
 import { toast } from "@/src/lib/toast"
 
 import { FeedViewSelector } from "../feed/view-selector"
@@ -108,7 +108,7 @@ const Impl = (props: { id: string }) => {
         navigation.back()
       }
     } catch (error) {
-      toast.error(error instanceof Error ? getBizFetchErrorMessage(error) : "Failed to update list")
+      toastFetchError(error as Error)
     } finally {
       setIsLoading(false)
     }

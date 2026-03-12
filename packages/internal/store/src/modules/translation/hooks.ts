@@ -47,6 +47,7 @@ export const usePrefetchEntryTranslation = ({
   }, [queryClient, translationMode])
 
   const isLoggedIn = useIsLoggedIn()
+
   return useQueries({
     queries: isLoggedIn
       ? entryList.map((entry) => {
