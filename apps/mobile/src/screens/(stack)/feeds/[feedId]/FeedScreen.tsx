@@ -36,7 +36,8 @@ export const FeedScreen: NavigationControllerView<{
           <FeedScreenEntryList />
           {!isSubscribed && isBizId(feedIdentifier) && (
             <Pressable
-              className="absolute left-1/2 z-10 m-2 mx-auto -translate-x-1/2 rounded-full bg-accent px-4 py-2"
+              className="absolute left-1/2 z-10 min-w-[112px] -translate-x-1/2 items-center justify-center overflow-hidden rounded-full bg-accent px-5 py-3"
+              hitSlop={12}
               style={{
                 bottom: Math.max(20, insets.bottom + 12),
               }}

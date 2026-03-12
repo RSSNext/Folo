@@ -58,7 +58,7 @@ export function Select<T>({
         >
           <Text
             className={cn("flex-1 text-right font-semibold text-accent", disabled && "text-gray")}
-            ellipsizeMode="middle"
+            ellipsizeMode="tail"
             numberOfLines={1}
           >
             {displayValue || valueToLabelMap.get(currentValue) || "Select"}
