@@ -1,0 +1,92 @@
+{
+  "metadata": {
+    "title": "Folo",
+    "description": "AI-powered RSS reader for deep, noise-free reading with contextual AI.",
+    "keywords": "Folo, AI RSS reader, RSS, summarize, translate, research, open source, content discovery, information browser"
+  },
+  "common": {
+    "actions": {
+      "getStarted": "Get Started",
+      "download": "Download",
+      "tryOnWeb": "Try on Web",
+      "viewOnTwitter": "View on Twitter",
+      "switchLanguage": "Switch language"
+    },
+    "error": {
+      "title": "Something went wrong!",
+      "action": "Try again"
+    }
+  },
+  "landing": {
+    "hero": {
+      "eyebrow": "AI Reader · Clean Timeline",
+      "title": "<brand>Folo</brand> is the <highlight>AI</highlight> Reader",
+      "bodyLine1": "The AI that reads the internet for you,",
+      "bodyLine2": "cutting through noise to surface the knowledge you actually care about."
+    },
+    "features": {
+      "headline": "Reading reimagined in the AI era",
+      "discover": {
+        "label": "Discover",
+        "titleStrong": "AI finds the best sources",
+        "titleRest": "from millions across the Internet — while you stay in full control."
+      },
+      "twin": {
+        "label": "Digital Twin",
+        "titleStrong": "Everything you Folo trains your AI",
+        "titleRest": "to think like you. It remembers, adapts, and evolves with every update."
+      },
+      "vibe": {
+        "label": "Vibe Read",
+        "titleStrong": "Let AI read it all.",
+        "titleRest": "Sit back, vibe, and only get notified when insights or signals truly matter."
+      }
+    },
+    "builtOpen": {
+      "title": "Built Open",
+      "body": "Transparent, verifiable, and crafted with the community. Explore the code, file issues, and shape the reading experience together.",
+      "note": "Built with modern primitives: accessible, keyboard-friendly, and optimized for performance. PRs welcome."
+    },
+    "repoStats": {
+      "githubStars": "GitHub Stars",
+      "license": "License",
+      "licenseValue": "GPL-3.0",
+      "repository": "Repository",
+      "repoDescriptionMobile": "Built with modern primitives: accessible, keyboard-friendly, and optimized for performance. PRs welcome.",
+      "repoAriaLabel": "Open Folo repository on GitHub"
+    },
+    "socialProof": {
+      "eyebrow": "Loved by The Curious",
+      "headline": "Folo is how the curious read in the AI era."
+    }
+  },
+  "download": {
+    "metadata": {
+      "title": "Download Folo",
+      "description": "Download Folo for Desktop or use it on the Web. Available on macOS, Windows, and Linux."
+    },
+    "hero": {
+      "title": "Download <brand>Folo</brand>",
+      "subtitle": "Get the full power of AI-powered reading on Desktop, or access it instantly on the Web."
+    },
+    "platforms": {
+      "macOS": {
+        "label": "macOS",
+        "store": "Mac App Store"
+      },
+      "Windows": {
+        "label": "Windows",
+        "store": "Microsoft Store"
+      },
+      "Linux": {
+        "label": "Linux",
+        "store": "GitHub"
+      },
+      "web": {
+        "title": "Web Version",
+        "subtitle": "No installation required"
+      },
+      "footer": "By downloading, you agree to our <terms>Terms</terms> and <privacy>Privacy Policy</privacy>."
+    }
+  }
+}

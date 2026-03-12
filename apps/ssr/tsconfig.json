@@ -40,5 +40,5 @@
     "./tailwind.config.ts",
     "./helper/**/*.ts"
   ],
-  "exclude": ["node_modules"]
+  "exclude": ["node_modules", "./src/**/*.worker.ts"]
 }

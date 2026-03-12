@@ -1,0 +1,92 @@
+{
+  "metadata": {
+    "title": "Folo",
+    "description": "AI 搭載の RSS リーダー。文脈理解でノイズのない深い読書体験を。",
+    "keywords": "Folo, AI RSS リーダー, RSS, 要約, 翻訳, リサーチ, オープンソース, コンテンツ発見, インフォメーションブラウザ"
+  },
+  "common": {
+    "actions": {
+      "getStarted": "今すぐ体験",
+      "download": "ダウンロード",
+      "tryOnWeb": "Web で試す",
+      "viewOnTwitter": "X で見る",
+      "switchLanguage": "言語を切り替える"
+    },
+    "error": {
+      "title": "問題が発生しました！",
+      "action": "再試行"
+    }
+  },
+  "landing": {
+    "hero": {
+      "eyebrow": "AI リーダー · クリーンタイムライン",
+      "title": "<brand>Folo</brand> はあなたの <highlight>AI</highlight> リーダー",
+      "bodyLine1": "インターネットの情報を AI が代わりに読み、",
+      "bodyLine2": "雑音を取り除いて、本当に必要な知識だけを届けます。"
+    },
+    "features": {
+      "headline": "AI 時代のための新しい読書体験",
+      "discover": {
+        "label": "ディスカバリー",
+        "titleStrong": "AI が最高の情報源を見つけ出す",
+        "titleRest": "インターネット上の数百万のソースから、あなたが選択権を持ったまま。"
+      },
+      "twin": {
+        "label": "デジタルツイン",
+        "titleStrong": "Folo でのすべてがあなたの AI を育てる",
+        "titleRest": "記憶し、理解し、アップデートのたびにあなたと共に進化します。"
+      },
+      "vibe": {
+        "label": "バイブリード",
+        "titleStrong": "AI にすべて任せて読んでもらおう。",
+        "titleRest": "くつろぎながら、本当に価値ある洞察やシグナルだけを通知します。"
+      }
+    },
+    "builtOpen": {
+      "title": "オープンに構築",
+      "body": "透明で検証可能、そしてコミュニティと共に作り上げています。コードを覗き、Issue を立て、新しい読書体験を一緒に形にしましょう。",
+      "note": "モダンなプライミティブで構築：アクセシブル、キーボードフレンドリー、高速。PR 大歓迎。"
+    },
+    "repoStats": {
+      "githubStars": "GitHub スター",
+      "license": "ライセンス",
+      "licenseValue": "GPL-3.0",
+      "repository": "リポジトリ",
+      "repoDescriptionMobile": "モダンなプライミティブで構築：アクセシブル、キーボードフレンドリー、高速。PR 大歓迎。",
+      "repoAriaLabel": "GitHub で Folo リポジトリを開く"
+    },
+    "socialProof": {
+      "eyebrow": "好奇心を持つ人に愛されています",
+      "headline": "AI 時代に好奇心旺盛な人が読むのは Folo です。"
+    }
+  },
+  "download": {
+    "metadata": {
+      "title": "Folo をダウンロード",
+      "description": "デスクトップ版をダウンロードするか、Web で今すぐ利用できます。macOS・Windows・Linux に対応。"
+    },
+    "hero": {
+      "title": "<brand>Folo</brand> をダウンロード",
+      "subtitle": "デスクトップではフル機能の AI リーディングを、Web ではすぐに利用できます。"
+    },
+    "platforms": {
+      "macOS": {
+        "label": "macOS",
+        "store": "Mac App Store"
+      },
+      "Windows": {
+        "label": "Windows",
+        "store": "Microsoft Store"
+      },
+      "Linux": {
+        "label": "Linux",
+        "store": "GitHub"
+      },
+      "web": {
+        "title": "Web 版",
+        "subtitle": "インストール不要ですぐに利用可能"
+      },
+      "footer": "ダウンロードすると、<terms>利用規約</terms>と<privacy>プライバシーポリシー</privacy>に同意したものとみなされます。"
+    }
+  }
+}

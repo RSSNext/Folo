@@ -17,6 +17,7 @@ import { ModalStackProvider } from "~/components/ui/modal"
 import { jotaiStore } from "~/lib/jotai"
 import { persistConfig, queryClient } from "~/lib/query-client"
 import { FollowCommandManager } from "~/modules/command/command-manager"
+import { ReviewPromptProvider } from "~/modules/review-prompt/provider"
 
 import { HotkeyProvider } from "./hotkey-provider"
 import { I18nProvider } from "./i18n-provider"
@@ -51,6 +52,7 @@ export const RootProviders: FC<PropsWithChildren> = ({ children }) => (
                   <StableRouterProvider />
                   <SettingSync />
                   <FollowCommandManager />
+                  <ReviewPromptProvider />
 
                   {import.meta.env.DEV && <Devtools />}
 

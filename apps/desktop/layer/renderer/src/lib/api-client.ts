@@ -1,4 +1,5 @@
 import { env } from "@follow/shared/env.desktop"
+import { whoami } from "@follow/store/user/getters"
 import { userActions } from "@follow/store/user/store"
 import { createDesktopAPIHeaders } from "@follow/utils/headers"
 import { FollowClient } from "@follow-app/client-sdk"
@@ -58,6 +59,12 @@ followClient.addErrorInterceptor(async ({ error, response }) => {
 
 followClient.addResponseInterceptor(async ({ response }) => {
   if (response.status === 401) {
+    const shouldPromptForLogin = response.url.includes("/better-auth/get-session") || !whoami()
+
+    if (!shouldPromptForLogin) {
+      return response
+    }
+
     // Or we can present LoginModal here.
     // router.navigate("/login")
     // If any response status is 401, we can set auth fail. Maybe some bug, but if navigate to login page, had same issues

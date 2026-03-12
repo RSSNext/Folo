@@ -2,12 +2,12 @@ import { expoClient } from "@better-auth/expo/client"
 import { baseAuthPlugins } from "@follow/shared/auth"
 import { isNewUserQueryKey } from "@follow/store/user/constants"
 import { whoamiQueryKey } from "@follow/store/user/hooks"
+import { userActions } from "@follow/store/user/store"
 import { createMobileAPIHeaders } from "@follow/utils/headers"
 import { useQuery } from "@tanstack/react-query"
 import { createAuthClient } from "better-auth/react"
 import { nativeApplicationVersion } from "expo-application"
 import * as FileSystem from "expo-file-system/legacy"
-import * as SecureStore from "expo-secure-store"
 import Storage from "expo-sqlite/kv-store"
 import { Platform } from "react-native"
 import DeviceInfo from "react-native-device-info"
@@ -16,12 +16,27 @@ import { getDbPath } from "@/src/database"
 
 import { getClientId, getSessionId } from "./client-session"
 import { getUserAgent } from "./native/user-agent"
+import { Navigation } from "./navigation/Navigation"
 import { getEnvProfile, proxyEnv } from "./proxy-env"
 import { queryClient } from "./query-client"
+import { safeSecureStore } from "./secure-store"
 
 const storagePrefix = "follow_auth"
 export const cookieKey = `${storagePrefix}_cookie`
 export const sessionTokenKey = "__Secure-better-auth.session_token"
+const sessionDataKey = `${storagePrefix}_session_data`
+
+let authStateRevision = 0
+let lastAuthStateChangeAt = 0
+
+export const getAuthStateRevision = () => authStateRevision
+export const getLastAuthStateChangeAt = () => lastAuthStateChangeAt
+
+const bumpAuthStateRevision = () => {
+  authStateRevision += 1
+  lastAuthStateChangeAt = Date.now()
+  return authStateRevision
+}
 
 const plugins = [
   ...baseAuthPlugins,
@@ -29,9 +44,9 @@ const plugins = [
     scheme: "follow",
     storagePrefix,
     storage: {
-      setItem(key, value) {
+      setItem(key: string, value: string) {
         try {
-          SecureStore.setItem(key, value)
+          safeSecureStore.setItem(key, value)
         } catch (e) {
           console.warn("SecureStore.setItem failed:", e)
           return
@@ -41,24 +56,43 @@ const plugins = [
           if (__DEV__) {
             const env = getEnvProfile()
             try {
-              SecureStore.setItem(`${cookieKey}_${env}`, value)
+              safeSecureStore.setItem(`${cookieKey}_${env}`, value)
             } catch {
               // Keychain may be unavailable in background
             }
           }
+          bumpAuthStateRevision()
           queryClient.invalidateQueries({ queryKey: whoamiQueryKey })
           queryClient.invalidateQueries({ queryKey: isNewUserQueryKey })
         }
       },
-      getItem(key) {
+      getItem(key: string) {
         try {
-          return SecureStore.getItem(key)
+          return safeSecureStore.getItem(key)
         } catch (e) {
           console.warn("SecureStore.getItem failed:", e)
           return null
         }
       },
-    },
+      removeItem(key: string) {
+        try {
+          safeSecureStore.removeItem(key)
+        } catch (e) {
+          console.warn("SecureStore.removeItem failed:", e)
+          return
+        }
+
+        if (key === cookieKey) {
+          if (__DEV__) {
+            const env = getEnvProfile()
+            safeSecureStore.removeItem(`${cookieKey}_${env}`)
+          }
+          bumpAuthStateRevision()
+          queryClient.invalidateQueries({ queryKey: whoamiQueryKey })
+          queryClient.invalidateQueries({ queryKey: isNewUserQueryKey })
+        }
+      },
+    } as any,
   }),
 ]
 
@@ -149,6 +183,17 @@ export function isAuthCodeValid(authCode: string) {
 
 export const signOut = async () => {
   await authClient.signOut()
+  safeSecureStore.removeItem(cookieKey)
+  safeSecureStore.removeItem(sessionTokenKey)
+  safeSecureStore.removeItem(sessionDataKey)
+  if (__DEV__) {
+    safeSecureStore.removeItem(`${cookieKey}_${getEnvProfile()}`)
+  }
+  await userActions.removeCurrentUser()
+  Navigation.rootNavigation.popToRoot()
+  bumpAuthStateRevision()
+  queryClient.invalidateQueries({ queryKey: whoamiQueryKey })
+  queryClient.invalidateQueries({ queryKey: isNewUserQueryKey })
   const dbPath = getDbPath()
   await FileSystem.deleteAsync(dbPath)
   await expo.reloadAppAsync("User sign out")

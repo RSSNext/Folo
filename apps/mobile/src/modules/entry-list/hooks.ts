@@ -1,5 +1,6 @@
 import { debouncedFetchEntryContentByStream } from "@follow/store/entry/store"
 import { unreadSyncService } from "@follow/store/unread/store"
+import { useIsLoggedIn } from "@follow/store/user/hooks"
 import type { ViewToken } from "@shopify/flash-list"
 import { useCallback, useEffect, useInsertionEffect, useMemo, useRef, useState } from "react"
 import type { NativeScrollEvent, NativeSyntheticEvent } from "react-native"
@@ -18,6 +19,7 @@ export function useOnViewableItemsChanged({
 } = {}) {
   const orientation = useRef<"down" | "up">("down")
   const lastOffset = useRef(0)
+  const isLoggedIn = useIsLoggedIn()
 
   const markAsReadWhenScrolling = useGeneralSettingKey("scrollMarkUnread")
   const markAsReadWhenRendering = useGeneralSettingKey("renderMarkUnread")
@@ -58,7 +60,7 @@ export function useOnViewableItemsChanged({
   useEffect(() => {
     if (disabled) return
 
-    if (markAsReadWhenScrolling && lastRemovedItems) {
+    if (isLoggedIn && markAsReadWhenScrolling && lastRemovedItems) {
       lastRemovedItems.forEach((item) => {
         unreadSyncService.markEntryAsRead(stableIdExtractor(item)).then(() => {
           setLastRemovedItems((prev) => {
@@ -72,13 +74,14 @@ export function useOnViewableItemsChanged({
       })
     }
 
-    if (markAsReadWhenRendering && lastViewableItems) {
+    if (isLoggedIn && markAsReadWhenRendering && lastViewableItems) {
       lastViewableItems.forEach((item) => {
         unreadSyncService.markEntryAsRead(stableIdExtractor(item))
       })
     }
   }, [
     disabled,
+    isLoggedIn,
     lastRemovedItems,
     lastViewableItems,
     markAsReadWhenRendering,

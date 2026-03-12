@@ -1,0 +1,53 @@
+appId: is.follow
+---
+- waitForAnimationToEnd:
+    timeout: 15000
+- runFlow:
+    file: ./dismiss-overlays.yaml
+- runFlow:
+    when:
+      visible:
+        id: navigation-back
+    commands:
+      - tapOn:
+          id: navigation-back
+      - waitForAnimationToEnd
+- runFlow:
+    when:
+      visible:
+        id: navigation-back
+    commands:
+      - tapOn:
+          id: navigation-back
+      - waitForAnimationToEnd
+- runFlow:
+    when:
+      visible: Settings
+    commands:
+      - tapOn:
+          text: Settings
+- runFlow:
+    when:
+      notVisible: Settings
+    commands:
+      - tapOn:
+          point: "89%,86%"
+- scrollUntilVisible:
+    element:
+      id: settings-sign-out
+    direction: DOWN
+    timeout: 10000
+    centerElement: false
+- tapOn:
+    id: settings-sign-out
+- extendedWaitUntil:
+    visible: Confirm sign out
+    timeout: 10000
+- tapOn:
+    text: Sign out
+- extendedWaitUntil:
+    visible:
+      id: login-screen
+    timeout: 30000
+- assertVisible:
+    id: login-screen

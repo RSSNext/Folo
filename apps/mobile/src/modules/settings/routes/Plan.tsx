@@ -4,13 +4,24 @@ import { cn } from "@follow/utils"
 import type { StatusConfigs } from "@follow-app/client-sdk"
 import { useMutation, useQuery } from "@tanstack/react-query"
 import dayjs from "dayjs"
+import type { SubscriptionProduct } from "expo-iap"
 import { openURL } from "expo-linking"
+import type { TFunction } from "i18next"
 import { useCallback, useEffect, useMemo, useRef, useState } from "react"
 import { useTranslation } from "react-i18next"
 import type { LayoutChangeEvent } from "react-native"
-import { ActivityIndicator, Animated, Easing, Pressable, StyleSheet, View } from "react-native"
+import {
+  ActivityIndicator,
+  Animated,
+  Easing,
+  Platform,
+  Pressable,
+  StyleSheet,
+  View,
+} from "react-native"
 
 import { useIsPaymentEnabled, useServerConfigs } from "@/src/atoms/server-configs"
+import { DefaultHeaderBackButton } from "@/src/components/layouts/header/NavigationHeader"
 import {
   NavigationBlurEffectHeaderView,
   SafeNavigationScrollView,
@@ -22,11 +33,47 @@ import { authClient } from "@/src/lib/auth"
 import type { NavigationControllerView } from "@/src/lib/navigation/types"
 import { proxyEnv } from "@/src/lib/proxy-env"
 import { toast } from "@/src/lib/toast"
+import { useAppleIAP } from "@/src/providers/AppleIAPProvider"
 import { useColor } from "@/src/theme/colors"
 
 type PaymentPlan = NonNullable<StatusConfigs["PAYMENT_PLAN_LIST"]>[number]
 type PaymentFeature = PaymentPlan["limit"]
 type BillingPeriod = "monthly" | "yearly"
+
+const AI_MODEL_SELECTION_VALUE_LABELS = {
+  none: {
+    translationKey: "plan.featureValues.AI_MODEL_SELECTION.none",
+    fallback: "—",
+  },
+  curated: {
+    translationKey: "plan.featureValues.AI_MODEL_SELECTION.curated",
+    fallback: "Curated models",
+  },
+  high_performance: {
+    translationKey: "plan.featureValues.AI_MODEL_SELECTION.high_performance",
+    fallback: "All high-end models",
+  },
+} as const
+
+const PLAN_FEATURE_ORDER: Array<keyof PaymentFeature> = [
+  "MAX_SUBSCRIPTIONS",
+  "MAX_LISTS",
+  "MAX_INBOXES",
+  "MAX_ACTIONS",
+  "MAX_AI_ENTRY_SUMMARY_PER_DAY",
+  "MAX_AI_ENTRY_TRANSLATION_PER_DAY",
+  "MAX_AI_TEXT_TO_SPEECH_PER_DAY",
+  "AI_MODEL_SELECTION",
+  "AI_BRING_YOUR_OWN_KEY",
+  "BOOSTS",
+  "PRIORITY_SUPPORT",
+  "PRIVATE_SUBSCRIPTION",
+  "MAX_RSSHUB_SUBSCRIPTIONS",
+  "SECURE_IMAGE_PROXY",
+  "INTEGRATION_SUPPORTED",
+  "AI_CREDIT",
+  "MAX_AI_TASKS",
+]
 
 const BILLING_SEGMENTS: BillingPeriod[] = ["monthly", "yearly"]
 
@@ -34,6 +81,10 @@ type SegmentLayout = {
   width: number
   x: number
 }
+
+const PlanHeaderBackButton = ({ canGoBack }: { canGoBack: boolean }) => (
+  <DefaultHeaderBackButton canGoBack={canGoBack} canDismiss={false} />
+)
 
 const styles = StyleSheet.create({
   billingSegmentIndicator: {
@@ -49,20 +100,51 @@ type UpgradeVariables = {
   annual: boolean
 }
 
-const currencyFormatter = new Intl.NumberFormat("en-US", {
-  style: "currency",
-  currency: "USD",
-  trailingZeroDisplay: "stripIfInteger",
-})
+type ActiveSubscription = {
+  source: "stripe" | "apple" | null
+  plan: string | null
+  status: string | null
+  productId: string | null
+  periodEnd: string | null
+  trialEnd: string | null
+  canManage: boolean
+}
+
+const currencyFormatter = (() => {
+  try {
+    return new Intl.NumberFormat("en-US", {
+      style: "currency",
+      currency: "USD",
+      trailingZeroDisplay: "stripIfInteger",
+    })
+  } catch {
+    return new Intl.NumberFormat("en-US", {
+      style: "currency",
+      currency: "USD",
+      minimumFractionDigits: 0,
+      maximumFractionDigits: 2,
+    })
+  }
+})()
 
 const formatCurrency = (value: number) => currencyFormatter.format(value)
 
 const formatFeatureValue = (
   key: keyof PaymentFeature,
   value: PaymentFeature[keyof PaymentFeature] | undefined | null,
+  t?: TFunction<"settings">,
 ): string => {
   if (value == null) {
     return "—"
+  }
+
+  if (key === "AI_MODEL_SELECTION" && typeof value === "string") {
+    const selectionValue =
+      AI_MODEL_SELECTION_VALUE_LABELS[value as keyof typeof AI_MODEL_SELECTION_VALUE_LABELS]
+
+    if (selectionValue) {
+      return t?.(selectionValue.translationKey) ?? selectionValue.fallback
+    }
   }
 
   if (typeof value === "boolean") {
@@ -108,17 +190,163 @@ const isFeatureValueVisible = (value: PaymentFeature[keyof PaymentFeature] | nul
   return true
 }
 
+const isAppleProductId = (value: string | undefined): value is string => typeof value === "string"
+
+const BILLING_PERIOD_RANK: Record<BillingPeriod, number> = {
+  monthly: 0,
+  yearly: 1,
+}
+
+type PlanActionType = "current" | "upgrade" | "new" | "coming-soon" | null
+
+const matchesPlanIdentifier = (
+  plan: PaymentPlan,
+  identifier: string | null | undefined,
+): boolean => {
+  if (!identifier) {
+    return false
+  }
+
+  return plan.planID === identifier || plan.role === identifier
+}
+
+const getAppleProductIdForBillingPeriod = (
+  plan: PaymentPlan,
+  billingPeriod: BillingPeriod,
+): string | null => {
+  const productId =
+    billingPeriod === "yearly" ? plan.appleProductIdentifierAnnual : plan.appleProductIdentifier
+
+  return productId ?? null
+}
+
+const inferBillingPeriodFromProductId = (
+  productId: string | null | undefined,
+  plan: PaymentPlan,
+): BillingPeriod | null => {
+  if (!productId) {
+    return null
+  }
+
+  if (productId === plan.appleProductIdentifierAnnual) {
+    return "yearly"
+  }
+
+  if (productId === plan.appleProductIdentifier) {
+    return "monthly"
+  }
+
+  const normalizedProductId = productId.toLowerCase()
+
+  if (normalizedProductId.includes("annual") || normalizedProductId.includes("year")) {
+    return "yearly"
+  }
+
+  if (normalizedProductId.includes("month")) {
+    return "monthly"
+  }
+
+  return null
+}
+
+const getPlanActionType = ({
+  plan,
+  billingPeriod,
+  currentPlan,
+  activeSubscription,
+  hasExistingSubscription,
+}: {
+  plan: PaymentPlan
+  billingPeriod: BillingPeriod
+  currentPlan: PaymentPlan | null
+  activeSubscription?: ActiveSubscription
+  hasExistingSubscription: boolean
+}): PlanActionType => {
+  if (plan.isComingSoon) {
+    return "coming-soon"
+  }
+
+  const hasCheckout = !!plan.planID
+  const targetTier = plan.tier ?? 0
+  const currentTier = currentPlan?.tier ?? 0
+  const isSamePlan =
+    matchesPlanIdentifier(plan, activeSubscription?.plan) ||
+    (!!currentPlan && plan.role === currentPlan.role)
+
+  if (isSamePlan) {
+    if (!hasExistingSubscription) {
+      return "current"
+    }
+
+    const currentBillingPeriod = inferBillingPeriodFromProductId(
+      activeSubscription?.productId,
+      plan,
+    )
+    if (
+      currentBillingPeriod &&
+      BILLING_PERIOD_RANK[billingPeriod] > BILLING_PERIOD_RANK[currentBillingPeriod]
+    ) {
+      return "upgrade"
+    }
+
+    return "current"
+  }
+
+  if (!hasCheckout) {
+    return null
+  }
+
+  if (!hasExistingSubscription) {
+    return currentTier === 0 ? "new" : targetTier > currentTier ? "upgrade" : null
+  }
+
+  return targetTier > currentTier ? "upgrade" : null
+}
+
 export const PlanScreen: NavigationControllerView = () => {
   const { t } = useTranslation("settings")
   const serverConfigs = useServerConfigs()
   const isPaymentEnabled = useIsPaymentEnabled()
   const role = useUserRole()
   const roleEndAt = useRoleEndAt()
+  const whoami = useWhoami()
+  const {
+    subscriptions: appleSubscriptions,
+    isProcessingPurchase,
+    isPurchasing,
+    isRestoring,
+    loadSubscriptions,
+    openSubscriptionManagement,
+    requestSubscriptionPurchase,
+    restoreSubscriptionPurchases,
+  } = useAppleIAP()
 
   const plans = useMemo(() => serverConfigs?.PAYMENT_PLAN_LIST ?? [], [serverConfigs])
+  const appleProductIds = useMemo(
+    () =>
+      plans
+        .flatMap((plan) => [plan.appleProductIdentifier, plan.appleProductIdentifierAnnual])
+        .filter(isAppleProductId),
+    [plans],
+  )
+  const appleProductsById = useMemo(
+    () =>
+      new Map<string, SubscriptionProduct>(
+        appleSubscriptions.map((product: SubscriptionProduct) => [product.id, product]),
+      ),
+    [appleSubscriptions],
+  )
 
   const defaultBillingPeriod: BillingPeriod = "yearly"
   const [billingPeriod, setBillingPeriod] = useState<BillingPeriod>(defaultBillingPeriod)
+
+  useEffect(() => {
+    if (Platform.OS !== "ios" || appleProductIds.length === 0) {
+      return
+    }
+
+    void loadSubscriptions(appleProductIds)
+  }, [appleProductIds, loadSubscriptions])
 
   const sortedPlans = useMemo(() => {
     return [...plans].sort((a, b) => (a.tier ?? 0) - (b.tier ?? 0))
@@ -127,6 +355,42 @@ export const PlanScreen: NavigationControllerView = () => {
   const currentPlan = useMemo(() => {
     return sortedPlans.find((plan) => plan.role === role) ?? null
   }, [sortedPlans, role])
+
+  const billingSubscriptionQuery = useQuery({
+    queryKey: ["billingSubscription"],
+    queryFn: async () => {
+      const response = await followClient.request<{ code: number; data: ActiveSubscription }>(
+        "/billing/subscription",
+      )
+      return response.data
+    },
+    enabled: !!whoami?.id,
+  })
+
+  const activeSubscription = billingSubscriptionQuery.data
+  const subscribedPlan = useMemo(() => {
+    if (!activeSubscription?.plan) {
+      return currentPlan
+    }
+
+    return (
+      sortedPlans.find((plan) => matchesPlanIdentifier(plan, activeSubscription.plan)) ??
+      currentPlan
+    )
+  }, [activeSubscription?.plan, currentPlan, sortedPlans])
+
+  const hasExistingSubscription = useMemo(() => {
+    if (activeSubscription) {
+      return Boolean(
+        activeSubscription.plan ||
+        activeSubscription.source ||
+        activeSubscription.productId ||
+        activeSubscription.status,
+      )
+    }
+
+    return role != null && role !== UserRole.Free
+  }, [activeSubscription, role])
 
   const daysLeft = useMemo(() => {
     if (!roleEndAt) {
@@ -161,6 +425,24 @@ export const PlanScreen: NavigationControllerView = () => {
 
   const upgradeMutation = useMutation<void, Error, UpgradeVariables>({
     mutationFn: async ({ planId, annual }) => {
+      const selectedPlan = plans.find((plan) => plan.planID === planId)
+
+      if (Platform.OS === "ios" && activeSubscription?.source !== "stripe") {
+        const productId = annual
+          ? selectedPlan?.appleProductIdentifierAnnual
+          : selectedPlan?.appleProductIdentifier
+
+        if (!productId) {
+          throw new Error(t("subscription.actions.upgrade_error"))
+        }
+
+        await requestSubscriptionPurchase({
+          sku: productId,
+          appAccountToken: whoami?.appleAppAccountToken,
+        })
+        return
+      }
+
       const response = await authClient.subscription.upgrade({
         plan: planId,
         annual,
@@ -184,30 +466,6 @@ export const PlanScreen: NavigationControllerView = () => {
     },
   })
 
-  const userId = useWhoami()?.id
-  const activeSubscriptionQuery = useQuery({
-    queryKey: ["activeSubscription"],
-    queryFn: async () => {
-      const response = await authClient.subscription.list()
-      const { data } = response
-      return data?.find(
-        (sub: {
-          status: string
-          stripeSubscriptionId?: string | null
-          periodEnd?: Date | null
-        }) => {
-          if (!sub.stripeSubscriptionId) return false
-          if (sub.status === "active" || sub.status === "trialing") return true
-          if (sub.status === "canceled" && sub.periodEnd) {
-            return new Date(sub.periodEnd) > new Date()
-          }
-          return false
-        },
-      )
-    },
-    enabled: !!userId,
-  })
-
   const billingPortalMutation = useMutation({
     mutationFn: async () => {
       const data = await followClient.request<{ code: number; data?: { url: string } }>(
@@ -226,11 +484,27 @@ export const PlanScreen: NavigationControllerView = () => {
     },
   })
 
+  const handleManageSubscription = useCallback(() => {
+    if (activeSubscription?.source === "apple") {
+      void openSubscriptionManagement().catch(() => {
+        toast.error(t("subscription.actions.manage_error"))
+      })
+      return
+    }
+
+    billingPortalMutation.mutate()
+  }, [activeSubscription?.source, billingPortalMutation, openSubscriptionManagement, t])
+
   if (!isPaymentEnabled || sortedPlans.length === 0) {
     return (
       <SafeNavigationScrollView
         className="bg-system-grouped-background"
-        Header={<NavigationBlurEffectHeaderView title={t("titles.subscription.long")} />}
+        Header={
+          <NavigationBlurEffectHeaderView
+            title={t("titles.subscription.long")}
+            headerLeft={PlanHeaderBackButton}
+          />
+        }
       >
         <View className="flex-1 items-center justify-center px-6 py-12">
           <Text className="text-center text-base text-secondary-label">
@@ -241,24 +515,30 @@ export const PlanScreen: NavigationControllerView = () => {
     )
   }
 
-  const summaryTitle = currentPlan
-    ? t("subscription.summary.current", { plan: currentPlan.name })
+  const summaryPlan = subscribedPlan ?? currentPlan
+  const summaryTitle = summaryPlan
+    ? t("subscription.summary.current", { plan: summaryPlan.name })
     : t("subscription.summary.free")
 
   let summarySubtitle = t("subscription.summary.free_description")
-  if (role === UserRole.Pro || role === UserRole.Plus) {
-    summarySubtitle = t("subscription.summary.active")
-  } else if (daysLeft && daysLeft > 0 && role && role !== UserRole.Free) {
+  if (daysLeft && daysLeft > 0 && role && role !== UserRole.Free) {
     summarySubtitle = t("subscription.summary.trial_expiring", {
       date: dayjs(roleEndAt).format("MMMM D, YYYY"),
       days: daysLeft,
     })
+  } else if (summaryPlan && summaryPlan.role !== UserRole.Free) {
+    summarySubtitle = t("subscription.summary.active")
   }
 
   return (
     <SafeNavigationScrollView
       className="bg-system-grouped-background"
-      Header={<NavigationBlurEffectHeaderView title={t("titles.subscription.long")} />}
+      Header={
+        <NavigationBlurEffectHeaderView
+          title={t("titles.subscription.long")}
+          headerLeft={PlanHeaderBackButton}
+        />
+      }
     >
       <View className="gap-6 px-4 pb-10 pt-6">
         <View className="rounded-3xl bg-secondary-system-grouped-background p-5 shadow-sm">
@@ -279,18 +559,38 @@ export const PlanScreen: NavigationControllerView = () => {
 
         <View className="gap-4">
           {sortedPlans.map((plan) => {
-            const isCurrentPlan = plan.role === role
+            const isCurrentPlan =
+              matchesPlanIdentifier(plan, activeSubscription?.plan) || plan.role === role
             const isProcessing =
               upgradeMutation.isPending && upgradeMutation.variables?.planId === plan.planID
+            const actionType = getPlanActionType({
+              plan,
+              billingPeriod,
+              currentPlan: subscribedPlan ?? currentPlan,
+              activeSubscription,
+              hasExistingSubscription,
+            })
 
             return (
               <PlanCard
                 key={plan.planID ?? plan.name}
                 plan={plan}
                 billingPeriod={billingPeriod}
+                actionType={actionType}
                 isCurrentPlan={isCurrentPlan}
+                storeProduct={
+                  Platform.OS === "ios"
+                    ? appleProductsById.get(
+                        getAppleProductIdForBillingPeriod(plan, billingPeriod) ?? "",
+                      )
+                    : undefined
+                }
                 onUpgrade={
-                  plan.planID
+                  plan.planID &&
+                  actionType &&
+                  actionType !== "current" &&
+                  actionType !== "coming-soon" &&
+                  (!hasExistingSubscription || billingSubscriptionQuery.isFetched)
                     ? () =>
                         upgradeMutation.mutate({
                           planId: plan.planID as string,
@@ -298,14 +598,32 @@ export const PlanScreen: NavigationControllerView = () => {
                         })
                     : undefined
                 }
-                onManageSubscription={() => billingPortalMutation.mutate()}
-                isProcessing={isProcessing}
+                onManageSubscription={handleManageSubscription}
+                isProcessing={isProcessing || isPurchasing || isProcessingPurchase}
                 isManaging={billingPortalMutation.isPending}
-                activeSubscription={activeSubscriptionQuery.data}
+                activeSubscription={billingSubscriptionQuery.data}
+                upgradeButtonText={plan.upgradeButtonText}
               />
             )
           })}
         </View>
+
+        {Platform.OS === "ios" && (
+          <Pressable
+            accessibilityRole="button"
+            onPress={() => void restoreSubscriptionPurchases()}
+            disabled={isRestoring}
+            className="h-11 items-center justify-center rounded-full border border-opaque-separator/60 bg-secondary-system-grouped-background disabled:opacity-60"
+          >
+            {isRestoring ? (
+              <ActivityIndicator />
+            ) : (
+              <Text className="text-base font-medium text-label">
+                {t("subscription.actions.restore")}
+              </Text>
+            )}
+          </Pressable>
+        )}
       </View>
     </SafeNavigationScrollView>
   )
@@ -436,30 +754,30 @@ const BillingToggle = ({
   )
 }
 
-type ActiveSubscription = {
-  status: string
-  stripeSubscriptionId?: string | null
-  periodEnd?: Date | null
-}
-
 const PlanCard = ({
   plan,
   billingPeriod,
+  actionType,
   isCurrentPlan,
+  storeProduct,
   onUpgrade,
   onManageSubscription,
   isProcessing,
   isManaging,
   activeSubscription,
+  upgradeButtonText,
 }: {
   plan: PaymentPlan
   billingPeriod: BillingPeriod
+  actionType: PlanActionType
   isCurrentPlan: boolean
+  storeProduct?: { displayPrice?: string } | null
   onUpgrade?: () => void
   onManageSubscription?: () => void
   isProcessing?: boolean
   isManaging?: boolean
   activeSubscription?: ActiveSubscription
+  upgradeButtonText?: string
 }) => {
   const { t } = useTranslation("settings")
 
@@ -480,7 +798,9 @@ const PlanCard = ({
   const hasDiscount = isPaidPlan && discountPrice > 0 && discountPrice < regularPrice
 
   const displayPrice = !isPaidPlan ? 0 : hasDiscount ? discountPrice : regularPrice
-  const formattedPrice = isPaidPlan ? formatCurrency(displayPrice) : t("subscription.price.free")
+  const formattedPrice = isPaidPlan
+    ? storeProduct?.displayPrice || formatCurrency(displayPrice)
+    : t("subscription.price.free")
 
   const formattedRegularPrice =
     hasDiscount && regularPrice > 0 ? formatCurrency(regularPrice) : undefined
@@ -516,34 +836,26 @@ const PlanCard = ({
 
   const periodLabel = !isPaidPlan
     ? ""
-    : billingPeriod === "yearly"
-      ? t("subscription.price.per_month_billed_yearly")
-      : t("subscription.price.per_month")
+    : storeProduct?.displayPrice && billingPeriod === "yearly"
+      ? t("subscription.price.per_year")
+      : billingPeriod === "yearly"
+        ? t("subscription.price.per_month_billed_yearly")
+        : t("subscription.price.per_month")
 
   const planDescription = t(`plan.descriptions.${plan.role}` as const, { defaultValue: "" })
 
   const features = useMemo(() => {
-    return (
-      Object.entries(plan.limit || {}) as Array<
-        [keyof PaymentFeature, PaymentFeature[keyof PaymentFeature]]
-      >
-    )
+    const fallbackFeatureOrder = Object.keys(plan.limit || {}) as Array<keyof PaymentFeature>
+    const orderedFeatureKeys = [
+      ...PLAN_FEATURE_ORDER,
+      ...fallbackFeatureOrder.filter((featureKey) => !PLAN_FEATURE_ORDER.includes(featureKey)),
+    ]
+
+    return orderedFeatureKeys
+      .map((featureKey) => [featureKey, plan.limit?.[featureKey]] as const)
       .filter(([, value]) => isFeatureValueVisible(value))
       .slice(0, 6)
   }, [plan.limit])
-
-  const actionType = useMemo(() => {
-    if (plan.isComingSoon) {
-      return "coming-soon" as const
-    }
-    if (isCurrentPlan) {
-      return "current" as const
-    }
-    if (plan.planID) {
-      return "upgrade" as const
-    }
-    return null
-  }, [plan.isComingSoon, plan.planID, isCurrentPlan])
 
   const planNameFallback = plan.name || (plan.role ? UserRoleName[plan.role as UserRole] : "")
 
@@ -597,7 +909,7 @@ const PlanCard = ({
 
       <View className="mt-4 gap-2">
         {features.map(([featureKey, value]) => {
-          const formattedValue = formatFeatureValue(featureKey, value)
+          const formattedValue = formatFeatureValue(featureKey, value, t)
           const showValue = !(typeof value === "boolean" && value)
           return (
             <View key={featureKey as string} className="flex-row items-center gap-3">
@@ -633,6 +945,7 @@ const PlanCard = ({
         isProcessing={isProcessing}
         isManaging={isManaging}
         activeSubscription={activeSubscription}
+        upgradeButtonText={upgradeButtonText}
       />
     </View>
   )
@@ -645,19 +958,22 @@ const PlanAction = ({
   isProcessing,
   isManaging,
   activeSubscription,
+  upgradeButtonText,
 }: {
-  actionType: "current" | "upgrade" | "coming-soon" | null
+  actionType: "current" | "upgrade" | "new" | "coming-soon" | null
   onUpgrade?: () => void
   onManageSubscription?: () => void
   isProcessing?: boolean
   isManaging?: boolean
   activeSubscription?: ActiveSubscription
+  upgradeButtonText?: string
 }) => {
   const { t } = useTranslation("settings")
 
-  const canManageSubscription = !!activeSubscription?.stripeSubscriptionId
+  const canManageSubscription = !!activeSubscription?.canManage
   const isCanceled = activeSubscription?.status === "canceled"
-  const periodEnd = activeSubscription?.periodEnd ? new Date(activeSubscription.periodEnd) : null
+  const periodEnd = activeSubscription?.trialEnd ?? activeSubscription?.periodEnd
+  const effectivePeriodEnd = periodEnd ? new Date(periodEnd) : null
 
   if (actionType === "coming-soon") {
     return (
@@ -685,7 +1001,7 @@ const PlanAction = ({
             <Text className="text-xs text-secondary-label">
               {isCanceled
                 ? t("plan.canceled_expires", {
-                    date: periodEnd?.toLocaleDateString(undefined, {
+                    date: effectivePeriodEnd?.toLocaleDateString(undefined, {
                       year: "numeric",
                       month: "short",
                       day: "numeric",
@@ -693,14 +1009,14 @@ const PlanAction = ({
                   })
                 : activeSubscription?.status === "trialing"
                   ? t("plan.trial_ends", {
-                      date: periodEnd?.toLocaleDateString(undefined, {
+                      date: effectivePeriodEnd?.toLocaleDateString(undefined, {
                         year: "numeric",
                         month: "short",
                         day: "numeric",
                       }),
                     })
                   : t("plan.renews", {
-                      date: periodEnd?.toLocaleDateString(undefined, {
+                      date: effectivePeriodEnd?.toLocaleDateString(undefined, {
                         year: "numeric",
                         month: "short",
                         day: "numeric",
@@ -730,7 +1046,7 @@ const PlanAction = ({
     )
   }
 
-  if (actionType === "upgrade" && onUpgrade) {
+  if ((actionType === "upgrade" || actionType === "new") && onUpgrade) {
     return (
       <Pressable
         accessibilityRole="button"
@@ -742,7 +1058,9 @@ const PlanAction = ({
           <ActivityIndicator color="white" />
         ) : (
           <Text className="text-base font-semibold text-white">
-            {t("subscription.actions.upgrade")}
+            {actionType === "new"
+              ? (upgradeButtonText ?? t("subscription.actions.upgrade"))
+              : t("subscription.actions.upgrade")}
           </Text>
         )}
       </Pressable>

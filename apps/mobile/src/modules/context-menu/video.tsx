@@ -3,6 +3,7 @@ import { useIsEntryStarred } from "@follow/store/collection/hooks"
 import { collectionSyncService } from "@follow/store/collection/store"
 import { useEntry } from "@follow/store/entry/hooks"
 import { unreadSyncService } from "@follow/store/unread/store"
+import { useIsLoggedIn } from "@follow/store/user/hooks"
 import type { PropsWithChildren } from "react"
 import { useTranslation } from "react-i18next"
 import { Share } from "react-native"
@@ -16,6 +17,7 @@ type VideoContextMenuProps = PropsWithChildren<{
 
 export const VideoContextMenu = ({ entryId, children }: VideoContextMenuProps) => {
   const { t } = useTranslation()
+  const isLoggedIn = useIsLoggedIn()
   const entry = useEntry(entryId, (state) => ({
     read: state.read,
     feedId: state.feedId,
@@ -35,24 +37,26 @@ export const VideoContextMenu = ({ entryId, children }: VideoContextMenuProps) =
       <ContextMenu.Trigger>{children}</ContextMenu.Trigger>
 
       <ContextMenu.Content>
-        <ContextMenu.Item
-          key="MarkAsRead"
-          onSelect={() => {
-            entry.read
-              ? unreadSyncService.markEntryAsUnread(entryId)
-              : unreadSyncService.markEntryAsRead(entryId)
-          }}
-        >
-          <ContextMenu.ItemTitle>
-            {entry.read ? t("operation.mark_as_unread") : t("operation.mark_as_read")}
-          </ContextMenu.ItemTitle>
-          <ContextMenu.ItemIcon
-            ios={{
-              name: entry.read ? "circle.fill" : "checkmark.circle",
+        {isLoggedIn && (
+          <ContextMenu.Item
+            key="MarkAsRead"
+            onSelect={() => {
+              entry.read
+                ? unreadSyncService.markEntryAsUnread(entryId)
+                : unreadSyncService.markEntryAsRead(entryId)
             }}
-          />
-        </ContextMenu.Item>
-        {feedId && (
+          >
+            <ContextMenu.ItemTitle>
+              {entry.read ? t("operation.mark_as_unread") : t("operation.mark_as_read")}
+            </ContextMenu.ItemTitle>
+            <ContextMenu.ItemIcon
+              ios={{
+                name: entry.read ? "circle.fill" : "checkmark.circle",
+              }}
+            />
+          </ContextMenu.Item>
+        )}
+        {isLoggedIn && feedId && (
           <ContextMenu.Item
             key="Star"
             onSelect={() => {

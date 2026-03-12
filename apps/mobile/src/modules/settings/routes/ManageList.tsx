@@ -26,10 +26,9 @@ import { FeedIcon } from "@/src/components/ui/icon/feed-icon"
 import { ItemPressable } from "@/src/components/ui/pressable/ItemPressable"
 import { Text } from "@/src/components/ui/typography/Text"
 import { CheckLineIcon } from "@/src/icons/check_line"
+import { toastFetchError } from "@/src/lib/error-parser"
 import { useNavigation } from "@/src/lib/navigation/hooks"
 import type { NavigationControllerView } from "@/src/lib/navigation/types"
-import { getBizFetchErrorMessage } from "@/src/lib/parse-api-error"
-import { toast } from "@/src/lib/toast"
 import { accentColor } from "@/src/theme/colors"
 
 const ManageListContext = createContext<{
@@ -82,7 +81,7 @@ export const ManageListScreen: NavigationControllerView<{
                     navigation.back()
                   })
                   .catch((error) => {
-                    toast.error(getBizFetchErrorMessage(error))
+                    toastFetchError(error as Error)
                     console.error(error)
                   })
               }}

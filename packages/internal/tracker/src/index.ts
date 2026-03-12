@@ -22,6 +22,7 @@ export {
   type TrackerAdapter,
   type TrackPayload,
 } from "./adapters"
+export { TrackerMapper } from "./enums"
 export { TrackerManager, type TrackerManagerConfig } from "./manager"
 export { improvedTrackManager, trackManager } from "./track-manager"
 export { type AllTrackers, TrackerPoints } from "./tracker-points"

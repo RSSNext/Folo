@@ -1,6 +1,9 @@
 node_modules
 dist
 out
+.next
+.open-next
+next-env.d.ts
 .DS_Store
 *.log*
 .env
@@ -26,6 +29,22 @@ buildServer.json
 **/**/generated-routes.ts
 
 apps/desktop/build/appxmanifest.xml
+apps/desktop/resources/cli
 
 .claude/settings.local.json
 .serena
+
+.wrangler
+
+# Local agent artifacts
+.codex/
+
+# E2E outputs
+/apps/desktop/e2e/playwright-report/
+/apps/desktop/e2e/test-results/
+/apps/mobile/e2e/artifacts/
+/apps/mobile/report.xml
+/report.xml
+
+# Mobile local E2E build artifacts
+apps/mobile/build-*.tar.gz

@@ -31,6 +31,8 @@ import { followClient } from "~/lib/api-client"
 import { DiscoverFeedCard } from "./DiscoverFeedCard"
 import { FeedForm } from "./FeedForm"
 
+const isFeedLikeUrl = (value: string) => /^(?:https?:\/\/|folo:\/\/|follow:\/\/)/.test(value.trim())
+
 const FEED_DISCOVERY_INFO = {
   search: {
     label: "discover.any_url_or_keyword",
@@ -56,7 +58,9 @@ const FEED_DISCOVERY_INFO = {
       </a>
     ),
     schema: z.object({
-      keyword: z.string().url().startsWith("https://"),
+      keyword: z.string().refine(isFeedLikeUrl, {
+        message: "Invalid RSS URL",
+      }),
     }),
   },
   rsshub: {
@@ -301,6 +305,7 @@ export function DiscoverForm({ type = "search" }: { type?: string }) {
                   <FormControl>
                     <Input
                       autoFocus
+                      data-testid="discover-form-input"
                       {...field}
                       onChange={handleKeywordChange}
                       onCompositionEnd={handleCompositionEnd}
@@ -353,6 +358,7 @@ export function DiscoverForm({ type = "search" }: { type?: string }) {
             )}
             <div className="center flex" data-testid="discover-form-actions">
               <Button
+                data-testid="discover-form-submit"
                 disabled={!form.formState.isValid}
                 type="submit"
                 isLoading={mutation.isPending}

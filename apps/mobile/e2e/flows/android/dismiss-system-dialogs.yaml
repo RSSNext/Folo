@@ -1,0 +1,9 @@
+appId: is.follow
+---
+- runFlow:
+    when:
+      visible: System UI isn't responding
+    commands:
+      - tapOn:
+          text: Wait
+      - waitForAnimationToEnd

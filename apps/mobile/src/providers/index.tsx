@@ -19,6 +19,7 @@ import { GlobalErrorScreen } from "../components/errors/GlobalErrorScreen"
 import { LightboxStateProvider } from "../components/ui/lightbox/lightboxState"
 import { queryClient } from "../lib/query-client"
 import { TimelineSelectorDragProgressProvider } from "../modules/screen/atoms"
+import { AppleIAPProvider } from "./AppleIAPProvider"
 import { FontScalingProvider } from "./FontScalingProvider"
 import { MigrationProvider } from "./migration"
 import { ServerConfigsLoader } from "./ServerConfigsLoader"
@@ -30,6 +31,7 @@ const contexts = [
   <ErrorBoundary fallbackRender={GlobalErrorScreen} children={null} />,
   <KeyboardProvider children={null} />,
   <QueryClientProvider client={queryClient} />,
+  <AppleIAPProvider children={null} />,
   <GestureHandlerRootView />,
   <SheetProvider children={null} />,
   <ActionSheetProvider children={null} />,

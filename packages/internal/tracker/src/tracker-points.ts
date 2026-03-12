@@ -105,6 +105,73 @@ export class TrackerPoints {
     this.track(TrackerMapper.Subscribe, props)
   }
 
+  reviewPromptEligible(props: {
+    source: "auto" | "manual"
+    platform: string
+    distribution: string
+    score?: number
+  }) {
+    this.track(TrackerMapper.ReviewPromptEligible, props)
+  }
+
+  reviewPromptShown(props: {
+    source: "auto" | "manual"
+    platform: string
+    distribution: string
+    score?: number
+  }) {
+    this.track(TrackerMapper.ReviewPromptShown, props)
+  }
+
+  reviewPromptDismissed(props: {
+    source: "auto" | "manual"
+    platform: string
+    distribution: string
+  }) {
+    this.track(TrackerMapper.ReviewPromptDismissed, props)
+  }
+
+  reviewPromptPositive(props: {
+    source: "auto" | "manual"
+    platform: string
+    distribution: string
+  }) {
+    this.track(TrackerMapper.ReviewPromptPositive, props)
+  }
+
+  reviewPromptNegative(props: {
+    source: "auto" | "manual"
+    platform: string
+    distribution: string
+  }) {
+    this.track(TrackerMapper.ReviewPromptNegative, props)
+  }
+
+  reviewPromptFeedbackOpened(props: {
+    source: "auto" | "manual"
+    platform: string
+    distribution: string
+  }) {
+    this.track(TrackerMapper.ReviewPromptFeedbackOpened, props)
+  }
+
+  reviewPromptStoreOpened(props: {
+    source: "auto" | "manual"
+    platform: string
+    distribution: string
+  }) {
+    this.track(TrackerMapper.ReviewPromptStoreOpened, props)
+  }
+
+  reviewPromptNativeRequested(props: {
+    source: "auto" | "manual"
+    platform: string
+    distribution: string
+    score?: number
+  }) {
+    this.track(TrackerMapper.ReviewPromptNativeRequested, props)
+  }
+
   aiChatMessageSent() {
     this.track(TrackerMapper.AIChatMessageSent)
   }

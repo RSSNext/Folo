@@ -13,21 +13,46 @@ install! 'cocoapods',
 
 prepare_react_native_project!
 
+def generate_react_native_codegen!(ios_root)
+  app_root = File.expand_path('..', ios_root)
+  react_native_root = File.dirname(`node --print "require.resolve('react-native/package.json', { paths: ['#{ios_root}'] })"`.strip)
+  react_native_codegen_cli = File.join(react_native_root, 'scripts', 'generate-codegen-artifacts.js')
+
+  Pod::UI.puts 'Generating React Native codegen artifacts for iOS...'
+
+  codegen_output_root = File.join(ios_root, 'build', 'generated', 'ios')
+
+  system(
+    'node',
+    react_native_codegen_cli,
+    '--path',
+    app_root,
+    '--targetPlatform',
+    'ios',
+    '--outputPath',
+    codegen_output_root,
+  ) || raise('React Native iOS codegen generation failed')
+end
+
 target 'Folo' do
   use_expo_modules!
 
   if ENV['EXPO_USE_COMMUNITY_AUTOLINKING'] == '1'
     config_command = ['node', '-e', "process.argv=['', '', 'config'];require('@react-native-community/cli').run()"];
   else
+    expo_modules_autolinking_root = File.dirname(`node --print "require.resolve('expo-modules-autolinking/package.json', { paths: ['#{__dir__}'] })"`)
+    expo_modules_autolinking_cli = File.join(expo_modules_autolinking_root, 'bin/expo-modules-autolinking.js')
     config_command = [
-      'npx',
-      'expo-modules-autolinking',
+      'node',
+      expo_modules_autolinking_cli,
       'react-native-config',
       '--json',
       '--platform',
       'ios'
     ]
   end
+
+  generate_react_native_codegen!(__dir__)
 
   config = use_native_modules!(config_command)
 

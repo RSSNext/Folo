@@ -12,7 +12,8 @@
       "EnhancePagerViewModule",
       "EnhancePageViewModule",
       "ItemPressableModule",
-      "TabBarBottomAccessoryModule"
+      "TabBarBottomAccessoryModule",
+      "StoreKitTestHelperModule"
     ]
   },
   "android": {

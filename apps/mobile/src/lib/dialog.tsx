@@ -20,6 +20,8 @@ import type { ImageProps } from "react-native-svg"
 import { useColor } from "react-native-uikit-colors"
 
 import { Text } from "@/src/components/ui/typography/Text"
+import { dialogCountAtom } from "@/src/lib/dialog-state"
+import { jotaiStore } from "@/src/lib/jotai"
 
 import { FullWindowOverlay } from "../components/common/FullWindowOverlay"
 import { Overlay } from "../components/ui/overlay/Overlay"
@@ -220,10 +222,12 @@ class DialogStatic {
       </NavigationInstanceContext>,
     )
     this.currentStackedDialogs.add(props.id)
+    jotaiStore.set(dialogCountAtom, this.currentStackedDialogs.size)
     return siblings
   }
   destroy(id: string, siblings: RootSiblings) {
     this.currentStackedDialogs.delete(id)
+    jotaiStore.set(dialogCountAtom, this.currentStackedDialogs.size)
     siblings.destroy()
   }
 }

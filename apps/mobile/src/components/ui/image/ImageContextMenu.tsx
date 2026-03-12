@@ -3,6 +3,7 @@ import { useIsEntryStarred } from "@follow/store/collection/hooks"
 import { collectionSyncService } from "@follow/store/collection/store"
 import { useEntry } from "@follow/store/entry/hooks"
 import { unreadSyncService } from "@follow/store/unread/store"
+import { useIsLoggedIn } from "@follow/store/user/hooks"
 import { requireNativeModule } from "expo"
 import type { PropsWithChildren } from "react"
 import { useRef } from "react"
@@ -35,6 +36,7 @@ const getIOSNativeImageActions = () => {
 
 export const ImageContextMenu = ({ imageUrl, entryId, children, view }: ImageContextMenuProps) => {
   const { t } = useTranslation()
+  const isLoggedIn = useIsLoggedIn()
   const entry = useEntry(entryId, (state) => ({
     read: state.read,
     feedId: state.feedId,
@@ -58,7 +60,7 @@ export const ImageContextMenu = ({ imageUrl, entryId, children, view }: ImageCon
       </ContextMenu.Trigger>
 
       <ContextMenu.Content>
-        {entryId && feedId && view !== undefined && (
+        {isLoggedIn && entryId && feedId && view !== undefined && (
           <>
             <ContextMenu.Item
               key="MarkAsRead"

@@ -13,8 +13,8 @@ jobs:
   sync-to-dev:
     runs-on: ubuntu-latest
     if: |
-      (github.ref == 'refs/heads/main' && startsWith(github.event.head_commit.message, 'release(desktop):')) ||
-      (github.ref == 'refs/heads/mobile-main' && startsWith(github.event.head_commit.message, 'release(mobile):'))
+      (github.ref == 'refs/heads/main' && contains(github.event.head_commit.message || '', 'release(desktop):')) ||
+      (github.ref == 'refs/heads/mobile-main' && contains(github.event.head_commit.message || '', 'release(mobile):'))
     steps:
       - name: Checkout repository
         uses: actions/checkout@v6

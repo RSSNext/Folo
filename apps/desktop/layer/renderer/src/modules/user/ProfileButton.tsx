@@ -63,6 +63,7 @@ export const ProfileButton: FC<ProfileButtonProps> = memo((props) => {
       <DropdownMenuTrigger
         asChild
         className="!outline-none focus-visible:bg-theme-item-hover data-[state=open]:bg-transparent"
+        data-testid="profile-menu-trigger"
       >
         {props.animatedAvatar ? (
           <TransitionAvatar stage={dropdown ? "zoom-in" : ""} />
@@ -154,6 +155,7 @@ export const ProfileButton: FC<ProfileButtonProps> = memo((props) => {
         <DropdownMenuSeparator />
         <DropdownMenuItem
           className="pl-3"
+          data-testid="profile-menu-preferences"
           onClick={() => {
             settingModalPresent()
           }}
@@ -202,6 +204,7 @@ export const ProfileButton: FC<ProfileButtonProps> = memo((props) => {
         )}
         <DropdownMenuItem
           className="pl-3"
+          data-testid="profile-menu-logout"
           onClick={signOut}
           icon={<i className="i-mgc-exit-cute-re" />}
         >

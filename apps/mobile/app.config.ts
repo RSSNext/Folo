@@ -25,6 +25,8 @@ export default ({ config }: ConfigContext): ExpoConfig => {
       eas: {
         projectId: "a6335b14-fb84-45aa-ba80-6f6ab8926920",
       },
+      e2eEnvProfile: process.env.EXPO_PUBLIC_E2E_ENV_PROFILE ?? null,
+      e2eLanguage: process.env.EXPO_PUBLIC_E2E_LANGUAGE ?? null,
     },
     owner: "follow",
     // disable expo updates for now, https://github.com/expo/expo/issues/29630
@@ -57,7 +59,7 @@ export default ({ config }: ConfigContext): ExpoConfig => {
         LSApplicationQueriesSchemes: ["bilibili", "youtube"],
         CFBundleAllowMixedLocalizations: true,
         // apps/mobile/src/@types/constants.ts currentSupportedLanguages
-        CFBundleLocalizations: ["en", "ja", "zh-CN", "zh-TW"],
+        CFBundleLocalizations: ["en", "ja", "zh-CN", "zh-TW", "fr-FR"],
         CFBundleDevelopmentRegion: "en",
       },
       googleServicesFile: "./build/GoogleService-Info.plist",
@@ -134,6 +136,7 @@ export default ({ config }: ConfigContext): ExpoConfig => {
       ],
 
       require("./plugins/with-gradle-jvm-heap-size-increase.js"),
+      require("./plugins/with-android-jdk-21.js"),
       require("./plugins/with-android-manifest-plugin.js"),
       "expo-secure-store",
       "@react-native-firebase/app",

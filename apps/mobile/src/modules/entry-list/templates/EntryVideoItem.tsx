@@ -1,6 +1,7 @@
 import { FeedViewType } from "@follow/constants"
 import { useEntry } from "@follow/store/entry/hooks"
 import { unreadSyncService } from "@follow/store/unread/store"
+import { useIsLoggedIn } from "@follow/store/user/hooks"
 import { tracker } from "@follow/tracker"
 import { formatDuration, transformVideoUrl } from "@follow/utils"
 import { memo, useMemo } from "react"
@@ -20,6 +21,7 @@ import { EntryGridFooter } from "../../entry-content/EntryGridFooter"
 
 export const EntryVideoItem = memo(({ id }: { id: string }) => {
   const { t } = useTranslation()
+  const isLoggedIn = useIsLoggedIn()
   const item = useEntry(id, (state) => ({
     attachments: state.attachments,
     media: state.media,
@@ -45,7 +47,9 @@ export const EntryVideoItem = memo(({ id }: { id: string }) => {
         <ItemPressable
           itemStyle={ItemPressableStyle.Plain}
           onPress={() => {
-            unreadSyncService.markEntryAsRead(id)
+            if (isLoggedIn) {
+              unreadSyncService.markEntryAsRead(id)
+            }
             tracker.navigateEntry({
               feedId: item.feedId!,
               entryId: id,

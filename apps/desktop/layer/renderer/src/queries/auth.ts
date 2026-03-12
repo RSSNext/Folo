@@ -1,13 +1,16 @@
+import { IN_ELECTRON } from "@follow/shared/constants"
 import { whoamiQueryKey } from "@follow/store/user/hooks"
 import { userSyncService } from "@follow/store/user/store"
 import { tracker } from "@follow/tracker"
 import { clearStorage } from "@follow/utils/ns"
 import type { FetchError } from "ofetch"
 
+import { setLoginModalShow } from "~/atoms/user"
 import { QUERY_PERSIST_KEY } from "~/constants"
 import { useAuthQuery } from "~/hooks/common"
 import { deleteUserCustom as deleteUserFn, getAccountInfo, signOut as signOutFn } from "~/lib/auth"
 import { ipcServices } from "~/lib/client"
+import { clearAuthSessionToken, getAuthSessionToken } from "~/lib/client-session"
 import { defineQuery } from "~/lib/defineQuery"
 import { clearLocalPersistStoreData } from "~/store/utils/clear"
 
@@ -90,11 +93,14 @@ export const useSession = (options?: { enabled?: boolean }) => {
 }
 
 export const handleSessionChanges = () => {
+  setLoginModalShow(false)
   ipcServices?.auth.sessionChanged()
   window.location.reload()
 }
 
 export const signOut = async () => {
+  const authSessionToken = getAuthSessionToken()
+  clearAuthSessionToken()
   // Clear query cache
   localStorage.removeItem(QUERY_PERSIST_KEY)
 
@@ -105,8 +111,18 @@ export const signOut = async () => {
   clearStorage()
   // Sign out
   await tracker.manager.clear()
-  await ipcServices?.auth.signOut()
-  await signOutFn()
+  if (IN_ELECTRON) {
+    void ipcServices?.auth.signOut()
+    const authService = ipcServices?.auth as
+      | ({ signOutRemote?: (token?: string) => Promise<void> } & NonNullable<
+          typeof ipcServices
+        >["auth"])
+      | undefined
+    void authService?.signOutRemote?.(authSessionToken ?? undefined)
+  } else {
+    await ipcServices?.auth.signOut()
+    await signOutFn()
+  }
   window.location.reload()
 }
 

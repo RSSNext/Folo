@@ -2,7 +2,6 @@ import { ACTION_LANGUAGE_KEYS } from "@follow/shared"
 import i18next from "i18next"
 import { useMemo } from "react"
 import { useTranslation } from "react-i18next"
-import { View } from "react-native"
 
 import type { MobileSupportedLanguages } from "@/src/@types/constants"
 import { currentSupportedLanguages } from "@/src/@types/constants"
@@ -21,6 +20,8 @@ import {
 import { Switch } from "@/src/components/ui/switch/Switch"
 import { updateDayjsLocale } from "@/src/lib/i18n"
 import type { NavigationControllerView } from "@/src/lib/navigation/types"
+
+const settingSelectWrapperClassName = "w-[200px]"
 
 export function LanguageSelect({ settingKey }: { settingKey: "language" | "actionLanguage" }) {
   const { t } = useTranslation("settings")
@@ -80,10 +81,9 @@ function LanguageSetting({ settingKey }: { settingKey: "language" | "actionLangu
           ? t("general.language.description")
           : t("general.action_language.description")
       }
+      rightClassName={settingSelectWrapperClassName}
     >
-      <View className="w-[100px]">
-        <LanguageSelect settingKey={settingKey} />
-      </View>
+      <LanguageSelect settingKey={settingKey} />
     </GroupedInsetListCell>
   )
 }
@@ -96,19 +96,18 @@ function TranslationModeSetting() {
     <GroupedInsetListCell
       label={t("general.translation_mode.label")}
       description={t("general.translation_mode.description")}
+      rightClassName={settingSelectWrapperClassName}
     >
-      <View className="w-[120px]">
-        <Select
-          value={translationMode}
-          onValueChange={(value) => {
-            setGeneralSetting("translationMode", value as "bilingual" | "translation-only")
-          }}
-          options={[
-            { label: t("general.translation_mode.bilingual"), value: "bilingual" },
-            { label: t("general.translation_mode.translation-only"), value: "translation-only" },
-          ]}
-        />
-      </View>
+      <Select
+        value={translationMode}
+        onValueChange={(value) => {
+          setGeneralSetting("translationMode", value as "bilingual" | "translation-only")
+        }}
+        options={[
+          { label: t("general.translation_mode.bilingual"), value: "bilingual" },
+          { label: t("general.translation_mode.translation-only"), value: "translation-only" },
+        ]}
+      />
     </GroupedInsetListCell>
   )
 }
@@ -151,6 +150,7 @@ export const GeneralScreen: NavigationControllerView = () => {
         >
           <Switch
             size="sm"
+            testID="general-ai-summary-switch"
             value={summary}
             onValueChange={(value) => {
               setGeneralSetting("summary", value)

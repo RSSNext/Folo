@@ -1,0 +1,16 @@
+appId: is.follow
+---
+- runFlow:
+    when:
+      visible:
+        text: Sign in to your Apple Account
+    commands:
+      - tapOn:
+          text: Close
+- runFlow:
+    when:
+      visible:
+        text: Siri, Dictation & Privacy
+    commands:
+      - tapOn:
+          point: "8%,8%"

@@ -3,6 +3,7 @@ import { nanoid } from "nanoid"
 
 const CLIENT_ID_KEY = getStorageNS("client_id")
 const SESSION_ID_KEY = getStorageNS("session_id")
+const AUTH_SESSION_TOKEN_KEY = getStorageNS("auth_session_token")
 
 export const getClientId = (): string => {
   const clientId = localStorage.getItem(CLIENT_ID_KEY)
@@ -30,4 +31,16 @@ export const clearSessionId = (): void => {
 
 export const clearClientId = (): void => {
   localStorage.removeItem(CLIENT_ID_KEY)
+}
+
+export const getAuthSessionToken = (): string | null => {
+  return localStorage.getItem(AUTH_SESSION_TOKEN_KEY)
+}
+
+export const setAuthSessionToken = (token: string): void => {
+  localStorage.setItem(AUTH_SESSION_TOKEN_KEY, token)
+}
+
+export const clearAuthSessionToken = (): void => {
+  localStorage.removeItem(AUTH_SESSION_TOKEN_KEY)
 }

@@ -328,6 +328,7 @@ const SubscriptionFeedsSection = () => {
                     </DropdownMenu>
 
                     <MotionButtonBase
+                      data-testid="feeds-batch-unsubscribe"
                       className="text-xs text-red transition-colors hover:text-red/80"
                       type="button"
                       onClick={handleBatchUnsubscribe}
@@ -529,6 +530,7 @@ const FeedListItem = memo(
     return (
       <div
         data-id={id}
+        data-testid={`settings-feed-row-${id}`}
         role="button"
         tabIndex={-1}
         className={clsx(

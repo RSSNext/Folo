@@ -1,0 +1,9 @@
+appId: is.follow
+name: iOS auth journey
+---
+- runFlow:
+    file: ./register.yaml
+- runFlow:
+    file: ./sign-out.yaml
+- runFlow:
+    file: ./login.yaml

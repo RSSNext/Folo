@@ -1,0 +1,3 @@
+appId: is.follow
+---
+- runFlow: ../shared/register.yaml
