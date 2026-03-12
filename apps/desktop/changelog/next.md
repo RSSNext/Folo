@@ -2,22 +2,10 @@
 
 ## Shiny new things
 
-- Added the Folo CLI with browser-based sign-in
-- Added desktop-to-CLI session sync and install management
-- Added in-app review prompts
-
 ## Improvements
-
-- Improved account and auth flows to support CLI sign-in and session recovery
-- Added a dedicated CLI settings page and install controls
-- Expanded desktop end-to-end coverage for auth and user flows
 
 ## No longer broken
 
-- Removed the unwanted text selection toolbar
-- Fixed AI onboarding asset loading by switching the spline asset domain
-- Hardened setting sync authentication lifecycle
-
 ## Thanks
 
-Special thanks to volunteer contributors for their valuable contributions
+Special thanks to volunteer contributors @ for their valuable contributions
