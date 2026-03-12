@@ -199,9 +199,10 @@ const EntryInfo = ({ entryId }: { entryId: string }) => {
     publishedAt: state.publishedAt,
     feedId: state.feedId,
   }))
+  const isLoggedIn = useIsLoggedIn()
   const feed = useFeedById(entry?.feedId)
   const secondaryLabelColor = useColor("secondaryLabel")
-  const readCount = useEntryReadHistory(entryId)?.entryReadHistories?.readCount ?? 0
+  const readCount = useEntryReadHistory(entryId, 20, isLoggedIn)?.entryReadHistories?.readCount ?? 0
   const hideRecentReader = useUISettingKey("hideRecentReader")
   if (!entry) return null
   const { publishedAt } = entry
@@ -222,7 +223,7 @@ const EntryInfo = ({ entryId }: { entryId: string }) => {
           className="text-xs leading-tight text-secondary-label"
         />
       </View>
-      {!hideRecentReader && (
+      {isLoggedIn && !hideRecentReader && (
         <View className="flex flex-row items-center gap-1">
           <Eye2CuteReIcon width={16} height={16} color={secondaryLabelColor} />
           <Text className="text-xs leading-tight text-secondary-label">{readCount}</Text>

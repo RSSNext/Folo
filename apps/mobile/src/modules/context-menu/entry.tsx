@@ -4,6 +4,7 @@ import { collectionSyncService } from "@follow/store/collection/store"
 import { getEntry } from "@follow/store/entry/getter"
 import { useEntry } from "@follow/store/entry/hooks"
 import { unreadSyncService } from "@follow/store/unread/store"
+import { useIsLoggedIn } from "@follow/store/user/hooks"
 import { PortalProvider } from "@gorhom/portal"
 import type { PropsWithChildren } from "react"
 import { useCallback } from "react"
@@ -32,6 +33,7 @@ export const EntryItemContextMenu = ({
   const { t } = useTranslation()
   const selectedView = useSelectedView()
   const selectedFeed = useSelectedFeed()
+  const isLoggedIn = useIsLoggedIn()
   const entry = useEntry(id, (state) => ({
     read: state.read,
     feedId: state.feedId,
@@ -73,81 +75,85 @@ export const EntryItemContextMenu = ({
           )}
         </ContextMenu.Preview>
 
-        <ContextMenu.Item
-          key="MarkAsReadAbove"
-          onSelect={() => {
-            const payload = getFetchEntryPayload(selectedFeed, selectedView)
-            const { publishedAt } = entry
-            unreadSyncService.markBatchAsRead({
-              view: selectedView,
-              filter: payload,
-              time: {
-                startTime: new Date(publishedAt).getTime() + 1,
-                endTime: Date.now(),
-              },
-              excludePrivate: getHideAllReadSubscriptions(),
-            })
-          }}
-        >
-          <ContextMenu.ItemIcon
-            ios={{
-              name: "arrow.up",
-            }}
-          />
-          <ContextMenu.ItemTitle>
-            {t("operation.mark_all_as_read_which", {
-              which: t("operation.mark_all_as_read_which_above"),
-            })}
-          </ContextMenu.ItemTitle>
-        </ContextMenu.Item>
+        {isLoggedIn && (
+          <>
+            <ContextMenu.Item
+              key="MarkAsReadAbove"
+              onSelect={() => {
+                const payload = getFetchEntryPayload(selectedFeed, selectedView)
+                const { publishedAt } = entry
+                unreadSyncService.markBatchAsRead({
+                  view: selectedView,
+                  filter: payload,
+                  time: {
+                    startTime: new Date(publishedAt).getTime() + 1,
+                    endTime: Date.now(),
+                  },
+                  excludePrivate: getHideAllReadSubscriptions(),
+                })
+              }}
+            >
+              <ContextMenu.ItemIcon
+                ios={{
+                  name: "arrow.up",
+                }}
+              />
+              <ContextMenu.ItemTitle>
+                {t("operation.mark_all_as_read_which", {
+                  which: t("operation.mark_all_as_read_which_above"),
+                })}
+              </ContextMenu.ItemTitle>
+            </ContextMenu.Item>
 
-        <ContextMenu.Item
-          key="MarkAsRead"
-          onSelect={() => {
-            entry.read
-              ? unreadSyncService.markEntryAsUnread(id)
-              : unreadSyncService.markEntryAsRead(id)
-          }}
-        >
-          <ContextMenu.ItemTitle>
-            {entry.read ? t("operation.mark_as_unread") : t("operation.mark_as_read")}
-          </ContextMenu.ItemTitle>
-          <ContextMenu.ItemIcon
-            ios={{
-              name: entry.read ? "circle.fill" : "checkmark.circle",
-            }}
-          />
-        </ContextMenu.Item>
+            <ContextMenu.Item
+              key="MarkAsRead"
+              onSelect={() => {
+                entry.read
+                  ? unreadSyncService.markEntryAsUnread(id)
+                  : unreadSyncService.markEntryAsRead(id)
+              }}
+            >
+              <ContextMenu.ItemTitle>
+                {entry.read ? t("operation.mark_as_unread") : t("operation.mark_as_read")}
+              </ContextMenu.ItemTitle>
+              <ContextMenu.ItemIcon
+                ios={{
+                  name: entry.read ? "circle.fill" : "checkmark.circle",
+                }}
+              />
+            </ContextMenu.Item>
 
-        <ContextMenu.Item
-          key="MarkAsReadBelow"
-          onSelect={() => {
-            const payload = getFetchEntryPayload(selectedFeed, selectedView)
-            const { publishedAt } = entry
-            unreadSyncService.markBatchAsRead({
-              view: selectedView,
-              filter: payload,
-              time: {
-                startTime: 1,
-                endTime: new Date(publishedAt).getTime() - 1,
-              },
-              excludePrivate: getHideAllReadSubscriptions(),
-            })
-          }}
-        >
-          <ContextMenu.ItemIcon
-            ios={{
-              name: "arrow.down",
-            }}
-          />
-          <ContextMenu.ItemTitle>
-            {t("operation.mark_all_as_read_which", {
-              which: t("operation.mark_all_as_read_which_below"),
-            })}
-          </ContextMenu.ItemTitle>
-        </ContextMenu.Item>
+            <ContextMenu.Item
+              key="MarkAsReadBelow"
+              onSelect={() => {
+                const payload = getFetchEntryPayload(selectedFeed, selectedView)
+                const { publishedAt } = entry
+                unreadSyncService.markBatchAsRead({
+                  view: selectedView,
+                  filter: payload,
+                  time: {
+                    startTime: 1,
+                    endTime: new Date(publishedAt).getTime() - 1,
+                  },
+                  excludePrivate: getHideAllReadSubscriptions(),
+                })
+              }}
+            >
+              <ContextMenu.ItemIcon
+                ios={{
+                  name: "arrow.down",
+                }}
+              />
+              <ContextMenu.ItemTitle>
+                {t("operation.mark_all_as_read_which", {
+                  which: t("operation.mark_all_as_read_which_below"),
+                })}
+              </ContextMenu.ItemTitle>
+            </ContextMenu.Item>
+          </>
+        )}
 
-        {feedId && view !== undefined && (
+        {isLoggedIn && feedId && view !== undefined && (
           <ContextMenu.Item
             key="Star"
             onSelect={() => {

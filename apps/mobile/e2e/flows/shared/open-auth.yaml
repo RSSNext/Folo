@@ -11,6 +11,13 @@ appId: is.follow
     commands:
       - tapOn:
           id: no-login-timeline
+- runFlow:
+    when:
+      visible:
+        id: home-avatar-trigger
+    commands:
+      - tapOn:
+          id: home-avatar-trigger
 - extendedWaitUntil:
     visible:
       id: login-screen
