@@ -11,6 +11,7 @@ import { StyleSheet, View } from "react-native"
 import { useActionLanguage, useGeneralSettingKey } from "@/src/atoms/settings/general"
 import { useBottomTabBarHeight } from "@/src/components/layouts/tabbar/hooks"
 import { PlatformActivityIndicator } from "@/src/components/ui/loading/PlatformActivityIndicator"
+import { useIsTabletLayout } from "@/src/lib/responsive"
 import { useEntries } from "@/src/modules/screen/atoms"
 import { useHeaderHeight } from "@/src/modules/screen/hooks/useHeaderHeight"
 
@@ -38,6 +39,7 @@ export const EntryListContentPicture = ({
   "data" | "renderItem"
 > & { ref?: React.Ref<ElementRef<typeof TimelineSelectorMasonryList> | null> }) => {
   const ref = useRef<FlashListRef<any>>(null)
+  const isTablet = useIsTabletLayout()
 
   useImperativeHandle(forwardRef, () => ref.current!)
   const { fetchNextPage, refetch, isRefetching, hasNextPage, isFetching, isReady } = useEntries({
@@ -103,8 +105,8 @@ export const EntryListContentPicture = ({
       onViewableItemsChanged={onViewableItemsChanged}
       onScroll={onScroll}
       onEndReached={fetchNextPage}
-      numColumns={2}
-      contentContainerStyle={styles.contentContainer}
+      numColumns={isTablet ? 3 : 2}
+      contentContainerStyle={isTablet ? styles.tabletContentContainer : styles.contentContainer}
       ListFooterComponent={
         hasNextPage ? (
           <View className="h-20 items-center justify-center">
@@ -163,6 +165,9 @@ function EntryPictureItemSkeleton({ variantIndex }: { variantIndex: number }) {
 const styles = StyleSheet.create({
   contentContainer: {
     paddingHorizontal: 8,
+  },
+  tabletContentContainer: {
+    paddingHorizontal: 16,
   },
   skeletonHeight120: {
     height: 120,

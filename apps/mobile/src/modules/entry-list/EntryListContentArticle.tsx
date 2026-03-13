@@ -9,6 +9,7 @@ import { View } from "react-native"
 
 import { useActionLanguage, useGeneralSettingKey } from "@/src/atoms/settings/general"
 import { useBottomTabBarHeight } from "@/src/components/layouts/tabbar/hooks"
+import { useReadableContainerStyle } from "@/src/lib/responsive"
 import { useHeaderHeight } from "@/src/modules/screen/hooks/useHeaderHeight"
 
 import { useEntries } from "../screen/atoms"
@@ -37,21 +38,24 @@ export const EntryListContentArticle = ({
   ref?: React.Ref<ElementRef<typeof TimelineSelectorList> | null>
 }) => {
   const extraData: EntryExtraData = useMemo(() => ({ entryIds }), [entryIds])
+  const readableItemStyle = useReadableContainerStyle(860, 16)
 
   const { fetchNextPage, isFetching, refetch, isRefetching, hasNextPage, fetchedTime, isReady } =
     useEntries({ viewId: view, active })
 
   const renderItem = useCallback(
     ({ item: id, extraData, index }: ListRenderItemInfo<string>) => (
-      <EntryNormalItem
-        entryId={id}
-        extraData={extraData as EntryExtraData}
-        view={view}
-        hasTopSeparator={index > 0}
-        testID={index === 0 ? "timeline-entry-first" : undefined}
-      />
+      <View style={readableItemStyle}>
+        <EntryNormalItem
+          entryId={id}
+          extraData={extraData as EntryExtraData}
+          view={view}
+          hasTopSeparator={index > 0}
+          testID={index === 0 ? "timeline-entry-first" : undefined}
+        />
+      </View>
     ),
-    [view],
+    [readableItemStyle, view],
   )
 
   const ListFooterComponent = useMemo(
@@ -89,7 +93,9 @@ export const EntryListContentArticle = ({
     return (
       <View className="flex-1" style={{ paddingTop: headerHeight, paddingBottom: tabBarHeight }}>
         {ARTICLE_SKELETON_KEYS.map((key) => (
-          <EntryItemSkeleton key={key} />
+          <View key={key} style={readableItemStyle}>
+            <EntryItemSkeleton />
+          </View>
         ))}
       </View>
     )

@@ -160,7 +160,7 @@ export const AISummary: FC<{
   const mainContent = (
     <Animated.View
       className={cn(
-        "mx-4 my-2 rounded-xl border-opaque-separator/50",
+        "my-2 rounded-xl border-opaque-separator/50",
         isReactElement ? "px-4 pt-4" : "p-4",
         // Opacity modifier style incorrectly applied in Android
         isAndroid ? "bg-secondary-system-background" : "bg-secondary-system-background/30",

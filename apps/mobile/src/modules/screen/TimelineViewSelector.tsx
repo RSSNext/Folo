@@ -5,13 +5,14 @@ import * as React from "react"
 import { useEffect } from "react"
 import { useTranslation } from "react-i18next"
 import type { StyleProp, ViewStyle } from "react-native"
-import { ScrollView, Text, useWindowDimensions, View } from "react-native"
+import { ScrollView, StyleSheet, Text, useWindowDimensions, View } from "react-native"
 import Animated, { interpolate, interpolateColor, useAnimatedStyle } from "react-native-reanimated"
 
 import { ReAnimatedPressable } from "@/src/components/common/AnimatedComponents"
 import { TIMELINE_VIEW_SELECTOR_HEIGHT } from "@/src/constants/ui"
 import type { ViewDefinition } from "@/src/constants/views"
 import { views } from "@/src/constants/views"
+import { useIsTabletLayout, useReadableContainerStyle } from "@/src/lib/responsive"
 import {
   selectTimeline,
   useSelectedFeed,
@@ -25,10 +26,18 @@ import { TimelineViewSelectorContextMenu } from "./TimelineViewSelectorContextMe
 const ACTIVE_WIDTH = 180
 const INACTIVE_WIDTH = 48
 const ACTIVE_TEXT_WIDTH = 100
+const MAX_TABLET_ACTIVE_WIDTH = 280
+const styles = StyleSheet.create({
+  scrollView: {
+    width: "100%",
+  },
+})
 export function TimelineViewSelector() {
   const activeViews = useViewWithSubscription()
   const scrollViewRef = React.useRef<ScrollView | null>(null)
   const selectedFeed = useSelectedFeed()
+  const readableContainerStyle = useReadableContainerStyle(760, 12)
+  const activeViewCount = activeViews.length
   return (
     <View
       className="flex items-center justify-between py-2"
@@ -36,27 +45,39 @@ export function TimelineViewSelector() {
         height: TIMELINE_VIEW_SELECTOR_HEIGHT,
       }}
     >
-      <ScrollView
-        ref={scrollViewRef}
-        horizontal
-        scrollsToTop={false}
-        contentContainerClassName="flex-row gap-3 items-center px-3"
-        showsHorizontalScrollIndicator={false}
-      >
-        {activeViews.map((v, index) => {
-          const view = views.find((view) => view.view === v)
-          if (!view) return null
-          return (
-            <ViewItem
-              key={view.name}
-              index={index}
-              view={view}
-              scrollViewRef={scrollViewRef}
-              isActive={selectedFeed?.type === "view" && selectedFeed.viewId === view.view}
-            />
-          )
-        })}
-      </ScrollView>
+      <View style={readableContainerStyle}>
+        <ScrollView
+          ref={scrollViewRef}
+          style={styles.scrollView}
+          horizontal
+          scrollsToTop={false}
+          contentContainerClassName="flex-row items-center px-3"
+          contentContainerStyle={
+            activeViewCount > 0
+              ? {
+                  minWidth: "100%",
+                  justifyContent: "center",
+                  gap: 12,
+                }
+              : undefined
+          }
+          showsHorizontalScrollIndicator={false}
+        >
+          {activeViews.map((v, index) => {
+            const view = views.find((view) => view.view === v)
+            if (!view) return null
+            return (
+              <ViewItem
+                key={view.name}
+                index={index}
+                view={view}
+                scrollViewRef={scrollViewRef}
+                isActive={selectedFeed?.type === "view" && selectedFeed.viewId === view.view}
+              />
+            )
+          })}
+        </ScrollView>
+      </View>
     </View>
   )
 }
@@ -81,10 +102,14 @@ function ItemWrapper({
   const { width: windowWidth } = useWindowDimensions()
   const activeViews = useViewWithSubscription()
   const dragProgress = useTimelineSelectorDragProgress()
+  const isTablet = useIsTabletLayout()
   const activeWidth = Math.max(
     windowWidth - (INACTIVE_WIDTH + 12) * (activeViews.length - 1) - 8 * 2,
     ACTIVE_WIDTH,
   )
+  const resolvedActiveWidth = isTablet
+    ? Math.min(activeWidth, MAX_TABLET_ACTIVE_WIDTH)
+    : activeWidth
   const bgColor = useColor("gray5")
   return (
     <ReAnimatedPressable
@@ -103,7 +128,7 @@ function ItemWrapper({
         width: interpolate(
           dragProgress.get(),
           [index - 1, index, index + 1],
-          [INACTIVE_WIDTH, Math.max(activeWidth, INACTIVE_WIDTH), INACTIVE_WIDTH],
+          [INACTIVE_WIDTH, Math.max(resolvedActiveWidth, INACTIVE_WIDTH), INACTIVE_WIDTH],
           "clamp",
         ),
         ...style,

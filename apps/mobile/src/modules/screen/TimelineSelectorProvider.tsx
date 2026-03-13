@@ -14,6 +14,7 @@ import { DefaultHeaderBackButton } from "@/src/components/layouts/header/Navigat
 import { NavigationBlurEffectHeader } from "@/src/components/layouts/views/SafeNavigationScrollView"
 import { gentleSpringPreset } from "@/src/constants/spring"
 import { TIMELINE_VIEW_SELECTOR_HEIGHT } from "@/src/constants/ui"
+import { useIsTabletLayout } from "@/src/lib/responsive"
 import {
   ActionGroup,
   FeedShareActionButton,
@@ -33,12 +34,14 @@ export function TimelineHeader({ feedId }: { feedId?: string }) {
   const isFeed = screenType === "feed"
   const isTimeline = screenType === "timeline"
   const isSubscriptions = screenType === "subscriptions"
+  const isTablet = useIsTabletLayout()
 
   const { isFetching } = useEntries()
+  const shouldHideDuplicatedTitle = isTablet && (isTimeline || isSubscriptions)
 
   return (
     <NavigationBlurEffectHeader
-      headerTitle={<AnimatedTitle title={viewTitle} />}
+      headerTitle={shouldHideDuplicatedTitle ? undefined : <AnimatedTitle title={viewTitle} />}
       isLoading={(isFeed || isTimeline) && isFetching}
       headerLeft={useMemo(
         () =>
