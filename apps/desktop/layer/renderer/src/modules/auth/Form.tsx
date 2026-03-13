@@ -14,7 +14,7 @@ import { IN_ELECTRON } from "@follow/shared/constants"
 import { env } from "@follow/shared/env.desktop"
 import { zodResolver } from "@hookform/resolvers/zod"
 import { useForm } from "react-hook-form"
-import { useTranslation } from "react-i18next"
+import { Trans, useTranslation } from "react-i18next"
 import { toast } from "sonner"
 import { z } from "zod"
 
@@ -217,7 +217,16 @@ export function LoginWithPassword({
             <FormItem>
               <FormLabel>{t("login.email")}</FormLabel>
               <FormControl>
-                <Input data-testid="login-email-input" type="email" {...field} />
+                <Input
+                  data-testid="login-email-input"
+                  type="email"
+                  autoCapitalize="none"
+                  autoComplete="email"
+                  autoCorrect="off"
+                  inputMode="email"
+                  spellCheck={false}
+                  {...field}
+                />
               </FormControl>
               <FormMessage />
             </FormItem>
@@ -245,7 +254,15 @@ export function LoginWithPassword({
                 </a>
               </FormLabel>
               <FormControl>
-                <Input data-testid="login-password-input" type="password" {...field} />
+                <Input
+                  data-testid="login-password-input"
+                  type="password"
+                  autoCapitalize="none"
+                  autoComplete={IN_ELECTRON ? "current-password" : "new-password"}
+                  autoCorrect="off"
+                  spellCheck={false}
+                  {...field}
+                />
               </FormControl>
               <FormMessage />
             </FormItem>
@@ -268,17 +285,21 @@ export function LoginWithPassword({
 
       <Divider className="my-4" />
 
-      <div className="flex items-center justify-center gap-1 pb-2 text-center text-sm">
-        If you don't have an account,{" "}
-        <button
-          data-testid="login-switch-register"
-          type="button"
-          className="flex cursor-pointer items-center gap-1 text-accent hover:underline"
-          onClick={() => onLoginStateChange("register")}
-        >
-          Sign up
-          <i className="i-mgc-right-cute-fi !text-text" />
-        </button>
+      <div className="pb-2 text-center text-sm text-text-secondary">
+        <Trans
+          t={t}
+          i18nKey="login.no_account"
+          components={{
+            strong: (
+              <button
+                data-testid="login-switch-register"
+                type="button"
+                className="inline-flex cursor-pointer items-center gap-1 text-accent hover:underline focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-accent/30 focus-visible:ring-offset-2"
+                onClick={() => onLoginStateChange("register")}
+              />
+            ),
+          }}
+        />
       </div>
     </Form>
   )
@@ -396,7 +417,16 @@ export function RegisterForm({
               <FormItem>
                 <FormLabel>{t("register.email")}</FormLabel>
                 <FormControl>
-                  <Input data-testid="register-email-input" type="email" {...field} />
+                  <Input
+                    data-testid="register-email-input"
+                    type="email"
+                    autoCapitalize="none"
+                    autoComplete="email"
+                    autoCorrect="off"
+                    inputMode="email"
+                    spellCheck={false}
+                    {...field}
+                  />
                 </FormControl>
                 <FormMessage />
               </FormItem>
@@ -413,7 +443,15 @@ export function RegisterForm({
                     : `${t("register.password")} (${t("register.password_optional")})`}
                 </FormLabel>
                 <FormControl>
-                  <Input data-testid="register-password-input" type="password" {...field} />
+                  <Input
+                    data-testid="register-password-input"
+                    type="password"
+                    autoCapitalize="none"
+                    autoComplete="new-password"
+                    autoCorrect="off"
+                    spellCheck={false}
+                    {...field}
+                  />
                 </FormControl>
                 <FormMessage />
               </FormItem>
@@ -430,7 +468,15 @@ export function RegisterForm({
                     : `${t("register.confirm_password")} (${t("register.password_optional")})`}
                 </FormLabel>
                 <FormControl>
-                  <Input data-testid="register-confirm-password-input" type="password" {...field} />
+                  <Input
+                    data-testid="register-confirm-password-input"
+                    type="password"
+                    autoCapitalize="none"
+                    autoComplete="new-password"
+                    autoCorrect="off"
+                    spellCheck={false}
+                    {...field}
+                  />
                 </FormControl>
                 <FormMessage />
               </FormItem>
@@ -452,17 +498,21 @@ export function RegisterForm({
       </Form>
       <Divider className="my-4" />
 
-      <div className="flex items-center justify-center gap-1 pb-2 text-center text-sm">
-        If you already have an account,{" "}
-        <button
-          data-testid="register-switch-login"
-          type="button"
-          className="flex cursor-pointer items-center gap-1 text-accent hover:underline"
-          onClick={() => onLoginStateChange("login")}
-        >
-          Sign in
-          <i className="i-mgc-right-cute-fi !text-text" />
-        </button>
+      <div className="pb-2 text-center text-sm text-text-secondary">
+        <Trans
+          t={t}
+          i18nKey="login.have_account"
+          components={{
+            strong: (
+              <button
+                data-testid="register-switch-login"
+                type="button"
+                className="inline-flex cursor-pointer items-center gap-1 text-accent hover:underline focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-accent/30 focus-visible:ring-offset-2"
+                onClick={() => onLoginStateChange("login")}
+              />
+            ),
+          }}
+        />
       </div>
     </div>
   )

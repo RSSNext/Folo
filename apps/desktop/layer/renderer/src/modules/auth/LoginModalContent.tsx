@@ -31,7 +31,7 @@ export const LoginModalContent = (props: LoginModalContentProps) => {
 
   const { canClose = true, runtime } = props
 
-  const { t } = useTranslation()
+  const { t } = useTranslation(["app", "common"])
   const { data: authProviders, isLoading } = useAuthProviders()
   const { status } = useSession()
 
@@ -159,10 +159,11 @@ export const LoginModalContent = (props: LoginModalContentProps) => {
       {!IN_ELECTRON && (
         <button
           type="button"
-          className="absolute -right-2 -top-2 flex size-8 items-center justify-center rounded-lg border-0 bg-transparent hover:bg-fill/20"
+          aria-label={t("words.close", { ns: "common" })}
+          className="absolute -right-2 -top-2 flex size-8 items-center justify-center rounded-lg border-0 bg-transparent transition-colors hover:bg-fill/20 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-accent/30 focus-visible:ring-offset-2"
           onClick={modal.dismiss}
         >
-          <i className="i-mgc-close-cute-re size-4" />
+          <i aria-hidden className="i-mgc-close-cute-re pointer-events-none size-4" />
         </button>
       )}
       {isEmail ? (
@@ -181,13 +182,8 @@ export const LoginModalContent = (props: LoginModalContentProps) => {
         <div className="flex flex-col gap-4">
           {/* Login Providers */}
           <div className="flex flex-col gap-2.5">
-            {visibleProviders.map(([key, provider], index) => (
-              <m.div
-                key={key}
-                initial={{ opacity: 0, y: 10 }}
-                animate={{ opacity: 1, y: 0 }}
-                transition={{ ...Spring.presets.smooth, delay: index * 0.05 }}
-              >
+            {visibleProviders.map(([key, provider]) => (
+              <div key={key}>
                 <button
                   data-testid={`login-provider-${key}`}
                   type="button"
@@ -198,28 +194,32 @@ export const LoginModalContent = (props: LoginModalContentProps) => {
                       loginHandler(key, "app")
                     }
                   }}
-                  className="group center relative w-full gap-2 rounded-xl border border-border bg-material-medium py-3.5 pl-5 font-medium backdrop-blur-sm transition-all duration-200 hover:border-folo/30 hover:bg-folo/10"
+                  className="group center relative w-full gap-2 rounded-xl border border-border bg-material-medium py-3.5 pl-5 font-medium backdrop-blur-sm transition-colors duration-200 hover:border-folo/30 hover:bg-folo/10 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-accent/30 focus-visible:ring-offset-2"
                 >
                   {provider.icon64 ? (
                     <img
                       className={cn(
-                        "absolute left-7 size-5 object-contain",
+                        "pointer-events-none absolute left-7 size-5 object-contain",
                         !provider.iconDark64 &&
                           "dark:brightness-[0.85] dark:hue-rotate-180 dark:invert",
                       )}
                       src={isDark ? provider.iconDark64 || provider.icon64 : provider.icon64}
-                      alt={provider.name}
+                      alt=""
+                      aria-hidden="true"
                     />
                   ) : (
-                    <i className="i-mgc-mail-cute-re absolute left-7 size-5 text-text-secondary" />
+                    <i
+                      aria-hidden
+                      className="i-mgc-mail-cute-re pointer-events-none absolute left-7 size-5 text-text-secondary"
+                    />
                   )}
-                  <span className="relative z-10">
+                  <span className="pointer-events-none relative z-10">
                     {t("login.continueWith", { provider: provider.name })}
                   </span>
 
                   {lastMethod === key && (
                     <m.div
-                      className="absolute -right-2 -top-2 z-20 rounded-lg bg-accent px-2.5 py-1 text-xs font-medium text-white"
+                      className="pointer-events-none absolute -right-2 -top-2 z-20 rounded-lg bg-accent px-2.5 py-1 text-xs font-medium text-white"
                       initial={{ scale: 0, opacity: 0 }}
                       animate={{ scale: 1, opacity: 1 }}
                       transition={Spring.presets.bouncy}
@@ -228,7 +228,7 @@ export const LoginModalContent = (props: LoginModalContentProps) => {
                     </m.div>
                   )}
                 </button>
-              </m.div>
+              </div>
             ))}
           </div>
 
@@ -238,9 +238,9 @@ export const LoginModalContent = (props: LoginModalContentProps) => {
               <button
                 type="button"
                 onClick={() => handleOpenToken()}
-                className="inline-flex items-center gap-1 rounded-md px-2 py-1 transition-colors hover:bg-fill-secondary hover:text-text-secondary"
+                className="inline-flex items-center gap-1 rounded-md px-2 py-1 transition-colors hover:bg-fill-secondary hover:text-text-secondary focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-accent/30 focus-visible:ring-offset-2"
               >
-                <i className="i-mgc-key-2-cute-re size-3.5" />
+                <i aria-hidden className="i-mgc-key-2-cute-re size-3.5" />
                 <span>{t("login.enter_token")}</span>
               </button>
             </div>
@@ -249,7 +249,7 @@ export const LoginModalContent = (props: LoginModalContentProps) => {
               <button
                 type="button"
                 onClick={() => handleOpenLegal("tos")}
-                className="text-accent transition-colors hover:text-accent/80 hover:underline"
+                className="text-accent transition-colors hover:text-accent/80 hover:underline focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-accent/30 focus-visible:ring-offset-2"
               >
                 {t("login.terms")}
               </button>
@@ -257,7 +257,7 @@ export const LoginModalContent = (props: LoginModalContentProps) => {
               <button
                 type="button"
                 onClick={() => handleOpenLegal("privacy")}
-                className="text-accent transition-colors hover:text-accent/80 hover:underline"
+                className="text-accent transition-colors hover:text-accent/80 hover:underline focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-accent/30 focus-visible:ring-offset-2"
               >
                 {t("login.privacy")}
               </button>

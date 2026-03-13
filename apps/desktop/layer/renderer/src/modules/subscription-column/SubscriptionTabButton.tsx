@@ -157,6 +157,7 @@ const ViewAllSwitchButton: FC<{
   return (
     <ActionButton
       data-testid={getTimelineTabTestId(item.name)}
+      aria-pressed={isActive}
       shortcutScope={FocusablePresets.isNotFloatingLayerScope}
       key={item.name}
       tooltip={t(item.name, { ns: "common" })}
@@ -219,6 +220,7 @@ const ViewSwitchButton: FC<{
   return (
     <ActionButton
       data-testid={getTimelineTabTestId(item.name)}
+      aria-pressed={isActive}
       shortcutScope={FocusablePresets.isNotFloatingLayerScope}
       ref={setNodeRef}
       key={item.name}

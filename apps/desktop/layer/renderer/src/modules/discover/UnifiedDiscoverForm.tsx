@@ -301,7 +301,7 @@ export function UnifiedDiscoverForm() {
           className="w-full max-w-2xl"
           data-testid="discover-form"
         >
-          <div className="p-6">
+          <div className="rounded-2xl border border-fill-secondary bg-background/70 p-4 shadow-sm">
             <FormField
               control={form.control}
               name="keyword"

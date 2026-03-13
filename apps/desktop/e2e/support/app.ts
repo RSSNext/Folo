@@ -549,10 +549,14 @@ export const expectOnboardingFeedUnsubscribed = async (
 export const expectTimelineSwitchAndEntryReadFlow = async (page: Page) => {
   await returnToMainShell(page)
 
-  await page.getByTestId("timeline-tab-videos").click()
-  await expect.poll(async () => page.locator("[data-entry-id]").count()).toBe(0)
+  const videosTab = page.getByTestId("timeline-tab-videos")
+  await videosTab.click()
+  await expect(videosTab).toHaveAttribute("aria-pressed", "true", { timeout: 15_000 })
+  await expect.poll(async () => page.locator("[data-entry-id]").count()).toBeGreaterThan(0)
 
-  await page.getByTestId("timeline-tab-articles").click()
+  const articlesTab = page.getByTestId("timeline-tab-articles")
+  await articlesTab.click()
+  await expect(articlesTab).toHaveAttribute("aria-pressed", "true", { timeout: 15_000 })
   await expect.poll(async () => page.locator("[data-entry-id]").count()).toBeGreaterThan(0)
 
   const unreadOnboardingEntry = page

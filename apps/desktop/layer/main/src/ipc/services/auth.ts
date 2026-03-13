@@ -24,18 +24,26 @@ export class AuthService extends IpcService {
     const url = new URL(apiURL)
     const isSecure = url.protocol === "https:"
     const isLocalhost = url.hostname === "localhost" || url.hostname === "127.0.0.1"
+    const cookieNames = [
+      BETTER_AUTH_COOKIE_NAME_SESSION_TOKEN,
+      ...(isSecure && !isLocalhost ? ["__Secure-better-auth.session_token"] : []),
+    ]
 
-    await mainWindow.webContents.session.cookies.set({
-      url: apiURL,
-      name: BETTER_AUTH_COOKIE_NAME_SESSION_TOKEN,
-      value: token,
-      ...(isLocalhost ? {} : { domain: url.hostname }),
-      path: "/",
-      httpOnly: true,
-      secure: isSecure,
-      sameSite: "no_restriction",
-      expirationDate: new Date().setDate(new Date().getDate() + 30),
-    })
+    await Promise.all(
+      cookieNames.map((name) =>
+        mainWindow.webContents.session.cookies.set({
+          url: apiURL,
+          name,
+          value: token,
+          ...(isLocalhost ? {} : { domain: url.hostname }),
+          path: "/",
+          httpOnly: true,
+          secure: isSecure,
+          sameSite: "no_restriction",
+          expirationDate: new Date().setDate(new Date().getDate() + 30),
+        }),
+      ),
+    )
   }
 
   private async clearSessionToken(): Promise<void> {
@@ -78,7 +86,7 @@ export class AuthService extends IpcService {
     const token = typeof data.token === "string" ? data.token : null
     const persistedSessionToken = sessionToken ?? token
     if (response.ok && persistedSessionToken) {
-      void this.applySessionToken(persistedSessionToken).catch(() => {})
+      await this.applySessionToken(persistedSessionToken)
     }
 
     if (sessionToken) {
