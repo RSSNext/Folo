@@ -1,7 +1,7 @@
 import { useState } from "react"
 import { Trans, useTranslation } from "react-i18next"
-import { Linking, Pressable, TouchableWithoutFeedback, View } from "react-native"
-import { KeyboardAvoidingView, KeyboardController } from "react-native-keyboard-controller"
+import { Linking, Pressable, ScrollView, View } from "react-native"
+import { KeyboardAvoidingView } from "react-native-keyboard-controller"
 import Animated, { useAnimatedStyle, useSharedValue } from "react-native-reanimated"
 import { useSafeAreaInsets } from "react-native-safe-area-context"
 
@@ -22,77 +22,80 @@ export function Login() {
   const { t } = useTranslation()
   const [isRegister, setIsRegister] = useState(true)
   const [isEmail, setIsEmail] = useState(false)
+  const contentContainerStyle = {
+    flexGrow: 1,
+    paddingTop: insets.top + 56,
+    paddingBottom: insets.bottom + 24,
+  }
   return (
-    <View
-      testID="login-screen"
-      className="pb-safe-or-2 flex-1 justify-between"
-      style={{
-        paddingTop: insets.top + 56,
-      }}
-    >
-      <KeyboardAvoidingView behavior={"position"}>
-        <TouchableWithoutFeedback
-          onPress={() => {
-            KeyboardController.dismiss()
-          }}
-          accessible={false}
+    <View testID="login-screen" className="flex-1">
+      <KeyboardAvoidingView behavior={"position"} className="flex-1">
+        <ScrollView
+          className="flex-1"
+          keyboardDismissMode="on-drag"
+          keyboardShouldPersistTaps="handled"
+          contentContainerStyle={contentContainerStyle}
         >
-          <View
-            className="items-center"
-            style={{
-              gap: gapSize,
-            }}
-          >
-            <Logo
+          <View className="flex-1 justify-between px-6">
+            <View
+              className="items-center"
               style={{
-                width: logoSize,
-                height: logoSize,
-              }}
-            />
-            <Text
-              style={{
-                fontSize,
-                lineHeight,
+                gap: gapSize,
               }}
             >
-              <Text className="text-3xl font-semibold">{`${isRegister ? t("signin.sign_up_to") : t("signin.sign_in_to")} `}</Text>
-              <Text className="text-3xl font-bold">Folo</Text>
-            </Text>
-            {isEmail ? (
-              isRegister ? (
-                <EmailSignUp />
-              ) : (
-                <EmailLogin />
-              )
-            ) : (
-              <SocialLogin onPressEmail={() => setIsEmail(true)} isRegister={isRegister} />
-            )}
-          </View>
-        </TouchableWithoutFeedback>
-        <TermsCheckBox />
-        <View className="mt-14">
-          {isEmail ? (
-            <Text
-              className="pb-2 text-center text-lg font-medium text-label"
-              testID="auth-back"
-              onPress={() => setIsEmail(false)}
-            >
-              {t("login.back")}
-            </Text>
-          ) : (
-            <Pressable testID="auth-toggle-mode" onPress={() => setIsRegister(!isRegister)}>
-              <Text className="pb-2 text-center text-lg font-medium text-label">
-                <Trans
-                  t={t}
-                  i18nKey={isRegister ? "login.have_account" : "login.no_account"}
-                  components={{
-                    strong: <Text className="text-accent" />,
-                  }}
-                />
+              <Logo
+                style={{
+                  width: logoSize,
+                  height: logoSize,
+                }}
+              />
+              <Text
+                style={{
+                  fontSize,
+                  lineHeight,
+                }}
+              >
+                <Text className="text-3xl font-semibold">{`${isRegister ? t("signin.sign_up_to") : t("signin.sign_in_to")} `}</Text>
+                <Text className="text-3xl font-bold">Folo</Text>
               </Text>
-            </Pressable>
-          )}
-        </View>
+              {isEmail ? (
+                isRegister ? (
+                  <EmailSignUp />
+                ) : (
+                  <EmailLogin />
+                )
+              ) : (
+                <SocialLogin onPressEmail={() => setIsEmail(true)} isRegister={isRegister} />
+              )}
+            </View>
+            <View className="mt-10">
+              <TermsCheckBox />
+              <View className="mt-8">
+                {isEmail ? (
+                  <Text
+                    className="pb-2 text-center text-lg font-medium text-label"
+                    testID="auth-back"
+                    onPress={() => setIsEmail(false)}
+                  >
+                    {t("login.back")}
+                  </Text>
+                ) : (
+                  <Pressable testID="auth-toggle-mode" onPress={() => setIsRegister(!isRegister)}>
+                    <Text className="pb-2 text-center text-lg font-medium text-label">
+                      <Trans
+                        t={t}
+                        i18nKey={isRegister ? "login.have_account" : "login.no_account"}
+                        components={{
+                          strong: <Text className="text-accent" />,
+                        }}
+                      />
+                    </Text>
+                  </Pressable>
+                )}
+              </View>
+            </View>
+          </View>
+        </ScrollView>
       </KeyboardAvoidingView>
     </View>
   )
@@ -107,10 +110,7 @@ const TermsCheckBox = () => {
     ],
   }))
   return (
-    <Animated.View
-      className="mt-4 w-full flex-row items-center justify-center gap-2 px-8"
-      style={shakeStyle}
-    >
+    <Animated.View className="w-full items-center justify-center px-8" style={shakeStyle}>
       <TermsText />
     </Animated.View>
   )
@@ -118,16 +118,16 @@ const TermsCheckBox = () => {
 const TermsText = () => {
   const { t } = useTranslation()
   return (
-    <View>
+    <View className="items-center">
       <Text className="text-center text-sm text-secondary-label">{t("login.agree_to")} </Text>
-      <View className="flex-row items-center">
+      <View className="flex-row flex-wrap items-center justify-center">
         <Pressable
           onPress={() => Linking.openURL("https://folo.is/terms-of-service")}
           className="text-secondary-label"
         >
           <Text className="font-semibold">{t("login.terms")}</Text>
         </Pressable>
-        <Text className="text-secondary-label">&nbsp;&&nbsp;</Text>
+        <Text className="px-2 text-secondary-label">/</Text>
         <Pressable
           onPress={() => Linking.openURL("https://folo.is/privacy-policy")}
           className="text-secondary-label"

@@ -104,6 +104,7 @@ const AccountLinker: FC<{
   provider: keyof typeof provider2IconMap
   account?: Account
 }> = ({ provider, account }) => {
+  const { t } = useTranslation(["settings", "common"])
   const queryClient = useQueryClient()
   const unlinkAccountMutation = useMutation({
     mutationFn: async () => {
@@ -115,7 +116,7 @@ const AccountLinker: FC<{
       if (res.error) throw new Error(res.error.message)
     },
     onSuccess: () => {
-      toast.success("Unlinked account success")
+      toast.success(t("profile.link_social.unlink.success"))
       queryClient.invalidateQueries({
         queryKey: accountInfoKey,
       })
@@ -146,7 +147,7 @@ const AccountLinker: FC<{
           linkSocial({ provider: provider as any })
             .then((res) => {
               if (!res.data?.url) {
-                toast.error("Failed to link account")
+                toast.error(t("profile.link_social.link_failed"))
                 return
               }
               openLink(res.data.url, () => {
@@ -159,21 +160,27 @@ const AccountLinker: FC<{
               })
             })
             .catch((error) => {
-              toast.error(error instanceof Error ? error.message : "Failed to link account")
+              toast.error(
+                error instanceof Error ? error.message : t("profile.link_social.link_failed"),
+              )
             })
           return
         }
-        Alert.alert("Unlink account", "Are you sure you want to unlink your account?", [
-          {
-            text: "Cancel",
-            style: "cancel",
-          },
-          {
-            text: "Unlink",
-            style: "destructive",
-            onPress: () => unlinkAccountMutation.mutate(),
-          },
-        ])
+        Alert.alert(
+          t("profile.link_social.unlink.title"),
+          t("profile.link_social.unlink.confirm"),
+          [
+            {
+              text: t("words.cancel", { ns: "common" }),
+              style: "cancel",
+            },
+            {
+              text: t("profile.link_social.unlink.action"),
+              style: "destructive",
+              onPress: () => unlinkAccountMutation.mutate(),
+            },
+          ],
+        )
       }}
     />
   )
@@ -215,7 +222,7 @@ const AuthenticationSection = () => {
   )
 }
 const SecuritySection = () => {
-  const { t } = useTranslation("settings")
+  const { t } = useTranslation(["settings", "common"])
   const { data: account } = useAccount()
   const hasPassword = account?.data?.find((account) => account.provider === "credential")
   const whoAmI = useWhoami()
@@ -231,14 +238,14 @@ const SecuritySection = () => {
           onPress={() => {
             const email = whoAmI?.email || ""
             if (!email) {
-              toast.error("You need to login with email first")
+              toast.error(t("profile.change_password.email_required"))
               return
             }
             if (!hasPassword) {
               forgetPassword({
                 email,
               })
-              toast.success("We have sent you an email with instructions to reset your password.")
+              toast.success(t("profile.reset_password_mail_sent"))
             } else {
               navigation.pushControllerView(ResetPassword)
             }
@@ -260,10 +267,10 @@ const SecuritySection = () => {
                       .updateTwoFactor(false, ctx.password)
                       .finally(() => done())
                     if (res.error?.message) {
-                      toast.error("Invalid password or something went wrong")
+                      toast.error(t("profile.two_factor.invalid_password"))
                       return
                     }
-                    toast.success("2FA disabled")
+                    toast.success(t("profile.two_factor.disabled"))
                     return
                   }
                   const { password } = ctx
@@ -271,7 +278,7 @@ const SecuritySection = () => {
                     .updateTwoFactor(true, password)
                     .finally(() => done())
                   if (res.error?.message) {
-                    toast.error("Invalid password or something went wrong")
+                    toast.error(t("profile.two_factor.invalid_password"))
                     return
                   }
                   if (res.data && "totpURI" in res.data) {
@@ -279,7 +286,7 @@ const SecuritySection = () => {
                       totpURI: res.data.totpURI,
                     })
                   } else {
-                    toast.error("Failed to enable 2FA")
+                    toast.error(t("profile.two_factor.enable_failed"))
                   }
                 },
               },
@@ -291,15 +298,15 @@ const SecuritySection = () => {
           textClassName="text-red text-left"
           onPress={async () => {
             Alert.alert(
-              "Delete account",
-              "Are you sure you want to delete your account? \nThis action is irreversible and may take up to two days to take effect.",
+              t("profile.delete_account.confirm_title"),
+              t("profile.delete_account.confirm_description"),
               [
                 {
-                  text: "Cancel",
+                  text: t("words.cancel", { ns: "common" }),
                   style: "cancel",
                 },
                 {
-                  text: "Delete",
+                  text: t("words.delete", { ns: "common" }),
                   style: "destructive",
                   onPress: async () => {
                     // await signOut()

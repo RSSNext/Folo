@@ -128,7 +128,7 @@ function FollowImpl(props: { feedId: string; defaultView?: FeedViewType }) {
       } else {
         await subscriptionSyncService.subscribe(body)
       }
-      toast.success(isSubscribed ? "Feed updated" : "Feed followed")
+      toast.success(t(isSubscribed ? "feed.follow.update_success" : "feed.follow.success"))
       if (canDismiss) {
         navigate.dismiss()
       } else {
@@ -144,9 +144,9 @@ function FollowImpl(props: { feedId: string; defaultView?: FeedViewType }) {
   const handleUnfollow = () => {
     if (!subscription?.feedId || isLoading) return
 
-    Alert.alert("Unsubscribe?", "This will remove the feed from your subscriptions", [
+    Alert.alert(t("feed.unfollow.confirm_title"), t("feed.unfollow.confirm_description"), [
       {
-        text: "Cancel",
+        text: tCommon("words.cancel"),
         style: "cancel",
       },
       {
@@ -156,7 +156,7 @@ function FollowImpl(props: { feedId: string; defaultView?: FeedViewType }) {
           try {
             setIsLoading(true)
             await subscriptionSyncService.unsubscribe(subscription.feedId)
-            toast.success("Feed unfollowed")
+            toast.success(t("feed.unfollow.success"))
             if (canDismiss) {
               navigate.dismiss()
             } else {
@@ -181,7 +181,7 @@ function FollowImpl(props: { feedId: string; defaultView?: FeedViewType }) {
     })
   }, [isDirty, setScreenOptions])
   if (!feed?.id) {
-    return <Text className="text-label">Feed ({id}) not found</Text>
+    return <Text className="text-label">{t("feed.not_found", { id })}</Text>
   }
   return (
     <SafeNavigationScrollView

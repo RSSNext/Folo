@@ -5,6 +5,7 @@ import { cn, getLuminance } from "@follow/utils"
 import { LinearGradient } from "expo-linear-gradient"
 import type { FC } from "react"
 import { useMemo } from "react"
+import { useTranslation } from "react-i18next"
 import { Linking, Pressable, StyleSheet, View } from "react-native"
 import type { SharedValue } from "react-native-reanimated"
 import ReAnimated, { FadeIn, FadeOut, interpolate, useAnimatedStyle } from "react-native-reanimated"
@@ -91,6 +92,7 @@ export const UserHeaderBanner = ({
   userId?: string
   showRoleBadge?: boolean
 }) => {
+  const { t } = useTranslation()
   const serverConfigs = useServerConfigs()
   const bgColor = useColor("systemGroupedBackground")
   const avatarIconColor = useColor("secondaryLabel")
@@ -237,9 +239,9 @@ export const UserHeaderBanner = ({
         <View className="mt-2 items-center">
           {user?.name ? (
             <Text
-              numberOfLines={1}
+              numberOfLines={2}
               className={cn(
-                "px-8 text-xl font-bold",
+                "px-8 text-center text-xl font-bold",
                 gradientLight ? "text-black" : "text-white/95",
               )}
             >
@@ -287,7 +289,7 @@ export const UserHeaderBanner = ({
               testID="settings-sign-in"
               onPress={() => navigation.presentControllerView(LoginScreen)}
             >
-              <Text className="m-[6] text-sm text-accent">Sign in to your account</Text>
+              <Text className="m-[6] text-sm text-accent">{t("settings.sign_in_cta")}</Text>
             </Pressable>
           ) : null}
         </View>

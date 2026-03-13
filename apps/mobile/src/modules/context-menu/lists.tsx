@@ -52,9 +52,9 @@ export const SubscriptionListItemContextMenu: FC<
           title: t("operation.unfollow"),
           destructive: true,
           onSelect: () => {
-            Alert.alert(t("operation.unfollow"), "Are you sure you want to unsubscribe?", [
+            Alert.alert(t("feed.unfollow.confirm_title"), t("feed.unfollow.confirm_description"), [
               {
-                text: "Cancel",
+                text: t("words.cancel", { ns: "common" }),
                 style: "cancel",
               },
               {

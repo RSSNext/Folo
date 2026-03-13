@@ -49,7 +49,7 @@ export const EditProfileScreen = () => {
       await userSyncService.updateProfile(dirtyFields)
     },
     onSuccess: () => {
-      toast.success("Profile updated")
+      toast.success(t("profile.updateSuccess"))
       setDirtyFields({})
     },
     onError: (error) => {
