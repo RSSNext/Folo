@@ -63,7 +63,7 @@ export const EntryPlaceholderLogo = () => {
       }
     >
       <i className="i-mgc-folo-bot-original size-16 text-text-tertiary" />
-      <div>Where are we off to first?</div>
+      <div>Where do we go first?</div>
       <div className="mt-4 flex flex-col gap-2">
         {buttons.map((button) => (
           <Button

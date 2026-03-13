@@ -15,6 +15,7 @@ import { toast } from "sonner"
 import { z } from "zod"
 
 import { oneTimeToken } from "~/lib/auth"
+import { getFetchErrorMessage } from "~/lib/error-parser"
 import { handleSessionChanges } from "~/queries/auth"
 
 const formSchema = z.object({
@@ -46,7 +47,7 @@ export const TokenModalContent = () => {
       handleSessionChanges()
     } catch (e) {
       console.error("Failed to apply one-time token:", e)
-      toast.error("Failed to apply one-time token")
+      toast.error(e instanceof Error ? getFetchErrorMessage(e) : "Failed to apply one-time token")
     } finally {
       setIsLoading(false)
     }

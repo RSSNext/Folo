@@ -18,6 +18,7 @@ import { rimraf, rimrafSync } from "rimraf"
 
 const ResolvedMakerAppImage: typeof MakerAppImage = (MakerAppImage as any).default || MakerAppImage
 const platform = process.argv.find((arg) => arg.startsWith("--platform"))?.split("=")[1]
+const targetPlatform = platform || process.platform
 const mode = process.argv.find((arg) => arg.startsWith("--mode"))?.split("=")[1]
 const isMicrosoftStore =
   process.argv.find((arg) => arg.startsWith("--ms"))?.split("=")[1] === "true"
@@ -95,6 +96,48 @@ const noopAfterCopy = (_buildPath, _electronVersion, _platform, _arch, callback)
 
 const ignorePattern = new RegExp(`^/node_modules/(?!${[...keepModules].join("|")})`)
 
+const osxSign =
+  targetPlatform === "darwin"
+    ? process.env.OSX_SIGN_IDENTITY
+      ? {
+          optionsForFile: () => ({
+            entitlements: "build/entitlements.mac.plist",
+          }),
+          keychain: process.env.OSX_SIGN_KEYCHAIN_PATH,
+          identity: process.env.OSX_SIGN_IDENTITY,
+          continueOnError: false,
+        }
+      : {
+          // Local macOS builds still need a valid ad-hoc signature after Electron Packager
+          // mutates the upstream Electron bundle (plist updates, helper renames, extra resources).
+          // Hardened Runtime requires consistent Team IDs across loaded code, which ad-hoc signing
+          // does not provide, so local unsigned builds must disable it explicitly.
+          optionsForFile: () => ({
+            entitlements: "build/entitlements.mac.plist",
+            hardenedRuntime: false,
+          }),
+          identity: "-",
+          identityValidation: false,
+          continueOnError: false,
+        }
+    : targetPlatform === "mas"
+      ? {
+          optionsForFile: (filePath: string) => {
+            const entitlements = filePath.includes(".app/")
+              ? "build/entitlements.mas.child.plist"
+              : "build/entitlements.mas.plist"
+            return {
+              hardenedRuntime: false,
+              entitlements,
+            }
+          },
+          keychain: process.env.OSX_SIGN_KEYCHAIN_PATH,
+          identity: process.env.OSX_SIGN_IDENTITY,
+          provisioningProfile: process.env.OSX_SIGN_PROVISIONING_PROFILE_PATH,
+          continueOnError: false,
+        }
+      : undefined
+
 const config: ForgeConfig = {
   packagerConfig: {
     name: isStaging ? "Folo Staging" : "Folo",
@@ -128,25 +171,7 @@ const config: ForgeConfig = {
     extendInfo: {
       ITSAppUsesNonExemptEncryption: false,
     },
-    osxSign: {
-      optionsForFile:
-        platform === "mas"
-          ? (filePath) => {
-              const entitlements = filePath.includes(".app/")
-                ? "build/entitlements.mas.child.plist"
-                : "build/entitlements.mas.plist"
-              return {
-                hardenedRuntime: false,
-                entitlements,
-              }
-            }
-          : () => ({
-              entitlements: "build/entitlements.mac.plist",
-            }),
-      keychain: process.env.OSX_SIGN_KEYCHAIN_PATH,
-      identity: process.env.OSX_SIGN_IDENTITY,
-      provisioningProfile: process.env.OSX_SIGN_PROVISIONING_PROFILE_PATH,
-    },
+    ...(osxSign && { osxSign }),
     ...(process.env.APPLE_ID &&
       process.env.APPLE_PASSWORD &&
       process.env.APPLE_TEAM_ID && {

@@ -8,12 +8,12 @@ export const appUpdaterConfig = {
   enableCoreUpdate: !isStoreDistribution,
 
   // Disable app update will also disable renderer hot update and core update
-  enableAppUpdate: true,
+  enableAppUpdate: !DEV,
   enableDistributionStoreUpdate: isStoreDistribution,
 
   app: {
-    autoCheckUpdate: true,
-    autoDownloadUpdate: true,
+    autoCheckUpdate: !DEV,
+    autoDownloadUpdate: !DEV,
     checkUpdateInterval: 15 * 60 * 1000,
   },
 }

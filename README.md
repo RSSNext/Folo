@@ -105,6 +105,12 @@ This isn’t just another app. Folo is a community — introducing a new era of 
 
 You are welcome to join the open source community to build together, please check our [Contributing Guide](./CONTRIBUTING.md) for more details.
 
+## 📦 Local desktop packaging
+
+For local macOS desktop packaging, verification, and troubleshooting, see:
+
+- [Desktop Local Packaging](./wiki/desktop-local-packaging.md)
+
 ## 🔏 Code signing policy
 
 Folo for Windows uses free code signing provided by [SignPath.io](https://about.signpath.io/), a certificate by [SignPath Foundation](https://signpath.org/).

@@ -271,6 +271,26 @@ export const useEntryActions = ({ entryId, view }: { entryId: string; view: Feed
 
     const configs: EntryActionItem[] = [
       new EntryActionMenuItem({
+        id: COMMAND_ID.entry.readAbove,
+        onClick: runCmdFn(COMMAND_ID.entry.readAbove, [{ publishedAt: entry.publishedAt }]),
+        hide: !!isCollection,
+        entryId,
+      }),
+      new EntryActionMenuItem({
+        id: COMMAND_ID.entry.readBelow,
+        onClick: runCmdFn(COMMAND_ID.entry.readBelow, [{ publishedAt: entry.publishedAt }]),
+        hide: !!isCollection,
+        entryId,
+      }),
+      new EntryActionMenuItem({
+        id: COMMAND_ID.entry.read,
+        onClick: runCmdFn(COMMAND_ID.entry.read, [{ entryId }]),
+        hide: !!isCollection,
+        active: !!entry.read,
+        shortcut: shortcuts[COMMAND_ID.entry.read],
+        entryId,
+      }),
+      new EntryActionMenuItem({
         id: COMMAND_ID.integration.saveToEagle,
         onClick: runCmdFn(COMMAND_ID.integration.saveToEagle, [{ entryId }]),
         entryId,
@@ -378,26 +398,6 @@ export const useEntryActions = ({ entryId, view }: { entryId: string; view: Feed
           ),
         active: isShowAITranslationOnce,
         disabled: userRole === UserRole.Free || userRole === UserRole.Trial,
-        entryId,
-      }),
-      new EntryActionMenuItem({
-        id: COMMAND_ID.entry.read,
-        onClick: runCmdFn(COMMAND_ID.entry.read, [{ entryId }]),
-        hide: !!isCollection,
-        active: !!entry.read,
-        shortcut: shortcuts[COMMAND_ID.entry.read],
-        entryId,
-      }),
-      new EntryActionMenuItem({
-        id: COMMAND_ID.entry.readAbove,
-        onClick: runCmdFn(COMMAND_ID.entry.readAbove, [{ publishedAt: entry.publishedAt }]),
-        hide: !!isCollection,
-        entryId,
-      }),
-      new EntryActionMenuItem({
-        id: COMMAND_ID.entry.readBelow,
-        onClick: runCmdFn(COMMAND_ID.entry.readBelow, [{ publishedAt: entry.publishedAt }]),
-        hide: !!isCollection,
         entryId,
       }),
       new EntryActionMenuItem({
