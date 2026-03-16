@@ -372,17 +372,20 @@ export function RegisterForm({
             headers,
           }),
         )
-      : await signUp.email({
-          email: values.email,
-          password: values.password,
-          name: values.email.split("@")[0]!,
-          callbackURL: "/",
-        }, {
-          onError(context) {
-            toast.error(context.error.message)
+      : await signUp.email(
+          {
+            email: values.email,
+            password: values.password,
+            name: values.email.split("@")[0]!,
+            callbackURL: "/",
           },
-          headers,
-        })
+          {
+            onError(context) {
+              toast.error(context.error.message)
+            },
+            headers,
+          },
+        )
 
     if (result?.error) {
       return result

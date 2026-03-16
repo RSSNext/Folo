@@ -46,8 +46,8 @@ const InputOTPSlot = ({
     <div
       ref={ref}
       className={cn(
-        "border-border relative flex size-9 items-center justify-center border-y border-r font-mono text-sm shadow-sm transition-all first:rounded-l-md first:border-l last:rounded-r-md",
-        isActive && "ring-accent z-10 ring-1",
+        "relative flex size-9 items-center justify-center border-y border-r border-border font-mono text-sm shadow-sm transition-all first:rounded-l-md first:border-l last:rounded-r-md",
+        isActive && "z-10 ring-1 ring-accent",
         className,
       )}
       {...props}
@@ -55,7 +55,7 @@ const InputOTPSlot = ({
       {char}
       {hasFakeCaret && (
         <div className="pointer-events-none absolute inset-0 flex items-center justify-center">
-          <div className="animate-caret-blink bg-foreground h-4 w-px duration-1000" />
+          <div className="bg-foreground h-4 w-px animate-caret-blink duration-1000" />
         </div>
       )}
     </div>
@@ -76,7 +76,7 @@ const InputOTPSeparator = ({
     role="separator"
     {...props}
   >
-    <div className="bg-border h-1 w-3 rounded-full" />
+    <div className="h-1 w-3 rounded-full bg-border" />
   </div>
 )
 InputOTPSeparator.displayName = "InputOTPSeparator"

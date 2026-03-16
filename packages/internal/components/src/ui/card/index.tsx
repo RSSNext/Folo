@@ -8,7 +8,7 @@ const Card = ({
 }: React.HTMLAttributes<HTMLDivElement> & { ref?: React.Ref<HTMLDivElement | null> }) => (
   <div
     ref={ref}
-    className={cn("text-text bg-material-ultra-thin rounded-lg border", className)}
+    className={cn("rounded-lg border bg-material-ultra-thin text-text", className)}
     {...props}
   />
 )
@@ -44,7 +44,7 @@ const CardDescription = ({
   ...props
 }: React.HTMLAttributes<HTMLParagraphElement> & {
   ref?: React.Ref<HTMLParagraphElement | null>
-}) => <p ref={ref} className={cn("text-text-secondary text-sm", className)} {...props} />
+}) => <p ref={ref} className={cn("text-sm text-text-secondary", className)} {...props} />
 CardDescription.displayName = "CardDescription"
 
 const CardContent = ({

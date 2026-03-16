@@ -69,27 +69,30 @@ function RegisterForm() {
 
     try {
       const recaptchaToken = await requestRecaptchaToken("ssr_register")
-      await signUp.email({
-        email: values.email,
-        password: values.password,
-        name: values.email.split("@")[0]!,
-        callbackURL: "/",
-      }, {
-        onSuccess() {
-          tracker.register({
-            type: "email",
-          })
-          navigate("/login")
+      await signUp.email(
+        {
+          email: values.email,
+          password: values.password,
+          name: values.email.split("@")[0]!,
+          callbackURL: "/",
         },
-        onError(context) {
-          toast.error(context.error.message)
+        {
+          onSuccess() {
+            tracker.register({
+              type: "email",
+            })
+            navigate("/login")
+          },
+          onError(context) {
+            toast.error(context.error.message)
+          },
+          headers: recaptchaToken
+            ? {
+                "x-token": `r3:${recaptchaToken}`,
+              }
+            : undefined,
         },
-        headers: recaptchaToken
-          ? {
-              "x-token": `r3:${recaptchaToken}`,
-            }
-          : undefined,
-      })
+      )
     } finally {
       setIsSubmitting(false)
     }

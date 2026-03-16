@@ -1,7 +1,7 @@
 import { extendConfig } from "@follow/configs/tailwindcss/web"
 import daisyui from "daisyui"
-import { withUIKit } from "tailwindcss-uikit-colors/macos"
 import type { Config } from "tailwindcss"
+import { withUIKit } from "tailwindcss-uikit-colors/macos"
 
 /** @type {import('tailwindcss').Config} */
 export default withUIKit(

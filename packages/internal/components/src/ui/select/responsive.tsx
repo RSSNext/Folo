@@ -64,9 +64,9 @@ export const ResponsiveSelect = ({
         data-testid={triggerTestId}
         onClick={() => realSelectRef?.click()}
         className={cn(
-          "placeholder:text-text-secondary flex w-full items-center justify-between whitespace-nowrap rounded-md bg-transparent disabled:cursor-not-allowed disabled:opacity-50 [&>span]:line-clamp-1",
-          "ring-accent/20 focus:border-accent/80 duration-200 focus:outline-none focus:ring-2",
-          "border-border border",
+          "flex w-full items-center justify-between whitespace-nowrap rounded-md bg-transparent placeholder:text-text-secondary disabled:cursor-not-allowed disabled:opacity-50 [&>span]:line-clamp-1",
+          "ring-accent/20 duration-200 focus:border-accent/80 focus:outline-none focus:ring-2",
+          "border border-border",
           size === "sm" ? "h-7 p-2 text-sm" : "h-9 px-3 py-2 text-sm",
           "hover:border-accent/80",
           "relative",

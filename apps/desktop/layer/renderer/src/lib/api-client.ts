@@ -1,5 +1,5 @@
-import { env } from "@follow/shared/env.desktop"
 import { IN_ELECTRON } from "@follow/shared/constants"
+import { env } from "@follow/shared/env.desktop"
 import { whoami } from "@follow/store/user/getters"
 import { userActions } from "@follow/store/user/store"
 import { createDesktopAPIHeaders } from "@follow/utils/headers"
@@ -9,8 +9,7 @@ import PKG from "@pkg"
 import { NetworkStatus, setApiStatus } from "~/atoms/network"
 import { setLoginModalShow } from "~/atoms/user"
 
-import { getAuthSessionToken } from "./client-session"
-import { getClientId, getSessionId } from "./client-session"
+import { getAuthSessionToken, getClientId, getSessionId } from "./client-session"
 
 export const followClient = new FollowClient({
   credentials: "include",
@@ -34,7 +33,7 @@ followClient.addRequestInterceptor(async (ctx) => {
   if (authSessionToken && !headers.has("Cookie") && !headers.has("cookie")) {
     headers.set(
       "Cookie",
-      `__Secure-better-auth.session_token=${authSessionToken}; better-auth.session_token=${authSessionToken}`
+      `__Secure-better-auth.session_token=${authSessionToken}; better-auth.session_token=${authSessionToken}`,
     )
   }
 
