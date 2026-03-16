@@ -51,6 +51,7 @@ export class SettingService extends IpcService {
   @IpcMethod()
   setAppearance(_context: IpcContext, appearance: "light" | "dark" | "system"): void {
     nativeTheme.themeSource = appearance
+    store.set("appearance", appearance)
   }
 
   @IpcMethod()
