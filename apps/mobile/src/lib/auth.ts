@@ -138,7 +138,6 @@ export const authClient = createAuthClient({
 export const {
   changeEmail,
   changePassword,
-  forgetPassword,
   getAccountInfo,
   getCookie,
   getProviders,
@@ -152,6 +151,8 @@ export const {
   updateUser,
   useSession,
 } = authClient
+
+export const forgetPassword = authClient.requestPasswordReset
 
 export interface AuthProvider {
   name: string

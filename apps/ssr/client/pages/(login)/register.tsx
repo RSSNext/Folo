@@ -74,22 +74,21 @@ function RegisterForm() {
         password: values.password,
         name: values.email.split("@")[0]!,
         callbackURL: "/",
-        fetchOptions: {
-          onSuccess() {
-            tracker.register({
-              type: "email",
-            })
-            navigate("/login")
-          },
-          onError(context) {
-            toast.error(context.error.message)
-          },
-          headers: recaptchaToken
-            ? {
-                "x-token": `r3:${recaptchaToken}`,
-              }
-            : undefined,
+      }, {
+        onSuccess() {
+          tracker.register({
+            type: "email",
+          })
+          navigate("/login")
         },
+        onError(context) {
+          toast.error(context.error.message)
+        },
+        headers: recaptchaToken
+          ? {
+              "x-token": `r3:${recaptchaToken}`,
+            }
+          : undefined,
       })
     } finally {
       setIsSubmitting(false)

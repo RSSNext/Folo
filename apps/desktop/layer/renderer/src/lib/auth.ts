@@ -32,7 +32,6 @@ export const {
   changeEmail,
   changePassword,
   deleteUserCustom,
-  forgetPassword,
   getAccountInfo,
   getProviders,
   getSession,
@@ -49,5 +48,7 @@ export const {
   unlinkAccount,
   updateUser,
 } = auth.authClient
+
+export const forgetPassword = auth.authClient.requestPasswordReset
 
 export const { loginHandler } = auth

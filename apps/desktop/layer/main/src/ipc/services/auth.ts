@@ -22,7 +22,7 @@ export class AuthService extends IpcService {
 
     const apiURL = env.VITE_API_URL
     const url = new URL(apiURL)
-    const isSecure = url.protocol === "https:"
+    const isSecure = url.protocol === "https:" || url.hostname === "localhost" || url.hostname === "127.0.0.1"
     const isLocalhost = url.hostname === "localhost" || url.hostname === "127.0.0.1"
     const cookieNames = [
       BETTER_AUTH_COOKIE_NAME_SESSION_TOKEN,

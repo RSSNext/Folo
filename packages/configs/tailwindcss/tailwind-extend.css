@@ -28,10 +28,8 @@
     --tint: 214;
     --alpha: 3;
     --base: hsl(var(--tint, 214) 80% 27% / calc(var(--alpha, 4) * 1%));
-    /**
-      * Use relative syntax to get to: hsl(221 25% 22% / 40%)
-    */
-    --shade: hsl(from var(--base) calc(h + 8) 25 calc(l - 5));
+    /* Use color-mix instead of relative color syntax for build-tool compatibility. */
+    --shade: color-mix(in srgb, var(--base) 72%, black);
     --perfect-shadow:
       0 0 0 1px var(--base), 0 1px 1px -0.5px var(--shade), 0 3px 3px -1.5px var(--shade),
       0 6px 6px -3px var(--shade), 0 12px 12px -6px var(--base), 0 24px 24px -12px var(--base);

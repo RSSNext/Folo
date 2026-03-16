@@ -1,6 +1,7 @@
 import { extendConfig } from "@follow/configs/tailwindcss/web"
 import daisyui from "daisyui"
 import { withUIKit } from "tailwindcss-uikit-colors/macos"
+import type { Config } from "tailwindcss"
 
 /** @type {import('tailwindcss').Config} */
 export default withUIKit(
@@ -13,7 +14,7 @@ export default withUIKit(
       "../../node_modules/rc-modal-sheet/**/*.{js,ts,tsx}",
       "../../packages/**/*.{ts,tsx}",
     ],
-    plugins: [daisyui],
+    plugins: [daisyui as unknown as NonNullable<Config["plugins"]>[number]],
     daisyui: {
       logs: false,
       darkTheme: "dark",
