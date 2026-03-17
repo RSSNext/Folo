@@ -6,13 +6,12 @@ import { defineSettingPageData } from "~/modules/settings/utils"
 
 const iconName = "i-mgc-terminal-cute-re"
 const priority = (1000 << 1) + 25
-const CLI_SETTINGS_DISABLED_FOR_THIS_RELEASE = true
 
 export const loader = defineSettingPageData({
   icon: iconName,
   name: "titles.cli",
   priority,
-  hideIf: () => CLI_SETTINGS_DISABLED_FOR_THIS_RELEASE || !IN_ELECTRON,
+  hideIf: () => !IN_ELECTRON,
 })
 
 export function Component() {

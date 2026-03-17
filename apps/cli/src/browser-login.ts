@@ -210,7 +210,7 @@ export const loginWithBrowser = async (
           reject(
             new CLIError(
               "TIMEOUT",
-              "Timed out waiting for browser login. Please run `folo auth login` again.",
+              "Timed out waiting for browser login. Please run `folo login` again.",
             ),
           )
         })

@@ -109,7 +109,7 @@ export class AuthService extends IpcService {
   async sessionChanged(_context: IpcContext): Promise<void> {
     await updateNotificationsToken()
 
-    // Sync session token to CLI config
+    // Sync the current desktop session to the npm CLI login.
     const token = await getSessionTokenFromCookies()
     await syncSessionToCliConfig(token).catch((err) => {
       logger.error("Failed to sync session to CLI config:", err)
@@ -120,7 +120,7 @@ export class AuthService extends IpcService {
   async signOut(_context: IpcContext): Promise<void> {
     await deleteNotificationsToken()
 
-    // Clear CLI config token on sign out
+    // Clear the synced CLI login on sign out.
     await syncSessionToCliConfig().catch((err) => {
       logger.error("Failed to clear CLI config token:", err)
     })

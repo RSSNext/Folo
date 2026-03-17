@@ -49,7 +49,7 @@ class AppManagerStatic {
     registerUpdater()
     registerAppTray()
 
-    // Sync session to CLI config after window and cookies are ready
+    // Sync the desktop session to the npm CLI after cookies are ready.
     setTimeout(async () => {
       try {
         const token = await getSessionTokenFromCookies()

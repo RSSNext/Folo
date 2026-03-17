@@ -82,7 +82,7 @@ export const createCommandContext = async (
   if (requireAuth && !token) {
     throw new CLIError(
       "UNAUTHORIZED",
-      "Missing token. Run `folo auth login` (browser sign-in) or set FOLO_TOKEN.",
+      "Missing token. Run `folo login` (browser sign-in) or set FOLO_TOKEN.",
     )
   }
 
