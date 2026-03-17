@@ -14,8 +14,6 @@ export const DEFAULT_VALUES = {
     WEB_URL: "https://app.folo.is",
     INBOXES_EMAIL: "@follow.re",
     FIREBASE_CONFIG: FIREBASE_CONFIG_DEFAULT,
-    OPENPANEL_CLIENT_ID: "4382168f-b8d2-40c1-9a26-133a312d072b",
-    OPENPANEL_API_URL: "https://openpanel.follow.is/api",
     RECAPTCHA_V3_SITE_KEY: "6LeGa3csAAAAALi_WqhlWoaGaqd_kke4HRGvNE0C",
 
     POSTHOG_KEY: "phc_EZGEvBt830JgBHTiwpHqJAEbWnbv63m5UpreojwEWNL",
@@ -30,9 +28,6 @@ export const DEFAULT_VALUES = {
     API_URL: "https://api.folo.is",
     WEB_URL: "https://staging.follow.is",
     INBOXES_EMAIL: "@follow.re",
-    OPENPANEL_CLIENT_ID: "4382168f-b8d2-40c1-9a26-133a312d072b",
-    OPENPANEL_API_URL: "https://openpanel.follow.is/api",
-
     POSTHOG_KEY: "phc_EZGEvBt830JgBHTiwpHqJAEbWnbv63m5UpreojwEWNL",
     POSTHOG_HOST: "https://us.posthog.com",
   },

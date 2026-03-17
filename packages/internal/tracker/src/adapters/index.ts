@@ -1,5 +1,4 @@
 export type { CaptureExceptionPayload, IdentifyPayload, TrackerAdapter, TrackPayload } from "./base"
 export { FirebaseAdapter, type FirebaseAdapterConfig } from "./firebase"
-export { OpenPanelAdapter, type OpenPanelAdapterConfig } from "./openpanel"
 export { PostHogAdapter, type PostHogAdapterConfig } from "./posthog"
 export { ProxyAdapter } from "./proxy"
