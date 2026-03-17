@@ -1,0 +1,69 @@
+name: "\u2601\ufe0f Deploy Desktop to Cloudflare"
+
+on:
+  push:
+    branches: [main, dev]
+
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  deploy:
+    name: Build & Deploy Desktop Web
+    runs-on: ubuntu-latest
+    env:
+      VITE_SENTRY_DSN: ${{ vars.VITE_SENTRY_DSN }}
+      VITE_FIREBASE_CONFIG: ${{ vars.VITE_FIREBASE_CONFIG }}
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v6
+        with:
+          lfs: true
+
+      - name: Checkout LFS objects
+        run: git lfs checkout
+
+      - name: Cache turbo build setup
+        uses: actions/cache@v5
+        with:
+          path: .turbo
+          key: ${{ runner.os }}-turbo-${{ github.sha }}
+          restore-keys: |
+            ${{ runner.os }}-turbo-
+
+      - uses: pnpm/action-setup@v4
+
+      - name: Use Node.js LTS
+        uses: actions/setup-node@v6
+        with:
+          node-version: lts/*
+          cache: "pnpm"
+
+      - name: Install dependencies
+        run: pnpm install
+
+      - name: Build desktop web (SPA)
+        working-directory: apps/desktop
+        env:
+          VITE_WEB_URL: ${{ github.ref == 'refs/heads/dev' && 'https://dev.folo.is' || 'https://app.folo.is' }}
+          VITE_API_URL: ${{ github.ref == 'refs/heads/dev' && 'https://api.dev.folo.is' || 'https://api.folo.is' }}
+        run: pnpm run build:web
+
+      - name: Deploy desktop web to Cloudflare (dev)
+        if: github.ref == 'refs/heads/dev'
+        uses: cloudflare/wrangler-action@v3
+        with:
+          apiToken: ${{ secrets.CLOUDFLARE_API_TOKEN }}
+          accountId: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
+          workingDirectory: apps/desktop
+          command: deploy --env dev
+
+      - name: Deploy desktop web to Cloudflare (prod)
+        if: github.ref == 'refs/heads/main'
+        uses: cloudflare/wrangler-action@v3
+        with:
+          apiToken: ${{ secrets.CLOUDFLARE_API_TOKEN }}
+          accountId: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
+          workingDirectory: apps/desktop
+          command: 'deploy --env=""'

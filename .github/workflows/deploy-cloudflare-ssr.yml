@@ -1,0 +1,109 @@
+name: "\u2601\ufe0f Deploy SSR to Cloudflare"
+
+on:
+  push:
+    branches: [main, dev]
+  workflow_dispatch:
+    inputs:
+      confirm_production_deploy:
+        description: Deploy the selected branch to production (app.folo.is)
+        required: true
+        default: false
+        type: boolean
+
+concurrency:
+  group: ${{ github.workflow }}-${{ github.event_name == 'workflow_dispatch' && format('manual-prod-{0}', github.ref) || github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  deploy:
+    name: Build & Deploy SSR Worker
+    runs-on: ubuntu-latest
+    env:
+      VITE_SENTRY_DSN: ${{ vars.VITE_SENTRY_DSN }}
+      VITE_FIREBASE_CONFIG: ${{ vars.VITE_FIREBASE_CONFIG }}
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v6
+        with:
+          lfs: true
+
+      - name: Checkout LFS objects
+        run: git lfs checkout
+
+      - name: Cache turbo build setup
+        uses: actions/cache@v5
+        with:
+          path: .turbo
+          key: ${{ runner.os }}-turbo-${{ github.sha }}
+          restore-keys: |
+            ${{ runner.os }}-turbo-
+
+      - uses: pnpm/action-setup@v4
+
+      - name: Use Node.js LTS
+        uses: actions/setup-node@v6
+        with:
+          node-version: lts/*
+          cache: "pnpm"
+
+      - name: Install dependencies
+        run: pnpm install
+
+      - name: Resolve deployment target
+        id: target
+        run: |
+          if [[ "${{ github.event_name }}" == "workflow_dispatch" ]]; then
+            if [[ "${{ inputs.confirm_production_deploy }}" != "true" ]]; then
+              echo "Manual production deploy was not confirmed." >&2
+              exit 1
+            fi
+
+            echo "environment=prod" >> "$GITHUB_OUTPUT"
+            echo "vite_web_url=https://app.folo.is" >> "$GITHUB_OUTPUT"
+            echo "vite_api_url=https://api.folo.is" >> "$GITHUB_OUTPUT"
+            exit 0
+          fi
+
+          if [[ "${{ github.ref }}" == "refs/heads/dev" ]]; then
+            echo "environment=dev" >> "$GITHUB_OUTPUT"
+            echo "vite_web_url=https://dev.folo.is" >> "$GITHUB_OUTPUT"
+            echo "vite_api_url=https://api.dev.folo.is" >> "$GITHUB_OUTPUT"
+            exit 0
+          fi
+
+          echo "environment=prod" >> "$GITHUB_OUTPUT"
+          echo "vite_web_url=https://app.folo.is" >> "$GITHUB_OUTPUT"
+          echo "vite_api_url=https://api.folo.is" >> "$GITHUB_OUTPUT"
+
+      - name: Build desktop web (SSR assets)
+        working-directory: apps/desktop
+        env:
+          VITE_WEB_URL: ${{ steps.target.outputs.vite_web_url }}
+          VITE_API_URL: ${{ steps.target.outputs.vite_api_url }}
+        run: pnpm run build:web
+
+      - name: Build SSR Worker
+        working-directory: apps/ssr
+        run: pnpm run build:worker
+
+      - name: Copy WASM file
+        run: cp node_modules/@resvg/resvg-wasm/index_bg.wasm apps/ssr/dist/worker/resvg.wasm
+
+      - name: Deploy SSR Worker to Cloudflare (dev)
+        if: steps.target.outputs.environment == 'dev'
+        uses: cloudflare/wrangler-action@v3
+        with:
+          apiToken: ${{ secrets.CLOUDFLARE_API_TOKEN }}
+          accountId: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
+          workingDirectory: apps/ssr
+          command: deploy --env dev
+
+      - name: Deploy SSR Worker to Cloudflare (prod)
+        if: steps.target.outputs.environment == 'prod'
+        uses: cloudflare/wrangler-action@v3
+        with:
+          apiToken: ${{ secrets.CLOUDFLARE_API_TOKEN }}
+          accountId: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
+          workingDirectory: apps/ssr
+          command: 'deploy --env=""'
