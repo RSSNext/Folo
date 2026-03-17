@@ -40,8 +40,25 @@ function getRuntimeEnv() {
     if (metaEnvIsEmpty()) {
       return process.env
     }
-    return import.meta.env
+    return injectExternalEnv(import.meta.env)
   } catch {
     return process.env
   }
+}
+
+declare const globalThis: any
+function injectExternalEnv<T>(originEnv: T): T {
+  if (!("document" in globalThis)) {
+    return originEnv
+  }
+  const prefix = "__followEnv"
+  const env = globalThis[prefix]
+  if (!env) {
+    return originEnv
+  }
+
+  for (const key in env) {
+    originEnv[key as keyof T] = env[key]
+  }
+  return originEnv
 }
