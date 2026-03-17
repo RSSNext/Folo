@@ -1,5 +1,6 @@
 import { Command } from "commander"
 
+import packageJSON from "../package.json"
 import { parseFormat } from "./args"
 import { defaultApiURL } from "./client"
 import { registerAuthCommand } from "./commands/auth"
@@ -20,7 +21,7 @@ const program = new Command()
 program
   .name("folo")
   .description("Folo CLI client for structured automation")
-  .version("0.1.0")
+  .version(packageJSON.version)
   .option("-f, --format <format>", "Output format: json | table | plain", parseFormat, "json")
   .option("--api-url <url>", `API base URL (default: ${defaultApiURL})`)
   .option("--token <token>", "Override stored token")

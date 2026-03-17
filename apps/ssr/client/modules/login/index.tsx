@@ -164,14 +164,17 @@ export function Login() {
 
   const onceRef = useRef(false)
   useEffect(() => {
-    if (isAuthenticated && !onceRef.current) {
-      if (cliCallbackUrl) {
-        void handleCliCallback()
-      } else {
-        void handleOpenApp()
-      }
+    if (!isAuthenticated || onceRef.current) {
+      return
     }
+
     onceRef.current = true
+    if (cliCallbackUrl) {
+      void handleCliCallback()
+      return
+    }
+
+    void handleOpenApp()
   }, [cliCallbackUrl, handleCliCallback, handleOpenApp, isAuthenticated])
 
   const navigate = useNavigate()

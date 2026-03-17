@@ -13,6 +13,7 @@ import { logger } from "../logger"
 
 const execFileAsync = promisify(execFile)
 export const CLI_NPM_PACKAGE_NAME = "folocli"
+const CLI_NPX_PACKAGE_SPEC = `${CLI_NPM_PACKAGE_NAME}@latest`
 const CLI_CONFIG_DIR = join(homedir(), ".folo")
 const CLI_CONFIG_PATH = join(CLI_CONFIG_DIR, "config.json")
 const getNpxCommand = () => (process.platform === "win32" ? "npx.cmd" : "npx")
@@ -38,13 +39,13 @@ const writeCliConfig = async (config: CliConfig): Promise<void> => {
 
 export const getCliConfigPath = () => CLI_CONFIG_PATH
 
-export const getCliInstallCommand = () => `npm install -g ${CLI_NPM_PACKAGE_NAME}`
+export const getCliInstallCommand = () => `npx --yes ${CLI_NPX_PACKAGE_SPEC} --help`
 
 export const getCliLoginCommand = () =>
-  `npx --yes ${CLI_NPM_PACKAGE_NAME} login --token <session-token>`
+  `npx --yes ${CLI_NPX_PACKAGE_SPEC} login --token <session-token>`
 
 const runCliCommand = async (args: string[]) => {
-  await execFileAsync(getNpxCommand(), ["--yes", CLI_NPM_PACKAGE_NAME, ...args], {
+  await execFileAsync(getNpxCommand(), ["--yes", CLI_NPX_PACKAGE_SPEC, ...args], {
     windowsHide: true,
     timeout: 120_000,
     maxBuffer: 1024 * 1024,
