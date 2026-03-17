@@ -22,7 +22,11 @@
       "eyebrow": "AI RSS Reader · Clean Timeline",
       "title": "<brand>Folo</brand> is the <highlight>AI RSS Reader</highlight>",
       "bodyLine1": "The AI that reads the internet for you,",
-      "bodyLine2": "cutting through noise to surface the knowledge you actually care about."
+      "bodyLine2": "cutting through noise to surface the knowledge you actually care about.",
+      "humanTab": "I'm a Human",
+      "agentTab": "I'm an Agent",
+      "agentTitle": "Use Folo",
+      "agentBody": "Read <skill>https://api.folo.is/skill.md</skill> and follow the instructions to use Folo."
     },
     "features": {
       "headline": "Reading reimagined in the AI era",
