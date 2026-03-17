@@ -22,6 +22,11 @@ jobs:
   deploy:
     name: Build & Deploy
     runs-on: ubuntu-latest
+    env:
+      VITE_SENTRY_DSN: ${{ vars.VITE_SENTRY_DSN }}
+      VITE_OPENPANEL_CLIENT_ID: ${{ vars.VITE_OPENPANEL_CLIENT_ID }}
+      VITE_OPENPANEL_API_URL: ${{ vars.VITE_OPENPANEL_API_URL }}
+      VITE_FIREBASE_CONFIG: ${{ vars.VITE_FIREBASE_CONFIG }}
     strategy:
       matrix:
         node-version: [lts/*]
@@ -56,7 +61,11 @@ jobs:
 
       - name: Build desktop web (SPA)
         if: github.event_name == 'push'
-        run: pnpm exec turbo run Folo#build:web
+        working-directory: apps/desktop
+        env:
+          VITE_WEB_URL: ${{ github.ref == 'refs/heads/dev' && 'https://dev.folo.is' || 'https://app.folo.is' }}
+          VITE_API_URL: ${{ github.ref == 'refs/heads/dev' && 'https://api.dev.folo.is' || 'https://api.folo.is' }}
+        run: pnpm run build:web
 
       - name: Build SSR Worker
         if: github.event_name == 'push'
@@ -70,7 +79,16 @@ jobs:
       - name: Build Landing Worker
         run: pnpm exec turbo run @follow/landing#cf:build
 
-      - name: Deploy to Cloudflare (dev)
+      - name: Deploy desktop web to Cloudflare (dev)
+        if: github.event_name == 'push' && github.ref == 'refs/heads/dev'
+        uses: cloudflare/wrangler-action@v3
+        with:
+          apiToken: ${{ secrets.CLOUDFLARE_API_TOKEN }}
+          accountId: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
+          workingDirectory: apps/desktop
+          command: deploy --env dev
+
+      - name: Deploy SSR Worker to Cloudflare (dev)
         if: github.event_name == 'push' && github.ref == 'refs/heads/dev'
         uses: cloudflare/wrangler-action@v3
         with:
@@ -88,14 +106,23 @@ jobs:
           workingDirectory: apps/landing
           command: deploy --env dev --name landing-next-dev --routes landing.dev.folo.is/*
 
-      - name: Deploy to Cloudflare (prod)
+      - name: Deploy desktop web to Cloudflare (prod)
+        if: github.event_name == 'push' && github.ref == 'refs/heads/main'
+        uses: cloudflare/wrangler-action@v3
+        with:
+          apiToken: ${{ secrets.CLOUDFLARE_API_TOKEN }}
+          accountId: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
+          workingDirectory: apps/desktop
+          command: 'deploy --env=""'
+
+      - name: Deploy SSR Worker to Cloudflare (prod)
         if: github.event_name == 'push' && github.ref == 'refs/heads/main'
         uses: cloudflare/wrangler-action@v3
         with:
           apiToken: ${{ secrets.CLOUDFLARE_API_TOKEN }}
           accountId: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
           workingDirectory: apps/ssr
-          command: deploy
+          command: 'deploy --env=""'
 
       - name: Deploy Landing to Cloudflare (prod)
         if: |

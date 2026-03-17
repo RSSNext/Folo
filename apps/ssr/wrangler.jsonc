@@ -27,7 +27,39 @@
   "workers_dev": true,
   "routes": [
     {
-      "pattern": "app.folo.is/*",
+      "pattern": "app.folo.is/share/*",
+      "zone_id": "115ea8e6a7865dbfc1cf4530d5f87f63",
+    },
+    {
+      "pattern": "app.folo.is/og/*",
+      "zone_id": "115ea8e6a7865dbfc1cf4530d5f87f63",
+    },
+    {
+      "pattern": "app.folo.is/login*",
+      "zone_id": "115ea8e6a7865dbfc1cf4530d5f87f63",
+    },
+    {
+      "pattern": "app.folo.is/register*",
+      "zone_id": "115ea8e6a7865dbfc1cf4530d5f87f63",
+    },
+    {
+      "pattern": "app.folo.is/forget-password*",
+      "zone_id": "115ea8e6a7865dbfc1cf4530d5f87f63",
+    },
+    {
+      "pattern": "app.folo.is/reset-password*",
+      "zone_id": "115ea8e6a7865dbfc1cf4530d5f87f63",
+    },
+    {
+      "pattern": "app.folo.is/feed/*",
+      "zone_id": "115ea8e6a7865dbfc1cf4530d5f87f63",
+    },
+    {
+      "pattern": "app.folo.is/list/*",
+      "zone_id": "115ea8e6a7865dbfc1cf4530d5f87f63",
+    },
+    {
+      "pattern": "app.folo.is/profile/*",
       "zone_id": "115ea8e6a7865dbfc1cf4530d5f87f63",
     },
   ],
@@ -48,7 +80,39 @@
       "workers_dev": true,
       "routes": [
         {
-          "pattern": "dev.folo.is/*",
+          "pattern": "dev.folo.is/share/*",
+          "zone_id": "115ea8e6a7865dbfc1cf4530d5f87f63",
+        },
+        {
+          "pattern": "dev.folo.is/og/*",
+          "zone_id": "115ea8e6a7865dbfc1cf4530d5f87f63",
+        },
+        {
+          "pattern": "dev.folo.is/login*",
+          "zone_id": "115ea8e6a7865dbfc1cf4530d5f87f63",
+        },
+        {
+          "pattern": "dev.folo.is/register*",
+          "zone_id": "115ea8e6a7865dbfc1cf4530d5f87f63",
+        },
+        {
+          "pattern": "dev.folo.is/forget-password*",
+          "zone_id": "115ea8e6a7865dbfc1cf4530d5f87f63",
+        },
+        {
+          "pattern": "dev.folo.is/reset-password*",
+          "zone_id": "115ea8e6a7865dbfc1cf4530d5f87f63",
+        },
+        {
+          "pattern": "dev.folo.is/feed/*",
+          "zone_id": "115ea8e6a7865dbfc1cf4530d5f87f63",
+        },
+        {
+          "pattern": "dev.folo.is/list/*",
+          "zone_id": "115ea8e6a7865dbfc1cf4530d5f87f63",
+        },
+        {
+          "pattern": "dev.folo.is/profile/*",
           "zone_id": "115ea8e6a7865dbfc1cf4530d5f87f63",
         },
       ],
