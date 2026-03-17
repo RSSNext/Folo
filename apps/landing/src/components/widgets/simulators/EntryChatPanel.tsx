@@ -12,7 +12,7 @@ export const EntryChatPanel: React.FC<EntryChatPanelProps> = ({
   playTimeline = false,
 }) => {
   return (
-    <aside className="absolute shadow-2xl z-10 right-0 inset-y-0 flex flex-col w-[calc(100vw-100px)] lg:w-[400px] bg-background border-l">
+    <aside className="absolute shadow-2xl z-10 right-0 inset-y-0 flex flex-col w-[calc(100vw-100px)] lg:w-[360px] bg-background border-l">
       <ListChatPlayer
         autoplay={playTimeline}
         steps={AI_SUMMARY_STEPS}

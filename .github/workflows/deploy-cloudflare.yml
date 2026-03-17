@@ -3,23 +3,20 @@ on:
     branches: [main, dev]
   workflow_dispatch:
     inputs:
-      source_ref:
-        description: Branch, tag, or commit SHA to deploy for the SSR worker
+      landing_source_ref:
+        description: Branch, tag, or commit SHA to deploy for landing production
         required: true
         default: dev
         type: string
-      target_environment:
-        description: Target SSR worker environment. Use source_ref=dev + prod to release dev content to production.
+      confirm_landing_prod_deploy:
+        description: Deploy landing to production (folo.is)
         required: true
-        default: dev
-        type: choice
-        options:
-          - dev
-          - prod
+        default: false
+        type: boolean
 
 name: ☁️ Deploy to Cloudflare Workers
 concurrency:
-  group: ${{ github.workflow }}-${{ github.event_name == 'workflow_dispatch' && format('manual-{0}-{1}', inputs.target_environment, inputs.source_ref) || github.ref }}
+  group: ${{ github.workflow }}-${{ github.event_name == 'workflow_dispatch' && format('manual-landing-prod-{0}', inputs.landing_source_ref) || github.ref }}
   cancel-in-progress: true
 jobs:
   deploy:
@@ -33,7 +30,7 @@ jobs:
         uses: actions/checkout@v6
         with:
           lfs: true
-          ref: ${{ github.event_name == 'workflow_dispatch' && inputs.source_ref || github.ref }}
+          ref: ${{ github.event_name == 'workflow_dispatch' && inputs.landing_source_ref || github.ref }}
 
       - name: Checkout LFS objects
         run: git lfs checkout
@@ -58,22 +55,23 @@ jobs:
         run: pnpm install
 
       - name: Build desktop web (SPA)
+        if: github.event_name == 'push'
         run: pnpm exec turbo run Folo#build:web
 
       - name: Build SSR Worker
+        if: github.event_name == 'push'
         working-directory: apps/ssr
         run: pnpm run build:worker
 
       - name: Copy WASM file
+        if: github.event_name == 'push'
         run: cp node_modules/@resvg/resvg-wasm/index_bg.wasm apps/ssr/dist/worker/resvg.wasm
 
       - name: Build Landing Worker
         run: pnpm exec turbo run @follow/landing#cf:build
 
       - name: Deploy to Cloudflare (dev)
-        if: |
-          (github.event_name == 'push' && github.ref == 'refs/heads/dev') ||
-          (github.event_name == 'workflow_dispatch' && inputs.target_environment == 'dev')
+        if: github.event_name == 'push' && github.ref == 'refs/heads/dev'
         uses: cloudflare/wrangler-action@v3
         with:
           apiToken: ${{ secrets.CLOUDFLARE_API_TOKEN }}
@@ -91,9 +89,7 @@ jobs:
           command: deploy --env dev --name landing-next-dev --routes landing.dev.folo.is/*
 
       - name: Deploy to Cloudflare (prod)
-        if: |
-          (github.event_name == 'push' && github.ref == 'refs/heads/main') ||
-          (github.event_name == 'workflow_dispatch' && inputs.target_environment == 'prod')
+        if: github.event_name == 'push' && github.ref == 'refs/heads/main'
         uses: cloudflare/wrangler-action@v3
         with:
           apiToken: ${{ secrets.CLOUDFLARE_API_TOKEN }}
@@ -102,7 +98,9 @@ jobs:
           command: deploy
 
       - name: Deploy Landing to Cloudflare (prod)
-        if: github.event_name == 'push' && github.ref == 'refs/heads/main'
+        if: |
+          (github.event_name == 'push' && github.ref == 'refs/heads/main') ||
+          (github.event_name == 'workflow_dispatch' && inputs.confirm_landing_prod_deploy)
         uses: cloudflare/wrangler-action@v3
         with:
           apiToken: ${{ secrets.CLOUDFLARE_API_TOKEN }}

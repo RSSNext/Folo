@@ -14,11 +14,26 @@ export default defineConfig({
       },
     }),
   ],
+  optimizeDeps: {
+    exclude: [
+      'next-intl',
+      'next-intl/navigation',
+      'next-intl/routing',
+      'use-intl',
+    ],
+    include: [
+      'react',
+      'react-dom',
+      'react/jsx-runtime',
+      'react/jsx-dev-runtime',
+    ],
+  },
   resolve: {
     alias: {
       'next-intl/config': fileURLToPath(
         new URL('src/i18n/request.ts', import.meta.url),
       ),
     },
+    dedupe: ['react', 'react-dom'],
   },
 })

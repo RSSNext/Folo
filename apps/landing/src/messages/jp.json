@@ -1,7 +1,7 @@
 {
   "metadata": {
     "title": "Folo",
-    "description": "AI 搭載の RSS リーダー。文脈理解でノイズのない深い読書体験を。",
+    "description": "AI RSS Reader。文脈理解でノイズのない深い読書体験を。",
     "keywords": "Folo, AI RSS リーダー, RSS, 要約, 翻訳, リサーチ, オープンソース, コンテンツ発見, インフォメーションブラウザ"
   },
   "common": {
@@ -19,8 +19,8 @@
   },
   "landing": {
     "hero": {
-      "eyebrow": "AI リーダー · クリーンタイムライン",
-      "title": "<brand>Folo</brand> はあなたの <highlight>AI</highlight> リーダー",
+      "eyebrow": "AI RSS Reader · クリーンタイムライン",
+      "title": "<brand>Folo</brand> はあなたの <highlight>AI RSS Reader</highlight>",
       "bodyLine1": "インターネットの情報を AI が代わりに読み、",
       "bodyLine2": "雑音を取り除いて、本当に必要な知識だけを届けます。"
     },
@@ -29,7 +29,7 @@
       "discover": {
         "label": "ディスカバリー",
         "titleStrong": "AI が最高の情報源を見つけ出す",
-        "titleRest": "インターネット上の数百万のソースから、あなたが選択権を持ったまま。"
+        "titleRest": "オープンウェブ全体から。"
       },
       "twin": {
         "label": "デジタルツイン",
@@ -39,20 +39,49 @@
       "vibe": {
         "label": "バイブリード",
         "titleStrong": "AI にすべて任せて読んでもらおう。",
-        "titleRest": "くつろぎながら、本当に価値ある洞察やシグナルだけを通知します。"
+        "titleRest": "必要なシグナルだけ残す。"
+      }
+    },
+    "trustedBy": {
+      "eyebrow": "導入が進むチーム",
+      "headline": "すでに Folo を使うチームがあります。",
+      "body": "本番環境の業務用メール登録サンプルをもとに、Folo を使い始めている企業を抽出しました。"
+    },
+    "metrics": {
+      "eyebrow": "本番スナップショット",
+      "headline": "At a glance",
+      "body": "Folo の本番環境の規模です。",
+      "footnote": "本番スナップショット。概算値です。",
+      "cards": {
+        "feeds": {
+          "label": "Feeds",
+          "detail": "ブログ、研究、ニュースレター、ソーシャルなど幅広いソースをまとめて追えます。"
+        },
+        "entries": {
+          "label": "Entries",
+          "detail": "AI が検索・要約・文脈化できるだけの十分に大きな読書グラフです。"
+        },
+        "readers": {
+          "label": "Readers",
+          "detail": "ノイズに埋もれず情報を追うために、すでに Folo を使っている人たちです。"
+        },
+        "follows": {
+          "label": "Follows",
+          "detail": "いま本番タイムラインを流れている購読関係の総量です。"
+        }
       }
     },
     "builtOpen": {
       "title": "オープンに構築",
-      "body": "透明で検証可能、そしてコミュニティと共に作り上げています。コードを覗き、Issue を立て、新しい読書体験を一緒に形にしましょう。",
-      "note": "モダンなプライミティブで構築：アクセシブル、キーボードフレンドリー、高速。PR 大歓迎。"
+      "body": "オープンソースで、見ればわかる。",
+      "note": "コード公開。PR歓迎。"
     },
     "repoStats": {
       "githubStars": "GitHub スター",
       "license": "ライセンス",
       "licenseValue": "GPL-3.0",
       "repository": "リポジトリ",
-      "repoDescriptionMobile": "モダンなプライミティブで構築：アクセシブル、キーボードフレンドリー、高速。PR 大歓迎。",
+      "repoDescriptionMobile": "コード公開。PR歓迎。",
       "repoAriaLabel": "GitHub で Folo リポジトリを開く"
     },
     "socialProof": {
@@ -67,9 +96,21 @@
     },
     "hero": {
       "title": "<brand>Folo</brand> をダウンロード",
-      "subtitle": "デスクトップではフル機能の AI リーディングを、Web ではすぐに利用できます。"
+      "subtitle": "AI RSS Reader をデスクトップで使うか、Web ですぐに開けます。"
     },
     "platforms": {
+      "recommended": "このデバイスにおすすめ",
+      "allPlatforms": "その他の対応環境",
+      "moreDownloads": "その他のダウンロード",
+      "lessDownloads": "折りたたむ",
+      "iOS": {
+        "label": "iOS",
+        "store": "App Store"
+      },
+      "Android": {
+        "label": "Android",
+        "store": "Google Play"
+      },
       "macOS": {
         "label": "macOS",
         "store": "Mac App Store"
@@ -87,6 +128,51 @@
         "subtitle": "インストール不要ですぐに利用可能"
       },
       "footer": "ダウンロードすると、<terms>利用規約</terms>と<privacy>プライバシーポリシー</privacy>に同意したものとみなされます。"
+    }
+  },
+  "pricing": {
+    "metadata": {
+      "title": "Pricing",
+      "description": "Folo の読書ワークフローに合うプランを選べます。"
+    },
+    "eyebrow": "Pricing",
+    "headline": "読書ワークフローに合わせたプラン",
+    "body": "制限、AI 機能、運用規模を比較して選べます。",
+    "monthly": "月払い",
+    "yearly": "年払い",
+    "save": "{percent}% お得",
+    "month": "月",
+    "billedYearly": "年額 {total} で請求",
+    "mostPopular": "Most Popular",
+    "getStarted": "始める",
+    "table": {
+      "features": "機能"
+    },
+    "descriptions": {
+      "free": "落ち着いた読書体験を始めるための無料プラン。",
+      "basic": "購読数と AI 利用量を増やしたい個人ユーザー向け。",
+      "plus": "毎日 AI を活用するパワーユーザー向け。",
+      "pro": "大規模ライブラリと重いワークフロー向けの上位プラン。",
+      "admin": "大規模ライブラリと重いワークフロー向けの上位プラン。"
+    },
+    "features": {
+      "MAX_SUBSCRIPTIONS": "feed subscriptions",
+      "MAX_LISTS": "lists",
+      "MAX_INBOXES": "inboxes",
+      "MAX_ACTIONS": "actions",
+      "MAX_AI_ENTRY_SUMMARY_PER_DAY": "AI summaries / day",
+      "MAX_AI_ENTRY_TRANSLATION_PER_DAY": "AI translations / day",
+      "MAX_AI_TEXT_TO_SPEECH_PER_DAY": "text-to-speech / day",
+      "AI_MODEL_SELECTION": "AI model selection",
+      "AI_BRING_YOUR_OWN_KEY": "bring your own key",
+      "BOOSTS": "boosts",
+      "PRIORITY_SUPPORT": "priority support",
+      "PRIVATE_SUBSCRIPTION": "private subscriptions",
+      "MAX_RSSHUB_SUBSCRIPTIONS": "RSSHub subscriptions",
+      "SECURE_IMAGE_PROXY": "secure image proxy",
+      "INTEGRATION_SUPPORTED": "integrations",
+      "AI_CREDIT": "AI credits",
+      "MAX_AI_TASKS": "AI tasks"
     }
   }
 }

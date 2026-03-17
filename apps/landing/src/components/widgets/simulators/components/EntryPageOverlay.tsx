@@ -1,5 +1,5 @@
 export const EntryPageOverlay = () => {
   return (
-    <div className="absolute z-8 bg-linear-to-r from-background/20 to-background/70 inset-0" />
+    <div className="absolute inset-0 z-8 bg-linear-to-r from-background/6 via-background/8 to-background/72" />
   )
 }

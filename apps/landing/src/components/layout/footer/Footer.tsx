@@ -10,24 +10,18 @@ type LinkItem = { label: string; href: string; external?: boolean }
 const productLinks: LinkItem[] = [
   { label: 'Web App', href: 'https://app.folo.is', external: true },
   { label: 'Download', href: '/download', external: false },
+  { label: 'Pricing', href: '/pricing', external: false },
+  { label: 'Built Open', href: '/#open', external: false },
 ]
 
 const communityLinks: LinkItem[] = [
-  { label: 'Discord', href: 'https://discord.gg/followapp', external: true },
+  { label: 'Discord', href: 'https://discord.gg/AwWcAQ7euc', external: true },
   {
     label: 'GitHub',
     href: 'https://github.com/RSSNext/Folo',
     external: true,
   },
   { label: 'Twitter', href: 'https://x.com/folo_is', external: true },
-]
-
-const resourceLinks: LinkItem[] = [
-  { label: 'For Researchers', href: '#researchers' },
-  { label: 'For Builders', href: '#builders' },
-  { label: 'For Creators', href: '#creators' },
-  { label: 'For Investors', href: '#investors' },
-  // { label: 'API', href: '#api' },
 ]
 
 const legalLinks: LinkItem[] = [
@@ -44,56 +38,11 @@ const BrandBlock = () => (
       <span className="text-2xl font-semibold tracking-tight">Folo</span>
     </Link>
     <p className="mt-6 text-base leading-relaxed text-text-secondary">
-      The next-generation information browser powered by AI. Transform how you
-      discover, consume, and interact with content across the web.
+      The AI that reads the internet for you,
     </p>
     <p className="mt-4 text-sm text-text-tertiary">
-      Deep reading, contextual AI, and noise-free content discovery — all in one
-      beautiful interface.
+      cutting through noise to surface the knowledge you actually care about.
     </p>
-  </div>
-)
-
-const Social = () => (
-  <div className="mt-6 flex items-center gap-6">
-    <Link
-      href="https://github.com/RSSNext/Folo"
-      target="_blank"
-      rel="noreferrer noopener"
-      className={cx(
-        'inline-flex text-text-secondary transition-colors hover:text-text',
-        focusRing,
-      )}
-      aria-label="GitHub"
-    >
-      <i className="i-simple-icons-github size-5" aria-hidden />
-    </Link>
-
-    <Link
-      href="https://x.com/folo_is"
-      target="_blank"
-      rel="noreferrer noopener"
-      className={cx(
-        'inline-flex text-text-secondary transition-colors hover:text-text',
-        focusRing,
-      )}
-      aria-label="Twitter / X"
-    >
-      <i className="i-simple-icons-x size-5" aria-hidden />
-    </Link>
-
-    <Link
-      href="https://discord.gg/followapp"
-      target="_blank"
-      rel="noreferrer noopener"
-      className={cx(
-        'inline-flex text-text-secondary transition-colors hover:text-text',
-        focusRing,
-      )}
-      aria-label="Discord"
-    >
-      <i className="i-simple-icons-discord size-5" aria-hidden />
-    </Link>
   </div>
 )
 
@@ -144,14 +93,12 @@ export const Footer: Component<FooterProps> = ({ className }) => {
           {/* Brand section with stats */}
           <div className="lg:col-span-5">
             <BrandBlock />
-            <Social />
           </div>
 
           {/* Navigation columns */}
-          <div className="grid grid-cols-2 gap-8 sm:grid-cols-3 lg:col-span-7">
+          <div className="grid grid-cols-2 gap-8 lg:col-span-7">
             <LinkColumn title="Product" links={productLinks} />
             <LinkColumn title="Community" links={communityLinks} />
-            <LinkColumn title="Resources" links={resourceLinks} />
           </div>
         </div>
 
