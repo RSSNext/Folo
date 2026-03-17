@@ -79,15 +79,6 @@ jobs:
       - name: Build Landing Worker
         run: pnpm exec turbo run @follow/landing#cf:build
 
-      - name: Deploy desktop web to Cloudflare (dev)
-        if: github.event_name == 'push' && github.ref == 'refs/heads/dev'
-        uses: cloudflare/wrangler-action@v3
-        with:
-          apiToken: ${{ secrets.CLOUDFLARE_API_TOKEN }}
-          accountId: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
-          workingDirectory: apps/desktop
-          command: deploy --env dev
-
       - name: Deploy SSR Worker to Cloudflare (dev)
         if: github.event_name == 'push' && github.ref == 'refs/heads/dev'
         uses: cloudflare/wrangler-action@v3
@@ -95,6 +86,15 @@ jobs:
           apiToken: ${{ secrets.CLOUDFLARE_API_TOKEN }}
           accountId: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
           workingDirectory: apps/ssr
+          command: deploy --env dev
+
+      - name: Deploy desktop web to Cloudflare (dev)
+        if: github.event_name == 'push' && github.ref == 'refs/heads/dev'
+        uses: cloudflare/wrangler-action@v3
+        with:
+          apiToken: ${{ secrets.CLOUDFLARE_API_TOKEN }}
+          accountId: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
+          workingDirectory: apps/desktop
           command: deploy --env dev
 
       - name: Deploy Landing to Cloudflare (dev)
@@ -106,15 +106,6 @@ jobs:
           workingDirectory: apps/landing
           command: deploy --env dev --name landing-next-dev --routes landing.dev.folo.is/*
 
-      - name: Deploy desktop web to Cloudflare (prod)
-        if: github.event_name == 'push' && github.ref == 'refs/heads/main'
-        uses: cloudflare/wrangler-action@v3
-        with:
-          apiToken: ${{ secrets.CLOUDFLARE_API_TOKEN }}
-          accountId: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
-          workingDirectory: apps/desktop
-          command: 'deploy --env=""'
-
       - name: Deploy SSR Worker to Cloudflare (prod)
         if: github.event_name == 'push' && github.ref == 'refs/heads/main'
         uses: cloudflare/wrangler-action@v3
@@ -122,6 +113,15 @@ jobs:
           apiToken: ${{ secrets.CLOUDFLARE_API_TOKEN }}
           accountId: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
           workingDirectory: apps/ssr
+          command: 'deploy --env=""'
+
+      - name: Deploy desktop web to Cloudflare (prod)
+        if: github.event_name == 'push' && github.ref == 'refs/heads/main'
+        uses: cloudflare/wrangler-action@v3
+        with:
+          apiToken: ${{ secrets.CLOUDFLARE_API_TOKEN }}
+          accountId: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
+          workingDirectory: apps/desktop
           command: 'deploy --env=""'
 
       - name: Deploy Landing to Cloudflare (prod)
