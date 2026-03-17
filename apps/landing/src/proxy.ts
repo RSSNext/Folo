@@ -8,6 +8,7 @@ const bypassPrefixes = ['/_next', '/_vinext', '/api']
 const bypassExactPaths = new Set([
   '/apple-app-site-association',
   '/.well-known/apple-app-site-association',
+  '/discover-sources',
 ])
 
 const getLogicalPathname = (pathname: string) => {

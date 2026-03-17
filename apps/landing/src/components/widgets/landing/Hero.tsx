@@ -16,12 +16,17 @@ import { TiltCard } from '~/components/ui/effects/TiltCard'
 import { Highlighter } from '~/components/ui/highlighter'
 import { PanelSplitter } from '~/components/ui/panel/PanelSplitter'
 import { Link as LocalizedLink } from '~/i18n/routing'
+import type { HeroTimelineItem } from '~/lib/landing-data'
 
 import { ListDemo } from '../simulators/ListDemo'
 import { TimelineChatDemo } from '../simulators/TimelineChatDemo'
 import { WindowChrome } from './WindowChrome'
 
-export const LandingHero: Component = () => {
+type LandingHeroProps = {
+  items: HeroTimelineItem[]
+}
+
+export const LandingHero: Component<LandingHeroProps> = ({ items }) => {
   const ref = React.useRef<HTMLElement | null>(null)
   const { scrollYProgress } = useScroll({
     target: ref,
@@ -116,13 +121,13 @@ export const LandingHero: Component = () => {
         </div>
 
         {/* Preview card with tilt + parallax; prompt focus zoom */}
-        <PreviewAppDemo />
+        <PreviewAppDemo items={items} />
       </div>
     </section>
   )
 }
 
-const PreviewAppDemo = () => {
+const PreviewAppDemo = ({ items }: LandingHeroProps) => {
   const layoutContainerRef = useRef<HTMLDivElement | null>(null)
   const {
     position: columnWidth,
@@ -147,7 +152,7 @@ const PreviewAppDemo = () => {
             className="relative lg:aspect-video h-[800px] lg:h-auto w-full bg-background-secondary"
           >
             <div style={{ width: columnWidth }} className="size-full">
-              <ListDemo />
+              <ListDemo items={items} />
               {/* <ListSkeletonDemo /> */}
             </div>
 

@@ -55,7 +55,7 @@
     "unified": "11.0.5",
     "usehooks-ts": "3.1.1",
     "vaul": "1.1.2",
-    "vinext": "0.0.9"
+    "vinext": "0.0.30"
   },
   "devDependencies": {
     "@cloudflare/vite-plugin": "1.25.5",
