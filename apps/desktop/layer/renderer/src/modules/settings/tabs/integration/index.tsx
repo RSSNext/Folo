@@ -13,7 +13,8 @@ import {
   SimpleIconsZotero,
 } from "@follow/components/ui/platform-icon/icons.js"
 import { IN_ELECTRON } from "@follow/shared/constants"
-import { useCallback, useEffect, useMemo, useState } from "react"
+import type { FC } from "react"
+import { useEffect, useMemo, useState } from "react"
 import { useTranslation } from "react-i18next"
 import { toast } from "sonner"
 
@@ -22,12 +23,13 @@ import {
   setIntegrationSetting,
   useIntegrationSettingValue,
 } from "~/atoms/settings/integration"
+import { ipcServices } from "~/lib/client"
 import { downloadJsonFile, selectJsonFile } from "~/lib/export"
 import { getFetchAdapter } from "~/modules/integration/fetch-adapter"
 
 import { createSetting } from "../../helper/builder"
 import { useSetSettingCanSync } from "../../modal/hooks"
-import { SettingSectionTitle } from "../../section"
+import { SettingItemGroup, SettingSectionTitle } from "../../section"
 import { CustomIntegrationSection } from "./CustomIntegrationSection"
 
 const { defineSettingItem, SettingBuilder } = createSetting(
@@ -35,6 +37,61 @@ const { defineSettingItem, SettingBuilder } = createSetting(
   useIntegrationSettingValue,
   setIntegrationSetting,
 )
+const ObsidianVaultPathPicker: FC = () => {
+  const vaultPath = useIntegrationSettingValue().obsidianVaultPath
+  const { t } = useTranslation("settings")
+  const [pathValid, setPathValid] = useState<boolean | null>(null)
+
+  useEffect(() => {
+    if (!vaultPath) {
+      setPathValid(null)
+      return
+    }
+    ipcServices?.app.checkPathExists(vaultPath).then((exists) => {
+      setPathValid(exists)
+    })
+  }, [vaultPath])
+
+  const handleBrowse = async () => {
+    const selected = await ipcServices?.app.selectDirectory()
+    if (selected) {
+      setIntegrationSetting("obsidianVaultPath", selected)
+    }
+  }
+
+  const buttonText = !vaultPath
+    ? t("integration.obsidian.vaultPath.select")
+    : pathValid === false
+      ? t("integration.obsidian.vaultPath.reselect")
+      : t("integration.obsidian.vaultPath.change")
+
+  return (
+    <SettingItemGroup>
+      <div className="mb-2 mt-4 flex flex-col gap-3">
+        <label className="shrink-0 text-sm font-medium leading-none">
+          {t("integration.obsidian.vaultPath.label")}
+        </label>
+        <div className="flex items-center gap-2">
+          <Button variant="outline" size="sm" onClick={handleBrowse}>
+            {buttonText}
+          </Button>
+          {vaultPath && (
+            <span className="flex min-w-0 items-center gap-1.5">
+              <span className="min-w-0 truncate text-xs text-text-secondary">{vaultPath}</span>
+              {pathValid === false && (
+                <span className="inline-flex shrink-0 items-center gap-1 text-xs text-red">
+                  <i className="i-mgc-warning-cute-re" />
+                  {t("integration.obsidian.vaultPath.invalid")}
+                </span>
+              )}
+            </span>
+          )}
+        </div>
+      </div>
+    </SettingItemGroup>
+  )
+}
+
 export const SettingIntegration = () => {
   const { t } = useTranslation("settings")
   const setSync = useSetSettingCanSync()
@@ -100,11 +157,7 @@ export const SettingIntegration = () => {
               label: t("integration.obsidian.enable.label"),
               description: t("integration.obsidian.enable.description"),
             }),
-            defineSettingItem("obsidianVaultPath", {
-              label: t("integration.obsidian.vaultPath.label"),
-              vertical: true,
-              description: t("integration.obsidian.vaultPath.description"),
-            }),
+            ObsidianVaultPathPicker,
           ],
         },
         {

@@ -11,6 +11,7 @@ import {
 import { IN_ELECTRON } from "@follow/shared/constants"
 import { getEntry } from "@follow/store/entry/getter"
 import type { EntryModel } from "@follow/store/entry/types"
+import { getFeedById } from "@follow/store/feed/getter"
 import { getSummary } from "@follow/store/summary/getters"
 import { tracker } from "@follow/tracker"
 import { useMutation, useQuery } from "@tanstack/react-query"
@@ -321,9 +322,10 @@ const useRegisterObsidianCommands = () => {
               url: entry.url || "",
               title: entry.title || "",
               content: markdownContent,
-              author: entry.author || "",
+              author: entry.author || getFeedById(entry.feedId)?.title || "",
               publishedAt: entry.publishedAt.toISOString() || "",
               vaultPath: obsidianVaultPath,
+              description: getDescription(entry),
             })
           },
         }),
