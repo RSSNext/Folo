@@ -32,6 +32,8 @@ import { EntryContentContext, useEntryContentContext } from "@/src/modules/entry
 import { EntryAISummary } from "@/src/modules/entry-content/EntryAISummary"
 import { EntryNavigationHeader } from "@/src/modules/entry-content/EntryNavigationHeader"
 import { usePullUpToNext } from "@/src/modules/entry-content/pull-up-navigation/use-pull-up-navigation"
+import { EntryNavBar } from "@/src/modules/entry-content/swipe-entry-navigation/EntryNavBar"
+import { useSwipeEntryNavigation } from "@/src/modules/entry-content/swipe-entry-navigation/useSwipeEntryNavigation"
 
 import { EntrySocialTitle, EntryTitle } from "../../../../modules/entry-content/EntryTitle"
 
@@ -69,6 +71,29 @@ export const EntryDetailScreen: NavigationControllerView<{
     const currentEntryIdx = entryIds.indexOf(entryId)
     return entryIds[currentEntryIdx + 1]
   }, [entryId, entryIds])
+
+  // Navigate to an adjacent entry (used by both swipe and pull-up)
+  const navigateToEntry = useCallback(
+    (
+      targetEntryId: string,
+      animation: "fade_from_bottom" | "slide_from_right" | "slide_from_left" = "fade_from_bottom",
+    ) => {
+      navigation.replaceControllerView(
+        EntryDetailScreen,
+        {
+          entryId: targetEntryId,
+          entryIds,
+          view: viewType,
+        },
+        {
+          stackAnimation: animation,
+          transitionDuration: 300,
+        },
+      )
+    },
+    [entryIds, navigation, viewType],
+  )
+
   const {
     EntryPullUpToNext,
     scrollViewEventHandlers,
@@ -79,63 +104,87 @@ export const EntryDetailScreen: NavigationControllerView<{
     enabled: !!nextEntryId,
     onRefresh: useCallback(() => {
       if (!nextEntryId) return
-      navigation.replaceControllerView(
-        EntryDetailScreen,
-        {
-          entryId: nextEntryId,
-          entryIds,
-          view: viewType,
-        },
-        {
-          // Ensure that the replace animation is used
-          stackAnimation: "fade_from_bottom",
-          transitionDuration: 300,
-        },
-      )
-    }, [entryIds, navigation, nextEntryId, viewType]),
+      navigateToEntry(nextEntryId, "fade_from_bottom")
+    }, [navigateToEntry, nextEntryId]),
   })
+
+  // Horizontal swipe between entries
+  const { SwipeWrapper, canSwipe } = useSwipeEntryNavigation({
+    entryId,
+    entryIds,
+    onNavigateToEntry: useCallback(
+      (targetId: string) => {
+        const currentIdx = entryIds?.indexOf(entryId) ?? -1
+        const targetIdx = entryIds?.indexOf(targetId) ?? -1
+        const direction = targetIdx > currentIdx ? "slide_from_right" : "slide_from_left"
+        navigateToEntry(targetId, direction)
+      },
+      [entryId, entryIds, navigateToEntry],
+    ),
+  })
+
   return (
     <EntryContentContext value={ctxValue}>
       <PortalProvider>
         <BottomTabBarHeightContext value={insets.bottom}>
-          <GestureWrapper {...gestureWrapperProps}>
-            <SafeNavigationScrollView
-              Header={<EntryNavigationHeader entryId={entryId} />}
-              ScrollViewBottom={<EntryPullUpToNext {...pullUpViewProps} />}
-              automaticallyAdjustContentInsets={false}
-              contentContainerMaxWidth={680}
-              contentContainerClassName="flex min-h-full pb-16"
-              {...scrollViewEventHandlers}
-            >
-              <ItemPressable
-                itemStyle={ItemPressableStyle.UnStyled}
-                onPress={() => entry?.url && openLink(entry.url)}
-                className="rounded-xl px-5 py-4"
+          <SwipeWrapper>
+            <GestureWrapper {...gestureWrapperProps}>
+              <SafeNavigationScrollView
+                Header={<EntryNavigationHeader entryId={entryId} />}
+                ScrollViewBottom={<EntryPullUpToNext {...pullUpViewProps} />}
+                automaticallyAdjustContentInsets={false}
+                contentContainerMaxWidth={680}
+                contentContainerClassName="flex min-h-full pb-16"
+                {...scrollViewEventHandlers}
               >
-                {viewType === FeedViewType.SocialMedia ? (
-                  <EntrySocialTitle entryId={entryId} />
-                ) : (
-                  <>
-                    <EntryTitle title={entry?.title || ""} entryId={entryId} />
-                    <EntryInfo entryId={entryId} />
-                  </>
+                <ItemPressable
+                  itemStyle={ItemPressableStyle.UnStyled}
+                  onPress={() => entry?.url && openLink(entry.url)}
+                  className="rounded-xl px-5 py-4"
+                >
+                  {viewType === FeedViewType.SocialMedia ? (
+                    <EntrySocialTitle entryId={entryId} />
+                  ) : (
+                    <>
+                      <EntryTitle title={entry?.title || ""} entryId={entryId} />
+                      <EntryInfo entryId={entryId} />
+                    </>
+                  )}
+                </ItemPressable>
+                <View className="px-5">
+                  <EntryAISummary entryId={entryId} />
+                </View>
+                {entry && (
+                  <View className="mt-3 w-full px-5">
+                    <EntryContentWebViewWithContext entryId={entryId} />
+                  </View>
                 )}
-              </ItemPressable>
-              <View className="px-5">
-                <EntryAISummary entryId={entryId} />
-              </View>
-              {entry && (
-                <View className="mt-3 w-full px-5">
-                  <EntryContentWebViewWithContext entryId={entryId} />
-                </View>
-              )}
-              {viewType === FeedViewType.SocialMedia && (
-                <View className="mt-2 px-5">
-                  <EntryInfoSocial entryId={entryId} />
-                </View>
-              )}
-            </SafeNavigationScrollView>
-          </GestureWrapper>
+                {viewType === FeedViewType.SocialMedia && (
+                  <View className="mt-2 px-5">
+                    <EntryInfoSocial entryId={entryId} />
+                  </View>
+                )}
+                {/* Entry navigation bar — prev/next buttons */}
+                {entryIds && entryIds.length > 1 && (
+                  <View className="mt-8">
+                    <EntryNavBar
+                      prevEntryId={
+                        canSwipe
+                          ? entryIds.indexOf(entryId) > 0
+                            ? entryIds[entryIds.indexOf(entryId) - 1]
+                            : undefined
+                          : undefined
+                      }
+                      nextEntryId={nextEntryId}
+                      onNavigateToEntry={(targetId) => navigateToEntry(targetId)}
+                      currentIndex={(entryIds.indexOf(entryId) ?? 0) + 1}
+                      totalEntries={entryIds.length}
+                    />
+                  </View>
+                )}
+              </SafeNavigationScrollView>
+            </GestureWrapper>
+          </SwipeWrapper>
         </BottomTabBarHeightContext>
       </PortalProvider>
     </EntryContentContext>
