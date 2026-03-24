@@ -1,5 +1,5 @@
 import { env } from "@follow/shared/env.desktop"
-import { createDesktopAPIHeaders } from "@follow/utils/headers"
+import { createAuthRequestOriginHeaders, createDesktopAPIHeaders } from "@follow/utils/headers"
 import PKG from "@pkg"
 import type { IpcContext } from "electron-ipc-decorator"
 import { IpcMethod, IpcService } from "electron-ipc-decorator"
@@ -13,6 +13,14 @@ import { logger } from "../../logger"
 
 export class AuthService extends IpcService {
   static override readonly groupName = "auth"
+
+  private getAuthRequestHeaders(additionalHeaders?: Record<string, string>) {
+    return {
+      ...createDesktopAPIHeaders({ version: PKG.version }),
+      ...createAuthRequestOriginHeaders(env.VITE_WEB_URL),
+      ...additionalHeaders,
+    }
+  }
 
   private async applySessionToken(token: string): Promise<void> {
     const mainWindow = WindowManager.getMainWindow()
@@ -71,8 +79,7 @@ export class AuthService extends IpcService {
       method: "POST",
       headers: {
         "content-type": "application/json",
-        ...createDesktopAPIHeaders({ version: PKG.version }),
-        ...headers,
+        ...this.getAuthRequestHeaders(headers),
       },
       body: JSON.stringify(payload),
     })
@@ -130,14 +137,13 @@ export class AuthService extends IpcService {
   async signOutRemote(_context: IpcContext, token?: string): Promise<void> {
     await fetch(`${env.VITE_API_URL}/better-auth/sign-out`, {
       method: "POST",
-      headers: {
-        ...createDesktopAPIHeaders({ version: PKG.version }),
-        ...(token
+      headers: this.getAuthRequestHeaders(
+        token
           ? {
               Cookie: `__Secure-better-auth.session_token=${token}; better-auth.session_token=${token}`,
             }
-          : {}),
-      },
+          : undefined,
+      ),
     }).catch(() => {})
 
     await this.clearSessionToken()
