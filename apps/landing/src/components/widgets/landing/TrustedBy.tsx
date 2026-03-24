@@ -6,6 +6,7 @@ import type { LandingMetrics, TrustedCompany } from '~/lib/landing-data'
 
 type TrustedByProps = {
   companies: TrustedCompany[]
+  researchers: TrustedCompany[]
   metrics: LandingMetrics
 }
 
@@ -18,6 +19,7 @@ const formatCompact = (value: number) => compactFormatter.format(value)
 
 export const TrustedBy: Component<TrustedByProps> = ({
   companies,
+  researchers,
   metrics,
 }) => {
   const trustedT = useTranslations('landing.trustedBy')
@@ -34,34 +36,36 @@ export const TrustedBy: Component<TrustedByProps> = ({
     },
   ]
 
+  const renderTrustRow = (items: TrustedCompany[], eyebrow: string) => (
+    <div className="flex flex-col items-center gap-5 text-center">
+      <p className="text-[11px] font-medium uppercase tracking-[0.28em] text-accent/90">
+        {eyebrow}
+      </p>
+
+      <div className="flex flex-wrap items-center justify-center gap-x-8 gap-y-4">
+        {items.map((item) => (
+          <div key={item.name} className="inline-flex items-center gap-2.5">
+            <div className="flex size-8 items-center justify-center rounded-full bg-background-secondary p-1">
+              <img
+                src={`https://icons.folo.is/${item.host}`}
+                alt={item.name}
+                className="size-full rounded-full object-cover grayscale"
+                loading="lazy"
+              />
+            </div>
+            <span className="text-sm font-medium text-text">{item.name}</span>
+          </div>
+        ))}
+      </div>
+    </div>
+  )
+
   return (
     <section className="mx-auto mt-14 w-full max-w-[var(--container-max-width-2xl)] px-4 md:mt-16 lg:mt-20">
       <div className="flex flex-col gap-16">
-        <div className="flex flex-col items-center gap-5 text-center">
-          <p className="text-[11px] font-medium uppercase tracking-[0.28em] text-accent/90">
-            {trustedT('eyebrow')}
-          </p>
-
-          <div className="flex flex-wrap items-center justify-center gap-x-8 gap-y-4">
-            {companies.map((company) => (
-              <div
-                key={company.name}
-                className="inline-flex items-center gap-2.5"
-              >
-                <div className="flex size-8 items-center justify-center rounded-full bg-background-secondary p-1">
-                  <img
-                    src={`https://icons.folo.is/${company.host}`}
-                    alt={company.name}
-                    className="size-full rounded-full object-cover grayscale"
-                    loading="lazy"
-                  />
-                </div>
-                <span className="text-sm font-medium text-text">
-                  {company.name}
-                </span>
-              </div>
-            ))}
-          </div>
+        <div className="flex flex-col gap-8">
+          {renderTrustRow(companies, trustedT('eyebrow'))}
+          {renderTrustRow(researchers, trustedT('researchersEyebrow'))}
         </div>
 
         <div className="flex flex-col items-center gap-4 text-center">

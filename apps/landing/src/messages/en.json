@@ -48,6 +48,7 @@
     },
     "trustedBy": {
       "eyebrow": "Trusted by teams at",
+      "researchersEyebrow": "Trusted by researchers at",
       "headline": "Teams already using Folo.",
       "body": "We sampled production work-email registrations to find the companies that have already started reading with Folo."
     },
