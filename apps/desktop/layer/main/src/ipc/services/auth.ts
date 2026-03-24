@@ -7,6 +7,11 @@ import { IpcMethod, IpcService } from "electron-ipc-decorator"
 import { BETTER_AUTH_COOKIE_NAME_SESSION_TOKEN } from "~/constants/app"
 import { WindowManager } from "~/manager/window"
 
+import {
+  buildManagedAuthCookieHeader,
+  getManagedAuthCookies,
+  persistManagedAuthCookiesFromSetCookieHeader,
+} from "../../lib/auth-cookies"
 import { getSessionTokenFromCookies, syncSessionToCliConfig } from "../../lib/cli-session-sync"
 import { deleteNotificationsToken, updateNotificationsToken } from "../../lib/user"
 import { logger } from "../../logger"
@@ -89,11 +94,19 @@ export class AuthService extends IpcService {
       .catch(async () => ({ message: await response.text() }))) as Record<string, unknown>
 
     const setCookie = response.headers.get("set-cookie") || ""
+    const mainWindow = WindowManager.getMainWindow()
+    if (response.ok && setCookie && mainWindow) {
+      await persistManagedAuthCookiesFromSetCookieHeader({
+        apiURL: env.VITE_API_URL,
+        session: mainWindow.webContents.session,
+        setCookieHeader: setCookie,
+      })
+    }
     const sessionCookieMatch = setCookie.match(/better-auth\.session_token=([^;]+)/)
     const sessionToken = sessionCookieMatch?.[1] ?? null
     const token = typeof data.token === "string" ? data.token : null
     const persistedSessionToken = sessionToken ?? token
-    if (response.ok && persistedSessionToken) {
+    if (response.ok && persistedSessionToken && !setCookie && mainWindow) {
       await this.applySessionToken(persistedSessionToken)
     }
 
@@ -147,6 +160,57 @@ export class AuthService extends IpcService {
     }).catch(() => {})
 
     await this.clearSessionToken()
+  }
+
+  @IpcMethod()
+  async verifyTotp(
+    _context: IpcContext,
+    payload: { code: string; trustDevice?: boolean; headers?: Record<string, string> },
+  ) {
+    const mainWindow = WindowManager.getMainWindow()
+    const cookieHeader = mainWindow
+      ? buildManagedAuthCookieHeader(
+          await getManagedAuthCookies({
+            apiURL: env.VITE_API_URL,
+            session: mainWindow.webContents.session,
+          }),
+        )
+      : ""
+
+    const response = await fetch(`${env.VITE_API_URL}/better-auth/two-factor/verify-totp`, {
+      method: "POST",
+      headers: this.getAuthRequestHeaders({
+        "content-type": "application/json",
+        ...(cookieHeader ? { Cookie: cookieHeader } : {}),
+        ...payload.headers,
+      }),
+      body: JSON.stringify({
+        code: payload.code,
+        ...(payload.trustDevice !== undefined ? { trustDevice: payload.trustDevice } : {}),
+      }),
+    })
+
+    const data = (await response
+      .json()
+      .catch(async () => ({ message: await response.text() }))) as Record<string, unknown>
+    const setCookie = response.headers.get("set-cookie") || ""
+    if (response.ok && setCookie && mainWindow) {
+      await persistManagedAuthCookiesFromSetCookieHeader({
+        apiURL: env.VITE_API_URL,
+        session: mainWindow.webContents.session,
+        setCookieHeader: setCookie,
+      })
+    }
+
+    return {
+      data,
+      error: response.ok
+        ? null
+        : {
+            message: typeof data.message === "string" ? data.message : response.statusText,
+            status: response.status,
+          },
+    }
   }
 
   @IpcMethod()
