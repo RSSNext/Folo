@@ -54,7 +54,7 @@ import { ChatBottomPanel } from "./ChatBottomPanel"
 import { ChatMessageContainer } from "./ChatMessageContainer"
 
 const draftMessages = new Map<string, EditorState>()
-const ChatInterfaceContent = ({ centerInputOnEmpty }: ChatInterfaceProps) => {
+const ChatInterfaceContent = ({ centerInputOnEmpty, visualOffsetY }: ChatInterfaceProps) => {
   const hasMessages = useHasMessages()
   const status = useChatStatus()
   const chatActions = useChatActions()
@@ -288,6 +288,7 @@ const ChatInterfaceContent = ({ centerInputOnEmpty }: ChatInterfaceProps) => {
         <ChatBottomPanel
           hasMessages={hasMessages}
           centerInputOnEmpty={centerInputOnEmpty}
+          visualOffsetY={visualOffsetY}
           shouldShowInterruptionNotice={shouldShowInterruptionNotice}
           rateLimitMessage={rateLimitMessage}
           isRateLimited={isRateLimited}
