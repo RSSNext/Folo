@@ -45,15 +45,34 @@ const getAuthTokenFromResult = (result: unknown) => {
     return result.sessionToken
   }
 
+  if ("session" in result && result.session && typeof result.session === "object") {
+    const { token } = result.session as { token?: unknown }
+    if (typeof token === "string") {
+      return token
+    }
+  }
+
   if (
     "data" in result &&
     result.data &&
     typeof result.data === "object" &&
-    ("sessionToken" in result.data || "token" in result.data)
+    ("sessionToken" in result.data || "token" in result.data || "session" in result.data)
   ) {
-    const { sessionToken, token } = result.data as { sessionToken?: unknown; token?: unknown }
+    const { sessionToken, token, session } = result.data as {
+      sessionToken?: unknown
+      token?: unknown
+      session?: { token?: unknown } | unknown
+    }
     if (typeof token === "string") {
       return token
+    }
+    if (
+      session &&
+      typeof session === "object" &&
+      "token" in session &&
+      typeof session.token === "string"
+    ) {
+      return session.token
     }
     return typeof sessionToken === "string" ? sessionToken : null
   }

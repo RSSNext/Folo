@@ -204,6 +204,14 @@ export class AuthService extends IpcService {
       })
     }
 
+    const sessionToken =
+      data.session && typeof data.session === "object" && "token" in data.session
+        ? (data.session as { token?: unknown }).token
+        : null
+    if (typeof sessionToken === "string") {
+      data.sessionToken = sessionToken
+    }
+
     return {
       data,
       error: response.ok
