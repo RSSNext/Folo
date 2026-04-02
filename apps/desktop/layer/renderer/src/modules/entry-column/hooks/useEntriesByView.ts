@@ -19,7 +19,7 @@ import { isBizId } from "@follow/utils/utils"
 import { useMutation } from "@tanstack/react-query"
 import { debounce } from "es-toolkit/compat"
 import { useAtomValue } from "jotai"
-import { useCallback, useEffect, useMemo, useState } from "react"
+import { useCallback, useEffect, useMemo, useRef, useState } from "react"
 
 import { useGeneralSettingKey } from "~/atoms/settings/general"
 import { ROUTE_FEED_PENDING } from "~/constants/app"
@@ -27,6 +27,7 @@ import { useFeature } from "~/hooks/biz/useFeature"
 import { useRouteParams } from "~/hooks/biz/useRouteParams"
 
 import { aiTimelineEnabledAtom } from "../atoms/ai-timeline"
+import { getVisibleLocalEntryIds } from "./filter-local-entry-ids"
 import { useIsPreviewFeed } from "./useIsPreviewFeed"
 
 const useRemoteEntries = (): UseEntriesReturn => {
@@ -138,6 +139,18 @@ const useLocalEntries = (): UseEntriesReturn => {
     !inboxId &&
     !listId
 
+  const localQueryKey = useMemo(
+    () => [feedId || "", view, inboxId || "", listId || "", isCollection ? "1" : "0"].join(":"),
+    [feedId, inboxId, isCollection, listId, view],
+  )
+  const stickyVisibleStateRef = useRef<{
+    queryKey: string
+    ids: Set<string>
+  }>({
+    queryKey: localQueryKey,
+    ids: new Set<string>(),
+  })
+
   const allEntries = useEntryStore(
     useCallback(
       (state) => {
@@ -152,16 +165,17 @@ const useLocalEntries = (): UseEntriesReturn => {
                 entryIdsByInboxId,
               ) ?? [])
 
-        return ids
-          .map((id) => {
-            const entry = state.data[id]
-            if (!entry) return null
-            if (unreadOnly && entry.read) {
-              return null
-            }
-            return entry.id
-          })
-          .filter((id) => typeof id === "string")
+        const stickyVisibleIds =
+          unreadOnly && stickyVisibleStateRef.current.queryKey === localQueryKey
+            ? stickyVisibleStateRef.current.ids
+            : undefined
+
+        return getVisibleLocalEntryIds({
+          sourceIds: ids,
+          entries: state.data,
+          stickyVisibleIds,
+          unreadOnly,
+        })
       },
       [
         entryIdsByCategory,
@@ -171,11 +185,19 @@ const useLocalEntries = (): UseEntriesReturn => {
         entryIdsByListId,
         entryIdsByView,
         isCollection,
+        localQueryKey,
         showEntriesByView,
         unreadOnly,
       ],
     ),
   )
+
+  useEffect(() => {
+    stickyVisibleStateRef.current = {
+      queryKey: localQueryKey,
+      ids: unreadOnly ? new Set(allEntries) : new Set<string>(),
+    }
+  }, [allEntries, localQueryKey, unreadOnly])
 
   const [page, setPage] = useState(0)
   const pageSize = 30
