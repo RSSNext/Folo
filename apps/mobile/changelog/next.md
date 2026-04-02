@@ -4,8 +4,17 @@
 
 ## Improvements
 
+- Improved iPad layouts and entry detail rendering
+- Simplified iOS subscription management
+- Polished authentication and settings UX
+- Aligned mobile SDK compatibility across discover and settings screens
+
 ## No longer broken
+
+- Fixed timeline refresh after sign-in
+- Fixed mark-read timing right after refreshing a timeline
+- Fixed EAS build dependency setup by adding `expo-network`
 
 ## Thanks
 
-Special thanks to volunteer contributors @ for their valuable contributions
+Special thanks to volunteer contributors for their valuable contributions
