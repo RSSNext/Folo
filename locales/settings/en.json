@@ -615,6 +615,7 @@
   "plan.features.PRIVATE_SUBSCRIPTION": "Private Subscriptions",
   "plan.features.SECURE_IMAGE_PROXY": "Secure Image Proxy",
   "plan.manage_subscription": "Manage Subscription",
+  "plan.manage_subscription_hint_apple": "Manage: Apple Account > Subscriptions",
   "plan.renews": "Renews {{date}}",
   "plan.trial_ends": "Trial ends {{date}}",
   "privacy.privacy": "Privacy",

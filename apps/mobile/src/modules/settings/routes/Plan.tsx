@@ -316,7 +316,6 @@ export const PlanScreen: NavigationControllerView = () => {
     isPurchasing,
     isRestoring,
     loadSubscriptions,
-    openSubscriptionManagement,
     requestSubscriptionPurchase,
     restoreSubscriptionPurchases,
   } = useAppleIAP()
@@ -485,15 +484,8 @@ export const PlanScreen: NavigationControllerView = () => {
   })
 
   const handleManageSubscription = useCallback(() => {
-    if (activeSubscription?.source === "apple") {
-      void openSubscriptionManagement().catch(() => {
-        toast.error(t("subscription.actions.manage_error"))
-      })
-      return
-    }
-
     billingPortalMutation.mutate()
-  }, [activeSubscription?.source, billingPortalMutation, openSubscriptionManagement, t])
+  }, [billingPortalMutation])
 
   if (!isPaymentEnabled || sortedPlans.length === 0) {
     return (
@@ -971,6 +963,7 @@ const PlanAction = ({
   const { t } = useTranslation("settings")
 
   const canManageSubscription = !!activeSubscription?.canManage
+  const isAppleSubscription = activeSubscription?.source === "apple"
   const isCanceled = activeSubscription?.status === "canceled"
   const periodEnd = activeSubscription?.trialEnd ?? activeSubscription?.periodEnd
   const effectivePeriodEnd = periodEnd ? new Date(periodEnd) : null
@@ -1025,23 +1018,29 @@ const PlanAction = ({
             </Text>
           </View>
         )}
-        <Pressable
-          accessibilityRole="button"
-          onPress={onManageSubscription}
-          disabled={!canManageSubscription || isManaging}
-          className={cn(
-            "h-11 items-center justify-center rounded-full border border-opaque-separator/60",
-            !canManageSubscription && "opacity-50",
-          )}
-        >
-          {isManaging ? (
-            <ActivityIndicator />
-          ) : (
-            <Text className="text-base font-medium text-label">
-              {canManageSubscription ? t("plan.manage_subscription") : t("plan.current_plan")}
-            </Text>
-          )}
-        </Pressable>
+        {isAppleSubscription ? (
+          <Text className="rounded-2xl bg-secondary-system-fill px-4 py-3 text-center text-sm leading-5 text-secondary-label">
+            {t("plan.manage_subscription_hint_apple")}
+          </Text>
+        ) : (
+          <Pressable
+            accessibilityRole="button"
+            onPress={onManageSubscription}
+            disabled={!canManageSubscription || isManaging}
+            className={cn(
+              "h-11 items-center justify-center rounded-full border border-opaque-separator/60",
+              !canManageSubscription && "opacity-50",
+            )}
+          >
+            {isManaging ? (
+              <ActivityIndicator />
+            ) : (
+              <Text className="text-base font-medium text-label">
+                {canManageSubscription ? t("plan.manage_subscription") : t("plan.current_plan")}
+              </Text>
+            )}
+          </Pressable>
+        )}
       </View>
     )
   }

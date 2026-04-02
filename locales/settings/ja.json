@@ -615,6 +615,7 @@
   "plan.features.PRIVATE_SUBSCRIPTION": "プライベートサブスクリプション",
   "plan.features.SECURE_IMAGE_PROXY": "セキュア画像プロキシ",
   "plan.manage_subscription": "サブスクリプションを管理",
+  "plan.manage_subscription_hint_apple": "管理：Apple Account > サブスクリプション",
   "plan.renews": "更新日 {{date}}",
   "plan.trial_ends": "トライアル終了日 {{date}}",
   "privacy.privacy": "プライバシー",

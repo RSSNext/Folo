@@ -2,8 +2,7 @@ import { whoamiQueryKey } from "@follow/store/user/hooks"
 import { userSyncService } from "@follow/store/user/store"
 import { requireNativeModule } from "expo"
 import type { ProductPurchase, SubscriptionProduct } from "expo-iap"
-import { getTransactionJws, showManageSubscriptions, useIAP } from "expo-iap"
-import { openURL } from "expo-linking"
+import { getTransactionJws, useIAP } from "expo-iap"
 import type { PropsWithChildren } from "react"
 import { createContext, use, useCallback, useEffect, useMemo, useRef, useState } from "react"
 import { useTranslation } from "react-i18next"
@@ -15,7 +14,6 @@ import { proxyEnv } from "@/src/lib/proxy-env"
 import { queryClient } from "@/src/lib/query-client"
 import { toast } from "@/src/lib/toast"
 
-const APPLE_SUBSCRIPTION_MANAGEMENT_URL = "https://apps.apple.com/account/subscriptions"
 const billingSubscriptionQueryKey = ["billingSubscription"]
 
 type BillingSubscriptionResponse = {
@@ -40,12 +38,17 @@ type AppleIAPContextValue = {
     appAccountToken?: string | null
   }) => Promise<void>
   restoreSubscriptionPurchases: () => Promise<void>
-  openSubscriptionManagement: () => Promise<void>
 }
 
 const AppleIAPContext = createContext<AppleIAPContextValue | null>(null)
 
-const noopAsync = async () => {}
+const refreshBillingState = async () => {
+  await Promise.allSettled([
+    userSyncService.whoami(),
+    queryClient.invalidateQueries({ queryKey: whoamiQueryKey }),
+    queryClient.invalidateQueries({ queryKey: billingSubscriptionQueryKey }),
+  ])
+}
 
 export const AppleIAPProvider = ({ children }: PropsWithChildren) => {
   const { t } = useTranslation("settings")
@@ -106,14 +109,6 @@ export const AppleIAPProvider = ({ children }: PropsWithChildren) => {
   useEffect(() => {
     availablePurchasesRef.current = availablePurchases
   }, [availablePurchases])
-
-  const refreshBillingState = useCallback(async () => {
-    await Promise.allSettled([
-      userSyncService.whoami(),
-      queryClient.invalidateQueries({ queryKey: whoamiQueryKey }),
-      queryClient.invalidateQueries({ queryKey: billingSubscriptionQueryKey }),
-    ])
-  }, [])
 
   const verifyPurchase = useCallback(
     async (purchase: ProductPurchase) => {
@@ -186,14 +181,7 @@ export const AppleIAPProvider = ({ children }: PropsWithChildren) => {
         setIsProcessingPurchase(false)
       }
     })()
-  }, [
-    currentPurchase,
-    finishTransaction,
-    knownSubscriptionIds,
-    refreshBillingState,
-    t,
-    verifyPurchase,
-  ])
+  }, [currentPurchase, finishTransaction, knownSubscriptionIds, t, verifyPurchase])
 
   useEffect(() => {
     if (!currentPurchaseError) {
@@ -267,7 +255,7 @@ export const AppleIAPProvider = ({ children }: PropsWithChildren) => {
         throw error
       }
     },
-    [refreshBillingState, requestPurchase, storeKitTestHelper],
+    [requestPurchase, storeKitTestHelper],
   )
 
   const restoreSubscriptionPurchases = useCallback(async () => {
@@ -322,20 +310,7 @@ export const AppleIAPProvider = ({ children }: PropsWithChildren) => {
     } finally {
       setIsRestoring(false)
     }
-  }, [knownSubscriptionIds, refreshBillingState, restorePurchases, t, verifyPurchase])
-
-  const openSubscriptionManagement = useCallback(async () => {
-    if (Platform.OS !== "ios") {
-      await noopAsync()
-      return
-    }
-
-    try {
-      await showManageSubscriptions()
-    } catch {
-      await openURL(APPLE_SUBSCRIPTION_MANAGEMENT_URL)
-    }
-  }, [])
+  }, [knownSubscriptionIds, restorePurchases, t, verifyPurchase])
 
   const contextValue = useMemo<AppleIAPContextValue>(
     () => ({
@@ -347,7 +322,6 @@ export const AppleIAPProvider = ({ children }: PropsWithChildren) => {
       loadSubscriptions,
       requestSubscriptionPurchase,
       restoreSubscriptionPurchases,
-      openSubscriptionManagement,
     }),
     [
       connected,
@@ -358,7 +332,6 @@ export const AppleIAPProvider = ({ children }: PropsWithChildren) => {
       loadSubscriptions,
       requestSubscriptionPurchase,
       restoreSubscriptionPurchases,
-      openSubscriptionManagement,
     ],
   )
 
