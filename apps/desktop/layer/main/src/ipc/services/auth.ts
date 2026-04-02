@@ -12,11 +12,7 @@ import {
   getManagedAuthCookies,
   persistManagedAuthCookiesFromSetCookieHeader,
 } from "../../lib/auth-cookies"
-import {
-  getSessionTokenFromCookies,
-  resolveCliSessionToken,
-  syncSessionToCliConfig,
-} from "../../lib/cli-session-sync"
+import { getCliSessionToken, syncSessionToCliConfig } from "../../lib/cli-session-sync"
 import { deleteNotificationsToken, updateNotificationsToken } from "../../lib/user"
 import { logger } from "../../logger"
 
@@ -134,9 +130,8 @@ export class AuthService extends IpcService {
     await updateNotificationsToken()
 
     // Sync the current desktop session to the npm CLI login.
-    const token = resolveCliSessionToken({
+    const token = await getCliSessionToken({
       preferredToken,
-      cookieToken: await getSessionTokenFromCookies(),
     })
     await syncSessionToCliConfig(token).catch((err) => {
       logger.error("Failed to sync session to CLI config:", err)

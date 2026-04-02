@@ -6,10 +6,10 @@ import {
   getCliConfigPath,
   getCliInstallCommand,
   getCliLoginCommand,
+  getCliSessionToken,
   getSessionTokenFromCookies,
   isCliRunnerAvailable,
   readCliConfig,
-  resolveCliSessionToken,
   syncSessionToCliConfig,
 } from "../../lib/cli-session-sync"
 
@@ -55,9 +55,8 @@ export class CliService extends IpcService {
         return { success: false, error: "npx is not available. Install Node.js and npm first." }
       }
 
-      const token = resolveCliSessionToken({
+      const token = await getCliSessionToken({
         preferredToken,
-        cookieToken: await getSessionTokenFromCookies(),
       })
       if (!token) {
         return { success: false, error: "Sign in to Folo Desktop first." }
