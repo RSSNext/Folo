@@ -34,12 +34,21 @@ export const EntryListContentVideo = ({
   const ref = useRef<FlashListRef<any>>(null)
   useImperativeHandle(forwardRef, () => ref.current!)
   const isTablet = useIsTabletLayout()
-  const { fetchNextPage, refetch, isRefetching, isFetching, hasNextPage, isReady } = useEntries({
+  const {
+    fetchNextPage,
+    refetch,
+    isRefetching,
+    isFetching,
+    isFetchingNextPage,
+    hasNextPage,
+    isReady,
+  } = useEntries({
     viewId: view,
     active,
   })
   const { onViewableItemsChanged, onScroll, viewableItems } = useOnViewableItemsChanged({
     disabled: active === false || isFetching,
+    refreshing: isFetching && !isFetchingNextPage,
   })
 
   const translation = useGeneralSettingKey("translation")

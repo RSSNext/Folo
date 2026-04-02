@@ -25,7 +25,15 @@ export const EntryListContentSocial = ({
 }: { entryIds: string[] | null; active?: boolean; view: FeedViewType } & {
   ref?: React.Ref<ElementRef<typeof TimelineSelectorList> | null>
 }) => {
-  const { fetchNextPage, isFetching, refetch, isRefetching, hasNextPage, isReady } = useEntries({
+  const {
+    fetchNextPage,
+    isFetching,
+    isFetchingNextPage,
+    refetch,
+    isRefetching,
+    hasNextPage,
+    isReady,
+  } = useEntries({
     viewId: view,
     active,
   })
@@ -48,6 +56,7 @@ export const EntryListContentSocial = ({
 
   const { onViewableItemsChanged, onScroll, viewableItems } = useOnViewableItemsChanged({
     disabled: active === false || isFetching,
+    refreshing: isFetching && !isFetchingNextPage,
   })
 
   const translation = useGeneralSettingKey("translation")
