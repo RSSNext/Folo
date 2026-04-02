@@ -66,24 +66,29 @@ export class IntegrationService extends IpcService {
       author: string
       publishedAt: string
       vaultPath: string
+      description?: string
     },
   ) {
     try {
-      const { url, title, content, author, publishedAt, vaultPath } = input
+      const { url, title, content, author, publishedAt, vaultPath, description } = input
 
       const fileName = `${sanitizeFileName(title || publishedAt)
         .trim()
-        .slice(0, 20)}.md`
+        .slice(0, 80)}.md`
       const filePath = path.join(vaultPath, fileName)
       const exists = existsSync(filePath)
       if (exists) {
         return { success: false, error: "File already exists" }
       }
 
+      await fsp.mkdir(path.dirname(filePath), { recursive: true })
+
+      const yamlEscape = (s: string) => `"${s.replaceAll("\\", "\\\\").replaceAll('"', '\\"')}"`
+
       const markdown = `---
-url: ${url}
-author: ${author}
-publishedAt: ${publishedAt}
+url: ${yamlEscape(url)}
+author: ${yamlEscape(author)}
+publishedAt: ${yamlEscape(publishedAt)}${description ? `\ndescription: ${yamlEscape(description)}` : ""}
 ---
 
 # ${title}
