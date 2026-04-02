@@ -320,7 +320,10 @@ export const PlanScreen: NavigationControllerView = () => {
     restoreSubscriptionPurchases,
   } = useAppleIAP()
 
-  const plans = useMemo(() => serverConfigs?.PAYMENT_PLAN_LIST ?? [], [serverConfigs])
+  const plans = useMemo<PaymentPlan[]>(
+    () => serverConfigs?.PAYMENT_PLAN_LIST ?? [],
+    [serverConfigs],
+  )
   const appleProductIds = useMemo(
     () =>
       plans
@@ -402,14 +405,14 @@ export const PlanScreen: NavigationControllerView = () => {
 
   const averageSavings = useMemo(() => {
     const paidPlans = sortedPlans.filter(
-      (plan) => (plan.priceInDollars ?? 0) > 0 && (plan.priceInDollarsAnnual ?? 0) > 0,
+      (plan: PaymentPlan) => (plan.priceInDollars ?? 0) > 0 && (plan.priceInDollarsAnnual ?? 0) > 0,
     )
 
     if (paidPlans.length === 0) {
       return 0
     }
 
-    const total = paidPlans.reduce((acc, plan) => {
+    const total = paidPlans.reduce((acc, plan: PaymentPlan) => {
       const monthlyTotal = (plan.priceInDollars ?? 0) * 12
       const yearlyTotal = plan.priceInDollarsAnnual ?? 0
       if (monthlyTotal === 0) {
@@ -424,7 +427,7 @@ export const PlanScreen: NavigationControllerView = () => {
 
   const upgradeMutation = useMutation<void, Error, UpgradeVariables>({
     mutationFn: async ({ planId, annual }) => {
-      const selectedPlan = plans.find((plan) => plan.planID === planId)
+      const selectedPlan = plans.find((plan: PaymentPlan) => plan.planID === planId)
 
       if (Platform.OS === "ios" && activeSubscription?.source !== "stripe") {
         const productId = annual
@@ -900,7 +903,7 @@ const PlanCard = ({
       </View>
 
       <View className="mt-4 gap-2">
-        {features.map(([featureKey, value]) => {
+        {features.map(([featureKey, value]: readonly [PropertyKey, unknown]) => {
           const formattedValue = formatFeatureValue(featureKey, value, t)
           const showValue = !(typeof value === "boolean" && value)
           return (
@@ -909,7 +912,9 @@ const PlanCard = ({
                 <CheckLineIcon width={14} height={14} color="rgb(40, 205, 65)" />
               </View>
               <Text className="flex-1 text-sm text-label">
-                {t(`plan.features.${featureKey}` as const, { defaultValue: featureKey })}
+                {t(`plan.features.${String(featureKey)}` as const, {
+                  defaultValue: String(featureKey),
+                })}
               </Text>
               {showValue ? (
                 <Text

@@ -152,7 +152,7 @@ const VirtualGridImpl: FC<
   const rowVirtualizer = useVirtualizer({
     count: rows.length + (hasNextPage ? 1 : 0) + (Footer ? 1 : 0),
     estimateSize: () => {
-      return columns[0]! / ratioMap[view] + (!isImageOnly ? 58 : 0)
+      return columns[0]! / (ratioMap[view] ?? 1) + (!isImageOnly ? 58 : 0)
     },
     overscan: 5,
     gap: 8,

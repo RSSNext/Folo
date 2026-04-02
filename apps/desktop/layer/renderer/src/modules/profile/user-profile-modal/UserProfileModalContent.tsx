@@ -9,7 +9,6 @@ import { getAvatarUrl } from "@follow/utils"
 import { nextFrame, stopPropagation } from "@follow/utils/dom"
 import { getStorageNS } from "@follow/utils/ns"
 import { cn } from "@follow/utils/utils"
-import type { ListWithStats } from "@follow-app/client-sdk"
 import { useQuery } from "@tanstack/react-query"
 import { useAtom } from "jotai"
 import { atomWithStorage } from "jotai/utils"
@@ -63,7 +62,7 @@ const pickUserData = <
   }
 }
 
-const ListCard = memo(({ list }: { list: ListWithStats }) => {
+const ListCard = memo(({ list }: { list: any }) => {
   return (
     <div className="group/card relative overflow-hidden rounded-lg border border-fill bg-material-ultra-thin transition-all duration-200 hover:border-fill-secondary">
       <a
@@ -124,7 +123,11 @@ export const UserProfileModalContent: FC<SubscriptionModalContentProps> = ({ use
   const user = usePrefetchUser(userId)
   const storeUser = useUserById(userId)
 
-  const userInfo = user.data ? pickUserData(user.data) : storeUser ? pickUserData(storeUser) : null
+  const userInfo = user.data
+    ? pickUserData(user.data as any)
+    : storeUser
+      ? pickUserData(storeUser as any)
+      : null
 
   const modal = useCurrentModal()
   const controller = useAnimationControls()
@@ -361,7 +364,7 @@ const useUserListsQuery = (userId: string) => {
   })
 }
 
-const Lists = ({ lists }: { lists: ListWithStats[] }) => {
+const Lists = ({ lists }: { lists: any[] }) => {
   const { t } = useTranslation()
   if (!lists || lists.length === 0) return null
   return (

@@ -9,8 +9,7 @@ export const UserProvider = () => {
 
   useEffect(() => {
     if (!session?.user) return
-    // @ts-expect-error FIXME
-    setWhoami(session.user)
+    setWhoami(session.user as unknown as AuthUser)
 
     setIntegrationIdentify(session.user as unknown as AuthUser)
   }, [session?.user])

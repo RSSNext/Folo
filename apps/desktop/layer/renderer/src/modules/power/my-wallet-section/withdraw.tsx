@@ -26,9 +26,7 @@ import { toast } from "sonner"
 import { z } from "zod"
 
 import { useModalStack } from "~/components/ui/modal/stacked/hooks"
-import { useAuthQuery } from "~/hooks/common/useBizQuery"
 import { followClient } from "~/lib/api-client"
-import { defineQuery } from "~/lib/defineQuery"
 import { useTOTPModalWrapper } from "~/modules/profile/hooks"
 import { Balance } from "~/modules/wallet/balance"
 import { useWallet, wallet as walletActions } from "~/queries/wallet"
@@ -67,12 +65,7 @@ const WithdrawModalContent = ({ dismiss }: { dismiss: () => void }) => {
     resolver: zodResolver(formSchema),
   })
 
-  const powerPrice = useAuthQuery(
-    defineQuery(["power-price"], async () => {
-      const res = await followClient.api.wallets.powerPrice()
-      return res.data
-    }),
-  )
+  const rss3ConversionRate: number | null = null
 
   const mutation = useMutation({
     mutationFn: async ({
@@ -105,7 +98,7 @@ const WithdrawModalContent = ({ dismiss }: { dismiss: () => void }) => {
     if (mutation.isError) {
       toast.error(t("wallet.withdraw.error", { error: mutation.error?.message }))
     }
-  }, [mutation.isError, t])
+  }, [mutation.error?.message, mutation.isError, t])
 
   useEffect(() => {
     if (mutation.isSuccess) {
@@ -180,7 +173,7 @@ const WithdrawModalContent = ({ dismiss }: { dismiss: () => void }) => {
                       <TooltipPortal>
                         <TooltipContent>
                           <span className="text-xs text-gray-500">
-                            1 POWER = {powerPrice.data?.rss3 ?? "-"} RSS3
+                            <span>1 POWER = {rss3ConversionRate ?? "-"} RSS3</span>
                           </span>
                         </TooltipContent>
                       </TooltipPortal>
@@ -192,12 +185,10 @@ const WithdrawModalContent = ({ dismiss }: { dismiss: () => void }) => {
                     </span>
                   </FormControl>
                 </div>
-                {field.value && (
+                {field.value && rss3ConversionRate !== null && (
                   <span className="text-xs text-gray-500">
                     {t("wallet.withdraw.receiveRSS3", {
-                      amount: ((form.watch("amount") || 0) * (powerPrice.data?.rss3 ?? 0)).toFixed(
-                        4,
-                      ),
+                      amount: ((form.watch("amount") || 0) * rss3ConversionRate).toFixed(4),
                     })}
                   </span>
                 )}
