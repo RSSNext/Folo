@@ -285,4 +285,23 @@ export class AppService extends IpcService {
   getCacheSize(_context: IpcContext) {
     return getCacheSize()
   }
+
+  @IpcMethod()
+  async selectDirectory(_context: IpcContext): Promise<string | null> {
+    const result = await dialog.showOpenDialog({
+      properties: ["openDirectory"],
+    })
+    if (result.canceled || result.filePaths.length === 0) return null
+    return result.filePaths[0]!
+  }
+
+  @IpcMethod()
+  async checkPathExists(_context: IpcContext, input: string): Promise<boolean> {
+    try {
+      await fsp.access(input)
+      return true
+    } catch {
+      return false
+    }
+  }
 }
