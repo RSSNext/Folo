@@ -9,6 +9,7 @@ import {
   getHeroTimelineItems,
   getLandingMetrics,
   TRUSTED_COMPANIES,
+  TRUSTED_RESEARCH_INSTITUTIONS,
 } from '~/lib/landing-data'
 
 type LocaleParams = { locale?: string }
@@ -27,7 +28,11 @@ export default async function Home({
   return (
     <>
       <LandingHero items={heroItems} />
-      <TrustedBy companies={TRUSTED_COMPANIES} metrics={metrics} />
+      <TrustedBy
+        companies={TRUSTED_COMPANIES}
+        researchers={TRUSTED_RESEARCH_INSTITUTIONS}
+        metrics={metrics}
+      />
       <Features discoverSources={DISCOVER_FALLBACK} />
       {/* <ViewsShowcase /> */}
       {/* <Audience /> */}

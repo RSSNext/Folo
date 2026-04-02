@@ -343,6 +343,19 @@ export const TRUSTED_COMPANIES: TrustedCompany[] = [
   { name: 'NVIDIA', host: 'nvidia.com', users: 4 },
 ]
 
+export const TRUSTED_RESEARCH_INSTITUTIONS: TrustedCompany[] = [
+  { name: 'MIT', host: 'mit.edu', users: 1 },
+  { name: 'Stanford', host: 'stanford.edu', users: 2 },
+  { name: 'Oxford', host: 'ox.ac.uk', users: 1 },
+  { name: 'Harvard', host: 'harvard.edu', users: 4 },
+  { name: 'Cambridge', host: 'cam.ac.uk', users: 1 },
+  { name: 'NUS', host: 'nus.edu.sg', users: 11 },
+  { name: 'UCL', host: 'ucl.ac.uk', users: 2 },
+  { name: 'NTU Singapore', host: 'ntu.edu.sg', users: 6 },
+  { name: 'Peking University', host: 'pku.edu.cn', users: 41 },
+  { name: 'UPenn', host: 'upenn.edu', users: 5 },
+]
+
 const LANDING_METRICS_FALLBACK: LandingMetrics = {
   feeds: 1267577,
   entries: 300849952,

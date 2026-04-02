@@ -2,8 +2,10 @@ appId: is.follow
 ---
 - runFlow:
     file: ./dismiss-system-dialogs.yaml
-- assertVisible:
-    id: login-screen
+- extendedWaitUntil:
+    visible:
+      id: login-provider-credential
+    timeout: 60000
 - tapOn:
     id: auth-toggle-mode
 - extendedWaitUntil:
@@ -29,10 +31,11 @@ appId: is.follow
 - eraseText
 - setClipboard: ${E2E_PASSWORD}
 - pasteText
-- pressKey: Enter
+- tapOn:
+    id: login-submit
 - extendedWaitUntil:
     notVisible:
-      id: login-screen
+      id: login-provider-credential
     timeout: 30000
 - extendedWaitUntil:
     visible:

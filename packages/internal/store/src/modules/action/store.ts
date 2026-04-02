@@ -34,7 +34,7 @@ class ActionSyncService {
     const res = await api().actions.get()
     if (res.data) {
       actionActions.updateRules(
-        (res.data.rules ?? []).map((rule, index) => {
+        (res.data.rules ?? []).map((rule: ActionItemRes, index: number) => {
           const { condition } = rule
           // fix old data
           const finalCondition =

@@ -40,8 +40,16 @@ export const EntryListContentArticle = ({
   const extraData: EntryExtraData = useMemo(() => ({ entryIds }), [entryIds])
   const readableItemStyle = useReadableContainerStyle(860, 16)
 
-  const { fetchNextPage, isFetching, refetch, isRefetching, hasNextPage, fetchedTime, isReady } =
-    useEntries({ viewId: view, active })
+  const {
+    fetchNextPage,
+    isFetching,
+    isFetchingNextPage,
+    refetch,
+    isRefetching,
+    hasNextPage,
+    fetchedTime,
+    isReady,
+  } = useEntries({ viewId: view, active })
 
   const renderItem = useCallback(
     ({ item: id, extraData, index }: ListRenderItemInfo<string>) => (
@@ -67,6 +75,7 @@ export const EntryListContentArticle = ({
 
   const { onViewableItemsChanged, onScroll, viewableItems } = useOnViewableItemsChanged({
     disabled: active === false || isFetching,
+    refreshing: isFetching && !isFetchingNextPage,
   })
 
   useImperativeHandle(forwardRef, () => ref.current!)

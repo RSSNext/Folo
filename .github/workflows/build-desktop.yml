@@ -151,7 +151,7 @@ jobs:
           APPLE_TEAM_ID: ${{ secrets.APPLE_TEAM_ID }}
           OSX_SIGN_KEYCHAIN_PATH: ${{ runner.temp }}/app-signing.keychain-db
           OSX_SIGN_IDENTITY: ${{ secrets.OSX_SIGN_IDENTITY }}
-        uses: nick-fields/retry@v3
+        uses: nick-fields/retry@v4
         with:
           max_attempts: 3
           timeout_minutes: 10

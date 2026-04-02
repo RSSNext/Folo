@@ -1,3 +1,4 @@
+import { useScrollMarkReadGracePeriod } from "@follow/hooks"
 import { debouncedFetchEntryContentByStream } from "@follow/store/entry/store"
 import { unreadSyncService } from "@follow/store/unread/store"
 import { useIsLoggedIn } from "@follow/store/user/hooks"
@@ -12,10 +13,12 @@ export function useOnViewableItemsChanged({
   disabled,
   idExtractor = defaultIdExtractor,
   onScroll: onScrollProp,
+  refreshing,
 }: {
   disabled?: boolean
   idExtractor?: (item: ViewToken<string>) => string
   onScroll?: (e: NativeSyntheticEvent<NativeScrollEvent>) => void
+  refreshing?: boolean
 } = {}) {
   const orientation = useRef<"down" | "up">("down")
   const lastOffset = useRef(0)
@@ -23,6 +26,7 @@ export function useOnViewableItemsChanged({
 
   const markAsReadWhenScrolling = useGeneralSettingKey("scrollMarkUnread")
   const markAsReadWhenRendering = useGeneralSettingKey("renderMarkUnread")
+  const pauseScrollMarkRead = useScrollMarkReadGracePeriod(refreshing ?? false)
   const [viewableItems, setViewableItems] = useState<ViewToken<string>[]>([])
   const [lastViewableItems, setLastViewableItems] = useState<ViewToken<string>[] | null>()
   const [lastRemovedItems, setLastRemovedItems] = useState<ViewToken<string>[] | null>(null)
@@ -42,6 +46,11 @@ export function useOnViewableItemsChanged({
     // This can avoid misjudgment during the rebound of the pull-to-refresh (because the offset will change from negative to zero during the rebound).
     if (orientation.current === "down" && lastOffset.current > 0) {
       setLastViewableItems(viewableItems)
+      if (pauseScrollMarkRead) {
+        setLastRemovedItems(null)
+        return
+      }
+
       if (removed.length > 0) {
         setLastRemovedItems((prev) => {
           if (prev) {
@@ -58,9 +67,17 @@ export function useOnViewableItemsChanged({
   })
 
   useEffect(() => {
+    if (!disabled && !pauseScrollMarkRead) {
+      return
+    }
+
+    setLastRemovedItems(null)
+  }, [disabled, pauseScrollMarkRead])
+
+  useEffect(() => {
     if (disabled) return
 
-    if (isLoggedIn && markAsReadWhenScrolling && lastRemovedItems) {
+    if (isLoggedIn && markAsReadWhenScrolling && !pauseScrollMarkRead && lastRemovedItems) {
       lastRemovedItems.forEach((item) => {
         unreadSyncService.markEntryAsRead(stableIdExtractor(item)).then(() => {
           setLastRemovedItems((prev) => {
@@ -86,6 +103,7 @@ export function useOnViewableItemsChanged({
     lastViewableItems,
     markAsReadWhenRendering,
     markAsReadWhenScrolling,
+    pauseScrollMarkRead,
     stableIdExtractor,
   ])
 

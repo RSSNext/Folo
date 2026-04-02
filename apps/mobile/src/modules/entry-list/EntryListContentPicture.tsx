@@ -42,12 +42,21 @@ export const EntryListContentPicture = ({
   const isTablet = useIsTabletLayout()
 
   useImperativeHandle(forwardRef, () => ref.current!)
-  const { fetchNextPage, refetch, isRefetching, hasNextPage, isFetching, isReady } = useEntries({
+  const {
+    fetchNextPage,
+    refetch,
+    isRefetching,
+    hasNextPage,
+    isFetching,
+    isFetchingNextPage,
+    isReady,
+  } = useEntries({
     viewId: view,
     active,
   })
   const { onViewableItemsChanged, onScroll, viewableItems } = useOnViewableItemsChanged({
     disabled: active === false || isFetching,
+    refreshing: isFetching && !isFetchingNextPage,
   })
   const translation = useGeneralSettingKey("translation")
   const translationMode = useGeneralSettingKey("translationMode")

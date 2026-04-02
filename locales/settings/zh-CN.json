@@ -619,6 +619,7 @@
   "plan.features.PRIVATE_SUBSCRIPTION": "私有订阅",
   "plan.features.SECURE_IMAGE_PROXY": "安全图片代理",
   "plan.manage_subscription": "管理订阅",
+  "plan.manage_subscription_hint_apple": "管理：Apple 账户 > 订阅",
   "plan.renews": "续订日期 {{date}}",
   "plan.trial_ends": "试用期至 {{date}}",
   "privacy.privacy": "隐私政策",

@@ -290,7 +290,7 @@ const SubscriptionImpl = ({ ref, className, view, isSubscriptionLoading }: Subsc
               <SortableFeedList
                 view={view}
                 data={feedsData}
-                categoryOpenStateData={categoryOpenStateData}
+                categoryOpenStateData={categoryOpenStateData ?? {}}
               />
             ) : isSubscriptionLoading ? (
               <SubscriptionListSkeleton />

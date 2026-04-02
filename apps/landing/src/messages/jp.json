@@ -48,6 +48,7 @@
     },
     "trustedBy": {
       "eyebrow": "導入が進むチーム",
+      "researchersEyebrow": "導入が進む研究者",
       "headline": "すでに Folo を使うチームがあります。",
       "body": "本番環境の業務用メール登録サンプルをもとに、Folo を使い始めている企業を抽出しました。"
     },

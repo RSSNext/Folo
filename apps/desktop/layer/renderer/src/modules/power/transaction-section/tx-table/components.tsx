@@ -19,7 +19,11 @@ export const TypeRenderer = ({
   type: NonNullable<ReturnType<typeof useWalletTransactions>["data"]>[number]["type"]
 }) => {
   const { t } = useTranslation("settings")
-  return <div className="uppercase">{t(`wallet.transactions.types.${type}`)}</div>
+  return (
+    <div className="uppercase">
+      {t(`wallet.transactions.types.${String(type)}` as const, { defaultValue: String(type) })}
+    </div>
+  )
 }
 
 export const BalanceRenderer = ({

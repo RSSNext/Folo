@@ -2,19 +2,23 @@ appId: is.follow
 ---
 - tapOn:
     id: tab-SettingsTabScreen
-- scrollUntilVisible:
-    element:
-      text: Sign Out
-    direction: DOWN
-    timeout: 10000
-    centerElement: false
-- tapOn:
-    text: Sign Out
-- tapOn:
-    text: Sign out
 - extendedWaitUntil:
     visible:
-      id: login-screen
+      id: settings-general-link
+    timeout: 15000
+- scrollUntilVisible:
+    element:
+      id: settings-sign-out
+    direction: DOWN
+    timeout: 15000
+    centerElement: false
+- tapOn:
+    id: settings-sign-out
+- tapOn:
+    text: Sign Out
+- extendedWaitUntil:
+    visible:
+      id: login-provider-credential
     timeout: 30000
 - assertVisible:
-    id: login-screen
+    id: login-provider-credential

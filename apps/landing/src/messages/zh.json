@@ -48,6 +48,7 @@
     },
     "trustedBy": {
       "eyebrow": "已被这些团队采用",
+      "researchersEyebrow": "已被这些研究者采用",
       "headline": "已经有团队在用 Folo。",
       "body": "我们基于生产环境中的工作邮箱注册样本，整理出了这些已经开始使用 Folo 的公司。"
     },

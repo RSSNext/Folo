@@ -39,13 +39,13 @@ export const getSubscribedFeedIdAndInboxHandlesByView = ({
   if (typeof view !== "number") return []
   const state = useSubscriptionStore.getState()
 
-  const feedIds = Array.from(state.feedIdByView[view])
+  const feedIds = Array.from(state.feedIdByView[view] ?? [])
     .filter((i) => !excludePrivate || !state.data[i]?.isPrivate)
     .filter((i) => !excludeHidden || !state.data[i]?.hideFromTimeline)
 
   const inboxIds = view === FeedViewType.Articles ? getInboxList().map((i) => i.id) : []
 
-  const listFeedIds = Array.from(state.listIdByView[view])
+  const listFeedIds = Array.from(state.listIdByView[view] ?? [])
     .filter((i) => !excludePrivate || !state.data[i]?.isPrivate)
     .filter((i) => !excludeHidden || !state.data[i]?.hideFromTimeline)
     .flatMap((id) => getListFeedIds(id) ?? [])
@@ -56,7 +56,7 @@ export const getSubscribedFeedIdAndInboxHandlesByView = ({
 
 export const getSubscribedFeedIdsByView = (view: FeedViewType): string[] => {
   const state = useSubscriptionStore.getState()
-  return Array.from(state.feedIdByView[view])
+  return Array.from(state.feedIdByView[view] ?? [])
 }
 
 export const getSubscriptionByCategory = ({
@@ -139,9 +139,11 @@ const sortGroupedSubscriptionByUnread = (
 
 // Store selector functions (for React hooks)
 export const getSubscriptionIdsByViewSelector = (state: StateType) => (view: FeedViewType) => {
-  const feedIds = Array.from(state.feedIdByView[view])
+  const feedIds = Array.from(state.feedIdByView[view] ?? [])
   const inboxIds = view === FeedViewType.Articles ? getInboxList().map((i) => i.id) : []
-  const listFeedIds = Array.from(state.listIdByView[view]).flatMap((id) => getListFeedIds(id) ?? [])
+  const listFeedIds = Array.from(state.listIdByView[view] ?? []).flatMap(
+    (id) => getListFeedIds(id) ?? [],
+  )
 
   // Use Set to remove duplicates when feeds exist in both subscriptions and lists
   return Array.from(new Set([...feedIds, ...inboxIds, ...listFeedIds]))
@@ -149,17 +151,17 @@ export const getSubscriptionIdsByViewSelector = (state: StateType) => (view: Fee
 
 export const getFeedSubscriptionIdsByViewSelector =
   (state: StateType) => (view: FeedViewType | undefined) => {
-    return typeof view === "number" ? Array.from(state.feedIdByView[view]) : []
+    return typeof view === "number" ? Array.from(state.feedIdByView[view] ?? []) : []
   }
 
 export const getFeedSubscriptionByViewSelector = (state: StateType) => (view: FeedViewType) => {
-  return Array.from(state.feedIdByView[view])
+  return Array.from(state.feedIdByView[view] ?? [])
     .map((feedId) => state.data[feedId])
     .filter((feed) => !!feed)
 }
 
 export const getListSubscriptionByViewSelector = (state: StateType) => (view: FeedViewType) => {
-  return Array.from(state.listIdByView[view])
+  return Array.from(state.listIdByView[view] ?? [])
     .map((listId) => state.data[listId])
     .filter((list) => !!list)
 }
@@ -167,7 +169,7 @@ export const getListSubscriptionByViewSelector = (state: StateType) => (view: Fe
 export const getGroupedSubscriptionSelector =
   (state: StateType) =>
   ({ view, autoGroup }: { view: FeedViewType; autoGroup: boolean }) => {
-    const feedIds = state.feedIdByView[view]
+    const feedIds = state.feedIdByView[view] ?? []
 
     const grouped = {} as Record<string, string[]>
     const unGrouped = [] as string[]
@@ -291,19 +293,19 @@ export const getAllListSubscriptionSelector = (state: StateType) => () => {
 }
 
 export const getListSubscriptionSelector = (state: StateType) => (view: FeedViewType) => {
-  return Array.from(state.listIdByView[view]).map((listId) => state.data[listId])
+  return Array.from(state.listIdByView[view] ?? []).map((listId) => state.data[listId])
 }
 
 export const getListSubscriptionIdsSelector = (state: StateType) => (view: FeedViewType) => {
-  return Array.from(state.listIdByView[view])
+  return Array.from(state.listIdByView[view] ?? [])
 }
 
 export const getFeedSubscriptionSelector = (state: StateType) => (view: FeedViewType) => {
-  return Array.from(state.feedIdByView[view]).map((feedId) => state.data[feedId])
+  return Array.from(state.feedIdByView[view] ?? []).map((feedId) => state.data[feedId])
 }
 
 export const getFeedSubscriptionIdsSelector = (state: StateType) => (view: FeedViewType) => {
-  return Array.from(state.feedIdByView[view])
+  return Array.from(state.feedIdByView[view] ?? [])
 }
 
 export const getAllFeedSubscriptionSelector = (state: StateType) => () => {
@@ -354,7 +356,7 @@ export const getCategoriesSelector = (state: StateType) => (view?: FeedViewType)
     ? Array.from(
         new Set(Object.values(state.categories).flatMap((category) => Array.from(category))),
       )
-    : Array.from(state.categories[view])
+    : Array.from(state.categories[view] ?? [])
 }
 
 export const getSubscriptionCategoryExistSelector =
@@ -364,7 +366,7 @@ export const getSubscriptionCategoryExistSelector =
   }
 
 export const getCategoriesByViewSelector = (state: StateType) => (view: FeedViewType) => {
-  return state.categories[view]
+  return state.categories[view] ?? new Set<string>()
 }
 
 export const getListSubscriptionCountSelector = (state: StateType) => () => {

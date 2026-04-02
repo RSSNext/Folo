@@ -254,7 +254,7 @@ export const useSubscriptionCategoryExist = (categoryId: string | undefined | nu
 
 export const getSubscriptionCategory = (view?: FeedViewType) => {
   const state = useSubscriptionStore.getState()
-  return view === undefined ? [] : Array.from(state.categories[view])
+  return view === undefined ? [] : Array.from(state.categories[view] ?? [])
 }
 
 export const useViewWithSubscription = () =>
@@ -269,7 +269,7 @@ export const useViewWithSubscription = () =>
         ) {
           return true
         } else {
-          return state.feedIdByView[view.view].size > 0
+          return (state.feedIdByView[view.view]?.size ?? 0) > 0
         }
       })
       .map((v) => v.view)

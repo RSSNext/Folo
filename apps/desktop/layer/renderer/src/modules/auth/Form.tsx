@@ -110,6 +110,11 @@ const getElectronAuthService = () => {
       callbackURL: string
       headers?: Record<string, string>
     }) => Promise<unknown>
+    verifyTotp?: (payload: {
+      code: string
+      trustDevice?: boolean
+      headers?: Record<string, string>
+    }) => Promise<unknown>
   }
 }
 
@@ -183,9 +188,24 @@ export function LoginWithPassword({
           return (
             <TOTPForm
               onSubmitMutationFn={async (values) => {
-                const { data, error } = await twoFactor.verifyTotp({ code: values.code })
-                if (!data || error) {
-                  throw new Error(error?.message ?? "Invalid TOTP code")
+                const result = IN_ELECTRON
+                  ? normalizeElectronAuthResult(
+                      await getElectronAuthService()?.verifyTotp?.({
+                        code: values.code,
+                      }),
+                    )
+                  : await twoFactor.verifyTotp({ code: values.code })
+
+                if (!result?.data || result.error) {
+                  throw new Error(result.error?.message ?? "Invalid TOTP code")
+                }
+
+                if (IN_ELECTRON) {
+                  const token = getAuthTokenFromResult(result)
+                  if (token) {
+                    setAuthSessionToken(token)
+                    await setElectronSessionToken(token)
+                  }
                 }
               }}
               onSuccess={() => {
