@@ -115,15 +115,15 @@ class SubscriptionActions implements Hydratable, Resetable {
         draft.subscriptionIdSet.add(subscriptionSetId)
 
         if (subscription.feedId && subscription.type === "feed") {
-          draft.feedIdByView[subscription.view].add(subscription.feedId)
-          draft.feedIdByView[FeedViewType.All].add(subscription.feedId)
+          draft.feedIdByView[subscription.view]!.add(subscription.feedId)
+          draft.feedIdByView[FeedViewType.All]!.add(subscription.feedId)
           if (subscription.category) {
-            draft.categories[subscription.view].add(subscription.category)
+            draft.categories[subscription.view]!.add(subscription.category)
           }
         }
         if (subscription.listId && subscription.type === "list") {
-          draft.listIdByView[subscription.view].add(subscription.listId)
-          draft.listIdByView[FeedViewType.All].add(subscription.listId)
+          draft.listIdByView[subscription.view]!.add(subscription.listId)
+          draft.listIdByView[FeedViewType.All]!.add(subscription.listId)
         }
       }
     })
@@ -164,20 +164,21 @@ class SubscriptionActions implements Hydratable, Resetable {
 
   toggleCategoryOpenState(view: FeedViewType, category: string) {
     immerSet((state) => {
-      state.categoryOpenStateByView[view][category] = !state.categoryOpenStateByView[view][category]
+      state.categoryOpenStateByView[view]![category] =
+        !state.categoryOpenStateByView[view]![category]
     })
   }
 
   changeCategoryOpenState(view: FeedViewType, category: string, status: boolean) {
     immerSet((state) => {
-      state.categoryOpenStateByView[view][category] = status
+      state.categoryOpenStateByView[view]![category] = status
     })
   }
 
   expandCategoryOpenStateByView(view: FeedViewType, isOpen: boolean) {
     immerSet((state) => {
-      for (const category in state.categoryOpenStateByView[view]) {
-        state.categoryOpenStateByView[view][category] = isOpen
+      for (const category in state.categoryOpenStateByView[view]!) {
+        state.categoryOpenStateByView[view]![category] = isOpen
       }
     })
   }
@@ -234,15 +235,15 @@ class SubscriptionSyncService {
       immerSet((draft) => {
         if (
           subscription.category &&
-          !draft.categories[subscription.view].has(subscription.category)
+          !draft.categories[subscription.view]!.has(subscription.category)
         ) {
           addNewCategory = true
-          draft.categories[subscription.view].add(subscription.category)
+          draft.categories[subscription.view]!.add(subscription.category)
         }
 
         if (subscription.type === "feed") {
-          draft.feedIdByView[current.view].delete(current.feedId!)
-          draft.feedIdByView[subscription.view].add(subscription.feedId!)
+          draft.feedIdByView[current.view]!.delete(current.feedId!)
+          draft.feedIdByView[subscription.view]!.add(subscription.feedId!)
         }
 
         draft.data[subscriptionId] = subscription
@@ -251,12 +252,12 @@ class SubscriptionSyncService {
     tx.rollback((current) => {
       immerSet((draft) => {
         if (addNewCategory && subscription.category) {
-          draft.categories[subscription.view].delete(subscription.category)
+          draft.categories[subscription.view]!.delete(subscription.category)
         }
 
         if (subscription.type === "feed") {
-          draft.feedIdByView[subscription.view].delete(subscription.feedId!)
-          draft.feedIdByView[current.view].add(current.feedId!)
+          draft.feedIdByView[subscription.view]!.delete(subscription.feedId!)
+          draft.feedIdByView[current.view]!.add(current.feedId!)
         }
 
         draft.data[subscriptionId] = current
@@ -283,14 +284,14 @@ class SubscriptionSyncService {
     const data = await api().subscriptions.create(subscription)
 
     if (data.feed) {
-      feedActions.upsertMany([data.feed])
+      feedActions.upsertMany([data.feed as any])
       tracker.subscribe({ feedId: data.feed.id, view: subscription.view })
     }
 
     if (data.list) {
       listActions.upsertMany([
         {
-          ...data.list,
+          ...(data.list as any),
           userId: data.list.ownerUserId,
           type: "list",
           subscriptionCount: null,
@@ -343,16 +344,16 @@ class SubscriptionSyncService {
           if (!subscription) continue
           draft.subscriptionIdSet.delete(getSubscriptionDBId(subscription))
           if (subscription.feedId) {
-            draft.feedIdByView[subscription.view].delete(subscription.feedId)
-            draft.feedIdByView[FeedViewType.All].delete(subscription.feedId)
+            draft.feedIdByView[subscription.view]!.delete(subscription.feedId)
+            draft.feedIdByView[FeedViewType.All]!.delete(subscription.feedId)
           }
           if (subscription.listId) {
-            draft.listIdByView[subscription.view].delete(subscription.listId)
-            draft.listIdByView[FeedViewType.All].delete(subscription.listId)
+            draft.listIdByView[subscription.view]!.delete(subscription.listId)
+            draft.listIdByView[FeedViewType.All]!.delete(subscription.listId)
           }
           if (subscription.category) {
-            draft.categories[subscription.view].delete(subscription.category)
-            draft.categories[FeedViewType.All].delete(subscription.category)
+            draft.categories[subscription.view]!.delete(subscription.category)
+            draft.categories[FeedViewType.All]!.delete(subscription.category)
           }
           delete draft.data[id]
         }
@@ -377,16 +378,16 @@ class SubscriptionSyncService {
 
           draft.subscriptionIdSet.add(getSubscriptionDBId(subscription))
           if (subscription.feedId) {
-            draft.feedIdByView[subscription.view].add(subscription.feedId)
-            draft.feedIdByView[FeedViewType.All].add(subscription.feedId)
+            draft.feedIdByView[subscription.view]!.add(subscription.feedId)
+            draft.feedIdByView[FeedViewType.All]!.add(subscription.feedId)
           }
           if (subscription.listId) {
-            draft.listIdByView[subscription.view].add(subscription.listId)
-            draft.listIdByView[FeedViewType.All].add(subscription.listId)
+            draft.listIdByView[subscription.view]!.add(subscription.listId)
+            draft.listIdByView[FeedViewType.All]!.add(subscription.listId)
           }
           if (subscription.category) {
-            draft.categories[subscription.view].add(subscription.category)
-            draft.categories[FeedViewType.All].add(subscription.category)
+            draft.categories[subscription.view]!.add(subscription.category)
+            draft.categories[FeedViewType.All]!.add(subscription.category)
           }
         }
       })
@@ -436,12 +437,12 @@ class SubscriptionSyncService {
           if (!subscription) continue
 
           const currentView = subscription.view
-          draft.feedIdByView[currentView].delete(feedId)
-          draft.feedIdByView[newView].add(feedId)
+          draft.feedIdByView[currentView]!.delete(feedId)
+          draft.feedIdByView[newView]!.add(feedId)
           subscription.view = newView
 
           if (newCategory) {
-            draft.categories[newView].add(newCategory)
+            draft.categories[newView]!.add(newCategory)
             subscription.category = newCategory
           }
         }
@@ -464,8 +465,8 @@ class SubscriptionSyncService {
           if (!current[index]) continue
 
           subscription.view = current[index].view
-          draft.feedIdByView[newView].delete(feedId)
-          draft.feedIdByView[current[index].view].add(feedId)
+          draft.feedIdByView[newView]!.delete(feedId)
+          draft.feedIdByView[current[index]!.view]!.add(feedId)
 
           if (newCategory) {
             const currentCategory = current[index].category
@@ -504,9 +505,9 @@ class SubscriptionSyncService {
           return
         }
 
-        draft.data[listId].view = newView
-        draft.listIdByView[currentView].delete(listId)
-        draft.listIdByView[newView].add(listId)
+        draft.data[listId]!.view = newView
+        draft.listIdByView[currentView]!.delete(listId)
+        draft.listIdByView[newView]!.add(listId)
       })
     })
 
@@ -523,9 +524,9 @@ class SubscriptionSyncService {
           return
         }
 
-        draft.data[listId].view = current.view
-        draft.listIdByView[newView].delete(listId)
-        draft.listIdByView[currentView].add(listId)
+        draft.data[listId]!.view = current.view
+        draft.listIdByView[newView]!.delete(listId)
+        draft.listIdByView[currentView]!.add(listId)
       })
     })
 
@@ -552,7 +553,7 @@ class SubscriptionSyncService {
           if (!subscription) continue
           subscription.category = null
         }
-        draft.categories[view].delete(category)
+        draft.categories[view]!.delete(category)
       })
     })
 
@@ -571,7 +572,7 @@ class SubscriptionSyncService {
           subscription.category = category
         }
 
-        draft.categories[view].add(category)
+        draft.categories[view]!.add(category)
       })
     })
 
@@ -625,13 +626,13 @@ class SubscriptionSyncService {
           if (!subscription) continue
           subscription.category = newCategory
         }
-        draft.categories[view].add(newCategory)
-        draft.categories[view].delete(lastCategory)
+        draft.categories[view]!.add(newCategory)
+        draft.categories[view]!.delete(lastCategory)
 
-        const lastCategoryOpenState = draft.categoryOpenStateByView[view][lastCategory]
+        const lastCategoryOpenState = draft.categoryOpenStateByView[view]![lastCategory]
         if (typeof lastCategoryOpenState === "boolean") {
-          draft.categoryOpenStateByView[view][newCategory] = lastCategoryOpenState
-          delete draft.categoryOpenStateByView[view][lastCategory]
+          draft.categoryOpenStateByView[view]![newCategory] = lastCategoryOpenState
+          delete draft.categoryOpenStateByView[view]![lastCategory]
         }
       })
     })
@@ -651,13 +652,13 @@ class SubscriptionSyncService {
           const defaultCategory = getDefaultCategory(subscription)
           subscription.category = lastCategory !== defaultCategory ? lastCategory : null
         }
-        draft.categories[view].delete(newCategory)
-        draft.categories[view].add(lastCategory)
+        draft.categories[view]!.delete(newCategory)
+        draft.categories[view]!.add(lastCategory)
 
-        const lastCategoryOpenState = draft.categoryOpenStateByView[view][newCategory]
+        const lastCategoryOpenState = draft.categoryOpenStateByView[view]![newCategory]
         if (typeof lastCategoryOpenState === "boolean") {
-          draft.categoryOpenStateByView[view][lastCategory] = lastCategoryOpenState
-          delete draft.categoryOpenStateByView[view][newCategory]
+          draft.categoryOpenStateByView[view]![lastCategory] = lastCategoryOpenState
+          delete draft.categoryOpenStateByView[view]![newCategory]
         }
       })
     })

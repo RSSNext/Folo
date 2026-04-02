@@ -178,7 +178,7 @@ const Lists = ({ userId }: { userId: string }) => {
         <h2 className="text-xl font-medium text-zinc-900 dark:text-zinc-100">Created Lists</h2>
       </div>
       <div data-testid="profile-lists" className="flex flex-col space-y-4">
-        {lists.data?.map((list) => (
+        {(lists.data as any[] | undefined)?.map((list) => (
           <a
             key={list.id}
             href={UrlBuilder.shareList(list.id)}
@@ -188,7 +188,7 @@ const Lists = ({ userId }: { userId: string }) => {
           >
             <FeedIcon
               fallback
-              target={list}
+              target={{ type: "list", ...(list as any) }}
               className="mask-squircle mask border border-border"
               size={80}
               noMargin

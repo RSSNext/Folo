@@ -87,7 +87,7 @@ export const useEntryTranslation = ({
     useCallback(
       (state) => {
         if (!enabled && !actionSetting) return
-        return state.data[entryId]?.[language]
+        return state.data[entryId]?.[language as SupportedActionLanguage]
       },
       [actionSetting, entryId, language, enabled],
     ),

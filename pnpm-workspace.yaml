@@ -8,8 +8,8 @@ packages:
   - "!**/example/**"
 
 catalog:
-  "@follow-app/client-sdk": 0.3.92
-  "@folo-services/ai-tools": 0.2.65
+  "@follow-app/client-sdk": 0.3.95
+  "@folo-services/ai-tools": 0.2.66
   tailwindcss-uikit-colors: 1.0.0
   typescript: 5.9.3
 
@@ -40,6 +40,8 @@ overrides:
   "@floating-ui/dom": 1.7.2
   "@floating-ui/react": 0.27.14
   "@floating-ui/react-dom": 2.1.4
+  "@follow-app/client-sdk": 0.3.95
+  "@folo-services/drizzle": 0.1.47
   "@react-native-menu/menu": 2.0.0
   "@types/react": 19.1.17
   array-includes: npm:@nolyfill/array-includes@latest

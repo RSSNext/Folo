@@ -4,7 +4,6 @@ import { getBackgroundGradient } from "@follow/utils/color"
 import { getImageProxyUrl, replaceImgUrlIfNeed } from "@follow/utils/img-proxy"
 import { cn, getUrlIcon } from "@follow/utils/utils"
 import type { FeedGetResponse } from "@follow-app/client-sdk"
-import type { MediaModel } from "@folo-services/drizzle"
 import { m } from "motion/react"
 import type { ReactNode } from "react"
 import { useMemo } from "react"
@@ -69,8 +68,13 @@ const FallbackableImage = function FallbackableImage({
   )
 }
 
+type FeedIconMedia = {
+  url: string
+  type?: string
+}
+
 type FeedIconEntry = {
-  media?: Nullable<MediaModel[]>
+  media?: Nullable<FeedIconMedia[]>
 
   [key: string]: any
 }

@@ -35,7 +35,7 @@
     "@electron-toolkit/preload": "3.0.2",
     "@electron-toolkit/tsconfig": "2.0.0",
     "@follow-app/client-sdk": "catalog:",
-    "@folo-services/drizzle": "0.1.44",
+    "@folo-services/drizzle": "0.1.47",
     "@t3-oss/env-core": "0.13.10",
     "ai": "6.0.85",
     "better-auth": "1.5.5",

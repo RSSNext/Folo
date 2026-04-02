@@ -51,26 +51,8 @@ export const getLevelMultiplier = (level: number) => {
   if (level === 0) {
     return 0.1
   }
-  const serverConfigs = getServerConfigs()
-  if (!serverConfigs) {
-    return 1
-  }
-  const level1Range = serverConfigs?.LEVEL_PERCENTAGES[3]! - serverConfigs?.LEVEL_PERCENTAGES[2]!
-  const percentageIndex = serverConfigs.LEVEL_PERCENTAGES.length - level
-  let levelCurrentRange
-  if (percentageIndex - 1 < 0) {
-    levelCurrentRange = serverConfigs?.LEVEL_PERCENTAGES[percentageIndex]
-  } else {
-    levelCurrentRange =
-      serverConfigs?.LEVEL_PERCENTAGES[percentageIndex]! -
-      serverConfigs?.LEVEL_PERCENTAGES[percentageIndex - 1]!
-  }
-  const rangeMultiplier = levelCurrentRange / level1Range
 
-  const poolMultiplier =
-    serverConfigs?.DAILY_POWER_PERCENTAGES[level]! / serverConfigs?.DAILY_POWER_PERCENTAGES[1]!
-
-  return (poolMultiplier / rangeMultiplier).toFixed(0)
+  return 1
 }
 
 export const getBlockchainExplorerUrl = () => {
