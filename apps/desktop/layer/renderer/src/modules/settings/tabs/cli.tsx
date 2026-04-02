@@ -4,10 +4,33 @@ import { useCallback, useEffect, useState } from "react"
 import { useTranslation } from "react-i18next"
 import { toast } from "sonner"
 
+import { oneTimeToken } from "~/lib/auth"
 import { ipcServices } from "~/lib/client"
 import { getAuthSessionToken } from "~/lib/client-session"
 
 import { SettingSectionTitle } from "../section"
+
+const getOneTimeTokenFromResult = (result: unknown) => {
+  if (!result || typeof result !== "object") {
+    return null
+  }
+
+  if ("token" in result && typeof result.token === "string") {
+    return result.token
+  }
+
+  if (
+    "data" in result &&
+    result.data &&
+    typeof result.data === "object" &&
+    "token" in result.data &&
+    typeof result.data.token === "string"
+  ) {
+    return result.data.token
+  }
+
+  return null
+}
 
 export const SettingCli = () => {
   interface CliInstallStatus {
@@ -37,8 +60,11 @@ export const SettingCli = () => {
   const handleInstall = useCallback(async () => {
     setLoading(true)
     try {
-      const authSessionToken = getAuthSessionToken()
-      const result = await ipcServices?.cli.installCli(authSessionToken ?? undefined)
+      const generatedOneTimeToken = getOneTimeTokenFromResult(await oneTimeToken.generate())
+      const fallbackToken = getAuthSessionToken()
+      const result = await ipcServices?.cli.installCli(
+        generatedOneTimeToken ?? fallbackToken ?? undefined,
+      )
       if (result?.success) {
         toast.success(t("cli.install_success"))
       } else {
