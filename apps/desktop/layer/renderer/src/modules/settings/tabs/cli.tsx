@@ -5,6 +5,7 @@ import { useTranslation } from "react-i18next"
 import { toast } from "sonner"
 
 import { ipcServices } from "~/lib/client"
+import { getAuthSessionToken } from "~/lib/client-session"
 
 import { SettingSectionTitle } from "../section"
 
@@ -36,7 +37,8 @@ export const SettingCli = () => {
   const handleInstall = useCallback(async () => {
     setLoading(true)
     try {
-      const result = await ipcServices?.cli.installCli()
+      const authSessionToken = getAuthSessionToken()
+      const result = await ipcServices?.cli.installCli(authSessionToken ?? undefined)
       if (result?.success) {
         toast.success(t("cli.install_success"))
       } else {

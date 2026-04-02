@@ -90,6 +90,14 @@ export const getSessionTokenFromCookies = async (): Promise<string | undefined> 
   return sessionCookie?.value
 }
 
+export const resolveCliSessionToken = ({
+  preferredToken,
+  cookieToken,
+}: {
+  preferredToken?: string
+  cookieToken?: string
+}) => preferredToken || cookieToken
+
 export const syncSessionToCliConfig = async (token?: string): Promise<void> => {
   if (token) {
     const config = await readCliConfig()

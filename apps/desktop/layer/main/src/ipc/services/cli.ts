@@ -9,6 +9,7 @@ import {
   getSessionTokenFromCookies,
   isCliRunnerAvailable,
   readCliConfig,
+  resolveCliSessionToken,
   syncSessionToCliConfig,
 } from "../../lib/cli-session-sync"
 
@@ -45,13 +46,19 @@ export class CliService extends IpcService {
   }
 
   @IpcMethod()
-  async installCli(_context: IpcContext): Promise<{ success: boolean; error?: string }> {
+  async installCli(
+    _context: IpcContext,
+    preferredToken?: string,
+  ): Promise<{ success: boolean; error?: string }> {
     try {
       if (!(await isCliRunnerAvailable())) {
         return { success: false, error: "npx is not available. Install Node.js and npm first." }
       }
 
-      const token = await getSessionTokenFromCookies()
+      const token = resolveCliSessionToken({
+        preferredToken,
+        cookieToken: await getSessionTokenFromCookies(),
+      })
       if (!token) {
         return { success: false, error: "Sign in to Folo Desktop first." }
       }
