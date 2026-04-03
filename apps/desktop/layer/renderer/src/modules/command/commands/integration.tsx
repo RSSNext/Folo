@@ -283,6 +283,7 @@ const useRegisterObsidianCommands = () => {
       author: string
       publishedAt: string
       vaultPath: string
+      description?: string
     }) => {
       return await ipcServices?.integration.saveToObsidian(data)
     },

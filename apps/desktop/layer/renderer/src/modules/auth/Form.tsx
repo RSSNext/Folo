@@ -37,25 +37,44 @@ const getAuthTokenFromResult = (result: unknown) => {
     return null
   }
 
+  if ("token" in result && typeof result.token === "string") {
+    return result.token
+  }
+
   if ("sessionToken" in result && typeof result.sessionToken === "string") {
     return result.sessionToken
   }
 
-  if ("token" in result && typeof result.token === "string") {
-    return result.token
+  if ("session" in result && result.session && typeof result.session === "object") {
+    const { token } = result.session as { token?: unknown }
+    if (typeof token === "string") {
+      return token
+    }
   }
 
   if (
     "data" in result &&
     result.data &&
     typeof result.data === "object" &&
-    ("sessionToken" in result.data || "token" in result.data)
+    ("sessionToken" in result.data || "token" in result.data || "session" in result.data)
   ) {
-    const { sessionToken, token } = result.data as { sessionToken?: unknown; token?: unknown }
-    if (typeof sessionToken === "string") {
-      return sessionToken
+    const { sessionToken, token, session } = result.data as {
+      sessionToken?: unknown
+      token?: unknown
+      session?: { token?: unknown } | unknown
     }
-    return typeof token === "string" ? token : null
+    if (typeof token === "string") {
+      return token
+    }
+    if (
+      session &&
+      typeof session === "object" &&
+      "token" in session &&
+      typeof session.token === "string"
+    ) {
+      return session.token
+    }
+    return typeof sessionToken === "string" ? sessionToken : null
   }
 
   return null
@@ -74,7 +93,15 @@ const normalizeElectronAuthResult = (result: unknown): ElectronAuthResult => {
     return {}
   }
 
-  return result as ElectronAuthResult
+  const normalized = result as ElectronAuthResult & Record<string, unknown>
+  if ("data" in normalized || "error" in normalized) {
+    return normalized
+  }
+
+  return {
+    data: normalized,
+    error: null,
+  }
 }
 
 const setElectronSessionToken = async (token: string) => {

@@ -1,7 +1,7 @@
 {
   "name": "folocli",
   "type": "module",
-  "version": "0.0.1",
+  "version": "0.0.4",
   "description": "Folo CLI for terminal workflows and automation",
   "author": "Folo Team",
   "license": "AGPL-3.0-only",
