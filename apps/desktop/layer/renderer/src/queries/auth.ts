@@ -94,7 +94,8 @@ export const useSession = (options?: { enabled?: boolean }) => {
 
 export const handleSessionChanges = () => {
   setLoginModalShow(false)
-  ipcServices?.auth.sessionChanged()
+  const authSessionToken = getAuthSessionToken()
+  ipcServices?.auth.sessionChanged(authSessionToken ?? undefined)
   window.location.reload()
 }
 

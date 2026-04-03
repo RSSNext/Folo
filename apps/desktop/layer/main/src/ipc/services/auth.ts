@@ -9,15 +9,18 @@ import { WindowManager } from "~/manager/window"
 
 import {
   buildManagedAuthCookieHeader,
+  buildManagedAuthCookieHeaderFromSetCookieHeader,
   getManagedAuthCookies,
   persistManagedAuthCookiesFromSetCookieHeader,
 } from "../../lib/auth-cookies"
-import { getSessionTokenFromCookies, syncSessionToCliConfig } from "../../lib/cli-session-sync"
+import { getCliSessionToken, syncSessionToCliConfig } from "../../lib/cli-session-sync"
 import { deleteNotificationsToken, updateNotificationsToken } from "../../lib/user"
 import { logger } from "../../logger"
 
 export class AuthService extends IpcService {
   static override readonly groupName = "auth"
+
+  private pendingTwoFactorCookieHeader: string | null = null
 
   private getAuthRequestHeaders(additionalHeaders?: Record<string, string>) {
     return {
@@ -61,6 +64,7 @@ export class AuthService extends IpcService {
   }
 
   private async clearSessionToken(): Promise<void> {
+    this.pendingTwoFactorCookieHeader = null
     const mainWindow = WindowManager.getMainWindow()
     if (!mainWindow) {
       return
@@ -93,7 +97,12 @@ export class AuthService extends IpcService {
       .json()
       .catch(async () => ({ message: await response.text() }))) as Record<string, unknown>
 
-    const setCookie = response.headers.get("set-cookie") || ""
+    const setCookieValues =
+      typeof response.headers.getSetCookie === "function" ? response.headers.getSetCookie() : []
+    const setCookie =
+      setCookieValues.length > 0
+        ? setCookieValues.join(", ")
+        : response.headers.get("set-cookie") || ""
     const mainWindow = WindowManager.getMainWindow()
     if (response.ok && setCookie && mainWindow) {
       await persistManagedAuthCookiesFromSetCookieHeader({
@@ -102,6 +111,13 @@ export class AuthService extends IpcService {
         setCookieHeader: setCookie,
       })
     }
+
+    const pendingTwoFactorCookieHeader = buildManagedAuthCookieHeaderFromSetCookieHeader(setCookie)
+    this.pendingTwoFactorCookieHeader =
+      response.ok && typeof data.twoFactorRedirect === "boolean" && data.twoFactorRedirect
+        ? pendingTwoFactorCookieHeader || null
+        : null
+
     const sessionCookieMatch = setCookie.match(/better-auth\.session_token=([^;]+)/)
     const sessionToken = sessionCookieMatch?.[1] ?? null
     const token = typeof data.token === "string" ? data.token : null
@@ -126,11 +142,13 @@ export class AuthService extends IpcService {
   }
 
   @IpcMethod()
-  async sessionChanged(_context: IpcContext): Promise<void> {
+  async sessionChanged(_context: IpcContext, preferredToken?: string): Promise<void> {
     await updateNotificationsToken()
 
     // Sync the current desktop session to the npm CLI login.
-    const token = await getSessionTokenFromCookies()
+    const token = await getCliSessionToken({
+      preferredToken,
+    })
     await syncSessionToCliConfig(token).catch((err) => {
       logger.error("Failed to sync session to CLI config:", err)
     })
@@ -168,14 +186,16 @@ export class AuthService extends IpcService {
     payload: { code: string; trustDevice?: boolean; headers?: Record<string, string> },
   ) {
     const mainWindow = WindowManager.getMainWindow()
-    const cookieHeader = mainWindow
-      ? buildManagedAuthCookieHeader(
-          await getManagedAuthCookies({
-            apiURL: env.VITE_API_URL,
-            session: mainWindow.webContents.session,
-          }),
-        )
-      : ""
+    const cookieHeader =
+      this.pendingTwoFactorCookieHeader ||
+      (mainWindow
+        ? buildManagedAuthCookieHeader(
+            await getManagedAuthCookies({
+              apiURL: env.VITE_API_URL,
+              session: mainWindow.webContents.session,
+            }),
+          )
+        : "")
 
     const response = await fetch(`${env.VITE_API_URL}/better-auth/two-factor/verify-totp`, {
       method: "POST",
@@ -193,13 +213,32 @@ export class AuthService extends IpcService {
     const data = (await response
       .json()
       .catch(async () => ({ message: await response.text() }))) as Record<string, unknown>
-    const setCookie = response.headers.get("set-cookie") || ""
+    const setCookie =
+      typeof response.headers.getSetCookie === "function"
+        ? response.headers.getSetCookie().join(", ")
+        : response.headers.get("set-cookie") || ""
     if (response.ok && setCookie && mainWindow) {
       await persistManagedAuthCookiesFromSetCookieHeader({
         apiURL: env.VITE_API_URL,
         session: mainWindow.webContents.session,
         setCookieHeader: setCookie,
       })
+    }
+
+    const sessionCookieMatch = setCookie.match(/better-auth\.session_token=([^;]+)/)
+    const sessionTokenFromCookie = sessionCookieMatch?.[1] ?? null
+    const sessionTokenFromBody =
+      data.session && typeof data.session === "object" && "token" in data.session
+        ? (data.session as { token?: unknown }).token
+        : null
+    const sessionToken =
+      typeof sessionTokenFromBody === "string" ? sessionTokenFromBody : sessionTokenFromCookie
+    if (typeof sessionToken === "string") {
+      data.sessionToken = sessionToken
+    }
+
+    if (response.ok) {
+      this.pendingTwoFactorCookieHeader = null
     }
 
     return {

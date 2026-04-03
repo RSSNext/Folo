@@ -75,7 +75,7 @@ const plugins = [
             }
           }
           bumpAuthStateRevision()
-          const authStateChanged = !previousValue
+          const authStateChanged = previousValue !== value
           if (authStateChanged) {
             void refreshSessionQueries()
           }

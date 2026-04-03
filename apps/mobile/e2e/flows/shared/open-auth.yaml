@@ -11,6 +11,7 @@ appId: is.follow
     commands:
       - tapOn:
           id: no-login-timeline
+      - waitForAnimationToEnd
 - runFlow:
     when:
       visible:
@@ -18,10 +19,7 @@ appId: is.follow
     commands:
       - tapOn:
           id: home-avatar-trigger
-- extendedWaitUntil:
-    visible:
-      id: login-screen
-    timeout: 30000
+      - waitForAnimationToEnd
 - extendedWaitUntil:
     visible:
       id: login-provider-credential

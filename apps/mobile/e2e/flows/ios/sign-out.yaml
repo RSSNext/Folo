@@ -21,22 +21,19 @@ appId: is.follow
           id: navigation-back
       - waitForAnimationToEnd
 - runFlow:
-    when:
-      visible: Settings
     commands:
       - tapOn:
-          text: Settings
-- runFlow:
-    when:
-      notVisible: Settings
-    commands:
-      - tapOn:
-          point: "89%,86%"
+          point: "89%,95%"
+      - waitForAnimationToEnd
+- extendedWaitUntil:
+    visible:
+      id: settings-general-link
+    timeout: 15000
 - scrollUntilVisible:
     element:
       id: settings-sign-out
     direction: DOWN
-    timeout: 10000
+    timeout: 15000
     centerElement: false
 - tapOn:
     id: settings-sign-out
@@ -44,10 +41,10 @@ appId: is.follow
     visible: Confirm sign out
     timeout: 10000
 - tapOn:
-    text: Sign out
+    text: Sign Out
 - extendedWaitUntil:
     visible:
-      id: login-screen
+      id: login-provider-credential
     timeout: 30000
 - assertVisible:
-    id: login-screen
+    id: login-provider-credential

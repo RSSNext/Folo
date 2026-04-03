@@ -4,9 +4,37 @@ import { useCallback, useEffect, useState } from "react"
 import { useTranslation } from "react-i18next"
 import { toast } from "sonner"
 
+import { oneTimeToken } from "~/lib/auth"
 import { ipcServices } from "~/lib/client"
+import { getAuthSessionToken } from "~/lib/client-session"
+import { copyToClipboard } from "~/lib/clipboard"
 
 import { SettingSectionTitle } from "../section"
+
+const getOneTimeTokenFromResult = (result: unknown) => {
+  if (!result || typeof result !== "object") {
+    return null
+  }
+
+  if ("token" in result && typeof result.token === "string") {
+    return result.token
+  }
+
+  if (
+    "data" in result &&
+    result.data &&
+    typeof result.data === "object" &&
+    "token" in result.data &&
+    typeof result.data.token === "string"
+  ) {
+    return result.data.token
+  }
+
+  return null
+}
+
+const LATEST_WITH_NPX_COMMAND = "npx --yes folocli@latest --help"
+const AGENT_PROMPT = "Read https://api.folo.is/skill.md and follow the instructions to use Folo."
 
 export const SettingCli = () => {
   interface CliInstallStatus {
@@ -36,7 +64,10 @@ export const SettingCli = () => {
   const handleInstall = useCallback(async () => {
     setLoading(true)
     try {
-      const result = await ipcServices?.cli.installCli()
+      const generatedOneTimeToken = getOneTimeTokenFromResult(await oneTimeToken.generate())
+      const result = await ipcServices?.cli.installCli(
+        generatedOneTimeToken ?? getAuthSessionToken() ?? undefined,
+      )
       if (result?.success) {
         toast.success(t("cli.install_success"))
       } else {
@@ -102,24 +133,39 @@ export const SettingCli = () => {
 
             <div className="grid gap-3">
               <div className="rounded-xl border border-fill-secondary bg-fill-quaternary/60 p-3">
-                <div className="mb-1 text-xs font-medium uppercase tracking-wide text-text-secondary">
-                  {t("cli.package")}
+                <div className="mb-1 flex items-center justify-between gap-2 text-xs font-medium uppercase tracking-wide text-text-secondary">
+                  <span>RUN LATEST WITH NPX</span>
+                  <button
+                    type="button"
+                    className="inline-flex items-center gap-1 rounded-md px-1.5 py-0.5 text-[11px] font-medium text-accent transition-opacity hover:opacity-80"
+                    onClick={() => {
+                      void copyToClipboard(LATEST_WITH_NPX_COMMAND)
+                      toast.success("Command copied")
+                    }}
+                  >
+                    <i className="i-mgc-copy-2-cute-re text-sm" />
+                    Copy
+                  </button>
                 </div>
-                <code className="text-sm font-medium">{status.packageName}</code>
+                <code className="block break-all text-sm">{LATEST_WITH_NPX_COMMAND}</code>
               </div>
 
               <div className="rounded-xl border border-fill-secondary bg-fill-quaternary/60 p-3">
-                <div className="mb-1 text-xs font-medium uppercase tracking-wide text-text-secondary">
-                  {t("cli.global_install")}
+                <div className="mb-1 flex items-center justify-between gap-2 text-xs font-medium uppercase tracking-wide text-text-secondary">
+                  <span>AGENT PROMPT</span>
+                  <button
+                    type="button"
+                    className="inline-flex items-center gap-1 rounded-md px-1.5 py-0.5 text-[11px] font-medium text-accent transition-opacity hover:opacity-80"
+                    onClick={() => {
+                      void copyToClipboard(AGENT_PROMPT)
+                      toast.success("Prompt copied")
+                    }}
+                  >
+                    <i className="i-mgc-copy-2-cute-re text-sm" />
+                    Copy
+                  </button>
                 </div>
-                <code className="block break-all text-sm">{status.installCommand}</code>
-              </div>
-
-              <div className="rounded-xl border border-fill-secondary bg-fill-quaternary/60 p-3">
-                <div className="mb-1 text-xs font-medium uppercase tracking-wide text-text-secondary">
-                  {t("cli.desktop_sync")}
-                </div>
-                <code className="block break-all text-sm">{status.loginCommand}</code>
+                <p className="text-sm text-text-secondary">{AGENT_PROMPT}</p>
               </div>
             </div>
 

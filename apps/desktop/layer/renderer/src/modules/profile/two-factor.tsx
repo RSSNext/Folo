@@ -78,7 +78,7 @@ export function TOTPForm({
   const updateMutation = useMutation({
     mutationFn: onSubmitMutationFn,
     onError: (error) => {
-      const { code } = getFetchErrorInfo(error)
+      const { code, message } = getFetchErrorInfo(error)
       if (error.message === "invalid two factor authentication" || code === 4007) {
         form.resetField("code")
         form.setError("code", {
@@ -90,7 +90,10 @@ export function TOTPForm({
           form.setFocus("code")
         }, 10)
         controls.start("shake")
+        return
       }
+
+      toast.error(message || t("profile.totp_code.invalid"))
     },
     onSuccess,
   })
@@ -135,6 +138,11 @@ export function TOTPForm({
             </FormItem>
           )}
         />
+        <div className="text-right">
+          <Button type="submit" isLoading={updateMutation.isPending}>
+            {t("profile.submit")}
+          </Button>
+        </div>
       </form>
     </Form>
   )

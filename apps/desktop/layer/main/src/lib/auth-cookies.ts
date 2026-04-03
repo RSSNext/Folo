@@ -7,8 +7,14 @@ const MANAGED_AUTH_COOKIE_NAMES = [
   "better-auth.session_data",
   "better-auth.last_used_login_method",
   "dont_remember",
+  "__Secure-better-auth.dont_remember",
+  "better-auth.dont_remember",
   "trust_device",
+  "__Secure-better-auth.trust_device",
+  "better-auth.trust_device",
   "two_factor",
+  "__Secure-better-auth.two_factor",
+  "better-auth.two_factor",
 ] as const
 
 type ManagedAuthCookieName = (typeof MANAGED_AUTH_COOKIE_NAMES)[number]
@@ -159,6 +165,18 @@ const shouldRemoveCookie = (cookie: ParsedSetCookie) => {
 
 export const getManagedAuthCookieNames = () => {
   return [...MANAGED_AUTH_COOKIE_NAMES]
+}
+
+export const buildManagedAuthCookieHeaderFromSetCookieHeader = (setCookieHeader: string) => {
+  if (!setCookieHeader.trim()) {
+    return ""
+  }
+
+  return parseSetCookieHeader(setCookieHeader)
+    .filter((cookie) => isManagedAuthCookie(cookie.name))
+    .filter((cookie) => !shouldRemoveCookie(cookie))
+    .map((cookie) => `${cookie.name}=${cookie.value}`)
+    .join("; ")
 }
 
 export const buildManagedAuthCookieHeader = (cookies: Array<Pick<Cookie, "name" | "value">>) => {
