@@ -221,7 +221,7 @@ class APIMorph {
         feedId: item.feeds.id,
         inboxHandle: item.feeds.type === "inbox" ? item.feeds.id : null,
         read: item.read,
-        sources: "from" in item ? (item.from ?? null) : null,
+        sources: "from" in item && Array.isArray(item.from) ? item.from : null,
         settings: item.settings ?? null,
       })
     }

@@ -24,13 +24,13 @@ const SelectTrigger = ({
     ref={ref}
     className={cn(
       "flex w-full items-center justify-between whitespace-nowrap rounded-lg bg-transparent",
-      "focus-within:ring-material-medium outline-none transition-all duration-200 focus-within:outline-transparent focus-within:ring-2",
-      "border-border hover:border-fill border",
+      "outline-none transition-all duration-200 focus-within:outline-transparent focus-within:ring-2 focus-within:ring-material-medium",
+      "border border-border hover:border-fill",
       size === "sm" ? "h-8 px-3 text-sm" : "h-9 px-3.5 py-2 text-sm",
       "placeholder:text-text-secondary",
       "disabled:cursor-not-allowed disabled:opacity-50",
       "[&>span]:line-clamp-1",
-      "shadow-material-thin shadow-sm hover:shadow",
+      "shadow-sm shadow-material-thin hover:shadow",
       className,
       props.disabled && "cursor-not-allowed opacity-30",
     )}
@@ -53,7 +53,7 @@ const SelectScrollUpButton = ({
 }) => (
   <SelectPrimitive.ScrollUpButton
     ref={ref}
-    className={cn("cursor-menu flex items-center justify-center py-1", className)}
+    className={cn("flex cursor-menu items-center justify-center py-1", className)}
     {...props}
   >
     <i className="i-mingcute-up-line size-3.5" />
@@ -70,7 +70,7 @@ const SelectScrollDownButton = ({
 }) => (
   <SelectPrimitive.ScrollDownButton
     ref={ref}
-    className={cn("cursor-menu flex items-center justify-center py-1", className)}
+    className={cn("flex cursor-menu items-center justify-center py-1", className)}
     {...props}
   >
     <i className="i-mingcute-down-line size-3.5" />
@@ -91,9 +91,9 @@ const SelectContent = ({
     <SelectPrimitive.Content
       ref={ref}
       className={cn(
-        "bg-material-medium backdrop-blur-background text-text z-[60] max-h-96 min-w-32 overflow-hidden rounded-[6px] border p-1",
+        "z-[60] max-h-96 min-w-32 overflow-hidden rounded-[6px] border bg-material-medium p-1 text-text backdrop-blur-background",
         "shadow-context-menu",
-        "motion-scale-in-75 motion-duration-150 text-body lg:animate-none",
+        "text-body motion-scale-in-75 motion-duration-150 lg:animate-none",
         className,
       )}
       position={position}
@@ -125,7 +125,7 @@ const SelectLabel = ({
 } & { ref?: React.Ref<React.ElementRef<typeof SelectPrimitive.Label> | null> }) => (
   <SelectPrimitive.Label
     ref={ref}
-    className={cn("text-text px-2 py-1.5 font-semibold", inset && "pl-8", className)}
+    className={cn("px-2 py-1.5 font-semibold text-text", inset && "pl-8", className)}
     {...props}
   />
 )
@@ -143,8 +143,8 @@ const SelectItem = ({
   <SelectPrimitive.Item
     ref={ref}
     className={cn(
-      "cursor-menu focus:bg-theme-selection-active focus:text-theme-selection-foreground relative flex select-none items-center rounded-[5px] px-2.5 py-1 outline-none data-[disabled]:pointer-events-none data-[disabled]:opacity-50",
-      "data-[highlighted]:bg-theme-selection-hover focus-within:outline-transparent",
+      "relative flex cursor-menu select-none items-center rounded-[5px] px-2.5 py-1 outline-none focus:bg-theme-selection-active focus:text-theme-selection-foreground data-[disabled]:pointer-events-none data-[disabled]:opacity-50",
+      "focus-within:outline-transparent data-[highlighted]:bg-theme-selection-hover",
       "h-[28px] w-full",
       inset && "pl-8",
       className,
@@ -168,7 +168,7 @@ const SelectSeparator = ({
   ref?: React.Ref<React.ElementRef<typeof SelectPrimitive.Separator> | null>
 }) => (
   <SelectPrimitive.Separator
-    className="backdrop-blur-background mx-2 my-1 h-px"
+    className="mx-2 my-1 h-px backdrop-blur-background"
     asChild
     ref={ref}
     {...props}

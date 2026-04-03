@@ -35,14 +35,4 @@ export const initAnalytics = async () => {
   if (user) {
     tracker.identify(user as AuthUser)
   }
-
-  // op.setGlobalProperties({
-  //   build: "rn",
-  //   version: nativeApplicationVersion,
-  //   buildId: nativeBuildVersion,
-  // })
-
-  // op.setHeaders({
-  //   "User-Agent": await getUserAgent(),
-  // })
 }

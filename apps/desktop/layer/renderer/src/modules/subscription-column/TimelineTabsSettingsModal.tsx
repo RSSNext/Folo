@@ -18,6 +18,7 @@ import {
 import { CSS } from "@dnd-kit/utilities"
 import { Button } from "@follow/components/ui/button/index.js"
 import { getView } from "@follow/constants"
+import { cn } from "@follow/utils/utils"
 import type { CSSProperties, ReactNode } from "react"
 import { useCallback, useMemo } from "react"
 import { useTranslation } from "react-i18next"
@@ -27,16 +28,31 @@ import { useModalStack } from "~/components/ui/modal/stacked/hooks"
 import { parseView } from "~/hooks/biz/useRouteParams"
 import { useTimelineList } from "~/hooks/biz/useTimelineList"
 
-function ContainerDroppable({ id, children }: { id: "visible" | "hidden"; children: ReactNode }) {
+function ContainerDroppable({
+  id,
+  children,
+  emptyLabel,
+  hasItems,
+}: {
+  id: "visible" | "hidden"
+  children: ReactNode
+  emptyLabel: string
+  hasItems: boolean
+}) {
   const { setNodeRef, isOver } = useDroppable({ id, data: { container: id } })
   return (
     <div
       ref={setNodeRef}
-      className={`flex min-h-[120px] w-full flex-wrap items-center justify-center rounded-lg border border-border bg-material-ultra-thin p-2 pb-6 shadow-sm ${
-        isOver ? "outline outline-1 outline-orange-400" : ""
-      }`}
+      className={cn(
+        "flex min-h-[120px] w-full flex-col items-stretch justify-center rounded-xl border border-border bg-material-ultra-thin p-3 shadow-sm transition-colors",
+        isOver && "border-accent/50 bg-accent/5 ring-2 ring-accent/20",
+      )}
     >
-      {children}
+      {hasItems ? (
+        children
+      ) : (
+        <p className="px-3 py-6 text-center text-sm text-text-tertiary">{emptyLabel}</p>
+      )}
     </div>
   )
 }
@@ -55,7 +71,7 @@ function TabItem({ id }: { id: UniqueIdentifier }) {
   const meta = getViewMeta(String(id))
   const { t } = useTranslation()
   return (
-    <div className="flex w-full items-center gap-2 rounded-md p-2 hover:bg-material-opaque">
+    <div className="flex w-full items-center gap-2 rounded-lg border border-transparent bg-background/60 p-2.5 hover:bg-material-opaque">
       <div className="flex size-6 items-center justify-center text-lg">{meta.icon}</div>
       <div className="text-callout text-text-secondary">
         {t(meta.name as any, { ns: "common" })}
@@ -65,6 +81,8 @@ function TabItem({ id }: { id: UniqueIdentifier }) {
 }
 
 function SortableTabItem({ id }: { id: UniqueIdentifier }) {
+  const { t } = useTranslation("app")
+  const meta = getViewMeta(String(id))
   const { attributes, listeners, setNodeRef, transform, transition, isDragging } = useSortable({
     id,
   })
@@ -79,7 +97,11 @@ function SortableTabItem({ id }: { id: UniqueIdentifier }) {
     <div
       ref={setNodeRef}
       style={style}
-      className={isDragging ? "cursor-grabbing" : "cursor-grab"}
+      className={cn(
+        isDragging ? "cursor-grabbing" : "cursor-grab",
+        "rounded-xl focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-accent/30",
+      )}
+      aria-label={`${t("sidebar.timeline_tabs.drag_tab")}: ${t(meta.name as any, { ns: "common" })}`}
       {...attributes}
       {...listeners}
     >
@@ -96,6 +118,7 @@ function useResolvedTimelineTabs() {
 }
 
 const TimelineTabsSettings = () => {
+  const { t } = useTranslation(["app", "common", "settings"])
   const { visible, hidden } = useResolvedTimelineTabs()
 
   const commitTimelineTabs = useCallback(
@@ -175,6 +198,12 @@ const TimelineTabsSettings = () => {
       className="mx-auto w-[600px] max-w-full space-y-4 overflow-hidden pt-2"
       onPointerDown={(e) => e.stopPropagation()}
     >
+      <div className="space-y-1 px-1">
+        <p className="text-sm text-text-secondary">
+          {t("appearance.customize_sub_tabs.description", { ns: "settings" })}
+        </p>
+        <p className="text-xs text-text-tertiary">{t("sidebar.timeline_tabs.instructions")}</p>
+      </div>
       <DndContext
         sensors={sensors}
         collisionDetection={closestCenter}
@@ -183,8 +212,14 @@ const TimelineTabsSettings = () => {
       >
         <div className="space-y-4">
           <div>
-            <h3 className="mb-2 text-subheadline font-medium text-text">Visible</h3>
-            <ContainerDroppable id="visible">
+            <h3 className="mb-2 text-subheadline font-medium text-text">
+              {t("sidebar.timeline_tabs.visible")}
+            </h3>
+            <ContainerDroppable
+              id="visible"
+              emptyLabel={t("sidebar.timeline_tabs.empty_visible")}
+              hasItems={visible.length > 0}
+            >
               <SortableContext items={visible} strategy={verticalListSortingStrategy}>
                 {visible.map((id) => (
                   <SortableTabItem key={id} id={id} />
@@ -194,8 +229,14 @@ const TimelineTabsSettings = () => {
           </div>
 
           <div>
-            <h3 className="mb-2 text-subheadline font-medium text-text">Hidden</h3>
-            <ContainerDroppable id="hidden">
+            <h3 className="mb-2 text-subheadline font-medium text-text">
+              {t("sidebar.timeline_tabs.hidden")}
+            </h3>
+            <ContainerDroppable
+              id="hidden"
+              emptyLabel={t("sidebar.timeline_tabs.empty_hidden")}
+              hasItems={hidden.length > 0}
+            >
               <SortableContext items={hidden} strategy={verticalListSortingStrategy}>
                 {hidden.map((id) => (
                   <SortableTabItem key={id} id={id} />
@@ -209,6 +250,7 @@ const TimelineTabsSettings = () => {
       <div className="flex justify-end">
         <Button
           variant="outline"
+          disabled={visible.length === 0 && hidden.length === 0}
           onClick={() => {
             setUISetting("timelineTabs", {
               visible: [],
@@ -216,7 +258,7 @@ const TimelineTabsSettings = () => {
             })
           }}
         >
-          Reset to default
+          {t("sidebar.timeline_tabs.reset")}
         </Button>
       </div>
     </div>
@@ -225,13 +267,14 @@ const TimelineTabsSettings = () => {
 
 export const useShowTimelineTabsSettingsModal = () => {
   const { present } = useModalStack()
+  const { t } = useTranslation("settings")
   return useCallback(() => {
     present({
       id: "timeline-tabs-settings",
-      title: "Customize View Tabs",
+      title: t("appearance.customize_sub_tabs.label"),
       content: () => <TimelineTabsSettings />,
       overlay: true,
       clickOutsideToDismiss: true,
     })
-  }, [present])
+  }, [present, t])
 }

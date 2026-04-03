@@ -1,5 +1,5 @@
 import { FeedViewType, getView } from "@follow/constants"
-import { useTitle } from "@follow/hooks"
+import { useScrollMarkReadGracePeriod, useTitle } from "@follow/hooks"
 import { useEntry } from "@follow/store/entry/hooks"
 import { useFeedById } from "@follow/store/feed/hooks"
 import { useSubscriptionByFeedId } from "@follow/store/subscription/hooks"
@@ -80,8 +80,12 @@ function EntryColumnContent() {
   }, [activeEntryId, entry?.feedId, isCollection, isPendingEntry, isLoggedIn])
 
   const isInteracted = useRef(false)
+  const isRefreshing = state.isFetching && !state.isFetchingNextPage
+  const pauseScrollMarkRead = useScrollMarkReadGracePeriod(isRefreshing)
 
-  const handleMarkReadInRange = useEntryMarkReadHandler(entriesIds)
+  const { handleRenderMarkRead, handleScrollMarkRead } = useEntryMarkReadHandler(entriesIds, {
+    pauseScrollMarkRead,
+  })
 
   const handleScroll = useCallback(() => {
     if (!isInteracted.current) {
@@ -92,7 +96,7 @@ function EntryColumnContent() {
 
     const [first, second] = rangeQueueRef.current
     if (first && second && second.startIndex - first.startIndex > 0) {
-      handleMarkReadInRange?.(
+      handleScrollMarkRead?.(
         {
           startIndex: first.startIndex,
           endIndex: second.startIndex,
@@ -100,7 +104,7 @@ function EntryColumnContent() {
         isInteracted.current,
       )
     }
-  }, [handleMarkReadInRange, routeFeedId])
+  }, [handleScrollMarkRead, routeFeedId])
 
   const { handleScroll: handleScrollBeyond } = useAttachScrollBeyond()
   const handleCombinedScroll = useCallback(
@@ -114,7 +118,6 @@ function EntryColumnContent() {
   const navigate = useNavigateEntry()
 
   const rangeQueueRef = useRef<Range[]>([])
-  const isRefreshing = state.isFetching && !state.isFetchingNextPage
   const aiTimelineEnabled = useAtomValue(aiTimelineEnabledAtom)
   const showAiTimelineLoading = aiTimelineEnabled && state.isLoading && !state.isFetchingNextPage
   const renderAsRead = useGeneralSettingKey("renderMarkUnread")
@@ -134,9 +137,9 @@ function EntryColumnContent() {
         return
       }
       // For gird, render as mark read logic
-      handleMarkReadInRange?.(e, isInteracted.current)
+      handleRenderMarkRead?.(e, isInteracted.current)
     },
-    [handleMarkReadInRange, renderAsRead, view],
+    [handleRenderMarkRead, renderAsRead, view],
   )
 
   const fetchNextPage = useCallback(() => {

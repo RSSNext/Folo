@@ -4,15 +4,47 @@ import { useCallback, useEffect, useState } from "react"
 import { useTranslation } from "react-i18next"
 import { toast } from "sonner"
 
+import { oneTimeToken } from "~/lib/auth"
 import { ipcServices } from "~/lib/client"
+import { getAuthSessionToken } from "~/lib/client-session"
+import { copyToClipboard } from "~/lib/clipboard"
 
 import { SettingSectionTitle } from "../section"
 
+const getOneTimeTokenFromResult = (result: unknown) => {
+  if (!result || typeof result !== "object") {
+    return null
+  }
+
+  if ("token" in result && typeof result.token === "string") {
+    return result.token
+  }
+
+  if (
+    "data" in result &&
+    result.data &&
+    typeof result.data === "object" &&
+    "token" in result.data &&
+    typeof result.data.token === "string"
+  ) {
+    return result.data.token
+  }
+
+  return null
+}
+
+const LATEST_WITH_NPX_COMMAND = "npx --yes folocli@latest --help"
+const AGENT_PROMPT = "Read https://api.folo.is/skill.md and follow the instructions to use Folo."
+
 export const SettingCli = () => {
   interface CliInstallStatus {
-    installed: boolean
-    installPath: string | null
-    cliSourceAvailable: boolean
+    connected: boolean
+    configPath: string
+    hasDesktopSession: boolean
+    installCommand: string
+    loginCommand: string
+    npxAvailable: boolean
+    packageName: string
   }
   const { t } = useTranslation("settings")
   const [status, setStatus] = useState<CliInstallStatus | null>(null)
@@ -32,7 +64,10 @@ export const SettingCli = () => {
   const handleInstall = useCallback(async () => {
     setLoading(true)
     try {
-      const result = await ipcServices?.cli.installCli()
+      const generatedOneTimeToken = getOneTimeTokenFromResult(await oneTimeToken.generate())
+      const result = await ipcServices?.cli.installCli(
+        generatedOneTimeToken ?? getAuthSessionToken() ?? undefined,
+      )
       if (result?.success) {
         toast.success(t("cli.install_success"))
       } else {
@@ -72,9 +107,9 @@ export const SettingCli = () => {
 
         {status && (
           <div className="space-y-3">
-            <div className="flex items-center gap-2">
+            <div className="flex flex-wrap items-center gap-2">
               <span className="text-sm font-medium">Status:</span>
-              {status.installed ? (
+              {status.connected ? (
                 <span className="inline-flex items-center gap-1 rounded-full bg-green/10 px-2 py-0.5 text-xs text-green">
                   <i className="i-mingcute-check-line" />
                   {t("cli.installed")}
@@ -84,31 +119,83 @@ export const SettingCli = () => {
                   {t("cli.not_installed")}
                 </span>
               )}
+
+              <span
+                className={
+                  status.npxAvailable
+                    ? "inline-flex items-center gap-1 rounded-full bg-blue/10 px-2 py-0.5 text-xs text-blue"
+                    : "inline-flex items-center gap-1 rounded-full bg-orange/10 px-2 py-0.5 text-xs text-orange"
+                }
+              >
+                {status.npxAvailable ? t("cli.runtime_ready") : t("cli.runtime_missing")}
+              </span>
             </div>
 
-            {status.installed && status.installPath && (
+            <div className="grid gap-3">
+              <div className="rounded-xl border border-fill-secondary bg-fill-quaternary/60 p-3">
+                <div className="mb-1 flex items-center justify-between gap-2 text-xs font-medium uppercase tracking-wide text-text-secondary">
+                  <span>RUN LATEST WITH NPX</span>
+                  <button
+                    type="button"
+                    className="inline-flex items-center gap-1 rounded-md px-1.5 py-0.5 text-[11px] font-medium text-accent transition-opacity hover:opacity-80"
+                    onClick={() => {
+                      void copyToClipboard(LATEST_WITH_NPX_COMMAND)
+                      toast.success("Command copied")
+                    }}
+                  >
+                    <i className="i-mgc-copy-2-cute-re text-sm" />
+                    Copy
+                  </button>
+                </div>
+                <code className="block break-all text-sm">{LATEST_WITH_NPX_COMMAND}</code>
+              </div>
+
+              <div className="rounded-xl border border-fill-secondary bg-fill-quaternary/60 p-3">
+                <div className="mb-1 flex items-center justify-between gap-2 text-xs font-medium uppercase tracking-wide text-text-secondary">
+                  <span>AGENT PROMPT</span>
+                  <button
+                    type="button"
+                    className="inline-flex items-center gap-1 rounded-md px-1.5 py-0.5 text-[11px] font-medium text-accent transition-opacity hover:opacity-80"
+                    onClick={() => {
+                      void copyToClipboard(AGENT_PROMPT)
+                      toast.success("Prompt copied")
+                    }}
+                  >
+                    <i className="i-mgc-copy-2-cute-re text-sm" />
+                    Copy
+                  </button>
+                </div>
+                <p className="text-sm text-text-secondary">{AGENT_PROMPT}</p>
+              </div>
+            </div>
+
+            <div className="flex items-center gap-2">
               <div className="flex items-center gap-2">
                 <span className="text-sm font-medium">{t("cli.path")}:</span>
                 <code className="rounded bg-fill-quaternary px-2 py-0.5 text-xs">
-                  {status.installPath}
+                  {status.configPath}
                 </code>
               </div>
-            )}
+            </div>
 
-            {!status.cliSourceAvailable && (
+            {!status.npxAvailable && (
               <p className="text-sm text-orange-500">{t("cli.not_available")}</p>
             )}
 
+            {!status.hasDesktopSession && (
+              <p className="text-sm text-text-secondary">{t("cli.require_login")}</p>
+            )}
+
             <div className="flex gap-2">
-              {!status.installed ? (
-                <Button
-                  onClick={handleInstall}
-                  disabled={loading || !status.cliSourceAvailable}
-                  isLoading={loading}
-                >
-                  {t("cli.install")}
-                </Button>
-              ) : (
+              <Button
+                onClick={handleInstall}
+                disabled={loading || !status.npxAvailable || !status.hasDesktopSession}
+                isLoading={loading}
+              >
+                {t("cli.install")}
+              </Button>
+
+              {status.connected && (
                 <Button
                   variant="outline"
                   onClick={handleUninstall}

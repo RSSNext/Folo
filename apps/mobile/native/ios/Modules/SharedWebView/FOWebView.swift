@@ -57,11 +57,51 @@ private class FOWKWebViewConfiguration: WKWebViewConfiguration {
     let css = """
         :root { overflow: hidden !important; overflow-behavior: none !important; }
         body {
+            margin: 0 !important;
             overflow-y: visible !important;
             position: absolute !important;
             width: 100% !important;
+            max-width: 100% !important;
             height: auto !important;
             -webkit-overflow-scrolling: touch !important;
+        }
+        #root,
+        article {
+            width: 100% !important;
+            max-width: 100% !important;
+            margin-left: 0 !important;
+            margin-right: 0 !important;
+            box-sizing: border-box !important;
+        }
+        article > p,
+        article > div,
+        article > ul,
+        article > ol,
+        article > pre,
+        article > table,
+        article > blockquote,
+        article > h1,
+        article > h2,
+        article > h3,
+        article > h4,
+        article > h5,
+        article > h6,
+        article > figure {
+            width: 100% !important;
+            max-width: 100% !important;
+            margin-left: 0 !important;
+            margin-right: 0 !important;
+            box-sizing: border-box !important;
+        }
+        article figure {
+            margin-top: 0 !important;
+            margin-bottom: 1rem !important;
+        }
+        article button[data-image-width],
+        article figure img,
+        article > img {
+            margin-left: auto !important;
+            margin-right: auto !important;
         }
         ::selection {
             background-color: \(hexAccentColor) !important;

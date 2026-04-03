@@ -103,13 +103,14 @@ export const EntryDetailScreen: NavigationControllerView<{
               Header={<EntryNavigationHeader entryId={entryId} />}
               ScrollViewBottom={<EntryPullUpToNext {...pullUpViewProps} />}
               automaticallyAdjustContentInsets={false}
+              contentContainerMaxWidth={680}
               contentContainerClassName="flex min-h-full pb-16"
               {...scrollViewEventHandlers}
             >
               <ItemPressable
                 itemStyle={ItemPressableStyle.UnStyled}
                 onPress={() => entry?.url && openLink(entry.url)}
-                className="rounded-xl py-4"
+                className="rounded-xl px-5 py-4"
               >
                 {viewType === FeedViewType.SocialMedia ? (
                   <EntrySocialTitle entryId={entryId} />
@@ -120,14 +121,16 @@ export const EntryDetailScreen: NavigationControllerView<{
                   </>
                 )}
               </ItemPressable>
-              <EntryAISummary entryId={entryId} />
+              <View className="px-5">
+                <EntryAISummary entryId={entryId} />
+              </View>
               {entry && (
-                <View className="mt-3">
+                <View className="mt-3 w-full px-5">
                   <EntryContentWebViewWithContext entryId={entryId} />
                 </View>
               )}
               {viewType === FeedViewType.SocialMedia && (
-                <View className="mt-2">
+                <View className="mt-2 px-5">
                   <EntryInfoSocial entryId={entryId} />
                 </View>
               )}
@@ -207,7 +210,7 @@ const EntryInfo = ({ entryId }: { entryId: string }) => {
   if (!entry) return null
   const { publishedAt } = entry
   return (
-    <View className="mt-4 flex flex-row items-center gap-4 px-5">
+    <View className="mt-4 flex flex-row items-center gap-4">
       {feed && (
         <View className="flex shrink flex-row items-center gap-2">
           <FeedIcon feed={feed} />
@@ -238,7 +241,7 @@ const EntryInfoSocial = ({ entryId }: { entryId: string }) => {
   }))
   if (!entry) return null
   return (
-    <View className="mt-3 px-4">
+    <View className="mt-3">
       <Text className="text-sm text-secondary-label">
         {entry.publishedAt.toLocaleString(undefined, {
           dateStyle: "medium",

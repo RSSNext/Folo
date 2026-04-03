@@ -22,6 +22,10 @@ export const LandingHeader: Component = () => {
   const isMobile = useIsMobile()
   const isOverflowPage = usePageScrollLocationSelector((s) => s > 100)
   const actionsT = useTranslations('common.actions')
+  const navItems = [
+    { label: 'Download', href: '/download' },
+    { label: 'Pricing', href: '/pricing' },
+  ] as const
 
   return (
     <div className="fixed inset-x-0 top-0 z-50">
@@ -56,29 +60,26 @@ export const LandingHeader: Component = () => {
               )}
             />
           )}
-          {/* Brand */}
-          <LocalizedLink href="/" className="flex items-center gap-2 ml-4">
-            <Logo width={26} height={26} aria-hidden accentColor="#FF5C00" />
+          <div className="flex items-center gap-8">
+            <LocalizedLink href="/" className="flex items-center gap-2 ml-4">
+              <Logo width={26} height={26} aria-hidden accentColor="#FF5C00" />
 
-            <Folo className="size-8" />
-          </LocalizedLink>
+              <Folo className="size-8" />
+            </LocalizedLink>
 
-          {/* Center nav (desktop) */}
-          {/* <ul className="hidden items-center gap-5 md:flex">
-            {NAV_ITEMS.map((item) => (
-              <li key={item.id}>
-                <a
-                  href={`#${item.id}`}
-                  className={cx(
-                    'text-sm text-text-secondary hover:text-text transition-colors',
-                    focusRing,
-                  )}
-                >
-                  {item.label}
-                </a>
-              </li>
-            ))}
-          </ul> */}
+            <ul className="hidden items-center gap-5 md:flex">
+              {navItems.map((item) => (
+                <li key={item.href}>
+                  <LocalizedLink
+                    href={item.href}
+                    className="text-sm text-text-secondary transition-colors hover:text-text"
+                  >
+                    {item.label}
+                  </LocalizedLink>
+                </li>
+              ))}
+            </ul>
+          </div>
 
           {/* Actions */}
           <div className="flex items-center gap-2">

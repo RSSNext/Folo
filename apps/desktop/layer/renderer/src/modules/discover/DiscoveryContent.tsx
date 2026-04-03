@@ -42,9 +42,8 @@ export function DiscoveryContent() {
   }
 
   return (
-    <div className="relative mx-auto w-full max-w-[800px] space-y-6">
-      {/* Segment Toggle - Centered */}
-      <div className="relative flex justify-center">
+    <div className="relative mx-auto w-full max-w-[880px] space-y-5">
+      <div className="flex flex-wrap items-center justify-between gap-3">
         <SegmentGroup
           value={activeView}
           onValueChanged={(value) => setActiveView(value as DiscoveryView)}
@@ -70,28 +69,23 @@ export function DiscoveryContent() {
           />
         </SegmentGroup>
 
-        {/* Filters Bar - Inside Content Area */}
-        <div className="absolute right-0 flex items-center justify-end gap-4">
-          <div className="flex items-center gap-2">
-            <span className="shrink-0 text-sm font-medium text-text-secondary">
-              {t("words.language")}:
-            </span>
-            <ResponsiveSelect
-              value={lang}
-              onValueChange={handleLangChange}
-              triggerClassName="h-8 rounded border-0"
-              size="sm"
-              items={LanguageOptions}
-              renderItem={(item) => tCommon(item.label as any)}
-              renderValue={(item) => tCommon(item.label as any)}
-            />
-          </div>
+        <div className="flex items-center gap-2">
+          <span className="shrink-0 text-sm font-medium text-text-secondary">
+            {t("words.language")}:
+          </span>
+          <ResponsiveSelect
+            value={lang}
+            onValueChange={handleLangChange}
+            triggerClassName="h-8 rounded border-0 bg-material-ultra-thin"
+            size="sm"
+            items={LanguageOptions}
+            renderItem={(item) => tCommon(item.label as any)}
+            renderValue={(item) => tCommon(item.label as any)}
+          />
         </div>
       </div>
 
-      {/* Content Area with Filters */}
-      <div className="min-h-[400px]">
-        {/* Content */}
+      <div className="min-h-[400px] rounded-2xl border border-fill-secondary bg-background/70 p-4 shadow-sm">
         {activeView === "trending" ? (
           <Trending center limit={20} hideHeader />
         ) : (

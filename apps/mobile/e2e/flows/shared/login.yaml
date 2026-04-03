@@ -1,7 +1,9 @@
 appId: is.follow
 ---
-- assertVisible:
-    id: login-screen
+- extendedWaitUntil:
+    visible:
+      id: login-provider-credential
+    timeout: 60000
 - tapOn:
     id: auth-toggle-mode
 - extendedWaitUntil:
@@ -20,10 +22,11 @@ appId: is.follow
     id: login-password-input
 - eraseText
 - inputText: ${E2E_PASSWORD}
-- pressKey: Enter
+- tapOn:
+    id: login-submit
 - extendedWaitUntil:
     notVisible:
-      id: login-screen
+      id: login-provider-credential
     timeout: 30000
 - assertNotVisible:
-    id: login-screen
+    id: login-provider-credential

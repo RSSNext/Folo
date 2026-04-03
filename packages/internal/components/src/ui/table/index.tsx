@@ -45,7 +45,7 @@ const TableFooter = ({
 }) => (
   <tfoot
     ref={ref}
-    className={cn("bg-material-thin border-t font-medium [&>tr]:last:border-b-0", className)}
+    className={cn("border-t bg-material-thin font-medium [&>tr]:last:border-b-0", className)}
     {...props}
   />
 )
@@ -60,7 +60,7 @@ const TableRow = ({
 }) => (
   <tr
     ref={ref}
-    className={cn("data-[state=selected]:bg-material-medium transition-colors", className)}
+    className={cn("transition-colors data-[state=selected]:bg-material-medium", className)}
     {...props}
   />
 )
@@ -78,7 +78,7 @@ const TableHead = ({
   <th
     ref={ref}
     className={cn(
-      "text-text-secondary text-left align-middle font-medium [&:has([role=checkbox])]:pr-0",
+      "text-left align-middle font-medium text-text-secondary [&:has([role=checkbox])]:pr-0",
       tableHeadVariants({ size, className }),
     )}
     {...props}
@@ -112,7 +112,7 @@ const TableCaption = ({
   ...props
 }: React.HTMLAttributes<HTMLTableCaptionElement> & {
   ref?: React.Ref<HTMLTableCaptionElement | null>
-}) => <caption ref={ref} className={cn("text-text-secondary mt-4 text-sm", className)} {...props} />
+}) => <caption ref={ref} className={cn("mt-4 text-sm text-text-secondary", className)} {...props} />
 TableCaption.displayName = "TableCaption"
 
 export { Table, TableBody, TableCaption, TableCell, TableFooter, TableHead, TableHeader, TableRow }

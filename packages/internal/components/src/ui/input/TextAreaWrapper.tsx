@@ -89,11 +89,11 @@ export const TextAreaWrapper = ({
   return (
     <div
       className={cn(
-        "ring-accent/20 group relative flex h-full overflow-hidden border ring-0 duration-200",
+        "group relative flex h-full overflow-hidden border ring-0 ring-accent/20 duration-200",
         roundedMap[rounded],
 
         // Border states
-        "hover:border-accent/60 border-transparent",
+        "border-transparent hover:border-accent/60",
         isFocused && "!border-accent/80 ring-2",
 
         // Theme colors
@@ -111,7 +111,7 @@ export const TextAreaWrapper = ({
       {bordered && (
         <div
           className={clsx(
-            "border-border pointer-events-none absolute inset-0 z-0 border",
+            "pointer-events-none absolute inset-0 z-0 border border-border",
             roundedMap[rounded],
           )}
           aria-hidden="true"

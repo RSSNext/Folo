@@ -91,7 +91,7 @@ const Content: Component<WrappedElementProviderProps> = memo(
 
     const As = as as any
     return (
-      <As className={cn("relative", className)} ref={setElement}>
+      <As className={cn("relative w-full max-w-full", className)} ref={setElement}>
         {children}
       </As>
     )

@@ -1,7 +1,7 @@
 {
   "metadata": {
     "title": "Folo",
-    "description": "AI-powered RSS reader for deep, noise-free reading with contextual AI.",
+    "description": "AI RSS Reader for deep, noise-free reading with contextual AI.",
     "keywords": "Folo, AI RSS reader, RSS, summarize, translate, research, open source, content discovery, information browser"
   },
   "common": {
@@ -19,17 +19,21 @@
   },
   "landing": {
     "hero": {
-      "eyebrow": "AI Reader · Clean Timeline",
-      "title": "<brand>Folo</brand> is the <highlight>AI</highlight> Reader",
+      "eyebrow": "AI RSS Reader · Clean Timeline",
+      "title": "<brand>Folo</brand> is the <highlight>AI RSS Reader</highlight>",
       "bodyLine1": "The AI that reads the internet for you,",
-      "bodyLine2": "cutting through noise to surface the knowledge you actually care about."
+      "bodyLine2": "cutting through noise to surface the knowledge you actually care about.",
+      "humanTab": "I'm a Human",
+      "agentTab": "I'm an Agent",
+      "agentTitle": "Use Folo",
+      "agentBody": "Read <skill>https://api.folo.is/skill.md</skill> and follow the instructions to use Folo."
     },
     "features": {
       "headline": "Reading reimagined in the AI era",
       "discover": {
         "label": "Discover",
         "titleStrong": "AI finds the best sources",
-        "titleRest": "from millions across the Internet — while you stay in full control."
+        "titleRest": "across the open web."
       },
       "twin": {
         "label": "Digital Twin",
@@ -39,20 +43,50 @@
       "vibe": {
         "label": "Vibe Read",
         "titleStrong": "Let AI read it all.",
-        "titleRest": "Sit back, vibe, and only get notified when insights or signals truly matter."
+        "titleRest": "Keep only the signal."
+      }
+    },
+    "trustedBy": {
+      "eyebrow": "Trusted by teams at",
+      "researchersEyebrow": "Trusted by researchers at",
+      "headline": "Teams already using Folo.",
+      "body": "We sampled production work-email registrations to find the companies that have already started reading with Folo."
+    },
+    "metrics": {
+      "eyebrow": "Production Snapshot",
+      "headline": "At a glance",
+      "body": "Live production scale from Folo.",
+      "footnote": "Production snapshot. Approximate.",
+      "cards": {
+        "feeds": {
+          "label": "Feeds",
+          "detail": "Sources across blogs, research, newsletters, social profiles, and more."
+        },
+        "entries": {
+          "label": "Entries",
+          "detail": "A huge reading graph that AI can search, summarize, and connect for you."
+        },
+        "readers": {
+          "label": "Readers",
+          "detail": "People already using Folo to keep up without drowning in noise."
+        },
+        "follows": {
+          "label": "Follows",
+          "detail": "Subscriptions flowing through production timelines right now."
+        }
       }
     },
     "builtOpen": {
       "title": "Built Open",
-      "body": "Transparent, verifiable, and crafted with the community. Explore the code, file issues, and shape the reading experience together.",
-      "note": "Built with modern primitives: accessible, keyboard-friendly, and optimized for performance. PRs welcome."
+      "body": "Open source, verifiable, and easy to inspect.",
+      "note": "Code public. PRs welcome."
     },
     "repoStats": {
       "githubStars": "GitHub Stars",
       "license": "License",
       "licenseValue": "GPL-3.0",
       "repository": "Repository",
-      "repoDescriptionMobile": "Built with modern primitives: accessible, keyboard-friendly, and optimized for performance. PRs welcome.",
+      "repoDescriptionMobile": "Code public. PRs welcome.",
       "repoAriaLabel": "Open Folo repository on GitHub"
     },
     "socialProof": {
@@ -67,9 +101,21 @@
     },
     "hero": {
       "title": "Download <brand>Folo</brand>",
-      "subtitle": "Get the full power of AI-powered reading on Desktop, or access it instantly on the Web."
+      "subtitle": "Get the AI RSS Reader on Desktop, or open it instantly on the Web."
     },
     "platforms": {
+      "recommended": "Recommended for your device",
+      "allPlatforms": "Available on",
+      "moreDownloads": "More downloads",
+      "lessDownloads": "Show less",
+      "iOS": {
+        "label": "iOS",
+        "store": "App Store"
+      },
+      "Android": {
+        "label": "Android",
+        "store": "Google Play"
+      },
       "macOS": {
         "label": "macOS",
         "store": "Mac App Store"
@@ -87,6 +133,51 @@
         "subtitle": "No installation required"
       },
       "footer": "By downloading, you agree to our <terms>Terms</terms> and <privacy>Privacy Policy</privacy>."
+    }
+  },
+  "pricing": {
+    "metadata": {
+      "title": "Pricing",
+      "description": "Choose the Folo plan that fits your reading workflow."
+    },
+    "eyebrow": "Pricing",
+    "headline": "Plans for every reading workflow",
+    "body": "Compare limits, AI capabilities, and workflow scale before you choose.",
+    "monthly": "Monthly",
+    "yearly": "Yearly",
+    "save": "Save {percent}%",
+    "month": "month",
+    "billedYearly": "Billed yearly at {total}",
+    "mostPopular": "Most Popular",
+    "getStarted": "Get Started",
+    "table": {
+      "features": "Features"
+    },
+    "descriptions": {
+      "free": "For getting started with a calm reading workflow.",
+      "basic": "For solo readers who want more subscriptions and more AI.",
+      "plus": "For power users who rely on AI every day.",
+      "pro": "For heavy workflows, large libraries, and maximum limits.",
+      "admin": "For heavy workflows, large libraries, and maximum limits."
+    },
+    "features": {
+      "MAX_SUBSCRIPTIONS": "feed subscriptions",
+      "MAX_LISTS": "lists",
+      "MAX_INBOXES": "inboxes",
+      "MAX_ACTIONS": "actions",
+      "MAX_AI_ENTRY_SUMMARY_PER_DAY": "AI summaries / day",
+      "MAX_AI_ENTRY_TRANSLATION_PER_DAY": "AI translations / day",
+      "MAX_AI_TEXT_TO_SPEECH_PER_DAY": "text-to-speech / day",
+      "AI_MODEL_SELECTION": "AI model selection",
+      "AI_BRING_YOUR_OWN_KEY": "bring your own key",
+      "BOOSTS": "boosts",
+      "PRIORITY_SUPPORT": "priority support",
+      "PRIVATE_SUBSCRIPTION": "private subscriptions",
+      "MAX_RSSHUB_SUBSCRIPTIONS": "RSSHub subscriptions",
+      "SECURE_IMAGE_PROXY": "secure image proxy",
+      "INTEGRATION_SUPPORTED": "integrations",
+      "AI_CREDIT": "AI credits",
+      "MAX_AI_TASKS": "AI tasks"
     }
   }
 }

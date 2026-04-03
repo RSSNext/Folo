@@ -580,22 +580,24 @@ const PlanComparisonTable = ({ plans }: { plans: PaymentPlan[] }) => {
           <tbody>
             {visibleFeatureKeys.map((featureKey, index) => (
               <tr
-                key={featureKey}
+                key={String(featureKey)}
                 className={cn(
                   "border-b border-fill-tertiary transition-colors hover:bg-fill-secondary/30",
                   index % 2 === 0 ? "bg-background" : "bg-fill-secondary/20",
                 )}
               >
                 <td className="sticky left-0 z-10 bg-inherit px-4 py-3 text-sm font-medium">
-                  {t(`plan.features.${featureKey}`, { defaultValue: featureKey })}
+                  {t(`plan.features.${String(featureKey)}` as const, {
+                    defaultValue: String(featureKey),
+                  })}
                 </td>
                 {plans.map((plan) => {
-                  const value = plan.limit[featureKey]
+                  const value = plan.limit[featureKey as keyof typeof plan.limit]
                   const formattedValue = formatFeatureValue(featureKey, value, t)
 
                   return (
                     <td
-                      key={`${plan.name}-${featureKey}`}
+                      key={`${plan.name}-${String(featureKey)}`}
                       className="px-4 py-3 text-center text-sm"
                     >
                       <span

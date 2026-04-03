@@ -12,7 +12,7 @@ const readString = (value: unknown): string | undefined => {
   return typeof value === "string" && value.length > 0 ? value : undefined
 }
 
-const normalizeToken = (token: string | undefined) => {
+export const normalizeToken = (token: string | undefined) => {
   if (!token || !token.includes("%")) {
     return token
   }
@@ -40,6 +40,61 @@ export interface CommandContext {
   options: ResolvedGlobalOptions
   config: FoloCLIConfig
   token?: string
+}
+
+export interface CLIAuthSession {
+  user?: Record<string, unknown>
+  session?: Record<string, unknown>
+  role?: unknown
+  roleEndAt?: unknown
+  feedSubscriptionLimit?: unknown
+  rsshubSubscriptionLimit?: unknown
+}
+
+const readSessionErrorMessage = async (response: Response): Promise<string | undefined> => {
+  const contentType = response.headers.get("content-type") ?? ""
+
+  if (contentType.includes("application/json")) {
+    const data = (await response.json().catch(() => null)) as Record<string, unknown> | null
+    return typeof data?.message === "string" ? data.message : undefined
+  }
+
+  const text = await response.text().catch(() => "")
+  return text || undefined
+}
+
+export const fetchAuthSession = async ({
+  apiUrl,
+  token,
+  verbose = false,
+}: {
+  apiUrl: string
+  token: string
+  verbose?: boolean
+}): Promise<CLIAuthSession> => {
+  const requestUrl = `${apiUrl}/better-auth/get-session`
+  if (verbose) {
+    console.error(`[request] GET ${requestUrl}`)
+  }
+
+  const response = await fetch(requestUrl, {
+    method: "GET",
+    headers: {
+      Authorization: `Bearer ${token}`,
+      Cookie: `__Secure-better-auth.session_token=${token}; better-auth.session_token=${token}`,
+    },
+  })
+
+  if (verbose) {
+    console.error(`[response] GET ${requestUrl} -> ${response.status}`)
+  }
+
+  if (!response.ok) {
+    const message = await readSessionErrorMessage(response)
+    throw new CLIError("UNAUTHORIZED", message || "Token is invalid or expired.")
+  }
+
+  return (await response.json()) as CLIAuthSession
 }
 
 export const getGlobalOptions = (command: Command): GlobalOptions => {
@@ -82,7 +137,7 @@ export const createCommandContext = async (
   if (requireAuth && !token) {
     throw new CLIError(
       "UNAUTHORIZED",
-      "Missing token. Run `folo auth login` (browser sign-in) or set FOLO_TOKEN.",
+      "Missing token. Run `folo login` (browser sign-in) or set FOLO_TOKEN.",
     )
   }
 

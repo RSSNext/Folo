@@ -1,7 +1,7 @@
 {
   "name": "Folo",
   "type": "module",
-  "version": "1.4.0",
+  "version": "1.5.0",
   "private": true,
   "description": "Follow everything in one place",
   "author": "Folo Team",
@@ -18,7 +18,7 @@
     "build:electron-forge:macos": "electron-forge make --arch=x64 --platform=darwin && electron-forge make --arch=arm64 --platform=darwin && tsx scripts/merge-yml.ts",
     "build:electron-forge:mas": "electron-forge make --arch=universal --platform=mas",
     "build:electron-forge:ms": "tsx scripts/generate-appx-manifest.ts && electron-forge make --platform=win32 --ms=true",
-    "build:electron-vite": "pnpm run prepare:cli && electron-vite build",
+    "build:electron-vite": "electron-vite build",
     "build:render": "vite build -c vite.config.electron-render.ts",
     "build:web": "rm -rf out/web && cross-env WEB_BUILD=1 vite build",
     "bump": "vv --minor",
@@ -36,7 +36,6 @@
     "e2e:web": "playwright test -c e2e/playwright.config.ts --project=web",
     "e2e:web:prod": "cross-env FOLO_E2E_PROFILE=prod playwright test -c e2e/playwright.config.ts --project=web",
     "hotfix": "vv -c bump.hotfix.config.js --patch",
-    "prepare:cli": "tsx scripts/prepare-cli.ts",
     "publish": "electron-vite build && electron-forge publish",
     "start": "electron-vite preview",
     "update:main-hash": "tsx plugins/vite/generate-main-hash.ts"
@@ -95,5 +94,5 @@
     "vite-tsconfig-paths": "6.1.1"
   },
   "productName": "Folo",
-  "mainHash": "0c464fca7c98fd4b42abba743abb1cd590e216043987acf4f6d1e10392ce0e57"
+  "mainHash": "4778cc1cb43d08ed2a5edf391f0d22694641dc15eb27eaefb45bfa09ff176091"
 }

@@ -38,7 +38,7 @@ function Checkbox({
       <m.button
         data-slot="checkbox"
         className={cn(
-          "bg-fill cursor-checkbox focus-visible:ring-border data-[state=checked]:bg-accent peer flex shrink-0 items-center justify-center rounded-sm transition-colors duration-500 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50 data-[state=checked]:text-white",
+          "peer flex shrink-0 cursor-checkbox items-center justify-center rounded-sm bg-fill transition-colors duration-500 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-border focus-visible:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50 data-[state=checked]:bg-accent data-[state=checked]:text-white",
           size === "sm" ? "size-4" : "size-5",
           indeterminate && "bg-accent text-white",
           className,

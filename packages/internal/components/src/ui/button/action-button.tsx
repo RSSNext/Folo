@@ -108,7 +108,8 @@ export const ActionButton = ({
       className={cn(
         "no-drag-region pointer-events-auto inline-flex items-center justify-center",
         active && typeof icon !== "function" && "bg-zinc-500/15 hover:bg-zinc-500/20",
-        "hover:bg-theme-item-hover data-[state=open]:bg-theme-item-active rounded-md duration-200",
+        "rounded-md duration-200 hover:bg-theme-item-hover data-[state=open]:bg-theme-item-active",
+        "focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-border focus-visible:ring-offset-2",
         "disabled:cursor-not-allowed disabled:opacity-50",
         clickableDisabled && "cursor-not-allowed opacity-50",
         shouldHighlightMotion &&
@@ -127,6 +128,8 @@ export const ActionButton = ({
       }}
       type="button"
       disabled={disabled}
+      aria-busy={loading || undefined}
+      aria-disabled={disabled || clickableDisabled || undefined}
       onClick={
         onClick
           ? async (e) => {
@@ -185,7 +188,7 @@ export const ActionButton = ({
                 )}
               </div>
               {tooltipDescription ? (
-                <div className="text-text-secondary text-body">{tooltipDescription}</div>
+                <div className="text-body text-text-secondary">{tooltipDescription}</div>
               ) : null}
             </TooltipContent>
           </TooltipPortal>

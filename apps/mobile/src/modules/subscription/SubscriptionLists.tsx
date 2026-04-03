@@ -31,6 +31,7 @@ import { ItemPressable } from "@/src/components/ui/pressable/ItemPressable"
 import { Text } from "@/src/components/ui/typography/Text"
 import { StarCuteFiIcon } from "@/src/icons/star_cute_fi"
 import { useNavigation } from "@/src/lib/navigation/hooks"
+import { useReadableContainerStyle } from "@/src/lib/responsive"
 import { selectFeed } from "@/src/modules/screen/atoms"
 import { TimelineSelectorList } from "@/src/modules/screen/TimelineSelectorList"
 import { FeedScreen } from "@/src/screens/(stack)/feeds/[feedId]/FeedScreen"
@@ -227,14 +228,18 @@ const ItemRender = ({
 }
 const SectionTitle = ({ transKey }: { transKey: ParseKeys<"common"> }) => {
   const { t } = useTranslation("common")
+  const readableContainerStyle = useReadableContainerStyle(760, GROUPED_LIST_MARGIN)
   return (
     <View
-      style={{
-        marginHorizontal: GROUPED_LIST_MARGIN,
-        marginTop: GROUPED_SECTION_TOP_MARGIN,
-        marginBottom: GROUPED_SECTION_BOTTOM_MARGIN,
-        paddingHorizontal: GROUPED_LIST_ITEM_PADDING,
-      }}
+      style={[
+        readableContainerStyle,
+        {
+          marginHorizontal: GROUPED_LIST_MARGIN,
+          marginTop: GROUPED_SECTION_TOP_MARGIN,
+          marginBottom: GROUPED_SECTION_BOTTOM_MARGIN,
+          paddingHorizontal: GROUPED_LIST_ITEM_PADDING,
+        },
+      ]}
     >
       <Text className="text-secondary-label" ellipsizeMode="tail" numberOfLines={1}>
         {t(transKey)}

@@ -21,7 +21,7 @@ export const ShinyText: FC<AnimatedShinyTextProps> = ({
         } as CSSProperties
       }
       className={cn(
-        "text-text-secondary mx-auto max-w-md",
+        "mx-auto max-w-md text-text-secondary",
 
         // Shine effect
         "bg-clip-text bg-repeat-x",

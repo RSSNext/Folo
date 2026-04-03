@@ -25,7 +25,7 @@ export function SocialLogin({ onPressEmail }: { isRegister: boolean; onPressEmai
   const { t } = useTranslation()
 
   return (
-    <View className="flex w-screen items-center justify-center gap-4 px-6">
+    <View className="flex w-full items-center justify-center gap-4">
       <Pressable
         testID="login-provider-credential"
         hitSlop={20}
@@ -40,7 +40,7 @@ export function SocialLogin({ onPressEmail }: { isRegister: boolean; onPressEmai
                   ? credentialProvider.iconDark64 || credentialProvider.icon64
                   : credentialProvider.icon64,
             }}
-            className="absolute left-9 size-6"
+            className="absolute left-6 size-6"
             contentFit="contain"
           />
         )}
@@ -106,7 +106,7 @@ export function SocialLogin({ onPressEmail }: { isRegister: boolean; onPressEmai
                 uri:
                   colorScheme === "dark" ? provider.iconDark64 || provider.icon64 : provider.icon64,
               }}
-              className="absolute left-9 size-6"
+              className="absolute left-6 size-6"
               contentFit="contain"
             />
             <Text className="text-lg font-semibold text-label">

@@ -1,9 +1,22 @@
 {
-  "name": "@follow/cli",
+  "name": "folocli",
   "type": "module",
-  "version": "0.1.0",
-  "private": true,
-  "description": "Folo CLI for AI agents and power users",
+  "version": "0.0.4",
+  "description": "Folo CLI for terminal workflows and automation",
+  "author": "Folo Team",
+  "license": "AGPL-3.0-only",
+  "homepage": "https://github.com/RSSNext/Folo",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/RSSNext/Folo.git"
+  },
+  "keywords": [
+    "folo",
+    "rss",
+    "reader",
+    "cli",
+    "automation"
+  ],
   "bin": {
     "folo": "./dist/index.js"
   },
@@ -11,6 +24,9 @@
     "dist",
     "skill.md"
   ],
+  "engines": {
+    "node": ">=18"
+  },
   "scripts": {
     "build": "tsup --config tsup.config.ts && chmod +x dist/index.js",
     "dev": "tsx src/index.ts",

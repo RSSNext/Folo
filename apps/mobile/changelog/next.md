@@ -2,26 +2,10 @@
 
 ## Shiny new things
 
-- Added Apple subscriptions on iOS
-- Supported anonymous timeline reading without signing in
-- Refined upgrade prompts to match desktop subscription flows
-- Added in-app review prompts
-- Supported French localization
-
 ## Improvements
-
-- Polished settings and Discover UI across iOS and Android
-- Improved subscription and plan management surfaces
-- Hardened authentication flows and expanded end-to-end coverage
-- Aligned translation gating with actual user roles
 
 ## No longer broken
 
-- Fixed discover category loading and iOS auth bootstrap issues
-- Fixed iOS subscription upgrade actions
-- Fixed Android modal header overlap
-- Stabilized sign-in persistence across mobile auth flows
-
 ## Thanks
 
-Special thanks to volunteer contributors for their valuable contributions
+Special thanks to volunteer contributors @ for their valuable contributions

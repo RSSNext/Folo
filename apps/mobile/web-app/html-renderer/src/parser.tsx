@@ -144,7 +144,12 @@ export const parseHtml = (
         createElement(
           "figure",
           {
-            className: "max-w-full",
+            className: "mx-auto max-w-full",
+            style: {
+              marginLeft: "auto",
+              marginRight: "auto",
+              ...(props as any).style,
+            },
           },
           props.children,
         ),

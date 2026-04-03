@@ -28,7 +28,7 @@ export function Html({ content, scrollEnabled = true, ...options }: HtmlProps) {
   }, [scrollEnabled])
 
   return (
-    <article className="prose dark:prose-invert prose-h1:text-[1.6em] prose-h1:font-bold !max-w-full px-2">
+    <article className="prose !max-w-full px-2 dark:prose-invert prose-h1:text-[1.6em] prose-h1:font-bold">
       {res.toContent()}
     </article>
   )

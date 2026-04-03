@@ -29,7 +29,6 @@
     "@follow-app/readability": "workspace:*",
     "@follow/shared": "workspace:*",
     "@follow/utils": "workspace:*",
-    "@openpanel/web": "1.0.7",
     "builder-util-runtime": "9.5.1",
     "electron-context-menu": "4.1.1",
     "electron-ipc-decorator": "0.2.0",

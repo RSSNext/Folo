@@ -290,8 +290,6 @@ export default ({ mode }) => {
           "@tanstack/query-sync-storage-persister",
         ],
         ["tldts"],
-
-        ["@openpanel/web"],
         ["zod", "react-hook-form", "@hookform/resolvers"],
       ]),
 

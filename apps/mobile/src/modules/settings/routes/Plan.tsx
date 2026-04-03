@@ -316,12 +316,14 @@ export const PlanScreen: NavigationControllerView = () => {
     isPurchasing,
     isRestoring,
     loadSubscriptions,
-    openSubscriptionManagement,
     requestSubscriptionPurchase,
     restoreSubscriptionPurchases,
   } = useAppleIAP()
 
-  const plans = useMemo(() => serverConfigs?.PAYMENT_PLAN_LIST ?? [], [serverConfigs])
+  const plans = useMemo<PaymentPlan[]>(
+    () => serverConfigs?.PAYMENT_PLAN_LIST ?? [],
+    [serverConfigs],
+  )
   const appleProductIds = useMemo(
     () =>
       plans
@@ -403,14 +405,14 @@ export const PlanScreen: NavigationControllerView = () => {
 
   const averageSavings = useMemo(() => {
     const paidPlans = sortedPlans.filter(
-      (plan) => (plan.priceInDollars ?? 0) > 0 && (plan.priceInDollarsAnnual ?? 0) > 0,
+      (plan: PaymentPlan) => (plan.priceInDollars ?? 0) > 0 && (plan.priceInDollarsAnnual ?? 0) > 0,
     )
 
     if (paidPlans.length === 0) {
       return 0
     }
 
-    const total = paidPlans.reduce((acc, plan) => {
+    const total = paidPlans.reduce((acc, plan: PaymentPlan) => {
       const monthlyTotal = (plan.priceInDollars ?? 0) * 12
       const yearlyTotal = plan.priceInDollarsAnnual ?? 0
       if (monthlyTotal === 0) {
@@ -425,7 +427,7 @@ export const PlanScreen: NavigationControllerView = () => {
 
   const upgradeMutation = useMutation<void, Error, UpgradeVariables>({
     mutationFn: async ({ planId, annual }) => {
-      const selectedPlan = plans.find((plan) => plan.planID === planId)
+      const selectedPlan = plans.find((plan: PaymentPlan) => plan.planID === planId)
 
       if (Platform.OS === "ios" && activeSubscription?.source !== "stripe") {
         const productId = annual
@@ -485,15 +487,8 @@ export const PlanScreen: NavigationControllerView = () => {
   })
 
   const handleManageSubscription = useCallback(() => {
-    if (activeSubscription?.source === "apple") {
-      void openSubscriptionManagement().catch(() => {
-        toast.error(t("subscription.actions.manage_error"))
-      })
-      return
-    }
-
     billingPortalMutation.mutate()
-  }, [activeSubscription?.source, billingPortalMutation, openSubscriptionManagement, t])
+  }, [billingPortalMutation])
 
   if (!isPaymentEnabled || sortedPlans.length === 0) {
     return (
@@ -908,7 +903,7 @@ const PlanCard = ({
       </View>
 
       <View className="mt-4 gap-2">
-        {features.map(([featureKey, value]) => {
+        {features.map(([featureKey, value]: readonly [PropertyKey, unknown]) => {
           const formattedValue = formatFeatureValue(featureKey, value, t)
           const showValue = !(typeof value === "boolean" && value)
           return (
@@ -917,7 +912,9 @@ const PlanCard = ({
                 <CheckLineIcon width={14} height={14} color="rgb(40, 205, 65)" />
               </View>
               <Text className="flex-1 text-sm text-label">
-                {t(`plan.features.${featureKey}` as const, { defaultValue: featureKey })}
+                {t(`plan.features.${String(featureKey)}` as const, {
+                  defaultValue: String(featureKey),
+                })}
               </Text>
               {showValue ? (
                 <Text
@@ -971,6 +968,7 @@ const PlanAction = ({
   const { t } = useTranslation("settings")
 
   const canManageSubscription = !!activeSubscription?.canManage
+  const isAppleSubscription = activeSubscription?.source === "apple"
   const isCanceled = activeSubscription?.status === "canceled"
   const periodEnd = activeSubscription?.trialEnd ?? activeSubscription?.periodEnd
   const effectivePeriodEnd = periodEnd ? new Date(periodEnd) : null
@@ -1025,23 +1023,29 @@ const PlanAction = ({
             </Text>
           </View>
         )}
-        <Pressable
-          accessibilityRole="button"
-          onPress={onManageSubscription}
-          disabled={!canManageSubscription || isManaging}
-          className={cn(
-            "h-11 items-center justify-center rounded-full border border-opaque-separator/60",
-            !canManageSubscription && "opacity-50",
-          )}
-        >
-          {isManaging ? (
-            <ActivityIndicator />
-          ) : (
-            <Text className="text-base font-medium text-label">
-              {canManageSubscription ? t("plan.manage_subscription") : t("plan.current_plan")}
-            </Text>
-          )}
-        </Pressable>
+        {isAppleSubscription ? (
+          <Text className="rounded-2xl bg-secondary-system-fill px-4 py-3 text-center text-sm leading-5 text-secondary-label">
+            {t("plan.manage_subscription_hint_apple")}
+          </Text>
+        ) : (
+          <Pressable
+            accessibilityRole="button"
+            onPress={onManageSubscription}
+            disabled={!canManageSubscription || isManaging}
+            className={cn(
+              "h-11 items-center justify-center rounded-full border border-opaque-separator/60",
+              !canManageSubscription && "opacity-50",
+            )}
+          >
+            {isManaging ? (
+              <ActivityIndicator />
+            ) : (
+              <Text className="text-base font-medium text-label">
+                {canManageSubscription ? t("plan.manage_subscription") : t("plan.current_plan")}
+              </Text>
+            )}
+          </Pressable>
+        )}
       </View>
     )
   }

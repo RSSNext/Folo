@@ -28,6 +28,7 @@ export function VideoPlayer({
   const player = useVideoPlayer(source, (player) => {
     player.loop = true
     player.muted = true
+    player.preservesPitch = true
     // player.play()
   })
   const { status } = useEvent(player, "statusChange", { status: player.status })

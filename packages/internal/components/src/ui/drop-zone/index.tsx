@@ -65,7 +65,7 @@ export const DropZone = ({ id, accept, children, className, onDrop }: DropZonePr
       className={cn(
         "center flex h-[100px] w-full cursor-pointer rounded-md border border-dashed",
         isDragging ? "border-accent bg-accent/10" : "",
-        "hover:border-accent/50 duration-200",
+        "duration-200 hover:border-accent/50",
         className,
       )}
       htmlFor={id}

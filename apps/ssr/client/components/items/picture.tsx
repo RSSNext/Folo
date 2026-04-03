@@ -203,8 +203,10 @@ export const PictureList: FC<{
 }
 
 const itemKey = (item: { url: string }) => item.url
-const render: React.ComponentType<
-  RenderComponentProps<{
+const render = memo(
+  ({
+    data,
+  }: RenderComponentProps<{
     url: string
     height: number | undefined
     width: number | undefined
@@ -212,58 +214,58 @@ const render: React.ComponentType<
     id: string
     entry: ParsedEntry
     feed?: Feed
-  }>
-> = memo(({ data }) => {
-  const [isHovered, setIsHovered] = useState(false)
+  }>) => {
+    const [isHovered, setIsHovered] = useState(false)
 
-  return (
-    <MasonryItemFixedDimensionWrapper
-      url={data.url}
-      key={data.id}
-      height={data.height}
-      ratio={data.height && data.width ? data.height / data.width : undefined}
-    >
-      <div
-        className="size-full overflow-hidden rounded-md"
-        onMouseEnter={() => setIsHovered(true)}
-        onMouseLeave={() => setIsHovered(false)}
+    return (
+      <MasonryItemFixedDimensionWrapper
+        url={data.url}
+        key={data.id}
+        height={data.height}
+        ratio={data.height && data.width ? data.height / data.width : undefined}
       >
-        <PhotoView src={data.url}>
-          <LazyImage
-            src={data.url}
-            height={data.height}
-            width={data.width}
-            blurhash={data.blurhash}
-            className="duration-200 hover:scale-105"
-          />
-        </PhotoView>
+        <div
+          className="size-full overflow-hidden rounded-md"
+          onMouseEnter={() => setIsHovered(true)}
+          onMouseLeave={() => setIsHovered(false)}
+        >
+          <PhotoView src={data.url}>
+            <LazyImage
+              src={data.url}
+              height={data.height}
+              width={data.width}
+              blurhash={data.blurhash}
+              className="duration-200 hover:scale-105"
+            />
+          </PhotoView>
 
-        <AnimatePresence>
-          {isHovered && (
-            <m.div
-              initial={{ opacity: 0, y: 10 }}
-              animate={{ opacity: 1, y: 0 }}
-              exit={{ opacity: 0, y: 10 }}
-              className="absolute inset-x-0 -bottom-px z-[3] overflow-hidden rounded-b-md pb-1"
-              key="footer"
-            >
-              <div className="absolute inset-x-0 bottom-0 h-[56px]" style={maskStyle}>
-                <div className="absolute inset-x-0 bottom-0 h-[76px] bg-gradient-to-t from-black/80 to-transparent" />
-              </div>
-              <GridItemFooter
-                entry={data.entry}
-                feed={data.feed}
-                titleClassName="!text-white"
-                descriptionClassName="!text-white/80"
-                timeClassName="!text-white/60"
-              />
-            </m.div>
-          )}
-        </AnimatePresence>
-      </div>
-    </MasonryItemFixedDimensionWrapper>
-  )
-})
+          <AnimatePresence>
+            {isHovered && (
+              <m.div
+                initial={{ opacity: 0, y: 10 }}
+                animate={{ opacity: 1, y: 0 }}
+                exit={{ opacity: 0, y: 10 }}
+                className="absolute inset-x-0 -bottom-px z-[3] overflow-hidden rounded-b-md pb-1"
+                key="footer"
+              >
+                <div className="absolute inset-x-0 bottom-0 h-[56px]" style={maskStyle}>
+                  <div className="absolute inset-x-0 bottom-0 h-[76px] bg-gradient-to-t from-black/80 to-transparent" />
+                </div>
+                <GridItemFooter
+                  entry={data.entry}
+                  feed={data.feed}
+                  titleClassName="!text-white"
+                  descriptionClassName="!text-white/80"
+                  timeClassName="!text-white/60"
+                />
+              </m.div>
+            )}
+          </AnimatePresence>
+        </div>
+      </MasonryItemFixedDimensionWrapper>
+    )
+  },
+)
 const GridItemFooter = ({
   entry,
 

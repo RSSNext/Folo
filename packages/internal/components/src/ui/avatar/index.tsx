@@ -42,7 +42,7 @@ export const AvatarFallback = ({
   <AvatarPrimitive.Fallback
     ref={ref}
     className={cn(
-      "bg-material-opaque flex size-full items-center justify-center rounded-full",
+      "flex size-full items-center justify-center rounded-full bg-material-opaque",
       className,
     )}
     {...props}

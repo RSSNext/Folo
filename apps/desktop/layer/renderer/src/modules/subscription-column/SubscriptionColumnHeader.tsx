@@ -7,7 +7,7 @@ import { m } from "motion/react"
 import type { FC, PropsWithChildren } from "react"
 import { memo, useEffect, useRef, useState } from "react"
 import { useTranslation } from "react-i18next"
-import { Link } from "react-router"
+import { useNavigate } from "react-router"
 import { toast } from "sonner"
 
 import { setTimelineColumnShow, useSubscriptionColumnShow } from "~/atoms/sidebar"
@@ -27,6 +27,7 @@ import { ProfileButton } from "~/modules/user/ProfileButton"
 export const SubscriptionColumnHeader = memo(() => {
   const timelineId = useRouteParamsSelector((s) => s.timelineId)
   const navigateBackHome = useBackHome(timelineId)
+  const navigate = useNavigate()
   const normalStyle = !window.electron || window.electron.process.platform !== "darwin"
   const { t } = useTranslation()
   return (
@@ -52,15 +53,14 @@ export const SubscriptionColumnHeader = memo(() => {
         </LogoContextMenu>
       )}
       <div className="relative flex items-center gap-2" onClick={stopPropagation}>
-        <Link to="/discover" tabIndex={-1}>
-          <ActionButton
-            data-testid="subscription-discover-trigger"
-            shortcut="$mod+T"
-            tooltip={t("words.discover")}
-          >
-            <i className="i-mgc-add-cute-re size-5 text-text-secondary" />
-          </ActionButton>
-        </Link>
+        <ActionButton
+          data-testid="subscription-discover-trigger"
+          shortcut="$mod+T"
+          tooltip={t("words.discover")}
+          onClick={() => navigate("/discover")}
+        >
+          <i className="i-mgc-add-cute-re size-5 text-text-secondary" />
+        </ActionButton>
 
         <ProfileButton method="modal" animatedAvatar />
         <LayoutActionButton />

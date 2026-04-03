@@ -231,7 +231,7 @@ const SearchInput = () => {
           allowFontScaling={false}
           className="text-[16px] font-medium text-accent"
         >
-          Cancel
+          {t("words.cancel")}
         </Text>
       </ReAnimatedPressable>
     </Animated.View>

@@ -12,8 +12,8 @@ import { actionActions } from "@follow/store/action/store"
 import { nextFrame } from "@follow/utils"
 import { JsonObfuscatedCodec } from "@follow/utils/json-codec"
 import { cn } from "@follow/utils/utils"
+import { repository } from "@pkg"
 import { useQueryClient } from "@tanstack/react-query"
-import { m } from "motion/react"
 import { useCallback, useEffect, useRef, useState } from "react"
 import { useTranslation } from "react-i18next"
 import { useBlocker } from "react-router"
@@ -44,15 +44,14 @@ import {
 import { useSetSubViewRightView } from "../app-layout/subview/hooks"
 import { generateExportFilename } from "./utils"
 
-const EmptyActionPlaceholder = () => {
-  const { t } = useTranslation("settings")
+const EmptyActionPlaceholder = ({ onCreateRule }: { onCreateRule: () => void }) => {
+  const { t } = useTranslation(["settings", "common"])
 
   return (
-    <div className="relative flex min-h-96 w-full items-center justify-center">
-      <div className="flex flex-col items-center gap-6 text-center">
-        {/* Simple icon */}
-        <div className="flex size-14 items-center justify-center rounded-lg border border-fill-secondary bg-fill-quinary">
-          <i className="i-mgc-magic-2-cute-re size-7 text-text-secondary" />
+    <div className="flex min-h-96 w-full items-center justify-center py-10">
+      <div className="flex w-full max-w-xl flex-col items-center gap-6 rounded-3xl border border-fill-secondary bg-material-ultra-thin px-8 py-10 text-center shadow-sm">
+        <div className="flex size-16 items-center justify-center rounded-2xl border border-fill-secondary bg-fill-quinary">
+          <i className="i-mgc-magic-2-cute-re size-8 text-text-secondary" />
         </div>
 
         <div className="space-y-2">
@@ -63,25 +62,23 @@ const EmptyActionPlaceholder = () => {
             {t("actions.action_card.empty.description")}
           </p>
         </div>
-      </div>
-      <m.div
-        className="fixed right-20 top-12 z-[1000]"
-        animate={{
-          x: [0, 8, 0],
-          y: [0, -4, 0],
-          opacity: [0.5, 1, 0.5],
-        }}
-        transition={{
-          duration: 2.5,
-          repeat: Infinity,
-          ease: "easeInOut",
-        }}
-      >
-        <div className="flex items-center gap-2 text-text-secondary">
-          <span className="text-sm font-medium">{t("actions.action_card.empty.start")}</span>
-          <i className="i-mgc-arrow-right-up-cute-re size-5" />
+
+        <div className="flex flex-wrap items-center justify-center gap-3">
+          <Button onClick={onCreateRule}>
+            <i className="i-mgc-add-cute-re mr-2 size-4" />
+            {t("actions.action_card.empty.cta")}
+          </Button>
+          <a
+            href={`${repository.url}/wiki/Actions`}
+            target="_blank"
+            rel="noreferrer"
+            className="inline-flex items-center gap-2 rounded-lg border border-border px-4 py-2 text-sm font-medium text-text-secondary transition-colors hover:bg-fill-secondary hover:text-text"
+          >
+            <i className="i-mgc-book-6-cute-re size-4" />
+            <span>{t("words.documentation", { ns: "common" })}</span>
+          </a>
         </div>
-      </m.div>
+      </div>
     </div>
   )
 }
@@ -164,7 +161,7 @@ export const ActionSetting = () => {
           </div>
         </div>
       ) : (
-        <EmptyActionPlaceholder />
+        <EmptyActionPlaceholder onCreateRule={handleCreateRule} />
       )}
     </>
   )

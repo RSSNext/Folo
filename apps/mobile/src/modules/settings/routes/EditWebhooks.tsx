@@ -22,7 +22,7 @@ export const EditWebhooksScreen: NavigationControllerView<{
   const { t } = useTranslation("settings")
   const rule = useActionRule(index)
   const webhooks =
-    rule?.result.webhooks?.map((webhook, webhookIndex) => ({
+    rule?.result.webhooks?.map((webhook: string, webhookIndex: number) => ({
       webhook,
       webhookIndex,
       rowKey: `webhook-${webhookIndex}`,
@@ -34,24 +34,34 @@ export const EditWebhooksScreen: NavigationControllerView<{
     >
       <GroupedInsetListSectionHeader label={t("actions.action_card.webhooks")} marginSize="small" />
       <GroupedInsetListCard>
-        {webhooks.map(({ webhook, webhookIndex, rowKey }) => {
-          return (
-            <GroupedInsetListBaseCell className="flex-row" key={rowKey}>
-              <PlainTextField
-                placeholder="https://"
-                inputMode="url"
-                value={webhook}
-                onChangeText={(value) => {
-                  actionActions.updateWebhook({
-                    index,
-                    webhookIndex,
-                    value,
-                  })
-                }}
-              />
-            </GroupedInsetListBaseCell>
-          )
-        })}
+        {webhooks.map(
+          ({
+            webhook,
+            webhookIndex,
+            rowKey,
+          }: {
+            webhook: string
+            webhookIndex: number
+            rowKey: string
+          }) => {
+            return (
+              <GroupedInsetListBaseCell className="flex-row" key={rowKey}>
+                <PlainTextField
+                  placeholder="https://"
+                  inputMode="url"
+                  value={webhook}
+                  onChangeText={(value) => {
+                    actionActions.updateWebhook({
+                      index,
+                      webhookIndex,
+                      value,
+                    })
+                  }}
+                />
+              </GroupedInsetListBaseCell>
+            )
+          },
+        )}
         <GroupedInsetButtonCell
           label={t("actions.action_card.add")}
           onPress={() => {

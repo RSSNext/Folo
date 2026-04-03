@@ -14,6 +14,7 @@ import UIKit
 enum CustomTabbarController {
   static var tabBarController = {
     let tabBarController = UITabBarController()
+    let isPad = UIDevice.current.userInterfaceIdiom == .pad
     if #available(iOS 16.0, *), UIDevice.current.userInterfaceIdiom == .pad {
       tabBarController.tabBar.isTranslucent = false
       tabBarController.tabBar.barStyle = .default
@@ -25,7 +26,7 @@ enum CustomTabbarController {
       tabBarController.isTabBarHidden = true
     }
 
-    if #available(iOS 26.0, *) {
+    if #available(iOS 26.0, *), !isPad {
       tabBarController.isTabBarHidden = false
       tabBarController.tabBarMinimizeBehavior = .onScrollDown
 

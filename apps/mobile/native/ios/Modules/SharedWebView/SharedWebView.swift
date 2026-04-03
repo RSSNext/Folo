@@ -6,6 +6,7 @@ import WebKit
 
 class WebViewView: ExpoView {
     private var cancellable: AnyCancellable?
+    private var lastReportedHeight: CGFloat = 0
 
     required init(appContext: AppContext? = nil) {
         super.init(appContext: appContext)
@@ -14,7 +15,7 @@ class WebViewView: ExpoView {
         cancellable = WebViewManager.state.$contentHeight
             .receive(on: DispatchQueue.main)
             .sink { [weak self] _ in
-                self?.layoutSubviews()
+                self?.setNeedsLayout()
             }
     }
    
@@ -25,15 +26,18 @@ class WebViewView: ExpoView {
     private let onContentHeightChange = ExpoModulesCore.EventDispatcher()
 
     override func layoutSubviews() {
+        super.layoutSubviews()
         let rect = CGRect(
-            x: bounds.origin.x,
-            y: bounds.origin.y,
+            x: 0,
+            y: 0,
             width: bounds.width,
             height: WebViewManager.state.contentHeight
         )
         WebViewManager.updateFrame(rect)
-        frame = rect
-        onContentHeightChange(["height": Float(rect.height)])
+        if abs(lastReportedHeight - rect.height) > 0.5 {
+            lastReportedHeight = rect.height
+            onContentHeightChange(["height": Float(rect.height)])
+        }
 
     }
 

@@ -39,8 +39,8 @@
     "progressive-blur": "1.0.0",
     "radix-ui": "1.4.3",
     "re-resizable": "6.11.2",
-    "react": "19.0.0",
-    "react-dom": "19.0.0",
+    "react": "19.2.4",
+    "react-dom": "19.2.4",
     "react-error-boundary": "6.0.0",
     "react-intersection-observer": "9.16.0",
     "react-markdown": "10.1.0",
@@ -55,7 +55,7 @@
     "unified": "11.0.5",
     "usehooks-ts": "3.1.1",
     "vaul": "1.1.2",
-    "vinext": "0.0.9"
+    "vinext": "0.0.30"
   },
   "devDependencies": {
     "@cloudflare/vite-plugin": "1.25.5",

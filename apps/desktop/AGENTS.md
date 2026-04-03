@@ -173,7 +173,7 @@ For hover states on buttons or interactive areas within glass containers:
   }}
 >
   {/* Subtle shine effect */}
-  <div className="via-gray/5 absolute inset-0 -translate-x-full bg-gradient-to-r from-transparent to-transparent transition-transform duration-700 group-hover:translate-x-full dark:via-white/5" />
+  <div className="absolute inset-0 -translate-x-full bg-gradient-to-r from-transparent via-gray/5 to-transparent transition-transform duration-700 group-hover:translate-x-full dark:via-white/5" />
 </button>
 ```
 

@@ -30,8 +30,16 @@ interface SearchInput {
   options: Electron.FindInPageOptions
 }
 
+interface ExportCurrentPageAsPdfInput {
+  defaultPath?: string
+}
+
 interface Sender extends Electron.WebContents {
   getOwnerBrowserWindow: () => Electron.BrowserWindow | null
+}
+
+const ensurePdfExtension = (filePath: string) => {
+  return path.extname(filePath).toLowerCase() === ".pdf" ? filePath : `${filePath}.pdf`
 }
 
 export class AppService extends IpcService {
@@ -172,21 +180,47 @@ export class AppService extends IpcService {
   }
 
   @IpcMethod()
+  async exportCurrentPageAsPdf(
+    context: IpcContext,
+    input: ExportCurrentPageAsPdfInput = {},
+  ): Promise<string | null> {
+    const senderWindow = (context.sender as Sender).getOwnerBrowserWindow()
+    const dialogOptions: Electron.SaveDialogOptions = {
+      defaultPath: ensurePdfExtension(input.defaultPath || "Untitled.pdf"),
+      filters: [{ name: "PDF", extensions: ["pdf"] }],
+      properties: ["createDirectory", "showOverwriteConfirmation"],
+    }
+    const result = senderWindow
+      ? await dialog.showSaveDialog(senderWindow, dialogOptions)
+      : await dialog.showSaveDialog(dialogOptions)
+
+    if (result.canceled || !result.filePath) return null
+
+    const pdfData = await context.sender.printToPDF({
+      printBackground: true,
+      preferCSSPageSize: true,
+    })
+
+    const filePath = ensurePdfExtension(result.filePath)
+    await fsp.writeFile(filePath, pdfData)
+
+    return filePath
+  }
+
+  @IpcMethod()
   getAppPath(_context: IpcContext): string {
     return app.getAppPath()
   }
 
   @IpcMethod()
-  resolveAppAsarPath(context: IpcContext, input: string): string {
-    if (input.startsWith("file://")) {
-      input = fileURLToPath(input)
+  resolveAppAsarPath(_context: IpcContext, input: string): string {
+    const resolvedInput = input.startsWith("file://") ? fileURLToPath(input) : input
+
+    if (path.isAbsolute(resolvedInput)) {
+      return resolvedInput
     }
 
-    if (path.isAbsolute(input)) {
-      return input
-    }
-
-    return path.join(app.getAppPath(), input)
+    return path.join(app.getAppPath(), resolvedInput)
   }
 
   @IpcMethod()
@@ -250,5 +284,24 @@ export class AppService extends IpcService {
   @IpcMethod()
   getCacheSize(_context: IpcContext) {
     return getCacheSize()
+  }
+
+  @IpcMethod()
+  async selectDirectory(_context: IpcContext): Promise<string | null> {
+    const result = await dialog.showOpenDialog({
+      properties: ["openDirectory"],
+    })
+    if (result.canceled || result.filePaths.length === 0) return null
+    return result.filePaths[0]!
+  }
+
+  @IpcMethod()
+  async checkPathExists(_context: IpcContext, input: string): Promise<boolean> {
+    try {
+      await fsp.access(input)
+      return true
+    } catch {
+      return false
+    }
   }
 }

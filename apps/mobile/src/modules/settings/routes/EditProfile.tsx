@@ -49,7 +49,7 @@ export const EditProfileScreen = () => {
       await userSyncService.updateProfile(dirtyFields)
     },
     onSuccess: () => {
-      toast.success("Profile updated")
+      toast.success(t("profile.updateSuccess"))
       setDirtyFields({})
     },
     onError: (error) => {
@@ -118,16 +118,16 @@ const ProfileForm: FC<{
 }> = ({ whoami, dirtyFields, setDirtyFields }) => {
   const { t } = useTranslation("settings")
   const navigation = useNavigation()
-  const socialLinkFields: (keyof NonNullable<MeModel["socialLinks"]>)[] = [
+  type SocialLinkKey = "twitter" | "github" | "instagram" | "facebook" | "youtube" | "discord"
+  const socialLinkFields: SocialLinkKey[] = [
     "twitter",
     "github",
     "instagram",
     "facebook",
     "youtube",
-    // @ts-expect-error adding discord
     "discord",
   ]
-  const socialCopyMap = {
+  const socialCopyMap: Record<SocialLinkKey, string> = {
     twitter: t("profile.social.twitter", "Twitter"),
     github: t("profile.social.github", "GitHub"),
     instagram: t("profile.social.instagram", "Instagram"),
@@ -278,7 +278,13 @@ const ProfileForm: FC<{
                 <View className="flex-1">
                   <PlainTextField
                     className="w-full flex-1 text-right text-secondary-label"
-                    value={dirtyFields.socialLinks?.[social] ?? whoami?.socialLinks?.[social] ?? ""}
+                    value={
+                      dirtyFields.socialLinks?.[social] ??
+                      (whoami?.socialLinks as Partial<Record<SocialLinkKey, string>> | undefined)?.[
+                        social
+                      ] ??
+                      ""
+                    }
                     hitSlop={10}
                     selectionColor={accentColor}
                     onChangeText={(text) => {

@@ -10,10 +10,12 @@ import { RateLimitNotice } from "~/modules/ai-chat/components/layouts/RateLimitN
 
 import type { ShortcutData } from "../../editor"
 import { useSendAIShortcut } from "../../hooks/useSendAIShortcut"
+import { getBottomPanelContainerStyle } from "./ChatBottomPanel.styles"
 
 interface ChatBottomPanelProps {
   hasMessages: boolean
   centerInputOnEmpty?: boolean
+  visualOffsetY?: string | number
   shouldShowInterruptionNotice: boolean
   rateLimitMessage: string | null
   isRateLimited: boolean
@@ -27,6 +29,7 @@ interface ChatBottomPanelProps {
 export const ChatBottomPanel = ({
   hasMessages,
   centerInputOnEmpty,
+  visualOffsetY,
   shouldShowInterruptionNotice,
   rateLimitMessage,
   isRateLimited,
@@ -39,6 +42,11 @@ export const ChatBottomPanel = ({
   const panelRef = useRef<HTMLDivElement | null>(null)
   const t = useI18n()
   const { sendAIShortcut } = useSendAIShortcut()
+  const containerStyle = getBottomPanelContainerStyle({
+    centerInputOnEmpty,
+    hasMessages,
+    visualOffsetY,
+  })
 
   useLayoutEffect(() => {
     const element = panelRef.current
@@ -83,10 +91,9 @@ export const ChatBottomPanel = ({
       className={cn(
         "absolute z-10 mx-auto duration-500 ease-in-out",
         "inset-x-0 bottom-0 max-w-4xl px-4 pb-4",
-        centerInputOnEmpty &&
-          !hasMessages &&
-          "bottom-1/2 translate-y-[calc(100%+1rem)] duration-200",
+        centerInputOnEmpty && !hasMessages && "bottom-1/2 duration-200",
       )}
+      style={containerStyle}
     >
       {shouldShowInterruptionNotice && (
         <m.div

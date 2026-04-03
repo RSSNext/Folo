@@ -4,44 +4,34 @@ import {
   TooltipTrigger,
 } from '~/components/ui/tooltip'
 
-export type Reader = {
-  id: string
-  name: string
-  avatar: string
-}
-
 export type EntryDetail = {
   title: string
+  source: {
+    name: string
+    host: string
+    icon: string
+  }
   author: {
     name: string
-    avatar: string
-    email: string
-    date: string
+    role: string
+    dateLabel: string
+    readingTime: string
   }
-  readers: Reader[]
 }
 
 export const ENTRY_DETAIL: EntryDetail = {
-  title: 'Categorization Your Dependencies',
-  author: {
-    name: 'Anthony Fu',
-    avatar:
-      'https://webp.follow.is?url=https%3A%2F%2Fantfu.me%2Favatar.png&width=32&height=32',
-    email: 'hi@antfu.me',
-    date: 'Apr 28, 2025 10:00 PM',
+  title: 'Building effective agents for production teams',
+  source: {
+    name: 'Anthropic',
+    host: 'anthropic.com',
+    icon: 'https://icons.folo.is/anthropic.com',
   },
-  readers: [
-    {
-      id: '1',
-      name: 'Hyoban',
-      avatar: 'https://avatars-githubusercontent-webp.webp.se/u/38493346?v=4',
-    },
-    {
-      id: '2',
-      name: 'Innei',
-      avatar: 'https://avatars-githubusercontent-webp.webp.se/u/41265413?v=4',
-    },
-  ],
+  author: {
+    name: 'Anthropic Research',
+    role: 'Agent systems guide',
+    dateLabel: 'Updated recently',
+    readingTime: '8 min read',
+  },
 }
 
 type ToolInvocation = {
@@ -53,16 +43,16 @@ type ToolInvocation = {
 export const AI_TOOL_INVOCATION: ToolInvocation = {
   toolName: 'getEntry',
   input: `{
-  "id": "139726960627129344",
+  "id": "184203101927882752",
   "mode": "detailed"
 }`,
   output: `{
-  "id": "139726960627129344",
-  "title": "Categorize Your Dependencies",
-  "url": "https://antfu.me/posts/categorize-deps",
-  "author": "hi@antfu.me (Anthony Fu)",
-  "publishedAt": "2025-04-28T14:00:00.612Z",
-  "feedId": "39296322994753536",
+  "id": "184203101927882752",
+  "title": "Building effective agents for production teams",
+  "url": "https://www.anthropic.com/news",
+  "author": "Anthropic Research",
+  "publishedAt": "2026-03-14T09:30:00.000Z",
+  "feedId": "249743826993702912",
   "subtitles": null,
   "transcription": null
 }
@@ -114,9 +104,10 @@ export type AI_CHAT_STEP = UserStep | AssistantStep | ActionStep
 export const AI_SUMMARY_STEPS: AI_CHAT_STEP[] = [
   {
     role: 'user',
-    message: 'What talking about this article, and how to solve this problem?',
+    message:
+      'What changed here, and what should an engineering team actually do next?',
     context: {
-      current: 'Categorization Your Dependencies',
+      current: 'Building effective agents for production teams',
       className: 'text-orange',
       icon: <i className="size-2.5 i-mingcute-star-fill" />,
     },
@@ -130,66 +121,43 @@ export const AI_SUMMARY_STEPS: AI_CHAT_STEP[] = [
   {
     role: 'assistant',
     type: 'reasoning',
-    text: "**Summarizing actionable steps**\n\nI need to provide a summary of the article's main points and how to address the identified problem effectively. First, I’ll focus on categorizing dependencies using pnpm catalogs and utilizing tooling support such as a VSCode extension. The actionable steps should include setting up pnpm-workspace.yaml, defining categories like test and build, and running audits. My step-by-step plan involves mapping categories, adding catalogs, updating dependencies, installing...",
+    text: '**Finding the operational delta**\n\nThe article is not pitching agents as a prompt trick. It is framing production agents as a systems problem: tool boundaries, state, evals, retry policy, and approval gates matter more than flashy demos. I should separate platform claims from the concrete engineering steps a team would need to ship safely.',
   },
   {
     role: 'assistant',
     type: 'reasoning',
-    text: "**Updating CI and Tooling**\n\nI need to detail steps for updating CI and tooling, including using taze and eslint-plugin-pnpm, along with adjusting the build configuration to reference catalogs. I’ll run tests and builds while modifying optimizeDeps in Vite/unbuild using readWorkspaceYaml. Additionally, I should verify with node-modules-inspector and implement a gradual rollout by migrating packages in phases while monitoring for dependency diffs and vulnerabilities.\n\nIt's important to note the b...",
+    text: '**Reducing it to a production checklist**\n\nThe strongest through-line is that agent quality comes from narrower loops and better observability. The answer should emphasize explicit tool contracts, structured outputs, test cases for failure modes, and human review at expensive or risky steps.',
   },
   {
     role: 'assistant',
     type: 'reasoning',
-    text: "**Providing Actionable Steps**\n\nI want to include actionable steps and command snippets for using pnpm, such as in pnpm-workspace.yaml and package.json, while avoiding heavy formatting. It’s okay to mention the entry instead of repeating full code, but I’ll provide enough snippets to be helpful. \n\nI’ll ensure to use Markdown effectively, including inline citations when mentioning the pnpm catalogs feature. The goal is to be concise while offering clear, actionable steps. I'll also mention releva...",
+    text: '**Shaping the final response**\n\nI can keep this useful by translating the article into three layers: what the article claims, what signals are worth keeping, and what a team should instrument before calling an agent "production-ready."',
   },
   {
     role: 'action',
     type: 'set-title',
-    title: 'PNPM Catalogs for Dependency Categorization in Monorepos',
+    title: 'How to move AI agents from demos to production',
   },
   {
     role: 'assistant',
     type: 'markdown',
-    message: `Short summary — what the article says
-- The post argues that the simple split between "dependencies" and "devDependencies" no longer captures why a package is installed (build tool, lint/test, runtime, IDE types, inlined into bundles, etc.). Instead, it proposes categorizing dependencies (test, lint, build, frontend, backend, types, inlined, prod, …) and shows how pnpm’s new “catalogs” (including named catalogs) let you express those categories centrally and consistently in a monorepo. It also shows practical tooling and UX improvements (VS Code lens, taze, eslint-plugin-pnpm, node-modules-inspector) to make catalogs workable in real projects.
+    message: `Short summary
+- The article argues that strong agent products come from tighter system design, not just stronger prompts. Teams are getting better results by shrinking the loop: clear tool contracts, explicit handoffs, structured outputs, and smaller scopes per step.
 
-Why this matters (the problem)
-- package.json’s two buckets are overloaded and ambiguous: the same package in devDependencies could mean very different things in different contexts (types-only, test-only, inlined, etc.).
-- That ambiguity makes reviews, upgrades, bundling, and tooling behavior harder to reason about.
-- Moving version/category metadata into a centralized catalog can make dependency intent explicit and enable better tooling decisions.
+What matters
+- The main bottleneck is reliability. Once an agent can call tools or trigger side effects, every unclear interface becomes an operational bug.
+- Evaluation is part of the product. Teams need regression suites for tool use, refusal behavior, retries, latency, and cost.
+- Human approval still matters at high-risk steps. Good production systems use agents to draft, classify, and route work before they let them act.
 
-How to solve it — practical, runnable plan
-1. Pick categories you need
-   - Examples: test, lint, build, script, frontend, backend, types, inlined, prod. Decide what each means for your project.
+What to do next
+1. Start with a narrow task and one or two tools.
+2. Force structured outputs instead of free-form text.
+3. Log every tool call, retry, and failure mode.
+4. Add evals before expanding scope.
+5. Put human review in front of expensive, external, or irreversible actions.
 
-2. Add catalogs to your pnpm workspace
-   - In pnpm-workspace.yaml, add a catalog or named catalogs with the package versions you want to manage centrally. (The article shows examples.)
-
-3. Reference catalogs from package.json
-   - Replace explicit versions with catalog references, e.g. "vue": "catalog:frontend" or "vue": "catalog:". PNPM resolves them at install time.
-
-4. Install and validate
-   - Run pnpm install. Use the workspace tools to confirm the resolved versions match expectations.
-
-5. Add UX/tooling so the change is manageable
-   - Install PNPM Catalog Lens (VS Code extension) to show resolved versions inline.
-   - Use node-modules-inspector to visualize catalog origins.
-   - Use eslint-plugin-pnpm to enforce catalog usage and auto-fix where applicable.
-
-6. Integrate catalogs into build & dev tooling
-   - Read catalogs from pnpm-workspace.yaml in tool configs (Vite optimizeDeps, unbuild externals/inline lists) so bundlers/optimizers act on the new categories instead of relying on dependencies/devDependencies.
-
-7. Automate version bumps & reviews
-   - Use tools that understand catalogs (taze, or CI scripts) to check and bump versions centrally so PRs show the actual version changes in one place (pnpm-workspace.yaml).
-
-8. Roll out gradually and monitor
-   - Migrate a small package or one category first, run CI/tests, confirm bundling and runtime behavior, then continue. Keep comments in pnpm-workspace.yaml to explain decisions to teammates.
-
-Benefits and caveats
-- Benefits: clearer intent per package, centralized version control, easier upgrade/review, potential to inform bundlers/linters, better context for vulnerability risk.
-- Caveats: catalogs are pnpm-specific (and target monorepos best), package.json loses inline version numbers (so tooling is needed to surface resolved versions), ecosystem/tooling is still evolving—expect to add integrations.
-
-If you want, you can follow the article’s examples for the pnpm-workspace.yaml and the package.json changes and adopt the VS Code PNPM Catalog Lens + eslint-plugin-pnpm to make migration smooth.
+Bottom line
+- The winning pattern is not “one model does everything.” It is a measured workflow where the model reasons inside clear boundaries and the product team can inspect every step.
 `,
   },
 ]

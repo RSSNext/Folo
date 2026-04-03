@@ -11,6 +11,7 @@ import { NativePressable } from "@/src/components/ui/pressable/NativePressable"
 import { Text } from "@/src/components/ui/typography/Text"
 import { RightCuteFiIcon } from "@/src/icons/right_cute_fi"
 import { useNavigation } from "@/src/lib/navigation/hooks"
+import { useReadableContainerStyle } from "@/src/lib/responsive"
 import { selectFeed } from "@/src/modules/screen/atoms"
 import { FeedScreen } from "@/src/screens/(stack)/feeds/[feedId]/FeedScreen"
 import { useColor } from "@/src/theme/colors"
@@ -47,12 +48,16 @@ export const CategoryGrouped = memo(
     }, [rotateSharedValue])
     const secondaryLabelColor = useColor("label")
     const navigation = useNavigation()
+    const readableContainerStyle = useReadableContainerStyle(760, GROUPED_LIST_MARGIN)
     return (
       <>
         <View
-          style={{
-            marginHorizontal: GROUPED_LIST_MARGIN,
-          }}
+          style={[
+            readableContainerStyle,
+            {
+              marginHorizontal: GROUPED_LIST_MARGIN,
+            },
+          ]}
         >
           <SubscriptionFeedCategoryContextMenu
             feedIds={subscriptionIds}

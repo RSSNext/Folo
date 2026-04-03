@@ -23,6 +23,7 @@ import { toggleEntryReadability } from "~/hooks/biz/useEntryActions"
 import { navigateEntry } from "~/hooks/biz/useNavigateEntry"
 import { getRouteParams } from "~/hooks/biz/useRouteParams"
 import { copyToClipboard } from "~/lib/clipboard"
+import { exportPageAsPdf } from "~/lib/export"
 import { markAllByRoute } from "~/modules/entry-column/hooks/useMarkAll"
 import { useGalleryModal } from "~/modules/entry-content/hooks"
 import { playEntryTts } from "~/modules/player/entry-tts"
@@ -177,7 +178,9 @@ export const useRegisterEntryCommands = () => {
             return
           }
 
-          window.print()
+          void exportPageAsPdf({ title: entry.title || entry.url || undefined }).catch(() => {
+            toast.error("Failed to export as pdf", { duration: 3000 })
+          })
         },
       },
       {

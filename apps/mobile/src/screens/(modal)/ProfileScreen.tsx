@@ -381,9 +381,9 @@ const MaybeSwipeable = ({ id, children }: { id: string; children: React.ReactNod
         {
           onPress: () => {
             // unsubscribe
-            Alert.alert("Unsubscribe?", "This will remove the feed from your subscriptions", [
+            Alert.alert(t("feed.unfollow.confirm_title"), t("feed.unfollow.confirm_description"), [
               {
-                text: "Cancel",
+                text: t("words.cancel", { ns: "common" }),
                 style: "cancel",
               },
               {
