@@ -3,6 +3,7 @@ import { describe, expect, it, vi } from "vitest"
 
 import {
   buildManagedAuthCookieHeader,
+  buildManagedAuthCookieHeaderFromSetCookieHeader,
   getManagedAuthCookieNames,
   persistManagedAuthCookiesFromSetCookieHeader,
 } from "./auth-cookies"
@@ -23,6 +24,19 @@ describe("auth cookies", () => {
 
   it("includes the two-factor cookie in managed names", () => {
     expect(getManagedAuthCookieNames()).toContain("two_factor")
+  })
+
+  it("keeps prefixed two-factor cookies from a set-cookie header", () => {
+    const header = buildManagedAuthCookieHeaderFromSetCookieHeader(
+      [
+        "__Secure-better-auth.two_factor=signed-two-factor; Path=/; HttpOnly; Secure; SameSite=Lax",
+        "better-auth.last_used_login_method=email; Path=/; HttpOnly; Secure; SameSite=Lax",
+      ].join(", "),
+    )
+
+    expect(header).toBe(
+      "__Secure-better-auth.two_factor=signed-two-factor; better-auth.last_used_login_method=email",
+    )
   })
 
   it("persists managed auth cookies and removes expired ones from a set-cookie header", async () => {

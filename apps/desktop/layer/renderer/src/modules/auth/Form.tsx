@@ -93,7 +93,15 @@ const normalizeElectronAuthResult = (result: unknown): ElectronAuthResult => {
     return {}
   }
 
-  return result as ElectronAuthResult
+  const normalized = result as ElectronAuthResult & Record<string, unknown>
+  if ("data" in normalized || "error" in normalized) {
+    return normalized
+  }
+
+  return {
+    data: normalized,
+    error: null,
+  }
 }
 
 const setElectronSessionToken = async (token: string) => {
