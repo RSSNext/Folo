@@ -1,8 +1,14 @@
+import { Agent, request } from "node:http"
+
 import { afterEach, describe, expect, it, vi } from "vitest"
 
 import { DEFAULT_VALUES } from "../../../packages/internal/shared/src/env.common"
-import { resolveBrowserLoginToken, resolveCLILoginUrl } from "./browser-login"
+import { loginWithBrowser, resolveBrowserLoginToken, resolveCLILoginUrl } from "./browser-login"
 import { CLIError } from "./output"
+
+vi.mock("node:child_process", () => ({
+  spawnSync: vi.fn(() => ({ status: 0 })),
+}))
 
 afterEach(() => {
   vi.restoreAllMocks()
@@ -50,6 +56,91 @@ describe("browser login helpers", () => {
     expect(() => resolveCLILoginUrl("not-a-url", "http://127.0.0.1:3333/callback")).toThrowError(
       /Invalid API URL/,
     )
+  })
+
+  it("resolves browser login without waiting on a kept-alive callback socket", async () => {
+    const fetchMock = vi.fn().mockResolvedValue(
+      new Response(
+        JSON.stringify({
+          session: { token: "session-token" },
+          user: { id: "user-1" },
+        }),
+        {
+          status: 200,
+          headers: { "content-type": "application/json" },
+        },
+      ),
+    )
+    vi.stubGlobal("fetch", fetchMock)
+
+    let loginUrl: string | undefined
+    const loginPromise = loginWithBrowser({
+      apiUrl: DEFAULT_VALUES.PROD.API_URL,
+      timeoutMs: 1_000,
+      onStatus: (message) => {
+        const prefix = "Open this URL to sign in: "
+        if (message.startsWith(prefix)) {
+          loginUrl = message.slice(prefix.length)
+        }
+      },
+    })
+
+    await vi.waitFor(() => {
+      expect(loginUrl).toBeTruthy()
+    })
+
+    const callbackUrl = new URL(loginUrl!).searchParams.get("cli_callback")
+    expect(callbackUrl).toBeTruthy()
+
+    const callbackRequestUrl = new URL(callbackUrl!)
+    callbackRequestUrl.searchParams.set("token", "one-time-token")
+
+    const agent = new Agent({ keepAlive: true })
+
+    try {
+      const response = await new Promise<{ body: string; connectionHeader?: string }>(
+        (resolve, reject) => {
+          const req = request(
+            callbackRequestUrl,
+            {
+              agent,
+              headers: {
+                Connection: "keep-alive",
+              },
+            },
+            (res) => {
+              let body = ""
+              res.setEncoding("utf8")
+              res.on("data", (chunk) => {
+                body += chunk
+              })
+              res.on("end", () => {
+                const connectionHeader = Array.isArray(res.headers.connection)
+                  ? res.headers.connection[0]
+                  : res.headers.connection
+                resolve({ body, connectionHeader })
+              })
+            },
+          )
+
+          req.on("error", reject)
+          req.end()
+        },
+      )
+
+      expect(response.body).toContain("Folo CLI login complete")
+      expect(response.connectionHeader).toBe("close")
+
+      await expect(loginPromise).resolves.toEqual(
+        expect.objectContaining({
+          token: "session-token",
+          callbackUrl,
+          loginUrl,
+        }),
+      )
+    } finally {
+      agent.destroy()
+    }
   })
 
   it("exchanges one-time token for a session token", async () => {
