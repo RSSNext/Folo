@@ -1,18 +1,24 @@
+name: "\u2601\ufe0f Deploy Landing to Cloudflare"
+
 on:
   push:
     branches: [main, dev]
+  workflow_dispatch:
+    inputs:
+      confirm_production_deploy:
+        description: Deploy the selected branch to production (folo.is)
+        required: true
+        default: false
+        type: boolean
 
-name: ☁️ Deploy to Cloudflare Workers
 concurrency:
-  group: ${{ github.workflow }}-${{ github.ref }}
+  group: ${{ github.workflow }}-${{ github.event_name == 'workflow_dispatch' && format('manual-prod-{0}', github.ref) || github.ref }}
   cancel-in-progress: true
+
 jobs:
   deploy:
-    name: Build & Deploy
+    name: Build & Deploy Landing Worker
     runs-on: ubuntu-latest
-    strategy:
-      matrix:
-        node-version: [lts/*]
     steps:
       - name: Checkout code
         uses: actions/checkout@v6
@@ -32,39 +38,40 @@ jobs:
 
       - uses: pnpm/action-setup@v4
 
-      - name: Use Node.js ${{ matrix.node-version }}
+      - name: Use Node.js LTS
         uses: actions/setup-node@v6
         with:
-          node-version: ${{ matrix.node-version }}
+          node-version: lts/*
           cache: "pnpm"
 
       - name: Install dependencies
         run: pnpm install
 
-      - name: Build desktop web (SPA)
-        run: pnpm exec turbo run Folo#build:web
+      - name: Resolve deployment target
+        id: target
+        run: |
+          if [[ "${{ github.event_name }}" == "workflow_dispatch" ]]; then
+            if [[ "${{ inputs.confirm_production_deploy }}" != "true" ]]; then
+              echo "Manual production deploy was not confirmed." >&2
+              exit 1
+            fi
 
-      - name: Build SSR Worker
-        working-directory: apps/ssr
-        run: pnpm run build:worker
+            echo "environment=prod" >> "$GITHUB_OUTPUT"
+            exit 0
+          fi
 
-      - name: Copy WASM file
-        run: cp node_modules/@resvg/resvg-wasm/index_bg.wasm apps/ssr/dist/worker/resvg.wasm
+          if [[ "${{ github.ref }}" == "refs/heads/dev" ]]; then
+            echo "environment=dev" >> "$GITHUB_OUTPUT"
+            exit 0
+          fi
+
+          echo "environment=prod" >> "$GITHUB_OUTPUT"
 
       - name: Build Landing Worker
         run: pnpm exec turbo run @follow/landing#cf:build
 
-      - name: Deploy to Cloudflare (dev)
-        if: github.ref == 'refs/heads/dev'
-        uses: cloudflare/wrangler-action@v3
-        with:
-          apiToken: ${{ secrets.CLOUDFLARE_API_TOKEN }}
-          accountId: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
-          workingDirectory: apps/ssr
-          command: deploy --env dev
-
       - name: Deploy Landing to Cloudflare (dev)
-        if: github.ref == 'refs/heads/dev'
+        if: steps.target.outputs.environment == 'dev'
         uses: cloudflare/wrangler-action@v3
         with:
           apiToken: ${{ secrets.CLOUDFLARE_API_TOKEN }}
@@ -72,17 +79,8 @@ jobs:
           workingDirectory: apps/landing
           command: deploy --env dev --name landing-next-dev --routes landing.dev.folo.is/*
 
-      - name: Deploy to Cloudflare (prod)
-        if: github.ref == 'refs/heads/main'
-        uses: cloudflare/wrangler-action@v3
-        with:
-          apiToken: ${{ secrets.CLOUDFLARE_API_TOKEN }}
-          accountId: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
-          workingDirectory: apps/ssr
-          command: deploy
-
       - name: Deploy Landing to Cloudflare (prod)
-        if: github.ref == 'refs/heads/main'
+        if: steps.target.outputs.environment == 'prod'
         uses: cloudflare/wrangler-action@v3
         with:
           apiToken: ${{ secrets.CLOUDFLARE_API_TOKEN }}

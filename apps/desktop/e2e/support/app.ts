@@ -16,6 +16,30 @@ export const injectRecaptchaToken = async (page: Page, env?: DesktopE2EEnv) => {
     (nextEnv) => {
       window.__FOLO_E2E_RECAPTCHA_TOKEN__ = "e2e-token"
 
+      const originalFetch = globalThis.fetch.bind(globalThis)
+      const authEndpoints = [
+        "/better-auth/sign-in/email",
+        "/better-auth/sign-up/email",
+        "/better-auth/forget-password",
+      ]
+
+      globalThis.fetch = async (input, init) => {
+        const request = input instanceof Request ? input : new Request(input, init)
+        const requestURL = new URL(request.url, globalThis.location.origin)
+        const shouldInjectToken = authEndpoints.some((path) => requestURL.pathname.includes(path))
+
+        if (!shouldInjectToken) {
+          return originalFetch(input, init)
+        }
+
+        const headers = new Headers(request.headers)
+        if (!headers.has("x-token")) {
+          headers.set("x-token", "r3:e2e-token")
+        }
+
+        return originalFetch(new Request(request, { headers }))
+      }
+
       if (!nextEnv) {
         return
       }
@@ -549,10 +573,14 @@ export const expectOnboardingFeedUnsubscribed = async (
 export const expectTimelineSwitchAndEntryReadFlow = async (page: Page) => {
   await returnToMainShell(page)
 
-  await page.getByTestId("timeline-tab-videos").click()
-  await expect.poll(async () => page.locator("[data-entry-id]").count()).toBe(0)
+  const videosTab = page.getByTestId("timeline-tab-videos")
+  await videosTab.click()
+  await expect(videosTab).toHaveAttribute("aria-pressed", "true", { timeout: 15_000 })
+  await expect.poll(async () => page.locator("[data-entry-id]").count()).toBeGreaterThan(0)
 
-  await page.getByTestId("timeline-tab-articles").click()
+  const articlesTab = page.getByTestId("timeline-tab-articles")
+  await articlesTab.click()
+  await expect(articlesTab).toHaveAttribute("aria-pressed", "true", { timeout: 15_000 })
   await expect.poll(async () => page.locator("[data-entry-id]").count()).toBeGreaterThan(0)
 
   const unreadOnboardingEntry = page

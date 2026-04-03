@@ -10,7 +10,7 @@ import { describe, expect, it } from "vitest"
 const execFileAsync = promisify(execFile)
 const cliPath = resolve(process.cwd(), "dist/index.js")
 const testToken = process.env.FOLO_TEST_TOKEN
-const isolatedHome = mkdtempSync(resolve(tmpdir(), "folo-cli-test-"))
+const isolatedHome = mkdtempSync(resolve(tmpdir(), "folocli-test-"))
 
 type CLIExecution = {
   code: number
@@ -64,7 +64,7 @@ describe("cli e2e", () => {
   })
 
   it.runIf(Boolean(testToken))("can fetch session with test token", async () => {
-    const result = await runCLI(["--token", testToken!, "auth", "whoami"])
+    const result = await runCLI(["--token", testToken!, "whoami"])
     expect(result.code).toBe(0)
 
     const payload = JSON.parse(result.stdout) as {

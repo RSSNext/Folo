@@ -12,6 +12,7 @@ import { titleCase } from "title-case"
 import { Text } from "@/src/components/ui/typography/Text"
 import { CheckFilledIcon } from "@/src/icons/check_filled"
 import { MingcuteRightLine } from "@/src/icons/mingcute_right_line"
+import { useIsTabletLayout } from "@/src/lib/responsive"
 import { accentColor, useColor } from "@/src/theme/colors"
 
 import { PlatformActivityIndicator } from "../loading/PlatformActivityIndicator"
@@ -23,6 +24,8 @@ import {
   GROUPED_SECTION_TOP_MARGIN,
 } from "./constants"
 import { GroupedInsetListCardItemStyle } from "./GroupedInsetListCardItemStyle"
+
+const GROUPED_TABLET_MAX_WIDTH = 760
 
 interface GroupedInsetListCardProps {
   showSeparator?: boolean
@@ -53,10 +56,16 @@ export const GroupedInsetListCard: FC<
     () => React.Children.toArray(children).filter(Boolean),
     [children],
   )
+  const isTablet = useIsTabletLayout()
   return (
     <View
       {...props}
       style={[
+        isTablet && {
+          width: "100%",
+          maxWidth: GROUPED_TABLET_MAX_WIDTH,
+          alignSelf: "center",
+        },
         {
           marginHorizontal: GROUPED_LIST_MARGIN,
         },
@@ -106,9 +115,13 @@ export const GroupedInsetListSectionHeader: FC<{
   label: string
   marginSize?: "normal" | "small"
 }> = ({ label, marginSize = "normal" }) => {
+  const isTablet = useIsTabletLayout()
   return (
     <View
       style={{
+        width: isTablet ? "100%" : undefined,
+        maxWidth: isTablet ? GROUPED_TABLET_MAX_WIDTH : undefined,
+        alignSelf: isTablet ? "center" : undefined,
         paddingHorizontal: GROUPED_LIST_ITEM_PADDING,
         marginHorizontal: GROUPED_LIST_MARGIN,
         marginTop:

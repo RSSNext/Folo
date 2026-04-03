@@ -10,9 +10,13 @@ import { SettingSectionTitle } from "../section"
 
 export const SettingCli = () => {
   interface CliInstallStatus {
-    installed: boolean
-    installPath: string | null
-    cliSourceAvailable: boolean
+    connected: boolean
+    configPath: string
+    hasDesktopSession: boolean
+    installCommand: string
+    loginCommand: string
+    npxAvailable: boolean
+    packageName: string
   }
   const { t } = useTranslation("settings")
   const [status, setStatus] = useState<CliInstallStatus | null>(null)
@@ -72,9 +76,9 @@ export const SettingCli = () => {
 
         {status && (
           <div className="space-y-3">
-            <div className="flex items-center gap-2">
+            <div className="flex flex-wrap items-center gap-2">
               <span className="text-sm font-medium">Status:</span>
-              {status.installed ? (
+              {status.connected ? (
                 <span className="inline-flex items-center gap-1 rounded-full bg-green/10 px-2 py-0.5 text-xs text-green">
                   <i className="i-mingcute-check-line" />
                   {t("cli.installed")}
@@ -84,31 +88,68 @@ export const SettingCli = () => {
                   {t("cli.not_installed")}
                 </span>
               )}
+
+              <span
+                className={
+                  status.npxAvailable
+                    ? "inline-flex items-center gap-1 rounded-full bg-blue/10 px-2 py-0.5 text-xs text-blue"
+                    : "inline-flex items-center gap-1 rounded-full bg-orange/10 px-2 py-0.5 text-xs text-orange"
+                }
+              >
+                {status.npxAvailable ? t("cli.runtime_ready") : t("cli.runtime_missing")}
+              </span>
             </div>
 
-            {status.installed && status.installPath && (
+            <div className="grid gap-3">
+              <div className="rounded-xl border border-fill-secondary bg-fill-quaternary/60 p-3">
+                <div className="mb-1 text-xs font-medium uppercase tracking-wide text-text-secondary">
+                  {t("cli.package")}
+                </div>
+                <code className="text-sm font-medium">{status.packageName}</code>
+              </div>
+
+              <div className="rounded-xl border border-fill-secondary bg-fill-quaternary/60 p-3">
+                <div className="mb-1 text-xs font-medium uppercase tracking-wide text-text-secondary">
+                  {t("cli.global_install")}
+                </div>
+                <code className="block break-all text-sm">{status.installCommand}</code>
+              </div>
+
+              <div className="rounded-xl border border-fill-secondary bg-fill-quaternary/60 p-3">
+                <div className="mb-1 text-xs font-medium uppercase tracking-wide text-text-secondary">
+                  {t("cli.desktop_sync")}
+                </div>
+                <code className="block break-all text-sm">{status.loginCommand}</code>
+              </div>
+            </div>
+
+            <div className="flex items-center gap-2">
               <div className="flex items-center gap-2">
                 <span className="text-sm font-medium">{t("cli.path")}:</span>
                 <code className="rounded bg-fill-quaternary px-2 py-0.5 text-xs">
-                  {status.installPath}
+                  {status.configPath}
                 </code>
               </div>
-            )}
+            </div>
 
-            {!status.cliSourceAvailable && (
+            {!status.npxAvailable && (
               <p className="text-sm text-orange-500">{t("cli.not_available")}</p>
             )}
 
+            {!status.hasDesktopSession && (
+              <p className="text-sm text-text-secondary">{t("cli.require_login")}</p>
+            )}
+
             <div className="flex gap-2">
-              {!status.installed ? (
-                <Button
-                  onClick={handleInstall}
-                  disabled={loading || !status.cliSourceAvailable}
-                  isLoading={loading}
-                >
-                  {t("cli.install")}
-                </Button>
-              ) : (
+              <Button
+                onClick={handleInstall}
+                disabled={loading || !status.npxAvailable || !status.hasDesktopSession}
+                isLoading={loading}
+              >
+                {t("cli.install")}
+              </Button>
+
+              {status.connected && (
                 <Button
                   variant="outline"
                   onClick={handleUninstall}

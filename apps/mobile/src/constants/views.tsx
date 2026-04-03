@@ -1,5 +1,6 @@
 import type { ViewDefinition as ViewDefinitionBase } from "@follow/constants"
 import { FeedViewType, getViewList } from "@follow/constants"
+import type { FC } from "react"
 
 import { AnnouncementCuteFiIcon } from "../icons/announcement_cute_fi"
 import { BubbleCuteFiIcon } from "../icons/bubble_cute_fi"
@@ -10,7 +11,7 @@ import { ThoughtCuteFiIcon } from "../icons/thought_cute_fi"
 import { VideoCuteFiIcon } from "../icons/video_cute_fi"
 
 interface ViewDefinitionExtended {
-  icon: React.FC<{ color?: string; height?: number; width?: number }>
+  icon: FC<{ color?: string; height?: number; width?: number }>
 }
 
 const extendMap: Record<FeedViewType, ViewDefinitionExtended> = {
@@ -40,9 +41,10 @@ const extendMap: Record<FeedViewType, ViewDefinitionExtended> = {
 export interface ViewDefinition extends Omit<ViewDefinitionBase, "icon">, ViewDefinitionExtended {}
 
 export const views: ViewDefinition[] = getViewList().map((view) => {
-  const extendedView = extendMap[view.view]
+  const extendedView = extendMap[view.view]!
+  const { icon: _icon, ...restView } = view
   return {
-    ...view,
+    ...restView,
     ...extendedView,
-  }
+  } as ViewDefinition
 })

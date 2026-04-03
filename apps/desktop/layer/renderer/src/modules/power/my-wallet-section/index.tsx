@@ -36,9 +36,14 @@ export const MyWalletSection = ({ className }: { className?: string }) => {
     return <CreateWallet />
   }
   return (
-    <div className={cn(className)}>
+    <div
+      className={cn(
+        "rounded-2xl border border-fill-secondary bg-material-ultra-thin p-5 shadow-sm",
+        className,
+      )}
+    >
       <SettingSectionTitle title={t("wallet.balance.title")} margin="compact" />
-      <div className="mb-2 flex items-center justify-between">
+      <div className="flex items-start justify-between gap-4">
         <div>
           <div className="flex items-center gap-1">
             <Balance className="text-xl font-bold text-folo">
@@ -46,7 +51,7 @@ export const MyWalletSection = ({ className }: { className?: string }) => {
             </Balance>
           </div>
           <Tooltip>
-            <TooltipTrigger className="mt-1 block">
+            <TooltipTrigger className="mt-2 block">
               <div className="flex flex-row items-center gap-x-2 text-xs">
                 <span className="flex items-center gap-1 text-left">
                   {t("wallet.balance.withdrawable")} <i className="i-mgc-question-cute-re" />

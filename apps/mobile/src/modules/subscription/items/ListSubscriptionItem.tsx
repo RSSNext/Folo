@@ -15,6 +15,7 @@ import { ItemPressableStyle } from "@/src/components/ui/pressable/enum"
 import { ItemPressable } from "@/src/components/ui/pressable/ItemPressable"
 import { Text } from "@/src/components/ui/typography/Text"
 import { useNavigation } from "@/src/lib/navigation/hooks"
+import { useReadableContainerStyle } from "@/src/lib/responsive"
 import { FeedScreen } from "@/src/screens/(stack)/feeds/[feedId]/FeedScreen"
 
 import { SubscriptionListItemContextMenu } from "../../context-menu/lists"
@@ -30,12 +31,13 @@ export const ListSubscriptionItem = memo(({ id, isFirst, isLast }: ListSubscript
   const subscription = useSubscriptionById(id)
   const unreadCount = useUnreadByListId(id)
   const navigation = useNavigation()
+  const readableContainerStyle = useReadableContainerStyle(760, GROUPED_LIST_MARGIN)
   if (!list) return null
   return (
     <>
       <Animated.View
         exiting={FadeOutUp}
-        style={styles.container}
+        style={[styles.container, readableContainerStyle]}
         className={cn("overflow-hidden", {
           "rounded-t-[10px]": isFirst,
           "rounded-b-[10px]": isLast,

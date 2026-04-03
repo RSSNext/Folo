@@ -54,6 +54,18 @@ const commonHeaders = {
   "Cache-Control": "no-store",
 }
 
+export const createAuthRequestOriginHeaders = (webUrl: string): Record<string, string> => {
+  try {
+    const { origin } = new URL(webUrl)
+    return {
+      Origin: origin,
+      Referer: origin,
+    }
+  } catch {
+    return {}
+  }
+}
+
 enum DesktopPlatform {
   Desktop = "desktop",
   DesktopWeb = "desktop/web",

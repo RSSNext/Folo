@@ -1,6 +1,7 @@
 import { whoamiQueryKey } from "@follow/store/user/hooks"
 import { useMutation } from "@tanstack/react-query"
 import { useRef } from "react"
+import { useTranslation } from "react-i18next"
 import { KeyboardAvoidingView, View } from "react-native"
 import type { OtpInputRef } from "react-native-otp-entry"
 import { OtpInput } from "react-native-otp-entry"
@@ -24,6 +25,7 @@ const isAuthCodeValid = (code: string) => {
 export const TwoFASetting: NavigationControllerView<{
   totpURI: string
 }> = ({ totpURI }) => {
+  const { t } = useTranslation("settings")
   const label = useColor("label")
   const tertiaryLabel = useColor("tertiaryLabel")
   const navigation = useNavigation()
@@ -40,17 +42,19 @@ export const TwoFASetting: NavigationControllerView<{
       })
     },
     onError(error) {
-      toast.error(`Failed to verify: ${error.message}`)
+      toast.error(`${t("profile.two_factor.verify_failed")}: ${error.message}`)
     },
     onSuccess() {
       navigation.back()
-      toast.success("2FA enabled!")
+      toast.success(t("profile.two_factor.enabled"))
     },
   })
   const otpInputRef = useRef<OtpInputRef>(null)
   return (
     <KeyboardAvoidingView behavior="padding">
-      <SafeNavigationScrollView Header={<NavigationBlurEffectHeaderView title="Setting 2FA" />}>
+      <SafeNavigationScrollView
+        Header={<NavigationBlurEffectHeaderView title={t("profile.two_factor.setup.title")} />}
+      >
         <View className="my-8 items-center justify-center">
           <QRCode
             data={totpURI}
@@ -65,8 +69,7 @@ export const TwoFASetting: NavigationControllerView<{
 
         <View className="mx-12">
           <Text className="mb-8 text-sm text-secondary-label">
-            Scan the QR code above with your authenticator app, and then enter the 6-digit code
-            which will be displayed in your authenticator app.
+            {t("profile.two_factor.setup.description")}
           </Text>
         </View>
 

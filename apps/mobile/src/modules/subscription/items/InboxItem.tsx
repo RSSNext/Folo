@@ -13,6 +13,7 @@ import { ItemPressable } from "@/src/components/ui/pressable/ItemPressable"
 import { Text } from "@/src/components/ui/typography/Text"
 import { InboxCuteFiIcon } from "@/src/icons/inbox_cute_fi"
 import { useNavigation } from "@/src/lib/navigation/hooks"
+import { useReadableContainerStyle } from "@/src/lib/responsive"
 import { selectFeed } from "@/src/modules/screen/atoms"
 import { FeedScreen } from "@/src/screens/(stack)/feeds/[feedId]/FeedScreen"
 
@@ -25,13 +26,17 @@ export const InboxItem = memo(({ id, isFirst, isLast }: SubscriptionItemBaseProp
   const unreadCount = useUnreadById(id)
   const { colorScheme } = useColorScheme()
   const navigation = useNavigation()
+  const readableContainerStyle = useReadableContainerStyle(760, GROUPED_LIST_MARGIN)
   if (!subscription) return null
   return (
     <Animated.View
       exiting={FadeOutUp}
-      style={{
-        marginHorizontal: GROUPED_LIST_MARGIN,
-      }}
+      style={[
+        readableContainerStyle,
+        {
+          marginHorizontal: GROUPED_LIST_MARGIN,
+        },
+      ]}
       className={cn("overflow-hidden", {
         "rounded-t-[10px]": isFirst,
         "rounded-b-[10px]": isLast,

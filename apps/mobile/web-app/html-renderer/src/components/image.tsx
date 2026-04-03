@@ -37,10 +37,13 @@ export const MarkdownImage = (props: HTMLProps<"img">) => {
   return (
     <button
       type="button"
-      className="relative -mx-5 overflow-hidden bg-gray-300 dark:bg-neutral-800"
+      className="relative mx-auto block overflow-hidden bg-gray-300 dark:bg-neutral-800"
       style={{
         width: scaleWidth || undefined,
         height: scaleHeight || undefined,
+        marginLeft: "auto",
+        marginRight: "auto",
+        maxWidth: "100%",
       }}
       data-image-height={image?.height}
       data-image-width={image?.width}

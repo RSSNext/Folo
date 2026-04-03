@@ -1,7 +1,7 @@
 {
   "metadata": {
     "title": "Folo",
-    "description": "AI 驱动的 RSS 阅读器，具备上下文 AI，带来深度、无噪的阅读体验。",
+    "description": "AI RSS Reader，具备上下文 AI，带来深度、无噪的阅读体验。",
     "keywords": "Folo, AI RSS 阅读器, RSS, 摘要, 翻译, 研究, 开源, 内容发现, 信息浏览器"
   },
   "common": {
@@ -19,17 +19,21 @@
   },
   "landing": {
     "hero": {
-      "eyebrow": "AI 阅读器 · 洁净时间线",
-      "title": "<brand>Folo</brand> 是你的 <highlight>AI</highlight> 阅读器",
+      "eyebrow": "AI RSS Reader · 洁净时间线",
+      "title": "<brand>Folo</brand> 是你的 <highlight>AI RSS Reader</highlight>",
       "bodyLine1": "这款 AI 为你读遍全网，",
-      "bodyLine2": "穿透噪音，只呈现你真正关心的洞见。"
+      "bodyLine2": "穿透噪音，只呈现你真正关心的洞见。",
+      "humanTab": "I'm a Human",
+      "agentTab": "I'm an Agent",
+      "agentTitle": "Use Folo",
+      "agentBody": "Read <skill>https://api.folo.is/skill.md</skill> and follow the instructions to use Folo."
     },
     "features": {
       "headline": "在 AI 时代重新定义阅读",
       "discover": {
         "label": "发现",
         "titleStrong": "AI 从海量信息中筛选最佳来源",
-        "titleRest": "覆盖全网数百万站点，而你始终掌握选择权。"
+        "titleRest": "覆盖整个开放网络。"
       },
       "twin": {
         "label": "数字分身",
@@ -39,20 +43,50 @@
       "vibe": {
         "label": "氛围阅读",
         "titleStrong": "让 AI 读完所有内容。",
-        "titleRest": "放松沉浸，只在真正重要的洞察或信号出现时收到提醒。"
+        "titleRest": "只留下真正的信号。"
+      }
+    },
+    "trustedBy": {
+      "eyebrow": "已被这些团队采用",
+      "researchersEyebrow": "已被这些研究者采用",
+      "headline": "已经有团队在用 Folo。",
+      "body": "我们基于生产环境中的工作邮箱注册样本，整理出了这些已经开始使用 Folo 的公司。"
+    },
+    "metrics": {
+      "eyebrow": "生产环境快照",
+      "headline": "一眼看懂",
+      "body": "Folo 当前生产环境的数据规模。",
+      "footnote": "生产快照，近似值。",
+      "cards": {
+        "feeds": {
+          "label": "Feeds",
+          "detail": "覆盖博客、研究、Newsletter、社交账号以及更多开放网页来源。"
+        },
+        "entries": {
+          "label": "Entries",
+          "detail": "足够大的阅读图谱，能让 AI 做搜索、摘要与上下文关联。"
+        },
+        "readers": {
+          "label": "Readers",
+          "detail": "已经在用 Folo 追踪信息、同时避开噪音的人。"
+        },
+        "follows": {
+          "label": "Follows",
+          "detail": "此刻正在生产时间线里流转的订阅关系。"
+        }
       }
     },
     "builtOpen": {
       "title": "开放共建",
-      "body": "透明、可信，并由社区共同打造。快来浏览源码、提交 Issue，与我们一起塑造全新的阅读体验。",
-      "note": "基于现代原子化组件构建：无障碍、键盘友好、性能优先。欢迎 PR。"
+      "body": "开源、透明，而且容易验证。",
+      "note": "代码公开，欢迎 PR。"
     },
     "repoStats": {
       "githubStars": "GitHub 星标",
       "license": "许可证",
       "licenseValue": "GPL-3.0",
       "repository": "代码仓库",
-      "repoDescriptionMobile": "基于现代原子化组件构建：无障碍、键盘友好、性能优先。欢迎 PR。",
+      "repoDescriptionMobile": "代码公开，欢迎 PR。",
       "repoAriaLabel": "在 GitHub 打开 Folo 仓库"
     },
     "socialProof": {
@@ -67,9 +101,21 @@
     },
     "hero": {
       "title": "下载 <brand>Folo</brand>",
-      "subtitle": "在桌面端体验完整的 AI 阅读能力，或直接通过 Web 即刻使用。"
+      "subtitle": "在桌面端使用 AI RSS Reader，或直接在 Web 上打开。"
     },
     "platforms": {
+      "recommended": "为你的设备推荐",
+      "allPlatforms": "还可下载于",
+      "moreDownloads": "更多下载",
+      "lessDownloads": "收起",
+      "iOS": {
+        "label": "iOS",
+        "store": "App Store"
+      },
+      "Android": {
+        "label": "Android",
+        "store": "Google Play"
+      },
       "macOS": {
         "label": "macOS",
         "store": "Mac App Store"
@@ -87,6 +133,51 @@
         "subtitle": "无需安装，随时开启阅读"
       },
       "footer": "下载即表示你同意我们的 <terms>服务条款</terms> 和 <privacy>隐私政策</privacy>。"
+    }
+  },
+  "pricing": {
+    "metadata": {
+      "title": "价格",
+      "description": "选择适合你阅读工作流的 Folo 计划。"
+    },
+    "eyebrow": "Pricing",
+    "headline": "适合不同阅读工作流的计划",
+    "body": "先比较额度、AI 能力和工作流规模，再决定使用哪一档。",
+    "monthly": "月付",
+    "yearly": "年付",
+    "save": "省 {percent}%",
+    "month": "月",
+    "billedYearly": "按年计费 {total}",
+    "mostPopular": "最受欢迎",
+    "getStarted": "开始使用",
+    "table": {
+      "features": "功能"
+    },
+    "descriptions": {
+      "free": "适合开始使用，保持安静清爽的阅读体验。",
+      "basic": "适合希望提升订阅量和 AI 使用额度的个人读者。",
+      "plus": "适合每天依赖 AI 阅读和处理信息的重度用户。",
+      "pro": "适合大型资料库、重度工作流和最高额度需求。",
+      "admin": "适合大型资料库、重度工作流和最高额度需求。"
+    },
+    "features": {
+      "MAX_SUBSCRIPTIONS": "feed 订阅数",
+      "MAX_LISTS": "列表",
+      "MAX_INBOXES": "收件箱",
+      "MAX_ACTIONS": "自动动作",
+      "MAX_AI_ENTRY_SUMMARY_PER_DAY": "AI 摘要 / 天",
+      "MAX_AI_ENTRY_TRANSLATION_PER_DAY": "AI 翻译 / 天",
+      "MAX_AI_TEXT_TO_SPEECH_PER_DAY": "语音朗读 / 天",
+      "AI_MODEL_SELECTION": "AI 模型选择",
+      "AI_BRING_YOUR_OWN_KEY": "自带 API Key",
+      "BOOSTS": "加速次数",
+      "PRIORITY_SUPPORT": "优先支持",
+      "PRIVATE_SUBSCRIPTION": "私密订阅",
+      "MAX_RSSHUB_SUBSCRIPTIONS": "RSSHub 订阅数",
+      "SECURE_IMAGE_PROXY": "安全图片代理",
+      "INTEGRATION_SUPPORTED": "集成能力",
+      "AI_CREDIT": "AI Credits",
+      "MAX_AI_TASKS": "AI 任务"
     }
   }
 }

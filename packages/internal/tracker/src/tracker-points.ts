@@ -6,7 +6,13 @@ import { trackManager } from "./track-manager"
 export class TrackerPoints {
   // App
   identify(props: AuthUser) {
-    this.manager.identify(props)
+    this.manager.identify({
+      id: props.id,
+      name: props.name,
+      email: props.email,
+      image: props.image,
+      handle: props.handle,
+    })
     this.track(TrackerMapper.Identify, {
       id: props.id,
       name: props.name,

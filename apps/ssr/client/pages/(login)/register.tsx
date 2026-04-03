@@ -69,12 +69,14 @@ function RegisterForm() {
 
     try {
       const recaptchaToken = await requestRecaptchaToken("ssr_register")
-      await signUp.email({
-        email: values.email,
-        password: values.password,
-        name: values.email.split("@")[0]!,
-        callbackURL: "/",
-        fetchOptions: {
+      await signUp.email(
+        {
+          email: values.email,
+          password: values.password,
+          name: values.email.split("@")[0]!,
+          callbackURL: "/",
+        },
+        {
           onSuccess() {
             tracker.register({
               type: "email",
@@ -90,7 +92,7 @@ function RegisterForm() {
               }
             : undefined,
         },
-      })
+      )
     } finally {
       setIsSubmitting(false)
     }

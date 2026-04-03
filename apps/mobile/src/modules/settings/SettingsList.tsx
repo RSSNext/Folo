@@ -1,6 +1,7 @@
 import { UserRole } from "@follow/constants"
 import { useUserRole, useWhoami } from "@follow/store/user/hooks"
 import type { StatusConfigs as ServerConfigs } from "@follow-app/client-sdk"
+import i18next from "i18next"
 import type { FC } from "react"
 import { Fragment, useMemo } from "react"
 import { useTranslation } from "react-i18next"
@@ -203,15 +204,17 @@ const ActionGroupNavigationLinks: GroupNavigationLink[] = [
     onPress: () => {
       Dialog.show({
         id: "settings-sign-out-dialog",
-        title: "Confirm sign out",
+        title: i18next.t("profile.sign_out.confirm_title", { ns: "settings" }),
         content: (
           <View>
-            <Text className="text-label">Are you sure you want to sign out?</Text>
+            <Text className="text-label">
+              {i18next.t("profile.sign_out.confirm_message", { ns: "settings" })}
+            </Text>
           </View>
         ),
         variant: "destructive",
-        confirmText: "Sign out",
-        cancelText: "Cancel",
+        confirmText: i18next.t("titles.sign_out", { ns: "settings" }),
+        cancelText: i18next.t("words.cancel", { ns: "common" }),
         onConfirm: async () => {
           await signOut()
         },

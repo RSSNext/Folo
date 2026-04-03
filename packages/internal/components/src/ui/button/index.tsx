@@ -129,7 +129,7 @@ export const IconButton = ({
         styledButtonVariant({
           variant: "ghost",
         }),
-        "bg-accent/10 hover:bg-accent/20 active:bg-accent/30 dark:bg-accent/20 dark:hover:bg-accent/30 dark:active:bg-accent/40 group relative gap-2 px-4 transition-all duration-300",
+        "group relative gap-2 bg-accent/10 px-4 transition-all duration-300 hover:bg-accent/20 active:bg-accent/30 dark:bg-accent/20 dark:hover:bg-accent/30 dark:active:bg-accent/40",
         rest.className,
       )}
     >

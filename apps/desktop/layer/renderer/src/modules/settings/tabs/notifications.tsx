@@ -60,7 +60,8 @@ export const SettingNotifications = () => {
         <div className="flex items-center justify-between">
           <h3 className="text-sm font-semibold text-text">{t.settings("notifications.channel")}</h3>
           <span className="text-xs text-text-tertiary">
-            <span>{data?.data?.length || 0}</span> <span>{t.common("words.items")}</span>
+            <span>{data?.data?.length || 0}</span>{" "}
+            <span>{t.common("words.items", { count: data?.data?.length || 0 })}</span>
           </span>
         </div>
 
@@ -74,7 +75,12 @@ export const SettingNotifications = () => {
           {!isLoading && (!data?.data || data.data.length === 0) ? (
             <div className="flex flex-col items-center justify-center rounded-xl border border-dashed border-border bg-material-medium py-12">
               <i className="i-mgc-notification-cute-re mb-3 text-4xl text-text-quaternary" />
-              <p className="text-sm text-text-tertiary">No notification channels</p>
+              <p className="text-sm font-medium text-text">
+                {t.settings("notifications.empty.title")}
+              </p>
+              <p className="mt-1 max-w-sm px-6 text-center text-sm text-text-secondary">
+                {t.settings("notifications.empty.description")}
+              </p>
             </div>
           ) : (
             <ScrollArea.ScrollArea viewportClassName="max-h-[400px]">

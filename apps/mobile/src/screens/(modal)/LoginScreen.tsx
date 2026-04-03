@@ -1,5 +1,5 @@
 import { useWhoami } from "@follow/store/user/hooks"
-import { Fragment, useCallback, useEffect } from "react"
+import { useCallback, useEffect } from "react"
 import { ScrollView } from "react-native"
 
 import { HeaderCloseOnly } from "@/src/components/layouts/header/HeaderElements"
@@ -32,14 +32,24 @@ export const LoginScreen: NavigationControllerView = () => {
     }
   }, [exit, switchTab, whoami?.id])
   const isiPad = useIsiPad()
-  const Container = isiPad ? ScrollView : Fragment
   return (
     <>
-      <Container>
+      {isiPad ? (
+        <ScrollView
+          contentContainerStyle={tabletScrollViewContentStyle}
+          keyboardShouldPersistTaps="handled"
+        >
+          <Login />
+        </ScrollView>
+      ) : (
         <Login />
-      </Container>
+      )}
       <HeaderCloseOnly />
     </>
   )
 }
 LoginScreen.sheetGrabberVisible = false
+
+const tabletScrollViewContentStyle = {
+  flexGrow: 1,
+}

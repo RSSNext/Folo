@@ -18,6 +18,7 @@ This skill extends `../mobile-e2e/SKILL.md`. Read that skill first for the basel
 - iOS register flow: `apps/mobile/e2e/flows/ios/register.yaml`
 - Android register flow: `apps/mobile/e2e/flows/android/register.yaml`
 - Shared auth flows: `apps/mobile/e2e/flows/shared/*.yaml`
+- iOS interaction skill: `/Users/diygod/.agents/skills/axe/SKILL.md`
 - Expo config: `apps/mobile/app.config.ts`
 - Build profiles: `apps/mobile/eas.json`
 - Mobile artifacts: `apps/mobile/e2e/artifacts/`
@@ -184,6 +185,10 @@ Expected output pattern:
 xcrun simctl install "$IOS_UDID" <PATH_TO_Folo.app>
 xcrun simctl launch "$IOS_UDID" is.follow
 ```
+
+### iOS interaction after launch
+
+After the app is running on the dedicated iOS simulator, use the `$axe` skill for simulator interaction during visual validation. Use `$axe` as the default interaction layer for iOS screenshot-driven checks.
 
 ## Android workflow
 
@@ -364,7 +369,7 @@ For auth-related work:
 
 ## Screenshot-driven visual testing
 
-Once the app is in the right state, drive the rest of the validation with the visual toolchain available in the current environment. Screenshots are the source of truth for acceptance.
+Once the app is in the right state, drive the rest of the validation visually. On iOS, use the `$axe` skill as the default interaction tool for this phase. On Android, use the interaction tooling available in the current environment. Screenshots are the source of truth for acceptance.
 
 Create a timestamped artifact folder first:
 
@@ -430,4 +435,5 @@ If the client supports local image rendering, attach the key screenshots as imag
 
 - If doctor, typecheck, build, install, or server startup fails, stop and report the exact failing command.
 - If `local` mode cannot reach the local server, do not silently fall back to `prod`.
-- If the visual flow cannot be completed because the environment lacks the required interaction tooling, report that limitation clearly and still return the screenshots you captured.
+- If the iOS visual flow cannot be completed because `$axe` is unavailable or unusable, report that limitation clearly and still return the screenshots you captured.
+- If the Android visual flow cannot be completed because the environment lacks suitable interaction tooling, report that limitation clearly and still return the screenshots you captured.

@@ -3,7 +3,7 @@ import { Portal } from "@gorhom/portal"
 import { useAtom } from "jotai"
 import * as React from "react"
 import { useCallback, useEffect } from "react"
-import { View } from "react-native"
+import { Dimensions, StyleSheet, View } from "react-native"
 import { runOnJS, runOnUI } from "react-native-reanimated"
 import TrackPlayer from "react-native-track-player"
 
@@ -99,16 +99,22 @@ export function EntryContentWebView(props: EntryContentWebViewProps) {
     handleModeSwitch(nextMode)
   }, [mode, handleModeSwitch])
 
+  useEffect(() => {
+    // Reset the shared container height before the next entry content arrives.
+    setContentHeight(Dimensions.get("window").height)
+  }, [props.entryId, props.showReadability, props.showTranslation, setContentHeight])
+
   return (
     <>
       <View
-        key={mode}
-        style={{ height: contentHeight, transform: [{ translateY: 0 }] }}
+        key={`${mode}-${props.entryId}`}
+        style={{ width: "100%", height: contentHeight, transform: [{ translateY: 0 }] }}
         onLayout={() => {
           WebViewManager.setEntry(entryInWebview)
         }}
       >
         <NativeWebView
+          style={styles.webView}
           onContentHeightChange={(e) => {
             setContentHeight(e.nativeEvent.height)
           }}
@@ -127,3 +133,10 @@ export function EntryContentWebView(props: EntryContentWebViewProps) {
     </>
   )
 }
+
+const styles = StyleSheet.create({
+  webView: {
+    width: "100%",
+    height: "100%",
+  },
+})

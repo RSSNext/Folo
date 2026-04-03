@@ -126,7 +126,7 @@ const FormDescription = ({
     <p
       ref={ref}
       id={formDescriptionId}
-      className={cn("text-text-secondary text-xs", className)}
+      className={cn("text-xs text-text-secondary", className)}
       {...props}
     />
   )
@@ -152,7 +152,7 @@ const FormMessage = ({
     <p
       ref={ref}
       id={formMessageId}
-      className={cn("text-red text-sm font-medium", className)}
+      className={cn("text-sm font-medium text-red", className)}
       {...props}
     >
       {body}

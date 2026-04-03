@@ -1,19 +1,31 @@
 import { env } from "@follow/shared/env.desktop"
-import { createDesktopAPIHeaders } from "@follow/utils/headers"
+import { createAuthRequestOriginHeaders, createDesktopAPIHeaders } from "@follow/utils/headers"
 import PKG from "@pkg"
 import type { IpcContext } from "electron-ipc-decorator"
 import { IpcMethod, IpcService } from "electron-ipc-decorator"
 
 import { BETTER_AUTH_COOKIE_NAME_SESSION_TOKEN } from "~/constants/app"
-import { apiClient } from "~/lib/api-client"
 import { WindowManager } from "~/manager/window"
 
+import {
+  buildManagedAuthCookieHeader,
+  getManagedAuthCookies,
+  persistManagedAuthCookiesFromSetCookieHeader,
+} from "../../lib/auth-cookies"
 import { getSessionTokenFromCookies, syncSessionToCliConfig } from "../../lib/cli-session-sync"
 import { deleteNotificationsToken, updateNotificationsToken } from "../../lib/user"
 import { logger } from "../../logger"
 
 export class AuthService extends IpcService {
   static override readonly groupName = "auth"
+
+  private getAuthRequestHeaders(additionalHeaders?: Record<string, string>) {
+    return {
+      ...createDesktopAPIHeaders({ version: PKG.version }),
+      ...createAuthRequestOriginHeaders(env.VITE_WEB_URL),
+      ...additionalHeaders,
+    }
+  }
 
   private async applySessionToken(token: string): Promise<void> {
     const mainWindow = WindowManager.getMainWindow()
@@ -23,20 +35,29 @@ export class AuthService extends IpcService {
 
     const apiURL = env.VITE_API_URL
     const url = new URL(apiURL)
-    const isSecure = url.protocol === "https:"
+    const isSecure =
+      url.protocol === "https:" || url.hostname === "localhost" || url.hostname === "127.0.0.1"
     const isLocalhost = url.hostname === "localhost" || url.hostname === "127.0.0.1"
+    const cookieNames = [
+      BETTER_AUTH_COOKIE_NAME_SESSION_TOKEN,
+      ...(isSecure && !isLocalhost ? ["__Secure-better-auth.session_token"] : []),
+    ]
 
-    await mainWindow.webContents.session.cookies.set({
-      url: apiURL,
-      name: BETTER_AUTH_COOKIE_NAME_SESSION_TOKEN,
-      value: token,
-      ...(isLocalhost ? {} : { domain: url.hostname }),
-      path: "/",
-      httpOnly: true,
-      secure: isSecure,
-      sameSite: "no_restriction",
-      expirationDate: new Date().setDate(new Date().getDate() + 30),
-    })
+    await Promise.all(
+      cookieNames.map((name) =>
+        mainWindow.webContents.session.cookies.set({
+          url: apiURL,
+          name,
+          value: token,
+          ...(isLocalhost ? {} : { domain: url.hostname }),
+          path: "/",
+          httpOnly: true,
+          secure: isSecure,
+          sameSite: "no_restriction",
+          expirationDate: new Date().setDate(new Date().getDate() + 30),
+        }),
+      ),
+    )
   }
 
   private async clearSessionToken(): Promise<void> {
@@ -63,8 +84,7 @@ export class AuthService extends IpcService {
       method: "POST",
       headers: {
         "content-type": "application/json",
-        ...createDesktopAPIHeaders({ version: PKG.version }),
-        ...headers,
+        ...this.getAuthRequestHeaders(headers),
       },
       body: JSON.stringify(payload),
     })
@@ -74,12 +94,20 @@ export class AuthService extends IpcService {
       .catch(async () => ({ message: await response.text() }))) as Record<string, unknown>
 
     const setCookie = response.headers.get("set-cookie") || ""
+    const mainWindow = WindowManager.getMainWindow()
+    if (response.ok && setCookie && mainWindow) {
+      await persistManagedAuthCookiesFromSetCookieHeader({
+        apiURL: env.VITE_API_URL,
+        session: mainWindow.webContents.session,
+        setCookieHeader: setCookie,
+      })
+    }
     const sessionCookieMatch = setCookie.match(/better-auth\.session_token=([^;]+)/)
     const sessionToken = sessionCookieMatch?.[1] ?? null
     const token = typeof data.token === "string" ? data.token : null
     const persistedSessionToken = sessionToken ?? token
-    if (response.ok && persistedSessionToken) {
-      void this.applySessionToken(persistedSessionToken).catch(() => {})
+    if (response.ok && persistedSessionToken && !setCookie && mainWindow) {
+      await this.applySessionToken(persistedSessionToken)
     }
 
     if (sessionToken) {
@@ -101,7 +129,7 @@ export class AuthService extends IpcService {
   async sessionChanged(_context: IpcContext): Promise<void> {
     await updateNotificationsToken()
 
-    // Sync session token to CLI config
+    // Sync the current desktop session to the npm CLI login.
     const token = await getSessionTokenFromCookies()
     await syncSessionToCliConfig(token).catch((err) => {
       logger.error("Failed to sync session to CLI config:", err)
@@ -112,7 +140,7 @@ export class AuthService extends IpcService {
   async signOut(_context: IpcContext): Promise<void> {
     await deleteNotificationsToken()
 
-    // Clear CLI config token on sign out
+    // Clear the synced CLI login on sign out.
     await syncSessionToCliConfig().catch((err) => {
       logger.error("Failed to clear CLI config token:", err)
     })
@@ -122,59 +150,66 @@ export class AuthService extends IpcService {
   async signOutRemote(_context: IpcContext, token?: string): Promise<void> {
     await fetch(`${env.VITE_API_URL}/better-auth/sign-out`, {
       method: "POST",
-      headers: {
-        ...createDesktopAPIHeaders({ version: PKG.version }),
-        ...(token
+      headers: this.getAuthRequestHeaders(
+        token
           ? {
               Cookie: `__Secure-better-auth.session_token=${token}; better-auth.session_token=${token}`,
             }
-          : {}),
-      },
+          : undefined,
+      ),
     }).catch(() => {})
 
     await this.clearSessionToken()
   }
 
   @IpcMethod()
-  async getSession(_context: IpcContext) {
-    return apiClient.auth.getSession()
-  }
-
-  @IpcMethod()
-  async getSessionByToken(_context: IpcContext, token: string) {
-    const response = await fetch(`${env.VITE_API_URL}/better-auth/get-session`, {
-      headers: {
-        ...createDesktopAPIHeaders({ version: PKG.version }),
-        Cookie: `__Secure-better-auth.session_token=${token}; better-auth.session_token=${token}`,
-      },
-    })
-
-    return response.json().catch(async () => ({ message: await response.text() }))
-  }
-
-  @IpcMethod()
-  async request(
+  async verifyTotp(
     _context: IpcContext,
-    payload: {
-      input: string
-      init?: {
-        method?: string
-        headers?: Record<string, string>
-        body?: string
-      }
-    },
+    payload: { code: string; trustDevice?: boolean; headers?: Record<string, string> },
   ) {
-    const response = await fetch(payload.input, {
-      method: payload.init?.method,
-      headers: payload.init?.headers,
-      body: payload.init?.body,
-      cache: "no-store",
+    const mainWindow = WindowManager.getMainWindow()
+    const cookieHeader = mainWindow
+      ? buildManagedAuthCookieHeader(
+          await getManagedAuthCookies({
+            apiURL: env.VITE_API_URL,
+            session: mainWindow.webContents.session,
+          }),
+        )
+      : ""
+
+    const response = await fetch(`${env.VITE_API_URL}/better-auth/two-factor/verify-totp`, {
+      method: "POST",
+      headers: this.getAuthRequestHeaders({
+        "content-type": "application/json",
+        ...(cookieHeader ? { Cookie: cookieHeader } : {}),
+        ...payload.headers,
+      }),
+      body: JSON.stringify({
+        code: payload.code,
+        ...(payload.trustDevice !== undefined ? { trustDevice: payload.trustDevice } : {}),
+      }),
     })
+
+    const data = (await response
+      .json()
+      .catch(async () => ({ message: await response.text() }))) as Record<string, unknown>
+    const setCookie = response.headers.get("set-cookie") || ""
+    if (response.ok && setCookie && mainWindow) {
+      await persistManagedAuthCookiesFromSetCookieHeader({
+        apiURL: env.VITE_API_URL,
+        session: mainWindow.webContents.session,
+        setCookieHeader: setCookie,
+      })
+    }
 
     return {
-      status: response.status,
-      headers: Object.fromEntries(response.headers.entries()),
-      body: await response.text(),
+      data,
+      error: response.ok
+        ? null
+        : {
+            message: typeof data.message === "string" ? data.message : response.statusText,
+            status: response.status,
+          },
     }
   }
 

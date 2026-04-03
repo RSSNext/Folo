@@ -1,3 +1,4 @@
+import { cn } from "@follow/utils"
 import { useState } from "react"
 import { Trans, useTranslation } from "react-i18next"
 import { Linking, Pressable, TouchableWithoutFeedback, View } from "react-native"
@@ -7,7 +8,7 @@ import { useSafeAreaInsets } from "react-native-safe-area-context"
 
 import { Logo } from "@/src/components/ui/logo"
 import { Text } from "@/src/components/ui/typography/Text"
-import { useScaleHeight } from "@/src/lib/responsive"
+import { useIsTabletLayout, useReadableContainerStyle, useScaleHeight } from "@/src/lib/responsive"
 
 import { EmailLogin, EmailSignUp } from "./email"
 import { SocialLogin } from "./social"
@@ -15,6 +16,8 @@ import { SocialLogin } from "./social"
 export function Login() {
   const insets = useSafeAreaInsets()
   const scaledHeight = useScaleHeight()
+  const isTablet = useIsTabletLayout()
+  const contentWidthStyle = useReadableContainerStyle(480)
   const logoSize = scaledHeight(80)
   const gapSize = scaledHeight(28)
   const fontSize = scaledHeight(28)
@@ -25,12 +28,13 @@ export function Login() {
   return (
     <View
       testID="login-screen"
-      className="pb-safe-or-2 flex-1 justify-between"
+      className={cn("pb-safe-or-2 flex-1", isTablet ? "justify-center px-6" : "justify-between")}
       style={{
-        paddingTop: insets.top + 56,
+        paddingTop: insets.top + (isTablet ? 36 : 56),
+        paddingBottom: insets.bottom + (isTablet ? 32 : 0),
       }}
     >
-      <KeyboardAvoidingView behavior={"position"}>
+      <KeyboardAvoidingView behavior={"position"} style={contentWidthStyle}>
         <TouchableWithoutFeedback
           onPress={() => {
             KeyboardController.dismiss()
@@ -69,31 +73,63 @@ export function Login() {
             )}
           </View>
         </TouchableWithoutFeedback>
-        <TermsCheckBox />
-        <View className="mt-14">
-          {isEmail ? (
-            <Text
-              className="pb-2 text-center text-lg font-medium text-label"
-              testID="auth-back"
-              onPress={() => setIsEmail(false)}
-            >
-              {t("login.back")}
-            </Text>
-          ) : (
-            <Pressable testID="auth-toggle-mode" onPress={() => setIsRegister(!isRegister)}>
-              <Text className="pb-2 text-center text-lg font-medium text-label">
-                <Trans
-                  t={t}
-                  i18nKey={isRegister ? "login.have_account" : "login.no_account"}
-                  components={{
-                    strong: <Text className="text-accent" />,
-                  }}
-                />
-              </Text>
-            </Pressable>
-          )}
-        </View>
+        {!isTablet && (
+          <>
+            <TermsCheckBox />
+            <View className="mt-14">
+              {isEmail ? (
+                <Text
+                  className="pb-2 text-center text-lg font-medium text-label"
+                  testID="auth-back"
+                  onPress={() => setIsEmail(false)}
+                >
+                  {t("login.back")}
+                </Text>
+              ) : (
+                <Pressable testID="auth-toggle-mode" onPress={() => setIsRegister(!isRegister)}>
+                  <Text className="pb-2 text-center text-lg font-medium text-label">
+                    <Trans
+                      t={t}
+                      i18nKey={isRegister ? "login.have_account" : "login.no_account"}
+                      components={{
+                        strong: <Text className="text-accent" />,
+                      }}
+                    />
+                  </Text>
+                </Pressable>
+              )}
+            </View>
+          </>
+        )}
       </KeyboardAvoidingView>
+      {isTablet && (
+        <View style={contentWidthStyle}>
+          <TermsCheckBox />
+          <View className="mt-8">
+            {isEmail ? (
+              <Text
+                className="pb-2 text-center text-lg font-medium text-label"
+                testID="auth-back"
+                onPress={() => setIsEmail(false)}
+              >
+                {t("login.back")}
+              </Text>
+            ) : (
+              <Pressable testID="auth-toggle-mode" onPress={() => setIsRegister(!isRegister)}>
+                <Text className="pb-2 text-center text-lg font-medium text-label">
+                  <Trans
+                    t={t}
+                    i18nKey={isRegister ? "login.have_account" : "login.no_account"}
+                    components={{
+                      strong: <Text className="text-accent" />,
+                    }}
+                  />
+                </Text>
+              </Pressable>
+            )}
+          </View>
+        </View>
+      )}
     </View>
   )
 }

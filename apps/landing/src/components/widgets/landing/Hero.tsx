@@ -15,13 +15,21 @@ import { ParticlesAura } from '~/components/ui/effects/ParticlesAura'
 import { TiltCard } from '~/components/ui/effects/TiltCard'
 import { Highlighter } from '~/components/ui/highlighter'
 import { PanelSplitter } from '~/components/ui/panel/PanelSplitter'
+import { SegmentTab } from '~/components/ui/segment-tab'
 import { Link as LocalizedLink } from '~/i18n/routing'
+import type { HeroTimelineItem } from '~/lib/landing-data'
 
 import { ListDemo } from '../simulators/ListDemo'
 import { TimelineChatDemo } from '../simulators/TimelineChatDemo'
 import { WindowChrome } from './WindowChrome'
 
-export const LandingHero: Component = () => {
+type LandingHeroProps = {
+  items: HeroTimelineItem[]
+}
+
+type AudienceKey = 'human' | 'agent'
+
+export const LandingHero: Component<LandingHeroProps> = ({ items }) => {
   const ref = React.useRef<HTMLElement | null>(null)
   const { scrollYProgress } = useScroll({
     target: ref,
@@ -30,6 +38,28 @@ export const LandingHero: Component = () => {
   const bgY = useTransform(scrollYProgress, [0, 1], [0, -150])
   const heroT = useTranslations('landing.hero')
   const actionsT = useTranslations('common.actions')
+  const [audience, setAudience] = React.useState<AudienceKey>('human')
+
+  const audienceItems: {
+    value: AudienceKey
+    label: string
+    icon: React.ReactNode
+  }[] = [
+    {
+      value: 'human',
+      label: heroT('humanTab'),
+      icon: (
+        <i className="i-mingcute-user-3-line size-4 shrink-0" aria-hidden />
+      ),
+    },
+    {
+      value: 'agent',
+      label: heroT('agentTab'),
+      icon: (
+        <i className="i-mingcute-android-2-line size-4 shrink-0" aria-hidden />
+      ),
+    },
+  ]
 
   return (
     <section ref={ref} className="relative isolate w-full">
@@ -70,59 +100,86 @@ export const LandingHero: Component = () => {
             <p>{heroT('bodyLine2')}</p>
           </div>
 
-          <div className="mt-8 flex items-center">
-            <NextLink
-              href="https://app.folo.is"
-              target="_blank"
-              rel="noreferrer noopener"
-            >
-              <span className="relative inline-flex">
-                <Button className="group relative text-base overflow-hidden px-5 py-2.5 bg-accent text-accent-foreground shadow-[0_0_0_1px_var(--color-accent-40)] ![filter:drop-shadow(0_0_24px_color-mix(in_oklab,var(--color-accent)_35%,transparent))] rounded-xl">
-                  <span
-                    aria-hidden
-                    className={clsx(
-                      'pointer-events-none absolute -inset-1 rounded-[inherit] opacity-70 blur-md',
-                      'bg-[radial-gradient(closest-side,color-mix(in_oklab,var(--color-accent)_55%,transparent)_0%,transparent_70%)]',
-                    )}
-                  />
+          <div className="mt-8 max-w-xl">
+            <SegmentTab
+              items={audienceItems}
+              value={audience}
+              onChange={(value) => setAudience(value as AudienceKey)}
+              containerClassName="inline-flex w-fit max-w-full rounded-full border-border/70 bg-background/45 shadow-[0_20px_40px_-32px_rgba(255,107,0,0.4)]"
+              className="!inset-y-0 !rounded-full !border-accent/20 !bg-background !shadow-[0_12px_24px_-16px_rgba(255,107,0,0.6)]"
+              activeClassName="text-accent"
+              inactiveClassName="text-text-secondary/75 hover:text-text"
+              distribution="fit"
+              size="lg"
+              responsiveWrap
+            />
 
-                  <span className="relative z-10 inline-flex items-center">
-                    {actionsT('getStarted')}
+            {audience === 'human' ? (
+              <div className="mt-4 flex flex-wrap items-center gap-3">
+                <NextLink
+                  href="https://app.folo.is"
+                  target="_blank"
+                  rel="noreferrer noopener"
+                >
+                  <span className="relative inline-flex">
+                    <Button className="group relative overflow-hidden rounded-xl bg-accent px-5 py-2.5 text-base text-accent-foreground shadow-[0_0_0_1px_var(--color-accent-40)] ![filter:drop-shadow(0_0_24px_color-mix(in_oklab,var(--color-accent)_35%,transparent))]">
+                      <span
+                        aria-hidden
+                        className={clsx(
+                          'pointer-events-none absolute -inset-1 rounded-[inherit] opacity-70 blur-md',
+                          'bg-[radial-gradient(closest-side,color-mix(in_oklab,var(--color-accent)_55%,transparent)_0%,transparent_70%)]',
+                        )}
+                      />
+
+                      <span className="relative z-10 inline-flex items-center">
+                        {actionsT('getStarted')}
+                      </span>
+                      <BorderBeam colorFrom="#fff" colorTo="#ff5c00" />
+                    </Button>
+
+                    <ParticlesAura className="-inset-2" />
                   </span>
-                  <BorderBeam colorFrom="#fff" colorTo="#ff5c00" />
-                </Button>
-
-                <ParticlesAura className="-inset-2" />
-              </span>
-            </NextLink>
-            <LocalizedLink href="/download">
-              <Button variant="ghost" className="ml-4">
-                <span className="relative z-10 inline-flex items-center text-base">
-                  {actionsT('download')}
-                </span>
-              </Button>
-            </LocalizedLink>
-            {/* <a
-            href="#learn-more"
-            className="text-text-secondary hover:text-text inline-flex items-center gap-1 text-sm"
-          >
-            <span className="rounded-full border border-border bg-fill px-2 py-1 text-xs">
-              New
-            </span>
-            <span>Product Intelligence</span>
-            <i className="i-mingcute-right-line" aria-hidden />
-          </a> */}
+                </NextLink>
+                <LocalizedLink href="/download">
+                  <Button variant="ghost">
+                    <span className="relative z-10 inline-flex items-center text-base">
+                      {actionsT('download')}
+                    </span>
+                  </Button>
+                </LocalizedLink>
+              </div>
+            ) : (
+              <div className="bg-material-medium/60 border-border mt-4 rounded-2xl border p-5 backdrop-blur-md">
+                <p className="text-text text-sm font-semibold">
+                  {heroT('agentTitle')}
+                </p>
+                <p className="text-text-secondary mt-2 text-sm leading-6">
+                  {heroT.rich('agentBody', {
+                    skill: (chunks) => (
+                      <a
+                        href="https://api.folo.is/skill.md"
+                        target="_blank"
+                        rel="noreferrer noopener"
+                        className="text-accent underline decoration-accent/40 underline-offset-4 transition-colors hover:text-accent/80"
+                      >
+                        {chunks}
+                      </a>
+                    ),
+                  })}
+                </p>
+              </div>
+            )}
           </div>
         </div>
 
         {/* Preview card with tilt + parallax; prompt focus zoom */}
-        <PreviewAppDemo />
+        <PreviewAppDemo items={items} />
       </div>
     </section>
   )
 }
 
-const PreviewAppDemo = () => {
+const PreviewAppDemo = ({ items }: LandingHeroProps) => {
   const layoutContainerRef = useRef<HTMLDivElement | null>(null)
   const {
     position: columnWidth,
@@ -147,7 +204,7 @@ const PreviewAppDemo = () => {
             className="relative lg:aspect-video h-[800px] lg:h-auto w-full bg-background-secondary"
           >
             <div style={{ width: columnWidth }} className="size-full">
-              <ListDemo />
+              <ListDemo items={items} />
               {/* <ListSkeletonDemo /> */}
             </div>
 

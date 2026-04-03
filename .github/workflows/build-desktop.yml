@@ -29,8 +29,6 @@ env:
   VITE_WEB_URL: ${{ vars.VITE_WEB_URL }}
   VITE_API_URL: ${{ vars.VITE_API_URL }}
   VITE_SENTRY_DSN: ${{ vars.VITE_SENTRY_DSN }}
-  VITE_OPENPANEL_CLIENT_ID: ${{ vars.VITE_OPENPANEL_CLIENT_ID }}
-  VITE_OPENPANEL_API_URL: ${{ vars.VITE_OPENPANEL_API_URL }}
   VITE_FIREBASE_CONFIG: ${{ vars.VITE_FIREBASE_CONFIG }}
   SENTRY_AUTH_TOKEN: ${{ secrets.SENTRY_AUTH_TOKEN }}
   NODE_OPTIONS: --max-old-space-size=8192
@@ -153,7 +151,7 @@ jobs:
           APPLE_TEAM_ID: ${{ secrets.APPLE_TEAM_ID }}
           OSX_SIGN_KEYCHAIN_PATH: ${{ runner.temp }}/app-signing.keychain-db
           OSX_SIGN_IDENTITY: ${{ secrets.OSX_SIGN_IDENTITY }}
-        uses: nick-fields/retry@v3
+        uses: nick-fields/retry@v4
         with:
           max_attempts: 3
           timeout_minutes: 10

@@ -117,13 +117,13 @@ export const LexicalRichEditor = function LexicalRichEditor({
             <ContentEditable
               onContextMenu={stopPropagation}
               className={cn(
-                "scrollbar-none text-text placeholder:text-text-secondary size-full cursor-text",
+                "size-full cursor-text text-text scrollbar-none placeholder:text-text-secondary",
                 "size-full resize-none bg-transparent",
                 "text-sm !outline-none transition-all duration-200 focus:outline-none",
               )}
               aria-placeholder={placeholder}
               placeholder={
-                <div className="text-text-secondary pointer-events-none absolute left-0 top-0 text-sm">
+                <div className="pointer-events-none absolute left-0 top-0 text-sm text-text-secondary">
                   {placeholder}
                 </div>
               }

@@ -18,7 +18,6 @@
     "@follow-app/client-sdk": "catalog:",
     "@follow/tracker": "workspace:*",
     "@fontsource/sn-pro": "5.2.6",
-    "@openpanel/web": "1.0.7",
     "@radix-ui/react-avatar": "1.1.11",
     "@resvg/resvg-js": "2.6.2",
     "@sentry/react": "10.38.0",

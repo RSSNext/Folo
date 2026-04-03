@@ -66,7 +66,7 @@ Scrollbar.displayName = 'ScrollArea.Scrollbar'
 const Viewport = ({
   ref: forwardedRef,
   className,
-
+  mask: _mask,
   focusable = true,
   ...rest
 }: React.ComponentPropsWithoutRef<typeof ScrollAreaBase.Viewport> & {

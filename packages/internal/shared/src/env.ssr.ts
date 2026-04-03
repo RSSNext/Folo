@@ -15,10 +15,6 @@ export const env = createEnv({
     VITE_SENTRY_DSN: z.string().optional(),
     VITE_INBOXES_EMAIL: z.string().default(DEFAULT_VALUES.PROD.INBOXES_EMAIL),
     VITE_FIREBASE_CONFIG: z.string().default(DEFAULT_VALUES.PROD.FIREBASE_CONFIG),
-
-    VITE_OPENPANEL_CLIENT_ID: z.string().optional(),
-    VITE_OPENPANEL_API_URL: z.string().url().optional(),
-
     VITE_POSTHOG_KEY: z.string().optional().default(DEFAULT_VALUES.PROD.POSTHOG_KEY),
     VITE_POSTHOG_HOST: z.string().url().optional().default(DEFAULT_VALUES.PROD.POSTHOG_HOST),
 
@@ -44,8 +40,25 @@ function getRuntimeEnv() {
     if (metaEnvIsEmpty()) {
       return process.env
     }
-    return import.meta.env
+    return injectExternalEnv(import.meta.env)
   } catch {
     return process.env
   }
+}
+
+declare const globalThis: any
+function injectExternalEnv<T>(originEnv: T): T {
+  if (!("document" in globalThis)) {
+    return originEnv
+  }
+  const prefix = "__followEnv"
+  const env = globalThis[prefix]
+  if (!env) {
+    return originEnv
+  }
+
+  for (const key in env) {
+    originEnv[key as keyof T] = env[key]
+  }
+  return originEnv
 }

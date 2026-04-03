@@ -28,5 +28,4 @@ export const isAndroidApkInstall = () => {
   }
 }
 
-export const isPaymentFeatureEnabled = (paymentEnabled?: boolean | null) =>
-  Boolean(paymentEnabled) && (!isAndroid || isAndroidApkInstall())
+export const isPaymentFeatureEnabled: (paymentEnabled?: boolean | null) => boolean = Boolean

@@ -33,7 +33,7 @@ export function RepoStats() {
         target="_blank"
         rel="noreferrer noopener"
         className={cx(
-          'rounded-lg border border-border/70 bg-material-medium/60 hover:bg-fill-secondary transition-colors px-3 py-2 flex',
+          'rounded-lg bg-material-medium/60 hover:bg-fill-secondary transition-colors px-3 py-2 flex',
           'flex flex-col relative align-start text-left justify-start',
           'col-span-2 lg:col-span-1',
           focusRing,
@@ -70,7 +70,7 @@ function StatBox({
   value: string | number
 }) {
   return (
-    <div className="rounded-lg border border-border/70 z-[1] bg-material-medium/60 px-3 py-2">
+    <div className="rounded-lg z-[1] bg-material-medium/60 px-3 py-2">
       <div className="flex items-center gap-2 text-text">
         <i className={cx('size-4', icon)} aria-hidden />
         <span className="text-sm">{label}</span>

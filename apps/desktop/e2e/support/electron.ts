@@ -51,6 +51,30 @@ export const launchElectronApp = async (env: DesktopE2EEnv) => {
   await page.waitForLoadState("domcontentloaded")
   await page.evaluate(() => {
     window.__FOLO_E2E_RECAPTCHA_TOKEN__ = "e2e-token"
+
+    const originalFetch = globalThis.fetch.bind(globalThis)
+    const authEndpoints = [
+      "/better-auth/sign-in/email",
+      "/better-auth/sign-up/email",
+      "/better-auth/forget-password",
+    ]
+
+    globalThis.fetch = async (input, init) => {
+      const request = input instanceof Request ? input : new Request(input, init)
+      const requestURL = new URL(request.url, globalThis.location.origin)
+      const shouldInjectToken = authEndpoints.some((path) => requestURL.pathname.includes(path))
+
+      if (!shouldInjectToken) {
+        return originalFetch(input, init)
+      }
+
+      const headers = new Headers(request.headers)
+      if (!headers.has("x-token")) {
+        headers.set("x-token", "r3:e2e-token")
+      }
+
+      return originalFetch(new Request(request, { headers }))
+    }
   })
 
   return {

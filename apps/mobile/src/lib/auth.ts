@@ -38,6 +38,18 @@ const bumpAuthStateRevision = () => {
   return authStateRevision
 }
 
+// Session-scoped queries must be reset on auth transitions, otherwise mounted timeline
+// queries can keep rendering anonymous cache under the new session.
+const refreshSessionQueries = () =>
+  Promise.allSettled([
+    queryClient.invalidateQueries({ queryKey: whoamiQueryKey }),
+    queryClient.invalidateQueries({ queryKey: isNewUserQueryKey }),
+    queryClient.resetQueries({ queryKey: ["entries"] }),
+    queryClient.resetQueries({ queryKey: ["subscription"] }),
+    queryClient.resetQueries({ queryKey: ["unread"] }),
+    queryClient.resetQueries({ queryKey: ["owned", "lists"] }),
+  ])
+
 const plugins = [
   ...baseAuthPlugins,
   expoClient({
@@ -45,6 +57,7 @@ const plugins = [
     storagePrefix,
     storage: {
       setItem(key: string, value: string) {
+        const previousValue = key === cookieKey ? safeSecureStore.getItem(key) : null
         try {
           safeSecureStore.setItem(key, value)
         } catch (e) {
@@ -62,8 +75,10 @@ const plugins = [
             }
           }
           bumpAuthStateRevision()
-          queryClient.invalidateQueries({ queryKey: whoamiQueryKey })
-          queryClient.invalidateQueries({ queryKey: isNewUserQueryKey })
+          const authStateChanged = !previousValue
+          if (authStateChanged) {
+            void refreshSessionQueries()
+          }
         }
       },
       getItem(key: string) {
@@ -75,6 +90,7 @@ const plugins = [
         }
       },
       removeItem(key: string) {
+        const previousValue = key === cookieKey ? safeSecureStore.getItem(key) : null
         try {
           safeSecureStore.removeItem(key)
         } catch (e) {
@@ -88,8 +104,9 @@ const plugins = [
             safeSecureStore.removeItem(`${cookieKey}_${env}`)
           }
           bumpAuthStateRevision()
-          queryClient.invalidateQueries({ queryKey: whoamiQueryKey })
-          queryClient.invalidateQueries({ queryKey: isNewUserQueryKey })
+          if (previousValue) {
+            void refreshSessionQueries()
+          }
         }
       },
     } as any,
@@ -138,7 +155,6 @@ export const authClient = createAuthClient({
 export const {
   changeEmail,
   changePassword,
-  forgetPassword,
   getAccountInfo,
   getCookie,
   getProviders,
@@ -152,6 +168,8 @@ export const {
   updateUser,
   useSession,
 } = authClient
+
+export const forgetPassword = authClient.requestPasswordReset
 
 export interface AuthProvider {
   name: string
@@ -192,8 +210,7 @@ export const signOut = async () => {
   await userActions.removeCurrentUser()
   Navigation.rootNavigation.popToRoot()
   bumpAuthStateRevision()
-  queryClient.invalidateQueries({ queryKey: whoamiQueryKey })
-  queryClient.invalidateQueries({ queryKey: isNewUserQueryKey })
+  await refreshSessionQueries()
   const dbPath = getDbPath()
   await FileSystem.deleteAsync(dbPath)
   await expo.reloadAppAsync("User sign out")

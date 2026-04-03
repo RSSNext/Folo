@@ -84,7 +84,7 @@ function RadioGroupItem({
           type="button"
           data-slot="radio-group-item"
           className={cn(
-            "border-border text-accent ring-material-opaque focus-visible:ring-border flex aspect-square size-5 items-center justify-center rounded-full border focus:outline-none focus-visible:ring-2 focus-visible:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50",
+            "flex aspect-square size-5 items-center justify-center rounded-full border border-border text-accent ring-material-opaque focus:outline-none focus-visible:ring-2 focus-visible:ring-border focus-visible:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50",
             className,
           )}
           whileHover={{ scale: 1.05 }}

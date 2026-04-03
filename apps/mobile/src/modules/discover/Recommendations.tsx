@@ -160,7 +160,7 @@ export const RecommendationTab: TabComponent<{
   })
   const { data: analysisData, isLoading: isAnalysisLoading } = useQuery({
     queryKey: ["rsshub-analysis", discoverLanguage],
-    queryFn: () => fetchRsshubAnalysis(discoverLanguage).then((res) => res.data),
+    queryFn: () => fetchRsshubAnalysis().then((res) => res.data),
     staleTime: 1000 * 60 * 60 * 24,
     // 1 day
     meta: {

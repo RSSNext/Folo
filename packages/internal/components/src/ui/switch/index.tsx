@@ -71,7 +71,7 @@ function Switch({
       onChange={handleChange}
       style={{ width: switchWidth, padding: thumbPadding }}
       className={cn(
-        "focus-visible:ring-border cursor-switch data-[checked]:bg-accent bg-fill relative flex shrink-0 items-center justify-start rounded-full transition-colors duration-200 focus:outline-none focus-visible:ring-2 focus-visible:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50",
+        "relative flex shrink-0 cursor-switch items-center justify-start rounded-full bg-fill transition-colors duration-200 focus:outline-none focus-visible:ring-2 focus-visible:ring-border focus-visible:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50 data-[checked]:bg-accent",
         size === "sm" ? "h-5" : "h-6",
         className,
       )}
@@ -117,7 +117,7 @@ function Switch({
         data-slot="switch-thumb"
         whileTap="tab"
         className={cn(
-          "bg-background z-[1] flex items-center justify-center rounded-full text-neutral-500 shadow-lg ring-0 dark:text-neutral-400",
+          "z-[1] flex items-center justify-center rounded-full bg-background text-neutral-500 shadow-lg ring-0 dark:text-neutral-400",
           size === "sm" ? "[&_svg]:size-2.5" : "[&_svg]:size-3",
           "absolute",
         )}

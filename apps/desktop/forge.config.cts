@@ -102,10 +102,7 @@ const config: ForgeConfig = {
     buildVersion: process.env.BUILD_VERSION || undefined,
     appBundleId: "is.follow",
     icon: isStaging ? "resources/icon-staging" : "resources/icon",
-    extraResource: [
-      "./resources/app-update.yml",
-      ...(fs.existsSync("./resources/cli") ? ["./resources/cli"] : []),
-    ],
+    extraResource: ["./resources/app-update.yml"],
     protocols: [
       {
         name: "Folo",

@@ -10,6 +10,7 @@ import { StyleSheet, View } from "react-native"
 
 import { useActionLanguage, useGeneralSettingKey } from "@/src/atoms/settings/general"
 import { useBottomTabBarHeight } from "@/src/components/layouts/tabbar/hooks"
+import { useIsTabletLayout } from "@/src/lib/responsive"
 import { useEntries } from "@/src/modules/screen/atoms"
 import { useHeaderHeight } from "@/src/modules/screen/hooks/useHeaderHeight"
 
@@ -32,12 +33,22 @@ export const EntryListContentVideo = ({
 > & { ref?: React.Ref<ElementRef<typeof TimelineSelectorMasonryList> | null> }) => {
   const ref = useRef<FlashListRef<any>>(null)
   useImperativeHandle(forwardRef, () => ref.current!)
-  const { fetchNextPage, refetch, isRefetching, isFetching, hasNextPage, isReady } = useEntries({
+  const isTablet = useIsTabletLayout()
+  const {
+    fetchNextPage,
+    refetch,
+    isRefetching,
+    isFetching,
+    isFetchingNextPage,
+    hasNextPage,
+    isReady,
+  } = useEntries({
     viewId: view,
     active,
   })
   const { onViewableItemsChanged, onScroll, viewableItems } = useOnViewableItemsChanged({
     disabled: active === false || isFetching,
+    refreshing: isFetching && !isFetchingNextPage,
   })
 
   const translation = useGeneralSettingKey("translation")
@@ -106,11 +117,11 @@ export const EntryListContentVideo = ({
       onViewableItemsChanged={onViewableItemsChanged}
       onScroll={onScroll}
       onEndReached={fetchNextPage}
-      numColumns={2}
+      numColumns={isTablet ? 3 : 2}
       ListFooterComponent={ListFooterComponent}
       {...rest}
       onRefresh={refetch}
-      contentContainerStyle={styles.contentContainer}
+      contentContainerStyle={isTablet ? styles.tabletContentContainer : styles.contentContainer}
     />
   )
 }
@@ -118,6 +129,9 @@ export const EntryListContentVideo = ({
 const styles = StyleSheet.create({
   contentContainer: {
     paddingHorizontal: 8,
+  },
+  tabletContentContainer: {
+    paddingHorizontal: 16,
   },
 })
 

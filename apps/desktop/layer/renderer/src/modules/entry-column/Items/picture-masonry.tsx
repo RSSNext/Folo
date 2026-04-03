@@ -9,7 +9,7 @@ import { useMasonryColumn } from "@follow/components/ui/masonry/hooks.js"
 import { Masonry } from "@follow/components/ui/masonry/index.js"
 import { useScrollViewElement } from "@follow/components/ui/scroll-area/hooks.js"
 import { Skeleton } from "@follow/components/ui/skeleton/index.jsx"
-import { useRefValue } from "@follow/hooks"
+import { useRefValue, useScrollMarkReadGracePeriod } from "@follow/hooks"
 import { getEntry } from "@follow/store/entry/getter"
 import { useEntryTranslation } from "@follow/store/translation/hooks"
 import { clsx } from "@follow/utils/utils"
@@ -36,6 +36,7 @@ import { MediaContainerWidthProvider } from "~/components/ui/media/MediaContaine
 import type { StoreImageType } from "~/store/image"
 import { imageActions } from "~/store/image"
 
+import { useEntriesState } from "../context/EntriesContext"
 import { batchMarkRead } from "../hooks/useEntryMarkReadHandler"
 import { PictureWaterFallItem } from "./picture-item"
 
@@ -48,6 +49,10 @@ const gutter = 24
 
 export const PictureMasonry: FC<MasonryProps> = (props) => {
   const { data } = props
+  const entriesState = useEntriesState()
+  const pauseScrollMarkRead = useScrollMarkReadGracePeriod(
+    entriesState.isFetching && !entriesState.isFetchingNextPage,
+  )
   const cacheMap = useState(() => new Map<string, object>())[0]
   const [isInitDim, setIsInitDim] = useState(false)
   const [isInitLayout, setIsInitLayout] = useState(false)
@@ -155,6 +160,7 @@ export const PictureMasonry: FC<MasonryProps> = (props) => {
 
         function scrollOutViewMarkRead(entries: IntersectionObserverEntry[]) {
           if (!scrollMarkRead) return
+          if (pauseScrollMarkRead) return
           if (!scrollElement) return
           let minimumIndex = Number.MAX_SAFE_INTEGER
           entries.forEach((entry) => {
@@ -210,7 +216,7 @@ export const PictureMasonry: FC<MasonryProps> = (props) => {
     return () => {
       observer.disconnect()
     }
-  }, [scrollElement, renderMarkRead, scrollMarkRead, dataRef])
+  }, [dataRef, pauseScrollMarkRead, renderMarkRead, scrollElement, scrollMarkRead])
 
   const [firstScreenReady, setFirstScreenReady] = useState(false)
   useEffect(() => {

@@ -19,7 +19,7 @@ interface SectionProps {
 }
 
 function Section({ children, className }: SectionProps) {
-  return <section className={cn("mx-auto w-full max-w-6xl", className)}>{children}</section>
+  return <section className={cn("mx-auto w-full max-w-5xl", className)}>{children}</section>
 }
 
 // ============================================================================
@@ -33,25 +33,21 @@ export function Component() {
   const hasSearchData = useHasDiscoverSearchData()
 
   return (
-    <div className="flex size-full flex-col px-6 py-8">
-      {/* Hero Section */}
-      <Section className="mb-12">
-        <div className="text-center">
-          <h1 className="mb-2 text-3xl font-bold text-text">{t("words.discover")}</h1>
-          <p className="text-sm text-text-secondary">{t("discover.tips.search_keyword")}</p>
+    <div className="flex size-full flex-col p-6">
+      <Section className="mb-8">
+        <div className="rounded-[28px] border border-fill-secondary bg-material-ultra-thin px-6 py-8 shadow-sm">
+          <div className="text-center">
+            <h1 className="mb-2 text-3xl font-bold text-text">{t("words.discover")}</h1>
+            <p className="text-sm text-text-secondary">{t("discover.tips.search_keyword")}</p>
+          </div>
+          <div className="mt-6 flex flex-col items-center">
+            <UnifiedDiscoverForm />
+          </div>
         </div>
       </Section>
 
-      {/* Search Section */}
-      <Section className="mb-12">
-        <div className="flex flex-col items-center">
-          <UnifiedDiscoverForm />
-        </div>
-      </Section>
-
-      {/* Discovery Section - Hide when searching */}
       {!hasSearchData && (
-        <Section>
+        <Section className="mt-8">
           <AppErrorBoundary errorType={ErrorComponentType.RSSHubDiscoverError}>
             <DiscoveryContent />
           </AppErrorBoundary>

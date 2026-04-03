@@ -8,6 +8,8 @@ import { CLIError } from "./output"
 const LOCAL_CALLBACK_HOST = "127.0.0.1"
 const LOCAL_CALLBACK_PATH = "/callback"
 const DEFAULT_TIMEOUT_MS = 3 * 60 * 1000
+const ONE_TIME_TOKEN_VERIFY_PATH = "/better-auth/one-time-token/verify"
+const SESSION_CHECK_PATH = "/better-auth/get-session"
 
 const mappedWebOrigins: Array<{ apiOrigin: string; webOrigin: string }> = [
   {
@@ -97,6 +99,107 @@ export const resolveCLILoginUrl = (apiUrl: string, callbackUrl: string): string 
   return webUrl.toString()
 }
 
+const resolveAuthEndpointUrl = (apiUrl: string, path: string): string => {
+  let api: URL
+  try {
+    api = new URL(apiUrl)
+  } catch {
+    throw new CLIError("INVALID_ARGUMENT", `Invalid API URL: ${apiUrl}`)
+  }
+
+  return new URL(path, api.origin).toString()
+}
+
+const isRecord = (value: unknown): value is Record<string, unknown> => {
+  return typeof value === "object" && value !== null && !Array.isArray(value)
+}
+
+const extractErrorMessage = async (response: Response): Promise<string | undefined> => {
+  const contentType = response.headers.get("content-type") ?? ""
+
+  if (contentType.includes("application/json")) {
+    const data = (await response.json().catch(() => null)) as unknown
+    if (isRecord(data) && typeof data.message === "string" && data.message.length > 0) {
+      return data.message
+    }
+    return undefined
+  }
+
+  const text = await response.text().catch(() => "")
+  return text || undefined
+}
+
+const hasValidSessionToken = async (apiUrl: string, token: string): Promise<boolean> => {
+  const response = await fetch(resolveAuthEndpointUrl(apiUrl, SESSION_CHECK_PATH), {
+    headers: {
+      Authorization: `Bearer ${token}`,
+      Cookie: `__Secure-better-auth.session_token=${token}; better-auth.session_token=${token}`,
+    },
+    method: "GET",
+  })
+
+  if (!response.ok) {
+    return false
+  }
+
+  const data = (await response.json().catch(() => null)) as unknown
+  return isRecord(data) && Boolean(data.user) && Boolean(data.session)
+}
+
+export const resolveBrowserLoginToken = async (apiUrl: string, token: string): Promise<string> => {
+  const verifyUrl = resolveAuthEndpointUrl(apiUrl, ONE_TIME_TOKEN_VERIFY_PATH)
+
+  let response: Response
+  try {
+    response = await fetch(verifyUrl, {
+      method: "POST",
+      headers: {
+        "content-type": "application/json",
+      },
+      body: JSON.stringify({ token }),
+    })
+  } catch (error) {
+    throw new CLIError(
+      "NETWORK_ERROR",
+      `Failed to verify browser login token: ${(error as Error).message}`,
+    )
+  }
+
+  if (response.ok) {
+    const data = (await response.json().catch(() => null)) as unknown
+    const sessionToken =
+      isRecord(data) && isRecord(data.session) && typeof data.session.token === "string"
+        ? data.session.token
+        : undefined
+
+    if (!sessionToken) {
+      throw new CLIError(
+        "UNAUTHORIZED",
+        "Browser login verification succeeded without returning a session token.",
+      )
+    }
+
+    return sessionToken
+  }
+
+  const errorMessage = await extractErrorMessage(response)
+
+  try {
+    if (await hasValidSessionToken(apiUrl, token)) {
+      return token
+    }
+  } catch {
+    // Ignore fallback probe failures and surface the original verification error below.
+  }
+
+  throw new CLIError(
+    "UNAUTHORIZED",
+    errorMessage
+      ? `Browser login token verification failed: ${errorMessage}`
+      : "Browser login token verification failed.",
+  )
+}
+
 export interface BrowserLoginOptions {
   apiUrl: string
   timeoutMs?: number
@@ -166,13 +269,22 @@ export const loginWithBrowser = async (
         : ""
       const loginUrl = resolveCLILoginUrl(options.apiUrl, callbackUrl)
 
-      settle(() => {
-        resolve({
-          token,
-          callbackUrl,
-          loginUrl,
-        })
-      })
+      void (async () => {
+        try {
+          const sessionToken = await resolveBrowserLoginToken(options.apiUrl, token)
+          settle(() => {
+            resolve({
+              token: sessionToken,
+              callbackUrl,
+              loginUrl,
+            })
+          })
+        } catch (error) {
+          settle(() => {
+            reject(error)
+          })
+        }
+      })()
     })
 
     server.once("error", (error) => {
@@ -210,7 +322,7 @@ export const loginWithBrowser = async (
           reject(
             new CLIError(
               "TIMEOUT",
-              "Timed out waiting for browser login. Please run `folo auth login` again.",
+              "Timed out waiting for browser login. Please run `folo login` again.",
             ),
           )
         })

@@ -1,3 +1,4 @@
+import { DeviceType } from "expo-device"
 import { Platform } from "react-native"
 
 import { useDeviceType } from "../atoms/hooks/useDeviceType"
@@ -9,7 +10,7 @@ export const devicePlatform = isIOS ? "ios" : isAndroid ? "android" : "web"
 export const isWeb = !isNative
 
 export const useIsiPad = () => {
-  return useDeviceType() && isIOS
+  return useDeviceType() === DeviceType.TABLET && isIOS
 }
 
 export const isIos26 = Number.parseFloat(String(Platform.Version)) >= 26

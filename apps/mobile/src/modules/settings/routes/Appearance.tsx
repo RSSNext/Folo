@@ -1,7 +1,7 @@
 import { getUnreadAll } from "@follow/store/unread/getters"
 import { themeNames } from "@shikijs/themes"
 import { useTranslation } from "react-i18next"
-import { useColorScheme, View } from "react-native"
+import { useColorScheme } from "react-native"
 
 import { setUISetting, useUISettingKey } from "@/src/atoms/settings/ui"
 import {
@@ -84,6 +84,7 @@ export const AppearanceScreen = () => {
   const useSystemFontScaling = useUISettingKey("useSystemFontScaling")
   const useDifferentFontSizeForContent = useUISettingKey("useDifferentFontSizeForContent")
   const mobileContentFontSize = useUISettingKey("mobileContentFontSize")
+  const selectWrapperClassName = "w-auto min-w-[96px] max-w-[44vw] shrink-0"
   return (
     <SafeNavigationScrollView
       className="bg-system-grouped-background"
@@ -139,24 +140,23 @@ export const AppearanceScreen = () => {
           label={t("appearance.thumbnail_ratio.title")}
           description={t("appearance.thumbnail_ratio.description")}
         >
-          <View className="w-[100px]">
-            <Select
-              options={[
-                {
-                  label: "Square",
-                  value: "square",
-                },
-                {
-                  label: "Original",
-                  value: "original",
-                },
-              ]}
-              value={thumbnailRatio}
-              onValueChange={(val) => {
-                setUISetting("thumbnailRatio", val as "square" | "original")
-              }}
-            />
-          </View>
+          <Select
+            wrapperClassName={selectWrapperClassName}
+            options={[
+              {
+                label: t("appearance.thumbnail_ratio.square"),
+                value: "square",
+              },
+              {
+                label: t("appearance.thumbnail_ratio.original"),
+                value: "original",
+              },
+            ]}
+            value={thumbnailRatio}
+            onValueChange={(val) => {
+              setUISetting("thumbnailRatio", val as "square" | "original")
+            }}
+          />
         </GroupedInsetListCell>
       </GroupedInsetListCard>
 
@@ -178,19 +178,18 @@ export const AppearanceScreen = () => {
           label={t("appearance.font_scaling.scale.label")}
           description={t("appearance.font_scaling.scale.description")}
         >
-          <View className="w-[100px]">
-            <Select
-              options={fontSizePresets.map((preset) => ({
-                label: t(`appearance.font_scaling.size.${preset.key}`),
-                value: preset.value.toString(),
-              }))}
-              value={fontScale.toString()}
-              onValueChange={(val) => {
-                setUISetting("fontScale", Number.parseFloat(val))
-              }}
-              disabled={useSystemFontScaling}
-            />
-          </View>
+          <Select
+            wrapperClassName={selectWrapperClassName}
+            options={fontSizePresets.map((preset) => ({
+              label: t(`appearance.font_scaling.size.${preset.key}`),
+              value: preset.value.toString(),
+            }))}
+            value={fontScale.toString()}
+            onValueChange={(val) => {
+              setUISetting("fontScale", Number.parseFloat(val))
+            }}
+            disabled={useSystemFontScaling}
+          />
         </GroupedInsetListCell>
         <GroupedInsetListCell
           label={t("appearance.font_scaling.content_different.label")}
@@ -209,37 +208,35 @@ export const AppearanceScreen = () => {
             label={t("appearance.font_scaling.content_size.label")}
             description={t("appearance.font_scaling.content_size.description")}
           >
-            <View className="w-[100px]">
-              <Select
-                options={contentFontSizePresets.map((preset) => ({
-                  label: t(`appearance.font_scaling.content_size.${preset.key}`),
-                  value: preset.value.toString(),
-                }))}
-                value={mobileContentFontSize.toString()}
-                onValueChange={(val) => {
-                  setUISetting("mobileContentFontSize", Number.parseInt(val))
-                }}
-              />
-            </View>
+            <Select
+              wrapperClassName={selectWrapperClassName}
+              options={contentFontSizePresets.map((preset) => ({
+                label: t(`appearance.font_scaling.content_size.${preset.key}`),
+                value: preset.value.toString(),
+              }))}
+              value={mobileContentFontSize.toString()}
+              onValueChange={(val) => {
+                setUISetting("mobileContentFontSize", Number.parseInt(val))
+              }}
+            />
           </GroupedInsetListCell>
         )}
       </GroupedInsetListCard>
 
-      <GroupedInsetListSectionHeader label="Content" />
+      <GroupedInsetListSectionHeader label={t("appearance.content")} />
       <GroupedInsetListCard>
         <GroupedInsetListCell label={t("appearance.code_highlight_theme.label")}>
-          <View className="w-[120px]">
-            <Select
-              options={themeNames.map((theme) => ({
-                label: theme,
-                value: theme,
-              }))}
-              value={colorScheme === "dark" ? codeThemeDark : codeThemeLight}
-              onValueChange={(val) => {
-                setUISetting(`codeHighlightTheme${colorScheme === "dark" ? "Dark" : "Light"}`, val)
-              }}
-            />
-          </View>
+          <Select
+            wrapperClassName={selectWrapperClassName}
+            options={themeNames.map((theme) => ({
+              label: theme,
+              value: theme,
+            }))}
+            value={colorScheme === "dark" ? codeThemeDark : codeThemeLight}
+            onValueChange={(val) => {
+              setUISetting(`codeHighlightTheme${colorScheme === "dark" ? "Dark" : "Light"}`, val)
+            }}
+          />
         </GroupedInsetListCell>
 
         <GroupedInsetListCell

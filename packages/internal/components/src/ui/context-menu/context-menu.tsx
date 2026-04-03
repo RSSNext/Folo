@@ -36,7 +36,7 @@ const ContextMenuSubTrigger = ({
   <ContextMenuPrimitive.SubTrigger
     ref={ref}
     className={cn(
-      "cursor-menu data-[state=open]:bg-mix-background/accent-9/1 data-[state=open]:text-accent data-[highlighted]:text-accent data-[highlighted]:bg-mix-background/accent-9/1 flex select-none items-center rounded-[5px] px-2.5 py-1.5 outline-none",
+      "flex cursor-menu select-none items-center rounded-[5px] px-2.5 py-1.5 outline-none data-[highlighted]:text-accent data-[state=open]:text-accent data-[highlighted]:bg-mix-background/accent-9/1 data-[state=open]:bg-mix-background/accent-9/1",
       "h-[28px]",
       inset && "pl-8",
       "center gap-2",
@@ -62,13 +62,13 @@ const ContextMenuSubContent = ({
     <ContextMenuPrimitive.SubContent
       ref={ref}
       className={cn(
-        "text-text text-body",
+        "text-body text-text",
         "min-w-32 overflow-hidden",
         "rounded-[6px] p-1",
         "backdrop-blur-2xl",
         "z-[61]",
         "relative",
-        "dark:border-border/50 dark:border",
+        "dark:border dark:border-border/50",
         className,
       )}
       style={styles.content}
@@ -97,11 +97,11 @@ const ContextMenuContent = ({
     <ContextMenuPrimitive.Content
       ref={ref}
       className={cn(
-        "text-text z-[60] min-w-32 overflow-hidden rounded-[6px] p-1",
+        "z-[60] min-w-32 overflow-hidden rounded-[6px] p-1 text-text",
         "backdrop-blur-2xl",
-        "motion-scale-in-75 motion-duration-150 text-body lg:animate-none",
+        "text-body motion-scale-in-75 motion-duration-150 lg:animate-none",
         "relative",
-        "dark:border-border/50 dark:border",
+        "dark:border dark:border-border/50",
         className,
       )}
       style={styles.content}
@@ -130,8 +130,8 @@ const ContextMenuItem = ({
   <ContextMenuPrimitive.Item
     ref={ref}
     className={cn(
-      "cursor-menu focus:bg-accent/30 relative flex select-none items-center rounded-[5px] px-2.5 py-1.5 outline-none data-[disabled]:pointer-events-none data-[disabled]:opacity-50",
-      "data-[highlighted]:text-accent data-[highlighted]:bg-mix-background/accent-9/1 focus-within:outline-transparent",
+      "relative flex cursor-menu select-none items-center rounded-[5px] px-2.5 py-1.5 outline-none focus:bg-accent/30 data-[disabled]:pointer-events-none data-[disabled]:opacity-50",
+      "focus-within:outline-transparent data-[highlighted]:text-accent data-[highlighted]:bg-mix-background/accent-9/1",
       "h-[28px]",
       inset && "pl-8",
       className,
@@ -153,8 +153,8 @@ const ContextMenuCheckboxItem = ({
   <ContextMenuPrimitive.CheckboxItem
     ref={ref}
     className={cn(
-      "cursor-checkbox focus:bg-accent/30 relative flex select-none items-center rounded-[5px] px-8 py-1.5 outline-none data-[disabled]:pointer-events-none data-[disabled]:opacity-50",
-      "data-[highlighted]:text-accent data-[highlighted]:bg-mix-background/accent-9/1 focus-within:text-accent focus-within:outline-transparent",
+      "relative flex cursor-checkbox select-none items-center rounded-[5px] px-8 py-1.5 outline-none focus:bg-accent/30 data-[disabled]:pointer-events-none data-[disabled]:opacity-50",
+      "focus-within:text-accent focus-within:outline-transparent data-[highlighted]:text-accent data-[highlighted]:bg-mix-background/accent-9/1",
       "h-[28px]",
       className,
     )}
@@ -181,7 +181,7 @@ const ContextMenuLabel = ({
 } & { ref?: React.Ref<React.ElementRef<typeof ContextMenuPrimitive.Label> | null> }) => (
   <ContextMenuPrimitive.Label
     ref={ref}
-    className={cn("text-text px-2 py-1.5 font-semibold", inset && "pl-8", className)}
+    className={cn("px-2 py-1.5 font-semibold text-text", inset && "pl-8", className)}
     {...props}
   />
 )
@@ -194,7 +194,7 @@ const ContextMenuSeparator = ({
   ref?: React.Ref<React.ElementRef<typeof ContextMenuPrimitive.Separator> | null>
 }) => (
   <ContextMenuPrimitive.Separator
-    className="backdrop-blur-background mx-2 my-1 h-px"
+    className="mx-2 my-1 h-px backdrop-blur-background"
     asChild
     ref={ref}
     {...props}

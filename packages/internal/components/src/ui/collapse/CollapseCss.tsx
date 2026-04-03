@@ -118,7 +118,7 @@ export const CollapseCss: FC<CollapseProps> = ({
       >
         <span className="w-0 shrink grow truncate">{title}</span>
         {!hideArrow && (
-          <div className="text-text-secondary inline-flex shrink-0 items-center">
+          <div className="inline-flex shrink-0 items-center text-text-secondary">
             <i
               className={cn(
                 "i-mingcute-down-line transition-transform duration-300 ease-in-out",

@@ -114,7 +114,7 @@ export const PresentSheet = ({
           }}
           aria-describedby={undefined}
           className={cn(
-            "bg-theme-background fixed inset-x-0 bottom-0 flex max-h-[calc(100svh-3rem)] flex-col rounded-t-[10px] border-t pt-4",
+            "fixed inset-x-0 bottom-0 flex max-h-[calc(100svh-3rem)] flex-col rounded-t-[10px] border-t bg-theme-background pt-4",
             modalClassName,
           )}
         >
@@ -153,7 +153,7 @@ export const PresentSheet = ({
             <RootPortalContext value={contentInnerRef.current!}>
               <div
                 className={cn(
-                  "pb-safe-offset-4 flex grow flex-col overflow-auto px-4",
+                  "flex grow flex-col overflow-auto px-4 pb-safe-offset-4",
                   contentClassName,
                 )}
               >

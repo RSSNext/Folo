@@ -5,7 +5,7 @@ import {
   useMasonryItemWidth,
 } from "@follow/components/ui/masonry/contexts.jsx"
 import { useMasonryColumn } from "@follow/components/ui/masonry/hooks.js"
-import type { MediaModel } from "@folo-services/drizzle"
+import type { MediaModel } from "@follow/database/schemas/types"
 import type { RenderComponentProps } from "masonic"
 import { Masonry } from "masonic"
 import { useState } from "react"

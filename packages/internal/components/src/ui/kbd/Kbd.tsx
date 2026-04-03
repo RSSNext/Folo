@@ -77,7 +77,7 @@ export const KbdCombined: FC<{
           )}
           {i !== keys.length - 1 && (
             <span>
-              <i className="i-mgc-line-cute-re text-text-secondary size-[0.75em] shrink-0 origin-center translate-y-[0.15em] rotate-[-25deg]" />
+              <i className="i-mgc-line-cute-re size-[0.75em] shrink-0 origin-center translate-y-[0.15em] rotate-[-25deg] text-text-secondary" />
             </span>
           )}
         </Fragment>
@@ -345,7 +345,7 @@ export const Kbd: FC<{
   const KbdElement = (
     <kbd
       className={cn(
-        "kbd text-text box-border h-5 space-x-1 font-sans text-[0.7rem] tabular-nums transition-all duration-200",
+        "kbd box-border h-5 space-x-1 font-sans text-[0.7rem] tabular-nums text-text transition-all duration-200",
         wrapButton && isKeyPressed && "scale-95 opacity-80",
         className,
       )}

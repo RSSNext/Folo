@@ -69,6 +69,9 @@ export const TokenModalContent = () => {
                     autoFocus
                     className="mt-1 dark:text-zinc-200"
                     placeholder="folo://auth?token=xxx"
+                    autoCapitalize="none"
+                    autoCorrect="off"
+                    spellCheck={false}
                     {...field}
                   />
                 </FormControl>

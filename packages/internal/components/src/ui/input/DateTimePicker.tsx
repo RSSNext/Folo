@@ -235,7 +235,7 @@ export const DateTimePicker = memo<DateTimePickerProps>(
             {viewMode === "days" && (
               <>
                 {/* Weekdays */}
-                <div className="text-text-secondary mb-1 grid grid-cols-7 gap-0.5 text-center text-xs">
+                <div className="mb-1 grid grid-cols-7 gap-0.5 text-center text-xs text-text-secondary">
                   {weekDays.map((day) => (
                     <div key={day} className="flex h-6 items-center justify-center font-medium">
                       {day.slice(0, 2)}
@@ -362,9 +362,9 @@ export const DateTimePicker = memo<DateTimePickerProps>(
 
             {/* Time Selection (only single mode) */}
             {!isRangeMode && (
-              <div className="border-border -mx-2 border-t px-2 pt-2">
+              <div className="-mx-2 border-t border-border px-2 pt-2">
                 <div className="flex items-center justify-between">
-                  <span className="text-text-secondary text-xs font-medium">Time</span>
+                  <span className="text-xs font-medium text-text-secondary">Time</span>
                   <TimeSelect
                     value={currentDateTime.format("HH:mm")}
                     onChange={handleTimeChange}

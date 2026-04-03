@@ -23,6 +23,7 @@ export interface SegmentTabProps<T = string> {
   inactiveClassName?: string
   size?: 'sm' | 'md' | 'lg'
   variant?: 'default' | 'compact'
+  distribution?: 'fill' | 'fit'
   disabled?: boolean
   responsiveWrap?: boolean
   ref?: Ref<HTMLDivElement>
@@ -69,6 +70,7 @@ export function SegmentTab<T = string>({
   inactiveClassName,
   size = 'md',
   variant = 'default',
+  distribution = 'fill',
   disabled = false,
   responsiveWrap = false,
   ref,
@@ -82,7 +84,8 @@ export function SegmentTab<T = string>({
       role="tablist"
       aria-disabled={disabled || undefined}
       className={cn(
-        'container-type-[inline-size] relative flex w-full items-center',
+        'container-type-[inline-size] relative flex items-center',
+        distribution === 'fill' ? 'w-full' : 'w-fit max-w-full',
         styles.container,
         disabled && 'pointer-events-none opacity-60',
         containerClassName,
@@ -90,7 +93,8 @@ export function SegmentTab<T = string>({
     >
       <div
         className={cn(
-          'relative flex w-full items-center',
+          'relative flex items-center',
+          distribution === 'fill' ? 'w-full' : 'w-fit max-w-full',
           responsiveWrap && 'flex-wrap',
         )}
       >
@@ -110,12 +114,14 @@ export function SegmentTab<T = string>({
                 'focus-visible:ring-accent/30 focus:outline-none focus-visible:ring-2',
                 sizeClass,
                 styles.button,
-                responsiveWrap
-                  ? clsx(
-                      '@[0px]:flex-none @[0px]:basis-[calc(50%-0.125rem)] @[0px]:px-2',
-                      '@[420px]:flex-1 @[420px]:basis-auto @[420px]:px-3',
-                    )
-                  : clsx('flex-1', '@[0px]:px-2 @[420px]:px-3'),
+                distribution === 'fit'
+                  ? 'flex-none'
+                  : responsiveWrap
+                    ? clsx(
+                        '@[0px]:flex-none @[0px]:basis-[calc(50%-0.125rem)] @[0px]:px-2',
+                        '@[420px]:flex-1 @[420px]:basis-auto @[420px]:px-3',
+                      )
+                    : clsx('flex-1', '@[0px]:px-2 @[420px]:px-3'),
                 isActive
                   ? cn('text-text', activeClassName)
                   : cn(
@@ -150,7 +156,6 @@ export function SegmentTab<T = string>({
                     // Floating pill indicator with subtle border & shadow
                     'pointer-events-none absolute inset-x-0 inset-y-0.5 z-[-1]',
                     styles.indicator,
-                    responsiveWrap && 'hidden @[420px]:block',
                     className,
                   )}
                 />

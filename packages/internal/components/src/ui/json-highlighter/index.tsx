@@ -47,7 +47,7 @@ export const JsonHighlighter = ({
     <pre
       ref={ref}
       className={cn(
-        "bg-material-ultra-thin text-text overflow-auto rounded-md border p-4 text-sm",
+        "overflow-auto rounded-md border bg-material-ultra-thin p-4 text-sm text-text",
         "font-mono leading-relaxed",
         className,
       )}
@@ -57,7 +57,7 @@ export const JsonHighlighter = ({
       <code className="block">
         {showLineNumbers ? (
           <div className="flex">
-            <div className="text-text-tertiary border-fill mr-4 select-none border-r pr-4">
+            <div className="mr-4 select-none border-r border-fill pr-4 text-text-tertiary">
               {lines.map((_, index) => (
                 <div key={index} className="text-right">
                   {index + 1}

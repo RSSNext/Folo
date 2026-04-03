@@ -9,73 +9,40 @@ import PKG from "@pkg"
 import { NetworkStatus, setApiStatus } from "~/atoms/network"
 import { setLoginModalShow } from "~/atoms/user"
 
-import { ipcServices } from "./client"
 import { getAuthSessionToken, getClientId, getSessionId } from "./client-session"
-
-const electronFetch = async (input: string | URL | Request, options: RequestInit = {}) => {
-  const authService = ipcServices?.auth as
-    | (NonNullable<typeof ipcServices>["auth"] & {
-        request?: (payload: {
-          input: string
-          init?: { method?: string; headers?: Record<string, string>; body?: string }
-        }) => Promise<{ status: number; headers: Record<string, string>; body: string }>
-      })
-    | undefined
-
-  if (!authService?.request) {
-    return fetch(input.toString(), {
-      ...options,
-      cache: "no-store",
-    })
-  }
-
-  const headers = new Headers(options.headers)
-  const response = await authService.request({
-    input: input.toString(),
-    init: {
-      method: options.method,
-      headers: Object.fromEntries(headers.entries()),
-      body: typeof options.body === "string" ? options.body : undefined,
-    },
-  })
-
-  return new Response(response.body, {
-    status: response.status,
-    headers: response.headers,
-  })
-}
 
 export const followClient = new FollowClient({
   credentials: "include",
   timeout: 30000,
   baseURL: env.VITE_API_URL,
   fetch: async (input, options = {}) =>
-    IN_ELECTRON
-      ? electronFetch(input, options)
-      : fetch(input.toString(), {
-          ...options,
-          cache: "no-store",
-        }),
+    fetch(input.toString(), {
+      ...options,
+      cache: "no-store",
+    }),
 })
 
 export const followApi = followClient.api
 followClient.addRequestInterceptor(async (ctx) => {
   const { options } = ctx
-  const header = options.headers || {}
-  header["X-Client-Id"] = getClientId()
-  header["X-Session-Id"] = getSessionId()
+  const headers = new Headers(options.headers)
+  headers.set("X-Client-Id", getClientId())
+  headers.set("X-Session-Id", getSessionId())
 
   const authSessionToken = IN_ELECTRON ? getAuthSessionToken() : null
-  if (authSessionToken) {
-    header.Cookie = `__Secure-better-auth.session_token=${authSessionToken}; better-auth.session_token=${authSessionToken}`
+  if (authSessionToken && !headers.has("Cookie") && !headers.has("cookie")) {
+    headers.set(
+      "Cookie",
+      `__Secure-better-auth.session_token=${authSessionToken}; better-auth.session_token=${authSessionToken}`,
+    )
   }
 
   const apiHeader = createDesktopAPIHeaders({ version: PKG.version })
+  Object.entries(apiHeader).forEach(([key, value]) => {
+    headers.set(key, value)
+  })
 
-  options.headers = {
-    ...header,
-    ...apiHeader,
-  }
+  options.headers = Object.fromEntries(headers.entries())
   return ctx
 })
 
@@ -101,13 +68,11 @@ followClient.addErrorInterceptor(async ({ error, response }) => {
 
 followClient.addResponseInterceptor(async ({ response }) => {
   if (response.status === 401) {
-    const shouldPromptForLogin = response.url.includes("/better-auth/get-session") || !whoami()
+    const authSessionToken = IN_ELECTRON ? getAuthSessionToken() : null
+    const shouldPromptForLogin =
+      response.url.includes("/better-auth/get-session") || (!whoami() && !authSessionToken)
 
     if (!shouldPromptForLogin) {
-      return response
-    }
-
-    if (IN_ELECTRON && getAuthSessionToken()) {
       return response
     }
 
