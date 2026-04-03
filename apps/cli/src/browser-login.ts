@@ -8,6 +8,7 @@ import { CLIError } from "./output"
 const LOCAL_CALLBACK_HOST = "127.0.0.1"
 const LOCAL_CALLBACK_PATH = "/callback"
 const DEFAULT_TIMEOUT_MS = 3 * 60 * 1000
+const ONE_TIME_TOKEN_APPLY_PATH = "/better-auth/one-time-token/apply"
 const ONE_TIME_TOKEN_VERIFY_PATH = "/better-auth/one-time-token/verify"
 const SESSION_CHECK_PATH = "/better-auth/get-session"
 
@@ -114,6 +115,38 @@ const isRecord = (value: unknown): value is Record<string, unknown> => {
   return typeof value === "object" && value !== null && !Array.isArray(value)
 }
 
+const readSetCookieValues = (response: Response): string[] => {
+  if (typeof response.headers.getSetCookie === "function") {
+    return response.headers.getSetCookie()
+  }
+
+  const setCookie = response.headers.get("set-cookie")
+  return setCookie ? [setCookie] : []
+}
+
+const extractSessionTokenFromSetCookie = (setCookieValues: string[]): string | undefined => {
+  for (const setCookie of setCookieValues) {
+    const match = setCookie.match(/(?:__Secure-)?better-auth\.session_token=([^;]+)/)
+    if (match?.[1]) {
+      return match[1]
+    }
+  }
+
+  return undefined
+}
+
+const extractSessionTokenFromBody = (data: unknown): string | undefined => {
+  if (!isRecord(data)) {
+    return undefined
+  }
+
+  if (isRecord(data.session) && typeof data.session.token === "string") {
+    return data.session.token
+  }
+
+  return undefined
+}
+
 const extractErrorMessage = async (response: Response): Promise<string | undefined> => {
   const contentType = response.headers.get("content-type") ?? ""
 
@@ -147,42 +180,80 @@ const hasValidSessionToken = async (apiUrl: string, token: string): Promise<bool
 }
 
 export const resolveBrowserLoginToken = async (apiUrl: string, token: string): Promise<string> => {
+  const applyUrl = resolveAuthEndpointUrl(apiUrl, ONE_TIME_TOKEN_APPLY_PATH)
   const verifyUrl = resolveAuthEndpointUrl(apiUrl, ONE_TIME_TOKEN_VERIFY_PATH)
 
-  let response: Response
+  const requestBody = JSON.stringify({ token })
+
+  let response: Response | undefined
+  let errorMessage: string | undefined
   try {
-    response = await fetch(verifyUrl, {
+    response = await fetch(applyUrl, {
       method: "POST",
       headers: {
         "content-type": "application/json",
       },
-      body: JSON.stringify({ token }),
+      body: requestBody,
     })
   } catch (error) {
     throw new CLIError(
       "NETWORK_ERROR",
-      `Failed to verify browser login token: ${(error as Error).message}`,
+      `Failed to apply browser login token: ${(error as Error).message}`,
     )
   }
 
   if (response.ok) {
     const data = (await response.json().catch(() => null)) as unknown
     const sessionToken =
-      isRecord(data) && isRecord(data.session) && typeof data.session.token === "string"
-        ? data.session.token
-        : undefined
+      extractSessionTokenFromSetCookie(readSetCookieValues(response)) ??
+      extractSessionTokenFromBody(data)
 
     if (!sessionToken) {
       throw new CLIError(
         "UNAUTHORIZED",
-        "Browser login verification succeeded without returning a session token.",
+        "Browser login token apply succeeded without returning a session token.",
       )
     }
 
     return sessionToken
   }
 
-  const errorMessage = await extractErrorMessage(response)
+  errorMessage = await extractErrorMessage(response)
+
+  if (response.status === 404) {
+    try {
+      response = await fetch(verifyUrl, {
+        method: "POST",
+        headers: {
+          "content-type": "application/json",
+        },
+        body: requestBody,
+      })
+    } catch (error) {
+      throw new CLIError(
+        "NETWORK_ERROR",
+        `Failed to verify browser login token: ${(error as Error).message}`,
+      )
+    }
+
+    if (response.ok) {
+      const data = (await response.json().catch(() => null)) as unknown
+      const sessionToken =
+        extractSessionTokenFromSetCookie(readSetCookieValues(response)) ??
+        extractSessionTokenFromBody(data)
+
+      if (!sessionToken) {
+        throw new CLIError(
+          "UNAUTHORIZED",
+          "Browser login verification succeeded without returning a session token.",
+        )
+      }
+
+      return sessionToken
+    }
+
+    errorMessage = await extractErrorMessage(response)
+  }
 
   try {
     if (await hasValidSessionToken(apiUrl, token)) {

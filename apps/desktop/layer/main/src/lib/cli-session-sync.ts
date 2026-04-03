@@ -13,6 +13,7 @@ import { WindowManager } from "~/manager/window"
 
 import { logger } from "../logger"
 import { buildManagedAuthCookieHeader, getManagedAuthCookies } from "./auth-cookies"
+import { resolveCliSessionToken } from "./cli-login-token"
 
 const execFileAsync = promisify(execFile)
 export const CLI_NPM_PACKAGE_NAME = "folocli"
@@ -50,8 +51,7 @@ export const getCliConfigPath = () => CLI_CONFIG_PATH
 
 export const getCliInstallCommand = () => `npx --yes ${CLI_NPX_PACKAGE_SPEC} --help`
 
-export const getCliLoginCommand = () =>
-  `npx --yes ${CLI_NPX_PACKAGE_SPEC} login --token <session-token>`
+export const getCliLoginCommand = () => `npx --yes ${CLI_NPX_PACKAGE_SPEC} login --token <token>`
 
 const runCliCommand = async (args: string[]) => {
   await execFileAsync(getNpxCommand(), ["--yes", CLI_NPX_PACKAGE_SPEC, ...args], {
@@ -99,14 +99,6 @@ export const getSessionTokenFromCookies = async (): Promise<string | undefined> 
   return sessionCookie?.value
 }
 
-export const resolveCliSessionToken = ({
-  preferredToken,
-  cookieToken,
-}: {
-  preferredToken?: string
-  cookieToken?: string
-}) => preferredToken || cookieToken
-
 const generateOneTimeTokenFromCurrentSession = async (): Promise<string | undefined> => {
   const window = WindowManager.getMainWindow()
   if (!window) return undefined
@@ -140,7 +132,7 @@ const generateOneTimeTokenFromCurrentSession = async (): Promise<string | undefi
 const resolveSessionTokenFromOneTimeToken = async (
   oneTimeToken: string,
 ): Promise<string | undefined> => {
-  const response = await fetch(`${env.VITE_API_URL}/better-auth/one-time-token/verify`, {
+  const response = await fetch(`${env.VITE_API_URL}/better-auth/one-time-token/apply`, {
     method: "POST",
     headers: getCliSyncRequestHeaders({
       "content-type": "application/json",
@@ -150,6 +142,17 @@ const resolveSessionTokenFromOneTimeToken = async (
 
   if (!response.ok) {
     return undefined
+  }
+
+  const setCookieValues =
+    typeof response.headers.getSetCookie === "function"
+      ? response.headers.getSetCookie()
+      : ([response.headers.get("set-cookie")].filter(Boolean) as string[])
+  for (const setCookie of setCookieValues) {
+    const match = setCookie.match(/(?:__Secure-)?better-auth\.session_token=([^;]+)/)
+    if (match?.[1]) {
+      return match[1]
+    }
   }
 
   const data = (await response.json().catch(() => null)) as { session?: { token?: unknown } } | null

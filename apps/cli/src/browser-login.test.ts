@@ -56,12 +56,15 @@ describe("browser login helpers", () => {
     const fetchMock = vi.fn().mockResolvedValueOnce(
       new Response(
         JSON.stringify({
-          session: { token: "session-token" },
           user: { id: "user-1" },
         }),
         {
           status: 200,
-          headers: { "content-type": "application/json" },
+          headers: {
+            "content-type": "application/json",
+            "set-cookie":
+              "__Secure-better-auth.session_token=session-token; Path=/; HttpOnly; Secure; SameSite=None",
+          },
         },
       ),
     )
@@ -72,6 +75,49 @@ describe("browser login helpers", () => {
     expect(token).toBe("session-token")
     expect(fetchMock).toHaveBeenCalledTimes(1)
     expect(fetchMock).toHaveBeenCalledWith(
+      "https://api.folo.is/better-auth/one-time-token/apply",
+      expect.objectContaining({
+        method: "POST",
+        body: JSON.stringify({ token: "one-time-token" }),
+      }),
+    )
+  })
+
+  it("falls back to verify when apply endpoint is unavailable", async () => {
+    const fetchMock = vi
+      .fn()
+      .mockResolvedValueOnce(
+        new Response(null, {
+          status: 404,
+        }),
+      )
+      .mockResolvedValueOnce(
+        new Response(
+          JSON.stringify({
+            session: { token: "session-token" },
+            user: { id: "user-1" },
+          }),
+          {
+            status: 200,
+            headers: { "content-type": "application/json" },
+          },
+        ),
+      )
+    vi.stubGlobal("fetch", fetchMock)
+
+    const token = await resolveBrowserLoginToken(DEFAULT_VALUES.PROD.API_URL, "one-time-token")
+
+    expect(token).toBe("session-token")
+    expect(fetchMock).toHaveBeenNthCalledWith(
+      1,
+      "https://api.folo.is/better-auth/one-time-token/apply",
+      expect.objectContaining({
+        method: "POST",
+        body: JSON.stringify({ token: "one-time-token" }),
+      }),
+    )
+    expect(fetchMock).toHaveBeenNthCalledWith(
+      2,
       "https://api.folo.is/better-auth/one-time-token/verify",
       expect.objectContaining({
         method: "POST",

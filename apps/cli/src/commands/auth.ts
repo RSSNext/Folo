@@ -1,11 +1,35 @@
 import type { Command } from "commander"
 
 import { parsePositiveInt } from "../args"
-import { loginWithBrowser } from "../browser-login"
-import { getGlobalOptions } from "../client"
+import { loginWithBrowser, resolveBrowserLoginToken } from "../browser-login"
+import { fetchAuthSession, getGlobalOptions, normalizeToken } from "../client"
 import { runCommand } from "../command"
 import { clearToken, getConfigPath, updateConfig } from "../config"
 import { CLIError } from "../output"
+
+export const resolveLoginToken = async ({
+  inputToken,
+  apiUrl,
+  timeoutMs,
+  onStatus,
+}: {
+  inputToken?: string
+  apiUrl: string
+  timeoutMs: number
+  onStatus: (message: string) => void
+}) => {
+  if (inputToken) {
+    return await resolveBrowserLoginToken(apiUrl, inputToken)
+  }
+
+  const browserLogin = await loginWithBrowser({
+    apiUrl,
+    timeoutMs,
+    onStatus,
+  })
+
+  return browserLogin.token
+}
 
 interface AuthLoginOptions {
   token?: string
@@ -16,21 +40,22 @@ const runLoginAction = async function (this: Command, options: AuthLoginOptions)
   await runCommand(
     this,
     async ({ client, options: globalOptions }) => {
-      let token = options.token ?? getGlobalOptions(this).token
-      if (!token) {
-        const timeoutMs = (options.timeout ?? 180) * 1000
-        const browserLogin = await loginWithBrowser({
-          apiUrl: globalOptions.apiUrl,
-          timeoutMs,
-          onStatus: (message) => {
-            console.error(`[auth] ${message}`)
-          },
-        })
-        token = browserLogin.token
-      }
+      const resolvedToken = await resolveLoginToken({
+        inputToken: options.token ?? getGlobalOptions(this).token,
+        apiUrl: globalOptions.apiUrl,
+        timeoutMs: (options.timeout ?? 180) * 1000,
+        onStatus: (message) => {
+          console.error(`[auth] ${message}`)
+        },
+      })
 
+      const token = normalizeToken(resolvedToken) ?? resolvedToken
       client.setAuthToken(token)
-      const session = await client.api.auth.getSession()
+      const session = await fetchAuthSession({
+        apiUrl: globalOptions.apiUrl,
+        token,
+        verbose: globalOptions.verbose,
+      })
 
       if (!session.user || !session.session) {
         throw new CLIError("UNAUTHORIZED", "Token is invalid or expired.")
@@ -66,8 +91,16 @@ const runLogoutAction = async function (this: Command) {
 }
 
 const runWhoamiAction = async function (this: Command) {
-  await runCommand(this, async ({ client }) => {
-    const session = await client.api.auth.getSession()
+  await runCommand(this, async ({ token, options: globalOptions }) => {
+    if (!token) {
+      throw new CLIError("UNAUTHORIZED", "Missing token.")
+    }
+
+    const session = await fetchAuthSession({
+      apiUrl: globalOptions.apiUrl,
+      token,
+      verbose: globalOptions.verbose,
+    })
     if (!session.user || !session.session) {
       throw new CLIError("UNAUTHORIZED", "Token is invalid or expired.")
     }
@@ -87,7 +120,7 @@ const registerLoginCommand = (program: Command, name: string, description: strin
   program
     .command(name)
     .description(description)
-    .option("--token <token>", "Session token from Folo")
+    .option("--token <token>", "Session or one-time token from Folo")
     .option(
       "--timeout <seconds>",
       "Browser login timeout in seconds (default: 180)",
