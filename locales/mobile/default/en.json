@@ -33,6 +33,7 @@
   "login.password": "Password",
   "login.passwords_do_not_match": "Passwords don't match",
   "login.privacy": "Privacy Policy",
+  "login.redirecting": "Redirecting...",
   "login.sign_up_successful": "Sign up successful",
   "login.submit": "Submit",
   "login.terms": "Terms of Service",

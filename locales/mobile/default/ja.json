@@ -33,6 +33,7 @@
   "login.password": "パスワード",
   "login.passwords_do_not_match": "パスワードが一致しません",
   "login.privacy": "プライバシーポリシー",
+  "login.redirecting": "リダイレクト中...",
   "login.sign_up_successful": "サインアップに成功しました",
   "login.submit": "ログイン",
   "login.terms": "利用規約",

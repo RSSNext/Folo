@@ -33,6 +33,7 @@
   "login.password": "密码",
   "login.passwords_do_not_match": "两次输入的密码不一致",
   "login.privacy": "隐私政策",
+  "login.redirecting": "正在跳转...",
   "login.sign_up_successful": "注册成功",
   "login.submit": "提交",
   "login.terms": "服务条款",

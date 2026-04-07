@@ -23,6 +23,7 @@
   "login.password": "Mot de passe",
   "login.passwords_do_not_match": "Les mots de passe ne correspondent pas",
   "login.privacy": "Politique de confidentialité",
+  "login.redirecting": "Redirection...",
   "login.sign_up_successful": "Inscription réussie",
   "login.submit": "Soumettre",
   "login.terms": "Conditions d'utilisation",

@@ -23,6 +23,7 @@
   "login.password": "密碼",
   "login.passwords_do_not_match": "兩次輸入的密碼不一致",
   "login.privacy": "隱私政策",
+  "login.redirecting": "正在跳轉...",
   "login.sign_up_successful": "註冊成功",
   "login.submit": "送出",
   "login.terms": "服務條款",
