@@ -187,7 +187,7 @@ const SpotlightRuleEditor = ({
       </div>
 
       <div className="flex flex-wrap justify-end gap-2">
-        <Button size="sm" variant="outline" className="text-red" onClick={onDelete}>
+        <Button size="sm" variant="outline" onClick={onDelete}>
           {t("words.delete", { ns: "common" })}
         </Button>
         <Button disabled={isFirst} size="sm" variant="outline" onClick={() => onMove(-1)}>

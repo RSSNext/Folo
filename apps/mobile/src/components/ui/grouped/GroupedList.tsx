@@ -3,7 +3,7 @@ import { SymbolView } from "expo-symbols"
 import type { FC, PropsWithChildren } from "react"
 import * as React from "react"
 import { Fragment } from "react"
-import type { PressableProps, ViewProps } from "react-native"
+import type { PressableProps, ViewProps, ViewStyle } from "react-native"
 import { Pressable, StyleSheet, View } from "react-native"
 import Animated, { FadeIn, FadeOut } from "react-native-reanimated"
 import type { SFSymbol } from "sf-symbols-typescript"
@@ -26,6 +26,11 @@ import {
 import { GroupedInsetListCardItemStyle } from "./GroupedInsetListCardItemStyle"
 
 const GROUPED_TABLET_MAX_WIDTH = 760
+const GROUPED_TABLET_CARD_STYLE: ViewStyle = {
+  width: "100%",
+  maxWidth: GROUPED_TABLET_MAX_WIDTH,
+  alignSelf: "center",
+}
 
 interface GroupedInsetListCardProps {
   showSeparator?: boolean
@@ -57,9 +62,7 @@ export const GroupedInsetListCard: FC<
     return normalizedChildren.filter(Boolean)
   }, [children])
   const isTablet = useIsTabletLayout()
-  const tabletCardStyle = isTablet
-    ? { width: "100%", maxWidth: GROUPED_TABLET_MAX_WIDTH, alignSelf: "center" as const }
-    : undefined
+  const tabletCardStyle = isTablet ? GROUPED_TABLET_CARD_STYLE : undefined
   return (
     <View
       {...props}
@@ -115,10 +118,10 @@ export const GroupedInsetListSectionHeader: FC<{
   marginSize?: "normal" | "small"
 }> = ({ label, marginSize = "normal" }) => {
   const isTablet = useIsTabletLayout()
-  const sectionStyle = {
+  const sectionStyle: ViewStyle = {
     width: isTablet ? "100%" : undefined,
     maxWidth: isTablet ? GROUPED_TABLET_MAX_WIDTH : undefined,
-    alignSelf: isTablet ? ("center" as const) : undefined,
+    alignSelf: isTablet ? "center" : undefined,
     paddingHorizontal: GROUPED_LIST_ITEM_PADDING,
     marginHorizontal: GROUPED_LIST_MARGIN,
     marginTop:
