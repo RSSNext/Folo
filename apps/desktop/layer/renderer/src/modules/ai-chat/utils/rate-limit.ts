@@ -20,6 +20,7 @@ const formatResetTime = (windowResetTime: Date) => {
   const now = new Date()
   const diffMs = resetDate.getTime() - now.getTime()
   const diffMinutes = Math.ceil(diffMs / (1000 * 60))
+  const locale = i18n.language || i18n.resolvedLanguage || undefined
 
   if (diffMinutes < 60 && diffMinutes > 0) {
     const unit =
@@ -30,12 +31,31 @@ const formatResetTime = (windowResetTime: Date) => {
     return t("rate_limit.resets_in", { ns: "ai", value })
   }
 
-  const timeFormatter = new Intl.DateTimeFormat("en-GB", {
+  const isSameCalendarDay =
+    resetDate.getFullYear() === now.getFullYear() &&
+    resetDate.getMonth() === now.getMonth() &&
+    resetDate.getDate() === now.getDate()
+
+  const time = new Intl.DateTimeFormat(locale, {
     hour: "2-digit",
     minute: "2-digit",
     hour12: false,
-  })
-  return t("rate_limit.resets_at", { ns: "ai", time: timeFormatter.format(resetDate) })
+  }).format(resetDate)
+
+  if (isSameCalendarDay) {
+    return t("rate_limit.resets_at", { ns: "ai", time })
+  }
+
+  const dateTime = new Intl.DateTimeFormat(locale, {
+    ...(resetDate.getFullYear() !== now.getFullYear() ? { year: "numeric" as const } : {}),
+    month: "short",
+    day: "numeric",
+    hour: "2-digit",
+    minute: "2-digit",
+    hour12: false,
+  }).format(resetDate)
+
+  return t("rate_limit.resets_at", { ns: "ai", time: dateTime })
 }
 
 export function computeIsRateLimited(
