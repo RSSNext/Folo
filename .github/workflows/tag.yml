@@ -112,7 +112,7 @@ jobs:
 
       - name: Trigger Desktop Tag Version Build
         if: needs.create_tag.outputs.platform == 'desktop' && needs.create_tag.outputs.ref_name == 'main'
-        uses: actions/github-script@v8
+        uses: actions/github-script@v9
         with:
           github-token: ${{ secrets.GITHUB_TOKEN }}
           script: |
@@ -130,7 +130,7 @@ jobs:
 
       - name: Trigger Desktop Store Build
         if: needs.create_tag.outputs.platform == 'desktop' && needs.create_tag.outputs.ref_name == 'main'
-        uses: actions/github-script@v8
+        uses: actions/github-script@v9
         with:
           github-token: ${{ secrets.GITHUB_TOKEN }}
           script: |
@@ -149,7 +149,7 @@ jobs:
 
       - name: Trigger Mobile Preview Release Build
         if: needs.create_tag.outputs.platform == 'mobile' && needs.create_tag.outputs.ref_name == 'mobile-main'
-        uses: actions/github-script@v8
+        uses: actions/github-script@v9
         with:
           github-token: ${{ secrets.GITHUB_TOKEN }}
           script: |
@@ -167,7 +167,7 @@ jobs:
 
       - name: Trigger Mobile Production Android Build
         if: needs.create_tag.outputs.platform == 'mobile' && needs.create_tag.outputs.ref_name == 'mobile-main'
-        uses: actions/github-script@v8
+        uses: actions/github-script@v9
         with:
           github-token: ${{ secrets.GITHUB_TOKEN }}
           script: |
@@ -185,7 +185,7 @@ jobs:
 
       - name: Trigger Mobile Production iOS Build
         if: needs.create_tag.outputs.platform == 'mobile' && needs.create_tag.outputs.ref_name == 'mobile-main'
-        uses: actions/github-script@v8
+        uses: actions/github-script@v9
         with:
           github-token: ${{ secrets.GITHUB_TOKEN }}
           script: |
