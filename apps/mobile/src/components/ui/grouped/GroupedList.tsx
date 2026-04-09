@@ -52,20 +52,19 @@ export const GroupedInsetListCard: FC<
   SeparatorElement,
   ...props
 }) => {
-  const nextChildren = React.useMemo(
-    () => React.Children.toArray(children).filter(Boolean),
-    [children],
-  )
+  const nextChildren = React.useMemo(() => {
+    const normalizedChildren = Array.isArray(children) ? children : [children]
+    return normalizedChildren.filter(Boolean)
+  }, [children])
   const isTablet = useIsTabletLayout()
+  const tabletCardStyle = isTablet
+    ? { width: "100%", maxWidth: GROUPED_TABLET_MAX_WIDTH, alignSelf: "center" as const }
+    : undefined
   return (
     <View
       {...props}
       style={[
-        isTablet && {
-          width: "100%",
-          maxWidth: GROUPED_TABLET_MAX_WIDTH,
-          alignSelf: "center",
-        },
+        tabletCardStyle,
         {
           marginHorizontal: GROUPED_LIST_MARGIN,
         },
@@ -116,19 +115,18 @@ export const GroupedInsetListSectionHeader: FC<{
   marginSize?: "normal" | "small"
 }> = ({ label, marginSize = "normal" }) => {
   const isTablet = useIsTabletLayout()
+  const sectionStyle = {
+    width: isTablet ? "100%" : undefined,
+    maxWidth: isTablet ? GROUPED_TABLET_MAX_WIDTH : undefined,
+    alignSelf: isTablet ? ("center" as const) : undefined,
+    paddingHorizontal: GROUPED_LIST_ITEM_PADDING,
+    marginHorizontal: GROUPED_LIST_MARGIN,
+    marginTop:
+      marginSize === "normal" ? GROUPED_SECTION_TOP_MARGIN : GROUPED_SECTION_TOP_MARGIN / 2,
+    marginBottom: GROUPED_SECTION_BOTTOM_MARGIN,
+  }
   return (
-    <View
-      style={{
-        width: isTablet ? "100%" : undefined,
-        maxWidth: isTablet ? GROUPED_TABLET_MAX_WIDTH : undefined,
-        alignSelf: isTablet ? "center" : undefined,
-        paddingHorizontal: GROUPED_LIST_ITEM_PADDING,
-        marginHorizontal: GROUPED_LIST_MARGIN,
-        marginTop:
-          marginSize === "normal" ? GROUPED_SECTION_TOP_MARGIN : GROUPED_SECTION_TOP_MARGIN / 2,
-        marginBottom: GROUPED_SECTION_BOTTOM_MARGIN,
-      }}
-    >
+    <View style={sectionStyle}>
       <Text className="text-sm text-secondary-label" ellipsizeMode="tail" numberOfLines={1}>
         {label}
       </Text>
@@ -160,6 +158,7 @@ export const GroupedInsetListBaseCell: FC<
 export const GroupedInsetListNavigationLink: FC<
   {
     label: string
+    description?: string
     icon?: React.ReactNode
     onPress: () => void
     disabled?: boolean
@@ -168,6 +167,7 @@ export const GroupedInsetListNavigationLink: FC<
   } & BaseCellClassNames
 > = ({
   label,
+  description,
   icon,
   onPress,
   disabled,
@@ -185,9 +185,14 @@ export const GroupedInsetListNavigationLink: FC<
           className={cn(pressed ? "bg-system-fill" : undefined, disabled && "opacity-40")}
         >
           <View className={cn("flex-1 flex-row items-center justify-between", leftClassName)}>
-            <View className="flex-row items-center">
+            <View className="flex-1 flex-row items-center">
               {icon}
-              <Text className={"text-sm text-label"}>{label}</Text>
+              <View className="flex-1 gap-1">
+                <Text className={"text-sm text-label"}>{label}</Text>
+                {!!description && (
+                  <Text className="text-xs leading-tight text-secondary-label">{description}</Text>
+                )}
+              </View>
             </View>
             <View className={cn("-mr-2 ml-4 flex-row", rightClassName)}>
               {postfix}
@@ -308,7 +313,9 @@ export const GroupedInsetListActionCell: FC<{
   onPress?: () => void
   disabled?: boolean
   icon?: SFSymbol
-}> = ({ label, description, onPress, disabled, icon }) => {
+  prefix?: React.ReactNode
+  suffix?: React.ReactNode
+}> = ({ label, description, onPress, disabled, icon, prefix, suffix }) => {
   const rightIconColor = useColor("tertiaryLabel")
   return (
     <Pressable
@@ -322,6 +329,7 @@ export const GroupedInsetListActionCell: FC<{
         >
           <View className="flex-1">
             <View className="flex-row items-center gap-2">
+              {prefix}
               {!!icon && <SymbolView name={icon} size={20} tintColor="black" />}
               <Text className="text-sm text-label">{label}</Text>
             </View>
@@ -330,7 +338,8 @@ export const GroupedInsetListActionCell: FC<{
             )}
           </View>
 
-          <View className="-mr-2 ml-4">
+          <View className="-mr-2 ml-4 flex-row items-center gap-2">
+            {suffix}
             <MingcuteRightLine height={18} width={18} color={rightIconColor} />
           </View>
         </GroupedInsetListBaseCell>

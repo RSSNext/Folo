@@ -17,6 +17,7 @@ import { Text } from "@/src/components/ui/typography/Text"
 import { CertificateCuteFiIcon } from "@/src/icons/certificate_cute_fi"
 import { DatabaseIcon } from "@/src/icons/database"
 import { ExitCuteFiIcon } from "@/src/icons/exit_cute_fi"
+import { FlashlightCuteReIcon } from "@/src/icons/flashlight_cute_re"
 import { Magic2CuteFiIcon } from "@/src/icons/magic_2_cute_fi"
 import { NotificationCuteReIcon } from "@/src/icons/notification_cute_re"
 import { PaletteCuteFiIcon } from "@/src/icons/palette_cute_fi"
@@ -44,11 +45,13 @@ import { ListsScreen } from "./routes/Lists"
 import { NotificationsScreen } from "./routes/Notifications"
 import { PlanScreen } from "./routes/Plan"
 import { PrivacyScreen } from "./routes/Privacy"
+import { SpotlightScreen } from "./routes/Spotlight"
 
 type SettingsNavigationTranslationKey =
   | "titles.general"
   | "titles.notifications"
   | "titles.appearance"
+  | "titles.spotlight"
   | "titles.data_control"
   | "titles.account"
   | "titles.subscription.short"
@@ -107,6 +110,14 @@ const SettingGroupNavigationLinks: GroupNavigationLink[] = [
       navigation.pushControllerView(AppearanceScreen)
     },
     iconBackgroundColor: "#8B5CF6",
+  },
+  {
+    translationKey: "titles.spotlight",
+    icon: FlashlightCuteReIcon,
+    onPress: ({ navigation }) => {
+      navigation.pushControllerView(SpotlightScreen)
+    },
+    iconBackgroundColor: "#14B8A6",
   },
   {
     translationKey: "titles.data_control",

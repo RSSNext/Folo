@@ -1,4 +1,6 @@
-import type { Element, Parent, Text } from "hast"
+import type { SpotlightRule } from "@follow/shared/spotlight"
+import { spotlightHighlightOpacityHex } from "@follow/shared/spotlight"
+import type { Element, Parent, Root, Text } from "hast"
 import type { Schema } from "hast-util-sanitize"
 import type { Components } from "hast-util-to-jsx-runtime"
 import { toJsxRuntime } from "hast-util-to-jsx-runtime"
@@ -13,11 +15,104 @@ import type { Node } from "unist"
 import { visit } from "unist-util-visit"
 import { visitParents } from "unist-util-visit-parents"
 
+import { buildHighlightSegments, compileSpotlightRules } from "./spotlight"
+
 type ParseHtmlOptions = {
   renderInlineStyle?: boolean
   noMedia?: boolean
   components?: Components
   scrollEnabled?: boolean
+  hastTransform?: (tree: Root) => void
+}
+
+const spotlightExcludedTagNames = new Set([
+  "code",
+  "pre",
+  "kbd",
+  "samp",
+  "style",
+  "script",
+  "title",
+])
+
+const svgTextContextTagNames = new Set(["text", "tspan"])
+
+const toSpotlightStyle = (color: string) =>
+  `background-color:${color}${spotlightHighlightOpacityHex};border-radius:4px;padding-inline:1px;`
+
+type TextNodeTransformer = (node: Text, context: { ancestors: Element[] }) => Array<Element | Text>
+
+const transformHastTextNodes = (
+  tree: Parent,
+  transformer: TextNodeTransformer,
+  ancestors: Element[] = [],
+) => {
+  if (!Array.isArray(tree.children) || tree.children.length === 0) return
+
+  const nextChildren: Parent["children"] = []
+
+  for (const child of tree.children) {
+    if (child.type === "text") {
+      nextChildren.push(...transformer(child, { ancestors }))
+      continue
+    }
+
+    nextChildren.push(child)
+
+    if (child.type === "element") {
+      transformHastTextNodes(child, transformer, [...ancestors, child])
+      continue
+    }
+
+    if ("children" in child && Array.isArray(child.children)) {
+      transformHastTextNodes(child as Parent, transformer, ancestors)
+    }
+  }
+
+  tree.children = nextChildren
+}
+
+export const applySpotlightToHast = (tree: Root, rules: SpotlightRule[]) => {
+  const compiledRules = compileSpotlightRules(rules)
+  if (compiledRules.length === 0) return
+
+  transformHastTextNodes(tree, (node, { ancestors }) => {
+    if (ancestors.some((ancestor) => spotlightExcludedTagNames.has(ancestor.tagName))) {
+      return [node]
+    }
+
+    const isSvgSubtree = ancestors.some((ancestor) => ancestor.tagName === "svg")
+    const isVisibleSvgTextContext = ancestors.some((ancestor) =>
+      svgTextContextTagNames.has(ancestor.tagName),
+    )
+
+    if (isSvgSubtree && !isVisibleSvgTextContext) {
+      return [node]
+    }
+
+    const segments = buildHighlightSegments(node.value, compiledRules)
+    if (segments.length === 1 && !segments[0]?.highlight) {
+      return [node]
+    }
+
+    return segments.map((segment) =>
+      segment.highlight
+        ? {
+            type: "element",
+            tagName: isVisibleSvgTextContext ? "tspan" : "span",
+            properties: {
+              "data-spotlight-rule-id": segment.highlight.ruleId,
+              "data-spotlight-color": segment.highlight.color,
+              style: toSpotlightStyle(segment.highlight.color),
+            },
+            children: [{ type: "text", value: segment.text }],
+          }
+        : {
+            type: "text",
+            value: segment.text,
+          },
+    )
+  })
 }
 
 /**
@@ -46,7 +141,7 @@ function rehypeTrimEndBrElement() {
 }
 
 export const parseHtml = (content: string, options?: ParseHtmlOptions) => {
-  const { renderInlineStyle = false, noMedia = false, components } = options || {}
+  const { renderInlineStyle = false, noMedia = false, components, hastTransform } = options || {}
 
   const rehypeSchema: Schema = { ...defaultSchema }
   rehypeSchema.tagNames = [...rehypeSchema.tagNames!, "math"]
@@ -67,6 +162,7 @@ export const parseHtml = (content: string, options?: ParseHtmlOptions) => {
       "g",
       "ellipse",
       "text",
+      "tspan",
       "polygon",
       "path",
       "title",
@@ -127,6 +223,7 @@ export const parseHtml = (content: string, options?: ParseHtmlOptions) => {
       ],
       line: ["x1", "y1", "x2", "y2", "stroke", "stroke-width", "transform"],
       text: ["x", "y", "fill", "font-size", "font-family", "text-anchor", "transform"],
+      tspan: ["x", "y", "dx", "dy", "fill", "font-size", "font-family", "text-anchor", "transform"],
       use: ["href", "xlink:href", "x", "y", "width", "height", "transform"],
     }
   }
@@ -145,6 +242,7 @@ export const parseHtml = (content: string, options?: ParseHtmlOptions) => {
   // console.log("tree", tree)
 
   const hastTree = pipeline.runSync(tree, content)
+  hastTransform?.(hastTree as Root)
 
   const images = [] as string[]
 
