@@ -137,6 +137,35 @@ describe("/manifest", () => {
 
     expect(response.status).toBe(204)
   })
+
+  it("fails closed when the loaded release body version does not match the pointer", async () => {
+    const response = await fetchWorker(
+      "/manifest",
+      {
+        headers: {
+          "expo-platform": "ios",
+          "expo-runtime-version": "0.4.1",
+        },
+      },
+      {
+        kvEntries: new Map<string, unknown>([
+          [KV_KEYS.latest("mobile", "production", "0.4.1", "ios"), { releaseVersion: "0.4.2" }],
+          [
+            KV_KEYS.release("mobile", "0.4.2"),
+            createRelease({
+              releaseVersion: "0.4.3",
+              git: {
+                tag: "mobile/v0.4.3",
+                commit: "bcdef1234567890a",
+              },
+            }),
+          ],
+        ]),
+      },
+    )
+
+    expect(response.status).toBe(204)
+  })
 })
 
 describe("/assets/*", () => {

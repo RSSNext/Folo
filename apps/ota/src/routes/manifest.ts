@@ -83,6 +83,7 @@ manifestRoute.get("/manifest", async (c) => {
     release.releaseKind !== "ota" ||
     release.product !== product ||
     release.channel !== channel ||
+    release.releaseVersion !== pointer.releaseVersion ||
     release.runtimeVersion !== runtimeVersion ||
     !release.platforms[platform]
   ) {
