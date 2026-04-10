@@ -242,7 +242,7 @@ function resolvePlatformMetadata(fileMetadata, platform) {
 
 function collectAssets(value, platform) {
   if (value == null) {
-    return []
+    throw new TypeError(`Expo export metadata is missing ${platform} assets metadata`)
   }
 
   if (!Array.isArray(value)) {
