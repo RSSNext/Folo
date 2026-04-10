@@ -37,6 +37,24 @@
     "dev": {
       "name": "folo-ota-dev",
       "workers_dev": true,
+      "kv_namespaces": [
+        {
+          "binding": "OTA_KV",
+          "id": "REPLACE_WITH_DEV_KV_ID",
+          "preview_id": "REPLACE_WITH_DEV_PREVIEW_KV_ID",
+        },
+      ],
+      "r2_buckets": [
+        {
+          "binding": "OTA_BUCKET",
+          "bucket_name": "REPLACE_WITH_DEV_BUCKET_NAME",
+        },
+      ],
+      "vars": {
+        "GITHUB_OWNER": "RSSNext",
+        "GITHUB_REPO": "Folo",
+        "OTA_SYNC_TOKEN_HEADER": "x-ota-sync-token",
+      },
       "routes": [
         {
           "pattern": "ota.dev.folo.is/*",

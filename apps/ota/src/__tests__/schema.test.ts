@@ -35,5 +35,6 @@ describe("otaReleaseSchema", () => {
 
     expect(parsed.releaseVersion).toBe("0.4.2")
     expect(parsed.runtimeVersion).toBe("0.4.1")
+    expect(Object.keys(parsed.platforms)).toEqual(["ios"])
   })
 })

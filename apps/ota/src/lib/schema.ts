@@ -2,7 +2,6 @@ import { z } from "zod"
 
 const semver = z.string().regex(/^\d+\.\d+\.\d+$/)
 const sha256 = z.string().regex(/^[a-f0-9]{64}$/)
-const otaPlatformSchema = z.enum(["ios", "android", "macos", "windows", "linux"])
 
 const assetSchema = z.object({
   path: z.string().min(1),
@@ -14,6 +13,16 @@ const platformSchema = z.object({
   launchAsset: assetSchema,
   assets: z.array(assetSchema),
 })
+
+const platformsSchema = z
+  .object({
+    ios: platformSchema.optional(),
+    android: platformSchema.optional(),
+    macos: platformSchema.optional(),
+    windows: platformSchema.optional(),
+    linux: platformSchema.optional(),
+  })
+  .strict()
 
 export const otaReleaseSchema = z.object({
   schemaVersion: z.literal(1),
@@ -32,5 +41,5 @@ export const otaReleaseSchema = z.object({
     minSupportedBinaryVersion: semver,
     message: z.string().nullable(),
   }),
-  platforms: z.record(otaPlatformSchema, platformSchema.optional()),
+  platforms: platformsSchema,
 })
