@@ -40,13 +40,24 @@ jobs:
       OTA_RUNTIME_VERSION: ${{ inputs.runtime_version }}
       OTA_CHANNEL: ${{ inputs.channel }}
       OTA_GIT_TAG: mobile/v${{ inputs.release_version }}
-      OTA_GIT_COMMIT: ${{ github.sha }}
 
     steps:
       - name: Checkout repository
         uses: actions/checkout@v6
         with:
           fetch-depth: 0
+
+      - name: Resolve target release tag
+        run: |
+          git fetch --tags --force
+
+          if ! git rev-parse --verify "refs/tags/${OTA_GIT_TAG}" >/dev/null 2>&1; then
+            echo "::error::Required release tag ${OTA_GIT_TAG} does not exist. Create it before publishing OTA assets."
+            exit 1
+          fi
+
+          git checkout --detach "refs/tags/${OTA_GIT_TAG}"
+          echo "Checked out ${OTA_GIT_TAG} at $(git rev-list -n 1 "refs/tags/${OTA_GIT_TAG}")"
 
       - name: Setup pnpm
         uses: pnpm/action-setup@v5
@@ -83,7 +94,7 @@ jobs:
             gh release upload "$tag_name" "${ota_files[@]}" --clobber
           else
             gh release create "$tag_name" "${ota_files[@]}" \
-              --target "$GITHUB_SHA" \
+              --verify-tag \
               --title "$release_title" \
               --notes "OTA release assets for ${OTA_RELEASE_KIND} releases on the ${OTA_CHANNEL} channel."
           fi

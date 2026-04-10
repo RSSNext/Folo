@@ -7,13 +7,21 @@ import { pathToFileURL } from "node:url"
  *   baseUrl: string
  *   token: string
  *   headerName: string
+ *   timeoutMs?: number
  * }} TriggerOtaSyncOptions
  */
+
+const DEFAULT_TIMEOUT_MS = 10_000
 
 /**
  * @param {TriggerOtaSyncOptions} options
  */
-export async function triggerOtaSync({ baseUrl, token, headerName }) {
+export async function triggerOtaSync({
+  baseUrl,
+  token,
+  headerName,
+  timeoutMs = DEFAULT_TIMEOUT_MS,
+}) {
   if (!baseUrl) {
     throw new TypeError("OTA base URL is required")
   }
@@ -26,24 +34,45 @@ export async function triggerOtaSync({ baseUrl, token, headerName }) {
     throw new TypeError("OTA sync header name is required")
   }
 
-  const normalizedBaseUrl = baseUrl.replace(/\/+$/, "")
-  const response = await fetch(`${normalizedBaseUrl}/internal/sync`, {
-    method: "POST",
-    headers: {
-      [headerName]: token,
-    },
-  })
-
-  if (!response.ok) {
-    const responseText = await response.text()
-    const detail = responseText ? `: ${responseText}` : ""
-
-    throw new Error(
-      `Failed to trigger OTA sync (${response.status} ${response.statusText})${detail}`,
-    )
+  if (!Number.isInteger(timeoutMs) || timeoutMs <= 0) {
+    throw new TypeError("OTA sync timeout must be a positive integer")
   }
 
-  return response
+  const normalizedBaseUrl = baseUrl.replace(/\/+$/, "")
+  const controller = new AbortController()
+  const timeoutError = new Error(`Timed out while triggering OTA sync after ${timeoutMs}ms`)
+  const timeoutId = setTimeout(() => {
+    controller.abort(timeoutError)
+  }, timeoutMs)
+
+  try {
+    const response = await fetch(`${normalizedBaseUrl}/internal/sync`, {
+      method: "POST",
+      headers: {
+        [headerName]: token,
+      },
+      signal: controller.signal,
+    })
+
+    if (!response.ok) {
+      const responseText = await response.text()
+      const detail = responseText ? `: ${responseText}` : ""
+
+      throw new Error(
+        `Failed to trigger OTA sync (${response.status} ${response.statusText})${detail}`,
+      )
+    }
+
+    return response
+  } catch (error) {
+    if (controller.signal.aborted && controller.signal.reason === timeoutError) {
+      throw timeoutError
+    }
+
+    throw error
+  } finally {
+    clearTimeout(timeoutId)
+  }
 }
 
 async function main() {

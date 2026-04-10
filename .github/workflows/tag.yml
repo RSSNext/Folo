@@ -80,17 +80,76 @@ jobs:
           COMMIT_MESSAGE: ${{ github.event.head_commit.message }}
           RELEASE_VERSION: ${{ needs.create_tag.outputs.version }}
         run: |
-          release_kind="$(printf '%s\n' "$COMMIT_MESSAGE" | sed -nE 's/^OTA_RELEASE_KIND=(ota|store)$/\1/p' | tail -n 1)"
-          runtime_version="$(printf '%s\n' "$COMMIT_MESSAGE" | sed -nE 's/^OTA_RUNTIME_VERSION=(.+)$/\1/p' | tail -n 1)"
-          channel="$(printf '%s\n' "$COMMIT_MESSAGE" | sed -nE 's/^OTA_CHANNEL=(production|preview)$/\1/p' | tail -n 1)"
+          ota_trailers="$(printf '%s\n' "$COMMIT_MESSAGE" | sed -nE '/^OTA_/p')"
           normalized_release_version="${RELEASE_VERSION#v}"
 
-          if [ -n "$release_kind" ] && [ -n "$runtime_version" ] && [ -n "$channel" ]; then
-            echo "enabled=true" >> "$GITHUB_OUTPUT"
-          else
+          if [ -z "$ota_trailers" ]; then
             echo "enabled=false" >> "$GITHUB_OUTPUT"
+            echo "release_kind=" >> "$GITHUB_OUTPUT"
+            echo "runtime_version=" >> "$GITHUB_OUTPUT"
+            echo "channel=" >> "$GITHUB_OUTPUT"
+            echo "release_version=${normalized_release_version}" >> "$GITHUB_OUTPUT"
+            exit 0
           fi
 
+          invalid_trailers="$(printf '%s\n' "$ota_trailers" | sed -nE '/^OTA_(RELEASE_KIND|RUNTIME_VERSION|CHANNEL)=/!p')"
+          if [ -n "$invalid_trailers" ]; then
+            echo "::error::Unsupported OTA trailer lines detected:"
+            printf '%s\n' "$invalid_trailers"
+            exit 1
+          fi
+
+          release_kind_values="$(printf '%s\n' "$COMMIT_MESSAGE" | sed -nE 's/^OTA_RELEASE_KIND=(.*)$/\1/p')"
+          runtime_version_values="$(printf '%s\n' "$COMMIT_MESSAGE" | sed -nE 's/^OTA_RUNTIME_VERSION=(.*)$/\1/p')"
+          channel_values="$(printf '%s\n' "$COMMIT_MESSAGE" | sed -nE 's/^OTA_CHANNEL=(.*)$/\1/p')"
+
+          count_values() {
+            local values="$1"
+
+            if [ -z "$values" ]; then
+              echo 0
+              return
+            fi
+
+            printf '%s\n' "$values" | sed '/^$/d' | wc -l | tr -d ' '
+          }
+
+          release_kind_count="$(count_values "$release_kind_values")"
+          runtime_version_count="$(count_values "$runtime_version_values")"
+          channel_count="$(count_values "$channel_values")"
+
+          if [ "$release_kind_count" -ne 1 ] || [ "$runtime_version_count" -ne 1 ] || [ "$channel_count" -ne 1 ]; then
+            echo "::error::OTA trailers are incomplete or duplicated. Expected exactly one OTA_RELEASE_KIND, OTA_RUNTIME_VERSION, and OTA_CHANNEL trailer when any OTA_ trailer is present."
+            printf '%s\n' "$ota_trailers"
+            exit 1
+          fi
+
+          release_kind="$(printf '%s\n' "$release_kind_values" | tail -n 1)"
+          runtime_version="$(printf '%s\n' "$runtime_version_values" | tail -n 1)"
+          channel="$(printf '%s\n' "$channel_values" | tail -n 1)"
+
+          case "$release_kind" in
+            ota|store) ;;
+            *)
+              echo "::error::OTA_RELEASE_KIND must be either ota or store."
+              exit 1
+              ;;
+          esac
+
+          if [ -z "$runtime_version" ]; then
+            echo "::error::OTA_RUNTIME_VERSION must not be empty."
+            exit 1
+          fi
+
+          case "$channel" in
+            production|preview) ;;
+            *)
+              echo "::error::OTA_CHANNEL must be either production or preview."
+              exit 1
+              ;;
+          esac
+
+          echo "enabled=true" >> "$GITHUB_OUTPUT"
           echo "release_kind=${release_kind}" >> "$GITHUB_OUTPUT"
           echo "runtime_version=${runtime_version}" >> "$GITHUB_OUTPUT"
           echo "channel=${channel}" >> "$GITHUB_OUTPUT"
@@ -233,7 +292,7 @@ jobs:
               owner: context.repo.owner,
               repo: context.repo.repo,
               workflow_id: 'publish-ota.yml',
-              ref: 'mobile-main',
+              ref: '${{ needs.create_tag.outputs.tag_version }}',
               inputs: {
                 release_version: '${{ steps.ota_release.outputs.release_version }}',
                 release_kind: '${{ steps.ota_release.outputs.release_kind }}',
