@@ -226,7 +226,6 @@ KV stores:
 - latest compatible release pointers
 - sync status
 - cached GitHub ETag values
-- simple release disable or freeze flags
 
 Suggested keys:
 
@@ -277,11 +276,15 @@ Returns an Expo Updates manifest for the latest compatible OTA release.
 This route must:
 
 - read client headers
+- require `expo-platform`
+- require `expo-runtime-version`
+- default `expo-channel-name` to `production`
+- default `product` to `mobile`
 - find the latest matching OTA release from KV
 - generate manifest JSON
 - rewrite asset URLs to Worker-served or R2-backed URLs
 - attach required Expo protocol headers
-- attach code signing when enabled
+- return `204` when no compatible release is available or when persisted data fails validation
 
 ### `GET /assets/*`
 
@@ -291,9 +294,16 @@ This route should set strong cache headers and content type based on stored meta
 
 ### `GET /policy`
 
-Returns release policy for the installed app version, channel, and platform.
+Returns release policy for the installed app version, channel, and product.
 
 This route powers store-required update UX and future release notices.
+
+The verified v1 route shape:
+
+- requires `installedBinaryVersion`
+- defaults `channel` to `production`
+- defaults `product` to `mobile`
+- reads the latest store release body from `policy:<product>:<channel>`
 
 ### `POST /internal/sync`
 
@@ -303,7 +313,7 @@ This endpoint should be protected by a secret token header.
 
 ### `GET /internal/health`
 
-Returns diagnostic information for sync health and latest release pointers.
+Returns diagnostic information for sync health, including `lastSuccessAt`.
 
 ## GitHub Release Sync Flow
 
@@ -380,17 +390,21 @@ For `store-required` responses, the app decides whether to:
 
 The first version can support soft prompt and blocking prompt only.
 
-## Rollback and Freeze Strategy
+## Rollback Strategy
 
-### Soft rollback
+### Verified v1 rollback
 
-Move the latest KV pointer back to the previous compatible OTA release.
+Move the affected `latest:<product>:<channel>:<runtimeVersion>:<platform>` KV pointers back to the previous compatible OTA release.
 
-### Hard freeze
+If the incident is caused by a bad store release policy, overwrite `policy:<product>:<channel>` with the previous good store release record.
 
-Mark a release as disabled in KV so it is never returned even if it is otherwise compatible.
+### Verified v1 limitation
 
-These controls must be available without deleting GitHub Releases.
+GitHub Releases remains the source of truth, and sync always promotes the highest compatible `releaseVersion`.
+
+This means a manual KV rollback is temporary unless operators also remove or invalidate the bad GitHub Release assets, or publish a newer corrective release on the same runtime line before the next sync.
+
+Hard freeze and disable flags are not implemented in the verified v1 Worker.
 
 ## Error Handling
 
@@ -451,13 +465,14 @@ Phase 1:
 - mobile app config integration
 - background OTA check
 - basic debug actions
-- rollback by KV pointer edit
+- rollback by KV pointer edit, with source-of-truth correction required before the next sync
 
 Phase 2:
 
 - better admin controls
 - staged rollout support
 - richer policy targeting
+- hard freeze and disable controls
 - desktop integration
 
 ## Open Constraints to Preserve
