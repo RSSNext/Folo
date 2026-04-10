@@ -75,6 +75,24 @@ target 'Folo' do
       :ccache_enabled => podfile_properties['apple.ccacheEnabled'] == 'true',
     )
 
+    # Workaround for Xcode 26.4+ when Expo / React Native build RN from source.
+    # Context:
+    # - https://github.com/expo/expo/issues/44229
+    # - https://github.com/facebook/react-native/issues/55601
+    # - https://github.com/facebook/react-native/pull/56225
+    # Revisit this patch after upgrading Expo / React Native and remove it once
+    # the bundled fmt version includes the upstream fix.
+    fmt_base = File.join(installer.sandbox.pod_dir('fmt'), 'include', 'fmt', 'base.h')
+    if File.exist?(fmt_base)
+      content = File.read(fmt_base)
+      patched = content.gsub(/#\s*define FMT_USE_CONSTEVAL 1/, '#  define FMT_USE_CONSTEVAL 0')
+      if patched != content
+        File.chmod(0o644, fmt_base)
+        File.write(fmt_base, patched)
+        Pod::UI.puts 'Patched fmt/base.h: disabled FMT_USE_CONSTEVAL for Xcode 26.4+'
+      end
+    end
+
     # This is necessary for Xcode 14, because it signs resource bundles by default
     # when building for devices.
     installer.target_installation_results.pod_target_installation_results
