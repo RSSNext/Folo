@@ -1,0 +1,96 @@
+name: 📡 Publish OTA Release
+
+on:
+  workflow_dispatch:
+    inputs:
+      release_version:
+        type: string
+        required: true
+        description: "Release version without the v prefix"
+      release_kind:
+        type: choice
+        required: true
+        options:
+          - ota
+          - store
+        description: "Release kind embedded in ota-release.json"
+      runtime_version:
+        type: string
+        required: true
+        description: "Expo runtime version for the OTA bundle"
+      channel:
+        type: choice
+        required: true
+        options:
+          - production
+          - preview
+        description: "OTA channel embedded in ota-release.json"
+
+permissions:
+  contents: write
+
+jobs:
+  publish:
+    if: github.secret_source != 'None'
+    runs-on: ubuntu-latest
+    env:
+      OTA_PRODUCT: mobile
+      OTA_RELEASE_VERSION: ${{ inputs.release_version }}
+      OTA_RELEASE_KIND: ${{ inputs.release_kind }}
+      OTA_RUNTIME_VERSION: ${{ inputs.runtime_version }}
+      OTA_CHANNEL: ${{ inputs.channel }}
+      OTA_GIT_TAG: mobile/v${{ inputs.release_version }}
+      OTA_GIT_COMMIT: ${{ github.sha }}
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v6
+        with:
+          fetch-depth: 0
+
+      - name: Setup pnpm
+        uses: pnpm/action-setup@v5
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v6
+        with:
+          node-version: 22
+          cache: "pnpm"
+
+      - name: Install dependencies
+        run: pnpm install --frozen-lockfile
+
+      - name: Export OTA bundle assets
+        working-directory: apps/mobile
+        run: pnpm run update:export
+
+      - name: Build OTA release bundle
+        working-directory: apps/mobile
+        run: pnpm run update:bundle
+
+      - name: Publish GitHub release assets
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: |
+          tag_name="mobile/v${OTA_RELEASE_VERSION}"
+          release_title="Mobile v${OTA_RELEASE_VERSION}"
+          ota_files=(
+            "apps/mobile/dist/ota-release.json"
+            "apps/mobile/dist.tar.zst"
+          )
+
+          if gh release view "$tag_name" >/dev/null 2>&1; then
+            gh release upload "$tag_name" "${ota_files[@]}" --clobber
+          else
+            gh release create "$tag_name" "${ota_files[@]}" \
+              --target "$GITHUB_SHA" \
+              --title "$release_title" \
+              --notes "OTA release assets for ${OTA_RELEASE_KIND} releases on the ${OTA_CHANNEL} channel."
+          fi
+
+      - name: Trigger OTA sync
+        env:
+          OTA_BASE_URL: ${{ secrets.OTA_BASE_URL }}
+          OTA_SYNC_TOKEN: ${{ secrets.OTA_SYNC_TOKEN }}
+          OTA_SYNC_TOKEN_HEADER: ${{ secrets.OTA_SYNC_TOKEN_HEADER }}
+        run: node .github/scripts/trigger-ota-sync.mjs

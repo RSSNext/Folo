@@ -73,6 +73,29 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
+      - name: Extract OTA release trailers
+        id: ota_release
+        if: needs.create_tag.outputs.platform == 'mobile' && needs.create_tag.outputs.ref_name == 'mobile-main'
+        env:
+          COMMIT_MESSAGE: ${{ github.event.head_commit.message }}
+          RELEASE_VERSION: ${{ needs.create_tag.outputs.version }}
+        run: |
+          release_kind="$(printf '%s\n' "$COMMIT_MESSAGE" | sed -nE 's/^OTA_RELEASE_KIND=(ota|store)$/\1/p' | tail -n 1)"
+          runtime_version="$(printf '%s\n' "$COMMIT_MESSAGE" | sed -nE 's/^OTA_RUNTIME_VERSION=(.+)$/\1/p' | tail -n 1)"
+          channel="$(printf '%s\n' "$COMMIT_MESSAGE" | sed -nE 's/^OTA_CHANNEL=(production|preview)$/\1/p' | tail -n 1)"
+          normalized_release_version="${RELEASE_VERSION#v}"
+
+          if [ -n "$release_kind" ] && [ -n "$runtime_version" ] && [ -n "$channel" ]; then
+            echo "enabled=true" >> "$GITHUB_OUTPUT"
+          else
+            echo "enabled=false" >> "$GITHUB_OUTPUT"
+          fi
+
+          echo "release_kind=${release_kind}" >> "$GITHUB_OUTPUT"
+          echo "runtime_version=${runtime_version}" >> "$GITHUB_OUTPUT"
+          echo "channel=${channel}" >> "$GITHUB_OUTPUT"
+          echo "release_version=${normalized_release_version}" >> "$GITHUB_OUTPUT"
+
       - name: Checkout repository
         if: needs.create_tag.outputs.platform == 'desktop' && needs.create_tag.outputs.ref_name == 'main'
         uses: actions/checkout@v6
@@ -199,3 +222,23 @@ jobs:
               }
             });
             console.log('Mobile production iOS build triggered successfully');
+
+      - name: Trigger Mobile OTA Publish
+        if: needs.create_tag.outputs.platform == 'mobile' && needs.create_tag.outputs.ref_name == 'mobile-main' && steps.ota_release.outputs.enabled == 'true'
+        uses: actions/github-script@v9
+        with:
+          github-token: ${{ secrets.GITHUB_TOKEN }}
+          script: |
+            await github.rest.actions.createWorkflowDispatch({
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              workflow_id: 'publish-ota.yml',
+              ref: 'mobile-main',
+              inputs: {
+                release_version: '${{ steps.ota_release.outputs.release_version }}',
+                release_kind: '${{ steps.ota_release.outputs.release_kind }}',
+                runtime_version: '${{ steps.ota_release.outputs.runtime_version }}',
+                channel: '${{ steps.ota_release.outputs.channel }}'
+              }
+            });
+            console.log('Mobile OTA publish workflow triggered successfully');
