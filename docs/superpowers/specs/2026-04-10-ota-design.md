@@ -54,6 +54,8 @@ Do not use D1 in the first version. KV is sufficient for the initial read-heavy 
 
 GitHub Releases is the publishing source of truth.
 
+The repository may contain releases for multiple products such as mobile and desktop. The OTA service must distinguish them by the `product` field in `ota-release.json`, and Git tags should remain product-scoped.
+
 Each release must upload:
 
 - `ota-release.json`
@@ -90,6 +92,13 @@ This design separates:
 
 Each `releaseVersion` is unique and maps to exactly one `releaseKind`.
 
+Git tags remain product-scoped even though `releaseVersion` stays plain `x.y.z`.
+
+Examples:
+
+- `mobile/v0.4.2`
+- `desktop/v1.3.0`
+
 Rule:
 
 - `releaseVersion` increases on every release
@@ -119,7 +128,7 @@ Each GitHub Release must include an `ota-release.json` file with a schema simila
   "runtimeVersion": "0.4.1",
   "publishedAt": "2026-04-10T12:00:00Z",
   "git": {
-    "tag": "v0.4.2",
+    "tag": "mobile/v0.4.2",
     "commit": "abcdef123456"
   },
   "policy": {
@@ -307,6 +316,8 @@ Returns diagnostic information for sync health and latest release pointers.
 7. Worker updates latest pointers for compatible OTA releases
 8. Worker updates policy records for store-required releases
 
+The sync process must not assume that all releases belong to mobile. Index and serve releases under the metadata-declared `product`.
+
 ## Mobile Build and Publish Flow
 
 ### Release publishing
@@ -318,7 +329,7 @@ For each release:
 1. choose next `x.y.z`
 2. decide whether the release is `store` or `ota`
 3. generate exported payload for mobile
-4. publish GitHub Release `vX.Y.Z`
+4. publish GitHub Release `mobile/vX.Y.Z`
 5. upload `ota-release.json` and `dist.tar.zst`
 6. trigger OTA sync
 
