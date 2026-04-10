@@ -42,7 +42,7 @@ overrides:
   "@follow-app/client-sdk": 0.3.95
   "@folo-services/drizzle": 0.1.47
   "@react-native-menu/menu": 2.0.0
-  "@types/react": 19.1.17
+  "@types/react": 19.2.14
   array-includes: npm:@nolyfill/array-includes@latest
   array.prototype.findlastindex: npm:@nolyfill/array.prototype.findlastindex@latest
   array.prototype.flat: npm:@nolyfill/array.prototype.flat@latest
@@ -61,8 +61,8 @@ overrides:
   object.groupby: npm:@nolyfill/object.groupby@latest
   object.hasown: npm:@nolyfill/object.hasown@latest
   object.values: npm:@nolyfill/object.values@latest
-  react: 19.1.0
-  react-dom: 19.1.0
+  react: 19.2.0
+  react-dom: 19.2.0
   react-native-ios-context-menu: 3.2.1
   react-native-ios-utilities: 5.2.0
   serialize-error: 2.1.0

@@ -50,7 +50,6 @@ export const DebugButton = () => {
     })
     .onEnd((event) => {
       if (Math.abs(event.translationX) < 5 && Math.abs(event.translationY) < 5) {
-        // @ts-expect-error
         runOnJS(Navigation.rootNavigation.pushControllerView)(DebugScreen)
         return
       }

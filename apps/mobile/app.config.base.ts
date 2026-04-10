@@ -1,7 +1,7 @@
 import type { ConfigContext, ExpoConfig } from "expo/config"
 import { resolve } from "pathe"
 
-import PKG from "./package.json"
+const PKG = require("./package.json") as typeof import("./package.json")
 
 // const roundedIconPath = resolve(__dirname, "../../resources/icon.png")
 const iconPathMap = {
@@ -47,7 +47,6 @@ export default ({ config }: ConfigContext): ExpoConfig => {
     icon: iconPath,
     scheme: ["follow", "folo"],
     userInterfaceStyle: "automatic" as const,
-    newArchEnabled: true,
     ios: {
       supportsTablet: true,
       bundleIdentifier: "is.follow",
@@ -66,18 +65,12 @@ export default ({ config }: ConfigContext): ExpoConfig => {
     },
     android: {
       package: "is.follow",
-      // Suppress warning about EDGE_TO_EDGE_PLUGIN
-      // Learn more: https://expo.dev/blog/edge-to-edge-display-now-streamlined-for-android
-      edgeToEdgeEnabled: true,
       adaptiveIcon: {
         foregroundImage: adaptiveIconPath,
         monochromeImage: adaptiveIconPath,
         backgroundColor: "#FF5C00",
       },
       googleServicesFile: "./build/google-services.json",
-    },
-    androidStatusBar: {
-      translucent: true,
     },
     // web: {
     //   bundler: "metro",
@@ -106,6 +99,7 @@ export default ({ config }: ConfigContext): ExpoConfig => {
         {
           ios: {
             useFrameworks: "static",
+            forceStaticLinking: ["RNFBApp", "RNFBAnalytics", "RNFBMessaging", "RNFBAppCheck"],
           },
         },
       ],
@@ -120,6 +114,8 @@ export default ({ config }: ConfigContext): ExpoConfig => {
       ],
       "expo-apple-authentication",
       "expo-web-browser",
+      "expo-image",
+      "expo-sharing",
       [
         "expo-video",
         {
@@ -134,6 +130,8 @@ export default ({ config }: ConfigContext): ExpoConfig => {
           assetsPath: resolve(__dirname, "..", "..", "out", "rn-web"),
         },
       ],
+      require("./plugins/with-follow-ios-resources.js"),
+      require("./plugins/with-rnfb-build-properties.js"),
 
       require("./plugins/with-gradle-jvm-heap-size-increase.js"),
       require("./plugins/with-android-jdk-21.js"),

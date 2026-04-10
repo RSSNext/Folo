@@ -1,0 +1,242 @@
+{
+  "appPolicies": {
+    "eula": "",
+    "policies": [
+      {
+        "locale": "en_US",
+        "policyText": "",
+        "policyURL": ""
+      }
+    ]
+  },
+  "identifier": "33F52C22",
+  "nonRenewingSubscriptions": [],
+  "products": [
+    {
+      "displayPrice": "1.0",
+      "familyShareable": false,
+      "internalID": "6747998552",
+      "localizations": [
+        {
+          "description": "Pro Preview",
+          "displayName": "Pro Preview",
+          "locale": "en_US"
+        }
+      ],
+      "productID": "is.follow.propreview",
+      "referenceName": "Pro Preview",
+      "type": "NonConsumable"
+    }
+  ],
+  "settings": {
+    "_applicationInternalID": "6739802604",
+    "_developerTeamID": "492J8Q67PF",
+    "_failTransactionsEnabled": false,
+    "_lastSynchronizedDate": 773246215.317704,
+    "_locale": "en_US",
+    "_storefront": "USA",
+    "_storeKitErrors": [
+      {
+        "current": null,
+        "enabled": false,
+        "name": "Load Products"
+      },
+      {
+        "current": null,
+        "enabled": false,
+        "name": "Purchase"
+      },
+      {
+        "current": null,
+        "enabled": false,
+        "name": "Verification"
+      },
+      {
+        "current": null,
+        "enabled": false,
+        "name": "App Store Sync"
+      },
+      {
+        "current": null,
+        "enabled": false,
+        "name": "Subscription Status"
+      },
+      {
+        "current": null,
+        "enabled": false,
+        "name": "App Transaction"
+      },
+      {
+        "current": null,
+        "enabled": false,
+        "name": "Manage Subscriptions Sheet"
+      },
+      {
+        "current": null,
+        "enabled": false,
+        "name": "Refund Request Sheet"
+      },
+      {
+        "current": null,
+        "enabled": false,
+        "name": "Offer Code Redeem Sheet"
+      }
+    ]
+  },
+  "subscriptionGroups": [
+    {
+      "id": "21822756",
+      "name": "MembershipGroup",
+      "subscriptions": [
+        {
+          "adHocOffers": [],
+          "displayPrice": "4.99",
+          "familyShareable": false,
+          "groupNumber": 6,
+          "internalID": "6756944937",
+          "introductoryOffer": {
+            "displayPrice": "0",
+            "internalID": "intro-basic-monthly",
+            "paymentMode": "freeTrial",
+            "subscriptionPeriod": "P1W"
+          },
+          "localizations": [
+            {
+              "description": "More feeds without AI features.",
+              "displayName": "Folo Basic (Monthly)",
+              "locale": "en_US"
+            }
+          ],
+          "productID": "is.follow.basic.monthly",
+          "recurringSubscriptionPeriod": "P1M",
+          "referenceName": "Basic Monthly",
+          "type": "RecurringSubscription"
+        },
+        {
+          "adHocOffers": [],
+          "displayPrice": "49.99",
+          "familyShareable": false,
+          "groupNumber": 5,
+          "internalID": "6756944880",
+          "introductoryOffer": {
+            "displayPrice": "0",
+            "internalID": "intro-basic-yearly",
+            "paymentMode": "freeTrial",
+            "subscriptionPeriod": "P1W"
+          },
+          "localizations": [
+            {
+              "description": "More feeds without AI features.",
+              "displayName": "Folo Basic (Annual)",
+              "locale": "en_US"
+            }
+          ],
+          "productID": "is.follow.basic.yearly",
+          "recurringSubscriptionPeriod": "P1Y",
+          "referenceName": "Basic Yearly",
+          "type": "RecurringSubscription"
+        },
+        {
+          "adHocOffers": [],
+          "displayPrice": "9.99",
+          "familyShareable": false,
+          "groupNumber": 4,
+          "internalID": "6754834004",
+          "introductoryOffer": {
+            "displayPrice": "0",
+            "internalID": "intro-plus-monthly",
+            "paymentMode": "freeTrial",
+            "subscriptionPeriod": "P1W"
+          },
+          "localizations": [
+            {
+              "description": "Unlock AI features and more feeds.",
+              "displayName": "Folo Plus (Monthly)",
+              "locale": "en_US"
+            }
+          ],
+          "productID": "is.follow.plus.monthly",
+          "recurringSubscriptionPeriod": "P1M",
+          "referenceName": "Plus Monthly",
+          "type": "RecurringSubscription"
+        },
+        {
+          "adHocOffers": [],
+          "displayPrice": "99.99",
+          "familyShareable": false,
+          "groupNumber": 3,
+          "internalID": "6754834111",
+          "introductoryOffer": {
+            "displayPrice": "0",
+            "internalID": "intro-plus-yearly",
+            "paymentMode": "freeTrial",
+            "subscriptionPeriod": "P1W"
+          },
+          "localizations": [
+            {
+              "description": "Unlock AI features and more feeds.",
+              "displayName": "Folo Plus (Annual)",
+              "locale": "en_US"
+            }
+          ],
+          "productID": "is.follow.plus.yearly",
+          "recurringSubscriptionPeriod": "P1Y",
+          "referenceName": "Plus Yearly",
+          "type": "RecurringSubscription"
+        },
+        {
+          "adHocOffers": [],
+          "displayPrice": "99.99",
+          "familyShareable": false,
+          "groupNumber": 2,
+          "internalID": "6754833948",
+          "introductoryOffer": {
+            "displayPrice": "0",
+            "internalID": "intro-pro-monthly",
+            "paymentMode": "freeTrial",
+            "subscriptionPeriod": "P1W"
+          },
+          "localizations": [
+            {
+              "description": "Full access to the best of Folo.",
+              "displayName": "Folo Pro (Monthly)",
+              "locale": "en_US"
+            }
+          ],
+          "productID": "is.follow.pro.monthly",
+          "recurringSubscriptionPeriod": "P1M",
+          "referenceName": "Pro Monthly",
+          "type": "RecurringSubscription"
+        },
+        {
+          "adHocOffers": [],
+          "displayPrice": "999.99",
+          "familyShareable": false,
+          "groupNumber": 1,
+          "internalID": "6754834107",
+          "introductoryOffer": {
+            "displayPrice": "0",
+            "internalID": "intro-pro-yearly",
+            "paymentMode": "freeTrial",
+            "subscriptionPeriod": "P1W"
+          },
+          "localizations": [
+            {
+              "description": "Full access to the best of Folo.",
+              "displayName": "Folo Pro (Annual)",
+              "locale": "en_US"
+            }
+          ],
+          "productID": "is.follow.pro.yearly",
+          "recurringSubscriptionPeriod": "P1Y",
+          "referenceName": "Pro Yearly",
+          "type": "RecurringSubscription"
+        }
+      ]
+    }
+  ],
+  "version": {
+    "major": 4,
+    "minor": 0
+  }
+}
