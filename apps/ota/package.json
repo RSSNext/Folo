@@ -1,0 +1,24 @@
+{
+  "name": "@follow/ota",
+  "type": "module",
+  "private": true,
+  "scripts": {
+    "deploy:dev": "wrangler deploy --env dev",
+    "deploy:prod": "wrangler deploy",
+    "dev": "wrangler dev",
+    "test": "vitest run",
+    "typecheck": "tsc --noEmit"
+  },
+  "dependencies": {
+    "hono": "4.12.1",
+    "ofetch": "1.5.1",
+    "zod": "3.25.76"
+  },
+  "devDependencies": {
+    "@cloudflare/workers-types": "^4.20260405.0",
+    "@follow/configs": "workspace:*",
+    "typescript": "catalog:",
+    "vitest": "3.2.4",
+    "wrangler": "4.67.0"
+  }
+}
