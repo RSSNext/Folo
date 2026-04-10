@@ -370,6 +370,7 @@
   "general.translation_mode.description": "エントリリストで翻訳されたテキストの表示方法を選択します。",
   "general.translation_mode.label": "AI翻訳モード",
   "general.translation_mode.translation-only": "翻訳のみ",
+  "general.tts": "TTS",
   "general.voices": "音声",
   "integration.builtin.title": "組み込み統合",
   "integration.categories.custom_integrations": "カスタムアクション",

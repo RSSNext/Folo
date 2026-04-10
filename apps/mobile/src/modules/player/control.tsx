@@ -16,11 +16,19 @@ import { StopCircleCuteFiIcon } from "@/src/icons/stop_circle_cute_fi"
 import { VolumeCuteReIcon } from "@/src/icons/volume_cute_re"
 import { VolumeOffCuteReIcon } from "@/src/icons/volume_off_cute_re"
 import { useNavigation } from "@/src/lib/navigation/hooks"
-import { allowedRate, player, useIsPlaying, useProgress, useRate } from "@/src/lib/player"
+import {
+  allowedRate,
+  player,
+  useIsPlaying,
+  useProgress,
+  useRate,
+  useTtsStreamPlayback,
+} from "@/src/lib/player"
 import { useVolume } from "@/src/lib/volume"
 import { useColor } from "@/src/theme/colors"
 
 import { usePlayerScreenContext } from "./context"
+import { ttsStreamController } from "./tts-stream-controller"
 
 type ControlButtonProps = {
   size?: number
@@ -28,19 +36,33 @@ type ControlButtonProps = {
   color?: string
 }
 export function PlayPauseButton({ size = 24, className, color }: ControlButtonProps) {
+  const ttsStream = useTtsStreamPlayback()
   const { playing } = useIsPlaying()
+  const isStreamPlaying = ttsStream.status === "playing"
+  const isStream = !!ttsStream.entryId
   const label = useColor("label")
   return (
     <View className={className}>
       <ReAnimatedPressable
         entering={ZoomIn.springify()}
         exiting={FadeOut}
-        key={playing ? "pause" : "play"}
+        key={isStream ? `tts-${ttsStream.status}` : playing ? "pause" : "play"}
         onPress={() => {
+          if (isStream && ttsStream.entryId) {
+            void ttsStreamController.toggle(ttsStream.entryId)
+            return
+          }
+
           playing ? player.pause() : player.play()
         }}
       >
-        {playing ? (
+        {isStream ? (
+          isStreamPlaying ? (
+            <PauseCuteFiIcon color={color ?? label} width={size} height={size} />
+          ) : (
+            <PlayCuteFiIcon color={color ?? label} width={size} height={size} />
+          )
+        ) : playing ? (
           <PauseCuteFiIcon color={color ?? label} width={size} height={size} />
         ) : (
           <PlayCuteFiIcon color={color ?? label} width={size} height={size} />
@@ -58,6 +80,10 @@ export function SeekButton({
   offset?: number
 }) {
   const label = useColor("label")
+  const ttsStream = useTtsStreamPlayback()
+  if (ttsStream.entryId) {
+    return null
+  }
   return (
     <View className={className}>
       <Pressable
@@ -81,6 +107,10 @@ export function SeekButton({
 export function RateSelector() {
   const { isBackgroundLight } = usePlayerScreenContext()
   const [currentRate, setCurrentRate] = useRate()
+  const ttsStream = useTtsStreamPlayback()
+  if (ttsStream.entryId) {
+    return null
+  }
   return (
     <View className="flex-row items-center justify-center">
       <DropdownMenu.Root>
@@ -110,13 +140,18 @@ export function RateSelector() {
   )
 }
 export function StopButton({ size = 24, className, color }: ControlButtonProps) {
+  const ttsStream = useTtsStreamPlayback()
   const label = useColor("label")
   const navigation = useNavigation()
   return (
     <Pressable
       className={className}
       onPress={() => {
-        player.reset()
+        if (ttsStream.entryId) {
+          void ttsStreamController.stop()
+        } else {
+          player.reset()
+        }
         navigation.back()
       }}
     >
@@ -125,8 +160,19 @@ export function StopButton({ size = 24, className, color }: ControlButtonProps) 
   )
 }
 export function ControlGroup() {
+  const ttsStream = useTtsStreamPlayback()
   const { isBackgroundLight } = usePlayerScreenContext()
   const buttonColor = isBackgroundLight ? "black" : "white"
+
+  if (ttsStream.entryId) {
+    return (
+      <View className="flex-row items-center justify-center gap-6">
+        <PlayPauseButton size={50} color={buttonColor} />
+        <StopButton color={buttonColor} />
+      </View>
+    )
+  }
+
   return (
     <View className="flex-row items-center justify-between">
       <RateSelector />
@@ -155,6 +201,10 @@ export function ProgressBar() {
   })
   const min = useSharedValue(0)
   const max = useSharedValue(1)
+  const ttsStream = useTtsStreamPlayback()
+  if (ttsStream.entryId) {
+    return null
+  }
   const trackElapsedTime = formatSecondsToMinutes(position)
   const trackRemainingTime = formatSecondsToMinutes(duration - position)
   return (
@@ -213,6 +263,10 @@ export function VolumeBar() {
   const progress = useSharedValue(0)
   const min = useSharedValue(0)
   const max = useSharedValue(1)
+  const ttsStream = useTtsStreamPlayback()
+  if (ttsStream.entryId) {
+    return null
+  }
   progress.value = volume ?? 0
   return (
     <View className="mb-10">

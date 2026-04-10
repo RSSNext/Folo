@@ -8,6 +8,8 @@
   "entry.release_to_next_entry": "離して次のエントリーに移動",
   "entry_actions.toggle_ai_summary": "AI 要約に切り替え",
   "entry_content.ai_summary": "AI 要約",
+  "entry_content.header.play_tts": "TTS を再生",
+  "entry_content.header.play_tts_description": "設定でTTS音声を選択し、TTSを開始して音声コンテンツに変換します",
   "entry_content.no_content": "コンテンツがありません",
   "entry_content.no_video_url": "動画 URL が見つかりません",
   "entry_list.zero_unread": "未読ゼロ",

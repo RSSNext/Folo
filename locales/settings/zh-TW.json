@@ -370,6 +370,7 @@
   "general.translation_mode.description": "選擇譯文在條目列表中的顯示方式。",
   "general.translation_mode.label": "翻譯偏好",
   "general.translation_mode.translation-only": "僅譯文",
+  "general.tts": "TTS",
   "general.voices": "聲音",
   "integration.builtin.title": "內建整合",
   "integration.categories.custom_integrations": "自訂整合",

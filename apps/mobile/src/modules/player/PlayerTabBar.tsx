@@ -13,7 +13,7 @@ import { Image } from "@/src/components/ui/image/Image"
 import { Text } from "@/src/components/ui/typography/Text"
 import { BottomTabContext } from "@/src/lib/navigation/bottom-tab/BottomTabContext"
 import { useNavigation } from "@/src/lib/navigation/hooks"
-import { useActiveTrack } from "@/src/lib/player"
+import { useActivePlayable } from "@/src/lib/player"
 import { PlayerScreen } from "@/src/screens/PlayerScreen"
 import { usePrefetchImageColors } from "@/src/store/image/hooks"
 
@@ -21,13 +21,13 @@ import { PlayPauseButton, SeekButton } from "./control"
 
 const allowedTabIdentifiers = new Set(["IndexTabScreen", "SubscriptionsTabScreen"])
 export function PlayerTabBar({ className }: { className?: string }) {
-  const activeTrack = useActiveTrack()
+  const activePlayable = useActivePlayable()
   const tabRootCtx = use(BottomTabContext)
   const tabScreens = useAtomValue(tabRootCtx.tabScreensAtom)
   const currentIndex = useAtomValue(tabRootCtx.currentIndexAtom)
   const currentTabProps = tabScreens.find((tabScreen) => tabScreen.tabScreenIndex === currentIndex)
   const identifier = currentTabProps?.identifier
-  const isVisible = !!activeTrack && identifier && allowedTabIdentifiers.has(identifier)
+  const isVisible = !!activePlayable && identifier && allowedTabIdentifiers.has(identifier)
   const isVisibleSV = useSharedValue(isVisible ? 1 : 0)
   useEffect(() => {
     isVisibleSV.value = withTiming(isVisible ? 1 : 0)
@@ -39,7 +39,7 @@ export function PlayerTabBar({ className }: { className?: string }) {
       overflow: "hidden",
     }
   })
-  usePrefetchImageColors(activeTrack?.artwork)
+  usePrefetchImageColors(activePlayable?.artwork ?? undefined)
   const navigation = useNavigation()
   return (
     <Animated.View
@@ -47,6 +47,7 @@ export function PlayerTabBar({ className }: { className?: string }) {
       className={cn("border-b-hairline border-opaque-separator/50 px-2", className)}
     >
       <Pressable
+        testID="player-tab-bar"
         onPress={() => {
           navigation.presentControllerView(PlayerScreen, void 0, "transparentModal")
         }}
@@ -54,13 +55,13 @@ export function PlayerTabBar({ className }: { className?: string }) {
         <View className="flex flex-row items-center gap-4 overflow-hidden rounded-2xl p-2">
           <Image
             source={{
-              uri: activeTrack?.artwork ?? "",
+              uri: activePlayable?.artwork ?? "",
             }}
             className="size-12 rounded-lg"
           />
           <View className="flex-1 overflow-hidden">
             <Text className="text-lg font-semibold text-label" numberOfLines={1}>
-              {activeTrack?.title ?? ""}
+              {activePlayable?.title ?? ""}
             </Text>
           </View>
           <View className="mr-2 flex flex-row gap-4">

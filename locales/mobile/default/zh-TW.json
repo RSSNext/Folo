@@ -8,6 +8,8 @@
   "entry.release_to_next_entry": "鬆開查看下一條內容",
   "entry_actions.toggle_ai_summary": "切換 AI 總結",
   "entry_content.ai_summary": "AI 摘要",
+  "entry_content.header.play_tts": "播放文字轉語音",
+  "entry_content.header.play_tts_description": "在設定中選擇一個 TTS 語音，啟動 TTS 轉換為有聲內容",
   "entry_content.no_content": "無內容",
   "entry_content.no_video_url": "未找到影片連結",
   "entry_list.zero_unread": "全部已讀",

@@ -231,10 +231,22 @@ export const GroupedInsetListCell: FC<
     children?: React.ReactNode
     icon?: SFSymbol
     onPress?: () => void
+    testID?: string
   } & BaseCellClassNames
-> = ({ label, description, children, className, leftClassName, rightClassName, icon, onPress }) => {
+> = ({
+  label,
+  description,
+  children,
+  className,
+  leftClassName,
+  rightClassName,
+  icon,
+  onPress,
+  testID,
+}) => {
   return (
     <GroupedInsetListBaseCell
+      testID={testID}
       className={cn("flex flex-1 bg-secondary-system-grouped-background", className)}
       as={onPress ? Pressable : undefined}
       {...(onPress

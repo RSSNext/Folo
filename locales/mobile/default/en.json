@@ -8,6 +8,8 @@
   "entry.release_to_next_entry": "Release to go to the next entry",
   "entry_actions.toggle_ai_summary": "AI Summary",
   "entry_content.ai_summary": "AI Summary",
+  "entry_content.header.play_tts": "Play TTS",
+  "entry_content.header.play_tts_description": "Select a TTS voice in settings and start TTS to convert to audio content",
   "entry_content.no_content": "No media available",
   "entry_content.no_video_url": "No video URL found",
   "entry_list.zero_unread": "Zero Unread",

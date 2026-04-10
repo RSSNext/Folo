@@ -16,7 +16,7 @@ import { useNavigation } from "@/src/lib/navigation/hooks"
 
 import { gentleSpringPreset } from "../constants/spring"
 import type { NavigationControllerView } from "../lib/navigation/types"
-import { useActiveTrack, useIsPlaying } from "../lib/player"
+import { useActivePlayable, useIsPlaying, useTtsStreamPlayback } from "../lib/player"
 import { PlayerScreenContext, usePlayerScreenContext } from "../modules/player/context"
 import { ControlGroup, ProgressBar, VolumeBar } from "../modules/player/control"
 import { useCoverGradient } from "../modules/player/hooks"
@@ -24,11 +24,13 @@ import { usePrefetchImageColors } from "../store/image/hooks"
 
 function CoverArt({ cover }: { cover?: string }) {
   const scale = useSharedValue(1)
+  const ttsStream = useTtsStreamPlayback()
   const { playing } = useIsPlaying()
+  const isPlaying = ttsStream.entryId ? ttsStream.status === "playing" : playing
   useEffect(() => {
     cancelAnimation(scale)
-    scale.value = withSpring(playing ? 1 : 0.7, gentleSpringPreset)
-  }, [playing, scale])
+    scale.value = withSpring(isPlaying ? 1 : 0.7, gentleSpringPreset)
+  }, [isPlaying, scale])
   const animatedStyle = useAnimatedStyle(() => {
     return {
       transform: [
@@ -50,9 +52,9 @@ function CoverArt({ cover }: { cover?: string }) {
   )
 }
 export const PlayerScreen: NavigationControllerView = () => {
-  const activeTrack = useActiveTrack()
-  usePrefetchImageColors(activeTrack?.artwork)
-  const { gradientColors, isGradientLight } = useCoverGradient(activeTrack?.artwork)
+  const activePlayable = useActivePlayable()
+  usePrefetchImageColors(activePlayable?.artwork ?? undefined)
+  const { gradientColors, isGradientLight } = useCoverGradient(activePlayable?.artwork ?? undefined)
   const playerScreenContextValue = useMemo(
     () => ({
       isBackgroundLight: isGradientLight,
@@ -60,7 +62,7 @@ export const PlayerScreen: NavigationControllerView = () => {
     [isGradientLight],
   )
   const navigation = useNavigation()
-  if (!activeTrack) {
+  if (!activePlayable) {
     return null
   }
   return (
@@ -81,7 +83,7 @@ export const PlayerScreen: NavigationControllerView = () => {
         <SafeAreaView className="flex-1">
           <View className="flex-1">
             <DismissIndicator />
-            <CoverArt cover={activeTrack.artwork} />
+            <CoverArt cover={activePlayable.artwork ?? undefined} />
             <View className="mx-10 flex-1">
               <Text
                 className={cn(
@@ -90,7 +92,7 @@ export const PlayerScreen: NavigationControllerView = () => {
                 )}
                 numberOfLines={1}
               >
-                {activeTrack.title}
+                {activePlayable.title}
               </Text>
               <Text
                 className={cn(
@@ -99,7 +101,7 @@ export const PlayerScreen: NavigationControllerView = () => {
                 )}
                 numberOfLines={1}
               >
-                {activeTrack.artist}
+                {activePlayable.artist}
               </Text>
               <ProgressBar />
               <ControlGroup />

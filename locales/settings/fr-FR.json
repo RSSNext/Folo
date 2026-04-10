@@ -370,6 +370,7 @@
   "general.translation_mode.description": "Choisissez comment le texte traduit est affiché dans la liste des entrées.",
   "general.translation_mode.label": "Mode de traduction IA",
   "general.translation_mode.translation-only": "Seulement la traduction",
+  "general.tts": "TTS",
   "general.voices": "Voix",
   "integration.builtin.title": "Intégration intégrée",
   "integration.categories.custom_integrations": "Actions personnalisées",
