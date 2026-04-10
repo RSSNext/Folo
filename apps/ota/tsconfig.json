@@ -5,9 +5,9 @@
     "module": "ESNext",
     "moduleResolution": "Bundler",
     "lib": ["ES2022", "WebWorker"],
-    "types": ["vitest/globals"],
+    "types": ["@cloudflare/workers-types", "vitest/globals"],
     "jsx": "react-jsx",
     "baseUrl": "."
   },
-  "include": ["worker-configuration.d.ts", "src/**/*.ts", "src/**/*.tsx"]
+  "include": ["src/**/*.ts", "src/**/*.tsx"]
 }
