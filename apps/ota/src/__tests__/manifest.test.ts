@@ -51,9 +51,15 @@ describe("buildManifest", () => {
     expect(manifest.launchAsset.url).toBe(
       "https://ota.folo.is/assets/mobile/production/0.4.1/0.4.2/ios/bundles/ios-main.js",
     )
+    expect(manifest.launchAsset.key).toBe("ios-main")
+    expect(manifest.launchAsset.hash).toBe("qqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqo")
+    expect(manifest.launchAsset.fileExtension).toBe(".js")
     expect(manifest.assets[0]?.url).toBe(
       "https://ota.folo.is/assets/mobile/production/0.4.1/0.4.2/ios/assets/one.png",
     )
+    expect(manifest.assets[0]?.key).toBe("one")
+    expect(manifest.assets[0]?.hash).toBe("u7u7u7u7u7u7u7u7u7u7u7u7u7u7u7u7u7u7u7u7u7s")
+    expect(manifest.assets[0]?.fileExtension).toBe(".png")
   })
 })
 

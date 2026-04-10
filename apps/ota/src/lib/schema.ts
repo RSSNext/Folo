@@ -29,6 +29,7 @@ const platformsSchema = z
 
 export const otaReleaseSchema = z.object({
   schemaVersion: z.literal(1),
+  updateId: z.string().uuid().optional(),
   product: z.enum(["mobile", "desktop"]),
   channel: z.string().min(1),
   releaseVersion: semver,

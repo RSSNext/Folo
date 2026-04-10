@@ -54,6 +54,9 @@ describe("buildOtaMetadata", () => {
     expect(result.releaseVersion).toBe("0.4.2")
     expect(result.runtimeVersion).toBe("0.4.1")
     expect(result.git.tag).toBe("mobile/v0.4.2")
+    expect(result.updateId).toMatch(
+      /^[0-9a-f]{8}-[0-9a-f]{4}-5[0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$/,
+    )
   })
 
   it("uses asset ext metadata when exported asset paths have no suffix", async () => {
