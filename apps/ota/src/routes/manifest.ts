@@ -5,6 +5,7 @@ import { KV_KEYS } from "../lib/constants"
 import { getLatestReleasePointer } from "../lib/kv"
 import { buildManifest } from "../lib/manifest"
 import type { OtaPlatform, OtaRelease } from "../lib/schema"
+import { otaReleaseSchema } from "../lib/schema"
 
 const OTA_PLATFORMS: readonly OtaPlatform[] = ["ios", "android", "macos", "windows", "linux"]
 const OTA_PRODUCTS = ["mobile", "desktop"] as const
@@ -12,13 +13,26 @@ const OTA_PRODUCTS = ["mobile", "desktop"] as const
 export const manifestRoute = new Hono<{ Bindings: Env }>()
 
 manifestRoute.get("/manifest", async (c) => {
-  const platform = parsePlatform(c.req.header("expo-platform"))
-  const runtimeVersion = c.req.header("expo-runtime-version") ?? ""
+  const platformHeader = c.req.header("expo-platform")
+  const platform = parsePlatform(platformHeader)
+  const runtimeVersion = c.req.header("expo-runtime-version")
   const channel = c.req.header("expo-channel-name") ?? "production"
   const product = parseProduct(c.req.query("product"))
 
+  if (!platformHeader) {
+    return c.json({ error: "Missing expo-platform header" }, 400)
+  }
+
   if (!platform) {
-    return c.body(null, 204)
+    return c.json({ error: "Invalid expo-platform header" }, 400)
+  }
+
+  if (!runtimeVersion) {
+    return c.json({ error: "Missing expo-runtime-version header" }, 400)
+  }
+
+  if (!product) {
+    return c.json({ error: "Invalid product query parameter" }, 400)
   }
 
   const pointer = await getLatestReleasePointer(c.env.OTA_KV, {
@@ -32,12 +46,30 @@ manifestRoute.get("/manifest", async (c) => {
     return c.body(null, 204)
   }
 
-  const release = await c.env.OTA_KV.get<OtaRelease>(
+  const releaseRecord = await c.env.OTA_KV.get(
     KV_KEYS.release(product, pointer.releaseVersion),
     "json",
   )
 
-  if (!release || !release.platforms[platform]) {
+  if (!releaseRecord) {
+    return c.body(null, 204)
+  }
+
+  const parsedRelease = otaReleaseSchema.safeParse(releaseRecord)
+
+  if (!parsedRelease.success) {
+    return c.body(null, 204)
+  }
+
+  const release: OtaRelease = parsedRelease.data
+
+  if (
+    release.releaseKind !== "ota" ||
+    release.product !== product ||
+    release.channel !== channel ||
+    release.runtimeVersion !== runtimeVersion ||
+    !release.platforms[platform]
+  ) {
     return c.body(null, 204)
   }
 
@@ -57,13 +89,13 @@ manifestRoute.get("/manifest", async (c) => {
 })
 
 function parsePlatform(value: string | undefined): OtaPlatform | null {
-  if (!value) {
-    return "ios"
-  }
-
   return OTA_PLATFORMS.find((platform) => platform === value) ?? null
 }
 
-function parseProduct(value: string | undefined): OtaRelease["product"] {
-  return OTA_PRODUCTS.find((product) => product === value) ?? "mobile"
+function parseProduct(value: string | undefined): OtaRelease["product"] | null {
+  if (value === undefined) {
+    return "mobile"
+  }
+
+  return OTA_PRODUCTS.find((product) => product === value) ?? null
 }
