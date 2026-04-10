@@ -28,6 +28,19 @@ export function evaluateStorePolicy(
     return { action: "none", targetVersion: null, message: null }
   }
 
+  if (
+    compareSemver(
+      input.installedBinaryVersion,
+      latestStoreRelease.policy.minSupportedBinaryVersion,
+    ) < 0
+  ) {
+    return {
+      action: "block",
+      targetVersion: latestStoreRelease.releaseVersion,
+      message: latestStoreRelease.policy.message,
+    }
+  }
+
   if (compareSemver(latestStoreRelease.releaseVersion, input.installedBinaryVersion) <= 0) {
     return { action: "none", targetVersion: null, message: null }
   }
