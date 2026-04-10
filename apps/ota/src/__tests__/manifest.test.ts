@@ -82,6 +82,20 @@ describe("/manifest", () => {
     })
   })
 
+  it("returns 400 when expo-runtime-version is invalid", async () => {
+    const response = await fetchWorker("/manifest", {
+      headers: {
+        "expo-platform": "ios",
+        "expo-runtime-version": "0.4",
+      },
+    })
+
+    expect(response.status).toBe(400)
+    await expect(response.json()).resolves.toEqual({
+      error: "Invalid expo-runtime-version header",
+    })
+  })
+
   it("does not serve a store release as OTA", async () => {
     const release = createRelease({
       releaseKind: "store",
@@ -98,6 +112,25 @@ describe("/manifest", () => {
         kvEntries: new Map<string, unknown>([
           [KV_KEYS.latest("mobile", "production", "0.4.1", "ios"), { releaseVersion: "0.4.2" }],
           [KV_KEYS.release("mobile", "0.4.2"), release],
+        ]),
+      },
+    )
+
+    expect(response.status).toBe(204)
+  })
+
+  it("fails closed when the latest pointer record is malformed", async () => {
+    const response = await fetchWorker(
+      "/manifest",
+      {
+        headers: {
+          "expo-platform": "ios",
+          "expo-runtime-version": "0.4.1",
+        },
+      },
+      {
+        kvEntries: new Map<string, unknown>([
+          [KV_KEYS.latest("mobile", "production", "0.4.1", "ios"), { releaseVersion: "latest" }],
         ]),
       },
     )
@@ -146,6 +179,17 @@ describe("/policy", () => {
     expect(response.status).toBe(400)
     await expect(response.json()).resolves.toEqual({
       error: "Missing installedBinaryVersion query parameter",
+    })
+  })
+
+  it("rejects invalid installedBinaryVersion", async () => {
+    const response = await fetchWorker(
+      "/policy?product=mobile&channel=production&installedBinaryVersion=0.4",
+    )
+
+    expect(response.status).toBe(400)
+    await expect(response.json()).resolves.toEqual({
+      error: "Invalid installedBinaryVersion query parameter",
     })
   })
 })

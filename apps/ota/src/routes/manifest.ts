@@ -1,4 +1,5 @@
 import { Hono } from "hono"
+import { z } from "zod"
 
 import type { Env } from "../env"
 import { KV_KEYS } from "../lib/constants"
@@ -9,6 +10,10 @@ import { otaReleaseSchema } from "../lib/schema"
 
 const OTA_PLATFORMS: readonly OtaPlatform[] = ["ios", "android", "macos", "windows", "linux"]
 const OTA_PRODUCTS = ["mobile", "desktop"] as const
+const semverSchema = z.string().regex(/^\d+\.\d+\.\d+$/)
+const latestReleasePointerSchema = z.object({
+  releaseVersion: semverSchema,
+})
 
 export const manifestRoute = new Hono<{ Bindings: Env }>()
 
@@ -31,21 +36,32 @@ manifestRoute.get("/manifest", async (c) => {
     return c.json({ error: "Missing expo-runtime-version header" }, 400)
   }
 
+  if (!semverSchema.safeParse(runtimeVersion).success) {
+    return c.json({ error: "Invalid expo-runtime-version header" }, 400)
+  }
+
   if (!product) {
     return c.json({ error: "Invalid product query parameter" }, 400)
   }
 
-  const pointer = await getLatestReleasePointer(c.env.OTA_KV, {
+  const pointerRecord = await getLatestReleasePointer(c.env.OTA_KV, {
     product,
     channel,
     runtimeVersion,
     platform,
   })
 
-  if (!pointer) {
+  if (!pointerRecord) {
     return c.body(null, 204)
   }
 
+  const parsedPointer = latestReleasePointerSchema.safeParse(pointerRecord)
+
+  if (!parsedPointer.success) {
+    return c.body(null, 204)
+  }
+
+  const pointer = parsedPointer.data
   const releaseRecord = await c.env.OTA_KV.get(
     KV_KEYS.release(product, pointer.releaseVersion),
     "json",

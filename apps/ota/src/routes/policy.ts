@@ -1,5 +1,5 @@
 import { Hono } from "hono"
-import type { z } from "zod"
+import { z } from "zod"
 
 import type { Env } from "../env"
 import { KV_KEYS } from "../lib/constants"
@@ -14,8 +14,8 @@ const storePolicyReleaseSchema = otaReleaseSchema.pick({
   policy: true,
 })
 type StorePolicyRelease = z.infer<typeof storePolicyReleaseSchema>
-
 const OTA_PRODUCTS = ["mobile", "desktop"] as const
+const semverSchema = z.string().regex(/^\d+\.\d+\.\d+$/)
 
 export const policyRoute = new Hono<{ Bindings: Env }>()
 
@@ -30,6 +30,10 @@ policyRoute.get("/policy", async (c) => {
 
   if (!installedBinaryVersion) {
     return c.json({ error: "Missing installedBinaryVersion query parameter" }, 400)
+  }
+
+  if (!semverSchema.safeParse(installedBinaryVersion).success) {
+    return c.json({ error: "Invalid installedBinaryVersion query parameter" }, 400)
   }
 
   const latestStoreReleaseRecord = await c.env.OTA_KV.get(KV_KEYS.policy(product, channel), "json")
