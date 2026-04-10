@@ -1,0 +1,105 @@
+import { afterEach, beforeEach, describe, expect, it, vi } from "vitest"
+
+import { listPublishedOtaReleases } from "../lib/github"
+
+describe("listPublishedOtaReleases", () => {
+  beforeEach(() => {
+    vi.stubGlobal(
+      "fetch",
+      vi.fn().mockResolvedValue(
+        new Response(
+          JSON.stringify([
+            {
+              tag_name: "mobile/v0.4.2",
+              draft: false,
+              prerelease: false,
+              assets: [
+                {
+                  name: "ota-release.json",
+                  browser_download_url: "https://example.com/ota-release.json",
+                },
+                {
+                  name: "dist.tar.zst",
+                  browser_download_url: "https://example.com/dist.tar.zst",
+                },
+              ],
+            },
+          ]),
+          { status: 200 },
+        ),
+      ),
+    )
+  })
+
+  afterEach(() => {
+    vi.unstubAllGlobals()
+  })
+
+  it("returns releases that have both required assets", async () => {
+    const releases = await listPublishedOtaReleases({
+      owner: "RSSNext",
+      repo: "Folo",
+      token: "token",
+      etag: null,
+    })
+
+    expect(releases[0]?.tag).toBe("mobile/v0.4.2")
+    expect(releases[0]?.metadataUrl).toContain("ota-release.json")
+  })
+
+  it("returns an empty list for 304 responses", async () => {
+    const fetchMock = vi.fn().mockResolvedValue(new Response(null, { status: 304 }))
+
+    vi.stubGlobal("fetch", fetchMock)
+
+    const releases = await listPublishedOtaReleases({
+      owner: "RSSNext",
+      repo: "Folo",
+      token: "token",
+      etag: '"etag-value"',
+    })
+
+    expect(releases).toEqual([])
+    expect(fetchMock).toHaveBeenCalledWith(
+      "https://api.github.com/repos/RSSNext/Folo/releases",
+      expect.objectContaining({
+        headers: expect.objectContaining({
+          "If-None-Match": '"etag-value"',
+        }),
+      }),
+    )
+  })
+
+  it("filters out releases missing required assets", async () => {
+    vi.stubGlobal(
+      "fetch",
+      vi.fn().mockResolvedValue(
+        new Response(
+          JSON.stringify([
+            {
+              tag_name: "desktop/v1.2.3",
+              draft: false,
+              prerelease: false,
+              assets: [
+                {
+                  name: "ota-release.json",
+                  browser_download_url: "https://example.com/desktop-ota-release.json",
+                },
+              ],
+            },
+          ]),
+          { status: 200 },
+        ),
+      ),
+    )
+
+    const releases = await listPublishedOtaReleases({
+      owner: "RSSNext",
+      repo: "Folo",
+      token: "token",
+      etag: null,
+    })
+
+    expect(releases).toEqual([])
+  })
+})
