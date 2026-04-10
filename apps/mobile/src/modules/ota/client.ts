@@ -1,3 +1,5 @@
+import { z } from "zod"
+
 export interface FetchStorePolicyInput {
   baseUrl: string
   product: string
@@ -5,10 +7,16 @@ export interface FetchStorePolicyInput {
   installedBinaryVersion: string
 }
 
+const storePolicySchema = z.object({
+  action: z.enum(["none", "prompt", "block"]),
+  targetVersion: z.string().nullable(),
+  message: z.string().nullable(),
+})
+
 export interface StorePolicyResponse {
-  action: string
-  targetVersion?: string | null
-  message?: string | null
+  action: z.infer<typeof storePolicySchema>["action"]
+  targetVersion: string | null
+  message: string | null
 }
 
 export const fetchStorePolicy = async ({
@@ -27,5 +35,11 @@ export const fetchStorePolicy = async ({
     throw new Error(`Failed to fetch OTA policy (${response.status})`)
   }
 
-  return (await response.json()) as StorePolicyResponse
+  const payload = await response.json()
+  const result = storePolicySchema.safeParse(payload)
+  if (!result.success) {
+    throw new Error("Invalid OTA policy response")
+  }
+
+  return result.data
 }

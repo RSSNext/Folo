@@ -112,6 +112,11 @@ export const EnvProfileIndicator = () => {
   }
 
   const handleReloadOtaUpdate = async () => {
+    if (!otaState.pendingVersion) {
+      toast.info("No OTA update is ready")
+      return
+    }
+
     try {
       await reloadUpdate()
     } catch (error) {

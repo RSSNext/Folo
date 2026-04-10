@@ -50,4 +50,25 @@ describe("fetchStorePolicy", () => {
       }),
     ).rejects.toThrow("Failed to fetch OTA policy")
   })
+
+  it("throws when the policy payload is invalid", async () => {
+    vi.stubGlobal(
+      "fetch",
+      vi.fn().mockResolvedValue(
+        new Response(JSON.stringify({ action: "warn", targetVersion: "0.4.3", message: null }), {
+          status: 200,
+          headers: { "content-type": "application/json" },
+        }),
+      ),
+    )
+
+    await expect(
+      fetchStorePolicy({
+        baseUrl: "https://ota.folo.is",
+        product: "mobile",
+        channel: "production",
+        installedBinaryVersion: "0.4.1",
+      }),
+    ).rejects.toThrow("Invalid OTA policy response")
+  })
 })
