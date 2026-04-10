@@ -16,8 +16,19 @@ const adaptiveIconPath = resolve(__dirname, "./assets/adaptive-icon.png")
 const splashIconPath = resolve(__dirname, "./assets/splash-icon.png")
 
 const isDev = process.env.NODE_ENV === "development"
+const channelNameMap = {
+  development: "development",
+  "ios-simulator": "development",
+  preview: "preview",
+  "e2e-android": "preview",
+  "e2e-ios-simulator": "preview",
+  production: "production",
+} as Record<string, string>
 
 export default ({ config }: ConfigContext): ExpoConfig => {
+  const profile = process.env.PROFILE || "production"
+  const channelName = channelNameMap[profile] || channelNameMap.production
+
   const result: ExpoConfig = {
     ...config,
 
@@ -29,15 +40,18 @@ export default ({ config }: ConfigContext): ExpoConfig => {
       e2eLanguage: process.env.EXPO_PUBLIC_E2E_LANGUAGE ?? null,
     },
     owner: "follow",
-    // disable expo updates for now, https://github.com/expo/expo/issues/29630
-    // updates: {
-    //   url: "https://folo-custom-expo-updates.vercel.app/api/manifest",
-    //   codeSigningCertificate: "./code-signing/certificate.pem",
-    //   codeSigningMetadata: {
-    //     keyid: "main",
-    //     alg: "rsa-v1_5-sha256",
-    //   },
-    // },
+    updates: {
+      url: "https://folo-custom-expo-updates.vercel.app/api/manifest",
+      requestHeaders: {
+        "expo-channel-name": channelName,
+      },
+      codeSigningCertificate: "./code-signing/certificate.pem",
+      codeSigningMetadata: {
+        keyid: "main",
+        alg: "rsa-v1_5-sha256",
+      },
+      checkAutomatically: "NEVER",
+    },
     runtimeVersion: isDev ? "0.0.0-dev" : PKG.version,
 
     name: "Folo",
