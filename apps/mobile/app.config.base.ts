@@ -112,6 +112,8 @@ export default ({ config }: ConfigContext): ExpoConfig => {
         "expo-build-properties",
         {
           ios: {
+            // Expo SDK 55 archive builds regress with use_frameworks + prebuilt RN core.
+            buildReactNativeFromSource: true,
             useFrameworks: "static",
             forceStaticLinking: ["RNFBApp", "RNFBAnalytics", "RNFBMessaging", "RNFBAppCheck"],
           },

@@ -1,6 +1,7 @@
 {
   "expo.jsEngine": "hermes",
   "EX_DEV_CLIENT_NETWORK_INSPECTOR": "true",
+  "ios.buildReactNativeFromSource": "true",
   "ios.useFrameworks": "static",
   "ios.forceStaticLinking": "[\"RNFBApp\",\"RNFBAnalytics\",\"RNFBMessaging\",\"RNFBAppCheck\"]",
   "expo-image.disable-libdav1d": "false",

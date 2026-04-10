@@ -26,10 +26,20 @@ module.exports = function withRNFBBuildProperties(config) {
       tag: RNFB_IOS_COMPAT_TAG,
       src: config.modResults.contents,
       newSrc: `    installer.pods_project.targets.each do |target|
-      next unless target.name.start_with?('RNFB')
+      if target.name.start_with?('RNFB')
+        target.build_configurations.each do |config|
+          config.build_settings['CLANG_ALLOW_NON_MODULAR_INCLUDES_IN_FRAMEWORK_MODULES'] = 'YES'
+        end
+      end
+
+      next unless target.name == 'fmt'
 
       target.build_configurations.each do |config|
-        config.build_settings['CLANG_ALLOW_NON_MODULAR_INCLUDES_IN_FRAMEWORK_MODULES'] = 'YES'
+        config.build_settings['CLANG_CXX_LANGUAGE_STANDARD'] = 'gnu++17'
+        definitions = config.build_settings['GCC_PREPROCESSOR_DEFINITIONS'] || ['$(inherited)']
+        definitions = [definitions] unless definitions.is_a?(Array)
+        definitions << 'FMT_USE_CONSTEVAL=0' unless definitions.include?('FMT_USE_CONSTEVAL=0')
+        config.build_settings['GCC_PREPROCESSOR_DEFINITIONS'] = definitions
       end
     end`,
       anchor: /post_install do \|installer\|/,
