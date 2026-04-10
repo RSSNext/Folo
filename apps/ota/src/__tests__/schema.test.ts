@@ -37,4 +37,28 @@ describe("otaReleaseSchema", () => {
     expect(parsed.runtimeVersion).toBe("0.4.1")
     expect(Object.keys(parsed.platforms)).toEqual(["ios"])
   })
+
+  it("rejects metadata with no platforms", () => {
+    expect(() =>
+      otaReleaseSchema.parse({
+        schemaVersion: 1,
+        product: "mobile",
+        channel: "production",
+        releaseVersion: "0.4.2",
+        releaseKind: "ota",
+        runtimeVersion: "0.4.1",
+        publishedAt: "2026-04-10T12:00:00Z",
+        git: {
+          tag: "mobile/v0.4.2",
+          commit: "abcdef1234567890",
+        },
+        policy: {
+          storeRequired: false,
+          minSupportedBinaryVersion: "0.4.1",
+          message: null,
+        },
+        platforms: {},
+      }),
+    ).toThrow("At least one platform must be provided")
+  })
 })

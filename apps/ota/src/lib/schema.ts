@@ -23,6 +23,9 @@ const platformsSchema = z
     linux: platformSchema.optional(),
   })
   .strict()
+  .refine((platforms) => Object.keys(platforms).length > 0, {
+    message: "At least one platform must be provided",
+  })
 
 export const otaReleaseSchema = z.object({
   schemaVersion: z.literal(1),

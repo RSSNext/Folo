@@ -47,7 +47,7 @@
       "r2_buckets": [
         {
           "binding": "OTA_BUCKET",
-          "bucket_name": "REPLACE_WITH_DEV_BUCKET_NAME",
+          "bucket_name": "replace-with-dev-bucket-name",
         },
       ],
       "vars": {
