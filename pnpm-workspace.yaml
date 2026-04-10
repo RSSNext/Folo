@@ -28,7 +28,6 @@ onlyBuiltDependencies:
   - fast-folder-size
   - fs-xattr
   - macos-alias
-  - msedge-tts
   - protobufjs
   - sharp
   - simple-git-hooks

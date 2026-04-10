@@ -5,13 +5,12 @@ import { readability } from "@follow-app/readability"
 import { app, BrowserWindow } from "electron"
 import type { IpcContext } from "electron-ipc-decorator"
 import { IpcMethod, IpcService } from "electron-ipc-decorator"
-import { MsEdgeTTS, OUTPUT_FORMAT } from "msedge-tts"
 import path from "pathe"
 import type { ModelResult } from "vscode-languagedetection"
 
 import { detectCodeStringLanguage } from "../../modules/language-detection"
 
-const tts = new MsEdgeTTS()
+const TTS_SERVICE_URL = "https://tts.folo.is"
 
 interface ReadabilityInput {
   url: string
@@ -21,11 +20,54 @@ interface ReadabilityInput {
 interface TtsInput {
   id: string
   text: string
-  voice: string
+  voice?: string
 }
 
 interface DetectCodeStringLanguageInput {
   codeString: string
+}
+
+interface TtsErrorResponse {
+  error?: {
+    message?: string
+  }
+}
+
+interface TtsVoiceResponse {
+  voices: Array<{
+    FriendlyName: string
+    Gender: string
+    Locale: string
+    ShortName: string
+  }>
+}
+
+const readTtsErrorMessage = async (response: Response) => {
+  try {
+    const data = (await response.clone().json()) as TtsErrorResponse
+    return data.error?.message || "TTS request failed"
+  } catch {
+    return "TTS request failed"
+  }
+}
+
+const showReaderToastError = (
+  window: BrowserWindow | null,
+  error: unknown,
+  fallbackMessage: string,
+) => {
+  if (!window) return
+
+  if (error instanceof Error) {
+    void callWindowExpose(window).toast.error(error.message, {
+      duration: 1000,
+    })
+    return
+  }
+
+  void callWindowExpose(window).toast.error(fallbackMessage, {
+    duration: 1000,
+  })
 }
 
 export class ReaderService extends IpcService {
@@ -45,7 +87,10 @@ export class ReaderService extends IpcService {
 
   @IpcMethod()
   async tts(context: IpcContext, input: TtsInput): Promise<string | null> {
-    const { id, text, voice } = input
+    const { id } = input
+    const text = input.text.trim()
+    const voice = input.voice?.trim()
+
     if (!text) {
       return null
     }
@@ -53,33 +98,35 @@ export class ReaderService extends IpcService {
     const window = BrowserWindow.fromWebContents(context.sender)
     if (!window) return null
 
-    try {
-      await tts.setMetadata(voice, OUTPUT_FORMAT.AUDIO_24KHZ_96KBITRATE_MONO_MP3, {})
-    } catch (error: unknown) {
-      console.error("Failed to set voice", error)
-      if (error instanceof Error) {
-        callWindowExpose(window).toast.error(error.message, {
-          duration: 1000,
-        })
-      } else {
-        callWindowExpose(window).toast.error("Failed to set voice", {
-          duration: 1000,
-        })
-      }
-      return null
+    const dirPath = path.join(app.getPath("userData"), "Cache", "tts", id)
+    const filePath = path.join(dirPath, "audio.mp3")
+    if (fs.existsSync(filePath)) {
+      return filePath
     }
 
-    const dirPath = path.join(app.getPath("userData"), "Cache", "tts", id)
-    const possibleFilePathList = ["mp3", "webm"].map((ext) => {
-      return path.join(dirPath, `audio.${ext}`)
-    })
-    const filePath = possibleFilePathList.find((p) => fs.existsSync(p))
-    if (filePath) {
-      return filePath
-    } else {
+    try {
+      const response = await fetch(`${TTS_SERVICE_URL}/tts`, {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({
+          text,
+          ...(voice ? { voice } : {}),
+        }),
+      })
+
+      if (!response.ok) {
+        throw new Error(await readTtsErrorMessage(response))
+      }
+
       fs.mkdirSync(dirPath, { recursive: true })
-      const { audioFilePath } = await tts.toFile(dirPath, text)
-      return audioFilePath
+      fs.writeFileSync(filePath, Buffer.from(await response.arrayBuffer()))
+      return filePath
+    } catch (error: unknown) {
+      console.error("Failed to synthesize TTS", error)
+      showReaderToastError(window, error, "Failed to synthesize TTS")
+      return null
     }
   }
 
@@ -87,16 +134,16 @@ export class ReaderService extends IpcService {
   async getVoices(context: IpcContext) {
     const window = BrowserWindow.fromWebContents(context.sender)
     try {
-      const voices = await tts.getVoices()
-      return voices
-    } catch (error) {
-      console.error("Failed to get voices", error)
-      if (!window) return
-      if (error instanceof Error) {
-        void callWindowExpose(window).toast.error(error.message, { duration: 1000 })
-        return
+      const response = await fetch(`${TTS_SERVICE_URL}/voices`)
+      if (!response.ok) {
+        throw new Error(await readTtsErrorMessage(response))
       }
-      callWindowExpose(window).toast.error("Failed to get voices", { duration: 1000 })
+
+      const data = (await response.json()) as TtsVoiceResponse
+      return data.voices
+    } catch (error: unknown) {
+      console.error("Failed to get voices", error)
+      showReaderToastError(window, error, "Failed to get voices")
     }
   }
 
