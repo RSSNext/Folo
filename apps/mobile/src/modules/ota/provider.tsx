@@ -62,6 +62,43 @@ const getErrorMessage = (error: unknown, fallback: string) => {
   return error instanceof Error ? error.message : fallback
 }
 
+export function runWithSingleInFlight({
+  inFlightRef,
+  run,
+}: {
+  inFlightRef: { current: Promise<OtaCheckForUpdatesResult> | null }
+  run: () => Promise<OtaCheckForUpdatesResult>
+}) {
+  if (inFlightRef.current) {
+    return inFlightRef.current
+  }
+
+  const promise = run().finally(() => {
+    if (inFlightRef.current === promise) {
+      inFlightRef.current = null
+    }
+  })
+
+  inFlightRef.current = promise
+  return promise
+}
+
+export const runSafeReloadUpdate = async ({
+  isEnabled,
+  pendingVersion,
+  reload,
+}: {
+  isEnabled: boolean
+  pendingVersion: string | null
+  reload: () => Promise<void>
+}) => {
+  if (!isEnabled || !pendingVersion) {
+    return
+  }
+
+  await reload()
+}
+
 const runOtaCheck = async ({
   dispatch,
   currentPendingVersion,
@@ -188,19 +225,16 @@ const runGuardedOtaCheck = ({
     shouldCancel,
   })
 
-  const promise = runOtaCheck({
-    dispatch,
-    currentPendingVersion,
-    isUpdatePending,
-    shouldCancel,
-  }).finally(() => {
-    if (inFlightRef.current === promise) {
-      inFlightRef.current = null
-    }
+  return runWithSingleInFlight({
+    inFlightRef,
+    run: () =>
+      runOtaCheck({
+        dispatch,
+        currentPendingVersion,
+        isUpdatePending,
+        shouldCancel,
+      }),
   })
-
-  inFlightRef.current = promise
-  return promise
 }
 
 export const OtaProvider = ({ children }: PropsWithChildren) => {
@@ -289,13 +323,12 @@ export const OtaProvider = ({ children }: PropsWithChildren) => {
           isUpdatePending,
           shouldCancel: () => isUnmountedRef.current,
         }),
-      reloadUpdate: async () => {
-        if (!Updates.isEnabled || !currentPendingVersion) {
-          return
-        }
-
-        await Updates.reloadAsync()
-      },
+      reloadUpdate: async () =>
+        runSafeReloadUpdate({
+          isEnabled: Updates.isEnabled,
+          pendingVersion: currentPendingVersion,
+          reload: () => Updates.reloadAsync(),
+        }),
     }
   }, [currentPendingVersion, isUpdatePending])
 
