@@ -99,24 +99,24 @@ jobs:
             exit 1
           fi
 
-          release_kind_values="$(printf '%s\n' "$COMMIT_MESSAGE" | sed -nE 's/^OTA_RELEASE_KIND=(.*)$/\1/p')"
-          runtime_version_values="$(printf '%s\n' "$COMMIT_MESSAGE" | sed -nE 's/^OTA_RUNTIME_VERSION=(.*)$/\1/p')"
-          channel_values="$(printf '%s\n' "$COMMIT_MESSAGE" | sed -nE 's/^OTA_CHANNEL=(.*)$/\1/p')"
+          release_kind_lines="$(printf '%s\n' "$COMMIT_MESSAGE" | sed -n '/^OTA_RELEASE_KIND=/p')"
+          runtime_version_lines="$(printf '%s\n' "$COMMIT_MESSAGE" | sed -n '/^OTA_RUNTIME_VERSION=/p')"
+          channel_lines="$(printf '%s\n' "$COMMIT_MESSAGE" | sed -n '/^OTA_CHANNEL=/p')"
 
-          count_values() {
-            local values="$1"
+          count_lines() {
+            local lines="$1"
 
-            if [ -z "$values" ]; then
+            if [ -z "$lines" ]; then
               echo 0
               return
             fi
 
-            printf '%s\n' "$values" | sed '/^$/d' | wc -l | tr -d ' '
+            printf '%s\n' "$lines" | wc -l | tr -d ' '
           }
 
-          release_kind_count="$(count_values "$release_kind_values")"
-          runtime_version_count="$(count_values "$runtime_version_values")"
-          channel_count="$(count_values "$channel_values")"
+          release_kind_count="$(count_lines "$release_kind_lines")"
+          runtime_version_count="$(count_lines "$runtime_version_lines")"
+          channel_count="$(count_lines "$channel_lines")"
 
           if [ "$release_kind_count" -ne 1 ] || [ "$runtime_version_count" -ne 1 ] || [ "$channel_count" -ne 1 ]; then
             echo "::error::OTA trailers are incomplete or duplicated. Expected exactly one OTA_RELEASE_KIND, OTA_RUNTIME_VERSION, and OTA_CHANNEL trailer when any OTA_ trailer is present."
@@ -124,9 +124,9 @@ jobs:
             exit 1
           fi
 
-          release_kind="$(printf '%s\n' "$release_kind_values" | tail -n 1)"
-          runtime_version="$(printf '%s\n' "$runtime_version_values" | tail -n 1)"
-          channel="$(printf '%s\n' "$channel_values" | tail -n 1)"
+          release_kind="$(printf '%s\n' "$release_kind_lines" | sed -nE 's/^OTA_RELEASE_KIND=(.*)$/\1/p' | tail -n 1)"
+          runtime_version="$(printf '%s\n' "$runtime_version_lines" | sed -nE 's/^OTA_RUNTIME_VERSION=(.*)$/\1/p' | tail -n 1)"
+          channel="$(printf '%s\n' "$channel_lines" | sed -nE 's/^OTA_CHANNEL=(.*)$/\1/p' | tail -n 1)"
 
           case "$release_kind" in
             ota|store) ;;
