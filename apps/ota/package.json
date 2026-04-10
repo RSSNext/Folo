@@ -10,6 +10,7 @@
     "typecheck": "tsc --noEmit"
   },
   "dependencies": {
+    "fzstd": "0.1.1",
     "hono": "4.12.1",
     "ofetch": "1.5.1",
     "zod": "3.25.76"

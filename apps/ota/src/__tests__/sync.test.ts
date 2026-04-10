@@ -2,6 +2,7 @@ import { afterEach, beforeEach, describe, expect, it, vi } from "vitest"
 
 import type { GitHubRequestError } from "../lib/github"
 import { listPublishedOtaReleases } from "../lib/github"
+import { mirrorReleaseToStorage } from "../lib/sync"
 
 describe("listPublishedOtaReleases", () => {
   beforeEach(() => {
@@ -150,6 +151,88 @@ describe("listPublishedOtaReleases", () => {
         statusText: "Unauthorized",
         body: JSON.stringify({ message: "Bad credentials" }),
       }),
+    )
+  })
+})
+
+describe("mirrorReleaseToStorage", () => {
+  it("stores mirrored release metadata and latest pointers only for platforms with mirrored payloads", async () => {
+    const kvWrites: string[] = []
+    const r2Writes: string[] = []
+
+    const kv = {
+      put: vi.fn(async (key: string) => {
+        kvWrites.push(key)
+      }),
+      get: vi.fn(async () => null),
+    } as unknown as KVNamespace
+
+    const bucket = {
+      put: vi.fn(async (key: string) => {
+        r2Writes.push(key)
+      }),
+    } as unknown as R2Bucket
+
+    await mirrorReleaseToStorage(
+      {
+        release: {
+          schemaVersion: 1,
+          product: "mobile",
+          channel: "production",
+          releaseVersion: "0.4.2",
+          releaseKind: "ota",
+          runtimeVersion: "0.4.1",
+          publishedAt: "2026-04-10T12:00:00Z",
+          git: { tag: "mobile/v0.4.2", commit: "abcdef1234567890" },
+          policy: {
+            storeRequired: false,
+            minSupportedBinaryVersion: "0.4.1",
+            message: null,
+          },
+          platforms: {
+            ios: {
+              launchAsset: {
+                path: "bundles/ios-main.js",
+                sha256: "a".repeat(64),
+                contentType: "application/javascript",
+              },
+              assets: [],
+            },
+            android: {
+              launchAsset: {
+                path: "bundles/android-main.js",
+                sha256: "b".repeat(64),
+                contentType: "application/javascript",
+              },
+              assets: [],
+            },
+          },
+        },
+        files: [
+          {
+            key: "mobile/production/0.4.1/0.4.2/ios/bundles/ios-main.js",
+            body: new Uint8Array([1, 2, 3]),
+            contentType: "application/javascript",
+          },
+        ],
+      },
+      { kv, bucket },
+    )
+
+    expect(r2Writes).toContain("mobile/production/0.4.1/0.4.2/ios/bundles/ios-main.js")
+
+    const releaseWriteIndex = kvWrites.findIndex((key) =>
+      key.includes("release:mobile:0.4.2"),
+    )
+    const latestWriteIndex = kvWrites.findIndex((key) =>
+      key.includes("latest:mobile:production:0.4.1:ios"),
+    )
+
+    expect(releaseWriteIndex).toBeGreaterThanOrEqual(0)
+    expect(latestWriteIndex).toBeGreaterThan(releaseWriteIndex)
+    expect(kvWrites.some((key) => key.includes("latest:mobile:production:0.4.1:ios"))).toBe(true)
+    expect(kvWrites.some((key) => key.includes("latest:mobile:production:0.4.1:android"))).toBe(
+      false,
     )
   })
 })
