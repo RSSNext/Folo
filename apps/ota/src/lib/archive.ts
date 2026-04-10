@@ -1,13 +1,19 @@
-import { decompress } from "fzstd"
+import { Decompress } from "fzstd"
+import tar from "tar-stream"
 
 import type { OtaPlatform, OtaRelease } from "./schema"
 
-const TAR_BLOCK_SIZE = 512
-const textDecoder = new TextDecoder()
 const OTA_PLATFORMS: OtaPlatform[] = ["ios", "android", "macos", "windows", "linux"]
 
 type PlatformPayload = NonNullable<OtaRelease["platforms"][OtaPlatform]>
 type PlatformAsset = PlatformPayload["launchAsset"] | PlatformPayload["assets"][number]
+
+interface MirroredFileRequest {
+  archivePath: string
+  key: string
+  contentType: string
+  body?: Uint8Array
+}
 
 export interface MirroredFile {
   key: string
@@ -36,35 +42,120 @@ export async function extractMirroredFiles(input: {
 }): Promise<MirroredFile[]> {
   const compressedArchive =
     input.archiveBuffer instanceof Uint8Array ? input.archiveBuffer : new Uint8Array(input.archiveBuffer)
-  const archiveEntries = parseTarArchive(decompress(compressedArchive))
-  const files: MirroredFile[] = []
+  const requestedFiles = createMirroredFileRequests(input.release)
+  const requestsByArchivePath = new Map<string, MirroredFileRequest[]>()
+
+  for (const request of requestedFiles) {
+    const requestsForPath = requestsByArchivePath.get(request.archivePath)
+
+    if (requestsForPath) {
+      requestsForPath.push(request)
+      continue
+    }
+
+    requestsByArchivePath.set(request.archivePath, [request])
+  }
+
+  const missingArchivePaths = new Set(requestsByArchivePath.keys())
+  const tarExtract = tar.extract()
+
+  const extractedFiles = await new Promise<MirroredFile[]>((resolve, reject) => {
+    const rejectOnce = once(reject)
+    const resolveOnce = once(resolve)
+
+    tarExtract.on("entry", (header, stream, next) => {
+      const archivePath = normalizeArchivePath(header.name)
+      const matchingRequests = requestsByArchivePath.get(archivePath)
+      const chunks: Uint8Array[] = []
+
+      stream.on("data", (chunk) => {
+        if (matchingRequests) {
+          chunks.push(new Uint8Array(chunk))
+        }
+      })
+      stream.on("error", (error) => {
+        rejectOnce(toError(error))
+      })
+      stream.on("end", () => {
+        if (matchingRequests) {
+          const body = concatenateChunks(chunks)
+
+          for (const request of matchingRequests) {
+            request.body = body
+          }
+
+          missingArchivePaths.delete(archivePath)
+        }
+
+        next()
+      })
+      stream.resume()
+    })
+
+    tarExtract.on("error", (error) => {
+      rejectOnce(toError(error))
+    })
+    tarExtract.on("finish", () => {
+      if (missingArchivePaths.size > 0) {
+        rejectOnce(
+          new Error(
+            `Archive is missing referenced file "${[...missingArchivePaths][0]}" for ${input.release.releaseVersion}`,
+          ),
+        )
+        return
+      }
+
+      resolveOnce(
+        requestedFiles.map((request) => ({
+          key: request.key,
+          body: request.body ?? new Uint8Array(0),
+          contentType: request.contentType,
+        })),
+      )
+    })
+
+    const zstdStream = new Decompress((chunk, final) => {
+      if (chunk.byteLength > 0) {
+        tarExtract.write(chunk)
+      }
+
+      if (final) {
+        tarExtract.end()
+      }
+    })
+
+    try {
+      zstdStream.push(compressedArchive, true)
+    } catch (error) {
+      rejectOnce(toError(error))
+    }
+  })
+
+  return extractedFiles
+}
+
+function createMirroredFileRequests(release: OtaRelease): MirroredFileRequest[] {
+  const requests: MirroredFileRequest[] = []
 
   for (const platform of OTA_PLATFORMS) {
-    const platformPayload = input.release.platforms[platform]
+    const platformPayload = release.platforms[platform]
 
     if (!platformPayload) {
       continue
     }
 
     for (const asset of listReferencedAssets(platformPayload)) {
-      const assetPath = normalizeArchivePath(asset.path)
-      const archiveBody = archiveEntries.get(assetPath)
+      const archivePath = normalizeArchivePath(asset.path)
 
-      if (!archiveBody) {
-        throw new Error(
-          `Archive is missing referenced file "${assetPath}" for ${platform} in ${input.release.releaseVersion}`,
-        )
-      }
-
-      files.push({
-        key: buildMirroredAssetKey(input.release, platform, assetPath),
-        body: archiveBody,
+      requests.push({
+        archivePath,
+        key: buildMirroredAssetKey(release, platform, archivePath),
         contentType: asset.contentType,
       })
     }
   }
 
-  return files
+  return requests
 }
 
 function listReferencedAssets(platformPayload: PlatformPayload): PlatformAsset[] {
@@ -77,75 +168,44 @@ function listReferencedAssets(platformPayload: PlatformPayload): PlatformAsset[]
   return [...dedupedAssets.values()]
 }
 
-function parseTarArchive(archive: Uint8Array) {
-  const entries = new Map<string, Uint8Array>()
-  let offset = 0
-
-  while (offset + TAR_BLOCK_SIZE <= archive.length) {
-    const header = archive.subarray(offset, offset + TAR_BLOCK_SIZE)
-
-    if (isZeroBlock(header)) {
-      break
-    }
-
-    const fileName = readTarPath(header)
-    const fileSize = parseTarOctal(header.subarray(124, 136))
-    const fileType = header[156] ?? 0
-    const fileStart = offset + TAR_BLOCK_SIZE
-    const fileEnd = fileStart + fileSize
-
-    if (fileEnd > archive.length) {
-      throw new Error(`Archive entry "${fileName}" exceeds archive bounds`)
-    }
-
-    if (isRegularFile(fileType)) {
-      entries.set(normalizeArchivePath(fileName), archive.slice(fileStart, fileEnd))
-    }
-
-    offset = fileStart + Math.ceil(fileSize / TAR_BLOCK_SIZE) * TAR_BLOCK_SIZE
-  }
-
-  return entries
-}
-
-function readTarPath(header: Uint8Array) {
-  const name = readTarString(header.subarray(0, 100))
-  const prefix = readTarString(header.subarray(345, 500))
-
-  return prefix ? `${prefix}/${name}` : name
-}
-
-function readTarString(value: Uint8Array) {
-  const terminatorIndex = value.indexOf(0)
-  const sliceEnd = terminatorIndex === -1 ? value.length : terminatorIndex
-
-  return textDecoder.decode(value.subarray(0, sliceEnd)).trim()
-}
-
-function parseTarOctal(value: Uint8Array) {
-  const rawValue = readTarString(value).replaceAll("\0", "").trim()
-
-  if (!rawValue) {
-    return 0
-  }
-
-  const parsedValue = Number.parseInt(rawValue, 8)
-
-  if (Number.isNaN(parsedValue)) {
-    throw new TypeError(`Invalid tar entry size "${rawValue}"`)
-  }
-
-  return parsedValue
-}
-
 function normalizeArchivePath(path: string) {
   return path.replace(/^\/+/, "").replace(/^(\.\/)+/, "").replaceAll(/\/{2,}/g, "/")
 }
 
-function isRegularFile(fileType: number) {
-  return fileType === 0 || fileType === 48
+function concatenateChunks(chunks: readonly Uint8Array[]) {
+  if (chunks.length === 0) {
+    return new Uint8Array(0)
+  }
+
+  if (chunks.length === 1) {
+    return chunks[0]!.slice()
+  }
+
+  const totalLength = chunks.reduce((length, chunk) => length + chunk.byteLength, 0)
+  const output = new Uint8Array(totalLength)
+  let offset = 0
+
+  for (const chunk of chunks) {
+    output.set(chunk, offset)
+    offset += chunk.byteLength
+  }
+
+  return output
 }
 
-function isZeroBlock(block: Uint8Array) {
-  return block.every((byte) => byte === 0)
+function once<T extends (...args: never[]) => void>(callback: T): T {
+  let called = false
+
+  return ((...args: Parameters<T>) => {
+    if (called) {
+      return
+    }
+
+    called = true
+    callback(...args)
+  }) as T
+}
+
+function toError(error: unknown) {
+  return error instanceof Error ? error : new Error(String(error))
 }

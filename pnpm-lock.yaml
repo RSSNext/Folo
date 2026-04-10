@@ -1453,6 +1453,9 @@ importers:
       ofetch:
         specifier: 1.5.1
         version: 1.5.1
+      tar-stream:
+        specifier: 2.2.0
+        version: 2.2.0
       zod:
         specifier: 3.25.76
         version: 3.25.76
@@ -1460,6 +1463,9 @@ importers:
       '@cloudflare/workers-types':
         specifier: ^4.20260405.0
         version: 4.20260410.1
+      '@types/tar-stream':
+        specifier: 3.1.4
+        version: 3.1.4
       typescript:
         specifier: 'catalog:'
         version: 5.9.3
@@ -7874,6 +7880,9 @@ packages:
 
   '@types/stack-utils@2.0.3':
     resolution: {integrity: sha512-9aEbYZ3TbYMznPdcdr3SmIrLXwC/AKZXQeCf9Pgao5CKb8CyHuEX5jzWPTkvregvhRJHcpRO6BFoGW9ycaOkYw==}
+
+  '@types/tar-stream@3.1.4':
+    resolution: {integrity: sha512-921gW0+g29mCJX0fRvqeHzBlE/XclDaAG0Ousy1LCghsOhvaKacDeRGEVzQP9IPfKn8Vysy7FEXAIxycpc/CMg==}
 
   '@types/tar@6.1.13':
     resolution: {integrity: sha512-IznnlmU5f4WcGTh2ltRu/Ijpmk8wiWXfF0VA4s+HPjHZgvFggk1YaIkbo5krX/zUCzWF8N/l4+W/LNxnvAJ8nw==}
@@ -24816,6 +24825,10 @@ snapshots:
   '@types/semver@7.7.1': {}
 
   '@types/stack-utils@2.0.3': {}
+
+  '@types/tar-stream@3.1.4':
+    dependencies:
+      '@types/node': 25.2.3
 
   '@types/tar@6.1.13':
     dependencies:

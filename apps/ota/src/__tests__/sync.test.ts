@@ -1,8 +1,56 @@
+import tar from "tar-stream"
 import { afterEach, beforeEach, describe, expect, it, vi } from "vitest"
 
+import { extractMirroredFiles } from "../lib/archive"
 import type { GitHubRequestError } from "../lib/github"
 import { listPublishedOtaReleases } from "../lib/github"
+import { IMMUTABLE_ASSET_CACHE_CONTROL, putMirroredFiles } from "../lib/r2"
 import { mirrorReleaseToStorage } from "../lib/sync"
+
+vi.mock("fzstd", () => {
+  class Decompress {
+    ondata: (chunk: Uint8Array, final?: boolean) => unknown
+
+    constructor(ondata?: (chunk: Uint8Array, final?: boolean) => unknown) {
+      this.ondata = ondata ?? (() => {})
+    }
+
+    push(chunk: Uint8Array, final = false) {
+      const boundary = Math.max(1, Math.ceil(chunk.length / 2))
+      const firstChunk = chunk.subarray(0, boundary)
+      const secondChunk = chunk.subarray(boundary)
+
+      if (firstChunk.byteLength > 0) {
+        this.ondata(firstChunk, final && secondChunk.byteLength === 0)
+      }
+
+      if (secondChunk.byteLength > 0 || final) {
+        this.ondata(secondChunk, final)
+      }
+
+      return true
+    }
+  }
+
+  return { Decompress }
+})
+
+const textEncoder = new TextEncoder()
+const baseRelease = {
+  schemaVersion: 1,
+  product: "mobile",
+  channel: "production",
+  releaseVersion: "0.4.2",
+  releaseKind: "ota",
+  runtimeVersion: "0.4.1",
+  publishedAt: "2026-04-10T12:00:00Z",
+  git: { tag: "mobile/v0.4.2", commit: "abcdef1234567890" },
+  policy: {
+    storeRequired: false,
+    minSupportedBinaryVersion: "0.4.1",
+    message: null,
+  },
+} as const
 
 describe("listPublishedOtaReleases", () => {
   beforeEach(() => {
@@ -155,6 +203,101 @@ describe("listPublishedOtaReleases", () => {
   })
 })
 
+describe("extractMirroredFiles", () => {
+  it("extracts only referenced files from a tar archive", async () => {
+    const archiveBuffer = await createTarArchive([
+      {
+        name: "bundles/ios-main.js",
+        body: "console.log('ios')",
+      },
+      {
+        name: "bundles/unused.js",
+        body: "console.log('unused')",
+      },
+    ])
+
+    const files = await extractMirroredFiles({
+      release: {
+        ...baseRelease,
+        platforms: {
+          ios: {
+            launchAsset: {
+              path: "bundles/ios-main.js",
+              sha256: "a".repeat(64),
+              contentType: "application/javascript",
+            },
+            assets: [],
+          },
+        },
+      },
+      archiveBuffer,
+    })
+
+    expect(files).toEqual([
+      {
+        key: "mobile/production/0.4.1/0.4.2/ios/bundles/ios-main.js",
+        body: textEncoder.encode("console.log('ios')"),
+        contentType: "application/javascript",
+      },
+    ])
+  })
+
+  it("throws when a referenced archive file is missing", async () => {
+    const archiveBuffer = await createTarArchive([
+      {
+        name: "bundles/unused.js",
+        body: "console.log('unused')",
+      },
+    ])
+
+    await expect(
+      extractMirroredFiles({
+        release: {
+          ...baseRelease,
+          platforms: {
+            ios: {
+              launchAsset: {
+                path: "bundles/ios-main.js",
+                sha256: "a".repeat(64),
+                contentType: "application/javascript",
+              },
+              assets: [],
+            },
+          },
+        },
+        archiveBuffer,
+      }),
+    ).rejects.toThrow('Archive is missing referenced file "bundles/ios-main.js"')
+  })
+})
+
+describe("putMirroredFiles", () => {
+  it("forwards content metadata and immutable cache headers to R2", async () => {
+    const bucket = {
+      put: vi.fn(async () => null),
+    } as unknown as R2Bucket
+
+    await putMirroredFiles(bucket, [
+      {
+        key: "mobile/production/0.4.1/0.4.2/ios/bundles/ios-main.js",
+        body: textEncoder.encode("console.log('ios')"),
+        contentType: "application/javascript",
+      },
+    ])
+
+    expect(bucket.put).toHaveBeenCalledWith(
+      "mobile/production/0.4.1/0.4.2/ios/bundles/ios-main.js",
+      textEncoder.encode("console.log('ios')"),
+      expect.objectContaining({
+        httpMetadata: expect.objectContaining({
+          contentType: "application/javascript",
+          cacheControl: IMMUTABLE_ASSET_CACHE_CONTROL,
+        }),
+      }),
+    )
+  })
+})
+
 describe("mirrorReleaseToStorage", () => {
   it("stores mirrored release metadata and latest pointers only for platforms with mirrored payloads", async () => {
     const kvWrites: string[] = []
@@ -176,19 +319,7 @@ describe("mirrorReleaseToStorage", () => {
     await mirrorReleaseToStorage(
       {
         release: {
-          schemaVersion: 1,
-          product: "mobile",
-          channel: "production",
-          releaseVersion: "0.4.2",
-          releaseKind: "ota",
-          runtimeVersion: "0.4.1",
-          publishedAt: "2026-04-10T12:00:00Z",
-          git: { tag: "mobile/v0.4.2", commit: "abcdef1234567890" },
-          policy: {
-            storeRequired: false,
-            minSupportedBinaryVersion: "0.4.1",
-            message: null,
-          },
+          ...baseRelease,
           platforms: {
             ios: {
               launchAsset: {
@@ -236,3 +367,63 @@ describe("mirrorReleaseToStorage", () => {
     )
   })
 })
+
+async function createTarArchive(
+  entries: Array<{
+    name: string
+    body: string
+  }>,
+) {
+  const pack = tar.pack()
+  const archiveChunks: Uint8Array[] = []
+
+  const archivePromise = new Promise<Uint8Array>((resolve, reject) => {
+    pack.on("data", (chunk) => {
+      archiveChunks.push(new Uint8Array(chunk))
+    })
+    pack.on("error", reject)
+    pack.on("end", () => {
+      resolve(concatenateChunks(archiveChunks))
+    })
+  })
+
+  for (const entry of entries) {
+    await new Promise<void>((resolve, reject) => {
+      const body = textEncoder.encode(entry.body)
+      const tarEntry = pack.entry(
+        {
+          name: entry.name,
+          size: body.byteLength,
+        },
+        (error) => {
+          if (error) {
+            reject(error)
+            return
+          }
+
+          resolve()
+        },
+      )
+
+      tarEntry.on("error", reject)
+      tarEntry.end(body)
+    })
+  }
+
+  pack.finalize()
+
+  return archivePromise
+}
+
+function concatenateChunks(chunks: readonly Uint8Array[]) {
+  const totalLength = chunks.reduce((length, chunk) => length + chunk.byteLength, 0)
+  const output = new Uint8Array(totalLength)
+  let offset = 0
+
+  for (const chunk of chunks) {
+    output.set(chunk, offset)
+    offset += chunk.byteLength
+  }
+
+  return output
+}
