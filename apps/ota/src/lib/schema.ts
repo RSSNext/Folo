@@ -2,9 +2,6 @@ import { z } from "zod"
 
 const semver = z.string().regex(/^\d+\.\d+\.\d+$/)
 const sha256 = z.string().regex(/^[a-f0-9]{64}$/)
-const otaPlatforms = ["ios", "android", "macos", "windows", "linux"] as const
-
-export const otaPlatformSchema = z.enum(otaPlatforms)
 
 const assetSchema = z.object({
   path: z.string().min(1),
@@ -50,5 +47,5 @@ export const otaReleaseSchema = z.object({
   platforms: platformsSchema,
 })
 
-export type OtaPlatform = z.infer<typeof otaPlatformSchema>
+export type OtaPlatform = "ios" | "android" | "macos" | "windows" | "linux"
 export type OtaRelease = z.infer<typeof otaReleaseSchema>

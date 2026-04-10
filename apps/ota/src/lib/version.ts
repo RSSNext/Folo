@@ -29,7 +29,7 @@ export function selectLatestCompatibleRelease(
       .filter((release) => release.channel === input.channel)
       .filter((release) => release.releaseKind === "ota")
       .filter((release) => release.runtimeVersion === input.runtimeVersion)
-      .filter((release) => Object.prototype.hasOwnProperty.call(release.platforms, input.platform))
+      .filter((release) => Boolean(release.platforms[input.platform]))
       .sort((left, right) => compareSemver(right.releaseVersion, left.releaseVersion))[0] ?? null
   )
 }
