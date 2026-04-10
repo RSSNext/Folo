@@ -1,7 +1,9 @@
 import { Hono } from "hono"
 
 import type { Env } from "./env"
+import { syncGitHubReleases } from "./lib/sync"
 import { assetsRoute } from "./routes/assets"
+import { internalRoute } from "./routes/internal"
 import { manifestRoute } from "./routes/manifest"
 import { policyRoute } from "./routes/policy"
 
@@ -10,8 +12,11 @@ export const app = new Hono<{ Bindings: Env }>()
 app.route("/", manifestRoute)
 app.route("/", assetsRoute)
 app.route("/", policyRoute)
-app.get("/internal/health", (c) => c.json({ ok: true }))
+app.route("/", internalRoute)
 
 export default {
   fetch: app.fetch,
+  scheduled(_controller: ScheduledController, env: Env, ctx: ExecutionContext) {
+    ctx.waitUntil(syncGitHubReleases(env))
+  },
 }
