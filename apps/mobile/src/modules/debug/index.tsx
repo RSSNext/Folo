@@ -14,6 +14,8 @@ import { BugCuteReIcon } from "@/src/icons/bug_cute_re"
 import { JotaiPersistSyncStorage } from "@/src/lib/jotai"
 import { Navigation } from "@/src/lib/navigation/Navigation"
 import { setEnvProfile, useEnvProfile } from "@/src/lib/proxy-env"
+import { toast } from "@/src/lib/toast"
+import { useOtaActions, useOtaState } from "@/src/modules/ota/provider"
 import { DebugScreen } from "@/src/screens/(headless)/DebugScreen"
 
 export const DebugButton = () => {
@@ -91,7 +93,32 @@ export const DebugButton = () => {
 }
 export const EnvProfileIndicator = () => {
   const envProfile = useEnvProfile()
+  const otaState = useOtaState()
+  const { checkForUpdates, reloadUpdate } = useOtaActions()
   if (!__DEV__ && envProfile === "prod") return null
+
+  const handleCheckOtaUpdate = async () => {
+    try {
+      const result = await checkForUpdates()
+      if (result.kind === "available") {
+        toast.success(`OTA update ${result.version} is ready`)
+        return
+      }
+
+      toast.info("No OTA update available")
+    } catch (error) {
+      toast.error(error instanceof Error ? error.message : "Failed to check OTA update")
+    }
+  }
+
+  const handleReloadOtaUpdate = async () => {
+    try {
+      await reloadUpdate()
+    } catch (error) {
+      toast.error(error instanceof Error ? error.message : "Failed to reload OTA update")
+    }
+  }
+
   return (
     <View
       className="absolute bottom-0 left-16 items-center justify-center"
@@ -116,6 +143,26 @@ export const EnvProfileIndicator = () => {
               </DropdownMenu.Item>
             )
           })}
+          <DropdownMenu.Item
+            key="check-ota-update"
+            onSelect={() => {
+              void handleCheckOtaUpdate()
+            }}
+          >
+            <DropdownMenu.ItemTitle>Check OTA Update</DropdownMenu.ItemTitle>
+          </DropdownMenu.Item>
+          <DropdownMenu.Item
+            key="reload-ota-update"
+            onSelect={() => {
+              void handleReloadOtaUpdate()
+            }}
+          >
+            <DropdownMenu.ItemTitle>
+              {otaState.pendingVersion
+                ? `Reload OTA Update (${otaState.pendingVersion})`
+                : "Reload OTA Update"}
+            </DropdownMenu.ItemTitle>
+          </DropdownMenu.Item>
         </DropdownMenu.Content>
       </DropdownMenu.Root>
     </View>
