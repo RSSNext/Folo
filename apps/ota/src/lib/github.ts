@@ -16,12 +16,34 @@ export interface GitHubReleaseSummary {
   archiveUrl: string
 }
 
+export type GitHubReleaseListResult =
+  | { kind: "not-modified" }
+  | {
+      kind: "ok"
+      etag: string | null
+      releases: GitHubReleaseSummary[]
+    }
+
+export class GitHubRequestError extends Error {
+  readonly status: number
+  readonly statusText: string
+  readonly body: string | null
+
+  constructor(input: { status: number; statusText: string; body: string | null }) {
+    super(`GitHub releases request failed with ${input.status} ${input.statusText}`.trim())
+    this.name = "GitHubRequestError"
+    this.status = input.status
+    this.statusText = input.statusText
+    this.body = input.body
+  }
+}
+
 export async function listPublishedOtaReleases(input: {
   owner: string
   repo: string
   token: string
   etag: string | null
-}): Promise<GitHubReleaseSummary[]> {
+}): Promise<GitHubReleaseListResult> {
   const response = await fetch(
     `https://api.github.com/repos/${input.owner}/${input.repo}/releases`,
     {
@@ -35,30 +57,38 @@ export async function listPublishedOtaReleases(input: {
   )
 
   if (response.status === 304) {
-    return []
+    return { kind: "not-modified" }
   }
 
   if (!response.ok) {
-    throw new Error(`GitHub releases request failed with ${response.status}`)
+    throw new GitHubRequestError({
+      status: response.status,
+      statusText: response.statusText,
+      body: await response.text(),
+    })
   }
 
   const releases = (await response.json()) as GitHubRelease[]
 
-  return releases
-    .filter((release) => !release.draft)
-    .map((release) => {
-      const metadata = release.assets.find((asset) => asset.name === "ota-release.json")
-      const archive = release.assets.find((asset) => asset.name === "dist.tar.zst")
+  return {
+    kind: "ok",
+    etag: response.headers.get("etag"),
+    releases: releases
+      .filter((release) => !release.draft)
+      .map((release) => {
+        const metadata = release.assets.find((asset) => asset.name === "ota-release.json")
+        const archive = release.assets.find((asset) => asset.name === "dist.tar.zst")
 
-      if (!metadata || !archive) {
-        return null
-      }
+        if (!metadata || !archive) {
+          return null
+        }
 
-      return {
-        tag: release.tag_name,
-        metadataUrl: metadata.browser_download_url,
-        archiveUrl: archive.browser_download_url,
-      }
-    })
-    .filter((value): value is GitHubReleaseSummary => value !== null)
+        return {
+          tag: release.tag_name,
+          metadataUrl: metadata.browser_download_url,
+          archiveUrl: archive.browser_download_url,
+        }
+      })
+      .filter((value): value is GitHubReleaseSummary => value !== null),
+  }
 }
