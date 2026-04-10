@@ -14,24 +14,13 @@ const resolvePendingVersion = (manifest: Manifest | undefined): string => {
     return Updates.runtimeVersion ?? "unknown"
   }
 
-  const metadataVersion =
+  const metadataReleaseVersion =
     "metadata" in manifest && manifest.metadata && typeof manifest.metadata === "object"
-      ? Reflect.get(manifest.metadata, "version")
+      ? Reflect.get(manifest.metadata, "releaseVersion")
       : undefined
 
-  if (typeof metadataVersion === "string" && metadataVersion.length > 0) {
-    return metadataVersion
-  }
-
-  const expoClientVersion =
-    "extra" in manifest &&
-    manifest.extra?.expoClient &&
-    typeof manifest.extra.expoClient.version === "string"
-      ? manifest.extra.expoClient.version
-      : undefined
-
-  if (expoClientVersion) {
-    return expoClientVersion
+  if (typeof metadataReleaseVersion === "string" && metadataReleaseVersion.length > 0) {
+    return metadataReleaseVersion
   }
 
   if ("runtimeVersion" in manifest && typeof manifest.runtimeVersion === "string") {
@@ -42,10 +31,42 @@ const resolvePendingVersion = (manifest: Manifest | undefined): string => {
 }
 
 export const OtaProvider = ({ children }: PropsWithChildren) => {
+  const { checkError, downloadError, downloadedUpdate, isUpdatePending } = Updates.useUpdates()
   const [state, dispatch] = useReducer(reduceOtaState, initialOtaState)
 
+  const nativePendingVersion = useMemo(() => {
+    if (!isUpdatePending || downloadedUpdate?.type !== Updates.UpdateInfoType.NEW) {
+      return null
+    }
+
+    return resolvePendingVersion(downloadedUpdate.manifest)
+  }, [downloadedUpdate, isUpdatePending])
+
   useEffect(() => {
-    if (__DEV__ || !Updates.isEnabled) {
+    if (!nativePendingVersion) {
+      return
+    }
+
+    dispatch({
+      type: "downloaded",
+      version: nativePendingVersion,
+    })
+  }, [nativePendingVersion])
+
+  useEffect(() => {
+    const error = downloadError || checkError
+    if (!error) {
+      return
+    }
+
+    dispatch({
+      type: "failed",
+      message: error.message,
+    })
+  }, [checkError, downloadError])
+
+  useEffect(() => {
+    if (__DEV__ || !Updates.isEnabled || nativePendingVersion) {
       return
     }
 
@@ -61,7 +82,9 @@ export const OtaProvider = ({ children }: PropsWithChildren) => {
         }
 
         if (!checkResult.isAvailable) {
-          dispatch({ type: "reset" })
+          if (!isUpdatePending) {
+            dispatch({ type: "reset" })
+          }
           return
         }
 
@@ -79,7 +102,9 @@ export const OtaProvider = ({ children }: PropsWithChildren) => {
           return
         }
 
-        dispatch({ type: "reset" })
+        if (!isUpdatePending) {
+          dispatch({ type: "reset" })
+        }
       } catch (error) {
         if (isCancelled) {
           return
@@ -100,9 +125,19 @@ export const OtaProvider = ({ children }: PropsWithChildren) => {
       isCancelled = true
       task.cancel()
     }
-  }, [])
+  }, [isUpdatePending, nativePendingVersion])
 
-  const value = useMemo(() => state, [state])
+  const value = useMemo(() => {
+    if (!nativePendingVersion) {
+      return state
+    }
+
+    return {
+      status: "ready" as const,
+      pendingVersion: nativePendingVersion,
+      errorMessage: null,
+    }
+  }, [nativePendingVersion, state])
 
   return <OtaContext value={value}>{children}</OtaContext>
 }

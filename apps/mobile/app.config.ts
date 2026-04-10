@@ -41,7 +41,7 @@ export default ({ config }: ConfigContext): ExpoConfig => {
     },
     owner: "follow",
     updates: {
-      url: "https://folo-custom-expo-updates.vercel.app/api/manifest",
+      url: "https://ota.folo.is/manifest",
       requestHeaders: {
         "expo-channel-name": channelName,
       },
