@@ -1,7 +1,7 @@
 import type { Manifest } from "expo-updates"
 import * as Updates from "expo-updates"
 import type { PropsWithChildren } from "react"
-import { createContext, useEffect, useMemo, useReducer } from "react"
+import { createContext, use, useEffect, useMemo, useReducer } from "react"
 import { InteractionManager } from "react-native"
 
 import { initialOtaState, reduceOtaState } from "./store"
