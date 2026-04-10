@@ -6,7 +6,7 @@ import { existsSync } from "node:fs"
 import { readFile, writeFile } from "node:fs/promises"
 import { fileURLToPath } from "node:url"
 
-import { dirname, join, resolve } from "pathe"
+import { dirname, extname, join, resolve } from "pathe"
 
 const SCRIPT_DIR = dirname(fileURLToPath(import.meta.url))
 const REPO_ROOT = resolve(SCRIPT_DIR, "..", "..")
@@ -40,6 +40,13 @@ const CONTENT_TYPES = new Map([
   [".woff2", "font/woff2"],
   [".xml", "application/xml"],
 ])
+
+/**
+ * @typedef {{
+ *   path: string
+ *   ext?: string
+ * }} ExportAssetMetadata
+ */
 
 /**
  * @typedef {{
@@ -78,7 +85,7 @@ const CONTENT_TYPES = new Map([
  *     message: string | null
  *   }
  *   metadata: ExportMetadata
- *   resolveAsset: (assetPath: string) => Promise<OtaAsset>
+ *   resolveAsset: (asset: ExportAssetMetadata) => Promise<OtaAsset>
  * }} BuildOtaMetadataInput
  */
 
@@ -88,25 +95,17 @@ const CONTENT_TYPES = new Map([
 export async function buildOtaMetadata(input) {
   /** @type {Record<string, { launchAsset: OtaAsset, assets: OtaAsset[] }>} */
   const platforms = {}
+  const fileMetadata = resolveExportFileMetadata(input.metadata)
 
   for (const platform of OTA_PLATFORMS) {
-    const platformMetadata = input.metadata.fileMetadata?.[platform]
-
-    if (!platformMetadata?.bundle) {
-      continue
-    }
-
-    const launchAssetPath = normalizeAssetPath(platformMetadata.bundle)
-    const assetPaths = collectAssetPaths(platformMetadata.assets)
+    const platformMetadata = resolvePlatformMetadata(fileMetadata, platform)
+    const launchAsset = { path: normalizeAssetPath(platformMetadata.bundle) }
+    const assets = collectAssets(platformMetadata.assets, platform)
 
     platforms[platform] = {
-      launchAsset: await input.resolveAsset(launchAssetPath),
-      assets: await Promise.all(assetPaths.map((assetPath) => input.resolveAsset(assetPath))),
+      launchAsset: await input.resolveAsset(launchAsset),
+      assets: await Promise.all(assets.map((asset) => input.resolveAsset(asset))),
     }
-  }
-
-  if (Object.keys(platforms).length === 0) {
-    throw new Error("Expo export metadata does not include any platform bundles")
   }
 
   return {
@@ -163,8 +162,8 @@ export async function buildReleaseAssets(options = {}) {
       message: parseNullableEnv("OTA_POLICY_MESSAGE"),
     },
     metadata,
-    resolveAsset: async (assetPath) => {
-      const assetFilePath = join(distDir, assetPath)
+    resolveAsset: async (asset) => {
+      const assetFilePath = join(distDir, asset.path)
       let assetBuffer
 
       try {
@@ -172,14 +171,14 @@ export async function buildReleaseAssets(options = {}) {
       } catch (error) {
         const reason = error instanceof Error ? error.message : String(error)
         throw new Error(
-          `Failed to read exported asset "${assetPath}" at ${assetFilePath}: ${reason}`,
+          `Failed to read exported asset "${asset.path}" at ${assetFilePath}: ${reason}`,
         )
       }
 
       return {
-        path: assetPath,
+        path: asset.path,
         sha256: createHash("sha256").update(assetBuffer).digest("hex"),
-        contentType: resolveContentType(assetPath),
+        contentType: resolveContentType(asset),
       }
     },
   })
@@ -215,43 +214,104 @@ async function main() {
 /**
  * @param {unknown} value
  */
-function collectAssetPaths(value) {
-  if (!Array.isArray(value)) {
+function resolveExportFileMetadata(metadata) {
+  if (!metadata || typeof metadata !== "object") {
+    throw new Error("Expo export metadata is missing fileMetadata")
+  }
+
+  if (!metadata.fileMetadata || typeof metadata.fileMetadata !== "object") {
+    throw new Error("Expo export metadata is missing fileMetadata")
+  }
+
+  return metadata.fileMetadata
+}
+
+function resolvePlatformMetadata(fileMetadata, platform) {
+  const platformMetadata = fileMetadata[platform]
+
+  if (!platformMetadata || typeof platformMetadata !== "object") {
+    throw new Error(`Expo export metadata is missing ${platform} platform metadata`)
+  }
+
+  if (typeof platformMetadata.bundle !== "string" || platformMetadata.bundle.length === 0) {
+    throw new Error(`Expo export metadata is missing ${platform} bundle metadata`)
+  }
+
+  return platformMetadata
+}
+
+function collectAssets(value, platform) {
+  if (value == null) {
     return []
   }
 
-  const dedupedPaths = new Set()
-
-  for (const asset of value) {
-    const assetPath = resolveAssetPath(asset)
-
-    dedupedPaths.add(normalizeAssetPath(assetPath))
+  if (!Array.isArray(value)) {
+    throw new TypeError(`Expo export metadata has invalid ${platform} assets metadata`)
   }
 
-  return [...dedupedPaths]
+  /** @type {Map<string, ExportAssetMetadata>} */
+  const dedupedAssets = new Map()
+
+  for (const asset of value) {
+    const normalizedAsset = normalizeExportAsset(asset)
+    const existingAsset = dedupedAssets.get(normalizedAsset.path)
+
+    if (!existingAsset || (!existingAsset.ext && normalizedAsset.ext)) {
+      dedupedAssets.set(normalizedAsset.path, normalizedAsset)
+      continue
+    }
+
+    if (existingAsset.ext && normalizedAsset.ext && existingAsset.ext !== normalizedAsset.ext) {
+      throw new Error(
+        `Expo export metadata has conflicting ext values for asset "${normalizedAsset.path}"`,
+      )
+    }
+  }
+
+  return [...dedupedAssets.values()]
 }
 
 /**
  * @param {unknown} asset
  */
-function resolveAssetPath(asset) {
+function normalizeExportAsset(asset) {
   if (typeof asset === "string") {
-    return asset
+    return { path: normalizeAssetPath(asset) }
   }
 
   if (!asset || typeof asset !== "object") {
-    return null
+    throw new Error(`Unsupported Expo asset metadata entry: ${JSON.stringify(asset)}`)
   }
 
-  if ("path" in asset && typeof asset.path === "string") {
-    return asset.path
+  const assetPath =
+    "path" in asset && typeof asset.path === "string"
+      ? asset.path
+      : "file" in asset && typeof asset.file === "string"
+        ? asset.file
+        : null
+
+  if (!assetPath) {
+    throw new Error(`Unsupported Expo asset metadata entry: ${JSON.stringify(asset)}`)
   }
 
-  if ("file" in asset && typeof asset.file === "string") {
-    return asset.file
+  return {
+    path: normalizeAssetPath(assetPath),
+    ...("ext" in asset && asset.ext != null ? { ext: normalizeAssetExtension(asset.ext) } : {}),
+  }
+}
+
+function normalizeAssetExtension(ext) {
+  if (typeof ext !== "string") {
+    throw new TypeError(`Unsupported Expo asset ext metadata: ${JSON.stringify(ext)}`)
   }
 
-  throw new Error(`Unsupported Expo asset metadata entry: ${JSON.stringify(asset)}`)
+  const normalizedExt = ext.trim().replace(/^\.+/, "").toLowerCase()
+
+  if (!normalizedExt) {
+    throw new Error(`Invalid exported asset ext "${ext}"`)
+  }
+
+  return normalizedExt
 }
 
 function resolveMobileProjectDir(projectDir) {
@@ -286,10 +346,12 @@ function normalizeAssetPath(assetPath) {
   return normalized
 }
 
-function resolveContentType(assetPath) {
-  const extension = assetPath.includes(".") ? assetPath.slice(assetPath.lastIndexOf(".")) : ""
+function resolveContentType(asset) {
+  const pathExtension = extname(asset.path).toLowerCase()
+  const metadataExtension = asset.ext ? `.${asset.ext}` : ""
+  const extension = pathExtension || metadataExtension
 
-  return CONTENT_TYPES.get(extension.toLowerCase()) ?? "application/octet-stream"
+  return CONTENT_TYPES.get(extension) ?? "application/octet-stream"
 }
 
 async function createTarZstArchive({ distDir, archivePath }) {
@@ -380,7 +442,12 @@ function execGit(args, cwd) {
 }
 
 async function readJson(path) {
-  return JSON.parse(await readFile(path, "utf8"))
+  try {
+    return JSON.parse(await readFile(path, "utf8"))
+  } catch (error) {
+    const reason = error instanceof Error ? error.message : String(error)
+    throw new Error(`Failed to read JSON at ${path}: ${reason}`)
+  }
 }
 
 function parseBooleanEnv(name, defaultValue) {
