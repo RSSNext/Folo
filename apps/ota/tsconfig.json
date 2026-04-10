@@ -9,5 +9,5 @@
     "jsx": "react-jsx",
     "baseUrl": "."
   },
-  "include": ["src/**/*.ts", "src/**/*.tsx"]
+  "include": ["worker-configuration.d.ts", "src/**/*.ts", "src/**/*.tsx"]
 }
