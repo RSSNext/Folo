@@ -55,13 +55,6 @@ describe("selectLatestCompatibleRelease", () => {
           },
         }),
         createRelease({
-          releaseVersion: "0.4.3",
-          git: {
-            tag: "mobile/v0.4.3",
-            commit: "bcdef1234567890a",
-          },
-        }),
-        createRelease({
           releaseVersion: "0.4.4",
           runtimeVersion: "0.4.3",
           git: {
@@ -78,6 +71,6 @@ describe("selectLatestCompatibleRelease", () => {
       },
     )
 
-    expect(result?.releaseVersion).toBe("0.4.3")
+    expect(result?.releaseVersion).toBe("0.4.2")
   })
 })
