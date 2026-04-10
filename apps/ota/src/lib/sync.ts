@@ -12,8 +12,25 @@ import { compareSemver } from "./version"
 
 const OTA_PLATFORMS: OtaPlatform[] = ["ios", "android", "macos", "windows", "linux"]
 const semverPattern = /^\d+\.\d+\.\d+$/
+let inFlightSync: Promise<void> | null = null
 
 export async function syncGitHubReleases(env: Env) {
+  if (inFlightSync) {
+    return inFlightSync
+  }
+
+  const syncPromise = runSyncGitHubReleases(env).finally(() => {
+    if (inFlightSync === syncPromise) {
+      inFlightSync = null
+    }
+  })
+
+  inFlightSync = syncPromise
+
+  return syncPromise
+}
+
+async function runSyncGitHubReleases(env: Env) {
   const storedEtag = await env.OTA_KV.get<string>(KV_KEYS.githubEtag)
   const releasesResult = await listPublishedOtaReleases({
     owner: env.GITHUB_OWNER,

@@ -428,6 +428,149 @@ describe("syncGitHubReleases", () => {
     expect(kvEntries.get(KV_KEYS.syncLastSuccessAt)).toEqual(expect.any(String))
   })
 
+  it("does not advance sync markers when a later release fails validation", async () => {
+    const kvEntries = new Map<string, unknown>([
+      [KV_KEYS.githubEtag, '"etag-old"'],
+      [KV_KEYS.syncLastSuccessAt, "2026-04-10T10:00:00.000Z"],
+    ])
+    const validStoreRelease = await createReleaseMetadata({
+      releaseVersion: "0.5.2",
+      releaseKind: "store",
+      runtimeVersion: "0.5.2",
+      publishedAt: "2026-04-10T17:00:00Z",
+      git: {
+        tag: "mobile/v0.5.2",
+        commit: "abcdef1234567896",
+      },
+      policy: {
+        storeRequired: false,
+        minSupportedBinaryVersion: "0.5.0",
+        message: "Install 0.5.2 from the store.",
+      },
+    })
+
+    vi.stubGlobal(
+      "fetch",
+      vi.fn(async (input: string | URL | Request) => {
+        const url = String(input)
+
+        if (url === "https://api.github.com/repos/RSSNext/Folo/releases") {
+          return new Response(
+            JSON.stringify([
+              createGitHubReleaseAssetSet(
+                "mobile-v0.5.2",
+                "https://example.com/valid-store.json",
+                "https://example.com/valid-store.tar.zst",
+              ),
+              createGitHubReleaseAssetSet(
+                "mobile-v0.5.3",
+                "https://example.com/invalid-store.json",
+                "https://example.com/invalid-store.tar.zst",
+              ),
+            ]),
+            {
+              status: 200,
+              headers: {
+                ETag: '"etag-new"',
+              },
+            },
+          )
+        }
+
+        if (url === "https://example.com/valid-store.json") {
+          return new Response(JSON.stringify(validStoreRelease), {
+            headers: {
+              "Content-Type": "application/json",
+            },
+          })
+        }
+
+        if (url === "https://example.com/invalid-store.json") {
+          return new Response(
+            JSON.stringify({
+              schemaVersion: 1,
+              product: "mobile",
+              channel: "production",
+              releaseVersion: "invalid",
+            }),
+            {
+              headers: {
+                "Content-Type": "application/json",
+              },
+            },
+          )
+        }
+
+        throw new Error(`Unhandled fetch URL: ${url}`)
+      }),
+    )
+
+    await expect(
+      syncGitHubReleases(
+        createEnv({
+          kvEntries,
+          envOverrides: {
+            GITHUB_OWNER: "RSSNext",
+            GITHUB_REPO: "Folo",
+            GITHUB_TOKEN: "token",
+          },
+        }),
+      ),
+    ).rejects.toThrow()
+
+    expect(kvEntries.get(KV_KEYS.policy("mobile", "production"))).toBe(
+      JSON.stringify(validStoreRelease),
+    )
+    expect(kvEntries.get(KV_KEYS.githubEtag)).toBe('"etag-old"')
+    expect(kvEntries.get(KV_KEYS.syncLastSuccessAt)).toBe("2026-04-10T10:00:00.000Z")
+  })
+
+  it("deduplicates concurrent sync calls within the same isolate", async () => {
+    const kvEntries = new Map<string, unknown>()
+    const releasesResponse = createDeferred<Response>()
+    const fetchMock = vi.fn(async (input: string | URL | Request) => {
+      const url = String(input)
+
+      if (url === "https://api.github.com/repos/RSSNext/Folo/releases") {
+        return releasesResponse.promise
+      }
+
+      throw new Error(`Unhandled fetch URL: ${url}`)
+    })
+
+    vi.stubGlobal("fetch", fetchMock)
+
+    const env = createEnv({
+      kvEntries,
+      envOverrides: {
+        GITHUB_OWNER: "RSSNext",
+        GITHUB_REPO: "Folo",
+        GITHUB_TOKEN: "token",
+      },
+    })
+
+    const firstSync = syncGitHubReleases(env)
+    const secondSync = syncGitHubReleases(env)
+
+    await Promise.resolve()
+
+    expect(fetchMock).toHaveBeenCalledTimes(1)
+
+    releasesResponse.resolve(
+      new Response(JSON.stringify([]), {
+        status: 200,
+        headers: {
+          ETag: '"etag-deduped"',
+        },
+      }),
+    )
+
+    await Promise.all([firstSync, secondSync])
+
+    expect(kvEntries.get(KV_KEYS.githubEtag)).toBe('"etag-deduped"')
+    expect(kvEntries.get(KV_KEYS.syncLastSuccessAt)).toEqual(expect.any(String))
+  })
+
   it("keeps newer OTA pointers and store policy records when releases arrive out of order", async () => {
     const kvEntries = new Map<string, unknown>()
     const bucketEntries = new Map<string, { body: Uint8Array; headers?: Record<string, string> }>()
@@ -1015,4 +1158,19 @@ function toUint8Array(body: ReadableStream | ArrayBuffer | ArrayBufferView | str
   }
 
   throw new Error("ReadableStream bodies are not supported in tests")
+}
+
+function createDeferred<T>() {
+  let resolve!: (value: T | PromiseLike<T>) => void
+  let reject!: (reason?: unknown) => void
+  const promise = new Promise<T>((resolvePromise, rejectPromise) => {
+    resolve = resolvePromise
+    reject = rejectPromise
+  })
+
+  return {
+    promise,
+    resolve,
+    reject,
+  }
 }
