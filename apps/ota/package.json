@@ -5,7 +5,7 @@
   "scripts": {
     "deploy:dev": "wrangler deploy --env dev",
     "deploy:prod": "wrangler deploy",
-    "dev": "wrangler dev",
+    "dev": "wrangler dev --env dev",
     "test": "vitest run",
     "typecheck": "tsc --noEmit"
   },
