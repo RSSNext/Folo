@@ -23,7 +23,7 @@ const platformsSchema = z
     linux: platformSchema.optional(),
   })
   .strict()
-  .refine((platforms) => Object.keys(platforms).length > 0, {
+  .refine((platforms) => Object.values(platforms).some(Boolean), {
     message: "At least one platform must be provided",
   })
 
