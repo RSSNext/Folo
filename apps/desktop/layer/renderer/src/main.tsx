@@ -3,6 +3,7 @@ import "@follow/components/tailwind"
 import "./styles/main.css"
 
 import { IN_ELECTRON, WEB_BUILD } from "@follow/shared/constants"
+import { setByokCompletionFn, setByokResolver } from "@follow/shared/settings/byok-context"
 import { apiContext, authClientContext, queryClientContext } from "@follow/store/context"
 import { getOS } from "@follow/utils/utils"
 import * as React from "react"
@@ -23,6 +24,20 @@ import { router } from "./router"
 authClientContext.provide(authClient)
 queryClientContext.provide(queryClient)
 apiContext.provide(followApi)
+
+// Wire up BYOK resolver for store-layer AI features (summary, translation)
+import("./atoms/settings/ai").then(({ getAISettings }) => {
+  setByokResolver(() => getAISettings().byok)
+})
+import("./modules/ai-chat/services/byok-ai-service").then(({ byokCompletion }) => {
+  setByokCompletionFn((config, options) =>
+    byokCompletion(config, {
+      messages: options.messages,
+      model: options.model,
+      signal: options.signal,
+    }),
+  )
+})
 
 initializeApp().finally(() => {
   import("./push-notification").then(({ registerWebPushNotifications }) => {

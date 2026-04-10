@@ -1,4 +1,6 @@
 import { env } from "@follow/shared/env.desktop"
+import { getActiveLocalByokConfig } from "@follow/shared/settings/byok-context"
+import type { UserByokProviderConfig } from "@follow/shared/settings/interface"
 import type { HttpChatTransportInitOptions, UIMessageChunk } from "ai"
 import { HttpChatTransport, parseJsonEventStream, uiMessageChunkSchema } from "ai"
 
@@ -45,6 +47,12 @@ export function createChatTitleHandler(
  * This is used by the AbstractChat instance to communicate with AI providers
  */
 export function createChatTransport({ onValue, titleHandler }: CreateChatTransportOptions = {}) {
+  // Check for local BYOK provider
+  const localByokConfig = getActiveLocalByokConfig()
+  if (localByokConfig) {
+    return createLocalByokChatTransport({ onValue, titleHandler, config: localByokConfig })
+  }
+
   return new ExtendChatTransport({
     onValue,
     titleHandler,
@@ -57,6 +65,74 @@ export function createChatTransport({ onValue, titleHandler }: CreateChatTranspo
       const { selectedModel } = modelState
 
       return selectedModel ? { model: selectedModel } : {}
+    },
+  })
+}
+
+function getLocalProviderCompletionsURL(config: UserByokProviderConfig): string {
+  const baseURL = (config.baseURL || getDefaultBaseURL(config.provider)).replace(/\/+$/, "")
+
+  switch (config.provider) {
+    case "ollama": {
+      return `${baseURL}/v1/chat/completions`
+    }
+    default: {
+      return `${baseURL}/chat/completions`
+    }
+  }
+}
+
+function getDefaultBaseURL(provider: string): string {
+  switch (provider) {
+    case "ollama": {
+      return "http://127.0.0.1:11434"
+    }
+    case "lmstudio": {
+      return "http://127.0.0.1:1234/v1"
+    }
+    case "openrouter": {
+      return "https://openrouter.ai/api/v1"
+    }
+    case "mlx-vlm": {
+      return "http://127.0.0.1:8000/v1"
+    }
+    default: {
+      return ""
+    }
+  }
+}
+
+function createLocalByokChatTransport({
+  onValue,
+  titleHandler,
+  config,
+}: CreateChatTransportOptions & { config: UserByokProviderConfig }) {
+  const apiURL = getLocalProviderCompletionsURL(config)
+
+  const headers: Record<string, string> = {
+    "Content-Type": "application/json",
+  }
+  if (config.apiKey) {
+    headers.Authorization = `Bearer ${config.apiKey}`
+  }
+  if (config.provider === "openrouter") {
+    headers["HTTP-Referer"] = globalThis.location?.origin ?? "https://app.folo.is"
+    headers["X-Title"] = "Folo"
+  }
+  if (config.headers) {
+    Object.assign(headers, config.headers)
+  }
+
+  return new LocalByokChatTransport({
+    onValue,
+    titleHandler,
+    api: apiURL,
+    headers,
+    body: () => {
+      return {
+        model: config.model ?? "",
+        stream: true,
+      }
     },
   })
 }
@@ -165,5 +241,117 @@ class ExtendChatTransport extends HttpChatTransport<BizUIMessage> {
   ) {
     options.chatId = encodeURIComponent(options.chatId)
     return super.reconnectToStream(options)
+  }
+}
+
+/**
+ * Transport for local BYOK providers (Ollama, LM Studio, etc.)
+ * Converts OpenAI-compatible SSE streaming responses to AI SDK UIMessageChunk format
+ */
+class LocalByokChatTransport extends HttpChatTransport<BizUIMessage> {
+  constructor(
+    private localOptions: HttpChatTransportInitOptions<BizUIMessage> & {
+      onValue?: (value: UIMessageChunk) => void
+      titleHandler?: TitleHandlerOptions
+    },
+  ) {
+    super(localOptions)
+  }
+
+  protected processResponseStream(
+    stream: ReadableStream<Uint8Array<ArrayBufferLike>>,
+  ): ReadableStream<UIMessageChunk> {
+    const { onValue } = this.localOptions || {}
+    let messageId = `msg-${Date.now()}`
+
+    return new ReadableStream<UIMessageChunk>({
+      async start(controller) {
+        const reader = stream.getReader()
+        const decoder = new TextDecoder()
+        let buffer = ""
+        let sentStart = false
+
+        try {
+          while (true) {
+            const { done, value } = await reader.read()
+            if (done) break
+
+            buffer += decoder.decode(value, { stream: true })
+            const lines = buffer.split("\n")
+            buffer = lines.pop() ?? ""
+
+            for (const line of lines) {
+              const trimmed = line.trim()
+              if (!trimmed || !trimmed.startsWith("data: ")) continue
+
+              const data = trimmed.slice(6)
+              if (data === "[DONE]") {
+                // Emit finish chunk
+                const finishChunk: UIMessageChunk = {
+                  type: "finish",
+                  finishReason: "stop",
+                } as UIMessageChunk
+                onValue?.(finishChunk)
+                controller.enqueue(finishChunk)
+                continue
+              }
+
+              try {
+                const parsed = JSON.parse(data) as {
+                  id?: string
+                  choices?: {
+                    delta?: { content?: string; role?: string }
+                    finish_reason?: string | null
+                  }[]
+                }
+
+                if (parsed.id) {
+                  messageId = parsed.id
+                }
+
+                const delta = parsed.choices?.[0]?.delta
+
+                // Emit start chunk on first content
+                if (!sentStart && delta) {
+                  const startChunk = {
+                    type: "start",
+                    messageId,
+                  } as UIMessageChunk
+                  onValue?.(startChunk)
+                  controller.enqueue(startChunk)
+                  sentStart = true
+                }
+
+                if (delta?.content) {
+                  const textChunk = {
+                    type: "text" as const,
+                    text: delta.content,
+                  } as unknown as UIMessageChunk
+                  onValue?.(textChunk)
+                  controller.enqueue(textChunk)
+                }
+
+                // Handle finish_reason in the chunk itself
+                if (parsed.choices?.[0]?.finish_reason === "stop") {
+                  const finishChunk: UIMessageChunk = {
+                    type: "finish",
+                    finishReason: "stop",
+                  } as UIMessageChunk
+                  onValue?.(finishChunk)
+                  controller.enqueue(finishChunk)
+                }
+              } catch {
+                // Skip malformed chunks
+              }
+            }
+          }
+        } catch (error) {
+          controller.error(error)
+        } finally {
+          reader.releaseLock()
+          controller.close()
+        }
+      },
+    })
   }
 }

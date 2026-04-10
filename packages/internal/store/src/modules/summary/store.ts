@@ -2,6 +2,10 @@ import type { SummarySchema } from "@follow/database/schemas/types"
 import { summaryService } from "@follow/database/services/summary"
 import type { SupportedActionLanguage } from "@follow/shared"
 import { toApiSupportedActionLanguage } from "@follow/shared"
+import {
+  executeByokCompletion,
+  getActiveLocalByokConfig,
+} from "@follow/shared/settings/byok-context"
 import { FollowAPIError } from "@follow-app/client-sdk"
 
 import { api } from "../../context"
@@ -170,18 +174,26 @@ class SummarySyncService {
       state.generatingStatus[statusID] = SummaryGeneratingStatus.Pending
     })
 
-    // Use Our AI to generate summary
-    const pendingPromise = api()
-      .ai.summary({
-        id: entryId,
-        language: toApiSupportedActionLanguage(actionLanguage),
-        target,
-      })
-      .then((summary) => {
-        if (!summary.data) {
-          throw new FollowAPIError("AI summary limit exceeded. Please try again later.", 402)
-        }
+    // Check for local BYOK provider
+    const localByokConfig = getActiveLocalByokConfig()
 
+    const pendingPromise = (
+      localByokConfig
+        ? this.generateSummaryViaByok(entry, target, actionLanguage, localByokConfig)
+        : api()
+            .ai.summary({
+              id: entryId,
+              language: toApiSupportedActionLanguage(actionLanguage),
+              target,
+            })
+            .then((summary) => {
+              if (!summary.data) {
+                throw new FollowAPIError("AI summary limit exceeded. Please try again later.", 402)
+              }
+              return summary.data || ""
+            })
+    )
+      .then((summaryText) => {
         immerSet((state) => {
           if (!state.data[entryId]) {
             state.data[entryId] = {}
@@ -190,18 +202,18 @@ class SummarySyncService {
           state.data[entryId][actionLanguage] = {
             summary:
               target === "content"
-                ? summary.data || ""
+                ? summaryText
                 : state.data[entryId]?.[actionLanguage]?.summary || "",
             readabilitySummary:
               target === "readabilityContent"
-                ? summary.data || ""
+                ? summaryText
                 : state.data[entryId]?.[actionLanguage]?.readabilitySummary || null,
             lastAccessed: Date.now(),
           }
           state.generatingStatus[statusID] = SummaryGeneratingStatus.Success
         })
 
-        return summary.data || ""
+        return summaryText
       })
       .catch((error) => {
         immerSet((state) => {
@@ -229,6 +241,35 @@ class SummarySyncService {
     }
 
     return summary
+  }
+
+  private async generateSummaryViaByok(
+    entry: ReturnType<typeof getEntry>,
+    target: "content" | "readabilityContent",
+    actionLanguage: SupportedActionLanguage,
+    config: NonNullable<ReturnType<typeof getActiveLocalByokConfig>>,
+  ): Promise<string> {
+    const content = entry?.[target] || entry?.description || ""
+    if (!content) return ""
+
+    const languageInstruction = actionLanguage ? `Respond in ${actionLanguage}.` : ""
+
+    const result = await executeByokCompletion(config, {
+      messages: [
+        {
+          role: "system",
+          content:
+            `You are a helpful assistant that summarizes articles concisely. Provide a brief summary in 2-3 sentences. ${languageInstruction}`.trim(),
+        },
+        {
+          role: "user",
+          content: `Please summarize the following content:\n\n${content.slice(0, 8000)}`,
+        },
+      ],
+      model: config.model ?? undefined,
+    })
+
+    return result.content
   }
 }
 

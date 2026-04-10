@@ -3,6 +3,10 @@ import type { TranslationSchema } from "@follow/database/schemas/types"
 import { TranslationService } from "@follow/database/services/translation"
 import type { SupportedActionLanguage } from "@follow/shared"
 import { toApiSupportedActionLanguage } from "@follow/shared"
+import {
+  executeByokCompletion,
+  getActiveLocalByokConfig,
+} from "@follow/shared/settings/byok-context"
 import { checkLanguage } from "@follow/utils/language"
 import { create, indexedResolver, windowScheduler } from "@yornaath/batshit"
 
@@ -257,9 +261,81 @@ class TranslationSyncService {
 
     if (fields.length === 0) return null
 
+    // Check for local BYOK provider - translate directly instead of batching
+    const localByokConfig = getActiveLocalByokConfig()
+    if (localByokConfig) {
+      return this.translateViaByok(entry, entryId, language, fields, localByokConfig)
+    }
+
     const key = `${entryId}|${language}|${target}|${fields.join(",")}|${translationMode}`
     const result = await this.translationBatcher.fetch(key)
     return result || null
+  }
+
+  private async translateViaByok(
+    entry: NonNullable<ReturnType<typeof getEntry>>,
+    entryId: string,
+    language: SupportedActionLanguage,
+    fields: TranslationFieldArray,
+    config: NonNullable<ReturnType<typeof getActiveLocalByokConfig>>,
+  ): Promise<TranslationModel | null> {
+    const textsToTranslate: Record<string, string> = {}
+    for (const field of fields) {
+      const content = entry[field]
+      if (content) {
+        textsToTranslate[field] = content
+      }
+    }
+
+    if (Object.keys(textsToTranslate).length === 0) return null
+
+    const fieldsPrompt = Object.entries(textsToTranslate)
+      .map(([field, text]) => `[${field}]\n${text.slice(0, 4000)}`)
+      .join("\n\n")
+
+    try {
+      const result = await executeByokCompletion(config, {
+        messages: [
+          {
+            role: "system",
+            content: `You are a translator. Translate the following content to ${language}. Return the translation in the same format with field labels like [title], [description], [content], [readabilityContent]. Only return the translated text for each field.`,
+          },
+          {
+            role: "user",
+            content: fieldsPrompt,
+          },
+        ],
+        model: config.model ?? undefined,
+      })
+
+      const translation: TranslationModel = {
+        entryId,
+        language,
+        title: null,
+        description: null,
+        content: null,
+        readabilityContent: null,
+      }
+
+      // Parse response - extract fields from bracketed sections
+      const responseText = result.content
+      for (const field of fields) {
+        const regex = new RegExp(`\\[${field}\\]\\n?([\\s\\S]*?)(?=\\[\\w+\\]|$)`)
+        const match = responseText.match(regex)
+        if (match?.[1]) {
+          translation[field] = match[1].trim()
+        } else if (fields.length === 1) {
+          // If only one field, use entire response
+          translation[field] = responseText.trim()
+        }
+      }
+
+      await translationActions.upsertMany([translation])
+      return translation
+    } catch (error) {
+      console.error("BYOK translation failed:", error)
+      return null
+    }
   }
 }
 

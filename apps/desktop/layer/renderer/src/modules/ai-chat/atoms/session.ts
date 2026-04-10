@@ -11,10 +11,12 @@ export const [, , useEditingMessageId, useSetEditingMessageId, , setEditingMessa
 // AI Model persistence
 interface AIModelState {
   selectedModel: string | null
+  activeByokProvider?: string | null
 }
 
 const aiModelInitialState: AIModelState = {
   selectedModel: null,
+  activeByokProvider: null,
 }
 
 export const [, , useAIModelState, useSetAIModelState, getAIModelState, setAIModelState] =
