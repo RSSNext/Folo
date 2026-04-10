@@ -205,14 +205,15 @@ describe("listPublishedOtaReleases", () => {
 
 describe("extractMirroredFiles", () => {
   it("extracts only referenced files from a tar archive", async () => {
+    const iosBundle = textEncoder.encode("console.log('ios')")
     const archiveBuffer = await createTarArchive([
       {
         name: "bundles/ios-main.js",
-        body: "console.log('ios')",
+        body: iosBundle,
       },
       {
         name: "bundles/unused.js",
-        body: "console.log('unused')",
+        body: textEncoder.encode("console.log('unused')"),
       },
     ])
 
@@ -223,7 +224,7 @@ describe("extractMirroredFiles", () => {
           ios: {
             launchAsset: {
               path: "bundles/ios-main.js",
-              sha256: "a".repeat(64),
+              sha256: await sha256Hex(iosBundle),
               contentType: "application/javascript",
             },
             assets: [],
@@ -236,7 +237,7 @@ describe("extractMirroredFiles", () => {
     expect(files).toEqual([
       {
         key: "mobile/production/0.4.1/0.4.2/ios/bundles/ios-main.js",
-        body: textEncoder.encode("console.log('ios')"),
+        body: iosBundle,
         contentType: "application/javascript",
       },
     ])
@@ -246,7 +247,7 @@ describe("extractMirroredFiles", () => {
     const archiveBuffer = await createTarArchive([
       {
         name: "bundles/unused.js",
-        body: "console.log('unused')",
+        body: textEncoder.encode("console.log('unused')"),
       },
     ])
 
@@ -268,6 +269,34 @@ describe("extractMirroredFiles", () => {
         archiveBuffer,
       }),
     ).rejects.toThrow('Archive is missing referenced file "bundles/ios-main.js"')
+  })
+
+  it("throws when a referenced archive file hash does not match metadata", async () => {
+    const archiveBuffer = await createTarArchive([
+      {
+        name: "bundles/ios-main.js",
+        body: textEncoder.encode("console.log('tampered')"),
+      },
+    ])
+
+    await expect(
+      extractMirroredFiles({
+        release: {
+          ...baseRelease,
+          platforms: {
+            ios: {
+              launchAsset: {
+                path: "bundles/ios-main.js",
+                sha256: await sha256Hex(textEncoder.encode("console.log('ios')")),
+                contentType: "application/javascript",
+              },
+              assets: [],
+            },
+          },
+        },
+        archiveBuffer,
+      }),
+    ).rejects.toThrow('Archive file "bundles/ios-main.js" hash mismatch')
   })
 })
 
@@ -371,7 +400,7 @@ describe("mirrorReleaseToStorage", () => {
 async function createTarArchive(
   entries: Array<{
     name: string
-    body: string
+    body: Uint8Array
   }>,
 ) {
   const pack = tar.pack()
@@ -389,11 +418,10 @@ async function createTarArchive(
 
   for (const entry of entries) {
     await new Promise<void>((resolve, reject) => {
-      const body = textEncoder.encode(entry.body)
       const tarEntry = pack.entry(
         {
           name: entry.name,
-          size: body.byteLength,
+          size: entry.body.byteLength,
         },
         (error) => {
           if (error) {
@@ -406,7 +434,7 @@ async function createTarArchive(
       )
 
       tarEntry.on("error", reject)
-      tarEntry.end(body)
+      tarEntry.end(entry.body)
     })
   }
 
@@ -426,4 +454,14 @@ function concatenateChunks(chunks: readonly Uint8Array[]) {
   }
 
   return output
+}
+
+async function sha256Hex(data: Uint8Array) {
+  const digest = await crypto.subtle.digest("SHA-256", toDigestInput(data))
+
+  return [...new Uint8Array(digest)].map((byte) => byte.toString(16).padStart(2, "0")).join("")
+}
+
+function toDigestInput(data: Uint8Array) {
+  return new Uint8Array(data)
 }

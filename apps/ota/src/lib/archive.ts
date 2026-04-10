@@ -12,6 +12,7 @@ interface MirroredFileRequest {
   archivePath: string
   key: string
   contentType: string
+  sha256: string
   body?: Uint8Array
 }
 
@@ -76,11 +77,21 @@ export async function extractMirroredFiles(input: {
       stream.on("error", (error) => {
         rejectOnce(toError(error))
       })
-      stream.on("end", () => {
+      stream.on("end", async () => {
         if (matchingRequests) {
           const body = concatenateChunks(chunks)
+          const bodySha256 = await sha256Hex(body)
 
           for (const request of matchingRequests) {
+            if (request.sha256 !== bodySha256) {
+              rejectOnce(
+                new Error(
+                  `Archive file "${archivePath}" hash mismatch: expected ${request.sha256} but received ${bodySha256}`,
+                ),
+              )
+              return
+            }
+
             request.body = body
           }
 
@@ -151,6 +162,7 @@ function createMirroredFileRequests(release: OtaRelease): MirroredFileRequest[] 
         archivePath,
         key: buildMirroredAssetKey(release, platform, archivePath),
         contentType: asset.contentType,
+        sha256: asset.sha256,
       })
     }
   }
@@ -208,4 +220,14 @@ function once<T extends (...args: never[]) => void>(callback: T): T {
 
 function toError(error: unknown) {
   return error instanceof Error ? error : new Error(String(error))
+}
+
+async function sha256Hex(data: Uint8Array) {
+  const digest = await crypto.subtle.digest("SHA-256", toDigestInput(data))
+
+  return [...new Uint8Array(digest)].map((byte) => byte.toString(16).padStart(2, "0")).join("")
+}
+
+function toDigestInput(data: Uint8Array) {
+  return new Uint8Array(data)
 }
