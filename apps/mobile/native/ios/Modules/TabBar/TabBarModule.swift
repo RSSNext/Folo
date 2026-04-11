@@ -14,13 +14,10 @@ public class TabBarModule: Module {
 
     Function("switchTab") { [weak self] (reactTag: Int, index: Int) in
       DispatchQueue.main.async {
-        guard let bridge = self?.appContext?.reactBridge else {
-          return
-        }
-
-        if let sourceView = bridge.uiManager.view(forReactTag: NSNumber(value: reactTag))
-          as! TabBarRootView?
-        {
+        if let sourceView = self?.appContext?.findView(
+          withTag: reactTag,
+          ofType: TabBarRootView.self
+        ) {
           sourceView.switchToTab(index: index)
         }
       }

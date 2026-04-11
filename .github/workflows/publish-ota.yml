@@ -1,0 +1,123 @@
+name: 📡 Publish OTA Release
+
+on:
+  workflow_dispatch:
+    inputs:
+      release_version:
+        type: string
+        required: true
+        description: "Release version without the v prefix"
+      release_kind:
+        type: choice
+        required: true
+        options:
+          - ota
+          - store
+        description: "Release kind embedded in ota-release.json"
+      runtime_version:
+        type: string
+        required: true
+        description: "Expo runtime version for the OTA bundle"
+      channel:
+        type: choice
+        required: true
+        options:
+          - production
+          - preview
+        description: "OTA channel embedded in ota-release.json"
+      store_required:
+        type: choice
+        required: false
+        options:
+          - "false"
+          - "true"
+        default: "false"
+        description: "Whether /policy should block and require a store update"
+      policy_message:
+        type: string
+        required: false
+        description: "Optional /policy message for store metadata releases"
+
+permissions:
+  contents: write
+
+jobs:
+  publish:
+    if: github.secret_source != 'None'
+    runs-on: ubuntu-latest
+    env:
+      OTA_PRODUCT: mobile
+      OTA_RELEASE_VERSION: ${{ inputs.release_version }}
+      OTA_RELEASE_KIND: ${{ inputs.release_kind }}
+      OTA_RUNTIME_VERSION: ${{ inputs.runtime_version }}
+      OTA_CHANNEL: ${{ inputs.channel }}
+      OTA_STORE_REQUIRED: ${{ inputs.store_required }}
+      OTA_POLICY_MESSAGE: ${{ inputs.policy_message }}
+      OTA_GIT_TAG: mobile/v${{ inputs.release_version }}
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v6
+        with:
+          fetch-depth: 0
+
+      - name: Resolve target release tag
+        run: |
+          git fetch --tags --force
+
+          if ! git rev-parse --verify "refs/tags/${OTA_GIT_TAG}" >/dev/null 2>&1; then
+            echo "::error::Required release tag ${OTA_GIT_TAG} does not exist. Create it before publishing OTA assets."
+            exit 1
+          fi
+
+          git checkout --detach "refs/tags/${OTA_GIT_TAG}"
+          echo "Checked out ${OTA_GIT_TAG} at $(git rev-list -n 1 "refs/tags/${OTA_GIT_TAG}")"
+
+      - name: Setup pnpm
+        uses: pnpm/action-setup@v6
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v6
+        with:
+          node-version: 22
+          cache: "pnpm"
+
+      - name: Install dependencies
+        run: pnpm install --frozen-lockfile
+
+      - name: Export OTA bundle assets
+        if: inputs.release_kind == 'ota'
+        working-directory: apps/mobile
+        run: pnpm run update:export
+
+      - name: Build OTA release bundle
+        working-directory: apps/mobile
+        run: pnpm run update:bundle
+
+      - name: Publish GitHub release assets
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: |
+          tag_name="mobile/v${OTA_RELEASE_VERSION}"
+          release_title="Mobile v${OTA_RELEASE_VERSION}"
+          ota_files=("apps/mobile/dist/ota-release.json")
+
+          if [ -f "apps/mobile/dist.tar.zst" ]; then
+            ota_files+=("apps/mobile/dist.tar.zst")
+          fi
+
+          if gh release view "$tag_name" >/dev/null 2>&1; then
+            gh release upload "$tag_name" "${ota_files[@]}" --clobber
+          else
+            gh release create "$tag_name" "${ota_files[@]}" \
+              --verify-tag \
+              --title "$release_title" \
+              --notes "OTA release assets for ${OTA_RELEASE_KIND} releases on the ${OTA_CHANNEL} channel."
+          fi
+
+      - name: Trigger OTA sync
+        env:
+          OTA_BASE_URL: ${{ secrets.OTA_BASE_URL }}
+          OTA_SYNC_TOKEN: ${{ secrets.OTA_SYNC_TOKEN }}
+          OTA_SYNC_TOKEN_HEADER: ${{ secrets.OTA_SYNC_TOKEN_HEADER }}
+        run: node .github/scripts/trigger-ota-sync.mjs

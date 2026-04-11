@@ -1,6 +1,11 @@
+import type { SpotlightRule } from "@follow/shared/spotlight"
 import type { EntryModel } from "@follow/store/entry/types"
 
 import { SharedWebViewModule } from "./index"
+
+type WebViewEntryPayload = EntryModel & {
+  spotlightRules?: SpotlightRule[]
+}
 
 /**
  * WebView JavaScript bridge manager
@@ -17,10 +22,17 @@ export const WebViewManager = {
   /**
    * Set the current entry data in WebView
    */
-  setEntry(entry?: EntryModel | null): void {
+  setEntry(entry?: WebViewEntryPayload | null): void {
     if (!entry) return
     const json = JSON.stringify(entry)
     SharedWebViewModule.dispatch?.("setEntry", json)
+  },
+
+  /**
+   * Set spotlight rules for rich content highlighting in WebView
+   */
+  setSpotlights(spotlights: SpotlightRule[]): void {
+    SharedWebViewModule.dispatch?.("setSpotlights", JSON.stringify(spotlights))
   },
 
   /**

@@ -10,6 +10,6 @@
   "devDependencies": {
     "@follow-app/client-sdk": "catalog:",
     "@follow/configs": "workspace:*",
-    "@react-native-firebase/analytics": "22.2.1"
+    "@react-native-firebase/analytics": "24.0.0"
   }
 }

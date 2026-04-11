@@ -1,10 +1,11 @@
-import type { EntryModel } from "../../types"
+import type { EntryModel, SpotlightState } from "../../types"
 import {
   codeThemeDarkAtom,
   codeThemeLightAtom,
   entryAtom,
   noMediaAtom,
   readerRenderInlineStyleAtom,
+  spotlightAtom,
 } from "../atoms"
 
 type Store = ReturnType<typeof import("jotai").createStore>
@@ -25,6 +26,14 @@ export class WebViewBridgeManager {
    */
   setEntry = (entry: EntryModel) => {
     this.store.set(entryAtom, entry)
+    if (Array.isArray(entry.spotlightRules)) {
+      this.store.set(spotlightAtom, entry.spotlightRules)
+    }
+    bridge.measure()
+  }
+
+  setSpotlights = (spotlights: SpotlightState["spotlights"]) => {
+    this.store.set(spotlightAtom, spotlights)
     bridge.measure()
   }
 
@@ -74,6 +83,7 @@ export class WebViewBridgeManager {
     if (!window.__FO_BRIDGE__) {
       const handlers = {
         setEntry: this.setEntry,
+        setSpotlights: this.setSpotlights,
         setCodeTheme: this.setCodeTheme,
         setReaderRenderInlineStyle: this.setReaderRenderInlineStyle,
         setNoMedia: this.setNoMedia,

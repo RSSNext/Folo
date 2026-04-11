@@ -28,6 +28,7 @@ import { useMinimizeToTrayValue, useSetMinimizeToTray } from "~/hooks/biz/useTra
 import { fallbackLanguage } from "~/i18n"
 import { ipcServices } from "~/lib/client"
 import { setTranslationCache } from "~/modules/entry-content/atoms"
+import { fetchTtsVoices } from "~/modules/player/tts-service"
 
 import { PaidBadge, SettingDescription, SettingInput, SettingSwitch } from "../control"
 import { createSetting } from "../helper/builder"
@@ -162,7 +163,7 @@ export const SettingGeneral = () => {
 
           { type: "title", value: "TTS" },
 
-          IN_ELECTRON && VoiceSelector,
+          VoiceSelector,
 
           { type: "title", value: t("general.network") },
           IN_ELECTRON && NettingSetting,
@@ -198,7 +199,7 @@ const VoiceSelector = () => {
   const { t } = useTranslation("settings")
 
   const { data } = useQuery({
-    queryFn: () => ipcServices?.reader.getVoices(),
+    queryFn: ({ signal }) => fetchTtsVoices(signal),
     queryKey: ["voices"],
     meta: {
       persist: true,

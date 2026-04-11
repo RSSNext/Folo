@@ -17,6 +17,10 @@ on:
       store:
         type: boolean
         description: "Build for Mac App Store and Microsoft Store"
+      upload_to_app_store:
+        type: boolean
+        description: "Upload the Mac App Store pkg to App Store Connect"
+        default: true
       build_version:
         type: string
         description: "Build Version, only available when mas is true"
@@ -68,7 +72,7 @@ jobs:
           lfs: true
 
       - name: Setup pnpm
-        uses: pnpm/action-setup@v4
+        uses: pnpm/action-setup@v6
 
       - name: Use Node.js
         uses: actions/setup-node@v6
@@ -210,6 +214,24 @@ jobs:
             apps/desktop/out/make/**/*.pkg
           retention-days: 90
 
+      - name: Upload Mac App Store package to App Store Connect
+        if: runner.os == 'macOS' && github.event.inputs.store == 'true' && github.event.inputs.upload_to_app_store == 'true'
+        env:
+          APPLE_ID: ${{ secrets.APPLE_ID }}
+          APPLE_PASSWORD: ${{ secrets.APPLE_PASSWORD }}
+        shell: bash
+        run: |
+          set -euo pipefail
+
+          pkg_path="$(find apps/desktop/out/make -type f -name '*.pkg' | sort | head -n 1)"
+
+          if [ -z "$pkg_path" ]; then
+            echo "No Mac App Store package found under apps/desktop/out/make" >&2
+            exit 1
+          fi
+
+          .github/scripts/upload-mas-pkg.sh "$pkg_path"
+
       - name: Upload file (windows-x64-exe unsigned)
         uses: actions/upload-artifact@v7
         id: upload-unsigned-windows-x64-exe
@@ -221,7 +243,7 @@ jobs:
             apps/desktop/out/make/**/latest.yml
           retention-days: 90
 
-      - uses: signpath/github-action-submit-signing-request@v2.0
+      - uses: signpath/github-action-submit-signing-request@v2.1
         continue-on-error: true
         if: runner.os == 'windows' && env.RELEASE == 'true' && github.event.inputs.store != 'true'
         with:

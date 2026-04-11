@@ -74,6 +74,18 @@ jobs:
 
     steps:
       - name: Checkout repository
+        if: needs.create_tag.outputs.platform == 'mobile' && needs.create_tag.outputs.ref_name == 'mobile-main'
+        uses: actions/checkout@v6
+
+      - name: Resolve Mobile Release Config
+        id: release_mode
+        if: needs.create_tag.outputs.platform == 'mobile' && needs.create_tag.outputs.ref_name == 'mobile-main'
+        env:
+          RELEASE_VERSION: ${{ needs.create_tag.outputs.version }}
+          RELEASE_CONFIG_PATH: apps/mobile/release.json
+        run: node .github/scripts/resolve-mobile-release-config.mjs
+
+      - name: Checkout repository
         if: needs.create_tag.outputs.platform == 'desktop' && needs.create_tag.outputs.ref_name == 'main'
         uses: actions/checkout@v6
         with:
@@ -112,7 +124,7 @@ jobs:
 
       - name: Trigger Desktop Tag Version Build
         if: needs.create_tag.outputs.platform == 'desktop' && needs.create_tag.outputs.ref_name == 'main'
-        uses: actions/github-script@v8
+        uses: actions/github-script@v9
         with:
           github-token: ${{ secrets.GITHUB_TOKEN }}
           script: |
@@ -130,7 +142,7 @@ jobs:
 
       - name: Trigger Desktop Store Build
         if: needs.create_tag.outputs.platform == 'desktop' && needs.create_tag.outputs.ref_name == 'main'
-        uses: actions/github-script@v8
+        uses: actions/github-script@v9
         with:
           github-token: ${{ secrets.GITHUB_TOKEN }}
           script: |
@@ -148,8 +160,8 @@ jobs:
             console.log('Desktop store build triggered successfully');
 
       - name: Trigger Mobile Preview Release Build
-        if: needs.create_tag.outputs.platform == 'mobile' && needs.create_tag.outputs.ref_name == 'mobile-main'
-        uses: actions/github-script@v8
+        if: needs.create_tag.outputs.platform == 'mobile' && needs.create_tag.outputs.ref_name == 'mobile-main' && steps.release_mode.outputs.trigger_store_builds == 'true'
+        uses: actions/github-script@v9
         with:
           github-token: ${{ secrets.GITHUB_TOKEN }}
           script: |
@@ -166,8 +178,8 @@ jobs:
             console.log('Mobile preview release build triggered successfully');
 
       - name: Trigger Mobile Production Android Build
-        if: needs.create_tag.outputs.platform == 'mobile' && needs.create_tag.outputs.ref_name == 'mobile-main'
-        uses: actions/github-script@v8
+        if: needs.create_tag.outputs.platform == 'mobile' && needs.create_tag.outputs.ref_name == 'mobile-main' && steps.release_mode.outputs.trigger_store_builds == 'true'
+        uses: actions/github-script@v9
         with:
           github-token: ${{ secrets.GITHUB_TOKEN }}
           script: |
@@ -184,8 +196,8 @@ jobs:
             console.log('Mobile production Android build triggered successfully');
 
       - name: Trigger Mobile Production iOS Build
-        if: needs.create_tag.outputs.platform == 'mobile' && needs.create_tag.outputs.ref_name == 'mobile-main'
-        uses: actions/github-script@v8
+        if: needs.create_tag.outputs.platform == 'mobile' && needs.create_tag.outputs.ref_name == 'mobile-main' && steps.release_mode.outputs.trigger_store_builds == 'true'
+        uses: actions/github-script@v9
         with:
           github-token: ${{ secrets.GITHUB_TOKEN }}
           script: |
@@ -199,3 +211,25 @@ jobs:
               }
             });
             console.log('Mobile production iOS build triggered successfully');
+
+      - name: Trigger Mobile OTA Publish
+        if: needs.create_tag.outputs.platform == 'mobile' && needs.create_tag.outputs.ref_name == 'mobile-main' && steps.release_mode.outputs.trigger_ota_publish == 'true'
+        uses: actions/github-script@v9
+        with:
+          github-token: ${{ secrets.GITHUB_TOKEN }}
+          script: |
+            await github.rest.actions.createWorkflowDispatch({
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              workflow_id: 'publish-ota.yml',
+              ref: '${{ needs.create_tag.outputs.tag_version }}',
+              inputs: {
+                release_version: '${{ steps.release_mode.outputs.release_version }}',
+                release_kind: '${{ steps.release_mode.outputs.release_kind }}',
+                runtime_version: '${{ steps.release_mode.outputs.runtime_version }}',
+                channel: '${{ steps.release_mode.outputs.channel }}',
+                store_required: '${{ steps.release_mode.outputs.store_required }}',
+                policy_message: '${{ steps.release_mode.outputs.policy_message }}'
+              }
+            });
+            console.log('Mobile OTA publish workflow triggered successfully');

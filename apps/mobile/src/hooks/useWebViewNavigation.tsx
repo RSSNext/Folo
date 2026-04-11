@@ -1,10 +1,11 @@
-import { parseSafeUrl, transformVideoUrl } from "@follow/utils"
+import { parseSafeUrl } from "@follow/utils"
 import type { RefObject } from "react"
 import { useCallback } from "react"
 import type WebView from "react-native-webview"
 import type { WebViewNavigation } from "react-native-webview"
 
 import { openLink } from "../lib/native"
+import { resolveVideoUrlForMobileOpen } from "../lib/video-url"
 
 const allowHosts = new Set(["app.follow.is", "app.folo.is"])
 export function useWebViewNavigation({ webViewRef }: { webViewRef: RefObject<WebView> }) {
@@ -18,7 +19,7 @@ export function useWebViewNavigation({ webViewRef }: { webViewRef: RefObject<Web
 
       webViewRef.current?.stopLoading()
 
-      const formattedUrl = transformVideoUrl({ url: urlStr })
+      const formattedUrl = resolveVideoUrlForMobileOpen(urlStr)
       if (formattedUrl) {
         openLink(formattedUrl)
         return

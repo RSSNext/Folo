@@ -4,6 +4,7 @@ import { useEffect, useMemo, useRef, useState } from "react"
 import { PixelRatio } from "react-native"
 
 import { useActionLanguage } from "@/src/atoms/settings/general"
+import { useSpotlightSettingKey } from "@/src/atoms/settings/spotlight"
 import { useUISettingKey } from "@/src/atoms/settings/ui"
 
 import { prepareEntryRenderWebView } from "./index"
@@ -59,6 +60,7 @@ export function useWebViewEntry({
   const codeThemeLight = useUISettingKey("codeHighlightThemeLight")
   const codeThemeDark = useUISettingKey("codeHighlightThemeDark")
   const readerRenderInlineStyle = useUISettingKey("readerRenderInlineStyle")
+  const spotlightRules = useSpotlightSettingKey("spotlights")
   const useSystemFontScaling = useUISettingKey("useSystemFontScaling")
   const customFontScale = useUISettingKey("fontScale")
   const useDifferentFontSizeForContent = useUISettingKey("useDifferentFontSizeForContent")
@@ -93,11 +95,13 @@ export function useWebViewEntry({
     return {
       ...entry,
       content,
+      spotlightRules,
     }
   }, [
     entry,
     showReadability,
     showTranslation,
+    spotlightRules,
     translation?.content,
     translation?.readabilityContent,
   ])
@@ -114,6 +118,10 @@ export function useWebViewEntry({
   useEffect(() => {
     WebViewManager.setCodeTheme(codeThemeLight, codeThemeDark)
   }, [codeThemeLight, codeThemeDark])
+
+  useEffect(() => {
+    WebViewManager.setSpotlights(spotlightRules)
+  }, [spotlightRules])
 
   useEffect(() => {
     WebViewManager.setEntry(entryInWebview)

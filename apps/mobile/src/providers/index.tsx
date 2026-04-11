@@ -18,6 +18,7 @@ import { ErrorBoundary } from "../components/common/ErrorBoundary"
 import { GlobalErrorScreen } from "../components/errors/GlobalErrorScreen"
 import { LightboxStateProvider } from "../components/ui/lightbox/lightboxState"
 import { queryClient } from "../lib/query-client"
+import { TtsStreamProvider } from "../modules/player/TtsStreamProvider"
 import { TimelineSelectorDragProgressProvider } from "../modules/screen/atoms"
 import { AppleIAPProvider } from "./AppleIAPProvider"
 import { FontScalingProvider } from "./FontScalingProvider"
@@ -53,6 +54,7 @@ export const RootProviders = ({ children }: { children: ReactNode }) => {
       <ComposeContextProvider contexts={contexts}>
         {children}
         <ServerConfigsLoader />
+        <TtsStreamProvider />
       </ComposeContextProvider>
     </View>
   )

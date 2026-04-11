@@ -8,6 +8,8 @@
   "entry.release_to_next_entry": "Relâchez pour passer à l'entrée suivante",
   "entry_actions.toggle_ai_summary": "Résumé IA",
   "entry_content.ai_summary": "Résumé IA",
+  "entry_content.header.play_tts": "Lire TTS",
+  "entry_content.header.play_tts_description": "Sélectionnez une voix TTS dans les paramètres et démarrez TTS pour convertir en contenu audio",
   "entry_content.no_content": "Aucun média disponible",
   "entry_content.no_video_url": "Aucune URL vidéo trouvée",
   "entry_list.zero_unread": "Zéro non lu",

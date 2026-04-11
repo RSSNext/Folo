@@ -1,6 +1,11 @@
+import { getEntry } from "@follow/store/entry/getter"
+
 import { AudioPlayer, getAudioPlayerAtomValue, setAudioPlayerAtomValue } from "~/atoms/player"
-import { followClient } from "~/lib/api-client"
+import { getReadabilityStatus, ReadabilityStatus } from "~/atoms/readability"
+import { getGeneralSettings } from "~/atoms/settings/general"
 import { toastFetchError } from "~/lib/error-parser"
+
+import { getEntryTtsText, requestTts } from "./tts-service"
 
 const TTS_MIME_FALLBACK = "audio/ogg; codecs=opus"
 const STREAM_PLACEHOLDER_SRC = "about:blank"
@@ -318,7 +323,24 @@ export const playEntryTts = async (entryId: string, { toastTitle }: { toastTitle
   activeTtsAbortController = abortController
 
   try {
-    const response = await followClient.api.ai.tts({ entryId }, { signal: abortController.signal })
+    const entry = getEntry(entryId)
+    if (!entry) {
+      throw new Error("Entry not found")
+    }
+
+    const preferReadability = getReadabilityStatus()[entryId] === ReadabilityStatus.SUCCESS
+    const text = getEntryTtsText(entry, { preferReadability })
+
+    if (!text) {
+      throw new Error("No content available for TTS")
+    }
+
+    const { voice } = getGeneralSettings()
+    const response = await requestTts({
+      text,
+      voice,
+      signal: abortController.signal,
+    })
 
     let handled = false
     if (response.body && getAudioContextConstructor()) {

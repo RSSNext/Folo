@@ -6,7 +6,6 @@ import { cleanupSVG, importDirectorySync, isEmptyColor, parseColors, runSVGO } f
 import { compareColors, stringToColor } from "@iconify/utils/lib/colors"
 import { merge } from "es-toolkit/compat"
 import path, { resolve } from "pathe"
-import { theme } from "tailwindcss/defaultConfig"
 import type { Config } from "tailwindcss/types/config"
 import { withUIKit } from "tailwindcss-uikit-colors/src/macos/tailwind"
 import { workspaceRootSync } from "workspace-root"
@@ -26,22 +25,19 @@ const twConfig = {
         "2xl": "1400px",
       },
     },
-
-    fontSize: {
-      ...theme?.fontSize,
-      largeTitle: ["1.625rem", "2rem"], // 26px
-      title1: ["1.375rem", "1.625rem"], // 22px
-      title2: ["1.0625rem", "1.375rem"], // 17px
-      title3: ["0.9375rem", "1.25rem"], // 15px
-      headline: ["0.8125rem", "1rem"], // 13px
-      body: ["0.8125rem", "1rem"], // 13px
-      callout: ["0.75rem", "0.9375rem"], // 12px
-      subheadline: ["0.6875rem", "0.875rem"], // 11px
-      footnote: ["0.625rem", "0.8125rem"], // 10px
-      caption: ["0.625rem", "0.8125rem"], // 10px
-    },
-
     extend: {
+      fontSize: {
+        largeTitle: ["1.625rem", "2rem"], // 26px
+        title1: ["1.375rem", "1.625rem"], // 22px
+        title2: ["1.0625rem", "1.375rem"], // 17px
+        title3: ["0.9375rem", "1.25rem"], // 15px
+        headline: ["0.8125rem", "1rem"], // 13px
+        body: ["0.8125rem", "1rem"], // 13px
+        callout: ["0.75rem", "0.9375rem"], // 12px
+        subheadline: ["0.6875rem", "0.875rem"], // 11px
+        footnote: ["0.625rem", "0.8125rem"], // 10px
+        caption: ["0.625rem", "0.8125rem"], // 10px
+      },
       fontFamily: {
         theme: "var(--fo-font-family)",
       },
