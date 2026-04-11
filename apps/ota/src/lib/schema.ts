@@ -23,30 +23,37 @@ const platformsSchema = z
     linux: platformSchema.optional(),
   })
   .strict()
-  .refine((platforms) => Object.values(platforms).some(Boolean), {
-    message: "At least one platform must be provided",
-  })
 
-export const otaReleaseSchema = z.object({
-  schemaVersion: z.literal(1),
-  updateId: z.string().uuid().optional(),
-  product: z.enum(["mobile", "desktop"]),
-  channel: z.string().min(1),
-  releaseVersion: semver,
-  releaseKind: z.enum(["ota", "store"]),
-  runtimeVersion: semver,
-  publishedAt: z.string().datetime(),
-  git: z.object({
-    tag: z.string().min(1),
-    commit: z.string().min(7),
-  }),
-  policy: z.object({
-    storeRequired: z.boolean(),
-    minSupportedBinaryVersion: semver,
-    message: z.string().nullable(),
-  }),
-  platforms: platformsSchema,
-})
+export const otaReleaseSchema = z
+  .object({
+    schemaVersion: z.literal(1),
+    updateId: z.string().uuid().optional(),
+    product: z.enum(["mobile", "desktop"]),
+    channel: z.string().min(1),
+    releaseVersion: semver,
+    releaseKind: z.enum(["ota", "store"]),
+    runtimeVersion: semver,
+    publishedAt: z.string().datetime(),
+    git: z.object({
+      tag: z.string().min(1),
+      commit: z.string().min(7),
+    }),
+    policy: z.object({
+      storeRequired: z.boolean(),
+      minSupportedBinaryVersion: semver,
+      message: z.string().nullable(),
+    }),
+    platforms: platformsSchema,
+  })
+  .superRefine((release, ctx) => {
+    if (release.releaseKind === "ota" && !Object.values(release.platforms).some(Boolean)) {
+      ctx.addIssue({
+        code: z.ZodIssueCode.custom,
+        message: "At least one platform must be provided",
+        path: ["platforms"],
+      })
+    }
+  })
 
 export type OtaPlatform = "ios" | "android" | "macos" | "windows" | "linux"
 export type OtaRelease = z.infer<typeof otaReleaseSchema>

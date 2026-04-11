@@ -5,13 +5,16 @@ import type { Env } from "../env"
 import { KV_KEYS } from "../lib/constants"
 import { evaluateStorePolicy } from "../lib/policy"
 import type { OtaRelease } from "../lib/schema"
-import { otaReleaseSchema } from "../lib/schema"
 
-const storePolicyReleaseSchema = otaReleaseSchema.pick({
-  releaseVersion: true,
-  releaseKind: true,
-  runtimeVersion: true,
-  policy: true,
+const storePolicyReleaseSchema = z.object({
+  releaseVersion: z.string().regex(/^\d+\.\d+\.\d+$/),
+  releaseKind: z.enum(["ota", "store"]),
+  runtimeVersion: z.string().regex(/^\d+\.\d+\.\d+$/),
+  policy: z.object({
+    storeRequired: z.boolean(),
+    minSupportedBinaryVersion: z.string().regex(/^\d+\.\d+\.\d+$/),
+    message: z.string().nullable(),
+  }),
 })
 type StorePolicyRelease = z.infer<typeof storePolicyReleaseSchema>
 const OTA_PRODUCTS = ["mobile", "desktop"] as const

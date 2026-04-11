@@ -14,7 +14,7 @@ interface GitHubRelease {
 export interface GitHubReleaseSummary {
   tag: string
   metadataUrl: string
-  archiveUrl: string
+  archiveUrl: string | null
 }
 
 export type GitHubReleaseListResult =
@@ -83,14 +83,14 @@ export async function listPublishedOtaReleases(input: {
         const metadata = release.assets.find((asset) => asset.name === "ota-release.json")
         const archive = release.assets.find((asset) => asset.name === "dist.tar.zst")
 
-        if (!metadata || !archive) {
+        if (!metadata) {
           return null
         }
 
         return {
           tag: release.tag_name,
           metadataUrl: metadata.url ?? metadata.browser_download_url,
-          archiveUrl: archive.url ?? archive.browser_download_url,
+          archiveUrl: archive ? (archive.url ?? archive.browser_download_url) : null,
         }
       })
       .filter((value): value is GitHubReleaseSummary => value !== null),

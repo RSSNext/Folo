@@ -48,6 +48,12 @@ async function runSyncGitHubReleases(env: Env) {
     const release = await fetchReleaseMetadata(releaseSummary.metadataUrl, env)
 
     if (release.releaseKind === "ota") {
+      if (!releaseSummary.archiveUrl) {
+        throw new Error(
+          `Missing OTA archive asset for ${release.product} release ${release.releaseVersion}`,
+        )
+      }
+
       const archiveBuffer = await fetchArchiveBuffer(releaseSummary.archiveUrl, env)
       const files = await extractMirroredFiles({
         release,

@@ -12,6 +12,11 @@ afterEach(async () => {
   await Promise.all(
     tempDirs.splice(0).map((directory) => rm(directory, { recursive: true, force: true })),
   )
+  delete process.env.OTA_RELEASE_KIND
+  delete process.env.OTA_RELEASE_VERSION
+  delete process.env.OTA_RUNTIME_VERSION
+  delete process.env.OTA_CHANNEL
+  delete process.env.OTA_STORE_REQUIRED
 })
 
 describe("buildOtaMetadata", () => {
@@ -236,6 +241,32 @@ describe("buildOtaMetadata", () => {
 })
 
 describe("buildReleaseAssets", () => {
+  it("builds metadata-only assets for store releases without Expo export output", async () => {
+    const { buildReleaseAssets } = await import("./build-ota-release.mjs")
+
+    const projectDir = await mkdtemp(join(tmpdir(), "build-ota-release-store-test-"))
+    tempDirs.push(projectDir)
+
+    await writeFile(
+      join(projectDir, "package.json"),
+      JSON.stringify({ name: "@follow/mobile-test", version: "0.4.3" }),
+      "utf8",
+    )
+
+    process.env.OTA_RELEASE_KIND = "store"
+    process.env.OTA_RELEASE_VERSION = "0.4.3"
+    process.env.OTA_RUNTIME_VERSION = "0.4.3"
+    process.env.OTA_CHANNEL = "production"
+    process.env.OTA_STORE_REQUIRED = "true"
+
+    const result = await buildReleaseAssets({ projectDir })
+
+    expect(result.otaMetadata.releaseKind).toBe("store")
+    expect(result.otaMetadata.policy.storeRequired).toBe(true)
+    expect(result.otaMetadata.platforms).toEqual({})
+    expect(result.archivePath).toBeNull()
+  })
+
   it("includes the JSON file path when export metadata cannot be parsed", async () => {
     const { buildReleaseAssets } = await import("./build-ota-release.mjs")
 

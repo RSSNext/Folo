@@ -143,7 +143,7 @@ describe("listPublishedOtaReleases", () => {
     )
   })
 
-  it("filters out releases missing required assets", async () => {
+  it("filters out releases missing metadata assets", async () => {
     vi.stubGlobal(
       "fetch",
       vi.fn().mockResolvedValue(
@@ -155,8 +155,8 @@ describe("listPublishedOtaReleases", () => {
               prerelease: false,
               assets: [
                 {
-                  name: "ota-release.json",
-                  browser_download_url: "https://example.com/desktop-ota-release.json",
+                  name: "dist.tar.zst",
+                  browser_download_url: "https://example.com/desktop-dist.tar.zst",
                 },
               ],
             },
@@ -177,6 +177,49 @@ describe("listPublishedOtaReleases", () => {
       kind: "ok",
       etag: null,
       releases: [],
+    })
+  })
+
+  it("includes metadata-only releases so store policy publishes can sync", async () => {
+    vi.stubGlobal(
+      "fetch",
+      vi.fn().mockResolvedValue(
+        new Response(
+          JSON.stringify([
+            {
+              tag_name: "mobile/v0.4.3",
+              draft: false,
+              prerelease: false,
+              assets: [
+                {
+                  name: "ota-release.json",
+                  browser_download_url: "https://example.com/store-ota-release.json",
+                },
+              ],
+            },
+          ]),
+          { status: 200 },
+        ),
+      ),
+    )
+
+    const result = await listPublishedOtaReleases({
+      owner: "RSSNext",
+      repo: "Folo",
+      token: "token",
+      etag: null,
+    })
+
+    expect(result).toEqual({
+      kind: "ok",
+      etag: null,
+      releases: [
+        {
+          tag: "mobile/v0.4.3",
+          metadataUrl: "https://example.com/store-ota-release.json",
+          archiveUrl: null,
+        },
+      ],
     })
   })
 
@@ -595,6 +638,66 @@ describe("syncGitHubReleases", () => {
 
     expect(kvEntries.get(KV_KEYS.githubEtag)).toBe('"etag-deduped"')
     expect(kvEntries.get(KV_KEYS.syncLastSuccessAt)).toEqual(expect.any(String))
+  })
+
+  it("syncs store releases without requiring archive assets", async () => {
+    const kvEntries = new Map<string, unknown>()
+    const storeRelease = await createReleaseMetadata({
+      releaseVersion: "0.4.3",
+      releaseKind: "store",
+      runtimeVersion: "0.4.3",
+      publishedAt: "2026-04-10T16:00:00Z",
+      git: {
+        tag: "mobile/v0.4.3",
+        commit: "abcdef1234567895",
+      },
+      policy: {
+        storeRequired: true,
+        minSupportedBinaryVersion: "0.4.3",
+        message: "Install 0.4.3 from the store.",
+      },
+      platforms: {},
+    })
+
+    vi.stubGlobal(
+      "fetch",
+      vi.fn(async (input: string | URL | Request) => {
+        const url = String(input)
+
+        if (url === "https://api.github.com/repos/RSSNext/Folo/releases") {
+          return new Response(
+            JSON.stringify([
+              createGitHubReleaseAssetSet("mobile/v0.4.3", "https://example.com/store.json", null),
+            ]),
+            { status: 200 },
+          )
+        }
+
+        if (url === "https://example.com/store.json") {
+          return new Response(JSON.stringify(storeRelease), {
+            headers: {
+              "Content-Type": "application/json",
+            },
+          })
+        }
+
+        throw new Error(`Unhandled fetch URL: ${url}`)
+      }),
+    )
+
+    await syncGitHubReleases(
+      createEnv({
+        kvEntries,
+        envOverrides: {
+          GITHUB_OWNER: "RSSNext",
+          GITHUB_REPO: "Folo",
+          GITHUB_TOKEN: "token",
+        },
+      }),
+    )
+
+    expect(kvEntries.get(KV_KEYS.policy("mobile", "production"))).toBe(JSON.stringify(storeRelease))
+    expect(kvEntries.get(KV_KEYS.release("mobile", "0.4.3"))).toBe(JSON.stringify(storeRelease))
   })
 
   it("downloads private release assets through authenticated GitHub asset API requests", async () => {
@@ -1258,7 +1361,7 @@ async function createReleaseMetadata(overrides: Partial<OtaRelease> = {}): Promi
 function createGitHubReleaseAssetSet(
   tag: string,
   metadataUrl: string,
-  archiveUrl: string,
+  archiveUrl: string | null,
   options?: {
     metadataApiUrl?: string
     archiveApiUrl?: string
@@ -1274,11 +1377,15 @@ function createGitHubReleaseAssetSet(
         url: options?.metadataApiUrl ?? metadataUrl,
         browser_download_url: metadataUrl,
       },
-      {
-        name: "dist.tar.zst",
-        url: options?.archiveApiUrl ?? archiveUrl,
-        browser_download_url: archiveUrl,
-      },
+      ...(archiveUrl
+        ? [
+            {
+              name: "dist.tar.zst",
+              url: options?.archiveApiUrl ?? archiveUrl,
+              browser_download_url: archiveUrl,
+            },
+          ]
+        : []),
     ],
   }
 }

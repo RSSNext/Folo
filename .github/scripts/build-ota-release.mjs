@@ -3,7 +3,7 @@
 import { spawn, spawnSync } from "node:child_process"
 import { createHash } from "node:crypto"
 import { existsSync } from "node:fs"
-import { readFile, writeFile } from "node:fs/promises"
+import { mkdir, readFile, writeFile } from "node:fs/promises"
 import { fileURLToPath } from "node:url"
 
 import { dirname, extname, join, resolve } from "pathe"
@@ -95,16 +95,19 @@ const CONTENT_TYPES = new Map([
 export async function buildOtaMetadata(input) {
   /** @type {Record<string, { launchAsset: OtaAsset, assets: OtaAsset[] }>} */
   const platforms = {}
-  const fileMetadata = resolveExportFileMetadata(input.metadata)
 
-  for (const platform of OTA_PLATFORMS) {
-    const platformMetadata = resolvePlatformMetadata(fileMetadata, platform)
-    const launchAsset = { path: normalizeAssetPath(platformMetadata.bundle) }
-    const assets = collectAssets(platformMetadata.assets, platform)
+  if (input.releaseKind === "ota") {
+    const fileMetadata = resolveExportFileMetadata(input.metadata)
 
-    platforms[platform] = {
-      launchAsset: await input.resolveAsset(launchAsset),
-      assets: await Promise.all(assets.map((asset) => input.resolveAsset(asset))),
+    for (const platform of OTA_PLATFORMS) {
+      const platformMetadata = resolvePlatformMetadata(fileMetadata, platform)
+      const launchAsset = { path: normalizeAssetPath(platformMetadata.bundle) }
+      const assets = collectAssets(platformMetadata.assets, platform)
+
+      platforms[platform] = {
+        launchAsset: await input.resolveAsset(launchAsset),
+        assets: await Promise.all(assets.map((asset) => input.resolveAsset(asset))),
+      }
     }
   }
 
@@ -149,12 +152,7 @@ export async function buildReleaseAssets(options = {}) {
   const projectDir = resolveMobileProjectDir(options.projectDir)
   const distDir = join(projectDir, "dist")
   const metadataPath = join(distDir, "metadata.json")
-
-  if (!existsSync(metadataPath)) {
-    throw new Error(
-      `Missing Expo export metadata at ${metadataPath}. Run "pnpm --dir apps/mobile run update:export" first.`,
-    )
-  }
+  const archivePath = join(projectDir, "dist.tar.zst")
 
   const packageJson = await readJson(join(projectDir, "package.json"))
   const product = process.env.OTA_PRODUCT ?? "mobile"
@@ -165,7 +163,14 @@ export async function buildReleaseAssets(options = {}) {
   const gitTag = process.env.OTA_GIT_TAG ?? `${product}/v${releaseVersion}`
   const gitCommit = process.env.OTA_GIT_COMMIT ?? execGit(["rev-parse", "HEAD"], REPO_ROOT)
   const publishedAt = process.env.OTA_PUBLISHED_AT ?? new Date().toISOString()
-  const metadata = await readJson(metadataPath)
+
+  if (releaseKind === "ota" && !existsSync(metadataPath)) {
+    throw new Error(
+      `Missing Expo export metadata at ${metadataPath}. Run "pnpm --dir apps/mobile run update:export" first.`,
+    )
+  }
+
+  const metadata = releaseKind === "ota" ? await readJson(metadataPath) : { fileMetadata: {} }
 
   const otaMetadata = await buildOtaMetadata({
     product,
@@ -204,17 +209,20 @@ export async function buildReleaseAssets(options = {}) {
   })
 
   const outputPath = join(distDir, "ota-release.json")
-  const archivePath = join(projectDir, "dist.tar.zst")
 
+  await mkdir(distDir, { recursive: true })
   await writeFile(outputPath, `${JSON.stringify(otaMetadata, null, 2)}\n`, "utf8")
-  await createTarZstArchive({ distDir, archivePath })
+
+  if (releaseKind === "ota") {
+    await createTarZstArchive({ distDir, archivePath })
+  }
 
   return {
     projectDir,
     distDir,
     metadataPath,
     outputPath,
-    archivePath,
+    archivePath: releaseKind === "ota" ? archivePath : null,
     otaMetadata,
   }
 }
@@ -224,7 +232,9 @@ async function main() {
     const result = await buildReleaseAssets()
 
     console.info(`Wrote OTA metadata: ${result.outputPath}`)
-    console.info(`Wrote OTA archive: ${result.archivePath}`)
+    if (result.archivePath) {
+      console.info(`Wrote OTA archive: ${result.archivePath}`)
+    }
   } catch (error) {
     console.error(error instanceof Error ? error.message : String(error))
     process.exitCode = 1

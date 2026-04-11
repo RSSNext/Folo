@@ -25,6 +25,18 @@ on:
           - production
           - preview
         description: "OTA channel embedded in ota-release.json"
+      store_required:
+        type: choice
+        required: false
+        options:
+          - "false"
+          - "true"
+        default: "false"
+        description: "Whether /policy should block and require a store update"
+      policy_message:
+        type: string
+        required: false
+        description: "Optional /policy message for store metadata releases"
 
 permissions:
   contents: write
@@ -39,6 +51,8 @@ jobs:
       OTA_RELEASE_KIND: ${{ inputs.release_kind }}
       OTA_RUNTIME_VERSION: ${{ inputs.runtime_version }}
       OTA_CHANNEL: ${{ inputs.channel }}
+      OTA_STORE_REQUIRED: ${{ inputs.store_required }}
+      OTA_POLICY_MESSAGE: ${{ inputs.policy_message }}
       OTA_GIT_TAG: mobile/v${{ inputs.release_version }}
 
     steps:
@@ -72,6 +86,7 @@ jobs:
         run: pnpm install --frozen-lockfile
 
       - name: Export OTA bundle assets
+        if: inputs.release_kind == 'ota'
         working-directory: apps/mobile
         run: pnpm run update:export
 
@@ -85,10 +100,11 @@ jobs:
         run: |
           tag_name="mobile/v${OTA_RELEASE_VERSION}"
           release_title="Mobile v${OTA_RELEASE_VERSION}"
-          ota_files=(
-            "apps/mobile/dist/ota-release.json"
-            "apps/mobile/dist.tar.zst"
-          )
+          ota_files=("apps/mobile/dist/ota-release.json")
+
+          if [ -f "apps/mobile/dist.tar.zst" ]; then
+            ota_files+=("apps/mobile/dist.tar.zst")
+          fi
 
           if gh release view "$tag_name" >/dev/null 2>&1; then
             gh release upload "$tag_name" "${ota_files[@]}" --clobber

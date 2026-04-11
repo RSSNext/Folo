@@ -38,7 +38,7 @@ describe("otaReleaseSchema", () => {
     expect(Object.keys(parsed.platforms)).toEqual(["ios"])
   })
 
-  it("rejects metadata with no platforms", () => {
+  it("rejects ota metadata with no platforms", () => {
     expect(() =>
       otaReleaseSchema.parse({
         schemaVersion: 1,
@@ -60,6 +60,31 @@ describe("otaReleaseSchema", () => {
         platforms: {},
       }),
     ).toThrow("At least one platform must be provided")
+  })
+
+  it("accepts store metadata with no platforms", () => {
+    const parsed = otaReleaseSchema.parse({
+      schemaVersion: 1,
+      product: "mobile",
+      channel: "production",
+      releaseVersion: "0.4.3",
+      releaseKind: "store",
+      runtimeVersion: "0.4.3",
+      publishedAt: "2026-04-10T12:00:00Z",
+      git: {
+        tag: "mobile/v0.4.3",
+        commit: "abcdef1234567890",
+      },
+      policy: {
+        storeRequired: true,
+        minSupportedBinaryVersion: "0.4.3",
+        message: "Install 0.4.3 from the store.",
+      },
+      platforms: {},
+    })
+
+    expect(parsed.releaseKind).toBe("store")
+    expect(parsed.platforms).toEqual({})
   })
 
   it("rejects metadata when platform keys exist without a real payload", () => {
