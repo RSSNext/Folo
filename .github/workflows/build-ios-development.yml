@@ -55,6 +55,7 @@ jobs:
         working-directory: apps/mobile
         run: eas build --platform ios --profile development --non-interactive --local --output=./build.ipa
         env:
+          EAS_NO_FROZEN_LOCKFILE: "1"
           SENTRY_AUTH_TOKEN: ${{ secrets.RN_SENTRY_AUTH_TOKEN }}
           CI: true
 
@@ -105,6 +106,7 @@ jobs:
         working-directory: apps/mobile
         run: eas build --platform ios --profile development --non-interactive --local --output=./build.ipa
         env:
+          EAS_NO_FROZEN_LOCKFILE: "1"
           CI: true
           SENTRY_AUTH_TOKEN: ${{ secrets.RN_SENTRY_AUTH_TOKEN }}
       # Optional: Upload artifact
@@ -149,6 +151,7 @@ jobs:
         working-directory: apps/mobile
         run: eas build --platform ios --profile ios-simulator --non-interactive --local --output=./build-simulator.ipa
         env:
+          EAS_NO_FROZEN_LOCKFILE: "1"
           CI: true
           SENTRY_AUTH_TOKEN: ${{ secrets.RN_SENTRY_AUTH_TOKEN }}
       # Optional: Upload artifact

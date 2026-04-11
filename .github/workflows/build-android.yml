@@ -75,6 +75,8 @@ jobs:
       - name: 🔨 Build Android app
         working-directory: apps/mobile
         run: eas build --platform android --profile ${{ github.event.inputs.profile || 'preview' }} --local --output=${{ github.workspace }}/build.${{ github.event.inputs.profile == 'production' && 'aab' || 'apk' }}
+        env:
+          EAS_NO_FROZEN_LOCKFILE: "1"
 
       - name: 📤 Upload apk Artifact
         if: github.event.inputs.profile != 'production'
