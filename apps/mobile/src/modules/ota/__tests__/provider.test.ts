@@ -76,7 +76,7 @@ describe("runWithSingleInFlight", () => {
 
 describe("runSafeReloadUpdate", () => {
   it("does not reload when updates are disabled", async () => {
-    const reload = vi.fn().mockResolvedValue(undefined)
+    const reload = vi.fn(async () => {})
 
     await runSafeReloadUpdate({
       isEnabled: false,
@@ -88,7 +88,7 @@ describe("runSafeReloadUpdate", () => {
   })
 
   it("does not reload when no pending update exists", async () => {
-    const reload = vi.fn().mockResolvedValue(undefined)
+    const reload = vi.fn(async () => {})
 
     await runSafeReloadUpdate({
       isEnabled: true,
@@ -100,7 +100,7 @@ describe("runSafeReloadUpdate", () => {
   })
 
   it("reloads when updates are enabled and a pending version exists", async () => {
-    const reload = vi.fn().mockResolvedValue(undefined)
+    const reload = vi.fn(async () => {})
 
     await runSafeReloadUpdate({
       isEnabled: true,
