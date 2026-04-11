@@ -1,7 +1,7 @@
 {
   "$schema": "https://openapi.vercel.sh/vercel.json",
   "framework": null,
-  "buildCommand": "pnpm run --filter Folo build:web",
+  "buildCommand": "VITE_API_URL=${VITE_API_URL:-https://$VERCEL_PROJECT_PRODUCTION_URL} VITE_WEB_URL=https://$VERCEL_PROJECT_PRODUCTION_URL pnpm run --filter Folo build:web",
   "outputDirectory": "apps/desktop/out/web",
   "installCommand": "pnpm install",
   "rewrites": [
