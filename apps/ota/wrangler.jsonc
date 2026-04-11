@@ -8,15 +8,15 @@
   "workers_dev": true,
   "routes": [
     {
-      "pattern": "ota.folo.is/*",
-      "zone_id": "115ea8e6a7865dbfc1cf4530d5f87f63",
+      "pattern": "ota.folo.is",
+      "custom_domain": true,
     },
   ],
   "kv_namespaces": [
     {
       "binding": "OTA_KV",
-      "id": "REPLACE_WITH_PROD_KV_ID",
-      "preview_id": "REPLACE_WITH_DEV_KV_ID",
+      "id": "bcb477ad28284a74a7b4a6bfe231c228",
+      "preview_id": "abc5b3894cef431ca00e8fe7126a0ec9",
     },
   ],
   "r2_buckets": [
