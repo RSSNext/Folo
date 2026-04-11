@@ -21,6 +21,8 @@
     "start:clean": "expo start --dev-client --clear",
     "typecheck": "tsc --noEmit",
     "update": "tsx scripts/expo-update.ts",
+    "update:bundle": "node ../../.github/scripts/build-ota-release.mjs",
+    "update:export": "expo export -p ios -p android --output-dir dist",
     "web": "expo start --web"
   },
   "dependencies": {

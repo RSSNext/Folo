@@ -73,6 +73,88 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
+      - name: Extract OTA release trailers
+        id: ota_release
+        if: needs.create_tag.outputs.platform == 'mobile' && needs.create_tag.outputs.ref_name == 'mobile-main'
+        env:
+          COMMIT_MESSAGE: ${{ github.event.head_commit.message }}
+          RELEASE_VERSION: ${{ needs.create_tag.outputs.version }}
+        run: |
+          ota_trailers="$(printf '%s\n' "$COMMIT_MESSAGE" | sed -nE '/^OTA_/p')"
+          normalized_release_version="${RELEASE_VERSION#v}"
+
+          if [ -z "$ota_trailers" ]; then
+            echo "enabled=false" >> "$GITHUB_OUTPUT"
+            echo "release_kind=" >> "$GITHUB_OUTPUT"
+            echo "runtime_version=" >> "$GITHUB_OUTPUT"
+            echo "channel=" >> "$GITHUB_OUTPUT"
+            echo "release_version=${normalized_release_version}" >> "$GITHUB_OUTPUT"
+            exit 0
+          fi
+
+          invalid_trailers="$(printf '%s\n' "$ota_trailers" | sed -nE '/^OTA_(RELEASE_KIND|RUNTIME_VERSION|CHANNEL)=/!p')"
+          if [ -n "$invalid_trailers" ]; then
+            echo "::error::Unsupported OTA trailer lines detected:"
+            printf '%s\n' "$invalid_trailers"
+            exit 1
+          fi
+
+          release_kind_lines="$(printf '%s\n' "$COMMIT_MESSAGE" | sed -n '/^OTA_RELEASE_KIND=/p')"
+          runtime_version_lines="$(printf '%s\n' "$COMMIT_MESSAGE" | sed -n '/^OTA_RUNTIME_VERSION=/p')"
+          channel_lines="$(printf '%s\n' "$COMMIT_MESSAGE" | sed -n '/^OTA_CHANNEL=/p')"
+
+          count_lines() {
+            local lines="$1"
+
+            if [ -z "$lines" ]; then
+              echo 0
+              return
+            fi
+
+            printf '%s\n' "$lines" | wc -l | tr -d ' '
+          }
+
+          release_kind_count="$(count_lines "$release_kind_lines")"
+          runtime_version_count="$(count_lines "$runtime_version_lines")"
+          channel_count="$(count_lines "$channel_lines")"
+
+          if [ "$release_kind_count" -ne 1 ] || [ "$runtime_version_count" -ne 1 ] || [ "$channel_count" -ne 1 ]; then
+            echo "::error::OTA trailers are incomplete or duplicated. Expected exactly one OTA_RELEASE_KIND, OTA_RUNTIME_VERSION, and OTA_CHANNEL trailer when any OTA_ trailer is present."
+            printf '%s\n' "$ota_trailers"
+            exit 1
+          fi
+
+          release_kind="$(printf '%s\n' "$release_kind_lines" | sed -nE 's/^OTA_RELEASE_KIND=(.*)$/\1/p' | tail -n 1)"
+          runtime_version="$(printf '%s\n' "$runtime_version_lines" | sed -nE 's/^OTA_RUNTIME_VERSION=(.*)$/\1/p' | tail -n 1)"
+          channel="$(printf '%s\n' "$channel_lines" | sed -nE 's/^OTA_CHANNEL=(.*)$/\1/p' | tail -n 1)"
+
+          case "$release_kind" in
+            ota|store) ;;
+            *)
+              echo "::error::OTA_RELEASE_KIND must be either ota or store."
+              exit 1
+              ;;
+          esac
+
+          if [ -z "$runtime_version" ]; then
+            echo "::error::OTA_RUNTIME_VERSION must not be empty."
+            exit 1
+          fi
+
+          case "$channel" in
+            production|preview) ;;
+            *)
+              echo "::error::OTA_CHANNEL must be either production or preview."
+              exit 1
+              ;;
+          esac
+
+          echo "enabled=true" >> "$GITHUB_OUTPUT"
+          echo "release_kind=${release_kind}" >> "$GITHUB_OUTPUT"
+          echo "runtime_version=${runtime_version}" >> "$GITHUB_OUTPUT"
+          echo "channel=${channel}" >> "$GITHUB_OUTPUT"
+          echo "release_version=${normalized_release_version}" >> "$GITHUB_OUTPUT"
+
       - name: Checkout repository
         if: needs.create_tag.outputs.platform == 'desktop' && needs.create_tag.outputs.ref_name == 'main'
         uses: actions/checkout@v6
@@ -199,3 +281,23 @@ jobs:
               }
             });
             console.log('Mobile production iOS build triggered successfully');
+
+      - name: Trigger Mobile OTA Publish
+        if: needs.create_tag.outputs.platform == 'mobile' && needs.create_tag.outputs.ref_name == 'mobile-main' && steps.ota_release.outputs.enabled == 'true'
+        uses: actions/github-script@v9
+        with:
+          github-token: ${{ secrets.GITHUB_TOKEN }}
+          script: |
+            await github.rest.actions.createWorkflowDispatch({
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              workflow_id: 'publish-ota.yml',
+              ref: '${{ needs.create_tag.outputs.tag_version }}',
+              inputs: {
+                release_version: '${{ steps.ota_release.outputs.release_version }}',
+                release_kind: '${{ steps.ota_release.outputs.release_kind }}',
+                runtime_version: '${{ steps.ota_release.outputs.runtime_version }}',
+                channel: '${{ steps.ota_release.outputs.channel }}'
+              }
+            });
+            console.log('Mobile OTA publish workflow triggered successfully');
