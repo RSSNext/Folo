@@ -1702,7 +1702,7 @@ importers:
         specifier: 1.44.0
         version: 1.44.0
       tailwindcss:
-        specifier: '>=3 || <4'
+        specifier: '>=3 <4'
         version: 3.4.17(ts-node@10.9.2(@types/node@25.2.3)(typescript@5.9.3))
       tailwindcss-animate:
         specifier: 1.0.7
