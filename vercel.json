@@ -1,5 +1,9 @@
 {
   "$schema": "https://openapi.vercel.sh/vercel.json",
+  "framework": null,
+  "buildCommand": "pnpm run --filter Folo build:web",
+  "outputDirectory": "apps/desktop/out/web",
+  "installCommand": "pnpm install",
   "rewrites": [
     {
       "source": "/__debug_proxy",
