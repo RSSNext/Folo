@@ -2,6 +2,7 @@ import { Hono } from "hono"
 import { z } from "zod"
 
 import type { Env } from "../env"
+import { createExpoSignatureHeader, OtaCodeSigningError } from "../lib/code-signing"
 import { KV_KEYS } from "../lib/constants"
 import { getLatestReleasePointer } from "../lib/kv"
 import { buildManifest } from "../lib/manifest"
@@ -90,19 +91,46 @@ manifestRoute.get("/manifest", async (c) => {
     return c.body(null, 204)
   }
 
-  return new Response(
-    JSON.stringify(buildManifest(release, { origin: new URL(c.req.url).origin, platform })),
-    {
-      status: 200,
-      headers: {
-        "cache-control": "private, max-age=0",
-        "content-type": "application/expo+json; charset=utf-8",
-        "expo-protocol-version": "1",
-        "expo-sfv-version": "0",
-        vary: "expo-platform, expo-runtime-version, expo-channel-name",
-      },
-    },
+  const manifestBody = JSON.stringify(
+    buildManifest(release, { origin: new URL(c.req.url).origin, platform }),
   )
+
+  let expoSignatureHeader: string | null = null
+  try {
+    expoSignatureHeader = await createExpoSignatureHeader({
+      manifestBody,
+      expectSignatureHeader: c.req.header("expo-expect-signature"),
+      privateKeyPem: c.env.OTA_CODE_SIGNING_PRIVATE_KEY,
+    })
+  } catch (error) {
+    if (error instanceof OtaCodeSigningError) {
+      return new Response(JSON.stringify({ error: error.message }), {
+        status: error.status,
+        headers: {
+          "content-type": "application/json; charset=utf-8",
+        },
+      })
+    }
+
+    throw error
+  }
+
+  const headers = new Headers({
+    "cache-control": "private, max-age=0",
+    "content-type": "application/expo+json; charset=utf-8",
+    "expo-protocol-version": "1",
+    "expo-sfv-version": "0",
+    vary: "expo-platform, expo-runtime-version, expo-channel-name",
+  })
+
+  if (expoSignatureHeader) {
+    headers.set("expo-signature", expoSignatureHeader)
+  }
+
+  return new Response(manifestBody, {
+    status: 200,
+    headers,
+  })
 })
 
 function parsePlatform(value: string | undefined): OtaPlatform | null {

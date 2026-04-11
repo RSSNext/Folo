@@ -79,6 +79,8 @@ export OTA_GOOD_RELEASE_VERSION="0.4.1"
 export OTA_GOOD_STORE_VERSION="0.4.1"
 ```
 
+Production and development Workers must also provide an `OTA_CODE_SIGNING_PRIVATE_KEY` secret containing the PEM-encoded PKCS#8 private key that matches `apps/mobile/code-signing/certificate.pem`.
+
 ## Manual Verification Commands
 
 Trigger a sync and inspect health:

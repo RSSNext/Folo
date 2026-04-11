@@ -16,6 +16,7 @@ const adaptiveIconPath = resolve(__dirname, "./assets/adaptive-icon.png")
 const splashIconPath = resolve(__dirname, "./assets/splash-icon.png")
 
 const isDev = process.env.NODE_ENV === "development"
+const semverPattern = /^\d+\.\d+\.\d+$/
 const channelNameMap = {
   development: "development",
   "ios-simulator": "development",
@@ -25,9 +26,40 @@ const channelNameMap = {
   production: "production",
 } as Record<string, string>
 
+export const resolveRuntimeVersion = ({
+  isDevelopment,
+  packageVersion,
+  otaRuntimeVersionOverride,
+}: {
+  isDevelopment: boolean
+  packageVersion: string
+  otaRuntimeVersionOverride?: string | null
+}) => {
+  if (isDevelopment) {
+    return "0.0.0-dev"
+  }
+
+  if (otaRuntimeVersionOverride) {
+    if (!semverPattern.test(otaRuntimeVersionOverride)) {
+      throw new Error(
+        `Expected OTA_RUNTIME_VERSION to be a plain x.y.z version, got ${otaRuntimeVersionOverride}`,
+      )
+    }
+
+    return otaRuntimeVersionOverride
+  }
+
+  return packageVersion
+}
+
 export default ({ config }: ConfigContext): ExpoConfig => {
   const profile = process.env.PROFILE || "production"
   const channelName = channelNameMap[profile] || channelNameMap.production
+  const runtimeVersion = resolveRuntimeVersion({
+    isDevelopment: isDev,
+    packageVersion: PKG.version,
+    otaRuntimeVersionOverride: process.env.OTA_RUNTIME_VERSION ?? null,
+  })
 
   const result: ExpoConfig = {
     ...config,
@@ -52,7 +84,7 @@ export default ({ config }: ConfigContext): ExpoConfig => {
       },
       checkAutomatically: "NEVER",
     },
-    runtimeVersion: isDev ? "0.0.0-dev" : PKG.version,
+    runtimeVersion,
 
     name: "Folo",
     slug: "follow",

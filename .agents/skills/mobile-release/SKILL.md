@@ -40,7 +40,7 @@ The CI release flow is file-driven:
    ```
 2. If no tag exists, fall back to the last release commit subject:
    ```bash
-   git log --format="%H %s" | grep "^[a-f0-9]* release(mobile): Release v" | head -1 | awk '{print $1}'
+   git log --format="%H %s" | grep -Ei "^[a-f0-9]* release\\(mobile\\): release v" | head -1 | awk '{print $1}'
    ```
 3. Collect commits since that point:
    ```bash

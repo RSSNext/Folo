@@ -1,3 +1,5 @@
+import { createVerify, generateKeyPairSync } from "node:crypto"
+
 import { describe, expect, it, vi } from "vitest"
 
 import type { Env } from "../env"
@@ -172,6 +174,78 @@ describe("/manifest", () => {
 
     expect(response.status).toBe(204)
   })
+
+  it("signs manifest responses when expo-expect-signature is provided", async () => {
+    const { privateKey, publicKey } = generateKeyPairSync("rsa", {
+      modulusLength: 2048,
+      privateKeyEncoding: {
+        format: "pem",
+        type: "pkcs8",
+      },
+      publicKeyEncoding: {
+        format: "pem",
+        type: "spki",
+      },
+    })
+    const response = await fetchWorker(
+      "/manifest",
+      {
+        headers: {
+          "expo-platform": "ios",
+          "expo-runtime-version": "0.4.1",
+          "expo-expect-signature": 'sig, keyid="main", alg="rsa-v1_5-sha256"',
+        },
+      },
+      {
+        kvEntries: new Map<string, unknown>([
+          [KV_KEYS.latest("mobile", "production", "0.4.1", "ios"), { releaseVersion: "0.4.2" }],
+          [KV_KEYS.release("mobile", "0.4.2"), createRelease()],
+        ]),
+        otaCodeSigningPrivateKey: privateKey,
+      },
+    )
+
+    expect(response.status).toBe(200)
+
+    const manifestBody = await response.text()
+    const signatureHeader = response.headers.get("expo-signature")
+
+    expect(signatureHeader).toContain('keyid="main"')
+    expect(signatureHeader).toContain('alg="rsa-v1_5-sha256"')
+
+    const signatureMatch = signatureHeader?.match(/sig="([^"]+)"/)
+    expect(signatureMatch?.[1]).toBeTruthy()
+
+    const verifier = createVerify("RSA-SHA256")
+    verifier.update(manifestBody, "utf8")
+    verifier.end()
+
+    expect(verifier.verify(publicKey, signatureMatch![1]!, "base64")).toBe(true)
+  })
+
+  it("returns 500 when code signing is requested but the Worker is not configured", async () => {
+    const response = await fetchWorker(
+      "/manifest",
+      {
+        headers: {
+          "expo-platform": "ios",
+          "expo-runtime-version": "0.4.1",
+          "expo-expect-signature": 'sig, keyid="main", alg="rsa-v1_5-sha256"',
+        },
+      },
+      {
+        kvEntries: new Map<string, unknown>([
+          [KV_KEYS.latest("mobile", "production", "0.4.1", "ios"), { releaseVersion: "0.4.2" }],
+          [KV_KEYS.release("mobile", "0.4.2"), createRelease()],
+        ]),
+      },
+    )
+
+    expect(response.status).toBe(500)
+    await expect(response.json()).resolves.toEqual({
+      error: "OTA code signing is not configured",
+    })
+  })
 })
 
 describe("/assets/*", () => {
@@ -279,6 +353,7 @@ async function fetchWorker(
         headers?: Record<string, string>
       }
     >
+    otaCodeSigningPrivateKey?: string
   },
 ) {
   const response = await otaWorker.fetch(
@@ -299,6 +374,7 @@ function createEnv(options?: {
       headers?: Record<string, string>
     }
   >
+  otaCodeSigningPrivateKey?: string
 }): Env {
   return {
     OTA_KV: createKvNamespace(options?.kvEntries),
@@ -308,6 +384,7 @@ function createEnv(options?: {
     GITHUB_TOKEN: "",
     OTA_SYNC_TOKEN: "",
     OTA_SYNC_TOKEN_HEADER: "x-ota-sync-token",
+    OTA_CODE_SIGNING_PRIVATE_KEY: options?.otaCodeSigningPrivateKey,
   }
 }
 
