@@ -45,10 +45,10 @@ async function runSyncGitHubReleases(env: Env) {
   }
 
   for (const releaseSummary of releasesResult.releases) {
-    const release = await fetchReleaseMetadata(releaseSummary.metadataUrl)
+    const release = await fetchReleaseMetadata(releaseSummary.metadataUrl, env)
 
     if (release.releaseKind === "ota") {
-      const archiveBuffer = await fetchArchiveBuffer(releaseSummary.archiveUrl)
+      const archiveBuffer = await fetchArchiveBuffer(releaseSummary.archiveUrl, env)
       const files = await extractMirroredFiles({
         release,
         archiveBuffer,
@@ -163,8 +163,13 @@ async function putLatestPolicyRecord(kv: KVNamespace, release: OtaRelease) {
   await kv.put(KV_KEYS.policy(release.product, release.channel), JSON.stringify(release))
 }
 
-async function fetchReleaseMetadata(url: string): Promise<OtaRelease> {
-  const response = await fetch(url)
+async function fetchReleaseMetadata(
+  url: string,
+  env: Pick<Env, "GITHUB_OWNER" | "GITHUB_REPO" | "GITHUB_TOKEN">,
+): Promise<OtaRelease> {
+  const response = await fetch(url, {
+    headers: createGitHubAssetHeaders(env),
+  })
 
   if (!response.ok) {
     throw new Error(`Failed to fetch OTA release metadata from ${url}: ${response.status}`)
@@ -173,14 +178,27 @@ async function fetchReleaseMetadata(url: string): Promise<OtaRelease> {
   return otaReleaseSchema.parse(await response.json())
 }
 
-async function fetchArchiveBuffer(url: string) {
-  const response = await fetch(url)
+async function fetchArchiveBuffer(
+  url: string,
+  env: Pick<Env, "GITHUB_OWNER" | "GITHUB_REPO" | "GITHUB_TOKEN">,
+) {
+  const response = await fetch(url, {
+    headers: createGitHubAssetHeaders(env),
+  })
 
   if (!response.ok) {
     throw new Error(`Failed to fetch OTA archive from ${url}: ${response.status}`)
   }
 
   return new Uint8Array(await response.arrayBuffer())
+}
+
+function createGitHubAssetHeaders(env: Pick<Env, "GITHUB_OWNER" | "GITHUB_REPO" | "GITHUB_TOKEN">) {
+  return {
+    Accept: "application/octet-stream",
+    Authorization: `Bearer ${env.GITHUB_TOKEN}`,
+    "User-Agent": `folo-ota-worker/${env.GITHUB_OWNER}.${env.GITHUB_REPO}`,
+  }
 }
 
 async function updateSyncLastSuccessAt(kv: KVNamespace) {

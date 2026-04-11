@@ -180,6 +180,32 @@ describe("listPublishedOtaReleases", () => {
     })
   })
 
+  it("sends a user agent header required by the GitHub releases API", async () => {
+    const fetchMock = vi.fn().mockResolvedValue(
+      new Response(JSON.stringify([]), {
+        status: 200,
+      }),
+    )
+
+    vi.stubGlobal("fetch", fetchMock)
+
+    await listPublishedOtaReleases({
+      owner: "RSSNext",
+      repo: "Folo",
+      token: "token",
+      etag: null,
+    })
+
+    expect(fetchMock).toHaveBeenCalledWith(
+      "https://api.github.com/repos/RSSNext/Folo/releases",
+      expect.objectContaining({
+        headers: expect.objectContaining({
+          "User-Agent": expect.any(String),
+        }),
+      }),
+    )
+  })
+
   it("throws a structured error for failed requests", async () => {
     vi.stubGlobal(
       "fetch",
@@ -569,6 +595,113 @@ describe("syncGitHubReleases", () => {
 
     expect(kvEntries.get(KV_KEYS.githubEtag)).toBe('"etag-deduped"')
     expect(kvEntries.get(KV_KEYS.syncLastSuccessAt)).toEqual(expect.any(String))
+  })
+
+  it("downloads private release assets through authenticated GitHub asset API requests", async () => {
+    const kvEntries = new Map<string, unknown>()
+    const bucketEntries = new Map<string, { body: Uint8Array; headers?: Record<string, string> }>()
+    const otaBundle = textEncoder.encode("console.log('private-ota')")
+    const otaRelease = await createReleaseMetadata({
+      platforms: {
+        ios: {
+          launchAsset: {
+            path: "bundles/ios-main.js",
+            sha256: await sha256Hex(otaBundle),
+            contentType: "application/javascript",
+          },
+          assets: [],
+        },
+      },
+    })
+    const otaArchive = await createTarArchive([
+      {
+        name: "bundles/ios-main.js",
+        body: otaBundle,
+      },
+    ])
+
+    const fetchMock = vi.fn(async (input: string | URL | Request, init?: RequestInit) => {
+      const url = String(input)
+
+      if (url === "https://api.github.com/repos/RSSNext/Folo/releases") {
+        return new Response(
+          JSON.stringify([
+            createGitHubReleaseAssetSet(
+              "mobile/v0.4.2",
+              "https://github.com/RSSNext/Folo/releases/download/mobile/v0.4.2/ota-release.json",
+              "https://github.com/RSSNext/Folo/releases/download/mobile/v0.4.2/dist.tar.zst",
+              {
+                metadataApiUrl: "https://api.github.com/repos/RSSNext/Folo/releases/assets/1",
+                archiveApiUrl: "https://api.github.com/repos/RSSNext/Folo/releases/assets/2",
+              },
+            ),
+          ]),
+          { status: 200 },
+        )
+      }
+
+      if (url === "https://api.github.com/repos/RSSNext/Folo/releases/assets/1") {
+        expect(init).toMatchObject({
+          headers: expect.objectContaining({
+            Authorization: "Bearer token",
+            Accept: "application/octet-stream",
+            "User-Agent": expect.any(String),
+          }),
+        })
+
+        return new Response(JSON.stringify(otaRelease), {
+          status: 200,
+          headers: {
+            "Content-Type": "application/octet-stream",
+          },
+        })
+      }
+
+      if (url === "https://api.github.com/repos/RSSNext/Folo/releases/assets/2") {
+        expect(init).toMatchObject({
+          headers: expect.objectContaining({
+            Authorization: "Bearer token",
+            Accept: "application/octet-stream",
+            "User-Agent": expect.any(String),
+          }),
+        })
+
+        const archivePayload = new Uint8Array(otaArchive.byteLength)
+        archivePayload.set(otaArchive)
+
+        return new Response(archivePayload.buffer, {
+          status: 200,
+          headers: {
+            "Content-Type": "application/octet-stream",
+          },
+        })
+      }
+
+      if (url.startsWith("https://github.com/RSSNext/Folo/releases/download/")) {
+        return new Response("Not Found", {
+          status: 404,
+          statusText: "Not Found",
+        })
+      }
+
+      throw new Error(`Unhandled fetch URL: ${url}`)
+    })
+
+    vi.stubGlobal("fetch", fetchMock)
+
+    await syncGitHubReleases(
+      createEnv({
+        kvEntries,
+        bucketEntries,
+        envOverrides: {
+          GITHUB_OWNER: "RSSNext",
+          GITHUB_REPO: "Folo",
+          GITHUB_TOKEN: "token",
+        },
+      }),
+    )
+
+    expect(bucketEntries.has("mobile/production/0.4.1/0.4.2/ios/bundles/ios-main.js")).toBe(true)
   })
 
   it("keeps newer OTA pointers and store policy records when releases arrive out of order", async () => {
@@ -1122,7 +1255,15 @@ async function createReleaseMetadata(overrides: Partial<OtaRelease> = {}): Promi
   }
 }
 
-function createGitHubReleaseAssetSet(tag: string, metadataUrl: string, archiveUrl: string) {
+function createGitHubReleaseAssetSet(
+  tag: string,
+  metadataUrl: string,
+  archiveUrl: string,
+  options?: {
+    metadataApiUrl?: string
+    archiveApiUrl?: string
+  },
+) {
   return {
     tag_name: tag,
     draft: false,
@@ -1130,10 +1271,12 @@ function createGitHubReleaseAssetSet(tag: string, metadataUrl: string, archiveUr
     assets: [
       {
         name: "ota-release.json",
+        url: options?.metadataApiUrl ?? metadataUrl,
         browser_download_url: metadataUrl,
       },
       {
         name: "dist.tar.zst",
+        url: options?.archiveApiUrl ?? archiveUrl,
         browser_download_url: archiveUrl,
       },
     ],

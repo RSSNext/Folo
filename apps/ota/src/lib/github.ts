@@ -1,5 +1,6 @@
 export interface GitHubReleaseAsset {
   name: string
+  url?: string
   browser_download_url: string
 }
 
@@ -44,12 +45,15 @@ export async function listPublishedOtaReleases(input: {
   token: string
   etag: string | null
 }): Promise<GitHubReleaseListResult> {
+  const userAgent = `folo-ota-worker/${input.owner}.${input.repo}`
+
   const response = await fetch(
     `https://api.github.com/repos/${input.owner}/${input.repo}/releases`,
     {
       headers: {
         Accept: "application/vnd.github+json",
         Authorization: `Bearer ${input.token}`,
+        "User-Agent": userAgent,
         "X-GitHub-Api-Version": "2022-11-28",
         ...(input.etag ? { "If-None-Match": input.etag } : {}),
       },
@@ -85,8 +89,8 @@ export async function listPublishedOtaReleases(input: {
 
         return {
           tag: release.tag_name,
-          metadataUrl: metadata.browser_download_url,
-          archiveUrl: archive.browser_download_url,
+          metadataUrl: metadata.url ?? metadata.browser_download_url,
+          archiveUrl: archive.url ?? archive.browser_download_url,
         }
       })
       .filter((value): value is GitHubReleaseSummary => value !== null),
