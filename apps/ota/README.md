@@ -14,6 +14,17 @@ This runbook covers release rollout verification and rollback for the `apps/ota`
   - `POST /internal/sync`
   - `GET /internal/health`
 
+Desktop release automation is file-driven:
+
+- `apps/desktop/release-plan.json`
+- `apps/desktop/release.json`
+
+Desktop release modes:
+
+- `build`: publish direct installer assets only
+- `ota`: publish renderer OTA assets and direct installer assets together
+- `binary-policy`: publish distribution-specific binary policy without rebuilding installers
+
 ## Request Shape
 
 `/manifest`:
@@ -23,11 +34,26 @@ This runbook covers release rollout verification and rollback for the `apps/ota`
 - Accepts `product`; defaults to `mobile`.
 - Returns `204` when no compatible OTA release exists.
 
+Desktop `/manifest`:
+
+- Uses `X-App-Platform`, `X-App-Version`, and `X-App-Channel`.
+- Accepts optional `X-App-Runtime-Version`; defaults to `X-App-Version`.
+- Accepts optional `X-App-Renderer-Version`.
+- Returns desktop JSON with `renderer` and optional `app` payloads.
+- Never returns direct `app` payloads for `mas` or `mss`.
+
 `/policy`:
 
 - Requires `installedBinaryVersion`.
 - Accepts `channel`; defaults to `production`.
 - Accepts `product`; defaults to `mobile`.
+
+Desktop `/policy`:
+
+- Uses `X-App-Platform`, `X-App-Version`, and `X-App-Channel`.
+- Resolves `distribution` from `X-App-Platform`.
+- Prefers `policy:<product>:<channel>:<distribution>` and falls back to `policy:<product>:<channel>`.
+- Returns `none`, `prompt`, or `block` plus distribution-specific `downloadUrl` or `storeUrl`.
 
 ## Release Checklist
 
@@ -46,8 +72,9 @@ This runbook covers release rollout verification and rollback for the `apps/ota`
 2. Read the current KV pointers before changing anything.
 3. Overwrite the affected `latest:<product>:<channel>:<runtimeVersion>:<platform>` keys with the previous good `releaseVersion`.
 4. If the issue is a bad store policy release, overwrite `policy:<product>:<channel>` with the previous good store release record.
-5. Re-run the manual verification commands for `/manifest` and `/policy`.
-6. Correct the GitHub Release source of truth before the next sync.
+5. If the issue is a bad desktop distribution policy release, overwrite `policy:<product>:<channel>:<distribution>` with the previous good policy record.
+6. Re-run the manual verification commands for `/manifest` and `/policy`.
+7. Correct the GitHub Release source of truth before the next sync.
 
 ## Verified v1 Limitation
 
@@ -72,6 +99,7 @@ export OTA_PRODUCT="mobile"
 export OTA_CHANNEL="production"
 export OTA_RUNTIME_VERSION="0.4.1"
 export OTA_INSTALLED_BINARY_VERSION="0.4.1"
+export OTA_DESKTOP_PLATFORM="desktop/windows/exe"
 export OTA_RELEASE_VERSION="0.4.2"
 export OTA_SYNC_TOKEN_HEADER="x-ota-sync-token"
 export OTA_SYNC_TOKEN="<secret>"
@@ -135,6 +163,34 @@ curl --fail --silent --show-error \
 jq . /tmp/ota-policy.json
 ```
 
+Verify desktop `/manifest` for a direct Windows build:
+
+```bash
+curl --fail --silent --show-error \
+  -H "X-App-Platform: $OTA_DESKTOP_PLATFORM" \
+  -H "X-App-Version: 1.5.0" \
+  -H "X-App-Runtime-Version: 1.5.0" \
+  -H "X-App-Renderer-Version: 1.5.0" \
+  -H "X-App-Channel: stable" \
+  "$OTA_BASE_URL/manifest" \
+  | tee /tmp/desktop-ota-manifest.json
+
+jq . /tmp/desktop-ota-manifest.json
+```
+
+Verify desktop `/policy` for MAS:
+
+```bash
+curl --fail --silent --show-error \
+  -H "X-App-Platform: desktop/macos/mas" \
+  -H "X-App-Version: 1.5.0" \
+  -H "X-App-Channel: stable" \
+  "$OTA_BASE_URL/policy" \
+  | tee /tmp/desktop-ota-policy.json
+
+jq . /tmp/desktop-ota-policy.json
+```
+
 ## Manual Rollback Commands
 
 Inspect current pointers:
@@ -187,6 +243,8 @@ Run these from the repository root:
 ```bash
 pnpm --filter @follow/ota test
 pnpm --filter @follow/ota typecheck
+pnpm --dir apps/desktop/layer/main exec vitest run src/updater/api.test.ts src/updater/index.test.ts
+pnpm --dir apps/desktop/layer/main typecheck
 pnpm --filter @follow/mobile exec vitest run src/modules/ota/__tests__/client.test.ts src/modules/ota/__tests__/store.test.ts src/modules/ota/__tests__/provider.test.ts
 pnpm --filter @follow/mobile typecheck
 pnpm exec prettier --check .github/workflows/publish-ota.yml .github/workflows/tag.yml .github/scripts/trigger-ota-sync.mjs .github/scripts/trigger-ota-sync.test.ts

@@ -1,4 +1,4 @@
-import type { OtaPlatform, OtaRelease } from "./schema"
+import type { OtaPlatform, OtaProjectedPlatforms, OtaRelease } from "./schema"
 
 export function compareSemver(left: string, right: string) {
   const leftParts = left.split(".").map(Number)
@@ -18,8 +18,8 @@ export function selectLatestCompatibleRelease(
   releases: OtaRelease[],
   input: {
     product: OtaRelease["product"]
-    channel: OtaRelease["channel"]
-    runtimeVersion: OtaRelease["runtimeVersion"]
+    channel: string
+    runtimeVersion: string | null
     platform: OtaPlatform
   },
 ) {
@@ -29,7 +29,7 @@ export function selectLatestCompatibleRelease(
       .filter((release) => release.channel === input.channel)
       .filter((release) => release.releaseKind === "ota")
       .filter((release) => release.runtimeVersion === input.runtimeVersion)
-      .filter((release) => Boolean(release.platforms[input.platform]))
+      .filter((release) => Boolean((release.platforms as OtaProjectedPlatforms)[input.platform]))
       .sort((left, right) => compareSemver(right.releaseVersion, left.releaseVersion))[0] ?? null
   )
 }

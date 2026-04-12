@@ -98,8 +98,16 @@ jobs:
           git config --global user.email "github-actions[bot]@users.noreply.github.com"
 
       - name: Resolve desktop build version
-        id: desktop_build_version
         if: needs.create_tag.outputs.platform == 'desktop' && needs.create_tag.outputs.ref_name == 'main'
+        id: desktop_release_mode
+        env:
+          RELEASE_VERSION: ${{ needs.create_tag.outputs.version }}
+          RELEASE_CONFIG_PATH: apps/desktop/release.json
+        run: node .github/scripts/resolve-desktop-release-config.mjs
+
+      - name: Resolve desktop build version
+        id: desktop_build_version
+        if: needs.create_tag.outputs.platform == 'desktop' && needs.create_tag.outputs.ref_name == 'main' && steps.desktop_release_mode.outputs.triggerStoreBuilds == 'true'
         run: |
           git fetch --tags --force
           latest_tag="$(git tag -l 'desktop-build/v*' --sort=-v:refname | head -n 1)"
@@ -123,7 +131,7 @@ jobs:
           echo "Desktop build version: ${next_build}"
 
       - name: Trigger Desktop Tag Version Build
-        if: needs.create_tag.outputs.platform == 'desktop' && needs.create_tag.outputs.ref_name == 'main'
+        if: needs.create_tag.outputs.platform == 'desktop' && needs.create_tag.outputs.ref_name == 'main' && steps.desktop_release_mode.outputs.triggerDirectBuild == 'true'
         uses: actions/github-script@v9
         with:
           github-token: ${{ secrets.GITHUB_TOKEN }}
@@ -141,7 +149,7 @@ jobs:
             console.log('Desktop Tag Version build triggered successfully');
 
       - name: Trigger Desktop Store Build
-        if: needs.create_tag.outputs.platform == 'desktop' && needs.create_tag.outputs.ref_name == 'main'
+        if: needs.create_tag.outputs.platform == 'desktop' && needs.create_tag.outputs.ref_name == 'main' && steps.desktop_release_mode.outputs.triggerStoreBuilds == 'true'
         uses: actions/github-script@v9
         with:
           github-token: ${{ secrets.GITHUB_TOKEN }}

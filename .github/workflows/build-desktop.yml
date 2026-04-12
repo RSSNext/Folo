@@ -289,6 +289,47 @@ jobs:
             apps/desktop/out/make/**/latest-linux.yml
           retention-days: 90
 
+      - name: Prepare release assets for aggregation
+        if: env.RELEASE == 'true'
+        env:
+          DESKTOP_RELEASE_ASSET_DIR: ${{ runner.temp }}/desktop-release-assets
+        run: |
+          node --input-type=module <<'EOF'
+          import { cpSync, existsSync, mkdirSync, rmSync } from "node:fs"
+          import { join } from "node:path"
+
+          const stageDir = process.env.DESKTOP_RELEASE_ASSET_DIR
+
+          if (!stageDir) {
+            throw new Error("DESKTOP_RELEASE_ASSET_DIR is not set")
+          }
+
+          rmSync(stageDir, { recursive: true, force: true })
+          mkdirSync(join(stageDir, "apps", "desktop", "out"), { recursive: true })
+
+          const pathsToCopy = [
+            ["apps/desktop/out/make", join(stageDir, "apps", "desktop", "out", "make")],
+            ["apps/desktop/dist", join(stageDir, "apps", "desktop", "dist")],
+          ]
+
+          for (const [sourcePath, destinationPath] of pathsToCopy) {
+            if (!existsSync(sourcePath)) {
+              continue
+            }
+
+            cpSync(sourcePath, destinationPath, { recursive: true })
+          }
+          EOF
+
+      - name: Upload release assets for aggregation
+        if: env.RELEASE == 'true'
+        uses: actions/upload-artifact@v7
+        with:
+          name: desktop-release-assets-${{ runner.os }}
+          path: ${{ runner.temp }}/desktop-release-assets/apps
+          if-no-files-found: error
+          retention-days: 7
+
       - name: Generate artifact attestation
         if: env.RELEASE == 'true'
         continue-on-error: true
@@ -303,21 +344,68 @@ jobs:
             apps/desktop/dist/manifest.yml
             apps/desktop/dist/*.tar.gz
 
+  publish-release:
+    if: github.secret_source != 'None' && needs.release.result == 'success' && (github.event.inputs.tag_version == 'true' || github.ref_type == 'tag')
+    needs: release
+    runs-on: ubuntu-latest
+
+    permissions:
+      contents: write
+
+    steps:
+      - name: Check out Git repository Fully
+        uses: actions/checkout@v6
+        with:
+          fetch-depth: 0
+          lfs: true
+
+      - name: Setup pnpm
+        uses: pnpm/action-setup@v6
+
+      - name: Use Node.js
+        uses: actions/setup-node@v6
+        with:
+          node-version: 22
+          cache: "pnpm"
+
+      - name: Install dependencies
+        run: pnpm i
+
+      - name: Download release assets
+        uses: actions/download-artifact@v5
+        with:
+          pattern: desktop-release-assets-*
+          path: .
+          merge-multiple: true
+
+      - name: Ensure zstd
+        shell: bash
+        run: |
+          if command -v zstd >/dev/null 2>&1; then
+            zstd --version
+            exit 0
+          fi
+
+          sudo apt-get update
+          sudo apt-get install -y zstd
+
+      - name: Build desktop OTA release assets
+        env:
+          OTA_PRODUCT: desktop
+        run: node .github/scripts/build-ota-release.mjs
+
       - run: npx changelogithub
-        if: env.RELEASE == 'true'
         continue-on-error: true
         env:
           GITHUB_TOKEN: ${{ github.token }}
 
       - name: Setup Version
-        if: env.RELEASE == 'true'
         id: version
         uses: ./.github/actions/setup-version
         with:
           type: "desktop"
 
       - name: Prepare Release Notes
-        if: env.RELEASE == 'true'
         id: release_notes
         shell: bash
         run: |
@@ -337,8 +425,34 @@ jobs:
 
           echo "body_path=${release_notes_file}" >> "$GITHUB_OUTPUT"
 
+      - name: Prepare release files
+        id: release_files
+        shell: bash
+        run: |
+          release_files="$RUNNER_TEMP/desktop-release-files.txt"
+
+          cat <<'EOF' > "$release_files"
+          apps/desktop/out/make/**/Folo-*.dmg
+          apps/desktop/out/make/**/Folo-*.zip
+          apps/desktop/out/make/**/Folo-*.exe
+          apps/desktop/out/make/**/Folo-*.AppImage
+          apps/desktop/out/make/**/*.yml
+          apps/desktop/dist/manifest.yml
+          apps/desktop/dist/*.tar.gz
+          apps/desktop/dist/ota-release.json
+          EOF
+
+          if [ -f apps/desktop/dist.tar.zst ]; then
+            echo "apps/desktop/dist.tar.zst" >> "$release_files"
+          fi
+
+          {
+            echo "files<<EOF"
+            cat "$release_files"
+            echo "EOF"
+          } >> "$GITHUB_OUTPUT"
+
       - name: Create Release Draft
-        if: env.RELEASE == 'true'
         uses: softprops/action-gh-release@v2
         with:
           name: Desktop v${{ steps.version.outputs.APP_VERSION }}
@@ -346,11 +460,4 @@ jobs:
           prerelease: true
           tag_name: desktop/v${{ steps.version.outputs.APP_VERSION }}
           body_path: ${{ steps.release_notes.outputs.body_path }}
-          files: |
-            apps/desktop/out/make/**/Folo-*.dmg
-            apps/desktop/out/make/**/Folo-*.zip
-            apps/desktop/out/make/**/Folo-*.exe
-            apps/desktop/out/make/**/Folo-*.AppImage
-            apps/desktop/out/make/**/*.yml
-            apps/desktop/dist/manifest.yml
-            apps/desktop/dist/*.tar.gz
+          files: ${{ steps.release_files.outputs.files }}

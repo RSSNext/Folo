@@ -4,13 +4,14 @@ import { z } from "zod"
 import type { Env } from "../env"
 import { createExpoSignatureHeader, OtaCodeSigningError } from "../lib/code-signing"
 import { KV_KEYS } from "../lib/constants"
+import { buildDesktopManifestResponse, isDesktopRelease } from "../lib/desktop"
 import { getLatestReleasePointer } from "../lib/kv"
 import { buildManifest } from "../lib/manifest"
-import type { OtaPlatform, OtaRelease } from "../lib/schema"
+import { parseDesktopRequest } from "../lib/request"
+import type { OtaPlatform, OtaProjectedPlatforms, OtaRelease } from "../lib/schema"
 import { otaReleaseSchema } from "../lib/schema"
 
 const OTA_PLATFORMS: readonly OtaPlatform[] = ["ios", "android", "macos", "windows", "linux"]
-const OTA_PRODUCTS = ["mobile", "desktop"] as const
 const semverSchema = z.string().regex(/^\d+\.\d+\.\d+$/)
 const latestReleasePointerSchema = z.object({
   releaseVersion: semverSchema,
@@ -19,6 +20,88 @@ const latestReleasePointerSchema = z.object({
 export const manifestRoute = new Hono<{ Bindings: Env }>()
 
 manifestRoute.get("/manifest", async (c) => {
+  const desktopRequest = parseDesktopRequest(c)
+
+  if (desktopRequest.platformHeader) {
+    const { distribution } = desktopRequest
+
+    if (!desktopRequest.platform || !distribution) {
+      return c.json({ error: "Invalid x-app-platform header" }, 400)
+    }
+
+    if (
+      !desktopRequest.runtimeVersion ||
+      !semverSchema.safeParse(desktopRequest.runtimeVersion).success
+    ) {
+      return c.json({ error: "Invalid x-app-runtime-version header" }, 400)
+    }
+
+    if (!desktopRequest.channel) {
+      return c.json({ error: "Missing x-app-channel header" }, 400)
+    }
+
+    const pointerRecord = await getLatestReleasePointer(c.env.OTA_KV, {
+      product: "desktop",
+      channel: desktopRequest.channel,
+      runtimeVersion: desktopRequest.runtimeVersion,
+      platform: desktopRequest.platform,
+    })
+
+    if (!pointerRecord) {
+      return c.body(null, 204)
+    }
+
+    const parsedPointer = latestReleasePointerSchema.safeParse(pointerRecord)
+
+    if (!parsedPointer.success) {
+      return c.body(null, 204)
+    }
+
+    const releaseRecord = await c.env.OTA_KV.get(
+      KV_KEYS.release("desktop", parsedPointer.data.releaseVersion),
+      "json",
+    )
+
+    if (!releaseRecord) {
+      return c.body(null, 204)
+    }
+
+    const parsedRelease = otaReleaseSchema.safeParse(releaseRecord)
+
+    if (!parsedRelease.success || !isDesktopRelease(parsedRelease.data)) {
+      return c.body(null, 204)
+    }
+
+    const release = parsedRelease.data
+
+    if (
+      release.releaseKind !== "ota" ||
+      release.channel !== desktopRequest.channel ||
+      release.releaseVersion !== parsedPointer.data.releaseVersion ||
+      release.runtimeVersion !== desktopRequest.runtimeVersion
+    ) {
+      return c.body(null, 204)
+    }
+
+    const payload = buildDesktopManifestResponse(release, {
+      origin: new URL(c.req.url).origin,
+      platform: desktopRequest.platform,
+      distribution,
+      installedBinaryVersion: desktopRequest.installedBinaryVersion,
+      rendererVersion: desktopRequest.rendererVersion,
+    })
+
+    if (!payload) {
+      return c.body(null, 204)
+    }
+
+    return c.json(payload, 200, {
+      "cache-control": "private, max-age=0",
+      "content-type": "application/json; charset=utf-8",
+      vary: "x-app-platform, x-app-version, x-app-runtime-version, x-app-renderer-version, x-app-channel",
+    })
+  }
+
   const platformHeader = c.req.header("expo-platform")
   const platform = parsePlatform(platformHeader)
   const runtimeVersion = c.req.header("expo-runtime-version")
@@ -86,7 +169,7 @@ manifestRoute.get("/manifest", async (c) => {
     release.channel !== channel ||
     release.releaseVersion !== pointer.releaseVersion ||
     release.runtimeVersion !== runtimeVersion ||
-    !release.platforms[platform]
+    !(release.platforms as OtaProjectedPlatforms)[platform]
   ) {
     return c.body(null, 204)
   }
@@ -142,5 +225,5 @@ function parseProduct(value: string | undefined): OtaRelease["product"] | null {
     return "mobile"
   }
 
-  return OTA_PRODUCTS.find((product) => product === value) ?? null
+  return value === "mobile" ? "mobile" : null
 }

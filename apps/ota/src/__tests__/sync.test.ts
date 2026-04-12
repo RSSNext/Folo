@@ -8,7 +8,8 @@ import { KV_KEYS } from "../lib/constants"
 import type { GitHubRequestError } from "../lib/github"
 import { listPublishedOtaReleases } from "../lib/github"
 import { IMMUTABLE_ASSET_CACHE_CONTROL, putMirroredFiles } from "../lib/r2"
-import type { OtaRelease } from "../lib/schema"
+import type { DesktopOtaRelease, MobileOtaRelease, OtaRelease } from "../lib/schema"
+import { otaReleaseSchema } from "../lib/schema"
 import { mirrorReleaseToStorage, syncGitHubReleases } from "../lib/sync"
 
 vi.mock("fzstd", () => {
@@ -700,6 +701,392 @@ describe("syncGitHubReleases", () => {
     expect(kvEntries.get(KV_KEYS.release("mobile", "0.4.3"))).toBe(JSON.stringify(storeRelease))
   })
 
+  it("writes distribution-aware policy keys for desktop binary metadata", async () => {
+    const kvEntries = new Map<string, unknown>()
+    const binaryRelease = createDesktopReleaseMetadata({
+      releaseKind: "binary",
+      runtimeVersion: null,
+      desktop: {
+        renderer: null,
+        app: null,
+      },
+      policy: {
+        required: true,
+        minSupportedBinaryVersion: "1.5.0",
+        message: "Install the latest desktop app.",
+        distributions: {
+          direct: {
+            downloadUrl: "https://ota.folo.is/Folo-1.5.1.dmg",
+          },
+          mas: {
+            storeUrl: "https://apps.apple.com/app/id123456789",
+          },
+          mss: {
+            storeUrl: "ms-windows-store://pdp/?ProductId=9NBLGGH12345",
+          },
+        },
+      },
+    })
+
+    vi.stubGlobal(
+      "fetch",
+      vi.fn(async (input: string | URL | Request) => {
+        const url = String(input)
+
+        if (url === "https://api.github.com/repos/RSSNext/Folo/releases") {
+          return new Response(
+            JSON.stringify([
+              createGitHubReleaseAssetSet(
+                "desktop/v1.5.1",
+                "https://example.com/desktop-binary.json",
+                null,
+              ),
+            ]),
+            { status: 200 },
+          )
+        }
+
+        if (url === "https://example.com/desktop-binary.json") {
+          return new Response(JSON.stringify(binaryRelease), {
+            headers: {
+              "Content-Type": "application/json",
+            },
+          })
+        }
+
+        throw new Error(`Unhandled fetch URL: ${url}`)
+      }),
+    )
+
+    await syncGitHubReleases(
+      createEnv({
+        kvEntries,
+        envOverrides: {
+          GITHUB_OWNER: "RSSNext",
+          GITHUB_REPO: "Folo",
+          GITHUB_TOKEN: "token",
+        },
+      }),
+    )
+
+    expect(kvEntries.get(KV_KEYS.release("desktop", "1.5.1"))).toBe(JSON.stringify(binaryRelease))
+    expect(kvEntries.get(KV_KEYS.policy("desktop", "stable"))).toEqual(expect.any(String))
+    expect(kvEntries.get(KV_KEYS.policy("desktop", "stable", "direct"))).toEqual(expect.any(String))
+    expect(kvEntries.get(KV_KEYS.policy("desktop", "stable", "mas"))).toEqual(expect.any(String))
+    expect(kvEntries.get(KV_KEYS.policy("desktop", "stable", "mss"))).toEqual(expect.any(String))
+
+    expect(
+      JSON.parse(String(kvEntries.get(KV_KEYS.policy("desktop", "stable", "direct")))),
+    ).toEqual(
+      expect.objectContaining({
+        distribution: "direct",
+        downloadUrl: "https://ota.folo.is/Folo-1.5.1.dmg",
+        storeUrl: null,
+      }),
+    )
+    expect(JSON.parse(String(kvEntries.get(KV_KEYS.policy("desktop", "stable", "mas"))))).toEqual(
+      expect.objectContaining({
+        distribution: "mas",
+        downloadUrl: null,
+        storeUrl: "https://apps.apple.com/app/id123456789",
+      }),
+    )
+  })
+
+  it("clears stale desktop distribution policy keys that disappear from a newer binary release", async () => {
+    const kvEntries = new Map<string, unknown>([
+      [
+        KV_KEYS.policy("desktop", "stable", "mas"),
+        JSON.stringify({
+          releaseVersion: "1.5.0",
+          required: false,
+          minSupportedBinaryVersion: "1.5.0",
+          message: "Old store policy.",
+          publishedAt: "2026-04-11T09:00:00Z",
+          distribution: "mas",
+          downloadUrl: null,
+          storeUrl: "https://apps.apple.com/app/id123456789",
+        }),
+      ],
+    ])
+
+    const binaryRelease = createDesktopReleaseMetadata({
+      releaseKind: "binary",
+      runtimeVersion: null,
+      desktop: {
+        renderer: null,
+        app: null,
+      },
+      policy: {
+        required: false,
+        minSupportedBinaryVersion: "1.5.0",
+        message: "Use the latest direct installer.",
+        distributions: {
+          direct: {
+            downloadUrl: "https://ota.folo.is/Folo-1.5.1.dmg",
+          },
+        },
+      },
+    })
+
+    vi.stubGlobal(
+      "fetch",
+      vi.fn(async (input: string | URL | Request) => {
+        const url = String(input)
+
+        if (url === "https://api.github.com/repos/RSSNext/Folo/releases") {
+          return new Response(
+            JSON.stringify([
+              createGitHubReleaseAssetSet(
+                "desktop/v1.5.1",
+                "https://example.com/desktop-binary.json",
+                null,
+              ),
+            ]),
+            { status: 200 },
+          )
+        }
+
+        if (url === "https://example.com/desktop-binary.json") {
+          return new Response(JSON.stringify(binaryRelease), {
+            headers: {
+              "Content-Type": "application/json",
+            },
+          })
+        }
+
+        throw new Error(`Unhandled fetch URL: ${url}`)
+      }),
+    )
+
+    await syncGitHubReleases(
+      createEnv({
+        kvEntries,
+        envOverrides: {
+          GITHUB_OWNER: "RSSNext",
+          GITHUB_REPO: "Folo",
+          GITHUB_TOKEN: "token",
+        },
+      }),
+    )
+
+    expect(kvEntries.get(KV_KEYS.policy("desktop", "stable", "direct"))).toEqual(expect.any(String))
+    expect(kvEntries.has(KV_KEYS.policy("desktop", "stable", "mas"))).toBe(false)
+  })
+
+  it("does not delete newer desktop distribution policy keys when an older binary release syncs later", async () => {
+    const kvEntries = new Map<string, unknown>([
+      [
+        KV_KEYS.policy("desktop", "stable", "mas"),
+        JSON.stringify({
+          releaseVersion: "1.5.2",
+          required: false,
+          minSupportedBinaryVersion: "1.5.0",
+          message: "Newer store policy.",
+          publishedAt: "2026-04-11T10:00:00Z",
+          distribution: "mas",
+          downloadUrl: null,
+          storeUrl: "https://apps.apple.com/app/id123456789",
+        }),
+      ],
+    ])
+
+    const olderBinaryRelease = createDesktopReleaseMetadata({
+      releaseVersion: "1.5.1",
+      releaseKind: "binary",
+      runtimeVersion: null,
+      desktop: {
+        renderer: null,
+        app: null,
+      },
+      policy: {
+        required: false,
+        minSupportedBinaryVersion: "1.5.0",
+        message: "Older direct installer policy.",
+        distributions: {
+          direct: {
+            downloadUrl: "https://ota.folo.is/Folo-1.5.1.dmg",
+          },
+        },
+      },
+    })
+
+    vi.stubGlobal(
+      "fetch",
+      vi.fn(async (input: string | URL | Request) => {
+        const url = String(input)
+
+        if (url === "https://api.github.com/repos/RSSNext/Folo/releases") {
+          return new Response(
+            JSON.stringify([
+              createGitHubReleaseAssetSet(
+                "desktop/v1.5.1",
+                "https://example.com/desktop-older-binary.json",
+                null,
+              ),
+            ]),
+            { status: 200 },
+          )
+        }
+
+        if (url === "https://example.com/desktop-older-binary.json") {
+          return new Response(JSON.stringify(olderBinaryRelease), {
+            headers: {
+              "Content-Type": "application/json",
+            },
+          })
+        }
+
+        throw new Error(`Unhandled fetch URL: ${url}`)
+      }),
+    )
+
+    await syncGitHubReleases(
+      createEnv({
+        kvEntries,
+        envOverrides: {
+          GITHUB_OWNER: "RSSNext",
+          GITHUB_REPO: "Folo",
+          GITHUB_TOKEN: "token",
+        },
+      }),
+    )
+
+    expect(JSON.parse(String(kvEntries.get(KV_KEYS.policy("desktop", "stable", "mas"))))).toEqual(
+      expect.objectContaining({
+        releaseVersion: "1.5.2",
+        distribution: "mas",
+      }),
+    )
+  })
+
+  it("mirrors only desktop renderer archives and writes latest pointers for desktop ota", async () => {
+    const kvEntries = new Map<string, unknown>()
+    const bucketEntries = new Map<string, { body: Uint8Array; headers?: Record<string, string> }>()
+    const rendererBundle = textEncoder.encode("desktop renderer bundle")
+    const desktopOtaRelease = createDesktopReleaseMetadata({
+      releaseKind: "ota",
+      runtimeVersion: "1.5.0",
+      desktop: {
+        renderer: {
+          version: "1.5.1",
+          commit: "abcdef1234567890",
+          manifest: {
+            name: "manifest.yml",
+            downloadUrl:
+              "https://github.com/RSSNext/Folo/releases/download/desktop/v1.5.1/manifest.yml",
+          },
+          launchAsset: {
+            path: "renderer/custom-renderer.tar.gz",
+            sha256: await sha256Hex(rendererBundle),
+            contentType: "application/gzip",
+          },
+          assets: [],
+        },
+        app: {
+          platforms: {
+            windows: {
+              platform: "windows-x64",
+              releaseDate: "2026-04-11T10:00:00Z",
+              manifest: {
+                name: "latest.yml",
+                path: "latest.yml",
+                downloadUrl:
+                  "https://github.com/RSSNext/Folo/releases/download/desktop/v1.5.1/latest.yml",
+              },
+              files: [
+                {
+                  filename: "Folo-1.5.1-windows-x64.exe",
+                  sha512: "d".repeat(88),
+                  size: 654321,
+                  downloadUrl:
+                    "https://github.com/RSSNext/Folo/releases/download/desktop/v1.5.1/Folo-1.5.1-windows-x64.exe",
+                },
+              ],
+            },
+          },
+        },
+      },
+    })
+    const desktopArchive = await createTarArchive([
+      {
+        name: "renderer/custom-renderer.tar.gz",
+        body: rendererBundle,
+      },
+    ])
+
+    vi.stubGlobal(
+      "fetch",
+      vi.fn(async (input: string | URL | Request) => {
+        const url = String(input)
+
+        if (url === "https://api.github.com/repos/RSSNext/Folo/releases") {
+          return new Response(
+            JSON.stringify([
+              createGitHubReleaseAssetSet(
+                "desktop/v1.5.1",
+                "https://example.com/desktop-ota.json",
+                "https://example.com/desktop-ota.tar.zst",
+              ),
+            ]),
+            { status: 200 },
+          )
+        }
+
+        if (url === "https://example.com/desktop-ota.json") {
+          return new Response(JSON.stringify(desktopOtaRelease), {
+            headers: {
+              "Content-Type": "application/json",
+            },
+          })
+        }
+
+        if (url === "https://example.com/desktop-ota.tar.zst") {
+          const archivePayload = new Uint8Array(desktopArchive.byteLength)
+          archivePayload.set(desktopArchive)
+          return new Response(archivePayload.buffer)
+        }
+
+        throw new Error(`Unhandled fetch URL: ${url}`)
+      }),
+    )
+
+    await syncGitHubReleases(
+      createEnv({
+        kvEntries,
+        bucketEntries,
+        envOverrides: {
+          GITHUB_OWNER: "RSSNext",
+          GITHUB_REPO: "Folo",
+          GITHUB_TOKEN: "token",
+        },
+      }),
+    )
+
+    expect(kvEntries.get(KV_KEYS.release("desktop", "1.5.1"))).toBe(
+      JSON.stringify(desktopOtaRelease),
+    )
+    expect(kvEntries.get(KV_KEYS.latest("desktop", "stable", "1.5.0", "macos"))).toBe(
+      JSON.stringify({ releaseVersion: "1.5.1" }),
+    )
+    expect(kvEntries.get(KV_KEYS.latest("desktop", "stable", "1.5.0", "windows"))).toBe(
+      JSON.stringify({ releaseVersion: "1.5.1" }),
+    )
+    expect(kvEntries.get(KV_KEYS.latest("desktop", "stable", "1.5.0", "linux"))).toBe(
+      JSON.stringify({ releaseVersion: "1.5.1" }),
+    )
+    expect(
+      bucketEntries.has("desktop/stable/1.5.0/1.5.1/macos/renderer/custom-renderer.tar.gz"),
+    ).toBe(true)
+    expect(
+      bucketEntries.has("desktop/stable/1.5.0/1.5.1/windows/renderer/custom-renderer.tar.gz"),
+    ).toBe(true)
+    expect(
+      bucketEntries.has("desktop/stable/1.5.0/1.5.1/linux/renderer/custom-renderer.tar.gz"),
+    ).toBe(true)
+    expect(bucketEntries.has("desktop/stable/1.5.0/1.5.1/windows/latest.yml")).toBe(false)
+  })
+
   it("downloads private release assets through authenticated GitHub asset API requests", async () => {
     const kvEntries = new Map<string, unknown>()
     const bucketEntries = new Map<string, { body: Uint8Array; headers?: Record<string, string> }>()
@@ -1266,6 +1653,9 @@ function createKvNamespace(entries = new Map<string, unknown>()): KVNamespace {
     put: vi.fn(async (key: string, value: string) => {
       entries.set(key, value)
     }),
+    delete: vi.fn(async (key: string) => {
+      entries.delete(key)
+    }),
   } as unknown as KVNamespace
 }
 
@@ -1326,7 +1716,9 @@ function createExecutionContext(): ExecutionContext {
   } as unknown as ExecutionContext
 }
 
-async function createReleaseMetadata(overrides: Partial<OtaRelease> = {}): Promise<OtaRelease> {
+async function createReleaseMetadata(
+  overrides: Partial<MobileOtaRelease> = {},
+): Promise<MobileOtaRelease> {
   return {
     schemaVersion: 1,
     product: "mobile",
@@ -1356,6 +1748,75 @@ async function createReleaseMetadata(overrides: Partial<OtaRelease> = {}): Promi
     },
     ...overrides,
   }
+}
+
+function createDesktopReleaseMetadata(
+  overrides: Partial<DesktopOtaRelease> = {},
+): DesktopOtaRelease {
+  return otaReleaseSchema.parse({
+    schemaVersion: 2,
+    product: "desktop",
+    channel: "stable",
+    releaseVersion: "1.5.1",
+    releaseKind: "ota",
+    runtimeVersion: "1.5.0",
+    publishedAt: "2026-04-11T10:00:00Z",
+    git: {
+      tag: "desktop/v1.5.1",
+      commit: "abcdef1234567890",
+    },
+    policy: {
+      required: false,
+      minSupportedBinaryVersion: "1.5.0",
+      message: null,
+      distributions: {
+        direct: {
+          downloadUrl: "https://ota.folo.is/Folo-1.5.1.dmg",
+        },
+      },
+    },
+    desktop: {
+      renderer: {
+        version: "1.5.1",
+        commit: "abcdef1234567890",
+        manifest: {
+          name: "manifest.yml",
+          downloadUrl:
+            "https://github.com/RSSNext/Folo/releases/download/desktop/v1.5.1/manifest.yml",
+        },
+        launchAsset: {
+          path: "renderer/custom-renderer.tar.gz",
+          sha256: "a".repeat(64),
+          contentType: "application/gzip",
+        },
+        assets: [],
+      },
+      app: {
+        platforms: {
+          windows: {
+            platform: "windows-x64",
+            releaseDate: "2026-04-11T10:00:00Z",
+            manifest: {
+              name: "latest.yml",
+              path: "latest.yml",
+              downloadUrl:
+                "https://github.com/RSSNext/Folo/releases/download/desktop/v1.5.1/latest.yml",
+            },
+            files: [
+              {
+                filename: "Folo-1.5.1-windows-x64.exe",
+                sha512: "d".repeat(88),
+                size: 654321,
+                downloadUrl:
+                  "https://github.com/RSSNext/Folo/releases/download/desktop/v1.5.1/Folo-1.5.1-windows-x64.exe",
+              },
+            ],
+          },
+        },
+      },
+    },
+    ...overrides,
+  }) as DesktopOtaRelease
 }
 
 function createGitHubReleaseAssetSet(

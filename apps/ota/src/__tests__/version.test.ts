@@ -1,6 +1,6 @@
 import { describe, expect, it } from "vitest"
 
-import type { OtaRelease } from "../lib/schema"
+import type { MobileOtaRelease } from "../lib/schema"
 import { compareSemver, selectLatestCompatibleRelease } from "../lib/version"
 
 function createPlatform(path: string, sha256Seed: string) {
@@ -14,7 +14,7 @@ function createPlatform(path: string, sha256Seed: string) {
   }
 }
 
-function createRelease(overrides: Partial<OtaRelease> = {}): OtaRelease {
+function createRelease(overrides: Partial<MobileOtaRelease> = {}): MobileOtaRelease {
   return {
     schemaVersion: 1,
     product: "mobile",

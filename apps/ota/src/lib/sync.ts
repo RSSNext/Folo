@@ -3,10 +3,10 @@ import type { MirroredFile } from "./archive"
 import { buildMirroredAssetKey, extractMirroredFiles } from "./archive"
 import { KV_KEYS } from "./constants"
 import { listPublishedOtaReleases } from "./github"
-import type { LatestReleasePointerRecord } from "./kv"
-import { putReleaseRecord } from "./kv"
+import type { BinaryPolicyRecord, LatestReleasePointerRecord } from "./kv"
+import { putBinaryPolicyRecord, putReleaseRecord } from "./kv"
 import { putMirroredFiles } from "./r2"
-import type { OtaPlatform, OtaRelease } from "./schema"
+import type { DesktopDistribution, OtaPlatform, OtaProjectedPlatforms, OtaRelease } from "./schema"
 import { otaReleaseSchema } from "./schema"
 import { compareSemver } from "./version"
 
@@ -141,7 +141,8 @@ function hasCompleteMirroredPayload(
   platform: OtaPlatform,
   mirroredFileKeys: ReadonlySet<string>,
 ) {
-  const platformPayload = release.platforms[platform]
+  const platforms = release.platforms as OtaProjectedPlatforms
+  const platformPayload = platforms[platform]
 
   if (!platformPayload) {
     return false
@@ -157,6 +158,11 @@ function hasCompleteMirroredPayload(
 }
 
 async function putLatestPolicyRecord(kv: KVNamespace, release: OtaRelease) {
+  if (release.product === "desktop") {
+    await putDesktopPolicyRecords(kv, release)
+    return
+  }
+
   const existingPolicyRecord = await kv.get<OtaRelease>(
     KV_KEYS.policy(release.product, release.channel),
     "json",
@@ -167,6 +173,88 @@ async function putLatestPolicyRecord(kv: KVNamespace, release: OtaRelease) {
   }
 
   await kv.put(KV_KEYS.policy(release.product, release.channel), JSON.stringify(release))
+}
+
+async function putDesktopPolicyRecords(kv: KVNamespace, release: OtaRelease) {
+  if (release.product !== "desktop" || release.releaseKind !== "binary") {
+    return
+  }
+
+  const genericRecord: BinaryPolicyRecord = {
+    releaseVersion: release.releaseVersion,
+    required: release.policy.required,
+    minSupportedBinaryVersion: release.policy.minSupportedBinaryVersion,
+    message: release.policy.message,
+    publishedAt: release.publishedAt,
+    distribution: null,
+    downloadUrl: null,
+    storeUrl: null,
+  }
+
+  const existingGenericRecord = await kv.get<BinaryPolicyRecord>(
+    KV_KEYS.policy(release.product, release.channel),
+    "json",
+  )
+
+  if (shouldPersistReleaseVersion(existingGenericRecord?.releaseVersion, release.releaseVersion)) {
+    await putBinaryPolicyRecord(kv, {
+      product: release.product,
+      channel: release.channel,
+      value: genericRecord,
+    })
+  }
+
+  for (const distribution of Object.keys(release.policy.distributions) as DesktopDistribution[]) {
+    const value = release.policy.distributions[distribution]
+    if (!value) {
+      continue
+    }
+    const policyRecord: BinaryPolicyRecord = {
+      releaseVersion: release.releaseVersion,
+      required: release.policy.required,
+      minSupportedBinaryVersion: release.policy.minSupportedBinaryVersion,
+      message: release.policy.message,
+      publishedAt: release.publishedAt,
+      distribution,
+      downloadUrl: value.downloadUrl ?? null,
+      storeUrl: value.storeUrl ?? null,
+    }
+
+    const existingRecord = await kv.get<BinaryPolicyRecord>(
+      KV_KEYS.policy(release.product, release.channel, distribution),
+      "json",
+    )
+
+    if (!shouldPersistReleaseVersion(existingRecord?.releaseVersion, release.releaseVersion)) {
+      continue
+    }
+
+    await putBinaryPolicyRecord(kv, {
+      product: release.product,
+      channel: release.channel,
+      distribution,
+      value: policyRecord,
+    })
+  }
+
+  const knownDistributions: DesktopDistribution[] = ["direct", "mas", "mss"]
+
+  for (const distribution of knownDistributions) {
+    if (distribution in release.policy.distributions) {
+      continue
+    }
+
+    const existingRecord = await kv.get<BinaryPolicyRecord>(
+      KV_KEYS.policy(release.product, release.channel, distribution),
+      "json",
+    )
+
+    if (!shouldPersistReleaseVersion(existingRecord?.releaseVersion, release.releaseVersion)) {
+      continue
+    }
+
+    await kv.delete(KV_KEYS.policy(release.product, release.channel, distribution))
+  }
 }
 
 async function fetchReleaseMetadata(

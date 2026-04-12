@@ -6,7 +6,7 @@ import type { Env } from "../env"
 import otaWorker from "../index"
 import { KV_KEYS } from "../lib/constants"
 import { buildManifest } from "../lib/manifest"
-import type { OtaRelease } from "../lib/schema"
+import type { DesktopOtaRelease, MobileOtaRelease } from "../lib/schema"
 
 const textEncoder = new TextEncoder()
 
@@ -43,7 +43,7 @@ describe("buildManifest", () => {
             ],
           },
         },
-      } satisfies OtaRelease,
+      } satisfies MobileOtaRelease,
       {
         origin: "https://ota.folo.is",
         platform: "ios",
@@ -62,6 +62,28 @@ describe("buildManifest", () => {
     expect(manifest.assets[0]?.key).toBe("one")
     expect(manifest.assets[0]?.hash).toBe("u7u7u7u7u7u7u7u7u7u7u7u7u7u7u7u7u7u7u7u7u7s")
     expect(manifest.assets[0]?.fileExtension).toBe(".png")
+  })
+
+  it("uses a deterministic id when updateId is absent", () => {
+    const release = {
+      ...createRelease({
+        product: "mobile",
+        git: { tag: "mobile/v0.4.2", commit: "abcdef1234567890" },
+      }),
+    }
+
+    delete (release as Partial<MobileOtaRelease>).updateId
+
+    const first = buildManifest(release, {
+      origin: "https://ota.folo.is",
+      platform: "ios",
+    })
+    const second = buildManifest(release, {
+      origin: "https://ota.folo.is",
+      platform: "ios",
+    })
+
+    expect(first.id).toBe(second.id)
   })
 })
 
@@ -101,6 +123,20 @@ describe("/manifest", () => {
     expect(response.status).toBe(400)
     await expect(response.json()).resolves.toEqual({
       error: "Invalid expo-runtime-version header",
+    })
+  })
+
+  it("rejects legacy query-based desktop manifest requests", async () => {
+    const response = await fetchWorker("/manifest?product=desktop", {
+      headers: {
+        "expo-platform": "ios",
+        "expo-runtime-version": "0.4.1",
+      },
+    })
+
+    expect(response.status).toBe(400)
+    await expect(response.json()).resolves.toEqual({
+      error: "Invalid product query parameter",
     })
   })
 
@@ -246,6 +282,107 @@ describe("/manifest", () => {
       error: "OTA code signing is not configured",
     })
   })
+
+  it("returns renderer and app payloads for desktop direct builds", async () => {
+    const response = await fetchWorker(
+      "/manifest",
+      {
+        headers: {
+          "x-app-platform": "desktop/windows/exe",
+          "x-app-version": "1.5.0",
+          "x-app-runtime-version": "1.5.0",
+          "x-app-renderer-version": "1.5.0",
+          "x-app-channel": "stable",
+        },
+      },
+      {
+        kvEntries: new Map<string, unknown>([
+          [KV_KEYS.latest("desktop", "stable", "1.5.0", "windows"), { releaseVersion: "1.5.1" }],
+          [KV_KEYS.release("desktop", "1.5.1"), createDesktopRelease()],
+        ]),
+      },
+    )
+
+    expect(response.status).toBe(200)
+    await expect(response.json()).resolves.toMatchObject({
+      product: "desktop",
+      channel: "stable",
+      runtimeVersion: "1.5.0",
+      renderer: {
+        releaseVersion: "1.5.1",
+        version: "1.5.1",
+        commit: "abcdef1234567890",
+      },
+      app: {
+        platform: "windows-x64",
+        version: "1.5.1",
+        manifest: {
+          name: "latest.yml",
+        },
+      },
+    })
+  })
+
+  it("returns only renderer for desktop store distributions", async () => {
+    const response = await fetchWorker(
+      "/manifest",
+      {
+        headers: {
+          "x-app-platform": "desktop/macos/mas",
+          "x-app-version": "1.5.0",
+          "x-app-runtime-version": "1.5.0",
+          "x-app-renderer-version": "1.5.0",
+          "x-app-channel": "stable",
+        },
+      },
+      {
+        kvEntries: new Map<string, unknown>([
+          [KV_KEYS.latest("desktop", "stable", "1.5.0", "macos"), { releaseVersion: "1.5.1" }],
+          [KV_KEYS.release("desktop", "1.5.1"), createDesktopRelease()],
+        ]),
+      },
+    )
+
+    expect(response.status).toBe(200)
+    await expect(response.json()).resolves.toMatchObject({
+      product: "desktop",
+      renderer: {
+        releaseVersion: "1.5.1",
+        version: "1.5.1",
+      },
+      app: null,
+    })
+  })
+
+  it("never returns a direct app payload for desktop mss distributions", async () => {
+    const response = await fetchWorker(
+      "/manifest",
+      {
+        headers: {
+          "x-app-platform": "desktop/windows/ms",
+          "x-app-version": "1.5.0",
+          "x-app-runtime-version": "1.5.0",
+          "x-app-renderer-version": "1.5.0",
+          "x-app-channel": "stable",
+        },
+      },
+      {
+        kvEntries: new Map<string, unknown>([
+          [KV_KEYS.latest("desktop", "stable", "1.5.0", "windows"), { releaseVersion: "1.5.1" }],
+          [KV_KEYS.release("desktop", "1.5.1"), createDesktopRelease()],
+        ]),
+      },
+    )
+
+    expect(response.status).toBe(200)
+    await expect(response.json()).resolves.toMatchObject({
+      product: "desktop",
+      renderer: {
+        version: "1.5.1",
+      },
+      app: null,
+    })
+  })
 })
 
 describe("/assets/*", () => {
@@ -303,7 +440,7 @@ describe("/policy", () => {
   })
 })
 
-function createRelease(overrides: Partial<OtaRelease> = {}): OtaRelease {
+function createRelease(overrides: Partial<MobileOtaRelease> = {}): MobileOtaRelease {
   return {
     schemaVersion: 1,
     product: "mobile",
@@ -339,6 +476,117 @@ function createRelease(overrides: Partial<OtaRelease> = {}): OtaRelease {
     },
     ...overrides,
   }
+}
+
+function createDesktopRelease(overrides: Partial<DesktopOtaRelease> = {}): DesktopOtaRelease {
+  return {
+    schemaVersion: 2,
+    product: "desktop",
+    channel: "stable",
+    releaseVersion: "1.5.1",
+    releaseKind: "ota",
+    runtimeVersion: "1.5.0",
+    publishedAt: "2026-04-11T10:00:00Z",
+    git: {
+      tag: "desktop/v1.5.1",
+      commit: "abcdef1234567890",
+    },
+    policy: {
+      required: false,
+      minSupportedBinaryVersion: "1.5.0",
+      message: null,
+      distributions: {
+        direct: {
+          downloadUrl: "https://ota.folo.is/Folo-1.5.1.exe",
+        },
+        mas: {
+          storeUrl: "https://apps.apple.com/app/id123456789",
+        },
+        mss: {
+          storeUrl: "ms-windows-store://pdp/?ProductId=9NBLGGH12345",
+        },
+      },
+    },
+    desktop: {
+      renderer: {
+        version: "1.5.1",
+        commit: "abcdef1234567890",
+        manifest: {
+          name: "manifest.yml",
+          downloadUrl:
+            "https://github.com/RSSNext/Folo/releases/download/desktop/v1.5.1/manifest.yml",
+        },
+        launchAsset: {
+          path: "renderer/custom-renderer.tar.gz",
+          sha256: "a".repeat(64),
+          contentType: "application/gzip",
+        },
+        assets: [],
+      },
+      app: {
+        platforms: {
+          macos: {
+            platform: "darwin",
+            releaseDate: "2026-04-11T10:00:00Z",
+            manifest: {
+              name: "latest-mac.yml",
+              path: "latest-mac.yml",
+              downloadUrl:
+                "https://github.com/RSSNext/Folo/releases/download/desktop/v1.5.1/latest-mac.yml",
+            },
+            files: [
+              {
+                filename: "Folo-1.5.1-mac.zip",
+                sha512: "c".repeat(88),
+                size: 543210,
+                downloadUrl:
+                  "https://github.com/RSSNext/Folo/releases/download/desktop/v1.5.1/Folo-1.5.1-mac.zip",
+              },
+            ],
+          },
+          windows: {
+            platform: "windows-x64",
+            releaseDate: "2026-04-11T10:00:00Z",
+            manifest: {
+              name: "latest.yml",
+              path: "latest.yml",
+              downloadUrl:
+                "https://github.com/RSSNext/Folo/releases/download/desktop/v1.5.1/latest.yml",
+            },
+            files: [
+              {
+                filename: "Folo-1.5.1-windows-x64.exe",
+                sha512: "d".repeat(88),
+                size: 654321,
+                downloadUrl:
+                  "https://github.com/RSSNext/Folo/releases/download/desktop/v1.5.1/Folo-1.5.1-windows-x64.exe",
+              },
+            ],
+          },
+          linux: {
+            platform: "linux-x64",
+            releaseDate: "2026-04-11T10:00:00Z",
+            manifest: {
+              name: "latest-linux.yml",
+              path: "latest-linux.yml",
+              downloadUrl:
+                "https://github.com/RSSNext/Folo/releases/download/desktop/v1.5.1/latest-linux.yml",
+            },
+            files: [
+              {
+                filename: "Folo-1.5.1.AppImage",
+                sha512: "e".repeat(88),
+                size: 765432,
+                downloadUrl:
+                  "https://github.com/RSSNext/Folo/releases/download/desktop/v1.5.1/Folo-1.5.1.AppImage",
+              },
+            ],
+          },
+        },
+      },
+    },
+    ...overrides,
+  } as DesktopOtaRelease
 }
 
 async function fetchWorker(

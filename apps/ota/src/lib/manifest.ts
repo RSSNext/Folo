@@ -1,7 +1,9 @@
-import { buildMirroredAssetKey } from "./archive"
-import type { OtaPlatform, OtaRelease } from "./schema"
+import { createHash } from "node:crypto"
 
-type PlatformPayload = NonNullable<OtaRelease["platforms"][OtaPlatform]>
+import { buildMirroredAssetKey } from "./archive"
+import type { OtaPlatform, OtaPlatformPayload, OtaProjectedPlatforms, OtaRelease } from "./schema"
+
+type PlatformPayload = OtaPlatformPayload
 type PlatformAsset = PlatformPayload["launchAsset"] | PlatformPayload["assets"][number]
 
 export interface ManifestAsset {
@@ -34,7 +36,8 @@ export function buildManifest(
     platform: OtaPlatform
   },
 ): OtaManifest {
-  const platformPayload = release.platforms[input.platform]
+  const platforms = release.platforms as OtaProjectedPlatforms
+  const platformPayload = platforms[input.platform]
 
   if (!platformPayload) {
     throw new Error(
@@ -43,16 +46,16 @@ export function buildManifest(
   }
 
   return {
-    id: release.updateId ?? crypto.randomUUID(),
+    id: resolveManifestId(release, input.platform),
     createdAt: release.publishedAt,
-    runtimeVersion: release.runtimeVersion,
+    runtimeVersion: release.runtimeVersion ?? release.releaseVersion,
     launchAsset: toManifestAsset(
       release,
       input.origin,
       input.platform,
       platformPayload.launchAsset,
     ),
-    assets: platformPayload.assets.map((asset) =>
+    assets: platformPayload.assets.map((asset: PlatformAsset) =>
       toManifestAsset(release, input.origin, input.platform, asset),
     ),
     metadata: {
@@ -63,6 +66,16 @@ export function buildManifest(
       product: release.product,
     },
   }
+}
+
+export function resolveManifestId(release: OtaRelease, platform: OtaPlatform) {
+  if (release.updateId) {
+    return release.updateId
+  }
+
+  return createDeterministicUuid(
+    `${release.product}:${release.channel}:${release.releaseVersion}:${release.runtimeVersion}:${platform}`,
+  )
 }
 
 function toManifestAsset(
@@ -159,4 +172,21 @@ function inferExtensionFromContentType(contentType: string) {
       return
     }
   }
+}
+
+function createDeterministicUuid(seed: string) {
+  const digest = createHash("sha1").update(seed).digest()
+  const bytes = Uint8Array.from(digest.subarray(0, 16))
+
+  bytes[6] = ((bytes[6] ?? 0) & 0x0f) | 0x50
+  bytes[8] = ((bytes[8] ?? 0) & 0x3f) | 0x80
+
+  const hex = Buffer.from(bytes).toString("hex")
+  return [
+    hex.slice(0, 8),
+    hex.slice(8, 12),
+    hex.slice(12, 16),
+    hex.slice(16, 20),
+    hex.slice(20, 32),
+  ].join("-")
 }

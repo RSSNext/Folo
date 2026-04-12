@@ -1,11 +1,22 @@
 import { KV_KEYS } from "./constants"
-import type { OtaPlatform, OtaRelease } from "./schema"
+import type { DesktopDistribution, OtaPlatform, OtaRelease } from "./schema"
 
 export interface LatestReleasePointerRecord {
   releaseVersion: OtaRelease["releaseVersion"]
 }
 
 export type ReleaseRecord = OtaRelease
+
+export interface BinaryPolicyRecord {
+  releaseVersion: OtaRelease["releaseVersion"]
+  required: boolean
+  minSupportedBinaryVersion: string
+  message: string | null
+  publishedAt: string | null
+  distribution: DesktopDistribution | null
+  downloadUrl: string | null
+  storeUrl: string | null
+}
 
 export async function getLatestReleasePointer(
   kv: KVNamespace,
@@ -29,4 +40,33 @@ export async function putReleaseRecord(
   value: ReleaseRecord,
 ) {
   await kv.put(KV_KEYS.release(product, releaseVersion), JSON.stringify(value))
+}
+
+export async function getBinaryPolicyRecord(
+  kv: KVNamespace,
+  input: {
+    product: OtaRelease["product"]
+    channel: OtaRelease["channel"]
+    distribution?: DesktopDistribution
+  },
+) {
+  return kv.get<BinaryPolicyRecord>(
+    KV_KEYS.policy(input.product, input.channel, input.distribution),
+    "json",
+  )
+}
+
+export async function putBinaryPolicyRecord(
+  kv: KVNamespace,
+  input: {
+    product: OtaRelease["product"]
+    channel: OtaRelease["channel"]
+    distribution?: DesktopDistribution
+    value: BinaryPolicyRecord
+  },
+) {
+  await kv.put(
+    KV_KEYS.policy(input.product, input.channel, input.distribution),
+    JSON.stringify(input.value),
+  )
 }

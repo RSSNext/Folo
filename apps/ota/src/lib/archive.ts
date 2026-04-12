@@ -1,11 +1,11 @@
 import { Decompress } from "fzstd"
 import tar from "tar-stream"
 
-import type { OtaPlatform, OtaRelease } from "./schema"
+import type { OtaPlatform, OtaPlatformPayload, OtaProjectedPlatforms, OtaRelease } from "./schema"
 
 const OTA_PLATFORMS: OtaPlatform[] = ["ios", "android", "macos", "windows", "linux"]
 
-type PlatformPayload = NonNullable<OtaRelease["platforms"][OtaPlatform]>
+type PlatformPayload = OtaPlatformPayload
 type PlatformAsset = PlatformPayload["launchAsset"] | PlatformPayload["assets"][number]
 
 interface MirroredFileRequest {
@@ -149,9 +149,10 @@ export async function extractMirroredFiles(input: {
 
 function createMirroredFileRequests(release: OtaRelease): MirroredFileRequest[] {
   const requests: MirroredFileRequest[] = []
+  const platforms = release.platforms as OtaProjectedPlatforms
 
   for (const platform of OTA_PLATFORMS) {
-    const platformPayload = release.platforms[platform]
+    const platformPayload = platforms[platform]
 
     if (!platformPayload) {
       continue

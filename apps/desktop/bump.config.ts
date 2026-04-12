@@ -11,7 +11,12 @@ export default defineConfig({
     "pnpm prettier --ignore-unknown --write package.json",
     "git add package.json",
   ],
-  trailing: ["git checkout -b release/desktop/${NEW_VERSION}"],
+  trailing: [
+    "tsx scripts/apply-release-config.ts ${NEW_VERSION}",
+    "git add package.json",
+    "git add release.json release-plan.json",
+    "git checkout -b release/desktop/${NEW_VERSION}",
+  ],
   finally: [
     "git push origin release/desktop/${NEW_VERSION}",
     "gh pr create --title 'release(desktop): Release v${NEW_VERSION}' --body 'v${NEW_VERSION}' --base main --head release/desktop/${NEW_VERSION}",
