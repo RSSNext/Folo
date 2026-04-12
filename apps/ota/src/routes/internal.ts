@@ -2,7 +2,7 @@ import { Hono } from "hono"
 
 import type { Env } from "../env"
 import { KV_KEYS } from "../lib/constants"
-import { syncGitHubReleases } from "../lib/sync"
+import { syncGitHubReleases, syncStoreVersions } from "../lib/sync"
 
 export const internalRoute = new Hono<{ Bindings: Env }>()
 
@@ -13,16 +13,20 @@ internalRoute.post("/internal/sync", async (c) => {
     return c.json({ error: "Unauthorized" }, 401)
   }
 
-  await syncGitHubReleases(c.env)
+  await Promise.all([syncGitHubReleases(c.env), syncStoreVersions(c.env)])
 
   return c.json({ ok: true })
 })
 
 internalRoute.get("/internal/health", async (c) => {
-  const lastSuccessAt = await c.env.OTA_KV.get<string>(KV_KEYS.syncLastSuccessAt)
+  const [lastSuccessAt, storeVersionLastSuccessAt] = await Promise.all([
+    c.env.OTA_KV.get<string>(KV_KEYS.syncLastSuccessAt),
+    c.env.OTA_KV.get<string>(KV_KEYS.storeVersionSyncLastSuccessAt),
+  ])
 
   return c.json({
     ok: true,
     lastSuccessAt: lastSuccessAt ?? null,
+    storeVersionLastSuccessAt: storeVersionLastSuccessAt ?? null,
   })
 })

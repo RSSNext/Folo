@@ -7,13 +7,6 @@ on:
         type: string
         required: true
         description: "Release version without the v prefix"
-      release_kind:
-        type: choice
-        required: true
-        options:
-          - ota
-          - store
-        description: "Release kind embedded in ota-release.json"
       runtime_version:
         type: string
         required: true
@@ -25,18 +18,6 @@ on:
           - production
           - preview
         description: "OTA channel embedded in ota-release.json"
-      store_required:
-        type: choice
-        required: false
-        options:
-          - "false"
-          - "true"
-        default: "false"
-        description: "Whether /policy should block and require a store update"
-      policy_message:
-        type: string
-        required: false
-        description: "Optional /policy message for store metadata releases"
 
 permissions:
   contents: write
@@ -48,11 +29,8 @@ jobs:
     env:
       OTA_PRODUCT: mobile
       OTA_RELEASE_VERSION: ${{ inputs.release_version }}
-      OTA_RELEASE_KIND: ${{ inputs.release_kind }}
       OTA_RUNTIME_VERSION: ${{ inputs.runtime_version }}
       OTA_CHANNEL: ${{ inputs.channel }}
-      OTA_STORE_REQUIRED: ${{ inputs.store_required }}
-      OTA_POLICY_MESSAGE: ${{ inputs.policy_message }}
       OTA_GIT_TAG: mobile/v${{ inputs.release_version }}
 
     steps:
@@ -86,7 +64,6 @@ jobs:
         run: pnpm install --frozen-lockfile
 
       - name: Export OTA bundle assets
-        if: inputs.release_kind == 'ota'
         working-directory: apps/mobile
         run: pnpm run update:export
 
@@ -111,7 +88,7 @@ jobs:
             gh release create "$tag_name" "${ota_files[@]}" \
               --verify-tag \
               --title "$release_title" \
-              --notes "OTA release assets for ${OTA_RELEASE_KIND} releases on the ${OTA_CHANNEL} channel."
+              --notes "OTA release assets for the ${OTA_CHANNEL} channel."
           fi
 
       - name: Trigger OTA sync

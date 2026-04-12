@@ -420,7 +420,7 @@ describe("/assets/*", () => {
 
 describe("/policy", () => {
   it("rejects missing installedBinaryVersion", async () => {
-    const response = await fetchWorker("/policy?product=mobile&channel=production")
+    const response = await fetchWorker("/policy?product=mobile&platform=ios&channel=production")
 
     expect(response.status).toBe(400)
     await expect(response.json()).resolves.toEqual({
@@ -430,7 +430,7 @@ describe("/policy", () => {
 
   it("rejects invalid installedBinaryVersion", async () => {
     const response = await fetchWorker(
-      "/policy?product=mobile&channel=production&installedBinaryVersion=0.4",
+      "/policy?product=mobile&platform=ios&channel=production&installedBinaryVersion=0.4",
     )
 
     expect(response.status).toBe(400)

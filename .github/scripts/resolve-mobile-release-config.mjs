@@ -5,7 +5,7 @@ import { readFile } from "node:fs/promises"
 import { pathToFileURL } from "node:url"
 
 const SEMVER_PATTERN = /^\d+\.\d+\.\d+$/
-const VALID_MODES = new Set(["store", "ota", "store-policy"])
+const VALID_MODES = new Set(["store", "ota"])
 const VALID_CHANNELS = new Set(["production", "preview"])
 
 export function resolveMobileReleaseConfig(input) {
@@ -19,18 +19,15 @@ export function resolveMobileReleaseConfig(input) {
   }
 
   if (!VALID_MODES.has(config.mode)) {
-    throw new Error("apps/mobile/release.json mode must be store, ota, or store-policy.")
+    throw new Error("apps/mobile/release.json mode must be store or ota.")
   }
 
   if (config.mode === "store") {
     return {
       triggerStoreBuilds: true,
       triggerOtaPublish: false,
-      releaseKind: null,
       runtimeVersion: null,
       channel: null,
-      storeRequired: null,
-      policyMessage: null,
       releaseVersion: normalizedReleaseVersion,
     }
   }
@@ -46,11 +43,8 @@ export function resolveMobileReleaseConfig(input) {
   return {
     triggerStoreBuilds: false,
     triggerOtaPublish: true,
-    releaseKind: config.mode === "ota" ? "ota" : "store",
     runtimeVersion: config.runtimeVersion,
     channel: config.channel,
-    storeRequired: config.mode === "store-policy" ? String(config.storeRequired ?? false) : "false",
-    policyMessage: config.mode === "store-policy" ? (config.message ?? "") : "",
     releaseVersion: normalizedReleaseVersion,
   }
 }
@@ -79,11 +73,8 @@ async function main() {
 
     setGitHubOutput("trigger_store_builds", String(result.triggerStoreBuilds))
     setGitHubOutput("trigger_ota_publish", String(result.triggerOtaPublish))
-    setGitHubOutput("release_kind", result.releaseKind ?? "")
     setGitHubOutput("runtime_version", result.runtimeVersion ?? "")
     setGitHubOutput("channel", result.channel ?? "")
-    setGitHubOutput("store_required", result.storeRequired ?? "")
-    setGitHubOutput("policy_message", result.policyMessage ?? "")
     setGitHubOutput("release_version", result.releaseVersion)
   } catch (error) {
     console.error(error instanceof Error ? error.message : String(error))

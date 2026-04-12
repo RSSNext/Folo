@@ -9,7 +9,7 @@ import type {
   SetStateAction,
 } from "react"
 import { createContext, use, useEffect, useMemo, useReducer, useRef, useState } from "react"
-import { InteractionManager } from "react-native"
+import { InteractionManager, Platform } from "react-native"
 
 import type { StorePolicyResponse } from "./client"
 import { fetchStorePolicy } from "./client"
@@ -184,6 +184,7 @@ const refreshStorePolicyInBackground = ({
   void fetchStorePolicy({
     baseUrl: OtaBaseUrl,
     product: OtaProduct,
+    platform: Platform.OS === "android" ? "android" : "ios",
     channel: getOtaChannel(),
     installedBinaryVersion: getInstalledBinaryVersion(),
   })

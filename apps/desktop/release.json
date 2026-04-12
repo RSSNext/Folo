@@ -2,8 +2,5 @@
   "version": "1.5.0",
   "mode": "build",
   "runtimeVersion": null,
-  "channel": null,
-  "distributions": [],
-  "required": false,
-  "message": null
+  "channel": null
 }

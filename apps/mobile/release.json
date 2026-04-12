@@ -2,7 +2,5 @@
   "version": "0.4.1",
   "mode": "store",
   "runtimeVersion": null,
-  "channel": null,
-  "storeRequired": false,
-  "message": null
+  "channel": null
 }

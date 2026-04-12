@@ -3,6 +3,7 @@ import { z } from "zod"
 export interface FetchStorePolicyInput {
   baseUrl: string
   product: string
+  platform: "ios" | "android"
   channel: string
   installedBinaryVersion: string
 }
@@ -22,11 +23,13 @@ export interface StorePolicyResponse {
 export const fetchStorePolicy = async ({
   baseUrl,
   product,
+  platform,
   channel,
   installedBinaryVersion,
 }: FetchStorePolicyInput): Promise<StorePolicyResponse> => {
   const requestUrl = new URL("/policy", baseUrl)
   requestUrl.searchParams.set("product", product)
+  requestUrl.searchParams.set("platform", platform)
   requestUrl.searchParams.set("channel", channel)
   requestUrl.searchParams.set("installedBinaryVersion", installedBinaryVersion)
 

@@ -2,23 +2,17 @@ import { Hono } from "hono"
 import { z } from "zod"
 
 import type { Env } from "../env"
-import { KV_KEYS } from "../lib/constants"
-import { getBinaryPolicyRecord } from "../lib/kv"
+import { getStoreVersionRecord, putStoreVersionRecord } from "../lib/kv"
 import { evaluateBinaryPolicy, evaluateStorePolicy } from "../lib/policy"
 import { parseDesktopRequest } from "../lib/request"
 import type { OtaRelease } from "../lib/schema"
+import type { MobileStorePlatform } from "../lib/store-version"
+import {
+  fetchDesktopStoreVersion,
+  fetchMobileStoreVersion,
+  getDesktopStoreUrl,
+} from "../lib/store-version"
 
-const storePolicyReleaseSchema = z.object({
-  releaseVersion: z.string().regex(/^\d+\.\d+\.\d+$/),
-  releaseKind: z.enum(["ota", "store"]),
-  runtimeVersion: z.string().regex(/^\d+\.\d+\.\d+$/),
-  policy: z.object({
-    storeRequired: z.boolean(),
-    minSupportedBinaryVersion: z.string().regex(/^\d+\.\d+\.\d+$/),
-    message: z.string().nullable(),
-  }),
-})
-type StorePolicyRelease = z.infer<typeof storePolicyReleaseSchema>
 const semverSchema = z.string().regex(/^\d+\.\d+\.\d+$/)
 
 export const policyRoute = new Hono<{ Bindings: Env }>()
@@ -43,38 +37,49 @@ policyRoute.get("/policy", async (c) => {
       return c.json({ error: "Missing x-app-channel header" }, 400)
     }
 
-    const [targeted, generic] = await Promise.all([
-      getBinaryPolicyRecord(c.env.OTA_KV, {
-        product: "desktop",
-        channel: desktopRequest.channel,
-        distribution: desktopRequest.distribution,
-      }),
-      getBinaryPolicyRecord(c.env.OTA_KV, {
-        product: "desktop",
-        channel: desktopRequest.channel,
-      }),
-    ])
-
-    return c.json(
-      evaluateBinaryPolicy(
-        {
-          targeted,
-          generic,
-        },
-        {
+    if (desktopRequest.channel !== "stable") {
+      return c.json(
+        evaluateBinaryPolicy({
           installedBinaryVersion: desktopRequest.installedBinaryVersion,
           distribution: desktopRequest.distribution,
-        },
-      ),
+          latestStoreVersion: null,
+          storeUrl: null,
+        }),
+      )
+    }
+
+    const cachedStoreVersion = await getStoreVersionRecord(c.env.OTA_KV, {
+      product: "desktop",
+      target: desktopRequest.distribution,
+    })
+    const storeUrl = getDesktopStoreUrl(desktopRequest.distribution)
+    const version =
+      cachedStoreVersion?.version ??
+      (desktopRequest.distribution === "direct"
+        ? null
+        : await fetchAndCacheDesktopStoreVersion(c.env.OTA_KV, desktopRequest.distribution))
+
+    return c.json(
+      evaluateBinaryPolicy({
+        installedBinaryVersion: desktopRequest.installedBinaryVersion,
+        distribution: desktopRequest.distribution,
+        latestStoreVersion: version,
+        storeUrl,
+      }),
     )
   }
 
   const product = parseProduct(c.req.query("product"))
+  const platform = parseMobileStorePlatform(c.req.query("platform"))
   const channel = c.req.query("channel") ?? "production"
   const installedBinaryVersion = c.req.query("installedBinaryVersion")
 
   if (!product) {
     return c.json({ error: "Invalid product query parameter" }, 400)
+  }
+
+  if (!platform) {
+    return c.json({ error: "Missing platform query parameter" }, 400)
   }
 
   if (!installedBinaryVersion) {
@@ -85,14 +90,23 @@ policyRoute.get("/policy", async (c) => {
     return c.json({ error: "Invalid installedBinaryVersion query parameter" }, 400)
   }
 
-  const latestStoreReleaseRecord = await c.env.OTA_KV.get(KV_KEYS.policy(product, channel), "json")
-  const parsedStoreRelease = storePolicyReleaseSchema.safeParse(latestStoreReleaseRecord)
-  const latestStoreRelease: StorePolicyRelease | null = parsedStoreRelease.success
-    ? parsedStoreRelease.data
-    : null
+  if (channel !== "production") {
+    return c.json(
+      evaluateStorePolicy(null, {
+        installedBinaryVersion,
+      }),
+    )
+  }
+
+  const cachedStoreVersion = await getStoreVersionRecord(c.env.OTA_KV, {
+    product: "mobile",
+    target: platform,
+  })
+  const latestStoreVersion =
+    cachedStoreVersion?.version ?? (await fetchAndCacheMobileStoreVersion(c.env.OTA_KV, platform))
 
   return c.json(
-    evaluateStorePolicy(latestStoreRelease, {
+    evaluateStorePolicy(latestStoreVersion, {
       installedBinaryVersion,
     }),
   )
@@ -104,4 +118,50 @@ function parseProduct(value: string | undefined): OtaRelease["product"] | null {
   }
 
   return value === "mobile" ? "mobile" : null
+}
+
+function parseMobileStorePlatform(value: string | undefined): MobileStorePlatform | null {
+  if (value === "ios" || value === "android") {
+    return value
+  }
+
+  return null
+}
+
+async function fetchAndCacheMobileStoreVersion(kv: KVNamespace, platform: MobileStorePlatform) {
+  const version = await fetchMobileStoreVersion(platform)
+  if (!version) {
+    return null
+  }
+
+  await putStoreVersionRecord(kv, {
+    product: "mobile",
+    target: platform,
+    value: {
+      version,
+      fetchedAt: new Date().toISOString(),
+      source: platform === "ios" ? "app-store" : "google-play",
+    },
+  })
+
+  return version
+}
+
+async function fetchAndCacheDesktopStoreVersion(kv: KVNamespace, distribution: "mas" | "mss") {
+  const { version } = await fetchDesktopStoreVersion(distribution)
+  if (!version) {
+    return null
+  }
+
+  await putStoreVersionRecord(kv, {
+    product: "desktop",
+    target: distribution,
+    value: {
+      version,
+      fetchedAt: new Date().toISOString(),
+      source: distribution === "mas" ? "mac-app-store" : "microsoft-store",
+    },
+  })
+
+  return version
 }

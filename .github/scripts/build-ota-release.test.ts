@@ -314,9 +314,6 @@ describe("buildDesktopReleaseAssets", () => {
         mode: "build",
         runtimeVersion: null,
         channel: null,
-        distributions: [],
-        required: false,
-        message: null,
       },
       manifests: [
         {
@@ -346,11 +343,7 @@ releaseDate: 2026-04-11T10:00:00.000Z
     expect(result.otaMetadata.runtimeVersion).toBeNull()
     expect(result.otaMetadata.channel).toBe("stable")
     expect(result.otaMetadata.desktop.renderer).toBeNull()
-    expect(result.otaMetadata.policy.distributions).toEqual({
-      direct: {
-        downloadUrl: "https://github.com/RSSNext/Folo/releases/tag/desktop/v1.5.1",
-      },
-    })
+    expect(result.otaMetadata.policy.distributions).toEqual({})
     expect(result.otaMetadata.desktop.app.platforms.windows).toEqual(
       expect.objectContaining({
         platform: "windows-x64",
@@ -386,9 +379,6 @@ releaseDate: 2026-04-11T10:00:00.000Z
         mode: "ota",
         runtimeVersion: "1.5.0",
         channel: "stable",
-        distributions: ["direct"],
-        required: false,
-        message: null,
       },
       rendererArchiveContents: "renderer archive",
       rendererManifestContents: `
@@ -446,95 +436,6 @@ releaseDate: 2026-04-11T10:00:00.000Z
     expect(result.archivePath).not.toBeNull()
   })
 
-  it("builds desktop binary-policy metadata without dist.tar.zst", async () => {
-    const { buildDesktopReleaseAssets } = await import("./build-ota-release.mjs")
-    const projectDir = await createDesktopProjectFixture({
-      version: "1.5.1",
-      releaseConfig: {
-        version: "1.5.1",
-        mode: "binary-policy",
-        runtimeVersion: null,
-        channel: "stable",
-        distributions: ["mas", "mss"],
-        required: true,
-        message: "Install the latest desktop app.",
-      },
-    })
-
-    const result = await buildDesktopReleaseAssets({
-      projectDir,
-      owner: "RSSNext",
-      repo: "Folo",
-    })
-
-    expect(result.otaMetadata.schemaVersion).toBe(2)
-    expect(result.otaMetadata.releaseKind).toBe("binary")
-    expect(result.otaMetadata.runtimeVersion).toBeNull()
-    expect(result.otaMetadata.channel).toBe("stable")
-    expect(result.otaMetadata.policy).toEqual({
-      required: true,
-      minSupportedBinaryVersion: "1.5.1",
-      message: "Install the latest desktop app.",
-      distributions: {
-        mas: {
-          storeUrl: "https://apps.apple.com/us/app/folo-follow-everything/id6739802604",
-        },
-        mss: {
-          storeUrl: "https://apps.microsoft.com/detail/9nvfzpv0v0ht?mode=direct",
-        },
-      },
-    })
-    expect(result.otaMetadata.desktop).toEqual({
-      renderer: null,
-      app: null,
-    })
-    expect(result.archivePath).toBeNull()
-  })
-
-  it("keeps desktop binary-policy metadata installer-free even if manifests exist", async () => {
-    const { buildDesktopReleaseAssets } = await import("./build-ota-release.mjs")
-    const projectDir = await createDesktopProjectFixture({
-      version: "1.5.1",
-      releaseConfig: {
-        version: "1.5.1",
-        mode: "binary-policy",
-        runtimeVersion: null,
-        channel: "stable",
-        distributions: ["direct"],
-        required: false,
-        message: "Use the latest direct installer.",
-      },
-      manifests: [
-        {
-          relativeDir: join("out", "make", "squirrel.windows", "x64"),
-          manifestName: "latest.yml",
-          contents: `
-version: 1.5.1
-files:
-  - url: Folo-1.5.1-windows-x64.exe
-    sha512: ${"1".repeat(88)}
-    size: 123456
-releaseDate: 2026-04-11T10:00:00.000Z
-`,
-        },
-      ],
-    })
-
-    const result = await buildDesktopReleaseAssets({
-      projectDir,
-      owner: "RSSNext",
-      repo: "Folo",
-    })
-
-    expect(result.otaMetadata.policy.distributions).toEqual({
-      direct: {
-        downloadUrl: "https://github.com/RSSNext/Folo/releases/tag/desktop/v1.5.1",
-      },
-    })
-    expect(result.otaMetadata.desktop.app).toBeNull()
-    expect(result.archivePath).toBeNull()
-  })
-
   it("fails when a desktop manifest contains an invalid file entry", async () => {
     const { buildDesktopReleaseAssets } = await import("./build-ota-release.mjs")
     const projectDir = await createDesktopProjectFixture({
@@ -544,9 +445,6 @@ releaseDate: 2026-04-11T10:00:00.000Z
         mode: "build",
         runtimeVersion: null,
         channel: null,
-        distributions: [],
-        required: false,
-        message: null,
       },
       manifests: [
         {
@@ -581,9 +479,6 @@ releaseDate: 2026-04-11T10:00:00.000Z
         mode: "build",
         runtimeVersion: null,
         channel: null,
-        distributions: [],
-        required: false,
-        message: null,
       },
     })
 
@@ -605,9 +500,6 @@ releaseDate: 2026-04-11T10:00:00.000Z
         mode: "ota",
         runtimeVersion: "1.5.0",
         channel: "stable",
-        distributions: ["direct"],
-        required: false,
-        message: null,
       },
       rendererArchiveContents: "renderer archive",
       rendererManifestContents: `
@@ -637,9 +529,6 @@ filename: custom-renderer.tar.gz
         mode: "build",
         runtimeVersion: null,
         channel: null,
-        distributions: [],
-        required: false,
-        message: null,
       },
       manifests: [
         {
@@ -686,12 +575,9 @@ async function createDesktopProjectFixture(input: {
   version: string
   releaseConfig: {
     version: string
-    mode: "build" | "ota" | "binary-policy"
+    mode: "build" | "ota"
     runtimeVersion: string | null
     channel: "stable" | "beta" | "alpha" | null
-    distributions: Array<"direct" | "mas" | "mss">
-    required: boolean
-    message: string | null
   }
   manifests?: Array<{
     relativeDir: string

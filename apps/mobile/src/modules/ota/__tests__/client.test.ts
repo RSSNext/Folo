@@ -22,12 +22,16 @@ describe("fetchStorePolicy", () => {
     const result = await fetchStorePolicy({
       baseUrl: "https://ota.folo.is",
       product: "mobile",
+      platform: "ios",
       channel: "production",
       installedBinaryVersion: "0.4.1",
     })
 
     expect(result.action).toBe("block")
     expect(result.targetVersion).toBe("0.4.3")
+    expect(fetch).toHaveBeenCalledWith(
+      "https://ota.folo.is/policy?product=mobile&platform=ios&channel=production&installedBinaryVersion=0.4.1",
+    )
   })
 
   it("throws when the policy request fails", async () => {
@@ -45,6 +49,7 @@ describe("fetchStorePolicy", () => {
       fetchStorePolicy({
         baseUrl: "https://ota.folo.is",
         product: "mobile",
+        platform: "ios",
         channel: "production",
         installedBinaryVersion: "0.4.1",
       }),
@@ -66,6 +71,7 @@ describe("fetchStorePolicy", () => {
       fetchStorePolicy({
         baseUrl: "https://ota.folo.is",
         product: "mobile",
+        platform: "ios",
         channel: "production",
         installedBinaryVersion: "0.4.1",
       }),

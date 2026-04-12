@@ -10,7 +10,7 @@ import { listPublishedOtaReleases } from "../lib/github"
 import { IMMUTABLE_ASSET_CACHE_CONTROL, putMirroredFiles } from "../lib/r2"
 import type { DesktopOtaRelease, MobileOtaRelease, OtaRelease } from "../lib/schema"
 import { otaReleaseSchema } from "../lib/schema"
-import { mirrorReleaseToStorage, syncGitHubReleases } from "../lib/sync"
+import { mirrorReleaseToStorage, syncGitHubReleases, syncStoreVersions } from "../lib/sync"
 
 vi.mock("fzstd", () => {
   class Decompress {
@@ -521,7 +521,7 @@ describe("syncGitHubReleases", () => {
 
     vi.stubGlobal(
       "fetch",
-      vi.fn(async (input: string | URL | Request) => {
+      vi.fn(async (input: string | URL | Request, _init?: RequestInit) => {
         const url = String(input)
 
         if (url === "https://api.github.com/repos/RSSNext/Folo/releases") {
@@ -662,7 +662,7 @@ describe("syncGitHubReleases", () => {
 
     vi.stubGlobal(
       "fetch",
-      vi.fn(async (input: string | URL | Request) => {
+      vi.fn(async (input: string | URL | Request, _init?: RequestInit) => {
         const url = String(input)
 
         if (url === "https://api.github.com/repos/RSSNext/Folo/releases") {
@@ -749,7 +749,7 @@ describe("syncGitHubReleases", () => {
 
     vi.stubGlobal(
       "fetch",
-      vi.fn(async (input: string | URL | Request) => {
+      vi.fn(async (input: string | URL | Request, _init?: RequestInit) => {
         const url = String(input)
 
         if (url === "https://api.github.com/repos/RSSNext/Folo/releases") {
@@ -783,7 +783,7 @@ describe("syncGitHubReleases", () => {
         }
 
         if (url === "https://example.com/ota.tar.zst") {
-          return new Response(otaArchive)
+          return new Response(new Blob([new Uint8Array(otaArchive)]))
         }
 
         throw new Error(`Unhandled fetch URL: ${url}`)
@@ -834,7 +834,7 @@ describe("syncGitHubReleases", () => {
 
     vi.stubGlobal(
       "fetch",
-      vi.fn(async (input: string | URL | Request) => {
+      vi.fn(async (input: string | URL | Request, _init?: RequestInit) => {
         const url = String(input)
 
         if (url === "https://api.github.com/repos/RSSNext/Folo/releases") {
@@ -935,7 +935,7 @@ describe("syncGitHubReleases", () => {
 
     vi.stubGlobal(
       "fetch",
-      vi.fn(async (input: string | URL | Request) => {
+      vi.fn(async (input: string | URL | Request, _init?: RequestInit) => {
         const url = String(input)
 
         if (url === "https://api.github.com/repos/RSSNext/Folo/releases") {
@@ -1017,7 +1017,7 @@ describe("syncGitHubReleases", () => {
 
     vi.stubGlobal(
       "fetch",
-      vi.fn(async (input: string | URL | Request) => {
+      vi.fn(async (input: string | URL | Request, _init?: RequestInit) => {
         const url = String(input)
 
         if (url === "https://api.github.com/repos/RSSNext/Folo/releases") {
@@ -1484,16 +1484,129 @@ describe("syncGitHubReleases", () => {
   })
 })
 
+describe("syncStoreVersions", () => {
+  it("writes cached versions for all storefront channels", async () => {
+    const kvEntries = new Map<string, unknown>()
+
+    vi.stubGlobal(
+      "fetch",
+      vi.fn(async (input: string | URL | Request, _init?: RequestInit) => {
+        const url = String(input)
+
+        if (url === "https://itunes.apple.com/lookup?id=6739802604") {
+          return new Response(
+            JSON.stringify({
+              results: [{ version: "0.4.1" }],
+            }),
+            { status: 200, headers: { "Content-Type": "application/json" } },
+          )
+        }
+
+        if (url === "https://play.google.com/store/apps/details?id=is.follow&hl=en_US&gl=US") {
+          return new Response('[[["0.4.1"]],[[[36]]]', {
+            status: 200,
+            headers: { "Content-Type": "text/html" },
+          })
+        }
+
+        if (
+          url === "https://apps.apple.com/us/app/folo-follow-everything/id6739802604?platform=mac"
+        ) {
+          return new Response('{"primarySubtitle":"Version 1.5.0"}', {
+            status: 200,
+            headers: { "Content-Type": "text/html" },
+          })
+        }
+
+        if (
+          url ===
+          "https://storeedgefd.dsx.mp.microsoft.com/v9.0/products/9nvfzpv0v0ht?market=US&locale=en-US&deviceFamily=Windows.Desktop"
+        ) {
+          return new Response(
+            JSON.stringify({
+              Payload: {
+                Skus: [
+                  {
+                    FulfillmentData: JSON.stringify({
+                      WuCategoryId: "wu-category-id",
+                      PackageFamilyName:
+                        "NaturalSelectionLabs.Follow-Yourfavoritesinoneinbo_abc123",
+                    }),
+                  },
+                ],
+              },
+            }),
+            { status: 200, headers: { "Content-Type": "application/json" } },
+          )
+        }
+
+        if (url === "https://fe3.delivery.mp.microsoft.com/ClientWebService/client.asmx") {
+          const body = String(init?.body ?? "")
+
+          if (body.includes("GetCookie")) {
+            return new Response("<EncryptedData>cookie-value</EncryptedData>", {
+              status: 200,
+              headers: { "Content-Type": "application/soap+xml" },
+            })
+          }
+
+          return new Response(
+            '&lt;PackageMoniker="NaturalSelectionLabs.Follow-Yourfavoritesinoneinbo_1.5.0.0_x64__abc123"&gt;',
+            {
+              status: 200,
+              headers: { "Content-Type": "application/soap+xml" },
+            },
+          )
+        }
+
+        throw new Error(`Unhandled fetch URL: ${url}`)
+      }),
+    )
+
+    await syncStoreVersions(createEnv({ kvEntries }))
+
+    expect(JSON.parse(String(kvEntries.get(KV_KEYS.storeVersion("mobile", "ios"))))).toEqual(
+      expect.objectContaining({
+        version: "0.4.1",
+        source: "app-store",
+      }),
+    )
+    expect(JSON.parse(String(kvEntries.get(KV_KEYS.storeVersion("mobile", "android"))))).toEqual(
+      expect.objectContaining({
+        version: "0.4.1",
+        source: "google-play",
+      }),
+    )
+    expect(JSON.parse(String(kvEntries.get(KV_KEYS.storeVersion("desktop", "mas"))))).toEqual(
+      expect.objectContaining({
+        version: "1.5.0",
+        source: "mac-app-store",
+      }),
+    )
+    expect(JSON.parse(String(kvEntries.get(KV_KEYS.storeVersion("desktop", "mss"))))).toEqual(
+      expect.objectContaining({
+        version: "1.5.0",
+        source: "microsoft-store",
+      }),
+    )
+    expect(kvEntries.get(KV_KEYS.storeVersionSyncLastSuccessAt)).toEqual(expect.any(String))
+  })
+})
+
 describe("internal routes", () => {
   it("returns the last successful sync timestamp from KV", async () => {
     const response = await fetchWorker("/internal/health", undefined, {
-      kvEntries: new Map([[KV_KEYS.syncLastSuccessAt, "2026-04-10T15:00:00.000Z"]]),
+      kvEntries: new Map([
+        [KV_KEYS.syncLastSuccessAt, "2026-04-10T15:00:00.000Z"],
+        [KV_KEYS.storeVersionSyncLastSuccessAt, "2026-04-10T15:05:00.000Z"],
+      ]),
     })
 
     expect(response.status).toBe(200)
     await expect(response.json()).resolves.toEqual({
       ok: true,
       lastSuccessAt: "2026-04-10T15:00:00.000Z",
+      storeVersionLastSuccessAt: "2026-04-10T15:05:00.000Z",
     })
   })
 
@@ -1518,6 +1631,7 @@ describe("internal routes", () => {
 
   it("runs sync for authorized requests", async () => {
     const kvEntries = new Map<string, unknown>()
+    let microsoftSoapRequestCount = 0
     const storeRelease = await createReleaseMetadata({
       releaseVersion: "0.5.1",
       releaseKind: "store",
@@ -1536,7 +1650,7 @@ describe("internal routes", () => {
 
     vi.stubGlobal(
       "fetch",
-      vi.fn(async (input: string | URL | Request) => {
+      vi.fn(async (input: string | URL | Request, _init?: RequestInit) => {
         const url = String(input)
 
         if (url === "https://api.github.com/repos/RSSNext/Folo/releases") {
@@ -1558,6 +1672,79 @@ describe("internal routes", () => {
               "Content-Type": "application/json",
             },
           })
+        }
+
+        if (url === "https://itunes.apple.com/lookup?id=6739802604") {
+          return new Response(JSON.stringify({ results: [{ version: "0.4.1" }] }), {
+            headers: {
+              "Content-Type": "application/json",
+            },
+          })
+        }
+
+        if (url === "https://play.google.com/store/apps/details?id=is.follow&hl=en_US&gl=US") {
+          return new Response('[[["0.4.1"]],[[[36]]]', {
+            headers: {
+              "Content-Type": "text/html",
+            },
+          })
+        }
+
+        if (
+          url === "https://apps.apple.com/us/app/folo-follow-everything/id6739802604?platform=mac"
+        ) {
+          return new Response('{"primarySubtitle":"Version 1.5.0"}', {
+            headers: {
+              "Content-Type": "text/html",
+            },
+          })
+        }
+
+        if (
+          url ===
+          "https://storeedgefd.dsx.mp.microsoft.com/v9.0/products/9nvfzpv0v0ht?market=US&locale=en-US&deviceFamily=Windows.Desktop"
+        ) {
+          return new Response(
+            JSON.stringify({
+              Payload: {
+                Skus: [
+                  {
+                    FulfillmentData: JSON.stringify({
+                      WuCategoryId: "wu-category-id",
+                      PackageFamilyName:
+                        "NaturalSelectionLabs.Follow-Yourfavoritesinoneinbo_abc123",
+                    }),
+                  },
+                ],
+              },
+            }),
+            {
+              headers: {
+                "Content-Type": "application/json",
+              },
+            },
+          )
+        }
+
+        if (url === "https://fe3.delivery.mp.microsoft.com/ClientWebService/client.asmx") {
+          microsoftSoapRequestCount += 1
+
+          if (microsoftSoapRequestCount === 1) {
+            return new Response("<EncryptedData>cookie-value</EncryptedData>", {
+              headers: {
+                "Content-Type": "application/soap+xml",
+              },
+            })
+          }
+
+          return new Response(
+            '&lt;PackageMoniker="NaturalSelectionLabs.Follow-Yourfavoritesinoneinbo_1.5.0.0_x64__abc123"&gt;',
+            {
+              headers: {
+                "Content-Type": "application/soap+xml",
+              },
+            },
+          )
         }
 
         throw new Error(`Unhandled fetch URL: ${url}`)
@@ -1588,6 +1775,10 @@ describe("internal routes", () => {
       ok: true,
     })
     expect(kvEntries.get(KV_KEYS.policy("mobile", "production"))).toBe(JSON.stringify(storeRelease))
+    expect(kvEntries.get(KV_KEYS.storeVersion("mobile", "ios"))).toEqual(expect.any(String))
+    expect(kvEntries.get(KV_KEYS.storeVersion("mobile", "android"))).toEqual(expect.any(String))
+    expect(kvEntries.get(KV_KEYS.storeVersion("desktop", "mas"))).toEqual(expect.any(String))
+    expect(kvEntries.get(KV_KEYS.storeVersion("desktop", "mss"))).toEqual(expect.any(String))
   })
 })
 
@@ -1597,7 +1788,79 @@ describe("scheduled handler", () => {
 
     vi.stubGlobal(
       "fetch",
-      vi.fn(async () => new Response(null, { status: 304 })),
+      vi.fn(async (input: string | URL | Request, init?: RequestInit) => {
+        const url = String(input)
+
+        if (url === "https://api.github.com/repos/RSSNext/Folo/releases") {
+          return new Response(null, { status: 304 })
+        }
+
+        if (url === "https://itunes.apple.com/lookup?id=6739802604") {
+          return new Response(JSON.stringify({ results: [{ version: "0.4.1" }] }), {
+            status: 200,
+            headers: { "Content-Type": "application/json" },
+          })
+        }
+
+        if (url === "https://play.google.com/store/apps/details?id=is.follow&hl=en_US&gl=US") {
+          return new Response('[[["0.4.1"]],[[[36]]]', {
+            status: 200,
+            headers: { "Content-Type": "text/html" },
+          })
+        }
+
+        if (
+          url === "https://apps.apple.com/us/app/folo-follow-everything/id6739802604?platform=mac"
+        ) {
+          return new Response('{"primarySubtitle":"Version 1.5.0"}', {
+            status: 200,
+            headers: { "Content-Type": "text/html" },
+          })
+        }
+
+        if (
+          url ===
+          "https://storeedgefd.dsx.mp.microsoft.com/v9.0/products/9nvfzpv0v0ht?market=US&locale=en-US&deviceFamily=Windows.Desktop"
+        ) {
+          return new Response(
+            JSON.stringify({
+              Payload: {
+                Skus: [
+                  {
+                    FulfillmentData: JSON.stringify({
+                      WuCategoryId: "wu-category-id",
+                      PackageFamilyName:
+                        "NaturalSelectionLabs.Follow-Yourfavoritesinoneinbo_abc123",
+                    }),
+                  },
+                ],
+              },
+            }),
+            { status: 200, headers: { "Content-Type": "application/json" } },
+          )
+        }
+
+        if (url === "https://fe3.delivery.mp.microsoft.com/ClientWebService/client.asmx") {
+          const body = String(init?.body ?? "")
+
+          if (body.includes("GetCookie")) {
+            return new Response("<EncryptedData>cookie-value</EncryptedData>", {
+              status: 200,
+              headers: { "Content-Type": "application/soap+xml" },
+            })
+          }
+
+          return new Response(
+            '&lt;PackageMoniker="NaturalSelectionLabs.Follow-Yourfavoritesinoneinbo_1.5.0.0_x64__abc123"&gt;',
+            {
+              status: 200,
+              headers: { "Content-Type": "application/soap+xml" },
+            },
+          )
+        }
+
+        throw new Error(`Unhandled fetch URL: ${url}`)
+      }),
     )
 
     const env = createEnv({
@@ -1618,6 +1881,8 @@ describe("scheduled handler", () => {
     await syncPromise
 
     expect(kvEntries.get(KV_KEYS.syncLastSuccessAt)).toEqual(expect.any(String))
+    expect(kvEntries.get(KV_KEYS.storeVersion("mobile", "ios"))).toEqual(expect.any(String))
+    expect(kvEntries.get(KV_KEYS.storeVersionSyncLastSuccessAt)).toEqual(expect.any(String))
   })
 })
 

@@ -12,18 +12,13 @@ describe("resolveMobileReleaseConfig", () => {
           mode: "store",
           runtimeVersion: null,
           channel: null,
-          storeRequired: false,
-          message: null,
         },
       }),
     ).toEqual({
       triggerStoreBuilds: true,
       triggerOtaPublish: false,
-      releaseKind: null,
       runtimeVersion: null,
       channel: null,
-      storeRequired: null,
-      policyMessage: null,
       releaseVersion: "0.4.2",
     })
   })
@@ -39,46 +34,14 @@ describe("resolveMobileReleaseConfig", () => {
           mode: "ota",
           runtimeVersion: "0.4.1",
           channel: "production",
-          storeRequired: false,
-          message: null,
         },
       }),
     ).toEqual({
       triggerStoreBuilds: false,
       triggerOtaPublish: true,
-      releaseKind: "ota",
       runtimeVersion: "0.4.1",
       channel: "production",
-      storeRequired: "false",
-      policyMessage: "",
       releaseVersion: "0.4.2",
-    })
-  })
-
-  it("triggers metadata-only publish for store-policy mode", async () => {
-    const { resolveMobileReleaseConfig } = await import("./resolve-mobile-release-config.mjs")
-
-    expect(
-      resolveMobileReleaseConfig({
-        releaseVersion: "v0.4.3",
-        releaseConfig: {
-          version: "0.4.3",
-          mode: "store-policy",
-          runtimeVersion: "0.4.3",
-          channel: "production",
-          storeRequired: true,
-          message: "Install 0.4.3 from the store.",
-        },
-      }),
-    ).toEqual({
-      triggerStoreBuilds: false,
-      triggerOtaPublish: true,
-      releaseKind: "store",
-      runtimeVersion: "0.4.3",
-      channel: "production",
-      storeRequired: "true",
-      policyMessage: "Install 0.4.3 from the store.",
-      releaseVersion: "0.4.3",
     })
   })
 
@@ -93,8 +56,6 @@ describe("resolveMobileReleaseConfig", () => {
           mode: "store",
           runtimeVersion: null,
           channel: null,
-          storeRequired: false,
-          message: null,
         },
       }),
     ).toThrow(/does not match release version/i)

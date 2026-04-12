@@ -5,9 +5,8 @@ import { readFile } from "node:fs/promises"
 import { pathToFileURL } from "node:url"
 
 const SEMVER_PATTERN = /^\d+\.\d+\.\d+$/
-const VALID_MODES = new Set(["build", "ota", "binary-policy"])
+const VALID_MODES = new Set(["build", "ota"])
 const VALID_CHANNELS = new Set(["stable", "beta", "alpha"])
-const VALID_DISTRIBUTIONS = new Set(["direct", "mas", "mss"])
 
 export function resolveDesktopReleaseConfig(input) {
   const normalizedReleaseVersion = input.releaseVersion.replace(/^v/, "")
@@ -20,16 +19,7 @@ export function resolveDesktopReleaseConfig(input) {
   }
 
   if (!VALID_MODES.has(config.mode)) {
-    throw new Error("apps/desktop/release.json mode must be build, ota, or binary-policy.")
-  }
-
-  if (
-    !Array.isArray(config.distributions) ||
-    config.distributions.some((item) => !VALID_DISTRIBUTIONS.has(item))
-  ) {
-    throw new Error(
-      "apps/desktop/release.json distributions must only contain direct, mas, or mss.",
-    )
+    throw new Error("apps/desktop/release.json mode must be build or ota.")
   }
 
   if (config.mode === "build") {
@@ -40,13 +30,8 @@ export function resolveDesktopReleaseConfig(input) {
     return {
       triggerDirectBuild: true,
       triggerStoreBuilds: true,
-      triggerMetadataPublish: false,
-      releaseKind: null,
       runtimeVersion: null,
       channel: null,
-      distributions: "",
-      required: "",
-      policyMessage: "",
       releaseVersion: normalizedReleaseVersion,
     }
   }
@@ -63,38 +48,10 @@ export function resolveDesktopReleaseConfig(input) {
     return {
       triggerDirectBuild: true,
       triggerStoreBuilds: true,
-      triggerMetadataPublish: false,
-      releaseKind: "ota",
       runtimeVersion: config.runtimeVersion,
       channel: config.channel,
-      distributions: config.distributions.join(","),
-      required: String(config.required ?? false),
-      policyMessage: "",
       releaseVersion: normalizedReleaseVersion,
     }
-  }
-
-  if (!config.channel || !VALID_CHANNELS.has(config.channel)) {
-    throw new Error("apps/desktop/release.json channel must be stable, beta, or alpha.")
-  }
-
-  if (config.distributions.length === 0) {
-    throw new Error(
-      "apps/desktop/release.json binary-policy mode requires at least one distribution.",
-    )
-  }
-
-  return {
-    triggerDirectBuild: false,
-    triggerStoreBuilds: false,
-    triggerMetadataPublish: true,
-    releaseKind: "binary",
-    runtimeVersion: null,
-    channel: config.channel,
-    distributions: config.distributions.join(","),
-    required: String(config.required ?? false),
-    policyMessage: config.message ?? "",
-    releaseVersion: normalizedReleaseVersion,
   }
 }
 
@@ -123,13 +80,8 @@ async function main() {
 
     setGitHubOutput("triggerDirectBuild", String(result.triggerDirectBuild))
     setGitHubOutput("triggerStoreBuilds", String(result.triggerStoreBuilds))
-    setGitHubOutput("triggerMetadataPublish", String(result.triggerMetadataPublish))
-    setGitHubOutput("releaseKind", result.releaseKind ?? "")
     setGitHubOutput("runtimeVersion", result.runtimeVersion ?? "")
     setGitHubOutput("channel", result.channel ?? "")
-    setGitHubOutput("distributions", result.distributions ?? "")
-    setGitHubOutput("required", result.required ?? "")
-    setGitHubOutput("policyMessage", result.policyMessage ?? "")
     setGitHubOutput("releaseVersion", result.releaseVersion)
   } catch (error) {
     console.error(error instanceof Error ? error.message : String(error))

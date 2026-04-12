@@ -15,6 +15,9 @@ export const KV_KEYS = {
     distribution?: DesktopDistribution,
   ) =>
     distribution ? `policy:${product}:${channel}:${distribution}` : `policy:${product}:${channel}`,
+  storeVersion: (product: OtaRelease["product"], target: "ios" | "android" | DesktopDistribution) =>
+    `store-version:${product}:${target}`,
   githubEtag: "github:etag:releases",
   syncLastSuccessAt: "sync:last-success-at",
+  storeVersionSyncLastSuccessAt: "sync:store-version-last-success-at",
 } as const

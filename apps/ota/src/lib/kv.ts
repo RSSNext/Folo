@@ -18,6 +18,12 @@ export interface BinaryPolicyRecord {
   storeUrl: string | null
 }
 
+export interface StoreVersionRecord {
+  version: string
+  fetchedAt: string
+  source: "app-store" | "google-play" | "mac-app-store" | "microsoft-store"
+}
+
 export async function getLatestReleasePointer(
   kv: KVNamespace,
   input: {
@@ -69,4 +75,25 @@ export async function putBinaryPolicyRecord(
     KV_KEYS.policy(input.product, input.channel, input.distribution),
     JSON.stringify(input.value),
   )
+}
+
+export async function getStoreVersionRecord(
+  kv: KVNamespace,
+  input: {
+    product: OtaRelease["product"]
+    target: "ios" | "android" | DesktopDistribution
+  },
+) {
+  return kv.get<StoreVersionRecord>(KV_KEYS.storeVersion(input.product, input.target), "json")
+}
+
+export async function putStoreVersionRecord(
+  kv: KVNamespace,
+  input: {
+    product: OtaRelease["product"]
+    target: "ios" | "android" | DesktopDistribution
+    value: StoreVersionRecord
+  },
+) {
+  await kv.put(KV_KEYS.storeVersion(input.product, input.target), JSON.stringify(input.value))
 }

@@ -29,9 +29,6 @@ describe("applyDesktopReleaseConfig", () => {
           mode: "ota",
           runtimeVersion: "1.5.0",
           channel: "stable",
-          distributions: ["direct"],
-          required: false,
-          message: null,
         },
         null,
         2,
@@ -73,9 +70,6 @@ describe("applyDesktopReleaseConfig", () => {
           mode: "build",
           runtimeVersion: null,
           channel: null,
-          distributions: [],
-          required: false,
-          message: null,
         },
         null,
         2,
@@ -92,7 +86,7 @@ describe("applyDesktopReleaseConfig", () => {
     )
   })
 
-  it("rejects binary-policy mode when distributions are missing", async () => {
+  it("rejects ota mode when the channel is missing", async () => {
     const projectDir = await mkdtemp(join(tmpdir(), "desktop-release-config-"))
     tempDirs.push(projectDir)
 
@@ -105,12 +99,9 @@ describe("applyDesktopReleaseConfig", () => {
       join(projectDir, "release-plan.json"),
       `${JSON.stringify(
         {
-          mode: "binary-policy",
-          runtimeVersion: null,
-          channel: "stable",
-          distributions: [],
-          required: true,
-          message: "Install the required binary update.",
+          mode: "ota",
+          runtimeVersion: "1.5.0",
+          channel: null,
         },
         null,
         2,
@@ -121,7 +112,7 @@ describe("applyDesktopReleaseConfig", () => {
     const { applyReleaseConfig } = await import("./apply-release-config.impl.ts")
 
     await expect(() => applyReleaseConfig({ projectDir, version: "1.5.1" })).rejects.toThrow(
-      /binary-policy mode requires channel and distributions/i,
+      /desktop ota mode requires a channel/i,
     )
   })
 })

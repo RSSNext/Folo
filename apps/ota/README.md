@@ -23,7 +23,6 @@ Desktop release modes:
 
 - `build`: publish direct installer assets only
 - `ota`: publish renderer OTA assets and direct installer assets together
-- `binary-policy`: publish distribution-specific binary policy without rebuilding installers
 
 ## Request Shape
 
@@ -44,16 +43,29 @@ Desktop `/manifest`:
 
 `/policy`:
 
-- Requires `installedBinaryVersion`.
+- Requires `platform` and `installedBinaryVersion`.
 - Accepts `channel`; defaults to `production`.
 - Accepts `product`; defaults to `mobile`.
+- Detects the current live store version automatically:
+  - `ios`: App Store lookup API
+  - `android`: Google Play storefront
+- Returns `none` or `prompt`.
 
 Desktop `/policy`:
 
 - Uses `X-App-Platform`, `X-App-Version`, and `X-App-Channel`.
 - Resolves `distribution` from `X-App-Platform`.
-- Prefers `policy:<product>:<channel>:<distribution>` and falls back to `policy:<product>:<channel>`.
-- Returns `none`, `prompt`, or `block` plus distribution-specific `downloadUrl` or `storeUrl`.
+- Detects the current live store version automatically for store distributions:
+  - `mas`: Mac App Store storefront
+  - `mss`: Microsoft Store public update service
+- Returns `none` or `prompt` plus distribution-specific `storeUrl`.
+
+Store version caching:
+
+- Scheduled sync refreshes storefront versions into KV every 5 minutes.
+- `POST /internal/sync` refreshes both GitHub release metadata and storefront versions.
+- `/policy` reads cached storefront versions first.
+- If a cache entry is missing, `/policy` fetches the storefront version once and backfills KV.
 
 ## Release Checklist
 
@@ -61,20 +73,19 @@ Desktop `/policy`:
 2. Confirm the GitHub Release contains both `ota-release.json` and `dist.tar.zst`.
 3. Trigger an OTA sync after publishing or updating release assets.
 4. Verify `/internal/health` reports a fresh `lastSuccessAt`.
-5. Verify `/manifest` resolves the expected `releaseVersion` for every target platform.
-6. Download the returned launch asset URL and confirm it is reachable.
-7. Verify `/policy` returns the expected action for the installed binary version.
-8. Run the automated OTA and mobile verification commands before closing the rollout.
+5. Verify `/internal/health` reports a fresh `storeVersionLastSuccessAt`.
+6. Verify `/manifest` resolves the expected `releaseVersion` for every target platform.
+7. Download the returned launch asset URL and confirm it is reachable.
+8. Verify `/policy` returns the expected action for the current installed version and storefront.
+9. Run the automated OTA and mobile verification commands before closing the rollout.
 
 ## Rollback Checklist
 
 1. Identify the last known good OTA release version for the affected `channel`, `runtimeVersion`, and platform set.
 2. Read the current KV pointers before changing anything.
 3. Overwrite the affected `latest:<product>:<channel>:<runtimeVersion>:<platform>` keys with the previous good `releaseVersion`.
-4. If the issue is a bad store policy release, overwrite `policy:<product>:<channel>` with the previous good store release record.
-5. If the issue is a bad desktop distribution policy release, overwrite `policy:<product>:<channel>:<distribution>` with the previous good policy record.
-6. Re-run the manual verification commands for `/manifest` and `/policy`.
-7. Correct the GitHub Release source of truth before the next sync.
+4. Re-run the manual verification commands for `/manifest` and `/policy`.
+5. Correct the GitHub Release source of truth before the next sync.
 
 ## Verified v1 Limitation
 
@@ -96,6 +107,7 @@ Set these before running the manual checks:
 ```bash
 export OTA_BASE_URL="https://ota.folo.is"
 export OTA_PRODUCT="mobile"
+export OTA_PLATFORM="ios"
 export OTA_CHANNEL="production"
 export OTA_RUNTIME_VERSION="0.4.1"
 export OTA_INSTALLED_BINARY_VERSION="0.4.1"
@@ -104,7 +116,6 @@ export OTA_RELEASE_VERSION="0.4.2"
 export OTA_SYNC_TOKEN_HEADER="x-ota-sync-token"
 export OTA_SYNC_TOKEN="<secret>"
 export OTA_GOOD_RELEASE_VERSION="0.4.1"
-export OTA_GOOD_STORE_VERSION="0.4.1"
 ```
 
 Production and development Workers must also provide an `OTA_CODE_SIGNING_PRIVATE_KEY` secret containing the PEM-encoded PKCS#8 private key that matches `apps/mobile/code-signing/certificate.pem`.
@@ -157,7 +168,7 @@ Verify `/policy`:
 
 ```bash
 curl --fail --silent --show-error \
-  "$OTA_BASE_URL/policy?product=$OTA_PRODUCT&channel=$OTA_CHANNEL&installedBinaryVersion=$OTA_INSTALLED_BINARY_VERSION" \
+  "$OTA_BASE_URL/policy?product=$OTA_PRODUCT&platform=$OTA_PLATFORM&channel=$OTA_CHANNEL&installedBinaryVersion=$OTA_INSTALLED_BINARY_VERSION" \
   | tee /tmp/ota-policy.json
 
 jq . /tmp/ota-policy.json
@@ -189,51 +200,6 @@ curl --fail --silent --show-error \
   | tee /tmp/desktop-ota-policy.json
 
 jq . /tmp/desktop-ota-policy.json
-```
-
-## Manual Rollback Commands
-
-Inspect current pointers:
-
-```bash
-pnpm exec wrangler kv key get "latest:$OTA_PRODUCT:$OTA_CHANNEL:$OTA_RUNTIME_VERSION:ios" \
-  --binding OTA_KV \
-  --remote \
-  --text
-
-pnpm exec wrangler kv key get "latest:$OTA_PRODUCT:$OTA_CHANNEL:$OTA_RUNTIME_VERSION:android" \
-  --binding OTA_KV \
-  --remote \
-  --text
-```
-
-Rollback OTA pointers to the previous good release:
-
-```bash
-pnpm exec wrangler kv key put "latest:$OTA_PRODUCT:$OTA_CHANNEL:$OTA_RUNTIME_VERSION:ios" \
-  "{\"releaseVersion\":\"$OTA_GOOD_RELEASE_VERSION\"}" \
-  --binding OTA_KV \
-  --remote
-
-pnpm exec wrangler kv key put "latest:$OTA_PRODUCT:$OTA_CHANNEL:$OTA_RUNTIME_VERSION:android" \
-  "{\"releaseVersion\":\"$OTA_GOOD_RELEASE_VERSION\"}" \
-  --binding OTA_KV \
-  --remote
-```
-
-Rollback the store policy pointer:
-
-```bash
-pnpm exec wrangler kv key get "release:$OTA_PRODUCT:$OTA_GOOD_STORE_VERSION" \
-  --binding OTA_KV \
-  --remote \
-  --text \
-  > /tmp/ota-good-store-release.json
-
-pnpm exec wrangler kv key put "policy:$OTA_PRODUCT:$OTA_CHANNEL" \
-  --path /tmp/ota-good-store-release.json \
-  --binding OTA_KV \
-  --remote
 ```
 
 ## Automated Verification Commands

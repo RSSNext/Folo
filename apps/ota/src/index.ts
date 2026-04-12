@@ -1,7 +1,7 @@
 import { Hono } from "hono"
 
 import type { Env } from "./env"
-import { syncGitHubReleases } from "./lib/sync"
+import { syncGitHubReleases, syncStoreVersions } from "./lib/sync"
 import { assetsRoute } from "./routes/assets"
 import { internalRoute } from "./routes/internal"
 import { manifestRoute } from "./routes/manifest"
@@ -17,6 +17,6 @@ app.route("/", internalRoute)
 export default {
   fetch: app.fetch,
   scheduled(_controller: ScheduledController, env: Env, ctx: ExecutionContext) {
-    ctx.waitUntil(syncGitHubReleases(env))
+    ctx.waitUntil(Promise.all([syncGitHubReleases(env), syncStoreVersions(env)]))
   },
 }

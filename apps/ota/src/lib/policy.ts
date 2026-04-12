@@ -1,11 +1,5 @@
-import type { BinaryPolicyRecord } from "./kv"
-import type { DesktopDistribution, MobileOtaRelease, OtaRelease } from "./schema"
+import type { DesktopDistribution, OtaRelease } from "./schema"
 import { compareSemver } from "./version"
-
-type StoreReleasePolicyInput = Pick<
-  MobileOtaRelease,
-  "releaseVersion" | "releaseKind" | "runtimeVersion" | "policy"
->
 
 type StorePolicyEvaluation =
   | {
@@ -20,36 +14,23 @@ type StorePolicyEvaluation =
     }
 
 export function evaluateStorePolicy(
-  latestStoreRelease: StoreReleasePolicyInput | null,
+  latestStoreVersion: OtaRelease["releaseVersion"] | null,
   input: {
     installedBinaryVersion: OtaRelease["releaseVersion"]
   },
 ): StorePolicyEvaluation {
-  if (!latestStoreRelease || latestStoreRelease.releaseKind !== "store") {
+  if (!latestStoreVersion) {
     return { action: "none", targetVersion: null, message: null }
   }
 
-  if (
-    compareSemver(
-      input.installedBinaryVersion,
-      latestStoreRelease.policy.minSupportedBinaryVersion,
-    ) < 0
-  ) {
-    return {
-      action: "block",
-      targetVersion: latestStoreRelease.releaseVersion,
-      message: latestStoreRelease.policy.message,
-    }
-  }
-
-  if (compareSemver(latestStoreRelease.releaseVersion, input.installedBinaryVersion) <= 0) {
+  if (compareSemver(latestStoreVersion, input.installedBinaryVersion) <= 0) {
     return { action: "none", targetVersion: null, message: null }
   }
 
   return {
-    action: latestStoreRelease.policy.storeRequired ? "block" : "prompt",
-    targetVersion: latestStoreRelease.releaseVersion,
-    message: latestStoreRelease.policy.message,
+    action: "prompt",
+    targetVersion: latestStoreVersion,
+    message: null,
   }
 }
 
@@ -63,19 +44,13 @@ type BinaryPolicyEvaluation = {
   publishedAt: string | null
 }
 
-export function evaluateBinaryPolicy(
-  policies: {
-    targeted: BinaryPolicyRecord | null
-    generic: BinaryPolicyRecord | null
-  },
-  input: {
-    installedBinaryVersion: OtaRelease["releaseVersion"]
-    distribution: DesktopDistribution
-  },
-): BinaryPolicyEvaluation {
-  const policy = policies.targeted ?? policies.generic
-
-  if (!policy) {
+export function evaluateBinaryPolicy(input: {
+  installedBinaryVersion: OtaRelease["releaseVersion"]
+  distribution: DesktopDistribution
+  latestStoreVersion: OtaRelease["releaseVersion"] | null
+  storeUrl: string | null
+}): BinaryPolicyEvaluation {
+  if (input.distribution === "direct" || !input.latestStoreVersion) {
     return {
       action: "none",
       targetVersion: null,
@@ -87,19 +62,7 @@ export function evaluateBinaryPolicy(
     }
   }
 
-  if (compareSemver(input.installedBinaryVersion, policy.minSupportedBinaryVersion) < 0) {
-    return {
-      action: "block",
-      targetVersion: policy.releaseVersion,
-      message: policy.message,
-      distribution: input.distribution,
-      downloadUrl: policy.downloadUrl,
-      storeUrl: policy.storeUrl,
-      publishedAt: policy.publishedAt,
-    }
-  }
-
-  if (compareSemver(policy.releaseVersion, input.installedBinaryVersion) <= 0) {
+  if (compareSemver(input.latestStoreVersion, input.installedBinaryVersion) <= 0) {
     return {
       action: "none",
       targetVersion: null,
@@ -112,12 +75,12 @@ export function evaluateBinaryPolicy(
   }
 
   return {
-    action: policy.required ? "block" : "prompt",
-    targetVersion: policy.releaseVersion,
-    message: policy.message,
+    action: "prompt",
+    targetVersion: input.latestStoreVersion,
+    message: null,
     distribution: input.distribution,
-    downloadUrl: policy.downloadUrl,
-    storeUrl: policy.storeUrl,
-    publishedAt: policy.publishedAt,
+    downloadUrl: null,
+    storeUrl: input.storeUrl,
+    publishedAt: null,
   }
 }

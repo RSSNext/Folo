@@ -3,17 +3,13 @@ import { readFile, writeFile } from "node:fs/promises"
 import { join } from "pathe"
 
 const semverPattern = /^\d+\.\d+\.\d+$/
-const validModes = new Set(["build", "ota", "binary-policy"])
+const validModes = new Set(["build", "ota"])
 const validChannels = new Set(["stable", "beta", "alpha"])
-const validDistributions = new Set(["direct", "mas", "mss"])
 
 export interface DesktopReleasePlan {
-  mode: "build" | "ota" | "binary-policy"
+  mode: "build" | "ota"
   runtimeVersion: string | null
   channel: "stable" | "beta" | "alpha" | null
-  distributions: Array<"direct" | "mas" | "mss">
-  required: boolean
-  message: string | null
 }
 
 interface DesktopPackageJson {
@@ -62,18 +58,11 @@ async function readReleasePlan(path: string): Promise<DesktopReleasePlan> {
 
 function validateReleasePlan(plan: DesktopReleasePlan) {
   if (!validModes.has(plan.mode)) {
-    throw new Error("release-plan.json mode must be build, ota, or binary-policy")
+    throw new Error("release-plan.json mode must be build or ota")
   }
 
   if (plan.channel !== null && !validChannels.has(plan.channel)) {
     throw new Error("release-plan.json channel must be stable, beta, alpha, or null")
-  }
-
-  if (
-    !Array.isArray(plan.distributions) ||
-    plan.distributions.some((item) => !validDistributions.has(item))
-  ) {
-    throw new Error("release-plan.json distributions must only contain direct, mas, or mss")
   }
 
   if (plan.mode === "build") {
@@ -90,11 +79,6 @@ function validateReleasePlan(plan: DesktopReleasePlan) {
     if (!plan.channel) {
       throw new Error("desktop ota mode requires a channel")
     }
-    return
-  }
-
-  if (!plan.channel || plan.distributions.length === 0) {
-    throw new Error("desktop binary-policy mode requires channel and distributions")
   }
 }
 
@@ -103,8 +87,5 @@ export function createDefaultReleasePlan(): DesktopReleasePlan {
     mode: "build",
     runtimeVersion: null,
     channel: null,
-    distributions: [],
-    required: false,
-    message: null,
   }
 }

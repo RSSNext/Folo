@@ -24,10 +24,6 @@ on:
       build_version:
         type: string
         description: "Build Version, only available when mas is true"
-      metadata_only:
-        type: boolean
-        description: "Publish release metadata only without rebuilding desktop binaries"
-        default: false
 
 # https://docs.github.com/en/enterprise-cloud@latest/actions/writing-workflows/choosing-what-your-workflow-does/control-the-concurrency-of-workflows-and-jobs
 concurrency:
@@ -43,7 +39,7 @@ env:
 
 jobs:
   release:
-    if: github.secret_source != 'None' && github.event.inputs.metadata_only != 'true' && (github.event_name != 'push' || !contains(github.event.head_commit.message || '', 'release(desktop):'))
+    if: github.secret_source != 'None' && (github.event_name != 'push' || !contains(github.event.head_commit.message || '', 'release(desktop):'))
     runs-on: ${{ matrix.os }}
     env:
       PROD: ${{ github.event.inputs.tag_version == 'true' || github.ref_type == 'tag' || github.event.inputs.store == 'true' }}
@@ -349,7 +345,7 @@ jobs:
             apps/desktop/dist/*.tar.gz
 
   publish-release:
-    if: github.secret_source != 'None' && (needs.release.result == 'success' || github.event.inputs.metadata_only == 'true') && (github.event.inputs.tag_version == 'true' || github.ref_type == 'tag')
+    if: github.secret_source != 'None' && needs.release.result == 'success' && (github.event.inputs.tag_version == 'true' || github.ref_type == 'tag')
     needs: release
     runs-on: ubuntu-latest
 
@@ -376,7 +372,6 @@ jobs:
         run: pnpm i
 
       - name: Download release assets
-        if: github.event.inputs.metadata_only != 'true'
         uses: actions/download-artifact@v5
         with:
           pattern: desktop-release-assets-*
@@ -384,7 +379,6 @@ jobs:
           merge-multiple: true
 
       - name: Ensure zstd
-        if: github.event.inputs.metadata_only != 'true'
         shell: bash
         run: |
           if command -v zstd >/dev/null 2>&1; then
@@ -437,12 +431,7 @@ jobs:
         run: |
           release_files="$RUNNER_TEMP/desktop-release-files.txt"
 
-          if [ "${{ github.event.inputs.metadata_only }}" == "true" ]; then
-            cat <<'EOF' > "$release_files"
-          apps/desktop/dist/ota-release.json
-          EOF
-          else
-            cat <<'EOF' > "$release_files"
+          cat <<'EOF' > "$release_files"
           apps/desktop/out/make/**/Folo-*.dmg
           apps/desktop/out/make/**/Folo-*.zip
           apps/desktop/out/make/**/Folo-*.exe
@@ -453,9 +442,8 @@ jobs:
           apps/desktop/dist/ota-release.json
           EOF
 
-            if [ -f apps/desktop/dist.tar.zst ]; then
-              echo "apps/desktop/dist.tar.zst" >> "$release_files"
-            fi
+          if [ -f apps/desktop/dist.tar.zst ]; then
+            echo "apps/desktop/dist.tar.zst" >> "$release_files"
           fi
 
           {

@@ -20,21 +20,13 @@ describe("resolveDesktopReleaseConfig", () => {
           mode: "build",
           runtimeVersion: null,
           channel: null,
-          distributions: [],
-          required: false,
-          message: null,
         },
       }),
     ).toEqual({
       triggerDirectBuild: true,
       triggerStoreBuilds: true,
-      triggerMetadataPublish: false,
-      releaseKind: null,
       runtimeVersion: null,
       channel: null,
-      distributions: "",
-      required: "",
-      policyMessage: "",
       releaseVersion: "1.5.1",
     })
   })
@@ -50,52 +42,14 @@ describe("resolveDesktopReleaseConfig", () => {
           mode: "ota",
           runtimeVersion: "1.5.0",
           channel: "stable",
-          distributions: ["direct"],
-          required: false,
-          message: null,
         },
       }),
     ).toEqual({
       triggerDirectBuild: true,
       triggerStoreBuilds: true,
-      triggerMetadataPublish: false,
-      releaseKind: "ota",
       runtimeVersion: "1.5.0",
       channel: "stable",
-      distributions: "direct",
-      required: "false",
-      policyMessage: "",
       releaseVersion: "1.5.1",
-    })
-  })
-
-  it("triggers metadata publishing only for binary-policy mode", async () => {
-    const { resolveDesktopReleaseConfig } = await import("./resolve-desktop-release-config.mjs")
-
-    expect(
-      resolveDesktopReleaseConfig({
-        releaseVersion: "v1.5.2",
-        releaseConfig: {
-          version: "1.5.2",
-          mode: "binary-policy",
-          runtimeVersion: null,
-          channel: "beta",
-          distributions: ["mas", "mss"],
-          required: true,
-          message: "Install the store binary update.",
-        },
-      }),
-    ).toEqual({
-      triggerDirectBuild: false,
-      triggerStoreBuilds: false,
-      triggerMetadataPublish: true,
-      releaseKind: "binary",
-      runtimeVersion: null,
-      channel: "beta",
-      distributions: "mas,mss",
-      required: "true",
-      policyMessage: "Install the store binary update.",
-      releaseVersion: "1.5.2",
     })
   })
 
@@ -110,9 +64,6 @@ describe("resolveDesktopReleaseConfig", () => {
           mode: "build",
           runtimeVersion: null,
           channel: null,
-          distributions: [],
-          required: false,
-          message: null,
         },
       }),
     ).toThrow(/does not match release version/i)
@@ -129,15 +80,12 @@ describe("resolveDesktopReleaseConfig", () => {
           mode: "build",
           runtimeVersion: "1.5.1",
           channel: "stable",
-          distributions: [],
-          required: false,
-          message: null,
         },
       }),
     ).toThrow(/must not set runtimeVersion or channel/i)
   })
 
-  it("writes GitHub outputs safely for multiline policy messages", async () => {
+  it("writes GitHub outputs for ota mode", async () => {
     const projectDir = await mkdtemp(join(tmpdir(), "desktop-release-config-output-"))
 
     try {
@@ -149,12 +97,9 @@ describe("resolveDesktopReleaseConfig", () => {
         `${JSON.stringify(
           {
             version: "1.5.2",
-            mode: "binary-policy",
-            runtimeVersion: null,
+            mode: "ota",
+            runtimeVersion: "1.5.1",
             channel: "beta",
-            distributions: ["mas"],
-            required: true,
-            message: "Install the new build.\nStore rollout is required.",
           },
           null,
           2,
@@ -174,9 +119,12 @@ describe("resolveDesktopReleaseConfig", () => {
 
       const output = await readFile(githubOutputPath, "utf8")
 
-      expect(output).toContain("policyMessage<<")
-      expect(output).toContain("Install the new build.\nStore rollout is required.")
-      expect(output).not.toContain("policyMessage=Install the new build.\n")
+      expect(output).toContain("triggerDirectBuild=true")
+      expect(output).toContain("triggerStoreBuilds=true")
+      expect(output).toContain("runtimeVersion<<")
+      expect(output).toContain("1.5.1")
+      expect(output).toContain("channel<<")
+      expect(output).toContain("beta")
     } finally {
       await rm(projectDir, { recursive: true, force: true })
     }

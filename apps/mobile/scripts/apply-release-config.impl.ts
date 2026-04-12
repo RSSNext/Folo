@@ -5,11 +5,9 @@ import { join } from "pathe"
 const semverPattern = /^\d+\.\d+\.\d+$/
 
 export interface ReleasePlan {
-  mode: "store" | "ota" | "store-policy"
+  mode: "store" | "ota"
   runtimeVersion: string | null
   channel: "production" | "preview" | null
-  storeRequired: boolean
-  message: string | null
 }
 
 export async function applyReleaseConfig(input: { projectDir: string; version: string }) {
@@ -47,8 +45,8 @@ async function readReleasePlan(path: string): Promise<ReleasePlan> {
 }
 
 function validateReleasePlan(plan: ReleasePlan) {
-  if (plan.mode !== "store" && plan.mode !== "ota" && plan.mode !== "store-policy") {
-    throw new Error("release-plan.json mode must be store, ota, or store-policy")
+  if (plan.mode !== "store" && plan.mode !== "ota") {
+    throw new Error("release-plan.json mode must be store or ota")
   }
 
   if (plan.mode === "store") {
@@ -69,7 +67,5 @@ export function createDefaultReleasePlan(): ReleasePlan {
     mode: "store",
     runtimeVersion: null,
     channel: null,
-    storeRequired: false,
-    message: null,
   }
 }

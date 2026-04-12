@@ -24,8 +24,6 @@ describe("apply-release-config", () => {
           mode: "ota",
           runtimeVersion: "0.4.1",
           channel: "production",
-          storeRequired: false,
-          message: null,
         },
         null,
         2,

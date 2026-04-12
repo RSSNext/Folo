@@ -167,25 +167,6 @@ jobs:
             });
             console.log('Desktop store build triggered successfully');
 
-      - name: Trigger Desktop Metadata Publish
-        if: needs.create_tag.outputs.platform == 'desktop' && needs.create_tag.outputs.ref_name == 'main' && steps.desktop_release_mode.outputs.triggerMetadataPublish == 'true'
-        uses: actions/github-script@v9
-        with:
-          github-token: ${{ secrets.GITHUB_TOKEN }}
-          script: |
-            const response = await github.rest.actions.createWorkflowDispatch({
-              owner: context.repo.owner,
-              repo: context.repo.repo,
-              workflow_id: 'build-desktop.yml',
-              ref: 'main',
-              inputs: {
-                tag_version: 'true',
-                store: 'false',
-                metadata_only: 'true'
-              }
-            });
-            console.log('Desktop metadata publish triggered successfully');
-
       - name: Trigger Mobile Preview Release Build
         if: needs.create_tag.outputs.platform == 'mobile' && needs.create_tag.outputs.ref_name == 'mobile-main' && steps.release_mode.outputs.trigger_store_builds == 'true'
         uses: actions/github-script@v9
@@ -252,11 +233,8 @@ jobs:
               ref: '${{ needs.create_tag.outputs.tag_version }}',
               inputs: {
                 release_version: '${{ steps.release_mode.outputs.release_version }}',
-                release_kind: '${{ steps.release_mode.outputs.release_kind }}',
                 runtime_version: '${{ steps.release_mode.outputs.runtime_version }}',
-                channel: '${{ steps.release_mode.outputs.channel }}',
-                store_required: '${{ steps.release_mode.outputs.store_required }}',
-                policy_message: '${{ steps.release_mode.outputs.policy_message }}'
+                channel: '${{ steps.release_mode.outputs.channel }}'
               }
             });
             console.log('Mobile OTA publish workflow triggered successfully');

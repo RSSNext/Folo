@@ -4,15 +4,17 @@ import { buildMirroredAssetKey, extractMirroredFiles } from "./archive"
 import { KV_KEYS } from "./constants"
 import { listPublishedOtaReleases } from "./github"
 import type { BinaryPolicyRecord, LatestReleasePointerRecord } from "./kv"
-import { putBinaryPolicyRecord, putReleaseRecord } from "./kv"
+import { putBinaryPolicyRecord, putReleaseRecord, putStoreVersionRecord } from "./kv"
 import { putMirroredFiles } from "./r2"
 import type { DesktopDistribution, OtaPlatform, OtaProjectedPlatforms, OtaRelease } from "./schema"
 import { otaReleaseSchema } from "./schema"
+import { fetchDesktopStoreVersion, fetchMobileStoreVersion } from "./store-version"
 import { compareSemver } from "./version"
 
 const OTA_PLATFORMS: OtaPlatform[] = ["ios", "android", "macos", "windows", "linux"]
 const semverPattern = /^\d+\.\d+\.\d+$/
 let inFlightSync: Promise<void> | null = null
+let inFlightStoreSync: Promise<void> | null = null
 
 export async function syncGitHubReleases(env: Env) {
   if (inFlightSync) {
@@ -26,6 +28,22 @@ export async function syncGitHubReleases(env: Env) {
   })
 
   inFlightSync = syncPromise
+
+  return syncPromise
+}
+
+export async function syncStoreVersions(env: Env) {
+  if (inFlightStoreSync) {
+    return inFlightStoreSync
+  }
+
+  const syncPromise = runSyncStoreVersions(env).finally(() => {
+    if (inFlightStoreSync === syncPromise) {
+      inFlightStoreSync = null
+    }
+  })
+
+  inFlightStoreSync = syncPromise
 
   return syncPromise
 }
@@ -83,6 +101,65 @@ async function runSyncGitHubReleases(env: Env) {
   }
 
   await updateSyncLastSuccessAt(env.OTA_KV)
+}
+
+async function runSyncStoreVersions(env: Env) {
+  const fetchedAt = new Date().toISOString()
+  const syncTasks = [
+    {
+      product: "mobile" as const,
+      target: "ios" as const,
+      source: "app-store" as const,
+      fetchVersion: () => fetchMobileStoreVersion("ios"),
+    },
+    {
+      product: "mobile" as const,
+      target: "android" as const,
+      source: "google-play" as const,
+      fetchVersion: () => fetchMobileStoreVersion("android"),
+    },
+    {
+      product: "desktop" as const,
+      target: "mas" as const,
+      source: "mac-app-store" as const,
+      fetchVersion: async () => (await fetchDesktopStoreVersion("mas")).version,
+    },
+    {
+      product: "desktop" as const,
+      target: "mss" as const,
+      source: "microsoft-store" as const,
+      fetchVersion: async () => (await fetchDesktopStoreVersion("mss")).version,
+    },
+  ]
+
+  const results = await Promise.allSettled(
+    syncTasks.map(async (task) => {
+      const version = await task.fetchVersion()
+      if (!version) {
+        throw new Error(`No store version found for ${task.product}:${task.target}`)
+      }
+
+      await putStoreVersionRecord(env.OTA_KV, {
+        product: task.product,
+        target: task.target,
+        value: {
+          version,
+          fetchedAt,
+          source: task.source,
+        },
+      })
+    }),
+  )
+
+  const failures = results.filter((result) => result.status === "rejected")
+  if (failures.length > 0) {
+    throw new AggregateError(
+      failures.map((result) => (result as PromiseRejectedResult).reason),
+      "Failed to refresh one or more store versions",
+    )
+  }
+
+  await env.OTA_KV.put(KV_KEYS.storeVersionSyncLastSuccessAt, fetchedAt)
 }
 
 export async function mirrorReleaseToStorage(
