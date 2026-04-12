@@ -15,6 +15,10 @@ const DEFAULT_MOBILE_PROJECT_DIR = join(REPO_ROOT, "apps", "mobile")
 const DEFAULT_DESKTOP_PROJECT_DIR = join(REPO_ROOT, "apps", "desktop")
 const OTA_PLATFORMS = ["ios", "android"]
 const DESKTOP_PLATFORMS = new Set(["macos", "windows", "linux"])
+const DESKTOP_DEFAULT_CHANNEL = "stable"
+const DESKTOP_MAC_APP_STORE_URL =
+  "https://apps.apple.com/us/app/folo-follow-everything/id6739802604"
+const DESKTOP_MICROSOFT_STORE_URL = "https://apps.microsoft.com/detail/9nvfzpv0v0ht?mode=direct"
 const CONTENT_TYPES = new Map([
   [".aac", "audio/aac"],
   [".bmp", "image/bmp"],
@@ -247,6 +251,7 @@ export async function buildDesktopReleaseAssets(options = {}) {
   const [owner, repo] = resolveRepository(options)
   const releaseKind = releaseConfig.mode === "ota" ? "ota" : "binary"
   const runtimeVersion = releaseConfig.mode === "ota" ? releaseConfig.runtimeVersion : null
+  const channel = releaseConfig.channel ?? DESKTOP_DEFAULT_CHANNEL
   const desktopApp =
     releaseConfig.mode === "binary-policy"
       ? null
@@ -277,7 +282,7 @@ export async function buildDesktopReleaseAssets(options = {}) {
   const otaMetadata = {
     schemaVersion: 2,
     product,
-    channel: releaseConfig.channel ?? null,
+    channel,
     releaseVersion,
     releaseKind,
     runtimeVersion,
@@ -290,9 +295,13 @@ export async function buildDesktopReleaseAssets(options = {}) {
       required: releaseConfig.required ?? false,
       minSupportedBinaryVersion: process.env.OTA_MIN_SUPPORTED_BINARY_VERSION ?? releaseVersion,
       message: releaseConfig.message ?? null,
-      distributions: Object.fromEntries(
-        (releaseConfig.distributions ?? []).map((distribution) => [distribution, {}]),
-      ),
+      distributions: resolveDesktopPolicyDistributions({
+        mode: releaseConfig.mode,
+        distributions: releaseConfig.distributions ?? [],
+        owner,
+        repo,
+        gitTag,
+      }),
     },
     desktop: {
       renderer: desktopRenderer,
@@ -842,6 +851,53 @@ async function resolveFileAsset(input) {
 
 function buildGitHubAssetUrl({ owner, repo, tag, filename }) {
   return `https://github.com/${owner}/${repo}/releases/download/${tag}/${filename}`
+}
+
+function buildGitHubReleaseUrl({ owner, repo, tag }) {
+  return `https://github.com/${owner}/${repo}/releases/tag/${tag}`
+}
+
+function resolveDesktopPolicyDistributions({ mode, distributions, owner, repo, gitTag }) {
+  const normalizedDistributions =
+    mode === "build" && distributions.length === 0 ? ["direct"] : distributions
+
+  return Object.fromEntries(
+    normalizedDistributions.map((distribution) => {
+      switch (distribution) {
+        case "direct": {
+          return [
+            distribution,
+            {
+              downloadUrl: buildGitHubReleaseUrl({
+                owner,
+                repo,
+                tag: gitTag,
+              }),
+            },
+          ]
+        }
+        case "mas": {
+          return [
+            distribution,
+            {
+              storeUrl: DESKTOP_MAC_APP_STORE_URL,
+            },
+          ]
+        }
+        case "mss": {
+          return [
+            distribution,
+            {
+              storeUrl: DESKTOP_MICROSOFT_STORE_URL,
+            },
+          ]
+        }
+        default: {
+          throw new Error(`Unsupported desktop distribution "${distribution}"`)
+        }
+      }
+    }),
+  )
 }
 
 function resolveRepository(options) {

@@ -344,8 +344,13 @@ releaseDate: 2026-04-11T10:00:00.000Z
     expect(result.otaMetadata.product).toBe("desktop")
     expect(result.otaMetadata.releaseKind).toBe("binary")
     expect(result.otaMetadata.runtimeVersion).toBeNull()
-    expect(result.otaMetadata.channel).toBeNull()
+    expect(result.otaMetadata.channel).toBe("stable")
     expect(result.otaMetadata.desktop.renderer).toBeNull()
+    expect(result.otaMetadata.policy.distributions).toEqual({
+      direct: {
+        downloadUrl: "https://github.com/RSSNext/Folo/releases/tag/desktop/v1.5.1",
+      },
+    })
     expect(result.otaMetadata.desktop.app.platforms.windows).toEqual(
       expect.objectContaining({
         platform: "windows-x64",
@@ -471,8 +476,12 @@ releaseDate: 2026-04-11T10:00:00.000Z
       minSupportedBinaryVersion: "1.5.1",
       message: "Install the latest desktop app.",
       distributions: {
-        mas: {},
-        mss: {},
+        mas: {
+          storeUrl: "https://apps.apple.com/us/app/folo-follow-everything/id6739802604",
+        },
+        mss: {
+          storeUrl: "https://apps.microsoft.com/detail/9nvfzpv0v0ht?mode=direct",
+        },
       },
     })
     expect(result.otaMetadata.desktop).toEqual({
@@ -517,6 +526,11 @@ releaseDate: 2026-04-11T10:00:00.000Z
       repo: "Folo",
     })
 
+    expect(result.otaMetadata.policy.distributions).toEqual({
+      direct: {
+        downloadUrl: "https://github.com/RSSNext/Folo/releases/tag/desktop/v1.5.1",
+      },
+    })
     expect(result.otaMetadata.desktop.app).toBeNull()
     expect(result.archivePath).toBeNull()
   })

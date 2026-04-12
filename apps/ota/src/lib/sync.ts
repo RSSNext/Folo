@@ -163,6 +163,10 @@ async function putLatestPolicyRecord(kv: KVNamespace, release: OtaRelease) {
     return
   }
 
+  if (release.releaseKind !== "store") {
+    return
+  }
+
   const existingPolicyRecord = await kv.get<OtaRelease>(
     KV_KEYS.policy(release.product, release.channel),
     "json",

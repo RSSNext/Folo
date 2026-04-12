@@ -352,6 +352,7 @@
   "notify.update_info_1": "Cliquez pour redémarrer",
   "notify.update_info_2": "Cliquez pour recharger la page",
   "notify.update_info_3": "Touchez pour recharger la page",
+  "notify.update_info_direct": "Cliquez pour ouvrir la page de téléchargement",
   "notify.update_info_store": "Cliquez pour ouvrir {{store}}",
   "player.back_10s": "Reculer 10s",
   "player.close": "Fermer",

@@ -20,7 +20,7 @@ Important notes:
 - `mainHash` is still regenerated automatically, but it is **not** the OTA compatibility switch anymore. Do not use it as the release decision point.
 - `runtimeVersion` in `apps/desktop/package.json` is the desktop OTA compatibility key. `apps/desktop/scripts/apply-release-config.impl.ts` writes it during bump.
 - This skill covers the normal `build` and `ota` desktop release flow.
-- `binary-policy` exists in `apps/desktop/release-plan.json`, but the current `tag.yml` automation does not dispatch a standalone desktop metadata-only publish path. Treat `binary-policy` as a manual or special-case workflow, not the normal regular release path.
+- `binary-policy` exists in `apps/desktop/release-plan.json`, and the current `tag.yml` automation dispatches a standalone desktop metadata-only publish path.
 
 ## Pre-flight checks
 
@@ -106,7 +106,7 @@ Use this decision table:
 
 - `binary-policy`
   Metadata-only policy release.
-  Do not treat this as part of the normal regular release flow until the GitHub automation wires it end-to-end.
+  Use this when the release should update desktop binary policy metadata without rebuilding installers.
 
 Present the analysis to the user with:
 

@@ -353,6 +353,7 @@
   "notify.update_info_1": "クリックして再起動",
   "notify.update_info_2": "クリックして再読み込み",
   "notify.update_info_3": "タッチして再読み込み",
+  "notify.update_info_direct": "クリックしてダウンロードページを開く",
   "notify.update_info_store": "クリックして{{store}}を開く",
   "player.back_10s": "10 秒戻る",
   "player.close": "閉じる",

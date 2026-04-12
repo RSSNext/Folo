@@ -167,6 +167,25 @@ jobs:
             });
             console.log('Desktop store build triggered successfully');
 
+      - name: Trigger Desktop Metadata Publish
+        if: needs.create_tag.outputs.platform == 'desktop' && needs.create_tag.outputs.ref_name == 'main' && steps.desktop_release_mode.outputs.triggerMetadataPublish == 'true'
+        uses: actions/github-script@v9
+        with:
+          github-token: ${{ secrets.GITHUB_TOKEN }}
+          script: |
+            const response = await github.rest.actions.createWorkflowDispatch({
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              workflow_id: 'build-desktop.yml',
+              ref: 'main',
+              inputs: {
+                tag_version: 'true',
+                store: 'false',
+                metadata_only: 'true'
+              }
+            });
+            console.log('Desktop metadata publish triggered successfully');
+
       - name: Trigger Mobile Preview Release Build
         if: needs.create_tag.outputs.platform == 'mobile' && needs.create_tag.outputs.ref_name == 'mobile-main' && steps.release_mode.outputs.trigger_store_builds == 'true'
         uses: actions/github-script@v9

@@ -16,12 +16,7 @@ import { channel, isWindows } from "../env"
 import { fetchDesktopManifest, fetchDesktopPolicy, getDesktopRuntimeVersion } from "./api"
 import { appUpdaterConfig } from "./configs"
 import { FollowUpdateProvider } from "./follow-update-provider"
-import type {
-  DesktopAppPayload,
-  DesktopDistribution,
-  DesktopManifestResponse,
-  DesktopPolicyResponse,
-} from "./types"
+import type { DesktopAppPayload, DesktopManifestResponse, DesktopPolicyResponse } from "./types"
 import { WindowsUpdater } from "./windows-updater"
 
 const logger = log.scope("app-updater")
@@ -155,10 +150,15 @@ class FollowUpdater {
     })
 
     if (result.hasUpdate && policy.distribution === "direct" && policy.downloadUrl) {
-      logger.warn("Direct binary policy requires a separate installer flow")
       logger.info("Direct binary policy available", {
         action: policy.action,
         downloadUrl: policy.downloadUrl,
+      })
+      await this.notifyDistributionUpdate(policy)
+    } else if (result.hasUpdate && policy.distribution === "direct") {
+      logger.info("Direct binary policy available", {
+        action: policy.action,
+        downloadUrl: null,
       })
     } else if (!result.hasUpdate) {
       logger.info("Update decision: none")
@@ -354,16 +354,18 @@ class FollowUpdater {
       return { hasUpdate: true }
     }
 
-    if (!info.storeUrl) {
-      logger.warn("Distribution update missing store URL", {
+    const targetUrl = info.distribution === "direct" ? info.downloadUrl : info.storeUrl
+
+    if (!targetUrl) {
+      logger.warn("Distribution update missing target URL", {
         distribution: info.distribution,
       })
       return { hasUpdate: false }
     }
 
     await callWindowExpose(mainWindow).distributionUpdateAvailable({
-      distribution: info.distribution as Exclude<DesktopDistribution, "direct">,
-      storeUrl: info.storeUrl,
+      distribution: info.distribution,
+      targetUrl,
       storeVersion: info.targetVersion ?? null,
       currentVersion: appVersion,
     })

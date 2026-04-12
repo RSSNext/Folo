@@ -701,6 +701,110 @@ describe("syncGitHubReleases", () => {
     expect(kvEntries.get(KV_KEYS.release("mobile", "0.4.3"))).toBe(JSON.stringify(storeRelease))
   })
 
+  it("does not let a newer mobile ota release overwrite the latest store policy record", async () => {
+    const kvEntries = new Map<string, unknown>()
+    const storeRelease = await createReleaseMetadata({
+      releaseVersion: "0.4.3",
+      releaseKind: "store",
+      runtimeVersion: "0.4.3",
+      publishedAt: "2026-04-10T16:00:00Z",
+      git: {
+        tag: "mobile/v0.4.3",
+        commit: "abcdef1234567895",
+      },
+      policy: {
+        storeRequired: true,
+        minSupportedBinaryVersion: "0.4.3",
+        message: "Install 0.4.3 from the store.",
+      },
+      platforms: {},
+    })
+    const otaBundle = textEncoder.encode("console.log('ota release 0.4.4')")
+    const otaRelease = await createReleaseMetadata({
+      releaseVersion: "0.4.4",
+      releaseKind: "ota",
+      runtimeVersion: "0.4.3",
+      publishedAt: "2026-04-10T18:00:00Z",
+      git: {
+        tag: "mobile/v0.4.4",
+        commit: "abcdef1234567896",
+      },
+      platforms: {
+        ios: {
+          launchAsset: {
+            path: "bundles/ios-main.js",
+            sha256: await sha256Hex(otaBundle),
+            contentType: "application/javascript",
+          },
+          assets: [],
+        },
+      },
+    })
+    const otaArchive = await createTarArchive([
+      {
+        name: "bundles/ios-main.js",
+        body: otaBundle,
+      },
+    ])
+
+    vi.stubGlobal(
+      "fetch",
+      vi.fn(async (input: string | URL | Request) => {
+        const url = String(input)
+
+        if (url === "https://api.github.com/repos/RSSNext/Folo/releases") {
+          return new Response(
+            JSON.stringify([
+              createGitHubReleaseAssetSet(
+                "mobile/v0.4.4",
+                "https://example.com/ota.json",
+                "https://example.com/ota.tar.zst",
+              ),
+              createGitHubReleaseAssetSet("mobile/v0.4.3", "https://example.com/store.json", null),
+            ]),
+            { status: 200 },
+          )
+        }
+
+        if (url === "https://example.com/store.json") {
+          return new Response(JSON.stringify(storeRelease), {
+            headers: {
+              "Content-Type": "application/json",
+            },
+          })
+        }
+
+        if (url === "https://example.com/ota.json") {
+          return new Response(JSON.stringify(otaRelease), {
+            headers: {
+              "Content-Type": "application/json",
+            },
+          })
+        }
+
+        if (url === "https://example.com/ota.tar.zst") {
+          return new Response(otaArchive)
+        }
+
+        throw new Error(`Unhandled fetch URL: ${url}`)
+      }),
+    )
+
+    await syncGitHubReleases(
+      createEnv({
+        kvEntries,
+        envOverrides: {
+          GITHUB_OWNER: "RSSNext",
+          GITHUB_REPO: "Folo",
+          GITHUB_TOKEN: "token",
+        },
+      }),
+    )
+
+    expect(kvEntries.get(KV_KEYS.policy("mobile", "production"))).toBe(JSON.stringify(storeRelease))
+    expect(kvEntries.get(KV_KEYS.release("mobile", "0.4.4"))).toBe(JSON.stringify(otaRelease))
+  })
+
   it("writes distribution-aware policy keys for desktop binary metadata", async () => {
     const kvEntries = new Map<string, unknown>()
     const binaryRelease = createDesktopReleaseMetadata({
