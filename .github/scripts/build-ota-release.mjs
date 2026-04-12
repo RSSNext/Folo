@@ -633,7 +633,7 @@ async function collectDesktopRendererPayload(input) {
     },
     launchAsset: await resolveFileAsset({
       sourcePath: rendererArchivePath,
-      metadataPath: join("renderer", filename),
+      metadataPath: filename,
     }),
     assets: [],
   }

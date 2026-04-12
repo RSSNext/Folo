@@ -429,7 +429,7 @@ releaseDate: 2026-04-11T10:00:00.000Z
             "https://github.com/RSSNext/Folo/releases/download/desktop/v1.5.1/manifest.yml",
         },
         launchAsset: expect.objectContaining({
-          path: "renderer/custom-renderer.tar.gz",
+          path: "custom-renderer.tar.gz",
           contentType: "application/gzip",
         }),
       }),
