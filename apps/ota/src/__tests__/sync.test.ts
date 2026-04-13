@@ -498,6 +498,102 @@ describe("syncGitHubReleases", () => {
     expect(kvEntries.get(KV_KEYS.syncLastSuccessAt)).toEqual(expect.any(String))
   })
 
+  it("backfills latest release summaries when GitHub returns 304 and the summary keys are missing", async () => {
+    const kvEntries = new Map<string, unknown>([[KV_KEYS.githubEtag, '"etag-current"']])
+    const mobileRelease = await createReleaseMetadata({
+      releaseVersion: "0.4.3",
+      releaseKind: "store",
+      runtimeVersion: "0.4.3",
+      publishedAt: "2026-04-10T16:00:00Z",
+      git: {
+        tag: "mobile/v0.4.3",
+        commit: "abcdef1234567895",
+      },
+      platforms: {},
+    })
+    const desktopRelease = createDesktopReleaseMetadata({
+      releaseVersion: "1.5.2",
+      releaseKind: "binary",
+      runtimeVersion: null,
+      publishedAt: "2026-04-11T12:00:00Z",
+      git: {
+        tag: "desktop/v1.5.2",
+        commit: "abcdef1234567891",
+      },
+      desktop: {
+        renderer: null,
+        app: null,
+      },
+    })
+
+    let githubRequestCount = 0
+    vi.stubGlobal(
+      "fetch",
+      vi.fn(async (input: string | URL | Request) => {
+        const url = String(input)
+
+        if (url === "https://api.github.com/repos/RSSNext/Folo/releases") {
+          githubRequestCount += 1
+
+          if (githubRequestCount === 1) {
+            return new Response(null, { status: 304 })
+          }
+
+          return new Response(
+            JSON.stringify([
+              createGitHubReleaseAssetSet(
+                "desktop/v1.5.2",
+                "https://example.com/desktop.json",
+                null,
+              ),
+              createGitHubReleaseAssetSet("mobile/v0.4.3", "https://example.com/mobile.json", null),
+            ]),
+            { status: 200 },
+          )
+        }
+
+        if (url === "https://example.com/mobile.json") {
+          return new Response(JSON.stringify(mobileRelease), {
+            headers: { "Content-Type": "application/json" },
+          })
+        }
+
+        if (url === "https://example.com/desktop.json") {
+          return new Response(JSON.stringify(desktopRelease), {
+            headers: { "Content-Type": "application/json" },
+          })
+        }
+
+        throw new Error(`Unhandled fetch URL: ${url}`)
+      }),
+    )
+
+    await syncGitHubReleases(
+      createEnv({
+        kvEntries,
+        envOverrides: {
+          GITHUB_OWNER: "RSSNext",
+          GITHUB_REPO: "Folo",
+          GITHUB_TOKEN: "token",
+        },
+      }),
+    )
+
+    expect(githubRequestCount).toBe(2)
+    expect(JSON.parse(String(kvEntries.get(KV_KEYS.latestReleaseVersion("mobile"))))).toEqual({
+      product: "mobile",
+      version: "0.4.3",
+      publishedAt: "2026-04-10T16:00:00Z",
+      tag: "mobile/v0.4.3",
+    })
+    expect(JSON.parse(String(kvEntries.get(KV_KEYS.latestReleaseVersion("desktop"))))).toEqual({
+      product: "desktop",
+      version: "1.5.2",
+      publishedAt: "2026-04-11T12:00:00Z",
+      tag: "desktop/v1.5.2",
+    })
+  })
+
   it("does not advance sync markers when a later release fails validation", async () => {
     const kvEntries = new Map<string, unknown>([
       [KV_KEYS.githubEtag, '"etag-old"'],

@@ -18,6 +18,11 @@ import { compareSemver } from "./version"
 
 const OTA_PLATFORMS: OtaPlatform[] = ["ios", "android", "macos", "windows", "linux"]
 const semverPattern = /^\d+\.\d+\.\d+$/
+type ReleaseSummary = {
+  tag: string
+  metadataUrl: string
+  archiveUrl: string | null
+}
 let inFlightSync: Promise<void> | null = null
 let inFlightStoreSync: Promise<void> | null = null
 
@@ -54,10 +59,6 @@ export async function syncStoreVersions(env: Env) {
 }
 
 async function runSyncGitHubReleases(env: Env) {
-  const latestReleaseByProduct = new Map<
-    OtaRelease["product"],
-    Pick<OtaRelease, "releaseVersion" | "publishedAt"> & { tag: string }
-  >()
   const storedEtag = await env.OTA_KV.get<string>(KV_KEYS.githubEtag)
   const releasesResult = await listPublishedOtaReleases({
     owner: env.GITHUB_OWNER,
@@ -67,53 +68,12 @@ async function runSyncGitHubReleases(env: Env) {
   })
 
   if (releasesResult.kind === "not-modified") {
+    await ensureLatestReleaseVersionRecords(env)
     await updateSyncLastSuccessAt(env.OTA_KV)
     return
   }
 
-  for (const releaseSummary of releasesResult.releases) {
-    const release = await fetchReleaseMetadata(releaseSummary.metadataUrl, env)
-    updateLatestReleaseByProduct(latestReleaseByProduct, release)
-
-    if (release.releaseKind === "ota") {
-      if (!releaseSummary.archiveUrl) {
-        throw new Error(
-          `Missing OTA archive asset for ${release.product} release ${release.releaseVersion}`,
-        )
-      }
-
-      const archiveBuffer = await fetchArchiveBuffer(releaseSummary.archiveUrl, env)
-      const files = await extractMirroredFiles({
-        release,
-        archiveBuffer,
-      })
-
-      await mirrorReleaseToStorage(
-        {
-          release,
-          files,
-        },
-        {
-          kv: env.OTA_KV,
-          bucket: env.OTA_BUCKET,
-        },
-      )
-
-      continue
-    }
-
-    await putReleaseRecord(env.OTA_KV, release.product, release.releaseVersion, release)
-    await putLatestPolicyRecord(env.OTA_KV, release)
-  }
-
-  for (const [product, latestRelease] of latestReleaseByProduct) {
-    await putLatestReleaseVersionRecord(env.OTA_KV, {
-      product,
-      version: latestRelease.releaseVersion,
-      publishedAt: latestRelease.publishedAt,
-      tag: latestRelease.tag,
-    })
-  }
+  await persistReleaseSummaries(env, releasesResult.releases)
 
   if (releasesResult.etag) {
     await env.OTA_KV.put(KV_KEYS.githubEtag, releasesResult.etag)
@@ -179,6 +139,105 @@ async function runSyncStoreVersions(env: Env) {
   }
 
   await env.OTA_KV.put(KV_KEYS.storeVersionSyncLastSuccessAt, fetchedAt)
+}
+
+async function ensureLatestReleaseVersionRecords(env: Env) {
+  const [mobileLatest, desktopLatest] = await Promise.all([
+    env.OTA_KV.get(KV_KEYS.latestReleaseVersion("mobile")),
+    env.OTA_KV.get(KV_KEYS.latestReleaseVersion("desktop")),
+  ])
+
+  if (mobileLatest && desktopLatest) {
+    return
+  }
+
+  const releasesResult = await listPublishedOtaReleases({
+    owner: env.GITHUB_OWNER,
+    repo: env.GITHUB_REPO,
+    token: env.GITHUB_TOKEN,
+    etag: null,
+  })
+
+  if (releasesResult.kind === "not-modified") {
+    return
+  }
+
+  await persistLatestReleaseVersionRecords(env, releasesResult.releases)
+}
+
+async function persistReleaseSummaries(env: Env, releases: ReleaseSummary[]) {
+  const latestReleaseByProduct = new Map<
+    OtaRelease["product"],
+    Pick<OtaRelease, "releaseVersion" | "publishedAt"> & { tag: string }
+  >()
+
+  for (const releaseSummary of releases) {
+    const release = await fetchReleaseMetadata(releaseSummary.metadataUrl, env)
+    updateLatestReleaseByProduct(latestReleaseByProduct, release)
+
+    if (release.releaseKind === "ota") {
+      if (!releaseSummary.archiveUrl) {
+        throw new Error(
+          `Missing OTA archive asset for ${release.product} release ${release.releaseVersion}`,
+        )
+      }
+
+      const archiveBuffer = await fetchArchiveBuffer(releaseSummary.archiveUrl, env)
+      const files = await extractMirroredFiles({
+        release,
+        archiveBuffer,
+      })
+
+      await mirrorReleaseToStorage(
+        {
+          release,
+          files,
+        },
+        {
+          kv: env.OTA_KV,
+          bucket: env.OTA_BUCKET,
+        },
+      )
+
+      continue
+    }
+
+    await putReleaseRecord(env.OTA_KV, release.product, release.releaseVersion, release)
+    await putLatestPolicyRecord(env.OTA_KV, release)
+  }
+
+  await writeLatestReleaseVersionRecords(env.OTA_KV, latestReleaseByProduct)
+}
+
+async function persistLatestReleaseVersionRecords(env: Env, releases: ReleaseSummary[]) {
+  const latestReleaseByProduct = new Map<
+    OtaRelease["product"],
+    Pick<OtaRelease, "releaseVersion" | "publishedAt"> & { tag: string }
+  >()
+
+  for (const releaseSummary of releases) {
+    const release = await fetchReleaseMetadata(releaseSummary.metadataUrl, env)
+    updateLatestReleaseByProduct(latestReleaseByProduct, release)
+  }
+
+  await writeLatestReleaseVersionRecords(env.OTA_KV, latestReleaseByProduct)
+}
+
+async function writeLatestReleaseVersionRecords(
+  kv: KVNamespace,
+  latestReleaseByProduct: Map<
+    OtaRelease["product"],
+    Pick<OtaRelease, "releaseVersion" | "publishedAt"> & { tag: string }
+  >,
+) {
+  for (const [product, latestRelease] of latestReleaseByProduct) {
+    await putLatestReleaseVersionRecord(kv, {
+      product,
+      version: latestRelease.releaseVersion,
+      publishedAt: latestRelease.publishedAt,
+      tag: latestRelease.tag,
+    })
+  }
 }
 
 function updateLatestReleaseByProduct(
