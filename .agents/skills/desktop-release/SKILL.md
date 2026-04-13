@@ -20,7 +20,7 @@ Important notes:
 - `mainHash` is still regenerated automatically, but it is **not** the OTA compatibility switch anymore. Do not use it as the release decision point.
 - `runtimeVersion` in `apps/desktop/package.json` is the desktop OTA compatibility key. `apps/desktop/scripts/apply-release-config.impl.ts` writes it during bump.
 - This skill covers the normal `build` and `ota` desktop release flow.
-- `binary-policy` exists in `apps/desktop/release-plan.json`, and the current `tag.yml` automation dispatches a standalone desktop metadata-only publish path.
+- Do not recommend or write any other mode. The current implementation only supports `build` and `ota`.
 
 ## Pre-flight checks
 
@@ -100,13 +100,8 @@ Use this decision table:
   For `ota`, you must choose:
   - `runtimeVersion`: the newest installed desktop binary version that this renderer update is compatible with
   - `channel`: usually `stable`
-  - `distributions`: any desktop distributions that should receive policy metadata alongside the OTA release
 
   If you are unsure whether a change is binary-compatible, prefer `build`.
-
-- `binary-policy`
-  Metadata-only policy release.
-  Use this when the release should update desktop binary policy metadata without rebuilding installers.
 
 Present the analysis to the user with:
 

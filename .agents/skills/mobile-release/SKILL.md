@@ -13,7 +13,8 @@ The skill must recommend one of these modes, explain why, ask the user to confir
 
 - `store`: normal App Store / Google Play release
 - `ota`: OTA-only publish, no store builds
-- `store-policy`: metadata-only publish for `/policy`, no store builds
+
+Do not recommend or write any other mode. The current implementation only supports `store` and `ota`.
 
 The CI release flow is file-driven:
 
@@ -80,16 +81,9 @@ The CI release flow is file-driven:
 - no native or runtime-affecting paths changed
 - the goal is to ship without store review
 
-### Recommend `store-policy` only when:
-
-- the user explicitly wants `/policy` to prompt or block older binaries
-- no new store binary should be built
-
-Do not recommend `store-policy` by default for ordinary releases.
-
 ### Determine the target runtime
 
-If recommending `ota` or `store-policy`, derive the target store binary version from recent `origin/mobile-main` releases and propose it as the `runtimeVersion`.
+If recommending `ota`, derive the target store binary version from recent `origin/mobile-main` releases and propose it as the `runtimeVersion`.
 
 If you cannot determine the runtime confidently, stop and ask the user to confirm it.
 
@@ -99,9 +93,8 @@ Present:
 
 - the recommended mode
 - rationale based on changed files and commits
-- for `ota` or `store-policy`, the proposed `runtimeVersion`
-- for `ota` or `store-policy`, the proposed `channel`
-- for `store-policy`, whether `/policy` should block (`storeRequired=true`) or just prompt (`storeRequired=false`)
+- for `ota`, the proposed `runtimeVersion`
+- for `ota`, the proposed `channel`
 
 Wait for explicit user confirmation before continuing.
 
@@ -117,9 +110,7 @@ Examples:
 {
   "mode": "store",
   "runtimeVersion": null,
-  "channel": null,
-  "storeRequired": false,
-  "message": null
+  "channel": null
 }
 ```
 
@@ -129,21 +120,7 @@ Examples:
 {
   "mode": "ota",
   "runtimeVersion": "0.4.1",
-  "channel": "production",
-  "storeRequired": false,
-  "message": null
-}
-```
-
-### Store policy release
-
-```json
-{
-  "mode": "store-policy",
-  "runtimeVersion": "0.4.3",
-  "channel": "production",
-  "storeRequired": true,
-  "message": "Install 0.4.3 from the store."
+  "channel": "production"
 }
 ```
 
@@ -196,7 +173,6 @@ Examples:
    - new version
    - final release mode
    - runtimeVersion and channel if present
-   - storeRequired and message for `store-policy`
    - PR URL
 3. Summarize expected post-merge automation:
 
@@ -212,12 +188,6 @@ Examples:
 
 - create mobile tag
 - trigger OTA publish only
-- no store builds
-
-### `mode=store-policy`
-
-- create mobile tag
-- trigger metadata-only OTA publish
 - no store builds
 
 ## References
