@@ -128,7 +128,7 @@ jobs:
 
       - name: Create Release Draft
         if: github.event.inputs.release == 'true'
-        uses: softprops/action-gh-release@v2
+        uses: softprops/action-gh-release@v3
         with:
           name: Mobile v${{ steps.version.outputs.APP_VERSION }}
           draft: true

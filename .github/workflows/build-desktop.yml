@@ -453,7 +453,7 @@ jobs:
           } >> "$GITHUB_OUTPUT"
 
       - name: Create Release Draft
-        uses: softprops/action-gh-release@v2
+        uses: softprops/action-gh-release@v3
         with:
           name: Desktop v${{ steps.version.outputs.APP_VERSION }}
           draft: false
