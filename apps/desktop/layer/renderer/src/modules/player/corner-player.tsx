@@ -360,7 +360,7 @@ export const PlayerProgress = () => {
     return dayjs()
       .startOf("y")
       .second(time)
-      .format(time > ONE_HOUR_IN_SECONDS ? "H:mm:ss" : "m:ss")
+      .format(time >= ONE_HOUR_IN_SECONDS ? "H:mm:ss" : "m:ss")
   }
 
   const currentTimeIndicator = getTimeIndicator(controlledCurrentTime)
