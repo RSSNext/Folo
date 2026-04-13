@@ -1989,31 +1989,6 @@ describe("/versions", () => {
   })
 
   it("backfills latest github release versions when the summary keys are missing", async () => {
-    const mobileRelease = await createReleaseMetadata({
-      releaseVersion: "0.4.3",
-      releaseKind: "store",
-      runtimeVersion: "0.4.3",
-      publishedAt: "2026-04-10T16:00:00Z",
-      git: {
-        tag: "mobile/v0.4.3",
-        commit: "abcdef1234567895",
-      },
-      platforms: {},
-    })
-    const desktopRelease = createDesktopReleaseMetadata({
-      releaseVersion: "1.5.2",
-      releaseKind: "binary",
-      runtimeVersion: null,
-      publishedAt: "2026-04-11T12:00:00Z",
-      git: {
-        tag: "desktop/v1.5.2",
-        commit: "abcdef1234567891",
-      },
-      desktop: {
-        renderer: null,
-        app: null,
-      },
-    })
     const kvEntries = new Map<string, unknown>([
       [
         KV_KEYS.storeVersion("mobile", "ios"),
@@ -2033,27 +2008,21 @@ describe("/versions", () => {
         if (url === "https://api.github.com/repos/RSSNext/Folo/releases") {
           return new Response(
             JSON.stringify([
-              createGitHubReleaseAssetSet(
-                "desktop/v1.5.2",
-                "https://example.com/desktop.json",
-                null,
-              ),
-              createGitHubReleaseAssetSet("mobile/v0.4.3", "https://example.com/mobile.json", null),
+              {
+                tag_name: "desktop/v1.5.2",
+                draft: false,
+                prerelease: false,
+                published_at: "2026-04-11T12:00:00Z",
+              },
+              {
+                tag_name: "mobile/v0.4.3",
+                draft: false,
+                prerelease: false,
+                published_at: "2026-04-10T16:00:00Z",
+              },
             ]),
             { status: 200 },
           )
-        }
-
-        if (url === "https://example.com/mobile.json") {
-          return new Response(JSON.stringify(mobileRelease), {
-            headers: { "Content-Type": "application/json" },
-          })
-        }
-
-        if (url === "https://example.com/desktop.json") {
-          return new Response(JSON.stringify(desktopRelease), {
-            headers: { "Content-Type": "application/json" },
-          })
         }
 
         throw new Error(`Unhandled fetch URL: ${url}`)

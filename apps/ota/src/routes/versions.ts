@@ -1,13 +1,11 @@
 import { Hono } from "hono"
 
 import type { Env } from "../env"
-import { listPublishedOtaReleases } from "../lib/github"
 import {
   getLatestReleaseVersionRecord,
   getStoreVersionRecord,
   putLatestReleaseVersionRecord,
 } from "../lib/kv"
-import { otaReleaseSchema } from "../lib/schema"
 import { STORE_URLS } from "../lib/store-version"
 import { compareSemver } from "../lib/version"
 
@@ -50,19 +48,27 @@ versionsRoute.get("/versions", async (c) => {
 })
 
 async function backfillLatestReleaseVersions(env: Env) {
-  const releasesResult = await listPublishedOtaReleases({
-    owner: env.GITHUB_OWNER,
-    repo: env.GITHUB_REPO,
-    token: env.GITHUB_TOKEN,
-    etag: null,
-  })
+  const response = await fetch(
+    `https://api.github.com/repos/${env.GITHUB_OWNER}/${env.GITHUB_REPO}/releases`,
+    {
+      headers: {
+        Accept: "application/vnd.github+json",
+        "User-Agent": `folo-ota-worker/${env.GITHUB_OWNER}.${env.GITHUB_REPO}`,
+        ...(env.GITHUB_TOKEN ? { Authorization: `Bearer ${env.GITHUB_TOKEN}` } : {}),
+      },
+    },
+  )
 
-  if (releasesResult.kind === "not-modified") {
-    return {
-      mobile: null,
-      desktop: null,
-    }
+  if (!response.ok) {
+    throw new Error(`Failed to fetch GitHub releases (${response.status})`)
   }
+
+  const releases = (await response.json()) as Array<{
+    tag_name?: string
+    draft?: boolean
+    prerelease?: boolean
+    published_at?: string
+  }>
 
   const latestByProduct = new Map<
     "mobile" | "desktop",
@@ -74,20 +80,23 @@ async function backfillLatestReleaseVersions(env: Env) {
     }
   >()
 
-  for (const releaseSummary of releasesResult.releases) {
-    const response = await fetch(releaseSummary.metadataUrl)
-    if (!response.ok) {
-      throw new Error(`Failed to fetch release metadata (${response.status})`)
+  for (const release of releases) {
+    if (release.draft || release.prerelease || !release.tag_name || !release.published_at) {
+      continue
     }
 
-    const release = otaReleaseSchema.parse(await response.json())
-    const current = latestByProduct.get(release.product)
-    if (!current || compareSemver(release.releaseVersion, current.version) > 0) {
-      latestByProduct.set(release.product, {
-        product: release.product,
-        version: release.releaseVersion,
-        publishedAt: release.publishedAt,
-        tag: release.git.tag,
+    const parsed = parseProductReleaseTag(release.tag_name)
+    if (!parsed) {
+      continue
+    }
+
+    const current = latestByProduct.get(parsed.product)
+    if (!current || compareSemver(parsed.version, current.version) > 0) {
+      latestByProduct.set(parsed.product, {
+        product: parsed.product,
+        version: parsed.version,
+        publishedAt: release.published_at,
+        tag: release.tag_name,
       })
     }
   }
@@ -106,6 +115,25 @@ async function backfillLatestReleaseVersions(env: Env) {
   return {
     mobile,
     desktop,
+  }
+}
+
+function parseProductReleaseTag(
+  tag: string,
+): { product: "mobile" | "desktop"; version: string } | null {
+  const match = tag.match(/^(mobile|desktop)\/v(\d+\.\d+\.\d+)$/)
+  if (!match) {
+    return null
+  }
+
+  const [, product, version] = match
+  if ((product !== "mobile" && product !== "desktop") || !version) {
+    return null
+  }
+
+  return {
+    product,
+    version,
   }
 }
 
