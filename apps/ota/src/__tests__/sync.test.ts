@@ -1541,7 +1541,7 @@ describe("syncStoreVersions", () => {
         }
 
         if (url === "https://fe3.delivery.mp.microsoft.com/ClientWebService/client.asmx") {
-          const body = String(init?.body ?? "")
+          const body = String(_init?.body ?? "")
 
           if (body.includes("GetCookie")) {
             return new Response("<EncryptedData>cookie-value</EncryptedData>", {
@@ -1779,6 +1779,207 @@ describe("internal routes", () => {
     expect(kvEntries.get(KV_KEYS.storeVersion("mobile", "android"))).toEqual(expect.any(String))
     expect(kvEntries.get(KV_KEYS.storeVersion("desktop", "mas"))).toEqual(expect.any(String))
     expect(kvEntries.get(KV_KEYS.storeVersion("desktop", "mss"))).toEqual(expect.any(String))
+  })
+})
+
+describe("/versions", () => {
+  it("returns cached store versions and latest product release versions", async () => {
+    const response = await fetchWorker("/versions", undefined, {
+      kvEntries: new Map([
+        [
+          KV_KEYS.storeVersion("mobile", "ios"),
+          {
+            version: "0.4.1",
+            fetchedAt: "2026-04-12T14:25:27.016Z",
+            source: "app-store",
+          },
+        ],
+        [
+          KV_KEYS.storeVersion("mobile", "android"),
+          {
+            version: "0.4.1",
+            fetchedAt: "2026-04-12T14:25:27.016Z",
+            source: "google-play",
+          },
+        ],
+        [
+          KV_KEYS.storeVersion("desktop", "mas"),
+          {
+            version: "1.5.0",
+            fetchedAt: "2026-04-12T14:25:27.016Z",
+            source: "mac-app-store",
+          },
+        ],
+        [
+          KV_KEYS.storeVersion("desktop", "mss"),
+          {
+            version: "1.5.0",
+            fetchedAt: "2026-04-12T14:25:27.016Z",
+            source: "microsoft-store",
+          },
+        ],
+        [
+          KV_KEYS.latestReleaseVersion("mobile"),
+          {
+            product: "mobile",
+            version: "0.4.1",
+            publishedAt: "2026-04-10T12:00:00Z",
+            tag: "mobile/v0.4.1",
+          },
+        ],
+        [
+          KV_KEYS.latestReleaseVersion("desktop"),
+          {
+            product: "desktop",
+            version: "1.5.0",
+            publishedAt: "2026-04-11T10:00:00Z",
+            tag: "desktop/v1.5.0",
+          },
+        ],
+      ]),
+      envOverrides: {
+        GITHUB_OWNER: "RSSNext",
+        GITHUB_REPO: "Folo",
+      },
+    })
+
+    expect(response.status).toBe(200)
+    await expect(response.json()).resolves.toEqual({
+      store: {
+        mobile: {
+          ios: {
+            version: "0.4.1",
+            fetchedAt: "2026-04-12T14:25:27.016Z",
+            source: "app-store",
+            url: "https://apps.apple.com/us/app/folo-follow-everything/id6739802604",
+          },
+          android: {
+            version: "0.4.1",
+            fetchedAt: "2026-04-12T14:25:27.016Z",
+            source: "google-play",
+            url: "https://play.google.com/store/apps/details?id=is.follow",
+          },
+        },
+        desktop: {
+          mas: {
+            version: "1.5.0",
+            fetchedAt: "2026-04-12T14:25:27.016Z",
+            source: "mac-app-store",
+            url: "https://apps.apple.com/us/app/folo-follow-everything/id6739802604?platform=mac",
+          },
+          mss: {
+            version: "1.5.0",
+            fetchedAt: "2026-04-12T14:25:27.016Z",
+            source: "microsoft-store",
+            url: "https://apps.microsoft.com/detail/9nvfzpv0v0ht?mode=direct",
+          },
+        },
+      },
+      github: {
+        mobile: {
+          version: "0.4.1",
+          publishedAt: "2026-04-10T12:00:00Z",
+          tag: "mobile/v0.4.1",
+          url: "https://github.com/RSSNext/Folo/releases/tag/mobile/v0.4.1",
+        },
+        desktop: {
+          version: "1.5.0",
+          publishedAt: "2026-04-11T10:00:00Z",
+          tag: "desktop/v1.5.0",
+          url: "https://github.com/RSSNext/Folo/releases/tag/desktop/v1.5.0",
+        },
+      },
+    })
+  })
+})
+
+describe("latest release summary", () => {
+  it("persists the latest release version for each product during github sync", async () => {
+    const kvEntries = new Map<string, unknown>()
+    const mobileRelease = await createReleaseMetadata({
+      releaseVersion: "0.4.3",
+      releaseKind: "store",
+      runtimeVersion: "0.4.3",
+      publishedAt: "2026-04-10T16:00:00Z",
+      git: {
+        tag: "mobile/v0.4.3",
+        commit: "abcdef1234567895",
+      },
+      platforms: {},
+    })
+    const desktopRelease = createDesktopReleaseMetadata({
+      releaseVersion: "1.5.2",
+      releaseKind: "binary",
+      runtimeVersion: null,
+      publishedAt: "2026-04-11T12:00:00Z",
+      git: {
+        tag: "desktop/v1.5.2",
+        commit: "abcdef1234567891",
+      },
+      desktop: {
+        renderer: null,
+        app: null,
+      },
+    })
+
+    vi.stubGlobal(
+      "fetch",
+      vi.fn(async (input: string | URL | Request) => {
+        const url = String(input)
+
+        if (url === "https://api.github.com/repos/RSSNext/Folo/releases") {
+          return new Response(
+            JSON.stringify([
+              createGitHubReleaseAssetSet(
+                "desktop/v1.5.2",
+                "https://example.com/desktop.json",
+                null,
+              ),
+              createGitHubReleaseAssetSet("mobile/v0.4.3", "https://example.com/mobile.json", null),
+            ]),
+            { status: 200 },
+          )
+        }
+
+        if (url === "https://example.com/mobile.json") {
+          return new Response(JSON.stringify(mobileRelease), {
+            headers: { "Content-Type": "application/json" },
+          })
+        }
+
+        if (url === "https://example.com/desktop.json") {
+          return new Response(JSON.stringify(desktopRelease), {
+            headers: { "Content-Type": "application/json" },
+          })
+        }
+
+        throw new Error(`Unhandled fetch URL: ${url}`)
+      }),
+    )
+
+    await syncGitHubReleases(
+      createEnv({
+        kvEntries,
+        envOverrides: {
+          GITHUB_OWNER: "RSSNext",
+          GITHUB_REPO: "Folo",
+          GITHUB_TOKEN: "token",
+        },
+      }),
+    )
+
+    expect(JSON.parse(String(kvEntries.get(KV_KEYS.latestReleaseVersion("mobile"))))).toEqual({
+      product: "mobile",
+      version: "0.4.3",
+      publishedAt: "2026-04-10T16:00:00Z",
+      tag: "mobile/v0.4.3",
+    })
+    expect(JSON.parse(String(kvEntries.get(KV_KEYS.latestReleaseVersion("desktop"))))).toEqual({
+      product: "desktop",
+      version: "1.5.2",
+      publishedAt: "2026-04-11T12:00:00Z",
+      tag: "desktop/v1.5.2",
+    })
   })
 })
 

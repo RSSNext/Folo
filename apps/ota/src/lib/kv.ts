@@ -24,6 +24,13 @@ export interface StoreVersionRecord {
   source: "app-store" | "google-play" | "mac-app-store" | "microsoft-store"
 }
 
+export interface LatestReleaseVersionRecord {
+  product: OtaRelease["product"]
+  version: OtaRelease["releaseVersion"]
+  publishedAt: string
+  tag: string
+}
+
 export async function getLatestReleasePointer(
   kv: KVNamespace,
   input: {
@@ -96,4 +103,18 @@ export async function putStoreVersionRecord(
   },
 ) {
   await kv.put(KV_KEYS.storeVersion(input.product, input.target), JSON.stringify(input.value))
+}
+
+export async function getLatestReleaseVersionRecord(
+  kv: KVNamespace,
+  product: OtaRelease["product"],
+) {
+  return kv.get<LatestReleaseVersionRecord>(KV_KEYS.latestReleaseVersion(product), "json")
+}
+
+export async function putLatestReleaseVersionRecord(
+  kv: KVNamespace,
+  value: LatestReleaseVersionRecord,
+) {
+  await kv.put(KV_KEYS.latestReleaseVersion(value.product), JSON.stringify(value))
 }

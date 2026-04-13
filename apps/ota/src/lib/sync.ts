@@ -4,7 +4,12 @@ import { buildMirroredAssetKey, extractMirroredFiles } from "./archive"
 import { KV_KEYS } from "./constants"
 import { listPublishedOtaReleases } from "./github"
 import type { BinaryPolicyRecord, LatestReleasePointerRecord } from "./kv"
-import { putBinaryPolicyRecord, putReleaseRecord, putStoreVersionRecord } from "./kv"
+import {
+  putBinaryPolicyRecord,
+  putLatestReleaseVersionRecord,
+  putReleaseRecord,
+  putStoreVersionRecord,
+} from "./kv"
 import { putMirroredFiles } from "./r2"
 import type { DesktopDistribution, OtaPlatform, OtaProjectedPlatforms, OtaRelease } from "./schema"
 import { otaReleaseSchema } from "./schema"
@@ -49,6 +54,10 @@ export async function syncStoreVersions(env: Env) {
 }
 
 async function runSyncGitHubReleases(env: Env) {
+  const latestReleaseByProduct = new Map<
+    OtaRelease["product"],
+    Pick<OtaRelease, "releaseVersion" | "publishedAt"> & { tag: string }
+  >()
   const storedEtag = await env.OTA_KV.get<string>(KV_KEYS.githubEtag)
   const releasesResult = await listPublishedOtaReleases({
     owner: env.GITHUB_OWNER,
@@ -64,6 +73,7 @@ async function runSyncGitHubReleases(env: Env) {
 
   for (const releaseSummary of releasesResult.releases) {
     const release = await fetchReleaseMetadata(releaseSummary.metadataUrl, env)
+    updateLatestReleaseByProduct(latestReleaseByProduct, release)
 
     if (release.releaseKind === "ota") {
       if (!releaseSummary.archiveUrl) {
@@ -94,6 +104,15 @@ async function runSyncGitHubReleases(env: Env) {
 
     await putReleaseRecord(env.OTA_KV, release.product, release.releaseVersion, release)
     await putLatestPolicyRecord(env.OTA_KV, release)
+  }
+
+  for (const [product, latestRelease] of latestReleaseByProduct) {
+    await putLatestReleaseVersionRecord(env.OTA_KV, {
+      product,
+      version: latestRelease.releaseVersion,
+      publishedAt: latestRelease.publishedAt,
+      tag: latestRelease.tag,
+    })
   }
 
   if (releasesResult.etag) {
@@ -160,6 +179,23 @@ async function runSyncStoreVersions(env: Env) {
   }
 
   await env.OTA_KV.put(KV_KEYS.storeVersionSyncLastSuccessAt, fetchedAt)
+}
+
+function updateLatestReleaseByProduct(
+  latestReleaseByProduct: Map<
+    OtaRelease["product"],
+    Pick<OtaRelease, "releaseVersion" | "publishedAt"> & { tag: string }
+  >,
+  release: OtaRelease,
+) {
+  const current = latestReleaseByProduct.get(release.product)
+  if (!current || compareSemver(release.releaseVersion, current.releaseVersion) > 0) {
+    latestReleaseByProduct.set(release.product, {
+      releaseVersion: release.releaseVersion,
+      publishedAt: release.publishedAt,
+      tag: release.git.tag,
+    })
+  }
 }
 
 export async function mirrorReleaseToStorage(
