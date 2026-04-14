@@ -18,6 +18,7 @@ import { ContextMenu } from "@/src/components/ui/context-menu"
 import { Text } from "@/src/components/ui/typography/Text"
 import { useNavigation } from "@/src/lib/navigation/hooks"
 import { toast } from "@/src/lib/toast"
+import { playEntryTts } from "@/src/modules/player/entry-tts"
 import { EntryDetailScreen } from "@/src/screens/(stack)/entries/[entryId]/EntryDetailScreen"
 
 import { getFetchEntryPayload, useSelectedFeed, useSelectedView } from "../screen/atoms"
@@ -181,6 +182,22 @@ export const EntryItemContextMenu = ({
             </ContextMenu.ItemTitle>
           </ContextMenu.Item>
         )}
+
+        <ContextMenu.Item
+          key="PlayTts"
+          onSelect={() => {
+            void playEntryTts(id, {
+              toastTitle: t("entry_content.header.play_tts"),
+            })
+          }}
+        >
+          <ContextMenu.ItemIcon
+            ios={{
+              name: "speaker.wave.2",
+            }}
+          />
+          <ContextMenu.ItemTitle>{t("entry_content.header.play_tts")}</ContextMenu.ItemTitle>
+        </ContextMenu.Item>
 
         {entry.url && (
           <ContextMenu.Item

@@ -5,6 +5,10 @@ import { franc } from "franc-min"
 import { parseHtml } from "./html"
 import { duplicateIfLengthLessThan } from "./utils"
 
+const detectableLanguageCodes = Object.values(ACTION_LANGUAGE_MAP).flatMap(({ code }) =>
+  code ? [code] : [],
+)
+
 export const checkLanguage = ({
   content,
   language,
@@ -22,7 +26,7 @@ export const checkLanguage = ({
   }
 
   const sourceLanguage = franc(duplicateIfLengthLessThan(pureContent, 20), {
-    only: [code],
+    only: detectableLanguageCodes,
   })
 
   return sourceLanguage === code

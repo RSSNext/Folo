@@ -353,6 +353,7 @@
   "notify.update_info_1": "Click to restart",
   "notify.update_info_2": "Click to reload page",
   "notify.update_info_3": "Touch to reload page",
+  "notify.update_info_direct": "Click to open the download page",
   "notify.update_info_store": "Click to open {{store}}",
   "player.back_10s": "Back 10s",
   "player.close": "Close",

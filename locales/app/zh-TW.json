@@ -353,6 +353,7 @@
   "notify.update_info_1": "點擊重新啟動",
   "notify.update_info_2": "點擊重新整理頁面",
   "notify.update_info_3": "點選重新整理頁面",
+  "notify.update_info_direct": "點擊開啟下載頁面",
   "notify.update_info_store": "點擊前往 {{store}}",
   "player.back_10s": "後退 10 秒",
   "player.close": "關閉",

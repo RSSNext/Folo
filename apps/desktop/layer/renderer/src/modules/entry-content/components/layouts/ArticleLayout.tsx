@@ -58,7 +58,7 @@ export const ArticleLayout: React.FC<EntryLayoutProps> = ({
 
   return (
     <div className={cn(readableContentMaxWidthClassName, "mx-auto mt-1 px-4")}>
-      <EntryTitle entryId={entryId} compact={compact} containerClassName="mt-12" />
+      <EntryTitle entryId={entryId} compact={compact} containerClassName="mt-12 print:mt-6" />
 
       <ArticleAudioPlayer entryId={entryId} />
 

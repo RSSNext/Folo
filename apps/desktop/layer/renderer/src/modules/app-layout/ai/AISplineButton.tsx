@@ -25,9 +25,14 @@ export const AIIndicator: FC = () => {
   return (
     <>
       <AnimatePresence>
-        {shouldShow && !showSplineButton && <AISmartSidebar />}
+        {shouldShow && !showSplineButton && (
+          <div data-hide-in-print>
+            <AISmartSidebar />
+          </div>
+        )}
         {shouldShow && showSplineButton && (
           <m.button
+            data-hide-in-print
             key="ai-spline-button"
             initial={{ scale: 0, opacity: 0 }}
             animate={{ scale: 1, opacity: 1 }}

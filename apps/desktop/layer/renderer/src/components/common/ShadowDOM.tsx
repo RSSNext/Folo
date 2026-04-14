@@ -9,6 +9,7 @@ import root from "react-shadow"
 
 import { useUISettingKeys } from "~/atoms/settings/ui"
 import { useReduceMotion } from "~/hooks/biz/useReduceMotion"
+import { buildAppFontFamily } from "~/lib/font-family"
 import type { TextSelectionEvent } from "~/lib/simple-text-selection"
 import { addTextSelectionListener } from "~/lib/simple-text-selection"
 
@@ -120,7 +121,7 @@ export const ShadowDOM: FC<
         <div
           style={useMemo(
             () => ({
-              fontFamily: `${uiFont},"SN Pro", system-ui, sans-serif`,
+              fontFamily: buildAppFontFamily(uiFont),
               "--pointer": usePointerCursor ? "pointer" : "default",
               "--fo-a": hexToHslString(getAccentColorValue(accentColor)[dark ? "dark" : "light"]),
             }),

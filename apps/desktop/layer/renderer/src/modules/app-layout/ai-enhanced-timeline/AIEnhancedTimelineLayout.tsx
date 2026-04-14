@@ -218,6 +218,7 @@ const AIEnhancedTimelineLayoutImpl = () => {
         <AppLayoutGridContainerProvider>
           <div ref={layoutContainerRef} className="flex h-full min-w-0">
             <div
+              data-hide-in-print={showEntryDetailsColumn ? true : undefined}
               className={cn(
                 "relative flex h-full flex-col overflow-hidden",
                 shouldShowEntryBorder && "border-r",
@@ -273,9 +274,12 @@ const AIEnhancedTimelineLayoutImpl = () => {
                 {splitter}
 
                 <div
+                  data-hide-in-print={
+                    !showEntryContentOnRight && shouldShowFixedAI ? true : undefined
+                  }
                   className={cn(
                     "relative flex h-full min-w-0 flex-col overflow-hidden bg-theme-background",
-                    showEntryDetailsColumn ? "flex-1" : "flex-none",
+                    showEntryDetailsColumn ? "flex-1 print:w-full" : "flex-none",
                   )}
                   style={rightColumnStyle}
                 >

@@ -108,7 +108,7 @@ export const AISummary: FC<{
         <View className="mt-2 gap-3">
           <View className="flex-row items-center gap-2">
             <Animated.View className="size-2.5 rounded-full bg-purple" style={loadingPulseStyle} />
-            <Text className="text-[13px] text-secondary-label">{loadingTitle}</Text>
+            <Text className="text-[14px] leading-5 text-secondary-label">{loadingTitle}</Text>
           </View>
           <View className="gap-2">
             <Animated.View
@@ -152,7 +152,7 @@ export const AISummary: FC<{
     }
 
     return (
-      <Text className="mt-2 text-[13px] leading-5 text-label" selectable={!forMeasurement}>
+      <Text className="mt-2 text-base leading-6 text-label" selectable={!forMeasurement}>
         {summaryText.trim()}
       </Text>
     )
@@ -171,7 +171,7 @@ export const AISummary: FC<{
       <View className="mb-2 flex-row items-center justify-between">
         <View className="flex-row items-center gap-2">
           <AiCuteReIcon height={16} width={16} color={purpleColor} />
-          <Text className="text-[15px] font-semibold text-label">{summaryTitle}</Text>
+          <Text className="text-[16px] font-semibold text-label">{summaryTitle}</Text>
         </View>
         {summaryTextForSheet && (
           <Pressable

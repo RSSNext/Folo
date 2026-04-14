@@ -1,23 +1,45 @@
 ---
 name: desktop-release
-description: Perform a regular desktop release from the dev branch. Gathers commits since last release, updates changelog, evaluates mainHash changes, bumps version, and creates release PR.
+description: Perform a regular desktop release from the dev branch. Gather changes since the last desktop tag, update the changelog, choose the desktop release mode in release-plan.json, bump the version, and prepare the release PR.
 disable-model-invocation: true
 allowed-tools: Bash, Read, Write, Edit, Glob, Grep
 ---
 
 # Desktop Regular Release
 
-Perform a regular desktop release. This skill handles the full release workflow from the `dev` branch.
+Perform a regular desktop release from the `dev` branch.
+
+This workflow is now file-driven:
+
+- `apps/desktop/changelog/next.md` is the human-edited changelog draft.
+- `apps/desktop/release-plan.json` is the human-edited release intent.
+- `pnpm --dir apps/desktop bump` applies both inputs, writes `apps/desktop/release.json`, resets `apps/desktop/release-plan.json`, bumps the version, creates `release/desktop/{NEW_VERSION}`, pushes it, and opens the PR.
+
+Important notes:
+
+- `mainHash` is still regenerated automatically, but it is **not** the OTA compatibility switch anymore. Do not use it as the release decision point.
+- `runtimeVersion` in `apps/desktop/package.json` is the desktop OTA compatibility key. `apps/desktop/scripts/apply-release-config.impl.ts` writes it during bump.
+- This skill covers the normal `build` and `ota` desktop release flow.
+- Do not recommend or write any other mode. The current implementation only supports `build` and `ota`.
 
 ## Pre-flight checks
 
 1. Confirm the current branch is `dev`. If not, abort with a warning.
 2. Run `git pull --rebase` in the repo root to ensure the local branch is up to date.
-3. Read `apps/desktop/package.json` to get the current `version` and `mainHash`.
+3. Read:
+   - `apps/desktop/package.json`
+   - `apps/desktop/release-plan.json`
+   - `apps/desktop/release.json`
+   - `apps/desktop/bump.config.ts`
+4. Record the current:
+   - `version`
+   - `runtimeVersion`
+   - `release-plan.json` contents
+5. Note that `pnpm --dir apps/desktop bump` will push a branch and open a PR. Do not run it without explicit user approval.
 
-## Step 1: Gather changes since last release
+## Step 1: Gather changes since last desktop release
 
-1. Find the last release tag:
+1. Find the last desktop release tag:
    ```bash
    git tag --sort=-creatordate | grep '^desktop/v' | head -1
    ```
@@ -26,138 +48,170 @@ Perform a regular desktop release. This skill handles the full release workflow 
    git log <last-tag>..HEAD --oneline --no-merges
    ```
 3. Categorize commits into:
-   - **Shiny new things** (feat: commits, new features)
-   - **Improvements** (refactor:, perf:, chore: improvements, dependency updates)
-   - **No longer broken** (fix: commits, bug fixes)
-   - **Thanks** (identify external contributor GitHub usernames from commits)
+   - **Shiny new things**
+   - **Improvements**
+   - **No longer broken**
+   - **Thanks**
 
-## Step 2: Update changelog
+## Step 2: Update changelog draft
 
 1. Read `apps/desktop/changelog/next.md`.
-2. Present the categorized changes to the user and draft the changelog content.
-3. Wait for user confirmation or edits before writing.
-4. Write the final content to `apps/desktop/changelog/next.md`, following the template format:
+2. Draft the changelog content from the categorized commits.
+3. Present the draft to the user.
+4. Wait for user confirmation or edits before writing.
+5. Write the final content to `apps/desktop/changelog/next.md` using the existing template structure.
+6. Keep `NEXT_VERSION` as the placeholder. `apps/desktop/scripts/apply-changelog.ts` replaces it during bump.
 
-   ```markdown
-   # What's new in vNEXT_VERSION
+## Step 3: Choose the desktop release mode
 
-   ## Shiny new things
+This replaces the old `mainHash` decision.
 
-   - description of new feature
+Inspect runtime-affecting changes since the last desktop tag:
 
-   ## Improvements
+```bash
+git diff <last-tag>..HEAD --name-only -- \
+  apps/desktop/layer/main/ \
+  apps/desktop/layer/preload/ \
+  apps/desktop/forge.config.cts \
+  apps/desktop/resources/ \
+  apps/desktop/scripts/ \
+  apps/desktop/package.json
+```
 
-   - description of improvement
+Use this decision table:
 
-   ## No longer broken
+- `build`
+  Use this when the release requires a new binary.
+  Typical triggers:
+  - main process changes
+  - preload or IPC changes
+  - updater flow changes
+  - Electron / Forge / packaging / signing changes
+  - native resource changes
+  - dependency or package changes that affect runtime behavior
 
-   - description of fix
+- `ota`
+  Use this when the release is renderer-compatible with an already-installed binary.
+  Typical triggers:
+  - renderer UI changes
+  - web behavior changes
+  - shared frontend logic changes that do not require a new desktop binary
 
-   ## Thanks
+  For `ota`, you must choose:
+  - `runtimeVersion`: the newest installed desktop binary version that this renderer update is compatible with
+  - `channel`: usually `stable`
 
-   Special thanks to volunteer contributors @username for their valuable contributions
-   ```
+  If you are unsure whether a change is binary-compatible, prefer `build`.
 
-5. Keep `NEXT_VERSION` as the placeholder - it will be replaced by `apply-changelog.ts` during bump.
+Present the analysis to the user with:
 
-## Step 3: Commit changelog updates before bump
+- changed runtime-affecting files
+- summary of what changed
+- recommended mode: `build` or `ota`
+- recommended `release-plan.json`
+- explicit request for confirmation
 
-`nbump` requires a clean working tree. Commit changelog edits before running bump.
+## Step 4: Update release inputs
 
-1. Stage the changelog update:
-   ```bash
-   git add apps/desktop/changelog/next.md
-   ```
-2. Commit it on `dev`:
-   ```bash
-   git commit -m "docs(desktop): prepare release changelog"
-   ```
-3. If there are no changes to commit, continue without creating an extra commit.
+1. Edit `apps/desktop/changelog/next.md`.
+2. Edit `apps/desktop/release-plan.json`.
+3. Do **not** edit `apps/desktop/release.json` directly. It is generated during bump.
+4. Because `nbump` requires a clean working tree, commit the release inputs before bump.
 
-## Step 4: Evaluate mainHash
+Stage the inputs:
 
-This is critical for determining whether users need a full app update or can use the lightweight renderer hot update.
+```bash
+git add apps/desktop/changelog/next.md apps/desktop/release-plan.json
+```
 
-1. Check what files changed in `apps/desktop/layer/main/` since the last release tag:
-   ```bash
-   git diff <last-tag>..HEAD --name-only -- apps/desktop/layer/main/
-   ```
-2. Also check changes to `apps/desktop/package.json` fields other than version/mainHash (since package.json is included in the hash calculation):
-   ```bash
-   git diff <last-tag>..HEAD -- apps/desktop/package.json
-   ```
+Commit them on `dev`:
 
-**Decision logic:**
+```bash
+git commit -m "docs(desktop): prepare release inputs"
+```
 
-- If there are **NO changes** in `layer/main/` and no meaningful `package.json` changes (only version/mainHash/changelog-related), then mainHash should NOT be updated. Users will get a fast renderer-only hot update.
-- If there are **trivial changes** in `layer/main/` (typo fixes, comment changes, logging tweaks) that don't affect runtime behavior, recommend NOT updating mainHash. Present the changes to the user and ask for confirmation.
-- If there are **meaningful changes** in `layer/main/` (new features, bug fixes, dependency changes, API changes), mainHash MUST be updated. Users will need a full app update.
+If there are no changes to commit, continue.
 
-Present your analysis to the user with:
+## Step 5: Run the bump
 
-- List of changed files in `layer/main/`
-- A summary of what changed
-- Your recommendation (update or skip mainHash)
-- Ask for explicit confirmation
+Do not execute this step until the user explicitly approves pushing code.
 
-## Step 5: Save old mainHash and execute bump
+Run:
 
-1. Save the current mainHash from `apps/desktop/package.json` for later comparison.
-2. Verify working tree is clean before bump:
-   ```bash
-   git status --short
-   ```
-3. Change directory to `apps/desktop/` and run the bump:
-   ```bash
-   cd apps/desktop && pnpm bump
-   ```
-4. This command will:
-   - Pull latest changes
-   - Apply changelog (rename next.md to {version}.md, create new next.md)
-   - Recalculate mainHash and write to package.json
-   - Format package.json
-   - Bump minor version
-   - Commit with message `release(desktop): release v{NEW_VERSION}`
-   - Create branch `release/desktop/{NEW_VERSION}`
-   - Push branch and create PR to `main`
+```bash
+pnpm --dir apps/desktop bump
+```
 
-## Step 6: Restore mainHash if skipping update
+This command currently does all of the following:
 
-If Step 4 decided mainHash should NOT be updated, restore the old value now. The bump has already committed, pushed, and created the PR on a new release branch, so we amend the commit and force push. This is safe because the release branch was just created.
+- pulls latest changes
+- applies the changelog
+- regenerates `mainHash`
+- runs `apps/desktop/scripts/apply-release-config.ts ${NEW_VERSION}`
+- writes `apps/desktop/release.json`
+- updates `apps/desktop/package.json` `runtimeVersion`
+- resets `apps/desktop/release-plan.json` back to the default `build` template
+- commits `release(desktop): release v{NEW_VERSION}`
+- creates `release/desktop/{NEW_VERSION}`
+- pushes the branch
+- creates a PR to `main`
 
-1. Change back to the repo root first (Step 5 left the working directory at `apps/desktop/`):
-   ```bash
-   cd ../..
-   ```
-2. Ensure you are on the `release/desktop/{NEW_VERSION}` branch (bump should have switched to it).
-3. Replace the recalculated mainHash with the saved old value in `apps/desktop/package.json`.
-4. Stage and amend the release commit:
-   ```bash
-   git add apps/desktop/package.json && git commit --amend --no-edit
-   ```
-5. Force push the release branch:
-   ```bash
-   git push --force origin release/desktop/{NEW_VERSION}
-   ```
+## Step 6: Verify the generated release state
 
-If Step 4 decided mainHash SHOULD be updated, skip this step entirely — the bump already wrote the correct new value.
+After bump completes, verify:
 
-## Step 7: Verify
+1. Current branch is `release/desktop/{NEW_VERSION}`.
+2. `apps/desktop/package.json` has the expected:
+   - `version`
+   - `runtimeVersion`
+3. `apps/desktop/release.json` matches the intended mode and release settings.
+4. `apps/desktop/release-plan.json` was reset to the default template.
+5. The PR was created successfully.
 
-1. Confirm the PR was created successfully by checking the output.
-2. Report the new version number and PR URL to the user.
-3. Summarize:
-   - New version: v{NEW_VERSION}
-   - mainHash updated: yes/no (and why)
-   - Changelog highlights
-   - PR URL
+Also note what will happen after merge:
+
+- merging the PR to `main` triggers `.github/workflows/tag.yml`
+- `tag.yml` creates `desktop/v{NEW_VERSION}`
+- `tag.yml` dispatches `.github/workflows/build-desktop.yml`
+- `build-desktop.yml` publishes the desktop release draft
+
+Expected release artifacts by mode:
+
+- `build`
+  publishes binary artifacts and desktop binary metadata (`ota-release.json`)
+
+- `ota`
+  publishes binary artifacts, desktop binary metadata, and renderer OTA assets such as:
+  - `apps/desktop/dist/manifest.yml`
+  - `apps/desktop/dist/*.tar.gz`
+  - `apps/desktop/dist/ota-release.json`
+  - `apps/desktop/dist.tar.zst`
+
+## Step 7: Report back to the user
+
+Summarize:
+
+- new version: `v{NEW_VERSION}`
+- release mode: `build` or `ota`
+- `runtimeVersion`
+- renderer OTA included: yes or no
+- release branch
+- PR URL
+- short changelog highlights
+
+When mentioning `mainHash`, only describe it as "regenerated automatically", never as the release decision mechanism.
 
 ## Reference
 
 - Bump config: `apps/desktop/bump.config.ts`
 - Changelog dir: `apps/desktop/changelog/`
 - Changelog template: `apps/desktop/changelog/next.template.md`
-- mainHash generator: `apps/desktop/plugins/vite/generate-main-hash.ts`
-- Hot updater logic: `apps/desktop/layer/main/src/updater/hot-updater.ts`
-- CI build workflow: `.github/workflows/build-desktop.yml`
-- Tag workflow: `.github/workflows/tag.yml`
+- Changelog apply script: `apps/desktop/scripts/apply-changelog.ts`
+- Release plan input: `apps/desktop/release-plan.json`
+- Generated release config: `apps/desktop/release.json`
+- Release config apply script: `apps/desktop/scripts/apply-release-config.impl.ts`
+- Desktop release config resolver: `.github/scripts/resolve-desktop-release-config.mjs`
+- Desktop OTA metadata builder: `.github/scripts/build-ota-release.mjs`
+- Desktop build workflow: `.github/workflows/build-desktop.yml`
+- Tag orchestrator: `.github/workflows/tag.yml`
+- Desktop hot updater: `apps/desktop/layer/main/src/updater/hot-updater.ts`

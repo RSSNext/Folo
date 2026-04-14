@@ -13,6 +13,7 @@
   "main": "./dist/main/index.js",
   "scripts": {
     "analyze:web": "cross-env analyzer=1 WEB_BUILD=1 vite build",
+    "apply:release-config": "tsx scripts/apply-release-config.ts",
     "build:electron": "pnpm run build:electron-vite && electron-forge make",
     "build:electron-forge": "electron-forge make",
     "build:electron-forge:macos": "electron-forge make --arch=x64 --platform=darwin && electron-forge make --arch=arm64 --platform=darwin && tsx scripts/merge-yml.ts",
@@ -61,6 +62,7 @@
     "@playwright/test": "1.58.2",
     "@types/html-minifier-terser": "7.0.2",
     "@types/js-yaml": "4.0.9",
+    "@types/semver": "7.7.1",
     "@vitejs/plugin-legacy": "7.2.1",
     "@vitejs/plugin-react": "5.1.4",
     "async-es": "3.2.6",
@@ -82,6 +84,7 @@
     "pathe": "2.0.3",
     "react": "19.0.0",
     "react-dom": "19.0.0",
+    "semver": "7.7.4",
     "tailwindcss": "3.4.17",
     "tailwindcss-content-visibility": "1.0.2",
     "tailwindcss-multi": "0.4.6",
@@ -93,6 +96,7 @@
     "vite-plugin-route-builder": "0.4.1",
     "vite-tsconfig-paths": "6.1.1"
   },
+  "runtimeVersion": "1.5.0",
   "productName": "Folo",
   "mainHash": "4778cc1cb43d08ed2a5edf391f0d22694641dc15eb27eaefb45bfa09ff176091"
 }

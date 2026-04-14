@@ -42,6 +42,7 @@ import { EntryNoContent } from "./components/entry-content/EntryNoContent"
 import { EntryScrollingAndNavigationHandler } from "./components/entry-content/EntryScrollingAndNavigationHandler.js"
 import { EntryTitleMetaHandler } from "./components/entry-content/EntryTitleMetaHandler"
 import type { EntryContentProps } from "./components/entry-content/types"
+import { EntryPrintHeader } from "./components/EntryPrintHeader"
 import { getEntryContentLayout } from "./components/layouts"
 import type { EntryLayoutProps } from "./components/layouts/types"
 import { SourceContentPanel } from "./components/SourceContentView"
@@ -152,7 +153,7 @@ const EntryContentImpl: Component<EntryContentProps> = ({
             title: entryTranslation.title ?? undefined,
           }
         : undefined,
-    [entryTranslation?.content, entryTranslation?.title],
+    [entryTranslation],
   )
   return (
     <div className={cn(className, "flex flex-col @container")}>
@@ -212,9 +213,10 @@ const EntryContentImpl: Component<EntryContentProps> = ({
             <article
               data-testid="entry-render"
               onContextMenu={stopPropagation}
-              className={"relative w-full min-w-0 pb-10 pt-12"}
+              className={"relative w-full min-w-0 pb-10 pt-12 print:pt-0"}
             >
               <ApplyEntryActions entryId={entryId} key={entryId} />
+              <EntryPrintHeader entryId={entryId} />
 
               {!content && !isInReadabilityMode ? (
                 <div className="center mt-16 min-w-0">

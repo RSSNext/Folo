@@ -1,11 +1,5 @@
 import { URL } from "node:url"
 
-import type {
-  AppUpdate,
-  LatestReleasePayload,
-  PlatformUpdate,
-  PlatformUpdateFile,
-} from "@follow-app/client-sdk"
 import type { UpdateFileInfo, UpdateInfo } from "builder-util-runtime"
 import { newError } from "builder-util-runtime"
 import type { AppUpdater } from "electron-updater"
@@ -14,15 +8,15 @@ import { Provider } from "electron-updater/out/providers/Provider"
 import type { ResolvedUpdateFileInfo } from "electron-updater/out/types"
 
 import { logger } from "../logger"
-import { getUpdateInfo } from "./api"
+import { fetchDesktopManifest } from "./api"
+import type { DesktopAppPayload } from "./types"
 
 interface FollowProviderOptions {
   provider: "custom"
 }
 
 type FollowProviderContext = {
-  payload: LatestReleasePayload
-  platform: PlatformUpdate
+  app: DesktopAppPayload
 }
 
 export class FollowUpdateProvider extends Provider<UpdateInfo> {
@@ -61,12 +55,12 @@ export class FollowUpdateProvider extends Provider<UpdateInfo> {
   }
 
   private buildUpdateInfo(context: FollowProviderContext): UpdateInfo {
-    const { payload, platform } = context
-    const files = this.mapFiles(platform.files)
+    const { app } = context
+    const files = this.mapFiles(app.files)
 
     if (files.length === 0) {
       throw newError(
-        `No downloadable files found for platform ${platform.platform}`,
+        `No downloadable files found for platform ${app.platform}`,
         "ERR_UPDATER_CHANNEL_FILE_NOT_FOUND",
       )
     }
@@ -74,7 +68,7 @@ export class FollowUpdateProvider extends Provider<UpdateInfo> {
     const primaryFile = files[0]
     if (!primaryFile) {
       throw newError(
-        `Platform ${platform.platform} provides no downloadable file`,
+        `Platform ${app.platform} provides no downloadable file`,
         "ERR_UPDATER_CHANNEL_FILE_NOT_FOUND",
       )
     }
@@ -88,20 +82,18 @@ export class FollowUpdateProvider extends Provider<UpdateInfo> {
       }
     }
 
-    const { release } = payload
-
     return {
-      version: platform.version,
+      version: app.version,
       files,
       path: primaryPath,
       sha512: primaryFile.sha512,
-      releaseName: release.name,
-      releaseNotes: release.body,
-      releaseDate: platform.releaseDate || release.publishedAt || new Date().toISOString(),
+      releaseName: `Folo ${app.version}`,
+      releaseNotes: null,
+      releaseDate: app.releaseDate || new Date().toISOString(),
     }
   }
 
-  private mapFiles(files: PlatformUpdate["files"]): UpdateFileInfo[] {
+  private mapFiles(files: DesktopAppPayload["files"]): UpdateFileInfo[] {
     if (!files) return []
 
     return files
@@ -109,7 +101,7 @@ export class FollowUpdateProvider extends Provider<UpdateInfo> {
       .filter((file): file is UpdateFileInfo => file !== null)
   }
 
-  private mapFile(file: PlatformUpdateFile): UpdateFileInfo | null {
+  private mapFile(file: DesktopAppPayload["files"][number]): UpdateFileInfo | null {
     if (!file.downloadUrl || !file.sha512) {
       logger.warn("Skip platform file without downloadUrl or sha512", file)
       return null
@@ -146,58 +138,16 @@ export class FollowUpdateProvider extends Provider<UpdateInfo> {
   }
 
   private async fetchContext(): Promise<FollowProviderContext> {
-    const payload = await getUpdateInfo({})
-    const { decision } = payload
+    const manifest = await fetchDesktopManifest()
+    const app = manifest?.app
 
-    if (!decision || decision.type !== "app" || !decision.app) {
+    if (!app) {
       throw newError(
         "No app update metadata available from provider",
         "ERR_UPDATER_NO_PUBLISHED_VERSIONS",
       )
     }
 
-    const platform = this.pickPlatform(decision.app)
-    if (!platform) {
-      throw newError(
-        `No matching platform update for ${process.platform}/${process.arch}`,
-        "ERR_UPDATER_CHANNEL_FILE_NOT_FOUND",
-      )
-    }
-
-    return { payload, platform }
-  }
-
-  private pickPlatform(appDecision: AppUpdate): PlatformUpdate | null {
-    const platforms = appDecision.platforms ?? []
-    const selected = appDecision.selectedPlatform
-    if (selected) {
-      return selected
-    }
-
-    const candidates = this.resolvePlatformCandidates()
-    const matched = platforms.find((platform) =>
-      candidates.includes(platform.platform.toLowerCase()),
-    )
-
-    return matched ?? platforms[0] ?? null
-  }
-
-  private resolvePlatformCandidates(): string[] {
-    const base = new Set<string>()
-    base.add(process.platform)
-    base.add(`${process.platform}-${process.arch}`)
-    base.add(process.arch)
-
-    if (process.platform === "darwin") {
-      base.add("mac")
-      base.add("macos")
-    }
-
-    if (process.platform === "win32") {
-      base.add("windows")
-      base.add("win")
-    }
-
-    return Array.from(base).map((value) => value.toLowerCase())
+    return { app }
   }
 }

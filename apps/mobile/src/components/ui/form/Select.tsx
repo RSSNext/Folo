@@ -23,6 +23,7 @@ interface SelectProps<T> {
   wrapperStyle?: StyleProp<ViewStyle>
   label?: string
   disabled?: boolean
+  triggerTestID?: string
 }
 export function Select<T>({
   options,
@@ -33,6 +34,7 @@ export function Select<T>({
   wrapperStyle,
   label,
   disabled,
+  triggerTestID,
 }: SelectProps<T>) {
   const [currentValue, setCurrentValue] = useState(() => value)
   useEffect(() => {
@@ -49,6 +51,7 @@ export function Select<T>({
     <DropdownMenu.Root>
       <DropdownMenu.Trigger asChild disabled={disabled}>
         <View
+          testID={triggerTestID}
           className={cn(
             "min-w-24 flex-1 shrink flex-row items-center rounded-lg pl-3",
             disabled && "opacity-50",

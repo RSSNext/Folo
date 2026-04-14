@@ -1,8 +1,9 @@
 import { atom, useAtom } from "jotai"
-import { useCallback, useEffect } from "react"
+import { useCallback, useEffect, useSyncExternalStore } from "react"
 import TrackPlayer, { useActiveTrack, useIsPlaying } from "react-native-track-player"
 
 import { PlayerRegistered } from "../initialize/player"
+import { ttsStreamController } from "../modules/player/tts-stream-controller"
 import { toast } from "./toast"
 
 export type SimpleMediaState = "playing" | "paused" | "loading"
@@ -74,6 +75,45 @@ class Player {
 export const player = new Player()
 
 export { useActiveTrack, useIsPlaying, useProgress } from "react-native-track-player"
+
+export interface ActivePlayable {
+  artwork?: string | null
+  artist?: string | null
+  entryId?: string | null
+  kind: "track-player" | "tts-stream"
+  title: string
+}
+
+export function useTtsStreamPlayback() {
+  return useSyncExternalStore(ttsStreamController.subscribe, ttsStreamController.getState)
+}
+
+export function useActivePlayable(): ActivePlayable | null {
+  const activeTrack = useActiveTrack()
+  const ttsStream = useTtsStreamPlayback()
+
+  if (ttsStream.entryId) {
+    return {
+      artwork: ttsStream.artwork,
+      artist: ttsStream.artist,
+      entryId: ttsStream.entryId,
+      kind: "tts-stream",
+      title: ttsStream.title ?? "TTS",
+    }
+  }
+
+  if (!activeTrack) {
+    return null
+  }
+
+  return {
+    artwork: activeTrack.artwork,
+    artist: activeTrack.artist,
+    entryId: null,
+    kind: "track-player",
+    title: activeTrack.title ?? "Unknown Title",
+  }
+}
 
 export const allowedRate = [0.75, 1, 1.25, 1.5, 1.75, 2]
 export type Rate = (typeof allowedRate)[number]

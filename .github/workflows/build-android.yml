@@ -46,7 +46,7 @@ jobs:
         uses: actions/checkout@v6
 
       - name: 📦 Setup pnpm
-        uses: pnpm/action-setup@v4
+        uses: pnpm/action-setup@v6
 
       - name: 🏗 Setup Node.js
         uses: actions/setup-node@v6
@@ -61,7 +61,7 @@ jobs:
           distribution: "zulu"
 
       - name: Setup Android SDK
-        uses: android-actions/setup-android@v3
+        uses: android-actions/setup-android@v4
 
       - name: 📱 Setup EAS
         uses: expo/expo-github-action@v8
@@ -75,6 +75,8 @@ jobs:
       - name: 🔨 Build Android app
         working-directory: apps/mobile
         run: eas build --platform android --profile ${{ github.event.inputs.profile || 'preview' }} --local --output=${{ github.workspace }}/build.${{ github.event.inputs.profile == 'production' && 'aab' || 'apk' }}
+        env:
+          EAS_NO_FROZEN_LOCKFILE: "1"
 
       - name: 📤 Upload apk Artifact
         if: github.event.inputs.profile != 'production'
@@ -126,7 +128,7 @@ jobs:
 
       - name: Create Release Draft
         if: github.event.inputs.release == 'true'
-        uses: softprops/action-gh-release@v2
+        uses: softprops/action-gh-release@v3
         with:
           name: Mobile v${{ steps.version.outputs.APP_VERSION }}
           draft: true

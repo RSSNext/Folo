@@ -9,7 +9,6 @@ config.resolver.sourceExts.push("sql")
 
 config.transformer.getTransformOptions = async () => ({
   transform: {
-    experimentalImportSupport: false,
     inlineRequires: true,
   },
 })
