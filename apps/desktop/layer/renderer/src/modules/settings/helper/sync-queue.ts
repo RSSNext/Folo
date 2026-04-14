@@ -1,4 +1,10 @@
 import type { AISettings, GeneralSettings, UISettings } from "@follow/shared/settings/interface"
+import type { SpotlightSettings } from "@follow/shared/spotlight"
+import {
+  mergeAppearancePayloadWithSpotlightSettings,
+  pickSpotlightPayloadFromRemoteAppearance,
+  toAppearanceSpotlightPayload,
+} from "@follow/shared/spotlight"
 import { whoami } from "@follow/store/user/getters"
 import { tracker } from "@follow/tracker"
 import { EventBus } from "@follow/utils/event-bus"
@@ -14,6 +20,11 @@ import {
   generalServerSyncWhiteListKeys,
   getGeneralSettings,
 } from "~/atoms/settings/general"
+import {
+  __spotlightSettingAtom,
+  getSpotlightSettings,
+  spotlightServerSyncWhiteListKeys,
+} from "~/atoms/settings/spotlight"
 import { __uiSettingAtom, getUISettings, uiServerSyncWhiteListKeys } from "~/atoms/settings/ui"
 import { followClient } from "~/lib/api-client"
 import { jotaiStore } from "~/lib/jotai"
@@ -23,7 +34,10 @@ type SettingMapping = {
   appearance: UISettings
   general: GeneralSettings
   ai: AISettings
+  spotlight: SpotlightSettings
 }
+type SettingDomain = keyof SettingMapping
+type RemoteSettingsTab = "appearance" | "general" | "ai"
 
 const pickSyncPayload = <T extends object>(payload: T, keys: readonly (keyof T | string)[]) => {
   const nextPayload = {} as Partial<T>
@@ -42,6 +56,7 @@ const localSettingGetterMap = {
   appearance: () => getUISettings(),
   general: () => getGeneralSettings(),
   ai: () => getAISettings(),
+  spotlight: () => getSpotlightSettings(),
 }
 
 const createInternalSetter =
@@ -55,18 +70,121 @@ const localSettingSetterMap = {
   appearance: createInternalSetter(__uiSettingAtom),
   general: createInternalSetter(__generalSettingAtom),
   ai: createInternalSetter(__aiSettingAtom),
+  spotlight: createInternalSetter(__spotlightSettingAtom),
 }
 
 const settingWhiteListMap = {
   appearance: uiServerSyncWhiteListKeys,
   general: generalServerSyncWhiteListKeys,
   ai: aiServerSyncWhiteListKeys,
+  spotlight: spotlightServerSyncWhiteListKeys,
+}
+
+const remoteTabMap: Record<SettingDomain, RemoteSettingsTab> = {
+  appearance: "appearance",
+  general: "general",
+  ai: "ai",
+  spotlight: "appearance",
+}
+
+const remoteTabToDomainMap: Record<RemoteSettingsTab, SettingDomain[]> = {
+  appearance: ["appearance", "spotlight"],
+  general: ["general"],
+  ai: ["ai"],
 }
 
 const bizSettingKeyToTabMapping = {
   ui: "appearance",
   general: "general",
   ai: "ai",
+  spotlight: "spotlight",
+} as const
+
+const getSettingUpdated = (payload: Record<string, unknown>) =>
+  typeof payload.updated === "number" ? payload.updated : undefined
+
+const getLocalUpdated = (payload: object) =>
+  typeof (payload as { updated?: unknown }).updated === "number"
+    ? (payload as { updated: number }).updated
+    : undefined
+
+const getLocalAppearancePayload = () =>
+  pickSyncPayload(localSettingGetterMap.appearance(), settingWhiteListMap.appearance)
+
+const getLocalSpotlightSnapshot = () =>
+  localSettingGetterMap.spotlight() as SpotlightSettings & { updated?: number }
+
+const payloadForRemote = (
+  domain: SettingDomain,
+  payload: Record<string, unknown>,
+): Record<string, unknown> =>
+  domain === "spotlight"
+    ? toAppearanceSpotlightPayload(
+        payload as unknown as SpotlightSettings,
+        getSettingUpdated(payload),
+      )
+    : pickSyncPayload(payload, settingWhiteListMap[domain])
+
+const buildFullLocalAppearancePayload = () => {
+  const spotlightSettings = getLocalSpotlightSnapshot()
+  return mergeAppearancePayloadWithSpotlightSettings(
+    getLocalAppearancePayload(),
+    spotlightSettings,
+    getSettingUpdated(spotlightSettings as unknown as Record<string, unknown>),
+  )
+}
+
+const mergeAppearancePayloadWithLocalChanges = (
+  basePayload: Record<string, unknown>,
+  options: {
+    appearancePayload?: Record<string, unknown>
+    spotlightSettings?: (SpotlightSettings & { updated?: number }) | null
+  },
+) => {
+  let nextPayload = { ...basePayload }
+
+  if (options.appearancePayload) {
+    nextPayload = {
+      ...nextPayload,
+      ...options.appearancePayload,
+    }
+  }
+
+  if (options.spotlightSettings) {
+    nextPayload = mergeAppearancePayloadWithSpotlightSettings(
+      nextPayload,
+      options.spotlightSettings,
+      getSettingUpdated(options.spotlightSettings as unknown as Record<string, unknown>),
+    )
+  }
+
+  return nextPayload
+}
+
+const getLocalPayloadForRemoteTab = (remoteTab: Exclude<RemoteSettingsTab, "appearance">) =>
+  payloadForRemote(
+    remoteTab,
+    localSettingGetterMap[remoteTab]() as unknown as Record<string, unknown>,
+  )
+
+const payloadFromRemote = (
+  domain: SettingDomain,
+  payload: Record<string, unknown>,
+  updated: number,
+): Record<string, unknown> | null => {
+  if (domain === "spotlight") {
+    return pickSpotlightPayloadFromRemoteAppearance(payload, updated)
+  }
+
+  const nextPayload = pickSyncPayload(payload, settingWhiteListMap[domain])
+  if (isEmptyObject(nextPayload)) {
+    return null
+  }
+
+  return {
+    ...nextPayload,
+    updated,
+  }
 }
 
 const isUnauthorizedError = (error: unknown) => {
@@ -81,7 +199,7 @@ const isUnauthorizedError = (error: unknown) => {
   return false
 }
 
-export type SettingSyncTab = keyof SettingMapping
+export type SettingSyncTab = SettingDomain
 export interface SettingSyncQueueItem<T extends SettingSyncTab = SettingSyncTab> {
   tab: T
   payload: Partial<SettingMapping[T]>
@@ -219,6 +337,39 @@ class SettingSyncQueue {
   private threshold = 1000
   private flushScheduled = false
 
+  private pendingPromise: Promise<{
+    code: 0
+    settings: Record<string, any>
+    updated: Record<string, string>
+  }> | null = null
+
+  private fetchSettingRemote() {
+    if (this.pendingPromise) {
+      return this.pendingPromise
+    }
+
+    const promise = settings.get().prefetch() as Promise<{
+      code: 0
+      settings: Record<string, any>
+      updated: Record<string, string>
+    }>
+
+    this.pendingPromise = promise.finally(() => {
+      this.pendingPromise = null
+    })
+
+    return this.pendingPromise
+  }
+
+  private async fetchRemoteAppearancePayload() {
+    const remoteSettings = await this.fetchSettingRemote()
+    const remoteAppearancePayload = remoteSettings.settings?.appearance
+
+    return remoteAppearancePayload && typeof remoteAppearancePayload === "object"
+      ? { ...(remoteAppearancePayload as Record<string, unknown>) }
+      : {}
+  }
+
   async enqueue<T extends SettingSyncTab>(tab: T, payload: Partial<SettingMapping[T]>) {
     const currentUserId = this.getCurrentUserId()
     if (!currentUserId) {
@@ -265,39 +416,67 @@ class SettingSyncQueue {
       return
     }
 
-    const groupedTab = {} as Record<SettingSyncTab, any>
-
-    const referenceMap = {} as Record<SettingSyncTab, Set<SettingSyncQueueItem>>
+    const changedDomainsByRemoteTab = {} as Partial<Record<RemoteSettingsTab, Set<SettingDomain>>>
+    const domainOverrides = {} as Partial<Record<SettingDomain, Record<string, unknown>>>
+    const referenceMap = {} as Partial<Record<RemoteSettingsTab, Set<SettingSyncQueueItem>>>
     for (const item of this.queue) {
-      if (!groupedTab[item.tab]) {
-        groupedTab[item.tab] = {}
+      const remoteTab = remoteTabMap[item.tab]
+      changedDomainsByRemoteTab[remoteTab] ||= new Set()
+      changedDomainsByRemoteTab[remoteTab].add(item.tab)
+
+      referenceMap[remoteTab] ||= new Set()
+      referenceMap[remoteTab].add(item)
+
+      domainOverrides[item.tab] = {
+        ...domainOverrides[item.tab],
+        ...payloadForRemote(item.tab, item.payload as unknown as Record<string, unknown>),
       }
+    }
 
-      referenceMap[item.tab] ||= new Set()
-      referenceMap[item.tab].add(item)
+    let remoteAppearancePayload = {} as Record<string, unknown>
+    if (changedDomainsByRemoteTab.appearance?.size) {
+      try {
+        remoteAppearancePayload = await this.fetchRemoteAppearancePayload()
+      } catch (error) {
+        if (isUnauthorizedError(error)) {
+          this.queue = []
+          this.ownerUserId = currentUserId
+          return
+        }
 
-      groupedTab[item.tab] = {
-        ...groupedTab[item.tab],
-        ...item.payload,
+        this.reportSyncError("flush", error)
+        return
       }
     }
 
     const promises = [] as Promise<any>[]
-    for (const tab in groupedTab) {
-      const json = pickSyncPayload(groupedTab[tab], settingWhiteListMap[tab])
+    for (const tab in changedDomainsByRemoteTab) {
+      const remoteTab = tab as RemoteSettingsTab
+      const changedDomains = changedDomainsByRemoteTab[remoteTab]
+      const json =
+        remoteTab === "appearance"
+          ? mergeAppearancePayloadWithLocalChanges(remoteAppearancePayload, {
+              appearancePayload: changedDomains?.has("appearance")
+                ? domainOverrides.appearance
+                : undefined,
+              spotlightSettings: changedDomains?.has("spotlight")
+                ? getLocalSpotlightSnapshot()
+                : undefined,
+            })
+          : domainOverrides[remoteTab]
 
-      if (isEmptyObject(json)) {
+      if (!json || isEmptyObject(json)) {
         continue
       }
 
       const promise = followClient.api.settings
         .update({
-          tab: tab as SettingsTab,
+          tab: remoteTab as SettingsTab,
           ...json,
         })
         .then(() => {
           // remove from queue
-          for (const item of referenceMap[tab]) {
+          for (const item of referenceMap[remoteTab] ?? []) {
             const index = this.queue.indexOf(item)
             if (index !== -1) {
               this.queue.splice(index, 1)
@@ -330,29 +509,39 @@ class SettingSyncQueue {
     this.bindQueueOwner(currentUserId)
 
     if (!tab) {
-      const promises = [] as Promise<any>[]
-      for (const tab in localSettingGetterMap) {
-        const payload = pickSyncPayload(localSettingGetterMap[tab](), settingWhiteListMap[tab])
-
-        const promise = followClient.api.settings.update({
-          tab: tab as SettingsTab,
-          ...payload,
-        })
-
-        promises.push(promise)
-      }
+      const promises = [
+        followClient.api.settings.update({
+          tab: "appearance",
+          ...buildFullLocalAppearancePayload(),
+        }),
+        followClient.api.settings.update({
+          tab: "general",
+          ...getLocalPayloadForRemoteTab("general"),
+        }),
+        followClient.api.settings.update({
+          tab: "ai",
+          ...getLocalPayloadForRemoteTab("ai"),
+        }),
+      ]
 
       this.chain = this.chain.finally(() => Promise.all(promises))
       return this.chain
     } else {
-      const payload = pickSyncPayload(localSettingGetterMap[tab](), settingWhiteListMap[tab])
+      this.chain = this.chain.finally(async () => {
+        const remoteTab = remoteTabMap[tab]
+        const payload =
+          remoteTab === "appearance"
+            ? mergeAppearancePayloadWithLocalChanges(await this.fetchRemoteAppearancePayload(), {
+                appearancePayload: tab === "appearance" ? getLocalAppearancePayload() : undefined,
+                spotlightSettings: tab === "spotlight" ? getLocalSpotlightSnapshot() : undefined,
+              })
+            : getLocalPayloadForRemoteTab(remoteTab)
 
-      this.chain = this.chain.finally(() =>
-        followClient.api.settings.update({
-          tab: tab as SettingsTab,
+        return followClient.api.settings.update({
+          tab: remoteTab as SettingsTab,
           ...payload,
-        }),
-      )
+        })
+      })
 
       return this.chain
     }
@@ -364,27 +553,25 @@ class SettingSyncQueue {
 
     this.bindQueueOwner(currentUserId)
 
-    const remoteSettings = await settings
-      .get()
-      .prefetch()
-      .catch((error) => {
-        if (isUnauthorizedError(error)) {
-          this.queue = []
-          this.ownerUserId = currentUserId
-          return null
-        }
-
-        this.reportSyncError("syncLocal", error)
+    const remoteSettings = await this.fetchSettingRemote().catch((error) => {
+      if (isUnauthorizedError(error)) {
+        this.queue = []
+        this.ownerUserId = currentUserId
         return null
-      })
+      }
+
+      this.reportSyncError("syncLocal", error)
+      return null
+    })
 
     if (!remoteSettings) return
 
     if (isEmptyObject(remoteSettings.settings)) return
 
     for (const tab in remoteSettings.settings) {
-      const remoteSettingPayload = remoteSettings.settings[tab]
-      const updated = remoteSettings.updated[tab]
+      const remoteTab = tab as RemoteSettingsTab
+      const remoteSettingPayload = remoteSettings.settings[remoteTab]
+      const updated = remoteSettings.updated[remoteTab]
 
       if (!updated) {
         continue
@@ -392,21 +579,20 @@ class SettingSyncQueue {
 
       const remoteUpdatedDate = new Date(updated).getTime()
 
-      const localSettings = localSettingGetterMap[tab]()
-      const localSettingsUpdated = localSettings.updated
+      for (const domain of remoteTabToDomainMap[remoteTab] ?? []) {
+        const localSettings = localSettingGetterMap[domain]()
+        const localSettingsUpdated = getLocalUpdated(localSettings)
 
-      if (!localSettingsUpdated || remoteUpdatedDate > localSettingsUpdated) {
-        // Use remote and update local
-        const nextPayload = pickSyncPayload(remoteSettingPayload, settingWhiteListMap[tab])
-
-        if (isEmptyObject(nextPayload)) {
+        if (localSettingsUpdated && remoteUpdatedDate <= localSettingsUpdated) {
           continue
         }
 
-        const setter = localSettingSetterMap[tab]
+        const nextPayload = payloadFromRemote(domain, remoteSettingPayload, remoteUpdatedDate)
+        if (!nextPayload || isEmptyObject(nextPayload)) {
+          continue
+        }
 
-        nextPayload.updated = remoteUpdatedDate
-
+        const setter = localSettingSetterMap[domain]
         setter(nextPayload)
       }
     }

@@ -1,7 +1,7 @@
 {
   "name": "Folo",
   "type": "module",
-  "version": "1.5.0",
+  "version": "1.6.0",
   "private": true,
   "description": "Follow everything in one place",
   "author": "Folo Team",
@@ -96,7 +96,7 @@
     "vite-plugin-route-builder": "0.4.1",
     "vite-tsconfig-paths": "6.1.1"
   },
-  "runtimeVersion": "1.5.0",
+  "runtimeVersion": "1.6.0",
   "productName": "Folo",
-  "mainHash": "4778cc1cb43d08ed2a5edf391f0d22694641dc15eb27eaefb45bfa09ff176091"
+  "mainHash": "a146c17f95d7c9383634b40eb933d796eae25c079bba41a0e4a3cdfc62f2dace"
 }

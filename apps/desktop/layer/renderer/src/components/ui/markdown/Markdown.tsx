@@ -1,3 +1,4 @@
+import type { SpotlightRule } from "@follow/shared/spotlight"
 import { cn } from "@follow/utils/utils"
 import { useMemo, useState } from "react"
 
@@ -9,9 +10,13 @@ import { MarkdownRenderContainerRefContext } from "./context"
 export const Markdown: Component<
   {
     children: string
+    spotlightRules?: SpotlightRule[]
   } & Partial<RemarkOptions>
-> = ({ children, components, className, applyMiddleware }) => {
-  const stableRemarkOptions = useState({ components, applyMiddleware })[0]
+> = ({ children, components, className, applyMiddleware, rehypePlugins, spotlightRules }) => {
+  const stableRemarkOptions = useMemo(
+    () => ({ components, applyMiddleware, rehypePlugins, spotlightRules }),
+    [applyMiddleware, components, rehypePlugins, spotlightRules],
+  )
 
   const markdownElement = useMemo(
     () => parseMarkdown(children, { ...stableRemarkOptions }).content,
