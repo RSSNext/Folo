@@ -113,7 +113,7 @@
     "@follow/tracker": "workspace:*",
     "@follow/utils": "workspace:*",
     "@tanstack/react-query": "5.90.21",
-    "@yornaath/batshit": "0.3.0",
+    "@yornaath/batshit": "0.14.0",
     "es-toolkit": "1.44.0",
     "i18next": "25.8.6",
     "immer": "11.1.4",

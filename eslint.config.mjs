@@ -14,6 +14,7 @@ export default defineConfig(
     formatting: false,
     lessOpinionated: true,
     ignores: [
+      ".context/**",
       "resources/**",
       "apps/mobile/android/**",
       "apps/mobile/ios/**",

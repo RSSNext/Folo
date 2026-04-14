@@ -2188,8 +2188,8 @@ importers:
         specifier: 5.90.21
         version: 5.90.21(react@19.2.0)
       '@yornaath/batshit':
-        specifier: 0.3.0
-        version: 0.3.0
+        specifier: 0.14.0
+        version: 0.14.0
       es-toolkit:
         specifier: 1.44.0
         version: 1.44.0
@@ -8468,9 +8468,6 @@ packages:
 
   '@yornaath/batshit@0.14.0':
     resolution: {integrity: sha512-0I+xMi5JoRs3+qVXXhk2AmsEl43MwrG+L+VW+nqw/qQqMFtgRPszLaxhJCfsBKnjfJ0gJzTI1Q9Q9+y903HyHQ==}
-
-  '@yornaath/batshit@0.3.0':
-    resolution: {integrity: sha512-UkD6hk6hFZtqioJgGZpl+WevplgK23jJSyD9Wko6IPseUrzBBEkW4O9Mw38bmVXXtPKo2YXc3JqlfB/dIff/eA==}
 
   abbrev@1.1.1:
     resolution: {integrity: sha512-nne9/IiQ/hzIhY6pdDnbBtz7DjPTKrY00P/zvPSm5pOFkl6xuGrGnXn/VtTNNfNtAfZ9/1RtehkszU9qcTii0Q==}
@@ -25781,8 +25778,6 @@ snapshots:
   '@yornaath/batshit@0.14.0':
     dependencies:
       '@yornaath/batshit-devtools': 1.7.1
-
-  '@yornaath/batshit@0.3.0': {}
 
   abbrev@1.1.1: {}
 
