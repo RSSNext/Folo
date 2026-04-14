@@ -113,8 +113,12 @@
     "@follow/tracker": "workspace:*",
     "@follow/utils": "workspace:*",
     "@tanstack/react-query": "5.90.21",
+    "@yornaath/batshit": "0.3.0",
     "es-toolkit": "1.44.0",
+    "i18next": "25.8.6",
     "immer": "11.1.4",
+    "jotai": "2.17.1",
+    "sf-symbols-typescript": "2.2.0",
     "zustand": "5.0.11"
   }
 }

@@ -2187,15 +2187,27 @@ importers:
       '@tanstack/react-query':
         specifier: 5.90.21
         version: 5.90.21(react@19.2.0)
+      '@yornaath/batshit':
+        specifier: 0.3.0
+        version: 0.3.0
       es-toolkit:
         specifier: 1.44.0
         version: 1.44.0
+      i18next:
+        specifier: 25.8.6
+        version: 25.8.6(typescript@5.9.3)
       immer:
         specifier: 11.1.4
         version: 11.1.4
+      jotai:
+        specifier: 2.17.1
+        version: 2.17.1(@babel/core@7.29.0)(@babel/template@7.28.6)(@types/react@19.2.14)(react@19.2.0)
       react:
         specifier: 19.2.0
         version: 19.2.0
+      sf-symbols-typescript:
+        specifier: 2.2.0
+        version: 2.2.0
       zustand:
         specifier: 5.0.11
         version: 5.0.11(@types/react@19.2.14)(immer@11.1.4)(react@19.2.0)(use-sync-external-store@1.6.0(react@19.2.0))
@@ -8456,6 +8468,9 @@ packages:
 
   '@yornaath/batshit@0.14.0':
     resolution: {integrity: sha512-0I+xMi5JoRs3+qVXXhk2AmsEl43MwrG+L+VW+nqw/qQqMFtgRPszLaxhJCfsBKnjfJ0gJzTI1Q9Q9+y903HyHQ==}
+
+  '@yornaath/batshit@0.3.0':
+    resolution: {integrity: sha512-UkD6hk6hFZtqioJgGZpl+WevplgK23jJSyD9Wko6IPseUrzBBEkW4O9Mw38bmVXXtPKo2YXc3JqlfB/dIff/eA==}
 
   abbrev@1.1.1:
     resolution: {integrity: sha512-nne9/IiQ/hzIhY6pdDnbBtz7DjPTKrY00P/zvPSm5pOFkl6xuGrGnXn/VtTNNfNtAfZ9/1RtehkszU9qcTii0Q==}
@@ -25766,6 +25781,8 @@ snapshots:
   '@yornaath/batshit@0.14.0':
     dependencies:
       '@yornaath/batshit-devtools': 1.7.1
+
+  '@yornaath/batshit@0.3.0': {}
 
   abbrev@1.1.1: {}
 
