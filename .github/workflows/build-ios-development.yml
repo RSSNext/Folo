@@ -51,6 +51,9 @@ jobs:
       - name: Install dependencies
         run: pnpm install
 
+      - name: Build mobile web assets
+        run: pnpm --dir apps/mobile/web-app build --outDir ../../../out/rn-web/html-renderer
+
       - name: 🔨 Build iOS IPA
         working-directory: apps/mobile
         run: eas build --platform ios --profile development --non-interactive --local --output=./build.ipa
@@ -104,6 +107,9 @@ jobs:
       - name: Install dependencies
         run: pnpm install
 
+      - name: Build mobile web assets
+        run: pnpm --dir apps/mobile/web-app build --outDir ../../../out/rn-web/html-renderer
+
       - name: 🔨 Build iOS IPA
         working-directory: apps/mobile
         run: eas build --platform ios --profile development --non-interactive --local --output=./build.ipa
@@ -150,6 +156,9 @@ jobs:
 
       - name: Install dependencies
         run: pnpm install
+
+      - name: Build mobile web assets
+        run: pnpm --dir apps/mobile/web-app build --outDir ../../../out/rn-web/html-renderer
 
       - name: 🔨 Build iOS IPA
         working-directory: apps/mobile
