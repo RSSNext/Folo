@@ -22,8 +22,11 @@ fi
 upload_cmd=(
   xcrun
   altool
-  --upload-package
+  --upload-app
+  -f
   "$pkg_path"
+  -t
+  macos
   --wait
   --show-progress
   --output-format
@@ -55,7 +58,7 @@ run_upload() {
   return "$exit_code"
 }
 
-echo "Uploading Mac App Store package with Apple ID: ${pkg_path}"
+echo "Uploading Mac App Store package: ${pkg_path}"
 if run_upload; then
   exit 0
 fi
@@ -75,9 +78,12 @@ if [[ $providers_exit -ne 0 ]]; then
   exit 1
 fi
 
-mapfile -t provider_ids < <(
+provider_ids=()
+while IFS= read -r provider_id; do
+  provider_ids+=("$provider_id")
+done < <(
   printf '%s\n' "$providers_output" \
-    | perl -ne 'print "$1\n" if /publicid[^[:alnum:]]+([[:alnum:]-]+)/i' \
+    | grep -Eo '[0-9a-fA-F]{8}(-[0-9a-fA-F]{4}){3}-[0-9a-fA-F]{12}' \
     | awk '!seen[$0]++'
 )
 
