@@ -4,6 +4,7 @@ packages:
   - apps/desktop/layer/*
   - "!apps/mobile/native/example"
   - apps/mobile/web-app
+  - apps/mobile/web-app/html-renderer
   - "!**/example"
   - "!**/example/**"
 

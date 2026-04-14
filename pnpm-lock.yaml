@@ -93,6 +93,9 @@ importers:
       '@babel/types':
         specifier: 7.29.0
         version: 7.29.0
+      '@electron-toolkit/tsconfig':
+        specifier: 2.0.0
+        version: 2.0.0(@types/node@25.2.3)
       '@eslint/compat':
         specifier: 1.4.1
         version: 1.4.1(eslint@9.39.1(jiti@2.6.1))
@@ -679,7 +682,7 @@ importers:
         version: 2.1.2
       motion:
         specifier: 12.34.0
-        version: 12.34.0(react-dom@19.2.0(react@19.2.0))(react@19.2.0)
+        version: 12.34.0(@emotion/is-prop-valid@1.3.1)(react-dom@19.2.0(react@19.2.0))(react@19.2.0)
       nanoid:
         specifier: 5.1.6
         version: 5.1.6
@@ -893,7 +896,7 @@ importers:
         version: 3.0.5
       motion:
         specifier: 12.23.24
-        version: 12.23.24(react-dom@19.2.0(react@19.2.0))(react@19.2.0)
+        version: 12.23.24(@emotion/is-prop-valid@1.3.1)(react-dom@19.2.0(react@19.2.0))(react@19.2.0)
       next-intl:
         specifier: 4.4.0
         version: 4.4.0(next@16.0.11(@babel/core@7.29.0)(@opentelemetry/api@1.9.0)(@playwright/test@1.58.2)(babel-plugin-react-compiler@1.0.0)(react-dom@19.2.0(react@19.2.0))(react@19.2.0))(react@19.2.0)(typescript@5.9.3)
@@ -1469,6 +1472,85 @@ importers:
 
   apps/mobile/web-app: {}
 
+  apps/mobile/web-app/html-renderer:
+    dependencies:
+      '@emotion/is-prop-valid':
+        specifier: 1.3.1
+        version: 1.3.1
+      '@follow/components':
+        specifier: workspace:*
+        version: link:../../../../packages/internal/components
+      '@follow/configs':
+        specifier: workspace:*
+        version: link:../../../../packages/configs
+      '@follow/hooks':
+        specifier: workspace:*
+        version: link:../../../../packages/internal/hooks
+      '@follow/shared':
+        specifier: workspace:*
+        version: link:../../../../packages/internal/shared
+      '@follow/types':
+        specifier: workspace:*
+        version: link:../../../../packages/internal/types
+      '@follow/utils':
+        specifier: workspace:*
+        version: link:../../../../packages/internal/utils
+      '@shikijs/transformers':
+        specifier: 3.22.0
+        version: 3.22.0
+      clsx:
+        specifier: 2.1.1
+        version: 2.1.1
+      foxact:
+        specifier: 0.2.52
+        version: 0.2.52(react-dom@19.2.0(react@19.2.0))(react@19.2.0)
+      jotai:
+        specifier: 2.17.1
+        version: 2.17.1(@babel/core@7.29.0)(@babel/template@7.28.6)(@types/react@19.2.14)(react@19.2.0)
+      katex:
+        specifier: 0.16.28
+        version: 0.16.28
+      motion:
+        specifier: 12.34.0
+        version: 12.34.0(@emotion/is-prop-valid@1.3.1)(react-dom@19.2.0(react@19.2.0))(react@19.2.0)
+      react:
+        specifier: 19.2.0
+        version: 19.2.0
+      react-blurhash:
+        specifier: 0.3.0
+        version: 0.3.0(blurhash@2.0.5)(react@19.2.0)
+      react-dom:
+        specifier: 19.2.0
+        version: 19.2.0(react@19.2.0)
+      shiki:
+        specifier: 3.22.0
+        version: 3.22.0
+      usehooks-ts:
+        specifier: 3.1.1
+        version: 3.1.1(react@19.2.0)
+    devDependencies:
+      '@types/hast':
+        specifier: 3.0.4
+        version: 3.0.4
+      '@vitejs/plugin-react':
+        specifier: 5.1.4
+        version: 5.1.4(vite@7.3.1(@types/node@25.2.3)(jiti@2.6.1)(lightningcss@1.31.1)(terser@5.46.0)(tsx@4.21.0)(yaml@2.8.2))
+      hast-util-to-jsx-runtime:
+        specifier: 2.3.6
+        version: 2.3.6
+      pathe:
+        specifier: 2.0.3
+        version: 2.0.3
+      typescript:
+        specifier: 'catalog:'
+        version: 5.9.3
+      vite:
+        specifier: 7.3.1
+        version: 7.3.1(@types/node@25.2.3)(jiti@2.6.1)(lightningcss@1.31.1)(terser@5.46.0)(tsx@4.21.0)(yaml@2.8.2)
+      vitest:
+        specifier: 3.2.4
+        version: 3.2.4(@edge-runtime/vm@3.2.0)(@types/debug@4.1.12)(@types/node@25.2.3)(happy-dom@20.6.1(bufferutil@4.1.0))(jiti@2.6.1)(lightningcss@1.31.1)(terser@5.46.0)(tsx@4.21.0)(yaml@2.8.2)
+
   apps/ota:
     dependencies:
       fzstd:
@@ -1555,13 +1637,13 @@ importers:
         version: 0.18.12
       motion:
         specifier: 12.34.0
-        version: 12.34.0(react-dom@19.2.0(react@19.2.0))(react@19.2.0)
+        version: 12.34.0(@emotion/is-prop-valid@1.3.1)(react-dom@19.2.0(react@19.2.0))(react@19.2.0)
       ofetch:
         specifier: 1.5.1
         version: 1.5.1
       rc-modal-sheet:
         specifier: 1.0.2
-        version: 1.0.2(@radix-ui/react-dialog@1.1.15(@types/react-dom@19.2.3(@types/react@19.2.14))(@types/react@19.2.14)(react-dom@19.2.0(react@19.2.0))(react@19.2.0))(clsx@2.1.1)(motion@12.34.0(react-dom@19.2.0(react@19.2.0))(react@19.2.0))(tailwind-merge@3.4.0)(vaul@1.1.2(@types/react-dom@19.2.3(@types/react@19.2.14))(@types/react@19.2.14)(react-dom@19.2.0(react@19.2.0))(react@19.2.0))
+        version: 1.0.2(@radix-ui/react-dialog@1.1.15(@types/react-dom@19.2.3(@types/react@19.2.14))(@types/react@19.2.14)(react-dom@19.2.0(react@19.2.0))(react@19.2.0))(clsx@2.1.1)(motion@12.34.0(@emotion/is-prop-valid@1.3.1)(react-dom@19.2.0(react@19.2.0))(react@19.2.0))(tailwind-merge@3.4.0)(vaul@1.1.2(@types/react-dom@19.2.3(@types/react@19.2.14))(@types/react@19.2.14)(react-dom@19.2.0(react@19.2.0))(react@19.2.0))
       react:
         specifier: 19.2.0
         version: 19.2.0
@@ -1947,7 +2029,7 @@ importers:
         version: 4.1.0(react@19.2.0)
       motion:
         specifier: 12.34.0
-        version: 12.34.0(react-dom@19.2.0(react@19.2.0))(react@19.2.0)
+        version: 12.34.0(@emotion/is-prop-valid@1.3.1)(react-dom@19.2.0(react@19.2.0))(react@19.2.0)
       react-blurhash:
         specifier: 0.3.0
         version: 0.3.0(blurhash@2.0.5)(react@19.2.0)
@@ -2309,7 +2391,7 @@ importers:
         version: 2.17.1(@babel/core@7.29.0)(@babel/template@7.28.6)(@types/react@19.2.14)(react@19.2.0)
       motion:
         specifier: 12.34.0
-        version: 12.34.0(react-dom@19.2.0(react@19.2.0))(react@19.2.0)
+        version: 12.34.0(@emotion/is-prop-valid@1.3.1)(react-dom@19.2.0(react@19.2.0))(react@19.2.0)
       nanoid:
         specifier: 5.1.6
         version: 5.1.6
@@ -3741,6 +3823,12 @@ packages:
 
   '@emnapi/wasi-threads@1.1.0':
     resolution: {integrity: sha512-WI0DdZ8xFSbgMjR1sFsKABJ/C5OnRrjT06JXbZKexJGrDuPTzZdDYfFlsgcCXCyf+suG5QU2e/y1Wo2V/OapLQ==}
+
+  '@emotion/is-prop-valid@1.3.1':
+    resolution: {integrity: sha512-/ACwoqx7XQi9knQs/G0qKvv5teDMhD7bXYns9N/wM8ah8iNb8jZ2uNO0YOgiq2o2poIvVtJS2YALasQuMSQ7Kw==}
+
+  '@emotion/memoize@0.9.0':
+    resolution: {integrity: sha512-30FAj7/EoJ5mwVPOWhAyCX+FPfMDrVecJAM+Iw9NRoSl4BBAQeqj4cApHHUXOVvIPgLVDsCFoz/hGD+5QQD1GQ==}
 
   '@eneris/push-receiver@4.3.0':
     resolution: {integrity: sha512-COn7fZIh1P+3FYEpE87E2KoACW/gYTxwURykYqQ1lKMO1O/vdfrWP4ECsew/Kto9Mec34J46hvD5I/2nNa8kfA==}
@@ -19801,6 +19889,12 @@ snapshots:
       tslib: 2.8.1
     optional: true
 
+  '@emotion/is-prop-valid@1.3.1':
+    dependencies:
+      '@emotion/memoize': 0.9.0
+
+  '@emotion/memoize@0.9.0': {}
+
   '@eneris/push-receiver@4.3.0':
     dependencies:
       http_ece: 1.2.1
@@ -29931,12 +30025,13 @@ snapshots:
 
   fraction.js@5.3.4: {}
 
-  framer-motion@12.34.2(react-dom@19.2.0(react@19.2.0))(react@19.2.0):
+  framer-motion@12.34.2(@emotion/is-prop-valid@1.3.1)(react-dom@19.2.0(react@19.2.0))(react@19.2.0):
     dependencies:
       motion-dom: 12.34.2
       motion-utils: 12.29.2
       tslib: 2.8.1
     optionalDependencies:
+      '@emotion/is-prop-valid': 1.3.1
       react: 19.2.0
       react-dom: 19.2.0(react@19.2.0)
 
@@ -32448,19 +32543,21 @@ snapshots:
 
   motion-utils@12.29.2: {}
 
-  motion@12.23.24(react-dom@19.2.0(react@19.2.0))(react@19.2.0):
+  motion@12.23.24(@emotion/is-prop-valid@1.3.1)(react-dom@19.2.0(react@19.2.0))(react@19.2.0):
     dependencies:
-      framer-motion: 12.34.2(react-dom@19.2.0(react@19.2.0))(react@19.2.0)
+      framer-motion: 12.34.2(@emotion/is-prop-valid@1.3.1)(react-dom@19.2.0(react@19.2.0))(react@19.2.0)
       tslib: 2.8.1
     optionalDependencies:
+      '@emotion/is-prop-valid': 1.3.1
       react: 19.2.0
       react-dom: 19.2.0(react@19.2.0)
 
-  motion@12.34.0(react-dom@19.2.0(react@19.2.0))(react@19.2.0):
+  motion@12.34.0(@emotion/is-prop-valid@1.3.1)(react-dom@19.2.0(react@19.2.0))(react@19.2.0):
     dependencies:
-      framer-motion: 12.34.2(react-dom@19.2.0(react@19.2.0))(react@19.2.0)
+      framer-motion: 12.34.2(@emotion/is-prop-valid@1.3.1)(react-dom@19.2.0(react@19.2.0))(react@19.2.0)
       tslib: 2.8.1
     optionalDependencies:
+      '@emotion/is-prop-valid': 1.3.1
       react: 19.2.0
       react-dom: 19.2.0(react@19.2.0)
 
@@ -33729,11 +33826,11 @@ snapshots:
       iconv-lite: 0.7.2
       unpipe: 1.0.0
 
-  rc-modal-sheet@1.0.2(@radix-ui/react-dialog@1.1.15(@types/react-dom@19.2.3(@types/react@19.2.14))(@types/react@19.2.14)(react-dom@19.2.0(react@19.2.0))(react@19.2.0))(clsx@2.1.1)(motion@12.34.0(react-dom@19.2.0(react@19.2.0))(react@19.2.0))(tailwind-merge@3.4.0)(vaul@1.1.2(@types/react-dom@19.2.3(@types/react@19.2.14))(@types/react@19.2.14)(react-dom@19.2.0(react@19.2.0))(react@19.2.0)):
+  rc-modal-sheet@1.0.2(@radix-ui/react-dialog@1.1.15(@types/react-dom@19.2.3(@types/react@19.2.14))(@types/react@19.2.14)(react-dom@19.2.0(react@19.2.0))(react@19.2.0))(clsx@2.1.1)(motion@12.34.0(@emotion/is-prop-valid@1.3.1)(react-dom@19.2.0(react@19.2.0))(react@19.2.0))(tailwind-merge@3.4.0)(vaul@1.1.2(@types/react-dom@19.2.3(@types/react@19.2.14))(@types/react@19.2.14)(react-dom@19.2.0(react@19.2.0))(react@19.2.0)):
     dependencies:
       '@radix-ui/react-dialog': 1.1.15(@types/react-dom@19.2.3(@types/react@19.2.14))(@types/react@19.2.14)(react-dom@19.2.0(react@19.2.0))(react@19.2.0)
       clsx: 2.1.1
-      motion: 12.34.0(react-dom@19.2.0(react@19.2.0))(react@19.2.0)
+      motion: 12.34.0(@emotion/is-prop-valid@1.3.1)(react-dom@19.2.0(react@19.2.0))(react@19.2.0)
       tailwind-merge: 3.4.0
       vaul: 1.1.2(@types/react-dom@19.2.3(@types/react@19.2.14))(@types/react@19.2.14)(react-dom@19.2.0(react@19.2.0))(react@19.2.0)
 

@@ -90,14 +90,14 @@ export const parseHtml = (
       hr: ({ node, ...props }) =>
         createElement("hr", {
           ...props,
-          className: tw`scale-x-50`,
+          className: "scale-x-50",
         }),
       input: ({ node, ...props }) => {
         if (props.type === "checkbox") {
           return createElement(Checkbox, {
             ...props,
             disabled: false,
-            className: tw`pointer-events-none mr-2`,
+            className: "pointer-events-none mr-2",
           })
         }
         return createElement("input", props)
@@ -170,7 +170,7 @@ export const parseHtml = (
 
           createElement("table", {
             ...props,
-            className: tw`w-full my-0`,
+            className: "w-full my-0",
           }),
         ),
       video: ({ node, ...props }) =>
