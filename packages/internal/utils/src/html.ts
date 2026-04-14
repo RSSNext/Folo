@@ -11,7 +11,6 @@ import rehypeParse from "rehype-parse"
 import rehypeSanitize, { defaultSchema } from "rehype-sanitize"
 import rehypeStringify from "rehype-stringify"
 import { unified } from "unified"
-import type { Node } from "unist"
 import { visit } from "unist-util-visit"
 import { visitParents } from "unist-util-visit-parents"
 
@@ -24,6 +23,10 @@ type ParseHtmlOptions = {
   scrollEnabled?: boolean
   hastTransform?: (tree: Root) => void
 }
+
+type CompatibleVisitTree = Parameters<typeof visit>[0]
+type CompatibleVisitParentsTree = Parameters<typeof visitParents>[0]
+type CompatibleAncestor = Element | Parent | Root | Text
 
 const spotlightExcludedTagNames = new Set([
   "code",
@@ -237,18 +240,20 @@ export const parseHtml = (content: string, options?: ParseHtmlOptions) => {
 
   const tree = pipeline.parse(content)
 
-  rehypeUrlToAnchor(tree)
+  rehypeUrlToAnchor(tree as CompatibleVisitParentsTree)
 
   // console.log("tree", tree)
 
-  const hastTree = pipeline.runSync(tree, content)
+  const hastTree = pipeline.runSync(tree, content) as Root
   hastTransform?.(hastTree as Root)
 
   const images = [] as string[]
 
-  visit(tree, "element", (node) => {
-    if (node.tagName === "img" && node.properties.src) {
-      images.push(node.properties.src as string)
+  visit(hastTree as CompatibleVisitTree, "element", (node) => {
+    const element = node as Element
+
+    if (element.tagName === "img" && typeof element.properties.src === "string") {
+      images.push(element.properties.src)
     }
   })
 
@@ -268,12 +273,15 @@ export const parseHtml = (content: string, options?: ParseHtmlOptions) => {
   }
 }
 
-function rehypeUrlToAnchor(tree: Node) {
+function rehypeUrlToAnchor(tree: CompatibleVisitParentsTree) {
   const tagsShouldNotBeWrapped = new Set(["a", "pre", "code"])
   // https://chatgpt.com/share/37e0ceec-5c9e-4086-b9d6-5afc1af13bb0
-  visitParents(tree as any, "text", (node: Text, ancestors: Node[]) => {
+  visitParents(tree, "text", (node, ancestors) => {
+    const textNode = node as Text
+    const typedAncestors = ancestors as CompatibleAncestor[]
+
     if (
-      ancestors.some(
+      typedAncestors.some(
         (ancestor) =>
           "tagName" in ancestor && tagsShouldNotBeWrapped.has((ancestor as Element).tagName),
       )
@@ -281,10 +289,10 @@ function rehypeUrlToAnchor(tree: Node) {
       return
     }
 
-    const parent = ancestors.at(-1)
+    const parent = typedAncestors.at(-1)
 
     const urlRegex = /https?:\/\/\S+/g
-    const text = node.value
+    const text = textNode.value
     const matches = [...text.matchAll(urlRegex)]
 
     if (matches.length === 0 || !parent || !("children" in parent)) return
@@ -324,7 +332,7 @@ function rehypeUrlToAnchor(tree: Node) {
       })
     }
 
-    const index = (parent.children as (Text | Element)[]).indexOf(node)
+    const index = (parent.children as (Text | Element)[]).indexOf(textNode)
     ;(parent.children as (Text | Element)[]).splice(index, 1, ...newNodes)
   })
 }

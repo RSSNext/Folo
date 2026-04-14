@@ -2271,6 +2271,12 @@ importers:
       '@mozilla/readability':
         specifier: 0.6.0
         version: 0.6.0(patch_hash=61709486ef07e9c8175a4b3f19f1aa4e2a1a75a3c557643c574d6cdacd6dd959)
+      '@types/hast':
+        specifier: 3.0.4
+        version: 3.0.4
+      '@types/unist':
+        specifier: 3.0.3
+        version: 3.0.3
       chardet:
         specifier: 2.1.1
         version: 2.1.1
