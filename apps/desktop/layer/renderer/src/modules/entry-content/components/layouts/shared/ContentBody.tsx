@@ -1,6 +1,7 @@
 import { useEntry } from "@follow/store/entry/hooks"
 import { cn } from "@follow/utils/utils"
 
+import { useSpotlightSettingKey } from "~/atoms/settings/spotlight"
 import { HTML } from "~/components/ui/markdown/HTML"
 import { readableContentMaxWidthClassName } from "~/constants/ui"
 import { useRenderStyle } from "~/hooks/biz/useRenderStyle"
@@ -32,6 +33,7 @@ export const ContentBody: React.FC<ContentBodyProps> = ({
     baseFontSize: compact ? 14 : 16,
     baseLineHeight: compact ? 1.625 : 1.7,
   })
+  const spotlightRules = useSpotlightSettingKey("spotlights")
 
   if (!entry) return null
 
@@ -51,6 +53,7 @@ export const ContentBody: React.FC<ContentBodyProps> = ({
         className,
       )}
       noMedia={noMedia}
+      spotlightRules={spotlightRules}
       style={renderStyle}
     >
       {content}
