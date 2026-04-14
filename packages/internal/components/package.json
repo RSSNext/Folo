@@ -64,7 +64,9 @@
     "@types/hast": "3.0.4",
     "@types/unist": "3.0.3",
     "class-variance-authority": "0.7.1",
+    "clsx": "2.1.1",
     "dayjs": "1.11.19",
+    "es-toolkit": "1.44.0",
     "foxact": "0.2.52",
     "hast-util-to-jsx-runtime": "2.3.6",
     "hast-util-to-text": "4.0.2",
@@ -77,7 +79,9 @@
     "react-blurhash": "0.3.0",
     "react-fast-marquee": "1.6.5",
     "react-hook-form": "7.71.1",
+    "react-hotkeys-hook": "5.2.4",
     "react-i18next": "16.5.4",
+    "react-router": "7.13.0",
     "rehype-infer-description-meta": "2.0.0",
     "rehype-parse": "9.0.1",
     "rehype-sanitize": "6.0.0",
@@ -85,6 +89,7 @@
     "remark-directive": "4.0.0",
     "remark-gfm": "4.0.1",
     "remark-gh-alerts": "0.0.3",
+    "remark-parse": "11.0.0",
     "remark-rehype": "11.1.2",
     "sonner": "2.0.7",
     "tailwindcss-uikit-colors": "catalog:",
@@ -94,7 +99,8 @@
     "use-context-selector": "2.0.0",
     "usehooks-ts": "3.1.1",
     "vaul": "1.1.2",
-    "vfile": "5.3.7"
+    "vfile": "5.3.7",
+    "zustand": "5.0.11"
   },
   "devDependencies": {
     "@follow/configs": "workspace:*",

@@ -1912,9 +1912,15 @@ importers:
       class-variance-authority:
         specifier: 0.7.1
         version: 0.7.1
+      clsx:
+        specifier: 2.1.1
+        version: 2.1.1
       dayjs:
         specifier: 1.11.19
         version: 1.11.19
+      es-toolkit:
+        specifier: 1.44.0
+        version: 1.44.0
       foxact:
         specifier: 0.2.52
         version: 0.2.52(react-dom@19.2.0(react@19.2.0))(react@19.2.0)
@@ -1951,9 +1957,15 @@ importers:
       react-hook-form:
         specifier: 7.71.1
         version: 7.71.1(react@19.2.0)
+      react-hotkeys-hook:
+        specifier: 5.2.4
+        version: 5.2.4(react-dom@19.2.0(react@19.2.0))(react@19.2.0)
       react-i18next:
         specifier: 16.5.4
         version: 16.5.4(i18next@25.8.6(typescript@5.9.3))(react-dom@19.2.0(react@19.2.0))(react-native@0.83.4(@babel/core@7.29.0)(@types/react@19.2.14)(bufferutil@4.1.0)(react@19.2.0))(react@19.2.0)(typescript@5.9.3)
+      react-router:
+        specifier: 7.13.0
+        version: 7.13.0(react-dom@19.2.0(react@19.2.0))(react@19.2.0)
       rehype-infer-description-meta:
         specifier: 2.0.0
         version: 2.0.0
@@ -1975,6 +1987,9 @@ importers:
       remark-gh-alerts:
         specifier: 0.0.3
         version: 0.0.3(@types/mdast@4.0.4)(unified@11.0.5)
+      remark-parse:
+        specifier: 11.0.0
+        version: 11.0.0
       remark-rehype:
         specifier: 11.1.2
         version: 11.1.2
@@ -2005,6 +2020,9 @@ importers:
       vfile:
         specifier: 5.3.7
         version: 5.3.7
+      zustand:
+        specifier: 5.0.11
+        version: 5.0.11(@types/react@19.2.14)(immer@11.1.4)(react@19.2.0)(use-sync-external-store@1.6.0(react@19.2.0))
     devDependencies:
       '@follow/configs':
         specifier: workspace:*
@@ -2073,12 +2091,21 @@ importers:
       '@follow/utils':
         specifier: workspace:*
         version: link:../utils
+      '@tanstack/react-query':
+        specifier: 5.90.21
+        version: 5.90.21(react@19.2.0)
+      es-toolkit:
+        specifier: 1.44.0
+        version: 1.44.0
       foxact:
         specifier: 0.2.52
         version: 0.2.52(react-dom@19.2.0(react@19.2.0))(react@19.2.0)
       jotai:
         specifier: 2.17.1
         version: 2.17.1(@babel/core@7.29.0)(@babel/template@7.28.6)(@types/react@19.2.14)(react@19.2.0)
+      sonner:
+        specifier: 2.0.7
+        version: 2.0.7(react-dom@19.2.0(react@19.2.0))(react@19.2.0)
       usehooks-ts:
         specifier: 3.1.1
         version: 3.1.1(react@19.2.0)
@@ -2250,9 +2277,30 @@ importers:
       clsx:
         specifier: 2.1.1
         version: 2.1.1
+      dayjs:
+        specifier: 1.11.19
+        version: 1.11.19
       dompurify:
         specifier: 3.3.1
         version: 3.3.1
+      es-toolkit:
+        specifier: 1.44.0
+        version: 1.44.0
+      franc-min:
+        specifier: 6.2.0
+        version: 6.2.0
+      hast-util-sanitize:
+        specifier: 5.0.2
+        version: 5.0.2
+      hast-util-to-jsx-runtime:
+        specifier: 2.3.6
+        version: 2.3.6
+      hast-util-to-text:
+        specifier: 4.0.2
+        version: 4.0.2
+      jotai:
+        specifier: 2.17.1
+        version: 2.17.1(@babel/core@7.29.0)(@babel/template@7.28.6)(@types/react@19.2.14)(react@19.2.0)
       motion:
         specifier: 12.34.0
         version: 12.34.0(react-dom@19.2.0(react@19.2.0))(react@19.2.0)
@@ -2262,15 +2310,39 @@ importers:
       path-to-regexp:
         specifier: 8.3.0
         version: 8.3.0
+      rehype-infer-description-meta:
+        specifier: 2.0.0
+        version: 2.0.0
+      rehype-parse:
+        specifier: 9.0.1
+        version: 9.0.1
+      rehype-sanitize:
+        specifier: 6.0.0
+        version: 6.0.0
+      rehype-stringify:
+        specifier: 10.0.1
+        version: 10.0.1
       tailwind-merge:
         specifier: 3.4.0
         version: 3.4.0
       tldts:
         specifier: 7.0.23
         version: 7.0.23
+      unified:
+        specifier: 11.0.5
+        version: 11.0.5
       uniqolor:
         specifier: 1.1.1
         version: 1.1.1
+      unist-util-visit:
+        specifier: 5.1.0
+        version: 5.1.0
+      unist-util-visit-parents:
+        specifier: 5.1.3
+        version: 5.1.3
+      zustand:
+        specifier: 5.0.11
+        version: 5.0.11(@types/react@19.2.14)(immer@11.1.4)(react@19.2.0)(use-sync-external-store@1.6.0(react@19.2.0))
     devDependencies:
       '@follow/configs':
         specifier: workspace:*
