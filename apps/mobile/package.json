@@ -152,6 +152,7 @@
     "eas-cli": "16.26.0",
     "expo-drizzle-studio-plugin": "0.2.1",
     "nbump": "2.1.8",
+    "pathe": "2.0.3",
     "postcss": "8.5.6",
     "sf-symbols-typescript": "2.2.0",
     "typescript": "catalog:"
