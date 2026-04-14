@@ -1135,6 +1135,9 @@ importers:
       '@react-native-picker/picker':
         specifier: 2.11.4
         version: 2.11.4(react-native@0.83.4(@babel/core@7.29.0)(@types/react@19.2.14)(bufferutil@4.1.0)(react@19.2.0))(react@19.2.0)
+      '@shikijs/themes':
+        specifier: 3.22.0
+        version: 3.22.0
       '@shopify/flash-list':
         specifier: 2.0.2
         version: 2.0.2(@babel/runtime@7.28.6)(react-native@0.83.4(@babel/core@7.29.0)(@types/react@19.2.14)(bufferutil@4.1.0)(react@19.2.0))(react@19.2.0)
@@ -1231,6 +1234,9 @@ importers:
       expo-media-library:
         specifier: 55.0.14
         version: 55.0.14(expo@55.0.13)(react-native@0.83.4(@babel/core@7.29.0)(@types/react@19.2.14)(bufferutil@4.1.0)(react@19.2.0))
+      expo-modules-core:
+        specifier: 55.0.22
+        version: 55.0.22(react-native-worklets@0.7.4(@babel/core@7.29.0)(react-native@0.83.4(@babel/core@7.29.0)(@types/react@19.2.14)(bufferutil@4.1.0)(react@19.2.0))(react@19.2.0))(react-native@0.83.4(@babel/core@7.29.0)(@types/react@19.2.14)(bufferutil@4.1.0)(react@19.2.0))(react@19.2.0)
       expo-network:
         specifier: 55.0.13
         version: 55.0.13(expo@55.0.13)(react@19.2.0)
@@ -1273,6 +1279,9 @@ importers:
       expo-web-browser:
         specifier: 55.0.14
         version: 55.0.14(expo@55.0.13)(react-native@0.83.4(@babel/core@7.29.0)(@types/react@19.2.14)(bufferutil@4.1.0)(react@19.2.0))
+      foxact:
+        specifier: 0.2.52
+        version: 0.2.52(react-dom@19.2.0(react@19.2.0))(react@19.2.0)
       franc-min:
         specifier: 6.2.0
         version: 6.2.0
@@ -1309,6 +1318,9 @@ importers:
       react-error-boundary:
         specifier: 6.1.0
         version: 6.1.0(react@19.2.0)
+      react-freeze:
+        specifier: 1.0.4
+        version: 1.0.4(react@19.2.0)
       react-hook-form:
         specifier: 7.71.1
         version: 7.71.1(react@19.2.0)
