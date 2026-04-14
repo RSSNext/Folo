@@ -2,24 +2,10 @@
 
 ## Shiny new things
 
-- Added streaming text-to-speech playback
-- Enabled background OTA updates
-- Added Spotlight settings with refined highlighting controls
-
 ## Improvements
-
-- Upgraded the app to Expo SDK 55 and the latest React Native Firebase stack
-- Improved OTA policy handling and release metadata flow
-- Increased AI summary font size for better readability
 
 ## No longer broken
 
-- Fixed YouTube embeds closing incorrectly on iOS
-- Fixed Android video playback changing the original audio pitch
-- Fixed social sign-in state refresh
-- Fixed session refresh after cookie updates
-- Fixed iOS archive and build issues on Expo SDK 55 / Xcode 26.4
-
 ## Thanks
 
-Special thanks to volunteer contributor @luckycold for their valuable contribution
+Special thanks to volunteer contributors @ for their valuable contributions
