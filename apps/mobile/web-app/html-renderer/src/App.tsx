@@ -1,6 +1,6 @@
 import { createStore, Provider, useAtomValue } from "jotai"
 
-import { entryAtom, noMediaAtom, readerRenderInlineStyleAtom } from "./atoms"
+import { entryAtom, noMediaAtom, readerRenderInlineStyleAtom, spotlightAtom } from "./atoms"
 import { HTML } from "./HTML"
 import { WebViewBridgeManager } from "./managers/webview-bridge"
 
@@ -14,10 +14,15 @@ export const App = () => {
   const entry = useAtomValue(entryAtom, { store })
   const readerRenderInlineStyle = useAtomValue(readerRenderInlineStyleAtom, { store })
   const noMedia = useAtomValue(noMediaAtom, { store })
+  const spotlightRules = useAtomValue(spotlightAtom, { store })
 
   return (
     <Provider store={store}>
-      <HTML renderInlineStyle={readerRenderInlineStyle} noMedia={noMedia}>
+      <HTML
+        renderInlineStyle={readerRenderInlineStyle}
+        noMedia={noMedia}
+        spotlightRules={spotlightRules}
+      >
         {entry?.content}
       </HTML>
     </Provider>
