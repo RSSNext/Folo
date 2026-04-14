@@ -135,5 +135,4 @@ jobs:
           prerelease: true
           tag_name: mobile/v${{ steps.version.outputs.APP_VERSION }}
           body_path: ${{ steps.release_notes.outputs.body_path }}
-          # .aab cannot be installed directly on your Android Emulator or device.
-          files: ${{ github.workspace }}/build.apk
+          files: ${{ format('{0}/build.{1}', github.workspace, github.event.inputs.profile == 'production' && 'aab' || 'apk') }}
