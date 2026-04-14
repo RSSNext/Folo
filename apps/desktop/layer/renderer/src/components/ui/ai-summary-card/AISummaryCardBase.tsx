@@ -6,6 +6,7 @@ import type { ReactNode } from "react"
 import { useTranslation } from "react-i18next"
 
 import { useIsPaymentEnabled } from "~/atoms/server-configs"
+import { useSpotlightSettingKey } from "~/atoms/settings/spotlight"
 import { CopyButton } from "~/components/ui/button/CopyButton"
 import { Markdown } from "~/components/ui/markdown/Markdown"
 import { useFeature } from "~/hooks/biz/useFeature"
@@ -109,6 +110,7 @@ export const AISummaryCardBase: React.FC<AISummaryCardBaseProps> = ({
 }) => {
   const { t } = useTranslation("app")
   const aiEnabled = useFeature("ai")
+  const spotlightRules = useSpotlightSettingKey("spotlights")
 
   const hasContent = !isLoading && content
   const shouldSuggestUpgrade =
@@ -218,7 +220,9 @@ export const AISummaryCardBase: React.FC<AISummaryCardBaseProps> = ({
         {isLoading ? (
           loadingComponent || <DefaultLoadingState />
         ) : hasContent ? (
-          <Markdown className="prose-sm max-w-none prose-p:m-0">{String(content)}</Markdown>
+          <Markdown className="prose-sm max-w-none prose-p:m-0" spotlightRules={spotlightRules}>
+            {String(content)}
+          </Markdown>
         ) : shouldSuggestUpgrade ? (
           <DefaultEmptyState
             message={t("ai.summary_upgrade_required_title")}

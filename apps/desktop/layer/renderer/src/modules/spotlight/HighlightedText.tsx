@@ -35,7 +35,12 @@ export const HighlightedText = ({
     <>
       {keyedSegments.map(({ key, segment }) =>
         segment.highlight ? (
-          <span key={key} style={toHighlightStyle(segment.highlight.color)}>
+          <span
+            key={key}
+            data-spotlight-color={segment.highlight.color}
+            data-spotlight-rule-id={segment.highlight.ruleId}
+            style={toHighlightStyle(segment.highlight.color)}
+          >
             {segment.text}
           </span>
         ) : (

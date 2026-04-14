@@ -9,6 +9,7 @@ import { useHover } from "@use-gesture/react"
 import { useEffect, useMemo, useRef, useState } from "react"
 
 import { AudioPlayer } from "~/atoms/player"
+import { useSpotlightSettingKey } from "~/atoms/settings/spotlight"
 import { m } from "~/components/common/Motion"
 import { HTML } from "~/components/ui/markdown/HTML"
 import { Media } from "~/components/ui/media/Media"
@@ -72,7 +73,7 @@ export const VideoPlayer: React.FC<VideoPlayerProps> = ({
         lang,
       }),
     ],
-    [entry?.attachments, entry?.url],
+    [entry?.attachments, entry?.url, lang],
   )
 
   const modalStack = useModalStack()
@@ -186,6 +187,7 @@ const PreviewVideoModalContent: ModalContentComponent<{
 
   const content = translation?.content || entry?.content
   const currentAudioPlayerIsPlay = useRef(AudioPlayer.get().status === "playing")
+  const spotlightRules = useSpotlightSettingKey("spotlights")
 
   const renderStyle = useRenderStyle()
 
@@ -221,6 +223,7 @@ const PreviewVideoModalContent: ModalContentComponent<{
             as="div"
             className="prose !max-w-full dark:prose-invert"
             noMedia
+            spotlightRules={spotlightRules}
             style={renderStyle}
           >
             {content}

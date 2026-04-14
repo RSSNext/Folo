@@ -77,6 +77,8 @@ jobs:
         run: eas build --platform android --profile ${{ github.event.inputs.profile || 'preview' }} --local --output=${{ github.workspace }}/build.${{ github.event.inputs.profile == 'production' && 'aab' || 'apk' }}
         env:
           EAS_NO_FROZEN_LOCKFILE: "1"
+          npm_config_node_linker: isolated
+          npm_config_shamefully_hoist: "false"
 
       - name: 📤 Upload apk Artifact
         if: github.event.inputs.profile != 'production'
@@ -135,5 +137,4 @@ jobs:
           prerelease: true
           tag_name: mobile/v${{ steps.version.outputs.APP_VERSION }}
           body_path: ${{ steps.release_notes.outputs.body_path }}
-          # .aab cannot be installed directly on your Android Emulator or device.
-          files: ${{ github.workspace }}/build.apk
+          files: ${{ format('{0}/build.{1}', github.workspace, github.event.inputs.profile == 'production' && 'aab' || 'apk') }}

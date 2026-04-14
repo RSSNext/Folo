@@ -20,6 +20,7 @@ import { titleCase } from "title-case"
 
 import { AudioPlayer, useAudioPlayerAtomSelector } from "~/atoms/player"
 import { useGeneralSettingKey } from "~/atoms/settings/general"
+import { useSpotlightSettingKey } from "~/atoms/settings/spotlight"
 import { RelativeTime } from "~/components/ui/datetime"
 import { FEED_COLLECTION_LIST } from "~/constants"
 import { useEntryIsRead } from "~/hooks/biz/useAsRead"
@@ -28,6 +29,7 @@ import { EntryTranslation } from "~/modules/entry-column/translation"
 import type { FeedIconEntry } from "~/modules/feed/feed-icon"
 import { FeedIcon } from "~/modules/feed/feed-icon"
 import { FeedTitle } from "~/modules/feed/feed-title"
+import { HighlightedText } from "~/modules/spotlight/HighlightedText"
 import { getPreferredTitle } from "~/store/feed/hooks"
 
 import { StarIcon } from "../star-icon"
@@ -208,6 +210,8 @@ export function AllItem({ entryId, translation, currentFeedTitle }: UniversalIte
 AllItem.wrapperClassName = "pl-5 pr-4 @[700px]:pl-6 @[1024px]:pr-5"
 
 export function AllItemStateLess({ entry, feed }: EntryItemStatelessProps) {
+  const spotlightRules = useSpotlightSettingKey("spotlights")
+
   return (
     <div className="group relative flex cursor-menu py-4">
       <FeedIcon target={feed} fallback className="mr-2 size-5" />
@@ -218,7 +222,7 @@ export function AllItemStateLess({ entry, feed }: EntryItemStatelessProps) {
           <span>{!!entry.publishedAt && <RelativeTime date={entry.publishedAt} />}</span>
         </div>
         <div className="relative my-0.5 truncate break-words font-medium text-text">
-          {entry.title}
+          <HighlightedText rules={spotlightRules} text={entry.title} />
         </div>
       </div>
     </div>

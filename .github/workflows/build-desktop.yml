@@ -165,13 +165,48 @@ jobs:
             npx electron-forge make --arch=arm64 --platform=darwin ${{ env.PROD == 'false' && '--mode=staging' || '' }}
             npx tsx scripts/merge-yml.ts
 
+      - name: Resolve desktop build version
+        if: runner.os == 'macOS' && github.event.inputs.store == 'true'
+        id: desktop_build_version
+        shell: bash
+        run: |
+          set -euo pipefail
+
+          build_version="${{ github.event.inputs.build_version }}"
+
+          if [ -n "$build_version" ]; then
+            echo "Using provided desktop build version: $build_version"
+            echo "build_version=$build_version" >> "$GITHUB_OUTPUT"
+            exit 0
+          fi
+
+          git fetch --tags --force
+
+          latest_tag="$(git tag -l 'desktop-build/v*' --sort=-v:refname | head -n 1)"
+          if [ -z "$latest_tag" ]; then
+            last_build=110
+          else
+            last_build="${latest_tag#desktop-build/v}"
+          fi
+
+          build_version=$((last_build + 1))
+          build_tag="desktop-build/v${build_version}"
+
+          git config user.name "github-actions[bot]"
+          git config user.email "github-actions[bot]@users.noreply.github.com"
+          git tag "$build_tag"
+          git push origin "$build_tag"
+
+          echo "Reserved desktop build version: ${build_version}"
+          echo "build_version=$build_version" >> "$GITHUB_OUTPUT"
+
       - name: Build - Mac App Store
         if: runner.os == 'macOS' && github.event.inputs.store == 'true'
         env:
           OSX_SIGN_KEYCHAIN_PATH: ${{ runner.temp }}/app-signing.keychain-db
           OSX_SIGN_IDENTITY: ${{ secrets.OSX_SIGN_IDENTITY_MAS }}
           OSX_SIGN_PROVISIONING_PROFILE_PATH: ${{ runner.temp }}/build_pp.provisionprofile
-          BUILD_VERSION: ${{ github.event.inputs.build_version }}
+          BUILD_VERSION: ${{ steps.desktop_build_version.outputs.build_version }}
         working-directory: apps/desktop
         run: pnpm build:electron-forge:mas
 
@@ -293,6 +328,7 @@ jobs:
         if: env.RELEASE == 'true'
         env:
           DESKTOP_RELEASE_ASSET_DIR: ${{ runner.temp }}/desktop-release-assets
+        shell: bash
         run: |
           node --input-type=module <<'EOF'
           import { cpSync, existsSync, mkdirSync, rmSync } from "node:fs"
@@ -326,7 +362,7 @@ jobs:
         uses: actions/upload-artifact@v7
         with:
           name: desktop-release-assets-${{ runner.os }}
-          path: ${{ runner.temp }}/desktop-release-assets/apps
+          path: ${{ runner.temp }}/desktop-release-assets
           if-no-files-found: error
           retention-days: 7
 
