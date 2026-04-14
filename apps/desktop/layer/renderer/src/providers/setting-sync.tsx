@@ -15,6 +15,7 @@ import { useReduceMotion } from "~/hooks/biz/useReduceMotion"
 import { useSyncTheme } from "~/hooks/common"
 import { langChain } from "~/i18n"
 import { ipcServices } from "~/lib/client"
+import { buildAppFontFamily } from "~/lib/font-family"
 import { loadLanguageAndApply } from "~/lib/load-language"
 
 const useUpdateDockBadge = (setting: UISettings) => {
@@ -66,8 +67,7 @@ const useUISettingSync = () => {
 
   useInsertionEffect(() => {
     const root = document.documentElement
-    // https://developer.mozilla.org/en-US/docs/Web/CSS/font-family#valid_family_names
-    const fontCss = `"${setting.uiFontFamily}", system-ui, sans-serif`
+    const fontCss = buildAppFontFamily(setting.uiFontFamily)
 
     Object.assign(root.style, {
       fontFamily: fontCss,

@@ -3,7 +3,7 @@ import { useEntry } from "@follow/store/entry/hooks"
 import { unreadSyncService } from "@follow/store/unread/store"
 import { useIsLoggedIn } from "@follow/store/user/hooks"
 import { tracker } from "@follow/tracker"
-import { formatDuration, transformVideoUrl } from "@follow/utils"
+import { formatDuration } from "@follow/utils"
 import { memo, useMemo } from "react"
 import { useTranslation } from "react-i18next"
 import { Linking, View } from "react-native"
@@ -15,6 +15,7 @@ import { ItemPressable } from "@/src/components/ui/pressable/ItemPressable"
 import { Text } from "@/src/components/ui/typography/Text"
 import { openLink } from "@/src/lib/native"
 import { toast } from "@/src/lib/toast"
+import { resolveVideoUrlForMobileOpen } from "@/src/lib/video-url"
 
 import { VideoContextMenu } from "../../context-menu/video"
 import { EntryGridFooter } from "../../entry-content/EntryGridFooter"
@@ -141,10 +142,6 @@ const openVideo = async (url: string) => {
   }
 
   // Fallback to opening in in-app browser
-  const formattedUrl = openLinksInExternalApp
-    ? url
-    : transformVideoUrl({
-        url,
-      }) || url
+  const formattedUrl = openLinksInExternalApp ? url : resolveVideoUrlForMobileOpen(url)
   openLink(formattedUrl)
 }

@@ -25,8 +25,10 @@ import { ShareForwardCuteReIcon } from "@/src/icons/share_forward_cute_re"
 import { StarCuteFiIcon } from "@/src/icons/star_cute_fi"
 import { StarCuteReIcon } from "@/src/icons/star_cute_re"
 import { Translate2CuteReIcon } from "@/src/icons/translate_2_cute_re"
+import { VoiceCuteReIcon } from "@/src/icons/voice_cute_re"
 import { hideIntelligenceGlowEffect, openLink } from "@/src/lib/native"
 import { toast } from "@/src/lib/toast"
+import { playEntryTts } from "@/src/modules/player/entry-tts"
 
 import { useEntryContentContext } from "./ctx"
 
@@ -173,6 +175,19 @@ const HeaderRightActionsImpl = ({
         inMenu: true,
       },
     {
+      key: "PlayTts",
+      title: t("entry_content.header.play_tts"),
+      icon: <VoiceCuteReIcon />,
+      iconIOS: { name: "speaker.wave.2" },
+      onPress: () => {
+        void playEntryTts(entryId, {
+          preferReadability: showReadability,
+          toastTitle: t("entry_content.header.play_tts"),
+        })
+      },
+      inMenu: true,
+    },
+    {
       key: "Share",
       title: t("operation.share"),
       icon: <ShareForwardCuteReIcon />,
@@ -228,7 +243,7 @@ const HeaderRightActionsImpl = ({
 
       <DropdownMenu.Root>
         <DropdownMenu.Trigger>
-          <Pressable hitSlop={10} accessibilityLabel="More Actions">
+          <Pressable testID="entry-more-actions" hitSlop={10} accessibilityLabel="More Actions">
             <More1CuteReIcon color={labelColor} />
           </Pressable>
         </DropdownMenu.Trigger>

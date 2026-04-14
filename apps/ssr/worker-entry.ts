@@ -144,6 +144,12 @@ app.get("/og/:type/:id", async (c) => {
   })
 })
 
+// SSR pages reference hashed bundles from /dist-external, so these requests
+// must stay on the SSR worker instead of falling through to the SPA worker.
+app.get("/dist-external/*", (c) => {
+  return c.env.ASSETS.fetch(c.req.raw)
+})
+
 // SSR routes - use SSR template with meta injection
 // These routes correspond to the vercel.json rewrites to follow-external-ssr
 const ssrHandler = async (c: any) => {

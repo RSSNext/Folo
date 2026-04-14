@@ -28,9 +28,7 @@ public class HelperModule: Module {
 
     Function("scrollToTop") { (reactTag: Int) in
       DispatchQueue.main.async { [weak self] in
-        guard let bridge = self?.appContext?.reactBridge else { return }
-
-        if let sourceView = bridge.uiManager.view(forReactTag: NSNumber(value: reactTag)) {
+        if let sourceView = self?.appContext?.findView(withTag: reactTag, ofType: UIView.self) {
           let scrollView = self?.findUIScrollView(view: sourceView)
           guard let scrollView = scrollView else {
             return
@@ -42,9 +40,7 @@ public class HelperModule: Module {
 
     AsyncFunction("isScrollToEnd") { (reactTag: Int, promise: Promise) in
       DispatchQueue.main.async { [weak self] in
-        guard let bridge = self?.appContext?.reactBridge else { return }
-
-        if let sourceView = bridge.uiManager.view(forReactTag: NSNumber(value: reactTag)) {
+        if let sourceView = self?.appContext?.findView(withTag: reactTag, ofType: UIView.self) {
           let scrollView = self?.findUIScrollView(view: sourceView)
           guard let scrollView = scrollView else {
             return
@@ -62,9 +58,7 @@ public class HelperModule: Module {
 
     Function("saveImageByHandle") { (reactTag: Int) in
       DispatchQueue.main.async { [weak self] in
-        guard let bridge = self?.appContext?.reactBridge else { return }
-
-        if let sourceView = bridge.uiManager.view(forReactTag: NSNumber(value: reactTag)) {
+        if let sourceView = self?.appContext?.findView(withTag: reactTag, ofType: UIView.self) {
           let imageView = self?.findUIImageView(view: sourceView)
           guard let imageView = imageView else {
             return
@@ -78,8 +72,7 @@ public class HelperModule: Module {
 
     Function("shareImageByHandle") { (reactTag: Int, url: String?) in
       DispatchQueue.main.async { [weak self] in
-        guard let bridge = self?.appContext?.reactBridge else { return }
-        if let sourceView = bridge.uiManager.view(forReactTag: NSNumber(value: reactTag)) {
+        if let sourceView = self?.appContext?.findView(withTag: reactTag, ofType: UIView.self) {
           let imageView = self?.findUIImageView(view: sourceView)
           guard let imageView = imageView else {
             return
@@ -103,9 +96,7 @@ public class HelperModule: Module {
 
     AsyncFunction("getBase64FromImageViewByHandle") { (reactTag: Int, promise: Promise) in
       DispatchQueue.main.async { [weak self] in
-        guard let bridge = self?.appContext?.reactBridge else { return }
-
-        if let sourceView = bridge.uiManager.view(forReactTag: NSNumber(value: reactTag)) {
+        if let sourceView = self?.appContext?.findView(withTag: reactTag, ofType: UIView.self) {
           let imageView = self?.findUIImageView(view: sourceView)
           guard let imageView = imageView else {
             promise.reject(
@@ -122,9 +113,7 @@ public class HelperModule: Module {
 
     Function("copyImageByHandle") { (reactTag: Int) in
       DispatchQueue.main.async { [weak self] in
-        guard let bridge = self?.appContext?.reactBridge else { return }
-
-        if let sourceView = bridge.uiManager.view(forReactTag: NSNumber(value: reactTag)) {
+        if let sourceView = self?.appContext?.findView(withTag: reactTag, ofType: UIView.self) {
           let imageView = self?.findUIImageView(view: sourceView)
           guard let imageView = imageView else {
             return

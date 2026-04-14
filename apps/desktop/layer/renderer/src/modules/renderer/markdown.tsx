@@ -4,6 +4,7 @@ import { getFeedById } from "@follow/store/feed/getter"
 import type { ComponentProps } from "react"
 import { useMemo } from "react"
 
+import { useSpotlightSettingKey } from "~/atoms/settings/spotlight"
 import {
   MarkdownImageRecordContext,
   MarkdownRenderActionContext,
@@ -24,6 +25,7 @@ export function EntryContentMarkdownRenderer({
   children,
   ...props
 }: EntryContentRendererProps & MarkdownProps) {
+  const spotlightRules = useSpotlightSettingKey("spotlights")
   const entry = useEntry(entryId, (state) => {
     const images =
       state.media?.reduce(
@@ -69,7 +71,9 @@ export function EntryContentMarkdownRenderer({
     <MarkdownImageRecordContext.Provider value={images}>
       <MarkdownRenderActionContext value={actions}>
         <EntryInfoContext value={useMemo(() => ({ feedId, entryId }), [feedId, entryId])}>
-          <Markdown {...props}>{children ?? ""}</Markdown>
+          <Markdown {...props} spotlightRules={spotlightRules}>
+            {children ?? ""}
+          </Markdown>
         </EntryInfoContext>
       </MarkdownRenderActionContext>
     </MarkdownImageRecordContext.Provider>

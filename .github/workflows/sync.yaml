@@ -8,6 +8,7 @@ on:
 
 permissions:
   contents: write
+  pull-requests: write
 
 jobs:
   sync-to-dev:
@@ -16,20 +17,33 @@ jobs:
       (github.ref == 'refs/heads/main' && contains(github.event.head_commit.message || '', 'release(desktop):')) ||
       (github.ref == 'refs/heads/mobile-main' && contains(github.event.head_commit.message || '', 'release(mobile):'))
     steps:
-      - name: Checkout repository
-        uses: actions/checkout@v6
-        with:
-          fetch-depth: 0
-
-      - name: Set up Git
-        run: |
-          git config --global user.name "github-actions[bot]"
-          git config --global user.email "github-actions[bot]@users.noreply.github.com"
-
-      - name: Merge source branch into dev
+      - name: Create or update sync pull request
+        env:
+          GH_TOKEN: ${{ github.token }}
         run: |
           source_branch="${GITHUB_REF_NAME}"
-          git fetch origin main mobile-main dev
-          git checkout dev
-          git merge --no-ff "origin/${source_branch}" -m "chore(sync): merge ${source_branch} into dev"
-          git push origin dev
+          title="chore(sync): merge ${source_branch} into dev"
+          body=$(cat <<EOF
+          This pull request was created automatically after a release branch update.
+
+          - Source branch: \`${source_branch}\`
+          - Target branch: \`dev\`
+          EOF
+          )
+
+          pr_number="$(gh pr list --base dev --head "${source_branch}" --state open --json number --jq '.[0].number')"
+
+          if [ -z "${pr_number}" ]; then
+            pr_url="$(gh pr create --base dev --head "${source_branch}" --title "${title}" --body "${body}")"
+            pr_number="$(gh pr view "${pr_url}" --json number --jq '.number')"
+            echo "Created sync PR: ${pr_url}"
+          else
+            gh pr edit "${pr_number}" --title "${title}" --body "${body}"
+            echo "Updated existing sync PR: #${pr_number}"
+          fi
+
+          if gh pr merge "${pr_number}" --auto --merge; then
+            echo "Enabled auto-merge for sync PR #${pr_number}"
+          else
+            echo "Could not enable auto-merge for sync PR #${pr_number}. Merge it manually after required checks pass."
+          fi

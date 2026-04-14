@@ -24,9 +24,12 @@ export enum WindowState {
   MAXIMIZED = "maximized",
   NORMAL = "normal",
 }
+
+export type DesktopUpdateDistribution = StoreDistribution | "direct"
+
 export interface DistributionUpdateNotice {
-  distribution: StoreDistribution
-  storeUrl: string
+  distribution: DesktopUpdateDistribution
+  targetUrl: string
   storeVersion: string | null
   currentVersion: string | null
 }

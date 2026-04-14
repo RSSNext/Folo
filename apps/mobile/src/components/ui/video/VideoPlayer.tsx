@@ -66,8 +66,8 @@ export function VideoPlayer({
         style={videoStyle}
         contentFit={isFullScreen ? "contain" : "cover"}
         player={player}
-        allowsFullscreen
         allowsPictureInPicture
+        fullscreenOptions={{ enable: true }}
         // The Android native controls will be shown when the video is paused
         nativeControls={isIOS || isFullScreen}
         accessible={false}

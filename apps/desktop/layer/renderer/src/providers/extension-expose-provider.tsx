@@ -47,7 +47,7 @@ export const ExtensionExposeProvider = () => {
           type: "distribution",
           status: "ready",
           distribution: payload.distribution,
-          storeUrl: payload.storeUrl,
+          targetUrl: payload.targetUrl,
           storeVersion: payload.storeVersion,
           currentVersion: payload.currentVersion,
         })

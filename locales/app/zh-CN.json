@@ -353,6 +353,7 @@
   "notify.update_info_1": "点击重新启动",
   "notify.update_info_2": "点击重新加载页面",
   "notify.update_info_3": "点按重新加载页面",
+  "notify.update_info_direct": "点击打开下载页面",
   "notify.update_info_store": "点击前往 {{store}}",
   "player.back_10s": "后退 10s",
   "player.close": "关闭",

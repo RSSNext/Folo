@@ -11,6 +11,7 @@ const FIREBASE_CONFIG_DEFAULT = JSON.stringify({
 export const DEFAULT_VALUES = {
   PROD: {
     API_URL: "https://api.folo.is",
+    OTA_URL: "https://ota.folo.is",
     WEB_URL: "https://app.folo.is",
     INBOXES_EMAIL: "@follow.re",
     FIREBASE_CONFIG: FIREBASE_CONFIG_DEFAULT,
@@ -21,11 +22,13 @@ export const DEFAULT_VALUES = {
   },
   DEV: {
     API_URL: "https://api.dev.follow.is",
+    OTA_URL: "https://ota.folo.is",
     WEB_URL: "https://dev.follow.is",
     INBOXES_EMAIL: "__dev@follow.re",
   },
   STAGING: {
     API_URL: "https://api.folo.is",
+    OTA_URL: "https://ota.folo.is",
     WEB_URL: "https://staging.follow.is",
     INBOXES_EMAIL: "@follow.re",
     POSTHOG_KEY: "phc_EZGEvBt830JgBHTiwpHqJAEbWnbv63m5UpreojwEWNL",
@@ -33,6 +36,7 @@ export const DEFAULT_VALUES = {
   },
   LOCAL: {
     API_URL: "http://localhost:3000",
+    OTA_URL: "http://localhost:8787",
     WEB_URL: "http://localhost:2233",
     INBOXES_EMAIL: "@follow.re",
   },

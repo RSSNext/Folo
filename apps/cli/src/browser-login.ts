@@ -308,6 +308,7 @@ export const loginWithBrowser = async (
       server.close(() => {
         handler()
       })
+      server.closeIdleConnections?.()
     }
 
     const server = createServer((req, res) => {
@@ -315,6 +316,9 @@ export const loginWithBrowser = async (
         req.url ?? "/",
         `http://${req.headers.host ?? LOCAL_CALLBACK_HOST}`,
       )
+
+      res.shouldKeepAlive = false
+      res.setHeader("connection", "close")
 
       if (requestUrl.pathname !== LOCAL_CALLBACK_PATH) {
         res.statusCode = 404

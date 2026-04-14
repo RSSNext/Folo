@@ -2,6 +2,9 @@ import { useEntry } from "@follow/store/entry/hooks"
 import { useFeedsByIds } from "@follow/store/feed/hooks"
 import * as React from "react"
 
+import { useSpotlightSettingKey } from "~/atoms/settings/spotlight"
+import { HighlightedText } from "~/modules/spotlight/HighlightedText"
+
 interface TitleProps {
   fallback: string
 }
@@ -19,12 +22,17 @@ interface FeedTitleProps extends TitleProps {
  */
 export const EntryTitle: React.FC<EntryTitleProps> = React.memo(({ entryId, fallback }) => {
   const entryTitle = useEntry(entryId!, (e) => e?.title)
+  const spotlightRules = useSpotlightSettingKey("spotlights")
 
   if (!entryId || !entryTitle) {
     return <span className="text-text-tertiary">{fallback}</span>
   }
 
-  return <span title={entryTitle}>{entryTitle}</span>
+  return (
+    <span title={entryTitle}>
+      <HighlightedText rules={spotlightRules} text={entryTitle} />
+    </span>
+  )
 })
 
 EntryTitle.displayName = "EntryTitle"

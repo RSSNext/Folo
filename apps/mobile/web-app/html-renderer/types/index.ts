@@ -1,3 +1,5 @@
+import type { SpotlightRule } from "@follow/shared/spotlight"
+
 export interface MediaModel {
   url: string
   type: "photo" | "video"
@@ -11,4 +13,9 @@ export interface EntryModel {
   content?: string
   title?: string
   media?: MediaModel[]
+  spotlightRules?: SpotlightRule[]
+}
+
+export interface SpotlightState {
+  spotlights: SpotlightRule[]
 }

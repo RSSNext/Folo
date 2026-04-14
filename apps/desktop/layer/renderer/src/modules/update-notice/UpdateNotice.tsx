@@ -33,11 +33,11 @@ export const UpdateNotice = () => {
         break
       }
       case "distribution": {
-        if (status.storeUrl) {
+        if (status.targetUrl) {
           if (ipcServices?.app.openExternal) {
-            void ipcServices.app.openExternal(status.storeUrl)
+            void ipcServices.app.openExternal(status.targetUrl)
           } else {
-            window.open(status.storeUrl, "_blank")
+            window.open(status.targetUrl, "_blank")
           }
         }
         break
@@ -55,6 +55,9 @@ export const UpdateNotice = () => {
     const { distribution } = updaterStatus
 
     switch (distribution) {
+      case "direct": {
+        return null
+      }
       case "mas": {
         return t("notify.store.mas")
       }
@@ -81,7 +84,9 @@ export const UpdateNotice = () => {
         return t("notify.update_info_3")
       }
       case "distribution": {
-        return t("notify.update_info_store", { store: storeName ?? "" })
+        return updaterStatus.distribution === "direct"
+          ? t("notify.update_info_direct")
+          : t("notify.update_info_store", { store: storeName ?? "" })
       }
       default: {
         return null

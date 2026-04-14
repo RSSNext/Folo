@@ -13,7 +13,9 @@ export default defineConfig({
   trailing: [
     "plutil -replace CFBundleShortVersionString -string ${NEW_VERSION} ios/Folo/Info.plist",
     "CURRENT_BUILD=$(plutil -extract CFBundleVersion raw ios/Folo/Info.plist) && plutil -replace CFBundleVersion -string $((CURRENT_BUILD + 1)) ios/Folo/Info.plist",
+    "tsx scripts/apply-release-config.ts ${NEW_VERSION}",
     "git add ios/Folo/Info.plist",
+    "git add release.json release-plan.json",
     "git checkout -b release/mobile/${NEW_VERSION}",
   ],
   finally: [

@@ -11,6 +11,7 @@ export const env = createEnv({
   client: {
     VITE_WEB_URL: z.string().url().default(DEFAULT_VALUES.PROD.WEB_URL),
     VITE_API_URL: z.string().default(DEFAULT_VALUES.PROD.API_URL),
+    VITE_OTA_URL: z.string().url().default(DEFAULT_VALUES.PROD.OTA_URL),
     VITE_DEV_PROXY: z.string().optional(),
     VITE_SENTRY_DSN: z.string().optional(),
     VITE_INBOXES_EMAIL: z.string().default(DEFAULT_VALUES.PROD.INBOXES_EMAIL),

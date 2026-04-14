@@ -46,12 +46,15 @@ export const AutoResizeHeight: React.FC<AnimateChangeInHeightProps> = ({
 
   return (
     <m.div
-      className={cn("overflow-hidden", className)}
+      className={cn("overflow-hidden print:!h-auto print:!overflow-visible", className)}
       initial={false}
       animate={{ height }}
       transition={Spring.smooth(duration)}
     >
-      <div className={cn("overflow-hidden", innerClassName)} ref={containerRef}>
+      <div
+        className={cn("overflow-hidden print:overflow-visible", innerClassName)}
+        ref={containerRef}
+      >
         {children}
       </div>
     </m.div>

@@ -1,4 +1,4 @@
-import type { StoreDistribution } from "@follow-app/client-sdk"
+import type { DesktopUpdateDistribution } from "@follow/shared/bridge"
 import { atom } from "jotai"
 
 import { createAtomHooks } from "~/lib/jotai"
@@ -19,8 +19,8 @@ type RendererUpdaterStatus = BaseUpdaterStatus<"renderer">
 type PwaUpdaterStatus = BaseUpdaterStatus<"pwa">
 
 type DistributionUpdaterStatus = BaseUpdaterStatus<"distribution"> & {
-  distribution: StoreDistribution
-  storeUrl: string
+  distribution: DesktopUpdateDistribution
+  targetUrl: string
   storeVersion: string | null
   currentVersion: string | null
 }

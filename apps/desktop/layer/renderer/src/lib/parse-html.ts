@@ -1,8 +1,9 @@
 import { MemoedDangerousHTMLStyle } from "@follow/components/common/MemoedDangerousHTMLStyle.jsx"
 import { Checkbox } from "@follow/components/ui/checkbox/index.jsx"
 import { LazyKateX } from "@follow/components/ui/katex/lazy.js"
-import { parseHtml as parseHtmlGeneral } from "@follow/utils/html"
-import type { Element } from "hast"
+import type { SpotlightRule } from "@follow/shared/spotlight"
+import { applySpotlightToHast, parseHtml as parseHtmlGeneral } from "@follow/utils/html"
+import type { Element, Root } from "hast"
 import type { Components } from "hast-util-to-jsx-runtime"
 import { createElement } from "react"
 import { renderToString } from "react-dom/server"
@@ -28,10 +29,25 @@ export const parseHtml = (
   options?: Partial<{
     renderInlineStyle: boolean
     noMedia?: boolean
+    spotlightRules?: SpotlightRule[]
+    hastTransform?: (tree: Root) => void
   }>,
 ) => {
+  const spotlightRules = options?.spotlightRules
+  const hastTransform = options?.hastTransform
+
   return parseHtmlGeneral(content, {
     ...options,
+    hastTransform:
+      spotlightRules?.length || hastTransform
+        ? (tree) => {
+            if (spotlightRules?.length) {
+              applySpotlightToHast(tree, spotlightRules)
+            }
+
+            hastTransform?.(tree)
+          }
+        : undefined,
     components: {
       a: ({ node, ...props }) => {
         // markInlineImage(node)

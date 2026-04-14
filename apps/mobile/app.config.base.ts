@@ -1,7 +1,7 @@
 import type { ConfigContext, ExpoConfig } from "expo/config"
 import { resolve } from "pathe"
 
-import PKG from "./package.json"
+const PKG = require("./package.json") as typeof import("./package.json")
 
 // const roundedIconPath = resolve(__dirname, "../../resources/icon.png")
 const iconPathMap = {
@@ -16,8 +16,51 @@ const adaptiveIconPath = resolve(__dirname, "./assets/adaptive-icon.png")
 const splashIconPath = resolve(__dirname, "./assets/splash-icon.png")
 
 const isDev = process.env.NODE_ENV === "development"
+const semverPattern = /^\d+\.\d+\.\d+$/
+const channelNameMap = {
+  development: "development",
+  "ios-simulator": "development",
+  preview: "preview",
+  "e2e-android": "preview",
+  "e2e-ios-simulator": "preview",
+  production: "production",
+} as Record<string, string>
+
+export const resolveRuntimeVersion = ({
+  isDevelopment,
+  packageVersion,
+  otaRuntimeVersionOverride,
+}: {
+  isDevelopment: boolean
+  packageVersion: string
+  otaRuntimeVersionOverride?: string | null
+}) => {
+  if (isDevelopment) {
+    return "0.0.0-dev"
+  }
+
+  if (otaRuntimeVersionOverride) {
+    if (!semverPattern.test(otaRuntimeVersionOverride)) {
+      throw new Error(
+        `Expected OTA_RUNTIME_VERSION to be a plain x.y.z version, got ${otaRuntimeVersionOverride}`,
+      )
+    }
+
+    return otaRuntimeVersionOverride
+  }
+
+  return packageVersion
+}
 
 export default ({ config }: ConfigContext): ExpoConfig => {
+  const profile = process.env.PROFILE || "production"
+  const channelName = channelNameMap[profile] || channelNameMap.production
+  const runtimeVersion = resolveRuntimeVersion({
+    isDevelopment: isDev,
+    packageVersion: PKG.version,
+    otaRuntimeVersionOverride: process.env.OTA_RUNTIME_VERSION ?? null,
+  })
+
   const result: ExpoConfig = {
     ...config,
 
@@ -29,16 +72,19 @@ export default ({ config }: ConfigContext): ExpoConfig => {
       e2eLanguage: process.env.EXPO_PUBLIC_E2E_LANGUAGE ?? null,
     },
     owner: "follow",
-    // disable expo updates for now, https://github.com/expo/expo/issues/29630
-    // updates: {
-    //   url: "https://folo-custom-expo-updates.vercel.app/api/manifest",
-    //   codeSigningCertificate: "./code-signing/certificate.pem",
-    //   codeSigningMetadata: {
-    //     keyid: "main",
-    //     alg: "rsa-v1_5-sha256",
-    //   },
-    // },
-    runtimeVersion: isDev ? "0.0.0-dev" : PKG.version,
+    updates: {
+      url: "https://ota.folo.is/manifest",
+      requestHeaders: {
+        "expo-channel-name": channelName,
+      },
+      codeSigningCertificate: "./code-signing/certificate.pem",
+      codeSigningMetadata: {
+        keyid: "main",
+        alg: "rsa-v1_5-sha256",
+      },
+      checkAutomatically: "NEVER",
+    },
+    runtimeVersion,
 
     name: "Folo",
     slug: "follow",
@@ -47,7 +93,6 @@ export default ({ config }: ConfigContext): ExpoConfig => {
     icon: iconPath,
     scheme: ["follow", "folo"],
     userInterfaceStyle: "automatic" as const,
-    newArchEnabled: true,
     ios: {
       supportsTablet: true,
       bundleIdentifier: "is.follow",
@@ -66,18 +111,12 @@ export default ({ config }: ConfigContext): ExpoConfig => {
     },
     android: {
       package: "is.follow",
-      // Suppress warning about EDGE_TO_EDGE_PLUGIN
-      // Learn more: https://expo.dev/blog/edge-to-edge-display-now-streamlined-for-android
-      edgeToEdgeEnabled: true,
       adaptiveIcon: {
         foregroundImage: adaptiveIconPath,
         monochromeImage: adaptiveIconPath,
         backgroundColor: "#FF5C00",
       },
       googleServicesFile: "./build/google-services.json",
-    },
-    androidStatusBar: {
-      translucent: true,
     },
     // web: {
     //   bundler: "metro",
@@ -105,7 +144,10 @@ export default ({ config }: ConfigContext): ExpoConfig => {
         "expo-build-properties",
         {
           ios: {
+            // Expo SDK 55 archive builds regress with use_frameworks + prebuilt RN core.
+            buildReactNativeFromSource: true,
             useFrameworks: "static",
+            forceStaticLinking: ["RNFBApp", "RNFBAnalytics", "RNFBMessaging", "RNFBAppCheck"],
           },
         },
       ],
@@ -120,6 +162,8 @@ export default ({ config }: ConfigContext): ExpoConfig => {
       ],
       "expo-apple-authentication",
       "expo-web-browser",
+      "expo-image",
+      "expo-sharing",
       [
         "expo-video",
         {
@@ -134,6 +178,8 @@ export default ({ config }: ConfigContext): ExpoConfig => {
           assetsPath: resolve(__dirname, "..", "..", "out", "rn-web"),
         },
       ],
+      require("./plugins/with-follow-ios-resources.js"),
+      require("./plugins/with-rnfb-build-properties.js"),
 
       require("./plugins/with-gradle-jvm-heap-size-increase.js"),
       require("./plugins/with-android-jdk-21.js"),

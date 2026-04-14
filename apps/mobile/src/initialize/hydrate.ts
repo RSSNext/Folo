@@ -2,6 +2,7 @@ import { persistQueryClient } from "@tanstack/react-query-persist-client"
 
 import { initializeDefaultDataSettings } from "../atoms/settings/data"
 import { initializeDefaultGeneralSettings } from "../atoms/settings/general"
+import { initializeDefaultSpotlightSettings } from "../atoms/settings/spotlight"
 import { initializeDefaultUISettings } from "../atoms/settings/ui"
 import { kvStoragePersister, queryClient } from "../lib/query-client"
 
@@ -17,6 +18,7 @@ export const hydrateSettings = () => {
   initializeDefaultUISettings()
   initializeDefaultGeneralSettings()
   initializeDefaultDataSettings()
+  initializeDefaultSpotlightSettings()
 }
 export const hydrateQueryClient = () => {
   persistQueryClient({

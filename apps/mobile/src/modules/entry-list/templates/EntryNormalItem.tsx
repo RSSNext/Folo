@@ -262,8 +262,8 @@ const ThumbnailImage = ({ entryId }: { entryId: string }) => {
             // The Android native controls will be shown when the video is paused
             nativeControls={isIOS || showVideoNativeControlsForAndroid}
             accessible={false}
-            allowsFullscreen={false}
             allowsVideoFrameAnalysis={false}
+            fullscreenOptions={{ enable: false }}
             onFullscreenExit={() => {
               videoPlayer.pause()
               setShowVideoNativeControlsForAndroid(false)

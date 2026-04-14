@@ -63,6 +63,7 @@ jobs:
         working-directory: apps/mobile
         run: eas build --platform ios --profile ${{ github.event.inputs.profile || 'preview' }} --non-interactive --local --output=./build.ipa
         env:
+          EAS_NO_FROZEN_LOCKFILE: "1"
           SENTRY_AUTH_TOKEN: ${{ secrets.RN_SENTRY_AUTH_TOKEN }}
           CI: true
 
@@ -97,7 +98,7 @@ jobs:
         uses: ./.github/actions/setup-xcode
 
       - name: 📦 Setup pnpm
-        uses: pnpm/action-setup@v4
+        uses: pnpm/action-setup@v6
 
       - name: 🏗 Setup Node.js
         uses: actions/setup-node@v6
@@ -118,6 +119,7 @@ jobs:
         working-directory: apps/mobile
         run: eas build --platform ios --profile ${{ github.event.inputs.profile || 'preview' }} --non-interactive --local --output=./build.ipa
         env:
+          EAS_NO_FROZEN_LOCKFILE: "1"
           CI: true
           SENTRY_AUTH_TOKEN: ${{ secrets.RN_SENTRY_AUTH_TOKEN }}
       # Optional: Upload artifact
