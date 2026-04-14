@@ -1,4 +1,5 @@
 import { MemoedDangerousHTMLStyle } from "@follow/components/common/MemoedDangerousHTMLStyle.js"
+import type { SpotlightRule } from "@follow/shared/spotlight"
 import { clsx } from "clsx"
 import katexStyle from "katex/dist/katex.min.css?raw"
 import * as React from "react"
@@ -14,6 +15,7 @@ export type HTMLProps<A extends keyof React.JSX.IntrinsicElements = "div"> = {
 
   accessory?: React.ReactNode
   noMedia?: boolean
+  spotlightRules?: SpotlightRule[]
 } & React.JSX.IntrinsicElements[A] &
   Partial<{
     renderInlineStyle: boolean
@@ -25,25 +27,29 @@ export const HTML = <A extends keyof React.JSX.IntrinsicElements = "div">(props:
     as = "article",
     accessory,
     noMedia,
+    spotlightRules,
 
     ...rest
   } = props
   const [remarkOptions, setRemarkOptions] = useState({
     renderInlineStyle,
     noMedia,
+    spotlightRules,
   })
   const [shouldForceReMountKey, setShouldForceReMountKey] = useState(0)
 
   useEffect(() => {
     setRemarkOptions((options) => {
-      if (JSON.stringify(options) === JSON.stringify({ renderInlineStyle, noMedia })) {
+      if (
+        JSON.stringify(options) === JSON.stringify({ renderInlineStyle, noMedia, spotlightRules })
+      ) {
         return options
       }
 
       setShouldForceReMountKey((key) => key + 1)
-      return { ...options, renderInlineStyle, noMedia }
+      return { ...options, renderInlineStyle, noMedia, spotlightRules }
     })
-  }, [renderInlineStyle, noMedia])
+  }, [renderInlineStyle, noMedia, spotlightRules])
 
   const [refElement, setRefElement] = useState<HTMLDivElement | null>(null)
 

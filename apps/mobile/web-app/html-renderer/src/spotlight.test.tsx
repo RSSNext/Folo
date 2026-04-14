@@ -5,6 +5,7 @@ import { beforeEach, describe, expect, test, vi } from "vitest"
 
 import { entryAtom, spotlightAtom } from "./atoms"
 import { WebViewBridgeManager } from "./managers/webview-bridge"
+import { parseHtml } from "./parser"
 import { applySpotlightToHtmlRendererTree } from "./spotlight"
 
 const spotlightRules: SpotlightRule[] = [
@@ -210,5 +211,32 @@ describe("WebViewBridgeManager", () => {
       spotlightRules,
     })
     expect(store.get(spotlightAtom)).toEqual(spotlightRules)
+  })
+})
+
+describe("parseHtml", () => {
+  test("injects spotlight markup when parser receives spotlight rules", () => {
+    const { hastTree } = parseHtml("<p>alpha beta</p>", { spotlightRules })
+
+    expect(hastTree).toMatchObject({
+      children: [
+        {
+          type: "element",
+          tagName: "p",
+          children: [
+            {
+              type: "element",
+              tagName: "span",
+              properties: expect.objectContaining({
+                "data-spotlight-rule-id": "alpha-rule",
+                style: "background-color:#ffcc00CC;border-radius:5px;padding-inline:2px;",
+              }),
+              children: [{ type: "text", value: "alpha" }],
+            },
+            { type: "text", value: " beta" },
+          ],
+        },
+      ],
+    })
   })
 })

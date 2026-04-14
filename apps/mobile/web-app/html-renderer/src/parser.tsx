@@ -1,5 +1,6 @@
 import { MemoedDangerousHTMLStyle } from "@follow/components/common/MemoedDangerousHTMLStyle.jsx"
 import { Checkbox } from "@follow/components/ui/checkbox/index.jsx"
+import type { SpotlightRule } from "@follow/shared/spotlight"
 import { parseHtml as parseHtmlGeneral } from "@follow/utils/html"
 import type { Components } from "hast-util-to-jsx-runtime"
 import { createElement } from "react"
@@ -9,8 +10,9 @@ import { createHeadingRenderer, MarkdownLink, MarkdownP } from "./components"
 import { MarkdownImage } from "./components/image"
 import { Math } from "./components/math"
 import { ShikiHighLighter } from "./components/shiki"
+import { applySpotlightToHtmlRendererTree } from "./spotlight"
 
-const Style: Components["style"] = ({ node, ...props }) => {
+const renderStyleTag: Components["style"] = ({ node, ...props }) => {
   if (typeof props.children === "string") {
     return createElement(MemoedDangerousHTMLStyle, null, props.children)
   }
@@ -22,10 +24,16 @@ export const parseHtml = (
   options?: Partial<{
     renderInlineStyle: boolean
     noMedia?: boolean
+    spotlightRules?: SpotlightRule[]
   }>,
 ) => {
+  const spotlightRules = options?.spotlightRules ?? []
+
   return parseHtmlGeneral(content, {
     ...options,
+    hastTransform: (tree) => {
+      applySpotlightToHtmlRendererTree(tree, spotlightRules)
+    },
     components: {
       a: ({ node, ...props }) => {
         // Ignore link wrapper when child is an image to ensure image preview
@@ -62,7 +70,7 @@ export const parseHtml = (
       h6: (props) => {
         return createHeadingRenderer(6)(props)
       },
-      style: Style,
+      style: renderStyleTag,
       img: ({ node, ...props }) => {
         return createElement(MarkdownImage, props as any)
       },
