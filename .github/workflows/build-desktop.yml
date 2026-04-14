@@ -372,7 +372,7 @@ jobs:
         run: pnpm i
 
       - name: Download release assets
-        uses: actions/download-artifact@v5
+        uses: actions/download-artifact@v8
         with:
           pattern: desktop-release-assets-*
           path: .
