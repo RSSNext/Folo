@@ -146,6 +146,7 @@
   },
   "devDependencies": {
     "@babel/core": "7.29.0",
+    "@expo/config-plugins": "55.0.8",
     "@follow/configs": "workspace:*",
     "@types/react": "19.2.14",
     "babel-plugin-inline-import": "3.0.0",

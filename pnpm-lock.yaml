@@ -1418,6 +1418,9 @@ importers:
       '@babel/core':
         specifier: 7.29.0
         version: 7.29.0
+      '@expo/config-plugins':
+        specifier: 55.0.8
+        version: 55.0.8
       '@follow/configs':
         specifier: workspace:*
         version: link:../../packages/configs
