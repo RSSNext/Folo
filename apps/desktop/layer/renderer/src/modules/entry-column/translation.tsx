@@ -2,7 +2,9 @@ import { cn } from "@follow/utils/utils"
 import { useMemo } from "react"
 
 import { useGeneralSettingKey } from "~/atoms/settings/general"
+import { useSpotlightSettingKey } from "~/atoms/settings/spotlight"
 import { HTML } from "~/components/ui/markdown/HTML"
+import { HighlightedText } from "~/modules/spotlight/HighlightedText"
 
 export const EntryTranslation: Component<{
   source?: string | null
@@ -12,6 +14,7 @@ export const EntryTranslation: Component<{
   bilingual?: boolean
 }> = ({ source, target, className, isHTML, inline = true, bilingual }) => {
   const bilingualFinal = useGeneralSettingKey("translationMode") === "bilingual" || bilingual
+  const spotlightRules = useSpotlightSettingKey("spotlights")
 
   const nextTarget = useMemo(() => {
     if (!target || source === target) {
@@ -28,11 +31,18 @@ export const EntryTranslation: Component<{
     return (
       <div>
         {isHTML ? (
-          <HTML as="div" className={cn("prose dark:prose-invert", className)} noMedia>
+          <HTML
+            as="div"
+            className={cn("prose dark:prose-invert", className)}
+            noMedia
+            spotlightRules={spotlightRules}
+          >
             {nextTarget || source}
           </HTML>
         ) : (
-          <div className={className}>{nextTarget || source}</div>
+          <div className={className}>
+            <HighlightedText rules={spotlightRules} text={nextTarget || source} />
+          </div>
         )}
       </div>
     )
@@ -43,19 +53,32 @@ export const EntryTranslation: Component<{
   return (
     <>
       {isHTML ? (
-        <HTML as="div" className={cn("prose dark:prose-invert", className)} noMedia>
+        <HTML
+          as="div"
+          className={cn("prose dark:prose-invert", className)}
+          noMedia
+          spotlightRules={spotlightRules}
+        >
           {nextTarget || source}
         </HTML>
       ) : (
         <div className={cn(inline && "inline align-middle", className)}>
           {nextTarget && inline && (
             <>
-              <span className="align-middle">{nextTarget}</span>
+              <span className="align-middle">
+                <HighlightedText rules={spotlightRules} text={nextTarget} />
+              </span>
               <i className="i-mgc-translate-2-ai-cute-re mx-2 align-middle" />
             </>
           )}
-          <SourceTag className={cn(inline && "align-middle")}>{source}</SourceTag>
-          {nextTarget && !inline && <p>{nextTarget}</p>}
+          <SourceTag className={cn(inline && "align-middle")}>
+            <HighlightedText rules={spotlightRules} text={source} />
+          </SourceTag>
+          {nextTarget && !inline && (
+            <p>
+              <HighlightedText rules={spotlightRules} text={nextTarget} />
+            </p>
+          )}
         </div>
       )}
     </>
