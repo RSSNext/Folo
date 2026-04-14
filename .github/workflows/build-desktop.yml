@@ -327,7 +327,7 @@ jobs:
         uses: actions/upload-artifact@v7
         with:
           name: desktop-release-assets-${{ runner.os }}
-          path: ${{ runner.temp }}/desktop-release-assets/apps
+          path: ${{ runner.temp }}/desktop-release-assets
           if-no-files-found: error
           retention-days: 7
 
