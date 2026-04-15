@@ -323,6 +323,66 @@ describe("/manifest", () => {
     })
   })
 
+  it("returns app payloads for desktop direct binary builds without an OTA pointer", async () => {
+    const response = await fetchWorker(
+      "/manifest",
+      {
+        headers: {
+          "x-app-platform": "desktop/windows/exe",
+          "x-app-version": "1.6.0",
+          "x-app-runtime-version": "1.6.0",
+          "x-app-renderer-version": "1.6.0",
+          "x-app-channel": "stable",
+        },
+      },
+      {
+        kvEntries: new Map<string, unknown>([
+          [
+            KV_KEYS.policy("desktop", "stable"),
+            {
+              releaseVersion: "1.6.1",
+              required: false,
+              minSupportedBinaryVersion: "1.6.1",
+              message: null,
+              publishedAt: "2026-04-15T02:54:57.862Z",
+              distribution: null,
+              downloadUrl: null,
+              storeUrl: null,
+            },
+          ],
+          [
+            KV_KEYS.release("desktop", "1.6.1"),
+            createDesktopRelease({
+              releaseVersion: "1.6.1",
+              releaseKind: "binary",
+              runtimeVersion: null,
+              desktop: {
+                renderer: null,
+                app: createDesktopRelease().desktop.app,
+              },
+            }),
+          ],
+        ]),
+      },
+    )
+
+    expect(response.status).toBe(200)
+    await expect(response.json()).resolves.toMatchObject({
+      product: "desktop",
+      channel: "stable",
+      runtimeVersion: "1.6.0",
+      renderer: null,
+      app: {
+        platform: "windows-x64",
+        version: "1.6.1",
+        releaseVersion: "1.6.1",
+        manifest: {
+          name: "latest.yml",
+        },
+      },
+    })
+  })
+
   it("returns only renderer for desktop store distributions", async () => {
     const response = await fetchWorker(
       "/manifest",

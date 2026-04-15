@@ -10,15 +10,19 @@ export function buildDesktopManifestResponse(
     distribution: "direct" | "mas" | "mss"
     installedBinaryVersion: string | null
     rendererVersion: string | null
+    runtimeVersion: string
   },
 ) {
-  const rendererManifest = buildManifest(release, {
-    origin: input.origin,
-    platform: input.platform,
-  })
+  const rendererManifest = release.desktop.renderer
+    ? buildManifest(release, {
+        origin: input.origin,
+        platform: input.platform,
+      })
+    : null
 
   const renderer =
     release.desktop.renderer &&
+    rendererManifest &&
     isVersionOutdated(input.rendererVersion, release.desktop.renderer.version)
       ? {
           releaseVersion: release.releaseVersion,
@@ -53,7 +57,7 @@ export function buildDesktopManifestResponse(
     createdAt: release.publishedAt,
     product: "desktop" as const,
     channel: release.channel,
-    runtimeVersion: release.runtimeVersion,
+    runtimeVersion: release.runtimeVersion ?? input.runtimeVersion,
     renderer,
     app,
   }
