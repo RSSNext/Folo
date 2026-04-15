@@ -1,9 +1,9 @@
-import { Spring } from "@follow/components/constants/spring.js"
 import { cn } from "@follow/utils/utils"
 import * as TooltipPrimitive from "@radix-ui/react-tooltip"
 import { m } from "motion/react"
 import * as React from "react"
 
+import { Spring } from "../../constants/spring"
 import { tooltipStyle, tooltipStyles } from "./styles"
 
 const TooltipProvider = TooltipPrimitive.Provider

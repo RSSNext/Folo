@@ -72,6 +72,9 @@ jobs:
       - name: Install dependencies
         run: pnpm install
 
+      - name: Build mobile web assets
+        run: pnpm --dir apps/mobile/web-app build --outDir ../../../out/rn-web/html-renderer
+
       - name: 🔨 Build Android app
         working-directory: apps/mobile
         run: eas build --platform android --profile ${{ github.event.inputs.profile || 'preview' }} --local --output=${{ github.workspace }}/build.${{ github.event.inputs.profile == 'production' && 'aab' || 'apk' }}

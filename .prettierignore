@@ -2,6 +2,7 @@ pnpm-lock.yaml
 
 CHANGELOG.md
 .context
+.waylog
 
 apps/external/postcss.config.cjs
 

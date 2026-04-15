@@ -8,7 +8,6 @@
 // Original code copied and simplified from the link below as the codebase is currently not maintained:
 // https://github.com/jobtoday/react-native-image-viewing
 
-// import * as ScreenOrientation from "expo-screen-orientation"
 import * as React from "react"
 import { useCallback, useMemo, useState } from "react"
 import { LayoutAnimation, PixelRatio, ScrollView, StyleSheet, View } from "react-native"
@@ -47,7 +46,6 @@ type Rect = {
   height: number
 }
 
-// const { PORTRAIT_UP } = ScreenOrientation.OrientationLock
 const PIXEL_RATIO = PixelRatio.get()
 const SLOW_SPRING: WithSpringConfig = {
   mass: isIOS ? 1.25 : 0.75,
