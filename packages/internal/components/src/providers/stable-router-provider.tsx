@@ -1,7 +1,8 @@
-import { setNavigate, setRoute } from "@follow/components/atoms/route.js"
 import { useLayoutEffect } from "react"
 import type { NavigateFunction } from "react-router"
 import { useLocation, useNavigate, useParams, useSearchParams } from "react-router"
+
+import { setNavigate, setRoute } from "../atoms/route"
 
 // eslint-disable-next-line @typescript-eslint/no-empty-object-type
 export interface CustomRoute {}

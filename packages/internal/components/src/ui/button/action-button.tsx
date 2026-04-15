@@ -1,7 +1,3 @@
-import {
-  useFocusable,
-  useGlobalFocusableScopeSelector,
-} from "@follow/components/common/Focusable/index.js"
 import type { EnhanceSet } from "@follow/utils"
 import { stopPropagation } from "@follow/utils/dom"
 import { cn, getOS } from "@follow/utils/utils"
@@ -10,6 +6,7 @@ import { useCallback, useState } from "react"
 import type { Options } from "react-hotkeys-hook"
 import { useHotkeys } from "react-hotkeys-hook"
 
+import { useFocusable, useGlobalFocusableScopeSelector } from "../../common/Focusable"
 import { KbdCombined } from "../kbd/Kbd"
 import { Tooltip, TooltipContent, TooltipPortal, TooltipTrigger } from "../tooltip"
 

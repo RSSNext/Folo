@@ -1,4 +1,4 @@
-const { withGradleProperties } = require("@expo/config-plugins")
+const { withGradleProperties } = require("expo/config-plugins")
 
 function setGradleProperty(config, key, value) {
   return withGradleProperties(config, (config) => {

@@ -1,10 +1,10 @@
-import { viewportAtom } from "@follow/components/atoms/viewport.js"
 import { throttle } from "es-toolkit/compat"
 import { useIsomorphicLayoutEffect } from "foxact/use-isomorphic-layout-effect"
 import { useStore } from "jotai"
 import type { FC } from "react"
 
 import { mouseAtom } from "../atoms/mouse"
+import { viewportAtom } from "../atoms/viewport"
 
 export const EventProvider: FC = () => {
   const store = useStore()

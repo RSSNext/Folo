@@ -1,7 +1,8 @@
-import { Button } from "@follow/components/ui/button/index.js"
-import { Input } from "@follow/components/ui/input/index.js"
 import { cn } from "@follow/utils/utils"
 import { useCallback, useEffect, useRef, useState } from "react"
+
+import { Button } from "../button"
+import { Input } from "../input"
 
 export interface KeyValuePair {
   key: string

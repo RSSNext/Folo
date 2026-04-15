@@ -1,5 +1,6 @@
-const { withPodfile, withPodfileProperties } = require("@expo/config-plugins")
-const { mergeContents } = require("@expo/config-plugins/build/utils/generateCode")
+const { withPodfile, withPodfileProperties } = require("expo/config-plugins")
+
+const { mergeContents } = require("./merge-contents")
 
 const STATIC_FRAMEWORK_TAG = "follow-rnfb-static-framework"
 const RNFB_IOS_COMPAT_TAG = "follow-rnfb-ios-compat"

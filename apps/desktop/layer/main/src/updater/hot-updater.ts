@@ -8,6 +8,7 @@ import { runtimeVersion as configuredRuntimeVersion, version as appVersion } fro
 import log from "electron-log"
 import { dump, load } from "js-yaml"
 import path from "pathe"
+import { compare } from "semver"
 import { x } from "tar"
 
 import { HOTUPDATE_RENDER_ENTRY_DIR } from "~/constants/app"
@@ -42,6 +43,47 @@ export interface RendererEligibilityResult {
   reason?: string
 }
 
+const getCurrentRendererContext = () => ({
+  appVersion,
+  runtimeVersion: configuredRuntimeVersion ?? appVersion,
+})
+
+const normalizeRendererVersion = (version?: null | string) => {
+  const normalized = version?.split("-")[0]?.trim()
+  if (!normalized) {
+    return null
+  }
+
+  return /^\d+\.\d+\.\d+$/.test(normalized) ? normalized : null
+}
+
+const compareRendererVersions = (left?: null | string, right?: null | string) => {
+  const normalizedLeft = normalizeRendererVersion(left)
+  const normalizedRight = normalizeRendererVersion(right)
+
+  if (!normalizedLeft || !normalizedRight) {
+    return null
+  }
+
+  return compare(normalizedLeft, normalizedRight)
+}
+
+export const isRendererManifestUsable = (
+  manifest: null | Partial<Pick<RendererManifest, "runtimeVersion" | "version">>,
+  input: { appVersion: string; runtimeVersion: string },
+) => {
+  if (!manifest?.runtimeVersion || manifest.runtimeVersion !== input.runtimeVersion) {
+    return false
+  }
+
+  const versionComparison = compareRendererVersions(manifest.version, input.appVersion)
+  if (versionComparison === null) {
+    return false
+  }
+
+  return versionComparison >= 0
+}
+
 class RendererHotUpdater {
   private readonly logger = log.scope("updater:renderer")
   private readonly tempDir = path.resolve(os.tmpdir(), "follow-render-update")
@@ -74,7 +116,24 @@ class RendererHotUpdater {
       }
     }
 
-    if (manifest.version === appVersion) {
+    const versionComparison = compareRendererVersions(manifest.version, appVersion)
+    if (versionComparison === null) {
+      return {
+        status: RendererEligibilityStatus.NoManifest,
+        manifest,
+        reason: `Renderer payload version ${manifest.version} is invalid`,
+      }
+    }
+
+    if (versionComparison < 0) {
+      return {
+        status: RendererEligibilityStatus.AlreadyCurrent,
+        manifest,
+        reason: `Renderer version ${manifest.version} is older than current app version ${appVersion}`,
+      }
+    }
+
+    if (versionComparison === 0) {
       return {
         status: RendererEligibilityStatus.AlreadyCurrent,
         reason: "Renderer version matches current app version",
@@ -203,7 +262,7 @@ class RendererHotUpdater {
 
   async cleanup(): Promise<void> {
     const manifest = this.getCurrentManifest()
-    if (!manifest) {
+    if (!manifest || !isRendererManifestUsable(manifest, getCurrentRendererContext())) {
       await rm(HOTUPDATE_RENDER_ENTRY_DIR, { recursive: true, force: true })
       return
     }
@@ -234,6 +293,9 @@ class RendererHotUpdater {
 
     const manifest = this.getCurrentManifest()
     if (!manifest) return
+    if (!isRendererManifestUsable(manifest, getCurrentRendererContext())) {
+      return
+    }
 
     const dir = path.resolve(HOTUPDATE_RENDER_ENTRY_DIR, manifest.version)
     const entryFile = path.resolve(dir, "index.html")

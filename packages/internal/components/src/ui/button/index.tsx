@@ -1,11 +1,11 @@
-import { useMobile } from "@follow/components/hooks/useMobile.js"
-import { LoadingCircle } from "@follow/components/ui/loading/index.jsx"
 import { cn } from "@follow/utils/utils"
 import type { VariantProps } from "class-variance-authority"
 import type { HTMLMotionProps } from "motion/react"
 import { m } from "motion/react"
 import * as React from "react"
 
+import { useMobile } from "../../hooks/useMobile"
+import { LoadingCircle } from "../loading"
 import { styledButtonVariant } from "./variants"
 
 export interface BaseButtonProps {

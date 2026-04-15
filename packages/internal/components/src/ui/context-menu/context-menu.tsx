@@ -219,4 +219,4 @@ export {
   ContextMenuTrigger,
 }
 
-export { RootPortal as ContextMenuPortal } from "@follow/components/ui/portal/index.jsx"
+export { RootPortal as ContextMenuPortal } from "../portal"

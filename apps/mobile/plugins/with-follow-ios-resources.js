@@ -1,4 +1,4 @@
-const { withDangerousMod, withXcodeProject, IOSConfig } = require("@expo/config-plugins")
+const { withDangerousMod, withXcodeProject, IOSConfig } = require("expo/config-plugins")
 const fs = require("node:fs")
 const path = require("pathe")
 

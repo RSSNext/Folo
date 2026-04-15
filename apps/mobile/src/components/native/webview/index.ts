@@ -1,6 +1,6 @@
 import { EventBus } from "@follow/utils/event-bus"
 import type { NativeModule } from "expo"
-import { requireNativeModule } from "expo-modules-core"
+import { requireNativeModule } from "expo"
 
 import { htmlUrl } from "./constants"
 

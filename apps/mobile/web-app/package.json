@@ -3,7 +3,7 @@
   "version": "0.0.0",
   "private": true,
   "scripts": {
-    "build": "cd html-renderer && vite build",
-    "typecheck": "cd html-renderer && tsc --noEmit"
+    "build": "pnpm --dir html-renderer build",
+    "typecheck": "pnpm --dir html-renderer typecheck"
   }
 }

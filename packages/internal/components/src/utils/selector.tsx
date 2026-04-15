@@ -1,7 +1,8 @@
-import { useMobile } from "@follow/components/hooks/useMobile.js"
-import { useViewport } from "@follow/components/hooks/useViewport.js"
 import type { ComponentType, ReactNode, RefAttributes } from "react"
 import { lazy, Suspense } from "react"
+
+import { useMobile } from "../hooks/useMobile"
+import { useViewport } from "../hooks/useViewport"
 
 export function withResponsiveComponent<P extends object>(
   desktopImport: () => Promise<{ default: ComponentType<P> }>,
