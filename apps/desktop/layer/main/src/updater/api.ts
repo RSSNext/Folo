@@ -1,9 +1,8 @@
 import { env } from "@follow/shared/env.desktop"
 import { createDesktopAPIHeaders } from "@follow/utils/headers"
 import PKG, { runtimeVersion as configuredRuntimeVersion, version as appVersion } from "@pkg"
-import { gte } from "semver"
 
-import { getCurrentRendererManifest } from "~/updater/hot-updater"
+import { getCurrentRendererManifest, isRendererManifestUsable } from "~/updater/hot-updater"
 
 import { channel } from "../env"
 import type {
@@ -18,8 +17,12 @@ export const getDesktopRuntimeVersion = () => configuredRuntimeVersion ?? appVer
 
 export const getDesktopRendererVersion = () => {
   const rendererManifest = getCurrentRendererManifest()
-  return gte(rendererManifest?.version ?? appVersion, appVersion)
-    ? (rendererManifest?.version ?? appVersion)
+
+  return isRendererManifestUsable(rendererManifest, {
+    appVersion,
+    runtimeVersion: getDesktopRuntimeVersion(),
+  })
+    ? rendererManifest!.version
     : appVersion
 }
 

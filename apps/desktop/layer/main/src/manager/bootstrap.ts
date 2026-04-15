@@ -85,6 +85,8 @@ export class BootstrapManager {
         currentApiURL: env.VITE_API_URL,
       })
 
+      await cleanupOldRender()
+
       // Bypass CORS for PostHog analytics
       session.defaultSession.webRequest.onHeadersReceived((details, callback) => {
         const url = new URL(details.url)
