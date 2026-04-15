@@ -79,6 +79,7 @@ jobs:
         working-directory: apps/mobile
         run: eas build --platform android --profile ${{ github.event.inputs.profile || 'preview' }} --local --output=${{ github.workspace }}/build.${{ github.event.inputs.profile == 'production' && 'aab' || 'apk' }}
         env:
+          EAS_BUILD_DISABLE_EXPO_DOCTOR_STEP: "1"
           EAS_NO_FROZEN_LOCKFILE: "1"
           npm_config_node_linker: isolated
           npm_config_shamefully_hoist: "false"
