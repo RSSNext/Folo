@@ -4,6 +4,7 @@ import PKG from "@pkg"
 import { atomWithStorage } from "jotai/utils"
 
 import { createAtomHooks } from "~/lib/jotai"
+import { isLocalMASVersionInReview } from "~/lib/mas-review"
 
 export const [, , useServerConfigs, , getServerConfigs, setServerConfigs] = createAtomHooks(
   atomWithStorage<Nullable<ExtractResponseData<GetStatusConfigsResponse>>>(
@@ -16,26 +17,32 @@ export const [, , useServerConfigs, , getServerConfigs, setServerConfigs] = crea
   ),
 )
 
+export const [, , useMASStoreVersion, , getMASStoreVersion, setMASStoreVersion] = createAtomHooks(
+  atomWithStorage<null | string>(getStorageNS("mas-store-version"), null, undefined, {
+    getOnInit: true,
+  }),
+)
+
 export type ServerConfigs = ExtractResponseData<GetStatusConfigsResponse>
 export type PaymentPlan = ServerConfigs["PAYMENT_PLAN_LIST"][number]
 export type PaymentFeature = PaymentPlan["limit"]
 
 export const useIsInMASReview = () => {
-  const serverConfigs = useServerConfigs()
-  return (
-    typeof process !== "undefined" &&
-    process.mas &&
-    serverConfigs?.MAS_IN_REVIEW_VERSION === PKG.version
-  )
+  const masStoreVersion = useMASStoreVersion()
+  return isLocalMASVersionInReview({
+    isMASBuild: typeof process !== "undefined" && !!process.mas,
+    localVersion: PKG.version,
+    storeVersion: masStoreVersion,
+  })
 }
 
 export const getIsInMASReview = () => {
-  const serverConfigs = getServerConfigs()
-  return (
-    typeof process !== "undefined" &&
-    process.mas &&
-    serverConfigs?.MAS_IN_REVIEW_VERSION === PKG.version
-  )
+  const masStoreVersion = getMASStoreVersion()
+  return isLocalMASVersionInReview({
+    isMASBuild: typeof process !== "undefined" && !!process.mas,
+    localVersion: PKG.version,
+    storeVersion: masStoreVersion,
+  })
 }
 
 export const useIsPaymentEnabled = () => {
