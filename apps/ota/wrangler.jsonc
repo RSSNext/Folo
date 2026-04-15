@@ -4,6 +4,15 @@
   "main": "src/index.ts",
   "compatibility_date": "2026-04-10",
   "compatibility_flags": ["nodejs_compat"],
+  "observability": {
+    "logs": {
+      "enabled": true,
+      "invocation_logs": true,
+    },
+    "traces": {
+      "enabled": true,
+    },
+  },
   "account_id": "1f1d1678a2413a54c944b3081bab5c84",
   "workers_dev": true,
   "routes": [
