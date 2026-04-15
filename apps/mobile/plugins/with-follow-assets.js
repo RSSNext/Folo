@@ -7,7 +7,7 @@
  * - [spacedrive](https://github.com/spacedriveapp/spacedrive/blob/main/apps/mobile/scripts/withRiveAssets.js)
  */
 
-const { withDangerousMod, withXcodeProject, IOSConfig } = require("@expo/config-plugins")
+const { withDangerousMod, withXcodeProject, IOSConfig } = require("expo/config-plugins")
 const fs = require("node:fs")
 const path = require("pathe")
 const { execSync } = require("node:child_process")

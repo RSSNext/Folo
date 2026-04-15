@@ -1,5 +1,6 @@
-const { withAppDelegate } = require("@expo/config-plugins")
-const { mergeContents } = require("@expo/config-plugins/build/utils/generateCode")
+const { withAppDelegate } = require("expo/config-plugins")
+
+const { mergeContents } = require("./merge-contents")
 
 const withFollowAppDelegate = (config) => {
   return withAppDelegate(config, async (config) => {

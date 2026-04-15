@@ -1,5 +1,4 @@
-const { AndroidConfig, withAndroidManifest } = require("@expo/config-plugins")
-const { Paths } = require("@expo/config-plugins/build/android")
+const { AndroidConfig, withAndroidManifest } = require("expo/config-plugins")
 const path = require("pathe")
 const fs = require("node:fs")
 
@@ -17,7 +16,7 @@ const withTrustLocalCerts = (config) => {
 async function setCustomConfigAsync(config, androidManifest) {
   const src_file_pat = path.join(__dirname, "network_security_config.xml")
   const res_file_path = path.join(
-    await Paths.getResourceFolderAsync(config.modRequest.projectRoot),
+    await AndroidConfig.Paths.getResourceFolderAsync(config.modRequest.projectRoot),
     "xml",
     "network_security_config.xml",
   )
