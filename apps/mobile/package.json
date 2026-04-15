@@ -151,6 +151,7 @@
   "devDependencies": {
     "@babel/core": "7.29.0",
     "@follow/configs": "workspace:*",
+    "@tailwindcss/typography": "0.5.19",
     "@types/react": "19.2.14",
     "babel-plugin-inline-import": "3.0.0",
     "eas-cli": "16.26.0",
