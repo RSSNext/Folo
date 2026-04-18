@@ -14,6 +14,7 @@ on:
         default: preview
         options:
           - preview
+          - production-apk
           - production
         description: "Build profile"
       release:
@@ -74,6 +75,15 @@ jobs:
 
       - name: Build mobile web assets
         run: pnpm --dir apps/mobile/web-app build --outDir ../../../out/rn-web/html-renderer
+
+      - name: Validate release profile
+        if: github.event.inputs.release == 'true'
+        run: |
+          profile="${{ github.event.inputs.profile || 'preview' }}"
+          if [ "$profile" != "production-apk" ]; then
+            echo "GitHub Release APKs must use the production-apk profile."
+            exit 1
+          fi
 
       - name: 🔨 Build Android app
         working-directory: apps/mobile
