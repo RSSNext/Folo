@@ -7,7 +7,7 @@ import { m } from "motion/react"
 import type { FC, PropsWithChildren } from "react"
 import { memo, useEffect, useRef, useState } from "react"
 import { useTranslation } from "react-i18next"
-import { useNavigate } from "react-router"
+import { useLocation, useNavigate } from "react-router"
 import { toast } from "sonner"
 
 import { setTimelineColumnShow, useSubscriptionColumnShow } from "~/atoms/sidebar"
@@ -28,6 +28,7 @@ export const SubscriptionColumnHeader = memo(() => {
   const timelineId = useRouteParamsSelector((s) => s.timelineId)
   const navigateBackHome = useBackHome(timelineId)
   const navigate = useNavigate()
+  const location = useLocation()
   const normalStyle = !window.electron || window.electron.process.platform !== "darwin"
   const { t } = useTranslation()
   return (
@@ -57,7 +58,11 @@ export const SubscriptionColumnHeader = memo(() => {
           data-testid="subscription-discover-trigger"
           shortcut="$mod+T"
           tooltip={t("words.discover")}
-          onClick={() => navigate("/discover")}
+          onClick={() => {
+            if (location.pathname !== "/discover") {
+              navigate("/discover")
+            }
+          }}
         >
           <i className="i-mgc-add-cute-re size-5 text-text-secondary" />
         </ActionButton>
