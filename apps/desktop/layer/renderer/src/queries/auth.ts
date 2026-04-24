@@ -4,15 +4,50 @@ import { userSyncService } from "@follow/store/user/store"
 import { tracker } from "@follow/tracker"
 import { clearStorage } from "@follow/utils/ns"
 import type { FetchError } from "ofetch"
+import { useEffect } from "react"
 
 import { setLoginModalShow } from "~/atoms/user"
 import { QUERY_PERSIST_KEY } from "~/constants"
 import { useAuthQuery } from "~/hooks/common"
-import { deleteUserCustom as deleteUserFn, getAccountInfo, signOut as signOutFn } from "~/lib/auth"
+import {
+  deleteUserCustom as deleteUserFn,
+  getAccountInfo,
+  getSession as refreshBetterAuthSession,
+  signOut as signOutFn,
+} from "~/lib/auth"
 import { ipcServices } from "~/lib/client"
 import { clearAuthSessionToken, getAuthSessionToken } from "~/lib/client-session"
 import { defineQuery } from "~/lib/defineQuery"
 import { clearLocalPersistStoreData } from "~/store/utils/clear"
+
+const sessionCookieRefreshInterval = 1000 * 60 * 60 * 12
+
+let lastSessionCookieRefreshAt = 0
+let sessionCookieRefreshPromise: Promise<unknown> | null = null
+
+const refreshAuthSessionCookie = async () => {
+  if (IN_ELECTRON && !getAuthSessionToken()) {
+    return
+  }
+
+  if (Date.now() - lastSessionCookieRefreshAt < sessionCookieRefreshInterval) {
+    return
+  }
+
+  sessionCookieRefreshPromise ??= refreshBetterAuthSession()
+    .then((result) => {
+      if (!result?.error) {
+        lastSessionCookieRefreshAt = Date.now()
+      }
+      return result
+    })
+    .catch(() => null)
+    .finally(() => {
+      sessionCookieRefreshPromise = null
+    })
+
+  await sessionCookieRefreshPromise
+}
 
 export const auth = {
   getSession: () => defineQuery(whoamiQueryKey, () => userSyncService.whoami()),
@@ -90,6 +125,32 @@ export const useSession = (options?: { enabled?: boolean }) => {
     ...rest,
     status: getAuthStatus(),
   } as const
+}
+
+export const useAuthSessionCookieRefresh = (enabled: boolean) => {
+  useEffect(() => {
+    if (!enabled) {
+      return
+    }
+
+    const refresh = () => {
+      if (document.visibilityState !== "hidden") {
+        void refreshAuthSessionCookie()
+      }
+    }
+
+    refresh()
+
+    const interval = window.setInterval(refresh, sessionCookieRefreshInterval)
+    window.addEventListener("focus", refresh)
+    document.addEventListener("visibilitychange", refresh)
+
+    return () => {
+      window.clearInterval(interval)
+      window.removeEventListener("focus", refresh)
+      document.removeEventListener("visibilitychange", refresh)
+    }
+  }, [enabled])
 }
 
 export const handleSessionChanges = () => {
