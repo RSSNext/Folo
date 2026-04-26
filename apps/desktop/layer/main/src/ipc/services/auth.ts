@@ -1,3 +1,7 @@
+import {
+  buildBetterAuthSessionTokenCookieHeader,
+  getBetterAuthSessionTokenCookieName,
+} from "@follow/shared/auth-cookie"
 import { env } from "@follow/shared/env.desktop"
 import { createAuthRequestOriginHeaders, createDesktopAPIHeaders } from "@follow/utils/headers"
 import PKG from "@pkg"
@@ -10,8 +14,10 @@ import { WindowManager } from "~/manager/window"
 import {
   buildManagedAuthCookieHeader,
   buildManagedAuthCookieHeaderFromSetCookieHeader,
+  dedupeManagedAuthCookies,
   getManagedAuthCookies,
   persistManagedAuthCookiesFromSetCookieHeader,
+  removeManagedAuthCookies,
 } from "../../lib/auth-cookies"
 import { getCliSessionToken, syncSessionToCliConfig } from "../../lib/cli-session-sync"
 import { deleteNotificationsToken, updateNotificationsToken } from "../../lib/user"
@@ -40,27 +46,25 @@ export class AuthService extends IpcService {
     const url = new URL(apiURL)
     const isSecure =
       url.protocol === "https:" || url.hostname === "localhost" || url.hostname === "127.0.0.1"
-    const isLocalhost = url.hostname === "localhost" || url.hostname === "127.0.0.1"
-    const cookieNames = [
-      BETTER_AUTH_COOKIE_NAME_SESSION_TOKEN,
-      ...(isSecure && !isLocalhost ? ["__Secure-better-auth.session_token"] : []),
-    ]
+    const cookieName = getBetterAuthSessionTokenCookieName(apiURL)
+    const cookieSession = mainWindow.webContents.session
 
-    await Promise.all(
-      cookieNames.map((name) =>
-        mainWindow.webContents.session.cookies.set({
-          url: apiURL,
-          name,
-          value: token,
-          ...(isLocalhost ? {} : { domain: url.hostname }),
-          path: "/",
-          httpOnly: true,
-          secure: isSecure,
-          sameSite: "no_restriction",
-          expirationDate: new Date().setDate(new Date().getDate() + 30),
-        }),
-      ),
-    )
+    await removeManagedAuthCookies({
+      apiURL,
+      session: cookieSession,
+      names: [BETTER_AUTH_COOKIE_NAME_SESSION_TOKEN, "__Secure-better-auth.session_token"],
+    })
+    await cookieSession.cookies.set({
+      url: apiURL,
+      name: cookieName,
+      value: token,
+      path: "/",
+      httpOnly: true,
+      secure: isSecure,
+      sameSite: "no_restriction",
+      expirationDate: Math.floor(Date.now() / 1000) + 60 * 60 * 24 * 30,
+    })
+    await dedupeManagedAuthCookies({ apiURL, session: cookieSession })
   }
 
   private async clearSessionToken(): Promise<void> {
@@ -72,11 +76,7 @@ export class AuthService extends IpcService {
 
     const { session } = mainWindow.webContents
     const apiURL = env.VITE_API_URL
-    await Promise.allSettled([
-      session.cookies.remove(apiURL, BETTER_AUTH_COOKIE_NAME_SESSION_TOKEN),
-      session.cookies.remove(apiURL, "__Secure-better-auth.session_token"),
-      session.cookies.remove(apiURL, "better-auth.last_used_login_method"),
-    ])
+    await removeManagedAuthCookies({ apiURL, session })
   }
 
   private async requestCredentialAuth(
@@ -171,7 +171,7 @@ export class AuthService extends IpcService {
       headers: this.getAuthRequestHeaders(
         token
           ? {
-              Cookie: `__Secure-better-auth.session_token=${token}; better-auth.session_token=${token}`,
+              Cookie: buildBetterAuthSessionTokenCookieHeader(env.VITE_API_URL, token),
             }
           : undefined,
       ),

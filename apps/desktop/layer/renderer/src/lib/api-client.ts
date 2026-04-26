@@ -1,3 +1,4 @@
+import { buildBetterAuthSessionTokenCookieHeader } from "@follow/shared/auth-cookie"
 import { IN_ELECTRON } from "@follow/shared/constants"
 import { env } from "@follow/shared/env.desktop"
 import { whoami } from "@follow/store/user/getters"
@@ -33,7 +34,7 @@ followClient.addRequestInterceptor(async (ctx) => {
   if (authSessionToken && !headers.has("Cookie") && !headers.has("cookie")) {
     headers.set(
       "Cookie",
-      `__Secure-better-auth.session_token=${authSessionToken}; better-auth.session_token=${authSessionToken}`,
+      buildBetterAuthSessionTokenCookieHeader(env.VITE_API_URL, authSessionToken),
     )
   }
 

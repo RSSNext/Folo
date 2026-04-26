@@ -14,6 +14,7 @@ import { WindowManager } from "~/manager/window"
 
 import { isMacOS } from "../env"
 import { migrateAuthCookiesToNewApiDomain } from "../lib/auth-cookie-migration"
+import { dedupeManagedAuthCookies } from "../lib/auth-cookies"
 import { handleUrlRouting } from "../lib/router"
 import { store } from "../lib/store"
 import { updateNotificationsToken } from "../lib/user"
@@ -83,6 +84,10 @@ export class BootstrapManager {
 
       await migrateAuthCookiesToNewApiDomain(session.defaultSession, {
         currentApiURL: env.VITE_API_URL,
+      })
+      await dedupeManagedAuthCookies({
+        apiURL: env.VITE_API_URL,
+        session: session.defaultSession,
       })
 
       await cleanupOldRender()
@@ -206,18 +211,23 @@ export class BootstrapManager {
 
         if (ck && apiURL) {
           const cookie = parse(atob(ck), { decode: (value) => value })
-          Object.keys(cookie).forEach(async (name) => {
-            const value = cookie[name]!
-            await mainWindow.webContents.session.cookies.set({
-              url: apiURL,
-              name,
-              value,
-              secure: true,
-              httpOnly: true,
-              domain: new URL(apiURL).hostname,
-              sameSite: "no_restriction",
-              expirationDate: new Date().setDate(new Date().getDate() + 30),
-            })
+          await Promise.all(
+            Object.keys(cookie).map(async (name) => {
+              const value = cookie[name]!
+              await mainWindow.webContents.session.cookies.set({
+                url: apiURL,
+                name,
+                value,
+                secure: true,
+                httpOnly: true,
+                sameSite: "no_restriction",
+                expirationDate: Math.floor(Date.now() / 1000) + 60 * 60 * 24 * 30,
+              })
+            }),
+          )
+          await dedupeManagedAuthCookies({
+            apiURL,
+            session: mainWindow.webContents.session,
           })
 
           if (userId) {

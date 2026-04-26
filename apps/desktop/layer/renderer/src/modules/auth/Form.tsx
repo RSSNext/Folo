@@ -37,12 +37,12 @@ const getAuthTokenFromResult = (result: unknown) => {
     return null
   }
 
-  if ("token" in result && typeof result.token === "string") {
-    return result.token
-  }
-
   if ("sessionToken" in result && typeof result.sessionToken === "string") {
     return result.sessionToken
+  }
+
+  if ("token" in result && typeof result.token === "string") {
+    return result.token
   }
 
   if ("session" in result && result.session && typeof result.session === "object") {
@@ -63,6 +63,9 @@ const getAuthTokenFromResult = (result: unknown) => {
       token?: unknown
       session?: { token?: unknown } | unknown
     }
+    if (typeof sessionToken === "string") {
+      return sessionToken
+    }
     if (typeof token === "string") {
       return token
     }
@@ -74,7 +77,7 @@ const getAuthTokenFromResult = (result: unknown) => {
     ) {
       return session.token
     }
-    return typeof sessionToken === "string" ? sessionToken : null
+    return null
   }
 
   return null
@@ -104,27 +107,12 @@ const normalizeElectronAuthResult = (result: unknown): ElectronAuthResult => {
   }
 }
 
-const setElectronSessionToken = async (token: string) => {
-  if (!ipcServices) {
-    return
-  }
-
-  const authService = ipcServices.auth as
-    | (typeof ipcServices.auth & {
-        setSessionToken?: (token: string) => Promise<void>
-      })
-    | undefined
-
-  await authService?.setSessionToken?.(token)
-}
-
 const getElectronAuthService = () => {
   if (!ipcServices) {
     return null
   }
 
   return ipcServices.auth as typeof ipcServices.auth & {
-    setSessionToken?: (token: string) => Promise<void>
     signInWithCredential?: (payload: {
       email: string
       password: string
@@ -231,7 +219,6 @@ export function LoginWithPassword({
                   const token = getAuthTokenFromResult(result)
                   if (token) {
                     setAuthSessionToken(token)
-                    await setElectronSessionToken(token)
                   }
                 }
               }}
@@ -247,7 +234,6 @@ export function LoginWithPassword({
         const token = getAuthTokenFromResult(res)
         if (token) {
           setAuthSessionToken(token)
-          await setElectronSessionToken(token)
         }
       }
       handleSessionChanges()
@@ -442,7 +428,6 @@ export function RegisterForm({
       const token = getAuthTokenFromResult(result)
       if (token) {
         setAuthSessionToken(token)
-        await setElectronSessionToken(token)
       }
     }
 

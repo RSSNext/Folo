@@ -1,8 +1,12 @@
+import {
+  BETTER_AUTH_SECURE_SESSION_TOKEN_COOKIE_NAME,
+  BETTER_AUTH_SESSION_TOKEN_COOKIE_NAME,
+} from "@follow/shared/auth-cookie"
 import type { Cookie, CookiesSetDetails, Session } from "electron"
 
 const MANAGED_AUTH_COOKIE_NAMES = [
-  "__Secure-better-auth.session_token",
-  "better-auth.session_token",
+  BETTER_AUTH_SECURE_SESSION_TOKEN_COOKIE_NAME,
+  BETTER_AUTH_SESSION_TOKEN_COOKIE_NAME,
   "__Secure-better-auth.session_data",
   "better-auth.session_data",
   "better-auth.last_used_login_method",
@@ -18,6 +22,9 @@ const MANAGED_AUTH_COOKIE_NAMES = [
 ] as const
 
 type ManagedAuthCookieName = (typeof MANAGED_AUTH_COOKIE_NAMES)[number]
+type ManagedAuthCookie = Pick<Cookie, "name" | "value"> &
+  Partial<Pick<Cookie, "domain" | "hostOnly" | "path" | "secure">>
+type KnownManagedAuthCookie = ManagedAuthCookie & { name: ManagedAuthCookieName }
 
 type ParsedSetCookie = {
   domain?: string
@@ -32,6 +39,7 @@ type ParsedSetCookie = {
 }
 
 const MANAGED_AUTH_COOKIE_NAME_SET = new Set<string>(MANAGED_AUTH_COOKIE_NAMES)
+const COOKIE_CLEANUP_SUBDOMAIN = "__folo_cookie_cleanup__"
 
 const splitSetCookieHeader = (header: string) => {
   const parts: string[] = []
@@ -151,6 +159,59 @@ const isManagedAuthCookie = (cookieName: string): cookieName is ManagedAuthCooki
   return MANAGED_AUTH_COOKIE_NAME_SET.has(cookieName)
 }
 
+const getKnownManagedAuthCookies = (cookies: ManagedAuthCookie[]) => {
+  return cookies.filter((cookie): cookie is KnownManagedAuthCookie =>
+    isManagedAuthCookie(cookie.name),
+  )
+}
+
+const getCookieHeaderPriority = (cookie: ManagedAuthCookie) => {
+  let priority = 0
+  if (cookie.hostOnly) priority += 8
+  if (cookie.value.includes(".")) priority += 4
+  if (cookie.secure) priority += 2
+  if ((cookie.path ?? "/") === "/") priority += 1
+  return priority
+}
+
+const getPreferredCookie = <TCookie extends ManagedAuthCookie>(cookies: TCookie[]) => {
+  return cookies.reduce<TCookie | null>((preferred, cookie) => {
+    if (!preferred) return cookie
+    return getCookieHeaderPriority(cookie) > getCookieHeaderPriority(preferred) ? cookie : preferred
+  }, null)
+}
+
+const isSameStoredCookie = (a: ManagedAuthCookie, b: ManagedAuthCookie) => {
+  return (
+    a.name === b.name &&
+    a.value === b.value &&
+    (a.domain ?? "") === (b.domain ?? "") &&
+    (a.path ?? "/") === (b.path ?? "/") &&
+    Boolean(a.hostOnly) === Boolean(b.hostOnly)
+  )
+}
+
+const buildCookieRemovalURL = (apiURL: string, cookie: ManagedAuthCookie) => {
+  const url = new URL(apiURL)
+  const domain = (cookie.domain || url.hostname).replace(/^\./, "")
+  const hostname = cookie.hostOnly ? domain : `${COOKIE_CLEANUP_SUBDOMAIN}.${domain}`
+  const path = cookie.path?.startsWith("/") ? cookie.path : "/"
+
+  return `${url.protocol}//${hostname}${path}`
+}
+
+const removeStoredCookie = async ({
+  apiURL,
+  cookie,
+  session,
+}: {
+  apiURL: string
+  cookie: ManagedAuthCookie
+  session: Session
+}) => {
+  await session.cookies.remove(buildCookieRemovalURL(apiURL, cookie), cookie.name)
+}
+
 const shouldRemoveCookie = (cookie: ParsedSetCookie) => {
   if (cookie.maxAge !== undefined) {
     return cookie.maxAge <= 0
@@ -179,11 +240,46 @@ export const buildManagedAuthCookieHeaderFromSetCookieHeader = (setCookieHeader:
     .join("; ")
 }
 
-export const buildManagedAuthCookieHeader = (cookies: Array<Pick<Cookie, "name" | "value">>) => {
-  return cookies
-    .filter((cookie) => isManagedAuthCookie(cookie.name))
+export const buildManagedAuthCookieHeader = (cookies: ManagedAuthCookie[]) => {
+  const selectedCookies = new Map<ManagedAuthCookieName, ManagedAuthCookie>()
+  const selectedCookieNames: ManagedAuthCookieName[] = []
+
+  getKnownManagedAuthCookies(cookies).forEach((cookie) => {
+    const current = selectedCookies.get(cookie.name)
+    if (!current) {
+      selectedCookieNames.push(cookie.name)
+      selectedCookies.set(cookie.name, cookie)
+      return
+    }
+
+    if (getCookieHeaderPriority(cookie) > getCookieHeaderPriority(current)) {
+      selectedCookies.set(cookie.name, cookie)
+    }
+  })
+
+  if (selectedCookies.has(BETTER_AUTH_SECURE_SESSION_TOKEN_COOKIE_NAME)) {
+    selectedCookies.delete(BETTER_AUTH_SESSION_TOKEN_COOKIE_NAME)
+  }
+
+  return selectedCookieNames
+    .map((name) => selectedCookies.get(name))
+    .filter((cookie): cookie is ManagedAuthCookie => !!cookie)
     .map((cookie) => `${cookie.name}=${cookie.value}`)
     .join("; ")
+}
+
+export const getPreferredSessionTokenCookie = (cookies: ManagedAuthCookie[]) => {
+  const managedCookies = getKnownManagedAuthCookies(cookies)
+  return (
+    getPreferredCookie(
+      managedCookies.filter(
+        (cookie) => cookie.name === BETTER_AUTH_SECURE_SESSION_TOKEN_COOKIE_NAME,
+      ),
+    ) ||
+    getPreferredCookie(
+      managedCookies.filter((cookie) => cookie.name === BETTER_AUTH_SESSION_TOKEN_COOKIE_NAME),
+    )
+  )
 }
 
 export const getManagedAuthCookies = async ({
@@ -196,6 +292,56 @@ export const getManagedAuthCookies = async ({
   const { hostname } = new URL(apiURL)
   const cookies = await session.cookies.get({ domain: hostname })
   return cookies.filter((cookie) => isManagedAuthCookie(cookie.name))
+}
+
+export const removeManagedAuthCookies = async ({
+  apiURL,
+  names,
+  session,
+}: {
+  apiURL: string
+  names?: readonly string[]
+  session: Session
+}) => {
+  const nameSet = names ? new Set(names) : null
+  const cookies = await getManagedAuthCookies({ apiURL, session })
+  await Promise.all(
+    cookies
+      .filter((cookie) => !nameSet || nameSet.has(cookie.name))
+      .map((cookie) => removeStoredCookie({ apiURL, cookie, session })),
+  )
+}
+
+export const dedupeManagedAuthCookies = async ({
+  apiURL,
+  session,
+}: {
+  apiURL: string
+  session: Session
+}) => {
+  const cookies = await getManagedAuthCookies({ apiURL, session })
+  const staleCookies = new Set<Cookie>()
+
+  for (const name of MANAGED_AUTH_COOKIE_NAMES) {
+    const sameNameCookies = cookies.filter((cookie) => cookie.name === name)
+    const preferred = getPreferredCookie(sameNameCookies)
+    if (!preferred) continue
+
+    sameNameCookies
+      .filter((cookie) => !isSameStoredCookie(cookie, preferred))
+      .forEach((cookie) => staleCookies.add(cookie))
+  }
+
+  const secureSessionCookie = getPreferredSessionTokenCookie(cookies)
+  if (secureSessionCookie?.name === BETTER_AUTH_SECURE_SESSION_TOKEN_COOKIE_NAME) {
+    cookies
+      .filter((cookie) => cookie.name === BETTER_AUTH_SESSION_TOKEN_COOKIE_NAME)
+      .forEach((cookie) => staleCookies.add(cookie))
+  }
+
+  await Promise.all(
+    [...staleCookies].map((cookie) => removeStoredCookie({ apiURL, cookie, session })),
+  )
 }
 
 export const persistManagedAuthCookiesFromSetCookieHeader = async ({
@@ -215,26 +361,27 @@ export const persistManagedAuthCookiesFromSetCookieHeader = async ({
     isManagedAuthCookie(cookie.name),
   )
 
-  await Promise.all(
-    cookies.map(async (cookie) => {
-      if (shouldRemoveCookie(cookie)) {
-        await session.cookies.remove(apiURL, cookie.name)
-        return
-      }
+  for (const cookie of cookies) {
+    await removeManagedAuthCookies({ apiURL, session, names: [cookie.name] })
 
-      const details: CookiesSetDetails = {
-        url: apiURL,
-        name: cookie.name,
-        value: cookie.value,
-        path: cookie.path,
-        httpOnly: cookie.httpOnly,
-        secure: cookie.secure,
-        ...(cookie.sameSite ? { sameSite: cookie.sameSite } : {}),
-        ...(cookie.domain ? { domain: cookie.domain } : {}),
-        ...(cookie.expirationDate ? { expirationDate: cookie.expirationDate } : {}),
-      }
+    if (shouldRemoveCookie(cookie)) {
+      continue
+    }
 
-      await session.cookies.set(details)
-    }),
-  )
+    const details: CookiesSetDetails = {
+      url: apiURL,
+      name: cookie.name,
+      value: cookie.value,
+      path: cookie.path,
+      httpOnly: cookie.httpOnly,
+      secure: cookie.secure,
+      ...(cookie.sameSite ? { sameSite: cookie.sameSite } : {}),
+      ...(cookie.domain ? { domain: cookie.domain } : {}),
+      ...(cookie.expirationDate ? { expirationDate: cookie.expirationDate } : {}),
+    }
+
+    await session.cookies.set(details)
+  }
+
+  await dedupeManagedAuthCookies({ apiURL, session })
 }
