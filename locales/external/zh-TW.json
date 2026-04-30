@@ -34,7 +34,7 @@
   "invitation.earlyAccess": "Folo 目前處於搶先體驗階段，需要邀請碼才能使用。",
   "invitation.earlyAccessMessage": "😰 抱歉，Folo 目前處於搶先體驗階段，需要邀請碼才能使用。",
   "invitation.generateButton": "產生新邀請碼",
-  "invitation.generateCost": "您可以花費 {{INVITATION_PRICE}} Power 為您的朋友產生邀請碼。",
+  "invitation.generateCost": "您可以為朋友產生邀請碼。",
   "invitation.getCodeMessage": "您可以通過以下方式獲取邀請碼：",
   "invitation.title": "邀請碼",
   "login.backToWebApp": "返回網頁應用程式",

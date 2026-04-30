@@ -1,3 +1,4 @@
+import { buildBetterAuthSessionTokenCookieHeader } from "@follow/shared/auth-cookie"
 import { IN_ELECTRON } from "@follow/shared/constants"
 import { env } from "@follow/shared/env.desktop"
 import { whoami } from "@follow/store/user/getters"
@@ -6,14 +7,13 @@ import { createDesktopAPIHeaders } from "@follow/utils/headers"
 import { FollowClient } from "@follow-app/client-sdk"
 import PKG from "@pkg"
 
-import { NetworkStatus, setApiStatus } from "~/atoms/network"
 import { setLoginModalShow } from "~/atoms/user"
 
 import { getAuthSessionToken, getClientId, getSessionId } from "./client-session"
 
 export const followClient = new FollowClient({
   credentials: "include",
-  timeout: 30000,
+  timeout: 60_000,
   baseURL: env.VITE_API_URL,
   fetch: async (input, options = {}) =>
     fetch(input.toString(), {
@@ -33,7 +33,7 @@ followClient.addRequestInterceptor(async (ctx) => {
   if (authSessionToken && !headers.has("Cookie") && !headers.has("cookie")) {
     headers.set(
       "Cookie",
-      `__Secure-better-auth.session_token=${authSessionToken}; better-auth.session_token=${authSessionToken}`,
+      buildBetterAuthSessionTokenCookieHeader(env.VITE_API_URL, authSessionToken),
     )
   }
 
@@ -44,26 +44,6 @@ followClient.addRequestInterceptor(async (ctx) => {
 
   options.headers = Object.fromEntries(headers.entries())
   return ctx
-})
-
-followClient.addResponseInterceptor(({ response }) => {
-  setApiStatus(NetworkStatus.ONLINE)
-  return response
-})
-
-followClient.addErrorInterceptor(async ({ error, response }) => {
-  // If api is down
-  if ((!response || response.status === 0) && navigator.onLine) {
-    setApiStatus(NetworkStatus.OFFLINE)
-  } else {
-    setApiStatus(NetworkStatus.ONLINE)
-  }
-
-  if (!response) {
-    return error
-  }
-
-  return error
 })
 
 followClient.addResponseInterceptor(async ({ response }) => {

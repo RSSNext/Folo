@@ -5,10 +5,15 @@ import type { Env } from "../env"
 import { createExpoSignatureHeader, OtaCodeSigningError } from "../lib/code-signing"
 import { KV_KEYS } from "../lib/constants"
 import { buildDesktopManifestResponse, isDesktopRelease } from "../lib/desktop"
-import { getLatestReleasePointer } from "../lib/kv"
+import { getBinaryPolicyRecord, getLatestReleasePointer } from "../lib/kv"
 import { buildManifest } from "../lib/manifest"
 import { parseDesktopRequest } from "../lib/request"
-import type { OtaPlatform, OtaProjectedPlatforms, OtaRelease } from "../lib/schema"
+import type {
+  DesktopOtaRelease,
+  OtaPlatform,
+  OtaProjectedPlatforms,
+  OtaRelease,
+} from "../lib/schema"
 import { otaReleaseSchema } from "../lib/schema"
 
 const OTA_PLATFORMS: readonly OtaPlatform[] = ["ios", "android", "macos", "windows", "linux"]
@@ -40,56 +45,25 @@ manifestRoute.get("/manifest", async (c) => {
       return c.json({ error: "Missing x-app-channel header" }, 400)
     }
 
-    const pointerRecord = await getLatestReleasePointer(c.env.OTA_KV, {
-      product: "desktop",
-      channel: desktopRequest.channel,
-      runtimeVersion: desktopRequest.runtimeVersion,
-      platform: desktopRequest.platform,
-    })
-
-    if (!pointerRecord) {
-      return c.body(null, 204)
-    }
-
-    const parsedPointer = latestReleasePointerSchema.safeParse(pointerRecord)
-
-    if (!parsedPointer.success) {
-      return c.body(null, 204)
-    }
-
-    const releaseRecord = await c.env.OTA_KV.get(
-      KV_KEYS.release("desktop", parsedPointer.data.releaseVersion),
-      "json",
-    )
-
-    if (!releaseRecord) {
-      return c.body(null, 204)
-    }
-
-    const parsedRelease = otaReleaseSchema.safeParse(releaseRecord)
-
-    if (!parsedRelease.success || !isDesktopRelease(parsedRelease.data)) {
-      return c.body(null, 204)
-    }
-
-    const release = parsedRelease.data
-
-    if (
-      release.releaseKind !== "ota" ||
-      release.channel !== desktopRequest.channel ||
-      release.releaseVersion !== parsedPointer.data.releaseVersion ||
-      release.runtimeVersion !== desktopRequest.runtimeVersion
-    ) {
-      return c.body(null, 204)
-    }
-
-    const payload = buildDesktopManifestResponse(release, {
-      origin: new URL(c.req.url).origin,
-      platform: desktopRequest.platform,
-      distribution,
-      installedBinaryVersion: desktopRequest.installedBinaryVersion,
-      rendererVersion: desktopRequest.rendererVersion,
-    })
+    const payload =
+      (await resolveDesktopOtaManifestPayload(c.env.OTA_KV, {
+        channel: desktopRequest.channel,
+        platform: desktopRequest.platform,
+        distribution,
+        runtimeVersion: desktopRequest.runtimeVersion,
+        installedBinaryVersion: desktopRequest.installedBinaryVersion,
+        rendererVersion: desktopRequest.rendererVersion,
+        origin: new URL(c.req.url).origin,
+      })) ??
+      (await resolveDesktopBinaryManifestPayload(c.env.OTA_KV, {
+        channel: desktopRequest.channel,
+        platform: desktopRequest.platform,
+        distribution,
+        runtimeVersion: desktopRequest.runtimeVersion,
+        installedBinaryVersion: desktopRequest.installedBinaryVersion,
+        rendererVersion: desktopRequest.rendererVersion,
+        origin: new URL(c.req.url).origin,
+      }))
 
     if (!payload) {
       return c.body(null, 204)
@@ -215,6 +189,125 @@ manifestRoute.get("/manifest", async (c) => {
     headers,
   })
 })
+
+async function resolveDesktopOtaManifestPayload(
+  kv: KVNamespace,
+  input: {
+    channel: string
+    platform: "macos" | "windows" | "linux"
+    distribution: "direct" | "mas" | "mss"
+    runtimeVersion: string
+    installedBinaryVersion: string | null
+    rendererVersion: string | null
+    origin: string
+  },
+) {
+  const pointerRecord = await getLatestReleasePointer(kv, {
+    product: "desktop",
+    channel: input.channel,
+    runtimeVersion: input.runtimeVersion,
+    platform: input.platform,
+  })
+
+  if (!pointerRecord) {
+    return null
+  }
+
+  const parsedPointer = latestReleasePointerSchema.safeParse(pointerRecord)
+  if (!parsedPointer.success) {
+    return null
+  }
+
+  const release = await getDesktopRelease(kv, parsedPointer.data.releaseVersion)
+  if (!release) {
+    return null
+  }
+
+  if (
+    release.releaseKind !== "ota" ||
+    release.channel !== input.channel ||
+    release.releaseVersion !== parsedPointer.data.releaseVersion ||
+    release.runtimeVersion !== input.runtimeVersion
+  ) {
+    return null
+  }
+
+  return buildDesktopManifestResponse(release, {
+    origin: input.origin,
+    platform: input.platform,
+    distribution: input.distribution,
+    installedBinaryVersion: input.installedBinaryVersion,
+    rendererVersion: input.rendererVersion,
+    runtimeVersion: input.runtimeVersion,
+  })
+}
+
+async function resolveDesktopBinaryManifestPayload(
+  kv: KVNamespace,
+  input: {
+    channel: string
+    platform: "macos" | "windows" | "linux"
+    distribution: "direct" | "mas" | "mss"
+    runtimeVersion: string
+    installedBinaryVersion: string | null
+    rendererVersion: string | null
+    origin: string
+  },
+) {
+  if (input.distribution !== "direct") {
+    return null
+  }
+
+  const policyRecord =
+    (await getBinaryPolicyRecord(kv, {
+      product: "desktop",
+      channel: input.channel,
+      distribution: "direct",
+    })) ??
+    (await getBinaryPolicyRecord(kv, {
+      product: "desktop",
+      channel: input.channel,
+    }))
+
+  if (!policyRecord) {
+    return null
+  }
+
+  const release = await getDesktopRelease(kv, policyRecord.releaseVersion)
+  if (!release) {
+    return null
+  }
+
+  if (release.releaseKind !== "binary" || release.channel !== input.channel) {
+    return null
+  }
+
+  return buildDesktopManifestResponse(release, {
+    origin: input.origin,
+    platform: input.platform,
+    distribution: input.distribution,
+    installedBinaryVersion: input.installedBinaryVersion,
+    rendererVersion: input.rendererVersion,
+    runtimeVersion: input.runtimeVersion,
+  })
+}
+
+async function getDesktopRelease(
+  kv: KVNamespace,
+  releaseVersion: string,
+): Promise<DesktopOtaRelease | null> {
+  const releaseRecord = await kv.get(KV_KEYS.release("desktop", releaseVersion), "json")
+  if (!releaseRecord) {
+    return null
+  }
+
+  const parsedRelease = otaReleaseSchema.safeParse(releaseRecord)
+  if (!parsedRelease.success || !isDesktopRelease(parsedRelease.data)) {
+    return null
+  }
+
+  return parsedRelease.data
+}
 
 function parsePlatform(value: string | undefined): OtaPlatform | null {
   return OTA_PLATFORMS.find((platform) => platform === value) ?? null

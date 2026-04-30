@@ -12,6 +12,7 @@ import { useIntentHandler } from "./hooks/useIntentHandler"
 import { useMessaging, useUpdateMessagingToken } from "./hooks/useMessaging"
 import { useOnboarding } from "./hooks/useOnboarding"
 import { useUnreadCountBadge } from "./hooks/useUnreadCountBadge"
+import { useAuthSessionCookieRefresh } from "./lib/auth"
 import { DebugButton, EnvProfileIndicator } from "./modules/debug"
 import { ReviewPromptProvider } from "./modules/review-prompt/provider"
 
@@ -53,6 +54,7 @@ const ScaleableWrapper: FC<PropsWithChildren> = ({ children }) => {
 }
 
 const SideEffect = () => {
+  useAuthSessionCookieRefresh()
   usePrefetchSessionUser()
   useUnreadCountBadge()
   useBackHandler()

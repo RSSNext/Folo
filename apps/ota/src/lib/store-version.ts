@@ -7,7 +7,9 @@ const MICROSOFT_STORE_MARKET = "US"
 const MICROSOFT_STORE_LOCALE = "en-US"
 const MICROSOFT_STORE_RING = "Retail"
 const PLAY_VERSION_PATTERN = /\[\[\["(\d+\.\d+\.\d+)"\]\],\[\[\[36\]\]/
-const APPLE_VERSION_PATTERN = /"primarySubtitle":"Version (\d+\.\d+\.\d+)"/
+const APPLE_LOOKUP_URL = `https://itunes.apple.com/lookup?id=${APPLE_APP_STORE_ID}`
+const APPLE_PRIMARY_SUBTITLE_VERSION_PATTERN = /"primarySubtitle":"Version (\d+\.\d+\.\d+)"/
+const APPLE_TEXT_VERSION_PATTERN = /\bVersion (\d+\.\d+\.\d+)\b/
 const MICROSOFT_VERSION_PATTERN = /^\d+(?:\.\d+)+$/
 
 export type MobileStorePlatform = "ios" | "android"
@@ -74,21 +76,31 @@ export function getDesktopStoreUrl(distribution: DesktopDistribution) {
 }
 
 async function fetchIosStoreVersion() {
-  const response = await fetch(`https://itunes.apple.com/lookup?id=${APPLE_APP_STORE_ID}`, {
-    headers: STORE_HEADERS,
-  })
-  if (!response.ok) {
-    throw new Error(`App Store lookup failed (${response.status})`)
+  try {
+    const response = await fetch(APPLE_LOOKUP_URL, {
+      headers: STORE_HEADERS,
+    })
+    if (!response.ok) {
+      throw new Error(`App Store lookup failed (${response.status})`)
+    }
+
+    const payload = (await response.json()) as {
+      results?: Array<{
+        version?: unknown
+      }>
+    }
+
+    const version = payload.results?.[0]?.version
+    if (typeof version === "string") {
+      return version
+    }
+
+    console.warn("[ota] Apple lookup response did not include an iOS version, falling back")
+  } catch (error) {
+    console.warn("[ota] Apple lookup request failed for iOS store version, falling back", error)
   }
 
-  const payload = (await response.json()) as {
-    results?: Array<{
-      version?: unknown
-    }>
-  }
-
-  const version = payload.results?.[0]?.version
-  return typeof version === "string" ? version : null
+  return fetchAppleStorefrontVersion(STORE_URLS.ios, "iOS App Store storefront request")
 }
 
 async function fetchGooglePlayVersion() {
@@ -104,15 +116,7 @@ async function fetchGooglePlayVersion() {
 }
 
 async function fetchMacAppStoreVersion() {
-  const response = await fetch(STORE_URLS.mas, {
-    headers: STORE_HEADERS,
-  })
-  if (!response.ok) {
-    throw new Error(`Mac App Store storefront request failed (${response.status})`)
-  }
-
-  const html = await response.text()
-  return html.match(APPLE_VERSION_PATTERN)?.[1] ?? null
+  return fetchAppleStorefrontVersion(STORE_URLS.mas, "Mac App Store storefront request")
 }
 
 async function fetchMicrosoftStoreVersion() {
@@ -184,6 +188,26 @@ async function fetchJson<T>(url: string, context: string): Promise<T> {
   }
 
   return (await response.json()) as T
+}
+
+async function fetchAppleStorefrontVersion(url: string, context: string) {
+  const response = await fetch(url, {
+    headers: STORE_HEADERS,
+  })
+  if (!response.ok) {
+    throw new Error(`${context} failed (${response.status})`)
+  }
+
+  const html = await response.text()
+  return extractAppleStoreVersion(html)
+}
+
+function extractAppleStoreVersion(html: string) {
+  return (
+    html.match(APPLE_PRIMARY_SUBTITLE_VERSION_PATTERN)?.[1] ??
+    html.match(APPLE_TEXT_VERSION_PATTERN)?.[1] ??
+    null
+  )
 }
 
 function resolveMicrosoftFulfillmentData(payload: {

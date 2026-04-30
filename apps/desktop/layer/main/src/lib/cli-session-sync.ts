@@ -8,11 +8,14 @@ import { createAuthRequestOriginHeaders, createDesktopAPIHeaders } from "@follow
 import PKG from "@pkg"
 import { join } from "pathe"
 
-import { BETTER_AUTH_COOKIE_NAME_SESSION_TOKEN } from "~/constants/app"
 import { WindowManager } from "~/manager/window"
 
 import { logger } from "../logger"
-import { buildManagedAuthCookieHeader, getManagedAuthCookies } from "./auth-cookies"
+import {
+  buildManagedAuthCookieHeader,
+  getManagedAuthCookies,
+  getPreferredSessionTokenCookie,
+} from "./auth-cookies"
 import { resolveCliSessionToken } from "./cli-login-token"
 
 const execFileAsync = promisify(execFile)
@@ -92,9 +95,7 @@ export const getSessionTokenFromCookies = async (): Promise<string | undefined> 
     domain: new URL(env.VITE_API_URL).hostname,
   })
 
-  const sessionCookie = cookies.find((cookie) =>
-    cookie.name.includes(BETTER_AUTH_COOKIE_NAME_SESSION_TOKEN),
-  )
+  const sessionCookie = getPreferredSessionTokenCookie(cookies)
 
   return sessionCookie?.value
 }

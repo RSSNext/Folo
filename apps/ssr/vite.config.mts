@@ -49,6 +49,9 @@ export default defineConfig({
   ],
 
   server: {
+    watch: {
+      ignored: ["**/.env", "**/.env.*"],
+    },
     proxy: {
       "/api": {
         target: "https://api.follow.is",

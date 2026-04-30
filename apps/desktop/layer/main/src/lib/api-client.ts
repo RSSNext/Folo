@@ -4,11 +4,11 @@ import { FollowClient } from "@follow-app/client-sdk"
 import PKG, { mainHash, version as appVersion } from "@pkg"
 import { gte } from "semver"
 
-import { BETTER_AUTH_COOKIE_NAME_SESSION_TOKEN } from "~/constants/app"
 import { WindowManager } from "~/manager/window"
 import { getCurrentRendererManifest } from "~/updater/hot-updater"
 
 import { logger } from "../logger"
+import { getPreferredSessionTokenCookie } from "./auth-cookies"
 
 export const followClient = new FollowClient({
   credentials: "include",
@@ -39,9 +39,7 @@ followClient.addRequestInterceptor(async (ctx) => {
   const cookies = await window?.webContents.session.cookies.get({
     domain: new URL(env.VITE_API_URL).hostname,
   })
-  const sessionCookie = cookies?.find((cookie) =>
-    cookie.name.includes(BETTER_AUTH_COOKIE_NAME_SESSION_TOKEN),
-  )
+  const sessionCookie = cookies ? getPreferredSessionTokenCookie(cookies) : null
   const headerCookie = sessionCookie ? `${sessionCookie.name}=${sessionCookie.value}` : ""
   const userAgent = window?.webContents.getUserAgent() || `Folo/${PKG.version}`
 

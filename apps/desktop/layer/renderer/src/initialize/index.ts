@@ -13,7 +13,6 @@ import { hydrateSessionsFromLocalDb } from "~/modules/ai-chat-session"
 import { settingSyncQueue } from "~/modules/settings/helper/sync-queue"
 import { ElectronCloseEvent, ElectronShowEvent } from "~/providers/invalidate-query-provider"
 
-import { subscribeNetworkStatus } from "../atoms/network"
 import { appLog } from "../lib/log"
 import { initAnalytics } from "./analytics"
 import { registerHistoryStack } from "./history"
@@ -78,8 +77,6 @@ export const initializeApp = async () => {
 
   // Enable Map/Set in immer
   enableMapSet()
-
-  subscribeNetworkStatus()
 
   apm("initializeSettings", initializeSettings)
 

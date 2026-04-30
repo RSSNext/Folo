@@ -8,7 +8,7 @@ import PKG from "../../../desktop/package.json"
 
 export const followClient = new FollowClient({
   credentials: "include",
-  timeout: 30000,
+  timeout: 60_000,
   baseURL: env.VITE_API_URL,
   fetch: async (input: any, options = {}) =>
     fetch(input.toString(), {
