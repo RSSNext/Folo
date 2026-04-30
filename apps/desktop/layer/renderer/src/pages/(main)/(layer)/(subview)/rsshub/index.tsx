@@ -2,7 +2,7 @@ import { Logo } from "@follow/components/icons/logo.jsx"
 import { Button } from "@follow/components/ui/button/index.js"
 import { RSSHubLogo } from "@follow/components/ui/platform-icon/icons.js"
 import { whoami } from "@follow/store/user/getters"
-import { cn, formatNumber } from "@follow/utils/utils"
+import { cn } from "@follow/utils/utils"
 import type { RSSHubListItem } from "@follow-app/client-sdk"
 import { memo, useCallback, useEffect } from "react"
 import { useTranslation } from "react-i18next"
@@ -110,7 +110,6 @@ const InstanceCard = memo(({ item }: { item: InstanceItem }) => {
   )
 
   const title = isOfficial ? "Folo Official" : ""
-  const price = isOfficial ? 0 : instance.price
   const description = isOfficial ? "Folo Built-in RSSHub" : instance.description
 
   const usersStat = isOfficial ? "*" : instance.userCount || 0
@@ -164,11 +163,6 @@ const InstanceCard = memo(({ item }: { item: InstanceItem }) => {
           <div>
             <h3 className="text-sm font-semibold text-text">{title}</h3>
             <div className="flex items-center gap-1">{tags}</div>
-          </div>
-        </div>
-        <div className="text-right">
-          <div className="flex items-center gap-1 text-sm font-medium">
-            {formatNumber(price ?? 0)} <i className="i-mgc-power size-3 text-folo" />
           </div>
         </div>
       </div>
@@ -276,7 +270,7 @@ function List({ data }: { data?: RSSHubListItem[] }) {
 
       // full load last
       if (loadA === 1 && loadB === 1) {
-        return a.price - b.price
+        return 0
       }
       if (loadA === 1) {
         return 1
@@ -285,7 +279,7 @@ function List({ data }: { data?: RSSHubListItem[] }) {
         return -1
       }
 
-      return a.price - b.price || loadA - loadB
+      return loadA - loadB
     }) || []),
   ]
 

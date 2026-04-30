@@ -31,6 +31,8 @@ import { useTOTPModalWrapper } from "~/modules/profile/hooks"
 import { Balance } from "~/modules/wallet/balance"
 import { useWallet, wallet as walletActions } from "~/queries/wallet"
 
+const RSS3_CONVERSION_RATE = 0.043
+
 export const WithdrawButton = () => {
   const { t } = useTranslation("settings")
   const { present } = useModalStack()
@@ -54,18 +56,22 @@ const WithdrawModalContent = ({ dismiss }: { dismiss: () => void }) => {
   const wallet = useWallet()
   const cashablePowerTokenBigInt = [BigInt(wallet.data?.[0]!.cashablePowerToken || 0n), 18] as const
   const cashablePowerTokenNumber = toNumber(cashablePowerTokenBigInt)
+  const walletAddress = wallet.data?.[0]?.address ?? "-"
 
   const formSchema = z.object({
     address: z.string().startsWith("0x").length(42),
     amount: z.number().positive().max(cashablePowerTokenNumber),
-    toRss3: z.boolean().optional(),
+    toRss3: z.boolean(),
   })
 
   const form = useForm<z.infer<typeof formSchema>>({
     resolver: zodResolver(formSchema),
+    defaultValues: {
+      toRss3: true,
+    },
   })
-
-  const rss3ConversionRate: number | null = null
+  const withdrawAmount = form.watch("amount")
+  const receiveAmount = Number.isFinite(withdrawAmount) ? withdrawAmount * RSS3_CONVERSION_RATE : 0
 
   const mutation = useMutation({
     mutationFn: async ({
@@ -91,7 +97,7 @@ const WithdrawModalContent = ({ dismiss }: { dismiss: () => void }) => {
   const present = useTOTPModalWrapper(mutation.mutateAsync, { force: true })
 
   const onSubmit = (values: z.infer<typeof formSchema>) => {
-    present(values)
+    present({ ...values, toRss3: true })
   }
 
   useEffect(() => {
@@ -126,6 +132,9 @@ const WithdrawModalContent = ({ dismiss }: { dismiss: () => void }) => {
       </div>
       <Form {...form}>
         <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-4 lg:w-96">
+          <div className="rounded-md border border-orange/20 bg-orange/10 p-3 text-xs leading-relaxed text-text-secondary">
+            {t("wallet.withdraw.gasFeeNotice", { address: walletAddress })}
+          </div>
           <FormField
             control={form.control}
             name="address"
@@ -161,7 +170,7 @@ const WithdrawModalContent = ({ dismiss }: { dismiss: () => void }) => {
           <FormField
             control={form.control}
             name="toRss3"
-            render={({ field }) => (
+            render={() => (
               <FormItem>
                 <div className="flex items-center gap-2">
                   <FormLabel className="flex items-center gap-1">
@@ -173,7 +182,7 @@ const WithdrawModalContent = ({ dismiss }: { dismiss: () => void }) => {
                       <TooltipPortal>
                         <TooltipContent>
                           <span className="text-xs text-gray-500">
-                            <span>1 POWER = {rss3ConversionRate ?? "-"} RSS3</span>
+                            <span>1 POWER = {RSS3_CONVERSION_RATE} RSS3</span>
                           </span>
                         </TooltipContent>
                       </TooltipPortal>
@@ -181,17 +190,15 @@ const WithdrawModalContent = ({ dismiss }: { dismiss: () => void }) => {
                   </FormLabel>
                   <FormControl className="!mt-0">
                     <span className="inline-flex">
-                      <Switch checked={field.value} onCheckedChange={field.onChange} />
+                      <Switch checked={true} disabled />
                     </span>
                   </FormControl>
                 </div>
-                {field.value && rss3ConversionRate !== null && (
-                  <span className="text-xs text-gray-500">
-                    {t("wallet.withdraw.receiveRSS3", {
-                      amount: ((form.watch("amount") || 0) * rss3ConversionRate).toFixed(4),
-                    })}
-                  </span>
-                )}
+                <span className="text-xs text-gray-500">
+                  {t("wallet.withdraw.receiveRSS3", {
+                    amount: receiveAmount.toFixed(4),
+                  })}
+                </span>
                 <FormMessage />
               </FormItem>
             )}

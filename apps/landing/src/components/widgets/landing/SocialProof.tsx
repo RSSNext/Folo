@@ -7,7 +7,7 @@ import { MagicCard } from '~/components/ui/magic-card'
 const tweetList = [
   {
     id: '1833056589135442345',
-    text: "Very nice news aggregation, and it gives 2 power token everyday, so far I just try move front end people I followed in, haven't done yet, will try move more rss subscribe.",
+    text: "Very nice news aggregation. So far I just try move front end people I followed in, haven't done yet, will try move more rss subscribe.",
     name: '🦋 AnneInCoding',
     screenName: '@anneincoding',
     profileImageUrl:

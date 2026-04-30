@@ -139,7 +139,7 @@ export const ProfileButton: FC<ProfileButtonProps> = memo((props) => {
             }}
             icon={<i className="i-mgc-power-outline" />}
           >
-            {t("user_button.power")}
+            {t("user_button.wallet")}
           </DropdownMenuItem>
         )}
         <DropdownMenuItem
