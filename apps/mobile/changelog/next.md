@@ -2,10 +2,9 @@
 
 ## Shiny new things
 
-## Improvements
+- Added OTA version details to About
 
 ## No longer broken
 
-## Thanks
-
-Special thanks to volunteer contributors @ for their valuable contributions
+- Fixed session refresh after cookie updates
+- Extended API request timeouts
