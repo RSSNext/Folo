@@ -7,7 +7,6 @@ import { createDesktopAPIHeaders } from "@follow/utils/headers"
 import { FollowClient } from "@follow-app/client-sdk"
 import PKG from "@pkg"
 
-import { NetworkStatus, setApiStatus } from "~/atoms/network"
 import { setLoginModalShow } from "~/atoms/user"
 
 import { getAuthSessionToken, getClientId, getSessionId } from "./client-session"
@@ -45,26 +44,6 @@ followClient.addRequestInterceptor(async (ctx) => {
 
   options.headers = Object.fromEntries(headers.entries())
   return ctx
-})
-
-followClient.addResponseInterceptor(({ response }) => {
-  setApiStatus(NetworkStatus.ONLINE)
-  return response
-})
-
-followClient.addErrorInterceptor(async ({ error, response }) => {
-  // If api is down
-  if ((!response || response.status === 0) && navigator.onLine) {
-    setApiStatus(NetworkStatus.OFFLINE)
-  } else {
-    setApiStatus(NetworkStatus.ONLINE)
-  }
-
-  if (!response) {
-    return error
-  }
-
-  return error
 })
 
 followClient.addResponseInterceptor(async ({ response }) => {
