@@ -34,7 +34,7 @@
   "invitation.earlyAccess": "Folo is currently requires an invitation code to use.",
   "invitation.earlyAccessMessage": "😰 Sorry, Folo is currently requires an invitation code to use.",
   "invitation.generateButton": "Generate new code",
-  "invitation.generateCost": "You can spend {{INVITATION_PRICE}} Power to generate an invitation code for your friends.",
+  "invitation.generateCost": "You can generate an invitation code for your friends.",
   "invitation.getCodeMessage": "You can get an invitation code in the following ways:",
   "invitation.title": "Invitation Code",
   "login.backToWebApp": "Back To Web App",

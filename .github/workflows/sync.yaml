@@ -17,11 +17,36 @@ jobs:
       (github.ref == 'refs/heads/main' && contains(github.event.head_commit.message || '', 'release(desktop):')) ||
       (github.ref == 'refs/heads/mobile-main' && contains(github.event.head_commit.message || '', 'release(mobile):'))
     steps:
-      - name: Create or update sync pull request
+      - name: Check whether source branch is ahead of dev
+        id: compare
         env:
           GH_TOKEN: ${{ github.token }}
+        shell: bash
         run: |
+          set -euo pipefail
+
           source_branch="${GITHUB_REF_NAME}"
+          compare_ref="$(printf '%s' "dev...${source_branch}" | jq -sRr @uri)"
+          ahead_by="$(gh api "repos/${GITHUB_REPOSITORY}/compare/${compare_ref}" --jq '.ahead_by')"
+
+          echo "source_branch=${source_branch}" >> "$GITHUB_OUTPUT"
+          echo "ahead_by=${ahead_by}" >> "$GITHUB_OUTPUT"
+
+          if [ "$ahead_by" -eq 0 ]; then
+            echo "No commits to sync from ${source_branch} into dev."
+          else
+            echo "${source_branch} is ${ahead_by} commit(s) ahead of dev."
+          fi
+
+      - name: Create or update sync pull request
+        if: steps.compare.outputs.ahead_by != '0'
+        env:
+          GH_TOKEN: ${{ github.token }}
+        shell: bash
+        run: |
+          set -euo pipefail
+
+          source_branch="${{ steps.compare.outputs.source_branch }}"
           title="chore(sync): merge ${source_branch} into dev"
           body=$(cat <<EOF
           This pull request was created automatically after a release branch update.
@@ -31,18 +56,18 @@ jobs:
           EOF
           )
 
-          pr_number="$(gh pr list --base dev --head "${source_branch}" --state open --json number --jq '.[0].number')"
+          pr_number="$(gh pr list --repo "${GITHUB_REPOSITORY}" --base dev --head "${source_branch}" --state open --json number --jq '.[0].number')"
 
           if [ -z "${pr_number}" ]; then
-            pr_url="$(gh pr create --base dev --head "${source_branch}" --title "${title}" --body "${body}")"
-            pr_number="$(gh pr view "${pr_url}" --json number --jq '.number')"
+            pr_url="$(gh pr create --repo "${GITHUB_REPOSITORY}" --base dev --head "${source_branch}" --title "${title}" --body "${body}")"
+            pr_number="${pr_url##*/}"
             echo "Created sync PR: ${pr_url}"
           else
-            gh pr edit "${pr_number}" --title "${title}" --body "${body}"
+            gh pr edit --repo "${GITHUB_REPOSITORY}" "${pr_number}" --title "${title}" --body "${body}"
             echo "Updated existing sync PR: #${pr_number}"
           fi
 
-          if gh pr merge "${pr_number}" --auto --merge; then
+          if gh pr merge --repo "${GITHUB_REPOSITORY}" "${pr_number}" --auto --merge; then
             echo "Enabled auto-merge for sync PR #${pr_number}"
           else
             echo "Could not enable auto-merge for sync PR #${pr_number}. Merge it manually after required checks pass."

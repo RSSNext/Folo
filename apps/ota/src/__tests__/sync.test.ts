@@ -1687,6 +1687,229 @@ describe("syncStoreVersions", () => {
     )
     expect(kvEntries.get(KV_KEYS.storeVersionSyncLastSuccessAt)).toEqual(expect.any(String))
   })
+
+  it("falls back to the iOS App Store page when the Apple lookup payload has no version", async () => {
+    const kvEntries = new Map<string, unknown>()
+    const consoleWarnSpy = vi.spyOn(console, "warn").mockImplementation(() => {})
+
+    vi.stubGlobal(
+      "fetch",
+      vi.fn(async (input: string | URL | Request, _init?: RequestInit) => {
+        const url = String(input)
+
+        if (url === "https://itunes.apple.com/lookup?id=6739802604") {
+          return new Response(
+            JSON.stringify({
+              results: [{}],
+            }),
+            { status: 200, headers: { "Content-Type": "application/json" } },
+          )
+        }
+
+        if (url === "https://apps.apple.com/us/app/folo-follow-everything/id6739802604") {
+          return new Response(
+            '<script type="application/json">{"primarySubtitle":"Version 0.5.0"}</script>',
+            {
+              status: 200,
+              headers: { "Content-Type": "text/html" },
+            },
+          )
+        }
+
+        if (url === "https://play.google.com/store/apps/details?id=is.follow&hl=en_US&gl=US") {
+          return new Response('[[["0.4.1"]],[[[36]]]', {
+            status: 200,
+            headers: { "Content-Type": "text/html" },
+          })
+        }
+
+        if (
+          url === "https://apps.apple.com/us/app/folo-follow-everything/id6739802604?platform=mac"
+        ) {
+          return new Response('{"primarySubtitle":"Version 1.5.0"}', {
+            status: 200,
+            headers: { "Content-Type": "text/html" },
+          })
+        }
+
+        if (
+          url ===
+          "https://storeedgefd.dsx.mp.microsoft.com/v9.0/products/9nvfzpv0v0ht?market=US&locale=en-US&deviceFamily=Windows.Desktop"
+        ) {
+          return new Response(
+            JSON.stringify({
+              Payload: {
+                Skus: [
+                  {
+                    FulfillmentData: JSON.stringify({
+                      WuCategoryId: "wu-category-id",
+                      PackageFamilyName:
+                        "NaturalSelectionLabs.Follow-Yourfavoritesinoneinbo_abc123",
+                    }),
+                  },
+                ],
+              },
+            }),
+            { status: 200, headers: { "Content-Type": "application/json" } },
+          )
+        }
+
+        if (url === "https://fe3.delivery.mp.microsoft.com/ClientWebService/client.asmx") {
+          const body = String(_init?.body ?? "")
+
+          if (body.includes("GetCookie")) {
+            return new Response("<EncryptedData>cookie-value</EncryptedData>", {
+              status: 200,
+              headers: { "Content-Type": "application/soap+xml" },
+            })
+          }
+
+          return new Response(
+            '&lt;PackageMoniker="NaturalSelectionLabs.Follow-Yourfavoritesinoneinbo_1.5.0.0_x64__abc123"&gt;',
+            {
+              status: 200,
+              headers: { "Content-Type": "application/soap+xml" },
+            },
+          )
+        }
+
+        throw new Error(`Unhandled fetch URL: ${url}`)
+      }),
+    )
+
+    await syncStoreVersions(createEnv({ kvEntries }))
+
+    expect(JSON.parse(String(kvEntries.get(KV_KEYS.storeVersion("mobile", "ios"))))).toEqual(
+      expect.objectContaining({
+        version: "0.5.0",
+        source: "app-store",
+      }),
+    )
+    expect(consoleWarnSpy).toHaveBeenCalledWith(
+      "[ota] Apple lookup response did not include an iOS version, falling back",
+    )
+  })
+
+  it("logs and skips failed storefronts while persisting successful updates", async () => {
+    const kvEntries = new Map<string, unknown>()
+    const consoleErrorSpy = vi.spyOn(console, "error").mockImplementation(() => {})
+    const consoleWarnSpy = vi.spyOn(console, "warn").mockImplementation(() => {})
+
+    vi.stubGlobal(
+      "fetch",
+      vi.fn(async (input: string | URL | Request, _init?: RequestInit) => {
+        const url = String(input)
+
+        if (url === "https://itunes.apple.com/lookup?id=6739802604") {
+          throw new Error("lookup unavailable")
+        }
+
+        if (url === "https://apps.apple.com/us/app/folo-follow-everything/id6739802604") {
+          return new Response("service unavailable", {
+            status: 503,
+            headers: { "Content-Type": "text/html" },
+          })
+        }
+
+        if (url === "https://play.google.com/store/apps/details?id=is.follow&hl=en_US&gl=US") {
+          return new Response('[[["0.4.1"]],[[[36]]]', {
+            status: 200,
+            headers: { "Content-Type": "text/html" },
+          })
+        }
+
+        if (
+          url === "https://apps.apple.com/us/app/folo-follow-everything/id6739802604?platform=mac"
+        ) {
+          return new Response('{"primarySubtitle":"Version 1.5.0"}', {
+            status: 200,
+            headers: { "Content-Type": "text/html" },
+          })
+        }
+
+        if (
+          url ===
+          "https://storeedgefd.dsx.mp.microsoft.com/v9.0/products/9nvfzpv0v0ht?market=US&locale=en-US&deviceFamily=Windows.Desktop"
+        ) {
+          return new Response(
+            JSON.stringify({
+              Payload: {
+                Skus: [
+                  {
+                    FulfillmentData: JSON.stringify({
+                      WuCategoryId: "wu-category-id",
+                      PackageFamilyName:
+                        "NaturalSelectionLabs.Follow-Yourfavoritesinoneinbo_abc123",
+                    }),
+                  },
+                ],
+              },
+            }),
+            { status: 200, headers: { "Content-Type": "application/json" } },
+          )
+        }
+
+        if (url === "https://fe3.delivery.mp.microsoft.com/ClientWebService/client.asmx") {
+          const body = String(_init?.body ?? "")
+
+          if (body.includes("GetCookie")) {
+            return new Response("<EncryptedData>cookie-value</EncryptedData>", {
+              status: 200,
+              headers: { "Content-Type": "application/soap+xml" },
+            })
+          }
+
+          return new Response(
+            '&lt;PackageMoniker="NaturalSelectionLabs.Follow-Yourfavoritesinoneinbo_1.5.0.0_x64__abc123"&gt;',
+            {
+              status: 200,
+              headers: { "Content-Type": "application/soap+xml" },
+            },
+          )
+        }
+
+        throw new Error(`Unhandled fetch URL: ${url}`)
+      }),
+    )
+
+    await expect(syncStoreVersions(createEnv({ kvEntries }))).resolves.toBeUndefined()
+
+    expect(kvEntries.get(KV_KEYS.storeVersion("mobile", "ios"))).toBeUndefined()
+    expect(kvEntries.get(KV_KEYS.storeVersion("mobile", "android"))).toEqual(expect.any(String))
+    expect(kvEntries.get(KV_KEYS.storeVersion("desktop", "mas"))).toEqual(expect.any(String))
+    expect(kvEntries.get(KV_KEYS.storeVersion("desktop", "mss"))).toEqual(expect.any(String))
+    expect(kvEntries.get(KV_KEYS.storeVersionSyncLastSuccessAt)).toEqual(expect.any(String))
+    expect(consoleErrorSpy).toHaveBeenCalledWith(
+      "[ota] Failed to refresh store version for mobile:ios",
+      expect.any(Error),
+    )
+    expect(consoleWarnSpy).toHaveBeenCalledWith(
+      "[ota] Store version sync completed with 1 failure(s); refreshed 3/4 providers",
+    )
+  })
+
+  it("fails when every storefront refresh fails", async () => {
+    const kvEntries = new Map<string, unknown>()
+    const consoleErrorSpy = vi.spyOn(console, "error").mockImplementation(() => {})
+    const consoleWarnSpy = vi.spyOn(console, "warn").mockImplementation(() => {})
+
+    vi.stubGlobal(
+      "fetch",
+      vi.fn(async () => {
+        throw new Error("network unavailable")
+      }),
+    )
+
+    await expect(syncStoreVersions(createEnv({ kvEntries }))).rejects.toThrow(
+      "Failed to refresh all store versions",
+    )
+
+    expect(kvEntries.get(KV_KEYS.storeVersionSyncLastSuccessAt)).toBeUndefined()
+    expect(consoleErrorSpy).toHaveBeenCalledTimes(4)
+    expect(consoleWarnSpy).not.toHaveBeenCalledWith(
+      expect.stringContaining("Store version sync completed with"),
+    )
+  })
 })
 
 describe("internal routes", () => {

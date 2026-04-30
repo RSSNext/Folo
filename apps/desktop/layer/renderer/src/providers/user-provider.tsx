@@ -1,10 +1,11 @@
 import { useEffect } from "react"
 
 import { setIntegrationIdentify } from "~/initialize/helper"
-import { useSession } from "~/queries/auth"
+import { useAuthSessionCookieRefresh, useSession } from "~/queries/auth"
 
 export const UserProvider = () => {
   const { session } = useSession()
+  useAuthSessionCookieRefresh(!!session?.user)
 
   useEffect(() => {
     if (!session?.user) return

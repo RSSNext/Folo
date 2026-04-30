@@ -130,11 +130,38 @@ async function runSyncStoreVersions(env: Env) {
     }),
   )
 
-  const failures = results.filter((result) => result.status === "rejected")
-  if (failures.length > 0) {
+  const failures = results.flatMap((result, index) => {
+    const task = syncTasks[index]
+
+    if (!task || result.status === "fulfilled") {
+      return []
+    }
+
+    return [
+      {
+        task,
+        reason: result.reason,
+      },
+    ]
+  })
+
+  for (const failure of failures) {
+    console.error(
+      `[ota] Failed to refresh store version for ${failure.task.product}:${failure.task.target}`,
+      failure.reason,
+    )
+  }
+
+  if (failures.length === syncTasks.length) {
     throw new AggregateError(
-      failures.map((result) => (result as PromiseRejectedResult).reason),
-      "Failed to refresh one or more store versions",
+      failures.map((failure) => failure.reason),
+      "Failed to refresh all store versions",
+    )
+  }
+
+  if (failures.length > 0) {
+    console.warn(
+      `[ota] Store version sync completed with ${failures.length} failure(s); refreshed ${syncTasks.length - failures.length}/${syncTasks.length} providers`,
     )
   }
 

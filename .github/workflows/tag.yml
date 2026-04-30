@@ -167,7 +167,7 @@ jobs:
             });
             console.log('Desktop store build triggered successfully');
 
-      - name: Trigger Mobile Preview Release Build
+      - name: Trigger Mobile Production APK Release Build
         if: needs.create_tag.outputs.platform == 'mobile' && needs.create_tag.outputs.ref_name == 'mobile-main' && steps.release_mode.outputs.trigger_store_builds == 'true'
         uses: actions/github-script@v9
         with:
@@ -179,11 +179,11 @@ jobs:
               workflow_id: 'build-android.yml',
               ref: 'mobile-main',
               inputs: {
-                profile: 'preview',
+                profile: 'production-apk',
                 release: 'true'
               }
             });
-            console.log('Mobile preview release build triggered successfully');
+            console.log('Mobile production APK release build triggered successfully');
 
       - name: Trigger Mobile Production Android Build
         if: needs.create_tag.outputs.platform == 'mobile' && needs.create_tag.outputs.ref_name == 'mobile-main' && steps.release_mode.outputs.trigger_store_builds == 'true'

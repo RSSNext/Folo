@@ -25,6 +25,7 @@ const storagePrefix = "follow_auth"
 export const cookieKey = `${storagePrefix}_cookie`
 export const sessionTokenKey = "__Secure-better-auth.session_token"
 const sessionDataKey = `${storagePrefix}_session_data`
+const sessionCookieRefreshIntervalSeconds = 60 * 60 * 12
 
 let authStateRevision = 0
 let lastAuthStateChangeAt = 0
@@ -115,6 +116,10 @@ const plugins = [
 
 export const authClient = createAuthClient({
   baseURL: `${proxyEnv.API_URL}/better-auth`,
+  sessionOptions: {
+    refetchInterval: sessionCookieRefreshIntervalSeconds,
+    refetchOnWindowFocus: true,
+  },
   fetchOptions: {
     cache: "no-store",
     // Learn more: https://better-fetch.vercel.app/docs/hooks
@@ -168,6 +173,11 @@ export const {
   updateUser,
   useSession,
 } = authClient
+
+// Mount Better Auth's session atom so the Expo plugin can persist refreshed Set-Cookie metadata.
+export const useAuthSessionCookieRefresh = () => {
+  useSession()
+}
 
 export const forgetPassword = authClient.requestPasswordReset
 

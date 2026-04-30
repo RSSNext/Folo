@@ -143,6 +143,45 @@ describe("/policy", () => {
     })
   })
 
+  it("falls back to the iOS App Store page when the Apple lookup API fails", async () => {
+    const consoleWarnSpy = vi.spyOn(console, "warn").mockImplementation(() => {})
+
+    vi.stubGlobal(
+      "fetch",
+      vi.fn(async (input: RequestInfo | URL) => {
+        const url = String(input)
+
+        if (url === "https://itunes.apple.com/lookup?id=6739802604") {
+          throw new Error("lookup unavailable")
+        }
+
+        if (url === "https://apps.apple.com/us/app/folo-follow-everything/id6739802604") {
+          return new Response(
+            '<script type="application/json">{"primarySubtitle":"Version 0.4.4"}</script>',
+            { status: 200, headers: { "content-type": "text/html" } },
+          )
+        }
+
+        throw new Error(`Unhandled fetch URL: ${url}`)
+      }),
+    )
+
+    const response = await fetchWorker(
+      "/policy?product=mobile&platform=ios&channel=production&installedBinaryVersion=0.4.1",
+    )
+
+    expect(response.status).toBe(200)
+    await expect(response.json()).resolves.toEqual({
+      action: "prompt",
+      targetVersion: "0.4.4",
+      message: null,
+    })
+    expect(consoleWarnSpy).toHaveBeenCalledWith(
+      "[ota] Apple lookup request failed for iOS store version, falling back",
+      expect.any(Error),
+    )
+  })
+
   it("uses the cached iOS store version when KV is populated", async () => {
     const fetchSpy = vi.fn()
     vi.stubGlobal("fetch", fetchSpy)

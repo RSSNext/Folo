@@ -24,7 +24,6 @@ import {
 import { FloatingLayerScope } from "~/constants"
 import { useBatchUpdateSubscription } from "~/hooks/biz/useSubscriptionActions"
 import { useI18n } from "~/hooks/common"
-import { NetworkStatusIndicator } from "~/modules/app/NetworkStatusIndicator"
 import { COMMAND_ID } from "~/modules/command/commands/id"
 import { useCommandBinding } from "~/modules/command/hooks/use-command-binding"
 import { CornerPlayer } from "~/modules/player/corner-player"
@@ -74,8 +73,6 @@ export const SubscriptionColumnContainer = () => {
             <CornerPlayer />
 
             <UpdateNotice />
-
-            <NetworkStatusIndicator />
           </SubscriptionColumn>
         </DndContext>
       </FeedResponsiveResizerContainer>

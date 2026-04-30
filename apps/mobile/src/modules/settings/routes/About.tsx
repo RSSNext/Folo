@@ -1,4 +1,6 @@
 import { nativeApplicationVersion, nativeBuildVersion } from "expo-application"
+import type { Manifest } from "expo-updates"
+import * as Updates from "expo-updates"
 import { Trans, useTranslation } from "react-i18next"
 import { Linking, View } from "react-native"
 
@@ -53,10 +55,36 @@ const links = [
     iconColor: "#FFFFFF",
   },
 ]
+
+const normalizeOtaVersion = (version: string | null | undefined) => {
+  const normalizedVersion = version?.trim()
+  return normalizedVersion || null
+}
+
+const resolveOtaReleaseVersion = (manifest: Partial<Manifest> | undefined) => {
+  if (!manifest || !("metadata" in manifest)) {
+    return null
+  }
+
+  const { metadata } = manifest
+  if (!metadata || typeof metadata !== "object") {
+    return null
+  }
+
+  const releaseVersion = Reflect.get(metadata, "releaseVersion")
+  return typeof releaseVersion === "string" ? normalizeOtaVersion(releaseVersion) : null
+}
+
 export const AboutScreen = () => {
   const { t } = useTranslation("settings")
   const buildId = nativeBuildVersion
   const appVersion = nativeApplicationVersion
+  const { currentlyRunning } = Updates.useUpdates()
+  const otaVersion =
+    resolveOtaReleaseVersion(currentlyRunning.manifest) ??
+    normalizeOtaVersion(currentlyRunning.runtimeVersion) ??
+    normalizeOtaVersion(Updates.runtimeVersion)
+  const appVersionLabel = `${appVersion} (${buildId})${otaVersion ? ` · OTA ${otaVersion}` : ""}`
   const { distribution, platform, rateTarget, storageKey, userId } = useMobileReviewPromptState()
 
   const handleRateFolo = async () => {
@@ -109,9 +137,7 @@ export const AboutScreen = () => {
           <View className="flex-1 items-center justify-center">
             <Logo height={80} width={80} />
             <Text className="mt-4 text-2xl font-semibold text-label">Folo</Text>
-            <Text className="font-mono text-sm text-tertiary-label">
-              {appVersion} ({buildId})
-            </Text>
+            <Text className="font-mono text-sm text-tertiary-label">{appVersionLabel}</Text>
           </View>
           <View className="mt-6 flex-1">
             <Trans

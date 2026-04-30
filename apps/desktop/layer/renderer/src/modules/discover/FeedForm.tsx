@@ -117,7 +117,7 @@ export const FeedForm: Component<{
         isError: feedQuery.isError,
       })
     }
-  }, [feedQuery.isLoading])
+  }, [feedQuery.data?.feed.url, feedQuery.isError, feedQuery.isLoading, id, url])
 
   return (
     <div
@@ -250,7 +250,7 @@ const FeedInnerForm = ({
 
   useEffect(() => {
     setClickOutSideToDismiss(!form.formState.isDirty)
-  }, [form.formState.isDirty])
+  }, [form.formState.isDirty, setClickOutSideToDismiss])
 
   useEffect(() => {
     if (subscription) {
@@ -262,7 +262,7 @@ const FeedInnerForm = ({
         form.setValue("hideFromTimeline", subscription.hideFromTimeline)
       subscription?.title && form.setValue("title", subscription.title)
     }
-  }, [subscription])
+  }, [form, subscription])
 
   useEffect(() => {
     if (
@@ -272,7 +272,7 @@ const FeedInnerForm = ({
     ) {
       form.setValue("view", `${analytics.view}`)
     }
-  }, [analytics, subscription, defaultValues?.view])
+  }, [analytics, defaultValues?.view, form, subscription])
 
   const followMutation = useMutation({
     mutationFn: async (values: z.infer<typeof formSchema>) => {

@@ -34,7 +34,7 @@
   "invitation.earlyAccess": "現在、Folo はアーリーアクセス中で、利用には招待コードが必要です。",
   "invitation.earlyAccessMessage": "😰 申し訳ありませんが、Folo は現在アーリーアクセス中で、招待コードが必要です。",
   "invitation.generateButton": "新しいコードを生成",
-  "invitation.generateCost": "友達のために招待コードを生成するには、{{INVITATION_PRICE}} Power を消費できます。",
+  "invitation.generateCost": "友達のために招待コードを生成できます。",
   "invitation.getCodeMessage": "以下の方法で招待コードを入手できます：",
   "invitation.title": "招待コード",
   "login.backToWebApp": "ウェブアプリに戻る",

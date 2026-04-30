@@ -5,7 +5,6 @@ import { EllipsisHorizontalTextWithTooltip } from "@follow/components/ui/typogra
 import { useMeasure } from "@follow/hooks"
 import { useUserRole } from "@follow/store/user/hooks"
 import { cn } from "@follow/utils/utils"
-import { repository } from "@pkg"
 import type { FC } from "react"
 import { memo, useCallback, useLayoutEffect, useState } from "react"
 import { useTranslation } from "react-i18next"
@@ -139,7 +138,7 @@ export const ProfileButton: FC<ProfileButtonProps> = memo((props) => {
             }}
             icon={<i className="i-mgc-power-outline" />}
           >
-            {t("user_button.power")}
+            {t("user_button.wallet")}
           </DropdownMenuItem>
         )}
         <DropdownMenuItem
@@ -193,7 +192,7 @@ export const ProfileButton: FC<ProfileButtonProps> = memo((props) => {
             <DropdownMenuItem
               className="pl-3"
               onClick={() => {
-                window.open(`${repository.url}/releases`)
+                window.open("https://folo.is/download", "_blank", "noopener,noreferrer")
               }}
               icon={<i className="i-mgc-download-2-cute-re" />}
             >

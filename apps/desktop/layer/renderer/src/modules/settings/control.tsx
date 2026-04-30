@@ -47,8 +47,12 @@ export const PaidBadge: Component<{
       </TooltipTrigger>
       <TooltipPortal>
         <TooltipContent>
-          {paidLevel === SettingPaidLevels.FreeLimited && t("control.paid_badge.free_limited")}
-          {paidLevel === SettingPaidLevels.Basic && t("control.paid_badge.basic_or_higher")}
+          {paidLevel === SettingPaidLevels.FreeLimited && (
+            <span>{t("control.paid_badge.free_limited")}</span>
+          )}
+          {paidLevel === SettingPaidLevels.Basic && (
+            <span>{t("control.paid_badge.basic_or_higher")}</span>
+          )}
         </TooltipContent>
       </TooltipPortal>
     </Tooltip>
