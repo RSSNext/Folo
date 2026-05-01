@@ -209,20 +209,30 @@ export function isAuthCodeValid(authCode: string) {
   )
 }
 
-export const signOut = async () => {
-  await authClient.signOut()
-  safeSecureStore.removeItem(cookieKey)
-  safeSecureStore.removeItem(sessionTokenKey)
-  safeSecureStore.removeItem(sessionDataKey)
+const clearAuthStorage = async () => {
+  const keys = [cookieKey, sessionTokenKey, sessionDataKey]
   if (__DEV__) {
-    safeSecureStore.removeItem(`${cookieKey}_${getEnvProfile()}`)
+    keys.push(`${cookieKey}_${getEnvProfile()}`)
   }
+
+  await Promise.all(keys.map((key) => safeSecureStore.removeItemAsync(key)))
+}
+
+export const signOut = async () => {
+  try {
+    await authClient.signOut()
+  } catch (error) {
+    console.warn(
+      `[auth] Remote sign out failed: ${error instanceof Error ? error.message : String(error)}`,
+    )
+  }
+  await clearAuthStorage()
   await userActions.removeCurrentUser()
   Navigation.rootNavigation.popToRoot()
   bumpAuthStateRevision()
   await refreshSessionQueries()
   const dbPath = getDbPath()
-  await FileSystem.deleteAsync(dbPath)
+  await FileSystem.deleteAsync(dbPath, { idempotent: true })
   await expo.reloadAppAsync("User sign out")
 }
 
