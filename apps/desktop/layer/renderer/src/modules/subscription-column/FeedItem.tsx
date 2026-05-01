@@ -50,6 +50,17 @@ interface FeedItemProps {
   isPreview?: boolean
 }
 
+const FEED_ERROR_INDICATOR_DELAY_MS = 24 * 60 * 60 * 1000
+
+const shouldShowFeedErrorIndicator = (errorAt?: string | null) => {
+  if (!errorAt) return false
+
+  const errorTime = Date.parse(errorAt)
+  if (Number.isNaN(errorTime)) return false
+
+  return Date.now() - errorTime > FEED_ERROR_INDICATOR_DELAY_MS
+}
+
 const DraggableItemWrapper: Component<
   {
     className?: string
@@ -207,6 +218,8 @@ const FeedItemImpl = ({ view, feedId, className, isPreview }: FeedItemProps) => 
 
   const isFeed = feed.type === "feed" || !feed.type
   const isOnboardingFeed = isOnboardingFeedUrl(feed.url)
+  const showFeedErrorIndicator =
+    isFeed && !isOnboardingFeed && shouldShowFeedErrorIndicator(feed.errorAt)
 
   return (
     <DraggableItemWrapper
@@ -229,15 +242,10 @@ const FeedItemImpl = ({ view, feedId, className, isPreview }: FeedItemProps) => 
       onDoubleClick={handleDoubleClick}
       {...contextMenuProps}
     >
-      <div
-        className={cn(
-          "flex min-w-0 items-center",
-          isFeed && feed.errorAt && !isOnboardingFeed && "text-red",
-        )}
-      >
+      <div className={cn("flex min-w-0 items-center", showFeedErrorIndicator && "text-red")}>
         <FeedIcon fallback target={feed} size={16} />
         <FeedTitle feed={feed} />
-        {isFeed && !isOnboardingFeed && (
+        {showFeedErrorIndicator && (
           <ErrorTooltip errorAt={feed.errorAt} errorMessage={feed.errorMessage}>
             <i className="i-mingcute-close-circle-fill ml-1 shrink-0 text-base" />
           </ErrorTooltip>
