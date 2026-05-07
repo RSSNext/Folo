@@ -1,5 +1,6 @@
 import type { FeedViewType } from "@follow/constants"
 import { UserRole } from "@follow/constants"
+import { shouldRenderScrollMarkReadEndSpacer } from "@follow/shared/scroll-mark-read"
 import { usePrefetchEntryTranslation } from "@follow/store/translation/hooks"
 import { useUserRole } from "@follow/store/user/hooks"
 import type { FlashListRef, ListRenderItemInfo } from "@shopify/flash-list"
@@ -14,6 +15,7 @@ import { useHeaderHeight } from "@/src/modules/screen/hooks/useHeaderHeight"
 
 import { useEntries } from "../screen/atoms"
 import { TimelineSelectorList } from "../screen/TimelineSelectorList"
+import { EntryListEndScrollSpacer } from "./EntryListEndScrollSpacer"
 import { EntryListFooter } from "./EntryListFooter"
 import { useOnViewableItemsChanged } from "./hooks"
 import { EntryNormalItem } from "./templates/EntryNormalItem"
@@ -66,9 +68,21 @@ export const EntryListContentArticle = ({
     [readableItemStyle, view],
   )
 
+  const hasEndSpacer = shouldRenderScrollMarkReadEndSpacer({
+    entryCount: entryIds?.length ?? 0,
+    hasNextPage,
+  })
   const ListFooterComponent = useMemo(
-    () => (hasNextPage ? <EntryItemSkeleton /> : <EntryListFooter fetchedTime={fetchedTime} />),
-    [hasNextPage, fetchedTime],
+    () =>
+      hasNextPage ? (
+        <EntryItemSkeleton />
+      ) : (
+        <View>
+          <EntryListFooter fetchedTime={fetchedTime} />
+          {hasEndSpacer && <EntryListEndScrollSpacer />}
+        </View>
+      ),
+    [hasEndSpacer, hasNextPage, fetchedTime],
   )
 
   const ref = useRef<FlashListRef<any>>(null)

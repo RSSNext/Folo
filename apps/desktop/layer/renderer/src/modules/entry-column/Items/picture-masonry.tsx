@@ -10,6 +10,7 @@ import { Masonry } from "@follow/components/ui/masonry/index.js"
 import { useScrollViewElement } from "@follow/components/ui/scroll-area/hooks.js"
 import { Skeleton } from "@follow/components/ui/skeleton/index.jsx"
 import { useRefValue, useScrollMarkReadGracePeriod } from "@follow/hooks"
+import { shouldRenderScrollMarkReadEndSpacer } from "@follow/shared/scroll-mark-read"
 import { getEntry } from "@follow/store/entry/getter"
 import { useEntryTranslation } from "@follow/store/translation/hooks"
 import { clsx } from "@follow/utils/utils"
@@ -38,6 +39,7 @@ import { imageActions } from "~/store/image"
 
 import { useEntriesState } from "../context/EntriesContext"
 import { batchMarkRead } from "../hooks/useEntryMarkReadHandler"
+import { useScrollMarkReadEndPadding } from "../hooks/useScrollMarkReadEndPadding"
 import { PictureWaterFallItem } from "./picture-item"
 
 // grid grid-cols-1 @lg:grid-cols-2 @3xl:grid-cols-3 @6xl:grid-cols-4 @7xl:grid-cols-5 px-4 gap-1.5
@@ -135,6 +137,12 @@ export const PictureMasonry: FC<MasonryProps> = (props) => {
   })
 
   const currentRange = useRef<{ start: number; end: number }>(undefined)
+  const scrollElement = useScrollViewElement()
+  const hasEndSpacer = shouldRenderScrollMarkReadEndSpacer({
+    entryCount: data.length,
+    hasNextPage: props.hasNextPage,
+  })
+  const endSpacerHeight = useScrollMarkReadEndPadding(scrollElement, hasEndSpacer)
   const handleRender = useCallback(
     (startIndex: number, stopIndex: number, items: any[]) => {
       currentRange.current = { start: startIndex, end: stopIndex }
@@ -142,7 +150,6 @@ export const PictureMasonry: FC<MasonryProps> = (props) => {
     },
     [maybeLoadMore],
   )
-  const scrollElement = useScrollViewElement()
 
   const [intersectionObserver, setIntersectionObserver] = useState<IntersectionObserver>(null!)
   const renderMarkRead = useGeneralSettingKey("renderMarkUnread")
@@ -265,6 +272,13 @@ export const PictureMasonry: FC<MasonryProps> = (props) => {
                           <div className="mb-4">{props.Footer}</div>
                         )
                       ) : null}
+                      {hasEndSpacer && (
+                        <div
+                          aria-hidden
+                          className="pointer-events-none"
+                          style={{ height: `${endSpacerHeight}px` }}
+                        />
+                      )}
                     </FirstScreenReadyContext>
                   </MediaContainerWidthProvider>
                 </MasonryForceRerenderContext>

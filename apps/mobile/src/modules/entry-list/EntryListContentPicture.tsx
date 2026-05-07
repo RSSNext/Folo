@@ -1,6 +1,7 @@
 import type { FeedViewType } from "@follow/constants"
 import { UserRole } from "@follow/constants"
 import { useTypeScriptHappyCallback } from "@follow/hooks"
+import { shouldRenderScrollMarkReadEndSpacer } from "@follow/shared/scroll-mark-read"
 import { usePrefetchEntryTranslation } from "@follow/store/translation/hooks"
 import { useUserRole } from "@follow/store/user/hooks"
 import type { FlashListProps, FlashListRef } from "@shopify/flash-list"
@@ -16,6 +17,7 @@ import { useEntries } from "@/src/modules/screen/atoms"
 import { useHeaderHeight } from "@/src/modules/screen/hooks/useHeaderHeight"
 
 import { TimelineSelectorMasonryList } from "../screen/TimelineSelectorList"
+import { EntryListEndScrollSpacer } from "./EntryListEndScrollSpacer"
 import { GridEntryListFooter } from "./EntryListFooter"
 import { useOnViewableItemsChanged } from "./hooks"
 // import type { MasonryItem } from "./templates/EntryGridItem"
@@ -74,6 +76,10 @@ export const EntryListContentPicture = ({
   const renderItem = useTypeScriptHappyCallback(({ item }: { item: string }) => {
     return <EntryPictureItem id={item} />
   }, [])
+  const hasEndSpacer = shouldRenderScrollMarkReadEndSpacer({
+    entryCount: entryIds?.length ?? 0,
+    hasNextPage,
+  })
 
   const headerHeight = useHeaderHeight()
   const tabBarHeight = useBottomTabBarHeight()
@@ -122,7 +128,10 @@ export const EntryListContentPicture = ({
             <PlatformActivityIndicator />
           </View>
         ) : (
-          <GridEntryListFooter />
+          <View>
+            <GridEntryListFooter />
+            {hasEndSpacer && <EntryListEndScrollSpacer />}
+          </View>
         )
       }
       {...rest}
