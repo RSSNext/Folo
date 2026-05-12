@@ -138,6 +138,7 @@
   "entry_actions.no_bittorrent_urls_found": "此条目中未找到 BitTorrent 链接",
   "entry_actions.open_in_browser": "在{{which}}打开",
   "entry_actions.recent_reader": "最近阅读者：",
+  "entry_actions.save_image_to_eagle": "保存图片到 Eagle",
   "entry_actions.save_media_to_eagle": "保存到 Eagle",
   "entry_actions.save_to_cubox": "保存到 Cubox",
   "entry_actions.save_to_instapaper": "保存到 Instapaper",

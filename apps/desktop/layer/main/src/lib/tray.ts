@@ -75,10 +75,19 @@ const getTrayContextMenu = () => {
     },
   ])
 }
+
+const refreshTrayContextMenu = () => {
+  if (!tray) return
+
+  tray.setContextMenu(getTrayContextMenu())
+  tray.setToolTip(app.getName())
+}
+
 export const registerAppTray = () => {
   if (!getTrayConfig()) return
   if (tray) {
-    destroyAppTray()
+    refreshTrayContextMenu()
+    return
   }
 
   const icon = nativeImage.createFromPath(getTrayIconPath())
@@ -87,10 +96,9 @@ export const registerAppTray = () => {
   trayIcon.setTemplateImage(true)
   tray = new Tray(trayIcon)
 
-  tray.setContextMenu(getTrayContextMenu())
-  tray.setToolTip(app.getName())
+  refreshTrayContextMenu()
   tray.on("mouse-enter", () => {
-    tray?.setContextMenu(getTrayContextMenu())
+    refreshTrayContextMenu()
   })
   if (isWindows) {
     tray.on("click", showWindow)

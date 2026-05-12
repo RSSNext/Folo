@@ -1,5 +1,5 @@
 import type { Session } from "electron"
-import { describe, expect, it, vi } from "vitest"
+import { beforeEach, describe, expect, it, vi } from "vitest"
 
 import {
   buildManagedAuthCookieHeader,
@@ -10,6 +10,10 @@ import {
 } from "./auth-cookies"
 
 describe("auth cookies", () => {
+  beforeEach(() => {
+    vi.useRealTimers()
+  })
+
   it("builds a cookie header from managed auth cookies only", () => {
     const header = buildManagedAuthCookieHeader([
       { name: "__Secure-better-auth.session_token", value: "session-token" },
@@ -102,6 +106,53 @@ describe("auth cookies", () => {
       }),
     )
     expect(remove).not.toHaveBeenCalled()
+  })
+
+  it("persists session token cookies across app restarts when the server sends Max-Age", async () => {
+    vi.useFakeTimers()
+    vi.setSystemTime(new Date("2026-05-12T00:00:00.000Z"))
+
+    const set = vi.fn().mockImplementation(async () => {})
+    const remove = vi.fn().mockImplementation(async () => {})
+    const get = vi.fn().mockResolvedValue([])
+
+    await persistManagedAuthCookiesFromSetCookieHeader({
+      apiURL: "https://api.folo.is",
+      session: {
+        cookies: { get, set, remove },
+      } as unknown as Session,
+      setCookieHeader:
+        "__Secure-better-auth.session_token=session-token; Max-Age=2592000; Path=/; HttpOnly; Secure; SameSite=None",
+    })
+
+    expect(set).toHaveBeenCalledWith(
+      expect.objectContaining({
+        name: "__Secure-better-auth.session_token",
+        value: "session-token",
+        expirationDate: 1_781_136_000,
+      }),
+    )
+  })
+
+  it("keeps rememberMe=false session token cookies session-scoped", async () => {
+    const set = vi.fn().mockImplementation(async () => {})
+    const remove = vi.fn().mockImplementation(async () => {})
+    const get = vi.fn().mockResolvedValue([])
+
+    await persistManagedAuthCookiesFromSetCookieHeader({
+      apiURL: "https://api.folo.is",
+      session: {
+        cookies: { get, set, remove },
+      } as unknown as Session,
+      setCookieHeader:
+        "__Secure-better-auth.session_token=session-token; Path=/; HttpOnly; Secure; SameSite=None",
+    })
+
+    expect(set).toHaveBeenCalledWith(
+      expect.not.objectContaining({
+        expirationDate: expect.any(Number),
+      }),
+    )
   })
 
   it("removes stale duplicate session token cookies while keeping the secure host-only cookie", async () => {

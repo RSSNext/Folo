@@ -1,5 +1,6 @@
 import type { FeedViewType } from "@follow/constants"
 import { UserRole } from "@follow/constants"
+import { shouldRenderScrollMarkReadEndSpacer } from "@follow/shared/scroll-mark-read"
 import { usePrefetchEntryTranslation } from "@follow/store/translation/hooks"
 import { useUserRole } from "@follow/store/user/hooks"
 import type { FlashListRef, ListRenderItemInfo } from "@shopify/flash-list"
@@ -11,6 +12,7 @@ import { useActionLanguage, useGeneralSettingKey } from "@/src/atoms/settings/ge
 
 import { useEntries } from "../screen/atoms"
 import { TimelineSelectorList } from "../screen/TimelineSelectorList"
+import { EntryListEndScrollSpacer } from "./EntryListEndScrollSpacer"
 import { EntryListFooter } from "./EntryListFooter"
 import { useOnViewableItemsChanged } from "./hooks"
 import { ItemSeparatorFullWidth } from "./ItemSeparator"
@@ -49,9 +51,21 @@ export const EntryListContentSocial = ({
     [],
   )
 
+  const hasEndSpacer = shouldRenderScrollMarkReadEndSpacer({
+    entryCount: entryIds?.length ?? 0,
+    hasNextPage,
+  })
   const ListFooterComponent = useMemo(
-    () => (hasNextPage ? <EntryItemSkeleton /> : <EntryListFooter />),
-    [hasNextPage],
+    () =>
+      hasNextPage ? (
+        <EntryItemSkeleton />
+      ) : (
+        <View>
+          <EntryListFooter />
+          {hasEndSpacer && <EntryListEndScrollSpacer />}
+        </View>
+      ),
+    [hasEndSpacer, hasNextPage],
   )
 
   const { onViewableItemsChanged, onScroll, viewableItems } = useOnViewableItemsChanged({

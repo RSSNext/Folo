@@ -138,6 +138,7 @@
   "entry_actions.no_bittorrent_urls_found": "このエントリには BitTorrent URL が見つかりませんでした。",
   "entry_actions.open_in_browser": "{{which}} で開く",
   "entry_actions.recent_reader": "最近の購読者:",
+  "entry_actions.save_image_to_eagle": "画像を Eagle に保存",
   "entry_actions.save_media_to_eagle": "メディアを Eagle に保存",
   "entry_actions.save_to_cubox": "Cubox に保存",
   "entry_actions.save_to_instapaper": "Instapaper に保存",

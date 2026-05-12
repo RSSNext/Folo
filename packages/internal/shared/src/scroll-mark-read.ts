@@ -1,0 +1,46 @@
+export const MIN_SCROLL_MARK_READ_END_PADDING = 480
+export const SCROLL_MARK_READ_END_INDICATOR_HEIGHT = 1
+
+export const getScrollMarkReadEndPadding = (viewportHeight: number | null | undefined) => {
+  if (typeof viewportHeight !== "number" || !Number.isFinite(viewportHeight)) {
+    return MIN_SCROLL_MARK_READ_END_PADDING
+  }
+
+  return Math.max(viewportHeight - SCROLL_MARK_READ_END_INDICATOR_HEIGHT, 0)
+}
+
+export const shouldRenderScrollMarkReadEndSpacer = ({
+  entryCount,
+  hasNextPage,
+}: {
+  entryCount: number
+  hasNextPage: boolean
+}) => entryCount > 0 && !hasNextPage
+
+export const getScrollMarkReadExitedSliceEnd = ({
+  indexes,
+  renderedEndIndex,
+}: {
+  indexes: readonly number[]
+  renderedEndIndex: number | null | undefined
+}) => {
+  if (typeof renderedEndIndex !== "number" || !Number.isFinite(renderedEndIndex)) {
+    return null
+  }
+
+  let minimumIndex = Number.MAX_SAFE_INTEGER
+
+  for (const index of indexes) {
+    if (!Number.isInteger(index) || index < 0) {
+      continue
+    }
+
+    if (index > renderedEndIndex) {
+      continue
+    }
+
+    minimumIndex = Math.min(minimumIndex, index)
+  }
+
+  return minimumIndex === Number.MAX_SAFE_INTEGER ? null : minimumIndex + 1
+}
