@@ -17,8 +17,15 @@ export const MarkdownBlockImage = (
 ) => {
   const size = useWrappedElementSize()
 
-  const { transformUrl } = use(MarkdownRenderActionContext)
+  const { onImageContextMenu, transformUrl } = use(MarkdownRenderActionContext)
   const src = transformUrl(props.src)
+  const handleContextMenu = (event: React.MouseEvent<HTMLImageElement>) => {
+    props.onContextMenu?.(event)
+
+    if (src) {
+      void onImageContextMenu?.(event, src)
+    }
+  }
 
   const media = useContextSelector(MarkdownImageRecordContext, (record) =>
     props.src ? record[props.src] : null,
@@ -33,6 +40,7 @@ export const MarkdownBlockImage = (
       height={media?.height || props.height}
       width={media?.width || props.width}
       blurhash={media?.blurhash}
+      onContextMenu={handleContextMenu}
       mediaContainerClassName={cn(
         "rounded",
         size.w < Number.parseInt(props.width as string) && "w-full",

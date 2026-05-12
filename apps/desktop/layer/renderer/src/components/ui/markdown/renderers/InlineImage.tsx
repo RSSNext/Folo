@@ -13,8 +13,16 @@ export const MarkdownInlineImage = (
     }
   },
 ) => {
-  const { transformUrl } = use(MarkdownRenderActionContext)
+  const { onImageContextMenu, transformUrl } = use(MarkdownRenderActionContext)
   const populatedUrl = transformUrl(props.src)
+  const handleContextMenu = (event: React.MouseEvent<HTMLImageElement>) => {
+    props.onContextMenu?.(event)
+
+    if (populatedUrl) {
+      void onImageContextMenu?.(event, populatedUrl)
+    }
+  }
+
   const media = useContextSelector(MarkdownImageRecordContext, (record) =>
     props.src ? record[props.src] : null,
   )
@@ -28,6 +36,7 @@ export const MarkdownInlineImage = (
       height={media?.height || props.height}
       width={media?.width || props.width}
       blurhash={media?.blurhash}
+      onContextMenu={handleContextMenu}
       mediaContainerClassName={cn("inline max-w-full rounded-md")}
       popper
       showFallback

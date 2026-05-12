@@ -138,6 +138,7 @@
   "entry_actions.no_bittorrent_urls_found": "Aucune URL BitTorrent trouvée dans cette entrée.",
   "entry_actions.open_in_browser": "Ouvrir dans {{which}}",
   "entry_actions.recent_reader": "Lecteur récent :",
+  "entry_actions.save_image_to_eagle": "Enregistrer l'image dans Eagle",
   "entry_actions.save_media_to_eagle": "Enregistrer le média dans Eagle",
   "entry_actions.save_to_cubox": "Enregistrer dans Cubox",
   "entry_actions.save_to_instapaper": "Enregistrer dans Instapaper",

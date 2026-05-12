@@ -15,6 +15,7 @@ import type { MarkdownImage, MarkdownRenderActions } from "~/components/ui/markd
 
 import { TimeStamp } from "./components/TimeStamp"
 import { EntryInfoContext } from "./context"
+import { useImageContextMenu } from "./hooks/useImageContextMenu"
 import type { EntryContentRendererProps } from "./types"
 
 export function EntryContentHTMLRenderer<AS extends keyof JSX.IntrinsicElements = "div">({
@@ -46,6 +47,7 @@ export function EntryContentHTMLRenderer<AS extends keyof JSX.IntrinsicElements 
   })
 
   const images: Record<string, MarkdownImage> = useMemo(() => entry?.images ?? {}, [entry])
+  const onImageContextMenu = useImageContextMenu(entry?.url)
   const actions: MarkdownRenderActions = useMemo(() => {
     return {
       isAudio() {
@@ -62,8 +64,9 @@ export function EntryContentHTMLRenderer<AS extends keyof JSX.IntrinsicElements 
         return url
       },
       ensureAndRenderTimeStamp,
+      onImageContextMenu,
     }
-  }, [entry, feedId, view])
+  }, [entry, feedId, onImageContextMenu, view])
   return (
     // eslint-disable-next-line @eslint-react/no-context-provider
     <MarkdownImageRecordContext.Provider value={images}>

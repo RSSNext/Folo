@@ -1,3 +1,5 @@
+import type { MouseEvent } from "react"
+
 export type MarkdownImage = {
   url: string
   width?: number | undefined
@@ -10,4 +12,5 @@ export interface MarkdownRenderActions {
   transformUrl: (url?: string) => string | undefined
   isAudio: (url?: string) => boolean
   ensureAndRenderTimeStamp: (children: string) => React.ReactNode
+  onImageContextMenu?: (event: MouseEvent, imageUrl: string) => void | Promise<void>
 }

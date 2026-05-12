@@ -138,6 +138,7 @@
   "entry_actions.no_bittorrent_urls_found": "此條目中未找到 BitTorrent 連結。",
   "entry_actions.open_in_browser": "在{{which}}中打開",
   "entry_actions.recent_reader": "最近閲讀者：",
+  "entry_actions.save_image_to_eagle": "儲存圖片至 Eagle",
   "entry_actions.save_media_to_eagle": "儲存媒體至 Eagle",
   "entry_actions.save_to_cubox": "儲存到 Cubox",
   "entry_actions.save_to_instapaper": "儲存到 Instapaper",
