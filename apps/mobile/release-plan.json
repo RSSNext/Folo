@@ -1,5 +1,5 @@
 {
-  "mode": "store",
-  "runtimeVersion": null,
-  "channel": null
+  "mode": "ota",
+  "runtimeVersion": "0.5.0",
+  "channel": "production"
 }

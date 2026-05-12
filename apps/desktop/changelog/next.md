@@ -2,12 +2,10 @@
 
 ## Shiny new things
 
-- Added an Eagle action to image context menus
+## Improvements
 
 ## No longer broken
 
-- Fixed tray menu refreshes losing the active tray instance
-- Fixed desktop auth cookies missing max-age persistence
-- Fixed unavailable AI summaries breaking summary state
-- Fixed final entries and mark-read footers near the end of entry lists
-- Delayed feed error indicators to avoid premature error states
+## Thanks
+
+Special thanks to volunteer contributors @ for their valuable contributions
