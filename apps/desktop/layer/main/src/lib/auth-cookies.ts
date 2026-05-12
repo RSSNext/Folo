@@ -224,6 +224,18 @@ const shouldRemoveCookie = (cookie: ParsedSetCookie) => {
   return false
 }
 
+const getCookieExpirationDate = (cookie: ParsedSetCookie) => {
+  if (cookie.expirationDate !== undefined) {
+    return cookie.expirationDate
+  }
+
+  if (cookie.maxAge !== undefined && cookie.maxAge > 0) {
+    return Math.floor(Date.now() / 1000) + cookie.maxAge
+  }
+
+  return
+}
+
 export const getManagedAuthCookieNames = () => {
   return [...MANAGED_AUTH_COOKIE_NAMES]
 }
@@ -368,6 +380,7 @@ export const persistManagedAuthCookiesFromSetCookieHeader = async ({
       continue
     }
 
+    const expirationDate = getCookieExpirationDate(cookie)
     const details: CookiesSetDetails = {
       url: apiURL,
       name: cookie.name,
@@ -377,7 +390,7 @@ export const persistManagedAuthCookiesFromSetCookieHeader = async ({
       secure: cookie.secure,
       ...(cookie.sameSite ? { sameSite: cookie.sameSite } : {}),
       ...(cookie.domain ? { domain: cookie.domain } : {}),
-      ...(cookie.expirationDate ? { expirationDate: cookie.expirationDate } : {}),
+      ...(expirationDate ? { expirationDate } : {}),
     }
 
     await session.cookies.set(details)
