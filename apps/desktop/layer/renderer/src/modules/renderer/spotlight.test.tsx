@@ -12,12 +12,14 @@ import { jotaiStore } from "~/lib/jotai"
 import { EntryContentHTMLRenderer } from "./html"
 import { EntryContentMarkdownRenderer } from "./markdown"
 
-const { htmlMock, markdownMock, useEntryMock, getFeedByIdMock } = vi.hoisted(() => ({
-  htmlMock: vi.fn(() => null),
-  markdownMock: vi.fn(() => null),
-  useEntryMock: vi.fn(),
-  getFeedByIdMock: vi.fn(),
-}))
+const { htmlMock, imageContextMenuHookMock, markdownMock, useEntryMock, getFeedByIdMock } =
+  vi.hoisted(() => ({
+    htmlMock: vi.fn(() => null),
+    imageContextMenuHookMock: vi.fn(() => {}),
+    markdownMock: vi.fn(() => null),
+    useEntryMock: vi.fn(),
+    getFeedByIdMock: vi.fn(),
+  }))
 
 vi.mock("@follow/store/entry/hooks", () => ({
   useEntry: useEntryMock,
@@ -33,6 +35,10 @@ vi.mock("~/components/ui/markdown/HTML", () => ({
 
 vi.mock("~/components/ui/markdown/Markdown", () => ({
   Markdown: markdownMock,
+}))
+
+vi.mock("./hooks/useImageContextMenu", () => ({
+  useImageContextMenu: imageContextMenuHookMock,
 }))
 
 const rule = {

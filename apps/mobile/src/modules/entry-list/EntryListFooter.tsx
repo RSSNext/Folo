@@ -1,6 +1,6 @@
 import { unreadSyncService } from "@follow/store/unread/store"
 import { useTranslation } from "react-i18next"
-import { Pressable } from "react-native"
+import { Pressable, View } from "react-native"
 
 import { getHideAllReadSubscriptions } from "@/src/atoms/settings/general"
 import { Text } from "@/src/components/ui/typography/Text"
@@ -43,6 +43,7 @@ export const EntryListFooter = ({ fetchedTime }: { fetchedTime?: number }) => {
           })}
         </Text>
       </Pressable>
+      <FooterEndIndicator />
     </>
   )
 }
@@ -51,30 +52,37 @@ export const GridEntryListFooter = ({ fetchedTime }: { fetchedTime?: number }) =
   const selectedView = useSelectedView()
   const selectedFeed = useSelectedFeed()
   return (
-    <Pressable
-      className="flex-row items-center justify-center gap-1.5 py-6"
-      onPress={() => {
-        if (typeof selectedView === "number") {
-          const payload = getFetchEntryPayload(selectedFeed, selectedView)
-          unreadSyncService.markBatchAsRead({
-            view: selectedView,
-            filter: payload,
-            time: fetchedTime
-              ? {
-                  insertedBefore: fetchedTime,
-                }
-              : undefined,
-            excludePrivate: getHideAllReadSubscriptions(),
-          })
-        }
-      }}
-    >
-      <CheckCircleCuteReIcon height={16} width={16} />
-      <Text className="font-bold text-label">
-        {t("operation.mark_all_as_read_which", {
-          which: t("operation.mark_all_as_read_which_above"),
-        })}
-      </Text>
-    </Pressable>
+    <>
+      <Pressable
+        className="flex-row items-center justify-center gap-1.5 py-6"
+        onPress={() => {
+          if (typeof selectedView === "number") {
+            const payload = getFetchEntryPayload(selectedFeed, selectedView)
+            unreadSyncService.markBatchAsRead({
+              view: selectedView,
+              filter: payload,
+              time: fetchedTime
+                ? {
+                    insertedBefore: fetchedTime,
+                  }
+                : undefined,
+              excludePrivate: getHideAllReadSubscriptions(),
+            })
+          }
+        }}
+      >
+        <CheckCircleCuteReIcon height={16} width={16} />
+        <Text className="font-bold text-label">
+          {t("operation.mark_all_as_read_which", {
+            which: t("operation.mark_all_as_read_which_above"),
+          })}
+        </Text>
+      </Pressable>
+      <FooterEndIndicator />
+    </>
   )
 }
+
+const FooterEndIndicator = () => (
+  <View className="h-px w-full bg-opaque-separator/70" collapsable={false} />
+)

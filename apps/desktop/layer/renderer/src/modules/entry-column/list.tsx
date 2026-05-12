@@ -2,6 +2,7 @@ import { EmptyIcon } from "@follow/components/icons/empty.jsx"
 import { useScrollViewElement } from "@follow/components/ui/scroll-area/hooks.js"
 import type { FeedViewType } from "@follow/constants"
 import { useTypeScriptHappyCallback } from "@follow/hooks"
+import { shouldRenderScrollMarkReadEndSpacer } from "@follow/shared/scroll-mark-read"
 import { LRUCache } from "@follow/utils/lru-cache"
 import type { Range, VirtualItem, Virtualizer } from "@tanstack/react-virtual"
 import { defaultRangeExtractor, useVirtualizer } from "@tanstack/react-virtual"
@@ -18,6 +19,7 @@ import { useFeedHeaderTitle } from "~/store/feed/hooks"
 import { VirtualRowItem } from "./components/VirtualRowItem"
 import { EntryColumnShortcutHandler } from "./EntryColumnShortcutHandler"
 import { EntryItemSkeleton } from "./EntryItemSkeleton"
+import { useScrollMarkReadEndPadding } from "./hooks/useScrollMarkReadEndPadding"
 
 export const EntryEmptyList = ({
   ref,
@@ -91,6 +93,11 @@ export const EntryList: FC<EntryListProps> = memo(
     syncType,
   }) => {
     const scrollRef = useScrollViewElement()
+    const hasEndSpacer = shouldRenderScrollMarkReadEndSpacer({
+      entryCount: entriesIds.length,
+      hasNextPage,
+    })
+    const endSpacerHeight = useScrollMarkReadEndPadding(scrollRef, hasEndSpacer)
 
     const stickyIndexes = useMemo(
       () =>
@@ -198,7 +205,7 @@ export const EntryList: FC<EntryListProps> = memo(
           onKeyDown={handleKeyDown}
           className={"relative w-full select-none"}
           style={{
-            height: `${rowVirtualizer.getTotalSize()}px`,
+            height: `${rowVirtualizer.getTotalSize() + endSpacerHeight}px`,
           }}
         >
           {rowVirtualizer.getVirtualItems().map((virtualRow) => {

@@ -19,7 +19,11 @@ const isSecureStoreUnavailable = (error: unknown) => {
   )
 }
 
-const warnFallback = (action: "getItem" | "setItem", key: string, error: unknown) => {
+const warnFallback = (
+  action: "getItem" | "setItem" | "removeItem",
+  key: string,
+  error: unknown,
+) => {
   const warnKey = `${action}:${key}`
   if (warnedFallbackKeys.has(warnKey)) {
     return
@@ -36,6 +40,22 @@ const warnFallback = (action: "getItem" | "setItem", key: string, error: unknown
 }
 
 const getFallbackValue = (key: string) => Storage.getItemSync(getFallbackKey(key))
+
+const deleteSecureStoreItem = async (key: string) => {
+  try {
+    await SecureStore.deleteItemAsync(key)
+  } catch (error) {
+    if (isSecureStoreUnavailable(error)) {
+      forceFallback = true
+      warnFallback("removeItem", key, error)
+      return
+    }
+
+    console.warn(
+      `[auth-storage] SecureStore removeItem failed for ${key}: ${error instanceof Error ? error.message : String(error)}`,
+    )
+  }
+}
 
 export const safeSecureStore = {
   getItem(key: string) {
@@ -88,16 +108,15 @@ export const safeSecureStore = {
       return
     }
 
-    void SecureStore.deleteItemAsync(key).catch((error) => {
-      if (isSecureStoreUnavailable(error)) {
-        forceFallback = true
-        warnFallback("setItem", key, error)
-        return
-      }
+    void deleteSecureStoreItem(key)
+  },
+  async removeItemAsync(key: string) {
+    Storage.removeItemSync(getFallbackKey(key))
 
-      console.warn(
-        `[auth-storage] SecureStore removeItem failed for ${key}: ${error instanceof Error ? error.message : String(error)}`,
-      )
-    })
+    if (forceFallback) {
+      return
+    }
+
+    await deleteSecureStoreItem(key)
   },
 }
