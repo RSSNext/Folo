@@ -2,7 +2,6 @@ import type { SummarySchema } from "@follow/database/schemas/types"
 import { summaryService } from "@follow/database/services/summary"
 import type { SupportedActionLanguage } from "@follow/shared"
 import { toApiSupportedActionLanguage } from "@follow/shared"
-import { FollowAPIError } from "@follow-app/client-sdk"
 
 import { api } from "../../context"
 import type { Hydratable, Resetable } from "../../lib/base"
@@ -139,7 +138,7 @@ class SummaryActions implements Resetable, Hydratable {
 export const summaryActions = new SummaryActions()
 
 class SummarySyncService {
-  private pendingPromises: Record<StatusID, Promise<string>> = {}
+  private pendingPromises: Record<StatusID, Promise<string | null>> = {}
 
   async generateSummary({
     entryId,
@@ -178,8 +177,14 @@ class SummarySyncService {
         target,
       })
       .then((summary) => {
-        if (!summary.data) {
-          throw new FollowAPIError("AI summary limit exceeded. Please try again later.", 402)
+        const generatedSummary = summary.data?.trim() ? summary.data : null
+
+        if (!generatedSummary) {
+          immerSet((state) => {
+            state.generatingStatus[statusID] = SummaryGeneratingStatus.Success
+          })
+
+          return null
         }
 
         immerSet((state) => {
@@ -190,18 +195,18 @@ class SummarySyncService {
           state.data[entryId][actionLanguage] = {
             summary:
               target === "content"
-                ? summary.data || ""
+                ? generatedSummary
                 : state.data[entryId]?.[actionLanguage]?.summary || "",
             readabilitySummary:
               target === "readabilityContent"
-                ? summary.data || ""
+                ? generatedSummary
                 : state.data[entryId]?.[actionLanguage]?.readabilitySummary || null,
             lastAccessed: Date.now(),
           }
           state.generatingStatus[statusID] = SummaryGeneratingStatus.Success
         })
 
-        return summary.data || ""
+        return generatedSummary
       })
       .catch((error) => {
         immerSet((state) => {
