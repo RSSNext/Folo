@@ -92,7 +92,7 @@ jobs:
 
       - name: Deploy SSR Worker to Cloudflare (dev)
         if: steps.target.outputs.environment == 'dev'
-        uses: cloudflare/wrangler-action@v3
+        uses: cloudflare/wrangler-action@v4
         with:
           apiToken: ${{ secrets.CLOUDFLARE_API_TOKEN }}
           accountId: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
@@ -101,7 +101,7 @@ jobs:
 
       - name: Deploy SSR Worker to Cloudflare (prod)
         if: steps.target.outputs.environment == 'prod'
-        uses: cloudflare/wrangler-action@v3
+        uses: cloudflare/wrangler-action@v4
         with:
           apiToken: ${{ secrets.CLOUDFLARE_API_TOKEN }}
           accountId: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
