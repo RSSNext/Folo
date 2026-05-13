@@ -85,6 +85,41 @@ describe("buildManifest", () => {
 
     expect(first.id).toBe(second.id)
   })
+
+  it("includes the embedded Expo config needed by expo-constants after an OTA launch", () => {
+    const manifest = buildManifest(createRelease(), {
+      origin: "https://ota.folo.is",
+      platform: "ios",
+    })
+
+    expect(manifest.extra).toMatchObject({
+      expoClient: {
+        name: "Folo",
+        slug: "follow",
+        owner: "follow",
+        scheme: ["follow", "folo"],
+        version: "0.4.2",
+        runtimeVersion: "0.4.1",
+        updates: {
+          url: "https://ota.folo.is/manifest",
+          requestHeaders: {
+            "expo-channel-name": "production",
+          },
+        },
+        ios: {
+          bundleIdentifier: "is.follow",
+        },
+        android: {
+          package: "is.follow",
+        },
+        extra: {
+          eas: {
+            projectId: "a6335b14-fb84-45aa-ba80-6f6ab8926920",
+          },
+        },
+      },
+    })
+  })
 })
 
 describe("/manifest", () => {
