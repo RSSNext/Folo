@@ -66,7 +66,7 @@ jobs:
         run: echo "CLOUDFLARE_ACCOUNT_ID=${{ secrets.CLOUDFLARE_ACCOUNT_ID }}" >> $GITHUB_ENV
 
       - name: Fix account_id in wrangler config
-        run: sed -i 's/"account_id": "[^"]*"/"account_id": "${{ secrets.CLOUDFLARE_ACCOUNT_ID }}"/' apps/landing/wrangler.jsonc
+        run: sed -i "s/\"account_id\": \"[^\"]*\"/\"account_id\": \"$CLOUDFLARE_ACCOUNT_ID\"/" apps/landing/wrangler.jsonc
 
       - name: Deploy to Cloudflare Pages (Landing)
         uses: cloudflare/wrangler-action@v4
@@ -127,7 +127,7 @@ jobs:
         run: echo "CLOUDFLARE_ACCOUNT_ID=${{ secrets.CLOUDFLARE_ACCOUNT_ID }}" >> $GITHUB_ENV
 
       - name: Fix account_id in wrangler config
-        run: sed -i 's/"account_id": "[^"]*"/"account_id": "${{ secrets.CLOUDFLARE_ACCOUNT_ID }}"/' apps/desktop/wrangler.jsonc
+        run: sed -i "s/\"account_id\": \"[^\"]*\"/\"account_id\": \"$CLOUDFLARE_ACCOUNT_ID\"/" apps/desktop/wrangler.jsonc
 
       - name: Deploy to Cloudflare Pages (Desktop)
         uses: cloudflare/wrangler-action@v4
@@ -191,7 +191,7 @@ jobs:
         run: echo "CLOUDFLARE_ACCOUNT_ID=${{ secrets.CLOUDFLARE_ACCOUNT_ID }}" >> $GITHUB_ENV
 
       - name: Fix account_id in wrangler config
-        run: sed -i 's/"account_id": "[^"]*"/"account_id": "${{ secrets.CLOUDFLARE_ACCOUNT_ID }}"/' apps/ssr/wrangler.jsonc
+        run: sed -i "s/\"account_id\": \"[^\"]*\"/\"account_id\": \"$CLOUDFLARE_ACCOUNT_ID\"/" apps/ssr/wrangler.jsonc
 
       - name: Deploy SSR Worker
         uses: cloudflare/wrangler-action@v4
