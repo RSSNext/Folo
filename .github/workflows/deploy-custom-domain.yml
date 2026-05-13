@@ -62,6 +62,12 @@ jobs:
       - name: Build Landing
         run: pnpm exec turbo run @follow/landing#build
 
+      - name: Set Cloudflare Account ID
+        run: echo "CLOUDFLARE_ACCOUNT_ID=${{ secrets.CLOUDFLARE_ACCOUNT_ID }}" >> $GITHUB_ENV
+
+      - name: Fix account_id in wrangler config
+        run: sed -i 's/"account_id": "[^"]*"/"account_id": "${{ secrets.CLOUDFLARE_ACCOUNT_ID }}"/' apps/landing/wrangler.jsonc
+
       - name: Deploy to Cloudflare Pages (Landing)
         uses: cloudflare/wrangler-action@v4
         with:
@@ -114,7 +120,14 @@ jobs:
           VITE_API_URL: ${{ vars.CUSTOM_API_URL }}
           VITE_SENTRY_DSN: ${{ vars.VITE_SENTRY_DSN }}
           VITE_FIREBASE_CONFIG: ${{ vars.VITE_FIREBASE_CONFIG }}
+          CLOUDFLARE_ACCOUNT_ID: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
         run: pnpm run build:web
+
+      - name: Set Cloudflare Account ID
+        run: echo "CLOUDFLARE_ACCOUNT_ID=${{ secrets.CLOUDFLARE_ACCOUNT_ID }}" >> $GITHUB_ENV
+
+      - name: Fix account_id in wrangler config
+        run: sed -i 's/"account_id": "[^"]*"/"account_id": "${{ secrets.CLOUDFLARE_ACCOUNT_ID }}"/' apps/desktop/wrangler.jsonc
 
       - name: Deploy to Cloudflare Pages (Desktop)
         uses: cloudflare/wrangler-action@v4
@@ -168,10 +181,17 @@ jobs:
           VITE_API_URL: ${{ vars.CUSTOM_API_URL }}
           VITE_SENTRY_DSN: ${{ vars.VITE_SENTRY_DSN }}
           VITE_FIREBASE_CONFIG: ${{ vars.VITE_FIREBASE_CONFIG }}
+          CLOUDFLARE_ACCOUNT_ID: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
         run: pnpm run build:worker
 
       - name: Copy WASM file
         run: cp node_modules/@resvg/resvg-wasm/index_bg.wasm apps/ssr/dist/worker/resvg.wasm
+
+      - name: Set Cloudflare Account ID
+        run: echo "CLOUDFLARE_ACCOUNT_ID=${{ secrets.CLOUDFLARE_ACCOUNT_ID }}" >> $GITHUB_ENV
+
+      - name: Fix account_id in wrangler config
+        run: sed -i 's/"account_id": "[^"]*"/"account_id": "${{ secrets.CLOUDFLARE_ACCOUNT_ID }}"/' apps/ssr/wrangler.jsonc
 
       - name: Deploy SSR Worker
         uses: cloudflare/wrangler-action@v4
