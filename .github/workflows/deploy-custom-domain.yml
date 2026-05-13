@@ -1,0 +1,183 @@
+name: "\u26c5 Deploy to Custom Domain (folo.886200.xyz)"
+
+on:
+  push:
+    branches: [main]
+  workflow_dispatch:
+    inputs:
+      deploy_env:
+        description: 'Deployment environment'
+        required: true
+        default: 'production'
+        type: choice
+        options:
+          - production
+          - staging
+
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+
+env:
+  NODE_VERSION: lts/*
+  PNPM_VERSION: 9
+
+jobs:
+  deploy-landing:
+    name: Build & Deploy Landing
+    runs-on: ubuntu-latest
+    environment:
+      name: ${{ github.event.inputs.deploy_env || 'production' }}
+      url: https://folo.886200.xyz
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v6
+        with:
+          lfs: true
+
+      - name: Checkout LFS objects
+        run: git lfs checkout
+
+      - uses: pnpm/action-setup@v6
+        with:
+          version: ${{ env.PNPM_VERSION }}
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v6
+        with:
+          node-version: ${{ env.NODE_VERSION }}
+          cache: "pnpm"
+
+      - name: Cache turbo build
+        uses: actions/cache@v5
+        with:
+          path: .turbo
+          key: ${{ runner.os }}-turbo-${{ github.sha }}
+          restore-keys: |
+            ${{ runner.os }}-turbo-
+
+      - name: Install dependencies
+        run: pnpm install
+
+      - name: Build Landing
+        run: pnpm exec turbo run @follow/landing#build
+
+      - name: Deploy to Cloudflare Pages (Landing)
+        uses: cloudflare/wrangler-action@v4
+        with:
+          apiToken: ${{ secrets.CLOUDFLARE_API_TOKEN }}
+          accountId: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
+          workingDirectory: apps/landing
+          command: |
+            deploy --env="" --name landing-${{ vars.CUSTOM_DOMAIN_SLUG }} --routes ${{ vars.CUSTOM_DOMAIN }}/*
+
+  deploy-desktop:
+    name: Build & Deploy Desktop Web
+    runs-on: ubuntu-latest
+    environment:
+      name: ${{ github.event.inputs.deploy_env || 'production' }}
+      url: https://folo.886200.xyz
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v6
+        with:
+          lfs: true
+
+      - name: Checkout LFS objects
+        run: git lfs checkout
+
+      - uses: pnpm/action-setup@v6
+        with:
+          version: ${{ env.PNPM_VERSION }}
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v6
+        with:
+          node-version: ${{ env.NODE_VERSION }}
+          cache: "pnpm"
+
+      - name: Cache turbo build
+        uses: actions/cache@v5
+        with:
+          path: .turbo
+          key: ${{ runner.os }}-turbo-${{ github.sha }}
+          restore-keys: |
+            ${{ runner.os }}-turbo-
+
+      - name: Install dependencies
+        run: pnpm install
+
+      - name: Build Desktop Web
+        working-directory: apps/desktop
+        env:
+          VITE_WEB_URL: ${{ vars.CUSTOM_WEB_URL }}
+          VITE_API_URL: ${{ vars.CUSTOM_API_URL }}
+          VITE_SENTRY_DSN: ${{ vars.VITE_SENTRY_DSN }}
+          VITE_FIREBASE_CONFIG: ${{ vars.VITE_FIREBASE_CONFIG }}
+        run: pnpm run build:web
+
+      - name: Deploy to Cloudflare Pages (Desktop)
+        uses: cloudflare/wrangler-action@v4
+        with:
+          apiToken: ${{ secrets.CLOUDFLARE_API_TOKEN }}
+          accountId: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
+          workingDirectory: apps/desktop
+          command: |
+            deploy --env="" --name folo-web-${{ vars.CUSTOM_DOMAIN_SLUG }} --routes ${{ vars.CUSTOM_DOMAIN }}/*
+
+  deploy-ssr:
+    name: Build & Deploy SSR Worker
+    runs-on: ubuntu-latest
+    environment:
+      name: ${{ github.event.inputs.deploy_env || 'production' }}
+      url: https://folo.886200.xyz
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v6
+        with:
+          lfs: true
+
+      - name: Checkout LFS objects
+        run: git lfs checkout
+
+      - uses: pnpm/action-setup@v6
+        with:
+          version: ${{ env.PNPM_VERSION }}
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v6
+        with:
+          node-version: ${{ env.NODE_VERSION }}
+          cache: "pnpm"
+
+      - name: Cache turbo build
+        uses: actions/cache@v5
+        with:
+          path: .turbo
+          key: ${{ runner.os }}-turbo-${{ github.sha }}
+          restore-keys: |
+            ${{ runner.os }}-turbo-
+
+      - name: Install dependencies
+        run: pnpm install
+
+      - name: Build SSR Worker
+        working-directory: apps/ssr
+        env:
+          VITE_WEB_URL: ${{ vars.CUSTOM_WEB_URL }}
+          VITE_API_URL: ${{ vars.CUSTOM_API_URL }}
+          VITE_SENTRY_DSN: ${{ vars.VITE_SENTRY_DSN }}
+          VITE_FIREBASE_CONFIG: ${{ vars.VITE_FIREBASE_CONFIG }}
+        run: pnpm run build:worker
+
+      - name: Copy WASM file
+        run: cp node_modules/@resvg/resvg-wasm/index_bg.wasm apps/ssr/dist/worker/resvg.wasm
+
+      - name: Deploy SSR Worker
+        uses: cloudflare/wrangler-action@v4
+        with:
+          apiToken: ${{ secrets.CLOUDFLARE_API_TOKEN }}
+          accountId: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
+          workingDirectory: apps/ssr
+          command: |
+            deploy --env="" --name folo-ssr-${{ vars.CUSTOM_DOMAIN_SLUG }}
