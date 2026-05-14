@@ -17,7 +17,7 @@ import { tracker } from "@follow/tracker"
 import { useMutation, useQuery } from "@tanstack/react-query"
 import type { FetchError } from "ofetch"
 import { ofetch } from "ofetch"
-import { useMemo } from "react"
+import { useEffect, useMemo } from "react"
 import { useTranslation } from "react-i18next"
 import { toast } from "sonner"
 
@@ -71,6 +71,14 @@ const useRegisterEagleCommands = () => {
   })
 
   const isEagleAvailable = enableEagle && (checkEagle.isLoading ? false : !!checkEagle.data)
+
+  useEffect(() => {
+    if (!IN_ELECTRON) return
+
+    void ipcServices?.integration.setEagleContextMenuEnabled({
+      enabled: isEagleAvailable,
+    })
+  }, [isEagleAvailable])
 
   useRegisterCommandEffect(
     !isEagleAvailable

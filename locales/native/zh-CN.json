@@ -14,6 +14,7 @@
   "contextMenu.saveImage": "保存图片",
   "contextMenu.saveImageAs": "图片另存为...",
   "contextMenu.saveLinkAs": "链接另存为...",
+  "contextMenu.saveMediaToEagle": "保存到 Eagle",
   "contextMenu.saveVideo": "保存视频",
   "contextMenu.saveVideoAs": "视频另存为...",
   "contextMenu.searchWithGoogle": "在谷歌中搜索",

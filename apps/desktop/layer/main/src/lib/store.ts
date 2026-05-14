@@ -7,6 +7,7 @@ type StoreData = {
   "notifications-persistent-ids"?: string[] | null
   appearance?: "light" | "dark" | "system" | null
   cacheSizeLimit?: number | null
+  eagleContextMenuEnabled?: boolean | null
   minimizeToTray?: boolean | null
   proxy?: string | null
   qbittorrentSID?: string | null
