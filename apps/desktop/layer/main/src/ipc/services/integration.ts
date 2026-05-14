@@ -9,6 +9,8 @@ import path from "pathe"
 import { store } from "~/lib/store"
 import { logger } from "~/logger"
 
+import { createObsidianFrontmatter } from "./obsidian-frontmatter"
+
 // Taken from https://github.com/rollup/rollup/blob/4f69d33af3b2ec9320c43c9e6c65ea23a02bdde3/src/utils/sanitizeFileName.ts
 // https://datatracker.ietf.org/doc/html/rfc2396
 // eslint-disable-next-line no-control-regex
@@ -67,10 +69,22 @@ export class IntegrationService extends IpcService {
       publishedAt: string
       vaultPath: string
       description?: string
+      feedTitle?: string
+      feedUrl?: string
     },
   ) {
     try {
-      const { url, title, content, author, publishedAt, vaultPath, description } = input
+      const {
+        url,
+        title,
+        content,
+        author,
+        publishedAt,
+        vaultPath,
+        description,
+        feedTitle,
+        feedUrl,
+      } = input
 
       const fileName = `${sanitizeFileName(title || publishedAt)
         .trim()
@@ -83,13 +97,17 @@ export class IntegrationService extends IpcService {
 
       await fsp.mkdir(path.dirname(filePath), { recursive: true })
 
-      const yamlEscape = (s: string) => `"${s.replaceAll("\\", "\\\\").replaceAll('"', '\\"')}"`
+      const frontmatter = createObsidianFrontmatter({
+        url,
+        author,
+        publishedAt,
+        description,
+        tags: ["folo"],
+        feedTitle,
+        feedUrl,
+      })
 
-      const markdown = `---
-url: ${yamlEscape(url)}
-author: ${yamlEscape(author)}
-publishedAt: ${yamlEscape(publishedAt)}${description ? `\ndescription: ${yamlEscape(description)}` : ""}
----
+      const markdown = `${frontmatter}
 
 # ${title}
 
