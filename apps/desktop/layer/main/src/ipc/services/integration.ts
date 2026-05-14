@@ -14,7 +14,7 @@ import { createObsidianFrontmatter } from "./obsidian-frontmatter"
 // Taken from https://github.com/rollup/rollup/blob/4f69d33af3b2ec9320c43c9e6c65ea23a02bdde3/src/utils/sanitizeFileName.ts
 // https://datatracker.ietf.org/doc/html/rfc2396
 // eslint-disable-next-line no-control-regex
-const INVALID_CHAR_REGEX = /[\u0000-\u001F"#$%&*+,:;<=>?[\]^`{|}\u007F]/g
+const INVALID_CHAR_REGEX = /[\u0000-\u001F"#$%&*+,:;<=>?[\]^`{|}\u007F/\\]/g
 const DRIVE_LETTER_REGEX = /^[a-z]:/i
 
 function sanitizeFileName(name: string): string {
