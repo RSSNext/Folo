@@ -123,6 +123,12 @@ export const useEntriesQuery = (
       isPop ? Infinity : fetchUnread && feedUnreadDirty ? 0 : defaultStaleTime,
     enabled: !!props,
   })
+  const { fetchNextPage: queryFetchNextPage } = query
+  const fetchNextPage = useCallback(
+    (options?: Parameters<typeof queryFetchNextPage>[0]) =>
+      queryFetchNextPage({ cancelRefetch: false, ...options }),
+    [queryFetchNextPage],
+  )
 
   const entriesIds = useMemo(() => {
     if (!query.data || query.isLoading || query.isError) {
@@ -140,10 +146,11 @@ export const useEntriesQuery = (
   return useMemo(() => {
     return {
       ...query,
+      fetchNextPage,
       entriesIds,
       queryKey,
     }
-  }, [entriesIds, query, queryKey])
+  }, [entriesIds, fetchNextPage, query, queryKey])
 }
 
 export const usePrefetchEntryDetail = (entryId: string | undefined, isInbox?: boolean) => {
