@@ -78,7 +78,10 @@ export const EntriesProvider: React.FC<React.PropsWithChildren> = ({ children })
 
   // Stable actions that reference latest refs
   const fetchNextPageStable = useCallback(() => fetchNextPageRef.current?.(), [])
-  const refetchStable = useCallback(() => refetchRef.current?.(), [])
+  const refetchStable = useCallback(() => {
+    onResetRef.current?.()
+    return refetchRef.current?.()
+  }, [])
   const setOnResetStable = useCallback((cb: (() => void) | null) => {
     onResetRef.current = cb
   }, [])

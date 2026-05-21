@@ -37,17 +37,25 @@ import { EntryRootStateContext } from "./store/EntryColumnContext"
 
 function EntryColumnContent() {
   const listRef = useRef<Virtualizer<HTMLElement, Element>>(undefined)
+  const scrollAreaRef = useRef<HTMLDivElement>(null)
   const { t } = useTranslation()
   const state = useEntriesState()
 
   const actions = useEntriesActions()
+  const scrollTimelineToTop = useCallback(() => {
+    listRef.current?.scrollToOffset(0)
+
+    const scrollArea = scrollAreaRef.current
+    if (!scrollArea) return
+
+    scrollArea.scrollTop = 0
+    scrollArea.scrollLeft = 0
+  }, [])
   // Register reset handler to keep scroll behavior when data resets
   useEffect(() => {
-    actions.setOnReset(() => {
-      listRef.current?.scrollToIndex(0)
-    })
+    actions.setOnReset(scrollTimelineToTop)
     return () => actions.setOnReset(null)
-  }, [actions])
+  }, [actions, scrollTimelineToTop])
 
   const { entriesIds, groupedCounts } = state
   useSnapEntryIdList(entriesIds)
@@ -169,9 +177,17 @@ function EntryColumnContent() {
         !state.error &&
         (!feed || feed?.type === "feed") && <AddFeedHelper />}
 
-      <EntryListHeader refetch={actions.refetch} isRefreshing={isRefreshing} />
+      <EntryListHeader
+        refetch={actions.refetch}
+        isRefreshing={isRefreshing}
+        onBeforeRefresh={scrollTimelineToTop}
+      />
 
-      <EntryColumnWrapper onScroll={handleCombinedScroll} key={`${routeFeedId}-${view}`}>
+      <EntryColumnWrapper
+        ref={scrollAreaRef}
+        onScroll={handleCombinedScroll}
+        key={`${routeFeedId}-${view}`}
+      >
         {entriesIds.length === 0 ? (
           state.isLoading ? (
             <EntryItemSkeleton view={view} />
