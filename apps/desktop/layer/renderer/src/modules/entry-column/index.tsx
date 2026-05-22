@@ -8,7 +8,7 @@ import { useIsLoggedIn } from "@follow/store/user/hooks"
 import { isBizId } from "@follow/utils/utils"
 import type { Range, Virtualizer } from "@tanstack/react-virtual"
 import { atom, useAtomValue } from "jotai"
-import { memo, useCallback, useEffect, useMemo, useRef } from "react"
+import { memo, useCallback, useEffect, useLayoutEffect, useMemo, useRef } from "react"
 import { useTranslation } from "react-i18next"
 
 import { useGeneralSettingKey } from "~/atoms/settings/general"
@@ -41,16 +41,30 @@ function EntryColumnContent() {
   const { t } = useTranslation()
   const state = useEntriesState()
 
+  const isInteracted = useRef(false)
+  const rangeQueueRef = useRef<Range[]>([])
+  const resetScrollInteractionState = useCallback(() => {
+    isInteracted.current = false
+    rangeQueueRef.current = []
+  }, [])
+
   const actions = useEntriesActions()
   const scrollTimelineToTop = useCallback(() => {
-    listRef.current?.scrollToOffset(0)
+    resetScrollInteractionState()
 
-    const scrollArea = scrollAreaRef.current
-    if (!scrollArea) return
+    const runScrollToTop = () => {
+      listRef.current?.scrollToOffset(0)
 
-    scrollArea.scrollTop = 0
-    scrollArea.scrollLeft = 0
-  }, [])
+      const scrollArea = scrollAreaRef.current
+      if (!scrollArea) return
+
+      scrollArea.scrollTop = 0
+      scrollArea.scrollLeft = 0
+    }
+
+    runScrollToTop()
+    globalThis.requestAnimationFrame?.(runScrollToTop)
+  }, [resetScrollInteractionState])
   // Register reset handler to keep scroll behavior when data resets
   useEffect(() => {
     actions.setOnReset(scrollTimelineToTop)
@@ -76,6 +90,7 @@ function EntryColumnContent() {
   const title = useFeedHeaderTitle()
   useTitle(title)
   const isLoggedIn = useIsLoggedIn()
+  const timelineIdentity = `${view}:${routeFeedId ?? ""}`
 
   useEffect(() => {
     if (!activeEntryId) return
@@ -87,9 +102,25 @@ function EntryColumnContent() {
     unreadSyncService.markEntryAsRead(activeEntryId)
   }, [activeEntryId, entry?.feedId, isCollection, isPendingEntry, isLoggedIn])
 
-  const isInteracted = useRef(false)
   const isRefreshing = state.isFetching && !state.isFetchingNextPage
-  const pauseScrollMarkRead = useScrollMarkReadGracePeriod(isRefreshing)
+  const pauseScrollMarkRead = useScrollMarkReadGracePeriod(
+    isRefreshing,
+    undefined,
+    timelineIdentity,
+  )
+
+  useLayoutEffect(() => {
+    resetScrollInteractionState()
+  }, [resetScrollInteractionState, timelineIdentity])
+
+  const wasRefreshingRef = useRef(isRefreshing)
+  useEffect(() => {
+    const wasRefreshing = wasRefreshingRef.current
+    wasRefreshingRef.current = isRefreshing
+
+    if (!wasRefreshing || isRefreshing) return
+    scrollTimelineToTop()
+  }, [isRefreshing, scrollTimelineToTop])
 
   const { handleRenderMarkRead, handleScrollMarkRead } = useEntryMarkReadHandler(entriesIds, {
     pauseScrollMarkRead,
@@ -125,7 +156,6 @@ function EntryColumnContent() {
 
   const navigate = useNavigateEntry()
 
-  const rangeQueueRef = useRef<Range[]>([])
   const aiTimelineEnabled = useAtomValue(aiTimelineEnabledAtom)
   const showAiTimelineLoading = aiTimelineEnabled && state.isLoading && !state.isFetchingNextPage
   const renderAsRead = useGeneralSettingKey("renderMarkUnread")
