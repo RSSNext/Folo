@@ -41,7 +41,7 @@ jobs:
           cache: "pnpm"
 
       - name: Install dependencies
-        run: pnpm install
+        run: pnpm install --frozen-lockfile --child-concurrency=1
 
       - name: Build desktop web (SPA)
         working-directory: apps/desktop

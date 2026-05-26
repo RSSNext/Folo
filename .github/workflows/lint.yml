@@ -44,7 +44,7 @@ jobs:
           node-version: ${{ matrix.node-version }}
           cache: "pnpm"
       - name: Install dependencies
-        run: pnpm install
+        run: pnpm install --frozen-lockfile --child-concurrency=1
       - name: Build web and SSR server
         run: |
           npm exec turbo run Folo#build:web @follow/ssr#build
