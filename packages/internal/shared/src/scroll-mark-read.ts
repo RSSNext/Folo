@@ -46,6 +46,36 @@ export const getScrollMarkReadRange = ({
   }
 }
 
+export const getScrollMarkReadRangeState = ({
+  anchorIndex,
+  currentStartIndex,
+}: {
+  anchorIndex: number | null | undefined
+  currentStartIndex: number | null | undefined
+}) => {
+  if (
+    typeof currentStartIndex !== "number" ||
+    !Number.isInteger(currentStartIndex) ||
+    currentStartIndex < 0
+  ) {
+    return {
+      nextAnchorIndex:
+        typeof anchorIndex === "number" && Number.isInteger(anchorIndex) && anchorIndex >= 0
+          ? anchorIndex
+          : null,
+      range: null,
+    }
+  }
+
+  return {
+    nextAnchorIndex: currentStartIndex,
+    range: getScrollMarkReadRange({
+      previousEndIndex: anchorIndex,
+      currentStartIndex,
+    }),
+  }
+}
+
 export const getScrollMarkReadExitedSliceEnd = ({
   indexes,
   renderedEndIndex,

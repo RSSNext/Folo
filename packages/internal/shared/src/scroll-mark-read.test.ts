@@ -4,6 +4,7 @@ import {
   getScrollMarkReadEndPadding,
   getScrollMarkReadExitedSliceEnd,
   getScrollMarkReadRange,
+  getScrollMarkReadRangeState,
   MIN_SCROLL_MARK_READ_END_PADDING,
   SCROLL_MARK_READ_END_INDICATOR_HEIGHT,
   shouldRenderScrollMarkReadEndSpacer,
@@ -62,5 +63,27 @@ describe("scroll mark-read range", () => {
         currentStartIndex: 8,
       }),
     ).toBeNull()
+  })
+
+  it("moves the anchor backward while scrolling up so entries can be retried", () => {
+    expect(
+      getScrollMarkReadRangeState({
+        anchorIndex: 12,
+        currentStartIndex: 8,
+      }),
+    ).toEqual({
+      nextAnchorIndex: 8,
+      range: null,
+    })
+
+    expect(
+      getScrollMarkReadRangeState({
+        anchorIndex: 8,
+        currentStartIndex: 12,
+      }),
+    ).toEqual({
+      nextAnchorIndex: 12,
+      range: { startIndex: 8, endIndex: 12 },
+    })
   })
 })

@@ -1,6 +1,6 @@
 import { FeedViewType, getView } from "@follow/constants"
 import { useScrollMarkReadGracePeriod, useTitle } from "@follow/hooks"
-import { getScrollMarkReadRange } from "@follow/shared/scroll-mark-read"
+import { getScrollMarkReadRangeState } from "@follow/shared/scroll-mark-read"
 import { useEntry } from "@follow/store/entry/hooks"
 import { useFeedById } from "@follow/store/feed/hooks"
 import { useSubscriptionByFeedId } from "@follow/store/subscription/hooks"
@@ -43,11 +43,11 @@ function EntryColumnContent() {
   const state = useEntriesState()
 
   const isInteracted = useRef(false)
-  const scrollMarkReadEndIndexRef = useRef<number | null>(null)
+  const scrollMarkReadAnchorIndexRef = useRef<number | null>(null)
   const latestRangeStartIndexRef = useRef<number | null>(null)
   const resetScrollInteractionState = useCallback(() => {
     isInteracted.current = false
-    scrollMarkReadEndIndexRef.current = null
+    scrollMarkReadAnchorIndexRef.current = null
     latestRangeStartIndexRef.current = null
   }, [])
 
@@ -133,19 +133,14 @@ function EntryColumnContent() {
     (currentStartIndex: number) => {
       if (!routeFeedId) return
 
-      const range = getScrollMarkReadRange({
-        previousEndIndex: scrollMarkReadEndIndexRef.current,
+      const { nextAnchorIndex, range } = getScrollMarkReadRangeState({
+        anchorIndex: scrollMarkReadAnchorIndexRef.current,
         currentStartIndex,
       })
+      scrollMarkReadAnchorIndexRef.current = nextAnchorIndex
 
       if (range) {
         handleScrollMarkRead?.(range as Range, isInteracted.current)
-        scrollMarkReadEndIndexRef.current = currentStartIndex
-        return
-      }
-
-      if (scrollMarkReadEndIndexRef.current === null) {
-        scrollMarkReadEndIndexRef.current = currentStartIndex
       }
     },
     [handleScrollMarkRead, routeFeedId],
@@ -182,8 +177,8 @@ function EntryColumnContent() {
       }
 
       latestRangeStartIndexRef.current = e.startIndex
-      if (scrollMarkReadEndIndexRef.current === null) {
-        scrollMarkReadEndIndexRef.current = e.startIndex
+      if (scrollMarkReadAnchorIndexRef.current === null) {
+        scrollMarkReadAnchorIndexRef.current = e.startIndex
       } else if (isInteracted.current) {
         flushScrollMarkRead(e.startIndex)
       }
