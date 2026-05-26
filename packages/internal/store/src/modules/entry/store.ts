@@ -60,12 +60,56 @@ const defaultState: EntryState = {
   entryIdSet: new Set(),
 }
 
+const LOCAL_READ_PROTECTION_WINDOW = 30 * 1000
+
 export const useEntryStore = createZustandStore<EntryState>("entry")(() => defaultState)
 
 const get = useEntryStore.getState
 const immerSet = createImmerSetter(useEntryStore)
 
 class EntryActions implements Hydratable, Resetable {
+  private localReadProtectionExpiresAt = new Map<EntryId, number>()
+  private nextLocalReadProtectionCleanupAt = 0
+
+  private protectLocalRead(entryId: EntryId) {
+    const now = Date.now()
+    this.pruneLocalReadProtection(now)
+    this.localReadProtectionExpiresAt.set(entryId, now + LOCAL_READ_PROTECTION_WINDOW)
+  }
+
+  private clearLocalReadProtection(entryId: EntryId) {
+    this.localReadProtectionExpiresAt.delete(entryId)
+  }
+
+  private isLocalReadProtected(entryId: EntryId) {
+    const expiresAt = this.localReadProtectionExpiresAt.get(entryId)
+    if (!expiresAt) return false
+
+    if (expiresAt <= Date.now()) {
+      this.localReadProtectionExpiresAt.delete(entryId)
+      return false
+    }
+
+    return true
+  }
+
+  private pruneLocalReadProtection(now: number) {
+    if (this.nextLocalReadProtectionCleanupAt > now) return
+
+    for (const [entryId, expiresAt] of this.localReadProtectionExpiresAt.entries()) {
+      if (expiresAt <= now) {
+        this.localReadProtectionExpiresAt.delete(entryId)
+      }
+    }
+
+    this.nextLocalReadProtectionCleanupAt = now + LOCAL_READ_PROTECTION_WINDOW
+  }
+
+  clearLocalReadProtectionInSession() {
+    this.localReadProtectionExpiresAt.clear()
+    this.nextLocalReadProtectionCleanupAt = 0
+  }
+
   async hydrate() {
     const entries = await EntryService.getEntriesToHydrate()
     entryActions.upsertManyInSession(entries.map((e) => dbStoreMorph.toEntryModel(e)))
@@ -200,30 +244,33 @@ class EntryActions implements Hydratable, Resetable {
 
     immerSet((draft) => {
       for (const entry of entries) {
-        draft.entryIdSet.add(entry.id)
-        draft.data[entry.id] = entry
+        const nextEntry =
+          !entry.read && this.isLocalReadProtected(entry.id) ? { ...entry, read: true } : entry
 
-        const { feedId, inboxHandle, read, sources } = entry
+        draft.entryIdSet.add(nextEntry.id)
+        draft.data[nextEntry.id] = nextEntry
+
+        const { feedId, inboxHandle, read, sources } = nextEntry
         if (unreadOnly && read) continue
 
         if (inboxHandle) {
           this.addEntryIdToInbox({
             draft,
             inboxHandle,
-            entryId: entry.id,
+            entryId: nextEntry.id,
           })
         } else {
           this.addEntryIdToFeed({
             draft,
             feedId,
-            entryId: entry.id,
+            entryId: nextEntry.id,
           })
         }
 
         this.addEntryIdToView({
           draft,
           feedId,
-          entryId: entry.id,
+          entryId: nextEntry.id,
           sources,
           hidePrivateSubscriptionsInTimeline,
         })
@@ -231,16 +278,16 @@ class EntryActions implements Hydratable, Resetable {
         this.addEntryIdToCategory({
           draft,
           feedId,
-          entryId: entry.id,
+          entryId: nextEntry.id,
         })
 
-        entry.sources
+        nextEntry.sources
           ?.filter((s) => !!s && s !== "feed")
           .forEach((s) => {
             this.addEntryIdToList({
               draft,
               listId: s,
-              entryId: entry.id,
+              entryId: nextEntry.id,
             })
           })
       }
@@ -355,6 +402,12 @@ class EntryActions implements Hydratable, Resetable {
             continue
           }
 
+          if (read) {
+            this.protectLocalRead(entryId)
+          } else {
+            this.clearLocalReadProtection(entryId)
+          }
+
           if (entry.read !== read) {
             entry.read = read
             affectedEntryIds.add(entryId)
@@ -387,6 +440,12 @@ class EntryActions implements Hydratable, Resetable {
             +new Date(entry.insertedAt) >= time.insertedBefore
           ) {
             continue
+          }
+
+          if (read) {
+            this.protectLocalRead(entry.id)
+          } else {
+            this.clearLocalReadProtection(entry.id)
           }
 
           if (entry.read !== read) {
@@ -450,6 +509,7 @@ class EntryActions implements Hydratable, Resetable {
   async reset() {
     const tx = createTransaction()
     tx.store(() => {
+      this.clearLocalReadProtectionInSession()
       immerSet(() => defaultState)
     })
 

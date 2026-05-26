@@ -3,7 +3,7 @@ import { beforeEach, describe, expect, it, vi } from "vitest"
 
 import { apiContext } from "../../context"
 import type { FollowAPI } from "../../types"
-import { useEntryStore } from "../entry/store"
+import { entryActions, useEntryStore } from "../entry/store"
 import type { EntryModel } from "../entry/types"
 import { unreadSyncService, useUnreadStore } from "./store"
 
@@ -40,6 +40,7 @@ describe("unreadSyncService", () => {
 
   beforeEach(() => {
     vi.clearAllMocks()
+    entryActions.clearLocalReadProtectionInSession()
 
     useEntryStore.setState({
       data: {},
@@ -125,6 +126,84 @@ describe("unreadSyncService", () => {
         entryIds: ["entry1", "entry2"],
         isInbox: false,
       })
+    } finally {
+      vi.useRealTimers()
+    }
+  })
+
+  it("keeps entries locally read when a stale entry fetch returns during the request", async () => {
+    const entries = {
+      entry1: createEntry("entry1", "feed1"),
+    }
+    useEntryStore.setState((state) => ({
+      ...state,
+      data: entries,
+      entryIdSet: new Set(Object.keys(entries)),
+    }))
+    useUnreadStore.setState({ data: { feed1: 1 } })
+
+    let resolveMarkAsRead!: () => void
+    markAsReadMock.mockReturnValue(
+      new Promise((resolve) => {
+        resolveMarkAsRead = () => resolve({ data: null })
+      }),
+    )
+
+    const markAsRead = unreadSyncService.markEntriesAsRead(["entry1"])
+
+    expect(useEntryStore.getState().data.entry1?.read).toBe(true)
+    entryActions.upsertManyInSession([createEntry("entry1", "feed1")])
+    expect(useEntryStore.getState().data.entry1?.read).toBe(true)
+
+    resolveMarkAsRead()
+    await markAsRead
+
+    expect(useEntryStore.getState().data.entry1?.read).toBe(true)
+  })
+
+  it("keeps entries locally read when a stale entry fetch returns after the request", async () => {
+    const entries = {
+      entry1: createEntry("entry1", "feed1"),
+    }
+    useEntryStore.setState((state) => ({
+      ...state,
+      data: entries,
+      entryIdSet: new Set(Object.keys(entries)),
+    }))
+    useUnreadStore.setState({ data: { feed1: 1 } })
+    markAsReadMock.mockResolvedValue({ data: null })
+
+    await unreadSyncService.markEntriesAsRead(["entry1"])
+    expect(useEntryStore.getState().data.entry1?.read).toBe(true)
+
+    entryActions.upsertManyInSession([createEntry("entry1", "feed1")])
+
+    expect(useEntryStore.getState().data.entry1?.read).toBe(true)
+  })
+
+  it("allows remote unread after the local read protection window expires", async () => {
+    vi.useFakeTimers()
+    vi.setSystemTime(new Date("2026-01-01T00:00:00.000Z"))
+
+    try {
+      const entries = {
+        entry1: createEntry("entry1", "feed1"),
+      }
+      useEntryStore.setState((state) => ({
+        ...state,
+        data: entries,
+        entryIdSet: new Set(Object.keys(entries)),
+      }))
+      useUnreadStore.setState({ data: { feed1: 1 } })
+      markAsReadMock.mockResolvedValue({ data: null })
+
+      await unreadSyncService.markEntriesAsRead(["entry1"])
+      expect(useEntryStore.getState().data.entry1?.read).toBe(true)
+
+      vi.advanceTimersByTime(31_000)
+      entryActions.upsertManyInSession([createEntry("entry1", "feed1")])
+
+      expect(useEntryStore.getState().data.entry1?.read).toBe(false)
     } finally {
       vi.useRealTimers()
     }

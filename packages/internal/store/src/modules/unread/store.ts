@@ -265,6 +265,7 @@ class UnreadSyncService {
     })
 
     tx.persist(() => {
+      entryActions.markEntryReadStatusInSession({ entryIds: targetEntryIds, read: true })
       return EntryService.patchMany({
         entry: { read: true },
         entryIds: targetEntryIds,
