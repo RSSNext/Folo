@@ -1,5 +1,6 @@
 import { FeedViewType, getView } from "@follow/constants"
 import { useScrollMarkReadGracePeriod, useTitle } from "@follow/hooks"
+import { getScrollMarkReadRange } from "@follow/shared/scroll-mark-read"
 import { useEntry } from "@follow/store/entry/hooks"
 import { useFeedById } from "@follow/store/feed/hooks"
 import { useSubscriptionByFeedId } from "@follow/store/subscription/hooks"
@@ -42,10 +43,12 @@ function EntryColumnContent() {
   const state = useEntriesState()
 
   const isInteracted = useRef(false)
-  const rangeQueueRef = useRef<Range[]>([])
+  const scrollMarkReadEndIndexRef = useRef<number | null>(null)
+  const latestRangeStartIndexRef = useRef<number | null>(null)
   const resetScrollInteractionState = useCallback(() => {
     isInteracted.current = false
-    rangeQueueRef.current = []
+    scrollMarkReadEndIndexRef.current = null
+    latestRangeStartIndexRef.current = null
   }, [])
 
   const actions = useEntriesActions()
@@ -126,24 +129,37 @@ function EntryColumnContent() {
     pauseScrollMarkRead,
   })
 
+  const flushScrollMarkRead = useCallback(
+    (currentStartIndex: number) => {
+      if (!routeFeedId) return
+
+      const range = getScrollMarkReadRange({
+        previousEndIndex: scrollMarkReadEndIndexRef.current,
+        currentStartIndex,
+      })
+
+      if (range) {
+        handleScrollMarkRead?.(range as Range, isInteracted.current)
+        scrollMarkReadEndIndexRef.current = currentStartIndex
+        return
+      }
+
+      if (scrollMarkReadEndIndexRef.current === null) {
+        scrollMarkReadEndIndexRef.current = currentStartIndex
+      }
+    },
+    [handleScrollMarkRead, routeFeedId],
+  )
+
   const handleScroll = useCallback(() => {
     if (!isInteracted.current) {
       isInteracted.current = true
     }
 
-    if (!routeFeedId) return
-
-    const [first, second] = rangeQueueRef.current
-    if (first && second && second.startIndex - first.startIndex > 0) {
-      handleScrollMarkRead?.(
-        {
-          startIndex: first.startIndex,
-          endIndex: second.startIndex,
-        } as Range,
-        isInteracted.current,
-      )
+    if (latestRangeStartIndexRef.current !== null) {
+      flushScrollMarkRead(latestRangeStartIndexRef.current)
     }
-  }, [handleScrollMarkRead, routeFeedId])
+  }, [flushScrollMarkRead])
 
   const { handleScroll: handleScrollBeyond } = useAttachScrollBeyond()
   const handleCombinedScroll = useCallback(
@@ -161,13 +177,15 @@ function EntryColumnContent() {
   const renderAsRead = useGeneralSettingKey("renderMarkUnread")
   const handleRangeChange = useCallback(
     (e: Range) => {
-      const [_, second] = rangeQueueRef.current
-      if (second?.startIndex === e.startIndex) {
+      if (latestRangeStartIndexRef.current === e.startIndex) {
         return
       }
-      rangeQueueRef.current.push(e)
-      if (rangeQueueRef.current.length > 2) {
-        rangeQueueRef.current.shift()
+
+      latestRangeStartIndexRef.current = e.startIndex
+      if (scrollMarkReadEndIndexRef.current === null) {
+        scrollMarkReadEndIndexRef.current = e.startIndex
+      } else if (isInteracted.current) {
+        flushScrollMarkRead(e.startIndex)
       }
 
       if (!renderAsRead) return
@@ -177,7 +195,7 @@ function EntryColumnContent() {
       // For gird, render as mark read logic
       handleRenderMarkRead?.(e, isInteracted.current)
     },
-    [handleRenderMarkRead, renderAsRead, view],
+    [flushScrollMarkRead, handleRenderMarkRead, renderAsRead, view],
   )
 
   const fetchNextPage = useCallback(() => {

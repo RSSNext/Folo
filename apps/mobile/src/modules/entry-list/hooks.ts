@@ -78,23 +78,20 @@ export function useOnViewableItemsChanged({
     if (disabled) return
 
     if (isLoggedIn && markAsReadWhenScrolling && !pauseScrollMarkRead && lastRemovedItems) {
-      lastRemovedItems.forEach((item) => {
-        unreadSyncService.markEntryAsRead(stableIdExtractor(item)).then(() => {
-          setLastRemovedItems((prev) => {
-            if (prev) {
-              return prev.filter((prevItem) => prevItem.key !== item.key)
-            } else {
-              return null
-            }
-          })
+      const entryIds = lastRemovedItems.map((item) => stableIdExtractor(item))
+      const entryIdSet = new Set(entryIds)
+      void unreadSyncService.queueEntriesAsRead(entryIds).then(() => {
+        setLastRemovedItems((prev) => {
+          if (!prev) return null
+          return prev.filter((prevItem) => !entryIdSet.has(stableIdExtractor(prevItem)))
         })
       })
     }
 
     if (isLoggedIn && markAsReadWhenRendering && lastViewableItems) {
-      lastViewableItems.forEach((item) => {
-        unreadSyncService.markEntryAsRead(stableIdExtractor(item))
-      })
+      void unreadSyncService.queueEntriesAsRead(
+        lastViewableItems.map((item) => stableIdExtractor(item)),
+      )
     }
   }, [
     disabled,

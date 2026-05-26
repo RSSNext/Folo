@@ -3,6 +3,7 @@ import { describe, expect, it } from "vitest"
 import {
   getScrollMarkReadEndPadding,
   getScrollMarkReadExitedSliceEnd,
+  getScrollMarkReadRange,
   MIN_SCROLL_MARK_READ_END_PADDING,
   SCROLL_MARK_READ_END_INDICATOR_HEIGHT,
   shouldRenderScrollMarkReadEndSpacer,
@@ -39,6 +40,26 @@ describe("scroll mark-read exited slice", () => {
       getScrollMarkReadExitedSliceEnd({
         indexes: [Number.NaN, -1, 8],
         renderedEndIndex: 6,
+      }),
+    ).toBeNull()
+  })
+})
+
+describe("scroll mark-read range", () => {
+  it("marks the full skipped range when scrolling jumps over intermediate entries", () => {
+    expect(
+      getScrollMarkReadRange({
+        previousEndIndex: 4,
+        currentStartIndex: 12,
+      }),
+    ).toEqual({ startIndex: 4, endIndex: 12 })
+  })
+
+  it("does not mark entries while scrolling upward or staying within the previous high-water mark", () => {
+    expect(
+      getScrollMarkReadRange({
+        previousEndIndex: 12,
+        currentStartIndex: 8,
       }),
     ).toBeNull()
   })

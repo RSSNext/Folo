@@ -26,11 +26,22 @@ const initialUnreadStore: UnreadState = {
   data: {},
 }
 
+const READ_MARK_BATCH_WINDOW = 100
+
 export const useUnreadStore = createZustandStore<UnreadState>("unread")(() => initialUnreadStore)
 const get = useUnreadStore.getState
 const set = useUnreadStore.setState
 
+type ReadEntryTarget = {
+  entryId: string
+  id: FeedIdOrInboxHandle
+  isInbox: boolean
+}
+
 class UnreadSyncService {
+  private queuedReadEntryIds = new Set<string>()
+  private queuedReadFlushPromise: Promise<void> | null = null
+
   async resetFromRemote() {
     const res = await api().reads.get({})
 
@@ -192,7 +203,114 @@ class UnreadSyncService {
     })
   }
 
+  private getReadEntryTargets(entryIds: string[]): ReadEntryTarget[] {
+    const seenEntryIds = new Set<string>()
+    const targets: ReadEntryTarget[] = []
+
+    for (const entryId of entryIds) {
+      if (seenEntryIds.has(entryId)) continue
+      seenEntryIds.add(entryId)
+
+      const entry = getEntry(entryId)
+      if (!entry || entry.read || (!entry.feedId && !entry.inboxHandle)) continue
+
+      targets.push({
+        entryId,
+        id: entry.inboxHandle || entry.feedId || "",
+        isInbox: !!entry.inboxHandle,
+      })
+    }
+
+    return targets
+  }
+
+  async markEntriesAsRead(entryIds: string[]) {
+    const targets = this.getReadEntryTargets(entryIds)
+    if (targets.length === 0) return
+
+    const targetEntryIds = targets.map((target) => target.entryId)
+    const unreadCountById = targets.reduce(
+      (acc, target) => {
+        acc[target.id] = (acc[target.id] || 0) + 1
+        return acc
+      },
+      {} as Record<FeedIdOrInboxHandle, number>,
+    )
+
+    const feedEntryIds = targets.filter((target) => !target.isInbox).map((target) => target.entryId)
+    const inboxEntryIds = targets.filter((target) => target.isInbox).map((target) => target.entryId)
+
+    const tx = createTransaction()
+    tx.store(() => {
+      entryActions.markEntryReadStatusInSession({ entryIds: targetEntryIds, read: true })
+      for (const [id, count] of Object.entries(unreadCountById)) {
+        unreadActions.removeUnread(id, count)
+      }
+    })
+
+    tx.request(async () => {
+      if (feedEntryIds.length > 0) {
+        await api().reads.markAsRead({ entryIds: feedEntryIds, isInbox: false })
+      }
+      if (inboxEntryIds.length > 0) {
+        await api().reads.markAsRead({ entryIds: inboxEntryIds, isInbox: true })
+      }
+    })
+
+    tx.rollback(() => {
+      entryActions.markEntryReadStatusInSession({ entryIds: targetEntryIds, read: false })
+      for (const [id, count] of Object.entries(unreadCountById)) {
+        unreadActions.addUnread(id, count)
+      }
+    })
+
+    tx.persist(() => {
+      return EntryService.patchMany({
+        entry: { read: true },
+        entryIds: targetEntryIds,
+      })
+    })
+
+    Object.keys(unreadCountById).forEach((id) => {
+      if (id) {
+        setFeedUnreadDirty(id)
+      }
+    })
+
+    await tx.run()
+  }
+
+  queueEntriesAsRead(entryIds: string[]) {
+    for (const entryId of entryIds) {
+      this.queuedReadEntryIds.add(entryId)
+    }
+
+    if (this.queuedReadFlushPromise) {
+      return this.queuedReadFlushPromise
+    }
+
+    this.queuedReadFlushPromise = new Promise<void>((resolve) => {
+      setTimeout(() => {
+        const queuedEntryIds = Array.from(this.queuedReadEntryIds)
+        this.queuedReadEntryIds.clear()
+        this.queuedReadFlushPromise = null
+
+        this.markEntriesAsRead(queuedEntryIds)
+          .catch((error) => {
+            console.error(error)
+          })
+          .finally(resolve)
+      }, READ_MARK_BATCH_WINDOW)
+    })
+
+    return this.queuedReadFlushPromise
+  }
+
   private async markEntryReadStatus({ entryId, read }: { entryId: string; read: boolean }) {
+    if (read) {
+      return this.markEntriesAsRead([entryId])
+    }
+
     const entry = getEntry(entryId)
     if (!entry || entry.read === read || (!entry.feedId && !entry.inboxHandle)) return
 

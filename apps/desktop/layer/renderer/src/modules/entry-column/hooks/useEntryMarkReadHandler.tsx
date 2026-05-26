@@ -84,8 +84,6 @@ export function batchMarkRead(ids: string[]) {
   }
 
   if (batchLikeIds.length > 0) {
-    for (const id of batchLikeIds) {
-      unreadSyncService.markEntryAsRead(id)
-    }
+    void unreadSyncService.queueEntriesAsRead(batchLikeIds)
   }
 }
