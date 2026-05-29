@@ -14,7 +14,9 @@ interface SegmentGroupProps {
 export const SegmentGroup = (props: ComponentType<SegmentGroupProps>) => {
   const { onValueChanged, value, className } = props
 
-  const [currentValue, setCurrentValue] = useState(value || "")
+  const isControlled = value !== undefined
+  const [uncontrolledValue, setUncontrolledValue] = useState(value || "")
+  const currentValue = isControlled ? value : uncontrolledValue
   const componentId = useId()
 
   return (
@@ -23,13 +25,15 @@ export const SegmentGroup = (props: ComponentType<SegmentGroupProps>) => {
       value={useMemo(
         () => ({
           value: currentValue,
-          setValue: (value) => {
-            setCurrentValue(value)
-            onValueChanged?.(value)
+          setValue: (nextValue) => {
+            if (!isControlled) {
+              setUncontrolledValue(nextValue)
+            }
+            onValueChanged?.(nextValue)
           },
           componentId,
         }),
-        [componentId, currentValue, onValueChanged],
+        [componentId, currentValue, isControlled, onValueChanged],
       )}
     >
       <div

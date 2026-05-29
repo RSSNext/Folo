@@ -26,7 +26,7 @@ export const WhenSection = ({ index }: WhenSectionProps) => {
   const { t } = useTranslation("settings")
 
   const disabled = useActionRule(index, (a) => a.result.disabled)
-  const condition = useActionRule(index, (a) => a.condition)
+  const condition = useActionRule(index, (a) => a.condition) ?? []
 
   const mode = condition.length > 0 ? "filter" : "all"
 
@@ -43,9 +43,14 @@ export const WhenSection = ({ index }: WhenSectionProps) => {
   return (
     <section className="flex flex-col gap-4">
       <div className="flex flex-wrap items-center justify-between gap-3">
-        <span className="text-xs font-semibold uppercase tracking-wide text-text-secondary">
-          {t("actions.action_card.when_feeds_match")}
-        </span>
+        <div className="flex items-center gap-2">
+          <span className="flex size-5 items-center justify-center rounded-full bg-orange text-[11px] font-bold text-white shadow-sm">
+            1
+          </span>
+          <span className="text-sm font-bold uppercase tracking-wide text-text">
+            {t("actions.action_card.when_feeds_match")}
+          </span>
+        </div>
         <SegmentGroup
           value={mode}
           onValueChanged={(value) => handleModeChange(value as "all" | "filter")}
