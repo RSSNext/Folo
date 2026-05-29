@@ -39,6 +39,11 @@ jobs:
         with:
           fetch-depth: 0
 
+      - name: Preserve workflow helper scripts
+        run: |
+          mkdir -p "$RUNNER_TEMP/folo-release-scripts"
+          cp .github/scripts/trigger-ota-sync.mjs "$RUNNER_TEMP/folo-release-scripts/trigger-ota-sync.mjs"
+
       - name: Resolve target release tag
         run: |
           git fetch --tags --force
@@ -96,4 +101,5 @@ jobs:
           OTA_BASE_URL: ${{ secrets.OTA_BASE_URL }}
           OTA_SYNC_TOKEN: ${{ secrets.OTA_SYNC_TOKEN }}
           OTA_SYNC_TOKEN_HEADER: ${{ secrets.OTA_SYNC_TOKEN_HEADER }}
-        run: node .github/scripts/trigger-ota-sync.mjs
+          OTA_SYNC_TIMEOUT_MS: 120000
+        run: node "$RUNNER_TEMP/folo-release-scripts/trigger-ota-sync.mjs"

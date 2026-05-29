@@ -11,7 +11,21 @@ import { pathToFileURL } from "node:url"
  * }} TriggerOtaSyncOptions
  */
 
-const DEFAULT_TIMEOUT_MS = 10_000
+const DEFAULT_TIMEOUT_MS = 120_000
+
+export function readOtaSyncTimeoutMs(value) {
+  if (!value) {
+    return DEFAULT_TIMEOUT_MS
+  }
+
+  const timeoutMs = Number(value)
+
+  if (!Number.isInteger(timeoutMs) || timeoutMs <= 0) {
+    throw new TypeError("OTA sync timeout must be a positive integer")
+  }
+
+  return timeoutMs
+}
 
 /**
  * @param {TriggerOtaSyncOptions} options
@@ -81,6 +95,7 @@ async function main() {
       baseUrl: process.env.OTA_BASE_URL ?? "",
       token: process.env.OTA_SYNC_TOKEN ?? "",
       headerName: process.env.OTA_SYNC_TOKEN_HEADER ?? "",
+      timeoutMs: readOtaSyncTimeoutMs(process.env.OTA_SYNC_TIMEOUT_MS),
     })
 
     console.info("Triggered OTA sync successfully")
