@@ -10,6 +10,7 @@
     "cf:deploy:dev": "pnpm exec vinext deploy --preview",
     "dev": "cross-env NODE_ENV=development vinext dev -p 4399",
     "start": "cross-env NODE_ENV=production vinext start -p 4399",
+    "test": "vitest run --config vitest.config.ts",
     "typecheck": "tsc --noEmit"
   },
   "dependencies": {

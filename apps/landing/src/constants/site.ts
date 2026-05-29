@@ -11,7 +11,6 @@ export const siteInfo = {
   xLink: 'https://x.com/folo_is',
   discordLink: 'https://discord.gg/followapp',
   productHuntLink: 'https://www.producthunt.com/posts/follow-5',
-  releaseLink: 'https://github.com/RSSNext/Folo/releases/latest',
   navigation: [
     { title: 'Features', href: '/#features' },
     { title: 'Testimonials', href: '/#testimonials' },

@@ -1,5 +1,3 @@
-import { siteInfo } from './site'
-
 export type OS = 'iOS' | 'Android' | 'macOS' | 'Windows' | 'Linux'
 
 export type PlatformDownloadChannel = {
@@ -15,6 +13,15 @@ export type PlatformDownloadGroup = {
   icon: string
   channels: PlatformDownloadChannel[]
 }
+
+const OTA_DOWNLOAD_URL = 'https://ota.folo.is/download'
+
+export const DEFAULT_RELEASE_DOWNLOAD_LINKS = {
+  androidApk: `${OTA_DOWNLOAD_URL}/mobile/android/apk`,
+  linuxAppImage: `${OTA_DOWNLOAD_URL}/desktop/linux/appimage`,
+  macosDmg: `${OTA_DOWNLOAD_URL}/desktop/macos/dmg`,
+  windowsExe: `${OTA_DOWNLOAD_URL}/desktop/windows/exe`,
+} as const
 
 export const PlatformDownloadGroups: PlatformDownloadGroup[] = [
   {
@@ -43,9 +50,9 @@ export const PlatformDownloadGroups: PlatformDownloadGroup[] = [
       },
       {
         id: 'android-apk',
-        href: siteInfo.releaseLink,
+        href: DEFAULT_RELEASE_DOWNLOAD_LINKS.androidApk,
         name: 'Direct Download (APK)',
-        description: 'Install from the latest GitHub release',
+        description: 'Download the latest APK',
       },
     ],
   },
@@ -62,9 +69,9 @@ export const PlatformDownloadGroups: PlatformDownloadGroup[] = [
       },
       {
         id: 'macos-dmg',
-        href: siteInfo.releaseLink,
+        href: DEFAULT_RELEASE_DOWNLOAD_LINKS.macosDmg,
         name: 'Direct Download (DMG)',
-        description: 'Install from the latest GitHub release',
+        description: 'Download the latest DMG',
       },
     ],
   },
@@ -81,9 +88,9 @@ export const PlatformDownloadGroups: PlatformDownloadGroup[] = [
       },
       {
         id: 'windows-exe',
-        href: siteInfo.releaseLink,
+        href: DEFAULT_RELEASE_DOWNLOAD_LINKS.windowsExe,
         name: 'Direct Download (EXE)',
-        description: 'Install from the latest GitHub release',
+        description: 'Download the latest EXE',
       },
     ],
   },
@@ -93,10 +100,10 @@ export const PlatformDownloadGroups: PlatformDownloadGroup[] = [
     icon: 'i-simple-icons-linux',
     channels: [
       {
-        id: 'linux-github',
-        href: siteInfo.releaseLink,
-        name: 'GitHub Release',
-        description: 'AppImage and other release assets',
+        id: 'linux-appimage',
+        href: DEFAULT_RELEASE_DOWNLOAD_LINKS.linuxAppImage,
+        name: 'Direct Download (AppImage)',
+        description: 'Download the latest AppImage',
       },
     ],
   },
