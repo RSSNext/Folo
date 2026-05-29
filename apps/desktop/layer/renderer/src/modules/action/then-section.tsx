@@ -206,9 +206,14 @@ export const ThenSection = ({ index, variant: _variant = "detail" }: ThenSection
   return (
     <section className="flex flex-col gap-4">
       <div className="flex flex-wrap items-center justify-between gap-3">
-        <span className="text-xs font-semibold uppercase tracking-wide text-text-secondary">
-          {t("actions.action_card.then_do")}
-        </span>
+        <div className="flex items-center gap-2">
+          <span className="flex size-5 items-center justify-center rounded-full bg-orange text-[11px] font-bold text-white shadow-sm">
+            2
+          </span>
+          <span className="text-sm font-bold uppercase tracking-wide text-text">
+            {t("actions.action_card.then_do")}
+          </span>
+        </div>
         {enabledActions.length > 0 && (
           <span className="text-xs text-text-secondary">
             {t("actions.action_card.summary.action_count", { count: enabledActions.length })}

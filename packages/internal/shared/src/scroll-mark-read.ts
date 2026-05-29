@@ -17,6 +17,65 @@ export const shouldRenderScrollMarkReadEndSpacer = ({
   hasNextPage: boolean
 }) => entryCount > 0 && !hasNextPage
 
+export const getScrollMarkReadRange = ({
+  previousEndIndex,
+  currentStartIndex,
+}: {
+  previousEndIndex: number | null | undefined
+  currentStartIndex: number | null | undefined
+}) => {
+  if (
+    typeof previousEndIndex !== "number" ||
+    !Number.isInteger(previousEndIndex) ||
+    previousEndIndex < 0
+  ) {
+    return null
+  }
+
+  if (
+    typeof currentStartIndex !== "number" ||
+    !Number.isInteger(currentStartIndex) ||
+    currentStartIndex <= previousEndIndex
+  ) {
+    return null
+  }
+
+  return {
+    startIndex: previousEndIndex,
+    endIndex: currentStartIndex,
+  }
+}
+
+export const getScrollMarkReadRangeState = ({
+  anchorIndex,
+  currentStartIndex,
+}: {
+  anchorIndex: number | null | undefined
+  currentStartIndex: number | null | undefined
+}) => {
+  if (
+    typeof currentStartIndex !== "number" ||
+    !Number.isInteger(currentStartIndex) ||
+    currentStartIndex < 0
+  ) {
+    return {
+      nextAnchorIndex:
+        typeof anchorIndex === "number" && Number.isInteger(anchorIndex) && anchorIndex >= 0
+          ? anchorIndex
+          : null,
+      range: null,
+    }
+  }
+
+  return {
+    nextAnchorIndex: currentStartIndex,
+    range: getScrollMarkReadRange({
+      previousEndIndex: anchorIndex,
+      currentStartIndex,
+    }),
+  }
+}
+
 export const getScrollMarkReadExitedSliceEnd = ({
   indexes,
   renderedEndIndex,

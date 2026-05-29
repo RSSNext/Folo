@@ -49,7 +49,7 @@ jobs:
           token: ${{ secrets.EXPO_TOKEN }}
 
       - name: Install dependencies
-        run: pnpm install
+        run: pnpm install --frozen-lockfile --child-concurrency=1
 
       - name: Build mobile web assets
         run: pnpm --dir apps/mobile/web-app build --outDir ../../../out/rn-web/html-renderer
@@ -106,7 +106,7 @@ jobs:
           token: ${{ secrets.EXPO_TOKEN }}
 
       - name: Install dependencies
-        run: pnpm install
+        run: pnpm install --frozen-lockfile --child-concurrency=1
 
       - name: Build mobile web assets
         run: pnpm --dir apps/mobile/web-app build --outDir ../../../out/rn-web/html-renderer
@@ -157,7 +157,7 @@ jobs:
           token: ${{ secrets.EXPO_TOKEN }}
 
       - name: Install dependencies
-        run: pnpm install
+        run: pnpm install --frozen-lockfile --child-concurrency=1
 
       - name: Build mobile web assets
         run: pnpm --dir apps/mobile/web-app build --outDir ../../../out/rn-web/html-renderer

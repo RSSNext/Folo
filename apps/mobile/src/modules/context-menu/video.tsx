@@ -6,9 +6,10 @@ import { unreadSyncService } from "@follow/store/unread/store"
 import { useIsLoggedIn } from "@follow/store/user/hooks"
 import type { PropsWithChildren } from "react"
 import { useTranslation } from "react-i18next"
-import { Share } from "react-native"
+import { Platform, Share } from "react-native"
 
 import { ContextMenu } from "@/src/components/ui/context-menu"
+import { createLinkShareContent } from "@/src/lib/share"
 import { toast } from "@/src/lib/toast"
 
 type VideoContextMenuProps = PropsWithChildren<{
@@ -87,11 +88,14 @@ export const VideoContextMenu = ({ entryId, children }: VideoContextMenuProps) =
           key="Share"
           onSelect={async () => {
             if (!entry.url) return
-            await Share.share({
-              message: [entry.title, entry.url].filter(Boolean).join("\n"),
-              url: entry.url,
-              title: entry.title || "Shared Video",
-            })
+            await Share.share(
+              createLinkShareContent({
+                platform: Platform.OS,
+                title: entry.title || "Shared Video",
+                url: entry.url,
+                message: [entry.title, entry.url].filter(Boolean).join("\n"),
+              }),
+            )
             return
           }}
         >

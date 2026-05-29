@@ -16,6 +16,7 @@ describe("resolveMobileReleaseConfig", () => {
       }),
     ).toEqual({
       triggerStoreBuilds: true,
+      triggerReleaseApk: true,
       triggerOtaPublish: false,
       runtimeVersion: null,
       channel: null,
@@ -23,7 +24,7 @@ describe("resolveMobileReleaseConfig", () => {
     })
   })
 
-  it("triggers OTA publish only for ota mode", async () => {
+  it("triggers OTA publish and release APK builds for ota mode", async () => {
     const { resolveMobileReleaseConfig } = await import("./resolve-mobile-release-config.mjs")
 
     expect(
@@ -38,6 +39,7 @@ describe("resolveMobileReleaseConfig", () => {
       }),
     ).toEqual({
       triggerStoreBuilds: false,
+      triggerReleaseApk: true,
       triggerOtaPublish: true,
       runtimeVersion: "0.4.1",
       channel: "production",

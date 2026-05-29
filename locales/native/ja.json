@@ -14,6 +14,7 @@
   "contextMenu.saveImage": "画像を保存",
   "contextMenu.saveImageAs": "画像を名前を付けて保存...",
   "contextMenu.saveLinkAs": "名前をつけてリンクを保存...",
+  "contextMenu.saveMediaToEagle": "メディアを Eagle に保存",
   "contextMenu.saveVideo": "動画を保存",
   "contextMenu.saveVideoAs": "動画を名前を付けて保存...",
   "contextMenu.searchWithGoogle": "Google で検索",

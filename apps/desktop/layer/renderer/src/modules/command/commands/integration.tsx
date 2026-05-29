@@ -17,17 +17,16 @@ import { tracker } from "@follow/tracker"
 import { useMutation, useQuery } from "@tanstack/react-query"
 import type { FetchError } from "ofetch"
 import { ofetch } from "ofetch"
-import { useMemo } from "react"
+import { useEffect, useMemo } from "react"
 import { useTranslation } from "react-i18next"
 import { toast } from "sonner"
 
-import { getReadabilityStatus, ReadabilityStatus } from "~/atoms/readability"
 import { getActionLanguage } from "~/atoms/settings/general"
 import { getIntegrationSettings, useIntegrationSettingKey } from "~/atoms/settings/integration"
 import { useRouteParams } from "~/hooks/biz/useRouteParams"
 import { ipcServices } from "~/lib/client"
-import { parseHtml } from "~/lib/parse-html"
 import { CustomIntegrationManager } from "~/modules/integration/custom-integration-manager"
+import { getEntryContentAsMarkdown } from "~/modules/integration/entry-content-markdown"
 
 import { useRegisterCommandEffect } from "../hooks/use-register-command"
 import { defineFollowCommand } from "../registry/command"
@@ -72,6 +71,14 @@ const useRegisterEagleCommands = () => {
   })
 
   const isEagleAvailable = enableEagle && (checkEagle.isLoading ? false : !!checkEagle.data)
+
+  useEffect(() => {
+    if (!IN_ELECTRON) return
+
+    void ipcServices?.integration.setEagleContextMenuEnabled({
+      enabled: isEagleAvailable,
+    })
+  }, [isEagleAvailable])
 
   useRegisterCommandEffect(
     !isEagleAvailable
@@ -254,19 +261,6 @@ const useRegisterInstapaperCommands = () => {
   )
 }
 
-const getEntryContentAsMarkdown = async (entry: EntryModel) => {
-  const isReadabilityReady = getReadabilityStatus()[entry.id] === ReadabilityStatus.SUCCESS
-  const content = (isReadabilityReady ? entry.readabilityContent || "" : entry.content) || ""
-  const [toMarkdown, toMdast, gfmTableToMarkdown] = await Promise.all([
-    import("mdast-util-to-markdown").then((m) => m.toMarkdown),
-    import("hast-util-to-mdast").then((m) => m.toMdast),
-    import("mdast-util-gfm-table").then((m) => m.gfmTableToMarkdown),
-  ])
-  return toMarkdown(toMdast(parseHtml(content).hastTree), {
-    extensions: [gfmTableToMarkdown()],
-  })
-}
-
 const useRegisterObsidianCommands = () => {
   const { t } = useTranslation()
 
@@ -284,6 +278,8 @@ const useRegisterObsidianCommands = () => {
       publishedAt: string
       vaultPath: string
       description?: string
+      feedTitle?: string
+      feedUrl?: string
     }) => {
       return await ipcServices?.integration.saveToObsidian(data)
     },
@@ -315,6 +311,7 @@ const useRegisterObsidianCommands = () => {
               return
             }
             const markdownContent = await getEntryContentAsMarkdown(entry)
+            const feed = getFeedById(entry.feedId)
             tracker.integration({
               type: "obsidian",
               event: "save",
@@ -323,10 +320,12 @@ const useRegisterObsidianCommands = () => {
               url: entry.url || "",
               title: entry.title || "",
               content: markdownContent,
-              author: entry.author || getFeedById(entry.feedId)?.title || "",
+              author: entry.author || feed?.title || "",
               publishedAt: entry.publishedAt.toISOString() || "",
               vaultPath: obsidianVaultPath,
               description: getDescription(entry),
+              feedTitle: feed?.title || "",
+              feedUrl: feed?.url || "",
             })
           },
         }),

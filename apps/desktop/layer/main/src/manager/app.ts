@@ -10,6 +10,7 @@ import { WindowManager } from "~/manager/window"
 
 import { getIconPath } from "../helper"
 import { initializeIpcServices } from "../ipc"
+import { saveMediaToEagle } from "../ipc/services/integration"
 import { checkAndCleanCodeCache, clearCacheCronJob } from "../lib/cleaner"
 import { getSessionTokenFromCookies, syncSessionToCliConfig } from "../lib/cli-session-sync"
 import { t } from "../lib/i18n"
@@ -213,6 +214,19 @@ class AppManagerStatic {
 
       prepend: (_defaultActions, params) => {
         return [
+          {
+            label: t("contextMenu.saveMediaToEagle"),
+            visible:
+              params.mediaType === "image" &&
+              params.srcURL !== "" &&
+              !!store.get("eagleContextMenuEnabled"),
+            click: () => {
+              void saveMediaToEagle({
+                url: params.pageURL || params.srcURL,
+                mediaUrls: [params.srcURL],
+              })
+            },
+          },
           {
             label: t("contextMenu.openImageInBrowser"),
             visible: params.mediaType === "image",

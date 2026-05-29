@@ -7,7 +7,7 @@ import { usePrefetchUser, useUserById, useWhoami } from "@follow/store/user/hook
 import { Image as ExpoImage } from "expo-image"
 import { createContext, Fragment, use, useCallback, useEffect, useMemo } from "react"
 import { useTranslation } from "react-i18next"
-import { Alert, FlatList, Pressable, Share, View } from "react-native"
+import { Alert, FlatList, Platform, Pressable, Share, View } from "react-native"
 import Animated, {
   interpolate,
   useAnimatedScrollHandler,
@@ -42,6 +42,7 @@ import { ShareForwardCuteReIcon } from "@/src/icons/share_forward_cute_re"
 import type { followClient } from "@/src/lib/api-client"
 import { Navigation } from "@/src/lib/navigation/Navigation"
 import type { NavigationControllerView } from "@/src/lib/navigation/types"
+import { createLinkShareContent } from "@/src/lib/share"
 import { toast } from "@/src/lib/toast"
 import { useShareSubscription } from "@/src/modules/settings/hooks/useShareSubscription"
 import { UserHeaderBanner } from "@/src/modules/settings/UserHeaderBanner"
@@ -95,11 +96,13 @@ function ProfileScreenImpl(props: { userId: string }) {
   const openShareUrl = useCallback(() => {
     if (!user?.id) return
     const shareUrl = `https://app.folo.is/share/users/${user.id}`
-    Share.share({
-      message: shareUrl,
-      url: shareUrl,
-      title: `Folo | ${user.name}'s Profile`,
-    })
+    Share.share(
+      createLinkShareContent({
+        platform: Platform.OS,
+        title: `Folo | ${user.name}'s Profile`,
+        url: shareUrl,
+      }),
+    )
   }, [user?.id, user?.name])
 
   const whoami = useWhoami()

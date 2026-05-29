@@ -160,6 +160,9 @@ class ActionActions {
   deleteRule(index: number) {
     immerSet((state) => {
       state.rules.splice(index, 1)
+      state.rules.forEach((rule, ruleIndex) => {
+        rule.index = ruleIndex
+      })
       state.isDirty = true
     })
   }

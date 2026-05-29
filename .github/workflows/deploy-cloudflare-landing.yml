@@ -45,7 +45,7 @@ jobs:
           cache: "pnpm"
 
       - name: Install dependencies
-        run: pnpm install
+        run: pnpm install --frozen-lockfile --child-concurrency=1
 
       - name: Resolve deployment target
         id: target
@@ -72,7 +72,7 @@ jobs:
 
       - name: Deploy Landing to Cloudflare (dev)
         if: steps.target.outputs.environment == 'dev'
-        uses: cloudflare/wrangler-action@v3
+        uses: cloudflare/wrangler-action@v4
         with:
           apiToken: ${{ secrets.CLOUDFLARE_API_TOKEN }}
           accountId: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
@@ -81,7 +81,7 @@ jobs:
 
       - name: Deploy Landing to Cloudflare (prod)
         if: steps.target.outputs.environment == 'prod'
-        uses: cloudflare/wrangler-action@v3
+        uses: cloudflare/wrangler-action@v4
         with:
           apiToken: ${{ secrets.CLOUDFLARE_API_TOKEN }}
           accountId: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}

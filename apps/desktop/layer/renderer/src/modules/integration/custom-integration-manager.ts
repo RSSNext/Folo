@@ -10,8 +10,8 @@ import { toast } from "sonner"
 
 import { getActionLanguage } from "~/atoms/settings/general"
 import { getIntegrationSettings } from "~/atoms/settings/integration"
-import { parseHtml } from "~/lib/parse-html"
 
+import { convertHtmlToIntegrationMarkdown } from "./entry-content-markdown"
 import { getFetchAdapter } from "./fetch-adapter"
 import { URLSchemeHandler } from "./url-scheme-handler"
 
@@ -39,20 +39,7 @@ export class CustomIntegrationManager {
    */
   private static async getEntryContentAsMarkdown(entry: EntryModel): Promise<string> {
     const content = entry.content || ""
-    if (!content) return ""
-
-    try {
-      const [toMarkdown, toMdast, gfmTableToMarkdown] = await Promise.all([
-        import("mdast-util-to-markdown").then((m) => m.toMarkdown),
-        import("hast-util-to-mdast").then((m) => m.toMdast),
-        import("mdast-util-gfm-table").then((m) => m.gfmTableToMarkdown),
-      ])
-      return toMarkdown(toMdast(parseHtml(content).hastTree), {
-        extensions: [gfmTableToMarkdown()],
-      })
-    } catch {
-      return content
-    }
+    return convertHtmlToIntegrationMarkdown(content)
   }
 
   /**

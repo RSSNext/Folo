@@ -480,6 +480,106 @@ describe("/manifest", () => {
   })
 })
 
+describe("/download", () => {
+  it("redirects desktop Windows downloads to the installer from OTA metadata", async () => {
+    const response = await fetchWorker("/download/desktop/windows/exe", undefined, {
+      kvEntries: new Map<string, unknown>([
+        [
+          KV_KEYS.policy("desktop", "stable", "direct"),
+          {
+            releaseVersion: "1.5.1",
+            required: false,
+            minSupportedBinaryVersion: "1.5.0",
+            message: null,
+            publishedAt: "2026-04-11T10:00:00Z",
+            distribution: "direct",
+            downloadUrl: null,
+            storeUrl: null,
+          },
+        ],
+        [KV_KEYS.release("desktop", "1.5.1"), createDesktopRelease()],
+      ]),
+    })
+
+    expect(response.status).toBe(302)
+    expect(response.headers.get("location")).toBe(
+      "https://github.com/RSSNext/Folo/releases/download/desktop/v1.5.1/Folo-1.5.1-windows-x64.exe",
+    )
+  })
+
+  it("redirects desktop macOS downloads to the dmg from OTA metadata", async () => {
+    const response = await fetchWorker("/download/desktop/macos/dmg", undefined, {
+      kvEntries: new Map<string, unknown>([
+        [
+          KV_KEYS.policy("desktop", "stable", "direct"),
+          {
+            releaseVersion: "1.5.1",
+            required: false,
+            minSupportedBinaryVersion: "1.5.0",
+            message: null,
+            publishedAt: "2026-04-11T10:00:00Z",
+            distribution: "direct",
+            downloadUrl: null,
+            storeUrl: null,
+          },
+        ],
+        [
+          KV_KEYS.release("desktop", "1.5.1"),
+          createDesktopRelease({
+            desktop: {
+              ...createDesktopRelease().desktop,
+              app: {
+                platforms: {
+                  ...createDesktopRelease().desktop.app!.platforms,
+                  macos: {
+                    ...createDesktopRelease().desktop.app!.platforms.macos!,
+                    files: [
+                      {
+                        filename: "Folo-1.5.1-macos-arm64.dmg",
+                        sha512: "f".repeat(88),
+                        size: 654321,
+                        downloadUrl:
+                          "https://github.com/RSSNext/Folo/releases/download/desktop/v1.5.1/Folo-1.5.1-macos-arm64.dmg",
+                      },
+                      ...createDesktopRelease().desktop.app!.platforms.macos!.files,
+                    ],
+                  },
+                },
+              },
+            },
+          }),
+        ],
+      ]),
+    })
+
+    expect(response.status).toBe(302)
+    expect(response.headers.get("location")).toBe(
+      "https://github.com/RSSNext/Folo/releases/download/desktop/v1.5.1/Folo-1.5.1-macos-arm64.dmg",
+    )
+  })
+
+  it("redirects Android APK downloads from the cached OTA release version", async () => {
+    const response = await fetchWorker("/download/mobile/android/apk", undefined, {
+      kvEntries: new Map<string, unknown>([
+        [
+          KV_KEYS.latestReleaseVersion("mobile"),
+          {
+            product: "mobile",
+            version: "0.5.0",
+            publishedAt: "2026-04-15T04:49:25Z",
+            tag: "mobile/v0.5.0",
+          },
+        ],
+      ]),
+    })
+
+    expect(response.status).toBe(302)
+    expect(response.headers.get("location")).toBe(
+      "https://github.com/RSSNext/Folo/releases/download/mobile/v0.5.0/build.apk",
+    )
+  })
+})
+
 describe("/assets/*", () => {
   it("returns 404 when the asset is missing", async () => {
     const response = await fetchWorker(

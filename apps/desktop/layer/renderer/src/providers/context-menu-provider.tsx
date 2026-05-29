@@ -18,7 +18,7 @@ import {
 import { KbdCombined } from "@follow/components/ui/kbd/Kbd.js"
 import { nextFrame, preventDefault } from "@follow/utils/dom"
 import { cn } from "@follow/utils/utils"
-import { Fragment, memo, useCallback, useEffect, useRef } from "react"
+import { Fragment, memo, useCallback, useEffect, useReducer, useRef } from "react"
 import { useHotkeys } from "react-hotkeys-hook"
 
 import type { FollowMenuItem } from "~/atoms/context-menu"
@@ -40,6 +40,8 @@ export const ContextMenuProvider: Component = ({ children }) => (
 const Handler = () => {
   const ref = useRef<HTMLSpanElement>(null)
   const [contextMenuState, setContextMenuState] = useContextMenuState()
+  const wasOpenRef = useRef(false)
+  const [contextMenuKey, resetContextMenu] = useReducer((key) => key + 1, 0)
 
   useEffect(() => {
     if (!contextMenuState.open) return
@@ -55,6 +57,18 @@ const Handler = () => {
       }),
     )
   }, [contextMenuState])
+
+  useEffect(() => {
+    if (contextMenuState.open) {
+      wasOpenRef.current = true
+      return
+    }
+
+    if (!wasOpenRef.current) return
+    wasOpenRef.current = false
+    resetContextMenu()
+  }, [contextMenuState.open])
+
   const setGlobalFocusableScope = useSetGlobalFocusableScope()
 
   const handleOpenChange = useCallback(
@@ -69,11 +83,11 @@ const Handler = () => {
   )
 
   return (
-    <ContextMenu onOpenChange={handleOpenChange}>
+    <ContextMenu key={contextMenuKey} onOpenChange={handleOpenChange}>
       <ContextMenuTrigger className="hidden" ref={ref} />
-      <ContextMenuContent onContextMenu={preventDefault}>
-        {contextMenuState.open &&
-          contextMenuState.menuItems.map((item, index) => {
+      {contextMenuState.open && (
+        <ContextMenuContent onContextMenu={preventDefault}>
+          {contextMenuState.menuItems.map((item, index) => {
             const prevItem = contextMenuState.menuItems[index - 1]
             if (prevItem instanceof MenuItemSeparator && item instanceof MenuItemSeparator) {
               return null
@@ -86,11 +100,33 @@ const Handler = () => {
             if (!nextItem && item instanceof MenuItemSeparator) {
               return null
             }
-            return <Item key={index} item={item} />
+            return (
+              <Item key={getMenuItemKey(item, index, contextMenuState.menuItems)} item={item} />
+            )
           })}
-      </ContextMenuContent>
+        </ContextMenuContent>
+      )}
     </ContextMenu>
   )
+}
+
+const getMenuItemKey = (item: FollowMenuItem, index: number, items: FollowMenuItem[]) => {
+  if (item instanceof MenuItemSeparator) {
+    const previousItem = items[index - 1]
+    const nextItem = items[index + 1]
+    const previousLabel = previousItem instanceof MenuItemText ? previousItem.label : "start"
+    const nextLabel = nextItem instanceof MenuItemText ? nextItem.label : "end"
+
+    return `separator-${previousLabel}-${nextLabel}`
+  }
+
+  return [
+    item.label,
+    item.shortcut ?? "no-shortcut",
+    typeof item.checked === "boolean" ? item.checked.toString() : "unchecked",
+    item.disabled ? "disabled" : "enabled",
+    item.submenu.length.toString(),
+  ].join(":")
 }
 
 const Item = memo(({ item }: { item: FollowMenuItem }) => {
@@ -155,7 +191,7 @@ const Item = memo(({ item }: { item: FollowMenuItem }) => {
             <ContextMenuPortal>
               <ContextMenuSubContent>
                 {item.submenu.map((subItem, index) => (
-                  <Item key={index} item={subItem} />
+                  <Item key={getMenuItemKey(subItem, index, item.submenu)} item={subItem} />
                 ))}
               </ContextMenuSubContent>
             </ContextMenuPortal>
