@@ -29,9 +29,16 @@ concurrency:
 jobs:
   build:
     name: Build Android apk for device
-    if: github.secret_source != 'None' && (github.event_name != 'push' || github.ref != 'refs/heads/mobile-main' || !contains(github.event.head_commit.message || '', 'release(mobile):'))
+    if: >-
+      github.secret_source != 'None' &&
+      (
+        github.event_name != 'push' ||
+        !(
+          (github.ref == 'refs/heads/mobile-main' && contains(github.event.head_commit.message || '', 'release(mobile):')) ||
+          (github.ref == 'refs/heads/main' && contains(github.event.head_commit.message || '', 'release(desktop):'))
+        )
+      )
     runs-on: ubuntu-latest
-
     steps:
       - name: 🧹 Claim disk space
         run: |
