@@ -38,6 +38,20 @@ type ReadEntryTarget = {
   isInbox: boolean
 }
 
+const countUnreadEntriesById = (entryIds: string[]): UnreadStoreModel => {
+  const unreadCountById: UnreadStoreModel = {}
+
+  for (const entryId of entryIds) {
+    const entry = getEntry(entryId)
+    const id = entry?.inboxHandle || entry?.feedId
+    if (!id) continue
+
+    unreadCountById[id] = (unreadCountById[id] || 0) + 1
+  }
+
+  return unreadCountById
+}
+
 class UnreadSyncService {
   private queuedReadEntryIds = new Set<string>()
   private queuedReadFlushPromise: Promise<void> | null = null
@@ -65,9 +79,13 @@ class UnreadSyncService {
     if (!ids || ids.length === 0) return
 
     const currentUnreadList = ids.map((id) => ({ id, count: get().data[id] || 0 }))
+    const currentUnreadById = Object.fromEntries(
+      currentUnreadList.map(({ id, count }) => [id, count]),
+    )
     const newUnreadListWhenNoTimeFilter = ids.map((id) => ({ id, count: 0 }))
 
     let affectedEntryIds: string[] = []
+    let newUnreadListWhenTimeFilter: typeof currentUnreadList = []
 
     const tx = createTransaction<unknown, unknown, UnreadStoreModel>()
 
@@ -80,6 +98,13 @@ class UnreadSyncService {
 
       if (!time) {
         unreadActions.upsertManyInSession(newUnreadListWhenNoTimeFilter)
+      } else {
+        const optimisticUnreadCountById = countUnreadEntriesById(affectedEntryIds)
+        newUnreadListWhenTimeFilter = ids.map((id) => ({
+          id,
+          count: Math.max(0, (currentUnreadById[id] || 0) - (optimisticUnreadCountById[id] || 0)),
+        }))
+        unreadActions.upsertManyInSession(newUnreadListWhenTimeFilter)
       }
     })
 
@@ -99,7 +124,13 @@ class UnreadSyncService {
         await UnreadService.upsertMany(newUnreadListWhenNoTimeFilter)
       } else {
         if (res) {
-          await unreadActions.changeBatch(res, "decrement")
+          const finalUnreadList = Array.from(new Set([...ids, ...Object.keys(res)])).map((id) => ({
+            id,
+            count: Math.max(0, (currentUnreadById[id] ?? get().data[id] ?? 0) - (res[id] || 0)),
+          }))
+          await unreadActions.upsertMany(finalUnreadList)
+        } else {
+          await UnreadService.upsertMany(newUnreadListWhenTimeFilter)
         }
       }
 

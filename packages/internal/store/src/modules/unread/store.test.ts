@@ -26,17 +26,23 @@ vi.mock("@follow/database/services/unread", () => ({
   },
 }))
 
-const createEntry = (id: string, feedId: string, read = false): EntryModel => ({
+const createEntry = (
+  id: string,
+  feedId: string,
+  read = false,
+  publishedAt = new Date("2026-01-01T00:00:00.000Z"),
+): EntryModel => ({
   id,
   guid: `${id}-guid`,
   insertedAt: new Date("2026-01-01T00:00:00.000Z"),
-  publishedAt: new Date("2026-01-01T00:00:00.000Z"),
+  publishedAt,
   feedId,
   read,
 })
 
 describe("unreadSyncService", () => {
   const markAsReadMock = vi.fn()
+  const markAllAsReadMock = vi.fn()
 
   beforeEach(() => {
     vi.clearAllMocks()
@@ -62,6 +68,7 @@ describe("unreadSyncService", () => {
     useUnreadStore.setState({ data: {} })
     apiContext.provide({
       reads: {
+        markAllAsRead: markAllAsReadMock,
         markAsRead: markAsReadMock,
       },
     } as unknown as FollowAPI)
@@ -95,6 +102,50 @@ describe("unreadSyncService", () => {
     expect(useEntryStore.getState().data.entry1?.read).toBe(true)
     expect(useEntryStore.getState().data.entry2?.read).toBe(true)
     expect(useUnreadStore.getState().data.feed1).toBe(0)
+  })
+
+  it("optimistically decrements unread count for time-limited batch reads", async () => {
+    const entries = {
+      entry1: createEntry("entry1", "feed1", false, new Date("2026-01-01T00:05:00.000Z")),
+      entry2: createEntry("entry2", "feed1", false, new Date("2026-01-01T00:03:00.000Z")),
+      entry3: createEntry("entry3", "feed1", false, new Date("2026-01-01T00:01:00.000Z")),
+    }
+    useEntryStore.setState((state) => ({
+      ...state,
+      data: entries,
+      entryIdSet: new Set(Object.keys(entries)),
+    }))
+    useUnreadStore.setState({ data: { feed1: 3 } })
+
+    let resolveMarkAllAsRead!: (value: { data: { read: Record<string, number> } }) => void
+    markAllAsReadMock.mockReturnValue(
+      new Promise((resolve) => {
+        resolveMarkAllAsRead = resolve
+      }),
+    )
+
+    const markBatchAsRead = unreadSyncService.markBatchAsRead({
+      view: FeedViewType.Articles,
+      filter: {
+        feedIdList: ["feed1"],
+      },
+      time: {
+        startTime: new Date("2026-01-01T00:02:00.000Z").getTime(),
+        endTime: new Date("2026-01-01T00:06:00.000Z").getTime(),
+      },
+      excludePrivate: false,
+    })
+    await Promise.resolve()
+
+    expect(useEntryStore.getState().data.entry1?.read).toBe(true)
+    expect(useEntryStore.getState().data.entry2?.read).toBe(true)
+    expect(useEntryStore.getState().data.entry3?.read).toBe(false)
+    expect(useUnreadStore.getState().data.feed1).toBe(1)
+
+    resolveMarkAllAsRead({ data: { read: { feed1: 2 } } })
+    await markBatchAsRead
+
+    expect(useUnreadStore.getState().data.feed1).toBe(1)
   })
 
   it("queues rapid read marks into one batched request", async () => {
