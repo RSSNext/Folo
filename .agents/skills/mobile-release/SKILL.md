@@ -83,7 +83,17 @@ The CI release flow is file-driven:
 
 ### Determine the target runtime
 
-If recommending `ota`, derive the target store binary version from recent `origin/mobile-main` releases and propose it as the `runtimeVersion`.
+If recommending `ota`, derive the target runtime from the store binaries that users currently have installed, not from the new release version, latest mobile tag, or latest OTA release.
+
+1. Check the public store versions first:
+   ```bash
+   curl --fail --silent --show-error https://ota.folo.is/versions | jq '.store.mobile'
+   ```
+2. Cross-check the store runtime model in `apps/mobile/app.config.base.ts`. Today the mobile runtime defaults to the binary package version unless `OTA_RUNTIME_VERSION` is explicitly set during an OTA export.
+3. Use the current App Store / Google Play binary version as the OTA `runtimeVersion`. Example: if the stores still show `0.5.0`, an OTA release for `0.5.4` must use `"runtimeVersion": "0.5.0"` so existing store users can receive it.
+4. If iOS and Android store versions differ, or if the target installed runtime is not clear, stop and ask the user. The release plan supports only one OTA `runtimeVersion`; do not guess or silently pick the newest version.
+
+Never choose the previous OTA release version just because it is the latest working manifest. A runtime mismatch publishes valid assets that only newer binaries can see, leaving current store users stuck on the older OTA.
 
 If you cannot determine the runtime confidently, stop and ask the user to confirm it.
 
@@ -189,6 +199,8 @@ Examples:
 - create mobile tag
 - trigger OTA publish only
 - no store builds
+
+Do not require live OTA manifest verification during release PR preparation. The user manually merges the PR later, so the OTA publish happens after this workflow finishes and there may be a time gap before the Worker syncs. If the user later asks to check the rollout, verify the workflow run, GitHub Release assets, and `/manifest` at that time.
 
 ## References
 
