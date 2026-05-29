@@ -1,11 +1,19 @@
 # What's new in vNEXT_VERSION
 
-## Shiny new things
-
 ## Improvements
+
+- Upgraded AI summaries to a more powerful Kimi model
+- Improved Obsidian integration metadata and markdown handling
+- Improved scroll mark-read reliability with batched updates, retry handling, and local read-state preservation
+- Improved action rule editor state stability
+- Routed direct desktop downloads through OTA-backed delivery
 
 ## No longer broken
 
-## Thanks
-
-Special thanks to volunteer contributors @ for their valuable contributions
+- Fixed stale desktop context menus after web menu changes
+- Fixed native image context menus being replaced unexpectedly
+- Fixed duplicate timeline page requests
+- Fixed timeline refreshes not returning to the top first
+- Fixed starred collection pagination order
+- Fixed Obsidian file path separator handling
+- Fixed unread counts after time-limited mark-read actions
