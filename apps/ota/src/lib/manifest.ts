@@ -5,6 +5,43 @@ import type { OtaPlatform, OtaPlatformPayload, OtaProjectedPlatforms, OtaRelease
 
 type PlatformPayload = OtaPlatformPayload
 type PlatformAsset = PlatformPayload["launchAsset"] | PlatformPayload["assets"][number]
+type MobileExpoClientConfig = {
+  name: string
+  slug: string
+  owner: string
+  version: string
+  runtimeVersion: string
+  orientation: "portrait"
+  scheme: string[]
+  userInterfaceStyle: "automatic"
+  updates: {
+    url: string
+    requestHeaders: {
+      "expo-channel-name": string
+    }
+    codeSigningMetadata: {
+      keyid: string
+      alg: string
+    }
+    checkAutomatically: "NEVER"
+  }
+  ios: {
+    bundleIdentifier: string
+    supportsTablet: boolean
+    usesAppleSignIn: boolean
+  }
+  android: {
+    package: string
+  }
+  extra: {
+    eas: {
+      projectId: string
+    }
+  }
+}
+
+const MOBILE_UPDATE_URL = "https://ota.folo.is/manifest"
+const MOBILE_EAS_PROJECT_ID = "a6335b14-fb84-45aa-ba80-6f6ab8926920"
 
 export interface ManifestAsset {
   key: string
@@ -26,6 +63,7 @@ export interface OtaManifest {
   }
   extra: {
     product: OtaRelease["product"]
+    expoClient?: MobileExpoClientConfig
   }
 }
 
@@ -62,9 +100,7 @@ export function buildManifest(
       channel: release.channel,
       releaseVersion: release.releaseVersion,
     },
-    extra: {
-      product: release.product,
-    },
+    extra: buildManifestExtra(release),
   }
 }
 
@@ -140,6 +176,56 @@ function toExpoAssetIdentity(path: string, contentType: string) {
     key: fileName,
     fileExtension: inferredExtension,
   }
+}
+
+function buildManifestExtra(release: OtaRelease): OtaManifest["extra"] {
+  const extra: OtaManifest["extra"] = {
+    product: release.product,
+  }
+
+  if (release.product === "mobile") {
+    // Expo Updates hydrates Constants.expoConfig from extra.expoClient after an OTA launch.
+    extra.expoClient = buildMobileExpoClientConfig(release)
+  }
+
+  return extra
+}
+
+function buildMobileExpoClientConfig(release: Extract<OtaRelease, { product: "mobile" }>) {
+  return {
+    name: "Folo",
+    slug: "follow",
+    owner: "follow",
+    version: release.releaseVersion,
+    runtimeVersion: release.runtimeVersion,
+    orientation: "portrait",
+    scheme: ["follow", "folo"],
+    userInterfaceStyle: "automatic",
+    updates: {
+      url: MOBILE_UPDATE_URL,
+      requestHeaders: {
+        "expo-channel-name": release.channel,
+      },
+      codeSigningMetadata: {
+        keyid: "main",
+        alg: "rsa-v1_5-sha256",
+      },
+      checkAutomatically: "NEVER",
+    },
+    ios: {
+      bundleIdentifier: "is.follow",
+      supportsTablet: true,
+      usesAppleSignIn: true,
+    },
+    android: {
+      package: "is.follow",
+    },
+    extra: {
+      eas: {
+        projectId: MOBILE_EAS_PROJECT_ID,
+      },
+    },
+  } satisfies MobileExpoClientConfig
 }
 
 function inferExtensionFromContentType(contentType: string) {

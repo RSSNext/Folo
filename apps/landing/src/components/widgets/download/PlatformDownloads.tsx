@@ -20,19 +20,16 @@ type PlatformDownloadsProps = {
 }
 
 const getPlatformGroups = (
+  groups: PlatformDownloadGroup[],
   detectedOS: OS | null,
   showAllPlatforms: boolean,
 ): PlatformDownloadGroup[] => {
   if (!detectedOS) {
-    return PlatformDownloadGroups
+    return groups
   }
 
-  const currentPlatform = PlatformDownloadGroups.find(
-    (group) => group.os === detectedOS,
-  )
-  const otherPlatforms = PlatformDownloadGroups.filter(
-    (group) => group.os !== detectedOS,
-  )
+  const currentPlatform = groups.find((group) => group.os === detectedOS)
+  const otherPlatforms = groups.filter((group) => group.os !== detectedOS)
 
   return showAllPlatforms
     ? ([currentPlatform, ...otherPlatforms].filter(
@@ -40,7 +37,7 @@ const getPlatformGroups = (
       ) as PlatformDownloadGroup[])
     : currentPlatform
       ? [currentPlatform]
-      : PlatformDownloadGroups
+      : groups
 }
 
 export const PlatformDownloads: Component<PlatformDownloadsProps> = ({
@@ -49,7 +46,11 @@ export const PlatformDownloads: Component<PlatformDownloadsProps> = ({
   const platformT = useTranslations('download.platforms')
   const [showAllPlatforms, setShowAllPlatforms] = React.useState(false)
 
-  const platformGroups = getPlatformGroups(detectedOS, showAllPlatforms)
+  const platformGroups = getPlatformGroups(
+    PlatformDownloadGroups,
+    detectedOS,
+    showAllPlatforms,
+  )
   const webTitle = platformT('web.title')
   const webSubtitle = platformT('web.subtitle')
   const footer = platformT.rich('footer', {

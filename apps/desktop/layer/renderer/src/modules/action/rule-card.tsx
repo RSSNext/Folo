@@ -28,6 +28,12 @@ export const RuleCard = ({
   defaultOpen = false,
   onOpenChange,
 }: RuleCardProps) => {
+  const ruleExists = useActionRules((rules) => Boolean(rules[index]))
+
+  if (!ruleExists) {
+    return null
+  }
+
   if (mode === "compact") {
     return <CompactRuleCard index={index} defaultOpen={defaultOpen} onOpenChange={onOpenChange} />
   }
@@ -72,6 +78,10 @@ const CompactRuleCard = ({
   useEffect(() => {
     setOpen(defaultOpen)
   }, [defaultOpen])
+
+  if (!rule) {
+    return null
+  }
 
   const toggle = () => {
     setOpen((prev) => {
@@ -123,11 +133,19 @@ const CompactRuleCard = ({
 
 const RuleCardToolbar = ({ index }: { index: number }) => {
   const { t } = useTranslation("settings")
-  const name = useActionRule(index, (a) => a.name)
-  const disabled = useActionRule(index, (a) => a.result.disabled)
+  const rule = useActionRule(index)
   const ruleCount = useActionRules((s) => s.length)
   const mutation = useUpdateActionsMutation()
   const { ask } = useDialog()
+
+  if (!rule) {
+    return null
+  }
+
+  const {
+    name,
+    result: { disabled },
+  } = rule
 
   const handleDelete = () => {
     if (ruleCount === 1) {

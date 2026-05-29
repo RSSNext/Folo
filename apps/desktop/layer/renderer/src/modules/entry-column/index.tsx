@@ -1,5 +1,6 @@
 import { FeedViewType, getView } from "@follow/constants"
 import { useScrollMarkReadGracePeriod, useTitle } from "@follow/hooks"
+import { getScrollMarkReadRangeState } from "@follow/shared/scroll-mark-read"
 import { useEntry } from "@follow/store/entry/hooks"
 import { useFeedById } from "@follow/store/feed/hooks"
 import { useSubscriptionByFeedId } from "@follow/store/subscription/hooks"
@@ -8,7 +9,7 @@ import { useIsLoggedIn } from "@follow/store/user/hooks"
 import { isBizId } from "@follow/utils/utils"
 import type { Range, Virtualizer } from "@tanstack/react-virtual"
 import { atom, useAtomValue } from "jotai"
-import { memo, useCallback, useEffect, useMemo, useRef } from "react"
+import { memo, useCallback, useEffect, useLayoutEffect, useMemo, useRef } from "react"
 import { useTranslation } from "react-i18next"
 
 import { useGeneralSettingKey } from "~/atoms/settings/general"
@@ -37,17 +38,41 @@ import { EntryRootStateContext } from "./store/EntryColumnContext"
 
 function EntryColumnContent() {
   const listRef = useRef<Virtualizer<HTMLElement, Element>>(undefined)
+  const scrollAreaRef = useRef<HTMLDivElement>(null)
   const { t } = useTranslation()
   const state = useEntriesState()
 
+  const isInteracted = useRef(false)
+  const scrollMarkReadAnchorIndexRef = useRef<number | null>(null)
+  const latestRangeStartIndexRef = useRef<number | null>(null)
+  const resetScrollInteractionState = useCallback(() => {
+    isInteracted.current = false
+    scrollMarkReadAnchorIndexRef.current = null
+    latestRangeStartIndexRef.current = null
+  }, [])
+
   const actions = useEntriesActions()
+  const scrollTimelineToTop = useCallback(() => {
+    resetScrollInteractionState()
+
+    const runScrollToTop = () => {
+      listRef.current?.scrollToOffset(0)
+
+      const scrollArea = scrollAreaRef.current
+      if (!scrollArea) return
+
+      scrollArea.scrollTop = 0
+      scrollArea.scrollLeft = 0
+    }
+
+    runScrollToTop()
+    globalThis.requestAnimationFrame?.(runScrollToTop)
+  }, [resetScrollInteractionState])
   // Register reset handler to keep scroll behavior when data resets
   useEffect(() => {
-    actions.setOnReset(() => {
-      listRef.current?.scrollToIndex(0)
-    })
+    actions.setOnReset(scrollTimelineToTop)
     return () => actions.setOnReset(null)
-  }, [actions])
+  }, [actions, scrollTimelineToTop])
 
   const { entriesIds, groupedCounts } = state
   useSnapEntryIdList(entriesIds)
@@ -68,6 +93,7 @@ function EntryColumnContent() {
   const title = useFeedHeaderTitle()
   useTitle(title)
   const isLoggedIn = useIsLoggedIn()
+  const timelineIdentity = `${view}:${routeFeedId ?? ""}`
 
   useEffect(() => {
     if (!activeEntryId) return
@@ -79,32 +105,56 @@ function EntryColumnContent() {
     unreadSyncService.markEntryAsRead(activeEntryId)
   }, [activeEntryId, entry?.feedId, isCollection, isPendingEntry, isLoggedIn])
 
-  const isInteracted = useRef(false)
   const isRefreshing = state.isFetching && !state.isFetchingNextPage
-  const pauseScrollMarkRead = useScrollMarkReadGracePeriod(isRefreshing)
+  const pauseScrollMarkRead = useScrollMarkReadGracePeriod(
+    isRefreshing,
+    undefined,
+    timelineIdentity,
+  )
+
+  useLayoutEffect(() => {
+    resetScrollInteractionState()
+  }, [resetScrollInteractionState, timelineIdentity])
+
+  const wasRefreshingRef = useRef(isRefreshing)
+  useEffect(() => {
+    const wasRefreshing = wasRefreshingRef.current
+    wasRefreshingRef.current = isRefreshing
+
+    if (!wasRefreshing || isRefreshing) return
+    scrollTimelineToTop()
+  }, [isRefreshing, scrollTimelineToTop])
 
   const { handleRenderMarkRead, handleScrollMarkRead } = useEntryMarkReadHandler(entriesIds, {
     pauseScrollMarkRead,
   })
+
+  const flushScrollMarkRead = useCallback(
+    (currentStartIndex: number) => {
+      if (!routeFeedId) return
+
+      const { nextAnchorIndex, range } = getScrollMarkReadRangeState({
+        anchorIndex: scrollMarkReadAnchorIndexRef.current,
+        currentStartIndex,
+      })
+      scrollMarkReadAnchorIndexRef.current = nextAnchorIndex
+
+      if (range) {
+        handleScrollMarkRead?.(range as Range, isInteracted.current)
+      }
+    },
+    [handleScrollMarkRead, routeFeedId],
+  )
 
   const handleScroll = useCallback(() => {
     if (!isInteracted.current) {
       isInteracted.current = true
     }
 
-    if (!routeFeedId) return
-
-    const [first, second] = rangeQueueRef.current
-    if (first && second && second.startIndex - first.startIndex > 0) {
-      handleScrollMarkRead?.(
-        {
-          startIndex: first.startIndex,
-          endIndex: second.startIndex,
-        } as Range,
-        isInteracted.current,
-      )
+    if (latestRangeStartIndexRef.current !== null) {
+      flushScrollMarkRead(latestRangeStartIndexRef.current)
     }
-  }, [handleScrollMarkRead, routeFeedId])
+  }, [flushScrollMarkRead])
 
   const { handleScroll: handleScrollBeyond } = useAttachScrollBeyond()
   const handleCombinedScroll = useCallback(
@@ -117,19 +167,20 @@ function EntryColumnContent() {
 
   const navigate = useNavigateEntry()
 
-  const rangeQueueRef = useRef<Range[]>([])
   const aiTimelineEnabled = useAtomValue(aiTimelineEnabledAtom)
   const showAiTimelineLoading = aiTimelineEnabled && state.isLoading && !state.isFetchingNextPage
   const renderAsRead = useGeneralSettingKey("renderMarkUnread")
   const handleRangeChange = useCallback(
     (e: Range) => {
-      const [_, second] = rangeQueueRef.current
-      if (second?.startIndex === e.startIndex) {
+      if (latestRangeStartIndexRef.current === e.startIndex) {
         return
       }
-      rangeQueueRef.current.push(e)
-      if (rangeQueueRef.current.length > 2) {
-        rangeQueueRef.current.shift()
+
+      latestRangeStartIndexRef.current = e.startIndex
+      if (scrollMarkReadAnchorIndexRef.current === null) {
+        scrollMarkReadAnchorIndexRef.current = e.startIndex
+      } else if (isInteracted.current) {
+        flushScrollMarkRead(e.startIndex)
       }
 
       if (!renderAsRead) return
@@ -139,7 +190,7 @@ function EntryColumnContent() {
       // For gird, render as mark read logic
       handleRenderMarkRead?.(e, isInteracted.current)
     },
-    [handleRenderMarkRead, renderAsRead, view],
+    [flushScrollMarkRead, handleRenderMarkRead, renderAsRead, view],
   )
 
   const fetchNextPage = useCallback(() => {
@@ -169,9 +220,17 @@ function EntryColumnContent() {
         !state.error &&
         (!feed || feed?.type === "feed") && <AddFeedHelper />}
 
-      <EntryListHeader refetch={actions.refetch} isRefreshing={isRefreshing} />
+      <EntryListHeader
+        refetch={actions.refetch}
+        isRefreshing={isRefreshing}
+        onBeforeRefresh={scrollTimelineToTop}
+      />
 
-      <EntryColumnWrapper onScroll={handleCombinedScroll} key={`${routeFeedId}-${view}`}>
+      <EntryColumnWrapper
+        ref={scrollAreaRef}
+        onScroll={handleCombinedScroll}
+        key={`${routeFeedId}-${view}`}
+      >
         {entriesIds.length === 0 ? (
           state.isLoading ? (
             <EntryItemSkeleton view={view} />

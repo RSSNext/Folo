@@ -10,7 +10,7 @@ import { setStringAsync } from "expo-clipboard"
 import { useAtom } from "jotai"
 import { useCallback, useEffect, useState } from "react"
 import { useTranslation } from "react-i18next"
-import { Pressable, Share, View } from "react-native"
+import { Platform, Pressable, Share, View } from "react-native"
 import type { SharedValue } from "react-native-reanimated"
 import Animated, { interpolate, useAnimatedStyle } from "react-native-reanimated"
 import { useColor } from "react-native-uikit-colors"
@@ -27,6 +27,7 @@ import { StarCuteReIcon } from "@/src/icons/star_cute_re"
 import { Translate2CuteReIcon } from "@/src/icons/translate_2_cute_re"
 import { VoiceCuteReIcon } from "@/src/icons/voice_cute_re"
 import { hideIntelligenceGlowEffect, openLink } from "@/src/lib/native"
+import { createLinkShareContent } from "@/src/lib/share"
 import { toast } from "@/src/lib/toast"
 import { playEntryTts } from "@/src/modules/player/entry-tts"
 
@@ -100,11 +101,9 @@ const HeaderRightActionsImpl = ({
 
   const handleShare = () => {
     if (!entry?.title || !entry?.url) return
-    Share.share({
-      message: entry.url,
-      title: entry.title,
-      url: entry.url,
-    })
+    Share.share(
+      createLinkShareContent({ platform: Platform.OS, title: entry.title, url: entry.url }),
+    )
   }
 
   const toggleAITranslation = () => {

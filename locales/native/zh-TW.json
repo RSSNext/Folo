@@ -14,6 +14,7 @@
   "contextMenu.saveImage": "儲存圖片",
   "contextMenu.saveImageAs": "圖片另存為...",
   "contextMenu.saveLinkAs": "連結另存為...",
+  "contextMenu.saveMediaToEagle": "儲存媒體至 Eagle",
   "contextMenu.saveVideo": "儲存影片",
   "contextMenu.saveVideoAs": "影片另存為...",
   "contextMenu.searchWithGoogle": "使用 Google 搜尋",

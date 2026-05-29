@@ -9,7 +9,7 @@ import { PortalProvider } from "@gorhom/portal"
 import type { PropsWithChildren } from "react"
 import { useCallback } from "react"
 import { useTranslation } from "react-i18next"
-import { Share, View } from "react-native"
+import { Platform, Share, View } from "react-native"
 
 import { getHideAllReadSubscriptions } from "@/src/atoms/settings/general"
 import { EntryContentWebView } from "@/src/components/native/webview/EntryContentWebView"
@@ -17,6 +17,7 @@ import { WebViewManager } from "@/src/components/native/webview/webview-manager"
 import { ContextMenu } from "@/src/components/ui/context-menu"
 import { Text } from "@/src/components/ui/typography/Text"
 import { useNavigation } from "@/src/lib/navigation/hooks"
+import { createLinkShareContent } from "@/src/lib/share"
 import { toast } from "@/src/lib/toast"
 import { playEntryTts } from "@/src/modules/player/entry-tts"
 import { EntryDetailScreen } from "@/src/screens/(stack)/entries/[entryId]/EntryDetailScreen"
@@ -204,11 +205,13 @@ export const EntryItemContextMenu = ({
             key="Share"
             onSelect={async () => {
               if (!entry.url) return
-              await Share.share({
-                message: entry.url,
-                url: entry.url,
-                title: entry.title || "Shared Link",
-              })
+              await Share.share(
+                createLinkShareContent({
+                  platform: Platform.OS,
+                  title: entry.title || "Shared Link",
+                  url: entry.url,
+                }),
+              )
             }}
           >
             <ContextMenu.ItemIcon

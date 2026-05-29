@@ -1,8 +1,7 @@
 import { getView } from "@follow/constants"
-import { entryActions } from "@follow/store/entry/store"
 import { unreadSyncService } from "@follow/store/unread/store"
 import type { Range } from "@tanstack/react-virtual"
-import { useEffect, useMemo, useRef } from "react"
+import { useMemo } from "react"
 import { useEventCallback } from "usehooks-ts"
 
 import { useGeneralSettingKey } from "~/atoms/settings/general"
@@ -18,26 +17,13 @@ export const useEntryMarkReadHandler = (
   const scrollMarkUnread = useGeneralSettingKey("scrollMarkUnread")
   const feedView = useRouteParamsSelector((params) => params.view)
 
-  const processedEntryIds = useRef(new Set<string>())
-
-  useEffect(() => {
-    processedEntryIds.current.clear()
-  }, [entriesIds])
-
   const handleRangeMarkRead = useEventCallback(
     ({ startIndex, endIndex }: Range, enabled?: boolean) => {
       if (!enabled) return
       const idSlice = entriesIds?.slice(startIndex, endIndex)
-      if (!idSlice) return
+      if (!idSlice?.length) return
 
-      // Filter out entries that have already been processed
-      const newEntries = idSlice.filter((id) => !processedEntryIds.current.has(id))
-      if (newEntries.length === 0) return
-
-      // Mark these entries as processed to avoid duplicate processing
-      newEntries.forEach((id) => processedEntryIds.current.add(id))
-
-      batchMarkRead(newEntries)
+      batchMarkRead(idSlice)
     },
   )
 
@@ -71,21 +57,6 @@ export const useEntryMarkReadHandler = (
 }
 
 export function batchMarkRead(ids: string[]) {
-  const batchLikeIds = [] as string[]
-  const entriesId2Map = entryActions.getFlattenMapEntries()
-  for (const id of ids) {
-    const entry = entriesId2Map[id]
-
-    if (!entry) continue
-    const isRead = entry.read
-    if (!isRead && entry.feedId) {
-      batchLikeIds.push(id)
-    }
-  }
-
-  if (batchLikeIds.length > 0) {
-    for (const id of batchLikeIds) {
-      unreadSyncService.markEntryAsRead(id)
-    }
-  }
+  if (ids.length === 0) return
+  void unreadSyncService.queueEntriesAsRead(ids)
 }

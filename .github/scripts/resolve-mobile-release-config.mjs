@@ -25,6 +25,7 @@ export function resolveMobileReleaseConfig(input) {
   if (config.mode === "store") {
     return {
       triggerStoreBuilds: true,
+      triggerReleaseApk: true,
       triggerOtaPublish: false,
       runtimeVersion: null,
       channel: null,
@@ -42,6 +43,7 @@ export function resolveMobileReleaseConfig(input) {
 
   return {
     triggerStoreBuilds: false,
+    triggerReleaseApk: true,
     triggerOtaPublish: true,
     runtimeVersion: config.runtimeVersion,
     channel: config.channel,
@@ -72,6 +74,7 @@ async function main() {
     })
 
     setGitHubOutput("trigger_store_builds", String(result.triggerStoreBuilds))
+    setGitHubOutput("trigger_release_apk", String(result.triggerReleaseApk))
     setGitHubOutput("trigger_ota_publish", String(result.triggerOtaPublish))
     setGitHubOutput("runtime_version", result.runtimeVersion ?? "")
     setGitHubOutput("channel", result.channel ?? "")

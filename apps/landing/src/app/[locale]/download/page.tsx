@@ -31,7 +31,8 @@ export async function generateMetadata({
 }
 
 export default async function DownloadPage() {
-  const ua = (await headers()).get('user-agent')?.toLowerCase()
+  const headerList = await headers()
+  const ua = headerList.get('user-agent')?.toLowerCase()
 
   return (
     <>
