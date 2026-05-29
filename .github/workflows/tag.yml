@@ -168,7 +168,7 @@ jobs:
             console.log('Desktop store build triggered successfully');
 
       - name: Trigger Mobile Production APK Release Build
-        if: needs.create_tag.outputs.platform == 'mobile' && needs.create_tag.outputs.ref_name == 'mobile-main' && steps.release_mode.outputs.trigger_store_builds == 'true'
+        if: needs.create_tag.outputs.platform == 'mobile' && needs.create_tag.outputs.ref_name == 'mobile-main' && steps.release_mode.outputs.trigger_release_apk == 'true'
         uses: actions/github-script@v9
         with:
           github-token: ${{ secrets.GITHUB_TOKEN }}
