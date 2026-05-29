@@ -48,6 +48,10 @@ export const invalidateEntriesQuery = ({
 }
 
 const defaultStaleTime = 10 * (60 * 1000) // 10 minutes
+const toPageParam = (value: Date | string | null | undefined) => {
+  if (!value) return
+  return typeof value === "string" ? value : value.toISOString()
+}
 
 export const useEntriesQuery = (
   props?: Omit<FetchEntriesProps, "pageParam" | "read" | "excludePrivate"> &
@@ -71,6 +75,7 @@ export const useEntriesQuery = (
 
   const isPop =
     "history" in globalThis && "isPop" in globalThis.history && !!globalThis.history.isPop
+  const isCollectionQuery = isCollection === true || feedId === FEED_COLLECTION_LIST
   const queryKey = useMemo(
     () => [
       "entries",
@@ -110,7 +115,15 @@ export const useEntriesQuery = (
         excludePrivate: hidePrivateSubscriptionsInTimeline,
       }),
 
-    getNextPageParam: (lastPage) => (aiSort ? null : lastPage.data?.at(-1)?.entries.publishedAt),
+    getNextPageParam: (lastPage) => {
+      if (aiSort) return
+
+      const lastEntry = lastPage.data?.at(-1)
+      return isCollectionQuery
+        ? (toPageParam(lastEntry?.collections?.createdAt) ??
+            toPageParam(lastEntry?.entries.publishedAt))
+        : toPageParam(lastEntry?.entries.publishedAt)
+    },
     initialPageParam: undefined as undefined | string,
     refetchOnWindowFocus: false,
     refetchOnReconnect: false,

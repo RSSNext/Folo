@@ -10,7 +10,11 @@ import { afterEach, beforeAll, describe, expect, test, vi } from "vitest"
 
 type EntriesResponse = Awaited<ReturnType<typeof entrySyncServices.fetchEntries>>
 
-const createEntriesResponse = (entryId: string, publishedAt: string) =>
+const createEntriesResponse = (
+  entryId: string,
+  publishedAt: string,
+  collectionCreatedAt?: string,
+) =>
   ({
     data: [
       {
@@ -18,6 +22,11 @@ const createEntriesResponse = (entryId: string, publishedAt: string) =>
           id: entryId,
           publishedAt,
         },
+        ...(collectionCreatedAt && {
+          collections: {
+            createdAt: collectionCreatedAt,
+          },
+        }),
       },
     ],
   }) as unknown as EntriesResponse
@@ -139,5 +148,66 @@ describe("useEntriesQuery", () => {
       pendingPageResolvers[1]?.(createEntriesResponse("entry-3", "2026-05-12T00:00:00.000Z"))
       await Promise.allSettled([firstFetch, secondFetch])
     })
+  })
+
+  test("uses collection created time as next-page cursor for starred entries", async () => {
+    const fetchEntriesSpy = vi
+      .spyOn(entrySyncServices, "fetchEntries")
+      .mockImplementation(async (props) => {
+        if (props.pageParam) {
+          return createEntriesResponse("entry-2", "2026-02-27T00:00:00.000Z")
+        }
+
+        return createEntriesResponse(
+          "entry-1",
+          "2026-02-28T00:00:00.000Z",
+          "2026-03-02T00:00:00.000Z",
+        )
+      })
+
+    let entriesQuery: ReturnType<typeof useEntriesQuery> | undefined
+    const EntriesQueryConsumer = () => {
+      entriesQuery = useEntriesQuery({
+        feedId: "collections",
+        view: FeedViewType.Articles,
+        limit: 1,
+      })
+
+      return null
+    }
+
+    container = document.createElement("div")
+    document.body.append(container)
+    root = createRoot(container)
+    queryClient = new QueryClient({
+      defaultOptions: {
+        queries: {
+          retry: false,
+        },
+      },
+    })
+
+    await act(async () => {
+      root?.render(
+        <QueryClientProvider client={queryClient!}>
+          <EntriesQueryConsumer />
+        </QueryClientProvider>,
+      )
+    })
+
+    await act(async () => {
+      await vi.waitFor(() => {
+        expect(entriesQuery?.isSuccess).toBe(true)
+      })
+    })
+
+    await act(async () => {
+      await entriesQuery?.fetchNextPage()
+    })
+
+    await vi.waitFor(() => {
+      expect(fetchEntriesSpy).toHaveBeenCalledTimes(2)
+    })
+    expect(fetchEntriesSpy.mock.calls[1]?.[0].pageParam).toBe("2026-03-02T00:00:00.000Z")
   })
 })

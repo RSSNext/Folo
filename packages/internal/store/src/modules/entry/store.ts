@@ -601,8 +601,12 @@ class EntrySyncServices {
 
     if (typeof view === "number") {
       const { collections, entryIdsNotInCollections } = apiMorph.toCollections(res.data, view)
+      const effectiveLimit = limit !== undefined ? Math.min(limit, 100) : 20
+      const shouldResetCollection =
+        params.isCollection && !pageParam && entries.length < effectiveLimit
       await collectionActions.upsertMany(collections, {
-        reset: params.isCollection && !pageParam,
+        // A full reset is only safe once the first page proves there are no more collection rows.
+        reset: shouldResetCollection,
       })
       await collectionActions.delete(entryIdsNotInCollections)
     }
