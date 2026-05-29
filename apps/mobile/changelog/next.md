@@ -1,11 +1,14 @@
 # What's New in vNEXT_VERSION
 
-## Shiny new things
-
 ## Improvements
+
+- Upgraded AI summaries to a more powerful Kimi model
+- Improved scroll mark-read reliability with batched updates, retry handling, and local read-state preservation
+- Improved action rule editor state stability
+- Routed direct downloads through OTA-backed delivery
 
 ## No longer broken
 
-## Thanks
-
-Special thanks to volunteer contributors @ for their valuable contributions
+- Fixed duplicate shared links from mobile share actions
+- Fixed starred collection pagination order
+- Fixed unread counts after time-limited mark-read actions
