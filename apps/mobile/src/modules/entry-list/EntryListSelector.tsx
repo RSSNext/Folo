@@ -17,6 +17,7 @@ import { useEntries, useEntryListContext } from "../screen/atoms"
 import { EntryListContentArticle } from "./EntryListContentArticle"
 import { EntryListContentSocial } from "./EntryListContentSocial"
 import { EntryListContentVideo } from "./EntryListContentVideo"
+import { shouldScrollEntryListToTopOnRefreshStateChange } from "./refresh-reset"
 
 const NoLoginGuard = ({ children }: { children: React.ReactNode }) => {
   const whoami = useWhoami()
@@ -70,7 +71,30 @@ function EntryListSelectorImpl({ entryIds, viewId, active = true }: EntryListSel
     })
   }, [unreadOnly, ref])
 
-  const { isReady } = useEntries({ viewId, active })
+  const { isFetching, isFetchingNextPage, isReady } = useEntries({ viewId, active })
+  const isRefreshing = isFetching && !isFetchingNextPage
+  const wasRefreshingRef = useRef(isRefreshing)
+  useEffect(() => {
+    if (!active) return
+
+    const wasRefreshing = wasRefreshingRef.current
+    wasRefreshingRef.current = isRefreshing
+
+    if (
+      !shouldScrollEntryListToTopOnRefreshStateChange({
+        wasRefreshing,
+        isRefreshing,
+      })
+    ) {
+      return
+    }
+
+    ref?.current?.scrollToOffset({
+      offset: 0,
+      animated: false,
+    })
+  }, [active, isRefreshing, ref])
+
   const hasResetAfterReadyRef = useRef(false)
   useEffect(() => {
     if (!active) return

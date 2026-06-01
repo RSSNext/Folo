@@ -34,6 +34,7 @@ import { useEntryMarkReadHandler } from "./hooks/useEntryMarkReadHandler"
 import { useNavigateFirstEntry } from "./hooks/useNavigateFirstEntry"
 import { EntryListHeader } from "./layouts/EntryListHeader"
 import { EntryEmptyList, EntryList } from "./list"
+import { shouldScrollTimelineToTopOnRefreshStateChange } from "./refresh-reset"
 import { EntryRootStateContext } from "./store/EntryColumnContext"
 
 function EntryColumnContent() {
@@ -121,7 +122,14 @@ function EntryColumnContent() {
     const wasRefreshing = wasRefreshingRef.current
     wasRefreshingRef.current = isRefreshing
 
-    if (!wasRefreshing || isRefreshing) return
+    if (
+      !shouldScrollTimelineToTopOnRefreshStateChange({
+        wasRefreshing,
+        isRefreshing,
+      })
+    ) {
+      return
+    }
     scrollTimelineToTop()
   }, [isRefreshing, scrollTimelineToTop])
 
