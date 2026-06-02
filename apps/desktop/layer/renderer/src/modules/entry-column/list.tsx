@@ -8,7 +8,7 @@ import type { Range, VirtualItem, Virtualizer } from "@tanstack/react-virtual"
 import { defaultRangeExtractor, useVirtualizer } from "@tanstack/react-virtual"
 import type { HTMLMotionProps } from "motion/react"
 import type { FC, MutableRefObject, ReactNode } from "react"
-import { memo, startTransition, useEffect, useMemo, useRef, useState } from "react"
+import { memo, startTransition, useEffect, useLayoutEffect, useMemo, useRef, useState } from "react"
 import { useTranslation } from "react-i18next"
 import { useEventCallback } from "usehooks-ts"
 
@@ -20,6 +20,7 @@ import { VirtualRowItem } from "./components/VirtualRowItem"
 import { EntryColumnShortcutHandler } from "./EntryColumnShortcutHandler"
 import { EntryItemSkeleton } from "./EntryItemSkeleton"
 import { useScrollMarkReadEndPadding } from "./hooks/useScrollMarkReadEndPadding"
+import { getInitialScrollOffset, shouldApplyScrollResetSignal } from "./scroll-reset"
 
 export const EntryEmptyList = ({
   ref,
@@ -66,6 +67,10 @@ export type EntryListProps = {
   onRangeChange?: (range: Range) => void
 
   listRef?: MutableRefObject<Virtualizer<HTMLElement, Element> | undefined>
+  appliedResetScrollSignal?: number
+  onResetScrollSignalConsumed?: (signal: number) => void
+  resetScrollSignal?: number
+  suspendMarkRead?: boolean
 }
 
 const capacity = 3
@@ -91,6 +96,9 @@ export const EntryList: FC<EntryListProps> = memo(
     onRangeChange,
     gap,
     syncType,
+    appliedResetScrollSignal,
+    onResetScrollSignalConsumed,
+    resetScrollSignal,
   }) => {
     const scrollRef = useScrollViewElement()
     const hasEndSpacer = shouldRenderScrollMarkReadEndSpacer({
@@ -114,13 +122,21 @@ export const EntryList: FC<EntryListProps> = memo(
     )
 
     const cacheKey = `${view}-${feedId}`
+    const isResetScrollPending = shouldApplyScrollResetSignal({
+      resetSignal: resetScrollSignal,
+      appliedResetSignal: appliedResetScrollSignal,
+    })
     const rowVirtualizer = useVirtualizer({
       count: entriesIds.length + 1,
       estimateSize: () => 112,
       overscan: 5,
       gap,
       getScrollElement: () => scrollRef,
-      initialOffset: offsetCache.get(cacheKey) ?? 0,
+      initialOffset: getInitialScrollOffset({
+        cachedOffset: offsetCache.get(cacheKey),
+        resetSignal: resetScrollSignal,
+        appliedResetSignal: appliedResetScrollSignal,
+      }),
       initialMeasurementsCache: measurementsCache.get(cacheKey) ?? [],
       onChange: useTypeScriptHappyCallback(
         (virtualizer: Virtualizer<HTMLElement, Element>) => {
@@ -150,6 +166,25 @@ export const EntryList: FC<EntryListProps> = memo(
       if (!listRef) return
       listRef.current = rowVirtualizer
     }, [rowVirtualizer, listRef])
+
+    useLayoutEffect(() => {
+      if (!scrollRef) return
+      if (!isResetScrollPending) return
+      if (resetScrollSignal === undefined) return
+
+      rowVirtualizer.scrollToOffset(0)
+      scrollRef.scrollTop = 0
+      scrollRef.scrollLeft = 0
+      offsetCache.put(cacheKey, 0)
+      onResetScrollSignalConsumed?.(resetScrollSignal)
+    }, [
+      cacheKey,
+      isResetScrollPending,
+      onResetScrollSignalConsumed,
+      resetScrollSignal,
+      rowVirtualizer,
+      scrollRef,
+    ])
 
     const handleScrollTo = useEventCallback((index: number) => {
       rowVirtualizer.scrollToIndex(index)

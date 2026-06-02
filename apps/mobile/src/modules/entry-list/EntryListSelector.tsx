@@ -2,7 +2,7 @@ import { FeedViewType } from "@follow/constants"
 import { useWhoami } from "@follow/store/user/hooks"
 import type { FlashListRef } from "@shopify/flash-list"
 import type { RefObject } from "react"
-import { useEffect, useRef } from "react"
+import { useCallback, useEffect, useRef, useState } from "react"
 
 import { useGeneralSettingKey } from "@/src/atoms/settings/general"
 import { withErrorBoundary } from "@/src/components/common/ErrorBoundary"
@@ -14,6 +14,7 @@ import { EntryListContentPicture } from "@/src/modules/entry-list/EntryListConte
 import { EntryDetailScreen } from "@/src/screens/(stack)/entries/[entryId]/EntryDetailScreen"
 
 import { useEntries, useEntryListContext } from "../screen/atoms"
+import { shouldSuspendMarkReadForScrollReset } from "../screen/scroll-reset"
 import { EntryListContentArticle } from "./EntryListContentArticle"
 import { EntryListContentSocial } from "./EntryListContentSocial"
 import { EntryListContentVideo } from "./EntryListContentVideo"
@@ -38,6 +39,20 @@ type EntryListSelectorProps = {
 
 function EntryListSelectorImpl({ entryIds, viewId, active = true }: EntryListSelectorProps) {
   const ref = useRegisterNavigationScrollView<FlashListRef<any>>(active)
+  const [resetScrollSignal, setResetScrollSignal] = useState<number>()
+  const [appliedResetScrollSignal, setAppliedResetScrollSignal] = useState<number>()
+  const isScrollResetPending = shouldSuspendMarkReadForScrollReset({
+    resetSignal: resetScrollSignal,
+    appliedResetSignal: appliedResetScrollSignal,
+  })
+  const requestScrollToTop = useCallback(() => {
+    setResetScrollSignal((signal) => (signal ?? 0) + 1)
+  }, [])
+  const handleResetScrollSignalConsumed = useCallback((signal: number) => {
+    setAppliedResetScrollSignal((currentSignal) =>
+      currentSignal === signal ? currentSignal : signal,
+    )
+  }, [])
 
   let ContentComponent:
     | typeof EntryListContentSocial
@@ -65,11 +80,8 @@ function EntryListSelectorImpl({ entryIds, viewId, active = true }: EntryListSel
 
   const unreadOnly = useGeneralSettingKey("unreadOnly")
   useEffect(() => {
-    ref?.current?.scrollToOffset({
-      offset: 0,
-      animated: false,
-    })
-  }, [unreadOnly, ref])
+    requestScrollToTop()
+  }, [requestScrollToTop, unreadOnly])
 
   const { isFetching, isFetchingNextPage, isReady } = useEntries({ viewId, active })
   const isRefreshing = isFetching && !isFetchingNextPage
@@ -89,11 +101,8 @@ function EntryListSelectorImpl({ entryIds, viewId, active = true }: EntryListSel
       return
     }
 
-    ref?.current?.scrollToOffset({
-      offset: 0,
-      animated: false,
-    })
-  }, [active, isRefreshing, ref])
+    requestScrollToTop()
+  }, [active, isRefreshing, requestScrollToTop])
 
   const hasResetAfterReadyRef = useRef(false)
   useEffect(() => {
@@ -105,37 +114,29 @@ function EntryListSelectorImpl({ entryIds, viewId, active = true }: EntryListSel
     if (!entryIds?.length) return
     if (hasResetAfterReadyRef.current) return
 
-    const frameId = requestAnimationFrame(() => {
-      ref?.current?.scrollToOffset({
-        offset: 0,
-        animated: false,
-      })
-    })
+    requestScrollToTop()
     hasResetAfterReadyRef.current = true
-
-    return () => {
-      cancelAnimationFrame(frameId)
-    }
-  }, [active, entryIds, isReady, ref, viewId])
+  }, [active, entryIds, isReady, requestScrollToTop, viewId])
 
   useEffect(() => {
     if (!active) return
 
-    const frameId = requestAnimationFrame(() => {
-      ref?.current?.scrollToOffset({
-        offset: 0,
-        animated: false,
-      })
-    })
-
-    return () => {
-      cancelAnimationFrame(frameId)
-    }
-  }, [active, ref, viewId])
+    requestScrollToTop()
+  }, [active, requestScrollToTop, viewId])
 
   useAutoScrollToEntryAfterPullUpToNext(ref, entryIds || [])
 
-  return <ContentComponent ref={ref} entryIds={entryIds} active={active} view={viewId} />
+  return (
+    <ContentComponent
+      ref={ref}
+      entryIds={entryIds}
+      active={active}
+      view={viewId}
+      onResetScrollSignalConsumed={handleResetScrollSignalConsumed}
+      resetScrollSignal={resetScrollSignal}
+      suspendMarkRead={isScrollResetPending}
+    />
+  )
 }
 
 export const EntryListSelector = withErrorBoundary(

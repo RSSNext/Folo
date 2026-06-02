@@ -24,8 +24,14 @@ export const EntryListContentSocial = ({
   entryIds,
   active,
   view,
+  onResetScrollSignalConsumed,
+  resetScrollSignal,
+  suspendMarkRead,
 }: { entryIds: string[] | null; active?: boolean; view: FeedViewType } & {
   ref?: React.Ref<ElementRef<typeof TimelineSelectorList> | null>
+  onResetScrollSignalConsumed?: (signal: number) => void
+  resetScrollSignal?: number
+  suspendMarkRead?: boolean
 }) => {
   const {
     fetchNextPage,
@@ -69,7 +75,7 @@ export const EntryListContentSocial = ({
   )
 
   const { onViewableItemsChanged, onScroll, viewableItems } = useOnViewableItemsChanged({
-    disabled: active === false || isFetching,
+    disabled: active === false || isFetching || suspendMarkRead,
     refreshing: isFetching && !isFetchingNextPage,
   })
 
@@ -92,6 +98,8 @@ export const EntryListContentSocial = ({
       <TimelineSelectorList
         onRefresh={() => {}}
         isRefetching={false}
+        onResetScrollSignalConsumed={onResetScrollSignalConsumed}
+        resetScrollSignal={resetScrollSignal}
         data={Array.from({ length: 5 }).map((_, index) => `skeleton-${index}`)}
         keyExtractor={(id) => id}
         renderItem={EntryItemSkeleton}
@@ -107,6 +115,8 @@ export const EntryListContentSocial = ({
         refetch()
       }}
       isRefetching={isRefetching}
+      onResetScrollSignalConsumed={onResetScrollSignalConsumed}
+      resetScrollSignal={resetScrollSignal}
       data={entryIds}
       extraData={extraData}
       keyExtractor={(id) => id}

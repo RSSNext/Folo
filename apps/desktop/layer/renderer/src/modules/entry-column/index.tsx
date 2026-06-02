@@ -9,7 +9,7 @@ import { useIsLoggedIn } from "@follow/store/user/hooks"
 import { isBizId } from "@follow/utils/utils"
 import type { Range, Virtualizer } from "@tanstack/react-virtual"
 import { atom, useAtomValue } from "jotai"
-import { memo, useCallback, useEffect, useLayoutEffect, useMemo, useRef } from "react"
+import { memo, useCallback, useEffect, useLayoutEffect, useMemo, useRef, useState } from "react"
 import { useTranslation } from "react-i18next"
 
 import { useGeneralSettingKey } from "~/atoms/settings/general"
@@ -35,6 +35,7 @@ import { useNavigateFirstEntry } from "./hooks/useNavigateFirstEntry"
 import { EntryListHeader } from "./layouts/EntryListHeader"
 import { EntryEmptyList, EntryList } from "./list"
 import { shouldScrollTimelineToTopOnRefreshStateChange } from "./refresh-reset"
+import { shouldSuspendMarkReadForScrollReset } from "./scroll-reset"
 import { EntryRootStateContext } from "./store/EntryColumnContext"
 
 function EntryColumnContent() {
@@ -53,8 +54,20 @@ function EntryColumnContent() {
   }, [])
 
   const actions = useEntriesActions()
+  const [resetScrollSignal, setResetScrollSignal] = useState<number>()
+  const [appliedResetScrollSignal, setAppliedResetScrollSignal] = useState<number>()
+  const isScrollResetPending = shouldSuspendMarkReadForScrollReset({
+    resetSignal: resetScrollSignal,
+    appliedResetSignal: appliedResetScrollSignal,
+  })
+  const handleResetScrollSignalConsumed = useCallback((signal: number) => {
+    setAppliedResetScrollSignal((currentSignal) =>
+      currentSignal === signal ? currentSignal : signal,
+    )
+  }, [])
   const scrollTimelineToTop = useCallback(() => {
     resetScrollInteractionState()
+    setResetScrollSignal((signal) => (signal ?? 0) + 1)
 
     const runScrollToTop = () => {
       listRef.current?.scrollToOffset(0)
@@ -155,6 +168,10 @@ function EntryColumnContent() {
   )
 
   const handleScroll = useCallback(() => {
+    if (isScrollResetPending) {
+      return
+    }
+
     if (!isInteracted.current) {
       isInteracted.current = true
     }
@@ -162,7 +179,7 @@ function EntryColumnContent() {
     if (latestRangeStartIndexRef.current !== null) {
       flushScrollMarkRead(latestRangeStartIndexRef.current)
     }
-  }, [flushScrollMarkRead])
+  }, [flushScrollMarkRead, isScrollResetPending])
 
   const { handleScroll: handleScrollBeyond } = useAttachScrollBeyond()
   const handleCombinedScroll = useCallback(
@@ -185,6 +202,10 @@ function EntryColumnContent() {
       }
 
       latestRangeStartIndexRef.current = e.startIndex
+      if (isScrollResetPending) {
+        return
+      }
+
       if (scrollMarkReadAnchorIndexRef.current === null) {
         scrollMarkReadAnchorIndexRef.current = e.startIndex
       } else if (isInteracted.current) {
@@ -198,7 +219,7 @@ function EntryColumnContent() {
       // For gird, render as mark read logic
       handleRenderMarkRead?.(e, isInteracted.current)
     },
-    [flushScrollMarkRead, handleRenderMarkRead, renderAsRead, view],
+    [flushScrollMarkRead, handleRenderMarkRead, isScrollResetPending, renderAsRead, view],
   )
 
   const fetchNextPage = useCallback(() => {
@@ -257,6 +278,10 @@ function EntryColumnContent() {
             fetchNextPage={fetchNextPage}
             refetch={actions.refetch}
             groupCounts={groupedCounts}
+            appliedResetScrollSignal={appliedResetScrollSignal}
+            onResetScrollSignalConsumed={handleResetScrollSignalConsumed}
+            resetScrollSignal={resetScrollSignal}
+            suspendMarkRead={isScrollResetPending}
             syncType={state.type}
             Footer={
               isCollection ? void 0 : <FooterMarkItem view={view} fetchedTime={state.fetchedTime} />
