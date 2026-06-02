@@ -37,13 +37,12 @@ export const EntryReadHistory: Component<{ entryId: string }> = ({ entryId }) =>
 
   const LIMIT = getLimit(appGirdContainerWidth)
 
-  const placeholder = <div className="-mb-3 h-10" />
-  if (!entryHistory) return placeholder
-  if (!me) return placeholder
+  if (!entryHistory) return null
+  if (!me) return null
 
   const displayUsers = entryHistory.userIds.filter((id) => id !== me?.id).slice(0, LIMIT)
 
-  if (displayUsers.length === 0) return placeholder
+  if (displayUsers.length === 0) return null
 
   return (
     <div
