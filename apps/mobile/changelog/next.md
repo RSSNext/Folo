@@ -6,6 +6,8 @@
 
 ## No longer broken
 
+- Fixed duplicated lines in code blocks from feeds that wrap each line in nested divs (e.g., Cloudflare's changelog)
+
 ## Thanks
 
 Special thanks to volunteer contributors @ for their valuable contributions
