@@ -23,3 +23,14 @@ export const getInitialScrollOffset = ({
   })
     ? 0
     : (cachedOffset ?? 0)
+
+export const shouldResetScrollOnTimelineIdentityChange = ({
+  enabled,
+  previousTimelineIdentity,
+  timelineIdentity,
+}: {
+  enabled: boolean
+  previousTimelineIdentity?: string
+  timelineIdentity: string
+}) =>
+  enabled && previousTimelineIdentity !== undefined && previousTimelineIdentity !== timelineIdentity

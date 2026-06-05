@@ -35,7 +35,10 @@ import { useNavigateFirstEntry } from "./hooks/useNavigateFirstEntry"
 import { EntryListHeader } from "./layouts/EntryListHeader"
 import { EntryEmptyList, EntryList } from "./list"
 import { shouldScrollTimelineToTopOnRefreshStateChange } from "./refresh-reset"
-import { shouldSuspendMarkReadForScrollReset } from "./scroll-reset"
+import {
+  shouldResetScrollOnTimelineIdentityChange,
+  shouldSuspendMarkReadForScrollReset,
+} from "./scroll-reset"
 import { EntryRootStateContext } from "./store/EntryColumnContext"
 
 function EntryColumnContent() {
@@ -126,9 +129,22 @@ function EntryColumnContent() {
     timelineIdentity,
   )
 
+  const previousTimelineIdentityRef = useRef<string>(undefined)
   useLayoutEffect(() => {
+    const previousTimelineIdentity = previousTimelineIdentityRef.current
+    previousTimelineIdentityRef.current = timelineIdentity
+
     resetScrollInteractionState()
-  }, [resetScrollInteractionState, timelineIdentity])
+    if (
+      shouldResetScrollOnTimelineIdentityChange({
+        enabled: view === FeedViewType.SocialMedia,
+        previousTimelineIdentity,
+        timelineIdentity,
+      })
+    ) {
+      scrollTimelineToTop()
+    }
+  }, [resetScrollInteractionState, scrollTimelineToTop, timelineIdentity, view])
 
   const wasRefreshingRef = useRef(isRefreshing)
   useEffect(() => {

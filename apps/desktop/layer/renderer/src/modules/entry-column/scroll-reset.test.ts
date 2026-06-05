@@ -3,6 +3,7 @@ import { describe, expect, test } from "vitest"
 import {
   getInitialScrollOffset,
   shouldApplyScrollResetSignal,
+  shouldResetScrollOnTimelineIdentityChange,
   shouldSuspendMarkReadForScrollReset,
 } from "./scroll-reset"
 
@@ -53,6 +54,40 @@ describe("shouldApplyScrollResetSignal", () => {
       shouldSuspendMarkReadForScrollReset({
         resetSignal: 1,
         appliedResetSignal: 1,
+      }),
+    ).toBe(false)
+  })
+
+  test("resets scroll for enabled timeline identity changes after initial mount", () => {
+    expect(
+      shouldResetScrollOnTimelineIdentityChange({
+        enabled: true,
+        previousTimelineIdentity: undefined,
+        timelineIdentity: "6:",
+      }),
+    ).toBe(false)
+
+    expect(
+      shouldResetScrollOnTimelineIdentityChange({
+        enabled: true,
+        previousTimelineIdentity: "0:",
+        timelineIdentity: "6:",
+      }),
+    ).toBe(true)
+
+    expect(
+      shouldResetScrollOnTimelineIdentityChange({
+        enabled: false,
+        previousTimelineIdentity: "0:",
+        timelineIdentity: "6:",
+      }),
+    ).toBe(false)
+
+    expect(
+      shouldResetScrollOnTimelineIdentityChange({
+        enabled: true,
+        previousTimelineIdentity: "6:",
+        timelineIdentity: "6:",
       }),
     ).toBe(false)
   })
