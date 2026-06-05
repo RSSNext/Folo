@@ -11,6 +11,7 @@ import { View } from "react-native"
 import { useActionLanguage, useGeneralSettingKey } from "@/src/atoms/settings/general"
 
 import { useEntries } from "../screen/atoms"
+import { getResetScrollSignalForContent } from "../screen/scroll-reset"
 import { TimelineSelectorList } from "../screen/TimelineSelectorList"
 import { EntryListEndScrollSpacer } from "./EntryListEndScrollSpacer"
 import { EntryListFooter } from "./EntryListFooter"
@@ -92,6 +93,13 @@ export const EntryListContentSocial = ({
     mode: translationMode,
   })
 
+  const contentResetScrollSignal = getResetScrollSignalForContent({
+    entryCount: entryIds?.length ?? 0,
+    hasScrollableSkeleton: true,
+    isReady,
+    resetScrollSignal,
+  })
+
   // Show loading skeleton when entries are not ready and no data yet
   if (!isReady && (!entryIds || entryIds.length === 0)) {
     return (
@@ -99,7 +107,7 @@ export const EntryListContentSocial = ({
         onRefresh={() => {}}
         isRefetching={false}
         onResetScrollSignalConsumed={onResetScrollSignalConsumed}
-        resetScrollSignal={resetScrollSignal}
+        resetScrollSignal={contentResetScrollSignal}
         data={Array.from({ length: 5 }).map((_, index) => `skeleton-${index}`)}
         keyExtractor={(id) => id}
         renderItem={EntryItemSkeleton}
@@ -116,7 +124,7 @@ export const EntryListContentSocial = ({
       }}
       isRefetching={isRefetching}
       onResetScrollSignalConsumed={onResetScrollSignalConsumed}
-      resetScrollSignal={resetScrollSignal}
+      resetScrollSignal={contentResetScrollSignal}
       data={entryIds}
       extraData={extraData}
       keyExtractor={(id) => id}
