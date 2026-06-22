@@ -5,7 +5,7 @@ import { nextFrame } from "@follow/utils"
 import type { FlashListProps, FlashListRef } from "@shopify/flash-list"
 import { FlashList } from "@shopify/flash-list"
 import * as Haptics from "expo-haptics"
-import { use, useCallback, useImperativeHandle, useRef } from "react"
+import { use, useCallback, useEffect, useImperativeHandle, useRef } from "react"
 import type { NativeScrollEvent, NativeSyntheticEvent } from "react-native"
 import { RefreshControl, View } from "react-native"
 import { useSafeAreaInsets } from "react-native-safe-area-context"
@@ -16,16 +16,59 @@ import { ScreenItemContext } from "@/src/lib/navigation/ScreenItemContext"
 import { useHeaderHeight } from "@/src/modules/screen/hooks/useHeaderHeight"
 
 import { EntryListEmpty } from "../entry-list/EntryListEmpty"
+import { shouldApplyScrollResetSignal } from "./scroll-reset"
 
 type Props = {
   onRefresh: () => void
   isRefetching: boolean
+  onResetScrollSignalConsumed?: (signal: number) => void
+  resetScrollSignal?: number
+}
+
+const usePendingScrollReset = (
+  resetScrollSignal: number | undefined,
+  scrollToTop: () => boolean,
+  onResetScrollSignalConsumed?: (signal: number) => void,
+) => {
+  const appliedResetScrollSignalRef = useRef<number | undefined>(undefined)
+  const canApplyScrollResetRef = useRef(false)
+  const flushPendingScrollReset = useCallback(() => {
+    if (!canApplyScrollResetRef.current) return
+    if (
+      !shouldApplyScrollResetSignal({
+        resetSignal: resetScrollSignal,
+        appliedResetSignal: appliedResetScrollSignalRef.current,
+      })
+    ) {
+      return
+    }
+
+    requestAnimationFrame(() => {
+      if (scrollToTop()) {
+        appliedResetScrollSignalRef.current = resetScrollSignal
+        if (resetScrollSignal !== undefined) {
+          onResetScrollSignalConsumed?.(resetScrollSignal)
+        }
+      }
+    })
+  }, [onResetScrollSignalConsumed, resetScrollSignal, scrollToTop])
+
+  useEffect(() => {
+    flushPendingScrollReset()
+  }, [flushPendingScrollReset])
+
+  return useCallback(() => {
+    canApplyScrollResetRef.current = true
+    flushPendingScrollReset()
+  }, [flushPendingScrollReset])
 }
 
 export const TimelineSelectorList = ({
   ref: forwardedRef,
   onRefresh,
   isRefetching,
+  onResetScrollSignalConsumed,
+  resetScrollSignal,
   ...props
 }: Props &
   Omit<FlashListProps<any>, "onRefresh"> & { ref?: React.Ref<FlashListRef<any> | null> }) => {
@@ -38,6 +81,23 @@ export const TimelineSelectorList = ({
   const { scrollViewHeight, scrollViewContentHeight, reAnimatedScrollY } = use(ScreenItemContext)!
 
   const tabBarHeight = useBottomTabBarHeight()
+  const scrollToTop = useCallback(() => {
+    const scroller = ref.current
+    if (!scroller) return false
+
+    scroller.scrollToOffset({
+      offset: 0,
+      animated: false,
+    })
+    reAnimatedScrollY.value = 0
+    return true
+  }, [reAnimatedScrollY])
+  const markScrollResetReady = usePendingScrollReset(
+    resetScrollSignal,
+    scrollToTop,
+    onResetScrollSignalConsumed,
+  )
+
   const onScroll = useCallback(
     (e: NativeSyntheticEvent<NativeScrollEvent>) => {
       props.onScroll?.(e)
@@ -50,17 +110,31 @@ export const TimelineSelectorList = ({
 
   const onLayout = useTypeScriptHappyCallback(
     (e) => {
+      props.onLayout?.(e)
       scrollViewHeight.value = e.nativeEvent.layout.height - headerHeight - tabBarHeight
     },
-    [scrollViewHeight],
+    [headerHeight, props, scrollViewHeight, tabBarHeight],
   ) as FlashListProps<any>["onLayout"]
 
   const onContentSizeChange = useTypeScriptHappyCallback(
     (w, h) => {
+      props.onContentSizeChange?.(w, h)
       scrollViewContentHeight.value = h
+      markScrollResetReady()
     },
-    [scrollViewContentHeight],
+    [markScrollResetReady, props, scrollViewContentHeight],
   ) as FlashListProps<any>["onContentSizeChange"]
+  const onLoad = useTypeScriptHappyCallback(
+    (info) => {
+      props.onLoad?.(info)
+      markScrollResetReady()
+    },
+    [markScrollResetReady, props],
+  ) as FlashListProps<any>["onLoad"]
+  const onCommitLayoutEffect = useTypeScriptHappyCallback(() => {
+    props.onCommitLayoutEffect?.()
+    markScrollResetReady()
+  }, [markScrollResetReady, props]) as FlashListProps<any>["onCommitLayoutEffect"]
 
   if (props.data?.length === 0) {
     return <EntryListEmpty />
@@ -72,8 +146,6 @@ export const TimelineSelectorList = ({
         automaticallyAdjustsScrollIndicatorInsets={false}
         automaticallyAdjustContentInsets={false}
         ref={ref}
-        onLayout={onLayout}
-        onContentSizeChange={onContentSizeChange}
         refreshControl={
           <RefreshControl
             progressViewOffset={headerHeight}
@@ -97,6 +169,10 @@ export const TimelineSelectorList = ({
           paddingBottom: tabBarHeight,
         }}
         {...props}
+        onLayout={onLayout}
+        onLoad={onLoad}
+        onCommitLayoutEffect={onCommitLayoutEffect}
+        onContentSizeChange={onContentSizeChange}
         onScroll={onScroll}
         onEndReached={() => {
           nextFrame(() => {
@@ -109,9 +185,11 @@ export const TimelineSelectorList = ({
 }
 
 export const TimelineSelectorMasonryList = ({
-  ref,
+  ref: forwardedRef,
   onRefresh,
   isRefetching,
+  onResetScrollSignalConsumed,
+  resetScrollSignal,
   ...props
 }: Props &
   Omit<FlashListProps<any>, "onRefresh"> & {
@@ -119,12 +197,30 @@ export const TimelineSelectorMasonryList = ({
   }) => {
   const { refetch: unreadRefetch } = usePrefetchUnread()
   const { refetch: subscriptionRefetch } = usePrefetchSubscription()
+  const ref = useRef<FlashListRef<any>>(null)
+  useImperativeHandle(forwardedRef, () => ref.current!)
 
   const insets = useSafeAreaInsets()
 
   const headerHeight = useHeaderHeight()
 
   const { reAnimatedScrollY } = use(ScreenItemContext)!
+  const scrollToTop = useCallback(() => {
+    const scroller = ref.current
+    if (!scroller) return false
+
+    scroller.scrollToOffset({
+      offset: 0,
+      animated: false,
+    })
+    reAnimatedScrollY.value = 0
+    return true
+  }, [reAnimatedScrollY])
+  const markScrollResetReady = usePendingScrollReset(
+    resetScrollSignal,
+    scrollToTop,
+    onResetScrollSignalConsumed,
+  )
 
   const onScroll = useCallback(
     (e: NativeSyntheticEvent<NativeScrollEvent>) => {
@@ -135,6 +231,24 @@ export const TimelineSelectorMasonryList = ({
   )
 
   const tabBarHeight = useBottomTabBarHeight()
+  const onContentSizeChange = useTypeScriptHappyCallback(
+    (w, h) => {
+      props.onContentSizeChange?.(w, h)
+      markScrollResetReady()
+    },
+    [markScrollResetReady, props],
+  ) as FlashListProps<any>["onContentSizeChange"]
+  const onLoad = useTypeScriptHappyCallback(
+    (info) => {
+      props.onLoad?.(info)
+      markScrollResetReady()
+    },
+    [markScrollResetReady, props],
+  ) as FlashListProps<any>["onLoad"]
+  const onCommitLayoutEffect = useTypeScriptHappyCallback(() => {
+    props.onCommitLayoutEffect?.()
+    markScrollResetReady()
+  }, [markScrollResetReady, props]) as FlashListProps<any>["onCommitLayoutEffect"]
 
   const systemFill = useColor("secondaryLabel")
 
@@ -160,6 +274,9 @@ export const TimelineSelectorMasonryList = ({
         />
       }
       {...props}
+      onLoad={onLoad}
+      onCommitLayoutEffect={onCommitLayoutEffect}
+      onContentSizeChange={onContentSizeChange}
       contentContainerStyle={[
         {
           paddingTop: headerHeight,

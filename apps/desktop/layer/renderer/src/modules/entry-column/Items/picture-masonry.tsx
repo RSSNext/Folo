@@ -43,6 +43,7 @@ import { imageActions } from "~/store/image"
 import { useEntriesState } from "../context/EntriesContext"
 import { batchMarkRead } from "../hooks/useEntryMarkReadHandler"
 import { useScrollMarkReadEndPadding } from "../hooks/useScrollMarkReadEndPadding"
+import { shouldApplyScrollResetSignal } from "../scroll-reset"
 import { PictureWaterFallItem } from "./picture-item"
 
 // grid grid-cols-1 @lg:grid-cols-2 @3xl:grid-cols-3 @6xl:grid-cols-4 @7xl:grid-cols-5 px-4 gap-1.5
@@ -53,7 +54,7 @@ const FirstScreenReadyContext = createContext(false)
 const gutter = 24
 
 export const PictureMasonry: FC<MasonryProps> = (props) => {
-  const { data } = props
+  const { appliedResetScrollSignal, data, onResetScrollSignalConsumed, resetScrollSignal } = props
   const entriesState = useEntriesState()
   const pauseScrollMarkRead = useScrollMarkReadGracePeriod(
     entriesState.isFetching && !entriesState.isFetchingNextPage,
@@ -146,6 +147,27 @@ export const PictureMasonry: FC<MasonryProps> = (props) => {
     hasNextPage: props.hasNextPage,
   })
   const endSpacerHeight = useScrollMarkReadEndPadding(scrollElement, hasEndSpacer)
+  const isResetScrollPending = shouldApplyScrollResetSignal({
+    resetSignal: resetScrollSignal,
+    appliedResetSignal: appliedResetScrollSignal,
+  })
+  useLayoutEffect(() => {
+    if (!scrollElement) return
+    if (!isInitDim || !deferIsInitLayout) return
+    if (!isResetScrollPending) return
+    if (resetScrollSignal === undefined) return
+
+    scrollElement.scrollTop = 0
+    scrollElement.scrollLeft = 0
+    onResetScrollSignalConsumed?.(resetScrollSignal)
+  }, [
+    onResetScrollSignalConsumed,
+    deferIsInitLayout,
+    isInitDim,
+    isResetScrollPending,
+    resetScrollSignal,
+    scrollElement,
+  ])
   const handleRender = useCallback(
     (startIndex: number, stopIndex: number, items: any[]) => {
       currentRange.current = { start: startIndex, end: stopIndex }
@@ -161,6 +183,7 @@ export const PictureMasonry: FC<MasonryProps> = (props) => {
   const dataRef = useRefValue(data)
   useEffect(() => {
     if (!renderMarkRead && !scrollMarkRead) return
+    if (props.suspendMarkRead) return
     if (!scrollElement) return
 
     const observer = new IntersectionObserver(
@@ -224,7 +247,14 @@ export const PictureMasonry: FC<MasonryProps> = (props) => {
     return () => {
       observer.disconnect()
     }
-  }, [dataRef, pauseScrollMarkRead, renderMarkRead, scrollElement, scrollMarkRead])
+  }, [
+    dataRef,
+    pauseScrollMarkRead,
+    props.suspendMarkRead,
+    renderMarkRead,
+    scrollElement,
+    scrollMarkRead,
+  ])
 
   const [firstScreenReady, setFirstScreenReady] = useState(false)
   useEffect(() => {
@@ -328,6 +358,10 @@ interface MasonryProps {
   endReached: () => any
   hasNextPage: boolean
   Footer?: FC | ReactNode
+  appliedResetScrollSignal?: number
+  onResetScrollSignalConsumed?: (signal: number) => void
+  resetScrollSignal?: number
+  suspendMarkRead?: boolean
 }
 
 const LoadingSkeletonItem = () => {

@@ -25,6 +25,14 @@ afterEach(async () => {
 })
 
 describe("triggerOtaSync", () => {
+  it("reads a configurable OTA sync timeout", async () => {
+    const { readOtaSyncTimeoutMs } = await import("./trigger-ota-sync.mjs")
+
+    expect(readOtaSyncTimeoutMs()).toBe(120_000)
+    expect(readOtaSyncTimeoutMs("30000")).toBe(30_000)
+    expect(() => readOtaSyncTimeoutMs("0")).toThrow("OTA sync timeout must be a positive integer")
+  })
+
   it("POSTs to /internal/sync with the configured auth header", async () => {
     const requests: Array<{ method?: string; url?: string; headerValue?: string }> = []
     const headerName = "x-ota-sync-token"

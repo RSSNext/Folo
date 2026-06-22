@@ -365,6 +365,20 @@ describe("extractCodeFromHtml", () => {
     `)
   })
 
+  // https://developers.cloudflare.com/changelog/rss/index.xml
+  it("should not duplicate code blocks from cloudflare changelog", () => {
+    const htmlString = `<div><div><span>{</span></div></div><div><div><span>  </span><span>"</span><span>$schema</span><span>"</span><span>:</span><span> </span><span>"./node_modules/wrangler/config-schema.json"</span><span>,</span></div></div><div><div><span>  </span><span>"</span><span>pipelines</span><span>"</span><span>:</span><span> </span><span>[</span></div></div><div><div><span>}</span></div></div>`
+    const result = extractCodeFromHtml(htmlString)
+
+    expect(result).toMatchInlineSnapshot(`
+      "{
+        "$schema": "./node_modules/wrangler/config-schema.json",
+        "pipelines": [
+      }
+      "
+    `)
+  })
+
   it("no <code />", () => {
     const htmlString = `<span class="line"><span class="keyword">if</span> theme.<span class="property">twikoo</span>.<span class="property">enable</span> == <span class="literal">true</span></span><br><span class="line">  #tcomment</span><br><span class="line">  <span class="title function_">script</span>(src=<span class="string">'https://registry.npmmirror.com/twikoo/1.6.39/files/dist/twikoo.all.min.js'</span>)</span><br><span class="line">  script.</span><br><span class="line">    twikoo.<span class="title function_">init</span>({</span><br><span class="line">      <span class="attr">envId</span>: <span class="string">'#{theme.twikoo.envId}'</span>,</span><br><span class="line">      <span class="attr">el</span>: <span class="string">'#tcomment'</span>,</span><br><span class="line">      <span class="attr">region</span>: <span class="string">'#{theme.twikoo.region}'</span>,</span><br><span class="line">      <span class="attr">path</span>: <span class="string">'#{theme.twikoo.path}'</span>,</span><br><span class="line">      <span class="attr">onCommentLoaded</span>: <span class="keyword">function</span> (<span class="params"></span>) {</span><br><span class="line">        <span class="keyword">const</span> commentCountElement = <span class="variable language_">document</span>.<span class="title function_">querySelector</span>(<span class="string">'.tk-comments-count'</span>);</span><br><span class="line">        <span class="keyword">const</span> targetElement = <span class="variable language_">document</span>.<span class="title function_">querySelector</span>(<span class="string">'.waline-comment-count'</span>);</span><br><span class="line">        <span class="keyword">if</span> (commentCountElement) {</span><br><span class="line">          <span class="keyword">const</span> countSpan = commentCountElement.<span class="title function_">querySelector</span>(<span class="string">'span:first-child'</span>);</span><br><span class="line">          <span class="keyword">const</span> commentCount = <span class="built_in">parseInt</span>(countSpan.<span class="property">textContent</span>);</span><br><span class="line">          targetElement.<span class="property">textContent</span> = commentCount;</span><br><span class="line">        } <span class="keyword">else</span> {</span><br><span class="line">          <span class="variable language_">console</span>.<span class="title function_">log</span>(<span class="string">'未找到评论数量元素'</span>);</span><br><span class="line">        }</span><br><span class="line">      }</span><br><span class="line">    })</span><br><span class="line"></span><br>`
     const result = extractCodeFromHtml(htmlString)

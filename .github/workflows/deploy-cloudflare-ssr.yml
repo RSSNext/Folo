@@ -24,7 +24,7 @@ jobs:
       VITE_FIREBASE_CONFIG: ${{ vars.VITE_FIREBASE_CONFIG }}
     steps:
       - name: Checkout code
-        uses: actions/checkout@v6
+        uses: actions/checkout@v7
         with:
           lfs: true
 

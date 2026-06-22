@@ -35,11 +35,19 @@ export const EntryListContentPicture = ({
   entryIds,
   active,
   view,
+  onResetScrollSignalConsumed,
+  resetScrollSignal,
+  suspendMarkRead,
   ...rest
 }: { entryIds: string[] | null; active?: boolean; view: FeedViewType } & Omit<
   FlashListProps<string>,
   "data" | "renderItem"
-> & { ref?: React.Ref<ElementRef<typeof TimelineSelectorMasonryList> | null> }) => {
+> & {
+    ref?: React.Ref<ElementRef<typeof TimelineSelectorMasonryList> | null>
+    onResetScrollSignalConsumed?: (signal: number) => void
+    resetScrollSignal?: number
+    suspendMarkRead?: boolean
+  }) => {
   const ref = useRef<FlashListRef<any>>(null)
   const isTablet = useIsTabletLayout()
 
@@ -57,7 +65,7 @@ export const EntryListContentPicture = ({
     active,
   })
   const { onViewableItemsChanged, onScroll, viewableItems } = useOnViewableItemsChanged({
-    disabled: active === false || isFetching,
+    disabled: active === false || isFetching || suspendMarkRead,
     refreshing: isFetching && !isFetchingNextPage,
   })
   const translation = useGeneralSettingKey("translation")
@@ -114,6 +122,8 @@ export const EntryListContentPicture = ({
     <TimelineSelectorMasonryList
       ref={ref}
       isRefetching={isRefetching}
+      onResetScrollSignalConsumed={onResetScrollSignalConsumed}
+      resetScrollSignal={resetScrollSignal}
       data={entryIds}
       renderItem={renderItem}
       keyExtractor={defaultKeyExtractor}

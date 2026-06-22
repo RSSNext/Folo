@@ -28,11 +28,19 @@ export const EntryListContentVideo = ({
   entryIds,
   active,
   view,
+  onResetScrollSignalConsumed,
+  resetScrollSignal,
+  suspendMarkRead,
   ...rest
 }: { entryIds: string[] | null; active?: boolean; view: FeedViewType } & Omit<
   FlashListProps<string>,
   "data" | "renderItem"
-> & { ref?: React.Ref<ElementRef<typeof TimelineSelectorMasonryList> | null> }) => {
+> & {
+    ref?: React.Ref<ElementRef<typeof TimelineSelectorMasonryList> | null>
+    onResetScrollSignalConsumed?: (signal: number) => void
+    resetScrollSignal?: number
+    suspendMarkRead?: boolean
+  }) => {
   const ref = useRef<FlashListRef<any>>(null)
   useImperativeHandle(forwardRef, () => ref.current!)
   const isTablet = useIsTabletLayout()
@@ -49,7 +57,7 @@ export const EntryListContentVideo = ({
     active,
   })
   const { onViewableItemsChanged, onScroll, viewableItems } = useOnViewableItemsChanged({
-    disabled: active === false || isFetching,
+    disabled: active === false || isFetching || suspendMarkRead,
     refreshing: isFetching && !isFetchingNextPage,
   })
 
@@ -120,6 +128,8 @@ export const EntryListContentVideo = ({
     <TimelineSelectorMasonryList
       ref={ref}
       isRefetching={isRefetching}
+      onResetScrollSignalConsumed={onResetScrollSignalConsumed}
+      resetScrollSignal={resetScrollSignal}
       data={entryIds}
       renderItem={renderItem}
       keyExtractor={defaultKeyExtractor}
