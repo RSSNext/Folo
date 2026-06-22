@@ -1,16 +1,11 @@
 # What's new in vNEXT_VERSION
 
-## No longer broken
+## Shiny new things
 
-- Fixed duplicated lines in code blocks from feeds that wrap each line in nested divs (e.g., Cloudflare's changelog)
-- Fixed social timeline scroll reset on view changes
-- Fixed timeline refreshes returning to the top before new content is rendered
-- Fixed mark-read state changes while the timeline is being reset
-- Fixed the recent reader spacer appearing when there are no recent entries
-- Fixed reading mode content disappearing after translation updates
-- Fixed streaming TTS scheduling stability
-- Fixed the Spline AI indicator rendering while idle
+## Improvements
+
+## No longer broken
 
 ## Thanks
 
-Special thanks to volunteer contributor @TonyRL for the nested code block fix
+Special thanks to volunteer contributors @ for their valuable contributions
