@@ -4,7 +4,6 @@ import { AnimatePresence, m } from "motion/react"
 import type { FC } from "react"
 
 import { setAIPanelVisibility, useAIPanelVisibility, useAISettingKey } from "~/atoms/settings/ai"
-import { AISpline } from "~/modules/ai-chat/components/3d-models/AISpline"
 import { AISmartSidebar } from "~/modules/ai-chat/components/layouts/AISmartSidebar"
 
 import { AIChatFloatingPanel } from "./AIChatFloatingPanel"
@@ -44,6 +43,7 @@ export const AIIndicator: FC = () => {
             className={clsx(
               "fixed bottom-8 right-8 z-40",
               "rounded-2xl",
+              "size-16",
               "hover:scale-105",
               "active:scale-95",
               "flex items-center justify-center",
@@ -51,7 +51,7 @@ export const AIIndicator: FC = () => {
             )}
             title="Open AI Chat"
           >
-            <AISpline />
+            <i className="i-mgc-folo-bot-original size-16 text-folo" aria-hidden />
           </m.button>
         )}
       </AnimatePresence>
