@@ -1,6 +1,6 @@
 {
-  "version": "1.9.0",
-  "mode": "build",
-  "runtimeVersion": null,
-  "channel": null
+  "version": "1.10.0",
+  "mode": "ota",
+  "runtimeVersion": "1.9.0",
+  "channel": "stable"
 }

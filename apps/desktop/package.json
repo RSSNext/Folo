@@ -1,7 +1,7 @@
 {
   "name": "Folo",
   "type": "module",
-  "version": "1.9.0",
+  "version": "1.10.0",
   "private": true,
   "description": "Follow everything in one place",
   "author": "Folo Team",
@@ -98,5 +98,5 @@
   },
   "runtimeVersion": "1.9.0",
   "productName": "Folo",
-  "mainHash": "0ccdf61724c1dac73e38b9267958138671911ef8cf87830abb9451c2729b9211"
+  "mainHash": "79b9a1c73ebea4fc92b28cc4952a2fe92557557141b1de0c81074622d8a1f404"
 }
