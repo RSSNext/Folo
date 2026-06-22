@@ -198,16 +198,17 @@ const createAudioContextStreamingHandle = (
     const source = audioContext.createBufferSource()
     source.buffer = segmentBuffer
     source.connect(destination)
-    source.start(scheduledTime)
+    const segmentStartTime = Math.max(scheduledTime, audioContext.currentTime)
+    source.start(segmentStartTime)
 
     if (decodedDuration === 0) {
-      playbackStartTime = scheduledTime
+      playbackStartTime = segmentStartTime
       if (progressTimer === null) {
         progressTimer = window.setInterval(updateProgress, 250)
       }
     }
 
-    scheduledTime += frameCount / sampleRate
+    scheduledTime = segmentStartTime + frameCount / sampleRate
     decodedDuration = totalDuration
 
     const playerState = getAudioPlayerAtomValue()
