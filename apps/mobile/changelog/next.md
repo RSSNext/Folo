@@ -1,13 +1,12 @@
 # What's New in vNEXT_VERSION
 
-## Shiny new things
-
-## Improvements
-
 ## No longer broken
 
 - Fixed duplicated lines in code blocks from feeds that wrap each line in nested divs (e.g., Cloudflare's changelog)
+- Fixed timeline refreshes returning to the top before new content is rendered
+- Fixed mark-read state changes while the timeline is being reset
+- Fixed social timeline scroll reset preservation across mobile list layouts
 
 ## Thanks
 
-Special thanks to volunteer contributors @ for their valuable contributions
+Special thanks to volunteer contributor @TonyRL for the nested code block fix
