@@ -1,6 +1,7 @@
 import type { Metadata } from 'next/types'
 
-import { getMarkdownContent, MarkdownContent } from '~/components/ui/markdown'
+import { MarkdownContent } from '~/components/ui/markdown'
+import { getMarkdownContent } from '~/components/ui/markdown/get-markdown-content'
 import { siteInfo } from '~/constants/site'
 
 export const metadata: Metadata = {

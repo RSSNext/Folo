@@ -1,11 +1,3 @@
-import fs from 'node:fs'
-
-import { join } from 'pathe'
-import rehypeStringify from 'rehype-stringify'
-import remarkParse from 'remark-parse'
-import remarkRehype from 'remark-rehype'
-import { unified } from 'unified'
-
 interface MarkdownContentProps {
   content: string
 }
@@ -24,28 +16,4 @@ export function MarkdownContent({ content }: MarkdownContentProps) {
       </div>
     </div>
   )
-}
-
-// Utility function to read and process markdown files
-export async function getMarkdownContent(filePath: string) {
-  try {
-    const fullPath = join(process.cwd(), 'src', filePath)
-    const fileContents = fs.readFileSync(fullPath, 'utf8')
-
-    // Process markdown to HTML using unified
-    const processedContent = await unified()
-      .use(remarkParse)
-      .use(remarkRehype, { allowDangerousHtml: true })
-      .use(rehypeStringify, { allowDangerousHtml: true })
-      .process(fileContents)
-
-    return {
-      content: processedContent.toString(),
-    }
-  } catch (error) {
-    console.error('Error reading markdown file:', error)
-    return {
-      content: '<p>Error loading content. Please try again later.</p>',
-    }
-  }
 }
