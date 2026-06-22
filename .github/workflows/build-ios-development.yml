@@ -40,10 +40,10 @@ jobs:
 
     steps:
       - name: 📦 Checkout code
-        uses: actions/checkout@v6
+        uses: actions/checkout@v7
 
       - name: 📱 Setup EAS
-        uses: expo/expo-github-action@v8
+        uses: expo/expo-github-action@v9
         with:
           eas-version: latest
           token: ${{ secrets.EXPO_TOKEN }}
@@ -85,7 +85,7 @@ jobs:
 
     steps:
       - name: 📦 Checkout code
-        uses: actions/checkout@v6
+        uses: actions/checkout@v7
 
       - name: 🔧 Setup Xcode
         uses: ./.github/actions/setup-xcode
@@ -100,7 +100,7 @@ jobs:
           cache: "pnpm"
 
       - name: 📱 Setup EAS
-        uses: expo/expo-github-action@v8
+        uses: expo/expo-github-action@v9
         with:
           eas-version: latest
           token: ${{ secrets.EXPO_TOKEN }}
@@ -136,7 +136,7 @@ jobs:
 
     steps:
       - name: 📦 Checkout code
-        uses: actions/checkout@v6
+        uses: actions/checkout@v7
 
       - name: 🔧 Setup Xcode
         uses: ./.github/actions/setup-xcode
@@ -151,7 +151,7 @@ jobs:
           cache: "pnpm"
 
       - name: 📱 Setup EAS
-        uses: expo/expo-github-action@v8
+        uses: expo/expo-github-action@v9
         with:
           eas-version: latest
           token: ${{ secrets.EXPO_TOKEN }}

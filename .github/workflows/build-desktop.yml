@@ -39,7 +39,15 @@ env:
 
 jobs:
   release:
-    if: github.secret_source != 'None' && (github.event_name != 'push' || github.ref != 'refs/heads/main' || !contains(github.event.head_commit.message || '', 'release(desktop):'))
+    if: >-
+      github.secret_source != 'None' &&
+      (
+        github.event_name != 'push' ||
+        !(
+          (github.ref == 'refs/heads/main' && contains(github.event.head_commit.message || '', 'release(desktop):')) ||
+          (github.ref == 'refs/heads/mobile-main' && contains(github.event.head_commit.message || '', 'release(mobile):'))
+        )
+      )
     runs-on: ${{ matrix.os }}
     env:
       PROD: ${{ github.event.inputs.tag_version == 'true' || github.ref_type == 'tag' || github.event.inputs.store == 'true' }}
@@ -59,13 +67,13 @@ jobs:
 
     steps:
       - name: Check out Git repository Fully
-        uses: actions/checkout@v6
+        uses: actions/checkout@v7
         if: env.PROD == 'true'
         with:
           fetch-depth: 0
           lfs: true
       - name: Check out Git repository
-        uses: actions/checkout@v6
+        uses: actions/checkout@v7
         if: env.PROD == 'false'
         with:
           fetch-depth: 1
@@ -390,7 +398,7 @@ jobs:
 
     steps:
       - name: Check out Git repository Fully
-        uses: actions/checkout@v6
+        uses: actions/checkout@v7
         with:
           fetch-depth: 0
           lfs: true

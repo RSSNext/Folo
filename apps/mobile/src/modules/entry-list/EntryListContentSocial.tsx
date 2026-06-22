@@ -11,6 +11,7 @@ import { View } from "react-native"
 import { useActionLanguage, useGeneralSettingKey } from "@/src/atoms/settings/general"
 
 import { useEntries } from "../screen/atoms"
+import { getResetScrollSignalForContent } from "../screen/scroll-reset"
 import { TimelineSelectorList } from "../screen/TimelineSelectorList"
 import { EntryListEndScrollSpacer } from "./EntryListEndScrollSpacer"
 import { EntryListFooter } from "./EntryListFooter"
@@ -24,8 +25,14 @@ export const EntryListContentSocial = ({
   entryIds,
   active,
   view,
+  onResetScrollSignalConsumed,
+  resetScrollSignal,
+  suspendMarkRead,
 }: { entryIds: string[] | null; active?: boolean; view: FeedViewType } & {
   ref?: React.Ref<ElementRef<typeof TimelineSelectorList> | null>
+  onResetScrollSignalConsumed?: (signal: number) => void
+  resetScrollSignal?: number
+  suspendMarkRead?: boolean
 }) => {
   const {
     fetchNextPage,
@@ -69,7 +76,7 @@ export const EntryListContentSocial = ({
   )
 
   const { onViewableItemsChanged, onScroll, viewableItems } = useOnViewableItemsChanged({
-    disabled: active === false || isFetching,
+    disabled: active === false || isFetching || suspendMarkRead,
     refreshing: isFetching && !isFetchingNextPage,
   })
 
@@ -86,12 +93,21 @@ export const EntryListContentSocial = ({
     mode: translationMode,
   })
 
+  const contentResetScrollSignal = getResetScrollSignalForContent({
+    entryCount: entryIds?.length ?? 0,
+    hasScrollableSkeleton: true,
+    isReady,
+    resetScrollSignal,
+  })
+
   // Show loading skeleton when entries are not ready and no data yet
   if (!isReady && (!entryIds || entryIds.length === 0)) {
     return (
       <TimelineSelectorList
         onRefresh={() => {}}
         isRefetching={false}
+        onResetScrollSignalConsumed={onResetScrollSignalConsumed}
+        resetScrollSignal={contentResetScrollSignal}
         data={Array.from({ length: 5 }).map((_, index) => `skeleton-${index}`)}
         keyExtractor={(id) => id}
         renderItem={EntryItemSkeleton}
@@ -107,6 +123,8 @@ export const EntryListContentSocial = ({
         refetch()
       }}
       isRefetching={isRefetching}
+      onResetScrollSignalConsumed={onResetScrollSignalConsumed}
+      resetScrollSignal={contentResetScrollSignal}
       data={entryIds}
       extraData={extraData}
       keyExtractor={(id) => id}

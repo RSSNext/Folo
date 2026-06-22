@@ -22,7 +22,7 @@ jobs:
 
     steps:
       - name: Checkout repository
-        uses: actions/checkout@v6
+        uses: actions/checkout@v7
 
       - name: Setup Node.js
         uses: actions/setup-node@v6
@@ -75,7 +75,7 @@ jobs:
     steps:
       - name: Checkout repository
         if: needs.create_tag.outputs.platform == 'mobile' && needs.create_tag.outputs.ref_name == 'mobile-main'
-        uses: actions/checkout@v6
+        uses: actions/checkout@v7
 
       - name: Resolve Mobile Release Config
         id: release_mode
@@ -87,7 +87,7 @@ jobs:
 
       - name: Checkout repository
         if: needs.create_tag.outputs.platform == 'desktop' && needs.create_tag.outputs.ref_name == 'main'
-        uses: actions/checkout@v6
+        uses: actions/checkout@v7
         with:
           fetch-depth: 0
 

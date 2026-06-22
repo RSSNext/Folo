@@ -26,6 +26,7 @@ import { EntryRenderError } from "../entry-content/EntryRenderError"
 import { ReadabilityNotice } from "../entry-content/ReadabilityNotice"
 import { EntryAttachments } from "../EntryAttachments"
 import { EntryTitle } from "../EntryTitle"
+import { getArticleRendererContent } from "./content-selection"
 import { MediaTranscript, TranscriptToggle, useTranscription } from "./shared"
 import { ArticleAudioPlayer } from "./shared/AudioPlayer"
 import type { EntryLayoutProps } from "./types"
@@ -151,7 +152,7 @@ const Renderer: React.FC<{
       style={stableRenderStyle}
       renderInlineStyle={readerRenderInlineStyle}
     >
-      {translation?.content || content}
+      {getArticleRendererContent({ content, translationContent: translation?.content })}
     </ContentRenderer>
   )
 }

@@ -269,7 +269,9 @@ export function extractCodeFromHtml(htmlString: string) {
 
   if (divElements.length > 0) {
     divElements.forEach((div) => {
-      code += `${div.textContent}\n`
+      if (!div.querySelector("div")) {
+        code += `${div.textContent}\n`
+      }
     })
     return code
   }

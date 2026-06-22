@@ -36,8 +36,14 @@ export const EntryListContentArticle = ({
   entryIds,
   active,
   view,
+  onResetScrollSignalConsumed,
+  resetScrollSignal,
+  suspendMarkRead,
 }: { entryIds: string[] | null; active?: boolean; view: FeedViewType } & {
   ref?: React.Ref<ElementRef<typeof TimelineSelectorList> | null>
+  onResetScrollSignalConsumed?: (signal: number) => void
+  resetScrollSignal?: number
+  suspendMarkRead?: boolean
 }) => {
   const extraData: EntryExtraData = useMemo(() => ({ entryIds }), [entryIds])
   const readableItemStyle = useReadableContainerStyle(860, 16)
@@ -88,7 +94,7 @@ export const EntryListContentArticle = ({
   const ref = useRef<FlashListRef<any>>(null)
 
   const { onViewableItemsChanged, onScroll, viewableItems } = useOnViewableItemsChanged({
-    disabled: active === false || isFetching,
+    disabled: active === false || isFetching || suspendMarkRead,
     refreshing: isFetching && !isFetchingNextPage,
   })
 
@@ -129,6 +135,8 @@ export const EntryListContentArticle = ({
       ref={ref}
       onRefresh={refetch}
       isRefetching={isRefetching}
+      onResetScrollSignalConsumed={onResetScrollSignalConsumed}
+      resetScrollSignal={resetScrollSignal}
       data={entryIds}
       extraData={extraData}
       keyExtractor={defaultKeyExtractor}

@@ -8,6 +8,8 @@ import type { NativeScrollEvent, NativeSyntheticEvent } from "react-native"
 
 import { useGeneralSettingKey } from "@/src/atoms/settings/general"
 
+import { shouldCollectViewableItemsForMarkRead } from "./viewable-mark-read"
+
 const defaultIdExtractor = (item: ViewToken<string>) => item.key
 export function useOnViewableItemsChanged({
   disabled,
@@ -42,9 +44,21 @@ export function useOnViewableItemsChanged({
     debouncedFetchEntryContentByStream(viewableItems.map((item) => stableIdExtractor(item)))
     const removed = changed.filter((item) => !item.isViewable)
 
+    if (disabled) {
+      setLastRemovedItems(null)
+      setLastViewableItems(null)
+      return
+    }
+
     // Only when the scroll direction is down and the current offset is a positive number, is it marked as read.
     // This can avoid misjudgment during the rebound of the pull-to-refresh (because the offset will change from negative to zero during the rebound).
-    if (orientation.current === "down" && lastOffset.current > 0) {
+    if (
+      shouldCollectViewableItemsForMarkRead({
+        disabled,
+        isScrollingDown: orientation.current === "down",
+        offset: lastOffset.current,
+      })
+    ) {
       setLastViewableItems(viewableItems)
       if (pauseScrollMarkRead) {
         setLastRemovedItems(null)
