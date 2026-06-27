@@ -81,6 +81,29 @@ export async function saveMediaToEagle(input: SaveToEagleInput): Promise<any> {
   }
 }
 
+// Allowlist of URL scheme protocols that `openURLScheme` is permitted to hand
+// off to `shell.openExternal`. The list intentionally covers the integrations
+// shipped in the UI (Obsidian, Bear, Drafts, Things, Notion, DEVONthink) plus
+// generic web/mail schemes, while excluding dangerous protocols such as
+// `file:`, `smb:`, `ms-msdt:`, `search-ms:`, `jar:`, `res:`, `javascript:`,
+// `data:`, `vbscript:`, which have known abuse chains when invoked from
+// untrusted content.
+const ALLOWED_URL_SCHEME_PROTOCOLS = new Set<string>([
+  "http",
+  "https",
+  "mailto",
+  "obsidian",
+  "bear",
+  "drafts",
+  "things",
+  "notion",
+  "x-devonthink",
+])
+
+function isAllowedURLSchemeProtocol(protocol: string): boolean {
+  return ALLOWED_URL_SCHEME_PROTOCOLS.has(protocol)
+}
+
 export class IntegrationService extends IpcService {
   static override readonly groupName = "integration"
 
@@ -382,9 +405,30 @@ ${content}
     const requestId = Math.random().toString(36).slice(2, 8)
 
     try {
-      // Validate URL scheme format
-      if (!scheme.includes("://")) {
+      // Parse and validate the protocol up-front. `shell.openExternal` will
+      // happily dispatch any scheme the OS has registered a handler for,
+      // including `file://`, `smb://`, `ms-msdt:`, `search-ms:`, `jar:`,
+      // `res:`, etc. Several of those have well-documented exploit chains
+      // (NTLM credential theft over SMB, MSDT/Follina RCE on Windows,
+      // local-file disclosure via file://). The Electron docs explicitly
+      // warn against passing untrusted URLs to `shell.openExternal`, so we
+      // enforce a strict allowlist of schemes that the integrations UI is
+      // intended to support.
+      let protocol: string
+      try {
+        protocol = new URL(scheme).protocol.replace(/:$/, "").toLowerCase()
+      } catch {
         throw new Error("Invalid URL scheme format. Must include protocol (e.g., 'app://')")
+      }
+
+      if (!protocol) {
+        throw new Error("Invalid URL scheme format. Must include protocol (e.g., 'app://')")
+      }
+
+      if (!isAllowedURLSchemeProtocol(protocol)) {
+        throw new Error(
+          `URL scheme "${protocol}://" is not allowed. Allowed schemes: ${[...ALLOWED_URL_SCHEME_PROTOCOLS].sort().join(", ")}.`,
+        )
       }
 
       // Log URL scheme execution (mask sensitive data)
@@ -399,7 +443,7 @@ ${content}
 
       logger.info(`[URLScheme:${requestId}] Opening URL scheme`, {
         scheme: safeScheme,
-        protocol: scheme.split("://")[0],
+        protocol,
       })
 
       // Use Electron's shell.openExternal to open URL scheme
