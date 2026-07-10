@@ -188,6 +188,7 @@ export const parseHtml = (content: string, options?: ParseHtmlOptions) => {
         "allowfullscreen",
         "sandbox",
         "loading",
+        "referrerPolicy",
         "title",
         "id",
         "class",

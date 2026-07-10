@@ -16,6 +16,8 @@ import { createHeadingRenderer } from "~/components/ui/markdown/renderers/Headin
 import { MarkdownInlineImage } from "~/components/ui/markdown/renderers/InlineImage"
 import { Media } from "~/components/ui/media/Media"
 
+const youtubeEmbedRegex = /^https:\/\/(?:www\.)?(?:youtube\.com|youtube-nocookie\.com)\/embed\//
+
 function markInlineImage(node?: Element) {
   for (const item of node?.children ?? []) {
     if (item.type === "element" && item.tagName === "img") {
@@ -142,7 +144,7 @@ export const parseHtml = (
         return createElement("input", props)
       },
       iframe: ({ node, ...props }) => {
-        const { width, height, src, ...rest } = props
+        const { width, height, src, referrerPolicy, ...rest } = props
 
         // Apply security sandbox attributes and responsive styling
         return createElement("iframe", {
@@ -154,6 +156,16 @@ export const parseHtml = (
           sandbox: "allow-scripts allow-same-origin allow-popups allow-forms",
           allowFullScreen: true,
           loading: "lazy",
+          // Avoid YouTube Error 153 https://developers.google.com/youtube/terms/required-minimum-functionality#embedded-player-api-client-identity
+          ...(typeof src === "string" &&
+            youtubeEmbedRegex.test(src) && {
+              referrerPolicy:
+                !referrerPolicy ||
+                referrerPolicy === "no-referrer" ||
+                referrerPolicy === "same-origin"
+                  ? "strict-origin-when-cross-origin"
+                  : referrerPolicy,
+            }),
           style: {
             aspectRatio: width && height ? `${width} / ${height}` : "16 / 9",
             ...rest.style,

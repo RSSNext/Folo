@@ -1,6 +1,7 @@
+import { renderToString } from "react-dom/server"
 import { describe, expect, it } from "vitest"
 
-import { extractCodeFromHtml } from "../parse-html"
+import { extractCodeFromHtml, parseHtml } from "../parse-html"
 
 describe("extractCodeFromHtml", () => {
   it("should extract code from div elements", () => {
@@ -386,5 +387,37 @@ describe("extractCodeFromHtml", () => {
     expect(result).toMatchInlineSnapshot(
       `"if theme.twikoo.enable == true  #tcomment  script(src='https://registry.npmmirror.com/twikoo/1.6.39/files/dist/twikoo.all.min.js')  script.    twikoo.init({      envId: '#{theme.twikoo.envId}',      el: '#tcomment',      region: '#{theme.twikoo.region}',      path: '#{theme.twikoo.path}',      onCommentLoaded: function () {        const commentCountElement = document.querySelector('.tk-comments-count');        const targetElement = document.querySelector('.waline-comment-count');        if (commentCountElement) {          const countSpan = commentCountElement.querySelector('span:first-child');          const commentCount = parseInt(countSpan.textContent);          targetElement.textContent = commentCount;        } else {          console.log('未找到评论数量元素');        }      }    })"`,
     )
+  })
+})
+
+describe("parseHtml iframe", () => {
+  const renderIframe = (attrs: string) =>
+    renderToString(parseHtml(`<iframe ${attrs}></iframe>`).toContent()).toLowerCase()
+
+  const youtubeSrc = `src="https://www.youtube.com/embed/dQw4w9WgXcQ"`
+
+  it("should rewrite referrer-hiding policies on youtube iframes", () => {
+    for (const policy of ["no-referrer", "same-origin"]) {
+      expect(renderIframe(`${youtubeSrc} referrerpolicy="${policy}"`)).toContain(
+        `referrerpolicy="strict-origin-when-cross-origin"`,
+      )
+    }
+  })
+
+  it("should keep other declared referrerpolicy values on youtube iframes", () => {
+    expect(renderIframe(`${youtubeSrc} referrerpolicy="origin"`)).toContain(
+      `referrerpolicy="origin"`,
+    )
+  })
+
+  it("should set referrerpolicy when youtube iframes declare none", () => {
+    // an absent attribute would inherit no-referrer from the document meta tag
+    expect(renderIframe(youtubeSrc)).toContain(`referrerpolicy="strict-origin-when-cross-origin"`)
+  })
+
+  it("should drop referrerpolicy on non-youtube iframes", () => {
+    expect(
+      renderIframe(`src="https://example.com/embed" referrerpolicy="no-referrer"`),
+    ).not.toContain("referrerpolicy")
   })
 })
