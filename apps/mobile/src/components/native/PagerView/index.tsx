@@ -102,6 +102,6 @@ export const PagerView: FC<PagerViewProps> = ({
 
 const styles = StyleSheet.create({
   pageContainer: {
-    ...StyleSheet.absoluteFillObject,
+    ...StyleSheet.absoluteFill,
   },
 })

@@ -43,11 +43,7 @@ export interface ViewMentionData extends MentionBaseData {
 }
 
 export type MentionData =
-  | EntryMentionData
-  | FeedMentionData
-  | DateMentionData
-  | CategoryMentionData
-  | ViewMentionData
+  EntryMentionData | FeedMentionData | DateMentionData | CategoryMentionData | ViewMentionData
 
 export type MentionType = MentionData["type"]
 

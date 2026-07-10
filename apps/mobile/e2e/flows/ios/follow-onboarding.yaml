@@ -1,5 +1,7 @@
 appId: is.follow
 ---
+- runFlow:
+    file: ./dismiss-overlays.yaml
 - tapOn:
     text: Discover
 - tapOn:
@@ -8,7 +10,8 @@ appId: is.follow
 - inputText: folo://onboarding
 - pressKey: Enter
 - extendedWaitUntil:
-    visible: Welcome to Folo
+    visible:
+      id: discover-feed-follow-action
     timeout: 20000
 - tapOn:
     id: discover-feed-follow-action

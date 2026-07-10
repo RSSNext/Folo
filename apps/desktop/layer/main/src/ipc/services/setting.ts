@@ -1,7 +1,6 @@
 import { createRequire } from "node:module"
 
 import { app, nativeTheme } from "electron"
-import type { IpcContext } from "electron-ipc-decorator"
 import { IpcMethod, IpcService } from "electron-ipc-decorator"
 
 import { WindowManager } from "~/manager/window"
@@ -23,62 +22,62 @@ export class SettingService extends IpcService {
   static override readonly groupName = "setting"
 
   @IpcMethod()
-  getLoginItemSettings(_context: IpcContext): Electron.LoginItemSettings {
+  getLoginItemSettings(): Electron.LoginItemSettings {
     return app.getLoginItemSettings()
   }
 
   @IpcMethod()
-  setLoginItemSettings(_context: IpcContext, input: SetLoginItemSettingsInput): void {
+  setLoginItemSettings(input: SetLoginItemSettingsInput): void {
     app.setLoginItemSettings(input)
   }
 
   @IpcMethod()
-  openSettingWindow(_context: IpcContext): void {
+  openSettingWindow(): void {
     WindowManager.showSetting()
   }
 
   @IpcMethod()
-  async getSystemFonts(_context: IpcContext): Promise<string[]> {
+  async getSystemFonts(): Promise<string[]> {
     const fonts = await require("font-list").getFonts()
     return fonts.map((font: string) => font.replaceAll('"', ""))
   }
 
   @IpcMethod()
-  getAppearance(_context: IpcContext): "light" | "dark" | "system" {
+  getAppearance(): "light" | "dark" | "system" {
     return nativeTheme.themeSource
   }
 
   @IpcMethod()
-  setAppearance(_context: IpcContext, appearance: "light" | "dark" | "system"): void {
+  setAppearance(appearance: "light" | "dark" | "system"): void {
     nativeTheme.themeSource = appearance
     store.set("appearance", appearance)
   }
 
   @IpcMethod()
-  getMinimizeToTray(_context: IpcContext): boolean {
+  getMinimizeToTray(): boolean {
     return getTrayConfig()
   }
 
   @IpcMethod()
-  setMinimizeToTray(_context: IpcContext, minimize: boolean): void {
+  setMinimizeToTray(minimize: boolean): void {
     setTrayConfig(minimize)
   }
 
   @IpcMethod()
-  getProxyConfig(_context: IpcContext) {
+  getProxyConfig() {
     const proxy = store.get("proxy")
     return proxy ?? undefined
   }
 
   @IpcMethod()
-  setProxyConfig(_context: IpcContext, config: string) {
+  setProxyConfig(config: string) {
     const result = setProxyConfig(config)
     updateProxy()
     return result
   }
 
   @IpcMethod()
-  getMessagingToken(_context: IpcContext): string | null {
+  getMessagingToken(): string | null {
     return store.get("notifications-credentials") as string | null
   }
 }

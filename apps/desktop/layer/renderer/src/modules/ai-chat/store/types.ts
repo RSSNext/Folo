@@ -37,8 +37,7 @@ export type AIChatContextBlock = ValueContextBlock | FileAttachmentContextBlock
 
 // Helper type for creating new blocks without id
 export type AIChatContextBlockInput =
-  | Omit<ValueContextBlock, "id">
-  | Omit<FileAttachmentContextBlock, "id">
+  Omit<ValueContextBlock, "id"> | Omit<FileAttachmentContextBlock, "id">
 
 export type AIChatContextBlockType = AIChatContextBlock["type"]
 

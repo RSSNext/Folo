@@ -12,14 +12,14 @@ catalog:
   "@follow-app/client-sdk": 0.3.95
   "@folo-services/ai-tools": 0.2.66
   tailwindcss-uikit-colors: 1.0.0
-  typescript: 5.9.3
+  typescript: 6.0.3
 
 ignorePatchFailures: false
 
 onlyBuiltDependencies:
   - "@firebase/util"
   - "@tsslint/core"
-  - "@tsslint/eslint"
+  - "@tsslint/compat-eslint"
   - bufferutil
   - core-js
   - dtrace-provider
@@ -36,45 +36,78 @@ onlyBuiltDependencies:
 
 overrides:
   "@electron/node-gyp": 10.2.0-electron.2
-  "@floating-ui/core": 1.7.2
-  "@floating-ui/dom": 1.7.2
-  "@floating-ui/react": 0.27.14
-  "@floating-ui/react-dom": 2.1.4
+  "@floating-ui/core": 1.7.5
+  "@floating-ui/dom": 1.7.5
+  "@floating-ui/react": 0.27.19
+  "@floating-ui/react-dom": 2.1.8
   "@follow-app/client-sdk": 0.3.95
   "@folo-services/drizzle": 0.1.47
   "@react-native-menu/menu": 2.0.0
-  "@types/react": 19.2.14
+  "@types/react": 19.2.17
   array-includes: npm:@nolyfill/array-includes@latest
   array.prototype.findlastindex: npm:@nolyfill/array.prototype.findlastindex@latest
   array.prototype.flat: npm:@nolyfill/array.prototype.flat@latest
   array.prototype.flatmap: npm:@nolyfill/array.prototype.flatmap@latest
   array.prototype.tosorted: npm:@nolyfill/array.prototype.tosorted@latest
-  drizzle-orm: 0.45.1
+  drizzle-orm: 0.45.2
+  eslint-plugin-react-hooks>zod-validation-error: 4.0.2
   global-agent>serialize-error: 7.0.1
   has: npm:@nolyfill/has@latest
   is-core-module: npm:@nolyfill/is-core-module@1.0.39
   isarray: npm:@nolyfill/isarray@1.0.44
   lan-network@<0.1.7: 0.1.7
-  nativewind>react-native-css-interop: 0.2.1
+  nativewind>react-native-css-interop: 0.2.6
   object.assign: npm:@nolyfill/object.assign@latest
   object.entries: npm:@nolyfill/object.entries@latest
   object.fromentries: npm:@nolyfill/object.fromentries@latest
   object.groupby: npm:@nolyfill/object.groupby@latest
   object.hasown: npm:@nolyfill/object.hasown@latest
   object.values: npm:@nolyfill/object.values@latest
-  react: 19.2.0
-  react-dom: 19.2.0
+  react: 19.2.7
+  react-dom: 19.2.7
   react-native-ios-context-menu: 3.2.1
   react-native-ios-utilities: 5.2.0
-  serialize-error: 2.1.0
+  react-server-dom-webpack: 19.2.7
   string.prototype.matchall: npm:@nolyfill/string.prototype.matchall@latest
+  unrun: 0.3.1
+
+packageExtensions:
+  "@hono/zod-openapi@1.2.1":
+    peerDependenciesMeta:
+      hono:
+        optional: true
+  "@hono/zod-validator@0.7.6":
+    peerDependenciesMeta:
+      hono:
+        optional: true
 
 patchedDependencies:
-  "@microflash/remark-callout-directives": patches/@microflash__remark-callout-directives.patch
   "@mozilla/readability@0.6.0": patches/@mozilla__readability@0.6.0.patch
   "@pengx17/electron-forge-maker-appimage": patches/@pengx17__electron-forge-maker-appimage.patch
-  daisyui@4.12.24: patches/daisyui@4.12.24.patch
   re-resizable@6.11.2: patches/re-resizable@6.11.2.patch
+  react-native-ios-utilities@5.2.0: patches/react-native-ios-utilities@5.2.0.patch
   react-native-sheet-transitions: patches/react-native-sheet-transitions.patch
-  react-native-track-player@4.1.1: patches/react-native-track-player@4.1.1.patch
+  react-native-track-player@4.1.2: patches/react-native-track-player@4.1.2.patch
   workbox-precaching: patches/workbox-precaching.patch
+
+peerDependencyRules:
+  allowedVersions:
+    "@eslint-react/ast>typescript": ">=4.8.4 <6.1.0"
+    "@eslint-react/core>typescript": ">=4.8.4 <6.1.0"
+    "@eslint-react/eslint-plugin>typescript": ">=4.8.4 <6.1.0"
+    "@eslint-react/shared>typescript": ">=4.8.4 <6.1.0"
+    "@eslint-react/var>typescript": ">=4.8.4 <6.1.0"
+    "@typescript-eslint/project-service>typescript": ">=4.8.4 <6.1.0"
+    "@typescript-eslint/tsconfig-utils>typescript": ">=4.8.4 <6.1.0"
+    "@typescript-eslint/type-utils>typescript": ">=4.8.4 <6.1.0"
+    "@typescript-eslint/typescript-estree>typescript": ">=4.8.4 <6.1.0"
+    "@typescript-eslint/utils>typescript": ">=4.8.4 <6.1.0"
+    eslint-plugin-react-dom>typescript: ">=4.8.4 <6.1.0"
+    eslint-plugin-react-hooks-extra>typescript: ">=4.8.4 <6.1.0"
+    eslint-plugin-react-naming-convention>typescript: ">=4.8.4 <6.1.0"
+    eslint-plugin-react-native>eslint: ^10
+    eslint-plugin-react-rsc>typescript: ">=4.8.4 <6.1.0"
+    eslint-plugin-react-web-api>typescript: ">=4.8.4 <6.1.0"
+    eslint-plugin-react-x>typescript: ">=4.8.4 <6.1.0"
+    jojoo>immer: "11"
+    wrangler>@cloudflare/workers-types: ^5

@@ -20,7 +20,6 @@ export const SegmentGroup = (props: ComponentType<SegmentGroupProps>) => {
   const componentId = useId()
 
   return (
-    // eslint-disable-next-line @eslint-react/no-context-provider
     <SegmentGroupContext.Provider
       value={useMemo(
         () => ({

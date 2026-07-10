@@ -28,6 +28,7 @@ import {
 import { __uiSettingAtom, getUISettings, uiServerSyncWhiteListKeys } from "~/atoms/settings/ui"
 import { followClient } from "~/lib/api-client"
 import { jotaiStore } from "~/lib/jotai"
+import { queryClient } from "~/lib/query-client"
 import { settings } from "~/queries/settings"
 
 type SettingMapping = {
@@ -38,6 +39,11 @@ type SettingMapping = {
 }
 type SettingDomain = keyof SettingMapping
 type RemoteSettingsTab = "appearance" | "general" | "ai"
+export interface RemoteSettingsResponse {
+  code: 0
+  settings: Record<string, any>
+  updated: Record<string, string>
+}
 
 const pickSyncPayload = <T extends object>(payload: T, keys: readonly (keyof T | string)[]) => {
   const nextPayload = {} as Partial<T>
@@ -337,22 +343,19 @@ class SettingSyncQueue {
   private threshold = 1000
   private flushScheduled = false
 
-  private pendingPromise: Promise<{
-    code: 0
-    settings: Record<string, any>
-    updated: Record<string, string>
-  }> | null = null
+  private pendingPromise: Promise<RemoteSettingsResponse> | null = null
 
   private fetchSettingRemote() {
     if (this.pendingPromise) {
       return this.pendingPromise
     }
 
-    const promise = settings.get().prefetch() as Promise<{
-      code: 0
-      settings: Record<string, any>
-      updated: Record<string, string>
-    }>
+    const settingQuery = settings.get()
+    const promise = queryClient.fetchQuery({
+      queryKey: settingQuery.key,
+      queryFn: settingQuery.fn,
+      staleTime: 0,
+    }) as Promise<RemoteSettingsResponse>
 
     this.pendingPromise = promise.finally(() => {
       this.pendingPromise = null
@@ -368,6 +371,10 @@ class SettingSyncQueue {
     return remoteAppearancePayload && typeof remoteAppearancePayload === "object"
       ? { ...(remoteAppearancePayload as Record<string, unknown>) }
       : {}
+  }
+
+  private async fetchFreshRemoteSettings() {
+    return followClient.api.settings.get() as Promise<RemoteSettingsResponse>
   }
 
   async enqueue<T extends SettingSyncTab>(tab: T, payload: Partial<SettingMapping[T]>) {
@@ -500,6 +507,23 @@ class SettingSyncQueue {
     }
   }
 
+  private replaceAllRemote() {
+    return Promise.all([
+      followClient.api.settings.update({
+        tab: "appearance",
+        ...buildFullLocalAppearancePayload(),
+      }),
+      followClient.api.settings.update({
+        tab: "general",
+        ...getLocalPayloadForRemoteTab("general"),
+      }),
+      followClient.api.settings.update({
+        tab: "ai",
+        ...getLocalPayloadForRemoteTab("ai"),
+      }),
+    ])
+  }
+
   replaceRemote(tab?: SettingSyncTab) {
     const currentUserId = this.getCurrentUserId()
     if (!currentUserId) {
@@ -509,22 +533,7 @@ class SettingSyncQueue {
     this.bindQueueOwner(currentUserId)
 
     if (!tab) {
-      const promises = [
-        followClient.api.settings.update({
-          tab: "appearance",
-          ...buildFullLocalAppearancePayload(),
-        }),
-        followClient.api.settings.update({
-          tab: "general",
-          ...getLocalPayloadForRemoteTab("general"),
-        }),
-        followClient.api.settings.update({
-          tab: "ai",
-          ...getLocalPayloadForRemoteTab("ai"),
-        }),
-      ]
-
-      this.chain = this.chain.finally(() => Promise.all(promises))
+      this.chain = this.chain.finally(() => this.replaceAllRemote())
       return this.chain
     } else {
       this.chain = this.chain.finally(async () => {
@@ -547,25 +556,37 @@ class SettingSyncQueue {
     }
   }
 
-  async syncLocal() {
+  replaceRemoteIfEmpty() {
     const currentUserId = this.getCurrentUserId()
-    if (!currentUserId) return
+    if (!currentUserId) {
+      return this.chain
+    }
 
     this.bindQueueOwner(currentUserId)
 
-    const remoteSettings = await this.fetchSettingRemote().catch((error) => {
-      if (isUnauthorizedError(error)) {
-        this.queue = []
-        this.ownerUserId = currentUserId
-        return null
-      }
+    this.chain = this.chain.finally(async () => {
+      try {
+        const remoteSettings = await this.fetchFreshRemoteSettings()
+        if (!isEmptyObject(remoteSettings.settings)) {
+          return
+        }
 
-      this.reportSyncError("syncLocal", error)
-      return null
+        await this.replaceAllRemote()
+      } catch (error) {
+        if (isUnauthorizedError(error)) {
+          this.queue = []
+          this.ownerUserId = currentUserId
+          return
+        }
+
+        this.reportSyncError("flush", error)
+      }
     })
 
-    if (!remoteSettings) return
+    return this.chain
+  }
 
+  applyRemoteSettings(remoteSettings: RemoteSettingsResponse) {
     if (isEmptyObject(remoteSettings.settings)) return
 
     for (const tab in remoteSettings.settings) {
@@ -596,6 +617,28 @@ class SettingSyncQueue {
         setter(nextPayload)
       }
     }
+  }
+
+  async syncLocal() {
+    const currentUserId = this.getCurrentUserId()
+    if (!currentUserId) return
+
+    this.bindQueueOwner(currentUserId)
+
+    const remoteSettings = await this.fetchSettingRemote().catch((error) => {
+      if (isUnauthorizedError(error)) {
+        this.queue = []
+        this.ownerUserId = currentUserId
+        return null
+      }
+
+      this.reportSyncError("syncLocal", error)
+      return null
+    })
+
+    if (!remoteSettings) return
+
+    this.applyRemoteSettings(remoteSettings)
   }
 }
 

@@ -65,6 +65,6 @@ export function GlassPlayerTabBar({ className }: { className?: string }) {
 const styles = StyleSheet.create({
   glass: {
     borderRadius: 99,
-    ...StyleSheet.absoluteFillObject,
+    ...StyleSheet.absoluteFill,
   },
 })

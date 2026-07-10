@@ -3,8 +3,7 @@ import fs from "node:fs"
 import { callWindowExpose } from "@follow/shared/bridge"
 import { readability } from "@follow-app/readability"
 import { app, BrowserWindow } from "electron"
-import type { IpcContext } from "electron-ipc-decorator"
-import { IpcMethod, IpcService } from "electron-ipc-decorator"
+import { getIpcContext, IpcMethod, IpcService } from "electron-ipc-decorator"
 import path from "pathe"
 import type { ModelResult } from "vscode-languagedetection"
 
@@ -74,7 +73,7 @@ export class ReaderService extends IpcService {
   static override readonly groupName = "reader"
 
   @IpcMethod()
-  async readability(_context: IpcContext, input: ReadabilityInput) {
+  async readability(input: ReadabilityInput) {
     const { url } = input
 
     if (!url) {
@@ -86,7 +85,7 @@ export class ReaderService extends IpcService {
   }
 
   @IpcMethod()
-  async tts(context: IpcContext, input: TtsInput): Promise<string | null> {
+  async tts(input: TtsInput): Promise<string | null> {
     const { id } = input
     const text = input.text.trim()
     const voice = input.voice?.trim()
@@ -95,7 +94,7 @@ export class ReaderService extends IpcService {
       return null
     }
 
-    const window = BrowserWindow.fromWebContents(context.sender)
+    const window = BrowserWindow.fromWebContents(getIpcContext().sender)
     if (!window) return null
 
     const dirPath = path.join(app.getPath("userData"), "Cache", "tts", id)
@@ -131,8 +130,8 @@ export class ReaderService extends IpcService {
   }
 
   @IpcMethod()
-  async getVoices(context: IpcContext) {
-    const window = BrowserWindow.fromWebContents(context.sender)
+  async getVoices() {
+    const window = BrowserWindow.fromWebContents(getIpcContext().sender)
     try {
       const response = await fetch(`${TTS_SERVICE_URL}/voices`)
       if (!response.ok) {
@@ -149,7 +148,6 @@ export class ReaderService extends IpcService {
 
   @IpcMethod()
   async detectCodeStringLanguage(
-    _context: IpcContext,
     input: DetectCodeStringLanguageInput,
   ): Promise<ModelResult | undefined> {
     const { codeString } = input

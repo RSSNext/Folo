@@ -33,7 +33,7 @@ import { URLSchemePreview } from "~/modules/integration/URLSchemePreview"
 const httpTemplateSchema = z.object({
   method: z.enum(["GET", "POST", "PUT", "PATCH", "DELETE"]),
   url: z.string().url("URL is required"),
-  headers: z.record(z.string()),
+  headers: z.record(z.string(), z.string()),
   body: z.string().optional(),
 })
 
@@ -60,7 +60,7 @@ const createFormSchema = () =>
         }
       } catch (error) {
         if (error instanceof z.ZodError) {
-          error.errors.forEach((zodError) => {
+          error.issues.forEach((zodError) => {
             ctx.addIssue({
               code: z.ZodIssueCode.custom,
               message: zodError.message,

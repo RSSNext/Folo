@@ -1,4 +1,3 @@
-/* eslint-disable @eslint-react/dom/no-missing-iframe-sandbox */
 import { Button } from "@follow/components/ui/button/index.js"
 import { Switch } from "@follow/components/ui/switch/index.jsx"
 import {

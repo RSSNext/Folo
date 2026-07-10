@@ -5,7 +5,7 @@ import { defineSettingPageData } from "~/modules/settings/utils"
 const iconName = "i-mgc-power-outline"
 const priority = (1000 << 1) + 17
 
-export const loader = defineSettingPageData({
+export const handle = defineSettingPageData({
   icon: iconName,
   name: "titles.plan.short",
   title: "titles.plan.long",

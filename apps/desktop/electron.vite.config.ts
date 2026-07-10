@@ -11,6 +11,9 @@ export default defineConfig({
       lib: {
         entry: "./layer/main/src/index.ts",
       },
+      rollupOptions: {
+        external: ["canvas", "jsdom"],
+      },
     },
     resolve: {
       alias: {

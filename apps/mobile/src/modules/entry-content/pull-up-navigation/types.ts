@@ -1,6 +1,6 @@
 import type { FC, PropsWithChildren } from "react"
 import type { NativeScrollEvent, NativeSyntheticEvent } from "react-native"
-import type { ComposedGesture, GestureType } from "react-native-gesture-handler"
+import type { GestureType, LegacyComposedGesture } from "react-native-gesture-handler"
 import type { SharedValue } from "react-native-reanimated"
 import type { ReanimatedScrollEvent } from "react-native-reanimated/lib/typescript/hook/commonTypes"
 
@@ -18,7 +18,7 @@ export interface UsePullUpToNextProps {
 
 interface GestureWrapperProps {
   enabled?: boolean
-  gesture?: ComposedGesture | GestureType
+  gesture?: GestureType | LegacyComposedGesture
 }
 
 export interface UsePullUpToNextReturn {

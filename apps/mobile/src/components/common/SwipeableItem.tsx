@@ -35,7 +35,7 @@ const getActionKey = (side: "left" | "right", action: Action) => {
 }
 const styles = StyleSheet.create({
   absoluteFill: {
-    ...StyleSheet.absoluteFillObject,
+    ...StyleSheet.absoluteFill,
   },
   actionContainer: {
     flex: 1,

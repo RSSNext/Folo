@@ -13,7 +13,6 @@ export const useBackHandler = () => {
   useEffect(() => {
     if (!isAndroid) return
 
-    // eslint-disable-next-line @eslint-react/web-api/no-leaked-event-listener -- listener.remove() handles cleanup
     const listener = BackHandler.addEventListener("hardwareBackPress", () => {
       const lightboxWasActive = closeLightbox()
       if (lightboxWasActive) {

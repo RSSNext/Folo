@@ -1,4 +1,3 @@
-import "@follow/components/tailwind"
 import "@follow/components/dayjs"
 import "./styles/index.css"
 

@@ -1,3 +1,4 @@
+import type { Draft } from "immer"
 import { isDraft, original, produce } from "immer"
 import type { StateCreator, StoreApi, UseBoundStore } from "zustand"
 import type { PersistStorage } from "zustand/middleware"
@@ -106,9 +107,10 @@ export function createImmerSetter<T>(useStore: UseBoundStore<StoreApi<T>>) {
     )
 }
 
-type MayBeDraft<T> = T
+type MayBeDraft<T> = T | Draft<T>
+const isImmerDraft = <T>(value: MayBeDraft<T>): value is Draft<T> => isDraft(value)
 export const toRaw = <T>(draft: MayBeDraft<T>): T => {
-  return isDraft(draft) ? original(draft)! : draft
+  return isImmerDraft(draft) ? original(draft) : draft
 }
 type SyncOrAsync<T> = T | Promise<T>
 type ExecutorFn<S, Ctx> = (snapshot: S, ctx: Ctx) => SyncOrAsync<void>

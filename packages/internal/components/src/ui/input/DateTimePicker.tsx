@@ -206,7 +206,7 @@ export const DateTimePicker = memo<DateTimePickerProps>(
                 <Button
                   variant="ghost"
                   size="sm"
-                  buttonClassName="text-text text-sm font-medium hover:bg-mix-accent/background-1/4 px-2 py-1 rounded-[4px]"
+                  buttonClassName="text-text text-sm font-medium hover:bg-mix-accent-background-1-4 px-2 py-1 rounded-[4px]"
                   onClick={() => setViewMode(viewMode === "months" ? "days" : "months")}
                 >
                   {calendar.month}
@@ -214,7 +214,7 @@ export const DateTimePicker = memo<DateTimePickerProps>(
                 <Button
                   variant="ghost"
                   size="sm"
-                  buttonClassName="text-text text-sm font-medium hover:bg-mix-accent/background-1/4 px-2 py-1 rounded-[4px]"
+                  buttonClassName="text-text text-sm font-medium hover:bg-mix-accent-background-1-4 px-2 py-1 rounded-[4px]"
                   onClick={() => setViewMode(viewMode === "years" ? "days" : "years")}
                 >
                   {calendar.year}
@@ -278,7 +278,7 @@ export const DateTimePicker = memo<DateTimePickerProps>(
                           isToday && !isSelected && "bg-accent/10 font-medium",
                           isOtherMonth && "text-text-quaternary",
                           isDisabled && "text-text-quaternary cursor-not-allowed opacity-50",
-                          !isSelected && !isDisabled && "hover:bg-mix-accent/background-1/4",
+                          !isSelected && !isDisabled && "hover:bg-mix-accent-background-1-4",
                         )}
                         disabled={isDisabled}
                       >
@@ -314,7 +314,7 @@ export const DateTimePicker = memo<DateTimePickerProps>(
                         isSelected && "bg-accent hover:bg-accent/90 text-white",
                         isToday && !isSelected && "bg-accent/10 font-medium",
                         isDisabled && "text-text-quaternary cursor-not-allowed opacity-50",
-                        !isSelected && !isDisabled && "hover:bg-mix-accent/background-1/4",
+                        !isSelected && !isDisabled && "hover:bg-mix-accent-background-1-4",
                       )}
                       disabled={isDisabled}
                     >
@@ -349,7 +349,7 @@ export const DateTimePicker = memo<DateTimePickerProps>(
                         isSelected && "bg-accent hover:bg-accent/90 text-white",
                         isToday && !isSelected && "bg-accent/10 font-medium",
                         isDisabled && "text-text-quaternary cursor-not-allowed opacity-50",
-                        !isSelected && !isDisabled && "hover:bg-mix-accent/background-1/4",
+                        !isSelected && !isDisabled && "hover:bg-mix-accent-background-1-4",
                       )}
                       disabled={isDisabled}
                     >

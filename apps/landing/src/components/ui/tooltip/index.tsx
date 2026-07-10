@@ -1,4 +1,4 @@
-import { Tooltip as TooltipPrimitive } from '@base-ui-components/react/tooltip'
+import { Tooltip as TooltipPrimitive } from '@base-ui/react/tooltip'
 import { m } from 'motion/react'
 import * as React from 'react'
 

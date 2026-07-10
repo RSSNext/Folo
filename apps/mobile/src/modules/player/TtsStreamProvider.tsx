@@ -1,12 +1,13 @@
 import { useEffect, useRef } from "react"
 import { StyleSheet, View } from "react-native"
+import type { WebViewProps } from "react-native-webview"
 import { WebView } from "react-native-webview"
 
 import { ttsStreamController } from "./tts-stream-controller"
 import { TTS_STREAM_WEBVIEW_HTML } from "./tts-stream-webview-html"
 
 export const TtsStreamProvider = () => {
-  const webViewRef = useRef<WebView>(null)
+  const webViewRef = useRef<WebView<WebViewProps>>(null)
 
   useEffect(() => {
     ttsStreamController.attachWebView(webViewRef.current)
@@ -18,7 +19,7 @@ export const TtsStreamProvider = () => {
 
   return (
     <View pointerEvents="none" style={styles.container}>
-      <WebView
+      <WebView<WebViewProps>
         ref={webViewRef}
         allowsInlineMediaPlayback
         androidLayerType="software"

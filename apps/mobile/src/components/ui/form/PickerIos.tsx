@@ -1,4 +1,3 @@
-/* eslint-disable @eslint-react/no-array-index-key */
 import { cn } from "@follow/utils"
 import { Portal } from "@gorhom/portal"
 import { Picker } from "@react-native-picker/picker"

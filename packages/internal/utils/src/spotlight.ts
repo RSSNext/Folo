@@ -19,8 +19,7 @@ export interface SpotlightPatternValidationError {
 }
 
 export type SpotlightPatternValidation =
-  | SpotlightPatternValidationResult
-  | SpotlightPatternValidationError
+  SpotlightPatternValidationResult | SpotlightPatternValidationError
 
 export interface HighlightSegment {
   text: string

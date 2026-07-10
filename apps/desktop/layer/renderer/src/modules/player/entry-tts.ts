@@ -19,8 +19,7 @@ type TtsAudioHandle = {
 }
 
 type AudioContextConstructor =
-  | (new (contextOptions?: AudioContextOptions | undefined) => AudioContext)
-  | null
+  (new (contextOptions?: AudioContextOptions | undefined) => AudioContext) | null
 
 const getAudioContextConstructor = (): AudioContextConstructor => {
   if (typeof window === "undefined") {

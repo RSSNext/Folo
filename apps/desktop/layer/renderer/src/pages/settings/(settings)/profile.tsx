@@ -15,7 +15,7 @@ import { deleteUser } from "~/queries/auth"
 
 const iconName = "i-mgc-user-setting-cute-re"
 const priority = (1000 << 3) + 10
-export const loader = defineSettingPageData({
+export const handle = defineSettingPageData({
   icon: iconName,
   name: "titles.account",
   priority,

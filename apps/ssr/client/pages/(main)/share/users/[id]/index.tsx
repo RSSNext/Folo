@@ -119,7 +119,7 @@ const UserHero = ({ user }: { user: UserProfile }) => {
       <div className="mb-6">
         <Avatar className="mx-auto size-20 border border-border">
           <AvatarImage className="duration-300 animate-in fade-in-0" src={user.image!} />
-          <AvatarFallback className="bg-zinc-100 text-xl font-medium text-zinc-600 dark:bg-neutral-800 dark:text-neutral-400">
+          <AvatarFallback className="dark:bg-neutral-800 dark:text-neutral-400 bg-zinc-100 text-xl font-medium text-zinc-600">
             {user.name?.slice(0, 2)}
           </AvatarFallback>
         </Avatar>
@@ -278,7 +278,7 @@ const Subscriptions = ({ userId }: { userId: string }) => {
                     {category}
                   </h2>
                   <div className="flex items-center space-x-3">
-                    <span className="rounded-full bg-zinc-100 px-3 py-1 text-sm font-medium text-zinc-600 dark:bg-neutral-800 dark:text-neutral-400">
+                    <span className="dark:bg-neutral-800 dark:text-neutral-400 rounded-full bg-zinc-100 px-3 py-1 text-sm font-medium text-zinc-600">
                       {subscriptions.data?.[category]?.length || 0}
                     </span>
                     <i

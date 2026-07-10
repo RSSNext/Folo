@@ -1,6 +1,5 @@
 import { DeviceEventEmitter } from "react-native"
 
-// eslint-disable-next-line @typescript-eslint/no-empty-object-type
 export interface CustomEvent {}
 export interface EventBusMap extends CustomEvent {}
 

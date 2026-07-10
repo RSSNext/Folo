@@ -39,7 +39,6 @@ export const MarkAllReadButton = ({
 
   // const activeScope = useGlobalFocusableScope()
   const when = useGlobalFocusableScopeSelector(
-    // eslint-disable-next-line @eslint-react/hooks-extra/no-unnecessary-use-callback
     useCallback(
       (activeScope) => activeScope.or(HotkeyScope.Timeline, HotkeyScope.SubscriptionList),
       [],

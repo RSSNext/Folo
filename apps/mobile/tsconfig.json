@@ -6,7 +6,6 @@
     "skipLibCheck": true,
     "noImplicitOverride": true,
     "allowImportingTsExtensions": true,
-    "baseUrl": ".",
     "paths": {
       "@/*": ["./*"],
       "@locales/*": ["../../locales/*"]

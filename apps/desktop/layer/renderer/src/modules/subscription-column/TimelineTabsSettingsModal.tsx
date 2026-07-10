@@ -148,9 +148,7 @@ const TimelineTabsSettings = () => {
 
       // Determine hovered list
       const overContainer = (over.data?.current as any)?.container as
-        | "visible"
-        | "hidden"
-        | undefined
+        "visible" | "hidden" | undefined
       const overKey: "visible" | "hidden" =
         overContainer || (visible.includes(overId) ? "visible" : "hidden")
 

@@ -4,7 +4,6 @@ import { useLocation, useNavigate, useParams, useSearchParams } from "react-rout
 
 import { setNavigate, setRoute } from "../atoms/route"
 
-// eslint-disable-next-line @typescript-eslint/no-empty-object-type
 export interface CustomRoute {}
 export interface GlobalRoute extends CustomRoute {
   navigate: NavigateFunction
@@ -15,6 +14,7 @@ declare global {
   }
 }
 window.router = {
+  ...window.router,
   navigate() {},
 } as any
 

@@ -204,7 +204,7 @@ const SwipeWrapper: FC<{ active: string; children: React.JSX.Element[] }> = memo
         if (prevOrderIndex < orderIndex) setDirection("right")
         else setDirection("left")
       }
-      // eslint-disable-next-line @eslint-react/web-api/no-leaked-timeout
+
       setTimeout(() => {
         setCurrentAnimatedActive(viewIndex)
       }, 0)
@@ -317,7 +317,6 @@ const CommandsHandler = ({
   timelineList: string[]
 }) => {
   const when = useGlobalFocusableScopeSelector(
-    // eslint-disable-next-line @eslint-react/hooks-extra/no-unnecessary-use-callback
     useCallback(
       (activeScope) =>
         activeScope.or(HotkeyScope.SubscriptionList, HotkeyScope.Timeline) ||

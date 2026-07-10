@@ -1,4 +1,3 @@
-/* eslint-disable @typescript-eslint/no-unsafe-function-type */
 // @copy https://github.com/streamich/react-use/blob/master/src/useClickAway.ts
 import type { RefObject } from 'react'
 import { useEffect, useRef } from 'react'
@@ -17,8 +16,7 @@ function on<T extends Window | Document | HTMLElement | EventTarget>(
 function off<T extends Window | Document | HTMLElement | EventTarget>(
   obj: T | null,
   ...args:
-    | Parameters<T['removeEventListener']>
-    | [string, Function | null, ...any]
+    Parameters<T['removeEventListener']> | [string, Function | null, ...any]
 ): void {
   if (obj && obj.removeEventListener) {
     obj.removeEventListener(

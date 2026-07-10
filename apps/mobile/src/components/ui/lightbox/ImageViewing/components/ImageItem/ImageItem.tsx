@@ -2,7 +2,7 @@
 
 import * as React from "react"
 import { View } from "react-native"
-import type { PanGesture } from "react-native-gesture-handler"
+import type { LegacyPanGesture } from "react-native-gesture-handler"
 import type { SharedValue } from "react-native-reanimated"
 
 import type {
@@ -28,7 +28,7 @@ type Props = {
   }
   imageAspect: number | undefined
   imageDimensions: ImageDimensions | undefined
-  dismissSwipePan: PanGesture
+  dismissSwipePan: LegacyPanGesture
   transforms: Readonly<
     SharedValue<{
       scaleAndMoveTransform: Transform

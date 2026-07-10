@@ -122,13 +122,16 @@ class TabBarRootView: ExpoView {
       tabViewControllers.append(screenVC)
       tabBarController.viewControllers = tabViewControllers
       tabBarController.didMove(toParent: vc)
+      return
     }
 
     if let tabBarPortalView = subview as? TabBarPortalView {
       let tabBarView = tabBarController.view!
       tabBarView.addSubview(tabBarPortalView)
+      return
     }
 
+    super.insertSubview(subview, at: atIndex)
   }
 
   override func willRemoveSubview(_ subview: UIView) {

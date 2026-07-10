@@ -19,7 +19,7 @@ import { ReviewPromptProvider } from "./modules/review-prompt/provider"
 export function App({ children }: { children: React.ReactNode }) {
   return (
     <>
-      <StatusBar translucent animated style="auto" />
+      <StatusBar animated style="auto" />
       <View className="flex-1 bg-system-background">
         <SideEffect />
 

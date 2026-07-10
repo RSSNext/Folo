@@ -60,8 +60,7 @@ export const UserRenderer = ({
   iconClassName,
 }: {
   user?: NonNullable<ReturnType<typeof useWalletTransactions>["data"]>[number][
-    | "fromUser"
-    | "toUser"]
+    "fromUser" | "toUser"]
   hideName?: boolean
   iconClassName?: string
 }) => {

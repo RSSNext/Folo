@@ -105,7 +105,7 @@ export const OTPWindow = <T,>({ onSuccess, verifyFn, onDismiss }: OTPWindowProps
     <FullWindowOverlay>
       <Animated.View
         style={[
-          StyleSheet.absoluteFillObject,
+          StyleSheet.absoluteFill,
           {
             opacity: windowOpacity,
           },

@@ -5,7 +5,7 @@ import { defineSettingPageData } from "~/modules/settings/utils"
 const iconName = "i-mgc-rada-cute-re"
 const priority = (1000 << 2) + 10
 
-export const loader = defineSettingPageData({
+export const handle = defineSettingPageData({
   icon: iconName,
   name: "titles.lists",
   priority,

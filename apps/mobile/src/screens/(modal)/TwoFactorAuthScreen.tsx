@@ -22,6 +22,7 @@ export const TwoFactorAuthScreen: NavigationControllerView = () => {
   const label = useColor("label")
   const tertiaryLabel = useColor("tertiaryLabel")
   const otpInputRef = useRef<OtpInputRef>(null)
+  const submittedCodeRef = useRef<string | null>(null)
   const navigation = useNavigation()
   const submitMutation = useMutation({
     mutationFn: async (value: string) => {
@@ -36,12 +37,21 @@ export const TwoFactorAuthScreen: NavigationControllerView = () => {
       })
     },
     onError(error) {
+      submittedCodeRef.current = null
       toast.error(`Failed to verify: ${error.message}`)
     },
     onSuccess() {
       navigation.popToRoot()
     },
   })
+  const submitCode = (code: string) => {
+    if (!isAuthCodeValid(code)) return
+    if (submitMutation.isPending) return
+    if (submittedCodeRef.current === code) return
+
+    submittedCodeRef.current = code
+    submitMutation.mutate(code)
+  }
   return (
     <View
       className="flex-1"
@@ -91,11 +101,8 @@ export const TwoFactorAuthScreen: NavigationControllerView = () => {
                 borderColor: accentColor,
               },
             }}
-            onFilled={(code) => {
-              if (isAuthCodeValid(code)) {
-                submitMutation.mutate(code)
-              }
-            }}
+            onTextChange={submitCode}
+            onFilled={submitCode}
           />
         </View>
       </TouchableWithoutFeedback>

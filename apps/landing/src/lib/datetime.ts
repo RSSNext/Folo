@@ -11,7 +11,7 @@ dayjs.locale('zh-cn')
 export enum DateFormat {
   'MMM DD YYYY',
   'HH:mm',
-  'LLLL',
+  LLLL,
   'H:mm:ss A',
   'YYYY-MM-DD',
   'YYYY-MM-DD dddd',

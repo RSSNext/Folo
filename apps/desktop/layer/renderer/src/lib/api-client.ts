@@ -9,17 +9,63 @@ import PKG from "@pkg"
 
 import { setLoginModalShow } from "~/atoms/user"
 
+import { ipcServices } from "./client"
 import { getAuthSessionToken, getClientId, getSessionId } from "./client-session"
+
+const isElectronRuntime = () => {
+  return IN_ELECTRON || (typeof window !== "undefined" && !!window.electron)
+}
+
+const fetchWithElectronAuth = async (request: Request) => {
+  const requestURL = new URL(request.url)
+  const apiURL = new URL(env.VITE_API_URL)
+  const authService = ipcServices?.auth as
+    | (NonNullable<typeof ipcServices>["auth"] & {
+        fetchWithAuth?: (payload: {
+          body?: string
+          headers?: Record<string, string>
+          method: string
+          url: string
+        }) => Promise<{
+          body: string
+          headers: [string, string][]
+          status: number
+          statusText: string
+        }>
+      })
+    | undefined
+
+  if (!isElectronRuntime() || requestURL.origin !== apiURL.origin || !authService?.fetchWithAuth) {
+    return fetch(request)
+  }
+
+  const body =
+    request.method !== "GET" && request.method !== "HEAD" ? await request.clone().text() : undefined
+  const response = await authService.fetchWithAuth({
+    body,
+    headers: Object.fromEntries(request.headers.entries()),
+    method: request.method,
+    url: request.url,
+  })
+
+  return new Response(response.body, {
+    headers: response.headers,
+    status: response.status,
+    statusText: response.statusText,
+  })
+}
 
 export const followClient = new FollowClient({
   credentials: "include",
   timeout: 60_000,
   baseURL: env.VITE_API_URL,
-  fetch: async (input, options = {}) =>
-    fetch(input.toString(), {
+  fetch: async (input, options = {}) => {
+    const request = new Request(input.toString(), {
       ...options,
       cache: "no-store",
-    }),
+    })
+    return fetchWithElectronAuth(request)
+  },
 })
 
 export const followApi = followClient.api
@@ -29,7 +75,7 @@ followClient.addRequestInterceptor(async (ctx) => {
   headers.set("X-Client-Id", getClientId())
   headers.set("X-Session-Id", getSessionId())
 
-  const authSessionToken = IN_ELECTRON ? getAuthSessionToken() : null
+  const authSessionToken = isElectronRuntime() ? getAuthSessionToken() : null
   if (authSessionToken && !headers.has("Cookie") && !headers.has("cookie")) {
     headers.set(
       "Cookie",
@@ -48,7 +94,7 @@ followClient.addRequestInterceptor(async (ctx) => {
 
 followClient.addResponseInterceptor(async ({ response }) => {
   if (response.status === 401) {
-    const authSessionToken = IN_ELECTRON ? getAuthSessionToken() : null
+    const authSessionToken = isElectronRuntime() ? getAuthSessionToken() : null
     const shouldPromptForLogin =
       response.url.includes("/better-auth/get-session") || (!whoami() && !authSessionToken)
 

@@ -1,6 +1,7 @@
 ALTER TABLE `ai_chat` RENAME TO `ai_chat_sessions`;--> statement-breakpoint
 ALTER TABLE `ai_chat_sessions` RENAME COLUMN "room_id" TO "id";--> statement-breakpoint
-ALTER TABLE `ai_chat_sessions` ADD `updated_at` integer DEFAULT (unixepoch() * 1000) NOT NULL;--> statement-breakpoint
+ALTER TABLE `ai_chat_sessions` ADD `updated_at` integer;--> statement-breakpoint
+UPDATE `ai_chat_sessions` SET `updated_at` = COALESCE(`created_at`, unixepoch() * 1000) WHERE `updated_at` IS NULL;--> statement-breakpoint
 CREATE INDEX `idx_ai_chat_sessions_updated_at` ON `ai_chat_sessions` (`updated_at`);--> statement-breakpoint
 PRAGMA foreign_keys=OFF;--> statement-breakpoint
 CREATE TABLE `__new_ai_chat_messages` (
@@ -16,7 +17,30 @@ CREATE TABLE `__new_ai_chat_messages` (
 	FOREIGN KEY (`chat_id`) REFERENCES `ai_chat_sessions`(`id`) ON UPDATE no action ON DELETE cascade
 );
 --> statement-breakpoint
-INSERT INTO `__new_ai_chat_messages`("id", "chat_id", "role", "rich_text_schema", "created_at", "metadata", "status", "finished_at", "message_parts") SELECT "id", "chat_id", "role", "rich_text_schema", "created_at", "metadata", "status", "finished_at", "message_parts" FROM `ai_chat_messages`;--> statement-breakpoint
+INSERT INTO `__new_ai_chat_messages`("id", "chat_id", "role", "rich_text_schema", "created_at", "metadata", "status", "finished_at", "message_parts")
+SELECT
+	"id",
+	"room_id",
+	CASE
+		WHEN json_valid("message") THEN COALESCE(json_extract("message", '$.role'), 'user')
+		ELSE 'user'
+	END,
+	NULL,
+	"created_at",
+	CASE
+		WHEN json_valid("message") THEN json_extract("message", '$.metadata')
+		ELSE NULL
+	END,
+	'completed',
+	NULL,
+	CASE
+		WHEN json_valid("message") THEN COALESCE(
+			json_extract("message", '$.parts'),
+			json_array(json_object('type', 'text', 'text', COALESCE(json_extract("message", '$.content'), CAST("message" AS TEXT))))
+		)
+		ELSE json_array(json_object('type', 'text', 'text', CAST("message" AS TEXT)))
+	END
+FROM `ai_chat_messages`;--> statement-breakpoint
 DROP TABLE `ai_chat_messages`;--> statement-breakpoint
 ALTER TABLE `__new_ai_chat_messages` RENAME TO `ai_chat_messages`;--> statement-breakpoint
 PRAGMA foreign_keys=ON;--> statement-breakpoint

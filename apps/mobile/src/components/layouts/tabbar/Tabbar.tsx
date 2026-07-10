@@ -238,7 +238,7 @@ const styles = StyleSheet.create({
     fontSize: 10,
   },
   blurEffect: {
-    ...StyleSheet.absoluteFillObject,
+    ...StyleSheet.absoluteFill,
     overflow: "hidden",
     backgroundColor: "transparent",
   },

@@ -25,7 +25,6 @@ import { FontScalingProvider } from "./FontScalingProvider"
 import { MigrationProvider } from "./migration"
 import { ServerConfigsLoader } from "./ServerConfigsLoader"
 
-/* eslint-disable @eslint-react/no-missing-key */
 const contexts = [
   <MigrationProvider children={null} />,
   <Provider store={jotaiStore} />,

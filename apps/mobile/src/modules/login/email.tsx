@@ -63,7 +63,6 @@ async function signInWithEmail(
       throw new Error(res.error.message)
     }
 
-    // @ts-expect-error better-auth response type omits twoFactorRedirect
     if (res.data?.twoFactorRedirect) {
       Navigation.rootNavigation.presentControllerView(TwoFactorAuthScreen)
       return false

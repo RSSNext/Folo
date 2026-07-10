@@ -201,14 +201,10 @@ export const UserHeaderBanner = ({
             x: 1,
             y: 1,
           }}
-          style={StyleSheet.absoluteFillObject}
+          style={StyleSheet.absoluteFill}
         />
         {gradientColors && (
-          <ReAnimated.View
-            style={StyleSheet.absoluteFillObject}
-            entering={FadeIn}
-            exiting={FadeOut}
-          >
+          <ReAnimated.View style={StyleSheet.absoluteFill} entering={FadeIn} exiting={FadeOut}>
             <LinearGradient
               colors={gradientColors as [string, string, ...string[]]}
               start={{
@@ -219,7 +215,7 @@ export const UserHeaderBanner = ({
                 x: 1,
                 y: 1,
               }}
-              style={StyleSheet.absoluteFillObject}
+              style={StyleSheet.absoluteFill}
             />
           </ReAnimated.View>
         )}

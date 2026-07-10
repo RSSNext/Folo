@@ -9,7 +9,6 @@
     "strict": true,
     "noUncheckedIndexedAccess": true,
     "noImplicitOverride": true,
-    "baseUrl": ".",
     "noImplicitReturns": false,
     "noEmit": true,
     "skipLibCheck": true,
@@ -20,7 +19,7 @@
       "@follow/types/react"
     ],
     "paths": {
-      "~/*": ["src/*"],
+      "~/*": ["./src/*"],
       "@pkg": ["../../package.json"],
       "@locales/*": ["../../../../locales/*"]
     }

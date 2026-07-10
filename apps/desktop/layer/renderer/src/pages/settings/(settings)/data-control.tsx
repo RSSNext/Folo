@@ -6,7 +6,7 @@ import { defineSettingPageData } from "~/modules/settings/utils"
 
 const priority = (1000 << 1) + 30
 
-export const loader = defineSettingPageData({
+export const handle = defineSettingPageData({
   icon: <MaterialSymbolsDatabaseOutline />,
   name: "titles.data_control",
   priority,

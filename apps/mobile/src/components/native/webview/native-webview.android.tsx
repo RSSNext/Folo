@@ -6,7 +6,7 @@ import type { RefObject } from "react"
 import { useCallback, useRef } from "react"
 import type { ViewProps } from "react-native"
 import { runOnJS, runOnUI } from "react-native-reanimated"
-import type { WebViewNavigation } from "react-native-webview"
+import type { WebViewNavigation, WebViewProps } from "react-native-webview"
 import WebView from "react-native-webview"
 
 import { openLink } from "@/src/lib/native"
@@ -15,9 +15,11 @@ import { useLightboxControls } from "../../ui/lightbox/lightboxState"
 import { htmlUrl } from "./constants"
 import { atEnd, atStart } from "./injected-js"
 
-const webviewAtom = atom<WebView | null>(null)
+type WebViewRef = WebView<WebViewProps>
 
-const setWebview = (webview: WebView | null) => {
+const webviewAtom = atom<WebViewRef | null>(null)
+
+const setWebview = (webview: WebViewRef | null) => {
   jotaiStore.set(webviewAtom, webview)
 }
 
@@ -41,12 +43,12 @@ export const NativeWebView: React.ComponentType<
     url?: string
   }
 > = ({ onContentHeightChange, onSeekAudio }) => {
-  const webViewRef = useRef<WebView | null>(null)
+  const webViewRef = useRef<WebViewRef | null>(null)
   const { onNavigationStateChange } = useWebViewNavigation({ webViewRef })
   const { openLightbox } = useLightboxControls()
 
   return (
-    <WebView
+    <WebView<WebViewProps>
       ref={(webview) => {
         setWebview(webview)
       }}
@@ -120,7 +122,7 @@ export const NativeWebView: React.ComponentType<
   )
 }
 
-const useWebViewNavigation = ({ webViewRef }: { webViewRef: RefObject<WebView | null> }) => {
+const useWebViewNavigation = ({ webViewRef }: { webViewRef: RefObject<WebViewRef | null> }) => {
   const onNavigationStateChange = useCallback(
     (newNavState: WebViewNavigation) => {
       const { url: urlStr } = newNavState

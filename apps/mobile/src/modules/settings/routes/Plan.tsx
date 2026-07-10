@@ -4,7 +4,7 @@ import { cn } from "@follow/utils"
 import type { StatusConfigs } from "@follow-app/client-sdk"
 import { useMutation, useQuery } from "@tanstack/react-query"
 import dayjs from "dayjs"
-import type { SubscriptionProduct } from "expo-iap"
+import type { ProductSubscription } from "expo-iap"
 import { openURL } from "expo-linking"
 import type { TFunction } from "i18next"
 import { useCallback, useEffect, useMemo, useRef, useState } from "react"
@@ -333,8 +333,8 @@ export const PlanScreen: NavigationControllerView = () => {
   )
   const appleProductsById = useMemo(
     () =>
-      new Map<string, SubscriptionProduct>(
-        appleSubscriptions.map((product: SubscriptionProduct) => [product.id, product]),
+      new Map<string, ProductSubscription>(
+        appleSubscriptions.map((product: ProductSubscription) => [product.id, product]),
       ),
     [appleSubscriptions],
   )

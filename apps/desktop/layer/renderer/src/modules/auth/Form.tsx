@@ -12,6 +12,8 @@ import { Input } from "@follow/components/ui/input/Input.js"
 import type { LoginRuntime } from "@follow/shared/auth"
 import { IN_ELECTRON } from "@follow/shared/constants"
 import { env } from "@follow/shared/env.desktop"
+import { userActions } from "@follow/store/user/store"
+import type { AuthUser } from "@follow-app/client-sdk"
 import { zodResolver } from "@hookform/resolvers/zod"
 import { useForm } from "react-hook-form"
 import { Trans, useTranslation } from "react-i18next"
@@ -81,6 +83,47 @@ const getAuthTokenFromResult = (result: unknown) => {
   }
 
   return null
+}
+
+const getAuthUserFromResult = (result: unknown): AuthUser | null => {
+  if (!result || typeof result !== "object") {
+    return null
+  }
+
+  const data =
+    "data" in result && result.data && typeof result.data === "object" ? result.data : result
+  if (!("user" in data) || !data.user || typeof data.user !== "object") {
+    return null
+  }
+
+  const user = data.user as { id?: unknown }
+  return typeof user.id === "string" ? (data.user as AuthUser) : null
+}
+
+const persistElectronAuthUser = async (result: unknown) => {
+  if (!IN_ELECTRON) {
+    return
+  }
+
+  const authUser = getAuthUserFromResult(result)
+  if (!authUser) {
+    return
+  }
+
+  await userActions.upsertMany([
+    {
+      id: authUser.id,
+      email: authUser.email ?? null,
+      handle: authUser.handle ?? null,
+      name: authUser.name ?? null,
+      image: authUser.image ?? null,
+      isMe: true,
+      emailVerified: authUser.emailVerified ?? false,
+      bio: authUser.bio ?? null,
+      website: authUser.website ?? null,
+      socialLinks: authUser.socialLinks ?? null,
+    },
+  ])
 }
 
 type ElectronAuthResult = {
@@ -220,6 +263,7 @@ export function LoginWithPassword({
                   if (token) {
                     setAuthSessionToken(token)
                   }
+                  await persistElectronAuthUser(result)
                 }
               }}
               onSuccess={() => {
@@ -235,6 +279,7 @@ export function LoginWithPassword({
         if (token) {
           setAuthSessionToken(token)
         }
+        await persistElectronAuthUser(res)
       }
       handleSessionChanges()
     }
@@ -429,6 +474,7 @@ export function RegisterForm({
       if (token) {
         setAuthSessionToken(token)
       }
+      await persistElectronAuthUser(result)
     }
 
     handleSessionChanges()

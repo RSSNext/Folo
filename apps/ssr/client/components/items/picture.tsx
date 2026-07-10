@@ -178,7 +178,7 @@ export const PictureList: FC<{
         <div className="flex w-full flex-wrap" ref={containerRef}>
           {isInitLayout && (
             <MasonryItemWidthContext value={currentItemWidth}>
-              {/* eslint-disable-next-line @eslint-react/no-context-provider */}
+              {}
               <MasonryItemsAspectRatioContext.Provider value={masonryItemsRadio}>
                 <MasonryItemsAspectRatioSetterContext value={setMasonryItemsRadio}>
                   <div className="relative w-full">

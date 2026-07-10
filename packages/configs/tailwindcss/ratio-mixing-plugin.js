@@ -48,39 +48,6 @@ const ratioMixingPlugin = plugin.withOptions(
 
 function generateDynamicRatioUtilities(addUtilities, config) {
   const { baseColors, variants, colorSpace } = config
-  const utilities = {}
-
-  // Generate dynamic utilities that parse ratios from class names
-  // Pattern: bg-mix-accent/background-7/3 or bg-mix-accent/background-1.5/2
-  Object.entries(baseColors).forEach(([color1Name, color1Value]) => {
-    Object.entries(baseColors).forEach(([color2Name, color2Value]) => {
-      if (color1Name === color2Name) return // Skip same color mixing
-
-      variants.forEach((variant) => {
-        const property = getPropertyName(variant)
-
-        // Generate a utility that can accept arbitrary ratio values
-        const classPattern = `.${variant}-${config.prefix}-${color1Name}\\/${color2Name}-([0-9.]+)\\/([0-9.]+)`
-
-        utilities[classPattern] = (match) => {
-          const num = Number.parseFloat(match[1])
-          const denom = Number.parseFloat(match[2])
-
-          if (num <= 0 || denom <= 0) return {}
-
-          const percentage1 = Math.round((num / (num + denom)) * 100)
-          const percentage2 = 100 - percentage1
-
-          const mixedColor = `color-mix(in ${colorSpace}, ${color1Value} ${percentage1}%, ${color2Value} ${percentage2}%)`
-
-          return { [property]: mixedColor }
-        }
-      })
-    })
-  })
-
-  // Since we can't use regex patterns directly with addUtilities,
-  // we'll use a different approach with addComponents
   const dynamicUtilities = {}
 
   // Create utilities for common ratios that can be extended
@@ -112,7 +79,7 @@ function generateDynamicRatioUtilities(addUtilities, config) {
         const percentage2 = 100 - percentage1
 
         variants.forEach((variant) => {
-          const className = `.${variant}-${config.prefix}-${color1Name}\\/${color2Name}-${num}\\/${denom}`
+          const className = `.${variant}-${config.prefix}-${color1Name}-${color2Name}-${num}-${denom}`
           const property = getPropertyName(variant)
           const mixedColor = `color-mix(in ${colorSpace}, ${color1Value} ${percentage1}%, ${color2Value} ${percentage2}%)`
 

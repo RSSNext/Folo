@@ -5,7 +5,6 @@ import {
 import { env } from "@follow/shared/env.desktop"
 import { createAuthRequestOriginHeaders, createDesktopAPIHeaders } from "@follow/utils/headers"
 import PKG from "@pkg"
-import type { IpcContext } from "electron-ipc-decorator"
 import { IpcMethod, IpcService } from "electron-ipc-decorator"
 
 import { BETTER_AUTH_COOKIE_NAME_SESSION_TOKEN } from "~/constants/app"
@@ -27,6 +26,37 @@ export class AuthService extends IpcService {
   static override readonly groupName = "auth"
 
   private pendingTwoFactorCookieHeader: string | null = null
+
+  private async getManagedCookieHeader(): Promise<string> {
+    const mainWindow = WindowManager.getMainWindow()
+    if (!mainWindow) {
+      return ""
+    }
+
+    return buildManagedAuthCookieHeader(
+      await getManagedAuthCookies({
+        apiURL: env.VITE_API_URL,
+        session: mainWindow.webContents.session,
+      }),
+    )
+  }
+
+  private async persistAuthCookiesFromResponse(response: Response): Promise<void> {
+    const setCookieValues =
+      typeof response.headers.getSetCookie === "function" ? response.headers.getSetCookie() : []
+    const setCookie =
+      setCookieValues.length > 0
+        ? setCookieValues.join(", ")
+        : response.headers.get("set-cookie") || ""
+    const mainWindow = WindowManager.getMainWindow()
+    if (response.ok && setCookie && mainWindow) {
+      await persistManagedAuthCookiesFromSetCookieHeader({
+        apiURL: env.VITE_API_URL,
+        session: mainWindow.webContents.session,
+        setCookieHeader: setCookie,
+      })
+    }
+  }
 
   private getAuthRequestHeaders(additionalHeaders?: Record<string, string>) {
     return {
@@ -104,13 +134,7 @@ export class AuthService extends IpcService {
         ? setCookieValues.join(", ")
         : response.headers.get("set-cookie") || ""
     const mainWindow = WindowManager.getMainWindow()
-    if (response.ok && setCookie && mainWindow) {
-      await persistManagedAuthCookiesFromSetCookieHeader({
-        apiURL: env.VITE_API_URL,
-        session: mainWindow.webContents.session,
-        setCookieHeader: setCookie,
-      })
-    }
+    await this.persistAuthCookiesFromResponse(response)
 
     const pendingTwoFactorCookieHeader = buildManagedAuthCookieHeaderFromSetCookieHeader(setCookie)
     this.pendingTwoFactorCookieHeader =
@@ -142,7 +166,53 @@ export class AuthService extends IpcService {
   }
 
   @IpcMethod()
-  async sessionChanged(_context: IpcContext, preferredToken?: string): Promise<void> {
+  async fetchWithAuth(payload: {
+    body?: string
+    headers?: Record<string, string>
+    method: string
+    url: string
+  }) {
+    const requestURL = new URL(payload.url)
+    const apiURL = new URL(env.VITE_API_URL)
+    if (requestURL.origin !== apiURL.origin) {
+      throw new Error("Refusing to proxy non-API request")
+    }
+
+    const headers = new Headers(payload.headers)
+    headers.delete("content-length")
+    headers.delete("host")
+    for (const [key, value] of Object.entries(this.getAuthRequestHeaders())) {
+      headers.set(key, value)
+    }
+
+    if (!headers.has("cookie")) {
+      const cookieHeader = await this.getManagedCookieHeader()
+      if (cookieHeader) {
+        headers.set("Cookie", cookieHeader)
+      }
+    }
+
+    const response = await fetch(payload.url, {
+      method: payload.method,
+      headers,
+      body:
+        payload.body !== undefined && payload.method !== "GET" && payload.method !== "HEAD"
+          ? payload.body
+          : undefined,
+    })
+
+    await this.persistAuthCookiesFromResponse(response)
+
+    return {
+      body: await response.text(),
+      headers: Array.from(response.headers.entries()),
+      status: response.status,
+      statusText: response.statusText,
+    }
+  }
+
+  @IpcMethod()
+  async sessionChanged(preferredToken?: string): Promise<void> {
     await updateNotificationsToken()
 
     // Sync the current desktop session to the npm CLI login.
@@ -155,7 +225,7 @@ export class AuthService extends IpcService {
   }
 
   @IpcMethod()
-  async signOut(_context: IpcContext): Promise<void> {
+  async signOut(): Promise<void> {
     await deleteNotificationsToken()
 
     // Clear the synced CLI login on sign out.
@@ -165,7 +235,7 @@ export class AuthService extends IpcService {
   }
 
   @IpcMethod()
-  async signOutRemote(_context: IpcContext, token?: string): Promise<void> {
+  async signOutRemote(token?: string): Promise<void> {
     await fetch(`${env.VITE_API_URL}/better-auth/sign-out`, {
       method: "POST",
       headers: this.getAuthRequestHeaders(
@@ -181,10 +251,11 @@ export class AuthService extends IpcService {
   }
 
   @IpcMethod()
-  async verifyTotp(
-    _context: IpcContext,
-    payload: { code: string; trustDevice?: boolean; headers?: Record<string, string> },
-  ) {
+  async verifyTotp(payload: {
+    code: string
+    trustDevice?: boolean
+    headers?: Record<string, string>
+  }) {
     const mainWindow = WindowManager.getMainWindow()
     const cookieHeader =
       this.pendingTwoFactorCookieHeader ||
@@ -253,10 +324,11 @@ export class AuthService extends IpcService {
   }
 
   @IpcMethod()
-  async signInWithCredential(
-    _context: IpcContext,
-    payload: { email: string; password: string; headers?: Record<string, string> },
-  ) {
+  async signInWithCredential(payload: {
+    email: string
+    password: string
+    headers?: Record<string, string>
+  }) {
     return this.requestCredentialAuth(
       "/sign-in/email",
       {
@@ -268,16 +340,13 @@ export class AuthService extends IpcService {
   }
 
   @IpcMethod()
-  async signUpWithCredential(
-    _context: IpcContext,
-    payload: {
-      email: string
-      password: string
-      name: string
-      callbackURL: string
-      headers?: Record<string, string>
-    },
-  ) {
+  async signUpWithCredential(payload: {
+    email: string
+    password: string
+    name: string
+    callbackURL: string
+    headers?: Record<string, string>
+  }) {
     return this.requestCredentialAuth(
       "/sign-up/email",
       {
@@ -291,7 +360,7 @@ export class AuthService extends IpcService {
   }
 
   @IpcMethod()
-  async setSessionToken(_context: IpcContext, token: string): Promise<void> {
+  async setSessionToken(token: string): Promise<void> {
     await this.applySessionToken(token)
   }
 }

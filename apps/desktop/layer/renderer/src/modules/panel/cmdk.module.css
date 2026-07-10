@@ -1,3 +1,5 @@
+@reference "../../styles/main.css";
+
 .status-bar {
   @apply relative z-10 h-px w-full shrink-0 scale-y-75 transform;
 

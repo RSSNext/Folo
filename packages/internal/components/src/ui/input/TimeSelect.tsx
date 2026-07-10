@@ -68,7 +68,7 @@ export const TimeSelect = memo<TimeSelectProps>(
         <Select disabled={disabled} value={hourValue} onValueChange={(h) => update(h, minuteValue)}>
           <SelectTrigger
             aria-label={label ? `${label} hour` : "Hour"}
-            className="h-6 w-12 justify-between rounded-[4px] border-0 bg-material-opaque px-1.5 py-0 text-xs hover:bg-mix-accent/background-1/4"
+            className="h-6 w-12 justify-between rounded-[4px] border-0 bg-material-opaque px-1.5 py-0 text-xs hover:bg-mix-accent-background-1-4"
           >
             <SelectValue />
           </SelectTrigger>
@@ -84,7 +84,7 @@ export const TimeSelect = memo<TimeSelectProps>(
         <Select disabled={disabled} value={minuteValue} onValueChange={(m) => update(hourValue, m)}>
           <SelectTrigger
             aria-label={label ? `${label} minute` : "Minute"}
-            className="h-6 w-12 justify-between rounded-[4px] border-0 bg-material-opaque px-1.5 py-0 text-xs hover:bg-mix-accent/background-1/4"
+            className="h-6 w-12 justify-between rounded-[4px] border-0 bg-material-opaque px-1.5 py-0 text-xs hover:bg-mix-accent-background-1-4"
           >
             <SelectValue />
           </SelectTrigger>

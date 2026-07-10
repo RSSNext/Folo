@@ -137,7 +137,7 @@ build_ios_simulator_app() {
       -destination "id=${device_id}" \
       build \
       "$@"
-  )
+  ) >&2
 
   find "$HOME/Library/Developer/Xcode/DerivedData" -path '*Build/Products/Release-iphonesimulator/Folo.app' | head -n1
 }

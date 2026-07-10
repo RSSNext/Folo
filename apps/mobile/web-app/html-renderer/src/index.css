@@ -1,0 +1,6 @@
+@import "tailwindcss" source(none);
+@import "@follow/components/assets/colors-media.css";
+@import "@follow/components/assets/tailwind.css";
+@config "../tailwind.config.ts";
+@source "./";
+@source "../../../../../packages";

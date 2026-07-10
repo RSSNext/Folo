@@ -41,19 +41,21 @@ const listSchema = z.object({
     .transform((val) => (val === "" ? null : val)),
   view: z.number().int(),
 })
+type ListFormInput = z.input<typeof listSchema>
+type ListFormOutput = z.output<typeof listSchema>
 
 const defaultValues = {
   title: "",
   description: null,
   image: null,
   view: FeedViewType.Articles,
-} satisfies z.infer<typeof listSchema>
+} satisfies ListFormInput
 export const ListScreen: NavigationControllerView<{
   listId?: string
 }> = ({ listId }) => {
   const { t } = useTranslation("settings")
   const list = useListById(listId || "")
-  const form = useForm<z.infer<typeof listSchema>>({
+  const form = useForm<ListFormInput, any, ListFormOutput>({
     defaultValues: list
       ? {
           title: list.title ?? "",

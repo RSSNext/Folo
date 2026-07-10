@@ -1,5 +1,3 @@
-import "@follow/components/assets/colors-media.css"
-import "@follow/components/assets/tailwind.css"
 import "./index.css"
 
 import { createElement } from "react"

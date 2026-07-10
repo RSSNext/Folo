@@ -58,12 +58,20 @@ type Account = {
     | null
     | undefined
 }
+type AccountInfoResponse = {
+  data?: Account[]
+}
+type LinkSocialResponse = {
+  data?: {
+    url?: string | null
+  } | null
+}
 const accountInfoKey = ["account-info"]
 const userProviderKey = ["providers"]
 const useAccount = () => {
-  return useQuery({
+  return useQuery<AccountInfoResponse>({
     queryKey: accountInfoKey,
-    queryFn: () => getAccountInfo(),
+    queryFn: async () => (await getAccountInfo()) as AccountInfoResponse,
   })
 }
 export const AccountScreen = () => {
@@ -145,7 +153,7 @@ const AccountLinker: FC<{
       onPress={() => {
         if (!account) {
           linkSocial({ provider: provider as any })
-            .then((res) => {
+            .then((res: LinkSocialResponse) => {
               if (!res.data?.url) {
                 toast.error(t("profile.link_social.link_failed"))
                 return
@@ -159,7 +167,7 @@ const AccountLinker: FC<{
                 })
               })
             })
-            .catch((error) => {
+            .catch((error: unknown) => {
               toast.error(
                 error instanceof Error ? error.message : t("profile.link_social.link_failed"),
               )
@@ -196,7 +204,9 @@ const AuthenticationSection = () => {
   const providerToAccountMap = useMemo(() => {
     const providerMap: Record<string, Account | undefined> = {}
     for (const provider of Object.keys(providers || {})) {
-      providerMap[provider] = accounts?.data?.find((account) => account.provider === provider)
+      providerMap[provider] = accounts?.data?.find(
+        (account: Account) => account.provider === provider,
+      )
     }
     return providerMap
   }, [accounts?.data, providers])
@@ -224,7 +234,7 @@ const AuthenticationSection = () => {
 const SecuritySection = () => {
   const { t } = useTranslation(["settings", "common"])
   const { data: account } = useAccount()
-  const hasPassword = account?.data?.find((account) => account.provider === "credential")
+  const hasPassword = account?.data?.find((account: Account) => account.provider === "credential")
   const whoAmI = useWhoami()
   const twoFactorEnabled = whoAmI?.twoFactorEnabled
   const navigation = useNavigation()

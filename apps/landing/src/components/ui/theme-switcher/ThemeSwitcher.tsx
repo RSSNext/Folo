@@ -1,4 +1,3 @@
-/* eslint-disable @eslint-react/dom/no-flush-sync */
 'use client'
 
 import { useTheme } from 'next-themes'

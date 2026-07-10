@@ -9,7 +9,7 @@ import { useColor } from "@/src/theme/colors"
 
 import { BaseSearchPageRootView } from "./__base"
 
-export const useDataSkeleton = (isLoading: boolean, data: any) => {
+export const useDataSkeleton = (isLoading: boolean, itemCount: number | undefined) => {
   const { t } = useTranslation("common")
   const textColor = useColor("text")
   return useMemo(() => {
@@ -20,7 +20,7 @@ export const useDataSkeleton = (isLoading: boolean, data: any) => {
         </BaseSearchPageRootView>
       )
     }
-    if (data?.data.length === 0) {
+    if (itemCount === 0) {
       return (
         <BaseSearchPageRootView className="h-64 items-center justify-center">
           <SadCuteReIcon height={32} width={32} color={withOpacity(textColor, 0.5)} />
@@ -29,5 +29,5 @@ export const useDataSkeleton = (isLoading: boolean, data: any) => {
       )
     }
     return null
-  }, [isLoading, data, t, textColor])
+  }, [isLoading, itemCount, t, textColor])
 }

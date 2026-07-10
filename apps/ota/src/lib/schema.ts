@@ -100,7 +100,9 @@ const desktopPolicySchema = z.object({
   required: z.boolean(),
   minSupportedBinaryVersion: semver,
   message: z.string().nullable(),
-  distributions: z.record(desktopDistributionSchema, desktopPolicyDistributionSchema).default({}),
+  distributions: z
+    .partialRecord(desktopDistributionSchema, desktopPolicyDistributionSchema)
+    .default({}),
 })
 
 const desktopReleaseInputSchema = z

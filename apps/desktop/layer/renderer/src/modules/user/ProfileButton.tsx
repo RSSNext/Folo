@@ -3,7 +3,7 @@ import { RSSHubLogo } from "@follow/components/ui/platform-icon/icons.js"
 import { RootPortal } from "@follow/components/ui/portal/index.js"
 import { EllipsisHorizontalTextWithTooltip } from "@follow/components/ui/typography/EllipsisWithTooltip.js"
 import { useMeasure } from "@follow/hooks"
-import { useUserRole } from "@follow/store/user/hooks"
+import { useUserRole, useWhoami } from "@follow/store/user/hooks"
 import { cn } from "@follow/utils/utils"
 import type { FC } from "react"
 import { memo, useCallback, useLayoutEffect, useState } from "react"
@@ -38,7 +38,8 @@ export type ProfileButtonProps = LoginProps & {
 export const ProfileButton: FC<ProfileButtonProps> = memo((props) => {
   const serverConfig = useServerConfigs()
   const { status, session } = useSession()
-  const { user } = session || {}
+  const whoami = useWhoami()
+  const user = session?.user ?? whoami
   const settingModalPresent = useSettingModal()
   const presentUserProfile = usePresentUserProfileModal("dialog")
   const { t } = useTranslation()
@@ -53,7 +54,7 @@ export const ProfileButton: FC<ProfileButtonProps> = memo((props) => {
   const role = useUserRole()
   const isInMASReview = useIsInMASReview()
 
-  if (status !== "authenticated") {
+  if (status !== "authenticated" && !user) {
     return <LoginButton {...props} />
   }
 
@@ -65,9 +66,13 @@ export const ProfileButton: FC<ProfileButtonProps> = memo((props) => {
         data-testid="profile-menu-trigger"
       >
         {props.animatedAvatar ? (
-          <TransitionAvatar stage={dropdown ? "zoom-in" : ""} />
+          <TransitionAvatar data-testid="profile-menu-trigger" stage={dropdown ? "zoom-in" : ""} />
         ) : (
-          <UserAvatar hideName className="size-6 p-0 [&_*]:border-0" />
+          <UserAvatar
+            data-testid="profile-menu-trigger"
+            hideName
+            className="size-6 p-0 [&_*]:border-0"
+          />
         )}
       </DropdownMenuTrigger>
 

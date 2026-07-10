@@ -66,6 +66,7 @@ export const viteRenderBaseConfig = {
     codeInspectorPlugin({
       bundler: "vite",
       hotKeys: ["altKey"],
+      needEnvInspector: true,
     }),
     react({
       // jsxImportSource: "@welldone-software/why-did-you-render", // <-----

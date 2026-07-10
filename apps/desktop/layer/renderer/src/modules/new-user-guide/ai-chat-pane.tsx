@@ -509,7 +509,7 @@ function AIChatInterface({ inputRef }: AIChatInterfaceProps) {
             type="button"
             onClick={() => resetScrollState()}
             className={cn(
-              "group center flex size-8 items-center gap-2 rounded-full border backdrop-blur-background transition-all bg-mix-background/transparent-8/2",
+              "group center flex size-8 items-center gap-2 rounded-full border backdrop-blur-background transition-all bg-mix-background-transparent-8-2",
               "border-border",
               "hover:border-border/60 active:scale-[0.98]",
             )}

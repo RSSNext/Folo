@@ -7,7 +7,6 @@
     "noImplicitReturns": false,
     "noUnusedLocals": false,
     "noUnusedParameters": false,
-    "baseUrl": ".",
     "paths": {
       "@shared/*": ["./src/*"],
       "@pkg": ["../../package.json"],

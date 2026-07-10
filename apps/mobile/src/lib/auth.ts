@@ -1,10 +1,12 @@
 import { expoClient } from "@better-auth/expo/client"
+import type { BaseAuthPlugins } from "@follow/shared/auth"
 import { baseAuthPlugins } from "@follow/shared/auth"
 import { isNewUserQueryKey } from "@follow/store/user/constants"
 import { whoamiQueryKey } from "@follow/store/user/hooks"
 import { userActions } from "@follow/store/user/store"
 import { createMobileAPIHeaders } from "@follow/utils/headers"
 import { useQuery } from "@tanstack/react-query"
+import type { BetterAuthClientOptions } from "better-auth/client"
 import { createAuthClient } from "better-auth/react"
 import { nativeApplicationVersion } from "expo-application"
 import * as FileSystem from "expo-file-system/legacy"
@@ -14,6 +16,7 @@ import DeviceInfo from "react-native-device-info"
 
 import { getDbPath } from "@/src/database"
 
+import { createMobileAuthCookieSyncPlugin } from "./auth-cookie-sync"
 import { getClientId, getSessionId } from "./client-session"
 import { getUserAgent } from "./native/user-agent"
 import { Navigation } from "./navigation/Navigation"
@@ -51,70 +54,85 @@ const refreshSessionQueries = () =>
     queryClient.resetQueries({ queryKey: ["owned", "lists"] }),
   ])
 
+type MobileAuthPlugins = [
+  ...BaseAuthPlugins,
+  ReturnType<typeof createMobileAuthCookieSyncPlugin>,
+  ReturnType<typeof expoClient>,
+]
+type MobileAuthClientOptions = Omit<BetterAuthClientOptions, "plugins"> & {
+  plugins: MobileAuthPlugins
+}
+
+const authCookieStorage = {
+  setItem(key: string, value: string) {
+    const previousValue = key === cookieKey ? safeSecureStore.getItem(key) : null
+    try {
+      safeSecureStore.setItem(key, value)
+    } catch (e) {
+      console.warn("SecureStore.setItem failed:", e)
+      return
+    }
+
+    if (key === cookieKey) {
+      if (__DEV__) {
+        const env = getEnvProfile()
+        try {
+          safeSecureStore.setItem(`${cookieKey}_${env}`, value)
+        } catch {
+          // Keychain may be unavailable in background
+        }
+      }
+      bumpAuthStateRevision()
+      const authStateChanged = previousValue !== value
+      if (authStateChanged) {
+        void refreshSessionQueries()
+      }
+    }
+  },
+  getItem(key: string) {
+    try {
+      return safeSecureStore.getItem(key)
+    } catch (e) {
+      console.warn("SecureStore.getItem failed:", e)
+      return null
+    }
+  },
+  removeItem(key: string) {
+    const previousValue = key === cookieKey ? safeSecureStore.getItem(key) : null
+    try {
+      safeSecureStore.removeItem(key)
+    } catch (e) {
+      console.warn("SecureStore.removeItem failed:", e)
+      return
+    }
+
+    if (key === cookieKey) {
+      if (__DEV__) {
+        const env = getEnvProfile()
+        safeSecureStore.removeItem(`${cookieKey}_${env}`)
+      }
+      bumpAuthStateRevision()
+      if (previousValue) {
+        void refreshSessionQueries()
+      }
+    }
+  },
+}
+
 const plugins = [
   ...baseAuthPlugins,
+  createMobileAuthCookieSyncPlugin({
+    cookieKey,
+    storage: authCookieStorage,
+  }),
   expoClient({
     scheme: "folo",
     storagePrefix,
-    storage: {
-      setItem(key: string, value: string) {
-        const previousValue = key === cookieKey ? safeSecureStore.getItem(key) : null
-        try {
-          safeSecureStore.setItem(key, value)
-        } catch (e) {
-          console.warn("SecureStore.setItem failed:", e)
-          return
-        }
-
-        if (key === cookieKey) {
-          if (__DEV__) {
-            const env = getEnvProfile()
-            try {
-              safeSecureStore.setItem(`${cookieKey}_${env}`, value)
-            } catch {
-              // Keychain may be unavailable in background
-            }
-          }
-          bumpAuthStateRevision()
-          const authStateChanged = previousValue !== value
-          if (authStateChanged) {
-            void refreshSessionQueries()
-          }
-        }
-      },
-      getItem(key: string) {
-        try {
-          return safeSecureStore.getItem(key)
-        } catch (e) {
-          console.warn("SecureStore.getItem failed:", e)
-          return null
-        }
-      },
-      removeItem(key: string) {
-        const previousValue = key === cookieKey ? safeSecureStore.getItem(key) : null
-        try {
-          safeSecureStore.removeItem(key)
-        } catch (e) {
-          console.warn("SecureStore.removeItem failed:", e)
-          return
-        }
-
-        if (key === cookieKey) {
-          if (__DEV__) {
-            const env = getEnvProfile()
-            safeSecureStore.removeItem(`${cookieKey}_${env}`)
-          }
-          bumpAuthStateRevision()
-          if (previousValue) {
-            void refreshSessionQueries()
-          }
-        }
-      },
-    } as any,
+    storage: authCookieStorage,
   }),
-]
+] as MobileAuthPlugins
 
-export const authClient = createAuthClient({
+export const authClient = createAuthClient<MobileAuthClientOptions>({
   baseURL: `${proxyEnv.API_URL}/better-auth`,
   sessionOptions: {
     refetchInterval: sessionCookieRefreshIntervalSeconds,

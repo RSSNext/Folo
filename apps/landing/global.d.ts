@@ -1,7 +1,5 @@
 /// <reference types="vite/client" />
 
-/* eslint-disable @typescript-eslint/no-empty-object-type */
-/* eslint-disable @typescript-eslint/method-signature-style */
 import type { FC, PropsWithChildren } from 'react'
 
 declare global {

@@ -21,3 +21,9 @@ appId: is.follow
       - tapOn:
           point: "50%,18%"
       - waitForAnimationToEnd
+- runFlow:
+    when:
+      visible: Not Now
+    commands:
+      - tapOn: Not Now
+      - waitForAnimationToEnd

@@ -36,6 +36,7 @@
     "tsdown.config.ts",
     "./client/**/*.ts",
     "./client/**/*.tsx",
+    "./types/**/*.d.ts",
     "vite.config.mts",
     "./tailwind.config.ts",
     "./helper/**/*.ts"

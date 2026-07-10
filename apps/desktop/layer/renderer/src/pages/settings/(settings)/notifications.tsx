@@ -5,7 +5,7 @@ import { defineSettingPageData } from "~/modules/settings/utils"
 const iconName = "i-mgc-notification-cute-re"
 const priority = (1000 << 1) + 50
 
-export const loader = defineSettingPageData({
+export const handle = defineSettingPageData({
   icon: iconName,
   name: "titles.notifications",
   priority,

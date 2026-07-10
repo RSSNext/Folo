@@ -35,7 +35,7 @@ feedUrl: "https://www.techflowpost.com/feed"
     expect(load(frontmatter.replace(/^---\n/, "").replace(/\n---$/, ""))).toEqual({
       url: "https://www.techflowpost.com/zh-CN/article/31569",
       author: "Deep Tide TechFlow",
-      publishedAt: new Date("2026-05-14T04:20:44.000Z"),
+      publishedAt: "2026-05-14T04:20:44",
       description: [
         "Author: David, Deep Tide TechFlow.",
         "",

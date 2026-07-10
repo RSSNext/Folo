@@ -1,4 +1,3 @@
-import type { IpcContext } from "electron-ipc-decorator"
 import { IpcMethod, IpcService } from "electron-ipc-decorator"
 
 import { UNREAD_BACKGROUND_POLLING_INTERVAL } from "../../constants/app"
@@ -82,7 +81,7 @@ export class DockService extends IpcService {
   }
 
   @IpcMethod()
-  setDockBadge(_context: IpcContext, count: number): void {
+  setDockBadge(count: number): void {
     setDockCount(count)
   }
 }

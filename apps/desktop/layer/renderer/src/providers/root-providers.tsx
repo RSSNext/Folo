@@ -19,12 +19,12 @@ import { persistConfig, queryClient } from "~/lib/query-client"
 import { FollowCommandManager } from "~/modules/command/command-manager"
 import { ReviewPromptProvider } from "~/modules/review-prompt/provider"
 
+import { ExtensionExposeProvider } from "./extension-expose-provider"
 import { HotkeyProvider } from "./hotkey-provider"
 import { I18nProvider } from "./i18n-provider"
 import { InvalidateQueryProvider } from "./invalidate-query-provider"
 import {
   LazyContextMenuProvider,
-  LazyExtensionExposeProvider,
   LazyExternalJumpInProvider,
   LazyPopoverProvider,
   LazyPWAPrompt,
@@ -53,13 +53,13 @@ export const RootProviders: FC<PropsWithChildren> = ({ children }) => (
                   <SettingSync />
                   <FollowCommandManager />
                   <ReviewPromptProvider />
+                  <ExtensionExposeProvider />
 
                   {import.meta.env.DEV && <Devtools />}
 
                   {children}
                   <Suspense>
                     <LCPEndDetector />
-                    <LazyExtensionExposeProvider />
                     <LazyContextMenuProvider />
                     <LazyPopoverProvider />
                     <LazyExternalJumpInProvider />

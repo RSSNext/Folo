@@ -4,8 +4,7 @@ import { fileURLToPath } from "node:url"
 import { callWindowExpose } from "@follow/shared/bridge"
 import { DEV } from "@follow/shared/constants"
 import { app, BrowserWindow, clipboard, dialog, shell } from "electron"
-import type { IpcContext } from "electron-ipc-decorator"
-import { IpcMethod, IpcService } from "electron-ipc-decorator"
+import { getIpcContext, IpcMethod, IpcService } from "electron-ipc-decorator"
 import path from "pathe"
 
 import { START_IN_TRAY_ARGS } from "~/constants/app"
@@ -56,7 +55,7 @@ export class AppService extends IpcService {
   }
 
   @IpcMethod()
-  switchAppLocale(context: IpcContext, input: string): void {
+  switchAppLocale(input: string): void {
     i18n.changeLanguage(input)
     AppManager.registerMenuAndContextMenu()
     registerAppTray()
@@ -90,16 +89,17 @@ export class AppService extends IpcService {
   }
 
   @IpcMethod()
-  async openExternal(_context: IpcContext, url: string): Promise<void> {
+  async openExternal(url: string): Promise<void> {
     if (!url) return
 
     await shell.openExternal(url)
   }
 
   @IpcMethod()
-  windowAction(context: IpcContext, input: WindowActionInput): void {
-    if (context.sender.getType() === "window") {
-      const window: BrowserWindow | null = (context.sender as Sender).getOwnerBrowserWindow()
+  windowAction(input: WindowActionInput): void {
+    const { sender } = getIpcContext()
+    if (sender.getType() === "window") {
+      const window: BrowserWindow | null = (sender as Sender).getOwnerBrowserWindow()
 
       if (!window) return
       switch (input.action) {
@@ -124,18 +124,18 @@ export class AppService extends IpcService {
   }
 
   @IpcMethod()
-  quitAndInstall(_context: IpcContext): void {
+  quitAndInstall(): void {
     quitAndInstall()
   }
 
   @IpcMethod()
-  readClipboard(_context: IpcContext): string {
+  readClipboard(): string {
     return clipboard.readText()
   }
 
   @IpcMethod()
-  async search(context: IpcContext, input: SearchInput): Promise<Electron.Result | null> {
-    const { sender: webContents } = context
+  async search(input: SearchInput): Promise<Electron.Result | null> {
+    const { sender: webContents } = getIpcContext()
 
     const { promise, resolve } = Promise.withResolvers<Electron.Result | null>()
 
@@ -148,12 +148,13 @@ export class AppService extends IpcService {
   }
 
   @IpcMethod()
-  clearSearch(context: IpcContext): void {
-    context.sender.stopFindInPage("keepSelection")
+  clearSearch(): void {
+    getIpcContext().sender.stopFindInPage("keepSelection")
   }
 
   @IpcMethod()
-  async download(context: IpcContext, input: string): Promise<void> {
+  async download(input: string): Promise<void> {
+    const { sender } = getIpcContext()
     const result = await dialog.showSaveDialog({
       defaultPath: input.split("/").pop(),
     })
@@ -162,14 +163,14 @@ export class AppService extends IpcService {
     try {
       await downloadFile(input, result.filePath)
 
-      const senderWindow = (context.sender as Sender).getOwnerBrowserWindow()
+      const senderWindow = (sender as Sender).getOwnerBrowserWindow()
       if (senderWindow) {
         callWindowExpose(senderWindow).toast.success("Download success!", {
           duration: 1000,
         })
       }
     } catch (err) {
-      const senderWindow = (context.sender as Sender).getOwnerBrowserWindow()
+      const senderWindow = (sender as Sender).getOwnerBrowserWindow()
       if (senderWindow) {
         callWindowExpose(senderWindow).toast.error("Download failed!", {
           duration: 1000,
@@ -180,11 +181,9 @@ export class AppService extends IpcService {
   }
 
   @IpcMethod()
-  async exportCurrentPageAsPdf(
-    context: IpcContext,
-    input: ExportCurrentPageAsPdfInput = {},
-  ): Promise<string | null> {
-    const senderWindow = (context.sender as Sender).getOwnerBrowserWindow()
+  async exportCurrentPageAsPdf(input: ExportCurrentPageAsPdfInput = {}): Promise<string | null> {
+    const { sender } = getIpcContext()
+    const senderWindow = (sender as Sender).getOwnerBrowserWindow()
     const dialogOptions: Electron.SaveDialogOptions = {
       defaultPath: ensurePdfExtension(input.defaultPath || "Untitled.pdf"),
       filters: [{ name: "PDF", extensions: ["pdf"] }],
@@ -196,7 +195,7 @@ export class AppService extends IpcService {
 
     if (result.canceled || !result.filePath) return null
 
-    const pdfData = await context.sender.printToPDF({
+    const pdfData = await sender.printToPDF({
       printBackground: true,
       preferCSSPageSize: true,
     })
@@ -208,12 +207,12 @@ export class AppService extends IpcService {
   }
 
   @IpcMethod()
-  getAppPath(_context: IpcContext): string {
+  getAppPath(): string {
     return app.getAppPath()
   }
 
   @IpcMethod()
-  resolveAppAsarPath(_context: IpcContext, input: string): string {
+  resolveAppAsarPath(input: string): string {
     const resolvedInput = input.startsWith("file://") ? fileURLToPath(input) : input
 
     if (path.isAbsolute(resolvedInput)) {
@@ -224,7 +223,7 @@ export class AppService extends IpcService {
   }
 
   @IpcMethod()
-  readyToShowMainWindow(_context: IpcContext) {
+  readyToShowMainWindow() {
     const shouldShowWindow =
       !app.getLoginItemSettings().wasOpenedAsHidden && !process.argv.includes(START_IN_TRAY_ARGS)
     if (shouldShowWindow) {
@@ -234,18 +233,18 @@ export class AppService extends IpcService {
   }
 
   @IpcMethod()
-  openCacheFolder(_context: IpcContext): void {
+  openCacheFolder(): void {
     const dir = path.join(app.getPath("userData"), "cache")
     shell.openPath(dir)
   }
 
   @IpcMethod()
-  getCacheLimit(_context: IpcContext): number {
+  getCacheLimit(): number {
     return store.get(StoreKey.CacheSizeLimit) || 0
   }
 
   @IpcMethod()
-  async clearCache(_context: IpcContext): Promise<void> {
+  async clearCache(): Promise<void> {
     const cachePath = path.join(app.getPath("userData"), "cache", "Cache_Data")
     if (process.platform === "win32") {
       // Request elevation on Windows
@@ -268,7 +267,7 @@ export class AppService extends IpcService {
   }
 
   @IpcMethod()
-  limitCacheSize(_context: IpcContext, input: number): void {
+  limitCacheSize(input: number): void {
     if (input === 0) {
       store.delete(StoreKey.CacheSizeLimit)
     } else {
@@ -277,17 +276,17 @@ export class AppService extends IpcService {
   }
 
   @IpcMethod()
-  revealLogFile(_context: IpcContext) {
+  revealLogFile() {
     return revealLogFile()
   }
 
   @IpcMethod()
-  getCacheSize(_context: IpcContext) {
+  getCacheSize() {
     return getCacheSize()
   }
 
   @IpcMethod()
-  async selectDirectory(_context: IpcContext): Promise<string | null> {
+  async selectDirectory(): Promise<string | null> {
     const result = await dialog.showOpenDialog({
       properties: ["openDirectory"],
     })
@@ -296,7 +295,7 @@ export class AppService extends IpcService {
   }
 
   @IpcMethod()
-  async checkPathExists(_context: IpcContext, input: string): Promise<boolean> {
+  async checkPathExists(input: string): Promise<boolean> {
     try {
       await fsp.access(input)
       return true

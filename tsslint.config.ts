@@ -1,8 +1,9 @@
-import { defineConfig } from "@tsslint/config"
-import { convertRules } from "@tsslint/eslint"
+import { defineConfig, importESLintRules } from "@tsslint/config"
 
 export default defineConfig({
-  rules: await convertRules({
-    "react-x/no-leaked-conditional-rendering": "error",
-  }),
+  rules: {
+    ...(await importESLintRules({
+      "react-x/no-leaked-conditional-rendering": "error",
+    })),
+  },
 })

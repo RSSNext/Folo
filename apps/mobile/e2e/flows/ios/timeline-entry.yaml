@@ -1,5 +1,7 @@
 appId: is.follow
 ---
+- runFlow:
+    file: ./dismiss-overlays.yaml
 - tapOn:
     text: Home
 - tapOn:

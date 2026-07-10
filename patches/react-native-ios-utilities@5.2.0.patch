@@ -1,0 +1,62 @@
+diff --git a/ios/Sources/Extensions+Helpers/RCTView+Helpers.swift b/ios/Sources/Extensions+Helpers/RCTView+Helpers.swift
+index 09be306d5aa39337c5114c2ad6ba7513218e0751..e8bbb4fb53b64abfbd70712a42bfcf6bf25f53b8 100644
+--- a/ios/Sources/Extensions+Helpers/RCTView+Helpers.swift
++++ b/ios/Sources/Extensions+Helpers/RCTView+Helpers.swift
+@@ -25,15 +25,22 @@ public extension RCTView {
+     return rootView.recursivelyFindSubview(whereType: targetType);
+   };
+   
+-  var closestParentReactContentView: RCTRootContentView? {
+-    let targetType = RCTRootContentView.self;
+-  
+-    if let match = self.recursivelyFindParentView(whereType: targetType) {
+-      return match;
++  var closestParentReactContentView: UIView? {
++    var currentView = self.superview;
++    
++    while let view = currentView {
++      let hasTouchHandler =
++        view.gestureRecognizers?.contains { $0 is RCTTouchHandler } ?? false;
++      
++      if hasTouchHandler {
++        return view;
++      };
++      
++      currentView = view.superview;
+     };
+     
+     guard let rootView = self.rootViewForCurrentWindow else { return nil };
+-    return rootView.recursivelyFindSubview(whereType: targetType);
++    return rootView.recursivelyFindSubviewWithReactTouchHandler();
+   };
+   
+   var reactTouchHandlers: [RCTTouchHandler]? {
+@@ -58,6 +65,27 @@ public extension RCTView {
+       currentView = superview;
+     };
+     
+-    return closestParentReactContentView?.reactTouchHandlers?.first;
++    return closestParentReactContentView?.gestureRecognizers?.compactMap {
++      $0 as? RCTTouchHandler
++    }.first;
++  };
++};
++
++fileprivate extension UIView {
++  func recursivelyFindSubviewWithReactTouchHandler() -> UIView? {
++    let hasTouchHandler =
++      self.gestureRecognizers?.contains { $0 is RCTTouchHandler } ?? false;
++    
++    if hasTouchHandler {
++      return self;
++    };
++    
++    for subview in self.subviews {
++      if let match = subview.recursivelyFindSubviewWithReactTouchHandler() {
++        return match;
++      };
++    };
++    
++    return nil;
+   };
+ };

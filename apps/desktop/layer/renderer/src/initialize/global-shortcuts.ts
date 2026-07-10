@@ -1,6 +1,8 @@
 import { callWindowExposeRenderer } from "@follow/shared/bridge"
 import { detectIsEditableElement } from "@follow/utils"
 
+import { showSettings } from "~/modules/settings/modal/use-setting-modal-hack"
+
 interface ShortcutDefinition {
   accelerator: string
   action: () => void
@@ -24,7 +26,7 @@ export const registerAppGlobalShortcuts = () => {
   const shortcuts: ShortcutDefinition[] = [
     {
       accelerator: "CmdOrCtrl+,",
-      action: () => window.router.showSettings(),
+      action: () => showSettings(),
       inputBypass: true,
     },
     {

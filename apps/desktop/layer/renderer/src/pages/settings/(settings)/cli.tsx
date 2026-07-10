@@ -7,7 +7,7 @@ import { defineSettingPageData } from "~/modules/settings/utils"
 
 const priority = (1000 << 1) + 25
 
-export const loader = defineSettingPageData({
+export const handle = defineSettingPageData({
   icon: <Android2CuteReIcon />,
   headerIcon: <Android2CuteReIcon className="size-5 text-accent" />,
   name: "titles.cli",

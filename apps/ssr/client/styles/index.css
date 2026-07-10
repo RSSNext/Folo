@@ -1,3 +1,5 @@
+@import "tailwindcss" source(none);
+@import "@follow/components/tailwind";
 @import "@fontsource/sn-pro/200-italic.css";
 @import "@fontsource/sn-pro/200.css";
 @import "@fontsource/sn-pro/300-italic.css";
@@ -14,6 +16,14 @@
 @import "@fontsource/sn-pro/800.css";
 @import "@fontsource/sn-pro/900-italic.css";
 @import "@fontsource/sn-pro/900.css";
+@config "../../tailwind.config.ts";
+@source "../";
+@source "../../index.html";
+@source "../../../../packages";
+@source "../../../../node_modules/rc-modal-sheet";
+@source inline(
+  "line-clamp-[1] line-clamp-[2] line-clamp-[3] line-clamp-[4] line-clamp-[5] line-clamp-[6] line-clamp-[7] line-clamp-[8]"
+);
 
 button {
   --cursor-button: pointer;

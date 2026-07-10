@@ -35,6 +35,6 @@ export interface NavigationControllerViewExtraProps extends Pick<
    */
   transparent?: boolean
 }
-// eslint-disable-next-line @typescript-eslint/no-empty-object-type
+
 export type NavigationControllerView<P = {}> = FC<P> & NavigationControllerViewExtraProps
 export type NavigationControllerViewType = StackPresentationTypes

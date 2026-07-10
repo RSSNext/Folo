@@ -34,8 +34,7 @@ export const LCPEndDetector = () => {
         scheduleRaf(() => {
           // Prefer idle if available to avoid jank
           const ric = (typeof window !== "undefined" && (window as any).requestIdleCallback) as
-            | ((cb: () => void, opts?: { timeout?: number }) => number)
-            | undefined
+            ((cb: () => void, opts?: { timeout?: number }) => number) | undefined
           if (ric) {
             const id = ric(() => jotaiStore.set(LCPEndAtom, true), {
               timeout: 200,
@@ -101,8 +100,7 @@ export const LCPEndDetector = () => {
         rafIds.forEach((id) => (window.cancelAnimationFrame as (h: number) => void)(id))
       }
       const cic = (typeof window !== "undefined" && (window as any).cancelIdleCallback) as
-        | ((id: number) => void)
-        | undefined
+        ((id: number) => void) | undefined
       if (cic) idleCallbackIds.forEach((id) => cic(id))
       timeoutIds.forEach((id) => clearTimeout(id))
       if (safetyTimer) clearTimeout(safetyTimer)
@@ -116,5 +114,4 @@ export const LCPEndDetector = () => {
   return null
 }
 
-// eslint-disable-next-line react-refresh/only-export-components
 export const isLCPEnded = () => jotaiStore.get(LCPEndAtom)

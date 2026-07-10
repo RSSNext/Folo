@@ -1,11 +1,12 @@
 import ExpoModulesCore
 import Foundation
-#if canImport(StoreKitTest)
+#if STOREKIT_TESTING && canImport(StoreKitTest)
+import StoreKit
 import StoreKitTest
 #endif
 
 public class StoreKitTestHelperModule: Module {
-  #if canImport(StoreKitTest)
+  #if STOREKIT_TESTING && canImport(StoreKitTest)
     private static var session: SKTestSession?
   #endif
 
@@ -13,7 +14,7 @@ public class StoreKitTestHelperModule: Module {
     Name("StoreKitTestHelper")
 
     AsyncFunction("prepareLocalSubscriptions") { () -> [String: Any] in
-      #if canImport(StoreKitTest)
+      #if STOREKIT_TESTING && canImport(StoreKitTest)
         let moduleFileURL = URL(fileURLWithPath: #filePath)
         let appRootURL = moduleFileURL
           .deletingLastPathComponent()
@@ -45,16 +46,22 @@ public class StoreKitTestHelperModule: Module {
     }
 
     AsyncFunction("buyProduct") { (productId: String) async throws -> [String: Any] in
-      #if canImport(StoreKitTest)
+      #if STOREKIT_TESTING && canImport(StoreKitTest)
         guard let session = Self.session else {
           throw NSError(domain: "StoreKitTestHelper", code: 1, userInfo: [NSLocalizedDescriptionKey: "SKTestSession not prepared"])
         }
-        let transaction = try await session.buyProduct(identifier: productId)
-        return [
-          "success": true,
-          "productId": productId,
-          "jwsRepresentation": transaction.jwsRepresentation,
-        ]
+        if #available(iOS 17.0, *) {
+          _ = try await session.buyProduct(identifier: productId)
+          guard let transaction = await Transaction.latest(for: productId) else {
+            throw NSError(domain: "StoreKitTestHelper", code: 2, userInfo: [NSLocalizedDescriptionKey: "StoreKit transaction not found"])
+          }
+          return [
+            "success": true,
+            "productId": productId,
+            "jwsRepresentation": transaction.jwsRepresentation,
+          ]
+        }
+        throw NSError(domain: "StoreKitTestHelper", code: 3, userInfo: [NSLocalizedDescriptionKey: "StoreKitTest purchases require iOS 17 or newer"])
       #else
         return [
           "success": false,

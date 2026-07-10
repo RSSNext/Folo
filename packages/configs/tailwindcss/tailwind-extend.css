@@ -1,7 +1,5 @@
 /* This CSS File do not import anywhere, just write atom class for tailwindcss. The tailwindcss intellisense will be work. */
 
-@tailwind components;
-
 @layer components {
   .drag-region {
     -webkit-app-region: drag;
@@ -20,7 +18,9 @@
   }
 
   .center {
-    @apply flex items-center justify-center;
+    display: flex;
+    align-items: center;
+    justify-content: center;
   }
 
   .shadow-perfect {
@@ -90,8 +90,12 @@
       rgba(var(--color-background) / 0.95),
       rgba(var(--color-background) / 0.92)
     );
-    @apply rounded-[4px] px-1 text-[0.5em];
-    @apply inline-flex items-center justify-center;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    border-radius: 4px;
+    padding-inline: 0.25rem;
+    font-size: 0.5em;
     box-shadow:
       0 2px 8px rgba(0, 0, 0, 0.06),
       0 1px 4px rgba(0, 0, 0, 0.04),
@@ -242,8 +246,8 @@
     text-decoration: underline;
     text-underline-offset: 3px;
 
-    @apply decoration-accent/30 hover:no-underline;
-    @apply border-0;
+    border-width: 0;
+    text-decoration-color: hsl(var(--fo-a) / 0.3);
 
     background-position: left 1.1em;
 
@@ -253,6 +257,7 @@
 
     &:hover {
       background-size: 100% 1.5px;
+      text-decoration-line: none;
       text-shadow:
         0.05em 0 theme(colors.background),
         -0.05em 0 theme(colors.background);

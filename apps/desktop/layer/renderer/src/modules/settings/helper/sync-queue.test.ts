@@ -1,6 +1,11 @@
 import { afterEach, beforeEach, describe, expect, test, vi } from "vitest"
 
 import {
+  getGeneralSettings,
+  initializeDefaultGeneralSettings,
+  setGeneralSetting,
+} from "~/atoms/settings/general"
+import {
   getSpotlightSettings,
   initializeDefaultSpotlightSettings,
   setSpotlightSetting,
@@ -9,11 +14,14 @@ import { initializeDefaultUISettings } from "~/atoms/settings/ui"
 
 import { settingSyncQueue } from "./sync-queue"
 
-const { settingsPrefetchMock, settingsUpdateMock, whoamiMock } = vi.hoisted(() => ({
-  settingsPrefetchMock: vi.fn(),
-  settingsUpdateMock: vi.fn(),
-  whoamiMock: vi.fn(),
-}))
+const { settingsGetMock, settingsPrefetchMock, settingsUpdateMock, whoamiMock } = vi.hoisted(
+  () => ({
+    settingsGetMock: vi.fn(),
+    settingsPrefetchMock: vi.fn(),
+    settingsUpdateMock: vi.fn(),
+    whoamiMock: vi.fn(),
+  }),
+)
 
 vi.mock("@follow/store/user/getters", () => ({
   whoami: whoamiMock,
@@ -31,6 +39,7 @@ vi.mock("~/lib/api-client", () => ({
   followClient: {
     api: {
       settings: {
+        get: settingsGetMock,
         update: settingsUpdateMock,
       },
     },
@@ -40,7 +49,8 @@ vi.mock("~/lib/api-client", () => ({
 vi.mock("~/queries/settings", () => ({
   settings: {
     get: () => ({
-      prefetch: settingsPrefetchMock,
+      key: ["settings"],
+      fn: settingsPrefetchMock,
     }),
   },
 }))
@@ -79,8 +89,14 @@ describe("desktop spotlight setting sync", () => {
       settings: {},
       updated: {},
     })
+    settingsGetMock.mockResolvedValue({
+      code: 0,
+      settings: {},
+      updated: {},
+    })
 
     initializeDefaultUISettings()
+    initializeDefaultGeneralSettings()
     initializeDefaultSpotlightSettings()
     localStorage.clear()
   })
@@ -92,7 +108,30 @@ describe("desktop spotlight setting sync", () => {
     settingSyncQueue.queue = []
     localStorage.clear()
     initializeDefaultUISettings()
+    initializeDefaultGeneralSettings()
     initializeDefaultSpotlightSettings()
+  })
+
+  test("applyRemoteSettings hydrates general settings from provided payload", () => {
+    setGeneralSetting("language", "ja")
+
+    settingSyncQueue.applyRemoteSettings({
+      code: 0,
+      settings: {
+        general: {
+          language: "en",
+        },
+      },
+      updated: {
+        general: "2030-04-14T12:00:00.000Z",
+      },
+    })
+
+    expect(getGeneralSettings()).toMatchObject({
+      language: "en",
+      updated: Date.parse("2030-04-14T12:00:00.000Z"),
+    })
+    expect(settingsPrefetchMock).not.toHaveBeenCalled()
   })
 
   test("syncLocal hydrates spotlight rules from remote appearance settings", async () => {
@@ -148,5 +187,23 @@ describe("desktop spotlight setting sync", () => {
         spotlights: [rule],
       }),
     )
+  })
+
+  test("replaceRemoteIfEmpty does not overwrite existing remote settings", async () => {
+    settingsGetMock.mockResolvedValue({
+      code: 0,
+      settings: {
+        general: {
+          language: "ja",
+        },
+      },
+      updated: {
+        general: "2026-04-14T12:00:00.000Z",
+      },
+    })
+
+    await settingSyncQueue.replaceRemoteIfEmpty()
+
+    expect(settingsUpdateMock).not.toHaveBeenCalled()
   })
 })

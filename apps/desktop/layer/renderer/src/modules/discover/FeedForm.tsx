@@ -99,10 +99,11 @@ export const FeedForm: Component<{
   const feedQuery = useFeedQuery(queryParams)
 
   const id = feedQuery.data?.feed.id || _id
-  const feed = useFeedByIdOrUrl({
+  const feedFromStore = useFeedByIdOrUrl({
     id,
     url,
-  }) as FeedModel
+  }) as FeedModel | undefined
+  const feed = feedFromStore || (feedQuery.data?.feed as FeedModel | undefined)
 
   const { t } = useTranslation()
 

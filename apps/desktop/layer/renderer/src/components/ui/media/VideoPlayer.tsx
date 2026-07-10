@@ -158,7 +158,7 @@ export const VideoPlayer = ({
         </m.div>
       </div>
       {state.hasAudio && !state.muted && state.playing && <BizControlOutsideMedia />}
-      {/* eslint-disable-next-line @eslint-react/no-context-provider */}
+      {}
       <VideoPlayerContext.Provider
         value={useMemo(
           () => ({ state, controls, wrapperRef, src, variant }),
@@ -189,7 +189,6 @@ const BizControlOutsideMedia = () => {
 }
 
 const FloatMutedButton = () => {
-  // eslint-disable-next-line @eslint-react/no-use-context
   const ctx = useContext(VideoPlayerContext)
   const isMuted = ctx.state.muted
   return (
@@ -372,7 +371,6 @@ const VolumeControl = () => {
 }
 
 const PlayProgressBar = () => {
-  // eslint-disable-next-line @eslint-react/no-use-context
   const { state, controls } = useContext(VideoPlayerContext)
   const [currentDragging, setCurrentDragging] = useState(false)
   const [dragTime, setDragTime] = useState(0)

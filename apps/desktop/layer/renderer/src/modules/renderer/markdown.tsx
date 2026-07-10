@@ -70,7 +70,6 @@ export function EntryContentMarkdownRenderer({
   }, [entry, feedId, onImageContextMenu, view])
 
   return (
-    // eslint-disable-next-line @eslint-react/no-context-provider
     <MarkdownImageRecordContext.Provider value={images}>
       <MarkdownRenderActionContext value={actions}>
         <EntryInfoContext value={useMemo(() => ({ feedId, entryId }), [feedId, entryId])}>

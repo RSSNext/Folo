@@ -11,16 +11,16 @@
   },
   "dependencies": {
     "fzstd": "0.1.1",
-    "hono": "4.12.1",
+    "hono": "4.12.28",
     "ofetch": "1.5.1",
-    "tar-stream": "2.2.0",
-    "zod": "3.25.76"
+    "tar-stream": "3.2.0",
+    "zod": "4.4.3"
   },
   "devDependencies": {
-    "@cloudflare/workers-types": "^4.20260405.0",
+    "@cloudflare/workers-types": "5.20260708.1",
     "@types/tar-stream": "3.1.4",
     "typescript": "catalog:",
-    "vitest": "3.2.4",
-    "wrangler": "4.67.0"
+    "vitest": "4.1.10",
+    "wrangler": "4.107.1"
   }
 }

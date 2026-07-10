@@ -88,7 +88,4 @@ type EntryPreviousEntryCommand = Command<{
 }>
 
 export type EntryRenderCommand =
-  | EntryScrollDownCommand
-  | EntryScrollUpCommand
-  | EntryNextEntryCommand
-  | EntryPreviousEntryCommand
+  EntryScrollDownCommand | EntryScrollUpCommand | EntryNextEntryCommand | EntryPreviousEntryCommand

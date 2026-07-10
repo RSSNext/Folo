@@ -277,7 +277,7 @@ export const PictureMasonry: FC<MasonryProps> = (props) => {
     <div ref={containerRef} className="mx-4 pt-4">
       {isInitDim && deferIsInitLayout && (
         <MasonryItemWidthContext value={currentItemWidth}>
-          {/* eslint-disable-next-line @eslint-react/no-context-provider */}
+          {}
           <MasonryItemsAspectRatioContext.Provider value={masonryItemsRadio}>
             <MasonryItemsAspectRatioSetterContext value={setMasonryItemsRadio}>
               <MasonryIntersectionContext value={intersectionObserver}>

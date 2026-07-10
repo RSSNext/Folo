@@ -50,7 +50,7 @@ export const EntryListContentSocial = ({
 
   const ref = useRef<FlashListRef<any>>(null)
   useImperativeHandle(forwardRef, () => ref.current!)
-  // eslint-disable-next-line @eslint-react/hooks-extra/no-unnecessary-use-callback
+  // eslint-disable-next-line react/no-unnecessary-use-callback
   const renderItem = useCallback(
     ({ item: id, extraData }: ListRenderItemInfo<string>) => (
       <EntrySocialItem entryId={id} extraData={extraData as EntryExtraData} />

@@ -50,9 +50,9 @@ const LoadingContainer: FC<{
   return (
     <FullWindowOverlay>
       {/* Pressable to prevent the overlay from being clicked */}
-      <Pressable style={StyleSheet.absoluteFillObject} className="items-center justify-center">
+      <Pressable style={StyleSheet.absoluteFill} className="items-center justify-center">
         <View className="relative overflow-hidden rounded-2xl border border-non-opaque-separator p-12">
-          <BlurView style={StyleSheet.absoluteFillObject} tint="systemChromeMaterialDark" />
+          <BlurView style={StyleSheet.absoluteFill} tint="systemChromeMaterialDark" />
           {Platform.OS === "ios" ? (
             <PlatformActivityIndicator size={"large"} color="white" />
           ) : (

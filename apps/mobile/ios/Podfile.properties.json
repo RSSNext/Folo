@@ -1,6 +1,7 @@
 {
   "expo.jsEngine": "hermes",
   "EX_DEV_CLIENT_NETWORK_INSPECTOR": "true",
+  "ios.deploymentTarget": "16.4",
   "ios.buildReactNativeFromSource": "true",
   "ios.useFrameworks": "static",
   "ios.forceStaticLinking": "[\"RNFBApp\",\"RNFBAnalytics\",\"RNFBMessaging\",\"RNFBAppCheck\"]",

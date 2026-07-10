@@ -6,8 +6,7 @@ import { defineSettingPageData } from "~/modules/settings/utils"
 const iconName = "i-mgc-ai-cute-re"
 const priority = (1000 << 1) + 15
 
-// eslint-disable-next-line react-refresh/only-export-components
-export const loader = defineSettingPageData({
+export const handle = defineSettingPageData({
   icon: iconName,
   name: "titles.ai",
   priority,

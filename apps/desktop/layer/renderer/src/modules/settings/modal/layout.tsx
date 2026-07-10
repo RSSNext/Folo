@@ -98,7 +98,7 @@ export function SettingModalLayout(props: PropsWithChildren) {
           cursor: "grabbing",
         }}
       >
-        {/* eslint-disable-next-line @eslint-react/no-context-provider */}
+        {}
         <SettingContext.Provider value={defaultCtx}>
           <Resizable
             onResizeStart={handleResizeStart}

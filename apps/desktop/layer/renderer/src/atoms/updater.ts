@@ -26,11 +26,7 @@ type DistributionUpdaterStatus = BaseUpdaterStatus<"distribution"> & {
 }
 
 export type UpdaterStatusAtom =
-  | AppUpdaterStatus
-  | RendererUpdaterStatus
-  | PwaUpdaterStatus
-  | DistributionUpdaterStatus
-  | null
+  AppUpdaterStatus | RendererUpdaterStatus | PwaUpdaterStatus | DistributionUpdaterStatus | null
 export const [, , useUpdaterStatus, , getUpdaterStatus, setUpdaterStatus] = createAtomHooks(
   atom(null as UpdaterStatusAtom),
 )

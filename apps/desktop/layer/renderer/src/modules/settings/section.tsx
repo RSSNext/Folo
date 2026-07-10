@@ -1,6 +1,3 @@
-/* eslint-disable @eslint-react/no-children-to-array */
-/* eslint-disable @eslint-react/no-children-map */
-
 import { cn } from "@follow/utils/utils"
 import type { FC, PropsWithChildren, ReactNode } from "react"
 import { cloneElement, createContext, use, useEffect, useRef } from "react"

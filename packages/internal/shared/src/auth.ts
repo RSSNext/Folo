@@ -1,7 +1,11 @@
 import { stripeClient } from "@better-auth/stripe/client"
 import { IN_ELECTRON } from "@follow/shared"
 import type { AuthPlugins } from "@follow-app/client-sdk/auth"
-import type { BetterAuthClientPlugin, BetterFetchOption } from "better-auth/client"
+import type {
+  BetterAuthClientOptions,
+  BetterAuthClientPlugin,
+  BetterFetchOption,
+} from "better-auth/client"
 import { createAuthClient } from "better-auth/client"
 import {
   inferAdditionalFields,
@@ -54,12 +58,19 @@ export const baseAuthPlugins = [
   stripeClient({ subscription: true }),
   lastLoginMethodClient(),
   magicLinkClient(),
-]
+] as const satisfies readonly BetterAuthClientPlugin[]
+
+export type BaseAuthPlugins = [...typeof baseAuthPlugins]
+
+export type FoloAuthClientOptions<ExtraPlugins extends BetterAuthClientPlugin[] = []> = Omit<
+  BetterAuthClientOptions,
+  "plugins"
+> & {
+  plugins: [...BaseAuthPlugins, ...ExtraPlugins]
+}
 
 export type AuthClient<ExtraPlugins extends BetterAuthClientPlugin[] = []> = ReturnType<
-  typeof createAuthClient<{
-    plugins: [...typeof baseAuthPlugins, ...ExtraPlugins]
-  }>
+  typeof createAuthClient<FoloAuthClientOptions<ExtraPlugins>>
 >
 
 export type LoginRuntime = "browser" | "app"
@@ -74,9 +85,11 @@ export class Auth {
       fetchOptions?: BetterFetchOption
     },
   ) {
-    this.authClient = createAuthClient({
+    const plugins = [...baseAuthPlugins] as BaseAuthPlugins
+
+    this.authClient = createAuthClient<FoloAuthClientOptions>({
       baseURL: `${this.options.apiURL}/better-auth`,
-      plugins: baseAuthPlugins,
+      plugins,
       fetchOptions: {
         ...this.options.fetchOptions,
         credentials: "include",

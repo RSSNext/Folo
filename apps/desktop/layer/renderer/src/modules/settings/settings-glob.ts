@@ -30,14 +30,14 @@ function getSettings() {
 
     const Module = map[path] as {
       Component: () => JSX.Element
-      loader: SettingPageConfig
+      handle: SettingPageConfig
     }
 
-    if (!Module.loader) continue
+    if (!Module.handle) continue
     settings.push({
-      ...Module.loader,
+      ...Module.handle,
       Component: Module.Component,
-      loader: Module.loader,
+      loader: Module.handle,
       path: p,
     })
   }

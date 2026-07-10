@@ -1,7 +1,6 @@
-import type { MenuItemConstructorOptions, MessageBoxOptions } from "electron"
+import type { MenuItemConstructorOptions, MessageBoxOptions, WebContents } from "electron"
 import { dialog, Menu, ShareMenu } from "electron"
-import type { IpcContext } from "electron-ipc-decorator"
-import { IpcMethod, IpcService } from "electron-ipc-decorator"
+import { getIpcContext, IpcMethod, IpcService } from "electron-ipc-decorator"
 
 type SerializableMenuItem = Omit<MenuItemConstructorOptions, "click" | "submenu"> & {
   submenu?: SerializableMenuItem[]
@@ -22,7 +21,7 @@ export class MenuService extends IpcService {
 
   private normalizeMenuItems(
     items: SerializableMenuItem[],
-    context: IpcContext,
+    sender: WebContents,
     path: number[] = [],
   ): MenuItemConstructorOptions[] {
     return items.map((item, index) => {
@@ -30,20 +29,21 @@ export class MenuService extends IpcService {
       return {
         ...item,
         click() {
-          context.sender.send("menu-click", {
+          sender.send("menu-click", {
             id: item.id,
             path: curPath,
           })
         },
-        submenu: item.submenu ? this.normalizeMenuItems(item.submenu, context, curPath) : undefined,
+        submenu: item.submenu ? this.normalizeMenuItems(item.submenu, sender, curPath) : undefined,
       }
     })
   }
 
   @IpcMethod()
-  async showContextMenu(context: IpcContext, input: ShowContextMenuInput): Promise<void> {
+  async showContextMenu(input: ShowContextMenuInput): Promise<void> {
+    const { sender } = getIpcContext()
     const defer = Promise.withResolvers<void>()
-    const normalizedMenuItems = this.normalizeMenuItems(input.items, context)
+    const normalizedMenuItems = this.normalizeMenuItems(input.items, sender)
 
     const menu = Menu.buildFromTemplate(normalizedMenuItems)
     menu.popup({
@@ -53,7 +53,7 @@ export class MenuService extends IpcService {
   }
 
   @IpcMethod()
-  async showConfirmDialog(_context: IpcContext, input: ShowConfirmDialogInput): Promise<boolean> {
+  async showConfirmDialog(input: ShowConfirmDialogInput): Promise<boolean> {
     const result = await dialog.showMessageBox({
       message: input.title,
       detail: input.message,
@@ -64,14 +64,15 @@ export class MenuService extends IpcService {
   }
 
   @IpcMethod()
-  async showShareMenu(context: IpcContext, input: string): Promise<void> {
+  async showShareMenu(input: string): Promise<void> {
+    const { sender } = getIpcContext()
     const menu = new ShareMenu({
       urls: [input],
     })
 
     menu.popup({
       callback: () => {
-        context.sender.send("menu-closed")
+        sender.send("menu-closed")
       },
     })
   }

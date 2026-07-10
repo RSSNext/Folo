@@ -1,4 +1,8 @@
-import type { WebView as WebViewType, WebViewMessageEvent } from "react-native-webview"
+import type {
+  WebView as WebViewType,
+  WebViewMessageEvent,
+  WebViewProps,
+} from "react-native-webview"
 
 export type TtsPlaybackStatus = "idle" | "loading" | "paused" | "playing"
 
@@ -55,9 +59,9 @@ class TtsStreamController {
   private queuedCommands: string[] = []
   private ready = false
   private readyWaiters = new Set<() => void>()
-  private webView: WebViewType | null = null
+  private webView: WebViewType<WebViewProps> | null = null
 
-  attachWebView = (webView: WebViewType | null) => {
+  attachWebView = (webView: WebViewType<WebViewProps> | null) => {
     this.webView = webView
     if (!webView) {
       this.ready = false

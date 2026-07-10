@@ -220,13 +220,7 @@ interface PlanCardProps {
 const PlanCard = ({ plan, billingPeriod, isCurrentPlan, currentTier }: PlanCardProps) => {
   const { t } = useTranslation("settings")
   const getPlanActionType = ():
-    | "current"
-    | "upgrade"
-    | "coming-soon"
-    | "in-trial"
-    | "switch"
-    | "new"
-    | null => {
+    "current" | "upgrade" | "coming-soon" | "in-trial" | "switch" | "new" | null => {
     if (plan.isComingSoon) return "coming-soon"
     switch (true) {
       case isCurrentPlan: {

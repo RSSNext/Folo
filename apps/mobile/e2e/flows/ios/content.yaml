@@ -2,6 +2,8 @@ appId: is.follow
 name: iOS content journey
 ---
 - runFlow:
+    file: ./dismiss-overlays.yaml
+- runFlow:
     file: ./ensure-onboarding-unfollowed.yaml
 - runFlow:
     file: ./follow-onboarding.yaml

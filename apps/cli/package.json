@@ -36,14 +36,14 @@
   },
   "dependencies": {
     "@follow-app/client-sdk": "catalog:",
-    "commander": "14.0.1",
+    "commander": "15.0.0",
     "pathe": "2.0.3"
   },
   "devDependencies": {
     "@follow/configs": "workspace:*",
-    "@types/node": "25.2.3",
-    "tsup": "8.5.0",
-    "tsx": "4.21.0",
+    "@types/node": "26.1.1",
+    "tsup": "8.5.1",
+    "tsx": "4.23.0",
     "typescript": "catalog:"
   }
 }

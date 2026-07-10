@@ -9,17 +9,8 @@ import { followClient } from "@/src/lib/api-client"
 import { useSearchPageContext } from "../ctx"
 import { ItemSeparator } from "./__base"
 import { useDataSkeleton } from "./hooks"
-import type { SearchFeedCardItem } from "./SearchFeedCard"
+import { resolveSearchFeedItems } from "./search-feed-items"
 import { SearchFeedCard } from "./SearchFeedCard"
-
-const isDirectFeedInput = (value: string) => value.includes("://")
-
-const createDirectFeedItem = (value: string): SearchFeedCardItem => ({
-  feed: {
-    title: value,
-    url: value,
-  },
-})
 
 export const SearchFeed = () => {
   const { t } = useTranslation("common")
@@ -33,17 +24,11 @@ export const SearchFeed = () => {
     },
     enabled: !!searchValue,
   })
-  const skeleton = useDataSkeleton(isLoading, data)
+  const discoveredItems = data?.data ?? []
+  const items = resolveSearchFeedItems(discoveredItems, searchValue)
+  const skeleton = useDataSkeleton(isLoading, data === undefined ? undefined : items.length)
   if (skeleton) return skeleton
   if (data === undefined) return null
-
-  const discoveredItems = data.data ?? []
-  const items =
-    discoveredItems.length > 0
-      ? discoveredItems
-      : searchValue && isDirectFeedInput(searchValue)
-        ? [createDirectFeedItem(searchValue)]
-        : []
 
   const resultCount = items.length
   const resultLabel =

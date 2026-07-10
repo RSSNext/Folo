@@ -91,7 +91,7 @@ export const ReviewPromptProvider = () => {
     recordActiveDay()
 
     // React Native AppState subscriptions are cleaned up with subscription.remove().
-    // eslint-disable-next-line @eslint-react/web-api/no-leaked-event-listener
+
     const subscription = AppState.addEventListener("change", handleAppStateChange)
 
     return () => {

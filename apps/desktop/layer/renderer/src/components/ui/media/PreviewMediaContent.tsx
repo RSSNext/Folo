@@ -598,16 +598,17 @@ const DOMImageViewer: FC<{
         centerOnInit={true}
         smooth={true}
         centerZoomedOut
-        alignmentAnimation={{
+        autoAlignment={{
           sizeX: 0,
           sizeY: 0,
           velocityAlignmentTime: 0.2,
         }}
         velocityAnimation={{
-          sensitivity: 1,
+          sensitivityMouse: 1,
+          sensitivityTouch: 1,
           animationTime: 0.2,
         }}
-        onTransformed={onTransformed}
+        onTransform={onTransformed}
       >
         <TransformComponent
           wrapperProps={{

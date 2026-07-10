@@ -36,7 +36,7 @@ export const SearchList = () => {
     queryFn: () => followClient.api.discover.discover({ keyword: searchValue, target: "lists" }),
     enabled: !!searchValue,
   })
-  const skeleton = useDataSkeleton(isLoading, data)
+  const skeleton = useDataSkeleton(isLoading, data?.data.length)
   if (skeleton) return skeleton
   if (data === undefined) return null
   const resultCount = data.data?.length ?? 0

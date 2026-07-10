@@ -1,5 +1,4 @@
 import "./wdyr"
-import "@follow/components/tailwind"
 import "./styles/main.css"
 
 import { IN_ELECTRON, WEB_BUILD } from "@follow/shared/constants"
@@ -31,7 +30,6 @@ initializeApp().finally(() => {
     }
   })
 
-  // eslint-disable-next-line @eslint-react/dom/no-flush-sync
   flushSync(() => setAppIsReady(true))
 })
 

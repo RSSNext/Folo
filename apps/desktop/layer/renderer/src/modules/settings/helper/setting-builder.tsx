@@ -1,4 +1,3 @@
-/* eslint-disable @eslint-react/no-array-index-key */
 import { UserRole } from "@follow/constants"
 import { SettingPaidLevels } from "@follow/shared/settings/constants"
 import { useUserRole } from "@follow/store/user/hooks"
@@ -51,11 +50,7 @@ export const createSettingBuilder =
   <T extends object>(useSetting: () => T) =>
   <K extends keyof T>(props: {
     settings: (
-      | SettingItem<T, K>
-      | SectionSettingItem
-      | CustomSettingItem
-      | ActionSettingItem
-      | boolean
+      SettingItem<T, K> | SectionSettingItem | CustomSettingItem | ActionSettingItem | boolean
     )[]
   }) => {
     const { settings } = props

@@ -38,15 +38,7 @@ export interface GeneralSettings {
 }
 
 export type AccentColor =
-  | "orange"
-  | "blue"
-  | "green"
-  | "purple"
-  | "pink"
-  | "red"
-  | "yellow"
-  | "gray"
-  | string // Allow custom hex colors
+  "orange" | "blue" | "green" | "purple" | "pink" | "red" | "yellow" | "gray" | string // Allow custom hex colors
 export interface UISettings {
   accentColor: AccentColor
   customAccentColor?: string // Store custom color value

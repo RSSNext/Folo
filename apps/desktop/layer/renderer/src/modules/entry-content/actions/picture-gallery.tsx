@@ -54,7 +54,7 @@ export const ImageGallery = ({ images }: { images: MediaModel[] }) => {
   return (
     <div ref={containerRef}>
       <MasonryItemWidthContext value={currentItemWidth}>
-        {/* eslint-disable-next-line @eslint-react/no-context-provider */}
+        {}
         <MasonryItemsAspectRatioContext.Provider value={masonryItemsRadio}>
           <MasonryItemsAspectRatioSetterContext value={setMasonryItemsRadio}>
             <MediaContainerWidthProvider width={currentItemWidth}>

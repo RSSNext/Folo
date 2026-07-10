@@ -153,7 +153,7 @@ export const PresentSheet = ({
             <RootPortalContext value={contentInnerRef.current!}>
               <div
                 className={cn(
-                  "flex grow flex-col overflow-auto px-4 pb-safe-offset-4",
+                  "pb-safe-offset-4 flex grow flex-col overflow-auto px-4",
                   contentClassName,
                 )}
               >

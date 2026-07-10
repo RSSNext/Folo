@@ -1,4 +1,3 @@
-import type { IpcContext } from "electron-ipc-decorator"
 import { IpcMethod, IpcService } from "electron-ipc-decorator"
 
 import {
@@ -27,7 +26,7 @@ export class CliService extends IpcService {
   static override readonly groupName = "cli"
 
   @IpcMethod()
-  async getInstallStatus(_context: IpcContext): Promise<CliInstallStatus> {
+  async getInstallStatus(): Promise<CliInstallStatus> {
     const [config, npxAvailable, desktopToken] = await Promise.all([
       readCliConfig(),
       isCliRunnerAvailable(),
@@ -46,10 +45,7 @@ export class CliService extends IpcService {
   }
 
   @IpcMethod()
-  async installCli(
-    _context: IpcContext,
-    preferredToken?: string,
-  ): Promise<{ success: boolean; error?: string }> {
+  async installCli(preferredToken?: string): Promise<{ success: boolean; error?: string }> {
     try {
       if (!(await isCliRunnerAvailable())) {
         return { success: false, error: "npx is not available. Install Node.js and npm first." }
@@ -73,7 +69,7 @@ export class CliService extends IpcService {
   }
 
   @IpcMethod()
-  async uninstallCli(_context: IpcContext): Promise<{ success: boolean; error?: string }> {
+  async uninstallCli(): Promise<{ success: boolean; error?: string }> {
     try {
       await syncSessionToCliConfig()
       return { success: true }

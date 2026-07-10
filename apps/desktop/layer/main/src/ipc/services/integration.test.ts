@@ -1,7 +1,6 @@
 import fsp from "node:fs/promises"
 import os from "node:os"
 
-import type { IpcContext } from "electron-ipc-decorator"
 import path from "pathe"
 import { afterEach, describe, expect, it, vi } from "vitest"
 
@@ -51,10 +50,9 @@ describe("IntegrationService", () => {
   it("saves Obsidian titles with path separators as one markdown file", async () => {
     vaultPath = await fsp.mkdtemp(path.join(os.tmpdir(), "folo-obsidian-"))
     const service = new IntegrationService()
-    const context = {} as IpcContext
 
     await expect(
-      service.saveToObsidian(context, {
+      service.saveToObsidian({
         url: "https://example.com",
         title: "KAWA DESIGN 少女前线2：追放 索米·雪兔献礼 1/6比例手办",
         content: "content",

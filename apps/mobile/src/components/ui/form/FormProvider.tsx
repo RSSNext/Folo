@@ -1,19 +1,27 @@
 import { createContext, use } from "react"
 import type { FieldValues, UseFormReturn } from "react-hook-form"
 
-const FormContext = createContext<UseFormReturn<any> | null>(null)
+const FormContext = createContext<UseFormReturn<any, any, any> | null>(null)
 
-export function FormProvider<T extends FieldValues>(props: {
-  form: UseFormReturn<T>
+export function FormProvider<
+  TFieldValues extends FieldValues,
+  TContext = any,
+  TTransformedValues = TFieldValues,
+>(props: {
+  form: UseFormReturn<TFieldValues, TContext, TTransformedValues>
   children: React.ReactNode
 }) {
   return <FormContext value={props.form}>{props.children}</FormContext>
 }
 
-export function useFormContext<T extends FieldValues>() {
+export function useFormContext<
+  TFieldValues extends FieldValues = FieldValues,
+  TContext = any,
+  TTransformedValues = TFieldValues,
+>() {
   const context = use(FormContext)
   if (!context) {
     throw new Error("useFormContext must be used within a FormProvider")
   }
-  return context as UseFormReturn<T>
+  return context as UseFormReturn<TFieldValues, TContext, TTransformedValues>
 }

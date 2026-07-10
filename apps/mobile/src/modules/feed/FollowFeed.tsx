@@ -43,6 +43,8 @@ const formSchema = z.object({
   hideFromTimeline: z.boolean().optional(),
   title: z.string().optional(),
 })
+type FollowFeedFormInput = z.input<typeof formSchema>
+type FollowFeedFormOutput = z.output<typeof formSchema>
 export function FollowFeed(props: { id: string }) {
   const { id } = props
   const feed = useFeedById(id as string)
@@ -93,7 +95,7 @@ function FollowImpl(props: { feedId: string; defaultView?: FeedViewType }) {
       view: subscription?.view ?? defaultView,
     }
   }, [subscription, defaultView])
-  const form = useForm<z.infer<typeof formSchema>>({
+  const form = useForm<FollowFeedFormInput, any, FollowFeedFormOutput>({
     resolver: zodResolver(formSchema),
     defaultValues: defaultFormValues,
   })
@@ -105,10 +107,9 @@ function FollowImpl(props: { feedId: string; defaultView?: FeedViewType }) {
   const [isLoading, setIsLoading] = useState(false)
   const navigate = useNavigation()
   const canDismiss = useCanDismiss()
-  const submit = async () => {
+  const submit = async (values: FollowFeedFormOutput) => {
     if (isLoading) return
     setIsLoading(true)
-    const values = form.getValues()
     const body: SubscriptionForm = {
       url: feed?.url,
       view: values.view,
@@ -331,7 +332,7 @@ function FollowImpl(props: { feedId: string; defaultView?: FeedViewType }) {
               name="view"
               control={form.control}
               render={({ field: { onChange, value } }) => (
-                <FeedViewSelector value={value} onChange={onChange} />
+                <FeedViewSelector value={value as FeedViewType} onChange={onChange} />
               )}
             />
           </View>

@@ -9,9 +9,11 @@ export default defineConfig({
 
   clean: true,
   format: ["esm"],
-  external: ["node:*", /\.wasm$/],
-  noExternal: ["**"],
-  inlineOnly: false,
+  deps: {
+    neverBundle: ["node:*", /\.wasm$/],
+    alwaysBundle: ["**"],
+    onlyBundle: false,
+  },
   treeshake: true,
   splitting: false,
 

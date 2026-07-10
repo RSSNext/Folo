@@ -83,6 +83,7 @@ describe("ContextMenuProvider", () => {
     vi.spyOn(console, "info").mockImplementation(() => {})
 
     Object.assign(window, {
+      addEventListener: document.defaultView?.addEventListener.bind(document.defaultView),
       clearTimeout,
       Element: document.defaultView?.Element ?? Element,
       getComputedStyle:
@@ -91,6 +92,7 @@ describe("ContextMenuProvider", () => {
       innerHeight: 768,
       innerWidth: 1024,
       Node: document.defaultView?.Node ?? Node,
+      removeEventListener: document.defaultView?.removeEventListener.bind(document.defaultView),
       setTimeout,
     })
   })

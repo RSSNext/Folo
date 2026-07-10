@@ -2,7 +2,6 @@ import { existsSync } from "node:fs"
 import fsp from "node:fs/promises"
 
 import { shell } from "electron"
-import type { IpcContext } from "electron-ipc-decorator"
 import { IpcMethod, IpcService } from "electron-ipc-decorator"
 import path from "pathe"
 
@@ -86,20 +85,17 @@ export class IntegrationService extends IpcService {
   static override readonly groupName = "integration"
 
   @IpcMethod()
-  async saveToObsidian(
-    context: IpcContext,
-    input: {
-      url: string
-      title: string
-      content: string
-      author: string
-      publishedAt: string
-      vaultPath: string
-      description?: string
-      feedTitle?: string
-      feedUrl?: string
-    },
-  ) {
+  async saveToObsidian(input: {
+    url: string
+    title: string
+    content: string
+    author: string
+    publishedAt: string
+    vaultPath: string
+    description?: string
+    feedTitle?: string
+    feedUrl?: string
+  }) {
     try {
       const {
         url,
@@ -151,22 +147,22 @@ ${content}
   }
 
   @IpcMethod()
-  async saveToEagle(context: IpcContext, input: SaveToEagleInput): Promise<any> {
+  async saveToEagle(input: SaveToEagleInput): Promise<any> {
     return saveMediaToEagle(input)
   }
 
   @IpcMethod()
-  setEagleContextMenuEnabled(context: IpcContext, input: SetEagleContextMenuEnabledInput): void {
+  setEagleContextMenuEnabled(input: SetEagleContextMenuEnabledInput): void {
     store.set("eagleContextMenuEnabled", input.enabled)
   }
 
   @IpcMethod()
-  async loginToQBittorrent(context: IpcContext, input: LoginToQBittorrentInput) {
+  async loginToQBittorrent(input: LoginToQBittorrentInput) {
     const { host, username, password } = input
 
     const existingSID = store.get("qbittorrentSID")
     if (existingSID) {
-      const errorMessage = await this.checkQBittorrentAuth(context, { host })
+      const errorMessage = await this.checkQBittorrentAuth({ host })
       if (!errorMessage) {
         return
       }
@@ -194,7 +190,7 @@ ${content}
     return
   }
 
-  async checkQBittorrentAuth(context: IpcContext, input: CheckQBittorrentAuthInput) {
+  async checkQBittorrentAuth(input: CheckQBittorrentAuthInput) {
     const { host } = input
     const sid = store.get("qbittorrentSID")
     if (!sid) {
@@ -214,7 +210,7 @@ ${content}
   }
 
   @IpcMethod()
-  async addMagnet(context: IpcContext, input: AddMagnetInput) {
+  async addMagnet(input: AddMagnetInput) {
     const { host, urls } = input
     const sid = store.get("qbittorrentSID")
     if (!sid) {
@@ -235,12 +231,11 @@ ${content}
       return `Failed to add magnet links: ${text}`
     }
 
-    // eslint-disable-next-line no-console
     console.log(`Added magnet links to qBittorrent: ${urls.join(", ")}`)
   }
 
   @IpcMethod()
-  async customFetch(context: IpcContext, input: CustomFetchInput) {
+  async customFetch(input: CustomFetchInput) {
     const requestId = Math.random().toString(36).slice(2, 8)
     const { url, method, headers, body, timeout = 10_000 } = input
 
@@ -383,7 +378,7 @@ ${content}
   }
 
   @IpcMethod()
-  async openURLScheme(context: IpcContext, scheme: string) {
+  async openURLScheme(scheme: string) {
     const requestId = Math.random().toString(36).slice(2, 8)
 
     try {

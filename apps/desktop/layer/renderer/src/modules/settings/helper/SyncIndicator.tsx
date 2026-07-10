@@ -11,6 +11,7 @@ import { useAuthQuery } from "~/hooks/common"
 import { settings } from "~/queries/settings"
 
 import { useSettingContextSelector } from "../modal/hooks"
+import type { RemoteSettingsResponse } from "./sync-queue"
 import { settingSyncQueue } from "./sync-queue"
 
 export const SettingSyncIndicator = () => {
@@ -19,16 +20,23 @@ export const SettingSyncIndicator = () => {
   const canSync = useSettingContextSelector((s) => s.canSync)
 
   const isOnline = useIsOnline()
-  const onceRef = useRef(false)
+  const seedEmptyRemoteOnceRef = useRef(false)
   useEffect(() => {
-    if (!isLoading && remoteSettings && !onceRef.current) {
-      const hasSetting = JSON.stringify(remoteSettings.settings) !== "{}"
-      onceRef.current = true
-      if (hasSetting) {
-        return
-      }
-      // Replace local to remote
-      settingSyncQueue.replaceRemote()
+    if (isLoading || !remoteSettings) {
+      return
+    }
+
+    const hasSetting = JSON.stringify(remoteSettings.settings) !== "{}"
+    if (hasSetting) {
+      settingSyncQueue.applyRemoteSettings(remoteSettings as RemoteSettingsResponse)
+      return
+    }
+
+    if (!seedEmptyRemoteOnceRef.current) {
+      seedEmptyRemoteOnceRef.current = true
+      // Seed remote settings once for new accounts, but re-check before writing because another
+      // session may have created remote settings while this modal was loading.
+      settingSyncQueue.replaceRemoteIfEmpty()
     }
   }, [remoteSettings, isLoading])
 

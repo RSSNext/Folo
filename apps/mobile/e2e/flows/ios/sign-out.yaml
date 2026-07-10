@@ -42,6 +42,10 @@ appId: is.follow
     timeout: 10000
 - tapOn:
     text: Sign Out
+- launchApp:
+    stopApp: false
+- waitForAnimationToEnd:
+    timeout: 15000
 - extendedWaitUntil:
     visible:
       id: login-provider-credential

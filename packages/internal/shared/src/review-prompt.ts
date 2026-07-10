@@ -1,10 +1,7 @@
 const DAY_IN_MS = 24 * 60 * 60 * 1000
 
 export type ReviewPromptOutcome =
-  | "dismissed"
-  | "negative_feedback"
-  | "positive_store_redirect"
-  | "native_request"
+  "dismissed" | "negative_feedback" | "positive_store_redirect" | "native_request"
 
 export interface ReviewPromptState {
   firstSeenAt: string | null

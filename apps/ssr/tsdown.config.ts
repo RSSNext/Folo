@@ -10,8 +10,10 @@ export default defineConfig({
 
   clean: true,
   format: ["esm"],
-  external: ["lightningcss", "vite"],
-  inlineOnly: false,
+  deps: {
+    neverBundle: ["lightningcss", "vite"],
+    onlyBundle: false,
+  },
   treeshake: true,
 
   define: {

@@ -7,6 +7,19 @@ import path from "pathe"
 
 const dependencyKeys = ["dependencies", "devDependencies"]
 const ignoredEnsureVersionFiles = new Set(["apps/landing/package.json"])
+const ignoredEnsureVersionDependencies = new Map([
+  // electron-vite 5 still peers Vite 5/6/7, so the root desktop toolchain
+  // stays on Vite 7 while Vite-native apps can move to Vite 8.
+  ["package.json", new Set(["vite"])],
+  ["apps/ssr/package.json", new Set(["@vitejs/plugin-react", "vite"])],
+  ["apps/mobile/web-app/html-renderer/package.json", new Set(["@vitejs/plugin-react"])],
+  // NativeWind 4 uses react-native-css-interop, whose latest stable release
+  // still requires Tailwind CSS 3.
+  ["apps/mobile/package.json", new Set(["tailwindcss"])],
+])
+
+const isIgnoredEnsureVersionDependency = (filePath, dependency) =>
+  ignoredEnsureVersionDependencies.get(filePath)?.has(dependency) ?? false
 
 /** @type {import("eslint").ESLint.Plugin} */
 export default {
@@ -51,6 +64,8 @@ export default {
             if (!dependencies) return
 
             Object.keys(dependencies).forEach((dependency) => {
+              if (isIgnoredEnsureVersionDependency(filePath, dependency)) return
+
               if (!packageVersionMap.has(dependency)) {
                 packageVersionMap.set(dependency, [])
               }
@@ -72,6 +87,7 @@ export default {
             if (!dependencyKeys.includes(packageCategory)) return
             const packageName = node.key.value
             const packageVersion = node.value.value
+            if (isIgnoredEnsureVersionDependency(currentFilePath, packageName)) return
 
             const versions = packageVersionMap.get(packageName)
             if (!versions || versions.find((v) => v.version === packageVersion)) return

@@ -183,6 +183,7 @@ enum WebViewManager {
   @discardableResult
   static func getOrCreate() -> WKWebView {
     if let webView = shared { return webView }
+    state.setInitialContentHeightIfNeeded()
     let webView = FOWebView(frame: .zero, state: state)
     shared = webView
     return webView

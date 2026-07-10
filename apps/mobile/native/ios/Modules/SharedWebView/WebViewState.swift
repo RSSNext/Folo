@@ -23,15 +23,12 @@ final class WebViewState: ObservableObject {
   @Published public var audioSeekEvent: AudioSeekEvent?
 
   public init() {
-    if Thread.isMainThread {
-      self.contentHeight = UIScreen.main.bounds.height
-    } else {
-      var height: CGFloat = 0
-      DispatchQueue.main.sync {
-        height = UIScreen.main.bounds.height
-      }
-      self.contentHeight = height
-    }
+    self.contentHeight = 0
+  }
+
+  public func setInitialContentHeightIfNeeded() {
+    guard Thread.isMainThread, contentHeight == 0 else { return }
+    contentHeight = UIScreen.main.bounds.height
   }
 
   public func previewImages(urls: [String], index: Int) {

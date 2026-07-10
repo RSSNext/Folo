@@ -144,6 +144,7 @@ export default ({ config }: ConfigContext): ExpoConfig => {
         "expo-build-properties",
         {
           ios: {
+            deploymentTarget: "16.4",
             // Expo SDK 55 archive builds regress with use_frameworks + prebuilt RN core.
             buildReactNativeFromSource: true,
             useFrameworks: "static",
@@ -161,6 +162,7 @@ export default ({ config }: ConfigContext): ExpoConfig => {
         },
       ],
       "expo-apple-authentication",
+      "expo-status-bar",
       "expo-web-browser",
       "expo-image",
       "expo-sharing",

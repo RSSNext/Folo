@@ -8,7 +8,7 @@ import type { EditorState, LexicalEditor } from "lexical"
 import { $getRoot } from "lexical"
 import type { Ref } from "react"
 import { memo, use, useCallback, useImperativeHandle, useRef, useState } from "react"
-import { matchKeyBindingPress, parseKeybinding } from "tinykeys"
+import { matchKeybindingPress, parseKeybinding } from "tinykeys"
 
 import { AIChatContextBar } from "~/modules/ai-chat/components/layouts/AIChatContextBar"
 import { COMMAND_ID } from "~/modules/command/commands/id"
@@ -24,7 +24,7 @@ import { AIModelIndicator } from "./AIModelIndicator"
 
 const chatInputVariants = cva(
   [
-    "bg-mix-background/transparent-8/2 focus-within:ring-accent/20 focus-within:border-accent/80 border-border/80",
+    "bg-mix-background-transparent-8-2 focus-within:ring-accent/20 focus-within:border-accent/80 border-border/80",
     "relative overflow-hidden rounded-2xl border backdrop-blur-background duration-200 focus-within:ring-2",
     "z-[1]",
   ],
@@ -129,7 +129,7 @@ export const ChatInput = memo(
           const presses = parseKeybinding(shortcut)
 
           // For single key shortcuts (not sequences), check if the first press matches
-          return presses.length === 1 && presses[0] && matchKeyBindingPress(event, presses[0])
+          return presses.length === 1 && presses[0] && matchKeybindingPress(event, presses[0])
         })
 
         if (matchesToggleShortcut) {

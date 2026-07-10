@@ -25,9 +25,9 @@ export const updateNotificationsToken = async (newCredentials?: Credentials) => 
         token: credentials.fcm.token,
         channel: notificationChannel,
       })
-      logger.info("updateNotificationsToken success: ", credentials.fcm.token)
-    } catch (error) {
-      logger.error("updateNotificationsToken error: ", error)
+      logger.info("Notification token updated successfully")
+    } catch {
+      logger.error("Failed to update notification token")
     }
   }
 }

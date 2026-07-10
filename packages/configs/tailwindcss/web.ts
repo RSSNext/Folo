@@ -2,12 +2,15 @@
 import "./tw-css-plugin"
 
 import { getIconCollections, iconsPlugin } from "@egoist/tailwindcss-icons"
-import { cleanupSVG, importDirectorySync, isEmptyColor, parseColors, runSVGO } from "@iconify/tools"
+import { isEmptyColor, parseColors } from "@iconify/tools/lib/colors/parse.js"
+import { importDirectorySync } from "@iconify/tools/lib/import/directory.js"
+import { runSVGO } from "@iconify/tools/lib/optimise/svgo.js"
+import { cleanupSVG } from "@iconify/tools/lib/svg/cleanup.js"
 import { compareColors, stringToColor } from "@iconify/utils/lib/colors"
 import { merge } from "es-toolkit/compat"
 import path, { resolve } from "pathe"
-import type { Config } from "tailwindcss/types/config"
-import { withUIKit } from "tailwindcss-uikit-colors/src/macos/tailwind"
+import type { Config } from "tailwindcss"
+import { withUIKit } from "tailwindcss-uikit-colors/macos"
 import { workspaceRootSync } from "workspace-root"
 
 import ratioMixingPlugin from "./ratio-mixing-plugin"

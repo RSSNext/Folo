@@ -68,21 +68,22 @@ const useHideableBottom = (
   originalDefaultHeaderHeight: number,
   hideableBottomHeight?: number,
 ) => {
-  const lastScrollY = useRef(0)
-
-  const largeDefaultHeaderHeightRef = useRef(
+  const lastScrollY = useSharedValue(0)
+  const largeDefaultHeaderHeight = useSharedValue(
     originalDefaultHeaderHeight + (hideableBottomHeight || 0),
   )
-  const largeHeaderHeight = useSharedValue(largeDefaultHeaderHeightRef.current)
+  const largeHeaderHeight = useSharedValue(
+    originalDefaultHeaderHeight + (hideableBottomHeight || 0),
+  )
   const [hideableBottomRef, setHideableBottomRef] = useState<View | undefined>()
 
   useEffect(() => {
     hideableBottomRef?.measure((x, y, width, height) => {
       const largeHeight = height + originalDefaultHeaderHeight
-      largeDefaultHeaderHeightRef.current = largeHeight
+      largeDefaultHeaderHeight.value = largeHeight
       largeHeaderHeight.value = largeHeight
     })
-  }, [hideableBottomRef, largeHeaderHeight, originalDefaultHeaderHeight])
+  }, [hideableBottomRef, largeDefaultHeaderHeight, largeHeaderHeight, originalDefaultHeaderHeight])
 
   const { reAnimatedScrollY } = use(ScreenItemContext)!
   useAnimatedReaction(
@@ -92,24 +93,24 @@ const useHideableBottom = (
         return
       }
 
-      const largeDefaultHeaderHeight = largeDefaultHeaderHeightRef.current
+      const expandedHeaderHeight = largeDefaultHeaderHeight.value
 
       if (value <= 100) {
-        largeHeaderHeight.value = withTiming(largeDefaultHeaderHeight)
-      } else if (value > lastScrollY.current + HideableThreshold) {
+        largeHeaderHeight.value = withTiming(expandedHeaderHeight)
+      } else if (value > lastScrollY.value + HideableThreshold) {
         largeHeaderHeight.value = withTiming(originalDefaultHeaderHeight)
-      } else if (value < lastScrollY.current - HideableThreshold) {
-        largeHeaderHeight.value = withTiming(largeDefaultHeaderHeight)
+      } else if (value < lastScrollY.value - HideableThreshold) {
+        largeHeaderHeight.value = withTiming(expandedHeaderHeight)
       }
-      lastScrollY.current = value
+      lastScrollY.value = value
     },
   )
 
   useEffect(() => {
-    EventBus.subscribe("SELECT_TIMELINE", () => {
-      largeHeaderHeight.value = withTiming(largeDefaultHeaderHeightRef.current)
+    return EventBus.subscribe("SELECT_TIMELINE", () => {
+      largeHeaderHeight.value = withTiming(largeDefaultHeaderHeight.value)
     })
-  }, [largeHeaderHeight])
+  }, [largeDefaultHeaderHeight, largeHeaderHeight])
 
   const layoutHeightOnceRef = useRef(false)
   const onLayout = useCallback(
@@ -126,16 +127,21 @@ const useHideableBottom = (
 
       layoutHeightOnceRef.current = true
 
-      largeDefaultHeaderHeightRef.current = height + originalDefaultHeaderHeight
-      largeHeaderHeight.value = largeDefaultHeaderHeightRef.current
+      const expandedHeaderHeight = height + originalDefaultHeaderHeight
+      largeDefaultHeaderHeight.value = expandedHeaderHeight
+      largeHeaderHeight.value = expandedHeaderHeight
     },
-    [hideableBottomHeight, largeHeaderHeight, originalDefaultHeaderHeight],
+    [
+      hideableBottomHeight,
+      largeDefaultHeaderHeight,
+      largeHeaderHeight,
+      originalDefaultHeaderHeight,
+    ],
   )
   return {
     hideableBottomRef,
     setHideableBottomRef,
     largeHeaderHeight,
-    largeDefaultHeaderHeightRef,
     onLayout,
   }
 }
@@ -217,7 +223,7 @@ export const InternalNavigationHeader = ({
 
   const blurStyle = useAnimatedStyle(() => ({
     opacity: opacityAnimated.value,
-    ...StyleSheet.absoluteFillObject,
+    ...StyleSheet.absoluteFill,
     borderBottomWidth: StyleSheet.hairlineWidth,
     borderBottomColor: border,
   }))

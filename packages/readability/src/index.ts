@@ -1,25 +1,13 @@
 import { Readability } from "@mozilla/readability"
 import chardet from "chardet"
-import DOMPurify from "dompurify"
 import { parseHTML } from "linkedom/worker"
+
+import { sanitizeHTMLString } from "./sanitize"
 
 const isDev = process.env.NODE_ENV === "development"
 
 const userAgents =
   "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/127.0.0.0 Safari/537.36"
-
-// For avoiding xss attack from readability, the raw document string should be sanitized.
-// The xss attack in electron may lead to more serious outcomes than browser environment.
-// It may allows remotely execute malicious scripts in main process.
-// Before the sanitizing, the DOMPurify requires a `window` environment provided by linkedom.
-function sanitizeHTMLString(dirtyDocumentString: string) {
-  const parser = parseHTML(dirtyDocumentString)
-  const purify = DOMPurify(parser.window)
-  // How do DOMPurify changes the origin html structure,
-  // You can refer its document https://github.com/cure53/DOMPurify?tab=readme-ov-file#can-i-configure-dompurify
-  const sanitizedDocumentString = purify.sanitize(dirtyDocumentString)
-  return sanitizedDocumentString
-}
 
 /**
  * Decodes the response body of a `fetch` request into a string, ensuring proper character set handling.

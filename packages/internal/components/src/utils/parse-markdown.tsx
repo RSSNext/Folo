@@ -1,4 +1,5 @@
-import "@microflash/remark-callout-directives/themes/github/index.css"
+// @ts-expect-error CSS side-effect import from package exports has no type declaration.
+import "@microflash/remark-callout-directives/theme/github"
 import "remark-gh-alerts/styles/github-colors-light.css"
 import "remark-gh-alerts/styles/github-colors-dark-media.css"
 import "remark-gh-alerts/styles/github-base.css"

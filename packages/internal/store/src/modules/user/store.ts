@@ -249,7 +249,12 @@ class UserActions implements Hydratable, Resetable {
     tx.store(() => this.upsertManyInSession(users))
     const { whoami } = useUserStore.getState()
     tx.persist(() =>
-      UserService.upsertMany(users.map((user) => ({ ...user, isMe: whoami?.id === user.id }))),
+      UserService.upsertMany(
+        users.map((user) => ({
+          ...user,
+          isMe: user.isMe || whoami?.id === user.id,
+        })),
+      ),
     )
     await tx.run()
   }

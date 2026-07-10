@@ -23,6 +23,7 @@ import {
   GROUPED_SECTION_BOTTOM_MARGIN,
   GROUPED_SECTION_TOP_MARGIN,
 } from "./constants"
+import { getGroupedListChildKey } from "./grouped-list-key"
 import { GroupedInsetListCardItemStyle } from "./GroupedInsetListCardItemStyle"
 
 const GROUPED_TABLET_MAX_WIDTH = 760
@@ -84,7 +85,6 @@ export const GroupedInsetListCard: FC<
             if (child === null) return null
             const isNavigationLink =
               React.isValidElement(child) &&
-              // eslint-disable-next-line @typescript-eslint/no-unsafe-function-type
               ((child.type as Function).name === GroupedInsetListNavigationLink.name ||
                 (child.type as any).itemStyle === GroupedInsetListCardItemStyle.NavigationLink)
             const NextSeparatorComponent =
@@ -95,7 +95,7 @@ export const GroupedInsetListCard: FC<
                 : NextSeparatorComponent
               : NextSeparatorComponent
             return (
-              <Fragment key={typeof child === "object" && "key" in child ? child.key : index}>
+              <Fragment key={getGroupedListChildKey(child, index)}>
                 {child}
                 {!isLast &&
                   (NextSeparatorElement ?? (

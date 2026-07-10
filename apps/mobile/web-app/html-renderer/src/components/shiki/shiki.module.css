@@ -1,3 +1,5 @@
+@reference "../../index.css";
+
 .shiki-wrapper {
   @apply overflow-hidden rounded-md;
 

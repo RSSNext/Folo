@@ -4,7 +4,8 @@ import {
   transformerNotationHighlight,
 } from "@shikijs/transformers"
 import type { ShikiTransformer } from "shiki"
-import { createHighlighterCoreSync, createJavaScriptRegexEngine } from "shiki"
+import { createHighlighterCoreSync } from "shiki/core"
+import { createJavaScriptRegexEngine } from "shiki/engine/javascript"
 
 export const shikiTransformers: ShikiTransformer[] = [
   transformerMetaHighlight(),

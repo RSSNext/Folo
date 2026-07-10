@@ -1,5 +1,5 @@
 import { IN_ELECTRON } from "@follow/shared/constants"
-import { whoamiQueryKey } from "@follow/store/user/hooks"
+import { useWhoami, whoamiQueryKey } from "@follow/store/user/hooks"
 import { userSyncService } from "@follow/store/user/store"
 import { tracker } from "@follow/tracker"
 import { clearStorage } from "@follow/utils/ns"
@@ -25,8 +25,22 @@ const sessionCookieRefreshInterval = 1000 * 60 * 60 * 12
 let lastSessionCookieRefreshAt = 0
 let sessionCookieRefreshPromise: Promise<unknown> | null = null
 
+const hasBetterAuthSessionCookie = () => {
+  if (typeof document === "undefined") {
+    return false
+  }
+
+  return /(?:^|;\s*)(?:better-auth\.session_token|__Secure-better-auth\.session_token)=/.test(
+    document.cookie,
+  )
+}
+
+const isElectronRuntime = () => {
+  return IN_ELECTRON || (typeof window !== "undefined" && !!window.electron)
+}
+
 const refreshAuthSessionCookie = async () => {
-  if (IN_ELECTRON && !getAuthSessionToken()) {
+  if (isElectronRuntime() && !getAuthSessionToken()) {
     return
   }
 
@@ -75,6 +89,7 @@ export const useHasPassword = () => {
 }
 
 export const useSession = (options?: { enabled?: boolean }) => {
+  const whoami = useWhoami()
   const { data, isLoading, ...rest } = useAuthQuery(auth.getSession(), {
     retry(failureCount, error) {
       const fetchError = error as FetchError
@@ -94,23 +109,26 @@ export const useSession = (options?: { enabled?: boolean }) => {
   })
   const { error } = rest
   const fetchError = error as FetchError
+  const hasLocalAuthCredential = isElectronRuntime()
+    ? !!getAuthSessionToken()
+    : hasBetterAuthSessionCookie()
+  const session =
+    (data === undefined || (data === null && hasLocalAuthCredential)) && whoami
+      ? ({ user: whoami } as NonNullable<typeof data>)
+      : data
 
   const getAuthStatus = ():
-    | "loading"
-    | "authenticated"
-    | "error"
-    | "unauthenticated"
-    | "unknown" => {
-    if (isLoading) {
-      return "loading"
+    "loading" | "authenticated" | "error" | "unauthenticated" | "unknown" => {
+    if (session) {
+      return "authenticated"
     }
 
     if (fetchError) {
       return "error"
     }
 
-    if (data) {
-      return "authenticated"
+    if (isLoading) {
+      return "loading"
     }
 
     if (data === null) {
@@ -121,7 +139,7 @@ export const useSession = (options?: { enabled?: boolean }) => {
   }
 
   return {
-    session: data,
+    session,
     ...rest,
     status: getAuthStatus(),
   } as const
@@ -155,6 +173,7 @@ export const useAuthSessionCookieRefresh = (enabled: boolean) => {
 
 export const handleSessionChanges = () => {
   setLoginModalShow(false)
+  localStorage.removeItem(QUERY_PERSIST_KEY)
   const authSessionToken = getAuthSessionToken()
   ipcServices?.auth.sessionChanged(authSessionToken ?? undefined)
   window.location.reload()
@@ -162,29 +181,36 @@ export const handleSessionChanges = () => {
 
 export const signOut = async () => {
   const authSessionToken = getAuthSessionToken()
-  clearAuthSessionToken()
-  // Clear query cache
-  localStorage.removeItem(QUERY_PERSIST_KEY)
 
-  // clear local store data
-  await clearLocalPersistStoreData()
+  try {
+    if (IN_ELECTRON) {
+      const authService = ipcServices?.auth as
+        | ({ signOutRemote?: (token?: string) => Promise<void> } & NonNullable<
+            typeof ipcServices
+          >["auth"])
+        | undefined
+      await Promise.allSettled([
+        ipcServices?.auth.signOut(),
+        authService?.signOutRemote?.(authSessionToken ?? undefined),
+      ])
+    } else {
+      await ipcServices?.auth.signOut()
+      await signOutFn()
+    }
+  } finally {
+    clearAuthSessionToken()
+    // Clear query cache
+    localStorage.removeItem(QUERY_PERSIST_KEY)
 
-  // Clear local storage
-  clearStorage()
-  // Sign out
-  await tracker.manager.clear()
-  if (IN_ELECTRON) {
-    void ipcServices?.auth.signOut()
-    const authService = ipcServices?.auth as
-      | ({ signOutRemote?: (token?: string) => Promise<void> } & NonNullable<
-          typeof ipcServices
-        >["auth"])
-      | undefined
-    void authService?.signOutRemote?.(authSessionToken ?? undefined)
-  } else {
-    await ipcServices?.auth.signOut()
-    await signOutFn()
+    // clear local store data
+    await clearLocalPersistStoreData()
+
+    // Clear local storage
+    clearStorage()
+    // Sign out
+    await tracker.manager.clear()
   }
+
   window.location.reload()
 }
 

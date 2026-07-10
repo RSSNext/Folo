@@ -1,3 +1,5 @@
+@reference "../../../../styles/main.css";
+
 .shiki-wrapper {
   @apply overflow-hidden;
 

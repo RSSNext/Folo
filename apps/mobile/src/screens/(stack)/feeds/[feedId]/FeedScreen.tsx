@@ -50,7 +50,7 @@ export const FeedScreen: NavigationControllerView<{
             >
               <ThemedBlurView
                 useGlass
-                style={StyleSheet.absoluteFillObject}
+                style={StyleSheet.absoluteFill}
                 tintColor={withOpacity(accentColor, 0.6)}
               />
               <Text className="font-bold text-white">{t("words.follow")}</Text>

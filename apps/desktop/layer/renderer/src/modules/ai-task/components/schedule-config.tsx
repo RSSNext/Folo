@@ -349,7 +349,7 @@ export const ScheduleConfig = memo<ScheduleConfigProps>(
                   }
                   value={value.dayOfWeek.toString()}
                 >
-                  <SelectTrigger className="h-6 justify-between rounded-[4px] border-0 bg-material-opaque px-1.5 py-0 text-xs hover:bg-mix-accent/background-1/4">
+                  <SelectTrigger className="h-6 justify-between rounded-[4px] border-0 bg-material-opaque px-1.5 py-0 text-xs hover:bg-mix-accent-background-1-4">
                     <SelectValue placeholder={t("schedule.day_placeholder")} />
                   </SelectTrigger>
                   <SelectContent>
@@ -406,7 +406,7 @@ export const ScheduleConfig = memo<ScheduleConfigProps>(
                   }
                   value={value.dayOfMonth.toString()}
                 >
-                  <SelectTrigger className="h-6 justify-between rounded-[4px] border-0 bg-material-opaque px-1.5 py-0 text-xs hover:bg-mix-accent/background-1/4">
+                  <SelectTrigger className="h-6 justify-between rounded-[4px] border-0 bg-material-opaque px-1.5 py-0 text-xs hover:bg-mix-accent-background-1-4">
                     <SelectValue placeholder={t("schedule.day_placeholder")} />
                   </SelectTrigger>
                   <SelectContent>

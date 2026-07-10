@@ -11,9 +11,7 @@ import type {
 import { useQuery } from "@tanstack/react-query"
 
 type GetUserSubscriptionsResponse = (
-  | SubscriptionWithFeed
-  | ListSubscriptionResponse
-  | InboxSubscriptionResponse
+  SubscriptionWithFeed | ListSubscriptionResponse | InboxSubscriptionResponse
 )[]
 
 const UN_CATEGORIZED = "Uncategorized"

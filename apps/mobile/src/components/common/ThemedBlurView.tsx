@@ -45,9 +45,7 @@ export const ThemedBlurView = ({
         tint={colorScheme === "light" ? "systemChromeMaterialLight" : "systemChromeMaterialDark"}
         {...rest}
       />
-      {tintColor && (
-        <View style={[StyleSheet.absoluteFillObject, { backgroundColor: tintColor }]} />
-      )}
+      {tintColor && <View style={[StyleSheet.absoluteFill, { backgroundColor: tintColor }]} />}
     </>
   ) : (
     <View

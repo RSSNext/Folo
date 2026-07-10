@@ -446,8 +446,7 @@ index 9d6d869efcece065618d4f2cefdc8c54831af9ed..37f41fd3fcd8dcb7b5b54c0ad3f207dd
  
 +    // https://github.com/doublesymmetry/react-native-track-player/pull/2451
      @MainThread
--    override fun onBind(intent: Intent?): IBinder {
-+    override fun onBind(intent: Intent): IBinder {
+     override fun onBind(intent: Intent): IBinder {
          return binder
      }
  
