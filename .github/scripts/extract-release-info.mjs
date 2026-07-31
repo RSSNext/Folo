@@ -7,12 +7,20 @@
 
 import { execSync } from "node:child_process"
 import { appendFileSync } from "node:fs"
+import { pathToFileURL } from "node:url"
 
 // Configuration
 const RELEASE_PATTERNS = {
-  desktop: /release\(desktop\): Release (v\d+\.\d+\.\d+(-[0-9A-Z-.]+)?)/i,
-  mobile: /release\(mobile\): Release (v\d+\.\d+\.\d+(-[0-9A-Z-.]+)?)/i,
+  desktop: /^release\(desktop\): Release (v\d+\.\d+\.\d+(?:-[0-9A-Z-.]+)?)(?: \(#\d+\))?$/i,
+  mobile: /^release\(mobile\): Release (v\d+\.\d+\.\d+(?:-[0-9A-Z-.]+)?)(?: \(#\d+\))?$/i,
 }
+
+const RELEASE_PLATFORM_BY_REF = {
+  main: "desktop",
+  "mobile-main": "mobile",
+}
+
+const GITHUB_MERGE_SUBJECT_PATTERN = /^Merge pull request #\d+ from /i
 
 const EXIT_CODES = {
   SUCCESS: 0,
@@ -57,7 +65,6 @@ function setGitHubOutput(key, value) {
 
 /**
  * Get the latest commit message
- * @returns {string} Latest commit message
  */
 function getLatestCommitMessage() {
   try {
@@ -69,21 +76,45 @@ function getLatestCommitMessage() {
 }
 
 /**
- * Extract release information from commit message
+ * Extract release information from a commit message.
+ * Prefer the subject. For a standard GitHub merge commit, fall back only to the first non-empty body
+ * line, where GitHub stores the PR title. When a GitHub ref is available, only the platform released
+ * from that branch is considered. Other body lines are ignored so stale release commits cannot
+ * retrigger a release.
  * @param {string} commitMessage - Git commit message
- * @returns {Object|null} Release information or null if no release found
+ * @param {string|undefined} refName - GitHub ref name
+ * @returns {{platform: string, version: string, tagName: string}|null} Release information or null
  */
-function extractReleaseInfo(commitMessage) {
-  for (const [platform, regex] of Object.entries(RELEASE_PATTERNS)) {
-    const match = commitMessage.match(regex)
-    if (match) {
-      const version = match[1]
-      const tagName = `${platform}/${version}`
+export function extractReleaseInfo(commitMessage, refName = process.env.GITHUB_REF_NAME) {
+  const [commitSubject = "", ...commitBodyLines] = commitMessage.split(/\r?\n/)
+  const expectedPlatform = refName ? RELEASE_PLATFORM_BY_REF[refName] : undefined
 
-      return {
-        platform,
-        version,
-        tagName,
+  if (refName && !expectedPlatform) {
+    return null
+  }
+
+  const platforms = expectedPlatform ? [expectedPlatform] : Object.keys(RELEASE_PATTERNS)
+  const candidates = [commitSubject.trim()]
+
+  if (GITHUB_MERGE_SUBJECT_PATTERN.test(commitSubject)) {
+    const pullRequestTitle = commitBodyLines.map((line) => line.trim()).find(Boolean)
+    if (pullRequestTitle) {
+      candidates.push(pullRequestTitle)
+    }
+  }
+
+  for (const candidate of candidates) {
+    for (const platform of platforms) {
+      const match = candidate.match(RELEASE_PATTERNS[platform])
+      if (match) {
+        const version = match[1]
+        const tagName = `${platform}/${version}`
+
+        return {
+          platform,
+          version,
+          tagName,
+        }
       }
     }
   }
@@ -128,4 +159,6 @@ function main() {
   }
 }
 
-main()
+if (process.argv[1] && import.meta.url === pathToFileURL(process.argv[1]).href) {
+  main()
+}

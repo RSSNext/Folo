@@ -36,7 +36,6 @@ jobs:
       - name: Extract release information
         id: extract_info
         run: .github/scripts/extract-release-info.mjs
-        continue-on-error: true
 
       - name: Expose release outputs
         id: release_info
