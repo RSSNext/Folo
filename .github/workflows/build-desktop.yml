@@ -139,6 +139,10 @@ jobs:
       - name: Install dependencies
         run: pnpm i
 
+      - name: Install Linux packaging tools
+        if: runner.os == 'Linux'
+        run: sudo apt-get update && sudo apt-get install -y fakeroot dpkg
+
       - name: Prebuild packages (Windows)
         if: runner.os == 'windows'
         run: pnpm run build:packages
@@ -332,6 +336,15 @@ jobs:
             apps/desktop/out/make/**/latest-linux.yml
           retention-days: 90
 
+      - name: Upload file (linux-x64-deb)
+        uses: actions/upload-artifact@v7
+        if: runner.os == 'linux'
+        with:
+          name: linux-x64-deb
+          path: |
+            apps/desktop/out/make/**/*x64.deb
+          retention-days: 90
+
       - name: Prepare release assets for aggregation
         if: env.RELEASE == 'true'
         env:
@@ -384,6 +397,7 @@ jobs:
             apps/desktop/out/make/**/Folo-*.zip
             apps/desktop/out/make/**/Folo-*.exe
             apps/desktop/out/make/**/Folo-*.AppImage
+            apps/desktop/out/make/**/Folo-*.deb
             apps/desktop/out/make/**/*.yml
             apps/desktop/dist/manifest.yml
             apps/desktop/dist/*.tar.gz
@@ -480,6 +494,7 @@ jobs:
           apps/desktop/out/make/**/Folo-*.zip
           apps/desktop/out/make/**/Folo-*.exe
           apps/desktop/out/make/**/Folo-*.AppImage
+          apps/desktop/out/make/**/Folo-*.deb
           apps/desktop/out/make/**/*.yml
           apps/desktop/dist/manifest.yml
           apps/desktop/dist/*.tar.gz

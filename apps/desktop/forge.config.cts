@@ -4,6 +4,7 @@ import { cp, readdir } from "node:fs/promises"
 
 import { FuseV1Options, FuseVersion } from "@electron/fuses"
 import { MakerAppX } from "@electron-forge/maker-appx"
+import { MakerDeb } from "@electron-forge/maker-deb"
 import { MakerDMG } from "@electron-forge/maker-dmg"
 import { MakerPKG } from "@electron-forge/maker-pkg"
 import { MakerSquirrel } from "@electron-forge/maker-squirrel"
@@ -24,7 +25,7 @@ const isMicrosoftStore =
 
 const isStaging = mode === "staging"
 
-const artifactRegex = /.*\.(?:exe|dmg|AppImage|zip)$/
+const artifactRegex = /.*\.(?:exe|dmg|AppImage|zip|deb)$/
 const platformNamesMap = {
   darwin: "macos",
   linux: "linux",
@@ -237,6 +238,25 @@ const config: ForgeConfig = {
         ],
       },
     }),
+    new MakerDeb(
+      {
+        options: {
+          name: isStaging ? "folo-staging" : "folo",
+          productName: isStaging ? "Folo Staging" : "Folo",
+          // must match the executable emitted by electron-packager (packagerConfig.name)
+          bin: isStaging ? "Folo Staging" : "Folo",
+          genericName: "RSS Reader",
+          description: "Follow everything in one place",
+          maintainer: "Folo Team",
+          homepage: "https://github.com/RSSNext/Folo",
+          categories: ["Network", "News"],
+          section: "web",
+          icon: isStaging ? "resources/icon-staging.png" : "resources/icon.png",
+          mimeType: ["x-scheme-handler/folo", "x-scheme-handler/follow"],
+        },
+      },
+      ["linux"],
+    ),
     new MakerPKG(
       {
         name: "Folo",
@@ -322,15 +342,18 @@ const config: ForgeConfig = {
               fs.renameSync(artifact, newArtifact)
 
               try {
-                const fileData = fs.readFileSync(newArtifact)
-                const hash = crypto.createHash("sha512").update(fileData).digest("base64")
-                const { size } = fs.statSync(newArtifact)
+                // .deb is a distro package, not an electron-updater feed entry
+                if (path.extname(newArtifact) !== ".deb") {
+                  const fileData = fs.readFileSync(newArtifact)
+                  const hash = crypto.createHash("sha512").update(fileData).digest("base64")
+                  const { size } = fs.statSync(newArtifact)
 
-                yml.files.push({
-                  url: path.basename(newArtifact),
-                  sha512: hash,
-                  size,
-                })
+                  yml.files.push({
+                    url: path.basename(newArtifact),
+                    sha512: hash,
+                    size,
+                  })
+                }
               } catch {
                 console.error(`Failed to hash ${newArtifact}`)
               }
