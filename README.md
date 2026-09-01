@@ -54,6 +54,7 @@ Feel free to try it using the following methods:
 You can also install using the following methods maintained by our community:
 
 - If you are using Arch Linux, you can install the package [folo-appimage](https://aur.archlinux.org/packages/folo-appimage) that is maintained by [timochan](https://github.com/ttimochan) and [grtsinry43](https://github.com/grtsinry43).
+- If you are using Linux with [Flatpak](https://flatpak.org), you can install [Folo](https://flatpark.org/apps/is.folo.Folo/) from [FlatPark](https://flatpark.org) that is maintained by [Komh](https://github.com/jing2uo).
 - If you are using Nix, you can install the package [follow](https://github.com/NixOS/nixpkgs/blob/master/pkgs/by-name/fo/follow/package.nix) that is maintained by [iosmanthus](https://github.com/iosmanthus).
 - If you are using macOS with [Homebrew](https://brew.sh), you can install the cask [folo](https://formulae.brew.sh/cask/folo) that is maintained by [realSunyz](https://github.com/realSunyz).
 - If you are using Windows with [Scoop](https://scoop.sh), you can install the manifest [folo](https://github.com/cscnk52/cetacea/blob/master/bucket/folo.json) that is maintained by [cscnk52](https://github.com/cscnk52).
