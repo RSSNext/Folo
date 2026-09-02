@@ -344,6 +344,8 @@
   "general.mark_as_read.title": "标记已读",
   "general.minimize_to_tray.description": "关闭窗口时最小化到系统托盘。",
   "general.minimize_to_tray.label": "最小化到托盘",
+  "general.minimize_to_tray.restart_now": "立即重启",
+  "general.minimize_to_tray.restart_to_remove": "重启 Folo 后托盘图标才会移除。",
   "general.network": "网络",
   "general.open_links_in_external_app.label": "在外部应用内打开链接",
   "general.privacy": "隐私",
