@@ -1,7 +1,7 @@
 import { name } from "@pkg"
 import { app, Menu, nativeImage, Tray } from "electron"
 
-import { isMacOS, isMAS, isWindows } from "~/env"
+import { isLinux, isMacOS, isMAS, isWindows } from "~/env"
 import { getTrayIconPath } from "~/helper"
 import { logger, revealLogFile } from "~/logger"
 import { WindowManager } from "~/manager/window"
@@ -115,21 +115,48 @@ const showWindow = () => {
 }
 
 const destroyAppTray = () => {
-  if (tray) {
-    tray.destroy()
-    tray = null
-  }
+  if (!tray) return
+
+  // On Linux, `Tray.destroy()` does not remove the icon from StatusNotifierItem
+  // trays (waybar, KDE Plasma, …). Chromium's StatusIconLinuxDbus un-exports its
+  // own D-Bus objects but never tells `org.kde.StatusNotifierWatcher` the item
+  // is gone, and the item is registered by object path on the process-wide
+  // session-bus connection whose name outlives the tray — so the host gets no
+  // `NameOwnerChanged` and keeps a dead icon. Toggling `minimizeToTray` back on
+  // then stacks a *second* icon (Chromium bumps its global StatusNotifierItem
+  // id), with only the newest menu wired to live handlers. The whole pile only
+  // clears when the app fully exits.
+  //
+  // Keep the single Tray instance for the app's lifetime on Linux. The window
+  // close handler reads `getTrayConfig()` on every close, so a tray icon that
+  // outlives a disabled setting is inert; the renderer asks the user to restart
+  // to actually remove it (see `setTrayConfig`'s return value).
+  //
+  // Refs: #3940, #4985, #3207
+  if (isLinux) return
+
+  tray.destroy()
+  tray = null
 }
 
 const DEFAULT_MINIMIZE_TO_TRAY = false
 
 export const getTrayConfig = () => store.get("minimizeToTray") ?? DEFAULT_MINIMIZE_TO_TRAY
 
-export const setTrayConfig = (input: boolean) => {
+/**
+ * @returns `true` when the change could not be applied to the tray icon live and
+ * the app must be restarted for it to take effect (Linux disabling only).
+ */
+export const setTrayConfig = (input: boolean): boolean => {
   store.set("minimizeToTray", input)
   if (input) {
     registerAppTray()
-  } else {
-    destroyAppTray()
+    return false
   }
+
+  // `destroyAppTray()` can't remove the icon on Linux (see above); report that a
+  // restart is needed so the renderer can offer it.
+  const needsRestart = isLinux && tray !== null
+  destroyAppTray()
+  return needsRestart
 }

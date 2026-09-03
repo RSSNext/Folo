@@ -344,6 +344,8 @@
   "general.mark_as_read.title": "Mark as read",
   "general.minimize_to_tray.description": "Minimize to system tray when closing window.",
   "general.minimize_to_tray.label": "Minimize to tray",
+  "general.minimize_to_tray.restart_now": "Restart now",
+  "general.minimize_to_tray.restart_to_remove": "The tray icon will be removed after Folo restarts.",
   "general.network": "Network",
   "general.open_links_in_external_app.label": "Open links in external app",
   "general.privacy": "Privacy",

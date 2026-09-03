@@ -129,6 +129,12 @@ export class AppService extends IpcService {
   }
 
   @IpcMethod()
+  relaunch(): void {
+    app.relaunch()
+    app.exit(0)
+  }
+
+  @IpcMethod()
   readClipboard(): string {
     return clipboard.readText()
   }

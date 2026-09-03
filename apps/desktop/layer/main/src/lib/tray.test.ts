@@ -5,6 +5,7 @@ const mocks = vi.hoisted(() => {
     isMacOS: false,
     isMAS: false,
     isWindows: false,
+    isLinux: false,
   }
 
   return {
@@ -113,6 +114,7 @@ describe("tray", () => {
     mocks.env.isMacOS = false
     mocks.env.isMAS = false
     mocks.env.isWindows = false
+    mocks.env.isLinux = false
     mocks.getBadgeCount.mockReturnValue(0)
     mocks.store.get.mockReturnValue(true)
     mocks.trayInstances.length = 0
@@ -127,5 +129,33 @@ describe("tray", () => {
     expect(mocks.trayInstances).toHaveLength(1)
     expect(mocks.trayInstances[0]!.destroy).not.toHaveBeenCalled()
     expect(mocks.trayInstances[0]!.setContextMenu).toHaveBeenCalledTimes(2)
+  })
+
+  it("destroys the native tray when disabled off Linux", async () => {
+    const { registerAppTray, setTrayConfig } = await import("./tray")
+
+    registerAppTray()
+    const needsRestart = setTrayConfig(false)
+
+    expect(mocks.trayInstances[0]!.destroy).toHaveBeenCalledTimes(1)
+    expect(needsRestart).toBe(false)
+  })
+
+  it("keeps the native tray on Linux when disabled and reports a restart is needed", async () => {
+    // Electron's Tray.destroy() can't remove a StatusNotifierItem icon while the
+    // process runs, so recreating it would stack a dead icon. Keep the instance
+    // and let the caller offer a restart instead.
+    mocks.env.isLinux = true
+    const { registerAppTray, setTrayConfig } = await import("./tray")
+
+    registerAppTray()
+    const needsRestart = setTrayConfig(false)
+
+    expect(mocks.trayInstances[0]!.destroy).not.toHaveBeenCalled()
+    expect(needsRestart).toBe(true)
+
+    // Re-enabling reuses the same instance rather than creating a second one.
+    setTrayConfig(true)
+    expect(mocks.trayInstances).toHaveLength(1)
   })
 })

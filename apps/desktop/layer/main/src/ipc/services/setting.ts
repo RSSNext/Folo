@@ -59,8 +59,8 @@ export class SettingService extends IpcService {
   }
 
   @IpcMethod()
-  setMinimizeToTray(minimize: boolean): void {
-    setTrayConfig(minimize)
+  setMinimizeToTray(minimize: boolean): boolean {
+    return setTrayConfig(minimize)
   }
 
   @IpcMethod()
