@@ -549,7 +549,7 @@
   "invitation.confirmModal.message": "生成邀请码将消耗一个邀请码额度。",
   "invitation.confirmModal.title": "确认",
   "invitation.created_at": "创建于",
-  "invitation.earlyAccess": "Folo 目前处于<strong>早期开发</strong>状态，需要邀请码才能使用。",
+  "invitation.earlyAccess": "Folo 目前需要邀请码才能使用。",
   "invitation.earlyAccessMessage": "😰 抱歉，Folo 目前处于抢先体验阶段，需要邀请码才能使用。",
   "invitation.generate": "生成",
   "invitation.generateButton": "生成邀请码",

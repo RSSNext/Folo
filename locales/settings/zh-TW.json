@@ -543,7 +543,7 @@
   "invitation.confirmModal.message": "產生邀請碼將使用一個邀請碼額度。",
   "invitation.confirmModal.title": "確認",
   "invitation.created_at": "建立者：",
-  "invitation.earlyAccess": "Folo 目前處於<strong>早期開發</strong>狀態，需要邀請碼才能使用。",
+  "invitation.earlyAccess": "Folo 目前需要邀請碼才能使用。",
   "invitation.earlyAccessMessage": "😰 抱歉，關注目前處於搶先體驗階段，需要邀請碼才能使用。",
   "invitation.generate": "產生",
   "invitation.generateButton": "產生邀請碼",

@@ -543,7 +543,7 @@
   "invitation.confirmModal.message": "招待コードを生成すると招待枠を 1 つ使用します。",
   "invitation.confirmModal.title": "確認",
   "invitation.created_at": "作成日",
-  "invitation.earlyAccess": "現在、Folo は<strong>アーリーアクセス</strong>中で、招待コードが必要です。",
+  "invitation.earlyAccess": "現在、Foloのご利用には招待コードが必要です。",
   "invitation.earlyAccessMessage": "😰 申し訳ありません。Folo は現在アーリーアクセス中で、招待コードが必要です。",
   "invitation.generate": "生成",
   "invitation.generateButton": "新しいコードを生成",
