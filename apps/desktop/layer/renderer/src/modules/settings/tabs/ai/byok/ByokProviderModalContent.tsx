@@ -39,9 +39,10 @@ export const ByokProviderModalContent = ({
   // Get the first available provider or fallback to the current one
   const defaultProvider = availableProviders[0]?.value ?? provider?.provider ?? "openai"
 
-  // Auto-fill base URL when Ollama is selected
+  // Auto-fill base URL for known providers
   const getDefaultBaseURL = (p: ByokProviderName) => {
     if (p === "ollama") return "http://localhost:11434/v1"
+    if (p === "openrouter") return "https://openrouter.ai/api/v1"
     return provider?.provider === p ? (provider?.baseURL ?? null) : null
   }
 
@@ -57,8 +58,13 @@ export const ByokProviderModalContent = ({
     setFormData((prev) => ({
       ...prev,
       provider: value,
-      // Auto-fill base URL for Ollama, preserve existing URL for other providers
-      baseURL: value === "ollama" ? "http://localhost:11434/v1" : prev.baseURL,
+      // Auto-fill base URL for known providers
+      baseURL:
+        value === "ollama"
+          ? "http://localhost:11434/v1"
+          : value === "openrouter"
+            ? "https://openrouter.ai/api/v1"
+            : prev.baseURL,
     }))
   }
 
