@@ -41,7 +41,7 @@
   "login.confirm_password.label": "確認密碼",
   "login.continueWith": "透過 {{provider}} 登入",
   "login.email": "電子信箱",
-  "login.enter_token": "如果你已安裝客戶端但未自動跳轉，請複製下方 token 並貼到客戶端（v0.5.0+）的「請輸入授權令牌以繼續」欄位。",
+  "login.enter_token": "如果你已安裝客戶端但未自動跳轉，請複製下方的授權令牌並貼到客戶端（v0.5.0+）的「請輸入授權令牌以繼續」欄位。",
   "login.errors.unknown": "未知錯誤",
   "login.forget_password.description": "輸入與您的帳號關聯的電子信箱，我們將向您發送有關如何重設密碼的電子郵件。",
   "login.forget_password.email_invalid": "無效的電子信箱地址",

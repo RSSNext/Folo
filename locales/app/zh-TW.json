@@ -192,7 +192,7 @@
   "entry_content.selection_toolbar.poster_copy_failed": "複製海報失敗",
   "entry_content.selection_toolbar.share": "分享",
   "entry_content.selection_toolbar.share_poster": "分享海報",
-  "entry_content.web_app_notice": "Web 應用程式不支援此類型內容。您可以下載桌面應用程式。",
+  "entry_content.web_app_notice": "網頁版不支援此類型內容。您可以下載桌面應用程式。",
   "entry_list.zero_unread": "全部已讀",
   "entry_list_header.ai_timeline": "AI 時間線",
   "entry_list_header.ai_timeline_loading": "正在用 AI 重新排序時間線…",
