@@ -506,8 +506,6 @@
   "integration.custom_integrations.search_empty": "No custom integration found",
   "integration.custom_integrations.status.disabled": "Disabled",
   "integration.custom_integrations.title": "Custom Integrations",
-  "integration.custom_integrations.validation.invalid": "Template has errors",
-  "integration.custom_integrations.validation.valid": "Template is valid",
   "integration.eagle.enable.description": "Display 'Save media to Eagle' button when available.",
   "integration.eagle.enable.label": "Enable",
   "integration.eagle.title": "Eagle",

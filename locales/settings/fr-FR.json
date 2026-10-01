@@ -506,8 +506,6 @@
   "integration.custom_integrations.search_empty": "Aucune intégration personnalisée trouvée",
   "integration.custom_integrations.status.disabled": "Désactivé",
   "integration.custom_integrations.title": "Intégrations personnalisées",
-  "integration.custom_integrations.validation.invalid": "Le modèle contient des erreurs",
-  "integration.custom_integrations.validation.valid": "Le modèle est valide",
   "integration.eagle.enable.description": "Afficher le bouton 'Enregistrer le média dans Eagle' si disponible.",
   "integration.eagle.enable.label": "Activer",
   "integration.eagle.title": "Eagle",

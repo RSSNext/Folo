@@ -506,8 +506,6 @@
   "integration.custom_integrations.search_empty": "找不到自訂整合",
   "integration.custom_integrations.status.disabled": "已停用",
   "integration.custom_integrations.title": "自定義整合",
-  "integration.custom_integrations.validation.invalid": "模板錯誤",
-  "integration.custom_integrations.validation.valid": "模板正確",
   "integration.eagle.enable.description": "顯示「將媒體儲存到 Eagle」按鈕（如果可用）。",
   "integration.eagle.enable.label": "啟用",
   "integration.eagle.title": "Eagle",

@@ -506,8 +506,6 @@
   "integration.custom_integrations.search_empty": "カスタム統合が見つかりません",
   "integration.custom_integrations.status.disabled": "無効",
   "integration.custom_integrations.title": "カスタム統合",
-  "integration.custom_integrations.validation.invalid": "テンプレートにエラーがあります",
-  "integration.custom_integrations.validation.valid": "テンプレートは有効です",
   "integration.eagle.enable.description": "利用可能な場合、'Eagle にメディアを保存' ボタンを表示します。",
   "integration.eagle.enable.label": "有効化",
   "integration.eagle.title": "Eagle",

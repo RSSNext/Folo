@@ -93,16 +93,6 @@ export function validateFile(file: File): FileValidationResult {
   }
 }
 
-export function formatFileSize(bytes: number): string {
-  if (bytes === 0) return "0 Bytes"
-
-  const k = 1024
-  const sizes = ["Bytes", "KB", "MB", "GB"]
-  const i = Math.floor(Math.log(bytes) / Math.log(k))
-
-  return `${Number.parseFloat((bytes / Math.pow(k, i)).toFixed(1))} ${sizes[i]}`
-}
-
 export function getFileCategoryFromMimeType(mimeType: string): FileCategory {
   // Images
   if (mimeType.startsWith("image/")) {

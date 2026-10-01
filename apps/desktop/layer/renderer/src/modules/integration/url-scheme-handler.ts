@@ -93,42 +93,4 @@ export class URLSchemeHandler {
     // Browser support depends on registered protocol handlers
     return true
   }
-
-  /**
-   * Get common URL scheme examples for different app types
-   */
-  static getExamples(): { name: string; scheme: string; description: string }[] {
-    return [
-      {
-        name: "Obsidian",
-        scheme: "obsidian://new?vault=MyVault&name=[title]&content=[content_markdown]",
-        description: "Create new note in Obsidian vault",
-      },
-      {
-        name: "Bear",
-        scheme: "bear://x-callback-url/create?title=[title]&text=[content_markdown]&tags=follow",
-        description: "Create new note in Bear with tags",
-      },
-      {
-        name: "Drafts",
-        scheme: "drafts://x-callback-url/create?text=[title]%0A%0A[content_markdown]",
-        description: "Create new draft with title and content",
-      },
-      {
-        name: "Things 3",
-        scheme: "things:///add?title=[title]&notes=[summary]&list=Reading",
-        description: "Add item to Things 3 reading list",
-      },
-      {
-        name: "Notion",
-        scheme: "notion://new?title=[title]&content=[content_markdown]",
-        description: "Create new Notion page",
-      },
-      {
-        name: "DEVONthink",
-        scheme: "x-devonthink://createText?title=[title]&text=[content_markdown]&destination=Inbox",
-        description: "Create new text document in DEVONthink",
-      },
-    ]
-  }
 }

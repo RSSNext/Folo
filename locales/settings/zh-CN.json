@@ -506,8 +506,6 @@
   "integration.custom_integrations.search_empty": "未找到自定义集成",
   "integration.custom_integrations.status.disabled": "已禁用",
   "integration.custom_integrations.title": "自定义集成",
-  "integration.custom_integrations.validation.invalid": "模板有错误",
-  "integration.custom_integrations.validation.valid": "模板有效",
   "integration.eagle.enable.description": "显示「保存到 Eagle」按钮（如果可用）。",
   "integration.eagle.enable.label": "启用",
   "integration.eagle.title": "Eagle",
