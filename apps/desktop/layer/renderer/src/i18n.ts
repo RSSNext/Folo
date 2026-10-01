@@ -50,7 +50,9 @@ export const initI18n = async () => {
   }
 
   let cache = null as any
-  if (!DEV) {
+  // Electron bundles every language and never refreshes this cache, so a copy left by an older
+  // version would only shadow the bundled resources.
+  if (!DEV && !ELECTRON) {
     cache = LocaleCache.shared.get(lang)
     if (cache) {
       mergedResources[lang] = cache
@@ -59,7 +61,7 @@ export const initI18n = async () => {
 
   await i18next.use(initReactI18next).init({
     ns,
-    lng: cache ? lang : fallbackLanguage,
+    lng: ELECTRON || cache ? lang : fallbackLanguage,
     fallbackLng: {
       default: [fallbackLanguage],
       "zh-TW": ["zh-CN", fallbackLanguage],

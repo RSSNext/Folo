@@ -74,6 +74,7 @@ export const loadLanguageAndApply = async (lang: string) => {
     }
     EventBus.dispatch("I18N_UPDATE", "")
   } else {
+    // Electron bundles every language in default-resource.electron.ts, there is nothing to fetch
     if (ELECTRON) return
     let importFilePath = ""
 
