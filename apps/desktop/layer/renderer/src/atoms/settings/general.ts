@@ -84,6 +84,8 @@ export const generalServerSyncWhiteListKeys: (keyof GeneralSettings)[] = [
   "sendAnonymousData",
   "language",
   "voice",
+  // The server answers AI chat in this language.
+  "actionLanguage",
 ]
 
 export const enhancedGeneralSettingKeys = new Set<keyof GeneralSettings>([

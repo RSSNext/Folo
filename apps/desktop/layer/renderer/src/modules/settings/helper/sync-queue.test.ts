@@ -3,6 +3,7 @@ import type { SyncAction } from "@follow/store/sync/types"
 import { FollowAPIError } from "@follow-app/client-sdk"
 import { afterEach, beforeEach, describe, expect, test, vi } from "vitest"
 
+import { getAISettings, initializeDefaultAISettings, setAISetting } from "~/atoms/settings/ai"
 import {
   getGeneralSettings,
   initializeDefaultGeneralSettings,
@@ -101,6 +102,7 @@ describe("desktop spotlight setting sync", () => {
 
     initializeDefaultUISettings()
     initializeDefaultGeneralSettings()
+    initializeDefaultAISettings()
     initializeDefaultSpotlightSettings()
     localStorage.clear()
   })
@@ -113,6 +115,7 @@ describe("desktop spotlight setting sync", () => {
     localStorage.clear()
     initializeDefaultUISettings()
     initializeDefaultGeneralSettings()
+    initializeDefaultAISettings()
     initializeDefaultSpotlightSettings()
   })
 
@@ -276,6 +279,47 @@ describe("desktop spotlight setting sync", () => {
         spotlights: [rule],
       }),
     )
+  })
+
+  test("the action language and the AI personalize prompt are sent to the server", async () => {
+    vi.useFakeTimers()
+
+    await settingSyncQueue.init()
+
+    setGeneralSetting("actionLanguage", "fr-FR")
+    setAISetting("personalizePrompt", "Call me Captain.")
+    // Local-only AI settings stay on the device.
+    setAISetting("showSplineButton", false)
+
+    await vi.advanceTimersByTimeAsync(1000)
+    await Promise.resolve()
+
+    expect(settingsUpdateMock).toHaveBeenCalledTimes(2)
+    expect(settingsUpdateMock).toHaveBeenCalledWith({ tab: "general", actionLanguage: "fr-FR" })
+    expect(settingsUpdateMock).toHaveBeenCalledWith({
+      tab: "ai",
+      personalizePrompt: "Call me Captain.",
+    })
+  })
+
+  test("a newer remote action language and personalize prompt replace the local ones", () => {
+    setGeneralSetting("actionLanguage", "ja")
+    setAISetting("personalizePrompt", "Keep answers short.")
+
+    settingSyncQueue.applyRemoteSettings({
+      code: 0,
+      settings: {
+        general: { actionLanguage: "fr-FR" },
+        ai: { personalizePrompt: "Call me Captain." },
+      },
+      updated: {
+        general: "2030-04-14T12:00:00.000Z",
+        ai: "2030-04-14T12:00:00.000Z",
+      },
+    })
+
+    expect(getGeneralSettings().actionLanguage).toBe("fr-FR")
+    expect(getAISettings().personalizePrompt).toBe("Call me Captain.")
   })
 
   test("replaceRemoteIfEmpty does not overwrite existing remote settings", async () => {

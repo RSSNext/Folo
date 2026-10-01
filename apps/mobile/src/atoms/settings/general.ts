@@ -35,6 +35,8 @@ export const generalServerSyncWhiteListKeys: (keyof GeneralSettings)[] = [
   "language",
   "appLaunchOnStartup",
   "voice",
+  // The server answers AI chat in this language.
+  "actionLanguage",
 ]
 
 export function useActionLanguage() {
