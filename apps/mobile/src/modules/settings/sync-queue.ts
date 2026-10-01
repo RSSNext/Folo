@@ -13,11 +13,13 @@ import { isEmptyObject, jotaiStore, sleep } from "@follow/utils"
 import { EventBus } from "@follow/utils/event-bus"
 import type { SettingsTab } from "@follow-app/client-sdk"
 import { FollowAPIError } from "@follow-app/client-sdk"
+import { isEqual } from "es-toolkit"
 import type { PrimitiveAtom } from "jotai"
 
 import {
   __generalSettingAtom,
-  generalServerSyncWhiteListKeys,
+  createDefaultGeneralSettings,
+  generalLocalOnlyKeys,
   getGeneralSettings,
 } from "@/src/atoms/settings/general"
 import {
@@ -25,7 +27,12 @@ import {
   getSpotlightSettings,
   spotlightServerSyncWhiteListKeys,
 } from "@/src/atoms/settings/spotlight"
-import { __uiSettingAtom, getUISettings, uiServerSyncWhiteListKeys } from "@/src/atoms/settings/ui"
+import {
+  __uiSettingAtom,
+  createDefaultSettings as createDefaultUISettings,
+  getUISettings,
+  uiLocalOnlyKeys,
+} from "@/src/atoms/settings/ui"
 import { followClient } from "@/src/lib/api-client"
 import { kv } from "@/src/lib/kv"
 
@@ -68,10 +75,30 @@ const localSettingSetterMap = {
   general: createInternalSetter(__generalSettingAtom),
   spotlight: createInternalSetter(__spotlightSettingAtom),
 }
-const settingWhiteListMap = {
-  appearance: uiServerSyncWhiteListKeys,
-  general: generalServerSyncWhiteListKeys,
-  spotlight: spotlightServerSyncWhiteListKeys,
+
+type LocalOnlyDomain = Exclude<SettingDomain, "spotlight">
+
+/**
+ * Appearance and general settings sync every key except their device-local ones. Spotlight
+ * rules travel in the appearance tab and sync only their own keys, so the appearance domain
+ * leaves those keys to them.
+ */
+const localOnlyKeysMap: Record<LocalOnlyDomain, readonly string[]> = {
+  appearance: [...uiLocalOnlyKeys, "spotlights", "spotlightsUpdated"],
+  general: generalLocalOnlyKeys,
+}
+
+const defaultSettingsGetterMap: Record<LocalOnlyDomain, () => object> = {
+  appearance: createDefaultUISettings,
+  general: createDefaultGeneralSettings,
+}
+
+const omitLocalOnlyKeys = <T extends object>(domain: LocalOnlyDomain, payload: T) => {
+  const localOnlyKeys = new Set(localOnlyKeysMap[domain])
+  return Object.fromEntries(
+    // The server records when each tab changed, so `updated` stays on the device as well.
+    Object.entries(payload).filter(([key]) => key !== "updated" && !localOnlyKeys.has(key)),
+  ) as Partial<T>
 }
 
 const remoteTabMap: Record<SettingDomain, RemoteSettingsTab> = {
@@ -95,7 +122,7 @@ const getSettingUpdated = (payload: Record<string, unknown>) =>
   typeof payload.updated === "number" ? payload.updated : undefined
 
 const getLocalAppearancePayload = () =>
-  pickSyncPayload(localSettingGetterMap.appearance(), settingWhiteListMap.appearance)
+  omitLocalOnlyKeys("appearance", localSettingGetterMap.appearance())
 
 const getLocalSpotlightSnapshot = () =>
   localSettingGetterMap.spotlight() as SpotlightSettings & { updated?: number }
@@ -109,7 +136,7 @@ const payloadForRemote = (
         payload as unknown as SpotlightSettings,
         getSettingUpdated(payload),
       )
-    : pickSyncPayload(payload, settingWhiteListMap[domain])
+    : omitLocalOnlyKeys(domain, payload)
 
 const buildFullLocalAppearancePayload = () => {
   const spotlightSettings = getLocalSpotlightSnapshot()
@@ -162,7 +189,7 @@ const payloadFromRemote = (
     return pickSpotlightPayloadFromRemoteAppearance(payload, updated)
   }
 
-  const nextPayload = pickSyncPayload(payload, settingWhiteListMap[domain])
+  const nextPayload = omitLocalOnlyKeys(domain, payload)
   if (isEmptyObject(nextPayload)) {
     return null
   }
@@ -254,7 +281,10 @@ class SettingSyncQueue {
       const domain = bizSettingKeyToDomainMapping[data.key] as SettingSyncTab
       if (!domain) return
 
-      const nextPayload = pickSyncPayload(data.payload, settingWhiteListMap[domain])
+      const nextPayload =
+        domain === "spotlight"
+          ? pickSyncPayload(data.payload, spotlightServerSyncWhiteListKeys)
+          : omitLocalOnlyKeys(domain, data.payload)
       if (isEmptyObject(nextPayload)) return
       this.enqueue(domain, nextPayload)
 
@@ -264,6 +294,8 @@ class SettingSyncQueue {
     this.disposers.push(d1)
 
     await loadPromise
+    // After the load, which keeps the queue as it is once anything was added to it.
+    this.uploadLocalSettingsOnce()
   }
 
   teardown() {
@@ -570,15 +602,61 @@ class SettingSyncQueue {
     this.applyRemoteSettings(remoteSettings)
   }
 
+  /**
+   * A local change to this tab is still waiting to be sent. It wins for now, and the server's
+   * answer to it is logged with both changes merged.
+   */
+  private hasPendingChange(tab: RemoteSettingsTab) {
+    return this.queue.some((item) => remoteTabMap[item.tab] === tab)
+  }
+
+  /**
+   * From 1.6.0 until this version only the device-local keys synced, so what the server holds
+   * for every other setting may be months old. Once per account, before this device takes any
+   * of it, the settings changed here from their defaults are queued for upload. While they
+   * wait, their tabs keep the server's values out; afterwards the settings still at their
+   * defaults take the account's values.
+   */
+  private uploadLocalSettingsOnce() {
+    const currentUserId = this.getCurrentUserId()
+    if (!currentUserId) return
+
+    const doneKey = `setting_sync_local_first_${currentUserId}`
+    if (kv.getSync(doneKey)) return
+    kv.setSync(doneKey, "1")
+
+    let enqueued = false
+    for (const domain of Object.keys(defaultSettingsGetterMap) as LocalOnlyDomain[]) {
+      const localSettings = localSettingGetterMap[domain]() as unknown as Record<string, unknown>
+      const defaultSettings = defaultSettingsGetterMap[domain]() as Record<string, unknown>
+      const changedSettings = Object.fromEntries(
+        Object.keys(defaultSettings)
+          .filter((key) => !isEqual(localSettings[key], defaultSettings[key]))
+          .map((key) => [key, localSettings[key]]),
+      )
+      const payload = omitLocalOnlyKeys(domain, changedSettings)
+      if (!isEmptyObject(payload)) {
+        void this.enqueue(domain, payload)
+        enqueued = true
+      }
+    }
+    if (enqueued) {
+      void this.persist()
+    }
+  }
+
   /** Merge settings from the server into the local ones; the newer side wins per domain. */
   applyRemoteSettings(remoteSettings: {
     settings: Record<string, any>
     updated: Record<string, string>
   }) {
+    this.uploadLocalSettingsOnce()
     if (isEmptyObject(remoteSettings.settings)) return
 
     for (const tab in remoteSettings.settings) {
       const remoteTab = tab as RemoteSettingsTab
+      if (this.hasPendingChange(remoteTab)) continue
+
       const remoteSettingPayload = remoteSettings.settings[remoteTab as SettingsTab]
       const updated = remoteSettings.updated[remoteTab as SettingsTab]
 
@@ -629,9 +707,8 @@ class SettingSyncQueue {
     const data = action.data as { payload?: Record<string, unknown>; updatedAt?: string } | null
     if (!data?.updatedAt) return
 
-    // A local change to this tab is still waiting to be sent. It wins for now, and the
-    // server's answer to it is logged with both changes merged.
-    if (this.queue.some((item) => remoteTabMap[item.tab] === tab)) return
+    this.uploadLocalSettingsOnce()
+    if (this.hasPendingChange(tab)) return
 
     if (!data.payload) {
       await this.syncLocal()

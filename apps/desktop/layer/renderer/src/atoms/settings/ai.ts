@@ -125,8 +125,8 @@ export const {
   useSettingValue: useAISettingValue,
   settingAtom: __aiSettingAtom,
 } = createSettingAtom("ai", createDefaultSettings)
-// The server adds the personalize prompt to the AI chat system prompt.
-export const aiServerSyncWhiteListKeys: (keyof AISettings)[] = ["personalizePrompt"]
+/** Device-local AI settings: every other AI setting syncs to the account. */
+export const aiLocalOnlyKeys: (keyof AISettings)[] = []
 
 export const syncServerShortcuts = (
   serverShortcuts: readonly ServerShortcutConfig[] | null | undefined,

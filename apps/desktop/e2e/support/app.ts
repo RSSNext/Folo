@@ -687,7 +687,8 @@ export const closeSettings = async (page: Page) => {
     .toBe(false)
 }
 
-export const setLanguage = async (page: Page, label: string) => {
+// The interface language stays on the device; the action language syncs to the account.
+export const setActionLanguage = async (page: Page, label: string) => {
   const languageValue = label.includes("日本語") ? "ja" : label.includes("English") ? "en" : null
   const syncResponse = languageValue
     ? page.waitForResponse(
@@ -695,22 +696,22 @@ export const setLanguage = async (page: Page, label: string) => {
           response.request().method() === "PATCH" &&
           response.url().includes("/settings/general") &&
           response.status() < 400 &&
-          (response.request().postData() ?? "").includes(`"language":"${languageValue}"`),
+          (response.request().postData() ?? "").includes(`"actionLanguage":"${languageValue}"`),
         { timeout: 120_000 },
       )
     : null
 
-  await page.getByTestId("settings-language-select").click()
+  await page.getByTestId("settings-action-language-select").click()
   await page.getByRole("option", { name: label }).click()
 
   await syncResponse
-  await expect(page.getByTestId("settings-language-select")).toContainText(label, {
+  await expect(page.getByTestId("settings-action-language-select")).toContainText(label, {
     timeout: 30_000,
   })
 }
 
-export const getLanguageLabel = async (page: Page) => {
-  return visibleByTestId(page, "settings-language-select").textContent()
+export const getActionLanguageLabel = async (page: Page) => {
+  return visibleByTestId(page, "settings-action-language-select").textContent()
 }
 
 export const openOnboardingFeedForm = async (

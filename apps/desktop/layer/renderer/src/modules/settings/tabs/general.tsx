@@ -352,6 +352,7 @@ const ActionLanguageSelector = () => {
       <ResponsiveSelect
         size="sm"
         triggerClassName="w-48"
+        triggerTestId="settings-action-language-select"
         defaultValue={actionLanguage}
         value={actionLanguage}
         onValueChange={(value) => {

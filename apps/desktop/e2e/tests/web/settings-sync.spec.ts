@@ -3,12 +3,12 @@ import { expect, test } from "@playwright/test"
 
 import { createTestAccount, tryDeleteCurrentUser } from "../../support/account"
 import {
-  getLanguageLabel,
+  getActionLanguageLabel,
   loginWithCredential,
   openSettings,
   openWebApp,
   registerWithCredential,
-  setLanguage,
+  setActionLanguage,
 } from "../../support/app"
 import { resolveDesktopE2EEnv } from "../../support/env"
 
@@ -24,7 +24,7 @@ const closeContextSafely = async (context: BrowserContext) => {
   }
 }
 
-const reloadAndOpenSettingsWithRemoteLanguage = async (
+const reloadAndOpenSettingsWithRemoteActionLanguage = async (
   page: Awaited<ReturnType<BrowserContext["newPage"]>>,
   apiURL: string,
   language: string,
@@ -42,9 +42,9 @@ const reloadAndOpenSettingsWithRemoteLanguage = async (
           }
 
           const payload = (await response.json().catch(() => null)) as {
-            settings?: { general?: { language?: string } }
+            settings?: { general?: { actionLanguage?: string } }
           } | null
-          return payload?.settings?.general?.language ?? null
+          return payload?.settings?.general?.actionLanguage ?? null
         }, apiURL),
       { timeout: 120_000 },
     )
@@ -76,24 +76,24 @@ test.describe("web multi-session sync", () => {
       await openSettings(pageA)
 
       await test.step("session A change syncs to session B", async () => {
-        await setLanguage(pageA, "日本語")
+        await setActionLanguage(pageA, "日本語")
         await expect
-          .poll(async () => getLanguageLabel(pageA), { timeout: 15_000 })
+          .poll(async () => getActionLanguageLabel(pageA), { timeout: 15_000 })
           .toContain("日本語")
-        await reloadAndOpenSettingsWithRemoteLanguage(pageB, env.apiURL, "ja")
+        await reloadAndOpenSettingsWithRemoteActionLanguage(pageB, env.apiURL, "ja")
         await expect
-          .poll(async () => getLanguageLabel(pageB), { timeout: 15_000 })
+          .poll(async () => getActionLanguageLabel(pageB), { timeout: 15_000 })
           .toContain("日本語")
       })
 
       await test.step("session B change syncs back to session A", async () => {
-        await setLanguage(pageB, "English")
+        await setActionLanguage(pageB, "English")
         await expect
-          .poll(async () => getLanguageLabel(pageB), { timeout: 15_000 })
+          .poll(async () => getActionLanguageLabel(pageB), { timeout: 15_000 })
           .toContain("English")
-        await reloadAndOpenSettingsWithRemoteLanguage(pageA, env.apiURL, "en")
+        await reloadAndOpenSettingsWithRemoteActionLanguage(pageA, env.apiURL, "en")
         await expect
-          .poll(async () => getLanguageLabel(pageA), { timeout: 15_000 })
+          .poll(async () => getActionLanguageLabel(pageA), { timeout: 15_000 })
           .toContain("English")
       })
 
