@@ -5,6 +5,7 @@ import type { PropsWithChildren } from "react"
 import { useState } from "react"
 
 import { DeclarativeModal } from "~/components/ui/modal/stacked/declarative-modal"
+import { useI18n } from "~/hooks/common"
 
 import { AiOnboardingModalContent } from "./ai-onboarding-modal-content"
 
@@ -25,12 +26,13 @@ const Modal = ({ children }: PropsWithChildren) => {
 }
 
 export const AiOnboardingModal = () => {
+  const t = useI18n()
   const [open, setOpen] = useState(true)
   return (
     <RootPortal>
       <DeclarativeModal
         id="ai-onboarding"
-        title="AI Onboarding"
+        title={t.app("new_user_guide.title")}
         CustomModalComponent={Modal}
         modalContainerClassName="flex items-center justify-center"
         open={open}

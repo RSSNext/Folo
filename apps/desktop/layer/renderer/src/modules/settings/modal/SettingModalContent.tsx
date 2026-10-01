@@ -12,7 +12,7 @@ import {
   useMemo,
   useState,
 } from "react"
-import { Trans } from "react-i18next"
+import { Trans, useTranslation } from "react-i18next"
 import { useLoaderData } from "react-router"
 
 import { ModalClose } from "~/components/ui/modal/stacked/components"
@@ -60,6 +60,7 @@ export const SettingModalContent: FC<{
 const Content: FC<{
   initialSection?: string | null
 }> = ({ initialSection }) => {
+  const { t } = useTranslation("settings")
   const availableSettings = useAvailableSettings()
   const tab = useSettingTab()
   const setTab = useSetSettingTab()
@@ -165,7 +166,7 @@ const Content: FC<{
           className="flex flex-1 items-center justify-center px-12 text-center text-text-secondary"
           onClick={ensureLogin}
         >
-          Please log in to access this setting.
+          {t("common.login_required")}
         </button>
       </>
     )

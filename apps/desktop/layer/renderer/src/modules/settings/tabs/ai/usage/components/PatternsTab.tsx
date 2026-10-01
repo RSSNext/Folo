@@ -18,9 +18,7 @@ export const PatternsTab = ({ hourBuckets, maxHourCount, byOperation }: Patterns
     <div className="mx-4 grid grid-cols-1 gap-4 @md:grid-cols-2">
       <Card>
         <CardHeader>
-          <CardTitle className="text-base text-text">
-            {t("analytics.peak_hours", { defaultValue: "Peak hours" })}
-          </CardTitle>
+          <CardTitle className="text-base text-text">{t("analytics.peak_hours")}</CardTitle>
         </CardHeader>
         <CardContent>
           <div className="mb-3 h-24 w-full">
@@ -43,9 +41,7 @@ export const PatternsTab = ({ hourBuckets, maxHourCount, byOperation }: Patterns
 
       <Card>
         <CardHeader>
-          <CardTitle className="text-base text-text">
-            {t("analytics.by_operation", { defaultValue: "By operation" })}
-          </CardTitle>
+          <CardTitle className="text-base text-text">{t("analytics.by_operation")}</CardTitle>
         </CardHeader>
         <CardContent>
           {byOperation?.length > 0 ? (

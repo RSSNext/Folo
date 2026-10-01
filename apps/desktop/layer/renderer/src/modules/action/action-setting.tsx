@@ -31,7 +31,7 @@ import {
 import { useDialog } from "~/components/ui/modal/stacked/hooks"
 import { useContextMenu } from "~/hooks/common/useContextMenu"
 import { getI18n } from "~/i18n"
-import { copyToClipboard, readFromClipboard } from "~/lib/clipboard"
+import { ClipboardError, copyToClipboard, readFromClipboard } from "~/lib/clipboard"
 import { toastFetchError } from "~/lib/error-parser"
 import { downloadJsonFile, selectJsonFile } from "~/lib/export"
 import { RuleCard } from "~/modules/action/rule-card"
@@ -177,11 +177,11 @@ const ShareImportSection = () => {
       const jsonData = actionActions.exportRules()
       const filename = generateExportFilename()
       downloadJsonFile(jsonData, filename)
-      toast.success(`Action rules exported successfully as ${filename}`)
+      toast.success(t("actions.share.export_success", { filename }))
     } catch {
-      toast.error("Failed to export action rules")
+      toast.error(t("actions.share.export_failed"))
     }
-  }, [])
+  }, [t])
 
   const handleImport = useCallback(async () => {
     try {
@@ -197,9 +197,9 @@ const ShareImportSection = () => {
       if (error instanceof Error && error.message === "No file selected") {
         return
       }
-      toast.error("Failed to import action rules")
+      toast.error(t("actions.share.import_failed"))
     }
-  }, [])
+  }, [t])
 
   const foloPrefix = "folo:actions#"
   const handleCopyToClipboard = useCallback(async () => {
@@ -207,18 +207,18 @@ const ShareImportSection = () => {
       const jsonData = actionActions.exportRules()
       const codecData = JsonObfuscatedCodec.encode(jsonData)
       await copyToClipboard(`${foloPrefix}${codecData}`)
-      toast.success("Action rules copied to clipboard")
+      toast.success(t("actions.share.copy_success"))
     } catch (error) {
-      toast.error("Failed to copy action rules to clipboard")
+      toast.error(t("actions.share.copy_failed"))
       console.error(error)
     }
-  }, [foloPrefix])
+  }, [foloPrefix, t])
 
   const handleImportFromClipboard = useCallback(async () => {
     try {
       const clipboardData = await readFromClipboard()
       if (!clipboardData.startsWith(foloPrefix)) {
-        toast.error("Invalid clipboard data")
+        toast.error(t("actions.share.invalid_clipboard"))
         return
       }
       const codecData = clipboardData.slice(foloPrefix.length)
@@ -231,14 +231,13 @@ const ShareImportSection = () => {
         toast.error(result.message)
       }
     } catch (error) {
-      if (error instanceof Error && error.message.includes("clipboard")) {
-        toast.error(error.message)
-      } else {
-        toast.error("Failed to import from clipboard")
+      // readFromClipboard has already shown its own error
+      if (!(error instanceof ClipboardError)) {
+        toast.error(t("actions.share.import_clipboard_failed"))
       }
       console.error(error)
     }
-  }, [foloPrefix])
+  }, [foloPrefix, t])
 
   return (
     <div className="mb-4 flex justify-end">
@@ -442,7 +441,7 @@ const ActionButtonGroup = ({ onCreateRule }: { onCreateRule: () => void }) => {
             loading={mutation.isPending}
             onClick={() => mutation.mutate()}
           >
-            {mutation.isPending ? "Saving..." : t("actions.save")}
+            {mutation.isPending ? t("actions.saving") : t("actions.save")}
           </HeaderActionButton>
         )}
       </HeaderActionGroup>,

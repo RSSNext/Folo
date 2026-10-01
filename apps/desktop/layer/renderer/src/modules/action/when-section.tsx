@@ -87,7 +87,7 @@ export const WhenSection = ({ index }: WhenSectionProps) => {
                       <div key={conditionIdx} className="flex flex-col gap-2">
                         <div className="flex flex-col gap-2 rounded-lg border border-fill-secondary bg-transparent p-3 @[800px]:flex-row @[800px]:items-center">
                           <ResponsiveSelect
-                            placeholder="Select Field"
+                            placeholder={t("actions.action_card.select_field")}
                             disabled={disabled}
                             value={item.field}
                             onValueChange={(value) => change("field", value as ActionFeedField)}
@@ -200,7 +200,7 @@ const OperationSelect = ({
   }
   return (
     <ResponsiveSelect
-      placeholder="Select Operation"
+      placeholder={t("actions.action_card.select_operation")}
       disabled={disabled}
       value={value}
       onValueChange={(nextValue) => onValueChange?.(nextValue as ActionOperation)}
@@ -250,8 +250,10 @@ const ValueInput = ({
         >
           <CommonSelectTrigger />
           <SelectContent>
-            <SelectItem value="collected">Collected</SelectItem>
-            <SelectItem value="read">Read</SelectItem>
+            <SelectItem value="collected">
+              {t("actions.action_card.status_options.collected")}
+            </SelectItem>
+            <SelectItem value="read">{t("actions.action_card.status_options.read")}</SelectItem>
           </SelectContent>
         </Select>
       )

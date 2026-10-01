@@ -1,6 +1,7 @@
 import { cn } from "@follow/utils/utils"
 import { FlashList } from "@shopify/flash-list"
 import { useCallback, useState } from "react"
+import { useTranslation } from "react-i18next"
 import type { StyleProp, ViewStyle } from "react-native"
 import { Pressable, StyleSheet, View } from "react-native"
 import { useSafeAreaInsets } from "react-native-safe-area-context"
@@ -37,6 +38,7 @@ export function Select<T>({
   label,
   disabled,
 }: SelectProps<T>) {
+  const { t } = useTranslation()
   const grayColor = useColor("gray")
   const [isModalVisible, setModalVisible] = useState(false)
   const selectedOption = options.find((opt) => opt.value === value)
@@ -116,7 +118,7 @@ export function Select<T>({
         ellipsizeMode="tail"
         numberOfLines={1}
       >
-        {displayValue || selectedOption?.label || "Select"}
+        {displayValue || selectedOption?.label || t("select.placeholder")}
       </Text>
       <View className="ml-auto shrink-0 pl-1">
         <MingcuteDownLineIcon color={disabled ? grayColor : accentColor} height={18} width={18} />
@@ -126,7 +128,7 @@ export function Select<T>({
   const SelectModal = (
     <BottomModal visible={isModalVisible} onClose={closeModal}>
       <View className="border-b-hairline flex-row items-center justify-between border-opaque-separator p-4">
-        <Text className="text-xl font-semibold text-label">Select an option</Text>
+        <Text className="text-xl font-semibold text-label">{t("select.title")}</Text>
         <Pressable onPress={closeModal}>
           <Text
             style={{
@@ -134,7 +136,7 @@ export function Select<T>({
             }}
             className="text-lg font-bold"
           >
-            Done
+            {t("words.done", { ns: "common" })}
           </Text>
         </Pressable>
       </View>

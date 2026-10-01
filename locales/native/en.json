@@ -22,14 +22,15 @@
   "contextMenu.services": "Services",
   "dialog.cancel": "Cancel",
   "dialog.clearAllData": "Are you sure you want to clear all data?",
+  "dialog.confirm": "Confirm",
   "dialog.no": "No",
   "dialog.open": "Open",
   "dialog.openExternalApp.message": "Are you sure you want to open \"{{url}}\" with other apps?",
   "dialog.openExternalApp.title": "Open External App?",
   "dialog.yes": "Yes",
+  "download.success": "Download complete",
   "menu.about": "About {{name}}",
-  "menu.actualSize": "Actual Size",
-  "menu.bringAllToFront": "Bring All to Front",
+  "menu.alwaysOnTop": "Always on top",
   "menu.checkForUpdates": "Check for Updates",
   "menu.clearAllData": "Clear All Data",
   "menu.close": "Close",
@@ -69,7 +70,5 @@
   "menu.unread": "Unread",
   "menu.view": "View",
   "menu.window": "Window",
-  "menu.zoom": "Zoom",
-  "menu.zoomIn": "Zoom In",
-  "menu.zoomOut": "Zoom Out"
+  "menu.zoom": "Zoom"
 }

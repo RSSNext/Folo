@@ -1,5 +1,6 @@
 import { $createTextNode, $getSelection, $isRangeSelection } from "lexical"
 import { memo, Suspense, use, useCallback, useEffect, useMemo, useRef, useState } from "react"
+import { useTranslation } from "react-i18next"
 
 import { AIPanelRefsContext } from "~/modules/ai-chat/store/AIChatContext"
 
@@ -13,6 +14,7 @@ import type { MentionData } from "../../editor/plugins/mention/types"
  * Allows users to add mentions (@feed, @entry, @date, etc.) to the input field
  */
 export const MentionButton: Component = memo(() => {
+  const { t } = useTranslation("ai")
   const atButtonRef = useRef<HTMLButtonElement>(null)
   const [isMentionDropdownVisible, setIsMentionDropdownVisible] = useState(false)
   const [query, setQuery] = useState("")
@@ -115,7 +117,7 @@ export const MentionButton: Component = memo(() => {
         type="button"
         onClick={handleAtButtonClick}
         className="flex size-7 items-center justify-center rounded-md border border-border bg-material-medium text-text-secondary transition-colors hover:bg-material-thin hover:text-text-secondary"
-        title="Add Context"
+        title={t("chat.context.add")}
       >
         <i className="i-mgc-at-cute-re size-3.5" />
       </button>

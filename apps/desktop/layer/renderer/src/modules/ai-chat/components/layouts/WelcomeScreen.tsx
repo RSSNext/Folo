@@ -31,6 +31,7 @@ export const WelcomeScreen = ({ centerInputOnEmpty }: WelcomeScreenProps) => {
     >
       <div className="mx-auto flex w-full flex-1 flex-col justify-center space-y-8 pb-52">
         <DefaultWelcomeHeader
+          title={t("user_button.ai", { ns: "app" })}
           description={
             hasEntryContext ? t("welcome_description_contextual") : t("welcome_description")
           }
@@ -56,7 +57,7 @@ export const WelcomeScreen = ({ centerInputOnEmpty }: WelcomeScreenProps) => {
   )
 }
 
-const DefaultWelcomeHeader = ({ description }: { description: string }) => (
+const DefaultWelcomeHeader = ({ title, description }: { title: string; description: string }) => (
   <m.div
     initial={{ opacity: 0, y: -20 }}
     animate={{ opacity: 1, y: 0 }}
@@ -68,7 +69,7 @@ const DefaultWelcomeHeader = ({ description }: { description: string }) => (
       </div>
       <div className="flex flex-col gap-2">
         <h1 className="flex items-center justify-center gap-2 text-2xl font-semibold text-text">
-          <Folo className="size-11" /> AI
+          <Folo className="size-11" /> {title}
         </h1>
 
         <p className="text-balance text-sm text-text-secondary">{description}</p>

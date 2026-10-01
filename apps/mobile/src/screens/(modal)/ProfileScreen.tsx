@@ -88,9 +88,9 @@ function ProfileScreenImpl(props: { userId: string }) {
   const user = useUserById(props.userId)
   useEffect(() => {
     if (isError) {
-      toast.error("Failed to fetch subscriptions")
+      toast.error(t("profile.fetch_subscriptions_failed"))
     }
-  }, [isError])
+  }, [isError, t])
   const insets = useSafeAreaInsets()
   const textLabelColor = useColor("label")
   const openShareUrl = useCallback(() => {
@@ -99,11 +99,11 @@ function ProfileScreenImpl(props: { userId: string }) {
     Share.share(
       createLinkShareContent({
         platform: Platform.OS,
-        title: `Folo | ${user.name}'s Profile`,
+        title: `Folo | ${t("profile.title", { name: user.name })}`,
         url: shareUrl,
       }),
     )
-  }, [user?.id, user?.name])
+  }, [t, user?.id, user?.name])
 
   const whoami = useWhoami()
   const isMyProfile = user?.id === whoami?.id

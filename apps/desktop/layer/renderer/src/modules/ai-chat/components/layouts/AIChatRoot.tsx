@@ -3,6 +3,7 @@ import type { IdGenerator } from "ai"
 import { atom } from "jotai"
 import type { FC, PropsWithChildren } from "react"
 import { useEffect, useMemo, useRef } from "react"
+import { useTranslation } from "react-i18next"
 
 import { Focusable } from "~/components/common/Focusable"
 import { HotkeyScope } from "~/constants"
@@ -25,6 +26,7 @@ interface AIChatRootProps extends PropsWithChildren {
 }
 
 const AIChatRootInner: FC<AIChatRootProps> = ({ children, chatId: externalChatId }) => {
+  const { t } = useTranslation("ai")
   const currentChatId = useCurrentChatId()
 
   const chatActions = useChatActions()
@@ -44,7 +46,7 @@ const AIChatRootInner: FC<AIChatRootProps> = ({ children, chatId: externalChatId
       <div className="flex size-full items-center justify-center bg-background">
         <div className="flex items-center gap-2">
           <i className="i-mgc-loading-3-cute-re size-6 animate-spin text-text" />
-          <span className="text-text-secondary">Initializing chat...</span>
+          <span className="text-text-secondary">{t("chat.initializing")}</span>
         </div>
       </div>
     )

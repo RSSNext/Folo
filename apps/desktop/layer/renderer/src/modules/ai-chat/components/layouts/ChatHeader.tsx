@@ -141,8 +141,8 @@ export const ChatHeader: FC<{ isFloating: boolean }> = ({ isFloating }) => {
           <ActionButton
             tooltip={
               panelStyle === AIChatPanelStyle.Fixed
-                ? "Switch to Floating Panel"
-                : "Switch to Fixed Panel"
+                ? t("chat.header.switch_to_floating")
+                : t("chat.header.switch_to_fixed")
             }
             onClick={onTogglePanelStyle}
           >
@@ -158,7 +158,7 @@ export const ChatHeader: FC<{ isFloating: boolean }> = ({ isFloating }) => {
           <ChatMoreDropdown
             canClosePanel={!isAllView}
             triggerElement={
-              <ActionButton tooltip="More">
+              <ActionButton tooltip={t("chat.header.more")}>
                 <i className="i-mingcute-more-1-fill size-5 text-text-secondary" />
               </ActionButton>
             }
@@ -167,7 +167,10 @@ export const ChatHeader: FC<{ isFloating: boolean }> = ({ isFloating }) => {
           {isFloating && (
             <>
               <div className="h-5 w-px bg-border" />
-              <ActionButton tooltip="Close" onClick={() => setAIPanelVisibility(false)}>
+              <ActionButton
+                tooltip={t("words.close", { ns: "common" })}
+                onClick={() => setAIPanelVisibility(false)}
+              >
                 <i className="i-mgc-close-cute-re size-5 text-text-secondary" />
               </ActionButton>
             </>
@@ -192,8 +195,8 @@ export const ChatPageHeader = () => {
           <ActionButton
             tooltip={
               panelStyle === AIChatPanelStyle.Fixed
-                ? "Switch to Floating Panel"
-                : "Switch to Fixed Panel"
+                ? t("chat.header.switch_to_floating")
+                : t("chat.header.switch_to_fixed")
             }
             onClick={onTogglePanelStyle}
           >
@@ -211,7 +214,7 @@ export const ChatPageHeader = () => {
           <div className="mx-2 h-5 w-px bg-border" />
           <ChatMoreDropdown
             triggerElement={
-              <ActionButton tooltip="More">
+              <ActionButton tooltip={t("chat.header.more")}>
                 <i className="i-mingcute-more-1-fill size-5 text-text-secondary" />
               </ActionButton>
             }

@@ -194,7 +194,7 @@ export class AppService extends IpcService {
 
       const senderWindow = (sender as Sender).getOwnerBrowserWindow()
       if (senderWindow) {
-        callWindowExpose(senderWindow).toast.success("Download success!", {
+        callWindowExpose(senderWindow).toast.success(i18n.t("download.success"), {
           duration: 1000,
         })
       }

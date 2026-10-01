@@ -137,7 +137,7 @@ export const EditSpotlightRuleScreen: NavigationControllerView<{
                   return (
                     <Pressable
                       key={preset.value}
-                      accessibilityLabel={`Select highlight color ${index + 1}`}
+                      accessibilityLabel={t("spotlight.select_color_index", { index: index + 1 })}
                       className="relative"
                       onPress={() => {
                         updateRule((currentRule) => ({ ...currentRule, color: preset.value }))

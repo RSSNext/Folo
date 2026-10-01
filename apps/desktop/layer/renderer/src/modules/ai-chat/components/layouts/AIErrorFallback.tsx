@@ -1,4 +1,5 @@
 import { Button } from "@follow/components/ui/button/index.js"
+import { useTranslation } from "react-i18next"
 
 import type { FallbackRender } from "~/components/common/ErrorBoundary"
 import { attachOpenInEditor } from "~/lib/dev"
@@ -7,6 +8,7 @@ import { FeedbackIssue } from "../../../../components/common/ErrorElement"
 import { parseError } from "../../../../components/errors/helper"
 
 export const AIErrorFallback: FallbackRender = (props) => {
+  const { t } = useTranslation("ai")
   const { message, stack } = parseError(props.error)
 
   return (
@@ -18,11 +20,11 @@ export const AIErrorFallback: FallbackRender = (props) => {
         </div>
 
         {/* Error title */}
-        <h2 className="mb-3 text-xl font-semibold text-text">AI Chat Encountered an Error</h2>
+        <h2 className="mb-3 text-xl font-semibold text-text">{t("chat.error.title")}</h2>
 
         {/* Error message */}
         <div className="mb-6 text-sm leading-relaxed text-text-secondary">
-          {message || "An unexpected error occurred while processing your request."}
+          {message || t("chat.error.unexpected")}
         </div>
 
         {/* Development stack trace */}
@@ -39,17 +41,17 @@ export const AIErrorFallback: FallbackRender = (props) => {
 
         {/* Error description */}
         <p className="mb-8 text-sm leading-relaxed text-text-tertiary">
-          Don't worry! You can try again or reload the chat to continue your conversation.
+          {t("chat.error.description")}
         </p>
 
         {/* Action buttons */}
         <div className="flex items-center justify-center gap-3">
           <Button onClick={() => props.resetError()} variant="primary">
-            Try Again
+            {t("chat.error.try_again")}
           </Button>
 
           <Button onClick={() => window.location.reload()} variant="outline">
-            Reload Page
+            {t("chat.error.reload_page")}
           </Button>
         </div>
 

@@ -3,6 +3,7 @@ import "@xyflow/react/dist/style.css"
 import { alwaysFalse } from "@follow/utils"
 import type { ReasoningUIPart, TextUIPart, ToolUIPart } from "ai"
 import * as React from "react"
+import { useTranslation } from "react-i18next"
 
 import { ErrorBoundary } from "~/components/common/ErrorBoundary"
 import type { AIDisplayFlowTool, BizUIMessage, BizUITools } from "~/modules/ai-chat/store/types"
@@ -26,6 +27,7 @@ const shouldBypassMergeToolName = (name: string) => name.startsWith("tool-displa
 
 export const AIMessageParts: React.FC<AIMessagePartsProps> = React.memo(
   ({ message, isLastMessage }) => {
+    const { t } = useTranslation("ai")
     const chatStatus = useChatStatus()
 
     const shouldMessageAnimation = React.useMemo(() => {
@@ -114,7 +116,7 @@ export const AIMessageParts: React.FC<AIMessagePartsProps> = React.memo(
                     <div className="flex items-center gap-2">
                       <i className="i-mgc-loading-3-cute-re size-4 animate-spin text-text-secondary" />
                       <span className="text-sm font-medium text-text-secondary">
-                        Generating Flow Chart...
+                        {t("chat.flow_chart.generating")}
                       </span>
                     </div>
                   </div>

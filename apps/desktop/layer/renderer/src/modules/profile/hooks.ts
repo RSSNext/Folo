@@ -52,6 +52,7 @@ export const useUserSubscriptionsQuery = (userId: string | undefined) => {
 
 type Variant = "drawer" | "dialog"
 export const usePresentUserProfileModal = (variant: Variant = "dialog") => {
+  const { t } = useTranslation("app")
   const { present } = useModalStack()
   const presentAsync = useAsyncModal()
   return useCallback(
@@ -71,7 +72,8 @@ export const usePresentUserProfileModal = (variant: Variant = "dialog") => {
         type ResponseType = ReturnType<typeof useDataFetcher>["data"]
         return presentAsync<ResponseType>({
           id: `user-profile-${userId}`,
-          title: (data: ResponseType) => `${data?.name}'s Profile`,
+          title: (data: ResponseType) =>
+            t("user_profile.title_with_name", { name: data?.name ?? "" }),
 
           content: () => createElement(LazyUserProfileModalContent, { userId }),
           useDataFetcher,
@@ -80,7 +82,7 @@ export const usePresentUserProfileModal = (variant: Variant = "dialog") => {
       }
 
       present({
-        title: "User Profile",
+        title: t("user_profile.title"),
         id: `user-profile-${userId}`,
         content: () =>
           createElement(LazyUserProfileModalContent, {
@@ -98,7 +100,7 @@ export const usePresentUserProfileModal = (variant: Variant = "dialog") => {
             : "overflow-hidden",
       })
     },
-    [present, presentAsync, variant],
+    [present, presentAsync, t, variant],
   )
 }
 

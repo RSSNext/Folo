@@ -37,12 +37,8 @@
   "command.subscription.open_in_browser.title": "ブラウザで開く",
   "command.subscription.open_in_tab.title": "タブで開く",
   "command.subscription.open_site_in_browser.title": "ブラウザでサイトを開く",
-  "command.subscription.open_site_in_tab.title": "タブでサイトを開く",
   "command.subscription.previous_subscription.description": "前のサブスクリプション",
   "command.subscription.previous_subscription.title": "前のサブスクリプション",
-  "command.subscription.switch_between_views.title": "ビュー間の切り替え",
-  "command.subscription.switch_next_view.title": "次のビューに切り替え",
-  "command.subscription.switch_previous_view.title": "前のビューに切り替え",
   "command.subscription.switch_tab_to_article.description": "サブスクリプションビューのアーティクルタブに切り替え。",
   "command.subscription.switch_tab_to_article.title": "アーティクルタブに切り替え",
   "command.subscription.switch_tab_to_audio.description": "サブスクリプションビューのオーディオタブに切り替え。",
@@ -76,5 +72,6 @@
   "settings.shortcuts.description": "アプリケーションのショートカットをカスタマイズします。以下はカスタマイズ可能なコマンドのリストです。",
   "settings.shortcuts.press_to_record": "記録するにはキーを押してください",
   "settings.shortcuts.reset": "リセット",
+  "settings.shortcuts.reset_defaults": "デフォルトに戻す",
   "settings.shortcuts.undo": "元に戻す"
 }

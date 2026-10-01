@@ -40,7 +40,7 @@ export const TimelinePromptSection = () => {
 
   const handleSave = async () => {
     if (isOverLimit) {
-      toast.error(`Prompt must be ${MAX_CHARACTERS} characters or less`)
+      toast.error(t("prompt_editor.too_long", { max: MAX_CHARACTERS }))
       return
     }
 
@@ -84,7 +84,7 @@ export const TimelinePromptSection = () => {
           {t("timeline_prompt.prompt.help")}
           {isOverLimit && (
             <span className="mt-1 block text-red">
-              Prompt exceeds {MAX_CHARACTERS} character limit
+              {t("prompt_editor.over_limit", { max: MAX_CHARACTERS })}
             </span>
           )}
         </SettingDescription>
@@ -122,7 +122,7 @@ export const TimelinePromptSection = () => {
 
                 <div className="relative flex w-fit max-w-full items-center justify-between gap-3 px-5 py-3">
                   <span className="whitespace-nowrap text-xs text-text-secondary sm:text-sm">
-                    Unsaved changes
+                    {t("words.unsaved_changes", { ns: "common" })}
                   </span>
                   <Button
                     buttonClassName="bg-accent rounded-full"
@@ -130,7 +130,7 @@ export const TimelinePromptSection = () => {
                     onClick={handleSave}
                     disabled={isSaving || isOverLimit}
                   >
-                    {isSaving ? "Saving..." : "Save"}
+                    {isSaving ? t("prompt_editor.saving") : t("words.save", { ns: "common" })}
                   </Button>
                 </div>
               </div>

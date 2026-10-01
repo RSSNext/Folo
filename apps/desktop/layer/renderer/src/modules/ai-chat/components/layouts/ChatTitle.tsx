@@ -1,5 +1,6 @@
 import { cn } from "@follow/utils/utils"
 import type { ButtonHTMLAttributes } from "react"
+import { useTranslation } from "react-i18next"
 
 interface AIHeaderTitleProps extends Omit<ButtonHTMLAttributes<HTMLButtonElement>, "type"> {
   title?: string
@@ -10,12 +11,13 @@ interface AIHeaderTitleProps extends Omit<ButtonHTMLAttributes<HTMLButtonElement
 export const AIHeaderTitle = ({
   ref,
   title = "",
-  placeholder = "Untitled Chat",
+  placeholder,
   className,
   onTitleSave,
   ...buttonProps
 }: AIHeaderTitleProps & { ref?: React.RefObject<HTMLButtonElement | null> }) => {
-  const displayTitle = title || placeholder
+  const { t } = useTranslation("ai")
+  const displayTitle = title || (placeholder ?? t("chat.untitled"))
   const { ["aria-label"]: ariaLabelProp, ...restButtonProps } = buttonProps
   const ariaLabel = ariaLabelProp ?? displayTitle
 

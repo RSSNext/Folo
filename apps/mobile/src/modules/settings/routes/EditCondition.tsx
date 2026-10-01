@@ -177,7 +177,7 @@ function ValueField({
           }}
           hitSlop={10}
           selectionColor={accentColor}
-          placeholder="Enter value"
+          placeholder={t("actions.action_card.value_placeholder", { ns: "settings" })}
         />
       )
     }

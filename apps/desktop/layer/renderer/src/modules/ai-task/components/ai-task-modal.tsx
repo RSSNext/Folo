@@ -13,7 +13,7 @@ import { LexicalRichEditorTextArea } from "@follow/components/ui/lexical-rich-ed
 import type { AITask } from "@follow-app/client-sdk"
 import { zodResolver } from "@hookform/resolvers/zod"
 import dayjs from "dayjs"
-import { useRef, useState } from "react"
+import { useMemo, useRef, useState } from "react"
 import type { GlobalError } from "react-hook-form"
 import { useForm } from "react-hook-form"
 import { useTranslation } from "react-i18next"
@@ -24,7 +24,7 @@ import { MentionPlugin, ShortcutPlugin } from "~/modules/ai-chat/editor"
 import { AIPersistService } from "~/modules/ai-chat/services"
 import { useCreateAITaskMutation, useUpdateAITaskMutation } from "~/modules/ai-task/query"
 import type { ScheduleType, TaskFormData } from "~/modules/ai-task/types"
-import { MAX_PROMPT_LENGTH, taskSchema } from "~/modules/ai-task/types"
+import { createTaskSchema, MAX_PROMPT_LENGTH } from "~/modules/ai-task/types"
 import { useSettingModal } from "~/modules/settings/modal/use-setting-modal-hack"
 
 import { NotifyChannelsConfig } from "./notify-channels-config"
@@ -120,6 +120,7 @@ export const AITaskModal = ({ task, prompt, showSettingsTip = false }: AITaskMod
 
   const isEditing = !!task
 
+  const taskSchema = useMemo(() => createTaskSchema(t), [t])
   const form = useForm<TaskFormData>({
     resolver: zodResolver(taskSchema),
     defaultValues: getDefaultFormData(task, prompt),

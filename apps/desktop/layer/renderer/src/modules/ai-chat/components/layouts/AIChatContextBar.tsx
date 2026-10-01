@@ -1,6 +1,7 @@
 import { Popover, PopoverContent, PopoverTrigger } from "@follow/components/ui/popover/index.jsx"
 import { cn } from "@follow/utils/utils"
 import { memo, useCallback, useEffect, useMemo, useRef } from "react"
+import { useTranslation } from "react-i18next"
 
 import { useGeneralSettingKey } from "~/atoms/settings/general"
 import { useRouteParamsSelector } from "~/hooks/biz/useRouteParams"
@@ -18,6 +19,7 @@ import { MentionButton } from "../context-bar/MentionButton"
 const MAX_VISIBLE_BLOCKS = 4
 
 export const AIChatContextBar: Component = memo(({ className }) => {
+  const { t } = useTranslation("ai")
   const blocks = useAIChatStore()((s) => s.blocks)
   const fileInputRef = useRef<HTMLInputElement>(null)
   const { handleFileInputChange } = useFileUploadWithDefaults()
@@ -122,7 +124,7 @@ export const AIChatContextBar: Component = memo(({ className }) => {
         type="button"
         onClick={handleAttachFile}
         className="flex size-7 shrink-0 items-center justify-center rounded-md border border-border bg-material-medium text-text-secondary transition-colors hover:bg-material-thin hover:text-text-secondary"
-        title="Upload Files"
+        title={t("chat.context.upload_files")}
       >
         <i className="i-mgc-attachment-cute-re size-3.5" />
       </button>
@@ -167,7 +169,7 @@ export const AIChatContextBar: Component = memo(({ className }) => {
             <PopoverContent className="w-80 p-3" align="start">
               <div className="flex flex-col gap-2">
                 <div className="mb-1 text-xs font-medium text-text-secondary">
-                  Additional Context
+                  {t("chat.context.additional")}
                 </div>
                 {hiddenBlocks.map((item) => renderBlock(item))}
               </div>

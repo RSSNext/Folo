@@ -4,6 +4,7 @@ import { nextFrame } from "@follow/utils/dom"
 import { cn } from "@follow/utils/utils"
 import { createPlainShiki } from "plain-shiki"
 import { useLayoutEffect, useMemo, useRef } from "react"
+import { useTranslation } from "react-i18next"
 import css from "shiki/langs/css.mjs"
 import githubDark from "shiki/themes/github-dark.mjs"
 import githubLight from "shiki/themes/github-light.mjs"
@@ -19,6 +20,7 @@ export const CSSEditor: Component<{
   onChange: (value: string) => void
   defaultValue?: string
 }> = ({ onChange, className, defaultValue }) => {
+  const { t } = useTranslation()
   const ref = useRef<HTMLDivElement>(null)
 
   const isDark = useIsDark()
@@ -82,7 +84,7 @@ export const CSSEditor: Component<{
       <div className="flex size-full flex-col">
         <div className="-mt-2 mb-1 text-center text-sm text-text-tertiary">
           <i className="i-mingcute-warning-line mr-0.5 translate-y-[2px]" />
-          Your browser does not support highlight CSS.
+          {t("editor.css_highlight_unsupported")}
         </div>
         <div className="relative h-0 grow">
           <div className="absolute inset-0">

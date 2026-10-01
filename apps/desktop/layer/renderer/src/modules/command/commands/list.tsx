@@ -70,7 +70,7 @@ export const useRegisterListCommands = () => {
         if (!listId) return
         const { view } = getRouteParams()
         await copyToClipboard(UrlBuilder.shareList(listId, view))
-        toast.success("copy success!", {
+        toast.success(t("app.copied_to_clipboard", { ns: "common" }), {
           duration: 1000,
         })
       },
@@ -82,7 +82,7 @@ export const useRegisterListCommands = () => {
       run: async ({ listId }) => {
         if (!listId) return
         await copyToClipboard(listId)
-        toast.success("copy success!", {
+        toast.success(t("app.copied_to_clipboard", { ns: "common" }), {
           duration: 1000,
         })
       },

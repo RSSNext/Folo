@@ -7,6 +7,7 @@ import { useFeedById } from "@follow/store/feed/hooks"
 import { useInboxById } from "@follow/store/inbox/hooks"
 import { clsx, cn, formatEstimatedMins, formatTimeToSeconds, isSafari } from "@follow/utils/utils"
 import { useMemo } from "react"
+import { useTranslation } from "react-i18next"
 
 import { AudioPlayer, useAudioPlayerAtomSelector } from "~/atoms/player"
 import { useActionLanguage, useGeneralSettingKey } from "~/atoms/settings/general"
@@ -316,10 +317,7 @@ function AudioCover({
     playerValue.src === src && playerValue.show ? playerValue.status : false,
   )
 
-  const language = useGeneralSettingKey("language")
-  const isChinese = useMemo(() => {
-    return language === "zh-CN"
-  }, [language])
+  const { t } = useTranslation("common")
 
   const seconds = formatTimeToSeconds(durationInSeconds)
   const estimatedMins = seconds && Math.floor(seconds / 60)
@@ -380,7 +378,9 @@ function AudioCover({
               isMobile && "opacity-100 backdrop-blur-background",
             )}
           >
-            {isChinese ? `${estimatedMins} 分钟` : formatEstimatedMins(estimatedMins)}
+            {formatEstimatedMins(estimatedMins, (unit, values) =>
+              t(`time.duration.${unit}`, values),
+            )}
           </div>
         </div>
       )}

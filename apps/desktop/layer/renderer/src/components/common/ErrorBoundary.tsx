@@ -1,5 +1,6 @@
 import { tracker } from "@follow/tracker"
 import type { PropsWithChildren, ReactNode } from "react"
+import { createElement } from "react"
 import type { FallbackProps } from "react-error-boundary"
 import { ErrorBoundary as ReactErrorBoundary } from "react-error-boundary"
 
@@ -42,8 +43,9 @@ export const ErrorBoundary = ({
   return (
     <ReactErrorBoundary
       onError={handleError}
+      // Render the fallback as a component so it can use hooks (e.g. useTranslation)
       fallbackRender={(props) =>
-        renderFallback({
+        createElement(renderFallback, {
           ...props,
           resetError: props.resetErrorBoundary,
         })

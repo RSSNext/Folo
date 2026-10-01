@@ -6,6 +6,7 @@ import { transformVideoUrl } from "@follow/utils/url-for-video"
 import { cn } from "@follow/utils/utils"
 import { useHover } from "@use-gesture/react"
 import { useEffect, useMemo, useRef, useState } from "react"
+import { useTranslation } from "react-i18next"
 
 import { RelativeTime } from "~/components/ui/datetime"
 import { Media } from "~/components/ui/media/Media"
@@ -19,6 +20,7 @@ import type { EntryItemStatelessProps, UniversalItemProps } from "../types"
 const ViewTag = IN_ELECTRON ? "webview" : "iframe"
 
 export function VideoItem({ entryId, translation }: UniversalItemProps) {
+  const { t } = useTranslation()
   const entry = useEntry(entryId, (state) => {
     const { id, url } = state
 
@@ -117,7 +119,7 @@ export function VideoItem({ entryId, translation }: UniversalItemProps) {
           ) : (
             <div className="center aspect-video w-full flex-col gap-1 rounded-md bg-material-medium text-xs text-text-secondary">
               <i className="i-mgc-sad-cute-re size-6" />
-              No media available
+              {t("entry_content.no_content")}
             </div>
           )}
           {!!entry.duration && (
@@ -132,6 +134,7 @@ export function VideoItem({ entryId, translation }: UniversalItemProps) {
 }
 
 export function VideoItemStateLess({ entry, feed }: EntryItemStatelessProps) {
+  const { t } = useTranslation()
   return (
     <div className="p-1.5">
       <div className="w-full">
@@ -157,7 +160,7 @@ export function VideoItemStateLess({ entry, feed }: EntryItemStatelessProps) {
           ) : (
             <div className="center aspect-video w-full flex-col gap-1 rounded-md bg-material-medium text-xs text-text-secondary">
               <i className="i-mgc-sad-cute-re size-6" />
-              No media available
+              {t("entry_content.no_content")}
             </div>
           )}
         </div>

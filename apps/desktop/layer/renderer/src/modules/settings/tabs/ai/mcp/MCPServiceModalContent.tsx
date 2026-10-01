@@ -85,13 +85,17 @@ export const MCPServiceModalContent = ({
           </div>
 
           <div className="space-y-2">
-            <Label className="text-xs text-text">Transport Type</Label>
+            <Label className="text-xs text-text">
+              {t("integration.mcp.service.transport_type")}
+            </Label>
             <Select
               value={transportType}
               onValueChange={(value) => setTransportType(value as "streamable-http" | "sse")}
             >
               <SelectTrigger>
-                <SelectValue placeholder="Select transport type" />
+                <SelectValue
+                  placeholder={t("integration.mcp.service.transport_type_placeholder")}
+                />
               </SelectTrigger>
               <SelectContent>
                 <SelectItem value="streamable-http">Streamable HTTP</SelectItem>
@@ -110,13 +114,15 @@ export const MCPServiceModalContent = ({
           </div>
 
           <div className="min-w-[500px] space-y-2">
-            <Label className="text-xs text-text">Headers (Optional)</Label>
+            <Label className="text-xs text-text">
+              {t("integration.mcp.service.headers.label")}
+            </Label>
             <KeyValueEditor
               value={headers}
               onChange={setHeaders}
-              keyPlaceholder="Header name"
-              valuePlaceholder="Header value"
-              addButtonText="Add Header"
+              keyPlaceholder={t("integration.mcp.service.headers.key_placeholder")}
+              valuePlaceholder={t("integration.mcp.service.headers.value_placeholder")}
+              addButtonText={t("integration.mcp.service.headers.add")}
               minRows={0}
             />
           </div>
@@ -127,10 +133,10 @@ export const MCPServiceModalContent = ({
         <div />
         <div className="flex gap-2">
           <Button variant="outline" size="sm" onClick={onCancel}>
-            Cancel
+            {t("words.cancel", { ns: "common" })}
           </Button>
           <Button size="sm" onClick={handleSave}>
-            Save
+            {t("words.save", { ns: "common" })}
           </Button>
         </div>
       </div>

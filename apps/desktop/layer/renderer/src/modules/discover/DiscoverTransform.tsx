@@ -1,4 +1,7 @@
 import { LoadingCircle } from "@follow/components/ui/loading/index.jsx"
+import type { TFunction } from "i18next"
+import { useMemo } from "react"
+import { useTranslation } from "react-i18next"
 
 import { useAuthQuery } from "~/hooks/common"
 import { Queries } from "~/queries"
@@ -6,46 +9,50 @@ import { Queries } from "~/queries"
 import type { RouteParams } from "./DiscoverFeedForm"
 import { DiscoverFeedForm } from "./DiscoverFeedForm"
 
-const transformRouteParams: RouteParams = {
-  title: { description: "The title of the RSS", default: "Extract from <title>" },
-  item: { description: "The HTML elements as item using CSS selector", default: "html" },
+const getTransformRouteParams = (t: TFunction<"app">): RouteParams => ({
+  title: {
+    description: t("discover.transform.params.title"),
+    default: t("discover.transform.defaults.title"),
+  },
+  item: { description: t("discover.transform.params.item"), default: "html" },
   itemTitle: {
-    description: "The HTML elements as title in item using CSS selector",
-    default: "item element",
+    description: t("discover.transform.params.item_title"),
+    default: t("discover.transform.defaults.item_element"),
   },
   itemTitleAttr: {
-    description: "The attributes of title element as title",
-    default: "Element text",
+    description: t("discover.transform.params.item_title_attr"),
+    default: t("discover.transform.defaults.element_text"),
   },
   itemLink: {
-    description: "The HTML elements as link in item using CSS selector",
-    default: "item element",
+    description: t("discover.transform.params.item_link"),
+    default: t("discover.transform.defaults.item_element"),
   },
-  itemLinkAttr: { description: "The attributes of link element as link", default: "href" },
+  itemLinkAttr: { description: t("discover.transform.params.item_link_attr"), default: "href" },
   itemDesc: {
-    description: "The HTML elements as description in item using CSS selector",
-    default: "item element",
+    description: t("discover.transform.params.item_desc"),
+    default: t("discover.transform.defaults.item_element"),
   },
   itemDescAttr: {
-    description: "The attributes of description element as description",
-    default: "Element html",
+    description: t("discover.transform.params.item_desc_attr"),
+    default: t("discover.transform.defaults.element_html"),
   },
   itemPubDate: {
-    description: "The HTML elements as pubDate in item using CSS selector",
-    default: "item element",
+    description: t("discover.transform.params.item_pub_date"),
+    default: t("discover.transform.defaults.item_element"),
   },
   itemPubDateAttr: {
-    description: "The attributes of pubDate element as pubDate",
-    default: "Element html",
+    description: t("discover.transform.params.item_pub_date_attr"),
+    default: t("discover.transform.defaults.element_html"),
   },
   itemContent: {
-    description:
-      "The HTML elements as description in item using CSS selector ( in itemLink page for full content )",
+    description: t("discover.transform.params.item_content"),
   },
-  encoding: { description: "The encoding of the HTML content", default: "utf-8" },
-}
+  encoding: { description: t("discover.transform.params.encoding"), default: "utf-8" },
+})
 
 export function DiscoverTransform() {
+  const { t } = useTranslation()
+  const transformRouteParams = useMemo(() => getTransformRouteParams(t), [t])
   const { data, isLoading } = useAuthQuery(
     Queries.discover.rsshubNamespace({
       namespace: "rsshub",

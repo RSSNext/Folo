@@ -10,6 +10,7 @@ import { defaultNS, ns } from "./@types/constants"
 import { defaultResources } from "./@types/default-resource"
 import { getGeneralSettings } from "./atoms/settings/general"
 import { jotaiStore } from "./lib/jotai"
+import { applyZodLocale } from "./lib/zod-locale"
 
 export const i18nAtom = atom(i18next)
 
@@ -59,6 +60,7 @@ export const initI18n = async () => {
     }
   }
 
+  i18next.on("languageChanged", applyZodLocale)
   await i18next.use(initReactI18next).init({
     ns,
     lng: ELECTRON || cache ? lang : fallbackLanguage,
@@ -68,6 +70,10 @@ export const initI18n = async () => {
     },
     defaultNS,
     debug: import.meta.env.DEV,
+    // React escapes rendered text; escaping here again shows entities such as `&amp;`
+    interpolation: {
+      escapeValue: false,
+    },
 
     resources: mergedResources,
   })

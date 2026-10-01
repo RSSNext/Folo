@@ -4,6 +4,7 @@ import { useInboxById } from "@follow/store/inbox/hooks"
 import { useEntryTranslation } from "@follow/store/translation/hooks"
 import { cn, formatEstimatedMins, formatTimeToSeconds } from "@follow/utils"
 import { useMemo } from "react"
+import { useTranslation } from "react-i18next"
 import { useShallow } from "zustand/shallow"
 
 import { useShowAITranslation } from "~/atoms/ai-translation"
@@ -33,6 +34,7 @@ export const EntryTitle = ({
   containerClassName,
   noRecentReader,
 }: EntryLinkProps) => {
+  const { t } = useTranslation("common")
   const entry = useEntry(
     entryId,
     useShallow((state) => {
@@ -44,7 +46,7 @@ export const EntryTitle = ({
       const { duration_in_seconds } =
         attachments?.find((attachment) => attachment.duration_in_seconds) ?? {}
       const seconds = duration_in_seconds ? formatTimeToSeconds(duration_in_seconds) : undefined
-      const estimatedMins = seconds ? formatEstimatedMins(Math.floor(seconds / 60)) : undefined
+      const estimatedMins = seconds ? Math.floor(seconds / 60) : undefined
 
       const media = state.media || []
       const firstPhoto = media.find((a) => a.type === "photo")
@@ -178,10 +180,14 @@ export const EntryTitle = ({
               </span>
             </div>
 
-            {entry.estimatedMins && (
+            {entry.estimatedMins !== undefined && (
               <div className="flex items-center gap-1.5">
                 <i className="i-mgc-time-cute-re text-base" />
-                <span className="text-xs tabular-nums">{entry.estimatedMins}</span>
+                <span className="text-xs tabular-nums">
+                  {formatEstimatedMins(entry.estimatedMins, (unit, values) =>
+                    t(`time.duration.${unit}`, values),
+                  )}
+                </span>
               </div>
             )}
           </div>

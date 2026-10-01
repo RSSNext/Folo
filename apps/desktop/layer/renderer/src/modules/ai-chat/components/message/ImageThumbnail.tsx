@@ -2,6 +2,7 @@ import { cn } from "@follow/utils/utils"
 import * as HoverCard from "@radix-ui/react-hover-card"
 import { m } from "motion/react"
 import * as React from "react"
+import { useTranslation } from "react-i18next"
 
 import { useModalStack } from "~/components/ui/modal/stacked/hooks"
 import type { FileAttachment } from "~/modules/ai-chat/store/types"
@@ -20,6 +21,7 @@ type ImageThumbnailProps = AttachmentImageProps
  * Unified ImageThumbnail with hover preview, click-to-modal, loading and error fallbacks
  */
 export const ImageThumbnail: React.FC<ImageThumbnailProps> = React.memo((props) => {
+  const { t } = useTranslation("ai")
   const { present } = useModalStack()
 
   const [contentImageError, setContentImageError] = React.useState(false)
@@ -56,7 +58,7 @@ export const ImageThumbnail: React.FC<ImageThumbnailProps> = React.memo((props) 
           computed.originalUrl &&
           present({
             max: true,
-            title: "Preview Image",
+            title: t("chat.image.preview"),
             clickOutsideToDismiss: true,
             content: () => (
               <div className="flex max-h-full max-w-full items-center justify-center">

@@ -4,6 +4,7 @@ import { nextFrame, stopPropagation, thenable } from "@follow/utils"
 import type { LexicalEditor, SerializedEditorState } from "lexical"
 import { AnimatePresence, m } from "motion/react"
 import * as React from "react"
+import { useTranslation } from "react-i18next"
 
 import { RelativeTime } from "~/components/ui/datetime"
 import { useEditingMessageId, useSetEditingMessageId } from "~/modules/ai-chat/atoms/session"
@@ -24,6 +25,7 @@ export const UserChatMessage: React.FC<UserChatMessageProps> = React.memo(({ mes
     throw thenable
   }
 
+  const { t } = useTranslation("ai")
   const chatActions = useChatActions()
   const messageId = message.id
   const [isHovered, setIsHovered] = React.useState(false)
@@ -179,19 +181,19 @@ export const UserChatMessage: React.FC<UserChatMessageProps> = React.memo(({ mes
                   type="button"
                   onClick={handleEdit}
                   className="flex items-center gap-1 rounded-md px-2 py-1 text-xs text-text-secondary transition-colors hover:bg-fill-secondary"
-                  title="Edit message"
+                  title={t("chat.message.edit")}
                 >
                   <i className="i-mgc-edit-cute-re size-3" />
-                  <span>Edit</span>
+                  <span>{t("words.edit", { ns: "common" })}</span>
                 </button>
                 <button
                   type="button"
                   onClick={handleRetry}
                   className="flex items-center gap-1 rounded-md px-2 py-1 text-xs text-text-secondary transition-colors hover:bg-fill-secondary"
-                  title="Retry"
+                  title={t("retry", { ns: "common" })}
                 >
                   <i className="i-mgc-refresh-2-cute-re size-3" />
-                  <span>Retry</span>
+                  <span>{t("retry", { ns: "common" })}</span>
                 </button>
               </m.div>
             )}

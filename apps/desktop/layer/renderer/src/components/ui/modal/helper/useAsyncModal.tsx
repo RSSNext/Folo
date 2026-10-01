@@ -1,7 +1,7 @@
-/* eslint-disable react-refresh/only-export-components */
 import { useOnce, useTypeScriptHappyCallback } from "@follow/hooks"
 import type { FC } from "react"
 import { createContext, createElement, use } from "react"
+import { useTranslation } from "react-i18next"
 import { useEventCallback } from "usehooks-ts"
 
 import type { ModalActionsInternal } from "~/components/ui/modal"
@@ -24,6 +24,7 @@ export type AsyncModalOptions<T> = {
 const AsyncModalContext = createContext<AsyncModalOptions<any>>(null!)
 export const useAsyncModal = () => {
   const { present } = useModalStack()
+  const { t } = useTranslation()
 
   return useEventCallback(<T,>(options: AsyncModalOptions<T>) => {
     present({
@@ -33,7 +34,7 @@ export const useAsyncModal = () => {
           <LazyContent />
         </AsyncModalContext>
       ),
-      title: "Loading...",
+      title: t("words.loading"),
       CustomModalComponent: NoopChildren,
       overlay: options.overlay,
     })

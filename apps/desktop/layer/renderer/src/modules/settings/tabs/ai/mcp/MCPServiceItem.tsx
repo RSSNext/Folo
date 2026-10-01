@@ -36,7 +36,7 @@ export const MCPServiceItem = ({
   }
 
   const formatDate = (dateString: string | null) => {
-    if (!dateString) return "Never"
+    if (!dateString) return t("integration.mcp.service.never")
     return new Date(dateString).toLocaleDateString()
   }
 
@@ -44,19 +44,19 @@ export const MCPServiceItem = ({
     {
       icon: "i-mgc-edit-cute-re",
       onClick: () => onEdit(service),
-      title: "Edit connection",
+      title: t("integration.mcp.service.actions.edit"),
     },
     {
       icon: "i-mgc-refresh-2-cute-re",
       onClick: () => onRefresh(service.id),
-      title: "Refresh tools",
+      title: t("integration.mcp.service.actions.refresh_tools"),
       disabled: isRefreshing,
       loading: isRefreshing,
     },
     {
       icon: "i-mgc-delete-2-cute-re",
       onClick: () => onDelete(service.id),
-      title: "Delete service",
+      title: t("integration.mcp.service.actions.delete"),
       disabled: isDeleting,
       loading: isDeleting,
     },
@@ -80,20 +80,33 @@ export const MCPServiceItem = ({
           <div className="space-y-1">
             {service.url && (
               <p className="text-xs text-text-secondary">
-                <span className="text-text-tertiary">URL:</span> {service.url}
+                <span className="text-text-tertiary">
+                  {t("integration.mcp.service.fields.url")}
+                </span>{" "}
+                {service.url}
               </p>
             )}
 
             <p className="text-xs text-text-secondary">
-              <span className="text-text-tertiary">Tools:</span> {service.toolCount}
-              <span className="ml-4 text-text-tertiary">Created:</span>{" "}
+              <span className="text-text-tertiary">
+                {t("integration.mcp.service.fields.tools")}
+              </span>{" "}
+              {service.toolCount}
+              <span className="ml-4 text-text-tertiary">
+                {t("integration.mcp.service.fields.created")}
+              </span>{" "}
               {formatDate(service.createdAt)}
-              <span className="ml-4 text-text-tertiary">Last Used:</span>{" "}
+              <span className="ml-4 text-text-tertiary">
+                {t("integration.mcp.service.fields.last_used")}
+              </span>{" "}
               {formatDate(service.lastUsed)}
             </p>
             {service.lastError && (
               <p className="text-xs text-red">
-                <span className="text-text-tertiary">Error:</span> {service.lastError}
+                <span className="text-text-tertiary">
+                  {t("integration.mcp.service.fields.error")}
+                </span>{" "}
+                {service.lastError}
               </p>
             )}
           </div>

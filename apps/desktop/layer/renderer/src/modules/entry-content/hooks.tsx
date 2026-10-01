@@ -21,7 +21,7 @@ export const useGalleryModal = () => {
     (entryId?: string) => {
       if (!entryId) {
         // this should not happen unless there is a bug in the code
-        toast.error("Invalid feed id")
+        toast.error(t("entry_content.invalid_entry_id"))
         return
       }
       tracker.entryContentHeaderImageGalleryClick({

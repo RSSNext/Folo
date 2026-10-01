@@ -26,6 +26,7 @@ export const TokenModalContent = () => {
     resolver: zodResolver(formSchema),
   })
   const { t } = useTranslation("common")
+  const { t: tApp } = useTranslation("app")
   const [isLoading, setIsLoading] = useState(false)
 
   async function onSubmit(values: z.infer<typeof formSchema>) {
@@ -46,7 +47,7 @@ export const TokenModalContent = () => {
       handleSessionChanges()
     } catch (e) {
       console.error("Failed to apply one-time token:", e)
-      toast.error("Failed to apply one-time token")
+      toast.error(tApp("login.apply_token_failed"))
     } finally {
       setIsLoading(false)
     }

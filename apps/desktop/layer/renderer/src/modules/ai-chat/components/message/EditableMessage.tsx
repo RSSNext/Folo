@@ -7,6 +7,7 @@ import { isEqual } from "es-toolkit"
 import type { EditorState, LexicalEditor, SerializedEditorState } from "lexical"
 import { $getRoot } from "lexical"
 import { useCallback, useEffect, useMemo, useRef, useState } from "react"
+import { Trans, useTranslation } from "react-i18next"
 
 import { useEditingMessageId, useSetEditingMessageId } from "~/modules/ai-chat/atoms/session"
 import { useChatStatus } from "~/modules/ai-chat/store/hooks"
@@ -31,6 +32,7 @@ export const EditableMessage = ({
   className,
   initialHeight,
 }: EditableMessageProps) => {
+  const { t } = useTranslation("ai")
   const status = useChatStatus()
   const editingMessageId = useEditingMessageId()
   const setEditingMessageId = useSetEditingMessageId()
@@ -128,7 +130,7 @@ export const EditableMessage = ({
         >
           <LexicalRichEditor
             ref={editorRef}
-            placeholder="Edit your message..."
+            placeholder={t("chat.placeholder.edit_message")}
             className="h-full min-w-64"
             onChange={handleEditorChange}
             onKeyDown={handleKeyDown}
@@ -144,7 +146,7 @@ export const EditableMessage = ({
             onClick={handleCancel}
             disabled={isProcessing}
             className="flex size-8 items-center justify-center rounded-lg text-text-tertiary transition-colors hover:bg-fill/50 hover:text-text disabled:opacity-50"
-            title="Cancel (Esc)"
+            title={t("chat.message.edit_cancel")}
           >
             <i className="i-mgc-close-cute-re size-4" />
           </button>
@@ -153,7 +155,7 @@ export const EditableMessage = ({
             onClick={handleSave}
             disabled={isProcessing || isEmpty}
             className="flex size-8 items-center justify-center rounded-lg text-accent transition-colors hover:bg-accent/10 hover:text-accent disabled:opacity-50"
-            title="Save (Enter)"
+            title={t("chat.message.edit_save")}
           >
             <i className="i-mgc-send-plane-cute-fi size-4" />
           </button>
@@ -164,7 +166,14 @@ export const EditableMessage = ({
       <div className="relative mt-2">
         <div className="absolute -inset-x-2 -bottom-2 -top-8 z-[-1] bg-background" />
         <div className="relative z-[1] text-xs text-text-secondary">
-          Press <Kbd abbr="Enter">Enter</Kbd> to save, <Kbd abbr="Esc">Esc</Kbd> to cancel
+          <Trans
+            t={t}
+            i18nKey="chat.message.edit_hint"
+            components={{
+              enter: <Kbd abbr="Enter">Enter</Kbd>,
+              esc: <Kbd abbr="Esc">Esc</Kbd>,
+            }}
+          />
         </div>
       </div>
     </div>

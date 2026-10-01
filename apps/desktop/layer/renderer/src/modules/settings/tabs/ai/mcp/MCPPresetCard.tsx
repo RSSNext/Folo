@@ -1,4 +1,5 @@
 import { Button } from "@follow/components/ui/button/index.js"
+import { useTranslation } from "react-i18next"
 
 import type { MCPPreset } from "./types"
 
@@ -8,6 +9,8 @@ interface MCPPresetCardProps {
 }
 
 export const MCPPresetCard = ({ preset, onSelect }: MCPPresetCardProps) => {
+  const { t } = useTranslation("ai")
+
   return (
     <div className="group rounded-lg border border-fill-secondary bg-material-medium p-4 transition-all hover:border-accent hover:bg-fill-quaternary hover:shadow-md">
       <div className="flex flex-col items-center space-y-3 text-center">
@@ -20,14 +23,14 @@ export const MCPPresetCard = ({ preset, onSelect }: MCPPresetCardProps) => {
         <h3 className="text-sm font-medium text-text">{preset.displayName}</h3>
 
         {/* Description */}
-        <p className="text-xs leading-relaxed text-text-secondary">{preset.description}</p>
+        <p className="text-xs leading-relaxed text-text-secondary">{t(preset.descriptionKey)}</p>
 
         {/* Features */}
         <div className="w-full space-y-1">
-          {preset.features.map((feature) => (
-            <div key={feature} className="flex items-center text-left text-xs text-text">
+          {preset.featureKeys.map((featureKey) => (
+            <div key={featureKey} className="flex items-center text-left text-xs text-text">
               <span className="mr-2 text-accent">•</span>
-              <span>{feature}</span>
+              <span>{t(featureKey)}</span>
             </div>
           ))}
         </div>
@@ -38,14 +41,14 @@ export const MCPPresetCard = ({ preset, onSelect }: MCPPresetCardProps) => {
           buttonClassName="w-full bg-accent text-white hover:bg-accent/90"
           onClick={() => onSelect(preset)}
         >
-          Quick Setup
+          {t("integration.mcp.preset.quick_setup")}
         </Button>
 
         {/* Auth Required Indicator */}
         {preset.authRequired && (
           <div className="flex items-center text-xs text-text-secondary">
             <i className="i-mgc-user-setting-cute-re mr-1 size-3" />
-            <span>Authentication required</span>
+            <span>{t("integration.mcp.preset.auth_required")}</span>
           </div>
         )}
       </div>

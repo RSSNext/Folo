@@ -16,6 +16,7 @@ import type { DiscoveryItem } from "@follow-app/client-sdk"
 import { zodResolver } from "@hookform/resolvers/zod"
 import { repository } from "@pkg"
 import { useMutation } from "@tanstack/react-query"
+import i18next from "i18next"
 import { produce } from "immer"
 import type { ChangeEvent, CompositionEvent } from "react"
 import { startTransition, useCallback, useEffect, useMemo, useRef } from "react"
@@ -64,7 +65,8 @@ const searchSchema = z.object({
 
 const rssSchema = z.object({
   keyword: z.string().refine(isFeedLikeUrl, {
-    message: "Invalid RSS URL",
+    // Resolved at validation time so the message follows the current language.
+    error: () => i18next.t("discover.invalid_rss_url"),
   }),
 })
 
@@ -146,7 +148,7 @@ export function UnifiedDiscoverForm() {
       if (inputType === "rss") {
         const validated = rssSchema.safeParse({ keyword })
         if (!validated.success) {
-          throw new Error("Invalid RSS URL")
+          throw new Error(t("discover.invalid_rss_url"))
         }
         present({
           title: t("feed_form.add_feed"),
@@ -158,7 +160,7 @@ export function UnifiedDiscoverForm() {
       if (inputType === "rsshub") {
         const validated = rsshubSchema.safeParse({ keyword })
         if (!validated.success) {
-          throw new Error("Invalid RSSHub route")
+          throw new Error(t("discover.invalid_rsshub_route"))
         }
         present({
           title: t("feed_form.add_feed"),
@@ -318,7 +320,7 @@ export function UnifiedDiscoverForm() {
                       value={field.value || ""}
                       onChange={handleKeywordChange}
                       onCompositionEnd={handleCompositionEnd}
-                      placeholder="Enter URL, RSSHub route, or keyword..."
+                      placeholder={t("discover.search_input_placeholder")}
                       className="h-12 text-base"
                     />
                   </FormControl>
@@ -355,7 +357,7 @@ export function UnifiedDiscoverForm() {
                           className="inline-flex items-center gap-1 rounded-full border border-accent px-2 py-px text-accent hover:bg-accent/10"
                         >
                           <i className="i-mgc-book-6-cute-re" />
-                          <span>RSSHub Docs</span>
+                          <span>{t("discover.rsshub_docs")}</span>
                         </a>
                       </>
                     )}

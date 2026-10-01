@@ -446,7 +446,36 @@ export function timeStringToSeconds(time: string): number | null {
   }
 }
 
-export const formatEstimatedMins = (estimatedMins: number) => {
+export type EstimatedDurationUnit = "months_days" | "days_hours" | "hours_minutes" | "minutes"
+export type EstimatedDurationFormatter = (
+  unit: EstimatedDurationUnit,
+  values: { months: number; days: number; hours: number; minutes: number },
+) => string
+
+const formatEstimatedDurationInEnglish: EstimatedDurationFormatter = (unit, values) => {
+  switch (unit) {
+    case "months_days": {
+      return `${values.months}M ${values.days}d`
+    }
+    case "days_hours": {
+      return `${values.days}d ${values.hours}h`
+    }
+    case "hours_minutes": {
+      return `${values.hours}h ${values.minutes}m`
+    }
+    case "minutes": {
+      return `${values.minutes} mins`
+    }
+  }
+}
+
+/**
+ * Formats a duration given in minutes, e.g. `1h 5m`. Pass `format` to localize the output.
+ */
+export const formatEstimatedMins = (
+  estimatedMins: number,
+  format: EstimatedDurationFormatter = formatEstimatedDurationInEnglish,
+) => {
   const minutesInHour = 60
   const minutesInDay = minutesInHour * 24
   const minutesInMonth = minutesInDay * 30
@@ -457,15 +486,15 @@ export const formatEstimatedMins = (estimatedMins: number) => {
   const minutes = estimatedMins % minutesInHour
 
   if (months > 0) {
-    return `${months}M ${days}d`
+    return format("months_days", { months, days, hours, minutes })
   }
   if (days > 0) {
-    return `${days}d ${hours}h`
+    return format("days_hours", { months, days, hours, minutes })
   }
   if (hours > 0) {
-    return `${hours}h ${minutes}m`
+    return format("hours_minutes", { months, days, hours, minutes })
   }
-  return `${estimatedMins} mins`
+  return format("minutes", { months, days, hours, minutes: estimatedMins })
 }
 
 export const omitShallow = (obj: any, ...keys: string[]) => {

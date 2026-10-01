@@ -4,8 +4,10 @@ import { Button } from "@follow/components/ui/button/index.js"
 import { APP_STORE_URLS } from "@follow/constants"
 import { getMobilePlatform, isMobileDevice } from "@follow/utils"
 import { useEffect } from "react"
+import { useTranslation } from "react-i18next"
 
 export function DownloadPage() {
+  const { t } = useTranslation()
   const openDownloadPage = () => {
     window.open("https://folo.is/download", "_blank", "noopener,noreferrer")
   }
@@ -35,19 +37,19 @@ export function DownloadPage() {
           <Logo className="size-12" />
           <Folo className="w-12 text-text" />
         </div>
-        <p className="text-base text-text-secondary">Follow everything in one place</p>
+        <p className="text-base text-text-secondary">{t("download.tagline")}</p>
       </div>
 
       {/* Main Content */}
       <div className="w-full max-w-xs space-y-6 text-center">
         <div>
-          <h1 className="mb-3 text-xl font-semibold text-text">Download Folo</h1>
+          <h1 className="mb-3 text-xl font-semibold text-text">
+            {t("download.title", { appName: APP_NAME })}
+          </h1>
           <p className="text-sm text-text-secondary">
-            {isMobile
-              ? mobilePlatform
-                ? `Get the ${mobilePlatform} app for the best experience`
-                : "Get the mobile app for the best experience"
-              : "Get the mobile app for the best experience"}
+            {isMobile && mobilePlatform
+              ? t("download.get_platform_app", { platform: mobilePlatform })
+              : t("download.get_mobile_app")}
           </p>
         </div>
 
@@ -55,17 +57,19 @@ export function DownloadPage() {
         <Button onClick={isMobile ? handleMobileDownload : openDownloadPage}>
           <i className="i-mgc-download-2-cute-re mr-2 text-lg" />
           <span>
-            {isMobile && mobilePlatform ? `Download for ${mobilePlatform}` : "Go to Download Page"}
+            {isMobile && mobilePlatform
+              ? t("download.download_for_platform", { platform: mobilePlatform })
+              : t("download.go_to_download_page")}
           </span>
         </Button>
 
         {/* Hint */}
         <p className="text-xs text-text-tertiary">
-          {isMobile
-            ? mobilePlatform
-              ? `Redirecting to ${mobilePlatform === "iOS" ? "App Store" : "Google Play"}...`
-              : "Available for iOS, Android, Windows, macOS & Linux"
-            : "Available for iOS, Android, Windows, macOS & Linux"}
+          {isMobile && mobilePlatform
+            ? t("download.redirecting_to_store", {
+                store: mobilePlatform === "iOS" ? "App Store" : "Google Play",
+              })
+            : t("download.available_platforms")}
         </p>
       </div>
     </div>

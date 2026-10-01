@@ -6,6 +6,7 @@ import type {
   ActionItem as ActionItemRes,
 } from "@follow-app/client-sdk"
 import { merge } from "es-toolkit/compat"
+import { t } from "i18next"
 
 import { api } from "../../context"
 import type { Hydratable, Resetable } from "../../lib/base"
@@ -375,19 +376,31 @@ class ActionActions implements Hydratable, Resetable {
 
       // Validate the structure
       if (!parsedData.rules || !Array.isArray(parsedData.rules)) {
-        return { success: false, message: "Invalid JSON structure: missing or invalid rules array" }
+        return {
+          success: false,
+          message: t("actions.import_result.invalid_structure", { ns: "settings" }),
+        }
       }
 
       // Validate each rule structure
       for (const rule of parsedData.rules) {
         if (!rule.name || typeof rule.name !== "string") {
-          return { success: false, message: "Invalid rule: missing or invalid name field" }
+          return {
+            success: false,
+            message: t("actions.import_result.invalid_name", { ns: "settings" }),
+          }
         }
         if (!rule.condition || !Array.isArray(rule.condition)) {
-          return { success: false, message: "Invalid rule: missing or invalid condition field" }
+          return {
+            success: false,
+            message: t("actions.import_result.invalid_condition", { ns: "settings" }),
+          }
         }
         if (!rule.result || typeof rule.result !== "object") {
-          return { success: false, message: "Invalid rule: missing or invalid result field" }
+          return {
+            success: false,
+            message: t("actions.import_result.invalid_result", { ns: "settings" }),
+          }
         }
       }
 
@@ -406,13 +419,22 @@ class ActionActions implements Hydratable, Resetable {
 
       return {
         success: true,
-        message: `Successfully imported ${importedRules.length} action rule(s)`,
+        message: t("actions.import_result.success", {
+          ns: "settings",
+          count: importedRules.length,
+        }),
         importedCount: importedRules.length,
       }
     } catch (error) {
       return {
         success: false,
-        message: `Failed to parse JSON: ${error instanceof Error ? error.message : "Unknown error"}`,
+        message: t("actions.import_result.parse_failed", {
+          ns: "settings",
+          error:
+            error instanceof Error
+              ? error.message
+              : t("actions.import_result.unknown_error", { ns: "settings" }),
+        }),
       }
     }
   }

@@ -2,6 +2,7 @@ import { Spring } from "@follow/components/constants/spring.js"
 import { cn } from "@follow/utils"
 import { AnimatePresence, m } from "motion/react"
 import { memo } from "react"
+import { useTranslation } from "react-i18next"
 
 interface FileDropZoneProps {
   isVisible: boolean
@@ -10,6 +11,7 @@ interface FileDropZoneProps {
 }
 
 export const FileDropZone = memo(({ isVisible, isDragOver, className }: FileDropZoneProps) => {
+  const { t } = useTranslation("ai")
   return (
     <AnimatePresence>
       {isVisible && (
@@ -57,11 +59,11 @@ export const FileDropZone = memo(({ isVisible, isDragOver, className }: FileDrop
             </m.div>
 
             <p className={cn("font-medium text-text", isDragOver && "text-accent")}>
-              {isDragOver ? "Drop files to upload" : "Drag files here to upload"}
+              {isDragOver ? t("chat.file.upload.drop") : t("chat.file.upload.drag_here")}
             </p>
 
             <p className="mt-1 text-sm text-text-secondary">
-              Images, PDFs, and text files supported
+              {t("chat.file.upload.supported_types")}
             </p>
           </m.div>
         </m.div>

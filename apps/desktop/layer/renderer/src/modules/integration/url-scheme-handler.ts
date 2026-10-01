@@ -1,4 +1,5 @@
 import type { URLSchemeTemplate } from "@follow/shared/settings/interface"
+import { t } from "i18next"
 import { toast } from "sonner"
 
 import { ipcServices } from "~/lib/client"
@@ -50,16 +51,20 @@ export class URLSchemeHandler {
 
       // Validate URL scheme format
       if (!finalScheme.includes("://")) {
-        throw new Error("Invalid URL scheme format. Must include protocol (e.g., 'app://')")
+        throw new Error(t("entry_actions.custom_integration.url_scheme_invalid"))
       }
 
       await this.openURLScheme(finalScheme)
 
       // Since URL schemes don't return responses, we assume success
-      toast.success("URL scheme executed successfully")
+      toast.success(t("entry_actions.custom_integration.url_scheme_success"))
     } catch (error) {
       console.error("URL scheme execution failed:", error)
-      toast.error(`URL scheme failed: ${error instanceof Error ? error.message : String(error)}`)
+      toast.error(
+        t("entry_actions.custom_integration.url_scheme_failed", {
+          error: error instanceof Error ? error.message : String(error),
+        }),
+      )
     }
   }
 
@@ -75,7 +80,7 @@ export class URLSchemeHandler {
       // Note: This may be blocked by popup blockers for non-user-initiated actions
       const opened = window.open(scheme, "_blank")
       if (!opened) {
-        throw new Error("Failed to open URL scheme. This may be blocked by popup blockers.")
+        throw new Error(t("entry_actions.custom_integration.url_scheme_blocked"))
       }
     }
   }

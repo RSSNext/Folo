@@ -28,11 +28,11 @@ export const OverviewTab = ({ dailyTotals, peakDay }: OverviewTabProps) => {
             </div>
             <div className="mt-2 flex items-center justify-between text-xs text-text-tertiary">
               <span>
-                {t("analytics.points", { defaultValue: "Points" })}: {dailyTotals.length}
+                {t("analytics.points")}: {dailyTotals.length}
               </span>
               {peakDay?.date ? (
                 <span>
-                  <span>{t("analytics.peak", { defaultValue: "Peak" })}: </span>
+                  <span>{t("analytics.peak")}: </span>
                   <span>{formatTokenCountString(peakDay.totalTokens)}</span>
                   <span>{" · "}</span>
                   <span>{new Date(peakDay.date).toLocaleDateString()} </span>

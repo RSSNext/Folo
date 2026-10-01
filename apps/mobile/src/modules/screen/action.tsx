@@ -166,7 +166,7 @@ export const FeedShareActionButton = ({
             platform: Platform.OS,
             title: feed.title!,
             url,
-            message: `Check out ${feed.title} on Folo: ${url}`,
+            message: t("operation.share_feed_message", { title: feed.title, url }),
           }),
         )
       }}

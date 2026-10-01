@@ -37,12 +37,8 @@
   "command.subscription.open_in_browser.title": "Open in Browser",
   "command.subscription.open_in_tab.title": "Open in Tab",
   "command.subscription.open_site_in_browser.title": "Open Site in Browser",
-  "command.subscription.open_site_in_tab.title": "Open Site in Tab",
   "command.subscription.previous_subscription.description": "Previous Subscription",
   "command.subscription.previous_subscription.title": "Previous Subscription",
-  "command.subscription.switch_between_views.title": "Switch Between Views",
-  "command.subscription.switch_next_view.title": "Switch to Next View",
-  "command.subscription.switch_previous_view.title": "Switch to Previous View",
   "command.subscription.switch_tab_to_article.description": "Switch to the article tab in the subscription view.",
   "command.subscription.switch_tab_to_article.title": "Switch to Article Tab",
   "command.subscription.switch_tab_to_audio.description": "Switch to the audio tab in the subscription view.",
@@ -76,5 +72,6 @@
   "settings.shortcuts.description": "Customize the application's shortcuts. Below is a list of some commands that can be customized.",
   "settings.shortcuts.press_to_record": "Press keys to record",
   "settings.shortcuts.reset": "Reset",
+  "settings.shortcuts.reset_defaults": "Reset Defaults",
   "settings.shortcuts.undo": "Undo"
 }

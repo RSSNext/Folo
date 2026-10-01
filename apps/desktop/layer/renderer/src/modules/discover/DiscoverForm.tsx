@@ -15,12 +15,13 @@ import type { DiscoveryItem } from "@follow-app/client-sdk"
 import { zodResolver } from "@hookform/resolvers/zod"
 import { repository } from "@pkg"
 import { useMutation } from "@tanstack/react-query"
+import i18next from "i18next"
 import { produce } from "immer"
 import { atom, useAtomValue, useStore } from "jotai"
 import type { ChangeEvent, CompositionEvent } from "react"
 import { startTransition, useCallback, useEffect } from "react"
 import { useForm } from "react-hook-form"
-import { useTranslation } from "react-i18next"
+import { Trans, useTranslation } from "react-i18next"
 import { useSearchParams } from "react-router"
 import { z } from "zod"
 
@@ -59,7 +60,8 @@ const FEED_DISCOVERY_INFO = {
     ),
     schema: z.object({
       keyword: z.string().refine(isFeedLikeUrl, {
-        message: "Invalid RSS URL",
+        // Resolved at validation time so the message follows the current language.
+        error: () => i18next.t("discover.invalid_rss_url"),
       }),
     }),
   },
@@ -76,7 +78,9 @@ const FEED_DISCOVERY_INFO = {
         className="inline-flex w-auto items-center gap-1 rounded-full border border-accent px-2 py-px text-sm font-normal text-accent"
       >
         <i className="i-mgc-book-6-cute-re" />
-        <span>RSSHub Docs</span>
+        <span>
+          <Trans i18nKey="discover.rsshub_docs" />
+        </span>
       </a>
     ),
     schema: z.object({
@@ -309,7 +313,9 @@ export function DiscoverForm({ type = "search" }: { type?: string }) {
                       {...field}
                       onChange={handleKeywordChange}
                       onCompositionEnd={handleCompositionEnd}
-                      placeholder={type === "search" ? "Enter URL or keyword..." : undefined}
+                      placeholder={
+                        type === "search" ? t("discover.keyword_input_placeholder") : undefined
+                      }
                     />
                   </FormControl>
                   <FormMessage />

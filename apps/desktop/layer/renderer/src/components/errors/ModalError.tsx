@@ -1,5 +1,6 @@
 import { Button } from "@follow/components/ui/button/index.js"
 import type { FC } from "react"
+import { useTranslation } from "react-i18next"
 
 import { attachOpenInEditor } from "~/lib/dev"
 
@@ -12,6 +13,7 @@ import { parseError } from "./helper"
 const ModalErrorFallback: FC<AppErrorFallbackProps> = (props) => {
   const { message, stack } = parseError(props.error)
   const modal = useCurrentModal()
+  const { t } = useTranslation()
   return (
     <m.div
       className="flex flex-col items-center justify-center rounded-md bg-theme-background p-2"
@@ -31,17 +33,14 @@ const ModalErrorFallback: FC<AppErrorFallbackProps> = (props) => {
           </pre>
         ) : null}
 
-        <p className="my-8">
-          {APP_NAME} has a temporary problem, click the button below to try reloading the app or
-          another solution?
-        </p>
+        <p className="my-8">{t("errors_page.temporary_problem", { appName: APP_NAME })}</p>
 
         <div className="center gap-4">
           <Button onClick={() => modal.dismiss()} variant="outline">
-            Close Modal
+            {t("words.close", { ns: "common" })}
           </Button>
           <Button onClick={() => window.location.reload()} variant="outline">
-            Reload
+            {t("errors_page.reload")}
           </Button>
         </div>
 

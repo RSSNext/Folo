@@ -26,7 +26,7 @@ export interface ContextBlockPresentation {
 }
 
 export function useContextBlockPresentation(block: AIChatContextBlock): ContextBlockPresentation {
-  const { t } = useTranslation("common")
+  const { t } = useTranslation("ai")
 
   return useMemo(() => {
     const label = block.type === "mainView" ? "" : getBlockLabel(block.type)
@@ -36,7 +36,7 @@ export function useContextBlockPresentation(block: AIChatContextBlock): ContextB
 
     const buildFileContent = (): ReactNode => {
       if (!attachment) {
-        return <span className="text-text-tertiary">[File: Unknown]</span>
+        return <span className="text-text-tertiary">{t("chat.file.unknown")}</span>
       }
 
       const { dataUrl, previewUrl, uploadStatus, uploadProgress, errorMessage, name } = attachment
@@ -80,7 +80,7 @@ export function useContextBlockPresentation(block: AIChatContextBlock): ContextB
 
               {uploadStatus === "error" && (
                 <span className="text-xs text-red" title={errorMessage}>
-                  Upload failed
+                  {t("chat.file.upload_failed")}
                 </span>
               )}
             </div>
@@ -119,7 +119,7 @@ export function useContextBlockPresentation(block: AIChatContextBlock): ContextB
     switch (block.type) {
       case "mainView": {
         const viewName = getView(Number(block.value))?.name
-        const translated = viewName ? t(viewName) : block.value
+        const translated = viewName ? t(viewName, { ns: "common" }) : block.value
         displayContent = translated
         title = typeof translated === "string" ? translated : undefined
         break
@@ -141,15 +141,16 @@ export function useContextBlockPresentation(block: AIChatContextBlock): ContextB
         break
       }
       case "unreadOnly": {
-        displayContent = "Unread Only"
-        title = "Unread Only"
+        const unreadOnlyLabel = t("chat.context.unread_only")
+        displayContent = unreadOnlyLabel
+        title = unreadOnlyLabel
         break
       }
       case "fileAttachment": {
         displayContent = buildFileContent()
         title = attachment
           ? attachment.name || getFileDisplayContent(attachment)
-          : "[File: Unknown]"
+          : t("chat.file.unknown")
         break
       }
       default: {

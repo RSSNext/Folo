@@ -4,6 +4,7 @@ import { stopPropagation, thenable } from "@follow/utils"
 import type { LexicalEditor } from "lexical"
 import { m } from "motion/react"
 import * as React from "react"
+import { useTranslation } from "react-i18next"
 import { toast } from "sonner"
 
 import { RelativeTime } from "~/components/ui/datetime"
@@ -81,6 +82,7 @@ const filterEmptyMessagePart = (messageParts: BizUIMessage["parts"]) => {
 
 export const AIChatMessage: React.FC<AIChatMessageProps> = React.memo(
   ({ message: originalMessage, isLastMessage }) => {
+    const { t } = useTranslation("ai")
     const message = React.useMemo(() => {
       return {
         ...originalMessage,
@@ -97,11 +99,11 @@ export const AIChatMessage: React.FC<AIChatMessageProps> = React.memo(
       const messageContent = getMessageMarkdownFormat()
       try {
         await copyToClipboard(messageContent)
-        toast.success("Message copied to clipboard")
+        toast.success(t("chat.message.copied"))
       } catch {
-        toast.error("Failed to copy message")
+        toast.error(t("chat.message.copy_failed"))
       }
-    }, [getMessageMarkdownFormat])
+    }, [getMessageMarkdownFormat, t])
 
     return (
       <div onContextMenu={stopPropagation} className="group flex justify-start">
@@ -123,10 +125,10 @@ export const AIChatMessage: React.FC<AIChatMessageProps> = React.memo(
                 type="button"
                 onClick={handleCopy}
                 className="flex items-center gap-1 rounded-md px-2 py-1 text-xs text-text-secondary transition-colors hover:bg-fill-tertiary"
-                title="Copy message"
+                title={t("chat.message.copy")}
               >
                 <i className="i-mgc-copy-2-cute-re size-3" />
-                <span>Copy</span>
+                <span>{t("words.copy", { ns: "common" })}</span>
               </button>
 
               <TokenUsagePill metadata={originalMessage.metadata}>
@@ -147,6 +149,7 @@ export const AIChatMessage: React.FC<AIChatMessageProps> = React.memo(
 )
 
 export const AIChatWaitingIndicator: React.FC = () => {
+  const { t } = useTranslation("ai")
   return (
     <m.div
       initial={{ opacity: 0, y: 8 }}
@@ -157,7 +160,7 @@ export const AIChatWaitingIndicator: React.FC = () => {
     >
       <div className="flex items-center gap-2 rounded-full text-xs text-text-secondary">
         <i className="i-mgc-loading-3-cute-re size-3 animate-spin" />
-        <span className="font-medium">Thinking…</span>
+        <span className="font-medium">{t("chat.thinking")}</span>
       </div>
     </m.div>
   )

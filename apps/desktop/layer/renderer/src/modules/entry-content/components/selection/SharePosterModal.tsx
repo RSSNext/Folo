@@ -277,7 +277,13 @@ export function SharePosterModal({ selectedText, entryId }: SharePosterModalProp
       ctx.globalAlpha = 0.8
       ctx.font = config.fontMeta
       const authorTextX = authorAvatarImg ? padding + avatarSize + 12 : padding
-      ctx.fillText(`By ${entry.author}`, authorTextX, avatarY + avatarSize / 2 - 7)
+      ctx.fillText(
+        t("entry_content.share_poster.by_author", {
+          author: entry.author,
+        }),
+        authorTextX,
+        avatarY + avatarSize / 2 - 7,
+      )
       ctx.globalAlpha = 1
     }
 
@@ -331,7 +337,7 @@ export function SharePosterModal({ selectedText, entryId }: SharePosterModalProp
     ctx.fill(foloPath)
 
     ctx.restore()
-  }, [entry, feed, mode, selectedText, authorAvatarImg])
+  }, [entry, feed, mode, selectedText, authorAvatarImg, t])
 
   useEffect(() => {
     draw()
@@ -417,7 +423,7 @@ export function SharePosterModal({ selectedText, entryId }: SharePosterModalProp
                 "hover:bg-fill/20 hover:text-text",
               )}
               whileTap={{ scale: 0.95 }}
-              title="Toggle Appearance"
+              title={t("entry_content.share_poster.toggle_appearance")}
             >
               <span
                 className={
@@ -438,7 +444,7 @@ export function SharePosterModal({ selectedText, entryId }: SharePosterModalProp
                 "hover:bg-fill/20 hover:text-text",
               )}
               whileTap={{ scale: 0.95 }}
-              title="Share to X"
+              title={t("entry_content.share_poster.share_to_x")}
             >
               <span className="i-mgc-social-x-cute-li text-base" />
             </m.button>

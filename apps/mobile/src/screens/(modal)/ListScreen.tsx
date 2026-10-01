@@ -217,7 +217,7 @@ const ScreenOptions = memo(({ title, listId }: ScreenOptionsProps) => {
                   await listSyncServices.createList({
                     list: values as CreateListModel,
                   })
-                  toast.success("List created")
+                  toast.success(t("lists.created.success"))
                   navigation.dismiss()
                 } catch (error) {
                   toastFetchError(error as Error)
@@ -238,7 +238,7 @@ const ScreenOptions = memo(({ title, listId }: ScreenOptionsProps) => {
                     ...values,
                   },
                 })
-                toast.success("List updated")
+                toast.success(t("lists.edit.success"))
                 navigation.dismiss()
               } catch (error) {
                 toastFetchError(error as Error)

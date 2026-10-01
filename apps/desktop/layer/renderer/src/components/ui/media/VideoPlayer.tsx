@@ -371,6 +371,7 @@ const VolumeControl = () => {
 }
 
 const PlayProgressBar = () => {
+  const { t } = useTranslation()
   const { state, controls } = useContext(VideoPlayerContext)
   const [currentDragging, setCurrentDragging] = useState(false)
   const [dragTime, setDragTime] = useState(0)
@@ -417,7 +418,7 @@ const PlayProgressBar = () => {
       {/* indicator */}
       <Slider.Thumb
         className="block h-3 w-[3px] rounded-[1px] bg-zinc-500 dark:bg-zinc-400"
-        aria-label="Progress"
+        aria-label={t("player.progress")}
       />
     </Slider.Root>
   )

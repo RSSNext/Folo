@@ -259,7 +259,7 @@ export const OpmlSelectionModal = ({
       {/* Search Input */}
       <div className="mb-4">
         <Input
-          placeholder={t("discover.import.search_feeds_placeholder", "Search feeds...")}
+          placeholder={t("discover.import.search_feeds_placeholder")}
           value={searchQuery}
           onChange={(e) => setSearchQuery(e.target.value)}
           className="w-full"
@@ -279,11 +279,11 @@ export const OpmlSelectionModal = ({
         <span className="font-medium">
           {searchQuery.trim() ? (
             <>
-              {t("discover.import.select_all_filtered", "Select all filtered")} (
-              {filteredSelectedCount}/{filteredSubscriptions.length})
+              {t("discover.import.select_all_filtered")} ({filteredSelectedCount}/
+              {filteredSubscriptions.length})
               {filteredSubscriptions.length < parsedData.subscriptions.length && (
                 <span className="ml-1 text-text-secondary">
-                  of {parsedData.subscriptions.length} total
+                  {t("discover.import.total_count", { total: parsedData.subscriptions.length })}
                 </span>
               )}
             </>
@@ -300,7 +300,7 @@ export const OpmlSelectionModal = ({
         <div className="space-y-2">
           {filteredSubscriptions.length === 0 && searchQuery.trim() ? (
             <div className="py-8 text-center text-text-secondary">
-              {t("discover.import.no_feeds_found", "No feeds found matching your search.")}
+              {t("discover.import.no_feeds_found")}
             </div>
           ) : (
             filteredSubscriptions.map(({ item, refIndex }) => {
@@ -320,7 +320,9 @@ export const OpmlSelectionModal = ({
                 >
                   <Checkbox checked={isSelected} disabled={wouldExceedQuota} />
                   <div className="min-w-0 flex-1 shrink">
-                    <div className="truncate font-medium">{item.title || "Untitled Feed"}</div>
+                    <div className="truncate font-medium">
+                      {item.title || t("discover.import.untitled_feed")}
+                    </div>
                     <div className="truncate text-sm text-text-secondary">{item.url}</div>
                     {item.category && (
                       <div className="mt-1 text-xs text-text-secondary opacity-80">
@@ -337,7 +339,7 @@ export const OpmlSelectionModal = ({
 
       <div className="mt-4 flex justify-end gap-3">
         <Button variant="outline" onClick={dismiss} disabled={importMutation.isPending}>
-          Cancel
+          {t("words.cancel", { ns: "common" })}
         </Button>
         <Button
           onClick={handleImport}

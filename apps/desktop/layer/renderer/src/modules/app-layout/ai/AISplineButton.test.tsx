@@ -1,3 +1,4 @@
+import appEn from "@locales/app/en.json"
 import * as React from "react"
 import { act } from "react"
 import type { Root } from "react-dom/client"
@@ -14,6 +15,17 @@ const { setAIPanelVisibilityMock, splineRenderMock, aiState } = vi.hoisted(() =>
     showSplineButton: true,
   },
 }))
+
+vi.mock("react-i18next", async (importOriginal) => {
+  const actual = await importOriginal<typeof import("react-i18next")>()
+
+  return {
+    ...actual,
+    useTranslation: () => ({
+      t: (key: keyof typeof appEn) => appEn[key] ?? key,
+    }),
+  }
+})
 
 vi.mock("~/atoms/settings/ai", () => ({
   setAIPanelVisibility: setAIPanelVisibilityMock,

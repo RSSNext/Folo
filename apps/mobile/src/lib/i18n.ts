@@ -13,6 +13,7 @@ import { defaultResources } from "@/src/@types/default-resource"
 
 import { getGeneralSettings } from "../atoms/settings/general"
 import { getE2ELanguage } from "./e2e-config"
+import { applyZodLocale } from "./zod-locale"
 
 const fallbackLanguage = "en"
 
@@ -37,6 +38,7 @@ export async function initializeI18n() {
   const { language: storedLanguage } = getGeneralSettings()
   const language = getForcedLanguage() ?? storedLanguage
 
+  i18n.on("languageChanged", applyZodLocale)
   return Promise.all([
     updateDayjsLocale(language),
     i18n.use(initReactI18next).init({

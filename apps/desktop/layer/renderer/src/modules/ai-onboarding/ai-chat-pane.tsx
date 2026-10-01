@@ -110,6 +110,7 @@ export function AIChatPane() {
 }
 
 function AIChatPaneImpl() {
+  const t = useI18n()
   const setStep = useSetAtom(stepAtom)
 
   const hasMessages = useHasMessages()
@@ -152,7 +153,8 @@ function AIChatPaneImpl() {
     <div className="relative flex h-full flex-col">
       <header className="flex w-full items-start justify-between px-4 pb-4 pt-2">
         <div className="flex items-center gap-2">
-          <Folo className="size-9" /> <span className="text-xl font-semibold">AI</span>
+          <Folo className="size-9" />{" "}
+          <span className="text-xl font-semibold">{t.app("user_button.ai")}</span>
         </div>
         <GlassButton onClick={handleSkip} variant="flat">
           <i className="i-mgc-close-cute-re" />

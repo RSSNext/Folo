@@ -218,10 +218,10 @@ export const ShortcutModalContent = ({ shortcut, onSave, onCancel }: ShortcutMod
 
         <div className="flex gap-2">
           <Button variant="outline" size="sm" onClick={onCancel}>
-            Cancel
+            {t("words.cancel", { ns: "common" })}
           </Button>
           <Button size="sm" onClick={handleSave}>
-            Save
+            {t("words.save", { ns: "common" })}
           </Button>
         </div>
       </div>

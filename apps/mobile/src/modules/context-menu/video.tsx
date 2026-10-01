@@ -63,13 +63,13 @@ export const VideoContextMenu = ({ entryId, children }: VideoContextMenuProps) =
             onSelect={() => {
               if (isEntryStarred) {
                 collectionSyncService.unstarEntry({ entryId })
-                toast.success("Unstarred")
+                toast.success(t("operation.unstar_success"))
               } else {
                 collectionSyncService.starEntry({
                   entryId,
                   view: FeedViewType.Videos,
                 })
-                toast.success("Starred")
+                toast.success(t("operation.star_success"))
               }
             }}
           >
@@ -91,7 +91,7 @@ export const VideoContextMenu = ({ entryId, children }: VideoContextMenuProps) =
             await Share.share(
               createLinkShareContent({
                 platform: Platform.OS,
-                title: entry.title || "Shared Video",
+                title: entry.title || t("operation.share_title.video"),
                 url: entry.url,
                 message: [entry.title, entry.url].filter(Boolean).join("\n"),
               }),

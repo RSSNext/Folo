@@ -56,7 +56,7 @@ export const CustomIntegrationPreview = ({
       >
         <span className="flex items-center gap-2">
           <i className="i-mingcute-eye-line" />
-          {t("integration.custom_integrations.preview.title", "Preview Request")}
+          {t("integration.custom_integrations.preview.title")}
         </span>
         <i className={cn("i-mgc-right-cute-re transition-transform", isOpen && "rotate-90")} />
       </Button>
@@ -67,14 +67,18 @@ export const CustomIntegrationPreview = ({
             <div className="flex items-center justify-center rounded-lg bg-material-medium p-4">
               <div className="flex items-center gap-2">
                 <i className="i-mgc-loading-3-cute-re animate-spin" />
-                <span className="text-sm text-text-tertiary">Generating preview...</span>
+                <span className="text-sm text-text-tertiary">
+                  {t("integration.custom_integrations.preview.generating")}
+                </span>
               </div>
             </div>
           ) : preview ? (
             <div className="space-y-3 rounded-lg bg-material-medium p-4">
               {/* Method and URL */}
               <div>
-                <h4 className="mb-2 text-sm font-medium text-text-secondary">Request</h4>
+                <h4 className="mb-2 text-sm font-medium text-text-secondary">
+                  {t("integration.custom_integrations.preview.request")}
+                </h4>
                 <div className="flex items-center gap-2 rounded bg-material-medium p-2 font-mono text-sm">
                   <span className="rounded bg-blue/10 px-2 py-1 text-xs font-bold text-blue">
                     {preview.method}
@@ -86,7 +90,9 @@ export const CustomIntegrationPreview = ({
               {/* Headers */}
               {Object.keys(preview.headers).length > 0 && (
                 <div>
-                  <h4 className="mb-2 text-sm font-medium text-text-secondary">Headers</h4>
+                  <h4 className="mb-2 text-sm font-medium text-text-secondary">
+                    {t("integration.custom_integrations.preview.headers")}
+                  </h4>
                   <div className="space-y-1 rounded bg-material-medium p-2">
                     {Object.entries(preview.headers).map(([key, value]) => (
                       <div key={key} className="flex font-mono text-sm">
@@ -103,7 +109,9 @@ export const CustomIntegrationPreview = ({
               {/* Body */}
               {preview.body && (
                 <div>
-                  <h4 className="mb-2 text-sm font-medium text-text-secondary">Request Body</h4>
+                  <h4 className="mb-2 text-sm font-medium text-text-secondary">
+                    {t("integration.custom_integrations.preview.body")}
+                  </h4>
                   <div className="max-h-40 overflow-auto rounded bg-material-medium p-2">
                     <pre className="whitespace-pre-wrap font-mono text-sm text-text-secondary">
                       {preview.body}
@@ -115,13 +123,13 @@ export const CustomIntegrationPreview = ({
               {/* Placeholders Info */}
               <div className="border-t border-border pt-3">
                 <h4 className="mb-2 text-sm font-medium text-text-secondary">
-                  Available Placeholders
+                  {t("integration.custom_integrations.preview.placeholders")}
                 </h4>
                 <div className="grid grid-cols-2 gap-2 text-xs">
                   {CustomIntegrationManager.getAvailablePlaceholders().map((placeholder) => (
                     <div key={placeholder.key} className="rounded bg-material-opaque p-2">
                       <code className="font-bold text-text">{placeholder.key}</code>
-                      <div className="mt-1 text-text-tertiary">{placeholder.description}</div>
+                      <div className="mt-1 text-text-tertiary">{t(placeholder.descriptionKey)}</div>
                     </div>
                   ))}
                 </div>
@@ -129,7 +137,9 @@ export const CustomIntegrationPreview = ({
             </div>
           ) : (
             <div className="flex items-center justify-center rounded-lg bg-material-medium p-4">
-              <span className="text-sm text-text-tertiary">Failed to generate preview</span>
+              <span className="text-sm text-text-tertiary">
+                {t("integration.custom_integrations.preview.failed")}
+              </span>
             </div>
           )}
         </div>

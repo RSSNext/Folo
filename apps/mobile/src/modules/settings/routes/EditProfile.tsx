@@ -128,12 +128,12 @@ const ProfileForm: FC<{
     "discord",
   ]
   const socialCopyMap: Record<SocialLinkKey, string> = {
-    twitter: t("profile.social.twitter", "Twitter"),
-    github: t("profile.social.github", "GitHub"),
-    instagram: t("profile.social.instagram", "Instagram"),
-    facebook: t("profile.social.facebook", "Facebook"),
-    youtube: t("profile.social.youtube", "YouTube"),
-    discord: t("profile.social.discord", "Discord"),
+    twitter: "Twitter",
+    github: "GitHub",
+    instagram: "Instagram",
+    facebook: "Facebook",
+    youtube: "YouTube",
+    discord: "Discord",
   }
   return (
     <View className="mt-4">
@@ -213,7 +213,7 @@ const ProfileForm: FC<{
           </GroupedInsetListCard>
           <GroupedOutlineDescription description={t("profile.handle.description")} />
 
-          <GroupedInsetListSectionHeader label={t("profile.bio.label", "Bio")} />
+          <GroupedInsetListSectionHeader label={t("profile.profile.bio")} />
           <GroupedInsetListCard>
             <View className="flex-1">
               <TextInput
@@ -230,7 +230,7 @@ const ProfileForm: FC<{
                   })
                 }}
                 textAlignVertical="top"
-                placeholder={t("profile.bio.placeholder", "Tell us about yourself")}
+                placeholder={t("profile.profile.bio_placeholder")}
               />
             </View>
           </GroupedInsetListCard>
@@ -238,7 +238,7 @@ const ProfileForm: FC<{
           {/* Website */}
           <GroupedInsetListCard className="mt-4">
             <GroupedInsetListCell
-              label={t("profile.website.label", "Website")}
+              label={t("profile.profile.website")}
               leftClassName="flex-none"
               rightClassName="flex-1"
             >
@@ -264,9 +264,7 @@ const ProfileForm: FC<{
           </GroupedInsetListCard>
 
           {/* Social Links */}
-          <GroupedInsetListSectionHeader
-            label={t("profile.social.title", "Social Media Handles")}
-          />
+          <GroupedInsetListSectionHeader label={t("profile.profile.social_links")} />
           <GroupedInsetListCard>
             {socialLinkFields.map((social) => (
               <GroupedInsetListCell

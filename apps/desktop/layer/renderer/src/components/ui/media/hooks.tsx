@@ -1,5 +1,6 @@
 import { isMobile } from "@follow/components/hooks/useMobile.js"
 import { use, useCallback } from "react"
+import { useTranslation } from "react-i18next"
 
 import { PlainModal } from "../modal/stacked/custom-modal"
 import { useModalStack } from "../modal/stacked/hooks"
@@ -9,6 +10,7 @@ import { PreviewMediaContent } from "./PreviewMediaContent"
 
 export const usePreviewMedia = (children?: React.ReactNode) => {
   const { present } = useModalStack()
+  const { t } = useTranslation()
   return useCallback(
     (media?: PreviewMediaProps[], initialIndex = 0) => {
       if (!media || media.length === 0) {
@@ -25,7 +27,7 @@ export const usePreviewMedia = (children?: React.ReactNode) => {
           </PreviewMediaContent>
         ),
         autoFocus: false,
-        title: "Media Preview",
+        title: t("media.preview_title"),
         overlay: false,
         overlayOptions: {
           blur: false,
@@ -35,7 +37,7 @@ export const usePreviewMedia = (children?: React.ReactNode) => {
         clickOutsideToDismiss: false,
       })
     },
-    [children, present],
+    [children, present, t],
   )
 }
 

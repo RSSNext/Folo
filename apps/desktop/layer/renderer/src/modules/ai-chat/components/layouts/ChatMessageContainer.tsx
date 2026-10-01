@@ -2,6 +2,7 @@ import { ScrollArea } from "@follow/components/ui/scroll-area/ScrollArea.js"
 import { AnimatePresence } from "motion/react"
 import type { RefObject, UIEventHandler } from "react"
 import { useCallback, useEffect, useMemo, useState } from "react"
+import { useTranslation } from "react-i18next"
 
 import { WelcomeScreen } from "~/modules/ai-chat/components/layouts/WelcomeScreen"
 import { AIChatWaitingIndicator } from "~/modules/ai-chat/components/message/AIChatMessage"
@@ -41,6 +42,7 @@ export const ChatMessageContainer = ({
   centerInputOnEmpty,
   onScrollToBottom,
 }: ChatMessageContainerProps) => {
+  const { t } = useTranslation("ai")
   const [isAtBottom, setIsAtBottom] = useState(true)
 
   useEffect(() => {
@@ -80,7 +82,7 @@ export const ChatMessageContainer = ({
                 <div className="flex -translate-y-24 flex-col items-center space-y-2">
                   <i className="i-mgc-loading-3-cute-re size-8 animate-spin text-text" />
                   {isSyncingRemote && (
-                    <p className="text-sm text-text-secondary">Syncing messages from server...</p>
+                    <p className="text-sm text-text-secondary">{t("chat.syncing_messages")}</p>
                   )}
                 </div>
               </div>

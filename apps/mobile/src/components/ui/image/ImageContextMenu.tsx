@@ -84,13 +84,13 @@ export const ImageContextMenu = ({ imageUrl, entryId, children, view }: ImageCon
               onSelect={() => {
                 if (isEntryStarred) {
                   collectionSyncService.unstarEntry({ entryId })
-                  toast.success("Unstarred")
+                  toast.success(t("operation.unstar_success"))
                 } else {
                   collectionSyncService.starEntry({
                     entryId,
                     view,
                   })
-                  toast.success("Starred")
+                  toast.success(t("operation.star_success"))
                 }
               }}
             >
@@ -121,7 +121,7 @@ export const ImageContextMenu = ({ imageUrl, entryId, children, view }: ImageCon
             }
           }}
         >
-          <ContextMenu.ItemTitle>Save to Album</ContextMenu.ItemTitle>
+          <ContextMenu.ItemTitle>{t("image.save_to_album")}</ContextMenu.ItemTitle>
           <ContextMenu.ItemIcon
             ios={{
               name: "square.and.arrow.down",

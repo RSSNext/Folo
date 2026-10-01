@@ -158,7 +158,7 @@ const FeedItemImpl = ({ view, feedId, className, isPreview }: FeedItemProps) => 
         nextItems.push(
           MenuItemSeparator.default,
           new MenuItemText({
-            label: "Feedback",
+            label: t("words.feedback", { ns: "common" }),
             click: () => {
               window.open(
                 getNewIssueUrl({

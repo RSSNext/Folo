@@ -1,4 +1,5 @@
 import { Button } from "@follow/components/ui/button/index.js"
+import { useTranslation } from "react-i18next"
 
 import { MCPPresetCard } from "./MCPPresetCard"
 import type { MCPPreset } from "./types"
@@ -13,6 +14,8 @@ export const MCPPresetSelectionModal = ({
   onPresetSelected,
   onManualConfig,
 }: MCPPresetSelectionModalProps) => {
+  const { t } = useTranslation("ai")
+
   return (
     <div className="space-y-6">
       <div className="space-y-4">
@@ -28,24 +31,26 @@ export const MCPPresetSelectionModal = ({
                 <i className="i-mgc-settings-7-cute-re size-8 text-text" />
               </div>
 
-              <h3 className="text-sm font-medium text-text">Custom</h3>
+              <h3 className="text-sm font-medium text-text">
+                {t("integration.mcp.preset.custom.title")}
+              </h3>
 
               <p className="text-xs leading-relaxed text-text-secondary">
-                Manual configuration for other MCP services
+                {t("integration.mcp.preset.custom.description")}
               </p>
 
               <div className="w-full space-y-1">
                 <div className="flex items-center text-left text-xs text-text">
                   <span className="mr-2 text-accent">•</span>
-                  <span>Custom URL & settings</span>
+                  <span>{t("integration.mcp.preset.features.custom_url")}</span>
                 </div>
                 <div className="flex items-center text-left text-xs text-text">
                   <span className="mr-2 text-accent">•</span>
-                  <span>Advanced configuration</span>
+                  <span>{t("integration.mcp.preset.features.advanced_config")}</span>
                 </div>
                 <div className="flex items-center text-left text-xs text-text">
                   <span className="mr-2 text-accent">•</span>
-                  <span>Full control</span>
+                  <span>{t("integration.mcp.preset.features.full_control")}</span>
                 </div>
               </div>
 
@@ -55,7 +60,7 @@ export const MCPPresetSelectionModal = ({
                 buttonClassName="w-full border-accent text-accent hover:bg-accent hover:text-white"
                 onClick={onManualConfig}
               >
-                Configure
+                {t("integration.mcp.preset.configure")}
               </Button>
             </div>
           </div>
@@ -67,9 +72,11 @@ export const MCPPresetSelectionModal = ({
         <div className="flex items-start space-x-3">
           <i className="i-mgc-information-cute-re mt-0.5 size-4 text-text-secondary" />
           <div className="space-y-1">
-            <p className="text-xs font-medium text-text">More services coming soon</p>
+            <p className="text-xs font-medium text-text">
+              {t("integration.mcp.preset.coming_soon.title")}
+            </p>
             <p className="text-xs text-text-secondary">
-              You can use the custom configuration option for any MCP-compatible service.
+              {t("integration.mcp.preset.coming_soon.description")}
             </p>
           </div>
         </div>
