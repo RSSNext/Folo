@@ -28,6 +28,7 @@ import { z } from "zod"
 import { useModalStack } from "~/components/ui/modal/stacked/hooks"
 import { useRequireLogin } from "~/hooks/common/useRequireLogin"
 import { followClient } from "~/lib/api-client"
+import { createErrorToaster } from "~/lib/error-parser"
 
 import {
   getDiscoverSearchData,
@@ -58,23 +59,25 @@ function detectInputType(value: string): "rss" | "rsshub" | "search" {
   return "search"
 }
 
-const searchSchema = z.object({
-  keyword: z.string().min(1),
+const rsshubRouteSchema = z.string().url().startsWith("rsshub://")
+
+const discoverSchema = z.object({
+  keyword: z
+    .string()
+    .min(1)
+    .refine(
+      (keyword) =>
+        detectInputType(keyword) !== "rsshub" ||
+        rsshubRouteSchema.safeParse(keyword.trim()).success,
+      {
+        // Resolved at validation time so the message follows the current language.
+        error: () => i18next.t("discover.invalid_rsshub_route"),
+      },
+    ),
   target: z.enum(["feeds", "lists"]),
 })
 
-const rssSchema = z.object({
-  keyword: z.string().refine(isFeedLikeUrl, {
-    // Resolved at validation time so the message follows the current language.
-    error: () => i18next.t("discover.invalid_rss_url"),
-  }),
-})
-
-const rsshubSchema = z.object({
-  keyword: z.string().url().startsWith("rsshub://"),
-})
-
-type SearchFormData = z.infer<typeof searchSchema>
+type DiscoverFormData = z.infer<typeof discoverSchema>
 
 // Compact Tool Link Component
 interface ToolLinkProps {
@@ -116,9 +119,8 @@ export function UnifiedDiscoverForm() {
     return "search"
   }, [keywordFromSearch])
 
-  // Use search form by default, but validate based on detected type
-  const form = useForm<SearchFormData>({
-    resolver: zodResolver(searchSchema),
+  const form = useForm<DiscoverFormData>({
+    resolver: zodResolver(discoverSchema),
     defaultValues: {
       keyword: keywordFromSearch || "",
       target: "feeds",
@@ -142,34 +144,6 @@ export function UnifiedDiscoverForm() {
 
   const mutation = useMutation({
     mutationFn: async ({ keyword, target }: { keyword: string; target: "feeds" | "lists" }) => {
-      const inputType = detectInputType(keyword)
-
-      // For RSS/RSSHub, validate and show feed form modal directly
-      if (inputType === "rss") {
-        const validated = rssSchema.safeParse({ keyword })
-        if (!validated.success) {
-          throw new Error(t("discover.invalid_rss_url"))
-        }
-        present({
-          title: t("feed_form.add_feed"),
-          content: () => <FeedForm url={keyword} onSuccess={dismissAll} />,
-        })
-        return []
-      }
-
-      if (inputType === "rsshub") {
-        const validated = rsshubSchema.safeParse({ keyword })
-        if (!validated.success) {
-          throw new Error(t("discover.invalid_rsshub_route"))
-        }
-        present({
-          title: t("feed_form.add_feed"),
-          content: () => <FeedForm url={keyword} onSuccess={dismissAll} />,
-        })
-        return []
-      }
-
-      // For search, perform discovery
       const { data } = await followClient.api.discover.discover({
         keyword: keyword.trim(),
         target,
@@ -182,6 +156,7 @@ export function UnifiedDiscoverForm() {
 
       return data
     },
+    onError: createErrorToaster(t("discover.search_failed")),
   })
 
   const handleKeywordChange = useCallback(
@@ -285,10 +260,21 @@ export function UnifiedDiscoverForm() {
     [form],
   )
 
-  function onSubmit(values: SearchFormData) {
+  function onSubmit(values: DiscoverFormData) {
     if (!ensureLogin()) {
       return
     }
+
+    // RSS and RSSHub input opens the feed preview directly; only keywords go through discovery
+    if (detectInputType(values.keyword) !== "search") {
+      const url = values.keyword.trim()
+      present({
+        title: t("feed_form.add_feed"),
+        content: () => <FeedForm url={url} onSuccess={dismissAll} />,
+      })
+      return
+    }
+
     atomKey.current = values.keyword + values.target
     mutation.mutate({ keyword: values.keyword, target: values.target })
   }

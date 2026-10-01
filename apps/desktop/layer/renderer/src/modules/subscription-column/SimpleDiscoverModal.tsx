@@ -22,6 +22,7 @@ import { z } from "zod"
 
 import { useModalStack } from "~/components/ui/modal/stacked/hooks"
 import { followClient } from "~/lib/api-client"
+import { createErrorToaster } from "~/lib/error-parser"
 
 import { DiscoverFeedCard } from "../discover/DiscoverFeedCard"
 import { FeedForm } from "../discover/FeedForm"
@@ -102,6 +103,7 @@ export function SimpleDiscoverModal({ dismiss }: { dismiss: () => void }) {
       jotaiStore.set(discoverSearchDataAtom, data)
       return data
     },
+    onError: createErrorToaster(t("discover.search_failed")),
   })
 
   const handleKeywordChange = useCallback(

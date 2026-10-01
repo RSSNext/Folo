@@ -1,7 +1,13 @@
 import { Button } from "@follow/components/ui/button/index.js"
 import { CollapseCss, CollapseCssGroup } from "@follow/components/ui/collapse/index.js"
 import { DropZone } from "@follow/components/ui/drop-zone/index.js"
-import { Form, FormControl, FormField, FormItem } from "@follow/components/ui/form/index.jsx"
+import {
+  Form,
+  FormControl,
+  FormField,
+  FormItem,
+  FormMessage,
+} from "@follow/components/ui/form/index.jsx"
 import { zodResolver } from "@hookform/resolvers/zod"
 import { useMutation } from "@tanstack/react-query"
 import i18next from "i18next"
@@ -192,6 +198,7 @@ export function DiscoverImport() {
                     )}
                   </DropZone>
                 </FormControl>
+                <FormMessage />
               </FormItem>
             )}
           />
