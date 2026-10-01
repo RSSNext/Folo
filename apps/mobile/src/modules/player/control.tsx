@@ -29,6 +29,7 @@ import { useVolume } from "@/src/lib/volume"
 import { useColor } from "@/src/theme/colors"
 
 import { usePlayerScreenContext } from "./context"
+import { stopEntryTts } from "./entry-tts"
 import { ttsStreamController } from "./tts-stream-controller"
 
 type ControlButtonProps = {
@@ -157,9 +158,9 @@ export function StopButton({
       hitSlop={10}
       className={className}
       onPress={() => {
-        if (ttsStream.entryId) {
-          void ttsStreamController.stop()
-        } else {
+        // Also cancels a TTS request that is still loading, so it can't start playing afterwards
+        void stopEntryTts()
+        if (!ttsStream.entryId) {
           void player.reset()
         }
         onStopped?.()

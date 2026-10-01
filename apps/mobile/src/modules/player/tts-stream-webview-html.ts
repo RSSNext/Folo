@@ -16,26 +16,32 @@ export const TTS_STREAM_WEBVIEW_HTML = String.raw`
         const TTS_MIME_FALLBACK = "audio/mpeg";
         const MIN_INITIAL_DECODE_BYTES = 24 * 1024;
         const MIN_INCREMENTAL_DECODE_BYTES = 16 * 1024;
+        const PROGRESS_INTERVAL_MS = 1000;
+        // Matches the app's start timeout: the service never pauses this long between chunks
+        const STALL_TIMEOUT_MS = 15000;
 
-        const state = {
-          abortController: null,
-          audioContext: null,
-          chunkBytesSinceLastDecode: 0,
-          chunks: [],
-          closed: false,
-          decodePromise: null,
-          decodedDuration: 0,
-          entryId: null,
-          pendingDecode: false,
-          reader: null,
-          requestId: null,
-          scheduledTime: 0,
-          status: "idle",
-          totalLength: 0,
-        };
+        // The playback that owns the audio output. A play command replaces it and a stop command
+        // clears it. Async work of an earlier playback checks isCurrent() before it touches audio
+        // or posts an event, so it can't stop or report on the playback that replaced it.
+        let current = null;
 
         const postMessage = (payload) => {
           window.ReactNativeWebView?.postMessage(JSON.stringify(payload));
+        };
+
+        const isCurrent = (playback) => current === playback;
+
+        const postPlaybackEvent = (playback, type, extra) => {
+          if (!isCurrent(playback)) {
+            return;
+          }
+
+          postMessage({
+            ...extra,
+            entryId: playback.entryId,
+            requestId: playback.requestId,
+            type,
+          });
         };
 
         const concatChunks = (chunks, totalLength) => {
@@ -70,56 +76,72 @@ export const TTS_STREAM_WEBVIEW_HTML = String.raw`
           }
         };
 
-        const stopPlayback = async () => {
-          if (state.closed) {
+        const closePlayback = (playback) => {
+          if (!playback || playback.closed) {
             return;
           }
 
-          state.closed = true;
+          playback.closed = true;
+          if (isCurrent(playback)) {
+            current = null;
+          }
+
+          clearInterval(playback.stallTimer);
 
           try {
-            state.abortController?.abort();
+            playback.abortController.abort();
           } catch {}
 
           try {
-            await state.reader?.cancel();
+            playback.reader?.cancel().catch(() => {});
           } catch {}
 
           try {
-            await state.audioContext?.close();
+            playback.audioContext?.close().catch(() => {});
           } catch {}
-
-          state.abortController = null;
-          state.audioContext = null;
-          state.chunkBytesSinceLastDecode = 0;
-          state.chunks = [];
-          state.closed = false;
-          state.decodePromise = null;
-          state.decodedDuration = 0;
-          state.entryId = null;
-          state.pendingDecode = false;
-          state.reader = null;
-          state.requestId = null;
-          state.scheduledTime = 0;
-          state.status = "idle";
-          state.totalLength = 0;
         };
 
-        const scheduleDecodedBuffer = (buffer) => {
-          if (!state.audioContext) {
+        // Tells the app that the download is still moving, so it keeps waiting for the first audio
+        const reportProgress = (playback) => {
+          const now = Date.now();
+          if (
+            playback.status !== "loading" ||
+            now - playback.lastProgressAt < PROGRESS_INTERVAL_MS
+          ) {
             return;
           }
 
-          const totalDuration = buffer.duration;
-          const newDuration = totalDuration - state.decodedDuration;
+          playback.lastProgressAt = now;
+          postPlaybackEvent(playback, "progress");
+        };
 
-          if (newDuration <= 0) {
-            state.decodedDuration = Math.max(state.decodedDuration, totalDuration);
+        // Once playing, a stalled download would leave the stream silent while the app shows it
+        // playing. Before the first audio the app's start timeout covers it.
+        const checkStall = (playback) => {
+          if (
+            !isCurrent(playback) ||
+            !playback.downloading ||
+            playback.status !== "playing" ||
+            playback.audioContext.currentTime < playback.scheduledTime ||
+            Date.now() - playback.lastChunkAt < STALL_TIMEOUT_MS
+          ) {
+            return;
+          }
+
+          postPlaybackEvent(playback, "error", { message: "TTS stream stalled" });
+          closePlayback(playback);
+        };
+
+        const scheduleDecodedBuffer = (playback, buffer) => {
+          const { audioContext } = playback;
+          const totalDuration = buffer.duration;
+
+          if (totalDuration <= playback.decodedDuration) {
             return;
           }
 
           const sampleRate = buffer.sampleRate;
-          const startSample = Math.floor(state.decodedDuration * sampleRate);
+          const startSample = Math.floor(playback.decodedDuration * sampleRate);
           const endSample = Math.floor(totalDuration * sampleRate);
           const frameCount = endSample - startSample;
 
@@ -127,7 +149,7 @@ export const TTS_STREAM_WEBVIEW_HTML = String.raw`
             return;
           }
 
-          const segmentBuffer = state.audioContext.createBuffer(
+          const segmentBuffer = audioContext.createBuffer(
             buffer.numberOfChannels,
             frameCount,
             sampleRate,
@@ -139,75 +161,75 @@ export const TTS_STREAM_WEBVIEW_HTML = String.raw`
             segmentBuffer.copyToChannel(channelData, channel, 0);
           }
 
-          const source = state.audioContext.createBufferSource();
+          const source = audioContext.createBufferSource();
           source.buffer = segmentBuffer;
-          source.connect(state.audioContext.destination);
-          source.start(state.scheduledTime);
+          source.connect(audioContext.destination);
+          // The context clock runs while the first bytes download, so a segment scheduled in the
+          // past would start right away and overlap the segment before it.
+          const startTime = Math.max(playback.scheduledTime, audioContext.currentTime);
+          source.start(startTime);
 
-          state.scheduledTime += frameCount / sampleRate;
-          state.decodedDuration = totalDuration;
+          playback.scheduledTime = startTime + frameCount / sampleRate;
+          playback.decodedDuration = totalDuration;
 
-          if (state.status !== "playing") {
-            state.status = "playing";
-            postMessage({
-              entryId: state.entryId,
-              requestId: state.requestId,
-              type: "started",
-            });
-          } else {
-            postMessage({
-              entryId: state.entryId,
-              type: "playing",
-            });
+          // A paused playback stays paused while the rest of the audio decodes
+          if (playback.status === "loading") {
+            playback.status = "playing";
+            postPlaybackEvent(playback, "started");
           }
         };
 
-        const decodeChunks = async () => {
-          if (!state.audioContext || state.closed) {
-            return;
-          }
-
-          const merged = concatChunks(state.chunks, state.totalLength);
+        const decodeChunks = async (playback) => {
+          const merged = concatChunks(playback.chunks, playback.totalLength);
 
           let decoded;
           try {
-            decoded = await state.audioContext.decodeAudioData(merged.slice(0));
+            decoded = await playback.audioContext.decodeAudioData(merged.slice(0));
           } catch {
             return;
           }
 
-          scheduleDecodedBuffer(decoded);
+          if (isCurrent(playback)) {
+            scheduleDecodedBuffer(playback, decoded);
+          }
         };
 
-        const requestDecode = () => {
-          if (state.decodePromise) {
-            state.pendingDecode = true;
+        const requestDecode = (playback) => {
+          if (!isCurrent(playback)) {
             return;
           }
 
-          state.decodePromise = decodeChunks()
+          if (playback.decodePromise) {
+            playback.pendingDecode = true;
+            return;
+          }
+
+          playback.decodePromise = decodeChunks(playback)
             .catch(() => {})
             .finally(() => {
-              state.decodePromise = null;
-              if (state.pendingDecode) {
-                state.pendingDecode = false;
-                requestDecode();
+              playback.decodePromise = null;
+              if (playback.pendingDecode) {
+                playback.pendingDecode = false;
+                requestDecode(playback);
               }
             });
         };
 
-        const processStream = async (response) => {
+        const processStream = async (playback, response) => {
           if (!response.body || !response.body.getReader) {
             const buffer = await response.arrayBuffer();
-            const decoded = await state.audioContext.decodeAudioData(buffer.slice(0));
-            scheduleDecodedBuffer(decoded);
+            playback.downloading = false;
+            const decoded = await playback.audioContext.decodeAudioData(buffer.slice(0));
+            if (isCurrent(playback)) {
+              scheduleDecodedBuffer(playback, decoded);
+            }
             return;
           }
 
-          state.reader = response.body.getReader();
+          playback.reader = response.body.getReader();
 
-          while (!state.closed) {
-            const { done, value } = await state.reader.read();
+          while (isCurrent(playback)) {
+            const { done, value } = await playback.reader.read();
             if (done) {
               break;
             }
@@ -216,59 +238,71 @@ export const TTS_STREAM_WEBVIEW_HTML = String.raw`
               continue;
             }
 
-            state.chunks.push(value);
-            state.totalLength += value.length;
-            state.chunkBytesSinceLastDecode += value.length;
+            playback.lastChunkAt = Date.now();
+            playback.chunks.push(value);
+            playback.totalLength += value.length;
+            playback.chunkBytesSinceLastDecode += value.length;
+            reportProgress(playback);
 
             const threshold =
-              state.decodedDuration === 0
+              playback.decodedDuration === 0
                 ? MIN_INITIAL_DECODE_BYTES
                 : MIN_INCREMENTAL_DECODE_BYTES;
 
-            if (state.chunkBytesSinceLastDecode >= threshold) {
-              state.chunkBytesSinceLastDecode = 0;
-              requestDecode();
+            if (playback.chunkBytesSinceLastDecode >= threshold) {
+              playback.chunkBytesSinceLastDecode = 0;
+              requestDecode(playback);
             }
           }
 
-          requestDecode();
-          if (state.decodePromise) {
-            await state.decodePromise;
+          playback.downloading = false;
+          requestDecode(playback);
+          // A decode that was running queues one more for the bytes that arrived meanwhile
+          while (playback.decodePromise) {
+            await playback.decodePromise;
           }
         };
 
-        const waitForPlaybackToFinish = async () => {
+        const waitForPlaybackToFinish = async (playback) => {
           while (
-            !state.closed &&
-            state.audioContext &&
-            state.audioContext.currentTime < state.scheduledTime
+            isCurrent(playback) &&
+            playback.audioContext.currentTime < playback.scheduledTime
           ) {
             await new Promise((resolve) => setTimeout(resolve, 200));
           }
         };
 
         const handlePlay = async (payload) => {
-          const sameEntry = state.entryId === payload.entryId;
-          if (sameEntry && (state.status === "playing" || state.status === "paused")) {
-            await handleToggle(payload);
-            return;
-          }
+          // A play command always starts over, also for the entry that is playing. The app pauses
+          // and resumes with toggle commands and waits for this request's started event.
+          closePlayback(current);
 
-          await stopPlayback();
-
-          state.abortController = new AbortController();
-          state.audioContext = getAudioContext();
-          state.chunkBytesSinceLastDecode = 0;
-          state.chunks = [];
-          state.decodedDuration = 0;
-          state.entryId = payload.entryId;
-          state.requestId = payload.requestId;
-          state.scheduledTime = state.audioContext.currentTime;
-          state.status = "loading";
-          state.totalLength = 0;
+          const playback = {
+            abortController: new AbortController(),
+            audioContext: null,
+            chunkBytesSinceLastDecode: 0,
+            chunks: [],
+            closed: false,
+            decodePromise: null,
+            decodedDuration: 0,
+            downloading: false,
+            entryId: payload.entryId,
+            lastChunkAt: 0,
+            lastProgressAt: 0,
+            pendingDecode: false,
+            reader: null,
+            requestId: payload.requestId,
+            scheduledTime: 0,
+            stallTimer: null,
+            status: "loading",
+            totalLength: 0,
+          };
+          current = playback;
 
           try {
-            await state.audioContext.resume();
+            playback.audioContext = getAudioContext();
+            playback.scheduledTime = playback.audioContext.currentTime;
+            await playback.audioContext.resume();
 
             const response = await fetch(TTS_SERVICE_URL + "/tts", {
               body: JSON.stringify({
@@ -280,58 +314,51 @@ export const TTS_STREAM_WEBVIEW_HTML = String.raw`
                 Accept: TTS_MIME_FALLBACK,
               },
               method: "POST",
-              signal: state.abortController.signal,
+              signal: playback.abortController.signal,
             });
 
             if (!response.ok) {
               throw new Error(await readErrorMessage(response));
             }
 
-            await processStream(response);
-            await waitForPlaybackToFinish();
+            playback.downloading = true;
+            playback.lastChunkAt = Date.now();
+            playback.stallTimer = setInterval(() => checkStall(playback), 1000);
+            reportProgress(playback);
+            await processStream(playback, response);
 
-            postMessage({
-              entryId: payload.entryId,
-              type: "ended",
-            });
-          } catch (error) {
-            if (state.abortController?.signal.aborted) {
-              return;
+            if (isCurrent(playback) && playback.status === "loading") {
+              throw new Error("TTS stream contained no playable audio");
             }
 
-            postMessage({
-              entryId: payload.entryId,
+            await waitForPlaybackToFinish(playback);
+            postPlaybackEvent(playback, "ended");
+          } catch (error) {
+            postPlaybackEvent(playback, "error", {
               message: error instanceof Error ? error.message : "TTS streaming failed",
-              requestId: payload.requestId,
-              type: "error",
             });
           } finally {
-            await stopPlayback();
+            closePlayback(playback);
           }
         };
 
         const handleToggle = async (payload) => {
-          if (!state.audioContext || state.entryId !== payload.entryId) {
+          const playback = current;
+          if (!playback || playback.entryId !== payload.entryId) {
             return;
           }
 
-          if (state.status === "playing") {
-            await state.audioContext.suspend();
-            state.status = "paused";
-            postMessage({
-              entryId: payload.entryId,
-              type: "paused",
-            });
+          if (playback.status === "playing") {
+            playback.status = "paused";
+            await playback.audioContext.suspend();
+            postPlaybackEvent(playback, "paused");
             return;
           }
 
-          if (state.status === "paused") {
-            await state.audioContext.resume();
-            state.status = "playing";
-            postMessage({
-              entryId: payload.entryId,
-              type: "playing",
-            });
+          if (playback.status === "paused") {
+            playback.status = "playing";
+            await playback.audioContext.resume();
+            postPlaybackEvent(playback, "playing");
           }
         };
 
@@ -354,11 +381,7 @@ export const TTS_STREAM_WEBVIEW_HTML = String.raw`
           }
 
           if (payload.type === "stop") {
-            await stopPlayback();
-            postMessage({
-              entryId: state.entryId,
-              type: "ended",
-            });
+            closePlayback(current);
           }
         };
 
