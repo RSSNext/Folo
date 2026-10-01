@@ -1,28 +1,20 @@
 import { clsx } from "@follow/utils"
 import { GlassView } from "expo-glass-effect"
-import { useAtomValue } from "jotai"
-import { use } from "react"
 import { Pressable, StyleSheet, View } from "react-native"
 
 import { Image } from "@/src/components/ui/image/Image"
 import { Text } from "@/src/components/ui/typography/Text"
-import { BottomTabContext } from "@/src/lib/navigation/bottom-tab/BottomTabContext"
 import { useNavigation } from "@/src/lib/navigation/hooks"
 import { useActivePlayable } from "@/src/lib/player"
 import { PlayerScreen } from "@/src/screens/PlayerScreen"
 import { usePrefetchImageColors } from "@/src/store/image/hooks"
 
 import { PlayPauseButton, SeekButton, StopButton } from "./control"
+import { useShouldShowPlayerBar } from "./hooks"
 
-const allowedTabIdentifiers = new Set(["IndexTabScreen", "SubscriptionsTabScreen"])
 export function GlassPlayerTabBar({ className }: { className?: string }) {
   const activePlayable = useActivePlayable()
-  const tabRootCtx = use(BottomTabContext)
-  const tabScreens = useAtomValue(tabRootCtx.tabScreensAtom)
-  const currentIndex = useAtomValue(tabRootCtx.currentIndexAtom)
-  const currentTabProps = tabScreens.find((tabScreen) => tabScreen.tabScreenIndex === currentIndex)
-  const identifier = currentTabProps?.identifier
-  const isVisible = !!activePlayable && identifier && allowedTabIdentifiers.has(identifier)
+  const isVisible = useShouldShowPlayerBar()
 
   usePrefetchImageColors(activePlayable?.artwork ?? undefined)
   const navigation = useNavigation()
