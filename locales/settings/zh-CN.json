@@ -599,7 +599,7 @@
   "lists.info": "列表是可以分享或出售给他人订阅的订阅源集合，订阅者将会同步并访问列表中的所有订阅源。",
   "lists.manage_list": "管理列表",
   "lists.noLists": "没有列表",
-  "lists.select_feeds": "选择要添加到当前列表的订阅源。",
+  "lists.select_feeds": "选择要添加到当前列表的订阅源",
   "lists.subscriptions": "订阅",
   "lists.title": "标题",
   "lists.view": "视图",

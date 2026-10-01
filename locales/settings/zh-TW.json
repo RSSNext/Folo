@@ -599,7 +599,7 @@
   "lists.info": "列表是您可以分享或出售給他人訂閱的 RSS 摘要集合。訂閱者將同步並訪問列表中的所有 RSS 摘要。",
   "lists.manage_list": "管理列表",
   "lists.noLists": "沒有列表",
-  "lists.select_feeds": "選擇要新增到當前列表的 RSS 摘要",
+  "lists.select_feeds": "選擇要新增到目前列表的 RSS 摘要",
   "lists.subscriptions": "訂閱",
   "lists.title": "標題",
   "lists.view": "查看",

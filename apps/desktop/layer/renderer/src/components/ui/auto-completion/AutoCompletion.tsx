@@ -7,7 +7,6 @@ import { Combobox, ComboboxInput, ComboboxOption, ComboboxOptions } from "@headl
 import Fuse from "fuse.js"
 import { AnimatePresence, m } from "motion/react"
 import { Fragment, memo, useCallback, useEffect, useState } from "react"
-import { useTranslation } from "react-i18next"
 
 export type Suggestion = {
   name: string
@@ -38,7 +37,6 @@ export const Autocomplete = ({
   defaultValue,
   ...inputProps
 }: AutocompleteProps & { ref?: React.Ref<HTMLInputElement | null> }) => {
-  const { t } = useTranslation()
   const [selectedOptions, setSelectedOptions] = useState<NoInfer<Suggestion> | null>(
     () => suggestions.find((suggestion) => suggestion.value === value) || null,
   )
@@ -80,7 +78,6 @@ export const Autocomplete = ({
               ref={forwardedRef}
               as={Input}
               autoComplete="off"
-              aria-label={t("feed_form.select_category")}
               displayValue={renderSuggestion}
               value={value}
               {...inputProps}
