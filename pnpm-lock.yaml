@@ -1579,9 +1579,6 @@ importers:
       tailwindcss:
         specifier: 3.4.19
         version: 3.4.19(tsx@4.23.15)(yaml@2.9.0)
-      title-case:
-        specifier: 4.3.2
-        version: 4.3.2
       use-sync-external-store:
         specifier: 1.7.0
         version: 1.7.0(react@19.2.8)
@@ -2587,6 +2584,9 @@ importers:
       tailwind-merge:
         specifier: 3.7.0
         version: 3.7.0
+      title-case:
+        specifier: 4.3.2
+        version: 4.3.2
       tldts:
         specifier: 7.4.14
         version: 7.4.14

@@ -7,16 +7,16 @@ import { useFeedById } from "@follow/store/feed/hooks"
 import { useInboxById } from "@follow/store/inbox/hooks"
 import { clsx, cn, formatEstimatedMins, formatTimeToSeconds, isSafari } from "@follow/utils/utils"
 import { useMemo } from "react"
-import { titleCase } from "title-case"
 
 import { AudioPlayer, useAudioPlayerAtomSelector } from "~/atoms/player"
-import { useGeneralSettingKey } from "~/atoms/settings/general"
+import { useActionLanguage, useGeneralSettingKey } from "~/atoms/settings/general"
 import { useUISettingKey } from "~/atoms/settings/ui"
 import { RelativeTime } from "~/components/ui/datetime"
 import { Media } from "~/components/ui/media/Media"
 import { FEED_COLLECTION_LIST } from "~/constants"
 import { useEntryIsRead } from "~/hooks/biz/useAsRead"
 import { useRouteParamsSelector } from "~/hooks/biz/useRouteParams"
+import { useTitleCaseIfEnglish } from "~/hooks/common/useTitleCaseIfEnglish"
 import { EntryTranslation } from "~/modules/entry-column/translation"
 import type { FeedIconEntry } from "~/modules/feed/feed-icon"
 import { FeedIcon } from "~/modules/feed/feed-icon"
@@ -28,7 +28,16 @@ import type { UniversalItemProps } from "../types"
 
 const entrySelector = (state: EntryModel) => {
   /// keep-sorted
-  const { authorAvatar, authorUrl, description, feedId, inboxHandle, publishedAt, title } = state
+  const {
+    authorAvatar,
+    authorUrl,
+    description,
+    feedId,
+    inboxHandle,
+    language,
+    publishedAt,
+    title,
+  } = state
 
   const audios = state.attachments?.filter((a) => a.mime_type?.startsWith("audio") && a.url)
   const firstAudio = audios?.[0]
@@ -47,6 +56,7 @@ const entrySelector = (state: EntryModel) => {
     firstMedia,
     firstPhotoUrl,
     inboxId: inboxHandle,
+    language,
     publishedAt,
     title,
   }
@@ -87,6 +97,8 @@ export function ListItem({
   const rid = `list-item-${entryId}`
 
   const bilingual = useGeneralSettingKey("translationMode") === "bilingual"
+  const actionLanguage = useActionLanguage()
+  const titleCaseIfEnglish = useTitleCaseIfEnglish()
 
   const iconEntry: FeedIconEntry = useMemo(
     () => ({
@@ -211,8 +223,8 @@ export function ListItem({
           {entry?.title ? (
             <EntryTranslation
               className={cn("autospace-normal hyphens-auto font-medium", lineClamp.title)}
-              source={titleCase(entry?.title ?? "")}
-              target={titleCase(translation?.title ?? "")}
+              source={titleCaseIfEnglish(entry?.title ?? "", entry?.language)}
+              target={titleCaseIfEnglish(translation?.title ?? "", actionLanguage)}
             />
           ) : (
             <EntryTranslation

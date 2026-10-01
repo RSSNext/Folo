@@ -4,7 +4,6 @@ import { useInboxById } from "@follow/store/inbox/hooks"
 import { useEntryTranslation } from "@follow/store/translation/hooks"
 import { cn, formatEstimatedMins, formatTimeToSeconds } from "@follow/utils"
 import { useMemo } from "react"
-import { titleCase } from "title-case"
 import { useShallow } from "zustand/shallow"
 
 import { useShowAITranslation } from "~/atoms/ai-translation"
@@ -13,6 +12,7 @@ import { useUISettingKey } from "~/atoms/settings/ui"
 import { RelativeTime } from "~/components/ui/datetime"
 import { useNavigateEntry } from "~/hooks/biz/useNavigateEntry"
 import { useFeedSafeUrl } from "~/hooks/common/useFeedSafeUrl"
+import { useTitleCaseIfEnglish } from "~/hooks/common/useTitleCaseIfEnglish"
 import type { FeedIconEntry } from "~/modules/feed/feed-icon"
 import { FeedIcon } from "~/modules/feed/feed-icon"
 import { getPreferredTitle } from "~/store/feed/hooks"
@@ -37,7 +37,8 @@ export const EntryTitle = ({
     entryId,
     useShallow((state) => {
       /// keep-sorted
-      const { author, authorAvatar, authorUrl, feedId, inboxHandle, publishedAt, title } = state
+      const { author, authorAvatar, authorUrl, feedId, inboxHandle, language, publishedAt, title } =
+        state
 
       const attachments = state.attachments || []
       const { duration_in_seconds } =
@@ -58,6 +59,7 @@ export const EntryTitle = ({
         feedId,
         firstPhotoUrl,
         inboxId: inboxHandle,
+        language,
         publishedAt,
         title,
       }
@@ -76,6 +78,8 @@ export const EntryTitle = ({
     language: actionLanguage,
     enabled: enableTranslation,
   })
+
+  const titleCaseIfEnglish = useTitleCaseIfEnglish()
 
   const dateFormat = useUISettingKey("dateFormat")
 
@@ -127,8 +131,8 @@ export const EntryTitle = ({
           )}
         >
           <EntryTranslation
-            source={titleCase(entry.title ?? "")}
-            target={titleCase(translation?.title ?? "")}
+            source={titleCaseIfEnglish(entry.title ?? "", entry.language)}
+            target={titleCaseIfEnglish(translation?.title ?? "", actionLanguage)}
             className="autospace-normal inline-block select-text hyphens-auto text-text duration-200"
             inline={false}
           />

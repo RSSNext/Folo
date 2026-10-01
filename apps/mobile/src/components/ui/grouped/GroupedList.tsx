@@ -1,13 +1,14 @@
 import { cn } from "@follow/utils"
+import { titleCaseIfEnglish } from "@follow/utils/title-case"
 import { SymbolView } from "expo-symbols"
 import type { FC, PropsWithChildren } from "react"
 import * as React from "react"
 import { Fragment } from "react"
+import { useTranslation } from "react-i18next"
 import type { PressableProps, ViewProps, ViewStyle } from "react-native"
 import { Pressable, StyleSheet, View } from "react-native"
 import Animated, { FadeIn, FadeOut } from "react-native-reanimated"
 import type { SFSymbol } from "sf-symbols-typescript"
-import { titleCase } from "title-case"
 
 import { Text } from "@/src/components/ui/typography/Text"
 import { CheckFilledIcon } from "@/src/icons/check_filled"
@@ -244,6 +245,8 @@ export const GroupedInsetListCell: FC<
   onPress,
   testID,
 }) => {
+  const { i18n } = useTranslation()
+
   return (
     <GroupedInsetListBaseCell
       testID={testID}
@@ -258,7 +261,7 @@ export const GroupedInsetListCell: FC<
       <View className={cn("flex-1 gap-1", leftClassName)}>
         <View className="flex-row items-center gap-2">
           {!!icon && <SymbolView name={icon} size={20} tintColor="black" />}
-          <Text className="text-sm text-label">{titleCase(label)}</Text>
+          <Text className="text-sm text-label">{titleCaseIfEnglish(label, i18n.language)}</Text>
         </View>
         {!!description && (
           <Text className="text-xs leading-tight text-secondary-label">{description}</Text>
