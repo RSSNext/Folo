@@ -43,23 +43,24 @@ const release = (controller: AbortController) => {
 
 /**
  * The fetch promise settles once the headers arrive, but the native task, and the closure it
- * holds, live on until the body finished. Keep the request in flight until the response says it
- * is done; responses without that signal count as done right away.
+ * holds, live on until the body finished. Keep the request in flight, and the caller's abort
+ * forwarded, until the response says it is done; responses without that signal count as done
+ * right away.
  */
-const releaseWhenFinalized = (controller: AbortController, response: unknown) => {
+const settleWhenFinalized = (response: unknown, settle: () => void) => {
   const emitter = response as FinalizableResponse | null
   if (!emitter || typeof emitter.addListener !== "function") {
-    release(controller)
+    settle()
     return
   }
 
   try {
     const subscription = emitter.addListener(FINALIZATION_EVENT, () => {
       subscription.remove()
-      release(controller)
+      settle()
     })
   } catch {
-    release(controller)
+    settle()
   }
 }
 
@@ -81,18 +82,22 @@ export const trackFetch = <TInput, TInit extends FetchInit, TResponse>(
       outerSignal?.addEventListener("abort", forwardAbort, { once: true })
     }
 
+    // The caller's abort also cancels a body that is still downloading, as with a plain fetch
+    const settle = () => {
+      outerSignal?.removeEventListener("abort", forwardAbort)
+      release(controller)
+    }
+
     inFlight.add(controller)
     let response: TResponse
     try {
       response = await fetchImpl(input, { ...init, signal: controller.signal } as TInit)
     } catch (error) {
-      outerSignal?.removeEventListener("abort", forwardAbort)
-      release(controller)
+      settle()
       throw error
     }
 
-    outerSignal?.removeEventListener("abort", forwardAbort)
-    releaseWhenFinalized(controller, response)
+    settleWhenFinalized(response, settle)
     return response
   }
 }
