@@ -1,0 +1,9 @@
+{
+  "name": "Folo: lettore RSS con IA",
+  "subtitle": "Notizie e blog in sintesi",
+  "promotionalText": "Lascia che sia l’IA a leggere per prima: riassunti immediati, traduzioni affiancate e lettura ad alta voce per tutto ciò che segui, in un’unica timeline pulita.",
+  "keywords": {
+    "ios": "feed,aggregatore,news,rassegna,stampa,giornali,podcast,newsletter,traduzione,riassunto,video,rsshub",
+    "macos": "feed,aggregatore,news,rassegna,stampa,giornali,podcast,newsletter,traduzione,riassunto,chat,mcp,tech"
+  }
+}

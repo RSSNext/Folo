@@ -1,0 +1,599 @@
+{
+  "categories": {
+    "tech": {
+      "en": "Tech",
+      "zh-Hans": "科技",
+      "zh-Hant": "科技",
+      "ja": "テック",
+      "fr": "Tech"
+    },
+    "ai": {
+      "en": "AI",
+      "zh-Hans": "AI",
+      "zh-Hant": "AI",
+      "ja": "AI",
+      "fr": "IA"
+    },
+    "science": {
+      "en": "Science",
+      "zh-Hans": "科学",
+      "zh-Hant": "科學",
+      "ja": "サイエンス",
+      "fr": "Sciences"
+    },
+    "reading": {
+      "en": "Reading",
+      "zh-Hans": "阅读",
+      "zh-Hant": "閱讀",
+      "ja": "読みもの",
+      "fr": "Lecture"
+    },
+    "design": {
+      "en": "Design",
+      "zh-Hans": "设计",
+      "zh-Hant": "設計",
+      "ja": "デザイン",
+      "fr": "Design"
+    },
+    "photography": {
+      "en": "Photography",
+      "zh-Hans": "摄影",
+      "zh-Hant": "攝影",
+      "ja": "写真",
+      "fr": "Photographie"
+    },
+    "videos": {
+      "en": "Watch",
+      "zh-Hans": "视频",
+      "zh-Hant": "影片",
+      "ja": "動画",
+      "fr": "Vidéos"
+    },
+    "podcasts": {
+      "en": "Podcasts",
+      "zh-Hans": "播客",
+      "zh-Hant": "Podcast",
+      "ja": "ポッドキャスト",
+      "fr": "Podcasts"
+    },
+    "social": {
+      "en": "Social",
+      "zh-Hans": "社交",
+      "zh-Hant": "社群",
+      "ja": "SNS",
+      "fr": "Réseaux"
+    },
+    "translation": {
+      "en": "World",
+      "zh-Hans": "海外",
+      "zh-Hant": "海外",
+      "ja": "海外",
+      "fr": "International"
+    }
+  },
+  "shared": [
+    {
+      "url": "rsshub://nasa/apod",
+      "view": 2,
+      "category": "photography"
+    },
+    {
+      "url": "rsshub://1x",
+      "view": 2,
+      "category": "photography"
+    },
+    {
+      "url": "rsshub://magnumphotos/magazine",
+      "view": 2,
+      "category": "photography"
+    },
+    {
+      "url": "rsshub://natgeo/dailyphoto",
+      "view": 2,
+      "category": "photography"
+    },
+    {
+      "url": "rsshub://twitter/user/OpenAI",
+      "view": 1,
+      "category": "social"
+    },
+    {
+      "url": "rsshub://twitter/user/github",
+      "view": 1,
+      "category": "social"
+    },
+    {
+      "url": "rsshub://bsky/profile/bsky.app",
+      "view": 1,
+      "category": "social"
+    }
+  ],
+  "locales": {
+    "en": [
+      {
+        "url": "https://github.blog/feed/",
+        "view": 0,
+        "category": "tech"
+      },
+      {
+        "url": "https://openai.com/news/rss.xml",
+        "view": 0,
+        "category": "ai"
+      },
+      {
+        "url": "rsshub://anthropic/news",
+        "view": 0,
+        "category": "ai"
+      },
+      {
+        "url": "https://magazine.sebastianraschka.com/feed",
+        "view": 0,
+        "category": "ai"
+      },
+      {
+        "url": "https://www.designboom.com/feed/",
+        "view": 0,
+        "category": "design"
+      },
+      {
+        "url": "https://www.quantamagazine.org/feed/",
+        "view": 0,
+        "category": "science"
+      },
+      {
+        "url": "https://www.smashingmagazine.com/feed/",
+        "view": 0,
+        "category": "design"
+      },
+      {
+        "url": "https://www.thisiscolossal.com/feed/",
+        "view": 0,
+        "category": "design"
+      },
+      {
+        "url": "https://aeon.co/feed.rss",
+        "view": 0,
+        "category": "reading"
+      },
+      {
+        "url": "https://www.smithsonianmag.com/rss/latest_articles/",
+        "view": 0,
+        "category": "science"
+      },
+      {
+        "url": "https://feeds.acast.com/public/shows/67587e77c705e441797aff96",
+        "view": 4,
+        "category": "podcasts"
+      },
+      {
+        "url": "rsshub://youtube/user/%40bbcearth",
+        "view": 3,
+        "category": "videos"
+      },
+      {
+        "url": "rsshub://youtube/user/%40NatGeo",
+        "view": 3,
+        "category": "videos"
+      },
+      {
+        "url": "rsshub://youtube/user/%40TED",
+        "view": 3,
+        "category": "videos"
+      },
+      {
+        "url": "rsshub://youtube/user/%40TheVerge",
+        "view": 3,
+        "category": "videos"
+      },
+      {
+        "url": "rsshub://youtube/user/%40PBSSpaceTime",
+        "view": 3,
+        "category": "videos"
+      },
+      {
+        "url": "rsshub://youtube/user/%40kurzgesagt",
+        "view": 3,
+        "category": "videos"
+      },
+      {
+        "url": "rsshub://youtube/user/%40mkbhd",
+        "view": 3,
+        "category": "videos"
+      },
+      {
+        "url": "rsshub://youtube/user/%403blue1brown",
+        "view": 3,
+        "category": "videos"
+      },
+      {
+        "url": "https://feeds.megaphone.fm/hubermanlab",
+        "view": 4,
+        "category": "podcasts"
+      },
+      {
+        "url": "https://feeds.megaphone.fm/recodedecode",
+        "view": 4,
+        "category": "podcasts"
+      },
+      {
+        "url": "https://feeds.transistor.fm/acquired",
+        "view": 4,
+        "category": "podcasts"
+      }
+    ],
+    "zh-Hans": [
+      {
+        "url": "https://sspai.com/feed",
+        "view": 0,
+        "category": "tech"
+      },
+      {
+        "url": "https://www.ifanr.com/feed",
+        "view": 0,
+        "category": "tech"
+      },
+      {
+        "url": "https://www.geekpark.net/rss",
+        "view": 0,
+        "category": "tech"
+      },
+      {
+        "url": "https://www.ruanyifeng.com/blog/atom.xml",
+        "view": 0,
+        "category": "reading"
+      },
+      {
+        "url": "https://www.appinn.com/feed/",
+        "view": 0,
+        "category": "reading"
+      },
+      {
+        "url": "rsshub://zhihu/daily",
+        "view": 0,
+        "category": "reading"
+      },
+      {
+        "url": "rsshub://guokr/scientific",
+        "view": 0,
+        "category": "science"
+      },
+      {
+        "url": "rsshub://bilibili/user/video/946974",
+        "view": 3,
+        "category": "videos"
+      },
+      {
+        "url": "rsshub://bilibili/user/video/25876945",
+        "view": 3,
+        "category": "videos"
+      },
+      {
+        "url": "rsshub://bilibili/user/video/163637592",
+        "view": 3,
+        "category": "videos"
+      },
+      {
+        "url": "rsshub://bilibili/user/video/19319172",
+        "view": 3,
+        "category": "videos"
+      },
+      {
+        "url": "rsshub://bilibili/user/video/9458053",
+        "view": 3,
+        "category": "videos"
+      },
+      {
+        "url": "rsshub://bilibili/user/video/254463269",
+        "view": 3,
+        "category": "videos"
+      },
+      {
+        "url": "https://feeds.fireside.fm/sv101/rss",
+        "view": 4,
+        "category": "podcasts"
+      },
+      {
+        "url": "https://justpodmedia.com/rss/left-right.xml",
+        "view": 4,
+        "category": "podcasts"
+      },
+      {
+        "url": "rsshub://xiaoyuzhou/podcast/6013f9f58e2f7ee375cf4216",
+        "view": 4,
+        "category": "podcasts"
+      }
+    ],
+    "zh-Hant": [
+      {
+        "url": "https://mashdigi.com/feed/",
+        "view": 0,
+        "category": "tech"
+      },
+      {
+        "url": "https://applealmond.com/feed",
+        "view": 0,
+        "category": "tech"
+      },
+      {
+        "url": "https://www.digitimes.com.tw/tech/rss/xml/xmlrss_10_0.xml",
+        "view": 0,
+        "category": "tech"
+      },
+      {
+        "url": "https://crossing.cw.com.tw/rss",
+        "view": 0,
+        "category": "reading"
+      },
+      {
+        "url": "https://pansci.asia/feed",
+        "view": 0,
+        "category": "science"
+      },
+      {
+        "url": "https://www.youtube.com/feeds/videos.xml?playlist_id=UULFPRWWKG0VkBA0Pqa4Jr5j0Q",
+        "view": 3,
+        "category": "videos",
+        "title": "Joeman"
+      },
+      {
+        "url": "https://www.youtube.com/feeds/videos.xml?playlist_id=UULFeo3JwE3HezUWFdVcehQk9Q",
+        "view": 3,
+        "category": "videos",
+        "title": "阿滴英文"
+      },
+      {
+        "url": "https://www.youtube.com/feeds/videos.xml?playlist_id=UULFmoOnxeTHUcUBWFNSUR8HvQ",
+        "view": 3,
+        "category": "videos",
+        "title": "3cTim 哥"
+      },
+      {
+        "url": "https://www.youtube.com/feeds/videos.xml?playlist_id=UULF5r-9EMDERXlUni-UWAtTdg",
+        "view": 3,
+        "category": "videos",
+        "title": "科技狗 3C Dog"
+      },
+      {
+        "url": "https://www.youtube.com/feeds/videos.xml?playlist_id=UULFIF_gt4BfsWyM_2GOcKXyEQ",
+        "view": 3,
+        "category": "videos",
+        "title": "啾啾鞋"
+      },
+      {
+        "url": "https://www.youtube.com/feeds/videos.xml?playlist_id=UULFAr4MVsPBKjhg5eLDDpbDFg",
+        "view": 3,
+        "category": "videos",
+        "title": "電獺少女"
+      },
+      {
+        "url": "https://feed.firstory.me/rss/user/cm3o5681s06e801v3fxpjehwb",
+        "view": 4,
+        "category": "podcasts"
+      },
+      {
+        "url": "https://anchor.fm/s/120c33e0/podcast/rss",
+        "view": 4,
+        "category": "podcasts"
+      },
+      {
+        "url": "https://feeds.soundon.fm/podcasts/6731d283-54f0-49ec-a040-e5a641c3125f.xml",
+        "view": 4,
+        "category": "podcasts"
+      },
+      {
+        "url": "https://feeds.soundon.fm/podcasts/45edd1fd-3ad0-4e95-aaa8-b229856181c4.xml",
+        "view": 4,
+        "category": "podcasts"
+      }
+    ],
+    "ja": [
+      {
+        "url": "https://smhn.info/feed",
+        "view": 0,
+        "category": "tech"
+      },
+      {
+        "url": "https://zenn.dev/feed",
+        "view": 0,
+        "category": "tech"
+      },
+      {
+        "url": "https://www.lifehacker.jp/feed/index.xml",
+        "view": 0,
+        "category": "reading"
+      },
+      {
+        "url": "https://tabi-labo.com/feed",
+        "view": 0,
+        "category": "reading"
+      },
+      {
+        "url": "https://www.roomie.jp/feed/",
+        "view": 0,
+        "category": "reading"
+      },
+      {
+        "url": "https://dailyportalz.jp/feed/headline",
+        "view": 0,
+        "category": "reading"
+      },
+      {
+        "url": "https://sorae.info/feed",
+        "view": 0,
+        "category": "science"
+      },
+      {
+        "url": "https://www.youtube.com/feeds/videos.xml?playlist_id=UULFmpkIzF3xFzhPez7gXOyhVg",
+        "view": 3,
+        "category": "videos",
+        "title": "ゆる言語学ラジオ"
+      },
+      {
+        "url": "https://www.youtube.com/feeds/videos.xml?playlist_id=UULFQ_MqAw18jFTlBB-f8BP7dw",
+        "view": 3,
+        "category": "videos",
+        "title": "QuizKnock"
+      },
+      {
+        "url": "https://www.youtube.com/feeds/videos.xml?playlist_id=UULFqmWJJolqAgjIdLqK3zD1QQ",
+        "view": 3,
+        "category": "videos",
+        "title": "ヨビノリ"
+      },
+      {
+        "url": "https://www.youtube.com/feeds/videos.xml?playlist_id=UULFZm3dECbQU33IWG5MQ-NAdw",
+        "view": 3,
+        "category": "videos",
+        "title": "ギズモード・ジャパン"
+      },
+      {
+        "url": "https://www.youtube.com/feeds/videos.xml?playlist_id=UULFCD76tKlE45u1YTX0cVh1OQ",
+        "view": 3,
+        "category": "videos",
+        "title": "Appleが大好きなんだよ"
+      },
+      {
+        "url": "https://www.youtube.com/feeds/videos.xml?playlist_id=UULFBevyiJ2ierZY-0yZhfLrmQ",
+        "view": 3,
+        "category": "videos",
+        "title": "3Blue1Brown Japan"
+      },
+      {
+        "url": "https://anchor.fm/s/8c2088c/podcast/rss",
+        "view": 4,
+        "category": "podcasts"
+      },
+      {
+        "url": "https://api.robotstart.jp/api/v1/feeds/35ac047a/get-feeds/podcast",
+        "view": 4,
+        "category": "podcasts"
+      },
+      {
+        "url": "https://api.robotstart.jp/api/v1/feeds/35d00481/get-feeds/podcast",
+        "view": 4,
+        "category": "podcasts"
+      },
+      {
+        "url": "https://feeds.rebuild.fm/rebuildfm",
+        "view": 4,
+        "category": "podcasts"
+      }
+    ],
+    "fr": [
+      {
+        "url": "https://www.numerama.com/feed/",
+        "view": 0,
+        "category": "tech"
+      },
+      {
+        "url": "https://korben.info/feed",
+        "view": 0,
+        "category": "tech"
+      },
+      {
+        "url": "https://www.blogdumoderateur.com/feed/",
+        "view": 0,
+        "category": "tech"
+      },
+      {
+        "url": "https://siecledigital.fr/feed/",
+        "view": 0,
+        "category": "tech"
+      },
+      {
+        "url": "https://www.futura-sciences.com/rss/actualites.xml",
+        "view": 0,
+        "category": "science"
+      },
+      {
+        "url": "https://www.youtube.com/feeds/videos.xml?playlist_id=UULFgoxc-VKU0cw9BcM9z_qokg",
+        "view": 3,
+        "category": "videos",
+        "title": "Frandroid"
+      },
+      {
+        "url": "https://www.youtube.com/feeds/videos.xml?playlist_id=UULFqRSWOqkW_oelrdUN7KQ-aQ",
+        "view": 3,
+        "category": "videos",
+        "title": "Les Numériques"
+      },
+      {
+        "url": "https://www.youtube.com/feeds/videos.xml?playlist_id=UULFWedHS9qKebauVIK2J7383g",
+        "view": 3,
+        "category": "videos",
+        "title": "Underscore_"
+      },
+      {
+        "url": "https://www.youtube.com/feeds/videos.xml?playlist_id=UULFYnvxJ-PKiGXo_tYXpWAC-w",
+        "view": 3,
+        "category": "videos",
+        "title": "Micode"
+      },
+      {
+        "url": "https://www.youtube.com/feeds/videos.xml?playlist_id=UULFaNlbnghtwlsGF-KzAFThqA",
+        "view": 3,
+        "category": "videos",
+        "title": "ScienceEtonnante"
+      },
+      {
+        "url": "https://www.youtube.com/feeds/videos.xml?playlist_id=UULFSULDz1yaHLVQWHpm4g_GHA",
+        "view": 3,
+        "category": "videos",
+        "title": "Monsieur Bidouille"
+      },
+      {
+        "url": "https://www.youtube.com/feeds/videos.xml?playlist_id=UULFH6rAZUDfVIoVSJjm3vlcnw",
+        "view": 3,
+        "category": "videos",
+        "title": "Vasco"
+      },
+      {
+        "url": "https://feeds.audiomeans.fr/feed/d6ddb849-3100-43b2-91a5-93f54fe4c4b5.xml",
+        "view": 4,
+        "category": "podcasts"
+      },
+      {
+        "url": "https://feeds.acast.com/public/shows/660681b953b2df00165f1c32",
+        "view": 4,
+        "category": "podcasts"
+      },
+      {
+        "url": "https://feeds.audiomeans.fr/feed/b4a5ee3a-9230-4f9f-988d-2ae156a2d5a9.xml",
+        "view": 4,
+        "category": "podcasts"
+      },
+      {
+        "url": "https://feed.ausha.co/DPOJLTk1MlKx",
+        "view": 4,
+        "category": "podcasts"
+      }
+    ]
+  },
+  "translation": {
+    "en": {
+      "url": "https://www.ifanr.com/feed",
+      "view": 0,
+      "category": "translation"
+    },
+    "zh-Hans": {
+      "url": "https://www.thisiscolossal.com/feed/",
+      "view": 0,
+      "category": "translation"
+    },
+    "zh-Hant": {
+      "url": "https://www.thisiscolossal.com/feed/",
+      "view": 0,
+      "category": "translation"
+    },
+    "ja": {
+      "url": "https://www.thisiscolossal.com/feed/",
+      "view": 0,
+      "category": "translation"
+    },
+    "fr": {
+      "url": "https://www.thisiscolossal.com/feed/",
+      "view": 0,
+      "category": "translation"
+    }
+  }
+}

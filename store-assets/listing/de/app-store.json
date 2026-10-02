@@ -1,0 +1,9 @@
+{
+  "name": "Folo - RSS-Reader mit KI",
+  "subtitle": "News & Blogs, zusammengefasst",
+  "promotionalText": "Lass die KI vorarbeiten: Sie fasst in Sekunden zusammen, übersetzt neben dem Original und liest dir vor. Artikel, Videos und Podcasts in einer übersichtlichen Timeline.",
+  "keywords": {
+    "ios": "nachrichten,feed,feedreader,newsreader,zusammenfassung,übersetzung,podcast,newsletter,rsshub,ai,atom",
+    "macos": "nachrichten,feed,feedreader,zusammenfassung,übersetzung,podcast,newsletter,chat,recherche,ai,atom"
+  }
+}

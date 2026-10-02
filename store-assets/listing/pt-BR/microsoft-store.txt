@@ -1,0 +1,35 @@
+O Folo é o leitor de RSS com IA que reúne tudo o que você acompanha em uma única linha do tempo, sem ruído, e ainda ajuda na leitura.
+
+Siga blogs, sites de notícias, newsletters, podcasts, canais de vídeo e redes sociais em um só lugar. Pergunte à IA sobre o que você lê, receba um panorama de toda a sua linha do tempo e deixe os resumos e as traduções fazerem o trabalho pesado.
+
+IA QUE LÊ COM VOCÊ
+• Converse com a IA sobre um artigo, um feed, uma pasta ou toda a sua linha do tempo
+• Transforme sua linha do tempo em um resumo rápido do que importa
+• Tarefas de IA: agende boletins diários ou semanais, entregues no chat ou por e-mail
+• Resumos com IA e tradução para inglês, chinês, japonês ou francês, exibidos ao lado do original ou separadamente
+• Leitura em voz alta com vozes naturais
+• Conecte serviços MCP, escolha seu modelo de IA ou use sua própria chave de API
+
+TUDO O QUE VOCÊ SEGUE, EM UM SÓ LUGAR
+• Siga qualquer feed RSS, Atom ou JSON, ou busque fontes pelo nome
+• Acompanhe sites sem feed com milhares de rotas do RSSHub
+• Importe e exporte OPML para trazer seus feeds de qualquer outro leitor
+• Artigos, posts de redes sociais, imagens, vídeos e podcasts, cada um com seu próprio layout
+• Pastas, favoritos, listas e uma caixa de entrada com endereço de e-mail próprio para newsletters
+
+FEITO PARA O COMPUTADOR
+• Layout de três painéis pensado para uma leitura rápida e focada
+• Atalhos de teclado personalizáveis e menu de comandos
+• Ações: filtre, marque como favorito, reescreva ou resuma novos itens e receba notificações, tudo com suas próprias regras
+• Envie artigos para Obsidian, Readwise, Instapaper, Zotero, Cubox, Outline, Readeck e Eagle
+• Temas, fontes de leitura, CSS personalizado e realce de sintaxe
+• Spotlight destaca as palavras-chave que importam para você
+
+ONDE QUER QUE VOCÊ LEIA
+Seus feeds, o que você já leu e seus favoritos ficam sincronizados entre Windows, macOS, Linux, Android, iPhone, iPad e a web.
+
+CÓDIGO ABERTO, SEM ANÚNCIOS
+O Folo é de código aberto sob a licença AGPL-3.0 e não tem anúncios. É desenvolvido de forma aberta, com uma comunidade de leitores e desenvolvedores. A interface do Folo, os resumos e as traduções com IA estão disponíveis em inglês, chinês, japonês e francês.
+
+PLANOS
+Para usar o Folo de graça, basta criar uma conta. Os planos Basic, Plus e Pro permitem seguir mais feeds e oferecem limites maiores de IA e automações, como tarefas de IA, caixas de entrada e uso da sua própria chave de API.

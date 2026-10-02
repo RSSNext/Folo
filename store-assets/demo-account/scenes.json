@@ -1,0 +1,350 @@
+{
+  "en": {
+    "chatPrompt": "What were the most interesting tech and science stories in my feeds today?",
+    "avoid": [
+      "trump",
+      "biden",
+      "election",
+      "war",
+      "gaza",
+      "israel",
+      "ukraine",
+      "russia",
+      "nazi",
+      "protest",
+      "shooting",
+      "killed",
+      "dead",
+      "death",
+      "drug",
+      "obesity",
+      "lawsuit",
+      "hack",
+      "hacked",
+      "hacking",
+      "hackers",
+      "breach",
+      "slavery",
+      "colonial",
+      "colonizing"
+    ],
+    "translationFeed": "爱范儿",
+    "translationFolder": "World",
+    "tasks": [
+      {
+        "name": "Morning briefing",
+        "prompt": "Summarize the most important stories in my feeds since yesterday.",
+        "schedule": {
+          "type": "daily",
+          "hour": 8
+        }
+      },
+      {
+        "name": "Weekly AI roundup",
+        "prompt": "Collect this week's notable AI research and product news from my feeds.",
+        "schedule": {
+          "type": "weekly",
+          "dayOfWeek": 1,
+          "hour": 9
+        }
+      },
+      {
+        "name": "Science highlights",
+        "prompt": "Pick the best science and space stories of the week and explain why they matter.",
+        "schedule": {
+          "type": "weekly",
+          "dayOfWeek": 5,
+          "hour": 18
+        }
+      }
+    ],
+    "shortcuts": {
+      "default-summarize-timeline": {
+        "name": "Summarize",
+        "prompt": "Recap the entries in the current timeline within <mention-date text=\"24hoursago\"></mention-date> in a casual, conversational tone. Open with a few relaxed sentences or light bullets on the standout topics, then briefly mention other interesting threads. Leave out politics and politicians entirely."
+      },
+      "default-recommend-feeds": {
+        "name": "Recommend Feeds",
+        "prompt": ""
+      },
+      "default-analyze": {
+        "name": "Analyze",
+        "prompt": ""
+      }
+    },
+    "heroFolder": "Design"
+  },
+  "zh-Hans": {
+    "chatPrompt": "我的订阅今天有哪些值得一读的科技和科学新闻？",
+    "avoid": [
+      "特朗普",
+      "拜登",
+      "选举",
+      "战争",
+      "以色列",
+      "乌克兰",
+      "俄罗斯",
+      "纳粹",
+      "抗议",
+      "枪击",
+      "死亡",
+      "去世",
+      "诉讼",
+      "trump",
+      "war",
+      "黑客",
+      "漏洞"
+    ],
+    "translationFeed": "Colossal",
+    "translationFolder": "海外",
+    "tasks": [
+      {
+        "name": "每日早报",
+        "prompt": "总结昨天以来我的订阅里最重要的内容。",
+        "schedule": {
+          "type": "daily",
+          "hour": 8
+        }
+      },
+      {
+        "name": "AI 周报",
+        "prompt": "整理本周订阅里值得关注的 AI 研究和产品动态。",
+        "schedule": {
+          "type": "weekly",
+          "dayOfWeek": 1,
+          "hour": 9
+        }
+      },
+      {
+        "name": "科学精选",
+        "prompt": "挑出本周最好的科学与太空报道，并说明它们为什么重要。",
+        "schedule": {
+          "type": "weekly",
+          "dayOfWeek": 5,
+          "hour": 18
+        }
+      }
+    ],
+    "shortcuts": {
+      "default-summarize-timeline": {
+        "name": "总结",
+        "prompt": "用轻松、聊天式的语气回顾当前时间线中 <mention-date text=\"24hoursago\"></mention-date> 的内容。先用几句话或几个要点讲讲最值得关注的话题，再简单提一下其他有意思的线索。完全不要提政治新闻和政治人物。"
+      },
+      "default-recommend-feeds": {
+        "name": "推荐订阅源",
+        "prompt": "分析我的订阅源，挑出最符合我兴趣、内容质量最高且类型多样的 5–10 个。用 <mention-feed> 引用推荐的订阅源，而不是直接给出 ID。然后问问我的兴趣是什么。"
+      },
+      "default-analyze": {
+        "name": "分析",
+        "prompt": "分析这篇内容，找出其中的偏见、模式、趋势和关联。考虑作者和来源，必要时查证事实，并梳理更大的背景，想想读者最想知道什么。"
+      }
+    },
+    "heroFolder": "科技"
+  },
+  "zh-Hant": {
+    "chatPrompt": "我的訂閱今天有哪些值得一讀的科技與科學新聞？",
+    "avoid": [
+      "川普",
+      "特朗普",
+      "拜登",
+      "選舉",
+      "戰爭",
+      "以色列",
+      "烏克蘭",
+      "俄羅斯",
+      "中共",
+      "抗議",
+      "槍擊",
+      "死亡",
+      "過世",
+      "訴訟",
+      "trump",
+      "war",
+      "駭客",
+      "漏洞"
+    ],
+    "translationFeed": "Colossal",
+    "translationFolder": "海外",
+    "tasks": [
+      {
+        "name": "每日早報",
+        "prompt": "總結昨天以來我的訂閱裡最重要的內容。",
+        "schedule": {
+          "type": "daily",
+          "hour": 8
+        }
+      },
+      {
+        "name": "AI 週報",
+        "prompt": "整理本週訂閱裡值得關注的 AI 研究與產品動態。",
+        "schedule": {
+          "type": "weekly",
+          "dayOfWeek": 1,
+          "hour": 9
+        }
+      },
+      {
+        "name": "科學精選",
+        "prompt": "挑出本週最好的科學與太空報導，並說明它們為什麼重要。",
+        "schedule": {
+          "type": "weekly",
+          "dayOfWeek": 5,
+          "hour": 18
+        }
+      }
+    ],
+    "shortcuts": {
+      "default-summarize-timeline": {
+        "name": "總結",
+        "prompt": "用輕鬆、聊天式的語氣回顧目前時間軸中 <mention-date text=\"24hoursago\"></mention-date> 的內容。先用幾句話或幾個重點講講最值得關注的話題，再簡單提一下其他有趣的線索。完全不要提政治新聞與政治人物。"
+      },
+      "default-recommend-feeds": {
+        "name": "推薦訂閱源",
+        "prompt": "分析我的訂閱源，挑出最符合我興趣、內容品質最高且類型多元的 5–10 個。用 <mention-feed> 引用推薦的訂閱源，而不是直接給出 ID。然後問問我的興趣是什麼。"
+      },
+      "default-analyze": {
+        "name": "分析",
+        "prompt": "分析這篇內容，找出其中的偏見、模式、趨勢與關聯。考慮作者與來源，必要時查證事實，並梳理更大的背景，想想讀者最想知道什麼。"
+      }
+    },
+    "heroFolder": "科技"
+  },
+  "ja": {
+    "chatPrompt": "今日のフィードで面白かったテックとサイエンスの記事を教えて",
+    "avoid": [
+      "トランプ",
+      "バイデン",
+      "選挙",
+      "戦争",
+      "イスラエル",
+      "ウクライナ",
+      "ロシア",
+      "ナチス",
+      "抗議",
+      "銃撃",
+      "死亡",
+      "逝去",
+      "訴訟",
+      "trump",
+      "war",
+      "ハッカー",
+      "脆弱性",
+      "不正アクセス"
+    ],
+    "translationFeed": "Colossal",
+    "translationFolder": "海外",
+    "tasks": [
+      {
+        "name": "朝のブリーフィング",
+        "prompt": "昨日からフィードに届いた中で特に重要なニュースを要約して。",
+        "schedule": {
+          "type": "daily",
+          "hour": 8
+        }
+      },
+      {
+        "name": "AI 週刊まとめ",
+        "prompt": "今週フィードに届いた注目の AI 研究とプロダクトのニュースをまとめて。",
+        "schedule": {
+          "type": "weekly",
+          "dayOfWeek": 1,
+          "hour": 9
+        }
+      },
+      {
+        "name": "サイエンスのハイライト",
+        "prompt": "今週の科学・宇宙の記事からベストを選び、なぜ重要かを説明して。",
+        "schedule": {
+          "type": "weekly",
+          "dayOfWeek": 5,
+          "hour": 18
+        }
+      }
+    ],
+    "shortcuts": {
+      "default-summarize-timeline": {
+        "name": "要約",
+        "prompt": "現在のタイムラインの <mention-date text=\"24hoursago\"></mention-date> の記事を、くだけた会話調で振り返って。まず注目のトピックを数文か箇条書きで紹介し、そのほかの面白い話題にも軽く触れて。政治のニュースや政治家には一切触れないで。"
+      },
+      "default-recommend-feeds": {
+        "name": "フィードをおすすめ",
+        "prompt": "私のフィードを分析して、興味に合い、質が高く、バラエティに富んだものを 5〜10 個選んで。おすすめは ID ではなく <mention-feed> で示して。そのあと私の興味を聞いて。"
+      },
+      "default-analyze": {
+        "name": "分析",
+        "prompt": "この内容を分析して、偏り、パターン、トレンド、つながりを見つけて。著者や情報源も考慮し、必要なら事実確認をして、背景も調べて。読者が知りたいことを考えて。"
+      }
+    },
+    "heroFolder": "テック"
+  },
+  "fr": {
+    "chatPrompt": "Quelles sont les actus tech et science les plus intéressantes de mes flux aujourd’hui ?",
+    "avoid": [
+      "trump",
+      "biden",
+      "élection",
+      "guerre",
+      "gaza",
+      "israël",
+      "ukraine",
+      "russie",
+      "nazi",
+      "manifestation",
+      "fusillade",
+      "tué",
+      "mort",
+      "procès",
+      "hacker",
+      "hackers",
+      "piratage",
+      "pirates",
+      "faille",
+      "cyberattaque"
+    ],
+    "translationFeed": "Colossal",
+    "translationFolder": "International",
+    "tasks": [
+      {
+        "name": "Briefing du matin",
+        "prompt": "Résume les articles les plus importants de mes flux depuis hier.",
+        "schedule": {
+          "type": "daily",
+          "hour": 8
+        }
+      },
+      {
+        "name": "Récap IA de la semaine",
+        "prompt": "Rassemble les recherches et annonces IA marquantes de la semaine dans mes flux.",
+        "schedule": {
+          "type": "weekly",
+          "dayOfWeek": 1,
+          "hour": 9
+        }
+      },
+      {
+        "name": "Sciences et espace",
+        "prompt": "Choisis les meilleurs articles de science et d'espace de la semaine et explique leur intérêt.",
+        "schedule": {
+          "type": "weekly",
+          "dayOfWeek": 5,
+          "hour": 18
+        }
+      }
+    ],
+    "shortcuts": {
+      "default-summarize-timeline": {
+        "name": "Résumer",
+        "prompt": "Fais le récap des articles de la timeline actuelle sur <mention-date text=\"24hoursago\"></mention-date>, sur un ton détendu et conversationnel. Commence par quelques phrases ou puces légères sur les sujets marquants, puis évoque brièvement les autres pistes intéressantes. Ne mentionne ni la politique ni aucun responsable politique."
+      },
+      "default-recommend-feeds": {
+        "name": "Recommander des flux",
+        "prompt": "Analyse mes flux et choisis les 5 à 10 qui correspondent le mieux à mes centres d’intérêt, avec la meilleure qualité et la plus grande diversité. Utilise <mention-feed> pour citer les flux recommandés plutôt que leur ID. Ensuite, demande-moi quels sont mes centres d’intérêt."
+      },
+      "default-analyze": {
+        "name": "Analyser",
+        "prompt": "Analyse ce contenu : biais, tendances, motifs, liens. Tiens compte de l’auteur et de la source, vérifie les faits si utile et replace le sujet dans son contexte. Pense à ce que le lecteur voudrait savoir."
+      }
+    },
+    "heroFolder": "Tech"
+  }
+}

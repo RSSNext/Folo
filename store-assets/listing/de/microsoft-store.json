@@ -1,0 +1,34 @@
+{
+  "shortDescription": "Folo ist der RSS-Reader mit KI für Windows. Folge Blogs, News, Newslettern, Videos und Podcasts in einer übersichtlichen Timeline und lass die KI zusammenfassen, übersetzen und deine Fragen zu allem beantworten, dem du folgst.",
+  "features": [
+    "Folge Feeds im Format RSS, Atom und JSON Feed sowie Tausenden RSSHub-Routen für Websites ohne eigenen Feed",
+    "Eine Timeline für Artikel, Social-Media-Posts, Bilder, Videos, Podcasts und Benachrichtigungen",
+    "KI-Zusammenfassungen für jeden Artikel, auf Abruf oder automatisch",
+    "KI-Übersetzung ins Englische, Chinesische, Japanische oder Französische, neben dem Original oder für sich allein",
+    "Chatte mit der KI über einen Artikel, einen Feed, einen Ordner oder deine ganze Timeline",
+    "Fasse deine Timeline zu einem kurzen Überblick zusammen",
+    "KI-Aufgaben, die dir tägliche oder wöchentliche Briefings in den Chat oder per E-Mail liefern",
+    "Binde MCP-Dienste an, um deine anderen Tools in Folo AI zu nutzen",
+    "Wähle dein KI-Modell oder nutze deinen eigenen API-Schlüssel",
+    "Vorlesefunktion mit natürlichen Stimmen",
+    "Actions: Regeln, die neue Einträge filtern, als Favorit markieren, umschreiben, zusammenfassen oder dich benachrichtigen",
+    "Sende Artikel an Obsidian, Readwise, Instapaper, Zotero, Cubox, Outline, Readeck oder Eagle",
+    "Inbox mit eigener E-Mail-Adresse für Newsletter",
+    "OPML-Import und -Export",
+    "Anpassbare Tastenkürzel und ein Befehlsmenü",
+    "Designs, Leseschriften, eigenes CSS und Syntaxhervorhebung",
+    "Spotlight hebt die Stichwörter hervor, die dir wichtig sind",
+    "Synchronisierung zwischen Windows, macOS, Linux, Android, iPhone, iPad und dem Web",
+    "Open Source unter AGPL-3.0, ohne Werbung"
+  ],
+  "screenshotCaptions": [
+    "Alle Feeds in einer übersichtlichen Timeline, Folo AI nur einen Klick entfernt.",
+    "Frag Folo AI zu einem Artikel, einem Feed oder allem, was du verfolgst.",
+    "Aus Hunderten neuen Einträgen wird ein kurzer Überblick.",
+    "Lies Artikel neben einer KI-Übersetzung ins Englische, Chinesische, Japanische oder Französische.",
+    "Bilder, Videos und Podcasts bekommen jeweils ein eigenes Layout.",
+    "Plane KI-Aufgaben für tägliche oder wöchentliche Briefings.",
+    "Sende Artikel an Notiz-Apps und Read-later-Tools oder binde MCP-Dienste an.",
+    "Pass Folo mit Designs, Leseschriften und Tastenkürzeln an dich an."
+  ]
+}

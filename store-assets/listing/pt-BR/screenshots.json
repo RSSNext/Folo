@@ -1,0 +1,103 @@
+{
+  "mobile.hero": {
+    "eyebrow": "O leitor de RSS com IA",
+    "headline": "Todos os feeds.\n*Nada de ruído.*",
+    "badge": "Código aberto · 39 mil estrelas no GitHub"
+  },
+  "mobile.summary": {
+    "eyebrow": "Resumos com IA",
+    "headline": "O essencial,\n*em segundos.*"
+  },
+  "mobile.translate": {
+    "eyebrow": "Tradução com IA",
+    "headline": "Leia além\n*do seu idioma.*"
+  },
+  "mobile.formats": {
+    "eyebrow": "Todos os formatos",
+    "headline": "Muito mais\n*que artigos.*"
+  },
+  "mobile.listen": {
+    "eyebrow": "Texto para fala",
+    "headline": "Suas leituras,\n*em voz alta.*"
+  },
+  "mobile.discover": {
+    "eyebrow": "Descobrir",
+    "headline": "Fontes que\n*valem a pena.*"
+  },
+  "mobile.sync": {
+    "eyebrow": "Sincronização",
+    "headline": "Continue\n*de onde parou.*"
+  },
+  "mobile.more": {
+    "eyebrow": "E tem mais",
+    "headline": "Feito para\n*mentes curiosas.*",
+    "pills": [
+      "Favoritos",
+      "Listas",
+      "Caixa de entrada",
+      "Importar OPML",
+      "Ações",
+      "Spotlight",
+      "Modo escuro",
+      "Código aberto",
+      "Sem anúncios"
+    ]
+  },
+  "desktop.hero": {
+    "eyebrow": "O leitor de RSS com IA",
+    "headline": "Todos os feeds.\n*Nada de ruído.*",
+    "sub": "Blogs, notícias, vídeos e podcasts em uma só linha do tempo, com a IA a um clique.",
+    "badge": "Código aberto · 39 mil estrelas no GitHub"
+  },
+  "desktop.chat": {
+    "eyebrow": "Folo AI",
+    "headline": "Pergunte\n*o que quiser.*",
+    "sub": "Converse sobre um artigo, um feed ou tudo o que você segue."
+  },
+  "desktop.digest": {
+    "eyebrow": "Resumo das novidades",
+    "headline": "Seu dia,\n*resumido.*",
+    "sub": "Transforme centenas de novidades em um resumo rápido."
+  },
+  "desktop.translate": {
+    "eyebrow": "Tradução com IA",
+    "headline": "Leia além\n*do seu idioma.*",
+    "sub": "Tradução para inglês, chinês, japonês ou francês, lado a lado com o original."
+  },
+  "desktop.formats": {
+    "eyebrow": "Todos os formatos",
+    "headline": "Muito mais\n*que artigos.*",
+    "sub": "Imagens, vídeos e podcasts, cada um com um layout feito para ele."
+  },
+  "desktop.tasks": {
+    "eyebrow": "Tarefas de IA",
+    "headline": "Boletins que se\n*escrevem sozinhos.*",
+    "sub": "Agende tarefas de IA diárias ou semanais, entregues no chat ou por e-mail."
+  },
+  "desktop.integrations": {
+    "eyebrow": "Integrações",
+    "headline": "Funciona com\n*suas ferramentas.*",
+    "sub": "Envie artigos para Obsidian, Readwise e outros, ou conecte serviços MCP."
+  },
+  "desktop.more": {
+    "eyebrow": "E tem mais",
+    "headline": "Feito para quem\n*lê de verdade.*",
+    "pills": [
+      "Atalhos de teclado",
+      "Menu de comandos",
+      "Ações",
+      "Spotlight",
+      "CSS personalizado",
+      "Temas",
+      "OPML",
+      "Texto para fala",
+      "Código aberto",
+      "Sem anúncios"
+    ]
+  },
+  "play.featureGraphic": {
+    "eyebrow": "Folo",
+    "headline": "*Leitor RSS* com IA",
+    "sub": "Todos os feeds. Nada de ruído."
+  }
+}

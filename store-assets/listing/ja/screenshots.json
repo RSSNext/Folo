@@ -1,0 +1,103 @@
+{
+  "mobile.hero": {
+    "eyebrow": "AI RSSリーダー",
+    "headline": "すべてのフィードを\n*ノイズなしで。*",
+    "badge": "オープンソース · GitHubで39Kスター"
+  },
+  "mobile.summary": {
+    "eyebrow": "AI要約",
+    "headline": "記事の要点を\n*数秒でつかむ。*"
+  },
+  "mobile.translate": {
+    "eyebrow": "AI翻訳",
+    "headline": "世界の記事を\n*日本語で読む。*"
+  },
+  "mobile.formats": {
+    "eyebrow": "あらゆる形式",
+    "headline": "楽しめるのは\n*記事だけじゃない。*"
+  },
+  "mobile.listen": {
+    "eyebrow": "読み上げ",
+    "headline": "読みたい記事を、\n*耳で聴く。*"
+  },
+  "mobile.discover": {
+    "eyebrow": "発見",
+    "headline": "フォローしたい\n*情報源に出会う。*"
+  },
+  "mobile.sync": {
+    "eyebrow": "同期",
+    "headline": "どのデバイスでも\n*続きから読める。*"
+  },
+  "mobile.more": {
+    "eyebrow": "ほかにも",
+    "headline": "好奇心の\n*おもむくままに。*",
+    "pills": [
+      "スター付き",
+      "リスト",
+      "受信トレイ",
+      "OPMLインポート",
+      "アクション",
+      "Spotlight",
+      "ダークモード",
+      "オープンソース",
+      "広告なし"
+    ]
+  },
+  "desktop.hero": {
+    "eyebrow": "AI RSSリーダー",
+    "headline": "すべてのフィードを\n*ノイズなしで。*",
+    "sub": "ブログもニュースも動画もポッドキャストも、ひとつの落ち着いたタイムラインに。AIはワンクリックで。",
+    "badge": "オープンソース · GitHubで39Kスター"
+  },
+  "desktop.chat": {
+    "eyebrow": "Folo AI",
+    "headline": "フィードに\n*なんでも聞ける。*",
+    "sub": "記事やフィード、フォロー中のすべてについてチャットできます。"
+  },
+  "desktop.digest": {
+    "eyebrow": "タイムライン要約",
+    "headline": "今日の新着を、\n*ひと目で。*",
+    "sub": "数百件の新着エントリーを、短いダイジェストにまとめます。"
+  },
+  "desktop.translate": {
+    "eyebrow": "AI翻訳",
+    "headline": "世界の記事を\n*日本語で読む。*",
+    "sub": "英語・中国語・日本語・フランス語への翻訳を、原文と並べて表示。"
+  },
+  "desktop.formats": {
+    "eyebrow": "あらゆる形式",
+    "headline": "楽しめるのは\n*記事だけじゃない。*",
+    "sub": "画像、動画、ポッドキャストには、それぞれ専用のレイアウトを。"
+  },
+  "desktop.tasks": {
+    "eyebrow": "AIタスク",
+    "headline": "ブリーフィングは\n*AIにおまかせ。*",
+    "sub": "毎日・毎週のAIタスクを予約して、チャットやメールで受け取れます。"
+  },
+  "desktop.integrations": {
+    "eyebrow": "連携",
+    "headline": "いつものツールと\n*つながる。*",
+    "sub": "記事をObsidianやReadwiseなどに送ったり、MCPサービスを接続したり。"
+  },
+  "desktop.more": {
+    "eyebrow": "ほかにも",
+    "headline": "じっくり読む\n*あなたのために。*",
+    "pills": [
+      "キーボードショートカット",
+      "コマンドメニュー",
+      "アクション",
+      "Spotlight",
+      "カスタムCSS",
+      "テーマ",
+      "OPML",
+      "読み上げ",
+      "オープンソース",
+      "広告なし"
+    ]
+  },
+  "play.featureGraphic": {
+    "eyebrow": "Folo",
+    "headline": "AI *RSSリーダー*",
+    "sub": "すべてのフィードを、ノイズなしで。"
+  }
+}

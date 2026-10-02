@@ -1,0 +1,32 @@
+Folo is an AI-powered RSS reader that brings everything you follow into one calm timeline, then helps you read it.
+
+Follow blogs, news sites, newsletters, podcasts, video channels and social feeds in one place. Let AI summarize long articles, translate posts in other languages and read the rest aloud, so you stay informed without juggling a dozen apps.
+
+ONE TIMELINE FOR EVERYTHING YOU FOLLOW
+• Subscribe to any RSS, Atom or JSON feed, or search for sources by name
+• Follow sites that have no feed through thousands of RSSHub routes
+• Discover trending feeds and curated lists by topic and language
+• Import your subscriptions from any other feed reader with OPML
+• Keep things tidy with folders, stars and lists
+
+AI THAT READS WITH YOU
+• AI summaries: get the key points of any article in seconds
+• AI translation: read in English, Chinese, Japanese or French, next to the original or on its own
+• Text-to-speech: listen to articles in a natural voice
+• Actions: automatically summarize, translate, star, mute or filter new entries with your own rules
+
+MADE FOR EVERY FORMAT
+• A clean reader view that fetches full article text
+• Dedicated layouts for social posts, picture galleries, videos and podcasts
+• Background audio playback and picture-in-picture video
+
+YOUR READER, YOUR WAY
+• Light and dark themes, reading fonts, text size and line spacing
+• Spotlight highlights the keywords you care about
+• Subscriptions, read status and stars sync across Android, iPhone, iPad, Windows, macOS, Linux and the web
+
+OPEN SOURCE, NO ADS
+Folo is open source under the AGPL-3.0 license and has no ads. It is built in the open with a community of readers and developers.
+
+FREE TO START
+Folo is free to download. Create a free account to follow feeds and sync them across your devices. Paid plans add more subscriptions, higher AI limits and automations.

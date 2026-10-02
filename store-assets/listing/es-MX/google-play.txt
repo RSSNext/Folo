@@ -1,0 +1,32 @@
+Folo es un lector RSS con IA que reúne todo lo que sigues en una sola línea de tiempo, sin ruido, y te ayuda a leerlo.
+
+Sigue blogs, sitios de noticias, newsletters, podcasts, canales de video y redes sociales en un mismo lugar. Deja que la IA resuma los artículos largos, traduzca las publicaciones en otros idiomas y te lea el resto en voz alta, para estar al día sin saltar entre una docena de apps.
+
+TODO LO QUE SIGUES, EN UN SOLO LUGAR
+• Suscríbete a cualquier feed RSS, Atom o JSON, o busca fuentes por su nombre
+• Sigue sitios que no tienen feed gracias a miles de rutas de RSSHub
+• Descubre feeds en tendencia y listas seleccionadas por tema e idioma
+• Importa tus suscripciones desde cualquier otro lector de feeds con OPML
+• Mantén todo en orden con carpetas, favoritos y listas
+
+IA QUE LEE CONTIGO
+• Resúmenes con IA: las ideas clave de cualquier artículo en segundos
+• Traducción con IA: traduce artículos al inglés, chino, japonés o francés y léelos junto al original o por separado
+• Lectura en voz alta: escucha los artículos con una voz natural
+• Acciones: resume, traduce, marca como favoritas, silencia o filtra las entradas nuevas de forma automática con tus propias reglas
+
+PENSADO PARA CADA FORMATO
+• Una vista de lectura limpia que obtiene el texto completo de los artículos
+• Diseños específicos para publicaciones de redes sociales, galerías de imágenes, videos y podcasts
+• Audio en segundo plano y video en modo imagen en imagen
+
+TU LECTOR, A TU MANERA
+• Temas claro y oscuro, tipografías de lectura, tamaño del texto e interlineado
+• Spotlight destaca las palabras clave que te interesan
+• Tus suscripciones, lo que ya leíste y tus favoritos se sincronizan entre Android, iPhone, iPad, Windows, macOS, Linux y la web
+
+CÓDIGO ABIERTO, SIN ANUNCIOS
+Folo es de código abierto, con licencia AGPL-3.0, y no tiene anuncios. Se desarrolla de forma abierta junto a una comunidad de lectores y desarrolladores. La interfaz de Folo, los resúmenes y las traducciones con IA están disponibles en inglés, chino, japonés y francés.
+
+COMIENZA GRATIS
+Descargar Folo no cuesta nada. Crea una cuenta gratuita para seguir feeds y sincronizarlos entre tus dispositivos. Los planes de pago agregan más suscripciones, límites de IA más altos y automatizaciones.

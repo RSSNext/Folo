@@ -1,0 +1,34 @@
+{
+  "shortDescription": "Folo is the AI RSS reader for Windows. Follow blogs, news, newsletters, videos and podcasts in one calm timeline, then let AI summarize, translate and answer questions about everything you follow.",
+  "features": [
+    "Follow RSS, Atom and JSON feeds, plus thousands of RSSHub routes for sites without a feed",
+    "One timeline for articles, social posts, pictures, videos, podcasts and notifications",
+    "AI summaries for any article, on demand or automatically",
+    "AI translation shown side by side or on its own, in English, Chinese, Japanese or French",
+    "Chat with AI about an article, a feed, a folder or your whole timeline",
+    "Summarize your timeline into a quick digest",
+    "AI tasks that deliver daily or weekly briefings to chat or email",
+    "Connect MCP services to bring your other tools into Folo AI",
+    "Choose your AI model or bring your own API key",
+    "Text-to-speech with natural voices",
+    "Actions: rules that filter, star, rewrite, notify or summarize new entries",
+    "Send articles to Obsidian, Readwise, Instapaper, Zotero, Cubox, Outline, Readeck or Eagle",
+    "Inbox with its own email address for newsletters",
+    "Import and export OPML",
+    "Customizable keyboard shortcuts and a command menu",
+    "Themes, reading fonts, custom CSS and code highlighting",
+    "Spotlight highlights the keywords you care about",
+    "Sync across Windows, macOS, Linux, Android, iPhone, iPad and the web",
+    "Open source under AGPL-3.0, with no ads"
+  ],
+  "screenshotCaptions": [
+    "All your feeds in one calm timeline, with Folo AI one click away.",
+    "Ask Folo AI about an article, a feed or everything you follow.",
+    "Turn hundreds of new entries into one quick digest.",
+    "Read articles side by side with an AI translation in English, Chinese, Japanese or French.",
+    "Pictures, videos and podcasts each get a layout made for them.",
+    "Schedule AI tasks for daily or weekly briefings.",
+    "Send articles to your notes and read-later tools, or connect MCP services.",
+    "Make it yours with themes, reading fonts and keyboard shortcuts."
+  ]
+}

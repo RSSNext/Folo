@@ -1,0 +1,9 @@
+{
+  "name": "Folo - AI RSS Reader",
+  "subtitle": "Your news & blogs, summarized",
+  "promotionalText": "Let AI read first: instant summaries, side-by-side translations and read-aloud for the articles, videos and podcasts you follow, all in one calm timeline.",
+  "keywords": {
+    "ios": "feed,aggregator,podcast,newsletter,summary,translate,digest,atom,headlines,magazine,video,rsshub",
+    "macos": "feed,aggregator,podcast,newsletter,summary,translate,digest,atom,headlines,magazine,chat,research"
+  }
+}

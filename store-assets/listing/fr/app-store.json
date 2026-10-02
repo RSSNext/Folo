@@ -1,0 +1,9 @@
+{
+  "name": "Folo : lecteur RSS avec IA",
+  "subtitle": "Actualités et blogs, résumés",
+  "promotionalText": "L’IA lit avant vous : résumés instantanés, traduction côte à côte et lecture à voix haute pour tout ce que vous suivez, dans une seule chronologie apaisée.",
+  "keywords": {
+    "ios": "flux,agrégateur,veille,actu,info,presse,news,podcast,newsletter,traduction,vidéo,atom,rsshub,tech",
+    "macos": "flux,agrégateur,veille,actu,info,presse,news,podcast,newsletter,traduction,synthèse,chat,tech,mcp"
+  }
+}

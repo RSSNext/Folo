@@ -1,0 +1,35 @@
+Folo è il lettore RSS con IA che riunisce tutto ciò che segui in un’unica timeline, pulita e senza distrazioni, e poi ti aiuta a leggerla.
+
+Segui blog, siti di notizie, newsletter, podcast, canali video e profili social in un unico posto. Fai domande all’IA su ciò che leggi, ottieni un riepilogo dell’intera timeline e lascia a riassunti e traduzioni il lavoro più pesante.
+
+UN’IA CHE LEGGE CON TE
+• Chatta con l’IA su un articolo, un feed, una cartella o l’intera timeline
+• Riassumi la timeline in un riepilogo veloce di ciò che conta
+• Attività IA: pianifica briefing giornalieri o settimanali, recapitati in chat o via email
+• Riassunti IA e traduzione in inglese, cinese, giapponese o francese, con l’originale a fianco o senza
+• Sintesi vocale con voci naturali
+• Collega servizi MCP, scegli il modello di IA o usa la tua chiave API
+
+UN’UNICA TIMELINE PER TUTTO CIÒ CHE SEGUI
+• Iscriviti a qualsiasi feed RSS, Atom o JSON, oppure cerca le fonti per nome
+• Segui anche i siti senza feed grazie a migliaia di route RSSHub
+• Importa ed esporta in OPML per passare da qualsiasi altro lettore
+• Articoli, post social, immagini, video e podcast, ognuno con il suo layout
+• Cartelle, preferiti, liste e un’inbox con un indirizzo email dedicato alle newsletter
+
+PENSATO PER IL DESKTOP
+• Un layout a tre colonne per una lettura rapida e concentrata
+• Scorciatoie da tastiera personalizzabili e menu dei comandi
+• Actions: filtra, aggiungi ai preferiti, riscrivi o riassumi i nuovi contenuti, o ricevi una notifica, con regole tutte tue
+• Invia articoli a Obsidian, Readwise, Instapaper, Zotero, Cubox, Outline, Readeck ed Eagle
+• Temi, font di lettura, CSS personalizzato ed evidenziazione del codice
+• Spotlight mette in evidenza le parole chiave che ti interessano
+
+OVUNQUE TU LEGGA
+I feed che segui, lo stato di lettura e i preferiti si sincronizzano su Windows, macOS, Linux, Android, iPhone, iPad e web. L’interfaccia dell’app è disponibile in inglese, cinese, giapponese e francese.
+
+OPEN SOURCE, SENZA PUBBLICITÀ
+Folo è open source con licenza AGPL-3.0 e non contiene pubblicità. È sviluppato alla luce del sole insieme a una comunità di lettori e sviluppatori.
+
+PIANI
+Per usare Folo basta un account gratuito. I piani Basic, Plus e Pro ti permettono di seguire più feed, alzano i limiti IA e aggiungono automazioni come le attività IA, le inbox e l’uso della tua chiave API.
