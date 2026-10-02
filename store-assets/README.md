@@ -6,6 +6,7 @@ Screenshots, artwork and listing copy for the App Store (iPhone, iPad, Mac), Goo
 listing/<locale>/        Store copy per listing locale (names, subtitles, descriptions,
                          keywords, release notes, screenshot headlines)
 demo-account/            Curated subscriptions per UI locale, capture settings, avatar
+promo/                   Release promo video specs (see Release promo video)
 src/                     Brand tokens, device frames, slide layouts, automation helpers
 scripts/                 Entry points (see below)
 captures/                Raw app captures, captures/<ui locale>/<device>/<scene>.png (ignored)
@@ -43,6 +44,10 @@ Run everything from the repository root with `pnpm exec tsx`. The scripts' depen
 | Microsoft Store | `microsoft-store/desktop`     | 3840 × 2160, the Mac posters; captions repeat them |
 | Microsoft Store | `microsoft-store/extras`      | 3840 × 2160 super hero art, 300 × 300 store logo   |
 | GitHub          | `github/readme`               | 2400 × 1200 README banner, English only            |
+
+## Release promo video
+
+`store-assets/scripts/release-video.ts <spec.json> (--stills <dir> | --video <out.mp4>) [--captures <dir>]` renders the announcement video of a release, 1920 × 1080 at 30 fps, from the captures in the slides' style: an intro with the versions, one scene per highlight (a Mac window, a Mac and a phone, or phones with a callout) and an outro with folo.is. The spec format is documented in the script; `promo/example.json` is the desktop 1.15.0 / mobile 0.5.11 video and uses every layout. `--stills` writes one frame per scene and a contact sheet; both modes print each shot's capture time and report text that wraps or leaves its area, and `--video` (which needs `ffmpeg`) renders nothing until that is fixed. The release flow around it, with the post and the quote line, is `.agents/skills/release-promo`.
 
 ## Capture notes
 
