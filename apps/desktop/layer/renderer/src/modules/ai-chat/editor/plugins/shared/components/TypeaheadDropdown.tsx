@@ -13,6 +13,7 @@ import { cn, thenable } from "@follow/utils"
 import { useLexicalComposerContext } from "@lexical/react/LexicalComposerContext"
 import * as React from "react"
 import { useEffect, useMemo, useRef, useState } from "react"
+import { useTranslation } from "react-i18next"
 
 import { calculateDropdownPosition } from "../utils/positioning"
 
@@ -69,9 +70,9 @@ export function TypeaheadDropdown<TItem, TGroupKey = string>({
   ariaLabel,
   renderItem,
   getKey,
-  loadingMessage = "Searching...",
-  emptyMessage = "No matches found",
-  emptyHint = "Try a different search term",
+  loadingMessage,
+  emptyMessage,
+  emptyHint,
   anchor,
   showSearchInput = false,
   onQueryChange,
@@ -79,6 +80,10 @@ export function TypeaheadDropdown<TItem, TGroupKey = string>({
 }: TypeaheadDropdownProps<TItem, TGroupKey>) {
   if (!isVisible) throw thenable
 
+  const { t } = useTranslation("ai")
+  const resolvedLoadingMessage = loadingMessage ?? t("words.searching", { ns: "app" })
+  const resolvedEmptyMessage = emptyMessage ?? t("chat.typeahead.no_matches")
+  const resolvedEmptyHint = emptyHint ?? t("chat.typeahead.try_different_term")
   const editor = useOptionalLexicalEditor()
   const dropdownRef = useRef<HTMLDivElement>(null)
   const [referenceWidth, setReferenceWidth] = useState<number>(320)
@@ -205,7 +210,7 @@ export function TypeaheadDropdown<TItem, TGroupKey = string>({
       return (
         <div className="flex items-center gap-2 px-2.5 py-1.5 text-text-secondary">
           <i className="i-mgc-loading-3-cute-re size-4 animate-spin" />
-          <span className="text-sm">{loadingMessage}</span>
+          <span className="text-sm">{resolvedLoadingMessage}</span>
         </div>
       )
     }
@@ -214,8 +219,8 @@ export function TypeaheadDropdown<TItem, TGroupKey = string>({
     if (totalItems === 0) {
       return (
         <div className="px-2.5 py-1.5 text-center text-text-tertiary">
-          <span className="text-sm">{emptyMessage}</span>
-          {query && <div className="mt-1 text-xs text-text-quaternary">{emptyHint}</div>}
+          <span className="text-sm">{resolvedEmptyMessage}</span>
+          {query && <div className="mt-1 text-xs text-text-quaternary">{resolvedEmptyHint}</div>}
         </div>
       )
     }
@@ -273,9 +278,9 @@ export function TypeaheadDropdown<TItem, TGroupKey = string>({
     getKey,
     ariaLabel,
     query,
-    loadingMessage,
-    emptyMessage,
-    emptyHint,
+    resolvedLoadingMessage,
+    resolvedEmptyMessage,
+    resolvedEmptyHint,
     onSetSelectIndex,
     onSelect,
     isGrouped,
@@ -319,7 +324,7 @@ export function TypeaheadDropdown<TItem, TGroupKey = string>({
                       }
                     }
                   }}
-                  placeholder="Search for context..."
+                  placeholder={t("chat.placeholder.search_context")}
                   autoFocus
                   className="w-full bg-transparent text-sm text-text outline-none placeholder:text-text-quaternary"
                 />

@@ -1,6 +1,7 @@
 import { useEntry } from "@follow/store/entry/hooks"
 import { cn } from "@follow/utils"
 import { checkLanguage } from "@follow/utils/language"
+import { useTranslation } from "react-i18next"
 
 import { AudioPlayer, useAudioPlayerAtomSelector } from "~/atoms/player"
 
@@ -348,6 +349,7 @@ export const MediaTranscript: React.FC<MediaTranscriptProps> = ({
   entryId,
   type = "transcription",
 }) => {
+  const { t } = useTranslation()
   // Determine if jump and progress tracking should be disabled based on type
   const disableJump = type === "subtitle"
   const disableProgressTracking = type === "subtitle"
@@ -368,7 +370,7 @@ export const MediaTranscript: React.FC<MediaTranscriptProps> = ({
   if (!srt) {
     return (
       <div className={cn("p-4 text-center text-text-secondary", className)}>
-        No transcript available
+        {t("entry_content.transcript.empty")}
       </div>
     )
   }
@@ -379,8 +381,10 @@ export const MediaTranscript: React.FC<MediaTranscriptProps> = ({
   } catch (error) {
     return (
       <div className={cn("p-4 text-center text-red", className)}>
-        Error parsing transcript:{" "}
-        <span>{error instanceof Error ? error.message : "Unknown error"}</span>
+        {t("entry_content.transcript.parse_error", {
+          message:
+            error instanceof Error ? error.message : t("error_screen.unknown", { ns: "common" }),
+        })}
       </div>
     )
   }
@@ -455,7 +459,7 @@ export const MediaTranscript: React.FC<MediaTranscriptProps> = ({
                         ? "bg-accent/10 text-accent"
                         : "text-text-tertiary hover:bg-fill-tertiary hover:text-text-secondary",
                     )}
-                    title="Jump to this time"
+                    title={t("entry_content.transcript.jump_to_time")}
                   >
                     {formatTime(subtitle.startTime)}
                   </button>

@@ -3,6 +3,7 @@ import { useDatePicker } from "@rehookify/datepicker"
 import dayjs from "dayjs"
 import { memo, useEffect, useMemo, useState } from "react"
 import * as React from "react"
+import { useTranslation } from "react-i18next"
 
 import { Button } from "../button"
 import { Popover, PopoverContent, PopoverTrigger } from "../popover"
@@ -42,16 +43,17 @@ export const DateTimePicker = memo<DateTimePickerProps>(
     value,
     onChange,
     minDate,
-    placeholder = "Select date & time",
+    placeholder,
     className,
     disabled,
     mode = "single",
     rangeValue,
     onRangeChange,
-    rangePlaceholder = "Select date range",
+    rangePlaceholder,
     contentClassName,
     children,
   }) => {
+    const { t } = useTranslation("common")
     const [isOpen, setIsOpen] = useState(false)
     const [viewMode, setViewMode] = useState<"days" | "months" | "years">("days")
 
@@ -128,7 +130,7 @@ export const DateTimePicker = memo<DateTimePickerProps>(
     }
 
     const formatRangeButtonLabel = (): string => {
-      if (!rangeStart && !rangeEnd) return rangePlaceholder
+      if (!rangeStart && !rangeEnd) return rangePlaceholder ?? t("placeholder.select_date_range")
       if (rangeStart && !rangeEnd) return `${rangeStart.format("MMM DD, YYYY")} – ...`
       if (!rangeStart && rangeEnd) return `... – ${rangeEnd.format("MMM DD, YYYY")}`
       return `${rangeStart!.format("MMM DD, YYYY")} – ${rangeEnd!.format("MMM DD, YYYY")}`
@@ -181,7 +183,7 @@ export const DateTimePicker = memo<DateTimePickerProps>(
                 ? formatRangeButtonLabel()
                 : value
                   ? currentDateTime.format("MMM DD, YYYY HH:mm")
-                  : placeholder}
+                  : (placeholder ?? t("placeholder.select_date_time"))}
             </Button>
           )}
         </PopoverTrigger>
@@ -364,7 +366,7 @@ export const DateTimePicker = memo<DateTimePickerProps>(
             {!isRangeMode && (
               <div className="-mx-2 border-t border-border px-2 pt-2">
                 <div className="flex items-center justify-between">
-                  <span className="text-xs font-medium text-text-secondary">Time</span>
+                  <span className="text-xs font-medium text-text-secondary">{t("words.time")}</span>
                   <TimeSelect
                     value={currentDateTime.format("HH:mm")}
                     onChange={handleTimeChange}

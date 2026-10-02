@@ -8,7 +8,8 @@
     "allowImportingTsExtensions": true,
     "paths": {
       "@/*": ["./*"],
-      "@locales/*": ["../../locales/*"]
+      "@locales/*": ["../../locales/*"],
+      "tailwindcss": ["./node_modules/tailwindcss"]
     },
     "jsx": "preserve",
     "types": ["@follow/types/global", "vite/client"]

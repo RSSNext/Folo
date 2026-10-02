@@ -5,6 +5,7 @@ import * as Slider from "@radix-ui/react-slider"
 import dayjs from "dayjs"
 import { AnimatePresence, m } from "motion/react"
 import { useCallback, useMemo, useState } from "react"
+import { useTranslation } from "react-i18next"
 
 import { AudioPlayer, useAudioPlayerAtomSelector } from "~/atoms/player"
 
@@ -28,6 +29,7 @@ const formatDuration = (seconds: number) => {
 }
 
 export const ArticleAudioPlayer: React.FC<AudioPlayerProps> = ({ entryId, className }) => {
+  const { t } = useTranslation()
   const entry = useEntry(entryId, (state) => ({
     attachments: state.attachments,
     feedId: state.feedId,
@@ -175,7 +177,7 @@ export const ArticleAudioPlayer: React.FC<AudioPlayerProps> = ({ entryId, classN
                     : "linear-gradient(to bottom right, rgba(var(--color-background) / 0.6), rgba(var(--color-background) / 0.4))",
                   borderColor: "hsl(var(--fo-a) / 0.15)",
                 }}
-                title="Back 10s"
+                title={t("player.back_10s")}
               >
                 <i className="i-mgc-back-2-cute-re size-4 text-text-secondary transition-colors group-hover:text-text" />
               </button>
@@ -195,7 +197,7 @@ export const ArticleAudioPlayer: React.FC<AudioPlayerProps> = ({ entryId, classN
                     "linear-gradient(135deg, hsl(var(--fo-a) / 0.9), hsl(var(--fo-a) / 0.75))",
                   borderColor: "hsl(var(--fo-a) / 0.4)",
                 }}
-                title={isPlaying ? "Pause" : "Play"}
+                title={isPlaying ? t("player.pause") : t("player.play")}
               >
                 {isLoading ? (
                   <i className="i-mgc-loading-3-cute-re size-6 animate-spin text-white" />
@@ -224,7 +226,7 @@ export const ArticleAudioPlayer: React.FC<AudioPlayerProps> = ({ entryId, classN
                     : "linear-gradient(to bottom right, rgba(var(--color-background) / 0.6), rgba(var(--color-background) / 0.4))",
                   borderColor: "hsl(var(--fo-a) / 0.15)",
                 }}
-                title="Forward 10s"
+                title={t("player.forward_10s")}
               >
                 <i className="i-mgc-forward-2-cute-re size-4 text-text-secondary transition-colors group-hover:text-text" />
               </button>
@@ -255,7 +257,7 @@ export const ArticleAudioPlayer: React.FC<AudioPlayerProps> = ({ entryId, classN
 
                   <Slider.Thumb
                     className="block size-3.5 rounded-full border-2 border-white bg-accent opacity-0 transition-opacity focus-visible:opacity-100 focus-visible:outline-none group-hover:opacity-100"
-                    aria-label="Progress"
+                    aria-label={t("player.progress")}
                   />
                 </Slider.Root>
               ) : (
@@ -292,7 +294,7 @@ export const ArticleAudioPlayer: React.FC<AudioPlayerProps> = ({ entryId, classN
                 type="button"
                 onClick={handleDownload}
                 className="group relative flex size-8 items-center justify-center rounded-full bg-transparent transition-all duration-300 hover:[background:linear-gradient(to_right,hsl(var(--fo-a)/0.08),hsl(var(--fo-a)/0.05))] hover:[border-color:hsl(var(--fo-a)/0.25)]"
-                title="Download"
+                title={t("player.download")}
               >
                 <i className="i-mgc-download-2-cute-re size-4 text-text-secondary transition-colors group-hover:text-text" />
               </button>

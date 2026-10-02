@@ -118,8 +118,6 @@ export const ListForm: Component<{
               onClick={() => {
                 window.open(
                   getNewIssueUrl({
-                    target: "discussion",
-                    category: "list-expired",
                     body: [
                       "### Info:",
                       "",

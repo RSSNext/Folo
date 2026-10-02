@@ -98,6 +98,7 @@ export default defineConfig(
     yaml: false,
     ignores: [
       ".context/**",
+      ".claude/worktrees/**",
       "resources/**",
       "apps/mobile/android/**",
       "apps/mobile/ios/**",

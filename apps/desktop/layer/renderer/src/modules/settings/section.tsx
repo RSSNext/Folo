@@ -2,7 +2,8 @@ import { cn } from "@follow/utils/utils"
 import type { FC, PropsWithChildren, ReactNode } from "react"
 import { cloneElement, createContext, use, useEffect, useRef } from "react"
 import * as React from "react"
-import { titleCase } from "title-case"
+
+import { useTitleCaseIfEnglish } from "~/hooks/common/useTitleCaseIfEnglish"
 
 import { SettingActionItem, SettingDescription, SettingSwitch } from "./control"
 
@@ -16,6 +17,7 @@ export const SettingSectionTitle: FC<{
 }> = ({ title, margin, className, sectionId }) => {
   const highlightedSectionId = use(SettingSectionHighlightIdContext)
   const elementRef = useRef<HTMLDivElement | null>(null)
+  const titleCaseIfEnglish = useTitleCaseIfEnglish()
 
   const isHighlighted = !!sectionId && highlightedSectionId === sectionId && !!elementRef.current
 
@@ -67,7 +69,7 @@ export const SettingSectionTitle: FC<{
       )}
     >
       {isHighlighted && <div className="absolute -inset-4 rounded-lg" data-highlighted-element />}
-      {typeof title === "string" ? titleCase(title) : title}
+      {typeof title === "string" ? titleCaseIfEnglish(title) : title}
     </div>
   )
 }

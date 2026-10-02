@@ -2,6 +2,7 @@ import { Spring } from "@follow/components/constants/spring.js"
 import { clsx } from "@follow/utils"
 import { AnimatePresence, m } from "motion/react"
 import type { FC } from "react"
+import { useTranslation } from "react-i18next"
 
 import { setAIPanelVisibility, useAIPanelVisibility, useAISettingKey } from "~/atoms/settings/ai"
 import { AISmartSidebar } from "~/modules/ai-chat/components/layouts/AISmartSidebar"
@@ -9,6 +10,7 @@ import { AISmartSidebar } from "~/modules/ai-chat/components/layouts/AISmartSide
 import { AIChatFloatingPanel } from "./AIChatFloatingPanel"
 
 export const AIIndicator: FC = () => {
+  const { t } = useTranslation()
   const isVisible = useAIPanelVisibility()
   const showSplineButton = useAISettingKey("showSplineButton")
 
@@ -49,7 +51,7 @@ export const AIIndicator: FC = () => {
               "flex items-center justify-center",
               "transition-all duration-300 ease-out",
             )}
-            title="Open AI Chat"
+            title={t("ai.open_chat")}
           >
             <i className="i-mgc-folo-bot-original size-16 text-folo" aria-hidden />
           </m.button>

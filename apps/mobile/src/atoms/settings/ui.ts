@@ -51,7 +51,8 @@ export const {
   settingAtom: __uiSettingAtom,
 } = createSettingAtom("ui", createDefaultSettings)
 
-export const uiServerSyncWhiteListKeys: (keyof UISettings)[] = [
+/** Device-local appearance settings: every other appearance setting syncs to the account. */
+export const uiLocalOnlyKeys: (keyof UISettings)[] = [
   "uiFontFamily",
   "readerFontFamily",
   "opaqueSidebar",

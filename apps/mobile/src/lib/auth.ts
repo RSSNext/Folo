@@ -1,4 +1,4 @@
-import { expoClient } from "@better-auth/expo/client"
+import { expoClient, getSetCookie, storageAdapter } from "@better-auth/expo/client"
 import type { BaseAuthPlugins } from "@follow/shared/auth"
 import { baseAuthPlugins } from "@follow/shared/auth"
 import { isNewUserQueryKey } from "@follow/store/user/constants"
@@ -11,6 +11,7 @@ import { createAuthClient } from "better-auth/react"
 import { nativeApplicationVersion } from "expo-application"
 import * as FileSystem from "expo-file-system/legacy"
 import Storage from "expo-sqlite/kv-store"
+import * as WebBrowser from "expo-web-browser"
 import { Platform } from "react-native"
 import DeviceInfo from "react-native-device-info"
 
@@ -27,6 +28,8 @@ import { getEnvProfile, proxyEnv } from "./proxy-env"
 import { queryClient } from "./query-client"
 import { reloadApp } from "./reload-app"
 import { safeSecureStore } from "./secure-store"
+import type { SocialSignInResult } from "./social-auth"
+import { buildAuthorizationProxyURL, parseSocialAuthCallbackURL } from "./social-auth"
 
 const storagePrefix = "follow_auth"
 export const cookieKey = `${storagePrefix}_cookie`
@@ -122,11 +125,19 @@ const authCookieStorage = createSessionAwareAuthCookieStorage({
   },
 })
 
+// Share Better Auth's write queue and recoverable UTF-8 chunk storage with its
+// Expo plugin so a two-factor cookie update cannot race a session refresh.
+const expoCookieStorage = storageAdapter(authCookieStorage)
+
 const plugins = [
   ...baseAuthPlugins,
   createMobileAuthCookieSyncPlugin({
     cookieKey,
     storage: authCookieStorage,
+    cookieStorage: {
+      getItem: expoCookieStorage.getItem,
+      setItem: expoCookieStorage.setItemAsync,
+    },
   }),
   expoClient({
     scheme: "folo",
@@ -135,8 +146,10 @@ const plugins = [
   }),
 ] as MobileAuthPlugins
 
+const getAuthBaseURL = () => `${proxyEnv.API_URL}/better-auth`
+
 export const authClient = createAuthClient<MobileAuthClientOptions>({
-  baseURL: `${proxyEnv.API_URL}/better-auth`,
+  baseURL: getAuthBaseURL(),
   sessionOptions: {
     refetchInterval: sessionCookieRefreshIntervalSeconds,
     refetchOnWindowFocus: true,
@@ -201,6 +214,57 @@ export const useAuthSessionCookieRefresh = () => {
 }
 
 export const forgetPassword = authClient.requestPasswordReset
+
+/**
+ * Runs the same auth session as the Expo plugin's automatic redirect, but reports how it ended,
+ * so a failed callback can be shown instead of leaving the user on the login screen.
+ */
+export const signInWithSocialProvider = async (
+  provider: string,
+  callbackURL: string,
+): Promise<SocialSignInResult> => {
+  const { data, error } = await signIn.social({
+    provider,
+    callbackURL,
+    // Without it a failed callback ends on the website instead of returning to the app.
+    errorCallbackURL: callbackURL,
+    disableRedirect: true,
+  })
+  if (error || !data?.url) {
+    return { type: "error", error: error?.code || error?.message || "sign_in_request_failed" }
+  }
+
+  if (Platform.OS === "android") {
+    try {
+      WebBrowser.dismissAuthSession()
+    } catch {
+      // No Custom Tab left over from an earlier attempt.
+    }
+  }
+
+  const session = await WebBrowser.openAuthSessionAsync(
+    buildAuthorizationProxyURL({
+      authBaseURL: getAuthBaseURL(),
+      authorizationURL: data.url,
+      storedCookie: expoCookieStorage.getItem(cookieKey),
+    }),
+    callbackURL,
+  )
+  if (session.type !== "success") {
+    return { type: "cancel" }
+  }
+
+  const { result, cookie } = parseSocialAuthCallbackURL(session.url)
+  if (cookie) {
+    const previousCookie = await expoCookieStorage.getItemAsync(cookieKey)
+    await expoCookieStorage.setItemAsync(
+      cookieKey,
+      getSetCookie(cookie, previousCookie ?? undefined),
+    )
+    authClient.$store.notify("$sessionSignal")
+  }
+  return result
+}
 
 export interface AuthProvider {
   name: string

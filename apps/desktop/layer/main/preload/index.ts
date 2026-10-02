@@ -2,7 +2,7 @@ import os from "node:os"
 import { platform } from "node:process"
 
 import { electronAPI } from "@electron-toolkit/preload"
-import { clipboard, contextBridge } from "electron"
+import { contextBridge } from "electron"
 
 export const isMacOS = platform === "darwin"
 
@@ -50,10 +50,4 @@ if (process.contextIsolated) {
   window.api = api
   // @ts-ignore (define in dts)
   window.platform = process.platform
-
-  Object.defineProperty(window.navigator, "clipboard", {
-    get: () => {
-      return clipboard
-    },
-  })
 }

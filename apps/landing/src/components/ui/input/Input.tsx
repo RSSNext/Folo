@@ -27,10 +27,10 @@ const inputStyles = tv({
 
     // file
     [
-      'file:cursor-pointer file:rounded-l-[999px] file:rounded-r-none file:border-0 file:px-3 file:outline-hidden focus:outline-hidden disabled:pointer-events-none file:disabled:pointer-events-none',
+      'file:cursor-pointer file:rounded-l-[999px] file:rounded-r-none file:border-0 file:px-3 file:outline-hidden focus:outline-hidden disabled:pointer-events-none disabled:file:pointer-events-none',
       'file:border-solid file:border-border file:bg-fill file:text-placeholder-text file:hover:bg-fill-secondary',
       'file:[border-inline-end-width:1px] file:[margin-inline-end:0.75rem]',
-      'file:disabled:bg-disabled-control file:disabled:text-disabled-text',
+      'disabled:file:bg-disabled-control disabled:file:text-disabled-text',
     ],
     // focus
     focusInput,

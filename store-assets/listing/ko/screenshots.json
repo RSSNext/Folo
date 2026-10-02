@@ -1,0 +1,103 @@
+{
+  "mobile.hero": {
+    "eyebrow": "AI RSS 리더",
+    "headline": "모든 피드를 한곳에,\n*잡음은 빼고.*",
+    "badge": "오픈 소스 · GitHub 스타 39K"
+  },
+  "mobile.summary": {
+    "eyebrow": "AI 요약",
+    "headline": "긴 글의 핵심을\n*몇 초 만에.*"
+  },
+  "mobile.translate": {
+    "eyebrow": "AI 번역",
+    "headline": "원문과 번역을\n*나란히 한눈에.*"
+  },
+  "mobile.formats": {
+    "eyebrow": "모든 형식",
+    "headline": "글뿐만 아니라\n*영상도, 팟캐스트도.*"
+  },
+  "mobile.listen": {
+    "eyebrow": "음성 읽기",
+    "headline": "읽고 싶은 글,\n*귀로 들으세요.*"
+  },
+  "mobile.discover": {
+    "eyebrow": "탐색",
+    "headline": "팔로우할 만한\n*피드를 찾아보세요.*"
+  },
+  "mobile.sync": {
+    "eyebrow": "동기화",
+    "headline": "어느 기기에서든\n*읽던 곳부터 이어서.*"
+  },
+  "mobile.more": {
+    "eyebrow": "그 밖에도",
+    "headline": "호기심 많은\n*당신을 위해.*",
+    "pills": [
+      "별표",
+      "리스트",
+      "수신함",
+      "OPML 가져오기",
+      "자동화 규칙",
+      "Spotlight",
+      "다크 모드",
+      "오픈 소스",
+      "광고 없음"
+    ]
+  },
+  "desktop.hero": {
+    "eyebrow": "AI RSS 리더",
+    "headline": "모든 피드를 한곳에,\n*잡음은 빼고.*",
+    "sub": "블로그, 뉴스, 영상, 팟캐스트를 차분한 타임라인 하나에. AI는 클릭 한 번이면 됩니다.",
+    "badge": "오픈 소스 · GitHub 스타 39K"
+  },
+  "desktop.chat": {
+    "eyebrow": "Folo AI",
+    "headline": "피드에\n*뭐든 물어보세요.*",
+    "sub": "글 하나, 피드 하나, 또는 팔로우하는 모든 것에 대해 대화하세요."
+  },
+  "desktop.digest": {
+    "eyebrow": "타임라인 요약",
+    "headline": "오늘의 소식,\n*한눈에 요약.*",
+    "sub": "수백 개의 새 글을 짧은 다이제스트 하나로 정리합니다."
+  },
+  "desktop.translate": {
+    "eyebrow": "AI 번역",
+    "headline": "원문과 번역을\n*나란히 한눈에.*",
+    "sub": "영어, 중국어, 일본어, 프랑스어 번역을 원문과 나란히 보여 줍니다."
+  },
+  "desktop.formats": {
+    "eyebrow": "모든 형식",
+    "headline": "글뿐만 아니라\n*영상도, 팟캐스트도.*",
+    "sub": "이미지, 영상, 팟캐스트마다 전용 레이아웃을 제공합니다."
+  },
+  "desktop.tasks": {
+    "eyebrow": "AI 작업",
+    "headline": "브리핑은\n*AI가 알아서.*",
+    "sub": "매일 또는 매주 AI 작업을 예약해 채팅이나 이메일로 받아 보세요."
+  },
+  "desktop.integrations": {
+    "eyebrow": "연동",
+    "headline": "쓰던 도구와\n*바로 연결.*",
+    "sub": "Obsidian, Readwise 등으로 글을 보내거나 MCP 서비스를 연결하세요."
+  },
+  "desktop.more": {
+    "eyebrow": "그 밖에도",
+    "headline": "깊이 읽는\n*당신을 위해.*",
+    "pills": [
+      "키보드 단축키",
+      "명령 메뉴",
+      "자동화 규칙",
+      "Spotlight",
+      "커스텀 CSS",
+      "테마",
+      "OPML",
+      "음성 읽기",
+      "오픈 소스",
+      "광고 없음"
+    ]
+  },
+  "play.featureGraphic": {
+    "eyebrow": "Folo",
+    "headline": "AI *RSS 리더*",
+    "sub": "모든 피드를 한곳에, 잡음은 빼고."
+  }
+}

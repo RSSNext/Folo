@@ -65,6 +65,7 @@ export const PictureWaterFallItem = memo(function PictureWaterFallItem({
   index,
   className,
 }: UniversalItemProps & { index: number; className?: string }) {
+  const { t } = useTranslation()
   const entry = useEntry(entryId, (state) => ({
     media: state.media,
     id: state.id,
@@ -122,7 +123,7 @@ export const PictureWaterFallItem = memo(function PictureWaterFallItem({
         ) : (
           <div className="center aspect-video flex-col gap-1 rounded-md bg-material-medium text-xs text-text-secondary">
             <i className="i-mgc-sad-cute-re size-6" />
-            No media available
+            {t("entry_content.no_content")}
           </div>
         )}
       </EntryItemWrapper>

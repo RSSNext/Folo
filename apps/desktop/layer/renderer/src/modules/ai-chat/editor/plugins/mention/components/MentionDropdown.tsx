@@ -153,6 +153,8 @@ export const MentionDropdown: React.FC<MentionDropdownProps> = ({
 }) => {
   if (!isVisible) throw thenable
 
+  const { t } = useTranslation("ai")
+
   // Group suggestions by type with stable ordering
   const groupedSuggestions = useMemo<TypeaheadGroup<MentionData, MentionData["type"]>[]>(() => {
     const groupMap = new Map<MentionData["type"], MentionData[]>()
@@ -189,7 +191,7 @@ export const MentionDropdown: React.FC<MentionDropdownProps> = ({
       onSetSelectIndex={onSetSelectIndex}
       onClose={onClose}
       query={query}
-      ariaLabel="Mention suggestions"
+      ariaLabel={t("chat.typeahead.mention_suggestions")}
       getKey={(mention) => `${mention.type}-${mention.id}`}
       renderItem={(mention, _index, isSelected, handlers) => (
         <MentionSuggestionItem

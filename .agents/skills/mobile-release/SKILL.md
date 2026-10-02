@@ -1,217 +1,332 @@
 ---
 name: mobile-release
-description: Use when preparing a mobile release from the dev branch and deciding whether changes should ship through the app stores or through the OTA pipeline before creating the release PR to mobile-main.
+description: Full Folo mobile release from dev to the stores. Decides between a store release and an OTA-only release, drafts the changelog, bumps the version and opens the release PR to mobile-main, verifies the PR's CI-built Android package and the iOS build on a simulator along with every change in the release, merges the PR, watches the build or OTA workflows, publishes the GitHub release, and submits the iOS build for App Store review and the Android build for Google Play review. Use when the user asks to release, ship or publish the mobile app.
 disable-model-invocation: true
+argument-hint: "[optional notes, e.g. 'ota' or 'minor bump']"
 allowed-tools: Bash, Read, Write, Edit, Glob, Grep
 ---
 
 # Mobile Release
 
-Perform a mobile release from `dev`, with an explicit release-mode decision before the bump.
+The release flow shared by every agent. Claude Code reaches it through `.claude/skills/mobile-release/SKILL.md`, which maps these steps onto Claude's tools. Change the flow here, not in the adapter.
 
-The skill must recommend one of these modes, explain why, ask the user to confirm, and then write `apps/mobile/release-plan.json` before running the bump:
+Phase A prepares the release, Phase B verifies the packages GitHub Actions builds for the PR, and Phase C merges and carries the release through every store. The run ends only when every item in **Definition of done** for the chosen mode is checked, or when the only open items are blocked on the user and you have told them exactly what is left.
 
-- `store`: normal App Store / Google Play release
-- `ota`: OTA-only publish, no store builds
+## Standing authorization
 
-Do not recommend or write any other mode. The current implementation only supports `store` and `ota`.
+Invoking this skill is the user's approval, for this release, to:
 
-The CI release flow is file-driven:
+- push `dev` and the release branch and open the release PR, once the Phase A confirmation gate passes
+- merge the release PR after verification passes
+- publish the GitHub release
+- sign in to App Store Connect and Google Play Console with the user's 1Password logins through the password manager's browser autofill, without asking in chat
+- fill What's New and release notes, submit the iOS version for App Review, and send the Google Play production release for review
 
-- `apps/mobile/release-plan.json` is the editable plan on `dev`
-- `pnpm bump` runs `apps/mobile/scripts/apply-release-config.ts`
-- that script writes `apps/mobile/release.json` for the new version and resets the plan back to a safe default
-- GitHub Actions reads `apps/mobile/release.json` after merge to decide which pipelines to trigger
+Still ask first: code changes that fix something found during verification; accepting agreements, terms or policy declarations in any console; changing listings (beyond What's New and release notes), screenshots, pricing, availability, content rating or Data safety; deleting builds, releases, tracks or tags; force pushes; anything outside this release.
 
-## Pre-flight checks
+1Password still shows its own consent prompt on the user's devices. Request credentials only when a sign-in page actually shows up, and keep working on other steps while it waits.
 
-1. Confirm the current branch is `dev`. If not, abort with a warning.
-2. Run `git pull --rebase` in the repo root.
-3. Read:
-   - `apps/mobile/package.json`
-   - `apps/mobile/release-plan.json`
-   - `.github/workflows/tag.yml`
-   - `.github/workflows/publish-ota.yml`
+Signed-in checks use the demo account (1Password item `mczvztynp5if7izw5wvmoggtru`) on QA devices that keep its session (`references/verify-android-build.md`, `references/verify-ios-build.md`). Never use the user's own account and never register new accounts on production.
 
-## Step 1: Gather changes since last release
+## Definition of done
 
-1. Find the last mobile tag:
+Store mode (`mode: store`):
+
+- [ ] Release PR `release(mobile): Release v<version>` merged into `mobile-main` with a merge commit; tag `mobile/v<version>` exists
+- [ ] GitHub release `Mobile v<version>` published with `build.apk`: not a draft, not a prerelease, not latest
+- [ ] iOS: App Store version with the new build attached, What's New in every locale, state `WAITING_FOR_REVIEW`
+- [ ] Android: Google Play production release with the new app bundle and release notes, sent for review
+- [ ] `chore(sync): merge mobile-main into dev` merged, or its blocker reported
+- [ ] Verification report and final summary delivered; temporary devices, downloads and browser tabs cleaned up
+
+OTA mode (`mode: ota`):
+
+- [ ] Release PR merged; tag `mobile/v<version>` exists
+- [ ] `https://ota.folo.is/manifest` returns the new release for iOS and Android on the chosen runtime and channel, and the launch asset downloads
+- [ ] A device running the store binary for that runtime picks up the update (Settings → About shows `OTA <new version>`)
+- [ ] GitHub release `Mobile v<version>` with `ota-release.json`, `dist.tar.zst` and `build.apk`: not a draft, not a prerelease, not latest
+- [ ] Sync PR merged or reported; report delivered; cleanup done
+
+## How to work
+
+- Shell tools: `git`, `gh`, `pnpm`, `asc` (App Store Connect API; its keychain profile is already set up), `xcrun` (`simctl`), `adb`, `emulator`, `aapt2` and `apksigner` from the newest `~/Library/Android/sdk/build-tools/*`, `axe` for simulator input, optionally `maestro`.
+- Scratch space: `SCRATCH=<a temporary directory>/mobile-release-<version>`. Keep downloads, screenshots and `verification.md` there.
+- Long waits (CI runs of 30–50 minutes, App Store processing): run `gh run watch <run-id> --exit-status --interval 60`, or a polling loop with `sleep`, as a background command and do the next independent step meanwhile.
+- Store consoles run in the user's Chrome, which holds the store sessions and the 1Password integration. Read `references/browser-and-credentials.md` before the first browser step.
+- Simulators and emulators follow the isolation rules of `.agents/skills/mobile-self-test`: never take over one another session is driving. iOS is verified on simulators only, never on the user's physical devices.
+- Talk to the user in their language. Everything written into the repository stays English.
+- If a desktop release runs in the same session, take turns in Chrome, one console at a time.
+
+## Phase A: Prepare the release
+
+### A0. Pre-flight
+
+1. Pick the checkout. `dev` can be checked out in only one worktree at a time:
    ```bash
-   git tag --sort=-creatordate | grep -E '^mobile[@/]' | head -1
-   ```
-2. If no tag exists, fall back to the last release commit subject:
-   ```bash
-   git log --format="%H %s" | grep -Ei "^[a-f0-9]* release\\(mobile\\): release v" | head -1 | awk '{print $1}'
-   ```
-3. Collect commits since that point:
-   ```bash
-   git log <last-tag-or-commit>..HEAD --oneline --no-merges
-   ```
-4. Collect changed files:
-   ```bash
-   git diff --name-only <last-tag-or-commit>..HEAD
-   ```
-5. Categorize commits into:
-   - `Shiny new things`
-   - `Improvements`
-   - `No longer broken`
-   - `Thanks`
-
-## Step 2: Recommend a release mode
-
-### Recommend `store` when:
-
-- any native or binary-affecting paths changed, for example:
-  - `apps/mobile/ios/**`
-  - `apps/mobile/android/**`
-  - `apps/mobile/native/**`
-  - `apps/mobile/package.json`
-  - `apps/mobile/app.config.ts`
-  - `apps/mobile/app.config.base.ts`
-  - `apps/mobile/eas.json`
-  - `apps/mobile/ios/Folo/Info.plist`
-  - `.github/workflows/build-ios.yml`
-  - `.github/workflows/build-android.yml`
-- Expo / React Native / native dependency changes require a new binary
-- permissions, entitlements, icons, splash, Firebase config, or build configuration changed
-
-### Recommend `ota` when:
-
-- changes are limited to JS/TS/assets that the current binary can already run
-- no native or runtime-affecting paths changed
-- the goal is to ship without store review
-
-### Determine the target runtime
-
-If recommending `ota`, derive the target runtime from the store binaries that users currently have installed, not from the new release version, latest mobile tag, or latest OTA release.
-
-1. Check the public store versions first:
-   ```bash
-   curl --fail --silent --show-error https://ota.folo.is/versions | jq '.store.mobile'
-   ```
-2. Cross-check the store runtime model in `apps/mobile/app.config.base.ts`. Today the mobile runtime defaults to the binary package version unless `OTA_RUNTIME_VERSION` is explicitly set during an OTA export.
-3. Use the current App Store / Google Play binary version as the OTA `runtimeVersion`. Example: if the stores still show `0.5.0`, an OTA release for `0.5.4` must use `"runtimeVersion": "0.5.0"` so existing store users can receive it.
-4. If iOS and Android store versions differ, or if the target installed runtime is not clear, stop and ask the user. The release plan supports only one OTA `runtimeVersion`; do not guess or silently pick the newest version.
-
-Never choose the previous OTA release version just because it is the latest working manifest. A runtime mismatch publishes valid assets that only newer binaries can see, leaving current store users stuck on the older OTA.
-
-If you cannot determine the runtime confidently, stop and ask the user to confirm it.
-
-### Confirmation gate
-
-Present:
-
-- the recommended mode
-- rationale based on changed files and commits
-- for `ota`, the proposed `runtimeVersion`
-- for `ota`, the proposed `channel`
-
-Wait for explicit user confirmation before continuing.
-
-## Step 3: Write the release plan file
-
-Update `apps/mobile/release-plan.json` to match the confirmed mode.
-
-Examples:
-
-### Store release
-
-```json
-{
-  "mode": "store",
-  "runtimeVersion": null,
-  "channel": null
-}
-```
-
-### OTA release
-
-```json
-{
-  "mode": "ota",
-  "runtimeVersion": "0.4.1",
-  "channel": "production"
-}
-```
-
-## Step 4: Update changelog
-
-1. Read `apps/mobile/changelog/next.md`.
-2. Present the categorized changes and draft changelog content.
-3. Wait for user confirmation or edits before writing.
-4. Write the final content to `apps/mobile/changelog/next.md`.
-
-## Step 5: Commit pre-bump files before bump
-
-`nbump` requires a clean working tree.
-
-1. Stage:
-   ```bash
-   git add apps/mobile/changelog/next.md apps/mobile/release-plan.json
-   ```
-2. Commit:
-   ```bash
-   git commit -m "docs(mobile): prepare release metadata"
-   ```
-3. If nothing changed, continue.
-
-## Step 6: Execute bump
-
-1. Verify the working tree is clean:
-   ```bash
+   git fetch origin --prune --tags
+   git worktree list --porcelain | grep -B2 '^branch refs/heads/dev$' || echo "dev is free"
    git status --short
    ```
-2. Run:
+   If another worktree has `dev`, stop and ask which checkout to use. Otherwise, with a clean tree (nbump counts untracked files as dirty too), `git switch dev` (or `git switch -c dev --track origin/dev`), then `git pull --rebase`. Check `git log --oneline origin/dev..dev`: local commits that are not on `origin/dev` would ship in this release and be pushed, so list them at the gate and let the user decide; never reset or rewrite `dev` on your own.
+2. The previous release must already be merged back: `git merge-base --is-ancestor origin/mobile-main origin/dev`. If that fails, the last `chore(sync): merge mobile-main into dev` PR has not landed (`gh pr list --base dev --head mobile-main --state open`), and bumping now would compute the wrong version. Stop and report.
+3. Read `apps/mobile/package.json`, `apps/mobile/release-plan.json`, `.github/workflows/tag.yml` and `.github/workflows/publish-ota.yml`.
+4. Tooling: `gh auth status`; `asc auth status` lists a keychain credential; the browser tool reaches the user's Chrome; `xcrun simctl list devices`; `adb devices`; `df -h /System/Volumes/Data` has several GB free.
+5. Store snapshot (read only):
    ```bash
-   cd apps/mobile && pnpm bump
+   curl -fsS https://ota.folo.is/versions | jq '{store: .store.mobile, github: .github.mobile}'
+   asc versions list --app 6739802604 --platform IOS --limit 3 --output json 2>/dev/null \
+     | jq -r '.data[] | [.id, .attributes.versionString, (.attributes.appVersionState // .attributes.appStoreState)] | @tsv'
    ```
-3. `pnpm bump` will:
-   - apply changelog
-   - bump `package.json`
-   - update `ios/Folo/Info.plist`
-   - run `tsx scripts/apply-release-config.ts ${NEW_VERSION}`
-   - write `apps/mobile/release.json`
-   - reset `apps/mobile/release-plan.json` back to the safe default `store`
-   - create the release branch
-   - push the branch
-   - open a PR to `mobile-main`
+   Note any editable iOS version and whether its version string will need renaming. A version still `WAITING_FOR_REVIEW` or `IN_REVIEW` blocks a new submission; mention it at the gate.
 
-## Step 7: Verify and report
+The bump (A5) pushes a branch and opens a PR. Never run it before the confirmation gate passes.
 
-1. Confirm the PR was created successfully.
-2. Read `apps/mobile/release.json` on the release branch and report:
-   - new version
-   - final release mode
-   - runtimeVersion and channel if present
-   - PR URL
-3. Summarize expected post-merge automation:
+### A1. Gather changes
 
-### `mode=store`
+1. Last mobile tag: `git tag --sort=-creatordate | grep -E '^mobile[@/]' | head -1`. Without a tag, fall back to the last release commit: `git log --format="%H %s" | grep -Ei "^[a-f0-9]* release\(mobile\): release v" | head -1 | awk '{print $1}'`.
+2. Commits and changed files since then: `git log <ref>..HEAD --oneline --no-merges`, `git diff --name-only <ref>..HEAD`. Keep what affects mobile (`apps/mobile/**`, `packages/**`, `locales/**`, root dependency files); desktop-only commits do not belong in this changelog.
+3. Categorize into **Shiny new things**, **Improvements**, **No longer broken** and **Thanks**.
 
-- create mobile tag
-- trigger preview Android build
-- trigger production Android build
-- trigger production iOS build
-- no OTA publish
+### A2. Recommend a release mode
 
-### `mode=ota`
+Only `store` and `ota` exist; never write another mode.
 
-- create mobile tag
-- trigger OTA publish only
-- no store builds
+Recommend `store` when any native or binary-affecting path changed, for example `apps/mobile/ios/**`, `apps/mobile/android/**`, `apps/mobile/native/**`, `apps/mobile/package.json`, `apps/mobile/app.config.base.ts`, `apps/mobile/app.config.js`, `apps/mobile/plugins/**`, `apps/mobile/eas.json`, `apps/mobile/ios/Folo/Info.plist`, `.github/workflows/build-ios.yml`, `.github/workflows/build-android.yml`; when Expo, React Native or native dependencies changed; or when permissions, entitlements, icons, splash, Firebase config or build configuration changed.
 
-Do not require live OTA manifest verification during release PR preparation. The user manually merges the PR later, so the OTA publish happens after this workflow finishes and there may be a time gap before the Worker syncs. If the user later asks to check the rollout, verify the workflow run, GitHub Release assets, and `/manifest` at that time.
+Also recommend `store` when the entry HTML renderer changed: `apps/mobile/web-app/**` is built into `out/rn-web` and shipped inside the binary (iOS resources, Android `html-renderer` assets), so an OTA cannot update it, while the PR's preview builds would still show the change. That includes changes in the packages it bundles (`packages/internal/{components,hooks,shared,types,utils}`, `packages/configs`) when the renderer uses the changed files, and `apps/mobile/code-signing/**`, whose certificate is embedded in the binary.
 
-## References
+Recommend `ota` when the changes are limited to JS, TS and assets the current binary can already run, nothing native changed, and the goal is to ship without store review.
 
+For `ota`, derive the runtime from the store binaries users have installed, not from the new version, the latest tag or the latest OTA release:
+
+1. `curl -fsS https://ota.folo.is/versions | jq '.store.mobile'`.
+2. Cross-check `apps/mobile/app.config.base.ts`: the runtime defaults to the binary's package version unless `OTA_RUNTIME_VERSION` is set during an OTA export.
+3. Use the current App Store and Google Play binary version as `runtimeVersion`. If the stores show `0.5.0`, an OTA for `0.5.4` uses `"runtimeVersion": "0.5.0"`.
+4. If iOS and Android differ, or the installed runtime is unclear, stop and ask. The plan supports one runtime; never guess or silently pick the newest.
+
+Never choose the previous OTA release version just because it is the latest working manifest; a runtime mismatch publishes assets only newer binaries can see and leaves store users stuck.
+
+Plans:
+
+```json
+{ "mode": "store", "runtimeVersion": null, "channel": null }
+```
+
+```json
+{ "mode": "ota", "runtimeVersion": "0.5.10", "channel": "production" }
+```
+
+### A3. Draft the changelog
+
+Read `apps/mobile/changelog/next.md` (template: `next.template.md`) and draft it from the categorized commits, one user-facing line per change. Keep `NEXT_VERSION` as the placeholder.
+
+### A4. Confirmation gate
+
+Show the user, in one message:
+
+- the next version: a patch bump by default (`--patch`, e.g. 0.5.10 → 0.5.11); mobile versions stay within 0.5.x even for feature releases unless the user asks for `--minor`
+- the recommended mode with the rationale from files and commits; for `ota`, the runtime and channel and how they were derived; the exact `release-plan.json`
+- the changelog draft
+- what happens after a "go" without further questions (Phases B and C) and what may still need them
+
+The store release notes are fixed text (`references/release-notes.md`), so they need no review. Wait for an explicit go-ahead. Apply edits; ask again only if the version or the mode changes.
+
+### A5. Write the inputs and bump
+
+1. Write `apps/mobile/release-plan.json` and `apps/mobile/changelog/next.md`.
+2. Commit on `dev`; nbump needs a clean tree. Skip the commit if nothing changed:
+   ```bash
+   git add apps/mobile/changelog/next.md apps/mobile/release-plan.json
+   git commit -m "docs(mobile): prepare release metadata"
+   ```
+3. Bump from inside `apps/mobile` with an explicit type (plain `vv` shows a version menu), then push `dev`:
+   ```bash
+   git status --short                                   # must be empty
+   (cd apps/mobile && echo y | pnpm bump --patch)       # or --minor; answers nbump's "Continue?" prompt
+   git rev-parse --abbrev-ref HEAD                      # must print release/mobile/<version>
+   gh pr view --json number,url,title                   # must show the new PR
+   git push origin dev                                  # only after both checks pass
+   ```
+   nbump looks for `package.json` from `INIT_CWD`, the directory pnpm was started in, so `pnpm --dir apps/mobile bump` from the repository root reads the root `package.json` and fails. It also asks "Continue?" after printing the versions; with no input the prompt aborts and the command still exits 0, so check the branch and the PR before pushing anything.
+   The bump applies the changelog, bumps `package.json`, sets `CFBundleShortVersionString` and increments `CFBundleVersion` in `ios/Folo/Info.plist`, runs `scripts/apply-release-config.ts` (writes `release.json`, resets `release-plan.json` to `store`), commits `release(mobile): release v<version>` with `--no-verify` on a new `release/mobile/<version>` branch, pushes it and opens a PR to `mobile-main` titled `release(mobile): Release v<version>`. Only the metadata commit in step 2 goes through the lint-staged hook; if that hook fails, fix the cause and commit again.
+4. Record `VERSION`, `MODE` and `PR` (`gh pr view --json number,url`).
+
+### A6. Check the generated state
+
+On `release/mobile/<version>`: `apps/mobile/release.json` has the version, mode, runtime and channel; `release-plan.json` is back to `store`; `package.json` and `ios/Folo/Info.plist` carry the new version; the PR exists against `mobile-main`.
+
+## Phase B: Verify the PR builds
+
+Never merge with an open blocker: a store build or an OTA publish starts as soon as the PR is merged.
+
+### B1. Wait for CI
+
+The push to `release/mobile/<version>` starts:
+
+- `🍎 Build iOS` (preview profile): an ad-hoc signed `build.ipa` in the artifact `app-ios`; about 40 minutes on GitHub's macOS runners with Xcode 26.4.1.
+- `🤖 Build Android` (preview profile): `build.apk` in the artifact `app-android`; about 40 minutes.
+- `📱 Build iOS for development` (development clients; not needed here).
+
+```bash
+HEAD_SHA=$(git rev-parse HEAD)
+for wf in build-ios.yml build-android.yml; do
+  gh run list --workflow "$wf" --branch "release/mobile/$VERSION" --event push \
+    --json databaseId,headSha --jq ".[] | select(.headSha == \"$HEAD_SHA\") | .databaseId"
+done
+```
+
+Watch both runs and `gh pr checks "$PR" --watch --interval 60` in the background. A new push to the branch cancels running builds. If a job fails, read `gh run view <run-id> --log-failed`; rerun once for infrastructure flakes, otherwise stop and report.
+
+Write the verification plan (B2) and start the iOS simulator build (`references/verify-ios-build.md` §2) while the runs go.
+
+### B2. Write the verification plan
+
+Create `$SCRATCH/verification.md` with one row per item: what to check, platform (iOS, Android or both), account state (signed in or guest), expected result, evidence file, result.
+
+- Every changelog entry, on both platforms unless it is platform specific.
+- Every risky commit, even one without an entry: native modules, the iOS and Android projects, player and TTS, auth, sync engine, OTA client, networking.
+- The smoke suite: launch to the timeline without an error; open an entry; the player bar if audio is involved; each Settings tab; switch the app language and back; Discover; Settings → About shows `<version> (<build>)`; no crash in the logs.
+- `ota` mode: the JS must also run on the old binary. Check that nothing native changed since the runtime's tag. Every bump touches `Info.plist` and `package.json`, so those two are inspected by content:
+  ```bash
+  git diff mobile/v<runtimeVersion>..HEAD --name-only -- apps/mobile/ios apps/mobile/android apps/mobile/native \
+    apps/mobile/plugins apps/mobile/web-app apps/mobile/code-signing apps/mobile/app.config.base.ts \
+    apps/mobile/app.config.js apps/mobile/eas.json ':(exclude)apps/mobile/ios/Folo/Info.plist'
+  git diff mobile/v<runtimeVersion>..HEAD -U0 -- apps/mobile/package.json apps/mobile/ios/Folo/Info.plist
+  ```
+  The first command must print nothing, and the second may only change `version`, `CFBundleShortVersionString` and `CFBundleVersion`. Also look at `pnpm-lock.yaml` for dependencies with native code. Any other hit means the mode is wrong: stop and go back to the gate. The real old-binary check happens after publishing (C4).
+
+### B3. Verify the Android package
+
+Follow `references/verify-android-build.md`: download `app-android`, check package, version and signing certificate, install it on the QA emulator (a temporary emulator as a guest fallback), work through the plan, and clean up.
+
+### B4. Verify the iOS build
+
+Follow `references/verify-ios-build.md`: download `app-ios` and check the IPA statically, then run the functional checks on a simulator with a Release build of the same commit. The ad-hoc IPA itself runs only on registered physical devices, which are not used for verification.
+
+### B5. Decide
+
+- Pass: every item passed or carries a non-blocking note, and the PR checks are green.
+- Blocking: a crash, a wrong version, bundle ID, profile or signing certificate, a changelog item that does not work, a regression in a core flow, red PR checks.
+
+On a blocker, stop and tell the user with the evidence and a proposed fix. A fix lands on `dev` first and is then cherry-picked onto `release/mobile/<version>`. Committing `apps/mobile/src` changes on a `release/*` branch runs `scripts/increment-build-id.sh`, which raises `CFBundleVersion` in `ios/Folo/Info.plist`; that is harmless, since EAS sets the build numbers remotely (`appVersionSource: remote`). A local simulator build can also raise `CFBundleVersion`; check `git status` before committing so it does not slip in. The push rebuilds the packages and B1–B5 run again.
+
+## Phase C: Merge and ship
+
+### C1. Merge
+
+```bash
+gh pr view "$PR" --json state,mergeable,mergeStateStatus --jq .
+gh pr merge "$PR" --merge
+MERGE_SHA=$(gh pr view "$PR" --json mergeCommit --jq .mergeCommit.oid)
+```
+
+Use a merge commit: the default merge message puts the PR title in the body, and `tag.yml` reads it from there. No `--admin`, no squash or rebase.
+
+### C2. Watch the post-merge workflows
+
+`🏷️ Release Orchestrator` (`tag.yml`) runs for `MERGE_SHA`, creates `mobile/v<version>`, resolves `apps/mobile/release.json` and dispatches:
+
+- store mode, on `mobile-main`:
+  - `🤖 Build Android` with `production-apk` and `release=true`: builds the APK and creates the GitHub release `Mobile v<version>` as a draft prerelease with `build.apk` (about 35 minutes; artifact `app-android`)
+  - `🤖 Build Android` with `production`: builds the AAB and runs `eas submit`, which uploads it to Google Play as a draft release on the internal testing track (about 30 minutes; artifact `aab-android`)
+  - `🍎 Build iOS` with `production`: builds the IPA and runs `eas submit`, which uploads it to App Store Connect; EAS raises the build number remotely (about 50 minutes)
+- ota mode: `📡 Publish OTA Release` on the tag (exports the bundle, attaches `ota-release.json` and `dist.tar.zst` to the release, triggers the worker sync; a few minutes) and the `production-apk` Android build above
+
+```bash
+gh run list --workflow tag.yml --branch mobile-main --limit 3 --json databaseId,headSha,status,conclusion
+for wf in build-android.yml build-ios.yml publish-ota.yml; do
+  gh run list --workflow "$wf" --event workflow_dispatch --limit 3 --json databaseId,headBranch,createdAt,status
+done
+```
+
+Tell the two Android runs apart by their artifacts or steps (`app-android` with "Create Release Draft" versus `aab-android` with "Submit to Google Play"). Watch every run in the background. The push-triggered builds on `mobile-main` are skipped on purpose. `🔄 Sync Release Branches To Dev` opens `chore(sync): merge mobile-main into dev` (C7).
+
+### C3. Publish the GitHub release
+
+Drafts are invisible to the tag endpoint, so find the release through the list API:
+
+```bash
+gh api repos/RSSNext/Folo/releases --jq ".[] | select(.tag_name == \"mobile/v$VERSION\") | {id, draft, prerelease, assets: [.assets[].name]}"
+```
+
+- Store mode: one draft with `build.apk`. Download it (`mkdir -p "$SCRATCH/release" && gh api repos/RSSNext/Folo/releases/assets/<asset id> -H 'Accept: application/octet-stream' > "$SCRATCH/release/build.apk"`) and check it as in `references/verify-android-build.md` §1: package `is.follow`, versionName the new version, the EAS signing certificate.
+- OTA mode: `ota-release.json`, `dist.tar.zst` and `build.apk` should sit on one non-draft release (the APK build may have marked it prerelease). If they ended up on two releases with the same tag, stop and report.
+
+Then publish it without taking "latest" away from the desktop release, and check:
+
+```bash
+LATEST_BEFORE=$(gh api repos/RSSNext/Folo/releases/latest --jq .tag_name)    # a desktop/v… tag
+gh api -X PATCH "repos/RSSNext/Folo/releases/<release id>" -F draft=false -F prerelease=false -f make_latest=false
+gh release view "mobile/v$VERSION" --json isDraft,isPrerelease                 # both false
+gh api repos/RSSNext/Folo/releases/latest --jq .tag_name                       # still a desktop/v… tag
+```
+
+`gh release view` has no `isLatest` field; the `releases/latest` endpoint is the check. In OTA mode `publish-ota.yml` creates the release without `--latest=false`, so a mobile tag may already hold "latest" before you start. If `LATEST_BEFORE` or the final check shows a `mobile/v…` tag, give it back to the newest desktop release with `gh release edit desktop/v<newest> --latest` and mention it in the report.
+
+### C4. Check OTA delivery and download links
+
+Store mode, within about 15 minutes of C3:
+
+```bash
+curl -fsS https://ota.folo.is/versions | jq '.github.mobile'
+curl -sI https://ota.folo.is/download/mobile/android/apk | grep -i '^location'
+```
+
+OTA mode, after the publish run:
+
+```bash
+for p in ios android; do
+  curl -fsS -H "expo-platform: $p" -H "expo-runtime-version: <runtimeVersion>" -H "expo-channel-name: <channel>" \
+    "https://ota.folo.is/manifest?product=mobile" | jq -r '.metadata.releaseVersion, .launchAsset.url'
+done
+```
+
+Both platforms must report the new version, and the launch asset URL must download. Then check a real old binary: install the GitHub release APK of version `<runtimeVersion>` on a temporary emulator as a fresh install (`references/verify-android-build.md` §4), launch it, wait for the update, relaunch, and confirm Settings → About shows `OTA <new version>` (before the update it shows `OTA <runtimeVersion>`, the runtime fallback) and the changed screens work. If it doesn't, follow the rollback checklist in `apps/ota/README.md` and tell the user at once.
+
+### C5. App Store (store mode)
+
+Follow `references/store-submissions.md` § App Store: confirm "Submit to App Store" succeeded in the iOS run, wait for processing, rename or create the iOS version, fill What's New in every locale, validate, submit with `asc`, and confirm `WAITING_FOR_REVIEW` with `asc` and in App Store Connect.
+
+### C6. Google Play (store mode)
+
+Follow `references/store-submissions.md` § Google Play: confirm "Submit to Google Play" succeeded, create the production release from the uploaded bundle in Play Console, add the release notes, and send the changes for review.
+
+### C7. Sync PR
+
+```bash
+gh pr list --base dev --head mobile-main --state all --limit 1 \
+  --json number,state,mergedAt,mergeStateStatus,autoMergeRequest
+```
+
+`dev` requires `Format, Lint and Typecheck (lts/*)` and `Build web and SSR server (lts/*)`. The PR is opened with the workflow token, which starts no `pull_request` workflows; since October 2026 `lint.yml` and `build-web.yml` also run on pushes to `mobile-main`, so the merge commit carries both checks and the sync PR auto-merges like the desktop one. A release whose `mobile-main` predates that change won't get them (#5095 waited eight days). Check `gh pr checks <n> --required`. Merged, or the required checks running: fine. Checks missing or failing, or conflicts: report it with the details and the fix (closing and reopening the PR starts the checks; conflicts need a manual merge), and don't push to `dev` or `mobile-main` to force it unless the user asks. The next release's pre-flight depends on it.
+
+### C8. Report and clean up
+
+Tell the user: version, mode, runtime and channel; PR and merge commit; tag; GitHub release URL; for store mode the App Store version state and the Google Play release state; for OTA mode the manifest results and the old-binary check; the sync PR; the verification summary with `verification.md` and the key screenshots; anything not verified and why. Store reviews finish later; say how to check them.
+
+Clean up: delete temporary simulators and emulators, shut down QA devices you booted, delete downloads (keep the report and screenshots), revert stray changes such as `Info.plist` build numbers from local builds, close the browser tabs you opened, and release any granted credentials.
+
+## Failure handling
+
+- The bump fails halfway: nbump restores `package.json` only when a trailing hook fails and rolls nothing back after a leading hook fails. Check `git status` and `git branch --list 'release/mobile/*'`, restore the tree with `git restore --staged --worktree apps/mobile` and delete the generated `apps/mobile/changelog/<version>.md` if the bump renamed `next.md`. Ask before deleting a leftover local release branch. If the branch reached GitHub but `gh pr create` failed, open the PR by hand with the title and body from `bump.config.ts`.
+- A CI build or PR check fails: read the failed log, rerun once for flakes, otherwise stop before merging and report.
+- Verification fails: stop before merging (B5).
+- `tag.yml` fails or creates no tag: read its log. The usual causes are a merge message without the PR title or a `release.json` version mismatch. Report; never create release tags by hand.
+- `eas submit` fails in a production run: read the log; rerun the failed job once for transient App Store Connect or Google Play errors (`gh run rerun <run-id> --failed`), otherwise report.
+- App Store processing ends `INVALID` or `FAILED`: report with the build ID; App Store Connect emails the reason.
+- The OTA manifest still serves the old release 15 minutes after the publish run: check the run's "Trigger OTA sync" step and report.
+- A console asks to accept new agreements, terms or policy declarations: stop and ask; only the account holder can accept.
+- A 1Password prompt times out: tell the user, continue with steps that don't need that login, retry once the user responds.
+- Never delete releases, tags, builds, tracks or store releases to start over; ask first.
+
+## Reference
+
+- Claude Code adapter: `.claude/skills/mobile-release/SKILL.md`; device rules: `.agents/skills/mobile-self-test/SKILL.md`, `.agents/skills/mobile-e2e/SKILL.md`
 - Bump config: `apps/mobile/bump.config.ts`
-- Release plan: `apps/mobile/release-plan.json`
-- Release config: `apps/mobile/release.json`
-- Apply release config script: `apps/mobile/scripts/apply-release-config.ts`
-- Changelog dir: `apps/mobile/changelog/`
-- Apply changelog script: `apps/mobile/scripts/apply-changelog.ts`
+- Changelog: `apps/mobile/changelog/`, `apps/mobile/scripts/apply-changelog.ts`
+- Release plan and config: `apps/mobile/release-plan.json`, `apps/mobile/release.json`, `apps/mobile/scripts/apply-release-config.ts`
 - Release config resolver: `.github/scripts/resolve-mobile-release-config.mjs`
-- Tag orchestration: `.github/workflows/tag.yml`
-- OTA publish workflow: `.github/workflows/publish-ota.yml`
-- App config: `apps/mobile/app.config.ts`
-- iOS Info.plist: `apps/mobile/ios/Folo/Info.plist`
+- Workflows: `.github/workflows/tag.yml`, `build-ios.yml`, `build-android.yml`, `publish-ota.yml`, `sync.yaml`, `lint.yml`, `build-web.yml`
+- Build profiles and submit config: `apps/mobile/eas.json`; app config: `apps/mobile/app.config.base.ts`; iOS Info.plist: `apps/mobile/ios/Folo/Info.plist`
+- OTA worker: `apps/ota` (its `README.md` lists manifest, policy and rollback steps)
+- `references/verify-android-build.md`, `references/verify-ios-build.md`, `references/store-submissions.md`, `references/release-notes.md`, `references/browser-and-credentials.md`

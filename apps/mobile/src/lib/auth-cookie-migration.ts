@@ -52,7 +52,7 @@ const createMigrationHeaders = async () => {
 }
 
 const hasValidSessionOnApiDomain = async (apiURL: string) => {
-  const cookie = getCookie()
+  const cookie = await getCookie()
   if (!cookie) {
     return false
   }
@@ -80,7 +80,7 @@ const hasValidSessionOnApiDomain = async (apiURL: string) => {
 }
 
 const getLegacyOneTimeToken = async () => {
-  const cookie = getCookie()
+  const cookie = await getCookie()
   if (!cookie) {
     return null
   }

@@ -391,17 +391,25 @@ const normalizeDescription = (value: string | null | undefined) => {
 }
 
 const fetchJson = async <T>(url: string) => {
-  const response = await fetch(url, {
-    headers: {
-      accept: 'application/json',
-    },
-  })
+  const controller = new AbortController()
+  const timeout = setTimeout(() => controller.abort(), 5000)
 
-  if (!response.ok) {
-    throw new Error(`Failed to fetch ${url}: ${response.status}`)
+  try {
+    const response = await fetch(url, {
+      headers: {
+        accept: 'application/json',
+      },
+      signal: controller.signal,
+    })
+
+    if (!response.ok) {
+      throw new Error(`Failed to fetch ${url}: ${response.status}`)
+    }
+
+    return (await response.json()) as T
+  } finally {
+    clearTimeout(timeout)
   }
-
-  return (await response.json()) as T
 }
 
 const getTrendingLanguage = (locale?: string) =>

@@ -1,4 +1,5 @@
 import type { FollowClient } from "@follow-app/client-sdk"
+import { FollowAPIError } from "@follow-app/client-sdk"
 import * as React from "react"
 
 import { renderToImage } from "../../lib/og/render-to-image"
@@ -6,7 +7,10 @@ import { getUserProfile } from "../../lib/user-profile-params"
 import { getImageBase64, OGAvatar, OGCanvas } from "./__base"
 
 export const renderUserOG = async (apiClient: FollowClient, handleOrId: string) => {
-  const user = await getUserProfile(apiClient, handleOrId)
+  const user = await getUserProfile(apiClient, handleOrId).catch((error: unknown) => {
+    if (error instanceof FollowAPIError && error.status === 404) throw 404
+    throw error
+  })
 
   if (!user) {
     throw 404

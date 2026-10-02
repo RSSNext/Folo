@@ -10,7 +10,7 @@ import { useAnimationControls } from "motion/react"
 import type { FC } from "react"
 import * as React from "react"
 import { Fragment, use, useCallback, useEffect, useMemo, useRef, useState } from "react"
-import { useTranslation } from "react-i18next"
+import { Trans, useTranslation } from "react-i18next"
 import type { ReactZoomPanPinchRef, ReactZoomPanPinchState } from "react-zoom-pan-pinch"
 import { TransformComponent, TransformWrapper } from "react-zoom-pan-pinch"
 
@@ -212,8 +212,10 @@ const HeaderActions: FC<{
 
   const { dismiss } = useCurrentModal()
   return (
+    // `safe-inset-top` keeps the actions below the custom Windows title bar, whose window
+    // controls would otherwise cover the close button
     <m.div
-      className="pointer-events-none absolute inset-x-0 top-0 z-[100] flex h-16 items-center justify-end gap-2 px-3"
+      className="pointer-events-none absolute inset-x-0 z-[100] flex h-16 items-center justify-end gap-2 px-3 safe-inset-top"
       variants={headerActionsVariants}
       initial="initial"
       animate="animate"
@@ -421,6 +423,7 @@ const FallbackableImage: FC<
     onZoomChange?: (isZoomed: boolean) => void
   }
 > = ({ src, fallbackUrl, containerClassName, onZoomChange, loading }) => {
+  const { t } = useTranslation()
   const replaceImgUrlIfNeed = useReplaceImgUrlIfNeed()
   const [currentSrc, setCurrentSrc] = useState(() => replaceImgUrlIfNeed(src))
   const [isAllError, setIsAllError] = useState(false)
@@ -468,7 +471,7 @@ const FallbackableImage: FC<
           minZoom={1}
           maxZoom={2}
           src={currentSrc}
-          alt="preview"
+          alt={t("media.preview")}
           loading={loading}
           highResLoaded={!isLoading}
           onLoad={() => setIsLoading(false)}
@@ -484,48 +487,52 @@ const FallbackableImage: FC<
         >
           <i className="i-mgc-close-cute-re text-[60px] text-red-400" />
 
-          <span>Failed to load image</span>
+          <span>{t("media.image_load_failed")}</span>
           <div className="center gap-2">
-            <MotionButtonBase
-              className="pointer-events-auto underline underline-offset-4"
-              onClick={() => {
-                setCurrentSrc(replaceImgUrlIfNeed(src))
-                setIsAllError(false)
+            <Trans
+              t={t}
+              i18nKey="media.image_load_failed_actions"
+              components={{
+                Retry: (
+                  <MotionButtonBase
+                    className="pointer-events-auto underline underline-offset-4"
+                    onClick={() => {
+                      setCurrentSrc(replaceImgUrlIfNeed(src))
+                      setIsAllError(false)
+                    }}
+                  />
+                ),
+                Link: (
+                  <a
+                    className="pointer-events-auto underline underline-offset-4"
+                    href={src}
+                    target="_blank"
+                    rel="noreferrer"
+                  />
+                ),
               }}
-            >
-              Retry
-            </MotionButtonBase>
-            or
-            <a
-              className="pointer-events-auto underline underline-offset-4"
-              href={src}
-              target="_blank"
-              rel="noreferrer"
-            >
-              Visit Original
-            </a>
+            />
           </div>
         </div>
       )}
 
       {currentState === "fallback" && (
         <div className="absolute bottom-8 left-1/2 mt-4 -translate-x-1/2 rounded-lg bg-material-thick px-3 py-2 text-center text-xs text-text opacity-70 backdrop-blur-background">
-          <span>
-            This image is preview in low quality, because the original image is not available.
-          </span>
-          <br />
-          <span>
-            You can{" "}
-            <a
-              href={src}
-              target="_blank"
-              rel="noreferrer"
-              className="underline duration-200 hover:text-accent"
-            >
-              visit the original image
-            </a>{" "}
-            if you want to see the full quality.
-          </span>
+          <Trans
+            t={t}
+            i18nKey="media.low_quality_preview"
+            components={{
+              br: <br />,
+              Link: (
+                <a
+                  href={src}
+                  target="_blank"
+                  rel="noreferrer"
+                  className="underline duration-200 hover:text-accent"
+                />
+              ),
+            }}
+          />
         </div>
       )}
     </div>

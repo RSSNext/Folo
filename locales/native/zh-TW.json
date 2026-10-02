@@ -22,14 +22,15 @@
   "contextMenu.services": "服務",
   "dialog.cancel": "取消",
   "dialog.clearAllData": "您確定要清除所有資料嗎？",
+  "dialog.confirm": "確認",
   "dialog.no": "否",
   "dialog.open": "開啟",
-  "dialog.openExternalApp.message": "確定要使用其他App開啟 {{url}} 嗎？",
-  "dialog.openExternalApp.title": "開啟外部App？",
+  "dialog.openExternalApp.message": "確定要使用其他應用程式開啟 {{url}} 嗎？",
+  "dialog.openExternalApp.title": "開啟外部應用程式？",
   "dialog.yes": "是",
+  "download.success": "下載完成",
   "menu.about": "關於 {{name}}",
-  "menu.actualSize": "實際大小",
-  "menu.bringAllToFront": "將所有視窗移至最上層",
+  "menu.alwaysOnTop": "視窗置頂",
   "menu.checkForUpdates": "檢查更新",
   "menu.clearAllData": "清除所有資料",
   "menu.close": "關閉",
@@ -69,7 +70,5 @@
   "menu.unread": "未讀",
   "menu.view": "檢視",
   "menu.window": "視窗",
-  "menu.zoom": "縮放",
-  "menu.zoomIn": "放大",
-  "menu.zoomOut": "縮小"
+  "menu.zoom": "縮放"
 }

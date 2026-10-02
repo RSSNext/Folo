@@ -201,6 +201,7 @@ describe("entry tts", () => {
   it("schedules decoded stream chunks from the current audio context time", async () => {
     const sourceStartTimes: number[] = []
     const audioContexts: Array<{ currentTime: number }> = []
+    const closeAudioContextMock = vi.fn(() => Promise.resolve())
 
     class FakeAudioContext {
       currentTime = 0
@@ -209,7 +210,7 @@ describe("entry tts", () => {
         audioContexts.push(this)
       }
 
-      close = vi.fn(() => Promise.resolve())
+      close = closeAudioContextMock
       createBuffer = (_channels: number, frameCount: number, sampleRate: number) =>
         createAudioBufferMock(frameCount / sampleRate, sampleRate)
       createBufferSource = () => ({
@@ -248,5 +249,12 @@ describe("entry tts", () => {
       expect(sourceStartTimes).toHaveLength(1)
     })
     expect(sourceStartTimes[0]).toBeGreaterThanOrEqual(3)
+
+    // playEntryTts starts playback without awaiting its background stream loop.
+    // Let that loop release its timers before afterEach restores the DOM globals.
+    await waitForExpectation(() => {
+      expect(closeAudioContextMock).toHaveBeenCalledTimes(1)
+    })
+    expect(audioElementMock.srcObject).toBeNull()
   })
 })

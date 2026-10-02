@@ -4,6 +4,7 @@ import { getStorageNS } from "@follow/utils/ns"
 import { repository } from "@pkg"
 import type { FC } from "react"
 import { Suspense, use, useEffect, useRef } from "react"
+import { Trans, useTranslation } from "react-i18next"
 import { toast } from "sonner"
 
 import { useServerConfigs } from "~/atoms/server-configs"
@@ -13,9 +14,10 @@ import { useModalStack } from "~/components/ui/modal/stacked/hooks"
 import { Paper } from "~/components/ui/paper"
 import { DebugRegistry } from "~/modules/debug/registry"
 
-import { linkifyChangelog } from "./utils"
+import { getDesktopReleaseUrl, linkifyChangelog } from "./utils"
 
 const AppNotificationContainer: FC = () => {
+  const { t } = useTranslation()
   const { present } = useModalStack()
 
   const serverConfigs = useServerConfigs()
@@ -58,27 +60,32 @@ const AppNotificationContainer: FC = () => {
       toast.success("", {
         description: (
           <div className="font-medium text-text">
-            App is upgraded to{" "}
-            <a
-              href={`${repository.url}/releases/tag/v${APP_VERSION}`}
-              target="_blank"
-              rel="noreferrer"
-            >
-              {APP_VERSION}
-            </a>
-            , enjoy the new features! 🎉
+            <Trans
+              t={t}
+              i18nKey="notify.app_upgraded"
+              values={{ version: APP_VERSION }}
+              components={{
+                Link: (
+                  <a
+                    href={getDesktopReleaseUrl(repository.url, APP_VERSION)}
+                    target="_blank"
+                    rel="noreferrer"
+                  />
+                ),
+              }}
+            />
           </div>
         ),
         closeButton: true,
         duration: 5000,
         action: CHANGELOG_CONTENT
           ? {
-              label: "What's new?",
+              label: t("notify.whats_new"),
               onClick: () => {
                 nextFrame(() => {
                   present({
                     clickOutsideToDismiss: true,
-                    title: "What's new?",
+                    title: t("notify.whats_new"),
                     autoFocus: false,
                     modalClassName:
                       "relative mx-auto mt-[10vh] scrollbar-none max-w-full overflow-auto px-2 lg:max-w-[65rem] lg:p-0",

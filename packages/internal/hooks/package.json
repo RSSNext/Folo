@@ -15,11 +15,11 @@
     "@follow/shared": "workspace:*",
     "@follow/types": "workspace:*",
     "@follow/utils": "workspace:*",
-    "@tanstack/react-query": "5.101.2",
-    "es-toolkit": "1.49.0",
-    "foxact": "0.3.8",
-    "jotai": "2.20.1",
-    "sonner": "2.0.7",
+    "@tanstack/react-query": "5.103.2",
+    "es-toolkit": "1.52.0",
+    "foxact": "0.3.12",
+    "jotai": "3.0.0",
+    "sonner": "2.0.8",
     "usehooks-ts": "3.1.1"
   },
   "devDependencies": {

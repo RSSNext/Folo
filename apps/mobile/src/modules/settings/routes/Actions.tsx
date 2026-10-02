@@ -124,11 +124,12 @@ const NewRuleButton = () => {
   )
 }
 const SaveRuleButton = ({ disabled }: { disabled?: boolean }) => {
+  const { t } = useTranslation("settings")
   const navigation = useNavigation()
   const { mutate, isPending } = useUpdateActionsMutation({
     onSuccess() {
       navigation.back()
-      toast.success("Actions saved")
+      toast.success(t("actions.saveSuccess"))
     },
     onError(error) {
       toastFetchError(error)
@@ -136,7 +137,7 @@ const SaveRuleButton = ({ disabled }: { disabled?: boolean }) => {
   })
   return (
     <HeaderSubmitTextButton
-      label="Save"
+      label={t("actions.save")}
       isValid={!disabled}
       onPress={mutate}
       isLoading={isPending}

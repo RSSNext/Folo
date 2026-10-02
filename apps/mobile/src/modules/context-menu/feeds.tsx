@@ -162,15 +162,19 @@ const generateSubscriptionContextMenu = (navigation: Navigation, id: string) => 
               if (!subscription) return
               const prompt = isIOS ? Alert.prompt : modalPrompt
 
-              prompt("Create New Category", "Enter the name of the new category", (text) => {
-                subscriptionSyncService.edit({
-                  ...subscription,
-                  category: text,
-                })
-              })
+              prompt(
+                t("operation.create_new_category"),
+                t("operation.enter_name_for_new_category"),
+                (text) => {
+                  subscriptionSyncService.edit({
+                    ...subscription,
+                    category: text,
+                  })
+                },
+              )
             }}
           >
-            <ContextMenu.ItemTitle>Create New Category</ContextMenu.ItemTitle>
+            <ContextMenu.ItemTitle>{t("operation.create_new_category")}</ContextMenu.ItemTitle>
             <ContextMenu.ItemIcon ios={{ name: "plus" }} />
           </ContextMenu.Item>
         </ContextMenu.SubContent>
@@ -340,7 +344,7 @@ export const SubscriptionFeedCategoryContextMenu = ({
                 newCategory,
                 view: currentView,
               })
-              toast.success("Category renamed successfully")
+              toast.success(t("operation.rename_category_success"))
             }
             prompt(
               t("operation.rename_category"),

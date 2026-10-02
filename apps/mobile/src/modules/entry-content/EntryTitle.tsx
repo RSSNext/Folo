@@ -10,6 +10,7 @@ import { UserAvatar } from "@/src/components/ui/avatar/UserAvatar"
 import { FeedIcon } from "@/src/components/ui/icon/feed-icon"
 import { Text } from "@/src/components/ui/typography/Text"
 import { EntryContentContext, useEntryContentContext } from "@/src/modules/entry-content/ctx"
+import { useSocialAuthorTitle } from "@/src/modules/feed/feed-title"
 
 import { EntryTranslation } from "../entry-list/templates/EntryTranslation"
 
@@ -49,6 +50,7 @@ export const EntrySocialTitle = ({ entryId }: { entryId: string }) => {
     }
   })
   const feed = useFeedById(entry?.feedId as string)
+  const authorTitle = useSocialAuthorTitle(entry?.feedId, entry?.author)
   return (
     <View className="flex-row items-center gap-3 px-4">
       {entry?.authorAvatar ? (
@@ -56,9 +58,7 @@ export const EntrySocialTitle = ({ entryId }: { entryId: string }) => {
       ) : (
         feed && <FeedIcon feed={feed} size={28} />
       )}
-      <Text className="text-[15px] font-semibold text-label">
-        {entry?.author || feed?.title || ""}
-      </Text>
+      <Text className="text-[15px] font-semibold text-label">{authorTitle || ""}</Text>
     </View>
   )
 }

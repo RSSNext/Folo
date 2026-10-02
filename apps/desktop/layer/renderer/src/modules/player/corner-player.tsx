@@ -338,6 +338,7 @@ const CornerPlayerImpl = ({ hideControls, rounded }: ControlButtonProps) => {
 
 const ONE_HOUR_IN_SECONDS = 60 * 60
 export const PlayerProgress = () => {
+  const { t } = useTranslation()
   const isMobile = useMobile()
   const playerValue = useAudioPlayerAtomValue()
 
@@ -400,7 +401,7 @@ export const PlayerProgress = () => {
           {/* indicator */}
           <Slider.Thumb
             className="block h-2 w-[3px] rounded-[1px] bg-accent"
-            aria-label="Progress"
+            aria-label={t("player.progress")}
           />
         </Slider.Root>
       )}

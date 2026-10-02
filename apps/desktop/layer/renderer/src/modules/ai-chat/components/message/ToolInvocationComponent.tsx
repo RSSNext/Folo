@@ -4,6 +4,7 @@ import type { ToolUIPart } from "ai"
 import { getStaticToolName } from "ai"
 import clsx from "clsx"
 import * as React from "react"
+import { useTranslation } from "react-i18next"
 import { titleCase } from "title-case"
 
 interface ToolInvocationComponentProps {
@@ -14,6 +15,7 @@ interface ToolInvocationComponentProps {
 
 export const ToolInvocationComponent: React.FC<ToolInvocationComponentProps> = React.memo(
   ({ part, variant }) => {
+    const { t } = useTranslation("ai")
     const toolName = titleCase(getStaticToolName(part).replaceAll("_", " "))
 
     const hasError = "errorText" in part && part.errorText
@@ -54,7 +56,11 @@ export const ToolInvocationComponent: React.FC<ToolInvocationComponentProps> = R
               <div className="group/tool flex h-6 min-w-0 flex-1 items-center py-0">
                 <div className="flex items-center gap-2 text-xs text-text-secondary">
                   <span>
-                    {hasError ? "Tool Failed:" : isCalling ? "Tool Calling:" : "Tool Called:"}
+                    {hasError
+                      ? t("chat.tool.failed")
+                      : isCalling
+                        ? t("chat.tool.calling")
+                        : t("chat.tool.called")}
                   </span>
                   <span className={`truncate font-medium ${hasError ? "text-red" : "text-text"}`}>
                     {toolName}
@@ -71,7 +77,9 @@ export const ToolInvocationComponent: React.FC<ToolInvocationComponentProps> = R
               {/* Show tool arguments if available */}
               {hasArgs ? (
                 <div>
-                  <div className="mb-1 font-medium text-text-secondary">Arguments:</div>
+                  <div className="mb-1 font-medium text-text-secondary">
+                    {t("chat.tool.arguments")}
+                  </div>
                   <JsonHighlighter
                     className="overflow-x-auto rounded bg-fill-secondary p-2 text-[11px] text-text-tertiary"
                     json={JSON.stringify(part.input, null, 2)}
@@ -82,7 +90,9 @@ export const ToolInvocationComponent: React.FC<ToolInvocationComponentProps> = R
               {/* Show tool result if available */}
               {hasResult ? (
                 <div>
-                  <div className="mb-1 font-medium text-text-secondary">Result:</div>
+                  <div className="mb-1 font-medium text-text-secondary">
+                    {t("chat.tool.result")}
+                  </div>
                   <JsonHighlighter
                     className="overflow-x-auto rounded bg-fill-secondary p-2 text-[11px] text-text-tertiary"
                     json={result!}
@@ -93,7 +103,7 @@ export const ToolInvocationComponent: React.FC<ToolInvocationComponentProps> = R
               {/* Show error if available */}
               {hasError && "errorText" in part ? (
                 <div>
-                  <div className="mb-1 font-medium text-red">Error:</div>
+                  <div className="mb-1 font-medium text-red">{t("chat.tool.error")}</div>
                   <pre className="overflow-x-auto rounded bg-red/10 p-2 text-[11px] text-red">
                     {String(part.errorText)}
                   </pre>

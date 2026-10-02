@@ -1,0 +1,35 @@
+Folo est le lecteur RSS avec IA qui réunit tout ce que vous suivez dans une seule chronologie apaisée, puis vous aide à y voir clair.
+
+Suivez blogs, sites d’actualité, newsletters, podcasts, chaînes vidéo et réseaux sociaux au même endroit. Interrogez l’IA sur vos lectures, obtenez un condensé de toute votre chronologie et laissez résumés et traductions faire le gros du travail.
+
+UNE IA QUI LIT AVEC VOUS
+• Discutez avec l’IA d’un article, d’un flux, d’un dossier ou de toute votre chronologie
+• Résumez votre chronologie en un condensé rapide de l’essentiel
+• Tâches IA : programmez des synthèses quotidiennes ou hebdomadaires, à recevoir dans la discussion ou par e-mail
+• Résumés IA et traduction en français, anglais, chinois ou japonais, en comparaison bilingue ou en traduction seule
+• Synthèse vocale avec des voix naturelles
+• Connectez des services MCP, choisissez votre modèle d’IA ou utilisez votre propre clé API
+
+UNE SEULE CHRONOLOGIE POUR TOUT SUIVRE
+• Abonnez-vous à n’importe quel flux RSS, Atom ou JSON, ou recherchez des sources par leur nom
+• Suivez les sites sans flux grâce à des milliers de routes RSSHub
+• Importez et exportez en OPML pour migrer depuis n’importe quel autre lecteur
+• Articles, publications sociales, images, vidéos et podcasts, chacun avec sa propre mise en page
+• Des dossiers, des favoris, des listes et une boîte de réception avec sa propre adresse e-mail pour vos newsletters
+
+PENSÉ POUR LE GRAND ÉCRAN
+• Une disposition en trois colonnes, pour une lecture rapide et concentrée
+• Raccourcis clavier personnalisables et palette de commandes
+• Actions : filtrez, mettez en favori, réécrivez ou résumez les nouvelles entrées, ou recevez une notification, selon vos propres règles
+• Envoyez vos articles vers Obsidian, Readwise, Instapaper, Zotero, Cubox, Outline, Readeck et Eagle
+• Thèmes, polices de lecture, CSS personnalisé et coloration syntaxique du code
+• Spotlight met en évidence les mots-clés qui comptent pour vous
+
+PARTOUT OÙ VOUS LISEZ
+Abonnements, état de lecture et favoris se synchronisent entre Windows, macOS, Linux, Android, iPhone, iPad et le Web.
+
+OPEN SOURCE ET SANS PUBLICITÉ
+Folo est open source, sous licence AGPL-3.0, et ne contient aucune publicité. Il est développé au grand jour avec une communauté de lecteurs et de développeurs.
+
+FORFAITS
+Un compte gratuit suffit pour utiliser Folo. Les forfaits Basic, Plus et Pro permettent de suivre davantage de flux, relèvent les quotas IA et ajoutent des automatisations comme les tâches IA, les boîtes de réception ou l’utilisation de votre propre clé API.

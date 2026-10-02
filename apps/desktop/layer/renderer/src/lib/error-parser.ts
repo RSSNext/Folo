@@ -128,18 +128,18 @@ export const toastFetchError = (
   }
 
   if (!_reason) {
-    const title = _title || message || "Unknown error occurred"
+    const title = _title || message || t("common:error_screen.unknown")
     toastOptions.description = _title ? message : ""
     const isPaymentEnabled = getIsPaymentEnabled()
     const needUpgradeError = status && isPaymentEnabled ? status === 402 : false
     if (needUpgradeError) {
-      toastOptions.description = "Please upgrade your plan."
+      toastOptions.description = t("request_error.upgrade_required")
     }
     return toast.error(title, {
       ...toastOptions,
       action: needUpgradeError
         ? {
-            label: "Upgrade",
+            label: t("settings:subscription.actions.upgrade"),
             onClick: () => {
               window.router.showSettings({ tab: "plan" })
             },

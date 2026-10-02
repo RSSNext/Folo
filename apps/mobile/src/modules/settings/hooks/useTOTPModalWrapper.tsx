@@ -1,5 +1,6 @@
 import { useWhoami } from "@follow/store/user/hooks"
 import { useCallback } from "react"
+import { useTranslation } from "react-i18next"
 import Siblings from "react-native-root-siblings"
 
 import { getFetchErrorInfo } from "@/src/lib/error-parser"
@@ -13,6 +14,7 @@ export const useTOTPModalWrapper = <T extends { TOTPCode?: string }>(
   callback: (input: T) => Promise<any>,
   options?: { force?: boolean; dismiss?: () => any },
 ) => {
+  const { t } = useTranslation("settings")
   const user = useWhoami()
   const navigation = useNavigation()
   return useCallback(
@@ -20,7 +22,7 @@ export const useTOTPModalWrapper = <T extends { TOTPCode?: string }>(
       const presentTOTPModal = () => {
         options?.dismiss?.()
         if (!user?.twoFactorEnabled) {
-          toast.error("You need to enable two-factor authentication to perform this action.")
+          toast.error(t("profile.two_factor.enable_notice"))
 
           navigation.pushControllerView(TwoFactorAuthScreen)
 
@@ -61,6 +63,6 @@ export const useTOTPModalWrapper = <T extends { TOTPCode?: string }>(
         }
       }
     },
-    [callback, navigation, options, user?.twoFactorEnabled],
+    [callback, navigation, options, t, user?.twoFactorEnabled],
   )
 }

@@ -80,7 +80,10 @@ class AppManagerStatic {
   }
 
   private setupAppVisuals() {
-    if (app.dock) {
+    // Packaged builds already ship the right bundle icon, and macOS derives its dark and tinted
+    // appearances from it. A runtime image would pin the Dock to one static icon, so only unpackaged
+    // runs, which would otherwise show Electron's default icon, set it here.
+    if (app.dock && !app.isPackaged) {
       app.dock.setIcon(getIconPath())
     }
   }

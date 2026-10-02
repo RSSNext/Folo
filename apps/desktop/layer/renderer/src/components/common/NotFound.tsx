@@ -2,6 +2,7 @@ import { Logo } from "@follow/components/icons/logo.jsx"
 import { Button } from "@follow/components/ui/button/index.js"
 import { ELECTRON_BUILD } from "@follow/shared/constants"
 import { useEffect } from "react"
+import { Trans, useTranslation } from "react-i18next"
 import type { Location } from "react-router"
 import { Navigate, useLocation, useNavigate } from "react-router"
 
@@ -25,6 +26,7 @@ class AccessNotFoundError extends Error {
   }
 }
 export const NotFound = () => {
+  const { t } = useTranslation()
   const location = useLocation()
   useSyncTheme()
 
@@ -56,15 +58,17 @@ export const NotFound = () => {
         <div className="center mb-8 flex">
           <Logo className="size-20" />
         </div>
-        <p className="font-semibold">
-          You have come to a desert of knowledge where there is nothing.
-        </p>
+        <p className="font-semibold">{t("errors_page.not_found.description")}</p>
         <p>
-          Current path: <code>{location.pathname}</code>
+          <Trans
+            t={t}
+            i18nKey="errors_page.not_found.current_path"
+            components={{ Path: <code>{location.pathname}</code> }}
+          />
         </p>
 
         <p>
-          <Button onClick={() => navigate("/")}>Back to Home</Button>
+          <Button onClick={() => navigate("/")}>{t("errors_page.not_found.back_to_home")}</Button>
         </p>
       </main>
 

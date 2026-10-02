@@ -1,0 +1,37 @@
+Folo ist der RSS-Reader mit KI, der all deine Quellen in einer übersichtlichen Timeline bündelt und dir beim Lesen hilft.
+
+Folge Blogs, Nachrichtenseiten, Newslettern, Podcasts, Videokanälen und Social-Media-Feeds an einem Ort. Lass die KI lange Texte zusammenfassen, fremdsprachige Artikel übersetzen und den Rest vorlesen. So bleibst du informiert, ohne in Tabs zu versinken.
+
+ALLE QUELLEN IN EINER TIMELINE
+• Abonniere beliebige Feeds im Format RSS, Atom oder JSON Feed oder suche Quellen nach Namen
+• Folge Websites ohne eigenen Feed über Tausende RSSHub-Routen
+• Finde neue Lieblingsquellen in angesagten Feeds und kuratierten Listen
+• Importiere deine Abos per OPML aus jedem anderen Reader
+• Behalte den Überblick mit Ordnern, Favoriten und Listen
+
+KI, DIE MITLIEST
+• KI-Zusammenfassungen: die wichtigsten Punkte jedes Artikels in Sekunden
+• KI-Übersetzung ins Englische, Chinesische, Japanische oder Französische, direkt neben dem Original oder für sich allein
+• Vorlesefunktion: Hör dir jeden Artikel mit natürlicher Stimme an
+• Actions: eigene Regeln, die neue Einträge automatisch zusammenfassen, übersetzen, als Favorit markieren oder filtern
+
+FÜR JEDES FORMAT GEMACHT
+• Eine aufgeräumte Leseansicht, die den vollständigen Text von Artikeln lädt
+• Eigene Layouts für Social-Media-Posts, Bilder, Videos und Podcasts
+• Hintergrundwiedergabe für Podcasts und Bild-in-Bild für Videos
+
+GANZ NACH DEINEM GESCHMACK
+• Helles und dunkles Design, Leseschriften, Schriftgröße und Zeilenabstand
+• Spotlight hebt die Stichwörter hervor, die dir wichtig sind
+• Abos, Lesestatus und Favoriten werden zwischen iPhone, iPad, Mac, Windows, Android und dem Web synchronisiert
+
+OPEN SOURCE, OHNE WERBUNG
+Folo ist Open Source und werbefrei. Die App entsteht öffentlich, gemeinsam mit einer Community aus Lesern und Entwicklern. Ihre Oberfläche gibt es auf Englisch, Chinesisch, Japanisch und Französisch.
+
+KOSTENLOS LOSLEGEN
+Mit einem kostenlosen Konto folgst du Feeds und synchronisierst sie auf all deinen Geräten. Die Tarife Basic, Plus und Pro bieten mehr Feed-Abos, höhere KI-Limits und Automatisierungen.
+
+Abonnements werden monatlich oder jährlich abgerechnet und verlängern sich automatisch, wenn sie nicht spätestens 24 Stunden vor Ende des aktuellen Zeitraums gekündigt werden. Die Zahlung erfolgt bei Bestätigung des Kaufs über deinen Apple Account. Du kannst dein Abonnement jederzeit in deinen Account-Einstellungen im App Store verwalten oder kündigen.
+
+Datenschutzerklärung: https://folo.is/privacy-policy
+Nutzungsbedingungen: https://www.apple.com/legal/internet-services/itunes/dev/stdeula/

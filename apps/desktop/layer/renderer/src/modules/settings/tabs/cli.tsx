@@ -108,7 +108,7 @@ export const SettingCli = () => {
         {status && (
           <div className="space-y-3">
             <div className="flex flex-wrap items-center gap-2">
-              <span className="text-sm font-medium">Status:</span>
+              <span className="text-sm font-medium">{t("cli.status")}:</span>
               {status.connected ? (
                 <span className="inline-flex items-center gap-1 rounded-full bg-green/10 px-2 py-0.5 text-xs text-green">
                   <i className="i-mingcute-check-line" />
@@ -134,17 +134,17 @@ export const SettingCli = () => {
             <div className="grid gap-3">
               <div className="rounded-xl border border-fill-secondary bg-fill-quaternary/60 p-3">
                 <div className="mb-1 flex items-center justify-between gap-2 text-xs font-medium uppercase tracking-wide text-text-secondary">
-                  <span>RUN LATEST WITH NPX</span>
+                  <span>{t("cli.global_install")}</span>
                   <button
                     type="button"
                     className="inline-flex items-center gap-1 rounded-md px-1.5 py-0.5 text-[11px] font-medium text-accent transition-opacity hover:opacity-80"
                     onClick={() => {
                       void copyToClipboard(LATEST_WITH_NPX_COMMAND)
-                      toast.success("Command copied")
+                      toast.success(t("cli.command_copied"))
                     }}
                   >
                     <i className="i-mgc-copy-2-cute-re text-sm" />
-                    Copy
+                    {t("words.copy", { ns: "common" })}
                   </button>
                 </div>
                 <code className="block break-all text-sm">{LATEST_WITH_NPX_COMMAND}</code>
@@ -152,17 +152,17 @@ export const SettingCli = () => {
 
               <div className="rounded-xl border border-fill-secondary bg-fill-quaternary/60 p-3">
                 <div className="mb-1 flex items-center justify-between gap-2 text-xs font-medium uppercase tracking-wide text-text-secondary">
-                  <span>AGENT PROMPT</span>
+                  <span>{t("cli.agent_prompt")}</span>
                   <button
                     type="button"
                     className="inline-flex items-center gap-1 rounded-md px-1.5 py-0.5 text-[11px] font-medium text-accent transition-opacity hover:opacity-80"
                     onClick={() => {
                       void copyToClipboard(AGENT_PROMPT)
-                      toast.success("Prompt copied")
+                      toast.success(t("cli.prompt_copied"))
                     }}
                   >
                     <i className="i-mgc-copy-2-cute-re text-sm" />
-                    Copy
+                    {t("words.copy", { ns: "common" })}
                   </button>
                 </div>
                 <p className="text-sm text-text-secondary">{AGENT_PROMPT}</p>

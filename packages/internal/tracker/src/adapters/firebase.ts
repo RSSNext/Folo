@@ -1,18 +1,19 @@
-import type { FirebaseAnalyticsTypes } from "@react-native-firebase/analytics"
-
 import { TrackerMapper } from "../enums"
 import type { IdentifyPayload, TrackerAdapter, TrackPayload } from "./base"
 
+export interface FirebaseTracker {
+  logEvent: (name: string, properties?: Record<string, unknown>) => void | Promise<void>
+  setUserId: (id: string | null) => Promise<void>
+  setUserProperties: (properties: Record<string, string | null>) => Promise<void>
+}
+
 export interface FirebaseAdapterConfig {
-  instance: Pick<FirebaseAnalyticsTypes.Module, "logEvent" | "setUserId" | "setUserProperties">
+  instance: FirebaseTracker
   enabled?: boolean
 }
 
 export class FirebaseAdapter implements TrackerAdapter {
-  private firebaseInstance: Pick<
-    FirebaseAnalyticsTypes.Module,
-    "logEvent" | "setUserId" | "setUserProperties"
-  >
+  private firebaseInstance: FirebaseTracker
   private enabled: boolean
 
   constructor(config: FirebaseAdapterConfig) {

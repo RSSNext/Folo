@@ -10,6 +10,7 @@ import { defaultNS, ns } from "./@types/constants"
 import { defaultResources } from "./@types/default-resource"
 import { getGeneralSettings } from "./atoms/settings/general"
 import { jotaiStore } from "./lib/jotai"
+import { applyZodLocale } from "./lib/zod-locale"
 
 export const i18nAtom = atom(i18next)
 
@@ -50,22 +51,29 @@ export const initI18n = async () => {
   }
 
   let cache = null as any
-  if (!DEV) {
+  // Electron bundles every language and never refreshes this cache, so a copy left by an older
+  // version would only shadow the bundled resources.
+  if (!DEV && !ELECTRON) {
     cache = LocaleCache.shared.get(lang)
     if (cache) {
       mergedResources[lang] = cache
     }
   }
 
+  i18next.on("languageChanged", applyZodLocale)
   await i18next.use(initReactI18next).init({
     ns,
-    lng: cache ? lang : fallbackLanguage,
+    lng: ELECTRON || cache ? lang : fallbackLanguage,
     fallbackLng: {
       default: [fallbackLanguage],
       "zh-TW": ["zh-CN", fallbackLanguage],
     },
     defaultNS,
     debug: import.meta.env.DEV,
+    // React escapes rendered text; escaping here again shows entities such as `&amp;`
+    interpolation: {
+      escapeValue: false,
+    },
 
     resources: mergedResources,
   })

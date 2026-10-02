@@ -1,6 +1,7 @@
 import { cn, thenable } from "@follow/utils"
 import * as React from "react"
 import { useCallback } from "react"
+import { useTranslation } from "react-i18next"
 
 import { useAISettingValue } from "~/atoms/settings/ai"
 
@@ -109,6 +110,8 @@ export const ShortcutDropdown: React.FC<ShortcutDropdownProps> = ({
 }) => {
   if (!isVisible) throw thenable
 
+  const { t } = useTranslation("ai")
+
   return (
     <TypeaheadDropdown
       isVisible={isVisible}
@@ -119,11 +122,9 @@ export const ShortcutDropdown: React.FC<ShortcutDropdownProps> = ({
       onSetSelectIndex={onSetSelectIndex}
       onClose={onClose}
       query={query}
-      ariaLabel="Shortcut suggestions"
+      ariaLabel={t("chat.typeahead.shortcut_suggestions")}
       getKey={(s) => s.id}
-      loadingMessage="Searching..."
-      emptyMessage="No shortcuts found"
-      emptyHint="Try a different search term"
+      emptyMessage={t("chat.typeahead.no_shortcuts")}
       renderItem={(shortcut, _index, isSelected, handlers) => (
         <ShortcutSuggestionItem
           key={shortcut.id}

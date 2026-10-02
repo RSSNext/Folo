@@ -18,6 +18,7 @@ export const KV_KEYS = {
   storeVersion: (product: OtaRelease["product"], target: "ios" | "android" | DesktopDistribution) =>
     `store-version:${product}:${target}`,
   latestReleaseVersion: (product: OtaRelease["product"]) => `latest-release:${product}`,
+  latestAndroidApk: "latest-release:mobile:android-apk",
   githubEtag: "github:etag:releases",
   syncLastSuccessAt: "sync:last-success-at",
   storeVersionSyncLastSuccessAt: "sync:store-version-last-success-at",

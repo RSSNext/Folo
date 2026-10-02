@@ -1,5 +1,6 @@
 import { useMutation } from "@tanstack/react-query"
 import { useCallback, useState } from "react"
+import { useTranslation } from "react-i18next"
 import { useColor } from "react-native-uikit-colors"
 
 import {
@@ -20,6 +21,7 @@ import { useNavigation } from "@/src/lib/navigation/hooks"
 import { toast } from "@/src/lib/toast"
 
 export const ResetPassword = () => {
+  const { t } = useTranslation("settings")
   const labelColor = useColor("label")
   const navigation = useNavigation()
 
@@ -42,11 +44,11 @@ export const ResetPassword = () => {
       }
     },
     onSuccess: () => {
-      toast.success("Password updated")
+      toast.success(t("profile.update_password_success"))
       navigation.back()
     },
     onError: (error) => {
-      toast.error(error instanceof Error ? error.message : "Failed to update password")
+      toast.error(error instanceof Error ? error.message : t("profile.update_password_failed"))
     },
   })
 
@@ -54,23 +56,23 @@ export const ResetPassword = () => {
     if (isPending) return
     if (!isFormValid) {
       if (newPassword && confirmNewPassword && newPassword !== confirmNewPassword) {
-        toast.error("New passwords do not match")
+        toast.error(t("login.passwords_do_not_match", { ns: "default" }))
       }
       return
     }
     submitChangePassword()
-  }, [confirmNewPassword, isFormValid, isPending, newPassword, submitChangePassword])
+  }, [confirmNewPassword, isFormValid, isPending, newPassword, submitChangePassword, t])
 
   return (
     <SafeNavigationScrollView
       className="flex-1 bg-system-grouped-background"
       Header={
         <NavigationBlurEffectHeaderView
-          title="Reset Password"
+          title={t("profile.change_password.label")}
           headerRight={useCallback(
             () => (
               <UIBarButton
-                label="Save"
+                label={t("words.save", { ns: "common" })}
                 normalIcon={
                   isPending ? (
                     <PlatformActivityIndicator size="small" color={labelColor} />
@@ -82,12 +84,12 @@ export const ResetPassword = () => {
                 onPress={handleSave}
               />
             ),
-            [handleSave, isFormValid, isPending, labelColor],
+            [handleSave, isFormValid, isPending, labelColor, t],
           )}
         />
       }
     >
-      <GroupedInsetListSectionHeader label="Current Password" />
+      <GroupedInsetListSectionHeader label={t("profile.current_password.label")} />
       <GroupedInsetListCard>
         <GroupedInsetListBaseCell className="py-3">
           <PlainTextField
@@ -96,14 +98,14 @@ export const ResetPassword = () => {
             hitSlop={10}
             secureTextEntry={true}
             keyboardType="visible-password"
-            placeholder="Enter your current password"
+            placeholder={t("profile.current_password.placeholder")}
             value={currentPassword}
             onChangeText={setCurrentPassword}
           />
         </GroupedInsetListBaseCell>
       </GroupedInsetListCard>
 
-      <GroupedInsetListSectionHeader marginSize="small" label="New Password" />
+      <GroupedInsetListSectionHeader marginSize="small" label={t("profile.new_password.label")} />
       <GroupedInsetListCard>
         <GroupedInsetListBaseCell className="py-3">
           <PlainTextField
@@ -111,14 +113,17 @@ export const ResetPassword = () => {
             keyboardType="visible-password"
             secureTextEntry={true}
             hitSlop={10}
-            placeholder="Enter your new password"
+            placeholder={t("profile.new_password.placeholder")}
             value={newPassword}
             onChangeText={setNewPassword}
           />
         </GroupedInsetListBaseCell>
       </GroupedInsetListCard>
 
-      <GroupedInsetListSectionHeader marginSize="small" label="Confirm New Password" />
+      <GroupedInsetListSectionHeader
+        marginSize="small"
+        label={t("profile.confirm_password.label")}
+      />
       <GroupedInsetListCard>
         <GroupedInsetListBaseCell className="py-3">
           <PlainTextField
@@ -126,7 +131,7 @@ export const ResetPassword = () => {
             keyboardType="visible-password"
             secureTextEntry={true}
             hitSlop={10}
-            placeholder="Enter your new password again"
+            placeholder={t("profile.confirm_password.placeholder")}
             value={confirmNewPassword}
             onChangeText={setConfirmNewPassword}
             returnKeyType="done"

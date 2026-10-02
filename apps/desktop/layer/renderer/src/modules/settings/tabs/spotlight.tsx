@@ -210,11 +210,13 @@ const SpotlightColorButton = ({
   selected: boolean
   onClick: () => void
 }) => {
+  const { t } = useTranslation("settings")
+
   return (
     <button
       type="button"
       data-spotlight-color-option={preset.value}
-      aria-label={`Select highlight color ${preset.value}`}
+      aria-label={t("spotlight.select_color", { color: preset.value })}
       className="relative size-9 rounded-full border border-fill-secondary shadow-sm transition-transform duration-200 hover:scale-105 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-accent/40 focus-visible:ring-offset-2"
       style={{
         backgroundColor: preset.value,

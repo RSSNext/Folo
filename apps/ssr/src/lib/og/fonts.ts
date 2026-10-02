@@ -3,6 +3,8 @@ import { createRequire } from "node:module"
 
 import path, { resolve } from "pathe"
 
+import { getSNProFontFamily } from "./sn-pro-font-family"
+
 const require = createRequire(import.meta.url)
 
 const weights = [
@@ -61,7 +63,7 @@ fontsData = snFontsDir.map((file) => {
     return null
   }
   return {
-    name: `SN Pro`,
+    name: getSNProFontFamily(file),
     data: fs.readFileSync(path.join(snFontsDirPath, file)),
     weight: weight.weight,
     style: file.includes("Italic") ? "italic" : ("normal" as "italic" | "normal"),

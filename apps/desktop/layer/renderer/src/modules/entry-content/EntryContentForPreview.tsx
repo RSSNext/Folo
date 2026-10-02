@@ -8,6 +8,7 @@ import { stopPropagation } from "@follow/utils/dom"
 import { clsx } from "@follow/utils/utils"
 import * as React from "react"
 import { memo } from "react"
+import { useTranslation } from "react-i18next"
 
 import { useEntryIsInReadability } from "~/atoms/readability"
 import { useUISettingKey } from "~/atoms/settings/ui"
@@ -33,6 +34,7 @@ const EntryContentImpl: Component<EntryContentProps> = ({
 
   compact,
 }) => {
+  const { t } = useTranslation()
   const entry = useEntry(entryId, (state) => {
     const { feedId, inboxHandle } = state
     const { title, url } = state
@@ -81,7 +83,9 @@ const EntryContentImpl: Component<EntryContentProps> = ({
             ) : error ? (
               <div className="center mt-36 flex flex-col items-center gap-3">
                 <i className="i-mgc-warning-cute-re text-4xl text-red" />
-                <span className="text-balance text-center text-sm">Network Error</span>
+                <span className="text-balance text-center text-sm">
+                  {t("entry_content.network_error")}
+                </span>
                 <pre className="mt-6 w-full overflow-auto whitespace-pre-wrap break-all">
                   {error.message}
                 </pre>

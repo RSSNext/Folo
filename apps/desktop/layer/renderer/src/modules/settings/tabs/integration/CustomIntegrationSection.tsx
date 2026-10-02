@@ -141,7 +141,9 @@ export const CustomIntegrationSection = memo(({ searchQuery }: CustomIntegration
     return (
       <div className="text-center">
         <i className="i-mgc-webhook-cute-re mb-3 text-2xl text-text-tertiary" />
-        <p className="mb-2 text-sm font-medium text-text-tertiary">No custom integration found</p>
+        <p className="mb-2 text-sm font-medium text-text-tertiary">
+          {t("integration.custom_integrations.search_empty")}
+        </p>
       </div>
     )
   }

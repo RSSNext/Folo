@@ -51,7 +51,7 @@ export function AppTipModalContent({ initialStep = 0 }: AppTipModalContentProps)
       import("~/components/ui/modal/stacked/custom-modal"),
     ]).then(([m, { PlainModal }]) => {
       window.presentModal({
-        title: "AI Onboarding",
+        title: t("new_user_guide.title"),
         content: ({ dismiss }) => (
           <m.AiOnboardingModalContent
             onClose={() => {
@@ -66,7 +66,7 @@ export function AppTipModalContent({ initialStep = 0 }: AppTipModalContentProps)
         overlay: true,
       })
     })
-  }, [completeOnboarding])
+  }, [completeOnboarding, t])
 
   const steps = useMemo<AppTipStep[]>(() => {
     return [

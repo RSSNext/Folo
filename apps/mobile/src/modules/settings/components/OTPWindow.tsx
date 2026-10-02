@@ -1,5 +1,6 @@
 import { useMutation } from "@tanstack/react-query"
 import { useEffect, useRef, useState } from "react"
+import { useTranslation } from "react-i18next"
 import {
   Animated,
   Keyboard,
@@ -26,6 +27,7 @@ type OTPWindowProps<T> = {
   onDismiss: () => void
 }
 export const OTPWindow = <T,>({ onSuccess, verifyFn, onDismiss }: OTPWindowProps<T>) => {
+  const { t } = useTranslation("settings")
   const otpInputRef = useRef<OtpInputRef>(null)
   const label = useColor("label")
   const tertiaryLabel = useColor("tertiaryLabel")
@@ -33,7 +35,7 @@ export const OTPWindow = <T,>({ onSuccess, verifyFn, onDismiss }: OTPWindowProps
   const tertiaryBackground = useColor("gray6")
   const submitMutation = useMutation({
     onError(error) {
-      toast.error(`Failed to verify: ${error.message}`)
+      toast.error(t("profile.two_factor.verify_failed_with_error", { error: error.message }))
     },
     onSuccess(data) {
       onSuccess(data)
@@ -138,10 +140,10 @@ export const OTPWindow = <T,>({ onSuccess, verifyFn, onDismiss }: OTPWindowProps
           >
             <View className="px-6 pb-1 pt-6">
               <Text className="mb-1 text-center text-lg font-medium text-label">
-                Verification Required
+                {t("profile.two_factor.verification_required")}
               </Text>
               <Text className="text-center text-base text-secondary-label">
-                Please enter the code from your authenticator app.
+                {t("profile.two_factor.enter_code")}
               </Text>
             </View>
 
@@ -200,7 +202,7 @@ export const OTPWindow = <T,>({ onSuccess, verifyFn, onDismiss }: OTPWindowProps
                   }}
                   suppressHighlighting
                 >
-                  Cancel
+                  {t("words.cancel", { ns: "common" })}
                 </Text>
               </View>
             </View>

@@ -56,7 +56,9 @@ export const ItemPressable: FC<ItemPressableProps> = memo(
         // This is a workaround to prevent context menu crash when release too quickly
         // https://github.com/nandorojo/zeego/issues/61
         onLongPress={composeEventHandlers(props.onLongPress, () => {})}
-        delayLongPress={props.delayLongPress ?? 100}
+        // Keep React Native's default threshold: a 100ms no-op long press
+        // cancels ordinary taps before the native context menu opens.
+        delayLongPress={props.delayLongPress ?? 500}
         className={cn("relative overflow-hidden", props.className)}
         style={StyleSheet.flatten([
           props.style,

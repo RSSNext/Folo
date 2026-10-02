@@ -71,6 +71,10 @@ vi.mock("./toast", () => ({
   toast: { error: mocks.toastError },
 }))
 
+vi.mock("i18next", () => ({
+  t: (key: string) => key,
+}))
+
 describe("player", () => {
   let player: (typeof import("./player"))["player"]
 
@@ -117,8 +121,8 @@ describe("player", () => {
     expect(mocks.native.setMediaItem).toHaveBeenCalledWith({
       mediaId: "https://example.com/audio.mp3",
       url: "https://example.com/audio.mp3",
-      title: "Unknown Title",
-      artist: "Unknown Artist",
+      title: "player.unknown_title",
+      artist: "player.unknown_artist",
       artworkUrl: undefined,
     })
   })

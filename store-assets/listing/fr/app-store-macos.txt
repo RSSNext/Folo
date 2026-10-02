@@ -1,0 +1,33 @@
+Folo est le lecteur RSS avec IA qui réunit tout ce que vous suivez dans une seule chronologie apaisée, puis vous aide à y voir clair.
+
+Suivez blogs, sites d’actualité, newsletters, podcasts, chaînes vidéo et réseaux sociaux au même endroit. Interrogez l’IA sur vos lectures, obtenez un condensé de toute votre chronologie et laissez résumés et traductions faire le gros du travail.
+
+UNE IA QUI LIT AVEC VOUS
+• Discutez avec l’IA d’un article, d’un flux, d’un dossier ou de toute votre chronologie
+• Résumez votre chronologie en un condensé rapide de l’essentiel
+• Tâches IA : programmez des synthèses quotidiennes ou hebdomadaires, à recevoir dans la discussion ou par e-mail
+• Résumés IA et traduction en comparaison bilingue, en français, anglais, chinois ou japonais
+• Synthèse vocale avec des voix naturelles
+• Connectez des services MCP pour relier vos autres outils à Folo AI
+
+UNE SEULE CHRONOLOGIE POUR TOUT SUIVRE
+• Abonnez-vous à n’importe quel flux RSS, Atom ou JSON, ou recherchez des sources par leur nom
+• Importez et exportez en OPML pour migrer depuis n’importe quel autre lecteur
+• Articles, publications sociales, images, vidéos et podcasts, chacun avec sa propre mise en page
+• Des dossiers, des favoris et une boîte de réception avec sa propre adresse e-mail pour vos newsletters
+
+PENSÉ POUR LE GRAND ÉCRAN
+• Une disposition en trois colonnes, pour une lecture rapide et concentrée
+• Raccourcis clavier personnalisables et palette de commandes
+• Actions : filtrez, mettez en favori, réécrivez ou résumez les nouvelles entrées selon vos propres règles
+• Envoyez vos articles vers Obsidian, Readwise, Instapaper, Zotero, Cubox, Outline, Readeck et Eagle
+• Thèmes, polices de lecture, CSS personnalisé et coloration syntaxique du code
+• Spotlight met en évidence les mots-clés qui comptent pour vous
+
+PARTOUT OÙ VOUS LISEZ
+Abonnements, état de lecture et favoris se synchronisent entre Mac, iPhone, iPad, Windows, Android et le Web.
+
+OPEN SOURCE ET SANS PUBLICITÉ
+Folo est open source et sans publicité, développé au grand jour avec une communauté de lecteurs et de développeurs. Certaines fonctionnalités sont soumises à des limites d’utilisation ou nécessitent un forfait payant.
+
+Conditions d’utilisation : https://www.apple.com/legal/internet-services/itunes/dev/stdeula/

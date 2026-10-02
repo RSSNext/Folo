@@ -2,7 +2,7 @@ import { StatusBar } from "expo-status-bar"
 import type { PrimitiveAtom } from "jotai"
 import { atom, useAtomValue, useStore } from "jotai"
 import type { FC, PropsWithChildren } from "react"
-import { memo, use, useEffect, useMemo, useRef, useState } from "react"
+import { memo, use, useCallback, useEffect, useMemo, useRef, useState } from "react"
 import type { ScrollView } from "react-native"
 import { StyleSheet } from "react-native"
 import {
@@ -37,17 +37,27 @@ interface RootStackNavigationProps {
   headerConfig?: ScreenStackHeaderConfigProps
 }
 export const RootStackNavigation = ({ children, headerConfig }: RootStackNavigationProps) => {
+  // Initial session resolution or a JS reload can queue a modal before the
+  // native root has appeared. Retain those routes until its onAppear event
+  // before mounting the native screens that present them.
+  const [nativeRootReady, setNativeRootReady] = useState(false)
+  const handleRootAppear = useCallback(() => setNativeRootReady(true), [])
+
   return (
     <AttachNavigationScrollViewProvider>
       <ScreenNameContext value={useMemo(() => atom(""), [])}>
         <ChainNavigationContext value={Navigation.rootNavigation.__dangerous_getCtxValue()}>
           <NavigationInstanceContext value={Navigation.rootNavigation}>
             <ScreenStack style={StyleSheet.absoluteFill}>
-              <WrappedScreenItem headerConfig={headerConfig} screenId="root">
+              <WrappedScreenItem
+                headerConfig={headerConfig}
+                screenId="root"
+                onNativeAppear={handleRootAppear}
+              >
                 {children}
               </WrappedScreenItem>
 
-              <ScreenItemsMapper />
+              {nativeRootReady && <ScreenItemsMapper />}
               <StateHandler />
             </ScreenStack>
           </NavigationInstanceContext>

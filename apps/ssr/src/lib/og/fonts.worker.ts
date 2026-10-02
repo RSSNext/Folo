@@ -1,4 +1,5 @@
 import fontsBase64Data from "../../../.generated/fonts-data"
+import { getSNProFontFamily } from "./sn-pro-font-family"
 
 let cachedFonts: any[] | null = null
 let koseFont: any | null = null
@@ -17,7 +18,7 @@ function decodeSNProFonts(): any[] {
     const weight = Number.parseInt(weightStr)
     const buf = Uint8Array.from(atob(base64), (c) => c.codePointAt(0)!)
     fontsData.push({
-      name: "SN Pro",
+      name: getSNProFontFamily(key),
       data: buf.buffer,
       weight,
       style: "normal" as const,

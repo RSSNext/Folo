@@ -14,9 +14,9 @@ import { cn } from "@follow/utils/utils"
 import type { ChangeEventHandler, ReactNode } from "react"
 import { useCallback, useId, useState } from "react"
 import { useTranslation } from "react-i18next"
-import { titleCase } from "title-case"
 
 import { useIsPaymentEnabled } from "~/atoms/server-configs"
+import { useTitleCaseIfEnglish } from "~/hooks/common/useTitleCaseIfEnglish"
 
 import { SettingPaidLevels } from "./helper/setting-builder"
 import { useSetSettingTab } from "./modal/context"
@@ -65,6 +65,7 @@ export const SettingCheckbox: Component<{
   onCheckedChange: (checked: boolean) => void
 }> = ({ checked, label, onCheckedChange }) => {
   const id = useId()
+  const titleCaseIfEnglish = useTitleCaseIfEnglish()
   return (
     <div className="mb-2 flex items-center gap-4">
       <Checkbox
@@ -73,7 +74,7 @@ export const SettingCheckbox: Component<{
         onCheckedChange={onCheckedChange}
         className="cursor-auto"
       />
-      <Label htmlFor={id}>{titleCase(label)}</Label>
+      <Label htmlFor={id}>{titleCaseIfEnglish(label)}</Label>
     </div>
   )
 }
@@ -86,13 +87,14 @@ export const SettingSwitch: Component<{
   paidLevel?: SettingPaidLevels
 }> = ({ checked, label, onCheckedChange, className, disabled, paidLevel }) => {
   const id = useId()
+  const titleCaseIfEnglish = useTitleCaseIfEnglish()
   const handleCheckedChange = (checked: boolean) => {
     onCheckedChange(checked)
   }
   return (
     <div className={cn("mb-3 flex items-center justify-between gap-4", className)}>
       <Label htmlFor={id} className="flex items-center gap-1">
-        <span>{titleCase(label)}</span>
+        <span>{titleCaseIfEnglish(label)}</span>
         {!!paidLevel && <PaidBadge paidLevel={paidLevel} />}
       </Label>
       <Switch id={id} checked={checked} onCheckedChange={handleCheckedChange} disabled={disabled} />
@@ -109,6 +111,7 @@ export const SettingInput: Component<{
   labelClassName?: string
 }> = ({ value, label, onChange, labelClassName, className, type, vertical }) => {
   const id = useId()
+  const titleCaseIfEnglish = useTitleCaseIfEnglish()
 
   return (
     <div
@@ -122,7 +125,7 @@ export const SettingInput: Component<{
         className={cn("shrink-0 text-sm font-medium leading-none", labelClassName)}
         htmlFor={id}
       >
-        {titleCase(label)}
+        {titleCaseIfEnglish(label)}
       </Label>
       <Input type={type} id={id} value={value} onChange={onChange} className="text-xs" />
     </div>
@@ -137,6 +140,7 @@ export const SettingTextArea: Component<{
   labelClassName?: string
 }> = ({ value, label, onChange, labelClassName, className, vertical }) => {
   const id = useId()
+  const titleCaseIfEnglish = useTitleCaseIfEnglish()
 
   return (
     <div
@@ -150,7 +154,7 @@ export const SettingTextArea: Component<{
         className={cn("shrink-0 text-sm font-medium leading-none", labelClassName)}
         htmlFor={id}
       >
-        {titleCase(label)}
+        {titleCaseIfEnglish(label)}
       </Label>
       <TextArea id={id} value={value} onChange={onChange} className="text-xs" />
     </div>
@@ -165,12 +169,13 @@ export const SettingTabbedSegment: Component<{
   description?: string
 }> = ({ label, className, value, values, onValueChanged, description }) => {
   const [currentValue, setCurrentValue] = useState(value)
+  const titleCaseIfEnglish = useTitleCaseIfEnglish()
 
   return (
     <>
       <div className={cn("mb-3 flex items-center justify-between gap-4", className)}>
         <label className="text-sm font-medium leading-none">
-          {typeof label === "string" ? titleCase(label) : label}
+          {typeof label === "string" ? titleCaseIfEnglish(label) : label}
         </label>
 
         <SegmentGroup
@@ -214,13 +219,17 @@ export const SettingActionItem = ({
   label: ReactNode
   action: () => void
   buttonText: string
-}) => (
-  <div className={cn("relative mb-2 mt-4 flex items-center justify-between gap-4")}>
-    <div className="text-sm font-medium">
-      {typeof label === "string" ? titleCase(label) : label}
+}) => {
+  const titleCaseIfEnglish = useTitleCaseIfEnglish()
+
+  return (
+    <div className={cn("relative mb-2 mt-4 flex items-center justify-between gap-4")}>
+      <div className="text-sm font-medium">
+        {typeof label === "string" ? titleCaseIfEnglish(label) : label}
+      </div>
+      <Button variant="outline" size="sm" onClick={action}>
+        {buttonText}
+      </Button>
     </div>
-    <Button variant="outline" size="sm" onClick={action}>
-      {buttonText}
-    </Button>
-  </div>
-)
+  )
+}

@@ -4,7 +4,7 @@ import { useInboxById } from "@follow/store/inbox/hooks"
 import { useEntryTranslation } from "@follow/store/translation/hooks"
 import { cn, formatEstimatedMins, formatTimeToSeconds } from "@follow/utils"
 import { useMemo } from "react"
-import { titleCase } from "title-case"
+import { useTranslation } from "react-i18next"
 import { useShallow } from "zustand/shallow"
 
 import { useShowAITranslation } from "~/atoms/ai-translation"
@@ -13,6 +13,7 @@ import { useUISettingKey } from "~/atoms/settings/ui"
 import { RelativeTime } from "~/components/ui/datetime"
 import { useNavigateEntry } from "~/hooks/biz/useNavigateEntry"
 import { useFeedSafeUrl } from "~/hooks/common/useFeedSafeUrl"
+import { useTitleCaseIfEnglish } from "~/hooks/common/useTitleCaseIfEnglish"
 import type { FeedIconEntry } from "~/modules/feed/feed-icon"
 import { FeedIcon } from "~/modules/feed/feed-icon"
 import { getPreferredTitle } from "~/store/feed/hooks"
@@ -33,17 +34,19 @@ export const EntryTitle = ({
   containerClassName,
   noRecentReader,
 }: EntryLinkProps) => {
+  const { t } = useTranslation("common")
   const entry = useEntry(
     entryId,
     useShallow((state) => {
       /// keep-sorted
-      const { author, authorAvatar, authorUrl, feedId, inboxHandle, publishedAt, title } = state
+      const { author, authorAvatar, authorUrl, feedId, inboxHandle, language, publishedAt, title } =
+        state
 
       const attachments = state.attachments || []
       const { duration_in_seconds } =
         attachments?.find((attachment) => attachment.duration_in_seconds) ?? {}
       const seconds = duration_in_seconds ? formatTimeToSeconds(duration_in_seconds) : undefined
-      const estimatedMins = seconds ? formatEstimatedMins(Math.floor(seconds / 60)) : undefined
+      const estimatedMins = seconds ? Math.floor(seconds / 60) : undefined
 
       const media = state.media || []
       const firstPhoto = media.find((a) => a.type === "photo")
@@ -58,6 +61,7 @@ export const EntryTitle = ({
         feedId,
         firstPhotoUrl,
         inboxId: inboxHandle,
+        language,
         publishedAt,
         title,
       }
@@ -76,6 +80,8 @@ export const EntryTitle = ({
     language: actionLanguage,
     enabled: enableTranslation,
   })
+
+  const titleCaseIfEnglish = useTitleCaseIfEnglish()
 
   const dateFormat = useUISettingKey("dateFormat")
 
@@ -127,8 +133,8 @@ export const EntryTitle = ({
           )}
         >
           <EntryTranslation
-            source={titleCase(entry.title ?? "")}
-            target={titleCase(translation?.title ?? "")}
+            source={titleCaseIfEnglish(entry.title ?? "", entry.language)}
+            target={titleCaseIfEnglish(translation?.title ?? "", actionLanguage)}
             className="autospace-normal inline-block select-text hyphens-auto text-text duration-200"
             inline={false}
           />
@@ -174,10 +180,14 @@ export const EntryTitle = ({
               </span>
             </div>
 
-            {entry.estimatedMins && (
+            {entry.estimatedMins !== undefined && (
               <div className="flex items-center gap-1.5">
                 <i className="i-mgc-time-cute-re text-base" />
-                <span className="text-xs tabular-nums">{entry.estimatedMins}</span>
+                <span className="text-xs tabular-nums">
+                  {formatEstimatedMins(entry.estimatedMins, (unit, values) =>
+                    t(`time.duration.${unit}`, values),
+                  )}
+                </span>
               </div>
             )}
           </div>

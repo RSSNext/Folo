@@ -125,6 +125,29 @@ describe("trackFetch with a finalizable response", () => {
     expect(getInFlightRequestCount()).toBe(0)
     expect(fake.listenerCount()).toBe(0)
   })
+
+  it("forwards the caller's abort while the body downloads, until the response is finalized", async () => {
+    const fake = createFakeResponse()
+    const signals: AbortSignal[] = []
+    const tracked = trackFetch(async (_input: string, init?: { signal?: AbortSignal | null }) => {
+      signals.push(init!.signal!)
+      return fake.response
+    })
+
+    const outer = new AbortController()
+    await tracked("https://example.test/body", { signal: outer.signal })
+    outer.abort()
+    const abortedWhileDownloading = signals[0]!.aborted
+
+    const later = new AbortController()
+    await tracked("https://example.test/body", { signal: later.signal })
+    fake.finalize()
+    later.abort()
+
+    expect(abortedWhileDownloading).toBe(true)
+    expect(signals[1]!.aborted).toBe(false)
+    expect(getInFlightRequestCount()).toBe(0)
+  })
 })
 
 describe("installGlobalFetchTracking", () => {

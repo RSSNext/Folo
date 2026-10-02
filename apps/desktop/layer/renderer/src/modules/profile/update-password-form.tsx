@@ -11,6 +11,8 @@ import { Label } from "@follow/components/ui/label/index.js"
 import { env } from "@follow/shared/env.desktop"
 import { zodResolver } from "@hookform/resolvers/zod"
 import { useMutation } from "@tanstack/react-query"
+import type { TFunction } from "i18next"
+import { useMemo } from "react"
 import { useForm } from "react-hook-form"
 import { Trans, useTranslation } from "react-i18next"
 import { toast } from "sonner"
@@ -22,23 +24,27 @@ import { useHasPassword } from "~/queries/auth"
 
 const passwordSchema = z.string().min(8).max(128)
 
-const updatePasswordFormSchema = z
-  .object({
-    currentPassword: passwordSchema,
-    newPassword: passwordSchema,
-    confirmPassword: passwordSchema,
-  })
-  .refine((data) => data.newPassword === data.confirmPassword, {
-    message: "Passwords don't match",
-    path: ["confirmPassword"],
-  })
+const createUpdatePasswordFormSchema = (t: TFunction<"app">) =>
+  z
+    .object({
+      currentPassword: passwordSchema,
+      newPassword: passwordSchema,
+      confirmPassword: passwordSchema,
+    })
+    .refine((data) => data.newPassword === data.confirmPassword, {
+      message: t("login.passwords_do_not_match"),
+      path: ["confirmPassword"],
+    })
+
+type UpdatePasswordFormValues = z.infer<ReturnType<typeof createUpdatePasswordFormSchema>>
 
 const UpdateExistingPasswordForm = () => {
   const { t } = useTranslation("settings")
 
   const { t: tApp } = useTranslation("app")
 
-  const form = useForm<z.infer<typeof updatePasswordFormSchema>>({
+  const updatePasswordFormSchema = useMemo(() => createUpdatePasswordFormSchema(tApp), [tApp])
+  const form = useForm<UpdatePasswordFormValues>({
     resolver: zodResolver(updatePasswordFormSchema),
     defaultValues: {
       currentPassword: "",
@@ -48,7 +54,7 @@ const UpdateExistingPasswordForm = () => {
   })
 
   const updateMutation = useMutation({
-    mutationFn: async (values: z.infer<typeof updatePasswordFormSchema>) => {
+    mutationFn: async (values: UpdatePasswordFormValues) => {
       const res = await changePassword({
         currentPassword: values.currentPassword,
         newPassword: values.newPassword,
@@ -69,7 +75,7 @@ const UpdateExistingPasswordForm = () => {
     },
   })
 
-  function onSubmit(values: z.infer<typeof updatePasswordFormSchema>) {
+  function onSubmit(values: UpdatePasswordFormValues) {
     updateMutation.mutate(values)
   }
 

@@ -15,6 +15,8 @@ import { env } from "@follow/shared/env.desktop"
 import { userActions } from "@follow/store/user/store"
 import type { AuthUser } from "@follow-app/client-sdk"
 import { zodResolver } from "@hookform/resolvers/zod"
+import type { TFunction } from "i18next"
+import { useMemo } from "react"
 import { useForm } from "react-hook-form"
 import { Trans, useTranslation } from "react-i18next"
 import { toast } from "sonner"
@@ -255,7 +257,7 @@ export function LoginWithPassword({
                   : await twoFactor.verifyTotp({ code: values.code })
 
                 if (!result?.data || result.error) {
-                  throw new Error(result.error?.message ?? "Invalid TOTP code")
+                  throw new Error(result.error?.message ?? tSettings("profile.totp_code.invalid"))
                 }
 
                 if (IN_ELECTRON) {
@@ -383,18 +385,21 @@ export function LoginWithPassword({
   )
 }
 
-const registerFormSchema = z
-  .object({
-    email: z.string().email(),
-    password: IN_ELECTRON
-      ? z.string().min(8).max(128)
-      : z.string().min(8).max(128).or(z.literal("")),
-    confirmPassword: IN_ELECTRON ? z.string() : z.string().or(z.literal("")),
-  })
-  .refine((data) => data.password === data.confirmPassword, {
-    message: "Passwords don't match",
-    path: ["confirmPassword"],
-  })
+const createRegisterFormSchema = (t: TFunction<"app">) =>
+  z
+    .object({
+      email: z.string().email(),
+      password: IN_ELECTRON
+        ? z.string().min(8).max(128)
+        : z.string().min(8).max(128).or(z.literal("")),
+      confirmPassword: IN_ELECTRON ? z.string() : z.string().or(z.literal("")),
+    })
+    .refine((data) => data.password === data.confirmPassword, {
+      message: t("login.passwords_do_not_match"),
+      path: ["confirmPassword"],
+    })
+
+type RegisterFormValues = z.infer<ReturnType<typeof createRegisterFormSchema>>
 
 export function RegisterForm({
   runtime,
@@ -405,7 +410,8 @@ export function RegisterForm({
 }) {
   const { t } = useTranslation("app")
 
-  const form = useForm<z.infer<typeof registerFormSchema>>({
+  const registerFormSchema = useMemo(() => createRegisterFormSchema(t), [t])
+  const form = useForm<RegisterFormValues>({
     resolver: zodResolver(registerFormSchema),
     defaultValues: {
       email: "",
@@ -417,7 +423,7 @@ export function RegisterForm({
 
   const requestRecaptchaToken = useRecaptchaToken()
 
-  async function onSubmit(values: z.infer<typeof registerFormSchema>) {
+  async function onSubmit(values: RegisterFormValues) {
     const recaptchaToken = await requestRecaptchaToken("desktop_register")
     const headers = recaptchaToken
       ? {

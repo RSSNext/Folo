@@ -9,7 +9,11 @@ import { api } from "../../context"
 import type { Hydratable, Resetable } from "../../lib/base"
 import { createTransaction, createZustandStore } from "../../lib/helper"
 import { entryReadOverlayKey } from "../../sync/overlay-keys"
-import { ensureSyncedThroughEngine } from "../../sync/sync-status"
+import {
+  ensureSyncedThroughEngine,
+  recordUnreadSnapshotThroughEngine,
+  requestUnreadCalibration,
+} from "../../sync/sync-status"
 import {
   defineTransactionKind,
   readLastSyncId,
@@ -286,21 +290,33 @@ export const markAllReadTransaction = defineTransactionKind<
 class UnreadSyncService {
   /**
    * Bring the counters up to date after a user gesture. The delta feed does it when the sync
-   * engine runs; the recount is the fallback.
+   * engine runs; the recount is the fallback. A refresh the user asked for also recounts
+   * through the engine, at most once a minute, so counters that drifted from the list on
+   * screen do not wait for the hourly calibration.
    */
-  async refresh() {
-    if (await ensureSyncedThroughEngine()) return
+  async refresh({ calibrate = false }: { calibrate?: boolean } = {}) {
+    if (await ensureSyncedThroughEngine()) {
+      if (calibrate) await requestUnreadCalibration()
+      return
+    }
     await this.resetFromRemote()
   }
 
-  async resetFromRemote() {
+  /**
+   * Replace the confirmed counters with the server's. The answer names the sync id the
+   * counts reflect, so the change log is not applied on top of what the snapshot already
+   * contains; `fallbackSyncId` stands in for servers that do not name it.
+   */
+  async resetFromRemote({ fallbackSyncId }: { fallbackSyncId?: number } = {}) {
     const res = await api().reads.get({})
+    const snapshotSyncId = readLastSyncId(res) ?? fallbackSyncId
 
-    if (unreadActions.isConfirmedEqual(res.data)) {
-      return res.data
+    if (!unreadActions.isConfirmedEqual(res.data)) {
+      await unreadActions.upsertMany(res.data, { reset: true })
     }
-
-    await unreadActions.upsertMany(res.data, { reset: true })
+    if (snapshotSyncId !== undefined) {
+      await recordUnreadSnapshotThroughEngine(snapshotSyncId)
+    }
     return res.data
   }
 

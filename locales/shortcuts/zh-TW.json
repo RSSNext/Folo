@@ -37,12 +37,8 @@
   "command.subscription.open_in_browser.title": "在瀏覽器中開啟",
   "command.subscription.open_in_tab.title": "在分頁中開啟",
   "command.subscription.open_site_in_browser.title": "在瀏覽器中開啟網站",
-  "command.subscription.open_site_in_tab.title": "在分頁中開啟網站",
   "command.subscription.previous_subscription.description": "切換到上一個訂閱。",
   "command.subscription.previous_subscription.title": "上一個訂閱",
-  "command.subscription.switch_between_views.title": "在視圖之間切換",
-  "command.subscription.switch_next_view.title": "切換到下一個視圖",
-  "command.subscription.switch_previous_view.title": "切換到上一個視圖",
   "command.subscription.switch_tab_to_article.description": "在訂閱視圖中切換到文章分頁。",
   "command.subscription.switch_tab_to_article.title": "切換到文章分頁",
   "command.subscription.switch_tab_to_audio.description": "在訂閱視圖中切換到音訊分頁。",
@@ -76,5 +72,6 @@
   "settings.shortcuts.description": "自訂應用程式的快捷鍵。以下是一些可以自訂的指令清單。",
   "settings.shortcuts.press_to_record": "按下以記錄",
   "settings.shortcuts.reset": "重設",
+  "settings.shortcuts.reset_defaults": "恢復預設",
   "settings.shortcuts.undo": "復原"
 }

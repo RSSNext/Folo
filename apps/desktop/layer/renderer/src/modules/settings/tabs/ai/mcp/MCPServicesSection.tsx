@@ -91,7 +91,7 @@ export const MCPServicesSection = () => {
         const tempId = `temp-${Date.now()}-${Math.random().toString(36).slice(2, 11)}`
         const optimisticService: OptimisticMCPService = {
           id: tempId,
-          name: variables.name || "New Service",
+          name: variables.name || t("integration.mcp.service.new_service"),
           transportType: variables.transportType,
           url: variables.url,
           headers: variables.headers,
@@ -196,7 +196,7 @@ export const MCPServicesSection = () => {
       },
       errorConfig: {
         showToast: true,
-        customMessage: "Failed to update MCP connection",
+        customMessage: t("integration.mcp.service.update_failed"),
         retryable: false,
       },
     }),
@@ -213,7 +213,7 @@ export const MCPServicesSection = () => {
       queryKey: mcpQueryKeys.connections(),
       getId: (variables) => variables.connectionId,
       getToggleData: (variables) => ({ enabled: variables.enabled }),
-      errorMessage: "Failed to toggle MCP connection",
+      errorMessage: t("integration.mcp.service.toggle_failed"),
       retryable: true,
     }),
   )
@@ -227,7 +227,7 @@ export const MCPServicesSection = () => {
       onSuccess: () => {
         toast.success(t("integration.mcp.service.deleted"))
       },
-      errorMessage: "Failed to delete MCP connection",
+      errorMessage: t("integration.mcp.service.delete_failed"),
       retryable: false,
     }),
   )
@@ -239,10 +239,10 @@ export const MCPServicesSection = () => {
       // Invalidate both connections (for updated counts) and tools queries
       queryClient.invalidateQueries({ queryKey: mcpQueryKeys.connections() })
       queryClient.invalidateQueries({ queryKey: mcpQueryKeys.all })
-      toast.success("MCP tools refreshed successfully")
+      toast.success(t("integration.mcp.service.tools_refreshed"))
     },
     onError: (error) => {
-      toast.error("Failed to refresh MCP tools")
+      toast.error(t("integration.mcp.service.tools_refresh_failed"))
       console.error("Failed to refresh MCP tools:", error)
     },
   })
@@ -250,14 +250,14 @@ export const MCPServicesSection = () => {
   const { present } = useModalStack()
   const handleAddService = () => {
     present({
-      title: "Add MCP Service",
+      title: t("integration.mcp.services.add_title"),
       content: ({ dismiss }: { dismiss: () => void }) => (
         <MCPPresetSelectionModal
           onPresetSelected={(preset) => {
             if (!preset.quickSetup) {
               // Show form with preset values pre-filled
               present({
-                title: `Setup ${preset.displayName}`,
+                title: t("integration.mcp.services.setup_title", { name: preset.displayName }),
                 content: ({ dismiss: dismissForm }) => (
                   <MCPServiceModalContent
                     service={null}
@@ -279,7 +279,7 @@ export const MCPServicesSection = () => {
           onManualConfig={() => {
             // Show manual configuration form
             present({
-              title: "Add MCP Service",
+              title: t("integration.mcp.services.add_title"),
               content: ({ dismiss: dismissForm }) => (
                 <MCPServiceModalContent
                   service={null}
@@ -300,7 +300,7 @@ export const MCPServicesSection = () => {
 
   const handleEditService = (service: MCPService) => {
     present({
-      title: "Edit MCP Service",
+      title: t("integration.mcp.services.edit_title"),
       content: ({ dismiss }: { dismiss: () => void }) => (
         <MCPServiceModalContent
           service={service}
@@ -344,10 +344,10 @@ export const MCPServicesSection = () => {
   // Show error message if query failed
   React.useEffect(() => {
     if (error) {
-      toast.error("Failed to load MCP connections")
+      toast.error(t("integration.mcp.services.load_failed"))
       console.error("Failed to load MCP connections:", error)
     }
-  }, [error])
+  }, [error, t])
 
   return (
     <div className="space-y-4">
@@ -373,7 +373,7 @@ export const MCPServicesSection = () => {
                 size="sm"
                 onClick={() => refetch()}
                 disabled={isLoading}
-                title="Refresh connections"
+                title={t("integration.mcp.services.refresh")}
               >
                 {isLoading ? (
                   <i className="i-mgc-loading-3-cute-re size-4 animate-spin" />

@@ -5,6 +5,7 @@ import { preventDefault } from "@follow/utils/dom"
 import type { PropsWithChildren } from "react"
 import * as React from "react"
 import { Suspense, useRef, useState } from "react"
+import { useTranslation } from "react-i18next"
 import { Outlet } from "react-router"
 
 import { setMainContainerElement, setRootContainerElement } from "~/atoms/dom"
@@ -15,6 +16,7 @@ import { ErrorComponentType } from "~/components/errors/enum"
 import { PlainModal, PlainWithAnimationModal } from "~/components/ui/modal/stacked/custom-modal"
 import { DeclarativeModal } from "~/components/ui/modal/stacked/declarative-modal"
 import { ROOT_CONTAINER_ID } from "~/constants/dom"
+import { getI18n } from "~/i18n"
 import { EnvironmentIndicator } from "~/modules/app/EnvironmentIndicator"
 import { LoginModalContent } from "~/modules/auth/LoginModalContent"
 import { DebugRegistry } from "~/modules/debug/registry"
@@ -137,6 +139,7 @@ const errorTypes = [
  * // based on the route configuration in generated-routes.ts
  */
 export function MainDestopLayout() {
+  const { t } = useTranslation()
   const isAuthFail = useLoginModalShow()
   const user = useWhoami()
 
@@ -197,7 +200,7 @@ export function MainDestopLayout() {
             defaultOpen
             CustomModalComponent={PlainModal}
             overlay
-            title="Login"
+            title={t("words.login")}
             canClose={true}
             clickOutsideToDismiss={true}
           >
@@ -258,7 +261,7 @@ const RootContainer = ({
 DebugRegistry.add("App Tip Dialog", () => {
   import("~/modules/app-tip/AppTipModalContent").then((m) => {
     window.presentModal({
-      title: "App Tip",
+      title: getI18n().t("app_tip.title"),
       content: () => <m.AppTipModalContent />,
       CustomModalComponent: PlainWithAnimationModal,
       modalContainerClassName: "flex items-center justify-center",
@@ -273,7 +276,7 @@ DebugRegistry.add("App Tip Dialog", () => {
 DebugRegistry.add("AI Onboarding", () => {
   import("~/modules/ai-onboarding/ai-onboarding-modal-content").then((m) => {
     window.presentModal({
-      title: "AI Onboarding",
+      title: getI18n().t("new_user_guide.title"),
       content: ({ dismiss }) => (
         <m.AiOnboardingModalContent
           onClose={() => {

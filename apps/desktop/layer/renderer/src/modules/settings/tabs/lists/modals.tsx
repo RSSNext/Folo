@@ -210,6 +210,7 @@ export const ListFeedsModalContent = ({ id }: { id: string }) => {
     <>
       <div className="flex items-center gap-2">
         <Autocomplete
+          aria-label={t("lists.select_feeds")}
           maxHeight={window.innerHeight < 600 ? 120 : 240}
           autoFocus
           value={feedSearchFor}

@@ -11,7 +11,8 @@ import { Image } from "@/src/components/ui/image/Image"
 import { PlatformActivityIndicator } from "@/src/components/ui/loading/PlatformActivityIndicator"
 import { Text } from "@/src/components/ui/typography/Text"
 import type { AuthProvider } from "@/src/lib/auth"
-import { signIn, useAuthProviders } from "@/src/lib/auth"
+import { signIn, signInWithSocialProvider, useAuthProviders } from "@/src/lib/auth"
+import { toast } from "@/src/lib/toast"
 
 import { loginWithSocialProvider } from "./social-login"
 
@@ -77,12 +78,8 @@ export function SocialLogin({ onPressEmail }: { isRegister: boolean; onPressEmai
               void loginWithSocialProvider({
                 providerId: provider.id,
                 setPendingProviderId,
-                signInWithProvider: async (providerId, { callbackURL }) => {
-                  await signIn.social({
-                    provider: providerId as any,
-                    callbackURL,
-                  })
-                },
+                signInWithProvider: (providerId, { callbackURL }) =>
+                  signInWithSocialProvider(providerId, callbackURL),
                 signInWithAppleIdentityToken: async () => {
                   const credential = await AppleAuthentication.signInAsync({
                     requestedScopes: [
@@ -115,6 +112,10 @@ export function SocialLogin({ onPressEmail }: { isRegister: boolean; onPressEmai
                 },
                 onError: (error) => {
                   console.error(error)
+                },
+                onFailure: (error) => {
+                  console.error(`[auth] ${provider.id} sign-in failed: ${error}`)
+                  toast.error(t("login.social_sign_in_failed", { provider: provider.name }))
                 },
               })
             }}

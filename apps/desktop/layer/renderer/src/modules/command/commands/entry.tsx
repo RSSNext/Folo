@@ -143,7 +143,7 @@ export const useRegisterEntryCommands = () => {
           const entry = getEntry(entryId)
           const isStarred = isEntryStarred(entryId)
           if (!entry) {
-            toast.error("Failed to star: entry is not available", { duration: 3000 })
+            toast.error(t("entry_actions.unavailable.star"), { duration: 3000 })
             return
           }
 
@@ -162,7 +162,7 @@ export const useRegisterEntryCommands = () => {
         run: ({ entryId }) => {
           const entry = getEntry(entryId)
           if (!entry) {
-            toast.error("Failed to delete: entry is not available", { duration: 3000 })
+            toast.error(t("entry_actions.unavailable.delete"), { duration: 3000 })
             return
           }
           deleteInboxEntry.mutate(entry.id)
@@ -176,7 +176,7 @@ export const useRegisterEntryCommands = () => {
         run: ({ entryId }) => {
           const entry = getEntry(entryId)
           if (!entry) {
-            toast.error("Failed to copy link: entry is not available", { duration: 3000 })
+            toast.error(t("entry_actions.unavailable.copy_link"), { duration: 3000 })
             return
           }
           if (!entry.url) return
@@ -195,12 +195,12 @@ export const useRegisterEntryCommands = () => {
           const entry = getEntry(entryId)
 
           if (!entry) {
-            toast.error("Failed to export as pdf: entry is not available", { duration: 3000 })
+            toast.error(t("entry_actions.unavailable.export_as_pdf"), { duration: 3000 })
             return
           }
 
           void exportPageAsPdf({ title: entry.title || entry.url || undefined }).catch(() => {
-            toast.error("Failed to export as pdf", { duration: 3000 })
+            toast.error(t("entry_actions.failed_to_export_as_pdf"), { duration: 3000 })
           })
         },
       },
@@ -212,7 +212,7 @@ export const useRegisterEntryCommands = () => {
         run: ({ entryId }) => {
           const entry = getEntry(entryId)
           if (!entry) {
-            toast.error("Failed to copy link: entry is not available", { duration: 3000 })
+            toast.error(t("entry_actions.unavailable.copy_title"), { duration: 3000 })
             return
           }
           if (!entry.title) return
@@ -232,7 +232,7 @@ export const useRegisterEntryCommands = () => {
         run: ({ entryId }) => {
           const entry = getEntry(entryId)
           if (!entry || !entry.url) {
-            toast.error("Failed to open in browser: url is not available", { duration: 3000 })
+            toast.error(t("entry_actions.unavailable.open_in_browser"), { duration: 3000 })
             return
           }
           window.open(entry.url, "_blank")
@@ -250,7 +250,7 @@ export const useRegisterEntryCommands = () => {
           if (!getShowSourceContent()) {
             const entry = getEntry(entryId)
             if (!entry || !entry.url) {
-              toast.error("Failed to view source content: url is not available", { duration: 3000 })
+              toast.error(t("entry_actions.unavailable.view_source_content"), { duration: 3000 })
               return
             }
             const routeParams = getRouteParams()
@@ -282,7 +282,7 @@ export const useRegisterEntryCommands = () => {
         run: ({ entryId }) => {
           const entry = getEntry(entryId)
           if (!entry || !entry.url) {
-            toast.error("Failed to share: url is not available", { duration: 3000 })
+            toast.error(t("entry_actions.unavailable.share"), { duration: 3000 })
             return
           }
 
@@ -322,7 +322,7 @@ export const useRegisterEntryCommands = () => {
         run: ({ entryId }) => {
           const entry = getEntry(entryId)
           if (!entry) {
-            toast.error("Failed to mark as unread: feed is not available", { duration: 3000 })
+            toast.error(t("entry_actions.unavailable.toggle_read"), { duration: 3000 })
             return
           }
           if (entry.read) {

@@ -32,6 +32,7 @@ const engine = (synced: boolean) => ({
   ensureSynced: vi.fn(async () => synced),
   catchUp: vi.fn(async () => synced),
   requestUnreadCalibration: vi.fn(async () => {}),
+  recordUnreadSnapshot: vi.fn(async () => {}),
 })
 
 describe("action rules and the sync engine", () => {

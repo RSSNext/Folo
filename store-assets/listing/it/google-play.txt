@@ -1,0 +1,32 @@
+Folo è un lettore RSS basato sull’IA che riunisce tutto ciò che segui in un’unica timeline, pulita e senza distrazioni, e poi ti aiuta a leggerla.
+
+Segui blog, siti di notizie, newsletter, podcast, canali video e profili social in un unico posto. Lascia che l’IA riassuma gli articoli lunghi, traduca i post scritti in altre lingue e ti legga il resto ad alta voce: resti aggiornato senza destreggiarti tra una dozzina di app.
+
+UN’UNICA TIMELINE PER TUTTO CIÒ CHE SEGUI
+• Iscriviti a qualsiasi feed RSS, Atom o JSON, oppure cerca le fonti per nome
+• Segui anche i siti che non hanno un feed grazie a migliaia di route RSSHub
+• Scopri feed di tendenza e liste selezionate per argomento e lingua
+• Importa i tuoi feed da qualsiasi altro lettore con OPML
+• Tieni tutto in ordine con cartelle, preferiti e liste
+
+UN’IA CHE LEGGE CON TE
+• Riassunti IA: i punti chiave di qualsiasi articolo in pochi secondi
+• Traduzione IA: leggi in inglese, cinese, giapponese o francese, con l’originale a fianco o senza
+• Sintesi vocale: ascolta gli articoli con una voce naturale
+• Actions: riassumi, traduci, aggiungi ai preferiti, silenzia o filtra automaticamente i nuovi contenuti con regole tutte tue
+
+PENSATO PER OGNI FORMATO
+• Una modalità lettura pulita che recupera il testo completo degli articoli
+• Layout dedicati a post social, gallerie di immagini, video e podcast
+• Riproduzione audio in background e video in picture-in-picture
+
+IL TUO LETTORE, A MODO TUO
+• Temi chiaro e scuro, font di lettura, dimensione del testo e interlinea
+• Spotlight mette in evidenza le parole chiave che ti interessano
+• I feed che segui, lo stato di lettura e i preferiti si sincronizzano su Android, iPhone, iPad, Windows, macOS, Linux e web
+
+OPEN SOURCE, SENZA PUBBLICITÀ
+Folo è open source con licenza AGPL-3.0 e non contiene pubblicità. È sviluppato alla luce del sole insieme a una comunità di lettori e sviluppatori. L’interfaccia dell’app è disponibile in inglese, cinese, giapponese e francese.
+
+INIZIA GRATIS
+Folo si scarica gratuitamente. Crea un account gratuito per seguire i tuoi feed e sincronizzarli su tutti i tuoi dispositivi. I piani a pagamento ti permettono di seguire più feed, alzano i limiti IA e aggiungono automazioni.

@@ -11,6 +11,7 @@ import type { FeedModel } from "@follow/store/feed/types"
 import type { InboxModel } from "@follow/store/inbox/types"
 import type { ListModel } from "@follow/store/list/types"
 import { cn } from "@follow/utils/utils"
+import { useTranslation } from "react-i18next"
 
 import { UrlBuilder } from "~/lib/url-builder"
 import { FeedIcon } from "~/modules/feed/feed-icon"
@@ -75,6 +76,7 @@ export function FollowSummary({
 }
 
 const RSSHubIndicator = () => {
+  const { t } = useTranslation("common")
   return (
     <Tooltip>
       <TooltipTrigger>
@@ -84,7 +86,7 @@ const RSSHubIndicator = () => {
         </div>
       </TooltipTrigger>
       <TooltipPortal>
-        <TooltipContent>This feed is powered by RSSHub.</TooltipContent>
+        <TooltipContent>{t("feed.powered_by_rsshub")}</TooltipContent>
       </TooltipPortal>
     </Tooltip>
   )

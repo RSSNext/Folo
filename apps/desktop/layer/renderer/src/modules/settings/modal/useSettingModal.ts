@@ -1,4 +1,5 @@
 import { createElement, useCallback } from "react"
+import { useTranslation } from "react-i18next"
 
 import { PlainModal } from "~/components/ui/modal/stacked/custom-modal"
 import { useModalStack } from "~/components/ui/modal/stacked/hooks"
@@ -21,6 +22,7 @@ const normalizeOptions = (options?: SettingModalOptions) => {
 }
 
 export const useSettingModal = () => {
+  const { t } = useTranslation()
   const { present } = useModalStack()
 
   return useCallback(
@@ -28,7 +30,7 @@ export const useSettingModal = () => {
       const { tab, section } = normalizeOptions(options)
 
       return present({
-        title: "Setting",
+        title: t("user_button.preferences"),
         id: "setting",
         content: () =>
           createElement(SettingModalContent, {
@@ -39,6 +41,6 @@ export const useSettingModal = () => {
         modalContainerClassName: "overflow-hidden",
       })
     },
-    [present],
+    [present, t],
   )
 }

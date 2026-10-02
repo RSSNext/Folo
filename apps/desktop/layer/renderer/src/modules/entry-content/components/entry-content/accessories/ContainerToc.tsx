@@ -7,6 +7,7 @@ import { springScrollTo } from "@follow/utils/scroller"
 import { cn } from "@follow/utils/utils"
 import { useStore } from "jotai"
 import { memo, useEffect, useMemo, useState } from "react"
+import { useTranslation } from "react-i18next"
 
 import { setAIPanelVisibility } from "~/atoms/settings/ai"
 import type { TocRef } from "~/components/ui/markdown/components/Toc"
@@ -46,6 +47,7 @@ const useReadPercent = () => {
 }
 
 const BackTopIndicator: Component = memo(({ className }) => {
+  const { t } = useTranslation()
   const [readPercent] = useReadPercent()
   const scrollElement = useScrollViewElement()
   const aiEnabled = useFeature("ai")
@@ -72,7 +74,7 @@ const BackTopIndicator: Component = memo(({ className }) => {
           )}
         >
           <i className="i-mgc-ai-cute-re" />
-          <span>Ask AI</span>
+          <span>{t("entry_content.selection_toolbar.ask_ai")}</span>
         </MotionButtonBase>
       )}
       <MotionButtonBase
@@ -85,7 +87,7 @@ const BackTopIndicator: Component = memo(({ className }) => {
         )}
       >
         <i className="i-mingcute-arrow-up-circle-line" />
-        <span className="whitespace-nowrap">Back Top</span>
+        <span className="whitespace-nowrap">{t("entry_content.toc.back_to_top")}</span>
       </MotionButtonBase>
     </span>
   )

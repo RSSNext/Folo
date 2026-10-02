@@ -1,6 +1,10 @@
 import { describe, expect, it, vi } from "vitest"
 
+import type { SocialSignInResult } from "@/src/lib/social-auth"
+
 import { loginWithSocialProvider } from "./social-login"
+
+const signedIn = async (): Promise<SocialSignInResult> => ({ type: "success" })
 
 describe("loginWithSocialProvider", () => {
   it("syncs session after OAuth completes and tracks login when a user is available", async () => {
@@ -10,6 +14,7 @@ describe("loginWithSocialProvider", () => {
     })
     const signInWithProvider = vi.fn(async (providerId: string) => {
       sequence.push(`sign-in:${providerId}`)
+      return signedIn()
     })
     const signInWithAppleIdentityToken = vi.fn(async () => {
       sequence.push("apple")
@@ -39,14 +44,13 @@ describe("loginWithSocialProvider", () => {
 
   it("clears pending state and skips tracking when no session is available after OAuth", async () => {
     const setPendingProviderId = vi.fn()
-    const signInWithProvider = vi.fn(async () => {})
     const syncSession = vi.fn(async () => false)
     const trackLogin = vi.fn()
 
     const result = await loginWithSocialProvider({
       providerId: "github",
       setPendingProviderId,
-      signInWithProvider,
+      signInWithProvider: vi.fn(signedIn),
       signInWithAppleIdentityToken: vi.fn(async () => {}),
       syncSession,
       trackLogin,
@@ -58,8 +62,54 @@ describe("loginWithSocialProvider", () => {
     expect(setPendingProviderId).toHaveBeenLastCalledWith(null)
   })
 
+  it("reports a rejected OAuth callback without syncing the session", async () => {
+    const setPendingProviderId = vi.fn()
+    const syncSession = vi.fn(async () => true)
+    const onFailure = vi.fn()
+
+    const result = await loginWithSocialProvider({
+      providerId: "google",
+      setPendingProviderId,
+      signInWithProvider: vi.fn(async (): Promise<SocialSignInResult> => ({
+        type: "error",
+        error: "state_mismatch",
+      })),
+      signInWithAppleIdentityToken: vi.fn(async () => {}),
+      syncSession,
+      trackLogin: vi.fn(),
+      onFailure,
+    })
+
+    expect(result).toBe(false)
+    expect(onFailure).toHaveBeenCalledWith("state_mismatch")
+    expect(syncSession).not.toHaveBeenCalled()
+    expect(setPendingProviderId).toHaveBeenLastCalledWith(null)
+  })
+
+  it("stays silent when the user cancels the auth session", async () => {
+    const syncSession = vi.fn(async () => true)
+    const onFailure = vi.fn()
+    const onError = vi.fn()
+
+    const result = await loginWithSocialProvider({
+      providerId: "google",
+      setPendingProviderId: vi.fn(),
+      signInWithProvider: vi.fn(async (): Promise<SocialSignInResult> => ({ type: "cancel" })),
+      signInWithAppleIdentityToken: vi.fn(async () => {}),
+      syncSession,
+      trackLogin: vi.fn(),
+      onError,
+      onFailure,
+    })
+
+    expect(result).toBe(false)
+    expect(syncSession).not.toHaveBeenCalled()
+    expect(onFailure).not.toHaveBeenCalled()
+    expect(onError).not.toHaveBeenCalled()
+  })
+
   it("uses the Folo native app scheme as the OAuth callback URL", async () => {
-    const signInWithProvider = vi.fn(async () => {})
+    const signInWithProvider = vi.fn(signedIn)
 
     await loginWithSocialProvider({
       providerId: "github",
@@ -75,7 +125,7 @@ describe("loginWithSocialProvider", () => {
 
   it("uses the Apple token flow for Apple sign in", async () => {
     const signInWithAppleIdentityToken = vi.fn(async () => {})
-    const signInWithProvider = vi.fn(async () => {})
+    const signInWithProvider = vi.fn(signedIn)
 
     await loginWithSocialProvider({
       providerId: "apple",

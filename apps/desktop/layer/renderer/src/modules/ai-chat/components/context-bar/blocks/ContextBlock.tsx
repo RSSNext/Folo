@@ -86,7 +86,7 @@ export const CombinedContextBlock: FC<{
   unreadOnlyBlock?: UnreadOnlyBlock
   readOnly?: boolean
 }> = memo(({ viewBlock, feedBlock, unreadOnlyBlock, readOnly = false }) => {
-  const { t } = useTranslation("common")
+  const { t } = useTranslation("ai")
   const blockActions = useChatBlockActions()
 
   const viewIcon = viewBlock && getView(Number(viewBlock.value))?.icon.props.className
@@ -157,16 +157,20 @@ export const CombinedContextBlock: FC<{
           className="min-w-0 truncate"
         />
       )}
-      {unreadOnlyBlock && <i className="i-mgc-round-cute-fi size-3 shrink-0" title="Unread Only" />}
+      {unreadOnlyBlock && (
+        <i className="i-mgc-round-cute-fi size-3 shrink-0" title={t("chat.context.unread_only")} />
+      )}
     </span>
   ) : (
     <span className="flex items-center gap-1">
       {(() => {
         if (!viewBlock) return null
         const viewName = getView(Number(viewBlock.value))?.name
-        return viewName ? t(viewName) : viewBlock.value
+        return viewName ? t(viewName, { ns: "common" }) : viewBlock.value
       })()}
-      {unreadOnlyBlock && <i className="i-mgc-round-cute-fi size-3" title="Unread Only" />}
+      {unreadOnlyBlock && (
+        <i className="i-mgc-round-cute-fi size-3" title={t("chat.context.unread_only")} />
+      )}
     </span>
   )
 

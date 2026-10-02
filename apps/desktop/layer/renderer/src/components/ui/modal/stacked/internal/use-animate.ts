@@ -24,16 +24,20 @@ export const useModalAnimate = (isTop: boolean, modalId: string): ModalAnimateCo
   const [isClosing, setIsClosing] = useState(false)
   // Initial enter animation
   useEffect(() => {
-    ModalEventBus.subscribe("RE_PRESENT", (data) => {
+    const unsubscribe = ModalEventBus.subscribe("RE_PRESENT", (data) => {
       if (data.id !== modalId) {
         return
       }
       setIsClosing(false)
       animateController.start(modalMontionConfig.animate)
     })
-    nextFrame(() => {
+    const cancelFrame = nextFrame(() => {
       animateController.start(modalMontionConfig.animate)
     })
+    return () => {
+      unsubscribe()
+      cancelFrame()
+    }
   }, [animateController, modalId, setIsClosing])
 
   // Notice animation for when modal can't be dismissed

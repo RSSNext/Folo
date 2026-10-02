@@ -1,0 +1,32 @@
+Folo ist ein KI-gestützter RSS-Reader, der all deine Quellen in einer übersichtlichen Timeline bündelt und dir beim Lesen hilft.
+
+Folge Blogs, Nachrichtenseiten, Newslettern, Podcasts, Videokanälen und Social-Media-Feeds an einem Ort. Lass die KI lange Artikel zusammenfassen, fremdsprachige Beiträge übersetzen und den Rest vorlesen. So bleibst du informiert, ohne zwischen einem Dutzend Apps zu wechseln.
+
+ALLE QUELLEN IN EINER TIMELINE
+• Abonniere beliebige Feeds im Format RSS, Atom oder JSON Feed oder suche Quellen nach Namen
+• Folge Websites ohne eigenen Feed über Tausende RSSHub-Routen
+• Entdecke angesagte Feeds und kuratierte Listen nach Thema und Sprache
+• Importiere deine Abos per OPML aus jedem anderen Feedreader
+• Behalte den Überblick mit Ordnern, Favoriten und Listen
+
+KI, DIE MITLIEST
+• KI-Zusammenfassungen: die wichtigsten Punkte jedes Artikels in Sekunden
+• KI-Übersetzung ins Englische, Chinesische, Japanische oder Französische, neben dem Original oder für sich allein
+• Vorlesefunktion: Hör dir Artikel mit natürlicher Stimme an
+• Actions: eigene Regeln, die neue Einträge automatisch zusammenfassen, übersetzen, als Favorit markieren, stummschalten oder filtern
+
+FÜR JEDES FORMAT GEMACHT
+• Eine aufgeräumte Leseansicht, die den vollständigen Artikeltext lädt
+• Eigene Layouts für Social-Media-Posts, Bildergalerien, Videos und Podcasts
+• Audiowiedergabe im Hintergrund und Bild-in-Bild für Videos
+
+GANZ NACH DEINEM GESCHMACK
+• Helles und dunkles Design, Leseschriften, Schriftgröße und Zeilenabstand
+• Spotlight hebt die Stichwörter hervor, die dir wichtig sind
+• Abos, Lesestatus und Favoriten werden zwischen Android, iPhone, iPad, Windows, macOS, Linux und dem Web synchronisiert
+
+OPEN SOURCE, OHNE WERBUNG
+Folo ist Open Source unter der AGPL-3.0-Lizenz und enthält keine Werbung. Die App entsteht öffentlich, gemeinsam mit einer Community aus Lesern und Entwicklern. Ihre Oberfläche gibt es auf Englisch, Chinesisch, Japanisch und Französisch.
+
+KOSTENLOS LOSLEGEN
+Folo kannst du kostenlos herunterladen. Mit einem kostenlosen Konto folgst du Feeds und synchronisierst sie auf all deinen Geräten. Kostenpflichtige Tarife bieten mehr Feed-Abos, höhere KI-Limits und Automatisierungen.

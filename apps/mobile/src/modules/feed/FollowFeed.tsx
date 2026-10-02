@@ -28,6 +28,7 @@ import { Text } from "@/src/components/ui/typography/Text"
 import { SafeAlertCuteReIcon } from "@/src/icons/safe_alert_cute_re"
 import { SafetyCertificateCuteReIcon } from "@/src/icons/safety_certificate_cute_re"
 import { User3CuteReIcon } from "@/src/icons/user_3_cute_re"
+import { sanitizeErrorMessage } from "@/src/lib/error-message"
 import { toastFetchError } from "@/src/lib/error-parser"
 import { useCanDismiss, useNavigation } from "@/src/lib/navigation/hooks"
 import { useSetModalScreenOptions } from "@/src/lib/navigation/ScreenOptionsContext"
@@ -69,7 +70,7 @@ export function FollowUrl(props: { url: string }) {
     )
   }
   if (!data) {
-    return <Text className="text-label">{error?.message}</Text>
+    return <Text className="text-label">{sanitizeErrorMessage(error?.message ?? "")}</Text>
   }
   return (
     <FollowImpl

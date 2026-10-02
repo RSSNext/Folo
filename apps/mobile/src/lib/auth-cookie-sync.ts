@@ -10,6 +10,11 @@ type RemovableAuthCookieStorage = AuthCookieStorage & {
   removeItem: (key: string) => unknown
 }
 
+type AsyncAuthCookieStorage = RemovableAuthCookieStorage & {
+  getItemAsync: (key: string) => Promise<string | null>
+  setItemAsync: (key: string, value: string) => Promise<void>
+}
+
 type StoredCookie = Record<
   string,
   {
@@ -134,20 +139,35 @@ const createCookieStorage = (storage: AuthCookieStorage) => ({
       return stored
     }
 
-    const count = Number(stored.slice(chunkMarker.length))
-    if (!Number.isInteger(count) || count < 1) {
+    const [countValue, slot, fallbackValue, ...extra] = stored.slice(chunkMarker.length).split(":")
+    const count = Number(countValue)
+    const fallbackCount = fallbackValue === undefined ? null : Number(fallbackValue)
+    const validCount = (value: number) => Number.isInteger(value) && value >= 1 && value <= 100
+    if (
+      extra.length > 0 ||
+      !validCount(count) ||
+      (slot !== undefined && slot !== "0" && slot !== "1") ||
+      (fallbackCount !== null && !validCount(fallbackCount))
+    ) {
       return null
     }
 
-    let value = ""
-    for (let index = 0; index < count; index++) {
-      const chunk = storage.getItem(`${key}.${index}`)
-      if (chunk == null) {
-        return null
+    const readChunks = (prefix: string, length: number) => {
+      let value = ""
+      for (let index = 0; index < length; index++) {
+        const chunk = storage.getItem(`${prefix}.${index}`)
+        if (!chunk) {
+          return null
+        }
+        value += chunk
       }
-      value += chunk
+      return value
     }
 
+    const value = readChunks(slot === undefined ? key : `${key}.${slot}`, count)
+    if (value === null && slot !== undefined && fallbackCount !== null) {
+      return readChunks(`${key}.${slot === "0" ? "1" : "0"}`, fallbackCount)
+    }
     return value
   },
   async setItem(name: string, value: string) {
@@ -175,14 +195,20 @@ export const createSessionAwareAuthCookieStorage = ({
   cookieKey: string
   storage: RemovableAuthCookieStorage
   onSessionChange: () => void
-}): RemovableAuthCookieStorage => {
+}): AsyncAuthCookieStorage => {
   const normalizedCookieKey = normalizeCookieName(cookieKey)
   const cookieStorage = createCookieStorage(storage)
   let lastObservedCookie = cookieStorage.getItem(cookieKey)
 
-  return {
+  const sessionStorage: AsyncAuthCookieStorage = {
     getItem(key) {
       return storage.getItem(key)
+    },
+    async getItemAsync(key) {
+      return storage.getItem(key)
+    },
+    async setItemAsync(key, value) {
+      await sessionStorage.setItem(key, value)
     },
     async setItem(key, value) {
       if (key !== normalizedCookieKey) {
@@ -218,6 +244,7 @@ export const createSessionAwareAuthCookieStorage = ({
       }
     },
   }
+  return sessionStorage
 }
 
 const managedAuthCookieNames = new Set([
@@ -337,11 +364,12 @@ export const mergeStoredAuthCookies = (
 export const createMobileAuthCookieSyncPlugin = ({
   cookieKey,
   storage,
+  cookieStorage = createCookieStorage(storage),
 }: {
   cookieKey: string
   storage: AuthCookieStorage
+  cookieStorage?: AuthCookieStorage
 }): BetterAuthClientPlugin => {
-  const cookieStorage = createCookieStorage(storage)
   const getStoredCookieHeader = () =>
     getCookieHeaderFromStoredCookie(cookieStorage.getItem(cookieKey) || "{}")
 

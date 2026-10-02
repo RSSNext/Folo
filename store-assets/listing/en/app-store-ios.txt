@@ -1,0 +1,37 @@
+Folo is the AI RSS reader that brings everything you follow into one calm timeline, then helps you read it.
+
+Follow blogs, news sites, newsletters, podcasts, video channels and social feeds in one place. Let AI summarize the long reads, translate the ones in other languages and read the rest aloud, so you stay informed without drowning in tabs.
+
+ONE TIMELINE FOR EVERYTHING YOU FOLLOW
+• Subscribe to any RSS, Atom or JSON feed, or search for sources by name
+• Follow sites without a feed through thousands of RSSHub routes
+• Explore trending feeds and curated lists to find new favorites
+• Import your subscriptions from any other reader with OPML
+• Keep things tidy with folders, stars and lists
+
+AI THAT READS WITH YOU
+• AI summaries: the key points of any article in seconds
+• AI translation: read in English, Chinese, Japanese or French, side by side with the original or on its own
+• Text-to-speech: listen to any article in a natural voice
+• Actions: summarize, translate, star or filter new entries automatically with your own rules
+
+MADE FOR EVERY FORMAT
+• A clean reader view that fetches the full text of articles
+• Dedicated layouts for social posts, pictures, videos and podcasts
+• Background playback for podcasts and picture-in-picture for videos
+
+YOUR READER, YOUR WAY
+• Light and dark themes, reading fonts, text size and line spacing
+• Spotlight highlights the keywords you care about
+• Subscriptions, read status and stars sync across iPhone, iPad, Mac, Windows, Android and the web
+
+OPEN SOURCE, NO ADS
+Folo is open source and ad-free, built in the open with a community of readers and developers.
+
+FREE TO START
+Create a free account to follow feeds and sync them across your devices. Basic, Plus and Pro plans add more subscriptions, higher AI limits and automations.
+
+Subscriptions are billed monthly or yearly and renew automatically unless canceled at least 24 hours before the end of the current period. Payment is charged to your Apple Account at confirmation of purchase. Manage or cancel your subscription anytime in your App Store account settings.
+
+Privacy Policy: https://folo.is/privacy-policy
+Terms of Use: https://www.apple.com/legal/internet-services/itunes/dev/stdeula/

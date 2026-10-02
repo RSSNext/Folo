@@ -6,6 +6,7 @@ import type {
 import type { EntryModel } from "@follow/store/entry/types"
 import { getSummary } from "@follow/store/summary/getters"
 import { tracker } from "@follow/tracker"
+import { t } from "i18next"
 import { toast } from "sonner"
 
 import { getActionLanguage } from "~/atoms/settings/general"
@@ -28,6 +29,16 @@ export interface PlaceholderContext {
   publishedAt: string
   description: string
   [key: string]: string
+}
+
+/**
+ * Placeholder metadata shown in the custom integration UI.
+ * `descriptionKey` is a `settings` namespace key, translated where it is rendered.
+ */
+export interface IntegrationPlaceholder {
+  key: string
+  descriptionKey: I18nKeysForSettings
+  example?: string
 }
 
 /**
@@ -77,20 +88,44 @@ export class CustomIntegrationManager {
   /**
    * Get all available placeholders with their descriptions
    */
-  static getAvailablePlaceholders(): Array<{ key: string; description: string; example?: string }> {
+  static getAvailablePlaceholders(): IntegrationPlaceholder[] {
     return [
-      { key: "[title]", description: "Entry title", example: "Example Article Title" },
-      { key: "[url]", description: "Entry URL", example: "https://example.com/article" },
-      { key: "[content_html]", description: "Entry content in HTML format" },
-      { key: "[content_markdown]", description: "Entry content in Markdown format" },
-      { key: "[summary]", description: "Entry summary or description" },
-      { key: "[author]", description: "Entry author", example: "John Doe" },
+      {
+        key: "[title]",
+        descriptionKey: "integration.custom_integrations.placeholders.fields.title",
+        example: "Example Article Title",
+      },
+      {
+        key: "[url]",
+        descriptionKey: "integration.custom_integrations.placeholders.fields.url",
+        example: "https://example.com/article",
+      },
+      {
+        key: "[content_html]",
+        descriptionKey: "integration.custom_integrations.placeholders.fields.content_html",
+      },
+      {
+        key: "[content_markdown]",
+        descriptionKey: "integration.custom_integrations.placeholders.fields.content_markdown",
+      },
+      {
+        key: "[summary]",
+        descriptionKey: "integration.custom_integrations.placeholders.fields.summary",
+      },
+      {
+        key: "[author]",
+        descriptionKey: "integration.custom_integrations.placeholders.fields.author",
+        example: "John Doe",
+      },
       {
         key: "[published_at]",
-        description: "Publication date in ISO format",
+        descriptionKey: "integration.custom_integrations.placeholders.fields.published_at",
         example: "2024-01-01T12:00:00.000Z",
       },
-      { key: "[description]", description: "Entry description" },
+      {
+        key: "[description]",
+        descriptionKey: "integration.custom_integrations.placeholders.fields.description",
+      },
     ]
   }
 
@@ -195,7 +230,12 @@ export class CustomIntegrationManager {
     entry: EntryModel,
   ): Promise<{ success: boolean; error?: string }> {
     if (!integration.enabled) {
-      return { success: false, error: `${integration.name} is disabled` }
+      return {
+        success: false,
+        error: t("entry_actions.custom_integration.disabled", {
+          name: integration.name,
+        }),
+      }
     }
 
     try {
@@ -249,7 +289,12 @@ export class CustomIntegrationManager {
 
         // Check if request was successful
         if (!response.ok) {
-          throw new Error(`Request failed with status ${response.status}: ${response.statusText}`)
+          throw new Error(
+            t("entry_actions.custom_integration.request_failed", {
+              status: response.status,
+              statusText: response.statusText,
+            }),
+          )
         }
 
         return { success: true }
@@ -278,16 +323,21 @@ export class CustomIntegrationManager {
           })
 
           if (!response.ok) {
-            throw new Error(`Request failed with status ${response.status}: ${response.statusText}`)
+            throw new Error(
+              t("entry_actions.custom_integration.request_failed", {
+                status: response.status,
+                statusText: response.statusText,
+              }),
+            )
           }
 
           return { success: true }
         }
       }
 
-      return { success: false, error: "Invalid integration configuration" }
+      return { success: false, error: t("entry_actions.custom_integration.invalid_config") }
     } catch (error) {
-      const errorMessage = (error as Error)?.message || "Unknown error"
+      const errorMessage = (error as Error)?.message || t("error_screen.unknown", { ns: "common" })
       return { success: false, error: errorMessage }
     }
   }
@@ -299,121 +349,24 @@ export class CustomIntegrationManager {
     const result = await this.executeIntegration(integration, entry)
 
     if (result.success) {
-      toast.success(`Saved to ${integration.name} successfully`, {
-        duration: 3000,
-      })
+      toast.success(
+        t("entry_actions.custom_integration.saved", {
+          name: integration.name,
+        }),
+        {
+          duration: 3000,
+        },
+      )
     } else {
-      toast.error(`Failed to save to ${integration.name}: ${result.error}`, {
-        duration: 3000,
-      })
-    }
-  }
-
-  /**
-   * Validate a fetch template
-   */
-  static validateFetchTemplate(fetchTemplate: FetchTemplate): { valid: boolean; errors: string[] } {
-    const errors: string[] = []
-
-    if (!fetchTemplate.url?.trim()) {
-      errors.push("URL is required")
-    }
-
-    if (!fetchTemplate.method) {
-      errors.push("HTTP method is required")
-    }
-
-    if (
-      fetchTemplate.method &&
-      !["GET", "POST", "PUT", "PATCH", "DELETE"].includes(fetchTemplate.method)
-    ) {
-      errors.push("Invalid HTTP method")
-    }
-
-    try {
-      if (fetchTemplate.url) {
-        new URL(fetchTemplate.url.replaceAll(/\[.*?\]/g, "https://example.com"))
-      }
-    } catch {
-      errors.push("Invalid URL format")
-    }
-
-    return {
-      valid: errors.length === 0,
-      errors,
-    }
-  }
-
-  /**
-   * Validate a URL scheme template
-   */
-  static validateURLSchemeTemplate(template: URLSchemeTemplate): {
-    valid: boolean
-    errors: string[]
-  } {
-    const errors: string[] = []
-
-    if (!template.scheme?.trim()) {
-      errors.push("URL scheme is required")
-    }
-
-    if (template.scheme && !template.scheme.includes("://")) {
-      errors.push("URL scheme must include protocol (e.g., 'app://')")
-    }
-
-    try {
-      if (template.scheme) {
-        // Replace placeholders with sample values for validation
-        const testScheme = template.scheme.replaceAll(/\[.*?\]/g, "test")
-        new URL(testScheme)
-      }
-    } catch {
-      errors.push("Invalid URL scheme format")
-    }
-
-    return {
-      valid: errors.length === 0,
-      errors,
-    }
-  }
-
-  /**
-   * Validate a custom integration
-   */
-  static validateCustomIntegration(integration: Partial<CustomIntegration>): {
-    valid: boolean
-    errors: string[]
-  } {
-    const errors: string[] = []
-
-    if (!integration.name?.trim()) {
-      errors.push("Integration name is required")
-    }
-
-    // Type is optional for backward compatibility, default to "http"
-    const integrationType = integration.type || "http"
-
-    if (integrationType === "http") {
-      if (!integration.fetchTemplate) {
-        errors.push("HTTP template is required for HTTP integrations")
-      } else {
-        const templateValidation = this.validateFetchTemplate(integration.fetchTemplate)
-        errors.push(...templateValidation.errors)
-      }
-    } else if (integrationType === "url-scheme") {
-      if (!integration.urlSchemeTemplate) {
-        errors.push("URL scheme template is required for URL scheme integrations")
-      } else {
-        const templateValidation = this.validateURLSchemeTemplate(integration.urlSchemeTemplate)
-        errors.push(...templateValidation.errors)
-      }
-    } else {
-      errors.push("Invalid integration type. Must be 'http' or 'url-scheme'")
-    }
-
-    return {
-      valid: errors.length === 0,
-      errors,
+      toast.error(
+        t("entry_actions.custom_integration.failed", {
+          name: integration.name,
+          error: result.error,
+        }),
+        {
+          duration: 3000,
+        },
+      )
     }
   }
 

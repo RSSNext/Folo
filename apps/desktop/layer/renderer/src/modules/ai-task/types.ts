@@ -1,4 +1,5 @@
 import dayjs from "dayjs"
+import type { TFunction } from "i18next"
 import { z } from "zod"
 
 export const MAX_PROMPT_LENGTH = 2000
@@ -37,30 +38,34 @@ export const aiTaskOptionsSchema = z.object({
 
 export type AITaskOptions = z.infer<typeof aiTaskOptionsSchema>
 
-export const taskSchema = z
-  .object({
-    name: z.string().min(1, "Title is required").max(50, "Title must be less than 50 characters"),
-    prompt: z
-      .string()
-      .min(1, "Prompt is required")
-      .max(MAX_PROMPT_LENGTH, "Prompt must be less than 2000 characters"),
-    schedule: scheduleSchema,
-    options: aiTaskOptionsSchema,
-  })
-  .refine(
-    (data) => {
-      // Validate that for "once" type, the date is in the future
-      if (data.schedule.type === "once") {
-        const scheduledDate = dayjs(data.schedule.date)
-        const now = dayjs()
-        return scheduledDate.isAfter(now)
-      }
-      return true
-    },
-    {
-      message: "Scheduled date must be in the future",
-      path: ["schedule", "date"],
-    },
-  )
+export const createTaskSchema = (t: TFunction<"ai">) =>
+  z
+    .object({
+      name: z
+        .string()
+        .min(1, t("tasks.validation.title_required"))
+        .max(50, t("tasks.validation.title_max")),
+      prompt: z
+        .string()
+        .min(1, t("tasks.validation.prompt_required"))
+        .max(MAX_PROMPT_LENGTH, t("tasks.validation.prompt_max")),
+      schedule: scheduleSchema,
+      options: aiTaskOptionsSchema,
+    })
+    .refine(
+      (data) => {
+        // Validate that for "once" type, the date is in the future
+        if (data.schedule.type === "once") {
+          const scheduledDate = dayjs(data.schedule.date)
+          const now = dayjs()
+          return scheduledDate.isAfter(now)
+        }
+        return true
+      },
+      {
+        message: t("tasks.validation.date_future"),
+        path: ["schedule", "date"],
+      },
+    )
 
-export type TaskFormData = z.infer<typeof taskSchema>
+export type TaskFormData = z.infer<ReturnType<typeof createTaskSchema>>

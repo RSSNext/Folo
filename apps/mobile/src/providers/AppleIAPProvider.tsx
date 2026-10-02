@@ -21,6 +21,11 @@ import {
 } from "./apple-iap-purchase"
 
 const billingSubscriptionQueryKey = ["billingSubscription"]
+const nativeStoreKitE2E = process.env.EXPO_PUBLIC_E2E_IAP_NATIVE === "1"
+
+const logStoreKitE2E = (event: string) => {
+  if (nativeStoreKitE2E) console.info(`[StoreKit E2E] ${event}`)
+}
 
 type BillingSubscriptionResponse = {
   source: "stripe" | "apple" | null
@@ -92,7 +97,8 @@ export const AppleIAPProvider = ({ children }: PropsWithChildren) => {
 
     try {
       return requireNativeModule("StoreKitTestHelper") as {
-        prepareLocalSubscriptions?: () => Promise<unknown>
+        prepareLocalSubscriptions?: () => Promise<{ enabled: boolean }>
+        clearPurchaseError?: () => Promise<void>
         buyProduct?: (productId: string) => Promise<{ jwsRepresentation?: string }>
       }
     } catch {
@@ -100,9 +106,38 @@ export const AppleIAPProvider = ({ children }: PropsWithChildren) => {
     }
   }, [])
 
-  useEffect(() => {
-    void storeKitTestHelper?.prepareLocalSubscriptions?.().catch(() => {})
+  const localStoreKitSessionRef = useRef<Promise<void> | null>(null)
+  const ensureLocalStoreKitSession = useCallback(async () => {
+    if (!nativeStoreKitE2E) return
+
+    const apiUrl = new URL(proxyEnv.API_URL)
+    if (
+      Platform.OS !== "ios" ||
+      apiUrl.protocol !== "http:" ||
+      apiUrl.hostname !== "localhost" ||
+      !storeKitTestHelper?.prepareLocalSubscriptions
+    ) {
+      throw new Error("Native StoreKit E2E requires the local iOS test environment")
+    }
+
+    localStoreKitSessionRef.current ??= storeKitTestHelper
+      .prepareLocalSubscriptions()
+      .then((result) => {
+        if (!result.enabled) {
+          throw new Error("Native StoreKit E2E requires a STOREKIT_TESTING build")
+        }
+        logStoreKitE2E("session-ready")
+      })
+    await localStoreKitSessionRef.current
   }, [storeKitTestHelper])
+
+  useEffect(() => {
+    if (nativeStoreKitE2E) {
+      void ensureLocalStoreKitSession().catch(() => logStoreKitE2E("session-unavailable"))
+      return
+    }
+    void storeKitTestHelper?.prepareLocalSubscriptions?.().catch(() => {})
+  }, [ensureLocalStoreKitSession, storeKitTestHelper])
 
   const {
     connected,
@@ -112,15 +147,32 @@ export const AppleIAPProvider = ({ children }: PropsWithChildren) => {
     finishTransaction,
     requestPurchase,
     restorePurchases,
-    validateReceipt,
+    verifyPurchase: verifyStorePurchase,
   } = useIAP({
     onPurchaseError: (error) => {
+      logStoreKitE2E(`purchase-error:${error.code}`)
+      if (nativeStoreKitE2E) {
+        localStoreKitSessionRef.current = (
+          localStoreKitSessionRef.current ?? Promise.resolve()
+        ).then(async () => {
+          if (!storeKitTestHelper?.clearPurchaseError) {
+            throw new Error("Native StoreKit E2E error recovery is unavailable")
+          }
+          await storeKitTestHelper.clearPurchaseError()
+        })
+        void localStoreKitSessionRef.current.catch(() =>
+          logStoreKitE2E("purchase-error-recovery-failed"),
+        )
+      }
       setCurrentPurchaseError({
         code: error.code,
         message: error.message,
       })
     },
-    onPurchaseSuccess: setCurrentPurchase,
+    onPurchaseSuccess: (purchase) => {
+      logStoreKitE2E("purchase-success")
+      setCurrentPurchase(purchase)
+    },
   })
 
   useEffect(() => {
@@ -129,6 +181,7 @@ export const AppleIAPProvider = ({ children }: PropsWithChildren) => {
 
   const verifyPurchase = useCallback(
     async (purchase: Purchase) => {
+      await ensureLocalStoreKitSession()
       const productId = purchase.productId
       let signedTransactionInfo = selectSignedTransactionInfo(purchase.purchaseToken)
 
@@ -140,7 +193,7 @@ export const AppleIAPProvider = ({ children }: PropsWithChildren) => {
 
       if (!signedTransactionInfo) {
         signedTransactionInfo = selectSignedTransactionInfo(
-          await validateReceipt({ apple: { sku: productId } })
+          await verifyStorePurchase({ apple: { sku: productId } })
             .then((result) =>
               "jwsRepresentation" in result ? result.jwsRepresentation : undefined,
             )
@@ -148,6 +201,9 @@ export const AppleIAPProvider = ({ children }: PropsWithChildren) => {
         )
       }
 
+      if (nativeStoreKitE2E && !signedTransactionInfo) {
+        throw new Error("Native StoreKit E2E requires a signed local transaction")
+      }
       const response = await followClient.request<{
         code: number
         data: BillingSubscriptionResponse
@@ -159,8 +215,9 @@ export const AppleIAPProvider = ({ children }: PropsWithChildren) => {
       if (response.code !== 0) {
         throw new Error("Failed to verify Apple subscription")
       }
+      logStoreKitE2E("server-verified")
     },
-    [validateReceipt],
+    [ensureLocalStoreKitSession, verifyStorePurchase],
   )
 
   useEffect(() => {
@@ -191,6 +248,7 @@ export const AppleIAPProvider = ({ children }: PropsWithChildren) => {
       try {
         await verifyPurchase(currentPurchase)
         await finishTransaction({ purchase: currentPurchase })
+        logStoreKitE2E("transaction-finished")
         await refreshBillingState()
       } catch (error) {
         processedTransactionsRef.current.delete(transactionKey)
@@ -224,9 +282,11 @@ export const AppleIAPProvider = ({ children }: PropsWithChildren) => {
         return
       }
 
+      await ensureLocalStoreKitSession()
       await fetchProducts({ skus, type: "subs" })
+      logStoreKitE2E("products-loaded")
     },
-    [fetchProducts],
+    [ensureLocalStoreKitSession, fetchProducts],
   )
 
   const requestSubscriptionPurchase = useCallback(
@@ -237,7 +297,8 @@ export const AppleIAPProvider = ({ children }: PropsWithChildren) => {
 
       setIsPurchasing(true)
       try {
-        if (storeKitTestHelper?.buyProduct) {
+        await ensureLocalStoreKitSession()
+        if (!nativeStoreKitE2E && storeKitTestHelper?.buyProduct) {
           setIsProcessingPurchase(true)
           try {
             const result = await storeKitTestHelper.buyProduct(sku)
@@ -262,6 +323,7 @@ export const AppleIAPProvider = ({ children }: PropsWithChildren) => {
           }
         }
 
+        logStoreKitE2E("request-purchase")
         await requestPurchase({
           type: "subs",
           request: {
@@ -277,7 +339,7 @@ export const AppleIAPProvider = ({ children }: PropsWithChildren) => {
         throw error
       }
     },
-    [requestPurchase, storeKitTestHelper],
+    [ensureLocalStoreKitSession, requestPurchase, storeKitTestHelper],
   )
 
   const restoreSubscriptionPurchases = useCallback(async () => {
@@ -287,7 +349,9 @@ export const AppleIAPProvider = ({ children }: PropsWithChildren) => {
 
     setIsRestoring(true)
     try {
+      await ensureLocalStoreKitSession()
       await restorePurchases()
+      logStoreKitE2E("restore-purchases")
       await new Promise((resolve) => setTimeout(resolve, 300))
 
       const restoredPurchases = availablePurchasesRef.current.filter((purchase) =>
@@ -332,7 +396,7 @@ export const AppleIAPProvider = ({ children }: PropsWithChildren) => {
     } finally {
       setIsRestoring(false)
     }
-  }, [knownSubscriptionIds, restorePurchases, t, verifyPurchase])
+  }, [ensureLocalStoreKitSession, knownSubscriptionIds, restorePurchases, t, verifyPurchase])
 
   const contextValue = useMemo<AppleIAPContextValue>(
     () => ({

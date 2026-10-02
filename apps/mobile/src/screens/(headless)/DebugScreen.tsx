@@ -61,7 +61,7 @@ export const DebugScreen: NavigationControllerView = () => {
         {
           title: "Get Current Session Token",
           onPress: async () => {
-            const token = getCookie()
+            const token = await getCookie()
             Alert.alert(`Current Session Token: ${token}`)
           },
         },

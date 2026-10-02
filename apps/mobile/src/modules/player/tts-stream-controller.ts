@@ -32,11 +32,27 @@ type TtsBridgeCommand =
 
 type TtsBridgeEvent =
   | { type: "ready" }
-  | { entryId: string; requestId: string; type: "started" }
-  | { entryId: string; type: "playing" | "paused" | "ended" }
-  | { entryId?: string; message: string; requestId?: string; type: "error" }
+  | {
+      entryId: string
+      requestId: string
+      type: "ended" | "paused" | "playing" | "progress" | "started"
+    }
+  | { entryId: string; message: string; requestId: string; type: "error" }
 
-const START_TIMEOUT_MS = 10_000
+/**
+ * The TTS service takes several seconds to send the first bytes of a long text and can pause for
+ * a few seconds between chunks, so a start only times out when the WebView reports no download
+ * progress for this long.
+ */
+const START_STALL_TIMEOUT_MS = 15_000
+
+/** A newer play request or a stop replaced the stream before it started. */
+export class TtsStreamInterruptedError extends Error {
+  constructor() {
+    super("TTS interrupted")
+    this.name = "TtsStreamInterruptedError"
+  }
+}
 
 class TtsStreamController {
   private listeners = new Set<() => void>()
@@ -49,6 +65,9 @@ class TtsStreamController {
     title: null,
   }
 
+  // The request the playback state belongs to. Events of any other request are stale.
+  private activeRequestId: string | null = null
+
   private pendingStart: {
     reject: (reason?: unknown) => void
     requestId: string
@@ -59,12 +78,17 @@ class TtsStreamController {
   private queuedCommands: string[] = []
   private ready = false
   private readyWaiters = new Set<() => void>()
+  private requestCount = 0
   private webView: WebViewType<WebViewProps> | null = null
 
   attachWebView = (webView: WebViewType<WebViewProps> | null) => {
     this.webView = webView
     if (!webView) {
       this.ready = false
+      // The stream went away with the WebView, e.g. after the system killed its content process
+      if (this.activeRequestId) {
+        this.endActiveRequest(new Error("TTS streaming player was closed"))
+      }
     }
   }
 
@@ -88,6 +112,11 @@ class TtsStreamController {
       return
     }
 
+    // A late event of a request that was replaced or stopped
+    if (payload.type !== "ready" && payload.requestId !== this.activeRequestId) {
+      return
+    }
+
     switch (payload.type) {
       case "ready": {
         this.ready = true
@@ -98,11 +127,15 @@ class TtsStreamController {
         this.flushQueuedCommands()
         return
       }
+      case "progress": {
+        this.restartStartTimeout()
+        return
+      }
       case "started": {
         this.setPlaybackState({
           status: "playing",
         })
-        this.resolvePendingStart(payload.requestId)
+        this.resolvePendingStart()
         return
       }
       case "playing":
@@ -113,16 +146,11 @@ class TtsStreamController {
         return
       }
       case "ended": {
-        if (this.playbackState.entryId === payload.entryId) {
-          this.resetPlaybackState()
-        }
+        this.endActiveRequest(new Error("TTS stream ended before playback started"))
         return
       }
       case "error": {
-        this.rejectPendingStart(payload.requestId, new Error(payload.message))
-        if (this.playbackState.entryId === payload.entryId) {
-          this.resetPlaybackState()
-        }
+        this.endActiveRequest(new Error(payload.message))
       }
     }
   }
@@ -144,9 +172,11 @@ class TtsStreamController {
   }) => {
     await this.waitUntilReady()
 
-    const requestId = `${entryId}-${Date.now()}`
+    this.requestCount += 1
+    const requestId = `${entryId}-${Date.now()}-${this.requestCount}`
 
-    this.rejectPendingStart(undefined, new Error("TTS interrupted"))
+    this.rejectPendingStart(new TtsStreamInterruptedError())
+    this.activeRequestId = requestId
     this.setPlaybackState({
       artwork,
       artist,
@@ -156,19 +186,11 @@ class TtsStreamController {
     })
 
     await new Promise<void>((resolve, reject) => {
-      const timeoutId = setTimeout(() => {
-        if (this.pendingStart?.requestId === requestId) {
-          this.pendingStart = null
-          this.resetPlaybackState()
-          reject(new Error("TTS streaming did not start in time"))
-        }
-      }, START_TIMEOUT_MS)
-
       this.pendingStart = {
         reject,
         requestId,
         resolve,
-        timeoutId,
+        timeoutId: this.scheduleStartTimeout(requestId),
       }
 
       this.sendCommand({
@@ -190,10 +212,11 @@ class TtsStreamController {
   }
 
   stop = async () => {
-    this.rejectPendingStart(undefined, new Error("TTS interrupted"))
+    this.rejectPendingStart(new TtsStreamInterruptedError())
     this.sendCommand({
       type: "stop",
     })
+    this.activeRequestId = null
     this.resetPlaybackState()
   }
 
@@ -208,8 +231,30 @@ class TtsStreamController {
     this.queuedCommands = []
   }
 
-  private resolvePendingStart = (requestId?: string) => {
-    if (!this.pendingStart || this.pendingStart.requestId !== requestId) {
+  private scheduleStartTimeout = (requestId: string) =>
+    setTimeout(() => {
+      if (this.pendingStart?.requestId !== requestId) {
+        return
+      }
+
+      // Otherwise the WebView keeps downloading and starts playing audio the app no longer tracks
+      this.sendCommand({
+        type: "stop",
+      })
+      this.endActiveRequest(new Error("TTS streaming did not start in time"))
+    }, START_STALL_TIMEOUT_MS)
+
+  private restartStartTimeout = () => {
+    if (!this.pendingStart) {
+      return
+    }
+
+    clearTimeout(this.pendingStart.timeoutId)
+    this.pendingStart.timeoutId = this.scheduleStartTimeout(this.pendingStart.requestId)
+  }
+
+  private resolvePendingStart = () => {
+    if (!this.pendingStart) {
       return
     }
 
@@ -218,18 +263,21 @@ class TtsStreamController {
     this.pendingStart = null
   }
 
-  private rejectPendingStart = (requestId?: string, error?: Error) => {
+  private rejectPendingStart = (error: Error) => {
     if (!this.pendingStart) {
-      return
-    }
-
-    if (requestId && this.pendingStart.requestId !== requestId) {
       return
     }
 
     clearTimeout(this.pendingStart.timeoutId)
     this.pendingStart.reject(error)
     this.pendingStart = null
+  }
+
+  // Rejects the start when the request ends before playing, e.g. the stream had no playable audio
+  private endActiveRequest = (error: Error) => {
+    this.rejectPendingStart(error)
+    this.activeRequestId = null
+    this.resetPlaybackState()
   }
 
   private notify = () => {

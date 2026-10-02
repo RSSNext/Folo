@@ -155,7 +155,7 @@ export const registerAppMenu = () => {
           label: t("menu.front"),
         },
         {
-          label: "Always on top",
+          label: t("menu.alwaysOnTop"),
           type: "checkbox",
           checked: WindowManager.getMainWindow()?.isAlwaysOnTop(),
           click: () => {

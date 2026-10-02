@@ -1,0 +1,7 @@
+appId: is.follow
+name: Android subscription and reading journey
+---
+- runFlow: ../shared/ensure-onboarding-unfollowed.yaml
+- runFlow: ../shared/follow-onboarding.yaml
+- runFlow: ./timeline-entry.yaml
+- runFlow: ../shared/unfollow-onboarding.yaml

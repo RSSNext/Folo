@@ -522,6 +522,7 @@ const FeedListItem = memo(
     const subscription = useSubscriptionByFeedId(id)
     const feed = useFeedById(id)
     const isCustomizeName = subscription?.title && feed?.title !== subscription?.title
+    const { t } = useTranslation("settings")
     const { t: tCommon } = useTranslation("common")
     const isRSSHub = Boolean(feed?.url?.startsWith("rsshub://"))
 
@@ -563,7 +564,7 @@ const FeedListItem = memo(
                   </TooltipTrigger>
                   <TooltipPortal>
                     <TooltipContent>
-                      {feed?.errorMessage || "Feed has encountered an error"}
+                      {feed?.errorMessage || t("feeds.tableRow.errorFallback")}
                     </TooltipContent>
                   </TooltipPortal>
                 </Tooltip>
@@ -581,7 +582,7 @@ const FeedListItem = memo(
                     </div>
                   </TooltipTrigger>
                   <TooltipPortal>
-                    <TooltipContent>This feed is powered by RSSHub</TooltipContent>
+                    <TooltipContent>{tCommon("feed.powered_by_rsshub")}</TooltipContent>
                   </TooltipPortal>
                 </Tooltip>
               )}
@@ -615,7 +616,7 @@ const FeedListItem = memo(
                 </div>
               </TooltipTrigger>
               <TooltipPortal>
-                <TooltipContent>Subscription Count</TooltipContent>
+                <TooltipContent>{t("feeds.tableRow.subscriptionCount")}</TooltipContent>
               </TooltipPortal>
             </Tooltip>
           ) : (
@@ -630,13 +631,14 @@ const FeedListItem = memo(
                   <div className="flex items-center justify-center gap-0.5 text-text-secondary">
                     <i className="i-mgc-safety-certificate-cute-re text-[10px]" />
                     <span className="text-[11px] tabular-nums">
-                      {Math.round(feed.updatesPerWeek)}
-                      {"/w"}
+                      {t("feeds.tableRow.updatesPerWeekValue", {
+                        value: Math.round(feed.updatesPerWeek),
+                      })}
                     </span>
                   </div>
                 </TooltipTrigger>
                 <TooltipPortal>
-                  <TooltipContent>Updates Per Week</TooltipContent>
+                  <TooltipContent>{t("feeds.tableRow.updatesPerWeek")}</TooltipContent>
                 </TooltipPortal>
               </Tooltip>
               {feed.latestEntryPublishedAt && (
@@ -647,7 +649,7 @@ const FeedListItem = memo(
                       <RelativeDay date={new Date(feed.latestEntryPublishedAt)} />
                     </div>
                   </TooltipTrigger>
-                  <TooltipContent>Latest Entry Published</TooltipContent>
+                  <TooltipContent>{t("feeds.tableRow.latestEntryPublished")}</TooltipContent>
                 </Tooltip>
               )}
             </div>

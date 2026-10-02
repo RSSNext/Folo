@@ -3,6 +3,7 @@ import { use, useCallback } from "react"
 
 import { ScreenItemContext } from "../ScreenItemContext"
 import { BottomTabContext } from "./BottomTabContext"
+import type { TabScreenContextType } from "./TabScreenContext"
 import { TabScreenContext } from "./TabScreenContext"
 
 export const useScreenIsAppeared = () => {
@@ -16,9 +17,10 @@ export const useTabScreenIsFocused = () => {
   const currentIndex = useAtomValue(currentIndexAtom)
   const { isFocusedAtom } = use(ScreenItemContext)
   const isFocused = useAtomValue(isFocusedAtom)
-  const { tabScreenIndex } = use(TabScreenContext)
+  // Null outside a tab screen, e.g. in a screen pushed onto the root stack.
+  const tabScreen = use(TabScreenContext) as TabScreenContextType | null
 
-  return currentIndex === tabScreenIndex && isFocused
+  return !!tabScreen && currentIndex === tabScreen.tabScreenIndex && isFocused
 }
 
 export const useSwitchTab = () => {
@@ -40,8 +42,4 @@ export const useBottomTabHeight = () => {
 export const useTabScreenIdentifier = () => {
   const { identifierAtom } = use(TabScreenContext)
   return useAtomValue(identifierAtom)
-}
-
-export const useInTabScreen = () => {
-  return !!use(TabScreenContext)
 }

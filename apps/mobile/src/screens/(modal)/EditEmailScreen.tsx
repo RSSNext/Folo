@@ -41,10 +41,10 @@ export const EditEmailScreen: NavigationControllerView = () => {
       await userSyncService.updateEmail(email)
     },
     onError: (error) => {
-      toast.error(error instanceof Error ? error.message : "Failed to update email")
+      toast.error(error instanceof Error ? error.message : t("profile.email.update_failed"))
     },
     onSuccess: () => {
-      toast.info("Please check your email inbox to verify your new email")
+      toast.info(t("profile.email.changed_verification_sent"))
       navigation.dismiss()
     },
   })
@@ -85,7 +85,7 @@ export const EditEmailScreen: NavigationControllerView = () => {
                 setEmail(text)
                 setIsDirty(true)
               }}
-              placeholder="Enter your email"
+              placeholder={t("profile.email.placeholder")}
               className="w-full flex-1 text-left text-secondary-label"
             />
           </GroupedInsetListCell>
@@ -104,10 +104,10 @@ export const EditEmailScreen: NavigationControllerView = () => {
               disabled={isSendingVerificationEmail}
               label={
                 isSendingVerificationEmail
-                  ? "Sending Verification Email..."
+                  ? t("profile.email.sending_verification")
                   : hasSentVerificationEmail
-                    ? "Verification Email Sent"
-                    : "Send Verification Email"
+                    ? t("profile.email.verification_sent")
+                    : t("profile.email.send_verification")
               }
               onPress={() => {
                 setIsSendingVerificationEmail(true)
@@ -115,11 +115,13 @@ export const EditEmailScreen: NavigationControllerView = () => {
                   .sendVerificationEmail()
                   .then(() => {
                     setHasSentVerificationEmail(true)
-                    toast.success("Verification email sent")
+                    toast.success(t("profile.email.verification_sent"))
                   })
                   .catch((error) => {
                     toast.error(
-                      error instanceof Error ? error.message : "Failed to send verification email",
+                      error instanceof Error
+                        ? error.message
+                        : t("profile.email.send_verification_failed"),
                     )
                   })
                   .finally(() => {

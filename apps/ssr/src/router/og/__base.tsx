@@ -138,22 +138,27 @@ export async function getImageBase64(image: string | null | undefined) {
     return null
   }
 
-  const url = new URL(image)
-  return await fetch(image, {
-    headers: {
-      "User-Agent":
-        "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/122.0.0.0 Safari/537.36",
-      Referer: url.origin,
-    },
-  }).then(async (res) => {
+  try {
+    const url = new URL(image)
+    const res = await fetch(image, {
+      signal: AbortSignal.timeout(5000),
+      headers: {
+        "User-Agent":
+          "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/122.0.0.0 Safari/537.36",
+        Referer: url.origin,
+      },
+    })
     const isImage = res.headers.get("content-type")?.startsWith("image/")
-    if (isImage) {
+    if (res.ok && isImage) {
       const arrayBuffer = await res.arrayBuffer()
 
       return `data:${res.headers.get("content-type")};base64,${Buffer.from(arrayBuffer).toString("base64")}`
     }
     return null
-  })
+  } catch {
+    // An unavailable remote icon should use OGAvatar's initials fallback.
+    return null
+  }
 }
 
 export const OGAvatar: React.FC<{ base64?: Nullable<string>; title: string }> = ({

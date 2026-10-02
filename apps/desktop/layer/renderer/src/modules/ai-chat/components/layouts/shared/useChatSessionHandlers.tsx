@@ -42,7 +42,7 @@ export const useChatSessionHandlers = ({ sessions = [] }: UseChatSessionHandlers
           await AIChatSessionService.fetchAndPersistMessages(session as AIChatSession)
         } catch (e) {
           console.error("Failed to sync chat session messages:", e)
-          toast.error("Failed to load chat messages")
+          toast.error(t("tasks.toast.load_failed"))
         }
       }
 
@@ -59,7 +59,7 @@ export const useChatSessionHandlers = ({ sessions = [] }: UseChatSessionHandlers
         })
       }
     },
-    [chatActions, currentChatId, markChatSessionSeenMutation, shouldDisableTimelineSummary],
+    [chatActions, currentChatId, markChatSessionSeenMutation, shouldDisableTimelineSummary, t],
   )
 
   const handleDeleteSession = useCallback(
@@ -78,7 +78,7 @@ export const useChatSessionHandlers = ({ sessions = [] }: UseChatSessionHandlers
 
       const confirm = await ask({
         title: t("delete_chat"),
-        message: t("delete_chat_message", { title: session.title || "Untitled Chat" }),
+        message: t("delete_chat_message", { title: session.title || t("chat.untitled") }),
         variant: "danger",
       })
 

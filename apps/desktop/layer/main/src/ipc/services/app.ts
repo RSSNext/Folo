@@ -8,10 +8,11 @@ import { getIpcContext, IpcMethod, IpcService } from "electron-ipc-decorator"
 import path from "pathe"
 
 import { START_IN_TRAY_ARGS } from "~/constants/app"
+import { isMacOS } from "~/env"
 import { getCacheSize } from "~/lib/cleaner"
 import { i18n } from "~/lib/i18n"
 import { store, StoreKey } from "~/lib/store"
-import { registerAppTray } from "~/lib/tray"
+import { getTrayConfig, registerAppTray } from "~/lib/tray"
 import { logger, revealLogFile } from "~/logger"
 import { AppManager } from "~/manager/app"
 import { WindowManager } from "~/manager/window"
@@ -39,6 +40,18 @@ interface Sender extends Electron.WebContents {
 
 const ensurePdfExtension = (filePath: string) => {
   return path.extname(filePath).toLowerCase() === ".pdf" ? filePath : `${filePath}.pdf`
+}
+
+/**
+ * Whether the app was launched at login and should start hidden in the tray. Windows passes the
+ * login item arguments to the app (see `START_IN_TRAY_ARGS`); macOS ignores them, so check how the
+ * app was launched instead. Only when the tray icon is enabled, otherwise nothing would be left on
+ * Windows to bring the window back.
+ */
+const shouldStartInTray = () => {
+  if (!getTrayConfig()) return false
+  if (process.argv.includes(START_IN_TRAY_ARGS)) return true
+  return isMacOS && app.getLoginItemSettings().wasOpenedAtLogin
 }
 
 export class AppService extends IpcService {
@@ -145,7 +158,7 @@ export class AppService extends IpcService {
   }
 
   @IpcMethod()
-  readClipboard(): string {
+  readClipboard(): Promise<string> {
     return clipboard.readText()
   }
 
@@ -181,7 +194,7 @@ export class AppService extends IpcService {
 
       const senderWindow = (sender as Sender).getOwnerBrowserWindow()
       if (senderWindow) {
-        callWindowExpose(senderWindow).toast.success("Download success!", {
+        callWindowExpose(senderWindow).toast.success(i18n.t("download.success"), {
           duration: 1000,
         })
       }
@@ -240,12 +253,9 @@ export class AppService extends IpcService {
 
   @IpcMethod()
   readyToShowMainWindow() {
-    const shouldShowWindow =
-      !app.getLoginItemSettings().wasOpenedAsHidden && !process.argv.includes(START_IN_TRAY_ARGS)
-    if (shouldShowWindow) {
-      const window = WindowManager.getMainWindow()
-      if (window) window.show()
-    }
+    if (shouldStartInTray()) return
+    const window = WindowManager.getMainWindow()
+    if (window) window.show()
   }
 
   @IpcMethod()

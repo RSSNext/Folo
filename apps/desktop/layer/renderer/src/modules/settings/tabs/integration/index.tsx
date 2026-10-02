@@ -423,7 +423,7 @@ export const SettingIntegration = () => {
             setSearchQuery(e.target.value)
           }, [])}
           className="h-9"
-          aria-label="Search integrations"
+          aria-label={t("integration.search.label")}
         />
       </div>
 
@@ -465,8 +465,10 @@ export const SettingIntegration = () => {
               <SettingSectionTitle title={t("integration.builtin.title")} />
               <span className="flex items-center gap-1 text-sm text-text-tertiary">
                 <span className="size-2 rounded-full bg-green" />
-                {filteredIntegrations.filter((i) => i.configured).length}/
-                {filteredIntegrations.length} configured
+                {t("integration.builtin.configured_count", {
+                  configured: filteredIntegrations.filter((i) => i.configured).length,
+                  total: filteredIntegrations.length,
+                })}
               </span>
             </div>
 
@@ -520,7 +522,7 @@ export const SettingIntegration = () => {
         <div className="text-center">
           <i className="i-mingcute-document-line mb-3 text-2xl text-text-tertiary" />
           <p className="mb-2 text-sm font-medium text-text-tertiary">
-            No built-in integration found
+            {t("integration.builtin.search_empty")}
           </p>
         </div>
       )}

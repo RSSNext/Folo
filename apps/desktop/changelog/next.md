@@ -1,29 +1,34 @@
 # What's new in vNEXT_VERSION
 
-## Shiny new things
-
-- Added an incremental sync engine: subscriptions, unread counts, collections, lists, inboxes and timelines now follow the server's change log instead of refetching full snapshots
-- Added a persisted transaction queue: read, unread, mark-all and star actions apply instantly, are sent in order, and are retried while offline
-- Added a prompt when the API cannot be reached, dismissed automatically once the server answers again
-- Added a preferences button next to the login button so settings can be opened without signing in
-
 ## Improvements
 
-- Reduced launch requests: the session, action rules, settings, wallet and push token are no longer requested on every start
-- Routed API requests, updates, downloads, reader page fetching, text-to-speech and integrations through Chromium's network stack so they follow the system proxy, PAC files and SOCKS proxies
-- Timelines now catch up when you return to the window, and oldest-first lists pick up new entries at their end
-- On Linux, turning off "Minimize to tray" now offers to restart Folo so the tray icon is actually removed
-- Redacted the CLI login token from logs
+- Upgraded to Electron 44
+- Settings sync covers every appearance, general and AI setting again; only device-specific ones such as the interface language, fonts and launch at login stay on each device
+- The action language and the AI personalization prompt now sync, so AI chat answers in the action language you picked
+- Finished the Simplified Chinese, Traditional Chinese, Japanese and French translations, including text that was previously hard-coded in English
+- In-app bug reports and feature requests now open the matching GitHub issue form with the details filled in
+- Regex conditions in Actions now show an example pattern and how to escape special characters
 
 ## No longer broken
 
-- Fixed "Unable to connect to the server" appearing on brief hiccups; the API now counts as unreachable only after a probe confirms it
-- Fixed being signed out locally when the API was temporarily unreachable; only a real 401 clears the session
-- Fixed cover images missing from the entry body not being shown above the content
-- Fixed the masonry layout not resetting when the item order changed
-- Fixed keyboard shortcut hints splitting the comma key in shortcuts like "⌘ ,"
-- Fixed the system tray icon piling up on Linux (waybar, KDE Plasma) every time "Minimize to tray" was toggled, leaving dead icons whose menus did nothing
+- Fixed only device-specific settings syncing between devices since 1.6.0
+- Fixed the AI settings and chat panel staying in English in Simplified and Traditional Chinese
+- Fixed English title case being applied to non-English entry titles and settings labels
+- Fixed names containing "&" or quotes showing HTML entities
+- Fixed unread counts that stayed behind after reading new entries
+- Fixed an invisible strip next to the scrollbar that blocked hovering and clicking the right edge of timeline entries
+- Fixed lists missing from the All view
+- Fixed social media posts showing the feed title instead of your custom subscription title
+- Fixed Folo not starting hidden in the tray when launched at login on macOS
+- Fixed the Dock icon ignoring the macOS dark and tinted icon styles
+- Fixed a main process crash ("Maximum call stack size exceeded") in the push notification receiver
+- Fixed OPML import and Discover not showing validation and search errors
+- Fixed strikethrough text being dropped when exporting entries to Markdown
+- Fixed the media preview header overlapping the Windows title bar buttons
+- Fixed reordering toolbar actions saving the order on every drag movement
+- Fixed the upgrade notice linking to a release page that doesn't exist
+- Fixed in-app feedback links pointing at GitHub Discussions, which are disabled
 
 ## Thanks
 
-Special thanks to volunteer contributor @jing2uo for fixing the Linux system tray icon
+Special thanks to volunteer contributor @sanmaxdev for adding regex help to Actions

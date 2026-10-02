@@ -3,7 +3,6 @@ import fs, { readdirSync } from "node:fs"
 import { cp, readdir } from "node:fs/promises"
 
 import { FuseV1Options, FuseVersion } from "@electron/fuses"
-import { MakerAppX } from "@electron-forge/maker-appx"
 import { MakerDeb } from "@electron-forge/maker-deb"
 import { MakerDMG } from "@electron-forge/maker-dmg"
 import { MakerPKG } from "@electron-forge/maker-pkg"
@@ -60,7 +59,6 @@ const keepModules = new Set([
   "require-from-string",
   "saxes",
   "source-map-js",
-  "symbol-tree",
   "tldts",
   "tldts-core",
   "tough-cookie",
@@ -267,18 +265,21 @@ const config: ForgeConfig = {
     // Only include AppX maker for Microsoft Store builds
     ...(isMicrosoftStore
       ? [
-          new MakerAppX({
-            publisher: "CN=7CBBEB6A-9B0E-4387-BAE3-576D0ACA279E",
-            packageDisplayName: "Folo - Follow everything in one place",
-            devCert: "build/dev.pfx",
-            assets: "static/appx",
-            manifest: "build/appxmanifest.xml",
-            // @ts-ignore
-            publisherDisplayName: "Natural Selection Labs",
-            identityName: "NaturalSelectionLabs.Follow-Yourfavoritesinoneinbo",
-            packageBackgroundColor: "#FF5C00",
-            protocol: "folo",
-          }),
+          {
+            name: "@electron-forge/maker-appx",
+            platforms: ["win32"],
+            config: {
+              publisher: "CN=7CBBEB6A-9B0E-4387-BAE3-576D0ACA279E",
+              packageDisplayName: "Folo - Follow everything in one place",
+              devCert: "build/dev.pfx",
+              assets: "static/appx",
+              manifest: "build/appxmanifest.xml",
+              publisherDisplayName: "Natural Selection Labs",
+              identityName: "NaturalSelectionLabs.Follow-Yourfavoritesinoneinbo",
+              packageBackgroundColor: "#FF5C00",
+              protocol: "folo",
+            },
+          },
         ]
       : [
           new MakerSquirrel({

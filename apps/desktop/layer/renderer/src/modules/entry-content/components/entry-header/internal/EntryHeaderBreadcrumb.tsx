@@ -43,6 +43,7 @@ function ViewSubscriptionsDropdown({
   view: number
   onNavigate: ReturnType<typeof useNavigateEntry>
 }) {
+  const { t } = useTranslation()
   const feedSubsRef = useRef<ReturnType<typeof useFeedSubscriptionByView>>([])
   const listSubsRef = useRef<ReturnType<typeof useListSubscriptionByView>>([])
   const [forceUpdate] = useForceUpdate()
@@ -82,7 +83,7 @@ function ViewSubscriptionsDropdown({
         <button
           type="button"
           className="no-drag-region -ml-1 inline-flex size-6 items-center justify-center rounded text-text-tertiary transition-colors hover:text-text focus-visible:bg-fill/60"
-          aria-label="Open subscriptions of this view"
+          aria-label={t("entry_content.breadcrumb.open_view_subscriptions")}
         >
           <i className="i-mingcute-down-line size-4" />
         </button>
@@ -98,10 +99,12 @@ function ViewSubscriptionsDropdown({
               onClick={() => onNavigate({ entryId: null, view })}
               checked={isAllFeeds}
             >
-              <span className="truncate">All</span>
+              <span className="truncate">{t("words.all", { ns: "common" })}</span>
             </DropdownMenuItem>
             {listSubsRef.current && listSubsRef.current.length > 0 && (
-              <div className="px-2 py-1 text-xs text-text-tertiary">Lists</div>
+              <div className="px-2 py-1 text-xs text-text-tertiary">
+                {t("words.lists", { ns: "common" })}
+              </div>
             )}
             {listSubsRef.current?.map((s) =>
               s.listId ? (
@@ -115,7 +118,9 @@ function ViewSubscriptionsDropdown({
               ) : null,
             )}
             {feedSubsRef.current && feedSubsRef.current.length > 0 && (
-              <div className="px-2 py-1 text-xs text-text-tertiary">Feeds</div>
+              <div className="px-2 py-1 text-xs text-text-tertiary">
+                {t("words.feeds", { ns: "common" })}
+              </div>
             )}
             {feedSubsRef.current?.map((s) =>
               s.feedId ? (
@@ -157,6 +162,7 @@ function FeedEntriesDropdown({
   currentEntryId: string
   onNavigate: ReturnType<typeof useNavigateEntry>
 }) {
+  const { t } = useTranslation()
   const siblingEntriesRef = useRef<{ id: string; title: string }[]>([])
   const [forceUpdate] = useForceUpdate()
 
@@ -191,7 +197,7 @@ function FeedEntriesDropdown({
         <button
           type="button"
           className="no-drag-region -ml-2 inline-flex size-6 items-center justify-center rounded text-text-tertiary transition-colors hover:text-text focus-visible:bg-fill/60"
-          aria-label="Open entries from this feed"
+          aria-label={t("entry_content.breadcrumb.open_feed_entries")}
         >
           <i className="i-mingcute-down-line size-4" />
         </button>
@@ -240,7 +246,7 @@ export function EntryHeaderBreadcrumb() {
   return (
     <div className="flex min-w-0 flex-1 overflow-hidden">
       <nav
-        aria-label="Breadcrumb"
+        aria-label={t("entry_content.breadcrumb.label")}
         className={
           "group/breadcrumb flex min-w-0 items-center gap-1 truncate leading-tight text-text-secondary"
         }

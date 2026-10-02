@@ -1,3 +1,4 @@
+import { useTranslation } from "react-i18next"
 import { Pressable, View } from "react-native"
 
 import { Text } from "@/src/components/ui/typography/Text"
@@ -8,6 +9,7 @@ import { accentColor } from "@/src/theme/colors"
 import { Logo } from "../ui/logo"
 
 export function NoLoginInfo({ target }: { target: "timeline" | "subscriptions" }) {
+  const { t } = useTranslation()
   const readableContainerStyle = useReadableContainerStyle(420)
   return (
     <Pressable
@@ -18,7 +20,7 @@ export function NoLoginInfo({ target }: { target: "timeline" | "subscriptions" }
       <View className="items-center gap-3 px-6" style={readableContainerStyle}>
         <Logo width={40} height={40} color={accentColor} />
         <Text className="text-center text-xl text-secondary-label">
-          {`Sign in to see your ${target}`}
+          {target === "timeline" ? t("no_login.timeline") : t("no_login.subscriptions")}
         </Text>
       </View>
     </Pressable>

@@ -109,7 +109,7 @@ export const DataScreen = () => {
                     if (cacheDir) {
                       await FileSystem.deleteAsync(cacheDir, { idempotent: true })
                     }
-                    toast.success("Cache cleared")
+                    toast.success(t("data_control.clean_cache.success"))
                   },
                 },
               ],

@@ -1,7 +1,7 @@
 on:
   pull_request:
   push:
-    branches: [main, dev]
+    branches: [main, dev, mobile-main]
 
 # Do not use secrets or variables to allow for public access
 env:
@@ -11,7 +11,7 @@ env:
 name: ✨ CI Format, Typecheck and Lint
 concurrency:
   group: ${{ github.workflow }}-${{ github.ref }}-lint
-  cancel-in-progress: ${{ github.ref != 'refs/heads/main' && github.ref != 'refs/heads/dev' }}
+  cancel-in-progress: ${{ github.ref != 'refs/heads/main' && github.ref != 'refs/heads/dev' && github.ref != 'refs/heads/mobile-main' }}
 jobs:
   build:
     name: Format, Lint and Typecheck

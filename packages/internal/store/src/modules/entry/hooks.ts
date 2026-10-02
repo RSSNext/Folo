@@ -7,6 +7,7 @@ import { FEED_COLLECTION_LIST } from "../../constants/app"
 import { queryClient } from "../../context"
 import { useFeedUnreadIsDirty } from "../feed/hooks"
 import { useSyncUnreadWhenUnMatch } from "../unread/hooks"
+import type { UnreadListScope } from "../unread/types"
 import {
   getEntryIdsByCategorySelector,
   getEntryIdsByFeedIdSelector,
@@ -322,7 +323,34 @@ export const useEntriesQuery = (
     )
   }, [query.data, query.isLoading, query.isError])
 
-  useSyncUnreadWhenUnMatch(entriesIds)
+  const unreadScope = useMemo<UnreadListScope>(
+    () => ({
+      view,
+      feedId: feedId === undefined ? undefined : String(feedId),
+      feedIdList,
+      listId: listId === undefined ? undefined : String(listId),
+      inboxId: inboxId === undefined ? undefined : String(inboxId),
+      isCollection,
+      excludePrivate: hidePrivateSubscriptionsInTimeline === true,
+    }),
+    [
+      view,
+      feedId,
+      feedIdList?.toString(),
+      listId,
+      inboxId,
+      isCollection,
+      hidePrivateSubscriptionsInTimeline,
+    ],
+  )
+  // Once every unread entry is on screen, a counter above the list can only be wrong.
+  const unreadListComplete =
+    fetchUnread === true &&
+    !aiSort &&
+    query.isSuccess &&
+    !query.isFetching &&
+    query.hasNextPage === false
+  useSyncUnreadWhenUnMatch(entriesIds, { scope: unreadScope, complete: unreadListComplete })
 
   return useMemo(() => {
     return {

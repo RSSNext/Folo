@@ -113,7 +113,7 @@ export const SettingAbout = () => {
 
   const handleOpenAiOnboarding = () => {
     present({
-      title: "App Tip",
+      title: t("about.appTip"),
       content: () => <AppTipModalContent />,
       CustomModalComponent: PlainWithAnimationModal,
       modalContainerClassName: "flex items-center justify-center",
@@ -176,7 +176,7 @@ export const SettingAbout = () => {
         <div className="mt-6 flex flex-wrap items-center justify-center gap-2">
           {appVersion && (
             <span className="inline-flex items-center rounded-full bg-fill-secondary px-3 py-1 text-xs font-medium text-text-secondary">
-              <span className="mr-1.5 text-text-tertiary">App</span>
+              <span className="mr-1.5 text-text-tertiary">{t("about.appVersion")}</span>
               {appVersion}
             </span>
           )}
@@ -186,7 +186,7 @@ export const SettingAbout = () => {
               onClick={handleRendererVersionClick}
               className="inline-flex items-center rounded-full bg-fill-secondary px-3 py-1 text-xs font-medium text-text-secondary transition-colors hover:bg-fill-tertiary"
             >
-              <span className="mr-1.5 text-text-tertiary">Renderer</span>
+              <span className="mr-1.5 text-text-tertiary">{t("about.rendererVersion")}</span>
               {rendererVersion}
             </button>
           )}
@@ -318,9 +318,7 @@ export const SettingAbout = () => {
                     className="text-accent hover:underline"
                     href={getNewIssueUrl({ template: "feature_request.yml" })}
                     target="_blank"
-                  >
-                    open an issue
-                  </a>
+                  />
                 ),
               }}
             />

@@ -121,9 +121,8 @@ describe("IntegrationService", () => {
       },
     )
 
-    // The integration UI ships these schemes as built-in examples
-    // (see url-scheme-handler.ts#getExamples) plus generic web/mail.
-    // They must keep working after the fix.
+    // Schemes of common note and task apps users set up as URL scheme integrations, plus
+    // generic web/mail. They must keep working after the fix.
     it.each([
       ["https://example.com"],
       ["http://example.com/path?q=1"],

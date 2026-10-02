@@ -16,15 +16,15 @@ import { useInboxById } from "@follow/store/inbox/hooks"
 import { transformVideoUrl } from "@follow/utils/url-for-video"
 import { cn, isSafari } from "@follow/utils/utils"
 import { useMemo } from "react"
-import { titleCase } from "title-case"
 
 import { AudioPlayer, useAudioPlayerAtomSelector } from "~/atoms/player"
-import { useGeneralSettingKey } from "~/atoms/settings/general"
+import { useActionLanguage, useGeneralSettingKey } from "~/atoms/settings/general"
 import { useSpotlightSettingKey } from "~/atoms/settings/spotlight"
 import { RelativeTime } from "~/components/ui/datetime"
 import { FEED_COLLECTION_LIST } from "~/constants"
 import { useEntryIsRead } from "~/hooks/biz/useAsRead"
 import { useRouteParamsSelector } from "~/hooks/biz/useRouteParams"
+import { useTitleCaseIfEnglish } from "~/hooks/common/useTitleCaseIfEnglish"
 import { EntryTranslation } from "~/modules/entry-column/translation"
 import type { FeedIconEntry } from "~/modules/feed/feed-icon"
 import { FeedIcon } from "~/modules/feed/feed-icon"
@@ -40,7 +40,16 @@ const ViewTag = IN_ELECTRON ? "webview" : "iframe"
 
 const entrySelector = (state: EntryModel) => {
   /// keep-sorted
-  const { authorAvatar, authorUrl, description, feedId, inboxHandle, publishedAt, title } = state
+  const {
+    authorAvatar,
+    authorUrl,
+    description,
+    feedId,
+    inboxHandle,
+    language,
+    publishedAt,
+    title,
+  } = state
 
   const audios = state.attachments?.filter((a) => a.mime_type?.startsWith("audio") && a.url)
   const video = transformVideoUrl({
@@ -63,6 +72,7 @@ const entrySelector = (state: EntryModel) => {
     firstAudio,
     firstPhotoUrl,
     inboxId: inboxHandle,
+    language,
     publishedAt,
     title,
     video,
@@ -95,6 +105,8 @@ export function AllItem({ entryId, translation, currentFeedTitle }: UniversalIte
   const inbox = useInboxById(entry?.inboxId)
 
   const bilingual = useGeneralSettingKey("translationMode") === "bilingual"
+  const actionLanguage = useActionLanguage()
+  const titleCaseIfEnglish = useTitleCaseIfEnglish()
 
   const iconEntry: FeedIconEntry = useMemo(
     () => ({
@@ -172,8 +184,8 @@ export function AllItem({ entryId, translation, currentFeedTitle }: UniversalIte
                   "inline-flex min-w-0 items-center hyphens-auto font-medium",
                   lineClamp.title,
                 )}
-                source={titleCase(entry?.title ?? "")}
-                target={titleCase(translation?.title ?? "")}
+                source={titleCaseIfEnglish(entry?.title ?? "", entry?.language)}
+                target={titleCaseIfEnglish(translation?.title ?? "", actionLanguage)}
               />
             ) : (
               <EntryTranslation

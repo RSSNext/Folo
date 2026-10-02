@@ -3,6 +3,7 @@ import { cn } from "@follow/utils"
 import { AnimatePresence, m } from "motion/react"
 import type { FC, PropsWithChildren } from "react"
 import { memo, useCallback, useRef, useState } from "react"
+import { useTranslation } from "react-i18next"
 
 import { useFileUploadWithDefaults } from "../../hooks/useFileUpload"
 
@@ -11,6 +12,7 @@ interface GlobalFileDropZoneProps extends PropsWithChildren {
 }
 
 export const GlobalFileDropZone: FC<GlobalFileDropZoneProps> = memo(({ children, className }) => {
+  const { t } = useTranslation("ai")
   const { handleFileDrop } = useFileUploadWithDefaults()
   const [isDragOver, setIsDragOver] = useState(false)
   const [isProcessing, setIsProcessing] = useState(false)
@@ -102,9 +104,11 @@ export const GlobalFileDropZone: FC<GlobalFileDropZoneProps> = memo(({ children,
                 <>
                   <div className="size-12 animate-spin rounded-full border-4 border-accent border-t-transparent" />
                   <div className="text-center">
-                    <p className="text-lg font-medium text-text">Processing files...</p>
+                    <p className="text-lg font-medium text-text">
+                      {t("chat.file.attach.processing")}
+                    </p>
                     <p className="text-sm text-text-secondary">
-                      Please wait while we process your files
+                      {t("chat.file.attach.processing_hint")}
                     </p>
                   </div>
                 </>
@@ -128,9 +132,9 @@ export const GlobalFileDropZone: FC<GlobalFileDropZoneProps> = memo(({ children,
                     </m.div>
                   </div>
                   <div className="text-center">
-                    <p className="text-lg font-medium text-text">Drop files to attach</p>
+                    <p className="text-lg font-medium text-text">{t("chat.file.attach.drop")}</p>
                     <p className="text-sm text-text-secondary">
-                      Images, PDFs, text files, and audio files are supported
+                      {t("chat.file.attach.supported_types")}
                     </p>
                   </div>
                 </>

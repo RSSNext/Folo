@@ -2,6 +2,7 @@ import { ActionButton } from "@follow/components/ui/button/index.js"
 import { nextFrame } from "@follow/utils"
 import type { ReactElement } from "react"
 import { useMemo, useState } from "react"
+import { useTranslation } from "react-i18next"
 import { toast } from "sonner"
 
 import {
@@ -31,6 +32,7 @@ interface TaskReportDropdownProps {
 }
 
 export const TaskReportDropdown = ({ triggerElement, asChild = true }: TaskReportDropdownProps) => {
+  const { t } = useTranslation("ai")
   const tasks = useAITaskListQuery()
   const sessions = useAIChatSessionListQuery({
     refetchInterval: tasks?.length ? 1 * 60 * 1000 : false, // 1 minute
@@ -60,13 +62,13 @@ export const TaskReportDropdown = ({ triggerElement, asChild = true }: TaskRepor
 
   const handleScheduleActionClick = () => {
     if (!canCreateNewTask) {
-      toast.error("Please remove an existing task before creating a new one.")
+      toast.error(t("tasks.toast.limit_reached"))
       return
     }
     showSettings({ tab: "ai", section: AI_SETTING_SECTION_IDS.tasks })
     nextFrame(() => {
       present({
-        title: "New AI Task",
+        title: t("tasks.modal.new_title"),
         canClose: true,
         content: () => <AITaskModal showSettingsTip />,
       })
@@ -74,12 +76,12 @@ export const TaskReportDropdown = ({ triggerElement, asChild = true }: TaskRepor
   }
 
   const defaultTrigger = (
-    <ActionButton tooltip="Task Reports" className="relative">
+    <ActionButton tooltip={t("chat.task_reports.title")} className="relative">
       <i className="i-mgc-calendar-time-add-cute-re size-5 text-text-secondary" />
       {hasUnreadSessions && (
         <span
           className="absolute right-1 top-1 block size-2 rounded-full bg-accent shadow-[0_0_0_2px_var(--color-bg-default)] dark:shadow-[0_0_0_2px_var(--color-bg-default)]"
-          aria-label="Unread task reports"
+          aria-label={t("chat.task_reports.unread")}
         />
       )}
     </ActionButton>
@@ -97,7 +99,7 @@ export const TaskReportDropdown = ({ triggerElement, asChild = true }: TaskRepor
           {hasTaskSessions && triggerElement && (
             <span
               className="absolute right-1 top-1 block size-2 rounded-full bg-accent shadow-[0_0_0_2px_var(--color-bg-default)] dark:shadow-[0_0_0_2px_var(--color-bg-default)]"
-              aria-label="Unread task reports"
+              aria-label={t("chat.task_reports.unread")}
             />
           )}
         </DropdownMenuTrigger>
@@ -124,7 +126,7 @@ export const TaskReportDropdown = ({ triggerElement, asChild = true }: TaskRepor
           ))
         ) : (
           <EmptyState
-            message="No unread task reports"
+            message={t("chat.task_reports.empty")}
             icon={
               <i className="i-mgc-calendar-time-add-cute-re mb-2 block size-8 text-text-secondary" />
             }
@@ -136,7 +138,7 @@ export const TaskReportDropdown = ({ triggerElement, asChild = true }: TaskRepor
             <DropdownMenuSeparator />
             <DropdownMenuItem onClick={handleScheduleActionClick}>
               <i className="i-mgc-add-cute-re mr-2 size-4" />
-              New Task
+              {t("tasks.actions.new_task")}
             </DropdownMenuItem>
           </>
         )}

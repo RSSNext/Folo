@@ -17,7 +17,7 @@ function AuthProviderButton({ provider }: { provider: string }) {
     mutationFn: async () => {
       const account = accounts?.find((account) => account.provider === provider)
       if (!account) throw new Error("Account not found")
-      const res = await unlinkAccount({ providerId: provider, accountId: account.accountId })
+      const res = await unlinkAccount({ accountId: account.id })
       if (res.error) throw new Error(res.error.message)
     },
     onSuccess: () => {

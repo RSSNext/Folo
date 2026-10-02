@@ -50,7 +50,7 @@ followClient.addRequestInterceptor(async (ctx) => {
   header["X-Client-Id"] = getClientId()
   header["X-Session-Id"] = getSessionId()
   header["User-Agent"] = await getUserAgent()
-  header["cookie"] = getCookie()
+  header["cookie"] = await getCookie()
 
   const apiHeader = createMobileAPIHeaders({
     version: nativeApplicationVersion || "",
@@ -92,7 +92,7 @@ const getRequestAuthRevision = (options: Record<string, unknown>) => {
 followClient.addResponseInterceptor(async (ctx) => {
   const { options, response } = ctx
   if (response.status === 401) {
-    const currentCookie = getCookie()
+    const currentCookie = await getCookie()
     const requestCookie = getRequestCookie(options.headers)
     const requestAuthRevision = getRequestAuthRevision(options as Record<string, unknown>)
     const currentAuthRevision = getAuthStateRevision()

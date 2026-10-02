@@ -1,6 +1,7 @@
 import { useEntry } from "@follow/store/entry/hooks"
 import { getSubscriptionById } from "@follow/store/subscription/getter"
 import { useCallback } from "react"
+import { useTranslation } from "react-i18next"
 
 import { disableShowAISummaryOnce } from "~/atoms/ai-summary"
 import { disableShowAITranslationOnce } from "~/atoms/ai-translation"
@@ -15,11 +16,12 @@ import { getRouteParams, getTimelineIdByView } from "~/hooks/biz/useRouteParams"
 
 export const usePeekModal = () => {
   const { present } = useModalStack()
+  const { t } = useTranslation()
   return useCallback(
     (entryId: string, variant: "toast" | "modal") => {
       const basePresentProps = {
         clickOutsideToDismiss: true,
-        title: "Entry Preview",
+        title: t("peek_modal.title"),
       }
 
       if (variant === "toast") {
@@ -48,7 +50,7 @@ export const usePeekModal = () => {
                 rightActions={[
                   {
                     onClick: () => {},
-                    label: "More Actions",
+                    label: t("peek_modal.more_actions"),
                     icon: <EntryMoreActions entryId={entryId} />,
                   },
                 ]}
@@ -68,6 +70,6 @@ export const usePeekModal = () => {
         })
       }
     },
-    [present],
+    [present, t],
   )
 }

@@ -225,7 +225,7 @@ export const EntryListHeader: FC<{
               isBizId(routerParams.feedId!) &&
               feed?.type === "feed" ? (
                 <ActionButton
-                  tooltip="Refresh"
+                  tooltip={t("entry_list_header.refresh")}
                   onClick={() => {
                     onBeforeRefresh?.()
                     void refreshFeed()

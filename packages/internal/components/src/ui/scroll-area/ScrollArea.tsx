@@ -33,9 +33,6 @@ const Thumb = ({
       "relative w-full flex-1 rounded-xl transition-colors duration-150",
       "bg-fill-secondary hover:bg-fill",
       "active:bg-fill-vibrant",
-      "before:absolute before:-left-1/2 before:-top-1/2 before:h-full before:min-h-[44]",
-      'before:w-full before:min-w-[44] before:-translate-x-full before:-translate-y-full before:content-[""]',
-
       className,
     )}
   />

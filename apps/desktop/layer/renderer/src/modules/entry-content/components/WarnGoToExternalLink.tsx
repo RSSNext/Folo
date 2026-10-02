@@ -7,6 +7,7 @@ import { Label } from "@radix-ui/react-label"
 import { PopoverPortal } from "@radix-ui/react-popover"
 import { atomWithStorage } from "jotai/utils"
 import { useState } from "react"
+import { useTranslation } from "react-i18next"
 
 import { useGeneralSettingKey, useGeneralSettingValue } from "~/atoms/settings/general"
 import { jotaiStore } from "~/lib/jotai"
@@ -48,6 +49,7 @@ const WarnGoToExternalLinkImpl = ({
 }: React.DetailedHTMLProps<React.AnchorHTMLAttributes<HTMLAnchorElement>, HTMLAnchorElement> & {
   ref?: React.Ref<HTMLAnchorElement | null>
 }) => {
+  const { t } = useTranslation()
   const [open, setOpen] = useState(false)
   const [checked, setChecked] = useState<boolean | "indeterminate">(false)
 
@@ -95,20 +97,21 @@ const WarnGoToExternalLinkImpl = ({
       </PopoverTrigger>
       <PopoverPortal>
         <PopoverContent>
-          <p className="max-w-[50ch] text-sm">
-            You are about to leave this site to go to an external page, do you trust this URL and go
-            to it?
-          </p>
+          <p className="max-w-[50ch] text-sm">{t("entry_content.external_link.warning")}</p>
           <p className="mt-2 text-center text-sm underline">{rest.href}</p>
 
           <div className="mt-3 flex justify-between">
             <Label className="center flex">
               <Checkbox checked={checked} onCheckedChange={setChecked} />
-              <span className="ml-2 text-[13px]">Trust this domain</span>
+              <span className="ml-2 text-[13px]">
+                {t("entry_content.external_link.trust_domain")}
+              </span>
             </Label>
 
             <IconButton icon={<i className="i-mingcute-arrow-right-line" />} onClick={handleGo}>
-              <span className="duration-200 group-hover:opacity-0">Go</span>
+              <span className="duration-200 group-hover:opacity-0">
+                {t("entry_content.external_link.go")}
+              </span>
             </IconButton>
           </div>
         </PopoverContent>

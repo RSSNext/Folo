@@ -37,12 +37,8 @@
   "command.subscription.open_in_browser.title": "Ouvrir dans le navigateur",
   "command.subscription.open_in_tab.title": "Ouvrir dans un onglet",
   "command.subscription.open_site_in_browser.title": "Ouvrir le site dans le navigateur",
-  "command.subscription.open_site_in_tab.title": "Ouvrir le site dans un onglet",
   "command.subscription.previous_subscription.description": "Abonnement précédent",
   "command.subscription.previous_subscription.title": "Abonnement précédent",
-  "command.subscription.switch_between_views.title": "Basculer entre les vues",
-  "command.subscription.switch_next_view.title": "Passer à la vue suivante",
-  "command.subscription.switch_previous_view.title": "Passer à la vue précédente",
   "command.subscription.switch_tab_to_article.description": "Passer à l'onglet article dans la vue d'abonnement.",
   "command.subscription.switch_tab_to_article.title": "Passer à l'onglet Article",
   "command.subscription.switch_tab_to_audio.description": "Passer à l'onglet audio dans la vue d'abonnement.",
@@ -76,5 +72,6 @@
   "settings.shortcuts.description": "Personnalisez les raccourcis de l'application. Vous trouverez ci-dessous une liste de commandes personnalisables.",
   "settings.shortcuts.press_to_record": "Appuyez sur les touches pour enregistrer",
   "settings.shortcuts.reset": "Réinitialiser",
+  "settings.shortcuts.reset_defaults": "Rétablir les valeurs par défaut",
   "settings.shortcuts.undo": "Annuler"
 }

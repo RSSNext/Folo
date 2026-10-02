@@ -97,7 +97,7 @@
           "introductoryOffer": {
             "displayPrice": "0",
             "internalID": "intro-basic-monthly",
-            "paymentMode": "freeTrial",
+            "paymentMode": "free",
             "subscriptionPeriod": "P1W"
           },
           "localizations": [
@@ -110,7 +110,9 @@
           "productID": "is.follow.basic.monthly",
           "recurringSubscriptionPeriod": "P1M",
           "referenceName": "Basic Monthly",
-          "type": "RecurringSubscription"
+          "type": "RecurringSubscription",
+          "codeOffers": [],
+          "subscriptionGroupID": "21822756"
         },
         {
           "adHocOffers": [],
@@ -121,7 +123,7 @@
           "introductoryOffer": {
             "displayPrice": "0",
             "internalID": "intro-basic-yearly",
-            "paymentMode": "freeTrial",
+            "paymentMode": "free",
             "subscriptionPeriod": "P1W"
           },
           "localizations": [
@@ -134,7 +136,9 @@
           "productID": "is.follow.basic.yearly",
           "recurringSubscriptionPeriod": "P1Y",
           "referenceName": "Basic Yearly",
-          "type": "RecurringSubscription"
+          "type": "RecurringSubscription",
+          "codeOffers": [],
+          "subscriptionGroupID": "21822756"
         },
         {
           "adHocOffers": [],
@@ -145,7 +149,7 @@
           "introductoryOffer": {
             "displayPrice": "0",
             "internalID": "intro-plus-monthly",
-            "paymentMode": "freeTrial",
+            "paymentMode": "free",
             "subscriptionPeriod": "P1W"
           },
           "localizations": [
@@ -158,7 +162,9 @@
           "productID": "is.follow.plus.monthly",
           "recurringSubscriptionPeriod": "P1M",
           "referenceName": "Plus Monthly",
-          "type": "RecurringSubscription"
+          "type": "RecurringSubscription",
+          "codeOffers": [],
+          "subscriptionGroupID": "21822756"
         },
         {
           "adHocOffers": [],
@@ -169,7 +175,7 @@
           "introductoryOffer": {
             "displayPrice": "0",
             "internalID": "intro-plus-yearly",
-            "paymentMode": "freeTrial",
+            "paymentMode": "free",
             "subscriptionPeriod": "P1W"
           },
           "localizations": [
@@ -182,7 +188,9 @@
           "productID": "is.follow.plus.yearly",
           "recurringSubscriptionPeriod": "P1Y",
           "referenceName": "Plus Yearly",
-          "type": "RecurringSubscription"
+          "type": "RecurringSubscription",
+          "codeOffers": [],
+          "subscriptionGroupID": "21822756"
         },
         {
           "adHocOffers": [],
@@ -193,7 +201,7 @@
           "introductoryOffer": {
             "displayPrice": "0",
             "internalID": "intro-pro-monthly",
-            "paymentMode": "freeTrial",
+            "paymentMode": "free",
             "subscriptionPeriod": "P1W"
           },
           "localizations": [
@@ -206,7 +214,9 @@
           "productID": "is.follow.pro.monthly",
           "recurringSubscriptionPeriod": "P1M",
           "referenceName": "Pro Monthly",
-          "type": "RecurringSubscription"
+          "type": "RecurringSubscription",
+          "codeOffers": [],
+          "subscriptionGroupID": "21822756"
         },
         {
           "adHocOffers": [],
@@ -217,7 +227,7 @@
           "introductoryOffer": {
             "displayPrice": "0",
             "internalID": "intro-pro-yearly",
-            "paymentMode": "freeTrial",
+            "paymentMode": "free",
             "subscriptionPeriod": "P1W"
           },
           "localizations": [
@@ -230,9 +240,12 @@
           "productID": "is.follow.pro.yearly",
           "recurringSubscriptionPeriod": "P1Y",
           "referenceName": "Pro Yearly",
-          "type": "RecurringSubscription"
+          "type": "RecurringSubscription",
+          "codeOffers": [],
+          "subscriptionGroupID": "21822756"
         }
-      ]
+      ],
+      "localizations": []
     }
   ],
   "version": {

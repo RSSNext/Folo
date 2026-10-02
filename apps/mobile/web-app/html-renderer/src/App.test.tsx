@@ -13,6 +13,47 @@ const renderEntry = (entry: EntryModel) => {
   return container.querySelector("article")
 }
 
+describe("onboarding Markdown", () => {
+  beforeEach(() => {
+    vi.stubGlobal("bridge", { measure: vi.fn() })
+    window.__FO_BRIDGE__.dispatch("setNoMedia", "false")
+  })
+
+  test("renders headings, emphasis and images through the regular article renderer", () => {
+    const article = renderEntry({
+      url: "folo://onboarding/1",
+      content: `Welcome to **Folo**.\n\n### Your Subscriptions\n\n![Guide](${coverImageUrl})`,
+    })
+
+    expect(article?.querySelector("h3")?.textContent).toBe("Your Subscriptions")
+    expect(article?.querySelector("strong")?.textContent).toBe("Folo")
+    expect(article?.querySelector("button img")?.getAttribute("src")).toBe(coverImageUrl)
+    expect(article?.textContent).not.toContain("###")
+  })
+
+  test("keeps media hiding and HTML sanitization for onboarding content", () => {
+    window.__FO_BRIDGE__.dispatch("setNoMedia", "true")
+    const article = renderEntry({
+      url: "folo://onboarding/1",
+      content: `### Guide\n\n![Guide](${coverImageUrl})\n\n[Unsafe](javascript:alert(1))`,
+    })
+
+    expect(article?.querySelector("h3")?.textContent).toBe("Guide")
+    expect(article?.querySelector("img")).toBeNull()
+    expect(article?.innerHTML).not.toContain("javascript:")
+  })
+
+  test("leaves ordinary HTML article text unchanged", () => {
+    const article = renderEntry({
+      url: "https://example.com/article",
+      content: "<p>Literal **asterisks** and ### hashes</p>",
+    })
+
+    expect(article?.querySelector("p")?.textContent).toBe("Literal **asterisks** and ### hashes")
+    expect(article?.querySelector("strong, h3")).toBeNull()
+  })
+})
+
 describe("entry cover image", () => {
   beforeEach(() => {
     vi.stubGlobal("bridge", { measure: vi.fn() })

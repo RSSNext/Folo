@@ -2,6 +2,7 @@ import { convertLexicalToMarkdown } from "@follow/components/ui/lexical-rich-edi
 import { FeedViewType } from "@follow/constants"
 import { DEFAULT_SUMMARIZE_TIMELINE_SHORTCUT_ID } from "@follow/shared/settings/defaults"
 import { getCategoryFeedIds } from "@follow/store/subscription/getter"
+import { t } from "i18next"
 import type { LexicalEditor } from "lexical"
 import { $createParagraphNode, $getRoot, createEditor } from "lexical"
 import { nanoid } from "nanoid"
@@ -245,7 +246,7 @@ export const useAutoTimelineSummaryShortcut = () => {
         })
 
         await AIPersistService.ensureSession(timelineSummaryChatId, {
-          title: "Timeline Summary",
+          title: t("chat.timeline_summary.title", { ns: "ai" }),
         })
 
         await chatActions.switchToChat(timelineSummaryChatId)

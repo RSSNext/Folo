@@ -71,7 +71,7 @@ body:
       options:
         - label: Check that there isn't already an issue that reports the same bug to avoid creating a duplicate.
           required: true
-        - label: Check that this is a concrete bug. For Q&A, please open a GitHub Discussion instead.
+        - label: Check that this is a concrete bug. For Q&A, please ask on our Discord server instead.
           required: true
         - label: This issue is valid
           required: true

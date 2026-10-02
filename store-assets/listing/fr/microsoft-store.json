@@ -1,0 +1,34 @@
+{
+  "shortDescription": "Folo est le lecteur RSS avec IA pour Windows. Suivez blogs, actualités, newsletters, vidéos et podcasts dans une seule chronologie apaisée, puis laissez l’IA résumer, traduire et répondre à vos questions sur tout ce que vous suivez.",
+  "features": [
+    "Flux RSS, Atom et JSON, plus des milliers de routes RSSHub pour les sites sans flux",
+    "Une seule chronologie pour les articles, publications sociales, images, vidéos, podcasts et notifications",
+    "Résumés IA de n’importe quel article, à la demande ou automatiquement",
+    "Traduction IA en comparaison bilingue ou en traduction seule, en français, anglais, chinois ou japonais",
+    "Discutez avec l’IA d’un article, d’un flux, d’un dossier ou de toute votre chronologie",
+    "Résumez votre chronologie en un condensé rapide",
+    "Tâches IA qui envoient des synthèses quotidiennes ou hebdomadaires dans la discussion ou par e-mail",
+    "Connectez des services MCP pour relier vos autres outils à Folo AI",
+    "Choisissez votre modèle d’IA ou utilisez votre propre clé API",
+    "Synthèse vocale avec des voix naturelles",
+    "Actions : des règles pour filtrer, mettre en favori, réécrire ou résumer les nouvelles entrées, ou vous notifier",
+    "Envoyez vos articles vers Obsidian, Readwise, Instapaper, Zotero, Cubox, Outline, Readeck ou Eagle",
+    "Boîte de réception avec sa propre adresse e-mail pour vos newsletters",
+    "Import et export OPML",
+    "Raccourcis clavier personnalisables et palette de commandes",
+    "Thèmes, polices de lecture, CSS personnalisé et coloration syntaxique du code",
+    "Spotlight met en évidence les mots-clés qui comptent pour vous",
+    "Synchronisation entre Windows, macOS, Linux, Android, iPhone, iPad et le Web",
+    "Open source sous licence AGPL-3.0, sans publicité"
+  ],
+  "screenshotCaptions": [
+    "Tous vos flux dans une chronologie apaisée, avec Folo AI à portée de clic.",
+    "Interrogez Folo AI sur un article, un flux ou tout ce que vous suivez.",
+    "Transformez des centaines de nouvelles entrées en un condensé rapide.",
+    "Lisez vos articles en comparaison bilingue, avec une traduction IA en français, anglais, chinois ou japonais.",
+    "Images, vidéos et podcasts ont chacun une mise en page sur mesure.",
+    "Programmez des tâches IA pour recevoir des synthèses quotidiennes ou hebdomadaires.",
+    "Envoyez vos articles vers vos outils de notes et de lecture différée, ou connectez des services MCP.",
+    "Personnalisez Folo avec des thèmes, des polices de lecture et des raccourcis clavier."
+  ]
+}

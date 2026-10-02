@@ -3,8 +3,9 @@ export interface MCPPreset {
   name: string
   displayName: string
   icon: string // simple-icons class name
-  description: string
-  features: string[]
+  // i18n keys in the `ai` namespace, translated where the preset is rendered
+  descriptionKey: I18nKeysForAi
+  featureKeys: I18nKeysForAi[]
 
   quickSetup: boolean
   authRequired: boolean
@@ -21,8 +22,12 @@ export const MCP_PRESETS: MCPPreset[] = [
     name: "notion",
     displayName: "Notion",
     icon: "i-simple-icons-notion",
-    description: "Connect your Notion workspace",
-    features: ["Read & search pages", "Create new content", "Update existing pages"],
+    descriptionKey: "integration.mcp.preset.notion.description",
+    featureKeys: [
+      "integration.mcp.preset.features.read_pages",
+      "integration.mcp.preset.features.create_content",
+      "integration.mcp.preset.features.update_pages",
+    ],
 
     quickSetup: true,
     authRequired: true,
@@ -37,8 +42,12 @@ export const MCP_PRESETS: MCPPreset[] = [
     name: "linear",
     displayName: "Linear",
     icon: "i-simple-icons-linear",
-    description: "Connect your Linear workspace",
-    features: ["Read & search issues", "Create new issues", "Update existing issues"],
+    descriptionKey: "integration.mcp.preset.linear.description",
+    featureKeys: [
+      "integration.mcp.preset.features.read_issues",
+      "integration.mcp.preset.features.create_issues",
+      "integration.mcp.preset.features.update_issues",
+    ],
 
     quickSetup: true,
     authRequired: true,
@@ -54,8 +63,12 @@ export const MCP_PRESETS: MCPPreset[] = [
     name: "github",
     displayName: "GitHub",
     icon: "i-simple-icons-github",
-    description: "Connect your GitHub repository",
-    features: ["Read & search issues", "Create new issues", "Update existing issues"],
+    descriptionKey: "integration.mcp.preset.github.description",
+    featureKeys: [
+      "integration.mcp.preset.features.read_issues",
+      "integration.mcp.preset.features.create_issues",
+      "integration.mcp.preset.features.update_issues",
+    ],
 
     quickSetup: false,
     authRequired: true,
@@ -71,8 +84,12 @@ export const MCP_PRESETS: MCPPreset[] = [
     name: "fabric",
     displayName: "Fabric",
     icon: tw`i-simple-icons-modelcontextprotocol`,
-    description: "Connect your Fabric AI workspace",
-    features: ["Read & search workspaces", "Create new notes", "Update existing notes"],
+    descriptionKey: "integration.mcp.preset.fabric.description",
+    featureKeys: [
+      "integration.mcp.preset.features.read_workspaces",
+      "integration.mcp.preset.features.create_notes",
+      "integration.mcp.preset.features.update_notes",
+    ],
 
     quickSetup: true,
     authRequired: true,

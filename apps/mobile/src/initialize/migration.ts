@@ -1,15 +1,15 @@
 import { migrateDB } from "@follow/database/db"
 import { useSyncExternalStore } from "react"
 
-let storeChangeFn: () => void
+const listeners = new Set<() => void>()
 const subscribe = (onStoreChange: () => void) => {
-  storeChangeFn = onStoreChange
+  listeners.add(onStoreChange)
 
   return () => {
-    storeChangeFn = () => {}
+    listeners.delete(onStoreChange)
   }
 }
-const migrateStore = {
+let migrateStore = {
   success: false,
   error: null as Error | null,
 }
@@ -17,15 +17,15 @@ const migrateStore = {
 export const migrateDatabase = async () => {
   try {
     await migrateDB()
-    migrateStore.success = true
-    storeChangeFn?.()
+    migrateStore = { success: true, error: null }
   } catch (error) {
-    migrateStore.error = error as Error
+    migrateStore = { success: false, error: error as Error }
 
     console.error(error)
-
-    storeChangeFn?.()
   }
+  // useSyncExternalStore compares snapshots by identity. Mutating the previous
+  // object leaves subscribers stuck on the migration screen during cold starts.
+  listeners.forEach((listener) => listener())
 }
 
 const getSnapshot = () => {

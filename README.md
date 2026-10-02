@@ -1,16 +1,16 @@
 <div align="center">
-  <a href="https://github.com/RSSNext/Folo">
-    <img src="https://github.com/RSSNext/Folo/raw/refs/heads/dev/apps/desktop/layer/renderer/public/icon.svg" alt="Logo" width="80" height="80">
+  <a href="https://folo.is">
+    <img src="https://github.com/RSSNext/Folo/raw/refs/heads/dev/apps/desktop/layer/renderer/public/icon.svg" alt="Folo" width="80" height="80">
   </a>
 
   <h3>Folo</h3>
   <p>
-    <img src="https://github.com/user-attachments/assets/cbe924f2-d8b0-48b0-814e-7c06ccb1911c" height="60" />
+    <img src="https://github.com/user-attachments/assets/cbe924f2-d8b0-48b0-814e-7c06ccb1911c" alt="Top 1 News App on the App Store" height="60" />
     &nbsp;&nbsp;&nbsp;
-    <img src="https://github.com/user-attachments/assets/6997a236-3df3-49d5-98a4-514f6d1a02c4" height="60" />
+    <img src="https://github.com/user-attachments/assets/6997a236-3df3-49d5-98a4-514f6d1a02c4" alt="Top 1 Trending of the Month on GitHub" height="60" />
     <br />
     <br />
-    <a href="https://github.com/RSSNext/Folo/stargazers"><img src="https://img.shields.io/github/stars/RSSNext/Follow?color=ffcb47&labelColor=black&style=flat-square&logo=github&label=Stars" /></a>
+    <a href="https://github.com/RSSNext/Folo/stargazers"><img src="https://img.shields.io/github/stars/RSSNext/Folo?color=ffcb47&labelColor=black&style=flat-square&logo=github&label=Stars" /></a>
     <a href="https://github.com/RSSNext/Folo/graphs/contributors"><img src="https://img.shields.io/github/contributors/RSSNext/Folo?style=flat-square&logo=github&label=Contributors&labelColor=black" /></a>
     <a href="https://github.com/RSSNext/Folo/releases"><img src="https://img.shields.io/github/downloads/RSSNext/Folo/total?color=369eff&labelColor=black&logo=github&style=flat-square&label=Downloads" /></a>
     <a href="https://x.com/intent/follow?screen_name=folo_is"><img src="https://img.shields.io/badge/Follow-blue?color=1d9bf0&logo=x&labelColor=black&style=flat-square" /></a>
@@ -23,33 +23,26 @@
     <a href="https://github.com/RSSNext/Folo/releases"><img src="https://img.shields.io/badge/dynamic/json?url=https%3A%2F%2Fota.folo.is%2Fversions&query=%24.github.desktop.version&prefix=v&style=flat-square&logo=github&label=Desktop&labelColor=black&color=FF5C00&cacheSeconds=600" /></a>
     <br />
     <br />
-    <!-- <a href="https://github.com/RSSNext/Folo" target="_blank"><img src="https://github.com/user-attachments/assets/59b957fb-59ed-4ef0-994e-f6a402a6fe2b" alt="GitHub Trending" height="55"/></a>
-    <br />
-    <br /> -->
-    <a href="https://apps.apple.com/us/app/folo-follow-everything/id6739802604" target="_blank"><img src="https://github.com/user-attachments/assets/35747716-28bf-413a-822b-aa49d49f1aa0" alt="Folo Mobile" width="52%"/></a>
-    <a href="https://apps.apple.com/us/app/folo-follow-everything/id6739802604" target="_blank"><img src="https://github.com/user-attachments/assets/198a0165-b8c9-45c1-9116-b473a13a8d0c" alt="Folo Desktop" width="46%"/></a>
+    <a href="https://folo.is" target="_blank"><img src="https://github.com/user-attachments/assets/95bd0348-4b32-453d-8a8d-4a6ebede81fa" alt="Folo on Mac and iPhone. All your feeds. None of the noise." width="100%" /></a>
     <br />
     <br />
-
   </p>
 </div>
 
-As they say, your thoughts are what you read—and we’ve been consuming noisy feeds for too long! Folo organizes content into one timeline, keeping you updated on what matters, noise-free. Share lists, explore collections, and enjoy distraction-free browsing.
+Folo is an open-source AI RSS reader that brings everything you follow into one calm timeline, then helps you read it. Follow blogs, news sites, newsletters, podcasts, video channels and social feeds in one place, ask AI about what you read, get a digest of your day, and let summaries and translations do the heavy lifting.
 
 ## 👋🏻 Getting Started & Join Our Community
 
-Whether for users or professional developers, Folo will be your open information playground. Please be aware that Folo is currently under active development, and feedback is welcome for any [issue](https://github.com/RSSNext/Folo/issues) encountered.
+Folo runs in the browser and on iOS, Android, macOS, Windows and Linux, and keeps your subscriptions, read status and stars in sync across all of them. It is under active development, and feedback is welcome for any [issue](https://github.com/RSSNext/Folo/issues) you run into.
 
-Feel free to try it using the following methods:
-
-| Operating System | Source                                                                                                                                                                                                                                                                                                                                                                                                                              |
-| :--------------- | :---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| Any              | <a href="https://app.folo.is" target="_blank"><img src="https://github.com/user-attachments/assets/51ef7800-b683-4493-83e8-eb4752366997" alt="Browser" height="55"/></a>                                                                                                                                                                                                                                                            |
-| iOS              | <a href="https://apps.apple.com/us/app/folo-follow-everything/id6739802604" target="_blank"><img src="https://github.com/user-attachments/assets/a94d8698-2a11-4f43-9b0a-b756b17b61f7" alt="App Store" height="55"/></a>                                                                                                                                                                                                            |
-| Android          | <a href="https://play.google.com/store/apps/details?id=is.follow" target="_blank"><img src="https://github.com/user-attachments/assets/0d178e0b-3ace-4f75-bbde-ab3c0a416ce8" alt="Google Play" height="55"/></a> <a href="https://github.com/RSSNext/Folo/releases/latest" target="_blank"><img src="https://github.com/user-attachments/assets/cf61e197-d756-4606-a8ad-fb591f79fdfc" alt="App Store" height="55"/></a>             |
-| macOS            | <a href="https://apps.apple.com/us/app/folo-follow-everything/id6739802604" target="_blank"><img src="https://github.com/user-attachments/assets/d8f8c877-4b1d-4a95-b400-30afe45d970e" alt="Mac App Store" height="55"/></a> <a href="https://github.com/RSSNext/Folo/releases/latest" target="_blank"><img src="https://github.com/user-attachments/assets/cf61e197-d756-4606-a8ad-fb591f79fdfc" alt="App Store" height="55"/></a> |
-| Windows          | <a href="https://apps.microsoft.com/detail/9nvfzpv0v0ht?mode=direct" target="_blank"><img src="https://github.com/user-attachments/assets/f689d2dc-010d-432b-909e-99ab344ddbda" alt="Microsoft Store" height="55"/></a> <a href="https://github.com/RSSNext/Folo/releases/latest" target="_blank"><img src="https://github.com/user-attachments/assets/cf61e197-d756-4606-a8ad-fb591f79fdfc" alt="App Store" height="55"/></a>      |
-| Linux            | <a href="https://github.com/RSSNext/Folo/releases/latest" target="_blank"><img src="https://github.com/user-attachments/assets/cf61e197-d756-4606-a8ad-fb591f79fdfc" alt="App Store" height="55"/></a>                                                                                                                                                                                                                              |
+| Platform | Download                                                                                                                                                                                                                                                                                                                                                                                                                                                     |
+| :------- | :----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| Web      | <a href="https://app.folo.is" target="_blank"><img src="https://github.com/user-attachments/assets/51ef7800-b683-4493-83e8-eb4752366997" alt="Try on the Browser" height="55"/></a>                                                                                                                                                                                                                                                                          |
+| iOS      | <a href="https://apps.apple.com/us/app/folo-follow-everything/id6739802604" target="_blank"><img src="https://github.com/user-attachments/assets/a94d8698-2a11-4f43-9b0a-b756b17b61f7" alt="Download on the App Store" height="55"/></a>                                                                                                                                                                                                                     |
+| Android  | <a href="https://play.google.com/store/apps/details?id=is.follow" target="_blank"><img src="https://github.com/user-attachments/assets/0d178e0b-3ace-4f75-bbde-ab3c0a416ce8" alt="Get it on Google Play" height="55"/></a> <a href="https://github.com/RSSNext/Folo/releases/latest" target="_blank"><img src="https://github.com/user-attachments/assets/cf61e197-d756-4606-a8ad-fb591f79fdfc" alt="Download on GitHub" height="55"/></a>                   |
+| macOS    | <a href="https://apps.apple.com/us/app/folo-follow-everything/id6739802604" target="_blank"><img src="https://github.com/user-attachments/assets/d8f8c877-4b1d-4a95-b400-30afe45d970e" alt="Download on the Mac App Store" height="55"/></a> <a href="https://github.com/RSSNext/Folo/releases/latest" target="_blank"><img src="https://github.com/user-attachments/assets/cf61e197-d756-4606-a8ad-fb591f79fdfc" alt="Download on GitHub" height="55"/></a> |
+| Windows  | <a href="https://apps.microsoft.com/detail/9nvfzpv0v0ht?mode=direct" target="_blank"><img src="https://github.com/user-attachments/assets/f689d2dc-010d-432b-909e-99ab344ddbda" alt="Download from the Microsoft Store" height="55"/></a> <a href="https://github.com/RSSNext/Folo/releases/latest" target="_blank"><img src="https://github.com/user-attachments/assets/cf61e197-d756-4606-a8ad-fb591f79fdfc" alt="Download on GitHub" height="55"/></a>    |
+| Linux    | <a href="https://github.com/RSSNext/Folo/releases/latest" target="_blank"><img src="https://github.com/user-attachments/assets/cf61e197-d756-4606-a8ad-fb591f79fdfc" alt="Download on GitHub" height="55"/></a>                                                                                                                                                                                                                                              |
 
 You can also install using the following methods maintained by our community:
 
@@ -61,13 +54,13 @@ You can also install using the following methods maintained by our community:
 
 | [![Discord](https://img.shields.io/badge/dynamic/json?url=https%3A%2F%2Fdiscord.com%2Fapi%2Finvites%2FAwWcAQ7euc%3Fwith_counts%3Dtrue&query=approximate_member_count&color=5865F2&label=Discord&labelColor=black&logo=discord&logoColor=white&style=flat-square)](https://discord.gg/AwWcAQ7euc) | Join our Discord server to connect with developers, request features, and receive support. |
 | :----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | :----------------------------------------------------------------------------------------- |
-| [![](https://img.shields.io/badge/any_text-Follow-blue?color=2CA5E0&label=_&logo=x&labelColor=black&style=flat-square)](https://x.com/intent/follow?screen_name=folo_is)                                                                                                                         | Follow us on X/Twitter for product updates and to join in on reward activities.            |
+| [![](https://img.shields.io/badge/any_text-Follow-blue?color=2CA5E0&label=_&logo=x&labelColor=black&style=flat-square)](https://x.com/intent/follow?screen_name=folo_is)                                                                                                                         | Follow us on X for product updates.                                                        |
 
 > \[!IMPORTANT]
 >
 > **Star Us**, You will receive all release notifications from GitHub without any delay \~
 
-![Image](https://github.com/user-attachments/assets/a08f9437-b24c-4388-8f01-2826e09eeaf2)
+![Star Folo on GitHub](https://github.com/user-attachments/assets/a08f9437-b24c-4388-8f01-2826e09eeaf2)
 
 <a href="https://next.ossinsight.io/widgets/official/compose-last-28-days-stats?repo_id=783512367" target="_blank" style="display: block" align="center">
   <picture>
@@ -78,29 +71,62 @@ You can also install using the following methods maintained by our community:
 
 ## ✨ Features
 
-### Customized Information Hub
+### Folo AI
 
-Subscribe to a vast range of feeds and curated lists. Curate your favorites and keep track of what matters most to you.
+Ask about an article, a feed, a folder or everything you follow. Pick your AI model or bring your own API key, and connect MCP services to bring your other tools into Folo AI.
 
-![](https://github.com/user-attachments/assets/11dc7d21-f5d8-4e41-9269-24fc352aa02b)
+![Folo AI: ask your feeds anything](https://github.com/user-attachments/assets/cd5a6455-0317-43a0-9bbb-9c0a5983fa12)
 
-### AI At Your Fingertips
+### Timeline Summary
 
-A smarter and more efficient browsing with AI-powered features like translation, summary, and more.
+Turn hundreds of new entries into one quick digest of what matters.
 
-![](https://github.com/user-attachments/assets/37cf4f2f-4c5e-4775-86e8-2fa1a1b2ecf5)
+![Timeline summary: your day, summarized](https://github.com/user-attachments/assets/1fb8b40c-481b-4f54-9170-844f2513349d)
 
-### Dynamic Content Support
+### AI Translation and Summaries
 
-Because we know content is more than just text. From articles to videos, images to audio — Folo gets it all covered.
+Read articles side by side with an AI translation in English, Chinese, Japanese or French, and get an AI summary of any article, on demand or automatically.
 
-![](https://github.com/user-attachments/assets/d1379fd6-8767-476e-b0dc-d61753715e26)
+![AI translation: read the world in your language](https://github.com/user-attachments/assets/4396ee96-2bee-4332-ae49-4dc7c633ef8f)
 
-### More Than Just An App
+### Every Format
 
-This isn’t just another app. Folo is a community — introducing a new era of openness and community-driven experience.
+Articles, social posts, pictures, videos and podcasts each get a layout made for them, and text-to-speech reads any article aloud with natural voices.
 
-![](https://github.com/user-attachments/assets/62004a04-eaea-4f5d-bfbf-4e68b6b90286)
+![Every format: not just articles](https://github.com/user-attachments/assets/46c85896-4c2c-4333-ab30-97721678740d)
+
+### AI Tasks
+
+Schedule AI tasks that write daily or weekly briefings and deliver them to chat or email.
+
+![AI tasks: briefings that write themselves](https://github.com/user-attachments/assets/12b4a8bb-1590-4d5b-8e1a-8967456de1ce)
+
+### Integrations
+
+Send articles to Obsidian, Readwise, Instapaper, Zotero, Cubox, Outline, Readeck or Eagle, and let Actions filter, star, rewrite, notify or summarize new entries with your own rules.
+
+![Integrations: works with your tools](https://github.com/user-attachments/assets/5d45ab95-71a2-42b4-9631-332aee1ea343)
+
+### On Your Phone
+
+Folo for iPhone, iPad and Android brings AI summaries, read-aloud and discovery with you, and picks up where you left off on your computer.
+
+<p align="center">
+  <img src="https://github.com/user-attachments/assets/61bbe7a5-2f95-4ca3-a466-6192781dcff2" alt="AI summaries on iPhone" width="24%" />
+  <img src="https://github.com/user-attachments/assets/2c97a3dc-e688-4445-8ae2-aabed7275ca7" alt="Text-to-speech on iPhone" width="24%" />
+  <img src="https://github.com/user-attachments/assets/5797f7cd-b5a4-42e2-8199-3a4c010b89d7" alt="Discovering sources on iPhone" width="24%" />
+  <img src="https://github.com/user-attachments/assets/f616f7ff-0718-4d2c-af01-408963920bbe" alt="The same timeline on iPhone and Mac" width="24%" />
+</p>
+
+### And More
+
+- Subscribe to any RSS, Atom or JSON feed, plus thousands of [RSSHub](https://github.com/DIYgod/RSSHub) routes for sites without a feed
+- Import and export OPML to move from any other reader
+- An inbox with its own email address for newsletters
+- Customizable keyboard shortcuts and a command menu
+- Themes, reading fonts, custom CSS and code highlighting
+- Spotlight highlights the keywords you care about
+- Open source, with no ads
 
 ## 🤝 Contributing
 

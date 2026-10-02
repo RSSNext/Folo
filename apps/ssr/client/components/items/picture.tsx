@@ -1,6 +1,6 @@
+import type { FeedEntryItem } from "@client/components/items/types"
 import { LazyImage } from "@client/components/ui/image"
 import { getPreferredTitle } from "@client/lib/helper"
-import type { Feed } from "@client/query/feed"
 import { MemoedDangerousHTMLStyle } from "@follow/components/common/MemoedDangerousHTMLStyle.jsx"
 import { TitleMarquee } from "@follow/components/ui/marquee/index.jsx"
 import {
@@ -14,7 +14,7 @@ import {
 import { Masonry } from "@follow/components/ui/masonry/index.jsx"
 import { nextFrame } from "@follow/utils/dom"
 import { cn } from "@follow/utils/utils"
-import type { ParsedEntry } from "@follow-app/client-sdk"
+import type { FeedSchema, ParsedEntry } from "@follow-app/client-sdk"
 import dayjs from "dayjs"
 import { throttle } from "es-toolkit/compat"
 import type { RenderComponentProps } from "masonic"
@@ -98,10 +98,8 @@ const getCurrentColumn = (w: number) => {
   return columns
 }
 export const PictureList: FC<{
-  entries: ParsedEntry[]
-
-  feed?: Feed
-}> = ({ entries, feed }) => {
+  items: FeedEntryItem[]
+}> = ({ items }) => {
   const [masonryItemsRadio, setMasonryItemsRadio] = useState<Record<string, number>>({})
   const [currentItemWidth, setCurrentItemWidth] = useState(0)
   const [currentColumn, setCurrentColumn] = useState(1)
@@ -145,11 +143,11 @@ export const PictureList: FC<{
     }
   }, [xGutter])
 
-  const items = useMemo(() => {
+  const masonryItems = useMemo(() => {
     const flattenedItems = []
     const imageSrcSet = new Set<string>()
-    for (let i = 0; i < entries?.length || 0; i++) {
-      const entry = entries[i]!
+    for (let i = 0; i < items?.length || 0; i++) {
+      const { entry, feed } = items[i]!
       if (!entry.media) continue
       for (let j = 0; j < entry.media?.length || 0; j++) {
         const media = entry.media[j]!
@@ -169,7 +167,7 @@ export const PictureList: FC<{
       }
     }
     return flattenedItems
-  }, [entries, feed])
+  }, [items])
 
   return (
     <PhotoProvider>
@@ -183,7 +181,7 @@ export const PictureList: FC<{
                 <MasonryItemsAspectRatioSetterContext value={setMasonryItemsRadio}>
                   <div className="relative w-full">
                     <Masonry
-                      items={items}
+                      items={masonryItems}
                       columnGutter={yGutter}
                       columnWidth={currentItemWidth}
                       columnCount={currentColumn}
@@ -213,7 +211,7 @@ const render = memo(
     blurhash: string | undefined
     id: string
     entry: ParsedEntry
-    feed?: Feed
+    feed: Nullable<FeedSchema>
   }>) => {
     const [isHovered, setIsHovered] = useState(false)
 
@@ -275,7 +273,7 @@ const GridItemFooter = ({
   feed,
 }: {
   entry: ParsedEntry
-  feed?: Feed
+  feed: Nullable<FeedSchema>
   titleClassName?: string
   descriptionClassName?: string
   timeClassName?: string
@@ -294,9 +292,9 @@ const GridItemFooter = ({
         </div>
       </div>
       <div className="flex items-center gap-1 truncate text-[13px]">
-        <FeedIcon fallback className="mr-0.5 flex" target={feed?.feed} entry={entry} size={18} />
+        <FeedIcon fallback className="mr-0.5 flex" target={feed} entry={entry} size={18} />
         <span className={cn("min-w-0 truncate", descriptionClassName)}>
-          {getPreferredTitle(feed?.feed)}
+          {getPreferredTitle(feed)}
         </span>
         <span className={cn("text-zinc-500", timeClassName)}>·</span>
         <span className={cn("text-zinc-500", timeClassName)}>

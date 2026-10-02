@@ -6,14 +6,24 @@ import {
   tracker,
 } from "@follow/tracker"
 import type { AuthUser } from "@follow-app/client-sdk"
-import { getAnalytics } from "@react-native-firebase/analytics"
+import {
+  getAnalytics,
+  logEvent,
+  setUserId,
+  setUserProperties,
+} from "@react-native-firebase/analytics"
 import { nativeApplicationVersion, nativeBuildVersion } from "expo-application"
 import PostHog from "posthog-react-native"
 
 import { proxyEnv } from "../lib/proxy-env"
 
 export const initAnalytics = async () => {
-  setFirebaseTracker(getAnalytics())
+  const analytics = getAnalytics()
+  setFirebaseTracker({
+    logEvent: (name, properties) => logEvent(analytics, name, properties),
+    setUserId: (id) => setUserId(analytics, id),
+    setUserProperties: (properties) => setUserProperties(analytics, properties),
+  })
 
   if (proxyEnv.POSTHOG_KEY) {
     setPostHogTracker(

@@ -5,6 +5,7 @@ import TrackPlayer, {
   useIsPlaying as useNativeIsPlaying,
   usePlaybackState,
 } from "@rntp/player"
+import { t } from "i18next"
 import { atom, useAtom } from "jotai"
 import { useCallback, useEffect, useSyncExternalStore } from "react"
 
@@ -67,7 +68,7 @@ class Player {
     artwork?: string | null
   }) {
     if (!PlayerRegistered) {
-      toast.error("Player is not registered. Please wait for the app to initialize.")
+      toast.error(t("player.not_ready"))
       return
     }
     if (newTrack) {
@@ -79,8 +80,8 @@ class Player {
         TrackPlayer.setMediaItem({
           mediaId: url,
           url,
-          title: title ?? "Unknown Title",
-          artist: artist ?? "Unknown Artist",
+          title: title ?? t("player.unknown_title"),
+          artist: artist ?? t("player.unknown_artist"),
           artworkUrl: artwork ?? undefined,
         })
       }
@@ -148,7 +149,7 @@ export function useActivePlayable(): ActivePlayable | null {
     artist: activeTrack.artist,
     entryId: null,
     kind: "track-player",
-    title: activeTrack.title ?? "Unknown Title",
+    title: activeTrack.title ?? t("player.unknown_title"),
   }
 }
 

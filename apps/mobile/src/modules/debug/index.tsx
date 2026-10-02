@@ -21,7 +21,7 @@ import { DebugScreen } from "@/src/screens/(headless)/DebugScreen"
 export const DebugButton = () => {
   const cachedPositionAtom = useMemo(
     () =>
-      atomWithStorage(
+      atomWithStorage<{ x: number; y: number }>(
         "debug-button-position",
         {
           x: 0,

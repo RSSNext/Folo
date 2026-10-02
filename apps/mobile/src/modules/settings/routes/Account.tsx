@@ -118,8 +118,7 @@ const AccountLinker: FC<{
     mutationFn: async () => {
       if (!account) throw new Error("Account not found")
       const res = await unlinkAccount({
-        providerId: provider,
-        accountId: account.accountId,
+        accountId: account.id,
       })
       if (res.error) throw new Error(res.error.message)
     },
