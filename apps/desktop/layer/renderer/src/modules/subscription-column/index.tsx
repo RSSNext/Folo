@@ -16,7 +16,7 @@ import { Lethargy } from "lethargy"
 import { AnimatePresence, m } from "motion/react"
 import type { FC, PropsWithChildren } from "react"
 import { memo, useCallback, useEffect, useLayoutEffect, useMemo, useRef, useState } from "react"
-import { Trans } from "react-i18next"
+import { Trans, useTranslation } from "react-i18next"
 
 import { useRootContainerElement } from "~/atoms/dom"
 import { useIsInMASReview } from "~/atoms/server-configs"
@@ -45,6 +45,7 @@ export function SubscriptionColumn({
   children,
   className,
 }: PropsWithChildren<{ className?: string }>) {
+  const { t } = useTranslation()
   const { isLoading: isSubscriptionLoading } = usePrefetchSubscription()
   usePrefetchUnread()
 
@@ -137,7 +138,7 @@ export function SubscriptionColumn({
       {!feedColumnShow && (
         <RootPortal to={rootContainerElement}>
           <ActionButton
-            tooltip={"Toggle Feed Column"}
+            tooltip={t("app.toggle_sidebar")}
             className="center absolute left-0 top-2.5 z-0 hidden -translate-x-2 text-zinc-500 macos:flex macos:left-macos-traffic-light-2"
             onClick={() => setTimelineColumnShow(true)}
           >

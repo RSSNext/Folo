@@ -7,6 +7,7 @@ import { KbdCombined } from "@follow/components/ui/kbd/Kbd.js"
 import { AnimatePresence, m, useSpring, useTransform } from "motion/react"
 import * as React from "react"
 import { useEffect, useState } from "react"
+import { useTranslation } from "react-i18next"
 
 import { setAIPanelVisibility, useAIPanelVisibility } from "~/atoms/settings/ai"
 import { FocusablePresets } from "~/components/common/Focusable"
@@ -14,6 +15,7 @@ import { COMMAND_ID } from "~/modules/command/commands/id"
 import { useCommandShortcut } from "~/modules/command/hooks/use-command-binding"
 
 const AIAmbientSidebar: React.FC<{ onExpand: () => void }> = ({ onExpand }) => {
+  const { t } = useTranslation("ai")
   const [showPrompt, setShowPrompt] = useState(false)
   const isShowPromptRef = React.useRef(false)
   const intensity = useSpring(0, Spring.presets.smooth)
@@ -228,9 +230,9 @@ const AIAmbientSidebar: React.FC<{ onExpand: () => void }> = ({ onExpand }) => {
 
                 {/* Info section */}
                 <div className="relative px-5 py-3.5 text-right">
-                  <p className="text-sm font-medium text-text">Ask AI anything</p>
+                  <p className="text-sm font-medium text-text">{t("chat.smart_sidebar.title")}</p>
                   <p className="mt-0.5 text-xs text-text-secondary">
-                    Get insights about this article
+                    {t("chat.smart_sidebar.description")}
                   </p>
                 </div>
 
@@ -274,11 +276,13 @@ const AIAmbientSidebar: React.FC<{ onExpand: () => void }> = ({ onExpand }) => {
                           ease: "easeInOut",
                         }}
                       />
-                      <span className="text-sm font-medium text-text">Open AI Chat</span>
+                      <span className="text-sm font-medium text-text">
+                        {t("chat.smart_sidebar.open")}
+                      </span>
                     </div>
 
                     <KbdCombined
-                      abbr="Open AI Chat"
+                      abbr={t("chat.smart_sidebar.open")}
                       joint
                       className="rounded-md bg-fill/40 px-2 backdrop-blur-sm"
                     >

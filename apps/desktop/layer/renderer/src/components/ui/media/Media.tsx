@@ -5,6 +5,7 @@ import type { FC, ImgHTMLAttributes, VideoHTMLAttributes } from "react"
 import * as React from "react"
 import { memo, use, useEffect, useMemo, useRef, useState } from "react"
 import { Blurhash, BlurhashCanvas } from "react-blurhash"
+import { Trans, useTranslation } from "react-i18next"
 import { useEventCallback } from "usehooks-ts"
 
 import { useGetImageProxyUrl } from "~/lib/img-proxy"
@@ -425,30 +426,43 @@ const MediaImpl: FC<MediaProps> = ({
 
 export const Media: FC<MediaProps> = memo((props) => <MediaImpl {...props} key={props.src} />)
 
-const FallbackMedia: FC<MediaProps> = ({ type, mediaContainerClassName, className, ...props }) => (
-  <div className={className} style={props.style}>
-    <div
-      className={cn(
-        "size-full",
-        "center rounded bg-material-ultra-thick",
-        "not-prose !flex max-h-full flex-col space-y-1 p-4 @container",
-        mediaContainerClassName,
-      )}
-    >
-      <div className="hidden @sm:hidden @md:contents">
-        <i className="i-mgc-close-cute-re text-xl text-red" />
-        <p>Media loaded failed</p>
-        <div className="space-x-1 break-all px-4 text-sm">
-          Go to{" "}
-          <a href={props.src} target="_blank" rel="noreferrer" className="follow-link--underline">
-            original media url
-          </a>
-          <i className="i-mgc-external-link-cute-re translate-y-0.5" />
+const FallbackMedia: FC<MediaProps> = ({ type, mediaContainerClassName, className, ...props }) => {
+  const { t } = useTranslation()
+  return (
+    <div className={className} style={props.style}>
+      <div
+        className={cn(
+          "size-full",
+          "center rounded bg-material-ultra-thick",
+          "not-prose !flex max-h-full flex-col space-y-1 p-4 @container",
+          mediaContainerClassName,
+        )}
+      >
+        <div className="hidden @sm:hidden @md:contents">
+          <i className="i-mgc-close-cute-re text-xl text-red" />
+          <p>{t("media.load_failed")}</p>
+          <div className="space-x-1 break-all px-4 text-sm">
+            <Trans
+              t={t}
+              i18nKey="media.open_original"
+              components={{
+                Link: (
+                  <a
+                    href={props.src}
+                    target="_blank"
+                    rel="noreferrer"
+                    className="follow-link--underline"
+                  />
+                ),
+              }}
+            />
+            <i className="i-mgc-external-link-cute-re translate-y-0.5" />
+          </div>
         </div>
       </div>
     </div>
-  </div>
-)
+  )
+}
 
 const AspectRatio = ({
   width,

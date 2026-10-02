@@ -11,6 +11,7 @@ import type { JSAnimation } from "motion/react"
 import { AnimatePresence, m } from "motion/react"
 import * as React from "react"
 import { useEffect, useRef, useState } from "react"
+import { useTranslation } from "react-i18next"
 import { useEventCallback } from "usehooks-ts"
 
 import { FocusablePresets } from "~/components/common/Focusable"
@@ -24,6 +25,7 @@ export const EntryScrollingAndNavigationHandler = ({
   scrollerRef: React.RefObject<HTMLDivElement | null>
   scrollAnimationRef: React.RefObject<JSAnimation<any> | null>
 }) => {
+  const { t } = useTranslation()
   const isAlreadyScrolledBottomRef = useRef(false)
   const [showKeepScrollingPanel, setShowKeepScrollingPanel] = useState(false)
 
@@ -156,9 +158,9 @@ export const EntryScrollingAndNavigationHandler = ({
           >
             <i className="i-mingcute-arrow-down-fill mr-1 size-5 text-text/90" />
             <span className="text-left text-[13px] font-medium text-text/90">
-              Already scrolled to the bottom.
+              {t("entry_content.scrolled_to_bottom")}
               <br />
-              Keep pressing to jump to the next article
+              {t("entry_content.keep_pressing_for_next")}
             </span>
           </button>
         </m.div>

@@ -6,6 +6,7 @@
   "scripts": {
     "build": "vite build",
     "dev": "vite",
+    "test": "vitest run --config vite.config.mts --environment happy-dom src",
     "typecheck": "tsc --noEmit"
   },
   "dependencies": {
@@ -16,28 +17,28 @@
     "@follow/shared": "workspace:*",
     "@follow/types": "workspace:*",
     "@follow/utils": "workspace:*",
-    "@shikijs/transformers": "4.3.1",
+    "@shikijs/transformers": "4.4.3",
     "clsx": "2.1.1",
-    "foxact": "0.3.8",
-    "jotai": "2.20.1",
-    "katex": "0.17.0",
-    "motion": "12.42.2",
-    "react": "19.2.7",
+    "foxact": "0.3.12",
+    "jotai": "3.0.0",
+    "katex": "0.18.7",
+    "motion": "13.4.0",
+    "react": "19.2.8",
     "react-blurhash": "0.3.0",
-    "react-dom": "19.2.7",
-    "shiki": "4.3.1",
+    "react-dom": "19.2.8",
+    "shiki": "4.4.3",
     "usehooks-ts": "3.1.1"
   },
   "devDependencies": {
-    "@tailwindcss/postcss": "4.3.2",
+    "@tailwindcss/postcss": "4.3.3",
     "@types/hast": "3.0.5",
-    "@vitejs/plugin-react": "6.0.3",
-    "autoprefixer": "10.5.2",
+    "@vitejs/plugin-react": "6.1.1",
+    "autoprefixer": "10.6.1",
     "hast-util-to-jsx-runtime": "2.3.6",
     "pathe": "2.0.3",
-    "tailwindcss": "4.3.2",
+    "tailwindcss": "4.3.3",
     "typescript": "catalog:",
-    "vite": "8.1.4",
-    "vitest": "4.1.10"
+    "vite": "8.3.0",
+    "vitest": "5.0.1"
   }
 }

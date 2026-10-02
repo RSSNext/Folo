@@ -8,6 +8,7 @@ import { tracker } from "@follow/tracker"
 import { cn, formatEstimatedMins, formatTimeToSeconds } from "@follow/utils"
 import { useVideoPlayer, VideoView } from "expo-video"
 import { memo, useCallback, useMemo, useRef, useState } from "react"
+import { useTranslation } from "react-i18next"
 import type { ImageErrorEventData } from "react-native"
 import { View } from "react-native"
 
@@ -25,6 +26,7 @@ import { useNavigation } from "@/src/lib/navigation/hooks"
 import { isIOS } from "@/src/lib/platform"
 import { player, useAudioPlayState } from "@/src/lib/player"
 import { toast } from "@/src/lib/toast"
+import { usePreferredFeedTitle } from "@/src/modules/feed/feed-title"
 import { EntryDetailScreen } from "@/src/screens/(stack)/entries/[entryId]/EntryDetailScreen"
 
 import { EntryItemContextMenu } from "../../context-menu/entry"
@@ -48,6 +50,7 @@ export const EntryNormalItem = memo(
     testID?: string
     isTimelineSource?: boolean
   }) => {
+    const { t } = useTranslation()
     const entry = useEntry(entryId, (state) => ({
       id: state.id,
       feedId: state.feedId,
@@ -69,6 +72,7 @@ export const EntryNormalItem = memo(
     })
     const from = getInboxFrom(entry)
     const feed = useFeedById(entry?.feedId as string)
+    const feedTitle = usePreferredFeedTitle(entry?.feedId)
     const navigation = useNavigation()
     const handlePress = useCallback(() => {
       if (entry) {
@@ -124,13 +128,15 @@ export const EntryNormalItem = memo(
             <View className="mb-1 flex-row items-center gap-1.5 pr-2">
               <FeedIcon fallback feed={feed} size={view === FeedViewType.Notifications ? 14 : 16} />
               <Text numberOfLines={1} className="shrink text-xs font-medium text-secondary-label">
-                {feed?.title || from || "Unknown feed"}
+                {feedTitle || from || t("entry_list.unknown_feed")}
               </Text>
               <Text className="text-xs font-medium text-tertiary-label">·</Text>
               {estimatedMins ? (
                 <>
                   <Text className="text-xs font-medium text-secondary-label">
-                    {formatEstimatedMins(estimatedMins)}
+                    {formatEstimatedMins(estimatedMins, (unit, values) =>
+                      t(`time.duration.${unit}`, { ns: "common", ...values }),
+                    )}
                   </Text>
                   <Text className="text-xs font-medium text-tertiary-label">·</Text>
                 </>
@@ -172,6 +178,7 @@ export const EntryNormalItem = memo(
 )
 EntryNormalItem.displayName = "EntryNormalItem"
 const ThumbnailImage = ({ entryId }: { entryId: string }) => {
+  const { t } = useTranslation()
   const entry = useEntry(entryId, (state) => ({
     feedId: state.feedId,
     media: state.media,
@@ -179,6 +186,7 @@ const ThumbnailImage = ({ entryId }: { entryId: string }) => {
     title: state.title,
   }))
   const feed = useFeedById(entry?.feedId as string)
+  const feedTitle = usePreferredFeedTitle(entry?.feedId)
   const thumbnailRatio = useUISettingKey("thumbnailRatio")
   const mediaModel = entry?.media?.find(
     (media) => media.type === "photo" || (media.type === "video" && media.preview_image_url),
@@ -216,14 +224,14 @@ const ThumbnailImage = ({ entryId }: { entryId: string }) => {
       player.play({
         url: audio.url,
         title: entry?.title,
-        artist: feed?.title,
+        artist: feedTitle,
         artwork: image,
       })
     } catch (error) {
       console.error("Error playing audio:", error)
-      toast.error("Failed to play audio")
+      toast.error(t("player.play_failed"))
     }
-  }, [audio, audioState, entry?.title, feed?.title, image, video, videoPlayer])
+  }, [audio, audioState, entry?.title, feedTitle, image, t, video, videoPlayer])
   const [imageError, setImageError] = useState(audio && !image)
   const handleImageError = useCallback(() => {
     setImageError(true)

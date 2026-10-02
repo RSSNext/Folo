@@ -1,0 +1,37 @@
+appId: is.follow
+name: Android tab registration and session persistence
+---
+- repeat:
+    times: 3
+    commands:
+      - tapOn:
+          id: tab-SettingsTabScreen
+      - assertVisible:
+          id: settings-general-link
+      - tapOn:
+          id: tab-SubscriptionsTabScreen
+      - assertVisible:
+          id: subscription-feed-url-folo-onboarding
+      - tapOn:
+          id: tab-DiscoverTabScreen
+      - assertVisible:
+          id: discover-search-input
+      - tapOn:
+          id: tab-IndexTabScreen
+      - assertVisible:
+          id: timeline-entry-first
+- launchApp
+- extendedWaitUntil:
+    visible:
+      id: timeline-entry-first
+    timeout: 30000
+- assertNotVisible:
+    id: login-provider-credential
+- tapOn:
+    id: tab-SettingsTabScreen
+- assertVisible:
+    id: settings-general-link
+- tapOn:
+    id: tab-IndexTabScreen
+- assertVisible:
+    id: timeline-entry-first

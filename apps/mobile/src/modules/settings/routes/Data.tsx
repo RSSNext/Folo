@@ -15,6 +15,7 @@ import {
 } from "@/src/components/ui/grouped/GroupedList"
 import { Switch } from "@/src/components/ui/switch/Switch"
 import { getDbPath } from "@/src/database"
+import { reloadApp } from "@/src/lib/reload-app"
 import { toast } from "@/src/lib/toast"
 
 import { exportLocalDatabase, importOpml } from "../utils"
@@ -80,7 +81,7 @@ export const DataScreen = () => {
                   onPress: async () => {
                     const dbPath = getDbPath()
                     await FileSystem.deleteAsync(dbPath)
-                    await expo.reloadAppAsync("Clear Sqlite Data")
+                    await reloadApp("Clear Sqlite Data")
                   },
                 },
               ],
@@ -108,7 +109,7 @@ export const DataScreen = () => {
                     if (cacheDir) {
                       await FileSystem.deleteAsync(cacheDir, { idempotent: true })
                     }
-                    toast.success("Cache cleared")
+                    toast.success(t("data_control.clean_cache.success"))
                   },
                 },
               ],

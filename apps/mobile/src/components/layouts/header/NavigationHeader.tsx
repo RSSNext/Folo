@@ -11,6 +11,7 @@ import {
   useRef,
   useState,
 } from "react"
+import { useTranslation } from "react-i18next"
 import type { LayoutChangeEvent, StyleProp, ViewStyle } from "react-native"
 import { Alert, Pressable, StyleSheet, View } from "react-native"
 import type { AnimatedProps } from "react-native-reanimated"
@@ -392,6 +393,7 @@ export const DefaultHeaderBackButton = ({
   canDismiss,
   promptBeforeLeave,
 }: NavigationHeaderButtonProps) => {
+  const { t } = useTranslation()
   const label = useColor("label")
   const navigation = useNavigation()
 
@@ -413,18 +415,22 @@ export const DefaultHeaderBackButton = ({
         }
 
         if (promptBeforeLeave) {
-          Alert.alert("Are you sure you want to exit?", "You have unsaved changes.", [
-            {
-              text: "Cancel",
-              style: "cancel",
-            },
-            {
-              text: "Exit",
-              onPress: () => {
-                leave()
+          Alert.alert(
+            t("navigation.unsaved_changes.title"),
+            t("navigation.unsaved_changes.description"),
+            [
+              {
+                text: t("words.cancel", { ns: "common" }),
+                style: "cancel",
               },
-            },
-          ])
+              {
+                text: t("navigation.unsaved_changes.exit"),
+                onPress: () => {
+                  leave()
+                },
+              },
+            ],
+          )
         } else {
           leave()
         }

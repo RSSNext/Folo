@@ -1,0 +1,17 @@
+{
+  "name": "@follow/store-assets",
+  "type": "module",
+  "private": true,
+  "scripts": {
+    "typecheck": "tsc --noEmit"
+  },
+  "devDependencies": {
+    "@iconify-json/mingcute": "1.2.8",
+    "@types/node": "26.6.2",
+    "pathe": "2.0.3",
+    "playwright": "1.63.0",
+    "sharp": "0.35.4",
+    "tsx": "4.23.15",
+    "typescript": "catalog:"
+  }
+}

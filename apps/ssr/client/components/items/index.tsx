@@ -1,9 +1,9 @@
 import { GridList } from "@client/components/items/grid"
 import { NormalListItem } from "@client/components/items/normal"
 import { PictureList } from "@client/components/items/picture"
+import type { EntryWithFeed, FeedEntryItem } from "@client/components/items/types"
 import type { Feed } from "@client/query/feed"
 import { FeedViewType } from "@follow/constants"
-import type { ParsedEntry } from "@follow-app/client-sdk"
 import type { FC } from "react"
 import { useMemo } from "react"
 import * as React from "react"
@@ -24,41 +24,49 @@ export const Item = ({
   feed,
   view,
 }: {
-  entries: ParsedEntry[]
+  entries: EntryWithFeed[]
+  /**
+   * Feed shared by every entry, e.g. on a feed page. Entries that carry their own feed use it
+   * instead.
+   */
   feed?: Feed
   view: FeedViewType
 }) => {
   return useMemo(() => {
+    const items: FeedEntryItem[] =
+      entries?.map((entry) => ({
+        entry,
+        feed: entry.feeds ?? feed?.feed,
+      })) ?? []
+
     switch (true) {
       case viewsRenderType.Normal.includes(view): {
-        return <NormalList entries={entries} feed={feed} />
+        return <NormalList items={items} />
       }
       case viewsRenderType.Picture.includes(view): {
-        return <PictureList entries={entries} feed={feed} />
+        return <PictureList items={items} />
       }
       case viewsRenderType.Grid.includes(view): {
-        return <GridList entries={entries} feed={feed} />
+        return <GridList items={items} />
       }
     }
   }, [entries, feed, view])
 }
 
 const NormalList: FC<{
-  entries: ParsedEntry[]
-
-  feed?: Feed
-}> = ({ entries, feed }) => {
+  items: FeedEntryItem[]
+}> = ({ items }) => {
   return (
     <>
-      {entries?.map((entry) => (
+      {items.map(({ entry, feed }) => (
         <div className="relative cursor-default" key={entry.id}>
           <NormalListItem
             withDetails
             entryPreview={{
               entry,
-              feed: feed?.feed,
+              feed,
 
-              feedId: feed?.feed.id,
+              feedId: feed?.id,
             }}
           />
         </div>

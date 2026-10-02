@@ -1,0 +1,103 @@
+{
+  "mobile.hero": {
+    "eyebrow": "AI RSS 阅读器",
+    "headline": "订阅一切，\n*只留重点。*",
+    "badge": "开源 · GitHub 3.9 万 Star"
+  },
+  "mobile.summary": {
+    "eyebrow": "AI 摘要",
+    "headline": "长文太长？\n*AI 几秒读懂。*"
+  },
+  "mobile.translate": {
+    "eyebrow": "AI 翻译",
+    "headline": "外文内容，\n*像母语一样读。*"
+  },
+  "mobile.formats": {
+    "eyebrow": "多种内容形式",
+    "headline": "不只是\n*文章。*"
+  },
+  "mobile.listen": {
+    "eyebrow": "文本转语音",
+    "headline": "没空看？\n*让 AI 读给你听。*"
+  },
+  "mobile.discover": {
+    "eyebrow": "发现",
+    "headline": "好内容，\n*不再错过。*"
+  },
+  "mobile.sync": {
+    "eyebrow": "多端同步",
+    "headline": "换台设备，\n*接着读。*"
+  },
+  "mobile.more": {
+    "eyebrow": "还有更多",
+    "headline": "为好奇心\n*而生。*",
+    "pills": [
+      "收藏",
+      "列表",
+      "收件箱",
+      "OPML 导入",
+      "自动化",
+      "Spotlight",
+      "深色模式",
+      "开源",
+      "无广告"
+    ]
+  },
+  "desktop.hero": {
+    "eyebrow": "AI RSS 阅读器",
+    "headline": "订阅一切，\n*只留重点。*",
+    "sub": "博客、新闻、视频、播客汇成一条清爽的时间线，AI 随时待命。",
+    "badge": "开源 · GitHub 3.9 万 Star"
+  },
+  "desktop.chat": {
+    "eyebrow": "Folo AI",
+    "headline": "有问题，\n*直接问你的订阅。*",
+    "sub": "就一篇文章、一个订阅源或你关注的一切，和 AI 聊聊。"
+  },
+  "desktop.digest": {
+    "eyebrow": "总结时间线",
+    "headline": "今天发生了什么，\n*一眼看完。*",
+    "sub": "把几百条新内容浓缩成一份简报。"
+  },
+  "desktop.translate": {
+    "eyebrow": "AI 翻译",
+    "headline": "外文内容，\n*像母语一样读。*",
+    "sub": "中、英、日、法双语对照翻译。"
+  },
+  "desktop.formats": {
+    "eyebrow": "多种内容形式",
+    "headline": "不只是\n*文章。*",
+    "sub": "图片、视频、播客都有专属布局。"
+  },
+  "desktop.tasks": {
+    "eyebrow": "AI 任务",
+    "headline": "每日简报，\n*自动写好。*",
+    "sub": "定时运行 AI 任务，结果发送到对话或邮箱。"
+  },
+  "desktop.integrations": {
+    "eyebrow": "集成",
+    "headline": "和你的工具\n*无缝衔接。*",
+    "sub": "一键发送到 Obsidian、Readwise 等，或接入 MCP 服务。"
+  },
+  "desktop.more": {
+    "eyebrow": "还有更多",
+    "headline": "为深度阅读\n*而生。*",
+    "pills": [
+      "快捷键",
+      "命令面板",
+      "自动化",
+      "Spotlight",
+      "自定义 CSS",
+      "主题",
+      "OPML",
+      "文本转语音",
+      "开源",
+      "无广告"
+    ]
+  },
+  "play.featureGraphic": {
+    "eyebrow": "Folo",
+    "headline": "AI *RSS 阅读器*",
+    "sub": "订阅一切，只留重点。"
+  }
+}

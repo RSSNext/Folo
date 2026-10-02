@@ -1,0 +1,34 @@
+{
+  "shortDescription": "O Folo é o leitor de RSS com IA para Windows. Siga blogs, notícias, newsletters, vídeos e podcasts em uma única linha do tempo, sem ruído, e deixe a IA resumir, traduzir e responder perguntas sobre tudo o que você acompanha.",
+  "features": [
+    "Siga feeds RSS, Atom e JSON, além de milhares de rotas do RSSHub para sites sem feed",
+    "Uma única linha do tempo para artigos, posts de redes sociais, imagens, vídeos, podcasts e notificações",
+    "Resumos com IA para qualquer artigo, quando você pedir ou automaticamente",
+    "Tradução com IA para inglês, chinês, japonês ou francês, ao lado do original ou separada",
+    "Converse com a IA sobre um artigo, um feed, uma pasta ou toda a sua linha do tempo",
+    "Transforme sua linha do tempo em um resumo rápido",
+    "Tarefas de IA que entregam boletins diários ou semanais no chat ou por e-mail",
+    "Conecte serviços MCP para usar suas outras ferramentas no Folo AI",
+    "Escolha seu modelo de IA ou use sua própria chave de API",
+    "Leitura em voz alta com vozes naturais",
+    "Ações: regras que filtram, marcam como favorito, reescrevem ou resumem novos itens, ou avisam você sobre eles",
+    "Envie artigos para Obsidian, Readwise, Instapaper, Zotero, Cubox, Outline, Readeck ou Eagle",
+    "Caixa de entrada com endereço de e-mail próprio para newsletters",
+    "Importação e exportação de OPML",
+    "Atalhos de teclado personalizáveis e menu de comandos",
+    "Temas, fontes de leitura, CSS personalizado e realce de sintaxe",
+    "Spotlight destaca as palavras-chave que importam para você",
+    "Sincronização entre Windows, macOS, Linux, Android, iPhone, iPad e a web",
+    "Código aberto sob a licença AGPL-3.0, sem anúncios"
+  ],
+  "screenshotCaptions": [
+    "Todos os seus feeds em uma única linha do tempo, sem ruído, com o Folo AI a um clique.",
+    "Pergunte ao Folo AI sobre um artigo, um feed ou tudo o que você segue.",
+    "Transforme centenas de novidades em um resumo rápido.",
+    "Leia artigos lado a lado com a tradução por IA para inglês, chinês, japonês ou francês.",
+    "Imagens, vídeos e podcasts, cada um com um layout feito para ele.",
+    "Agende tarefas de IA para receber boletins diários ou semanais.",
+    "Envie artigos para seus apps de notas e de leitura para depois, ou conecte serviços MCP.",
+    "Deixe do seu jeito com temas, fontes de leitura e atalhos de teclado."
+  ]
+}

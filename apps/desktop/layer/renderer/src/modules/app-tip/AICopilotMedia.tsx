@@ -5,6 +5,7 @@ import { ScrollArea } from "@follow/components/ui/scroll-area/ScrollArea.js"
 import { cn } from "@follow/utils"
 import { m } from "motion/react"
 import * as React from "react"
+import { useTranslation } from "react-i18next"
 
 import { AISpline } from "~/modules/ai-chat/components/3d-models/AISpline"
 import { AIMarkdownStreamingMessage } from "~/modules/ai-chat/components/message/AIMarkdownMessage"
@@ -14,7 +15,16 @@ import type { BizUIMessage } from "~/modules/ai-chat/store/types"
 type PreviewMessage = {
   id: string
   role: "user" | "assistant"
-  text: string
+  textKey: I18nKeys
+}
+
+type PreviewFeed = {
+  id: string
+  type: "feed"
+  title: string
+  url: string
+  siteUrl: string
+  descriptionKey: I18nKeys
 }
 
 const buildUserBizMessage = (id: string, text: string): BizUIMessage => {
@@ -38,28 +48,22 @@ const chatScript: PreviewMessage[] = [
   {
     id: "m1",
     role: "user",
-    text: "Help me follow the latest AI trends for frontend.",
+    textKey: "new_user_dialog.ai.media.user_message_1",
   },
   {
     id: "m2",
     role: "assistant",
-    text:
-      "Sure — here are key updates this week:\n\n" +
-      "- React 19 RC brings Actions and built-in async APIs.\n" +
-      "- Vite 6 improves SSR and dev server performance.\n" +
-      "- AI tooling: better model routers and eval kits.\n",
+    textKey: "new_user_dialog.ai.media.assistant_message_1",
   },
   {
     id: "m3",
     role: "user",
-    text: "Great. Recommend some feeds to follow?",
+    textKey: "new_user_dialog.ai.media.user_message_2",
   },
   {
     id: "m4",
     role: "assistant",
-    text:
-      "Absolutely — I’ve picked a few high-signal sources for you. " +
-      "You can follow them in one click below.",
+    textKey: "new_user_dialog.ai.media.assistant_message_2",
   },
 ]
 
@@ -125,6 +129,7 @@ export const AICopilotMedia: React.FC = () => {
 }
 
 const Header: React.FC = () => {
+  const { t } = useTranslation()
   return (
     <m.div
       initial={{ opacity: 0, y: -20 }}
@@ -153,10 +158,10 @@ const Header: React.FC = () => {
           >
             <div className="flex items-center gap-2">
               <Folo className="size-7" />
-              <span className="text-sm font-semibold text-text">AI</span>
+              <span className="text-sm font-semibold text-text">{t("user_button.ai")}</span>
             </div>
             <span className="text-xs text-text-secondary">
-              Summarize, search, and curate for you
+              {t("new_user_dialog.ai.media.tagline")}
             </span>
           </m.div>
         </div>
@@ -170,31 +175,32 @@ const ChatPreview: React.FC<{
   streamingId?: string
   showRecommendations?: boolean
 }> = ({ messages, streamingId, showRecommendations }) => {
-  const feeds = React.useMemo(
+  const { t } = useTranslation()
+  const feeds = React.useMemo<PreviewFeed[]>(
     () => [
       {
         id: "vercel-blog",
-        type: "feed" as const,
+        type: "feed",
         title: "Vercel Blog",
         url: "https://vercel.com/blog",
         siteUrl: "https://vercel.com",
-        description: "Frontend, AI, and infra updates.",
+        descriptionKey: "new_user_dialog.ai.media.feeds.vercel_blog",
       },
       {
         id: "react",
-        type: "feed" as const,
+        type: "feed",
         title: "React",
         url: "https://react.dev/blog",
         siteUrl: "https://react.dev",
-        description: "Official updates and releases.",
+        descriptionKey: "new_user_dialog.ai.media.feeds.react",
       },
       {
         id: "ai-engineering",
-        type: "feed" as const,
+        type: "feed",
         title: "AI Engineering",
         url: "https://aie.sh",
         siteUrl: "https://aie.sh",
-        description: "Practical AI for builders.",
+        descriptionKey: "new_user_dialog.ai.media.feeds.ai_engineering",
       },
     ],
     [],
@@ -207,6 +213,7 @@ const ChatPreview: React.FC<{
           {messages.map((message, index) => {
             const isUser = message.role === "user"
             const delay = index * 0.1
+            const text = t(message.textKey)
 
             return (
               <m.div
@@ -232,11 +239,11 @@ const ChatPreview: React.FC<{
                   >
                     <div className="relative px-3.5 py-2.5">
                       {isUser ? (
-                        <UserMessageParts message={buildUserBizMessage(message.id, message.text)} />
+                        <UserMessageParts message={buildUserBizMessage(message.id, text)} />
                       ) : (
                         <>
                           <AIMarkdownStreamingMessage
-                            text={message.text}
+                            text={text}
                             isStreaming={message.id === streamingId}
                             className="text-text"
                           />
@@ -282,7 +289,9 @@ const ChatPreview: React.FC<{
                       >
                         <i className="i-mingcute-sparkles-2-line size-4 text-orange" />
                       </m.div>
-                      <span className="text-xs font-semibold text-text">Recommended Feeds</span>
+                      <span className="text-xs font-semibold text-text">
+                        {t("new_user_dialog.ai.media.recommended_feeds")}
+                      </span>
                     </m.div>
                   </div>
 
@@ -317,7 +326,7 @@ const ChatPreview: React.FC<{
                             </h4>
                             {/* Feed description */}
                             <p className="mb-1 line-clamp-2 text-[11px] leading-snug text-text-secondary">
-                              {feed.description}
+                              {t(feed.descriptionKey)}
                             </p>
                             {/* URL hint */}
                             <div className="flex items-center gap-1 text-[10px] text-text-tertiary">

@@ -3,6 +3,7 @@ import { SegmentGroup, SegmentItem } from "@follow/components/ui/segment/index.j
 import { nextFrame } from "@follow/utils"
 import type { ReactNode } from "react"
 import { startTransition, useCallback, useMemo, useState } from "react"
+import { useTranslation } from "react-i18next"
 import { toast } from "sonner"
 
 import {
@@ -36,6 +37,7 @@ export const ChatHistoryDropdown = ({
   triggerElement,
   asChild = true,
 }: ChatHistoryDropdownProps) => {
+  const { t } = useTranslation("ai")
   const [loadingChatId, setLoadingChatId] = useState<string | null>(null)
   const [activeTab, setActiveTab] = useState("chats")
   const { sessions, loading, loadHistory } = useChatHistory()
@@ -76,13 +78,13 @@ export const ChatHistoryDropdown = ({
 
   const handleScheduleActionClick = () => {
     if (!canCreateNewTask) {
-      toast.error("Please remove an existing task before creating a new one.")
+      toast.error(t("tasks.toast.limit_reached"))
       return
     }
     showSettings({ tab: "ai", section: AI_SETTING_SECTION_IDS.tasks })
     nextFrame(() => {
       present({
-        title: "New AI Task",
+        title: t("tasks.modal.new_title"),
         canClose: true,
         content: () => <AITaskModal showSettingsTip />,
       })
@@ -105,12 +107,12 @@ export const ChatHistoryDropdown = ({
   )
 
   const defaultTrigger = (
-    <ActionButton tooltip="Chat History" className="relative">
+    <ActionButton tooltip={t("chat.history.title")} className="relative">
       <i className="i-mgc-history-cute-re size-5 text-text-secondary" />
       {(hasUnreadRegularSessions || hasUnreadTaskSessions) && (
         <span
           className="absolute right-1 top-1 block size-2 rounded-full bg-accent shadow-[0_0_0_2px_var(--color-bg-default)] dark:shadow-[0_0_0_2px_var(--color-bg-default)]"
-          aria-label="Unread messages"
+          aria-label={t("chat.history.unread_messages")}
         />
       )}
     </ActionButton>
@@ -127,7 +129,7 @@ export const ChatHistoryDropdown = ({
             value="chats"
             label={
               <span className="flex items-center gap-1">
-                Chats
+                {t("chat.history.tabs.chats")}
                 {hasUnreadRegularSessions && <span className="size-1.5 rounded-full bg-accent" />}
               </span>
             }
@@ -136,7 +138,7 @@ export const ChatHistoryDropdown = ({
             value="tasks"
             label={
               <span className="flex items-center gap-1">
-                Tasks
+                {t("chat.history.tabs.tasks")}
                 {hasUnreadTaskSessions && <span className="size-1.5 rounded-full bg-accent" />}
               </span>
             }
@@ -152,7 +154,9 @@ export const ChatHistoryDropdown = ({
             ) : regularSessions.length > 0 ? (
               <>
                 <div className="mb-1.5 px-2 py-1">
-                  <p className="text-xs font-medium text-text-secondary">Recent Chats</p>
+                  <p className="text-xs font-medium text-text-secondary">
+                    {t("chat.history.recent")}
+                  </p>
                 </div>
                 {regularSessions.map((session) => (
                   <SessionItem
@@ -169,12 +173,14 @@ export const ChatHistoryDropdown = ({
                 ))}
               </>
             ) : (
-              <EmptyState message="No chat history yet" />
+              <EmptyState message={t("chat.history.empty")} />
             )
           ) : taskSessionsFiltered.length > 0 ? (
             <>
               <div className="mb-1.5 px-2 py-1">
-                <p className="text-xs font-medium text-text-secondary">Task Sessions</p>
+                <p className="text-xs font-medium text-text-secondary">
+                  {t("chat.history.task_sessions")}
+                </p>
               </div>
               {taskSessionsFiltered.map((session) => (
                 <SessionItem
@@ -198,13 +204,13 @@ export const ChatHistoryDropdown = ({
                   <DropdownMenuSeparator />
                   <DropdownMenuItem onClick={handleScheduleActionClick}>
                     <i className="i-mgc-add-cute-re mr-2 size-4" />
-                    New Task
+                    {t("tasks.actions.new_task")}
                   </DropdownMenuItem>
                 </>
               )}
             </>
           ) : (
-            <EmptyState message="No task sessions yet" />
+            <EmptyState message={t("chat.history.task_sessions_empty")} />
           )}
         </div>
       </DropdownMenuContent>

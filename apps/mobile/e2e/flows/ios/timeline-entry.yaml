@@ -15,7 +15,6 @@ appId: is.follow
 - tapOn:
     id: timeline-entry-first
     point: "50%,50%"
-    retryTapIfNoChange: true
 - extendedWaitUntil:
     notVisible:
       id: timeline-entry-first
@@ -24,6 +23,15 @@ appId: is.follow
     visible:
       id: navigation-back
     timeout: 20000
+- extendedWaitUntil:
+    visible: Hey there! Welcome to Folo. We're so glad to have you.
+    timeout: 20000
+- scrollUntilVisible:
+    element:
+      text: Your Subscriptions
+    direction: DOWN
+    timeout: 30000
+    centerElement: true
 - tapOn:
     id: navigation-back
 - extendedWaitUntil:

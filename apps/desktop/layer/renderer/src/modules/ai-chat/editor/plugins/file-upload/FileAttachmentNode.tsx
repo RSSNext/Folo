@@ -1,4 +1,3 @@
-/* eslint-disable react-refresh/only-export-components */
 import type {
   DOMConversionMap,
   DOMConversionOutput,
@@ -10,6 +9,7 @@ import type {
 } from "lexical"
 import { DecoratorNode } from "lexical"
 import * as React from "react"
+import { useTranslation } from "react-i18next"
 
 import { useAIMessageOptionalId } from "~/modules/ai-chat/components/message/AIMessageIdContext"
 import { useChatBlockSelector, useMessageByIdSelector } from "~/modules/ai-chat/store/hooks"
@@ -139,10 +139,11 @@ function FileAttachmentPill({ attachment }: { attachment: FileAttachment }) {
 }
 
 function MissingFilePill() {
+  const { t } = useTranslation("ai")
   return (
     <span className="inline-flex items-center gap-1 rounded border border-border bg-fill px-2 py-1 text-xs text-gray">
       <i className="i-mgc-attachment-cute-re" />
-      <span className="max-w-32 truncate">File not found</span>
+      <span className="max-w-32 truncate">{t("chat.file.not_found")}</span>
     </span>
   )
 }

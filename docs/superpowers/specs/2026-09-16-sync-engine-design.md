@@ -359,9 +359,19 @@ read first. Anything written between the two calls is replayed by the next delta
   at most hourly, because unread entries age out of the retention window without an
   action, and `/subscriptions` daily, because feed metadata is not owned by the user. A
   recount also follows actions that change counters structurally (a subscription or list
-  membership added) or that come from a server that does not send the numbers yet, and
+  membership added) or that come from a server that does not send the numbers yet, a
+  refresh the user asks for (the desktop refresh button, pull to refresh on mobile), and
   `useSyncUnreadWhenUnMatch` asks for one, at most once a minute, when the list on screen
-  still shows more unread entries than the counter after a delta pull.
+  disagrees with the counter after a delta pull: it shows more unread entries than the
+  counter, or it is an unread-only list with no more pages and shows fewer.
+- An unread snapshot is paired with the sync id it reflects. `GET /reads` answers with
+  `lastSyncId`, read on the same replica after the counts, so every action up to it had its
+  change inside the counts; an older server gets `/sync/state` read just before instead.
+  The engine keeps that id in `sync_meta` (`unreadSnapshotSyncId`) and applies the counter
+  part of `N`, `U` and `inbox_entry` `D` actions only above it. Without this the log double
+  counts: a poll answered from a stale head, or a snapshot that simply ran before the pull
+  carrying the hints, put the snapshot ahead of the cursor, and the `N` increments that
+  followed were added on top of counts that already contained the entries.
 - New entries never rearrange what is loaded. On launch, foreground and manual pulls the
   engine fetches only the edge of the entry lists on screen where new entries arrive
   (`refreshEntriesHead`): the first page of a newest-first list, merged in front of the

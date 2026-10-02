@@ -8,6 +8,7 @@ import type { EditorState, LexicalEditor } from "lexical"
 import { $getRoot } from "lexical"
 import type { Ref } from "react"
 import { memo, use, useCallback, useImperativeHandle, useRef, useState } from "react"
+import { useTranslation } from "react-i18next"
 import { matchKeybindingPress, parseKeybinding } from "tinykeys"
 
 import { AIChatContextBar } from "~/modules/ai-chat/components/layouts/AIChatContextBar"
@@ -58,6 +59,7 @@ export const ChatInput = memo(
     onEditorStateChange,
     submitDisabled,
   }: ChatInputProps) => {
+    const { t } = useTranslation("ai")
     const status = useChatStatus()
     const chatActions = useChatActions()
     const mainEntryId = useMainEntryId()
@@ -165,8 +167,8 @@ export const ChatInput = memo(
               ref={editorRef}
               placeholder={
                 scene === "onboarding"
-                  ? "Enter your message"
-                  : `Ask anything about this ${mainEntryId ? "entry" : "timeline"}...`
+                  ? t("chat.placeholder.onboarding")
+                  : t(mainEntryId ? "chat.placeholder.entry" : "chat.placeholder.timeline")
               }
               className="h-14"
               onChange={handleEditorChange}

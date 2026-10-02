@@ -160,6 +160,9 @@ export default ({ config }: ConfigContext): ExpoConfig => {
             buildReactNativeFromSource: true,
             useFrameworks: "static",
             forceStaticLinking: ["RNFBApp", "RNFBAnalytics", "RNFBMessaging", "RNFBAppCheck"],
+            // Apps linked against the iOS 27 SDK (Xcode 27) crash at launch on iOS 27 without
+            // the UIScene life cycle. Remove after upgrading to Expo SDK 58, which adopts it natively.
+            enableSceneSupport: true,
           },
         },
       ],
@@ -199,7 +202,7 @@ export default ({ config }: ConfigContext): ExpoConfig => {
       require("./plugins/with-android-jdk-21.js"),
       require("./plugins/with-android-manifest-plugin.js"),
       "expo-secure-store",
-      "@react-native-firebase/app",
+      ["@react-native-firebase/app", { ios: { disableSPM: true } }],
       [
         "expo-image-picker",
         {

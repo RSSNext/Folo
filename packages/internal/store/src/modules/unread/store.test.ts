@@ -3,7 +3,8 @@ import { FollowAPIError } from "@follow-app/client-sdk"
 import { afterEach, beforeEach, describe, expect, it, vi } from "vitest"
 
 import { apiContext } from "../../context"
-import { setSyncEngineActive } from "../../sync/sync-status"
+import type { SyncEngineHandle } from "../../sync/sync-status"
+import { registerSyncEngine, setSyncEngineActive } from "../../sync/sync-status"
 import { transactionQueue } from "../../sync/transaction-queue"
 import type { FollowAPI } from "../../types"
 import { entryActions, useEntryStore } from "../entry/store"
@@ -518,5 +519,57 @@ describe("unreadSyncService", () => {
 
     entryActions.upsertManyInSession([createEntry("entry1", "feed1", true)])
     expect(useEntryStore.getState().data.entry1?.read).toBe(false)
+  })
+
+  describe("with the sync engine", () => {
+    const engine = (): SyncEngineHandle & {
+      requestUnreadCalibration: ReturnType<typeof vi.fn>
+      recordUnreadSnapshot: ReturnType<typeof vi.fn>
+    } => ({
+      ensureSynced: vi.fn(async () => true),
+      catchUp: vi.fn(async () => true),
+      requestUnreadCalibration: vi.fn(async () => {}),
+      recordUnreadSnapshot: vi.fn(async () => {}),
+    })
+
+    afterEach(() => {
+      registerSyncEngine(null)
+    })
+
+    it("recounts through the engine only when the refresh asks for it", async () => {
+      const handle = engine()
+      registerSyncEngine(handle)
+      setSyncEngineActive(true)
+
+      await unreadSyncService.refresh()
+      expect(handle.ensureSynced).toHaveBeenCalledTimes(1)
+      expect(handle.requestUnreadCalibration).not.toHaveBeenCalled()
+      expect(getUnreadMock).not.toHaveBeenCalled()
+
+      await unreadSyncService.refresh({ calibrate: true })
+      expect(handle.requestUnreadCalibration).toHaveBeenCalledTimes(1)
+      expect(getUnreadMock).not.toHaveBeenCalled()
+    })
+
+    it("tells the engine which sync id a snapshot reflects", async () => {
+      const handle = engine()
+      registerSyncEngine(handle)
+      setSyncEngineActive(true)
+      getUnreadMock.mockResolvedValue({ data: { feed1: 2 }, lastSyncId: 42 })
+
+      await unreadSyncService.resetFromRemote({ fallbackSyncId: 7 })
+      expect(handle.recordUnreadSnapshot).toHaveBeenCalledWith(42)
+
+      // Without an id in the answer the caller's fallback stands in.
+      getUnreadMock.mockResolvedValue({ data: { feed1: 2 } })
+      await unreadSyncService.resetFromRemote({ fallbackSyncId: 7 })
+      expect(handle.recordUnreadSnapshot).toHaveBeenLastCalledWith(7)
+
+      // A snapshot that changes nothing is still a snapshot.
+      handle.recordUnreadSnapshot.mockClear()
+      await unreadSyncService.resetFromRemote()
+      expect(handle.recordUnreadSnapshot).not.toHaveBeenCalled()
+      expect(useUnreadStore.getState().data).toEqual({ feed1: 2 })
+    })
   })
 })

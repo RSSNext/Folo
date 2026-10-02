@@ -78,7 +78,6 @@ export const Autocomplete = ({
               ref={forwardedRef}
               as={Input}
               autoComplete="off"
-              aria-label="Select Category"
               displayValue={renderSuggestion}
               value={value}
               {...inputProps}

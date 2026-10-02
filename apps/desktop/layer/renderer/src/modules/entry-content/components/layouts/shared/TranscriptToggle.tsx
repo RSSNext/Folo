@@ -1,4 +1,5 @@
 import { SegmentGroup, SegmentItem } from "@follow/components/ui/segment/index.js"
+import { useTranslation } from "react-i18next"
 
 interface TranscriptToggleProps {
   showTranscript: boolean
@@ -11,6 +12,7 @@ export const TranscriptToggle: React.FC<TranscriptToggleProps> = ({
   onToggle,
   hasTranscript,
 }) => {
+  const { t } = useTranslation()
   if (!hasTranscript) return null
 
   return (
@@ -19,8 +21,8 @@ export const TranscriptToggle: React.FC<TranscriptToggleProps> = ({
         value={showTranscript ? "transcript" : "content"}
         onValueChanged={(value) => onToggle(value === "transcript")}
       >
-        <SegmentItem value="content" label="Content" />
-        <SegmentItem value="transcript" label="Transcript" />
+        <SegmentItem value="content" label={t("entry_content.transcript.tab_content")} />
+        <SegmentItem value="transcript" label={t("entry_content.transcript.tab_transcript")} />
       </SegmentGroup>
     </div>
   )

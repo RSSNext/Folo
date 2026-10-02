@@ -1,5 +1,6 @@
 import type { AIChatSession } from "@follow-app/client-sdk"
 import type { ReactNode } from "react"
+import { useTranslation } from "react-i18next"
 
 import { RelativeDay } from "~/components/ui/datetime"
 import { DropdownMenuItem } from "~/components/ui/dropdown-menu/dropdown-menu"
@@ -29,6 +30,7 @@ export const SessionItem = ({
   isLoading = false,
   hasUnread = false,
 }: SessionItemProps) => {
+  const { t } = useTranslation("ai")
   const hasUnreadMessages = isUnreadSession(session)
   return (
     <DropdownMenuItem
@@ -40,12 +42,12 @@ export const SessionItem = ({
           {hasUnreadMessages && (
             <span
               className="absolute left-2 block size-2 shrink-0 rounded-full bg-accent group-hover:bg-white"
-              aria-label="Unread"
+              aria-label={t("chat.history.unread")}
               role="status"
             />
           )}
           <p className={`mb-0.5 truncate font-medium ${hasUnread ? "ml-2" : ""}`}>
-            {session.title || "Untitled Chat"}
+            {session.title || t("chat.untitled")}
           </p>
         </div>
         <div className="relative flex min-w-0 items-center">

@@ -72,7 +72,7 @@ export const ChatMoreDropdown = ({
         <DropdownMenuSeparator />
         <DropdownMenuItem onClick={() => settingModalPresent("ai")}>
           <i className="i-mgc-settings-1-cute-re mr-2 size-4" />
-          <span>AI Settings</span>
+          <span>{t("settings.title")}</span>
         </DropdownMenuItem>
 
         {canClosePanel && (
@@ -80,7 +80,7 @@ export const ChatMoreDropdown = ({
             <DropdownMenuSeparator />
             <DropdownMenuItem onClick={handleCloseSidebar}>
               <i className="i-mgc-close-cute-re mr-2 size-4" />
-              <span>Close Sidebar</span>
+              <span>{t("chat.header.close_sidebar")}</span>
             </DropdownMenuItem>
           </>
         )}

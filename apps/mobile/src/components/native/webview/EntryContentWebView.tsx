@@ -4,6 +4,7 @@ import TrackPlayer from "@rntp/player"
 import { useAtom } from "jotai"
 import * as React from "react"
 import { useCallback, useEffect } from "react"
+import { useTranslation } from "react-i18next"
 import { Dimensions, StyleSheet, View } from "react-native"
 import { runOnJS, runOnUI } from "react-native-reanimated"
 
@@ -29,6 +30,7 @@ type EntryContentWebViewProps = {
 // Export for backward compatibility
 
 export function EntryContentWebView(props: EntryContentWebViewProps) {
+  const { t } = useTranslation()
   const [contentHeight, setContentHeight] = useAtom(sharedWebViewHeightAtom)
   const { openLightbox } = useLightboxControls()
 
@@ -49,13 +51,13 @@ export function EntryContentWebView(props: EntryContentWebViewProps) {
       if (activeTrack?.mediaId !== entryAudio.url) {
         await player.play({
           url: entryAudio.url || "",
-          title: entryInWebview?.title || "Unknown Title",
-          artist: entryInWebview?.author || "Unknown Artist",
+          title: entryInWebview?.title || t("player.unknown_title"),
+          artist: entryInWebview?.author || t("player.unknown_artist"),
         })
       }
       await player.seekTo(e.time)
     },
-    [entryInWebview?.attachments, entryInWebview?.author, entryInWebview?.title],
+    [entryInWebview?.attachments, entryInWebview?.author, entryInWebview?.title, t],
   )
 
   // Handle audio seek events

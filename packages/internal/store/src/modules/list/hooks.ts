@@ -1,4 +1,4 @@
-import type { FeedViewType } from "@follow/constants"
+import { FeedViewType } from "@follow/constants"
 import { useQuery } from "@tanstack/react-query"
 import { useCallback, useMemo } from "react"
 
@@ -27,7 +27,14 @@ export function useListById<T = ListModel>(
 
 export const useListByView = (view: FeedViewType) => {
   return useListStore(
-    useCallback((state) => Object.values(state.lists).filter((list) => list.view === view), [view]),
+    useCallback(
+      (state) =>
+        // The All view aggregates every view, so every list belongs to it
+        Object.values(state.lists).filter(
+          (list) => list.view === view || view === FeedViewType.All,
+        ),
+      [view],
+    ),
   )
 }
 

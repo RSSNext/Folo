@@ -23,15 +23,9 @@ export const HistoryTab = ({ analysis }: HistoryTabProps) => {
     <div className="space-y-3 px-4">
       <div className="sticky top-0 z-10 rounded-lg bg-material-opaque px-4 py-3">
         <div className="grid grid-cols-[2fr_1fr_1fr] gap-4 text-xs font-medium text-text-secondary">
-          <div className="flex items-center gap-2">
-            {t("analytics.event", { defaultValue: "Event" })}
-          </div>
-          <div className="ml-5 flex items-center justify-start gap-2">
-            {t("analytics.tokens", { defaultValue: "Tokens" })}
-          </div>
-          <div className="flex items-center justify-end gap-2">
-            {t("analytics.time", { defaultValue: "Time" })}
-          </div>
+          <div className="flex items-center gap-2">{t("analytics.event")}</div>
+          <div className="ml-5 flex items-center justify-start gap-2">{t("analytics.credits")}</div>
+          <div className="flex items-center justify-end gap-2">{t("analytics.time")}</div>
         </div>
       </div>
 

@@ -129,6 +129,7 @@ const SeparatorComponent = () => {
   )
 }
 const FeedCell = (props: { feedId: string; isSelected: boolean }) => {
+  const { t } = useTranslation("settings")
   const feed = useFeedById(props.feedId)
   const { nextSelectedFeedIdRef } = use(ManageListContext)
   const [currentSelected, setCurrentSelected] = useState(props.isSelected)
@@ -159,7 +160,7 @@ const FeedCell = (props: { feedId: string; isSelected: boolean }) => {
             </View>
           </View>
           <Text className="flex-1 text-label" ellipsizeMode="middle" numberOfLines={1}>
-            {feed?.title || "Untitled Feed"}
+            {feed?.title || t("lists.feeds.untitled")}
           </Text>
         </View>
 

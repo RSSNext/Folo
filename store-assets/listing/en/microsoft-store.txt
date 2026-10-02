@@ -1,0 +1,35 @@
+Folo is the AI RSS reader that brings everything you follow into one calm timeline, then helps you read it.
+
+Follow blogs, news sites, newsletters, podcasts, video channels and social feeds in one place. Ask AI about what you read, get a digest of your whole timeline, and let summaries and translations do the heavy lifting.
+
+AI THAT READS WITH YOU
+• Chat with AI about an article, a feed, a folder or your whole timeline
+• Summarize your timeline into a quick digest of what matters
+• AI tasks: schedule daily or weekly briefings, delivered to chat or email
+• AI summaries and translation in English, Chinese, Japanese or French, shown side by side with the original or on their own
+• Text-to-speech with natural voices
+• Connect MCP services, choose your AI model, or bring your own API key
+
+ONE TIMELINE FOR EVERYTHING YOU FOLLOW
+• Subscribe to any RSS, Atom or JSON feed, or search for sources by name
+• Follow sites without a feed through thousands of RSSHub routes
+• Import and export OPML to move from any other reader
+• Articles, social posts, pictures, videos and podcasts, each with its own layout
+• Folders, stars, lists and an inbox with its own email address for newsletters
+
+BUILT FOR THE DESK
+• A three-pane layout designed for fast, focused reading
+• Customizable keyboard shortcuts and a command menu
+• Actions: filter, star, rewrite, notify or summarize new entries with your own rules
+• Send articles to Obsidian, Readwise, Instapaper, Zotero, Cubox, Outline, Readeck and Eagle
+• Themes, reading fonts, custom CSS and code highlighting
+• Spotlight highlights the keywords you care about
+
+EVERYWHERE YOU READ
+Subscriptions, read status and stars sync across Windows, macOS, Linux, Android, iPhone, iPad and the web.
+
+OPEN SOURCE, NO ADS
+Folo is open source under the AGPL-3.0 license and has no ads. It is built in the open with a community of readers and developers.
+
+PLANS
+Folo is free to use with a free account. Basic, Plus and Pro plans add more subscriptions, higher AI limits and automations such as AI tasks, inboxes and bring-your-own-key.

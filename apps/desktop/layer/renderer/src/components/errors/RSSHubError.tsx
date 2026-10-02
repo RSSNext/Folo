@@ -1,4 +1,5 @@
 import type { FC } from "react"
+import { useTranslation } from "react-i18next"
 
 import { attachOpenInEditor } from "~/lib/dev"
 
@@ -8,13 +9,14 @@ import { parseError } from "./helper"
 
 const RSSHubErrorFallback: FC<AppErrorFallbackProps> = (props) => {
   const { message, stack } = parseError(props.error)
+  const { t } = useTranslation()
 
   return (
     <div className="flex flex-col items-center justify-center">
       <div className="m-auto max-w-prose text-center">
         <p className="center my-3 gap-2 font-bold">
           <i className="i-mgc-bug-cute-re text-red-500" />
-          RSSHub has a temporary problem, please contact the our team.
+          {t("errors_page.rsshub_problem")}
         </p>
         <div className="text-lg">{message}</div>
         {import.meta.env.DEV && stack ? (

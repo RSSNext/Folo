@@ -1,5 +1,6 @@
 import { Button } from "@follow/components/ui/button/index.js"
 import type { FC } from "react"
+import { useTranslation } from "react-i18next"
 
 import { attachOpenInEditor } from "~/lib/dev"
 
@@ -10,6 +11,7 @@ import { parseError, useResetErrorWhenRouteChange } from "./helper"
 const PageErrorFallback: FC<AppErrorFallbackProps> = (props) => {
   const { message, stack } = parseError(props.error)
   useResetErrorWhenRouteChange(props.resetError)
+  const { t } = useTranslation()
   return (
     <div className="pointer-events-auto flex w-full flex-col items-center justify-center rounded-md bg-theme-background p-2">
       <div className="m-auto max-w-prose text-center">
@@ -23,18 +25,15 @@ const PageErrorFallback: FC<AppErrorFallbackProps> = (props) => {
           </pre>
         ) : null}
 
-        <p className="my-8">
-          {APP_NAME} has a temporary problem, click the button below to try reloading the app or
-          another solution?
-        </p>
+        <p className="my-8">{t("errors_page.temporary_problem", { appName: APP_NAME })}</p>
 
         <div className="center gap-4">
           <Button onClick={() => props.resetError()} variant="primary">
-            Retry
+            {t("retry", { ns: "common" })}
           </Button>
 
           <Button onClick={() => window.location.reload()} variant="outline">
-            Reload
+            {t("errors_page.reload")}
           </Button>
         </div>
 

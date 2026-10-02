@@ -1,7 +1,7 @@
 /** @type {import('tailwindcss').Config} */
-import { withUIKit } from "react-native-uikit-colors/tailwind"
+import { withNativeUIKit } from "./scripts/native-uikit"
 
-export default withUIKit({
+export default withNativeUIKit({
   darkMode: "class",
   content: ["./src/**/*.{js,jsx,ts,tsx}"],
   presets: [require("nativewind/preset")],

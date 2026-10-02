@@ -36,4 +36,27 @@ describe("sanitizeHTMLString", () => {
     expect(clean).not.toContain("evil.example.com")
     expect(clean).not.toContain("watch?v=")
   })
+
+  it.each([
+    '<math><mtext><table><mglyph><style><!--</style><img title="--><img src=x onerror=alert(1)>">',
+    '<svg><p><style><g title="</style><img src=x onerror=alert(1)>">',
+    "<table><tbody><tr><td><img src=x onerror=alert(1)></table><script>alert(2)</script>",
+    '<svg><a xlink:href="javascript:alert(1)"><text>open</text></a></svg>',
+  ])("keeps malformed and foreign markup safe after reparsing: %s", (dirty) => {
+    // Parsing sanitized output again models the Electron reader inserting it
+    // into a new document, where mutation-XSS payloads can change structure.
+    const clean = sanitizeHTMLString(sanitizeHTMLString(dirty))
+    expect(clean).not.toMatch(/\bonerror\s*=|<script\b|javascript:/i)
+  })
+
+  it("rejects lookalike embeds and strips active attributes from allowed embeds", () => {
+    const clean = sanitizeHTMLString(`
+      <iframe src="https://youtube.com.evil.example/embed/video"></iframe>
+      <iframe src="https://youtube.com@evil.example/embed/video"></iframe>
+      <iframe src="https://www.youtube.com/embed/video" onload="alert(1)" srcdoc="<script>alert(2)</script>"></iframe>
+    `)
+    expect(clean).not.toContain("evil.example")
+    expect(clean).not.toMatch(/onload|srcdoc|<script/i)
+    expect(clean).toContain('src="https://www.youtube.com/embed/video"')
+  })
 })

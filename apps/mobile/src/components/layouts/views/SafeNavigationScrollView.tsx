@@ -12,7 +12,7 @@ import { useSafeAreaFrame, useSafeAreaInsets } from "react-native-safe-area-cont
 
 import { useBottomTabBarHeight } from "@/src/components/layouts/tabbar/hooks"
 import { isScrollToEnd } from "@/src/lib/native"
-import { useInTabScreen } from "@/src/lib/navigation/bottom-tab/hooks"
+import { useTabScreenIsFocused } from "@/src/lib/navigation/bottom-tab/hooks"
 import { useScreenIsInSheetModal } from "@/src/lib/navigation/hooks"
 import { ScreenItemContext } from "@/src/lib/navigation/ScreenItemContext"
 
@@ -87,10 +87,16 @@ export const SafeNavigationScrollView = ({
   })
   const { opacity } = use(BottomTabBarBackgroundContext)
 
-  const inTabScreen = useInTabScreen()
+  // All tab screens stay mounted, so only the focused one may drive the shared tab bar background.
+  // Otherwise a hidden tab whose content fits the screen (e.g. Settings) clears it over the visible one.
+  const tabScreenIsFocused = useTabScreenIsFocused()
+  const tabScreenIsFocusedRef = useRef(tabScreenIsFocused)
+  useLayoutEffect(() => {
+    tabScreenIsFocusedRef.current = tabScreenIsFocused
+  }, [tabScreenIsFocused])
 
   function checkScrollToBottom() {
-    if (!inTabScreen) {
+    if (!tabScreenIsFocusedRef.current) {
       return
     }
     const handle = findNodeHandle(ref.current!)
@@ -99,7 +105,9 @@ export const SafeNavigationScrollView = ({
     }
 
     isScrollToEnd(handle).then((isEnd) => {
-      opacity.value = isEnd ? 0 : 1
+      if (tabScreenIsFocusedRef.current) {
+        opacity.value = isEnd ? 0 : 1
+      }
     })
   }
   const scrollHandler = useAnimatedScrollHandler({

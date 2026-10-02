@@ -15,7 +15,7 @@ class Analytics4 {
     this.sessionID = sessionID
   }
 
-  async setUserId(id: string) {
+  async setUserId(id: string | null) {
     this.userID = id
   }
 

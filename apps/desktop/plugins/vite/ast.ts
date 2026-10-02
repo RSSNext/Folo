@@ -1,34 +1,23 @@
-import { isTaggedFunctionCallOf } from "ast-kit"
 import type { Transformer } from "unplugin-ast"
 import { RemoveWrapperFunction } from "unplugin-ast/transformers"
 import AST from "unplugin-ast/vite"
+import type { TaggedTemplateExpression } from "unplugin-ast/yuku"
 
 // Custom transformer for tw function that compresses template strings
-const TwTransformer: Transformer<any> = {
-  // @ts-ignore
-  onNode: (node) => isTaggedFunctionCallOf(node, ["tw"]),
+export const TwTransformer: Transformer<TaggedTemplateExpression> = {
+  onNode: (node): node is TaggedTemplateExpression =>
+    node.type === "TaggedTemplateExpression" &&
+    node.tag.type === "Identifier" &&
+    node.tag.name === "tw",
   transform(node) {
-    if (node.type === "TaggedTemplateExpression") {
-      const { quasi } = node
-
-      // Process template literals
-      if (quasi.type === "TemplateLiteral") {
-        // Get the raw string content
-        const rawString = quasi.quasis[0]?.value?.raw || ""
-
-        // Compress the string: remove extra whitespace, newlines, and normalize spaces
-        const compressedString = rawString
-          .replaceAll(/\s+/g, " ") // Replace multiple whitespace with single space
-          .trim() // Remove leading and trailing whitespace
-
-        // Update the template literal
-        quasi.quasis[0].value.raw = compressedString
-        quasi.quasis[0].value.cooked = compressedString
-      }
-
-      return quasi
+    const { quasi } = node
+    const firstPart = quasi.quasis[0]
+    if (firstPart) {
+      const compressedString = firstPart.value.raw.replaceAll(/\s+/g, " ").trim()
+      firstPart.value.raw = compressedString
+      firstPart.value.cooked = compressedString
     }
-    return node.arguments[0]
+    return quasi
   },
 }
 

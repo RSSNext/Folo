@@ -1,4 +1,5 @@
 import type { URLSchemeTemplate } from "@follow/shared/settings/interface"
+import { t } from "i18next"
 import { toast } from "sonner"
 
 import { ipcServices } from "~/lib/client"
@@ -50,16 +51,20 @@ export class URLSchemeHandler {
 
       // Validate URL scheme format
       if (!finalScheme.includes("://")) {
-        throw new Error("Invalid URL scheme format. Must include protocol (e.g., 'app://')")
+        throw new Error(t("entry_actions.custom_integration.url_scheme_invalid"))
       }
 
       await this.openURLScheme(finalScheme)
 
       // Since URL schemes don't return responses, we assume success
-      toast.success("URL scheme executed successfully")
+      toast.success(t("entry_actions.custom_integration.url_scheme_success"))
     } catch (error) {
       console.error("URL scheme execution failed:", error)
-      toast.error(`URL scheme failed: ${error instanceof Error ? error.message : String(error)}`)
+      toast.error(
+        t("entry_actions.custom_integration.url_scheme_failed", {
+          error: error instanceof Error ? error.message : String(error),
+        }),
+      )
     }
   }
 
@@ -75,7 +80,7 @@ export class URLSchemeHandler {
       // Note: This may be blocked by popup blockers for non-user-initiated actions
       const opened = window.open(scheme, "_blank")
       if (!opened) {
-        throw new Error("Failed to open URL scheme. This may be blocked by popup blockers.")
+        throw new Error(t("entry_actions.custom_integration.url_scheme_blocked"))
       }
     }
   }
@@ -87,43 +92,5 @@ export class URLSchemeHandler {
     // URL schemes work in both Electron and browser contexts
     // Browser support depends on registered protocol handlers
     return true
-  }
-
-  /**
-   * Get common URL scheme examples for different app types
-   */
-  static getExamples(): { name: string; scheme: string; description: string }[] {
-    return [
-      {
-        name: "Obsidian",
-        scheme: "obsidian://new?vault=MyVault&name=[title]&content=[content_markdown]",
-        description: "Create new note in Obsidian vault",
-      },
-      {
-        name: "Bear",
-        scheme: "bear://x-callback-url/create?title=[title]&text=[content_markdown]&tags=follow",
-        description: "Create new note in Bear with tags",
-      },
-      {
-        name: "Drafts",
-        scheme: "drafts://x-callback-url/create?text=[title]%0A%0A[content_markdown]",
-        description: "Create new draft with title and content",
-      },
-      {
-        name: "Things 3",
-        scheme: "things:///add?title=[title]&notes=[summary]&list=Reading",
-        description: "Add item to Things 3 reading list",
-      },
-      {
-        name: "Notion",
-        scheme: "notion://new?title=[title]&content=[content_markdown]",
-        description: "Create new Notion page",
-      },
-      {
-        name: "DEVONthink",
-        scheme: "x-devonthink://createText?title=[title]&text=[content_markdown]&destination=Inbox",
-        description: "Create new text document in DEVONthink",
-      },
-    ]
   }
 }

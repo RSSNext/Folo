@@ -720,6 +720,126 @@ describe("syncEngine", () => {
     expect(subscriptionsGetMock).toHaveBeenCalledTimes(1)
   })
 
+  it("does not add new-entry hints a recount already counted, even when they arrive later", async () => {
+    const twoHoursAgo = Date.now() - 2 * 60 * 60 * 1000
+    seedCursor(200, twoHoursAgo)
+    // The crawler logged four new entries at 201, but this poll is still answered from a
+    // head published before that, so the hint is not delivered yet.
+    deltaMock.mockResolvedValueOnce(deltaResponse([], { lastSyncId: 200 }))
+    // The recount that follows already sees the four entries.
+    stateMock.mockResolvedValue({ code: 0, data: { lastSyncId: 201 } })
+    readsGetMock.mockResolvedValue({ data: { "feed-1": 4 } })
+
+    await syncEngine.pull("interval")
+
+    expect(useUnreadStore.getState().data["feed-1"]).toBe(4)
+    expect(syncMetaStore.get("unreadSnapshotSyncId")).toBe("201")
+
+    // The user reads one of them; the next poll delivers the hint and the flip together.
+    deltaMock.mockResolvedValueOnce(
+      deltaResponse([
+        createAction({
+          id: 201,
+          action: "N",
+          modelId: "feed-1",
+          data: {
+            feedId: "feed-1",
+            count: 4,
+            unread: 4,
+            latestPublishedAt: "2026-09-18T14:31:00.000Z",
+            from: ["feed"],
+          },
+        }),
+        createAction({
+          id: 202,
+          data: { entryIds: ["entry1"], read: true, isInbox: false, feeds: { "feed-1": 1 } },
+        }),
+      ]),
+    )
+    await syncEngine.pull("interval")
+
+    // Four minus one, not four plus four minus one.
+    expect(useUnreadStore.getState().data["feed-1"]).toBe(3)
+    expect(setFeedUnreadDirtyMock).toHaveBeenCalledWith("feed-1")
+  })
+
+  it("takes the snapshot id from the recount answer and keeps it across restarts", async () => {
+    seedCursor(300, Date.now() - 2 * 60 * 60 * 1000)
+    deltaMock.mockResolvedValueOnce(deltaResponse([], { lastSyncId: 300 }))
+    stateMock.mockResolvedValue({ code: 0, data: { lastSyncId: 301 } })
+    // The server names the id its counts reflect; it beats the state read before.
+    readsGetMock.mockResolvedValue({ data: { "feed-1": 2 }, lastSyncId: 305 })
+
+    await syncEngine.pull("interval")
+    expect(syncMetaStore.get("unreadSnapshotSyncId")).toBe("305")
+
+    // A restart loads the id again: 305 is inside the snapshot, 306 is not.
+    syncEngine.clearInSession()
+    seedCursor(300)
+    deltaMock.mockResolvedValueOnce(
+      deltaResponse([
+        createAction({
+          id: 305,
+          action: "N",
+          modelId: "feed-1",
+          data: {
+            feedId: "feed-1",
+            count: 2,
+            unread: 2,
+            latestPublishedAt: "2026-09-18T00:00:00.000Z",
+            from: ["feed"],
+          },
+        }),
+        createAction({
+          id: 306,
+          action: "N",
+          modelId: "feed-1",
+          data: {
+            feedId: "feed-1",
+            count: 1,
+            unread: 1,
+            latestPublishedAt: "2026-09-18T00:00:00.000Z",
+            from: ["feed"],
+          },
+        }),
+      ]),
+    )
+    await syncEngine.pull("interval")
+
+    expect(useUnreadStore.getState().data["feed-1"]).toBe(3)
+    expect(readsGetMock).toHaveBeenCalledTimes(1)
+  })
+
+  it("still flips read state and settles transactions for actions inside the snapshot", async () => {
+    seedCursor(400, Date.now() - 2 * 60 * 60 * 1000)
+    useEntryStore.setState((state) => ({
+      ...state,
+      data: { entry1: createEntry("entry1", "feed-1") },
+      entryIdSet: new Set(["entry1"]),
+    }))
+    deltaMock.mockResolvedValueOnce(deltaResponse([], { lastSyncId: 400 }))
+    stateMock.mockResolvedValue({ code: 0, data: { lastSyncId: 400 } })
+    // Another device read entry1 at 401, and the recount already reflects that.
+    readsGetMock.mockResolvedValue({ data: { "feed-1": 1 }, lastSyncId: 401 })
+    await syncEngine.pull("interval")
+    expect(useUnreadStore.getState().data["feed-1"]).toBe(1)
+
+    deltaMock.mockResolvedValueOnce(
+      deltaResponse([
+        createAction({
+          id: 401,
+          data: { entryIds: ["entry1"], read: true, isInbox: false, feeds: { "feed-1": 1 } },
+        }),
+      ]),
+    )
+    await syncEngine.pull("interval")
+
+    expect(useEntryStore.getState().data.entry1?.read).toBe(true)
+    expect(entryPatchManyMock).toHaveBeenCalledWith({ entry: { read: true }, entryIds: ["entry1"] })
+    // The counter was not moved twice.
+    expect(useUnreadStore.getState().data["feed-1"]).toBe(1)
+  })
+
   it("lets callers rely on the local snapshot once a cursor exists", async () => {
     seedCursor(100)
     deltaMock.mockResolvedValue(deltaResponse([], { lastSyncId: 100 }))

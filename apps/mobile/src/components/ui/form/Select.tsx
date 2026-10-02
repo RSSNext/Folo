@@ -1,5 +1,6 @@
 import { cn } from "@follow/utils"
 import { useEffect, useMemo, useState } from "react"
+import { useTranslation } from "react-i18next"
 import type { StyleProp, ViewStyle } from "react-native"
 import { View } from "react-native"
 import * as DropdownMenu from "zeego/dropdown-menu"
@@ -36,6 +37,7 @@ export function Select<T>({
   disabled,
   triggerTestID,
 }: SelectProps<T>) {
+  const { t } = useTranslation()
   const [currentValue, setCurrentValue] = useState(() => value)
   useEffect(() => {
     setCurrentValue(value)
@@ -64,7 +66,7 @@ export function Select<T>({
             ellipsizeMode="tail"
             numberOfLines={1}
           >
-            {displayValue || valueToLabelMap.get(currentValue) || "Select"}
+            {displayValue || valueToLabelMap.get(currentValue) || t("select.placeholder")}
           </Text>
           <View className="ml-auto shrink-0 pl-1">
             <MingcuteDownLineIcon

@@ -1,0 +1,34 @@
+{
+  "shortDescription": "Folo è il lettore RSS con IA per Windows. Segui blog, notizie, newsletter, video e podcast in un’unica timeline pulita, poi lascia che l’IA riassuma, traduca e risponda alle tue domande su tutto ciò che segui.",
+  "features": [
+    "Feed RSS, Atom e JSON, più migliaia di route RSSHub per i siti senza feed",
+    "Un’unica timeline per articoli, post social, immagini, video, podcast e notifiche",
+    "Riassunti IA di qualsiasi articolo, su richiesta o in automatico",
+    "Traduzione IA con l’originale a fianco o senza, in inglese, cinese, giapponese o francese",
+    "Chatta con l’IA su un articolo, un feed, una cartella o l’intera timeline",
+    "Riassumi la timeline in un riepilogo veloce",
+    "Attività IA che inviano briefing giornalieri o settimanali in chat o via email",
+    "Collega servizi MCP per integrare in Folo AI gli altri strumenti che usi",
+    "Scegli il modello di IA o usa la tua chiave API",
+    "Sintesi vocale con voci naturali",
+    "Actions: regole che filtrano, aggiungono ai preferiti, riscrivono o riassumono i nuovi contenuti, o ti inviano una notifica",
+    "Invia articoli a Obsidian, Readwise, Instapaper, Zotero, Cubox, Outline, Readeck o Eagle",
+    "Inbox con un indirizzo email dedicato alle newsletter",
+    "Importazione ed esportazione OPML",
+    "Scorciatoie da tastiera personalizzabili e menu dei comandi",
+    "Temi, font di lettura, CSS personalizzato ed evidenziazione del codice",
+    "Spotlight mette in evidenza le parole chiave che ti interessano",
+    "Sincronizzazione su Windows, macOS, Linux, Android, iPhone, iPad e web",
+    "Open source con licenza AGPL-3.0, senza pubblicità"
+  ],
+  "screenshotCaptions": [
+    "Tutti i tuoi feed in un’unica timeline pulita, con Folo AI a portata di clic.",
+    "Fai domande a Folo AI su un articolo, un feed o tutto ciò che segui.",
+    "Trasforma centinaia di nuovi contenuti in un unico riepilogo veloce.",
+    "Leggi gli articoli con la traduzione IA affiancata, in inglese, cinese, giapponese o francese.",
+    "Immagini, video e podcast hanno ciascuno un layout pensato apposta.",
+    "Pianifica attività IA per ricevere briefing giornalieri o settimanali.",
+    "Invia articoli ai tuoi strumenti per appunti e lettura differita, o collega servizi MCP.",
+    "Rendilo tuo con temi, font di lettura e scorciatoie da tastiera."
+  ]
+}

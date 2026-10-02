@@ -1,6 +1,6 @@
-import type { Feed } from "@client/query/feed"
+import type { FeedEntryItem } from "@client/components/items/types"
 import { TitleMarquee } from "@follow/components/ui/marquee/index.jsx"
-import type { ParsedEntry } from "@follow-app/client-sdk"
+import type { FeedSchema, ParsedEntry } from "@follow-app/client-sdk"
 import dayjs from "dayjs"
 import type { FC } from "react"
 import * as React from "react"
@@ -9,12 +9,11 @@ import { FeedIcon } from "../ui/feed-icon"
 import { LazyImage } from "../ui/image"
 
 export const GridList: FC<{
-  entries: ParsedEntry[]
-  feed?: Feed
-}> = ({ entries, feed }) => {
+  items: FeedEntryItem[]
+}> = ({ items }) => {
   return (
     <div className="grid grid-cols-1 gap-3 px-2 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 lg:px-3">
-      {entries.map((entry) => (
+      {items.map(({ entry, feed }) => (
         <div
           className="overflow-hidden rounded-md p-1.5 duration-200 hover:bg-material-medium"
           key={entry.id}
@@ -33,7 +32,7 @@ export const GridList: FC<{
 }
 
 const GridItemFooter: FC<{
-  feed?: Feed
+  feed: Nullable<FeedSchema>
   entryId: string
   entryPreview: ParsedEntry
 }> = ({ feed, entryPreview }) => {
@@ -45,14 +44,8 @@ const GridItemFooter: FC<{
         </div>
       </div>
       <div className="flex items-center gap-1 truncate text-[13px]">
-        <FeedIcon
-          fallback
-          className="mr-0.5 flex"
-          target={feed?.feed}
-          entry={entryPreview}
-          size={18}
-        />
-        <span className={"min-w-0 truncate"}>{feed?.feed.title}</span>
+        <FeedIcon fallback className="mr-0.5 flex" target={feed} entry={entryPreview} size={18} />
+        <span className={"min-w-0 truncate"}>{feed?.title}</span>
         <span className={"text-zinc-500"}>·</span>
         <span className={"text-zinc-500"}>
           {dayjs

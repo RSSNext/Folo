@@ -16,12 +16,13 @@ import { atom, useAtomValue, useStore } from "jotai"
 import type { ChangeEvent } from "react"
 import { useCallback, useState } from "react"
 import { useForm } from "react-hook-form"
-import { useTranslation } from "react-i18next"
+import { Trans, useTranslation } from "react-i18next"
 import { Link } from "react-router"
 import { z } from "zod"
 
 import { useModalStack } from "~/components/ui/modal/stacked/hooks"
 import { followClient } from "~/lib/api-client"
+import { createErrorToaster } from "~/lib/error-parser"
 
 import { DiscoverFeedCard } from "../discover/DiscoverFeedCard"
 import { FeedForm } from "../discover/FeedForm"
@@ -34,18 +35,22 @@ const formSchema = z.object({
 const typeConfig = {
   search: {
     label: "discover.any_url_or_keyword",
-    placeholder: "Enter keywords or URL...",
+    // i18n key for a translated placeholder; the other types show a literal example.
+    placeholderKey: "discover.keyword_input_placeholder",
+    placeholder: undefined,
     prefix: [] as string[],
     default: undefined,
   },
   rss: {
     label: "discover.rss_url",
+    placeholderKey: undefined,
     placeholder: "https://example.com/feed.xml",
     prefix: ["https://", "http://"],
     default: "https://",
   },
   rsshub: {
     label: "discover.rss_hub_route",
+    placeholderKey: undefined,
     placeholder: "rsshub://github/issue/follow/follow",
     prefix: ["rsshub://"],
     default: "rsshub://",
@@ -98,6 +103,7 @@ export function SimpleDiscoverModal({ dismiss }: { dismiss: () => void }) {
       jotaiStore.set(discoverSearchDataAtom, data)
       return data
     },
+    onError: createErrorToaster(t("discover.search_failed")),
   })
 
   const handleKeywordChange = useCallback(
@@ -146,9 +152,7 @@ export function SimpleDiscoverModal({ dismiss }: { dismiss: () => void }) {
   return (
     <div className="flex min-h-[400px] w-[600px] flex-col">
       <div className="mb-6">
-        <p className="text-sm text-text-secondary">
-          {t("discover.find_feeds_description", "Find and add new feeds to your collection")}
-        </p>
+        <p className="text-sm text-text-secondary">{t("discover.find_feeds_description")}</p>
       </div>
 
       <Form {...form}>
@@ -166,17 +170,18 @@ export function SimpleDiscoverModal({ dismiss }: { dismiss: () => void }) {
                     <SegmentItem value="rsshub" label={t("words.rsshub")} />
                   </SegmentGroup>
                 </FormControl>
-                <div className="absolute bottom-0 right-0 flex flex-col flex-wrap items-end gap-1 text-sm text-text-secondary">
-                  <div>
-                    Or go to{" "}
-                    <Link className="text-accent underline" to="/discover" onClick={dismiss}>
-                      Discover
-                    </Link>
-                    <i className="i-mgc-arrow-right-up-cute-re" />
-                  </div>
-
-                  <p>to find more interesting contents.</p>
-                </div>
+                <p className="absolute bottom-0 right-0 text-right text-sm leading-6 text-text-secondary">
+                  <Trans
+                    i18nKey="discover.go_to_discover_hint"
+                    components={{
+                      Link: (
+                        <Link className="text-accent underline" to="/discover" onClick={dismiss} />
+                      ),
+                      Icon: <i className="i-mgc-arrow-right-up-cute-re" />,
+                      br: <br />,
+                    }}
+                  />
+                </p>
               </FormItem>
             )}
           />
@@ -190,7 +195,11 @@ export function SimpleDiscoverModal({ dismiss }: { dismiss: () => void }) {
                 <FormLabel>{t(currentConfig.label)}</FormLabel>
                 <FormControl>
                   <Input
-                    placeholder={currentConfig.placeholder}
+                    placeholder={
+                      currentConfig.placeholderKey
+                        ? t(currentConfig.placeholderKey)
+                        : currentConfig.placeholder
+                    }
                     {...field}
                     onChange={handleKeywordChange}
                   />
@@ -206,7 +215,7 @@ export function SimpleDiscoverModal({ dismiss }: { dismiss: () => void }) {
               {t("words.cancel", { ns: "common" })}
             </Button>
             <Button type="submit" disabled={mutation.isPending}>
-              {mutation.isPending ? t("words.searching", "Searching...") : t("words.search")}
+              {mutation.isPending ? t("words.searching") : t("words.search")}
             </Button>
           </div>
         </form>
@@ -217,7 +226,7 @@ export function SimpleDiscoverModal({ dismiss }: { dismiss: () => void }) {
         <div className="mt-6 flex-1">
           <div className="mb-4 border-b border-border pb-2">
             <h3 className="font-medium text-text">
-              {t("discover.search_results", "Search Results")} ({discoverSearchData.length})
+              {t("discover.search_results")} ({discoverSearchData.length})
             </h3>
           </div>
           <div className="max-h-[300px] space-y-3 overflow-y-auto">
@@ -233,7 +242,7 @@ export function SimpleDiscoverModal({ dismiss }: { dismiss: () => void }) {
         <div className="mt-6 flex flex-1 items-center justify-center">
           <div className="text-center text-text-secondary">
             <i className="i-mgc-search-3-cute-re mb-2 text-2xl" />
-            <p>{t("discover.no_results", "No feeds found for your search.")}</p>
+            <p>{t("discover.no_results")}</p>
           </div>
         </div>
       )}

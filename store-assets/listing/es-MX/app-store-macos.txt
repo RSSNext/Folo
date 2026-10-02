@@ -1,0 +1,33 @@
+Folo es el lector RSS con IA que reúne todo lo que sigues en una sola línea de tiempo, sin ruido, y te ayuda a leerlo.
+
+Sigue blogs, sitios de noticias, newsletters, podcasts, canales de video y redes sociales en un mismo lugar. Pregúntale a la IA sobre lo que lees, pide un repaso de toda tu línea de tiempo y deja que los resúmenes y las traducciones hagan el trabajo pesado.
+
+IA QUE LEE CONTIGO
+• Chatea con la IA sobre un artículo, un feed, una carpeta o toda tu línea de tiempo
+• Convierte tu línea de tiempo en un resumen rápido de lo que importa
+• Tareas de IA: programa boletines diarios o semanales y recíbelos en el chat o por correo electrónico
+• Resúmenes con IA y traducción al inglés, chino, japonés o francés, junto al texto original
+• Lectura en voz alta con voces naturales
+• Conecta servicios MCP para usar tus otras herramientas desde Folo AI
+
+TODO LO QUE SIGUES, EN UN SOLO LUGAR
+• Suscríbete a cualquier feed RSS, Atom o JSON, o busca fuentes por su nombre
+• Importa y exporta OPML para traer tus suscripciones desde cualquier otro lector
+• Artículos, publicaciones de redes sociales, imágenes, videos y podcasts, cada uno con su propio diseño
+• Carpetas, favoritos y una bandeja de entrada con su propia dirección de correo para newsletters
+
+PENSADO PARA TU COMPUTADORA
+• Una vista de tres paneles para leer rápido y sin distracciones
+• Atajos de teclado personalizables y menú de comandos
+• Acciones: filtra, marca como favoritas, reescribe o resume las entradas nuevas con tus propias reglas
+• Envía artículos a Obsidian, Readwise, Instapaper, Zotero, Cubox, Outline, Readeck y Eagle
+• Temas, tipografías de lectura, CSS personalizado y resaltado de sintaxis
+• Spotlight destaca las palabras clave que te interesan
+
+DONDE SEA QUE LEAS
+Tus suscripciones, lo que ya leíste y tus favoritos se sincronizan entre Mac, iPhone, iPad, Windows, Android y la web.
+
+CÓDIGO ABIERTO, SIN ANUNCIOS
+Folo es de código abierto y no tiene anuncios. Se desarrolla de forma abierta junto a una comunidad de lectores y desarrolladores. Algunas funciones tienen límites de uso o requieren un plan de pago. La interfaz de Folo, los resúmenes y las traducciones con IA están disponibles en inglés, chino, japonés y francés.
+
+Términos de uso: https://www.apple.com/legal/internet-services/itunes/dev/stdeula/

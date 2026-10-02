@@ -2,7 +2,7 @@ import handler from 'vinext/server/app-router-entry'
 import { handleImageOptimization } from 'vinext/server/image-optimization'
 
 export default {
-  async fetch(request, env) {
+  async fetch(request, env, ctx) {
     const url = new URL(request.url)
 
     if (url.pathname === '/_vinext/image') {
@@ -18,6 +18,6 @@ export default {
       })
     }
 
-    return handler.fetch(request)
+    return handler.fetch(request, env, ctx)
   },
 }

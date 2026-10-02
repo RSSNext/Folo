@@ -1,0 +1,32 @@
+O Folo é um leitor de RSS com IA que reúne tudo o que você acompanha em uma única linha do tempo, sem ruído, e ainda ajuda na leitura.
+
+Siga blogs, sites de notícias, newsletters, podcasts, canais de vídeo e redes sociais em um só lugar. Deixe a IA resumir artigos longos, traduzir posts em outros idiomas e ler o resto em voz alta, para você ficar por dentro sem pular entre vários apps.
+
+TUDO O QUE VOCÊ SEGUE, EM UM SÓ LUGAR
+• Siga qualquer feed RSS, Atom ou JSON, ou busque fontes pelo nome
+• Acompanhe sites que não têm feed com milhares de rotas do RSSHub
+• Descubra feeds em alta e listas selecionadas por tema e idioma
+• Importe seus feeds de qualquer outro leitor via OPML
+• Mantenha tudo organizado com pastas, favoritos e listas
+
+IA QUE LÊ COM VOCÊ
+• Resumos com IA: os pontos principais de qualquer artigo em segundos
+• Tradução com IA: traduza artigos para inglês, chinês, japonês ou francês e leia ao lado do original ou só a tradução
+• Leitura em voz alta: ouça artigos com uma voz natural
+• Ações: resuma, traduza, marque como favorito, silencie ou filtre novos itens automaticamente com suas próprias regras
+
+FEITO PARA TODOS OS FORMATOS
+• Um modo de leitura limpo que carrega o texto completo dos artigos
+• Layouts próprios para posts de redes sociais, galerias de imagens, vídeos e podcasts
+• Áudio em segundo plano e vídeo em picture-in-picture
+
+SEU LEITOR, DO SEU JEITO
+• Temas claro e escuro, fontes de leitura, tamanho do texto e espaçamento entre linhas
+• Spotlight destaca as palavras-chave que importam para você
+• Seus feeds, o que você já leu e seus favoritos ficam sincronizados entre Android, iPhone, iPad, Windows, macOS, Linux e a web
+
+CÓDIGO ABERTO, SEM ANÚNCIOS
+O Folo é de código aberto sob a licença AGPL-3.0 e não tem anúncios. É desenvolvido de forma aberta, com uma comunidade de leitores e desenvolvedores. A interface do Folo, os resumos e as traduções com IA estão disponíveis em inglês, chinês, japonês e francês.
+
+COMECE DE GRAÇA
+Baixar o Folo não custa nada. Crie uma conta gratuita para seguir feeds e sincronizá-los entre seus dispositivos. Os planos pagos permitem seguir mais feeds e oferecem limites maiores de IA e automações.

@@ -1,0 +1,103 @@
+{
+  "mobile.hero": {
+    "eyebrow": "AI RSS 閱讀器",
+    "headline": "訂閱一切，\n*只留重點。*",
+    "badge": "開源 · GitHub 3.9 萬 Star"
+  },
+  "mobile.summary": {
+    "eyebrow": "AI 摘要",
+    "headline": "長文太長？\n*AI 幾秒讀懂。*"
+  },
+  "mobile.translate": {
+    "eyebrow": "AI 翻譯",
+    "headline": "外文內容，\n*像母語一樣讀。*"
+  },
+  "mobile.formats": {
+    "eyebrow": "多種內容形式",
+    "headline": "不只是\n*文章。*"
+  },
+  "mobile.listen": {
+    "eyebrow": "文字轉語音",
+    "headline": "沒空看？\n*讓 AI 唸給你聽。*"
+  },
+  "mobile.discover": {
+    "eyebrow": "發現",
+    "headline": "好內容，\n*不再錯過。*"
+  },
+  "mobile.sync": {
+    "eyebrow": "多裝置同步",
+    "headline": "換個裝置，\n*接著讀。*"
+  },
+  "mobile.more": {
+    "eyebrow": "還有更多",
+    "headline": "為好奇心\n*而生。*",
+    "pills": [
+      "收藏",
+      "列表",
+      "收件匣",
+      "OPML 匯入",
+      "自動化操作",
+      "Spotlight",
+      "深色模式",
+      "開源",
+      "無廣告"
+    ]
+  },
+  "desktop.hero": {
+    "eyebrow": "AI RSS 閱讀器",
+    "headline": "訂閱一切，\n*只留重點。*",
+    "sub": "部落格、新聞、影片、Podcast 匯成一條清爽的時間軸，AI 隨時待命。",
+    "badge": "開源 · GitHub 3.9 萬 Star"
+  },
+  "desktop.chat": {
+    "eyebrow": "Folo AI",
+    "headline": "有問題，\n*直接問你的訂閱。*",
+    "sub": "針對一篇文章、一個訂閱來源或你關注的一切，和 AI 聊聊。"
+  },
+  "desktop.digest": {
+    "eyebrow": "摘要時間軸",
+    "headline": "今天發生了什麼，\n*一眼看完。*",
+    "sub": "把幾百條新內容濃縮成一份簡報。"
+  },
+  "desktop.translate": {
+    "eyebrow": "AI 翻譯",
+    "headline": "外文內容，\n*像母語一樣讀。*",
+    "sub": "中、英、日、法雙語對照翻譯。"
+  },
+  "desktop.formats": {
+    "eyebrow": "多種內容形式",
+    "headline": "不只是\n*文章。*",
+    "sub": "圖片、影片、Podcast 都有專屬版面。"
+  },
+  "desktop.tasks": {
+    "eyebrow": "AI 任務",
+    "headline": "每日簡報，\n*自動寫好。*",
+    "sub": "定時執行 AI 任務，結果傳送到對話或電子郵件。"
+  },
+  "desktop.integrations": {
+    "eyebrow": "整合",
+    "headline": "和你的工具\n*無縫接軌。*",
+    "sub": "一鍵傳送到 Obsidian、Readwise 等，或接入 MCP 服務。"
+  },
+  "desktop.more": {
+    "eyebrow": "還有更多",
+    "headline": "為深度閱讀\n*而生。*",
+    "pills": [
+      "快速鍵",
+      "指令面板",
+      "自動化操作",
+      "Spotlight",
+      "自訂 CSS",
+      "主題",
+      "OPML",
+      "文字轉語音",
+      "開源",
+      "無廣告"
+    ]
+  },
+  "play.featureGraphic": {
+    "eyebrow": "Folo",
+    "headline": "AI *RSS 閱讀器*",
+    "sub": "訂閱一切，只留重點。"
+  }
+}

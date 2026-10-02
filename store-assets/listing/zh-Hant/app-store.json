@@ -1,0 +1,9 @@
+{
+  "name": "Folo - AI RSS 閱讀器",
+  "subtitle": "訂閱一切，AI 幫你劃重點",
+  "promotionalText": "讓 AI 先替你讀：文章、影片、Podcast 一鍵摘要，外文內容雙語對照，沒空看還能唸給你聽。你關注的一切，都在一條清爽的時間軸裡。",
+  "keywords": {
+    "ios": "新聞,資訊,聚合,部落格,podcast,摘要,總結,翻譯,雙語,朗讀,科技,影片,文章,電子報,feed,rsshub,newsletter,atom",
+    "macos": "新聞,資訊,聚合,部落格,podcast,摘要,總結,翻譯,雙語,朗讀,科技,對話,簡報,研究,電子報,feed,newsletter,atom"
+  }
+}

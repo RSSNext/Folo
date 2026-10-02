@@ -1,3 +1,5 @@
+import { t } from "i18next"
+
 import { followApi } from "~/lib/api-client"
 
 import type { FileAttachment } from "../store/types"
@@ -29,7 +31,7 @@ export async function processFile(
   if (!validation.isValid) {
     return {
       success: false,
-      error: validation.error?.message || "File validation failed",
+      error: validation.error?.message || t("chat.file.validation.failed", { ns: "ai" }),
     }
   }
 
@@ -70,7 +72,10 @@ export async function processFile(
   } catch (error) {
     return {
       success: false,
-      error: `Failed to process file: ${error instanceof Error ? error.message : "Unknown error"}`,
+      error: t("chat.file.process_failed", {
+        ns: "ai",
+        error: error instanceof Error ? error.message : t("error_screen.unknown", { ns: "common" }),
+      }),
     }
   }
 }
@@ -234,7 +239,8 @@ export async function uploadFileAttachment(
       ...fileAttachment,
       uploadStatus: "error",
       uploadProgress: undefined,
-      errorMessage: error instanceof Error ? error.message : "Upload failed",
+      errorMessage:
+        error instanceof Error ? error.message : t("chat.file.upload_failed", { ns: "ai" }),
     }
 
     return errorAttachment

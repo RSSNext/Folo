@@ -68,6 +68,42 @@ const writeChunkedCookie = async (
 }
 
 describe("mobile auth cookie sync", () => {
+  it("observes recoverable Expo cookie slots only after their marker is committed", async () => {
+    const key = "follow_auth_cookie"
+    const initial = createStoredCookie({ token: "initial" })
+    const next = createStoredCookie({ token: "next" })
+    const values = new Map<string, string>([
+      [key, `${chunkMarker}1:0`],
+      [`${key}.0.0`, initial],
+    ])
+    const onSessionChange = vi.fn()
+    const storage = createSessionAwareAuthCookieStorage({
+      cookieKey: key,
+      storage: {
+        getItem: (name) => values.get(name) ?? null,
+        setItem: (name, value) => values.set(name, value),
+        removeItem: (name) => values.delete(name),
+      },
+      onSessionChange,
+    })
+
+    // An interrupted write recovers the previous slot and keeps the same session.
+    await storage.setItemAsync(key, `${chunkMarker}2:1:1`)
+    expect(onSessionChange).not.toHaveBeenCalled()
+    await storage.setItemAsync(`${key}.1.0`, next.slice(0, 80))
+    await storage.setItemAsync(`${key}.1.1`, next.slice(80))
+    expect(onSessionChange).not.toHaveBeenCalled()
+    await storage.setItemAsync(key, `${chunkMarker}2:1:1`)
+    expect(onSessionChange).toHaveBeenCalledTimes(1)
+    expect(await storage.getItemAsync(key)).toBe(`${chunkMarker}2:1:1`)
+
+    // Removing obsolete chunks after a committed write must not invalidate the session.
+    await storage.removeItem(`${key}.0.0`)
+    expect(onSessionChange).toHaveBeenCalledTimes(1)
+    await storage.removeItem(key)
+    expect(onSessionChange).toHaveBeenCalledTimes(2)
+  })
+
   it("keeps the two-factor cookie from a React Native style combined Set-Cookie header", () => {
     const previousCookie = JSON.stringify({
       "better-auth.session_token": {

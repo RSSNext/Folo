@@ -1,0 +1,33 @@
+Folo ist der RSS-Reader mit KI, der all deine Quellen in einer übersichtlichen Timeline bündelt und dir beim Lesen hilft.
+
+Folge Blogs, Nachrichtenseiten, Newslettern, Podcasts, Videokanälen und Social-Media-Feeds an einem Ort. Stell der KI Fragen zu allem, was du liest, hol dir einen kompakten Überblick über deine ganze Timeline und überlass die Fleißarbeit den Zusammenfassungen und Übersetzungen.
+
+KI, DIE MITLIEST
+• Chatte mit der KI über einen Artikel, einen Feed, einen Ordner oder deine ganze Timeline
+• Fasse deine Timeline zu einem kurzen Überblick über das Wichtigste zusammen
+• KI-Aufgaben: Plane tägliche oder wöchentliche Briefings, zugestellt im Chat oder per E-Mail
+• KI-Zusammenfassungen und Übersetzung ins Englische, Chinesische, Japanische oder Französische, direkt neben dem Original
+• Vorlesefunktion mit natürlichen Stimmen
+• Binde MCP-Dienste an, um deine anderen Tools in Folo AI zu nutzen
+
+ALLE QUELLEN IN EINER TIMELINE
+• Abonniere beliebige Feeds im Format RSS, Atom oder JSON Feed oder suche Quellen nach Namen
+• OPML-Import und -Export für den Umzug aus jedem anderen Reader
+• Artikel, Social-Media-Posts, Bilder, Videos und Podcasts, jeweils mit eigenem Layout
+• Ordner, Favoriten und eine Inbox mit eigener E-Mail-Adresse für Newsletter
+
+FÜR DEN SCHREIBTISCH GEMACHT
+• Ein dreispaltiges Layout für schnelles, konzentriertes Lesen
+• Anpassbare Tastenkürzel und ein Befehlsmenü
+• Actions: eigene Regeln, die neue Einträge filtern, als Favorit markieren, umschreiben oder zusammenfassen
+• Sende Artikel an Obsidian, Readwise, Instapaper, Zotero, Cubox, Outline, Readeck und Eagle
+• Designs, Leseschriften, eigenes CSS und Syntaxhervorhebung
+• Spotlight hebt die Stichwörter hervor, die dir wichtig sind
+
+ÜBERALL, WO DU LIEST
+Abos, Lesestatus und Favoriten werden zwischen Mac, iPhone, iPad, Windows, Android und dem Web synchronisiert.
+
+OPEN SOURCE, OHNE WERBUNG
+Folo ist Open Source und werbefrei. Die App entsteht öffentlich, gemeinsam mit einer Community aus Lesern und Entwicklern. Einige Funktionen haben Nutzungslimits oder setzen einen kostenpflichtigen Tarif voraus. Die Oberfläche gibt es auf Englisch, Chinesisch, Japanisch und Französisch.
+
+Nutzungsbedingungen: https://www.apple.com/legal/internet-services/itunes/dev/stdeula/

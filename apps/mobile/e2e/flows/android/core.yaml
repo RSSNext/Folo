@@ -11,3 +11,9 @@ name: Android auth journey
     file: ./dismiss-dev-menu.yaml
 - runFlow:
     file: ./login.yaml
+- runFlow:
+    file: ./tab-navigation.yaml
+- runFlow:
+    file: ./content.yaml
+- runFlow:
+    file: ./deep-link.yaml

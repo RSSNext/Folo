@@ -32,7 +32,9 @@ for (const file of snFontsDir) {
   const weight = weights.find((w) => file.includes(w.weight.toString()))
   if (!weight) continue
   const data = fs.readFileSync(path.join(snFontsDirPath, file))
-  fontsData[`sn-pro-${weight.weight}`] = data.toString("base64")
+  // Keep every language subset; a weight-only key lets the alphabetically
+  // last subset overwrite Latin and produces missing glyphs in Worker OGs.
+  fontsData[file.replace(/-normal\.woff$/, "")] = data.toString("base64")
 }
 
 // kose-font is too large (~24MB) to bundle, loaded from R2 at runtime instead

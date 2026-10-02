@@ -1,5 +1,7 @@
+import { parseMarkdown } from "@follow/components/utils/parse-markdown.js"
 import { createStore, Provider, useAtomValue } from "jotai"
 import { useMemo } from "react"
+import { renderToStaticMarkup } from "react-dom/server"
 
 import {
   entryAtom,
@@ -26,6 +28,12 @@ export const App = () => {
   const readerStyle = useAtomValue(readerStyleAtom, { store })
   const coverMedia = entry?.media?.[0]
   const articleStyle = useMemo(() => getReaderArticleStyle(readerStyle), [readerStyle])
+  // Onboarding entries contain Markdown, as in the desktop reader. Pass the
+  // converted HTML through the usual sanitizer and native media/link renderers.
+  const content = useMemo(() => {
+    if (!entry?.content || !entry.url?.startsWith("folo://onboarding")) return entry?.content
+    return renderToStaticMarkup(parseMarkdown(entry.content).content)
+  }, [entry?.content, entry?.url])
 
   return (
     <Provider store={store}>
@@ -38,7 +46,7 @@ export const App = () => {
         style={articleStyle}
         className={readerStyle?.textColor ? READER_TEXT_COLOR_CLASS : undefined}
       >
-        {entry?.content}
+        {content}
       </HTML>
     </Provider>
   )

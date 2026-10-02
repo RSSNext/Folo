@@ -6,12 +6,14 @@ import {
 import { stopPropagation } from "@follow/utils/dom"
 import { useSetAtom } from "jotai"
 import { useCallback } from "react"
+import { useTranslation } from "react-i18next"
 
 import { useSendAIShortcut } from "~/modules/ai-chat/hooks/useSendAIShortcut"
 import { aiTimelineEnabledAtom } from "~/modules/entry-column/atoms/ai-timeline"
 import { useSettingModal } from "~/modules/settings/modal/use-setting-modal-hack"
 
 export const EntryPlaceholderLogo = () => {
+  const { t } = useTranslation()
   const { sendAIShortcut } = useSendAIShortcut()
   const setAiTimelineEnabled = useSetAtom(aiTimelineEnabledAtom)
   const settingModalPresent = useSettingModal()
@@ -33,22 +35,22 @@ export const EntryPlaceholderLogo = () => {
 
   const buttons = [
     {
-      label: "Summarize the current timeline",
+      label: t("entry_content.placeholder.summarize_timeline"),
       onClick: handleSummarizeTimeline,
       icon: <i className="i-mgc-paint-brush-ai-cute-re text-base" />,
     },
     {
-      label: "Suggest me some new feeds",
+      label: t("entry_content.placeholder.suggest_feeds"),
       onClick: handleRecommendFeeds,
       icon: <i className="i-mgc-search-ai-cute-re text-base" />,
     },
     {
-      label: "Sort the timeline by importance",
+      label: t("entry_content.placeholder.sort_timeline"),
       onClick: handleToggleAiTimeline,
       icon: <i className="i-mgc-refresh-4-ai-cute-re text-base" />,
     },
     {
-      label: "Personalize my Folo AI",
+      label: t("entry_content.placeholder.personalize_ai"),
       onClick: () => settingModalPresent("ai"),
       icon: <i className="i-mgc-ai-cute-re text-base" />,
     },
@@ -63,7 +65,7 @@ export const EntryPlaceholderLogo = () => {
       }
     >
       <i className="i-mgc-folo-bot-original size-16 text-text-tertiary" />
-      <div>Where are we off to first?</div>
+      <div>{t("entry_content.placeholder.title")}</div>
       <div className="mt-4 flex flex-col gap-2">
         {buttons.map((button) => (
           <Button

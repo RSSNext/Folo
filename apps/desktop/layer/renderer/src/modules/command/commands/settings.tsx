@@ -38,7 +38,7 @@ const useRegisterThemeCommands = () => {
   useRegisterCommandEffect([
     {
       id: COMMAND_ID.settings.changeThemeToAuto,
-      label: `To ${t("appearance.theme.system")}`,
+      label: t("appearance.theme.switch_to", { theme: t("appearance.theme.system") }),
       category,
       icon: <i className="i-mgc-settings-7-cute-re" />,
       when: theme !== "system",
@@ -48,7 +48,7 @@ const useRegisterThemeCommands = () => {
     },
     {
       id: COMMAND_ID.settings.changeThemeToDark,
-      label: `To ${t("appearance.theme.dark")}`,
+      label: t("appearance.theme.switch_to", { theme: t("appearance.theme.dark") }),
       category,
       icon: <i className="i-mingcute-moon-line" />,
       when: theme !== "dark",
@@ -58,7 +58,7 @@ const useRegisterThemeCommands = () => {
     },
     {
       id: COMMAND_ID.settings.changeThemeToLight,
-      label: `To ${t("appearance.theme.light")}`,
+      label: t("appearance.theme.switch_to", { theme: t("appearance.theme.light") }),
       category,
       icon: <i className="i-mingcute-sun-line" />,
       when: theme !== "light",

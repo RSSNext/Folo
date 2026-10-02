@@ -1,4 +1,4 @@
-import type { DragOverEvent } from "@dnd-kit/core"
+import type { DragEndEvent, DragOverEvent } from "@dnd-kit/core"
 import {
   closestCenter,
   DndContext,
@@ -8,10 +8,9 @@ import {
   useSensors,
 } from "@dnd-kit/core"
 import {
-  arrayMove,
+  rectSortingStrategy,
   SortableContext,
   sortableKeyboardCoordinates,
-  verticalListSortingStrategy,
 } from "@dnd-kit/sortable"
 import { Button } from "@follow/components/ui/button/index.js"
 import { useCallback, useRef } from "react"
@@ -23,6 +22,7 @@ import { useModalStack } from "~/components/ui/modal/stacked/hooks"
 import { DEFAULT_ACTION_ORDER } from "./constant"
 import { DroppableContainer, SortableActionButton } from "./dnd"
 import { useActionOrder } from "./hooks"
+import { moveActionToContainer, reorderActionInContainer } from "./order"
 
 const CustomizeToolbar = () => {
   const { t } = useTranslation("settings")
@@ -35,41 +35,26 @@ const CustomizeToolbar = () => {
     }),
   )
 
+  // Only moves between the two containers happen while dragging, so the action shows up in the
+  // container it is dragged into. Reordering within a container is previewed by the sortable
+  // strategy and saved on drop: saving it on every dragover re-renders the lists, which fires
+  // dragover again and can loop until React throws "Maximum update depth exceeded" (#4494).
   const handleDragOver = useCallback(
     ({ active, over }: DragOverEvent) => {
       if (!over) return
-      const activeId = active.id
-      const overId = over.id
-      const isActiveInMain = actionOrder.main.includes(activeId)
-      const isOverInMain = overId === "container-main" || actionOrder.main.includes(overId)
-      const isCrossContainer = isActiveInMain !== isOverInMain
+      const nextOrder = moveActionToContainer(actionOrder, active.id, over.id)
+      if (nextOrder) setUISetting("toolbarOrder", nextOrder)
+    },
+    [actionOrder],
+  )
 
-      if (isCrossContainer) {
-        // Moving between containers
-        const sourceList = isActiveInMain ? "main" : "more"
-        const targetList = isActiveInMain ? "more" : "main"
-        const newIndexOfOver = actionOrder[targetList].indexOf(overId)
-        setUISetting("toolbarOrder", {
-          ...actionOrder,
-          [sourceList]: actionOrder[sourceList].filter((item) => item !== activeId),
-          [targetList]: [
-            ...actionOrder[targetList].slice(0, newIndexOfOver),
-            activeId,
-            ...actionOrder[targetList].slice(newIndexOfOver),
-          ],
-        })
-        return
-      }
-      // Reordering within container
-      const list = isActiveInMain ? "main" : "more"
-      const items = actionOrder[list]
-      const oldIndex = items.indexOf(activeId)
-      const newIndex = items.indexOf(overId)
-
-      setUISetting("toolbarOrder", {
-        ...actionOrder,
-        [list]: arrayMove(items, oldIndex, newIndex),
-      })
+  const handleDragEnd = useCallback(
+    ({ active, over }: DragEndEvent) => {
+      if (!over) return
+      const nextOrder =
+        moveActionToContainer(actionOrder, active.id, over.id) ??
+        reorderActionInContainer(actionOrder, active.id, over.id)
+      if (nextOrder) setUISetting("toolbarOrder", nextOrder)
     },
     [actionOrder],
   )
@@ -92,14 +77,20 @@ const CustomizeToolbar = () => {
         </p>
       </div>
       {/* Refer to https://github.com/clauderic/dnd-kit/blob/master/stories/2%20-%20Presets/Sortable/MultipleContainers.tsx */}
-      <DndContext sensors={sensors} collisionDetection={closestCenter} onDragOver={handleDragOver}>
+      <DndContext
+        sensors={sensors}
+        collisionDetection={closestCenter}
+        onDragOver={handleDragOver}
+        onDragEnd={handleDragEnd}
+      >
         <div className="space-y-4">
           {/* Main toolbar */}
 
+          {/* The actions wrap into a grid, so use the rect strategy to preview the new position */}
           <DroppableContainer>
             <SortableContext
               items={actionOrder.main.map((item) => item)}
-              strategy={verticalListSortingStrategy}
+              strategy={rectSortingStrategy}
             >
               {actionOrder.main.map((id) => (
                 <SortableActionButton key={id} id={id} />
@@ -120,7 +111,7 @@ const CustomizeToolbar = () => {
           <DroppableContainer>
             <SortableContext
               items={actionOrder.more.map((item) => item)}
-              strategy={verticalListSortingStrategy}
+              strategy={rectSortingStrategy}
             >
               {actionOrder.more.map((id) => (
                 <SortableActionButton key={id} id={id} />

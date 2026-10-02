@@ -2,7 +2,14 @@ import type { PropsWithChildren } from "react"
 import * as React from "react"
 import { useCallback, useRef, useState } from "react"
 import type { MarqueeProps } from "react-fast-marquee"
-import Marquee from "react-fast-marquee"
+import MarqueeModule from "react-fast-marquee"
+
+// react-fast-marquee only ships CommonJS with `exports.default`. Vite 8 follows Node's interop for
+// `type: module` packages and returns the whole `module.exports` object for a default import,
+// which rendered as an invalid element (React error #130), so unwrap it when needed.
+const Marquee =
+  (MarqueeModule as typeof MarqueeModule & { default?: typeof MarqueeModule }).default ??
+  MarqueeModule
 
 export const TitleMarquee = ({
   children,

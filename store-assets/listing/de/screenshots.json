@@ -1,0 +1,103 @@
+{
+  "mobile.hero": {
+    "eyebrow": "Der RSS-Reader mit KI",
+    "headline": "Alle deine Feeds.\n*Kein Rauschen.*",
+    "badge": "Open Source · 39K Sterne auf GitHub"
+  },
+  "mobile.summary": {
+    "eyebrow": "KI-Zusammenfassungen",
+    "headline": "Das Wichtigste\n*in Sekunden.*"
+  },
+  "mobile.translate": {
+    "eyebrow": "KI-Übersetzung",
+    "headline": "Lies Quellen\n*aus aller Welt.*"
+  },
+  "mobile.formats": {
+    "eyebrow": "Jedes Format",
+    "headline": "Nicht nur\n*Artikel.*"
+  },
+  "mobile.listen": {
+    "eyebrow": "Vorlesen",
+    "headline": "Deine Leseliste,\n*vorgelesen.*"
+  },
+  "mobile.discover": {
+    "eyebrow": "Entdecken",
+    "headline": "Finde Quellen,\n*die sich lohnen.*"
+  },
+  "mobile.sync": {
+    "eyebrow": "Sync",
+    "headline": "Nahtlos\n*weiterlesen.*"
+  },
+  "mobile.more": {
+    "eyebrow": "Und mehr",
+    "headline": "Gemacht für\n*neugierige Köpfe.*",
+    "pills": [
+      "Favoriten",
+      "Listen",
+      "Inbox",
+      "OPML-Import",
+      "Actions",
+      "Spotlight",
+      "Dunkelmodus",
+      "Open Source",
+      "Werbefrei"
+    ]
+  },
+  "desktop.hero": {
+    "eyebrow": "Der RSS-Reader mit KI",
+    "headline": "Alle deine Feeds.\n*Kein Rauschen.*",
+    "sub": "Blogs, News, Videos und Podcasts in einer übersichtlichen Timeline, die KI nur einen Klick entfernt.",
+    "badge": "Open Source · 39K Sterne auf GitHub"
+  },
+  "desktop.chat": {
+    "eyebrow": "Folo AI",
+    "headline": "Frag deine Feeds\n*einfach alles.*",
+    "sub": "Chatte über einen Artikel, einen Feed oder alles, was du verfolgst."
+  },
+  "desktop.digest": {
+    "eyebrow": "Timeline-Zusammenfassung",
+    "headline": "Dein Tag,\n*kurz gefasst.*",
+    "sub": "Aus Hunderten neuen Einträgen wird ein kurzer Überblick."
+  },
+  "desktop.translate": {
+    "eyebrow": "KI-Übersetzung",
+    "headline": "Lies Quellen\n*aus aller Welt.*",
+    "sub": "Übersetzung ins Englische, Chinesische, Japanische oder Französische, direkt neben dem Original."
+  },
+  "desktop.formats": {
+    "eyebrow": "Jedes Format",
+    "headline": "Nicht nur\n*Artikel.*",
+    "sub": "Bilder, Videos und Podcasts bekommen eigene Layouts."
+  },
+  "desktop.tasks": {
+    "eyebrow": "KI-Aufgaben",
+    "headline": "Briefings\n*wie von selbst.*",
+    "sub": "Plane tägliche oder wöchentliche KI-Aufgaben und erhalte die Ergebnisse im Chat oder per E-Mail."
+  },
+  "desktop.integrations": {
+    "eyebrow": "Integrationen",
+    "headline": "Passt zu\n*deinen Tools.*",
+    "sub": "Sende Artikel an Obsidian, Readwise und mehr oder binde MCP-Dienste an."
+  },
+  "desktop.more": {
+    "eyebrow": "Und mehr",
+    "headline": "Für alle, die\n*gründlich lesen.*",
+    "pills": [
+      "Tastenkürzel",
+      "Befehlsmenü",
+      "Actions",
+      "Spotlight",
+      "Eigenes CSS",
+      "Designs",
+      "OPML",
+      "Vorlesen",
+      "Open Source",
+      "Werbefrei"
+    ]
+  },
+  "play.featureGraphic": {
+    "eyebrow": "Folo",
+    "headline": "*RSS-Reader* mit KI",
+    "sub": "Alle deine Feeds. Kein Rauschen."
+  }
+}

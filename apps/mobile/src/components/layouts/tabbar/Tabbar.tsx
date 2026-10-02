@@ -17,6 +17,7 @@ import { gentleSpringPreset, quickSpringPreset, softSpringPreset } from "@/src/c
 import { BottomTabContext } from "@/src/lib/navigation/bottom-tab/BottomTabContext"
 import type { ResolvedTabScreenProps, TabbarIconProps } from "@/src/lib/navigation/bottom-tab/types"
 import { isAndroid } from "@/src/lib/platform"
+import { FloatingPlayerBar } from "@/src/modules/player/FloatingPlayerBar"
 import { PlayerTabBar } from "@/src/modules/player/PlayerTabBar"
 import { accentColor } from "@/src/theme/colors"
 
@@ -79,16 +80,18 @@ export const Tabbar: FC<{
       <TabBarBackground />
 
       <PlayerTabBar />
+      {/* Pushed screens cover the tab bar, so they get a floating player bar instead */}
+      <FloatingPlayerBar />
       <Grid columns={renderTabScreens.length} gap={10} className="mt-[7]">
-        {renderTabScreens.map((route, index) => {
-          const focused = index === selectedIndex
+        {renderTabScreens.map((route) => {
+          const focused = route.tabScreenIndex === selectedIndex
           const label = route.title ?? ""
           return (
             <MemoedTabItem
               key={route.tabScreenIndex}
               focused={focused}
               identifier={route.identifier ?? String(route.tabScreenIndex)}
-              index={index}
+              index={route.tabScreenIndex}
               label={label}
               renderIcon={route.icon}
               onPress={onPress}

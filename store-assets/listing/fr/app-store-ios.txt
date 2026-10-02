@@ -1,0 +1,37 @@
+Folo est le lecteur RSS avec IA qui réunit tout ce que vous suivez dans une seule chronologie apaisée, puis vous aide à y voir clair.
+
+Suivez blogs, sites d’actualité, newsletters, podcasts, chaînes vidéo et réseaux sociaux au même endroit. Laissez l’IA résumer les longs articles, traduire ceux publiés dans d’autres langues et vous lire le reste à voix haute : vous gardez le fil sans vous noyer dans les onglets.
+
+UNE SEULE CHRONOLOGIE POUR TOUT SUIVRE
+• Abonnez-vous à n’importe quel flux RSS, Atom ou JSON, ou recherchez des sources par leur nom
+• Suivez les sites sans flux grâce à des milliers de routes RSSHub
+• Explorez les flux tendance et des listes triées sur le volet pour dénicher de nouvelles sources
+• Importez vos abonnements depuis n’importe quel autre lecteur grâce à l’OPML
+• Rangez tout avec des dossiers, des favoris et des listes
+
+UNE IA QUI LIT AVEC VOUS
+• Résumés IA : l’essentiel de n’importe quel article en quelques secondes
+• Traduction IA : lisez en français, anglais, chinois ou japonais, en comparaison bilingue ou en traduction seule
+• Synthèse vocale : écoutez n’importe quel article avec une voix naturelle
+• Actions : résumez, traduisez, mettez en favori ou filtrez automatiquement les nouvelles entrées selon vos propres règles
+
+PENSÉ POUR TOUS LES FORMATS
+• Un mode lecture épuré qui récupère le texte intégral des articles
+• Des mises en page dédiées aux publications sociales, images, vidéos et podcasts
+• Lecture en arrière-plan pour les podcasts et Image dans l’image pour les vidéos
+
+UN LECTEUR À VOTRE IMAGE
+• Thèmes clair et sombre, polices de lecture, taille du texte et interligne
+• Spotlight met en évidence les mots-clés qui comptent pour vous
+• Abonnements, état de lecture et favoris se synchronisent entre iPhone, iPad, Mac, Windows, Android et le Web
+
+OPEN SOURCE ET SANS PUBLICITÉ
+Folo est open source et sans publicité, développé au grand jour avec une communauté de lecteurs et de développeurs.
+
+COMMENCEZ GRATUITEMENT
+Créez un compte gratuit pour suivre vos flux et les synchroniser sur tous vos appareils. Les forfaits Basic, Plus et Pro permettent de suivre davantage de flux, relèvent les quotas IA et ajoutent des automatisations.
+
+Les abonnements sont facturés mensuellement ou annuellement et se renouvellent automatiquement, sauf résiliation au moins 24 heures avant la fin de la période en cours. Le paiement est débité de votre compte Apple à la confirmation de l’achat. Vous pouvez gérer ou résilier votre abonnement à tout moment dans les réglages de votre compte App Store.
+
+Politique de confidentialité : https://folo.is/privacy-policy
+Conditions d’utilisation : https://www.apple.com/legal/internet-services/itunes/dev/stdeula/

@@ -6,6 +6,9 @@ function buildMarkers(comment, tag) {
 }
 
 function findAnchorIndex(lines, anchor) {
+  if (typeof anchor === "function") {
+    return anchor(lines)
+  }
   if (typeof anchor === "string") {
     return lines.findIndex((line) => line.includes(anchor))
   }

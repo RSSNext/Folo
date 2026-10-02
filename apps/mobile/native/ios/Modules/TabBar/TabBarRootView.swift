@@ -21,15 +21,16 @@ enum CustomTabbarController {
 
     }
 
-    tabBarController.tabBar.isHidden = true
-    if #available(iOS 18.0, *) {
-      tabBarController.isTabBarHidden = true
-    }
-
     if #available(iOS 26.0, *), !isPad {
-      tabBarController.isTabBarHidden = false
+      // The native Liquid Glass tab bar is shown, so never hide it. Apps linked against the
+      // iOS 27 SDK no longer have `isTabBarHidden = false` undo `tabBar.isHidden = true`.
       tabBarController.tabBarMinimizeBehavior = .onScrollDown
-
+    } else {
+      // React Native renders the tab bar (BottomTabs) on older systems and on iPad.
+      tabBarController.tabBar.isHidden = true
+      if #available(iOS 18.0, *) {
+        tabBarController.isTabBarHidden = true
+      }
     }
 
     tabBarController.tabBar.tintColor = Utils.accentColor

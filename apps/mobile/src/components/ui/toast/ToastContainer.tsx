@@ -37,10 +37,14 @@ export const ToastContainer = () => {
 
   void renderBottomStackToasts
 
+  if (stack.length === 0) {
+    return null
+  }
+
   return (
-    <View className="absolute inset-0" pointerEvents="box-only">
+    <View className="absolute inset-0" pointerEvents="box-none">
       {/* Center replace container */}
-      <View className="absolute inset-0 items-center justify-center px-5" pointerEvents="box-only">
+      <View className="absolute inset-0 items-center justify-center px-5" pointerEvents="box-none">
         {renderCenterReplaceToast && <CenteredToast {...renderCenterReplaceToast} />}
       </View>
       {/* Bottom stack */}

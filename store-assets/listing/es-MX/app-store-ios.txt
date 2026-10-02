@@ -1,0 +1,37 @@
+Folo es el lector RSS con IA que reúne todo lo que sigues en una sola línea de tiempo, sin ruido, y te ayuda a leerlo.
+
+Sigue blogs, sitios de noticias, newsletters, podcasts, canales de video y redes sociales en un mismo lugar. Deja que la IA resuma los artículos largos, traduzca los que están en otros idiomas y te lea el resto en voz alta, para estar al día sin perderte entre pestañas.
+
+TODO LO QUE SIGUES, EN UN SOLO LUGAR
+• Suscríbete a cualquier feed RSS, Atom o JSON, o busca fuentes por su nombre
+• Sigue sitios sin feed gracias a miles de rutas de RSSHub
+• Explora feeds en tendencia y listas seleccionadas para descubrir nuevas fuentes
+• Importa tus suscripciones desde cualquier otro lector con OPML
+• Mantén todo en orden con carpetas, favoritos y listas
+
+IA QUE LEE CONTIGO
+• Resúmenes con IA: las ideas clave de cualquier artículo en segundos
+• Traducción con IA: traduce artículos al inglés, chino, japonés o francés y léelos junto al original o por separado
+• Lectura en voz alta: escucha cualquier artículo con una voz natural
+• Acciones: resume, traduce, marca como favoritas o filtra las entradas nuevas de forma automática con tus propias reglas
+
+PENSADO PARA CADA FORMATO
+• Una vista de lectura limpia que obtiene el texto completo de los artículos
+• Diseños específicos para publicaciones de redes sociales, imágenes, videos y podcasts
+• Podcasts en segundo plano y videos en modo imagen dentro de imagen
+
+TU LECTOR, A TU MANERA
+• Temas claro y oscuro, tipografías de lectura, tamaño del texto e interlineado
+• Spotlight destaca las palabras clave que te interesan
+• Tus suscripciones, lo que ya leíste y tus favoritos se sincronizan entre iPhone, iPad, Mac, Windows, Android y la web
+
+CÓDIGO ABIERTO, SIN ANUNCIOS
+Folo es de código abierto y no tiene anuncios. Se desarrolla de forma abierta junto a una comunidad de lectores y desarrolladores. La interfaz de Folo, los resúmenes y las traducciones con IA están disponibles en inglés, chino, japonés y francés.
+
+COMIENZA GRATIS
+Crea una cuenta gratuita para seguir feeds y sincronizarlos entre tus dispositivos. Los planes Basic, Plus y Pro agregan más suscripciones, límites de IA más altos y automatizaciones.
+
+Las suscripciones se cobran de forma mensual o anual y se renuevan automáticamente, a menos que se cancelen al menos 24 horas antes de que termine el período actual. El pago se carga a tu Cuenta de Apple al confirmar la compra. Puedes administrar o cancelar tu suscripción en cualquier momento desde la configuración de tu cuenta de App Store.
+
+Política de privacidad: https://folo.is/privacy-policy
+Términos de uso: https://www.apple.com/legal/internet-services/itunes/dev/stdeula/

@@ -1,4 +1,5 @@
 import * as Notifications from "expo-notifications"
+import { t } from "i18next"
 import { Platform } from "react-native"
 
 import { getUISettings } from "../atoms/settings/ui"
@@ -21,7 +22,7 @@ export async function requestNotificationPermission() {
     finalStatus = status
   }
   if (finalStatus !== "granted") {
-    toast.error("Permission not granted for notification!")
+    toast.error(t("permission.notification_denied"))
     return false
   }
   return true

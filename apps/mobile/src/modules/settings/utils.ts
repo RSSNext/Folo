@@ -3,6 +3,7 @@ import { userSyncService } from "@follow/store/user/store"
 import * as DocumentPicker from "expo-document-picker"
 import * as FileSystem from "expo-file-system/legacy"
 import * as Sharing from "expo-sharing"
+import { t } from "i18next"
 
 import { getDbPath } from "@/src/database"
 import { followApi } from "@/src/lib/api-client"
@@ -32,7 +33,7 @@ export const setAvatar = async () => {
       image: url,
     })
     .then(() => {
-      toast.success("Avatar updated")
+      toast.success(t("profile.avatar.uploadSuccess", { ns: "settings" }))
     })
     .catch((err) => {
       toastFetchError(err)
@@ -58,7 +59,7 @@ export const importOpml = async () => {
     const file = result.assets[0]
 
     if (!file) {
-      toast.error("No file selected")
+      toast.error(t("data_control.import_opml.no_file", { ns: "settings" }))
       return
     }
 
@@ -74,7 +75,12 @@ export const importOpml = async () => {
 
     const { successfulItems, conflictItems, parsedErrorItems } = data
     toast.success(
-      `Import successful, ${successfulItems.length} feeds were imported, ${conflictItems.length} feeds were already subscribed, and ${parsedErrorItems.length} feeds failed to import.`,
+      t("data_control.import_opml.result", {
+        ns: "settings",
+        successful: successfulItems.length,
+        conflict: conflictItems.length,
+        failed: parsedErrorItems.length,
+      }),
     )
   } catch (error) {
     toastFetchError(error as Error)
@@ -95,10 +101,10 @@ export const exportLocalDatabase = async () => {
     await Sharing.shareAsync(destinationUri, {
       UTI: "public.database",
       mimeType: "application/x-sqlite3",
-      dialogTitle: "Export Database",
+      dialogTitle: t("general.export_database.label", { ns: "settings" }),
     })
   } catch (error) {
     console.error(error)
-    toast.error("Failed to export database")
+    toast.error(t("data_control.export_local_database.failed", { ns: "settings" }))
   }
 }

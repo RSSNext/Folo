@@ -14,6 +14,7 @@ import { Text } from "@/src/components/ui/typography/Text"
 import { useNavigation } from "@/src/lib/navigation/hooks"
 import type { NavigationControllerView } from "@/src/lib/navigation/types"
 import { EntryListSelector } from "@/src/modules/entry-list/EntryListSelector"
+import { useFloatingPlayerBarInset } from "@/src/modules/player/hooks"
 import { EntryListContext, useEntries, useSelectedView } from "@/src/modules/screen/atoms"
 import { TimelineHeader } from "@/src/modules/screen/TimelineSelectorProvider"
 import { FollowScreen } from "@/src/screens/(modal)/FollowScreen"
@@ -23,6 +24,7 @@ export const FeedScreen: NavigationControllerView<{
   feedId: string
 }> = ({ feedId: feedIdentifier }) => {
   const insets = useSafeAreaInsets()
+  const floatingPlayerBarInset = useFloatingPlayerBarInset()
   const feed = useFeedById(feedIdentifier)
   const navigation = useNavigation()
   const isSubscribed = useIsSubscribed(feedIdentifier)
@@ -33,7 +35,7 @@ export const FeedScreen: NavigationControllerView<{
   return (
     <EntryListContext value={entryListContextValue}>
       <RootSiblingParent>
-        <BottomTabBarHeightContext value={insets.bottom}>
+        <BottomTabBarHeightContext value={insets.bottom + floatingPlayerBarInset}>
           <TimelineHeader feedId={feed?.id} />
           <FeedScreenEntryList />
           {isPreview && (
@@ -41,7 +43,7 @@ export const FeedScreen: NavigationControllerView<{
               className="absolute left-1/2 z-10 min-w-[112px] -translate-x-1/2 items-center justify-center overflow-hidden rounded-full bg-accent px-5 py-3"
               hitSlop={12}
               style={{
-                bottom: Math.max(20, insets.bottom + 12),
+                bottom: Math.max(20, insets.bottom + 12) + floatingPlayerBarInset,
               }}
               onPress={() => {
                 navigation.presentControllerView(FollowScreen, {

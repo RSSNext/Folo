@@ -12,14 +12,14 @@
   },
   "dependencies": {
     "@egoist/tailwindcss-icons": "1.9.2",
-    "@iconify-json/logos": "1.2.11",
-    "@iconify-json/mingcute": "1.2.7",
-    "@iconify-json/simple-icons": "1.2.89",
-    "@iconify/tools": "5.0.12",
-    "@iconify/utils": "3.1.4",
+    "@iconify-json/logos": "1.2.14",
+    "@iconify-json/mingcute": "1.2.8",
+    "@iconify-json/simple-icons": "1.2.97",
+    "@iconify/tools": "5.0.14",
+    "@iconify/utils": "3.1.7",
     "@tailwindcss/container-queries": "0.1.1",
     "@tailwindcss/typography": "0.5.20",
-    "es-toolkit": "1.49.0",
+    "es-toolkit": "1.52.0",
     "tailwindcss-animate": "1.0.7",
     "tailwindcss-motion": "1.1.1",
     "tailwindcss-multi": "0.4.6",
@@ -27,9 +27,9 @@
     "tailwindcss-uikit-colors": "catalog:"
   },
   "devDependencies": {
-    "postcss": "8.5.16",
+    "postcss": "8.5.28",
     "postcss-js": "5.1.0",
-    "tailwindcss": "4.3.2",
+    "tailwindcss": "4.3.3",
     "workspace-root": "3.3.1"
   }
 }

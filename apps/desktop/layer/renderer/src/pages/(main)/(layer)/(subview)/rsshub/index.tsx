@@ -109,8 +109,8 @@ const InstanceCard = memo(({ item }: { item: InstanceItem }) => {
     />
   )
 
-  const title = isOfficial ? "Folo Official" : ""
-  const description = isOfficial ? "Folo Built-in RSSHub" : instance.description
+  const title = isOfficial ? t("rsshub.official.title") : ""
+  const description = isOfficial ? t("rsshub.official.description") : instance.description
 
   const usersStat = isOfficial ? "*" : instance.userCount || 0
   const limitStat = isOfficial
@@ -138,7 +138,11 @@ const InstanceCard = memo(({ item }: { item: InstanceItem }) => {
           {t("rsshub.table.yours")}
         </span>
       )}
-      {hasError && <span className="rounded bg-red/10 px-1.5 py-0.5 text-xs text-red">Error</span>}
+      {hasError && (
+        <span className="rounded bg-red/10 px-1.5 py-0.5 text-xs text-red">
+          {t("rsshub.table.error")}
+        </span>
+      )}
     </>
   )
 
@@ -172,11 +176,11 @@ const InstanceCard = memo(({ item }: { item: InstanceItem }) => {
       <div className="flex items-center justify-between text-xs">
         <div className="flex gap-4">
           <div>
-            <span className="text-text-secondary">Users:</span>{" "}
+            <span className="text-text-secondary">{t("rsshub.table.users_label")}</span>{" "}
             <span className="text-text">{String(usersStat)}</span>
           </div>
           <div>
-            <span className="text-text-secondary">Limit:</span>{" "}
+            <span className="text-text-secondary">{t("rsshub.table.limit_label")}</span>{" "}
             <span className="text-text">{String(limitStat)}</span>
           </div>
         </div>
@@ -197,7 +201,7 @@ const InstanceCard = memo(({ item }: { item: InstanceItem }) => {
                   })
                 }
               >
-                Edit
+                {t("rsshub.table.edit")}
               </Button>
               <Button
                 variant="outline"
@@ -212,7 +216,7 @@ const InstanceCard = memo(({ item }: { item: InstanceItem }) => {
                   })
                 }
               >
-                Del
+                {t("rsshub.table.delete.label")}
               </Button>
             </>
           )}

@@ -36,6 +36,7 @@ export const WrappedScreenItem: FC<
     headerConfig?: ScreenStackHeaderConfigProps
     screenOptions?: NavigationControllerViewExtraProps
     style?: StyleProp<ViewStyle>
+    onNativeAppear?: () => void
   } & ScreenOptionsContextType
 > = memo(
   ({
@@ -45,6 +46,7 @@ export const WrappedScreenItem: FC<
     headerConfig,
     screenOptions: screenOptionsProp,
     style,
+    onNativeAppear,
     ...rest
   }) => {
     const navigation = useNavigation()
@@ -77,6 +79,7 @@ export const WrappedScreenItem: FC<
         setIsFocused(true)
         setIsAppeared(true)
         setIsDisappeared(false)
+        onNativeAppear?.()
       },
       onDisappear: () => {
         setIsFocused(false)

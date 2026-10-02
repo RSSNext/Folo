@@ -1,23 +1,20 @@
 import { Portal } from "@gorhom/portal"
 import { use, useLayoutEffect } from "react"
-import { Platform, View } from "react-native"
-import DeviceInfo from "react-native-device-info"
+import { View } from "react-native"
 import { useSafeAreaInsets } from "react-native-safe-area-context"
 
 import { BottomTabContext } from "@/src/lib/navigation/bottom-tab/BottomTabContext"
 import { TabBarPortal } from "@/src/lib/navigation/bottom-tab/TabBarPortal"
 import { useNavigation } from "@/src/lib/navigation/hooks"
 import { NavigationInstanceContext } from "@/src/lib/navigation/NavigationInstanceContext"
-import { isIos26 } from "@/src/lib/platform"
 import { GlassPlayerTabBar } from "@/src/modules/player/GlassPlayerTabBar"
 
 import { BottomTabs } from "./BottomTabs"
 import { SetBottomTabBarHeightContext } from "./contexts/BottomTabBarHeightContext"
-
-const isIpad = Platform.OS === "ios" && DeviceInfo.isTablet()
+import { isNativeTabBarEnabled } from "./native-tab-bar"
 
 export const ReactNativeTab = () => {
-  if (isIos26 && !isIpad) {
+  if (isNativeTabBarEnabled) {
     return <NativeTabBarHolder />
   }
   return (

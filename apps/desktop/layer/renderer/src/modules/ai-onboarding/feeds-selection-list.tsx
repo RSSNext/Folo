@@ -138,6 +138,7 @@ function FeedSelectionOperationScreen() {
 }
 
 function FeedSelectionItem({ feedAtom }: { feedAtom: PrimitiveAtom<FeedSelection> }) {
+  const t = useI18n()
   const [feed, setFeed] = useAtom(feedAtom)
 
   const onRemove = () => {
@@ -157,7 +158,7 @@ function FeedSelectionItem({ feedAtom }: { feedAtom: PrimitiveAtom<FeedSelection
             className="i-mingcute-minus-circle-fill absolute right-0 top-0 z-10 size-5 -translate-y-1/2 translate-x-1/2 cursor-pointer text-text-secondary transition-colors hover:text-text"
           />
         </TooltipTrigger>
-        <TooltipContent>Remove</TooltipContent>
+        <TooltipContent>{t.app("new_user_guide.selection.remove")}</TooltipContent>
       </Tooltip>
 
       <Card

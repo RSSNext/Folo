@@ -90,13 +90,13 @@ const useRegisterEagleCommands = () => {
           run: async ({ entryId }) => {
             const entry = getEntry(entryId)
             if (!entry) {
-              toast.error("Failed to save to Eagle: entry is not available", {
+              toast.error(t("entry_actions.unavailable.save_to", { target: "Eagle" }), {
                 duration: 3000,
               })
               return
             }
             if (!entry.url || !entry.media?.length) {
-              toast.error('Failed to save to Eagle: "url" or "media" is not available', {
+              toast.error(t("entry_actions.unavailable.save_media_to", { target: "Eagle" }), {
                 duration: 3000,
               })
               return
@@ -141,7 +141,9 @@ const useRegisterReadwiseCommands = () => {
           run: async ({ entryId }) => {
             const entry = getEntry(entryId)
             if (!entry) {
-              toast.error("Failed to save to Readwise: entry is not available", { duration: 3000 })
+              toast.error(t("entry_actions.unavailable.save_to", { target: "Readwise" }), {
+                duration: 3000,
+              })
               return
             }
             try {
@@ -168,9 +170,9 @@ const useRegisterReadwiseCommands = () => {
 
               toast.success(
                 <>
-                  {t("entry_actions.saved_to_readwise")},{" "}
+                  {t("entry_actions.saved_to_readwise")}{" "}
                   <a target="_blank" className="underline" href={data.url}>
-                    view
+                    {t("entry_actions.view_saved_item")}
                   </a>
                 </>,
                 {
@@ -210,7 +212,7 @@ const useRegisterInstapaperCommands = () => {
           run: async ({ entryId }) => {
             const entry = getEntry(entryId)
             if (!entry) {
-              toast.error("Failed to save to Instapaper: entry is not available", {
+              toast.error(t("entry_actions.unavailable.save_to", { target: "Instapaper" }), {
                 duration: 3000,
               })
               return
@@ -235,13 +237,13 @@ const useRegisterInstapaperCommands = () => {
 
               toast.success(
                 <>
-                  {t("entry_actions.saved_to_instapaper")},{" "}
+                  {t("entry_actions.saved_to_instapaper")}{" "}
                   <a
                     target="_blank"
                     className="underline"
                     href={`https://www.instapaper.com/read/${data.bookmark_id}`}
                   >
-                    view
+                    {t("entry_actions.view_saved_item")}
                   </a>
                 </>,
                 {
@@ -307,7 +309,9 @@ const useRegisterObsidianCommands = () => {
           run: async ({ entryId }) => {
             const entry = getEntry(entryId)
             if (!entry) {
-              toast.error("Failed to save to Obsidian: entry is not available", { duration: 3000 })
+              toast.error(t("entry_actions.unavailable.save_to", { target: "Obsidian" }), {
+                duration: 3000,
+              })
               return
             }
             const markdownContent = await getEntryContentAsMarkdown(entry)
@@ -356,7 +360,9 @@ const useRegisterOutlineCommands = () => {
           run: async ({ entryId }) => {
             const entry = getEntry(entryId)
             if (!entry) {
-              toast.error("Failed to save to Outline: entry is not available", { duration: 3000 })
+              toast.error(t("entry_actions.unavailable.save_to", { target: "Outline" }), {
+                duration: 3000,
+              })
               return
             }
 
@@ -420,7 +426,9 @@ const useRegisterReadeckCommands = () => {
           run: async ({ entryId }) => {
             const entry = getEntry(entryId)
             if (!entry) {
-              toast.error("Failed to save to Readeck: entry is not available", { duration: 3000 })
+              toast.error(t("entry_actions.unavailable.save_to", { target: "Readeck" }), {
+                duration: 3000,
+              })
               return
             }
             try {
@@ -448,9 +456,9 @@ const useRegisterReadeckCommands = () => {
 
               toast.success(
                 <>
-                  {t("entry_actions.saved_to_readeck")},{" "}
+                  {t("entry_actions.saved_to_readeck")}{" "}
                   <a target="_blank" className="underline" href={response.headers.get("Location")!}>
-                    view
+                    {t("entry_actions.view_saved_item")}
                   </a>
                 </>,
                 {
@@ -489,7 +497,9 @@ const useRegisterCuboxCommands = () => {
           run: async ({ entryId }) => {
             const entry = getEntry(entryId)
             if (!entry) {
-              toast.error("Failed to save to Cubox: entry is not available", { duration: 3000 })
+              toast.error(t("entry_actions.unavailable.save_to", { target: "Cubox" }), {
+                duration: 3000,
+              })
               return
             }
             try {
@@ -584,7 +594,9 @@ const useRegisterZoteroCommands = () => {
           run: async ({ entryId }) => {
             const entry = getEntry(entryId)
             if (!entry) {
-              toast.error("Failed to save to Zotero: entry is not available", { duration: 3000 })
+              toast.error(t("entry_actions.unavailable.save_to", { target: "Zotero" }), {
+                duration: 3000,
+              })
               return
             }
             try {
@@ -619,7 +631,9 @@ const useRegisterZoteroCommands = () => {
               switch (errorObj.statusCode) {
                 case 400: {
                   toast.error(
-                    `${t("entry_actions.failed_to_save_to_zotero")}: Invalid type/field; unparseable JSON`,
+                    t("entry_actions.zotero_error.save_failed", {
+                      reason: t("entry_actions.zotero_error.invalid_request"),
+                    }),
                     {
                       duration: 3000,
                     },
@@ -629,7 +643,9 @@ const useRegisterZoteroCommands = () => {
                 }
                 case 409: {
                   toast.error(
-                    `${t("entry_actions.failed_to_save_to_zotero")}: The target library is locked.`,
+                    t("entry_actions.zotero_error.save_failed", {
+                      reason: t("entry_actions.zotero_error.library_locked"),
+                    }),
                     {
                       duration: 3000,
                     },
@@ -639,7 +655,9 @@ const useRegisterZoteroCommands = () => {
                 }
                 case 412: {
                   toast.error(
-                    `${t("entry_actions.failed_to_save_to_zotero")}: The version provided in If-Unmodified-Since-Version is out of date, or the provided Zotero-Write-Token has already been submitted.`,
+                    t("entry_actions.zotero_error.save_failed", {
+                      reason: t("entry_actions.zotero_error.version_conflict"),
+                    }),
                     {
                       duration: 3000,
                     },
@@ -649,7 +667,9 @@ const useRegisterZoteroCommands = () => {
                 }
                 case 413: {
                   toast.error(
-                    `${t("entry_actions.failed_to_save_to_zotero")}: Too many items submitted`,
+                    t("entry_actions.zotero_error.save_failed", {
+                      reason: t("entry_actions.zotero_error.too_many_items"),
+                    }),
                     {
                       duration: 3000,
                     },
@@ -659,7 +679,9 @@ const useRegisterZoteroCommands = () => {
                 }
                 default: {
                   toast.error(
-                    `${t("entry_actions.failed_to_save_to_zotero")}: ${errorObj.message} || ""`,
+                    t("entry_actions.zotero_error.save_failed", {
+                      reason: errorObj.message || t("error_screen.unknown", { ns: "common" }),
+                    }),
                     {
                       duration: 3000,
                     },
@@ -739,7 +761,7 @@ const useRegisterQBittorrentCommands = () => {
           run: async ({ entryId }) => {
             const entry = getEntry(entryId)
             if (!entry) {
-              toast.error("Failed to save to qBittorrent: entry is not available")
+              toast.error(t("entry_actions.unavailable.save_to", { target: "qBittorrent" }))
               return
             }
             try {
@@ -787,6 +809,7 @@ const useRegisterQBittorrentCommands = () => {
 }
 
 const useRegisterCustomIntegrationCommands = () => {
+  const { t } = useTranslation()
   const customIntegrations = useIntegrationSettingKey("customIntegration")
   const enableCustomIntegration = useIntegrationSettingKey("enableCustomIntegration")
 
@@ -796,7 +819,7 @@ const useRegisterCustomIntegrationCommands = () => {
       ? []
       : defineFollowCommand({
           id: COMMAND_ID.integration.custom,
-          label: "Custom Integration",
+          label: t("integration.custom_integrations.title", { ns: "settings" }),
           icon: <i className="i-mgc-webhook-cute-re" />,
           category,
           run: async () => {},
@@ -810,6 +833,7 @@ const useRegisterCustomIntegrationCommands = () => {
 }
 
 const useRegisterCustomIntegrationVisualCommands = () => {
+  const { t } = useTranslation()
   const customIntegrations = useIntegrationSettingKey("customIntegration")
   const enableCustomIntegration = useIntegrationSettingKey("enableCustomIntegration")
 
@@ -827,9 +851,14 @@ const useRegisterCustomIntegrationVisualCommands = () => {
         run: async ({ entryId }: { entryId: string }) => {
           const entry = getEntry(entryId)
           if (!entry) {
-            toast.error(`Failed to save to ${integration.name}: entry is not available`, {
-              duration: 3000,
-            })
+            toast.error(
+              t("entry_actions.unavailable.save_to", {
+                target: integration.name,
+              }),
+              {
+                duration: 3000,
+              },
+            )
             return
           }
 
@@ -837,7 +866,7 @@ const useRegisterCustomIntegrationVisualCommands = () => {
         },
       })
     })
-  }, [customIntegrations, enableCustomIntegration])
+  }, [customIntegrations, enableCustomIntegration, t])
 
   useRegisterCommandEffect(visualCommands, {
     deps: [visualCommands],

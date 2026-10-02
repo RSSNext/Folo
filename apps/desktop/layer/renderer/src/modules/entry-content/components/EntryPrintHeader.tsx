@@ -4,6 +4,7 @@ import { useEntry } from "@follow/store/entry/hooks"
 import { useFeedById } from "@follow/store/feed/hooks"
 import { useInboxById } from "@follow/store/inbox/hooks"
 import { cn } from "@follow/utils/utils"
+import { useTranslation } from "react-i18next"
 
 import { readableContentMaxWidthClassName } from "~/constants/ui"
 
@@ -11,6 +12,7 @@ const PRINT_HOMEPAGE = "https://folo.is"
 const PRINT_HOMEPAGE_LABEL = "folo.is"
 
 export const EntryPrintHeader = ({ entryId }: { entryId: string }) => {
+  const { t } = useTranslation()
   const entry = useEntry(entryId, (state) => ({
     feedId: state.feedId,
     inboxId: state.inboxHandle,
@@ -41,10 +43,14 @@ export const EntryPrintHeader = ({ entryId }: { entryId: string }) => {
 
         <div className="mt-3 space-y-1.5">
           <p className="text-sm font-medium text-text-secondary">
-            The AI Reader that reads the internet for you
+            {t("entry_content.print.tagline")}
           </p>
           {sourceTitle ? (
-            <p className="text-sm text-text-secondary">Source: {sourceTitle}</p>
+            <p className="text-sm text-text-secondary">
+              {t("entry_content.print.source", {
+                source: sourceTitle,
+              })}
+            </p>
           ) : null}
         </div>
       </div>

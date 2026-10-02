@@ -1,0 +1,9 @@
+{
+  "name": "Folo - Lector RSS con IA",
+  "subtitle": "Noticias y blogs, resumidos",
+  "promotionalText": "Deja que la IA lea antes que tú: resúmenes al instante, traducciones junto al original y lectura en voz alta. Artículos, videos y podcasts, todo en un solo lugar.",
+  "keywords": {
+    "ios": "feed,agregador,podcast,resumen,traductor,titulares,encabezados,periódico,diario,revista,boletín",
+    "macos": "feed,agregador,podcast,resumen,traductor,titulares,encabezados,periódico,diario,chat,investigación"
+  }
+}

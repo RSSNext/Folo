@@ -1,13 +1,13 @@
 import type { env, envProfileMap } from "@follow/shared/env.rn"
 import { getEnvProfiles__dangerously } from "@follow/shared/env.rn"
+import type { JotaiSyncStorage } from "@follow/utils"
 import { createAtomHooks } from "@follow/utils"
-import { reloadAppAsync } from "expo"
 import { atomWithStorage } from "jotai/utils"
-import type { SyncStorage } from "jotai/vanilla/utils/atomWithStorage"
 
 import { cookieKey } from "./auth"
 import { getE2EEnvProfile } from "./e2e-config"
 import { JotaiPersistSyncStorage } from "./jotai"
+import { reloadApp } from "./reload-app"
 import { safeSecureStore } from "./secure-store"
 
 const getForcedEnvProfile = (): keyof typeof envProfileMap | null => {
@@ -24,7 +24,7 @@ const [, , useStoredEnvProfile, , getStoredEnvProfile, _setEnvProfile] = createA
   atomWithStorage(
     "##Follow-Current-Env-Profile",
     __DEV__ ? "dev" : "prod",
-    JotaiPersistSyncStorage as SyncStorage<string>,
+    JotaiPersistSyncStorage as JotaiSyncStorage<string>,
     {
       getOnInit: true,
     },
@@ -67,6 +67,6 @@ export const setEnvProfile = (profile: keyof typeof envProfileMap) => {
     console.warn("SecureStore access failed during env profile switch:", e)
   }
 
-  reloadAppAsync()
+  void reloadApp("Switch env profile")
 }
 export { getEnvProfile, useEnvProfile }

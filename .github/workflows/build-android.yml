@@ -63,7 +63,7 @@ jobs:
           cache: "pnpm"
 
       - name: Set up JDK 17
-        uses: actions/setup-java@v5
+        uses: actions/setup-java@v6
         with:
           java-version: "17"
           distribution: "zulu"
@@ -85,7 +85,7 @@ jobs:
         run: pnpm install --frozen-lockfile --child-concurrency=1
 
       - name: Build mobile web assets
-        run: pnpm --dir apps/mobile/web-app build --outDir ../../../out/rn-web/html-renderer
+        run: pnpm --dir apps/mobile/web-app build --outDir "${{ github.workspace }}/out/rn-web/html-renderer"
 
       - name: Validate release profile
         if: github.event.inputs.release == 'true'
@@ -102,8 +102,6 @@ jobs:
         env:
           EAS_BUILD_DISABLE_EXPO_DOCTOR_STEP: "1"
           EAS_NO_FROZEN_LOCKFILE: "1"
-          npm_config_node_linker: isolated
-          npm_config_shamefully_hoist: "false"
 
       - name: 📤 Upload apk Artifact
         if: github.event.inputs.profile != 'production'

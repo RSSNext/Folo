@@ -172,6 +172,8 @@ const SearchInput = () => {
           allowFontScaling={false}
           textAlignVertical="center"
           enterKeyHint="search"
+          autoCapitalize="none"
+          autoCorrect={false}
           autoFocus={isFocused}
           ref={inputRef}
           onSubmitEditing={() => {

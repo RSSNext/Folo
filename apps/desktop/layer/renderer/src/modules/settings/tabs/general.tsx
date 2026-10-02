@@ -3,6 +3,7 @@ import { UserRole } from "@follow/constants"
 import { useTypeScriptHappyCallback } from "@follow/hooks"
 import { ACTION_LANGUAGE_MAP } from "@follow/shared"
 import { IN_ELECTRON } from "@follow/shared/constants"
+import { START_IN_TRAY_ARGS } from "@follow/shared/desktop-launch"
 import { useUserRole } from "@follow/store/user/hooks"
 import { cn } from "@follow/utils/utils"
 import { useQuery } from "@tanstack/react-query"
@@ -48,8 +49,9 @@ const { defineSettingItem: _defineSettingItem, SettingBuilder } = createSetting(
 const saveLoginSetting = (checked: boolean) => {
   ipcServices?.setting.setLoginItemSettings({
     openAtLogin: checked,
-    openAsHidden: true,
-    args: ["--startup"],
+    // Start hidden in the tray when launched at login and the tray icon is enabled. Only Windows
+    // passes the arguments, the main process detects a login launch on macOS itself
+    args: [START_IN_TRAY_ARGS],
   })
   setGeneralSetting("appLaunchOnStartup", checked)
 }
@@ -59,7 +61,12 @@ export const SettingGeneral = () => {
   useEffect(() => {
     ipcServices?.setting.getLoginItemSettings().then((settings) => {
       if (settings) {
-        setGeneralSetting("appLaunchOnStartup", settings.openAtLogin)
+        // On Windows `openAtLogin` only matches a login item registered without arguments,
+        // `executableWillLaunchAtLogin` matches it with any arguments
+        setGeneralSetting(
+          "appLaunchOnStartup",
+          settings.openAtLogin || settings.executableWillLaunchAtLogin === true,
+        )
       }
     })
   }, [])
@@ -345,6 +352,7 @@ const ActionLanguageSelector = () => {
       <ResponsiveSelect
         size="sm"
         triggerClassName="w-48"
+        triggerTestId="settings-action-language-select"
         defaultValue={actionLanguage}
         value={actionLanguage}
         onValueChange={(value) => {

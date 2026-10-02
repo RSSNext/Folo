@@ -79,7 +79,8 @@ export function useHideAllReadSubscriptions() {
   return hideAllReadSubscriptions && unreadOnly
 }
 
-export const generalServerSyncWhiteListKeys: (keyof GeneralSettings)[] = [
+/** Device-local general settings: every other general setting syncs to the account. */
+export const generalLocalOnlyKeys: (keyof GeneralSettings)[] = [
   "appLaunchOnStartup",
   "sendAnonymousData",
   "language",

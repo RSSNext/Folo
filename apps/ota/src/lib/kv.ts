@@ -31,6 +31,13 @@ export interface LatestReleaseVersionRecord {
   tag: string
 }
 
+export interface LatestAndroidApkRecord {
+  version: OtaRelease["releaseVersion"]
+  publishedAt: string
+  tag: string
+  downloadUrl: string
+}
+
 export async function getLatestReleasePointer(
   kv: KVNamespace,
   input: {
@@ -117,4 +124,12 @@ export async function putLatestReleaseVersionRecord(
   value: LatestReleaseVersionRecord,
 ) {
   await kv.put(KV_KEYS.latestReleaseVersion(value.product), JSON.stringify(value))
+}
+
+export async function getLatestAndroidApkRecord(kv: KVNamespace) {
+  return kv.get<LatestAndroidApkRecord>(KV_KEYS.latestAndroidApk, "json")
+}
+
+export async function putLatestAndroidApkRecord(kv: KVNamespace, value: LatestAndroidApkRecord) {
+  await kv.put(KV_KEYS.latestAndroidApk, JSON.stringify(value))
 }

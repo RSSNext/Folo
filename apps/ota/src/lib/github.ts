@@ -4,11 +4,12 @@ export interface GitHubReleaseAsset {
   browser_download_url: string
 }
 
-interface GitHubRelease {
+export interface GitHubRelease {
   tag_name: string
   draft: boolean
   prerelease: boolean
-  assets: GitHubReleaseAsset[]
+  published_at?: string | null
+  assets?: GitHubReleaseAsset[]
 }
 
 export interface GitHubReleaseSummary {
@@ -25,6 +26,14 @@ export type GitHubReleaseListResult =
       releases: GitHubReleaseSummary[]
     }
 
+export type GitHubRawReleaseListResult =
+  | { kind: "not-modified" }
+  | {
+      kind: "ok"
+      etag: string | null
+      releases: GitHubRelease[]
+    }
+
 export class GitHubRequestError extends Error {
   readonly status: number
   readonly statusText: string
@@ -39,12 +48,16 @@ export class GitHubRequestError extends Error {
   }
 }
 
-export async function listPublishedOtaReleases(input: {
+/**
+ * Fetches the first page of GitHub releases, newest first. Drafts are kept so callers decide how
+ * to treat them.
+ */
+export async function fetchGitHubReleases(input: {
   owner: string
   repo: string
   token: string
   etag: string | null
-}): Promise<GitHubReleaseListResult> {
+}): Promise<GitHubRawReleaseListResult> {
   const userAgent = `folo-ota-worker/${input.owner}.${input.repo}`
 
   const response = await fetch(
@@ -52,9 +65,9 @@ export async function listPublishedOtaReleases(input: {
     {
       headers: {
         Accept: "application/vnd.github+json",
-        Authorization: `Bearer ${input.token}`,
         "User-Agent": userAgent,
         "X-GitHub-Api-Version": "2022-11-28",
+        ...(input.token ? { Authorization: `Bearer ${input.token}` } : {}),
         ...(input.etag ? { "If-None-Match": input.etag } : {}),
       },
     },
@@ -72,27 +85,49 @@ export async function listPublishedOtaReleases(input: {
     })
   }
 
-  const releases = (await response.json()) as GitHubRelease[]
-
   return {
     kind: "ok",
     etag: response.headers.get("etag"),
-    releases: releases
-      .filter((release) => !release.draft)
-      .map((release) => {
-        const metadata = release.assets.find((asset) => asset.name === "ota-release.json")
-        const archive = release.assets.find((asset) => asset.name === "dist.tar.zst")
+    releases: (await response.json()) as GitHubRelease[],
+  }
+}
 
-        if (!metadata) {
-          return null
-        }
+export function toOtaReleaseSummaries(releases: readonly GitHubRelease[]): GitHubReleaseSummary[] {
+  return releases
+    .filter((release) => !release.draft)
+    .map((release) => {
+      const assets = release.assets ?? []
+      const metadata = assets.find((asset) => asset.name === "ota-release.json")
+      const archive = assets.find((asset) => asset.name === "dist.tar.zst")
 
-        return {
-          tag: release.tag_name,
-          metadataUrl: metadata.url ?? metadata.browser_download_url,
-          archiveUrl: archive ? (archive.url ?? archive.browser_download_url) : null,
-        }
-      })
-      .filter((value): value is GitHubReleaseSummary => value !== null),
+      if (!metadata) {
+        return null
+      }
+
+      return {
+        tag: release.tag_name,
+        metadataUrl: metadata.url ?? metadata.browser_download_url,
+        archiveUrl: archive ? (archive.url ?? archive.browser_download_url) : null,
+      }
+    })
+    .filter((value): value is GitHubReleaseSummary => value !== null)
+}
+
+export async function listPublishedOtaReleases(input: {
+  owner: string
+  repo: string
+  token: string
+  etag: string | null
+}): Promise<GitHubReleaseListResult> {
+  const result = await fetchGitHubReleases(input)
+
+  if (result.kind === "not-modified") {
+    return result
+  }
+
+  return {
+    kind: "ok",
+    etag: result.etag,
+    releases: toOtaReleaseSummaries(result.releases),
   }
 }

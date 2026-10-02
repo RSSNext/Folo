@@ -404,7 +404,7 @@ export const AvatarUploadModal = ({
             <img
               ref={imageRef}
               src={selectedImage}
-              alt="Preview"
+              alt={t("profile.avatar.preview")}
               className="size-full object-contain"
               draggable={false}
               onLoad={handleImageLoad}
@@ -466,11 +466,11 @@ export const AvatarUploadModal = ({
           <div className="flex gap-2">
             <Button variant="outline" onClick={handleFullImageCrop} size="sm">
               <i className="i-mgc-fullscreen-cute-re mr-1 text-sm" />
-              Full Image
+              {t("profile.avatar.fullImage")}
             </Button>
             <Button variant="outline" onClick={handleCenterCrop} size="sm">
               <i className="i-mgc-round-cute-re mr-1 text-sm" />
-              Center Crop
+              {t("profile.avatar.centerCrop")}
             </Button>
           </div>
         ) : (

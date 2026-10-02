@@ -13,7 +13,7 @@ export const useCreateAIShortcutModal = () => {
   const { t } = useTranslation("ai")
   return useCallback(() => {
     present({
-      title: "Add AI Shortcut",
+      title: t("shortcuts.modal.add_title"),
       content: ({ dismiss }: { dismiss: () => void }) => (
         <ShortcutModalContent
           shortcut={null}
@@ -40,7 +40,7 @@ export const useEditAIShortcutModal = () => {
   return useCallback(
     (shortcut: AIShortcut) => {
       present({
-        title: "Edit AI Shortcut",
+        title: t("shortcuts.modal.edit_title"),
         content: ({ dismiss }: { dismiss: () => void }) => (
           <ShortcutModalContent
             shortcut={shortcut}

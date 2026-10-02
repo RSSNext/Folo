@@ -25,7 +25,7 @@ export const PlaceholderHelp = ({ className, onPlaceholderClick }: PlaceholderHe
       >
         <span className="flex items-center gap-1 text-xs">
           <i className="i-mgc-question-cute-re" />
-          {t("integration.custom_integrations.placeholders.help", "Available Placeholders")}
+          {t("integration.custom_integrations.placeholders.help")}
           <i className={cn("i-mgc-right-cute-re transition-transform", isOpen && "rotate-90")} />
         </span>
       </button>
@@ -34,10 +34,7 @@ export const PlaceholderHelp = ({ className, onPlaceholderClick }: PlaceholderHe
         <div className="space-y-2">
           <div className="rounded-lg bg-fill-secondary p-3">
             <p className="mb-3 text-xs text-text-tertiary">
-              {t(
-                "integration.custom_integrations.placeholders.description",
-                "Click on any placeholder to copy it to your clipboard",
-              )}
+              {t("integration.custom_integrations.placeholders.description")}
             </p>
 
             <div className="grid grid-cols-1 gap-2">
@@ -60,11 +57,13 @@ export const PlaceholderHelp = ({ className, onPlaceholderClick }: PlaceholderHe
                       </code>
                       <div className="min-w-0 flex-1">
                         <div className="text-xs font-medium text-text">
-                          {placeholder.description}
+                          {t(placeholder.descriptionKey)}
                         </div>
                         {placeholder.example && (
                           <div className="mt-1 text-xs text-text-tertiary">
-                            Example: {placeholder.example}
+                            {t("integration.custom_integrations.placeholders.example", {
+                              example: placeholder.example,
+                            })}
                           </div>
                         )}
                       </div>
@@ -72,12 +71,7 @@ export const PlaceholderHelp = ({ className, onPlaceholderClick }: PlaceholderHe
                     </button>
                   </TooltipTrigger>
                   <TooltipContent>
-                    <p>
-                      {t(
-                        "integration.custom_integrations.placeholders.click_to_copy",
-                        "Click to copy",
-                      )}
-                    </p>
+                    <p>{t("integration.custom_integrations.placeholders.click_to_copy")}</p>
                   </TooltipContent>
                 </Tooltip>
               ))}

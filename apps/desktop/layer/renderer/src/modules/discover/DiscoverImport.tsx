@@ -1,9 +1,16 @@
 import { Button } from "@follow/components/ui/button/index.js"
 import { CollapseCss, CollapseCssGroup } from "@follow/components/ui/collapse/index.js"
 import { DropZone } from "@follow/components/ui/drop-zone/index.js"
-import { Form, FormControl, FormField, FormItem } from "@follow/components/ui/form/index.jsx"
+import {
+  Form,
+  FormControl,
+  FormField,
+  FormItem,
+  FormMessage,
+} from "@follow/components/ui/form/index.jsx"
 import { zodResolver } from "@hookform/resolvers/zod"
 import { useMutation } from "@tanstack/react-query"
+import i18next from "i18next"
 import { Fragment } from "react"
 import { useForm } from "react-hook-form"
 import { Trans, useTranslation } from "react-i18next"
@@ -22,14 +29,15 @@ const parseOpmlFile = async (file: File) => {
   return data.data
 }
 
+// Messages are resolved at validation time so they follow the current language.
 const formSchema = z.object({
   file: z
     .instanceof(File)
     .refine((file) => file.size < 500_000, {
-      message: "Your OPML file must be less than 500KB.",
+      error: () => i18next.t("discover.import.file_too_large"),
     })
     .refine((file) => file.name.endsWith(".opml") || file.name.endsWith(".xml"), {
-      message: "Your OPML file must be in OPML or XML format.",
+      error: () => i18next.t("discover.import.invalid_file_type"),
     }),
 })
 
@@ -190,6 +198,7 @@ export function DiscoverImport() {
                     )}
                   </DropZone>
                 </FormControl>
+                <FormMessage />
               </FormItem>
             )}
           />

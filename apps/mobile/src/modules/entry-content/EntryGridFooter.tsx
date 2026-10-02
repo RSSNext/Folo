@@ -9,6 +9,7 @@ import { useActionLanguage, useGeneralSettingKey } from "@/src/atoms/settings/ge
 import { RelativeDateTime } from "@/src/components/ui/datetime/RelativeDateTime"
 import { FeedIcon } from "@/src/components/ui/icon/feed-icon"
 import { Text } from "@/src/components/ui/typography/Text"
+import { usePreferredFeedTitle } from "@/src/modules/feed/feed-title"
 
 import { EntryTranslation } from "../entry-list/templates/EntryTranslation"
 
@@ -36,6 +37,7 @@ export const EntryGridFooter = ({
     enabled: enableTranslation,
   })
   const feed = useFeedById(entry?.feedId || "")
+  const feedTitle = usePreferredFeedTitle(entry?.feedId)
   if (!entry) return null
   return (
     <View className="gap-2 px-1 py-2">
@@ -59,7 +61,7 @@ export const EntryGridFooter = ({
       <View className="flex-row items-center gap-1.5">
         <FeedIcon fallback feed={feed} size={14} />
         <Text numberOfLines={1} className="shrink text-xs font-medium text-secondary-label">
-          {feed?.title}
+          {feedTitle}
         </Text>
         <RelativeDateTime className="text-xs text-tertiary-label" date={entry.publishedAt} />
       </View>

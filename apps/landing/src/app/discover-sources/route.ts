@@ -25,11 +25,15 @@ export async function GET() {
     })
   }
 
+  const controller = new AbortController()
+  const timeout = setTimeout(() => controller.abort(), 5000)
+
   try {
     const response = await fetch(PRODUCTION_RSSHUB_ROUTES_URL, {
       headers: {
         accept: 'application/json',
       },
+      signal: controller.signal,
     })
 
     if (!response.ok) {
@@ -55,5 +59,7 @@ export async function GET() {
         'Cache-Control': 'public, max-age=60',
       },
     })
+  } finally {
+    clearTimeout(timeout)
   }
 }

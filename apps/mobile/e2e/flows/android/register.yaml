@@ -2,6 +2,10 @@ appId: is.follow
 ---
 - runFlow:
     file: ./dismiss-system-dialogs.yaml
+- extendedWaitUntil:
+    visible:
+      id: login-provider-credential
+    timeout: 60000
 - runFlow: ../shared/open-auth.yaml
 - tapOn:
     id: login-provider-credential

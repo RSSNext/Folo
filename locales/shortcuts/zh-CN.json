@@ -37,12 +37,8 @@
   "command.subscription.open_in_browser.title": "在浏览器中打开",
   "command.subscription.open_in_tab.title": "在标签页中打开",
   "command.subscription.open_site_in_browser.title": "在浏览器中打开网站",
-  "command.subscription.open_site_in_tab.title": "在标签页中打开网站",
   "command.subscription.previous_subscription.description": "切换到上一个订阅。",
   "command.subscription.previous_subscription.title": "上一个订阅",
-  "command.subscription.switch_between_views.title": "在视图之间切换",
-  "command.subscription.switch_next_view.title": "切换到下一个视图",
-  "command.subscription.switch_previous_view.title": "切换到上一个视图",
   "command.subscription.switch_tab_to_article.description": "在订阅视图中切换到文章标签页。",
   "command.subscription.switch_tab_to_article.title": "切换到文章标签页",
   "command.subscription.switch_tab_to_audio.description": "在订阅视图中切换到音频标签页。",
@@ -76,5 +72,6 @@
   "settings.shortcuts.description": "自定义应用的快捷键。以下是一些可以自定义的命令列表。",
   "settings.shortcuts.press_to_record": "按下以记录",
   "settings.shortcuts.reset": "重置",
+  "settings.shortcuts.reset_defaults": "恢复默认",
   "settings.shortcuts.undo": "撤销"
 }

@@ -1,0 +1,19 @@
+appId: is.follow
+name: Android cold-start queued follow route
+---
+- stopApp
+- openLink: "folo://add?url=folo%3A%2F%2Fonboarding&type=url"
+- extendedWaitUntil:
+    visible:
+      id: follow-submit
+    timeout: 30000
+- assertVisible: Welcome to Folo
+- assertNotVisible:
+    id: login-provider-credential
+- pressKey: Back
+- tapOn:
+    id: tab-SettingsTabScreen
+- assertVisible:
+    id: settings-general-link
+- tapOn:
+    id: tab-IndexTabScreen

@@ -11,11 +11,21 @@ appId: is.follow
       id: timeline-entry-first
     timeout: 20000
 - tapOn:
-    point: "540,520"
+    id: timeline-entry-first
+    point: "50%,50%"
 - extendedWaitUntil:
     notVisible:
       id: timeline-entry-first
     timeout: 20000
+- extendedWaitUntil:
+    visible: Hey there! Welcome to Folo. We're so glad to have you.
+    timeout: 20000
+- scrollUntilVisible:
+    element:
+      text: Your Subscriptions
+    direction: DOWN
+    timeout: 20000
+    centerElement: true
 - pressKey: Back
 - tapOn:
     id: timeline-view-articles

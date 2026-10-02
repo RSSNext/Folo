@@ -179,13 +179,13 @@ export const EntryItemContextMenu = ({
                 collectionSyncService.unstarEntry({
                   entryId: id,
                 })
-                toast.success("Unstarred")
+                toast.success(t("operation.unstar_success"))
               } else {
                 collectionSyncService.starEntry({
                   entryId: id,
                   view,
                 })
-                toast.success("Starred")
+                toast.success(t("operation.star_success"))
               }
             }}
           >
@@ -224,7 +224,7 @@ export const EntryItemContextMenu = ({
               await Share.share(
                 createLinkShareContent({
                   platform: Platform.OS,
-                  title: entry.title || "Shared Link",
+                  title: entry.title || t("operation.share_title.link"),
                   url: entry.url,
                 }),
               )

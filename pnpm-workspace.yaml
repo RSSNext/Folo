@@ -5,69 +5,77 @@ packages:
   - "!apps/mobile/native/example"
   - apps/mobile/web-app
   - apps/mobile/web-app/html-renderer
+  - store-assets
   - "!**/example"
   - "!**/example/**"
 
+nodeLinker: hoisted
+shamefullyHoist: true
+saveExact: true
+
 catalog:
   "@follow-app/client-sdk": 0.3.96
-  "@folo-services/ai-tools": 0.2.66
+  "@folo-services/ai-tools": 0.2.69
   tailwindcss-uikit-colors: 1.0.0
   typescript: 6.0.3
 
-ignorePatchFailures: false
-
-onlyBuiltDependencies:
-  - "@firebase/util"
-  - "@tsslint/core"
-  - "@tsslint/compat-eslint"
-  - bufferutil
-  - core-js
-  - dtrace-provider
-  - electron
-  - electron-winstaller
-  - esbuild
-  - fast-folder-size
-  - fs-xattr
-  - macos-alias
-  - protobufjs
-  - sharp
-  - simple-git-hooks
-  - utf-8-validate
+allowBuilds:
+  "@parcel/watcher": false
+  "@swc/core": false
+  better-sqlite3: false
+  node-pty: false
+  workerd: true
+  "@firebase/util": true
+  "@tsslint/core": true
+  "@tsslint/compat-eslint": true
+  bufferutil: true
+  core-js: true
+  dtrace-provider: true
+  electron: true
+  electron-winstaller: true
+  esbuild: true
+  fast-folder-size: true
+  fs-xattr: true
+  macos-alias: true
+  protobufjs: true
+  sharp: true
+  simple-git-hooks: true
+  utf-8-validate: true
 
 overrides:
   "@electron/node-gyp": 10.2.0-electron.2
-  "@floating-ui/core": 1.7.5
-  "@floating-ui/dom": 1.7.5
-  "@floating-ui/react": 0.27.19
-  "@floating-ui/react-dom": 2.1.8
+  "@floating-ui/core": 1.8.0
+  "@floating-ui/dom": 1.8.0
+  "@floating-ui/react": 0.27.20
+  "@floating-ui/react-dom": 2.1.9
   "@follow-app/client-sdk": 0.3.96
   "@folo-services/drizzle": 0.1.48
   "@react-native-menu/menu": 2.0.0
-  "@types/react": 19.2.17
+  "@types/react": 19.2.18
   array-includes: npm:@nolyfill/array-includes@latest
   array.prototype.findlastindex: npm:@nolyfill/array.prototype.findlastindex@latest
   array.prototype.flat: npm:@nolyfill/array.prototype.flat@latest
   array.prototype.flatmap: npm:@nolyfill/array.prototype.flatmap@latest
   array.prototype.tosorted: npm:@nolyfill/array.prototype.tosorted@latest
-  drizzle-orm: 0.45.2
+  drizzle-orm: 0.45.3
   eslint-plugin-react-hooks>zod-validation-error: 4.0.2
   global-agent>serialize-error: 7.0.1
   has: npm:@nolyfill/has@latest
   is-core-module: npm:@nolyfill/is-core-module@1.0.39
   isarray: npm:@nolyfill/isarray@1.0.44
   lan-network@<0.1.7: 0.1.7
-  nativewind>react-native-css-interop: 0.2.6
+  nativewind>react-native-css-interop: 0.2.7
   object.assign: npm:@nolyfill/object.assign@latest
   object.entries: npm:@nolyfill/object.entries@latest
   object.fromentries: npm:@nolyfill/object.fromentries@latest
   object.groupby: npm:@nolyfill/object.groupby@latest
   object.hasown: npm:@nolyfill/object.hasown@latest
   object.values: npm:@nolyfill/object.values@latest
-  react: 19.2.7
-  react-dom: 19.2.7
+  react: 19.2.8
+  react-dom: 19.2.8
   react-native-ios-context-menu: 3.2.1
   react-native-ios-utilities: 5.2.0
-  react-server-dom-webpack: 19.2.7
+  react-server-dom-webpack: 19.2.8
   string.prototype.matchall: npm:@nolyfill/string.prototype.matchall@latest
   unrun: 0.3.1
 
@@ -110,3 +118,46 @@ peerDependencyRules:
     eslint-plugin-react-x>typescript: ">=4.8.4 <6.1.0"
     jojoo>immer: "11"
     wrangler>@cloudflare/workers-types: ^5
+
+# Exact versions in the reviewed dependency graph installed before migrating from pnpm 10.
+minimumReleaseAgeExclude:
+  - "@ai-sdk/gateway@4.0.88"
+  - "@cloudflare/unenv-preset@2.16.2"
+  - "@cloudflare/vite-plugin@1.57.1"
+  - "@cloudflare/workers-types@5.20260922.1"
+  - "@colordx/core@6.6.0"
+  - "@posthog/types@1.412.4"
+  - "@sentry/browser-utils@10.75.1"
+  - "@sentry/browser@10.75.1"
+  - "@sentry/core@10.75.1"
+  - "@sentry/feedback@10.75.1"
+  - "@sentry/react@10.75.1"
+  - "@sentry/replay-canvas@10.75.1"
+  - "@sentry/replay@10.75.1"
+  - "@tanstack/query-async-storage-persister@5.103.2"
+  - "@tanstack/query-core@5.103.2"
+  - "@tanstack/query-devtools@5.103.2"
+  - "@tanstack/query-persist-client-core@5.103.2"
+  - "@tanstack/query-sync-storage-persister@5.103.2"
+  - "@tanstack/react-query-devtools@5.103.2"
+  - "@tanstack/react-query-persist-client@5.103.2"
+  - "@tanstack/react-query@5.103.2"
+  - "ai@7.0.109"
+  - "daisyui@5.7.43"
+  - "dotenv@18.0.2"
+  - "drizzle-kit@0.31.11"
+  - "drizzle-orm@0.45.3"
+  - "electron-to-chromium@1.5.434"
+  - "html-encoding-sniffer@7.0.0"
+  - "icu-minify@4.14.6"
+  - "jsdom@30.1.1"
+  - "miniflare@5.20260921.0-alpha"
+  - "next-intl-swc-plugin-extractor@4.14.6"
+  - "next-intl@4.14.6"
+  - "react-i18next@17.0.15"
+  - "tldts-core@7.4.14"
+  - "tldts@7.4.14"
+  - "use-intl@4.14.6"
+  - "vinext@1.0.0-beta.11"
+  - "w3c-xmlserializer@6.0.0"
+  - "wrangler@4.136.1"

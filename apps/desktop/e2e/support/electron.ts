@@ -48,7 +48,8 @@ export const launchElectronApp = async (env: DesktopE2EEnv) => {
   })
 
   const page = await electronApp.firstWindow()
-  await page.waitForLoadState("domcontentloaded")
+  // Electron exposes its initial about:blank window before loading the renderer.
+  await page.waitForURL((url) => url.protocol !== "about:", { waitUntil: "domcontentloaded" })
   await page.evaluate(() => {
     window.__FOLO_E2E_RECAPTCHA_TOKEN__ = "e2e-token"
 

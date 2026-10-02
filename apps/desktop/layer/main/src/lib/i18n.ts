@@ -13,6 +13,10 @@ i18n.init({
   },
   defaultNS,
   resources,
+  // Strings go to native menus and dialogs, not HTML
+  interpolation: {
+    escapeValue: false,
+  },
 })
 
 export const { t } = i18n

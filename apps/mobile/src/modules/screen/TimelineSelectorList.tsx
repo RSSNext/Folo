@@ -1,6 +1,7 @@
 import { useTypeScriptHappyCallback } from "@follow/hooks"
 import { usePrefetchSubscription } from "@follow/store/subscription/hooks"
 import { usePrefetchUnread } from "@follow/store/unread/hooks"
+import { unreadSyncService } from "@follow/store/unread/store"
 import { nextFrame } from "@follow/utils"
 import type { FlashListProps, FlashListRef } from "@shopify/flash-list"
 import { FlashList } from "@shopify/flash-list"
@@ -153,6 +154,7 @@ export const TimelineSelectorList = ({
             tintColor={systemFill}
             onRefresh={() => {
               unreadRefetch()
+              void unreadSyncService.refresh({ calibrate: true })
               subscriptionRefetch()
               Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light)
               onRefresh()

@@ -22,14 +22,15 @@
   "contextMenu.services": "サービス",
   "dialog.cancel": "キャンセル",
   "dialog.clearAllData": "本当にすべてのデータを消去してもよろしいですか？",
+  "dialog.confirm": "確認",
   "dialog.no": "いいえ",
   "dialog.open": "開く",
   "dialog.openExternalApp.message": "本当に他の外部アプリで \"{{url}}\" を開いてもよろしいですか？",
   "dialog.openExternalApp.title": "外部のアプリで開きますか？",
   "dialog.yes": "はい",
+  "download.success": "ダウンロードが完了しました",
   "menu.about": "{{name}} について",
-  "menu.actualSize": "実際のサイズ",
-  "menu.bringAllToFront": "すべてを前面に移動",
+  "menu.alwaysOnTop": "常に手前に表示",
   "menu.checkForUpdates": "アップデートを確認",
   "menu.clearAllData": "すべてのデータを消去",
   "menu.close": "閉じる",
@@ -69,7 +70,5 @@
   "menu.unread": "未読",
   "menu.view": "表示",
   "menu.window": "ウィンドウ",
-  "menu.zoom": "ズーム",
-  "menu.zoomIn": "拡大",
-  "menu.zoomOut": "縮小"
+  "menu.zoom": "ズーム"
 }

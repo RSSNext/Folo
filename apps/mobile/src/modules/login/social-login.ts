@@ -1,3 +1,5 @@
+import type { SocialSignInResult } from "@/src/lib/social-auth"
+
 export const nativeOAuthCallbackURL = "folo://"
 
 type LoginWithSocialProviderOptions = {
@@ -6,11 +8,13 @@ type LoginWithSocialProviderOptions = {
   signInWithProvider: (
     providerId: string,
     options: { callbackURL: typeof nativeOAuthCallbackURL },
-  ) => Promise<void>
+  ) => Promise<SocialSignInResult>
   signInWithAppleIdentityToken: () => Promise<void>
   syncSession: () => Promise<boolean>
   trackLogin: () => void
   onError?: (error: unknown) => void
+  // The provider flow finished without a session, e.g. the OAuth callback was rejected.
+  onFailure?: (error: string) => void
 }
 
 export async function loginWithSocialProvider({
@@ -21,6 +25,7 @@ export async function loginWithSocialProvider({
   syncSession,
   trackLogin,
   onError,
+  onFailure,
 }: LoginWithSocialProviderOptions) {
   setPendingProviderId(providerId)
 
@@ -28,7 +33,14 @@ export async function loginWithSocialProvider({
     if (providerId === "apple") {
       await signInWithAppleIdentityToken()
     } else {
-      await signInWithProvider(providerId, { callbackURL: nativeOAuthCallbackURL })
+      const result = await signInWithProvider(providerId, { callbackURL: nativeOAuthCallbackURL })
+      if (result.type === "error") {
+        onFailure?.(result.error)
+        return false
+      }
+      if (result.type === "cancel") {
+        return false
+      }
     }
 
     const hasSession = await syncSession()

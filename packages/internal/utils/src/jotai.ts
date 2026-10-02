@@ -1,8 +1,11 @@
 import type { Atom, PrimitiveAtom } from "jotai"
 import { createStore, useAtom, useAtomValue, useSetAtom } from "jotai"
+import type { createJSONStorage } from "jotai/utils"
 import { selectAtom } from "jotai/utils"
 import { useCallback } from "react"
 import { shallow } from "zustand/shallow"
+
+export type JotaiSyncStorage<Value> = ReturnType<typeof createJSONStorage<Value>>
 
 export const jotaiStore = createStore()
 

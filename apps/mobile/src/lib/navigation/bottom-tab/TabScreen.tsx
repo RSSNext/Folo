@@ -57,13 +57,14 @@ export const TabScreen: FC<PropsWithChildren<Omit<TabScreenProps, "tabScreenInde
     }
   }, [activeIcon, children, icon, props, tabScreenIndex])
   useEffect(() => {
-    setTabScreens((prev) => [
-      ...prev,
-      {
-        ...mergedProps,
-        tabScreenIndex,
-      },
-    ])
+    // Effects may re-register a screen after its siblings. Preserve the route
+    // order instead of letting effect timing determine the tab bar order.
+    setTabScreens((prev) =>
+      [
+        ...prev.filter((screen) => screen.tabScreenIndex !== tabScreenIndex),
+        { ...mergedProps, tabScreenIndex },
+      ].sort((left, right) => left.tabScreenIndex - right.tabScreenIndex),
+    )
 
     return () => {
       setTabScreens((prev) =>

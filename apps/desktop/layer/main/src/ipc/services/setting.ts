@@ -13,7 +13,6 @@ const require = createRequire(import.meta.url)
 
 interface SetLoginItemSettingsInput {
   openAtLogin: boolean
-  openAsHidden?: boolean
   path?: string
   args?: string[]
 }

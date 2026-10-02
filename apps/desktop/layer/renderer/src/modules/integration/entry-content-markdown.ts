@@ -7,13 +7,18 @@ export const convertHtmlToIntegrationMarkdown = async (content: string) => {
   if (!content) return ""
 
   try {
-    const [toMarkdown, toMdast, gfmTableToMarkdown] = await Promise.all([
-      import("mdast-util-to-markdown").then((m) => m.toMarkdown),
-      import("hast-util-to-mdast").then((m) => m.toMdast),
-      import("mdast-util-gfm-table").then((m) => m.gfmTableToMarkdown),
-    ])
+    const [toMarkdown, toMdast, gfmTableToMarkdown, gfmStrikethroughToMarkdown] = await Promise.all(
+      [
+        import("mdast-util-to-markdown").then((m) => m.toMarkdown),
+        import("hast-util-to-mdast").then((m) => m.toMdast),
+        import("mdast-util-gfm-table").then((m) => m.gfmTableToMarkdown),
+        // `<del>`, `<s>` and `<strike>` become `delete` nodes, which `toMarkdown` can't serialize
+        // without the GFM strikethrough extension
+        import("mdast-util-gfm-strikethrough").then((m) => m.gfmStrikethroughToMarkdown),
+      ],
+    )
     return toMarkdown(toMdast(parseHtml(content).hastTree), {
-      extensions: [gfmTableToMarkdown()],
+      extensions: [gfmTableToMarkdown(), gfmStrikethroughToMarkdown()],
       handlers: {
         break: () => "\n",
       },

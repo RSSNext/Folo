@@ -1,3 +1,9 @@
+/**
+ * Desktop releases are tagged `desktop/v<version>` (see `.github/workflows/build-desktop.yml`).
+ */
+export const getDesktopReleaseUrl = (repoUrl: string, version: string) =>
+  `${repoUrl.replace(/\.git$/, "")}/releases/tag/desktop/v${version}`
+
 export const linkifyChangelog = (content: string, repoUrl: string) => {
   if (!repoUrl) {
     return content

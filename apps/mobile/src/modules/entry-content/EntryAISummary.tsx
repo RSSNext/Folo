@@ -4,6 +4,7 @@ import { usePrefetchSummary, useSummary, useSummaryStatus } from "@follow/store/
 import { useAtomValue } from "jotai"
 import type { FC } from "react"
 import { useCallback, useMemo } from "react"
+import { useTranslation } from "react-i18next"
 
 import { useActionLanguage, useGeneralSettingKey } from "@/src/atoms/settings/general"
 import { ErrorBoundary } from "@/src/components/common/ErrorBoundary"
@@ -58,6 +59,7 @@ const looksLikeMarkdown = (source: string) => {
 export const EntryAISummary: FC<{
   entryId: string
 }> = ({ entryId }) => {
+  const { t } = useTranslation()
   const ctx = useEntryContentContext()
   const showReadability = useAtomValue(ctx.showReadabilityAtom)
   const showAISummaryOnce = useAtomValue(ctx.showAISummaryAtom)
@@ -105,7 +107,7 @@ export const EntryAISummary: FC<{
     <ErrorBoundary
       fallbackRender={() => (
         <Text className="text-[16px] leading-[24px] text-label">
-          Failed to generate summary. Rendering error.
+          {t("ai.summary_render_error")}
         </Text>
       )}
     >

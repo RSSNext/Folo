@@ -1,0 +1,103 @@
+{
+  "mobile.hero": {
+    "eyebrow": "The AI RSS reader",
+    "headline": "All your feeds.\n*None of the noise.*",
+    "badge": "Open source · 39K stars on GitHub"
+  },
+  "mobile.summary": {
+    "eyebrow": "AI summaries",
+    "headline": "Get the gist\n*in seconds.*"
+  },
+  "mobile.translate": {
+    "eyebrow": "AI translation",
+    "headline": "Read the world\n*in your language.*"
+  },
+  "mobile.formats": {
+    "eyebrow": "Every format",
+    "headline": "Not just\n*articles.*"
+  },
+  "mobile.listen": {
+    "eyebrow": "Text-to-speech",
+    "headline": "Your reading list,\n*read aloud.*"
+  },
+  "mobile.discover": {
+    "eyebrow": "Discover",
+    "headline": "Find sources\n*worth following.*"
+  },
+  "mobile.sync": {
+    "eyebrow": "Sync",
+    "headline": "Pick up where\n*you left off.*"
+  },
+  "mobile.more": {
+    "eyebrow": "And more",
+    "headline": "Made for\n*curious minds.*",
+    "pills": [
+      "Starred",
+      "Lists",
+      "Inbox",
+      "OPML import",
+      "Actions",
+      "Spotlight",
+      "Dark mode",
+      "Open source",
+      "No ads"
+    ]
+  },
+  "desktop.hero": {
+    "eyebrow": "The AI RSS reader",
+    "headline": "All your feeds.\n*None of the noise.*",
+    "sub": "Blogs, news, videos and podcasts in one calm timeline, with AI one click away.",
+    "badge": "Open source · 39K stars on GitHub"
+  },
+  "desktop.chat": {
+    "eyebrow": "Folo AI",
+    "headline": "Ask your feeds\n*anything.*",
+    "sub": "Chat about an article, a feed, or everything you follow."
+  },
+  "desktop.digest": {
+    "eyebrow": "Timeline summary",
+    "headline": "Your day,\n*summarized.*",
+    "sub": "Turn hundreds of new entries into one quick digest."
+  },
+  "desktop.translate": {
+    "eyebrow": "AI translation",
+    "headline": "Read the world\n*in your language.*",
+    "sub": "Side-by-side translation in English, Chinese, Japanese and French."
+  },
+  "desktop.formats": {
+    "eyebrow": "Every format",
+    "headline": "Not just\n*articles.*",
+    "sub": "Pictures, videos and podcasts get layouts made for them."
+  },
+  "desktop.tasks": {
+    "eyebrow": "AI tasks",
+    "headline": "Briefings that\n*write themselves.*",
+    "sub": "Schedule daily or weekly AI tasks, delivered to chat or email."
+  },
+  "desktop.integrations": {
+    "eyebrow": "Integrations",
+    "headline": "Works with\n*your tools.*",
+    "sub": "Send articles to Obsidian, Readwise and more, or connect MCP services."
+  },
+  "desktop.more": {
+    "eyebrow": "And more",
+    "headline": "Made for\n*deep readers.*",
+    "pills": [
+      "Keyboard shortcuts",
+      "Command menu",
+      "Actions",
+      "Spotlight",
+      "Custom CSS",
+      "Themes",
+      "OPML",
+      "Text-to-speech",
+      "Open source",
+      "No ads"
+    ]
+  },
+  "play.featureGraphic": {
+    "eyebrow": "Folo",
+    "headline": "The AI *RSS reader*",
+    "sub": "All your feeds. None of the noise."
+  }
+}

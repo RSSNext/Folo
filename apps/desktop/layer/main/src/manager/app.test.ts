@@ -3,6 +3,7 @@ import { beforeEach, describe, expect, it, vi } from "vitest"
 
 import { logger } from "~/logger"
 
+import { getIconPath } from "../helper"
 import { updateNotificationsToken } from "../lib/user"
 import { AppManager } from "./app"
 
@@ -36,6 +37,12 @@ const credentials = {
 } satisfies Credentials
 
 const mocks = vi.hoisted(() => ({
+  app: {
+    dock: {
+      setIcon: vi.fn(),
+    },
+    isPackaged: false,
+  },
   connect: vi.fn(),
   firebaseConfig: {
     apiKey: "firebase-api-key-secret",
@@ -94,7 +101,7 @@ vi.mock("@follow/shared/env.desktop", () => ({
 }))
 
 vi.mock("electron", () => ({
-  app: {},
+  app: mocks.app,
   nativeTheme: {},
   Notification: class {},
   shell: {},
@@ -209,5 +216,33 @@ describe("AppManager push notifications", () => {
     expect(logger.error).toHaveBeenCalledWith("PushReceiver connection failed")
     expect(logger.info).not.toHaveBeenCalledWith("PushReceiver connected")
     expect(JSON.stringify(vi.mocked(logger.error).mock.calls)).not.toContain(credentials.fcm.token)
+  })
+})
+
+describe("AppManager dock icon", () => {
+  const setupAppVisuals = () => {
+    const setup = Reflect.get(AppManager, "setupAppVisuals") as () => void
+    setup.call(AppManager)
+  }
+
+  beforeEach(() => {
+    vi.clearAllMocks()
+    vi.mocked(getIconPath).mockReturnValue("/resources/icon-dev.png")
+  })
+
+  it("keeps the bundle icon in packaged builds so the Dock follows the system appearance", () => {
+    mocks.app.isPackaged = true
+
+    setupAppVisuals()
+
+    expect(mocks.app.dock.setIcon).not.toHaveBeenCalled()
+  })
+
+  it("sets the mode-specific icon for unpackaged runs", () => {
+    mocks.app.isPackaged = false
+
+    setupAppVisuals()
+
+    expect(mocks.app.dock.setIcon).toHaveBeenCalledWith("/resources/icon-dev.png")
   })
 })

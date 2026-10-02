@@ -395,6 +395,7 @@ const FeedInnerForm = ({
                 <FormControl>
                   <div>
                     <Autocomplete
+                      aria-label={t("feed_form.select_category")}
                       maxHeight={window.innerHeight < 600 ? 120 : 240}
                       suggestions={suggestions}
                       {...(field as any)}

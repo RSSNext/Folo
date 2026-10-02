@@ -7,6 +7,7 @@ import { parseSocialMedia } from "~/lib/parsers"
 import type { FeedIconEntry } from "~/modules/feed/feed-icon"
 import { FeedIcon } from "~/modules/feed/feed-icon"
 import { FeedTitle } from "~/modules/feed/feed-title"
+import { useSocialAuthorTitle } from "~/modules/feed/social-author-title"
 
 interface AuthorHeaderProps {
   entryId: string
@@ -44,6 +45,11 @@ export const AuthorHeader: React.FC<AuthorHeaderProps> = ({
   })
 
   const feed = useFeedById(entry?.feedId)
+  const authorTitle = useSocialAuthorTitle({
+    feedId: entry?.feedId,
+    author: entry?.author,
+    feedTitle: feed?.title,
+  })
 
   if (!entry || !feed) return null
 
@@ -63,7 +69,7 @@ export const AuthorHeader: React.FC<AuthorHeaderProps> = ({
       <div className="min-w-0 flex-1">
         <div className="flex items-center gap-1 text-base">
           <span className="font-semibold">
-            <FeedTitle feed={feed} title={entry.author || feed.title} />
+            <FeedTitle feed={feed} title={authorTitle} />
           </span>
           {parsed?.type === "x" && <i className="i-mgc-twitter-cute-fi size-3 text-[#4A99E9]" />}
         </div>

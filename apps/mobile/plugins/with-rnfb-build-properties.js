@@ -6,6 +6,19 @@ const STATIC_FRAMEWORK_TAG = "follow-rnfb-static-framework"
 const RNFB_IOS_COMPAT_TAG = "follow-rnfb-ios-compat"
 const RNFB_STATIC_PODS = ["RNFBApp", "RNFBAnalytics", "RNFBMessaging", "RNFBAppCheck"]
 
+// Finds the `end` that closes `post_install do |installer|`: the next line at the same indentation.
+// Anchoring there instead of a fixed line offset keeps the generated block inside the hook, after
+// `react_native_post_install(...)`, however many lines the Expo template gives that call.
+function findPostInstallEnd(lines) {
+  const startIndex = lines.findIndex((line) => /post_install do \|installer\|/.test(line))
+  if (startIndex === -1) {
+    return -1
+  }
+
+  const indent = lines[startIndex].match(/^\s*/)[0]
+  return lines.findIndex((line, index) => index > startIndex && line.trimEnd() === `${indent}end`)
+}
+
 module.exports = function withRNFBBuildProperties(config) {
   config = withPodfileProperties(config, (config) => {
     config.modResults["ios.useFrameworks"] = "static"
@@ -56,8 +69,9 @@ module.exports = function withRNFBBuildProperties(config) {
         end
       end
     end`,
-      anchor: /post_install do \|installer\|/,
-      offset: 7,
+      anchor: findPostInstallEnd,
+      // Insert right before the closing `end`, so the block runs last in `post_install`.
+      offset: -1,
       comment: "#",
     }).contents
 

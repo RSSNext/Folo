@@ -56,6 +56,8 @@ import type {
 
 const LAST_SYNC_ID_KEY = "lastSyncId"
 const UNREAD_CALIBRATED_AT_KEY = "unreadCalibratedAt"
+/** The sync id the last unread snapshot reflects; counters logged up to it are not applied again. */
+const UNREAD_SNAPSHOT_SYNC_ID_KEY = "unreadSnapshotSyncId"
 const SUBSCRIPTIONS_CALIBRATED_AT_KEY = "subscriptionsCalibratedAt"
 /** Set once a registered model was loaded in full, so later launches rely on the change log. */
 const modelBootstrappedKey = (model: string) => `bootstrapped:${model}`
@@ -109,6 +111,7 @@ class SyncEngine implements Resetable {
   private loaded = false
   private unavailable = false
   private unreadCalibratedAt = 0
+  private unreadSnapshotSyncId = 0
   private subscriptionsCalibratedAt = 0
   private lastPullFinishedAt = 0
   /** Models whose actions were skipped this session because nobody handled them yet. */
@@ -144,14 +147,17 @@ class SyncEngine implements Resetable {
   private async loadCursor() {
     if (this.loaded) return
     try {
-      const [stored, unreadCalibratedAt, subscriptionsCalibratedAt] = await Promise.all([
-        SyncMetaService.get(LAST_SYNC_ID_KEY),
-        SyncMetaService.get(UNREAD_CALIBRATED_AT_KEY),
-        SyncMetaService.get(SUBSCRIPTIONS_CALIBRATED_AT_KEY),
-      ])
+      const [stored, unreadCalibratedAt, unreadSnapshotSyncId, subscriptionsCalibratedAt] =
+        await Promise.all([
+          SyncMetaService.get(LAST_SYNC_ID_KEY),
+          SyncMetaService.get(UNREAD_CALIBRATED_AT_KEY),
+          SyncMetaService.get(UNREAD_SNAPSHOT_SYNC_ID_KEY),
+          SyncMetaService.get(SUBSCRIPTIONS_CALIBRATED_AT_KEY),
+        ])
       const parsed = stored === null ? Number.NaN : Number(stored)
       this.lastSyncId = Number.isFinite(parsed) ? parsed : null
       this.unreadCalibratedAt = Number(unreadCalibratedAt) || 0
+      this.unreadSnapshotSyncId = Number(unreadSnapshotSyncId) || 0
       this.subscriptionsCalibratedAt = Number(subscriptionsCalibratedAt) || 0
       setSyncEngineActive(this.lastSyncId !== null)
     } catch (error) {
@@ -242,7 +248,8 @@ class SyncEngine implements Resetable {
 
     await subscriptionSyncService.fetch()
     await this.markCalibrated(SUBSCRIPTIONS_CALIBRATED_AT_KEY)
-    await unreadSyncService.resetFromRemote()
+    // The snapshot reflects at least the id read above; the response may name a later one.
+    await unreadSyncService.resetFromRemote({ fallbackSyncId: lastSyncId })
     await this.markCalibrated(UNREAD_CALIBRATED_AT_KEY)
     await this.bootstrapRegisteredModels({ force: true })
     await this.setLastSyncId(lastSyncId)
@@ -273,8 +280,34 @@ class SyncEngine implements Resetable {
   private async calibrateUnread() {
     // Claim the slot first so concurrent triggers do not recount twice.
     await this.markCalibrated(UNREAD_CALIBRATED_AT_KEY)
-    await unreadSyncService.resetFromRemote().catch((error) => {
+    await this.takeUnreadSnapshot().catch((error) => {
       console.error("[sync-engine] failed to recount unread entries", error)
+    })
+  }
+
+  /**
+   * Recount through `/reads`. The snapshot is paired with the sync id it reflects, so the
+   * counters of actions logged before it are not added on top when the log delivers them
+   * later. That happens whenever the snapshot runs ahead of the pull that carries those
+   * actions: a poll answered from a stale head, or new-entry hints logged seconds earlier.
+   *
+   * A server that does not name the id in its answer gets the state read just before: every
+   * action visible then has its change inside a snapshot taken afterwards.
+   */
+  private async takeUnreadSnapshot() {
+    const fallbackSyncId = await syncApi()
+      .state()
+      .then((response) => response.data.lastSyncId)
+      .catch(() => undefined)
+    await unreadSyncService.resetFromRemote({ fallbackSyncId })
+  }
+
+  /** Remember how far the log was reflected by the last unread snapshot. */
+  async recordUnreadSnapshot(lastSyncId: number) {
+    if (!Number.isFinite(lastSyncId) || lastSyncId <= this.unreadSnapshotSyncId) return
+    this.unreadSnapshotSyncId = lastSyncId
+    await SyncMetaService.set(UNREAD_SNAPSHOT_SYNC_ID_KEY, String(lastSyncId)).catch((error) => {
+      console.error("[sync-engine] failed to persist the unread snapshot id", error)
     })
   }
 
@@ -318,6 +351,7 @@ class SyncEngine implements Resetable {
     this.loaded = false
     this.unavailable = false
     this.unreadCalibratedAt = 0
+    this.unreadSnapshotSyncId = 0
     this.subscriptionsCalibratedAt = 0
     this.lastPullFinishedAt = 0
     this.unhandledModels.clear()
@@ -536,6 +570,9 @@ class SyncEngine implements Resetable {
   }
 
   private async applyTimelineAction(action: SyncAction, summary: PullSummary) {
+    // The last snapshot already counted everything logged up to its id.
+    const countersInSnapshot = action.id <= this.unreadSnapshotSyncId
+
     if (action.action === "U") {
       if (!isRecord(action.data) || !Array.isArray(action.data.entryIds)) return
       const data = action.data as unknown as TimelineReadActionData
@@ -549,6 +586,8 @@ class SyncEngine implements Resetable {
         entryActions.markEntryReadStatusInSession({ entryIds, read: data.read })
         await EntryService.patchMany({ entry: { read: data.read }, entryIds })
       }
+
+      if (countersInSnapshot) return
 
       // The counters follow the server even when a local transaction keeps an entry's read
       // state: that transaction is rebased on top of the confirmed counts.
@@ -584,6 +623,7 @@ class SyncEngine implements Resetable {
         summary.newestEntryAt = Math.max(summary.newestEntryAt, loggedAt)
       }
 
+      if (countersInSnapshot) return
       if (typeof data.unread === "number") {
         await unreadActions.applyConfirmedDelta({ [id]: data.unread })
       } else {
@@ -677,6 +717,7 @@ class SyncEngine implements Resetable {
     if (data.inboxId) {
       setFeedUnreadDirty(data.inboxId)
     }
+    if (action.id <= this.unreadSnapshotSyncId) return
     if (typeof data.unread !== "boolean" || !data.inboxId) {
       summary.refreshUnread = true
     } else if (data.unread) {

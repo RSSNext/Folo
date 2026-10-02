@@ -9,7 +9,7 @@ import { getDeviceLanguage } from "@/src/lib/i18n"
 
 import { createSettingAtom } from "./internal/helper"
 
-const createDefaultSettings = (): GeneralSettings => {
+export const createDefaultGeneralSettings = (): GeneralSettings => {
   const deviceLanguage = getDeviceLanguage()
   return {
     ...defaultGeneralSettings,
@@ -28,9 +28,10 @@ export const {
   useSettingValue: useGeneralSettingValue,
 
   settingAtom: __generalSettingAtom,
-} = createSettingAtom("general", createDefaultSettings)
+} = createSettingAtom("general", createDefaultGeneralSettings)
 
-export const generalServerSyncWhiteListKeys: (keyof GeneralSettings)[] = [
+/** Device-local general settings: every other general setting syncs to the account. */
+export const generalLocalOnlyKeys: (keyof GeneralSettings)[] = [
   "sendAnonymousData",
   "language",
   "appLaunchOnStartup",

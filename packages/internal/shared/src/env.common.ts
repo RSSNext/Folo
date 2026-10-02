@@ -21,9 +21,9 @@ export const DEFAULT_VALUES = {
     POSTHOG_HOST: "https://us.posthog.com",
   },
   DEV: {
-    API_URL: "https://api.dev.follow.is",
+    API_URL: "https://api.dev.folo.is",
     OTA_URL: "https://ota.folo.is",
-    WEB_URL: "https://dev.follow.is",
+    WEB_URL: "https://dev.folo.is",
     INBOXES_EMAIL: "__dev@follow.re",
   },
   STAGING: {

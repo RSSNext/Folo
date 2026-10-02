@@ -8,6 +8,7 @@ import type { ReasoningUIPart, ToolUIPart } from "ai"
 import { isStaticToolUIPart } from "ai"
 import { AnimatePresence, m } from "motion/react"
 import * as React from "react"
+import { useTranslation } from "react-i18next"
 
 import { ToolInvocationComponent } from "../message/ToolInvocationComponent"
 import { AIReasoningPart } from "./AIReasoningPart"
@@ -20,6 +21,7 @@ interface AIChainOfThoughtProps {
 }
 export const AIChainOfThought: React.FC<AIChainOfThoughtProps> = React.memo(
   ({ groups, isStreaming, className }) => {
+    const { t } = useTranslation("ai")
     const collapseId = React.useId()
 
     const collapseRef = React.useRef<CollapseCssRef>(null)
@@ -46,12 +48,12 @@ export const AIChainOfThought: React.FC<AIChainOfThoughtProps> = React.memo(
       if (!lastPart) return null
 
       if (isStaticToolUIPart(lastPart)) {
-        return `Calling [${lastPart.type.replace("tool-", "")}]`
+        return t("chat.reasoning.calling_tool", { tool: lastPart.type.replace("tool-", "") })
       }
 
       const lastPartText = lastPart.text
       return extractHeading(lastPartText)
-    }, [groups, isStreaming])
+    }, [groups, isStreaming, t])
 
     React.useEffect(() => {
       if (currentChainReasoningIsFinished) collapseRef.current?.setIsOpened(false)
@@ -78,7 +80,7 @@ export const AIChainOfThought: React.FC<AIChainOfThoughtProps> = React.memo(
                   <span className="text-text-secondary">
                     {!currentChainReasoningIsFinished ? (
                       <span className="flex items-center gap-2">
-                        Thinking:{" "}
+                        {t("chat.reasoning.thinking")}{" "}
                         <span className="min-w-0 truncate">
                           <AnimatePresence initial={false} mode="popLayout">
                             <m.span
@@ -97,7 +99,7 @@ export const AIChainOfThought: React.FC<AIChainOfThoughtProps> = React.memo(
                         </span>
                       </span>
                     ) : (
-                      "Finished Thinking"
+                      t("chat.reasoning.finished")
                     )}
                   </span>
                 </div>
@@ -150,6 +152,7 @@ const AIInnerReasoningPart: React.FC<{
   text: string
   groupStreaming: boolean
 }> = React.memo(({ title, text, groupStreaming }) => {
+  const { t } = useTranslation("ai")
   const id = React.useId()
   const collapseRef = React.useRef<CollapseCssRef>(null)
 
@@ -168,11 +171,12 @@ const AIInnerReasoningPart: React.FC<{
           <div className="flex items-center gap-2 text-xs text-text-secondary">
             {title && !groupStreaming ? (
               <span className="truncate">
-                {"Reason: "}
-                <span className="font-medium text-text">{title}</span>
+                {t("chat.reasoning.reason")} <span className="font-medium text-text">{title}</span>
               </span>
             ) : (
-              <span>{groupStreaming ? "Reasoning..." : "Reasoning"}</span>
+              <span>
+                {groupStreaming ? t("chat.reasoning.in_progress") : t("chat.reasoning.title")}
+              </span>
             )}
           </div>
           <div className="ml-2 flex items-center justify-center opacity-0 transition-opacity duration-200 group-hover/inner:opacity-100">

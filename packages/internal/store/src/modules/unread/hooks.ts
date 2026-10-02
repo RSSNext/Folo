@@ -11,8 +11,10 @@ import { getEntry } from "../entry/getter"
 import { useListFeedIds } from "../list/hooks"
 import { useSubscriptionIdsByView } from "../subscription/hooks"
 import { useIsLoggedIn } from "../user/hooks"
+import { getUnreadCountForScope } from "./getters"
 import { unreadCountAllSelector, unreadCountIdSelector, unreadCountIdsSelector } from "./selectors"
 import { unreadSyncService, useUnreadStore } from "./store"
+import type { UnreadListScope } from "./types"
 
 export const usePrefetchUnread = () => {
   const isLoggedIn = useIsLoggedIn()
@@ -46,13 +48,46 @@ const hasUnreadMismatch = (entryIds: string[]) => {
 }
 
 /**
- * Notice counters that are lower than the unread entries on screen. Without the sync engine
- * the counters are fetched again. With it, the list is usually just ahead of the next pull,
- * so the delta feed is applied first and a recount is only asked for if that did not help.
+ * A fully loaded unread-only list that shows fewer unread entries than its counter. The
+ * counter is wrong then: every unread entry the server knows of is on screen.
  */
-export const useSyncUnreadWhenUnMatch = (entryIds: string[]) => {
+export const hasUnreadCounterAboveList = (entryIds: string[], scope: UnreadListScope) => {
+  const expected = getUnreadCountForScope(scope)
+  if (!expected) return false
+
+  let shown = 0
+  for (const entryId of entryIds) {
+    const entry = getEntry(entryId)
+    if (entry && !entry.read) shown += 1
+  }
+  return expected > shown
+}
+
+export interface SyncUnreadWhenUnMatchOptions {
+  /** The list only holds unread entries and has no more pages to load. */
+  complete?: boolean
+  scope?: UnreadListScope
+}
+
+/**
+ * Notice counters that disagree with the list on screen: lower than the unread entries it
+ * shows, or higher than a fully loaded unread-only list. Without the sync engine the
+ * counters are fetched again. With it, the list is usually just ahead of the next pull, so
+ * the delta feed is applied first and a recount is only asked for if that did not help.
+ */
+export const useSyncUnreadWhenUnMatch = (
+  entryIds: string[],
+  options?: SyncUnreadWhenUnMatchOptions,
+) => {
+  const complete = options?.complete === true
+  const scope = options?.scope
+  const scopeKey = scope ? JSON.stringify(scope) : ""
+
   useEffect(() => {
-    if (!hasUnreadMismatch(entryIds)) return
+    const mismatch = () =>
+      hasUnreadMismatch(entryIds) ||
+      (complete && scope !== undefined && hasUnreadCounterAboveList(entryIds, scope))
+    if (!mismatch()) return
 
     if (!isSyncEngineActive()) {
       unreadSyncService.resetFromRemote()
@@ -61,11 +96,11 @@ export const useSyncUnreadWhenUnMatch = (entryIds: string[]) => {
 
     void (async () => {
       await ensureSyncedThroughEngine()
-      if (hasUnreadMismatch(entryIds)) {
+      if (mismatch()) {
         await requestUnreadCalibration()
       }
     })()
-  }, [entryIds.toString()])
+  }, [entryIds.toString(), complete, scopeKey])
 }
 
 export const useAutoMarkAsRead = (entryId: string, enabled: boolean) => {

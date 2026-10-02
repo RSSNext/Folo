@@ -102,7 +102,7 @@ export const AISummaryCardBase: React.FC<AISummaryCardBaseProps> = ({
   headerContent,
   footerContent,
   loadingComponent,
-  title = "AI Summary",
+  title,
   showCopyButton = true,
   showAskAIButton = false,
   onAskAI,
@@ -173,7 +173,7 @@ export const AISummaryCardBase: React.FC<AISummaryCardBaseProps> = ({
                   : "from-purple-600 to-blue-600 dark:from-purple-400 dark:to-blue-400",
               )}
             >
-              {title}
+              {title ?? t("ai_summary", { ns: "ai" })}
             </span>
           </div>
         )}
@@ -195,7 +195,7 @@ export const AISummaryCardBase: React.FC<AISummaryCardBaseProps> = ({
               )}
             >
               <i className="i-mgc-ai-cute-re text-base" />
-              <span>Ask AI</span>
+              <span>{t("entry_content.selection_toolbar.ask_ai")}</span>
             </MotionButtonBase>
           )}
 

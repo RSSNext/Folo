@@ -63,7 +63,7 @@ export const ShortcutSetting = () => {
       <div className="mb-4 flex min-h-6 items-center justify-end">
         {hasCustomizedShortcuts && (
           <Button variant={"outline"} onClick={resetDefaults}>
-            Reset Defaults
+            {t("settings.shortcuts.reset_defaults")}
           </Button>
         )}
       </div>

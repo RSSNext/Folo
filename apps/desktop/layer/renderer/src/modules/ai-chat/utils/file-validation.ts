@@ -1,3 +1,5 @@
+import { t } from "i18next"
+
 const MAX_IMAGE_ALLOWED_SIZE = 3 * 1024 * 1024
 const MAX_DOCUMENT_ALLOWED_SIZE = 1 * 1024 * 1024
 export const SUPPORTED_MIME_ACCEPT = "image/*,.pdf,.txt,.md"
@@ -34,6 +36,12 @@ export interface FileValidationResult {
   }
 }
 
+const FILE_TOO_LARGE_MESSAGE_KEYS = {
+  image: "chat.file.validation.too_large.image",
+  document: "chat.file.validation.too_large.document",
+  text: "chat.file.validation.too_large.text",
+} as const satisfies Record<FileCategory, string>
+
 export function validateFile(file: File): FileValidationResult {
   const fileType = file.type as SupportedFileType
   const fileInfo = SUPPORTED_FILE_TYPES[fileType]
@@ -43,7 +51,7 @@ export function validateFile(file: File): FileValidationResult {
       isValid: false,
       error: {
         type: "unsupported",
-        message: `File type "${file.type}" is not supported. Supported types: images, PDFs, text files.`,
+        message: t("chat.file.validation.unsupported_type", { ns: "ai", type: file.type }),
       },
     }
   }
@@ -55,7 +63,11 @@ export function validateFile(file: File): FileValidationResult {
       isValid: false,
       error: {
         type: "too_large",
-        message: `File size (${fileSizeMB}MB) exceeds the maximum allowed size of ${maxSizeMB}MB for ${fileInfo.category} files.`,
+        message: t(FILE_TOO_LARGE_MESSAGE_KEYS[fileInfo.category], {
+          ns: "ai",
+          size: fileSizeMB,
+          maxSize: maxSizeMB,
+        }),
       },
     }
   }
@@ -65,7 +77,7 @@ export function validateFile(file: File): FileValidationResult {
       isValid: false,
       error: {
         type: "invalid",
-        message: "File appears to be empty or corrupted.",
+        message: t("chat.file.validation.empty", { ns: "ai" }),
       },
     }
   }
@@ -79,16 +91,6 @@ export function validateFile(file: File): FileValidationResult {
       maxSize: fileInfo.maxSize,
     },
   }
-}
-
-export function formatFileSize(bytes: number): string {
-  if (bytes === 0) return "0 Bytes"
-
-  const k = 1024
-  const sizes = ["Bytes", "KB", "MB", "GB"]
-  const i = Math.floor(Math.log(bytes) / Math.log(k))
-
-  return `${Number.parseFloat((bytes / Math.pow(k, i)).toFixed(1))} ${sizes[i]}`
 }
 
 export function getFileCategoryFromMimeType(mimeType: string): FileCategory {

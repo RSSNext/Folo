@@ -5,6 +5,7 @@ import * as FileSystem from "expo-file-system/legacy"
 import type { ImageProps, ImageSource } from "expo-image"
 import { Asset, usePermissions } from "expo-media-library"
 import * as Sharing from "expo-sharing"
+import { t } from "i18next"
 import { useCallback } from "react"
 import { Image } from "react-native"
 
@@ -135,7 +136,7 @@ export async function shareImage({ uri }: { uri: string }) {
   const { filePath, cleanup } = await createTempFile(croppedImage.base64, filename)
   await Sharing.shareAsync(filePath, {
     mimeType: "image/png",
-    dialogTitle: "Share Image",
+    dialogTitle: t("image.share"),
   })
 
   cleanup()
@@ -172,9 +173,9 @@ export function useSaveImageToMediaLibrary() {
       async function save() {
         try {
           await saveImageToMediaLibrary({ uri })
-          toast.success("Image saved to library")
+          toast.success(t("image.saved"))
         } catch (e) {
-          toast.error(`Failed to save image: ${String(e)}`)
+          toast.error(t("image.save_failed", { error: String(e) }))
         }
       }
 
@@ -190,20 +191,14 @@ export function useSaveImageToMediaLibrary() {
             await save()
           } else {
             // since we've been explicitly denied, show a toast.
-            toast.error(
-              `Images cannot be saved unless permission is granted to access your photo library.`,
-              {
-                duration: 5000,
-              },
-            )
+            toast.error(t("image.permission_required"), {
+              duration: 5000,
+            })
           }
         } else {
-          toast.info(
-            `Permission to access your photo library was denied. Please enable it in your system settings.`,
-            {
-              duration: 5000,
-            },
-          )
+          toast.info(t("image.permission_denied"), {
+            duration: 5000,
+          })
         }
       }
     },

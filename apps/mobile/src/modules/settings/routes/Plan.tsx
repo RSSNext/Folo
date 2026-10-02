@@ -165,7 +165,7 @@ const formatFeatureValue = (
   }
 
   if (value === Number.MAX_SAFE_INTEGER) {
-    return "Unlimited"
+    return t?.("rsshub.table.unlimited") ?? "Unlimited"
   }
 
   if (typeof value === "number") {
@@ -967,7 +967,7 @@ const PlanCard = ({
                 <Text
                   className={cn(
                     "text-sm font-medium",
-                    formattedValue === "Unlimited" ? "text-accent" : "text-secondary-label",
+                    value === Number.MAX_SAFE_INTEGER ? "text-accent" : "text-secondary-label",
                   )}
                 >
                   {formattedValue === "✓" ? t("subscription.feature.included") : formattedValue}

@@ -1,4 +1,5 @@
 import { getView } from "@follow/constants"
+import { t } from "i18next"
 
 import type { AIChatContextBlock, FileAttachment } from "~/modules/ai-chat/store/types"
 import {
@@ -55,21 +56,21 @@ export const BLOCK_ICONS = {
  * Block labels for different context block types
  */
 export const BLOCK_LABELS = {
-  mainEntry: "Current",
-  mainFeed: "Current",
-  fileAttachment: "File",
-  mainView: "View",
-  unreadOnly: "Filter",
+  mainEntry: "chat.block_label.current",
+  mainFeed: "chat.block_label.current",
+  fileAttachment: "chat.block_label.file",
+  mainView: "chat.block_label.view",
+  unreadOnly: "chat.block_label.filter",
 } as const
 
 /**
  * File upload status labels
  */
 export const FILE_STATUS_LABELS = {
-  uploading: "Uploading...",
-  error: "Failed",
-  processing: "Processing...",
-  completed: "",
+  uploading: "chat.file.status.uploading",
+  error: "chat.file.status.failed",
+  processing: "chat.file.status.processing",
+  completed: null,
 } as const
 
 /**
@@ -100,7 +101,8 @@ export function getBlockIcon(block: AIChatContextBlock): string {
  * Gets the appropriate label for a block type
  */
 export function getBlockLabel(type: AIChatContextBlock["type"]): string {
-  return BLOCK_LABELS[type] || ""
+  const key = BLOCK_LABELS[type]
+  return key ? t(key, { ns: "ai" }) : ""
 }
 
 /**
@@ -125,6 +127,6 @@ export function isImageAttachment(block: AIChatContextBlock): boolean {
  * Gets display content for file attachments based on upload status
  */
 export function getFileDisplayContent(attachment: FileAttachment): string {
-  const statusLabel = FILE_STATUS_LABELS[attachment.uploadStatus || "completed"]
-  return statusLabel || attachment.name
+  const statusKey = FILE_STATUS_LABELS[attachment.uploadStatus || "completed"]
+  return statusKey ? t(statusKey, { ns: "ai" }) : attachment.name
 }

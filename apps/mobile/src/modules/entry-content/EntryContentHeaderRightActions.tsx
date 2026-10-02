@@ -128,7 +128,7 @@ const HeaderRightActionsImpl = ({
   const handleCopyLink = () => {
     if (!entry?.url) return
     setStringAsync(entry.url)
-    toast.success("Link copied to clipboard")
+    toast.success(t("operation.copy_which_success", { which: t("operation.copy.link") }))
   }
 
   const handleOpenInBrowser = () => {
@@ -157,7 +157,7 @@ const HeaderRightActionsImpl = ({
       },
     !showReadabilitySetting && {
       key: "ShowReadability",
-      title: "Show Readability",
+      title: t("entry_content.header.show_readability"),
       icon: <DocmentCuteReIcon />,
       iconIOS: { name: "doc.text" },
       onPress: toggleReadability,
@@ -168,7 +168,7 @@ const HeaderRightActionsImpl = ({
     isLoggedIn &&
       !showAITranslationSetting && {
         key: "ShowTranslation",
-        title: "Show Translation",
+        title: t("entry_content.header.show_translation"),
         icon: <Translate2CuteReIcon />,
         iconIOS: { name: "globe" },
         onPress: toggleAITranslation,
@@ -205,7 +205,7 @@ const HeaderRightActionsImpl = ({
     },
     {
       key: "OpenInBrowser",
-      title: "Open in Browser",
+      title: t("entry_content.header.open_in_browser"),
       iconIOS: { name: "safari" },
       onPress: handleOpenInBrowser,
       inMenu: true,
@@ -254,7 +254,11 @@ const HeaderRightActionsImpl = ({
 
       <DropdownMenu.Root>
         <DropdownMenu.Trigger>
-          <Pressable testID="entry-more-actions" hitSlop={10} accessibilityLabel="More Actions">
+          <Pressable
+            testID="entry-more-actions"
+            hitSlop={10}
+            accessibilityLabel={t("entry_content.header.more_actions")}
+          >
             <More1CuteReIcon color={labelColor} />
           </Pressable>
         </DropdownMenu.Trigger>

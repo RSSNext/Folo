@@ -11,6 +11,7 @@ import { zodResolver } from "@hookform/resolvers/zod"
 import { memo, useEffect, useMemo, useState } from "react"
 import type { FieldErrors } from "react-hook-form"
 import { Controller, useForm } from "react-hook-form"
+import { useTranslation } from "react-i18next"
 import { KeyboardAvoidingView, Linking, Pressable, View } from "react-native"
 import { z } from "zod"
 
@@ -63,6 +64,7 @@ export const RsshubFormScreen: NavigationControllerView<RsshubFormParams> = ({
   return <FormImpl route={parsedRoute} routePrefix={routePrefix as string} name={name!} />
 }
 function FormImpl({ route, routePrefix, name }: RsshubFormParams) {
+  const { t } = useTranslation()
   const { name: routeName, topFeeds } = route
   const keys = useMemo(() => parseRegexpPathParams(route.path), [route.path])
   const formPlaceholder = useMemo<Record<string, string>>(() => {
@@ -97,7 +99,6 @@ function FormImpl({ route, routePrefix, name }: RsshubFormParams) {
     mode: "all",
   })
 
-  // eslint-disable-next-line unicorn/prefer-structured-clone
   const nextErrors = JSON.parse(JSON.stringify(form.formState.errors))
   const data = form.watch() as Record<string, string | undefined>
   const fullPath = useMemo(() => {
@@ -126,7 +127,7 @@ function FormImpl({ route, routePrefix, name }: RsshubFormParams) {
             {keys.length === 0 && (
               <View className="mx-2 mt-4 gap-4 rounded-lg bg-secondary-system-grouped-background p-3">
                 <Text className="text-center text-base text-label">
-                  This feed has no parameters.
+                  {t("rsshub_form.no_parameters")}
                 </Text>
               </View>
             )}
@@ -212,14 +213,13 @@ function FormImpl({ route, routePrefix, name }: RsshubFormParams) {
   )
 }
 const Maintainers = ({ maintainers }: { maintainers?: string[] }) => {
+  const { t } = useTranslation()
   if (!maintainers || maintainers.length === 0) {
     return null
   }
   return (
     <View className="mx-8 mt-4 flex flex-row flex-wrap gap-x-1 text-sm text-tertiary-label">
-      <Text className="text-xs text-secondary-label">
-        This feed is provided by RSSHub, with credit to{" "}
-      </Text>
+      <Text className="text-xs text-secondary-label">{t("rsshub_form.maintainers")} </Text>
       {maintainers.map((m) => (
         <Pressable key={m} onPress={() => Linking.openURL(`https://github.com/${m}`)}>
           <Text className="text-xs text-accent/90">@{m}</Text>
@@ -276,6 +276,7 @@ const ModalHeaderSubmitButtonImpl = ({
   route: string
   errors: FieldErrors
 }) => {
+  const { t } = useTranslation()
   const form = useFormContext()
   const isValid = Object.keys(errors).length === 0
   const navigation = useNavigation()
@@ -311,14 +312,14 @@ const ModalHeaderSubmitButtonImpl = ({
           })
         })
         .catch(() => {
-          toast.error("Failed to fetch feed")
+          toast.error(t("rsshub_form.fetch_failed"))
         })
         .finally(() => {
           setIsLoading(false)
         })
     } catch (err: unknown) {
       if (err instanceof MissingOptionalParamError) {
-        toast.error(err.message)
+        toast.error(t("rsshub_form.missing_optional_param", { param: err.param }))
         // const idx = keys.findIndex((item) => item.name === err.param)
         // form.setFocus(keys[idx === 0 ? 0 : idx - 1].name, {
         //   shouldSelect: true,
@@ -327,6 +328,11 @@ const ModalHeaderSubmitButtonImpl = ({
     }
   })
   return (
-    <HeaderSubmitTextButton isLoading={isLoading} isValid={isValid} onPress={submit} label="Next" />
+    <HeaderSubmitTextButton
+      isLoading={isLoading}
+      isValid={isValid}
+      onPress={submit}
+      label={t("words.next", { ns: "common" })}
+    />
   )
 }

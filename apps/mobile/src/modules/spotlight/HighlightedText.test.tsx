@@ -1,7 +1,7 @@
 import assert from "node:assert/strict"
-import { describe, it } from "node:test"
 
 import type { SpotlightRule } from "@follow/shared/spotlight"
+import { describe, it } from "vitest"
 
 import { getHighlightedTextSegments } from "./highlightedTextSegments"
 import { getHighlightedTextSegmentStyle } from "./highlightedTextStyle"

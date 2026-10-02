@@ -1,8 +1,8 @@
+import type { JotaiSyncStorage } from "@follow/utils"
 import { getStorageNS } from "@follow/utils/ns"
 import { parseSafeUrl } from "@follow/utils/utils"
 import { noop } from "foxact/noop"
 import { atomWithStorage, createJSONStorage } from "jotai/utils"
-import type { SyncStorage } from "jotai/vanilla/utils/atomWithStorage"
 
 import { getRouteParams } from "~/hooks/biz/useRouteParams"
 import { createAtomHooks } from "~/lib/jotai"
@@ -33,7 +33,7 @@ const playerInitialValue: PlayerAtomValue = {
 
 const jsonStorage = createJSONStorage<PlayerAtomValue>()
 let hydrationDone = false
-const patchedLocalStorage: SyncStorage<PlayerAtomValue> = {
+const patchedLocalStorage: JotaiSyncStorage<PlayerAtomValue> = {
   setItem: jsonStorage.setItem,
   getItem: (key, initialValue) => {
     const value = jsonStorage.getItem(key, initialValue)

@@ -1,6 +1,5 @@
 import { cn } from "@follow/utils"
-import { useAtomValue } from "jotai"
-import { use, useEffect } from "react"
+import { useEffect } from "react"
 import { Pressable, View } from "react-native"
 import Animated, {
   interpolate,
@@ -11,23 +10,17 @@ import Animated, {
 
 import { Image } from "@/src/components/ui/image/Image"
 import { Text } from "@/src/components/ui/typography/Text"
-import { BottomTabContext } from "@/src/lib/navigation/bottom-tab/BottomTabContext"
 import { useNavigation } from "@/src/lib/navigation/hooks"
 import { useActivePlayable } from "@/src/lib/player"
 import { PlayerScreen } from "@/src/screens/PlayerScreen"
 import { usePrefetchImageColors } from "@/src/store/image/hooks"
 
 import { PlayPauseButton, SeekButton, StopButton } from "./control"
+import { useShouldShowPlayerBar } from "./hooks"
 
-const allowedTabIdentifiers = new Set(["IndexTabScreen", "SubscriptionsTabScreen"])
 export function PlayerTabBar({ className }: { className?: string }) {
   const activePlayable = useActivePlayable()
-  const tabRootCtx = use(BottomTabContext)
-  const tabScreens = useAtomValue(tabRootCtx.tabScreensAtom)
-  const currentIndex = useAtomValue(tabRootCtx.currentIndexAtom)
-  const currentTabProps = tabScreens.find((tabScreen) => tabScreen.tabScreenIndex === currentIndex)
-  const identifier = currentTabProps?.identifier
-  const isVisible = !!activePlayable && identifier && allowedTabIdentifiers.has(identifier)
+  const isVisible = useShouldShowPlayerBar()
   const isVisibleSV = useSharedValue(isVisible ? 1 : 0)
   useEffect(() => {
     isVisibleSV.value = withTiming(isVisible ? 1 : 0)

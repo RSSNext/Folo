@@ -1,5 +1,6 @@
 import type { TransactionQuery } from "@follow-app/client-sdk"
 import { useMutation } from "@tanstack/react-query"
+import { useTranslation } from "react-i18next"
 import { toast } from "sonner"
 
 import { useAuthQuery } from "~/hooks/common"
@@ -49,8 +50,10 @@ export const useWallet = (options?: { enabled?: boolean }) =>
 export const useWalletTransactions = (query: Parameters<typeof wallet.transactions.get>[0] = {}) =>
   useAuthQuery(wallet.transactions.get(query))
 
-export const useCreateWalletMutation = () =>
-  useMutation({
+export const useCreateWalletMutation = () => {
+  const { t } = useTranslation("settings")
+
+  return useMutation({
     mutationKey: ["createWallet"],
     mutationFn: () => createLegacyWallet(),
     async onError(err) {
@@ -58,6 +61,7 @@ export const useCreateWalletMutation = () =>
     },
     onSuccess() {
       wallet.get().invalidate()
-      toast("🎉 Wallet created.")
+      toast(t("wallet.create.success"))
     },
   })
+}

@@ -125,7 +125,8 @@ export const {
   useSettingValue: useAISettingValue,
   settingAtom: __aiSettingAtom,
 } = createSettingAtom("ai", createDefaultSettings)
-export const aiServerSyncWhiteListKeys = []
+/** Device-local AI settings: every other AI setting syncs to the account. */
+export const aiLocalOnlyKeys: (keyof AISettings)[] = []
 
 export const syncServerShortcuts = (
   serverShortcuts: readonly ServerShortcutConfig[] | null | undefined,

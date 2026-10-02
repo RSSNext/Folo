@@ -1,6 +1,6 @@
 import { createVerify, generateKeyPairSync } from "node:crypto"
 
-import { describe, expect, it, vi } from "vitest"
+import { afterEach, describe, expect, it, vi } from "vitest"
 
 import type { Env } from "../env"
 import otaWorker from "../index"
@@ -481,6 +481,10 @@ describe("/manifest", () => {
 })
 
 describe("/download", () => {
+  afterEach(() => {
+    vi.unstubAllGlobals()
+  })
+
   it("redirects desktop Windows downloads to the installer from OTA metadata", async () => {
     const response = await fetchWorker("/download/desktop/windows/exe", undefined, {
       kvEntries: new Map<string, unknown>([
@@ -558,16 +562,29 @@ describe("/download", () => {
     )
   })
 
-  it("redirects Android APK downloads from the cached OTA release version", async () => {
+  it("redirects Android APK downloads to the cached APK release", async () => {
+    const fetchSpy = vi.fn()
+    vi.stubGlobal("fetch", fetchSpy)
+
     const response = await fetchWorker("/download/mobile/android/apk", undefined, {
       kvEntries: new Map<string, unknown>([
         [
           KV_KEYS.latestReleaseVersion("mobile"),
           {
             product: "mobile",
-            version: "0.5.0",
-            publishedAt: "2026-04-15T04:49:25Z",
-            tag: "mobile/v0.5.0",
+            version: "0.5.11",
+            publishedAt: "2026-09-25T09:00:00Z",
+            tag: "mobile/v0.5.11",
+          },
+        ],
+        [
+          KV_KEYS.latestAndroidApk,
+          {
+            version: "0.5.10",
+            publishedAt: "2026-09-18T12:32:03Z",
+            tag: "mobile/v0.5.10",
+            downloadUrl:
+              "https://github.com/RSSNext/Folo/releases/download/mobile/v0.5.10/build.apk",
           },
         ],
       ]),
@@ -575,8 +592,129 @@ describe("/download", () => {
 
     expect(response.status).toBe(302)
     expect(response.headers.get("location")).toBe(
-      "https://github.com/RSSNext/Folo/releases/download/mobile/v0.5.0/build.apk",
+      "https://github.com/RSSNext/Folo/releases/download/mobile/v0.5.10/build.apk",
     )
+    expect(fetchSpy).not.toHaveBeenCalled()
+  })
+
+  it("backfills the Android APK from the newest published release that ships build.apk", async () => {
+    const fetchSpy = vi.fn(async (input: string | URL | Request) => {
+      const url = String(input)
+
+      if (url === "https://api.github.com/repos/RSSNext/Folo/releases") {
+        return new Response(
+          JSON.stringify([
+            createGitHubRelease("mobile/v0.5.12", {
+              prerelease: true,
+              publishedAt: "2026-09-26T09:00:00Z",
+              assetNames: ["build.apk"],
+            }),
+            createGitHubRelease("mobile/v0.5.11", {
+              publishedAt: "2026-09-25T09:00:00Z",
+              assetNames: ["dist.tar.zst", "ota-release.json"],
+            }),
+            createGitHubRelease("desktop/v1.14.0", {
+              publishedAt: "2026-09-18T11:50:59Z",
+              assetNames: ["Folo-1.14.0-macos-arm64.dmg"],
+            }),
+            createGitHubRelease("mobile/v0.5.10", {
+              publishedAt: "2026-09-18T12:32:03Z",
+              assetNames: ["build.apk"],
+            }),
+          ]),
+          { status: 200 },
+        )
+      }
+
+      throw new Error(`Unhandled fetch URL: ${url}`)
+    })
+    vi.stubGlobal("fetch", fetchSpy)
+
+    const response = await fetchWorker("/download/mobile/android/apk", undefined, {
+      kvEntries: new Map<string, unknown>([
+        [
+          KV_KEYS.latestReleaseVersion("mobile"),
+          {
+            product: "mobile",
+            version: "0.5.5",
+            publishedAt: "2026-06-22T07:10:19.849Z",
+            tag: "mobile/v0.5.5",
+          },
+        ],
+      ]),
+      envOverrides: {
+        GITHUB_OWNER: "RSSNext",
+        GITHUB_REPO: "Folo",
+      },
+    })
+
+    expect(response.status).toBe(302)
+    expect(response.headers.get("location")).toBe(
+      "https://github.com/RSSNext/Folo/releases/download/mobile/v0.5.10/build.apk",
+    )
+    expect(fetchSpy).toHaveBeenCalledTimes(1)
+  })
+
+  it("falls back to the release version record when the APK backfill fails", async () => {
+    vi.stubGlobal(
+      "fetch",
+      vi.fn(
+        async () => new Response(JSON.stringify({ message: "Bad credentials" }), { status: 401 }),
+      ),
+    )
+
+    const response = await fetchWorker("/download/mobile/android/apk", undefined, {
+      kvEntries: new Map<string, unknown>([
+        [
+          KV_KEYS.latestReleaseVersion("mobile"),
+          {
+            product: "mobile",
+            version: "0.5.5",
+            publishedAt: "2026-06-22T07:10:19.849Z",
+            tag: "mobile/v0.5.5",
+          },
+        ],
+      ]),
+      envOverrides: {
+        GITHUB_OWNER: "RSSNext",
+        GITHUB_REPO: "Folo",
+      },
+    })
+
+    expect(response.status).toBe(302)
+    expect(response.headers.get("location")).toBe(
+      "https://github.com/RSSNext/Folo/releases/download/mobile/v0.5.5/build.apk",
+    )
+  })
+
+  it("returns 404 when no published mobile release ships an APK", async () => {
+    vi.stubGlobal(
+      "fetch",
+      vi.fn(
+        async () =>
+          new Response(
+            JSON.stringify([
+              createGitHubRelease("mobile/v0.5.11", {
+                publishedAt: "2026-09-25T09:00:00Z",
+                assetNames: ["dist.tar.zst", "ota-release.json"],
+              }),
+            ]),
+            { status: 200 },
+          ),
+      ),
+    )
+
+    const response = await fetchWorker("/download/mobile/android/apk", undefined, {
+      envOverrides: {
+        GITHUB_OWNER: "RSSNext",
+        GITHUB_REPO: "Folo",
+      },
+    })
+
+    expect(response.status).toBe(404)
+    await expect(response.json()).resolves.toEqual({
+      error: "Android APK version is unavailable",
+    })
   })
 })
 
@@ -797,6 +935,7 @@ async function fetchWorker(
       }
     >
     otaCodeSigningPrivateKey?: string
+    envOverrides?: Partial<Env>
   },
 ) {
   const response = await otaWorker.fetch(
@@ -818,6 +957,7 @@ function createEnv(options?: {
     }
   >
   otaCodeSigningPrivateKey?: string
+  envOverrides?: Partial<Env>
 }): Env {
   return {
     OTA_KV: createKvNamespace(options?.kvEntries),
@@ -828,6 +968,27 @@ function createEnv(options?: {
     OTA_SYNC_TOKEN: "",
     OTA_SYNC_TOKEN_HEADER: "x-ota-sync-token",
     OTA_CODE_SIGNING_PRIVATE_KEY: options?.otaCodeSigningPrivateKey,
+    ...options?.envOverrides,
+  }
+}
+
+function createGitHubRelease(
+  tag: string,
+  options: {
+    publishedAt: string
+    prerelease?: boolean
+    assetNames: string[]
+  },
+) {
+  return {
+    tag_name: tag,
+    draft: false,
+    prerelease: options.prerelease ?? false,
+    published_at: options.publishedAt,
+    assets: options.assetNames.map((name) => ({
+      name,
+      browser_download_url: `https://github.com/RSSNext/Folo/releases/download/${tag}/${name}`,
+    })),
   }
 }
 

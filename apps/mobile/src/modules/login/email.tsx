@@ -90,6 +90,7 @@ export function EmailLogin() {
     mutationFn: onSubmit,
   })
   const onLogin = useCallback(() => {
+    void KeyboardController.dismiss()
     submitMutation.mutate({
       email: emailValue,
       password: passwordValue,
@@ -223,7 +224,7 @@ export function EmailSignUp() {
         return
       }
 
-      if (!getCookie()) {
+      if (!(await getCookie())) {
         const signedIn = await signInWithEmail(
           {
             email: values.email,
@@ -247,6 +248,7 @@ export function EmailSignUp() {
     },
   })
   const signup = handleSubmit((values) => {
+    void KeyboardController.dismiss()
     submitMutation.mutate(values)
   })
 

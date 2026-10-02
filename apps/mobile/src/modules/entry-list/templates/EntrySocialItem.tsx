@@ -26,6 +26,7 @@ import { NativePressable } from "@/src/components/ui/pressable/NativePressable"
 import { Text } from "@/src/components/ui/typography/Text"
 import { VideoPlayer } from "@/src/components/ui/video/VideoPlayer"
 import { useNavigation } from "@/src/lib/navigation/hooks"
+import { useSocialAuthorTitle } from "@/src/modules/feed/feed-title"
 import { EntryDetailScreen } from "@/src/screens/(stack)/entries/[entryId]/EntryDetailScreen"
 import { FeedScreen } from "@/src/screens/(stack)/feeds/[feedId]/FeedScreen"
 
@@ -55,6 +56,7 @@ export const EntrySocialItem = memo(
     })
     const { openLightbox } = useLightboxControls()
     const feed = useFeedById(entry?.feedId || "")
+    const authorTitle = useSocialAuthorTitle(entry?.feedId, entry?.author)
     const isLoggedIn = useIsLoggedIn()
     const navigation = useNavigation()
     const handlePress = useCallback(() => {
@@ -141,7 +143,7 @@ export const EntrySocialItem = memo(
             <View className="flex-1 flex-row items-center gap-1.5">
               <NativePressable hitSlop={10} onPress={navigationToFeedEntryList}>
                 <Text numberOfLines={1} className="shrink text-sm font-semibold text-label">
-                  {entry.author || feed?.title}
+                  {authorTitle}
                 </Text>
               </NativePressable>
               <Text className="text-xs text-tertiary-label">·</Text>

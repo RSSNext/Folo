@@ -17,6 +17,7 @@ import type { JSAnimation } from "motion/react"
 import { useAnimationControls } from "motion/react"
 import * as React from "react"
 import { memo, useEffect, useRef, useState } from "react"
+import { useTranslation } from "react-i18next"
 
 import { useShowAITranslation } from "~/atoms/ai-translation"
 import { useEntryIsInReadability } from "~/atoms/readability"
@@ -59,6 +60,7 @@ const EntryContentImpl: Component<EntryContentProps> = ({
   className,
   compact,
 }) => {
+  const { t } = useTranslation()
   const entry = useEntry(entryId, (state) => {
     const { feedId, inboxHandle } = state
     const { title, url } = state
@@ -227,7 +229,9 @@ const EntryContentImpl: Component<EntryContentProps> = ({
                   ) : error ? (
                     <div className="center mt-36 flex flex-col items-center gap-3">
                       <i className="i-mgc-warning-cute-re text-4xl text-red" />
-                      <span className="text-balance text-center text-sm">Network Error</span>
+                      <span className="text-balance text-center text-sm">
+                        {t("entry_content.network_error")}
+                      </span>
                       <pre className="mt-6 w-full overflow-auto whitespace-pre-wrap break-all">
                         {error.message}
                       </pre>

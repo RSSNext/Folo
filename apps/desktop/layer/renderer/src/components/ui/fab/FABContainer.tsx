@@ -7,6 +7,7 @@ import { AnimatePresence } from "motion/react"
 import type * as React from "react"
 import type { FC, JSX, PropsWithChildren, ReactNode } from "react"
 import { useId } from "react"
+import { useTranslation } from "react-i18next"
 
 import { m } from "~/components/common/Motion"
 import { jotaiStore } from "~/lib/jotai"
@@ -31,6 +32,7 @@ export const FABBase: FC<
 > = (props) => {
   const { children, show = true, ref, ...extra } = props
   const { className, ...rest } = extra
+  const { t } = useTranslation()
 
   return (
     <AnimatePresence>
@@ -45,7 +47,7 @@ export const FABBase: FC<
             ease: "easeInOut",
           }}
           ref={ref}
-          aria-label="Floating action button"
+          aria-label={t("app.floating_action_button")}
           className={cn(
             "mt-2 flex items-center justify-center",
             "size-9 text-lg md:text-base",

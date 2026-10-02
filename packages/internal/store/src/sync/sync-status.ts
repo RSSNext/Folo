@@ -22,6 +22,8 @@ export interface SyncEngineHandle {
   ensureSynced: () => Promise<boolean>
   catchUp: (delayMs?: number) => Promise<boolean>
   requestUnreadCalibration: () => Promise<void>
+  /** A full unread snapshot was taken; the counters logged up to this id are inside it. */
+  recordUnreadSnapshot: (lastSyncId: number) => Promise<void>
 }
 
 let engine: SyncEngineHandle | null = null
@@ -42,3 +44,6 @@ export const catchUpThroughEngine = (delayMs?: number) =>
 
 export const requestUnreadCalibration = () =>
   engine?.requestUnreadCalibration() ?? Promise.resolve()
+
+export const recordUnreadSnapshotThroughEngine = (lastSyncId: number) =>
+  engine?.recordUnreadSnapshot(lastSyncId) ?? Promise.resolve()

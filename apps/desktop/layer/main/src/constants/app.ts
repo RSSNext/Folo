@@ -8,7 +8,7 @@ export const HOTUPDATE_RENDER_ENTRY_DIR = path.resolve(app.getPath("userData"), 
 export const GITHUB_OWNER = process.env.GITHUB_OWNER || "RSSNext"
 export const GITHUB_REPO = process.env.GITHUB_REPO || "follow"
 
-// https://github.com/electron/electron/issues/25081
-export const START_IN_TRAY_ARGS = "--start-in-tray"
+// Shared with the renderer, which registers it as the login item argument
+export { START_IN_TRAY_ARGS } from "@follow/shared/desktop-launch"
 
 export const BETTER_AUTH_COOKIE_NAME_SESSION_TOKEN = "better-auth.session_token"
