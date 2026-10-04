@@ -1,5 +1,5 @@
 import { useTitle } from "@follow/hooks"
-import { atom, useAtomValue, useSetAtom } from "jotai"
+import { atom, useAtomValue, useAtomValueRawSync, useSetAtom } from "jotai"
 import type { ReactNode } from "react"
 import { useEffect } from "react"
 
@@ -22,7 +22,10 @@ export function useSubViewTitle(title: I18nKeys | ReactNode, fallbackTitleString
   }, [setTitle, t, title])
 }
 
-export const useSubViewTitleValue = () => useAtomValue(titleAtom)
+// Pages set the title in an effect, which runs before `SubviewLayout` (their ancestor) subscribes
+// when both mount in the same commit. Jotai v3 `useAtomValue` would keep the previous title;
+// `useAtomValueRawSync` re-checks after subscribing.
+export const useSubViewTitleValue = () => useAtomValueRawSync(titleAtom)
 
 export const useSubViewRightView = () => useAtomValue(rightViewAtom)
 
