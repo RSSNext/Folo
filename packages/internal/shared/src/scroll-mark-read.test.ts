@@ -2,7 +2,7 @@ import { describe, expect, it } from "vitest"
 
 import {
   getScrollMarkReadEndPadding,
-  getScrollMarkReadExitedSliceEnd,
+  getScrollMarkReadMasonryStartIndex,
   getScrollMarkReadRange,
   getScrollMarkReadRangeState,
   MIN_SCROLL_MARK_READ_END_PADDING,
@@ -27,22 +27,72 @@ describe("scroll mark-read trailing space", () => {
   })
 })
 
-describe("scroll mark-read exited slice", () => {
-  it("includes the first picture item after it scrolls out above the viewport", () => {
-    expect(getScrollMarkReadExitedSliceEnd({ indexes: [0], renderedEndIndex: 0 })).toBe(1)
-  })
+describe("scroll mark-read masonry start index", () => {
+  const viewport = { viewportTop: 100, viewportBottom: 900 }
 
-  it("includes the picture item that crossed the top edge", () => {
-    expect(getScrollMarkReadExitedSliceEnd({ indexes: [4], renderedEndIndex: 6 })).toBe(5)
-  })
-
-  it("ignores invalid indexes and items beyond the rendered range", () => {
+  it("starts at the first item still in view", () => {
     expect(
-      getScrollMarkReadExitedSliceEnd({
-        indexes: [Number.NaN, -1, 8],
-        renderedEndIndex: 6,
+      getScrollMarkReadMasonryStartIndex({
+        ...viewport,
+        items: [
+          { index: 0, top: -400, bottom: 50 },
+          { index: 1, top: -300, bottom: 300 },
+          { index: 2, top: -200, bottom: 80 },
+          { index: 3, top: 60, bottom: 500 },
+        ],
+      }),
+    ).toBe(1)
+  })
+
+  it("counts every item that left in the same frame", () => {
+    expect(
+      getScrollMarkReadMasonryStartIndex({
+        ...viewport,
+        items: [
+          { index: 4, top: -500, bottom: 20 },
+          { index: 5, top: -300, bottom: 40 },
+          { index: 6, top: -200, bottom: 90 },
+          { index: 7, top: -100, bottom: 100 },
+          { index: 8, top: 150, bottom: 600 },
+        ],
+      }),
+    ).toBe(8)
+  })
+
+  it("passes the last item once the list has scrolled past it", () => {
+    expect(
+      getScrollMarkReadMasonryStartIndex({
+        ...viewport,
+        items: [
+          { index: 54, top: -700, bottom: -480 },
+          { index: 55, top: -480, bottom: -60 },
+          { index: 56, top: -480, bottom: -290 },
+        ],
+      }),
+    ).toBe(57)
+  })
+
+  it("has no start index before any item has been laid out above or in view", () => {
+    expect(getScrollMarkReadMasonryStartIndex({ ...viewport, items: [] })).toBeNull()
+    expect(
+      getScrollMarkReadMasonryStartIndex({
+        ...viewport,
+        items: [{ index: 3, top: 950, bottom: 1200 }],
       }),
     ).toBeNull()
+  })
+
+  it("ignores invalid indexes", () => {
+    expect(
+      getScrollMarkReadMasonryStartIndex({
+        ...viewport,
+        items: [
+          { index: Number.NaN, top: 200, bottom: 400 },
+          { index: -1, top: 200, bottom: 400 },
+          { index: 2, top: -300, bottom: 0 },
+        ],
+      }),
+    ).toBe(3)
   })
 })
 

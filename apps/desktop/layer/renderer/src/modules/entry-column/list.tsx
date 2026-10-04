@@ -147,7 +147,7 @@ export const EntryList: FC<EntryListProps> = memo(
 
           onRangeChange?.(virtualizer.range as Range)
         },
-        [cacheKey],
+        [cacheKey, onRangeChange],
       ),
       rangeExtractor: useTypeScriptHappyCallback(
         (range: Range) => {

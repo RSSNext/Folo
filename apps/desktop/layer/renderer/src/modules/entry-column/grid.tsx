@@ -205,7 +205,7 @@ const VirtualGridImpl: FC<
 
         onRangeChange?.(realRange as Range)
       },
-      [rowCacheKey, columns.length],
+      [rowCacheKey, columns.length, onRangeChange],
     ),
   })
 

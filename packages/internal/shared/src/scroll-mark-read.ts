@@ -76,30 +76,45 @@ export const getScrollMarkReadRangeState = ({
   }
 }
 
-export const getScrollMarkReadExitedSliceEnd = ({
-  indexes,
-  renderedEndIndex,
+export type ScrollMarkReadItemBounds = {
+  index: number
+  top: number
+  bottom: number
+}
+
+/**
+ * The masonry counterpart of a virtual list's range start: the first item still in view.
+ * A masonry puts every item into the shortest column, so item tops grow with the index and
+ * every item before the first visible one has already scrolled out above the viewport.
+ */
+export const getScrollMarkReadMasonryStartIndex = ({
+  items,
+  viewportTop,
+  viewportBottom,
 }: {
-  indexes: readonly number[]
-  renderedEndIndex: number | null | undefined
+  items: readonly ScrollMarkReadItemBounds[]
+  viewportTop: number
+  viewportBottom: number
 }) => {
-  if (typeof renderedEndIndex !== "number" || !Number.isFinite(renderedEndIndex)) {
-    return null
-  }
+  let firstVisibleIndex: number | null = null
+  let lastExitedIndex: number | null = null
 
-  let minimumIndex = Number.MAX_SAFE_INTEGER
-
-  for (const index of indexes) {
+  for (const { index, top, bottom } of items) {
     if (!Number.isInteger(index) || index < 0) {
       continue
     }
 
-    if (index > renderedEndIndex) {
-      continue
+    if (bottom <= viewportTop) {
+      lastExitedIndex = lastExitedIndex === null ? index : Math.max(lastExitedIndex, index)
+    } else if (top < viewportBottom) {
+      firstVisibleIndex = firstVisibleIndex === null ? index : Math.min(firstVisibleIndex, index)
     }
-
-    minimumIndex = Math.min(minimumIndex, index)
   }
 
-  return minimumIndex === Number.MAX_SAFE_INTEGER ? null : minimumIndex + 1
+  if (firstVisibleIndex !== null) {
+    return firstVisibleIndex
+  }
+
+  // Nothing is in view once the list has scrolled past its last item
+  return lastExitedIndex === null ? null : lastExitedIndex + 1
 }
