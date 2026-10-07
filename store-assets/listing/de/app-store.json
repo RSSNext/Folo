@@ -5,5 +5,19 @@
   "keywords": {
     "ios": "nachrichten,feed,feedreader,newsreader,zusammenfassung,übersetzung,podcast,newsletter,rsshub,ai,atom",
     "macos": "nachrichten,feed,feedreader,zusammenfassung,übersetzung,podcast,newsletter,chat,recherche,ai,atom"
+  },
+  "customPages": {
+    "ai": {
+      "promotionalText": "Das Wichtigste jedes Artikels in Sekunden, fremdsprachige Quellen mit Übersetzung neben dem Original und aus Hunderten neuen Einträgen ein kurzer Überblick.",
+      "keywords": ["zusammenfassung", "übersetzung", "ai"]
+    },
+    "media": {
+      "promotionalText": "Podcasts, Videokanäle und Bilder-Feeds in einer Timeline, jeweils mit eigenem Layout. Keine Zeit zum Lesen? Lass dir Artikel mit natürlicher Stimme vorlesen.",
+      "keywords": ["podcast"]
+    },
+    "rss": {
+      "promotionalText": "Folge jedem RSS-, Atom- oder JSON-Feed und Tausenden RSSHub-Routen für Seiten ohne Feed. Importiere deine OPML-Datei und bleib auf allen Geräten synchron.",
+      "keywords": ["feed", "feedreader", "rsshub", "atom"]
+    }
   }
 }

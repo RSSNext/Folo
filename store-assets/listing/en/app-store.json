@@ -5,5 +5,19 @@
   "keywords": {
     "ios": "feed,aggregator,podcast,newsletter,summary,translate,digest,atom,headlines,magazine,video,rsshub",
     "macos": "feed,aggregator,podcast,newsletter,summary,translate,digest,atom,headlines,magazine,chat,research"
+  },
+  "customPages": {
+    "ai": {
+      "promotionalText": "Get the gist of any article in seconds, read foreign news side by side with an AI translation, and turn hundreds of new entries into one quick digest.",
+      "keywords": ["summary", "translate", "digest"]
+    },
+    "media": {
+      "promotionalText": "Podcasts, video channels and photo feeds in one timeline, each with a layout made for it. Short on time? Have any article read aloud with natural voices.",
+      "keywords": ["podcast", "video"]
+    },
+    "rss": {
+      "promotionalText": "Follow any RSS, Atom or JSON feed, plus thousands of RSSHub routes for sites without one. Import your OPML and keep everything in sync on every device.",
+      "keywords": ["feed", "aggregator", "atom", "rsshub"]
+    }
   }
 }

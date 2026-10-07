@@ -5,5 +5,19 @@
   "keywords": {
     "ios": "flux,agrégateur,veille,actu,info,presse,news,podcast,newsletter,traduction,vidéo,atom,rsshub,tech",
     "macos": "flux,agrégateur,veille,actu,info,presse,news,podcast,newsletter,traduction,synthèse,chat,tech,mcp"
+  },
+  "customPages": {
+    "ai": {
+      "promotionalText": "L’essentiel de chaque article en quelques secondes, les sources étrangères traduites côte à côte et des centaines de nouveautés réunies en un condensé rapide.",
+      "keywords": ["traduction"]
+    },
+    "media": {
+      "promotionalText": "Podcasts, chaînes vidéo et flux photo réunis dans une seule chronologie, chacun avec sa mise en page. Pas le temps de lire ? Écoutez vos articles.",
+      "keywords": ["podcast", "vidéo"]
+    },
+    "rss": {
+      "promotionalText": "Suivez n’importe quel flux RSS, Atom ou JSON, et des milliers de routes RSSHub pour les sites qui n’en ont pas. Importez votre OPML, tout reste synchronisé.",
+      "keywords": ["flux", "agrégateur", "veille", "atom", "rsshub"]
+    }
   }
 }

@@ -5,5 +5,19 @@
   "keywords": {
     "ios": "feed,reader,agregador,podcast,newsletter,resumen,traducir,titulares,periódicos,prensa,rsshub,vídeo",
     "macos": "feed,reader,agregador,podcast,newsletter,resumen,traducir,titulares,periódicos,chat,investigación"
+  },
+  "customPages": {
+    "ai": {
+      "promotionalText": "Lo esencial de cada artículo en segundos, fuentes en otros idiomas con la traducción junto al original y cientos de novedades en un resumen rápido.",
+      "keywords": ["resumen", "traducir"]
+    },
+    "media": {
+      "promotionalText": "Podcasts, canales de vídeo y feeds de fotos en una sola cronología, cada uno con su propio diseño. ¿Sin tiempo para leer? Escucha tus artículos en voz alta.",
+      "keywords": ["podcast", "vídeo"]
+    },
+    "rss": {
+      "promotionalText": "Sigue cualquier feed RSS, Atom o JSON y miles de rutas de RSSHub para sitios sin feed. Importa tu OPML y mantén todo sincronizado en cada dispositivo.",
+      "keywords": ["feed", "reader", "agregador", "rsshub"]
+    }
   }
 }

@@ -1,5 +1,6 @@
 // Validates every locale's listing copy against store limits and the policy
 // rules that commonly get submissions rejected. Exits non-zero on errors.
+import { customPages } from "../src/custom-pages"
 import { length, limits, loadListing } from "../src/listing"
 import { listingLocales } from "../src/locales"
 
@@ -63,6 +64,28 @@ for (const { id } of locales) {
   if (appStore.descriptionMacos.toLowerCase().includes("rsshub")) {
     // The Mac App Store build hides RSSHub while a version is in review.
     errors.push(`${id} appStore.descriptionMacos: mentions RSSHub`)
+  }
+  // A custom product page can only take keywords from the iOS keyword field,
+  // and each keyword can lead to one page.
+  const fieldKeywords = new Set(appStore.keywords.ios.split(","))
+  const assigned = new Set<string>()
+  for (const { id: page } of customPages) {
+    const field = `appStore.customPages.${page}`
+    const copy = appStore.customPages?.[page]
+    if (!copy) {
+      errors.push(`${id} ${field}: missing`)
+      continue
+    }
+    check(id, `${field}.promotionalText`, copy.promotionalText, a.promotionalText)
+    if (competitors.test(copy.promotionalText)) errors.push(`${id} ${field}: competitor name`)
+    if (copy.keywords.length === 0) errors.push(`${id} ${field}.keywords: empty`)
+    for (const keyword of copy.keywords) {
+      if (!fieldKeywords.has(keyword))
+        errors.push(`${id} ${field}.keywords: "${keyword}" is not in keywords.ios`)
+      if (assigned.has(keyword))
+        errors.push(`${id} ${field}.keywords: "${keyword}" is on another page`)
+      assigned.add(keyword)
+    }
   }
 
   const g = limits.googlePlay

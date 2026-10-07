@@ -31,6 +31,8 @@ Run everything from the repository root with `pnpm exec tsx`. The scripts' depen
 4. **Render** with `store-assets/scripts/render.ts [--deck app-store/iphone,...] [--locale en,ja,...] [--allow-missing]`. `--allow-missing` skips slides whose captures are not taken yet, for previews. Each output folder is emptied before it is written.
 5. **Check the images** with `store-assets/scripts/check-output.ts`: one file per slide for every store locale, at the store size, without alpha.
 6. **Update the repository README images** with `store-assets/scripts/export-readme.ts`: it writes the banner and the English Mac and iPhone posters the README shows as JPEGs to `output/github/readme`. The README links them as GitHub attachments, kept in a comment on [DIYgodLab/debug#1](https://github.com/DIYgodLab/debug/issues/1) rather than in the repository; an attachment only becomes public once the comment holding it is posted.
+7. **Update the App Store creative assets** (the product page header and search results artwork that iOS and iPadOS 27 show): `store-assets/scripts/app-store-creative.ts upload` puts each locale's `output/app-store/creative/<store locale>/universal.png` into the app's Asset Library (identical renders share one upload). Submit them in App Store Connect: Asset Library → Edit → select them → Add for Review → Submit for Review; this needs an Account Holder, Admin or App Manager and has no API. Review takes up to 48 hours. Then `app-store-creative.ts assign [--dry-run]` sets the approved images as header and search results asset on every localization of the live iOS version, which applies without a new app version.
+8. **Update the App Store custom product pages** in `src/custom-pages.ts` (name and screenshot order) and `listing/<locale>/app-store.json` → `customPages` (promotional text and the keywords each page takes over; `check-listing.ts` makes sure they come from that locale's `keywords.ios` and that no keyword is on two pages). `store-assets/scripts/app-store-custom-pages.ts sync [--page ai,...] [--skip-screenshots]` creates or updates every page localization with its text, keywords and the iPhone and iPad screenshots in the page's order (about a minute per screenshot set), and `app-store-custom-pages.ts submit` sends the editable page versions to App Review. Searches for a page's keywords show that page instead of the default product page once it is approved.
 
 ## Outputs
 
@@ -39,6 +41,7 @@ Run everything from the repository root with `pnpm exec tsx`. The scripts' depen
 | App Store       | `app-store/iphone`            | 1320 × 2868 (6.9")                                 |
 | App Store       | `app-store/ipad`              | 2064 × 2752 (13")                                  |
 | App Store       | `app-store/mac`               | 2880 × 1800                                        |
+| App Store       | `app-store/creative`          | 5244 × 2950 universal creative asset per locale    |
 | Google Play     | `google-play/phone`           | 1440 × 2560                                        |
 | Google Play     | `google-play/feature-graphic` | 1024 × 500                                         |
 | Microsoft Store | `microsoft-store/desktop`     | 3840 × 2160, the Mac posters; captions repeat them |

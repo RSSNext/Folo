@@ -1,8 +1,9 @@
 // Renders store screenshots from app captures and listing copy.
 //   tsx store-assets/scripts/render.ts [--deck app-store/iphone,...] [--locale en,ja,...] [--allow-missing]
 // Output: store-assets/output/<store>/<device>/<store locale>/NN-<slide>.png,
-// plus the locale-independent Microsoft Store extras in output/microsoft-store/extras
-// and the English GitHub README banner in output/github/readme-banner.png.
+// plus the locale-independent Microsoft Store extras in output/microsoft-store/extras,
+// the English GitHub README banner in output/github/readme-banner.png and the
+// App Store creative assets in output/app-store/creative/<store locale>/universal.png.
 // --allow-missing skips slides whose captures are not taken yet (for previews).
 import { access, copyFile, mkdir, rm } from "node:fs/promises"
 
@@ -26,6 +27,9 @@ const capturesDir = join(root, "captures")
 const outputDir = join(root, "output")
 // 2:1 keeps the banner short at the top of the README.
 const readmeBanner = { width: 2400, height: 1200 }
+// Apple's universal creative asset: one 16:9 PNG for both the product page
+// header and search results.
+const appStoreCreative = { width: 5244, height: 2950 }
 
 const arg = (name: string) => {
   const index = process.argv.indexOf(`--${name}`)
@@ -246,6 +250,37 @@ try {
       )
       rendered++
       console.log(`google-play/feature-graphic ${locale.id}`)
+    }
+
+    // The creative asset reuses the desktop hero copy without the sub line and
+    // the badge, which would be too small to read in a search result.
+    if (!deckFilter || deckFilter.includes("app-store/creative")) {
+      const copy = { ...listing.screenshots["desktop.hero"]! }
+      delete copy.sub
+      delete copy.badge
+      const html = renderSlideHtml({
+        canvas: appStoreCreative,
+        locale: locale.id,
+        layout: "creative",
+        tone: "light",
+        device: "mac",
+        captures: [await loadCapture(locale.captureLocale, "mac", "hero")],
+        companion: {
+          device: "iphone",
+          capture: await loadCapture(locale.captureLocale, "iphone", "timeline"),
+        },
+        copy,
+        eyebrowIcon: "rss-2-fill",
+      })
+      await writeForLocales(
+        (storeLocale) => join(outputDir, "app-store/creative", storeLocale),
+        "universal.png",
+        locale.appStore,
+        (path) =>
+          renderHtml(html, appStoreCreative, [{ path, ...appStoreCreative, format: "png" }]),
+      )
+      rendered++
+      console.log(`app-store/creative ${locale.id}`)
     }
   }
 } finally {

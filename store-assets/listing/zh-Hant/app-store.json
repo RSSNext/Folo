@@ -5,5 +5,19 @@
   "keywords": {
     "ios": "新聞,資訊,聚合,部落格,podcast,摘要,總結,翻譯,雙語,朗讀,科技,影片,文章,電子報,feed,rsshub,newsletter,atom",
     "macos": "新聞,資訊,聚合,部落格,podcast,摘要,總結,翻譯,雙語,朗讀,科技,對話,簡報,研究,電子報,feed,newsletter,atom"
+  },
+  "customPages": {
+    "ai": {
+      "promotionalText": "長文幾秒讀懂重點，外文內容雙語對照著讀，幾百條新內容一鍵濃縮成一份簡報。讓 AI 先替你讀，再決定看什麼。",
+      "keywords": ["摘要", "總結", "翻譯", "雙語"]
+    },
+    "media": {
+      "promotionalText": "Podcast、影片頻道、圖片訂閱都在一條時間軸裡，各有專屬版面。沒空看文章？讓 AI 用自然的聲音唸給你聽。",
+      "keywords": ["podcast", "影片", "朗讀"]
+    },
+    "rss": {
+      "promotionalText": "訂閱任何 RSS、Atom 或 JSON 訂閱源，沒有 RSS 的網站也能用數千條 RSSHub 路由訂閱。匯入 OPML，所有裝置自動同步。",
+      "keywords": ["聚合", "feed", "rsshub", "atom"]
+    }
   }
 }
