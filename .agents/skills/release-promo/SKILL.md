@@ -97,11 +97,12 @@ Folo 新版上线：设置重新跨设备同步，长文朗读更稳，界面完
 
 ### Captures
 
-The video shows real app screens only: the store screenshot captures, `store-assets/captures/<locale>/<device>/<scene>.png` (`store-assets/README.md`). They are not committed, so find the checkout that holds them and use the newest set:
+The video shows real app screens only: the store screenshot captures, `store-assets/captures/<locale>/<device>/<scene>.png` (`store-assets/README.md`). They are not committed. The full set lives in `~/Code/Projects/folo-store-media/captures`, which checkouts link as `store-assets/captures`; otherwise find a checkout that holds a set and use the newest one:
 
 ```bash
 ROOT=$(dirname "$(git rev-parse --path-format=absolute --git-common-dir)")
-find "$ROOT/store-assets" "$ROOT/.claude/worktrees" -maxdepth 3 -type d -path '*store-assets/captures' 2>/dev/null
+ls -d ~/Code/Projects/folo-store-media/captures 2>/dev/null
+find "$ROOT/store-assets" "$ROOT/.claude/worktrees" -maxdepth 3 -path '*store-assets/captures' \( -type d -o -type l \) 2>/dev/null
 ```
 
 `ls <captures>/en/*` lists the shots. `listen` and `summary` phone shots come with a `.json` region (the player bar, the AI summary card) that a callout can enlarge.
