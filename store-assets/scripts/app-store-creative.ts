@@ -158,6 +158,9 @@ const assign = async () => {
       localization.id,
       "--placement-type",
       placementTypes.join(","),
+      // Without it the placements carry no image relationship to compare.
+      "--include",
+      "image",
     ])
     for (const type of placementTypes) {
       const current = placements.filter((p) => p.attributes.placementType === type)
