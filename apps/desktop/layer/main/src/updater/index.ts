@@ -12,7 +12,7 @@ import { WindowManager } from "~/manager/window"
 import type { RendererManifest } from "~/updater/hot-updater"
 import { RendererEligibilityStatus, rendererUpdater } from "~/updater/hot-updater"
 
-import { channel, isWindows } from "../env"
+import { channel, isMacOS, isWindows } from "../env"
 import { fetchDesktopManifest, fetchDesktopPolicy, getDesktopRuntimeVersion } from "./api"
 import { appUpdaterConfig } from "./configs"
 import { FollowUpdateProvider } from "./follow-update-provider"
@@ -187,6 +187,15 @@ class FollowUpdater {
   quitAndInstall() {
     const mainWindow = WindowManager.getMainWindow()
     logger.info("Quit and install triggered", { windowId: mainWindow?.id })
+
+    if (!isMacOS) {
+      // Destroying the last window would quit the app right away, and the update would then be
+      // installed silently on quit without relaunching the app. Quitting to install destroys the
+      // windows before they can cancel the quit.
+      this.autoUpdater.quitAndInstall()
+      return
+    }
+
     WindowManager.destroyMainWindow()
 
     setTimeout(() => {
