@@ -36,7 +36,7 @@ const socialLinksSchema = z.object({
 })
 
 const formSchema = z.object({
-  handle: z.string().max(32).regex(/^\w+$/).optional(),
+  handle: z.string().max(32).regex(/^\w+$/).optional().or(z.literal("")),
   name: z.string().min(3).max(50),
   image: z.string().url().or(z.literal("")).optional(),
   bio: z.string().max(256).optional(),
@@ -84,7 +84,7 @@ export const ProfileSettingForm = ({
   const form = useForm<z.infer<typeof formSchema>>({
     resolver: zodResolver(formSchema),
     defaultValues: {
-      handle: user?.handle || undefined,
+      handle: user?.handle || "",
       name: user?.name || "",
       image: user?.image || "",
       bio: user?.bio || "",
@@ -130,7 +130,9 @@ export const ProfileSettingForm = ({
   })
 
   function onSubmit(values: z.infer<typeof formSchema>) {
-    updateMutation.mutate(values)
+    // An empty handle field leaves the handle as it is
+    const { handle, ...rest } = values
+    updateMutation.mutate(handle ? values : rest)
   }
 
   const handleAvatarUpload = async (blob: Blob) => {
