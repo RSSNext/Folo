@@ -2223,6 +2223,20 @@ describe("internal routes", () => {
     expect(response.status).toBe(401)
   })
 
+  it("rejects sync requests when no sync token is configured", async () => {
+    const response = await fetchWorker(
+      "/internal/sync",
+      { method: "POST" },
+      {
+        envOverrides: {
+          OTA_SYNC_TOKEN: undefined,
+        },
+      },
+    )
+
+    expect(response.status).toBe(401)
+  })
+
   it("runs sync for authorized requests", async () => {
     const kvEntries = new Map<string, unknown>()
     let microsoftSoapRequestCount = 0
