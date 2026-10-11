@@ -405,6 +405,9 @@ export const DefaultHeaderBackButton = ({
   return (
     <UINavigationHeaderActionButton
       testID="navigation-back"
+      accessibilityLabel={
+        showCloseIcon ? t("words.close", { ns: "common" }) : t("words.back", { ns: "common" })
+      }
       onPress={() => {
         const leave = () => {
           if (canGoBack) {
@@ -452,6 +455,7 @@ export const UINavigationHeaderActionButton = ({
   className,
   style,
   testID,
+  accessibilityLabel,
 }: {
   children: ReactNode
   onPress?: () => void
@@ -459,11 +463,16 @@ export const UINavigationHeaderActionButton = ({
   className?: string
   style?: StyleProp<ViewStyle>
   testID?: string
+  /** Required for icon-only buttons, which screen readers can't name otherwise */
+  accessibilityLabel?: string
 }) => {
   return (
     <Pressable
       hitSlop={5}
       testID={testID}
+      accessibilityRole={onPress ? "button" : undefined}
+      accessibilityLabel={accessibilityLabel}
+      accessibilityState={disabled ? { disabled } : undefined}
       className={cn("p-2", className)}
       onPress={onPress}
       disabled={disabled}

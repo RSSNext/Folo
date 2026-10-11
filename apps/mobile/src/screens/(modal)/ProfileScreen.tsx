@@ -131,7 +131,10 @@ function ProfileScreenImpl(props: { userId: string }) {
             name: user?.name || user?.handle,
           })}
           headerRight={
-            <UINavigationHeaderActionButton onPress={openShareUrl}>
+            <UINavigationHeaderActionButton
+              onPress={openShareUrl}
+              accessibilityLabel={t("operation.share")}
+            >
               <ShareForwardCuteReIcon color={textLabelColor} />
             </UINavigationHeaderActionButton>
           }
