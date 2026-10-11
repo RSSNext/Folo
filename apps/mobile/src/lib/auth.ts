@@ -321,12 +321,15 @@ export const signOut = async () => {
   await reloadApp("User sign out")
 }
 
-export const deleteUser = async ({ TOTPCode }: { TOTPCode?: string }) => {
-  if (!TOTPCode) {
-    return
+/**
+ * @param TOTPCode - required by the server only when two-factor authentication is enabled
+ */
+export const deleteUser = async ({ TOTPCode }: { TOTPCode?: string } = {}) => {
+  const res = await authClient.deleteUserCustom(TOTPCode ? { TOTPCode } : {})
+  // The auth client resolves with the error instead of throwing; keep the session when the
+  // account was not deleted
+  if (res.error) {
+    throw new Error(res.error.message || res.error.statusText)
   }
-  await authClient.deleteUserCustom({
-    TOTPCode,
-  })
   await signOut()
 }

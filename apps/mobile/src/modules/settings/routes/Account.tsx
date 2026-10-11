@@ -318,14 +318,30 @@ const SecuritySection = () => {
                   text: t("words.delete", { ns: "common" }),
                   style: "destructive",
                   onPress: async () => {
-                    // await signOut()
+                    const deleteAccount = async (TOTPCode?: string) => {
+                      try {
+                        await deleteUser({ TOTPCode })
+                      } catch (error) {
+                        toast.error(
+                          error instanceof Error && error.message
+                            ? error.message
+                            : t("error_screen.unknown", { ns: "common" }),
+                        )
+                      }
+                    }
+
+                    // The server only asks for a code when two-factor authentication is on
+                    if (!whoAmI?.twoFactorEnabled) {
+                      await deleteAccount()
+                      return
+                    }
+
                     Dialog.show(ConfirmTOTPCodeDialog, {
                       override: {
                         async onConfirm(ctx) {
+                          if (!ctx.totpCode) return
                           ctx.dismiss()
-                          await deleteUser({
-                            TOTPCode: ctx.totpCode,
-                          })
+                          await deleteAccount(ctx.totpCode)
                         },
                       },
                     })
