@@ -6,12 +6,14 @@ import {
   getEditorStateJSONString,
 } from "@follow/components/ui/lexical-rich-editor/utils.js"
 import { ScrollArea } from "@follow/components/ui/scroll-area/ScrollArea.js"
+import { FeedViewType } from "@follow/constants"
 import { useIsDark } from "@follow/hooks"
+import { subscriptionSyncService } from "@follow/store/subscription/store"
 import { tracker } from "@follow/tracker"
 import { nextFrame } from "@follow/utils"
 import { cn } from "@follow/utils/utils"
 import { AnimatePresence, m } from "framer-motion"
-import { useSetAtom } from "jotai"
+import { useSetAtom, useStore } from "jotai"
 import type { EditorState } from "lexical"
 import { $getRoot, $getSelection, $isRangeSelection, createEditor } from "lexical"
 import { nanoid } from "nanoid"
@@ -45,7 +47,7 @@ import {
   extractShortcutIdFromSerializedState,
   prefixMessageIdWithShortcut,
 } from "../ai-chat/utils/shortcut"
-import { stepAtom } from "./store"
+import { feedSelectionsAtom, stepAtom } from "./store"
 
 const SUGGESTION_KEYS = [
   "new_user_guide.ai_chat.suggestions.fashion_designer",
@@ -473,10 +475,38 @@ function AIChatInterface({ inputRef }: AIChatInterfaceProps) {
 
   const messages = useMessages()
   const setStep = useSetAtom(stepAtom)
+  const store = useStore()
+  const [isFinishing, setIsFinishing] = useState(false)
 
   const hasFeedsSelection = messages.some((msg) =>
     msg.parts.some((p) => p.type === "tool-onboardingGetTrendingFeeds" && p.output),
   )
+
+  // Follow the feeds left in the selection list before closing the onboarding
+  const handleFinish = useEventCallback(async () => {
+    setIsFinishing(true)
+    const selectedFeeds = store.get(feedSelectionsAtom).filter((feed) => feed.selected)
+    await Promise.allSettled(
+      selectedFeeds.map((feed) =>
+        subscriptionSyncService
+          .subscribe({
+            url: feed.url,
+            view: feed.analytics.view ?? FeedViewType.Articles,
+            category: null,
+            isPrivate: false,
+            hideFromTimeline: null,
+            title: feed.title ?? null,
+            feedId: feed.id,
+            listId: undefined,
+          })
+          .catch((error) => {
+            console.error("Failed to subscribe feed during onboarding", { feedId: feed.id, error })
+          }),
+      ),
+    )
+    setIsFinishing(false)
+    setStep("finish")
+  })
 
   return (
     <div className="flex h-full flex-1 flex-col" ref={scrollContainerParentRef}>
@@ -512,7 +542,7 @@ function AIChatInterface({ inputRef }: AIChatInterfaceProps) {
             status === "ready" &&
             hasFeedsSelection && (
               <div>
-                <Button onClick={() => setStep("finish")}>
+                <Button isLoading={isFinishing} onClick={handleFinish}>
                   {t.app("new_user_guide.actions.finish")}
                 </Button>
               </div>
