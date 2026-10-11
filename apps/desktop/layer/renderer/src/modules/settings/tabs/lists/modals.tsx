@@ -220,6 +220,8 @@ export const ListFeedsModalContent = ({ id }: { id: string }) => {
             setFeedSearchFor(e?.name || "")
           }}
           onChange={(e) => {
+            // Typing replaces the picked suggestion, so Add must not use it any more
+            selectedFeedIdRef.current = null
             setFeedSearchFor(e.target.value)
           }}
           suggestions={autocompleteSuggestions}
