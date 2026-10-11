@@ -435,19 +435,20 @@ const FallbackableImage: FC<
     currentSrc === src ? "origin" : "proxy",
   )
 
+  // Start over from the first source, so a retry goes through every source again
+  const retry = () => {
+    const firstSrc = replaceImgUrlIfNeed(src)
+    setCurrentSrc(firstSrc)
+    setCurrentState(firstSrc === src ? "origin" : "proxy")
+    setIsLoading(true)
+    setIsAllError(false)
+  }
+
   const handleError = useCallback(() => {
     switch (currentState) {
       case "proxy": {
-        if (currentSrc !== src) {
-          setCurrentSrc(src)
-          setCurrentState("origin")
-        } else {
-          if (fallbackUrl) {
-            setCurrentSrc(fallbackUrl)
-            setCurrentState("fallback")
-          }
-        }
-
+        setCurrentSrc(src)
+        setCurrentState("origin")
         break
       }
       case "origin": {
@@ -463,7 +464,7 @@ const FallbackableImage: FC<
         setIsAllError(true)
       }
     }
-  }, [currentSrc, currentState, fallbackUrl, src])
+  }, [currentState, fallbackUrl, src])
 
   return (
     <div className={cn("relative size-full", containerClassName)}>
@@ -497,10 +498,7 @@ const FallbackableImage: FC<
                 Retry: (
                   <MotionButtonBase
                     className="pointer-events-auto underline underline-offset-4"
-                    onClick={() => {
-                      setCurrentSrc(replaceImgUrlIfNeed(src))
-                      setIsAllError(false)
-                    }}
+                    onClick={retry}
                   />
                 ),
                 Link: (
