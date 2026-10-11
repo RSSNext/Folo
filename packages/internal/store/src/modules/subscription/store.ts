@@ -510,9 +510,24 @@ class SubscriptionSyncService {
           draft.feedIdByView[newView]!.add(feedId)
           subscription.view = newView
 
-          if (newCategory) {
-            draft.categories[newView]!.add(newCategory)
+          // `null` takes the feeds out of their category, `undefined` leaves it as it is
+          if (newCategory !== undefined) {
+            if (newCategory) {
+              draft.categories[newView]!.add(newCategory)
+            }
             subscription.category = newCategory
+          }
+        }
+
+        // Drop the categories the moved feeds left empty
+        for (const previous of current) {
+          if (!previous?.category) continue
+          const { category, view } = previous
+          const isStillUsed = Object.values(draft.data).some(
+            (subscription) => subscription.view === view && subscription.category === category,
+          )
+          if (!isStillUsed) {
+            draft.categories[view]!.delete(category)
           }
         }
       })
@@ -537,9 +552,12 @@ class SubscriptionSyncService {
           draft.feedIdByView[newView]!.delete(feedId)
           draft.feedIdByView[current[index]!.view]!.add(feedId)
 
-          if (newCategory) {
-            const currentCategory = current[index].category
-            subscription.category = currentCategory
+          if (newCategory !== undefined) {
+            subscription.category = current[index].category
+          }
+          const previousCategory = current[index].category
+          if (previousCategory) {
+            draft.categories[current[index].view]!.add(previousCategory)
           }
         }
       })
