@@ -386,6 +386,7 @@
   "general.open_links_in_external_app.label": "在外部应用内打开链接",
   "general.privacy": "隐私",
   "general.proxy.description": "代理网络请求，例如：socks://proxy.example.com:1080。",
+  "general.proxy.invalid": "请输入代理地址，例如 http://127.0.0.1:7890 或 socks5://127.0.0.1:1080。",
   "general.proxy.label": "代理",
   "general.rebuild_database.button": "重建",
   "general.rebuild_database.cancel": "取消",

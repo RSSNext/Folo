@@ -9,7 +9,7 @@ import { cn } from "@follow/utils/utils"
 import { useQuery } from "@tanstack/react-query"
 import dayjs from "dayjs"
 import { useAtom } from "jotai"
-import { useEffect } from "react"
+import { useEffect, useState } from "react"
 import { useTranslation } from "react-i18next"
 
 import { currentSupportedLanguages } from "~/@types/constants"
@@ -379,6 +379,21 @@ const NettingSetting = () => {
   const { t } = useTranslation("settings")
   const proxyConfig = useProxyValue()
   const setProxyConfig = useSetProxy()
+  // Applied on blur or Enter: every keystroke would otherwise reset the session proxy, and the
+  // partial values in between are invalid
+  const [draft, setDraft] = useState<string | null>(null)
+  const [isInvalid, setIsInvalid] = useState(false)
+
+  const applyDraft = async () => {
+    if (draft === null) return
+    const input = draft.trim()
+    // A host and port without a scheme, as most proxy apps show it, is an HTTP proxy
+    const proxy = input && !input.includes("://") ? `http://${input}` : input
+    const accepted = await setProxyConfig(proxy)
+    const invalid = !!proxy && !accepted
+    setIsInvalid(invalid)
+    if (!invalid) setDraft(null)
+  }
 
   return (
     <SettingItemGroup>
@@ -386,9 +401,19 @@ const NettingSetting = () => {
         type="text"
         label={t("general.proxy.label")}
         labelClassName="w-[150px]"
-        value={proxyConfig}
-        onChange={(event) => setProxyConfig(event.target.value.trim())}
+        value={draft ?? proxyConfig}
+        onChange={(event) => {
+          setDraft(event.target.value)
+          setIsInvalid(false)
+        }}
+        onBlur={applyDraft}
+        onKeyDown={(event) => {
+          if (event.key === "Enter") event.currentTarget.blur()
+        }}
       />
+      {isInvalid && (
+        <SettingDescription className="text-red">{t("general.proxy.invalid")}</SettingDescription>
+      )}
       <SettingDescription>{t("general.proxy.description")}</SettingDescription>
     </SettingItemGroup>
   )

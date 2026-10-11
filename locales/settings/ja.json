@@ -386,6 +386,7 @@
   "general.open_links_in_external_app.label": "外部アプリでリンクを開く",
   "general.privacy": "プライバシー",
   "general.proxy.description": "ネットワークリクエストを代理します。例: socks://proxy.example.com:1080。",
+  "general.proxy.invalid": "http://127.0.0.1:7890 や socks5://127.0.0.1:1080 のようなプロキシ URL を入力してください。",
   "general.proxy.label": "プロキシ",
   "general.rebuild_database.button": "再構築",
   "general.rebuild_database.cancel": "キャンセル",

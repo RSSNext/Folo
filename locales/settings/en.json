@@ -386,6 +386,7 @@
   "general.open_links_in_external_app.label": "Open links in external app",
   "general.privacy": "Privacy",
   "general.proxy.description": "Set proxy for network traffic routing, e.g., socks://proxy.example.com:1080.",
+  "general.proxy.invalid": "Enter a proxy URL such as http://127.0.0.1:7890 or socks5://127.0.0.1:1080.",
   "general.proxy.label": "Proxy",
   "general.rebuild_database.button": "Rebuild",
   "general.rebuild_database.cancel": "Cancel",

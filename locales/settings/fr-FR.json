@@ -386,6 +386,7 @@
   "general.open_links_in_external_app.label": "Ouvrir les liens dans une appli externe",
   "general.privacy": "Confidentialité",
   "general.proxy.description": "Définir le proxy pour le routage du trafic réseau, ex. socks://proxy.example.com:1080.",
+  "general.proxy.invalid": "Saisissez une URL de proxy, par exemple http://127.0.0.1:7890 ou socks5://127.0.0.1:1080.",
   "general.proxy.label": "Proxy",
   "general.rebuild_database.button": "Reconstruire",
   "general.rebuild_database.cancel": "Annuler",

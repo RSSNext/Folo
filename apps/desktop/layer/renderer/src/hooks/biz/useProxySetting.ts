@@ -14,15 +14,21 @@ proxyAtom.onMount = (setAtom) => {
 
 export const useProxyValue = () => useAtomValue(proxyAtom)
 
+/**
+ * @returns whether the proxy was accepted. The main process drops an invalid value and falls
+ * back to the system proxy, and the atom then shows what it actually stored.
+ */
 export const useSetProxy = () => {
   const setProxy = useSetAtom(proxyAtom)
   return useCallback(
-    (proxyString: string) => {
-      if (!IN_ELECTRON) {
-        return
+    async (proxyString: string) => {
+      if (!IN_ELECTRON || !ipcServices) {
+        return false
       }
-      setProxy(proxyString)
-      ipcServices?.setting.setProxyConfig(proxyString)
+      const accepted = await ipcServices.setting.setProxyConfig(proxyString)
+      const storedProxy = await ipcServices.setting.getProxyConfig()
+      setProxy(storedProxy || "")
+      return accepted
     },
     [setProxy],
   )
