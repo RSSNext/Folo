@@ -64,10 +64,12 @@ export const SortButton = () => {
         />
       </HoverCard.Trigger>
 
-      <RootPortal>
-        <HoverCard.Content ref={ref} className="z-10 -translate-x-4" sideOffset={5} forceMount>
-          <AnimatePresence>
-            {open && (
+      {/* Mounted only while open: a mounted hover card stays a dismissable layer even when closed,
+          and as the newest layer it takes Escape from any modal opened before it */}
+      <AnimatePresence>
+        {open && (
+          <RootPortal>
+            <HoverCard.Content ref={ref} className="z-10 -translate-x-4" sideOffset={5} forceMount>
               <m.div
                 initial={{ opacity: 0, scale: 0.98, y: 10 }}
                 animate={{ opacity: 1, scale: 1, y: 0 }}
@@ -104,10 +106,10 @@ export const SortButton = () => {
                   </div>
                 </section>
               </m.div>
-            )}
-          </AnimatePresence>
-        </HoverCard.Content>
-      </RootPortal>
+            </HoverCard.Content>
+          </RootPortal>
+        )}
+      </AnimatePresence>
     </HoverCard.Root>
   )
 }
