@@ -64,11 +64,10 @@ class ActionSyncService {
    */
   async fetchRules(options?: { keepLocalEdits?: boolean }) {
     const res = await api().actions.get()
-    if (res.data) {
-      await actionActions.setConfirmedRules(normalizeRules(res.data.rules), {
-        overwriteLocalEdits: !options?.keepLocalEdits,
-      })
-    }
+    // An account without any rules gets no data at all, which means an empty rule set
+    await actionActions.setConfirmedRules(normalizeRules(res.data?.rules), {
+      overwriteLocalEdits: !options?.keepLocalEdits,
+    })
     return res
   }
 
