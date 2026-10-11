@@ -117,6 +117,11 @@ export const toastFetchError = (
     return
   }
 
+  // Plain errors, such as wrapped auth client errors, carry their text in `message`
+  if (!message && !(error instanceof FetchError)) {
+    message = error.message
+  }
+
   const toastOptions: ExternalToast = {
     ..._toastOptions,
     classNames: {
