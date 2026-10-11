@@ -1,12 +1,13 @@
 import { useImageColors } from "@follow/store/image/hooks"
 import { useWhoami } from "@follow/store/user/hooks"
 import { cn } from "@follow/utils"
-import { use, useMemo } from "react"
+import { StatusBar } from "expo-status-bar"
+import { use, useMemo, useState } from "react"
 import { useTranslation } from "react-i18next"
 import type { ScrollView } from "react-native"
-import { Pressable, View } from "react-native"
+import { Pressable, StyleSheet, View } from "react-native"
 import type { SharedValue } from "react-native-reanimated"
-import Animated, { useAnimatedStyle } from "react-native-reanimated"
+import Animated, { runOnJS, useAnimatedReaction, useAnimatedStyle } from "react-native-reanimated"
 import { useSafeAreaInsets } from "react-native-safe-area-context"
 
 import { BlurEffect } from "@/src/components/common/BlurEffect"
@@ -14,9 +15,11 @@ import { useRegisterNavigationScrollView } from "@/src/components/layouts/tabbar
 import { SafeNavigationScrollView } from "@/src/components/layouts/views/SafeNavigationScrollView"
 import { Text } from "@/src/components/ui/typography/Text"
 import { useDefaultHeaderHeight } from "@/src/hooks/useDefaultHeaderHeight"
+import { useTabScreenIsFocused } from "@/src/lib/navigation/bottom-tab/hooks"
 import type { TabScreenComponent } from "@/src/lib/navigation/bottom-tab/types"
 import { useNavigation } from "@/src/lib/navigation/hooks"
 import { ScreenItemContext } from "@/src/lib/navigation/ScreenItemContext"
+import { isAndroid } from "@/src/lib/platform"
 import {
   getSettingsContentMarginTop,
   isUserHeaderGradientLight,
@@ -61,8 +64,30 @@ export function Settings() {
         headerHeight={headerHeight}
         scrollY={screenContext.reAnimatedScrollY}
       />
+      <BannerStatusBar gradientLight={gradientLight} scrollY={screenContext.reAnimatedScrollY} />
     </>
   )
+}
+
+// The status bar sits on the user banner until the header fades in, so its text follows the
+// banner colors, or it is dark on dark
+const BannerStatusBar = ({
+  gradientLight,
+  scrollY,
+}: {
+  gradientLight: boolean
+  scrollY: SharedValue<number>
+}) => {
+  const isFocused = useTabScreenIsFocused()
+  const [isOverBanner, setIsOverBanner] = useState(true)
+  useAnimatedReaction(
+    () => scrollY.value < 50,
+    (current, previous) => {
+      if (current !== previous) runOnJS(setIsOverBanner)(current)
+    },
+  )
+  if (!isFocused || !isOverBanner) return null
+  return <StatusBar animated style={gradientLight ? "dark" : "light"} />
 }
 const SettingHeader = ({
   gradientLight,
@@ -112,7 +137,15 @@ const EditProfileButton = ({ gradientLight }: { gradientLight: boolean }) => {
       className="absolute bottom-2 right-4 overflow-hidden rounded-full px-3 py-1.5"
       onPress={() => navigation.pushControllerView(EditProfileScreen)}
     >
-      <BlurEffect />
+      {/* Android has no blur, and the opaque fallback hides the label on the banner */}
+      {isAndroid ? (
+        <View
+          style={StyleSheet.absoluteFill}
+          className={gradientLight ? "bg-white/50" : "bg-black/30"}
+        />
+      ) : (
+        <BlurEffect />
+      )}
       <Text
         className={cn("text-xs font-medium", gradientLight ? "text-black/95" : "text-white/95")}
       >
