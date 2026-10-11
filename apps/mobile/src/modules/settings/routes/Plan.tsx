@@ -83,9 +83,15 @@ type SegmentLayout = {
   x: number
 }
 
-const PlanHeaderBackButton = ({ canGoBack }: { canGoBack: boolean }) => (
-  <DefaultHeaderBackButton canGoBack={canGoBack} canDismiss={false} />
-)
+// A back arrow when the plans were pushed, a close button when they open as their own sheet,
+// e.g. for the legacy trial role from settings
+const PlanHeaderBackButton = ({
+  canGoBack,
+  canDismiss,
+}: {
+  canGoBack: boolean
+  canDismiss: boolean
+}) => <DefaultHeaderBackButton canGoBack={canGoBack} canDismiss={!canGoBack && canDismiss} />
 
 const styles = StyleSheet.create({
   billingSegmentIndicator: {

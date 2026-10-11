@@ -148,17 +148,9 @@ const useHideableBottom = (
 }
 export interface InternalNavigationHeaderProps
   extends Omit<AnimatedProps<ViewProps>, "children">, PropsWithChildren {
-  headerLeft?:
-    | FC<{
-        canGoBack: boolean
-      }>
-    | ReactNode
+  headerLeft?: FC<NavigationHeaderButtonProps> | ReactNode
   promptBeforeLeave?: boolean
-  headerRight?:
-    | FC<{
-        canGoBack: boolean
-      }>
-    | ReactNode
+  headerRight?: FC<NavigationHeaderButtonProps> | ReactNode
   title?: string
 
   hideableBottom?: ReactNode
