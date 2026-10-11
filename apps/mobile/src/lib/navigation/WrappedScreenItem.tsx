@@ -1,6 +1,6 @@
 import { isUndefined } from "es-toolkit/compat"
 import type { PrimitiveAtom } from "jotai"
-import { atom, useAtomValue, useSetAtom } from "jotai"
+import { atom, useAtomValue, useAtomValueRawSync, useSetAtom } from "jotai"
 import type { FC, ReactNode } from "react"
 import { memo, use, useCallback, useMemo, useRef } from "react"
 import { useTranslation } from "react-i18next"
@@ -195,7 +195,9 @@ export const WrappedScreenItem: FC<
 const Header = () => {
   const ctxValue = use(ScreenItemContext)
 
-  const Slot = useAtomValue(ctxValue.Slot)
+  // Screens write their header into the slot from a layout effect in the same commit that mounts
+  // this component; jotai v3's useAtomValue would keep the empty slot from before that write
+  const Slot = useAtomValueRawSync(ctxValue.Slot)
 
   if (!Slot.header) {
     return null
