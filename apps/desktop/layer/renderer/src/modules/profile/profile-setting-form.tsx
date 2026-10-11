@@ -37,7 +37,7 @@ const socialLinksSchema = z.object({
 
 const formSchema = z.object({
   handle: z.string().max(32).regex(/^\w+$/).optional().or(z.literal("")),
-  name: z.string().min(3).max(50),
+  name: z.string().min(1).max(50),
   image: z.string().url().or(z.literal("")).optional(),
   bio: z.string().max(256).optional(),
   website: z.string().url().max(64).optional().or(z.literal("")),
