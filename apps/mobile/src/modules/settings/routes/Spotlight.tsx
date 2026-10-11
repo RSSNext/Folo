@@ -102,6 +102,7 @@ const SpotlightRuleColorDot = ({ color }: { color: string }) => {
 }
 
 const AddSpotlightRuleButton = () => {
+  const { t } = useTranslation("settings")
   const labelColor = useColor("label")
   const rules = useSpotlightSettingKey("spotlights")
   const handlePress = useCallback(() => {
@@ -111,7 +112,10 @@ const AddSpotlightRuleButton = () => {
   }, [rules])
 
   return (
-    <UINavigationHeaderActionButton onPress={handlePress}>
+    <UINavigationHeaderActionButton
+      onPress={handlePress}
+      accessibilityLabel={t("spotlight.add_rule")}
+    >
       <AddCuteReIcon height={20} width={20} color={labelColor} />
     </UINavigationHeaderActionButton>
   )

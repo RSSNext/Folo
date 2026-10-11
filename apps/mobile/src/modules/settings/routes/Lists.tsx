@@ -97,10 +97,12 @@ export const ListsScreen = () => {
   )
 }
 const AddListButton = () => {
+  const { t } = useTranslation("settings")
   const labelColor = useColor("label")
   const navigation = useNavigation()
   return (
     <UINavigationHeaderActionButton
+      accessibilityLabel={t("lists.create")}
       onPress={() => {
         navigation.presentControllerView(ListScreen)
       }}
