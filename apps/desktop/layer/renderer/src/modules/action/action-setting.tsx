@@ -90,6 +90,13 @@ export const ActionSetting = () => {
   const [selectedRuleIndex, setSelectedRuleIndex] = useState(0)
   const actionQuery = usePrefetchActions()
 
+  // Edits the user chose to leave behind must not stay in the store
+  useEffect(() => {
+    return () => {
+      actionActions.discardLocalEdits().catch(console.error)
+    }
+  }, [])
+
   useEffect(() => {
     if (actions.length === 0) {
       setSelectedRuleIndex(0)

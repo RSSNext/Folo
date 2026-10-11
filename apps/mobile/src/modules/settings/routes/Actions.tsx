@@ -6,7 +6,7 @@ import {
 } from "@follow/store/action/hooks"
 import type { ActionModel } from "@follow/store/action/store"
 import { actionActions } from "@follow/store/action/store"
-import { useCallback } from "react"
+import { useCallback, useEffect } from "react"
 import { useTranslation } from "react-i18next"
 import type { ListRenderItem } from "react-native"
 import { StyleSheet, View } from "react-native"
@@ -33,6 +33,7 @@ import { Book6CuteReIcon } from "@/src/icons/book_6_cute_re"
 import { Magic2CuteFiIcon } from "@/src/icons/magic_2_cute_fi"
 import { toastFetchError } from "@/src/lib/error-parser"
 import { useNavigation } from "@/src/lib/navigation/hooks"
+import { useSetScreenOptions } from "@/src/lib/navigation/ScreenOptionsContext"
 import { toast } from "@/src/lib/toast"
 import { accentColor } from "@/src/theme/colors"
 
@@ -44,6 +45,17 @@ export const ActionsScreen = () => {
   const { isLoading } = usePrefetchActions()
   const rules = useActionRules()
   const isDirty = useIsActionDataDirty()
+  // Leaving by a swipe would skip the unsaved changes prompt of the back button
+  const setScreenOptions = useSetScreenOptions()
+  useEffect(() => {
+    setScreenOptions({ gestureEnabled: !isDirty })
+  }, [isDirty, setScreenOptions])
+  // Edits the user chose to leave behind must not stay in the store
+  useEffect(() => {
+    return () => {
+      actionActions.discardLocalEdits().catch(console.error)
+    }
+  }, [])
   return (
     <SafeNavigationScrollView
       Header={

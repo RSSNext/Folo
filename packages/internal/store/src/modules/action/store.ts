@@ -102,20 +102,43 @@ class ActionActions implements Hydratable, Resetable {
     return this.loaded
   }
 
-  async hydrate() {
+  private async readConfirmedRules(): Promise<ActionRules | null> {
     try {
       const stored = await SyncMetaService.get(ACTION_RULES_DOCUMENT_KEY)
-      if (stored === null) return
+      if (stored === null) return null
       const parsed = JSON.parse(stored) as { rules?: ActionRules }
-      if (!Array.isArray(parsed.rules)) return
-      immerSet((state) => {
-        state.rules = parsed.rules!
-        state.isDirty = false
-      })
-      this.loaded = true
+      return Array.isArray(parsed.rules) ? parsed.rules : null
     } catch (error) {
       console.error("[action] failed to load the stored rules", error)
+      return null
     }
+  }
+
+  async hydrate() {
+    const rules = await this.readConfirmedRules()
+    if (!rules) return
+    immerSet((state) => {
+      state.rules = rules
+      state.isDirty = false
+    })
+    this.loaded = true
+  }
+
+  /**
+   * Drop unsaved edits and go back to the rules the server confirmed. Otherwise the edits stay
+   * in the store after the editor closes, and keep remote changes from showing up.
+   */
+  async discardLocalEdits() {
+    if (!useActionStore.getState().isDirty) return
+    const rules = await this.readConfirmedRules()
+    if (rules) {
+      immerSet((state) => {
+        state.rules = rules
+        state.isDirty = false
+      })
+      return
+    }
+    await actionSyncService.fetchRules()
   }
 
   async reset() {
