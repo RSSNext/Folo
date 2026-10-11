@@ -36,8 +36,15 @@ export const setFeedListSortOrder = (order: FeedListSortOrder) => {
 }
 
 const SELECT_NOTHING = []
-export const [, useSelectedFeedIdsState, , , getSelectedFeedIds, setSelectedFeedIds, ,] =
-  createAtomHooks(atom<string[]>(SELECT_NOTHING))
+export const [
+  ,
+  useSelectedFeedIdsState,
+  ,
+  ,
+  getSelectedFeedIds,
+  setSelectedFeedIds,
+  useSelectedFeedIdsSelector,
+] = createAtomHooks(atom<string[]>(SELECT_NOTHING))
 export const resetSelectedFeedIds = () => {
   setSelectedFeedIds(SELECT_NOTHING)
 }

@@ -38,7 +38,7 @@ import { FeedIcon } from "~/modules/feed/feed-icon"
 import { FeedTitle } from "~/modules/feed/feed-title"
 import { getPreferredTitle } from "~/store/feed/hooks"
 
-import { useSelectedFeedIdsState } from "./atom"
+import { setSelectedFeedIds, useSelectedFeedIdsSelector } from "./atom"
 import { DraggableContext } from "./context"
 import { feedColumnStyles } from "./styles"
 import { UnreadNumber } from "./UnreadNumber"
@@ -102,12 +102,18 @@ const FeedItemImpl = ({ view, feedId, className, isPreview }: FeedItemProps) => 
     }
   })
 
-  const [selectedFeedIds, setSelectedFeedIds] = useSelectedFeedIdsState()
+  // Each row reads only what it needs from the selection, so a click re-renders the rows whose
+  // state changes instead of the whole sidebar
+  const isSelected = useSelectedFeedIdsSelector((ids) => ids.includes(feedId), [feedId])
+  const hasSelection = useSelectedFeedIdsSelector((ids) => ids.length > 0)
+  const multipleSelectedFeedIds = useSelectedFeedIdsSelector(
+    (ids) => (ids.length > 1 && ids.includes(feedId) ? ids : undefined),
+    [feedId],
+  )
 
   const isMobile = useMobile()
-  const isInMultipleSelection = !isMobile && selectedFeedIds.includes(feedId)
-  const isMultiSelectingButNotSelected =
-    !isMobile && selectedFeedIds.length > 0 && !isInMultipleSelection
+  const isInMultipleSelection = !isMobile && isSelected
+  const isMultiSelectingButNotSelected = !isMobile && hasSelection && !isInMultipleSelection
 
   const handleClick: React.MouseEventHandler<HTMLDivElement> = useCallback(
     (e) => {
@@ -125,7 +131,7 @@ const FeedItemImpl = ({ view, feedId, className, isPreview }: FeedItemProps) => 
         view: navigationView,
       })
     },
-    [feedId, navigate, setSelectedFeedIds, navigationView],
+    [feedId, navigate, navigationView],
   )
 
   const feedUnread = useUnreadById(feedId)
@@ -133,7 +139,7 @@ const FeedItemImpl = ({ view, feedId, className, isPreview }: FeedItemProps) => 
   const isActive = useRouteParamsSelector((routerParams) => routerParams.feedId === feedId)
 
   const items = useFeedActions({
-    feedIds: selectedFeedIds,
+    feedIds: multipleSelectedFeedIds,
     feedId,
     // A folder in the All view can hold feeds from other views than the one it is listed with,
     // and moving a feed to a category must not move it to that view
