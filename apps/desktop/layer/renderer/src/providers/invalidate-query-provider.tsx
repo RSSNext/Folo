@@ -83,35 +83,32 @@ const InvalidateQueryProviderElectron = () => {
 }
 
 /**
- * Invalidate all queries when the window is visible
+ * Invalidate all queries when the window is visible again after being hidden for a while
  */
 
 const InvalidateQueryProviderWebApp = () => {
   const queryClient = useQueryClient()
 
-  const currentTimeRef = useRef(Date.now())
-  const currentVisibilityRef = useRef(!document.hidden)
+  const hiddenAtRef = useRef(0)
 
   const pageVisibility = usePageVisibility()
 
   useEffect(() => {
-    if (currentVisibilityRef.current === pageVisibility) {
+    if (!pageVisibility) {
+      hiddenAtRef.current = Date.now()
       return
     }
 
-    const now = Date.now()
-    if (now - currentTimeRef.current < staleTime) {
+    const hiddenAt = hiddenAtRef.current
+    hiddenAtRef.current = 0
+    if (!hiddenAt || Date.now() - hiddenAt < staleTime) {
       return
     }
 
-    currentTimeRef.current = now
-    currentVisibilityRef.current = pageVisibility
-    if (pageVisibility) {
-      appLog("Window switch to visible, invalidate all queries")
-      queryClient.invalidateQueries({
-        predicate: (query) => !isManagedBySyncEngine(query),
-      })
-    }
+    appLog("Window switch to visible, invalidate all queries")
+    queryClient.invalidateQueries({
+      predicate: (query) => !isManagedBySyncEngine(query),
+    })
   }, [pageVisibility, queryClient])
   return null
 }
