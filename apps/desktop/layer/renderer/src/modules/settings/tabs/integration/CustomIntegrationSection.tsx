@@ -6,7 +6,7 @@ import { useTranslation } from "react-i18next"
 import { toast } from "sonner"
 
 import { setIntegrationSetting, useIntegrationSettingValue } from "~/atoms/settings/integration"
-import { useModalStack } from "~/components/ui/modal/stacked/hooks"
+import { useDialog, useModalStack } from "~/components/ui/modal/stacked/hooks"
 
 import { createSetting } from "../../helper/builder"
 import { SettingSectionTitle } from "../../section"
@@ -116,14 +116,28 @@ export const CustomIntegrationSection = memo(({ searchQuery }: CustomIntegration
     [present, settings.customIntegration, t],
   )
 
+  const { ask } = useDialog()
   const handleDeleteCustomIntegration = useCallback(
-    (integrationId: string) => {
+    async (integrationId: string) => {
+      const integration = settings.customIntegration?.find((i) => i.id === integrationId)
+      // The delete button sits next to edit and pause, and a deletion can't be undone
+      const confirmed = await ask({
+        title: t("integration.custom_integrations.delete.title"),
+        message: t("integration.custom_integrations.delete.message", {
+          name: integration?.name ?? "",
+        }),
+        confirmText: t("words.delete", { ns: "common" }),
+        cancelText: t("words.cancel", { ns: "common" }),
+        variant: "danger",
+      })
+      if (!confirmed) return
+
       const currentIntegrations = settings.customIntegration || []
       const updatedIntegrations = currentIntegrations.filter((i) => i.id !== integrationId)
       setIntegrationSetting("customIntegration", updatedIntegrations)
       toast.success(t("integration.custom_integrations.delete.success"))
     },
-    [settings.customIntegration, t],
+    [ask, settings.customIntegration, t],
   )
 
   const handleToggleCustomIntegration = useCallback(
