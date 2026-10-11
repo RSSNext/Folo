@@ -1,13 +1,16 @@
 import { FeedViewType } from "@follow/constants"
+import { QueryClient } from "@tanstack/react-query"
 import { beforeEach, describe, expect, test, vi } from "vitest"
 
-import { apiContext } from "../../context"
+import { apiContext, queryClientContext } from "../../context"
 import type { FollowAPI } from "../../types"
 import { subscriptionSyncService, useSubscriptionStore } from "./store"
 import type { SubscriptionModel } from "./types"
 
 const mocks = vi.hoisted(() => ({
   batchUpdate: vi.fn(),
+  update: vi.fn(),
+  patch: vi.fn(),
   updateCategory: vi.fn(),
   deleteCategory: vi.fn(),
   patchMany: vi.fn(),
@@ -15,6 +18,7 @@ const mocks = vi.hoisted(() => ({
 
 vi.mock("@follow/database/services/subscription", () => ({
   SubscriptionService: {
+    patch: mocks.patch,
     patchMany: mocks.patchMany,
   },
 }))
@@ -69,8 +73,11 @@ describe("subscriptionSyncService", () => {
     mocks.updateCategory.mockResolvedValue({})
     mocks.deleteCategory.mockResolvedValue({})
     mocks.patchMany.mockResolvedValue(undefined)
+    mocks.update.mockResolvedValue({})
+    mocks.patch.mockResolvedValue(undefined)
+    queryClientContext.provide(new QueryClient())
     apiContext.provide({
-      subscriptions: { batchUpdate: mocks.batchUpdate },
+      subscriptions: { batchUpdate: mocks.batchUpdate, update: mocks.update },
       categories: { update: mocks.updateCategory, delete: mocks.deleteCategory },
     } as unknown as FollowAPI)
   })
@@ -129,5 +136,29 @@ describe("subscriptionSyncService", () => {
       feedIdList: ["a", "b"],
       category: "Science",
     })
+  })
+
+  test("moves a list to its new view when the list is edited", async () => {
+    const list: SubscriptionModel = {
+      ...createSubscription("", FeedViewType.Articles, null),
+      feedId: null,
+      listId: "list1",
+      type: "list",
+    }
+    const state = useSubscriptionStore.getState()
+    useSubscriptionStore.setState({
+      data: { list1: list },
+      listIdByView: {
+        ...state.listIdByView,
+        [FeedViewType.Articles]: new Set(["list1"]),
+        [FeedViewType.Pictures]: new Set(),
+      },
+    })
+
+    await subscriptionSyncService.edit({ ...list, view: FeedViewType.Pictures })
+
+    const { listIdByView } = useSubscriptionStore.getState()
+    expect(listIdByView[FeedViewType.Articles].has("list1")).toBe(false)
+    expect(listIdByView[FeedViewType.Pictures].has("list1")).toBe(true)
   })
 })

@@ -333,6 +333,10 @@ class SubscriptionSyncService {
           draft.feedIdByView[current.view]!.delete(current.feedId!)
           draft.feedIdByView[subscription.view]!.add(subscription.feedId!)
         }
+        if (subscription.type === "list") {
+          draft.listIdByView[current.view]!.delete(current.listId!)
+          draft.listIdByView[subscription.view]!.add(subscription.listId!)
+        }
 
         draft.data[subscriptionId] = subscription
       })
@@ -346,6 +350,10 @@ class SubscriptionSyncService {
         if (subscription.type === "feed") {
           draft.feedIdByView[subscription.view]!.delete(subscription.feedId!)
           draft.feedIdByView[current.view]!.add(current.feedId!)
+        }
+        if (subscription.type === "list") {
+          draft.listIdByView[subscription.view]!.delete(subscription.listId!)
+          draft.listIdByView[current.view]!.add(current.listId!)
         }
 
         draft.data[subscriptionId] = current
@@ -365,7 +373,7 @@ class SubscriptionSyncService {
 
     await tx.run()
 
-    invalidateViews(subscription.view)
+    invalidateViews(current.view, subscription.view)
   }
 
   async subscribe(subscription: SubscriptionForm) {
