@@ -8,7 +8,7 @@ import { FlashList } from "@shopify/flash-list"
 import * as Haptics from "expo-haptics"
 import { use, useCallback, useEffect, useImperativeHandle, useRef } from "react"
 import type { NativeScrollEvent, NativeSyntheticEvent } from "react-native"
-import { RefreshControl, View } from "react-native"
+import { RefreshControl, ScrollView, View } from "react-native"
 import { useSafeAreaInsets } from "react-native-safe-area-context"
 import { useColor } from "react-native-uikit-colors"
 
@@ -137,8 +137,30 @@ export const TimelineSelectorList = ({
     markScrollResetReady()
   }, [markScrollResetReady, props]) as FlashListProps<any>["onCommitLayoutEffect"]
 
+  const refreshControl = (
+    <RefreshControl
+      progressViewOffset={headerHeight}
+      // // FIXME: not sure why we need set tintColor manually here, otherwise we can not see the refresh indicator
+      tintColor={systemFill}
+      onRefresh={() => {
+        unreadRefetch()
+        void unreadSyncService.refresh({ calibrate: true })
+        subscriptionRefetch()
+        Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light)
+        onRefresh()
+      }}
+      refreshing={isRefetching}
+    />
+  )
+
   if (props.data?.length === 0) {
-    return <EntryListEmpty />
+    return (
+      <RefreshableEmptyList
+        refreshControl={refreshControl}
+        headerHeight={headerHeight}
+        tabBarHeight={tabBarHeight}
+      />
+    )
   }
 
   return (
@@ -147,21 +169,7 @@ export const TimelineSelectorList = ({
         automaticallyAdjustsScrollIndicatorInsets={false}
         automaticallyAdjustContentInsets={false}
         ref={ref}
-        refreshControl={
-          <RefreshControl
-            progressViewOffset={headerHeight}
-            // // FIXME: not sure why we need set tintColor manually here, otherwise we can not see the refresh indicator
-            tintColor={systemFill}
-            onRefresh={() => {
-              unreadRefetch()
-              void unreadSyncService.refresh({ calibrate: true })
-              subscriptionRefetch()
-              Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light)
-              onRefresh()
-            }}
-            refreshing={isRefetching}
-          />
-        }
+        refreshControl={refreshControl}
         scrollIndicatorInsets={{
           top: headerHeight,
           bottom: tabBarHeight,
@@ -254,27 +262,35 @@ export const TimelineSelectorMasonryList = ({
 
   const systemFill = useColor("secondaryLabel")
 
+  const refreshControl = (
+    <RefreshControl
+      progressViewOffset={headerHeight}
+      // // FIXME: not sure why we need set tintColor manually here, otherwise we can not see the refresh indicator
+      tintColor={systemFill}
+      onRefresh={() => {
+        unreadRefetch()
+        subscriptionRefetch()
+        onRefresh()
+      }}
+      refreshing={isRefetching}
+    />
+  )
+
   if (props.data?.length === 0) {
-    return <EntryListEmpty />
+    return (
+      <RefreshableEmptyList
+        refreshControl={refreshControl}
+        headerHeight={headerHeight}
+        tabBarHeight={tabBarHeight}
+      />
+    )
   }
 
   return (
     <FlashList
       ref={ref}
       masonry
-      refreshControl={
-        <RefreshControl
-          progressViewOffset={headerHeight}
-          // // FIXME: not sure why we need set tintColor manually here, otherwise we can not see the refresh indicator
-          tintColor={systemFill}
-          onRefresh={() => {
-            unreadRefetch()
-            subscriptionRefetch()
-            onRefresh()
-          }}
-          refreshing={isRefetching}
-        />
-      }
+      refreshControl={refreshControl}
       {...props}
       onLoad={onLoad}
       onCommitLayoutEffect={onCommitLayoutEffect}
@@ -295,3 +311,27 @@ export const TimelineSelectorMasonryList = ({
     />
   )
 }
+
+// An empty timeline keeps the pull to refresh, the only way to fetch entries that arrive later
+const RefreshableEmptyList = ({
+  refreshControl,
+  headerHeight,
+  tabBarHeight,
+}: {
+  refreshControl: React.ReactElement<React.ComponentProps<typeof RefreshControl>>
+  headerHeight: number
+  tabBarHeight: number
+}) => (
+  <ScrollView
+    className="flex-1"
+    contentContainerStyle={{
+      flexGrow: 1,
+      paddingTop: headerHeight,
+      paddingBottom: tabBarHeight,
+    }}
+    automaticallyAdjustContentInsets={false}
+    refreshControl={refreshControl}
+  >
+    <EntryListEmpty />
+  </ScrollView>
+)
