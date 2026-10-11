@@ -15,6 +15,7 @@ import { WindowManager } from "~/manager/window"
 import { isMacOS } from "../env"
 import { migrateAuthCookiesToNewApiDomain } from "../lib/auth-cookie-migration"
 import { dedupeManagedAuthCookies } from "../lib/auth-cookies"
+import { isDeepLink, openDeepLink, setDeepLinkHandler } from "../lib/deep-link"
 import { handleUrlRouting } from "../lib/router"
 import { store } from "../lib/store"
 import { updateNotificationsToken } from "../lib/user"
@@ -50,9 +51,25 @@ export class BootstrapManager {
         mainWindow.show()
       }
 
-      const url = commandLine.pop()
+      const url = commandLine.find(isDeepLink)
       if (url) {
-        this.handleOpen(url)
+        openDeepLink(url)
+      }
+    })
+
+    // Registered before the app is ready: macOS sends the link that launched the app right away
+    // and doesn't send it again
+    app.on("open-url", (event, url) => {
+      event.preventDefault()
+      if (app.isReady()) {
+        const mainWindow = WindowManager.getMainWindowOrCreate()
+        if (mainWindow && !mainWindow.isDestroyed()) {
+          if (mainWindow.isMinimized()) mainWindow.restore()
+          mainWindow.focus()
+        }
+      }
+      if (url) {
+        openDeepLink(url)
       }
     })
 
@@ -121,14 +138,13 @@ export class BootstrapManager {
 
       WindowManager.getMainWindowOrCreate()
 
-      app.on("open-url", (_, url) => {
-        const mainWindow = WindowManager.getMainWindowOrCreate()
-        if (mainWindow && !mainWindow.isDestroyed()) {
-          if (mainWindow.isMinimized()) mainWindow.restore()
-          mainWindow.focus()
-        }
-        url && this.handleOpen(url)
+      setDeepLinkHandler((url) => {
+        void this.handleOpen(url)
       })
+      // Windows and Linux pass the link that launched the app as an argument
+      for (const arg of process.argv) {
+        if (isDeepLink(arg)) openDeepLink(arg)
+      }
 
       if (DEV) {
         this.installDevTools()

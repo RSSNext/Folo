@@ -11,6 +11,7 @@ import path from "pathe"
 
 import { isMacOS, isWindows, isWindows11 } from "~/env"
 import { filePathToAppUrl, getIconPath } from "~/helper"
+import { setRendererReady } from "~/lib/deep-link"
 import { t } from "~/lib/i18n"
 import { store } from "~/lib/store"
 import { getTrayConfig } from "~/lib/tray"
@@ -434,6 +435,9 @@ class WindowManagerStatic {
     })
 
     this.bindMainWindowCloseHandlers(window)
+    // Deep links wait while the renderer loads, until it reports that it is ready again
+    window.webContents.on("did-navigate", () => setRendererReady(false))
+    window.on("closed", () => setRendererReady(false))
 
     this.windows.mainWindow = window
 

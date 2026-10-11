@@ -11,6 +11,7 @@ import { START_IN_TRAY_ARGS } from "~/constants/app"
 import { isMacOS } from "~/env"
 import { filePathToAppUrl } from "~/helper"
 import { getCacheSize } from "~/lib/cleaner"
+import { setRendererReady } from "~/lib/deep-link"
 import { i18n } from "~/lib/i18n"
 import { store, StoreKey } from "~/lib/store"
 import { getTrayConfig, registerAppTray } from "~/lib/tray"
@@ -256,8 +257,11 @@ export class AppService extends IpcService {
 
   @IpcMethod()
   readyToShowMainWindow() {
-    if (shouldStartInTray()) return
     const window = WindowManager.getMainWindow()
+    if (window && getIpcContext().sender === window.webContents) {
+      setRendererReady(true)
+    }
+    if (shouldStartInTray()) return
     if (window) window.show()
   }
 
