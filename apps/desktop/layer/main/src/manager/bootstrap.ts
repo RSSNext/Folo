@@ -99,15 +99,18 @@ export class BootstrapManager {
         callback({ cancel: false, requestHeaders: details.requestHeaders })
       })
 
-      await migrateAuthCookiesToNewApiDomain(session.defaultSession, {
-        currentApiURL: env.VITE_API_URL,
-      })
-      await dedupeManagedAuthCookies({
-        apiURL: env.VITE_API_URL,
-        session: session.defaultSession,
-      })
-
-      await cleanupOldRender()
+      // A failed cookie cleanup must not keep the main window from opening
+      try {
+        await migrateAuthCookiesToNewApiDomain(session.defaultSession, {
+          currentApiURL: env.VITE_API_URL,
+        })
+        await dedupeManagedAuthCookies({
+          apiURL: env.VITE_API_URL,
+          session: session.defaultSession,
+        })
+      } catch (error) {
+        logger.error("Failed to clean up auth cookies:", error)
+      }
 
       // Bypass CORS for PostHog analytics
       session.defaultSession.webRequest.onHeadersReceived((details, callback) => {
@@ -137,6 +140,12 @@ export class BootstrapManager {
       })
 
       WindowManager.getMainWindowOrCreate()
+
+      // Removing old renderer bundles can be slow, or fail on Windows when a file is in use, so it
+      // runs after the window opens
+      cleanupOldRender().catch((error) => {
+        logger.error("Failed to clean up old renderer bundles:", error)
+      })
 
       setDeepLinkHandler((url) => {
         void this.handleOpen(url)
