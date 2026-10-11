@@ -1,8 +1,9 @@
 import type { FeedViewType } from "@follow/constants"
 import type { MediaModel } from "@follow/database/schemas/types"
+import { useRecyclingState } from "@shopify/flash-list"
 import type { ImageSource } from "expo-image"
 import type { Ref } from "react"
-import { useEffect, useState } from "react"
+import { useEffect, useRef, useState } from "react"
 import { ScrollView, View } from "react-native"
 import Animated, {
   interpolateColor,
@@ -41,8 +42,11 @@ export const MediaCarousel = ({
   const containerHeight = Math.floor(containerWidth / aspectRatio)
   const hasMany = media.length > 1
 
-  // const activeIndex = useSharedValue(0)
-  const [activeIndex, setActiveIndex] = useState(0)
+  // The list recycles this row for other entries, which start at their first image
+  const scrollViewRef = useRef<ScrollView>(null)
+  const [activeIndex, setActiveIndex] = useRecyclingState(0, [entryId], () => {
+    scrollViewRef.current?.scrollTo({ x: 0, animated: false })
+  })
 
   return (
     <View
@@ -52,6 +56,7 @@ export const MediaCarousel = ({
     >
       <View ref={ref} className="relative overflow-hidden rounded-md">
         <ScrollView
+          ref={scrollViewRef}
           onMomentumScrollEnd={(e) => {
             setActiveIndex(Math.round(e.nativeEvent.contentOffset.x / containerWidth))
           }}

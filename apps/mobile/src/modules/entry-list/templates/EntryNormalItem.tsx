@@ -6,6 +6,7 @@ import { useFeedById } from "@follow/store/feed/hooks"
 import { useEntryTranslation } from "@follow/store/translation/hooks"
 import { tracker } from "@follow/tracker"
 import { cn, formatEstimatedMins, formatTimeToSeconds } from "@follow/utils"
+import { useRecyclingState } from "@shopify/flash-list"
 import { useEvent } from "expo"
 import { useVideoPlayer, VideoView } from "expo-video"
 import { memo, useCallback, useMemo, useRef, useState } from "react"
@@ -215,7 +216,8 @@ const ThumbnailImage = ({ entryId }: { entryId: string }) => {
       toast.error(t("player.play_failed"))
     }
   }, [audio, audioState, entry?.title, feedTitle, image, t])
-  const [imageError, setImageError] = useState(audio && !image)
+  // The list recycles this row for other entries, which haven't failed to load
+  const [imageError, setImageError] = useRecyclingState(!!audio && !image, [entryId])
   const handleImageError = useCallback(() => {
     setImageError(true)
   }, [])
@@ -239,7 +241,7 @@ const ThumbnailImage = ({ entryId }: { entryId: string }) => {
           />
         ))}
 
-      {video && <VideoThumbnail url={video.url} isSquare={isSquare} />}
+      {video && <VideoThumbnail key={video.url} url={video.url} isSquare={isSquare} />}
 
       {/* Show feed icon if no image but audio is present */}
       {imageError && <FeedIcon feed={feed} size={96} />}
