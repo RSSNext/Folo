@@ -17,6 +17,7 @@ import { useIsTabletLayout } from "@/src/lib/responsive"
 import { accentColor, useColor } from "@/src/theme/colors"
 
 import { PlatformActivityIndicator } from "../loading/PlatformActivityIndicator"
+import { GroupedCellLabelContext } from "./cell-label-context"
 import {
   GROUPED_ICON_TEXT_GAP,
   GROUPED_LIST_ITEM_PADDING,
@@ -268,7 +269,9 @@ export const GroupedInsetListCell: FC<
         )}
       </View>
 
-      <View className={cn("mb-auto ml-4 shrink-0", rightClassName)}>{children}</View>
+      <View className={cn("mb-auto ml-4 shrink-0", rightClassName)}>
+        <GroupedCellLabelContext value={label}>{children}</GroupedCellLabelContext>
+      </View>
     </GroupedInsetListBaseCell>
   )
 }
@@ -280,7 +283,12 @@ export const GroupedInsetListActionCellRadio: FC<{
   selected?: boolean
 }> = ({ label, description, onPress, disabled, selected }) => {
   return (
-    <Pressable onPress={onPress} disabled={disabled}>
+    <Pressable
+      onPress={onPress}
+      disabled={disabled}
+      accessibilityRole="radio"
+      accessibilityState={{ checked: !!selected, disabled: !!disabled }}
+    >
       {({ pressed }) => (
         <GroupedInsetListBaseCell
           className={cn(pressed ? "bg-system-fill" : undefined, disabled && "opacity-40")}
