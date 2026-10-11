@@ -206,6 +206,12 @@ export const FeedForm: Component<{
   )
 }
 
+// The All view lists every view, but a feed can't be followed into it
+const getDefaultFollowView = () => {
+  const { view } = getRouteParams()
+  return view === FeedViewType.All ? FeedViewType.Articles : view
+}
+
 const FeedInnerForm = ({
   defaultValues,
   id,
@@ -243,7 +249,7 @@ const FeedInnerForm = ({
   const form = useForm<z.infer<typeof formSchema>>({
     resolver: zodResolver(formSchema),
     defaultValues: defaultValues || {
-      view: getRouteParams().view.toString() || FeedViewType.Articles.toString(),
+      view: getDefaultFollowView().toString(),
     },
   })
 
@@ -266,11 +272,7 @@ const FeedInnerForm = ({
   }, [form, subscription])
 
   useEffect(() => {
-    if (
-      typeof analytics?.view === "number" &&
-      !subscription &&
-      typeof defaultValues?.view !== "number"
-    ) {
+    if (typeof analytics?.view === "number" && !subscription && !defaultValues?.view) {
       form.setValue("view", `${analytics.view}`)
     }
   }, [analytics, defaultValues?.view, form, subscription])
