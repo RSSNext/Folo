@@ -341,7 +341,7 @@ const ListItemImpl: Component<ListItemProps> = ({
 
   // Use current route view for navigation to stay in current view (e.g., All view)
   const currentRouteView = useRouteParamsSelector((s) => s.view)
-  const navigationView = currentRouteView ?? view
+  const navigationView = currentRouteView === FeedViewType.All ? currentRouteView : view
 
   const handleNavigate = useCallback(
     (e: React.MouseEvent<HTMLDivElement>) => {
@@ -456,7 +456,7 @@ const InboxItemImpl: Component<InboxItemProps> = ({ view, inboxId, className, ic
 
   // Use current route view for navigation to stay in current view (e.g., All view)
   const currentRouteView = useRouteParamsSelector((s) => s.view)
-  const navigationView = currentRouteView ?? view
+  const navigationView = currentRouteView === FeedViewType.All ? currentRouteView : view
 
   const handleNavigate = useCallback(
     (e: React.MouseEvent<HTMLDivElement>) => {
