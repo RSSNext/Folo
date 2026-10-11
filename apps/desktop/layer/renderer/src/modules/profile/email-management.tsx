@@ -24,6 +24,7 @@ import { AnimatedCommandButton } from "~/components/ui/button/AnimatedCommandBut
 import { CopyButton } from "~/components/ui/button/CopyButton"
 import { useModalStack } from "~/components/ui/modal/stacked/hooks"
 import { changeEmail, sendVerificationEmail } from "~/lib/auth"
+import { toastFetchError } from "~/lib/error-parser"
 
 const formSchema = z.object({
   email: z.string().email(),
@@ -37,12 +38,20 @@ export function EmailManagement() {
   const verifyEmailMutation = useMutation({
     mutationFn: async () => {
       if (!user?.email) return
-      return sendVerificationEmail({
+      const res = await sendVerificationEmail({
         email: user.email,
       })
+      // The auth client resolves with the error instead of throwing
+      if (res.error) {
+        throw new Error(res.error.message || res.error.statusText)
+      }
+      return res
     },
     onSuccess: () => {
       toast.success(t("profile.email.verification_sent"))
+    },
+    onError: (error) => {
+      toastFetchError(error)
     },
   })
 

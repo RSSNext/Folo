@@ -101,15 +101,21 @@ export const ProfileSettingForm = ({
   })
 
   const updateMutation = useMutation({
-    mutationFn: (values: Partial<z.infer<typeof formSchema>>) =>
-      updateUser({
+    mutationFn: async (values: Partial<z.infer<typeof formSchema>>) => {
+      const res = await updateUser({
         handle: values.handle,
         image: values.image,
         name: values.name,
         bio: values.bio,
         website: values.website,
         socialLinks: values.socialLinks as any,
-      }),
+      })
+      // The auth client resolves with the error instead of throwing
+      if (res.error) {
+        throw new Error(res.error.message || res.error.statusText)
+      }
+      return res
+    },
     onError: (error) => {
       toastFetchError(error)
     },
