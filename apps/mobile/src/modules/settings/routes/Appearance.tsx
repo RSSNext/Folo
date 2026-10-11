@@ -134,7 +134,10 @@ export const AppearanceScreen = () => {
             value={showUnreadCountBadgeMobile}
             onValueChange={(val) => {
               setUISetting("showUnreadCountBadgeMobile", val)
-              setBadgeCountAsyncWithPermission(val ? getUnreadAll() : 0, true)
+              void setBadgeCountAsyncWithPermission(val ? getUnreadAll() : 0, {
+                skipSettingCheck: true,
+                requestPermission: val,
+              })
             }}
           />
         </GroupedInsetListCell>

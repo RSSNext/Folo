@@ -30,14 +30,23 @@ export async function requestNotificationPermission() {
 
 export async function setBadgeCountAsyncWithPermission(
   badgeCount: number,
-  skipSettingCheck = false,
+  {
+    skipSettingCheck = false,
+    requestPermission = false,
+  }: {
+    skipSettingCheck?: boolean
+    /** Only a user action should prompt; background updates just check the current status */
+    requestPermission?: boolean
+  } = {},
 ) {
   const { showUnreadCountBadgeMobile } = getUISettings()
   if (!showUnreadCountBadgeMobile && !skipSettingCheck) {
     return false
   }
 
-  const permissionGranted = await requestNotificationPermission()
+  const permissionGranted = requestPermission
+    ? await requestNotificationPermission()
+    : (await Notifications.getPermissionsAsync()).status === "granted"
   if (!permissionGranted) {
     return false
   }
