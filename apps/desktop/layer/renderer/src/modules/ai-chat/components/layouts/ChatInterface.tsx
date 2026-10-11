@@ -331,6 +331,12 @@ const useChatInputFocusHandler = (
       return
     }
 
+    // Only a printable character starts typing. Tab, Enter, Space, the arrow and paging keys
+    // keep working on the focused button or the message list.
+    if (event.key.length !== 1 || event.key === " " || event.altKey || event.isComposing) {
+      return
+    }
+
     inputRef?.current?.focus()
   })
 }
