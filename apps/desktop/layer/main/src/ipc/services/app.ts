@@ -9,6 +9,7 @@ import path from "pathe"
 
 import { START_IN_TRAY_ARGS } from "~/constants/app"
 import { isMacOS } from "~/env"
+import { filePathToAppUrl } from "~/helper"
 import { getCacheSize } from "~/lib/cleaner"
 import { i18n } from "~/lib/i18n"
 import { store, StoreKey } from "~/lib/store"
@@ -92,7 +93,9 @@ export class AppService extends IpcService {
           logger.verbose("[rendererUpdateReload]: skip reload in dev")
           break
         }
-        window.loadFile(appLoadEntry)
+        // The app:// origin the window started with, or a file:// origin would come with an
+        // empty local storage and database
+        window.loadURL(filePathToAppUrl(appLoadEntry))
       } else window.destroy()
     }
 
