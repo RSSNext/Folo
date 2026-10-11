@@ -1,5 +1,5 @@
 import { execFile } from "node:child_process"
-import { mkdir, readFile, writeFile } from "node:fs/promises"
+import { chmod, mkdir, readFile, rename, writeFile } from "node:fs/promises"
 import { homedir } from "node:os"
 import { promisify } from "node:util"
 
@@ -17,7 +17,6 @@ import {
   getManagedAuthCookies,
   getPreferredSessionTokenCookie,
 } from "./auth-cookies"
-import { describeCliCommand, redactCliSecrets } from "./cli-command"
 import { resolveCliSessionToken } from "./cli-login-token"
 import { store } from "./store"
 
@@ -48,9 +47,19 @@ export const readCliConfig = async (): Promise<CliConfig> => {
   }
 }
 
+// Only the user can read the token, and the file is replaced in one step so the CLI never reads
+// it half written
 const writeCliConfig = async (config: CliConfig): Promise<void> => {
-  await mkdir(CLI_CONFIG_DIR, { recursive: true })
-  await writeFile(CLI_CONFIG_PATH, `${JSON.stringify(config, null, 2)}\n`, "utf8")
+  await mkdir(CLI_CONFIG_DIR, { recursive: true, mode: 0o700 })
+  if (process.platform !== "win32") {
+    await chmod(CLI_CONFIG_DIR, 0o700).catch(() => {})
+  }
+  const tempPath = `${CLI_CONFIG_PATH}.${process.pid}.tmp`
+  await writeFile(tempPath, `${JSON.stringify(config, null, 2)}\n`, {
+    encoding: "utf8",
+    mode: 0o600,
+  })
+  await rename(tempPath, CLI_CONFIG_PATH)
 }
 
 export const getCliConfigPath = () => CLI_CONFIG_PATH
@@ -73,27 +82,6 @@ const normalizeCliToken = (token: string | undefined) => {
 export const getCliInstallCommand = () => `npx --yes ${CLI_NPX_PACKAGE_SPEC} --help`
 
 export const getCliLoginCommand = () => `npx --yes ${CLI_NPX_PACKAGE_SPEC} login --token <token>`
-
-const runCliCommand = async (args: string[]) => {
-  const fullArgs = ["--yes", CLI_NPX_PACKAGE_SPEC, ...args]
-  try {
-    await execFileAsync(getNpxCommand(), fullArgs, {
-      windowsHide: true,
-      timeout: 120_000,
-      maxBuffer: 1024 * 1024,
-    })
-  } catch (error) {
-    // The original error carries the whole command line, token included. Callers log it,
-    // so replace it with one that says what failed without repeating the secret.
-    const output =
-      error && typeof error === "object" && "stderr" in error && typeof error.stderr === "string"
-        ? error.stderr.trim()
-        : ""
-    throw new Error(
-      `${describeCliCommand(getNpxCommand(), fullArgs)} failed${output ? `: ${redactCliSecrets(output, fullArgs)}` : ""}`,
-    )
-  }
-}
 
 export const isCliRunnerAvailable = async (): Promise<boolean> => {
   try {
@@ -230,28 +218,17 @@ export const syncSessionToCliConfig = async (token?: string): Promise<void> => {
       return
     }
 
-    if (!(await isCliRunnerAvailable())) {
-      throw new Error("npx is not available")
-    }
-
-    await runCliCommand(["login", "--token", token, "--api-url", env.VITE_API_URL])
-    logger.info("CLI login synced via npx")
+    // Written as `folocli login` writes it, without running the CLI: a spawned npx would need
+    // to be found on the PATH and would expose the token in its arguments
+    await writeCliConfig({
+      ...config,
+      token: normalizeCliToken(token),
+      apiUrl: env.VITE_API_URL,
+    })
+    logger.info("CLI login synced")
     return
   }
 
-  if (await isCliRunnerAvailable()) {
-    try {
-      await runCliCommand(["logout"])
-      logger.info("CLI login cleared via npx")
-      return
-    } catch (error) {
-      logger.error(
-        "Failed to clear CLI login via npx, falling back to local config cleanup:",
-        error,
-      )
-    }
-  }
-
   await clearCliConfigToken()
-  logger.info("CLI login cleared from local config")
+  logger.info("CLI login cleared")
 }
