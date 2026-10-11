@@ -363,10 +363,15 @@ export const useEntriesQuery = (
   }, [entriesIds, fetchNextPage, query, queryKey, refetch])
 }
 
-export const usePrefetchEntryDetail = (entryId: string | undefined, isInbox?: boolean) => {
+export const usePrefetchEntryDetail = (
+  entryId: string | undefined,
+  isInbox?: boolean,
+  options?: { enabled?: boolean },
+) => {
   return useQuery({
     queryKey: ["entry", entryId],
     queryFn: () => entrySyncServices.fetchEntryDetail(entryId, isInbox),
+    enabled: options?.enabled,
   })
 }
 
