@@ -157,6 +157,18 @@ export const useDialog = (): DialogInstance => {
       const config = variantConfig[variant]
 
       return new Promise<boolean>((resolve) => {
+        let settled = false
+        const settle = (confirmed: boolean) => {
+          if (settled) return
+          settled = true
+          if (confirmed) {
+            options.onConfirm?.()
+          } else {
+            options.onCancel?.()
+          }
+          resolve(confirmed)
+        }
+
         present({
           title: (
             <div className="flex items-center gap-2">
@@ -172,8 +184,7 @@ export const useDialog = (): DialogInstance => {
                 <Button
                   variant="outline"
                   onClick={() => {
-                    options.onCancel?.()
-                    resolve(false)
+                    settle(false)
                     dismiss()
                   }}
                 >
@@ -183,8 +194,7 @@ export const useDialog = (): DialogInstance => {
                   variant={config.confirmVariant}
                   buttonClassName={config.confirmClassName}
                   onClick={() => {
-                    options.onConfirm?.()
-                    resolve(true)
+                    settle(true)
                     dismiss()
                   }}
                 >
@@ -195,6 +205,8 @@ export const useDialog = (): DialogInstance => {
           ),
           canClose: true,
           clickOutsideToDismiss: false,
+          // Closing with the X button or Escape answers no, so callers awaiting it don't hang
+          onClose: () => settle(false),
         })
       })
     }),
