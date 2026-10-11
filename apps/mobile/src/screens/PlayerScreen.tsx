@@ -1,6 +1,6 @@
 import { cn } from "@follow/utils"
 import { LinearGradient } from "expo-linear-gradient"
-import { useEffect, useMemo } from "react"
+import { use, useEffect, useMemo } from "react"
 import { StyleSheet, View } from "react-native"
 import Reanimated, {
   cancelAnimation,
@@ -14,6 +14,7 @@ import { SheetScreen } from "react-native-sheet-transitions"
 import { Image } from "@/src/components/ui/image/Image"
 import { Text } from "@/src/components/ui/typography/Text"
 import { useNavigation } from "@/src/lib/navigation/hooks"
+import { ScreenItemContext } from "@/src/lib/navigation/ScreenItemContext"
 
 import { gentleSpringPreset } from "../constants/spring"
 import type { NavigationControllerView } from "../lib/navigation/types"
@@ -68,6 +69,15 @@ export const PlayerScreen: NavigationControllerView = () => {
     [isGradientLight],
   )
   const navigation = useNavigation()
+  // Once playback ends there is nothing to show, and the empty transparent modal would keep
+  // covering the app. The delay rides out the gap between two tracks.
+  const hasActivePlayable = !!activePlayable
+  const { screenId } = use(ScreenItemContext)
+  useEffect(() => {
+    if (hasActivePlayable) return
+    const timer = setTimeout(() => navigation.__internal_dismiss(screenId), 300)
+    return () => clearTimeout(timer)
+  }, [hasActivePlayable, navigation, screenId])
   if (!activePlayable) {
     return null
   }
