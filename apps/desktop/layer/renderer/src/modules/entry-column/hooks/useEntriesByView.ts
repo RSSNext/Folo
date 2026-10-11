@@ -246,11 +246,6 @@ const useLocalEntries = (): UseEntriesReturn => {
 
   const [page, setPage] = useState(0)
   const pageSize = 30
-  const totalPage = useMemo(
-    () => (allEntries ? Math.ceil(allEntries.length / pageSize) : 0),
-    [allEntries],
-  )
-
   const entries = useMemo(() => {
     return allEntries?.slice(0, (page + 1) * pageSize) || []
   }, [allEntries, page, pageSize])
@@ -284,7 +279,7 @@ const useLocalEntries = (): UseEntriesReturn => {
     isReady: true,
     isFetchingNextPage: false,
     isFetching: false,
-    hasNextPage: page < totalPage,
+    hasNextPage: hasNext,
     error: null,
   }
 }
