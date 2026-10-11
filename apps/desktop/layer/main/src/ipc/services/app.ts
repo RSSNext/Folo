@@ -205,7 +205,7 @@ export class AppService extends IpcService {
     } catch (err) {
       const senderWindow = (sender as Sender).getOwnerBrowserWindow()
       if (senderWindow) {
-        callWindowExpose(senderWindow).toast.error("Download failed!", {
+        callWindowExpose(senderWindow).toast.error(i18n.t("download.failed"), {
           duration: 1000,
         })
       }

@@ -82,12 +82,12 @@ export const clearAllData = async () => {
       ],
     })
 
-    caller.toast.success("App data reset successfully")
+    caller.toast.success(t("dialog.clearAllDataSuccess"))
 
     // reload the app
     win.reload()
   } catch (error: any) {
-    caller.toast.error(`Error resetting app data: ${error.message}`)
+    caller.toast.error(t("dialog.clearAllDataFailed", { message: error.message }))
   }
 }
 
