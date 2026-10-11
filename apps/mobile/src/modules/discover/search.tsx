@@ -15,6 +15,7 @@ import { getDefaultHeaderHeight } from "@/src/components/layouts/utils"
 import { SetNavigationHeaderHeightContext } from "@/src/components/layouts/views/NavigationHeaderContext"
 import { Search2CuteReIcon } from "@/src/icons/search_2_cute_re"
 import { useScreenIsInSheetModal } from "@/src/lib/navigation/hooks"
+import { queryClient } from "@/src/lib/query-client"
 import { accentColor, useColor } from "@/src/theme/colors"
 
 import { useSearchPageContext, useSearchPageScrollContainerAnimatedX } from "./ctx"
@@ -177,6 +178,11 @@ const SearchInput = () => {
           autoFocus={isFocused}
           ref={inputRef}
           onSubmitEditing={() => {
+            // Submitting the same keyword again searches again, e.g. after a failed request
+            if (tempSearchValue === searchValue) {
+              void queryClient.refetchQueries({ queryKey: ["searchFeed", searchValue] })
+              void queryClient.refetchQueries({ queryKey: ["searchList", searchValue] })
+            }
             setSearchValue(tempSearchValue)
           }}
           value={tempSearchValue}

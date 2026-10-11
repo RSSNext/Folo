@@ -8,7 +8,7 @@ import { followClient } from "@/src/lib/api-client"
 
 import { useSearchPageContext } from "../ctx"
 import { ItemSeparator } from "./__base"
-import { useDataSkeleton } from "./hooks"
+import { SearchErrorView, useDataSkeleton } from "./hooks"
 import { resolveSearchFeedItems } from "./search-feed-items"
 import { SearchFeedCard } from "./SearchFeedCard"
 
@@ -17,7 +17,7 @@ export const SearchFeed = () => {
   const { searchValueAtom } = useSearchPageContext()
   const searchValue = useAtomValue(searchValueAtom)
   const windowWidth = useWindowDimensions().width
-  const { data, isLoading } = useQuery({
+  const { data, error, isFetching, refetch } = useQuery({
     queryKey: ["searchFeed", searchValue],
     queryFn: () => {
       return followClient.api.discover.discover({ keyword: searchValue, target: "feeds" })
@@ -26,9 +26,15 @@ export const SearchFeed = () => {
   })
   const discoveredItems = data?.data ?? []
   const items = resolveSearchFeedItems(discoveredItems, searchValue)
-  const skeleton = useDataSkeleton(isLoading, data === undefined ? undefined : items.length)
+  // A retry after an error has no data either and shows the spinner again
+  const skeleton = useDataSkeleton(
+    isFetching && data === undefined,
+    data === undefined ? undefined : items.length,
+  )
   if (skeleton) return skeleton
-  if (data === undefined) return null
+  if (data === undefined) {
+    return error ? <SearchErrorView error={error} onRetry={() => void refetch()} /> : null
+  }
 
   const resultCount = items.length
   const resultLabel =
