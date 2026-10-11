@@ -9,7 +9,7 @@ import { BrowserWindow, screen, shell } from "electron"
 import type { Event } from "electron/main"
 import path from "pathe"
 
-import { isMacOS, isWindows, isWindows11 } from "~/env"
+import { isMacOS, isWindows } from "~/env"
 import { filePathToAppUrl, getIconPath } from "~/helper"
 import { setRendererReady } from "~/lib/deep-link"
 import { t } from "~/lib/i18n"
@@ -239,30 +239,25 @@ class WindowManagerStatic {
     })
   }
 
+  /**
+   * Remember where the window is. A maximized window keeps the size it returns to, along with
+   * the fact that it was maximized.
+   */
+  saveMainWindowState = (window: BrowserWindow) => {
+    const isMaximized = window.isMaximized()
+    const bounds = isMaximized ? window.getNormalBounds() : window.getBounds()
+    store.set(this.windowStateStoreKey, {
+      width: bounds.width,
+      height: bounds.height,
+      x: bounds.x,
+      y: bounds.y,
+      isMaximized,
+    })
+  }
+
   private bindMainWindowCloseHandlers(window: BrowserWindow) {
     window.on("close", () => {
-      if (isWindows11) {
-        const windowStoreKey = Symbol.for("maximized")
-        if (window[windowStoreKey]) {
-          const stored = window[windowStoreKey]
-          store.set(this.windowStateStoreKey, {
-            width: stored.size[0],
-            height: stored.size[1],
-            x: stored.position[0],
-            y: stored.position[1],
-          })
-
-          return
-        }
-      }
-
-      const bounds = window.getBounds()
-      store.set(this.windowStateStoreKey, {
-        width: bounds.width,
-        height: bounds.height,
-        x: bounds.x,
-        y: bounds.y,
-      })
+      this.saveMainWindowState(window)
     })
 
     window.on("close", (event) => {
@@ -383,8 +378,20 @@ class WindowManagerStatic {
     x?: number
     y?: number
   }) {
-    const primaryDisplay = screen.getPrimaryDisplay()
-    const { workArea } = primaryDisplay
+    // The display the window was on, as long as it is still connected, rather than always the
+    // primary one
+    const savedX = windowState?.x
+    const savedY = windowState?.y
+    const display =
+      savedX !== undefined && savedY !== undefined
+        ? screen.getDisplayMatching({
+            x: savedX,
+            y: savedY,
+            width: windowState?.width ?? WindowManagerStatic.mainWindowDefaultSize.width,
+            height: windowState?.height ?? WindowManagerStatic.mainWindowDefaultSize.height,
+          })
+        : screen.getPrimaryDisplay()
+    const { workArea } = display
 
     const maxWidth = workArea.width
     const maxHeight = workArea.height
@@ -420,6 +427,7 @@ class WindowManagerStatic {
           height?: number
           x?: number
           y?: number
+          isMaximized?: boolean
         }
       | undefined
     const { width, height, x, y, maxWidth, maxHeight } =
@@ -433,6 +441,11 @@ class WindowManagerStatic {
       minWidth: Math.min(this.config.minWindowSize.width, maxWidth),
       minHeight: Math.min(this.config.minWindowSize.height, maxHeight),
     })
+
+    // Once shown: maximizing a hidden window shows it before the renderer is ready
+    if (windowState?.isMaximized) {
+      window.once("show", () => window.maximize())
+    }
 
     this.bindMainWindowCloseHandlers(window)
     // Deep links wait while the renderer loads, until it reports that it is ready again

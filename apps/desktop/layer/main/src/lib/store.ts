@@ -15,6 +15,7 @@ type StoreData = {
   user?: string | null
   windowState?: {
     height: number
+    isMaximized?: boolean
     width: number
     x: number
     y: number

@@ -17,7 +17,6 @@ import { migrateAuthCookiesToNewApiDomain } from "../lib/auth-cookie-migration"
 import { dedupeManagedAuthCookies } from "../lib/auth-cookies"
 import { isDeepLink, openDeepLink, setDeepLinkHandler } from "../lib/deep-link"
 import { handleUrlRouting } from "../lib/router"
-import { store } from "../lib/store"
 import { updateNotificationsToken } from "../lib/user"
 import { logger } from "../logger"
 import { cleanupOldRender } from "../updater/hot-updater"
@@ -163,14 +162,7 @@ export class BootstrapManager {
     app.on("before-quit", async () => {
       const window = WindowManager.getMainWindow()
       if (!window || window.isDestroyed()) return
-      const bounds = window.getBounds()
-
-      store.set(WindowManager.windowStateStoreKey, {
-        width: bounds.width,
-        height: bounds.height,
-        x: bounds.x,
-        y: bounds.y,
-      })
+      WindowManager.saveMainWindowState(window)
       await session.defaultSession.cookies.flushStore()
       await cleanupOldRender()
     })
