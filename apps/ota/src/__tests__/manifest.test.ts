@@ -562,6 +562,64 @@ describe("/download", () => {
     )
   })
 
+  it("redirects Intel Mac downloads to the x64 dmg", async () => {
+    const response = await fetchWorker("/download/desktop/macos/dmg-x64", undefined, {
+      kvEntries: new Map<string, unknown>([
+        [
+          KV_KEYS.policy("desktop", "stable", "direct"),
+          {
+            releaseVersion: "1.5.1",
+            required: false,
+            minSupportedBinaryVersion: "1.5.0",
+            message: null,
+            publishedAt: "2026-04-11T10:00:00Z",
+            distribution: "direct",
+            downloadUrl: null,
+            storeUrl: null,
+          },
+        ],
+        [
+          KV_KEYS.release("desktop", "1.5.1"),
+          createDesktopRelease({
+            desktop: {
+              ...createDesktopRelease().desktop,
+              app: {
+                platforms: {
+                  ...createDesktopRelease().desktop.app!.platforms,
+                  macos: {
+                    ...createDesktopRelease().desktop.app!.platforms.macos!,
+                    files: [
+                      {
+                        filename: "Folo-1.5.1-macos-arm64.dmg",
+                        sha512: "f".repeat(88),
+                        size: 654321,
+                        downloadUrl:
+                          "https://github.com/RSSNext/Folo/releases/download/desktop/v1.5.1/Folo-1.5.1-macos-arm64.dmg",
+                      },
+                      {
+                        filename: "Folo-1.5.1-macos-x64.dmg",
+                        sha512: "e".repeat(88),
+                        size: 654322,
+                        downloadUrl:
+                          "https://github.com/RSSNext/Folo/releases/download/desktop/v1.5.1/Folo-1.5.1-macos-x64.dmg",
+                      },
+                      ...createDesktopRelease().desktop.app!.platforms.macos!.files,
+                    ],
+                  },
+                },
+              },
+            },
+          }),
+        ],
+      ]),
+    })
+
+    expect(response.status).toBe(302)
+    expect(response.headers.get("location")).toBe(
+      "https://github.com/RSSNext/Folo/releases/download/desktop/v1.5.1/Folo-1.5.1-macos-x64.dmg",
+    )
+  })
+
   it("redirects Android APK downloads to the cached APK release", async () => {
     const fetchSpy = vi.fn()
     vi.stubGlobal("fetch", fetchSpy)

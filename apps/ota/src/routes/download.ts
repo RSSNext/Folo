@@ -11,7 +11,7 @@ import { refreshLatestProductReleases } from "../lib/latest-release"
 import type { DesktopOtaRelease } from "../lib/schema"
 import { otaReleaseSchema } from "../lib/schema"
 
-type DesktopDownloadTarget = "macos-dmg" | "windows-exe" | "linux-appimage"
+type DesktopDownloadTarget = "macos-dmg" | "macos-dmg-x64" | "windows-exe" | "linux-appimage"
 type DesktopApp = NonNullable<DesktopOtaRelease["desktop"]["app"]>
 type DesktopAppPlatform = NonNullable<DesktopApp["platforms"][keyof DesktopApp["platforms"]]>
 
@@ -19,6 +19,11 @@ const desktopDownloadTargets = {
   "macos-dmg": {
     platform: "macos",
     patterns: [/macos.*arm64.*\.dmg$/i, /\.dmg$/i],
+  },
+  // Intel Macs can't run the Apple Silicon build, and browsers don't tell which one a Mac is
+  "macos-dmg-x64": {
+    platform: "macos",
+    patterns: [/macos.*x64.*\.dmg$/i],
   },
   "windows-exe": {
     platform: "windows",
@@ -40,6 +45,10 @@ export const downloadRoute = new Hono<{ Bindings: Env }>()
 
 downloadRoute.get("/download/desktop/macos/dmg", async (c) =>
   redirectDesktopDownload(c.env.OTA_KV, "macos-dmg", c.req.query("channel") ?? "stable"),
+)
+
+downloadRoute.get("/download/desktop/macos/dmg-x64", async (c) =>
+  redirectDesktopDownload(c.env.OTA_KV, "macos-dmg-x64", c.req.query("channel") ?? "stable"),
 )
 
 downloadRoute.get("/download/desktop/windows/exe", async (c) =>
