@@ -68,9 +68,6 @@ export async function generateMetadata(props: {
         url: '/favicon.ico',
       },
     ],
-    alternates: {
-      canonical: '/',
-    },
     robots: {
       index: true,
       follow: true,

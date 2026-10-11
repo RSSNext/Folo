@@ -1,9 +1,11 @@
+import type { Metadata } from 'next'
 import * as React from 'react'
 
 import { BuiltOpen } from '~/components/widgets/landing/BuiltOpen'
 import { Features } from '~/components/widgets/landing/Features'
 import { LandingHero } from '~/components/widgets/landing/Hero'
 import { TrustedBy } from '~/components/widgets/landing/TrustedBy'
+import { defaultLocale, locales } from '~/i18n/routing'
 import {
   DISCOVER_FALLBACK,
   getHeroTimelineItems,
@@ -11,8 +13,23 @@ import {
   TRUSTED_COMPANIES,
   TRUSTED_RESEARCH_INSTITUTIONS,
 } from '~/lib/landing-data'
+import { getLocaleAlternates } from '~/lib/seo'
 
 type LocaleParams = { locale?: string }
+
+export async function generateMetadata({
+  params,
+}: {
+  params: Promise<LocaleParams> | LocaleParams | undefined
+}): Promise<Metadata> {
+  const locale = (params ? (await params).locale : undefined) ?? defaultLocale
+  return {
+    alternates: getLocaleAlternates(
+      (locales as readonly string[]).includes(locale) ? locale : defaultLocale,
+      '/',
+    ),
+  }
+}
 
 export default async function Home({
   params,
