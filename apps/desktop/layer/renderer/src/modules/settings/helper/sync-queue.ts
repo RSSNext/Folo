@@ -283,6 +283,10 @@ class SettingSyncQueue {
     this.teardown()
 
     this.load()
+    // Changes left from the last session are only sent by a flush
+    if (this.queue.length > 0 && this.getCurrentUserId()) {
+      this.scheduleFlush()
+    }
     this.uploadLocalSettingsOnce()
 
     const d1 = EventBus.subscribe("SETTING_CHANGE_EVENT", (data) => {
@@ -433,6 +437,10 @@ class SettingSyncQueue {
       date: now,
     })
 
+    this.scheduleFlush()
+  }
+
+  private scheduleFlush() {
     if (this.flushScheduled) {
       return
     }
@@ -441,10 +449,16 @@ class SettingSyncQueue {
     this.chain = this.chain
       .finally(() => sleep(this.threshold))
       .finally(async () => {
+        const flushedItems = new Set(this.queue)
         try {
           await this.flush()
         } finally {
           this.flushScheduled = false
+          // A change made while the flush awaited the server was not part of it, and its
+          // enqueue skipped scheduling because this flush was still pending
+          if (this.queue.some((item) => !flushedItems.has(item))) {
+            this.scheduleFlush()
+          }
         }
       })
   }
