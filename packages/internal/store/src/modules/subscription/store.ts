@@ -251,10 +251,18 @@ class SubscriptionActions implements Hydratable, Resetable {
 
   resetByView(view: FeedViewType) {
     immerSet((draft) => {
+      // Only this view is refetched, so the other views keep their subscriptions, and the ones
+      // the server no longer returns for this view are dropped
+      for (const [storeId, subscription] of Object.entries(draft.data)) {
+        if (subscription.view !== view) continue
+        delete draft.data[storeId]
+        draft.subscriptionIdSet.delete(getSubscriptionDBId(subscription))
+        if (subscription.feedId) draft.feedIdByView[FeedViewType.All]!.delete(subscription.feedId)
+        if (subscription.listId) draft.listIdByView[FeedViewType.All]!.delete(subscription.listId)
+      }
       draft.feedIdByView[view] = new Set()
       draft.listIdByView[view] = new Set()
       draft.categories[view] = new Set()
-      draft.subscriptionIdSet = new Set()
     })
   }
 

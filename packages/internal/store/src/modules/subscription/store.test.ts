@@ -7,10 +7,11 @@ import type { FollowAPI } from "../../types"
 import { useListStore } from "../list/store"
 import type { ListModel } from "../list/types"
 import { useUnreadStore } from "../unread/store"
-import { subscriptionSyncService, useSubscriptionStore } from "./store"
+import { subscriptionActions, subscriptionSyncService, useSubscriptionStore } from "./store"
 import type { SubscriptionModel } from "./types"
 
 const mocks = vi.hoisted(() => ({
+  upsertSubscriptionRows: vi.fn(),
   deleteSubscriptions: vi.fn(),
   deleteSubscriptionRows: vi.fn(),
   unreadUpsertMany: vi.fn(),
@@ -30,6 +31,7 @@ vi.mock("@follow/database/services/unread", () => ({
 
 vi.mock("@follow/database/services/subscription", () => ({
   SubscriptionService: {
+    upsertMany: mocks.upsertSubscriptionRows,
     delete: mocks.deleteSubscriptionRows,
     patch: mocks.patch,
     patchMany: mocks.patchMany,
@@ -89,6 +91,7 @@ describe("subscriptionSyncService", () => {
     mocks.update.mockResolvedValue({})
     mocks.deleteSubscriptions.mockResolvedValue({})
     mocks.deleteSubscriptionRows.mockResolvedValue(undefined)
+    mocks.upsertSubscriptionRows.mockResolvedValue(undefined)
     mocks.unreadUpsertMany.mockResolvedValue(undefined)
     mocks.patch.mockResolvedValue(undefined)
     queryClientContext.provide(new QueryClient())
@@ -199,5 +202,26 @@ describe("subscriptionSyncService", () => {
     await subscriptionSyncService.unsubscribe("list1")
     await vi.waitFor(() => expect(useUnreadStore.getState().data.listOnly).toBe(0))
     expect(useUnreadStore.getState().data.direct).toBe(3)
+  })
+
+  test("refetching one view keeps the other views' subscriptions", async () => {
+    seed([
+      createSubscription("article", FeedViewType.Articles, null),
+      createSubscription("dropped", FeedViewType.Articles, null),
+      createSubscription("picture", FeedViewType.Pictures, null),
+    ])
+    useSubscriptionStore.setState({
+      subscriptionIdSet: new Set(["feed/article", "feed/dropped", "feed/picture"]),
+    })
+
+    await subscriptionActions.upsertMany(
+      [createSubscription("article", FeedViewType.Articles, null)],
+      { resetBeforeUpsert: FeedViewType.Articles },
+    )
+
+    const state = useSubscriptionStore.getState()
+    expect([...state.subscriptionIdSet].sort()).toEqual(["feed/article", "feed/picture"])
+    expect(Object.keys(state.data).sort()).toEqual(["article", "picture"])
+    expect([...state.feedIdByView[FeedViewType.All]].sort()).toEqual(["article", "picture"])
   })
 })
