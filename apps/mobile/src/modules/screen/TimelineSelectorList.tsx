@@ -24,6 +24,8 @@ type Props = {
   isRefetching: boolean
   onResetScrollSignalConsumed?: (signal: number) => void
   resetScrollSignal?: number
+  /** Why an empty timeline has no entries, when loading them failed */
+  emptyError?: Error | null
 }
 
 const usePendingScrollReset = (
@@ -70,6 +72,7 @@ export const TimelineSelectorList = ({
   isRefetching,
   onResetScrollSignalConsumed,
   resetScrollSignal,
+  emptyError,
   ...props
 }: Props &
   Omit<FlashListProps<any>, "onRefresh"> & { ref?: React.Ref<FlashListRef<any> | null> }) => {
@@ -159,6 +162,7 @@ export const TimelineSelectorList = ({
         refreshControl={refreshControl}
         headerHeight={headerHeight}
         tabBarHeight={tabBarHeight}
+        error={emptyError}
       />
     )
   }
@@ -200,6 +204,7 @@ export const TimelineSelectorMasonryList = ({
   isRefetching,
   onResetScrollSignalConsumed,
   resetScrollSignal,
+  emptyError,
   ...props
 }: Props &
   Omit<FlashListProps<any>, "onRefresh"> & {
@@ -284,6 +289,7 @@ export const TimelineSelectorMasonryList = ({
         refreshControl={refreshControl}
         headerHeight={headerHeight}
         tabBarHeight={tabBarHeight}
+        error={emptyError}
       />
     )
   }
@@ -319,10 +325,12 @@ const RefreshableEmptyList = ({
   refreshControl,
   headerHeight,
   tabBarHeight,
+  error,
 }: {
   refreshControl: React.ReactElement<React.ComponentProps<typeof RefreshControl>>
   headerHeight: number
   tabBarHeight: number
+  error?: Error | null
 }) => (
   <ScrollView
     className="flex-1"
@@ -334,6 +342,6 @@ const RefreshableEmptyList = ({
     automaticallyAdjustContentInsets={false}
     refreshControl={refreshControl}
   >
-    <EntryListEmpty />
+    <EntryListEmpty error={error} onRetry={refreshControl.props.onRefresh} />
   </ScrollView>
 )

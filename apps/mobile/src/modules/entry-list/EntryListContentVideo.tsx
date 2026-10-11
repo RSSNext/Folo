@@ -45,6 +45,7 @@ export const EntryListContentVideo = ({
   useImperativeHandle(forwardRef, () => ref.current!)
   const isTablet = useIsTabletLayout()
   const {
+    error: entriesError,
     fetchNextPage,
     refetch,
     isRefetching,
@@ -130,6 +131,7 @@ export const EntryListContentVideo = ({
     <TimelineSelectorMasonryList
       ref={ref}
       isRefetching={isRefetching}
+      emptyError={entriesError}
       onResetScrollSignalConsumed={onResetScrollSignalConsumed}
       resetScrollSignal={resetScrollSignal}
       data={entryIds}

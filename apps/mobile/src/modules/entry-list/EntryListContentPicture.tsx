@@ -53,6 +53,7 @@ export const EntryListContentPicture = ({
 
   useImperativeHandle(forwardRef, () => ref.current!)
   const {
+    error: entriesError,
     fetchNextPage,
     refetch,
     isRefetching,
@@ -124,6 +125,7 @@ export const EntryListContentPicture = ({
     <TimelineSelectorMasonryList
       ref={ref}
       isRefetching={isRefetching}
+      emptyError={entriesError}
       onResetScrollSignalConsumed={onResetScrollSignalConsumed}
       resetScrollSignal={resetScrollSignal}
       data={entryIds}

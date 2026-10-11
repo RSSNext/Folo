@@ -49,6 +49,7 @@ export const EntryListContentArticle = ({
   const readableItemStyle = useReadableContainerStyle(860, 16)
 
   const {
+    error: entriesError,
     fetchNextPage,
     isFetching,
     isFetchingNextPage,
@@ -136,6 +137,7 @@ export const EntryListContentArticle = ({
       ref={ref}
       onRefresh={refetch}
       isRefetching={isRefetching}
+      emptyError={entriesError}
       onResetScrollSignalConsumed={onResetScrollSignalConsumed}
       resetScrollSignal={resetScrollSignal}
       data={entryIds}

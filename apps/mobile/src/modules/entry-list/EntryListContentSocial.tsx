@@ -35,6 +35,7 @@ export const EntryListContentSocial = ({
   suspendMarkRead?: boolean
 }) => {
   const {
+    error: entriesError,
     fetchNextPage,
     isFetching,
     isFetchingNextPage,
@@ -125,6 +126,7 @@ export const EntryListContentSocial = ({
         refetch()
       }}
       isRefetching={isRefetching}
+      emptyError={entriesError}
       onResetScrollSignalConsumed={onResetScrollSignalConsumed}
       resetScrollSignal={contentResetScrollSignal}
       data={entryIds}
