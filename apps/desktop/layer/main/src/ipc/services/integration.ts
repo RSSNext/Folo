@@ -15,15 +15,11 @@ import { createObsidianFrontmatter } from "./obsidian-frontmatter"
 // https://datatracker.ietf.org/doc/html/rfc2396
 // eslint-disable-next-line no-control-regex
 const INVALID_CHAR_REGEX = /[\u0000-\u001F"#$%&*+,:;<=>?[\]^`{|}\u007F/\\]/g
-const DRIVE_LETTER_REGEX = /^[a-z]:/i
 
+// The name is an entry title, not a path, so no `:` is kept, not even after a leading letter
+// that looks like a drive: on Windows it would write to an NTFS alternate data stream
 function sanitizeFileName(name: string): string {
-  const match = DRIVE_LETTER_REGEX.exec(name)
-  const driveLetter = match ? match[0] : ""
-
-  // A `:` is only allowed as part of a windows drive letter (ex: C:\foo)
-  // Otherwise, avoid them because they can refer to NTFS alternate data streams.
-  return driveLetter + name.slice(driveLetter.length).replaceAll(INVALID_CHAR_REGEX, "_")
+  return name.replaceAll(INVALID_CHAR_REGEX, "_")
 }
 
 // Input types
