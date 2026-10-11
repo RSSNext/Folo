@@ -16,7 +16,19 @@ export interface KeyRecorderProps {
 
 export const KeyRecorder: FC<KeyRecorderProps> = ({ onChange, onBlur }) => {
   const { t } = useTranslation("shortcuts")
-  const { currentKeys } = useShortcutRecorder()
+  const commitRef = useRef<() => void>(() => {})
+  const { currentKeys } = useShortcutRecorder({
+    // Escape leaves without changing the shortcut, Enter keeps what was recorded
+    onCancel: () => onBlur(),
+    onCommit: () => commitRef.current(),
+  })
+  const commit = () => {
+    if (currentKeys.length > 0) {
+      onChange(currentKeys)
+    }
+    onBlur()
+  }
+  commitRef.current = commit
   const setGlobalScope = useReplaceGlobalFocusableScope()
 
   const ref = useRef<HTMLDivElement>(null)
@@ -29,18 +41,23 @@ export const KeyRecorder: FC<KeyRecorderProps> = ({ onChange, onBlur }) => {
       rollback()
     }
   }, [setGlobalScope])
-  useOnClickOutside(ref as RefObject<HTMLElement>, () => {
-    if (currentKeys.length > 0) {
-      onChange(currentKeys)
-    }
-    onBlur()
-  })
+  useOnClickOutside(ref as RefObject<HTMLElement>, commit)
   return (
     <div
       className="relative flex size-full items-center justify-center px-1 text-xs text-text-secondary"
       tabIndex={-1}
       role="textbox"
       ref={ref}
+      // Clicking the field again confirms the recording instead of toggling it away
+      onClick={(e) => {
+        e.stopPropagation()
+        commit()
+      }}
+      // Moving the focus elsewhere keeps what was recorded
+      onBlur={(e) => {
+        if (e.relatedTarget instanceof Node && e.currentTarget.contains(e.relatedTarget)) return
+        commit()
+      }}
     >
       {currentKeys.length > 0 ? (
         <div className="pr-4">
@@ -109,16 +126,40 @@ const MODIFIER_KEYS_SET = new Set<string>(Object.values(MODIFIER_KEYS_MAP))
 
 const F_KEY_REGEX = /^F(?:[1-9]|1[0-2])$/
 
-const useShortcutRecorder = () => {
+const useShortcutRecorder = ({
+  onCancel,
+  onCommit,
+}: {
+  onCancel: () => void
+  onCommit: () => void
+}) => {
   const [currentKeys, setCurrentKeys] = useState<string[]>([])
+  const currentKeysRef = useRef(currentKeys)
+  currentKeysRef.current = currentKeys
+  const onCancelRef = useRef(onCancel)
+  onCancelRef.current = onCancel
+  const onCommitRef = useRef(onCommit)
+  onCommitRef.current = onCommit
 
   useEffect(() => {
     const handleKeyDown = (event: KeyboardEvent) => {
+      const { altKey, ctrlKey, metaKey, shiftKey, key: eventKey } = event
+      const hasModifier = altKey || ctrlKey || metaKey || shiftKey
+
+      // Tab is recorded too, as some shortcuts use it; Escape and Enter let keyboard users leave
       event.preventDefault()
       event.stopPropagation()
       event.stopImmediatePropagation()
 
-      const { altKey, ctrlKey, metaKey, shiftKey, key: eventKey } = event
+      if (!hasModifier && eventKey === "Escape") {
+        onCancelRef.current()
+        return
+      }
+      // Enter confirms a recorded shortcut; with nothing recorded yet it is recorded as a key
+      if (!hasModifier && eventKey === "Enter" && currentKeysRef.current.length > 0) {
+        onCommitRef.current()
+        return
+      }
 
       let mainKeyPressed = eventKey
 
@@ -188,9 +229,11 @@ const useShortcutRecorder = () => {
       setCurrentKeys(sortShortcutKeys(currentCombination))
     }
 
-    window.addEventListener("keydown", handleKeyDown)
+    // Capture on the window, ahead of the dialog's own Escape handling on the document, so
+    // Escape cancels the recording instead of closing the settings
+    window.addEventListener("keydown", handleKeyDown, true)
     return () => {
-      window.removeEventListener("keydown", handleKeyDown)
+      window.removeEventListener("keydown", handleKeyDown, true)
     }
   }, [setCurrentKeys])
   return { currentKeys }

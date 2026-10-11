@@ -190,8 +190,9 @@ const ShortcutInputWrapper = memo(
               !allowCustomize && "pointer-events-none",
             )}
             onClick={() => {
-              if (allowCustomize) {
-                onEditingChange(!isEditing)
+              // While recording, the recorder handles clicks and confirms the recording
+              if (allowCustomize && !isEditing) {
+                onEditingChange(true)
               }
             }}
           >
