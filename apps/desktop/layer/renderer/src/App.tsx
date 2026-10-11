@@ -48,21 +48,24 @@ const AppLayer = () => {
   }, [appIsReady])
 
   useEffect(() => {
+    // Measured once, when the app first renders its content instead of the skeleton
+    if (!appIsReady) return
     const doneTime = Math.trunc(performance.now())
     tracker.uiRenderInit(doneTime)
     appLog("App is ready", `${doneTime}ms`)
-
-    if (isMobile()) {
-      const handler = (e: MouseEvent) => {
-        e.preventDefault()
-      }
-      document.addEventListener("contextmenu", handler)
-
-      return () => {
-        document.removeEventListener("contextmenu", handler)
-      }
-    }
   }, [appIsReady])
+
+  useEffect(() => {
+    if (!isMobile()) return
+    const handler = (e: MouseEvent) => {
+      e.preventDefault()
+    }
+    document.addEventListener("contextmenu", handler)
+
+    return () => {
+      document.removeEventListener("contextmenu", handler)
+    }
+  }, [])
 
   return appIsReady ? <Outlet /> : <AppSkeleton />
 }
