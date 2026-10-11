@@ -4,6 +4,7 @@ import { useColor } from "react-native-uikit-colors"
 
 import { Text } from "@/src/components/ui/typography/Text"
 import { AlertCuteFiIcon } from "@/src/icons/alert_cute_fi"
+import { getFetchErrorMessage } from "@/src/lib/error-parser"
 
 import { MonoText } from "../ui/typography/MonoText"
 
@@ -23,7 +24,7 @@ export const ListErrorView = ({ error, resetError }: { error: Error; resetError:
           {t("error_screen.list_try_later")}
         </Text>
         <MonoText className="mb-4 text-center text-base text-secondary-label">
-          {error.message || t("error_screen.unknown")}
+          {getFetchErrorMessage(error) || t("error_screen.unknown")}
         </MonoText>
 
         <Pressable className="w-full rounded-xl bg-accent px-6 py-3" onPress={resetError}>

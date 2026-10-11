@@ -11,6 +11,7 @@ import { useTranslation } from "react-i18next"
 import { StyleSheet, View } from "react-native"
 import { z } from "zod"
 
+import { ListErrorView } from "@/src/components/errors/ListErrorView"
 import { HeaderSubmitTextButton } from "@/src/components/layouts/header/HeaderElements"
 import {
   NavigationBlurEffectHeaderView,
@@ -34,7 +35,7 @@ import { FeedViewSelector } from "../feed/view-selector"
 export const FollowList = (props: { id: string }) => {
   const { id } = props
   const list = useListById(id)
-  const { isLoading } = useQuery({
+  const { isFetching, error, refetch } = useQuery({
     queryKey: ["list", id],
     queryFn: () =>
       listSyncServices.fetchListById({
@@ -42,12 +43,17 @@ export const FollowList = (props: { id: string }) => {
       }),
     enabled: !list,
   })
-  if (isLoading) {
-    return (
-      <View className="mt-24 flex-1 flex-row items-start justify-center">
-        <PlatformActivityIndicator />
-      </View>
-    )
+  if (!list) {
+    if (isFetching) {
+      return (
+        <View className="mt-24 flex-1 flex-row items-start justify-center">
+          <PlatformActivityIndicator />
+        </View>
+      )
+    }
+    if (error) {
+      return <ListErrorView error={error} resetError={() => void refetch()} />
+    }
   }
   return <Impl id={id} />
 }

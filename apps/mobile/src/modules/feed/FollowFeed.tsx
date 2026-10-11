@@ -12,6 +12,7 @@ import { Alert, View } from "react-native"
 import { useSafeAreaInsets } from "react-native-safe-area-context"
 import { z } from "zod"
 
+import { ListErrorView } from "@/src/components/errors/ListErrorView"
 import { HeaderSubmitTextButton } from "@/src/components/layouts/header/HeaderElements"
 import {
   NavigationBlurEffectHeaderView,
@@ -28,7 +29,6 @@ import { Text } from "@/src/components/ui/typography/Text"
 import { SafeAlertCuteReIcon } from "@/src/icons/safe_alert_cute_re"
 import { SafetyCertificateCuteReIcon } from "@/src/icons/safety_certificate_cute_re"
 import { User3CuteReIcon } from "@/src/icons/user_3_cute_re"
-import { sanitizeErrorMessage } from "@/src/lib/error-message"
 import { toastFetchError } from "@/src/lib/error-parser"
 import { useCanDismiss, useNavigation } from "@/src/lib/navigation/hooks"
 import { useSetModalScreenOptions } from "@/src/lib/navigation/ScreenOptionsContext"
@@ -46,31 +46,33 @@ const formSchema = z.object({
 })
 type FollowFeedFormInput = z.input<typeof formSchema>
 type FollowFeedFormOutput = z.output<typeof formSchema>
+const LoadingIndicator = () => (
+  <View className="mt-24 flex-1 flex-row items-start justify-center">
+    <PlatformActivityIndicator />
+  </View>
+)
+const FeedNotFound = ({ id }: { id: string }) => {
+  const { t } = useTranslation()
+  return <Text className="text-label">{t("feed.not_found", { id })}</Text>
+}
 export function FollowFeed(props: { id: string }) {
   const { id } = props
   const feed = useFeedById(id as string)
-  const { data } = usePrefetchFeed(id as string)
+  const { data, error, isFetching, refetch } = usePrefetchFeed(id as string)
   if (!feed) {
-    return (
-      <View className="mt-24 flex-1 flex-row items-start justify-center">
-        <PlatformActivityIndicator />
-      </View>
-    )
+    if (isFetching) return <LoadingIndicator />
+    if (error) return <ListErrorView error={error} resetError={() => void refetch()} />
+    return <FeedNotFound id={id} />
   }
   return <FollowImpl feedId={id} defaultView={data?.analytics?.view ?? undefined} />
 }
 export function FollowUrl(props: { url: string }) {
   const { url } = props
-  const { isLoading, data, error } = usePrefetchFeedByUrl(url)
-  if (isLoading) {
-    return (
-      <View className="mt-24 flex-1 flex-row items-start justify-center">
-        <PlatformActivityIndicator />
-      </View>
-    )
-  }
+  const { isFetching, data, error, refetch } = usePrefetchFeedByUrl(url)
   if (!data) {
-    return <Text className="text-label">{sanitizeErrorMessage(error?.message ?? "")}</Text>
+    if (isFetching) return <LoadingIndicator />
+    if (error) return <ListErrorView error={error} resetError={() => void refetch()} />
+    return <FeedNotFound id={url} />
   }
   return (
     <FollowImpl
@@ -183,7 +185,7 @@ function FollowImpl(props: { feedId: string; defaultView?: FeedViewType }) {
     })
   }, [isDirty, setScreenOptions])
   if (!feed?.id) {
-    return <Text className="text-label">{t("feed.not_found", { id })}</Text>
+    return <FeedNotFound id={id} />
   }
   return (
     <SafeNavigationScrollView
