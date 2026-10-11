@@ -195,9 +195,14 @@ export function Component() {
         </div>
 
         <div className="grid gap-3 sm:grid-cols-1 lg:grid-cols-2">
-          {listData.feedIds?.slice(0, SIZE).map((feedId: string) => (
-            <FeedRow feed={feedMap[feedId]!} key={feedId} />
-          ))}
+          {/* A list can still name feeds that were deleted since, which have no data */}
+          {listData.feedIds
+            ?.map((feedId: string) => feedMap[feedId])
+            .filter((feed): feed is FeedSchema => !!feed)
+            .slice(0, SIZE)
+            .map((feed) => (
+              <FeedRow feed={feed} key={feed.id} />
+            ))}
         </div>
 
         {"feedCount" in list.data && list.data.feedCount > SIZE && (
