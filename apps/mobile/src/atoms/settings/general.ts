@@ -55,9 +55,9 @@ export function useHideAllReadSubscriptions() {
   return hideAllReadSubscriptions && unreadOnly
 }
 
-export function getHideAllReadSubscriptions() {
-  const { hideAllReadSubscriptions, unreadOnly } = getGeneralSettings()
-  return hideAllReadSubscriptions && unreadOnly
+// Mark-all-read leaves the entries of private subscriptions alone when the timeline hides them
+export function getHidePrivateSubscriptionsInTimeline() {
+  return getGeneralSettings().hidePrivateSubscriptionsInTimeline
 }
 
 export function useEffectiveEntrySortOrder({ isTimelineSource }: { isTimelineSource: boolean }) {
