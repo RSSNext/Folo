@@ -166,9 +166,13 @@ export const ListScreen: NavigationControllerView<{
                     destructiveButtonIndex: 0,
                   },
                   async (index) => {
-                    if (index === 0) {
+                    if (index !== 0) return
+                    try {
                       await listSyncServices.deleteList(listId)
                       navigation.dismiss()
+                    } catch (error) {
+                      // The list is restored locally, so the user has to know the delete failed
+                      toastFetchError(error as Error)
                     }
                   },
                 )
