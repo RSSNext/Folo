@@ -3,8 +3,9 @@ import type { PrimitiveAtom } from "jotai"
 import { atom, useAtomValue, useSetAtom } from "jotai"
 import type { FC, ReactNode } from "react"
 import { memo, use, useCallback, useMemo, useRef } from "react"
+import { useTranslation } from "react-i18next"
 import type { NativeSyntheticEvent, StyleProp, ViewStyle } from "react-native"
-import { StyleSheet, View } from "react-native"
+import { Alert, StyleSheet, View } from "react-native"
 import { useSharedValue } from "react-native-reanimated"
 import type { ScreenStackHeaderConfigProps, StackPresentationTypes } from "react-native-screens"
 import {
@@ -122,6 +123,40 @@ export const WrappedScreenItem: FC<
       [navigation, screenId],
     )
 
+    // A screen sets preventNativeDismiss while it has unsaved changes, so a swipe or backdrop tap
+    // only leaves once the user confirms
+    const { t } = useTranslation()
+    const handleNativeDismissCancelled = useCallback(
+      (
+        e: NativeSyntheticEvent<{
+          dismissCount: number
+        }>,
+      ) => {
+        const { dismissCount } = e.nativeEvent
+        if (dismissCount <= 0) return
+        Alert.alert(
+          t("navigation.unsaved_changes.title"),
+          t("navigation.unsaved_changes.description"),
+          [
+            {
+              text: t("words.cancel", { ns: "common" }),
+              style: "cancel",
+            },
+            {
+              text: t("navigation.unsaved_changes.exit"),
+              style: "destructive",
+              onPress: () => {
+                for (let i = 0; i < dismissCount; i++) {
+                  navigation.__internal_dismiss(screenId)
+                }
+              },
+            },
+          ],
+        )
+      },
+      [navigation, screenId, t],
+    )
+
     const ref = useRef<View>(null)
 
     return (
@@ -147,7 +182,7 @@ export const WrappedScreenItem: FC<
             {...screenOptionsProp}
             {...resolveScreenOptions(screenOptionsFromCtx)}
             onDismissed={handleDismiss}
-            onNativeDismissCancelled={handleDismiss}
+            onNativeDismissCancelled={handleNativeDismissCancelled}
           >
             <Header />
             <ErrorBoundary fallbackRender={ScreenErrorScreen}>{children}</ErrorBoundary>
