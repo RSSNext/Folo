@@ -42,6 +42,7 @@ export const EntryListContentSocial = ({
     isRefetching,
     hasNextPage,
     isReady,
+    fetchedTime,
   } = useEntries({
     viewId: view,
     active,
@@ -68,11 +69,11 @@ export const EntryListContentSocial = ({
         <EntryItemSkeleton />
       ) : (
         <View>
-          <EntryListFooter />
+          <EntryListFooter fetchedTime={fetchedTime} />
           {hasEndSpacer && <EntryListEndScrollSpacer />}
         </View>
       ),
-    [hasEndSpacer, hasNextPage],
+    [hasEndSpacer, hasNextPage, fetchedTime],
   )
 
   const { onViewableItemsChanged, onScroll, viewableItems } = useOnViewableItemsChanged({

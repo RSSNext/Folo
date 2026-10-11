@@ -186,12 +186,15 @@ function useRemoteEntries(props?: UseEntriesProps): UseEntriesReturn {
     subscribed: props?.active !== false,
   })
 
+  // When the list was last loaded from its first page, which is what the footer marks as read
+  // before. Loading the next page shows older entries and must not move it.
+  const isFetchingFirstPage = query.isFetching && !query.isFetchingNextPage
   const [fetchedTime, setFetchedTime] = useState<number>()
   useEffect(() => {
-    if (!query.isFetching) {
+    if (!isFetchingFirstPage) {
       setFetchedTime(Date.now())
     }
-  }, [query.isFetching])
+  }, [isFetchingFirstPage])
 
   const refetch = useCallback(async () => void query.refetch(), [query])
   const fetchNextPage = useCallback(async () => void query.fetchNextPage(), [query])
