@@ -1,4 +1,5 @@
 import { EmptyIcon } from "@follow/components/icons/empty.jsx"
+import { Button } from "@follow/components/ui/button/index.js"
 import { useScrollViewElement } from "@follow/components/ui/scroll-area/hooks.js"
 import type { FeedViewType } from "@follow/constants"
 import { useTypeScriptHappyCallback } from "@follow/hooks"
@@ -24,8 +25,16 @@ import { getInitialScrollOffset, shouldApplyScrollResetSignal } from "./scroll-r
 
 export const EntryEmptyList = ({
   ref,
+  error,
+  isRetrying,
+  onRetry,
   ...props
-}: HTMLMotionProps<"div"> & { ref?: React.Ref<HTMLDivElement | null> }) => {
+}: HTMLMotionProps<"div"> & {
+  ref?: React.Ref<HTMLDivElement | null>
+  error?: unknown
+  isRetrying?: boolean
+  onRetry?: () => void
+}) => {
   const unreadOnly = useGeneralSettingKey("unreadOnly")
   const { t } = useTranslation()
   return (
@@ -34,7 +43,17 @@ export const EntryEmptyList = ({
       {...props}
       ref={ref}
     >
-      {unreadOnly ? (
+      {error != null ? (
+        <div className="flex -translate-y-6 flex-col items-center justify-center gap-3">
+          <i className="i-mgc-warning-cute-re text-3xl text-red" />
+          <span className="text-base">{t("entry_list.load_failed")}</span>
+          {onRetry && (
+            <Button variant="outline" isLoading={isRetrying} onClick={onRetry}>
+              {t("retry", { ns: "common" })}
+            </Button>
+          )}
+        </div>
+      ) : unreadOnly ? (
         <>
           <i className="i-mgc-celebrate-cute-re -mt-11 text-3xl" />
           <span className="text-base">{t("entry_list.zero_unread")}</span>

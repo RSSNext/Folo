@@ -250,6 +250,7 @@
   "entry_content.video_unavailable": "Video content not available",
   "entry_list.already_at_first_entry": "You are already at the first entry",
   "entry_list.already_at_last_entry": "You are already at the last entry",
+  "entry_list.load_failed": "Failed to load entries",
   "entry_list.zero_unread": "Zero Unread",
   "entry_list_header.ai_timeline": "AI timeline",
   "entry_list_header.ai_timeline_loading": "Reordering timeline with AI...",

@@ -250,6 +250,7 @@
   "entry_content.video_unavailable": "影片內容無法使用",
   "entry_list.already_at_first_entry": "已經是第一個條目了",
   "entry_list.already_at_last_entry": "已經是最後一個條目了",
+  "entry_list.load_failed": "載入條目失敗",
   "entry_list.zero_unread": "全部已讀",
   "entry_list_header.ai_timeline": "AI 時間線",
   "entry_list_header.ai_timeline_loading": "正在用 AI 重新排序時間線…",

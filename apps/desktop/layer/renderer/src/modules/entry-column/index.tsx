@@ -280,7 +280,11 @@ function EntryColumnContent() {
           state.isLoading ? (
             <EntryItemSkeleton view={view} />
           ) : (
-            <EntryEmptyList />
+            <EntryEmptyList
+              error={state.error}
+              isRetrying={state.isFetching}
+              onRetry={actions.refetch}
+            />
           )
         ) : (
           <ListComponent

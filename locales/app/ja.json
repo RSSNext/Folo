@@ -250,6 +250,7 @@
   "entry_content.video_unavailable": "動画コンテンツを利用できません",
   "entry_list.already_at_first_entry": "これが最初のエントリーです",
   "entry_list.already_at_last_entry": "これが最後のエントリーです",
+  "entry_list.load_failed": "エントリーの読み込みに失敗しました",
   "entry_list.zero_unread": "未読ゼロ",
   "entry_list_header.ai_timeline": "AIタイムライン",
   "entry_list_header.ai_timeline_loading": "AI でタイムラインを並び替えています…",

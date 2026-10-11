@@ -102,6 +102,15 @@ const useRemoteEntries = (): UseEntriesReturn => {
   const fetchNextPage = useCallback(async () => void query.fetchNextPage(), [query])
 
   if (!query.data || query.isLoading) {
+    if (query.isError) {
+      return {
+        ...fallbackReturn,
+        refetch,
+        isLoading: query.isFetching,
+        isFetching: query.isFetching,
+        error: query.error,
+      }
+    }
     return fallbackReturn
   }
   return {
@@ -342,15 +351,20 @@ export const useEntriesByView = ({ onReset }: { onReset?: () => void }) => {
 
     type: remoteQuery.isReady ? ("remote" as const) : ("local" as const),
     refetch: useCallback(() => {
-      const promise = query.refetch()
+      // Until the remote query has succeeded the local query is shown, but a
+      // refresh still has to retry the remote request.
+      const promise = remoteQuery.isReady
+        ? remoteQuery.refetch()
+        : Promise.all([remoteQuery.refetch(), localQuery.refetch()]).then(() => {})
       void unreadSyncService.refresh({ calibrate: true })
       return promise
-    }, [query]),
+    }, [localQuery, remoteQuery]),
     entriesIds: entryIds,
     groupedCounts,
     isFetching: remoteQuery.isFetching,
     isFetchingNextPage: remoteQuery.isFetchingNextPage,
     isLoading: remoteQuery.isLoading,
+    error: remoteQuery.error,
   }
 }
 
