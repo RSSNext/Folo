@@ -146,6 +146,8 @@ const FeedCell = (props: { feedId: string; isSelected: boolean }) => {
   if (!feed) return null
   return (
     <ItemPressable
+      accessibilityRole="checkbox"
+      accessibilityState={{ checked: currentSelected }}
       onPress={() => {
         const has = nextSelectedFeedIdRef.current.has(feed.id)
         if (has) {
