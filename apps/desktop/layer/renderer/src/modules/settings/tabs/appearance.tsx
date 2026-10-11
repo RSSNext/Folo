@@ -588,6 +588,18 @@ const ACCENT_COLORS: AccentColor[] = [
   "gray",
 ]
 
+// Names for screen readers: the swatches only show their color
+const ACCENT_COLOR_LABEL_KEYS = {
+  orange: "appearance.accent_color.colors.orange",
+  blue: "appearance.accent_color.colors.blue",
+  green: "appearance.accent_color.colors.green",
+  purple: "appearance.accent_color.colors.purple",
+  pink: "appearance.accent_color.colors.pink",
+  red: "appearance.accent_color.colors.red",
+  yellow: "appearance.accent_color.colors.yellow",
+  gray: "appearance.accent_color.colors.gray",
+} as const
+
 const CustomColorPicker = ({
   value,
   onChange,
@@ -823,6 +835,10 @@ const AccentColorSelector = () => {
               <button
                 key={color}
                 type="button"
+                aria-label={t(
+                  ACCENT_COLOR_LABEL_KEYS[color as keyof typeof ACCENT_COLOR_LABEL_KEYS],
+                )}
+                aria-pressed={isSelected}
                 className="group relative flex size-7 items-center justify-center rounded-full transition-all duration-200 hover:scale-110"
                 onClick={() => setUISetting("accentColor", color)}
                 style={{
@@ -857,6 +873,8 @@ const AccentColorSelector = () => {
             <PopoverTrigger asChild>
               <button
                 type="button"
+                aria-label={t("appearance.accent_color.custom")}
+                aria-pressed={isCustomColor}
                 className="group relative flex size-7 items-center justify-center rounded-full transition-all duration-200 hover:scale-110"
                 style={{
                   background: isCustomColor
