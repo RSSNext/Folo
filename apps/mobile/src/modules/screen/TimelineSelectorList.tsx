@@ -269,7 +269,9 @@ export const TimelineSelectorMasonryList = ({
       tintColor={systemFill}
       onRefresh={() => {
         unreadRefetch()
+        void unreadSyncService.refresh({ calibrate: true })
         subscriptionRefetch()
+        Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light)
         onRefresh()
       }}
       refreshing={isRefetching}
