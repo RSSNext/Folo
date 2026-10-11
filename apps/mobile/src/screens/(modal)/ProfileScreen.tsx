@@ -44,6 +44,7 @@ import { Navigation } from "@/src/lib/navigation/Navigation"
 import type { NavigationControllerView } from "@/src/lib/navigation/types"
 import { createLinkShareContent } from "@/src/lib/share"
 import { toast } from "@/src/lib/toast"
+import { selectFeed } from "@/src/modules/screen/atoms"
 import { useShareSubscription } from "@/src/modules/settings/hooks/useShareSubscription"
 import { UserHeaderBanner } from "@/src/modules/settings/UserHeaderBanner"
 import { ItemSeparator } from "@/src/modules/subscription/ItemSeparator"
@@ -288,11 +289,13 @@ const renderListItems = ({ item }: { item: PickedListModel }) => (
       paddingHorizontal: GROUPED_LIST_ITEM_PADDING,
     }}
     onPress={() => {
-      if (getSubscriptionById(item.id))
+      if (getSubscriptionById(item.id)) {
+        // FeedScreen shows the selected list, not the one it is pushed with
+        selectFeed({ type: "list", listId: item.id })
         Navigation.rootNavigation.pushControllerView(FeedScreen, {
           feedId: item.id,
         })
-      else {
+      } else {
         Navigation.rootNavigation.pushControllerView(FollowScreen, {
           type: "list",
           id: item.id,
@@ -332,11 +335,12 @@ const renderFeedItems = ({ item }: { item: PickedFeedModel }) => (
         paddingHorizontal: GROUPED_LIST_ITEM_PADDING,
       }}
       onPress={() => {
-        if (getSubscriptionById(item.id))
+        if (getSubscriptionById(item.id)) {
+          selectFeed({ type: "feed", feedId: item.id })
           Navigation.rootNavigation.pushControllerView(FeedScreen, {
             feedId: item.id,
           })
-        else {
+        } else {
           Navigation.rootNavigation.pushControllerView(FollowScreen, {
             type: "feed",
             id: item.id,
