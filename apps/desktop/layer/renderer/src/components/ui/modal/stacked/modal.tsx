@@ -25,7 +25,7 @@ import {
 } from "react"
 import { useEventCallback } from "usehooks-ts"
 
-import { useUISettingKey } from "~/atoms/settings/ui"
+import { suppressModalOverlayAtom, useUISettingKey } from "~/atoms/settings/ui"
 import { AppErrorBoundary } from "~/components/common/AppErrorBoundary"
 import { Focusable } from "~/components/common/Focusable"
 import { SafeFragment } from "~/components/common/Fragment"
@@ -125,7 +125,8 @@ export const ModalInternal = memo(function Modal({
     [close],
   )
 
-  const modalSettingOverlay = useUISettingKey("modalOverlay")
+  const suppressModalOverlay = useAtomValue(suppressModalOverlayAtom)
+  const modalSettingOverlay = useUISettingKey("modalOverlay") && !suppressModalOverlay
 
   const dismiss = useCallback(
     (e: SyntheticEvent) => {

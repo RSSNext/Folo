@@ -5,10 +5,11 @@ import { useEntry } from "@follow/store/entry/hooks"
 import { useFeedById } from "@follow/store/feed/hooks"
 import { useIsInbox } from "@follow/store/inbox/hooks"
 import { cn } from "@follow/utils"
+import { useAtomValue } from "jotai"
 import { useEffect, useMemo, useRef, useState } from "react"
 
 import { AIChatPanelStyle, useAIChatPanelStyle, useAIPanelVisibility } from "~/atoms/settings/ai"
-import { useUISettingKey } from "~/atoms/settings/ui"
+import { customCSSPreviewAtom, useUISettingKey } from "~/atoms/settings/ui"
 import { ErrorBoundary } from "~/components/common/ErrorBoundary"
 import { ShadowDOM } from "~/components/common/ShadowDOM"
 import type { TocRef } from "~/components/ui/markdown/components/Toc"
@@ -48,7 +49,9 @@ export const ArticleLayout: React.FC<EntryLayoutProps> = ({
   const [showTranscript, setShowTranscript] = useState(false)
 
   const { content } = useEntryContent(entryId)
-  const customCSS = useUISettingKey("customCSS")
+  const savedCustomCSS = useUISettingKey("customCSS")
+  const customCSSPreview = useAtomValue(customCSSPreviewAtom)
+  const customCSS = customCSSPreview ?? savedCustomCSS
 
   const aiChatPanelStyle = useAIChatPanelStyle()
   const isAIPanelVisible = useAIPanelVisibility()

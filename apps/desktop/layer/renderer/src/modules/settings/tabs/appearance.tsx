@@ -10,6 +10,7 @@ import type { AccentColor } from "@follow/shared/settings/interface"
 import { capitalizeFirstLetter, getOS } from "@follow/utils/utils"
 import dayjs from "dayjs"
 import { throttle } from "es-toolkit/compat"
+import { useSetAtom } from "jotai"
 import { useForceUpdate } from "motion/react"
 import {
   lazy,
@@ -25,8 +26,10 @@ import { useTranslation } from "react-i18next"
 import { bundledThemesInfo } from "shiki/themes"
 
 import {
+  customCSSPreviewAtom,
   getUISettings,
   setUISetting,
+  suppressModalOverlayAtom,
   useUISettingKey,
   useUISettingSelector,
   useUISettingValue,
@@ -386,36 +389,40 @@ const LazyCSSEditor = lazy(() =>
   import("../../editor/css-editor").then((m) => ({ default: m.CSSEditor })),
 )
 
+// The draft is only previewed until it is saved: the saved CSS and the modal overlay setting sync
+// to the account, and a reload with the editor open would otherwise keep a half-written draft.
 const CustomCSSModal = () => {
   const initialCSS = useRef(getUISettings().customCSS)
+  const draftCSSRef = useRef<string | null>(null)
+  const setCustomCSSPreview = useSetAtom(customCSSPreviewAtom)
+  const setSuppressModalOverlay = useSetAtom(suppressModalOverlayAtom)
   const { t } = useTranslation("common")
   const { dismiss } = useCurrentModal()
   useEffect(() => {
     return () => {
-      setUISetting("customCSS", initialCSS.current)
+      setCustomCSSPreview(null)
     }
-  }, [])
+  }, [setCustomCSSPreview])
   useEffect(() => {
     const modal = document.querySelector(`#${SETTING_MODAL_ID}`) as HTMLDivElement
     if (!modal) return
-    const prevOverlay = getUISettings().modalOverlay
-    setUISetting("modalOverlay", false)
+    setSuppressModalOverlay(true)
 
     modal.style.display = "none"
     return () => {
-      setUISetting("modalOverlay", prevOverlay)
+      setSuppressModalOverlay(false)
 
       modal.style.display = ""
     }
-  }, [])
+  }, [setSuppressModalOverlay])
   const [forceUpdate, key] = useForceUpdate()
   return (
     <form
       className="relative flex h-full max-w-full flex-col"
       onSubmit={(e) => {
         e.preventDefault()
-        if (initialCSS.current !== getUISettings().customCSS) {
-          initialCSS.current = getUISettings().customCSS
+        if (draftCSSRef.current !== null && draftCSSRef.current !== initialCSS.current) {
+          setUISetting("customCSS", draftCSSRef.current)
         }
         dismiss()
       }}
@@ -432,7 +439,8 @@ const CustomCSSModal = () => {
           key={key}
           className="h-[70vh] grow rounded-lg border p-3 font-mono lg:h-0"
           onChange={(value) => {
-            setUISetting("customCSS", value)
+            draftCSSRef.current = value
+            setCustomCSSPreview(value)
           }}
         />
       </Suspense>
@@ -443,7 +451,8 @@ const CustomCSSModal = () => {
           onClick={(e) => {
             e.preventDefault()
 
-            setUISetting("customCSS", initialCSS.current)
+            draftCSSRef.current = null
+            setCustomCSSPreview(null)
 
             forceUpdate()
           }}

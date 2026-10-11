@@ -13,7 +13,7 @@ import type { PropsWithChildren } from "react"
 import { memo, Suspense, use, useCallback, useMemo, useRef } from "react"
 import { createPortal } from "react-dom"
 
-import { useUISettingSelector } from "~/atoms/settings/ui"
+import { suppressModalOverlayAtom, useUISettingSelector } from "~/atoms/settings/ui"
 import { m } from "~/components/common/Motion"
 import { resizableOnly } from "~/components/ui/modal"
 import { useModalResizeAndDrag } from "~/components/ui/modal/stacked/internal/use-drag"
@@ -50,10 +50,12 @@ export function SettingModalLayout(props: PropsWithChildren) {
     draggable: true,
   })
 
-  const { draggable, overlay } = useUISettingSelector((state) => ({
+  const { draggable, overlay: settingOverlay } = useUISettingSelector((state) => ({
     draggable: state.modalDraggable,
     overlay: state.modalOverlay,
   }))
+  const suppressModalOverlay = useAtomValue(suppressModalOverlayAtom)
+  const overlay = settingOverlay && !suppressModalOverlay
 
   const measureDragConstraints = useRef((constraints: BoundingBox) => {
     if (getOS() === "Windows") {
