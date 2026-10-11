@@ -5,10 +5,11 @@ import { useEffect } from "react"
 import { useNavigation } from "../lib/navigation/hooks"
 import { FollowScreen } from "../screens/(modal)/FollowScreen"
 
-let previousIntentUrl = ""
-export const resetIntentUrl = () => {
-  previousIntentUrl = ""
-}
+// The launch link can be reported both by getInitialURL and as a url event. Only that echo is
+// skipped: opening the same link again later, like a second "Add to Folo" tap, must work.
+const DUPLICATE_LINK_WINDOW_MS = 2000
+let lastHandledLink: { url: string; at: number } | null = null
+let initialUrlChecked = false
 
 type DeepLinkParams =
   | { id: string | null; type: string | null; url?: string | null; view?: string | null }
@@ -19,11 +20,12 @@ const handleIncomingUrl = (
   incomingUrl: string | null,
   navigation: ReturnType<typeof useNavigation>,
 ) => {
-  if (!incomingUrl || incomingUrl === previousIntentUrl) {
+  if (!incomingUrl) return
+  const now = Date.now()
+  if (lastHandledLink?.url === incomingUrl && now - lastHandledLink.at < DUPLICATE_LINK_WINDOW_MS) {
     return
   }
-
-  previousIntentUrl = incomingUrl
+  lastHandledLink = { url: incomingUrl, at: now }
 
   const searchParams = extractParamsFromDeepLink(incomingUrl)
   if (!searchParams) {
@@ -48,9 +50,13 @@ export function useIntentHandler() {
   const navigation = useNavigation()
 
   useEffect(() => {
-    void Linking.getInitialURL().then((url) => {
-      handleIncomingUrl(url, navigation)
-    })
+    // The launch link stays the initial URL for the whole session
+    if (!initialUrlChecked) {
+      initialUrlChecked = true
+      void Linking.getInitialURL().then((url) => {
+        handleIncomingUrl(url, navigation)
+      })
+    }
 
     const subscription = Linking.addEventListener("url", ({ url }) => {
       handleIncomingUrl(url, navigation)
