@@ -2,7 +2,9 @@ import type { JotaiSyncStorage } from "@follow/utils"
 import { getStorageNS } from "@follow/utils/ns"
 import { parseSafeUrl } from "@follow/utils/utils"
 import { noop } from "foxact/noop"
+import { t } from "i18next"
 import { atomWithStorage, createJSONStorage } from "jotai/utils"
+import { toast } from "sonner"
 
 import { getRouteParams } from "~/hooks/biz/useRouteParams"
 import { createAtomHooks } from "~/lib/jotai"
@@ -144,7 +146,18 @@ export const AudioPlayer = {
           duration: this.audio.duration === Infinity ? 0 : this.audio.duration,
         })
       })
-      .catch(noop)
+      .catch((error: unknown) => {
+        // Interrupted by a later pause or by another source being mounted
+        if (currentActionId !== this.__currentActionId) return
+        if (error instanceof DOMException && error.name === "AbortError") return
+
+        this.teardown()
+        setAudioPlayerAtomValue({
+          ...getAudioPlayerAtomValue(),
+          status: "paused",
+        })
+        toast.error(t("player.load_failed"))
+      })
   },
   teardown() {
     this.currentTimeTimer && clearInterval(this.currentTimeTimer)

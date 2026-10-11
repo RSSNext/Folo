@@ -441,6 +441,7 @@
   "player.exit_full_screen": "退出全螢幕",
   "player.forward_10s": "前進 10 秒",
   "player.full_screen": "全螢幕",
+  "player.load_failed": "音訊播放失敗",
   "player.mute": "靜音",
   "player.open_entry": "開啟條目",
   "player.pause": "暫停",

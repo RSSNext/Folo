@@ -441,6 +441,7 @@
   "player.exit_full_screen": "フルスクリーンを終了",
   "player.forward_10s": "10 秒進む",
   "player.full_screen": "フルスクリーン",
+  "player.load_failed": "オーディオを再生できませんでした",
   "player.mute": "ミュート",
   "player.open_entry": "エントリーを開く",
   "player.pause": "一時停止",

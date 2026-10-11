@@ -441,6 +441,7 @@
   "player.exit_full_screen": "Quitter Plein Écran",
   "player.forward_10s": "Avancer 10s",
   "player.full_screen": "Plein Écran",
+  "player.load_failed": "Impossible de lire l'audio",
   "player.mute": "Muet",
   "player.open_entry": "Ouvrir l'entrée",
   "player.pause": "Pause",

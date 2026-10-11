@@ -441,6 +441,7 @@
   "player.exit_full_screen": "退出全屏",
   "player.forward_10s": "快进 10s",
   "player.full_screen": "进入全屏",
+  "player.load_failed": "音频播放失败",
   "player.mute": "静音",
   "player.open_entry": "跳转到条目",
   "player.pause": "暂停",
