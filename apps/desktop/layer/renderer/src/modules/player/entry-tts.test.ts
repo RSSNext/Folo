@@ -12,6 +12,7 @@ const {
   legacyTtsMock,
   mountMock,
   setAudioPlayerAtomValueMock,
+  setExternalSourceTeardownMock,
   toastFetchErrorMock,
 } = vi.hoisted(() => ({
   audioElementMock: {
@@ -31,6 +32,7 @@ const {
   legacyTtsMock: vi.fn(),
   mountMock: vi.fn(),
   setAudioPlayerAtomValueMock: vi.fn(),
+  setExternalSourceTeardownMock: vi.fn(),
   toastFetchErrorMock: vi.fn(),
 }))
 
@@ -56,6 +58,7 @@ vi.mock("~/atoms/player", () => ({
   AudioPlayer: {
     audio: audioElementMock,
     mount: mountMock,
+    setExternalSourceTeardown: setExternalSourceTeardownMock,
   },
   getAudioPlayerAtomValue: getAudioPlayerAtomValueMock,
   setAudioPlayerAtomValue: setAudioPlayerAtomValueMock,
@@ -192,6 +195,8 @@ describe("entry tts", () => {
       src: "blob:tts-audio",
       type: "audio",
     })
+    // Another audio source mounting afterwards stops the TTS
+    expect(setExternalSourceTeardownMock).toHaveBeenLastCalledWith(expect.any(Function))
   })
 
   it("uses the new default voice", () => {
