@@ -17,6 +17,7 @@
   "entry_content.header.show_translation": "翻訳を表示",
   "entry_content.no_content": "コンテンツがありません",
   "entry_content.no_video_url": "動画 URL が見つかりません",
+  "entry_content.unavailable": "このエントリーの本文を読み込めませんでした。",
   "entry_list.unknown_feed": "不明なフィード",
   "entry_list.zero_unread": "未読ゼロ",
   "feed.follow.success": "フィードをフォローしました。",
