@@ -82,9 +82,15 @@ export const RenameCategoryForm = ({
         onSubmit={(e) => {
           e.preventDefault()
 
-          return renameMutation.mutateAsync({
+          const newCategory = e.currentTarget.category.value.trim()
+          // An empty name would silently ungroup the folder
+          if (!newCategory || newCategory === currentCategory) {
+            onFinished()
+            return
+          }
+          renameMutation.mutate({
             lastCategory: currentCategory!,
-            newCategory: e.currentTarget.category.value,
+            newCategory,
           })
         }}
       >
