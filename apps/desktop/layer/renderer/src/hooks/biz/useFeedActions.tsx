@@ -206,7 +206,7 @@ export const useFeedActions = ({
               requiresLogin: true,
             })
           }),
-          listByView.length > 0 && MenuItemSeparator.default,
+          categories.size > 0 && MenuItemSeparator.default,
           new MenuItemText({
             label: t("sidebar.feed_column.context_menu.create_category"),
             icon: <i className="i-mgc-add-cute-re" />,
