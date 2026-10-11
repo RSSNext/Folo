@@ -90,7 +90,12 @@ export const WhenSection = ({ index }: WhenSectionProps) => {
                             placeholder={t("actions.action_card.select_field")}
                             disabled={disabled}
                             value={item.field}
-                            onValueChange={(value) => change("field", value as ActionFeedField)}
+                            onValueChange={(value) =>
+                              actionActions.changeConditionField(
+                                actionConditionIndex,
+                                value as ActionFeedField,
+                              )
+                            }
                             items={filterFieldOptions.map((option) => ({
                               ...option,
                               label: t(option.label),

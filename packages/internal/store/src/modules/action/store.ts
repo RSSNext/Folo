@@ -1,6 +1,7 @@
 import { SyncMetaService } from "@follow/database/services/sync-meta"
 import type {
   ActionConditionIndex,
+  ActionFeedField,
   ActionFilterItem,
   ActionId,
   ActionItem as ActionItemRes,
@@ -13,6 +14,7 @@ import type { Hydratable, Resetable } from "../../lib/base"
 import { createImmerSetter, createZustandStore } from "../../lib/helper"
 import { registerSyncModel } from "../../sync/model-registry"
 import { ensureSyncedThroughEngine } from "../../sync/sync-status"
+import { getFilterFieldType } from "./constant"
 
 export type ActionItem = Omit<ActionItemRes, "condition"> & {
   condition: ActionFilterItem[][]
@@ -179,6 +181,20 @@ class ActionActions implements Hydratable, Resetable {
       const group = rule.condition[index.groupIndex]
       if (!group) return
       group[index.conditionIndex] = merge(group[index.conditionIndex], condition)
+      state.isDirty = true
+    })
+  }
+
+  changeConditionField(index: ActionConditionIndex, field: ActionFeedField) {
+    immerSet((state) => {
+      const group = state.rules[index.ruleIndex]?.condition[index.groupIndex]
+      const item = group?.[index.conditionIndex]
+      if (!group || !item) return
+      // The operator and value only make sense for the previous field type
+      group[index.conditionIndex] =
+        getFilterFieldType(item.field) === getFilterFieldType(field)
+          ? { ...item, field }
+          : { field }
       state.isDirty = true
     })
   }

@@ -72,6 +72,9 @@ const filterFieldOptionsMap: {
 
 export const filterFieldOptions = Object.values(filterFieldOptionsMap)
 
+export const getFilterFieldType = (field: ActionFeedField | undefined) =>
+  (field && filterFieldOptionsMap[field]?.type) || "text"
+
 const filterOperatorOptionsMap: {
   [K in ActionOperation]: {
     label: Extract<ParseKeys<"settings">, `actions.action_card.operation_options.${string}`>
