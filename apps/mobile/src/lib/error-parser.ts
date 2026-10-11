@@ -8,6 +8,11 @@ import { showUpgradeRequiredDialog } from "@/src/modules/dialogs/UpgradeRequired
 import { sanitizeErrorMessage } from "./error-message"
 import { toast } from "./toast"
 
+// expo/fetch rejects with "fetch failed: <native reason>" when no response came back, e.g.
+// "java.net.ConnectException: Failed to connect to …", which means nothing to the user
+const isConnectionFailure = (error: Error) =>
+  error.message.startsWith("fetch failed:") && !error.message.includes("aborted")
+
 export const getFetchErrorInfo = (
   error: Error,
 ): {
@@ -44,6 +49,10 @@ export const getFetchErrorInfo = (
     }
   }
 
+  if (isConnectionFailure(error)) {
+    return { message: t("common:app.api_unreachable") }
+  }
+
   return { message: sanitizeErrorMessage(error.message) }
 }
 
@@ -59,7 +68,9 @@ export const createErrorToaster = (title?: string) => (err: Error) =>
   toastFetchError(err, { title })
 
 export const toastFetchError = (error: Error, { title: _title }: { title?: string } = {}) => {
-  const fallbackMessage = sanitizeErrorMessage(error.message)
+  const fallbackMessage = isConnectionFailure(error)
+    ? t("common:app.api_unreachable")
+    : sanitizeErrorMessage(error.message)
   let message = fallbackMessage
   let _reason = ""
   let code: number | undefined

@@ -1,7 +1,7 @@
 import { FollowAPIError } from "@follow-app/client-sdk"
 import { beforeEach, describe, expect, it, vi } from "vitest"
 
-import { toastFetchError } from "./error-parser"
+import { getFetchErrorMessage, toastFetchError } from "./error-parser"
 
 const mocks = vi.hoisted(() => ({
   isPaymentEnabled: false,
@@ -75,5 +75,32 @@ describe("toastFetchError", () => {
 
     expect(mocks.toastError).toHaveBeenCalledOnce()
     expect(mocks.toastError).toHaveBeenCalledWith("Unable to follow this feed")
+  })
+})
+
+describe("getFetchErrorMessage", () => {
+  it("describes a request that never reached the server instead of the native reason", () => {
+    const error = new Error(
+      "fetch failed: java.net.ConnectException: Failed to connect to localhost/127.0.0.1:3000",
+    )
+
+    expect(getFetchErrorMessage(error)).toBe("common:app.api_unreachable")
+  })
+
+  it("keeps the message of a cancelled request", () => {
+    const error = new Error("fetch failed: The operation was aborted.")
+
+    expect(getFetchErrorMessage(error)).toBe("fetch failed: The operation was aborted.")
+  })
+})
+
+describe("toastFetchError for unreachable servers", () => {
+  it("shows the connection message instead of the native reason", () => {
+    mocks.toastError.mockClear()
+    toastFetchError(
+      new Error("fetch failed: java.net.UnknownHostException: Unable to resolve host"),
+    )
+
+    expect(mocks.toastError).toHaveBeenCalledWith("common:app.api_unreachable")
   })
 })
