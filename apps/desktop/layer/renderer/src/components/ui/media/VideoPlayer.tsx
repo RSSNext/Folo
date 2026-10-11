@@ -63,6 +63,7 @@ export const VideoPlayer = ({
   src,
   className,
   variant = "player",
+  autoFocus,
   ...rest
 }: VideoPlayerProps & {
   ref?: React.Ref<VideoPlayerRef | null> | ((ref: VideoPlayerRef) => void)
@@ -117,14 +118,35 @@ export const VideoPlayer = ({
     },
   })
 
-  useHotkeys("space", (e) => {
-    e.preventDefault()
-    handleClick()
-  })
-
   const stateRef = useRefValue(state)
   const memoedControls = useState(controls)[0]
   const wrapperRef = useRef<HTMLDivElement>(null)
+
+  // Bound to the player element, so only the focused player reacts, and the keys don't also
+  // reach the timeline, the media carousel or the corner player
+  const hotkeysRef = useHotkeys(
+    ["space", "left", "right"],
+    (e) => {
+      e.preventDefault()
+      e.stopPropagation()
+      if (e.key === "ArrowLeft") {
+        controls.seek(stateRef.current.time - 5)
+      } else if (e.key === "ArrowRight") {
+        controls.seek(stateRef.current.time + 5)
+      } else {
+        handleClick()
+      }
+    },
+    { enabled: isPlayer },
+  )
+  useEffect(() => {
+    hotkeysRef(wrapperRef.current)
+  }, [hotkeysRef])
+  useEffect(() => {
+    if (autoFocus) {
+      wrapperRef.current?.focus({ preventScroll: true })
+    }
+  }, [autoFocus])
   useImperativeHandle(
     ref,
     () => ({
@@ -376,15 +398,6 @@ const PlayProgressBar = () => {
   const [currentDragging, setCurrentDragging] = useState(false)
   const [dragTime, setDragTime] = useState(0)
 
-  useHotkeys("left", (e) => {
-    e.preventDefault()
-    controls.seek(state.time - 5)
-  })
-
-  useHotkeys("right", (e) => {
-    e.preventDefault()
-    controls.seek(state.time + 5)
-  })
   return (
     <Slider.Root
       className="relative z-[1] flex size-full items-center transition-all duration-200 ease-in-out"

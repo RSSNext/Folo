@@ -331,6 +331,7 @@ export const PreviewMediaContent: FC<{
                 src={src}
                 controls
                 autoPlay
+                autoFocus
                 muted
                 className={cn("h-full w-auto object-contain", !!children && "rounded-l-xl")}
                 onClick={stopPropagation}
