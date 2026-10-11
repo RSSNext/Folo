@@ -135,7 +135,9 @@ const FeedItemImpl = ({ view, feedId, className, isPreview }: FeedItemProps) => 
   const items = useFeedActions({
     feedIds: selectedFeedIds,
     feedId,
-    view,
+    // A folder in the All view can hold feeds from other views than the one it is listed with,
+    // and moving a feed to a category must not move it to that view
+    view: subscription?.view ?? view,
   })
 
   const when = useGlobalFocusableScopeSelector(FocusablePresets.isSubscriptionList)

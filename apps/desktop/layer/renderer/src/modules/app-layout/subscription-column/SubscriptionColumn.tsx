@@ -3,8 +3,9 @@ import { DndContext, PointerSensor, pointerWithin, useSensor, useSensors } from 
 import { useGlobalFocusableScopeSelector } from "@follow/components/common/Focusable/hooks.js"
 import { PanelSplitter } from "@follow/components/ui/divider/PanelSplitter.js"
 import { Kbd } from "@follow/components/ui/kbd/Kbd.js"
-import type { FeedViewType } from "@follow/constants"
+import { FeedViewType } from "@follow/constants"
 import { defaultUISettings } from "@follow/shared/settings/defaults"
+import { getSubscriptionByFeedId } from "@follow/store/subscription/getter"
 import { cn } from "@follow/utils"
 import { Slot } from "@radix-ui/react-slot"
 import { debounce } from "es-toolkit/compat"
@@ -53,7 +54,21 @@ export const SubscriptionColumnContainer = () => {
         view: FeedViewType
       }
 
-      mutate({ category, view, feedIdList: getSelectedFeedIds() })
+      const feedIdList = getSelectedFeedIds()
+      if (view !== FeedViewType.All) {
+        mutate({ category, view, feedIdList })
+      } else {
+        // A folder in the All view holds feeds from several views, so each feed keeps its own
+        const feedIdsByView = new Map<FeedViewType, string[]>()
+        for (const feedId of feedIdList) {
+          const feedView = getSubscriptionByFeedId(feedId)?.view
+          if (feedView === undefined) continue
+          feedIdsByView.set(feedView, [...(feedIdsByView.get(feedView) ?? []), feedId])
+        }
+        for (const [feedView, feedIds] of feedIdsByView) {
+          mutate({ category, view: feedView, feedIdList: feedIds })
+        }
+      }
 
       resetSelectedFeedIds()
     },

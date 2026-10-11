@@ -3,8 +3,7 @@ import { useMobile } from "@follow/components/hooks/useMobile.js"
 import { MotionButtonBase } from "@follow/components/ui/button/index.js"
 import { LoadingCircle } from "@follow/components/ui/loading/index.jsx"
 import { useScrollViewElement } from "@follow/components/ui/scroll-area/hooks.js"
-import type { FeedViewType } from "@follow/constants"
-import { getViewList } from "@follow/constants"
+import { FeedViewType, getViewList } from "@follow/constants"
 import { useRefValue } from "@follow/hooks"
 import { useOwnedListByView } from "@follow/store/list/hooks"
 import {
@@ -62,6 +61,9 @@ function FeedCategoryImpl({
   const subscription = useSubscriptionByFeedId(ids[0]!)!
 
   const { view } = subscription
+  // The All view merges same-named folders from every view, so folder actions there cover all of
+  // their feeds instead of only those in the first feed's view
+  const categoryView = viewOnRoute === FeedViewType.All ? FeedViewType.All : view
   const autoGroup = useGeneralSettingSelector((state) => state.autoGroup)
   const folderName =
     subscription?.category || (autoGroup ? getDefaultCategory(subscription) : subscription.feedId)
@@ -154,13 +156,13 @@ function FeedCategoryImpl({
   const { present } = useModalStack()
 
   const { mutateAsync: changeCategoryView, isPending: isChangePending } = useMutation({
-    mutationKey: ["changeCategoryView", folderName, view],
+    mutationKey: ["changeCategoryView", folderName, categoryView],
     mutationFn: async (nextView: FeedViewType) => {
       if (!folderName) return
-      if (typeof view !== "number") return
+      if (typeof categoryView !== "number") return
       return subscriptionSyncService.changeCategoryView({
         category: folderName,
-        currentView: view,
+        currentView: categoryView,
         newView: nextView,
       })
     },
@@ -183,7 +185,7 @@ function FeedCategoryImpl({
     disabled: isAutoGroupedCategory,
     data: {
       category: folderName,
-      view,
+      view: categoryView,
     },
   })
 
@@ -235,7 +237,7 @@ function FeedCategoryImpl({
           new MenuItemText({
             label: t("sidebar.feed_column.context_menu.change_to_other_view"),
             submenu: getViewList()
-              .filter((v) => v.view !== view && v.switchable)
+              .filter((v) => v.view !== categoryView && v.switchable)
               .map(
                 (v) =>
                   new MenuItemText({
@@ -265,7 +267,9 @@ function FeedCategoryImpl({
                 title: t("sidebar.feed_column.context_menu.ungroup_category_confirmation", {
                   folderName,
                 }),
-                content: () => <CategoryRemoveDialogContent category={folderName!} view={view} />,
+                content: () => (
+                  <CategoryRemoveDialogContent category={folderName!} view={categoryView} />
+                ),
               })
             },
             requiresLogin: true,
@@ -279,7 +283,7 @@ function FeedCategoryImpl({
                   folderName,
                 }),
                 content: () => (
-                  <CategoryUnsubscribeDialogContent category={folderName!} view={view} />
+                  <CategoryUnsubscribeDialogContent category={folderName!} view={categoryView} />
                 ),
               })
             },
@@ -347,7 +351,7 @@ function FeedCategoryImpl({
             {isCategoryEditing ? (
               <RenameCategoryForm
                 currentCategory={folderName!}
-                view={view}
+                view={categoryView}
                 onFinished={() => setIsCategoryEditing(false)}
               />
             ) : (

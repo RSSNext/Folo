@@ -76,6 +76,21 @@ const defaultState: SubscriptionState = {
   categoryOpenStateByView: { ...emptyCategoryOpenStateByView },
 }
 
+// The All view merges same-named folders across views, so a folder changed there also changes the
+// categories of every view its feeds belong to
+const getCategoryViews = (
+  state: Pick<SubscriptionState, "data">,
+  feedIds: string[],
+  view: FeedViewType,
+) => {
+  const views = new Set<FeedViewType>([view])
+  for (const feedId of feedIds) {
+    const subscription = state.data[feedId]
+    if (subscription) views.add(subscription.view)
+  }
+  return views
+}
+
 const invalidateViews = (...views: (FeedViewType | undefined)[]) => {
   const viewSet = new Set<FeedViewType>()
 
@@ -598,6 +613,7 @@ class SubscriptionSyncService {
 
   async deleteCategory({ category, view }: { category: string; view: FeedViewType }) {
     const feedIds = getCategoryFeedIds(category, view)
+    const categoryViews = getCategoryViews(get(), feedIds, view)
 
     const tx = createTransaction()
     tx.store(() => {
@@ -607,7 +623,9 @@ class SubscriptionSyncService {
           if (!subscription) continue
           subscription.category = null
         }
-        draft.categories[view]!.delete(category)
+        for (const categoryView of categoryViews) {
+          draft.categories[categoryView]!.delete(category)
+        }
       })
     })
 
@@ -626,7 +644,9 @@ class SubscriptionSyncService {
           subscription.category = category
         }
 
-        draft.categories[view]!.add(category)
+        for (const categoryView of categoryViews) {
+          draft.categories[categoryView]!.add(category)
+        }
       })
     })
 
@@ -671,6 +691,7 @@ class SubscriptionSyncService {
     view: FeedViewType
   }) {
     const feedIds = getCategoryFeedIds(lastCategory, view)
+    const categoryViews = getCategoryViews(get(), feedIds, view)
 
     const tx = createTransaction()
     tx.store(() => {
@@ -680,8 +701,10 @@ class SubscriptionSyncService {
           if (!subscription) continue
           subscription.category = newCategory
         }
-        draft.categories[view]!.add(newCategory)
-        draft.categories[view]!.delete(lastCategory)
+        for (const categoryView of categoryViews) {
+          draft.categories[categoryView]!.add(newCategory)
+          draft.categories[categoryView]!.delete(lastCategory)
+        }
 
         const lastCategoryOpenState = draft.categoryOpenStateByView[view]![lastCategory]
         if (typeof lastCategoryOpenState === "boolean") {
@@ -706,8 +729,10 @@ class SubscriptionSyncService {
           const defaultCategory = getDefaultCategory(subscription)
           subscription.category = lastCategory !== defaultCategory ? lastCategory : null
         }
-        draft.categories[view]!.delete(newCategory)
-        draft.categories[view]!.add(lastCategory)
+        for (const categoryView of categoryViews) {
+          draft.categories[categoryView]!.delete(newCategory)
+          draft.categories[categoryView]!.add(lastCategory)
+        }
 
         const lastCategoryOpenState = draft.categoryOpenStateByView[view]![newCategory]
         if (typeof lastCategoryOpenState === "boolean") {
