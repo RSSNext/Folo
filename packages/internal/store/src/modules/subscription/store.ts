@@ -114,6 +114,29 @@ export const useSubscriptionStore = createZustandStore<SubscriptionState>("subsc
 const get = useSubscriptionStore.getState
 
 const immerSet = createImmerSetter(useSubscriptionStore)
+
+// Feeds followed only through an unfollowed list no longer count as unread
+const clearUnreadOfFeedsOnlyInLists = (unfollowedLists: SubscriptionModel[]) => {
+  if (unfollowedLists.length === 0) return
+  const stillFollowed = new Set<string>()
+  for (const subscription of Object.values(get().data)) {
+    if (subscription.feedId) stillFollowed.add(subscription.feedId)
+    if (subscription.listId) {
+      for (const feedId of getListById(subscription.listId)?.feedIds ?? []) {
+        stillFollowed.add(feedId)
+      }
+    }
+  }
+  for (const list of unfollowedLists) {
+    if (!list.listId) continue
+    for (const feedId of getListById(list.listId)?.feedIds ?? []) {
+      if (!stillFollowed.has(feedId)) {
+        unreadActions.updateById(feedId, 0)
+      }
+    }
+  }
+}
+
 class SubscriptionActions implements Hydratable, Resetable {
   async hydrate() {
     const subscriptions = await SubscriptionService.getSubscriptionAll()
@@ -483,6 +506,7 @@ class SubscriptionSyncService {
     feedSubscriptions.forEach((i) => {
       unreadActions.updateById(i.feedId, 0)
     })
+    clearUnreadOfFeedsOnlyInLists(listSubscriptions)
     return feedsAndLists
   }
 

@@ -543,6 +543,10 @@ class SyncEngine implements Resetable {
       if (current.feedId) {
         await unreadActions.updateById(current.feedId, 0)
       }
+      // The list's feeds may no longer be followed, which only a recount can tell
+      if (current.listId) {
+        summary.refreshUnread = true
+      }
       addView(summary.invalidateViews, current.view)
     }
   }

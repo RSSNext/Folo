@@ -4,10 +4,16 @@ import { beforeEach, describe, expect, test, vi } from "vitest"
 
 import { apiContext, queryClientContext } from "../../context"
 import type { FollowAPI } from "../../types"
+import { useListStore } from "../list/store"
+import type { ListModel } from "../list/types"
+import { useUnreadStore } from "../unread/store"
 import { subscriptionSyncService, useSubscriptionStore } from "./store"
 import type { SubscriptionModel } from "./types"
 
 const mocks = vi.hoisted(() => ({
+  deleteSubscriptions: vi.fn(),
+  deleteSubscriptionRows: vi.fn(),
+  unreadUpsertMany: vi.fn(),
   batchUpdate: vi.fn(),
   update: vi.fn(),
   patch: vi.fn(),
@@ -16,8 +22,15 @@ const mocks = vi.hoisted(() => ({
   patchMany: vi.fn(),
 }))
 
+vi.mock("@follow/database/services/unread", () => ({
+  UnreadService: {
+    upsertMany: mocks.unreadUpsertMany,
+  },
+}))
+
 vi.mock("@follow/database/services/subscription", () => ({
   SubscriptionService: {
+    delete: mocks.deleteSubscriptionRows,
     patch: mocks.patch,
     patchMany: mocks.patchMany,
   },
@@ -74,10 +87,17 @@ describe("subscriptionSyncService", () => {
     mocks.deleteCategory.mockResolvedValue({})
     mocks.patchMany.mockResolvedValue(undefined)
     mocks.update.mockResolvedValue({})
+    mocks.deleteSubscriptions.mockResolvedValue({})
+    mocks.deleteSubscriptionRows.mockResolvedValue(undefined)
+    mocks.unreadUpsertMany.mockResolvedValue(undefined)
     mocks.patch.mockResolvedValue(undefined)
     queryClientContext.provide(new QueryClient())
     apiContext.provide({
-      subscriptions: { batchUpdate: mocks.batchUpdate, update: mocks.update },
+      subscriptions: {
+        batchUpdate: mocks.batchUpdate,
+        delete: mocks.deleteSubscriptions,
+        update: mocks.update,
+      },
       categories: { update: mocks.updateCategory, delete: mocks.deleteCategory },
     } as unknown as FollowAPI)
   })
@@ -160,5 +180,24 @@ describe("subscriptionSyncService", () => {
     const { listIdByView } = useSubscriptionStore.getState()
     expect(listIdByView[FeedViewType.Articles].has("list1")).toBe(false)
     expect(listIdByView[FeedViewType.Pictures].has("list1")).toBe(true)
+  })
+
+  test("clears the unread counts of feeds followed only through an unfollowed list", async () => {
+    const list: SubscriptionModel = {
+      ...createSubscription("", FeedViewType.Articles, null),
+      feedId: null,
+      listId: "list1",
+      type: "list",
+    }
+    seed([createSubscription("direct", FeedViewType.Articles, null)])
+    useSubscriptionStore.setState((state) => ({ data: { ...state.data, list1: list } }))
+    useListStore.setState({
+      lists: { list1: { id: "list1", feedIds: ["direct", "listOnly"] } as ListModel },
+    })
+    useUnreadStore.setState({ data: { direct: 3, listOnly: 5 } })
+
+    await subscriptionSyncService.unsubscribe("list1")
+    await vi.waitFor(() => expect(useUnreadStore.getState().data.listOnly).toBe(0))
+    expect(useUnreadStore.getState().data.direct).toBe(3)
   })
 })
