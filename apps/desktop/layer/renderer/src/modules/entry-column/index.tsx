@@ -277,7 +277,8 @@ function EntryColumnContent() {
         key={`${routeFeedId}-${view}`}
       >
         {entriesIds.length === 0 ? (
-          state.isLoading ? (
+          // Guests can't load the timeline and the login modal covers it, so keep the placeholder
+          state.isLoading || (!isLoggedIn && state.error) ? (
             <EntryItemSkeleton view={view} />
           ) : (
             <EntryEmptyList
