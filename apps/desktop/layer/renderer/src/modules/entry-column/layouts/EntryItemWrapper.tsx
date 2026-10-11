@@ -9,7 +9,7 @@ import { cn } from "@follow/utils/utils"
 import { debounce } from "es-toolkit/compat"
 import { AnimatePresence } from "motion/react"
 import type { FC, MouseEvent, PropsWithChildren, TouchEvent } from "react"
-import { useCallback, useEffect, useMemo, useState } from "react"
+import { useCallback, useEffect, useMemo, useRef, useState } from "react"
 import { NavLink } from "react-router"
 import { useEventCallback } from "usehooks-ts"
 
@@ -30,6 +30,8 @@ import { getRouteParams, useRouteParams, useRouteParamsSelector } from "~/hooks/
 import { useShowEntryDetailsColumn } from "~/hooks/biz/useShowEntryDetailsColumn"
 import { useFeedSafeUrl } from "~/hooks/common/useFeedSafeUrl"
 import { useRequireLogin } from "~/hooks/common/useRequireLogin"
+
+const TAP_MOVE_TOLERANCE = 10
 
 export const EntryItemWrapper: FC<
   {
@@ -143,6 +145,28 @@ export const EntryItemWrapper: FC<
     },
     [asRead, entry?.id, entry?.feedId, navigate, view],
   )
+  // Touch devices open the entry on a tap without waiting for the emulated
+  // click, which a touch browser may swallow to show the hover action bar.
+  // Only a touch that barely moved is a tap; anything else is a scroll.
+  const touchStartPointRef = useRef<{ x: number; y: number } | null>(null)
+  const handleTouchStart = useCallback((e: TouchEvent<HTMLElement>) => {
+    const touch = e.touches.length === 1 ? e.touches[0] : undefined
+    touchStartPointRef.current = touch ? { x: touch.clientX, y: touch.clientY } : null
+  }, [])
+  const handleTouchEnd = useCallback(
+    (e: TouchEvent<HTMLElement>) => {
+      const start = touchStartPointRef.current
+      touchStartPointRef.current = null
+      const touch = e.changedTouches[0]
+      if (!start || !touch) return
+      if (Math.hypot(touch.clientX - start.x, touch.clientY - start.y) > TAP_MOVE_TOLERANCE) {
+        return
+      }
+      handleClick(e)
+    },
+    [handleClick],
+  )
+
   const { contextMenuProps, isContextMenuOpen, openContextMenuAt } = useEntryContextMenu({
     entryId,
     view,
@@ -174,7 +198,7 @@ export const EntryItemWrapper: FC<
         onMouseEnter={handleMouseEnter}
         onMouseLeave={handleMouseLeave}
         {...contextMenuProps}
-        {...(!isMobile ? { onTouchStart: handleClick } : {})}
+        {...(!isMobile ? { onTouchStart: handleTouchStart, onTouchEnd: handleTouchEnd } : {})}
       >
         {children}
         <AnimatePresence>
