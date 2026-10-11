@@ -97,7 +97,9 @@ export const ResetPassword = () => {
             className="w-full"
             hitSlop={10}
             secureTextEntry={true}
-            keyboardType="visible-password"
+            autoCapitalize="none"
+            autoComplete="current-password"
+            textContentType="password"
             placeholder={t("profile.current_password.placeholder")}
             value={currentPassword}
             onChangeText={setCurrentPassword}
@@ -110,8 +112,10 @@ export const ResetPassword = () => {
         <GroupedInsetListBaseCell className="py-3">
           <PlainTextField
             className="w-full"
-            keyboardType="visible-password"
             secureTextEntry={true}
+            autoCapitalize="none"
+            autoComplete="new-password"
+            textContentType="newPassword"
             hitSlop={10}
             placeholder={t("profile.new_password.placeholder")}
             value={newPassword}
@@ -128,8 +132,10 @@ export const ResetPassword = () => {
         <GroupedInsetListBaseCell className="py-3">
           <PlainTextField
             className="w-full"
-            keyboardType="visible-password"
             secureTextEntry={true}
+            autoCapitalize="none"
+            autoComplete="new-password"
+            textContentType="newPassword"
             hitSlop={10}
             placeholder={t("profile.confirm_password.placeholder")}
             value={confirmNewPassword}
