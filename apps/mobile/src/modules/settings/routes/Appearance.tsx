@@ -17,7 +17,10 @@ import {
 import { Switch } from "@/src/components/ui/switch/Switch"
 import { useNavigation } from "@/src/lib/navigation/hooks"
 // Font size presets
-import { setBadgeCountAsyncWithPermission } from "@/src/lib/permission"
+import {
+  requestNotificationPermission,
+  setBadgeCountAsyncWithPermission,
+} from "@/src/lib/permission"
 
 import { ReadingScreen } from "./Reading"
 
@@ -132,11 +135,15 @@ export const AppearanceScreen = () => {
           <Switch
             size="sm"
             value={showUnreadCountBadgeMobile}
-            onValueChange={(val) => {
+            onValueChange={async (val) => {
               setUISetting("showUnreadCountBadgeMobile", val)
+              if (val && !(await requestNotificationPermission())) {
+                // Without the permission the badge can't show, so the switch must not stay on
+                setUISetting("showUnreadCountBadgeMobile", false)
+                return
+              }
               void setBadgeCountAsyncWithPermission(val ? getUnreadAll() : 0, {
                 skipSettingCheck: true,
-                requestPermission: val,
               })
             }}
           />

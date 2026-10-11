@@ -28,26 +28,21 @@ export async function requestNotificationPermission() {
   return true
 }
 
+/**
+ * Only checks the notification permission; asking for it is left to the user's own action,
+ * see the badge setting.
+ */
 export async function setBadgeCountAsyncWithPermission(
   badgeCount: number,
-  {
-    skipSettingCheck = false,
-    requestPermission = false,
-  }: {
-    skipSettingCheck?: boolean
-    /** Only a user action should prompt; background updates just check the current status */
-    requestPermission?: boolean
-  } = {},
+  { skipSettingCheck = false }: { skipSettingCheck?: boolean } = {},
 ) {
   const { showUnreadCountBadgeMobile } = getUISettings()
   if (!showUnreadCountBadgeMobile && !skipSettingCheck) {
     return false
   }
 
-  const permissionGranted = requestPermission
-    ? await requestNotificationPermission()
-    : (await Notifications.getPermissionsAsync()).status === "granted"
-  if (!permissionGranted) {
+  const { status } = await Notifications.getPermissionsAsync()
+  if (status !== "granted") {
     return false
   }
 
