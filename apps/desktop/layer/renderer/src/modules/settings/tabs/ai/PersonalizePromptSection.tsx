@@ -25,9 +25,13 @@ export const PersonalizePromptSection = () => {
   const isOverLimit = currentLength > MAX_CHARACTERS
 
   const handleEditorChange = (value: string, textLength: number) => {
-    promptRef.current = value
+    // The editor also reports selection changes, and an empty editor serializes to a
+    // non-empty state, so compare text when nothing is stored yet
+    const storedPrompt = aiSettings.personalizePrompt
+    // An editor with no text clears the prompt instead of storing an empty editor state
+    promptRef.current = textLength === 0 ? "" : value
     setCurrentLength(textLength)
-    setHasChanges(value !== aiSettings.personalizePrompt)
+    setHasChanges(storedPrompt ? promptRef.current !== storedPrompt : textLength > 0)
   }
 
   const handleSave = async () => {
@@ -35,8 +39,6 @@ export const PersonalizePromptSection = () => {
       toast.error(t("prompt_editor.too_long", { max: MAX_CHARACTERS }))
       return
     }
-
-    if (!promptRef.current) return
 
     setIsSaving(true)
     try {
