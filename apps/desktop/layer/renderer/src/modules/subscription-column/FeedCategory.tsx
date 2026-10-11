@@ -321,19 +321,9 @@ function FeedCategoryImpl({
             className={cn("flex w-full min-w-0 items-center")}
             onDoubleClick={toggleCategoryOpenState}
           >
-            <button
-              data-type="collapse"
-              type="button"
-              onClick={handleCollapseButtonClick}
-              data-state={open ? "open" : "close"}
-              className={cn(
-                "flex h-8 items-center data-[state=open]:[&_.i-mgc-right-cute-fi]:rotate-90",
-              )}
-              tabIndex={-1}
-            >
-              {isCategoryIsWaiting ? (
-                <LoadingCircle size="small" className="mr-2 size-[16px]" />
-              ) : isCategoryEditing ? (
+            {isCategoryEditing && !isCategoryIsWaiting ? (
+              // Kept outside the collapse button, since a button can't contain another one
+              <div className="flex h-8 items-center">
                 <MotionButtonBase
                   onClick={() => {
                     setIsCategoryEditing(false)
@@ -342,12 +332,27 @@ function FeedCategoryImpl({
                 >
                   <i className="i-mgc-close-cute-re text-red" />
                 </MotionButtonBase>
-              ) : (
-                <div className="center mr-2 size-[16px]">
-                  <i className="i-mgc-right-cute-fi transition-transform" />
-                </div>
-              )}
-            </button>
+              </div>
+            ) : (
+              <button
+                data-type="collapse"
+                type="button"
+                onClick={handleCollapseButtonClick}
+                data-state={open ? "open" : "close"}
+                className={cn(
+                  "flex h-8 items-center data-[state=open]:[&_.i-mgc-right-cute-fi]:rotate-90",
+                )}
+                tabIndex={-1}
+              >
+                {isCategoryIsWaiting ? (
+                  <LoadingCircle size="small" className="mr-2 size-[16px]" />
+                ) : (
+                  <div className="center mr-2 size-[16px]">
+                    <i className="i-mgc-right-cute-fi transition-transform" />
+                  </div>
+                )}
+              </button>
+            )}
             {isCategoryEditing ? (
               <RenameCategoryForm
                 currentCategory={folderName!}
