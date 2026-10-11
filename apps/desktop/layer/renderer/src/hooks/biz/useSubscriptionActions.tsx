@@ -62,7 +62,10 @@ export const useDeleteSubscription = ({ onSuccess }: { onSuccess?: () => void } 
           label: (
             <span className={"flex items-center gap-1 px-1"}>
               {t("words.undo")}
-              <Kbd className="inline-flex items-center border border-border bg-transparent text-white">
+              <Kbd
+                wrapButton={false}
+                className="inline-flex items-center border border-border bg-transparent text-white"
+              >
                 $mod+Z
               </Kbd>
             </span>
