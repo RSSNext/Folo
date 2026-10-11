@@ -2,9 +2,7 @@ import { useDroppable } from "@dnd-kit/core"
 import { useMobile } from "@follow/components/hooks/useMobile.js"
 import { MotionButtonBase } from "@follow/components/ui/button/index.js"
 import { LoadingCircle } from "@follow/components/ui/loading/index.jsx"
-import { useScrollViewElement } from "@follow/components/ui/scroll-area/hooks.js"
 import { FeedViewType, getViewList } from "@follow/constants"
-import { useRefValue } from "@follow/hooks"
 import { useOwnedListByView } from "@follow/store/list/hooks"
 import {
   useSubscriptionByFeedId,
@@ -91,30 +89,22 @@ function FeedCategoryImpl({
     (s) => typeof s.feedId === "string" && ids.includes(s.feedId),
   )
 
-  const scroller = useScrollViewElement()
-  const scrollerRef = useRefValue(scroller)
+  const scrollToFeedRef = useRef(false)
   useEffect(() => {
-    if (shouldOpen) {
-      setOpen(true)
+    if (!shouldOpen) return
+    scrollToFeedRef.current = true
+    setOpen(true)
+  }, [setOpen, shouldOpen])
+  // The feed rows only render once the folder is open, so the scroll waits for that
+  useEffect(() => {
+    if (!open || !scrollToFeedRef.current) return
+    scrollToFeedRef.current = false
 
-      const $items = itemsRef.current
-
-      if (!$items) return
-      const $target = $items.querySelector(
-        `[data-feed-id="${getRouteParams().feedId}"]`,
-      ) as HTMLElement
-      if (!$target) return
-
-      const $scroller = scrollerRef.current
-      if (!$scroller) return
-
-      const scrollTop = $target.offsetTop - $scroller.clientHeight / 2
-      $scroller.scrollTo({
-        top: scrollTop,
-        behavior: "smooth",
-      })
-    }
-  }, [scrollerRef, setOpen, shouldOpen])
+    const $target = itemsRef.current?.querySelector(
+      `[data-feed-id="${getRouteParams().feedId}"]`,
+    ) as HTMLElement | null
+    $target?.scrollIntoView({ block: "nearest", behavior: "smooth" })
+  }, [open, shouldOpen])
 
   const itemsRef = useRef<HTMLDivElement>(null)
 
