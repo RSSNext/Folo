@@ -12,7 +12,7 @@ import {
 } from "~/components/ui/dropdown-menu/dropdown-menu"
 import { useSettingModal } from "~/modules/settings/modal/use-setting-modal-hack"
 
-import { useChatActions, useCurrentChatId, useMessages } from "../../store/hooks"
+import { useChatActions, useCurrentChatId, useHasMessages } from "../../store/hooks"
 import { generateAndUpdateChatTitle } from "../../utils/titleGeneration"
 
 export const ChatMoreDropdown = ({
@@ -28,7 +28,7 @@ export const ChatMoreDropdown = ({
   const chatActions = useChatActions()
   const currentChatId = useCurrentChatId()
 
-  const messages = useMessages()
+  const hasMessages = useHasMessages()
   const [isGenerating, setIsGenerating] = useState(false)
   const { t } = useTranslation("ai")
 
@@ -39,6 +39,7 @@ export const ChatMoreDropdown = ({
   const handleGenerateTitle = useCallback(
     async (e: React.MouseEvent) => {
       e.stopPropagation()
+      const messages = chatActions.getMessages()
       if (!currentChatId || messages.length === 0 || isGenerating) {
         return
       }
@@ -54,7 +55,7 @@ export const ChatMoreDropdown = ({
         setIsGenerating(false)
       }
     },
-    [currentChatId, messages, chatActions, isGenerating],
+    [currentChatId, chatActions, isGenerating],
   )
 
   return (
@@ -63,7 +64,7 @@ export const ChatMoreDropdown = ({
       <DropdownMenuContent align="end" className="w-56">
         <DropdownMenuItem
           onClick={handleGenerateTitle}
-          disabled={!currentChatId || messages.length === 0 || isGenerating}
+          disabled={!currentChatId || !hasMessages || isGenerating}
         >
           <i className="i-mgc-magic-2-cute-re mr-2 size-4" />
           <span>{isGenerating ? t("common.generating_title") : t("common.generate_title")}</span>

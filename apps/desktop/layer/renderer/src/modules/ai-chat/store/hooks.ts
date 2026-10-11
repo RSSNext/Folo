@@ -65,6 +65,18 @@ export const useHasMessages = () => {
   return store((state) => state.messages.length > 0)
 }
 
+/**
+ * The last message when the user sent it, otherwise null. Unlike `useMessages`, it doesn't
+ * change on every streamed chunk of an answer.
+ */
+export const useLastUserMessage = () => {
+  const store = useAIChatStore()
+  return store((state) => {
+    const lastMessage = state.messages.at(-1)
+    return lastMessage?.role === "user" ? lastMessage : null
+  })
+}
+
 export const useIsLocalChat = () => {
   const store = useAIChatStore()
   return store((state) => state.isLocal)
