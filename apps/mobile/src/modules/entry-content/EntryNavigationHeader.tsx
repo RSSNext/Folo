@@ -136,17 +136,15 @@ export const EntryNavigationHeader: FC<{
 
   const ctxValue = use(EntryContentContext)
   const titleHeight = useAtomValue(ctxValue.titleHeightAtom)
+  // Reacts only when the title crosses into or out of the header, not on every scroll frame
   useAnimatedReaction(
-    () => reanimatedScrollY.value,
-    (value) => {
-      if (value > titleHeight + headerHeight) {
-        opacityAnimatedValue.value = withTiming(1, { duration: 100 })
-        runOnJS(setIsHeaderTitleVisible)(true)
-      } else {
-        opacityAnimatedValue.value = withTiming(0, { duration: 100 })
-        runOnJS(setIsHeaderTitleVisible)(false)
-      }
+    () => reanimatedScrollY.value > titleHeight + headerHeight,
+    (visible, previous) => {
+      if (visible === previous) return
+      opacityAnimatedValue.value = withTiming(visible ? 1 : 0, { duration: 100 })
+      runOnJS(setIsHeaderTitleVisible)(visible)
     },
+    [titleHeight, headerHeight],
   )
   const headerBarWidth = useWindowDimensions().width
 
