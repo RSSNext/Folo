@@ -7,6 +7,7 @@ import type { FollowAPI } from "../../types"
 import { useListStore } from "../list/store"
 import type { ListModel } from "../list/types"
 import { useUnreadStore } from "../unread/store"
+import { getSortedGroupedSubscriptionSelector } from "./getter"
 import { subscriptionActions, subscriptionSyncService, useSubscriptionStore } from "./store"
 import type { SubscriptionModel } from "./types"
 
@@ -223,5 +224,23 @@ describe("subscriptionSyncService", () => {
     expect([...state.subscriptionIdSet].sort()).toEqual(["feed/article", "feed/picture"])
     expect(Object.keys(state.data).sort()).toEqual(["article", "picture"])
     expect([...state.feedIdByView[FeedViewType.All]].sort()).toEqual(["article", "picture"])
+  })
+})
+
+describe("getSortedGroupedSubscriptionSelector", () => {
+  test("sorts folders by the unread total of their feeds and hides read ones", () => {
+    useUnreadStore.setState({ data: { a: 1, b: 1, c: 5, d: 0 } })
+    const grouped = { Two: ["a", "b"], Five: ["c"], Read: ["d"] }
+    const select = getSortedGroupedSubscriptionSelector(useSubscriptionStore.getState())
+
+    expect(
+      select({
+        view: FeedViewType.Articles,
+        grouped,
+        sortBy: "count",
+        sortOrder: "desc",
+        hideAllReadSubscriptions: true,
+      }).map((group) => group.category),
+    ).toEqual(["Five", "Two"])
   })
 })
