@@ -76,7 +76,7 @@ const InboxInnerForm = ({ inbox }: { inbox?: Nullable<InboxModel> }) => {
   const form = useForm<z.infer<typeof formSchema>>({
     resolver: zodResolver(formSchema),
     defaultValues: {
-      handle: inbox?.id,
+      handle: inbox?.id ?? "",
       title: inbox?.title || "",
     },
   })
@@ -90,6 +90,7 @@ const InboxInnerForm = ({ inbox }: { inbox?: Nullable<InboxModel> }) => {
     },
     onSuccess: (_) => {
       toast.success(t("discover.inbox_create_success"))
+      currentModal.dismiss?.()
     },
     onError: createErrorToaster(t("discover.inbox_create_error")),
   })
@@ -103,6 +104,7 @@ const InboxInnerForm = ({ inbox }: { inbox?: Nullable<InboxModel> }) => {
     },
     onSuccess: () => {
       toast.success(t("discover.inbox_update_success"))
+      currentModal.dismiss?.()
     },
     onError: createErrorToaster(t("discover.inbox_update_error")),
   })
@@ -113,7 +115,6 @@ const InboxInnerForm = ({ inbox }: { inbox?: Nullable<InboxModel> }) => {
     } else {
       mutationCreate.mutate({ handle: values.handle, title: values.title })
     }
-    currentModal.dismiss?.()
   }
 
   return (
@@ -163,7 +164,7 @@ const InboxInnerForm = ({ inbox }: { inbox?: Nullable<InboxModel> }) => {
             )}
           />
           <div className={cn("center flex justify-end gap-4")} data-testid="discover-form-actions">
-            <Button type="submit" isLoading={mutationCreate.isPending}>
+            <Button type="submit" isLoading={mutationCreate.isPending || mutationChange.isPending}>
               {t(inbox ? "discover.inbox_update" : "discover.inbox_create")}
             </Button>
           </div>
