@@ -30,7 +30,8 @@ export const FeedClaimModalContent: FC<{
   })
   const { setClickOutSideToDismiss } = useCurrentModal()
 
-  const { mutateAsync: claim, isPending, isSuccess } = useClaimFeedMutation(feedId)
+  // The mutation shows its own error toast, so the button doesn't need the rejected promise
+  const { mutate: claim, isPending, isSuccess } = useClaimFeedMutation(feedId)
 
   useEffect(() => {
     setClickOutSideToDismiss(!isPending)

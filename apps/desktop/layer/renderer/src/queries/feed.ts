@@ -67,6 +67,8 @@ export const useClaimFeedMutation = (feedId: string) =>
       tracker.feedClaimed({
         feedId,
       })
+      // Settings > Feeds lists the claimed feeds
+      feed.claimedList().invalidate()
     },
   })
 
