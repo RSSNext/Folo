@@ -109,16 +109,11 @@ export const SearchCmdK: React.FC = () => {
   const pageSize = 16
   const renderedEntries = useMemo(() => entries.slice(0, (page + 1) * pageSize), [entries, page])
 
-  const renderedFeeds = useMemo(() => {
-    const delta = entries.length - renderedEntries.length
-
-    if (delta > pageSize) return []
-
-    const entriesTotalPage = Math.ceil(entries.length / pageSize)
-    const right = entriesTotalPage === page + 1 ? delta : pageSize * page + 1 - entries.length
-
-    return feeds.slice(0, right)
-  }, [entries.length, feeds, page, renderedEntries.length])
+  // Feeds fill the slots left on the current page once every entry is rendered
+  const renderedFeeds = useMemo(
+    () => feeds.slice(0, Math.max(0, (page + 1) * pageSize - entries.length)),
+    [entries.length, feeds, page],
+  )
   const totalCount = entries.length + feeds.length
   const renderedTotalCount = renderedEntries.length + renderedFeeds.length
   const loadMore = React.useCallback(() => {
