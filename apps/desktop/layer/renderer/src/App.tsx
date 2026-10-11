@@ -8,7 +8,6 @@ import { Outlet } from "react-router"
 
 import { useAppIsReady } from "./atoms/app"
 import { useUISettingKey } from "./atoms/settings/ui"
-import { applyAfterReadyCallbacks } from "./initialize/queue"
 import { removeAppSkeleton } from "./lib/app"
 import { ipcServices } from "./lib/client"
 import { appLog } from "./lib/log"
@@ -52,7 +51,6 @@ const AppLayer = () => {
     const doneTime = Math.trunc(performance.now())
     tracker.uiRenderInit(doneTime)
     appLog("App is ready", `${doneTime}ms`)
-    applyAfterReadyCallbacks()
 
     if (isMobile()) {
       const handler = (e: MouseEvent) => {
