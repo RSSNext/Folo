@@ -9,7 +9,7 @@ import type {
 import { DEFAULT_SHORTCUT_TARGETS } from "@follow/shared/settings/interface"
 import { jotaiStore } from "@follow/utils"
 import type { ExtractResponseData, GetStatusConfigsResponse } from "@follow-app/client-sdk"
-import { clamp } from "es-toolkit"
+import { clamp, isEqual } from "es-toolkit"
 import { atom, useAtomValue } from "jotai"
 
 import { getFeature } from "~/hooks/biz/useFeature"
@@ -131,11 +131,17 @@ export const aiLocalOnlyKeys: (keyof AISettings)[] = []
 export const syncServerShortcuts = (
   serverShortcuts: readonly ServerShortcutConfig[] | null | undefined,
 ) => {
-  const storedShortcuts = getAISettings().shortcuts ?? []
+  const currentSettings = jotaiStore.get(__aiSettingAtom)
+  const storedShortcuts = currentSettings.shortcuts ?? []
   const serverShortcutList = Array.isArray(serverShortcuts) ? serverShortcuts : []
   const mergedShortcuts = mergeWithServerShortcuts(storedShortcuts, serverShortcutList)
 
-  setAISetting("shortcuts", mergedShortcuts)
+  if (isEqual(mergedShortcuts, storedShortcuts)) return
+
+  // Every device merges the server defaults on its own. Writing them as a user change would
+  // stamp the AI settings as just updated and upload them on each launch, which overrides newer
+  // AI settings from other devices.
+  jotaiStore.set(__aiSettingAtom, { ...currentSettings, shortcuts: mergedShortcuts })
 }
 
 ////////// AI Panel Style
