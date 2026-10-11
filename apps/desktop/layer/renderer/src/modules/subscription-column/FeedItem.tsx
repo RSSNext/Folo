@@ -231,6 +231,7 @@ const FeedItemImpl = ({ view, feedId, className, isPreview }: FeedItemProps) => 
       isInMultipleSelection={isInMultipleSelection}
       data-feed-id={feedId}
       data-sub={`feed-${feedId}`}
+      aria-current={isActive ? "page" : undefined}
       data-active={
         isMultiSelectingButNotSelected
           ? false
@@ -381,6 +382,7 @@ const ListItemImpl: Component<ListItemProps> = ({
     <div
       data-list-id={listId}
       data-sub={`list-${listId}`}
+      aria-current={isActive ? "page" : undefined}
       data-active={isActive || isContextMenuOpen}
       className={cn(feedColumnStyles.item, "py-1 pl-2.5", className)}
       onClick={handleNavigate}
@@ -488,6 +490,7 @@ const InboxItemImpl: Component<InboxItemProps> = ({ view, inboxId, className, ic
   if (!inbox) return null
   return (
     <div
+      aria-current={isActive ? "page" : undefined}
       data-active={isActive || isContextMenuOpen}
       data-sub={`inbox-${inboxId}`}
       data-inbox-id={inboxId}

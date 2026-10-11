@@ -328,6 +328,8 @@ function FeedCategoryImpl({
                 data-type="collapse"
                 type="button"
                 onClick={handleCollapseButtonClick}
+                aria-label={folderName ?? undefined}
+                aria-expanded={open}
                 data-state={open ? "open" : "close"}
                 className={cn(
                   "flex h-8 items-center data-[state=open]:[&_.i-mgc-right-cute-fi]:rotate-90",
