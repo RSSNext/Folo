@@ -369,6 +369,7 @@ const FeedInnerForm = ({
                       data-testid="feed-form-title-input"
                       placeholder={feed.title || undefined}
                       {...field}
+                      value={field.value ?? ""}
                     />
                     <Button
                       buttonClassName="shrink-0"
@@ -401,6 +402,7 @@ const FeedInnerForm = ({
                       maxHeight={window.innerHeight < 600 ? 120 : 240}
                       suggestions={suggestions}
                       {...(field as any)}
+                      value={field.value ?? ""}
                       onSuggestionSelected={(suggestion) => {
                         if (suggestion) {
                           field.onChange(suggestion.value)

@@ -27,6 +27,7 @@ const CmdNPanel = () => {
         url: z.string().url(),
       }),
     ),
+    defaultValues: { url: "" },
 
     mode: "all",
   })
