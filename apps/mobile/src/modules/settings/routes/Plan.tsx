@@ -532,8 +532,10 @@ export const PlanScreen: NavigationControllerView = () => {
     ? t("subscription.summary.current", { plan: summaryPlan.name })
     : t("subscription.summary.free")
 
+  // roleEndAt is the end of the current period for every paid plan, not only for trials
+  const isTrial = activeSubscription?.status === "trialing" || role === UserRole.Trial
   let summarySubtitle = t("subscription.summary.free_description")
-  if (daysLeft && daysLeft > 0 && role && role !== UserRole.Free) {
+  if (daysLeft && daysLeft > 0 && isTrial) {
     summarySubtitle = t("subscription.summary.trial_expiring", {
       date: dayjs(roleEndAt).format("MMMM D, YYYY"),
       days: daysLeft,
