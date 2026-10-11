@@ -1,7 +1,9 @@
 import { useEntry } from "@follow/store/entry/hooks"
 import { cn } from "@follow/utils"
 import { checkLanguage } from "@follow/utils/language"
+import { memo, useMemo } from "react"
 import { useTranslation } from "react-i18next"
+import { useEventCallback } from "usehooks-ts"
 
 import { AudioPlayer, useAudioPlayerAtomSelector } from "~/atoms/player"
 
@@ -354,8 +356,9 @@ export const MediaTranscript: React.FC<MediaTranscriptProps> = ({
   const disableJump = type === "subtitle"
   const disableProgressTracking = type === "subtitle"
 
-  // Get current playing time from the audio player
-  const currentTime = useAudioPlayerAtomSelector((v) => v.currentTime) || 0
+  // Only follow the player while it plays this entry, so other audio doesn't re-render the transcript
+  const currentTime =
+    useAudioPlayerAtomSelector((v) => (v.entryId === entryId ? v.currentTime : 0), [entryId]) || 0
   const status = useAudioPlayerAtomSelector((v) => v.status)
   const playerEntryId = useAudioPlayerAtomSelector((v) => v.entryId)
 
@@ -367,39 +370,16 @@ export const MediaTranscript: React.FC<MediaTranscriptProps> = ({
   // Check if the current playing audio matches this transcript's entry
   const isCurrentAudio = playerEntryId === entryId
 
-  if (!srt) {
-    return (
-      <div className={cn("p-4 text-center text-text-secondary", className)}>
-        {t("entry_content.transcript.empty")}
-      </div>
-    )
-  }
+  const parsed = useMemo<{ subtitles: SubtitleItem[] } | { error: unknown } | null>(() => {
+    if (!srt) return null
+    try {
+      return { subtitles: parseSrt(srt) }
+    } catch (error) {
+      return { error }
+    }
+  }, [srt])
 
-  let subtitles: SubtitleItem[]
-  try {
-    subtitles = parseSrt(srt)
-  } catch (error) {
-    return (
-      <div className={cn("p-4 text-center text-red", className)}>
-        {t("entry_content.transcript.parse_error", {
-          message:
-            error instanceof Error ? error.message : t("error_screen.unknown", { ns: "common" }),
-        })}
-      </div>
-    )
-  }
-
-  // Find the current active subtitle based on current time
-  // Only show active state if this transcript matches the currently playing audio and progress tracking is enabled
-  const currentSubtitleIndex =
-    !disableProgressTracking && isCurrentAudio
-      ? subtitles.findIndex(
-          (subtitle) =>
-            currentTime >= subtitle.startTimeInSeconds && currentTime <= subtitle.endTimeInSeconds,
-        )
-      : -1
-
-  const handleTimeJump = (timeInSeconds: number) => {
+  const handleTimeJump = useEventCallback((timeInSeconds: number) => {
     if (disableJump) return
 
     if (isCurrentAudio) {
@@ -422,86 +402,145 @@ export const MediaTranscript: React.FC<MediaTranscriptProps> = ({
         // mount() automatically starts playing, so no need to call play() here
       }
     }
+  })
+
+  if (!parsed) {
+    return (
+      <div className={cn("p-4 text-center text-text-secondary", className)}>
+        {t("entry_content.transcript.empty")}
+      </div>
+    )
   }
+
+  if (!("subtitles" in parsed)) {
+    const { error } = parsed
+    return (
+      <div className={cn("p-4 text-center text-red", className)}>
+        {t("entry_content.transcript.parse_error", {
+          message:
+            error instanceof Error ? error.message : t("error_screen.unknown", { ns: "common" }),
+        })}
+      </div>
+    )
+  }
+
+  const { subtitles } = parsed
+
+  // Find the current active subtitle based on current time
+  // Only show active state if this transcript matches the currently playing audio and progress tracking is enabled
+  const currentSubtitleIndex =
+    !disableProgressTracking && isCurrentAudio
+      ? subtitles.findIndex(
+          (subtitle) =>
+            currentTime >= subtitle.startTimeInSeconds && currentTime <= subtitle.endTimeInSeconds,
+        )
+      : -1
 
   return (
     <div className={cn("space-y-1", className)} style={style}>
-      {subtitles.map((subtitle, index) => {
-        const isActive = index === currentSubtitleIndex
-        const isPast = isCurrentAudio && currentTime > subtitle.endTimeInSeconds
-
-        return (
-          <div
-            key={subtitle.index}
-            className={cn(
-              "group relative rounded-lg border-l-4 px-3 py-2 transition-all duration-300 ease-out",
-              !disableJump && "cursor-pointer",
-              isActive
-                ? "border-accent bg-accent/5 shadow-sm"
-                : "border-transparent hover:bg-fill-secondary hover:shadow-sm",
-              isPast && "opacity-50",
-            )}
-            onClick={() => !disableJump && handleTimeJump(subtitle.startTimeInSeconds)}
-          >
-            <div className="flex items-start gap-4">
-              {/* Time indicator */}
-              <div className="flex-shrink-0 translate-y-3">
-                {!disableJump ? (
-                  <button
-                    type="button"
-                    onClick={(e) => {
-                      e.stopPropagation()
-                      handleTimeJump(subtitle.startTimeInSeconds)
-                    }}
-                    className={cn(
-                      "rounded-md px-2 py-1 font-mono text-xs leading-none transition-all duration-200",
-                      isActive
-                        ? "bg-accent/10 text-accent"
-                        : "text-text-tertiary hover:bg-fill-tertiary hover:text-text-secondary",
-                    )}
-                    title={t("entry_content.transcript.jump_to_time")}
-                  >
-                    {formatTime(subtitle.startTime)}
-                  </button>
-                ) : (
-                  <span
-                    className={cn(
-                      "rounded-md px-2 py-1 font-mono text-xs leading-none",
-                      isActive ? "bg-accent/10 text-accent" : "bg-fill-tertiary text-text-tertiary",
-                    )}
-                  >
-                    {formatTime(subtitle.startTime)}
-                  </span>
-                )}
-              </div>
-
-              {/* Content */}
-              <div className="min-w-0 flex-1">
-                <p
-                  className={cn(
-                    "text-sm leading-relaxed transition-all duration-300",
-                    isActive ? "text-text-secondary" : "text-text-secondary",
-                    !disableJump && "group-hover:text-text",
-                  )}
-                >
-                  {subtitle.text}
-                </p>
-              </div>
-
-              {/* Active indicator */}
-              {type === "transcription" && (
-                <div className="flex w-6 flex-shrink-0 items-center justify-center">
-                  {isActive && (
-                    <div className="duration-300 animate-in fade-in slide-in-from-right-2">
-                      <div className="size-2 animate-pulse rounded-full bg-accent shadow-sm" />
-                    </div>
-                  )}
-                </div>
-              )}
-            </div>
-          </div>
-        )
-      })}
+      {subtitles.map((subtitle, index) => (
+        <TranscriptCue
+          key={subtitle.index}
+          subtitle={subtitle}
+          isActive={index === currentSubtitleIndex}
+          isPast={isCurrentAudio && currentTime > subtitle.endTimeInSeconds}
+          disableJump={disableJump}
+          showActiveIndicator={type === "transcription"}
+          onJump={handleTimeJump}
+        />
+      ))}
     </div>
   )
 }
+
+const TranscriptCue = memo(
+  ({
+    subtitle,
+    isActive,
+    isPast,
+    disableJump,
+    showActiveIndicator,
+    onJump,
+  }: {
+    subtitle: SubtitleItem
+    isActive: boolean
+    isPast: boolean
+    disableJump: boolean
+    showActiveIndicator: boolean
+    onJump: (timeInSeconds: number) => void
+  }) => {
+    const { t } = useTranslation()
+
+    return (
+      <div
+        className={cn(
+          "group relative rounded-lg border-l-4 px-3 py-2 transition-all duration-300 ease-out",
+          !disableJump && "cursor-pointer",
+          isActive
+            ? "border-accent bg-accent/5 shadow-sm"
+            : "border-transparent hover:bg-fill-secondary hover:shadow-sm",
+          isPast && "opacity-50",
+        )}
+        onClick={() => !disableJump && onJump(subtitle.startTimeInSeconds)}
+      >
+        <div className="flex items-start gap-4">
+          {/* Time indicator */}
+          <div className="flex-shrink-0 translate-y-3">
+            {!disableJump ? (
+              <button
+                type="button"
+                onClick={(e) => {
+                  e.stopPropagation()
+                  onJump(subtitle.startTimeInSeconds)
+                }}
+                className={cn(
+                  "rounded-md px-2 py-1 font-mono text-xs leading-none transition-all duration-200",
+                  isActive
+                    ? "bg-accent/10 text-accent"
+                    : "text-text-tertiary hover:bg-fill-tertiary hover:text-text-secondary",
+                )}
+                title={t("entry_content.transcript.jump_to_time")}
+              >
+                {formatTime(subtitle.startTime)}
+              </button>
+            ) : (
+              <span
+                className={cn(
+                  "rounded-md px-2 py-1 font-mono text-xs leading-none",
+                  isActive ? "bg-accent/10 text-accent" : "bg-fill-tertiary text-text-tertiary",
+                )}
+              >
+                {formatTime(subtitle.startTime)}
+              </span>
+            )}
+          </div>
+
+          {/* Content */}
+          <div className="min-w-0 flex-1">
+            <p
+              className={cn(
+                "text-sm leading-relaxed transition-all duration-300",
+                isActive ? "text-text-secondary" : "text-text-secondary",
+                !disableJump && "group-hover:text-text",
+              )}
+            >
+              {subtitle.text}
+            </p>
+          </div>
+
+          {/* Active indicator */}
+          {showActiveIndicator && (
+            <div className="flex w-6 flex-shrink-0 items-center justify-center">
+              {isActive && (
+                <div className="duration-300 animate-in fade-in slide-in-from-right-2">
+                  <div className="size-2 animate-pulse rounded-full bg-accent shadow-sm" />
+                </div>
+              )}
+            </div>
+          )}
+        </div>
+      </div>
+    )
+  },
+)
+TranscriptCue.displayName = "TranscriptCue"
