@@ -3,7 +3,7 @@ import { Checkbox } from "@follow/components/ui/checkbox/index.jsx"
 import { LazyKateX } from "@follow/components/ui/katex/lazy.js"
 import type { SpotlightRule } from "@follow/shared/spotlight"
 import { applySpotlightToHast, parseHtml as parseHtmlGeneral } from "@follow/utils/html"
-import type { Element, Root } from "hast"
+import type { Element, ElementContent, Root } from "hast"
 import type { Components } from "hast-util-to-jsx-runtime"
 import { createElement } from "react"
 import { renderToString } from "react-dom/server"
@@ -17,6 +17,22 @@ import { MarkdownInlineImage } from "~/components/ui/markdown/renderers/InlineIm
 import { Media } from "~/components/ui/media/Media"
 
 const youtubeEmbedRegex = /^https:\/\/(?:www\.)?(?:youtube\.com|youtube-nocookie\.com)\/embed\//
+
+// Elements whose renderers mark the images in them inline, see markInlineImage
+const inlineImageParents = new Set(["span", "b", "i"])
+// The img renderer below shows an image as block media unless it is inline and narrow, and
+// video is always block media; both render <div>s
+const isBlockMedia = (item: ElementContent, parentTagName?: string): boolean => {
+  if (item.type !== "element") return false
+  if (item.tagName === "video") return true
+  if (item.tagName === "img") {
+    const isInline =
+      (item.properties as any).inline || (!!parentTagName && inlineImageParents.has(parentTagName))
+    const widthPx = Number.parseInt(String(item.properties.width))
+    return !isInline || (!Number.isNaN(widthPx) && widthPx >= 600)
+  }
+  return item.children.some((child) => isBlockMedia(child, item.tagName))
+}
 
 function markInlineImage(node?: Element) {
   for (const item of node?.children ?? []) {
@@ -114,7 +130,11 @@ export const parseHtml = (
               ((item.properties as any).inline = true)
           }
         }
-        return createElement(MarkdownP, props, props.children)
+        return createElement(
+          MarkdownP,
+          { ...props, as: node?.children.some((child) => isBlockMedia(child)) ? "div" : "p" },
+          props.children,
+        )
       },
       span: ({ node, ...props }) => {
         markInlineImage(node)
