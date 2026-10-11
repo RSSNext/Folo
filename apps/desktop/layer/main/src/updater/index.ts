@@ -8,6 +8,7 @@ import type { AppUpdater } from "electron-updater"
 import { autoUpdater as defaultAutoUpdater } from "electron-updater"
 import { join } from "pathe"
 
+import { t } from "~/lib/i18n"
 import { WindowManager } from "~/manager/window"
 import type { RendererManifest } from "~/updater/hot-updater"
 import { RendererEligibilityStatus, rendererUpdater } from "~/updater/hot-updater"
@@ -31,7 +32,7 @@ type UpdateCheckResult = {
 
 class FollowUpdater {
   private readonly disabled: boolean
-  private checkingUpdate = false
+  private checkingUpdatePromise: Promise<UpdateCheckResult> | null = null
   private downloadingUpdate = false
 
   private pollingTimer: NodeJS.Timeout | null = null
@@ -96,27 +97,35 @@ class FollowUpdater {
       return { hasUpdate: false }
     }
 
-    if (this.checkingUpdate) {
-      logger.info("Update check already in progress, skipping")
-      return { hasUpdate: false }
+    // A check started while another runs, such as one from the menu during the background
+    // check at launch, waits for that one instead of reporting no update
+    if (this.checkingUpdatePromise) {
+      logger.info("Update check already in progress, waiting for it")
+      return this.checkingUpdatePromise
     }
 
-    this.checkingUpdate = true
+    this.checkingUpdatePromise = this.runUpdateCheck()
+    try {
+      return await this.checkingUpdatePromise
+    } finally {
+      this.checkingUpdatePromise = null
+    }
+  }
 
+  private async runUpdateCheck(): Promise<UpdateCheckResult> {
     try {
       const [manifest, policy] = await Promise.all([fetchDesktopManifest(), fetchDesktopPolicy()])
 
       if (appUpdaterConfig.enableDistributionStoreUpdate) {
         logger.info("Distribution store update enabled, checking ota manifest and store policy")
-        return this.handleDistributionAppDecision(manifest, policy)
+        return await this.handleDistributionAppDecision(manifest, policy)
       }
 
-      return this.handleDirectAppDecision(manifest, policy)
+      // Awaited, so a failure in the decision is reported as a failed check too
+      return await this.handleDirectAppDecision(manifest, policy)
     } catch (error) {
       logger.error("Failed to check for updates", error)
       return { hasUpdate: false, error: error instanceof Error ? error.message : "Unknown error" }
-    } finally {
-      this.checkingUpdate = false
     }
   }
 
@@ -520,5 +529,21 @@ export const registerUpdater = () => {
 
 export const checkForAppUpdates = (options: UpdateCheckOptions = {}) =>
   followUpdater.checkForUpdates(options)
+
+/** A check the user asked for from the menu or the tray, which tells them how it went. */
+export const checkForAppUpdatesFromMenu = async () => {
+  const result = await checkForAppUpdates()
+  const mainWindow = WindowManager.getMainWindow()
+  if (!mainWindow || mainWindow.isDestroyed()) return
+
+  const { toast } = callWindowExpose(mainWindow)
+  if (result.error) {
+    toast.error(t("update.checkFailed"))
+  } else if (result.hasUpdate) {
+    toast.success(t("update.available"))
+  } else {
+    toast.info(t("update.upToDate"))
+  }
+}
 
 export const quitAndInstall = () => followUpdater.quitAndInstall()

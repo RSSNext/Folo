@@ -70,5 +70,8 @@
   "menu.unread": "未读",
   "menu.view": "视图",
   "menu.window": "窗口",
-  "menu.zoom": "缩放"
+  "menu.zoom": "缩放",
+  "update.available": "有可用的更新",
+  "update.checkFailed": "检查更新失败",
+  "update.upToDate": "已是最新版本"
 }

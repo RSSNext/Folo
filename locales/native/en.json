@@ -70,5 +70,8 @@
   "menu.unread": "Unread",
   "menu.view": "View",
   "menu.window": "Window",
-  "menu.zoom": "Zoom"
+  "menu.zoom": "Zoom",
+  "update.available": "An update is available",
+  "update.checkFailed": "Couldn't check for updates",
+  "update.upToDate": "You're on the latest version"
 }

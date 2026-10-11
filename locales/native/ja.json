@@ -70,5 +70,8 @@
   "menu.unread": "未読",
   "menu.view": "表示",
   "menu.window": "ウィンドウ",
-  "menu.zoom": "ズーム"
+  "menu.zoom": "ズーム",
+  "update.available": "アップデートがあります",
+  "update.checkFailed": "アップデートを確認できませんでした",
+  "update.upToDate": "最新バージョンです"
 }
