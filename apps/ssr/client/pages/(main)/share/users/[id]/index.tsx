@@ -1,4 +1,5 @@
 import { NotFoundContent } from "@client/components/common/404"
+import { ShareLoadError } from "@client/components/common/ShareLoadError"
 import { FeedIcon } from "@client/components/ui/feed-icon"
 import { openInFollowApp } from "@client/lib/helper"
 import { UrlBuilder } from "@client/lib/url-builder"
@@ -14,6 +15,7 @@ import type { SubscriptionWithFeed, UserProfile } from "@follow-app/client-sdk"
 import { FollowAPIError } from "@follow-app/client-sdk"
 import * as React from "react"
 import { Fragment, memo, useState } from "react"
+import { useTranslation } from "react-i18next"
 import { useParams } from "react-router"
 
 interface FeedCardProps {
@@ -86,6 +88,7 @@ FeedCard.displayName = "FeedCard"
 
 export const Component = () => {
   const params = useParams()
+  const { t } = useTranslation()
 
   const user = useUserQuery(params.id)
 
@@ -100,7 +103,9 @@ export const Component = () => {
       return <NotFoundContent />
     }
 
-    return <ProfileLoadError onRetry={() => void user.refetch()} />
+    return (
+      <ShareLoadError title={t("share.load_error_profile")} onRetry={() => void user.refetch()} />
+    )
   }
 
   return (
@@ -112,21 +117,6 @@ export const Component = () => {
     </Fragment>
   )
 }
-
-const ProfileLoadError = ({ onRetry }: { onRetry: () => void }) => (
-  <div className="mx-auto flex min-h-[60vh] max-w-xl flex-col items-center justify-center px-6 text-center">
-    <i className="i-mgc-warning-fill mb-6 size-12 text-orange-500" />
-    <h1 className="text-2xl font-semibold text-zinc-900 dark:text-zinc-100">
-      Unable to load this profile
-    </h1>
-    <p className="mt-3 text-zinc-500 dark:text-zinc-400">
-      This may be a temporary problem. Please try again.
-    </p>
-    <Button buttonClassName="mt-8" onClick={onRetry}>
-      Try again
-    </Button>
-  </div>
-)
 
 const UserHero = ({ user }: { user: UserProfile }) => {
   const subscriptions = useUserSubscriptionsQuery(user.id)

@@ -49,5 +49,10 @@
   "register.email": "E-mail",
   "register.password": "Mot de passe",
   "register.submit": "Créer un compte",
+  "share.load_error_description": "Il s'agit peut-être d'un problème temporaire. Veuillez réessayer.",
+  "share.load_error_feed": "Impossible de charger ce flux",
+  "share.load_error_list": "Impossible de charger cette liste",
+  "share.load_error_profile": "Impossible de charger ce profil",
+  "share.retry": "Réessayer",
   "words.email": "E-mail"
 }

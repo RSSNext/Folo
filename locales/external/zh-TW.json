@@ -49,5 +49,10 @@
   "register.email": "電子信箱",
   "register.password": "密碼",
   "register.submit": "創建帳號",
+  "share.load_error_description": "這可能是暫時的問題，請再試一次。",
+  "share.load_error_feed": "無法載入此訂閱源",
+  "share.load_error_list": "無法載入此列表",
+  "share.load_error_profile": "無法載入此個人頁面",
+  "share.retry": "重試",
   "words.email": "電子信箱"
 }

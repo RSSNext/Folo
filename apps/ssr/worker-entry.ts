@@ -2,6 +2,7 @@ import "./global"
 
 // Global route dependencies
 import { env } from "@follow/shared/env.ssr"
+import { FollowAPIError } from "@follow-app/client-sdk"
 import { Hono } from "hono"
 import { minify } from "html-minifier-terser"
 import { parseHTML } from "linkedom"
@@ -169,6 +170,8 @@ const ssrHandler = async (c: any) => {
       document.documentElement.dataset.notFound = "true"
     } else if (e instanceof FetchError && e.response?.status) {
       c.status(e.response.status as any)
+    } else if (e instanceof FollowAPIError && e.status) {
+      c.status(e.status as any)
     } else if (e instanceof MetaError) {
       return c.json({ ok: false, message: e.metaMessage }, e.status as any)
     }
