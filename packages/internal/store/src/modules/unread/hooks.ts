@@ -1,6 +1,6 @@
 import type { FeedViewType } from "@follow/constants"
 import { useMutation, useQuery } from "@tanstack/react-query"
-import { useCallback, useEffect } from "react"
+import { useCallback, useEffect, useMemo } from "react"
 
 import {
   ensureSyncedThroughEngine,
@@ -153,8 +153,9 @@ export const useUnreadByView = (view: FeedViewType) => {
 export const useSortedIdsByUnread = (ids: string[], isDesc?: boolean) => {
   return useUnreadStore(
     useCallback(
+      // Sorts a copy: the ids often belong to the caller's props and are shared between lists
       (state) =>
-        ids.sort((a, b) => {
+        [...ids].sort((a, b) => {
           const unreadCompare = (state.data[b] || 0) - (state.data[a] || 0)
           if (unreadCompare !== 0) {
             return isDesc ? unreadCompare : -unreadCompare
@@ -174,33 +175,32 @@ export const useSortedCategoriesByUnread = (
   categories: Record<string, string[]>,
   isDesc?: boolean,
 ) => {
+  // The tuples are created once per categories object, so an unchanged order passes the store's
+  // shallow equality check and unread changes don't re-render every folder
+  const entries = useMemo(() => Object.entries(categories) as [string, string[]][], [categories])
   return useUnreadStore(
     useCallback(
       (state) => {
-        const sortedList = [] as [string, string[]][]
-
-        const folderUnread = {} as Record<string, number>
+        const folderUnread = new Map<string, number>()
         // Calc total unread count for each folder
-        for (const category in categories) {
-          folderUnread[category] = categories[category]!.reduce(
-            (acc, cur) => (state.data[cur] || 0) + acc,
-            0,
+        for (const [category, ids] of entries) {
+          folderUnread.set(
+            category,
+            ids.reduce((acc, cur) => (state.data[cur] || 0) + acc, 0),
           )
         }
 
         // Sort by unread count
-        Object.keys(folderUnread)
-          .sort((a, b) => folderUnread[b]! - folderUnread[a]!)
-          .forEach((key) => {
-            sortedList.push([key, categories[key]!.concat()])
-          })
+        const sortedList = [...entries].sort(
+          ([a], [b]) => folderUnread.get(b)! - folderUnread.get(a)!,
+        )
 
         if (!isDesc) {
           sortedList.reverse()
         }
         return sortedList
       },
-      [categories, isDesc],
+      [entries, isDesc],
     ),
   )
 }
