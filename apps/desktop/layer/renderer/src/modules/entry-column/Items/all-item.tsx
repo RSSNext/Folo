@@ -261,8 +261,9 @@ export const AllItemSkeleton = (
 )
 
 function AudioIcon({ entryId, src }: { entryId: string; src: string }) {
-  const playStatus = useAudioPlayerAtomSelector((playerValue) =>
-    playerValue.src === src && playerValue.show ? playerValue.status : false,
+  const playStatus = useAudioPlayerAtomSelector(
+    (playerValue) => (playerValue.src === src && playerValue.show ? playerValue.status : false),
+    [src],
   )
 
   const handleClickPlay = (e: React.MouseEvent<HTMLDivElement>) => {

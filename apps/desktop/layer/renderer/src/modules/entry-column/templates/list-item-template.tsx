@@ -313,8 +313,9 @@ function AudioCover({
   feedIcon: React.ReactNode
 }) {
   const isMobile = useMobile()
-  const playStatus = useAudioPlayerAtomSelector((playerValue) =>
-    playerValue.src === src && playerValue.show ? playerValue.status : false,
+  const playStatus = useAudioPlayerAtomSelector(
+    (playerValue) => (playerValue.src === src && playerValue.show ? playerValue.status : false),
+    [src],
   )
 
   const { t } = useTranslation("common")
