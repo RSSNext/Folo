@@ -18,6 +18,7 @@ import { langLoadingLockMapAtom } from "~/atoms/lang"
 import { useIsPaymentEnabled } from "~/atoms/server-configs"
 import {
   DEFAULT_ACTION_LANGUAGE,
+  getGeneralSettings,
   setGeneralSetting,
   useGeneralSettingKey,
   useGeneralSettingSelector,
@@ -63,10 +64,13 @@ export const SettingGeneral = () => {
       if (settings) {
         // On Windows `openAtLogin` only matches a login item registered without arguments,
         // `executableWillLaunchAtLogin` matches it with any arguments
-        setGeneralSetting(
-          "appLaunchOnStartup",
-          settings.openAtLogin || settings.executableWillLaunchAtLogin === true,
-        )
+        const launchOnStartup =
+          settings.openAtLogin || settings.executableWillLaunchAtLogin === true
+        // Writing marks the general settings as updated, which makes this device ignore older
+        // general settings from other devices, so only write when the OS value differs
+        if (getGeneralSettings().appLaunchOnStartup !== launchOnStartup) {
+          setGeneralSetting("appLaunchOnStartup", launchOnStartup)
+        }
       }
     })
   }, [])
