@@ -91,12 +91,16 @@ const useRemoteEntries = (): UseEntriesReturn => {
   ])
   const query = useEntriesQuery(entriesOptions)
 
+  // "Mark above as read" sends this as `insertedBefore`, so it must only move
+  // when the top of the list is (re)loaded. Loading the next page doesn't show
+  // entries inserted after the first page was fetched.
+  const isFetchingFirstPage = query.isFetching && !query.isFetchingNextPage
   const [fetchedTime, setFetchedTime] = useState<number>()
   useEffect(() => {
-    if (!query.isFetching) {
+    if (!isFetchingFirstPage) {
       setFetchedTime(Date.now())
     }
-  }, [query.isFetching])
+  }, [isFetchingFirstPage])
 
   const refetch = useCallback(async () => void query.refetch(), [query])
   const fetchNextPage = useCallback(async () => void query.fetchNextPage(), [query])
