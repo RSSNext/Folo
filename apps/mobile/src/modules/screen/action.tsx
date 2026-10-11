@@ -32,6 +32,7 @@ export const ActionGroup = ({ children, className }: PropsWithChildren<{ classNa
 }
 
 export function HomeLeftAction() {
+  const { t } = useTranslation()
   const user = useWhoami()
 
   const navigation = useNavigation()
@@ -45,7 +46,12 @@ export function HomeLeftAction() {
 
   return (
     <ActionGroup className="ml-2">
-      <Pressable testID="home-avatar-trigger" onPress={handlePress}>
+      <Pressable
+        testID="home-avatar-trigger"
+        accessibilityRole="button"
+        accessibilityLabel={user ? t("profile.my_profile") : t("settings.sign_in_cta")}
+        onPress={handlePress}
+      >
         <UserAvatar
           image={user?.image}
           name={user?.name}
