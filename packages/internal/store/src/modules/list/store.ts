@@ -207,7 +207,10 @@ class ListSyncServices {
       feedActions.upsertMany([apiMorph.toFeedFromAddFeeds(feed)])
     })
     await listActions.upsertMany([
-      { ...list, feedIds: [...list.feedIds, ...feeds.data.map((feed) => feed.id)] },
+      {
+        ...list,
+        feedIds: Array.from(new Set([...list.feedIds, ...feeds.data.map((feed) => feed.id)])),
+      },
     ])
   }
 
