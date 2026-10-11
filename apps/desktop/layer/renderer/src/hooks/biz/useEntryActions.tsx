@@ -24,7 +24,7 @@ import { useIntegrationSettingValue } from "~/atoms/settings/integration"
 import { useShowSourceContent } from "~/atoms/source-content"
 import { ipcServices } from "~/lib/client"
 import { COMMAND_ID } from "~/modules/command/commands/id"
-import { getCommand, useRunCommandFn } from "~/modules/command/hooks/use-command"
+import { getCommand, useCommands, useRunCommandFn } from "~/modules/command/hooks/use-command"
 import { useCommandShortcuts } from "~/modules/command/hooks/use-command-binding"
 import { isMutationCommandId } from "~/modules/command/mutation-command-ids"
 import type { FollowCommandId, UnknownCommand } from "~/modules/command/types"
@@ -262,6 +262,8 @@ export const useEntryActions = ({ entryId, view }: { entryId: string; view: Feed
   const integrationSettings = useIntegrationSettingValue()
 
   const shortcuts = useCommandShortcuts()
+  // Integrations register their commands only once they are enabled
+  const commands = useCommands()
 
   const isCurrentVisitEntry = routeEntryId === entryId
   const isOnboardingEntry = isOnboardingEntryUrl(entry?.url)
@@ -467,6 +469,7 @@ export const useEntryActions = ({ entryId, view }: { entryId: string; view: Feed
     })
 
     return configs
+    // eslint-disable-next-line react-hooks/exhaustive-deps -- the items read `commands` through getCommand
   }, [
     hasEntry,
     runCmdFn,
@@ -493,6 +496,7 @@ export const useEntryActions = ({ entryId, view }: { entryId: string; view: Feed
     integrationSettings.customIntegration,
     integrationSettings.enableCustomIntegration,
     isOnboardingEntry,
+    commands,
   ])
 
   return actionConfigs
