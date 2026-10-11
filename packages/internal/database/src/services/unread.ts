@@ -18,10 +18,11 @@ class UnreadServiceStatic implements Resetable {
   }
 
   async upsertMany(unreads: UnreadSchema[], options?: UnreadUpdateOptions) {
-    if (unreads.length === 0) return
+    // An empty snapshot still replaces the stored counts, or they come back on the next launch
     if (options?.reset) {
       await db.delete(unreadTable).execute()
     }
+    if (unreads.length === 0) return
     await db
       .insert(unreadTable)
       .values(unreads)
