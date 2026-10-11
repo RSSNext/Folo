@@ -1,3 +1,4 @@
+import { FeedViewType } from "@follow/constants"
 import { useIsEntryStarred } from "@follow/store/collection/hooks"
 import { collectionSyncService } from "@follow/store/collection/store"
 import { useEntry } from "@follow/store/entry/hooks"
@@ -31,6 +32,7 @@ import { useNavigation } from "@/src/lib/navigation/hooks"
 import { createLinkShareContent } from "@/src/lib/share"
 import { toast } from "@/src/lib/toast"
 import { playEntryTts } from "@/src/modules/player/entry-tts"
+import { getSelectedView } from "@/src/modules/screen/atoms"
 import { ReadingScreen } from "@/src/modules/settings/routes/Reading"
 
 import { useEntryContentContext } from "./ctx"
@@ -92,13 +94,15 @@ const HeaderRightActionsImpl = ({
   const subscription = useSubscriptionById(feed?.feedId as string)
 
   const handleToggleStar = () => {
-    if (!entry || !feed || !subscription) return
+    if (!entry) return
 
     isStarred
       ? collectionSyncService.unstarEntry({ entryId })
       : collectionSyncService.starEntry({
           entryId,
-          view: subscription.view,
+          // An entry read through a list, a preview or an unfollowed feed has no subscription,
+          // so it is starred in the view it was opened from
+          view: subscription?.view ?? getSelectedView() ?? FeedViewType.Articles,
         })
   }
 
@@ -143,7 +147,7 @@ const HeaderRightActionsImpl = ({
   // Define action items for reuse
   const actionItems = [
     isLoggedIn &&
-      subscription && {
+      !!entry && {
         key: "Star",
         title: isStarred ? t("operation.unstar") : t("operation.star"),
         icon: isStarred ? <StarCuteFiIcon /> : <StarCuteReIcon />,
