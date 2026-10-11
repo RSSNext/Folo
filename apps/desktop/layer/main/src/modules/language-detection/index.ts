@@ -64,13 +64,22 @@ const adjustLanguageConfidence = (modelResult: vsld.ModelResult): vsld.ModelResu
 }
 const require = createRequire(import.meta.url)
 
+// One instance for the app: the model is loaded and kept per instance, so a new one per code
+// block reloaded it every time and left the previous weights in memory
+let modelOperations: vsld.ModelOperations | undefined
+const getModelOperations = () => {
+  if (!modelOperations) {
+    const { ModelOperations } =
+      require("vscode-languagedetection") as typeof import("vscode-languagedetection")
+    modelOperations = new ModelOperations()
+  }
+  return modelOperations
+}
+
 export const detectCodeStringLanguage = async function* (codeString: string) {
-  const { ModelOperations } =
-    require("vscode-languagedetection") as typeof import("vscode-languagedetection")
-  const modelOperations = new ModelOperations()
-  const modelResults = await modelOperations.runModel(codeString)
+  const modelResults = await getModelOperations().runModel(codeString)
   if (modelResults.length === 0) {
-    logger.debug("no model results", codeString)
+    logger.debug("no model results")
     return
   }
   const firstModelResult = adjustLanguageConfidence(modelResults[0]!)
