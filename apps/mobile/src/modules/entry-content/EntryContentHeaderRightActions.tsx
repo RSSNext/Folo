@@ -233,6 +233,11 @@ const HeaderRightActionsImpl = ({
           opacity: interpolate(titleOpacityShareValue.value, [0, 1], [1, 0]),
         }))}
         className="absolute right-[32px] z-10 flex-row gap-2"
+        // Faded out once the title shows in the header, where Android would still let them be
+        // tapped and screen readers would still find them
+        pointerEvents={isHeaderTitleVisible ? "none" : "box-none"}
+        accessibilityElementsHidden={isHeaderTitleVisible}
+        importantForAccessibility={isHeaderTitleVisible ? "no-hide-descendants" : "auto"}
       >
         {actionItems
           .filter((item) => !item.inMenu)
