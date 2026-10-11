@@ -13,8 +13,9 @@ import { ZustandChat } from "./chat-instance"
 import type { ChatSlice } from "./types"
 
 export class ChatSliceActions {
-  // Hold reference to the most recently constructed (active) ChatSliceActions instance
-  private static _current: ChatSliceActions | null = null
+  // Mounted chat roots, the most recently mounted last. A closed modal or layout removes its
+  // own entry, so the previous chat becomes active again instead of a store nobody sees.
+  private static _activeStack: ChatSliceActions[] = []
 
   /**
    * Get the currently active ChatSliceActions instance.
@@ -23,15 +24,19 @@ export class ChatSliceActions {
    * This may be removed/refactored.
    */
   static getActiveInstance(): ChatSliceActions | null {
-    if (!this._current) return null
-    return this._current
+    return this._activeStack.at(-1) ?? null
   }
 
   /**
-   * See warning above — this setter exists solely for the same limited purpose.
+   * See warning above — this exists solely for the same limited purpose.
+   * @returns a function that removes the instance again when its chat root unmounts
    */
-  static setActiveInstance(instance: ChatSliceActions | null) {
-    this._current = instance
+  static activate(instance: ChatSliceActions) {
+    this._activeStack.push(instance)
+    return () => {
+      const index = this._activeStack.lastIndexOf(instance)
+      if (index !== -1) this._activeStack.splice(index, 1)
+    }
   }
 
   private chatInstance: ZustandChat
