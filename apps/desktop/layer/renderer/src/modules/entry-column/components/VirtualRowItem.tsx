@@ -1,5 +1,4 @@
 import { useEntry } from "@follow/store/entry/hooks"
-import { useIsListSubscription } from "@follow/store/subscription/hooks"
 import { clsx } from "@follow/utils/utils"
 import type { FC, Key } from "react"
 import { Fragment, memo, useMemo } from "react"
@@ -31,12 +30,11 @@ const EntryHeadDateItem: FC<{
     return { insertedAt, publishedAt }
   })
 
-  const routeParams = useRouteParams()
-  const { feedId, view } = routeParams
-  const isList = useIsListSubscription(feedId)
+  const { listId, view } = useRouteParams()
 
   if (!entry) return null
-  const date = new Date(isList ? entry.insertedAt : entry.publishedAt).toDateString()
+  // Match the grouping in useEntriesByView: lists are grouped by insertion time
+  const date = new Date(listId ? entry.insertedAt : entry.publishedAt).toDateString()
 
   return <DateItem isSticky={isSticky} date={date} view={view} />
 }
