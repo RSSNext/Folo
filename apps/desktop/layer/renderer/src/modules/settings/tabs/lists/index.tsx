@@ -131,7 +131,7 @@ export const SettingLists = () => {
                   </TableHeader>
                   <TableBody className="border-t-[12px] border-transparent [&_td]:!px-3">
                     {ownedLists.map((row) => (
-                      <TableRow key={row.title} className="h-8">
+                      <TableRow key={row.id} className="h-8">
                         <TableCell size="sm">
                           <a
                             target="_blank"
