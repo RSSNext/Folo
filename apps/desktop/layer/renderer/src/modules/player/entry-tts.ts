@@ -316,11 +316,21 @@ const stopActiveTts = () => {
   resetActiveTtsCleanup()
 }
 
+// Mounting the TTS source releases the previous external source, so the
+// teardown is cleared while TTS mounts itself and registered again after.
+const mountTtsSource = (mount: () => void) => {
+  AudioPlayer.setExternalSourceTeardown(null)
+  mount()
+  AudioPlayer.setExternalSourceTeardown(stopActiveTts)
+}
+
 export const playEntryTts = async (entryId: string, { toastTitle }: { toastTitle: string }) => {
   stopActiveTts()
 
   const abortController = new AbortController()
   activeTtsAbortController = abortController
+  // Another source mounted while the TTS request is pending cancels it.
+  AudioPlayer.setExternalSourceTeardown(stopActiveTts)
 
   try {
     const entry = getEntry(entryId)
@@ -344,34 +354,38 @@ export const playEntryTts = async (entryId: string, { toastTitle }: { toastTitle
 
     let handled = false
     if (response.body && getAudioContextConstructor()) {
-      AudioPlayer.mount({
-        type: "audio",
-        entryId,
-        src: STREAM_PLACEHOLDER_SRC,
-        currentTime: 0,
+      mountTtsSource(() => {
+        AudioPlayer.mount({
+          type: "audio",
+          entryId,
+          src: STREAM_PLACEHOLDER_SRC,
+          currentTime: 0,
+        })
+
+        const streamingHandle = createAudioContextStreamingHandle(
+          response,
+          entryId,
+          abortController.signal,
+        )
+
+        if (streamingHandle) {
+          activeTtsCleanup = streamingHandle.cleanup
+          handled = true
+        }
       })
-
-      const streamingHandle = createAudioContextStreamingHandle(
-        response,
-        entryId,
-        abortController.signal,
-      )
-
-      if (streamingHandle) {
-        activeTtsCleanup = streamingHandle.cleanup
-        handled = true
-      }
     }
 
     if (!handled) {
       const bufferedHandle = await createBufferedTtsHandle(response, abortController.signal)
-      AudioPlayer.mount({
-        type: "audio",
-        entryId,
-        src: bufferedHandle.url,
-        currentTime: 0,
+      mountTtsSource(() => {
+        AudioPlayer.mount({
+          type: "audio",
+          entryId,
+          src: bufferedHandle.url,
+          currentTime: 0,
+        })
+        activeTtsCleanup = bufferedHandle.cleanup
       })
-      activeTtsCleanup = bufferedHandle.cleanup
     }
   } catch (error) {
     if (abortController.signal.aborted) {

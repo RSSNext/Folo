@@ -64,6 +64,11 @@ export const [
   }),
 )
 
+// Stops a source that does not go through `audio.src` (the TTS MediaStream).
+// `srcObject` takes precedence over `src`, so it must be released before
+// another source is mounted.
+let externalSourceTeardown: (() => void) | null = null
+
 export const AudioPlayer = {
   audio: new Audio(),
   currentTimeTimer: null as ReturnType<typeof setInterval> | null,
@@ -72,10 +77,25 @@ export const AudioPlayer = {
   get() {
     return getAudioPlayerAtomValue()
   },
+  setExternalSourceTeardown(teardown: (() => void) | null) {
+    externalSourceTeardown = teardown
+  },
+  releaseExternalSource() {
+    const teardown = externalSourceTeardown
+    externalSourceTeardown = null
+    teardown?.()
+    if (this.audio.srcObject) {
+      this.audio.srcObject = null
+    }
+  },
   mount(v: Omit<PlayerAtomValue, "show" | "status" | "playedSeconds" | "duration">) {
     const curV = getAudioPlayerAtomValue()
     if (!v.src || (curV.src === v.src && curV.status === "playing")) {
       return
+    }
+
+    if (v.src !== curV.src) {
+      this.releaseExternalSource()
     }
 
     const routeParams = getRouteParams()
@@ -188,6 +208,7 @@ export const AudioPlayer = {
     })
 
     this.teardown()
+    this.releaseExternalSource()
   },
   seek(time: number) {
     if (getAudioPlayerAtomValue().isStream) {
