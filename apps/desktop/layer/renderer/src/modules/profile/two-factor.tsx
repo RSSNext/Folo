@@ -23,6 +23,7 @@ import { z } from "zod"
 
 import { useCurrentModal, useModalStack } from "~/components/ui/modal/stacked/hooks"
 import { twoFactor } from "~/lib/auth"
+import { copyToClipboard } from "~/lib/clipboard"
 import { getFetchErrorInfo } from "~/lib/error-parser"
 import { useHasPassword } from "~/queries/auth"
 
@@ -219,6 +220,7 @@ export const TwoFactorForm = () => {
       <div className="flex items-center justify-center">
         <QRCode value={totpURI} className="dark:border dark:border-white" />
       </div>
+      <TOTPSetupKeyButton totpURI={totpURI} />
       <TOTPForm
         message={{
           label: t("profile.totp_code.init"),
@@ -252,6 +254,26 @@ export const TwoFactorForm = () => {
         }
       }}
     />
+  )
+}
+
+// For authenticators that can't scan the screen, such as a password manager on the same computer
+const TOTPSetupKeyButton = ({ totpURI }: { totpURI: string }) => {
+  const { t } = useTranslation("settings")
+  const secret = URL.canParse(totpURI) ? new URL(totpURI).searchParams.get("secret") : null
+  if (!secret) return null
+
+  return (
+    <button
+      type="button"
+      className="mx-auto text-xs text-accent hover:underline"
+      onClick={async () => {
+        await copyToClipboard(secret)
+        toast.success(t("profile.two_factor.setup.key_copied"))
+      }}
+    >
+      {t("profile.two_factor.setup.copy_key")}
+    </button>
   )
 }
 
