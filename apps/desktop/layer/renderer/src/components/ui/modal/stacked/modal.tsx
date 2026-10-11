@@ -153,9 +153,12 @@ export const ModalInternal = memo(function Modal({
 
   const getIndex = useEventCallback(() => index)
   const [modalContentRef, setModalContentRef] = useState<HTMLDivElement | null>(null)
+  // `canClose` only stops the user from closing the modal (X, Escape, clicking outside).
+  // The content and the presenter can always dismiss it, or it would stay open with nothing in it.
+  const forceDismiss = useCallback(() => close(true), [close])
   const ModalProps: ModalActionsInternal = useMemo(
     () => ({
-      dismiss: close,
+      dismiss: forceDismiss,
       getIndex,
       setClickOutSideToDismiss: (v) => {
         setStack((state) =>
@@ -168,7 +171,7 @@ export const ModalInternal = memo(function Modal({
         )
       },
     }),
-    [close, getIndex, item.id, setStack],
+    [forceDismiss, getIndex, item.id, setStack],
   )
   useModalSubscriber(item.id, ModalProps)
 
