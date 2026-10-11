@@ -47,7 +47,7 @@ export class BootstrapManager {
       const mainWindow = WindowManager.getMainWindow()
       if (mainWindow) {
         if (mainWindow.isMinimized()) mainWindow.restore()
-        mainWindow.show()
+        WindowManager.showMainWindow(mainWindow)
       }
 
       const url = commandLine.find(isDeepLink)

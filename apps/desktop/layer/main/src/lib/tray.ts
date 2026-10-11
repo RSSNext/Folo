@@ -110,7 +110,7 @@ const showWindow = () => {
   if (mainWindow.isMinimized()) {
     mainWindow.restore()
   } else {
-    mainWindow.show()
+    WindowManager.showMainWindow(mainWindow)
   }
 }
 

@@ -59,7 +59,7 @@ export const registerAppMenu = () => {
           click: () => {
             const mainWindow = WindowManager.getMainWindow()
             if (!mainWindow) return
-            mainWindow.show()
+            WindowManager.showMainWindow(mainWindow)
             const caller = callWindowExpose(mainWindow)
             caller.quickAdd()
           },
@@ -72,7 +72,7 @@ export const registerAppMenu = () => {
           click: () => {
             const mainWindow = WindowManager.getMainWindow()
             if (!mainWindow) return
-            mainWindow.show()
+            WindowManager.showMainWindow(mainWindow)
 
             const caller = callWindowExpose(mainWindow)
             caller.goToDiscover()
@@ -182,7 +182,7 @@ export const registerAppMenu = () => {
               {
                 label: t("menu.checkForUpdates"),
                 click: async () => {
-                  WindowManager.getMainWindow()?.show()
+                  WindowManager.showMainWindow()
                   await checkForAppUpdatesFromMenu()
                 },
               },

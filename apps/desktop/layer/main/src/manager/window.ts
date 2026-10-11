@@ -442,9 +442,12 @@ class WindowManagerStatic {
       minHeight: Math.min(this.config.minWindowSize.height, maxHeight),
     })
 
-    // Once shown: maximizing a hidden window shows it before the renderer is ready
+    // Once shown: maximizing a hidden window shows it before the renderer is ready. macOS
+    // ignores a maximize while the window is still being ordered in, so it waits a tick.
+    // Maximizing a hidden window would show it before the renderer is ready, so it happens when
+    // the window is first shown
     if (windowState?.isMaximized) {
-      window.once("show", () => window.maximize())
+      this.maximizeOnFirstShow.add(window)
     }
 
     this.bindMainWindowCloseHandlers(window)
@@ -464,18 +467,27 @@ class WindowManagerStatic {
       if (this.windows.mainWindow.isMinimized()) {
         this.windows.mainWindow.restore()
       }
-      this.windows.mainWindow.show()
+      this.showMainWindow(this.windows.mainWindow)
 
       callWindowExpose(this.windows.mainWindow).showSetting(path)
       return
     } else {
       this.windows.mainWindow = this.createMainWindow()
-      this.windows.mainWindow.show()
+      this.showMainWindow(this.windows.mainWindow)
       callWindowExpose(this.windows.mainWindow).showSetting(path)
     }
   }
 
   getMainWindow = () => this.windows.mainWindow
+
+  private maximizeOnFirstShow = new WeakSet<BrowserWindow>()
+
+  /** Shows the main window, maximized the first time if it was maximized when the app quit. */
+  showMainWindow = (window = this.windows.mainWindow) => {
+    if (!window || window.isDestroyed()) return
+    window.show()
+    if (this.maximizeOnFirstShow.delete(window)) window.maximize()
+  }
 
   getMainWindowOrCreate = () => {
     if (!this.windows.mainWindow) {

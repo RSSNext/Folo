@@ -262,7 +262,7 @@ export class AppService extends IpcService {
       setRendererReady(true)
     }
     if (shouldStartInTray()) return
-    if (window) window.show()
+    if (window) WindowManager.showMainWindow(window)
   }
 
   @IpcMethod()
