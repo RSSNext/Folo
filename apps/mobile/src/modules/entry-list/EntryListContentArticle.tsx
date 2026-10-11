@@ -94,7 +94,8 @@ export const EntryListContentArticle = ({
   const ref = useRef<FlashListRef<any>>(null)
 
   const { onViewableItemsChanged, onScroll, viewableItems } = useOnViewableItemsChanged({
-    disabled: active === false || isFetching || suspendMarkRead,
+    // Loading the next page only appends entries, so the ones scrolled past meanwhile still count
+    disabled: active === false || (isFetching && !isFetchingNextPage) || suspendMarkRead,
     refreshing: isFetching && !isFetchingNextPage,
   })
 
