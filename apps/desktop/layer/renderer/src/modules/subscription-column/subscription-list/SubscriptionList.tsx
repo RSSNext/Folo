@@ -32,6 +32,7 @@ import { useCommandBinding } from "../../command/hooks/use-command-binding"
 import { useCommandHotkey } from "../../command/hooks/use-register-hotkey"
 import { useIsPreviewFeed } from "../../entry-column/hooks/useIsPreviewFeed"
 import {
+  getSelectedFeedIds,
   resetSelectedFeedIds,
   setFeedAreaScrollProgressValue,
   setSelectedFeedIds,
@@ -136,6 +137,15 @@ const SubscriptionImpl = ({ ref, className, view, isSubscriptionLoading }: Subsc
 
   const routerParams = useRouteParams()
   const { listId, feedId } = routerParams
+
+  // A sidebar selection no longer applies once another feed is opened from elsewhere, such as
+  // the entry header or search, or else the opened feed isn't highlighted
+  useEffect(() => {
+    const selectedFeedIds = getSelectedFeedIds()
+    if (selectedFeedIds.length === 0) return
+    if (feedId && selectedFeedIds.includes(feedId)) return
+    resetSelectedFeedIds()
+  }, [feedId])
   const isPreview = useIsPreviewFeed()
   const isFeedPreview = isPreview && !listId
   const isListPreview = isPreview && listId
