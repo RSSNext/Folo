@@ -41,9 +41,8 @@ export const SearchCmdK: React.FC = () => {
   const { t } = useTranslation()
   const open = useAppSearchOpen()
 
-  const [searchInstance, setSearchInstance] = React.useState(() =>
-    searchActions.createLocalDbSearch(),
-  )
+  // Built when the search opens: it reads every cached entry and indexes its content
+  const [searchInstance, setSearchInstance] = React.useState<Promise<SearchInstance> | null>(null)
   React.useEffect(() => {
     if (!open) return
 
@@ -92,6 +91,7 @@ export const SearchCmdK: React.FC = () => {
   const [isPending, startTransition] = React.useTransition()
   const handleSearch = React.useCallback(
     async (value: string) => {
+      if (!searchInstance) return
       const { search } = await searchInstance
       setPage(0)
       startTransition(() => {
