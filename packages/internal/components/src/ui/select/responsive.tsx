@@ -62,6 +62,7 @@ export const ResponsiveSelect = ({
       <button
         type="button"
         data-testid={triggerTestId}
+        disabled={disabled}
         onClick={() => realSelectRef?.click()}
         className={cn(
           "flex w-full items-center justify-between whitespace-nowrap rounded-md bg-transparent placeholder:text-text-secondary disabled:cursor-not-allowed disabled:opacity-50 [&>span]:line-clamp-1",
@@ -83,7 +84,8 @@ export const ResponsiveSelect = ({
         <select
           ref={setRealSelectRef}
           data-testid={nativeSelectTestId}
-          className="absolute inset-0 opacity-0"
+          className="absolute inset-0 opacity-0 disabled:cursor-not-allowed"
+          disabled={disabled}
           value={valueInner}
           onChange={(e) => onValueChange?.(e.target.value)}
         >
