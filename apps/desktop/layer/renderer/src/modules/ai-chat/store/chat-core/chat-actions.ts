@@ -35,6 +35,8 @@ export class ChatSliceActions {
   }
 
   private chatInstance: ZustandChat
+  // Bumped by every chat switch or new chat, so a slower earlier switch can tell it is outdated
+  private switchToken = 0
   constructor(
     private params: Parameters<StateCreator<ChatSlice, [], [], ChatSlice>>,
 
@@ -272,6 +274,7 @@ export class ChatSliceActions {
   }
 
   newChat = async () => {
+    this.switchToken++
     const newChatId = nanoid()
     // Cleanup old chat instance
     await this.chatInstance.destroy()
@@ -307,9 +310,12 @@ export class ChatSliceActions {
   }
 
   switchToChat = async (chatId: string) => {
+    const token = ++this.switchToken
+    const isOutdated = () => token !== this.switchToken
     try {
       // Cleanup old chat instance
       await this.chatInstance.destroy()
+      if (isOutdated()) return
       // Set loading state (using ready as there's no loading status in ChatStatus)
       this.setStatus("ready")
       this.setError(undefined)
@@ -317,6 +323,7 @@ export class ChatSliceActions {
       // Load session and messages in parallel to reduce database queries
       const { session: chatSession, messages } =
         await AIPersistService.loadSessionWithMessages(chatId)
+      if (isOutdated()) return
 
       // Create new chat instance with loaded messages
       const newChatInstance = new ZustandChat(
@@ -344,10 +351,14 @@ export class ChatSliceActions {
         syncStatus: chatSession ? chatSession.syncStatus : "local",
       }))
 
-      await newChatInstance.resumeStream()
-      // Update the reference
+      // Take over before resuming: resumeStream only settles when the resumed answer has
+      // finished, and stop, send or newChat must reach this instance meanwhile
       this.chatInstance = newChatInstance
+      newChatInstance.resumeStream().catch((error) => {
+        console.error("Failed to resume the chat stream:", error)
+      })
     } catch (error) {
+      if (isOutdated()) return
       console.error("Failed to switch to chat:", error)
       this.setError(error as Error)
       this.setStatus("ready")
