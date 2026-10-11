@@ -31,7 +31,10 @@ export const registerCollectionCommand = (program: Command) => {
 
         const response = await client.api.entries.list(request)
         const entries = response.data
-        const nextCursor = entries.at(-1)?.entries.publishedAt ?? null
+        const lastEntry = entries.at(-1)
+        // Collections are paged by when they were collected, not when they were published
+        const nextCursor =
+          lastEntry?.collections?.createdAt ?? lastEntry?.entries.publishedAt ?? null
 
         return {
           entries,
