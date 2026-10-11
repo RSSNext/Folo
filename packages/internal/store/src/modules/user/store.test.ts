@@ -1,7 +1,8 @@
+import type { AuthClient } from "@follow/shared/auth"
 import { FollowAPIError, FollowAuthError, FollowTimeoutError } from "@follow-app/client-sdk"
 import { beforeEach, describe, expect, it, vi } from "vitest"
 
-import { apiContext } from "../../context"
+import { apiContext, authClientContext } from "../../context"
 import type { FollowAPI } from "../../types"
 import type { MeModel } from "./store"
 import { userSyncService, useUserStore } from "./store"
@@ -55,5 +56,34 @@ describe("userSyncService.whoami", () => {
 
     await expect(userSyncService.whoami()).resolves.toBeNull()
     expect(useUserStore.getState().whoami).toBeNull()
+  })
+})
+
+describe("userSyncService.updateProfile", () => {
+  const updateUserMock = vi.fn()
+
+  beforeEach(() => {
+    vi.clearAllMocks()
+    useUserStore.setState({ users: {}, whoami: me, role: null, roleEndAt: null })
+    authClientContext.provide({ updateUser: updateUserMock } as unknown as AuthClient)
+  })
+
+  it("rolls the change back when the auth server rejects it", async () => {
+    updateUserMock.mockResolvedValue({
+      data: null,
+      error: { message: "Handle is already taken", status: 400, statusText: "Bad Request" },
+    })
+
+    await expect(userSyncService.updateProfile({ handle: "taken" })).rejects.toThrow(
+      "Handle is already taken",
+    )
+    expect(useUserStore.getState().whoami).toEqual(me)
+  })
+
+  it("keeps the change when the auth server accepts it", async () => {
+    updateUserMock.mockResolvedValue({ data: { status: true }, error: null })
+
+    await userSyncService.updateProfile({ handle: "mine" })
+    expect(useUserStore.getState().whoami).toEqual({ ...me, handle: "mine" })
   })
 })

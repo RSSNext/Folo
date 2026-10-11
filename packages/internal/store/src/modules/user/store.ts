@@ -119,10 +119,14 @@ class UserSyncService {
     })
 
     tx.request(async () => {
-      await authClient().updateUser({
+      const res = await authClient().updateUser({
         ...data,
         socialLinks: (data.socialLinks || null) as any,
       })
+      // The auth client resolves with the error instead of throwing; throw so the change rolls back
+      if (res.error) {
+        throw new Error(res.error.message || res.error.statusText)
+      }
     })
     tx.persist(async () => {
       const { whoami } = get()
@@ -145,7 +149,10 @@ class UserSyncService {
   async sendVerificationEmail() {
     const me = get().whoami
     if (!me?.email) return
-    await authClient().sendVerificationEmail({ email: me.email! })
+    const res = await authClient().sendVerificationEmail({ email: me.email! })
+    if (res.error) {
+      throw new Error(res.error.message || res.error.statusText)
+    }
   }
 
   async updateTwoFactor(enabled: boolean, password: string) {
@@ -182,7 +189,10 @@ class UserSyncService {
     tx.request(async () => {
       const { whoami } = get()
       if (!whoami) return
-      await authClient().changeEmail({ newEmail: email })
+      const res = await authClient().changeEmail({ newEmail: email })
+      if (res.error) {
+        throw new Error(res.error.message || res.error.statusText)
+      }
     })
     tx.rollback(() => {
       immerSet((state) => {
