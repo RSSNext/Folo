@@ -6,7 +6,7 @@ import { listSyncServices } from "@follow/store/list/store"
 import type { CreateListModel } from "@follow/store/list/types"
 import { zodResolver } from "@hookform/resolvers/zod"
 import { memo, useEffect, useState } from "react"
-import { Controller, useForm } from "react-hook-form"
+import { Controller, useForm, useFormState } from "react-hook-form"
 import { useTranslation } from "react-i18next"
 import { View } from "react-native"
 import { z } from "zod"
@@ -193,7 +193,9 @@ const ScreenOptions = memo(({ title, listId }: ScreenOptionsProps) => {
   const { t } = useTranslation("settings")
   const form = useFormContext()
 
-  const { isValid, isDirty } = form.formState
+  // This memoized component only re-renders for a form state it subscribes to; reading
+  // form.formState here would keep the values of its first render
+  const { isValid, isDirty } = useFormState({ control: form.control })
 
   const isEditing = !!listId
   const [isLoading, setIsLoading] = useState(false)
