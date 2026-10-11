@@ -9,6 +9,7 @@ import {
   getSessionTokenFromCookies,
   isCliRunnerAvailable,
   readCliConfig,
+  setCliSyncEnabled,
   syncSessionToCliConfig,
 } from "../../lib/cli-session-sync"
 
@@ -59,6 +60,7 @@ export class CliService extends IpcService {
       }
 
       await syncSessionToCliConfig(token)
+      setCliSyncEnabled(true)
       return { success: true }
     } catch (error) {
       return {
@@ -71,6 +73,7 @@ export class CliService extends IpcService {
   @IpcMethod()
   async uninstallCli(): Promise<{ success: boolean; error?: string }> {
     try {
+      setCliSyncEnabled(false)
       await syncSessionToCliConfig()
       return { success: true }
     } catch (error) {

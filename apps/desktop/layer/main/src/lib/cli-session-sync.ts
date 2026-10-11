@@ -19,6 +19,7 @@ import {
 } from "./auth-cookies"
 import { describeCliCommand, redactCliSecrets } from "./cli-command"
 import { resolveCliSessionToken } from "./cli-login-token"
+import { store } from "./store"
 
 const execFileAsync = promisify(execFile)
 export const CLI_NPM_PACKAGE_NAME = "folocli"
@@ -53,6 +54,21 @@ const writeCliConfig = async (config: CliConfig): Promise<void> => {
 }
 
 export const getCliConfigPath = () => CLI_CONFIG_PATH
+
+// The session is copied to the CLI only after the user connects it in the settings, and no longer
+// once they disconnect it, so the token isn't written for users who never asked for the CLI
+export const isCliSyncEnabled = () => store.get("cliSyncEnabled") === true
+export const setCliSyncEnabled = (enabled: boolean) => store.set("cliSyncEnabled", enabled)
+
+// The CLI stores the decoded token while the cookie keeps it URL encoded
+const normalizeCliToken = (token: string | undefined) => {
+  if (!token?.includes("%")) return token
+  try {
+    return decodeURIComponent(token)
+  } catch {
+    return token
+  }
+}
 
 export const getCliInstallCommand = () => `npx --yes ${CLI_NPX_PACKAGE_SPEC} --help`
 
@@ -207,7 +223,10 @@ export const getCliSessionToken = async ({
 export const syncSessionToCliConfig = async (token?: string): Promise<void> => {
   if (token) {
     const config = await readCliConfig()
-    if (config.token === token && config.apiUrl === env.VITE_API_URL) {
+    if (
+      normalizeCliToken(config.token) === normalizeCliToken(token) &&
+      config.apiUrl === env.VITE_API_URL
+    ) {
       return
     }
 
