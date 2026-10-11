@@ -13,6 +13,7 @@ import { LexicalRichEditorTextArea } from "@follow/components/ui/lexical-rich-ed
 import type { AITask } from "@follow-app/client-sdk"
 import { zodResolver } from "@hookform/resolvers/zod"
 import dayjs from "dayjs"
+import { $getRoot } from "lexical"
 import { useMemo, useRef, useState } from "react"
 import type { GlobalError } from "react-hook-form"
 import { useForm } from "react-hook-form"
@@ -120,7 +121,18 @@ export const AITaskModal = ({ task, prompt, showSettingsTip = false }: AITaskMod
 
   const isEditing = !!task
 
-  const taskSchema = useMemo(() => createTaskSchema(t), [t])
+  // Uncontrolled prompt state handled outside react-hook-form
+  const promptEditorRef = useRef<LexicalRichEditorRef | null>(null)
+  const [promptTextLength, setPromptTextLength] = useState(0)
+
+  const taskSchema = useMemo(
+    () =>
+      createTaskSchema(t, () => {
+        const editor = promptEditorRef.current?.getEditor()
+        return editor ? editor.getEditorState().read(() => $getRoot().getTextContent()) : ""
+      }),
+    [t],
+  )
   const form = useForm<TaskFormData>({
     resolver: zodResolver(taskSchema),
     defaultValues: getDefaultFormData(task, prompt),
@@ -129,10 +141,7 @@ export const AITaskModal = ({ task, prompt, showSettingsTip = false }: AITaskMod
   const scheduleValue = form.watch("schedule")
   const notifyChannelsValue = form.watch("options.notifyChannels")
 
-  // Uncontrolled prompt state handled outside react-hook-form
   const initialPromptRef = useRef(form.getValues("prompt"))
-  const promptEditorRef = useRef<LexicalRichEditorRef | null>(null)
-  const [promptTextLength, setPromptTextLength] = useState(0)
 
   const handleScheduleChange = (newSchedule: ScheduleType) => {
     form.setValue("schedule", newSchedule)
