@@ -152,6 +152,14 @@ export const setFeedUnreadDirty = (feedId: string) => {
   })
 }
 
+export const setFeedUnreadDirtyMany = (feedIds: Iterable<string>) => {
+  jotaiStore.set(feedUnreadDirtySetAtom, (prev) => {
+    const newSet = new Set(prev)
+    for (const feedId of feedIds) newSet.add(feedId)
+    return newSet.size === prev.size ? prev : newSet
+  })
+}
+
 export const clearFeedUnreadDirty = (feedId: string) => {
   jotaiStore.set(feedUnreadDirtySetAtom, (prev) => {
     const newSet = new Set(prev)

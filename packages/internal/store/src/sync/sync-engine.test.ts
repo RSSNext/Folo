@@ -132,6 +132,9 @@ vi.mock("../modules/entry/hooks", () => ({
 }))
 vi.mock("../modules/feed/hooks", () => ({
   setFeedUnreadDirty: setFeedUnreadDirtyMock,
+  setFeedUnreadDirtyMany: (feedIds: Iterable<string>) => {
+    for (const feedId of feedIds) setFeedUnreadDirtyMock(feedId)
+  },
   clearFeedUnreadDirty: vi.fn(),
   clearAllFeedUnreadDirty: vi.fn(),
 }))
@@ -693,6 +696,51 @@ describe("syncEngine", () => {
     })
     expect(invalidateEntriesQueryMock).not.toHaveBeenCalled()
     expect(readsGetMock).not.toHaveBeenCalled()
+  })
+
+  it("writes the counters of consecutive new-entry actions once, in order with other actions", async () => {
+    seedCursor(80)
+    unreadActions.upsertManyInSession([
+      { id: "feed-1", count: 1 },
+      { id: "feed-2", count: 0 },
+    ])
+    useSubscriptionStore.setState((state) => ({
+      ...state,
+      data: {
+        ...state.data,
+        "feed-1": { feedId: "feed-1", type: "feed", view: FeedViewType.Articles } as never,
+        "feed-2": { feedId: "feed-2", type: "feed", view: FeedViewType.Articles } as never,
+      },
+    }))
+    const newEntries = (id: number, feedId: string, unread: number) =>
+      createAction({
+        id,
+        model: "timeline",
+        modelId: feedId,
+        action: "N",
+        createdAt: "2026-09-16T08:00:00.000Z",
+        data: { feedId, count: unread, unread, latestPublishedAt: "", from: ["feed"] },
+      })
+    unreadUpsertManyMock.mockClear()
+
+    deltaMock.mockResolvedValueOnce(
+      deltaResponse([
+        newEntries(81, "feed-1", 2),
+        newEntries(82, "feed-2", 3),
+        newEntries(83, "feed-1", 4),
+        // Unfollowing sets the count outright, so the increments before it are applied first
+        createAction({ id: 84, model: "subscription", modelId: "feed-2", action: "D" }),
+        newEntries(85, "feed-1", 1),
+      ]),
+    )
+    await syncEngine.pull("interval")
+
+    expect(useUnreadStore.getState().data["feed-1"]).toBe(8)
+    expect(useUnreadStore.getState().data["feed-2"]).toBe(0)
+    expect(setFeedUnreadDirtyMock).toHaveBeenCalledWith("feed-1")
+    expect(setFeedUnreadDirtyMock).toHaveBeenCalledWith("feed-2")
+    // One write for the first three actions, one for the delete and one for the last action
+    expect(unreadUpsertManyMock).toHaveBeenCalledTimes(3)
   })
 
   it("takes full snapshots again only when a calibration is due", async () => {
