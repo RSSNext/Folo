@@ -99,7 +99,10 @@ async function processImage(
       return
     }
 
+    const objectUrl = URL.createObjectURL(file)
     img.onload = () => {
+      // The image is decoded; only the canvases are read from here on
+      URL.revokeObjectURL(objectUrl)
       // Calculate new dimensions
       let { width, height } = img
       const { maxWidth, maxHeight, quality } = options
@@ -139,10 +142,11 @@ async function processImage(
     }
 
     img.onerror = () => {
+      URL.revokeObjectURL(objectUrl)
       reject(new Error("Failed to load image"))
     }
 
-    img.src = URL.createObjectURL(file)
+    img.src = objectUrl
   })
 }
 
