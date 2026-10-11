@@ -3,6 +3,8 @@ import type { FeedViewType } from "@follow-app/client-sdk"
 import { atom } from "jotai"
 import { splitAtom } from "jotai/utils"
 
+import { jotaiStore } from "~/lib/jotai"
+
 export const stepAtom = atom<"intro" | "selecting-feeds" | "finish">("intro")
 
 export type FeedSelection = {
@@ -34,3 +36,12 @@ export const feedSelectionAtomsAtom = splitAtom(feedSelectionsAtom)
 export const selectedFeedSelectionAtomsAtom = atom((get) =>
   get(feedSelectionAtomsAtom).filter((a) => get(a).selected),
 )
+
+/**
+ * The atoms outlive the modal, so every launch has to start from the intro with an empty
+ * selection. Otherwise a finished onboarding closes again as soon as it opens.
+ */
+export const resetAiOnboarding = () => {
+  jotaiStore.set(stepAtom, "intro")
+  jotaiStore.set(feedSelectionsAtom, [])
+}
