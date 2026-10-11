@@ -48,10 +48,6 @@ export class CliService extends IpcService {
   @IpcMethod()
   async installCli(preferredToken?: string): Promise<{ success: boolean; error?: string }> {
     try {
-      if (!(await isCliRunnerAvailable())) {
-        return { success: false, error: "npx is not available. Install Node.js and npm first." }
-      }
-
       const token = await getCliSessionToken({
         preferredToken,
       })

@@ -25,7 +25,6 @@ export const CLI_NPM_PACKAGE_NAME = "folocli"
 const CLI_NPX_PACKAGE_SPEC = `${CLI_NPM_PACKAGE_NAME}@latest`
 const CLI_CONFIG_DIR = join(homedir(), ".folo")
 const CLI_CONFIG_PATH = join(CLI_CONFIG_DIR, "config.json")
-const getNpxCommand = () => (process.platform === "win32" ? "npx.cmd" : "npx")
 
 const getCliSyncRequestHeaders = (additionalHeaders?: Record<string, string>) => ({
   ...createDesktopAPIHeaders({ version: PKG.version }),
@@ -83,17 +82,35 @@ export const getCliInstallCommand = () => `npx --yes ${CLI_NPX_PACKAGE_SPEC} --h
 
 export const getCliLoginCommand = () => `npx --yes ${CLI_NPX_PACKAGE_SPEC} login --token <token>`
 
+const NPX_CHECK_OPTIONS = { windowsHide: true, timeout: 10_000, maxBuffer: 128 * 1024 }
+
+// Whether the CLI can run here, which only the settings show: the login itself is written
+// without npx
 export const isCliRunnerAvailable = async (): Promise<boolean> => {
-  try {
-    await execFileAsync(getNpxCommand(), ["--version"], {
-      windowsHide: true,
-      timeout: 10_000,
-      maxBuffer: 128 * 1024,
-    })
-    return true
-  } catch {
-    return false
+  if (process.platform === "win32") {
+    // npx is a .cmd script, which Node only starts through a shell since CVE-2024-27980
+    return execFileAsync("npx.cmd", ["--version"], { ...NPX_CHECK_OPTIONS, shell: true })
+      .then(() => true)
+      .catch(() => false)
   }
+
+  // An app opened from the Dock or a launcher only gets the system PATH, without Homebrew,
+  // nvm or the Node installer's directories, so the user's shell finds npx. It runs as an
+  // interactive login shell, as nvm is usually loaded from the interactive startup file.
+  const shell = process.env.SHELL || "/bin/sh"
+  return execFileAsync(shell, ["-ilc", "npx --version"], NPX_CHECK_OPTIONS)
+    .then(() => true)
+    .catch(() =>
+      execFileAsync("npx", ["--version"], {
+        ...NPX_CHECK_OPTIONS,
+        env: {
+          ...process.env,
+          PATH: [process.env.PATH, "/opt/homebrew/bin", "/usr/local/bin"].filter(Boolean).join(":"),
+        },
+      })
+        .then(() => true)
+        .catch(() => false),
+    )
 }
 
 const clearCliConfigToken = async () => {
