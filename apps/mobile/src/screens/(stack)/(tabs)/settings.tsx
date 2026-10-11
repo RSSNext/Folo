@@ -1,13 +1,12 @@
 import { useImageColors } from "@follow/store/image/hooks"
 import { useWhoami } from "@follow/store/user/hooks"
 import { cn } from "@follow/utils"
-import { StatusBar } from "expo-status-bar"
-import { use, useMemo, useState } from "react"
+import { use, useMemo } from "react"
 import { useTranslation } from "react-i18next"
 import type { ScrollView } from "react-native"
 import { Pressable, StyleSheet, View } from "react-native"
 import type { SharedValue } from "react-native-reanimated"
-import Animated, { runOnJS, useAnimatedReaction, useAnimatedStyle } from "react-native-reanimated"
+import Animated, { useAnimatedStyle } from "react-native-reanimated"
 import { useSafeAreaInsets } from "react-native-safe-area-context"
 
 import { BlurEffect } from "@/src/components/common/BlurEffect"
@@ -20,6 +19,7 @@ import type { TabScreenComponent } from "@/src/lib/navigation/bottom-tab/types"
 import { useNavigation } from "@/src/lib/navigation/hooks"
 import { ScreenItemContext } from "@/src/lib/navigation/ScreenItemContext"
 import { isAndroid } from "@/src/lib/platform"
+import { BannerStatusBar } from "@/src/modules/settings/BannerStatusBar"
 import {
   getSettingsContentMarginTop,
   isUserHeaderGradientLight,
@@ -35,6 +35,7 @@ export function Settings() {
   const imageColors = useImageColors(whoami?.image)
   const gradientLight = isUserHeaderGradientLight(imageColors)
   const scrollViewRef = useRegisterNavigationScrollView<ScrollView>()
+  const isFocused = useTabScreenIsFocused()
   const headerHeight = useDefaultHeaderHeight()
   const contentViewStyle = useMemo(
     () => ({ marginTop: getSettingsContentMarginTop(headerHeight) }),
@@ -64,31 +65,15 @@ export function Settings() {
         headerHeight={headerHeight}
         scrollY={screenContext.reAnimatedScrollY}
       />
-      <BannerStatusBar gradientLight={gradientLight} scrollY={screenContext.reAnimatedScrollY} />
+      <BannerStatusBar
+        gradientLight={gradientLight}
+        scrollY={screenContext.reAnimatedScrollY}
+        enabled={isFocused}
+      />
     </>
   )
 }
 
-// The status bar sits on the user banner until the header fades in, so its text follows the
-// banner colors, or it is dark on dark
-const BannerStatusBar = ({
-  gradientLight,
-  scrollY,
-}: {
-  gradientLight: boolean
-  scrollY: SharedValue<number>
-}) => {
-  const isFocused = useTabScreenIsFocused()
-  const [isOverBanner, setIsOverBanner] = useState(true)
-  useAnimatedReaction(
-    () => scrollY.value < 50,
-    (current, previous) => {
-      if (current !== previous) runOnJS(setIsOverBanner)(current)
-    },
-  )
-  if (!isFocused || !isOverBanner) return null
-  return <StatusBar animated style={gradientLight ? "dark" : "light"} />
-}
 const SettingHeader = ({
   gradientLight,
   headerHeight,

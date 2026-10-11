@@ -1,5 +1,6 @@
 import type { FeedViewType } from "@follow/constants"
 import type { FeedModel } from "@follow/store/feed/types"
+import { useImageColors } from "@follow/store/image/hooks"
 import type { ListModel } from "@follow/store/list/types"
 import { getSubscriptionById } from "@follow/store/subscription/getter"
 import { subscriptionSyncService } from "@follow/store/subscription/store"
@@ -42,10 +43,13 @@ import { ShareForwardCuteReIcon } from "@/src/icons/share_forward_cute_re"
 import type { followClient } from "@/src/lib/api-client"
 import { Navigation } from "@/src/lib/navigation/Navigation"
 import type { NavigationControllerView } from "@/src/lib/navigation/types"
+import { isAndroid } from "@/src/lib/platform"
 import { createLinkShareContent } from "@/src/lib/share"
 import { toast } from "@/src/lib/toast"
 import { selectFeed } from "@/src/modules/screen/atoms"
+import { BannerStatusBar } from "@/src/modules/settings/BannerStatusBar"
 import { useShareSubscription } from "@/src/modules/settings/hooks/useShareSubscription"
+import { isUserHeaderGradientLight } from "@/src/modules/settings/layout"
 import { UserHeaderBanner } from "@/src/modules/settings/UserHeaderBanner"
 import { ItemSeparator } from "@/src/modules/subscription/ItemSeparator"
 import { useColor } from "@/src/theme/colors"
@@ -87,6 +91,7 @@ function ProfileScreenImpl(props: { userId: string }) {
   })
   usePrefetchUser(props.userId)
   const user = useUserById(props.userId)
+  const gradientLight = isUserHeaderGradientLight(useImageColors(user?.image))
   useEffect(() => {
     if (isError) {
       toast.error(t("profile.fetch_subscriptions_failed"))
@@ -148,6 +153,8 @@ function ProfileScreenImpl(props: { userId: string }) {
         }}
       >
         <UserHeaderBanner scrollY={scrollY} userId={props.userId} />
+        {/* iOS shows the profile in a sheet, below the status bar */}
+        <BannerStatusBar gradientLight={gradientLight} scrollY={scrollY} enabled={isAndroid} />
 
         {isLoading && <PlatformActivityIndicator className="mt-24" size={28} />}
         <IsMyProfileContext value={isMyProfile}>
