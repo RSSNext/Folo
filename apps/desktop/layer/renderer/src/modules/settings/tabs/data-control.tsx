@@ -114,7 +114,8 @@ export const SettingDataControl = () => {
 }
 
 const exportFeedFormSchema = z.object({
-  rsshubUrl: z.string().url().optional(),
+  // Optional: a field that was typed in and cleared holds an empty string
+  rsshubUrl: z.string().url().optional().or(z.literal("")),
   folderMode: z.enum(["view", "category"]),
 })
 
@@ -124,6 +125,7 @@ const ExportFeedsForm = () => {
   const form = useForm<z.infer<typeof exportFeedFormSchema>>({
     resolver: zodResolver(exportFeedFormSchema),
     defaultValues: {
+      rsshubUrl: "",
       folderMode: "view",
     },
   })
