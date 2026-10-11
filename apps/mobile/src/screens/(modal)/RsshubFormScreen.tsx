@@ -318,12 +318,12 @@ const ModalHeaderSubmitButtonImpl = ({
           setIsLoading(false)
         })
     } catch (err: unknown) {
+      // The path could not be built, so no request is running to end the loading state
+      setIsLoading(false)
       if (err instanceof MissingOptionalParamError) {
         toast.error(t("rsshub_form.missing_optional_param", { param: err.param }))
-        // const idx = keys.findIndex((item) => item.name === err.param)
-        // form.setFocus(keys[idx === 0 ? 0 : idx - 1].name, {
-        //   shouldSelect: true,
-        // })
+      } else {
+        toast.error(err instanceof Error ? err.message : String(err))
       }
     }
   })
