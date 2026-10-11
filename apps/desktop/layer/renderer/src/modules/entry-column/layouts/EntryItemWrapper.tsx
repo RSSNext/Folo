@@ -6,11 +6,12 @@ import { FeedViewType } from "@follow/constants"
 import { useEntry } from "@follow/store/entry/hooks"
 import { unreadSyncService } from "@follow/store/unread/store"
 import { cn } from "@follow/utils/utils"
+import { debounce } from "es-toolkit/compat"
 import { AnimatePresence } from "motion/react"
 import type { FC, MouseEvent, PropsWithChildren, TouchEvent } from "react"
 import { useCallback, useEffect, useMemo, useState } from "react"
 import { NavLink } from "react-router"
-import { useDebounceCallback } from "usehooks-ts"
+import { useEventCallback } from "usehooks-ts"
 
 import { useGeneralSettingKey } from "~/atoms/settings/general"
 import { FocusablePresets } from "~/components/common/Focusable"
@@ -57,20 +58,18 @@ export const EntryItemWrapper: FC<
   const hoverMarkUnread = useGeneralSettingKey("hoverMarkUnread")
 
   const [showAction, setShowAction] = useState(false)
-  const handleMouseEnterMarkRead = useDebounceCallback(
-    () => {
-      if (!hoverMarkUnread) return
-      if (!document.hasFocus()) return
-      if (asRead) return
-      if (!entry?.feedId) return
+  const markReadOnHover = useEventCallback(() => {
+    if (!hoverMarkUnread) return
+    if (!document.hasFocus()) return
+    if (asRead) return
+    if (!entry?.feedId) return
 
-      unreadSyncService.markEntryAsRead(entry.id)
-    },
-    233,
-    {
-      leading: false,
-    },
-  )
+    unreadSyncService.markEntryAsRead(entry.id)
+  })
+  // One debounced instance per item, so leaving the item cancels the pending
+  // mark-as-read scheduled when the pointer entered it.
+  const handleMouseEnterMarkRead = useMemo(() => debounce(markReadOnHover, 233), [markReadOnHover])
+  useEffect(() => () => handleMouseEnterMarkRead.cancel(), [handleMouseEnterMarkRead])
 
   const handleMouseEnter = useMemo(() => {
     return () => {
