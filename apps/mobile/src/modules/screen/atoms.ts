@@ -197,7 +197,17 @@ function useRemoteEntries(props?: UseEntriesProps): UseEntriesReturn {
   const fetchNextPage = useCallback(async () => void query.fetchNextPage(), [query])
 
   if (!query.data || query.isLoading) {
-    return fallbackReturn
+    // Without data yet, still report a failed first page and keep the remote refetch, so the
+    // timeline can fall back to the stored entries and pull to refresh tries the server again
+    return {
+      ...fallbackReturn,
+      refetch,
+      fetchNextPage,
+      isLoading: !query.isError,
+      isRefetching: query.isRefetching,
+      isFetching: query.isFetching,
+      error: query.isError ? query.error : null,
+    }
   }
 
   return {
@@ -357,6 +367,10 @@ export function useEntries(props?: UseEntriesProps): UseEntriesReturn {
     if (remoteQuery.error) {
       return {
         ...localQuery,
+        // Pulling to refresh retries the server rather than the stored entries
+        refetch: remoteQuery.refetch,
+        isFetching: remoteQuery.isFetching,
+        isRefetching: remoteQuery.isRefetching,
         error: remoteQuery.error,
         isReady: true,
       }
