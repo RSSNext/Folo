@@ -1,6 +1,6 @@
 import { useImageColors } from "@follow/store/image/hooks"
 import { getLuminance, shadeColor } from "@follow/utils"
-import { useAtomValue } from "jotai"
+import { useAtomValue, useAtomValueRawSync } from "jotai"
 import { use, useMemo } from "react"
 
 import { isNativeTabBarEnabled } from "@/src/components/layouts/tabbar/native-tab-bar"
@@ -45,7 +45,8 @@ const playerBarTabIdentifiers = new Set(["IndexTabScreen", "SubscriptionsTabScre
 export function useShouldShowPlayerBar() {
   const activePlayable = useActivePlayable()
   const { tabScreensAtom, currentIndexAtom } = use(BottomTabContext)
-  const tabScreens = useAtomValue(tabScreensAtom)
+  // Tab screens register from effects in the commit that mounts the tab bar
+  const tabScreens = useAtomValueRawSync(tabScreensAtom)
   const currentIndex = useAtomValue(currentIndexAtom)
   const identifier = tabScreens.find(
     (tabScreen) => tabScreen.tabScreenIndex === currentIndex,

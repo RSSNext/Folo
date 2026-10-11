@@ -1,6 +1,6 @@
 import { StatusBar } from "expo-status-bar"
 import type { PrimitiveAtom } from "jotai"
-import { atom, useAtomValue, useStore } from "jotai"
+import { atom, useAtomValue, useAtomValueRawSync, useStore } from "jotai"
 import type { FC, PropsWithChildren } from "react"
 import { memo, use, useCallback, useEffect, useMemo, useRef, useState } from "react"
 import type { ScrollView } from "react-native"
@@ -184,7 +184,8 @@ const ModalScreenStackItems: FC<{
     [],
   )
 
-  const modalScreenOptions = useAtomValue(modalScreenOptionsCtxValue)
+  // Modal screens set their options from effects in the commit that mounts this group
+  const modalScreenOptions = useAtomValueRawSync(modalScreenOptionsCtxValue)
 
   if (!rootModalRoute) {
     return null

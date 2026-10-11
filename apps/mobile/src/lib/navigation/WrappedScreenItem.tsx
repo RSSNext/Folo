@@ -1,6 +1,6 @@
 import { isUndefined } from "es-toolkit/compat"
 import type { PrimitiveAtom } from "jotai"
-import { atom, useAtomValue, useAtomValueRawSync, useSetAtom } from "jotai"
+import { atom, useAtomValueRawSync, useSetAtom } from "jotai"
 import type { FC, ReactNode } from "react"
 import { memo, use, useCallback, useMemo, useRef } from "react"
 import { useTranslation } from "react-i18next"
@@ -104,7 +104,8 @@ export const WrappedScreenItem: FC<
       [],
     )
 
-    const screenOptionsFromCtx = useAtomValue(screenOptionsCtxValue)
+    // Screens set their options from effects in the commit that mounts this item
+    const screenOptionsFromCtx = useAtomValueRawSync(screenOptionsCtxValue)
 
     const backgroundColor = useColor("systemBackground")
 
