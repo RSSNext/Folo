@@ -1,6 +1,7 @@
 import { useEntry } from "@follow/store/entry/hooks"
 import { useFeedById } from "@follow/store/feed/hooks"
 import { cn } from "@follow/utils/utils"
+import { useMemo } from "react"
 
 import { RelativeTime } from "~/components/ui/datetime"
 import { parseSocialMedia } from "~/lib/parsers"
@@ -28,21 +29,22 @@ export const AuthorHeader: React.FC<AuthorHeaderProps> = ({
     const media = state.media || []
     const photo = media.find((a) => a.type === "photo")
     const firstPhotoUrl = photo?.url
-    const iconEntry: FeedIconEntry = {
-      firstPhotoUrl,
-      authorAvatar,
-    }
 
     return {
       feedId,
       author,
+      authorAvatar,
       authorUrl,
       publishedAt,
-      iconEntry,
+      firstPhotoUrl,
       guid,
       url,
     }
   })
+  const iconEntry: FeedIconEntry = useMemo(
+    () => ({ firstPhotoUrl: entry?.firstPhotoUrl, authorAvatar: entry?.authorAvatar }),
+    [entry?.authorAvatar, entry?.firstPhotoUrl],
+  )
 
   const feed = useFeedById(entry?.feedId)
   const authorTitle = useSocialAuthorTitle({
@@ -58,13 +60,7 @@ export const AuthorHeader: React.FC<AuthorHeaderProps> = ({
   return (
     <div className={cn("flex items-center gap-2", className)}>
       {showAvatar && (
-        <FeedIcon
-          fallback
-          target={feed}
-          entry={entry.iconEntry}
-          size={avatarSize}
-          className="shrink-0"
-        />
+        <FeedIcon fallback target={feed} entry={iconEntry} size={avatarSize} className="shrink-0" />
       )}
       <div className="min-w-0 flex-1">
         <div className="flex items-center gap-1 text-base">

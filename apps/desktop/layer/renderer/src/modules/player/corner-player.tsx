@@ -121,18 +121,21 @@ const CornerPlayerImpl = ({ hideControls, rounded }: ControlButtonProps) => {
     const firstPhoto = media.find((a) => a.type === "photo")
     const firstPhotoUrl = firstPhoto?.url
     const entryCoverImage = firstMedia?.preview_image_url || firstMedia?.url || firstPhotoUrl
-    const iconEntry: FeedIconEntry = { firstPhotoUrl, authorAvatar }
 
     return {
       authorAvatar,
       feedId,
-      iconEntry,
+      firstPhotoUrl,
       id,
       inboxId: inboxHandle,
       title,
       entryCoverImage,
     }
   })
+  const iconEntry: FeedIconEntry = useMemo(
+    () => ({ firstPhotoUrl: entry?.firstPhotoUrl, authorAvatar: entry?.authorAvatar }),
+    [entry?.authorAvatar, entry?.firstPhotoUrl],
+  )
   const isInbox = !!entry?.inboxId
   const feed = useFeedById(entry?.feedId)
   const subscription = useSubscriptionByFeedId(entry?.feedId)
@@ -212,7 +215,7 @@ const CornerPlayerImpl = ({ hideControls, rounded }: ControlButtonProps) => {
         <div className="relative size-[3.625rem] shrink-0">
           <FeedIcon
             target={feed}
-            entry={entry.iconEntry}
+            entry={iconEntry}
             size={isMobile ? 65.25 : 58}
             fallback={false}
             noMargin
