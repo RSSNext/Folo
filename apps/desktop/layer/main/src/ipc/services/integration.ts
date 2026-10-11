@@ -303,27 +303,11 @@ ${content}
       headerCount: Object.keys(headers || {}).length,
     })
 
-    // Log request headers (mask sensitive headers)
-    const safeHeaders = { ...headers }
-    Object.keys(safeHeaders).forEach((key) => {
-      if (
-        key.toLowerCase().includes("authorization") ||
-        key.toLowerCase().includes("token") ||
-        key.toLowerCase().includes("key")
-      ) {
-        safeHeaders[key] = "***"
-      }
+    // Only the header names are logged: the log file is written at every level and users attach
+    // it to issues, while integrations carry secrets in cookies, custom headers and bodies
+    logger.debug(`[CustomFetch:${requestId}] Request headers`, {
+      names: Object.keys(headers || {}),
     })
-    logger.debug(`[CustomFetch:${requestId}] Request headers`, { headers: safeHeaders })
-
-    // Log request body (truncated for large bodies)
-    if (body) {
-      const truncatedBody =
-        body.length > 500
-          ? `${body.slice(0, 500)}... [truncated, total: ${body.length} chars]`
-          : body
-      logger.debug(`[CustomFetch:${requestId}] Request body`, { body: truncatedBody })
-    }
 
     const startTime = Date.now()
 
@@ -362,7 +346,6 @@ ${content}
       })
 
       logger.debug(`[CustomFetch:${requestId}] Response headers`, {
-        headers: responseHeaders,
         contentType: responseHeaders["content-type"],
         contentLength: responseHeaders["content-length"],
       })
@@ -373,7 +356,6 @@ ${content}
 
       logger.debug(`[CustomFetch:${requestId}] Response body received`, {
         size: `${responseSize} chars`,
-        preview: text.length > 200 ? `${text.slice(0, 200)}...` : text,
       })
 
       // Try to parse as JSON, fallback to text
