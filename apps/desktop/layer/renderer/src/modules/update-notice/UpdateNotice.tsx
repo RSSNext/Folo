@@ -102,7 +102,15 @@ export const UpdateNotice = () => {
         "group absolute inset-x-3 cursor-pointer",
         playerIsShow ? "bottom-[4.5rem]" : "bottom-3",
       )}
+      role="button"
+      tabIndex={0}
       onClick={handleClick}
+      onKeyDown={(e) => {
+        if (e.key === "Enter" || e.key === " ") {
+          e.preventDefault()
+          handleClick()
+        }
+      }}
       initial={{ y: 20, opacity: 0, scale: 0.95 }}
       animate={{ y: 0, opacity: 1, scale: 1 }}
       exit={{ y: 20, opacity: 0, scale: 0.95 }}
