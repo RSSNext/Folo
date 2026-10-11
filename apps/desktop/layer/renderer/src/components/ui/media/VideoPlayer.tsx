@@ -2,6 +2,7 @@ import { Spring } from "@follow/components/constants/spring.js"
 import { ActionButton, MotionButtonBase } from "@follow/components/ui/button/index.js"
 import type { HTMLMediaState } from "@follow/hooks"
 import { useRefValue, useVideo } from "@follow/hooks"
+import { IN_ELECTRON } from "@follow/shared/constants"
 import { nextFrame, stopPropagation } from "@follow/utils/dom"
 import { clsx, cn } from "@follow/utils/utils"
 import * as Slider from "@radix-ui/react-slider"
@@ -25,6 +26,7 @@ import { AudioPlayer } from "~/atoms/player"
 import { Focusable } from "~/components/common/Focusable"
 import { IconScaleTransition } from "~/components/ux/transition/icon"
 import { HotkeyScope } from "~/constants"
+import { ipcServices } from "~/lib/client"
 
 import { VolumeSlider } from "./VolumeSlider"
 
@@ -338,19 +340,29 @@ const DownloadVideo = () => {
   const { t } = useTranslation()
   const src = useContextSelector(VideoPlayerContext, (v) => v.src)
   const [isDownloading, setIsDownloading] = useState(false)
-  const download = useEventCallback(() => {
+  const download = useEventCallback(async () => {
+    if (isDownloading) return
     setIsDownloading(true)
-    fetch(src)
-      .then((res) => res.blob())
-      .then((blob) => {
-        const url = URL.createObjectURL(blob)
-        const a = document.createElement("a")
-        a.href = url
-        a.download = src.split("/").pop()!
-        a.click()
-        URL.revokeObjectURL(url)
-        setIsDownloading(false)
-      })
+    try {
+      if (IN_ELECTRON && ipcServices) {
+        // The main process asks where to save it and reports the result itself
+        await ipcServices.app.download(src).catch(() => {})
+        return
+      }
+      const res = await fetch(src)
+      if (!res.ok) throw new Error(res.statusText)
+      const url = URL.createObjectURL(await res.blob())
+      const a = document.createElement("a")
+      a.href = url
+      a.download = src.split("/").pop()!
+      a.click()
+      URL.revokeObjectURL(url)
+    } catch {
+      // Most video hosts don't allow cross-origin reads, so let the browser open the file
+      window.open(src, "_blank", "noopener")
+    } finally {
+      setIsDownloading(false)
+    }
   })
 
   return (
