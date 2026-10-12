@@ -313,7 +313,7 @@
   "schedule.presets_title": "Préréglages rapides",
   "schedule.time_label": "Heure",
   "schedule.title": "Calendrier",
-  "session.interrupted.message": "Nous avons perdu la connexion avant que l'assistant ne réponde. Réessayez votre dernier message.",
+  "session.interrupted.message": "Votre dernier message n'a pas reçu de réponse. Réessayez pour continuer.",
   "session.interrupted.retry": "Réessayer",
   "settings.autoScrollWhenStreaming.description": "Faire défiler automatiquement vers le bas de la discussion lors du streaming.",
   "settings.autoScrollWhenStreaming.label": "Défilement auto. lors du streaming",

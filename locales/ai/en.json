@@ -313,7 +313,7 @@
   "schedule.presets_title": "Quick Presets",
   "schedule.time_label": "Time",
   "schedule.title": "Schedule",
-  "session.interrupted.message": "We lost connection before the assistant replied. Retry your last message.",
+  "session.interrupted.message": "Your last message didn't get a reply. Retry to continue.",
   "session.interrupted.retry": "Retry",
   "settings.autoScrollWhenStreaming.description": "Automatically scroll to the bottom of the chat when streaming.",
   "settings.autoScrollWhenStreaming.label": "Auto scroll when streaming",
