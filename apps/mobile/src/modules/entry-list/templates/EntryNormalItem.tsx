@@ -29,6 +29,7 @@ import { isIOS } from "@/src/lib/platform"
 import { player, useAudioPlayState } from "@/src/lib/player"
 import { toast } from "@/src/lib/toast"
 import { usePreferredFeedTitle } from "@/src/modules/feed/feed-title"
+import { getEntryArtwork } from "@/src/modules/player/artwork"
 import { EntryDetailScreen } from "@/src/screens/(stack)/entries/[entryId]/EntryDetailScreen"
 
 import { EntryItemContextMenu } from "../../context-menu/entry"
@@ -198,6 +199,8 @@ const ThumbnailImage = ({ entryId }: { entryId: string }) => {
   const audio = entry?.attachments?.find((attachment) => attachment.mime_type?.startsWith("audio/"))
   const audioState = useAudioPlayState(audio?.url)
   const video = mediaModel?.type === "video" ? mediaModel : null
+  // The list recycles this row for other entries, which haven't failed to load
+  const [imageError, setImageError] = useRecyclingState(!!audio && !image, [entryId])
   const handlePressPlay = useCallback(() => {
     if (!audio) return
     if (audioState !== "paused") {
@@ -209,15 +212,14 @@ const ThumbnailImage = ({ entryId }: { entryId: string }) => {
         url: audio.url,
         title: entry?.title,
         artist: feedTitle,
-        artwork: image,
+        // What the row shows, so the player isn't blank when the entry has no image
+        artwork: getEntryArtwork(imageError ? null : image, feed),
       })
     } catch (error) {
       console.error("Error playing audio:", error)
       toast.error(t("player.play_failed"))
     }
-  }, [audio, audioState, entry?.title, feedTitle, image, t])
-  // The list recycles this row for other entries, which haven't failed to load
-  const [imageError, setImageError] = useRecyclingState(!!audio && !image, [entryId])
+  }, [audio, audioState, entry?.title, feed, feedTitle, image, imageError, t])
   const handleImageError = useCallback(() => {
     setImageError(true)
   }, [])

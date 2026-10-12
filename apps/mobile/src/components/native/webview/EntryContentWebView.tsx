@@ -1,3 +1,4 @@
+import { getFeedById } from "@follow/store/feed/getter"
 import { EventBus } from "@follow/utils/event-bus"
 import { Portal } from "@gorhom/portal"
 import TrackPlayer from "@rntp/player"
@@ -10,6 +11,7 @@ import { runOnJS, runOnUI } from "react-native-reanimated"
 
 import { openLink } from "@/src/lib/native"
 import { player } from "@/src/lib/player"
+import { getEntryArtwork } from "@/src/modules/player/artwork"
 
 import { useLightboxControls } from "../../ui/lightbox/lightboxState"
 import { PlatformActivityIndicator } from "../../ui/loading/PlatformActivityIndicator"
@@ -61,11 +63,22 @@ export function EntryContentWebView(props: EntryContentWebViewProps) {
           url: entryAudio.url || "",
           title: entryInWebview?.title || t("player.unknown_title"),
           artist: entryInWebview?.author || t("player.unknown_artist"),
+          artwork: getEntryArtwork(
+            entryInWebview?.media?.find((media) => media.type === "photo")?.url,
+            getFeedById(entryInWebview?.feedId),
+          ),
         })
       }
       await player.seekTo(e.time)
     },
-    [entryInWebview?.attachments, entryInWebview?.author, entryInWebview?.title, t],
+    [
+      entryInWebview?.attachments,
+      entryInWebview?.author,
+      entryInWebview?.feedId,
+      entryInWebview?.media,
+      entryInWebview?.title,
+      t,
+    ],
   )
 
   // Handle audio seek events
