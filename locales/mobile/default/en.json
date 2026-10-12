@@ -168,5 +168,13 @@
   "tabs.discover": "Discover",
   "tabs.home": "Home",
   "tabs.settings": "Settings",
-  "tabs.subscriptions": "Subscriptions"
+  "tabs.subscriptions": "Subscriptions",
+  "update.store.app_store": "the App Store",
+  "update.store.google_play": "Google Play",
+  "update.store.later": "Later",
+  "update.store.message": "Folo {{version}} is available on {{store}}.",
+  "update.store.required": "This version is no longer supported. Update to Folo {{version}} on {{store}} to keep using the app.",
+  "update.store.required_title": "Update Required",
+  "update.store.title": "Update Available",
+  "update.store.update": "Update"
 }

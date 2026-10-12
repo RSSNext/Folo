@@ -168,5 +168,13 @@
   "tabs.discover": "発見",
   "tabs.home": "ホーム",
   "tabs.settings": "設定",
-  "tabs.subscriptions": "サブスクリプション"
+  "tabs.subscriptions": "サブスクリプション",
+  "update.store.app_store": "App Store",
+  "update.store.google_play": "Google Play",
+  "update.store.later": "後で",
+  "update.store.message": "{{store}} で Folo {{version}} が利用できます。",
+  "update.store.required": "このバージョンはサポートされなくなりました。引き続き使うには {{store}} で Folo {{version}} にアップデートしてください。",
+  "update.store.required_title": "アップデートが必要です",
+  "update.store.title": "アップデートがあります",
+  "update.store.update": "アップデート"
 }

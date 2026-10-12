@@ -168,5 +168,13 @@
   "tabs.discover": "发现",
   "tabs.home": "首页",
   "tabs.settings": "设置",
-  "tabs.subscriptions": "订阅"
+  "tabs.subscriptions": "订阅",
+  "update.store.app_store": "App Store",
+  "update.store.google_play": "Google Play",
+  "update.store.later": "稍后",
+  "update.store.message": "{{store}} 上已有新版本 Folo {{version}}。",
+  "update.store.required": "当前版本已不再受支持，请前往 {{store}} 更新到 Folo {{version}} 后继续使用。",
+  "update.store.required_title": "需要更新",
+  "update.store.title": "有新版本",
+  "update.store.update": "更新"
 }

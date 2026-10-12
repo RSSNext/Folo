@@ -168,5 +168,13 @@
   "tabs.discover": "Découvrir",
   "tabs.home": "Accueil",
   "tabs.settings": "Paramètres",
-  "tabs.subscriptions": "Abonnements"
+  "tabs.subscriptions": "Abonnements",
+  "update.store.app_store": "l’App Store",
+  "update.store.google_play": "Google Play",
+  "update.store.later": "Plus tard",
+  "update.store.message": "Folo {{version}} est disponible sur {{store}}.",
+  "update.store.required": "Cette version n’est plus prise en charge. Mettez à jour vers Folo {{version}} sur {{store}} pour continuer à utiliser l’app.",
+  "update.store.required_title": "Mise à jour requise",
+  "update.store.title": "Mise à jour disponible",
+  "update.store.update": "Mettre à jour"
 }
