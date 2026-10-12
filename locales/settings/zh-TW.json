@@ -694,7 +694,6 @@
   "profile.edit_profile": "編輯個人資料",
   "profile.email.change": "變更電子信箱",
   "profile.email.change_note": "如果你想更改電子信箱，應該驗證你的新電子信箱。",
-  "profile.email.changed": "電子信箱已變更。",
   "profile.email.changed_verification_sent": "已發送驗證新電子信箱的信件。",
   "profile.email.label": "電子信箱",
   "profile.email.placeholder": "輸入你的電子信箱",

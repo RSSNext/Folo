@@ -694,7 +694,6 @@
   "profile.edit_profile": "Edit Profile",
   "profile.email.change": "Change Email",
   "profile.email.change_note": "If you want to change your email, you should verify your new email.",
-  "profile.email.changed": "Email changed.",
   "profile.email.changed_verification_sent": "Email to verify the new email has been sent.",
   "profile.email.label": "Email",
   "profile.email.placeholder": "Enter your email",

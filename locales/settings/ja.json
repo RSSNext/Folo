@@ -694,7 +694,6 @@
   "profile.edit_profile": "プロフィールを編集",
   "profile.email.change": "Email を変更",
   "profile.email.change_note": "メールを変更したい場合は、新しいメールを確認する必要があります。",
-  "profile.email.changed": "Email を変更しました。",
   "profile.email.changed_verification_sent": "新たな Email に確認メールを送信しました。",
   "profile.email.label": "メールアドレス",
   "profile.email.placeholder": "メールアドレスを入力",

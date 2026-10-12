@@ -10,7 +10,6 @@ import {
 import { Input } from "@follow/components/ui/input/Input.js"
 import { Label } from "@follow/components/ui/label/index.js"
 import { useWhoami } from "@follow/store/user/hooks"
-import { userActions } from "@follow/store/user/store"
 import { cn } from "@follow/utils/utils"
 import { zodResolver } from "@hookform/resolvers/zod"
 import { useMutation } from "@tanstack/react-query"
@@ -22,7 +21,7 @@ import { z } from "zod"
 
 import { AnimatedCommandButton } from "~/components/ui/button/AnimatedCommandButton"
 import { CopyButton } from "~/components/ui/button/CopyButton"
-import { useModalStack } from "~/components/ui/modal/stacked/hooks"
+import { useCurrentModal, useModalStack } from "~/components/ui/modal/stacked/hooks"
 import { changeEmail, sendVerificationEmail } from "~/lib/auth"
 import { toastFetchError } from "~/lib/error-parser"
 
@@ -115,6 +114,7 @@ export function EmailManagement() {
 function EmailManagementForm() {
   const { t } = useTranslation("settings")
   const user = useWhoami()
+  const { dismiss } = useCurrentModal()
 
   const form = useForm<z.infer<typeof formSchema>>({
     resolver: zodResolver(formSchema),
@@ -130,18 +130,11 @@ function EmailManagementForm() {
         throw new Error(res.error.message)
       }
     },
-    onSuccess: (_, variables) => {
-      if (user?.emailVerified) {
-        toast.success(t("profile.email.changed_verification_sent"))
-      } else {
-        if (user) {
-          userActions.updateWhoami({
-            email: variables.email,
-          })
-        }
-        form.reset({ email: variables.email })
-        toast.success(t("profile.email.changed"))
-      }
+    onSuccess: () => {
+      // The server keeps the current email until the link sent for the new one is
+      // opened, for verified and unverified accounts alike
+      toast.success(t("profile.email.changed_verification_sent"))
+      dismiss()
     },
     onError: (error) => {
       toast.error(error.message)

@@ -694,7 +694,6 @@
   "profile.edit_profile": "编辑个人资料",
   "profile.email.change": "更改邮件地址",
   "profile.email.change_note": "如需更改邮件地址，请先验证你的新邮件地址。",
-  "profile.email.changed": "邮件地址已更改。",
   "profile.email.changed_verification_sent": "已发送验证新邮件地址的邮件。",
   "profile.email.label": "邮件地址",
   "profile.email.placeholder": "输入你的邮件地址",
