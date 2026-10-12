@@ -249,6 +249,7 @@ export const GroupedInsetListCell: FC<
   testID,
 }) => {
   const { i18n } = useTranslation()
+  const iconColor = useColor("label")
 
   return (
     <GroupedInsetListBaseCell
@@ -265,7 +266,7 @@ export const GroupedInsetListCell: FC<
     >
       <View className={cn("flex-1 gap-1", leftClassName)}>
         <View className="flex-row items-center gap-2">
-          {!!icon && <SymbolView name={icon} size={20} tintColor="black" />}
+          {!!icon && <SymbolView name={icon} size={20} tintColor={iconColor} />}
           <Text className="text-sm text-label">{titleCaseIfEnglish(label, i18n.language)}</Text>
         </View>
         {!!description && (
@@ -348,6 +349,7 @@ export const GroupedInsetListActionCell: FC<{
   suffix?: React.ReactNode
 }> = ({ label, description, onPress, disabled, icon, prefix, suffix }) => {
   const rightIconColor = useColor("tertiaryLabel")
+  const iconColor = useColor("label")
   return (
     <Pressable
       onPress={onPress}
@@ -361,7 +363,7 @@ export const GroupedInsetListActionCell: FC<{
           <View className="flex-1">
             <View className="flex-row items-center gap-2">
               {prefix}
-              {!!icon && <SymbolView name={icon} size={20} tintColor="black" />}
+              {!!icon && <SymbolView name={icon} size={20} tintColor={iconColor} />}
               <Text className="text-sm text-label">{label}</Text>
             </View>
             {!!description && (
