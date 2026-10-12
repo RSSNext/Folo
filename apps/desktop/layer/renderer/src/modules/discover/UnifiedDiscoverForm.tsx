@@ -127,7 +127,9 @@ export function UnifiedDiscoverForm() {
       keyword: keywordFromSearch || "",
       target: "feeds",
     },
-    mode: "all",
+    // Not on blur: leaving the autofocused empty box would show an error before any typing, and
+    // the message pushes down the tool links under the mouse, so the click that blurred it missed
+    mode: "onChange",
   })
 
   const { watch, trigger } = form
