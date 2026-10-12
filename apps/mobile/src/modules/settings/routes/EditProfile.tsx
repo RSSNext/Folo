@@ -185,6 +185,8 @@ const ProfileForm: FC<{
               </View>
             </GroupedInsetListCell>
           </GroupedInsetListCard>
+          <GroupedOutlineDescription description={t("profile.handle.description")} />
+
           {/* Email */}
           <GroupedInsetListCard className="mt-4">
             <GroupedInsetListNavigationLink
@@ -212,7 +214,6 @@ const ProfileForm: FC<{
               }
             />
           </GroupedInsetListCard>
-          <GroupedOutlineDescription description={t("profile.handle.description")} />
 
           <GroupedInsetListSectionHeader label={t("profile.profile.bio")} />
           <GroupedInsetListCard>
