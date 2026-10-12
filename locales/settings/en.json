@@ -707,6 +707,7 @@
   "profile.email.verify_status": "Your email is {{status}}",
   "profile.handle.description": "Your unique identifier.",
   "profile.handle.label": "Handle",
+  "profile.handle.taken": "This handle is already taken.",
   "profile.link_social.authentication": "Authentication",
   "profile.link_social.link": "Link",
   "profile.link_social.link_failed": "Failed to link account.",

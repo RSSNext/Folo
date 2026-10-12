@@ -707,6 +707,7 @@
   "profile.email.verify_status": "你的電子信箱目前狀態為 {{status}}",
   "profile.handle.description": "你的獨一無二名稱。",
   "profile.handle.label": "名稱",
+  "profile.handle.taken": "此名稱已被使用。",
   "profile.link_social.authentication": "驗證",
   "profile.link_social.link": "連結",
   "profile.link_social.link_failed": "連結帳號失敗。",

@@ -707,6 +707,7 @@
   "profile.email.verify_status": "Votre email est {{status}}",
   "profile.handle.description": "Votre identifiant unique.",
   "profile.handle.label": "Identifiant",
+  "profile.handle.taken": "Cet identifiant est déjà pris.",
   "profile.link_social.authentication": "Authentification",
   "profile.link_social.link": "Lier",
   "profile.link_social.link_failed": "Échec de la liaison du compte.",

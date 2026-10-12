@@ -22,6 +22,7 @@ import { z } from "zod"
 
 import { AvatarUploadModal } from "~/components/ui/crop/AvatarUploadModal"
 import { useModalStack } from "~/components/ui/modal/stacked/hooks"
+import { followApi } from "~/lib/api-client"
 import { updateUser } from "~/lib/auth"
 import { uploadAvatarBlob } from "~/lib/avatar-upload"
 import { toastFetchError } from "~/lib/error-parser"
@@ -54,6 +55,18 @@ const socialIconClassNames = {
 }
 
 const formItemLabelClassName = tw`pl-3`
+
+class HandleTakenError extends Error {}
+
+const isHandleTakenByOthers = async (handle: string, userId?: string) => {
+  try {
+    const res = await followApi.profiles.getProfile({ handle })
+    return !!res.data && res.data.id !== userId
+  } catch {
+    // Unknown handles answer with an error, so the handle is free or the lookup failed
+    return false
+  }
+}
 // Extended user type to include the new fields
 type ExtendedUser = ReturnType<typeof useWhoami> & {
   bio?: string
@@ -112,11 +125,23 @@ export const ProfileSettingForm = ({
       })
       // The auth client resolves with the error instead of throwing
       if (res.error) {
+        // The server answers a handle another user has with a bare 500, so look it up
+        if (
+          values.handle &&
+          values.handle.toLowerCase() !== user?.handle?.toLowerCase() &&
+          (await isHandleTakenByOthers(values.handle, user?.id))
+        ) {
+          throw new HandleTakenError()
+        }
         throw new Error(res.error.message || res.error.statusText)
       }
       return res
     },
     onError: (error) => {
+      if (error instanceof HandleTakenError) {
+        form.setError("handle", { message: t("profile.handle.taken") })
+        return
+      }
       toastFetchError(error)
     },
     onSuccess: (_, variables) => {

@@ -707,6 +707,7 @@
   "profile.email.verify_status": "あなたのメールは{{status}}です",
   "profile.handle.description": "あなた個人の識別子です",
   "profile.handle.label": "ハンドル",
+  "profile.handle.taken": "このハンドルはすでに使われています。",
   "profile.link_social.authentication": "認証",
   "profile.link_social.link": "リンク",
   "profile.link_social.link_failed": "アカウントの連携に失敗しました。",
