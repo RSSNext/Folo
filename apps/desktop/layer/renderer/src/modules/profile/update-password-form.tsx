@@ -18,7 +18,7 @@ import { Trans, useTranslation } from "react-i18next"
 import { toast } from "sonner"
 import { z } from "zod"
 
-import { useModalStack } from "~/components/ui/modal/stacked/hooks"
+import { useCurrentModal, useModalStack } from "~/components/ui/modal/stacked/hooks"
 import { changePassword } from "~/lib/auth"
 import { useHasPassword } from "~/queries/auth"
 
@@ -42,6 +42,7 @@ const UpdateExistingPasswordForm = () => {
   const { t } = useTranslation("settings")
 
   const { t: tApp } = useTranslation("app")
+  const { dismiss } = useCurrentModal()
 
   const updatePasswordFormSchema = useMemo(() => createUpdatePasswordFormSchema(tApp), [tApp])
   const form = useForm<UpdatePasswordFormValues>({
@@ -68,10 +69,10 @@ const UpdateExistingPasswordForm = () => {
       toast.error(error.message)
     },
     onSuccess: (_) => {
-      toast(t("profile.update_password_success"), {
+      toast.success(t("profile.update_password_success"), {
         duration: 3000,
       })
-      form.reset()
+      dismiss()
     },
   })
 
