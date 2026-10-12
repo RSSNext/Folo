@@ -83,6 +83,20 @@ const EmptyActionPlaceholder = ({ onCreateRule }: { onCreateRule: () => void }) 
   )
 }
 
+const ActionLoadError = ({ isRetrying, onRetry }: { isRetrying: boolean; onRetry: () => void }) => {
+  const { t } = useTranslation(["settings", "common"])
+
+  return (
+    <div className="flex min-h-96 w-full flex-col items-center justify-center gap-3 py-10">
+      <i className="i-mgc-warning-cute-re text-3xl text-red" />
+      <span className="text-sm text-text-secondary">{t("actions.load_failed")}</span>
+      <Button variant="outline" isLoading={isRetrying} onClick={onRetry}>
+        {t("retry", { ns: "common" })}
+      </Button>
+    </div>
+  )
+}
+
 export const ActionSetting = () => {
   const actions = useActionRules()
   const { t } = useTranslation("settings")
@@ -115,6 +129,13 @@ export const ActionSetting = () => {
         icon={<i className="i-mgc-magic-2-cute-re" />}
         size="large"
       />
+    )
+  }
+
+  // Saving sends every rule, so editing an empty list here would wipe the server's rules
+  if (actionQuery.isError && !actionActions.isLoaded()) {
+    return (
+      <ActionLoadError isRetrying={actionQuery.isFetching} onRetry={() => actionQuery.refetch()} />
     )
   }
 

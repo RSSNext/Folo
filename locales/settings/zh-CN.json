@@ -114,6 +114,7 @@
   "actions.import_result.success_other": "成功导入 {{count}} 条自动化规则",
   "actions.import_result.unknown_error": "未知错误",
   "actions.info": "自动化是可以在服务器或客户端自动执行任务的规则集。",
+  "actions.load_failed": "无法加载你的自动化规则。",
   "actions.navigate.prompt": "有未保存的自动化规则更改，确定要离开吗？",
   "actions.newRule": "新规则",
   "actions.no_rule": "没有可用的规则",

@@ -114,6 +114,7 @@
   "actions.import_result.success_other": "成功匯入 {{count}} 條自動化規則",
   "actions.import_result.unknown_error": "未知錯誤",
   "actions.info": "自動化操作是您可以自動化以在伺服器或客户端執行任務的規則集合。",
+  "actions.load_failed": "無法載入您的自動化規則。",
   "actions.navigate.prompt": "您有未儲存的自動化操作變更。您確定要離開嗎？",
   "actions.newRule": "新增規則",
   "actions.no_rule": "沒有可用的規則",

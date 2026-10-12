@@ -114,6 +114,7 @@
   "actions.import_result.success_other": "{{count}} règles d'action importées avec succès",
   "actions.import_result.unknown_error": "Erreur inconnue",
   "actions.info": "Les actions sont des collections de règles que vous pouvez automatiser pour effectuer des tâches côté serveur ou client.",
+  "actions.load_failed": "Impossible de charger vos règles d'action.",
   "actions.navigate.prompt": "Vous avez des modifications d'action non enregistrées. Êtes-vous sûr de vouloir quitter ?",
   "actions.newRule": "Nouvelle règle",
   "actions.no_rule": "Aucune règle disponible",

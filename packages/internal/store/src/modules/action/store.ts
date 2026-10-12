@@ -86,6 +86,10 @@ class ActionSyncService {
     if (!isDirty) {
       return null
     }
+    // Saving replaces every rule on the server, so it must wait until they were loaded
+    if (!actionActions.isLoaded()) {
+      throw new Error(t("actions.load_failed", { ns: "settings" }))
+    }
 
     const res = await api().actions.put({ rules: rules as any })
     await actionActions.setConfirmedRules(rules, { overwriteLocalEdits: true })

@@ -114,6 +114,7 @@
   "actions.import_result.success_other": "Successfully imported {{count}} action rules",
   "actions.import_result.unknown_error": "Unknown error",
   "actions.info": "Actions Are Collections of Rules That You Can Automate to Perform Tasks on Server or Client Side.",
+  "actions.load_failed": "Couldn't load your action rules.",
   "actions.navigate.prompt": "You Have Unsaved Action Changes. Are You Sure You Want to Leave?",
   "actions.newRule": "New Rule",
   "actions.no_rule": "No rule available",

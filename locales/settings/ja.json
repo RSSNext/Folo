@@ -114,6 +114,7 @@
   "actions.import_result.success_other": "{{count}} 件のアクションルールをインポートしました",
   "actions.import_result.unknown_error": "不明なエラー",
   "actions.info": "アクションは、サーバーまたはクライアント側でタスクを実行するために自動化できるルールのコレクションです。",
+  "actions.load_failed": "アクションルールを読み込めませんでした。",
   "actions.navigate.prompt": "保存されていないアクションの変更があります。本当に離れますか？",
   "actions.newRule": "新しいルール",
   "actions.no_rule": "利用可能なルールがありません",
