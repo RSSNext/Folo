@@ -13,6 +13,7 @@ const mocks = vi.hoisted(() => ({
   subscribe: vi.fn(),
   refresh: vi.fn(),
   toastWarning: vi.fn(),
+  toastFetchError: vi.fn(),
 }))
 
 vi.mock("@follow/store/subscription/store", () => ({
@@ -32,7 +33,7 @@ vi.mock("sonner", () => ({
 }))
 
 vi.mock("~/lib/error-parser", () => ({
-  toastFetchError: vi.fn(),
+  toastFetchError: mocks.toastFetchError,
 }))
 
 vi.mock("./useNavigateEntry", () => ({
@@ -141,5 +142,35 @@ describe("useDeleteSubscription undo", () => {
     await undoFromToast()
 
     expect(mocks.subscribe).toHaveBeenCalledWith(expect.objectContaining({ title: null }))
+  })
+
+  test("follows a list again by its list id only", async () => {
+    mocks.unsubscribe.mockResolvedValue([{ type: "list", id: "list-1", title: "Undo List" }])
+
+    await act(async () => {
+      await deleteSubscription?.mutateAsync({
+        subscription: { ...subscription, feedId: null, listId: "list-1", type: "list" },
+      })
+    })
+    await undoFromToast()
+
+    const [form] = mocks.subscribe.mock.calls[0]!
+    expect(form).toMatchObject({ listId: "list-1", url: undefined })
+    expect(form.feedId).toBeUndefined()
+  })
+
+  test("reports an undo the server rejects", async () => {
+    const error = new Error("Feed not found")
+    mocks.unsubscribe.mockResolvedValue([
+      { type: "feed", id: "feed-1", url: "https://sspai.com/feed", title: "少数派" },
+    ])
+    mocks.subscribe.mockRejectedValue(error)
+
+    await act(async () => {
+      await deleteSubscription?.mutateAsync({ subscription })
+    })
+    await undoFromToast()
+
+    expect(mocks.toastFetchError).toHaveBeenCalledWith(error)
   })
 })
