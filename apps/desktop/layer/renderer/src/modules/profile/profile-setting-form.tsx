@@ -15,11 +15,10 @@ import { userActions } from "@follow/store/user/store"
 import { cn } from "@follow/utils/utils"
 import { zodResolver } from "@hookform/resolvers/zod"
 import { useMutation } from "@tanstack/react-query"
-import i18next from "i18next"
 import { useForm } from "react-hook-form"
 import { useTranslation } from "react-i18next"
 import { toast } from "sonner"
-import { z } from "zod"
+import type { z } from "zod"
 
 import { AvatarUploadModal } from "~/components/ui/crop/AvatarUploadModal"
 import { useModalStack } from "~/components/ui/modal/stacked/hooks"
@@ -28,28 +27,8 @@ import { updateUser } from "~/lib/auth"
 import { uploadAvatarBlob } from "~/lib/avatar-upload"
 import { toastFetchError } from "~/lib/error-parser"
 
-const socialLinksSchema = z.object({
-  twitter: z.string().max(32).optional(),
-  github: z.string().max(32).optional(),
-  instagram: z.string().max(32).optional(),
-  facebook: z.string().max(32).optional(),
-  youtube: z.string().max(32).optional(),
-  discord: z.string().max(32).optional(),
-})
-
-const formSchema = z.object({
-  handle: z
-    .string()
-    .max(32)
-    .regex(/^\w+$/, { error: () => i18next.t("profile.handle.invalid", { ns: "settings" }) })
-    .optional()
-    .or(z.literal("")),
-  name: z.string().trim().min(1).max(50),
-  image: z.string().url().or(z.literal("")).optional(),
-  bio: z.string().max(256).optional(),
-  website: z.string().url().max(64).optional().or(z.literal("")),
-  socialLinks: socialLinksSchema.optional(),
-})
+import type { ProfileTextField, socialLinksSchema } from "./profile-form-schema"
+import { getProfileFieldError, profileFormSchema } from "./profile-form-schema"
 
 const socialIconClassNames = {
   twitter: "i-mgc-twitter-cute-fi",
@@ -62,7 +41,14 @@ const socialIconClassNames = {
 
 const formItemLabelClassName = tw`pl-3`
 
-class HandleTakenError extends Error {}
+class ProfileFieldError extends Error {
+  constructor(
+    readonly field: ProfileTextField,
+    message: string,
+  ) {
+    super(message)
+  }
+}
 
 const isHandleTakenByOthers = async (handle: string, userId?: string) => {
   try {
@@ -100,8 +86,8 @@ export const ProfileSettingForm = ({
   const user = useWhoami() as ExtendedUser
   const { present } = useModalStack()
 
-  const form = useForm<z.infer<typeof formSchema>>({
-    resolver: zodResolver(formSchema),
+  const form = useForm<z.infer<typeof profileFormSchema>>({
+    resolver: zodResolver(profileFormSchema),
     defaultValues: {
       handle: user?.handle || "",
       name: user?.name || "",
@@ -120,7 +106,7 @@ export const ProfileSettingForm = ({
   })
 
   const updateMutation = useMutation({
-    mutationFn: async (values: Partial<z.infer<typeof formSchema>>) => {
+    mutationFn: async (values: Partial<z.infer<typeof profileFormSchema>>) => {
       const res = await updateUser({
         handle: values.handle,
         image: values.image,
@@ -131,21 +117,26 @@ export const ProfileSettingForm = ({
       })
       // The auth client resolves with the error instead of throwing
       if (res.error) {
-        // The server answers a handle another user has with a bare 500, so look it up
+        const fieldError = getProfileFieldError(res.error.code)
+        if (fieldError) {
+          throw new ProfileFieldError(fieldError.field, fieldError.message)
+        }
+        // Servers without HANDLE_ALREADY_TAKEN answer a handle another user has with a bare 500,
+        // so look it up
         if (
           values.handle &&
           values.handle.toLowerCase() !== user?.handle?.toLowerCase() &&
           (await isHandleTakenByOthers(values.handle, user?.id))
         ) {
-          throw new HandleTakenError()
+          throw new ProfileFieldError("handle", t("profile.handle.taken"))
         }
         throw new Error(res.error.message || res.error.statusText)
       }
       return res
     },
     onError: (error) => {
-      if (error instanceof HandleTakenError) {
-        form.setError("handle", { message: t("profile.handle.taken") })
+      if (error instanceof ProfileFieldError) {
+        form.setError(error.field, { message: error.message })
         return
       }
       toastFetchError(error)
@@ -162,7 +153,7 @@ export const ProfileSettingForm = ({
     },
   })
 
-  function onSubmit(values: z.infer<typeof formSchema>) {
+  function onSubmit(values: z.infer<typeof profileFormSchema>) {
     // An empty handle field leaves the handle as it is
     const { handle, ...rest } = values
     updateMutation.mutate(handle ? values : rest)
