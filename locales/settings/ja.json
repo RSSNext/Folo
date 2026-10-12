@@ -708,6 +708,7 @@
   "profile.email.verify_status": "あなたのメールは{{status}}です",
   "profile.handle.description": "あなた個人の識別子です",
   "profile.handle.invalid": "英字、数字、アンダースコアのみ使用できます。",
+  "profile.handle.invalid_characters": "スペースや見えない文字は使用できません。",
   "profile.handle.label": "ハンドル",
   "profile.handle.taken": "このハンドルはすでに使われています。",
   "profile.link_social.authentication": "認証",

@@ -5,7 +5,7 @@ import enCommon from "../../../../../locales/common/en.json"
 import enSettings from "../../../../../locales/settings/en.json"
 import { getProfileFieldError, getServerProfileFieldError } from "./profile-validation"
 
-const INVALID_HANDLE = "Use only letters, numbers and underscores."
+const INVALID_HANDLE = "Don't use spaces or invisible characters."
 
 describe("getProfileFieldError", () => {
   beforeAll(async () => {

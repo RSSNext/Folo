@@ -708,6 +708,7 @@
   "profile.email.verify_status": "Votre email est {{status}}",
   "profile.handle.description": "Votre identifiant unique.",
   "profile.handle.invalid": "Utilisez uniquement des lettres, des chiffres et des tirets bas.",
+  "profile.handle.invalid_characters": "N'utilisez pas d'espaces ni de caractères invisibles.",
   "profile.handle.label": "Identifiant",
   "profile.handle.taken": "Cet identifiant est déjà pris.",
   "profile.link_social.authentication": "Authentification",

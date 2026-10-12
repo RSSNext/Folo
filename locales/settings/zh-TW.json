@@ -708,6 +708,7 @@
   "profile.email.verify_status": "你的電子信箱目前狀態為 {{status}}",
   "profile.handle.description": "你的獨一無二名稱。",
   "profile.handle.invalid": "只能使用字母、數字和底線。",
+  "profile.handle.invalid_characters": "不能使用空格或不可見字元。",
   "profile.handle.label": "名稱",
   "profile.handle.taken": "此名稱已被使用。",
   "profile.link_social.authentication": "驗證",

@@ -24,7 +24,9 @@ const countCharacters = (value: string) => Array.from(value).length
 const tooLongMessage = (field: ProfileTextField) =>
   t("validation.too_long", { ns: "common", count: MAX_LENGTH[field] })
 
-const invalidHandleMessage = () => t("profile.handle.invalid", { ns: "settings" })
+// Says what is refused. Desktop's message asks for letters, numbers and underscores only, which
+// its stricter check requires but this one, like the server, does not
+const invalidHandleMessage = () => t("profile.handle.invalid_characters", { ns: "settings" })
 
 /**
  * Why the server would refuse a profile field's value, as a translated message. The name and the
