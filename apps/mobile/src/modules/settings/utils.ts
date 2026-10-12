@@ -89,6 +89,10 @@ export const exportLocalDatabase = async () => {
       from: dbPath,
       to: destinationUri,
     })
+    // Earlier exports were saved as follow.db next to it; drop that stale copy of the database
+    await FileSystem.deleteAsync(`${FileSystem.documentDirectory}follow.db`, {
+      idempotent: true,
+    }).catch(console.error)
 
     await FileSystem.getInfoAsync(destinationUri)
     await Sharing.shareAsync(destinationUri, {
