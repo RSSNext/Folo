@@ -28,24 +28,49 @@ const KEY_HANDLING_ELEMENTS =
 // A link follows Enter only. Space does nothing to it, so the app's Space shortcut keeps working
 // while a link has the focus, such as a timeline entry that was just clicked.
 const ENTER_HANDLING_ELEMENTS = "a[href]"
+// Controls that Tab and Shift+Tab move the focus away from, so keyboard users can go from one to
+// the next. The draggable rows of the subscription list only look like buttons to assistive
+// technology and keep Tab for switching views.
+const TAB_HANDLING_ELEMENTS = [
+  KEY_HANDLING_ELEMENTS,
+  ENTER_HANDLING_ELEMENTS,
+  ...[
+    "link",
+    "menuitem",
+    "menuitemcheckbox",
+    "menuitemradio",
+    "switch",
+    "checkbox",
+    "radio",
+    "tab",
+    "option",
+    "slider",
+    "spinbutton",
+    "combobox",
+    "textbox",
+    "searchbox",
+  ].map((role) => `[role='${role}']`),
+].join(", ")
 
 // Key presses a shortcut of this module ran a command for
 const commandEvents = new WeakSet<Event>()
 
 /**
- * Space or Enter on a focused control or field belongs to it. A single-key shortcut on those keys
- * would otherwise press the wrong thing, such as toggling the audio player instead of opening the
- * focused menu button. Controls built from other elements, such as menu items, count once they
- * handled the key themselves.
+ * Space, Enter or Tab on a focused control or field belongs to it. A single-key shortcut on those
+ * keys would otherwise press the wrong thing, such as toggling the audio player instead of opening
+ * the focused menu button, or switching the timeline view instead of moving the focus to the next
+ * control. Controls built from other elements count once they handled the key themselves.
  */
 export const isKeyForFocusedControl = (event: KeyboardEvent) => {
-  if (event.key !== " " && event.key !== "Enter") return false
+  const { key } = event
+  if (key !== " " && key !== "Enter" && key !== "Tab") return false
   if (event.metaKey || event.ctrlKey || event.altKey) return false
   if (event.defaultPrevented && !commandEvents.has(event)) return true
   const { target } = event
   if (!(target instanceof Element)) return false
+  if (key === "Tab") return target.matches(TAB_HANDLING_ELEMENTS)
   if (target.matches(KEY_HANDLING_ELEMENTS)) return true
-  return event.key === "Enter" && target.matches(ENTER_HANDLING_ELEMENTS)
+  return key === "Enter" && target.matches(ENTER_HANDLING_ELEMENTS)
 }
 
 export const useCommandHotkey = <T extends FollowCommandId>({

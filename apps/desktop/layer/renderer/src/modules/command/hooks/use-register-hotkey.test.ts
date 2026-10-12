@@ -52,6 +52,31 @@ describe("isKeyForFocusedControl", () => {
     expect(pressOn(item, { key: "Enter" })).toBe(true)
   })
 
+  it("leaves Tab and Shift+Tab to the focused control, so the focus moves on", () => {
+    for (const html of [
+      "<button>Summarize timeline</button>",
+      '<a href="/timeline/articles/all/1">Entry</a>',
+      '<input type="search" />',
+      '<button role="switch">Image only</button>',
+      '<div role="menuitem" tabindex="-1">Edit</div>',
+      '<div role="switch" tabindex="0" aria-checked="false"></div>',
+    ]) {
+      const element = create(html)
+      expect(pressOn(element, { key: "Tab" }), html).toBe(true)
+      expect(pressOn(element, { key: "Tab", shiftKey: true }), html).toBe(true)
+    }
+  })
+
+  it("keeps Tab for switching views on the timeline and its lists", () => {
+    const region = create('<div role="region" tabindex="-1"></div>')
+    expect(pressOn(region, { key: "Tab" })).toBe(false)
+    expect(pressOn(region, { key: "Tab", shiftKey: true })).toBe(false)
+    expect(pressOn(document.body, { key: "Tab" })).toBe(false)
+    // A draggable subscription row, focused after a click
+    const feed = create('<div role="button" tabindex="0" aria-roledescription="draggable"></div>')
+    expect(pressOn(feed, { key: "Tab" })).toBe(false)
+  })
+
   it("keeps Space and Enter for the app elsewhere, and other keys everywhere", () => {
     const region = create('<div role="region" tabindex="-1"></div>')
     expect(pressOn(region, { key: " " })).toBe(false)
