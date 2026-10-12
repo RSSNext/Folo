@@ -375,7 +375,7 @@
   "general.export_database.label": "データベースをエクスポート",
   "general.group_by_date.description": "エントリーを日付ごとにグループ化します。",
   "general.group_by_date.label": "日付ごとにグループ化",
-  "general.hide_all_read_subscriptions.description": "購読リストで未読エントリーのない購読を非表示にします。",
+  "general.hide_all_read_subscriptions.description": "「未読のみ表示」がオンのとき、購読リストで未読エントリーのない購読を非表示にします。",
   "general.hide_all_read_subscriptions.label": "既読を非表示",
   "general.hide_private_subscriptions_in_timeline.description": "購読リストからプライベート購読を非表示にし、タイムラインからそれらのエントリーを非表示にします（この設定に関係なく、それらは常に公開されません）。",
   "general.hide_private_subscriptions_in_timeline.label": "プライベートを非表示",

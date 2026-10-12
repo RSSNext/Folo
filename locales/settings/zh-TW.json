@@ -375,7 +375,7 @@
   "general.export_database.label": "匯出資料庫",
   "general.group_by_date.description": "按日期分組項目",
   "general.group_by_date.label": "按日期分組",
-  "general.hide_all_read_subscriptions.description": "在訂閱列表中隱藏沒有未讀條目的訂閱。",
+  "general.hide_all_read_subscriptions.description": "開啟「僅顯示未讀」時，在訂閱列表中隱藏沒有未讀條目的訂閱。",
   "general.hide_all_read_subscriptions.label": "隱藏已讀",
   "general.hide_private_subscriptions_in_timeline.description": "從你的訂閱列表中隱藏私人訂閱，並從你的時間軸上隱藏它們的條目（無論此設置為何，它們對公眾始終是不可見的）。",
   "general.hide_private_subscriptions_in_timeline.label": "隱藏私人",

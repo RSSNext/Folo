@@ -375,7 +375,7 @@
   "general.export_database.label": "Exporter la base de données",
   "general.group_by_date.description": "Grouper les entrées par date.",
   "general.group_by_date.label": "Grouper par date",
-  "general.hide_all_read_subscriptions.description": "Masquer les abonnements sans entrées non lues dans la liste d'abonnements.",
+  "general.hide_all_read_subscriptions.description": "Lorsque « Afficher non lus uniquement » est activé, masquer les abonnements sans entrées non lues dans la liste d'abonnements.",
   "general.hide_all_read_subscriptions.label": "Masquer les lus",
   "general.hide_private_subscriptions_in_timeline.description": "Masquer les abonnements privés de votre liste d'abonnements et masquer leurs entrées de votre chronologie (ils sont toujours invisibles au public indépendamment de ce paramètre).",
   "general.hide_private_subscriptions_in_timeline.label": "Masquer les privés",
