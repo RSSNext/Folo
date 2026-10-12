@@ -9,6 +9,7 @@ import {
   HoverCardPortal,
   HoverCardTrigger,
 } from "@radix-ui/react-hover-card"
+import { useRef, useState } from "react"
 import { useTranslation } from "react-i18next"
 
 import { setUISetting, useUISettingKey } from "~/atoms/settings/ui"
@@ -18,12 +19,21 @@ export const SwitchToMasonryButton = () => {
   const isImageOnly = useUISettingKey("pictureViewImageOnly")
   const { t } = useTranslation()
   const isMobile = useMobile()
+  const [open, setOpen] = useState(false)
+  const triggerRef = useRef<HTMLButtonElement>(null)
 
   if (isMobile) return null
   return (
-    <HoverCard openDelay={100}>
-      <HoverCardTrigger>
-        <ActionButton>
+    <HoverCard openDelay={100} open={open} onOpenChange={setOpen}>
+      {/* The button itself is the trigger, so the options also open on click or Enter and Space,
+          not only on hover. Escape or a click outside closes them. */}
+      <HoverCardTrigger asChild>
+        <ActionButton
+          ref={triggerRef}
+          aria-label={t("entry_list_header.preview_mode")}
+          aria-expanded={open}
+          onClick={() => setOpen(true)}
+        >
           <i className={cn(!isMasonry ? "i-mgc-grid-cute-re" : "i-mgc-grid-2-cute-re")} />
         </ActionButton>
       </HoverCardTrigger>
@@ -31,6 +41,10 @@ export const SwitchToMasonryButton = () => {
         <HoverCardContent
           sideOffset={12}
           side="bottom"
+          // A click on the trigger keeps the options open instead of closing and reopening them
+          onPointerDownOutside={(event) => {
+            if (triggerRef.current?.contains(event.target as Node)) event.preventDefault()
+          }}
           className={clsx(
             "z-10 rounded-xl border bg-background drop-shadow",
             "data-[state=open]:animate-in data-[state=closed]:animate-out",
