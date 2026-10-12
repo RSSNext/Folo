@@ -5,12 +5,7 @@ import { useTranslation } from "react-i18next"
 
 import { useShowAISummary } from "~/atoms/ai-summary"
 import { useEntryIsInReadabilitySuccess } from "~/atoms/readability"
-import {
-  AIChatPanelStyle,
-  setAIPanelVisibility,
-  useAIChatPanelStyle,
-  useAIPanelVisibility,
-} from "~/atoms/settings/ai"
+import { setAIPanelVisibility, useAIPanelVisibility } from "~/atoms/settings/ai"
 import { useActionLanguage } from "~/atoms/settings/general"
 import { AISummaryCardBase } from "~/components/ui/ai-summary-card"
 
@@ -23,7 +18,6 @@ export function AISummary({ entryId }: { entryId: string }) {
   const actionLanguage = useActionLanguage()
 
   // AI Chat panel state
-  const aiChatPanelStyle = useAIChatPanelStyle()
   const isAIPanelVisible = useAIPanelVisibility()
 
   const summary = usePrefetchSummary({
@@ -33,12 +27,9 @@ export function AISummary({ entryId }: { entryId: string }) {
     enabled: showAISummary,
   })
 
-  // Show Ask AI button when:
-  // 1. Panel style is floating AND panel is not visible
-  // 2. OR panel style is fixed (since fixed panel can be toggled)
-  const shouldShowAskAI =
-    (aiChatPanelStyle === AIChatPanelStyle.Floating && !isAIPanelVisible) ||
-    aiChatPanelStyle === AIChatPanelStyle.Fixed
+  // Ask AI only opens the AI panel, so it is left out while the panel is open, including a fixed
+  // panel next to the entry once its chat has messages
+  const shouldShowAskAI = !isAIPanelVisible
 
   const handleAskAI = () => {
     setAIPanelVisibility(true)
