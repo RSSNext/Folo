@@ -18,7 +18,7 @@ import { catchUpThroughEngine, ensureSyncedThroughEngine } from "../../sync/sync
 import type { AcknowledgedChangeKind } from "../../sync/transaction-queue"
 import { readLastSyncId, transactionQueue } from "../../sync/transaction-queue"
 import { invalidateEntriesQuery } from "../entry/hooks"
-import { getFeedById } from "../feed/getter"
+import { getFeedById, getFeedServerId } from "../feed/getter"
 import { feedActions } from "../feed/store"
 import { inboxActions } from "../inbox/store"
 import { getListById } from "../list/getters"
@@ -507,7 +507,12 @@ class SubscriptionSyncService {
   }
 
   async subscribe(subscription: SubscriptionForm) {
-    const data = await api().subscriptions.create(subscription)
+    const body: SubscriptionForm = {
+      ...subscription,
+      // A feed the server has not stored yet is followed by its URL, not by its nonce id
+      feedId: getFeedServerId(subscription.feedId),
+    }
+    const data = await api().subscriptions.create(body)
 
     if (data.feed) {
       feedActions.upsertMany([data.feed as any])

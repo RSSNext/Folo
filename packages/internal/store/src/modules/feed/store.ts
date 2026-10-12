@@ -23,6 +23,23 @@ const set = useFeedStore.setState
 const immerSet = createImmerSetter(useFeedStore)
 // const get = useFeedStore.getState
 // const distanceTime = 1000 * 60 * 60 * 9
+
+/**
+ * The keys of the stored previews that incoming feeds replace. A feed the server has not stored
+ * yet is previewed under a nonce id, and the feed fetched or followed later for its URL takes its
+ * place, so the nonce is neither found nor sent once the real feed is known.
+ */
+const getReplacedPreviewIds = (stored: Record<string, FeedModel>, incoming: FeedSchema[]) => {
+  const previewIds = Object.keys(stored).filter((id) => stored[id]?.nonce)
+  if (previewIds.length === 0) return previewIds
+
+  const incomingIdByUrl = new Map(incoming.map((feed) => [feed.url, feed.id]))
+  return previewIds.filter((id) => {
+    const incomingId = incomingIdByUrl.get(stored[id]!.url)
+    return incomingId !== undefined && incomingId !== id
+  })
+}
+
 class FeedActions implements Hydratable, Resetable {
   async hydrate() {
     const feeds = await FeedService.getFeedAll()
@@ -30,7 +47,11 @@ class FeedActions implements Hydratable, Resetable {
   }
 
   upsertManyInSession(feeds: FeedSchema[]) {
+    const replacedPreviewIds = getReplacedPreviewIds(get().feeds, feeds)
     immerSet((draft) => {
+      for (const id of replacedPreviewIds) {
+        delete draft.feeds[id]
+      }
       for (const feed of feeds) {
         // Feeds from subscriptions carry no analytics, so keep the stored ones for keys the
         // incoming feed leaves empty, but let a fresh fetch replace them

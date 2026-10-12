@@ -4,6 +4,8 @@ import { beforeEach, describe, expect, test, vi } from "vitest"
 
 import { apiContext, queryClientContext } from "../../context"
 import type { FollowAPI } from "../../types"
+import { useFeedStore } from "../feed/store"
+import type { FeedModel } from "../feed/types"
 import { useListStore } from "../list/store"
 import type { ListModel } from "../list/types"
 import { useUnreadStore } from "../unread/store"
@@ -27,6 +29,14 @@ const mocks = vi.hoisted(() => ({
   updateCategory: vi.fn(),
   deleteCategory: vi.fn(),
   patchMany: vi.fn(),
+  create: vi.fn(),
+}))
+
+vi.mock("@follow/database/services/feed", () => ({
+  FEED_EXTRA_DATA_KEYS: [],
+  FeedService: {
+    upsertMany: vi.fn(async () => {}),
+  },
 }))
 
 vi.mock("@follow/database/services/unread", () => ({
@@ -104,6 +114,7 @@ describe("subscriptionSyncService", () => {
     apiContext.provide({
       subscriptions: {
         batchUpdate: mocks.batchUpdate,
+        create: mocks.create,
         delete: mocks.deleteSubscriptions,
         update: mocks.update,
       },
@@ -286,6 +297,40 @@ describe("subscriptionSyncService", () => {
     expect(state.feedIdByView[FeedViewType.Articles].has("leaving")).toBe(false)
     expect(mocks.deleteSubscriptionRows).toHaveBeenCalledWith(["feed/leaving"])
     expect(getConfirmedSubscriptionChange("failingList")).toBeUndefined()
+  })
+
+  test("follows a feed the server has not stored by its URL, not by its nonce id", async () => {
+    const url = "rsshub://test/sort"
+    useFeedStore.setState({
+      feeds: {
+        nonce: { type: "feed", id: "nonce", nonce: "nonce", url, title: "Sort" } as FeedModel,
+      },
+    })
+    seed([])
+    mocks.create.mockResolvedValue({
+      code: 0,
+      feed: { type: "feed", id: "feed-sort", url, title: "Sort" },
+      list: null,
+      unread: {},
+    })
+
+    await subscriptionSyncService.subscribe({
+      url,
+      feedId: "nonce",
+      listId: undefined,
+      view: FeedViewType.Articles,
+      category: null,
+      isPrivate: false,
+      hideFromTimeline: null,
+      title: null,
+    })
+
+    expect(mocks.create).toHaveBeenCalledTimes(1)
+    expect(mocks.create.mock.calls[0]![0]).toMatchObject({ url })
+    expect(mocks.create.mock.calls[0]![0].feedId).toBeUndefined()
+    // The followed feed takes the place of its preview
+    expect(Object.keys(useFeedStore.getState().feeds)).toEqual(["feed-sort"])
+    expect(useSubscriptionStore.getState().data["feed-sort"]?.feedId).toBe("feed-sort")
   })
 
   test("refetching one view keeps the other views' subscriptions", async () => {

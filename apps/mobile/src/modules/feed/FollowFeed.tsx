@@ -1,5 +1,10 @@
 import { FeedViewType } from "@follow/constants"
-import { useFeedById, usePrefetchFeed, usePrefetchFeedByUrl } from "@follow/store/feed/hooks"
+import {
+  useFeedById,
+  useFeedByIdOrUrl,
+  usePrefetchFeed,
+  usePrefetchFeedByUrl,
+} from "@follow/store/feed/hooks"
 import { useSubscriptionByFeedId } from "@follow/store/subscription/hooks"
 import { subscriptionSyncService } from "@follow/store/subscription/store"
 import type { SubscriptionForm } from "@follow/store/subscription/types"
@@ -94,7 +99,10 @@ export function FollowFeed(props: { id: string }) {
 export function FollowUrl(props: { url: string }) {
   const { url } = props
   const { isFetching, data, error, refetch } = usePrefetchFeedByUrl(url)
-  if (!data) {
+  // A feed the server had not stored yet is previewed under a nonce id until the feed itself
+  // arrives, e.g. by following it, and takes the preview's place
+  const feedId = useFeedByIdOrUrl({ id: data?.feed.id, url: data?.feed.url })?.id ?? data?.feed.id
+  if (!data || !feedId) {
     return (
       <FeedLoadState
         id={url}
@@ -105,10 +113,7 @@ export function FollowUrl(props: { url: string }) {
     )
   }
   return (
-    <FollowImpl
-      feedId={data.feed.id}
-      defaultView={data.responseData?.analytics?.view ?? undefined}
-    />
+    <FollowImpl feedId={feedId} defaultView={data.responseData?.analytics?.view ?? undefined} />
   )
 }
 function FollowImpl(props: { feedId: string; defaultView?: FeedViewType }) {
