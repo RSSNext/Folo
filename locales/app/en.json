@@ -425,7 +425,7 @@
   "notify.store.default": "the store",
   "notify.store.mas": "App Store",
   "notify.store.mss": "Microsoft Store",
-  "notify.unfollow_feed": "<FeedItem /> have been unfollowed.",
+  "notify.unfollow_feed": "<FeedItem /> has been unfollowed.",
   "notify.unfollow_feed_many": "All selected feeds have been unfollowed.",
   "notify.update_info": "{{app_name}} is ready to update!",
   "notify.update_info_1": "Click to restart",

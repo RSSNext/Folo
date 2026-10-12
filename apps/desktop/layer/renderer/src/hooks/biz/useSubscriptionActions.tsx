@@ -63,7 +63,8 @@ export const useDeleteSubscription = ({ onSuccess }: { onSuccess?: () => void } 
 
       const toastId = toast.warning("", {
         duration: 3000,
-        description: <UnfollowInfo title={feed.title!} undo={undo} />,
+        // The name the sidebar showed, which is the custom title when there is one
+        description: <UnfollowInfo title={subscription.title || feed.title || ""} undo={undo} />,
         action: {
           label: (
             <span className={"flex items-center gap-1 px-1"}>

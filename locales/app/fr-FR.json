@@ -425,7 +425,7 @@
   "notify.store.default": "le magasin",
   "notify.store.mas": "App Store",
   "notify.store.mss": "Microsoft Store",
-  "notify.unfollow_feed": "<FeedItem /> ont été désabonnés.",
+  "notify.unfollow_feed": "Vous ne suivez plus <FeedItem />.",
   "notify.unfollow_feed_many": "Tous les flux sélectionnés ont été désabonnés.",
   "notify.update_info": "{{app_name}} est prêt à être mis à jour !",
   "notify.update_info_1": "Cliquez pour redémarrer",

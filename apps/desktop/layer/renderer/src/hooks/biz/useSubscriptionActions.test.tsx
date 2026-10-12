@@ -144,6 +144,21 @@ describe("useDeleteSubscription undo", () => {
     expect(mocks.subscribe).toHaveBeenCalledWith(expect.objectContaining({ title: null }))
   })
 
+  test("names the feed in the toast as the sidebar did", async () => {
+    mocks.unsubscribe.mockResolvedValue([
+      { type: "feed", id: "feed-1", url: "https://sspai.com/feed", title: "少数派" },
+    ])
+
+    await act(async () => {
+      await deleteSubscription?.mutateAsync({ subscription })
+    })
+
+    const options = mocks.toastWarning.mock.calls.at(-1)?.[1] as {
+      description: React.ReactElement<{ title: string }>
+    }
+    expect(options.description.props.title).toBe("My SSPAI")
+  })
+
   test("follows a list again by its list id only", async () => {
     mocks.unsubscribe.mockResolvedValue([{ type: "list", id: "list-1", title: "Undo List" }])
 
