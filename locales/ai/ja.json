@@ -57,6 +57,7 @@
   "chat.context.upload_files": "ファイルをアップロード",
   "chat.error.description": "ご安心ください。再試行するか、チャットを再読み込みすると会話を続けられます。",
   "chat.error.reload_page": "ページを再読み込み",
+  "chat.error.stream_timeout": "応答が途中で届かなくなったため終了しました。メッセージを再試行してください。",
   "chat.error.title": "AI チャットでエラーが発生しました",
   "chat.error.try_again": "再試行",
   "chat.error.unexpected": "リクエストの処理中に予期しないエラーが発生しました。",

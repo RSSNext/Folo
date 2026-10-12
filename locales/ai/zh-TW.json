@@ -57,6 +57,7 @@
   "chat.context.upload_files": "上傳檔案",
   "chat.error.description": "別擔心！您可以重試或重新載入對話，繼續先前的交流。",
   "chat.error.reload_page": "重新載入頁面",
+  "chat.error.stream_timeout": "回覆長時間沒有新內容，已結束。請重試你的訊息。",
   "chat.error.title": "AI 對話發生錯誤",
   "chat.error.try_again": "重試",
   "chat.error.unexpected": "處理您的請求時發生未預期的錯誤。",

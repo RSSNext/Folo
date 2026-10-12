@@ -57,6 +57,7 @@
   "chat.context.upload_files": "Upload Files",
   "chat.error.description": "Don't worry! You can try again or reload the chat to continue your conversation.",
   "chat.error.reload_page": "Reload Page",
+  "chat.error.stream_timeout": "The reply stopped arriving, so it was ended. Retry your message to try again.",
   "chat.error.title": "AI Chat Encountered an Error",
   "chat.error.try_again": "Try Again",
   "chat.error.unexpected": "An unexpected error occurred while processing your request.",

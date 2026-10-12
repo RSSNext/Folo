@@ -57,6 +57,7 @@
   "chat.context.upload_files": "Importer des fichiers",
   "chat.error.description": "Pas d'inquiétude ! Vous pouvez réessayer ou recharger la discussion pour poursuivre votre conversation.",
   "chat.error.reload_page": "Recharger la page",
+  "chat.error.stream_timeout": "La réponse a cessé d'arriver et a été interrompue. Réessayez votre message.",
   "chat.error.title": "La discussion IA a rencontré une erreur",
   "chat.error.try_again": "Réessayer",
   "chat.error.unexpected": "Une erreur inattendue s'est produite lors du traitement de votre demande.",
