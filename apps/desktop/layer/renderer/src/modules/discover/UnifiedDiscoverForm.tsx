@@ -289,7 +289,15 @@ export function UnifiedDiscoverForm() {
       { keyword: values.keyword, target },
       {
         onSuccess: (data) => {
-          if (inputType === "rss" && data.length === 1 && data[0]?.feed?.url === url) {
+          if (inputType !== "rss") return
+          // Discovery knows only feeds someone follows or a page links to, so a new feed
+          // address finds nothing and is previewed directly instead of "No feeds found"
+          if (data.length === 0) {
+            mutation.reset()
+            presentFeedForm()
+            return
+          }
+          if (data.length === 1 && data[0]?.feed?.url === url) {
             presentFeedForm()
           }
         },
