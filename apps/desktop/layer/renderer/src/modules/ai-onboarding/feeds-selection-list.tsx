@@ -9,7 +9,7 @@ import { Tooltip, TooltipContent, TooltipTrigger } from "@follow/components/ui/t
 import { cn } from "@follow/utils/utils"
 import { decode } from "@toon-format/toon"
 import type { PrimitiveAtom } from "jotai"
-import { useAtom, useAtomValue, useSetAtom, useStore } from "jotai"
+import { useAtom, useAtomValue, useAtomValueRawSync, useSetAtom, useStore } from "jotai"
 import { AnimatePresence, m } from "motion/react"
 import { useEffect, useMemo, useRef } from "react"
 
@@ -106,7 +106,9 @@ function FeedSelectionOperationScreen() {
     }
   }, [dispatch, feedsToSelect, existingIds, outputKey])
 
-  const selectedAtoms = useAtomValue(selectedFeedSelectionAtomsAtom)
+  // The effect above inserts the recommended feeds in this component's own mount commit, before
+  // a plain useAtomValue here would subscribe
+  const selectedAtoms = useAtomValueRawSync(selectedFeedSelectionAtomsAtom)
   const items = useMemo(
     () => selectedAtoms.map((atom) => ({ atom, id: store.get(atom).id })),
     [selectedAtoms, store],
