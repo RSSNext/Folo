@@ -1,5 +1,6 @@
 import { useEntry } from "@follow/store/entry/hooks"
 import { usePrefetchSummary } from "@follow/store/summary/hooks"
+import { cn } from "@follow/utils/utils"
 import { useTranslation } from "react-i18next"
 
 import { useShowAISummary } from "~/atoms/ai-summary"
@@ -51,7 +52,8 @@ export function AISummary({ entryId }: { entryId: string }) {
     <AISummaryCardBase
       content={summary.data}
       isLoading={summary.isLoading}
-      className="my-8"
+      // Only a finished summary belongs in an exported PDF, not its loading, upgrade or empty state
+      className={cn("my-8", !summary.data && "print:hidden")}
       title={t("entry_content.ai_summary")}
       showAskAIButton={shouldShowAskAI}
       onAskAI={handleAskAI}
