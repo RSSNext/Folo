@@ -22,6 +22,8 @@ import {
 } from "@/src/components/layouts/views/SafeNavigationScrollView"
 import {
   GroupedInformationCell,
+  GroupedInsetActivityIndicatorCell,
+  GroupedInsetListBaseCell,
   GroupedInsetListCard,
   GroupedPlainButtonCell,
 } from "@/src/components/ui/grouped/GroupedList"
@@ -42,9 +44,11 @@ import { EditRuleScreen } from "./EditRule"
 export const ActionsScreen = () => {
   const { t } = useTranslation("settings")
   const { t: tCommon } = useTranslation("common")
-  const { isLoading } = usePrefetchActions()
+  const { isLoading, isError, isFetching, refetch } = usePrefetchActions()
   const rules = useActionRules()
   const isDirty = useIsActionDataDirty()
+  // Saving sends every rule, so editing an empty list here would wipe the server's rules
+  const loadFailed = isError && !actionActions.isLoaded()
   // Leaving by a swipe would skip the unsaved changes prompt of the back button
   const setScreenOptions = useSetScreenOptions()
   useEffect(() => {
@@ -94,28 +98,48 @@ export const ActionsScreen = () => {
         </GroupedInsetListCard>
       </View>
 
-      <View className="mt-6">
-        <GroupedInsetListCard>
-          {rules.length > 0 ? (
-            <SwipeableGroupProvider>
-              <Animated.FlatList
-                keyExtractor={keyExtractor}
-                itemLayoutAnimation={LinearTransition}
-                scrollEnabled={false}
-                data={rules}
-                renderItem={ListItemCell}
-                ItemSeparatorComponent={ItemSeparatorComponent}
-              />
-            </SwipeableGroupProvider>
-          ) : isLoading && rules.length === 0 ? (
-            <View className="my-4">
-              <PlatformActivityIndicator />
-            </View>
-          ) : null}
-        </GroupedInsetListCard>
-        <NewRuleButton />
-      </View>
+      {loadFailed ? (
+        <ActionLoadError isRetrying={isFetching} onRetry={() => void refetch()} />
+      ) : (
+        <View className="mt-6">
+          <GroupedInsetListCard>
+            {rules.length > 0 ? (
+              <SwipeableGroupProvider>
+                <Animated.FlatList
+                  keyExtractor={keyExtractor}
+                  itemLayoutAnimation={LinearTransition}
+                  scrollEnabled={false}
+                  data={rules}
+                  renderItem={ListItemCell}
+                  ItemSeparatorComponent={ItemSeparatorComponent}
+                />
+              </SwipeableGroupProvider>
+            ) : isLoading && rules.length === 0 ? (
+              <View className="my-4">
+                <PlatformActivityIndicator />
+              </View>
+            ) : null}
+          </GroupedInsetListCard>
+          <NewRuleButton />
+        </View>
+      )}
     </SafeNavigationScrollView>
+  )
+}
+const ActionLoadError = ({ isRetrying, onRetry }: { isRetrying: boolean; onRetry: () => void }) => {
+  const { t } = useTranslation("settings")
+  const { t: tCommon } = useTranslation("common")
+  return (
+    <GroupedInsetListCard className="mt-6">
+      <GroupedInsetListBaseCell>
+        <Text className="flex-1 text-sm text-secondary-label">{t("actions.load_failed")}</Text>
+      </GroupedInsetListBaseCell>
+      {isRetrying ? (
+        <GroupedInsetActivityIndicatorCell />
+      ) : (
+        <GroupedPlainButtonCell label={tCommon("retry")} onPress={onRetry} />
+      )}
+    </GroupedInsetListCard>
   )
 }
 const NewRuleButton = () => {
