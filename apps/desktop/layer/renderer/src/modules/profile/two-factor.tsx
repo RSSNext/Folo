@@ -9,6 +9,7 @@ import {
 } from "@follow/components/ui/form/index.jsx"
 import { Input, InputOTP, InputOTPGroup, InputOTPSlot } from "@follow/components/ui/input/index.js"
 import { Label } from "@follow/components/ui/label/index.js"
+import { TOTP_ISSUER } from "@follow/constants"
 import { useWhoami } from "@follow/store/user/hooks"
 import { userActions } from "@follow/store/user/store"
 import { zodResolver } from "@hookform/resolvers/zod"
@@ -246,7 +247,7 @@ export const TwoFactorForm = () => {
       onSubmitMutationFn={async (values) => {
         const res = user?.twoFactorEnabled
           ? await twoFactor.disable({ password: values.password })
-          : await twoFactor.enable({ password: values.password })
+          : await twoFactor.enable({ password: values.password, issuer: TOTP_ISSUER })
         if (res.error) {
           throw new Error(res.error.message)
         }

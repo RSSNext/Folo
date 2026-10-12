@@ -550,7 +550,7 @@ const BottomTip = () => {
     try {
       const settings = getIntegrationSettings()
       const jsonData = JSON.stringify(settings, null, 2)
-      const filename = `follow-integration-settings-${new Date().toISOString().split("T")[0]}.json`
+      const filename = `folo-integration-settings-${new Date().toISOString().split("T")[0]}.json`
       downloadJsonFile(jsonData, filename)
       toast.success(t("integration.export.success"))
     } catch (error) {

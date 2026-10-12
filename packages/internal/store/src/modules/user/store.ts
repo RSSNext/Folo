@@ -1,4 +1,5 @@
 import type { UserRole } from "@follow/constants"
+import { TOTP_ISSUER } from "@follow/constants"
 import type { UserSchema } from "@follow/database/schemas/types"
 import { UserService } from "@follow/database/services/user"
 import type { AuthUser } from "@follow-app/client-sdk"
@@ -161,7 +162,7 @@ class UserSyncService {
     if (!me) throw new Error("user not login")
 
     const res = enabled
-      ? await authClient().twoFactor.enable({ password })
+      ? await authClient().twoFactor.enable({ password, issuer: TOTP_ISSUER })
       : await authClient().twoFactor.disable({ password })
 
     if (!res.error) {
