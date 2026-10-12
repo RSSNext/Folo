@@ -127,6 +127,9 @@ export function SubscriptionColumn({
 
   useEffect(() => {
     if (!focusableContainerRef.current) return
+    // Keep the focus a page took while loading, such as the autofocused Discover search box
+    const { activeElement } = document
+    if (activeElement && activeElement !== document.body) return
     focusableContainerRef.current.focus()
   }, [])
 
