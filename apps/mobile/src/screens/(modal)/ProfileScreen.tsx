@@ -8,7 +8,7 @@ import { usePrefetchUser, useUserById, useWhoami } from "@follow/store/user/hook
 import { Image as ExpoImage } from "expo-image"
 import { createContext, Fragment, use, useCallback, useEffect, useMemo } from "react"
 import { useTranslation } from "react-i18next"
-import { Alert, FlatList, Platform, Pressable, Share, View } from "react-native"
+import { Alert, FlatList, Platform, Share, View } from "react-native"
 import Animated, {
   interpolate,
   useAnimatedScrollHandler,
@@ -21,6 +21,7 @@ import { ReAnimatedScrollView } from "@/src/components/common/AnimatedComponents
 import { BlurEffect } from "@/src/components/common/BlurEffect"
 import { SwipeableItem } from "@/src/components/common/SwipeableItem"
 import {
+  DefaultHeaderBackButton,
   InternalNavigationHeader,
   UINavigationHeaderActionButton,
 } from "@/src/components/layouts/header/NavigationHeader"
@@ -41,6 +42,7 @@ import { ItemPressable } from "@/src/components/ui/pressable/ItemPressable"
 import { Text } from "@/src/components/ui/typography/Text"
 import { ShareForwardCuteReIcon } from "@/src/icons/share_forward_cute_re"
 import type { followClient } from "@/src/lib/api-client"
+import { useCanBack, useCanDismiss } from "@/src/lib/navigation/hooks"
 import { Navigation } from "@/src/lib/navigation/Navigation"
 import type { NavigationControllerView } from "@/src/lib/navigation/types"
 import { isAndroid } from "@/src/lib/platform"
@@ -92,6 +94,9 @@ function ProfileScreenImpl(props: { userId: string }) {
   usePrefetchUser(props.userId)
   const user = useUserById(props.userId)
   const gradientLight = isUserHeaderGradientLight(useImageColors(user?.image))
+  const bannerIconColor = gradientLight ? "#000" : "#fff"
+  const canBack = useCanBack()
+  const canDismiss = useCanDismiss()
   useEffect(() => {
     if (isError) {
       toast.error(t("profile.fetch_subscriptions_failed"))
@@ -166,17 +171,29 @@ function ProfileScreenImpl(props: { userId: string }) {
         </IsMyProfileContext>
       </ReAnimatedScrollView>
 
+      {/* The header buttons on the banner until the header fades in, in the banner's colors.
+          Android opens the profile full screen, with no sheet to swipe away. */}
       <Animated.View
+        pointerEvents="box-none"
         style={useAnimatedStyle(() => ({
           opacity: interpolate(headerOpacity.value, [0, 1], [1, 0]),
-          top: insets.top + 17,
+          top: insets.top + 9,
         }))}
-        className="absolute flex w-full flex-row items-center justify-between px-4"
+        className="absolute flex w-full flex-row items-center justify-between px-2"
       >
-        <View />
-        <Pressable onPress={openShareUrl}>
-          <ShareForwardCuteReIcon color="#fff" />
-        </Pressable>
+        <View>
+          <DefaultHeaderBackButton
+            canGoBack={canBack}
+            canDismiss={canDismiss}
+            color={bannerIconColor}
+          />
+        </View>
+        <UINavigationHeaderActionButton
+          onPress={openShareUrl}
+          accessibilityLabel={t("operation.share")}
+        >
+          <ShareForwardCuteReIcon color={bannerIconColor} />
+        </UINavigationHeaderActionButton>
       </Animated.View>
     </View>
   )

@@ -385,9 +385,14 @@ export const DefaultHeaderBackButton = ({
   canGoBack,
   canDismiss,
   promptBeforeLeave,
-}: NavigationHeaderButtonProps) => {
+  color,
+}: NavigationHeaderButtonProps & {
+  // The icon color, the label color by default
+  color?: string
+}) => {
   const { t } = useTranslation()
-  const label = useColor("label")
+  const labelColor = useColor("label")
+  const label = color ?? labelColor
   const navigation = useNavigation()
 
   const isTopRouteInGroup = useIsTopRouteInGroup()
