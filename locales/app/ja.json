@@ -123,6 +123,7 @@
   "discover.transform.params.item_title": "item 内でタイトルとして使う HTML 要素（CSS セレクター）",
   "discover.transform.params.item_title_attr": "タイトルとして使うタイトル要素の属性",
   "discover.transform.params.title": "RSS のタイトル",
+  "discover.trending_empty": "ここにはまだトレンドのフィードがありません。",
   "discover.untitled_entry": "無題",
   "discover.view_docs": "ドキュメントを見る",
   "download.available_platforms": "iOS、Android、Windows、macOS、Linux に対応",

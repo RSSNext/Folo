@@ -123,6 +123,7 @@
   "discover.transform.params.item_title": "item 中用作標題的 HTML 元素（CSS 選擇器）",
   "discover.transform.params.item_title_attr": "標題元素中用作標題的屬性",
   "discover.transform.params.title": "RSS 的標題",
+  "discover.trending_empty": "這裡還沒有趨勢 RSS 摘要。",
   "discover.untitled_entry": "無標題",
   "discover.view_docs": "查看文件",
   "download.available_platforms": "支援 iOS、Android、Windows、macOS 與 Linux",

@@ -123,6 +123,7 @@
   "discover.transform.params.item_title": "Éléments HTML utilisés comme titre dans l'item (sélecteur CSS)",
   "discover.transform.params.item_title_attr": "Attribut de l'élément de titre utilisé comme titre",
   "discover.transform.params.title": "Le titre du flux RSS",
+  "discover.trending_empty": "Aucun flux tendance ici pour le moment.",
   "discover.untitled_entry": "Sans titre",
   "discover.view_docs": "Voir la documentation",
   "download.available_platforms": "Disponible sur iOS, Android, Windows, macOS et Linux",

@@ -123,6 +123,7 @@
   "discover.transform.params.item_title": "The HTML elements as title in item using CSS selector",
   "discover.transform.params.item_title_attr": "The attributes of title element as title",
   "discover.transform.params.title": "The title of the RSS",
+  "discover.trending_empty": "No trending feeds here yet.",
   "discover.untitled_entry": "Untitled",
   "discover.view_docs": "View Docs",
   "download.available_platforms": "Available for iOS, Android, Windows, macOS & Linux",

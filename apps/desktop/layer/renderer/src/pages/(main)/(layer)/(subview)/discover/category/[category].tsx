@@ -155,6 +155,11 @@ export const Component = () => {
                   </div>
                 ),
             )}
+            {filteredItems.length === 0 && (
+              <p className="py-8 text-center text-body text-text-secondary">
+                {t("search.empty.no_results")}
+              </p>
+            )}
           </div>
         </div>
       ) : (
