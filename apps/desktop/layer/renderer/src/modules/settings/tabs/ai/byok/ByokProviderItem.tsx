@@ -43,7 +43,12 @@ export const ByokProviderItem = ({ provider, onEdit, onDelete }: ByokProviderIte
         <div className="ml-4 flex items-center gap-1 opacity-60 transition-opacity group-hover:opacity-100">
           <Tooltip delayDuration={300}>
             <TooltipTrigger asChild>
-              <Button variant="ghost" size="sm" onClick={onEdit}>
+              <Button
+                variant="ghost"
+                size="sm"
+                aria-label={t("byok.providers.edit")}
+                onClick={onEdit}
+              >
                 <i className="i-mgc-edit-cute-re size-4" />
               </Button>
             </TooltipTrigger>
@@ -51,7 +56,12 @@ export const ByokProviderItem = ({ provider, onEdit, onDelete }: ByokProviderIte
           </Tooltip>
           <Tooltip delayDuration={300}>
             <TooltipTrigger asChild>
-              <Button variant="ghost" size="sm" onClick={onDelete}>
+              <Button
+                variant="ghost"
+                size="sm"
+                aria-label={t("byok.providers.delete")}
+                onClick={onDelete}
+              >
                 <i className="i-mgc-delete-2-cute-re size-4" />
               </Button>
             </TooltipTrigger>

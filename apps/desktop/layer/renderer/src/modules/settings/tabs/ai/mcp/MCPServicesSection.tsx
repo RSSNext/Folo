@@ -35,6 +35,7 @@ export const MCPServicesSection = () => {
   const dialog = useDialog()
 
   const shouldWindowFocusRefetchRef = React.useRef(false)
+  const enabledSwitchId = React.useId()
 
   // Reusable OAuth authorization handler using dialog
   const handleOAuthAuthorization = async (authorizationUrl: string, _connectionId?: string) => {
@@ -357,10 +358,12 @@ export const MCPServicesSection = () => {
       <div className="space-y-2">
         <div className="flex items-center justify-between">
           <div className="space-y-1">
-            <Label className="text-sm font-medium text-text">{t("integration.mcp.enabled")}</Label>
+            <Label htmlFor={enabledSwitchId} className="text-sm font-medium text-text">
+              {t("integration.mcp.enabled")}
+            </Label>
             <div className="text-xs text-text-secondary">{t("integration.mcp.description")}</div>
           </div>
-          <Switch checked={mcpEnabled} onCheckedChange={setMCPEnabled} />
+          <Switch id={enabledSwitchId} checked={mcpEnabled} onCheckedChange={setMCPEnabled} />
         </div>
       </div>
 

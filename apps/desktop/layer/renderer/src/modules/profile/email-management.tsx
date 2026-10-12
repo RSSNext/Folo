@@ -79,6 +79,7 @@ export function EmailManagement() {
             icon={<m.i className="i-mgc-edit-cute-re size-4" />}
             className="size-5 shrink-0 p-1"
             variant="ghost"
+            aria-label={t("profile.email.change")}
             onClick={() => {
               present({
                 title: t("profile.email.change"),

@@ -229,6 +229,7 @@ export const ProfileSettingForm = ({
                       <button
                         type="button"
                         onClick={openAvatarUpload}
+                        aria-label={t("profile.avatar.uploadTitle")}
                         className="group relative cursor-pointer transition-all duration-200 hover:opacity-80"
                       >
                         <Avatar className="size-16">
@@ -297,6 +298,7 @@ export const ProfileSettingForm = ({
                       <button
                         type="button"
                         onClick={openAvatarUpload}
+                        aria-label={t("profile.avatar.uploadTitle")}
                         className="group relative cursor-pointer transition-all duration-200 hover:opacity-80"
                       >
                         <Avatar className="size-8">

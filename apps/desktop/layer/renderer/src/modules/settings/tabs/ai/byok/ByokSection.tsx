@@ -2,6 +2,7 @@ import { Button } from "@follow/components/ui/button/index.js"
 import { Label } from "@follow/components/ui/label/index.jsx"
 import { Switch } from "@follow/components/ui/switch/index.jsx"
 import type { UserByokProviderConfig } from "@follow/shared/settings/interface"
+import { useId } from "react"
 import { useTranslation } from "react-i18next"
 import { toast } from "sonner"
 
@@ -18,6 +19,7 @@ export const ByokSection = () => {
   const byok = aiSettings.byok ?? { enabled: false, providers: [] }
   const { present } = useModalStack()
   const { ask } = useDialog()
+  const enabledSwitchId = useId()
 
   const handleToggleEnabled = (enabled: boolean) => {
     setAISetting("byok", {
@@ -106,10 +108,16 @@ export const ByokSection = () => {
       <div className="space-y-2">
         <div className="flex items-center justify-between">
           <div className="space-y-1">
-            <Label className="text-sm font-medium text-text">{t("byok.enabled")}</Label>
+            <Label htmlFor={enabledSwitchId} className="text-sm font-medium text-text">
+              {t("byok.enabled")}
+            </Label>
             <div className="text-xs text-text-secondary">{t("byok.description")}</div>
           </div>
-          <Switch checked={byok.enabled} onCheckedChange={handleToggleEnabled} />
+          <Switch
+            id={enabledSwitchId}
+            checked={byok.enabled}
+            onCheckedChange={handleToggleEnabled}
+          />
         </div>
       </div>
 

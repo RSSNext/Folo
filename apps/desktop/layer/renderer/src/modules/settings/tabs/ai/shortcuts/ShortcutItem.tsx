@@ -61,6 +61,7 @@ export const ShortcutItem = ({ shortcut, onDelete, onToggle, onEdit }: ShortcutI
         <ItemActions
           actions={actions}
           enabled={shortcut.enabled}
+          toggleLabel={shortcut.name}
           onToggle={(enabled) => onToggle(shortcut.id, enabled)}
         />
       </div>

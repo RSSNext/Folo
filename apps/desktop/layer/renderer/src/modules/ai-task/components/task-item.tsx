@@ -286,6 +286,7 @@ export const TaskItem = memo(({ task }: { task: AITask }) => {
         <ItemActions
           actions={actions}
           enabled={task.isEnabled}
+          toggleLabel={task.name}
           onToggle={async () => {
             try {
               await updateTaskMutation.mutateAsync({ id: task.id, isEnabled: !task.isEnabled })

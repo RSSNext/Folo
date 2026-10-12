@@ -25,13 +25,18 @@ export interface ItemActionsProps {
    * Callback when the switch is toggled
    */
   onToggle: (enabled: boolean) => void
+
+  /**
+   * Accessible name of the switch, usually the item name
+   */
+  toggleLabel?: string
 }
 
 /**
  * Reusable component for item actions (buttons + switch)
  * Used across AI Task Item, AI Shortcut Item, and MCP Service Item
  */
-export const ItemActions = ({ actions, enabled, onToggle }: ItemActionsProps) => {
+export const ItemActions = ({ actions, enabled, onToggle, toggleLabel }: ItemActionsProps) => {
   return (
     <div className="ml-4 flex items-center gap-3">
       {/* Action buttons group */}
@@ -43,6 +48,7 @@ export const ItemActions = ({ actions, enabled, onToggle }: ItemActionsProps) =>
                 <Button
                   variant="ghost"
                   size="sm"
+                  aria-label={action.title}
                   onClick={action.onClick}
                   disabled={action.disabled}
                 >
@@ -75,7 +81,7 @@ export const ItemActions = ({ actions, enabled, onToggle }: ItemActionsProps) =>
 
       {/* Switch area */}
       <div className="flex items-center gap-2 border-l border-fill-tertiary pl-3">
-        <Switch checked={enabled} onCheckedChange={onToggle} />
+        <Switch checked={enabled} onCheckedChange={onToggle} aria-label={toggleLabel} />
       </div>
     </div>
   )
