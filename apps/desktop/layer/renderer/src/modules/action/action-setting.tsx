@@ -504,6 +504,8 @@ const useUnSavedBlocker = (isDirty: boolean) => {
       message: t("settings:actions.navigate.prompt"),
       variant: "ask",
       onConfirm: () => navigationBlocker.proceed(),
+      // A blocker left in the blocked state swallows every later navigation without a prompt
+      onCancel: () => navigationBlocker.reset(),
     })
   }, [ask, navigationBlocker])
 
