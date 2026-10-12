@@ -74,6 +74,9 @@ export class ZustandChatState implements ChatState<BizUIMessage> {
         if (isStreaming) {
           void state.chatActions.markSessionSynced()
         }
+        if (status === "ready" || status === "error") {
+          void state.chatActions.adoptStoredTitle(this.chatId)
+        }
 
         if (
           this.#isResumingStream &&

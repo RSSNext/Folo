@@ -21,7 +21,14 @@ export const RelativeTime = (props: ComponentProps<typeof RelativeTimeBase>) => 
   return <RelativeTimeBase {...props} dateFormatTemplate={props.dateFormatTemplate ?? dateFormat} />
 }
 
-export const RelativeDay = ({ date }: { date: Date }) => {
+export const RelativeDay = ({
+  date,
+  plain,
+}: {
+  date: Date
+  /** Text only, without the tooltip button, for use inside another control such as a menu item */
+  plain?: boolean
+}) => {
   const { t } = useTranslation("common")
   const language = useGeneralSettingSelector((s) => s.language)
 
@@ -71,7 +78,7 @@ export const RelativeDay = ({ date }: { date: Date }) => {
 
   const formated = useMemo(() => dayjs(date).format(dateFormat), [dateFormat, date])
 
-  if (formated === dateString) {
+  if (plain || formated === dateString) {
     return <>{dateString}</>
   }
   return (

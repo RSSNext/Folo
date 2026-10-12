@@ -172,6 +172,26 @@ export class ChatSliceActions {
     return this.get().chatId
   }
 
+  /**
+   * Name a chat that is still untitled after a reply the way the chat history names it. A reply
+   * that brought no generated title, such as a failed one, would otherwise leave "New Chat" in
+   * the header while the history lists the chat under its stored title.
+   */
+  adoptStoredTitle = async (chatId: string) => {
+    const isCurrentAndUntitled = () => this.get().chatId === chatId && !this.get().currentTitle
+    if (!isCurrentAndUntitled() || this.getMessages().length === 0) return
+
+    try {
+      await AIPersistService.ensureSession(chatId)
+      const session = await AIPersistService.getChatSession(chatId)
+      if (session?.title && isCurrentAndUntitled()) {
+        this.setCurrentTitle(session.title)
+      }
+    } catch (error) {
+      console.error("Failed to read the chat title:", error)
+    }
+  }
+
   private createTransportTitleHandler = (chatId: string) => {
     return createChatTitleHandler({
       chatId,
