@@ -4,6 +4,8 @@ import { StyleSheet, View } from "react-native"
 import type { WebViewProps } from "react-native-webview"
 import { WebView } from "react-native-webview"
 
+import { FocusBlockerView } from "@/src/components/native/FocusBlockerView"
+
 import { handleNativePlaybackStarted } from "./entry-tts"
 import { ttsStreamController } from "./tts-stream-controller"
 import { TTS_STREAM_WEBVIEW_HTML } from "./tts-stream-webview-html"
@@ -39,22 +41,25 @@ export const TtsStreamProvider = () => {
 
   return (
     <View pointerEvents="none" style={styles.container}>
-      <WebView<WebViewProps>
-        key={webViewKey}
-        ref={webViewRef}
-        allowsInlineMediaPlayback
-        androidLayerType="software"
-        cacheEnabled={false}
-        javaScriptEnabled
-        mediaPlaybackRequiresUserAction={false}
-        onContentProcessDidTerminate={recreateWebView}
-        onMessage={ttsStreamController.handleMessage}
-        onRenderProcessGone={recreateWebView}
-        originWhitelist={["*"]}
-        scrollEnabled={false}
-        source={{ html: TTS_STREAM_WEBVIEW_HTML }}
-        style={styles.webView}
-      />
+      {/* Android would otherwise move the focus, and the open keyboard, of a closing form here */}
+      <FocusBlockerView style={styles.webView}>
+        <WebView<WebViewProps>
+          key={webViewKey}
+          ref={webViewRef}
+          allowsInlineMediaPlayback
+          androidLayerType="software"
+          cacheEnabled={false}
+          javaScriptEnabled
+          mediaPlaybackRequiresUserAction={false}
+          onContentProcessDidTerminate={recreateWebView}
+          onMessage={ttsStreamController.handleMessage}
+          onRenderProcessGone={recreateWebView}
+          originWhitelist={["*"]}
+          scrollEnabled={false}
+          source={{ html: TTS_STREAM_WEBVIEW_HTML }}
+          style={styles.webView}
+        />
+      </FocusBlockerView>
     </View>
   )
 }
