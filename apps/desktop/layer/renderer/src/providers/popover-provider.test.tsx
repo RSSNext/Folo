@@ -119,6 +119,26 @@ describe("PopoverProvider", () => {
     expect(document.body.textContent).not.toContain("Share content")
   })
 
+  test("keeps the anchor out of the page flow while closed", async () => {
+    ;({ container, root } = await renderProvider())
+
+    const getAnchor = () => document.querySelector<HTMLButtonElement>("button[aria-haspopup]")
+    expect(getAnchor()?.style.position).toBe("fixed")
+
+    await act(async () => {
+      showPopover({ x: 120, y: 80 }, <div>Share content</div>)
+      await waitForPopoverEffects()
+    })
+    expect(getAnchor()?.style.position).toBe("fixed")
+    expect(getAnchor()?.style.top).toBe("80px")
+
+    await act(async () => {
+      dismissPopover()
+      await waitForPopoverEffects()
+    })
+    expect(getAnchor()?.style.position).toBe("fixed")
+  })
+
   test("can reopen after a programmatic dismissal", async () => {
     ;({ container, root } = await renderProvider())
 

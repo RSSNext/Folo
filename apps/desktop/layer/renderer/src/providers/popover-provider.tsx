@@ -45,13 +45,16 @@ const Handler = memo(() => {
         }
       }}
     >
+      {/* Only anchors the popover at the pointer. It stays out of the page flow while closed too:
+          as an inline button after the full-height layout it made the page taller than the window,
+          so focusing it on close or opening a modal scrolled the whole app up. */}
       <PopoverTrigger
-        className="pointer-events-none"
-        style={
-          popoverState.open
-            ? { position: "fixed", top: popoverState.position.y, left: popoverState.position.x }
-            : {}
-        }
+        className="pointer-events-none size-0"
+        style={{
+          position: "fixed",
+          top: popoverState.open ? popoverState.position.y : 0,
+          left: popoverState.open ? popoverState.position.x : 0,
+        }}
       />
       <AnimatePresence>
         {popoverState.open && (
