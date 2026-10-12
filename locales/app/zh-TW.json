@@ -310,6 +310,7 @@
   "feed_claim_modal.verify_ownership": "要證明你是此 RSS 摘要的作者，您需要完成驗證。",
   "feed_form.add_feed": "新增 RSS 摘要",
   "feed_form.add_follow": "新增跟隨",
+  "feed_form.add_list": "新增列表",
   "feed_form.category": "分類",
   "feed_form.category_description": "預設情形下，您的跟隨將依網站網域分組。",
   "feed_form.error_fetching_feed": "獲取 RSS 摘要出錯。",

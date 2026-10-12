@@ -310,6 +310,7 @@
   "feed_claim_modal.verify_ownership": "要证明你是此订阅源的所有者，你需要完成所有权认证。",
   "feed_form.add_feed": "添加订阅源",
   "feed_form.add_follow": "新增订阅",
+  "feed_form.add_list": "添加列表",
   "feed_form.category": "分类",
   "feed_form.category_description": "默认情况下，你的订阅将按网站域名分组。",
   "feed_form.error_fetching_feed": "获取订阅源出错。",

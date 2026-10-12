@@ -310,6 +310,7 @@
   "feed_claim_modal.verify_ownership": "To claim this feed as your own, you need to verify ownership.",
   "feed_form.add_feed": "Add Feed",
   "feed_form.add_follow": "Add follow",
+  "feed_form.add_list": "Add List",
   "feed_form.category": "Category",
   "feed_form.category_description": "By default, your follows will be grouped by website.",
   "feed_form.error_fetching_feed": "Error in fetching feed.",

@@ -310,6 +310,7 @@
   "feed_claim_modal.verify_ownership": "このフィードを自分のものとしてクレームするには、所有権を確認する必要があります。",
   "feed_form.add_feed": "フィードを追加",
   "feed_form.add_follow": "フォローを追加",
+  "feed_form.add_list": "リストを追加",
   "feed_form.category": "カテゴリー",
   "feed_form.category_description": "デフォルトでは、フォローはウェブサイトごとにグループ化されます。",
   "feed_form.error_fetching_feed": "フィードの取得に失敗しました。",

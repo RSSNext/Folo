@@ -310,6 +310,7 @@
   "feed_claim_modal.verify_ownership": "Pour réclamer ce flux comme le vôtre, vous devez vérifier la propriété.",
   "feed_form.add_feed": "Ajouter un flux",
   "feed_form.add_follow": "Ajouter un suivi",
+  "feed_form.add_list": "Ajouter une liste",
   "feed_form.category": "Catégorie",
   "feed_form.category_description": "Par défaut, vos suivis seront groupés par site web.",
   "feed_form.error_fetching_feed": "Erreur lors de la récupération du flux.",
