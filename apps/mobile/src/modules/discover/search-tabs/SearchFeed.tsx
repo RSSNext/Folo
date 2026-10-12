@@ -40,7 +40,7 @@ export const SearchFeed = () => {
   const resultLabel =
     resultCount === 0
       ? t("discover.search.results_zero")
-      : t("discover.search.results_other", { count: resultCount })
+      : t("discover.search.results", { count: resultCount })
 
   return (
     <View

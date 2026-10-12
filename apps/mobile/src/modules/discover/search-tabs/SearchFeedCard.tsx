@@ -71,7 +71,7 @@ export const SearchFeedCard = ({
         <View className="flex-row items-center gap-1.5">
           <User3CuteReIcon width={14} height={14} color={iconColor} />
           <Text className="text-xs text-secondary-label">
-            {formatNumber(followerCount)} {t("feed.follower_other")}
+            {formatNumber(followerCount)} {t("feed.follower", { count: followerCount })}
           </Text>
         </View>
         <View className="flex-row items-center gap-1.5">
@@ -79,7 +79,7 @@ export const SearchFeedCard = ({
             <>
               <SafetyCertificateCuteReIcon width={14} height={14} color={iconColor} />
               <Text className="text-xs text-secondary-label">
-                {t("feed.entry_week_other", { count: item.analytics.updatesPerWeek })}
+                {t("feed.entry_week", { count: item.analytics.updatesPerWeek })}
               </Text>
             </>
           ) : item.analytics?.latestEntryPublishedAt ? (
