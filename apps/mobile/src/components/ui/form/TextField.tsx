@@ -131,6 +131,9 @@ export const PlainTextField = ({
     <View className="flex-1 flex-row items-center">
       <TextInput
         {...props}
+        // A text alignment gives iOS a paragraph style that word-wraps the unfocused field, which
+        // then shows only the part before the last hyphen or space instead of an ellipsis
+        lineBreakModeIOS={props.lineBreakModeIOS ?? (props.multiline ? undefined : "tail")}
         ref={textInputRef}
         onChange={props.onChange}
         onChangeText={props.onChangeText}
