@@ -34,3 +34,24 @@ export const parseSocialMedia = (parsedUrl?: string | null) => {
     },
   }
 }
+
+interface SocialFeedLike {
+  url?: string | null
+  siteUrl?: string | null
+}
+
+/** A feed of X posts, going by the RSSHub route it reads or the site it links to */
+export const isXFeed = (feed?: SocialFeedLike | null) => {
+  if (!feed) return false
+  if (feed.url && /^rsshub:\/\/twitter\//i.test(feed.url)) return true
+  return !!feed.siteUrl && (isXUrl(feed.siteUrl).validate || isTwitterUrl(feed.siteUrl).validate)
+}
+
+/**
+ * The X author of an entry of an X feed. An entry of another feed that only links to a post, such
+ * as a Hacker News item, was not written by the author of that post and gets none.
+ */
+export const parseEntrySocialMedia = (
+  entry: { authorUrl?: string | null; url?: string | null; guid?: string | null },
+  feed?: SocialFeedLike | null,
+) => (isXFeed(feed) ? parseSocialMedia(entry.authorUrl || entry.url || entry.guid) : undefined)

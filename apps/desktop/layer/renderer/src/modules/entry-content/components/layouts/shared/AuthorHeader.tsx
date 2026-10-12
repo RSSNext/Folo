@@ -4,7 +4,7 @@ import { cn } from "@follow/utils/utils"
 import { useMemo } from "react"
 
 import { RelativeTime } from "~/components/ui/datetime"
-import { parseSocialMedia } from "~/lib/parsers"
+import { parseEntrySocialMedia } from "~/lib/parsers"
 import type { FeedIconEntry } from "~/modules/feed/feed-icon"
 import { FeedIcon } from "~/modules/feed/feed-icon"
 import { FeedTitle } from "~/modules/feed/feed-title"
@@ -55,7 +55,7 @@ export const AuthorHeader: React.FC<AuthorHeaderProps> = ({
 
   if (!entry || !feed) return null
 
-  const parsed = parseSocialMedia(entry.authorUrl || entry.url || entry.guid)
+  const parsed = parseEntrySocialMedia(entry, feed)
 
   return (
     <div className={cn("flex items-center gap-2", className)}>
