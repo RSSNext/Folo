@@ -598,7 +598,7 @@
   "lists.delete.confirm": "Confirmer la suppression de la liste ?",
   "lists.delete.error": "Échec de la suppression de la liste.",
   "lists.delete.success": "Liste supprimée avec succès !",
-  "lists.delete.warning": "Attention : Une fois supprimée, la liste ne sera plus disponible et tout le contenu sera définitivement supprimé et irrécupérable !..",
+  "lists.delete.warning": "Attention : Une fois supprimée, la liste ne sera plus disponible et tout le contenu sera définitivement supprimé et irrécupérable !",
   "lists.description": "Description",
   "lists.edit.error": "Échec de la modification de la liste.",
   "lists.edit.label": "Modifier",

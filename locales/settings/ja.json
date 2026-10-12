@@ -598,7 +598,7 @@
   "lists.delete.confirm": "リストを削除しようとしていますよろしいですか？",
   "lists.delete.error": "リストの削除に失敗しました",
   "lists.delete.success": "リストを削除しました！",
-  "lists.delete.warning": "警告: 一度リストを削除するとそのリストは永久に利用できず、元にも戻せません！..",
+  "lists.delete.warning": "警告: 一度リストを削除するとそのリストは永久に利用できず、元にも戻せません！",
   "lists.description": "説明",
   "lists.edit.error": "リストの編集に失敗しました",
   "lists.edit.label": "編集",

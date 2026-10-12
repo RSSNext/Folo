@@ -69,7 +69,10 @@ export const SettingFeeds = () => {
   )
 }
 
-const GRID_COLS_CLASSNAME = "grid-cols-[30px_auto_100px_150px_60px_60px]"
+// In a narrow table the subscription date gives up its column so the names stay readable
+const GRID_COLS_CLASSNAME =
+  "grid-cols-[30px_auto_100px_150px_60px_60px] @max-[640px]:grid-cols-[30px_auto_100px_60px_60px]"
+const DATE_COLUMN_CLASSNAME = "@max-[640px]:hidden"
 
 const SubscriptionFeedsSection = () => {
   const { t } = useTranslation("settings")
@@ -182,7 +185,7 @@ const SubscriptionFeedsSection = () => {
       </div>
 
       {filteredFeeds.length > 0 && (
-        <div className="mt-6 space-y-0.5">
+        <div className="mt-6 space-y-0.5 @container">
           {/* Header - Sticky */}
           <div
             className={clsx(
@@ -214,7 +217,10 @@ const SubscriptionFeedsSection = () => {
               )}
             </button>
             <button
-              className="text-center transition-colors hover:text-text"
+              className={clsx(
+                "text-center transition-colors hover:text-text",
+                DATE_COLUMN_CLASSNAME,
+              )}
               onClick={() => handleSort("date")}
               type="button"
             >
@@ -600,7 +606,9 @@ const FeedListItem = memo(
           <span className="leading-tight">{tCommon(getView(subscription.view)!.name)}</span>
         </div>
         {!!subscription.createdAt && (
-          <div className="whitespace-nowrap pr-1 text-center text-xs">
+          <div
+            className={clsx("whitespace-nowrap pr-1 text-center text-xs", DATE_COLUMN_CLASSNAME)}
+          >
             <RelativeDay date={new Date(subscription.createdAt)} />
           </div>
         )}

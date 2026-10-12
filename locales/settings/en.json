@@ -598,7 +598,7 @@
   "lists.delete.confirm": "Confirm deletion of the list?",
   "lists.delete.error": "Failed to delete list.",
   "lists.delete.success": "List deleted successfully!",
-  "lists.delete.warning": "Warning: Once deleted, the list will no longer be available and all content will be permanently deleted and unrecoverable!..",
+  "lists.delete.warning": "Warning: Once deleted, the list will no longer be available and all content will be permanently deleted and unrecoverable!",
   "lists.description": "Description",
   "lists.edit.error": "Failed to edit list.",
   "lists.edit.label": "Edit",
