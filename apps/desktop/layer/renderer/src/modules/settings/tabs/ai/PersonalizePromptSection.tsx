@@ -65,6 +65,8 @@ export const PersonalizePromptSection = () => {
           <LexicalRichEditorTextArea
             initialValue={initialValue}
             onValueChange={handleEditorChange}
+            // Also reports the length of the text the editor opens with
+            onLengthChange={setCurrentLength}
             plugins={[MentionPlugin]}
             namespace="PersonalizePromptEditor"
             placeholder={t("personalize.prompt.placeholder")}
