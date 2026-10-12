@@ -255,6 +255,8 @@ export const useRegisterEntryCommands = () => {
               toast.error(t("entry_actions.unavailable.view_source_content"), { duration: 3000 })
               return
             }
+            // The onboarding entries have no source page, only an internal folo:// address
+            if (isOnboardingEntryUrl(entry.url)) return
             const routeParams = getRouteParams()
             const viewPreviewInModal = [
               FeedViewType.SocialMedia,
