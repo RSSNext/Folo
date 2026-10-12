@@ -2,7 +2,7 @@ import { getUnreadAll } from "@follow/store/unread/getters"
 import { useTranslation } from "react-i18next"
 
 import type { AppColorScheme } from "@/src/atoms/settings/ui"
-import { setUISetting, useUISettingKey } from "@/src/atoms/settings/ui"
+import { setUISetting, useUIPaidSettingLocked, useUISettingKey } from "@/src/atoms/settings/ui"
 import {
   NavigationBlurEffectHeaderView,
   SafeNavigationScrollView,
@@ -22,6 +22,7 @@ import {
   setBadgeCountAsyncWithPermission,
 } from "@/src/lib/permission"
 
+import { PaidSettingCell } from "../components/PaidSettingCell"
 import { ReadingScreen } from "./Reading"
 
 const fontSizePresets = [
@@ -82,6 +83,7 @@ export const AppearanceScreen = () => {
   )
   const showUnreadCountBadgeMobile = useUISettingKey("showUnreadCountBadgeMobile")
   const hideExtraBadge = useUISettingKey("hideExtraBadge")
+  const isHideExtraBadgeLocked = useUIPaidSettingLocked("hideExtraBadge")
   const thumbnailRatio = useUISettingKey("thumbnailRatio")
 
   // Font scaling settings
@@ -164,18 +166,20 @@ export const AppearanceScreen = () => {
 
       <GroupedInsetListSectionHeader label={t("appearance.subscriptions")} marginSize="small" />
       <GroupedInsetListCard>
-        <GroupedInsetListCell
+        <PaidSettingCell
           label={t("appearance.hide_extra_badge.label")}
           description={t("appearance.hide_extra_badge.description_mobile")}
+          locked={isHideExtraBadgeLocked}
         >
           <Switch
             size="sm"
             value={hideExtraBadge}
+            disabled={isHideExtraBadgeLocked}
             onValueChange={(val) => {
               setUISetting("hideExtraBadge", val)
             }}
           />
-        </GroupedInsetListCell>
+        </PaidSettingCell>
         <GroupedInsetListCell
           label={t("appearance.thumbnail_ratio.title")}
           description={t("appearance.thumbnail_ratio.description")}
