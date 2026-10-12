@@ -300,7 +300,8 @@ const RowRender = ({ feedId, listId }: { feedId: string; listId: string }) => {
   )
 }
 const categoryFormSchema = z.object({
-  categoryName: z.string().min(1),
+  // A name of only spaces would make a folder without a name
+  categoryName: z.string().trim().min(1),
 })
 export const CategoryCreationModalContent = ({
   onSubmit,

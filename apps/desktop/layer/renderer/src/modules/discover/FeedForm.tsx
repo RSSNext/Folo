@@ -283,7 +283,8 @@ const FeedInnerForm = ({
       const body = {
         url: feed.url,
         view: Number.parseInt(values.view),
-        category: values.category,
+        // A name of only spaces would make a folder without a name
+        category: values.category?.trim() || null,
         isPrivate: values.isPrivate || false,
         hideFromTimeline: values.hideFromTimeline,
         title: values.title,
