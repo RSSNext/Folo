@@ -25,10 +25,9 @@ describe("isKeyForFocusedControl", () => {
     document.body.innerHTML = ""
   })
 
-  it("leaves Space and Enter to buttons, links, switches and fields", () => {
+  it("leaves Space and Enter to buttons, switches and fields", () => {
     for (const html of [
       "<button>Options</button>",
-      '<a href="/x">Link</a>',
       '<button role="switch">Image only</button>',
       '<input type="checkbox" />',
       '<input type="search" />',
@@ -38,6 +37,13 @@ describe("isKeyForFocusedControl", () => {
       expect(pressOn(element, { key: " " }), html).toBe(true)
       expect(pressOn(element, { key: "Enter" }), html).toBe(true)
     }
+  })
+
+  it("leaves Enter to a link, but not Space, which does nothing to it", () => {
+    // Such as a timeline entry that was just clicked: Space still plays or pauses the audio
+    const link = create('<a href="/timeline/articles/all/1">Entry</a>')
+    expect(pressOn(link, { key: "Enter" })).toBe(true)
+    expect(pressOn(link, { key: " " })).toBe(false)
   })
 
   it("leaves them to a control that handled them itself, such as a menu item", () => {

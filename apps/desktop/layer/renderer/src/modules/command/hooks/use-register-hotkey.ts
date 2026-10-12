@@ -24,7 +24,10 @@ const SPECIAL_KEYS_MAPPINGS = {
 
 // Elements the browser itself acts on with Space or Enter: it presses them or types into them
 const KEY_HANDLING_ELEMENTS =
-  "a[href], button, input, select, summary, textarea, [contenteditable]:not([contenteditable='false'])"
+  "button, input, select, summary, textarea, [contenteditable]:not([contenteditable='false'])"
+// A link follows Enter only. Space does nothing to it, so the app's Space shortcut keeps working
+// while a link has the focus, such as a timeline entry that was just clicked.
+const ENTER_HANDLING_ELEMENTS = "a[href]"
 
 // Key presses a shortcut of this module ran a command for
 const commandEvents = new WeakSet<Event>()
@@ -40,7 +43,9 @@ export const isKeyForFocusedControl = (event: KeyboardEvent) => {
   if (event.metaKey || event.ctrlKey || event.altKey) return false
   if (event.defaultPrevented && !commandEvents.has(event)) return true
   const { target } = event
-  return target instanceof Element && target.matches(KEY_HANDLING_ELEMENTS)
+  if (!(target instanceof Element)) return false
+  if (target.matches(KEY_HANDLING_ELEMENTS)) return true
+  return event.key === "Enter" && target.matches(ENTER_HANDLING_ELEMENTS)
 }
 
 export const useCommandHotkey = <T extends FollowCommandId>({
