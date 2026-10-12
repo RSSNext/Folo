@@ -177,13 +177,17 @@ const SearchInput = () => {
           autoCorrect={false}
           autoFocus={isFocused}
           ref={inputRef}
-          onSubmitEditing={() => {
+          onSubmitEditing={({ nativeEvent }) => {
+            // Read the submitted text: typed or pasted text can arrive in the same frame as the
+            // return key, before tempSearchValue holds it
+            const { text } = nativeEvent
+            setTempSearchValue(text)
             // Submitting the same keyword again searches again, e.g. after a failed request
-            if (tempSearchValue === searchValue) {
+            if (text === searchValue) {
               void queryClient.refetchQueries({ queryKey: ["searchFeed", searchValue] })
               void queryClient.refetchQueries({ queryKey: ["searchList", searchValue] })
             }
-            setSearchValue(tempSearchValue)
+            setSearchValue(text)
           }}
           value={tempSearchValue}
           cursorColor={accentColor}
