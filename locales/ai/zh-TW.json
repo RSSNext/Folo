@@ -108,6 +108,8 @@
   "chat.message.edit_cancel": "取消 (Esc)",
   "chat.message.edit_hint": "按 <enter/> 儲存，按 <esc/> 取消",
   "chat.message.edit_save": "儲存 (Enter)",
+  "chat.message.send": "傳送訊息",
+  "chat.message.stop": "停止生成",
   "chat.placeholder.edit_message": "編輯訊息...",
   "chat.placeholder.entry": "詢問關於此條目的任何問題...",
   "chat.placeholder.onboarding": "輸入訊息",

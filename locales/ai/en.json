@@ -108,6 +108,8 @@
   "chat.message.edit_cancel": "Cancel (Esc)",
   "chat.message.edit_hint": "Press <enter/> to save, <esc/> to cancel",
   "chat.message.edit_save": "Save (Enter)",
+  "chat.message.send": "Send message",
+  "chat.message.stop": "Stop generating",
   "chat.placeholder.edit_message": "Edit your message...",
   "chat.placeholder.entry": "Ask anything about this entry...",
   "chat.placeholder.onboarding": "Enter your message",

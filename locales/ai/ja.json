@@ -108,6 +108,8 @@
   "chat.message.edit_cancel": "キャンセル (Esc)",
   "chat.message.edit_hint": "<enter/> で保存、<esc/> でキャンセル",
   "chat.message.edit_save": "保存 (Enter)",
+  "chat.message.send": "メッセージを送信",
+  "chat.message.stop": "生成を停止",
   "chat.placeholder.edit_message": "メッセージを編集...",
   "chat.placeholder.entry": "このエントリーについて何でも質問してください...",
   "chat.placeholder.onboarding": "メッセージを入力",
