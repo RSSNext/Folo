@@ -16,6 +16,7 @@ import type {
 import { AnimatePresence } from "motion/react"
 import type { FC } from "react"
 import { memo, useState } from "react"
+import { useTranslation } from "react-i18next"
 import { useEventCallback } from "usehooks-ts"
 
 import { m } from "~/components/common/Motion"
@@ -39,38 +40,67 @@ export const SubscriptionItems = ({
   userId: string
   itemStyle: ItemVariant
 }) => {
+  const { t } = useTranslation()
   const replaceImgUrlIfNeed = useReplaceImgUrlIfNeed()
   const profile = usePrefetchUser(userId)
   const userInfo = useUserById(userId)
   const subscriptions = useUserSubscriptionsQuery(userId)
   const renderUserData = profile.data || userInfo
 
-  return subscriptions.isLoading ? (
-    <LoadingWithIcon
-      size="large"
-      icon={
-        <Avatar className="aspect-square size-4">
-          <AvatarImage src={replaceImgUrlIfNeed(renderUserData?.image || undefined)} />
-          <AvatarFallback>{renderUserData?.name?.slice(0, 2)}</AvatarFallback>
-        </Avatar>
-      }
-      className="center h-48 w-full max-w-full"
-    />
-  ) : (
-    subscriptions.data && (
-      <div className="flex w-full">
-        <div className="relative flex w-0 grow flex-col">
-          {Object.keys(subscriptions.data).map((category) => (
-            <SubscriptionGroup
-              key={category}
-              category={category}
-              subscriptions={subscriptions.data?.[category]!}
-              itemStyle={itemStyle}
-            />
-          ))}
-        </div>
-      </div>
+  if (subscriptions.isLoading) {
+    return (
+      <LoadingWithIcon
+        size="large"
+        icon={
+          <Avatar className="aspect-square size-4">
+            <AvatarImage src={replaceImgUrlIfNeed(renderUserData?.image || undefined)} />
+            <AvatarFallback>{renderUserData?.name?.slice(0, 2)}</AvatarFallback>
+          </Avatar>
+        }
+        className="center h-48 w-full max-w-full"
+      />
     )
+  }
+
+  const categories = Object.keys(subscriptions.data ?? {})
+
+  if (categories.length === 0) {
+    // The heading above is always shown, so say why nothing is under it
+    if (subscriptions.isError) {
+      return (
+        <div className="mt-8 flex flex-col items-center gap-3 text-sm text-text-secondary">
+          <span>{t("user_profile.subscriptions_load_failed")}</span>
+          <Button
+            variant="outline"
+            size="sm"
+            isLoading={subscriptions.isFetching}
+            onClick={() => subscriptions.refetch()}
+          >
+            {t("retry", { ns: "common" })}
+          </Button>
+        </div>
+      )
+    }
+    return subscriptions.isSuccess ? (
+      <p className="mt-8 text-center text-sm text-text-secondary">
+        {t("user_profile.no_subscriptions")}
+      </p>
+    ) : null
+  }
+
+  return (
+    <div className="flex w-full">
+      <div className="relative flex w-0 grow flex-col">
+        {categories.map((category) => (
+          <SubscriptionGroup
+            key={category}
+            category={category}
+            subscriptions={subscriptions.data?.[category]!}
+            itemStyle={itemStyle}
+          />
+        ))}
+      </div>
+    </div>
   )
 }
 

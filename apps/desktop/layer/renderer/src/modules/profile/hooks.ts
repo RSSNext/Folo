@@ -28,9 +28,9 @@ export const useUserSubscriptionsQuery = (userId: string | undefined) => {
 
       for (const subscription of res.data || []) {
         if (!subscription.category && "feeds" in subscription) {
-          const { siteUrl } = subscription.feeds
-          if (!siteUrl) continue
-          const parsed = parse(siteUrl)
+          // Feeds without a site link are grouped by the domain of the feed itself
+          const { siteUrl, url } = subscription.feeds
+          const parsed = parse(siteUrl || url)
           parsed.domain && (subscription.category = capitalizeFirstLetter(parsed.domain))
         }
         if (subscription.category) {
