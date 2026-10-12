@@ -372,6 +372,7 @@
   "tasks.fields.schedule": "スケジュール：",
   "tasks.manage.desc": "スケジュールに従って自動実行される AI タスクを作成・管理します。",
   "tasks.manage.limit_reached": "(最大タスク数に達しました)",
+  "tasks.manage.not_in_plan": "(ご利用のプランには AI タスクが含まれていません)",
   "tasks.modal.delete_confirm": "タスク \"{{name}}\" を削除してもよろしいですか？",
   "tasks.modal.delete_title": "タスクを削除",
   "tasks.modal.edit_title": "AI タスクを編集",

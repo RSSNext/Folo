@@ -372,6 +372,7 @@
   "tasks.fields.schedule": "Schedule:",
   "tasks.manage.desc": "Create and manage automated AI tasks that run on your schedule.",
   "tasks.manage.limit_reached": "(Limit reached: maximum number of tasks reached)",
+  "tasks.manage.not_in_plan": "(AI tasks are not included in your plan)",
   "tasks.modal.delete_confirm": "Are you sure you want to delete the task \"{{name}}\"?",
   "tasks.modal.delete_title": "Delete Task",
   "tasks.modal.edit_title": "Edit AI Task",

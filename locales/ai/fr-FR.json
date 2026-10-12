@@ -372,6 +372,7 @@
   "tasks.fields.schedule": "Calendrier :",
   "tasks.manage.desc": "Créez et gérez des tâches IA automatisées qui s'exécutent selon votre calendrier.",
   "tasks.manage.limit_reached": "(Limite atteinte : nombre maximum de tâches atteint)",
+  "tasks.manage.not_in_plan": "(Les tâches IA ne sont pas incluses dans votre plan)",
   "tasks.modal.delete_confirm": "Êtes-vous sûr de vouloir supprimer la tâche \"{{name}}\" ?",
   "tasks.modal.delete_title": "Supprimer la tâche",
   "tasks.modal.edit_title": "Modifier la tâche IA",

@@ -372,6 +372,7 @@
   "tasks.fields.schedule": "排程：",
   "tasks.manage.desc": "建立並管理按排程自動執行的 AI 任務。",
   "tasks.manage.limit_reached": "(已達到最大任務數量限制)",
+  "tasks.manage.not_in_plan": "(您的方案不包含 AI 任務)",
   "tasks.modal.delete_confirm": "確定要刪除任務 \"{{name}}\" 嗎？",
   "tasks.modal.delete_title": "刪除任務",
   "tasks.modal.edit_title": "編輯 AI 任務",
