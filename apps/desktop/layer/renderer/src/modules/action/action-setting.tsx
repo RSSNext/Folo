@@ -8,7 +8,7 @@ import {
   useUpdateActionsMutation,
 } from "@follow/store/action/hooks"
 import type { ActionItem } from "@follow/store/action/store"
-import { actionActions } from "@follow/store/action/store"
+import { actionActions, useActionStore } from "@follow/store/action/store"
 import { nextFrame } from "@follow/utils"
 import { JsonObfuscatedCodec } from "@follow/utils/json-codec"
 import { cn } from "@follow/utils/utils"
@@ -42,7 +42,7 @@ import {
 } from "~/modules/action/rule-summary"
 
 import { useSetSubViewRightView } from "../app-layout/subview/hooks"
-import { generateExportFilename } from "./utils"
+import { findRuleIndexWithInvalidRegex, generateExportFilename } from "./utils"
 
 const EmptyActionPlaceholder = ({ onCreateRule }: { onCreateRule: () => void }) => {
   const { t } = useTranslation(["settings", "common"])
@@ -446,6 +446,20 @@ const ActionButtonGroup = ({ onCreateRule }: { onCreateRule: () => void }) => {
 
   const hasActions = actionLength > 0
 
+  const save = useCallback(() => {
+    const { rules } = useActionStore.getState()
+    const invalidIndex = findRuleIndexWithInvalidRegex(rules)
+    if (invalidIndex !== -1) {
+      toast.error(
+        t("actions.save_invalid_regex", {
+          name: getRuleDisplayName(rules[invalidIndex], invalidIndex, t),
+        }),
+      )
+      return
+    }
+    mutation.mutate()
+  }, [mutation, t])
+
   const setRightView = useSetSubViewRightView()
   useEffect(() => {
     setRightView(
@@ -460,7 +474,7 @@ const ActionButtonGroup = ({ onCreateRule }: { onCreateRule: () => void }) => {
             icon="i-mgc-check-circle-cute-re"
             disabled={!isDirty}
             loading={mutation.isPending}
-            onClick={() => mutation.mutate()}
+            onClick={save}
           >
             {mutation.isPending ? t("actions.saving") : t("actions.save")}
           </HeaderActionButton>
@@ -470,7 +484,7 @@ const ActionButtonGroup = ({ onCreateRule }: { onCreateRule: () => void }) => {
     return () => {
       setRightView(null)
     }
-  }, [setRightView, actionLength, hasActions, isDirty, mutation, onCreateRule, t])
+  }, [setRightView, actionLength, hasActions, isDirty, mutation, onCreateRule, save, t])
 
   return null
 }
