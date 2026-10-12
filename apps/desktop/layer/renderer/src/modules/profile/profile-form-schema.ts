@@ -30,13 +30,10 @@ const withMaxLength = (schema: z.ZodString, field: ProfileTextField) =>
     error: () => tooLongMessage(field),
   })
 
+const invalidHandleMessage = () => i18next.t("profile.handle.invalid", { ns: "settings" })
+
 export const profileFormSchema = z.object({
-  handle: withMaxLength(
-    z
-      .string()
-      .regex(/^\w+$/, { error: () => i18next.t("profile.handle.invalid", { ns: "settings" }) }),
-    "handle",
-  )
+  handle: withMaxLength(z.string().regex(/^\w+$/, { error: invalidHandleMessage }), "handle")
     .optional()
     .or(z.literal("")),
   name: withMaxLength(z.string().trim().min(1), "name"),
@@ -52,6 +49,8 @@ const SERVER_FIELD_ERRORS: Record<string, { field: ProfileTextField; message: ()
     field: "handle",
     message: () => i18next.t("profile.handle.taken", { ns: "settings" }),
   },
+  // Spaces or invisible characters in a handle; the form's own check refuses them first
+  HANDLE_INVALID_CHARACTERS: { field: "handle", message: invalidHandleMessage },
   NAME_CANNOT_BE_EMPTY: {
     field: "name",
     message: () => i18next.t("validation.required", { ns: "common" }),

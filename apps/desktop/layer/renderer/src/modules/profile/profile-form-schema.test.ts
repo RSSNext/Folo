@@ -36,6 +36,12 @@ describe("profileFormSchema", () => {
       "Use at most 256 characters.",
     )
   })
+
+  test("refuses a handle with spaces or invisible characters, as the server does", () => {
+    for (const handle of ["Ta ken", "Taken\u200B", "\u202ETaken"]) {
+      expect(errorOf({ handle }), handle).toBe("Use only letters, numbers and underscores.")
+    }
+  })
 })
 
 describe("getProfileFieldError", () => {
@@ -51,6 +57,10 @@ describe("getProfileFieldError", () => {
     expect(getProfileFieldError("WEBSITE_TOO_LONG")).toEqual({
       field: "website",
       message: "Use at most 256 characters.",
+    })
+    expect(getProfileFieldError("HANDLE_INVALID_CHARACTERS")).toEqual({
+      field: "handle",
+      message: "Use only letters, numbers and underscores.",
     })
   })
 
