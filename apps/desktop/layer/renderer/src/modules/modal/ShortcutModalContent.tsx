@@ -41,7 +41,11 @@ export const ShortcutModalContent = () => {
       >
         {t("shortcuts.guide.title", { ns: "app" })}
       </h2>
-      <MotionButtonBase onClick={dismiss} className="absolute right-3 top-2 p-2">
+      <MotionButtonBase
+        aria-label={t("words.close", { ns: "common" })}
+        onClick={dismiss}
+        className="absolute right-3 top-2 p-2"
+      >
         <i className="i-mgc-close-cute-re" />
       </MotionButtonBase>
       <ScrollArea.ScrollArea scrollbarClassName="w-2" rootClassName="w-full h-full">

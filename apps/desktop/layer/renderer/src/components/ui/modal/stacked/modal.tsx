@@ -23,6 +23,7 @@ import {
   useRef,
   useState,
 } from "react"
+import { useTranslation } from "react-i18next"
 import { useEventCallback } from "usehooks-ts"
 
 import { suppressModalOverlayAtom, useUISettingKey } from "~/atoms/settings/ui"
@@ -88,6 +89,7 @@ export const ModalInternal = memo(function Modal({
   } = item
 
   const setStack = useSetAtom(modalStackAtom)
+  const { t } = useTranslation("common")
 
   // Animation controls
   const { animateController, playNoticeAnimation, playExitAnimation, isClosing, readyToClose } =
@@ -395,8 +397,8 @@ export const ModalInternal = memo(function Modal({
                       {canClose && (
                         <Dialog.DialogClose
                           data-testid="modal-close"
+                          aria-label={t("words.close")}
                           className="center z-[2] -mr-1 rounded-lg p-2 text-text-secondary hover:bg-fill-quaternary hover:text-text"
-                          tabIndex={1}
                           onClick={close}
                         >
                           <i className="i-mgc-close-cute-re" />
