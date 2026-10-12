@@ -104,13 +104,6 @@ export const ActionSetting = () => {
   const [selectedRuleIndex, setSelectedRuleIndex] = useState(0)
   const actionQuery = usePrefetchActions()
 
-  // Edits the user chose to leave behind must not stay in the store
-  useEffect(() => {
-    return () => {
-      actionActions.discardLocalEdits().catch(console.error)
-    }
-  }, [])
-
   useEffect(() => {
     if (actions.length === 0) {
       setSelectedRuleIndex(0)
@@ -503,7 +496,12 @@ const useUnSavedBlocker = (isDirty: boolean) => {
       title: t("common:words.unsaved_changes"),
       message: t("settings:actions.navigate.prompt"),
       variant: "ask",
-      onConfirm: () => navigationBlocker.proceed(),
+      onConfirm: () => {
+        // Edits the user chose to leave behind must not stay in the store. This is not done on
+        // unmount: narrowing the window swaps the layout and unmounts the editor too.
+        actionActions.discardLocalEdits().catch(console.error)
+        navigationBlocker.proceed()
+      },
       // A blocker left in the blocked state swallows every later navigation without a prompt
       onCancel: () => navigationBlocker.reset(),
     })
