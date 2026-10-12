@@ -162,6 +162,7 @@
   "subscription_form.category_description": "Par défaut, vos abonnements seront regroupés par site web.",
   "subscription_form.hide_from_timeline": "Masquer de la timeline",
   "subscription_form.hide_from_timeline_description": "Si les entrées de cet abonnement sont visibles sur votre timeline principale.",
+  "subscription_form.list_title_description": "Titre personnalisé pour cette liste. Laissez vide pour utiliser celui par défaut.",
   "subscription_form.private_follow": "Suivi privé",
   "subscription_form.private_follow_description": "Si ce suivi est visible publiquement sur votre page de profil.",
   "subscription_form.title": "Titre",

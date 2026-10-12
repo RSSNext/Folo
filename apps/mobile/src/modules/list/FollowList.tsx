@@ -187,7 +187,7 @@ const Impl = (props: { id: string }) => {
               render={({ field: { onChange, ref, value } }) => (
                 <TextField
                   label={t("subscription_form.title")}
-                  description={t("subscription_form.title_description")}
+                  description={t("subscription_form.list_title_description")}
                   onChangeText={onChange}
                   value={value}
                   ref={ref}

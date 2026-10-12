@@ -162,6 +162,7 @@
   "subscription_form.category_description": "デフォルトでは、フォローはウェブサイトごとにグループ化されます。",
   "subscription_form.hide_from_timeline": "タイムラインから非表示",
   "subscription_form.hide_from_timeline_description": "このサブスクリプションのエントリーがメインビューのタイムラインに表示されるかどうか。",
+  "subscription_form.list_title_description": "このリストのカスタムタイトル。デフォルトを使用するには空白のままにします。",
   "subscription_form.private_follow": "プライベートフォロー",
   "subscription_form.private_follow_description": "このフォローがプロフィールページに公開されるかどうか。",
   "subscription_form.title": "タイトル",
