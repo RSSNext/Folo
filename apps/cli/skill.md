@@ -101,6 +101,8 @@ You can switch output mode:
 
 - Export:
   - `npx --yes folocli@latest opml export --output backup.opml`
+  - A directory as `--output` gets `folo.opml` inside it.
+  - Without `--output`, `data.content` holds the OPML document; `--format plain` prints the document itself.
 - Import:
   - `npx --yes folocli@latest opml import feeds.opml`
 
