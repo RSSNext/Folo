@@ -1,7 +1,7 @@
 import type { ActionItem } from "@follow/store/action/store"
 import { describe, expect, test } from "vitest"
 
-import { findRuleIndexWithInvalidRegex, getRegexError } from "./utils"
+import { findRuleIndexWithInvalidRegex, generateExportFilename, getRegexError } from "./utils"
 
 const rule = (condition: ActionItem["condition"], index = 0): ActionItem => ({
   name: `Rule ${index}`,
@@ -38,5 +38,14 @@ describe("findRuleIndexWithInvalidRegex", () => {
         rule([[{ field: "entry_title", operator: "regex", value: "^News" }]]),
       ]),
     ).toBe(-1)
+  })
+})
+
+describe("generateExportFilename", () => {
+  test("uses the local date and time", () => {
+    // Just after local midnight, when the UTC date can still be the previous day
+    expect(generateExportFilename(new Date(2026, 9, 12, 0, 30, 5))).toBe(
+      "folo-actions-2026-10-12-00-30-05.json",
+    )
   })
 })

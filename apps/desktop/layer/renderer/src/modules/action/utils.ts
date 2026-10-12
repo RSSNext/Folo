@@ -1,10 +1,12 @@
 import type { ActionItem } from "@follow/store/action/store"
 
-export const generateExportFilename = () => {
-  const now = new Date()
-  const dateStr = now.toISOString().split("T")[0] // YYYY-MM-DD
-  const timeStr = now.toTimeString().split(" ")[0]?.replaceAll(":", "-") // HH-MM-SS
-  return `follow-actions-${dateStr}-${timeStr}.json`
+const pad = (value: number) => value.toString().padStart(2, "0")
+
+// Both the date and the time are local, so the name matches the user's clock
+export const generateExportFilename = (now = new Date()) => {
+  const date = `${now.getFullYear()}-${pad(now.getMonth() + 1)}-${pad(now.getDate())}`
+  const time = `${pad(now.getHours())}-${pad(now.getMinutes())}-${pad(now.getSeconds())}`
+  return `folo-actions-${date}-${time}.json`
 }
 
 /** Why a "Matches Regex" pattern does not compile, or null when it does */
