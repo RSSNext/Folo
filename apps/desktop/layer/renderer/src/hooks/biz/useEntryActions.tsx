@@ -407,6 +407,7 @@ export const useEntryActions = ({ entryId, view }: { entryId: string; view: Feed
         onClick: runCmdFn(COMMAND_ID.entry.share, [{ entryId }]),
         hide: !entry.url,
         shortcut: shortcuts[COMMAND_ID.entry.share],
+        disabled: isOnboardingEntry,
         entryId,
       }),
       MENU_ITEM_SEPARATOR,

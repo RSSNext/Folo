@@ -3,6 +3,7 @@ import { FeedViewType } from "@follow/constants"
 import { IN_ELECTRON } from "@follow/shared/constants"
 import { isEntryStarred } from "@follow/store/collection/getter"
 import { collectionSyncService } from "@follow/store/collection/store"
+import { isOnboardingEntryUrl } from "@follow/store/constants/onboarding"
 import { getEntry } from "@follow/store/entry/getter"
 import { entrySyncServices } from "@follow/store/entry/store"
 import { getMarkReadTimeRange } from "@follow/store/entry/utils"
@@ -178,7 +179,8 @@ export const useRegisterEntryCommands = () => {
             toast.error(t("entry_actions.unavailable.copy_link"), { duration: 3000 })
             return
           }
-          if (!entry.url) return
+          // The onboarding entries link to an internal folo:// address nobody else can open
+          if (!entry.url || isOnboardingEntryUrl(entry.url)) return
           copyToClipboard(entry.url)
           toast(t("entry_actions.copied_notify", { which: t("words.link") }), {
             duration: 1000,
@@ -234,6 +236,7 @@ export const useRegisterEntryCommands = () => {
             toast.error(t("entry_actions.unavailable.open_in_browser"), { duration: 3000 })
             return
           }
+          if (isOnboardingEntryUrl(entry.url)) return
           window.open(entry.url, "_blank")
         },
       },
@@ -284,6 +287,7 @@ export const useRegisterEntryCommands = () => {
             toast.error(t("entry_actions.unavailable.share"), { duration: 3000 })
             return
           }
+          if (isOnboardingEntryUrl(entry.url)) return
 
           const xy = getMousePosition()
           showPopover(
