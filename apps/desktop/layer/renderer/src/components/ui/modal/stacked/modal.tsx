@@ -39,6 +39,7 @@ import { MODAL_STACK_Z_INDEX, modalMontionConfig } from "./constants"
 import type { CurrentModalContentProps, ModalActionsInternal } from "./context"
 import { CurrentModalContext, CurrentModalStateContext } from "./context"
 import { keepModalOpenForExpandedCombobox } from "./helper"
+import { useDialog } from "./hooks"
 import { useModalAnimate } from "./internal/use-animate"
 import { useModalResizeAndDrag } from "./internal/use-drag"
 import { useModalSelect } from "./internal/use-select"
@@ -119,13 +120,36 @@ export const ModalInternal = memo(function Modal({
     onPropsClose?.(false)
   })
 
+  // Escape and the X button ask first while the content has unsaved changes
+  const hasUnsavedChangesRef = useRef(false)
+  const isAskingToDiscardRef = useRef(false)
+  const { ask } = useDialog()
+  const requestClose = useEventCallback(() => {
+    if (!canClose) return
+    if (!hasUnsavedChangesRef.current) {
+      close()
+      return
+    }
+    if (isAskingToDiscardRef.current) return
+    isAskingToDiscardRef.current = true
+    void ask({
+      title: t("modal.discard_changes.title"),
+      message: t("modal.discard_changes.message"),
+      variant: "danger",
+      confirmText: t("words.discard"),
+      onConfirm: () => close(true),
+    }).finally(() => {
+      isAskingToDiscardRef.current = false
+    })
+  })
+
   const onClose = useCallback(
     (open: boolean): void => {
       if (!open) {
-        close()
+        requestClose()
       }
     },
-    [close],
+    [requestClose],
   )
 
   const suppressModalOverlay = useAtomValue(suppressModalOverlayAtom)
@@ -164,6 +188,9 @@ export const ModalInternal = memo(function Modal({
     () => ({
       dismiss: forceDismiss,
       getIndex,
+      setHasUnsavedChanges: (v) => {
+        hasUnsavedChangesRef.current = v
+      },
       setClickOutSideToDismiss: (v) => {
         setStack((state) =>
           produce(state, (draft) => {
@@ -214,7 +241,7 @@ export const ModalInternal = memo(function Modal({
     (e: SyntheticEvent) => {
       if (isSelectingRef.current) return
 
-      if (modal && clickOutsideToDismiss && canClose) {
+      if (modal && clickOutsideToDismiss && canClose && !hasUnsavedChangesRef.current) {
         dismiss(e)
       } else if (modal) {
         playNoticeAnimation()
@@ -402,7 +429,11 @@ export const ModalInternal = memo(function Modal({
                           data-testid="modal-close"
                           aria-label={t("words.close")}
                           className="center z-[2] -mr-1 rounded-lg p-2 text-text-secondary hover:bg-fill-quaternary hover:text-text"
-                          onClick={close}
+                          onClick={(event) => {
+                            // Radix would close the dialog at once, without asking about changes
+                            event.preventDefault()
+                            requestClose()
+                          }}
                         >
                           <i className="i-mgc-close-cute-re" />
                         </Dialog.DialogClose>

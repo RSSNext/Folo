@@ -23,7 +23,8 @@ import { useTranslation } from "react-i18next"
 import { toast } from "sonner"
 import { z } from "zod"
 
-import { useCurrentModal } from "~/components/ui/modal/stacked/hooks"
+import { useCurrentModal, useModalUnsavedChanges } from "~/components/ui/modal/stacked/hooks"
+import { useFormHasChanges } from "~/hooks/common/useFormHasChanges"
 import { createErrorToaster } from "~/lib/error-parser"
 import { FollowSummary } from "~/modules/feed/feed-summary"
 
@@ -82,6 +83,7 @@ const InboxInnerForm = ({ inbox }: { inbox?: Nullable<InboxModel> }) => {
       title: inbox?.title || "",
     },
   })
+  useModalUnsavedChanges(useFormHasChanges(form))
 
   const mutationCreate = useMutation({
     mutationFn: async ({ handle, title }: { handle: string; title: string }) => {

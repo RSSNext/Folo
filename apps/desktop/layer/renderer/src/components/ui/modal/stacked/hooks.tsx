@@ -2,7 +2,7 @@ import { Button } from "@follow/components/ui/button/index.js"
 import { atom, useAtomValue } from "jotai"
 import type { DragControls } from "motion/react"
 import type { ResizeCallback, ResizeStartCallback } from "re-resizable"
-import { use, useDeferredValue, useState } from "react"
+import { use, useDeferredValue, useEffect, useState } from "react"
 import { flushSync } from "react-dom"
 import { useTranslation } from "react-i18next"
 import { useContextSelector } from "use-context-selector"
@@ -55,6 +55,17 @@ const actions = {
 export const useCurrentModal = () => use(CurrentModalContext)
 
 export const useIsInModal = () => useContextSelector(CurrentModalStateContext, (v) => v.isInModal)
+
+/** Ask before Escape or the X button close the current modal while there are unsaved changes. */
+export const useModalUnsavedChanges = (hasUnsavedChanges: boolean) => {
+  const { setHasUnsavedChanges } = useCurrentModal()
+  const isInModal = useIsInModal()
+  useEffect(() => {
+    if (!isInModal) return
+    setHasUnsavedChanges(hasUnsavedChanges)
+    return () => setHasUnsavedChanges(false)
+  }, [hasUnsavedChanges, isInModal, setHasUnsavedChanges])
+}
 
 export const useResizeableModal = (
   modalElementRef: React.RefObject<HTMLDivElement | null>,

@@ -30,8 +30,9 @@ import { toast } from "sonner"
 import { z } from "zod"
 
 import { useIsPaymentEnabled } from "~/atoms/server-configs"
-import { useCurrentModal } from "~/components/ui/modal/stacked/hooks"
+import { useCurrentModal, useModalUnsavedChanges } from "~/components/ui/modal/stacked/hooks"
 import { useI18n } from "~/hooks/common"
+import { useFormHasChanges } from "~/hooks/common/useFormHasChanges"
 import { getFetchErrorMessage, toastFetchError } from "~/lib/error-parser"
 import { getNewIssueUrl } from "~/lib/issues"
 
@@ -194,20 +195,31 @@ const ListInnerForm = ({
 
   const { setClickOutSideToDismiss, dismiss } = useCurrentModal()
 
+  const hasUnsavedChanges = useFormHasChanges(form)
   useEffect(() => {
-    setClickOutSideToDismiss(!form.formState.isDirty)
-  }, [form.formState.isDirty])
+    setClickOutSideToDismiss(!hasUnsavedChanges)
+  }, [hasUnsavedChanges, setClickOutSideToDismiss])
+  useModalUnsavedChanges(hasUnsavedChanges)
 
   useEffect(() => {
-    if (subscription) {
-      form.setValue("view", `${subscription?.view}`)
-      typeof subscription.isPrivate === "boolean" &&
-        form.setValue("isPrivate", subscription.isPrivate)
-      subscription?.title && form.setValue("title", subscription.title)
-      typeof subscription.hideFromTimeline === "boolean" &&
-        form.setValue("hideFromTimeline", subscription.hideFromTimeline)
-    }
-  }, [subscription])
+    if (!subscription) return
+    // The form starts from the followed settings, so only real edits count as unsaved changes.
+    // Fields the user already changed keep the user's value.
+    form.reset(
+      {
+        ...form.formState.defaultValues,
+        view: `${subscription.view}`,
+        ...(typeof subscription.isPrivate === "boolean"
+          ? { isPrivate: subscription.isPrivate }
+          : {}),
+        ...(subscription.title ? { title: subscription.title } : {}),
+        ...(typeof subscription.hideFromTimeline === "boolean"
+          ? { hideFromTimeline: subscription.hideFromTimeline }
+          : {}),
+      },
+      { keepDirtyValues: true },
+    )
+  }, [form, subscription])
 
   const followMutation = useMutation({
     mutationFn: async (values: z.infer<typeof formSchema> & { TOTPCode?: string }) => {

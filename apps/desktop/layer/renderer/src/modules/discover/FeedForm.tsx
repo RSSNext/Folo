@@ -39,9 +39,14 @@ import { z } from "zod"
 
 import { useIsPaymentEnabled } from "~/atoms/server-configs"
 import { Autocomplete } from "~/components/ui/auto-completion"
-import { useCurrentModal, useIsInModal } from "~/components/ui/modal/stacked/hooks"
+import {
+  useCurrentModal,
+  useIsInModal,
+  useModalUnsavedChanges,
+} from "~/components/ui/modal/stacked/hooks"
 import { getRouteParams } from "~/hooks/biz/useRouteParams"
 import { useI18n } from "~/hooks/common"
+import { useFormHasChanges } from "~/hooks/common/useFormHasChanges"
 import { toastFetchError } from "~/lib/error-parser"
 import { useSettingModal } from "~/modules/settings/modal/useSettingModal"
 import { feed as feedQuery, useFeedQuery } from "~/queries/feed"
@@ -255,25 +260,40 @@ const FeedInnerForm = ({
 
   const { setClickOutSideToDismiss, dismiss } = useCurrentModal()
 
+  const hasUnsavedChanges = useFormHasChanges(form)
   useEffect(() => {
-    setClickOutSideToDismiss(!form.formState.isDirty)
-  }, [form.formState.isDirty, setClickOutSideToDismiss])
+    setClickOutSideToDismiss(!hasUnsavedChanges)
+  }, [hasUnsavedChanges, setClickOutSideToDismiss])
+  useModalUnsavedChanges(hasUnsavedChanges)
 
   useEffect(() => {
-    if (subscription) {
-      form.setValue("view", `${subscription?.view}`)
-      subscription?.category && form.setValue("category", subscription.category)
-      typeof subscription.isPrivate === "boolean" &&
-        form.setValue("isPrivate", subscription.isPrivate)
-      typeof subscription.hideFromTimeline === "boolean" &&
-        form.setValue("hideFromTimeline", subscription.hideFromTimeline)
-      subscription?.title && form.setValue("title", subscription.title)
-    }
+    if (!subscription) return
+    // The form starts from the followed settings, so only real edits count as unsaved changes.
+    // Fields the user already changed keep the user's value.
+    form.reset(
+      {
+        ...form.formState.defaultValues,
+        view: `${subscription.view}`,
+        ...(subscription.category ? { category: subscription.category } : {}),
+        ...(typeof subscription.isPrivate === "boolean"
+          ? { isPrivate: subscription.isPrivate }
+          : {}),
+        ...(typeof subscription.hideFromTimeline === "boolean"
+          ? { hideFromTimeline: subscription.hideFromTimeline }
+          : {}),
+        ...(subscription.title ? { title: subscription.title } : {}),
+      },
+      { keepDirtyValues: true },
+    )
   }, [form, subscription])
 
   useEffect(() => {
     if (typeof analytics?.view === "number" && !subscription && !defaultValues?.view) {
-      form.setValue("view", `${analytics.view}`)
+      // The suggested view is a starting value, not a change of the user's
+      form.reset(
+        { ...form.formState.defaultValues, view: `${analytics.view}` },
+        { keepDirtyValues: true },
+      )
     }
   }, [analytics, defaultValues?.view, form, subscription])
 

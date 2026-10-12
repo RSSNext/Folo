@@ -45,7 +45,9 @@ import {
   useIsInModal,
   useIsTopModal,
   useModalStack,
+  useModalUnsavedChanges,
 } from "~/components/ui/modal/stacked/hooks"
+import { useFormHasChanges } from "~/hooks/common/useFormHasChanges"
 
 import { FeedForm } from "./FeedForm"
 import { normalizeRSSHubParameters } from "./utils"
@@ -217,9 +219,11 @@ export const DiscoverFeedForm = ({
 
   const modal = useCurrentModal()
 
+  const hasUnsavedChanges = useFormHasChanges(form)
   useEffect(() => {
-    modal.setClickOutSideToDismiss(!form.formState.isDirty)
-  }, [form.formState.isDirty, modal])
+    modal.setClickOutSideToDismiss(!hasUnsavedChanges)
+  }, [hasUnsavedChanges, modal])
+  useModalUnsavedChanges(hasUnsavedChanges)
 
   return (
     <div className={cn("flex h-full flex-col", "mx-auto")} ref={rootContainerRef}>
