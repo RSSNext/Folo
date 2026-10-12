@@ -333,6 +333,8 @@
   "shortcuts.custom_prompt.title": "Invite personnalisée",
   "shortcuts.custom_prompt_placeholder": "Remplacer l'invite par défaut...",
   "shortcuts.default_prompt.label": "Invite par défaut",
+  "shortcuts.delete_confirm": "Êtes-vous sûr de vouloir supprimer le raccourci \"{{name}}\" ? Son prompt ne pourra pas être récupéré.",
+  "shortcuts.delete_title": "Supprimer le raccourci",
   "shortcuts.deleted": "Raccourci supprimé avec succès",
   "shortcuts.empty.description": "Créez des raccourcis IA personnalisés pour effectuer rapidement des tâches courantes et obtenir une assistance IA instantanée.",
   "shortcuts.empty.title": "Aucun raccourci pour le moment",

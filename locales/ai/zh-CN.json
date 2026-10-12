@@ -333,6 +333,8 @@
   "shortcuts.custom_prompt.title": "自定义提示",
   "shortcuts.custom_prompt_placeholder": "覆盖默认提示内容...",
   "shortcuts.default_prompt.label": "默认提示",
+  "shortcuts.delete_confirm": "确定要删除快捷方式 \"{{name}}\" 吗？它的提示词将无法恢复。",
+  "shortcuts.delete_title": "删除快捷方式",
   "shortcuts.deleted": "快捷方式删除成功",
   "shortcuts.empty.description": "创建自定义 AI 快捷方式，快速执行常见任务并获得即时 AI 协助。",
   "shortcuts.empty.title": "暂无快捷方式",

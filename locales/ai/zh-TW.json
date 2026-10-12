@@ -333,6 +333,8 @@
   "shortcuts.custom_prompt.title": "自訂提示",
   "shortcuts.custom_prompt_placeholder": "覆蓋預設提示內容...",
   "shortcuts.default_prompt.label": "預設提示",
+  "shortcuts.delete_confirm": "確定要刪除快速鍵 \"{{name}}\" 嗎？它的提示詞將無法復原。",
+  "shortcuts.delete_title": "刪除快速鍵",
   "shortcuts.deleted": "快速鍵刪除成功",
   "shortcuts.empty.description": "建立自訂 AI 快速鍵，快速執行常見任務並獲得即時 AI 協助。",
   "shortcuts.empty.title": "尚無快速鍵",

@@ -333,6 +333,8 @@
   "shortcuts.custom_prompt.title": "Custom prompt",
   "shortcuts.custom_prompt_placeholder": "Override the default prompt...",
   "shortcuts.default_prompt.label": "Default prompt",
+  "shortcuts.delete_confirm": "Are you sure you want to delete the shortcut \"{{name}}\"? Its prompt cannot be recovered.",
+  "shortcuts.delete_title": "Delete Shortcut",
   "shortcuts.deleted": "Shortcut deleted successfully",
   "shortcuts.empty.description": "Create custom AI shortcuts to quickly perform common tasks and get instant AI assistance.",
   "shortcuts.empty.title": "No Shortcuts Yet",

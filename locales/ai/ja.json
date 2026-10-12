@@ -333,6 +333,8 @@
   "shortcuts.custom_prompt.title": "カスタムプロンプト",
   "shortcuts.custom_prompt_placeholder": "既定の指示を上書きします...",
   "shortcuts.default_prompt.label": "既定のプロンプト",
+  "shortcuts.delete_confirm": "ショートカット \"{{name}}\" を削除してもよろしいですか？プロンプトは復元できません。",
+  "shortcuts.delete_title": "ショートカットを削除",
   "shortcuts.deleted": "ショートカットが正常に削除されました",
   "shortcuts.empty.description": "一般的なタスクを迅速に実行し、即座にAIアシスタンスを得るためのカスタムAIショートカットを作成します。",
   "shortcuts.empty.title": "ショートカットはまだありません",
