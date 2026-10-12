@@ -375,7 +375,7 @@
   "general.export_database.label": "Export Database",
   "general.group_by_date.description": "Group entries by date.",
   "general.group_by_date.label": "Group by date",
-  "general.hide_all_read_subscriptions.description": "While \"Show unread only\" is on, hide subscriptions without unread entries in the subscription list.",
+  "general.hide_all_read_subscriptions.description": "While \"Show Unread Only\" is on, hide subscriptions without unread entries in the subscription list.",
   "general.hide_all_read_subscriptions.label": "Hide read",
   "general.hide_private_subscriptions_in_timeline.description": "Hide private subscriptions from your subscriptions list and hide their entries from your timeline (they are always invisible to the public regardless of this setting).",
   "general.hide_private_subscriptions_in_timeline.label": "Hide private",
