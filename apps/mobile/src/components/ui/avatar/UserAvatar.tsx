@@ -77,7 +77,7 @@ export const UserAvatar = ({
       <View
         className={cn(
           "items-center justify-center rounded-full",
-          name && "bg-secondary-system-background",
+          name && "bg-tertiary-system-fill",
           className,
         )}
         style={{
