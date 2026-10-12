@@ -83,7 +83,8 @@ export const importOpml = async () => {
 export const exportLocalDatabase = async () => {
   const dbPath = getDbPath()
   try {
-    const destinationUri = `${FileSystem.documentDirectory}follow.db`
+    // The export carries the Folo name; the local database keeps follow.db so existing data stays
+    const destinationUri = `${FileSystem.documentDirectory}folo.db`
     await FileSystem.copyAsync({
       from: dbPath,
       to: destinationUri,
