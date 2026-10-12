@@ -253,7 +253,9 @@ export const GroupedInsetListCell: FC<
   return (
     <GroupedInsetListBaseCell
       testID={testID}
-      className={cn("flex flex-1 bg-secondary-system-grouped-background", className)}
+      // grow rather than flex-1: it fills a row, and as the only child of a column, such as a
+      // swipeable row, it keeps its height instead of a zero flex basis
+      className={cn("flex grow bg-secondary-system-grouped-background", className)}
       as={onPress ? Pressable : undefined}
       {...(onPress
         ? {
