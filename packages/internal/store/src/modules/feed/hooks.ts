@@ -100,8 +100,11 @@ export const usePrefetchFeedByUrl = (url: string, options?: GeneralQueryOptions)
 }
 
 export const usePrefetchFeedAnalytics = (id: string | string[], options?: GeneralQueryOptions) => {
+  // The server rejects a request without ids, e.g. before a list has measured its rows
+  const hasId = Array.isArray(id) ? id.length > 0 : !!id
   return useQuery({
     ...options,
+    enabled: hasId && (options?.enabled ?? true),
     queryKey: ["feed", "analytics", id],
     queryFn: () => feedSyncServices.fetchAnalytics(id),
   })
