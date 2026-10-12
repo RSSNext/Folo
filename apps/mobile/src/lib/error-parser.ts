@@ -1,4 +1,4 @@
-import { FollowAPIError } from "@follow-app/client-sdk"
+import { ExceptionCodeMap, FollowAPIError } from "@follow-app/client-sdk"
 import { t } from "i18next"
 import { FetchError } from "ofetch"
 
@@ -80,6 +80,8 @@ export const toastFetchError = (error: Error, { title: _title }: { title?: strin
     ? t("common:app.api_unreachable")
     : sanitizeErrorMessage(error.message)
   let message = fallbackMessage
+  // What the server said, kept next to the translation of its error code
+  let serverMessage = ""
   let _reason = ""
   let code: number | undefined
   let status: number | undefined
@@ -100,6 +102,7 @@ export const toastFetchError = (error: Error, { title: _title }: { title?: strin
         code = typeof _code === "number" ? _code : Number(_code)
       }
       message = typeof _message === "string" && _message.trim() ? _message : message
+      serverMessage = typeof _message === "string" ? _message : ""
       if (code != null) {
         const tValue = t(`errors:${code}` as any)
         if (tValue !== `${code}`) {
@@ -120,6 +123,7 @@ export const toastFetchError = (error: Error, { title: _title }: { title?: strin
       code = Number(error.code)
     }
     status = error.status ? Number(error.status) : status
+    serverMessage = error.message
     try {
       if (error.code) {
         const tValue = t(`errors:${code}` as any)
@@ -134,6 +138,7 @@ export const toastFetchError = (error: Error, { title: _title }: { title?: strin
   }
 
   message = sanitizeErrorMessage(message)
+  serverMessage = sanitizeErrorMessage(serverMessage)
 
   // 2fa errors are handled by the form
   if (code === 4007 || code === 4008) {
@@ -156,9 +161,15 @@ export const toastFetchError = (error: Error, { title: _title }: { title?: strin
     return
   }
 
+  // Every request validation failure has this code; only the server's message names the field
+  const detail =
+    code === ExceptionCodeMap.UnprocessableContent && serverMessage && serverMessage !== message
+      ? serverMessage
+      : ""
+
   if (!_reason) {
     const title = _title || message || "Unknown error"
-    return toast.error(title)
+    return detail ? toast.error(title, { description: detail }) : toast.error(title)
   } else {
     return toast.error(message || _title || "Unknown error")
   }

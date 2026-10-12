@@ -36,7 +36,9 @@ public enum Toast {
                 direction: options.position?.position() ?? .top,
                 dismissBy: [.time(time: TimeInterval(options.duration))]
             )
-            ToastViewSwift.Toast.default(image: options.type.image(), title: options.title, subtitle: options.message, config: config)
+            // Let the message wrap instead of cutting off a server error that names the field
+            let viewConfig = ToastViewConfiguration(subtitleNumberOfLines: 0)
+            ToastViewSwift.Toast.default(image: options.type.image(), title: options.title, subtitle: options.message, viewConfig: viewConfig, config: config)
                 .show(haptic: options.type.haptic())
         }
     }

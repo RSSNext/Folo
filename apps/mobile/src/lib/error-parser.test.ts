@@ -14,6 +14,9 @@ vi.mock("i18next", () => ({
     if (key === "errors:2012") {
       return "RSSHub feed subscription limit exceeded"
     }
+    if (key === "errors:3") {
+      return "Unprocessable content"
+    }
     return key.replace(/^errors:/u, "")
   },
 }))
@@ -75,6 +78,36 @@ describe("toastFetchError", () => {
 
     expect(mocks.toastError).toHaveBeenCalledOnce()
     expect(mocks.toastError).toHaveBeenCalledWith("Unable to follow this feed")
+  })
+})
+
+describe("toastFetchError for a rejected request body", () => {
+  beforeEach(() => {
+    mocks.toastError.mockClear()
+  })
+
+  it("names the field the server rejected under the translated code", () => {
+    toastFetchError(
+      new FollowAPIError(
+        "`rules.0.result.webhooks.0`: Invalid URL\nRequest: PUT /actions (original: /actions)\nArgs: {}",
+        422,
+        "3",
+      ),
+    )
+
+    expect(mocks.toastError).toHaveBeenCalledWith("Unprocessable content", {
+      description: "`rules.0.result.webhooks.0`: Invalid URL",
+    })
+  })
+
+  it("names the field under a title", () => {
+    toastFetchError(new FollowAPIError("`rules.0.condition`: Invalid input", 422, "3"), {
+      title: "Failed to save",
+    })
+
+    expect(mocks.toastError).toHaveBeenCalledWith("Failed to save", {
+      description: "`rules.0.condition`: Invalid input",
+    })
   })
 })
 

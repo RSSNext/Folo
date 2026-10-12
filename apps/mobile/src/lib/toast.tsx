@@ -7,7 +7,7 @@ import type { ToastProps } from "../components/ui/toast/types"
 export const toastInstance = new ToastManager()
 
 type CommandToastOptions = Partial<
-  Pick<ToastProps, "duration" | "icon" | "render" | "message" | "position">
+  Pick<ToastProps, "duration" | "icon" | "render" | "message" | "description" | "position">
 >
 type Toast = {
   // [key in "error" | "success" | "info"]: (message: string) => void;
@@ -27,18 +27,24 @@ interface NativeToasterOptions {
   duration?: number
   position?: "top" | "center" | "bottom"
 }
+// A second line takes longer to read than the default short toast allows
+const DEFAULT_DURATION = 1500
+const DESCRIBED_DURATION = 5000
+
 export const toast = {
   show: toastInstance.show.bind(toastInstance),
 } as Toast
 ;(["error", "success", "info"] as const).forEach((type) => {
   toast[type] = (message: string, options: CommandToastOptions = {}) => {
+    const duration =
+      options.duration ?? (options.description ? DESCRIBED_DURATION : DEFAULT_DURATION)
     if (Platform.OS === "ios") {
       const NativeToaster = requireNativeModule("Toaster")
       NativeToaster.toast({
-        // title: message,
-        message,
+        // The native toast shows the title in bold above the message
+        ...(options.description ? { title: message, message: options.description } : { message }),
         type,
-        duration: options.duration ? options.duration / 1000 : 1.5,
+        duration: duration / 1000,
         position: options.position,
       } as NativeToasterOptions)
       return
@@ -48,8 +54,8 @@ export const toast = {
       type,
       message,
       variant: "center-replace",
-      duration: options.duration ?? 1500,
       ...options,
+      duration,
     })
   }
 })
