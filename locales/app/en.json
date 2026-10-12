@@ -39,6 +39,7 @@
   "discover.import.opml_step1_other": "Export OPML from other readers",
   "discover.import.opml_step1_other_step1": "OPML is a widely supported open format and is essentially the standard for sharing feed subscription lists. Nearly all RSS readers allow for OPML import and export. If you're unsure how to do this, please refer to your RSS reader's help manual or join our community for assistance.",
   "discover.import.opml_step2": "Import OPML to Folo",
+  "discover.import.parse_failed": "This OPML file could not be read.",
   "discover.import.preview_opml_content": "Preview OPML Content",
   "discover.import.quota_exceeded": "Quota exceeded",
   "discover.import.quota_exceeded_warning": "You have selected more feeds than your remaining quota allows. Please deselect some feeds to continue.",

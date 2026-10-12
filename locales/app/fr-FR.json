@@ -39,6 +39,7 @@
   "discover.import.opml_step1_other": "Exporter l'OPML depuis d'autres lecteurs",
   "discover.import.opml_step1_other_step1": "OPML est un format ouvert largement pris en charge et est essentiellement la norme pour partager des listes d'abonnement aux flux. Presque tous les lecteurs RSS permettent l'importation et l'exportation OPML. Si vous ne savez pas comment faire, veuillez consulter le manuel d'aide de votre lecteur RSS ou rejoindre notre communauté pour obtenir de l'aide.",
   "discover.import.opml_step2": "Importer l'OPML vers Folo",
+  "discover.import.parse_failed": "Impossible de lire ce fichier OPML.",
   "discover.import.preview_opml_content": "Aperçu du contenu OPML",
   "discover.import.quota_exceeded": "Quota dépassé",
   "discover.import.quota_exceeded_warning": "Vous avez sélectionné plus de flux que votre quota restant ne le permet. Veuillez désélectionner certains flux pour continuer.",

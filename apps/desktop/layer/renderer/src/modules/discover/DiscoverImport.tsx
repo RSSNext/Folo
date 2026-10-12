@@ -51,7 +51,8 @@ export function DiscoverImport() {
   const parseOpmlMutation = useMutation({
     mutationFn: parseOpmlFile,
     async onError(err) {
-      toastFetchError(err)
+      // The server only answers with what its parser said, so say what failed first
+      toastFetchError(err, { title: t("discover.import.parse_failed") })
     },
   })
 

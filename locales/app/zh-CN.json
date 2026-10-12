@@ -39,6 +39,7 @@
   "discover.import.opml_step1_other": "从其他阅读器导出 OPML 文件",
   "discover.import.opml_step1_other_step1": "OPML 是一种广泛支持的开放格式，基本上是共享订阅源列表的标准。几乎所有的 RSS 阅读器都允许导入和导出 OPML。如果您不确定如何操作，请参考您的 RSS 阅读器的帮助手册或加入我们的社区以获取帮助。",
   "discover.import.opml_step2": "导入 OPML 到 Folo",
+  "discover.import.parse_failed": "无法读取此 OPML 文件。",
   "discover.import.preview_opml_content": "预览 OPML 内容",
   "discover.import.quota_exceeded": "超出额度",
   "discover.import.quota_exceeded_warning": "你选择的订阅源数量超过了剩余额度。请取消选择一些订阅源以继续。",

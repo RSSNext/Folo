@@ -44,17 +44,19 @@ export const getFetchErrorInfo = (
     }
   }
 
-  if (error instanceof FollowAPIError && error.code) {
+  if (error instanceof FollowAPIError) {
+    const message = stripRequestContext(error.message)
+    if (!error.code) return { message }
     // Codes such as "AUTH_REQUIRED" from the SDK are not API error codes
     const code = Number.isNaN(Number(error.code)) ? undefined : Number(error.code)
     try {
-      const i18nMessage = translateErrorCode(code, error.message)
+      const i18nMessage = translateErrorCode(code, message)
       return {
         message: i18nMessage,
         code,
       }
     } catch {
-      return { message: error.message }
+      return { message }
     }
   }
 

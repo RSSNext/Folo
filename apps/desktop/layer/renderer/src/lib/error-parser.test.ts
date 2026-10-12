@@ -74,6 +74,17 @@ describe("getFetchErrorMessage", () => {
     )
   })
 
+  test("drops the request context the SDK appends", () => {
+    expect(
+      getFetchErrorMessage(
+        new FollowAPIError(
+          'Internal Server Error\nRequest: POST /subscriptions/parse-opml (original: /subscriptions/parse-opml)\nArgs: {"headers":{"x-session-id":"abc"}}',
+          500,
+        ),
+      ),
+    ).toBe("Internal Server Error")
+  })
+
   test("keeps the SDK message for a non-numeric code", () => {
     expect(
       getFetchErrorMessage(new FollowAPIError("Authentication required", 401, "AUTH_REQUIRED")),

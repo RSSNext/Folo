@@ -39,6 +39,7 @@
   "discover.import.opml_step1_other": "從其他閱讀器匯出 OPML 檔案",
   "discover.import.opml_step1_other_step1": "OPML 是一種廣泛支援的開放格式，基本上是分享 RSS摘要列表的標準。幾乎所有 RSS 閱讀器都允許匯入與匯出 OPML。如果你不確定如何操作，請參考你的 RSS 閱讀器說明文件或加入我們的社群尋求協助。",
   "discover.import.opml_step2": "匯入 OPML 到 Folo",
+  "discover.import.parse_failed": "無法讀取此 OPML 檔案。",
   "discover.import.preview_opml_content": "預覽 OPML 內容",
   "discover.import.quota_exceeded": "超出額度",
   "discover.import.quota_exceeded_warning": "您選擇的 RSS 摘要數量超過了剩餘額度。請取消選擇一些 RSS 摘要以繼續。",
