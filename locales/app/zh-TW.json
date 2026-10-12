@@ -253,6 +253,7 @@
   "entry_content.share_poster.by_author": "作者：{{author}}",
   "entry_content.share_poster.share_to_x": "分享到 X",
   "entry_content.share_poster.toggle_appearance": "切換外觀",
+  "entry_content.source_embed_notice": "部分網站無法在此顯示。",
   "entry_content.toc.back_to_top": "回到頂端",
   "entry_content.transcript.empty": "沒有可用的逐字稿",
   "entry_content.transcript.jump_to_time": "跳至此時間點",

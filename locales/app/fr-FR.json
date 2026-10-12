@@ -253,6 +253,7 @@
   "entry_content.share_poster.by_author": "Par {{author}}",
   "entry_content.share_poster.share_to_x": "Partager sur X",
   "entry_content.share_poster.toggle_appearance": "Changer l'apparence",
+  "entry_content.source_embed_notice": "Certains sites ne peuvent pas être affichés ici.",
   "entry_content.toc.back_to_top": "Retour en haut",
   "entry_content.transcript.empty": "Aucune transcription disponible",
   "entry_content.transcript.jump_to_time": "Aller à ce moment",
