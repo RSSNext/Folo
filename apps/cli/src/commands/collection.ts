@@ -2,7 +2,7 @@ import type { EntryListRequest } from "@follow-app/client-sdk"
 import type { Command } from "commander"
 
 import { parseISODate, parsePositiveInt, parseView, viewHelp } from "../args"
-import { runCommand } from "../command"
+import { runCommand, toChangeResult } from "../command"
 
 interface CollectionListOptions {
   limit: number
@@ -55,7 +55,7 @@ export const registerCollectionCommand = (program: Command) => {
           entryId,
           view: options.view,
         })
-        return response.data
+        return toChangeResult(response)
       })
     })
 
@@ -68,7 +68,7 @@ export const registerCollectionCommand = (program: Command) => {
         const response = await client.api.collections.delete({
           entryId,
         })
-        return response.data
+        return toChangeResult(response)
       })
     })
 }

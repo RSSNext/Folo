@@ -54,6 +54,15 @@ describe("output helpers", () => {
     expect(output).toContain("| a")
   })
 
+  it("prints an empty table for a result without fields", () => {
+    const infoSpy = vi.spyOn(console, "info").mockImplementation(() => {})
+
+    printSuccess("table", {})
+    printSuccess("table", [])
+
+    expect(infoSpy.mock.calls).toEqual([["(empty)"], ["(empty)"]])
+  })
+
   it("normalizes CLIError", () => {
     const normalized = normalizeError(new CLIError("E_CODE", "message"))
     expect(normalized).toEqual({
