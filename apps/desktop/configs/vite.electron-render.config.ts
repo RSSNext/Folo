@@ -22,7 +22,8 @@ export default {
     ...viteRenderBaseConfig.plugins,
     createPlatformSpecificImportPlugin("electron"),
     routeBuilderPlugin({
-      pagePattern: "src/pages/**/*.tsx",
+      // Tests next to a page are not routes; bundled as one, they crash when opened
+      pagePattern: "src/pages/**/!(*.test).tsx",
       outputPath: "src/generated-routes.ts",
       enableInDev: true,
     }),
