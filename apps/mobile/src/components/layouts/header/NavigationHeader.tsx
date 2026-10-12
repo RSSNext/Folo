@@ -274,6 +274,14 @@ export const InternalNavigationHeader = ({
       setRightWidth(width)
     })
   }, [rightRef])
+  // The title is centered with the button widths, which can change after the first measure, e.g.
+  // the timeline actions only show once the user is known to be signed in
+  const onLeftLayout = useCallback((e: LayoutChangeEvent) => {
+    setLeftWidth(e.nativeEvent.layout.width)
+  }, [])
+  const onRightLayout = useCallback((e: LayoutChangeEvent) => {
+    setRightWidth(e.nativeEvent.layout.width)
+  }, [])
 
   return (
     <Animated.View
@@ -307,6 +315,7 @@ export const InternalNavigationHeader = ({
         {/* Left */}
         <View
           ref={leftRef}
+          onLayout={onLeftLayout}
           className="flex min-w-6 shrink-0 flex-row items-center justify-start"
           pointerEvents={"box-none"}
         >
@@ -355,6 +364,7 @@ export const InternalNavigationHeader = ({
         {/* Right */}
         <View
           ref={rightRef}
+          onLayout={onRightLayout}
           className="flex min-w-6 shrink-0 flex-row items-center justify-end"
           pointerEvents={"box-none"}
         >
