@@ -47,4 +47,23 @@ describe("actionActions", () => {
     actionActions.changeConditionField(index, "view")
     expect(useActionStore.getState().rules[0]!.condition[0]![0]).toEqual({ field: "view" })
   })
+
+  test("imports exported rules that have an empty name", () => {
+    actionActions.addRule(() => "")
+    actionActions.patchRule(0, { result: { star: true } })
+    const exported = actionActions.exportRules()
+    useActionStore.setState({ rules: [], isDirty: false })
+
+    expect(actionActions.importRules(exported).success).toBe(true)
+    expect(useActionStore.getState().rules).toMatchObject([{ name: "", result: { star: true } }])
+  })
+
+  test("rejects imported rules without a name", () => {
+    const result = actionActions.importRules(
+      JSON.stringify({ rules: [{ condition: [], result: {} }] }),
+    )
+
+    expect(result.success).toBe(false)
+    expect(useActionStore.getState().rules).toEqual([])
+  })
 })

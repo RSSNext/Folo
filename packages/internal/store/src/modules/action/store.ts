@@ -426,7 +426,8 @@ class ActionActions implements Hydratable, Resetable {
 
       // Validate each rule structure
       for (const rule of parsedData.rules) {
-        if (!rule.name || typeof rule.name !== "string") {
+        // An empty name is allowed: the editor saves it and shows a numbered default instead
+        if (typeof rule.name !== "string") {
           return {
             success: false,
             message: t("actions.import_result.invalid_name", { ns: "settings" }),
