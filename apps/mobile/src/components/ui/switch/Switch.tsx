@@ -59,7 +59,11 @@ export const Switch = ({
       ios_backgroundColor={gray4}
       onChange={onChange ?? undefined}
       onValueChange={onValueChange ?? undefined}
-      style={size === "sm" ? styles.small : styles.default}
+      style={[
+        size === "sm" ? styles.small : styles.default,
+        // iOS dims a disabled switch, but Android keeps the custom colors, so it would look enabled
+        disabled && Platform.OS === "android" && styles.disabledAndroid,
+      ]}
       testID={testID}
       accessibilityLabel={accessibilityLabel ?? cellLabel}
       thumbColor={Platform.OS === "android" ? "#FFFFFF" : undefined}
@@ -75,5 +79,8 @@ const styles = StyleSheet.create({
   },
   small: {
     transform: [{ scaleX: 0.8 }, { scaleY: 0.8 }],
+  },
+  disabledAndroid: {
+    opacity: 0.5,
   },
 })
