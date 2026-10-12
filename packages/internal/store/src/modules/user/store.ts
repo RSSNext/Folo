@@ -40,6 +40,36 @@ const get = useUserStore.getState
 const set = useUserStore.setState
 const immerSet = createImmerSetter(useUserStore)
 
+/**
+ * The fields a profile save sends and keeps, trimmed as the server saves them. The server
+ * replaces the social links with whatever a save sends, so they are sent only when the caller
+ * sets them: an avatar or name change must not clear them.
+ */
+const toProfileChanges = (
+  data: Partial<UserProfileEditable>,
+  currentHandle: string | null | undefined,
+): Partial<UserProfileEditable> => {
+  const { name, handle, socialLinks, ...rest } = data
+  const changes: Partial<UserProfileEditable> = rest
+
+  if (name !== undefined) {
+    changes.name = name.trim()
+  }
+  if (handle !== undefined) {
+    const trimmedHandle = handle.trim()
+    // The server keeps a handle stored with spaces around it when a save sends it back
+    changes.handle =
+      typeof currentHandle === "string" && trimmedHandle === currentHandle.trim()
+        ? currentHandle
+        : trimmedHandle
+  }
+  if (socialLinks !== undefined) {
+    changes.socialLinks = socialLinks
+  }
+
+  return changes
+}
+
 class UserSyncService {
   private userBatcher = create({
     fetcher: async (userIds: string[]) => {
@@ -110,20 +140,18 @@ class UserSyncService {
   async updateProfile(data: Partial<UserProfileEditable>) {
     const me = get().whoami
     if (!me) return
+    const changes = toProfileChanges(data, me.handle)
     const tx = createTransaction(me)
 
     tx.store(() => {
       immerSet((state) => {
         if (!state.whoami) return
-        state.whoami = { ...state.whoami, ...data } as MeModel
+        state.whoami = { ...state.whoami, ...changes } as MeModel
       })
     })
 
     tx.request(async () => {
-      const res = await authClient().updateUser({
-        ...data,
-        socialLinks: (data.socialLinks || null) as any,
-      })
+      const res = await authClient().updateUser(changes)
       // The auth client resolves with the error instead of throwing; throw so the change rolls back
       if (res.error) {
         throw new Error(res.error.message || res.error.statusText)
@@ -134,7 +162,7 @@ class UserSyncService {
       if (!whoami) return
       const nextUser = {
         ...whoami,
-        ...data,
+        ...changes,
       }
       userActions.upsertMany([nextUser as unknown as UserModel])
     })

@@ -1,3 +1,4 @@
+import { UserService } from "@follow/database/services/user"
 import type { AuthClient } from "@follow/shared/auth"
 import { FollowAPIError, FollowAuthError, FollowTimeoutError } from "@follow-app/client-sdk"
 import { beforeEach, describe, expect, it, vi } from "vitest"
@@ -85,5 +86,64 @@ describe("userSyncService.updateProfile", () => {
 
     await userSyncService.updateProfile({ handle: "mine" })
     expect(useUserStore.getState().whoami).toEqual({ ...me, handle: "mine" })
+  })
+
+  describe("with social links saved", () => {
+    const socialLinks = { github: "folo", twitter: "folo_is" }
+    const meWithLinks = { ...me, handle: "me", socialLinks } as MeModel
+
+    beforeEach(() => {
+      useUserStore.setState({ whoami: meWithLinks })
+      updateUserMock.mockResolvedValue({ data: { status: true }, error: null })
+    })
+
+    it("leaves them out of an avatar change, which would clear them", async () => {
+      await userSyncService.updateProfile({ image: "https://example.com/avatar.jpg" })
+
+      expect(updateUserMock).toHaveBeenCalledWith({ image: "https://example.com/avatar.jpg" })
+      expect(useUserStore.getState().whoami?.socialLinks).toEqual(socialLinks)
+      await vi.waitFor(() =>
+        expect(UserService.upsertMany).toHaveBeenCalledWith([
+          expect.objectContaining({ image: "https://example.com/avatar.jpg", socialLinks }),
+        ]),
+      )
+    })
+
+    it("leaves them out of a name change, and trims the name as the server does", async () => {
+      await userSyncService.updateProfile({ name: "  New Name " })
+
+      expect(updateUserMock).toHaveBeenCalledWith({ name: "New Name" })
+      expect(useUserStore.getState().whoami).toEqual({ ...meWithLinks, name: "New Name" })
+    })
+
+    it("sends the links a form edits, and empty links clear them", async () => {
+      await userSyncService.updateProfile({ socialLinks: { github: "", twitter: "folo_is" } })
+      expect(updateUserMock).toHaveBeenLastCalledWith({
+        socialLinks: { github: "", twitter: "folo_is" },
+      })
+
+      await userSyncService.updateProfile({ socialLinks: null })
+      expect(updateUserMock).toHaveBeenLastCalledWith({ socialLinks: null })
+      expect(useUserStore.getState().whoami?.socialLinks).toBeNull()
+    })
+  })
+
+  it("trims a new handle as the server does", async () => {
+    updateUserMock.mockResolvedValue({ data: { status: true }, error: null })
+
+    await userSyncService.updateProfile({ handle: " mine " })
+
+    expect(updateUserMock).toHaveBeenCalledWith({ handle: "mine" })
+    expect(useUserStore.getState().whoami?.handle).toBe("mine")
+  })
+
+  it("sends back a handle stored with spaces around it as it is stored", async () => {
+    useUserStore.setState({ whoami: { ...me, handle: "folo " } as MeModel })
+    updateUserMock.mockResolvedValue({ data: { status: true }, error: null })
+
+    await userSyncService.updateProfile({ handle: "folo", name: "Folo" })
+
+    expect(updateUserMock).toHaveBeenCalledWith({ handle: "folo ", name: "Folo" })
+    expect(useUserStore.getState().whoami?.handle).toBe("folo ")
   })
 })
