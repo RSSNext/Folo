@@ -129,8 +129,8 @@ export const AppearanceScreen = () => {
       <GroupedInsetListSectionHeader label={t("appearance.unread_count.label")} />
       <GroupedInsetListCard>
         <GroupedInsetListCell
-          label={t("appearance.unread_count.badge.label")}
-          description={t("appearance.unread_count.badge.description")}
+          label={t("appearance.unread_count.badge.app_icon_label")}
+          description={t("appearance.unread_count.badge.app_icon_description")}
         >
           <Switch
             size="sm"
@@ -166,7 +166,7 @@ export const AppearanceScreen = () => {
       <GroupedInsetListCard>
         <GroupedInsetListCell
           label={t("appearance.hide_extra_badge.label")}
-          description={t("appearance.hide_extra_badge.description")}
+          description={t("appearance.hide_extra_badge.description_mobile")}
         >
           <Switch
             size="sm"
