@@ -277,6 +277,9 @@ const ProfileForm: FC<{
                       handle: text,
                     })
                   }}
+                  // A handle is an identifier, not a sentence the keyboard should capitalize or correct
+                  autoCapitalize="none"
+                  autoCorrect={false}
                 />
               </View>
             </GroupedInsetListCell>
