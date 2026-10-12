@@ -215,6 +215,7 @@
   "entry_content.header.readability_description": "利用 Readability 獲取原始網站內容並解析的能力或許可提升內容可讀性。建議於 RSS 內容不可用或不完整時使用。",
   "entry_content.invalid_entry_id": "無效的條目 ID",
   "entry_content.keep_pressing_for_next": "繼續按下以跳至下一篇文章",
+  "entry_content.login_required": "登入後即可閱讀此條目。",
   "entry_content.network_error": "網路錯誤",
   "entry_content.no_content": "無內容",
   "entry_content.no_video": "沒有可用的影片",

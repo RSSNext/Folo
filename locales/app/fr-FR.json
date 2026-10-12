@@ -215,6 +215,7 @@
   "entry_content.header.readability_description": "Utiliser la capacité de lisibilité pour obtenir le contenu original du site web et l'analyser peut permettre un contenu plus lisible. Recommandé lorsque le contenu RSS n'est pas disponible ou incomplet.",
   "entry_content.invalid_entry_id": "ID d'entrée invalide",
   "entry_content.keep_pressing_for_next": "Continuez d'appuyer pour passer à l'article suivant",
+  "entry_content.login_required": "Connectez-vous pour lire cette entrée.",
   "entry_content.network_error": "Erreur réseau",
   "entry_content.no_content": "Aucun média disponible",
   "entry_content.no_video": "Aucune vidéo disponible",

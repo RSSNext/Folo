@@ -215,6 +215,7 @@
   "entry_content.header.readability_description": "Readability で元のウェブサイトのコンテンツを取得して解析すると、より読みやすくなる場合があります。RSS のコンテンツが利用できない、または不完全な場合におすすめです。",
   "entry_content.invalid_entry_id": "無効なエントリー ID です",
   "entry_content.keep_pressing_for_next": "さらに押すと次の記事に移動します",
+  "entry_content.login_required": "このエントリーを読むにはログインしてください。",
   "entry_content.network_error": "ネットワークエラー",
   "entry_content.no_content": "コンテンツがありません",
   "entry_content.no_video": "利用できる動画がありません",

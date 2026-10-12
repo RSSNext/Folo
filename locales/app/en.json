@@ -215,6 +215,7 @@
   "entry_content.header.readability_description": "Using readability's ability to obtain the original website content and parse it may allow for more readable content. Recommended to use it when the RSS content is not available or incomplete.",
   "entry_content.invalid_entry_id": "Invalid entry ID",
   "entry_content.keep_pressing_for_next": "Keep pressing to jump to the next article",
+  "entry_content.login_required": "Log in to read this entry.",
   "entry_content.network_error": "Network Error",
   "entry_content.no_content": "No media available",
   "entry_content.no_video": "No video available",
