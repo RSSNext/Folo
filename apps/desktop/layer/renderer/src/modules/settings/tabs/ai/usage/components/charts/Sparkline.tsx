@@ -18,7 +18,16 @@ export const Sparkline = ({ data, color = "#22c55e", area }: SparklineProps) => 
     return `${x},${y}`
   })
   const path = `M ${points.join(" L ")}`
-  const areaPath = `M ${points[0]} L ${points.slice(1).join(" L ")} L ${w - pad},${h - pad} L ${pad},${h - pad} Z`
+  const areaPath = `${path} L ${w - pad},${h - pad} L ${pad},${h - pad} Z`
+
+  // A single value has no line to draw, so it shows as a dot
+  if (data.length === 1) {
+    return (
+      <svg viewBox={`0 0 ${w} ${h}`} className="size-full">
+        <circle cx={w / 2} cy={h / 2} r={8} fill={color} />
+      </svg>
+    )
+  }
 
   return (
     <svg viewBox={`0 0 ${w} ${h}`} className="size-full">
