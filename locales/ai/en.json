@@ -393,6 +393,7 @@
   "tasks.status.paused": "Paused",
   "tasks.status.scheduled": "Scheduled",
   "tasks.status.unknown": "Unknown",
+  "tasks.toast.create_failed": "Failed to create task.",
   "tasks.toast.created": "AI task scheduled successfully",
   "tasks.toast.delete_failed": "Failed to delete task. Please try again.",
   "tasks.toast.delete_success": "Task deleted successfully",

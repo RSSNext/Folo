@@ -393,6 +393,7 @@
   "tasks.status.paused": "一時停止",
   "tasks.status.scheduled": "予定済み",
   "tasks.status.unknown": "不明",
+  "tasks.toast.create_failed": "タスクの作成に失敗しました。",
   "tasks.toast.created": "AIタスクが正常にスケジュールされました",
   "tasks.toast.delete_failed": "タスクの削除に失敗しました。もう一度お試しください。",
   "tasks.toast.delete_success": "タスクが削除されました",

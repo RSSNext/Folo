@@ -240,7 +240,7 @@ export const TaskItem = memo(({ task }: { task: AITask }) => {
           toast.success(t("tasks.toast.delete_success"))
         } catch (error) {
           console.error("Failed to delete task:", error)
-          toast.error(t("tasks.toast.delete_failed"))
+          toastFetchError(error as Error, { title: t("tasks.toast.delete_failed") })
         }
       },
       title: t("tasks.actions.delete_task"),
@@ -291,7 +291,7 @@ export const TaskItem = memo(({ task }: { task: AITask }) => {
               await updateTaskMutation.mutateAsync({ id: task.id, isEnabled: !task.isEnabled })
             } catch (error) {
               console.error("Failed to toggle task:", error)
-              toast.error(t("tasks.toast.update_failed"))
+              toastFetchError(error as Error, { title: t("tasks.toast.update_failed") })
             }
           }}
         />

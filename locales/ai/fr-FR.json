@@ -393,6 +393,7 @@
   "tasks.status.paused": "En pause",
   "tasks.status.scheduled": "Planifié",
   "tasks.status.unknown": "Inconnu",
+  "tasks.toast.create_failed": "Échec de la création de la tâche.",
   "tasks.toast.created": "Tâche IA planifiée avec succès",
   "tasks.toast.delete_failed": "Échec de la suppression de la tâche. Veuillez réessayer.",
   "tasks.toast.delete_success": "Tâche supprimée avec succès",

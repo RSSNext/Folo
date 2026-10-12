@@ -393,6 +393,7 @@
   "tasks.status.paused": "已暫停",
   "tasks.status.scheduled": "已排程",
   "tasks.status.unknown": "未知",
+  "tasks.toast.create_failed": "建立任務失敗。",
   "tasks.toast.created": "AI 任務安排成功",
   "tasks.toast.delete_failed": "刪除任務失敗，請重試。",
   "tasks.toast.delete_success": "任務刪除成功",
