@@ -164,7 +164,7 @@ const useRegisterReadwiseCommands = () => {
                   summary: entry.description || undefined,
                   published_date: entry.publishedAt || undefined,
                   image_url: entry.media?.[0]?.url || undefined,
-                  saved_using: "Follow",
+                  saved_using: "Folo",
                 },
               })
 
