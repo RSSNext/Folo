@@ -182,8 +182,9 @@ const SaveRuleButton = ({ disabled }: { disabled?: boolean }) => {
 }
 const ItemSeparatorComponent = () => {
   return (
+    // No flex-1: as the only flexible child of its list cell it lost its height once a row changed
     <View
-      className="ml-24 flex-1 bg-opaque-separator/70"
+      className="ml-24 bg-opaque-separator/70"
       collapsable={false}
       style={styles.itemSeparator}
     />
