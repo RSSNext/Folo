@@ -47,6 +47,8 @@ const isFeedLikeUrl = (value: string) => {
   return /^(?:https?:\/\/|rsshub:\/\/|folo:\/\/|follow:\/\/)/.test(trimmed)
 }
 
+const isWebUrl = (value: string) => /^https?:\/\//.test(value.trim())
+
 // Auto-detect input type
 function detectInputType(value: string): "rss" | "rsshub" | "search" {
   const trimmed = value.trim()
@@ -265,18 +267,34 @@ export function UnifiedDiscoverForm() {
       return
     }
 
-    // RSS and RSSHub input opens the feed preview directly; only keywords go through discovery
-    if (detectInputType(values.keyword) !== "search") {
-      const url = values.keyword.trim()
+    const inputType = detectInputType(values.keyword)
+    const url = values.keyword.trim()
+    const presentFeedForm = () =>
       present({
         title: t("feed_form.add_feed"),
         content: () => <FeedForm url={url} onSuccess={dismissAll} />,
       })
+
+    // RSSHub routes and app links open the feed preview directly
+    if (inputType === "rsshub" || (inputType === "rss" && !isWebUrl(url))) {
+      presentFeedForm()
       return
     }
 
-    atomKey.current = values.keyword + values.target
-    mutation.mutate({ keyword: values.keyword, target: values.target })
+    // A web address may be a site rather than a feed, so it goes through discovery,
+    // which finds the site's feeds; a feed address still opens its preview directly
+    const target = inputType === "search" ? values.target : "feeds"
+    atomKey.current = values.keyword + target
+    mutation.mutate(
+      { keyword: values.keyword, target },
+      {
+        onSuccess: (data) => {
+          if (inputType === "rss" && data.length === 1 && data[0]?.feed?.url === url) {
+            presentFeedForm()
+          }
+        },
+      },
+    )
   }
 
   const showTargetSelector = detectedType === "search"
