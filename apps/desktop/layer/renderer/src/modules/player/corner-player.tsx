@@ -117,6 +117,8 @@ const CornerPlayerImpl = ({ hideControls, rounded }: ControlButtonProps) => {
   const status = useAudioPlayerAtomSelector((v) => v.status)
   const isMute = useAudioPlayerAtomSelector((v) => v.isMute)
   const listId = useAudioPlayerAtomSelector((v) => v.listId)
+  // TTS plays from a MediaStream or a temporary blob, which has no file to download
+  const isTts = useAudioPlayerAtomSelector((v) => v.type === "tts")
 
   const playerValue = { entryId, status, isMute }
 
@@ -306,14 +308,16 @@ const CornerPlayerImpl = ({ hideControls, rounded }: ControlButtonProps) => {
               }}
               label={t("player.open_entry")}
             />
-            <ActionIcon
-              label={t("player.download")}
-              onClick={() => {
-                window.open(AudioPlayer.get().src, "_blank")
-              }}
-            >
-              <i className="i-mgc-download-2-cute-re" />
-            </ActionIcon>
+            {!isTts && (
+              <ActionIcon
+                label={t("player.download")}
+                onClick={() => {
+                  window.open(AudioPlayer.get().src, "_blank")
+                }}
+              >
+                <i className="i-mgc-download-2-cute-re" />
+              </ActionIcon>
+            )}
           </div>
           {/* audio control */}
           <div className="flex items-center">
