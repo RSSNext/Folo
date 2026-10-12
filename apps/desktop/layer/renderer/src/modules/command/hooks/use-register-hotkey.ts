@@ -22,6 +22,27 @@ const SPECIAL_KEYS_MAPPINGS = {
   "?": "Shift+Slash",
 }
 
+// Elements the browser itself acts on with Space or Enter: it presses them or types into them
+const KEY_HANDLING_ELEMENTS =
+  "a[href], button, input, select, summary, textarea, [contenteditable]:not([contenteditable='false'])"
+
+// Key presses a shortcut of this module ran a command for
+const commandEvents = new WeakSet<Event>()
+
+/**
+ * Space or Enter on a focused control or field belongs to it. A single-key shortcut on those keys
+ * would otherwise press the wrong thing, such as toggling the audio player instead of opening the
+ * focused menu button. Controls built from other elements, such as menu items, count once they
+ * handled the key themselves.
+ */
+export const isKeyForFocusedControl = (event: KeyboardEvent) => {
+  if (event.key !== " " && event.key !== "Enter") return false
+  if (event.metaKey || event.ctrlKey || event.altKey) return false
+  if (event.defaultPrevented && !commandEvents.has(event)) return true
+  const { target } = event
+  return target instanceof Element && target.matches(KEY_HANDLING_ELEMENTS)
+}
+
 export const useCommandHotkey = <T extends FollowCommandId>({
   shortcut,
   commandId,
@@ -54,10 +75,14 @@ export const useCommandHotkey = <T extends FollowCommandId>({
       keyMap[nextKey] = (event) => {
         const { target } = event
 
-        if (!options?.forceInputElement && checkIsEditableElement(target as HTMLElement)) {
+        if (
+          !options?.forceInputElement &&
+          (checkIsEditableElement(target as HTMLElement) || isKeyForFocusedControl(event))
+        ) {
           return
         }
 
+        commandEvents.add(event)
         event.preventDefault()
         event.stopPropagation()
 
