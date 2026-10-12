@@ -122,7 +122,7 @@ const Impl = (props: { id: string }) => {
   const setModalOptions = useSetModalScreenOptions()
   useEffect(() => {
     setModalOptions({
-      gestureEnabled: !isDirty,
+      preventNativeDismiss: isDirty,
     })
   }, [isDirty, setModalOptions])
   if (!list) {
@@ -135,6 +135,7 @@ const Impl = (props: { id: string }) => {
       Header={
         <NavigationBlurEffectHeaderView
           title={`${isSubscribed ? tCommon("words.edit") : tCommon("words.follow")} - ${list?.title}`}
+          promptBeforeLeave={isDirty}
           headerRight={
             <HeaderSubmitTextButton
               isValid={isValid}

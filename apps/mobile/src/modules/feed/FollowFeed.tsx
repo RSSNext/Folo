@@ -197,6 +197,7 @@ function FollowImpl(props: { feedId: string; defaultView?: FeedViewType }) {
       Header={
         <NavigationBlurEffectHeaderView
           title={`${isSubscribed ? tCommon("words.edit") : tCommon("words.follow")} - ${feed?.title}`}
+          promptBeforeLeave={isDirty}
           headerRight={() => (
             <HeaderSubmitTextButton
               isValid={isValid}

@@ -203,7 +203,7 @@ const ScreenOptions = memo(({ title, listId }: ScreenOptionsProps) => {
   const setModalOptions = useSetModalScreenOptions()
   useEffect(() => {
     setModalOptions({
-      gestureEnabled: !isDirty,
+      preventNativeDismiss: isDirty,
     })
   }, [isDirty, setModalOptions])
   const navigation = useNavigation()
@@ -211,6 +211,7 @@ const ScreenOptions = memo(({ title, listId }: ScreenOptionsProps) => {
   return (
     <NavigationBlurEffectHeader
       title={title ? `${t("lists.edit.label")} - ${title}` : t("lists.create")}
+      promptBeforeLeave={isDirty}
       headerRight={
         <FormProvider form={form}>
           <HeaderSubmitButton

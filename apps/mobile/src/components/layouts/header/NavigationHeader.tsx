@@ -420,6 +420,7 @@ export const DefaultHeaderBackButton = ({
               },
               {
                 text: t("navigation.unsaved_changes.exit"),
+                style: "destructive",
                 onPress: () => {
                   leave()
                 },
