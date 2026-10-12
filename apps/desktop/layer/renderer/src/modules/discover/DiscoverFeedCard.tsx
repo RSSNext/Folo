@@ -37,20 +37,27 @@ export function FeedCardActions<T extends TrendingFeedItem | DiscoveryItem>({
   const follow = useFollow()
   const { t } = useTranslation()
   const location = useLocation()
+  const list = "list" in item ? item.list : undefined
 
   return (
     <div className="flex items-center justify-between gap-2">
       {!isSubscribed && (
         <Button
           variant="ghost"
-          disabled={!item.feed?.id}
+          disabled={!item.feed?.id && !list?.id}
           buttonClassName="rounded-lg px-3 font-medium text-zinc-500 transition-colors hover:bg-zinc-100 hover:text-zinc-900 dark:text-zinc-400 dark:hover:bg-zinc-800/80 dark:hover:text-white"
           onClick={() => {
+            const backPath = `${location.pathname}${location.search}`
+            // A list result has no feed; its timeline previews it the same way
+            if (list?.id) {
+              navigateEntry({ listId: list.id, view: list.view, backPath })
+              return
+            }
             if (!item.feed?.id) return
             navigateEntry({
               feedId: item.feed.id,
               view: item.analytics?.view ?? 0,
-              backPath: `${location.pathname}${location.search}`,
+              backPath,
             })
           }}
         >
