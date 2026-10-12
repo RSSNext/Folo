@@ -15,6 +15,7 @@ import { userActions } from "@follow/store/user/store"
 import { cn } from "@follow/utils/utils"
 import { zodResolver } from "@hookform/resolvers/zod"
 import { useMutation } from "@tanstack/react-query"
+import i18next from "i18next"
 import { useForm } from "react-hook-form"
 import { useTranslation } from "react-i18next"
 import { toast } from "sonner"
@@ -37,7 +38,12 @@ const socialLinksSchema = z.object({
 })
 
 const formSchema = z.object({
-  handle: z.string().max(32).regex(/^\w+$/).optional().or(z.literal("")),
+  handle: z
+    .string()
+    .max(32)
+    .regex(/^\w+$/, { error: () => i18next.t("profile.handle.invalid", { ns: "settings" }) })
+    .optional()
+    .or(z.literal("")),
   name: z.string().trim().min(1).max(50),
   image: z.string().url().or(z.literal("")).optional(),
   bio: z.string().max(256).optional(),

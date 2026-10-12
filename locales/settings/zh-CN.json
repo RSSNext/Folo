@@ -706,6 +706,7 @@
   "profile.email.verified": "已验证",
   "profile.email.verify_status": "你的邮件地址{{status}}",
   "profile.handle.description": "你的唯一标识。",
+  "profile.handle.invalid": "只能使用字母、数字和下划线。",
   "profile.handle.label": "唯一标识",
   "profile.handle.taken": "该唯一标识已被占用。",
   "profile.link_social.authentication": "身份验证",

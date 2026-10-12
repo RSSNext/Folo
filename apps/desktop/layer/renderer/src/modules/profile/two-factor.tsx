@@ -13,6 +13,7 @@ import { useWhoami } from "@follow/store/user/hooks"
 import { userActions } from "@follow/store/user/store"
 import { zodResolver } from "@hookform/resolvers/zod"
 import { useMutation } from "@tanstack/react-query"
+import i18next from "i18next"
 import { m, useAnimation } from "motion/react"
 import { useState } from "react"
 import { useForm } from "react-hook-form"
@@ -30,7 +31,11 @@ import { useHasPassword } from "~/queries/auth"
 import { NoPasswordHint } from "./update-password-form"
 
 const passwordSchema = z.string().min(8).max(128)
-const totpCodeSchema = z.string().length(6).regex(/^\d+$/)
+const invalidTotpCode = () => i18next.t("profile.totp_code.invalid", { ns: "settings" })
+const totpCodeSchema = z
+  .string()
+  .length(6, { error: invalidTotpCode })
+  .regex(/^\d+$/, { error: invalidTotpCode })
 
 const passwordFormSchema = z.object({
   password: passwordSchema,
