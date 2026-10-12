@@ -16,7 +16,7 @@ export const RecommendationListItem: FC<{
   data: RSSHubRouteDeclaration
   routePrefix: string
 }> = memo(({ data, routePrefix }) => {
-  const { t } = useTranslation("common")
+  const { t, i18n } = useTranslation("common")
   const { categories } = useMemo(() => {
     const categories = new Set<string>()
     for (const route in data.routes) {
@@ -49,7 +49,10 @@ export const RecommendationListItem: FC<{
               key={c}
             >
               <Text className="text-xs text-text/70" numberOfLines={1}>
-                {t(`discover.category.${c}`)}
+                {/* Routes can use tags without a translation, such as "other"; show their name */}
+                {i18n.exists(`discover.category.${c}`, { ns: "common" })
+                  ? t(`discover.category.${c}`)
+                  : c.charAt(0).toUpperCase() + c.slice(1)}
               </Text>
             </View>
           ))}
