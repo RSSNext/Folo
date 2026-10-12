@@ -13,7 +13,7 @@ import {
 } from "react"
 import { useTranslation } from "react-i18next"
 import type { LayoutChangeEvent, StyleProp, ViewStyle } from "react-native"
-import { Alert, Pressable, StyleSheet, View } from "react-native"
+import { Pressable, StyleSheet, View } from "react-native"
 import type { AnimatedProps } from "react-native-reanimated"
 import Animated, {
   useAnimatedReaction,
@@ -37,6 +37,7 @@ import {
   useScreenIsInSheetModal,
 } from "@/src/lib/navigation/hooks"
 import { ScreenItemContext } from "@/src/lib/navigation/ScreenItemContext"
+import { confirmLeaveWithUnsavedChanges } from "@/src/lib/navigation/unsaved-changes"
 
 import { ThemedBlurView } from "../../common/ThemedBlurView"
 import { PlatformActivityIndicator } from "../../ui/loading/PlatformActivityIndicator"
@@ -410,23 +411,7 @@ export const DefaultHeaderBackButton = ({
         }
 
         if (promptBeforeLeave) {
-          Alert.alert(
-            t("navigation.unsaved_changes.title"),
-            t("navigation.unsaved_changes.description"),
-            [
-              {
-                text: t("words.cancel", { ns: "common" }),
-                style: "cancel",
-              },
-              {
-                text: t("navigation.unsaved_changes.exit"),
-                style: "destructive",
-                onPress: () => {
-                  leave()
-                },
-              },
-            ],
-          )
+          confirmLeaveWithUnsavedChanges(leave)
         } else {
           leave()
         }

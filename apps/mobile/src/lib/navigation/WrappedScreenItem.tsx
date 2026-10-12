@@ -3,9 +3,8 @@ import type { PrimitiveAtom } from "jotai"
 import { atom, useAtomValueRawSync, useSetAtom } from "jotai"
 import type { FC, ReactNode } from "react"
 import { memo, use, useCallback, useMemo, useRef } from "react"
-import { useTranslation } from "react-i18next"
 import type { NativeSyntheticEvent, StyleProp, ViewStyle } from "react-native"
-import { Alert, StyleSheet, View } from "react-native"
+import { StyleSheet, View } from "react-native"
 import { useSharedValue } from "react-native-reanimated"
 import type { ScreenStackHeaderConfigProps, StackPresentationTypes } from "react-native-screens"
 import {
@@ -27,6 +26,7 @@ import { ScreenItemContext } from "./ScreenItemContext"
 import type { ScreenOptionsContextType } from "./ScreenOptionsContext"
 import { ScreenOptionsContext } from "./ScreenOptionsContext"
 import type { NavigationControllerViewExtraProps } from "./types"
+import { confirmLeaveWithUnsavedChanges } from "./unsaved-changes"
 
 export const WrappedScreenItem: FC<
   {
@@ -126,7 +126,6 @@ export const WrappedScreenItem: FC<
 
     // A screen sets preventNativeDismiss while it has unsaved changes, so a swipe or backdrop tap
     // only leaves once the user confirms
-    const { t } = useTranslation()
     const handleNativeDismissCancelled = useCallback(
       (
         e: NativeSyntheticEvent<{
@@ -135,27 +134,13 @@ export const WrappedScreenItem: FC<
       ) => {
         const { dismissCount } = e.nativeEvent
         if (dismissCount <= 0) return
-        Alert.alert(
-          t("navigation.unsaved_changes.title"),
-          t("navigation.unsaved_changes.description"),
-          [
-            {
-              text: t("words.cancel", { ns: "common" }),
-              style: "cancel",
-            },
-            {
-              text: t("navigation.unsaved_changes.exit"),
-              style: "destructive",
-              onPress: () => {
-                for (let i = 0; i < dismissCount; i++) {
-                  navigation.__internal_dismiss(screenId)
-                }
-              },
-            },
-          ],
-        )
+        confirmLeaveWithUnsavedChanges(() => {
+          for (let i = 0; i < dismissCount; i++) {
+            navigation.__internal_dismiss(screenId)
+          }
+        })
       },
-      [navigation, screenId, t],
+      [navigation, screenId],
     )
 
     const ref = useRef<View>(null)
