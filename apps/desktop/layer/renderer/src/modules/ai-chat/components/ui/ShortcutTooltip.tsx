@@ -6,6 +6,9 @@ import {
   TooltipTrigger,
 } from "@follow/components/ui/tooltip/index.js"
 import type { ReactNode } from "react"
+import { useTranslation } from "react-i18next"
+
+import { formatPromptDateMentions } from "../../editor/plugins/mention/utils/promptPreview"
 
 export interface ShortcutTooltipProps {
   name: string
@@ -22,6 +25,7 @@ export const ShortcutTooltip: React.FC<ShortcutTooltipProps> = ({
   children,
   asChild = true,
 }) => {
+  const { t, i18n } = useTranslation("ai")
   return (
     <Tooltip>
       <TooltipRoot>
@@ -37,7 +41,11 @@ export const ShortcutTooltip: React.FC<ShortcutTooltipProps> = ({
                 )}
               </div>
 
-              {prompt && <span className="text-xs leading-snug text-text-secondary">{prompt}</span>}
+              {prompt && (
+                <span className="text-xs leading-snug text-text-secondary">
+                  {formatPromptDateMentions(prompt, t, i18n.language)}
+                </span>
+              )}
             </div>
           </TooltipContent>
         </TooltipPortal>
