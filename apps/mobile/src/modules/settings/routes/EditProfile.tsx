@@ -200,8 +200,14 @@ const ProfileForm: FC<{
               leftClassName="flex-none"
               rightClassName="flex-1"
               postfix={
-                <View className="ml-auto flex-row gap-2">
-                  <Text className="text-secondary-label">{whoami.email}</Text>
+                <View className="ml-auto shrink flex-row items-center gap-2">
+                  <Text
+                    className="shrink text-secondary-label"
+                    numberOfLines={1}
+                    ellipsizeMode="middle"
+                  >
+                    {whoami.email}
+                  </Text>
                   {whoami.emailVerified ? (
                     <CheckCircleCuteReIcon height={18} width={18} color={"#00C75F"} />
                   ) : (
