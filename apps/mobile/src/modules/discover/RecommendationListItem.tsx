@@ -33,25 +33,26 @@ export const RecommendationListItem: FC<{
   const navigation = useNavigation()
   return (
     <View className="py-4">
-      <View className="mt-1.5 flex-row justify-between overflow-hidden px-6">
-        <View className="flex-row items-center gap-3">
+      <View className="mt-1.5 flex-row items-center gap-3 overflow-hidden px-6">
+        {/* A long name is truncated instead of pushing the tags off-screen */}
+        <View className="flex-1 flex-row items-center gap-3">
           <FeedIcon siteUrl={`https://${data.url}`} size={24} />
-          <Text className="text-base font-medium text-text">{data.name}</Text>
+          <Text className="shrink text-base font-medium text-text" numberOfLines={1}>
+            {data.name}
+          </Text>
         </View>
-        <View className="flex-row items-center justify-between gap-4">
-          {/* Tags */}
-          <View className="shrink flex-row items-center">
-            {categories.map((c) => (
-              <View
-                className="mr-1 items-center justify-center overflow-hidden rounded-full bg-system-fill px-3 py-1"
-                key={c}
-              >
-                <Text className="text-xs text-text/70" numberOfLines={1}>
-                  {t(`discover.category.${c}`)}
-                </Text>
-              </View>
-            ))}
-          </View>
+        {/* Tags wrap onto more lines, as on desktop, when a site has many */}
+        <View className="max-w-[60%] flex-row flex-wrap justify-end gap-1">
+          {categories.map((c) => (
+            <View
+              className="shrink items-center justify-center overflow-hidden rounded-full bg-system-fill px-3 py-1"
+              key={c}
+            >
+              <Text className="text-xs text-text/70" numberOfLines={1}>
+                {t(`discover.category.${c}`)}
+              </Text>
+            </View>
+          ))}
         </View>
       </View>
       <GroupedInsetListCard className="mt-5">
