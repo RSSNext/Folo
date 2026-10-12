@@ -1,6 +1,6 @@
 import { EnhanceSet } from "@follow/utils"
 import { jotaiStore } from "@follow/utils/jotai"
-import { useAtomValue, useSetAtom } from "jotai"
+import { useAtomValueRawSync, useSetAtom } from "jotai"
 import { selectAtom } from "jotai/utils"
 import { use, useCallback, useMemo } from "react"
 
@@ -36,7 +36,9 @@ export const useGlobalFocusableScopeSelector = (
 ) => {
   const ctx = use(GlobalFocusableContext)
 
-  return useAtomValue(useMemo(() => selectAtom(ctx, selector), [ctx, selector]))
+  // A sibling can focus its Focusable in a mount effect of the same commit, so read the scope
+  // synchronously instead of missing that write until the next one
+  return useAtomValueRawSync(useMemo(() => selectAtom(ctx, selector), [ctx, selector]))
 }
 
 export const useSetGlobalFocusableScope = () => {
