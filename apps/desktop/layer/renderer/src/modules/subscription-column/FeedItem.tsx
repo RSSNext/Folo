@@ -268,7 +268,7 @@ const FeedItemImpl = ({ view, feedId, className, isPreview }: FeedItemProps) => 
         )}
         {subscription?.isPrivate && !isOnboardingFeed && (
           <Tooltip delayDuration={300}>
-            <TooltipTrigger>
+            <TooltipTrigger aria-label={t("feed_item.not_publicly_visible")}>
               <OouiUserAnonymous className="ml-1 shrink-0 text-base" />
             </TooltipTrigger>
             <TooltipPortal>
@@ -279,7 +279,7 @@ const FeedItemImpl = ({ view, feedId, className, isPreview }: FeedItemProps) => 
       </div>
       {isOnboardingFeed && (
         <Tooltip delayDuration={300}>
-          <TooltipTrigger>
+          <TooltipTrigger aria-label={t("feed_item.onboarding_feed")}>
             <i className="i-mingcute-sparkles-line shrink-0 text-base text-text-tertiary" />
           </TooltipTrigger>
           <TooltipPortal>
@@ -408,7 +408,7 @@ const ListItemImpl: Component<ListItemProps> = ({
 
         {subscription?.isPrivate && (
           <Tooltip delayDuration={300}>
-            <TooltipTrigger>
+            <TooltipTrigger aria-label={t("feed_item.not_publicly_visible")}>
               <OouiUserAnonymous className="ml-1 shrink-0 text-base" />
             </TooltipTrigger>
             <TooltipPortal>

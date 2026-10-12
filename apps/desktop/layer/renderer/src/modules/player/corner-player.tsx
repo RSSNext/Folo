@@ -237,6 +237,7 @@ const CornerPlayerImpl = ({ hideControls, rounded }: ControlButtonProps) => {
           >
             <button
               type="button"
+              aria-label={t(playerValue.status === "paused" ? "player.play" : "player.pause")}
               className="center size-10 rounded-full bg-theme-background opacity-95 hover:bg-accent hover:text-white hover:opacity-100"
               onClick={handleClickPlay}
             >
@@ -327,6 +328,7 @@ const CornerPlayerImpl = ({ hideControls, rounded }: ControlButtonProps) => {
               )}
               onClick={() => AudioPlayer.toggleMute()}
               label={<CornerPlayerVolumeSlider />}
+              ariaLabel={t(playerValue.isMute ? "player.unmute" : "player.mute")}
               labelDelayDuration={0}
             />
             <ActionIcon
@@ -424,6 +426,7 @@ const ActionIcon = ({
   className,
   onClick,
   label,
+  ariaLabel,
   labelDelayDuration = 700,
   tooltipAlign,
   children,
@@ -431,6 +434,8 @@ const ActionIcon = ({
   className?: string
   onClick?: () => void
   label: React.ReactNode
+  /** Accessible name, needed when the label is not plain text */
+  ariaLabel?: string
   labelDelayDuration?: number
   tooltipAlign?: "center" | "end" | "start"
   children?: React.ReactNode
@@ -441,7 +446,12 @@ const ActionIcon = ({
       onClick={onClick}
       asChild
     >
-      <button type="button">{children || <i aria-hidden className={className} />}</button>
+      <button
+        type="button"
+        aria-label={ariaLabel ?? (typeof label === "string" ? label : undefined)}
+      >
+        {children || <i aria-hidden className={className} />}
+      </button>
     </TooltipTrigger>
     <TooltipContent align={tooltipAlign}>{label}</TooltipContent>
   </Tooltip>

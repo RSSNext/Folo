@@ -10,6 +10,7 @@ import { debounce } from "es-toolkit/compat"
 import { AnimatePresence } from "motion/react"
 import type { FC, MouseEvent, PropsWithChildren, TouchEvent } from "react"
 import { useCallback, useEffect, useMemo, useRef, useState } from "react"
+import { useTranslation } from "react-i18next"
 import { NavLink } from "react-router"
 import { useEventCallback } from "usehooks-ts"
 
@@ -227,6 +228,7 @@ const ActionBar = ({
   openContextMenu: () => void
   isFirstItem: boolean
 }) => {
+  const { t } = useTranslation()
   const { view } = useRouteParams()
 
   const { mainAction } = useSortedEntryActions({ entryId, view })
@@ -259,6 +261,7 @@ const ActionBar = ({
         })}
 
         <ActionButton
+          aria-label={t("customizeToolbar.more_actions.title", { ns: "settings" })}
           onClick={openContextMenu}
           size="xs"
           icon={<i className="i-mingcute-more-1-fill" />}

@@ -104,6 +104,7 @@ export const MarkAllReadButton = ({
           )}
         </>
       }
+      aria-label={t("command.subscription.mark_all_as_read.title", { ns: "shortcuts" })}
       className={className}
       ref={ref}
       onClick={() => {

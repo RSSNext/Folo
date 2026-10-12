@@ -255,6 +255,7 @@ export function EntryHeaderBreadcrumb() {
           {/* Return Back Button  */}
           <button
             type="button"
+            aria-label={t("words.close", { ns: "common" })}
             className="no-drag-region inline-flex shrink-0 items-center rounded-full bg-transparent p-2 text-text-secondary hover:bg-fill/50 hover:text-text focus-visible:bg-fill/60"
             onClick={() => navigate({ entryId: null, view })}
           >
