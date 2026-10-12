@@ -7,6 +7,7 @@ import { useCallback, useMemo } from "react"
 
 import { FEED_COLLECTION_LIST, ROUTE_FEED_PENDING } from "../../constants/app"
 import type { GeneralQueryOptions } from "../../types"
+import { findFeedByUrl } from "./getter"
 import { feedSyncServices, useFeedStore } from "./store"
 import type { FeedModel } from "./types"
 
@@ -67,9 +68,7 @@ export function useFeedByUrl(url: string | undefined | null): FeedModel | undefi
     useCallback(
       (state) => {
         if (!url) return
-        const feed = Object.values(state.feeds).find((feed) => feed.url === url)
-        if (!feed) return
-        return feed
+        return findFeedByUrl(state, url)
       },
       [url],
     ),

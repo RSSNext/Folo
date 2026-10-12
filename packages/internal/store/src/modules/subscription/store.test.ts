@@ -4,12 +4,13 @@ import { beforeEach, describe, expect, test, vi } from "vitest"
 
 import { apiContext, queryClientContext } from "../../context"
 import type { FollowAPI } from "../../types"
-import { useFeedStore } from "../feed/store"
+import { getFeedByIdOrUrl } from "../feed/getter"
+import { feedSyncServices, useFeedStore } from "../feed/store"
 import type { FeedModel } from "../feed/types"
 import { useListStore } from "../list/store"
 import type { ListModel } from "../list/types"
 import { useUnreadStore } from "../unread/store"
-import { getSortedGroupedSubscriptionSelector } from "./getter"
+import { getSortedGroupedSubscriptionSelector, getSubscriptionByFeedId } from "./getter"
 import {
   getConfirmedSubscriptionChange,
   subscriptionActions,
@@ -331,6 +332,43 @@ describe("subscriptionSyncService", () => {
     // The followed feed takes the place of its preview
     expect(Object.keys(useFeedStore.getState().feeds)).toEqual(["feed-sort"])
     expect(useSubscriptionStore.getState().data["feed-sort"]?.feedId).toBe("feed-sort")
+  })
+
+  test("finds the subscription of a feed followed by its RSSHub instance address", async () => {
+    const address = "http://localhost:1200/test/sort"
+    const url = "rsshub://test/sort"
+    useFeedStore.setState({ feeds: {}, resolvedUrls: {} })
+    seed([])
+    const getFeed = vi.fn(async () => ({
+      data: { feed: { type: "feed", id: "", title: "", url } },
+    }))
+    apiContext.provide({
+      feeds: { get: getFeed },
+      subscriptions: { create: mocks.create },
+    } as unknown as FollowAPI)
+    mocks.create.mockResolvedValue({
+      code: 0,
+      feed: { type: "feed", id: "feed-sort", url, title: "Sort" },
+      list: null,
+      unread: {},
+    })
+
+    const { feed } = await feedSyncServices.fetchFeedByUrl({ url: address })
+    await subscriptionSyncService.subscribe({
+      url: feed.url,
+      feedId: feed.id,
+      listId: undefined,
+      view: FeedViewType.Articles,
+      category: null,
+      isPrivate: false,
+      hideFromTimeline: null,
+      title: null,
+    })
+
+    // A search result for the typed address looks the feed up by that address
+    const feedId = getFeedByIdOrUrl({ url: address })?.id
+    expect(feedId).toBe("feed-sort")
+    expect(getSubscriptionByFeedId(feedId)?.feedId).toBe("feed-sort")
   })
 
   test("refetching one view keeps the other views' subscriptions", async () => {

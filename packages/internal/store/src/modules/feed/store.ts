@@ -8,12 +8,19 @@ import { createImmerSetter, createTransaction, createZustandStore } from "../../
 import { whoami } from "../user/getters"
 import type { FeedModel } from "./types"
 
-interface FeedState {
+export interface FeedState {
   feeds: Record<string, FeedModel>
+  /**
+   * The URL of the feed an address was looked up as, keyed by that address where they differ.
+   * The server keeps the feed of an RSSHub instance address such as
+   * http://localhost:1200/test/sort as rsshub://test/sort.
+   */
+  resolvedUrls: Record<string, string>
 }
 
 const initialFeedStore: FeedState = {
   feeds: {},
+  resolvedUrls: {},
 }
 
 export const useFeedStore = createZustandStore<FeedState>("feed")(() => initialFeedStore)
@@ -83,6 +90,15 @@ class FeedActions implements Hydratable, Resetable {
     })
 
     await tx.run()
+  }
+
+  /** Remember the URL of the feed the server found for an address */
+  setResolvedUrl(address: string | undefined, feedUrl: string | undefined) {
+    if (!address || !feedUrl || address === feedUrl) return
+    if (get().resolvedUrls[address] === feedUrl) return
+    immerSet((draft) => {
+      draft.resolvedUrls[address] = feedUrl
+    })
   }
 
   patchInSession(feedId: string, patch: Partial<FeedSchema>) {
@@ -173,6 +189,7 @@ class FeedSyncServices {
       finalData["id"] = nonce
     }
     feedActions.upsertMany([finalData])
+    feedActions.setResolvedUrl(url, finalData.url)
 
     return {
       responseData: res.data,

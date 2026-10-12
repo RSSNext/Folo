@@ -2,7 +2,7 @@ import { beforeEach, describe, expect, it, vi } from "vitest"
 
 import { apiContext } from "../../context"
 import type { FollowAPI } from "../../types"
-import { getFeedServerId } from "./getter"
+import { findFeedByUrl, getFeedByUrl, getFeedServerId } from "./getter"
 import { feedActions, feedSyncServices, useFeedStore } from "./store"
 import type { FeedModel } from "./types"
 
@@ -49,7 +49,7 @@ describe("a feed the server has not stored yet", () => {
   const getFeed = vi.fn()
 
   beforeEach(() => {
-    useFeedStore.setState({ feeds: {} })
+    useFeedStore.setState({ feeds: {}, resolvedUrls: {} })
     // The server answers for a new address with the parsed feed and an empty id
     getFeed.mockResolvedValue({ data: { feed: { type: "feed", id: "", title: "New", url } } })
     apiContext.provide({ feeds: { get: getFeed } } as unknown as FollowAPI)
@@ -81,5 +81,41 @@ describe("a feed the server has not stored yet", () => {
 
     expect(Object.keys(useFeedStore.getState().feeds)).toEqual([second.id])
     expect(second.id).not.toBe(first.id)
+  })
+})
+
+describe("a feed the server keeps under another URL than its address", () => {
+  const address = "http://localhost:1200/test/sort"
+  const url = "rsshub://test/sort"
+
+  beforeEach(() => {
+    useFeedStore.setState({ feeds: {}, resolvedUrls: {} })
+    const getFeed = vi.fn(async () => ({
+      data: { feed: { type: "feed", id: "", title: "", url } },
+    }))
+    apiContext.provide({ feeds: { get: getFeed } } as unknown as FollowAPI)
+  })
+
+  it("is found by its address once it was looked up, and after it is followed", async () => {
+    expect(getFeedByUrl(address)).toBeUndefined()
+
+    const { feed: preview } = await feedSyncServices.fetchFeedByUrl({ url: address })
+    expect(getFeedByUrl(address)?.id).toBe(preview.id)
+
+    // Following it brings the stored feed in place of the preview
+    feedActions.upsertManyInSession([feed({ id: "feed-sort", url })])
+    expect(getFeedByUrl(address)?.id).toBe("feed-sort")
+    expect(getFeedByUrl(url)?.id).toBe("feed-sort")
+  })
+
+  it("matches only the URL its address was looked up as", () => {
+    const state = {
+      feeds: { sort: feed({ id: "sort", url }), other: feed({ id: "other", url: address }) },
+      resolvedUrls: { [address]: url },
+    }
+
+    expect(findFeedByUrl(state, address)?.id).toBe("sort")
+    expect(findFeedByUrl(state, "http://localhost:1200/test/other")).toBeUndefined()
+    expect(findFeedByUrl({ ...state, resolvedUrls: {} }, address)?.id).toBe("other")
   })
 })
