@@ -104,3 +104,20 @@ describe("toastFetchError for unreachable servers", () => {
     expect(mocks.toastError).toHaveBeenCalledWith("common:app.api_unreachable")
   })
 })
+
+describe("getFetchErrorMessage for API errors", () => {
+  it("keeps the API message for a code without a translation", () => {
+    const error = new FollowAPIError("Something specific went wrong", 400, "9999")
+    expect(getFetchErrorMessage(error)).toBe("Something specific went wrong")
+  })
+
+  it("keeps the SDK message for a non-numeric code", () => {
+    const error = new FollowAPIError("Authentication required", 401, "AUTH_REQUIRED")
+    expect(getFetchErrorMessage(error)).toBe("Authentication required")
+  })
+
+  it("translates a known API error code", () => {
+    const error = new FollowAPIError("limit", 402, "2012")
+    expect(getFetchErrorMessage(error)).toBe("RSSHub feed subscription limit exceeded")
+  })
+})

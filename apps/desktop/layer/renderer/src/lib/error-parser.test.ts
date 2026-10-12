@@ -1,7 +1,8 @@
+import { FollowAPIError } from "@follow-app/client-sdk"
 import { toast } from "sonner"
 import { beforeEach, describe, expect, test, vi } from "vitest"
 
-import { toastFetchError } from "./error-parser"
+import { getFetchErrorMessage, toastFetchError } from "./error-parser"
 
 vi.mock("sonner", () => ({
   toast: {
@@ -27,5 +28,19 @@ describe("toastFetchError", () => {
       "Failed to read aloud",
       expect.objectContaining({ description: "No content available for TTS" }),
     )
+  })
+})
+
+describe("getFetchErrorMessage", () => {
+  test("keeps the API message for a code without a translation", () => {
+    expect(getFetchErrorMessage(new FollowAPIError("Something specific", 400, "9999"))).toBe(
+      "Something specific",
+    )
+  })
+
+  test("keeps the SDK message for a non-numeric code", () => {
+    expect(
+      getFetchErrorMessage(new FollowAPIError("Authentication required", 401, "AUTH_REQUIRED")),
+    ).toBe("Authentication required")
   })
 })

@@ -13,6 +13,15 @@ import { toast } from "./toast"
 const isConnectionFailure = (error: Error) =>
   error.message.startsWith("fetch failed:") && !error.message.includes("aborted")
 
+// i18next answers a missing key with the key without its namespace, such as "1000"
+const translateErrorCode = (code: unknown, fallback: string) => {
+  if (code == null) return fallback
+  const translated: unknown = t(`errors:${code}` as never)
+  return typeof translated === "string" && translated && translated !== `${code}`
+    ? translated
+    : fallback
+}
+
 export const getFetchErrorInfo = (
   error: Error,
 ): {
@@ -24,8 +33,7 @@ export const getFetchErrorInfo = (
       const json = JSON.parse(error.response?._data)
 
       const { reason, code, message } = json
-      const i18nKey = `errors:${code}` as any
-      const i18nMessage = t(i18nKey) === i18nKey ? message : t(i18nKey)
+      const i18nMessage = translateErrorCode(code, message)
       return {
         message: sanitizeErrorMessage(`${i18nMessage}${reason ? `: ${reason}` : ""}`),
         code,
@@ -36,10 +44,10 @@ export const getFetchErrorInfo = (
   }
 
   if (error instanceof FollowAPIError && error.code) {
-    const code = Number(error.code)
+    // Codes such as "AUTH_REQUIRED" from the SDK are not API error codes
+    const code = Number.isNaN(Number(error.code)) ? undefined : Number(error.code)
     try {
-      const i18nKey = `errors:${code}` as any
-      const i18nMessage = t(i18nKey) === i18nKey ? error.message : t(i18nKey)
+      const i18nMessage = translateErrorCode(code, error.message)
       return {
         message: sanitizeErrorMessage(i18nMessage),
         code,
