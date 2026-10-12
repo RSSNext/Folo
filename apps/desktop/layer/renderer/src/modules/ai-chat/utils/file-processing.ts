@@ -1,6 +1,7 @@
 import { t } from "i18next"
 
 import { followApi } from "~/lib/api-client"
+import { getFetchErrorMessage } from "~/lib/error-parser"
 
 import type { FileAttachment } from "../store/types"
 import type { FileValidationResult } from "./file-validation"
@@ -238,13 +239,16 @@ export async function uploadFileAttachment(
       clearInterval(progressInterval)
     }
   } catch (error) {
-    // Return attachment with error status
+    // Return attachment with error status. The message of an API error also carries the
+    // request and its headers, which are not for the user.
     const errorAttachment: FileAttachment = {
       ...fileAttachment,
       uploadStatus: "error",
       uploadProgress: undefined,
       errorMessage:
-        error instanceof Error ? error.message : t("chat.file.upload_failed", { ns: "ai" }),
+        error instanceof Error
+          ? getFetchErrorMessage(error)
+          : t("chat.file.upload_failed", { ns: "ai" }),
     }
 
     return errorAttachment
