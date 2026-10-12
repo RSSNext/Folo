@@ -71,7 +71,7 @@ export const useDeleteSubscription = ({ onSuccess }: { onSuccess?: () => void } 
               {t("words.undo")}
               <Kbd
                 wrapButton={false}
-                className="inline-flex items-center border border-border bg-transparent text-white"
+                className="inline-flex items-center border border-border bg-transparent bg-none text-white"
               >
                 $mod+Z
               </Kbd>

@@ -74,7 +74,7 @@ export const MarkAllReadButton = ({
               {t("mark_all_read_button.undo")}
               <Kbd
                 wrapButton={false}
-                className="inline-flex items-center border border-border bg-transparent text-white"
+                className="inline-flex items-center border border-border bg-transparent bg-none text-white"
               >
                 $mod+z
               </Kbd>
