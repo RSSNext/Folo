@@ -50,6 +50,7 @@ export const SettingSpotlight = () => {
 
   return (
     <div className="mt-4 space-y-4">
+      <p className="text-sm text-text-secondary">{t("spotlight.description")}</p>
       <div className="flex justify-end">
         <Button
           size="sm"
@@ -60,6 +61,10 @@ export const SettingSpotlight = () => {
           {t("spotlight.add_rule")}
         </Button>
       </div>
+
+      {rules.length === 0 && (
+        <p className="py-8 text-center text-sm text-text-tertiary">{t("spotlight.empty")}</p>
+      )}
 
       {rules.map((rule, index) => (
         <SpotlightRuleEditor
