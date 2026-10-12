@@ -1,4 +1,9 @@
-import { FollowAPIError } from "@follow-app/client-sdk"
+import { ExceptionCodeMap, FollowAPIError } from "@follow-app/client-sdk"
+import enErrors from "@locales/errors/en.json"
+import frErrors from "@locales/errors/fr-FR.json"
+import jaErrors from "@locales/errors/ja.json"
+import zhCNErrors from "@locales/errors/zh-CN.json"
+import zhTWErrors from "@locales/errors/zh-TW.json"
 import i18next from "i18next"
 import { toast } from "sonner"
 import { beforeAll, beforeEach, describe, expect, test, vi } from "vitest"
@@ -89,5 +94,31 @@ describe("getFetchErrorMessage", () => {
     expect(
       getFetchErrorMessage(new FollowAPIError("Authentication required", 401, "AUTH_REQUIRED")),
     ).toBe("Authentication required")
+  })
+})
+
+describe("error code translations", () => {
+  // Codes newer servers answer with that the SDK's ExceptionCodeMap does not name yet
+  const codesMissingFromSDK = [8005, 12001, 13008, 15006]
+
+  test("cover every code the server answers with in every language", () => {
+    const codes = [
+      ...Object.values(ExceptionCodeMap).filter((code) => typeof code === "number"),
+      ...codesMissingFromSDK,
+    ].map(String)
+    const errorsByLanguage = {
+      en: enErrors,
+      "zh-CN": zhCNErrors,
+      "zh-TW": zhTWErrors,
+      ja: jaErrors,
+      "fr-FR": frErrors,
+    }
+
+    for (const [language, errors] of Object.entries(errorsByLanguage)) {
+      expect(
+        codes.filter((code) => !Object.hasOwn(errors, code)),
+        language,
+      ).toEqual([])
+    }
   })
 })
