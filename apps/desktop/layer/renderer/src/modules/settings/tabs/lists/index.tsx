@@ -175,6 +175,7 @@ export const SettingLists = () => {
                             <TooltipTrigger asChild>
                               <Button
                                 variant="ghost"
+                                aria-label={t.common("words.manage")}
                                 onClick={() => {
                                   present({
                                     title: t.settings("lists.feeds.manage"),
@@ -193,6 +194,7 @@ export const SettingLists = () => {
                             <TooltipTrigger asChild>
                               <Button
                                 variant="ghost"
+                                aria-label={t.common("words.edit")}
                                 onClick={() => {
                                   present({
                                     title: t.settings("lists.edit.label"),
@@ -211,6 +213,7 @@ export const SettingLists = () => {
                             <TooltipTrigger asChild>
                               <ActionButton
                                 size="sm"
+                                aria-label={t.common("words.delete")}
                                 onClick={() =>
                                   present({
                                     title: t.settings("lists.delete.confirm"),

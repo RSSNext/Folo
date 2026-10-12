@@ -611,6 +611,7 @@
   "lists.feeds.delete.success": "RSS 摘要已從列表中移除。",
   "lists.feeds.manage": "管理 RSS 摘要",
   "lists.feeds.owner": "擁有者",
+  "lists.feeds.remove": "從列表中移除",
   "lists.feeds.title": "標題",
   "lists.feeds.untitled": "未命名的 RSS 摘要",
   "lists.image": "圖片",

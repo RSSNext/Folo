@@ -12,18 +12,30 @@ import { IconOpacityTransition } from "~/components/ux/transition/icon"
 import { getFeedListSort, setFeedListSortBy, setFeedListSortOrder, useFeedListSort } from "../atom"
 
 const SORT_LIST = [
-  { icon: tw`i-mgc-numbers-90-sort-ascending-cute-re`, by: "count", order: "asc" },
-  { icon: tw`i-mgc-numbers-90-sort-descending-cute-re`, by: "count", order: "desc" },
+  {
+    icon: tw`i-mgc-numbers-90-sort-ascending-cute-re`,
+    by: "count",
+    order: "asc",
+    label: "sidebar.sort.count_asc",
+  },
+  {
+    icon: tw`i-mgc-numbers-90-sort-descending-cute-re`,
+    by: "count",
+    order: "desc",
+    label: "sidebar.sort.count_desc",
+  },
 
   {
     icon: tw`i-mgc-az-sort-ascending-letters-cute-re`,
     by: "alphabetical",
     order: "asc",
+    label: "sidebar.sort.alphabetical_asc",
   },
   {
     icon: tw`i-mgc-az-sort-descending-letters-cute-re`,
     by: "alphabetical",
     order: "desc",
+    label: "sidebar.sort.alphabetical_desc",
   },
 ] as const
 
@@ -39,29 +51,34 @@ export const SortButton = () => {
 
   return (
     <HoverCard.Root open={open} onOpenChange={setOpen}>
-      <HoverCard.Trigger
-        onClick={() => {
-          if (isMobile()) {
-            setOpen(true)
-            return
-          }
-          setFeedListSortBy(by === "count" ? "alphabetical" : "count")
-        }}
-        className="center"
-      >
-        <IconOpacityTransition
-          icon2={
-            order === "asc"
-              ? tw`i-mgc-numbers-90-sort-ascending-cute-re`
-              : tw`i-mgc-numbers-90-sort-descending-cute-re`
-          }
-          icon1={
-            order === "asc"
-              ? tw`i-mgc-az-sort-ascending-letters-cute-re`
-              : tw`i-mgc-az-sort-descending-letters-cute-re`
-          }
-          status={by === "count" ? "done" : "init"}
-        />
+      {/* A button rather than the default anchor, which has no href and cannot be focused */}
+      <HoverCard.Trigger asChild>
+        <button
+          type="button"
+          aria-label={t("sidebar.sort.label")}
+          onClick={() => {
+            if (isMobile()) {
+              setOpen(true)
+              return
+            }
+            setFeedListSortBy(by === "count" ? "alphabetical" : "count")
+          }}
+          className="center"
+        >
+          <IconOpacityTransition
+            icon2={
+              order === "asc"
+                ? tw`i-mgc-numbers-90-sort-ascending-cute-re`
+                : tw`i-mgc-numbers-90-sort-descending-cute-re`
+            }
+            icon1={
+              order === "asc"
+                ? tw`i-mgc-az-sort-ascending-letters-cute-re`
+                : tw`i-mgc-az-sort-descending-letters-cute-re`
+            }
+            status={by === "count" ? "done" : "init"}
+          />
+        </button>
       </HoverCard.Trigger>
 
       {/* Mounted only while open: a mounted hover card stays a dismissable layer even when closed,
@@ -81,12 +98,14 @@ export const SortButton = () => {
                 <section className="w-[170px] text-center">
                   <span className="text-[13px]">{t("sidebar.select_sort_method")}</span>
                   <div className="mt-4 grid grid-cols-2 grid-rows-2 gap-2">
-                    {SORT_LIST.map(({ icon, by, order }) => {
+                    {SORT_LIST.map(({ icon, by, order, label }) => {
                       const current = getFeedListSort()
                       const active = by === current.by && order === current.order
                       return (
                         <button
                           type="button"
+                          aria-label={t(label)}
+                          aria-pressed={active}
                           onClick={() => {
                             setFeedListSortBy(by)
                             setFeedListSortOrder(order)

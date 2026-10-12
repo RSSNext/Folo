@@ -611,6 +611,7 @@
   "lists.feeds.delete.success": "Flux supprimé de la liste.",
   "lists.feeds.manage": "Gérer les flux",
   "lists.feeds.owner": "Propriétaire",
+  "lists.feeds.remove": "Retirer de la liste",
   "lists.feeds.title": "Titre",
   "lists.feeds.untitled": "Flux sans titre",
   "lists.image": "Image",

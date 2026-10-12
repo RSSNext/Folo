@@ -270,6 +270,7 @@ export const ListFeedsModalContent = ({ id }: { id: string }) => {
 }
 
 const RowRender = ({ feedId, listId }: { feedId: string; listId: string }) => {
+  const { t } = useTranslation("settings")
   const feed = useFeedById(feedId)
 
   const removeMutation = useRemoveFeedFromFeedList()
@@ -292,7 +293,11 @@ const RowRender = ({ feedId, listId }: { feedId: string; listId: string }) => {
         </div>
       </TableCell>
       <TableCell align="center" size="sm">
-        <Button variant="ghost" onClick={() => removeMutation.mutate({ feedId: feed.id, listId })}>
+        <Button
+          variant="ghost"
+          aria-label={t("lists.feeds.remove")}
+          onClick={() => removeMutation.mutate({ feedId: feed.id, listId })}
+        >
           <i className="i-mgc-delete-2-cute-re" />
         </Button>
       </TableCell>

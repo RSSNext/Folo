@@ -294,6 +294,7 @@ const FeedItemImpl = ({ view, feedId, className, isPreview }: FeedItemProps) => 
               size="sm"
               variant="ghost"
               buttonClassName="!p-1 mr-0.5"
+              aria-label={t("words.follow", { ns: "common" })}
               onClick={() => {
                 follow({
                   isList: false,
@@ -421,6 +422,7 @@ const ListItemImpl: Component<ListItemProps> = ({
           size="sm"
           variant="ghost"
           buttonClassName="!p-1 mr-0.5"
+          aria-label={t("words.follow", { ns: "common" })}
           onClick={() => {
             follow({
               isList: true,

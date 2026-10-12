@@ -611,6 +611,7 @@
   "lists.feeds.delete.success": "フィードがリストから削除されました",
   "lists.feeds.manage": "フィードを管理",
   "lists.feeds.owner": "所有者",
+  "lists.feeds.remove": "リストから削除",
   "lists.feeds.title": "タイトル",
   "lists.feeds.untitled": "無題のフィード",
   "lists.image": "画像",

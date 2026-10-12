@@ -611,6 +611,7 @@
   "lists.feeds.delete.success": "Feed removed from list.",
   "lists.feeds.manage": "Manage Feeds",
   "lists.feeds.owner": "Owner",
+  "lists.feeds.remove": "Remove from list",
   "lists.feeds.title": "Title",
   "lists.feeds.untitled": "Untitled Feed",
   "lists.image": "Image",

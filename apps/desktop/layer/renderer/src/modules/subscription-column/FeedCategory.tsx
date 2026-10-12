@@ -315,6 +315,7 @@ function FeedCategoryImpl({
               // Kept outside the collapse button, since a button can't contain another one
               <div className="flex h-8 items-center">
                 <MotionButtonBase
+                  aria-label={t("words.cancel", { ns: "common" })}
                   onClick={() => {
                     setIsCategoryEditing(false)
                   }}

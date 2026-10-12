@@ -611,6 +611,7 @@
   "lists.feeds.delete.success": "订阅源已从列表删除",
   "lists.feeds.manage": "管理订阅源",
   "lists.feeds.owner": "所有者",
+  "lists.feeds.remove": "从列表中移除",
   "lists.feeds.title": "标题",
   "lists.feeds.untitled": "未命名订阅源",
   "lists.image": "图片",

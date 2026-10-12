@@ -480,6 +480,7 @@ export function UnifiedDiscoverForm() {
               <MotionButtonBase
                 className="flex cursor-button items-center justify-between gap-2 hover:text-accent"
                 type="button"
+                aria-label={t("discover.search.clear_results")}
                 onClick={() => {
                   setDiscoverSearchData({})
                   mutation.reset()
