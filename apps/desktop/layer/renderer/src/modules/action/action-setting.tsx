@@ -18,6 +18,7 @@ import { useCallback, useEffect, useRef, useState } from "react"
 import { useTranslation } from "react-i18next"
 import { useBlocker } from "react-router"
 import { toast } from "sonner"
+import { useEventCallback } from "usehooks-ts"
 
 import { MenuItemText, useShowContextMenu } from "~/atoms/context-menu"
 import { HeaderActionButton, HeaderActionGroup } from "~/components/ui/button/HeaderActionButton"
@@ -446,7 +447,10 @@ const ActionButtonGroup = ({ onCreateRule }: { onCreateRule: () => void }) => {
 
   const hasActions = actionLength > 0
 
-  const save = useCallback(() => {
+  // The pending state reaches the header button only after a render, too late for a double click
+  const isSavingRef = useRef(false)
+  const save = useEventCallback(() => {
+    if (isSavingRef.current) return
     const { rules } = useActionStore.getState()
     const invalidIndex = findRuleIndexWithInvalidRegex(rules)
     if (invalidIndex !== -1) {
@@ -457,8 +461,13 @@ const ActionButtonGroup = ({ onCreateRule }: { onCreateRule: () => void }) => {
       )
       return
     }
-    mutation.mutate()
-  }, [mutation, t])
+    isSavingRef.current = true
+    mutation.mutate(undefined, {
+      onSettled: () => {
+        isSavingRef.current = false
+      },
+    })
+  })
 
   const setRightView = useSetSubViewRightView()
   useEffect(() => {
