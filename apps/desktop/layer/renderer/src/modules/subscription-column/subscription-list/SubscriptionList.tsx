@@ -60,7 +60,11 @@ const SubscriptionImpl = ({
   const listSubIds = useSubscriptionListIds(view)
   const inboxSubIds = useInboxList(
     useCallback(
-      (inboxes) => (view === FeedViewType.Articles ? inboxes.map((inbox) => inbox.id) : []),
+      // Inboxes belong to Articles, and the All view lists every view
+      (inboxes) =>
+        view === FeedViewType.Articles || view === FeedViewType.All
+          ? inboxes.map((inbox) => inbox.id)
+          : [],
       [view],
     ),
   )
