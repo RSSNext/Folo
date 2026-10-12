@@ -1,6 +1,7 @@
 import { FollowAPIError } from "@follow-app/client-sdk"
+import i18next from "i18next"
 import { toast } from "sonner"
-import { beforeEach, describe, expect, test, vi } from "vitest"
+import { beforeAll, beforeEach, describe, expect, test, vi } from "vitest"
 
 import { getFetchErrorMessage, toastFetchError } from "./error-parser"
 
@@ -28,6 +29,41 @@ describe("toastFetchError", () => {
       "Failed to read aloud",
       expect.objectContaining({ description: "No content available for TTS" }),
     )
+  })
+
+  describe("with a request validation error", () => {
+    beforeAll(async () => {
+      await i18next.init({
+        lng: "en",
+        resources: { en: { errors: { 3: "Unprocessable content" } } },
+      })
+    })
+
+    test("names the field the server rejected", () => {
+      toastFetchError(
+        new FollowAPIError(
+          "`rules.0.result.webhooks.0`: Invalid URL\nRequest: PUT /actions (original: /actions)\nArgs: {}",
+          422,
+          "3",
+        ),
+      )
+
+      expect(toast.error).toHaveBeenCalledWith(
+        "Unprocessable content",
+        expect.objectContaining({ description: "`rules.0.result.webhooks.0`: Invalid URL" }),
+      )
+    })
+
+    test("names the field under a title", () => {
+      toastFetchError(new FollowAPIError("`rules.0.condition`: Invalid input", 422, "3"), {
+        title: "Failed to save",
+      })
+
+      expect(toast.error).toHaveBeenCalledWith(
+        "Failed to save",
+        expect.objectContaining({ description: "`rules.0.condition`: Invalid input" }),
+      )
+    })
   })
 })
 
