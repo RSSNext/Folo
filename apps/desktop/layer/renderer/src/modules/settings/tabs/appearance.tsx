@@ -25,6 +25,7 @@ import {
 import { useTranslation } from "react-i18next"
 import { bundledThemesInfo } from "shiki/themes"
 
+import { useGeneralSettingKey } from "~/atoms/settings/general"
 import {
   customCSSPreviewAtom,
   getUISettings,
@@ -57,6 +58,8 @@ export const SettingAppearance = () => {
   const { t } = useTranslation("settings")
   const isMobile = useMobile()
   const defineItem = useWrapEnhancedSettingItem(_defineItem, WrapEnhancedSettingTab.Appearance)
+  // These controls set enhanced settings, which only apply while Enhanced Settings is on
+  const enhancedSettings = useGeneralSettingKey("enhancedSettings")
   return (
     <div className="mt-4">
       <SettingBuilder
@@ -144,7 +147,7 @@ export const SettingAppearance = () => {
           },
 
           ThumbnailRatio,
-          DateFormat,
+          enhancedSettings && DateFormat,
 
           defineItem("hideRecentReader", {
             label: t("appearance.hide_recent_reader.label"),
@@ -160,7 +163,7 @@ export const SettingAppearance = () => {
             value: t("appearance.code_highlighting.title"),
           },
 
-          ShikiTheme,
+          enhancedSettings && ShikiTheme,
 
           defineItem("guessCodeLanguage", {
             label: t("appearance.guess_code_language.label"),
