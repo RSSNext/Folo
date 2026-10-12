@@ -149,6 +149,7 @@
   "chat.typeahead.try_different_term": "別のキーワードで検索してください",
   "chat.untitled": "無題のチャット",
   "common.generate_title": "タイトルを生成",
+  "common.generate_title_failed": "タイトルを生成できませんでした",
   "common.generating_title": "タイトルを生成中...",
   "common.new_chat": "新規チャット",
   "delete_chat": "Chat を削除",

@@ -149,6 +149,7 @@
   "chat.typeahead.try_different_term": "試試其他搜尋字詞",
   "chat.untitled": "未命名對話",
   "common.generate_title": "生成標題",
+  "common.generate_title_failed": "產生標題失敗",
   "common.generating_title": "正在生成標題...",
   "common.new_chat": "新對話",
   "delete_chat": "刪除對話",

@@ -149,6 +149,7 @@
   "chat.typeahead.try_different_term": "Try a different search term",
   "chat.untitled": "Untitled Chat",
   "common.generate_title": "Generate Title",
+  "common.generate_title_failed": "Couldn't generate a title",
   "common.generating_title": "Generating title...",
   "common.new_chat": "New Chat",
   "delete_chat": "Delete Chat",

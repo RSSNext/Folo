@@ -1,6 +1,7 @@
 import type { ReactNode } from "react"
 import { useCallback, useRef, useState } from "react"
 import { useTranslation } from "react-i18next"
+import { toast } from "sonner"
 
 import { setAIPanelVisibility } from "~/atoms/settings/ai"
 import {
@@ -10,6 +11,7 @@ import {
   DropdownMenuSeparator,
   DropdownMenuTrigger,
 } from "~/components/ui/dropdown-menu/dropdown-menu"
+import { toastFetchError } from "~/lib/error-parser"
 import { useSettingModal } from "~/modules/settings/modal/use-setting-modal-hack"
 
 import { useChatActions, useCurrentChatId, useHasMessages } from "../../store/hooks"
@@ -46,16 +48,25 @@ export const ChatMoreDropdown = ({
 
       setIsGenerating(true)
       try {
-        await generateAndUpdateChatTitle(currentChatId, messages.slice(-2), (newTitle) => {
-          chatActions.setCurrentTitle(newTitle)
-        })
+        const title = await generateAndUpdateChatTitle(
+          currentChatId,
+          messages.slice(-2),
+          (newTitle) => {
+            chatActions.setCurrentTitle(newTitle)
+          },
+        )
+        // The menu has closed by now, so a failure would otherwise go unnoticed
+        if (!title) {
+          toast.error(t("common.generate_title_failed"))
+        }
       } catch (error) {
         console.error("Failed to generate title:", error)
+        toastFetchError(error as Error, { title: t("common.generate_title_failed") })
       } finally {
         setIsGenerating(false)
       }
     },
-    [currentChatId, chatActions, isGenerating],
+    [currentChatId, chatActions, isGenerating, t],
   )
 
   return (

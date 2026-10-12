@@ -27,15 +27,11 @@ export const generateChatTitle = async (chatId: string, messages: SendingUIMessa
     }
   })
 
-  const response = await followClient.api.ai
-    .summaryTitle({
-      chatId,
-      messages: relevantMessages,
-    })
-    .catch((error) => {
-      console.error("Failed to generate chat title:", error)
-      return null
-    })
+  // A failed request throws, so the caller can say the title could not be generated
+  const response = await followClient.api.ai.summaryTitle({
+    chatId,
+    messages: relevantMessages,
+  })
 
   if (response && "title" in response) {
     return response.title

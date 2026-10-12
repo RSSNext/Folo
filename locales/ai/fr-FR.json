@@ -149,6 +149,7 @@
   "chat.typeahead.try_different_term": "Essayez un autre terme de recherche",
   "chat.untitled": "Discussion sans titre",
   "common.generate_title": "Générer un titre",
+  "common.generate_title_failed": "Impossible de générer un titre",
   "common.generating_title": "Génération du titre...",
   "common.new_chat": "Nouvelle discussion",
   "delete_chat": "Supprimer la discussion",
