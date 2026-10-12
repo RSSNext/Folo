@@ -144,6 +144,35 @@ const clearUnreadOfFeedsOnlyInLists = (unfollowedLists: SubscriptionModel[]) => 
   }
 }
 
+// Put back subscriptions whose unfollow the server refused
+const restoreInSession = (subscriptions: SubscriptionModel[]) => {
+  immerSet((draft) => {
+    for (const subscription of subscriptions) {
+      draft.data[getSubscriptionStoreId(subscription)] = subscription
+
+      draft.subscriptionIdSet.add(getSubscriptionDBId(subscription))
+      if (subscription.feedId) {
+        draft.feedIdByView[subscription.view]!.add(subscription.feedId)
+        draft.feedIdByView[FeedViewType.All]!.add(subscription.feedId)
+      }
+      if (subscription.listId) {
+        draft.listIdByView[subscription.view]!.add(subscription.listId)
+        draft.listIdByView[FeedViewType.All]!.add(subscription.listId)
+      }
+      if (subscription.category) {
+        draft.categories[subscription.view]!.add(subscription.category)
+        draft.categories[FeedViewType.All]!.add(subscription.category)
+      }
+    }
+  })
+}
+
+/** A body of DELETE /subscriptions that the server handles, and the subscriptions it unfollows */
+interface UnfollowRequest {
+  subscriptions: SubscriptionModel[]
+  body: { feedIdList: string[] } | { listId: string }
+}
+
 /** A follow or unfollow of a feed or list that the server confirmed to this device. */
 export interface ConfirmedSubscriptionChange {
   /** The followed subscription, or null once it was unfollowed */
@@ -534,69 +563,59 @@ class SubscriptionSyncService {
       .filter((i) => !!i)
     if (subscriptionList.length === 0) return feedsAndLists
 
-    const feedSubscriptions = subscriptionList.filter((i) => i.type === "feed")
-    const listSubscriptions = subscriptionList.filter((i) => i.type === "list")
+    subscriptionActions.removeManyInSession(normalizedIds)
 
-    const tx = createTransaction(subscriptionList)
-
-    tx.store(() => {
-      subscriptionActions.removeManyInSession(normalizedIds)
-    })
-
-    tx.request(async () => {
-      const feedIdList = feedSubscriptions.map((s) => s.feedId).filter((i) => typeof i === "string")
-      const response = await api().subscriptions.delete({
-        feedIdList: feedIdList.length > 0 ? feedIdList : undefined,
-        listId: listSubscriptions.at(0)?.listId || undefined,
+    // DELETE /subscriptions unfollows every feed of `feedIdList` at once but only one list, and
+    // ignores `listId` next to `feedIdList`, so each list is unfollowed in a request of its own
+    const feedSubscriptions = subscriptionList.filter((i) => i.type === "feed" && !!i.feedId)
+    const listSubscriptions = subscriptionList.filter((i) => i.type === "list" && !!i.listId)
+    const requests: UnfollowRequest[] = []
+    if (feedSubscriptions.length > 0) {
+      requests.push({
+        subscriptions: feedSubscriptions,
+        body: { feedIdList: feedSubscriptions.map((s) => s.feedId!) },
       })
-      trackConfirmedChanges(
-        subscriptionList.map((subscription) => ({
-          id: getSubscriptionStoreId(subscription),
-          subscription: null,
-        })),
-        response,
-      )
-    })
+    }
+    for (const subscription of listSubscriptions) {
+      requests.push({ subscriptions: [subscription], body: { listId: subscription.listId! } })
+    }
 
-    tx.rollback((current) => {
-      immerSet((draft) => {
-        for (const [index, id] of normalizedIds.entries()) {
-          const subscription = current[index]
-          if (!subscription) continue
+    const failed = new Set<SubscriptionModel>()
+    let requestError: unknown
+    // One request after another, as the server counts what is left of the previous one
+    for (const { subscriptions, body } of requests) {
+      try {
+        const response = await api().subscriptions.delete(body)
+        trackConfirmedChanges(
+          subscriptions.map((subscription) => ({
+            id: getSubscriptionStoreId(subscription),
+            subscription: null,
+          })),
+          response,
+        )
+      } catch (error) {
+        subscriptions.forEach((subscription) => failed.add(subscription))
+        requestError ??= error
+      }
+    }
 
-          draft.data[id] = subscription
+    // A failed request puts back only what it was about
+    if (failed.size > 0) {
+      restoreInSession(Array.from(failed))
+    }
+    const unfollowed = subscriptionList.filter((subscription) => !failed.has(subscription))
 
-          draft.subscriptionIdSet.add(getSubscriptionDBId(subscription))
-          if (subscription.feedId) {
-            draft.feedIdByView[subscription.view]!.add(subscription.feedId)
-            draft.feedIdByView[FeedViewType.All]!.add(subscription.feedId)
-          }
-          if (subscription.listId) {
-            draft.listIdByView[subscription.view]!.add(subscription.listId)
-            draft.listIdByView[FeedViewType.All]!.add(subscription.listId)
-          }
-          if (subscription.category) {
-            draft.categories[subscription.view]!.add(subscription.category)
-            draft.categories[FeedViewType.All]!.add(subscription.category)
-          }
-        }
-      })
-    })
+    if (unfollowed.length > 0) {
+      await SubscriptionService.delete(unfollowed.map((i) => buildSubscriptionDbId(i)))
+      invalidateViews(...unfollowed.map((i) => i.view))
 
-    tx.persist(() => {
-      return SubscriptionService.delete(subscriptionList.map((i) => buildSubscriptionDbId(i)))
-    })
+      for (const subscription of unfollowed) {
+        if (subscription.type === "feed") unreadActions.updateById(subscription.feedId, 0)
+      }
+      clearUnreadOfFeedsOnlyInLists(unfollowed.filter((i) => i.type === "list"))
+    }
 
-    await tx.run()
-    const affectedViews = Array.from(
-      new Set([...feedSubscriptions, ...listSubscriptions].map((i) => i.view)),
-    )
-    invalidateViews(...affectedViews)
-
-    feedSubscriptions.forEach((i) => {
-      unreadActions.updateById(i.feedId, 0)
-    })
-    clearUnreadOfFeedsOnlyInLists(listSubscriptions)
+    if (failed.size > 0) throw requestError
     return feedsAndLists
   }
 

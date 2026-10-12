@@ -8,7 +8,12 @@ import { useListStore } from "../list/store"
 import type { ListModel } from "../list/types"
 import { useUnreadStore } from "../unread/store"
 import { getSortedGroupedSubscriptionSelector } from "./getter"
-import { subscriptionActions, subscriptionSyncService, useSubscriptionStore } from "./store"
+import {
+  getConfirmedSubscriptionChange,
+  subscriptionActions,
+  subscriptionSyncService,
+  useSubscriptionStore,
+} from "./store"
 import type { SubscriptionModel } from "./types"
 
 const mocks = vi.hoisted(() => ({
@@ -203,6 +208,84 @@ describe("subscriptionSyncService", () => {
     await subscriptionSyncService.unsubscribe("list1")
     await vi.waitFor(() => expect(useUnreadStore.getState().data.listOnly).toBe(0))
     expect(useUnreadStore.getState().data.direct).toBe(3)
+  })
+
+  test("unfollows the selected feeds together and each selected list on its own", async () => {
+    const createList = (listId: string): SubscriptionModel => ({
+      ...createSubscription("", FeedViewType.Articles, null),
+      feedId: null,
+      listId,
+      type: "list",
+    })
+    seed([
+      createSubscription("feed1", FeedViewType.Articles, null),
+      createSubscription("feed2", FeedViewType.Articles, null),
+    ])
+    useSubscriptionStore.setState((state) => ({
+      data: { ...state.data, list1: createList("list1"), list2: createList("list2") },
+      listIdByView: {
+        ...state.listIdByView,
+        [FeedViewType.All]: new Set(["list1", "list2"]),
+        [FeedViewType.Articles]: new Set(["list1", "list2"]),
+      },
+    }))
+    let syncId = 40
+    mocks.deleteSubscriptions.mockImplementation(async () => ({ code: 0, lastSyncId: ++syncId }))
+
+    await subscriptionSyncService.unsubscribe(["feed1", "list1", "feed2", "list2"])
+
+    expect(mocks.deleteSubscriptions.mock.calls).toEqual([
+      [{ feedIdList: ["feed1", "feed2"] }],
+      [{ listId: "list1" }],
+      [{ listId: "list2" }],
+    ])
+    const state = useSubscriptionStore.getState()
+    expect(Object.keys(state.data)).toEqual([])
+    expect([...state.listIdByView[FeedViewType.Articles]]).toEqual([])
+    expect(mocks.deleteSubscriptionRows).toHaveBeenCalledWith([
+      "feed/feed1",
+      "list/list1",
+      "feed/feed2",
+      "list/list2",
+    ])
+    // Each unfollow stays confirmed until the change log reaches its own sync id
+    expect(getConfirmedSubscriptionChange("feed2")).toEqual({ subscription: null, syncId: 41 })
+    expect(getConfirmedSubscriptionChange("list1")).toEqual({ subscription: null, syncId: 42 })
+    expect(getConfirmedSubscriptionChange("list2")).toEqual({ subscription: null, syncId: 43 })
+  })
+
+  test("keeps only the subscriptions whose unfollow failed", async () => {
+    const list: SubscriptionModel = {
+      ...createSubscription("", FeedViewType.Articles, null),
+      feedId: null,
+      listId: "failingList",
+      type: "list",
+    }
+    seed([createSubscription("leaving", FeedViewType.Articles, null)])
+    useSubscriptionStore.setState((state) => ({
+      data: { ...state.data, failingList: list },
+      listIdByView: {
+        ...state.listIdByView,
+        [FeedViewType.All]: new Set(["failingList"]),
+        [FeedViewType.Articles]: new Set(["failingList"]),
+      },
+    }))
+    const error = new Error("Network error")
+    mocks.deleteSubscriptions.mockImplementation(async (body: { listId?: string }) => {
+      if (body.listId) throw error
+      return { code: 0 }
+    })
+
+    await expect(subscriptionSyncService.unsubscribe(["leaving", "failingList"])).rejects.toBe(
+      error,
+    )
+
+    const state = useSubscriptionStore.getState()
+    expect(Object.keys(state.data)).toEqual(["failingList"])
+    expect(state.listIdByView[FeedViewType.Articles].has("failingList")).toBe(true)
+    expect(state.feedIdByView[FeedViewType.Articles].has("leaving")).toBe(false)
+    expect(mocks.deleteSubscriptionRows).toHaveBeenCalledWith(["feed/leaving"])
+    expect(getConfirmedSubscriptionChange("failingList")).toBeUndefined()
   })
 
   test("refetching one view keeps the other views' subscriptions", async () => {
