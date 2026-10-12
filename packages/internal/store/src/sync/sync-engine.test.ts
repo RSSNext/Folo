@@ -653,6 +653,63 @@ describe("syncEngine", () => {
     expect(useSubscriptionStore.getState().data["feed-1"]?.feedId).toBe("feed-1")
   })
 
+  it("confirms nothing for a failed unfollow and keeps the cursor when the delta lags behind it", async () => {
+    seedCursor(20)
+    deltaMock.mockResolvedValueOnce(deltaResponse([], { lastSyncId: 20 }))
+    await syncEngine.pull("interval")
+
+    const { getConfirmedSubscriptionChange, subscriptionActions, subscriptionSyncService } =
+      await import("../modules/subscription/store")
+    subscriptionActions.upsertManyInSession([
+      {
+        feedId: "feed-2",
+        listId: null,
+        inboxId: null,
+        userId: "user-1",
+        view: FeedViewType.Articles,
+        isPrivate: false,
+        hideFromTimeline: null,
+        title: null,
+        category: null,
+        createdAt: "2026-01-01T00:00:00.000Z",
+        type: "feed",
+      },
+    ])
+    const deleteMock = vi.fn(async (): Promise<{ code: 0; lastSyncId: number }> => {
+      throw new TypeError("Failed to fetch")
+    })
+    apiContext.provide({
+      subscriptions: { get: subscriptionsGetMock, delete: deleteMock },
+      reads: { get: readsGetMock },
+    } as unknown as FollowAPI)
+
+    // Offline: the unfollow is rolled back, and nothing overrides the change log
+    await expect(subscriptionSyncService.unsubscribe("feed-2")).rejects.toThrow("Failed to fetch")
+    expect(useSubscriptionStore.getState().data["feed-2"]?.feedId).toBe("feed-2")
+    expect(getConfirmedSubscriptionChange("feed-2")).toBeUndefined()
+
+    deleteMock.mockImplementation(async () => ({ code: 0, lastSyncId: 21 }))
+    await subscriptionSyncService.unsubscribe("feed-2")
+    expect(getConfirmedSubscriptionChange("feed-2")).toEqual({ subscription: null, syncId: 21 })
+
+    // A replica behind the cursor answers with an older id: the cursor and the unfollow stay
+    deltaMock.mockResolvedValueOnce(deltaResponse([], { lastSyncId: 18 }))
+    await syncEngine.pull("manual")
+    expect(syncEngine.getLastSyncId()).toBe(20)
+    expect(getConfirmedSubscriptionChange("feed-2")).toBeDefined()
+
+    deltaMock.mockResolvedValueOnce(
+      deltaResponse([
+        createAction({ id: 21, model: "subscription", modelId: "feed-2", action: "D" }),
+      ]),
+    )
+    await syncEngine.pull("manual")
+    expect(deltaMock).toHaveBeenLastCalledWith({ lastSyncId: 20 })
+    expect(syncEngine.getLastSyncId()).toBe(21)
+    expect(getConfirmedSubscriptionChange("feed-2")).toBeUndefined()
+    expect(useSubscriptionStore.getState().data["feed-2"]).toBeUndefined()
+  })
+
   it("applies collection and read-state changes while pending local marks win", async () => {
     seedCursor(20)
     useEntryStore.setState((state) => ({
