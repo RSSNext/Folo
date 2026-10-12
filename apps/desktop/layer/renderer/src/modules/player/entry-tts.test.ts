@@ -272,6 +272,31 @@ describe("entry tts", () => {
     expect(audioElementMock.srcObject).toBeNull()
   })
 
+  it("plays once the first stream chunk is decoded, but keeps a pause made while loading", async () => {
+    const { closeAudioContextMock } = stubStreamingAudioContext()
+    getAudioPlayerAtomValueMock.mockReturnValue({ entryId: "entry-1", status: "loading" })
+
+    await playEntryTts("entry-1", { toastTitle: "Play TTS" })
+    await waitForExpectation(() => {
+      expect(closeAudioContextMock).toHaveBeenCalledTimes(1)
+    })
+    const scheduledStatuses = () =>
+      setAudioPlayerAtomValueMock.mock.calls
+        .map(([value]) => value)
+        .filter((value) => value.duration === 1 && value.currentTime === undefined)
+        .map((value) => value.status)
+    expect(scheduledStatuses()).toEqual(["playing"])
+
+    setAudioPlayerAtomValueMock.mockClear()
+    getAudioPlayerAtomValueMock.mockReturnValue({ entryId: "entry-1", status: "paused" })
+
+    await playEntryTts("entry-1", { toastTitle: "Play TTS" })
+    await waitForExpectation(() => {
+      expect(closeAudioContextMock).toHaveBeenCalledTimes(2)
+    })
+    expect(scheduledStatuses()).toEqual(["paused"])
+  })
+
   it("pauses and resumes the mounted entry tts without a new request", async () => {
     await playEntryTts("entry-1", { toastTitle: "Play TTS" })
     getAudioPlayerAtomValueMock.mockReturnValue({ entryId: "entry-1" })

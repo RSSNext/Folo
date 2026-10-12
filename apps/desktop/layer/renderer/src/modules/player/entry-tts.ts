@@ -222,7 +222,9 @@ const createAudioContextStreamingHandle = (
       setAudioPlayerAtomValue({
         ...playerState,
         duration: decodedDuration,
-        status: "playing",
+        // The first audio ends the loading state, but a pause while the rest is still
+        // downloading stays a pause: the audio context is suspended until the user resumes
+        status: playerState.status === "paused" ? "paused" : "playing",
         isStream: true,
       })
     }
