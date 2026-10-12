@@ -17,7 +17,11 @@ import { inboxActions, useInboxStore } from "../modules/inbox/store"
 import { getListById } from "../modules/list/getters"
 import { listActions } from "../modules/list/store"
 import { getSubscriptionById } from "../modules/subscription/getter"
-import { subscriptionActions, subscriptionSyncService } from "../modules/subscription/store"
+import {
+  getConfirmedSubscriptionChange,
+  subscriptionActions,
+  subscriptionSyncService,
+} from "../modules/subscription/store"
 import type { SubscriptionModel } from "../modules/subscription/types"
 import {
   getInboxStoreId,
@@ -117,6 +121,18 @@ const addView = (views: Set<FeedViewType>, view: FeedViewType | undefined) => {
 
 const isCountRecord = (value: unknown): value is Record<string, number> =>
   isRecord(value) && Object.values(value).every((count) => typeof count === "number")
+
+/**
+ * The row was logged before a follow or unfollow of the same feed or list that the server
+ * already confirmed to this device. The delta lags behind such a response, so applying the row
+ * would bring back the state before it, such as an unfollowed list.
+ */
+const isOlderThanConfirmedChange = (action: SyncAction) => {
+  if (!action.modelId) return false
+  const change = getConfirmedSubscriptionChange(action.modelId)
+  if (!change) return false
+  return change.syncId === undefined || action.id < change.syncId
+}
 
 class SyncEngine implements Resetable {
   private lastSyncId: number | null = null
@@ -532,7 +548,7 @@ class SyncEngine implements Resetable {
   }
 
   private async applySubscriptionAction(action: SyncAction, summary: PullSummary) {
-    if (!action.modelId) return
+    if (!action.modelId || isOlderThanConfirmedChange(action)) return
 
     if (action.action === "I") {
       if (!isRecord(action.data) || !("feeds" in action.data || "lists" in action.data)) return

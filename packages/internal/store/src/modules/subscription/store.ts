@@ -9,7 +9,14 @@ import { createImmerSetter, createTransaction, createZustandStore } from "../../
 import { apiMorph } from "../../morph/api"
 import { dbStoreMorph } from "../../morph/db-store"
 import { buildSubscriptionDbId, storeDbMorph } from "../../morph/store-db"
+import {
+  isSubscriptionOverlayKey,
+  parseOverlayKey,
+  subscriptionOverlayKey,
+} from "../../sync/overlay-keys"
 import { catchUpThroughEngine, ensureSyncedThroughEngine } from "../../sync/sync-status"
+import type { AcknowledgedChangeKind } from "../../sync/transaction-queue"
+import { readLastSyncId, transactionQueue } from "../../sync/transaction-queue"
 import { invalidateEntriesQuery } from "../entry/hooks"
 import { getFeedById } from "../feed/getter"
 import { feedActions } from "../feed/store"
@@ -135,6 +142,69 @@ const clearUnreadOfFeedsOnlyInLists = (unfollowedLists: SubscriptionModel[]) => 
       }
     }
   }
+}
+
+/** A follow or unfollow of a feed or list that the server confirmed to this device. */
+export interface ConfirmedSubscriptionChange {
+  /** The followed subscription, or null once it was unfollowed */
+  subscription: SubscriptionModel | null
+  /** The change-log id of the change, when the server named it */
+  syncId?: number
+}
+
+interface ConfirmedSubscriptionChanges {
+  /** Keyed by feed id or list id */
+  changes: Array<{ id: string; subscription: SubscriptionModel | null }>
+  syncId?: number
+}
+
+/**
+ * The change log and the subscription list are served from replicas that lag behind the
+ * response of a follow or unfollow, so for a moment they still describe the state before it.
+ * The confirmed change wins over them until the sync engine has applied its sync id.
+ */
+const confirmedSubscriptionChangeKind: AcknowledgedChangeKind<ConfirmedSubscriptionChanges> = {
+  kind: "subscriptions.confirmed",
+  overlays: ({ changes, syncId }) =>
+    changes.map(({ id, subscription }) => ({
+      key: subscriptionOverlayKey(id),
+      value: { subscription, syncId } satisfies ConfirmedSubscriptionChange,
+    })),
+}
+
+const trackConfirmedChanges = (
+  changes: ConfirmedSubscriptionChanges["changes"],
+  response: unknown,
+) => {
+  if (changes.length === 0) return
+  const syncId = readLastSyncId(response)
+  transactionQueue.trackAcknowledged(confirmedSubscriptionChangeKind, { changes, syncId }, syncId)
+}
+
+/** The confirmed follow or unfollow of a feed or list that the change log has not caught up with. */
+export const getConfirmedSubscriptionChange = (id: string) =>
+  transactionQueue.getOverlays().get(subscriptionOverlayKey(id)) as
+    ConfirmedSubscriptionChange | undefined
+
+/** Keep the confirmed follows and unfollows in a subscription list fetched from the server. */
+const keepConfirmedChanges = (subscriptions: SubscriptionModel[], view?: FeedViewType) => {
+  const changes = new Map<string, ConfirmedSubscriptionChange>()
+  for (const [key, value] of transactionQueue.getOverlays()) {
+    const id = isSubscriptionOverlayKey(key) ? parseOverlayKey(key)?.id : undefined
+    if (id) changes.set(id, value as ConfirmedSubscriptionChange)
+  }
+  if (changes.size === 0) return subscriptions
+
+  const kept = subscriptions.filter(
+    (subscription) => changes.get(getSubscriptionStoreId(subscription))?.subscription !== null,
+  )
+  const keptIds = new Set(kept.map((subscription) => getSubscriptionStoreId(subscription)))
+  for (const [id, { subscription }] of changes) {
+    if (!subscription || keptIds.has(id)) continue
+    if (typeof view === "number" && subscription.view !== view) continue
+    kept.push(subscription)
+  }
+  return kept
 }
 
 class SubscriptionActions implements Hydratable, Resetable {
@@ -313,7 +383,7 @@ class SubscriptionSyncService {
     const { subscriptions, collections } = apiMorph.toSubscription(data)
 
     feedActions.upsertMany(collections.feeds)
-    subscriptionActions.upsertMany(subscriptions, {
+    subscriptionActions.upsertMany(keepConfirmedChanges(subscriptions, view), {
       resetBeforeUpsert: typeof view === "number" ? view : true,
     })
     listActions.upsertMany(collections.lists)
@@ -433,20 +503,25 @@ class SubscriptionSyncService {
     }
 
     // Insert to subscription
-    await subscriptionActions.upsertMany([
-      {
-        ...subscription,
-        title: subscription.title ?? null,
-        category: subscription.category ?? null,
+    const followed: SubscriptionModel = {
+      ...subscription,
+      title: subscription.title ?? null,
+      category: subscription.category ?? null,
 
-        type: data.list ? "list" : "feed",
-        createdAt: new Date().toISOString(),
-        feedId: data.feed?.id ?? null,
-        listId: data.list?.id ?? null,
-        inboxId: null,
-        userId: whoami()?.id ?? "",
-      },
-    ])
+      type: data.list ? "list" : "feed",
+      createdAt: new Date().toISOString(),
+      feedId: data.feed?.id ?? null,
+      listId: data.list?.id ?? null,
+      inboxId: null,
+      userId: whoami()?.id ?? "",
+    }
+    if (followed.feedId || followed.listId) {
+      trackConfirmedChanges(
+        [{ id: getSubscriptionStoreId(followed), subscription: followed }],
+        data,
+      )
+    }
+    await subscriptionActions.upsertMany([followed])
 
     invalidateViews(subscription.view)
   }
@@ -470,10 +545,17 @@ class SubscriptionSyncService {
 
     tx.request(async () => {
       const feedIdList = feedSubscriptions.map((s) => s.feedId).filter((i) => typeof i === "string")
-      await api().subscriptions.delete({
+      const response = await api().subscriptions.delete({
         feedIdList: feedIdList.length > 0 ? feedIdList : undefined,
         listId: listSubscriptions.at(0)?.listId || undefined,
       })
+      trackConfirmedChanges(
+        subscriptionList.map((subscription) => ({
+          id: getSubscriptionStoreId(subscription),
+          subscription: null,
+        })),
+        response,
+      )
     })
 
     tx.rollback((current) => {

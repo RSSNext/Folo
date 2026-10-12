@@ -503,6 +503,156 @@ describe("syncEngine", () => {
     expect(invalidateEntriesQueryMock).toHaveBeenCalledTimes(1)
   })
 
+  it("keeps an unfollow and its undo against older rows that the delta still returns", async () => {
+    seedCursor(10)
+    deltaMock.mockResolvedValueOnce(deltaResponse([], { lastSyncId: 10 }))
+    await syncEngine.pull("interval")
+
+    const { subscriptionActions, subscriptionSyncService } =
+      await import("../modules/subscription/store")
+    const { listActions } = await import("../modules/list/store")
+    const list = {
+      id: "list-1",
+      title: "Reading",
+      userId: "owner-1",
+      ownerUserId: "owner-1",
+      description: null,
+      image: null,
+      view: FeedViewType.Articles,
+      feedIds: [],
+      fee: 0,
+      subscriptionCount: null,
+      purchaseAmount: null,
+      type: "list" as const,
+    }
+    const listSubscription = {
+      feedId: null,
+      listId: "list-1",
+      inboxId: null,
+      userId: "user-1",
+      view: FeedViewType.Articles,
+      isPrivate: false,
+      hideFromTimeline: null,
+      title: null,
+      category: null,
+      createdAt: "2026-01-01T00:00:00.000Z",
+      type: "list" as const,
+    }
+    // Followed on this device at 11, which the cursor has not reached yet.
+    listActions.upsertManyInSession([list])
+    subscriptionActions.upsertManyInSession([listSubscription])
+    const followRow = (id: number) =>
+      createAction({
+        id,
+        model: "list_subscription",
+        modelId: "list-1",
+        action: "I",
+        data: { ...listSubscription, lists: { ...list, owner: { id: "owner-1" } } },
+      })
+    const deleteMock = vi.fn(async () => ({ code: 0, lastSyncId: 12 }))
+    const createMock = vi.fn(async () => ({
+      code: 0,
+      feed: null,
+      list: { ...list, feedIds: undefined },
+      unread: {},
+      lastSyncId: 13,
+    }))
+    apiContext.provide({
+      subscriptions: { get: subscriptionsGetMock, delete: deleteMock, create: createMock },
+      reads: { get: readsGetMock },
+    } as unknown as FollowAPI)
+
+    await subscriptionSyncService.unsubscribe("list-1")
+    // The delta lags behind the unfollow and still returns the follow before it.
+    deltaMock.mockResolvedValueOnce(deltaResponse([followRow(11)]))
+    await syncEngine.pull("manual")
+    expect(useSubscriptionStore.getState().data["list-1"]).toBeUndefined()
+    expect(syncEngine.getLastSyncId()).toBe(11)
+
+    // Undo: the delta now returns the unfollow, but not the follow that undid it.
+    await subscriptionSyncService.subscribe({
+      url: undefined,
+      listId: "list-1",
+      feedId: undefined,
+      view: FeedViewType.Articles,
+      category: null,
+      isPrivate: false,
+      hideFromTimeline: null,
+      title: null,
+    })
+    deltaMock.mockResolvedValueOnce(
+      deltaResponse([
+        createAction({ id: 12, model: "list_subscription", modelId: "list-1", action: "D" }),
+      ]),
+    )
+    await syncEngine.pull("manual")
+    expect(useSubscriptionStore.getState().data["list-1"]?.listId).toBe("list-1")
+    expect(useSubscriptionStore.getState().listIdByView[FeedViewType.Articles].has("list-1")).toBe(
+      true,
+    )
+
+    // Once the log caught up with both changes, rows from other devices apply again.
+    deltaMock.mockResolvedValueOnce(deltaResponse([followRow(13)]))
+    await syncEngine.pull("manual")
+    deltaMock.mockResolvedValueOnce(
+      deltaResponse([
+        createAction({ id: 14, model: "list_subscription", modelId: "list-1", action: "D" }),
+      ]),
+    )
+    await syncEngine.pull("manual")
+    expect(useSubscriptionStore.getState().data["list-1"]).toBeUndefined()
+    expect(syncEngine.getLastSyncId()).toBe(14)
+  })
+
+  it("keeps a confirmed unfollow out of a subscription list read from a lagging replica", async () => {
+    seedCursor(10)
+    deltaMock.mockResolvedValueOnce(deltaResponse([], { lastSyncId: 10 }))
+    await syncEngine.pull("interval")
+
+    const { subscriptionActions, subscriptionSyncService } =
+      await import("../modules/subscription/store")
+    const feedSubscription = {
+      feedId: "feed-1",
+      listId: null,
+      inboxId: null,
+      userId: "user-1",
+      view: FeedViewType.Articles,
+      isPrivate: false,
+      hideFromTimeline: null,
+      title: null,
+      category: null,
+      createdAt: "2026-01-01T00:00:00.000Z",
+      type: "feed" as const,
+    }
+    subscriptionActions.upsertManyInSession([feedSubscription])
+    const feedRow = {
+      ...feedSubscription,
+      feeds: { id: "feed-1", url: "https://example.com/feed.xml", title: "Example" },
+    }
+    subscriptionsGetMock.mockResolvedValue({ data: [feedRow] })
+    apiContext.provide({
+      subscriptions: {
+        get: subscriptionsGetMock,
+        delete: vi.fn(async () => ({ code: 0, lastSyncId: 11 })),
+      },
+      reads: { get: readsGetMock },
+    } as unknown as FollowAPI)
+
+    await subscriptionSyncService.unsubscribe("feed-1")
+    await subscriptionSyncService.fetch()
+    expect(useSubscriptionStore.getState().data["feed-1"]).toBeUndefined()
+
+    deltaMock.mockResolvedValueOnce(
+      deltaResponse([
+        createAction({ id: 11, model: "subscription", modelId: "feed-1", action: "D" }),
+      ]),
+    )
+    await syncEngine.pull("manual")
+    // The change log has the unfollow now, so the server's list is trusted again.
+    await subscriptionSyncService.fetch()
+    expect(useSubscriptionStore.getState().data["feed-1"]?.feedId).toBe("feed-1")
+  })
+
   it("applies collection and read-state changes while pending local marks win", async () => {
     seedCursor(20)
     useEntryStore.setState((state) => ({

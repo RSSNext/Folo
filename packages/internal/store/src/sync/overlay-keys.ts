@@ -4,10 +4,14 @@
  */
 const ENTRY_READ_NAMESPACE = "entry-read"
 const COLLECTION_NAMESPACE = "collection"
+const SUBSCRIPTION_NAMESPACE = "subscription"
 
 export const entryReadOverlayKey = (entryId: string) => `${ENTRY_READ_NAMESPACE}:${entryId}`
 
 export const collectionOverlayKey = (entryId: string) => `${COLLECTION_NAMESPACE}:${entryId}`
+
+/** Keyed by the feed id or list id, which is also the model id of its change-log rows. */
+export const subscriptionOverlayKey = (id: string) => `${SUBSCRIPTION_NAMESPACE}:${id}`
 
 export const parseOverlayKey = (key: string): { namespace: string; id: string } | null => {
   const separatorIndex = key.indexOf(":")
@@ -23,3 +27,6 @@ export const isEntryReadOverlayKey = (key: string) =>
 
 export const isCollectionOverlayKey = (key: string) =>
   parseOverlayKey(key)?.namespace === COLLECTION_NAMESPACE
+
+export const isSubscriptionOverlayKey = (key: string) =>
+  parseOverlayKey(key)?.namespace === SUBSCRIPTION_NAMESPACE

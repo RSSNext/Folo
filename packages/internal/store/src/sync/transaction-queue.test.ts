@@ -357,6 +357,46 @@ describe("transactionQueue", () => {
     expect(transactionQueue.getOverlays().get("counter:a")).toBe(-1)
   })
 
+  it("keeps the overlays of a change sent outside the queue until the change log caught up", async () => {
+    setSyncEngineActive(true)
+    const acknowledged = vi.fn()
+    const settled = vi.fn()
+    const stopAcknowledged = transactionQueue.onAcknowledged(acknowledged)
+    const stopSettled = transactionQueue.onSettled(settled)
+    const kind = {
+      kind: "test.confirmed",
+      overlays: ({ key }: CounterPayload) => [{ key: `confirmed:${key}`, value: key }],
+    }
+
+    transactionQueue.trackAcknowledged(kind, { key: "a", delta: 1 }, 42)
+
+    expect(acknowledged).toHaveBeenCalledTimes(1)
+    expect(transactionQueue.getPendingCount()).toBe(0)
+    expect(outboxRows).toHaveLength(0)
+    expect(transactionQueue.getOverlays().get("confirmed:a")).toBe("a")
+    // Only the change log ends it, not the ordinary grace period.
+    await vi.advanceTimersByTimeAsync(60_000)
+    transactionQueue.markSynced(41)
+    expect(transactionQueue.getOverlays().get("confirmed:a")).toBe("a")
+
+    transactionQueue.markSynced(42)
+    expect(transactionQueue.getOverlays().get("confirmed:a")).toBeUndefined()
+    expect(settled).toHaveBeenCalledTimes(1)
+
+    // A change the engine already applied is settled at once.
+    transactionQueue.trackAcknowledged(kind, { key: "b", delta: 1 }, 40)
+    expect(transactionQueue.getOverlays().get("confirmed:b")).toBeUndefined()
+
+    // Without a sync id, the grace period ends it.
+    transactionQueue.trackAcknowledged({ ...kind, ackGraceMs: 1000 }, { key: "c", delta: 1 })
+    expect(transactionQueue.getOverlays().get("confirmed:c")).toBe("c")
+    await vi.advanceTimersByTimeAsync(1001)
+    expect(transactionQueue.getOverlays().get("confirmed:c")).toBeUndefined()
+
+    stopAcknowledged()
+    stopSettled()
+  })
+
   it("rebases unread counts with pending transactions only", async () => {
     const execute = vi.fn(() => new Promise<void>(() => {}))
     const kind = createCounterKind({ execute })
