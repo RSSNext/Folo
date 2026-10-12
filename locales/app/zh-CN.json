@@ -547,6 +547,7 @@
   "sidebar.feed_column.context_menu.ungroup_category": "取消分类分组",
   "sidebar.feed_column.context_menu.ungroup_category_confirmation": "取消分类「{{folderName}}」的分组？",
   "sidebar.feed_column.context_menu.unsubscribe_category": "取消分类内所有订阅",
+  "sidebar.load_failed": "加载订阅失败",
   "sidebar.select_sort_method": "选择排序方法",
   "sidebar.timeline_tabs.customize": "自定义视图标签...",
   "sidebar.timeline_tabs.drag_tab": "拖动时间线标签",

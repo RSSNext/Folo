@@ -42,12 +42,18 @@ import { DraggableContext } from "../context"
 import { FeedItem, ListItemAutoHideUnread } from "../FeedItem"
 import { useShouldFreeUpSpace } from "../hook"
 import { SortableFeedList, SortByAlphabeticalInbox, SortByAlphabeticalList } from "../sort-by"
-import { EmptyFeedList } from "./EmptyFeedList"
+import { EmptyFeedList, SubscriptionLoadError } from "./EmptyFeedList"
 import { ListHeader } from "./ListHeader"
 import { StarredItem } from "./StarredItem"
 import type { SubscriptionProps } from "./SubscriptionListGuard"
 
-const SubscriptionImpl = ({ ref, className, view, isSubscriptionLoading }: SubscriptionProps) => {
+const SubscriptionImpl = ({
+  ref,
+  className,
+  view,
+  isSubscriptionLoading,
+  subscriptionLoadError,
+}: SubscriptionProps) => {
   const autoGroup = useGeneralSettingKey("autoGroup")
   const feedsData = useFeedsGroupedData(view, autoGroup)
 
@@ -304,6 +310,8 @@ const SubscriptionImpl = ({ ref, className, view, isSubscriptionLoading }: Subsc
               />
             ) : isSubscriptionLoading ? (
               <SubscriptionListSkeleton />
+            ) : subscriptionLoadError ? (
+              <SubscriptionLoadError {...subscriptionLoadError} />
             ) : (
               <EmptyFeedList />
             )}

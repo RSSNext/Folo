@@ -547,6 +547,7 @@
   "sidebar.feed_column.context_menu.ungroup_category": "カテゴリーのグループ解除",
   "sidebar.feed_column.context_menu.ungroup_category_confirmation": "カテゴリー「{{folderName}}」のグループを解除しますか？",
   "sidebar.feed_column.context_menu.unsubscribe_category": "カテゴリー内の購読をすべて解除",
+  "sidebar.load_failed": "サブスクリプションの読み込みに失敗しました",
   "sidebar.select_sort_method": "並べ替え方法を選択",
   "sidebar.timeline_tabs.customize": "ビュータブをカスタマイズ...",
   "sidebar.timeline_tabs.drag_tab": "タイムラインタブをドラッグ",

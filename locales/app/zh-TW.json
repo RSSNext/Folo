@@ -547,6 +547,7 @@
   "sidebar.feed_column.context_menu.ungroup_category": "取消分類分組",
   "sidebar.feed_column.context_menu.ungroup_category_confirmation": "取消分類「{{folderName}}」的分組？",
   "sidebar.feed_column.context_menu.unsubscribe_category": "取消分類內所有訂閱",
+  "sidebar.load_failed": "載入訂閱失敗",
   "sidebar.select_sort_method": "選擇排序方式",
   "sidebar.timeline_tabs.customize": "自訂檢視分頁...",
   "sidebar.timeline_tabs.drag_tab": "拖曳時間軸標籤",

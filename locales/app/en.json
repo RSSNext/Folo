@@ -547,6 +547,7 @@
   "sidebar.feed_column.context_menu.ungroup_category": "Ungroup Category",
   "sidebar.feed_column.context_menu.ungroup_category_confirmation": "Ungroup category {{folderName}}?",
   "sidebar.feed_column.context_menu.unsubscribe_category": "Unsubscribe All in Category",
+  "sidebar.load_failed": "Failed to load subscriptions",
   "sidebar.select_sort_method": "Select a sort method",
   "sidebar.timeline_tabs.customize": "Customize View Tabs...",
   "sidebar.timeline_tabs.drag_tab": "Drag timeline tab",
