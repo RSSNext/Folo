@@ -13,13 +13,18 @@ import { MentionPlugin } from "~/modules/ai-chat/editor"
 import { SettingDescription } from "../../control"
 import { SettingModalContentPortal } from "../../modal/layout"
 
+// Kept outside the section, which unmounts on a tab switch or when Preferences closes,
+// so an unsaved draft is still there when the user comes back
+let unsavedDraft: string | null = null
+
 export const PersonalizePromptSection = () => {
   const { t } = useTranslation("ai")
   const aiSettings = useAISettingValue()
-  const promptRef = useRef("")
+  const [initialValue] = useState(() => unsavedDraft ?? aiSettings.personalizePrompt)
+  const promptRef = useRef(unsavedDraft ?? "")
   const [isSaving, setIsSaving] = useState(false)
   const [currentLength, setCurrentLength] = useState(0)
-  const [hasChanges, setHasChanges] = useState(false)
+  const [hasChanges, setHasChanges] = useState(unsavedDraft !== null)
 
   const MAX_CHARACTERS = 500
   const isOverLimit = currentLength > MAX_CHARACTERS
@@ -31,7 +36,9 @@ export const PersonalizePromptSection = () => {
     // An editor with no text clears the prompt instead of storing an empty editor state
     promptRef.current = textLength === 0 ? "" : value
     setCurrentLength(textLength)
-    setHasChanges(storedPrompt ? promptRef.current !== storedPrompt : textLength > 0)
+    const changed = storedPrompt ? promptRef.current !== storedPrompt : textLength > 0
+    setHasChanges(changed)
+    unsavedDraft = changed ? promptRef.current : null
   }
 
   const handleSave = async () => {
@@ -45,6 +52,7 @@ export const PersonalizePromptSection = () => {
       setAISetting("personalizePrompt", promptRef.current)
       toast.success(t("personalize.saved"))
       setHasChanges(false)
+      unsavedDraft = null
     } finally {
       setIsSaving(false)
     }
@@ -55,7 +63,7 @@ export const PersonalizePromptSection = () => {
       <div className="space-y-2">
         <div className="relative -ml-3">
           <LexicalRichEditorTextArea
-            initialValue={aiSettings.personalizePrompt}
+            initialValue={initialValue}
             onValueChange={handleEditorChange}
             plugins={[MentionPlugin]}
             namespace="PersonalizePromptEditor"
