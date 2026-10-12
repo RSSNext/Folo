@@ -1,6 +1,7 @@
 import { subscriptionSyncService } from "@follow/store/subscription/store"
 import { userSyncService } from "@follow/store/user/store"
 import * as DocumentPicker from "expo-document-picker"
+import { File } from "expo-file-system"
 import * as FileSystem from "expo-file-system/legacy"
 import * as Sharing from "expo-sharing"
 import { t } from "i18next"
@@ -40,12 +41,6 @@ export const setAvatar = async () => {
     })
 }
 
-type FileUpload = {
-  uri: string
-  name: string
-  type: string
-}
-
 export const importOpml = async () => {
   const result = await DocumentPicker.getDocumentAsync({
     type: ["application/octet-stream", "text/x-opml"],
@@ -63,11 +58,9 @@ export const importOpml = async () => {
       return
     }
 
-    formData.append("file", {
-      uri: file.uri,
-      type: file.mimeType || "application/octet-stream",
-      name: file.name,
-    } as FileUpload as any)
+    // The API client sends requests with expo/fetch, which reads a file part through `bytes()`
+    // and rejects React Native's `{ uri, name, type }` parts before sending anything.
+    formData.append("file", new File(file.uri))
 
     const { data } = await followApi.subscriptions.import(formData)
     // The import is logged per feed, so the delta feed delivers exactly what was added.
