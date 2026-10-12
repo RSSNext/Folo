@@ -474,7 +474,10 @@ export function UnifiedDiscoverForm() {
       <div className="mt-8 w-full max-w-2xl">
         {(mutation.isSuccess || !!discoverSearchData?.length) && (
           <div className="mb-4 flex items-center gap-2 text-sm text-text-secondary">
-            {t("discover.search.results", { count: discoverSearchData?.length || 0 })}
+            {/* Named after what the search looked for, which the segment may no longer show */}
+            {(mutation.variables?.target ?? target) === "lists"
+              ? t("discover.search.list_results", { count: discoverSearchData?.length || 0 })
+              : t("discover.search.results", { count: discoverSearchData?.length || 0 })}
 
             {discoverSearchData && discoverSearchData.length > 0 && (
               <MotionButtonBase
