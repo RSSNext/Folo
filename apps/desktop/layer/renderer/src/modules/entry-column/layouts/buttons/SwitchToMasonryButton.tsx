@@ -25,8 +25,8 @@ export const SwitchToMasonryButton = () => {
   if (isMobile) return null
   return (
     <HoverCard openDelay={100} open={open} onOpenChange={setOpen}>
-      {/* The button itself is the trigger, so the options also open on click or Enter and Space,
-          not only on hover. Escape or a click outside closes them. */}
+      {/* The button itself is the trigger, so the options also open on click or Enter, not only on
+          hover (Space is the global play/pause shortcut). Escape or a click outside closes them. */}
       <HoverCardTrigger asChild>
         <ActionButton
           ref={triggerRef}
