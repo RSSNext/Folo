@@ -266,6 +266,7 @@
   "entry_list.load_failed": "載入條目失敗",
   "entry_list.zero_unread": "全部已讀",
   "entry_list_header.ai_timeline": "AI 時間線",
+  "entry_list_header.ai_timeline_failed": "無法依重要性排序時間軸",
   "entry_list_header.ai_timeline_loading": "正在用 AI 重新排序時間線…",
   "entry_list_header.grid": "格線佈局",
   "entry_list_header.image_only": "僅圖片",
