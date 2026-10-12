@@ -69,13 +69,19 @@ const selectedFeedAtom = atom<SelectedFeed>(null)
 export const EntryListContext = createContext<{
   type: "timeline" | "feed" | "subscriptions"
   isPreview?: boolean
+  // The view of the subscription a feed screen shows, which wins over the view selected on Home
+  view?: FeedViewType
 }>({ type: "timeline" })
 export const useEntryListContext = () => {
   return use(EntryListContext)
 }
 
 export function useSelectedView() {
-  return useAtomValue(useMemo(() => selectAtom(selectedTimelineAtom, (state) => state.viewId), []))
+  const { view } = useEntryListContext()
+  const selectedView = useAtomValue(
+    useMemo(() => selectAtom(selectedTimelineAtom, (state) => state.viewId), []),
+  )
+  return view ?? selectedView
 }
 
 export const getSelectedView = () => {
