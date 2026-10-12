@@ -62,7 +62,7 @@ export const EditWebhooksScreen: NavigationControllerView<{
                   },
                 ]}
               >
-                <GroupedInsetListBaseCell className="flex-row">
+                <GroupedInsetListBaseCell className="flex-row bg-secondary-system-grouped-background">
                   <PlainTextField
                     placeholder="https://"
                     inputMode="url"
