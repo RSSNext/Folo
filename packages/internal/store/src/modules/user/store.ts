@@ -40,6 +40,10 @@ const get = useUserStore.getState
 const set = useUserStore.setState
 const immerSet = createImmerSetter(useUserStore)
 
+type ProfileChanges = Omit<Partial<UserProfileEditable>, "handle"> & {
+  handle?: string | null
+}
+
 /**
  * The fields a profile save sends and keeps, trimmed as the server saves them. The server
  * replaces the social links with whatever a save sends, so they are sent only when the caller
@@ -48,20 +52,26 @@ const immerSet = createImmerSetter(useUserStore)
 const toProfileChanges = (
   data: Partial<UserProfileEditable>,
   currentHandle: string | null | undefined,
-): Partial<UserProfileEditable> => {
+): ProfileChanges => {
   const { name, handle, socialLinks, ...rest } = data
-  const changes: Partial<UserProfileEditable> = rest
+  const changes: ProfileChanges = rest
 
   if (name !== undefined) {
     changes.name = name.trim()
   }
   if (handle !== undefined) {
     const trimmedHandle = handle.trim()
-    // The server keeps a handle stored with spaces around it when a save sends it back
-    changes.handle =
-      typeof currentHandle === "string" && trimmedHandle === currentHandle.trim()
-        ? currentHandle
-        : trimmedHandle
+    if (!trimmedHandle) {
+      // A blank handle means no handle. Saved as "", it would hit the unique index on handles
+      // once another user has one.
+      changes.handle = null
+    } else {
+      // The server keeps a handle stored with spaces around it when a save sends it back
+      changes.handle =
+        typeof currentHandle === "string" && trimmedHandle === currentHandle.trim()
+          ? currentHandle
+          : trimmedHandle
+    }
   }
   if (socialLinks !== undefined) {
     changes.socialLinks = socialLinks

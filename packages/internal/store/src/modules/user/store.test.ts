@@ -137,6 +137,19 @@ describe("userSyncService.updateProfile", () => {
     expect(useUserStore.getState().whoami?.handle).toBe("mine")
   })
 
+  it.each([
+    ["cleared", ""],
+    ["left with only spaces", "   "],
+  ])("saves a handle %s as no handle, as the server does", async (_kind, handle) => {
+    useUserStore.setState({ whoami: { ...me, handle: "mine" } as MeModel })
+    updateUserMock.mockResolvedValue({ data: { status: true }, error: null })
+
+    await userSyncService.updateProfile({ handle })
+
+    expect(updateUserMock).toHaveBeenCalledWith({ handle: null })
+    expect(useUserStore.getState().whoami?.handle).toBeNull()
+  })
+
   it("sends back a handle stored with spaces around it as it is stored", async () => {
     useUserStore.setState({ whoami: { ...me, handle: "folo " } as MeModel })
     updateUserMock.mockResolvedValue({ data: { status: true }, error: null })
