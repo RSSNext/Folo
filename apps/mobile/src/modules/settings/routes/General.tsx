@@ -1,6 +1,5 @@
 import { ACTION_LANGUAGE_KEYS } from "@follow/shared"
 import { useQuery } from "@tanstack/react-query"
-import i18next from "i18next"
 import { useMemo } from "react"
 import { useTranslation } from "react-i18next"
 
@@ -19,7 +18,7 @@ import {
   GroupedInsetListSectionHeader,
 } from "@/src/components/ui/grouped/GroupedList"
 import { Switch } from "@/src/components/ui/switch/Switch"
-import { updateDayjsLocale } from "@/src/lib/i18n"
+import { changeAppLanguage } from "@/src/lib/i18n"
 import type { NavigationControllerView } from "@/src/lib/navigation/types"
 import { fetchTtsVoices } from "@/src/modules/player/tts-service"
 
@@ -56,8 +55,7 @@ export function LanguageSelect({ settingKey }: { settingKey: "language" | "actio
       onValueChange={(value) => {
         setGeneralSetting(settingKey, value)
         if (settingKey === "language") {
-          i18next.changeLanguage(value)
-          updateDayjsLocale(value)
+          void changeAppLanguage(value)
         }
       }}
       displayValue={
