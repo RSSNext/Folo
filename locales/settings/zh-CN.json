@@ -805,7 +805,7 @@
   "spotlight.add_rule": "添加规则",
   "spotlight.case_sensitive": "区分大小写",
   "spotlight.color": "颜色",
-  "spotlight.description": "用颜色高亮条目列表中的关键词或模式。规则重叠时，以列表中靠前的规则为准。",
+  "spotlight.description": "用颜色高亮时间线、已打开的条目和 AI 总结中的关键词或模式。规则重叠时，以列表中靠前的规则为准。",
   "spotlight.empty": "还没有规则。",
   "spotlight.enabled": "启用",
   "spotlight.invalid_regex": "无效的正则表达式：{{error}}",

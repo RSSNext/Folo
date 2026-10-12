@@ -805,7 +805,7 @@
   "spotlight.add_rule": "Ajouter une règle",
   "spotlight.case_sensitive": "Respecter la casse",
   "spotlight.color": "Couleur",
-  "spotlight.description": "Mettez en couleur des mots ou des motifs dans la liste des entrées. Si des règles se chevauchent, celle placée le plus haut l'emporte.",
+  "spotlight.description": "Mettez en couleur des mots ou des motifs dans la chronologie, les entrées ouvertes et les résumés IA. Si des règles se chevauchent, celle placée le plus haut l'emporte.",
   "spotlight.empty": "Aucune règle pour le moment.",
   "spotlight.enabled": "Activée",
   "spotlight.invalid_regex": "Expression régulière invalide : {{error}}",

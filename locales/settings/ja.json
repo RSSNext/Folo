@@ -805,7 +805,7 @@
   "spotlight.add_rule": "ルールを追加",
   "spotlight.case_sensitive": "大文字と小文字を区別",
   "spotlight.color": "色",
-  "spotlight.description": "エントリー一覧のキーワードやパターンを色でハイライトします。ルールが重なる場合は、リストの上にあるルールが優先されます。",
+  "spotlight.description": "タイムライン、開いたエントリー、AI の要約に含まれるキーワードやパターンを色でハイライトします。ルールが重なる場合は、リストの上にあるルールが優先されます。",
   "spotlight.empty": "ルールはまだありません。",
   "spotlight.enabled": "有効",
   "spotlight.invalid_regex": "無効な正規表現: {{error}}",
