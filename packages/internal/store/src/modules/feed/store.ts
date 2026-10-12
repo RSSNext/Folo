@@ -32,11 +32,12 @@ class FeedActions implements Hydratable, Resetable {
   upsertManyInSession(feeds: FeedSchema[]) {
     immerSet((draft) => {
       for (const feed of feeds) {
+        // Feeds from subscriptions carry no analytics, so keep the stored ones for keys the
+        // incoming feed leaves empty, but let a fresh fetch replace them
         const data = Object.fromEntries(
-          FEED_EXTRA_DATA_KEYS.filter((key) => (draft.feeds[feed.id] || {})[key]).map((key) => [
-            key,
-            draft.feeds[feed.id]?.[key],
-          ]),
+          FEED_EXTRA_DATA_KEYS.filter(
+            (key) => feed[key] == null && (draft.feeds[feed.id] || {})[key],
+          ).map((key) => [key, draft.feeds[feed.id]?.[key]]),
         )
 
         draft.feeds[feed.id] = {
