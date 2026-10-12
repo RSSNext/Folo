@@ -6,7 +6,7 @@ import { beforeEach, describe, expect, it, vi } from "vitest"
 import { apiContext, authClientContext } from "../../context"
 import type { FollowAPI } from "../../types"
 import type { MeModel } from "./store"
-import { userSyncService, useUserStore } from "./store"
+import { userSyncService, UserUpdateError, useUserStore } from "./store"
 
 vi.mock("@follow/database/services/user", () => ({
   UserService: {
@@ -79,6 +79,23 @@ describe("userSyncService.updateProfile", () => {
       "Handle is already taken",
     )
     expect(useUserStore.getState().whoami).toEqual(me)
+  })
+
+  it("keeps the code of the check that refused the change", async () => {
+    updateUserMock.mockResolvedValue({
+      data: null,
+      error: {
+        code: "HANDLE_ALREADY_TAKEN",
+        message: "This handle is already taken.",
+        status: 400,
+        statusText: "Bad Request",
+      },
+    })
+
+    const error = await userSyncService.updateProfile({ handle: "taken" }).catch((e) => e)
+
+    expect(error).toBeInstanceOf(UserUpdateError)
+    expect(error).toMatchObject({ code: "HANDLE_ALREADY_TAKEN", status: 400 })
   })
 
   it("keeps the change when the auth server accepts it", async () => {

@@ -44,6 +44,19 @@ type ProfileChanges = Omit<Partial<UserProfileEditable>, "handle"> & {
   handle?: string | null
 }
 
+/** A profile change the auth server refused. `code` names the check that refused it, if any. */
+export class UserUpdateError extends Error {
+  readonly code: string | undefined
+  readonly status: number | undefined
+
+  constructor(message: string, code?: string, status?: number) {
+    super(message)
+    this.name = "UserUpdateError"
+    this.code = code
+    this.status = status
+  }
+}
+
 /**
  * The fields a profile save sends and keeps, trimmed as the server saves them. The server
  * replaces the social links with whatever a save sends, so they are sent only when the caller
@@ -164,7 +177,11 @@ class UserSyncService {
       const res = await authClient().updateUser(changes)
       // The auth client resolves with the error instead of throwing; throw so the change rolls back
       if (res.error) {
-        throw new Error(res.error.message || res.error.statusText)
+        throw new UserUpdateError(
+          res.error.message || res.error.statusText,
+          res.error.code,
+          res.error.status,
+        )
       }
     })
     tx.persist(async () => {

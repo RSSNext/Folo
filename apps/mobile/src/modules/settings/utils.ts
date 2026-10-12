@@ -12,6 +12,8 @@ import { toastFetchError } from "@/src/lib/error-parser"
 import { pickImage } from "@/src/lib/native/picker"
 import { toast } from "@/src/lib/toast"
 
+import { getProfileFieldError } from "./profile-validation"
+
 export const setAvatar = async () => {
   const result = await pickImage({
     maxSizeKB: 290,
@@ -27,6 +29,11 @@ export const setAvatar = async () => {
       toastFetchError(err)
       throw err
     })
+  // The profile keeps image URLs of up to 256 characters, so a longer one would not save
+  if (getProfileFieldError("image", url)) {
+    toast.error(t("profile.avatar.uploadError", { ns: "settings" }))
+    return
+  }
 
   userSyncService
     .updateProfile({
