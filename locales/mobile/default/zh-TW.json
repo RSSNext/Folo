@@ -21,6 +21,7 @@
   "entry_list.empty": "暫無條目",
   "entry_list.unknown_feed": "未知的 RSS 摘要",
   "entry_list.zero_unread": "全部已讀",
+  "feed.fetch_failed": "載入 RSS 摘要時發生問題，請稍後再試。",
   "feed.follow.success": "已跟隨此 RSS 摘要。",
   "feed.follow.update_success": "RSS 摘要已更新。",
   "feed.not_found": "找不到 RSS 摘要（{{id}}）。",

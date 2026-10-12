@@ -21,6 +21,7 @@
   "entry_list.empty": "Aucune entrée pour le moment",
   "entry_list.unknown_feed": "Flux inconnu",
   "entry_list.zero_unread": "Zéro non lu",
+  "feed.fetch_failed": "Un problème est survenu lors du chargement du flux. Veuillez réessayer plus tard.",
   "feed.follow.success": "Flux suivi.",
   "feed.follow.update_success": "Flux mis à jour.",
   "feed.not_found": "Flux ({{id}}) introuvable.",

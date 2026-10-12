@@ -8,7 +8,16 @@ import { getFetchErrorMessage } from "@/src/lib/error-parser"
 
 import { MonoText } from "../ui/typography/MonoText"
 
-export const ListErrorView = ({ error, resetError }: { error: Error; resetError: () => void }) => {
+export const ListErrorView = ({
+  error,
+  resetError,
+  description,
+}: {
+  error: Error
+  resetError: () => void
+  // Names what failed to load, the list by default
+  description?: string
+}) => {
   const { t } = useTranslation("common")
   const red = useColor("red")
   return (
@@ -21,7 +30,7 @@ export const ListErrorView = ({ error, resetError }: { error: Error; resetError:
           {t("error_screen.list_unable_to_load")}
         </Text>
         <Text className="mb-2 text-center text-base text-secondary-label">
-          {t("error_screen.list_try_later")}
+          {description ?? t("error_screen.list_try_later")}
         </Text>
         <MonoText className="mb-4 text-center text-base text-secondary-label">
           {getFetchErrorMessage(error) || t("error_screen.unknown")}

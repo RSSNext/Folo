@@ -21,6 +21,7 @@
   "entry_list.empty": "No entries yet",
   "entry_list.unknown_feed": "Unknown feed",
   "entry_list.zero_unread": "Zero Unread",
+  "feed.fetch_failed": "There was a problem loading the feed. Please try again later.",
   "feed.follow.success": "Feed followed.",
   "feed.follow.update_success": "Feed updated.",
   "feed.not_found": "Feed ({{id}}) not found.",

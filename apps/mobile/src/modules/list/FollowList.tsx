@@ -30,6 +30,7 @@ import { useNavigation, useScreenIsInSheetModal } from "@/src/lib/navigation/hoo
 import { useSetModalScreenOptions } from "@/src/lib/navigation/ScreenOptionsContext"
 import { toast } from "@/src/lib/toast"
 
+import { FollowStateView } from "../feed/FollowStateView"
 import { FeedViewSelector } from "../feed/view-selector"
 
 export const FollowList = (props: { id: string }) => {
@@ -46,13 +47,19 @@ export const FollowList = (props: { id: string }) => {
   if (!list) {
     if (isFetching) {
       return (
-        <View className="mt-24 flex-1 flex-row items-start justify-center">
-          <PlatformActivityIndicator />
-        </View>
+        <FollowStateView>
+          <View className="mt-24 flex-1 flex-row items-start justify-center">
+            <PlatformActivityIndicator />
+          </View>
+        </FollowStateView>
       )
     }
     if (error) {
-      return <ListErrorView error={error} resetError={() => void refetch()} />
+      return (
+        <FollowStateView>
+          <ListErrorView error={error} resetError={() => void refetch()} />
+        </FollowStateView>
+      )
     }
   }
   return <Impl id={id} />

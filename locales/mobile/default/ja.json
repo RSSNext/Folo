@@ -21,6 +21,7 @@
   "entry_list.empty": "エントリーはまだありません",
   "entry_list.unknown_feed": "不明なフィード",
   "entry_list.zero_unread": "未読ゼロ",
+  "feed.fetch_failed": "フィードの読み込み中に問題が発生しました。しばらくしてから再試行してください。",
   "feed.follow.success": "フィードをフォローしました。",
   "feed.follow.update_success": "フィードを更新しました。",
   "feed.not_found": "フィード（{{id}}）が見つかりません。",

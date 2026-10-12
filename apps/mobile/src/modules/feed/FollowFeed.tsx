@@ -34,6 +34,7 @@ import { useCanDismiss, useNavigation } from "@/src/lib/navigation/hooks"
 import { useSetModalScreenOptions } from "@/src/lib/navigation/ScreenOptionsContext"
 import { toast } from "@/src/lib/toast"
 import { FeedSummary } from "@/src/modules/discover/FeedSummary"
+import { FollowStateView } from "@/src/modules/feed/FollowStateView"
 import { FeedViewSelector } from "@/src/modules/feed/view-selector"
 import { useColor } from "@/src/theme/colors"
 
@@ -53,16 +54,40 @@ const LoadingIndicator = () => (
 )
 const FeedNotFound = ({ id }: { id: string }) => {
   const { t } = useTranslation()
-  return <Text className="text-label">{t("feed.not_found", { id })}</Text>
+  return <Text className="mt-24 px-4 text-center text-label">{t("feed.not_found", { id })}</Text>
+}
+const FeedLoadState = ({
+  id,
+  isFetching,
+  error,
+  onRetry,
+}: {
+  id: string
+  isFetching: boolean
+  error: Error | null
+  onRetry: () => void
+}) => {
+  const { t } = useTranslation()
+  return (
+    <FollowStateView>
+      {isFetching ? (
+        <LoadingIndicator />
+      ) : error ? (
+        <ListErrorView error={error} resetError={onRetry} description={t("feed.fetch_failed")} />
+      ) : (
+        <FeedNotFound id={id} />
+      )}
+    </FollowStateView>
+  )
 }
 export function FollowFeed(props: { id: string }) {
   const { id } = props
   const feed = useFeedById(id as string)
   const { data, error, isFetching, refetch } = usePrefetchFeed(id as string)
   if (!feed) {
-    if (isFetching) return <LoadingIndicator />
-    if (error) return <ListErrorView error={error} resetError={() => void refetch()} />
-    return <FeedNotFound id={id} />
+    return (
+      <FeedLoadState id={id} isFetching={isFetching} error={error} onRetry={() => void refetch()} />
+    )
   }
   return <FollowImpl feedId={id} defaultView={data?.analytics?.view ?? undefined} />
 }
@@ -70,9 +95,14 @@ export function FollowUrl(props: { url: string }) {
   const { url } = props
   const { isFetching, data, error, refetch } = usePrefetchFeedByUrl(url)
   if (!data) {
-    if (isFetching) return <LoadingIndicator />
-    if (error) return <ListErrorView error={error} resetError={() => void refetch()} />
-    return <FeedNotFound id={url} />
+    return (
+      <FeedLoadState
+        id={url}
+        isFetching={isFetching}
+        error={error}
+        onRetry={() => void refetch()}
+      />
+    )
   }
   return (
     <FollowImpl
@@ -185,7 +215,11 @@ function FollowImpl(props: { feedId: string; defaultView?: FeedViewType }) {
     })
   }, [isDirty, setScreenOptions])
   if (!feed?.id) {
-    return <FeedNotFound id={id} />
+    return (
+      <FollowStateView>
+        <FeedNotFound id={id} />
+      </FollowStateView>
+    )
   }
   return (
     <SafeNavigationScrollView

@@ -21,6 +21,7 @@
   "entry_list.empty": "暂无条目",
   "entry_list.unknown_feed": "未知订阅源",
   "entry_list.zero_unread": "全部已读",
+  "feed.fetch_failed": "加载订阅源时出现问题，请稍后重试。",
   "feed.follow.success": "已关注此订阅源。",
   "feed.follow.update_success": "订阅源已更新。",
   "feed.not_found": "未找到订阅源（{{id}}）。",
