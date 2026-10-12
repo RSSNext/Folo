@@ -76,8 +76,10 @@ export const GroupedInsetListCard: FC<
         },
         props.style,
       ]}
+      // shrink-0: Yoga gives a lone child that can both grow and shrink a zero flex basis, then
+      // keeps it after a sibling changes height, so a card alone in a wrapper collapsed to nothing
       className={cn(
-        "flex flex-1 flex-col overflow-hidden rounded-[10px] bg-secondary-system-grouped-background",
+        "flex flex-1 shrink-0 flex-col overflow-hidden rounded-[10px] bg-secondary-system-grouped-background",
         className,
       )}
     >
@@ -313,7 +315,8 @@ const OverlayInterectionPressable = ({
   ...props
 }: PropsWithChildren & PressableProps) => {
   return (
-    <Pressable {...props} className={cn("flex-1", props.className)}>
+    // No flex-1: as the only child of a menu trigger it kept a zero height once the card resized
+    <Pressable {...props}>
       {({ pressed }) => {
         return (
           <>
