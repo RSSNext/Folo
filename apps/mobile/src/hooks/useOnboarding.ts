@@ -1,5 +1,5 @@
 import { useIsNewUser, useWhoami } from "@follow/store/user/hooks"
-import { useAtomValue } from "jotai"
+import { useAtomValueRawSync } from "jotai"
 import { selectAtom } from "jotai/utils"
 import { useEffect, useMemo, useRef } from "react"
 
@@ -13,7 +13,7 @@ export function useOnboarding() {
   const navigation = useNavigation()
   // The sign-in screen pops to the root shortly after signing in, which would also close an
   // onboarding presented in the meantime, so it waits until nothing is open over the tabs
-  const isAtRoot = useAtomValue(
+  const isAtRoot = useAtomValueRawSync(
     useMemo(
       () => selectAtom(navigation.__dangerous_getCtxValue().routesAtom, (r) => r.length === 0),
       [navigation],
