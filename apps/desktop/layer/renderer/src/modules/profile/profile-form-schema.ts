@@ -32,16 +32,31 @@ const withMaxLength = (schema: z.ZodString, field: ProfileTextField) =>
 
 const invalidHandleMessage = () => i18next.t("profile.handle.invalid", { ns: "settings" })
 
-export const profileFormSchema = z.object({
-  handle: withMaxLength(z.string().regex(/^\w+$/, { error: invalidHandleMessage }), "handle")
-    .optional()
-    .or(z.literal("")),
-  name: withMaxLength(z.string().trim().min(1), "name"),
-  image: withMaxLength(z.string().url(), "image").or(z.literal("")).optional(),
-  bio: withMaxLength(z.string(), "bio").optional(),
-  website: withMaxLength(z.string().url(), "website").optional().or(z.literal("")),
-  socialLinks: socialLinksSchema.optional(),
-})
+const HANDLE_PATTERN = /^\w+$/
+
+/**
+ * The profile form's schema. `storedHandle` is the user's handle: older clients saved handles
+ * with spaces or other characters, which the server keeps when a save sends them back, so the
+ * handle's format is checked only once the user changes it.
+ */
+export const createProfileFormSchema = (storedHandle?: string | null) =>
+  z.object({
+    handle: withMaxLength(
+      z.string().refine((handle) => handle === storedHandle || HANDLE_PATTERN.test(handle), {
+        error: invalidHandleMessage,
+      }),
+      "handle",
+    )
+      .optional()
+      .or(z.literal("")),
+    name: withMaxLength(z.string().trim().min(1), "name"),
+    image: withMaxLength(z.string().url(), "image").or(z.literal("")).optional(),
+    bio: withMaxLength(z.string(), "bio").optional(),
+    website: withMaxLength(z.string().url(), "website").optional().or(z.literal("")),
+    socialLinks: socialLinksSchema.optional(),
+  })
+
+export type ProfileFormValues = z.infer<ReturnType<typeof createProfileFormSchema>>
 
 // The codes the server's update-user answers a field it refuses with
 const SERVER_FIELD_ERRORS: Record<string, { field: ProfileTextField; message: () => string }> = {

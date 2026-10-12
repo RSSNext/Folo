@@ -3,16 +3,16 @@ import enSettings from "@locales/settings/en.json"
 import i18next from "i18next"
 import { beforeAll, describe, expect, test } from "vitest"
 
-import { getProfileFieldError, profileFormSchema } from "./profile-form-schema"
+import { createProfileFormSchema, getProfileFieldError } from "./profile-form-schema"
 
 const profile = { handle: "folo", name: "Folo", image: "", bio: "", website: "" }
 
-const errorOf = (values: Partial<typeof profile>) => {
-  const result = profileFormSchema.safeParse({ ...profile, ...values })
+const errorOf = (values: Partial<typeof profile>, storedHandle: string | null = profile.handle) => {
+  const result = createProfileFormSchema(storedHandle).safeParse({ ...profile, ...values })
   return result.success ? undefined : result.error.issues[0]!.message
 }
 
-describe("profileFormSchema", () => {
+describe("createProfileFormSchema", () => {
   beforeAll(async () => {
     await i18next.init({
       lng: "en",
@@ -40,7 +40,23 @@ describe("profileFormSchema", () => {
   test("refuses a handle with spaces or invisible characters, as the server does", () => {
     for (const handle of ["Ta ken", "Taken\u200B", "\u202ETaken"]) {
       expect(errorOf({ handle }), handle).toBe("Use only letters, numbers and underscores.")
+      expect(errorOf({ handle }, null), handle).toBe("Use only letters, numbers and underscores.")
     }
+  })
+
+  test("keeps a handle older clients saved without the check until the user changes it", () => {
+    // The server keeps a stored handle that a save sends back, so other fields stay editable
+    for (const handle of ["Ta ken", "\u30D5\u30A9\u30ED", "folo "]) {
+      expect(errorOf({ handle, name: "New" }, handle), handle).toBeUndefined()
+    }
+
+    expect(errorOf({ handle: "Ta ken2" }, "Ta ken")).toBe(
+      "Use only letters, numbers and underscores.",
+    )
+    expect(errorOf({ handle: "\u30D5\u30A9" }, "\u30D5\u30A9\u30ED")).toBe(
+      "Use only letters, numbers and underscores.",
+    )
+    expect(errorOf({ handle: "folo_2" }, "Ta ken")).toBeUndefined()
   })
 })
 

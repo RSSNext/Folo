@@ -15,6 +15,7 @@ import { userActions } from "@follow/store/user/store"
 import { cn } from "@follow/utils/utils"
 import { zodResolver } from "@hookform/resolvers/zod"
 import { useMutation } from "@tanstack/react-query"
+import { useMemo } from "react"
 import { useForm } from "react-hook-form"
 import { useTranslation } from "react-i18next"
 import { toast } from "sonner"
@@ -27,8 +28,8 @@ import { updateUser } from "~/lib/auth"
 import { uploadAvatarBlob } from "~/lib/avatar-upload"
 import { toastFetchError } from "~/lib/error-parser"
 
-import type { ProfileTextField, socialLinksSchema } from "./profile-form-schema"
-import { getProfileFieldError, profileFormSchema } from "./profile-form-schema"
+import type { ProfileFormValues, ProfileTextField, socialLinksSchema } from "./profile-form-schema"
+import { createProfileFormSchema, getProfileFieldError } from "./profile-form-schema"
 
 const socialIconClassNames = {
   twitter: "i-mgc-twitter-cute-fi",
@@ -86,8 +87,10 @@ export const ProfileSettingForm = ({
   const user = useWhoami() as ExtendedUser
   const { present } = useModalStack()
 
-  const form = useForm<z.infer<typeof profileFormSchema>>({
-    resolver: zodResolver(profileFormSchema),
+  const storedHandle = user?.handle
+  const formSchema = useMemo(() => createProfileFormSchema(storedHandle), [storedHandle])
+  const form = useForm<ProfileFormValues>({
+    resolver: zodResolver(formSchema),
     defaultValues: {
       handle: user?.handle || "",
       name: user?.name || "",
@@ -106,7 +109,7 @@ export const ProfileSettingForm = ({
   })
 
   const updateMutation = useMutation({
-    mutationFn: async (values: Partial<z.infer<typeof profileFormSchema>>) => {
+    mutationFn: async (values: Partial<ProfileFormValues>) => {
       const res = await updateUser({
         handle: values.handle,
         image: values.image,
@@ -153,7 +156,7 @@ export const ProfileSettingForm = ({
     },
   })
 
-  function onSubmit(values: z.infer<typeof profileFormSchema>) {
+  function onSubmit(values: ProfileFormValues) {
     // An empty handle field leaves the handle as it is
     const { handle, ...rest } = values
     updateMutation.mutate(handle ? values : rest)
