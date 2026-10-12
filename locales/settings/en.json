@@ -806,6 +806,7 @@
   "spotlight.case_sensitive": "Case sensitive",
   "spotlight.color": "Color",
   "spotlight.description": "Highlight words or patterns with a color in the timeline, in opened entries and in AI summaries. When rules overlap, the one higher in the list wins.",
+  "spotlight.description_mobile": "Highlight words or patterns with a color in the timeline and in opened entries. When rules overlap, the one higher in the list wins.",
   "spotlight.empty": "No rules yet.",
   "spotlight.enabled": "Enabled",
   "spotlight.invalid_regex": "Invalid regex: {{error}}",

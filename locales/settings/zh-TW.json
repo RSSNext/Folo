@@ -806,6 +806,7 @@
   "spotlight.case_sensitive": "區分大小寫",
   "spotlight.color": "顏色",
   "spotlight.description": "以顏色標示時間軸、已開啟的條目和 AI 總結中的關鍵字或模式。規則重疊時，以列表中較前面的規則為準。",
+  "spotlight.description_mobile": "以顏色標示時間軸和已開啟條目中的關鍵字或模式。規則重疊時，以列表中較前面的規則為準。",
   "spotlight.empty": "還沒有規則。",
   "spotlight.enabled": "啟用",
   "spotlight.invalid_regex": "無效的正規表示式：{{error}}",

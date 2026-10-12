@@ -806,6 +806,7 @@
   "spotlight.case_sensitive": "大文字と小文字を区別",
   "spotlight.color": "色",
   "spotlight.description": "タイムライン、開いたエントリー、AI の要約に含まれるキーワードやパターンを色でハイライトします。ルールが重なる場合は、リストの上にあるルールが優先されます。",
+  "spotlight.description_mobile": "タイムラインと開いたエントリーに含まれるキーワードやパターンを色でハイライトします。ルールが重なる場合は、リストの上にあるルールが優先されます。",
   "spotlight.empty": "ルールはまだありません。",
   "spotlight.enabled": "有効",
   "spotlight.invalid_regex": "無効な正規表現: {{error}}",
