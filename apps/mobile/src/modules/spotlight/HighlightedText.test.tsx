@@ -80,11 +80,17 @@ describe("getHighlightedTextSegments", () => {
 })
 
 describe("getHighlightedTextSegmentStyle", () => {
-  it("adds only the native highlight background styling", () => {
+  it("adds the highlight background with text that stays readable on it in any theme", () => {
     assert.deepEqual(getHighlightedTextSegmentStyle("#EF4444"), {
       backgroundColor: "#EF4444CC",
       borderRadius: 5,
       paddingHorizontal: 2,
+      color: "#000000",
     })
+    assert.equal(getHighlightedTextSegmentStyle("#1E3A8A").color, "#FFFFFF")
+  })
+
+  it("keeps the theme text color when the highlight color is not a hex color", () => {
+    assert.equal("color" in getHighlightedTextSegmentStyle("red"), false)
   })
 })
