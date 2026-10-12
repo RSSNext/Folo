@@ -140,8 +140,8 @@ export const SettingGeneral = () => {
             value: t("general.timeline"),
           },
           defineSettingItem("unreadOnly", {
-            label: t("general.show_unread_on_launch.label"),
-            description: t("general.show_unread_on_launch.description"),
+            label: t("general.unread_only.label"),
+            description: t("general.unread_only.description"),
           }),
           defineSettingItem("groupByDate", {
             label: t("general.group_by_date.label"),

@@ -269,8 +269,8 @@ export const GeneralScreen: NavigationControllerView = () => {
       <GroupedInsetListSectionHeader label={t("general.timeline")} />
       <GroupedInsetListCard>
         <GroupedInsetListCell
-          label={t("general.show_unread_on_launch.label")}
-          description={t("general.show_unread_on_launch.description")}
+          label={t("general.unread_only.label")}
+          description={t("general.unread_only.description")}
         >
           <Switch
             size="sm"
