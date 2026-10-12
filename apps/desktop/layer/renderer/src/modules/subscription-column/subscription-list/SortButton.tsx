@@ -9,7 +9,13 @@ import { useTranslation } from "react-i18next"
 import { IconOpacityTransition } from "~/components/ux/transition/icon"
 import { useHoverPopover } from "~/hooks/common/useHoverPopover"
 
-import { getFeedListSort, setFeedListSortBy, setFeedListSortOrder, useFeedListSort } from "../atom"
+import {
+  getFeedListSort,
+  setFeedListSortBy,
+  setFeedListSortOrder,
+  toggleFeedListSortBy,
+  useFeedListSort,
+} from "../atom"
 
 const SORT_LIST = [
   {
@@ -65,7 +71,7 @@ export const SortButton = () => {
               show()
               return
             }
-            setFeedListSortBy(by === "count" ? "alphabetical" : "count")
+            toggleFeedListSortBy()
           }}
           className="center"
         >
