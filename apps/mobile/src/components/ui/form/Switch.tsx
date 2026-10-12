@@ -26,7 +26,15 @@ export const FormSwitch = ({
   SwitchProps & {
     ref?: React.Ref<SwitchRef | null>
   }) => {
-  const Trigger = <Switch size={size} ref={ref} {...rest} />
+  const Trigger = (
+    <Switch
+      size={size}
+      ref={ref}
+      {...rest}
+      // The label is a separate text, so screen readers would announce an unnamed switch
+      accessibilityLabel={rest.accessibilityLabel ?? label}
+    />
+  )
   if (!label) {
     return Trigger
   }
