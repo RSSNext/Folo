@@ -14,6 +14,7 @@ import { isOnboardingFeedUrl } from "@follow/store/constants/onboarding"
 import { useFeedById } from "@follow/store/feed/hooks"
 import { useInboxById } from "@follow/store/inbox/hooks"
 import { useListById } from "@follow/store/list/hooks"
+import { getSubscriptionByFeedId } from "@follow/store/subscription/getter"
 import { useSubscriptionByFeedId } from "@follow/store/subscription/hooks"
 import { useUnreadById, useUnreadByListId } from "@follow/store/unread/hooks"
 import { cn, isKeyForMultiSelectPressed } from "@follow/utils/utils"
@@ -186,12 +187,18 @@ const FeedItemImpl = ({ view, feedId, className, isPreview }: FeedItemProps) => 
 
       // Add "Switch to Another View" menu item
       if (subscription && typeof subscription.view === "number") {
+        // Like the other items of a multi-selection menu, it moves every selected feed
+        const targetFeedIds = multipleSelectedFeedIds ?? [feedId]
+        const currentViews = new Set(
+          targetFeedIds.map((id) => getSubscriptionByFeedId(id)?.view ?? subscription.view),
+        )
         nextItems.push(
           MenuItemSeparator.default,
           new MenuItemText({
             label: t("sidebar.feed_column.context_menu.change_to_other_view"),
             submenu: getViewList()
-              .filter((v) => v.view !== subscription.view && v.switchable)
+              // Hide only the view every target feed is already in
+              .filter((v) => v.switchable && !(currentViews.size === 1 && currentViews.has(v.view)))
               .map(
                 (v) =>
                   new MenuItemText({
@@ -200,7 +207,7 @@ const FeedItemImpl = ({ view, feedId, className, isPreview }: FeedItemProps) => 
                     icon: v.icon,
                     click() {
                       return changeFeedView({
-                        feedIdList: [feedId],
+                        feedIdList: targetFeedIds,
                         view: v.view,
                       })
                     },
