@@ -11,12 +11,13 @@ import {
 import { Input } from "@follow/components/ui/input/index.js"
 import { LoadingCircle } from "@follow/components/ui/loading/index.jsx"
 import { Switch } from "@follow/components/ui/switch/index.jsx"
-import { FeedViewType } from "@follow/constants"
+import { FeedViewType, UserRole } from "@follow/constants"
 import { useListById, usePrefetchListById } from "@follow/store/list/hooks"
 import type { ListModel } from "@follow/store/list/types"
 import { useSubscriptionByFeedId } from "@follow/store/subscription/hooks"
 import { subscriptionSyncService } from "@follow/store/subscription/store"
 import { whoami } from "@follow/store/user/getters"
+import { useUserRole } from "@follow/store/user/hooks"
 import { tracker } from "@follow/tracker"
 import { cn } from "@follow/utils/utils"
 import type { ListAnalyticsSchema } from "@follow-app/client-sdk"
@@ -28,6 +29,7 @@ import { useTranslation } from "react-i18next"
 import { toast } from "sonner"
 import { z } from "zod"
 
+import { useIsPaymentEnabled } from "~/atoms/server-configs"
 import { useCurrentModal } from "~/components/ui/modal/stacked/hooks"
 import { useI18n } from "~/hooks/common"
 import { getFetchErrorMessage, toastFetchError } from "~/lib/error-parser"
@@ -35,6 +37,7 @@ import { getNewIssueUrl } from "~/lib/issues"
 
 import { useTOTPModalWrapper } from "../profile/hooks"
 import { ViewSelectorRadioGroup } from "../shared/ViewSelectorRadioGroup"
+import { PaidBadge } from "./FeedForm"
 import { FeedSummary } from "./FeedSummary"
 
 const formSchema = z.object({
@@ -252,6 +255,11 @@ const ListInnerForm = ({
 
   const t = useI18n()
 
+  // Private follow is a paid feature for lists too, as in the feed form
+  const role = useUserRole()
+  const isPaymentEnabled = useIsPaymentEnabled()
+  const disabledForRole = role === UserRole.Free && isPaymentEnabled
+
   return (
     <div className="flex flex-1 flex-col gap-y-4">
       <FeedSummary isLoading={isLoading} feed={list} analytics={analytics} showAnalytics />
@@ -296,7 +304,10 @@ const ListInnerForm = ({
               <FormItem>
                 <div className="flex items-center justify-between">
                   <div>
-                    <FormLabel>{t("feed_form.private_follow")}</FormLabel>
+                    <FormLabel className="flex items-center gap-1">
+                      <span>{t("feed_form.private_follow")}</span>
+                      <PaidBadge />
+                    </FormLabel>
                     <FormDescription>{t("feed_form.private_follow_description")}</FormDescription>
                   </div>
                   <FormControl>
@@ -304,6 +315,7 @@ const ListInnerForm = ({
                       className="shrink-0"
                       checked={field.value}
                       onCheckedChange={field.onChange}
+                      disabled={disabledForRole}
                     />
                   </FormControl>
                 </div>
