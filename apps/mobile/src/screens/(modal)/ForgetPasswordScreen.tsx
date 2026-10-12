@@ -9,6 +9,7 @@ import { SubmitButton } from "@/src/components/common/SubmitButton"
 import { HeaderCloseOnly } from "@/src/components/layouts/header/HeaderElements"
 import { PlainTextField } from "@/src/components/ui/form/TextField"
 import { Text } from "@/src/components/ui/typography/Text"
+import { useTouchOnTypingPause } from "@/src/hooks/useTouchOnTypingPause"
 import { forgetPassword } from "@/src/lib/auth"
 import { isValidEmail } from "@/src/lib/email"
 import { useNavigation } from "@/src/lib/navigation/hooks"
@@ -20,10 +21,11 @@ export const ForgetPasswordScreen: NavigationControllerView = () => {
   const insets = useSafeAreaInsets()
   const { t } = useTranslation()
   const [email, setEmail] = useState("")
-  // Set once the field is left or submitted, so the hint does not interrupt typing
+  // Set once the field is left or submitted or typing pauses, so the hint does not interrupt typing
   const [isEmailTouched, setIsEmailTouched] = useState(false)
   const trimmedEmail = email.trim()
   const isEmailValid = isValidEmail(trimmedEmail)
+  useTouchOnTypingPause(trimmedEmail, !isEmailValid, setIsEmailTouched)
   const navigation = useNavigation()
   const contentContainerStyle = {
     flexGrow: 1,

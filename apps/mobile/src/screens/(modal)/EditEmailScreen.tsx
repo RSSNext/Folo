@@ -18,6 +18,7 @@ import {
   GroupedPlainButtonCell,
 } from "@/src/components/ui/grouped/GroupedList"
 import { Text } from "@/src/components/ui/typography/Text"
+import { useTouchOnTypingPause } from "@/src/hooks/useTouchOnTypingPause"
 import { isValidEmail } from "@/src/lib/email"
 import { useNavigation } from "@/src/lib/navigation/hooks"
 import type { NavigationControllerView } from "@/src/lib/navigation/types"
@@ -31,11 +32,12 @@ export const EditEmailScreen: NavigationControllerView = () => {
   const [email, setEmail] = useState(whoami?.email ?? "")
 
   const [isDirty, setIsDirty] = useState(false)
-  // Set once the field is left, so the hint does not interrupt typing
+  // Set once the field is left or typing pauses, so the hint does not interrupt typing
   const [isEmailTouched, setIsEmailTouched] = useState(false)
   const isValidate = whoami?.emailVerified
 
   const newEmailIsValid = isValidEmail(email)
+  useTouchOnTypingPause(isDirty ? email : "", !newEmailIsValid, setIsEmailTouched)
 
   const navigation = useNavigation()
   const { mutate: updateEmail, isPending } = useMutation({
