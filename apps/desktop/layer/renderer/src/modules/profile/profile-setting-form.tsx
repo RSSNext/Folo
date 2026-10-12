@@ -10,7 +10,7 @@ import {
   FormMessage,
 } from "@follow/components/ui/form/index.jsx"
 import { Input, TextArea } from "@follow/components/ui/input/index.js"
-import { useWhoami } from "@follow/store/user/hooks"
+import { invalidateUserSession, useWhoami } from "@follow/store/user/hooks"
 import { userActions } from "@follow/store/user/store"
 import { cn } from "@follow/utils/utils"
 import { zodResolver } from "@hookform/resolvers/zod"
@@ -148,6 +148,8 @@ export const ProfileSettingForm = ({
       if (user && variables) {
         userActions.updateWhoami({ ...variables } as any)
       }
+      // The profile menu reads the cached session, so refresh it as well
+      invalidateUserSession()
       toast(t("profile.updateSuccess"), {
         duration: 3000,
       })
