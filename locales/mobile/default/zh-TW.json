@@ -18,6 +18,7 @@
   "entry_content.no_content": "無內容",
   "entry_content.no_video_url": "未找到影片連結",
   "entry_content.unavailable": "無法載入這篇文章的內容。",
+  "entry_list.empty": "暫無條目",
   "entry_list.unknown_feed": "未知的 RSS 摘要",
   "entry_list.zero_unread": "全部已讀",
   "feed.follow.success": "已跟隨此 RSS 摘要。",

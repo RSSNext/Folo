@@ -18,6 +18,7 @@
   "entry_content.no_content": "No media available",
   "entry_content.no_video_url": "No video URL found",
   "entry_content.unavailable": "Couldn't load the content of this entry.",
+  "entry_list.empty": "No entries yet",
   "entry_list.unknown_feed": "Unknown feed",
   "entry_list.zero_unread": "Zero Unread",
   "feed.follow.success": "Feed followed.",

@@ -18,6 +18,7 @@
   "entry_content.no_content": "Aucun média disponible",
   "entry_content.no_video_url": "Aucune URL vidéo trouvée",
   "entry_content.unavailable": "Impossible de charger le contenu de cette entrée.",
+  "entry_list.empty": "Aucune entrée pour le moment",
   "entry_list.unknown_feed": "Flux inconnu",
   "entry_list.zero_unread": "Zéro non lu",
   "feed.follow.success": "Flux suivi.",

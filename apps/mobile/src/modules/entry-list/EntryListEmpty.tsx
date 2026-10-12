@@ -44,9 +44,7 @@ export const EntryListEmpty = ({
           </Text>
         </>
       ) : (
-        <Text className="text-secondary-label">
-          {t("search.empty.no_results", { ns: "common" })}
-        </Text>
+        <Text className="text-secondary-label">{t("entry_list.empty")}</Text>
       )}
     </View>
   )
