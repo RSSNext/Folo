@@ -29,8 +29,8 @@ export const ResetPassword = () => {
   const [newPassword, setNewPassword] = useState("")
   const [confirmNewPassword, setConfirmNewPassword] = useState("")
 
-  const isFormValid =
-    !!currentPassword && !!newPassword && !!confirmNewPassword && newPassword === confirmNewPassword
+  const isFormFilled = !!currentPassword && !!newPassword && !!confirmNewPassword
+  const isFormValid = isFormFilled && newPassword === confirmNewPassword
 
   const { mutate: submitChangePassword, isPending } = useMutation({
     mutationFn: async () => {
@@ -80,11 +80,13 @@ export const ResetPassword = () => {
                     <CheckLineIcon height={18} width={18} color={labelColor} />
                   )
                 }
-                disabled={!isFormValid || isPending}
+                // Enabled once every field is filled, so saving a confirmation that does not
+                // match says so instead of doing nothing
+                disabled={!isFormFilled || isPending}
                 onPress={handleSave}
               />
             ),
-            [handleSave, isFormValid, isPending, labelColor, t],
+            [handleSave, isFormFilled, isPending, labelColor, t],
           )}
         />
       }
