@@ -267,10 +267,14 @@ const ListInnerForm = ({
 
   const t = useI18n()
 
-  // Private follow is a paid feature for lists too, as in the feed form
+  // Private follow and hiding from the timeline are paid features for lists too, as in the feed
+  // form. Only turning them on needs the plan, so after a downgrade a list that has one on
+  // still lets the user turn it off.
   const role = useUserRole()
   const isPaymentEnabled = useIsPaymentEnabled()
   const disabledForRole = role === UserRole.Free && isPaymentEnabled
+  const isPrivateAlready = subscription?.isPrivate === true
+  const isHiddenAlready = subscription?.hideFromTimeline === true
 
   return (
     <div className="flex flex-1 flex-col gap-y-4">
@@ -327,7 +331,7 @@ const ListInnerForm = ({
                       className="shrink-0"
                       checked={field.value}
                       onCheckedChange={field.onChange}
-                      disabled={disabledForRole}
+                      disabled={disabledForRole && !isPrivateAlready}
                     />
                   </FormControl>
                 </div>
@@ -341,7 +345,10 @@ const ListInnerForm = ({
               <FormItem>
                 <div className="flex items-center justify-between">
                   <div>
-                    <FormLabel>{t("feed_form.hide_from_timeline")}</FormLabel>
+                    <FormLabel className="flex items-center gap-1">
+                      <span>{t("feed_form.hide_from_timeline")}</span>
+                      <PaidBadge />
+                    </FormLabel>
                     <FormDescription>
                       {t("feed_form.hide_from_timeline_description")}
                     </FormDescription>
@@ -351,6 +358,7 @@ const ListInnerForm = ({
                       className="shrink-0"
                       checked={field.value}
                       onCheckedChange={field.onChange}
+                      disabled={disabledForRole && !isHiddenAlready}
                     />
                   </FormControl>
                 </div>
