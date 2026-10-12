@@ -1,7 +1,7 @@
 import { defaultGeneralSettings } from "@follow/shared/settings/defaults"
 import { afterEach, beforeEach, describe, expect, it, vi } from "vitest"
 
-import { playEntryTts } from "./entry-tts"
+import { playEntryTts, toggleEntryTts } from "./entry-tts"
 
 const {
   audioElementMock,
@@ -14,6 +14,7 @@ const {
   setAudioPlayerAtomValueMock,
   setExternalSourceTeardownMock,
   toastFetchErrorMock,
+  togglePlayAndPauseMock,
 } = vi.hoisted(() => ({
   audioElementMock: {
     addEventListener: vi.fn(),
@@ -34,6 +35,7 @@ const {
   setAudioPlayerAtomValueMock: vi.fn(),
   setExternalSourceTeardownMock: vi.fn(),
   toastFetchErrorMock: vi.fn(),
+  togglePlayAndPauseMock: vi.fn(),
 }))
 
 vi.mock("@follow/store/entry/getter", () => ({
@@ -59,6 +61,7 @@ vi.mock("~/atoms/player", () => ({
     audio: audioElementMock,
     mount: mountMock,
     setExternalSourceTeardown: setExternalSourceTeardownMock,
+    togglePlayAndPause: togglePlayAndPauseMock,
   },
   getAudioPlayerAtomValue: getAudioPlayerAtomValueMock,
   setAudioPlayerAtomValue: setAudioPlayerAtomValueMock,
@@ -193,7 +196,7 @@ describe("entry tts", () => {
       currentTime: 0,
       entryId: "entry-1",
       src: "blob:tts-audio",
-      type: "audio",
+      type: "tts",
     })
     // Another audio source mounting afterwards stops the TTS
     expect(setExternalSourceTeardownMock).toHaveBeenLastCalledWith(expect.any(Function))
@@ -203,7 +206,7 @@ describe("entry tts", () => {
     expect(defaultGeneralSettings.voice).toBe("en-US-AvaMultilingualNeural")
   })
 
-  it("schedules decoded stream chunks from the current audio context time", async () => {
+  const stubStreamingAudioContext = () => {
     const sourceStartTimes: number[] = []
     const audioContexts: Array<{ currentTime: number }> = []
     const closeAudioContextMock = vi.fn(() => Promise.resolve())
@@ -242,11 +245,17 @@ describe("entry tts", () => {
       clearInterval: globalThis.clearInterval,
       setInterval: globalThis.setInterval,
       setTimeout: (handler: TimerHandler, timeout?: number, ...args: unknown[]) => {
-        audioContexts[0]!.currentTime = 10
+        audioContexts.at(-1)!.currentTime = 10
         return globalThis.setTimeout(handler, timeout, ...args)
       },
     })
-    fetchMock.mockResolvedValue(createStreamingResponse())
+    fetchMock.mockImplementation(async () => createStreamingResponse())
+
+    return { closeAudioContextMock, sourceStartTimes }
+  }
+
+  it("schedules decoded stream chunks from the current audio context time", async () => {
+    const { closeAudioContextMock, sourceStartTimes } = stubStreamingAudioContext()
 
     await playEntryTts("entry-1", { toastTitle: "Play TTS" })
 
@@ -261,5 +270,56 @@ describe("entry tts", () => {
       expect(closeAudioContextMock).toHaveBeenCalledTimes(1)
     })
     expect(audioElementMock.srcObject).toBeNull()
+  })
+
+  it("pauses and resumes the mounted entry tts without a new request", async () => {
+    await playEntryTts("entry-1", { toastTitle: "Play TTS" })
+    getAudioPlayerAtomValueMock.mockReturnValue({ entryId: "entry-1" })
+
+    await toggleEntryTts("entry-1", { toastTitle: "Play TTS" })
+
+    expect(togglePlayAndPauseMock).toHaveBeenCalledTimes(1)
+    expect(fetchMock).toHaveBeenCalledTimes(1)
+  })
+
+  it("requests the entry tts again after the player released it", async () => {
+    await playEntryTts("entry-1", { toastTitle: "Play TTS" })
+    getAudioPlayerAtomValueMock.mockReturnValue({ entryId: "entry-1" })
+
+    // Closing the player runs the teardown TTS registered for its source
+    const teardown = setExternalSourceTeardownMock.mock.lastCall?.[0] as () => void
+    teardown()
+    expect(revokeObjectURLMock).toHaveBeenCalledWith("blob:tts-audio")
+
+    fetchMock.mockResolvedValue(new Response(new Blob(["audio"]), { status: 200 }))
+    await toggleEntryTts("entry-1", { toastTitle: "Play TTS" })
+
+    expect(togglePlayAndPauseMock).not.toHaveBeenCalled()
+    expect(fetchMock).toHaveBeenCalledTimes(2)
+    expect(mountMock).toHaveBeenCalledTimes(2)
+  })
+
+  it("requests the entry tts again after its stream finished", async () => {
+    const { closeAudioContextMock } = stubStreamingAudioContext()
+
+    await playEntryTts("entry-1", { toastTitle: "Play TTS" })
+    await waitForExpectation(() => {
+      expect(closeAudioContextMock).toHaveBeenCalledTimes(1)
+    })
+    getAudioPlayerAtomValueMock.mockReturnValue({ entryId: "entry-1" })
+
+    await toggleEntryTts("entry-1", { toastTitle: "Play TTS" })
+
+    expect(togglePlayAndPauseMock).not.toHaveBeenCalled()
+    expect(fetchMock).toHaveBeenCalledTimes(2)
+    expect(mountMock).toHaveBeenLastCalledWith({
+      currentTime: 0,
+      entryId: "entry-1",
+      src: "about:blank",
+      type: "tts",
+    })
+    await waitForExpectation(() => {
+      expect(closeAudioContextMock).toHaveBeenCalledTimes(2)
+    })
   })
 })

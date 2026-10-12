@@ -12,6 +12,10 @@ const STREAM_PLACEHOLDER_SRC = "about:blank"
 
 let activeTtsAbortController: AbortController | null = null
 let activeTtsCleanup: (() => void) | null = null
+// The entry whose TTS audio is still mounted in the player. A stream that
+// finished or a TTS that was stopped leaves only a dead source behind, so
+// that entry has to be requested again.
+let resumableTtsEntryId: string | null = null
 
 type TtsAudioHandle = {
   url: string
@@ -144,6 +148,9 @@ const createAudioContextStreamingHandle = (
         ...playerState,
         isStream: false,
       })
+    }
+    if (resumableTtsEntryId === entryId) {
+      resumableTtsEntryId = null
     }
 
     void audioContext.close().catch(() => {})
@@ -314,6 +321,7 @@ const stopActiveTts = () => {
   activeTtsAbortController?.abort()
   activeTtsAbortController = null
   resetActiveTtsCleanup()
+  resumableTtsEntryId = null
 }
 
 // Mounting the TTS source releases the previous external source, so the
@@ -356,7 +364,7 @@ export const playEntryTts = async (entryId: string, { toastTitle }: { toastTitle
     if (response.body && getAudioContextConstructor()) {
       mountTtsSource(() => {
         AudioPlayer.mount({
-          type: "audio",
+          type: "tts",
           entryId,
           src: STREAM_PLACEHOLDER_SRC,
           currentTime: 0,
@@ -370,6 +378,7 @@ export const playEntryTts = async (entryId: string, { toastTitle }: { toastTitle
 
         if (streamingHandle) {
           activeTtsCleanup = streamingHandle.cleanup
+          resumableTtsEntryId = entryId
           handled = true
         }
       })
@@ -379,12 +388,13 @@ export const playEntryTts = async (entryId: string, { toastTitle }: { toastTitle
       const bufferedHandle = await createBufferedTtsHandle(response, abortController.signal)
       mountTtsSource(() => {
         AudioPlayer.mount({
-          type: "audio",
+          type: "tts",
           entryId,
           src: bufferedHandle.url,
           currentTime: 0,
         })
         activeTtsCleanup = bufferedHandle.cleanup
+        resumableTtsEntryId = entryId
       })
     }
   } catch (error) {
@@ -398,4 +408,17 @@ export const playEntryTts = async (entryId: string, { toastTitle }: { toastTitle
       activeTtsAbortController = null
     }
   }
+}
+
+/**
+ * Pauses or resumes the entry's TTS while its audio is still mounted, and
+ * requests it again once the stream finished or the player released it.
+ */
+export const toggleEntryTts = async (entryId: string, options: { toastTitle: string }) => {
+  if (resumableTtsEntryId === entryId && getAudioPlayerAtomValue().entryId === entryId) {
+    AudioPlayer.togglePlayAndPause()
+    return
+  }
+
+  await playEntryTts(entryId, options)
 }

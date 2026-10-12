@@ -11,7 +11,7 @@ import { createAtomHooks } from "~/lib/jotai"
 
 type PlayerAtomValue = {
   show: boolean
-  type?: "audio"
+  type?: "audio" | "tts"
   entryId?: string
   src?: string
   status?: "playing" | "paused" | "loading"
@@ -33,6 +33,11 @@ const playerInitialValue: PlayerAtomValue = {
   isStream: false,
 }
 
+// TTS plays from a MediaStream (under the about:blank placeholder) or a blob
+// URL, and neither can be loaded again after a reload
+const isPageScopedSource = (src: string | undefined) =>
+  !!src && (src.startsWith("blob:") || src.startsWith("about:"))
+
 const jsonStorage = createJSONStorage<PlayerAtomValue>()
 let hydrationDone = false
 const patchedLocalStorage: JotaiSyncStorage<PlayerAtomValue> = {
@@ -46,6 +51,11 @@ const patchedLocalStorage: JotaiSyncStorage<PlayerAtomValue> = {
       // patch status to `paused` when hydration
       value.status = "paused"
       value.isStream = false
+      if (isPageScopedSource(value.src)) {
+        value.show = false
+        value.src = undefined
+        value.entryId = undefined
+      }
       hydrationDone = true
     }
     return value

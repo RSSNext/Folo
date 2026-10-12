@@ -12,7 +12,6 @@ import { useMutation } from "@tanstack/react-query"
 import { useTranslation } from "react-i18next"
 import { toast } from "sonner"
 
-import { AudioPlayer, getAudioPlayerAtomValue } from "~/atoms/player"
 import { showPopover } from "~/atoms/popover"
 import { getGeneralSettings } from "~/atoms/settings/general"
 import {
@@ -30,7 +29,7 @@ import { getEffectiveRouteEntrySortOrder } from "~/modules/entry-column/hooks/en
 import { getIsPreviewFeed } from "~/modules/entry-column/hooks/useIsPreviewFeed"
 import { markAllByRoute } from "~/modules/entry-column/hooks/useMarkAll"
 import { useGalleryModal } from "~/modules/entry-content/hooks"
-import { playEntryTts } from "~/modules/player/entry-tts"
+import { toggleEntryTts } from "~/modules/player/entry-tts"
 
 import { useRegisterFollowCommand } from "../hooks/use-register-command"
 import type { Command, CommandCategory } from "../types"
@@ -369,12 +368,7 @@ export const useRegisterEntryCommands = () => {
         category,
         icon: <i className="i-mgc-voice-cute-re" />,
         run: async ({ entryId }) => {
-          if (getAudioPlayerAtomValue().entryId === entryId) {
-            AudioPlayer.togglePlayAndPause()
-            return
-          }
-
-          await playEntryTts(entryId, {
+          await toggleEntryTts(entryId, {
             toastTitle: t("entry_content.header.play_tts"),
           })
         },
