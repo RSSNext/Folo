@@ -14,16 +14,15 @@ import { toast } from "@/src/lib/toast"
 
 export const setAvatar = async () => {
   const result = await pickImage({
-    fileName: "avatar.jpg",
     maxSizeKB: 290,
   })
 
   if (!result) return
   const { formData } = result
+  // The SDK sends a FormData body as is, but turns a file it does not recognize as a Blob in a
+  // plain object into the string "[object Object]".
   const { url } = await followApi.upload
-    .uploadAvatar({
-      file: formData.get("file") as any,
-    } as any)
+    .uploadAvatar(formData as unknown as Parameters<typeof followApi.upload.uploadAvatar>[0])
     .catch((err) => {
       toastFetchError(err)
       throw err

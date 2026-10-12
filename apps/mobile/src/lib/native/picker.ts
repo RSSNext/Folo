@@ -1,10 +1,10 @@
+import { File } from "expo-file-system"
 import * as FileSystem from "expo-file-system/legacy"
 import * as ImageManipulator from "expo-image-manipulator"
 import * as ImagePicker from "expo-image-picker"
 
 export const pickImage = async (
   options?: ImagePicker.ImagePickerOptions & {
-    fileName?: string
     maxSizeKB?: number
   },
 ) => {
@@ -25,11 +25,10 @@ export const pickImage = async (
     }
 
     const formData = new FormData()
-    formData.append("file", {
-      uri: image.uri,
-      type: image.mimeType || "application/octet-stream",
-      name: options?.fileName ?? image.fileName ?? "untitled.jpg",
-    } as any)
+    // The API client sends requests with expo/fetch, which reads a file part through `bytes()`
+    // and rejects React Native's `{ uri, name, type }` parts. The part takes its name and type
+    // from the file's extension.
+    formData.append("file", new File(image.uri))
 
     return {
       formData,
