@@ -27,9 +27,16 @@ export const ByokProviderItem = ({ provider, onEdit, onDelete }: ByokProviderIte
         <div className="flex-1">
           <div className="flex items-center gap-2">
             <h4 className="text-sm font-medium text-text">{providerLabel}</h4>
-            <span className="inline-flex rounded-full bg-accent/10 px-2 py-1 text-xs text-accent">
-              {t("byok.providers.configured")}
-            </span>
+            {/* A provider without a key is skipped by the server, so it is not configured */}
+            {provider.apiKey ? (
+              <span className="inline-flex rounded-full bg-accent/10 px-2 py-1 text-xs text-accent">
+                {t("byok.providers.configured")}
+              </span>
+            ) : (
+              <span className="inline-flex rounded-full bg-orange/10 px-2 py-1 text-xs text-orange">
+                {t("byok.providers.missing_api_key")}
+              </span>
+            )}
           </div>
         </div>
 

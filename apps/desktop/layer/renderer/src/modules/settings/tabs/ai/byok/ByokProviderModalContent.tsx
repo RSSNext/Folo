@@ -45,13 +45,20 @@ export const ByokProviderModalContent = ({
     apiKey: provider?.apiKey ?? null,
     headers: provider?.headers ?? {},
   })
+  const [isApiKeyMissing, setIsApiKeyMissing] = useState(false)
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault()
     if (!formData.provider) {
       return
     }
-    onSave(formData)
+    // The server skips providers without a key, so one saved without it would never be used
+    const apiKey = formData.apiKey?.trim()
+    if (!apiKey) {
+      setIsApiKeyMissing(true)
+      return
+    }
+    onSave({ ...formData, apiKey })
   }
 
   return (
@@ -100,15 +107,21 @@ export const ByokProviderModalContent = ({
         <Input
           id="apiKey"
           type="password"
+          aria-required
+          aria-invalid={isApiKeyMissing}
           placeholder={t("byok.providers.form.api_key_placeholder")}
           value={formData.apiKey ?? ""}
-          onChange={(e) =>
+          onChange={(e) => {
+            setIsApiKeyMissing(false)
             setFormData({
               ...formData,
               apiKey: e.target.value || null,
             })
-          }
+          }}
         />
+        {isApiKeyMissing && (
+          <p className="text-xs text-red">{t("byok.providers.form.api_key_required")}</p>
+        )}
         <p className="text-xs text-text-secondary">{t("byok.providers.form.api_key_help")}</p>
       </div>
 
