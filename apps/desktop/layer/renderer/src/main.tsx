@@ -1,4 +1,7 @@
 import "./wdyr"
+// Imported apart from main.css: the production Tailwind pass rewrites the whole sheet
+// and loses the font files' relative url()s, so the fonts were never bundled
+import "@follow/components/assets/font.css"
 import "./styles/main.css"
 // Registers the "messaging" sync model before the sync engine starts.
 import "./lib/web-push-registration"
