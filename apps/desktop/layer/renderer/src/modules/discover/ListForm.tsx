@@ -329,7 +329,8 @@ const ListInnerForm = ({
                   <FormControl>
                     <Switch
                       className="shrink-0"
-                      checked={field.value}
+                      // Off until the form knows the followed setting, so the switch stays controlled
+                      checked={field.value ?? false}
                       onCheckedChange={field.onChange}
                       disabled={disabledForRole && !isPrivateAlready}
                     />
@@ -356,7 +357,7 @@ const ListInnerForm = ({
                   <FormControl>
                     <Switch
                       className="shrink-0"
-                      checked={field.value}
+                      checked={field.value ?? false}
                       onCheckedChange={field.onChange}
                       disabled={disabledForRole && !isHiddenAlready}
                     />
