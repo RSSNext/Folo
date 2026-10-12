@@ -51,7 +51,8 @@ export const SearchFeed = () => {
       <Text className="px-6 pt-4 text-text/60">{resultLabel}</Text>
       <View>
         {items.map((item, index) => (
-          <View key={item.feed?.id ?? item.feed?.url ?? `feed-${index}`}>
+          // Feeds the server has not stored yet have an empty id, so fall back to their URL
+          <View key={item.feed?.id || item.feed?.url || `feed-${index}`}>
             <SearchFeedCard item={item} />
             <ItemSeparator />
           </View>
