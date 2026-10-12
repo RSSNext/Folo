@@ -29,6 +29,7 @@
   "discover.search.results_one": "找到 {{count}} 筆結果",
   "discover.search.results_other": "找到 {{count}} 筆結果",
   "discover.search.results_zero": "搜尋結果為空",
+  "discover.trending_empty": "這裡還沒有趨勢 RSS 摘要。",
   "error_screen.crashed": "{{appName}} 當機了！",
   "error_screen.list_try_later": "載入列表時發生問題，請稍後再試。",
   "error_screen.list_unable_to_load": "無法載入內容",

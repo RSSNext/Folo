@@ -29,6 +29,7 @@
   "discover.search.results_one": "Found {{count}} result",
   "discover.search.results_other": "Found {{count}} results",
   "discover.search.results_zero": "No results found.",
+  "discover.trending_empty": "No trending feeds here yet.",
   "error_screen.crashed": "{{appName}} crashed!",
   "error_screen.list_try_later": "There was a problem loading the list. Please try again later.",
   "error_screen.list_unable_to_load": "Unable to load content",

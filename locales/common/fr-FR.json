@@ -29,6 +29,7 @@
   "discover.search.results_one": "{{count}} résultat trouvé",
   "discover.search.results_other": "{{count}} résultats trouvés",
   "discover.search.results_zero": "Aucun résultat trouvé.",
+  "discover.trending_empty": "Aucun flux tendance ici pour le moment.",
   "error_screen.crashed": "{{appName}} a planté !",
   "error_screen.list_try_later": "Un problème est survenu lors du chargement de la liste. Veuillez réessayer plus tard.",
   "error_screen.list_unable_to_load": "Impossible de charger le contenu",

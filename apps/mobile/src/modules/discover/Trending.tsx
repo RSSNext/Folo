@@ -27,6 +27,7 @@ export const Trending = ({
   itemClassName?: string
 }) => {
   const { t } = useTranslation("common")
+  const { t: tSettings } = useTranslation("settings")
   const label = useColor("label")
   const discoverLanguage = useUISettingKey("discoverLanguage")
   const trendingLanguage = discoverLanguage === "fra" ? "eng" : discoverLanguage
@@ -54,6 +55,8 @@ export const Trending = ({
         <ItemPressable
           className="rounded-lg p-1"
           itemStyle={ItemPressableStyle.UnStyled}
+          accessibilityRole="button"
+          accessibilityLabel={tSettings("discoverFilters.title")}
           onPress={() => {
             navigation.presentControllerView(DiscoverSettingsScreen)
           }}
@@ -78,8 +81,12 @@ export const Trending = ({
               <Text className="font-medium text-accent">{t("retry")}</Text>
             </Pressable>
           </View>
+        ) : !data?.length ? (
+          <View className="mt-2 items-center px-6 py-4">
+            <Text className="text-center text-secondary-label">{t("discover.trending_empty")}</Text>
+          </View>
         ) : (
-          data?.map((item, index) => (
+          data.map((item, index) => (
             <FeedSummary
               preview
               view={item.view}

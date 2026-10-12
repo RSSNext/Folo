@@ -20,6 +20,7 @@ import { RecommendationCategoryScreen } from "@/src/screens/(stack)/recommendati
 
 export const Category = () => {
   const { t } = useTranslation("common")
+  const { t: tSettings } = useTranslation("settings")
   const navigation = useNavigation()
   const label = useColor("label")
   return (
@@ -34,6 +35,8 @@ export const Category = () => {
         <ItemPressable
           className="rounded-lg p-1"
           itemStyle={ItemPressableStyle.UnStyled}
+          accessibilityRole="button"
+          accessibilityLabel={tSettings("discoverFilters.title")}
           onPress={() => {
             navigation.presentControllerView(DiscoverSettingsScreen)
           }}

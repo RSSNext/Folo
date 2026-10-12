@@ -29,6 +29,7 @@
   "discover.search.results_one": "{{count}} 件の結果が見つかりました",
   "discover.search.results_other": "{{count}} 件の結果が見つかりました",
   "discover.search.results_zero": "結果が見つかりませんでした。",
+  "discover.trending_empty": "ここにはまだトレンドのフィードがありません。",
   "error_screen.crashed": "{{appName}} がクラッシュしました。",
   "error_screen.list_try_later": "リストの読み込み中に問題が発生しました。しばらくしてから再試行してください。",
   "error_screen.list_unable_to_load": "コンテンツを読み込めません",

@@ -29,6 +29,7 @@
   "discover.search.results_one": "找到 {{count}} 条结果",
   "discover.search.results_other": "找到 {{count}} 条结果",
   "discover.search.results_zero": "搜索结果为空",
+  "discover.trending_empty": "这里还没有趋势订阅源。",
   "error_screen.crashed": "{{appName}} 崩溃了！",
   "error_screen.list_try_later": "加载列表时出现问题，请稍后重试。",
   "error_screen.list_unable_to_load": "无法加载内容",
