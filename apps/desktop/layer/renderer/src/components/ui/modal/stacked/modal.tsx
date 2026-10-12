@@ -38,6 +38,7 @@ import { modalStackAtom } from "./atom"
 import { MODAL_STACK_Z_INDEX, modalMontionConfig } from "./constants"
 import type { CurrentModalContentProps, ModalActionsInternal } from "./context"
 import { CurrentModalContext, CurrentModalStateContext } from "./context"
+import { keepModalOpenForExpandedCombobox } from "./helper"
 import { useModalAnimate } from "./internal/use-animate"
 import { useModalResizeAndDrag } from "./internal/use-drag"
 import { useModalSelect } from "./internal/use-select"
@@ -265,6 +266,7 @@ export const ModalInternal = memo(function Modal({
               asChild
               aria-describedby={undefined}
               onPointerDownOutside={preventDefault}
+              onEscapeKeyDown={keepModalOpenForExpandedCombobox}
               onOpenAutoFocus={openAutoFocus}
             >
               <Focusable
@@ -318,6 +320,7 @@ export const ModalInternal = memo(function Modal({
             asChild
             aria-describedby={undefined}
             onPointerDownOutside={preventDefault}
+            onEscapeKeyDown={keepModalOpenForExpandedCombobox}
             onOpenAutoFocus={openAutoFocus}
           >
             <Focusable
