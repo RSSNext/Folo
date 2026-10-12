@@ -98,12 +98,7 @@ const AvatarSection: FC<{
   const { t } = useTranslation("settings")
   return (
     <View className="mt-6 items-center justify-center">
-      <UserAvatar
-        image={whoami?.image}
-        name={whoami?.name}
-        size={80}
-        className={!whoami?.name || !whoami.image ? "bg-system-background" : ""}
-      />
+      <UserAvatar image={whoami?.image} name={whoami?.name} size={80} />
 
       <Pressable className="mt-2" hitSlop={10} onPress={setAvatar}>
         <Text className="text-lg text-accent">{t("profile.set_avatar")}</Text>
