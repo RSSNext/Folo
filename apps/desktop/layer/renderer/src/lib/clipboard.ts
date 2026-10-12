@@ -18,6 +18,17 @@ export const copyToClipboard = async (content: ClipboardContent): Promise<void> 
   }
 }
 
+// For menu items and shortcuts, which give no other sign that the copy happened
+export const copyToClipboardWithFeedback = async (content: ClipboardContent): Promise<void> => {
+  try {
+    await copyToClipboard(content)
+  } catch {
+    // The failure has been shown already
+    return
+  }
+  toast.success(t("common:app.copied_to_clipboard"))
+}
+
 export const readFromClipboard = async (): Promise<string> => {
   try {
     return await navigator.clipboard.readText()
