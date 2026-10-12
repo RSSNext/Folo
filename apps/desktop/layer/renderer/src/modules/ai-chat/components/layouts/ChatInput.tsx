@@ -47,6 +47,8 @@ const chatInputVariants = cva(
   },
 )
 
+const chatInputEditorPlugins = { tabIndentation: false }
+
 interface ChatInputProps extends VariantProps<typeof chatInputVariants> {
   onSend: (message: EditorState | string, editor: LexicalEditor | null) => void
   ref?: Ref<LexicalRichEditorRef | null>
@@ -188,6 +190,8 @@ export const ChatInput = memo(
               className="h-14"
               onChange={handleEditorChange}
               onKeyDown={handleKeyDown}
+              // Tab moves on to the controls below instead of indenting the message
+              enabledPlugins={chatInputEditorPlugins}
               autoFocus
               plugins={
                 scene === "onboarding"

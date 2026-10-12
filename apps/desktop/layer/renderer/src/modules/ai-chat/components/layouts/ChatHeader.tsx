@@ -104,7 +104,14 @@ const ChatHeaderLayout = ({
             )}
             <ChatHistoryDropdown
               triggerElement={
-                <AIHeaderTitle title={displayTitle} placeholder={t("common.new_chat")} />
+                <AIHeaderTitle
+                  title={displayTitle}
+                  placeholder={t("common.new_chat")}
+                  // Named apart from the New Chat button, as it opens the chat history
+                  aria-label={t("chat.history.trigger", {
+                    title: displayTitle || t("common.new_chat"),
+                  })}
+                />
               }
             />
           </div>

@@ -3,6 +3,7 @@ import { UserRolePriority } from "@follow/constants"
 import { useUserRole } from "@follow/store/user/hooks"
 import { cn } from "@follow/utils"
 import { Fragment, memo, useMemo } from "react"
+import { useTranslation } from "react-i18next"
 
 import {
   DropdownMenu,
@@ -78,6 +79,7 @@ const parseModelString = (modelString: string) => {
 }
 
 export const AIModelIndicator = memo(({ className, onModelChange }: AIModelIndicatorProps) => {
+  const { t } = useTranslation("ai")
   const { data, changeModel } = useAIModel()
   const { defaultModel, availableModels = [], currentModel, availableModelsMenu = [] } = data || {}
   const role = useUserRole()
@@ -93,38 +95,46 @@ export const AIModelIndicator = memo(({ className, onModelChange }: AIModelIndic
 
   const iconClass = providerIcons[provider] || providerIcons.auto
   const hasMultipleModels = availableModels && availableModels.length > 1
+  const modelLabel = selectedMenuItem?.label || modelName
 
+  const modelContentClassName = cn(
+    "inline-flex shrink-0 items-center rounded-xl border font-medium backdrop-blur-sm transition-colors",
+    hasMultipleModels ? "cursor-button hover:bg-material-medium" : "hover:bg-material-medium/50",
+    "duration-200",
+    "gap-1.5 p-1 text-xs",
+    hasMultipleModels && "px-2",
+    "border-border/50 bg-material-ultra-thin",
+    "text-text-secondary",
+
+    className,
+  )
   const modelContent = (
-    <div
-      className={cn(
-        "inline-flex shrink-0 items-center rounded-xl border font-medium backdrop-blur-sm transition-colors",
-        hasMultipleModels
-          ? "cursor-button hover:bg-material-medium"
-          : "hover:bg-material-medium/50",
-        "duration-200",
-        "gap-1.5 p-1 text-xs",
-        hasMultipleModels && "px-2",
-        "border-border/50 bg-material-ultra-thin",
-        "text-text-secondary",
-
-        className,
-      )}
-    >
+    <>
       <i className={cn("size-3", iconClass)} />
-      <span className="hidden max-w-20 truncate @md:inline">
-        {selectedMenuItem?.label || modelName}
-      </span>
+      {/* Hidden in a narrow panel, where the button's label still names the model */}
+      <span className="hidden max-w-20 truncate @md:inline">{modelLabel}</span>
       {hasMultipleModels && <i className="i-mingcute-down-line size-3 opacity-60" />}
-    </div>
+    </>
   )
 
   if (!hasMultipleModels) {
-    return modelContent
+    return <div className={modelContentClassName}>{modelContent}</div>
   }
 
   return (
     <DropdownMenu>
-      <DropdownMenuTrigger asChild>{modelContent}</DropdownMenuTrigger>
+      <DropdownMenuTrigger asChild>
+        <button
+          type="button"
+          aria-label={t("chat.model.label", { model: modelLabel })}
+          className={cn(
+            modelContentClassName,
+            "outline-none focus-visible:ring-2 focus-visible:ring-border",
+          )}
+        >
+          {modelContent}
+        </button>
+      </DropdownMenuTrigger>
       <DropdownMenuContent align="end" className="min-w-48">
         {availableModelsMenu.map(({ label, value, paidLevel }, index) => {
           if (value) {
