@@ -48,7 +48,11 @@ import { ViewSelectorRadioGroup } from "~/modules/shared/ViewSelectorRadioGroup"
 // Messages are resolved at validation time so they follow the current language
 const formSchema = z.object({
   view: z.string(),
-  title: z.string().min(1, { error: () => i18next.t("lists.title_required", { ns: "settings" }) }),
+  // A title of only spaces would make a list without a name
+  title: z
+    .string()
+    .trim()
+    .min(1, { error: () => i18next.t("lists.title_required", { ns: "settings" }) }),
   description: z.string().optional(),
   image: z.string().optional(),
 })
