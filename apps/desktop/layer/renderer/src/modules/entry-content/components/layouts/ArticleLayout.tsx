@@ -16,6 +16,7 @@ import type { TocRef } from "~/components/ui/markdown/components/Toc"
 import { useInPeekModal } from "~/components/ui/modal/inspire/InPeekModal"
 import { readableContentMaxWidthClassName } from "~/constants/ui"
 import { useRenderStyle } from "~/hooks/biz/useRenderStyle"
+import { useOptionalChatHasMessages } from "~/modules/ai-chat/store/hooks"
 import { EntryContentHTMLRenderer } from "~/modules/renderer/html"
 import { EntryContentMarkdownRenderer } from "~/modules/renderer/markdown"
 import { WrappedElementProvider } from "~/providers/wrapped-element-provider"
@@ -55,8 +56,11 @@ export const ArticleLayout: React.FC<EntryLayoutProps> = ({
 
   const aiChatPanelStyle = useAIChatPanelStyle()
   const isAIPanelVisible = useAIPanelVisibility()
+  const chatHasMessages = useOptionalChatHasMessages()
 
-  const shouldShowAISummary = aiChatPanelStyle === AIChatPanelStyle.Floating || !isAIPanelVisible
+  // The fixed panel shows the summary on the welcome screen of an empty chat instead
+  const shouldShowAISummary =
+    aiChatPanelStyle === AIChatPanelStyle.Floating || !isAIPanelVisible || chatHasMessages
 
   if (!entry) return null
 
