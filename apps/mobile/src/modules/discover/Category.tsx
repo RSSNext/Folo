@@ -123,8 +123,9 @@ const CategoryItem = memo(({ category }: { category: RSSHubCategory }) => {
         {/* The emoji sits above the name, so a long name cannot run into it */}
         <View className="flex-1">
           <CategoryEmoji emoji={emoji} />
+          {/* A margin, not padding: Android fits the font to the view's width, padding included */}
           <Text
-            className="pl-2 text-lg font-bold text-white"
+            className="ml-2 text-lg font-bold text-white"
             numberOfLines={1}
             adjustsFontSizeToFit
           >
