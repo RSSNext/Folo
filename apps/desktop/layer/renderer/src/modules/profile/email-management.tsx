@@ -68,13 +68,16 @@ export function EmailManagement() {
           {user?.emailVerified ? t("profile.email.verified") : t("profile.email.unverified")}
         </span>
       </div>
-      <div className="flex items-center justify-between pl-3">
-        <div className="group flex items-center gap-2 text-text-secondary">
-          {user?.email}
+      {/* Leave room on the right for the avatar the profile form places over this row */}
+      <div className="flex items-center justify-between gap-2 pl-3 pr-20">
+        <div className="group flex min-w-0 items-center gap-2 text-text-secondary">
+          <span className="truncate" title={user?.email}>
+            {user?.email}
+          </span>
 
           <AnimatedCommandButton
             icon={<m.i className="i-mgc-edit-cute-re size-4" />}
-            className="size-5 p-1"
+            className="size-5 shrink-0 p-1"
             variant="ghost"
             onClick={() => {
               present({
@@ -87,7 +90,7 @@ export function EmailManagement() {
             <CopyButton
               value={user.email}
               className={cn(
-                "size-5 p-1 duration-300",
+                "size-5 shrink-0 p-1 duration-300",
                 !isMobile && "opacity-0 group-hover:opacity-100",
               )}
             />
@@ -102,7 +105,7 @@ export function EmailManagement() {
             onClick={() => {
               verifyEmailMutation.mutate()
             }}
-            buttonClassName="absolute right-20"
+            buttonClassName="shrink-0"
           >
             {t("profile.email.send_verification")}
           </Button>
