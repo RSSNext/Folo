@@ -99,7 +99,8 @@ const SpotlightRuleEditor = ({
 }) => {
   const { t } = useTranslation("settings")
   const validation = validateSpotlightPattern(rule.pattern, rule.patternType)
-  const showRegexError = rule.patternType === "regex" && !validation.valid
+  // An empty pattern is simply not used yet, so only a rejected regex gets a message
+  const showRegexError = !validation.valid && validation.reason === "regex"
   const colorChoices = getSpotlightColorChoices(rule.color)
 
   const patternInputId = `spotlight-pattern-${rule.id}`

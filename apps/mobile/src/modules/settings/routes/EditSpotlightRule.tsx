@@ -99,7 +99,7 @@ export const EditSpotlightRuleScreen: NavigationControllerView<{
                 </View>
               </GroupedInsetListCell>
             </GroupedInsetListCard>
-            {rule.patternType === "regex" && !validation.valid && (
+            {!validation.valid && validation.reason === "regex" && (
               <View className="px-6 pt-2">
                 <Text className="text-sm text-red">
                   {t("spotlight.invalid_regex", { error: validation.error })}
