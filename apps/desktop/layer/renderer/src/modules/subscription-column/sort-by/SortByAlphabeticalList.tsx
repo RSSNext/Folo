@@ -101,7 +101,8 @@ export const SortByAlphabeticalFeedList = ({
             }
             return sortByAlphabet(nameA, nameB)
           })
-          return isDesc ? sorted : sorted.reverse()
+          // sortByAlphabet orders A to Z, which is ascending
+          return isDesc ? sorted.reverse() : sorted
         }
 
         // Return onboarding categories first, then regular categories
