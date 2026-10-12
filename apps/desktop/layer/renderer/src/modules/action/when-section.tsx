@@ -275,8 +275,10 @@ const ValueInput = ({
       )
     }
     default: {
+      // Sized like the bare inputs of the other types: with a zero flex basis the operator
+      // select took the whole row and squeezed the input to a few pixels
       return (
-        <div className="flex flex-col gap-1.5 @[800px]:flex-1">
+        <div className="flex w-full flex-auto flex-col gap-1.5">
           <Input
             disabled={disabled}
             value={value as string | undefined}
