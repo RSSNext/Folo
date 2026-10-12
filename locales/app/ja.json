@@ -83,6 +83,7 @@
   "discover.keyword_required": "URL またはキーワードを入力してください。",
   "discover.no_results": "検索に一致するフィードが見つかりませんでした。",
   "discover.preview": "プレビュー",
+  "discover.route_param_required": "このパラメーターは必須です。",
   "discover.rss_hub_route": "RSSHub ルート",
   "discover.rss_url": "RSS URL",
   "discover.rsshub_docs": "RSSHub ドキュメント",

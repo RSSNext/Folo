@@ -83,6 +83,7 @@
   "discover.keyword_required": "请输入链接或关键词。",
   "discover.no_results": "没有找到与搜索匹配的订阅源。",
   "discover.preview": "预览",
+  "discover.route_param_required": "此参数为必填项。",
   "discover.rss_hub_route": "RSSHub 路由",
   "discover.rss_url": "RSS URL",
   "discover.rsshub_docs": "RSSHub 文档",

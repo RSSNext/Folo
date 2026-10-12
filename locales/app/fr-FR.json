@@ -83,6 +83,7 @@
   "discover.keyword_required": "Saisissez une URL ou un mot-clé.",
   "discover.no_results": "Aucun flux trouvé pour votre recherche.",
   "discover.preview": "Aperçu",
+  "discover.route_param_required": "Ce paramètre est obligatoire.",
   "discover.rss_hub_route": "Route RSSHub",
   "discover.rss_url": "URL RSS",
   "discover.rsshub_docs": "Documentation RSSHub",

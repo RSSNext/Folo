@@ -83,6 +83,7 @@
   "discover.keyword_required": "Enter a URL or keyword.",
   "discover.no_results": "No feeds found for your search.",
   "discover.preview": "Preview",
+  "discover.route_param_required": "This parameter is required.",
   "discover.rss_hub_route": "RSSHub Route",
   "discover.rss_url": "RSS URL",
   "discover.rsshub_docs": "RSSHub Docs",
