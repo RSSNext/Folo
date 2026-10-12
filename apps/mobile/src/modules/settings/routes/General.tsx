@@ -6,7 +6,11 @@ import { useTranslation } from "react-i18next"
 import type { MobileSupportedLanguages } from "@/src/@types/constants"
 import { currentSupportedLanguages } from "@/src/@types/constants"
 import { defaultResources } from "@/src/@types/default-resource"
-import { setGeneralSetting, useGeneralSettingKey } from "@/src/atoms/settings/general"
+import {
+  setGeneralSetting,
+  useGeneralPaidSettingLocked,
+  useGeneralSettingKey,
+} from "@/src/atoms/settings/general"
 import {
   NavigationBlurEffectHeaderView,
   SafeNavigationScrollView,
@@ -21,6 +25,8 @@ import { Switch } from "@/src/components/ui/switch/Switch"
 import { changeAppLanguage } from "@/src/lib/i18n"
 import type { NavigationControllerView } from "@/src/lib/navigation/types"
 import { fetchTtsVoices } from "@/src/modules/player/tts-service"
+
+import { PaidSettingCell } from "../components/PaidSettingCell"
 
 const settingSelectWrapperClassName = "w-[200px]"
 
@@ -91,15 +97,18 @@ function LanguageSetting({ settingKey }: { settingKey: "language" | "actionLangu
 function TranslationModeSetting() {
   const { t } = useTranslation("settings")
   const translationMode = useGeneralSettingKey("translationMode")
+  const isLocked = useGeneralPaidSettingLocked("translationMode")
 
   return (
-    <GroupedInsetListCell
+    <PaidSettingCell
       label={t("general.translation_mode.label")}
       description={t("general.translation_mode.description")}
+      locked={isLocked}
       rightClassName={settingSelectWrapperClassName}
     >
       <Select
         value={translationMode}
+        disabled={isLocked}
         onValueChange={(value) => {
           setGeneralSetting("translationMode", value as "bilingual" | "translation-only")
         }}
@@ -108,7 +117,7 @@ function TranslationModeSetting() {
           { label: t("general.translation_mode.translation-only"), value: "translation-only" },
         ]}
       />
-    </GroupedInsetListCell>
+    </PaidSettingCell>
   )
 }
 
@@ -156,10 +165,14 @@ export const GeneralScreen: NavigationControllerView = () => {
   const { t } = useTranslation("settings")
 
   const translation = useGeneralSettingKey("translation")
+  const isTranslationLocked = useGeneralPaidSettingLocked("translation")
   const summary = useGeneralSettingKey("summary")
   const autoGroup = useGeneralSettingKey("autoGroup")
   const hideAllReadSubscriptions = useGeneralSettingKey("hideAllReadSubscriptions")
   const hidePrivateSubscriptionsInTimeline = useGeneralSettingKey(
+    "hidePrivateSubscriptionsInTimeline",
+  )
+  const isHidePrivateSubscriptionsLocked = useGeneralPaidSettingLocked(
     "hidePrivateSubscriptionsInTimeline",
   )
   const showUnreadOnLaunch = useGeneralSettingKey("unreadOnly")
@@ -197,18 +210,20 @@ export const GeneralScreen: NavigationControllerView = () => {
             }}
           />
         </GroupedInsetListCell>
-        <GroupedInsetListCell
+        <PaidSettingCell
           label={t("general.action.translation.label")}
           description={t("general.action.translation.description")}
+          locked={isTranslationLocked}
         >
           <Switch
             size="sm"
             value={translation}
+            disabled={isTranslationLocked}
             onValueChange={(value) => {
               setGeneralSetting("translation", value)
             }}
           />
-        </GroupedInsetListCell>
+        </PaidSettingCell>
         <TranslationModeSetting />
         <LanguageSetting settingKey="actionLanguage" />
       </GroupedInsetListCard>
@@ -248,18 +263,20 @@ export const GeneralScreen: NavigationControllerView = () => {
           />
         </GroupedInsetListCell>
 
-        <GroupedInsetListCell
+        <PaidSettingCell
           label={t("general.hide_private_subscriptions_in_timeline.label")}
           description={t("general.hide_private_subscriptions_in_timeline.description")}
+          locked={isHidePrivateSubscriptionsLocked}
         >
           <Switch
             size="sm"
             value={hidePrivateSubscriptionsInTimeline}
+            disabled={isHidePrivateSubscriptionsLocked}
             onValueChange={(value) => {
               setGeneralSetting("hidePrivateSubscriptionsInTimeline", value)
             }}
           />
-        </GroupedInsetListCell>
+        </PaidSettingCell>
       </GroupedInsetListCard>
 
       {/* Timeline */}

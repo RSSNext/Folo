@@ -234,6 +234,8 @@ export const GroupedInsetListCell: FC<
     description?: string
     children?: React.ReactNode
     icon?: SFSymbol
+    /** Shown after the label, such as a paid badge */
+    labelAccessory?: React.ReactNode
     onPress?: () => void
     testID?: string
   } & BaseCellClassNames
@@ -245,6 +247,7 @@ export const GroupedInsetListCell: FC<
   leftClassName,
   rightClassName,
   icon,
+  labelAccessory,
   onPress,
   testID,
 }) => {
@@ -267,7 +270,10 @@ export const GroupedInsetListCell: FC<
       <View className={cn("flex-1 gap-1", leftClassName)}>
         <View className="flex-row items-center gap-2">
           {!!icon && <SymbolView name={icon} size={20} tintColor={iconColor} />}
-          <Text className="text-sm text-label">{titleCaseIfEnglish(label, i18n.language)}</Text>
+          <Text className={cn("text-sm text-label", !!labelAccessory && "shrink")}>
+            {titleCaseIfEnglish(label, i18n.language)}
+          </Text>
+          {labelAccessory}
         </View>
         {!!description && (
           <Text className="text-xs leading-tight text-secondary-label">{description}</Text>
