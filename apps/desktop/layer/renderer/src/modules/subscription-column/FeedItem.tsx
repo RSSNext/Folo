@@ -68,10 +68,13 @@ const DraggableItemWrapper: Component<
   } & React.HTMLAttributes<HTMLDivElement>
 > = ({ children, isInMultipleSelection, ...props }) => {
   const draggableContext = use(DraggableContext)
+  // Only rows in the selection are dragged; on the others dnd-kit's attributes announce a
+  // disabled button, although a click opens the feed
+  const draggableAttributes = isInMultipleSelection ? draggableContext?.attributes : undefined
 
   return (
     <div
-      {...draggableContext?.attributes}
+      {...draggableAttributes}
       {...draggableContext?.listeners}
       style={isInMultipleSelection ? draggableContext?.style : undefined}
       {...props}
