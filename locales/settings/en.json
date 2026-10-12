@@ -621,6 +621,7 @@
   "lists.select_feeds": "Select feeds to add to the current list",
   "lists.subscriptions": "Subs",
   "lists.title": "Title",
+  "lists.title_required": "Enter a title.",
   "lists.view": "View",
   "notifications.channel": "Channel",
   "notifications.current": "(current client)",

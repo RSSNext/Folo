@@ -621,6 +621,7 @@
   "lists.select_feeds": "选择要添加到当前列表的订阅源",
   "lists.subscriptions": "订阅",
   "lists.title": "标题",
+  "lists.title_required": "请输入标题。",
   "lists.view": "视图",
   "notifications.channel": "渠道",
   "notifications.current": "（当前客户端）",

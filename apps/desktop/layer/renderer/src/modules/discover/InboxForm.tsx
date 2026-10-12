@@ -17,6 +17,7 @@ import type { InboxModel } from "@follow/store/inbox/types"
 import { cn } from "@follow/utils/utils"
 import { zodResolver } from "@hookform/resolvers/zod"
 import { useMutation } from "@tanstack/react-query"
+import i18next from "i18next"
 import { useForm } from "react-hook-form"
 import { useTranslation } from "react-i18next"
 import { toast } from "sonner"
@@ -58,11 +59,12 @@ export const InboxForm: Component<{
   )
 }
 
+// Messages are resolved at validation time so they follow the current language
 const inboxHandleSchema = z
   .string()
-  .min(3)
-  .max(32)
-  .regex(/^[a-z0-9_-]+$/)
+  .min(3, { error: () => i18next.t("discover.inbox.handle_length") })
+  .max(32, { error: () => i18next.t("discover.inbox.handle_length") })
+  .regex(/^[a-z0-9_-]+$/, { error: () => i18next.t("discover.inbox.handle_invalid") })
 
 const formSchema = z.object({
   handle: inboxHandleSchema,

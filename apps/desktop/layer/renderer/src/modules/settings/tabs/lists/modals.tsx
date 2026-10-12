@@ -28,6 +28,7 @@ import { useAllFeedSubscription } from "@follow/store/subscription/hooks"
 import { isBizId } from "@follow/utils/utils"
 import { zodResolver } from "@hookform/resolvers/zod"
 import { useMutation } from "@tanstack/react-query"
+import i18next from "i18next"
 import { useMemo, useRef, useState } from "react"
 import { useForm } from "react-hook-form"
 import { useTranslation } from "react-i18next"
@@ -44,9 +45,10 @@ import { FeedCertification } from "~/modules/feed/feed-certification"
 import { FeedIcon } from "~/modules/feed/feed-icon"
 import { ViewSelectorRadioGroup } from "~/modules/shared/ViewSelectorRadioGroup"
 
+// Messages are resolved at validation time so they follow the current language
 const formSchema = z.object({
   view: z.string(),
-  title: z.string().min(1),
+  title: z.string().min(1, { error: () => i18next.t("lists.title_required", { ns: "settings" }) }),
   description: z.string().optional(),
   image: z.string().optional(),
 })
@@ -306,7 +308,12 @@ const RowRender = ({ feedId, listId }: { feedId: string; listId: string }) => {
 }
 const categoryFormSchema = z.object({
   // A name of only spaces would make a folder without a name
-  categoryName: z.string().trim().min(1),
+  categoryName: z
+    .string()
+    .trim()
+    .min(1, {
+      error: () => i18next.t("sidebar.feed_column.context_menu.new_category_modal.name_required"),
+    }),
 })
 export const CategoryCreationModalContent = ({
   onSubmit,

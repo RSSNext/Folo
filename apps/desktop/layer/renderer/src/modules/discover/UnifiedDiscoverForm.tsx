@@ -66,7 +66,7 @@ const rsshubRouteSchema = z.string().url().startsWith("rsshub://")
 const discoverSchema = z.object({
   keyword: z
     .string()
-    .min(1)
+    .min(1, { error: () => i18next.t("discover.keyword_required") })
     .refine(
       (keyword) =>
         detectInputType(keyword) !== "rsshub" ||

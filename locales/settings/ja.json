@@ -621,6 +621,7 @@
   "lists.select_feeds": "現在のリストに追加するフィードを選択",
   "lists.subscriptions": "購読者",
   "lists.title": "タイトル",
+  "lists.title_required": "タイトルを入力してください。",
   "lists.view": "表示",
   "notifications.channel": "チャンネル",
   "notifications.current": "（現在のクライアント）",

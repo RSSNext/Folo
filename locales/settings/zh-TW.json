@@ -621,6 +621,7 @@
   "lists.select_feeds": "選擇要新增到目前列表的 RSS 摘要",
   "lists.subscriptions": "訂閱",
   "lists.title": "標題",
+  "lists.title_required": "請輸入標題。",
   "lists.view": "查看",
   "notifications.channel": "管道",
   "notifications.current": "（當前客户端）",

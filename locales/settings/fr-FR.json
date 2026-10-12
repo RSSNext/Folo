@@ -621,6 +621,7 @@
   "lists.select_feeds": "Sélectionner les flux à ajouter à la liste actuelle",
   "lists.subscriptions": "Membres",
   "lists.title": "Titre",
+  "lists.title_required": "Saisissez un titre.",
   "lists.view": "Vue",
   "notifications.channel": "Canal",
   "notifications.current": "(client actuel)",
