@@ -267,6 +267,7 @@ export const PreviewMediaContent: FC<{
   children?: React.ReactNode
   onZoomChange?: (isZoomed: boolean) => void
 }> = ({ media, initialIndex = 0, children, onZoomChange }) => {
+  const { t } = useTranslation()
   const videoRefs = useRef<(VideoPlayerRef | null)[]>([])
   const [emblaRef, emblaApi] = useEmblaCarousel({ loop: true, startIndex: initialIndex }, [
     WheelGesturesPlugin(),
@@ -389,6 +390,7 @@ export const PreviewMediaContent: FC<{
 
           {currentSlideIndex > 0 && (
             <GlassButton
+              description={t("media.previous")}
               className={`absolute left-2 top-1/2 z-[100] flex size-8 -translate-y-1/2 items-center justify-center rounded-full text-white opacity-0 backdrop-blur-sm duration-200 hover:bg-black/40 group-hover:opacity-100 lg:left-4 lg:size-10`}
               onClick={() => {
                 emblaApi?.scrollPrev()
@@ -400,6 +402,7 @@ export const PreviewMediaContent: FC<{
 
           {currentSlideIndex < media.length - 1 && (
             <GlassButton
+              description={t("media.next")}
               className={`absolute right-2 top-1/2 z-[100] flex size-8 -translate-y-1/2 items-center justify-center rounded-full text-white opacity-0 backdrop-blur-sm duration-200 hover:bg-black/40 group-hover:opacity-100 lg:right-4 lg:size-10`}
               onClick={() => {
                 emblaApi?.scrollNext()

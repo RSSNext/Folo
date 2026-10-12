@@ -8,7 +8,7 @@ import {
   PopoverTrigger,
 } from "@follow/components/ui/popover/index.jsx"
 import { AnimatePresence, m } from "motion/react"
-import { memo, useEffect } from "react"
+import { memo, useEffect, useRef } from "react"
 
 import { dismissPopover, usePopoverValue } from "~/atoms/popover"
 import { HotkeyScope } from "~/constants"
@@ -32,6 +32,15 @@ const Handler = memo(() => {
       setGlobalFocusableScope(HotkeyScope.DropdownMenu, "remove")
     }
   }, [popoverState.open, setGlobalFocusableScope])
+
+  // Kept after the state closed: the content gives the focus back when it unmounts
+  const openerRef = useRef<HTMLElement | null>(null)
+  const interactedOutsideRef = useRef(false)
+  useEffect(() => {
+    if (!popoverState.open) return
+    openerRef.current = popoverState.opener
+    interactedOutsideRef.current = false
+  }, [popoverState])
 
   const { modal, zIndex, ...contentProps } = popoverState.open ? (popoverState.props ?? {}) : {}
 
@@ -63,6 +72,22 @@ const Handler = memo(() => {
             asChild
             forceMount
             style={{ ...contentProps.style, zIndex }}
+            onInteractOutside={(event) => {
+              contentProps.onInteractOutside?.(event)
+              interactedOutsideRef.current = true
+            }}
+            onCloseAutoFocus={(event) => {
+              contentProps.onCloseAutoFocus?.(event)
+              if (event.defaultPrevented) return
+              // The trigger is only an invisible anchor at the pointer, so the focus goes back to
+              // the element the popover was opened from, unless the user moved on elsewhere
+              event.preventDefault()
+              const opener = openerRef.current
+              openerRef.current = null
+              if (!interactedOutsideRef.current && opener?.isConnected) {
+                opener.focus()
+              }
+            }}
           >
             <m.div
               className="mr-2 rounded-xl border bg-material-ultra-thick p-2 shadow-2xl backdrop-blur-background"
