@@ -178,7 +178,7 @@ export const useDialog = (): DialogInstance => {
           ),
           content: ({ dismiss }) => (
             <div className="flex max-w-[45ch] flex-col gap-3">
-              <div className="whitespace-pre text-wrap">{options.message}</div>
+              <div className="whitespace-pre-line">{options.message}</div>
 
               <div className="flex items-center justify-end gap-3">
                 <Button
