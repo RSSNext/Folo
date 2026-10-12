@@ -48,7 +48,8 @@ export const useDeleteSubscription = ({ onSuccess }: { onSuccess?: () => void } 
           category: subscription.category,
           isPrivate: subscription.isPrivate,
           feedId: feed.id,
-          title: feed.title,
+          // The custom title, or none so the feed keeps following its own title
+          title: subscription.title,
           hideFromTimeline: subscription.hideFromTimeline,
         })
 
