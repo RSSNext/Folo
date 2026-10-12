@@ -6,7 +6,8 @@ import { useTranslation } from "react-i18next"
 interface ByokProviderItemProps {
   provider: UserByokProviderConfig
   onDelete: () => void
-  onEdit: () => void
+  /** Without it the provider can only be deleted */
+  onEdit?: () => void
 }
 
 const PROVIDER_LABELS: Record<string, string> = {
@@ -41,19 +42,21 @@ export const ByokProviderItem = ({ provider, onEdit, onDelete }: ByokProviderIte
         </div>
 
         <div className="ml-4 flex items-center gap-1 opacity-60 transition-opacity group-hover:opacity-100">
-          <Tooltip delayDuration={300}>
-            <TooltipTrigger asChild>
-              <Button
-                variant="ghost"
-                size="sm"
-                aria-label={t("byok.providers.edit")}
-                onClick={onEdit}
-              >
-                <i className="i-mgc-edit-cute-re size-4" />
-              </Button>
-            </TooltipTrigger>
-            <TooltipContent>{t("byok.providers.edit")}</TooltipContent>
-          </Tooltip>
+          {onEdit && (
+            <Tooltip delayDuration={300}>
+              <TooltipTrigger asChild>
+                <Button
+                  variant="ghost"
+                  size="sm"
+                  aria-label={t("byok.providers.edit")}
+                  onClick={onEdit}
+                >
+                  <i className="i-mgc-edit-cute-re size-4" />
+                </Button>
+              </TooltipTrigger>
+              <TooltipContent>{t("byok.providers.edit")}</TooltipContent>
+            </Tooltip>
+          )}
           <Tooltip delayDuration={300}>
             <TooltipTrigger asChild>
               <Button

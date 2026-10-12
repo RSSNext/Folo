@@ -23,6 +23,7 @@
   "analytics.usage_trends": "Usage Trends (Last 30 Days)",
   "byok.description": "Use your own API keys for AI providers to have more control over costs and usage.",
   "byok.enabled": "Enable BYOK",
+  "byok.not_in_plan": "(BYOK is not included in your plan)",
   "byok.providers.add": "Add Provider",
   "byok.providers.add_title": "Add BYOK Provider",
   "byok.providers.added": "Provider added successfully",

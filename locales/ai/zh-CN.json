@@ -23,6 +23,7 @@
   "analytics.usage_trends": "使用趋势（最近 30 天）",
   "byok.description": "使用您自己的 AI 提供商 API 密钥，以便更好地控制成本和用量。",
   "byok.enabled": "启用 BYOK",
+  "byok.not_in_plan": "(你的计划不包含 BYOK)",
   "byok.providers.add": "添加提供商",
   "byok.providers.add_title": "添加 BYOK 提供商",
   "byok.providers.added": "提供商添加成功",

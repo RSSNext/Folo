@@ -23,6 +23,7 @@
   "analytics.usage_trends": "Tendances d'utilisation (30 derniers jours)",
   "byok.description": "Utilisez vos propres clés API pour les fournisseurs d'IA afin d'avoir plus de contrôle sur les coûts et l'utilisation.",
   "byok.enabled": "Activer BYOK",
+  "byok.not_in_plan": "(BYOK n'est pas inclus dans votre plan)",
   "byok.providers.add": "Ajouter un fournisseur",
   "byok.providers.add_title": "Ajouter un fournisseur BYOK",
   "byok.providers.added": "Fournisseur ajouté avec succès",

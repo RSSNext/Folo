@@ -23,6 +23,7 @@
   "analytics.usage_trends": "使用傾向（過去30日）",
   "byok.description": "AIプロバイダーに独自のAPIキーを使用して、コストと使用量をより細かく制御できます。",
   "byok.enabled": "BYOKを有効にする",
+  "byok.not_in_plan": "(ご利用のプランには BYOK が含まれていません)",
   "byok.providers.add": "プロバイダーを追加",
   "byok.providers.add_title": "BYOKプロバイダーを追加",
   "byok.providers.added": "プロバイダーが正常に追加されました",
