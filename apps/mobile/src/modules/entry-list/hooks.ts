@@ -8,7 +8,10 @@ import type { NativeScrollEvent, NativeSyntheticEvent } from "react-native"
 
 import { useGeneralSettingKey } from "@/src/atoms/settings/general"
 
-import { shouldCollectViewableItemsForMarkRead } from "./viewable-mark-read"
+import {
+  getPendingMarkReadItems,
+  shouldCollectViewableItemsForMarkRead,
+} from "./viewable-mark-read"
 
 const defaultIdExtractor = (item: ViewToken<string>) => item.key
 export function useOnViewableItemsChanged({
@@ -95,10 +98,7 @@ export function useOnViewableItemsChanged({
       const entryIds = lastRemovedItems.map((item) => stableIdExtractor(item))
       const entryIdSet = new Set(entryIds)
       void unreadSyncService.queueEntriesAsRead(entryIds).then(() => {
-        setLastRemovedItems((prev) => {
-          if (!prev) return null
-          return prev.filter((prevItem) => !entryIdSet.has(stableIdExtractor(prevItem)))
-        })
+        setLastRemovedItems((prev) => getPendingMarkReadItems(prev, entryIdSet, stableIdExtractor))
       })
     }
 
