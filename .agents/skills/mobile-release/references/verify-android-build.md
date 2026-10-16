@@ -14,10 +14,11 @@ BT=$(ls -d "$ANDROID_HOME"/build-tools/* | sort -V | tail -1)
 gh run download <build-android run> -n app-android -D "$SCRATCH/pr/android"
 APK="$SCRATCH/pr/android/build.apk"
 "$BT/aapt2" dump badging "$APK" | grep -E "^package:|^application-label:"
+"$BT/aapt2" dump resources "$APK" | grep -A1 "string/expo_runtime_version"
 "$BT/apksigner" verify --print-certs "$APK" | grep -E "SHA-256"
 ```
 
-Expected: package `is.follow`, `versionName` the new version, label "Folo", and certificate SHA-256 `4c2c3438d76d61ee5b18e8cd841776284e3d25574fa2ea68af809154aa496e08`. That is the EAS key; preview, `production-apk` and GitHub release APKs all carry it, so they update each other in place and keep app data. A Google Play install is re-signed by Google and cannot be updated with these APKs.
+Expected: package `is.follow`, `versionName` the new version, label "Folo", OTA runtime `expo_runtime_version` equal to the new version (the `eas-build-post-install` hook fails builds that embed anything else; APKs up to 0.6.0 embed `0.0.0-dev`), and certificate SHA-256 `4c2c3438d76d61ee5b18e8cd841776284e3d25574fa2ea68af809154aa496e08`. That is the EAS key; preview, `production-apk` and GitHub release APKs all carry it, so they update each other in place and keep app data. A Google Play install is re-signed by Google and cannot be updated with these APKs.
 
 The preview build talks to the production API, uses the `preview` OTA channel and shows the staging icon.
 
@@ -83,6 +84,8 @@ adb -s "$SERIAL" shell monkey -p is.follow -c android.intent.category.LAUNCHER 1
 ```
 
 The app checks for an update in the background after launch and applies a downloaded update on the next launch. Wait about a minute, then `adb -s "$SERIAL" shell am force-stop is.follow`, launch again, and confirm Settings → About shows `OTA <new version>` and the changed screens behave. The release APK uses the `production` channel; for a `preview` OTA, use a preview APK instead.
+
+Android binaries up to and including 0.6.0 embed the runtime `0.0.0-dev` (About shows `OTA 0.0.0-dev`), which ota.folo.is rejects, so they never take an OTA and this check cannot pass with them.
 
 ## 5. Clean up
 
