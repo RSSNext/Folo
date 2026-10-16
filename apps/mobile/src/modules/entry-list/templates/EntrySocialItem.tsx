@@ -84,12 +84,12 @@ export const EntrySocialItem = memo(
       })
     }, [entry?.feedId, navigation])
     const onPreviewImage = useCallback(
-      (index: number, rect: MeasuredDimensions | null, placeholder: ImageSource | undefined) => {
+      (index: number, rect: MeasuredDimensions | null, thumbnail: ImageSource | undefined) => {
         "worklet"
 
         runOnJS(openLightbox)({
           images: (entry?.media ?? [])
-            .map((mediaItem) => {
+            .map((mediaItem, mediaIndex) => {
               const imageUrl =
                 mediaItem.type === "video"
                   ? mediaItem.preview_image_url
@@ -102,9 +102,8 @@ export const EntrySocialItem = memo(
                   width: mediaItem.width ?? 0,
                   height: mediaItem.height ?? 0,
                 },
-                thumbUri: placeholder ?? {
-                  uri: imageUrl,
-                },
+                // Only the tapped image has its thumbnail at hand, other pages wait for their own
+                thumbUri: mediaIndex === index ? thumbnail : undefined,
                 thumbDimensions: null,
                 thumbRect: rect,
                 type: "image" as const,
@@ -194,7 +193,7 @@ interface EntryMediaItemProps {
   onPreviewImage: (
     index: number,
     rect: MeasuredDimensions | null,
-    placeholder: ImageSource | undefined,
+    thumbnail: ImageSource | undefined,
   ) => void
 }
 const EntryMediaItem = memo(
@@ -214,7 +213,9 @@ const EntryMediaItem = memo(
       <Animated.View ref={aviRef} collapsable={false}>
         <NativePressable
           onPress={() => {
-            const [placeholder] = getAllSources(
+            // The proxied thumbnail is what this tile shows, so the lightbox can show it from the
+            // cache while the original loads
+            const [, thumbnail] = getAllSources(
               {
                 uri: imageUrl,
               },
@@ -224,10 +225,7 @@ const EntryMediaItem = memo(
               "worklet"
 
               const rect = measure(aviRef)
-              onPreviewImage(index, rect, {
-                blurhash: mediaItem.blurhash,
-                ...placeholder,
-              })
+              onPreviewImage(index, rect, thumbnail)
             })()
           }}
         >
