@@ -1,6 +1,6 @@
 import { isUndefined } from "es-toolkit/compat"
 import type { PrimitiveAtom } from "jotai"
-import { atom, useAtomValue, useSetAtom } from "jotai"
+import { atom, useAtomValueRawSync, useSetAtom } from "jotai"
 import type { FC, ReactNode } from "react"
 import { memo, use, useCallback, useMemo, useRef } from "react"
 import type { NativeSyntheticEvent, StyleProp, ViewStyle } from "react-native"
@@ -26,6 +26,7 @@ import { ScreenItemContext } from "./ScreenItemContext"
 import type { ScreenOptionsContextType } from "./ScreenOptionsContext"
 import { ScreenOptionsContext } from "./ScreenOptionsContext"
 import type { NavigationControllerViewExtraProps } from "./types"
+import { confirmLeaveWithUnsavedChanges } from "./unsaved-changes"
 
 export const WrappedScreenItem: FC<
   {
@@ -103,7 +104,8 @@ export const WrappedScreenItem: FC<
       [],
     )
 
-    const screenOptionsFromCtx = useAtomValue(screenOptionsCtxValue)
+    // Screens set their options from effects in the commit that mounts this item
+    const screenOptionsFromCtx = useAtomValueRawSync(screenOptionsCtxValue)
 
     const backgroundColor = useColor("systemBackground")
 
@@ -118,6 +120,25 @@ export const WrappedScreenItem: FC<
             navigation.__internal_dismiss(screenId)
           }
         }
+      },
+      [navigation, screenId],
+    )
+
+    // A screen sets preventNativeDismiss while it has unsaved changes, so a swipe or backdrop tap
+    // only leaves once the user confirms
+    const handleNativeDismissCancelled = useCallback(
+      (
+        e: NativeSyntheticEvent<{
+          dismissCount: number
+        }>,
+      ) => {
+        const { dismissCount } = e.nativeEvent
+        if (dismissCount <= 0) return
+        confirmLeaveWithUnsavedChanges(() => {
+          for (let i = 0; i < dismissCount; i++) {
+            navigation.__internal_dismiss(screenId)
+          }
+        })
       },
       [navigation, screenId],
     )
@@ -147,7 +168,7 @@ export const WrappedScreenItem: FC<
             {...screenOptionsProp}
             {...resolveScreenOptions(screenOptionsFromCtx)}
             onDismissed={handleDismiss}
-            onNativeDismissCancelled={handleDismiss}
+            onNativeDismissCancelled={handleNativeDismissCancelled}
           >
             <Header />
             <ErrorBoundary fallbackRender={ScreenErrorScreen}>{children}</ErrorBoundary>
@@ -160,7 +181,9 @@ export const WrappedScreenItem: FC<
 const Header = () => {
   const ctxValue = use(ScreenItemContext)
 
-  const Slot = useAtomValue(ctxValue.Slot)
+  // Screens write their header into the slot from a layout effect in the same commit that mounts
+  // this component; jotai v3's useAtomValue would keep the empty slot from before that write
+  const Slot = useAtomValueRawSync(ctxValue.Slot)
 
   if (!Slot.header) {
     return null

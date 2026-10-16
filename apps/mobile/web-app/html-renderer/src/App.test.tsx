@@ -146,3 +146,34 @@ describe("reader style", () => {
     expect(article?.classList.contains("reader-text-color")).toBe(false)
   })
 })
+
+describe("embedded YouTube videos", () => {
+  beforeEach(() => {
+    vi.stubGlobal("bridge", { measure: vi.fn() })
+    window.__FO_BRIDGE__.dispatch("setNoMedia", "false")
+  })
+
+  test("replaces a YouTube player with a thumbnail that opens the video", () => {
+    const article = renderEntry({
+      url: "https://example.com/article",
+      content:
+        '<p>Watch</p><iframe src="https://www.youtube-nocookie.com/embed/dQw4w9WgXcQ?rel=0" title="Demo"></iframe>',
+    })
+
+    expect(article?.querySelector("iframe")).toBeNull()
+    const link = article?.querySelector("a[href='https://www.youtube.com/watch?v=dQw4w9WgXcQ']")
+    expect(link?.querySelector("img")?.getAttribute("src")).toBe(
+      "https://i.ytimg.com/vi/dQw4w9WgXcQ/hqdefault.jpg",
+    )
+  })
+
+  test("keeps other iframes and YouTube playlists as they are", () => {
+    const article = renderEntry({
+      url: "https://example.com/article",
+      content:
+        '<iframe src="https://player.vimeo.com/video/1"></iframe><iframe src="https://www.youtube.com/embed/videoseries?list=PL1"></iframe>',
+    })
+
+    expect(article?.querySelectorAll("iframe")).toHaveLength(2)
+  })
+})

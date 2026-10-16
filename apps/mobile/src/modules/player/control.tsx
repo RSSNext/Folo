@@ -38,10 +38,12 @@ type ControlButtonProps = {
   color?: string
 }
 export function PlayPauseButton({ size = 24, className, color }: ControlButtonProps) {
+  const { t } = useTranslation()
   const ttsStream = useTtsStreamPlayback()
   const playing = useIsPlaying()
   const isStreamPlaying = ttsStream.status === "playing"
   const isStream = !!ttsStream.entryId
+  const showsPause = isStream ? isStreamPlaying : playing
   const label = useColor("label")
   return (
     <View className={className}>
@@ -49,6 +51,8 @@ export function PlayPauseButton({ size = 24, className, color }: ControlButtonPr
         entering={ZoomIn.springify()}
         exiting={FadeOut}
         key={isStream ? `tts-${ttsStream.status}` : playing ? "pause" : "play"}
+        accessibilityRole="button"
+        accessibilityLabel={showsPause ? t("player.pause") : t("player.play")}
         onPress={() => {
           if (isStream && ttsStream.entryId) {
             void ttsStreamController.toggle(ttsStream.entryId)
@@ -58,13 +62,7 @@ export function PlayPauseButton({ size = 24, className, color }: ControlButtonPr
           playing ? player.pause() : player.play()
         }}
       >
-        {isStream ? (
-          isStreamPlaying ? (
-            <PauseCuteFiIcon color={color ?? label} width={size} height={size} />
-          ) : (
-            <PlayCuteFiIcon color={color ?? label} width={size} height={size} />
-          )
-        ) : playing ? (
+        {showsPause ? (
           <PauseCuteFiIcon color={color ?? label} width={size} height={size} />
         ) : (
           <PlayCuteFiIcon color={color ?? label} width={size} height={size} />
@@ -81,6 +79,7 @@ export function SeekButton({
 }: ControlButtonProps & {
   offset?: number
 }) {
+  const { t } = useTranslation()
   const label = useColor("label")
   const ttsStream = useTtsStreamPlayback()
   if (ttsStream.entryId) {
@@ -89,6 +88,12 @@ export function SeekButton({
   return (
     <View className={className}>
       <Pressable
+        accessibilityRole="button"
+        accessibilityLabel={
+          offset > 0
+            ? t("player.seek_forward", { seconds: offset })
+            : t("player.seek_backward", { seconds: -offset })
+        }
         onPress={() => {
           player.seekBy(offset)
         }}

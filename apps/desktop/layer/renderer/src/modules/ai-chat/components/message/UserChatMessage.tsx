@@ -104,8 +104,10 @@ export const UserChatMessage: React.FC<UserChatMessageProps> = React.memo(({ mes
   }, [setEditingMessageId])
 
   const handleRetry = React.useCallback(() => {
+    // A second request while one is still running would stream two answers into the same chat
+    if (isStreaming) return
     chatActions.regenerate({ messageId })
-  }, [chatActions, messageId])
+  }, [chatActions, isStreaming, messageId])
 
   const scene = useChatScene()
 
@@ -189,7 +191,8 @@ export const UserChatMessage: React.FC<UserChatMessageProps> = React.memo(({ mes
                 <button
                   type="button"
                   onClick={handleRetry}
-                  className="flex items-center gap-1 rounded-md px-2 py-1 text-xs text-text-secondary transition-colors hover:bg-fill-secondary"
+                  disabled={isStreaming}
+                  className="flex items-center gap-1 rounded-md px-2 py-1 text-xs text-text-secondary transition-colors hover:bg-fill-secondary disabled:cursor-not-allowed disabled:opacity-50 disabled:hover:bg-transparent"
                   title={t("retry", { ns: "common" })}
                 >
                   <i className="i-mgc-refresh-2-cute-re size-3" />

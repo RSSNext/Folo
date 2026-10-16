@@ -8,7 +8,7 @@ import {
   useUpdateActionsMutation,
 } from "@follow/store/action/hooks"
 import type { ActionItem } from "@follow/store/action/store"
-import { actionActions } from "@follow/store/action/store"
+import { actionActions, useActionStore } from "@follow/store/action/store"
 import { nextFrame } from "@follow/utils"
 import { JsonObfuscatedCodec } from "@follow/utils/json-codec"
 import { cn } from "@follow/utils/utils"
@@ -18,6 +18,7 @@ import { useCallback, useEffect, useRef, useState } from "react"
 import { useTranslation } from "react-i18next"
 import { useBlocker } from "react-router"
 import { toast } from "sonner"
+import { useEventCallback } from "usehooks-ts"
 
 import { MenuItemText, useShowContextMenu } from "~/atoms/context-menu"
 import { HeaderActionButton, HeaderActionGroup } from "~/components/ui/button/HeaderActionButton"
@@ -42,7 +43,7 @@ import {
 } from "~/modules/action/rule-summary"
 
 import { useSetSubViewRightView } from "../app-layout/subview/hooks"
-import { generateExportFilename } from "./utils"
+import { findRuleIndexWithInvalidRegex, generateExportFilename } from "./utils"
 
 const EmptyActionPlaceholder = ({ onCreateRule }: { onCreateRule: () => void }) => {
   const { t } = useTranslation(["settings", "common"])
@@ -83,6 +84,20 @@ const EmptyActionPlaceholder = ({ onCreateRule }: { onCreateRule: () => void }) 
   )
 }
 
+const ActionLoadError = ({ isRetrying, onRetry }: { isRetrying: boolean; onRetry: () => void }) => {
+  const { t } = useTranslation(["settings", "common"])
+
+  return (
+    <div className="flex min-h-96 w-full flex-col items-center justify-center gap-3 py-10">
+      <i className="i-mgc-warning-cute-re text-3xl text-red" />
+      <span className="text-sm text-text-secondary">{t("actions.load_failed")}</span>
+      <Button variant="outline" isLoading={isRetrying} onClick={onRetry}>
+        {t("retry", { ns: "common" })}
+      </Button>
+    </div>
+  )
+}
+
 export const ActionSetting = () => {
   const actions = useActionRules()
   const { t } = useTranslation("settings")
@@ -108,6 +123,13 @@ export const ActionSetting = () => {
         icon={<i className="i-mgc-magic-2-cute-re" />}
         size="large"
       />
+    )
+  }
+
+  // Saving sends every rule, so editing an empty list here would wipe the server's rules
+  if (actionQuery.isError && !actionActions.isLoaded()) {
+    return (
+      <ActionLoadError isRetrying={actionQuery.isFetching} onRetry={() => actionQuery.refetch()} />
     )
   }
 
@@ -425,6 +447,28 @@ const ActionButtonGroup = ({ onCreateRule }: { onCreateRule: () => void }) => {
 
   const hasActions = actionLength > 0
 
+  // The pending state reaches the header button only after a render, too late for a double click
+  const isSavingRef = useRef(false)
+  const save = useEventCallback(() => {
+    if (isSavingRef.current) return
+    const { rules } = useActionStore.getState()
+    const invalidIndex = findRuleIndexWithInvalidRegex(rules)
+    if (invalidIndex !== -1) {
+      toast.error(
+        t("actions.save_invalid_regex", {
+          name: getRuleDisplayName(rules[invalidIndex], invalidIndex, t),
+        }),
+      )
+      return
+    }
+    isSavingRef.current = true
+    mutation.mutate(undefined, {
+      onSettled: () => {
+        isSavingRef.current = false
+      },
+    })
+  })
+
   const setRightView = useSetSubViewRightView()
   useEffect(() => {
     setRightView(
@@ -439,7 +483,7 @@ const ActionButtonGroup = ({ onCreateRule }: { onCreateRule: () => void }) => {
             icon="i-mgc-check-circle-cute-re"
             disabled={!isDirty}
             loading={mutation.isPending}
-            onClick={() => mutation.mutate()}
+            onClick={save}
           >
             {mutation.isPending ? t("actions.saving") : t("actions.save")}
           </HeaderActionButton>
@@ -449,7 +493,7 @@ const ActionButtonGroup = ({ onCreateRule }: { onCreateRule: () => void }) => {
     return () => {
       setRightView(null)
     }
-  }, [setRightView, actionLength, hasActions, isDirty, mutation, onCreateRule, t])
+  }, [setRightView, actionLength, hasActions, isDirty, mutation, onCreateRule, save, t])
 
   return null
 }
@@ -475,7 +519,14 @@ const useUnSavedBlocker = (isDirty: boolean) => {
       title: t("common:words.unsaved_changes"),
       message: t("settings:actions.navigate.prompt"),
       variant: "ask",
-      onConfirm: () => navigationBlocker.proceed(),
+      onConfirm: () => {
+        // Edits the user chose to leave behind must not stay in the store. This is not done on
+        // unmount: narrowing the window swaps the layout and unmounts the editor too.
+        actionActions.discardLocalEdits().catch(console.error)
+        navigationBlocker.proceed()
+      },
+      // A blocker left in the blocked state swallows every later navigation without a prompt
+      onCancel: () => navigationBlocker.reset(),
     })
   }, [ask, navigationBlocker])
 

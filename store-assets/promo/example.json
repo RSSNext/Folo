@@ -1,0 +1,51 @@
+{
+  "desktop": "1.15.0",
+  "mobile": "0.5.11",
+  "scenes": [
+    {
+      "eyebrow": { "icon": "refresh-2-line", "text": "Settings sync" },
+      "headline": ["Your settings,", "*on every device.*"],
+      "sub": "Appearance, reading and AI preferences sync across desktop and mobile again.",
+      "visual": {
+        "layout": "mac-phone",
+        "mac": "en/mac/appearance",
+        "phone": "en/iphone/timeline",
+        "badge": { "icon": "refresh-2-line", "spin": true }
+      }
+    },
+    {
+      "duration": 4800,
+      "eyebrow": { "icon": "headphone-line", "text": "Text-to-speech" },
+      "headline": ["Long reads,", "*read aloud.*"],
+      "sub": "Starts in seconds, plays to the end, and the player follows you to every screen.",
+      "visual": {
+        "layout": "phones",
+        "phones": ["en/android/listen", "en/iphone/listen"],
+        "callout": "en/android/listen"
+      }
+    },
+    {
+      "eyebrow": { "icon": "translate-2-line", "text": "Languages" },
+      "headline": ["Fluent in", "*your language.*"],
+      "sub": "Every screen translated, and AI answers in the language you pick.",
+      "chips": ["简体中文", "繁體中文", "日本語", "Français"],
+      "visual": {
+        "layout": "mac",
+        "mac": ["zh-Hans/mac/hero", "zh-Hant/mac/hero", "ja/mac/hero"]
+      }
+    },
+    {
+      "duration": 4000,
+      "eyebrow": { "icon": "flash-line", "text": "Desktop v1.15.0" },
+      "headline": ["Electron 44,", "*plus fixes.*"],
+      "items": [
+        "Starts in the tray at login",
+        "Dock icon follows macOS styles",
+        "No dead zone by the scrollbar",
+        "Steadier unread counts",
+        "Strikethrough kept in Markdown export"
+      ],
+      "visual": { "layout": "mac", "mac": "en/mac/hero" }
+    }
+  ]
+}

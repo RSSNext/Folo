@@ -22,12 +22,15 @@
   "contextMenu.services": "Services",
   "dialog.cancel": "Cancel",
   "dialog.clearAllData": "Are you sure you want to clear all data?",
+  "dialog.clearAllDataFailed": "Couldn't reset app data: {{message}}",
+  "dialog.clearAllDataSuccess": "App data reset",
   "dialog.confirm": "Confirm",
   "dialog.no": "No",
   "dialog.open": "Open",
   "dialog.openExternalApp.message": "Are you sure you want to open \"{{url}}\" with other apps?",
   "dialog.openExternalApp.title": "Open External App?",
   "dialog.yes": "Yes",
+  "download.failed": "Download failed",
   "download.success": "Download complete",
   "menu.about": "About {{name}}",
   "menu.alwaysOnTop": "Always on top",
@@ -70,5 +73,8 @@
   "menu.unread": "Unread",
   "menu.view": "View",
   "menu.window": "Window",
-  "menu.zoom": "Zoom"
+  "menu.zoom": "Zoom",
+  "update.available": "An update is available",
+  "update.checkFailed": "Couldn't check for updates",
+  "update.upToDate": "You're on the latest version"
 }

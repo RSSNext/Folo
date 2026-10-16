@@ -3,7 +3,6 @@ import type { LexicalRichEditorRef } from "@follow/components/ui/lexical-rich-ed
 import { LexicalRichEditor } from "@follow/components/ui/lexical-rich-editor/index.js"
 import { ScrollArea } from "@follow/components/ui/scroll-area/ScrollArea.js"
 import { cn, nextFrame } from "@follow/utils"
-import { isEqual } from "es-toolkit"
 import type { EditorState, LexicalEditor, SerializedEditorState } from "lexical"
 import { $getRoot } from "lexical"
 import { useCallback, useEffect, useMemo, useRef, useState } from "react"
@@ -14,6 +13,7 @@ import { useChatStatus } from "~/modules/ai-chat/store/hooks"
 import type { BizUIMessage } from "~/modules/ai-chat/store/types"
 
 import { MentionPlugin, ShortcutPlugin } from "../../editor"
+import { isEditorStateUnchanged } from "../../utils/editor-state"
 
 interface EditableMessageProps {
   messageId: string
@@ -40,9 +40,13 @@ export const EditableMessage = ({
   const editorRef = useRef<LexicalRichEditorRef>(null)
   const [currentEditor, setCurrentEditor] = useState<LexicalEditor | null>(null)
 
+  // The stored state is the JSON string of the editor state
   const initialEditorState = useMemo(() => {
-    return (parts.find((part) => part.type === "data-rich-text") as any)?.data
-      .state as SerializedEditorState
+    const richTextPart = parts.find(
+      (part): part is Extract<BizUIMessage["parts"][number], { type: "data-rich-text" }> =>
+        part.type === "data-rich-text",
+    )
+    return richTextPart?.data.state
   }, [parts])
 
   const isEditing = editingMessageId === messageId
@@ -66,26 +70,27 @@ export const EditableMessage = ({
       if (setInitialEditorStateOnceRef.current) return
       const editor = editorRef.current?.getEditor()
 
-      if (!editor) return
+      if (!editor || !initialEditorState) return
       editor.setEditorState(editor.parseEditorState(initialEditorState))
       setInitialEditorStateOnceRef.current = true
     })
   }, [initialEditorState])
 
-  const handleSave = useCallback(() => {
-    if (currentEditor && editorRef.current && !editorRef.current.isEmpty()) {
-      const serializedEditorState = currentEditor.getEditorState().toJSON()
-
-      if (!isEqual(serializedEditorState, initialEditorState)) {
-        onSave(serializedEditorState, currentEditor)
-      }
-    }
-  }, [currentEditor, initialEditorState, onSave])
-
   const handleCancel = useCallback(() => {
     setEditingMessageId(null)
     onCancel()
   }, [onCancel, setEditingMessageId])
+
+  const handleSave = useCallback(() => {
+    if (!currentEditor || !editorRef.current || editorRef.current.isEmpty()) return
+
+    // Sending an unchanged message again would replace its answer and use another request
+    if (initialEditorState && isEditorStateUnchanged(currentEditor, initialEditorState)) {
+      handleCancel()
+      return
+    }
+    onSave(currentEditor.getEditorState().toJSON(), currentEditor)
+  }, [currentEditor, handleCancel, initialEditorState, onSave])
 
   const handleKeyDown = useCallback(
     (event: KeyboardEvent) => {

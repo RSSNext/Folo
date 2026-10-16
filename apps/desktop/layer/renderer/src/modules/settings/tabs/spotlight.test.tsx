@@ -227,6 +227,9 @@ describe("SettingSpotlight", () => {
 
     await click(getButtonByText(container!, "Add rule"))
     await click(getButtonByText(container!, "Regex"))
+    // A rule without a pattern yet is not an invalid regex
+    expect(container!.textContent).not.toContain("Invalid regex")
+
     await setInputValue(getInputByIdPrefix(container!, "spotlight-pattern-"), "[")
 
     expect(container!.textContent).toContain("Invalid regex")

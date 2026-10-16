@@ -120,23 +120,6 @@ const sortByUnread = (leftSubscriptionId: string, rightSubscriptionId: string) =
   return getUnreadById(nextRightSubscriptionId) - getUnreadById(nextLeftSubscriptionId)
 }
 
-const sortGroupedSubscriptionByUnread = (
-  leftCategory: string,
-  rightCategory: string,
-  view: FeedViewType,
-) => {
-  const leftFeedIds = getSubscriptionByCategory({ category: leftCategory, view })
-  const rightFeedIds = getSubscriptionByCategory({ category: rightCategory, view })
-
-  const leftUnreadCount = leftFeedIds.reduce((acc, feedId) => {
-    return acc + getUnreadById(feedId)
-  }, 0)
-  const rightUnreadCount = rightFeedIds.reduce((acc, feedId) => {
-    return acc + getUnreadById(feedId)
-  }, 0)
-  return -(rightUnreadCount - leftUnreadCount)
-}
-
 // Store selector functions (for React hooks)
 export const getSubscriptionIdsByViewSelector = (state: StateType) => (view: FeedViewType) => {
   const feedIds = Array.from(state.feedIdByView[view] ?? [])
@@ -217,7 +200,6 @@ export const getGroupedSubscriptionSelector =
 export const getSortedGroupedSubscriptionSelector =
   (_state: StateType) =>
   ({
-    view,
     grouped,
     sortBy,
     sortOrder,
@@ -230,9 +212,17 @@ export const getSortedGroupedSubscriptionSelector =
     hideAllReadSubscriptions: boolean
   }) => {
     const categories = Object.keys(grouped)
+    // The folder totals come from the ids already grouped, once per folder rather than once per
+    // comparison
+    const unreadTotals = new Map(
+      categories.map((category) => [
+        category,
+        grouped[category]!.reduce((acc, id) => acc + getUnreadById(id), 0),
+      ]),
+    )
     const sortedCategories = categories.sort((a, b) => {
-      const sortMethod = sortBy === "alphabet" ? sortByAlphabet : sortGroupedSubscriptionByUnread
-      const result = sortMethod(a, b, view)
+      const result =
+        sortBy === "alphabet" ? sortByAlphabet(a, b) : unreadTotals.get(a)! - unreadTotals.get(b)!
       return sortOrder === "asc" ? result : -result
     })
     const sortedList = [] as { category: string; subscriptionIds: string[] }[]

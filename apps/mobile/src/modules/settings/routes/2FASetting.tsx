@@ -1,8 +1,9 @@
 import { whoamiQueryKey } from "@follow/store/user/hooks"
 import { useMutation } from "@tanstack/react-query"
+import { setStringAsync } from "expo-clipboard"
 import { useRef } from "react"
 import { useTranslation } from "react-i18next"
-import { KeyboardAvoidingView, View } from "react-native"
+import { KeyboardAvoidingView, Pressable, View } from "react-native"
 import type { OtpInputRef } from "react-native-otp-entry"
 import { OtpInput } from "react-native-otp-entry"
 
@@ -50,6 +51,7 @@ export const TwoFASetting: NavigationControllerView<{
     },
   })
   const otpInputRef = useRef<OtpInputRef>(null)
+  const setupKey = URL.canParse(totpURI) ? new URL(totpURI).searchParams.get("secret") : null
   return (
     <KeyboardAvoidingView behavior="padding">
       <SafeNavigationScrollView
@@ -68,9 +70,25 @@ export const TwoFASetting: NavigationControllerView<{
         </View>
 
         <View className="mx-12">
-          <Text className="mb-8 text-sm text-secondary-label">
+          <Text className="text-sm text-secondary-label">
             {t("profile.two_factor.setup.description")}
           </Text>
+          {/* The QR code can't be scanned by an authenticator on this same phone */}
+          {setupKey ? (
+            <Pressable
+              className="mb-8 mt-3 self-start"
+              hitSlop={10}
+              accessibilityRole="button"
+              onPress={async () => {
+                await setStringAsync(setupKey)
+                toast.success(t("profile.two_factor.setup.key_copied"))
+              }}
+            >
+              <Text className="text-sm text-accent">{t("profile.two_factor.setup.copy_key")}</Text>
+            </Pressable>
+          ) : (
+            <View className="mb-8" />
+          )}
         </View>
 
         <OtpInput

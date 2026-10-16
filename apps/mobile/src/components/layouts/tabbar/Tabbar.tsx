@@ -1,4 +1,4 @@
-import { useAtom, useAtomValue } from "jotai"
+import { useAtom, useAtomValueRawSync } from "jotai"
 import type { FC } from "react"
 import { memo, use, useCallback, useEffect, useMemo } from "react"
 import type { StyleProp, TextStyle } from "react-native"
@@ -33,7 +33,8 @@ export const Tabbar: FC<{
   const insets = useSafeAreaInsets()
   const tabBarVisible = use(BottomTabBarVisibleContext)
   const tabContext = use(BottomTabContext)
-  const tabScreens = useAtomValue(tabContext.tabScreensAtom)
+  // Every TabScreen registers itself from an effect in the commit that mounts this bar
+  const tabScreens = useAtomValueRawSync(tabContext.tabScreensAtom)
   const [selectedIndex, setSelectedIndex] = useAtom(tabContext.currentIndexAtom)
   const translateY = useSharedValue(0)
   useEffect(() => {

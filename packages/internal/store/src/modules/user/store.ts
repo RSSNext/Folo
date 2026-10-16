@@ -1,4 +1,5 @@
 import type { UserRole } from "@follow/constants"
+import { TOTP_ISSUER } from "@follow/constants"
 import type { UserSchema } from "@follow/database/schemas/types"
 import { UserService } from "@follow/database/services/user"
 import type { AuthUser } from "@follow-app/client-sdk"
@@ -38,6 +39,59 @@ export const useUserStore = createZustandStore<UserStore>("user")(() => defaultS
 const get = useUserStore.getState
 const set = useUserStore.setState
 const immerSet = createImmerSetter(useUserStore)
+
+type ProfileChanges = Omit<Partial<UserProfileEditable>, "handle"> & {
+  handle?: string | null
+}
+
+/** A profile change the auth server refused. `code` names the check that refused it, if any. */
+export class UserUpdateError extends Error {
+  readonly code: string | undefined
+  readonly status: number | undefined
+
+  constructor(message: string, code?: string, status?: number) {
+    super(message)
+    this.name = "UserUpdateError"
+    this.code = code
+    this.status = status
+  }
+}
+
+/**
+ * The fields a profile save sends and keeps, trimmed as the server saves them. The server
+ * replaces the social links with whatever a save sends, so they are sent only when the caller
+ * sets them: an avatar or name change must not clear them.
+ */
+const toProfileChanges = (
+  data: Partial<UserProfileEditable>,
+  currentHandle: string | null | undefined,
+): ProfileChanges => {
+  const { name, handle, socialLinks, ...rest } = data
+  const changes: ProfileChanges = rest
+
+  if (name !== undefined) {
+    changes.name = name.trim()
+  }
+  if (handle !== undefined) {
+    const trimmedHandle = handle.trim()
+    if (!trimmedHandle) {
+      // A blank handle means no handle. Saved as "", it would hit the unique index on handles
+      // once another user has one.
+      changes.handle = null
+    } else {
+      // The server keeps a handle stored with spaces around it when a save sends it back
+      changes.handle =
+        typeof currentHandle === "string" && trimmedHandle === currentHandle.trim()
+          ? currentHandle
+          : trimmedHandle
+    }
+  }
+  if (socialLinks !== undefined) {
+    changes.socialLinks = socialLinks
+  }
+
+  return changes
+}
 
 class UserSyncService {
   private userBatcher = create({
@@ -109,27 +163,33 @@ class UserSyncService {
   async updateProfile(data: Partial<UserProfileEditable>) {
     const me = get().whoami
     if (!me) return
+    const changes = toProfileChanges(data, me.handle)
     const tx = createTransaction(me)
 
     tx.store(() => {
       immerSet((state) => {
         if (!state.whoami) return
-        state.whoami = { ...state.whoami, ...data } as MeModel
+        state.whoami = { ...state.whoami, ...changes } as MeModel
       })
     })
 
     tx.request(async () => {
-      await authClient().updateUser({
-        ...data,
-        socialLinks: (data.socialLinks || null) as any,
-      })
+      const res = await authClient().updateUser(changes)
+      // The auth client resolves with the error instead of throwing; throw so the change rolls back
+      if (res.error) {
+        throw new UserUpdateError(
+          res.error.message || res.error.statusText,
+          res.error.code,
+          res.error.status,
+        )
+      }
     })
     tx.persist(async () => {
       const { whoami } = get()
       if (!whoami) return
       const nextUser = {
         ...whoami,
-        ...data,
+        ...changes,
       }
       userActions.upsertMany([nextUser as unknown as UserModel])
     })
@@ -145,7 +205,10 @@ class UserSyncService {
   async sendVerificationEmail() {
     const me = get().whoami
     if (!me?.email) return
-    await authClient().sendVerificationEmail({ email: me.email! })
+    const res = await authClient().sendVerificationEmail({ email: me.email! })
+    if (res.error) {
+      throw new Error(res.error.message || res.error.statusText)
+    }
   }
 
   async updateTwoFactor(enabled: boolean, password: string) {
@@ -154,7 +217,7 @@ class UserSyncService {
     if (!me) throw new Error("user not login")
 
     const res = enabled
-      ? await authClient().twoFactor.enable({ password })
+      ? await authClient().twoFactor.enable({ password, issuer: TOTP_ISSUER })
       : await authClient().twoFactor.disable({ password })
 
     if (!res.error) {
@@ -182,7 +245,10 @@ class UserSyncService {
     tx.request(async () => {
       const { whoami } = get()
       if (!whoami) return
-      await authClient().changeEmail({ newEmail: email })
+      const res = await authClient().changeEmail({ newEmail: email })
+      if (res.error) {
+        throw new Error(res.error.message || res.error.statusText)
+      }
     })
     tx.rollback(() => {
       immerSet((state) => {

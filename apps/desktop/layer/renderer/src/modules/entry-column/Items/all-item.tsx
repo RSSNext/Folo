@@ -149,7 +149,9 @@ export function AllItem({ entryId, translation, currentFeedTitle }: UniversalIte
   // NOTE: prevent 0 height element, react virtuoso will not stop render any more
   if (!entry || !(feed || inbox)) return null
 
-  const displayTime = inInCollection ? collectionCreatedAt : entry?.publishedAt
+  // An entry unstarred from the Starred list stays there until the list reloads, with no
+  // collection time left, so it falls back to the published time
+  const displayTime = (inInCollection && collectionCreatedAt) || entry?.publishedAt
 
   const related = feed || inbox
 
@@ -261,8 +263,9 @@ export const AllItemSkeleton = (
 )
 
 function AudioIcon({ entryId, src }: { entryId: string; src: string }) {
-  const playStatus = useAudioPlayerAtomSelector((playerValue) =>
-    playerValue.src === src && playerValue.show ? playerValue.status : false,
+  const playStatus = useAudioPlayerAtomSelector(
+    (playerValue) => (playerValue.src === src && playerValue.show ? playerValue.status : false),
+    [src],
   )
 
   const handleClickPlay = (e: React.MouseEvent<HTMLDivElement>) => {

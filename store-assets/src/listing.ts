@@ -6,11 +6,19 @@ import type { SlideCopy } from "./slide"
 
 export const listingRoot = join(import.meta.dirname, "..", "listing")
 
+export interface CustomPageCopy {
+  promotionalText: string
+  // Keywords from keywords.ios that this custom product page takes over.
+  keywords: string[]
+}
+
 export interface AppStoreFields {
   name: string
   subtitle: string
   promotionalText: string
   keywords: { ios: string; macos: string }
+  // Keyed by the ids in src/custom-pages.ts.
+  customPages: Record<string, CustomPageCopy>
 }
 
 export interface GooglePlayFields {

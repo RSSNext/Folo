@@ -13,21 +13,32 @@ import { MentionPlugin } from "~/modules/ai-chat/editor"
 import { SettingDescription } from "../../control"
 import { SettingModalContentPortal } from "../../modal/layout"
 
+// Kept outside the section, which unmounts on a tab switch or when Preferences closes,
+// so an unsaved draft is still there when the user comes back
+let unsavedDraft: string | null = null
+
 export const PersonalizePromptSection = () => {
   const { t } = useTranslation("ai")
   const aiSettings = useAISettingValue()
-  const promptRef = useRef("")
+  const [initialValue] = useState(() => unsavedDraft ?? aiSettings.personalizePrompt)
+  const promptRef = useRef(unsavedDraft ?? "")
   const [isSaving, setIsSaving] = useState(false)
   const [currentLength, setCurrentLength] = useState(0)
-  const [hasChanges, setHasChanges] = useState(false)
+  const [hasChanges, setHasChanges] = useState(unsavedDraft !== null)
 
   const MAX_CHARACTERS = 500
   const isOverLimit = currentLength > MAX_CHARACTERS
 
   const handleEditorChange = (value: string, textLength: number) => {
-    promptRef.current = value
+    // The editor also reports selection changes, and an empty editor serializes to a
+    // non-empty state, so compare text when nothing is stored yet
+    const storedPrompt = aiSettings.personalizePrompt
+    // An editor with no text clears the prompt instead of storing an empty editor state
+    promptRef.current = textLength === 0 ? "" : value
     setCurrentLength(textLength)
-    setHasChanges(value !== aiSettings.personalizePrompt)
+    const changed = storedPrompt ? promptRef.current !== storedPrompt : textLength > 0
+    setHasChanges(changed)
+    unsavedDraft = changed ? promptRef.current : null
   }
 
   const handleSave = async () => {
@@ -36,13 +47,12 @@ export const PersonalizePromptSection = () => {
       return
     }
 
-    if (!promptRef.current) return
-
     setIsSaving(true)
     try {
       setAISetting("personalizePrompt", promptRef.current)
       toast.success(t("personalize.saved"))
       setHasChanges(false)
+      unsavedDraft = null
     } finally {
       setIsSaving(false)
     }
@@ -53,8 +63,10 @@ export const PersonalizePromptSection = () => {
       <div className="space-y-2">
         <div className="relative -ml-3">
           <LexicalRichEditorTextArea
-            initialValue={aiSettings.personalizePrompt}
+            initialValue={initialValue}
             onValueChange={handleEditorChange}
+            // Also reports the length of the text the editor opens with
+            onLengthChange={setCurrentLength}
             plugins={[MentionPlugin]}
             namespace="PersonalizePromptEditor"
             placeholder={t("personalize.prompt.placeholder")}

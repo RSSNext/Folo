@@ -2,7 +2,8 @@ import { Button } from "@follow/components/ui/button/index.js"
 import { useTranslation } from "react-i18next"
 import { toast } from "sonner"
 
-import { setAISetting, useAISettingValue } from "~/atoms/settings/ai"
+import { getAISettings, setAISetting, useAISettingValue } from "~/atoms/settings/ai"
+import { useDialog } from "~/components/ui/modal/stacked/hooks"
 
 import { useCreateAIShortcutModal, useEditAIShortcutModal } from "./hooks"
 import { ShortcutItem } from "./ShortcutItem"
@@ -13,11 +14,24 @@ export const AIShortcutsSection = () => {
 
   const handleAddShortcut = useCreateAIShortcutModal()
   const handleEditShortcut = useEditAIShortcutModal()
+  const { ask } = useDialog()
 
-  const handleDeleteShortcut = (id: string) => {
+  const handleDeleteShortcut = async (id: string) => {
+    const shortcut = shortcuts.find((s) => s.id === id)
+    if (!shortcut) return
+    // The name, prompt and hotkey the user wrote cannot be brought back
+    const confirmed = await ask({
+      title: t("shortcuts.delete_title"),
+      message: t("shortcuts.delete_confirm", { name: shortcut.name }),
+      confirmText: t("words.delete", { ns: "common" }),
+      cancelText: t("words.cancel", { ns: "common" }),
+      variant: "danger",
+    })
+    if (!confirmed) return
+
     setAISetting(
       "shortcuts",
-      shortcuts.filter((s) => s.id !== id),
+      getAISettings().shortcuts.filter((s) => s.id !== id),
     )
     toast.success(t("shortcuts.deleted"))
   }

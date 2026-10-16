@@ -82,9 +82,15 @@ export const RenameCategoryForm = ({
         onSubmit={(e) => {
           e.preventDefault()
 
-          return renameMutation.mutateAsync({
+          const newCategory = e.currentTarget.category.value.trim()
+          // An empty name would silently ungroup the folder
+          if (!newCategory || newCategory === currentCategory) {
+            onFinished()
+            return
+          }
+          renameMutation.mutate({
             lastCategory: currentCategory!,
-            newCategory: e.currentTarget.category.value,
+            newCategory,
           })
         }}
       >
@@ -100,6 +106,7 @@ export const RenameCategoryForm = ({
         />
         <MotionButtonBase
           type="submit"
+          aria-label={t("words.save", { ns: "common" })}
           className="center -mr-1 flex size-5 shrink-0 rounded-lg text-green hover:bg-material-ultra-thick"
         >
           <i className="i-mgc-check-filled size-3" />

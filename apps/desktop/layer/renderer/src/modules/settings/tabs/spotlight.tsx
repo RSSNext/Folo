@@ -50,6 +50,7 @@ export const SettingSpotlight = () => {
 
   return (
     <div className="mt-4 space-y-4">
+      <p className="text-sm text-text-secondary">{t("spotlight.description")}</p>
       <div className="flex justify-end">
         <Button
           size="sm"
@@ -60,6 +61,10 @@ export const SettingSpotlight = () => {
           {t("spotlight.add_rule")}
         </Button>
       </div>
+
+      {rules.length === 0 && (
+        <p className="py-8 text-center text-sm text-text-tertiary">{t("spotlight.empty")}</p>
+      )}
 
       {rules.map((rule, index) => (
         <SpotlightRuleEditor
@@ -99,7 +104,8 @@ const SpotlightRuleEditor = ({
 }) => {
   const { t } = useTranslation("settings")
   const validation = validateSpotlightPattern(rule.pattern, rule.patternType)
-  const showRegexError = rule.patternType === "regex" && !validation.valid
+  // An empty pattern is simply not used yet, so only a rejected regex gets a message
+  const showRegexError = !validation.valid && validation.reason === "regex"
   const colorChoices = getSpotlightColorChoices(rule.color)
 
   const patternInputId = `spotlight-pattern-${rule.id}`

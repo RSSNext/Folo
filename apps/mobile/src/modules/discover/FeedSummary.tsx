@@ -1,4 +1,5 @@
 import { FeedViewType } from "@follow/constants"
+import { useMemo } from "react"
 import { View } from "react-native"
 
 import { FeedIcon } from "@/src/components/ui/icon/feed-icon"
@@ -10,6 +11,7 @@ import { FollowScreen } from "@/src/screens/(modal)/FollowScreen"
 import { FeedScreen } from "@/src/screens/(stack)/feeds/[feedId]/FeedScreen"
 
 import { selectFeed, selectTimeline } from "../screen/atoms"
+import { getFeedDescriptionText } from "./feed-description"
 
 type FeedSummaryFeed = {
   id?: string | null
@@ -43,6 +45,10 @@ export const FeedSummary = ({
   preview?: boolean
 }) => {
   const navigation = useNavigation()
+  const description = useMemo(
+    () => (!simple && feed.description ? getFeedDescriptionText(feed.description) : ""),
+    [simple, feed.description],
+  )
   return (
     <ItemPressable
       itemStyle={ItemPressableStyle.UnStyled}
@@ -109,13 +115,13 @@ export const FeedSummary = ({
           </Text>
         </View>
       </View>
-      {!simple && !!feed.description && (
+      {!!description && (
         <Text
           className="mt-3 pl-[39] pr-2 text-subheadline text-text"
           ellipsizeMode="tail"
           numberOfLines={2}
         >
-          {feed.description}
+          {description}
         </Text>
       )}
 

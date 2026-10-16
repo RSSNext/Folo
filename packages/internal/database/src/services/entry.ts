@@ -15,6 +15,18 @@ interface InsertedBeforeTimeRangeFilter {
   insertedBefore: number
 }
 
+const ENTRIES_KEPT_PER_SOURCE = 20
+// Below SQLite's oldest default limit of 999 bound variables
+const SQL_VARIABLES_PER_QUERY = 500
+
+const chunk = <T>(items: T[], size: number) => {
+  const chunks: T[][] = []
+  for (let i = 0; i < items.length; i += size) {
+    chunks.push(items.slice(i, i + size))
+  }
+  return chunks
+}
+
 class EntryServiceStatic implements Resetable {
   async reset() {
     await db.delete(entriesTable).execute()
@@ -71,9 +83,15 @@ class EntryServiceStatic implements Resetable {
     return db.query.entriesTable.findMany()
   }
 
+  /**
+   * Keep the newest entries of every subscription and clear the rest, including the entries of
+   * feeds that are no longer followed, such as previewed feeds or opened links.
+   */
   async getEntriesToHydrate() {
-    const [entries, subscriptions] = await Promise.all([
+    const [candidates, subscriptions] = await Promise.all([
+      // Only what decides which entries to keep, so the content of the cleared ones isn't read
       db.query.entriesTable.findMany({
+        columns: { id: true, feedId: true, inboxHandle: true, sources: true },
         orderBy: (t, { desc }) => desc(t.publishedAt),
       }),
       db.query.subscriptionsTable.findMany(),
@@ -83,37 +101,45 @@ class EntryServiceStatic implements Resetable {
       subscriptions.map((s) => [s.listId || s.inboxId || s.feedId || "", 0] as const),
     )
 
-    const result: typeof entries = []
-    const idsToClear = new Set<string>()
+    const idsToKeep: string[] = []
+    const idsToClear: string[] = []
 
-    for (const entry of entries) {
+    for (const entry of candidates) {
       const possibleIdList = [
         ...(entry.sources?.filter((s) => s !== "feed") ?? []),
         entry.inboxHandle,
         entry.feedId,
       ].filter(Boolean) as string[]
 
-      if (possibleIdList.length === 0) continue
-
+      // An entry kept for one of its sources is kept even when another source is full
+      let isKept = false
       for (const id of possibleIdList) {
         const count = entryIdCountMap.get(id)
-        if (count === undefined) continue
+        if (count === undefined || count >= ENTRIES_KEPT_PER_SOURCE) continue
+        entryIdCountMap.set(id, count + 1)
+        isKept = true
+      }
 
-        if (count >= 20) {
-          idsToClear.add(entry.id)
-        } else {
-          result.push(entry)
-          entryIdCountMap.set(id, count + 1)
-        }
+      if (isKept) {
+        idsToKeep.push(entry.id)
+      } else {
+        idsToClear.push(entry.id)
       }
     }
 
-    await db
-      .delete(entriesTable)
-      .where(inArray(entriesTable.id, Array.from(idsToClear)))
-      .execute()
+    for (const ids of chunk(idsToClear, SQL_VARIABLES_PER_QUERY)) {
+      await db.delete(entriesTable).where(inArray(entriesTable.id, ids)).execute()
+    }
 
-    return result
+    const order = new Map(idsToKeep.map((id, index) => [id, index]))
+    const result: EntrySchema[] = []
+    for (const ids of chunk(idsToKeep, SQL_VARIABLES_PER_QUERY)) {
+      result.push(
+        ...(await db.query.entriesTable.findMany({ where: inArray(entriesTable.id, ids) })),
+      )
+    }
+    // Newest first, as they were selected
+    return result.sort((a, b) => order.get(a.id)! - order.get(b.id)!)
   }
 
   async deleteMany(entryIds: string[]) {

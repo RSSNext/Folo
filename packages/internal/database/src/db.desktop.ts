@@ -7,7 +7,7 @@ import { IDBMirrorVFS as MyVFS } from "wa-sqlite/src/examples/IDBMirrorVFS.js"
 // @ts-expect-error
 import * as SQLite from "wa-sqlite/src/sqlite-api.js"
 
-import { SQLITE_DB_NAME } from "./constant"
+import { EXPORTED_DB_FILE_NAME, SQLITE_DB_NAME } from "./constant"
 import { DatabaseSource } from "./DatabaseSource"
 import migrations from "./drizzle/migrations"
 import { migrate } from "./migrator"
@@ -92,7 +92,7 @@ export async function getDBFile() {
   const response = new Response(new ReadableStream(source), {
     headers: {
       "Content-Type": "application/vnd.sqlite3",
-      "Content-Disposition": `attachment; filename="${SQLITE_DB_NAME}"`,
+      "Content-Disposition": `attachment; filename="${EXPORTED_DB_FILE_NAME}"`,
     },
   })
   const databaseFile = await response.blob()
@@ -105,7 +105,7 @@ export async function exportDB() {
 
   const a = document.createElement("a")
   a.href = fileUrl
-  a.download = SQLITE_DB_NAME
+  a.download = EXPORTED_DB_FILE_NAME
   a.click()
   a.remove()
 

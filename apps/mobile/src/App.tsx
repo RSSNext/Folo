@@ -5,7 +5,6 @@ import type { FC, PropsWithChildren } from "react"
 import { useEffect, useRef } from "react"
 import { View } from "react-native"
 import Animated, { interpolate, useAnimatedStyle } from "react-native-reanimated"
-import { RootSiblingParent } from "react-native-root-siblings"
 import { useSheet } from "react-native-sheet-transitions"
 
 import { useBackHandler } from "./hooks/useBackHandler"
@@ -26,9 +25,7 @@ export function App({ children }: { children: React.ReactNode }) {
       <View className="flex-1 bg-system-background">
         <SideEffect />
 
-        <ScaleableWrapper>
-          <RootSiblingParent>{children}</RootSiblingParent>
-        </ScaleableWrapper>
+        <ScaleableWrapper>{children}</ScaleableWrapper>
 
         {__DEV__ && <DebugButton />}
 

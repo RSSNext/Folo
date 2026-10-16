@@ -22,12 +22,15 @@
   "contextMenu.services": "服务",
   "dialog.cancel": "取消",
   "dialog.clearAllData": "你确定要清除所有数据吗？",
+  "dialog.clearAllDataFailed": "无法重置应用数据：{{message}}",
+  "dialog.clearAllDataSuccess": "已重置应用数据",
   "dialog.confirm": "确认",
   "dialog.no": "否",
   "dialog.open": "打开",
   "dialog.openExternalApp.message": "确定要使用其他应用打开 {{url}} 吗？",
   "dialog.openExternalApp.title": "打开外部应用？",
   "dialog.yes": "是",
+  "download.failed": "下载失败",
   "download.success": "下载完成",
   "menu.about": "关于 {{name}}",
   "menu.alwaysOnTop": "窗口置顶",
@@ -70,5 +73,8 @@
   "menu.unread": "未读",
   "menu.view": "视图",
   "menu.window": "窗口",
-  "menu.zoom": "缩放"
+  "menu.zoom": "缩放",
+  "update.available": "有可用的更新",
+  "update.checkFailed": "检查更新失败",
+  "update.upToDate": "已是最新版本"
 }

@@ -179,8 +179,11 @@ const ShortcutInputWrapper = memo(
     return (
       <Tooltip>
         <TooltipTrigger asChild>
-          <button
-            type="button"
+          {/* Not a <button>: while recording it holds the recorder's own undo/reset button */}
+          <div
+            role="button"
+            tabIndex={allowCustomize ? 0 : -1}
+            aria-disabled={!allowCustomize}
             data-customized={isUserCustomize}
             className={cn(
               "relative flex h-full cursor-text justify-end rounded-md border px-1 duration-200",
@@ -190,8 +193,16 @@ const ShortcutInputWrapper = memo(
               !allowCustomize && "pointer-events-none",
             )}
             onClick={() => {
-              if (allowCustomize) {
-                onEditingChange(!isEditing)
+              // While recording, the recorder handles clicks and confirms the recording
+              if (allowCustomize && !isEditing) {
+                onEditingChange(true)
+              }
+            }}
+            onKeyDown={(e) => {
+              if (isEditing || !allowCustomize) return
+              if (e.key === "Enter" || e.key === " ") {
+                e.preventDefault()
+                onEditingChange(true)
               }
             }}
           >
@@ -209,7 +220,7 @@ const ShortcutInputWrapper = memo(
                 {shortcut}
               </KbdCombined>
             )}
-          </button>
+          </div>
         </TooltipTrigger>
         {hasConflict && (
           <RootPortal>

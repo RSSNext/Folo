@@ -20,6 +20,7 @@ export function StringLengthChangePlugin({ onChange }: StringLengthChangePluginP
       const textContent = $getRoot().getTextContent()
       const currentLength = textContent.length
       previousLengthRef.current = currentLength
+      onChange?.(currentLength, editor)
     })
 
     // Subscribe to updates and emit only when the length actually changes
@@ -30,6 +31,7 @@ export function StringLengthChangePlugin({ onChange }: StringLengthChangePluginP
 
         if (previousLengthRef.current !== currentLength) {
           previousLengthRef.current = currentLength
+          onChange?.(currentLength, editor)
         }
       })
     })

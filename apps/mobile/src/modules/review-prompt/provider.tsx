@@ -16,7 +16,7 @@ import { useEffect, useMemo, useRef, useState } from "react"
 import type { AppStateStatus } from "react-native"
 import { AppState, InteractionManager } from "react-native"
 
-import { dialogCountAtom } from "@/src/lib/dialog-state"
+import { dialogCountAtom, nativeAlertCountAtom } from "@/src/lib/dialog-state"
 import { Navigation } from "@/src/lib/navigation/Navigation"
 import { PlanScreen } from "@/src/modules/settings/routes/Plan"
 import { LoginScreen } from "@/src/screens/(modal)/LoginScreen"
@@ -39,7 +39,7 @@ export const ReviewPromptProvider = () => {
   const { currentState } = AppState
   const role = useUserRole()
   const routes = useAtomValue(routesAtom)
-  const dialogCount = useAtomValue(dialogCountAtom)
+  const dialogCount = useAtomValue(dialogCountAtom) + useAtomValue(nativeAlertCountAtom)
   const feedSubscriptions = useAllFeedSubscription()
   const listSubscriptions = useAllListSubscription()
 

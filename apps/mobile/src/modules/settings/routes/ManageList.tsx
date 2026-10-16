@@ -49,16 +49,25 @@ export const ManageListScreen: NavigationControllerView<{
   )
   const initOnceRef = useRef(false)
   useEffect(() => {
-    if (initOnceRef.current) return
+    // The list may still be loading; the selection starts from its feeds once it arrives
+    if (initOnceRef.current || !list) return
     initOnceRef.current = true
-    nextSelectedFeedIdRef.current = new Set(list?.feedIds ?? [])
-  }, [list?.feedIds])
+    nextSelectedFeedIdRef.current = new Set(list.feedIds)
+  }, [list])
   const addFeedsToFeedListMutation = useMutation({
-    mutationFn: () =>
-      listSyncServices.addFeedsToFeedList({
-        listId: id,
-        feedIds: Array.from(nextSelectedFeedIdRef.current),
-      }),
+    mutationFn: async () => {
+      const currentFeedIds = new Set(list?.feedIds ?? [])
+      const nextFeedIds = nextSelectedFeedIdRef.current
+      const addedFeedIds = Array.from(nextFeedIds).filter((feedId) => !currentFeedIds.has(feedId))
+      const removedFeedIds = Array.from(currentFeedIds).filter((feedId) => !nextFeedIds.has(feedId))
+
+      if (addedFeedIds.length > 0) {
+        await listSyncServices.addFeedsToFeedList({ listId: id, feedIds: addedFeedIds })
+      }
+      for (const feedId of removedFeedIds) {
+        await listSyncServices.removeFeedFromFeedList({ listId: id, feedId })
+      }
+    },
   })
   const navigation = useNavigation()
   return (
@@ -137,6 +146,8 @@ const FeedCell = (props: { feedId: string; isSelected: boolean }) => {
   if (!feed) return null
   return (
     <ItemPressable
+      accessibilityRole="checkbox"
+      accessibilityState={{ checked: currentSelected }}
       onPress={() => {
         const has = nextSelectedFeedIdRef.current.has(feed.id)
         if (has) {

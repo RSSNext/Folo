@@ -126,6 +126,10 @@ const refreshEntriesTail = async (query: Query) => {
   await observer.fetchNextPage({ cancelRefetch: false })
 }
 
+// `since` is read from the server's clock and `dataUpdatedAt` from this device's, so a list only
+// counts as fetched after the new entries when it is later by more than any likely clock skew
+const CLOCK_SKEW_MARGIN_MS = 5 * 60 * 1000
+
 /**
  * New entries arrived for these views. Fetch the edge of the entry lists that are on screen
  * where they arrive, the first page of a newest-first list, and merge it into what is loaded,
@@ -163,7 +167,7 @@ export const refreshEntriesHead = async ({
       if (isCollectionQuery || params.aiSort) return
       if (!query.isActive() || query.state.fetchStatus === "fetching") return
       if (!query.state.data) return
-      if (since !== undefined && query.state.dataUpdatedAt > since) return
+      if (since !== undefined && query.state.dataUpdatedAt > since + CLOCK_SKEW_MARGIN_MS) return
 
       if (params.sortOrder === "asc") {
         await refreshEntriesTail(query)
@@ -363,10 +367,15 @@ export const useEntriesQuery = (
   }, [entriesIds, fetchNextPage, query, queryKey, refetch])
 }
 
-export const usePrefetchEntryDetail = (entryId: string | undefined, isInbox?: boolean) => {
+export const usePrefetchEntryDetail = (
+  entryId: string | undefined,
+  isInbox?: boolean,
+  options?: { enabled?: boolean },
+) => {
   return useQuery({
     queryKey: ["entry", entryId],
     queryFn: () => entrySyncServices.fetchEntryDetail(entryId, isInbox),
+    enabled: options?.enabled,
   })
 }
 

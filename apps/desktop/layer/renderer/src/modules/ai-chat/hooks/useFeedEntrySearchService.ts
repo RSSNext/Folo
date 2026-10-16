@@ -158,17 +158,19 @@ export const useFeedEntrySearchService = (options: SearchServiceOptions = {}) =>
         return item.type === type
       }
 
+      // The proportional split balances a mixed search. With a type filter the other types are
+      // gone, and their share would cap the results at one or two items.
+      const limit = (items: SearchItem[]) =>
+        type ? items.slice(0, maxResults) : applyProportionalLimit(items, maxResults)
+
       if (!query.trim()) {
         // If no query, return recent items of the specified type
-        const filteredItems = allItems.filter(matchesType)
-        return applyProportionalLimit(filteredItems, maxResults)
+        return limit(allItems.filter(matchesType))
       }
 
       // Perform fuzzy search
       const fuseResults = fuse.search(query)
-      const filteredResults = fuseResults.map((result) => result.item).filter(matchesType)
-
-      return applyProportionalLimit(filteredResults, maxResults)
+      return limit(fuseResults.map((result) => result.item).filter(matchesType))
     }
   }, [allItems, fuse, typeRatios])
 

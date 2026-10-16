@@ -16,7 +16,6 @@ import { RoundCuteReIcon } from "@/src/icons/round_cute_re"
 import { ShareForwardCuteReIcon } from "@/src/icons/share_forward_cute_re"
 import { SortAscendingCuteReIcon } from "@/src/icons/sort_ascending_cute_re"
 import { SortDescendingCuteReIcon } from "@/src/icons/sort_descending_cute_re"
-import { Dialog } from "@/src/lib/dialog"
 import { useNavigation } from "@/src/lib/navigation/hooks"
 import { proxyEnv } from "@/src/lib/proxy-env"
 import { createLinkShareContent } from "@/src/lib/share"
@@ -25,13 +24,15 @@ import { LoginScreen } from "@/src/screens/(modal)/LoginScreen"
 import { ProfileScreen } from "@/src/screens/(modal)/ProfileScreen"
 import { accentColor, useColor } from "@/src/theme/colors"
 
-import { MarkAllAsReadDialog } from "../dialogs/MarkAllAsReadDialog"
+import { showMarkAllAsReadDialog } from "../dialogs/MarkAllAsReadDialog"
+import { useSelectedFeed, useSelectedView } from "./atoms"
 
 export const ActionGroup = ({ children, className }: PropsWithChildren<{ className?: string }>) => {
   return <View className={cn("flex flex-row items-center gap-1", className)}>{children}</View>
 }
 
 export function HomeLeftAction() {
+  const { t } = useTranslation()
   const user = useWhoami()
 
   const navigation = useNavigation()
@@ -45,7 +46,12 @@ export function HomeLeftAction() {
 
   return (
     <ActionGroup className="ml-2">
-      <Pressable testID="home-avatar-trigger" onPress={handlePress}>
+      <Pressable
+        testID="home-avatar-trigger"
+        accessibilityRole="button"
+        accessibilityLabel={user ? t("profile.my_profile") : t("settings.sign_in_cta")}
+        onPress={handlePress}
+      >
         <UserAvatar
           image={user?.image}
           name={user?.name}
@@ -65,13 +71,15 @@ interface HeaderActionButtonProps {
 export const MarkAllAsReadActionButton = ({ variant = "secondary" }: HeaderActionButtonProps) => {
   const { t } = useTranslation()
   const { size, color } = useButtonVariant({ variant })
+  const selectedFeed = useSelectedFeed()
+  const selectedView = useSelectedView()
 
   return (
     <UIBarButton
       label={t("operation.mark_all_as_read")}
       normalIcon={<CheckCircleCuteReIcon height={size} width={size} color={color} />}
       onPress={() => {
-        Dialog.show(MarkAllAsReadDialog)
+        showMarkAllAsReadDialog(selectedFeed, selectedView)
       }}
     />
   )

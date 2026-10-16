@@ -5,5 +5,19 @@
   "keywords": {
     "ios": "新闻,资讯,聚合,博客,播客,摘要,总结,翻译,双语,朗读,信息流,科技,视频,文章,feed,rsshub,newsletter,atom",
     "macos": "新闻,资讯,聚合,博客,播客,摘要,总结,翻译,双语,朗读,信息流,科技,对话,简报,研究,feed,newsletter,atom"
+  },
+  "customPages": {
+    "ai": {
+      "promotionalText": "长文几秒读懂要点，外文内容双语对照着读，几百条新内容一键浓缩成一份简报。让 AI 先替你读，再决定看什么。",
+      "keywords": ["摘要", "总结", "翻译", "双语"]
+    },
+    "media": {
+      "promotionalText": "播客、视频频道、图片订阅都在一条时间线里，各有专属布局。没空看文章？让 AI 用自然的声音读给你听。",
+      "keywords": ["播客", "视频", "朗读"]
+    },
+    "rss": {
+      "promotionalText": "订阅任意 RSS、Atom 或 JSON 订阅源，没有 RSS 的网站也能用数千条 RSSHub 路由订阅。导入 OPML，所有设备自动同步。",
+      "keywords": ["聚合", "信息流", "feed", "rsshub", "atom"]
+    }
   }
 }

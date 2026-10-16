@@ -35,6 +35,7 @@ export const EntryListContentSocial = ({
   suspendMarkRead?: boolean
 }) => {
   const {
+    error: entriesError,
     fetchNextPage,
     isFetching,
     isFetchingNextPage,
@@ -42,6 +43,7 @@ export const EntryListContentSocial = ({
     isRefetching,
     hasNextPage,
     isReady,
+    fetchedTime,
   } = useEntries({
     viewId: view,
     active,
@@ -68,15 +70,16 @@ export const EntryListContentSocial = ({
         <EntryItemSkeleton />
       ) : (
         <View>
-          <EntryListFooter />
+          <EntryListFooter fetchedTime={fetchedTime} />
           {hasEndSpacer && <EntryListEndScrollSpacer />}
         </View>
       ),
-    [hasEndSpacer, hasNextPage],
+    [hasEndSpacer, hasNextPage, fetchedTime],
   )
 
   const { onViewableItemsChanged, onScroll, viewableItems } = useOnViewableItemsChanged({
-    disabled: active === false || isFetching || suspendMarkRead,
+    // Loading the next page only appends entries, so the ones scrolled past meanwhile still count
+    disabled: active === false || (isFetching && !isFetchingNextPage) || suspendMarkRead,
     refreshing: isFetching && !isFetchingNextPage,
   })
 
@@ -123,6 +126,7 @@ export const EntryListContentSocial = ({
         refetch()
       }}
       isRefetching={isRefetching}
+      emptyError={entriesError}
       onResetScrollSignalConsumed={onResetScrollSignalConsumed}
       resetScrollSignal={contentResetScrollSignal}
       data={entryIds}

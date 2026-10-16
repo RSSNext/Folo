@@ -11,6 +11,8 @@ type LazyImageProps = PropsWithChildren<{
   blurhash?: string
 
   className?: string
+  /** Empty for images that only illustrate the entry next to them */
+  alt?: string
 
   height?: number
   width?: number
@@ -30,6 +32,7 @@ export const LazyImage = ({
   width,
   proxy,
   onClick,
+  alt = "",
 }: LazyImageProps & { ref?: React.Ref<HTMLImageElement | null> }) => {
   const nextSrc = useMemo(() => {
     if (!src) return src
@@ -51,9 +54,11 @@ export const LazyImage = ({
         src={nextSrc}
         height={height}
         width={width}
+        alt={alt}
         className={cn("size-full object-cover", className)}
         onClick={onClick}
-        tabIndex={1}
+        // In the normal tab order, and only when the image does something
+        tabIndex={onClick ? 0 : undefined}
       />
       <Avatar.Fallback asChild>
         <div
@@ -64,7 +69,7 @@ export const LazyImage = ({
             className,
           )}
           style={{
-            aspectRatio: height && width ? height / width : undefined,
+            aspectRatio: height && width ? width / height : undefined,
             width,
           }}
         >

@@ -5,13 +5,14 @@ import { useEffect } from "react"
 import { useNavigation } from "../lib/navigation/hooks"
 import { FollowScreen } from "../screens/(modal)/FollowScreen"
 
-let previousIntentUrl = ""
-export const resetIntentUrl = () => {
-  previousIntentUrl = ""
-}
+// The launch link can be reported both by getInitialURL and as a url event. Only that echo is
+// skipped: opening the same link again later, like a second "Add to Folo" tap, must work.
+const DUPLICATE_LINK_WINDOW_MS = 2000
+let lastHandledLink: { url: string; at: number } | null = null
+let initialUrlChecked = false
 
 type DeepLinkParams =
-  | { id: string | null; type: string | null; url?: string | null; view?: string | null }
+  | { id: string | null; type: "url" | "feed" | "list"; url?: string | null; view?: string | null }
   | "refresh"
   | null
 
@@ -19,11 +20,12 @@ const handleIncomingUrl = (
   incomingUrl: string | null,
   navigation: ReturnType<typeof useNavigation>,
 ) => {
-  if (!incomingUrl || incomingUrl === previousIntentUrl) {
+  if (!incomingUrl) return
+  const now = Date.now()
+  if (lastHandledLink?.url === incomingUrl && now - lastHandledLink.at < DUPLICATE_LINK_WINDOW_MS) {
     return
   }
-
-  previousIntentUrl = incomingUrl
+  lastHandledLink = { url: incomingUrl, at: now }
 
   const searchParams = extractParamsFromDeepLink(incomingUrl)
   if (!searchParams) {
@@ -38,7 +40,7 @@ const handleIncomingUrl = (
 
   navigation.presentControllerView(FollowScreen, {
     id: searchParams.id ?? undefined,
-    type: (searchParams.type as "url" | "feed" | "list") ?? undefined,
+    type: searchParams.type,
     url: searchParams.url ?? undefined,
     view: searchParams.view ?? undefined,
   })
@@ -48,9 +50,13 @@ export function useIntentHandler() {
   const navigation = useNavigation()
 
   useEffect(() => {
-    void Linking.getInitialURL().then((url) => {
-      handleIncomingUrl(url, navigation)
-    })
+    // The launch link stays the initial URL for the whole session
+    if (!initialUrlChecked) {
+      initialUrlChecked = true
+      void Linking.getInitialURL().then((url) => {
+        handleIncomingUrl(url, navigation)
+      })
+    }
 
     const subscription = Linking.addEventListener("url", ({ url }) => {
       handleIncomingUrl(url, navigation)
@@ -70,35 +76,26 @@ const extractParamsFromDeepLink = (incomingUrl: string | null): DeepLinkParams =
     if (url.protocol !== "follow:" && url.protocol !== "folo:") return null
 
     switch (url.hostname) {
-      case "add": {
+      case "add":
+      case "feed": {
         const { searchParams } = url
-        if (!searchParams.has("id") && !searchParams.has("url")) return null
+        const id = searchParams.get("id")
+        const feedUrl = searchParams.get("url")
+        const view = searchParams.get("view")
+        // Without an id the feed is looked up by its URL
+        if (!id) return feedUrl ? { id: null, type: "url", url: feedUrl, view } : null
 
-        return {
-          id: searchParams.get("id"),
-          type: searchParams.get("type"),
-          url: searchParams.get("url"),
-          view: searchParams.get("view"),
-        }
+        const isList = url.hostname === "add" && searchParams.get("type") === "list"
+        return { id, type: isList ? "list" : "feed", view }
       }
       case "list": {
         const { searchParams } = url
-        if (!searchParams.has("id") && !searchParams.has("url")) return null
+        const id = searchParams.get("id")
+        if (!id) return null
 
         return {
-          id: searchParams.get("id"),
+          id,
           type: "list",
-          view: searchParams.get("view"),
-        }
-      }
-      case "feed": {
-        const { searchParams } = url
-        if (!searchParams.has("id") && !searchParams.has("url")) return null
-
-        return {
-          id: searchParams.get("id"),
-          type: "feed",
-          url: searchParams.get("url"),
           view: searchParams.get("view"),
         }
       }

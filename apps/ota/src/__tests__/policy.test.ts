@@ -212,6 +212,62 @@ describe("/policy", () => {
     expect(fetchSpy).not.toHaveBeenCalled()
   })
 
+  it("returns none for iOS requests from countries without the App Store listing", async () => {
+    const fetchSpy = vi.fn()
+    vi.stubGlobal("fetch", fetchSpy)
+
+    const response = await fetchWorker(
+      "/policy?product=mobile&platform=ios&channel=production&installedBinaryVersion=0.4.1",
+      undefined,
+      {
+        country: "CN",
+        kvEntries: new Map([
+          [
+            KV_KEYS.storeVersion("mobile", "ios"),
+            {
+              version: "0.4.3",
+              fetchedAt: "2026-04-12T14:00:00.000Z",
+              source: "app-store",
+            },
+          ],
+        ]),
+      },
+    )
+
+    expect(response.status).toBe(200)
+    await expect(response.json()).resolves.toEqual({
+      action: "none",
+      targetVersion: null,
+      message: null,
+    })
+    expect(fetchSpy).not.toHaveBeenCalled()
+  })
+
+  it("still prompts Android requests from countries without the App Store listing", async () => {
+    const response = await fetchWorker(
+      "/policy?product=mobile&platform=android&channel=production&installedBinaryVersion=0.4.1",
+      undefined,
+      {
+        country: "CN",
+        kvEntries: new Map([
+          [
+            KV_KEYS.storeVersion("mobile", "android"),
+            {
+              version: "0.4.3",
+              fetchedAt: "2026-04-12T14:00:00.000Z",
+              source: "google-play",
+            },
+          ],
+        ]),
+      },
+    )
+
+    await expect(response.json()).resolves.toMatchObject({
+      action: "prompt",
+      targetVersion: "0.4.3",
+    })
+  })
+
   it("detects Mac App Store versions from the storefront page", async () => {
     vi.stubGlobal(
       "fetch",
@@ -399,13 +455,15 @@ async function fetchWorker(
   init?: RequestInit,
   options?: {
     kvEntries?: Map<string, unknown>
+    country?: string
   },
 ) {
-  return otaWorker.fetch(
-    new Request(`https://ota.folo.is${path}`, init),
-    createEnv(options),
-    createExecutionContext(),
-  )
+  const request = new Request(`https://ota.folo.is${path}`, init)
+  if (options?.country) {
+    // Cloudflare attaches cf to incoming requests; the test runtime has no such property
+    Object.defineProperty(request, "cf", { value: { country: options.country } })
+  }
+  return otaWorker.fetch(request, createEnv(options), createExecutionContext())
 }
 
 function createEnv(options?: { kvEntries?: Map<string, unknown> }): Env {

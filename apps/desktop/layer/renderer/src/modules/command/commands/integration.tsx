@@ -164,7 +164,7 @@ const useRegisterReadwiseCommands = () => {
                   summary: entry.description || undefined,
                   published_date: entry.publishedAt || undefined,
                   image_url: entry.media?.[0]?.url || undefined,
-                  saved_using: "Follow",
+                  saved_using: "Folo",
                 },
               })
 
@@ -616,11 +616,11 @@ const useRegisterZoteroCommands = () => {
                 body: requestBody,
               })
 
-              if (response.failed && Object.keys(response.failed).length > 0) {
-                response.failed.forEach((failedObj) => {
-                  toast.error(failedObj.message, { duration: 3000 })
-                })
-              }
+              // Zotero keys the failed items by their index in the request, not as an array
+              const failedItems = Object.values<{ message?: string }>(response.failed ?? {})
+              failedItems.forEach((failedObj) => {
+                toast.error(failedObj.message, { duration: 3000 })
+              })
               if (response.success && Object.keys(response.success).length > 0) {
                 toast.success(t("entry_actions.saved_to_zotero"), {
                   duration: 3000,
@@ -691,6 +691,9 @@ const useRegisterZoteroCommands = () => {
             }
           },
         }),
+    {
+      deps: [zoterAvailable, zoteroUserID, zoteroToken],
+    },
   )
 }
 
@@ -805,6 +808,9 @@ const useRegisterQBittorrentCommands = () => {
             }
           },
         }),
+    {
+      deps: [qbittorrentAvailable, qbittorrentHost, qbittorrentUsername, qbittorrentPassword],
+    },
   )
 }
 

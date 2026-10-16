@@ -1,7 +1,7 @@
 import { useWhoami } from "@follow/store/user/hooks"
 import { userSyncService } from "@follow/store/user/store"
 import { useMutation } from "@tanstack/react-query"
-import { useMemo, useState } from "react"
+import { useState } from "react"
 import { useTranslation } from "react-i18next"
 import { View } from "react-native"
 
@@ -17,6 +17,9 @@ import {
   GroupedOutlineDescription,
   GroupedPlainButtonCell,
 } from "@/src/components/ui/grouped/GroupedList"
+import { Text } from "@/src/components/ui/typography/Text"
+import { useTouchOnTypingPause } from "@/src/hooks/useTouchOnTypingPause"
+import { isValidEmail } from "@/src/lib/email"
 import { useNavigation } from "@/src/lib/navigation/hooks"
 import type { NavigationControllerView } from "@/src/lib/navigation/types"
 import { toast } from "@/src/lib/toast"
@@ -29,11 +32,12 @@ export const EditEmailScreen: NavigationControllerView = () => {
   const [email, setEmail] = useState(whoami?.email ?? "")
 
   const [isDirty, setIsDirty] = useState(false)
+  // Set once the field is left or typing pauses, so the hint does not interrupt typing
+  const [isEmailTouched, setIsEmailTouched] = useState(false)
   const isValidate = whoami?.emailVerified
 
-  const newEmailIsValid = useMemo(() => {
-    return email.match(/^[^\s@]+@[^\s@][^\s.@]*\.[^\s@]+$/)
-  }, [email])
+  const newEmailIsValid = isValidEmail(email)
+  useTouchOnTypingPause(isDirty ? email : "", !newEmailIsValid, setIsEmailTouched)
 
   const navigation = useNavigation()
   const { mutate: updateEmail, isPending } = useMutation({
@@ -80,16 +84,26 @@ export const EditEmailScreen: NavigationControllerView = () => {
           >
             <PlainTextField
               autoCapitalize="none"
+              autoCorrect={false}
+              keyboardType="email-address"
+              autoComplete="email"
+              textContentType="emailAddress"
               value={email}
               onChangeText={(text) => {
                 setEmail(text)
                 setIsDirty(true)
               }}
+              onBlur={() => setIsEmailTouched(true)}
               placeholder={t("profile.email.placeholder")}
               className="w-full flex-1 text-left text-secondary-label"
             />
           </GroupedInsetListCell>
         </GroupedInsetListCard>
+        {isDirty && isEmailTouched && !!email && !newEmailIsValid && (
+          <Text className="mx-9 mt-2 text-xs text-red">
+            {t("validation.invalid_email", { ns: "common" })}
+          </Text>
+        )}
         <GroupedOutlineDescription
           description={`${t("profile.email.verify_status", {
             status: isValidate ? t("profile.email.verified") : t("profile.email.unverified"),

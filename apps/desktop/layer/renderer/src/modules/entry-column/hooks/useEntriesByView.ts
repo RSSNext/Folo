@@ -18,13 +18,15 @@ import { nextFrame } from "@follow/utils"
 import { isBizId } from "@follow/utils/utils"
 import { useMutation } from "@tanstack/react-query"
 import { debounce } from "es-toolkit/compat"
-import { useAtomValue } from "jotai"
+import { useAtomValue, useSetAtom } from "jotai"
 import { useCallback, useEffect, useMemo, useRef, useState } from "react"
+import { useTranslation } from "react-i18next"
 
 import { useGeneralSettingKey } from "~/atoms/settings/general"
 import { ROUTE_FEED_PENDING } from "~/constants/app"
 import { useFeature } from "~/hooks/biz/useFeature"
 import { useRouteParams } from "~/hooks/biz/useRouteParams"
+import { toastFetchError } from "~/lib/error-parser"
 
 import { aiTimelineEnabledAtom } from "../atoms/ai-timeline"
 import { getEffectiveRouteEntrySortOrder } from "./entry-sort-order"
@@ -91,17 +93,41 @@ const useRemoteEntries = (): UseEntriesReturn => {
   ])
   const query = useEntriesQuery(entriesOptions)
 
+  // Plans without AI sort get a 402. Go back to the usual order and say why, instead of
+  // keeping the toggle on over the local list, which is not sorted by importance.
+  const { t } = useTranslation()
+  const setAiTimelineEnabled = useSetAtom(aiTimelineEnabledAtom)
+  const aiSortError = entriesOptions.aiSort && query.isError ? query.error : null
+  useEffect(() => {
+    if (!aiSortError) return
+    setAiTimelineEnabled(false)
+    toastFetchError(aiSortError, { title: t("entry_list_header.ai_timeline_failed") })
+  }, [aiSortError, setAiTimelineEnabled, t])
+
+  // "Mark above as read" sends this as `insertedBefore`, so it must only move
+  // when the top of the list is (re)loaded. Loading the next page doesn't show
+  // entries inserted after the first page was fetched.
+  const isFetchingFirstPage = query.isFetching && !query.isFetchingNextPage
   const [fetchedTime, setFetchedTime] = useState<number>()
   useEffect(() => {
-    if (!query.isFetching) {
+    if (!isFetchingFirstPage) {
       setFetchedTime(Date.now())
     }
-  }, [query.isFetching])
+  }, [isFetchingFirstPage])
 
   const refetch = useCallback(async () => void query.refetch(), [query])
   const fetchNextPage = useCallback(async () => void query.fetchNextPage(), [query])
 
   if (!query.data || query.isLoading) {
+    if (query.isError) {
+      return {
+        ...fallbackReturn,
+        refetch,
+        isLoading: query.isFetching,
+        isFetching: query.isFetching,
+        error: query.error,
+      }
+    }
     return fallbackReturn
   }
   return {
@@ -233,11 +259,6 @@ const useLocalEntries = (): UseEntriesReturn => {
 
   const [page, setPage] = useState(0)
   const pageSize = 30
-  const totalPage = useMemo(
-    () => (allEntries ? Math.ceil(allEntries.length / pageSize) : 0),
-    [allEntries],
-  )
-
   const entries = useMemo(() => {
     return allEntries?.slice(0, (page + 1) * pageSize) || []
   }, [allEntries, page, pageSize])
@@ -271,7 +292,7 @@ const useLocalEntries = (): UseEntriesReturn => {
     isReady: true,
     isFetchingNextPage: false,
     isFetching: false,
-    hasNextPage: page < totalPage,
+    hasNextPage: hasNext,
     error: null,
   }
 }
@@ -342,15 +363,20 @@ export const useEntriesByView = ({ onReset }: { onReset?: () => void }) => {
 
     type: remoteQuery.isReady ? ("remote" as const) : ("local" as const),
     refetch: useCallback(() => {
-      const promise = query.refetch()
+      // Until the remote query has succeeded the local query is shown, but a
+      // refresh still has to retry the remote request.
+      const promise = remoteQuery.isReady
+        ? remoteQuery.refetch()
+        : Promise.all([remoteQuery.refetch(), localQuery.refetch()]).then(() => {})
       void unreadSyncService.refresh({ calibrate: true })
       return promise
-    }, [query]),
+    }, [localQuery, remoteQuery]),
     entriesIds: entryIds,
     groupedCounts,
     isFetching: remoteQuery.isFetching,
     isFetchingNextPage: remoteQuery.isFetchingNextPage,
     isLoading: remoteQuery.isLoading,
+    error: remoteQuery.error,
   }
 }
 

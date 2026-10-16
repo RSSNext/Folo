@@ -2,7 +2,7 @@ import type { MarkAllAsReadRequest } from "@follow-app/client-sdk"
 import type { Command } from "commander"
 
 import { parseView, viewHelp } from "../args"
-import { runCommand } from "../command"
+import { runCommand, toChangeResult } from "../command"
 import { CLIError } from "../output"
 
 interface MarkAllReadOptions {
@@ -43,7 +43,7 @@ export const registerEntryCommand = (program: Command) => {
     .action(async function (this: Command, entryId: string) {
       await runCommand(this, async ({ client }) => {
         const response = await client.api.reads.markAsRead({ entryIds: [entryId] })
-        return response.data
+        return toChangeResult(response)
       })
     })
 
@@ -54,7 +54,7 @@ export const registerEntryCommand = (program: Command) => {
     .action(async function (this: Command, entryId: string) {
       await runCommand(this, async ({ client }) => {
         const response = await client.api.reads.markAsUnread({ entryId })
-        return response.data
+        return toChangeResult(response)
       })
     })
 

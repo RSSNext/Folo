@@ -3,7 +3,7 @@ import {
   HoverCardContent,
   HoverCardTrigger,
 } from "@follow/components/ui/hover-card/index.js"
-import { useEntry, usePrefetchEntryDetail } from "@follow/store/entry/hooks"
+import { useEntry, useHasEntry, usePrefetchEntryDetail } from "@follow/store/entry/hooks"
 import { useFeedById } from "@follow/store/feed/hooks"
 import { feedIconSelector } from "@follow/store/feed/selectors"
 import { cn } from "@follow/utils"
@@ -26,8 +26,10 @@ export const EntryPreviewCard: React.FC<EntryPreviewCardProps> = ({
   className,
   onNavigate,
 }) => {
-  // Prefetch entry details on hover
-  usePrefetchEntryDetail(entryId)
+  // Only an entry that isn't loaded yet is fetched, so an answer citing many entries from the
+  // timeline doesn't request each of them with its full content
+  const hasEntry = useHasEntry(entryId)
+  usePrefetchEntryDetail(entryId, undefined, { enabled: !hasEntry })
 
   const entry = useEntry(entryId, (state) => {
     if (!state) return null

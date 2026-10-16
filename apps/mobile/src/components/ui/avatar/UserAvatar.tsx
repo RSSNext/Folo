@@ -75,9 +75,12 @@ export const UserAvatar = ({
   if (!image) {
     return (
       <View
+        // Without a fill, as while signed out, this view is flattened away. Android creates it with
+        // only the props that changed once the name arrives, so it would lose its round corners.
+        collapsable={false}
         className={cn(
           "items-center justify-center rounded-full",
-          name && "bg-secondary-system-background",
+          name && "bg-tertiary-system-fill",
           className,
         )}
         style={{
@@ -88,10 +91,11 @@ export const UserAvatar = ({
         {name ? (
           <Text
             allowFontScaling={false}
-            className="p-2 text-center uppercase text-secondary-label"
+            className="text-center uppercase text-secondary-label"
             style={{
               fontSize: size / 3,
             }}
+            numberOfLines={1}
             adjustsFontSizeToFit
           >
             {name.slice(0, 2)}

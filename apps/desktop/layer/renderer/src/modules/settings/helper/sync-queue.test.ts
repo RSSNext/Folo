@@ -321,6 +321,51 @@ describe("desktop spotlight setting sync", () => {
     })
   })
 
+  test("a change made while a flush waits for the server is sent after it", async () => {
+    vi.useFakeTimers()
+    let resolveFirstUpdate!: (value: { code: number }) => void
+    settingsUpdateMock.mockImplementationOnce(
+      () =>
+        new Promise((resolve) => {
+          resolveFirstUpdate = resolve
+        }),
+    )
+
+    await settingSyncQueue.init()
+
+    setGeneralSetting("actionLanguage", "fr-FR")
+    await vi.advanceTimersByTimeAsync(1000)
+    expect(settingsUpdateMock).toHaveBeenCalledTimes(1)
+
+    setAISetting("personalizePrompt", "Call me Captain.")
+    resolveFirstUpdate({ code: 0 })
+    await vi.advanceTimersByTimeAsync(1000)
+
+    expect(settingsUpdateMock).toHaveBeenCalledTimes(2)
+    expect(settingsUpdateMock).toHaveBeenLastCalledWith({
+      tab: "ai",
+      personalizePrompt: "Call me Captain.",
+    })
+    expect(settingSyncQueue.queue).toEqual([])
+  })
+
+  test("changes left from the last session are sent after a restart", async () => {
+    vi.useFakeTimers()
+    localStorage.setItem(
+      getStorageNS("setting_sync_queue"),
+      JSON.stringify({
+        ownerUserId: "user-1",
+        queue: [{ tab: "general", payload: { actionLanguage: "de-DE" }, date: Date.now() }],
+      }),
+    )
+
+    await settingSyncQueue.init()
+    await vi.advanceTimersByTimeAsync(1000)
+
+    expect(settingsUpdateMock).toHaveBeenCalledWith({ tab: "general", actionLanguage: "de-DE" })
+    expect(settingSyncQueue.queue).toEqual([])
+  })
+
   test("newer settings from the account replace the local ones except the device-local ones", () => {
     setGeneralSetting("actionLanguage", "ja")
     setGeneralSetting("language", "ja")

@@ -2,6 +2,7 @@ import { ActionButton } from "@follow/components/ui/button/index.js"
 import { RootPortal } from "@follow/components/ui/portal/index.js"
 import type { FeedViewType } from "@follow/constants"
 import { useCallback, useMemo } from "react"
+import { useTranslation } from "react-i18next"
 
 import { MenuItemText } from "~/atoms/context-menu"
 import {
@@ -35,6 +36,7 @@ export const MoreActions = ({
   showMainAction?: boolean
   hideCustomizeToolbar?: boolean
 }) => {
+  const { t } = useTranslation()
   const { moreAction, mainAction } = useSortedEntryActions({ entryId, view })
   const { withLoginGuard } = useRequireLogin()
   const resolveClick = useCallback(
@@ -85,7 +87,10 @@ export const MoreActions = ({
   return (
     <DropdownMenu>
       <DropdownMenuTrigger asChild>
-        <ActionButton icon={<i className="i-mingcute-more-1-fill" />} />
+        <ActionButton
+          aria-label={t("customizeToolbar.more_actions.title", { ns: "settings" })}
+          icon={<i className="i-mingcute-more-1-fill" />}
+        />
       </DropdownMenuTrigger>
       <RootPortal>
         <DropdownMenuContent align="end">

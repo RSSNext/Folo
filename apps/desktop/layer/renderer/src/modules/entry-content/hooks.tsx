@@ -93,17 +93,22 @@ export const useEntryContent = (entryId: string) => {
 }
 
 export const useEntryMediaInfo = (entryId: string) => {
-  return useEntry(entryId, (entry) =>
-    Object.fromEntries(
-      entry?.media
-        ?.filter((m) => m.type === "photo")
-        .map((cur) => [
-          cur.url,
-          {
-            width: cur.width,
-            height: cur.height,
-          },
-        ]) ?? [],
-    ),
+  // Select the media array itself so unrelated entry writes keep the same
+  // reference, then derive the map from it.
+  const media = useEntry(entryId, (entry) => entry.media)
+  return useMemo(
+    () =>
+      Object.fromEntries(
+        media
+          ?.filter((m) => m.type === "photo")
+          .map((cur) => [
+            cur.url,
+            {
+              width: cur.width,
+              height: cur.height,
+            },
+          ]) ?? [],
+      ),
+    [media],
   )
 }

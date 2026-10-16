@@ -1,4 +1,4 @@
-import { eq } from "drizzle-orm"
+import { eq, sql } from "drizzle-orm"
 
 import { db } from "../db"
 import { feedsTable } from "../schemas"
@@ -23,7 +23,13 @@ class FeedServiceStatic implements Resetable {
       .values(feed)
       .onConflictDoUpdate({
         target: [feedsTable.id],
-        set: conflictUpdateAllExcept(feedsTable, ["id", ...FEED_EXTRA_DATA_KEYS]),
+        set: {
+          ...conflictUpdateAllExcept(feedsTable, ["id", ...FEED_EXTRA_DATA_KEYS]),
+          // Keep stored analytics when the incoming feed has none, take fresh ones otherwise
+          subscriptionCount: sql`coalesce(excluded.subscription_count, ${feedsTable.subscriptionCount})`,
+          updatesPerWeek: sql`coalesce(excluded.updates_per_week, ${feedsTable.updatesPerWeek})`,
+          latestEntryPublishedAt: sql`coalesce(excluded.latest_entry_published_at, ${feedsTable.latestEntryPublishedAt})`,
+        },
       })
   }
 

@@ -13,7 +13,7 @@ import { useTranslation } from "react-i18next"
 import { Platform, Share, View } from "react-native"
 
 import {
-  getHideAllReadSubscriptions,
+  getHidePrivateSubscriptionsInTimeline,
   useEffectiveEntrySortOrder,
 } from "@/src/atoms/settings/general"
 import { EntryContentWebView } from "@/src/components/native/webview/EntryContentWebView"
@@ -106,7 +106,7 @@ export const EntryItemContextMenu = ({
                     position: "above",
                     sortOrder,
                   }),
-                  excludePrivate: getHideAllReadSubscriptions(),
+                  excludePrivate: getHidePrivateSubscriptionsInTimeline(),
                 })
               }}
             >
@@ -153,7 +153,7 @@ export const EntryItemContextMenu = ({
                     position: "below",
                     sortOrder,
                   }),
-                  excludePrivate: getHideAllReadSubscriptions(),
+                  excludePrivate: getHidePrivateSubscriptionsInTimeline(),
                 })
               }}
             >

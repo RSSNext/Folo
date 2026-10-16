@@ -27,27 +27,26 @@ export function EntryContentMarkdownRenderer({
   ...props
 }: EntryContentRendererProps & MarkdownProps) {
   const spotlightRules = useSpotlightSettingKey("spotlights")
-  const entry = useEntry(entryId, (state) => {
-    const images =
-      state.media?.reduce(
-        (acc, media) => {
-          if (media.height && media.width) {
-            acc[media.url] = media
+  // Select the media array itself, which keeps its reference, and build the image record from it,
+  // or the record is new on every store update and re-renders the whole article
+  const entry = useEntry(entryId, (state) => ({
+    media: state.media,
+    url: state.url,
+  }))
+  const media = entry?.media
+  const images: Record<string, MarkdownImage> = useMemo(
+    () =>
+      media?.reduce(
+        (acc, item) => {
+          if (item.height && item.width) {
+            acc[item.url] = item
           }
           return acc
         },
         {} as Record<string, MarkdownImage>,
-      ) ?? {}
-
-    const { url } = state
-
-    return {
-      images,
-      url,
-    }
-  })
-
-  const images: Record<string, MarkdownImage> = useMemo(() => entry?.images ?? {}, [entry])
+      ) ?? {},
+    [media],
+  )
   const onImageContextMenu = useImageContextMenu(entry?.url)
   const actions: MarkdownRenderActions = useMemo(() => {
     return {
@@ -67,7 +66,7 @@ export function EntryContentMarkdownRenderer({
       ensureAndRenderTimeStamp,
       onImageContextMenu,
     }
-  }, [entry, feedId, onImageContextMenu, view])
+  }, [entry?.url, feedId, onImageContextMenu, view])
 
   return (
     <MarkdownImageRecordContext.Provider value={images}>

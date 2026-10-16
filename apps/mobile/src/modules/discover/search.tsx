@@ -15,6 +15,7 @@ import { getDefaultHeaderHeight } from "@/src/components/layouts/utils"
 import { SetNavigationHeaderHeightContext } from "@/src/components/layouts/views/NavigationHeaderContext"
 import { Search2CuteReIcon } from "@/src/icons/search_2_cute_re"
 import { useScreenIsInSheetModal } from "@/src/lib/navigation/hooks"
+import { queryClient } from "@/src/lib/query-client"
 import { accentColor, useColor } from "@/src/theme/colors"
 
 import { useSearchPageContext, useSearchPageScrollContainerAnimatedX } from "./ctx"
@@ -176,8 +177,17 @@ const SearchInput = () => {
           autoCorrect={false}
           autoFocus={isFocused}
           ref={inputRef}
-          onSubmitEditing={() => {
-            setSearchValue(tempSearchValue)
+          onSubmitEditing={({ nativeEvent }) => {
+            // Read the submitted text: typed or pasted text can arrive in the same frame as the
+            // return key, before tempSearchValue holds it
+            const { text } = nativeEvent
+            setTempSearchValue(text)
+            // Submitting the same keyword again searches again, e.g. after a failed request
+            if (text === searchValue) {
+              void queryClient.refetchQueries({ queryKey: ["searchFeed", searchValue] })
+              void queryClient.refetchQueries({ queryKey: ["searchList", searchValue] })
+            }
+            setSearchValue(text)
           }}
           value={tempSearchValue}
           cursorColor={accentColor}

@@ -16,7 +16,7 @@ import { Media } from "~/components/ui/media/Media"
 import { useEntryIsRead } from "~/hooks/biz/useAsRead"
 import { useRenderStyle } from "~/hooks/biz/useRenderStyle"
 import { jotaiStore } from "~/lib/jotai"
-import { parseSocialMedia } from "~/lib/parsers"
+import { parseEntrySocialMedia } from "~/lib/parsers"
 import type { FeedIconEntry } from "~/modules/feed/feed-icon"
 import { FeedIcon } from "~/modules/feed/feed-icon"
 import { FeedTitle } from "~/modules/feed/feed-title"
@@ -95,7 +95,7 @@ export const SocialMediaItem: EntryListItemFC = ({ entryId, translation }) => {
 
   const content = entry.content || entry.description
 
-  const parsed = parseSocialMedia(entry.authorUrl || entry.url || entry.guid)
+  const parsed = parseEntrySocialMedia(entry, feed)
   const EntryContentWrapper = autoExpandLongSocialMedia
     ? PassviseFragment
     : CollapsedSocialMediaItem

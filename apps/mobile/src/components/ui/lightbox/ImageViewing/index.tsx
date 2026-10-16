@@ -320,20 +320,23 @@ function ImageView({
       >
         {images.map((imageSrc, i) => (
           <View key={imageSrc.uri}>
-            <LightboxImage
-              onTap={onTap}
-              onZoom={onZoom}
-              imageSrc={imageSrc}
-              onRequestClose={onRequestClose}
-              isScrollViewBeingDragged={isDragging}
-              showControls={showControls}
-              safeAreaRef={safeAreaRef}
-              isScaled={isScaled}
-              isFlyingAway={isFlyingAway}
-              isActive={i === imageIndex}
-              dismissSwipeTranslateY={dismissSwipeTranslateY}
-              openProgress={openProgress}
-            />
+            {/* An entry can carry dozens of images, so only the visible page and its neighbors load */}
+            {Math.abs(i - imageIndex) <= 1 && (
+              <LightboxImage
+                onTap={onTap}
+                onZoom={onZoom}
+                imageSrc={imageSrc}
+                onRequestClose={onRequestClose}
+                isScrollViewBeingDragged={isDragging}
+                showControls={showControls}
+                safeAreaRef={safeAreaRef}
+                isScaled={isScaled}
+                isFlyingAway={isFlyingAway}
+                isActive={i === imageIndex}
+                dismissSwipeTranslateY={dismissSwipeTranslateY}
+                openProgress={openProgress}
+              />
+            )}
           </View>
         ))}
       </PagerView>

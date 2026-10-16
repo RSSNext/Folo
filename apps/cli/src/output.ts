@@ -68,11 +68,12 @@ const toTableRow = (value: unknown): Record<string, string | number | boolean | 
 const renderAsciiTable = (
   rows: Array<Record<string, string | number | boolean | null>>,
 ): string => {
-  if (rows.length === 0) {
+  const columns = Array.from(new Set(rows.flatMap((row) => Object.keys(row))))
+  // No rows, or a change the API answered with no fields
+  if (columns.length === 0) {
     return "(empty)"
   }
 
-  const columns = Array.from(new Set(rows.flatMap((row) => Object.keys(row))))
   const widths = columns.map((column) =>
     Math.max(column.length, ...rows.map((row) => String(row[column] ?? "").length)),
   )

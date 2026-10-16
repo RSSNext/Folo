@@ -20,6 +20,7 @@ export const EntryUser: Component<{
     <div className="no-drag-region center relative cursor-pointer hover:!z-[99999]" ref={ref}>
       <button
         type="button"
+        aria-label={`${t("entry_actions.recent_reader")} ${user.name || user.handle || ""}`.trim()}
         onClick={() => {
           presentUserProfile(userId)
         }}

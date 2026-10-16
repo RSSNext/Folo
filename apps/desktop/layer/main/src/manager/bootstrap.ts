@@ -15,8 +15,8 @@ import { WindowManager } from "~/manager/window"
 import { isMacOS } from "../env"
 import { migrateAuthCookiesToNewApiDomain } from "../lib/auth-cookie-migration"
 import { dedupeManagedAuthCookies } from "../lib/auth-cookies"
+import { isDeepLink, openDeepLink, setDeepLinkHandler } from "../lib/deep-link"
 import { handleUrlRouting } from "../lib/router"
-import { store } from "../lib/store"
 import { updateNotificationsToken } from "../lib/user"
 import { logger } from "../logger"
 import { cleanupOldRender } from "../updater/hot-updater"
@@ -47,12 +47,28 @@ export class BootstrapManager {
       const mainWindow = WindowManager.getMainWindow()
       if (mainWindow) {
         if (mainWindow.isMinimized()) mainWindow.restore()
-        mainWindow.show()
+        WindowManager.showMainWindow(mainWindow)
       }
 
-      const url = commandLine.pop()
+      const url = commandLine.find(isDeepLink)
       if (url) {
-        this.handleOpen(url)
+        openDeepLink(url)
+      }
+    })
+
+    // Registered before the app is ready: macOS sends the link that launched the app right away
+    // and doesn't send it again
+    app.on("open-url", (event, url) => {
+      event.preventDefault()
+      if (app.isReady()) {
+        const mainWindow = WindowManager.getMainWindowOrCreate()
+        if (mainWindow && !mainWindow.isDestroyed()) {
+          if (mainWindow.isMinimized()) mainWindow.restore()
+          mainWindow.focus()
+        }
+      }
+      if (url) {
+        openDeepLink(url)
       }
     })
 
@@ -82,15 +98,18 @@ export class BootstrapManager {
         callback({ cancel: false, requestHeaders: details.requestHeaders })
       })
 
-      await migrateAuthCookiesToNewApiDomain(session.defaultSession, {
-        currentApiURL: env.VITE_API_URL,
-      })
-      await dedupeManagedAuthCookies({
-        apiURL: env.VITE_API_URL,
-        session: session.defaultSession,
-      })
-
-      await cleanupOldRender()
+      // A failed cookie cleanup must not keep the main window from opening
+      try {
+        await migrateAuthCookiesToNewApiDomain(session.defaultSession, {
+          currentApiURL: env.VITE_API_URL,
+        })
+        await dedupeManagedAuthCookies({
+          apiURL: env.VITE_API_URL,
+          session: session.defaultSession,
+        })
+      } catch (error) {
+        logger.error("Failed to clean up auth cookies:", error)
+      }
 
       // Bypass CORS for PostHog analytics
       session.defaultSession.webRequest.onHeadersReceived((details, callback) => {
@@ -121,14 +140,19 @@ export class BootstrapManager {
 
       WindowManager.getMainWindowOrCreate()
 
-      app.on("open-url", (_, url) => {
-        const mainWindow = WindowManager.getMainWindowOrCreate()
-        if (mainWindow && !mainWindow.isDestroyed()) {
-          if (mainWindow.isMinimized()) mainWindow.restore()
-          mainWindow.focus()
-        }
-        url && this.handleOpen(url)
+      // Removing old renderer bundles can be slow, or fail on Windows when a file is in use, so it
+      // runs after the window opens
+      cleanupOldRender().catch((error) => {
+        logger.error("Failed to clean up old renderer bundles:", error)
       })
+
+      setDeepLinkHandler((url) => {
+        void this.handleOpen(url)
+      })
+      // Windows and Linux pass the link that launched the app as an argument
+      for (const arg of process.argv) {
+        if (isDeepLink(arg)) openDeepLink(arg)
+      }
 
       if (DEV) {
         this.installDevTools()
@@ -138,14 +162,7 @@ export class BootstrapManager {
     app.on("before-quit", async () => {
       const window = WindowManager.getMainWindow()
       if (!window || window.isDestroyed()) return
-      const bounds = window.getBounds()
-
-      store.set(WindowManager.windowStateStoreKey, {
-        width: bounds.width,
-        height: bounds.height,
-        x: bounds.x,
-        y: bounds.y,
-      })
+      WindowManager.saveMainWindowState(window)
       await session.defaultSession.cookies.flushStore()
       await cleanupOldRender()
     })

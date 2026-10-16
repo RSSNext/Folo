@@ -15,10 +15,14 @@ import { useDebounceCallback, useEventCallback } from "usehooks-ts"
 import { ipcServices } from "~/lib/client"
 import { observeResize } from "~/lib/observe-resize"
 
+// Like browser find bars, the panel starts with the previous search. The clipboard may hold
+// anything, e.g. a password, and must not show up here.
+let lastSearchText = ""
+
 const CmdFImpl: FC<{
   onClose: () => void
 }> = ({ onClose }) => {
-  const [value, setValue] = useState("")
+  const [value, setValue] = useState(lastSearchText)
   const [activeMatchOrdinal, setActiveMatchOrdinal] = useState(0)
   const [matches, setMatches] = useState(0)
 
@@ -28,12 +32,6 @@ const CmdFImpl: FC<{
   const [scrollLeft, setScrollLeft] = useState(0)
 
   useLayoutEffect(() => {
-    Promise.resolve(ipcServices?.app.readClipboard()).then((text) => {
-      if (!currentValue.current && text) {
-        setValue(text)
-      }
-    })
-
     inputRef.current?.focus()
     // Select all
 
@@ -73,6 +71,7 @@ const CmdFImpl: FC<{
       setIsSearching(true)
 
       const searchId = ++searchIdRef.current
+      if (text) lastSearchText = text
 
       let findNext = true
       if (!text) {

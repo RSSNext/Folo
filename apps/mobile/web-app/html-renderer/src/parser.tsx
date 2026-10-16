@@ -10,6 +10,7 @@ import { createHeadingRenderer, MarkdownLink, MarkdownP } from "./components"
 import { MarkdownImage } from "./components/image"
 import { Math } from "./components/math"
 import { ShikiHighLighter } from "./components/shiki"
+import { getYouTubeEmbedVideoId, YouTubeEmbedCard } from "./components/youtube-embed"
 import { applySpotlightToHtmlRendererTree } from "./spotlight"
 
 const renderStyleTag: Components["style"] = ({ node, ...props }) => {
@@ -88,6 +89,13 @@ export const parseHtml = (
         return createElement(MarkdownP, props, props.children)
       },
 
+      iframe: ({ node, ...props }) => {
+        const videoId = getYouTubeEmbedVideoId(props.src)
+        if (videoId) {
+          return createElement(YouTubeEmbedCard, { videoId, title: props.title })
+        }
+        return createElement("iframe", props)
+      },
       math: Math,
       hr: ({ node, ...props }) =>
         createElement("hr", {

@@ -1,4 +1,7 @@
 import "@follow/components/dayjs"
+// Imported apart from index.css: the production Tailwind pass rewrites the whole sheet
+// and loses the font files' relative url()s, so the fonts were never bundled
+import "@follow/components/assets/font.css"
 import "./styles/index.css"
 
 import * as React from "react"

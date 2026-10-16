@@ -4,7 +4,7 @@ import * as React from "react"
 
 import { renderToImage } from "../../lib/og/render-to-image"
 import { getUserProfile } from "../../lib/user-profile-params"
-import { getImageBase64, OGAvatar, OGCanvas } from "./__base"
+import { getImageBase64, OGAvatar, OGCanvas, renderWithAvatarFallback } from "./__base"
 
 export const renderUserOG = async (apiClient: FollowClient, handleOrId: string) => {
   const user = await getUserProfile(apiClient, handleOrId).catch((error: unknown) => {
@@ -18,57 +18,59 @@ export const renderUserOG = async (apiClient: FollowClient, handleOrId: string) 
 
   const imageBase64 = await getImageBase64(user.data.image)
 
-  return await renderToImage(
-    <OGCanvas seed={user.data.id}>
-      <div
-        style={{
-          display: "flex",
-          flexDirection: "column",
-          alignItems: "center",
-          justifyContent: "center",
-          width: "100%",
-          height: "100%",
-          gap: 25,
-        }}
-      >
-        <OGAvatar base64={imageBase64} title={user.data.name!} />
-
+  return await renderWithAvatarFallback(imageBase64, (avatarBase64) =>
+    renderToImage(
+      <OGCanvas seed={user.data.id}>
         <div
           style={{
             display: "flex",
             flexDirection: "column",
             alignItems: "center",
+            justifyContent: "center",
+            width: "100%",
+            height: "100%",
+            gap: 25,
           }}
         >
-          <h3
+          <OGAvatar base64={avatarBase64} title={user.data.name!} />
+
+          <div
             style={{
-              color: "#ffffff",
-              fontSize: "4.5rem",
-              fontWeight: 700,
-              margin: 0,
-              letterSpacing: "-0.02em",
+              display: "flex",
+              flexDirection: "column",
+              alignItems: "center",
             }}
           >
-            {user.data.name}
-          </h3>
-          {user.data.handle && (
-            <p
+            <h3
               style={{
-                fontSize: "2.5rem",
-                color: "#8b949e",
+                color: "#ffffff",
+                fontSize: "4.5rem",
+                fontWeight: 700,
                 margin: 0,
-                marginTop: 12,
+                letterSpacing: "-0.02em",
               }}
             >
-              @{user.data.handle}
-            </p>
-          )}
+              {user.data.name}
+            </h3>
+            {user.data.handle && (
+              <p
+                style={{
+                  fontSize: "2.5rem",
+                  color: "#8b949e",
+                  margin: 0,
+                  marginTop: 12,
+                }}
+              >
+                @{user.data.handle}
+              </p>
+            )}
+          </div>
         </div>
-      </div>
-    </OGCanvas>,
-    {
-      width: 1200,
-      height: 600,
-    },
+      </OGCanvas>,
+      {
+        width: 1200,
+        height: 600,
+      },
+    ),
   )
 }

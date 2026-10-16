@@ -9,7 +9,7 @@ import { cn } from "@follow/utils/utils"
 import { useQuery } from "@tanstack/react-query"
 import dayjs from "dayjs"
 import { useAtom } from "jotai"
-import { useEffect } from "react"
+import { useEffect, useState } from "react"
 import { useTranslation } from "react-i18next"
 
 import { currentSupportedLanguages } from "~/@types/constants"
@@ -18,6 +18,7 @@ import { langLoadingLockMapAtom } from "~/atoms/lang"
 import { useIsPaymentEnabled } from "~/atoms/server-configs"
 import {
   DEFAULT_ACTION_LANGUAGE,
+  getGeneralSettings,
   setGeneralSetting,
   useGeneralSettingKey,
   useGeneralSettingSelector,
@@ -63,10 +64,13 @@ export const SettingGeneral = () => {
       if (settings) {
         // On Windows `openAtLogin` only matches a login item registered without arguments,
         // `executableWillLaunchAtLogin` matches it with any arguments
-        setGeneralSetting(
-          "appLaunchOnStartup",
-          settings.openAtLogin || settings.executableWillLaunchAtLogin === true,
-        )
+        const launchOnStartup =
+          settings.openAtLogin || settings.executableWillLaunchAtLogin === true
+        // Writing marks the general settings as updated, which makes this device ignore older
+        // general settings from other devices, so only write when the OS value differs
+        if (getGeneralSettings().appLaunchOnStartup !== launchOnStartup) {
+          setGeneralSetting("appLaunchOnStartup", launchOnStartup)
+        }
       }
     })
   }, [])
@@ -136,8 +140,8 @@ export const SettingGeneral = () => {
             value: t("general.timeline"),
           },
           defineSettingItem("unreadOnly", {
-            label: t("general.show_unread_on_launch.label"),
-            description: t("general.show_unread_on_launch.description"),
+            label: t("general.unread_only.label"),
+            description: t("general.unread_only.description"),
           }),
           defineSettingItem("groupByDate", {
             label: t("general.group_by_date.label"),
@@ -375,6 +379,21 @@ const NettingSetting = () => {
   const { t } = useTranslation("settings")
   const proxyConfig = useProxyValue()
   const setProxyConfig = useSetProxy()
+  // Applied on blur or Enter: every keystroke would otherwise reset the session proxy, and the
+  // partial values in between are invalid
+  const [draft, setDraft] = useState<string | null>(null)
+  const [isInvalid, setIsInvalid] = useState(false)
+
+  const applyDraft = async () => {
+    if (draft === null) return
+    const input = draft.trim()
+    // A host and port without a scheme, as most proxy apps show it, is an HTTP proxy
+    const proxy = input && !input.includes("://") ? `http://${input}` : input
+    const accepted = await setProxyConfig(proxy)
+    const invalid = !!proxy && !accepted
+    setIsInvalid(invalid)
+    if (!invalid) setDraft(null)
+  }
 
   return (
     <SettingItemGroup>
@@ -382,9 +401,19 @@ const NettingSetting = () => {
         type="text"
         label={t("general.proxy.label")}
         labelClassName="w-[150px]"
-        value={proxyConfig}
-        onChange={(event) => setProxyConfig(event.target.value.trim())}
+        value={draft ?? proxyConfig}
+        onChange={(event) => {
+          setDraft(event.target.value)
+          setIsInvalid(false)
+        }}
+        onBlur={applyDraft}
+        onKeyDown={(event) => {
+          if (event.key === "Enter") event.currentTarget.blur()
+        }}
       />
+      {isInvalid && (
+        <SettingDescription className="text-red">{t("general.proxy.invalid")}</SettingDescription>
+      )}
       <SettingDescription>{t("general.proxy.description")}</SettingDescription>
     </SettingItemGroup>
   )

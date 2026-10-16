@@ -29,7 +29,7 @@ class LifecycleManagerStatic {
 
   private onActivate() {
     const mainWindow = WindowManager.getMainWindowOrCreate()
-    mainWindow.show()
+    WindowManager.showMainWindow(mainWindow)
     mainWindow.focus()
   }
 

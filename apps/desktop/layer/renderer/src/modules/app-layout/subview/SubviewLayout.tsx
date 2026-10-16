@@ -241,14 +241,13 @@ const SubViewHeaderRightView = ({ isHeaderElevated }: { isHeaderElevated: boolea
             <GlassButton
               key={key}
               description={typeof label === "string" ? label : undefined}
-              onClick={() => {
-                if (!disabled && !loading) onClick?.()
-              }}
+              disabled={disabled || loading}
+              onClick={onClick}
               className={cn(disabled || loading ? "cursor-not-allowed opacity-50" : "")}
               size="md"
               theme="auto"
             >
-              <i className={cn(icon || (loading ? "i-mgc-loading-3-cute-re animate-spin" : ""))} />
+              <i className={cn(loading ? "i-mgc-loading-3-cute-re animate-spin" : icon)} />
             </GlassButton>
           )
         }

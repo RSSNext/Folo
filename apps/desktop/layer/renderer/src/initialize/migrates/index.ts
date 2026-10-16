@@ -4,6 +4,7 @@ import { appLog } from "~/lib/log"
 
 import type { DefineMigrationOptions } from "./helper"
 import { v1 } from "./v/v1"
+import { v2 } from "./v/v2"
 
 const appVersionKey = getStorageNS("app_version")
 const migrationVersionKey = getStorageNS("migration_version")
@@ -22,7 +23,7 @@ const getMigrationVersions = () => {
     return new Set()
   }
 }
-const migrations: DefineMigrationOptions[] = [v1]
+const migrations: DefineMigrationOptions[] = [v1, v2]
 export const doMigration = async () => {
   const migrationVersions = getMigrationVersions()
 

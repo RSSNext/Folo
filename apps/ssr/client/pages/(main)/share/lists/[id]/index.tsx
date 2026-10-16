@@ -1,3 +1,5 @@
+import { NotFoundContent } from "@client/components/common/404"
+import { ShareLoadError } from "@client/components/common/ShareLoadError"
 import { Item } from "@client/components/items"
 import { FeedCertification } from "@client/components/ui/feed-certification"
 import { FeedIcon } from "@client/components/ui/feed-icon"
@@ -10,6 +12,7 @@ import { LoadingCircle } from "@follow/components/ui/loading/index.jsx"
 import { useTitle } from "@follow/hooks"
 import { cn, formatNumber } from "@follow/utils/utils"
 import type { FeedSchema } from "@follow-app/client-sdk"
+import { FollowAPIError } from "@follow-app/client-sdk"
 import { Fragment, memo } from "react"
 import * as React from "react"
 import { useTranslation } from "react-i18next"
@@ -86,7 +89,10 @@ export function Component() {
   }
 
   if (!list.data?.list) {
-    return null
+    if (!list.error || (list.error instanceof FollowAPIError && list.error.status === 404)) {
+      return <NotFoundContent />
+    }
+    return <ShareLoadError title={t("share.load_error_list")} onRetry={() => void list.refetch()} />
   }
 
   return (
@@ -189,9 +195,14 @@ export function Component() {
         </div>
 
         <div className="grid gap-3 sm:grid-cols-1 lg:grid-cols-2">
-          {listData.feedIds?.slice(0, SIZE).map((feedId: string) => (
-            <FeedRow feed={feedMap[feedId]!} key={feedId} />
-          ))}
+          {/* A list can still name feeds that were deleted since, which have no data */}
+          {listData.feedIds
+            ?.map((feedId: string) => feedMap[feedId])
+            .filter((feed): feed is FeedSchema => !!feed)
+            .slice(0, SIZE)
+            .map((feed) => (
+              <FeedRow feed={feed} key={feed.id} />
+            ))}
         </div>
 
         {"feedCount" in list.data && list.data.feedCount > SIZE && (

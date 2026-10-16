@@ -133,6 +133,32 @@ function LogoText() {
   )
 }
 
+const OG_IMAGE_TYPES = new Set([
+  "image/png",
+  "image/jpeg",
+  "image/jpg",
+  "image/gif",
+  "image/webp",
+  "image/svg+xml",
+])
+
+/**
+ * Renders with the avatar image, and once more with the initials when the image can't be drawn,
+ * so a broken icon doesn't take the whole preview down.
+ */
+export async function renderWithAvatarFallback<T>(
+  avatarBase64: string | null,
+  render: (avatarBase64: string | null) => Promise<T>,
+): Promise<T> {
+  try {
+    return await render(avatarBase64)
+  } catch (error) {
+    if (!avatarBase64) throw error
+    console.error("OG avatar render error, retrying without it:", error)
+    return await render(null)
+  }
+}
+
 export async function getImageBase64(image: string | null | undefined) {
   if (!image) {
     return null
@@ -148,11 +174,13 @@ export async function getImageBase64(image: string | null | undefined) {
         Referer: url.origin,
       },
     })
-    const isImage = res.headers.get("content-type")?.startsWith("image/")
-    if (res.ok && isImage) {
+    const contentType = res.headers.get("content-type")?.split(";")[0]?.trim().toLowerCase()
+    // Only formats the renderer can draw: an ICO favicon, common for feed icons, fails the whole
+    // image, while no image falls back to the initials
+    if (res.ok && contentType && OG_IMAGE_TYPES.has(contentType)) {
       const arrayBuffer = await res.arrayBuffer()
 
-      return `data:${res.headers.get("content-type")};base64,${Buffer.from(arrayBuffer).toString("base64")}`
+      return `data:${contentType};base64,${Buffer.from(arrayBuffer).toString("base64")}`
     }
     return null
   } catch {

@@ -2,14 +2,16 @@ import type { JotaiSyncStorage } from "@follow/utils"
 import { getStorageNS } from "@follow/utils/ns"
 import { parseSafeUrl } from "@follow/utils/utils"
 import { noop } from "foxact/noop"
+import { t } from "i18next"
 import { atomWithStorage, createJSONStorage } from "jotai/utils"
+import { toast } from "sonner"
 
 import { getRouteParams } from "~/hooks/biz/useRouteParams"
 import { createAtomHooks } from "~/lib/jotai"
 
 type PlayerAtomValue = {
   show: boolean
-  type?: "audio"
+  type?: "audio" | "tts"
   entryId?: string
   src?: string
   status?: "playing" | "paused" | "loading"
@@ -31,6 +33,11 @@ const playerInitialValue: PlayerAtomValue = {
   isStream: false,
 }
 
+// TTS plays from a MediaStream (under the about:blank placeholder) or a blob
+// URL, and neither can be loaded again after a reload
+const isPageScopedSource = (src: string | undefined) =>
+  !!src && (src.startsWith("blob:") || src.startsWith("about:"))
+
 const jsonStorage = createJSONStorage<PlayerAtomValue>()
 let hydrationDone = false
 const patchedLocalStorage: JotaiSyncStorage<PlayerAtomValue> = {
@@ -44,6 +51,11 @@ const patchedLocalStorage: JotaiSyncStorage<PlayerAtomValue> = {
       // patch status to `paused` when hydration
       value.status = "paused"
       value.isStream = false
+      if (isPageScopedSource(value.src)) {
+        value.show = false
+        value.src = undefined
+        value.entryId = undefined
+      }
       hydrationDone = true
     }
     return value
@@ -64,6 +76,11 @@ export const [
   }),
 )
 
+// Stops a source that does not go through `audio.src` (the TTS MediaStream).
+// `srcObject` takes precedence over `src`, so it must be released before
+// another source is mounted.
+let externalSourceTeardown: (() => void) | null = null
+
 export const AudioPlayer = {
   audio: new Audio(),
   currentTimeTimer: null as ReturnType<typeof setInterval> | null,
@@ -72,10 +89,25 @@ export const AudioPlayer = {
   get() {
     return getAudioPlayerAtomValue()
   },
+  setExternalSourceTeardown(teardown: (() => void) | null) {
+    externalSourceTeardown = teardown
+  },
+  releaseExternalSource() {
+    const teardown = externalSourceTeardown
+    externalSourceTeardown = null
+    teardown?.()
+    if (this.audio.srcObject) {
+      this.audio.srcObject = null
+    }
+  },
   mount(v: Omit<PlayerAtomValue, "show" | "status" | "playedSeconds" | "duration">) {
     const curV = getAudioPlayerAtomValue()
     if (!v.src || (curV.src === v.src && curV.status === "playing")) {
       return
+    }
+
+    if (v.src !== curV.src) {
+      this.releaseExternalSource()
     }
 
     const routeParams = getRouteParams()
@@ -124,7 +156,18 @@ export const AudioPlayer = {
           duration: this.audio.duration === Infinity ? 0 : this.audio.duration,
         })
       })
-      .catch(noop)
+      .catch((error: unknown) => {
+        // Interrupted by a later pause or by another source being mounted
+        if (currentActionId !== this.__currentActionId) return
+        if (error instanceof DOMException && error.name === "AbortError") return
+
+        this.teardown()
+        setAudioPlayerAtomValue({
+          ...getAudioPlayerAtomValue(),
+          status: "paused",
+        })
+        toast.error(t("player.load_failed"))
+      })
   },
   teardown() {
     this.currentTimeTimer && clearInterval(this.currentTimeTimer)
@@ -188,6 +231,7 @@ export const AudioPlayer = {
     })
 
     this.teardown()
+    this.releaseExternalSource()
   },
   seek(time: number) {
     if (getAudioPlayerAtomValue().isStream) {

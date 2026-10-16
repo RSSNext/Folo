@@ -58,7 +58,8 @@ const SortByAlphabeticalList = (props: SortListProps) => {
             const feedTitleB = getPreferredTitle(state.feeds[b]) || ""
             return sortByAlphabet(feedTitleA, feedTitleB)
           })
-          return isDesc ? sorted : sorted.reverse()
+          // sortByAlphabet orders A to Z, which is ascending
+          return isDesc ? sorted.reverse() : sorted
         }
 
         // Return onboarding feeds first, then regular feeds

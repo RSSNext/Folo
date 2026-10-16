@@ -63,6 +63,7 @@ const pickUserData = <
 }
 
 const ListCard = memo(({ list }: { list: any }) => {
+  const { t } = useTranslation("common")
   return (
     <div className="group/card relative overflow-hidden rounded-lg border border-fill bg-material-ultra-thin transition-all duration-200 hover:border-fill-secondary">
       <a
@@ -105,7 +106,7 @@ const ListCard = memo(({ list }: { list: any }) => {
                 <span>
                   {list.subscriptionCount}
                   <span className="ml-1 hidden sm:inline">
-                    {list.subscriptionCount > 1 ? "subscribers" : "subscriber"}
+                    {t("feed.follower", { count: list.subscriptionCount })}
                   </span>
                 </span>
               </div>

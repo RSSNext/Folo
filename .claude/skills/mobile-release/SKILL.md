@@ -1,6 +1,6 @@
 ---
 name: mobile-release
-description: Full Folo mobile release from dev to the stores. Decides between a store release and an OTA-only release, drafts the changelog, bumps the version and opens the release PR to mobile-main, verifies the PR's CI-built Android package and the iOS build on a simulator along with every change in the release, merges the PR, watches the build or OTA workflows, publishes the GitHub release, and submits the iOS build for App Store review and the Android build for Google Play review. Use when the user asks to release, ship or publish the mobile app.
+description: Full Folo mobile release from dev to the stores. Decides between a store release and an OTA-only release, drafts the changelog, bumps the version and opens the release PR to mobile-main, verifies the PR's CI-built Android package and the iOS build on a simulator along with every change in the release, merges the PR, watches the build or OTA workflows, publishes the GitHub release, submits the iOS build for App Store review and the Android build for Google Play review, and drafts the announcement post and promo video. Use when the user asks to release, ship or publish the mobile app.
 disable-model-invocation: true
 argument-hint: "[optional notes, e.g. 'ota' or 'minor bump']"
 allowed-tools: Bash, Read, Write, Edit, Glob, Grep
@@ -27,6 +27,7 @@ Read `.agents/skills/mobile-release/SKILL.md` completely before doing anything, 
 
 - Chrome quirks: when a ref click does nothing (the Google account chooser is one such place), take a screenshot and click by coordinates. Extension output containing `key=value` query strings can come back as "[BLOCKED: Cookie/query string data]"; read such values from the DOM in pieces.
 - Report (C8): reply in the user's language and send the key screenshots and `verification.md` with SendUserFile when available. Save new learnings about the consoles or the pipeline to memory.
+- Announcement kit (C9): follow `.claude/skills/release-promo/SKILL.md`.
 
 ## Limits that apply to Claude
 

@@ -10,7 +10,6 @@ import {
 import { Input } from "@follow/components/ui/input/Input.js"
 import { Label } from "@follow/components/ui/label/index.js"
 import { useWhoami } from "@follow/store/user/hooks"
-import { userActions } from "@follow/store/user/store"
 import { cn } from "@follow/utils/utils"
 import { zodResolver } from "@hookform/resolvers/zod"
 import { useMutation } from "@tanstack/react-query"
@@ -22,8 +21,9 @@ import { z } from "zod"
 
 import { AnimatedCommandButton } from "~/components/ui/button/AnimatedCommandButton"
 import { CopyButton } from "~/components/ui/button/CopyButton"
-import { useModalStack } from "~/components/ui/modal/stacked/hooks"
+import { useCurrentModal, useModalStack } from "~/components/ui/modal/stacked/hooks"
 import { changeEmail, sendVerificationEmail } from "~/lib/auth"
+import { toastFetchError } from "~/lib/error-parser"
 
 const formSchema = z.object({
   email: z.string().email(),
@@ -37,12 +37,20 @@ export function EmailManagement() {
   const verifyEmailMutation = useMutation({
     mutationFn: async () => {
       if (!user?.email) return
-      return sendVerificationEmail({
+      const res = await sendVerificationEmail({
         email: user.email,
       })
+      // The auth client resolves with the error instead of throwing
+      if (res.error) {
+        throw new Error(res.error.message || res.error.statusText)
+      }
+      return res
     },
     onSuccess: () => {
       toast.success(t("profile.email.verification_sent"))
+    },
+    onError: (error) => {
+      toastFetchError(error)
     },
   })
 
@@ -60,14 +68,18 @@ export function EmailManagement() {
           {user?.emailVerified ? t("profile.email.verified") : t("profile.email.unverified")}
         </span>
       </div>
-      <div className="flex items-center justify-between pl-3">
-        <div className="group flex items-center gap-2 text-text-secondary">
-          {user?.email}
+      {/* Leave room on the right for the avatar the profile form places over this row */}
+      <div className="flex items-center justify-between gap-2 pl-3 pr-20">
+        <div className="group flex min-w-0 items-center gap-2 text-text-secondary">
+          <span className="truncate" title={user?.email}>
+            {user?.email}
+          </span>
 
           <AnimatedCommandButton
             icon={<m.i className="i-mgc-edit-cute-re size-4" />}
-            className="size-5 p-1"
+            className="size-5 shrink-0 p-1"
             variant="ghost"
+            aria-label={t("profile.email.change")}
             onClick={() => {
               present({
                 title: t("profile.email.change"),
@@ -79,7 +91,7 @@ export function EmailManagement() {
             <CopyButton
               value={user.email}
               className={cn(
-                "size-5 p-1 duration-300",
+                "size-5 shrink-0 p-1 duration-300",
                 !isMobile && "opacity-0 group-hover:opacity-100",
               )}
             />
@@ -94,7 +106,7 @@ export function EmailManagement() {
             onClick={() => {
               verifyEmailMutation.mutate()
             }}
-            buttonClassName="absolute right-20"
+            buttonClassName="shrink-0"
           >
             {t("profile.email.send_verification")}
           </Button>
@@ -106,6 +118,7 @@ export function EmailManagement() {
 function EmailManagementForm() {
   const { t } = useTranslation("settings")
   const user = useWhoami()
+  const { dismiss } = useCurrentModal()
 
   const form = useForm<z.infer<typeof formSchema>>({
     resolver: zodResolver(formSchema),
@@ -121,18 +134,11 @@ function EmailManagementForm() {
         throw new Error(res.error.message)
       }
     },
-    onSuccess: (_, variables) => {
-      if (user?.emailVerified) {
-        toast.success(t("profile.email.changed_verification_sent"))
-      } else {
-        if (user) {
-          userActions.updateWhoami({
-            email: variables.email,
-          })
-        }
-        form.reset({ email: variables.email })
-        toast.success(t("profile.email.changed"))
-      }
+    onSuccess: () => {
+      // The server keeps the current email until the link sent for the new one is
+      // opened, for verified and unverified accounts alike
+      toast.success(t("profile.email.changed_verification_sent"))
+      dismiss()
     },
     onError: (error) => {
       toast.error(error.message)

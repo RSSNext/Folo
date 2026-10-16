@@ -7,6 +7,7 @@ type StoreData = {
   "notifications-persistent-ids"?: string[] | null
   appearance?: "light" | "dark" | "system" | null
   cacheSizeLimit?: number | null
+  cliSyncEnabled?: boolean | null
   eagleContextMenuEnabled?: boolean | null
   minimizeToTray?: boolean | null
   proxy?: string | null
@@ -14,6 +15,7 @@ type StoreData = {
   user?: string | null
   windowState?: {
     height: number
+    isMaximized?: boolean
     width: number
     x: number
     y: number

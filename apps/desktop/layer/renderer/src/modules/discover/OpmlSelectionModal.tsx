@@ -3,6 +3,8 @@ import { Checkbox } from "@follow/components/ui/checkbox/index.jsx"
 import { Input } from "@follow/components/ui/input/index.js"
 import { ScrollArea } from "@follow/components/ui/scroll-area/index.js"
 import { Tooltip, TooltipContent, TooltipTrigger } from "@follow/components/ui/tooltip/index.jsx"
+import { getFeedById } from "@follow/store/feed/getter"
+import { getAllFeedSubscription } from "@follow/store/subscription/getter"
 import { subscriptionSyncService } from "@follow/store/subscription/store"
 import { cn } from "@follow/utils/utils"
 import type { ExtractResponseData, SubscriptionParseOpmlResponse } from "@follow-app/client-sdk"
@@ -16,7 +18,18 @@ import { useCurrentModal } from "~/components/ui/modal/stacked/hooks"
 import { followClient } from "~/lib/api-client"
 import { toastFetchError } from "~/lib/error-parser"
 
+import type { OpmlImportResult } from "./opml-import"
+import { addFollowedToImportResult, splitFollowedOpmlItems } from "./opml-import"
 import type { ParsedFeedItem } from "./types"
+
+const getFollowedFeedIdByUrl = () => {
+  const feedIdByUrl = new Map<string, string>()
+  for (const { feedId } of getAllFeedSubscription()) {
+    const url = getFeedById(feedId)?.url
+    if (feedId && url) feedIdByUrl.set(url, feedId)
+  }
+  return feedIdByUrl
+}
 
 export const OpmlSelectionModal = ({
   parsedData,
@@ -30,7 +43,13 @@ export const OpmlSelectionModal = ({
   const { dismiss } = useCurrentModal()
 
   const importMutation = useMutation({
-    mutationFn: async (selectedItems: ParsedFeedItem[]) => {
+    mutationFn: async (selectedItems: ParsedFeedItem[]): Promise<OpmlImportResult> => {
+      const { followed, rest } = splitFollowedOpmlItems(selectedItems, getFollowedFeedIdByUrl())
+      // Nothing new to import, and the server fails on an import without a new feed
+      if (rest.length === 0) {
+        return { successfulItems: [], conflictItems: followed, parsedErrorItems: [] }
+      }
+
       const formData = new FormData()
 
       formData.append("file", file)
@@ -38,7 +57,7 @@ export const OpmlSelectionModal = ({
 
       const { data } = await followClient.api.subscriptions.import(formData)
 
-      return data
+      return addFollowedToImportResult(data, followed)
     },
     onSuccess: (data) => {
       // The import is logged per feed, so the delta feed delivers exactly what was added.

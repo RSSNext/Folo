@@ -83,8 +83,6 @@ export const EntryTitle = ({
 
   const titleCaseIfEnglish = useTitleCaseIfEnglish()
 
-  const dateFormat = useUISettingKey("dateFormat")
-
   const navigateEntry = useNavigateEntry()
 
   const iconEntry: FeedIconEntry = useMemo(
@@ -176,7 +174,7 @@ export const EntryTitle = ({
             <div className="flex items-center gap-1.5">
               <i className="i-mgc-calendar-time-add-cute-re text-base" />
               <span className="text-xs tabular-nums">
-                <RelativeTime date={entry.publishedAt} dateFormatTemplate={dateFormat} />
+                <RelativeTime date={entry.publishedAt} />
               </span>
             </div>
 

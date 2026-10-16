@@ -52,6 +52,12 @@ export interface TransactionKind<P, R = unknown> {
   ackGraceMs?: number
 }
 
+/**
+ * The parts of a transaction kind that still matter once the server confirmed the change, for
+ * changes whose caller sends the request itself (see `trackAcknowledged`).
+ */
+export type AcknowledgedChangeKind<P> = Pick<TransactionKind<P>, "kind" | "overlays" | "ackGraceMs">
+
 export interface TransactionPersistContext {
   /**
    * The server numbered the batch and the sync engine is running, so the change log will
@@ -95,8 +101,13 @@ interface QueuedTransaction<P = unknown> extends TransactionRecord<P> {
   reject: (error: unknown) => void
 }
 
+/** An acknowledged transaction keeps its record and the hooks that read its payload. */
+interface AcknowledgedRecord extends TransactionRecord {
+  definition: Pick<TransactionKind<unknown, unknown>, "overlays" | "rebaseUnread">
+}
+
 interface AcknowledgedTransaction {
-  record: QueuedTransaction
+  record: AcknowledgedRecord
   expiresAt: number
   syncId?: number
   awaitsSync: boolean
@@ -329,6 +340,35 @@ class TransactionQueue {
   }
 
   /**
+   * Keep the overlays of a change the caller sent itself, because it needs the server's answer
+   * before going on, as if the queue had sent it: they override older server data until the
+   * sync engine applied `syncId`. Without a sync id or a running engine the grace period ends
+   * them instead.
+   */
+  trackAcknowledged<P>(definition: AcknowledgedChangeKind<P>, payload: P, syncId?: number) {
+    const awaitsSync = syncId !== undefined && isSyncEngineActive()
+    const now = Date.now()
+    const record: AcknowledgedRecord = {
+      id: createTransactionId(),
+      kind: definition.kind,
+      payload,
+      createdAt: now,
+      definition: definition as AcknowledgedRecord["definition"],
+    }
+    this.acknowledged.push({
+      record,
+      expiresAt:
+        now + (awaitsSync ? SYNC_WAIT_MS : (definition.ackGraceMs ?? DEFAULT_ACK_GRACE_MS)),
+      syncId,
+      awaitsSync,
+    })
+    this.touch()
+    // The sync engine may already be past this id.
+    this.pruneAcknowledged()
+    this.notifyAcknowledged([record])
+  }
+
+  /**
    * The sync engine applied the change log up to `lastSyncId`. Acknowledged transactions the
    * server numbered at or below it are settled and stop overriding server data.
    */
@@ -481,9 +521,13 @@ class TransactionQueue {
       record.resolve()
     }
 
+    this.notifyAcknowledged(batch)
+  }
+
+  private notifyAcknowledged(records: TransactionRecord[]) {
     for (const listener of this.acknowledgedListeners) {
       try {
-        listener({ records: batch })
+        listener({ records })
       } catch (listenerError) {
         console.error("[transaction-queue] acknowledged listener threw", listenerError)
       }
@@ -543,7 +587,7 @@ class TransactionQueue {
     }
   }
 
-  private activeRecords(): QueuedTransaction[] {
+  private activeRecords(): AcknowledgedRecord[] {
     return [...this.acknowledged.map((item) => item.record), ...this.queued]
   }
 
@@ -551,7 +595,7 @@ class TransactionQueue {
     if (this.acknowledged.length === 0) return
     const now = Date.now()
     const next: AcknowledgedTransaction[] = []
-    const settled: QueuedTransaction[] = []
+    const settled: AcknowledgedRecord[] = []
     for (const item of this.acknowledged) {
       const pending =
         item.expiresAt > now && (item.syncId === undefined || item.syncId > this.syncedThrough)

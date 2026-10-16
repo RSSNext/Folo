@@ -1,11 +1,10 @@
 import { FeedViewType } from "@follow/constants"
 import { useFeedById } from "@follow/store/feed/hooks"
-import { useIsSubscribed } from "@follow/store/subscription/hooks"
+import { useIsSubscribed, useSubscriptionById } from "@follow/store/subscription/hooks"
 import { isBizId, withOpacity } from "@follow/utils"
 import { useMemo } from "react"
 import { useTranslation } from "react-i18next"
 import { Pressable, StyleSheet } from "react-native"
-import { RootSiblingParent } from "react-native-root-siblings"
 import { useSafeAreaInsets } from "react-native-safe-area-context"
 
 import { ThemedBlurView } from "@/src/components/common/ThemedBlurView"
@@ -29,39 +28,43 @@ export const FeedScreen: NavigationControllerView<{
   const navigation = useNavigation()
   const isSubscribed = useIsSubscribed(feedIdentifier)
   const isPreview = !isSubscribed && isBizId(feedIdentifier)
+  // A feed or list opened outside the Subscriptions tab, e.g. from a profile, keeps its own view
+  // instead of the one selected on Home. Categories, inboxes and previews use the selected view.
+  const subscriptionView = useSubscriptionById(feedIdentifier)?.view
   const { t } = useTranslation("common")
-  const entryListContextValue = useMemo(() => ({ type: "feed" as const, isPreview }), [isPreview])
+  const entryListContextValue = useMemo(
+    () => ({ type: "feed" as const, isPreview, view: subscriptionView }),
+    [isPreview, subscriptionView],
+  )
 
   return (
     <EntryListContext value={entryListContextValue}>
-      <RootSiblingParent>
-        <BottomTabBarHeightContext value={insets.bottom + floatingPlayerBarInset}>
-          <TimelineHeader feedId={feed?.id} />
-          <FeedScreenEntryList />
-          {isPreview && (
-            <Pressable
-              className="absolute left-1/2 z-10 min-w-[112px] -translate-x-1/2 items-center justify-center overflow-hidden rounded-full bg-accent px-5 py-3"
-              hitSlop={12}
-              style={{
-                bottom: Math.max(20, insets.bottom + 12) + floatingPlayerBarInset,
-              }}
-              onPress={() => {
-                navigation.presentControllerView(FollowScreen, {
-                  id: feedIdentifier,
-                  type: "feed",
-                })
-              }}
-            >
-              <ThemedBlurView
-                useGlass
-                style={StyleSheet.absoluteFill}
-                tintColor={withOpacity(accentColor, 0.6)}
-              />
-              <Text className="font-bold text-white">{t("words.follow")}</Text>
-            </Pressable>
-          )}
-        </BottomTabBarHeightContext>
-      </RootSiblingParent>
+      <BottomTabBarHeightContext value={insets.bottom + floatingPlayerBarInset}>
+        <TimelineHeader feedId={feed?.id} />
+        <FeedScreenEntryList />
+        {isPreview && (
+          <Pressable
+            className="absolute left-1/2 z-10 min-w-[112px] -translate-x-1/2 items-center justify-center overflow-hidden rounded-full bg-accent px-5 py-3"
+            hitSlop={12}
+            style={{
+              bottom: Math.max(20, insets.bottom + 12) + floatingPlayerBarInset,
+            }}
+            onPress={() => {
+              navigation.presentControllerView(FollowScreen, {
+                id: feedIdentifier,
+                type: "feed",
+              })
+            }}
+          >
+            <ThemedBlurView
+              useGlass
+              style={StyleSheet.absoluteFill}
+              tintColor={withOpacity(accentColor, 0.6)}
+            />
+            <Text className="font-bold text-white">{t("words.follow")}</Text>
+          </Pressable>
+        )}
+      </BottomTabBarHeightContext>
     </EntryListContext>
   )
 }

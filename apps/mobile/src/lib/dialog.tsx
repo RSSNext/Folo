@@ -82,6 +82,19 @@ class DialogStatic {
     return use(DialogContext)
   }
   private currentStackedDialogs = new Set<string>()
+  // Close handlers of the open dialogs, the topmost last
+  private closeHandlers: Array<{ id: string; close: () => void }> = []
+
+  /**
+   * Closes the topmost dialog like its cancel button does. Returns false when none is open, so
+   * the Android back button can fall through to the navigation.
+   */
+  dismissTop() {
+    const top = this.closeHandlers.at(-1)
+    if (!top) return false
+    top.close()
+    return true
+  }
 
   // Components
   DialogConfirm: FC<{
@@ -222,11 +235,13 @@ class DialogStatic {
       </NavigationInstanceContext>,
     )
     this.currentStackedDialogs.add(props.id)
+    this.closeHandlers.push({ id: props.id, close: handleClose })
     jotaiStore.set(dialogCountAtom, this.currentStackedDialogs.size)
     return siblings
   }
   destroy(id: string, siblings: RootSiblings) {
     this.currentStackedDialogs.delete(id)
+    this.closeHandlers = this.closeHandlers.filter((handler) => handler.id !== id)
     jotaiStore.set(dialogCountAtom, this.currentStackedDialogs.size)
     siblings.destroy()
   }

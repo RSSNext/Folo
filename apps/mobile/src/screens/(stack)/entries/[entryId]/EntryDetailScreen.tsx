@@ -6,6 +6,7 @@ import { usePrefetchEntryTranslation } from "@follow/store/translation/hooks"
 import { useAutoMarkAsRead } from "@follow/store/unread/hooks"
 import { useIsLoggedIn, useUserRole } from "@follow/store/user/hooks"
 import { PortalProvider } from "@gorhom/portal"
+import { useQuery } from "@tanstack/react-query"
 import * as WebBrowser from "expo-web-browser"
 import { atom, useAtomValue, useSetAtom } from "jotai"
 import { useCallback, useEffect, useMemo } from "react"
@@ -179,11 +180,15 @@ const EntryContentWebViewWithContext = ({ entryId }: { entryId: string }) => {
       setShowReadability(true)
     }
   }, [isPending, entry?.content, setShowReadability])
-  useEffect(() => {
-    if (showReadabilityOnce) {
-      entrySyncServices.fetchEntryReadabilityContent(entryId)
-    }
-  }, [showReadabilityOnce, entryId])
+  const readabilityQuery = useQuery({
+    queryKey: ["entry-readability", entryId],
+    queryFn: async () => {
+      await entrySyncServices.fetchEntryReadabilityContent(entryId)
+      return null
+    },
+    enabled: showReadabilityOnce,
+    retry: false,
+  })
 
   const showSourceContent = useAtomValue(showSourceContentAtom)
   useEffect(() => {
@@ -197,6 +202,7 @@ const EntryContentWebViewWithContext = ({ entryId }: { entryId: string }) => {
       entryId={entryId}
       showReadability={showReadabilityOnce}
       showTranslation={showTranslation}
+      isContentPending={showReadabilityOnce ? readabilityQuery.isFetching : isPending}
     />
   )
 }

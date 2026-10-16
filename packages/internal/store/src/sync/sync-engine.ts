@@ -11,13 +11,17 @@ import type { Resetable } from "../lib/base"
 import { collectionActions } from "../modules/collection/store"
 import { invalidateEntriesQuery, refreshEntriesHead } from "../modules/entry/hooks"
 import { entryActions } from "../modules/entry/store"
-import { setFeedUnreadDirty } from "../modules/feed/hooks"
+import { setFeedUnreadDirty, setFeedUnreadDirtyMany } from "../modules/feed/hooks"
 import { feedActions } from "../modules/feed/store"
 import { inboxActions, useInboxStore } from "../modules/inbox/store"
 import { getListById } from "../modules/list/getters"
 import { listActions } from "../modules/list/store"
 import { getSubscriptionById } from "../modules/subscription/getter"
-import { subscriptionActions, subscriptionSyncService } from "../modules/subscription/store"
+import {
+  getConfirmedSubscriptionChange,
+  subscriptionActions,
+  subscriptionSyncService,
+} from "../modules/subscription/store"
 import type { SubscriptionModel } from "../modules/subscription/types"
 import {
   getInboxStoreId,
@@ -85,6 +89,13 @@ interface PullSummary {
   newEntryViews: Set<FeedViewType>
   /** When the newest of those entries was logged, to skip lists fetched after it. */
   newestEntryAt: number
+  /**
+   * Unread increments of consecutive new-entry actions, applied together. They commute, but the
+   * other actions may set counts outright, so they are applied before any other action.
+   */
+  pendingUnreadDeltas: Record<string, number>
+  /** Feeds of those actions whose unread entries need fetching again. */
+  pendingDirtyFeedIds: Set<string>
 }
 
 const createPullSummary = (): PullSummary => ({
@@ -92,7 +103,12 @@ const createPullSummary = (): PullSummary => ({
   invalidateViews: new Set(),
   newEntryViews: new Set(),
   newestEntryAt: 0,
+  pendingUnreadDeltas: {},
+  pendingDirtyFeedIds: new Set(),
 })
+
+const isNewEntriesAction = (action: SyncAction) =>
+  action.model === "timeline" && action.action === "N"
 
 const isRecord = (value: unknown): value is Record<string, unknown> =>
   typeof value === "object" && value !== null
@@ -105,6 +121,18 @@ const addView = (views: Set<FeedViewType>, view: FeedViewType | undefined) => {
 
 const isCountRecord = (value: unknown): value is Record<string, number> =>
   isRecord(value) && Object.values(value).every((count) => typeof count === "number")
+
+/**
+ * The row was logged before a follow or unfollow of the same feed or list that the server
+ * already confirmed to this device. The delta lags behind such a response, so applying the row
+ * would bring back the state before it, such as an unfollowed list.
+ */
+const isOlderThanConfirmedChange = (action: SyncAction) => {
+  if (!action.modelId) return false
+  const change = getConfirmedSubscriptionChange(action.modelId)
+  if (!change) return false
+  return change.syncId === undefined || action.id < change.syncId
+}
 
 class SyncEngine implements Resetable {
   private lastSyncId: number | null = null
@@ -443,11 +471,33 @@ class SyncEngine implements Resetable {
   private async applyActions(actions: SyncAction[], summary: PullSummary) {
     for (const action of actions) {
       try {
+        if (!isNewEntriesAction(action)) {
+          await this.flushNewEntryCounters(summary)
+        }
         await this.applyAction(action, summary)
       } catch (error) {
         console.error(`[sync-engine] failed to apply ${action.model}/${action.action}`, error)
       }
     }
+    try {
+      await this.flushNewEntryCounters(summary)
+    } catch (error) {
+      console.error("[sync-engine] failed to apply new entry counters", error)
+    }
+  }
+
+  /**
+   * A night away can bring thousands of new-entry actions, so their counters are written in one
+   * store update and one database write per run instead of one per action.
+   */
+  private async flushNewEntryCounters(summary: PullSummary) {
+    const deltas = summary.pendingUnreadDeltas
+    const dirtyFeedIds = summary.pendingDirtyFeedIds
+    summary.pendingUnreadDeltas = {}
+    summary.pendingDirtyFeedIds = new Set()
+
+    if (dirtyFeedIds.size > 0) setFeedUnreadDirtyMany(dirtyFeedIds)
+    await unreadActions.applyConfirmedDelta(deltas)
   }
 
   private async applyAction(action: SyncAction, summary: PullSummary) {
@@ -498,7 +548,7 @@ class SyncEngine implements Resetable {
   }
 
   private async applySubscriptionAction(action: SyncAction, summary: PullSummary) {
-    if (!action.modelId) return
+    if (!action.modelId || isOlderThanConfirmedChange(action)) return
 
     if (action.action === "I") {
       if (!isRecord(action.data) || !("feeds" in action.data || "lists" in action.data)) return
@@ -542,6 +592,10 @@ class SyncEngine implements Resetable {
       await SubscriptionService.delete([getSubscriptionDBId(current)])
       if (current.feedId) {
         await unreadActions.updateById(current.feedId, 0)
+      }
+      // The list's feeds may no longer be followed, which only a recount can tell
+      if (current.listId) {
+        summary.refreshUnread = true
       }
       addView(summary.invalidateViews, current.view)
     }
@@ -608,7 +662,7 @@ class SyncEngine implements Resetable {
       const id = data.isInbox ? (data.inboxId ?? action.modelId) : (data.feedId ?? action.modelId)
       if (!id) return
 
-      setFeedUnreadDirty(id)
+      summary.pendingDirtyFeedIds.add(id)
       if (data.isInbox) {
         addView(summary.newEntryViews, FeedViewType.Articles)
       } else {
@@ -625,7 +679,7 @@ class SyncEngine implements Resetable {
 
       if (countersInSnapshot) return
       if (typeof data.unread === "number") {
-        await unreadActions.applyConfirmedDelta({ [id]: data.unread })
+        summary.pendingUnreadDeltas[id] = (summary.pendingUnreadDeltas[id] ?? 0) + data.unread
       } else {
         summary.refreshUnread = true
       }

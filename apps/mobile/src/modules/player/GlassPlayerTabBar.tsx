@@ -2,7 +2,6 @@ import { clsx } from "@follow/utils"
 import { GlassView } from "expo-glass-effect"
 import { Pressable, StyleSheet, View } from "react-native"
 
-import { Image } from "@/src/components/ui/image/Image"
 import { Text } from "@/src/components/ui/typography/Text"
 import { useNavigation } from "@/src/lib/navigation/hooks"
 import { useActivePlayable } from "@/src/lib/player"
@@ -11,6 +10,7 @@ import { usePrefetchImageColors } from "@/src/store/image/hooks"
 
 import { PlayPauseButton, SeekButton, StopButton } from "./control"
 import { useShouldShowPlayerBar } from "./hooks"
+import { PlayerArtwork } from "./PlayerArtwork"
 
 export function GlassPlayerTabBar({ className }: { className?: string }) {
   const activePlayable = useActivePlayable()
@@ -33,12 +33,7 @@ export function GlassPlayerTabBar({ className }: { className?: string }) {
               navigation.presentControllerView(PlayerScreen, void 0, "transparentModal")
             }}
           >
-            <Image
-              source={{
-                uri: activePlayable?.artwork ?? "",
-              }}
-              className="size-12 rounded-full"
-            />
+            <PlayerArtwork playable={activePlayable} size={48} className="size-12 rounded-full" />
             <View className="flex-1 overflow-hidden">
               <Text className="text-lg font-semibold text-label" numberOfLines={1}>
                 {activePlayable?.title ?? ""}

@@ -28,6 +28,8 @@ export function EntryPictureItem({ id }: { id: string }) {
     publishedAt: state.publishedAt,
     author: state.author,
   }))
+  // The carousel and the lightbox page through the same list, so an index means one image in both
+  const media = useMemo(() => uniqBy(item?.media ?? [], "url"), [item?.media])
   if (!item || !item.media) {
     return null
   }
@@ -48,9 +50,9 @@ export function EntryPictureItem({ id }: { id: string }) {
     <View className="m-1">
       <MediaItems
         ref={aviRef}
-        media={item.media}
+        media={media}
         entryId={id}
-        onPreview={(index, placeholder) => {
+        onPreview={(index, thumbnail) => {
           const feed = getFeedById(item.feedId!)
           if (!feed) {
             return
@@ -64,11 +66,10 @@ export function EntryPictureItem({ id }: { id: string }) {
 
             const rect = measure(aviRef)
             runOnJS(openLightbox)({
-              images: (item.media ?? []).map((media) => ({
-                uri: media.url,
-                thumbUri: placeholder ?? {
-                  uri: media.url,
-                },
+              images: media.map((mediaItem, mediaIndex) => ({
+                uri: mediaItem.url,
+                // Only the tapped image has its thumbnail at hand, other pages wait for their own
+                thumbUri: mediaIndex === index ? thumbnail : undefined,
                 thumbDimensions: null,
                 thumbRect: rect,
                 dimensions: rect
@@ -102,13 +103,10 @@ const MediaItems = ({
   ref?: Ref<View>
   media: MediaModel[]
   entryId: string
-  onPreview?: (index: number, placeholder: ImageSource | undefined) => void
+  onPreview?: (index: number, thumbnail: ImageSource | undefined) => void
   aspectRatio?: number
 }) => {
   const firstMedia = media[0]
-  const uniqMedia = useMemo(() => {
-    return uniqBy(media, "url")
-  }, [media])
   if (!firstMedia) {
     return null
   }
@@ -120,7 +118,7 @@ const MediaItems = ({
       ref={ref}
       view={FeedViewType.Pictures}
       entryId={entryId}
-      media={uniqMedia}
+      media={media}
       onPreview={onPreview}
       aspectRatio={realAspectRatio}
     />

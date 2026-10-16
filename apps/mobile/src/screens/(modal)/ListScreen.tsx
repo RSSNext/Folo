@@ -6,7 +6,7 @@ import { listSyncServices } from "@follow/store/list/store"
 import type { CreateListModel } from "@follow/store/list/types"
 import { zodResolver } from "@hookform/resolvers/zod"
 import { memo, useEffect, useState } from "react"
-import { Controller, useForm } from "react-hook-form"
+import { Controller, useForm, useFormState } from "react-hook-form"
 import { useTranslation } from "react-i18next"
 import { View } from "react-native"
 import { z } from "zod"
@@ -166,9 +166,13 @@ export const ListScreen: NavigationControllerView<{
                     destructiveButtonIndex: 0,
                   },
                   async (index) => {
-                    if (index === 0) {
+                    if (index !== 0) return
+                    try {
                       await listSyncServices.deleteList(listId)
                       navigation.dismiss()
+                    } catch (error) {
+                      // The list is restored locally, so the user has to know the delete failed
+                      toastFetchError(error as Error)
                     }
                   },
                 )
@@ -189,7 +193,9 @@ const ScreenOptions = memo(({ title, listId }: ScreenOptionsProps) => {
   const { t } = useTranslation("settings")
   const form = useFormContext()
 
-  const { isValid, isDirty } = form.formState
+  // This memoized component only re-renders for a form state it subscribes to; reading
+  // form.formState here would keep the values of its first render
+  const { isValid, isDirty } = useFormState({ control: form.control })
 
   const isEditing = !!listId
   const [isLoading, setIsLoading] = useState(false)
@@ -197,7 +203,7 @@ const ScreenOptions = memo(({ title, listId }: ScreenOptionsProps) => {
   const setModalOptions = useSetModalScreenOptions()
   useEffect(() => {
     setModalOptions({
-      gestureEnabled: !isDirty,
+      preventNativeDismiss: isDirty,
     })
   }, [isDirty, setModalOptions])
   const navigation = useNavigation()
@@ -205,6 +211,7 @@ const ScreenOptions = memo(({ title, listId }: ScreenOptionsProps) => {
   return (
     <NavigationBlurEffectHeader
       title={title ? `${t("lists.edit.label")} - ${title}` : t("lists.create")}
+      promptBeforeLeave={isDirty}
       headerRight={
         <FormProvider form={form}>
           <HeaderSubmitButton

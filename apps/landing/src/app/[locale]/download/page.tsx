@@ -6,6 +6,7 @@ import { DownloadHero } from '~/components/widgets/download/DownloadHero'
 import { PlatformDownloads } from '~/components/widgets/download/PlatformDownloads'
 import { defaultLocale, locales } from '~/i18n/routing'
 import { detectPlatform } from '~/lib/platform'
+import { getLocaleAlternates } from '~/lib/seo'
 
 type LocaleParams = { locale?: string }
 
@@ -27,6 +28,7 @@ export async function generateMetadata({
   return {
     title: t('title'),
     description: t('description'),
+    alternates: getLocaleAlternates(locale, '/download'),
   }
 }
 

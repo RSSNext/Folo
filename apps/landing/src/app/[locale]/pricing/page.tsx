@@ -4,6 +4,7 @@ import { getTranslations } from 'next-intl/server'
 import { PricingPlans } from '~/components/widgets/pricing/PricingPlans'
 import { defaultLocale, locales } from '~/i18n/routing'
 import { fetchPricingPlans } from '~/lib/pricing-data'
+import { getLocaleAlternates } from '~/lib/seo'
 
 type LocaleParams = { locale?: string }
 
@@ -25,6 +26,7 @@ export async function generateMetadata({
   return {
     title: t('title'),
     description: t('description'),
+    alternates: getLocaleAlternates(locale, '/pricing'),
   }
 }
 

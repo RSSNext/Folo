@@ -36,8 +36,17 @@ export const useFollow = () => {
       const subscription = getSubscriptionByFeedId(id)
       const isFollowed = !!subscription
 
+      // Whole phrases, since joining "Edit" and a plural noun reads wrong in every language
+      const title = options?.isList
+        ? isFollowed
+          ? t("sidebar.feed_actions.edit_list")
+          : t("feed_form.add_list")
+        : isFollowed
+          ? t("sidebar.feed_actions.edit_feed")
+          : t("feed_form.add_feed")
+
       present({
-        title: `${isFollowed ? `${t("common:words.edit")} ` : ""}${options?.isList ? t("words.lists") : t("words.feeds")}`,
+        title,
         modalContentClassName: "overflow-visible",
         content: ({ dismiss }) => {
           const onSuccess = () => {

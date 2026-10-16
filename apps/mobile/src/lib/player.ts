@@ -6,7 +6,7 @@ import TrackPlayer, {
   usePlaybackState,
 } from "@rntp/player"
 import { t } from "i18next"
-import { atom, useAtom } from "jotai"
+import { atom, useAtomValueRawSync, useSetAtom } from "jotai"
 import { useCallback, useEffect, useSyncExternalStore } from "react"
 
 import { PlayerRegistered } from "../initialize/player"
@@ -20,7 +20,10 @@ const pausedByUserAtom = atom(false)
 function usePlaybackStatus() {
   const playing = useNativeIsPlaying()
   const playbackState = usePlaybackState()
-  const [pausedByUser, setPausedByUser] = useAtom(pausedByUserAtom)
+  // Every mounted player control resets it in an effect, so a sibling mounting in the same
+  // commit must not keep the value it rendered with
+  const pausedByUser = useAtomValueRawSync(pausedByUserAtom)
+  const setPausedByUser = useSetAtom(pausedByUserAtom)
 
   useEffect(() => {
     if (playing) setPausedByUser(false)
@@ -159,7 +162,9 @@ export type Rate = (typeof allowedRate)[number]
 const rateAtom = atom<Rate>(1)
 
 export function useRate() {
-  const [rate, setRate] = useAtom(rateAtom)
+  // Synced from the native player in a mount effect, see usePlaybackStatus
+  const rate = useAtomValueRawSync(rateAtom)
+  const setRate = useSetAtom(rateAtom)
 
   useEffect(() => {
     function getRate() {

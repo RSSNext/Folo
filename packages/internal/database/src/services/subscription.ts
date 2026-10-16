@@ -1,10 +1,11 @@
 import type { FeedViewType } from "@follow/constants"
-import { and, eq, inArray, notInArray, sql } from "drizzle-orm"
+import { and, eq, inArray, notInArray } from "drizzle-orm"
 
 import { db } from "../db"
 import { feedsTable, inboxesTable, listsTable, subscriptionsTable } from "../schemas"
 import type { SubscriptionSchema } from "../schemas/types"
 import type { Resetable } from "./internal/base"
+import { conflictUpdateAllExcept } from "./internal/utils"
 
 class SubscriptionServiceStatic implements Resetable {
   getSubscriptionAll() {
@@ -21,15 +22,8 @@ class SubscriptionServiceStatic implements Resetable {
       .values(subscriptions)
       .onConflictDoUpdate({
         target: [subscriptionsTable.id],
-        set: {
-          category: sql`excluded.category`,
-          createdAt: sql`excluded.created_at`,
-          feedId: sql`excluded.feed_id`,
-          isPrivate: sql`excluded.is_private`,
-          title: sql`excluded.title`,
-          userId: sql`excluded.user_id`,
-          view: sql`excluded.view`,
-        },
+        // Every column but the id, so columns added later aren't left stale
+        set: conflictUpdateAllExcept(subscriptionsTable, ["id"]),
       })
   }
 

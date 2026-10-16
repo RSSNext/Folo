@@ -5,7 +5,7 @@ import { isLinux, isMacOS, isMAS, isWindows } from "~/env"
 import { getTrayIconPath } from "~/helper"
 import { logger, revealLogFile } from "~/logger"
 import { WindowManager } from "~/manager/window"
-import { checkForAppUpdates } from "~/updater"
+import { checkForAppUpdatesFromMenu } from "~/updater"
 
 import { getDockCount } from "./dock"
 import { t } from "./i18n"
@@ -59,7 +59,7 @@ const getTrayContextMenu = () => {
                 label: t("menu.checkForUpdates"),
                 click: async () => {
                   showWindow()
-                  await checkForAppUpdates()
+                  await checkForAppUpdatesFromMenu()
                 },
               },
             ]
@@ -110,7 +110,7 @@ const showWindow = () => {
   if (mainWindow.isMinimized()) {
     mainWindow.restore()
   } else {
-    mainWindow.show()
+    WindowManager.showMainWindow(mainWindow)
   }
 }
 

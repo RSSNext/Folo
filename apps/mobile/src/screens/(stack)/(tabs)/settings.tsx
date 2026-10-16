@@ -4,7 +4,7 @@ import { cn } from "@follow/utils"
 import { use, useMemo } from "react"
 import { useTranslation } from "react-i18next"
 import type { ScrollView } from "react-native"
-import { Pressable, View } from "react-native"
+import { Pressable, StyleSheet, View } from "react-native"
 import type { SharedValue } from "react-native-reanimated"
 import Animated, { useAnimatedStyle } from "react-native-reanimated"
 import { useSafeAreaInsets } from "react-native-safe-area-context"
@@ -14,9 +14,12 @@ import { useRegisterNavigationScrollView } from "@/src/components/layouts/tabbar
 import { SafeNavigationScrollView } from "@/src/components/layouts/views/SafeNavigationScrollView"
 import { Text } from "@/src/components/ui/typography/Text"
 import { useDefaultHeaderHeight } from "@/src/hooks/useDefaultHeaderHeight"
+import { useTabScreenIsFocused } from "@/src/lib/navigation/bottom-tab/hooks"
 import type { TabScreenComponent } from "@/src/lib/navigation/bottom-tab/types"
 import { useNavigation } from "@/src/lib/navigation/hooks"
 import { ScreenItemContext } from "@/src/lib/navigation/ScreenItemContext"
+import { isAndroid } from "@/src/lib/platform"
+import { BannerStatusBar } from "@/src/modules/settings/BannerStatusBar"
 import {
   getSettingsContentMarginTop,
   isUserHeaderGradientLight,
@@ -32,6 +35,7 @@ export function Settings() {
   const imageColors = useImageColors(whoami?.image)
   const gradientLight = isUserHeaderGradientLight(imageColors)
   const scrollViewRef = useRegisterNavigationScrollView<ScrollView>()
+  const isFocused = useTabScreenIsFocused()
   const headerHeight = useDefaultHeaderHeight()
   const contentViewStyle = useMemo(
     () => ({ marginTop: getSettingsContentMarginTop(headerHeight) }),
@@ -61,9 +65,15 @@ export function Settings() {
         headerHeight={headerHeight}
         scrollY={screenContext.reAnimatedScrollY}
       />
+      <BannerStatusBar
+        gradientLight={gradientLight}
+        scrollY={screenContext.reAnimatedScrollY}
+        enabled={isFocused}
+      />
     </>
   )
 }
+
 const SettingHeader = ({
   gradientLight,
   headerHeight,
@@ -112,7 +122,15 @@ const EditProfileButton = ({ gradientLight }: { gradientLight: boolean }) => {
       className="absolute bottom-2 right-4 overflow-hidden rounded-full px-3 py-1.5"
       onPress={() => navigation.pushControllerView(EditProfileScreen)}
     >
-      <BlurEffect />
+      {/* Android has no blur, and the opaque fallback hides the label on the banner */}
+      {isAndroid ? (
+        <View
+          style={StyleSheet.absoluteFill}
+          className={gradientLight ? "bg-white/50" : "bg-black/30"}
+        />
+      ) : (
+        <BlurEffect />
+      )}
       <Text
         className={cn("text-xs font-medium", gradientLight ? "text-black/95" : "text-white/95")}
       >

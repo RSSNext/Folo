@@ -110,6 +110,7 @@ const VirtualGridImpl: FC<
     appliedResetScrollSignal,
     onResetScrollSignalConsumed,
     resetScrollSignal,
+    syncType,
   } = props
   const scrollRef = useScrollViewElement()
 
@@ -205,7 +206,7 @@ const VirtualGridImpl: FC<
 
         onRangeChange?.(realRange as Range)
       },
-      [rowCacheKey, columns.length],
+      [rowCacheKey, columns.length, onRangeChange],
     ),
   })
 
@@ -260,7 +261,9 @@ const VirtualGridImpl: FC<
     if (isLoaderRow) {
       fetchNextPage()
     }
-  }, [fetchNextPage, hasNextPage, rows.length, virtualItems])
+    // Check again when the remote source replaces the local one: the loader row may already be
+    // in view, and the rows can stay the same, so nothing else would trigger the remote request.
+  }, [fetchNextPage, hasNextPage, rows.length, virtualItems, syncType])
 
   const [ready, setReady] = useState(false)
 

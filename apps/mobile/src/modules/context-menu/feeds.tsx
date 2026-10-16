@@ -28,7 +28,7 @@ import { FeedScreen } from "@/src/screens/(stack)/feeds/[feedId]/FeedScreen"
 
 import { ItemSeparator } from "../entry-list/ItemSeparator"
 import { EntryNormalItem } from "../entry-list/templates/EntryNormalItem"
-import { getSelectedView } from "../screen/atoms"
+import { getSelectedView, selectFeed } from "../screen/atoms"
 
 export const SubscriptionFeedItemContextMenu: FC<
   PropsWithChildren & {
@@ -68,6 +68,8 @@ const generateSubscriptionContextMenu = (navigation: Navigation, id: string) => 
         <ContextMenu.Preview
           size="STRETCH"
           onPress={() => {
+            // FeedScreen shows the selected feed, not the one it is pushed with
+            selectFeed({ type: "feed", feedId: id })
             navigation.pushControllerView(FeedScreen, {
               feedId: id,
             })

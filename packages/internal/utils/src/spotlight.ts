@@ -13,10 +13,14 @@ export interface SpotlightPatternValidationResult {
   error?: never
 }
 
-export interface SpotlightPatternValidationError {
-  valid: false
-  error: string
-}
+export type SpotlightPatternValidationError =
+  | { valid: false; reason: "empty" }
+  | {
+      valid: false
+      reason: "regex"
+      /** The regex engine's explanation, without its own "Invalid regular expression" prefix */
+      error: string
+    }
 
 export type SpotlightPatternValidation =
   SpotlightPatternValidationResult | SpotlightPatternValidationError
@@ -34,20 +38,21 @@ export const validateSpotlightPattern = (
   patternType: SpotlightRule["patternType"],
 ): SpotlightPatternValidation => {
   if (!pattern.trim()) {
-    return { valid: false, error: "Pattern is required." }
+    return { valid: false, reason: "empty" }
   }
 
   if (patternType === "regex") {
     try {
       new RegExp(pattern)
     } catch (error) {
-      return {
-        valid: false,
-        error:
-          error instanceof Error
-            ? `Invalid regular expression: ${error.message}`
-            : "Invalid regular expression.",
-      }
+      // V8 says "Invalid regular expression: /[abc/: Unterminated character class"; the app
+      // shows its own prefix, so keep only the explanation
+      const message = error instanceof Error ? error.message : String(error)
+      const explanation = message.replace(
+        /^Invalid (?:regular expression|RegExp):\s*(?:\/.*\/[a-z]*:\s*)?/i,
+        "",
+      )
+      return { valid: false, reason: "regex", error: explanation || message }
     }
   }
 

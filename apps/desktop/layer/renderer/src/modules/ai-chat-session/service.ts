@@ -43,15 +43,18 @@ class AIChatSessionServiceStatic {
 
       const summary = { sessions: sessions.length, messages: 0, failures: 0 }
 
-      sessions.forEach(async (session) => {
-        await AIPersistService.ensureSession(session.chatId, {
-          title: session.title,
-          createdAt: new Date(session.createdAt),
-          // Use createdAt for updatedAt as we are syncing session instead of messages
-          updatedAt: new Date(session.createdAt),
-          isLocal: false,
-        })
-      })
+      // Write every session before reading them back, or new remote sessions miss this load
+      await Promise.all(
+        sessions.map((session) =>
+          AIPersistService.ensureSession(session.chatId, {
+            title: session.title,
+            createdAt: new Date(session.createdAt),
+            // Use createdAt for updatedAt as we are syncing session instead of messages
+            updatedAt: new Date(session.createdAt),
+            isLocal: false,
+          }),
+        ),
+      )
       await this.loadSessionsFromDb()
       aiChatSessionStoreActions.setStats(summary)
       aiChatSessionStoreActions.setLastSyncedAt(new Date())

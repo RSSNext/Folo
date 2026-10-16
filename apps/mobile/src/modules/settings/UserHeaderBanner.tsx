@@ -32,6 +32,25 @@ import { accentColor } from "@/src/theme/colors"
 import { isUserHeaderGradientLight, USER_HEADER_BANNER_TOP_SPACING } from "./layout"
 
 const defaultGradientColors = ["#000", "#100", "#200"]
+
+const socialLinkBaseUrls: Record<string, string> = {
+  twitter: "https://twitter.com/",
+  github: "https://github.com/",
+  instagram: "https://instagram.com/",
+  facebook: "https://facebook.com/",
+  youtube: "https://youtube.com/",
+  discord: "https://discord.com/",
+}
+const hasUrlScheme = (value: string) => /^[a-z][\d+.a-z-]*:/i.test(value)
+// Profiles store the account name for each platform, as the desktop form asks for it
+const getSocialLinkUrl = (platform: string, value: string) => {
+  if (hasUrlScheme(value)) return value
+  const baseUrl = socialLinkBaseUrls[platform]
+  return baseUrl ? `${baseUrl}${value}` : null
+}
+const openExternalUrl = (url: string) => {
+  Linking.openURL(hasUrlScheme(url) ? url : `https://${url}`).catch(console.error)
+}
 const PlatformInfoMap: Record<
   string,
   {
@@ -301,7 +320,7 @@ export const UserHeaderBanner = ({
               className="flex-row items-center gap-1"
               onPress={() => {
                 if (user.website) {
-                  void Linking.openURL(user.website)
+                  openExternalUrl(user.website)
                 }
               }}
             >
@@ -334,7 +353,8 @@ export const UserHeaderBanner = ({
               <Pressable
                 key={platform}
                 onPress={() => {
-                  void Linking.openURL(link)
+                  const url = getSocialLinkUrl(platform, link)
+                  if (url) openExternalUrl(url)
                 }}
               >
                 <IconComponent height={22} width={22} color={color} />

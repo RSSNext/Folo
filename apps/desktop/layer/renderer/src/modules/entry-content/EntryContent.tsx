@@ -171,6 +171,7 @@ const EntryContentImpl: Component<EntryContentProps> = ({
       >
         <RootPortal to={panelPortalElement}>
           <EntryScrollingAndNavigationHandler
+            entryId={entryId}
             scrollAnimationRef={scrollAnimationRef}
             scrollerRef={scrollerRefObject}
           />
@@ -183,6 +184,7 @@ const EntryContentImpl: Component<EntryContentProps> = ({
               <div className="absolute inset-y-0 left-0 z-[9] flex w-12 items-center justify-center opacity-0 duration-200 hover:opacity-100 group-hover:opacity-40">
                 <GlassButton
                   size="sm"
+                  description={t("command.entry.previous_entry.title", { ns: "shortcuts" })}
                   className="!-translate-y-12 !bg-material-opaque !opacity-100 hover:!bg-material-opaque"
                   onClick={() => {
                     EventBus.dispatch(COMMAND_ID.timeline.switchToPrevious)
@@ -195,6 +197,7 @@ const EntryContentImpl: Component<EntryContentProps> = ({
               <div className="absolute inset-y-0 right-0 z-[9] flex w-12 items-center justify-center opacity-0 duration-200 hover:opacity-100 group-hover:opacity-40">
                 <GlassButton
                   size="sm"
+                  description={t("command.entry.next_entry.title", { ns: "shortcuts" })}
                   className="!-translate-y-12 !bg-material-opaque !opacity-100 hover:!bg-material-opaque"
                   onClick={() => {
                     EventBus.dispatch(COMMAND_ID.timeline.switchToNext)

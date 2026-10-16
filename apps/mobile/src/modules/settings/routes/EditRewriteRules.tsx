@@ -8,6 +8,7 @@ import {
 } from "@/src/components/layouts/views/SafeNavigationScrollView"
 import { PlainTextField } from "@/src/components/ui/form/TextField"
 import {
+  GroupedInsetButtonCell,
   GroupedInsetListBaseCell,
   GroupedInsetListCard,
   GroupedInsetListSectionHeader,
@@ -20,6 +21,7 @@ export const EditRewriteRulesScreen: NavigationControllerView<{
   index: number
 }> = ({ index }) => {
   const { t } = useTranslation("settings")
+  const { t: tCommon } = useTranslation("common")
   const rule = useActionRule(index)
   const rewriteRules =
     rule?.result.rewriteRules?.map(
@@ -80,6 +82,13 @@ export const EditRewriteRulesScreen: NavigationControllerView<{
                   }}
                 />
               </GroupedInsetListBaseCell>
+              <GroupedInsetButtonCell
+                label={tCommon("words.delete")}
+                style="destructive"
+                onPress={() => {
+                  actionActions.deleteRewriteRule(index, rewriteRuleIndex)
+                }}
+              />
             </GroupedInsetListCard>
           )
         },

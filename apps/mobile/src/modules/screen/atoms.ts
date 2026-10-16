@@ -69,13 +69,19 @@ const selectedFeedAtom = atom<SelectedFeed>(null)
 export const EntryListContext = createContext<{
   type: "timeline" | "feed" | "subscriptions"
   isPreview?: boolean
+  // The view of the subscription a feed screen shows, which wins over the view selected on Home
+  view?: FeedViewType
 }>({ type: "timeline" })
 export const useEntryListContext = () => {
   return use(EntryListContext)
 }
 
 export function useSelectedView() {
-  return useAtomValue(useMemo(() => selectAtom(selectedTimelineAtom, (state) => state.viewId), []))
+  const { view } = useEntryListContext()
+  const selectedView = useAtomValue(
+    useMemo(() => selectAtom(selectedTimelineAtom, (state) => state.viewId), []),
+  )
+  return view ?? selectedView
 }
 
 export const getSelectedView = () => {
@@ -186,18 +192,31 @@ function useRemoteEntries(props?: UseEntriesProps): UseEntriesReturn {
     subscribed: props?.active !== false,
   })
 
+  // When the list was last loaded from its first page, which is what the footer marks as read
+  // before. Loading the next page shows older entries and must not move it.
+  const isFetchingFirstPage = query.isFetching && !query.isFetchingNextPage
   const [fetchedTime, setFetchedTime] = useState<number>()
   useEffect(() => {
-    if (!query.isFetching) {
+    if (!isFetchingFirstPage) {
       setFetchedTime(Date.now())
     }
-  }, [query.isFetching])
+  }, [isFetchingFirstPage])
 
   const refetch = useCallback(async () => void query.refetch(), [query])
   const fetchNextPage = useCallback(async () => void query.fetchNextPage(), [query])
 
   if (!query.data || query.isLoading) {
-    return fallbackReturn
+    // Without data yet, still report a failed first page and keep the remote refetch, so the
+    // timeline can fall back to the stored entries and pull to refresh tries the server again
+    return {
+      ...fallbackReturn,
+      refetch,
+      fetchNextPage,
+      isLoading: !query.isError,
+      isRefetching: query.isRefetching,
+      isFetching: query.isFetching,
+      error: query.isError ? query.error : null,
+    }
   }
 
   return {
@@ -357,6 +376,10 @@ export function useEntries(props?: UseEntriesProps): UseEntriesReturn {
     if (remoteQuery.error) {
       return {
         ...localQuery,
+        // Pulling to refresh retries the server rather than the stored entries
+        refetch: remoteQuery.refetch,
+        isFetching: remoteQuery.isFetching,
+        isRefetching: remoteQuery.isRefetching,
         error: remoteQuery.error,
         isReady: true,
       }

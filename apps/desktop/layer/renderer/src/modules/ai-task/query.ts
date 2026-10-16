@@ -1,5 +1,6 @@
 import type { WithOptimistic } from "@follow/hooks"
 import { createOptimisticConfig, useOptimisticMutation } from "@follow/hooks"
+import { useUserRole } from "@follow/store/user/hooks"
 import type {
   AITask,
   CreateTaskRequest,
@@ -8,12 +9,17 @@ import type {
 } from "@follow-app/client-sdk"
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query"
 
+import { useServerConfigs } from "~/atoms/server-configs"
 import { followApi } from "~/lib/api-client"
-
-const MAX_AI_TASKS = 10
 
 // Use the generic optimistic wrapper type
 type OptimisticAITask = WithOptimistic<AITask>
+
+// Callers report failures themselves, translated and with an upgrade action for plan limits
+const withoutErrorToast = <T extends { errorConfig?: { showToast?: boolean } }>(config: T): T => ({
+  ...config,
+  errorConfig: { ...config.errorConfig, showToast: false },
+})
 
 const aiTaskKey = "ai-task"
 export const aiTaskKeys = {
@@ -33,9 +39,21 @@ export const useAITaskListQuery = () => {
   return data
 }
 
+/**
+ * How many AI tasks the user's plan allows (0 when the plan has none), or undefined while
+ * the plan is unknown
+ */
+export const useAITaskPlanLimit = () => {
+  const role = useUserRole()
+  const serverConfigs = useServerConfigs()
+  return serverConfigs?.PAYMENT_PLAN_LIST.find((plan) => plan.role === role)?.limit.MAX_AI_TASKS
+}
+
 export const useCanCreateNewAITask = () => {
   const tasks = useAITaskListQuery()
-  return !tasks || tasks.length < MAX_AI_TASKS
+  const limit = useAITaskPlanLimit()
+  // Without a known plan the server decides
+  return limit === undefined || (tasks?.length ?? 0) < limit
 }
 
 export const useAITaskQuery = (id: string | undefined, opts?: { enabled?: boolean }) => {
@@ -52,53 +70,54 @@ export const useAITaskQuery = (id: string | undefined, opts?: { enabled?: boolea
 
 export const useCreateAITaskMutation = () => {
   return useOptimisticMutation(
-    createOptimisticConfig.forCreate<OptimisticAITask, CreateTaskRequest, TaskCreateResponse>({
-      mutationFn: (input) => followApi.aiTask.create(input),
-      queryKey: aiTaskKeys.list,
-      generateOptimistic: (variables) => ({
-        name: variables.name,
-        prompt: variables.prompt,
-        isEnabled: variables.isEnabled ?? true,
-        schedule: variables.schedule,
-        options: variables.options ?? { notifyChannels: ["email"] },
-        userId: "temp-user",
-        createdAt: new Date().toISOString(),
-        updatedAt: new Date().toISOString(),
-        lastRunAt: null,
-        nextRunAt: null,
-        runCount: 0,
-        lastResult: null,
-        lastError: null,
+    withoutErrorToast(
+      createOptimisticConfig.forCreate<OptimisticAITask, CreateTaskRequest, TaskCreateResponse>({
+        mutationFn: (input) => followApi.aiTask.create(input),
+        queryKey: aiTaskKeys.list,
+        generateOptimistic: (variables) => ({
+          name: variables.name,
+          prompt: variables.prompt,
+          isEnabled: variables.isEnabled ?? true,
+          schedule: variables.schedule,
+          options: variables.options ?? { notifyChannels: ["email"] },
+          userId: "temp-user",
+          createdAt: new Date().toISOString(),
+          updatedAt: new Date().toISOString(),
+          lastRunAt: null,
+          nextRunAt: null,
+          runCount: 0,
+          lastResult: null,
+          lastError: null,
+        }),
+        retryable: false,
       }),
-
-      errorMessage: "Failed to create AI task",
-      retryable: false,
-    }),
+    ),
   )
 }
 
 export const useUpdateAITaskMutation = () => {
   return useOptimisticMutation(
-    createOptimisticConfig.forUpdate<OptimisticAITask, UpdateTaskRequest>({
-      mutationFn: (input) => followApi.aiTask.update(input),
-      queryKey: aiTaskKeys.list,
-      getId: (variables) => variables.id,
-      errorMessage: "Failed to update AI task",
-      retryable: false,
-    }),
+    withoutErrorToast(
+      createOptimisticConfig.forUpdate<OptimisticAITask, UpdateTaskRequest>({
+        mutationFn: (input) => followApi.aiTask.update(input),
+        queryKey: aiTaskKeys.list,
+        getId: (variables) => variables.id,
+        retryable: false,
+      }),
+    ),
   )
 }
 
 export const useDeleteAITaskMutation = () => {
   return useOptimisticMutation(
-    createOptimisticConfig.forDelete<OptimisticAITask, { id: string }>({
-      mutationFn: ({ id }) => followApi.aiTask.delete({ id }),
-      queryKey: aiTaskKeys.list,
-      getId: (variables) => variables.id,
-
-      errorMessage: "Failed to delete AI task",
-      retryable: false,
-    }),
+    withoutErrorToast(
+      createOptimisticConfig.forDelete<OptimisticAITask, { id: string }>({
+        mutationFn: ({ id }) => followApi.aiTask.delete({ id }),
+        queryKey: aiTaskKeys.list,
+        getId: (variables) => variables.id,
+        retryable: false,
+      }),
+    ),
   )
 }
 

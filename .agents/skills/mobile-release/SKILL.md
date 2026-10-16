@@ -1,6 +1,6 @@
 ---
 name: mobile-release
-description: Full Folo mobile release from dev to the stores. Decides between a store release and an OTA-only release, drafts the changelog, bumps the version and opens the release PR to mobile-main, verifies the PR's CI-built Android package and the iOS build on a simulator along with every change in the release, merges the PR, watches the build or OTA workflows, publishes the GitHub release, and submits the iOS build for App Store review and the Android build for Google Play review. Use when the user asks to release, ship or publish the mobile app.
+description: Full Folo mobile release from dev to the stores. Decides between a store release and an OTA-only release, drafts the changelog, bumps the version and opens the release PR to mobile-main, verifies the PR's CI-built Android package and the iOS build on a simulator along with every change in the release, merges the PR, watches the build or OTA workflows, publishes the GitHub release, submits the iOS build for App Store review and the Android build for Google Play review, and drafts the announcement post and promo video. Use when the user asks to release, ship or publish the mobile app.
 disable-model-invocation: true
 argument-hint: "[optional notes, e.g. 'ota' or 'minor bump']"
 allowed-tools: Bash, Read, Write, Edit, Glob, Grep
@@ -10,7 +10,7 @@ allowed-tools: Bash, Read, Write, Edit, Glob, Grep
 
 The release flow shared by every agent. Claude Code reaches it through `.claude/skills/mobile-release/SKILL.md`, which maps these steps onto Claude's tools. Change the flow here, not in the adapter.
 
-Phase A prepares the release, Phase B verifies the packages GitHub Actions builds for the PR, and Phase C merges and carries the release through every store. The run ends only when every item in **Definition of done** for the chosen mode is checked, or when the only open items are blocked on the user and you have told them exactly what is left.
+Phase A prepares the release, Phase B verifies the packages GitHub Actions builds for the PR, and Phase C merges, carries the release through every store and drafts its announcement. The run ends only when every item in **Definition of done** for the chosen mode is checked, or when the only open items are blocked on the user and you have told them exactly what is left.
 
 ## Standing authorization
 
@@ -38,6 +38,7 @@ Store mode (`mode: store`):
 - [ ] Android: Google Play production release with the new app bundle and release notes, sent for review
 - [ ] `chore(sync): merge mobile-main into dev` merged, or its blocker reported
 - [ ] Verification report and final summary delivered; temporary devices, downloads and browser tabs cleaned up
+- [ ] Announcement kit delivered: X post, reply with the release links, quote line and promo video (C9)
 
 OTA mode (`mode: ota`):
 
@@ -46,6 +47,7 @@ OTA mode (`mode: ota`):
 - [ ] A device running the store binary for that runtime picks up the update (Settings → About shows `OTA <new version>`)
 - [ ] GitHub release `Mobile v<version>` with `ota-release.json`, `dist.tar.zst` and `build.apk`: not a draft, not a prerelease, not latest
 - [ ] Sync PR merged or reported; report delivered; cleanup done
+- [ ] Announcement kit delivered (C9)
 
 ## How to work
 
@@ -306,6 +308,10 @@ Tell the user: version, mode, runtime and channel; PR and merge commit; tag; Git
 
 Clean up: delete temporary simulators and emulators, shut down QA devices you booted, delete downloads (keep the report and screenshots), revert stray changes such as `Info.plist` build numbers from local builds, close the browser tabs you opened, and release any granted credentials.
 
+### C9. Announcement kit
+
+Follow `.agents/skills/release-promo/SKILL.md`: pick the highlights, draft the X post, its reply with the release links and a one-sentence quote line for the second account, and render the promo video from the store captures. If a desktop release runs in the same session, make one kit for both after the later release's report. These are drafts; the user posts them.
+
 ## Failure handling
 
 - The bump fails halfway: nbump restores `package.json` only when a trailing hook fails and rolls nothing back after a leading hook fails. Check `git status` and `git branch --list 'release/mobile/*'`, restore the tree with `git restore --staged --worktree apps/mobile` and delete the generated `apps/mobile/changelog/<version>.md` if the bump renamed `next.md`. Ask before deleting a leftover local release branch. If the branch reached GitHub but `gh pr create` failed, open the PR by hand with the title and body from `bump.config.ts`.
@@ -329,4 +335,5 @@ Clean up: delete temporary simulators and emulators, shut down QA devices you bo
 - Workflows: `.github/workflows/tag.yml`, `build-ios.yml`, `build-android.yml`, `publish-ota.yml`, `sync.yaml`, `lint.yml`, `build-web.yml`
 - Build profiles and submit config: `apps/mobile/eas.json`; app config: `apps/mobile/app.config.base.ts`; iOS Info.plist: `apps/mobile/ios/Folo/Info.plist`
 - OTA worker: `apps/ota` (its `README.md` lists manifest, policy and rollback steps)
+- Announcement kit: `.agents/skills/release-promo/SKILL.md`; promo video renderer: `store-assets/scripts/release-video.ts`
 - `references/verify-android-build.md`, `references/verify-ios-build.md`, `references/store-submissions.md`, `references/release-notes.md`, `references/browser-and-credentials.md`

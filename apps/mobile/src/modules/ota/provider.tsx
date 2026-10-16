@@ -11,13 +11,15 @@ import type {
 import { createContext, use, useEffect, useMemo, useReducer, useRef, useState } from "react"
 import { InteractionManager, Platform } from "react-native"
 
+import { proxyEnv } from "@/src/lib/proxy-env"
+
 import type { StorePolicyResponse } from "./client"
 import { fetchStorePolicy } from "./client"
 import { initialOtaState, reduceOtaState } from "./store"
 import type { OtaAction, OtaState } from "./types"
+import { useStoreUpdatePrompt } from "./use-store-update-prompt"
 
 const OtaContext = createContext<OtaState>(initialOtaState)
-const OtaBaseUrl = "https://ota.folo.is"
 const OtaProduct = "mobile"
 
 export type OtaCheckForUpdatesResult = { kind: "available"; version: string } | { kind: "idle" }
@@ -182,7 +184,7 @@ const refreshStorePolicyInBackground = ({
   shouldCancel?: () => boolean
 }) => {
   void fetchStorePolicy({
-    baseUrl: OtaBaseUrl,
+    baseUrl: proxyEnv.OTA_URL,
     product: OtaProduct,
     platform: Platform.OS === "android" ? "android" : "ios",
     channel: getOtaChannel(),
@@ -200,14 +202,12 @@ const refreshStorePolicyInBackground = ({
 
 const runGuardedOtaCheck = ({
   dispatch,
-  setStorePolicy,
   inFlightRef,
   currentPendingVersion,
   isUpdatePending,
   shouldCancel = () => false,
 }: {
   dispatch: ActionDispatch<[action: OtaAction]>
-  setStorePolicy: Dispatch<SetStateAction<StorePolicyResponse | null>>
   inFlightRef: MutableRefObject<Promise<OtaCheckForUpdatesResult> | null>
   currentPendingVersion: string | null
   isUpdatePending: boolean
@@ -220,11 +220,6 @@ const runGuardedOtaCheck = ({
   if (inFlightRef.current) {
     return inFlightRef.current
   }
-
-  refreshStorePolicyInBackground({
-    setStorePolicy,
-    shouldCancel,
-  })
 
   return runWithSingleInFlight({
     inFlightRef,
@@ -241,7 +236,8 @@ const runGuardedOtaCheck = ({
 export const OtaProvider = ({ children }: PropsWithChildren) => {
   const { checkError, downloadError, downloadedUpdate, isUpdatePending } = Updates.useUpdates()
   const [state, dispatch] = useReducer(reduceOtaState, initialOtaState)
-  const [, setStorePolicy] = useState<StorePolicyResponse | null>(null)
+  const [storePolicy, setStorePolicy] = useState<StorePolicyResponse | null>(null)
+  useStoreUpdatePrompt(storePolicy)
   const checkInFlightRef = useRef<Promise<OtaCheckForUpdatesResult> | null>(null)
   const isUnmountedRef = useRef(false)
 
@@ -284,6 +280,18 @@ export const OtaProvider = ({ children }: PropsWithChildren) => {
     })
   }, [checkError, downloadError])
 
+  // A newer binary in the store matters whether or not this build takes OTA updates
+  useEffect(() => {
+    if (__DEV__) return
+    const task = InteractionManager.runAfterInteractions(() => {
+      refreshStorePolicyInBackground({
+        setStorePolicy,
+        shouldCancel: () => isUnmountedRef.current,
+      })
+    })
+    return () => task.cancel()
+  }, [])
+
   useEffect(() => {
     if (__DEV__ || !Updates.isEnabled || nativePendingVersion) {
       return
@@ -293,7 +301,6 @@ export const OtaProvider = ({ children }: PropsWithChildren) => {
       try {
         await runGuardedOtaCheck({
           dispatch,
-          setStorePolicy,
           inFlightRef: checkInFlightRef,
           currentPendingVersion: nativePendingVersion,
           isUpdatePending,
@@ -318,7 +325,6 @@ export const OtaProvider = ({ children }: PropsWithChildren) => {
       checkForUpdates: async () =>
         runGuardedOtaCheck({
           dispatch,
-          setStorePolicy,
           inFlightRef: checkInFlightRef,
           currentPendingVersion,
           isUpdatePending,

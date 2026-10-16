@@ -62,6 +62,7 @@ export const Recommendations = () => {
             navigation.back()
           }}
           className="-mb-2 ml-4"
+          accessibilityLabel={t("words.back")}
         >
           <MingcuteLeftLineIcon color={label} height={20} width={20} />
         </UINavigationHeaderActionButton>

@@ -1,8 +1,9 @@
 import type { FeedViewType } from "@follow/constants"
 import type { MediaModel } from "@follow/database/schemas/types"
+import { useRecyclingState } from "@shopify/flash-list"
 import type { ImageSource } from "expo-image"
 import type { Ref } from "react"
-import { useEffect, useState } from "react"
+import { useEffect, useMemo, useRef, useState } from "react"
 import { ScrollView, View } from "react-native"
 import Animated, {
   interpolateColor,
@@ -22,6 +23,12 @@ import { VideoPlayer } from "../video/VideoPlayer"
 const getMediaKey = (mediaItem: MediaModel) =>
   mediaItem.url || mediaItem.preview_image_url || `${mediaItem.type}-media`
 
+// Thumbnails are sized to the card, rounded up so that a slightly different layout asks for the
+// same URL and hits the cache
+const THUMBNAIL_SIZE_STEP = 50
+const toThumbnailSize = (size: number) =>
+  Math.ceil(size / THUMBNAIL_SIZE_STEP) * THUMBNAIL_SIZE_STEP
+
 export const MediaCarousel = ({
   ref,
   entryId,
@@ -33,16 +40,28 @@ export const MediaCarousel = ({
   ref?: Ref<View>
   entryId: string
   media: MediaModel[]
-  onPreview?: (index: number, placeholder: ImageSource | undefined) => void
+  onPreview?: (index: number, thumbnail: ImageSource | undefined) => void
   aspectRatio: number
   view: FeedViewType
 }) => {
   const [containerWidth, setContainerWidth] = useState(0)
   const containerHeight = Math.floor(containerWidth / aspectRatio)
   const hasMany = media.length > 1
+  // Media without an image get no page, so a page's position can differ from its media index
+  const pages = useMemo(
+    () =>
+      media.flatMap((m, index) => {
+        const imageUrl = m.type === "video" ? m.preview_image_url : m.url
+        return imageUrl ? [{ media: m, index, imageUrl }] : []
+      }),
+    [media],
+  )
 
-  // const activeIndex = useSharedValue(0)
-  const [activeIndex, setActiveIndex] = useState(0)
+  // The list recycles this row for other entries, which start at their first image
+  const scrollViewRef = useRef<ScrollView>(null)
+  const [activeIndex, setActiveIndex] = useRecyclingState(0, [entryId], () => {
+    scrollViewRef.current?.scrollTo({ x: 0, animated: false })
+  })
 
   return (
     <View
@@ -50,8 +69,11 @@ export const MediaCarousel = ({
         setContainerWidth(e.nativeEvent.layout.width)
       }}
     >
-      <View ref={ref} className="relative overflow-hidden rounded-md">
+      {/* Sized by the aspect ratio before the width is measured: a row laid out without its image
+          is so short that the list mounts far more rows than fit on screen */}
+      <View ref={ref} className="relative overflow-hidden rounded-md" style={{ aspectRatio }}>
         <ScrollView
+          ref={scrollViewRef}
           onMomentumScrollEnd={(e) => {
             setActiveIndex(Math.round(e.nativeEvent.contentOffset.x / containerWidth))
           }}
@@ -64,19 +86,27 @@ export const MediaCarousel = ({
           // See https://github.com/Shopify/flash-list/issues/797
           style={{ height: containerHeight }}
         >
-          {media.map((m, index) => {
-            const imageUrl = m.type === "video" ? m.preview_image_url : m.url
-            if (!imageUrl) {
-              return null
+          {pages.map(({ media: m, index, imageUrl }, position) => {
+            // An entry can carry dozens of images, so only the visible page and its neighbors load,
+            // and only once the card is measured, as their thumbnails are sized to it
+            if (!containerWidth || Math.abs(position - activeIndex) > 1) {
+              return (
+                <View key={imageUrl} style={{ width: containerWidth, height: containerHeight }} />
+              )
             }
-            const proxy = {
-              height: 400,
-            }
+            // The image covers the card, so one relatively wider than the card needs the card's
+            // height and any other its width. Asking for one side keeps the image uncropped
+            const proxy =
+              m.width && m.height && m.width / m.height > aspectRatio
+                ? { height: toThumbnailSize(containerHeight) }
+                : { width: toThumbnailSize(containerWidth) }
             const ImageItem = (
               <NativePressable
                 onPress={() => {
-                  const [placeholder] = getAllSources({ uri: imageUrl }, proxy)
-                  onPreview?.(index, { blurhash: m.blurhash, ...placeholder })
+                  // The proxied thumbnail is what this card shows, so the lightbox can show it from
+                  // the cache while the original loads
+                  const [, thumbnail] = getAllSources({ uri: imageUrl }, proxy)
+                  onPreview?.(index, thumbnail)
                 }}
               >
                 <Image

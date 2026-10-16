@@ -3,6 +3,8 @@ export interface ToastProps {
   variant: "bottom-stack" | "center-replace"
   type: "success" | "error" | "info"
   message: string
+  /** A second line under the message, such as the reason a request failed */
+  description?: string
   render: React.ReactNode
 
   action: {
@@ -18,7 +20,7 @@ export interface ToastProps {
 }
 
 export type CenterToastProps = Partial<
-  Pick<ToastProps, "message" | "render" | "type" | "duration" | "icon">
+  Pick<ToastProps, "message" | "description" | "render" | "type" | "duration" | "icon">
 > & {
   variant: "center-replace"
 }

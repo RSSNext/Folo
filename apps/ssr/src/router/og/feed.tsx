@@ -1,13 +1,18 @@
 import { getFeedIconSrc } from "@follow/components/utils/icon.js"
 import { formatNumber } from "@follow/utils"
 import type { FollowClient } from "@follow-app/client-sdk"
+import { FollowAPIError } from "@follow-app/client-sdk"
 import * as React from "react"
 
 import { renderToImage } from "../../lib/og/render-to-image"
-import { getImageBase64, OGAvatar, OGCanvas } from "./__base"
+import { getImageBase64, OGAvatar, OGCanvas, renderWithAvatarFallback } from "./__base"
 
 export const renderFeedOG = async (apiClient: FollowClient, feedId: string) => {
-  const feed = await apiClient.api.feeds.get({ id: feedId }).catch(() => null)
+  const feed = await apiClient.api.feeds.get({ id: feedId }).catch((error: unknown) => {
+    // Only a missing feed is a 404; other API failures are server errors that aren't cached
+    if (error instanceof FollowAPIError && error.status === 404) throw 404
+    throw error
+  })
 
   if (!feed?.data.feed) {
     throw 404
@@ -28,72 +33,74 @@ export const renderFeedOG = async (apiClient: FollowClient, feedId: string) => {
   const imageBase64 = await getImageBase64(image || src)
 
   try {
-    const imageRes = await renderToImage(
-      <OGCanvas seed={title!}>
-        <div
-          style={{
-            display: "flex",
-            flexDirection: "column",
-            alignItems: "center",
-            justifyContent: "center",
-            textAlign: "center",
-            gap: 15,
-            padding: "0 60px",
-          }}
-        >
-          <OGAvatar base64={imageBase64} title={title!} />
+    const imageRes = await renderWithAvatarFallback(imageBase64, (avatarBase64) =>
+      renderToImage(
+        <OGCanvas seed={title!}>
           <div
             style={{
               display: "flex",
               flexDirection: "column",
               alignItems: "center",
-              gap: 10,
-              overflow: "hidden",
+              justifyContent: "center",
+              textAlign: "center",
+              gap: 15,
+              padding: "0 60px",
             }}
           >
-            <h3
+            <OGAvatar base64={avatarBase64} title={title!} />
+            <div
               style={{
-                color: "#e6edf3",
-                fontSize: "3.2rem",
-                fontWeight: 600,
-                margin: 0,
+                display: "flex",
+                flexDirection: "column",
+                alignItems: "center",
+                gap: 10,
+                overflow: "hidden",
               }}
             >
-              {title}
-            </h3>
-            {description && (
-              <p
+              <h3
                 style={{
-                  fontSize: "1.8rem",
-                  color: "#8b949e",
+                  color: "#e6edf3",
+                  fontSize: "3.2rem",
+                  fontWeight: 600,
                   margin: 0,
-                  maxHeight: "5.4rem",
-                  lineHeight: 1.5,
-                  overflow: "hidden",
                 }}
               >
-                {description}
-              </p>
-            )}
+                {title}
+              </h3>
+              {description && (
+                <p
+                  style={{
+                    fontSize: "1.8rem",
+                    color: "#8b949e",
+                    margin: 0,
+                    maxHeight: "5.4rem",
+                    lineHeight: 1.5,
+                    overflow: "hidden",
+                  }}
+                >
+                  {description}
+                </p>
+              )}
+            </div>
+            <p
+              style={{
+                fontSize: "1.5rem",
+                color: "#afb8c1",
+                fontWeight: 500,
+                margin: 0,
+                paddingTop: 10,
+              }}
+            >
+              {formatNumber(feed.data.subscriptionCount || 0)} followers with{" "}
+              {formatNumber(feed.data.readCount || 0)} recent reads on Folo
+            </p>
           </div>
-          <p
-            style={{
-              fontSize: "1.5rem",
-              color: "#afb8c1",
-              fontWeight: 500,
-              margin: 0,
-              paddingTop: 10,
-            }}
-          >
-            {formatNumber(feed.data.subscriptionCount || 0)} followers with{" "}
-            {formatNumber(feed.data.readCount || 0)} recent reads on Folo
-          </p>
-        </div>
-      </OGCanvas>,
-      {
-        width: 1200,
-        height: 600,
-      },
+        </OGCanvas>,
+        {
+          width: 1200,
+          height: 600,
+        },
+      ),
     )
 
     return imageRes

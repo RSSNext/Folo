@@ -88,17 +88,41 @@ export const useScrollTracking = (
       return
     }
 
-    const scrollContainerTop =
-      scrollContainerElement === document ? 0 : getElementTop(scrollContainerElement as HTMLElement)
+    const measure = () => {
+      const scrollContainerTop =
+        scrollContainerElement === document
+          ? 0
+          : getElementTop(scrollContainerElement as HTMLElement)
 
-    const tops = toc.map(({ $heading }) => {
-      const elementTop = getElementTop($heading)
-      const top = elementTop - scrollContainerTop
-      return top
+      const tops = toc.map(({ $heading }) => {
+        const elementTop = getElementTop($heading)
+        const top = elementTop - scrollContainerTop
+        return top
+      })
+
+      headingTopsRef.current = tops
+      setHeadingTopsVersion((v) => v + 1)
+    }
+    measure()
+
+    // Images and embeds load after the first measure and push the headings down, so measure
+    // again whenever the scrolled content changes size
+    const $content =
+      scrollContainerElement === document
+        ? document.body
+        : (scrollContainerElement as HTMLElement).firstElementChild
+    if (!$content) return
+
+    let frame = 0
+    const observer = new ResizeObserver(() => {
+      cancelAnimationFrame(frame)
+      frame = requestAnimationFrame(measure)
     })
-
-    headingTopsRef.current = tops
-    setHeadingTopsVersion((v) => v + 1)
+    observer.observe($content)
+    return () => {
+      observer.disconnect()
+      cancelAnimationFrame(frame)
+    }
   }, [toc, scrollContainerElement])
 
   useEffect(() => {

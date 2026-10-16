@@ -11,6 +11,7 @@ import {
   fetchDesktopStoreVersion,
   fetchMobileStoreVersion,
   getDesktopStoreUrl,
+  isAppStoreAvailableIn,
 } from "../lib/store-version"
 
 const semverSchema = z.string().regex(/^\d+\.\d+\.\d+$/)
@@ -91,6 +92,15 @@ policyRoute.get("/policy", async (c) => {
   }
 
   if (channel !== "production") {
+    return c.json(
+      evaluateStorePolicy(null, {
+        installedBinaryVersion,
+      }),
+    )
+  }
+
+  // The request country stands in for the App Store storefront the device buys from
+  if (platform === "ios" && !isAppStoreAvailableIn(c.req.raw.cf?.country)) {
     return c.json(
       evaluateStorePolicy(null, {
         installedBinaryVersion,

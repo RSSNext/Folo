@@ -38,19 +38,36 @@ export const aiTaskOptionsSchema = z.object({
 
 export type AITaskOptions = z.infer<typeof aiTaskOptionsSchema>
 
-export const createTaskSchema = (t: TFunction<"ai">) =>
+/**
+ * @param getPromptText - the plain text of the prompt. The submitted prompt is the serialized
+ * editor state, whose JSON is never empty and is much longer than the text the user typed.
+ */
+export const createTaskSchema = (t: TFunction<"ai">, getPromptText?: () => string) =>
   z
     .object({
       name: z
         .string()
         .min(1, t("tasks.validation.title_required"))
         .max(50, t("tasks.validation.title_max")),
-      prompt: z
-        .string()
-        .min(1, t("tasks.validation.prompt_required"))
-        .max(MAX_PROMPT_LENGTH, t("tasks.validation.prompt_max")),
+      prompt: z.string(),
       schedule: scheduleSchema,
       options: aiTaskOptionsSchema,
+    })
+    .superRefine((data, ctx) => {
+      const promptText = getPromptText ? getPromptText() : data.prompt
+      if (!promptText.trim()) {
+        ctx.addIssue({
+          code: "custom",
+          message: t("tasks.validation.prompt_required"),
+          path: ["prompt"],
+        })
+      } else if (promptText.length > MAX_PROMPT_LENGTH) {
+        ctx.addIssue({
+          code: "custom",
+          message: t("tasks.validation.prompt_max"),
+          path: ["prompt"],
+        })
+      }
     })
     .refine(
       (data) => {

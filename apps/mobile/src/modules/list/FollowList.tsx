@@ -1,8 +1,9 @@
-import { FeedViewType } from "@follow/constants"
+import { FeedViewType, UserRole } from "@follow/constants"
 import { useListById } from "@follow/store/list/hooks"
 import { listSyncServices } from "@follow/store/list/store"
 import { useSubscriptionByListId } from "@follow/store/subscription/hooks"
 import { subscriptionSyncService } from "@follow/store/subscription/store"
+import { useUserRole } from "@follow/store/user/hooks"
 import { zodResolver } from "@hookform/resolvers/zod"
 import { useQuery } from "@tanstack/react-query"
 import { useEffect, useState } from "react"
@@ -11,11 +12,14 @@ import { useTranslation } from "react-i18next"
 import { StyleSheet, View } from "react-native"
 import { z } from "zod"
 
+import { useIsPaymentEnabled } from "@/src/atoms/server-configs"
+import { ListErrorView } from "@/src/components/errors/ListErrorView"
 import { HeaderSubmitTextButton } from "@/src/components/layouts/header/HeaderElements"
 import {
   NavigationBlurEffectHeaderView,
   SafeNavigationScrollView,
 } from "@/src/components/layouts/views/SafeNavigationScrollView"
+import { PaidBadge } from "@/src/components/ui/badge/PaidBadge"
 import { FormProvider } from "@/src/components/ui/form/FormProvider"
 import { FormLabel } from "@/src/components/ui/form/Label"
 import { FormSwitch } from "@/src/components/ui/form/Switch"
@@ -29,12 +33,13 @@ import { useNavigation, useScreenIsInSheetModal } from "@/src/lib/navigation/hoo
 import { useSetModalScreenOptions } from "@/src/lib/navigation/ScreenOptionsContext"
 import { toast } from "@/src/lib/toast"
 
+import { FollowStateView } from "../feed/FollowStateView"
 import { FeedViewSelector } from "../feed/view-selector"
 
 export const FollowList = (props: { id: string }) => {
   const { id } = props
   const list = useListById(id)
-  const { isLoading } = useQuery({
+  const { isFetching, error, refetch } = useQuery({
     queryKey: ["list", id],
     queryFn: () =>
       listSyncServices.fetchListById({
@@ -42,12 +47,23 @@ export const FollowList = (props: { id: string }) => {
       }),
     enabled: !list,
   })
-  if (isLoading) {
-    return (
-      <View className="mt-24 flex-1 flex-row items-start justify-center">
-        <PlatformActivityIndicator />
-      </View>
-    )
+  if (!list) {
+    if (isFetching) {
+      return (
+        <FollowStateView>
+          <View className="mt-24 flex-1 flex-row items-start justify-center">
+            <PlatformActivityIndicator />
+          </View>
+        </FollowStateView>
+      )
+    }
+    if (error) {
+      return (
+        <FollowStateView>
+          <ListErrorView error={error} resetError={() => void refetch()} />
+        </FollowStateView>
+      )
+    }
   }
   return <Impl id={id} />
 }
@@ -64,6 +80,11 @@ const Impl = (props: { id: string }) => {
   const list = useListById(id)
   const subscription = useSubscriptionByListId(id)
   const isSubscribed = !!subscription
+  // Private follow and hiding from the timeline are paid features for lists, as on desktop. Only
+  // turning one on needs the plan, so a list that has it on after a downgrade can still turn it off.
+  const role = useUserRole()
+  const isPaymentEnabled = useIsPaymentEnabled()
+  const isPlanLocked = isPaymentEnabled && (role === UserRole.Free || role === UserRole.Trial)
   const form = useForm<z.infer<typeof formSchema>>({
     resolver: zodResolver(formSchema),
     defaultValues: {
@@ -116,7 +137,7 @@ const Impl = (props: { id: string }) => {
   const setModalOptions = useSetModalScreenOptions()
   useEffect(() => {
     setModalOptions({
-      gestureEnabled: !isDirty,
+      preventNativeDismiss: isDirty,
     })
   }, [isDirty, setModalOptions])
   if (!list) {
@@ -129,6 +150,7 @@ const Impl = (props: { id: string }) => {
       Header={
         <NavigationBlurEffectHeaderView
           title={`${isSubscribed ? tCommon("words.edit") : tCommon("words.follow")} - ${list?.title}`}
+          promptBeforeLeave={isDirty}
           headerRight={
             <HeaderSubmitTextButton
               isValid={isValid}
@@ -173,7 +195,7 @@ const Impl = (props: { id: string }) => {
               render={({ field: { onChange, ref, value } }) => (
                 <TextField
                   label={t("subscription_form.title")}
-                  description={t("subscription_form.title_description")}
+                  description={t("subscription_form.list_title_description")}
                   onChangeText={onChange}
                   value={value}
                   ref={ref}
@@ -191,8 +213,15 @@ const Impl = (props: { id: string }) => {
                 <FormSwitch
                   value={value}
                   label={t("subscription_form.private_follow")}
+                  labelAccessory={
+                    <PaidBadge
+                      feature={t("subscription_form.private_follow")}
+                      locked={isPlanLocked}
+                    />
+                  }
                   description={t("subscription_form.private_follow_description")}
                   onValueChange={onChange}
+                  disabled={isPlanLocked && subscription?.isPrivate !== true}
                   size="sm"
                 />
               )}
@@ -207,8 +236,15 @@ const Impl = (props: { id: string }) => {
                 <FormSwitch
                   value={value}
                   label={t("subscription_form.hide_from_timeline")}
+                  labelAccessory={
+                    <PaidBadge
+                      feature={t("subscription_form.hide_from_timeline")}
+                      locked={isPlanLocked}
+                    />
+                  }
                   description={t("subscription_form.hide_from_timeline_description")}
                   onValueChange={onChange}
+                  disabled={isPlanLocked && subscription?.hideFromTimeline !== true}
                   size="sm"
                 />
               )}

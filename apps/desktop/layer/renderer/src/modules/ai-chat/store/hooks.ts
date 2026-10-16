@@ -1,6 +1,7 @@
+import { use, useSyncExternalStore } from "react"
 import { useShallow } from "zustand/shallow"
 
-import { useAIChatStore } from "./AIChatContext"
+import { AIChatStoreContext, useAIChatStore } from "./AIChatContext"
 import type { BlockSlice } from "./slices/block.slice"
 import type { BizUIMessage } from "./types"
 
@@ -63,6 +64,32 @@ export const useMessageByIdSelector = <T>(
 export const useHasMessages = () => {
   const store = useAIChatStore()
   return store((state) => state.messages.length > 0)
+}
+
+const subscribeToNothing = () => () => {}
+
+/**
+ * Like `useHasMessages`, but also usable outside an AI chat root (such as in a peek modal),
+ * where it is always false
+ */
+export const useOptionalChatHasMessages = () => {
+  const store = use(AIChatStoreContext)
+  return useSyncExternalStore(
+    store ? store.subscribe : subscribeToNothing,
+    () => !!store && store.getState().messages.length > 0,
+  )
+}
+
+/**
+ * The last message when the user sent it, otherwise null. Unlike `useMessages`, it doesn't
+ * change on every streamed chunk of an answer.
+ */
+export const useLastUserMessage = () => {
+  const store = useAIChatStore()
+  return store((state) => {
+    const lastMessage = state.messages.at(-1)
+    return lastMessage?.role === "user" ? lastMessage : null
+  })
 }
 
 export const useIsLocalChat = () => {

@@ -1,5 +1,6 @@
 import { cn } from "@follow/utils"
 import { useCallback } from "react"
+import { useTranslation } from "react-i18next"
 import { StyleSheet, View } from "react-native"
 
 import { ThemedBlurView } from "@/src/components/common/ThemedBlurView"
@@ -30,6 +31,7 @@ export function PlayerAction({
   iconSize = 24,
   buttonClassName = "",
 }: PlayerActionProps) {
+  const { t } = useTranslation()
   const handlePressPlay = useCallback(() => {
     onPress()
   }, [onPress])
@@ -50,6 +52,9 @@ export function PlayerAction({
     <NativePressable
       className={cn("absolute inset-0 flex items-center justify-center", className)}
       onPress={handlePressPlay}
+      accessibilityRole="button"
+      accessibilityLabel={mediaState === "playing" ? t("player.pause") : t("player.play")}
+      accessibilityState={{ busy: mediaState === "loading" }}
     >
       <View className={cn("overflow-hidden rounded-full p-2", buttonClassName)}>
         <ThemedBlurView

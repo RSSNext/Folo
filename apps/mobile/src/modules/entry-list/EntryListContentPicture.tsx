@@ -53,6 +53,7 @@ export const EntryListContentPicture = ({
 
   useImperativeHandle(forwardRef, () => ref.current!)
   const {
+    error: entriesError,
     fetchNextPage,
     refetch,
     isRefetching,
@@ -60,12 +61,14 @@ export const EntryListContentPicture = ({
     isFetching,
     isFetchingNextPage,
     isReady,
+    fetchedTime,
   } = useEntries({
     viewId: view,
     active,
   })
   const { onViewableItemsChanged, onScroll, viewableItems } = useOnViewableItemsChanged({
-    disabled: active === false || isFetching || suspendMarkRead,
+    // Loading the next page only appends entries, so the ones scrolled past meanwhile still count
+    disabled: active === false || (isFetching && !isFetchingNextPage) || suspendMarkRead,
     refreshing: isFetching && !isFetchingNextPage,
   })
   const translation = useGeneralSettingKey("translation")
@@ -122,6 +125,7 @@ export const EntryListContentPicture = ({
     <TimelineSelectorMasonryList
       ref={ref}
       isRefetching={isRefetching}
+      emptyError={entriesError}
       onResetScrollSignalConsumed={onResetScrollSignalConsumed}
       resetScrollSignal={resetScrollSignal}
       data={entryIds}
@@ -139,7 +143,7 @@ export const EntryListContentPicture = ({
           </View>
         ) : (
           <View>
-            <GridEntryListFooter />
+            <GridEntryListFooter fetchedTime={fetchedTime} />
             {hasEndSpacer && <EntryListEndScrollSpacer />}
           </View>
         )

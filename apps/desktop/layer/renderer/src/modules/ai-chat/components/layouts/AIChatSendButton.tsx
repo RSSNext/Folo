@@ -1,6 +1,7 @@
 import { Button } from "@follow/components/ui/button/index.js"
 import { cn } from "@follow/utils"
 import type { FC } from "react"
+import { useTranslation } from "react-i18next"
 
 interface AIChatSendButtonProps {
   onClick: () => void
@@ -16,10 +17,12 @@ export const AIChatSendButton: FC<AIChatSendButtonProps> = ({
   isProcessing = false,
   className,
 }) => {
+  const { t } = useTranslation("ai")
   return (
     <Button
       onClick={onClick}
       disabled={disabled}
+      aria-label={isProcessing ? t("chat.message.stop") : t("chat.message.send")}
       buttonClassName={cn(
         "size-8 rounded-xl p-0 transition-all duration-300 active:scale-95",
         isProcessing

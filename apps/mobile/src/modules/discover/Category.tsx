@@ -20,6 +20,7 @@ import { RecommendationCategoryScreen } from "@/src/screens/(stack)/recommendati
 
 export const Category = () => {
   const { t } = useTranslation("common")
+  const { t: tSettings } = useTranslation("settings")
   const navigation = useNavigation()
   const label = useColor("label")
   return (
@@ -34,6 +35,8 @@ export const Category = () => {
         <ItemPressable
           className="rounded-lg p-1"
           itemStyle={ItemPressableStyle.UnStyled}
+          accessibilityRole="button"
+          accessibilityLabel={tSettings("discoverFilters.title")}
           onPress={() => {
             navigation.presentControllerView(DiscoverSettingsScreen)
           }}
@@ -117,9 +120,17 @@ const CategoryItem = memo(({ category }: { category: RSSHubCategory }) => {
         className="rounded-2xl p-4"
         style={styles.cardItem}
       >
+        {/* The emoji sits above the name, so a long name cannot run into it */}
         <View className="flex-1">
           <CategoryEmoji emoji={emoji} />
-          <Text className="absolute bottom-0 left-2 text-lg font-bold text-white">{name}</Text>
+          {/* A margin, not padding: Android fits the font to the view's width, padding included */}
+          <Text
+            className="ml-2 text-lg font-bold text-white"
+            numberOfLines={1}
+            adjustsFontSizeToFit
+          >
+            {name}
+          </Text>
         </View>
       </LinearGradient>
     </Pressable>
@@ -129,18 +140,15 @@ const styles = StyleSheet.create({
   cardItem: {
     aspectRatio: 16 / 9,
   },
+  // Takes the height the name leaves; on a small card the emoji shrinks to fit it
   emojiContainer: {
-    position: "absolute",
-    right: 8,
-    top: 8,
-    width: 56,
-    height: 56,
-    alignItems: "center",
-    justifyContent: "center",
+    flex: 1,
+    alignItems: "flex-end",
+    paddingHorizontal: 8,
   },
   emojiText: {
-    fontSize: 40,
-    lineHeight: 48,
+    fontSize: 32,
+    lineHeight: 40,
     textAlign: "center",
     ...(Platform.OS === "android"
       ? {
@@ -149,7 +157,8 @@ const styles = StyleSheet.create({
       : {}),
   },
   emojiImage: {
-    width: 40,
-    height: 40,
+    flex: 1,
+    aspectRatio: 1,
+    maxHeight: 40,
   },
 })

@@ -83,12 +83,14 @@ export function TimelineViewSelector() {
 }
 function ItemWrapper({
   index,
+  isActive,
   activeColor,
   children,
   onPress,
   style,
   className,
   testID,
+  accessibilityLabel,
 }: {
   children: React.ReactNode
   index: number
@@ -98,6 +100,7 @@ function ItemWrapper({
   className?: string
   style?: Exclude<StyleProp<ViewStyle>, number>
   testID?: string
+  accessibilityLabel?: string
 }) {
   const { width: windowWidth } = useWindowDimensions()
   const activeViews = useViewWithSubscription()
@@ -114,6 +117,9 @@ function ItemWrapper({
   return (
     <ReAnimatedPressable
       testID={testID}
+      accessibilityRole="tab"
+      accessibilityLabel={accessibilityLabel}
+      accessibilityState={{ selected: isActive }}
       className={cn(
         "relative flex h-12 flex-row items-center justify-center gap-2 overflow-hidden rounded-[1.2rem] pl-2",
         className,
@@ -187,6 +193,7 @@ function ViewItem({
           index={index}
           activeColor={view.activeColor}
           testID={`timeline-view-${view.name.replace("feed_view_type.", "").replaceAll("_", "-")}`}
+          accessibilityLabel={t(view.name)}
           onPress={() =>
             selectTimeline({
               type: "view",

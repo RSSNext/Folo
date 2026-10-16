@@ -34,6 +34,14 @@ export function ErrorElement() {
     })
   }, [error])
 
+  // Electron loads the app from its index.html with a hash router, so the route is reset through
+  // the router instead of navigating to the origin root. The URL only changes once the navigation
+  // completes, so the reload waits for it.
+  const reloadAtHome = async () => {
+    await navigate("/")
+    window.location.reload()
+  }
+
   const reloadRef = useRef(false)
   if (
     message.startsWith("Failed to fetch dynamically imported module") &&
@@ -68,21 +76,14 @@ export function ErrorElement() {
       <div className="center gap-4">
         <Button
           variant="outline"
-          onClick={() => {
-            clearLocalPersistStoreData()
-            window.location.href = "/"
+          onClick={async () => {
+            await clearLocalPersistStoreData()
+            await reloadAtHome()
           }}
         >
           {t("errors_page.reset_local_database")}
         </Button>
-        <Button
-          onClick={() => {
-            navigate("/")
-            window.location.reload()
-          }}
-        >
-          {t("errors_page.reload")}
-        </Button>
+        <Button onClick={reloadAtHome}>{t("errors_page.reload")}</Button>
       </div>
 
       <FeedbackIssue message={message} stack={stack} error={error as Error} />

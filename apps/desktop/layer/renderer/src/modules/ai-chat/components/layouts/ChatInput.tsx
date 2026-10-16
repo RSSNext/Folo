@@ -19,7 +19,12 @@ import { useCommandShortcut } from "~/modules/command/hooks/use-command-binding"
 import { FileUploadPlugin, MentionPlugin, SelectedTextPlugin, ShortcutPlugin } from "../../editor"
 import { useMainEntryId } from "../../hooks/useMainEntryId"
 import { AIPanelRefsContext } from "../../store/AIChatContext"
-import { useChatActions, useChatScene, useChatStatus } from "../../store/hooks"
+import {
+  useChatActions,
+  useChatBlockSelector,
+  useChatScene,
+  useChatStatus,
+} from "../../store/hooks"
 import { AIChatSendButton } from "./AIChatSendButton"
 import { AIModelIndicator } from "./AIModelIndicator"
 
@@ -41,6 +46,8 @@ const chatInputVariants = cva(
     },
   },
 )
+
+const chatInputEditorPlugins = { tabIndentation: false }
 
 interface ChatInputProps extends VariantProps<typeof chatInputVariants> {
   onSend: (message: EditorState | string, editor: LexicalEditor | null) => void
@@ -85,8 +92,18 @@ export const ChatInput = memo(
     const [isEmpty, setIsEmpty] = useState(true)
     const [currentEditor, setCurrentEditor] = useState<LexicalEditor | null>(null)
 
+    // A message sent now would go out without the files still being processed or uploaded
+    const hasPendingUploads = useChatBlockSelector((state) =>
+      state.blocks.some(
+        (block) =>
+          block.type === "fileAttachment" &&
+          (block.attachment.uploadStatus === "processing" ||
+            block.attachment.uploadStatus === "uploading"),
+      ),
+    )
+
     const isProcessing = status === "submitted" || status === "streaming"
-    const isSubmitDisabled = submitDisabled || (!isProcessing && isEmpty)
+    const isSubmitDisabled = submitDisabled || (!isProcessing && (isEmpty || hasPendingUploads))
 
     const handleEditorChange = useCallback(
       (editorState: EditorState, editor: LexicalEditor) => {
@@ -173,6 +190,8 @@ export const ChatInput = memo(
               className="h-14"
               onChange={handleEditorChange}
               onKeyDown={handleKeyDown}
+              // Tab moves on to the controls below instead of indenting the message
+              enabledPlugins={chatInputEditorPlugins}
               autoFocus
               plugins={
                 scene === "onboarding"

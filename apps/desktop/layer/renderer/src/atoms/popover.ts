@@ -22,7 +22,14 @@ type PopoverState =
       props?: PopoverProps
       // Just for abort callback
       abortController: AbortController
+      /** The element that had the focus when the popover opened; it gets it back on close */
+      opener: HTMLElement | null
     }
+
+const getFocusedElement = () => {
+  const element = typeof document === "undefined" ? null : document.activeElement
+  return element instanceof HTMLElement && element !== document.body ? element : null
+}
 
 export const [popoverAtom, usePopoverState, usePopoverValue, useSetPopover] = createAtomHooks(
   atom<PopoverState>({ open: false }),
@@ -44,6 +51,8 @@ export const showPopover = (
     content: element,
     props,
     abortController: new AbortController(),
+    // A popover that replaces another one returns the focus to where the first one was opened
+    opener: currentPopover.open ? currentPopover.opener : getFocusedElement(),
   })
 }
 

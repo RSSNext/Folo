@@ -7,6 +7,7 @@ import {
   TooltipPortal,
   TooltipTrigger,
 } from "@follow/components/ui/tooltip/index.jsx"
+import { IN_ELECTRON } from "@follow/shared/constants"
 import { useEffect } from "react"
 import { Trans } from "react-i18next"
 import { Link } from "react-router"
@@ -79,7 +80,12 @@ export const SettingNotifications = () => {
                 {t.settings("notifications.empty.title")}
               </p>
               <p className="mt-1 max-w-sm px-6 text-center text-sm text-text-secondary">
-                {t.settings("notifications.empty.description")}
+                {/* The desktop app registers itself; a browser only after a notification Action */}
+                {IN_ELECTRON
+                  ? t.settings("notifications.empty.description")
+                  : t.settings("notifications.empty.description_web", {
+                      action: t.settings("actions.action_card.new_entry_notification"),
+                    })}
               </p>
             </div>
           ) : (

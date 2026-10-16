@@ -42,7 +42,7 @@ export class BlockSliceAction {
   get get() {
     return this.params[1]
   }
-  addBlock(block: AIChatContextBlockInput) {
+  addBlock(block: AIChatContextBlockInput & { id?: string }) {
     const currentBlocks = this.get().blocks
 
     // Only allow one SPECIAL_TYPES
@@ -55,7 +55,12 @@ export class BlockSliceAction {
 
     this.set(
       produce((state: BlockSlice) => {
-        state.blocks.push({ ...block, id: BlockSliceAction.SPECIAL_TYPES[block.type] || nanoid(8) })
+        // File attachments keep their attachment id: removing or updating an attachment looks
+        // its block up by that id
+        state.blocks.push({
+          ...block,
+          id: BlockSliceAction.SPECIAL_TYPES[block.type] || block.id || nanoid(8),
+        })
       }),
     )
   }

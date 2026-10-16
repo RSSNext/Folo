@@ -49,5 +49,10 @@
   "register.email": "メールアドレス",
   "register.password": "パスワード",
   "register.submit": "アカウントを作成",
+  "share.load_error_description": "一時的な問題の可能性があります。もう一度お試しください。",
+  "share.load_error_feed": "このフィードを読み込めませんでした",
+  "share.load_error_list": "このリストを読み込めませんでした",
+  "share.load_error_profile": "このプロフィールを読み込めませんでした",
+  "share.retry": "再試行",
   "words.email": "メールアドレス"
 }

@@ -2,6 +2,7 @@ import fontsBase64Data from "../../../.generated/fonts-data"
 import { getSNProFontFamily } from "./sn-pro-font-family"
 
 let cachedFonts: any[] | null = null
+let snProFonts: any[] | null = null
 let koseFont: any | null = null
 
 // Global reference to R2 bucket, set by worker-entry.ts
@@ -56,10 +57,13 @@ async function loadKoseFont(): Promise<any | null> {
 export async function getFonts(): Promise<any[]> {
   if (cachedFonts) return cachedFonts
 
-  const snProFonts = decodeSNProFonts()
+  snProFonts ??= decodeSNProFonts()
   const kose = await loadKoseFont()
 
-  cachedFonts = kose ? [...snProFonts, kose] : snProFonts
+  // Without the CJK font, Chinese and Japanese titles render without glyphs, so a failed load
+  // is tried again on the next image instead of being kept for the worker's lifetime
+  if (!kose) return snProFonts
+  cachedFonts = [...snProFonts, kose]
   return cachedFonts
 }
 

@@ -34,7 +34,7 @@ import {
   useChatStatus,
   useCurrentChatId,
   useHasMessages,
-  useMessages,
+  useLastUserMessage,
 } from "~/modules/ai-chat/store/hooks"
 
 import { LexicalAIEditorNodes } from "../../editor"
@@ -59,7 +59,8 @@ const ChatInterfaceContent = ({ centerInputOnEmpty, visualOffsetY }: ChatInterfa
   const status = useChatStatus()
   const chatActions = useChatActions()
   const error = useChatError()
-  const messages = useMessages()
+  // Only the last user message is needed, so streamed chunks don't re-render the whole chat
+  const lastUserMessageInChat = useLastUserMessage()
   const { ensureLogin } = useRequireLogin()
   const userRole = useUserRole()
 
@@ -109,7 +110,10 @@ const ChatInterfaceContent = ({ centerInputOnEmpty, visualOffsetY }: ChatInterfa
 
   const autoScrollWhenStreaming = useAISettingKey("autoScrollWhenStreaming")
 
-  const { shouldShowInterruptionNotice, lastUserMessage } = useInterruptionNotice(messages, status)
+  const { shouldShowInterruptionNotice, lastUserMessage } = useInterruptionNotice(
+    lastUserMessageInChat,
+    status,
+  )
 
   const { resetScrollState } = useAutoScroll(
     scrollAreaRef,
@@ -133,7 +137,9 @@ const ChatInterfaceContent = ({ centerInputOnEmpty, visualOffsetY }: ChatInterfa
     const blocks = [] as AIChatContextBlock[]
 
     for (const block of blockActions.getBlocks()) {
-      if (block.type === "fileAttachment" && block.attachment.serverUrl) {
+      if (block.type === "fileAttachment") {
+        // A file that failed or has not finished uploading has nothing for the model to read
+        if (!block.attachment.serverUrl) continue
         blocks.push({
           ...block,
           attachment: {
@@ -331,6 +337,12 @@ const useChatInputFocusHandler = (
       return
     }
 
+    // Only a printable character starts typing. Tab, Enter, Space, the arrow and paging keys
+    // keep working on the focused button or the message list.
+    if (event.key.length !== 1 || event.key === " " || event.altKey || event.isComposing) {
+      return
+    }
+
     inputRef?.current?.focus()
   })
 }
@@ -344,29 +356,18 @@ const useLogChatError = (error: unknown) => {
 }
 
 const useInterruptionNotice = (
-  messages: BizUIMessage[],
+  lastUserMessage: BizUIMessage | null,
   status: ReturnType<typeof useChatStatus>,
 ) => {
   return useMemo(() => {
-    if (messages.length === 0) {
-      return {
-        shouldShowInterruptionNotice: false,
-        lastUserMessage: null as BizUIMessage | null,
-      }
-    }
-
-    const lastMessage = messages.at(-1)!
     const shouldShow =
-      lastMessage.role === "user" &&
-      status !== "streaming" &&
-      status !== "error" &&
-      status !== "submitted"
+      !!lastUserMessage && status !== "streaming" && status !== "error" && status !== "submitted"
 
     return {
       shouldShowInterruptionNotice: shouldShow,
-      lastUserMessage: shouldShow ? lastMessage : null,
+      lastUserMessage: shouldShow ? lastUserMessage : null,
     }
-  }, [messages, status])
+  }, [lastUserMessage, status])
 }
 
 const useChatDraft = (currentChatId?: string | null) => {

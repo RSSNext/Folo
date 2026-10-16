@@ -11,7 +11,7 @@ import {
 import { HIDE_ACTIONS_IN_ENTRY_CONTEXT_MENU, useEntryActions } from "~/hooks/biz/useEntryActions"
 import { useFeedActions } from "~/hooks/biz/useFeedActions"
 import { useContextMenu } from "~/hooks/common/useContextMenu"
-import { copyToClipboard } from "~/lib/clipboard"
+import { copyToClipboardWithFeedback } from "~/lib/clipboard"
 
 export function useEntryContextMenu({
   entryId,
@@ -46,7 +46,7 @@ export function useEntryContextMenu({
       MENU_ITEM_SEPARATOR,
       new MenuItemText({
         label: `${t("words.copy")}${t("space")}${t("words.entry")} ${t("words.id")}`,
-        click: () => copyToClipboard(entryId),
+        click: () => copyToClipboardWithFeedback(entryId),
       }),
     ]
   }, [actionConfigs, feedItems, t, entryId])

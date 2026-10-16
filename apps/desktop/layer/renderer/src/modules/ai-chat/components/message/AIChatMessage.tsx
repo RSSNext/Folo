@@ -9,6 +9,7 @@ import { toast } from "sonner"
 
 import { RelativeTime } from "~/components/ui/datetime"
 import { copyToClipboard } from "~/lib/clipboard"
+import { useChatStatus } from "~/modules/ai-chat/store/hooks"
 import type { BizUIMessage } from "~/modules/ai-chat/store/types"
 
 import { MentionPlugin, ShortcutPlugin } from "../../editor"
@@ -83,6 +84,9 @@ const filterEmptyMessagePart = (messageParts: BizUIMessage["parts"]) => {
 export const AIChatMessage: React.FC<AIChatMessageProps> = React.memo(
   ({ message: originalMessage, isLastMessage }) => {
     const { t } = useTranslation("ai")
+    const status = useChatStatus()
+    const isStreaming = isLastMessage && (status === "submitted" || status === "streaming")
+    const hasFinished = !!originalMessage.metadata?.finishTime
     const message = React.useMemo(() => {
       return {
         ...originalMessage,
@@ -115,8 +119,8 @@ export const AIChatMessage: React.FC<AIChatMessageProps> = React.memo(
             </div>
           </div>
 
-          {/* Action buttons */}
-          {!!originalMessage.metadata?.finishTime && (
+          {/* Action buttons. A reply stopped midway never gets a finish time, but it can still be copied. */}
+          {(hasFinished || !isStreaming) && (
             <div className="absolute -left-2 bottom-1 right-0 flex items-center gap-1 opacity-0 transition-opacity duration-200 group-hover:opacity-100">
               <span className="whitespace-nowrap px-2 py-1 text-[11px] leading-none text-text-tertiary">
                 <RelativeTime date={originalMessage.createdAt} />
@@ -131,14 +135,16 @@ export const AIChatMessage: React.FC<AIChatMessageProps> = React.memo(
                 <span>{t("words.copy", { ns: "common" })}</span>
               </button>
 
-              <TokenUsagePill metadata={originalMessage.metadata}>
-                <button
-                  type="button"
-                  className="absolute right-0 flex items-center gap-1 rounded-md px-2 py-1 text-xs text-text-secondary transition-colors hover:bg-fill-tertiary"
-                >
-                  <i className="i-mgc-information-cute-re size-3" />
-                </button>
-              </TokenUsagePill>
+              {hasFinished && (
+                <TokenUsagePill metadata={originalMessage.metadata}>
+                  <button
+                    type="button"
+                    className="absolute right-0 flex items-center gap-1 rounded-md px-2 py-1 text-xs text-text-secondary transition-colors hover:bg-fill-tertiary"
+                  >
+                    <i className="i-mgc-information-cute-re size-3" />
+                  </button>
+                </TokenUsagePill>
+              )}
             </div>
           )}
           <div className="h-6" />

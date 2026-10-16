@@ -25,6 +25,7 @@ export const InboxActions = ({ id }: { id: string }) => {
       </ActionButton>
       <ActionButton
         size="sm"
+        tooltip={t("sidebar.feed_actions.edit_inbox")}
         onClick={() => {
           present({
             title: t("sidebar.feed_actions.edit_inbox"),

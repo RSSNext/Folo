@@ -1,5 +1,5 @@
 import dayjs from "dayjs"
-import { useEffect, useMemo, useState } from "react"
+import { useEffect, useState } from "react"
 import { useTranslation } from "react-i18next"
 import type { TextProps } from "react-native"
 
@@ -55,14 +55,13 @@ export const RelativeDateTime = ({
   postfixText,
   ...props
 }: RelativeDateTimeProps) => {
-  const { t } = useTranslation("common")
+  const { t, i18n } = useTranslation("common")
+  // dayjs formats in its global locale, which switches along with the app language
+  const { language } = i18n
   const [relative, setRelative] = useState<string>(() =>
     formatTime(date, displayAbsoluteTimeAfterDay, dateFormatTemplate),
   )
 
-  const memoizedFormatTime = useMemo(() => {
-    return dayjs(date).format(dateFormatTemplate ?? formatTemplateString)
-  }, [date, dateFormatTemplate])
   const [mode, setMode] = useState<"relative" | "absolute">("relative")
   useEffect(() => {
     if (mode === "absolute") return
@@ -75,7 +74,7 @@ export const RelativeDateTime = ({
       getUpdateInterval(date, displayAbsoluteTimeAfterDay) ?? 1000,
     )
     return () => clearInterval(interval)
-  }, [date, displayAbsoluteTimeAfterDay, dateFormatTemplate, mode])
+  }, [date, displayAbsoluteTimeAfterDay, dateFormatTemplate, mode, language])
 
   return (
     <NativePressable
@@ -87,7 +86,7 @@ export const RelativeDateTime = ({
       <Text key={mode} {...props}>
         {mode === "relative"
           ? `${relative}${t("space")}${postfixText ?? t("words.ago")}`
-          : memoizedFormatTime}
+          : dayjs(date).format(dateFormatTemplate ?? formatTemplateString)}
       </Text>
     </NativePressable>
   )
