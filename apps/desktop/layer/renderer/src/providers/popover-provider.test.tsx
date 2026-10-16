@@ -119,6 +119,56 @@ describe("PopoverProvider", () => {
     expect(document.body.textContent).not.toContain("Share content")
   })
 
+  test("keeps the anchor out of the page flow while closed", async () => {
+    ;({ container, root } = await renderProvider())
+
+    const getAnchor = () => document.querySelector<HTMLButtonElement>("button[aria-haspopup]")
+    expect(getAnchor()?.style.position).toBe("fixed")
+
+    await act(async () => {
+      showPopover({ x: 120, y: 80 }, <div>Share content</div>)
+      await waitForPopoverEffects()
+    })
+    expect(getAnchor()?.style.position).toBe("fixed")
+    expect(getAnchor()?.style.top).toBe("80px")
+
+    await act(async () => {
+      dismissPopover()
+      await waitForPopoverEffects()
+    })
+    expect(getAnchor()?.style.position).toBe("fixed")
+  })
+
+  test("gives the focus back to the element it was opened from", async () => {
+    ;({ container, root } = await renderProvider())
+    const opener = document.createElement("button")
+    opener.textContent = "Share"
+    document.body.append(opener)
+    opener.focus()
+
+    await act(async () => {
+      showPopover({ x: 120, y: 80 }, <button type="button">Copy link</button>)
+      await waitForPopoverEffects()
+    })
+    expect(document.activeElement?.textContent).toBe("Copy link")
+
+    await act(async () => {
+      document.activeElement?.dispatchEvent(
+        new KeyboardEvent("keydown", { bubbles: true, cancelable: true, key: "Escape" }),
+      )
+      await waitForPopoverEffects()
+    })
+
+    expect(jotaiStore.get(popoverAtom).open).toBe(false)
+    // The content leaves after its exit animation, and only then hands the focus back
+    await act(async () => {
+      await vi.waitFor(() => {
+        expect(document.activeElement).toBe(opener)
+      })
+    })
+    expect(document.activeElement?.getAttribute("aria-haspopup")).toBeNull()
+  })
+
   test("can reopen after a programmatic dismissal", async () => {
     ;({ container, root } = await renderProvider())
 

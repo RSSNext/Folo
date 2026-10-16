@@ -11,6 +11,7 @@ import { EventBus } from "@follow/utils/event-bus"
 import { cn } from "@follow/utils/utils"
 import * as Slider from "@radix-ui/react-slider"
 import dayjs from "dayjs"
+import i18next from "i18next"
 import { AnimatePresence, m } from "motion/react"
 import { useEffect, useMemo, useState } from "react"
 import Marquee from "react-fast-marquee"
@@ -29,8 +30,15 @@ import type { FeedIconEntry } from "~/modules/feed/feed-icon"
 import { FeedIcon } from "~/modules/feed/feed-icon"
 
 import { COMMAND_ID } from "../command/commands/id"
+import { toggleEntryTts } from "./entry-tts"
 
 const handleClickPlay = () => {
+  const { entryId, type } = getAudioPlayerAtomValue()
+  // A finished or released TTS has nothing left to resume, so it is requested again
+  if (type === "tts" && entryId) {
+    void toggleEntryTts(entryId, { toastTitle: i18next.t("entry_content.header.play_tts") })
+    return
+  }
   AudioPlayer.togglePlayAndPause()
 }
 
@@ -109,6 +117,8 @@ const CornerPlayerImpl = ({ hideControls, rounded }: ControlButtonProps) => {
   const status = useAudioPlayerAtomSelector((v) => v.status)
   const isMute = useAudioPlayerAtomSelector((v) => v.isMute)
   const listId = useAudioPlayerAtomSelector((v) => v.listId)
+  // TTS plays from a MediaStream or a temporary blob, which has no file to download
+  const isTts = useAudioPlayerAtomSelector((v) => v.type === "tts")
 
   const playerValue = { entryId, status, isMute }
 
@@ -121,18 +131,21 @@ const CornerPlayerImpl = ({ hideControls, rounded }: ControlButtonProps) => {
     const firstPhoto = media.find((a) => a.type === "photo")
     const firstPhotoUrl = firstPhoto?.url
     const entryCoverImage = firstMedia?.preview_image_url || firstMedia?.url || firstPhotoUrl
-    const iconEntry: FeedIconEntry = { firstPhotoUrl, authorAvatar }
 
     return {
       authorAvatar,
       feedId,
-      iconEntry,
+      firstPhotoUrl,
       id,
       inboxId: inboxHandle,
       title,
       entryCoverImage,
     }
   })
+  const iconEntry: FeedIconEntry = useMemo(
+    () => ({ firstPhotoUrl: entry?.firstPhotoUrl, authorAvatar: entry?.authorAvatar }),
+    [entry?.authorAvatar, entry?.firstPhotoUrl],
+  )
   const isInbox = !!entry?.inboxId
   const feed = useFeedById(entry?.feedId)
   const subscription = useSubscriptionByFeedId(entry?.feedId)
@@ -212,7 +225,7 @@ const CornerPlayerImpl = ({ hideControls, rounded }: ControlButtonProps) => {
         <div className="relative size-[3.625rem] shrink-0">
           <FeedIcon
             target={feed}
-            entry={entry.iconEntry}
+            entry={iconEntry}
             size={isMobile ? 65.25 : 58}
             fallback={false}
             noMargin
@@ -226,6 +239,7 @@ const CornerPlayerImpl = ({ hideControls, rounded }: ControlButtonProps) => {
           >
             <button
               type="button"
+              aria-label={t(playerValue.status === "paused" ? "player.play" : "player.pause")}
               className="center size-10 rounded-full bg-theme-background opacity-95 hover:bg-accent hover:text-white hover:opacity-100"
               onClick={handleClickPlay}
             >
@@ -294,14 +308,16 @@ const CornerPlayerImpl = ({ hideControls, rounded }: ControlButtonProps) => {
               }}
               label={t("player.open_entry")}
             />
-            <ActionIcon
-              label={t("player.download")}
-              onClick={() => {
-                window.open(AudioPlayer.get().src, "_blank")
-              }}
-            >
-              <i className="i-mgc-download-2-cute-re" />
-            </ActionIcon>
+            {!isTts && (
+              <ActionIcon
+                label={t("player.download")}
+                onClick={() => {
+                  window.open(AudioPlayer.get().src, "_blank")
+                }}
+              >
+                <i className="i-mgc-download-2-cute-re" />
+              </ActionIcon>
+            )}
           </div>
           {/* audio control */}
           <div className="flex items-center">
@@ -316,6 +332,7 @@ const CornerPlayerImpl = ({ hideControls, rounded }: ControlButtonProps) => {
               )}
               onClick={() => AudioPlayer.toggleMute()}
               label={<CornerPlayerVolumeSlider />}
+              ariaLabel={t(playerValue.isMute ? "player.unmute" : "player.mute")}
               labelDelayDuration={0}
             />
             <ActionIcon
@@ -413,6 +430,7 @@ const ActionIcon = ({
   className,
   onClick,
   label,
+  ariaLabel,
   labelDelayDuration = 700,
   tooltipAlign,
   children,
@@ -420,6 +438,8 @@ const ActionIcon = ({
   className?: string
   onClick?: () => void
   label: React.ReactNode
+  /** Accessible name, needed when the label is not plain text */
+  ariaLabel?: string
   labelDelayDuration?: number
   tooltipAlign?: "center" | "end" | "start"
   children?: React.ReactNode
@@ -430,7 +450,12 @@ const ActionIcon = ({
       onClick={onClick}
       asChild
     >
-      <button type="button">{children || <i aria-hidden className={className} />}</button>
+      <button
+        type="button"
+        aria-label={ariaLabel ?? (typeof label === "string" ? label : undefined)}
+      >
+        {children || <i aria-hidden className={className} />}
+      </button>
     </TooltipTrigger>
     <TooltipContent align={tooltipAlign}>{label}</TooltipContent>
   </Tooltip>

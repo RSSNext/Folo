@@ -11,7 +11,12 @@ import type { ToastProps } from "./types"
 
 export const CenteredToast = (props: ToastProps) => {
   const renderMessage = props.render ? null : props.message ? (
-    <Text className="font-semibold text-white">{props.message}</Text>
+    <View className="shrink">
+      <Text className="font-semibold text-white">{props.message}</Text>
+      {!!props.description && (
+        <Text className="mt-0.5 text-sm text-white/80">{props.description}</Text>
+      )}
+    </View>
   ) : null
   const { register } = use(ToastActionContext)
   useEffect(() => {

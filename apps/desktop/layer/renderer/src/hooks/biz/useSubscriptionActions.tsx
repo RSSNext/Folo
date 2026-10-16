@@ -6,6 +6,8 @@ import { useHotkeys } from "react-hotkeys-hook"
 import { Trans, useTranslation } from "react-i18next"
 import { toast } from "sonner"
 
+import { toastFetchError } from "~/lib/error-parser"
+
 import { navigateEntry } from "./useNavigateEntry"
 import { getRouteParams } from "./useRouteParams"
 
@@ -28,49 +30,63 @@ export const useDeleteSubscription = ({ onSuccess }: { onSuccess?: () => void } 
 
       if (!subscription) return
 
-      subscriptionSyncService
-        .unsubscribe([subscription.feedId, subscription.listId])
-        .then(([feed]) => {
-          // Already applied locally; only servers without a change log need the full list.
-          void subscriptionSyncService.refresh()
+      // Awaited so a failed request reaches onError; the store rolls the unfollow back
+      const [feed] = await subscriptionSyncService.unsubscribe([
+        subscription.feedId,
+        subscription.listId,
+      ])
+      // Already applied locally; only servers without a change log need the full list.
+      void subscriptionSyncService.refresh()
 
-          if (!subscription) return
-          if (!feed) return
-          const undo = async () => {
-            await subscriptionSyncService.subscribe({
-              url: feed.type === "feed" ? feed.url : undefined,
-              listId: feed.type === "list" ? feed.id : undefined,
-              view: subscription.view,
-              category: subscription.category,
-              isPrivate: subscription.isPrivate,
-              feedId: feed.id,
-              title: feed.title,
-              hideFromTimeline: subscription.hideFromTimeline,
-            })
+      if (!feed) return
 
-            toast.dismiss(toastId)
-          }
-
-          const toastId = toast.warning("", {
-            duration: 3000,
-            description: <UnfollowInfo title={feed.title!} undo={undo} />,
-            action: {
-              label: (
-                <span className={"flex items-center gap-1 px-1"}>
-                  {t("words.undo")}
-                  <Kbd className="inline-flex items-center border border-border bg-transparent text-white">
-                    $mod+Z
-                  </Kbd>
-                </span>
-              ),
-              onClick: undo,
-            },
+      const undo = async () => {
+        try {
+          await subscriptionSyncService.subscribe({
+            url: feed.type === "feed" ? feed.url : undefined,
+            listId: feed.type === "list" ? feed.id : undefined,
+            view: subscription.view,
+            category: subscription.category,
+            isPrivate: subscription.isPrivate,
+            // The server looks a feed id up before a list id, so a list must not send one
+            feedId: feed.type === "feed" ? feed.id : undefined,
+            // The custom title, or none so the feed keeps following its own title
+            title: subscription.title,
+            hideFromTimeline: subscription.hideFromTimeline,
           })
-        })
+
+          toast.dismiss(toastId)
+        } catch (error) {
+          toastFetchError(error as Error)
+        }
+      }
+
+      const toastId = toast.warning("", {
+        duration: 3000,
+        // The name the sidebar showed, which is the custom title when there is one
+        description: <UnfollowInfo title={subscription.title || feed.title || ""} undo={undo} />,
+        action: {
+          label: (
+            <span className={"flex items-center gap-1 px-1"}>
+              {t("words.undo")}
+              <Kbd
+                wrapButton={false}
+                className="inline-flex items-center border border-border bg-transparent bg-none text-white"
+              >
+                $mod+Z
+              </Kbd>
+            </span>
+          ),
+          onClick: undo,
+        },
+      })
     },
 
     onSuccess: (_) => {
       onSuccess?.()
+    },
+    onError: (error) => {
+      toastFetchError(error)
     },
     onMutate(variables) {
       if (getRouteParams().feedId === variables.subscription?.feedId) {

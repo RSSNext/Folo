@@ -10,8 +10,10 @@ import { Masonry } from "@follow/components/ui/masonry/index.js"
 import { useScrollViewElement } from "@follow/components/ui/scroll-area/hooks.js"
 import { Skeleton } from "@follow/components/ui/skeleton/index.jsx"
 import { useRefValue, useScrollMarkReadGracePeriod } from "@follow/hooks"
+import type { ScrollMarkReadItemBounds } from "@follow/shared/scroll-mark-read"
 import {
-  getScrollMarkReadExitedSliceEnd,
+  getScrollMarkReadMasonryStartIndex,
+  getScrollMarkReadRangeState,
   shouldRenderScrollMarkReadEndSpacer,
 } from "@follow/shared/scroll-mark-read"
 import { getEntry } from "@follow/store/entry/getter"
@@ -24,7 +26,6 @@ import {
   createContext,
   startTransition,
   use,
-  useCallback,
   useDeferredValue,
   useEffect,
   useLayoutEffect,
@@ -140,7 +141,7 @@ export const PictureMasonry: FC<MasonryProps> = (props) => {
     threshold: 3,
   })
 
-  const currentRange = useRef<{ start: number; end: number }>(undefined)
+  const scrollMarkReadAnchorIndexRef = useRef<number | null>(null)
   const scrollElement = useScrollViewElement()
   const hasEndSpacer = shouldRenderScrollMarkReadEndSpacer({
     entryCount: data.length,
@@ -168,14 +169,6 @@ export const PictureMasonry: FC<MasonryProps> = (props) => {
     resetScrollSignal,
     scrollElement,
   ])
-  const handleRender = useCallback(
-    (startIndex: number, stopIndex: number, items: any[]) => {
-      currentRange.current = { start: startIndex, end: stopIndex }
-      return maybeLoadMore(startIndex, stopIndex, items)
-    },
-    [maybeLoadMore],
-  )
-
   const [intersectionObserver, setIntersectionObserver] = useState<IntersectionObserver>(null!)
   const renderMarkRead = useGeneralSettingKey("renderMarkUnread")
   const scrollMarkRead = useGeneralSettingKey("scrollMarkUnread")
@@ -186,38 +179,46 @@ export const PictureMasonry: FC<MasonryProps> = (props) => {
     if (props.suspendMarkRead) return
     if (!scrollElement) return
 
+    // Count from the current position again, as the list does after a pause or a scroll reset
+    scrollMarkReadAnchorIndexRef.current = null
     const observer = new IntersectionObserver(
       (entries) => {
         renderInViewMarkRead(entries)
-        scrollOutViewMarkRead(entries)
+        scrollOutViewMarkRead()
 
-        function scrollOutViewMarkRead(entries: IntersectionObserverEntry[]) {
+        // The callback only lists the items that crossed an edge, and several of them can leave
+        // in one frame, so measure every laid out item to find the first one still in view
+        function scrollOutViewMarkRead() {
           if (!scrollMarkRead) return
           if (pauseScrollMarkRead) return
           if (!scrollElement) return
-          const exitedIndexes: number[] = []
-          entries.forEach((entry) => {
-            if (entry.isIntersecting) {
-              return
-            }
-            const $target = entry.target as HTMLDivElement
-            const $targetScrollTop = $target.getBoundingClientRect().top
+          const $container = containerRef.current
+          if (!$container) return
 
-            if ($targetScrollTop < 0) {
-              const { index } = (entry.target as HTMLDivElement).dataset
-              if (!index) return
-              const currentIndex = Number.parseInt(index)
-              exitedIndexes.push(currentIndex)
-            }
+          const items: ScrollMarkReadItemBounds[] = []
+          $container
+            .querySelectorAll<HTMLElement>("[data-entry-id][data-index]")
+            .forEach(($item) => {
+              // Masonic keeps items it is still measuring hidden at the top of the grid
+              if (getComputedStyle($item).visibility === "hidden") return
+
+              const { top, bottom } = $item.getBoundingClientRect()
+              items.push({ index: Number($item.dataset.index), top, bottom })
+            })
+
+          const viewport = scrollElement.getBoundingClientRect()
+          const { nextAnchorIndex, range } = getScrollMarkReadRangeState({
+            anchorIndex: scrollMarkReadAnchorIndexRef.current,
+            currentStartIndex: getScrollMarkReadMasonryStartIndex({
+              items,
+              viewportTop: viewport.top,
+              viewportBottom: viewport.bottom,
+            }),
           })
+          scrollMarkReadAnchorIndexRef.current = nextAnchorIndex
 
-          const exitedSliceEnd = getScrollMarkReadExitedSliceEnd({
-            indexes: exitedIndexes,
-            renderedEndIndex: currentRange.current?.end,
-          })
-
-          if (exitedSliceEnd !== null) {
-            batchMarkRead(dataRef.current.slice(0, exitedSliceEnd))
+          if (range) {
+            batchMarkRead(dataRef.current.slice(range.startIndex, range.endIndex))
           }
         }
 
@@ -248,6 +249,7 @@ export const PictureMasonry: FC<MasonryProps> = (props) => {
       observer.disconnect()
     }
   }, [
+    containerRef,
     dataRef,
     pauseScrollMarkRead,
     props.suspendMarkRead,
@@ -291,7 +293,7 @@ export const PictureMasonry: FC<MasonryProps> = (props) => {
                         columnCount={currentColumn}
                         overscanBy={2}
                         render={MasonryRender}
-                        onRender={handleRender}
+                        onRender={maybeLoadMore}
                         itemKey={itemKey}
                       />
                       {props.Footer ? (

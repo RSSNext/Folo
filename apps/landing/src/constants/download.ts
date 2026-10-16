@@ -20,6 +20,7 @@ export const DEFAULT_RELEASE_DOWNLOAD_LINKS = {
   androidApk: `${OTA_DOWNLOAD_URL}/mobile/android/apk`,
   linuxAppImage: `${OTA_DOWNLOAD_URL}/desktop/linux/appimage`,
   macosDmg: `${OTA_DOWNLOAD_URL}/desktop/macos/dmg`,
+  macosDmgX64: `${OTA_DOWNLOAD_URL}/desktop/macos/dmg-x64`,
   windowsExe: `${OTA_DOWNLOAD_URL}/desktop/windows/exe`,
 } as const
 
@@ -67,11 +68,18 @@ export const PlatformDownloadGroups: PlatformDownloadGroup[] = [
         name: 'Mac App Store',
         description: 'Automatic updates',
       },
+      // Browsers don't tell an Intel Mac from an Apple Silicon one, so both builds are offered
       {
         id: 'macos-dmg',
         href: DEFAULT_RELEASE_DOWNLOAD_LINKS.macosDmg,
-        name: 'Direct Download (DMG)',
-        description: 'Download the latest DMG',
+        name: 'Direct Download (Apple Silicon)',
+        description: 'DMG for Macs with M-series chips',
+      },
+      {
+        id: 'macos-dmg-x64',
+        href: DEFAULT_RELEASE_DOWNLOAD_LINKS.macosDmgX64,
+        name: 'Direct Download (Intel)',
+        description: 'DMG for Macs with Intel processors',
       },
     ],
   },

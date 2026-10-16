@@ -4,18 +4,21 @@ import { MarkdownRenderActionContext } from "../context"
 import { IsInParagraphContext } from "./ctx"
 
 export const MarkdownP: Component<
-  React.DetailedHTMLProps<React.HTMLAttributes<HTMLParagraphElement>, HTMLParagraphElement>
-> = ({ children, ...props }) => {
+  React.DetailedHTMLProps<React.HTMLAttributes<HTMLParagraphElement>, HTMLParagraphElement> & {
+    /** A paragraph holding block content, like a block image, must not be a <p> */
+    as?: "p" | "div"
+  }
+> = ({ children, as: Tag = "p", ...props }) => {
   const { isAudio, ensureAndRenderTimeStamp } = React.use(MarkdownRenderActionContext)
   const parseTimeline = isAudio()
   if (parseTimeline && typeof children === "string") {
     const renderer = ensureAndRenderTimeStamp(children)
-    if (renderer) return <p>{renderer}</p>
+    if (renderer) return <Tag>{renderer}</Tag>
   }
 
   if (parseTimeline && Array.isArray(children)) {
     return (
-      <p>
+      <Tag>
         {children.map((child, index) => {
           if (typeof child === "string") {
             const renderer = ensureAndRenderTimeStamp(child)
@@ -23,13 +26,13 @@ export const MarkdownP: Component<
           }
           return <React.Fragment key={index}>{child}</React.Fragment>
         })}
-      </p>
+      </Tag>
     )
   }
 
   return (
-    <p {...props}>
+    <Tag {...props}>
       <IsInParagraphContext value={true}>{children}</IsInParagraphContext>
-    </p>
+    </Tag>
   )
 }

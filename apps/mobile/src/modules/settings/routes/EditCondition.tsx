@@ -1,7 +1,7 @@
 import { filterFieldOptions, filterOperatorOptions } from "@follow/store/action/constant"
 import { useActionRuleCondition } from "@follow/store/action/hooks"
 import { actionActions } from "@follow/store/action/store"
-import type { ActionConditionIndex } from "@follow-app/client-sdk"
+import type { ActionConditionIndex, ActionFeedField } from "@follow-app/client-sdk"
 import { useMemo } from "react"
 import { useTranslation } from "react-i18next"
 import { View } from "react-native"
@@ -72,9 +72,7 @@ function ConditionForm({ index }: { index: ActionConditionIndex }) {
             }))}
             value={currentField?.value}
             onValueChange={(value) => {
-              actionActions.pathCondition(index, {
-                field: value as any,
-              })
+              actionActions.changeConditionField(index, value as ActionFeedField)
             }}
             wrapperClassName="min-w-48"
           />

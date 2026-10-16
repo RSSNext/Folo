@@ -2,6 +2,7 @@ import { useActionRule } from "@follow/store/action/hooks"
 import { actionActions } from "@follow/store/action/store"
 import { useTranslation } from "react-i18next"
 
+import { SwipeableItem } from "@/src/components/common/SwipeableItem"
 import {
   NavigationBlurEffectHeaderView,
   SafeNavigationScrollView,
@@ -15,11 +16,14 @@ import {
 } from "@/src/components/ui/grouped/GroupedList"
 import { Text } from "@/src/components/ui/typography/Text"
 import type { NavigationControllerView } from "@/src/lib/navigation/types"
+import { useColors } from "@/src/theme/colors"
 
 export const EditWebhooksScreen: NavigationControllerView<{
   index: number
 }> = ({ index }) => {
   const { t } = useTranslation("settings")
+  const { t: tCommon } = useTranslation("common")
+  const colors = useColors()
   const rule = useActionRule(index)
   const webhooks =
     rule?.result.webhooks?.map((webhook: string, webhookIndex: number) => ({
@@ -45,20 +49,34 @@ export const EditWebhooksScreen: NavigationControllerView<{
             rowKey: string
           }) => {
             return (
-              <GroupedInsetListBaseCell className="flex-row" key={rowKey}>
-                <PlainTextField
-                  placeholder="https://"
-                  inputMode="url"
-                  value={webhook}
-                  onChangeText={(value) => {
-                    actionActions.updateWebhook({
-                      index,
-                      webhookIndex,
-                      value,
-                    })
-                  }}
-                />
-              </GroupedInsetListBaseCell>
+              <SwipeableItem
+                key={rowKey}
+                swipeRightToCallAction
+                rightActions={[
+                  {
+                    label: tCommon("words.delete"),
+                    onPress: () => {
+                      actionActions.deleteWebhook(index, webhookIndex)
+                    },
+                    backgroundColor: colors.red,
+                  },
+                ]}
+              >
+                <GroupedInsetListBaseCell className="flex-row bg-secondary-system-grouped-background">
+                  <PlainTextField
+                    placeholder="https://"
+                    inputMode="url"
+                    value={webhook}
+                    onChangeText={(value) => {
+                      actionActions.updateWebhook({
+                        index,
+                        webhookIndex,
+                        value,
+                      })
+                    }}
+                  />
+                </GroupedInsetListBaseCell>
+              </SwipeableItem>
             )
           },
         )}

@@ -19,6 +19,17 @@ import { ipcServices } from "~/lib/client"
 import { COMMAND_ID } from "../command/commands/id"
 import { FeedForm } from "../discover/FeedForm"
 
+const feedUrlProtocols = new Set(["http:", "https:", "rsshub:"])
+const getFeedUrl = (text: string | undefined) => {
+  const trimmed = text?.trim()
+  if (!trimmed || /\s/.test(trimmed)) return null
+  try {
+    return feedUrlProtocols.has(new URL(trimmed).protocol) ? trimmed : null
+  } catch {
+    return null
+  }
+}
+
 const CmdNPanel = () => {
   const { t } = useTranslation()
   const form = useForm({
@@ -27,17 +38,23 @@ const CmdNPanel = () => {
         url: z.string().url(),
       }),
     ),
+    defaultValues: { url: "" },
 
     mode: "all",
   })
 
   useLayoutEffect(() => {
-    ipcServices?.app.readClipboard().then((clipboardText) => {
-      if (clipboardText) {
-        form.setValue("url", clipboardText)
-        form.control._setValid()
-      }
-    })
+    ipcServices?.app
+      .readClipboard()
+      .then((clipboardText) => {
+        // Only a copied link is useful here; anything else, like a password, must not show up
+        const url = getFeedUrl(clipboardText)
+        if (url) {
+          form.setValue("url", url)
+          form.control._setValid()
+        }
+      })
+      .catch(console.error)
   }, [])
 
   const { present, dismissAll } = useModalStack()

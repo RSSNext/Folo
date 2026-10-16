@@ -6,6 +6,7 @@ import { Trans, useTranslation } from "react-i18next"
 import type { Location } from "react-router"
 import { Navigate, useLocation, useNavigate } from "react-router"
 
+import { useAppIsReady } from "~/atoms/app"
 import { useSyncTheme } from "~/hooks/common"
 import { removeAppSkeleton } from "~/lib/app"
 
@@ -26,6 +27,13 @@ class AccessNotFoundError extends Error {
   }
 }
 export const NotFound = () => {
+  // This route renders outside the app, so on a direct load it mounts before i18n is set up,
+  // and text translated then stays as raw keys
+  const appIsReady = useAppIsReady()
+  return appIsReady ? <NotFoundContent /> : null
+}
+
+const NotFoundContent = () => {
   const { t } = useTranslation()
   const location = useLocation()
   useSyncTheme()

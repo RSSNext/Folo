@@ -10,7 +10,7 @@ import { clearAllDataAndConfirm } from "./lib/cleaner"
 import { t } from "./lib/i18n"
 import { revealLogFile } from "./logger"
 import { WindowManager } from "./manager/window"
-import { checkForAppUpdates, quitAndInstall } from "./updater"
+import { checkForAppUpdatesFromMenu, quitAndInstall } from "./updater"
 
 export const registerAppMenu = () => {
   const menus: Array<MenuItemConstructorOptions | MenuItem> = [
@@ -59,7 +59,7 @@ export const registerAppMenu = () => {
           click: () => {
             const mainWindow = WindowManager.getMainWindow()
             if (!mainWindow) return
-            mainWindow.show()
+            WindowManager.showMainWindow(mainWindow)
             const caller = callWindowExpose(mainWindow)
             caller.quickAdd()
           },
@@ -72,7 +72,7 @@ export const registerAppMenu = () => {
           click: () => {
             const mainWindow = WindowManager.getMainWindow()
             if (!mainWindow) return
-            mainWindow.show()
+            WindowManager.showMainWindow(mainWindow)
 
             const caller = callWindowExpose(mainWindow)
             caller.goToDiscover()
@@ -182,8 +182,8 @@ export const registerAppMenu = () => {
               {
                 label: t("menu.checkForUpdates"),
                 click: async () => {
-                  WindowManager.getMainWindow()?.show()
-                  await checkForAppUpdates()
+                  WindowManager.showMainWindow()
+                  await checkForAppUpdatesFromMenu()
                 },
               },
             ]

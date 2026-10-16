@@ -3,6 +3,8 @@ import { useCallback } from "react"
 import { useTranslation } from "react-i18next"
 import { toast } from "sonner"
 
+import { getFetchErrorMessage } from "~/lib/error-parser"
+
 import { useChatBlockActions } from "../store/hooks"
 import type { FileAttachment } from "../store/types"
 import type { ProcessFileOptions, ProcessFileResult } from "../utils/file-processing"
@@ -142,7 +144,9 @@ export function useFileUpload(
         }
       } catch (error) {
         const errorMessage =
-          error instanceof Error ? error.message : t("error_screen.unknown", { ns: "common" })
+          error instanceof Error
+            ? getFetchErrorMessage(error)
+            : t("error_screen.unknown", { ns: "common" })
 
         // Update to error state
         const errorAttachment: FileAttachment = {

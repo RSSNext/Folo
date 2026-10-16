@@ -29,8 +29,8 @@ export const ResetPassword = () => {
   const [newPassword, setNewPassword] = useState("")
   const [confirmNewPassword, setConfirmNewPassword] = useState("")
 
-  const isFormValid =
-    !!currentPassword && !!newPassword && !!confirmNewPassword && newPassword === confirmNewPassword
+  const isFormFilled = !!currentPassword && !!newPassword && !!confirmNewPassword
+  const isFormValid = isFormFilled && newPassword === confirmNewPassword
 
   const { mutate: submitChangePassword, isPending } = useMutation({
     mutationFn: async () => {
@@ -80,11 +80,13 @@ export const ResetPassword = () => {
                     <CheckLineIcon height={18} width={18} color={labelColor} />
                   )
                 }
-                disabled={!isFormValid || isPending}
+                // Enabled once every field is filled, so saving a confirmation that does not
+                // match says so instead of doing nothing
+                disabled={!isFormFilled || isPending}
                 onPress={handleSave}
               />
             ),
-            [handleSave, isFormValid, isPending, labelColor, t],
+            [handleSave, isFormFilled, isPending, labelColor, t],
           )}
         />
       }
@@ -97,7 +99,9 @@ export const ResetPassword = () => {
             className="w-full"
             hitSlop={10}
             secureTextEntry={true}
-            keyboardType="visible-password"
+            autoCapitalize="none"
+            autoComplete="current-password"
+            textContentType="password"
             placeholder={t("profile.current_password.placeholder")}
             value={currentPassword}
             onChangeText={setCurrentPassword}
@@ -110,8 +114,10 @@ export const ResetPassword = () => {
         <GroupedInsetListBaseCell className="py-3">
           <PlainTextField
             className="w-full"
-            keyboardType="visible-password"
             secureTextEntry={true}
+            autoCapitalize="none"
+            autoComplete="new-password"
+            textContentType="newPassword"
             hitSlop={10}
             placeholder={t("profile.new_password.placeholder")}
             value={newPassword}
@@ -128,8 +134,10 @@ export const ResetPassword = () => {
         <GroupedInsetListBaseCell className="py-3">
           <PlainTextField
             className="w-full"
-            keyboardType="visible-password"
             secureTextEntry={true}
+            autoCapitalize="none"
+            autoComplete="new-password"
+            textContentType="newPassword"
             hitSlop={10}
             placeholder={t("profile.confirm_password.placeholder")}
             value={confirmNewPassword}

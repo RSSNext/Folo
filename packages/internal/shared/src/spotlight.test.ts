@@ -5,6 +5,7 @@ import {
   defaultSpotlightColor,
   defaultSpotlightSettings,
   fromAppearanceSpotlightPayload,
+  getSpotlightTextColor,
   mergeAppearancePayloadWithSpotlightSettings,
   moveSpotlightRule,
   pickSpotlightPayloadFromRemoteAppearance,
@@ -205,5 +206,25 @@ describe("spotlight transport", () => {
         }),
       ],
     })
+  })
+})
+
+describe("getSpotlightTextColor", () => {
+  test("puts black text on every preset, whose pale colors make light text unreadable", () => {
+    for (const preset of spotlightColorPresets) {
+      expect(getSpotlightTextColor(preset.value)).toBe("#000000")
+    }
+    expect(getSpotlightTextColor("#fde68a")).toBe("#000000")
+  })
+
+  test("puts white text on a dark color", () => {
+    expect(getSpotlightTextColor("#1E3A8A")).toBe("#FFFFFF")
+    expect(getSpotlightTextColor("#000000")).toBe("#FFFFFF")
+  })
+
+  test("leaves the text color alone for a color that is not #RRGGBB", () => {
+    expect(getSpotlightTextColor("red")).toBeUndefined()
+    expect(getSpotlightTextColor("#FFF")).toBeUndefined()
+    expect(getSpotlightTextColor("#FDE68A80")).toBeUndefined()
   })
 })

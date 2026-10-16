@@ -16,7 +16,7 @@ import { useTranslation } from "react-i18next"
 import { toast } from "sonner"
 
 import { navigateEntry } from "~/hooks/biz/useNavigateEntry"
-import { copyToClipboard } from "~/lib/clipboard"
+import { ClipboardError, copyToClipboard } from "~/lib/clipboard"
 
 import { MarkdownRenderActionContext } from "../context"
 
@@ -34,7 +34,9 @@ export const MarkdownLink: Component<LinkProps> = (props) => {
       }
       await copyToClipboard(populatedFullHref)
       toast.success(t("share.link_copied"))
-    } catch {
+    } catch (error) {
+      // copyToClipboard has already shown its own error
+      if (error instanceof ClipboardError) return
       toast.error(t("share.copy_failed"))
     }
   }, [populatedFullHref, t])

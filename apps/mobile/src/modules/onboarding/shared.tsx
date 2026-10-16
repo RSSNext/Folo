@@ -11,7 +11,11 @@ export const OnboardingSectionScreenContainer = ({ children }: { children: React
       contentContainerClassName="items-center"
       style={{ marginTop: height }}
     >
-      <View style={readableContentStyle}>{children}</View>
+      {/* Phones get no readable-width style, so the wrapper must fill the row itself or the
+      `w-full` sections inside shrink to their content */}
+      <View className="w-full items-center" style={readableContentStyle}>
+        {children}
+      </View>
     </ScrollView>
   )
 }

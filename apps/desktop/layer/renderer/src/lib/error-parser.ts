@@ -1,5 +1,5 @@
 import { cn } from "@follow/utils/utils"
-import { FollowAPIError } from "@follow-app/client-sdk"
+import { ExceptionCodeMap, FollowAPIError } from "@follow-app/client-sdk"
 import { t } from "i18next"
 import { FetchError } from "ofetch"
 import { createElement } from "react"
@@ -10,6 +10,18 @@ import { getIsPaymentEnabled } from "~/atoms/server-configs"
 import { CopyButton } from "~/components/ui/button/CopyButton"
 import { Markdown } from "~/components/ui/markdown/Markdown"
 import { DebugRegistry } from "~/modules/debug/registry"
+
+// The SDK appends the request and its arguments to the server's message
+const stripRequestContext = (message: string) => message.replace(/\r?\nRequest:[\s\S]*$/u, "")
+
+// i18next answers a missing key with the key without its namespace, such as "1000"
+const translateErrorCode = (code: unknown, fallback: string) => {
+  if (code == null) return fallback
+  const translated: unknown = t(`errors:${code}` as never)
+  return typeof translated === "string" && translated && translated !== `${code}`
+    ? translated
+    : fallback
+}
 
 export const getFetchErrorInfo = (
   error: Error,
@@ -22,8 +34,7 @@ export const getFetchErrorInfo = (
       const json = JSON.parse(error.response?._data)
 
       const { reason, code, message } = json
-      const i18nKey = `errors:${code}` as any
-      const i18nMessage = t(i18nKey) === i18nKey ? message : t(i18nKey)
+      const i18nMessage = translateErrorCode(code, message)
       return {
         message: `${i18nMessage}${reason ? `: ${reason}` : ""}`,
         code,
@@ -33,17 +44,19 @@ export const getFetchErrorInfo = (
     }
   }
 
-  if (error instanceof FollowAPIError && error.code) {
-    const code = Number(error.code)
+  if (error instanceof FollowAPIError) {
+    const message = stripRequestContext(error.message)
+    if (!error.code) return { message }
+    // Codes such as "AUTH_REQUIRED" from the SDK are not API error codes
+    const code = Number.isNaN(Number(error.code)) ? undefined : Number(error.code)
     try {
-      const i18nKey = `errors:${code}` as any
-      const i18nMessage = t(i18nKey) === i18nKey ? error.message : t(i18nKey)
+      const i18nMessage = translateErrorCode(code, message)
       return {
         message: i18nMessage,
         code,
       }
     } catch {
-      return { message: error.message }
+      return { message }
     }
   }
 
@@ -66,6 +79,8 @@ export const toastFetchError = (
   { title: _title, ..._toastOptions }: ExternalToast & { title?: string } = {},
 ) => {
   let message = ""
+  // What the server said, kept next to the translation of its error code
+  let serverMessage = ""
   let _reason = ""
   let code: number | undefined
 
@@ -81,6 +96,7 @@ export const toastFetchError = (
       const { reason, code: _code, message: _message } = json
       code = _code
       message = _message
+      serverMessage = typeof _message === "string" ? _message : ""
 
       const tValue = t(`errors:${code}` as any)
       const i18nMessage = tValue === code?.toString() ? message : tValue
@@ -98,14 +114,15 @@ export const toastFetchError = (
   if (error instanceof FollowAPIError) {
     code = error.code ? Number(error.code) : undefined
     status = error.status ? Number(error.status) : undefined
-    message = error.message
+    message = stripRequestContext(error.message)
+    serverMessage = message
   }
 
   if ("code" in error && error.code) {
     code = Number(error.code)
     try {
       const tValue = t(`errors:${code}` as any)
-      const i18nMessage = tValue === code?.toString() ? error.message : tValue
+      const i18nMessage = tValue === code?.toString() ? stripRequestContext(error.message) : tValue
       message = i18nMessage
     } catch {
       message = error.message
@@ -115,6 +132,11 @@ export const toastFetchError = (
   // 2fa errors are handled by the form
   if (code === 4007 || code === 4008) {
     return
+  }
+
+  // Plain errors, such as wrapped auth client errors, carry their text in `message`
+  if (!message && !(error instanceof FetchError)) {
+    message = error.message
   }
 
   const toastOptions: ExternalToast = {
@@ -127,9 +149,13 @@ export const toastFetchError = (
     },
   }
 
+  // Every request validation failure has this code; only the server's message names the field
+  const detail =
+    code === ExceptionCodeMap.UnprocessableContent && serverMessage !== message ? serverMessage : ""
+
   if (!_reason) {
     const title = _title || message || t("common:error_screen.unknown")
-    toastOptions.description = _title ? message : ""
+    toastOptions.description = _title ? detail || message : detail
     const isPaymentEnabled = getIsPaymentEnabled()
     const needUpgradeError = status && isPaymentEnabled ? status === 402 : false
     if (needUpgradeError) {

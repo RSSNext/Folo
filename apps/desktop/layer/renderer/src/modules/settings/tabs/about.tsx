@@ -33,7 +33,9 @@ export const SettingAbout = () => {
   const { distribution, platform, rateTarget, storageKey, userId } = useDesktopReviewPromptState()
   const { data: appVersion } = useQuery({
     queryKey: ["appVersion"],
-    queryFn: () => ipcServices?.app.getAppVersion(),
+    queryFn: () => ipcServices!.app.getAppVersion(),
+    // Only Electron has an app version; the web build would resolve undefined, which React Query rejects
+    enabled: !!ipcServices,
   })
 
   const rendererVersion = PKG.version

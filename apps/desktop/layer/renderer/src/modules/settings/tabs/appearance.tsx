@@ -10,6 +10,7 @@ import type { AccentColor } from "@follow/shared/settings/interface"
 import { capitalizeFirstLetter, getOS } from "@follow/utils/utils"
 import dayjs from "dayjs"
 import { throttle } from "es-toolkit/compat"
+import { useSetAtom } from "jotai"
 import { useForceUpdate } from "motion/react"
 import {
   lazy,
@@ -24,9 +25,12 @@ import {
 import { useTranslation } from "react-i18next"
 import { bundledThemesInfo } from "shiki/themes"
 
+import { useGeneralSettingKey } from "~/atoms/settings/general"
 import {
+  customCSSPreviewAtom,
   getUISettings,
   setUISetting,
+  suppressModalOverlayAtom,
   useUISettingKey,
   useUISettingSelector,
   useUISettingValue,
@@ -54,6 +58,8 @@ export const SettingAppearance = () => {
   const { t } = useTranslation("settings")
   const isMobile = useMobile()
   const defineItem = useWrapEnhancedSettingItem(_defineItem, WrapEnhancedSettingTab.Appearance)
+  // These controls set enhanced settings, which only apply while Enhanced Settings is on
+  const enhancedSettings = useGeneralSettingKey("enhancedSettings")
   return (
     <div className="mt-4">
       <SettingBuilder
@@ -141,7 +147,7 @@ export const SettingAppearance = () => {
           },
 
           ThumbnailRatio,
-          DateFormat,
+          enhancedSettings && DateFormat,
 
           defineItem("hideRecentReader", {
             label: t("appearance.hide_recent_reader.label"),
@@ -157,7 +163,7 @@ export const SettingAppearance = () => {
             value: t("appearance.code_highlighting.title"),
           },
 
-          ShikiTheme,
+          enhancedSettings && ShikiTheme,
 
           defineItem("guessCodeLanguage", {
             label: t("appearance.guess_code_language.label"),
@@ -345,7 +351,7 @@ const ThumbnailRatio = () => {
           renderValue={(item) =>
             t(`appearance.thumbnail_ratio.${item.value as "square" | "original"}`)
           }
-          triggerClassName="w-48 lg:translate-y-2 -inset-8translate-y-1"
+          triggerClassName="w-48"
           size="sm"
         />
       </div>
@@ -386,36 +392,40 @@ const LazyCSSEditor = lazy(() =>
   import("../../editor/css-editor").then((m) => ({ default: m.CSSEditor })),
 )
 
+// The draft is only previewed until it is saved: the saved CSS and the modal overlay setting sync
+// to the account, and a reload with the editor open would otherwise keep a half-written draft.
 const CustomCSSModal = () => {
   const initialCSS = useRef(getUISettings().customCSS)
+  const draftCSSRef = useRef<string | null>(null)
+  const setCustomCSSPreview = useSetAtom(customCSSPreviewAtom)
+  const setSuppressModalOverlay = useSetAtom(suppressModalOverlayAtom)
   const { t } = useTranslation("common")
   const { dismiss } = useCurrentModal()
   useEffect(() => {
     return () => {
-      setUISetting("customCSS", initialCSS.current)
+      setCustomCSSPreview(null)
     }
-  }, [])
+  }, [setCustomCSSPreview])
   useEffect(() => {
     const modal = document.querySelector(`#${SETTING_MODAL_ID}`) as HTMLDivElement
     if (!modal) return
-    const prevOverlay = getUISettings().modalOverlay
-    setUISetting("modalOverlay", false)
+    setSuppressModalOverlay(true)
 
     modal.style.display = "none"
     return () => {
-      setUISetting("modalOverlay", prevOverlay)
+      setSuppressModalOverlay(false)
 
       modal.style.display = ""
     }
-  }, [])
+  }, [setSuppressModalOverlay])
   const [forceUpdate, key] = useForceUpdate()
   return (
     <form
       className="relative flex h-full max-w-full flex-col"
       onSubmit={(e) => {
         e.preventDefault()
-        if (initialCSS.current !== getUISettings().customCSS) {
-          initialCSS.current = getUISettings().customCSS
+        if (draftCSSRef.current !== null && draftCSSRef.current !== initialCSS.current) {
+          setUISetting("customCSS", draftCSSRef.current)
         }
         dismiss()
       }}
@@ -432,7 +442,8 @@ const CustomCSSModal = () => {
           key={key}
           className="h-[70vh] grow rounded-lg border p-3 font-mono lg:h-0"
           onChange={(value) => {
-            setUISetting("customCSS", value)
+            draftCSSRef.current = value
+            setCustomCSSPreview(value)
           }}
         />
       </Suspense>
@@ -443,7 +454,8 @@ const CustomCSSModal = () => {
           onClick={(e) => {
             e.preventDefault()
 
-            setUISetting("customCSS", initialCSS.current)
+            draftCSSRef.current = null
+            setCustomCSSPreview(null)
 
             forceUpdate()
           }}
@@ -578,6 +590,18 @@ const ACCENT_COLORS: AccentColor[] = [
   "yellow",
   "gray",
 ]
+
+// Names for screen readers: the swatches only show their color
+const ACCENT_COLOR_LABEL_KEYS = {
+  orange: "appearance.accent_color.colors.orange",
+  blue: "appearance.accent_color.colors.blue",
+  green: "appearance.accent_color.colors.green",
+  purple: "appearance.accent_color.colors.purple",
+  pink: "appearance.accent_color.colors.pink",
+  red: "appearance.accent_color.colors.red",
+  yellow: "appearance.accent_color.colors.yellow",
+  gray: "appearance.accent_color.colors.gray",
+} as const
 
 const CustomColorPicker = ({
   value,
@@ -814,6 +838,10 @@ const AccentColorSelector = () => {
               <button
                 key={color}
                 type="button"
+                aria-label={t(
+                  ACCENT_COLOR_LABEL_KEYS[color as keyof typeof ACCENT_COLOR_LABEL_KEYS],
+                )}
+                aria-pressed={isSelected}
                 className="group relative flex size-7 items-center justify-center rounded-full transition-all duration-200 hover:scale-110"
                 onClick={() => setUISetting("accentColor", color)}
                 style={{
@@ -848,6 +876,8 @@ const AccentColorSelector = () => {
             <PopoverTrigger asChild>
               <button
                 type="button"
+                aria-label={t("appearance.accent_color.custom")}
+                aria-pressed={isCustomColor}
                 className="group relative flex size-7 items-center justify-center rounded-full transition-all duration-200 hover:scale-110"
                 style={{
                   background: isCustomColor

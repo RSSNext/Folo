@@ -35,9 +35,41 @@ export const setFeedListSortOrder = (order: FeedListSortOrder) => {
   })
 }
 
+const flipOrder = (order: FeedListSortOrder): FeedListSortOrder =>
+  order === "asc" ? "desc" : "asc"
+
+/**
+ * Switch between sorting by unread count and by name. The order flips with it, so the most
+ * unread first goes with A to Z, as it always did on this button.
+ */
+export const toggleFeedListSortBy = () => {
+  const { by, order } = getFeedListSort()
+  setFeedListSort({
+    by: by === "count" ? "alphabetical" : "count",
+    order: flipOrder(order),
+  })
+}
+
+/**
+ * Versions before the name order was fixed listed "ascending" from Z to A and "descending" from
+ * A to Z. Flipping a stored name order keeps the list in the order its user saw.
+ */
+export const migrateFeedListSortByName = () => {
+  const { by, order } = getFeedListSort()
+  if (by !== "alphabetical") return
+  setFeedListSort({ by, order: flipOrder(order) })
+}
+
 const SELECT_NOTHING = []
-export const [, useSelectedFeedIdsState, , , getSelectedFeedIds, setSelectedFeedIds, ,] =
-  createAtomHooks(atom<string[]>(SELECT_NOTHING))
+export const [
+  ,
+  useSelectedFeedIdsState,
+  ,
+  ,
+  getSelectedFeedIds,
+  setSelectedFeedIds,
+  useSelectedFeedIdsSelector,
+] = createAtomHooks(atom<string[]>(SELECT_NOTHING))
 export const resetSelectedFeedIds = () => {
   setSelectedFeedIds(SELECT_NOTHING)
 }

@@ -34,24 +34,33 @@ NAME=Folo_Verify_$(date +%H%M%S)    # or Folo_Release_QA for the persistent QA e
 AVD="$HOME/.android/avd"
 mkdir -p "$AVD/$NAME.avd"
 cp "$AVD/Medium_Phone.avd/config.ini" "$AVD/$NAME.avd/config.ini"
-sed -i '' -e "s/^AvdId = .*/AvdId = $NAME/" -e "s/^avd.ini.displayname = .*/avd.ini.displayname = $NAME/" "$AVD/$NAME.avd/config.ini"
+sed -i '' -e "s/^AvdId = .*/AvdId = $NAME/" -e "s/^avd.ini.displayname = .*/avd.ini.displayname = $NAME/" \
+  -e "s/^hw\.cpu\.ncore = .*/hw.cpu.ncore = 4/" -e "s/^hw\.ramSize = .*/hw.ramSize = 4096/" \
+  -e "s/^hw\.gpu\.mode = .*/hw.gpu.mode = host/" "$AVD/$NAME.avd/config.ini"
 printf 'avd.ini.encoding=UTF-8\npath=%s\npath.rel=avd/%s.avd\ntarget=android-36\n' "$AVD/$NAME.avd" "$NAME" > "$AVD/$NAME.ini"
 ```
+
+`Medium_Phone.avd/config.ini` only asks for 1 core, 2 GB and `hw.gpu.mode = auto`. Android Studio overrides that when it launches the AVD, but a command-line launch takes the file as is, and `auto` falls back to lavapipe, which renders on the CPU. That emulator shows "System UI isn't responding", drops taps and stalls Reanimated animations, which looks like app bugs (a player bar that never hides, a see-through header). Before booting any AVD, including `Folo_Release_QA`, check that its `config.ini` asks for 4 cores, 4096 MB and `host`.
 
 Boot a new AVD once with `-wipe-data` to create fresh user data; never pass `-wipe-data` to `Folo_Release_QA` after that, it erases the signed-in session. On that first boot Android may show "System UI isn't responding"; tap Wait (`android:id/aerr_wait`). Deleting an AVD means removing `$AVD/$NAME.avd` and `$AVD/$NAME.ini` after `adb -s <serial> emu kill`.
 
 Creating `Folo_Release_QA` once: create it as above, boot it, install the current GitHub release APK (`gh release download mobile/v<live version> -p build.apk`), and sign in to the demo account; an agent that may not type passwords asks the user to do that sign-in. Do the same if the emulator lost its session.
 
-Boot and install (a booted copy of this config reports `sys.boot_completed` after about 15 seconds):
+Boot and install (a cold boot with this config reports `sys.boot_completed` after about 15 seconds):
 
 ```bash
 PORT=5560; SERIAL="emulator-$PORT"     # pick a port pair nothing listens on
-(emulator @"$NAME" -port $PORT -no-snapshot-save -no-boot-anim -no-audio > "$SCRATCH/emulator.log" 2>&1 &)
+(emulator @"$NAME" -port $PORT -no-snapshot -no-boot-anim > "$SCRATCH/emulator.log" 2>&1 &)
 adb -s "$SERIAL" wait-for-device
 until [ "$(adb -s "$SERIAL" shell getprop sys.boot_completed | tr -d '\r')" = 1 ]; do sleep 3; done
 adb -s "$SERIAL" install -r -d "$APK"
+adb -s "$SERIAL" shell dumpsys package is.follow | grep -E 'versionName|lastUpdateTime'   # the new version
 adb -s "$SERIAL" shell monkey -p is.follow -c android.intent.category.LAUNCHER 1
 ```
+
+- Always boot with `-no-snapshot`. The AVD config has `fastboot.forceFastBoot = yes`, so any other boot restores the quickboot snapshot and rolls the data partition back to the moment it was saved: an APK installed before a reboot is gone, and `Folo_Release_QA`'s snapshot still holds mobile 0.5.10. A cold boot keeps the data partition as the last session left it, including the demo session. Check the installed version after every boot or reinstall, and Settings → About before trusting a result.
+- Keep the audio on (no `-no-audio`). Without an audio device the TTS WebView stream never starts, the 15-second timeout falls back to downloading the whole file, and ExoPlayer then fails with `MediaCodecAudioRenderer error`, so none of the TTS checks mean anything. TTS plays through the Mac's speakers during those checks.
+- For long TTS checks pick an entry whose feed carries the full text (designboom does); the Aeon feed only has a one-line description, so its TTS ends after about 14 seconds by design.
 
 ## 3. Drive the app and check
 

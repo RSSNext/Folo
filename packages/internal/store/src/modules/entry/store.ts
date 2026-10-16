@@ -329,6 +329,31 @@ class EntryActions implements Hydratable, Resetable {
     await tx.run()
   }
 
+  /** Store the contents of several entries in one store update. */
+  async updateEntryContents(contents: { entryId: EntryId; content: string }[]) {
+    const tx = createTransaction()
+    tx.store(() => {
+      immerSet((draft) => {
+        for (const { entryId, content } of contents) {
+          const entry = draft.data[entryId]
+          if (entry && content) {
+            entry.content = content
+          }
+        }
+      })
+    })
+
+    tx.persist(() => {
+      for (const { entryId, content } of contents) {
+        if (content) {
+          EntryService.patch({ id: entryId, content })
+        }
+      }
+    })
+
+    await tx.run()
+  }
+
   /**
    * Entries whose read flag would change for the given selection, without mutating anything.
    */
@@ -671,12 +696,30 @@ class EntrySyncServices {
         return
       }
 
-      await readNdjsonStream<{ id: string; content: string }>(response, async (json) => {
-        await entryActions.updateEntryContent({ entryId: json.id, content: json.content })
+      // The lines of one network chunk are stored together, so a batch of entries updates the
+      // store, and every timeline selector over it, once per chunk instead of once per entry
+      let pending: { entryId: string; content: string }[] = []
+      let flushTimer: ReturnType<typeof setTimeout> | undefined
+      const flush = () => {
+        flushTimer = undefined
+        const contents = pending
+        pending = []
+        if (contents.length > 0) {
+          void entryActions.updateEntryContents(contents)
+        }
+      }
+
+      await readNdjsonStream<{ id: string; content: string }>(response, (json) => {
+        pending.push({ entryId: json.id, content: json.content })
+        flushTimer ??= setTimeout(flush, 0)
       })
+      clearTimeout(flushTimer)
+      flush()
     }
 
-    readStream()
+    readStream().catch((error) => {
+      console.error("Failed to fetch entry contents:", error)
+    })
   }
 
   async fetchEntryReadHistory(entryId: EntryId, size: number) {

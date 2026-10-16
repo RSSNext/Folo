@@ -15,6 +15,7 @@ import {
 } from "@/src/components/ui/grouped/GroupedList"
 import { Switch } from "@/src/components/ui/switch/Switch"
 import { getDbPath } from "@/src/database"
+import { setAnonymousDataEnabled } from "@/src/initialize/analytics"
 import { reloadApp } from "@/src/lib/reload-app"
 import { toast } from "@/src/lib/toast"
 
@@ -40,6 +41,7 @@ export const DataScreen = () => {
             value={sendAnonymousData}
             onValueChange={(val) => {
               setDataSetting("sendAnonymousData", val)
+              void setAnonymousDataEnabled(val).catch(console.error)
             }}
           />
         </GroupedInsetListCell>

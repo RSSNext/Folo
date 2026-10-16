@@ -1,5 +1,6 @@
 import type { FeedViewType } from "@follow/constants"
 import type { FeedModel } from "@follow/store/feed/types"
+import { useImageColors } from "@follow/store/image/hooks"
 import type { ListModel } from "@follow/store/list/types"
 import { getSubscriptionById } from "@follow/store/subscription/getter"
 import { subscriptionSyncService } from "@follow/store/subscription/store"
@@ -7,7 +8,7 @@ import { usePrefetchUser, useUserById, useWhoami } from "@follow/store/user/hook
 import { Image as ExpoImage } from "expo-image"
 import { createContext, Fragment, use, useCallback, useEffect, useMemo } from "react"
 import { useTranslation } from "react-i18next"
-import { Alert, FlatList, Platform, Pressable, Share, View } from "react-native"
+import { Alert, FlatList, Platform, Share, View } from "react-native"
 import Animated, {
   interpolate,
   useAnimatedScrollHandler,
@@ -20,6 +21,7 @@ import { ReAnimatedScrollView } from "@/src/components/common/AnimatedComponents
 import { BlurEffect } from "@/src/components/common/BlurEffect"
 import { SwipeableItem } from "@/src/components/common/SwipeableItem"
 import {
+  DefaultHeaderBackButton,
   InternalNavigationHeader,
   UINavigationHeaderActionButton,
 } from "@/src/components/layouts/header/NavigationHeader"
@@ -40,11 +42,16 @@ import { ItemPressable } from "@/src/components/ui/pressable/ItemPressable"
 import { Text } from "@/src/components/ui/typography/Text"
 import { ShareForwardCuteReIcon } from "@/src/icons/share_forward_cute_re"
 import type { followClient } from "@/src/lib/api-client"
+import { useCanBack, useCanDismiss } from "@/src/lib/navigation/hooks"
 import { Navigation } from "@/src/lib/navigation/Navigation"
 import type { NavigationControllerView } from "@/src/lib/navigation/types"
+import { isAndroid } from "@/src/lib/platform"
 import { createLinkShareContent } from "@/src/lib/share"
 import { toast } from "@/src/lib/toast"
+import { selectFeed } from "@/src/modules/screen/atoms"
+import { BannerStatusBar } from "@/src/modules/settings/BannerStatusBar"
 import { useShareSubscription } from "@/src/modules/settings/hooks/useShareSubscription"
+import { isUserHeaderGradientLight } from "@/src/modules/settings/layout"
 import { UserHeaderBanner } from "@/src/modules/settings/UserHeaderBanner"
 import { ItemSeparator } from "@/src/modules/subscription/ItemSeparator"
 import { useColor } from "@/src/theme/colors"
@@ -86,6 +93,10 @@ function ProfileScreenImpl(props: { userId: string }) {
   })
   usePrefetchUser(props.userId)
   const user = useUserById(props.userId)
+  const gradientLight = isUserHeaderGradientLight(useImageColors(user?.image))
+  const bannerIconColor = gradientLight ? "#000" : "#fff"
+  const canBack = useCanBack()
+  const canDismiss = useCanDismiss()
   useEffect(() => {
     if (isError) {
       toast.error(t("profile.fetch_subscriptions_failed"))
@@ -130,7 +141,10 @@ function ProfileScreenImpl(props: { userId: string }) {
             name: user?.name || user?.handle,
           })}
           headerRight={
-            <UINavigationHeaderActionButton onPress={openShareUrl}>
+            <UINavigationHeaderActionButton
+              onPress={openShareUrl}
+              accessibilityLabel={t("operation.share")}
+            >
               <ShareForwardCuteReIcon color={textLabelColor} />
             </UINavigationHeaderActionButton>
           }
@@ -144,6 +158,8 @@ function ProfileScreenImpl(props: { userId: string }) {
         }}
       >
         <UserHeaderBanner scrollY={scrollY} userId={props.userId} />
+        {/* iOS shows the profile in a sheet, below the status bar */}
+        <BannerStatusBar gradientLight={gradientLight} scrollY={scrollY} enabled={isAndroid} />
 
         {isLoading && <PlatformActivityIndicator className="mt-24" size={28} />}
         <IsMyProfileContext value={isMyProfile}>
@@ -155,17 +171,29 @@ function ProfileScreenImpl(props: { userId: string }) {
         </IsMyProfileContext>
       </ReAnimatedScrollView>
 
+      {/* The header buttons on the banner until the header fades in, in the banner's colors.
+          Android opens the profile full screen, with no sheet to swipe away. */}
       <Animated.View
+        pointerEvents="box-none"
         style={useAnimatedStyle(() => ({
           opacity: interpolate(headerOpacity.value, [0, 1], [1, 0]),
-          top: insets.top + 17,
+          top: insets.top + 9,
         }))}
-        className="absolute flex w-full flex-row items-center justify-between px-4"
+        className="absolute flex w-full flex-row items-center justify-between px-2"
       >
-        <View />
-        <Pressable onPress={openShareUrl}>
-          <ShareForwardCuteReIcon color="#fff" />
-        </Pressable>
+        <View>
+          <DefaultHeaderBackButton
+            canGoBack={canBack}
+            canDismiss={canDismiss}
+            color={bannerIconColor}
+          />
+        </View>
+        <UINavigationHeaderActionButton
+          onPress={openShareUrl}
+          accessibilityLabel={t("operation.share")}
+        >
+          <ShareForwardCuteReIcon color={bannerIconColor} />
+        </UINavigationHeaderActionButton>
       </Animated.View>
     </View>
   )
@@ -288,11 +316,13 @@ const renderListItems = ({ item }: { item: PickedListModel }) => (
       paddingHorizontal: GROUPED_LIST_ITEM_PADDING,
     }}
     onPress={() => {
-      if (getSubscriptionById(item.id))
+      if (getSubscriptionById(item.id)) {
+        // FeedScreen shows the selected list, not the one it is pushed with
+        selectFeed({ type: "list", listId: item.id })
         Navigation.rootNavigation.pushControllerView(FeedScreen, {
           feedId: item.id,
         })
-      else {
+      } else {
         Navigation.rootNavigation.pushControllerView(FollowScreen, {
           type: "list",
           id: item.id,
@@ -332,11 +362,12 @@ const renderFeedItems = ({ item }: { item: PickedFeedModel }) => (
         paddingHorizontal: GROUPED_LIST_ITEM_PADDING,
       }}
       onPress={() => {
-        if (getSubscriptionById(item.id))
+        if (getSubscriptionById(item.id)) {
+          selectFeed({ type: "feed", feedId: item.id })
           Navigation.rootNavigation.pushControllerView(FeedScreen, {
             feedId: item.id,
           })
-        else {
+        } else {
           Navigation.rootNavigation.pushControllerView(FollowScreen, {
             type: "feed",
             id: item.id,

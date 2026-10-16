@@ -1,6 +1,13 @@
 import { Spring } from "@follow/components/constants/spring.js"
 import { Button } from "@follow/components/ui/button/index.js"
-import { Form, FormField, FormItem, FormLabel } from "@follow/components/ui/form/index.jsx"
+import {
+  Form,
+  FormControl,
+  FormField,
+  FormItem,
+  FormLabel,
+  FormMessage,
+} from "@follow/components/ui/form/index.jsx"
 import { Input } from "@follow/components/ui/input/index.js"
 import { RootPortal } from "@follow/components/ui/portal/index.js"
 import { ScrollArea } from "@follow/components/ui/scroll-area/index.js"
@@ -21,6 +28,7 @@ import {
 import { cn } from "@follow/utils/utils"
 import type { RSSHubRouteMetadata } from "@follow-app/client-sdk"
 import { zodResolver } from "@hookform/resolvers/zod"
+import i18next from "i18next"
 import { m } from "motion/react"
 import type { FC } from "react"
 import { useCallback, useEffect, useLayoutEffect, useMemo, useRef } from "react"
@@ -37,7 +45,9 @@ import {
   useIsInModal,
   useIsTopModal,
   useModalStack,
+  useModalUnsavedChanges,
 } from "~/components/ui/modal/stacked/hooks"
+import { useFormHasChanges } from "~/hooks/common/useFormHasChanges"
 
 import { FeedForm } from "./FeedForm"
 import { normalizeRSSHubParameters } from "./utils"
@@ -76,6 +86,11 @@ const FeedMaintainers = ({ maintainers }: { maintainers?: string[] }) => {
 
 const routeParamsKeyPrefix = "route-params-"
 
+// The message is resolved at validation time so it follows the current language
+const requiredParamSchema = z
+  .string()
+  .min(1, { error: () => i18next.t("discover.route_param_required") })
+
 export type RouteParams = Record<
   string,
   {
@@ -113,7 +128,7 @@ export const DiscoverFeedForm = ({
           keys
             .map((keyItem) => [
               keyItem.name,
-              keyItem.optional ? z.string().optional().nullable() : z.string().min(1),
+              keyItem.optional ? z.string().optional().nullable() : requiredParamSchema,
             ])
             .concat(
               routeParams
@@ -204,9 +219,11 @@ export const DiscoverFeedForm = ({
 
   const modal = useCurrentModal()
 
+  const hasUnsavedChanges = useFormHasChanges(form)
   useEffect(() => {
-    modal.setClickOutSideToDismiss(!form.formState.isDirty)
-  }, [form.formState.isDirty, modal])
+    modal.setClickOutSideToDismiss(!hasUnsavedChanges)
+  }, [hasUnsavedChanges, modal])
+  useModalUnsavedChanges(hasUnsavedChanges)
 
   return (
     <div className={cn("flex h-full flex-col", "mx-auto")} ref={rootContainerRef}>
@@ -254,9 +271,11 @@ export const DiscoverFeedForm = ({
                               }}
                               defaultValue={parameters.default || void 0}
                             >
-                              <SelectTrigger ref={ref}>
-                                <SelectValue placeholder={t("discover.select_placeholder")} />
-                              </SelectTrigger>
+                              <FormControl>
+                                <SelectTrigger ref={ref}>
+                                  <SelectValue placeholder={t("discover.select_placeholder")} />
+                                </SelectTrigger>
+                              </FormControl>
                               <SelectContent>
                                 {parameters.options.map((option) => (
                                   <SelectItem key={option.value} value={option.value || ""}>
@@ -268,20 +287,23 @@ export const DiscoverFeedForm = ({
                               </SelectContent>
                             </Select>
                           ) : (
-                            <Input
-                              {...field}
-                              onBlur={() => {
-                                nextFrame(() => {
-                                  field.onBlur()
-                                })
-                              }}
-                              placeholder={
-                                (parameters?.default ?? formPlaceholder[keyItem.name])
-                                  ? `e.g. ${formPlaceholder[keyItem.name]}`
-                                  : void 0
-                              }
-                            />
+                            <FormControl>
+                              <Input
+                                {...field}
+                                onBlur={() => {
+                                  nextFrame(() => {
+                                    field.onBlur()
+                                  })
+                                }}
+                                placeholder={
+                                  (parameters?.default ?? formPlaceholder[keyItem.name])
+                                    ? `e.g. ${formPlaceholder[keyItem.name]}`
+                                    : void 0
+                                }
+                              />
+                            </FormControl>
                           )}
+                          <FormMessage className="pl-3" />
                           {!!parameters && (
                             <Markdown className="w-full max-w-full whitespace-normal break-all pl-3 text-footnote text-text-secondary">
                               {parameters.description}

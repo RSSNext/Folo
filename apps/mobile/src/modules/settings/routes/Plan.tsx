@@ -83,9 +83,15 @@ type SegmentLayout = {
   x: number
 }
 
-const PlanHeaderBackButton = ({ canGoBack }: { canGoBack: boolean }) => (
-  <DefaultHeaderBackButton canGoBack={canGoBack} canDismiss={false} />
-)
+// A back arrow when the plans were pushed, a close button when they open as their own sheet,
+// e.g. for the legacy trial role from settings
+const PlanHeaderBackButton = ({
+  canGoBack,
+  canDismiss,
+}: {
+  canGoBack: boolean
+  canDismiss: boolean
+}) => <DefaultHeaderBackButton canGoBack={canGoBack} canDismiss={!canGoBack && canDismiss} />
 
 const styles = StyleSheet.create({
   billingSegmentIndicator: {
@@ -532,8 +538,10 @@ export const PlanScreen: NavigationControllerView = () => {
     ? t("subscription.summary.current", { plan: summaryPlan.name })
     : t("subscription.summary.free")
 
+  // roleEndAt is the end of the current period for every paid plan, not only for trials
+  const isTrial = activeSubscription?.status === "trialing" || role === UserRole.Trial
   let summarySubtitle = t("subscription.summary.free_description")
-  if (daysLeft && daysLeft > 0 && role && role !== UserRole.Free) {
+  if (daysLeft && daysLeft > 0 && isTrial) {
     summarySubtitle = t("subscription.summary.trial_expiring", {
       date: dayjs(roleEndAt).format("MMMM D, YYYY"),
       days: daysLeft,

@@ -22,7 +22,7 @@ import { toast } from "sonner"
 import type { FollowMenuItem, MenuItemInput } from "~/atoms/context-menu"
 import { MenuItemSeparator, MenuItemText } from "~/atoms/context-menu"
 import { useModalStack } from "~/components/ui/modal/stacked/hooks"
-import { copyToClipboard } from "~/lib/clipboard"
+import { copyToClipboardWithFeedback } from "~/lib/clipboard"
 import { UrlBuilder } from "~/lib/url-builder"
 import { useFeedClaimModal } from "~/modules/claim"
 import { COMMAND_ID } from "~/modules/command/commands/id"
@@ -206,7 +206,7 @@ export const useFeedActions = ({
               requiresLogin: true,
             })
           }),
-          listByView.length > 0 && MenuItemSeparator.default,
+          categories.size > 0 && MenuItemSeparator.default,
           new MenuItemText({
             label: t("sidebar.feed_column.context_menu.create_category"),
             icon: <i className="i-mgc-add-cute-re" />,
@@ -275,7 +275,7 @@ export const useFeedActions = ({
         shortcut: "$mod+Shift+C",
         disabled: isEntryList,
         click: () => {
-          copyToClipboard(feedId)
+          void copyToClipboardWithFeedback(feedId)
         },
       }),
     ]
@@ -379,14 +379,14 @@ export const useListActions = ({ listId, view }: { listId: string; view?: FeedVi
         label: t("sidebar.feed_actions.copy_list_url"),
         shortcut: "$mod+C",
         click: () => {
-          copyToClipboard(UrlBuilder.shareList(listId, view))
+          void copyToClipboardWithFeedback(UrlBuilder.shareList(listId, view))
         },
       }),
       new MenuItemText({
         label: t("sidebar.feed_actions.copy_list_id"),
         shortcut: "$mod+Shift+C",
         click: () => {
-          copyToClipboard(listId)
+          void copyToClipboardWithFeedback(listId)
         },
       }),
     ]
@@ -422,7 +422,7 @@ export const useInboxActions = ({ inboxId }: { inboxId: string }) => {
         label: t("sidebar.feed_actions.copy_email_address"),
         shortcut: "$mod+Shift+C",
         click: () => {
-          copyToClipboard(`${inboxId}${env.VITE_INBOXES_EMAIL}`)
+          void copyToClipboardWithFeedback(`${inboxId}${env.VITE_INBOXES_EMAIL}`)
         },
       }),
     ]

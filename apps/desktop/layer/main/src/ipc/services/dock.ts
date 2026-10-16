@@ -15,13 +15,19 @@ class PollingManager {
 
     this.isPolling = true
     this.abortController = new AbortController()
+    const { signal } = this.abortController
 
     try {
-      while (!this.abortController.signal.aborted) {
-        await pollingFn()
+      while (!signal.aborted) {
+        // A failed round, such as one right after waking up offline, only skips that round
+        try {
+          await pollingFn()
+        } catch (error) {
+          console.error("Polling error:", error)
+        }
 
         // Use AbortSignal with sleep for proper cancellation
-        await this.sleepWithAbortSignal(interval, this.abortController.signal)
+        await this.sleepWithAbortSignal(interval, signal)
       }
     } catch (error) {
       if (error instanceof Error && error.name !== "AbortError") {
@@ -45,12 +51,16 @@ class PollingManager {
 
   private async sleepWithAbortSignal(ms: number, signal: AbortSignal): Promise<void> {
     return new Promise((resolve, reject) => {
-      const timeoutId = setTimeout(resolve, ms)
-
-      signal.addEventListener("abort", () => {
+      const onAbort = () => {
         clearTimeout(timeoutId)
         reject(new DOMException("Aborted", "AbortError"))
-      })
+      }
+      const timeoutId = setTimeout(() => {
+        signal.removeEventListener("abort", onAbort)
+        resolve()
+      }, ms)
+
+      signal.addEventListener("abort", onAbort, { once: true })
     })
   }
 }

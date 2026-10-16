@@ -71,8 +71,6 @@ class SummaryActions implements Resetable, Hydratable {
         }
       })
     })
-
-    this.batchClean()
   }
 
   async upsertMany(summaries: SummaryModel[]) {
@@ -81,42 +79,6 @@ class SummaryActions implements Resetable, Hydratable {
     for (const summary of summaries) {
       summaryService.insertSummary(summary)
     }
-  }
-
-  getSummary(entryId: string, language: SupportedActionLanguage) {
-    const state = get()
-    const summary = state.data[entryId]?.[language]
-
-    if (summary) {
-      immerSet((state) => {
-        if (state.data[entryId]) {
-          state.data[entryId]![language]!.lastAccessed = Date.now()
-        }
-      })
-    }
-
-    return summary
-  }
-
-  private batchClean() {
-    const state = get()
-    const entries = Object.entries(state.data)
-      .map(([, data]) => data)
-      .flatMap((data) => Object.entries(data))
-
-    if (entries.length <= 10) return
-
-    const sortedEntries = entries.sort(
-      ([, a], [, b]) => (a?.lastAccessed || 0) - (b?.lastAccessed || 0),
-    )
-
-    const entriesToRemove = sortedEntries.slice(0, entries.length - 10)
-
-    immerSet((state) => {
-      entriesToRemove.forEach(([entryId]) => {
-        delete state.data[entryId]
-      })
-    })
   }
 
   async reset() {

@@ -49,6 +49,7 @@ export const EntryListContentArticle = ({
   const readableItemStyle = useReadableContainerStyle(860, 16)
 
   const {
+    error: entriesError,
     fetchNextPage,
     isFetching,
     isFetchingNextPage,
@@ -94,7 +95,8 @@ export const EntryListContentArticle = ({
   const ref = useRef<FlashListRef<any>>(null)
 
   const { onViewableItemsChanged, onScroll, viewableItems } = useOnViewableItemsChanged({
-    disabled: active === false || isFetching || suspendMarkRead,
+    // Loading the next page only appends entries, so the ones scrolled past meanwhile still count
+    disabled: active === false || (isFetching && !isFetchingNextPage) || suspendMarkRead,
     refreshing: isFetching && !isFetchingNextPage,
   })
 
@@ -135,6 +137,7 @@ export const EntryListContentArticle = ({
       ref={ref}
       onRefresh={refetch}
       isRefetching={isRefetching}
+      emptyError={entriesError}
       onResetScrollSignalConsumed={onResetScrollSignalConsumed}
       resetScrollSignal={resetScrollSignal}
       data={entryIds}

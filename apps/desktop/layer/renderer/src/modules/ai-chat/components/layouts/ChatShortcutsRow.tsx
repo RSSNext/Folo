@@ -1,4 +1,4 @@
-import { getReadonlyRoute } from "@follow/components/atoms/route.js"
+import { useReadonlyRouteSelector } from "@follow/components/atoms/route.js"
 import { DEFAULT_SUMMARIZE_TIMELINE_SHORTCUT_ID } from "@follow/shared/settings/defaults"
 import type { AIShortcut } from "@follow/shared/settings/interface"
 import { DEFAULT_SHORTCUT_TARGETS } from "@follow/shared/settings/interface"
@@ -29,7 +29,8 @@ export const ChatShortcutsRow: React.FC<ChatShortcutsRowProps> = ({ onSelect }) 
   const { t } = useTranslation("ai")
   const aiSettings = useAISettingValue()
   const mainEntryId = useMainEntryId()
-  const isAiPage = useMemo(() => getReadonlyRoute().location.pathname === "/ai", [])
+  // Read reactively: on navigation into /ai this row mounts before the route is updated
+  const isAiPage = useReadonlyRouteSelector((route) => route.location.pathname === "/ai")
 
   const shortcutsToDisplay = useMemo(() => {
     const shortcuts = aiSettings.shortcuts ?? []

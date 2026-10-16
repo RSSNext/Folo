@@ -263,11 +263,9 @@ const NavigationLinkGroup: FC<{
               }
               testID={link.testID}
               onPress={() => {
-                if (
-                  link.trialNotAllowed &&
-                  (role === UserRole.Free || role === UserRole.Trial) &&
-                  getIsPaymentEnabled()
-                ) {
+                // Free plans include lists and actions up to a limit, which the server enforces
+                // with an upgrade prompt; only the legacy trial role has none of them
+                if (link.trialNotAllowed && role === UserRole.Trial && getIsPaymentEnabled()) {
                   navigation.presentControllerView(PlanScreen)
                 } else {
                   link.onPress({ navigation })

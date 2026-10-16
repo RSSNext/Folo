@@ -35,24 +35,23 @@ const cloneStylesElement = () => {
         children: $style.innerHTML,
       }),
     )
+  }
 
-    const styles = getLinkedStaticStyleSheets()
-
-    for (const style of styles) {
-      let key = weakMapElementKey.get(style.ref)
-      if (!key) {
-        key = nanoid(8)
-        weakMapElementKey.set(style.ref, key)
-      }
-
-      reactNodes.push(
-        createElement(MemoedDangerousHTMLStyle, {
-          key,
-          children: style.cssText,
-          ["data-href"]: style.ref.href,
-        }),
-      )
+  // Once per linked sheet, independent of the inline styles above
+  for (const style of getLinkedStaticStyleSheets()) {
+    let key = weakMapElementKey.get(style.ref)
+    if (!key) {
+      key = nanoid(8)
+      weakMapElementKey.set(style.ref, key)
     }
+
+    reactNodes.push(
+      createElement(MemoedDangerousHTMLStyle, {
+        key,
+        children: style.cssText,
+        ["data-href"]: style.ref.href,
+      }),
+    )
   }
 
   return reactNodes

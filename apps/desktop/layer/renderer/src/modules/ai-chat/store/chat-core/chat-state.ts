@@ -1,4 +1,3 @@
-/* eslint-disable unicorn/no-for-loop */
 import type { ChatState, ChatStatus } from "ai"
 import { throttle } from "es-toolkit/compat"
 import { produce } from "immer"
@@ -75,6 +74,9 @@ export class ZustandChatState implements ChatState<BizUIMessage> {
         if (isStreaming) {
           void state.chatActions.markSessionSynced()
         }
+        if (status === "ready" || status === "error") {
+          void state.chatActions.adoptStoredTitle(this.chatId)
+        }
 
         if (
           this.#isResumingStream &&
@@ -107,8 +109,14 @@ export class ZustandChatState implements ChatState<BizUIMessage> {
   set status(newStatus: ChatStatus) {
     if (this.#status === newStatus) return
 
+    const wasStreaming = this.#status === "streaming"
     this.#status = newStatus
     this.#eventEmitter.emit("status", { status: newStatus })
+
+    // Messages are not persisted while an answer streams, so save the result once it ends
+    if (wasStreaming) {
+      this.#persistMessages()
+    }
   }
 
   get error(): Error | undefined {
@@ -132,8 +140,12 @@ export class ZustandChatState implements ChatState<BizUIMessage> {
 
       this.#eventEmitter.emit("messages", { messages: this.#messages })
 
-      // Auto-persist messages when they change
-      this.#persistMessages()
+      // Auto-persist messages when they change. While an answer streams, every chunk replaces the
+      // last message, and the streaming parts are skipped anyway, so rewriting the whole chat
+      // each time only holds the database; the status setter saves once the stream ends.
+      if (this.#status !== "streaming") {
+        this.#persistMessages()
+      }
     })
   }
 

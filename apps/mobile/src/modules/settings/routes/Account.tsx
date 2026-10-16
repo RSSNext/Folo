@@ -34,9 +34,9 @@ import {
 } from "@/src/lib/auth"
 import { Dialog } from "@/src/lib/dialog"
 import { loading } from "@/src/lib/loading"
-import { openLink } from "@/src/lib/native"
 import { useNavigation } from "@/src/lib/navigation/hooks"
 import { toast } from "@/src/lib/toast"
+import { nativeOAuthCallbackURL } from "@/src/modules/login/social-login"
 
 import { ConfirmPasswordDialog } from "../../dialogs/ConfirmPasswordDialog"
 import { ConfirmTOTPCodeDialog } from "../../dialogs/ConfirmTOTPCodeDialog"
@@ -151,19 +151,23 @@ const AccountLinker: FC<{
       }
       onPress={() => {
         if (!account) {
-          linkSocial({ provider: provider as any })
+          linkSocial({
+            provider: provider as any,
+            // Return to the app when the provider is done, whether linking worked or not
+            callbackURL: nativeOAuthCallbackURL,
+            errorCallbackURL: nativeOAuthCallbackURL,
+          })
             .then((res: LinkSocialResponse) => {
               if (!res.data?.url) {
                 toast.error(t("profile.link_social.link_failed"))
                 return
               }
-              openLink(res.data.url, () => {
-                queryClient.invalidateQueries({
-                  queryKey: accountInfoKey,
-                })
-                queryClient.invalidateQueries({
-                  queryKey: userProviderKey,
-                })
+              // The auth client's Expo plugin already ran the browser session for this URL
+              queryClient.invalidateQueries({
+                queryKey: accountInfoKey,
+              })
+              queryClient.invalidateQueries({
+                queryKey: userProviderKey,
               })
             })
             .catch((error: unknown) => {
@@ -318,14 +322,30 @@ const SecuritySection = () => {
                   text: t("words.delete", { ns: "common" }),
                   style: "destructive",
                   onPress: async () => {
-                    // await signOut()
+                    const deleteAccount = async (TOTPCode?: string) => {
+                      try {
+                        await deleteUser({ TOTPCode })
+                      } catch (error) {
+                        toast.error(
+                          error instanceof Error && error.message
+                            ? error.message
+                            : t("error_screen.unknown", { ns: "common" }),
+                        )
+                      }
+                    }
+
+                    // The server only asks for a code when two-factor authentication is on
+                    if (!whoAmI?.twoFactorEnabled) {
+                      await deleteAccount()
+                      return
+                    }
+
                     Dialog.show(ConfirmTOTPCodeDialog, {
                       override: {
                         async onConfirm(ctx) {
+                          if (!ctx.totpCode) return
                           ctx.dismiss()
-                          await deleteUser({
-                            TOTPCode: ctx.totpCode,
-                          })
+                          await deleteAccount(ctx.totpCode)
                         },
                       },
                     })

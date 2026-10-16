@@ -117,7 +117,7 @@ describe("applySpotlightToHtmlRendererTree", () => {
           tagName: "span",
           properties: expect.objectContaining({
             "data-spotlight-rule-id": "alpha-rule",
-            style: "background-color:#ffcc00CC;border-radius:5px;padding-inline:2px;",
+            style: "background-color:#ffcc00CC;border-radius:5px;padding-inline:2px;color:#000000;",
           }),
           children: [{ type: "text", value: "alpha" }],
         },
@@ -169,7 +169,8 @@ describe("applySpotlightToHtmlRendererTree", () => {
               tagName: "tspan",
               properties: expect.objectContaining({
                 "data-spotlight-rule-id": "alpha-rule",
-                style: "background-color:#ffcc00CC;border-radius:5px;padding-inline:2px;",
+                style:
+                  "background-color:#ffcc00CC;border-radius:5px;padding-inline:2px;color:#000000;",
               }),
               children: [{ type: "text", value: "alpha" }],
             },
@@ -229,7 +230,8 @@ describe("parseHtml", () => {
               tagName: "span",
               properties: expect.objectContaining({
                 "data-spotlight-rule-id": "alpha-rule",
-                style: "background-color:#ffcc00CC;border-radius:5px;padding-inline:2px;",
+                style:
+                  "background-color:#ffcc00CC;border-radius:5px;padding-inline:2px;color:#000000;",
               }),
               children: [{ type: "text", value: "alpha" }],
             },

@@ -50,9 +50,14 @@ export const createSettingAtom = <T extends object>(
     ) {
       return true
     }
-    const role = useUserStore.getState().role ?? UserRole.Free
+    const { role, whoami } = useUserStore.getState()
+    // The role isn't stored, so it is unknown until the session loads, or all along offline.
+    // A signed-in user keeps their saved values meanwhile instead of falling back to defaults.
+    if (!role) return !!whoami
     return role !== UserRole.Free && role !== UserRole.Trial
   }
+  // Re-renders the setting hooks when the paid access may have changed
+  const usePaidAccessKey = () => useUserStore((state) => `${state.role}:${!!state.whoami}`)
 
   const resolveAccessibleValue = (
     key: string,
@@ -101,6 +106,7 @@ export const createSettingAtom = <T extends object>(
     }
 
     const value = useAtomValue(selectedAtom) as ReturnType<typeof getSettingsRaw>[T]
+    usePaidAccessKey()
     if (!key) return value
     const defaults = createDefaultSettings() as Record<string, unknown>
     return resolveAccessibleValue(String(key), value, defaults) as ReturnType<
@@ -158,6 +164,7 @@ export const createSettingAtom = <T extends object>(
     selector: (s: S) => R,
   ): R => {
     const stableSelector = useRefValue(selector)
+    const paidAccessKey = usePaidAccessKey()
 
     return useAtomValue(
       useMemo(
@@ -167,7 +174,9 @@ export const createSettingAtom = <T extends object>(
             (state) => stableSelector.current(sanitizeSettingsSnapshot(state) as S),
             shallow,
           ),
-        [stableSelector],
+        // A new selection when the paid access changes, as the snapshot depends on it
+        // eslint-disable-next-line react-hooks/exhaustive-deps
+        [stableSelector, paidAccessKey],
       ),
     )
   }
@@ -201,7 +210,9 @@ export const createSettingAtom = <T extends object>(
 
   const useSettingValue = () => {
     const value = useSettingValueRaw()
-    return useMemo(() => sanitizeSettingsSnapshot(value), [value])
+    const paidAccessKey = usePaidAccessKey()
+    // eslint-disable-next-line react-hooks/exhaustive-deps -- the snapshot depends on the paid access
+    return useMemo(() => sanitizeSettingsSnapshot(value), [value, paidAccessKey])
   }
 
   const getSettings = () => {

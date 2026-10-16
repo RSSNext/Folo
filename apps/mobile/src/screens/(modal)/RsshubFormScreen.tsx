@@ -10,7 +10,7 @@ import { PortalProvider } from "@gorhom/portal"
 import { zodResolver } from "@hookform/resolvers/zod"
 import { memo, useEffect, useMemo, useState } from "react"
 import type { FieldErrors } from "react-hook-form"
-import { Controller, useForm } from "react-hook-form"
+import { Controller, useForm, useFormState } from "react-hook-form"
 import { useTranslation } from "react-i18next"
 import { KeyboardAvoidingView, Linking, Pressable, View } from "react-native"
 import { z } from "zod"
@@ -247,16 +247,18 @@ type ScreenOptionsProps = {
 const ScreenOptions = memo(
   ({ name, routeName, route, routePrefix, errors }: ScreenOptionsProps) => {
     const form = useFormContext()
+    // This memoized component only re-renders for a form state it subscribes to
+    const { isDirty } = useFormState({ control: form.control })
     const setScreenOptions = useSetModalScreenOptions()
     useEffect(() => {
       setScreenOptions({
-        preventNativeDismiss: form.formState.isDirty,
-        gestureEnabled: !form.formState.isDirty,
+        preventNativeDismiss: isDirty,
       })
-    }, [form.formState.isDirty, setScreenOptions])
+    }, [isDirty, setScreenOptions])
     return (
       <NavigationBlurEffectHeader
         title={`${name} - ${routeName}`}
+        promptBeforeLeave={isDirty}
         headerRight={
           <FormProvider form={form}>
             <ModalHeaderSubmitButtonImpl errors={errors} routePrefix={routePrefix} route={route} />
@@ -318,12 +320,12 @@ const ModalHeaderSubmitButtonImpl = ({
           setIsLoading(false)
         })
     } catch (err: unknown) {
+      // The path could not be built, so no request is running to end the loading state
+      setIsLoading(false)
       if (err instanceof MissingOptionalParamError) {
         toast.error(t("rsshub_form.missing_optional_param", { param: err.param }))
-        // const idx = keys.findIndex((item) => item.name === err.param)
-        // form.setFocus(keys[idx === 0 ? 0 : idx - 1].name, {
-        //   shouldSelect: true,
-        // })
+      } else {
+        toast.error(err instanceof Error ? err.message : String(err))
       }
     }
   })

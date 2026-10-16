@@ -1,10 +1,11 @@
 import { composeEventHandlers } from "@follow/utils"
 import { cn } from "@follow/utils/utils"
-import { useEffect, useImperativeHandle, useRef, useState } from "react"
+import { use, useEffect, useImperativeHandle, useRef, useState } from "react"
 import type { StyleProp, TextInputProps, ViewStyle } from "react-native"
 import { Pressable, StyleSheet, TextInput, View } from "react-native"
 import Animated, { useAnimatedStyle, useSharedValue, withSpring } from "react-native-reanimated"
 
+import { GroupedCellLabelContext } from "@/src/components/ui/grouped/cell-label-context"
 import { Text } from "@/src/components/ui/typography/Text"
 import { gentleSpringPreset } from "@/src/constants/spring"
 import { CloseCircleFillIcon } from "@/src/icons/close_circle_fill"
@@ -53,6 +54,8 @@ const BaseField = ({
           ref={ref}
           className={cn("w-full flex-1 p-0 text-label placeholder:text-secondary-label", className)}
           style={StyleSheet.flatten([styles.textField, style])}
+          // The label is a separate text, so screen readers would announce an unnamed field
+          accessibilityLabel={label}
           {...rest}
         />
         {inputPostfixElement}
@@ -98,6 +101,7 @@ export const PlainTextField = ({
   ref?: React.Ref<TextInput | null>
 }) => {
   const secondaryLabelColor = useColor("secondaryLabel")
+  const cellLabel = use(GroupedCellLabelContext)
   const [isFocused, setIsFocused] = useState(false)
   const textInputRef = useRef<TextInput>(null)
   useImperativeHandle(ref, () => textInputRef.current!)
@@ -131,6 +135,11 @@ export const PlainTextField = ({
     <View className="flex-1 flex-row items-center">
       <TextInput
         {...props}
+        // A text alignment gives iOS a paragraph style that word-wraps the unfocused field, which
+        // then shows only the part before the last hyphen or space instead of an ellipsis
+        lineBreakModeIOS={props.lineBreakModeIOS ?? (props.multiline ? undefined : "tail")}
+        // Named after the grouped cell the field sits in, like a switch in such a cell
+        accessibilityLabel={props.accessibilityLabel ?? cellLabel}
         ref={textInputRef}
         onChange={props.onChange}
         onChangeText={props.onChangeText}

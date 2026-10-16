@@ -91,12 +91,16 @@ export function SocialLogin({ onPressEmail }: { isRegister: boolean; onPressEmai
                     throw new Error("No identityToken.")
                   }
 
-                  await signIn.social({
+                  const res = await signIn.social({
                     provider: "apple",
                     idToken: {
                       token: credential.identityToken,
                     },
                   })
+                  // The auth client resolves with the error instead of throwing
+                  if (res.error) {
+                    throw new Error(res.error.message || res.error.statusText)
+                  }
                 },
                 syncSession: async () => {
                   const session = await userSyncService.whoami().catch((error) => {
@@ -112,6 +116,9 @@ export function SocialLogin({ onPressEmail }: { isRegister: boolean; onPressEmai
                 },
                 onError: (error) => {
                   console.error(error)
+                  // Closing the Apple sign-in sheet is not a failure
+                  if ((error as { code?: string } | null)?.code === "ERR_REQUEST_CANCELED") return
+                  toast.error(t("login.social_sign_in_failed", { provider: provider.name }))
                 },
                 onFailure: (error) => {
                   console.error(`[auth] ${provider.id} sign-in failed: ${error}`)

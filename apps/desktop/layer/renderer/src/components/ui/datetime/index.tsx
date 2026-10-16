@@ -1,3 +1,4 @@
+import { RelativeTime as RelativeTimeBase } from "@follow/components/ui/datetime/index.js"
 import { getUpdateInterval } from "@follow/components/ui/datetime/utils.js"
 import {
   Tooltip,
@@ -7,14 +8,27 @@ import {
 } from "@follow/components/ui/tooltip/index.js"
 import { stopPropagation } from "@follow/utils/dom"
 import dayjs from "dayjs"
+import type { ComponentProps } from "react"
 import { useCallback, useEffect, useMemo, useRef, useState } from "react"
 import { useTranslation } from "react-i18next"
 
 import { useGeneralSettingSelector } from "~/atoms/settings/general"
 import { useUISettingKey } from "~/atoms/settings/ui"
 
-export { RelativeTime } from "@follow/components/ui/datetime/index.js"
-export const RelativeDay = ({ date }: { date: Date }) => {
+// Absolute dates follow the Date Format setting unless the caller asks for a format
+export const RelativeTime = (props: ComponentProps<typeof RelativeTimeBase>) => {
+  const dateFormat = useUISettingKey("dateFormat")
+  return <RelativeTimeBase {...props} dateFormatTemplate={props.dateFormatTemplate ?? dateFormat} />
+}
+
+export const RelativeDay = ({
+  date,
+  plain,
+}: {
+  date: Date
+  /** Text only, without the tooltip button, for use inside another control such as a menu item */
+  plain?: boolean
+}) => {
   const { t } = useTranslation("common")
   const language = useGeneralSettingSelector((s) => s.language)
 
@@ -64,7 +78,7 @@ export const RelativeDay = ({ date }: { date: Date }) => {
 
   const formated = useMemo(() => dayjs(date).format(dateFormat), [dateFormat, date])
 
-  if (formated === dateString) {
+  if (plain || formated === dateString) {
     return <>{dateString}</>
   }
   return (

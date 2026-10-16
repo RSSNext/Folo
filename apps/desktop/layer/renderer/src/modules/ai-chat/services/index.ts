@@ -266,7 +266,7 @@ class AIPersistServiceStatic {
       const referenceDate = timestamps?.updatedAt ?? timestamps?.createdAt ?? new Date()
       const formattedDateTime = this.formatDateTime(referenceDate, i18n.language)
 
-      return `${formattedDateTime} chat`
+      return i18n.t("chat.default_title.chat", { ns: "ai", time: formattedDateTime })
     }
 
     const datePart = chatId.slice(prefix.length)
@@ -287,7 +287,7 @@ class AIPersistServiceStatic {
 
     const formattedDateTime = this.formatDateTime(targetDate, i18n.language)
 
-    return `${formattedDateTime} timeline summary`
+    return i18n.t("chat.default_title.timeline_summary", { ns: "ai", time: formattedDateTime })
   }
 
   private formatDateTime(date: Date, locale?: string): string {

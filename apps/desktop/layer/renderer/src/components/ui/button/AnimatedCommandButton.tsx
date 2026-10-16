@@ -60,6 +60,7 @@ export const AnimatedCommandButton: FC<AnimatedCommandButtonProps & HTMLMotionPr
   return (
     <MotionButtonBase
       type="button"
+      aria-label={props["aria-label"]}
       className={cn(animatedCommandButtonVariants({ variant }), className)}
       onClick={useTypeScriptHappyCallback(
         (e) => {

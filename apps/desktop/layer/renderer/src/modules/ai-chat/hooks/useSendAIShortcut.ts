@@ -116,7 +116,9 @@ export const useSendAIShortcut = () => {
     const blocks: AIChatContextBlock[] = []
 
     for (const block of blockActions.getBlocks()) {
-      if (block.type === "fileAttachment" && block.attachment.serverUrl) {
+      if (block.type === "fileAttachment") {
+        // A file that failed or has not finished uploading has nothing for the model to read
+        if (!block.attachment.serverUrl) continue
         blocks.push({
           ...block,
           attachment: {

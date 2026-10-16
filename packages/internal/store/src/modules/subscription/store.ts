@@ -9,9 +9,16 @@ import { createImmerSetter, createTransaction, createZustandStore } from "../../
 import { apiMorph } from "../../morph/api"
 import { dbStoreMorph } from "../../morph/db-store"
 import { buildSubscriptionDbId, storeDbMorph } from "../../morph/store-db"
+import {
+  isSubscriptionOverlayKey,
+  parseOverlayKey,
+  subscriptionOverlayKey,
+} from "../../sync/overlay-keys"
 import { catchUpThroughEngine, ensureSyncedThroughEngine } from "../../sync/sync-status"
+import type { AcknowledgedChangeKind } from "../../sync/transaction-queue"
+import { readLastSyncId, transactionQueue } from "../../sync/transaction-queue"
 import { invalidateEntriesQuery } from "../entry/hooks"
-import { getFeedById } from "../feed/getter"
+import { getFeedById, getFeedServerId } from "../feed/getter"
 import { feedActions } from "../feed/store"
 import { inboxActions } from "../inbox/store"
 import { getListById } from "../list/getters"
@@ -76,6 +83,21 @@ const defaultState: SubscriptionState = {
   categoryOpenStateByView: { ...emptyCategoryOpenStateByView },
 }
 
+// The All view merges same-named folders across views, so a folder changed there also changes the
+// categories of every view its feeds belong to
+const getCategoryViews = (
+  state: Pick<SubscriptionState, "data">,
+  feedIds: string[],
+  view: FeedViewType,
+) => {
+  const views = new Set<FeedViewType>([view])
+  for (const feedId of feedIds) {
+    const subscription = state.data[feedId]
+    if (subscription) views.add(subscription.view)
+  }
+  return views
+}
+
 const invalidateViews = (...views: (FeedViewType | undefined)[]) => {
   const viewSet = new Set<FeedViewType>()
 
@@ -99,6 +121,121 @@ export const useSubscriptionStore = createZustandStore<SubscriptionState>("subsc
 const get = useSubscriptionStore.getState
 
 const immerSet = createImmerSetter(useSubscriptionStore)
+
+// Feeds followed only through an unfollowed list no longer count as unread
+const clearUnreadOfFeedsOnlyInLists = (unfollowedLists: SubscriptionModel[]) => {
+  if (unfollowedLists.length === 0) return
+  const stillFollowed = new Set<string>()
+  for (const subscription of Object.values(get().data)) {
+    if (subscription.feedId) stillFollowed.add(subscription.feedId)
+    if (subscription.listId) {
+      for (const feedId of getListById(subscription.listId)?.feedIds ?? []) {
+        stillFollowed.add(feedId)
+      }
+    }
+  }
+  for (const list of unfollowedLists) {
+    if (!list.listId) continue
+    for (const feedId of getListById(list.listId)?.feedIds ?? []) {
+      if (!stillFollowed.has(feedId)) {
+        unreadActions.updateById(feedId, 0)
+      }
+    }
+  }
+}
+
+// Put back subscriptions whose unfollow the server refused
+const restoreInSession = (subscriptions: SubscriptionModel[]) => {
+  immerSet((draft) => {
+    for (const subscription of subscriptions) {
+      draft.data[getSubscriptionStoreId(subscription)] = subscription
+
+      draft.subscriptionIdSet.add(getSubscriptionDBId(subscription))
+      if (subscription.feedId) {
+        draft.feedIdByView[subscription.view]!.add(subscription.feedId)
+        draft.feedIdByView[FeedViewType.All]!.add(subscription.feedId)
+      }
+      if (subscription.listId) {
+        draft.listIdByView[subscription.view]!.add(subscription.listId)
+        draft.listIdByView[FeedViewType.All]!.add(subscription.listId)
+      }
+      if (subscription.category) {
+        draft.categories[subscription.view]!.add(subscription.category)
+        draft.categories[FeedViewType.All]!.add(subscription.category)
+      }
+    }
+  })
+}
+
+/** A body of DELETE /subscriptions that the server handles, and the subscriptions it unfollows */
+interface UnfollowRequest {
+  subscriptions: SubscriptionModel[]
+  body: { feedIdList: string[] } | { listId: string }
+}
+
+/** A follow or unfollow of a feed or list that the server confirmed to this device. */
+export interface ConfirmedSubscriptionChange {
+  /** The followed subscription, or null once it was unfollowed */
+  subscription: SubscriptionModel | null
+  /** The change-log id of the change, when the server named it */
+  syncId?: number
+}
+
+interface ConfirmedSubscriptionChanges {
+  /** Keyed by feed id or list id */
+  changes: Array<{ id: string; subscription: SubscriptionModel | null }>
+  syncId?: number
+}
+
+/**
+ * The change log and the subscription list are served from replicas that lag behind the
+ * response of a follow or unfollow, so for a moment they still describe the state before it.
+ * The confirmed change wins over them until the sync engine has applied its sync id.
+ */
+const confirmedSubscriptionChangeKind: AcknowledgedChangeKind<ConfirmedSubscriptionChanges> = {
+  kind: "subscriptions.confirmed",
+  overlays: ({ changes, syncId }) =>
+    changes.map(({ id, subscription }) => ({
+      key: subscriptionOverlayKey(id),
+      value: { subscription, syncId } satisfies ConfirmedSubscriptionChange,
+    })),
+}
+
+const trackConfirmedChanges = (
+  changes: ConfirmedSubscriptionChanges["changes"],
+  response: unknown,
+) => {
+  if (changes.length === 0) return
+  const syncId = readLastSyncId(response)
+  transactionQueue.trackAcknowledged(confirmedSubscriptionChangeKind, { changes, syncId }, syncId)
+}
+
+/** The confirmed follow or unfollow of a feed or list that the change log has not caught up with. */
+export const getConfirmedSubscriptionChange = (id: string) =>
+  transactionQueue.getOverlays().get(subscriptionOverlayKey(id)) as
+    ConfirmedSubscriptionChange | undefined
+
+/** Keep the confirmed follows and unfollows in a subscription list fetched from the server. */
+const keepConfirmedChanges = (subscriptions: SubscriptionModel[], view?: FeedViewType) => {
+  const changes = new Map<string, ConfirmedSubscriptionChange>()
+  for (const [key, value] of transactionQueue.getOverlays()) {
+    const id = isSubscriptionOverlayKey(key) ? parseOverlayKey(key)?.id : undefined
+    if (id) changes.set(id, value as ConfirmedSubscriptionChange)
+  }
+  if (changes.size === 0) return subscriptions
+
+  const kept = subscriptions.filter(
+    (subscription) => changes.get(getSubscriptionStoreId(subscription))?.subscription !== null,
+  )
+  const keptIds = new Set(kept.map((subscription) => getSubscriptionStoreId(subscription)))
+  for (const [id, { subscription }] of changes) {
+    if (!subscription || keptIds.has(id)) continue
+    if (typeof view === "number" && subscription.view !== view) continue
+    kept.push(subscription)
+  }
+  return kept
+}
+
 class SubscriptionActions implements Hydratable, Resetable {
   async hydrate() {
     const subscriptions = await SubscriptionService.getSubscriptionAll()
@@ -213,10 +350,18 @@ class SubscriptionActions implements Hydratable, Resetable {
 
   resetByView(view: FeedViewType) {
     immerSet((draft) => {
+      // Only this view is refetched, so the other views keep their subscriptions, and the ones
+      // the server no longer returns for this view are dropped
+      for (const [storeId, subscription] of Object.entries(draft.data)) {
+        if (subscription.view !== view) continue
+        delete draft.data[storeId]
+        draft.subscriptionIdSet.delete(getSubscriptionDBId(subscription))
+        if (subscription.feedId) draft.feedIdByView[FeedViewType.All]!.delete(subscription.feedId)
+        if (subscription.listId) draft.listIdByView[FeedViewType.All]!.delete(subscription.listId)
+      }
       draft.feedIdByView[view] = new Set()
       draft.listIdByView[view] = new Set()
       draft.categories[view] = new Set()
-      draft.subscriptionIdSet = new Set()
     })
   }
 
@@ -267,7 +412,7 @@ class SubscriptionSyncService {
     const { subscriptions, collections } = apiMorph.toSubscription(data)
 
     feedActions.upsertMany(collections.feeds)
-    subscriptionActions.upsertMany(subscriptions, {
+    subscriptionActions.upsertMany(keepConfirmedChanges(subscriptions, view), {
       resetBeforeUpsert: typeof view === "number" ? view : true,
     })
     listActions.upsertMany(collections.lists)
@@ -318,6 +463,10 @@ class SubscriptionSyncService {
           draft.feedIdByView[current.view]!.delete(current.feedId!)
           draft.feedIdByView[subscription.view]!.add(subscription.feedId!)
         }
+        if (subscription.type === "list") {
+          draft.listIdByView[current.view]!.delete(current.listId!)
+          draft.listIdByView[subscription.view]!.add(subscription.listId!)
+        }
 
         draft.data[subscriptionId] = subscription
       })
@@ -331,6 +480,10 @@ class SubscriptionSyncService {
         if (subscription.type === "feed") {
           draft.feedIdByView[subscription.view]!.delete(subscription.feedId!)
           draft.feedIdByView[current.view]!.add(current.feedId!)
+        }
+        if (subscription.type === "list") {
+          draft.listIdByView[subscription.view]!.delete(subscription.listId!)
+          draft.listIdByView[current.view]!.add(current.listId!)
         }
 
         draft.data[subscriptionId] = current
@@ -350,11 +503,16 @@ class SubscriptionSyncService {
 
     await tx.run()
 
-    invalidateViews(subscription.view)
+    invalidateViews(current.view, subscription.view)
   }
 
   async subscribe(subscription: SubscriptionForm) {
-    const data = await api().subscriptions.create(subscription)
+    const body: SubscriptionForm = {
+      ...subscription,
+      // A feed the server has not stored yet is followed by its URL, not by its nonce id
+      feedId: getFeedServerId(subscription.feedId),
+    }
+    const data = await api().subscriptions.create(body)
 
     if (data.feed) {
       feedActions.upsertMany([data.feed as any])
@@ -379,20 +537,25 @@ class SubscriptionSyncService {
     }
 
     // Insert to subscription
-    await subscriptionActions.upsertMany([
-      {
-        ...subscription,
-        title: subscription.title ?? null,
-        category: subscription.category ?? null,
+    const followed: SubscriptionModel = {
+      ...subscription,
+      title: subscription.title ?? null,
+      category: subscription.category ?? null,
 
-        type: data.list ? "list" : "feed",
-        createdAt: new Date().toISOString(),
-        feedId: data.feed?.id ?? null,
-        listId: data.list?.id ?? null,
-        inboxId: null,
-        userId: whoami()?.id ?? "",
-      },
-    ])
+      type: data.list ? "list" : "feed",
+      createdAt: new Date().toISOString(),
+      feedId: data.feed?.id ?? null,
+      listId: data.list?.id ?? null,
+      inboxId: null,
+      userId: whoami()?.id ?? "",
+    }
+    if (followed.feedId || followed.listId) {
+      trackConfirmedChanges(
+        [{ id: getSubscriptionStoreId(followed), subscription: followed }],
+        data,
+      )
+    }
+    await subscriptionActions.upsertMany([followed])
 
     invalidateViews(subscription.view)
   }
@@ -405,61 +568,59 @@ class SubscriptionSyncService {
       .filter((i) => !!i)
     if (subscriptionList.length === 0) return feedsAndLists
 
-    const feedSubscriptions = subscriptionList.filter((i) => i.type === "feed")
-    const listSubscriptions = subscriptionList.filter((i) => i.type === "list")
+    subscriptionActions.removeManyInSession(normalizedIds)
 
-    const tx = createTransaction(subscriptionList)
-
-    tx.store(() => {
-      subscriptionActions.removeManyInSession(normalizedIds)
-    })
-
-    tx.request(async () => {
-      const feedIdList = feedSubscriptions.map((s) => s.feedId).filter((i) => typeof i === "string")
-      await api().subscriptions.delete({
-        feedIdList: feedIdList.length > 0 ? feedIdList : undefined,
-        listId: listSubscriptions.at(0)?.listId || undefined,
+    // DELETE /subscriptions unfollows every feed of `feedIdList` at once but only one list, and
+    // ignores `listId` next to `feedIdList`, so each list is unfollowed in a request of its own
+    const feedSubscriptions = subscriptionList.filter((i) => i.type === "feed" && !!i.feedId)
+    const listSubscriptions = subscriptionList.filter((i) => i.type === "list" && !!i.listId)
+    const requests: UnfollowRequest[] = []
+    if (feedSubscriptions.length > 0) {
+      requests.push({
+        subscriptions: feedSubscriptions,
+        body: { feedIdList: feedSubscriptions.map((s) => s.feedId!) },
       })
-    })
+    }
+    for (const subscription of listSubscriptions) {
+      requests.push({ subscriptions: [subscription], body: { listId: subscription.listId! } })
+    }
 
-    tx.rollback((current) => {
-      immerSet((draft) => {
-        for (const [index, id] of normalizedIds.entries()) {
-          const subscription = current[index]
-          if (!subscription) continue
+    const failed = new Set<SubscriptionModel>()
+    let requestError: unknown
+    // One request after another, as the server counts what is left of the previous one
+    for (const { subscriptions, body } of requests) {
+      try {
+        const response = await api().subscriptions.delete(body)
+        trackConfirmedChanges(
+          subscriptions.map((subscription) => ({
+            id: getSubscriptionStoreId(subscription),
+            subscription: null,
+          })),
+          response,
+        )
+      } catch (error) {
+        subscriptions.forEach((subscription) => failed.add(subscription))
+        requestError ??= error
+      }
+    }
 
-          draft.data[id] = subscription
+    // A failed request puts back only what it was about
+    if (failed.size > 0) {
+      restoreInSession(Array.from(failed))
+    }
+    const unfollowed = subscriptionList.filter((subscription) => !failed.has(subscription))
 
-          draft.subscriptionIdSet.add(getSubscriptionDBId(subscription))
-          if (subscription.feedId) {
-            draft.feedIdByView[subscription.view]!.add(subscription.feedId)
-            draft.feedIdByView[FeedViewType.All]!.add(subscription.feedId)
-          }
-          if (subscription.listId) {
-            draft.listIdByView[subscription.view]!.add(subscription.listId)
-            draft.listIdByView[FeedViewType.All]!.add(subscription.listId)
-          }
-          if (subscription.category) {
-            draft.categories[subscription.view]!.add(subscription.category)
-            draft.categories[FeedViewType.All]!.add(subscription.category)
-          }
-        }
-      })
-    })
+    if (unfollowed.length > 0) {
+      await SubscriptionService.delete(unfollowed.map((i) => buildSubscriptionDbId(i)))
+      invalidateViews(...unfollowed.map((i) => i.view))
 
-    tx.persist(() => {
-      return SubscriptionService.delete(subscriptionList.map((i) => buildSubscriptionDbId(i)))
-    })
+      for (const subscription of unfollowed) {
+        if (subscription.type === "feed") unreadActions.updateById(subscription.feedId, 0)
+      }
+      clearUnreadOfFeedsOnlyInLists(unfollowed.filter((i) => i.type === "list"))
+    }
 
-    await tx.run()
-    const affectedViews = Array.from(
-      new Set([...feedSubscriptions, ...listSubscriptions].map((i) => i.view)),
-    )
-    invalidateViews(...affectedViews)
-
-    feedSubscriptions.forEach((i) => {
-      unreadActions.updateById(i.feedId, 0)
-    })
+    if (failed.size > 0) throw requestError
     return feedsAndLists
   }
 
@@ -495,9 +656,24 @@ class SubscriptionSyncService {
           draft.feedIdByView[newView]!.add(feedId)
           subscription.view = newView
 
-          if (newCategory) {
-            draft.categories[newView]!.add(newCategory)
+          // `null` takes the feeds out of their category, `undefined` leaves it as it is
+          if (newCategory !== undefined) {
+            if (newCategory) {
+              draft.categories[newView]!.add(newCategory)
+            }
             subscription.category = newCategory
+          }
+        }
+
+        // Drop the categories the moved feeds left empty
+        for (const previous of current) {
+          if (!previous?.category) continue
+          const { category, view } = previous
+          const isStillUsed = Object.values(draft.data).some(
+            (subscription) => subscription.view === view && subscription.category === category,
+          )
+          if (!isStillUsed) {
+            draft.categories[view]!.delete(category)
           }
         }
       })
@@ -522,9 +698,12 @@ class SubscriptionSyncService {
           draft.feedIdByView[newView]!.delete(feedId)
           draft.feedIdByView[current[index]!.view]!.add(feedId)
 
-          if (newCategory) {
-            const currentCategory = current[index].category
-            subscription.category = currentCategory
+          if (newCategory !== undefined) {
+            subscription.category = current[index].category
+          }
+          const previousCategory = current[index].category
+          if (previousCategory) {
+            draft.categories[current[index].view]!.add(previousCategory)
           }
         }
       })
@@ -598,6 +777,7 @@ class SubscriptionSyncService {
 
   async deleteCategory({ category, view }: { category: string; view: FeedViewType }) {
     const feedIds = getCategoryFeedIds(category, view)
+    const categoryViews = getCategoryViews(get(), feedIds, view)
 
     const tx = createTransaction()
     tx.store(() => {
@@ -607,7 +787,9 @@ class SubscriptionSyncService {
           if (!subscription) continue
           subscription.category = null
         }
-        draft.categories[view]!.delete(category)
+        for (const categoryView of categoryViews) {
+          draft.categories[categoryView]!.delete(category)
+        }
       })
     })
 
@@ -626,7 +808,9 @@ class SubscriptionSyncService {
           subscription.category = category
         }
 
-        draft.categories[view]!.add(category)
+        for (const categoryView of categoryViews) {
+          draft.categories[categoryView]!.add(category)
+        }
       })
     })
 
@@ -671,6 +855,7 @@ class SubscriptionSyncService {
     view: FeedViewType
   }) {
     const feedIds = getCategoryFeedIds(lastCategory, view)
+    const categoryViews = getCategoryViews(get(), feedIds, view)
 
     const tx = createTransaction()
     tx.store(() => {
@@ -680,8 +865,10 @@ class SubscriptionSyncService {
           if (!subscription) continue
           subscription.category = newCategory
         }
-        draft.categories[view]!.add(newCategory)
-        draft.categories[view]!.delete(lastCategory)
+        for (const categoryView of categoryViews) {
+          draft.categories[categoryView]!.add(newCategory)
+          draft.categories[categoryView]!.delete(lastCategory)
+        }
 
         const lastCategoryOpenState = draft.categoryOpenStateByView[view]![lastCategory]
         if (typeof lastCategoryOpenState === "boolean") {
@@ -706,8 +893,10 @@ class SubscriptionSyncService {
           const defaultCategory = getDefaultCategory(subscription)
           subscription.category = lastCategory !== defaultCategory ? lastCategory : null
         }
-        draft.categories[view]!.delete(newCategory)
-        draft.categories[view]!.add(lastCategory)
+        for (const categoryView of categoryViews) {
+          draft.categories[categoryView]!.delete(newCategory)
+          draft.categories[categoryView]!.add(lastCategory)
+        }
 
         const lastCategoryOpenState = draft.categoryOpenStateByView[view]![newCategory]
         if (typeof lastCategoryOpenState === "boolean") {

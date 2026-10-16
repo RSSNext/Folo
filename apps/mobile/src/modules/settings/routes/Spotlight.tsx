@@ -1,11 +1,14 @@
 import type { SpotlightRule } from "@follow/shared/spotlight"
 import { defaultSpotlightColor } from "@follow/shared/spotlight"
 import { nanoid } from "nanoid/non-secure"
-import { useCallback } from "react"
 import { useTranslation } from "react-i18next"
 import { View } from "react-native"
 
-import { setSpotlightSetting, useSpotlightSettingKey } from "@/src/atoms/settings/spotlight"
+import {
+  getSpotlightSettings,
+  setSpotlightSetting,
+  useSpotlightSettingKey,
+} from "@/src/atoms/settings/spotlight"
 import { UINavigationHeaderActionButton } from "@/src/components/layouts/header/NavigationHeader"
 import {
   NavigationBlurEffectHeaderView,
@@ -16,8 +19,8 @@ import {
   GroupedInsetListCard,
   GroupedInsetListSectionHeader,
   GroupedOutlineDescription,
+  GroupedPlainButtonCell,
 } from "@/src/components/ui/grouped/GroupedList"
-import { Text } from "@/src/components/ui/typography/Text"
 import { AddCuteReIcon } from "@/src/icons/add_cute_re"
 import { Navigation } from "@/src/lib/navigation/Navigation"
 import type { NavigationControllerView } from "@/src/lib/navigation/types"
@@ -43,6 +46,12 @@ const createEditSpotlightRuleView = (ruleId: string) => {
   return EditSpotlightRuleView
 }
 
+const addSpotlightRule = () => {
+  const rule = createSpotlightRule()
+  setSpotlightSetting("spotlights", [...getSpotlightSettings().spotlights, rule])
+  Navigation.rootNavigation.presentControllerView(createEditSpotlightRuleView(rule.id))
+}
+
 export const SpotlightScreen: NavigationControllerView = () => {
   const { t } = useTranslation("settings")
   const rules = useSpotlightSettingKey("spotlights")
@@ -61,9 +70,11 @@ export const SpotlightScreen: NavigationControllerView = () => {
       <GroupedInsetListSectionHeader label={t("titles.spotlight")} marginSize="small" />
       <GroupedInsetListCard>
         {rules.length === 0 ? (
-          <View className="px-4 py-5">
-            <Text className="text-sm text-secondary-label">{t("spotlight.add_rule")}</Text>
-          </View>
+          <GroupedPlainButtonCell
+            accessibilityRole="button"
+            label={t("spotlight.add_rule")}
+            onPress={addSpotlightRule}
+          />
         ) : (
           rules.map((rule) => (
             <GroupedInsetListActionCell
@@ -85,7 +96,7 @@ export const SpotlightScreen: NavigationControllerView = () => {
           ))
         )}
       </GroupedInsetListCard>
-      <GroupedOutlineDescription description={t("spotlight.add_rule")} />
+      <GroupedOutlineDescription description={t("spotlight.description_mobile")} />
     </SafeNavigationScrollView>
   )
 }
@@ -102,16 +113,14 @@ const SpotlightRuleColorDot = ({ color }: { color: string }) => {
 }
 
 const AddSpotlightRuleButton = () => {
+  const { t } = useTranslation("settings")
   const labelColor = useColor("label")
-  const rules = useSpotlightSettingKey("spotlights")
-  const handlePress = useCallback(() => {
-    const rule = createSpotlightRule()
-    setSpotlightSetting("spotlights", [...rules, rule])
-    Navigation.rootNavigation.presentControllerView(createEditSpotlightRuleView(rule.id))
-  }, [rules])
 
   return (
-    <UINavigationHeaderActionButton onPress={handlePress}>
+    <UINavigationHeaderActionButton
+      onPress={addSpotlightRule}
+      accessibilityLabel={t("spotlight.add_rule")}
+    >
       <AddCuteReIcon height={20} width={20} color={labelColor} />
     </UINavigationHeaderActionButton>
   )

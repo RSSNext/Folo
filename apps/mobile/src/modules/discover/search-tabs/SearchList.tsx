@@ -21,7 +21,7 @@ import { useColor } from "@/src/theme/colors"
 
 import { useSearchPageContext } from "../ctx"
 import { ItemSeparator } from "./__base"
-import { useDataSkeleton } from "./hooks"
+import { SearchErrorView, useDataSkeleton } from "./hooks"
 
 type SearchResultItem = Awaited<
   ReturnType<typeof followClient.api.discover.discover>
@@ -31,19 +31,22 @@ export const SearchList = () => {
   const { searchValueAtom } = useSearchPageContext()
   const searchValue = useAtomValue(searchValueAtom)
   const windowWidth = useWindowDimensions().width
-  const { data, isLoading } = useQuery({
+  const { data, error, isFetching, refetch } = useQuery({
     queryKey: ["searchList", searchValue],
     queryFn: () => followClient.api.discover.discover({ keyword: searchValue, target: "lists" }),
     enabled: !!searchValue,
   })
-  const skeleton = useDataSkeleton(isLoading, data?.data.length)
+  // A retry after an error has no data either and shows the spinner again
+  const skeleton = useDataSkeleton(isFetching && data === undefined, data?.data.length)
   if (skeleton) return skeleton
-  if (data === undefined) return null
+  if (data === undefined) {
+    return error ? <SearchErrorView error={error} onRetry={() => void refetch()} /> : null
+  }
   const resultCount = data.data?.length ?? 0
   const resultLabel =
     resultCount === 0
       ? t("discover.search.results_zero")
-      : t("discover.search.results_other", { count: resultCount })
+      : t("discover.search.results", { count: resultCount })
   return (
     <View
       style={{
@@ -135,7 +138,7 @@ const SearchListCard = memo(({ item }: { item: SearchResultItem }) => {
         <View className="flex-row items-center gap-2">
           <User3CuteReIcon width={16} height={16} color={iconColor} />
           <Text className="text-sm text-text">
-            {formatNumber(followerCount)} {t("feed.follower_other")}
+            {formatNumber(followerCount)} {t("feed.follower", { count: followerCount })}
           </Text>
         </View>
       </View>

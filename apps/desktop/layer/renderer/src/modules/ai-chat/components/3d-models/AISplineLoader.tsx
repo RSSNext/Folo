@@ -1,12 +1,22 @@
 import { clamp, cn } from "@follow/utils"
 import Spline from "@splinetool/react-spline"
-import { useCallback, useRef } from "react"
+import { useCallback, useEffect, useRef } from "react"
 
 const resolvedAIIconUrl = "https://assets.folo.is/ai2.splinecode"
 
 export const AISplineLoader = ({ className }: { className?: string }) => {
   const containerRef = useRef<HTMLDivElement>(null)
   const headRef = useRef<any>(null)
+  // Spline ignores what onLoad returns, so the listeners are removed on unmount instead
+  const removeListenersRef = useRef<(() => void) | null>(null)
+
+  useEffect(() => {
+    return () => {
+      removeListenersRef.current?.()
+      removeListenersRef.current = null
+      headRef.current = null
+    }
+  }, [])
 
   // Angle conversion function: degrees to radians
   const degToRad = (degrees: number) => degrees * (Math.PI / 180)
@@ -95,11 +105,12 @@ export const AISplineLoader = ({ className }: { className?: string }) => {
       }
       onClick()
 
+      removeListenersRef.current?.()
       window.addEventListener("pointermove", onMove)
       document.addEventListener("mouseleave", onMouseLeave)
       window.addEventListener("click", onClick)
 
-      return () => {
+      removeListenersRef.current = () => {
         window.removeEventListener("pointermove", onMove)
         document.removeEventListener("mouseleave", onMouseLeave)
         window.removeEventListener("click", onClick)

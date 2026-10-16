@@ -13,6 +13,7 @@ import { LexicalRichEditorTextArea } from "@follow/components/ui/lexical-rich-ed
 import type { AITask } from "@follow-app/client-sdk"
 import { zodResolver } from "@hookform/resolvers/zod"
 import dayjs from "dayjs"
+import { $getRoot } from "lexical"
 import { useMemo, useRef, useState } from "react"
 import type { GlobalError } from "react-hook-form"
 import { useForm } from "react-hook-form"
@@ -20,6 +21,7 @@ import { useTranslation } from "react-i18next"
 import { toast } from "sonner"
 
 import { useCurrentModal } from "~/components/ui/modal/stacked/hooks"
+import { createErrorToaster } from "~/lib/error-parser"
 import { MentionPlugin, ShortcutPlugin } from "~/modules/ai-chat/editor"
 import { AIPersistService } from "~/modules/ai-chat/services"
 import { useCreateAITaskMutation, useUpdateAITaskMutation } from "~/modules/ai-task/query"
@@ -120,7 +122,18 @@ export const AITaskModal = ({ task, prompt, showSettingsTip = false }: AITaskMod
 
   const isEditing = !!task
 
-  const taskSchema = useMemo(() => createTaskSchema(t), [t])
+  // Uncontrolled prompt state handled outside react-hook-form
+  const promptEditorRef = useRef<LexicalRichEditorRef | null>(null)
+  const [promptTextLength, setPromptTextLength] = useState(0)
+
+  const taskSchema = useMemo(
+    () =>
+      createTaskSchema(t, () => {
+        const editor = promptEditorRef.current?.getEditor()
+        return editor ? editor.getEditorState().read(() => $getRoot().getTextContent()) : ""
+      }),
+    [t],
+  )
   const form = useForm<TaskFormData>({
     resolver: zodResolver(taskSchema),
     defaultValues: getDefaultFormData(task, prompt),
@@ -129,17 +142,14 @@ export const AITaskModal = ({ task, prompt, showSettingsTip = false }: AITaskMod
   const scheduleValue = form.watch("schedule")
   const notifyChannelsValue = form.watch("options.notifyChannels")
 
-  // Uncontrolled prompt state handled outside react-hook-form
   const initialPromptRef = useRef(form.getValues("prompt"))
-  const promptEditorRef = useRef<LexicalRichEditorRef | null>(null)
-  const [promptTextLength, setPromptTextLength] = useState(0)
 
   const handleScheduleChange = (newSchedule: ScheduleType) => {
     form.setValue("schedule", newSchedule)
   }
 
   const handleSubmit = async (data: TaskFormData) => {
-    // The optimistic mutations handle success/error toasts and error cases automatically
+    // The optimistic mutations roll back on failure; the toasts are shown here
     if (isEditing) {
       // Update existing task
       updateAITaskMutation.mutate(
@@ -161,6 +171,7 @@ export const AITaskModal = ({ task, prompt, showSettingsTip = false }: AITaskMod
             toast.success(t("tasks.toast.updated"))
             dismiss()
           },
+          onError: createErrorToaster(t("tasks.toast.update_failed")),
         },
       )
     } else {
@@ -170,6 +181,7 @@ export const AITaskModal = ({ task, prompt, showSettingsTip = false }: AITaskMod
           toast.success(t("tasks.toast.created"))
           dismiss()
         },
+        onError: createErrorToaster(t("tasks.toast.create_failed")),
       })
     }
   }

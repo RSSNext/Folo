@@ -45,6 +45,7 @@ export const EntryListContentVideo = ({
   useImperativeHandle(forwardRef, () => ref.current!)
   const isTablet = useIsTabletLayout()
   const {
+    error: entriesError,
     fetchNextPage,
     refetch,
     isRefetching,
@@ -52,12 +53,14 @@ export const EntryListContentVideo = ({
     isFetchingNextPage,
     hasNextPage,
     isReady,
+    fetchedTime,
   } = useEntries({
     viewId: view,
     active,
   })
   const { onViewableItemsChanged, onScroll, viewableItems } = useOnViewableItemsChanged({
-    disabled: active === false || isFetching || suspendMarkRead,
+    // Loading the next page only appends entries, so the ones scrolled past meanwhile still count
+    disabled: active === false || (isFetching && !isFetchingNextPage) || suspendMarkRead,
     refreshing: isFetching && !isFetchingNextPage,
   })
 
@@ -87,11 +90,11 @@ export const EntryListContentVideo = ({
         </View>
       ) : (
         <View>
-          <GridEntryListFooter />
+          <GridEntryListFooter fetchedTime={fetchedTime} />
           {hasEndSpacer && <EntryListEndScrollSpacer />}
         </View>
       ),
-    [hasEndSpacer, hasNextPage],
+    [hasEndSpacer, hasNextPage, fetchedTime],
   )
 
   const renderItem = useTypeScriptHappyCallback(({ item }: { item: string }) => {
@@ -128,6 +131,7 @@ export const EntryListContentVideo = ({
     <TimelineSelectorMasonryList
       ref={ref}
       isRefetching={isRefetching}
+      emptyError={entriesError}
       onResetScrollSignalConsumed={onResetScrollSignalConsumed}
       resetScrollSignal={resetScrollSignal}
       data={entryIds}

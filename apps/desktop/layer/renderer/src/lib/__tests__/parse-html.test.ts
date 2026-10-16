@@ -421,3 +421,34 @@ describe("parseHtml iframe", () => {
     ).not.toContain("referrerpolicy")
   })
 })
+
+describe("parseHtml paragraphs", () => {
+  const render = (html: string) => renderToString(parseHtml(html).toContent())
+  const hasDivInsideParagraph = (html: string) => /<p\b(?:(?!<\/p>)[\s\S])*<div\b/.test(html)
+
+  it("should render a paragraph holding a block image as a div", () => {
+    const html = render(`<p><img src="https://example.com/a.png"></p>`)
+
+    expect(html).toContain("<div")
+    expect(hasDivInsideParagraph(html)).toBe(false)
+  })
+
+  it("should render a paragraph holding a block video as a div", () => {
+    const html = render(`<p>Clip <video src="https://example.com/a.mp4"></video></p>`)
+
+    expect(hasDivInsideParagraph(html)).toBe(false)
+  })
+
+  it("should keep a paragraph with a narrow inline image a p", () => {
+    const html = render(`<p>Text <img src="https://example.com/a.png" width="20"></p>`)
+
+    expect(html.startsWith("<p")).toBe(true)
+  })
+
+  it("should keep a paragraph whose image sits in a span a p", () => {
+    const html = render(`<p><span><img src="https://example.com/a.png"></span></p>`)
+
+    expect(html.startsWith("<p")).toBe(true)
+    expect(hasDivInsideParagraph(html)).toBe(false)
+  })
+})

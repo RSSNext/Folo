@@ -1,3 +1,4 @@
+import { useFeedByIdOrUrl } from "@follow/store/feed/hooks"
 import { useSubscriptionByFeedId } from "@follow/store/subscription/hooks"
 import { formatNumber } from "@follow/utils"
 import type { DiscoveryItem, TrendingFeedItem } from "@follow-app/client-sdk"
@@ -39,7 +40,12 @@ export const SearchFeedCard = ({
   item: SearchFeedCardItem | TrendingFeedItem | DiscoveryItem
 }) => {
   const { t } = useTranslation("common")
-  const isSubscribed = useSubscriptionByFeedId(item.feed?.id ?? "")
+  // A typed feed URL has no id until the feed is fetched, e.g. by following it
+  const feedId = useFeedByIdOrUrl({
+    id: item.feed?.id ?? undefined,
+    url: item.feed?.url ?? undefined,
+  })?.id
+  const isSubscribed = useSubscriptionByFeedId(feedId ?? "")
   const iconColor = useColor("secondaryLabel")
   const followerCount = item.analytics?.subscriptionCount || 0
   const navigation = useNavigation()
@@ -65,7 +71,7 @@ export const SearchFeedCard = ({
         <View className="flex-row items-center gap-1.5">
           <User3CuteReIcon width={14} height={14} color={iconColor} />
           <Text className="text-xs text-secondary-label">
-            {formatNumber(followerCount)} {t("feed.follower_other")}
+            {formatNumber(followerCount)} {t("feed.follower", { count: followerCount })}
           </Text>
         </View>
         <View className="flex-row items-center gap-1.5">
@@ -73,7 +79,7 @@ export const SearchFeedCard = ({
             <>
               <SafetyCertificateCuteReIcon width={14} height={14} color={iconColor} />
               <Text className="text-xs text-secondary-label">
-                {t("feed.entry_week_other", { count: item.analytics.updatesPerWeek })}
+                {t("feed.entry_week", { count: item.analytics.updatesPerWeek })}
               </Text>
             </>
           ) : item.analytics?.latestEntryPublishedAt ? (

@@ -9,7 +9,7 @@ import { Tooltip, TooltipContent, TooltipTrigger } from "@follow/components/ui/t
 import { cn } from "@follow/utils/utils"
 import { decode } from "@toon-format/toon"
 import type { PrimitiveAtom } from "jotai"
-import { useAtom, useAtomValue, useSetAtom, useStore } from "jotai"
+import { useAtom, useAtomValue, useAtomValueRawSync, useSetAtom, useStore } from "jotai"
 import { AnimatePresence, m } from "motion/react"
 import { useEffect, useMemo, useRef } from "react"
 
@@ -52,12 +52,23 @@ function FeedSelectionOperationScreen() {
   const t = useI18n()
 
   const feedsToSelect: FeedToSelect[] = useMemo(() => {
-    // find the last message that has the tool
-    const output = chatMessages
-      .findLast((m) => m.parts?.some((p) => p.type === "tool-onboardingGetTrendingFeeds"))
-      ?.parts?.findLast((p) => p.type === "tool-onboardingGetTrendingFeeds")?.output
+    // Use the latest finished call: the assistant may call the tool again in the same answer,
+    // and that call has no output while it runs.
+    for (let i = chatMessages.length - 1; i >= 0; i--) {
+      const part = chatMessages[i]!.parts?.findLast(
+        (p) => p.type === "tool-onboardingGetTrendingFeeds" && p.output,
+      )
+      if (!part) continue
 
-    return typeof output === "string" ? (decode(output) as any[]) : (output as any[])
+      const output = "output" in part ? part.output : undefined
+      try {
+        const feeds = typeof output === "string" ? decode(output) : output
+        return Array.isArray(feeds) ? (feeds as FeedToSelect[]) : []
+      } catch {
+        return []
+      }
+    }
+    return []
   }, [chatMessages])
 
   const store = useStore()
@@ -95,7 +106,9 @@ function FeedSelectionOperationScreen() {
     }
   }, [dispatch, feedsToSelect, existingIds, outputKey])
 
-  const selectedAtoms = useAtomValue(selectedFeedSelectionAtomsAtom)
+  // The effect above inserts the recommended feeds in this component's own mount commit, before
+  // a plain useAtomValue here would subscribe
+  const selectedAtoms = useAtomValueRawSync(selectedFeedSelectionAtomsAtom)
   const items = useMemo(
     () => selectedAtoms.map((atom) => ({ atom, id: store.get(atom).id })),
     [selectedAtoms, store],

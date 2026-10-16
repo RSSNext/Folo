@@ -24,7 +24,10 @@ export const ActionBarItem = ({
     <Pressable
       hitSlop={10}
       onPress={onPress}
+      accessibilityRole="button"
       accessibilityLabel={label}
+      // Toggles such as Show Readability keep their label, so only the state tells on from off
+      accessibilityState={active === undefined ? undefined : { selected: active }}
       disabled={disabled}
       className={clsx(
         active && "bg-system-fill",

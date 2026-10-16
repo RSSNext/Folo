@@ -2,10 +2,7 @@ import { useDroppable } from "@dnd-kit/core"
 import { useMobile } from "@follow/components/hooks/useMobile.js"
 import { MotionButtonBase } from "@follow/components/ui/button/index.js"
 import { LoadingCircle } from "@follow/components/ui/loading/index.jsx"
-import { useScrollViewElement } from "@follow/components/ui/scroll-area/hooks.js"
-import type { FeedViewType } from "@follow/constants"
-import { getViewList } from "@follow/constants"
-import { useRefValue } from "@follow/hooks"
+import { FeedViewType, getViewList } from "@follow/constants"
 import { useOwnedListByView } from "@follow/store/list/hooks"
 import {
   useSubscriptionByFeedId,
@@ -62,6 +59,9 @@ function FeedCategoryImpl({
   const subscription = useSubscriptionByFeedId(ids[0]!)!
 
   const { view } = subscription
+  // The All view merges same-named folders from every view, so folder actions there cover all of
+  // their feeds instead of only those in the first feed's view
+  const categoryView = viewOnRoute === FeedViewType.All ? FeedViewType.All : view
   const autoGroup = useGeneralSettingSelector((state) => state.autoGroup)
   const folderName =
     subscription?.category || (autoGroup ? getDefaultCategory(subscription) : subscription.feedId)
@@ -89,30 +89,22 @@ function FeedCategoryImpl({
     (s) => typeof s.feedId === "string" && ids.includes(s.feedId),
   )
 
-  const scroller = useScrollViewElement()
-  const scrollerRef = useRefValue(scroller)
+  const scrollToFeedRef = useRef(false)
   useEffect(() => {
-    if (shouldOpen) {
-      setOpen(true)
+    if (!shouldOpen) return
+    scrollToFeedRef.current = true
+    setOpen(true)
+  }, [setOpen, shouldOpen])
+  // The feed rows only render once the folder is open, so the scroll waits for that
+  useEffect(() => {
+    if (!open || !scrollToFeedRef.current) return
+    scrollToFeedRef.current = false
 
-      const $items = itemsRef.current
-
-      if (!$items) return
-      const $target = $items.querySelector(
-        `[data-feed-id="${getRouteParams().feedId}"]`,
-      ) as HTMLElement
-      if (!$target) return
-
-      const $scroller = scrollerRef.current
-      if (!$scroller) return
-
-      const scrollTop = $target.offsetTop - $scroller.clientHeight / 2
-      $scroller.scrollTo({
-        top: scrollTop,
-        behavior: "smooth",
-      })
-    }
-  }, [scrollerRef, setOpen, shouldOpen])
+    const $target = itemsRef.current?.querySelector(
+      `[data-feed-id="${getRouteParams().feedId}"]`,
+    ) as HTMLElement | null
+    $target?.scrollIntoView({ block: "nearest", behavior: "smooth" })
+  }, [open, shouldOpen])
 
   const itemsRef = useRef<HTMLDivElement>(null)
 
@@ -154,13 +146,13 @@ function FeedCategoryImpl({
   const { present } = useModalStack()
 
   const { mutateAsync: changeCategoryView, isPending: isChangePending } = useMutation({
-    mutationKey: ["changeCategoryView", folderName, view],
+    mutationKey: ["changeCategoryView", folderName, categoryView],
     mutationFn: async (nextView: FeedViewType) => {
       if (!folderName) return
-      if (typeof view !== "number") return
+      if (typeof categoryView !== "number") return
       return subscriptionSyncService.changeCategoryView({
         category: folderName,
-        currentView: view,
+        currentView: categoryView,
         newView: nextView,
       })
     },
@@ -183,7 +175,7 @@ function FeedCategoryImpl({
     disabled: isAutoGroupedCategory,
     data: {
       category: folderName,
-      view,
+      view: categoryView,
     },
   })
 
@@ -235,7 +227,7 @@ function FeedCategoryImpl({
           new MenuItemText({
             label: t("sidebar.feed_column.context_menu.change_to_other_view"),
             submenu: getViewList()
-              .filter((v) => v.view !== view && v.switchable)
+              .filter((v) => v.view !== categoryView && v.switchable)
               .map(
                 (v) =>
                   new MenuItemText({
@@ -265,7 +257,9 @@ function FeedCategoryImpl({
                 title: t("sidebar.feed_column.context_menu.ungroup_category_confirmation", {
                   folderName,
                 }),
-                content: () => <CategoryRemoveDialogContent category={folderName!} view={view} />,
+                content: () => (
+                  <CategoryRemoveDialogContent category={folderName!} view={categoryView} />
+                ),
               })
             },
             requiresLogin: true,
@@ -279,7 +273,7 @@ function FeedCategoryImpl({
                   folderName,
                 }),
                 content: () => (
-                  <CategoryUnsubscribeDialogContent category={folderName!} view={view} />
+                  <CategoryUnsubscribeDialogContent category={folderName!} view={categoryView} />
                 ),
               })
             },
@@ -317,20 +311,11 @@ function FeedCategoryImpl({
             className={cn("flex w-full min-w-0 items-center")}
             onDoubleClick={toggleCategoryOpenState}
           >
-            <button
-              data-type="collapse"
-              type="button"
-              onClick={handleCollapseButtonClick}
-              data-state={open ? "open" : "close"}
-              className={cn(
-                "flex h-8 items-center data-[state=open]:[&_.i-mgc-right-cute-fi]:rotate-90",
-              )}
-              tabIndex={-1}
-            >
-              {isCategoryIsWaiting ? (
-                <LoadingCircle size="small" className="mr-2 size-[16px]" />
-              ) : isCategoryEditing ? (
+            {isCategoryEditing && !isCategoryIsWaiting ? (
+              // Kept outside the collapse button, since a button can't contain another one
+              <div className="flex h-8 items-center">
                 <MotionButtonBase
+                  aria-label={t("words.cancel", { ns: "common" })}
                   onClick={() => {
                     setIsCategoryEditing(false)
                   }}
@@ -338,16 +323,33 @@ function FeedCategoryImpl({
                 >
                   <i className="i-mgc-close-cute-re text-red" />
                 </MotionButtonBase>
-              ) : (
-                <div className="center mr-2 size-[16px]">
-                  <i className="i-mgc-right-cute-fi transition-transform" />
-                </div>
-              )}
-            </button>
+              </div>
+            ) : (
+              <button
+                data-type="collapse"
+                type="button"
+                onClick={handleCollapseButtonClick}
+                aria-label={folderName ?? undefined}
+                aria-expanded={open}
+                data-state={open ? "open" : "close"}
+                className={cn(
+                  "flex h-8 items-center data-[state=open]:[&_.i-mgc-right-cute-fi]:rotate-90",
+                )}
+                tabIndex={-1}
+              >
+                {isCategoryIsWaiting ? (
+                  <LoadingCircle size="small" className="mr-2 size-[16px]" />
+                ) : (
+                  <div className="center mr-2 size-[16px]">
+                    <i className="i-mgc-right-cute-fi transition-transform" />
+                  </div>
+                )}
+              </button>
+            )}
             {isCategoryEditing ? (
               <RenameCategoryForm
                 currentCategory={folderName!}
-                view={view}
+                view={categoryView}
                 onFinished={() => setIsCategoryEditing(false)}
               />
             ) : (

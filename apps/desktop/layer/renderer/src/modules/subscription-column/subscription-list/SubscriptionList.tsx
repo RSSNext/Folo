@@ -32,6 +32,7 @@ import { useCommandBinding } from "../../command/hooks/use-command-binding"
 import { useCommandHotkey } from "../../command/hooks/use-register-hotkey"
 import { useIsPreviewFeed } from "../../entry-column/hooks/useIsPreviewFeed"
 import {
+  getSelectedFeedIds,
   resetSelectedFeedIds,
   setFeedAreaScrollProgressValue,
   setSelectedFeedIds,
@@ -41,19 +42,29 @@ import { DraggableContext } from "../context"
 import { FeedItem, ListItemAutoHideUnread } from "../FeedItem"
 import { useShouldFreeUpSpace } from "../hook"
 import { SortableFeedList, SortByAlphabeticalInbox, SortByAlphabeticalList } from "../sort-by"
-import { EmptyFeedList } from "./EmptyFeedList"
+import { EmptyFeedList, SubscriptionLoadError } from "./EmptyFeedList"
 import { ListHeader } from "./ListHeader"
 import { StarredItem } from "./StarredItem"
 import type { SubscriptionProps } from "./SubscriptionListGuard"
 
-const SubscriptionImpl = ({ ref, className, view, isSubscriptionLoading }: SubscriptionProps) => {
+const SubscriptionImpl = ({
+  ref,
+  className,
+  view,
+  isSubscriptionLoading,
+  subscriptionLoadError,
+}: SubscriptionProps) => {
   const autoGroup = useGeneralSettingKey("autoGroup")
   const feedsData = useFeedsGroupedData(view, autoGroup)
 
   const listSubIds = useSubscriptionListIds(view)
   const inboxSubIds = useInboxList(
     useCallback(
-      (inboxes) => (view === FeedViewType.Articles ? inboxes.map((inbox) => inbox.id) : []),
+      // Inboxes belong to Articles, and the All view lists every view
+      (inboxes) =>
+        view === FeedViewType.Articles || view === FeedViewType.All
+          ? inboxes.map((inbox) => inbox.id)
+          : [],
       [view],
     ),
   )
@@ -136,6 +147,15 @@ const SubscriptionImpl = ({ ref, className, view, isSubscriptionLoading }: Subsc
 
   const routerParams = useRouteParams()
   const { listId, feedId } = routerParams
+
+  // A sidebar selection no longer applies once another feed is opened from elsewhere, such as
+  // the entry header or search, or else the opened feed isn't highlighted
+  useEffect(() => {
+    const selectedFeedIds = getSelectedFeedIds()
+    if (selectedFeedIds.length === 0) return
+    if (feedId && selectedFeedIds.includes(feedId)) return
+    resetSelectedFeedIds()
+  }, [feedId])
   const isPreview = useIsPreviewFeed()
   const isFeedPreview = isPreview && !listId
   const isListPreview = isPreview && listId
@@ -294,6 +314,8 @@ const SubscriptionImpl = ({ ref, className, view, isSubscriptionLoading }: Subsc
               />
             ) : isSubscriptionLoading ? (
               <SubscriptionListSkeleton />
+            ) : subscriptionLoadError ? (
+              <SubscriptionLoadError {...subscriptionLoadError} />
             ) : (
               <EmptyFeedList />
             )}

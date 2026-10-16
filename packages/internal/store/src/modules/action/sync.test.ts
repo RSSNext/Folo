@@ -117,7 +117,9 @@ describe("action rules and the sync engine", () => {
   })
 
   it("remembers saved rules as the confirmed version", async () => {
+    getMock.mockResolvedValue({ code: 0, data: { rules: [] } })
     putMock.mockResolvedValue({ code: 0 })
+    await actionSyncService.ensureRules()
     actionActions.addRule(() => "Mine")
 
     await actionSyncService.saveRules()
@@ -125,5 +127,16 @@ describe("action rules and the sync engine", () => {
     expect(putMock).toHaveBeenCalledTimes(1)
     expect(useActionStore.getState().isDirty).toBe(false)
     expect(JSON.parse(documents.get("model:action")!).rules).toMatchObject([{ name: "Mine" }])
+  })
+
+  it("refuses to save when the server's rules were never loaded", async () => {
+    getMock.mockRejectedValue(new Error("Internal Server Error"))
+    await expect(actionSyncService.ensureRules()).rejects.toThrow()
+    actionActions.addRule(() => "Mine")
+
+    await expect(actionSyncService.saveRules()).rejects.toThrow()
+
+    expect(putMock).not.toHaveBeenCalled()
+    expect(useActionStore.getState().isDirty).toBe(true)
   })
 })

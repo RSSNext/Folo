@@ -9,7 +9,7 @@ import { useMemo } from "react"
 import { useTranslation } from "react-i18next"
 import { useColorScheme } from "react-native"
 
-import { setUISetting, useUISettingKey } from "@/src/atoms/settings/ui"
+import { setUISetting, useUIPaidSettingLocked, useUISettingKey } from "@/src/atoms/settings/ui"
 import {
   NavigationBlurEffectHeaderView,
   SafeNavigationScrollView,
@@ -22,6 +22,8 @@ import {
 } from "@/src/components/ui/grouped/GroupedList"
 import { Switch } from "@/src/components/ui/switch/Switch"
 import type { NavigationControllerView } from "@/src/lib/navigation/types"
+
+import { PaidSettingCell } from "../components/PaidSettingCell"
 
 const selectWrapperClassName = "w-auto min-w-[96px] max-w-[44vw] shrink-0"
 
@@ -39,6 +41,7 @@ export const ReadingScreen: NavigationControllerView = () => {
   const autoHideReaderHeader = useUISettingKey("autoHideReaderHeader")
   const readerRenderInlineStyle = useUISettingKey("readerRenderInlineStyle")
   const hideRecentReader = useUISettingKey("hideRecentReader")
+  const isHideRecentReaderLocked = useUIPaidSettingLocked("hideRecentReader")
   const codeThemeLight = useUISettingKey("codeHighlightThemeLight")
   const codeThemeDark = useUISettingKey("codeHighlightThemeDark")
 
@@ -177,18 +180,20 @@ export const ReadingScreen: NavigationControllerView = () => {
 
       <GroupedInsetListSectionHeader label={t("appearance.misc")} />
       <GroupedInsetListCard>
-        <GroupedInsetListCell
+        <PaidSettingCell
           label={t("appearance.hide_recent_reader.label")}
           description={t("appearance.hide_recent_reader.description")}
+          locked={isHideRecentReaderLocked}
         >
           <Switch
             size="sm"
             value={hideRecentReader}
+            disabled={isHideRecentReaderLocked}
             onValueChange={(val) => {
               setUISetting("hideRecentReader", val)
             }}
           />
-        </GroupedInsetListCell>
+        </PaidSettingCell>
       </GroupedInsetListCard>
     </SafeNavigationScrollView>
   )

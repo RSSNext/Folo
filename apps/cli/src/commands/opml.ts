@@ -1,12 +1,37 @@
-import { mkdir, readFile, writeFile } from "node:fs/promises"
+import { mkdir, readFile, stat, writeFile } from "node:fs/promises"
 
+import type { FollowClient } from "@follow-app/client-sdk"
 import type { Command } from "commander"
-import { basename, dirname } from "pathe"
+import { basename, dirname, join } from "pathe"
 
 import { runCommand } from "../command"
 
 interface OpmlExportOptions {
   output?: string
+}
+
+/** The file name of an export when the CLI picks it */
+export const OPML_FILENAME = "folo.opml"
+
+/**
+ * GET /subscriptions/export answers with the OPML document itself (application/xml), not the
+ * JSON object the SDK types it as, so it is read as text.
+ */
+export const fetchOPMLExport = async (client: FollowClient) => {
+  const response = await client.request<Response>("/subscriptions/export", { asRaw: true })
+  return {
+    content: await response.text(),
+    contentType: response.headers.get("content-type") ?? "application/xml",
+  }
+}
+
+/** A directory, or a path that ends like one, gets the export as folo.opml inside it */
+export const resolveOPMLOutputPath = async (output: string) => {
+  if (/[/\\]$/.test(output)) {
+    return join(output, OPML_FILENAME)
+  }
+  const stats = await stat(output).catch(() => null)
+  return stats?.isDirectory() ? join(output, OPML_FILENAME) : output
 }
 
 interface OpmlImportOptions {
@@ -30,25 +55,28 @@ export const registerOPMLCommand = (program: Command) => {
   opmlCommand
     .command("export")
     .description("Export subscriptions as OPML")
-    .option("--output <file>", "Write exported OPML to file")
+    .option("--output <file>", `Write exported OPML to file (${OPML_FILENAME} in a directory)`)
     .action(async function (this: Command, options: OpmlExportOptions) {
-      await runCommand(this, async ({ client }) => {
-        const response = await client.api.subscriptions.export({
-          format: "opml",
-        })
+      await runCommand(this, async ({ client, options: globalOptions }) => {
+        const { content, contentType } = await fetchOPMLExport(client)
 
         if (!options.output) {
-          return response
+          // Plain output is the document itself, ready to be redirected into a file
+          if (globalOptions.format === "plain") {
+            return content
+          }
+          return { filename: OPML_FILENAME, contentType, content }
         }
 
-        await mkdir(dirname(options.output), { recursive: true })
-        await writeFile(options.output, response.content, "utf8")
+        const output = await resolveOPMLOutputPath(options.output)
+        await mkdir(dirname(output), { recursive: true })
+        await writeFile(output, content, "utf8")
 
         return {
-          output: options.output,
-          filename: response.filename,
-          contentType: response.contentType,
-          bytes: Buffer.byteLength(response.content),
+          output,
+          filename: basename(output),
+          contentType,
+          bytes: Buffer.byteLength(content),
         }
       })
     })

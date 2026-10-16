@@ -3,34 +3,51 @@ import { ActionButton } from "@follow/components/ui/button/index.js"
 import { SegmentGroup, SegmentItem } from "@follow/components/ui/segment/index.js"
 import { Switch } from "@follow/components/ui/switch/index.js"
 import { clsx, cn } from "@follow/utils/utils"
-import {
-  HoverCard,
-  HoverCardContent,
-  HoverCardPortal,
-  HoverCardTrigger,
-} from "@radix-ui/react-hover-card"
+import { Popover, PopoverContent, PopoverPortal, PopoverTrigger } from "@radix-ui/react-popover"
+import { useRef } from "react"
 import { useTranslation } from "react-i18next"
 
 import { setUISetting, useUISettingKey } from "~/atoms/settings/ui"
+import { useHoverPopover } from "~/hooks/common/useHoverPopover"
 
 export const SwitchToMasonryButton = () => {
   const isMasonry = useUISettingKey("pictureViewMasonry")
   const isImageOnly = useUISettingKey("pictureViewImageOnly")
   const { t } = useTranslation()
   const isMobile = useMobile()
+  const { open, show, onOpenChange, triggerProps, contentProps } = useHoverPopover()
+  const triggerRef = useRef<HTMLButtonElement>(null)
 
   if (isMobile) return null
   return (
-    <HoverCard openDelay={100}>
-      <HoverCardTrigger>
-        <ActionButton>
+    <Popover open={open} onOpenChange={onOpenChange}>
+      {/* The options show while the pointer rests on the button, and a click or Enter opens them
+          with the focus in them, so they can be set from the keyboard. Escape or a click outside
+          closes them. */}
+      <PopoverTrigger asChild>
+        <ActionButton
+          ref={triggerRef}
+          aria-label={t("entry_list_header.preview_mode")}
+          {...triggerProps}
+          onClick={(event) => {
+            // A click keeps the options open instead of toggling them
+            event.preventDefault()
+            show()
+          }}
+        >
           <i className={cn(!isMasonry ? "i-mgc-grid-cute-re" : "i-mgc-grid-2-cute-re")} />
         </ActionButton>
-      </HoverCardTrigger>
-      <HoverCardPortal>
-        <HoverCardContent
+      </PopoverTrigger>
+      <PopoverPortal>
+        <PopoverContent
           sideOffset={12}
           side="bottom"
+          aria-label={t("entry_list_header.preview_mode")}
+          {...contentProps}
+          // A click on the trigger keeps the options open instead of closing and reopening them
+          onPointerDownOutside={(event) => {
+            if (triggerRef.current?.contains(event.target as Node)) event.preventDefault()
+          }}
           className={clsx(
             "z-10 rounded-xl border bg-background drop-shadow",
             "data-[state=open]:animate-in data-[state=closed]:animate-out",
@@ -85,8 +102,8 @@ export const SwitchToMasonryButton = () => {
               />
             </div>
           </div>
-        </HoverCardContent>
-      </HoverCardPortal>
-    </HoverCard>
+        </PopoverContent>
+      </PopoverPortal>
+    </Popover>
   )
 }

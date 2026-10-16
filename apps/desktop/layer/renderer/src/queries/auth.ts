@@ -3,6 +3,7 @@ import { useWhoami, whoamiQueryKey } from "@follow/store/user/hooks"
 import { userSyncService } from "@follow/store/user/store"
 import { tracker } from "@follow/tracker"
 import { clearStorage } from "@follow/utils/ns"
+import { FollowAPIError } from "@follow-app/client-sdk"
 import type { FetchError } from "ofetch"
 import { useEffect } from "react"
 
@@ -220,8 +221,17 @@ export const deleteUser = async ({ TOTPCode }: { TOTPCode?: string }) => {
   if (!TOTPCode) {
     return
   }
-  await deleteUserFn({
+  const res = await deleteUserFn({
     TOTPCode,
   })
+  // The auth client resolves with the error instead of throwing. Keep the session when the
+  // account was not deleted, and keep the code so the form can tell a wrong TOTP code apart.
+  if (res.error) {
+    throw new FollowAPIError(
+      res.error.message || res.error.statusText,
+      res.error.status,
+      res.error.code ? String(res.error.code) : undefined,
+    )
+  }
   await signOut()
 }

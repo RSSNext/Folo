@@ -1,6 +1,7 @@
 import { SyncMetaService } from "@follow/database/services/sync-meta"
 import type {
   ActionConditionIndex,
+  ActionFeedField,
   ActionFilterItem,
   ActionId,
   ActionItem as ActionItemRes,
@@ -13,6 +14,7 @@ import type { Hydratable, Resetable } from "../../lib/base"
 import { createImmerSetter, createZustandStore } from "../../lib/helper"
 import { registerSyncModel } from "../../sync/model-registry"
 import { ensureSyncedThroughEngine } from "../../sync/sync-status"
+import { getFilterFieldType } from "./constant"
 
 export type ActionItem = Omit<ActionItemRes, "condition"> & {
   condition: ActionFilterItem[][]
@@ -62,11 +64,10 @@ class ActionSyncService {
    */
   async fetchRules(options?: { keepLocalEdits?: boolean }) {
     const res = await api().actions.get()
-    if (res.data) {
-      await actionActions.setConfirmedRules(normalizeRules(res.data.rules), {
-        overwriteLocalEdits: !options?.keepLocalEdits,
-      })
-    }
+    // An account without any rules gets no data at all, which means an empty rule set
+    await actionActions.setConfirmedRules(normalizeRules(res.data?.rules), {
+      overwriteLocalEdits: !options?.keepLocalEdits,
+    })
     return res
   }
 
@@ -85,6 +86,10 @@ class ActionSyncService {
     if (!isDirty) {
       return null
     }
+    // Saving replaces every rule on the server, so it must wait until they were loaded
+    if (!actionActions.isLoaded()) {
+      throw new Error(t("actions.load_failed", { ns: "settings" }))
+    }
 
     const res = await api().actions.put({ rules: rules as any })
     await actionActions.setConfirmedRules(rules, { overwriteLocalEdits: true })
@@ -100,20 +105,43 @@ class ActionActions implements Hydratable, Resetable {
     return this.loaded
   }
 
-  async hydrate() {
+  private async readConfirmedRules(): Promise<ActionRules | null> {
     try {
       const stored = await SyncMetaService.get(ACTION_RULES_DOCUMENT_KEY)
-      if (stored === null) return
+      if (stored === null) return null
       const parsed = JSON.parse(stored) as { rules?: ActionRules }
-      if (!Array.isArray(parsed.rules)) return
-      immerSet((state) => {
-        state.rules = parsed.rules!
-        state.isDirty = false
-      })
-      this.loaded = true
+      return Array.isArray(parsed.rules) ? parsed.rules : null
     } catch (error) {
       console.error("[action] failed to load the stored rules", error)
+      return null
     }
+  }
+
+  async hydrate() {
+    const rules = await this.readConfirmedRules()
+    if (!rules) return
+    immerSet((state) => {
+      state.rules = rules
+      state.isDirty = false
+    })
+    this.loaded = true
+  }
+
+  /**
+   * Drop unsaved edits and go back to the rules the server confirmed. Otherwise the edits stay
+   * in the store after the editor closes, and keep remote changes from showing up.
+   */
+  async discardLocalEdits() {
+    if (!useActionStore.getState().isDirty) return
+    const rules = await this.readConfirmedRules()
+    if (rules) {
+      immerSet((state) => {
+        state.rules = rules
+        state.isDirty = false
+      })
+      return
+    }
+    await actionSyncService.fetchRules()
   }
 
   async reset() {
@@ -179,6 +207,20 @@ class ActionActions implements Hydratable, Resetable {
       const group = rule.condition[index.groupIndex]
       if (!group) return
       group[index.conditionIndex] = merge(group[index.conditionIndex], condition)
+      state.isDirty = true
+    })
+  }
+
+  changeConditionField(index: ActionConditionIndex, field: ActionFeedField) {
+    immerSet((state) => {
+      const group = state.rules[index.ruleIndex]?.condition[index.groupIndex]
+      const item = group?.[index.conditionIndex]
+      if (!group || !item) return
+      // The operator and value only make sense for the previous field type
+      group[index.conditionIndex] =
+        getFilterFieldType(item.field) === getFilterFieldType(field)
+          ? { ...item, field }
+          : { field }
       state.isDirty = true
     })
   }
@@ -384,7 +426,8 @@ class ActionActions implements Hydratable, Resetable {
 
       // Validate each rule structure
       for (const rule of parsedData.rules) {
-        if (!rule.name || typeof rule.name !== "string") {
+        // An empty name is allowed: the editor saves it and shows a numbered default instead
+        if (typeof rule.name !== "string") {
           return {
             success: false,
             message: t("actions.import_result.invalid_name", { ns: "settings" }),

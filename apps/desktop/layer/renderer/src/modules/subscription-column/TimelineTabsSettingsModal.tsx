@@ -25,8 +25,11 @@ import { useTranslation } from "react-i18next"
 
 import { setUISetting } from "~/atoms/settings/ui"
 import { useModalStack } from "~/components/ui/modal/stacked/hooks"
-import { parseView } from "~/hooks/biz/useRouteParams"
+import { useNavigateEntry } from "~/hooks/biz/useNavigateEntry"
+import { getRouteParams, parseView } from "~/hooks/biz/useRouteParams"
 import { useTimelineList } from "~/hooks/biz/useTimelineList"
+
+import { resetSelectedFeedIds } from "./atom"
 
 function ContainerDroppable({
   id,
@@ -120,13 +123,26 @@ function useResolvedTimelineTabs() {
 const TimelineTabsSettings = () => {
   const { t } = useTranslation(["app", "common", "settings"])
   const { visible, hidden } = useResolvedTimelineTabs()
+  const navigate = useNavigateEntry()
 
   const commitTimelineTabs = useCallback(
     (nextVisible: string[], nextHidden: string[]) => {
       if (areArraysEqual(nextVisible, visible) && areArraysEqual(nextHidden, hidden)) return
+      // The sidebar needs at least one tab to show
+      if (nextVisible.length === 0) return
       setUISetting("timelineTabs", { visible: nextVisible, hidden: nextHidden })
+
+      // Leave a tab that was just hidden, as hiding it from its context menu does
+      const { timelineId } = getRouteParams()
+      if (timelineId && visible.includes(timelineId) && !nextVisible.includes(timelineId)) {
+        const currentIndex = visible.indexOf(timelineId)
+        const fallbackTimelineId =
+          nextVisible[currentIndex] ?? nextVisible[currentIndex - 1] ?? nextVisible[0]
+        navigate({ timelineId: fallbackTimelineId, feedId: null, entryId: null })
+        resetSelectedFeedIds()
+      }
     },
-    [hidden, visible],
+    [hidden, navigate, visible],
   )
 
   const sensors = useSensors(

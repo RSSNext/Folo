@@ -10,39 +10,26 @@ import {
   FormMessage,
 } from "@follow/components/ui/form/index.jsx"
 import { Input, TextArea } from "@follow/components/ui/input/index.js"
-import { useWhoami } from "@follow/store/user/hooks"
+import { invalidateUserSession, useWhoami } from "@follow/store/user/hooks"
 import { userActions } from "@follow/store/user/store"
 import { cn } from "@follow/utils/utils"
 import { zodResolver } from "@hookform/resolvers/zod"
 import { useMutation } from "@tanstack/react-query"
+import { useMemo } from "react"
 import { useForm } from "react-hook-form"
 import { useTranslation } from "react-i18next"
 import { toast } from "sonner"
-import { z } from "zod"
+import type { z } from "zod"
 
 import { AvatarUploadModal } from "~/components/ui/crop/AvatarUploadModal"
 import { useModalStack } from "~/components/ui/modal/stacked/hooks"
+import { followApi } from "~/lib/api-client"
 import { updateUser } from "~/lib/auth"
 import { uploadAvatarBlob } from "~/lib/avatar-upload"
 import { toastFetchError } from "~/lib/error-parser"
 
-const socialLinksSchema = z.object({
-  twitter: z.string().max(32).optional(),
-  github: z.string().max(32).optional(),
-  instagram: z.string().max(32).optional(),
-  facebook: z.string().max(32).optional(),
-  youtube: z.string().max(32).optional(),
-  discord: z.string().max(32).optional(),
-})
-
-const formSchema = z.object({
-  handle: z.string().max(32).regex(/^\w+$/).optional(),
-  name: z.string().min(3).max(50),
-  image: z.string().url().or(z.literal("")).optional(),
-  bio: z.string().max(256).optional(),
-  website: z.string().url().max(64).optional().or(z.literal("")),
-  socialLinks: socialLinksSchema.optional(),
-})
+import type { ProfileFormValues, ProfileTextField, socialLinksSchema } from "./profile-form-schema"
+import { createProfileFormSchema, getProfileFieldError } from "./profile-form-schema"
 
 const socialIconClassNames = {
   twitter: "i-mgc-twitter-cute-fi",
@@ -54,6 +41,25 @@ const socialIconClassNames = {
 }
 
 const formItemLabelClassName = tw`pl-3`
+
+class ProfileFieldError extends Error {
+  constructor(
+    readonly field: ProfileTextField,
+    message: string,
+  ) {
+    super(message)
+  }
+}
+
+const isHandleTakenByOthers = async (handle: string, userId?: string) => {
+  try {
+    const res = await followApi.profiles.getProfile({ handle })
+    return !!res.data && res.data.id !== userId
+  } catch {
+    // Unknown handles answer with an error, so the handle is free or the lookup failed
+    return false
+  }
+}
 // Extended user type to include the new fields
 type ExtendedUser = ReturnType<typeof useWhoami> & {
   bio?: string
@@ -81,10 +87,12 @@ export const ProfileSettingForm = ({
   const user = useWhoami() as ExtendedUser
   const { present } = useModalStack()
 
-  const form = useForm<z.infer<typeof formSchema>>({
+  const storedHandle = user?.handle
+  const formSchema = useMemo(() => createProfileFormSchema(storedHandle), [storedHandle])
+  const form = useForm<ProfileFormValues>({
     resolver: zodResolver(formSchema),
     defaultValues: {
-      handle: user?.handle || undefined,
+      handle: user?.handle || "",
       name: user?.name || "",
       image: user?.image || "",
       bio: user?.bio || "",
@@ -101,30 +109,57 @@ export const ProfileSettingForm = ({
   })
 
   const updateMutation = useMutation({
-    mutationFn: (values: Partial<z.infer<typeof formSchema>>) =>
-      updateUser({
+    mutationFn: async (values: Partial<ProfileFormValues>) => {
+      const res = await updateUser({
         handle: values.handle,
         image: values.image,
         name: values.name,
         bio: values.bio,
         website: values.website,
         socialLinks: values.socialLinks as any,
-      }),
+      })
+      // The auth client resolves with the error instead of throwing
+      if (res.error) {
+        const fieldError = getProfileFieldError(res.error.code)
+        if (fieldError) {
+          throw new ProfileFieldError(fieldError.field, fieldError.message)
+        }
+        // Servers without HANDLE_ALREADY_TAKEN answer a handle another user has with a bare 500,
+        // so look it up
+        if (
+          values.handle &&
+          values.handle.toLowerCase() !== user?.handle?.toLowerCase() &&
+          (await isHandleTakenByOthers(values.handle, user?.id))
+        ) {
+          throw new ProfileFieldError("handle", t("profile.handle.taken"))
+        }
+        throw new Error(res.error.message || res.error.statusText)
+      }
+      return res
+    },
     onError: (error) => {
+      if (error instanceof ProfileFieldError) {
+        form.setError(error.field, { message: error.message })
+        return
+      }
       toastFetchError(error)
     },
     onSuccess: (_, variables) => {
       if (user && variables) {
         userActions.updateWhoami({ ...variables } as any)
       }
+      // The profile menu reads the cached session, so refresh it as well
+      invalidateUserSession()
       toast(t("profile.updateSuccess"), {
         duration: 3000,
       })
     },
   })
 
-  function onSubmit(values: z.infer<typeof formSchema>) {
-    updateMutation.mutate(values)
+  function onSubmit(values: ProfileFormValues) {
+    // An empty handle field leaves the handle as it is
+    const { handle, ...rest } = values
+    updateMutation.mutate(handle ? values : rest)
   }
 
   const handleAvatarUpload = async (blob: Blob) => {
@@ -188,6 +223,7 @@ export const ProfileSettingForm = ({
                       <button
                         type="button"
                         onClick={openAvatarUpload}
+                        aria-label={t("profile.avatar.uploadTitle")}
                         className="group relative cursor-pointer transition-all duration-200 hover:opacity-80"
                       >
                         <Avatar className="size-16">
@@ -256,6 +292,7 @@ export const ProfileSettingForm = ({
                       <button
                         type="button"
                         onClick={openAvatarUpload}
+                        aria-label={t("profile.avatar.uploadTitle")}
                         className="group relative cursor-pointer transition-all duration-200 hover:opacity-80"
                       >
                         <Avatar className="size-8">

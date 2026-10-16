@@ -15,7 +15,6 @@ import { RadioGroup, RadioGroupItem } from "@follow/components/ui/radio-group/mo
 import { Slider } from "@follow/components/ui/slider/index.js"
 import { exportDB } from "@follow/database/db"
 import { ELECTRON_BUILD } from "@follow/shared/constants"
-import { env } from "@follow/shared/env.desktop"
 import { zodResolver } from "@hookform/resolvers/zod"
 import { useQuery } from "@tanstack/react-query"
 import { useForm } from "react-hook-form"
@@ -25,7 +24,10 @@ import { z } from "zod"
 
 import { setGeneralSetting, useGeneralSettingValue } from "~/atoms/settings/general"
 import { useDialog, useModalStack } from "~/components/ui/modal/stacked/hooks"
+import { followClient } from "~/lib/api-client"
 import { ipcServices } from "~/lib/client"
+import { toastFetchError } from "~/lib/error-parser"
+import { downloadBlob } from "~/lib/export"
 import { queryClient } from "~/lib/query-client"
 import { clearLocalPersistStoreData } from "~/store/utils/clear"
 
@@ -114,7 +116,8 @@ export const SettingDataControl = () => {
 }
 
 const exportFeedFormSchema = z.object({
-  rsshubUrl: z.string().url().optional(),
+  // Optional: a field that was typed in and cleared holds an empty string
+  rsshubUrl: z.string().url().optional().or(z.literal("")),
   folderMode: z.enum(["view", "category"]),
 })
 
@@ -124,20 +127,27 @@ const ExportFeedsForm = () => {
   const form = useForm<z.infer<typeof exportFeedFormSchema>>({
     resolver: zodResolver(exportFeedFormSchema),
     defaultValues: {
+      rsshubUrl: "",
       folderMode: "view",
     },
   })
 
-  function onSubmit(values: z.infer<typeof exportFeedFormSchema>) {
-    const link = document.createElement("a")
-    const exportUrl = new URL(`${env.VITE_API_URL}/subscriptions/export`)
-    exportUrl.searchParams.append("folderMode", values.folderMode)
+  async function onSubmit(values: z.infer<typeof exportFeedFormSchema>) {
+    const query: Record<string, string> = { folderMode: values.folderMode }
     if (values.rsshubUrl) {
-      exportUrl.searchParams.append("RSSHubURL", values.rsshubUrl)
+      query.RSSHubURL = values.rsshubUrl
     }
-    link.href = exportUrl.toString()
-    link.download = "follow.opml"
-    link.click()
+    try {
+      // Fetched through the API client, which is signed in on desktop too, and saved from a blob,
+      // so the file is named folo.opml whatever name the server suggests
+      const response = await followClient.request<Response>("/subscriptions/export", {
+        query,
+        asRaw: true,
+      })
+      downloadBlob(await response.blob(), "folo.opml")
+    } catch (error) {
+      toastFetchError(error as Error)
+    }
   }
 
   return (

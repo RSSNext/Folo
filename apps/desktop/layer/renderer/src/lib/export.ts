@@ -18,8 +18,11 @@ const sanitizeFileName = (value: string) => {
     .join("")
 }
 
-export const downloadJsonFile = (content: string, filename: string) => {
-  const blob = new Blob([content], { type: "application/json" })
+/**
+ * Save data under the given file name. Only a link to the app's own origin, such as this blob
+ * URL, keeps the name; for a link to the API's origin the browser takes the server's name.
+ */
+export const downloadBlob = (blob: Blob, filename: string) => {
   const url = URL.createObjectURL(blob)
   const link = document.createElement("a")
   link.href = url
@@ -28,6 +31,10 @@ export const downloadJsonFile = (content: string, filename: string) => {
   link.click()
   link.remove()
   URL.revokeObjectURL(url)
+}
+
+export const downloadJsonFile = (content: string, filename: string) => {
+  downloadBlob(new Blob([content], { type: "application/json" }), filename)
 }
 
 export const selectJsonFile = (): Promise<string> => {

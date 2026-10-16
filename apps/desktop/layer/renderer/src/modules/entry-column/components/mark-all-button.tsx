@@ -72,7 +72,10 @@ export const MarkAllReadButton = ({
           label: (
             <span className="flex items-center gap-1">
               {t("mark_all_read_button.undo")}
-              <Kbd className="inline-flex items-center border border-border bg-transparent text-white">
+              <Kbd
+                wrapButton={false}
+                className="inline-flex items-center border border-border bg-transparent bg-none text-white"
+              >
                 $mod+z
               </Kbd>
             </span>
@@ -101,6 +104,7 @@ export const MarkAllReadButton = ({
           )}
         </>
       }
+      aria-label={t("command.subscription.mark_all_as_read.title", { ns: "shortcuts" })}
       className={className}
       ref={ref}
       onClick={() => {

@@ -27,6 +27,7 @@ import {
 import { TimelineViewSelector } from "@/src/modules/screen/TimelineViewSelector"
 
 import {
+  EntryListContext,
   useEntries,
   useEntryListContext,
   useIsTimelineEntrySource,
@@ -35,7 +36,8 @@ import {
 
 export function TimelineHeader({ feedId }: { feedId?: string }) {
   const viewTitle = useSelectedFeedTitle()
-  const screenType = useEntryListContext().type
+  const entryListContext = useEntryListContext()
+  const screenType = entryListContext.type
   const isLoggedIn = useIsLoggedIn()
   const unreadOnly = useGeneralSettingKey("unreadOnly")
   const isTimelineSource = useIsTimelineEntrySource()
@@ -61,17 +63,21 @@ export function TimelineHeader({ feedId }: { feedId?: string }) {
         [isTimeline, isSubscriptions],
       )}
       headerRight={useMemo(() => {
+        // The header renders in the screen's header slot, outside this entry list context, so the
+        // actions get it again; otherwise a feed screen marks the whole Home view as read
         return () => (
-          <View className="flex-row items-center justify-end">
-            <ActionGroup>
-              {shouldShowEntrySort && <EntrySortOrderActionButton />}
-              {isLoggedIn && <UnreadOnlyActionButton />}
-              {isLoggedIn && <MarkAllAsReadActionButton />}
-              <FeedShareActionButton feedId={feedId} />
-            </ActionGroup>
-          </View>
+          <EntryListContext value={entryListContext}>
+            <View className="flex-row items-center justify-end">
+              <ActionGroup>
+                {shouldShowEntrySort && <EntrySortOrderActionButton />}
+                {isLoggedIn && <UnreadOnlyActionButton />}
+                {isLoggedIn && <MarkAllAsReadActionButton />}
+                <FeedShareActionButton feedId={feedId} />
+              </ActionGroup>
+            </View>
+          </EntryListContext>
         )
-      }, [feedId, isLoggedIn, shouldShowEntrySort])}
+      }, [entryListContext, feedId, isLoggedIn, shouldShowEntrySort])}
       headerHideableBottom={isTimeline || isSubscriptions ? TimelineViewSelector : undefined}
       headerHideableBottomHeight={TIMELINE_VIEW_SELECTOR_HEIGHT}
     />

@@ -8,7 +8,7 @@ import { ELECTRON_BUILD } from "@follow/shared/constants"
 import { useFeedsByIds } from "@follow/store/feed/hooks"
 import { useAllFeedSubscription, usePrefetchSubscription } from "@follow/store/subscription/hooks"
 import { usePrefetchUnread } from "@follow/store/unread/hooks"
-import { useUserSubscriptionLimit } from "@follow/store/user/hooks"
+import { useIsLoggedIn, useUserSubscriptionLimit } from "@follow/store/user/hooks"
 import { EventBus } from "@follow/utils/event-bus"
 import { clamp, cn } from "@follow/utils/utils"
 import { useWheel } from "@use-gesture/react"
@@ -46,7 +46,21 @@ export function SubscriptionColumn({
   className,
 }: PropsWithChildren<{ className?: string }>) {
   const { t } = useTranslation()
-  const { isLoading: isSubscriptionLoading } = usePrefetchSubscription()
+  const {
+    isLoading: isSubscriptionLoading,
+    isError: isSubscriptionError,
+    isFetching: isSubscriptionFetching,
+    refetch: refetchSubscription,
+  } = usePrefetchSubscription()
+  const isLoggedIn = useIsLoggedIn()
+  // Guests can't load subscriptions at all, which is not an error to show them
+  const subscriptionLoadError = useMemo(
+    () =>
+      isSubscriptionError && isLoggedIn
+        ? { isRetrying: isSubscriptionFetching, onRetry: () => void refetchSubscription() }
+        : undefined,
+    [isSubscriptionError, isLoggedIn, isSubscriptionFetching, refetchSubscription],
+  )
   usePrefetchUnread()
 
   const carouselRef = useRef<HTMLDivElement>(null)
@@ -113,6 +127,9 @@ export function SubscriptionColumn({
 
   useEffect(() => {
     if (!focusableContainerRef.current) return
+    // Keep the focus a page took while loading, such as the autofocused Discover search box
+    const { activeElement } = document
+    if (activeElement && activeElement !== document.body) return
     focusableContainerRef.current.focus()
   }, [])
 
@@ -172,6 +189,7 @@ export function SubscriptionColumn({
                 key={timelineId}
                 view={parseView(timelineId) ?? FeedViewType.Articles}
                 isSubscriptionLoading={isSubscriptionLoading}
+                subscriptionLoadError={subscriptionLoadError}
               />
             </section>
           ))}

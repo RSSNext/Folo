@@ -11,7 +11,7 @@ import {
   TooltipTrigger,
 } from "@follow/components/ui/tooltip/index.js"
 import { cn } from "@follow/utils/utils"
-import type { ChangeEventHandler, ReactNode } from "react"
+import type { ChangeEventHandler, FocusEventHandler, KeyboardEventHandler, ReactNode } from "react"
 import { useCallback, useId, useState } from "react"
 import { useTranslation } from "react-i18next"
 
@@ -106,10 +106,12 @@ export const SettingInput: Component<{
   label: string
   value: string
   onChange: ChangeEventHandler<HTMLInputElement>
+  onBlur?: FocusEventHandler<HTMLInputElement>
+  onKeyDown?: KeyboardEventHandler<HTMLInputElement>
   type: string
   vertical?: boolean
   labelClassName?: string
-}> = ({ value, label, onChange, labelClassName, className, type, vertical }) => {
+}> = ({ value, label, onChange, onBlur, onKeyDown, labelClassName, className, type, vertical }) => {
   const id = useId()
   const titleCaseIfEnglish = useTitleCaseIfEnglish()
 
@@ -127,7 +129,15 @@ export const SettingInput: Component<{
       >
         {titleCaseIfEnglish(label)}
       </Label>
-      <Input type={type} id={id} value={value} onChange={onChange} className="text-xs" />
+      <Input
+        type={type}
+        id={id}
+        value={value}
+        onChange={onChange}
+        onBlur={onBlur}
+        onKeyDown={onKeyDown}
+        className="text-xs"
+      />
     </div>
   )
 }

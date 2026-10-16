@@ -1,9 +1,14 @@
 import type { SpotlightRule } from "@follow/shared/spotlight"
+import { getSpotlightTextColor } from "@follow/shared/spotlight"
 import { applySpotlightToHast } from "@follow/utils/html"
 import type { Element, Parent, Root } from "hast"
 
-const mobileSpotlightStyle = (color: string) =>
-  `background-color:${color}CC;border-radius:5px;padding-inline:2px;`
+const mobileSpotlightStyle = (color: string) => {
+  // The reader's light text in dark mode is barely readable on the pale highlight colors
+  const textColor = getSpotlightTextColor(color)
+
+  return `background-color:${color}CC;border-radius:5px;padding-inline:2px;${textColor ? `color:${textColor};` : ""}`
+}
 
 const deepenSpotlightStylesForMobile = (tree: Parent) => {
   if (!Array.isArray(tree.children)) return

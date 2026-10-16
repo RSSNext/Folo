@@ -8,7 +8,6 @@ import { Pressable, StyleSheet, View } from "react-native"
 import { useSafeAreaInsets } from "react-native-safe-area-context"
 
 import { ThemedBlurView } from "@/src/components/common/ThemedBlurView"
-import { Image } from "@/src/components/ui/image/Image"
 import { useLightbox } from "@/src/components/ui/lightbox/lightboxState"
 import { Text } from "@/src/components/ui/typography/Text"
 import { BottomTabContext } from "@/src/lib/navigation/bottom-tab/BottomTabContext"
@@ -27,6 +26,7 @@ import {
   isRootStackPushedScreenOnTop,
 } from "./floating-player-bar"
 import { useShouldShowPlayerBar } from "./hooks"
+import { PlayerArtwork } from "./PlayerArtwork"
 
 /**
  * Player bar for screens pushed over the JS tab bar, which hide the tab bar and its player bar.
@@ -81,12 +81,7 @@ function FloatingPlayerBarContent({ bottomInset }: { bottomInset: number }) {
             navigation.presentControllerView(PlayerScreen, void 0, "transparentModal")
           }}
         >
-          <Image
-            source={{
-              uri: activePlayable?.artwork ?? "",
-            }}
-            className="size-10 rounded-full"
-          />
+          <PlayerArtwork playable={activePlayable} size={40} className="size-10 rounded-full" />
           <View className="flex-1 overflow-hidden">
             <Text className="text-base font-semibold text-label" numberOfLines={1}>
               {activePlayable?.title ?? ""}

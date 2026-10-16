@@ -131,7 +131,7 @@ export const SettingLists = () => {
                   </TableHeader>
                   <TableBody className="border-t-[12px] border-transparent [&_td]:!px-3">
                     {ownedLists.map((row) => (
-                      <TableRow key={row.title} className="h-8">
+                      <TableRow key={row.id} className="h-8">
                         <TableCell size="sm">
                           <a
                             target="_blank"
@@ -175,6 +175,7 @@ export const SettingLists = () => {
                             <TooltipTrigger asChild>
                               <Button
                                 variant="ghost"
+                                aria-label={t.common("words.manage")}
                                 onClick={() => {
                                   present({
                                     title: t.settings("lists.feeds.manage"),
@@ -193,6 +194,7 @@ export const SettingLists = () => {
                             <TooltipTrigger asChild>
                               <Button
                                 variant="ghost"
+                                aria-label={t.common("words.edit")}
                                 onClick={() => {
                                   present({
                                     title: t.settings("lists.edit.label"),
@@ -211,6 +213,7 @@ export const SettingLists = () => {
                             <TooltipTrigger asChild>
                               <ActionButton
                                 size="sm"
+                                aria-label={t.common("words.delete")}
                                 onClick={() =>
                                   present({
                                     title: t.settings("lists.delete.confirm"),

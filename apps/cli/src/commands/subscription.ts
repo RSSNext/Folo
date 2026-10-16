@@ -6,7 +6,7 @@ import type {
 import type { Command } from "commander"
 
 import { parseView, viewHelp } from "../args"
-import { runCommand } from "../command"
+import { runCommand, toChangeResult } from "../command"
 import { CLIError } from "../output"
 
 type SubscriptionTarget = "feed" | "list" | "url"
@@ -110,12 +110,9 @@ export const registerSubscriptionCommand = (program: Command) => {
           request.type = "list"
         }
 
+        // The feed or list it followed, its unread counts and the sync id of the change
         const response = await client.api.subscriptions.create(request)
-        return {
-          feed: response.feed,
-          list: response.list,
-          unread: response.unread,
-        }
+        return toChangeResult(response)
       })
     })
 
@@ -142,7 +139,7 @@ export const registerSubscriptionCommand = (program: Command) => {
         }
 
         const response = await client.api.subscriptions.delete(request)
-        return response.data
+        return toChangeResult(response)
       })
     })
 
@@ -196,7 +193,7 @@ export const registerSubscriptionCommand = (program: Command) => {
         }
 
         const response = await client.api.subscriptions.update(request)
-        return response.data
+        return toChangeResult(response)
       })
     })
 }

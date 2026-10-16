@@ -12,11 +12,14 @@ import { ResponsiveSelect } from "@follow/components/ui/select/responsive.js"
 import { filterFieldOptions, filterOperatorOptions } from "@follow/store/action/constant"
 import { useActionRule } from "@follow/store/action/hooks"
 import { actionActions } from "@follow/store/action/store"
+import { cn } from "@follow/utils/utils"
 import type { ActionFeedField, ActionOperation } from "@follow-app/client-sdk"
 import { Fragment } from "react"
 import { useTranslation } from "react-i18next"
 
 import { ViewSelectContent } from "~/modules/feed/view-select-content"
+
+import { getRegexError } from "./utils"
 
 type WhenSectionProps = {
   index: number
@@ -90,7 +93,12 @@ export const WhenSection = ({ index }: WhenSectionProps) => {
                             placeholder={t("actions.action_card.select_field")}
                             disabled={disabled}
                             value={item.field}
-                            onValueChange={(value) => change("field", value as ActionFeedField)}
+                            onValueChange={(value) =>
+                              actionActions.changeConditionField(
+                                actionConditionIndex,
+                                value as ActionFeedField,
+                              )
+                            }
                             items={filterFieldOptions.map((option) => ({
                               ...option,
                               label: t(option.label),
@@ -270,14 +278,23 @@ const ValueInput = ({
       )
     }
     default: {
+      const regexError = operator === "regex" ? getRegexError(value) : null
+      // Sized like the bare inputs of the other types: with a zero flex basis the operator
+      // select took the whole row and squeezed the input to a few pixels
       return (
-        <div className="flex flex-col gap-1.5 @[800px]:flex-1">
+        <div className="flex w-full flex-auto flex-col gap-1.5">
           <Input
             disabled={disabled}
             value={value as string | undefined}
-            className="h-9"
+            aria-invalid={regexError ? true : undefined}
+            className={cn("h-9", regexError && "border-red focus:border-red")}
             onChange={(event) => onChange(event.target.value)}
           />
+          {regexError && (
+            <p className="text-xs leading-relaxed text-red">
+              {t("actions.action_card.invalid_regex", { error: regexError })}
+            </p>
+          )}
           {operator === "regex" && (
             <p className="text-xs leading-relaxed text-text-tertiary">
               {t("actions.action_card.regex_help")}

@@ -23,6 +23,7 @@ export type Layout =
   | "split"
   | "split-right"
   | "banner"
+  | "creative"
 
 // A crop of a capture shown as a floating card over the device, e.g. the AI
 // summary block. Rect values are fractions of the capture size.
@@ -45,8 +46,8 @@ export interface SlideInput {
   copy: SlideCopy
   eyebrowIcon?: string
   callouts?: Callout[]
-  // Second device for the sync and banner layouts, e.g. a Mac window behind
-  // the phone.
+  // Second device for the sync, banner and creative layouts, e.g. a Mac window
+  // behind the phone.
   companion?: { device: DeviceKind; capture: Capture }
 }
 
@@ -235,10 +236,12 @@ ${place(f.html, (W - f.width) / 2, H * 0.52)}`
 }
 
 // Type scale unit: the canvas width on portrait canvases, a multiple of the
-// height on landscape ones. The README banner is wider than the store canvases
-// and shown smaller, so its copy gets a larger unit.
+// height on landscape ones. The README banner and the App Store creative asset
+// are shown smaller than the store screenshots, so their copy gets a larger unit.
 const textUnit = (canvas: SlideInput["canvas"], layout: Layout) =>
-  canvas.height > canvas.width ? canvas.width : canvas.height * (layout === "banner" ? 1.7 : 1.35)
+  canvas.height > canvas.width
+    ? canvas.width
+    : canvas.height * (layout === "banner" || layout === "creative" ? 1.7 : 1.35)
 
 const landscapeBody = (input: SlideInput): string => {
   const { canvas, layout, tone, device, captures } = input
@@ -305,6 +308,24 @@ ${place(f.html, (W - f.width) / 2, H * 0.43)}`
       return `${place(textBlock(input, bannerMetrics, "left"), W * 0.055, H * 0.5, "transform:translateY(-50%)")}
 ${place(desk.html, W * 0.42, deskTop)}
 ${place(phone.html, W * 0.375, deskTop + desk.height - phone.height * 0.82)}`
+    }
+    case "creative": {
+      // App Store universal creative asset (16:9). The App Store shows it as the
+      // product page header (cropped to about 21:9) and in search results (about
+      // 3:2), so the banner composition stays inside the central 80% x 70% that
+      // both crops keep.
+      if (!input.companion) throw new Error("creative layout needs a companion device")
+      const desk = frame(device, captures[0], W * 0.46, tone)
+      const phone = frame(input.companion.device, input.companion.capture, W * 0.115, tone)
+      const deskTop = (H - desk.height) / 2
+      const creativeMetrics = {
+        ...metrics,
+        eyebrow: textUnit(canvas, layout) * 0.021,
+        maxWidth: W * 0.29,
+      }
+      return `${place(textBlock(input, creativeMetrics, "left"), W * 0.1, H * 0.5, "transform:translateY(-50%)")}
+${place(desk.html, W * 0.44, deskTop)}
+${place(phone.html, W * 0.41, deskTop + desk.height - phone.height * 0.86)}`
     }
     default: {
       throw new Error(`Layout ${layout} is not available on landscape canvases`)

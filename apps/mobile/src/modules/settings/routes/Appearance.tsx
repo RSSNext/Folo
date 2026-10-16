@@ -2,7 +2,7 @@ import { getUnreadAll } from "@follow/store/unread/getters"
 import { useTranslation } from "react-i18next"
 
 import type { AppColorScheme } from "@/src/atoms/settings/ui"
-import { setUISetting, useUISettingKey } from "@/src/atoms/settings/ui"
+import { setUISetting, useUIPaidSettingLocked, useUISettingKey } from "@/src/atoms/settings/ui"
 import {
   NavigationBlurEffectHeaderView,
   SafeNavigationScrollView,
@@ -17,8 +17,12 @@ import {
 import { Switch } from "@/src/components/ui/switch/Switch"
 import { useNavigation } from "@/src/lib/navigation/hooks"
 // Font size presets
-import { setBadgeCountAsyncWithPermission } from "@/src/lib/permission"
+import {
+  requestNotificationPermission,
+  setBadgeCountAsyncWithPermission,
+} from "@/src/lib/permission"
 
+import { PaidSettingCell } from "../components/PaidSettingCell"
 import { ReadingScreen } from "./Reading"
 
 const fontSizePresets = [
@@ -79,6 +83,7 @@ export const AppearanceScreen = () => {
   )
   const showUnreadCountBadgeMobile = useUISettingKey("showUnreadCountBadgeMobile")
   const hideExtraBadge = useUISettingKey("hideExtraBadge")
+  const isHideExtraBadgeLocked = useUIPaidSettingLocked("hideExtraBadge")
   const thumbnailRatio = useUISettingKey("thumbnailRatio")
 
   // Font scaling settings
@@ -126,15 +131,22 @@ export const AppearanceScreen = () => {
       <GroupedInsetListSectionHeader label={t("appearance.unread_count.label")} />
       <GroupedInsetListCard>
         <GroupedInsetListCell
-          label={t("appearance.unread_count.badge.label")}
-          description={t("appearance.unread_count.badge.description")}
+          label={t("appearance.unread_count.badge.app_icon_label")}
+          description={t("appearance.unread_count.badge.app_icon_description")}
         >
           <Switch
             size="sm"
             value={showUnreadCountBadgeMobile}
-            onValueChange={(val) => {
+            onValueChange={async (val) => {
               setUISetting("showUnreadCountBadgeMobile", val)
-              setBadgeCountAsyncWithPermission(val ? getUnreadAll() : 0, true)
+              if (val && !(await requestNotificationPermission())) {
+                // Without the permission the badge can't show, so the switch must not stay on
+                setUISetting("showUnreadCountBadgeMobile", false)
+                return
+              }
+              void setBadgeCountAsyncWithPermission(val ? getUnreadAll() : 0, {
+                skipSettingCheck: true,
+              })
             }}
           />
         </GroupedInsetListCell>
@@ -154,18 +166,20 @@ export const AppearanceScreen = () => {
 
       <GroupedInsetListSectionHeader label={t("appearance.subscriptions")} marginSize="small" />
       <GroupedInsetListCard>
-        <GroupedInsetListCell
+        <PaidSettingCell
           label={t("appearance.hide_extra_badge.label")}
-          description={t("appearance.hide_extra_badge.description")}
+          description={t("appearance.hide_extra_badge.description_mobile")}
+          locked={isHideExtraBadgeLocked}
         >
           <Switch
             size="sm"
             value={hideExtraBadge}
+            disabled={isHideExtraBadgeLocked}
             onValueChange={(val) => {
               setUISetting("hideExtraBadge", val)
             }}
           />
-        </GroupedInsetListCell>
+        </PaidSettingCell>
         <GroupedInsetListCell
           label={t("appearance.thumbnail_ratio.title")}
           description={t("appearance.thumbnail_ratio.description")}

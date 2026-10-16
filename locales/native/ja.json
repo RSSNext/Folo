@@ -22,12 +22,15 @@
   "contextMenu.services": "サービス",
   "dialog.cancel": "キャンセル",
   "dialog.clearAllData": "本当にすべてのデータを消去してもよろしいですか？",
+  "dialog.clearAllDataFailed": "アプリのデータをリセットできませんでした：{{message}}",
+  "dialog.clearAllDataSuccess": "アプリのデータをリセットしました",
   "dialog.confirm": "確認",
   "dialog.no": "いいえ",
   "dialog.open": "開く",
   "dialog.openExternalApp.message": "本当に他の外部アプリで \"{{url}}\" を開いてもよろしいですか？",
   "dialog.openExternalApp.title": "外部のアプリで開きますか？",
   "dialog.yes": "はい",
+  "download.failed": "ダウンロードに失敗しました",
   "download.success": "ダウンロードが完了しました",
   "menu.about": "{{name}} について",
   "menu.alwaysOnTop": "常に手前に表示",
@@ -70,5 +73,8 @@
   "menu.unread": "未読",
   "menu.view": "表示",
   "menu.window": "ウィンドウ",
-  "menu.zoom": "ズーム"
+  "menu.zoom": "ズーム",
+  "update.available": "アップデートがあります",
+  "update.checkFailed": "アップデートを確認できませんでした",
+  "update.upToDate": "最新バージョンです"
 }

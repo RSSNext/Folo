@@ -2,6 +2,7 @@ import { readFileSync } from "node:fs"
 import { fileURLToPath } from "node:url"
 
 import { env } from "@follow/shared/env.ssr"
+import { FollowAPIError } from "@follow-app/client-sdk"
 import type { FastifyInstance, FastifyReply, FastifyRequest } from "fastify"
 import { minify } from "html-minifier-terser"
 import { parseHTML } from "linkedom"
@@ -90,6 +91,9 @@ async function safeInjectMetaToTemplate(
 
     if (e instanceof FetchError && e.response?.status) {
       res.code(e.response.status)
+    }
+    if (e instanceof FollowAPIError && e.status) {
+      res.code(e.status)
     }
 
     if (e instanceof MetaError) {

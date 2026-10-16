@@ -19,16 +19,17 @@ export const SortByUnreadFeedList = memo(({ view, data, categoryOpenStateData }:
         const onboardingCategories: [string, string[]][] = []
         const regularCategories: [string, string[]][] = []
 
-        for (const [category, ids] of sortedByUnread) {
-          const hasOnboardingFeed = ids.some((id) => {
+        // The tuples are passed through as they are, so an unchanged order keeps the result equal
+        for (const entry of sortedByUnread) {
+          const hasOnboardingFeed = entry[1].some((id) => {
             const feed = state.feeds[id]
             return feed && isOnboardingFeedUrl(feed.url)
           })
 
           if (hasOnboardingFeed) {
-            onboardingCategories.push([category, ids.concat()])
+            onboardingCategories.push(entry)
           } else {
-            regularCategories.push([category, ids.concat()])
+            regularCategories.push(entry)
           }
         }
 

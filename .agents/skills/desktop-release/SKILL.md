@@ -1,6 +1,6 @@
 ---
 name: desktop-release
-description: Full Folo desktop release from dev to the stores. Drafts the changelog, picks the build or ota mode, bumps the version and opens the release PR, verifies the packages GitHub Actions builds for the PR and every change in the release, merges the PR, watches the tag and store builds, gets the Windows installer signed, publishes the GitHub release, and submits the Mac App Store and Microsoft Store builds for review. Use when the user asks to release, ship or publish the desktop app.
+description: Full Folo desktop release from dev to the stores. Drafts the changelog, picks the build or ota mode, bumps the version and opens the release PR, verifies the packages GitHub Actions builds for the PR and every change in the release, merges the PR, watches the tag and store builds, gets the Windows installer signed, publishes the GitHub release, submits the Mac App Store and Microsoft Store builds for review, and drafts the announcement post and promo video. Use when the user asks to release, ship or publish the desktop app.
 disable-model-invocation: true
 argument-hint: "[optional notes, e.g. a preferred mode or the OTA runtime]"
 allowed-tools: Bash, Read, Write, Edit, Glob, Grep
@@ -10,7 +10,7 @@ allowed-tools: Bash, Read, Write, Edit, Glob, Grep
 
 The release flow shared by every agent. Claude Code reaches it through `.claude/skills/desktop-release/SKILL.md`, which maps these steps onto Claude's tools. Change the flow here, not in the adapter.
 
-Phase A prepares the release, Phase B verifies the packages GitHub Actions builds for the PR, and Phase C merges and carries the release through every store. The run ends only when every item in **Definition of done** is checked, or when the only open items are blocked on the user and you have told them exactly what is left.
+Phase A prepares the release, Phase B verifies the packages GitHub Actions builds for the PR, and Phase C merges, carries the release through every store and drafts its announcement. The run ends only when every item in **Definition of done** is checked, or when the only open items are blocked on the user and you have told them exactly what is left.
 
 ## Standing authorization
 
@@ -37,6 +37,7 @@ Still ask first: code changes that fix something found during verification; acce
 - [ ] Microsoft Store: new submission with `Folo.appx` `<version>.0` and What's New, submitted for certification
 - [ ] `chore(sync): merge main into dev` merged, or its blocker reported
 - [ ] Verification report and final summary delivered; temporary apps, profiles, mounts and browser tabs cleaned up
+- [ ] Announcement kit delivered: X post, reply with the release links, quote line and promo video (C10)
 
 ## How to work
 
@@ -300,6 +301,10 @@ Tell the user: version, mode and `runtimeVersion`; PR and merge commit; tag; Git
 
 Clean up: quit the test app, restore `~/.folo/config.json` if it changed, unregister and delete app copies, profile copies and mounts, delete the downloads (keep the report and screenshots), close the browser tabs you opened, and release any granted credentials.
 
+### C10. Announcement kit
+
+Follow `.agents/skills/release-promo/SKILL.md`: pick the highlights, draft the X post, its reply with the release links and a one-sentence quote line for the second account, and render the promo video from the store captures. If a mobile release runs in the same session, make one kit for both after the later release's report. These are drafts; the user posts them.
+
 ## Failure handling
 
 - The bump fails halfway: nbump restores `package.json` only when a trailing hook fails and rolls nothing back after a leading hook fails. Check `git status` and `git branch --list 'release/desktop/*'`, restore the tree with `git restore --staged --worktree apps/desktop` and delete the generated `apps/desktop/changelog/<version>.md` if the bump renamed `next.md`. Ask before deleting a leftover local release branch. If the branch reached GitHub but `gh pr create` failed, open the PR by hand with the title and body from `bump.config.ts`.
@@ -322,4 +327,5 @@ Clean up: quit the test app, restore `~/.folo/config.json` if it changed, unregi
 - OTA metadata builder: `.github/scripts/build-ota-release.mjs`; Mac App Store upload: `.github/scripts/upload-mas-pkg.sh`
 - Workflows: `.github/workflows/build-desktop.yml`, `.github/workflows/tag.yml`, `.github/workflows/sync.yaml`
 - OTA worker: `apps/ota` (its `README.md` lists manifest and policy checks); desktop updater: `apps/desktop/layer/main/src/updater/`
+- Announcement kit: `.agents/skills/release-promo/SKILL.md`; promo video renderer: `store-assets/scripts/release-video.ts`
 - `references/verify-macos-build.md`, `references/store-submissions.md`, `references/release-notes.md`, `references/browser-and-credentials.md`, `scripts/pe-signature.mjs`

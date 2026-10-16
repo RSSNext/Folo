@@ -2,7 +2,7 @@ import { impactAsync, ImpactFeedbackStyle } from "expo-haptics"
 import { atom, useAtomValue, useSetAtom } from "jotai"
 import { selectAtom } from "jotai/utils"
 import * as React from "react"
-import { StyleSheet, View } from "react-native"
+import { StyleSheet } from "react-native"
 import { RectButton } from "react-native-gesture-handler"
 import type { SwipeableMethods } from "react-native-gesture-handler/ReanimatedSwipeable"
 import ReanimatedSwipeable from "react-native-gesture-handler/ReanimatedSwipeable"
@@ -68,13 +68,9 @@ export const SwipeableItem: React.FC<SwipeableItemProps> = ({
     const width = leftActions?.length ? leftActions.length * rectButtonWidth : rectButtonWidth
     return (
       <>
-        <View
-          style={[
-            styles.absoluteFill,
-            {
-              backgroundColor: leftActions?.[0]?.backgroundColor ?? "#fff",
-            },
-          ]}
+        <ActionUnderlay
+          progress={progress}
+          backgroundColor={leftActions?.[0]?.backgroundColor ?? "#fff"}
         />
         <Animated.View
           style={[
@@ -101,13 +97,9 @@ export const SwipeableItem: React.FC<SwipeableItemProps> = ({
     const width = rightActions?.length ? rightActions.length * rectButtonWidth : rectButtonWidth
     return (
       <>
-        <View
-          style={[
-            styles.absoluteFill,
-            {
-              backgroundColor: rightActions?.at(-1)?.backgroundColor ?? "#fff",
-            },
-          ]}
+        <ActionUnderlay
+          progress={progress}
+          backgroundColor={rightActions?.at(-1)?.backgroundColor ?? "#fff"}
         />
         <Animated.View
           style={[
@@ -187,6 +179,21 @@ export const SwipeableGroupProvider = ({ children }: { children: React.ReactNode
     [],
   )
   return <SwipeableGroupContext value={ctx}>{children}</SwipeableGroupContext>
+}
+
+// Gesture handler 3 keeps the action panes mounted behind the row, so their color has to stay
+// hidden until the row moves, or it shows through rows that are not opaque or full width
+const ActionUnderlay = ({
+  progress,
+  backgroundColor,
+}: {
+  progress: SharedValue<number>
+  backgroundColor: string
+}) => {
+  const visibilityStyle = useAnimatedStyle(() => ({
+    opacity: progress.value > 0 ? 1 : 0,
+  }))
+  return <Animated.View style={[styles.absoluteFill, { backgroundColor }, visibilityStyle]} />
 }
 
 const LeftActionItem = React.memo(

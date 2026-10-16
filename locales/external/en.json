@@ -49,5 +49,10 @@
   "register.email": "Email",
   "register.password": "Password",
   "register.submit": "Create account",
+  "share.load_error_description": "This may be a temporary problem. Please try again.",
+  "share.load_error_feed": "Unable to load this feed",
+  "share.load_error_list": "Unable to load this list",
+  "share.load_error_profile": "Unable to load this profile",
+  "share.retry": "Try again",
   "words.email": "Email"
 }

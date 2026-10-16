@@ -24,3 +24,18 @@ export function resizableOnly(...positions: (keyof Enable)[]) {
   }
   return enable
 }
+
+/**
+ * Escape in an open combobox closes its suggestions. Radix handles Escape on the document
+ * before the combobox sees it, so without this the whole modal closes and drops the form.
+ */
+export const keepModalOpenForExpandedCombobox = (event: KeyboardEvent) => {
+  const { target } = event
+  if (
+    target instanceof HTMLElement &&
+    target.getAttribute("role") === "combobox" &&
+    target.getAttribute("aria-expanded") === "true"
+  ) {
+    event.preventDefault()
+  }
+}

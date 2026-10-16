@@ -1,6 +1,5 @@
 import { existsSync, readFileSync } from "node:fs"
 import { mkdir, mkdtemp, readdir, rename, rm, stat, writeFile } from "node:fs/promises"
-import os from "node:os"
 import { URL } from "node:url"
 
 import { callWindowExpose } from "@follow/shared/bridge"
@@ -86,7 +85,10 @@ export const isRendererManifestUsable = (
 
 class RendererHotUpdater {
   private readonly logger = log.scope("updater:renderer")
-  private readonly tempDir = path.resolve(os.tmpdir(), "follow-render-update")
+  // Next to the bundles it is moved into: a rename from /tmp fails across filesystems on Linux,
+  // where /tmp is often a tmpfs, and a shared /tmp lets another local user swap the files between
+  // the hash check and the extraction
+  private readonly tempDir = path.resolve(HOTUPDATE_RENDER_ENTRY_DIR, ".staging")
   private readonly manifestPath = path.resolve(HOTUPDATE_RENDER_ENTRY_DIR, "manifest.yml")
 
   extractManifest(payload: DesktopManifestResponse | null): RendererManifest | null {

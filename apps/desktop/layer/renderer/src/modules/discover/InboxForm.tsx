@@ -17,12 +17,14 @@ import type { InboxModel } from "@follow/store/inbox/types"
 import { cn } from "@follow/utils/utils"
 import { zodResolver } from "@hookform/resolvers/zod"
 import { useMutation } from "@tanstack/react-query"
+import i18next from "i18next"
 import { useForm } from "react-hook-form"
 import { useTranslation } from "react-i18next"
 import { toast } from "sonner"
 import { z } from "zod"
 
-import { useCurrentModal } from "~/components/ui/modal/stacked/hooks"
+import { useCurrentModal, useModalUnsavedChanges } from "~/components/ui/modal/stacked/hooks"
+import { useFormHasChanges } from "~/hooks/common/useFormHasChanges"
 import { createErrorToaster } from "~/lib/error-parser"
 import { FollowSummary } from "~/modules/feed/feed-summary"
 
@@ -58,11 +60,12 @@ export const InboxForm: Component<{
   )
 }
 
+// Messages are resolved at validation time so they follow the current language
 const inboxHandleSchema = z
   .string()
-  .min(3)
-  .max(32)
-  .regex(/^[a-z0-9_-]+$/)
+  .min(3, { error: () => i18next.t("discover.inbox.handle_length") })
+  .max(32, { error: () => i18next.t("discover.inbox.handle_length") })
+  .regex(/^[a-z0-9_-]+$/, { error: () => i18next.t("discover.inbox.handle_invalid") })
 
 const formSchema = z.object({
   handle: inboxHandleSchema,
@@ -76,10 +79,11 @@ const InboxInnerForm = ({ inbox }: { inbox?: Nullable<InboxModel> }) => {
   const form = useForm<z.infer<typeof formSchema>>({
     resolver: zodResolver(formSchema),
     defaultValues: {
-      handle: inbox?.id,
+      handle: inbox?.id ?? "",
       title: inbox?.title || "",
     },
   })
+  useModalUnsavedChanges(useFormHasChanges(form))
 
   const mutationCreate = useMutation({
     mutationFn: async ({ handle, title }: { handle: string; title: string }) => {
@@ -90,6 +94,7 @@ const InboxInnerForm = ({ inbox }: { inbox?: Nullable<InboxModel> }) => {
     },
     onSuccess: (_) => {
       toast.success(t("discover.inbox_create_success"))
+      currentModal.dismiss?.()
     },
     onError: createErrorToaster(t("discover.inbox_create_error")),
   })
@@ -103,6 +108,7 @@ const InboxInnerForm = ({ inbox }: { inbox?: Nullable<InboxModel> }) => {
     },
     onSuccess: () => {
       toast.success(t("discover.inbox_update_success"))
+      currentModal.dismiss?.()
     },
     onError: createErrorToaster(t("discover.inbox_update_error")),
   })
@@ -113,7 +119,6 @@ const InboxInnerForm = ({ inbox }: { inbox?: Nullable<InboxModel> }) => {
     } else {
       mutationCreate.mutate({ handle: values.handle, title: values.title })
     }
-    currentModal.dismiss?.()
   }
 
   return (
@@ -163,7 +168,7 @@ const InboxInnerForm = ({ inbox }: { inbox?: Nullable<InboxModel> }) => {
             )}
           />
           <div className={cn("center flex justify-end gap-4")} data-testid="discover-form-actions">
-            <Button type="submit" isLoading={mutationCreate.isPending}>
+            <Button type="submit" isLoading={mutationCreate.isPending || mutationChange.isPending}>
               {t(inbox ? "discover.inbox_update" : "discover.inbox_create")}
             </Button>
           </div>

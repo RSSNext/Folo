@@ -312,22 +312,20 @@ const ActionSection: React.FC<{
               },
             ]}
           >
-            <View className="flex-row items-center gap-2">
-              {action.onNavigate ? (
-                <GroupedInsetListActionCell
-                  label={t(action.label)}
-                  icon={action.icon}
-                  onPress={() => action.onNavigate?.(navigation, index)}
-                />
-              ) : (
-                <GroupedInsetListCell
-                  label={t(action.label)}
-                  icon={action.icon}
-                  leftClassName="flex-none"
-                  rightClassName="flex-1 flex-row justify-end"
-                />
-              )}
-            </View>
+            {action.onNavigate ? (
+              <GroupedInsetListActionCell
+                label={t(action.label)}
+                icon={action.icon}
+                onPress={() => action.onNavigate?.(navigation, index)}
+              />
+            ) : (
+              <GroupedInsetListCell
+                label={t(action.label)}
+                icon={action.icon}
+                leftClassName="flex-none"
+                rightClassName="flex-1 flex-row justify-end"
+              />
+            )}
           </SwipeableItem>
         ))}
         {notEnabledActions.length > 0 && (

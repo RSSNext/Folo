@@ -69,7 +69,7 @@ export const LexicalRichEditor = function LexicalRichEditor({
   namespace = "LexicalRichEditor",
   autoFocus = false,
   theme = defaultLexicalTheme,
-  enabledPlugins = defaultEnabledPlugins,
+  enabledPlugins: enabledPluginsProp,
   initalEditorState,
   plugins,
   accessories,
@@ -79,6 +79,8 @@ export const LexicalRichEditor = function LexicalRichEditor({
   onLengthChange,
 }: LexicalRichEditorProps & { ref?: React.RefObject<LexicalRichEditorRef | null> }) {
   const { t } = useTranslation("common")
+  // Callers only list the built-in plugins they turn on or off
+  const enabledPlugins = { ...defaultEnabledPlugins, ...enabledPluginsProp }
   // `null` hides the placeholder, so only an omitted prop falls back to the default text
   const placeholder = placeholderProp === undefined ? t("placeholder.message") : placeholderProp
   const [editorRef, setEditorRef] = useState<LexicalEditor | null>(null)

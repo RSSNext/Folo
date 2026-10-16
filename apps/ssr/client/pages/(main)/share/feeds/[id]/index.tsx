@@ -1,3 +1,5 @@
+import { NotFoundContent } from "@client/components/common/404"
+import { ShareLoadError } from "@client/components/common/ShareLoadError"
 import { Item } from "@client/components/items"
 import { FeedCertification } from "@client/components/ui/feed-certification"
 import { FeedIcon } from "@client/components/ui/feed-icon"
@@ -10,6 +12,7 @@ import { LoadingCircle } from "@follow/components/ui/loading/index.jsx"
 import { useTitle } from "@follow/hooks"
 import { cn } from "@follow/utils/utils"
 import type { FeedSchema } from "@follow-app/client-sdk"
+import { FollowAPIError } from "@follow-app/client-sdk"
 import { Fragment } from "react"
 import * as React from "react"
 import { useTranslation } from "react-i18next"
@@ -40,8 +43,15 @@ export function Component() {
 
   useTitle(feed.data?.feed.title)
 
-  if (feed.isLoading || !feed.data?.feed || !feedData) {
+  if (feed.isLoading) {
     return <LoadingCircle size="large" className="center fixed inset-0" />
+  }
+
+  if (!feed.data?.feed || !feedData) {
+    if (!feed.error || (feed.error instanceof FollowAPIError && feed.error.status === 404)) {
+      return <NotFoundContent />
+    }
+    return <ShareLoadError title={t("share.load_error_feed")} onRetry={() => void feed.refetch()} />
   }
 
   return (

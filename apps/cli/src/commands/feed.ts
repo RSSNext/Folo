@@ -1,6 +1,6 @@
 import type { Command } from "commander"
 
-import { runCommand } from "../command"
+import { runCommand, toChangeResult } from "../command"
 
 const isURL = (value: string) => value.startsWith("http://") || value.startsWith("https://")
 
@@ -27,7 +27,7 @@ export const registerFeedCommand = (program: Command) => {
     .action(async function (this: Command, feedId: string) {
       await runCommand(this, async ({ client }) => {
         const response = await client.api.feeds.refresh({ id: feedId })
-        return response.data
+        return toChangeResult(response)
       })
     })
 

@@ -41,9 +41,8 @@ export const SearchCmdK: React.FC = () => {
   const { t } = useTranslation()
   const open = useAppSearchOpen()
 
-  const [searchInstance, setSearchInstance] = React.useState(() =>
-    searchActions.createLocalDbSearch(),
-  )
+  // Built when the search opens: it reads every cached entry and indexes its content
+  const [searchInstance, setSearchInstance] = React.useState<Promise<SearchInstance> | null>(null)
   React.useEffect(() => {
     if (!open) return
 
@@ -92,6 +91,7 @@ export const SearchCmdK: React.FC = () => {
   const [isPending, startTransition] = React.useTransition()
   const handleSearch = React.useCallback(
     async (value: string) => {
+      if (!searchInstance) return
       const { search } = await searchInstance
       setPage(0)
       startTransition(() => {
@@ -109,16 +109,11 @@ export const SearchCmdK: React.FC = () => {
   const pageSize = 16
   const renderedEntries = useMemo(() => entries.slice(0, (page + 1) * pageSize), [entries, page])
 
-  const renderedFeeds = useMemo(() => {
-    const delta = entries.length - renderedEntries.length
-
-    if (delta > pageSize) return []
-
-    const entriesTotalPage = Math.ceil(entries.length / pageSize)
-    const right = entriesTotalPage === page + 1 ? delta : pageSize * page + 1 - entries.length
-
-    return feeds.slice(0, right)
-  }, [entries.length, feeds, page, renderedEntries.length])
+  // Feeds fill the slots left on the current page once every entry is rendered
+  const renderedFeeds = useMemo(
+    () => feeds.slice(0, Math.max(0, (page + 1) * pageSize - entries.length)),
+    [entries.length, feeds, page],
+  )
   const totalCount = entries.length + feeds.length
   const renderedTotalCount = renderedEntries.length + renderedFeeds.length
   const loadMore = React.useCallback(() => {

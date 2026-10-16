@@ -115,6 +115,7 @@ export const MCPServiceItem = ({
         <ItemActions
           actions={actions}
           enabled={service.enabled}
+          toggleLabel={service.name}
           onToggle={(enabled) => onToggleEnabled(service.id, enabled)}
         />
       </div>

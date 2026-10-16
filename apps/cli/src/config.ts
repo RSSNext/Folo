@@ -1,4 +1,4 @@
-import { mkdir, readFile, writeFile } from "node:fs/promises"
+import { chmod, mkdir, readFile, rename, writeFile } from "node:fs/promises"
 import { homedir } from "node:os"
 
 import { join } from "pathe"
@@ -26,9 +26,9 @@ const normalizeConfig = (config: unknown): FoloCLIConfig => {
 export const getConfigPath = () => configPath
 
 export const readConfig = async (): Promise<FoloCLIConfig> => {
+  let raw: string
   try {
-    const raw = await readFile(configPath, "utf8")
-    return normalizeConfig(JSON.parse(raw))
+    raw = await readFile(configPath, "utf8")
   } catch (error) {
     const nodeError = error as NodeJS.ErrnoException
     if (nodeError.code === "ENOENT") {
@@ -37,15 +37,33 @@ export const readConfig = async (): Promise<FoloCLIConfig> => {
 
     throw error
   }
+
+  try {
+    return normalizeConfig(JSON.parse(raw))
+  } catch {
+    // A damaged file would otherwise stop every command, login included, until it is deleted
+    console.error(`[config] Ignoring unreadable config at ${configPath}. Run login again.`)
+    return {}
+  }
 }
 
 const ensureConfigDir = async () => {
-  await mkdir(configDir, { recursive: true })
+  await mkdir(configDir, { recursive: true, mode: 0o700 })
+  if (process.platform !== "win32") {
+    await chmod(configDir, 0o700).catch(() => {})
+  }
 }
 
+// The token is readable only by the user, and the file is replaced in one step so a concurrent
+// or interrupted write never leaves half a file
 export const writeConfig = async (config: FoloCLIConfig) => {
   await ensureConfigDir()
-  await writeFile(configPath, `${JSON.stringify(config, null, 2)}\n`, "utf8")
+  const tempPath = `${configPath}.${process.pid}.tmp`
+  await writeFile(tempPath, `${JSON.stringify(config, null, 2)}\n`, {
+    encoding: "utf8",
+    mode: 0o600,
+  })
+  await rename(tempPath, configPath)
 }
 
 export const updateConfig = async (patch: Partial<FoloCLIConfig>) => {

@@ -3,6 +3,7 @@ import { FeedViewType } from "@follow/constants"
 import { IN_ELECTRON } from "@follow/shared/constants"
 import { isEntryStarred } from "@follow/store/collection/getter"
 import { collectionSyncService } from "@follow/store/collection/store"
+import { isOnboardingEntryUrl } from "@follow/store/constants/onboarding"
 import { getEntry } from "@follow/store/entry/getter"
 import { entrySyncServices } from "@follow/store/entry/store"
 import { getMarkReadTimeRange } from "@follow/store/entry/utils"
@@ -12,7 +13,6 @@ import { useMutation } from "@tanstack/react-query"
 import { useTranslation } from "react-i18next"
 import { toast } from "sonner"
 
-import { AudioPlayer, getAudioPlayerAtomValue } from "~/atoms/player"
 import { showPopover } from "~/atoms/popover"
 import { getGeneralSettings } from "~/atoms/settings/general"
 import {
@@ -30,7 +30,7 @@ import { getEffectiveRouteEntrySortOrder } from "~/modules/entry-column/hooks/en
 import { getIsPreviewFeed } from "~/modules/entry-column/hooks/useIsPreviewFeed"
 import { markAllByRoute } from "~/modules/entry-column/hooks/useMarkAll"
 import { useGalleryModal } from "~/modules/entry-content/hooks"
-import { playEntryTts } from "~/modules/player/entry-tts"
+import { toggleEntryTts } from "~/modules/player/entry-tts"
 
 import { useRegisterFollowCommand } from "../hooks/use-register-command"
 import type { Command, CommandCategory } from "../types"
@@ -179,7 +179,8 @@ export const useRegisterEntryCommands = () => {
             toast.error(t("entry_actions.unavailable.copy_link"), { duration: 3000 })
             return
           }
-          if (!entry.url) return
+          // The onboarding entries link to an internal folo:// address nobody else can open
+          if (!entry.url || isOnboardingEntryUrl(entry.url)) return
           copyToClipboard(entry.url)
           toast(t("entry_actions.copied_notify", { which: t("words.link") }), {
             duration: 1000,
@@ -235,6 +236,7 @@ export const useRegisterEntryCommands = () => {
             toast.error(t("entry_actions.unavailable.open_in_browser"), { duration: 3000 })
             return
           }
+          if (isOnboardingEntryUrl(entry.url)) return
           window.open(entry.url, "_blank")
         },
       },
@@ -253,6 +255,8 @@ export const useRegisterEntryCommands = () => {
               toast.error(t("entry_actions.unavailable.view_source_content"), { duration: 3000 })
               return
             }
+            // The onboarding entries have no source page, only an internal folo:// address
+            if (isOnboardingEntryUrl(entry.url)) return
             const routeParams = getRouteParams()
             const viewPreviewInModal = [
               FeedViewType.SocialMedia,
@@ -285,6 +289,7 @@ export const useRegisterEntryCommands = () => {
             toast.error(t("entry_actions.unavailable.share"), { duration: 3000 })
             return
           }
+          if (isOnboardingEntryUrl(entry.url)) return
 
           const xy = getMousePosition()
           showPopover(
@@ -369,12 +374,7 @@ export const useRegisterEntryCommands = () => {
         category,
         icon: <i className="i-mgc-voice-cute-re" />,
         run: async ({ entryId }) => {
-          if (getAudioPlayerAtomValue().entryId === entryId) {
-            AudioPlayer.togglePlayAndPause()
-            return
-          }
-
-          await playEntryTts(entryId, {
+          await toggleEntryTts(entryId, {
             toastTitle: t("entry_content.header.play_tts"),
           })
         },

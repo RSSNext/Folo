@@ -294,6 +294,10 @@ class SettingSyncQueue {
     this.disposers.push(d1)
 
     await loadPromise
+    // Changes left from the last session are only sent by a flush
+    if (this.queue.length > 0 && this.getCurrentUserId()) {
+      this.scheduleFlush()
+    }
     // After the load, which keeps the queue as it is once anything was added to it.
     this.uploadLocalSettingsOnce()
   }
@@ -400,6 +404,10 @@ class SettingSyncQueue {
       date: now,
     })
 
+    this.scheduleFlush()
+  }
+
+  private scheduleFlush() {
     if (this.flushScheduled) {
       return
     }
@@ -408,10 +416,19 @@ class SettingSyncQueue {
     this.chain = this.chain
       .finally(() => sleep(this.threshold))
       .finally(async () => {
+        const flushedItems = new Set(this.queue)
         try {
           await this.flush()
         } finally {
           this.flushScheduled = false
+          // The queue is persisted on every change; drop the sent items from storage too, or the
+          // next launch restores them and treats their tabs as still waiting to be sent
+          void this.persist()
+          // A change made while the flush awaited the server was not part of it, and its
+          // enqueue skipped scheduling because this flush was still pending
+          if (this.queue.some((item) => !flushedItems.has(item))) {
+            this.scheduleFlush()
+          }
         }
       })
   }

@@ -9,13 +9,25 @@ import type { AuthUser } from "@follow-app/client-sdk"
 import {
   getAnalytics,
   logEvent,
+  setAnalyticsCollectionEnabled,
   setUserId,
   setUserProperties,
 } from "@react-native-firebase/analytics"
 import { nativeApplicationVersion, nativeBuildVersion } from "expo-application"
 import PostHog from "posthog-react-native"
 
+import { getDataSettings } from "../atoms/settings/data"
 import { proxyEnv } from "../lib/proxy-env"
+
+let posthog: PostHog | null = null
+
+/** Follows the "Send anonymous data" setting for both events and error reports */
+export const setAnonymousDataEnabled = async (enabled: boolean) => {
+  await Promise.all([
+    setAnalyticsCollectionEnabled(getAnalytics(), enabled),
+    posthog && (enabled ? posthog.optIn() : posthog.optOut()),
+  ])
+}
 
 export const initAnalytics = async () => {
   const analytics = getAnalytics()
@@ -25,21 +37,23 @@ export const initAnalytics = async () => {
     setUserProperties: (properties) => setUserProperties(analytics, properties),
   })
 
+  const { sendAnonymousData } = getDataSettings()
   if (proxyEnv.POSTHOG_KEY) {
-    setPostHogTracker(
-      new PostHog(proxyEnv.POSTHOG_KEY, {
-        host: proxyEnv.POSTHOG_HOST,
-        before_send: createPostHogBeforeSend(),
-        errorTracking: {
-          autocapture: {
-            uncaughtExceptions: true,
-            unhandledRejections: true,
-            console: false,
-          },
+    posthog = new PostHog(proxyEnv.POSTHOG_KEY, {
+      host: proxyEnv.POSTHOG_HOST,
+      before_send: createPostHogBeforeSend(),
+      defaultOptIn: sendAnonymousData,
+      errorTracking: {
+        autocapture: {
+          uncaughtExceptions: true,
+          unhandledRejections: true,
+          console: false,
         },
-      }),
-    )
+      },
+    })
+    setPostHogTracker(posthog)
   }
+  await setAnonymousDataEnabled(sendAnonymousData).catch(console.error)
 
   tracker.manager.appendUserProperties({
     build: "rn",

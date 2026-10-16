@@ -9,10 +9,12 @@ import {
 } from "@follow/components/ui/form/index.jsx"
 import { Input, InputOTP, InputOTPGroup, InputOTPSlot } from "@follow/components/ui/input/index.js"
 import { Label } from "@follow/components/ui/label/index.js"
+import { TOTP_ISSUER } from "@follow/constants"
 import { useWhoami } from "@follow/store/user/hooks"
 import { userActions } from "@follow/store/user/store"
 import { zodResolver } from "@hookform/resolvers/zod"
 import { useMutation } from "@tanstack/react-query"
+import i18next from "i18next"
 import { m, useAnimation } from "motion/react"
 import { useState } from "react"
 import { useForm } from "react-hook-form"
@@ -23,13 +25,18 @@ import { z } from "zod"
 
 import { useCurrentModal, useModalStack } from "~/components/ui/modal/stacked/hooks"
 import { twoFactor } from "~/lib/auth"
+import { copyToClipboard } from "~/lib/clipboard"
 import { getFetchErrorInfo } from "~/lib/error-parser"
 import { useHasPassword } from "~/queries/auth"
 
 import { NoPasswordHint } from "./update-password-form"
 
 const passwordSchema = z.string().min(8).max(128)
-const totpCodeSchema = z.string().length(6).regex(/^\d+$/)
+const invalidTotpCode = () => i18next.t("profile.totp_code.invalid", { ns: "settings" })
+const totpCodeSchema = z
+  .string()
+  .length(6, { error: invalidTotpCode })
+  .regex(/^\d+$/, { error: invalidTotpCode })
 
 const passwordFormSchema = z.object({
   password: passwordSchema,
@@ -219,6 +226,7 @@ export const TwoFactorForm = () => {
       <div className="flex items-center justify-center">
         <QRCode value={totpURI} className="dark:border dark:border-white" />
       </div>
+      <TOTPSetupKeyButton totpURI={totpURI} />
       <TOTPForm
         message={{
           label: t("profile.totp_code.init"),
@@ -239,7 +247,7 @@ export const TwoFactorForm = () => {
       onSubmitMutationFn={async (values) => {
         const res = user?.twoFactorEnabled
           ? await twoFactor.disable({ password: values.password })
-          : await twoFactor.enable({ password: values.password })
+          : await twoFactor.enable({ password: values.password, issuer: TOTP_ISSUER })
         if (res.error) {
           throw new Error(res.error.message)
         }
@@ -252,6 +260,26 @@ export const TwoFactorForm = () => {
         }
       }}
     />
+  )
+}
+
+// For authenticators that can't scan the screen, such as a password manager on the same computer
+const TOTPSetupKeyButton = ({ totpURI }: { totpURI: string }) => {
+  const { t } = useTranslation("settings")
+  const secret = URL.canParse(totpURI) ? new URL(totpURI).searchParams.get("secret") : null
+  if (!secret) return null
+
+  return (
+    <button
+      type="button"
+      className="mx-auto text-xs text-accent hover:underline"
+      onClick={async () => {
+        await copyToClipboard(secret)
+        toast.success(t("profile.two_factor.setup.key_copied"))
+      }}
+    >
+      {t("profile.two_factor.setup.copy_key")}
+    </button>
   )
 }
 

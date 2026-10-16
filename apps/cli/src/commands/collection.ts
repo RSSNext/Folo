@@ -2,7 +2,7 @@ import type { EntryListRequest } from "@follow-app/client-sdk"
 import type { Command } from "commander"
 
 import { parseISODate, parsePositiveInt, parseView, viewHelp } from "../args"
-import { runCommand } from "../command"
+import { runCommand, toChangeResult } from "../command"
 
 interface CollectionListOptions {
   limit: number
@@ -31,7 +31,10 @@ export const registerCollectionCommand = (program: Command) => {
 
         const response = await client.api.entries.list(request)
         const entries = response.data
-        const nextCursor = entries.at(-1)?.entries.publishedAt ?? null
+        const lastEntry = entries.at(-1)
+        // Collections are paged by when they were collected, not when they were published
+        const nextCursor =
+          lastEntry?.collections?.createdAt ?? lastEntry?.entries.publishedAt ?? null
 
         return {
           entries,
@@ -52,7 +55,7 @@ export const registerCollectionCommand = (program: Command) => {
           entryId,
           view: options.view,
         })
-        return response.data
+        return toChangeResult(response)
       })
     })
 
@@ -65,7 +68,7 @@ export const registerCollectionCommand = (program: Command) => {
         const response = await client.api.collections.delete({
           entryId,
         })
-        return response.data
+        return toChangeResult(response)
       })
     })
 }

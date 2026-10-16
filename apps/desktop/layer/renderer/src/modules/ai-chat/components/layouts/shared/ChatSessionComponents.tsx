@@ -52,11 +52,12 @@ export const SessionItem = ({
         </div>
         <div className="relative flex min-w-0 items-center">
           <p className="ml-2 shrink-0 truncate text-xs text-text-secondary">
-            <RelativeDay date={new Date(session.updatedAt)} />
+            <RelativeDay plain date={new Date(session.updatedAt)} />
           </p>
           {onDelete && (
             <button
               type="button"
+              aria-label={t("delete_chat")}
               onClick={onDelete}
               disabled={isLoading}
               className="absolute inset-y-0 right-0 flex items-center rounded-md bg-accent px-2 py-1 text-white opacity-0 group-data-[highlighted]:text-white group-data-[highlighted]:opacity-100"

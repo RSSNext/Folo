@@ -22,12 +22,15 @@
   "contextMenu.services": "Services",
   "dialog.cancel": "Annuler",
   "dialog.clearAllData": "Êtes-vous sûr de vouloir effacer toutes les données ?",
+  "dialog.clearAllDataFailed": "Impossible de réinitialiser les données de l'application : {{message}}",
+  "dialog.clearAllDataSuccess": "Données de l'application réinitialisées",
   "dialog.confirm": "Confirmer",
   "dialog.no": "Non",
   "dialog.open": "Ouvrir",
   "dialog.openExternalApp.message": "Êtes-vous sûr de vouloir ouvrir \"{{url}}\" avec une autre application ?",
   "dialog.openExternalApp.title": "Ouvrir une application externe ?",
   "dialog.yes": "Oui",
+  "download.failed": "Échec du téléchargement",
   "download.success": "Téléchargement terminé",
   "menu.about": "À propos de {{name}}",
   "menu.alwaysOnTop": "Toujours au premier plan",
@@ -70,5 +73,8 @@
   "menu.unread": "Non lu",
   "menu.view": "Affichage",
   "menu.window": "Fenêtre",
-  "menu.zoom": "Zoom"
+  "menu.zoom": "Zoom",
+  "update.available": "Une mise à jour est disponible",
+  "update.checkFailed": "Impossible de vérifier les mises à jour",
+  "update.upToDate": "Vous utilisez la dernière version"
 }

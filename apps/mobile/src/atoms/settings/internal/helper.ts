@@ -1,4 +1,7 @@
+import { UserRole } from "@follow/constants"
 import { useRefValue } from "@follow/hooks"
+import { getSettingPaidLevel, SettingPaidLevels } from "@follow/shared/settings/constants"
+import { useUserStore } from "@follow/store/user/store"
 import { createAtomHooks } from "@follow/utils"
 import { EventBus } from "@follow/utils/event-bus"
 import type { SetStateAction, WritableAtom } from "jotai"
@@ -11,6 +14,23 @@ import { JotaiPersistSyncStorage } from "@/src/lib/jotai"
 
 const getStorageNS = (settingKey: string) => `follow-rn-${settingKey}`
 type Nullable<T> = T | null | undefined
+type Role = UserRole | null
+
+/**
+ * Whether a role can use a setting of this paid level, as on desktop. Only a role known to lack
+ * the plan locks it: the role loads after the app renders and is unknown while signed out, and
+ * the saved values keep working meanwhile.
+ */
+const canUsePaidLevel = (requiredLevel: SettingPaidLevels | undefined, role: Role) =>
+  requiredLevel === undefined ||
+  requiredLevel === SettingPaidLevels.Free ||
+  requiredLevel === SettingPaidLevels.FreeLimited ||
+  (role !== UserRole.Free && role !== UserRole.Trial)
+
+const roleSelector = (state: { role: Role }) => state.role
+// Re-renders the setting hooks when the role changes, as the values they read depend on it
+const useRole = () => useUserStore(roleSelector)
+const getRole = () => useUserStore.getState().role
 
 export const createSettingAtom = <T extends object>(
   settingKey: string,
@@ -25,10 +45,43 @@ export const createSettingAtom = <T extends object>(
     },
   ) as WritableAtom<T, [SetStateAction<T>], void>
 
-  const [, , useSettingValue, , getSettings, setSettings] = createAtomHooks(atom)
+  const [, , useSettingValueRaw, , getSettingsRaw, setSettings] = createAtomHooks(atom)
+
+  const defaults = createDefaultSettings() as Record<string, unknown>
+  // The defaults of the paid settings, which a plan without them reads
+  const paidSettingDefaults = new Map(
+    Object.keys(defaults)
+      .filter((key) => getSettingPaidLevel(settingKey, key) !== undefined)
+      .map((key) => [key, defaults[key]]),
+  )
+
+  const isLocked = (key: string, role: Role) =>
+    paidSettingDefaults.has(key) && !canUsePaidLevel(getSettingPaidLevel(settingKey, key), role)
+
+  /**
+   * A paid setting the plan lacks reads as its default, as on desktop. The saved value is kept
+   * and applies again once the plan includes the setting.
+   */
+  const resolveAccessibleValue = (key: string, value: unknown, role: Role) =>
+    isLocked(key, role) ? paidSettingDefaults.get(key) : value
+
+  const sanitizeSettings = (settings: T, role: Role): T => {
+    const raw = settings as Record<string, unknown>
+    let sanitized: Record<string, unknown> | null = null
+
+    for (const key of paidSettingDefaults.keys()) {
+      const value = resolveAccessibleValue(key, raw[key], role)
+      if (value !== raw[key]) {
+        if (!sanitized) sanitized = { ...raw }
+        sanitized[key] = value
+      }
+    }
+
+    return (sanitized ?? raw) as T
+  }
 
   const initializeDefaultSettings = () => {
-    const currentSettings = getSettings()
+    const currentSettings = getSettingsRaw()
     const defaultSettings = createDefaultSettings()
     if (typeof currentSettings !== "object") setSettings(defaultSettings)
     const newSettings = { ...defaultSettings, ...currentSettings }
@@ -52,7 +105,10 @@ export const createSettingAtom = <T extends object>(
       selectedAtom = noopAtom
     }
 
-    return useAtomValue(selectedAtom) as ReturnType<typeof getSettings>[T]
+    const value = useAtomValue(selectedAtom) as ReturnType<typeof getSettings>[T]
+    const role = useRole()
+    if (!key) return value
+    return resolveAccessibleValue(String(key), value, role) as ReturnType<typeof getSettings>[T]
   }
 
   const useSettingKey = <T extends keyof ReturnType<typeof getSettings>>(key: T) => {
@@ -105,17 +161,36 @@ export const createSettingAtom = <T extends object>(
     selector: (s: S) => R,
   ): R => {
     const stableSelector = useRefValue(selector)
+    const role = useRole()
 
     return useAtomValue(
-      // @ts-expect-error
-      useMemo(() => selectAtom(atom, stableSelector.current, shallow), [stableSelector]),
+      useMemo(
+        () =>
+          selectAtom(
+            atom,
+            (state) => stableSelector.current(sanitizeSettings(state, role) as S),
+            shallow,
+          ),
+        [stableSelector, role],
+      ),
     )
   }
 
+  /** Whether the user's plan lacks this paid setting */
+  const usePaidSettingLocked = (key: keyof ReturnType<typeof getSettings>) =>
+    isLocked(String(key), useRole())
+
+  /**
+   * Saves a setting. While the plan lacks a paid setting, only its default is saved: the setting
+   * can be turned off but not on.
+   */
   const setSetting = <K extends keyof ReturnType<typeof getSettings>>(
     key: K,
     value: ReturnType<typeof getSettings>[K],
   ) => {
+    if (isLocked(String(key), getRole()) && value !== paidSettingDefaults.get(String(key))) {
+      return
+    }
     const updated = Date.now()
 
     EventBus.dispatch("SETTING_CHANGE_EVENT", {
@@ -125,7 +200,7 @@ export const createSettingAtom = <T extends object>(
       },
     })
     setSettings({
-      ...getSettings(),
+      ...getSettingsRaw(),
       [key]: value,
 
       updated,
@@ -136,6 +211,14 @@ export const createSettingAtom = <T extends object>(
     setSettings(createDefaultSettings())
   }
 
+  const useSettingValue = () => {
+    const value = useSettingValueRaw()
+    const role = useRole()
+    return useMemo(() => sanitizeSettings(value, role), [value, role])
+  }
+
+  const getSettings = () => sanitizeSettings(getSettingsRaw(), getRole())
+
   Object.defineProperty(useSettingValue, "select", {
     value: useSettingSelector,
   })
@@ -143,6 +226,7 @@ export const createSettingAtom = <T extends object>(
   return {
     useSettingKey,
     useSettingSelector,
+    usePaidSettingLocked,
     setSetting,
     clearSettings,
     initializeDefaultSettings,
@@ -155,6 +239,7 @@ export const createSettingAtom = <T extends object>(
   } as {
     useSettingKey: typeof useSettingKey
     useSettingSelector: typeof useSettingSelector
+    usePaidSettingLocked: typeof usePaidSettingLocked
     setSetting: typeof setSetting
     clearSettings: typeof clearSettings
     initializeDefaultSettings: typeof initializeDefaultSettings

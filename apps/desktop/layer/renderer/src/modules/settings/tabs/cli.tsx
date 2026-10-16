@@ -189,7 +189,7 @@ export const SettingCli = () => {
             <div className="flex gap-2">
               <Button
                 onClick={handleInstall}
-                disabled={loading || !status.npxAvailable || !status.hasDesktopSession}
+                disabled={loading || !status.hasDesktopSession}
                 isLoading={loading}
               >
                 {t("cli.install")}

@@ -2,6 +2,7 @@ import { callWindowExpose } from "@follow/shared/bridge"
 import { extractElectronWindowOptions } from "@follow/shared/electron"
 import type { BrowserWindow } from "electron/main"
 
+import { openDeepLink } from "~/lib/deep-link"
 import { logger } from "~/logger"
 import { WindowManager } from "~/manager/window"
 
@@ -112,7 +113,8 @@ const callMainWindow = (url: string, fn: (mainWindow: BrowserWindow) => any) => 
   if (!mainWindow) {
     WindowManager.createMainWindow()
 
-    return handleUrlRouting(url)
+    // Routed again once the new window can take it
+    return openDeepLink(url)
   }
   mainWindow.restore()
   mainWindow.focus()

@@ -58,6 +58,8 @@ You can switch output mode:
 - `--format table`
 - `--format plain`
 
+Changes the API answers without data, such as `subscription remove`, `collection add`, `entry mark-read` or `list delete`, return the fields it sends: `{ "lastSyncId": 42 }` when the change was recorded for sync, otherwise `{}`. `subscription add` returns `feed`, `list`, `unread` and `lastSyncId`.
+
 ## Core Workflows
 
 ### 1. Timeline Reading
@@ -101,6 +103,8 @@ You can switch output mode:
 
 - Export:
   - `npx --yes folocli@latest opml export --output backup.opml`
+  - A directory as `--output` gets `folo.opml` inside it.
+  - Without `--output`, `data.content` holds the OPML document; `--format plain` prints the document itself.
 - Import:
   - `npx --yes folocli@latest opml import feeds.opml`
 

@@ -4,12 +4,16 @@ import {
   moveSpotlightRule,
 } from "@follow/shared/spotlight"
 import { validateSpotlightPattern } from "@follow/utils/spotlight"
-import { useMemo } from "react"
+import { useEffect, useMemo } from "react"
 import { useTranslation } from "react-i18next"
 import type { ViewStyle } from "react-native"
 import { Pressable, View } from "react-native"
 
-import { setSpotlightSetting, useSpotlightSettingKey } from "@/src/atoms/settings/spotlight"
+import {
+  getSpotlightSettings,
+  setSpotlightSetting,
+  useSpotlightSettingKey,
+} from "@/src/atoms/settings/spotlight"
 import {
   NavigationBlurEffectHeaderView,
   SafeNavigationScrollView,
@@ -27,6 +31,7 @@ import { Text } from "@/src/components/ui/typography/Text"
 import { CheckFilledIcon } from "@/src/icons/check_filled"
 import { useNavigation } from "@/src/lib/navigation/hooks"
 import type { NavigationControllerView } from "@/src/lib/navigation/types"
+import { dropSpotlightRuleWithoutPattern } from "@/src/modules/spotlight/rules"
 import { accentColor } from "@/src/theme/colors"
 
 export const EditSpotlightRuleScreen: NavigationControllerView<{
@@ -40,6 +45,17 @@ export const EditSpotlightRuleScreen: NavigationControllerView<{
   const colorChoices = useMemo(
     () => getSpotlightColorChoices(rule?.color ?? defaultSpotlightColor),
     [rule?.color],
+  )
+
+  // "+" saves a new rule before opening this editor. Drop it on close if it still has no pattern,
+  // or it stays in the list as a blank rule that highlights nothing
+  useEffect(
+    () => () => {
+      const { spotlights } = getSpotlightSettings()
+      const nextRules = dropSpotlightRuleWithoutPattern(spotlights, ruleId)
+      if (nextRules !== spotlights) setSpotlightSetting("spotlights", nextRules)
+    },
+    [ruleId],
   )
 
   const updateRule = (updater: (currentRule: (typeof rules)[number]) => (typeof rules)[number]) => {
@@ -99,7 +115,7 @@ export const EditSpotlightRuleScreen: NavigationControllerView<{
                 </View>
               </GroupedInsetListCell>
             </GroupedInsetListCard>
-            {rule.patternType === "regex" && !validation.valid && (
+            {!validation.valid && validation.reason === "regex" && (
               <View className="px-6 pt-2">
                 <Text className="text-sm text-red">
                   {t("spotlight.invalid_regex", { error: validation.error })}

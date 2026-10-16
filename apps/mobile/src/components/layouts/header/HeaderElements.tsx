@@ -23,12 +23,14 @@ export const HeaderSubmitButton = ({
   isLoading,
   testID,
 }: ModalHeaderSubmitButtonProps) => {
+  const { t } = useTranslation("common")
   const label = useColor("label")
   return (
     <UINavigationHeaderActionButton
       onPress={onPress}
       disabled={!isValid || isLoading}
       testID={testID}
+      accessibilityLabel={t("words.submit")}
     >
       {isLoading ? (
         <PlatformActivityIndicator size="small" color={withOpacity(label, 0.5)} />

@@ -1,4 +1,5 @@
 import { Spring } from "@follow/components/constants/spring.js"
+import { useViewport } from "@follow/components/hooks/useViewport.js"
 import { Folo } from "@follow/components/icons/folo.js"
 import { Logo } from "@follow/components/icons/logo.jsx"
 import { LetsIconsResizeDownRightLight } from "@follow/components/icons/resize.jsx"
@@ -13,7 +14,7 @@ import type { PropsWithChildren } from "react"
 import { memo, Suspense, use, useCallback, useMemo, useRef } from "react"
 import { createPortal } from "react-dom"
 
-import { useUISettingSelector } from "~/atoms/settings/ui"
+import { suppressModalOverlayAtom, useUISettingSelector } from "~/atoms/settings/ui"
 import { m } from "~/components/common/Motion"
 import { resizableOnly } from "~/components/ui/modal"
 import { useModalResizeAndDrag } from "~/components/ui/modal/stacked/internal/use-drag"
@@ -50,10 +51,15 @@ export function SettingModalLayout(props: PropsWithChildren) {
     draggable: true,
   })
 
-  const { draggable, overlay } = useUISettingSelector((state) => ({
+  const { draggable, overlay: settingOverlay } = useUISettingSelector((state) => ({
     draggable: state.modalDraggable,
     overlay: state.modalOverlay,
   }))
+  const suppressModalOverlay = useAtomValue(suppressModalOverlayAtom)
+  const overlay = settingOverlay && !suppressModalOverlay
+  // A fixed minimum wins over maxWidth, which pushed the panel and its close button out of a
+  // narrow window
+  const minWidth = useViewport(({ w }) => (w ? Math.min(700, Math.floor(w * 0.95)) : 700))
 
   const measureDragConstraints = useRef((constraints: BoundingBox) => {
     if (getOS() === "Windows") {
@@ -110,7 +116,7 @@ export function SettingModalLayout(props: PropsWithChildren) {
             }}
             maxHeight="90vh"
             minHeight={400}
-            minWidth={700}
+            minWidth={minWidth}
             maxWidth="95vw"
             className="flex !select-none flex-col"
           >

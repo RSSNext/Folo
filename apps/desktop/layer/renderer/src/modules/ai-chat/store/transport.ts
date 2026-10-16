@@ -1,10 +1,16 @@
 import { env } from "@follow/shared/env.desktop"
 import type { HttpChatTransportInitOptions, UIMessageChunk } from "ai"
 import { HttpChatTransport, parseJsonEventStream, uiMessageChunkSchema } from "ai"
+import { t } from "i18next"
 
 import { getAIModelState } from "../atoms/session"
 import { AIPersistService } from "../services"
+import { withInactivityTimeout } from "../utils/stream-timeout"
 import type { BizUIMessage } from "./types"
+
+// Nothing is streamed while a tool runs, so allow long pauses. This only ends a reply that
+// stopped arriving, which would otherwise stay on "Thinking..." until the user stops it.
+const STREAM_INACTIVITY_TIMEOUT = 2 * 60 * 1000
 
 type TitleHandlerPersistOption = boolean | ((title: string) => void | Promise<void>)
 
@@ -104,7 +110,11 @@ class ExtendChatTransport extends HttpChatTransport<BizUIMessage> {
     const { onValue } = this.options || {}
     const handleGeneratedTitle = this.handleGeneratedTitle.bind(this)
     return parseJsonEventStream({
-      stream,
+      stream: withInactivityTimeout(
+        stream,
+        STREAM_INACTIVITY_TIMEOUT,
+        () => new Error(t("chat.error.stream_timeout", { ns: "ai" })),
+      ),
       schema: uiMessageChunkSchema,
     }).pipeThrough(
       new TransformStream<UIMessageChunkParseResult, UIMessageChunk>({

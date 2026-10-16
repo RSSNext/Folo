@@ -136,17 +136,15 @@ export const EntryNavigationHeader: FC<{
 
   const ctxValue = use(EntryContentContext)
   const titleHeight = useAtomValue(ctxValue.titleHeightAtom)
+  // Reacts only when the title crosses into or out of the header, not on every scroll frame
   useAnimatedReaction(
-    () => reanimatedScrollY.value,
-    (value) => {
-      if (value > titleHeight + headerHeight) {
-        opacityAnimatedValue.value = withTiming(1, { duration: 100 })
-        runOnJS(setIsHeaderTitleVisible)(true)
-      } else {
-        opacityAnimatedValue.value = withTiming(0, { duration: 100 })
-        runOnJS(setIsHeaderTitleVisible)(false)
-      }
+    () => reanimatedScrollY.value > titleHeight + headerHeight,
+    (visible, previous) => {
+      if (visible === previous) return
+      opacityAnimatedValue.value = withTiming(visible ? 1 : 0, { duration: 100 })
+      runOnJS(setIsHeaderTitleVisible)(visible)
     },
+    [titleHeight, headerHeight],
   )
   const headerBarWidth = useWindowDimensions().width
 
@@ -162,9 +160,10 @@ export const EntryNavigationHeader: FC<{
               canGoBack={canGoBack ?? false}
               entryId={entryId}
               titleOpacityShareValue={opacityAnimatedValue}
+              isHeaderTitleVisible={isHeaderTitleVisible}
             />
           ),
-          [entryId],
+          [entryId, isHeaderTitleVisible],
         )}
         headerRight={
           <EntryContentContext value={ctxValue}>
@@ -198,9 +197,15 @@ interface EntryLeftGroupProps {
   canGoBack: boolean
   entryId: string
   titleOpacityShareValue: SharedValue<number>
+  isHeaderTitleVisible: boolean
 }
 
-const EntryLeftGroup = ({ canGoBack, entryId, titleOpacityShareValue }: EntryLeftGroupProps) => {
+const EntryLeftGroup = ({
+  canGoBack,
+  entryId,
+  titleOpacityShareValue,
+  isHeaderTitleVisible,
+}: EntryLeftGroupProps) => {
   const hideRecentReader = useUISettingKey("hideRecentReader")
   const animatedOpacity = useAnimatedStyle(() => {
     return {
@@ -212,7 +217,14 @@ const EntryLeftGroup = ({ canGoBack, entryId, titleOpacityShareValue }: EntryLef
       <DefaultHeaderBackButton canGoBack={canGoBack} canDismiss={false} />
 
       {!hideRecentReader && (
-        <Animated.View style={animatedOpacity} className="absolute left-[32px] z-10 flex-row gap-2">
+        <Animated.View
+          style={animatedOpacity}
+          className="absolute left-[32px] z-10 flex-row gap-2"
+          // Faded out once the title shows in the header, and no longer tappable or announced
+          pointerEvents={isHeaderTitleVisible ? "none" : "box-none"}
+          accessibilityElementsHidden={isHeaderTitleVisible}
+          importantForAccessibility={isHeaderTitleVisible ? "no-hide-descendants" : "auto"}
+        >
           <EntryReadHistory entryId={entryId} />
         </Animated.View>
       )}

@@ -49,5 +49,10 @@
   "register.email": "邮件地址",
   "register.password": "密码",
   "register.submit": "创建账户",
+  "share.load_error_description": "这可能是暂时的问题，请重试。",
+  "share.load_error_feed": "无法加载此订阅源",
+  "share.load_error_list": "无法加载此列表",
+  "share.load_error_profile": "无法加载此个人主页",
+  "share.retry": "重试",
   "words.email": "邮件地址"
 }

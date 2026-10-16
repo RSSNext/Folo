@@ -2,7 +2,7 @@ import { Button } from "@follow/components/ui/button/index.js"
 import { atom, useAtomValue } from "jotai"
 import type { DragControls } from "motion/react"
 import type { ResizeCallback, ResizeStartCallback } from "re-resizable"
-import { use, useDeferredValue, useState } from "react"
+import { use, useDeferredValue, useEffect, useState } from "react"
 import { flushSync } from "react-dom"
 import { useTranslation } from "react-i18next"
 import { useContextSelector } from "use-context-selector"
@@ -55,6 +55,17 @@ const actions = {
 export const useCurrentModal = () => use(CurrentModalContext)
 
 export const useIsInModal = () => useContextSelector(CurrentModalStateContext, (v) => v.isInModal)
+
+/** Ask before Escape or the X button close the current modal while there are unsaved changes. */
+export const useModalUnsavedChanges = (hasUnsavedChanges: boolean) => {
+  const { setHasUnsavedChanges } = useCurrentModal()
+  const isInModal = useIsInModal()
+  useEffect(() => {
+    if (!isInModal) return
+    setHasUnsavedChanges(hasUnsavedChanges)
+    return () => setHasUnsavedChanges(false)
+  }, [hasUnsavedChanges, isInModal, setHasUnsavedChanges])
+}
 
 export const useResizeableModal = (
   modalElementRef: React.RefObject<HTMLDivElement | null>,
@@ -157,6 +168,18 @@ export const useDialog = (): DialogInstance => {
       const config = variantConfig[variant]
 
       return new Promise<boolean>((resolve) => {
+        let settled = false
+        const settle = (confirmed: boolean) => {
+          if (settled) return
+          settled = true
+          if (confirmed) {
+            options.onConfirm?.()
+          } else {
+            options.onCancel?.()
+          }
+          resolve(confirmed)
+        }
+
         present({
           title: (
             <div className="flex items-center gap-2">
@@ -166,14 +189,13 @@ export const useDialog = (): DialogInstance => {
           ),
           content: ({ dismiss }) => (
             <div className="flex max-w-[45ch] flex-col gap-3">
-              <div className="whitespace-pre text-wrap">{options.message}</div>
+              <div className="whitespace-pre-line">{options.message}</div>
 
               <div className="flex items-center justify-end gap-3">
                 <Button
                   variant="outline"
                   onClick={() => {
-                    options.onCancel?.()
-                    resolve(false)
+                    settle(false)
                     dismiss()
                   }}
                 >
@@ -183,8 +205,7 @@ export const useDialog = (): DialogInstance => {
                   variant={config.confirmVariant}
                   buttonClassName={config.confirmClassName}
                   onClick={() => {
-                    options.onConfirm?.()
-                    resolve(true)
+                    settle(true)
                     dismiss()
                   }}
                 >
@@ -195,6 +216,8 @@ export const useDialog = (): DialogInstance => {
           ),
           canClose: true,
           clickOutsideToDismiss: false,
+          // Closing with the X button or Escape answers no, so callers awaiting it don't hang
+          onClose: () => settle(false),
         })
       })
     }),

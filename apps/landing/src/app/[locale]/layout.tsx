@@ -68,9 +68,6 @@ export async function generateMetadata(props: {
         url: '/favicon.ico',
       },
     ],
-    alternates: {
-      canonical: '/',
-    },
     robots: {
       index: true,
       follow: true,
@@ -112,9 +109,6 @@ export function generateViewport(): Viewport {
     initialScale: 1,
     viewportFit: 'cover',
     width: 'device-width',
-    maximumScale: 1,
-    minimumScale: 1,
-    userScalable: false,
   }
 }
 

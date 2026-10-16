@@ -9,7 +9,9 @@ import { SubmitButton } from "@/src/components/common/SubmitButton"
 import { HeaderCloseOnly } from "@/src/components/layouts/header/HeaderElements"
 import { PlainTextField } from "@/src/components/ui/form/TextField"
 import { Text } from "@/src/components/ui/typography/Text"
+import { useTouchOnTypingPause } from "@/src/hooks/useTouchOnTypingPause"
 import { forgetPassword } from "@/src/lib/auth"
+import { isValidEmail } from "@/src/lib/email"
 import { useNavigation } from "@/src/lib/navigation/hooks"
 import type { NavigationControllerView } from "@/src/lib/navigation/types"
 import { toast } from "@/src/lib/toast"
@@ -19,6 +21,11 @@ export const ForgetPasswordScreen: NavigationControllerView = () => {
   const insets = useSafeAreaInsets()
   const { t } = useTranslation()
   const [email, setEmail] = useState("")
+  // Set once the field is left or submitted or typing pauses, so the hint does not interrupt typing
+  const [isEmailTouched, setIsEmailTouched] = useState(false)
+  const trimmedEmail = email.trim()
+  const isEmailValid = isValidEmail(trimmedEmail)
+  useTouchOnTypingPause(trimmedEmail, !isEmailValid, setIsEmailTouched)
   const navigation = useNavigation()
   const contentContainerStyle = {
     flexGrow: 1,
@@ -48,6 +55,13 @@ export const ForgetPasswordScreen: NavigationControllerView = () => {
       navigation.back()
     },
   })
+  const submit = () => {
+    if (!isEmailValid) {
+      setIsEmailTouched(true)
+      return
+    }
+    forgetPasswordMutation.mutate(trimmedEmail)
+  }
   return (
     <KeyboardAvoidingView behavior="padding" style={styles.keyboardContainer}>
       <HeaderCloseOnly />
@@ -79,18 +93,24 @@ export const ForgetPasswordScreen: NavigationControllerView = () => {
                 className="flex-1 text-text"
                 value={email}
                 onChangeText={setEmail}
-                onSubmitEditing={() => forgetPasswordMutation.mutate(email)}
+                onBlur={() => setIsEmailTouched(true)}
+                onSubmitEditing={submit}
               />
             </View>
           </View>
+          {isEmailTouched && !!trimmedEmail && !isEmailValid && (
+            <Text className="mt-2 self-stretch px-6 text-sm text-red">
+              {t("validation.invalid_email", { ns: "common" })}
+            </Text>
+          )}
         </View>
 
         <SubmitButton
           title={t("login.forgot_password.continue")}
           className="mt-8 self-stretch"
-          disabled={!email || forgetPasswordMutation.isPending}
+          disabled={!isEmailValid || forgetPasswordMutation.isPending}
           isLoading={forgetPasswordMutation.isPending}
-          onPress={() => forgetPasswordMutation.mutate(email)}
+          onPress={submit}
         />
       </ScrollView>
     </KeyboardAvoidingView>

@@ -19,6 +19,7 @@ const warnNoProvider = () => {
 const defaultCtxValue: CurrentModalContentProps = {
   dismiss: warnNoProvider,
   setClickOutSideToDismiss: warnNoProvider,
+  setHasUnsavedChanges: warnNoProvider,
   ref: { current: null },
   modalElementRef: { current: null },
   getIndex: () => 0,
@@ -37,6 +38,11 @@ export type ModalContentComponent<T = object> = FC<ModalActionsInternal & T>
 export type ModalActionsInternal = {
   dismiss: () => void
   setClickOutSideToDismiss: (value: boolean) => void
+  /**
+   * While true, Escape and the X button ask whether to discard the changes before closing, and
+   * clicking outside does not close the modal. `dismiss` still closes it at once.
+   */
+  setHasUnsavedChanges: (value: boolean) => void
   getIndex: () => number
 }
 

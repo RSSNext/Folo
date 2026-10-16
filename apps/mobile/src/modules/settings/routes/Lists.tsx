@@ -97,10 +97,12 @@ export const ListsScreen = () => {
   )
 }
 const AddListButton = () => {
+  const { t } = useTranslation("settings")
   const labelColor = useColor("label")
   const navigation = useNavigation()
   return (
     <UINavigationHeaderActionButton
+      accessibilityLabel={t("lists.create")}
       onPress={() => {
         navigation.presentControllerView(ListScreen)
       }}
@@ -111,8 +113,9 @@ const AddListButton = () => {
 }
 const ItemSeparatorComponent = () => {
   return (
+    // No flex-1: as the only flexible child of its list cell it lost its height once a row changed
     <View
-      className="ml-24 flex-1 bg-opaque-separator/50"
+      className="ml-24 bg-opaque-separator/50"
       collapsable={false}
       style={styles.itemSeparator}
     />

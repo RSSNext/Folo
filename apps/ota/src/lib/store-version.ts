@@ -21,6 +21,14 @@ export const STORE_URLS = {
   mss: `https://apps.microsoft.com/detail/${MICROSOFT_STORE_PRODUCT_ID}?mode=direct`,
 } as const
 
+// Folo was pulled from the App Store in these countries, so a prompt to update from the App
+// Store would lead nowhere for people there (ISO 3166-1 alpha-2, as Cloudflare reports them)
+const APP_STORE_UNAVAILABLE_COUNTRIES = new Set(["CN"])
+
+export function isAppStoreAvailableIn(country: unknown) {
+  return typeof country !== "string" || !APP_STORE_UNAVAILABLE_COUNTRIES.has(country.toUpperCase())
+}
+
 const STORE_HEADERS = {
   "user-agent":
     "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/135.0.0.0 Safari/537.36",

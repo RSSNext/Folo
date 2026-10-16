@@ -13,4 +13,5 @@ export const useIsiPad = () => {
   return useDeviceType() === DeviceType.TABLET && isIOS
 }
 
-export const isIos26 = Number.parseFloat(String(Platform.Version)) >= 26
+// Platform.Version is the API level on Android (34 and up), not an iOS version
+export const isIos26 = isIOS && Number.parseFloat(String(Platform.Version)) >= 26

@@ -61,6 +61,9 @@ jobs:
           - os: ${{ github.event.inputs.store == 'true' && 'ubuntu-latest' }}
 
     permissions:
+      # The SignPath Pipeline Connector (submit-signing-request v3) reads the job and downloads the
+      # unsigned artifact with this token
+      actions: read
       id-token: write
       contents: write
       attestations: write

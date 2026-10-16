@@ -11,8 +11,15 @@ import { m } from "motion/react"
 import type { FC, ReactNode } from "react"
 
 export interface GlassButtonProps {
+  /**
+   * Shown as a tooltip and used as the accessible name, since the button only holds an icon
+   */
   description?: string
   onClick?: () => void
+  /**
+   * Ignores clicks and is announced as disabled, but stays focusable and keeps its tooltip
+   */
+  disabled?: boolean
   className?: string
   testId?: string
   children: ReactNode
@@ -157,6 +164,7 @@ const glassInnerShadowVariants = cva("absolute inset-0 rounded-full shadow-inner
 export const GlassButton: FC<GlassButtonProps> = ({
   description,
   onClick,
+  disabled,
   className,
   testId,
   children,
@@ -172,8 +180,11 @@ export const GlassButton: FC<GlassButtonProps> = ({
         <m.button
           data-testid={testId}
           type="button"
+          aria-label={description}
+          aria-disabled={disabled || undefined}
           onClick={(e) => {
             e.stopPropagation()
+            if (disabled) return
             onClick?.()
           }}
           className={cn(glassButtonVariants({ size, theme, variant }), className)}

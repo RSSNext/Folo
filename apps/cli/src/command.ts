@@ -8,6 +8,18 @@ interface RunCommandOptions {
   requireAuth?: boolean
 }
 
+/**
+ * The output of a change the API answers without a `data` field, although the published SDK
+ * types promise one for most of them: the fields it sends besides its success code, such as the
+ * sync id the change recorded. List edits and feed refreshes send none.
+ */
+export const toChangeResult = ({
+  code: _code,
+  ...fields
+}: {
+  code: number
+}): Record<string, unknown> => fields
+
 export const runCommand = async (
   command: Command,
   handler: (context: CommandContext) => Promise<unknown>,

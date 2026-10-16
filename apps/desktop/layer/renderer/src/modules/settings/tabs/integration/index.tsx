@@ -37,6 +37,10 @@ const { defineSettingItem, SettingBuilder } = createSetting(
   useIntegrationSettingValue,
   setIntegrationSetting,
 )
+// Their save actions are only registered in the desktop app (Obsidian and Eagle work with local
+// apps and files), so on the web they could be set up but never used
+const desktopOnlyIntegrations = new Set(["obsidian", "outline", "eagle"])
+
 const ObsidianVaultPathPicker: FC = () => {
   const vaultPath = useIntegrationSettingValue().obsidianVaultPath
   const { t } = useTranslation("settings")
@@ -387,13 +391,15 @@ export const SettingIntegration = () => {
   }, [t, settings])
 
   const filteredIntegrations = useMemo(() => {
-    const allIntegrations = integrationCategories.flatMap((category) =>
-      category.integrations.map((integration) => ({
-        ...integration,
-        categoryTitle: category.title,
-        categoryIcon: category.icon,
-      })),
-    )
+    const allIntegrations = integrationCategories
+      .flatMap((category) =>
+        category.integrations.map((integration) => ({
+          ...integration,
+          categoryTitle: category.title,
+          categoryIcon: category.icon,
+        })),
+      )
+      .filter((integration) => IN_ELECTRON || !desktopOnlyIntegrations.has(integration.key))
 
     if (!searchQuery) return allIntegrations
 
@@ -544,7 +550,7 @@ const BottomTip = () => {
     try {
       const settings = getIntegrationSettings()
       const jsonData = JSON.stringify(settings, null, 2)
-      const filename = `follow-integration-settings-${new Date().toISOString().split("T")[0]}.json`
+      const filename = `folo-integration-settings-${new Date().toISOString().split("T")[0]}.json`
       downloadJsonFile(jsonData, filename)
       toast.success(t("integration.export.success"))
     } catch (error) {

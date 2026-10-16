@@ -1,7 +1,7 @@
 import { cn } from "@follow/utils"
 import { LinearGradient } from "expo-linear-gradient"
-import { useEffect, useMemo } from "react"
-import { StyleSheet, View } from "react-native"
+import { use, useEffect, useMemo } from "react"
+import { StyleSheet, useWindowDimensions, View } from "react-native"
 import Reanimated, {
   cancelAnimation,
   useAnimatedStyle,
@@ -11,19 +11,23 @@ import Reanimated, {
 import { useSafeAreaInsets } from "react-native-safe-area-context"
 import { SheetScreen } from "react-native-sheet-transitions"
 
-import { Image } from "@/src/components/ui/image/Image"
 import { Text } from "@/src/components/ui/typography/Text"
 import { useNavigation } from "@/src/lib/navigation/hooks"
+import { ScreenItemContext } from "@/src/lib/navigation/ScreenItemContext"
 
 import { gentleSpringPreset } from "../constants/spring"
 import type { NavigationControllerView } from "../lib/navigation/types"
+import type { ActivePlayable } from "../lib/player"
 import { useActivePlayable, useIsPlaying, useTtsStreamPlayback } from "../lib/player"
 import { PlayerScreenContext, usePlayerScreenContext } from "../modules/player/context"
 import { ControlGroup, ProgressBar, VolumeBar } from "../modules/player/control"
 import { useCoverGradient } from "../modules/player/hooks"
+import { PlayerArtwork } from "../modules/player/PlayerArtwork"
 import { usePrefetchImageColors } from "../store/image/hooks"
 
-function CoverArt({ cover }: { cover?: string }) {
+function CoverArt({ playable }: { playable: ActivePlayable }) {
+  // The cover is 87% of the screen wide
+  const coverSize = Math.round(useWindowDimensions().width * 0.87)
   const scale = useSharedValue(1)
   const ttsStream = useTtsStreamPlayback()
   const playing = useIsPlaying()
@@ -43,12 +47,7 @@ function CoverArt({ cover }: { cover?: string }) {
   })
   return (
     <Reanimated.View className="mx-auto my-12 aspect-square w-[87%] shadow" style={[animatedStyle]}>
-      <Image
-        source={{
-          uri: cover ?? "",
-        }}
-        className="size-full rounded-lg"
-      />
+      <PlayerArtwork playable={playable} size={coverSize} className="size-full rounded-lg" />
     </Reanimated.View>
   )
 }
@@ -68,6 +67,15 @@ export const PlayerScreen: NavigationControllerView = () => {
     [isGradientLight],
   )
   const navigation = useNavigation()
+  // Once playback ends there is nothing to show, and the empty transparent modal would keep
+  // covering the app. The delay rides out the gap between two tracks.
+  const hasActivePlayable = !!activePlayable
+  const { screenId } = use(ScreenItemContext)
+  useEffect(() => {
+    if (hasActivePlayable) return
+    const timer = setTimeout(() => navigation.__internal_dismiss(screenId), 300)
+    return () => clearTimeout(timer)
+  }, [hasActivePlayable, navigation, screenId])
   if (!activePlayable) {
     return null
   }
@@ -89,7 +97,7 @@ export const PlayerScreen: NavigationControllerView = () => {
         <View className="flex-1" style={contentStyle}>
           <View className="flex-1">
             <DismissIndicator />
-            <CoverArt cover={activePlayable.artwork ?? undefined} />
+            <CoverArt playable={activePlayable} />
             <View className="mx-10 flex-1">
               <Text
                 className={cn(

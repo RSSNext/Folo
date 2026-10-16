@@ -25,6 +25,9 @@ describe('PlatformDownloadGroups', () => {
     expect(findChannel('macos-dmg').href).toBe(
       'https://ota.folo.is/download/desktop/macos/dmg',
     )
+    expect(findChannel('macos-dmg-x64').href).toBe(
+      'https://ota.folo.is/download/desktop/macos/dmg-x64',
+    )
     expect(findChannel('windows-exe').href).toBe(
       'https://ota.folo.is/download/desktop/windows/exe',
     )

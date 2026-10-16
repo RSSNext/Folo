@@ -1,6 +1,6 @@
 ---
 name: desktop-release
-description: Full Folo desktop release from dev to the stores. Drafts the changelog, picks the build or ota mode, bumps the version and opens the release PR, verifies the packages GitHub Actions builds for the PR and every change in the release, merges the PR, watches the tag and store builds, gets the Windows installer signed, publishes the GitHub release, and submits the Mac App Store and Microsoft Store builds for review. Use when the user asks to release, ship or publish the desktop app.
+description: Full Folo desktop release from dev to the stores. Drafts the changelog, picks the build or ota mode, bumps the version and opens the release PR, verifies the packages GitHub Actions builds for the PR and every change in the release, merges the PR, watches the tag and store builds, gets the Windows installer signed, publishes the GitHub release, submits the Mac App Store and Microsoft Store builds for review, and drafts the announcement post and promo video. Use when the user asks to release, ship or publish the desktop app.
 disable-model-invocation: true
 argument-hint: "[optional notes, e.g. a preferred mode or the OTA runtime]"
 allowed-tools: Bash, Read, Write, Edit, Glob, Grep
@@ -29,6 +29,7 @@ Read `.agents/skills/desktop-release/SKILL.md` completely before doing anything,
 - Uploads: `file_upload` takes under 10 MB per call and the limit counts across a whole `browser_batch`, so call it on its own. The `.appx` goes up with the chunked recipe in `references/store-submissions.md`; find the injected input with `find` "Folo chunk input".
 - Chrome quirks: when a ref click does nothing, take a screenshot and click by coordinates. Extension output containing `key=value` query strings can come back as "[BLOCKED: Cookie/query string data]"; read such values from the DOM in pieces.
 - Report (C9): reply in the user's language and send the key screenshots and `verification.md` with SendUserFile when available. Save new learnings about the consoles or the pipeline to memory.
+- Announcement kit (C10): follow `.claude/skills/release-promo/SKILL.md`.
 
 ## Limits that apply to Claude
 

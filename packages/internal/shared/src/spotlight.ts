@@ -53,6 +53,26 @@ export const getSpotlightColorChoices = (color?: string | null): SpotlightColorP
   return [{ value: color }, ...spotlightColorPresets]
 }
 
+const toLinearColorChannel = (hex: string) => {
+  const channel = Number.parseInt(hex, 16) / 255
+  return channel <= 0.04045 ? channel / 12.92 : ((channel + 0.055) / 1.055) ** 2.4
+}
+
+/**
+ * Black or white, whichever reads better on a highlight of `color`. The theme's text color can be
+ * too light for the pale presets in dark mode. Undefined when `color` is not a #RRGGBB hex.
+ */
+export const getSpotlightTextColor = (color: string) => {
+  if (!/^#[\da-f]{6}$/i.test(color)) return
+
+  const luminance =
+    0.2126 * toLinearColorChannel(color.slice(1, 3)) +
+    0.7152 * toLinearColorChannel(color.slice(3, 5)) +
+    0.0722 * toLinearColorChannel(color.slice(5, 7))
+  // Above this WCAG relative luminance, black text has the higher contrast ratio
+  return luminance > 0.179 ? "#000000" : "#FFFFFF"
+}
+
 const isSpotlightsUpdated = (value: unknown): value is number =>
   typeof value === "number" && Number.isFinite(value)
 

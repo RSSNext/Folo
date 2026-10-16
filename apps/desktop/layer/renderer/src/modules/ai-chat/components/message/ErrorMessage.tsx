@@ -1,8 +1,8 @@
 import { Spring } from "@follow/components/constants/spring.js"
 import { cn } from "@follow/utils"
-import { ExceptionCodeMap } from "@follow-app/client-sdk"
 import { m } from "motion/react"
 import * as React from "react"
+import { useTranslation } from "react-i18next"
 
 import { getErrorMessage, parseAIError } from "~/modules/ai-chat/utils/error"
 
@@ -17,6 +17,7 @@ interface ErrorMessageProps {
  * Note: Rate limit errors are handled separately by RateLimitNotice component
  */
 export const ErrorMessage: React.FC<ErrorMessageProps> = ({ error, className }) => {
+  const { t } = useTranslation("ai")
   const parsedError = React.useMemo(() => parseAIError(error), [error])
 
   if (parsedError.isRateLimitError) {
@@ -36,20 +37,6 @@ export const ErrorMessage: React.FC<ErrorMessageProps> = ({ error, className }) 
     }
   }
 
-  const getErrorTitle = () => {
-    if (parsedError.isBusinessError) {
-      switch (errorCode) {
-        case ExceptionCodeMap.AIRateLimitExceeded: {
-          return "AI Rate Limit Exceeded"
-        }
-        default: {
-          return "Error occurred"
-        }
-      }
-    }
-    return "Error occurred"
-  }
-
   const contextualInfo = getContextualInfo()
 
   return (
@@ -66,7 +53,9 @@ export const ErrorMessage: React.FC<ErrorMessageProps> = ({ error, className }) 
             {/* Header with subtle icon */}
             <div className="flex items-center gap-2">
               <i className="i-mgc-information-cute-re size-4 text-text-tertiary" />
-              <span className="text-xs font-medium text-text-secondary">{getErrorTitle()}</span>
+              <span className="text-xs font-medium text-text-secondary">
+                {t("chat.error.occurred")}
+              </span>
             </div>
 
             {/* Error message - always visible but subtle */}

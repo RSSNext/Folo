@@ -21,10 +21,11 @@ const ViewTag = IN_ELECTRON ? "webview" : "iframe"
 
 export function VideoItem({ entryId, translation }: UniversalItemProps) {
   const { t } = useTranslation()
+  // Return store references or primitives only: the store compares selector
+  // results shallowly, so a fresh `[]` would re-render on every entry write.
   const entry = useEntry(entryId, (state) => {
-    const { id, url } = state
+    const { id, url, attachments, media } = state
 
-    const attachments = state.attachments || []
     const { duration_in_seconds } =
       attachments?.find((attachment) => attachment.duration_in_seconds) ?? {}
     const seconds = duration_in_seconds
@@ -32,8 +33,7 @@ export function VideoItem({ entryId, translation }: UniversalItemProps) {
       : undefined
     const duration = formatDuration(seconds)
 
-    const media = state.media || []
-    const firstMedia = media[0]
+    const firstMedia = media?.[0]
 
     return { attachments, duration, firstMedia, id, url, media }
   })

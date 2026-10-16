@@ -1,10 +1,11 @@
 import { jotaiStore } from "@follow/utils"
-import { useAtomValue } from "jotai"
+import { useAtomValueRawSync } from "jotai"
 
 import { appAtoms } from "../app"
 
 export const useDeviceType = () => {
-  const deviceType = useAtomValue(appAtoms.deviceType)
+  // Set by an async init that can land while the first screens mount
+  const deviceType = useAtomValueRawSync(appAtoms.deviceType)
   return deviceType
 }
 

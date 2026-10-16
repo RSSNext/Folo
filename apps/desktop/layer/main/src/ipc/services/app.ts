@@ -3,13 +3,15 @@ import { fileURLToPath } from "node:url"
 
 import { callWindowExpose } from "@follow/shared/bridge"
 import { DEV } from "@follow/shared/constants"
-import { app, BrowserWindow, clipboard, dialog, shell } from "electron"
+import { app, BrowserWindow, clipboard, dialog, session, shell } from "electron"
 import { getIpcContext, IpcMethod, IpcService } from "electron-ipc-decorator"
 import path from "pathe"
 
 import { START_IN_TRAY_ARGS } from "~/constants/app"
 import { isMacOS } from "~/env"
-import { getCacheSize } from "~/lib/cleaner"
+import { filePathToAppUrl } from "~/helper"
+import { getCacheDir, getCacheSize } from "~/lib/cleaner"
+import { setRendererReady } from "~/lib/deep-link"
 import { i18n } from "~/lib/i18n"
 import { store, StoreKey } from "~/lib/store"
 import { getTrayConfig, registerAppTray } from "~/lib/tray"
@@ -92,7 +94,9 @@ export class AppService extends IpcService {
           logger.verbose("[rendererUpdateReload]: skip reload in dev")
           break
         }
-        window.loadFile(appLoadEntry)
+        // The app:// origin the window started with, or a file:// origin would come with an
+        // empty local storage and database
+        window.loadURL(filePathToAppUrl(appLoadEntry))
       } else window.destroy()
     }
 
@@ -201,7 +205,7 @@ export class AppService extends IpcService {
     } catch (err) {
       const senderWindow = (sender as Sender).getOwnerBrowserWindow()
       if (senderWindow) {
-        callWindowExpose(senderWindow).toast.error("Download failed!", {
+        callWindowExpose(senderWindow).toast.error(i18n.t("download.failed"), {
           duration: 1000,
         })
       }
@@ -253,15 +257,17 @@ export class AppService extends IpcService {
 
   @IpcMethod()
   readyToShowMainWindow() {
-    if (shouldStartInTray()) return
     const window = WindowManager.getMainWindow()
-    if (window) window.show()
+    if (window && getIpcContext().sender === window.webContents) {
+      setRendererReady(true)
+    }
+    if (shouldStartInTray()) return
+    if (window) WindowManager.showMainWindow(window)
   }
 
   @IpcMethod()
   openCacheFolder(): void {
-    const dir = path.join(app.getPath("userData"), "cache")
-    shell.openPath(dir)
+    shell.openPath(getCacheDir())
   }
 
   @IpcMethod()
@@ -271,24 +277,10 @@ export class AppService extends IpcService {
 
   @IpcMethod()
   async clearCache(): Promise<void> {
-    const cachePath = path.join(app.getPath("userData"), "cache", "Cache_Data")
-    if (process.platform === "win32") {
-      // Request elevation on Windows
-
-      try {
-        // Create a bat file to delete cache with elevated privileges
-        const batPath = path.join(app.getPath("temp"), "clear_cache.bat")
-        await fsp.writeFile(batPath, `@echo off\nrd /s /q "${cachePath}"\ndel "%~f0"`, "utf-8")
-
-        // Execute the bat file with admin privileges
-        await shell.openPath(batPath)
-        return
-      } catch (err) {
-        logger.error("Failed to clear cache with elevation", { error: err })
-      }
-    }
-    await fsp.rm(cachePath, { recursive: true, force: true }).catch(() => {
-      logger.error("Failed to clear cache")
+    // Through Chromium, which owns the cache files while the app runs, instead of deleting them
+    // under it or, on Windows, running a batch file in a console window
+    await session.defaultSession.clearCache().catch((error) => {
+      logger.error("Failed to clear cache", error)
     })
   }
 

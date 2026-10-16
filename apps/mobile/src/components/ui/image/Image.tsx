@@ -1,10 +1,11 @@
+import { useRecyclingState } from "@shopify/flash-list"
 import type {
   ImageErrorEventData,
   ImageLoadEventData,
   ImageProps as ExpoImageProps,
 } from "expo-image"
 import { Image as ExpoImage } from "expo-image"
-import { useCallback, useMemo, useState } from "react"
+import { useCallback, useMemo } from "react"
 import { useColor } from "react-native-uikit-colors"
 
 import { getAllSources } from "./utils"
@@ -37,8 +38,9 @@ export const Image = ({
     [source, proxy],
   )
 
-  const [isFallback, setIsFallback] = useState(false)
-  const [isError, setIsError] = useState(false)
+  // Lists recycle rows for other items, so the load state follows the image it belongs to
+  const [isFallback, setIsFallback] = useRecyclingState(false, [source?.uri])
+  const [isError, setIsError] = useRecyclingState(false, [source?.uri])
   const onError = useCallback(
     (e: ImageErrorEventData) => {
       if (
@@ -49,16 +51,17 @@ export const Image = ({
         setIsError(true)
         rest.onError?.(e)
       } else {
-        setIsFallback(true)
+        // Same size, so the list around it needs no new layout
+        setIsFallback(true, true)
       }
     },
     [isFallback, rest, safeSource?.uri],
   )
 
-  const [isLoading, setIsLoading] = useState(true)
+  const [isLoading, setIsLoading] = useRecyclingState(true, [source?.uri])
   const onLoad = useCallback(
     (e: ImageLoadEventData) => {
-      setIsLoading(false)
+      setIsLoading(false, true)
       rest.onLoad?.(e)
     },
     [rest],

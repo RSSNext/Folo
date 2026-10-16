@@ -19,15 +19,41 @@ import { COMMAND_ID } from "~/modules/command/commands/id"
 import { useCommandBinding } from "~/modules/command/hooks/use-command-binding"
 
 export const EntryScrollingAndNavigationHandler = ({
+  entryId,
   scrollerRef,
   scrollAnimationRef,
 }: {
+  entryId: string
   scrollerRef: React.RefObject<HTMLDivElement | null>
   scrollAnimationRef: React.RefObject<JSAnimation<any> | null>
 }) => {
   const { t } = useTranslation()
   const isAlreadyScrolledBottomRef = useRef(false)
   const [showKeepScrollingPanel, setShowKeepScrollingPanel] = useState(false)
+  const resetScrolledBottom = useEventCallback(() => {
+    isAlreadyScrolledBottomRef.current = false
+    setShowKeepScrollingPanel(false)
+  })
+
+  // The "keep pressing for the next entry" state belongs to one entry
+  useEffect(() => {
+    resetScrolledBottom()
+  }, [entryId, resetScrolledBottom])
+
+  useEffect(() => {
+    const $scroller = scrollerRef.current
+    if (!$scroller) return
+
+    const handler = () => {
+      if (!isAlreadyScrolledBottomRef.current) return
+      const { scrollTop, scrollHeight, clientHeight } = $scroller
+      if (scrollHeight - scrollTop - clientHeight >= 2) {
+        resetScrolledBottom()
+      }
+    }
+    $scroller.addEventListener("scroll", handler, { passive: true })
+    return () => $scroller.removeEventListener("scroll", handler)
+  }, [entryId, resetScrolledBottom, scrollerRef])
 
   const when = useGlobalFocusableScopeSelector(FocusablePresets.isEntryRender)
 
@@ -97,7 +123,8 @@ export const EntryScrollingAndNavigationHandler = ({
         cleanupScrollAnimation()
         const targetScroll = Math.max(0, currentScroll - delta)
         smoothScrollTo(targetScroll, $scroller)
-        checkScrollBottom($scroller)
+        // Scrolling up leaves the bottom, it never moves to the next entry
+        resetScrolledBottom()
       }),
 
       EventBus.subscribe(COMMAND_ID.entryRender.scrollDown, () => {
@@ -133,7 +160,14 @@ export const EntryScrollingAndNavigationHandler = ({
         },
       ),
     )
-  }, [highlightBoundary, navigateToNext, scrollAnimationRef, scrollerRef, smoothScrollTo])
+  }, [
+    highlightBoundary,
+    navigateToNext,
+    resetScrolledBottom,
+    scrollAnimationRef,
+    scrollerRef,
+    smoothScrollTo,
+  ])
 
   return (
     <AnimatePresence>

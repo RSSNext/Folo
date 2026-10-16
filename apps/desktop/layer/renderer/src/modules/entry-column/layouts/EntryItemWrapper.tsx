@@ -6,11 +6,13 @@ import { FeedViewType } from "@follow/constants"
 import { useEntry } from "@follow/store/entry/hooks"
 import { unreadSyncService } from "@follow/store/unread/store"
 import { cn } from "@follow/utils/utils"
+import { debounce } from "es-toolkit/compat"
 import { AnimatePresence } from "motion/react"
 import type { FC, MouseEvent, PropsWithChildren, TouchEvent } from "react"
-import { useCallback, useEffect, useMemo, useState } from "react"
+import { useCallback, useEffect, useMemo, useRef, useState } from "react"
+import { useTranslation } from "react-i18next"
 import { NavLink } from "react-router"
-import { useDebounceCallback } from "usehooks-ts"
+import { useEventCallback } from "usehooks-ts"
 
 import { useGeneralSettingKey } from "~/atoms/settings/general"
 import { FocusablePresets } from "~/components/common/Focusable"
@@ -29,6 +31,8 @@ import { getRouteParams, useRouteParams, useRouteParamsSelector } from "~/hooks/
 import { useShowEntryDetailsColumn } from "~/hooks/biz/useShowEntryDetailsColumn"
 import { useFeedSafeUrl } from "~/hooks/common/useFeedSafeUrl"
 import { useRequireLogin } from "~/hooks/common/useRequireLogin"
+
+const TAP_MOVE_TOLERANCE = 10
 
 export const EntryItemWrapper: FC<
   {
@@ -57,20 +61,18 @@ export const EntryItemWrapper: FC<
   const hoverMarkUnread = useGeneralSettingKey("hoverMarkUnread")
 
   const [showAction, setShowAction] = useState(false)
-  const handleMouseEnterMarkRead = useDebounceCallback(
-    () => {
-      if (!hoverMarkUnread) return
-      if (!document.hasFocus()) return
-      if (asRead) return
-      if (!entry?.feedId) return
+  const markReadOnHover = useEventCallback(() => {
+    if (!hoverMarkUnread) return
+    if (!document.hasFocus()) return
+    if (asRead) return
+    if (!entry?.feedId) return
 
-      unreadSyncService.markEntryAsRead(entry.id)
-    },
-    233,
-    {
-      leading: false,
-    },
-  )
+    unreadSyncService.markEntryAsRead(entry.id)
+  })
+  // One debounced instance per item, so leaving the item cancels the pending
+  // mark-as-read scheduled when the pointer entered it.
+  const handleMouseEnterMarkRead = useMemo(() => debounce(markReadOnHover, 233), [markReadOnHover])
+  useEffect(() => () => handleMouseEnterMarkRead.cancel(), [handleMouseEnterMarkRead])
 
   const handleMouseEnter = useMemo(() => {
     return () => {
@@ -144,6 +146,28 @@ export const EntryItemWrapper: FC<
     },
     [asRead, entry?.id, entry?.feedId, navigate, view],
   )
+  // Touch devices open the entry on a tap without waiting for the emulated
+  // click, which a touch browser may swallow to show the hover action bar.
+  // Only a touch that barely moved is a tap; anything else is a scroll.
+  const touchStartPointRef = useRef<{ x: number; y: number } | null>(null)
+  const handleTouchStart = useCallback((e: TouchEvent<HTMLElement>) => {
+    const touch = e.touches.length === 1 ? e.touches[0] : undefined
+    touchStartPointRef.current = touch ? { x: touch.clientX, y: touch.clientY } : null
+  }, [])
+  const handleTouchEnd = useCallback(
+    (e: TouchEvent<HTMLElement>) => {
+      const start = touchStartPointRef.current
+      touchStartPointRef.current = null
+      const touch = e.changedTouches[0]
+      if (!start || !touch) return
+      if (Math.hypot(touch.clientX - start.x, touch.clientY - start.y) > TAP_MOVE_TOLERANCE) {
+        return
+      }
+      handleClick(e)
+    },
+    [handleClick],
+  )
+
   const { contextMenuProps, isContextMenuOpen, openContextMenuAt } = useEntryContextMenu({
     entryId,
     view,
@@ -175,7 +199,7 @@ export const EntryItemWrapper: FC<
         onMouseEnter={handleMouseEnter}
         onMouseLeave={handleMouseLeave}
         {...contextMenuProps}
-        {...(!isMobile ? { onTouchStart: handleClick } : {})}
+        {...(!isMobile ? { onTouchStart: handleTouchStart, onTouchEnd: handleTouchEnd } : {})}
       >
         {children}
         <AnimatePresence>
@@ -204,6 +228,7 @@ const ActionBar = ({
   openContextMenu: () => void
   isFirstItem: boolean
 }) => {
+  const { t } = useTranslation()
   const { view } = useRouteParams()
 
   const { mainAction } = useSortedEntryActions({ entryId, view })
@@ -236,6 +261,7 @@ const ActionBar = ({
         })}
 
         <ActionButton
+          aria-label={t("customizeToolbar.more_actions.title", { ns: "settings" })}
           onClick={openContextMenu}
           size="xs"
           icon={<i className="i-mingcute-more-1-fill" />}

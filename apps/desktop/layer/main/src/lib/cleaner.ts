@@ -1,4 +1,3 @@
-import { statSync } from "node:fs"
 import fsp from "node:fs/promises"
 
 import { callWindowExpose } from "@follow/shared/bridge"
@@ -83,17 +82,20 @@ export const clearAllData = async () => {
       ],
     })
 
-    caller.toast.success("App data reset successfully")
+    caller.toast.success(t("dialog.clearAllDataSuccess"))
 
     // reload the app
     win.reload()
   } catch (error: any) {
-    caller.toast.error(`Error resetting app data: ${error.message}`)
+    caller.toast.error(t("dialog.clearAllDataFailed", { message: error.message }))
   }
 }
 
+// Chromium's HTTP cache. The name is capitalized, which matters on Linux.
+export const getCacheDir = () => path.join(app.getPath("userData"), "Cache")
+
 export const getCacheSize = async () => {
-  const cachePath = path.join(app.getPath("userData"), "cache")
+  const cachePath = getCacheDir()
 
   // Size is in bytes
   const sizeInBytes = await getFolderSize(cachePath).catch((error) => {
@@ -102,17 +104,24 @@ export const getCacheSize = async () => {
   return sizeInBytes || 0
 }
 
-const getCachedFilesRecursive = async (dir: string, result: string[] = []) => {
+interface CachedFile {
+  path: string
+  size: number
+  modifiedAt: number
+}
+
+const getCachedFilesRecursive = async (dir: string, result: CachedFile[] = []) => {
   const files = await fsp.readdir(dir)
 
   for (const file of files) {
     const filePath = path.join(dir, file)
-    const stat = await fsp.stat(filePath)
+    const stat = await fsp.stat(filePath).catch(() => null)
+    if (!stat) continue
     if (stat.isDirectory()) {
-      const files = await getCachedFilesRecursive(filePath)
-      result.push(...files)
-    } else {
-      result.push(filePath)
+      await getCachedFilesRecursive(filePath, result)
+    } else if (!file.startsWith("index")) {
+      // The cache index is rewritten all the time and is not an entry to evict
+      result.push({ path: filePath, size: stat.size, modifiedAt: stat.mtimeMs })
     }
   }
   return result
@@ -136,31 +145,26 @@ export const clearCacheCronJob = () => {
 
       const limitByteSize = hasLimit * 1024 * 1024
       if (cacheSize > limitByteSize) {
-        const shouldCleanSize = cacheSize - limitByteSize - 1024 * 1024 * 50 // 50MB
+        // Down to 50MB below the limit, so the next round doesn't start over right away
+        const shouldCleanSize = cacheSize - limitByteSize + 1024 * 1024 * 50
 
-        const cachePath = path.join(app.getPath("userData"), "cache")
-        const files = await getCachedFilesRecursive(cachePath)
-        // Sort by last modified
-        files.sort((a, b) => {
-          const aStat = statSync(a)
-          const bStat = statSync(b)
-          return bStat.mtime.getTime() - aStat.mtime.getTime()
-        })
+        const files = await getCachedFilesRecursive(getCacheDir()).catch(() => [])
+        // Oldest first: the files used least recently go
+        files.sort((a, b) => a.modifiedAt - b.modifiedAt)
 
         let cleanedSize = 0
         for (const file of files) {
           try {
-            const fileSize = statSync(file).size
-            await fsp.rm(file, { force: true })
-            cleanedSize += fileSize
+            await fsp.rm(file.path, { force: true })
+            cleanedSize += file.size
             if (cleanedSize >= shouldCleanSize) {
-              logger.info(`Cleaned ${cleanedSize} bytes cache`)
               break
             }
           } catch (error) {
-            logger.error(`Failed to delete cache file ${file}:`, error)
+            logger.error(`Failed to delete cache file ${file.path}:`, error)
           }
         }
+        logger.info(`Cleaned ${cleanedSize} bytes cache`)
       }
     },
     10 * 60 * 1000,

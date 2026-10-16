@@ -70,9 +70,7 @@ export const AIChatRoot: FC<AIChatRootProps> = ({
   )
   const chatActions = useAiContextStore((state) => state.chatActions)
 
-  useEffect(() => {
-    ChatSliceActions.setActiveInstance(chatActions)
-  }, [chatActions])
+  useEffect(() => ChatSliceActions.activate(chatActions), [chatActions])
 
   const Element = (
     <AIChatStoreContext value={useAiContextStore}>

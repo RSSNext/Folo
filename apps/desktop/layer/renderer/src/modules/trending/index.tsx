@@ -1,3 +1,4 @@
+import { Button } from "@follow/components/ui/button/index.js"
 import { useScrollElementUpdate } from "@follow/components/ui/scroll-area/hooks.js"
 import { ResponsiveSelect } from "@follow/components/ui/select/responsive.js"
 import { Skeleton } from "@follow/components/ui/skeleton/index.jsx"
@@ -9,6 +10,7 @@ import { useTranslation } from "react-i18next"
 
 import { setUISetting, useUISettingKey } from "~/atoms/settings/ui"
 import { followClient } from "~/lib/api-client"
+import { getFetchErrorMessage } from "~/lib/error-parser"
 
 import { TrendingFeedCard } from "../discover/TrendingFeedCard"
 
@@ -73,7 +75,7 @@ export function Trending({
   const [selectedView, setSelectedView] = useState<View>("all")
   const viewOptions = useMemo(() => buildViewOptions(), [])
 
-  const { data, isLoading } = useQuery({
+  const { data, isLoading, error, refetch } = useQuery({
     queryKey: ["trending", lang, selectedView],
     queryFn: async () => {
       return await followClient.api.trending.getFeeds({
@@ -194,38 +196,51 @@ export function Trending({
           </div>
         </div>
       )}
-      <div className={cn("grid grid-cols-2 gap-x-7 gap-y-3", narrow && "grid-cols-1")}>
-        {isLoading ? (
-          <>
-            {Array.from({ length: limit }).map((_, index) => (
-              <Skeleton key={index} className="h-[146px] w-[386px]" />
-            ))}
-          </>
-        ) : (
-          data?.data?.map((item, index) => (
-            <div className="relative m-4" key={item.feed.id}>
-              <TrendingFeedCard item={item} />
-              <div className="pointer-events-none absolute inset-0 -left-5 -top-6 overflow-hidden rounded-xl">
-                <div
-                  className={cn(
-                    "center absolute -left-5 -top-6 size-12 rounded-br-3xl pl-4 pt-5 text-xs",
-                    index < 3
-                      ? cn(
-                          "bg-accent text-white",
-                          index === 0 && "bg-accent",
-                          index === 1 && "bg-accent/90",
-                          index === 2 && "bg-accent/80",
-                        )
-                      : "bg-material-opaque",
-                  )}
-                >
-                  {index + 1}
+      {!isLoading && error && !data ? (
+        <div className="center flex-col gap-3 py-16 text-center text-sm text-text-secondary">
+          <p>{getFetchErrorMessage(error)}</p>
+          <Button variant="outline" size="sm" onClick={() => void refetch()}>
+            {tCommon("retry")}
+          </Button>
+        </div>
+      ) : !isLoading && !data?.data?.length ? (
+        <p className="py-16 text-center text-sm text-text-secondary">
+          {t("discover.trending_empty")}
+        </p>
+      ) : (
+        <div className={cn("grid grid-cols-2 gap-x-7 gap-y-3", narrow && "grid-cols-1")}>
+          {isLoading ? (
+            <>
+              {Array.from({ length: limit }).map((_, index) => (
+                <Skeleton key={index} className="h-[146px] w-[386px]" />
+              ))}
+            </>
+          ) : (
+            data?.data?.map((item, index) => (
+              <div className="relative m-4" key={item.feed.id}>
+                <TrendingFeedCard item={item} />
+                <div className="pointer-events-none absolute inset-0 -left-5 -top-6 overflow-hidden rounded-xl">
+                  <div
+                    className={cn(
+                      "center absolute -left-5 -top-6 size-12 rounded-br-3xl pl-4 pt-5 text-xs",
+                      index < 3
+                        ? cn(
+                            "bg-accent text-white",
+                            index === 0 && "bg-accent",
+                            index === 1 && "bg-accent/90",
+                            index === 2 && "bg-accent/80",
+                          )
+                        : "bg-material-opaque",
+                    )}
+                  >
+                    {index + 1}
+                  </div>
                 </div>
               </div>
-            </div>
-          ))
-        )}
-      </div>
+            ))
+          )}
+        </div>
+      )}
     </div>
   )
 }

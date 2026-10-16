@@ -1,6 +1,7 @@
 import { useUnreadByIds } from "@follow/store/unread/hooks"
 import { cn } from "@follow/utils"
-import { memo, useState } from "react"
+import { useRecyclingState } from "@shopify/flash-list"
+import { memo } from "react"
 import { View } from "react-native"
 import Animated, { useAnimatedStyle, useSharedValue, withSpring } from "react-native-reanimated"
 
@@ -35,8 +36,11 @@ export const CategoryGrouped = memo(
     isLast: boolean
   }) => {
     const unreadCounts = useUnreadByIds(subscriptionIds)
-    const [expanded, setExpanded] = useState(false)
     const rotateSharedValue = useSharedValue(0)
+    // The list recycles this row for other categories, which start collapsed
+    const [expanded, setExpanded] = useRecyclingState(false, [category], () => {
+      rotateSharedValue.value = 0
+    })
     const rotateStyle = useAnimatedStyle(() => {
       return {
         transform: [

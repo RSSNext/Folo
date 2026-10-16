@@ -1,7 +1,7 @@
 import { cn, formatNumber } from "@follow/utils"
 import { useQuery } from "@tanstack/react-query"
 import { useTranslation } from "react-i18next"
-import { View } from "react-native"
+import { Pressable, View } from "react-native"
 import { useColor } from "react-native-uikit-colors"
 
 import { useUISettingKey } from "@/src/atoms/settings/ui"
@@ -12,6 +12,7 @@ import { Text } from "@/src/components/ui/typography/Text"
 import { FilterCuteReIcon } from "@/src/icons/filter_cute_re"
 import { TrendingUpCuteReIcon } from "@/src/icons/trending_up_cute_re"
 import { User3CuteReIcon } from "@/src/icons/user_3_cute_re"
+import { getFetchErrorMessage } from "@/src/lib/error-parser"
 import { useNavigation } from "@/src/lib/navigation/hooks"
 import { DiscoverSettingsScreen } from "@/src/screens/(modal)/DiscoverSettingsScreen"
 
@@ -26,10 +27,11 @@ export const Trending = ({
   itemClassName?: string
 }) => {
   const { t } = useTranslation("common")
+  const { t: tSettings } = useTranslation("settings")
   const label = useColor("label")
   const discoverLanguage = useUISettingKey("discoverLanguage")
   const trendingLanguage = discoverLanguage === "fra" ? "eng" : discoverLanguage
-  const { data, isLoading } = useQuery({
+  const { data, isLoading, error, refetch } = useQuery({
     queryKey: ["trending", "feeds", discoverLanguage],
     queryFn: () =>
       fetchFeedTrending({
@@ -53,6 +55,8 @@ export const Trending = ({
         <ItemPressable
           className="rounded-lg p-1"
           itemStyle={ItemPressableStyle.UnStyled}
+          accessibilityRole="button"
+          accessibilityLabel={tSettings("discoverFilters.title")}
           onPress={() => {
             navigation.presentControllerView(DiscoverSettingsScreen)
           }}
@@ -66,8 +70,23 @@ export const Trending = ({
           <View className="mt-5 flex h-12 items-center justify-center">
             <PlatformActivityIndicator />
           </View>
+        ) : error && !data ? (
+          <View className="mt-2 items-center px-6 py-4">
+            <Text className="text-center text-secondary-label">{getFetchErrorMessage(error)}</Text>
+            <Pressable
+              accessibilityRole="button"
+              className="mt-3 rounded-full bg-secondary-system-fill px-4 py-2"
+              onPress={() => void refetch()}
+            >
+              <Text className="font-medium text-accent">{t("retry")}</Text>
+            </Pressable>
+          </View>
+        ) : !data?.length ? (
+          <View className="mt-2 items-center px-6 py-4">
+            <Text className="text-center text-secondary-label">{t("discover.trending_empty")}</Text>
+          </View>
         ) : (
-          data?.map((item, index) => (
+          data.map((item, index) => (
             <FeedSummary
               preview
               view={item.view}
