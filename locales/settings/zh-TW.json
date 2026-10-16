@@ -821,6 +821,7 @@
   "spotlight.select_color_index": "選擇醒目標示顏色 {{index}}",
   "spotlight.type": "類型",
   "subscription.actions.comingSoon": "即將推出",
+  "subscription.actions.google_play_not_connected": "Google Play 目前無法使用。請確認已登入 Play 商店後再試一次。",
   "subscription.actions.google_play_other_account": "你的訂閱屬於另一個 Google 帳號。請在 Google Play 中切換到該帳號後再變更方案。",
   "subscription.actions.google_play_unavailable": "Google Play 暫時無法購買此方案。",
   "subscription.actions.manage_error": "開啟訂閱管理時發生問題。",

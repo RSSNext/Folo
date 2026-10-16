@@ -821,6 +821,7 @@
   "spotlight.select_color_index": "ハイライト色 {{index}} を選択",
   "spotlight.type": "種類",
   "subscription.actions.comingSoon": "近日公開",
+  "subscription.actions.google_play_not_connected": "Google Play を利用できません。Play ストアにログインしていることを確認してから、もう一度お試しください。",
   "subscription.actions.google_play_other_account": "このサブスクリプションは別の Google アカウントのものです。Google Play でそのアカウントに切り替えてからプランを変更してください。",
   "subscription.actions.google_play_unavailable": "このプランは現在 Google Play で購入できません。",
   "subscription.actions.manage_error": "サブスクリプション管理を開けませんでした。",

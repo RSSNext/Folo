@@ -821,6 +821,7 @@
   "spotlight.select_color_index": "选择高亮颜色 {{index}}",
   "spotlight.type": "类型",
   "subscription.actions.comingSoon": "即将推出",
+  "subscription.actions.google_play_not_connected": "Google Play 当前不可用。请确认已登录 Play 商店后重试。",
   "subscription.actions.google_play_other_account": "你的订阅属于另一个 Google 账号。请在 Google Play 中切换到该账号后再更改计划。",
   "subscription.actions.google_play_unavailable": "Google Play 暂时无法购买此计划。",
   "subscription.actions.manage_error": "打开订阅管理时出现问题。",

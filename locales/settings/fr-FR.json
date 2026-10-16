@@ -821,6 +821,7 @@
   "spotlight.select_color_index": "Sélectionner la couleur de surbrillance {{index}}",
   "spotlight.type": "Type",
   "subscription.actions.comingSoon": "Bientôt disponible",
+  "subscription.actions.google_play_not_connected": "Google Play n'est pas disponible. Vérifiez que vous êtes connecté au Play Store, puis réessayez.",
   "subscription.actions.google_play_other_account": "Votre abonnement appartient à un autre compte Google. Passez sur ce compte dans Google Play pour changer de plan.",
   "subscription.actions.google_play_unavailable": "Ce plan n'est pas disponible sur Google Play pour le moment.",
   "subscription.actions.manage_error": "Une erreur s'est produite lors de l'ouverture de la gestion de l'abonnement.",

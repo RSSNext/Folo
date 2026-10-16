@@ -821,6 +821,7 @@
   "spotlight.select_color_index": "Select highlight color {{index}}",
   "spotlight.type": "Type",
   "subscription.actions.comingSoon": "Coming soon",
+  "subscription.actions.google_play_not_connected": "Google Play is not available. Make sure you are signed in to the Play Store, then try again.",
   "subscription.actions.google_play_other_account": "Your subscription belongs to another Google account. Switch to it in Google Play to change your plan.",
   "subscription.actions.google_play_unavailable": "This plan is not available from Google Play right now.",
   "subscription.actions.manage_error": "Something went wrong while opening subscription management.",

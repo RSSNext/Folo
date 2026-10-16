@@ -380,6 +380,8 @@ export const PlanScreen: NavigationControllerView = () => {
 
   const isGooglePlayConnected = googlePlay?.connected ?? false
   const loadGooglePlaySubscriptions = googlePlay?.loadSubscriptions
+  // Play products fail to load when the device has no usable Play Store
+  const [isGooglePlayUnavailable, setIsGooglePlayUnavailable] = useState(false)
   useEffect(() => {
     if (
       !isGooglePlayConnected ||
@@ -389,7 +391,10 @@ export const PlanScreen: NavigationControllerView = () => {
       return
     }
 
-    void loadGooglePlaySubscriptions(googlePlayProductIds).catch(() => {})
+    void loadGooglePlaySubscriptions(googlePlayProductIds).then(
+      () => setIsGooglePlayUnavailable(false),
+      () => setIsGooglePlayUnavailable(true),
+    )
   }, [googlePlayProductIds, isGooglePlayConnected, loadGooglePlaySubscriptions])
 
   const sortedPlans = useMemo(() => {
@@ -700,6 +705,12 @@ export const PlanScreen: NavigationControllerView = () => {
             )
           })}
         </View>
+
+        {googlePlay && (!googlePlay.connected || isGooglePlayUnavailable) ? (
+          <Text className="px-2 text-center text-sm leading-5 text-secondary-label">
+            {t("subscription.actions.google_play_not_connected")}
+          </Text>
+        ) : null}
 
         {storeBilling && (
           <Pressable

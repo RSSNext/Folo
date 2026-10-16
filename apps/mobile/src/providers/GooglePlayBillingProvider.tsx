@@ -60,6 +60,15 @@ const openSubscriptionManagement = async (productId?: string | null) => {
   })
 }
 
+// Fails when the device has no usable Play Store, e.g. no Google account is signed in
+const getOwnedPurchases = async (unavailableMessage: string) => {
+  try {
+    return await getAvailablePurchases()
+  } catch {
+    throw new Error(unavailableMessage)
+  }
+}
+
 const isAcknowledged = (purchase: Purchase) =>
   "isAcknowledgedAndroid" in purchase && purchase.isAcknowledgedAndroid === true
 
@@ -225,9 +234,9 @@ export const GooglePlayBillingProvider = ({ children }: PropsWithChildren) => {
         }
       } | null = null
       if (replacingProductId && replacingProductId !== sku) {
-        const currentPurchase = (await getAvailablePurchases()).find(
-          (purchase) => purchase.productId === replacingProductId && purchase.purchaseToken,
-        )
+        const currentPurchase = (
+          await getOwnedPurchases(t("subscription.actions.google_play_not_connected"))
+        ).find((purchase) => purchase.productId === replacingProductId && purchase.purchaseToken)
         // Google Play can only change a subscription owned by the signed-in Google account
         if (!currentPurchase?.purchaseToken) {
           throw new Error(t("subscription.actions.google_play_other_account"))
@@ -263,9 +272,16 @@ export const GooglePlayBillingProvider = ({ children }: PropsWithChildren) => {
   )
 
   const restoreSubscriptionPurchases = useCallback(async () => {
+    if (!connected) {
+      toast.error(t("subscription.actions.google_play_not_connected"))
+      return
+    }
+
     setIsRestoring(true)
     try {
-      const purchases = (await getAvailablePurchases())
+      const purchases = (
+        await getOwnedPurchases(t("subscription.actions.google_play_not_connected"))
+      )
         .filter(
           (purchase) =>
             purchase.purchaseToken &&
@@ -299,7 +315,7 @@ export const GooglePlayBillingProvider = ({ children }: PropsWithChildren) => {
     } finally {
       setIsRestoring(false)
     }
-  }, [acknowledgePurchase, knownProductIds, t, verifyPurchase])
+  }, [acknowledgePurchase, connected, knownProductIds, t, verifyPurchase])
 
   useEffect(() => {
     restorePurchasesRef.current = restoreSubscriptionPurchases
