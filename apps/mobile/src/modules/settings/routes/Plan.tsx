@@ -23,7 +23,6 @@ import { CheckLineIcon } from "@/src/icons/check_line"
 import { followClient } from "@/src/lib/api-client"
 import { authClient } from "@/src/lib/auth"
 import type { NavigationControllerView } from "@/src/lib/navigation/types"
-import type { MobileBillingProvider } from "@/src/lib/payment"
 import { getMobileBillingProvider } from "@/src/lib/payment"
 import { proxyEnv } from "@/src/lib/proxy-env"
 import { toast } from "@/src/lib/toast"
@@ -35,6 +34,9 @@ import {
 } from "@/src/providers/google-play-purchase"
 import { useGooglePlayBilling } from "@/src/providers/GooglePlayBillingProvider"
 import { useColor } from "@/src/theme/colors"
+
+import type { SubscriptionManagement, SubscriptionSource } from "./plan-billing"
+import { canChangeSubscriptionHere, getSubscriptionManagement } from "./plan-billing"
 
 type PaymentPlan = NonNullable<StatusConfigs["PAYMENT_PLAN_LIST"]>[number]
 type PaymentFeature = PaymentPlan["limit"]
@@ -108,7 +110,7 @@ type UpgradeVariables = {
 }
 
 type ActiveSubscription = {
-  source: "stripe" | "apple" | "google" | null
+  source: SubscriptionSource | null
   plan: string | null
   status: string | null
   productId: string | null
@@ -209,46 +211,6 @@ const isAppleProductId = (value: string | undefined): value is string => typeof 
 
 const APPLE_STANDARD_EULA_URL = "https://www.apple.com/legal/internet-services/itunes/dev/stdeula/"
 const TERMS_OF_SERVICE_URL = "https://folo.is/terms-of-service"
-
-type SubscriptionSource = NonNullable<ActiveSubscription["source"]>
-
-// A subscription bought in an app store can only change in that store, and Google Play installs
-// sell nothing but Google Play subscriptions.
-const canChangeSubscriptionHere = (
-  source: SubscriptionSource | null | undefined,
-  billingProvider: MobileBillingProvider,
-) => {
-  if (!source) {
-    return true
-  }
-
-  switch (billingProvider) {
-    case "google-play": {
-      return source === "google"
-    }
-    case "app-store": {
-      return source !== "google"
-    }
-    case "stripe": {
-      return source === "stripe"
-    }
-  }
-}
-
-type SubscriptionManagement = "apple-hint" | "other-platform-hint" | "manage-button"
-
-const getSubscriptionManagement = (
-  source: SubscriptionSource | null | undefined,
-  billingProvider: MobileBillingProvider,
-): SubscriptionManagement => {
-  if (source === "apple") {
-    return billingProvider === "google-play" ? "other-platform-hint" : "apple-hint"
-  }
-
-  return canChangeSubscriptionHere(source, billingProvider)
-    ? "manage-button"
-    : "other-platform-hint"
-}
 
 const BILLING_PERIOD_RANK: Record<BillingPeriod, number> = {
   monthly: 0,
