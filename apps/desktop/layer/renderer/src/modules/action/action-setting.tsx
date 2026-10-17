@@ -452,7 +452,7 @@ const ActionButtonGroup = ({ onCreateRule }: { onCreateRule: () => void }) => {
   const save = useEventCallback(() => {
     if (isSavingRef.current) return
     const { rules } = useActionStore.getState()
-    const invalidIndex = findRuleIndexWithInvalidRegex(rules)
+    const invalidIndex = findRuleIndexWithInvalidRegex(rules, actionActions.getLoadedRules())
     if (invalidIndex !== -1) {
       toast.error(
         t("actions.save_invalid_regex", {

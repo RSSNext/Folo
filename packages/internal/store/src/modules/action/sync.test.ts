@@ -129,6 +129,32 @@ describe("action rules and the sync engine", () => {
     expect(JSON.parse(documents.get("model:action")!).rules).toMatchObject([{ name: "Mine" }])
   })
 
+  it("keeps the rules as loaded next to the user's edits", async () => {
+    const handler = getSyncModelHandler("action")!
+    getMock.mockResolvedValue({ code: 0, data: { rules: [rule("Loaded")] } })
+    putMock.mockResolvedValue({ code: 0 })
+    await actionSyncService.ensureRules()
+    expect(actionActions.getLoadedRules()).toMatchObject([{ name: "Loaded" }])
+
+    actionActions.patchRule(0, { name: "Edited" })
+    await handler.apply({
+      id: 2,
+      model: "action",
+      modelId: null,
+      action: "U",
+      data: { rules: [rule("Changed elsewhere")] },
+      createdAt: "2026-09-17T00:00:00.000Z",
+    })
+    // The edits still change the rules they started from
+    expect(actionActions.getLoadedRules()).toMatchObject([{ name: "Loaded" }])
+
+    await actionSyncService.saveRules()
+    expect(actionActions.getLoadedRules()).toMatchObject([{ name: "Edited" }])
+
+    await actionActions.reset()
+    expect(actionActions.getLoadedRules()).toEqual([])
+  })
+
   it("refuses to save when the server's rules were never loaded", async () => {
     getMock.mockRejectedValue(new Error("Internal Server Error"))
     await expect(actionSyncService.ensureRules()).rejects.toThrow()

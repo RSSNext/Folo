@@ -99,10 +99,25 @@ class ActionSyncService {
 
 class ActionActions implements Hydratable, Resetable {
   private loaded = false
+  // The confirmed rules the rules in the store started from, before any unsaved edit
+  private loadedRules: ActionRules = []
 
   /** Whether confirmed rules are in the store, from the local database or from the server. */
   isLoaded() {
     return this.loaded
+  }
+
+  /** The confirmed rules the rules in the store started from: what the user's edits change. */
+  getLoadedRules(): readonly ActionItem[] {
+    return this.loadedRules
+  }
+
+  private showConfirmedRules(rules: ActionRules) {
+    immerSet((state) => {
+      state.rules = rules
+      state.isDirty = false
+    })
+    this.loadedRules = rules
   }
 
   private async readConfirmedRules(): Promise<ActionRules | null> {
@@ -120,10 +135,7 @@ class ActionActions implements Hydratable, Resetable {
   async hydrate() {
     const rules = await this.readConfirmedRules()
     if (!rules) return
-    immerSet((state) => {
-      state.rules = rules
-      state.isDirty = false
-    })
+    this.showConfirmedRules(rules)
     this.loaded = true
   }
 
@@ -135,10 +147,7 @@ class ActionActions implements Hydratable, Resetable {
     if (!useActionStore.getState().isDirty) return
     const rules = await this.readConfirmedRules()
     if (rules) {
-      immerSet((state) => {
-        state.rules = rules
-        state.isDirty = false
-      })
+      this.showConfirmedRules(rules)
       return
     }
     await actionSyncService.fetchRules()
@@ -146,10 +155,7 @@ class ActionActions implements Hydratable, Resetable {
 
   async reset() {
     this.loaded = false
-    immerSet((state) => {
-      state.rules = []
-      state.isDirty = false
-    })
+    this.showConfirmedRules([])
   }
 
   /**
@@ -158,10 +164,7 @@ class ActionActions implements Hydratable, Resetable {
    */
   async setConfirmedRules(rules: ActionRules, options?: { overwriteLocalEdits?: boolean }) {
     if (options?.overwriteLocalEdits || !useActionStore.getState().isDirty) {
-      immerSet((state) => {
-        state.rules = rules
-        state.isDirty = false
-      })
+      this.showConfirmedRules(rules)
     }
     this.loaded = true
 
