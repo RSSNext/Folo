@@ -5,11 +5,15 @@ import {
   useUpdateActionsMutation,
 } from "@follow/store/action/hooks"
 import type { ActionModel } from "@follow/store/action/store"
-import { actionActions } from "@follow/store/action/store"
+import {
+  actionActions,
+  actionSyncService,
+  isActionRulesConflictError,
+} from "@follow/store/action/store"
 import { useCallback, useEffect } from "react"
 import { useTranslation } from "react-i18next"
 import type { ListRenderItem } from "react-native"
-import { StyleSheet, View } from "react-native"
+import { Alert, StyleSheet, View } from "react-native"
 import Animated, { LinearTransition } from "react-native-reanimated"
 import { useColors } from "react-native-uikit-colors"
 
@@ -168,14 +172,34 @@ const SaveRuleButton = ({ disabled }: { disabled?: boolean }) => {
       toast.success(t("actions.saveSuccess"))
     },
     onError(error) {
-      toastFetchError(error)
+      if (!isActionRulesConflictError(error)) {
+        toastFetchError(error)
+        return
+      }
+      // The rules were changed elsewhere since they were loaded, so the save was refused
+      Alert.alert(t("actions.conflict.title"), t("actions.conflict.message"), [
+        { text: t("actions.conflict.keep_editing"), style: "cancel" },
+        {
+          text: t("actions.conflict.overwrite"),
+          style: "destructive",
+          onPress: () => mutate({ overwrite: true }),
+        },
+        {
+          text: t("actions.conflict.reload"),
+          onPress: () => {
+            actionSyncService.fetchRules().catch((fetchError: Error) => {
+              toastFetchError(fetchError)
+            })
+          },
+        },
+      ])
     },
   })
   return (
     <HeaderSubmitTextButton
       label={t("actions.save")}
       isValid={!disabled}
-      onPress={mutate}
+      onPress={() => mutate()}
       isLoading={isPending}
     />
   )

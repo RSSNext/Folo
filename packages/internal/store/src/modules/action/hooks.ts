@@ -3,7 +3,7 @@ import { useMutation, useQuery } from "@tanstack/react-query"
 import { useCallback } from "react"
 
 import type { GeneralMutationOptions } from "../../types"
-import type { ActionItem } from "./store"
+import type { ActionItem, SaveActionRulesOptions } from "./store"
 import { actionActions, actionSyncService, useActionStore } from "./store"
 
 export const usePrefetchActions = () => {
@@ -21,7 +21,8 @@ export const usePrefetchActions = () => {
 export const useUpdateActionsMutation = (options?: GeneralMutationOptions) => {
   return useMutation({
     ...options,
-    mutationFn: () => actionSyncService.saveRules(),
+    mutationFn: (saveOptions: SaveActionRulesOptions | void) =>
+      actionSyncService.saveRules(saveOptions ?? undefined),
   })
 }
 

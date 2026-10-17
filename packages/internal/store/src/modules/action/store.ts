@@ -6,6 +6,7 @@ import type {
   ActionId,
   ActionItem as ActionItemRes,
 } from "@follow-app/client-sdk"
+import { FollowAPIError } from "@follow-app/client-sdk"
 import { merge } from "es-toolkit/compat"
 import { t } from "i18next"
 
@@ -28,6 +29,30 @@ type ActionStore = {
 
 type ActionRules = ActionItem[]
 export type ActionModel = ActionItem
+
+/**
+ * Which version of the rules the server has: their `updatedAt`, null when it has no rules, or
+ * undefined when that is not known, such as for a copy an older app version stored.
+ */
+export type ActionRulesVersion = string | null | undefined
+
+// `ExceptionCodeMap.ActionRulesConflict`, which the pinned @folo-services/exceptions predates
+const ACTION_RULES_CONFLICT_CODE = 12001
+
+/** Whether a save was refused because the rules were changed elsewhere since they were loaded. */
+export const isActionRulesConflictError = (error: unknown) =>
+  error instanceof FollowAPIError && Number(error.code) === ACTION_RULES_CONFLICT_CODE
+
+const toRulesVersion = (updatedAt: unknown): string | undefined => {
+  if (typeof updatedAt === "string") return updatedAt
+  if (updatedAt instanceof Date) return updatedAt.toISOString()
+  return undefined
+}
+
+export type SaveActionRulesOptions = {
+  /** Replace the server's rules even if they were changed elsewhere since they were loaded. */
+  overwrite?: boolean
+}
 
 export const useActionStore = createZustandStore<ActionStore>("action")(() => ({
   rules: [],
@@ -64,9 +89,11 @@ class ActionSyncService {
    */
   async fetchRules(options?: { keepLocalEdits?: boolean }) {
     const res = await api().actions.get()
+    const { data } = res
     // An account without any rules gets no data at all, which means an empty rule set
-    await actionActions.setConfirmedRules(normalizeRules(res.data?.rules), {
+    await actionActions.setConfirmedRules(normalizeRules(data?.rules), {
       overwriteLocalEdits: !options?.keepLocalEdits,
+      version: data ? toRulesVersion(data.updatedAt) : null,
     })
     return res
   }
@@ -77,11 +104,22 @@ class ActionSyncService {
    * requested; otherwise they are fetched.
    */
   async ensureRules() {
-    if ((await ensureSyncedThroughEngine()) && actionActions.isLoaded()) return
+    if ((await ensureSyncedThroughEngine()) && actionActions.isLoaded()) {
+      // A copy stored before versions were kept is fetched once to learn its version
+      if (actionActions.getLoadedVersion() === undefined) {
+        await this.fetchRules({ keepLocalEdits: true })
+      }
+      return
+    }
     await this.fetchRules()
   }
 
-  async saveRules() {
+  /**
+   * Replace the server's rules with the ones in the store. Unless `overwrite` is set, this
+   * fails with an error `isActionRulesConflictError` recognizes when the rules were changed
+   * elsewhere since they were loaded, rather than overwriting those changes.
+   */
+  async saveRules(options?: SaveActionRulesOptions) {
     const { rules, isDirty } = useActionStore.getState()
     if (!isDirty) {
       return null
@@ -91,8 +129,16 @@ class ActionSyncService {
       throw new Error(t("actions.load_failed", { ns: "settings" }))
     }
 
-    const res = await api().actions.put({ rules: rules as any })
-    await actionActions.setConfirmedRules(rules, { overwriteLocalEdits: true })
+    // An unknown version cannot be checked, so such a save replaces the rules unconditionally
+    const expectedUpdatedAt = options?.overwrite ? undefined : actionActions.getLoadedVersion()
+    const res = await api().actions.put({
+      rules: rules as any,
+      ...(expectedUpdatedAt !== undefined && { expectedUpdatedAt }),
+    })
+    await actionActions.setConfirmedRules(rules, {
+      overwriteLocalEdits: true,
+      version: toRulesVersion(res.updatedAt),
+    })
     return res
   }
 }
@@ -101,6 +147,8 @@ class ActionActions implements Hydratable, Resetable {
   private loaded = false
   // The confirmed rules the rules in the store started from, before any unsaved edit
   private loadedRules: ActionRules = []
+  // The version of `loadedRules`, which a save sends so it fails if the rules changed since
+  private loadedVersion: ActionRulesVersion = undefined
 
   /** Whether confirmed rules are in the store, from the local database or from the server. */
   isLoaded() {
@@ -112,20 +160,33 @@ class ActionActions implements Hydratable, Resetable {
     return this.loadedRules
   }
 
-  private showConfirmedRules(rules: ActionRules) {
+  /** The version of the rules the store's rules started from. */
+  getLoadedVersion(): ActionRulesVersion {
+    return this.loadedVersion
+  }
+
+  private showConfirmedRules(rules: ActionRules, version: ActionRulesVersion) {
     immerSet((state) => {
       state.rules = rules
       state.isDirty = false
     })
     this.loadedRules = rules
+    this.loadedVersion = version
   }
 
-  private async readConfirmedRules(): Promise<ActionRules | null> {
+  private async readConfirmedRules(): Promise<{
+    rules: ActionRules
+    version: ActionRulesVersion
+  } | null> {
     try {
       const stored = await SyncMetaService.get(ACTION_RULES_DOCUMENT_KEY)
       if (stored === null) return null
-      const parsed = JSON.parse(stored) as { rules?: ActionRules }
-      return Array.isArray(parsed.rules) ? parsed.rules : null
+      const parsed = JSON.parse(stored) as { rules?: ActionRules; updatedAt?: unknown }
+      if (!Array.isArray(parsed.rules)) return null
+      return {
+        rules: parsed.rules,
+        version: parsed.updatedAt === null ? null : toRulesVersion(parsed.updatedAt),
+      }
     } catch (error) {
       console.error("[action] failed to load the stored rules", error)
       return null
@@ -133,9 +194,9 @@ class ActionActions implements Hydratable, Resetable {
   }
 
   async hydrate() {
-    const rules = await this.readConfirmedRules()
-    if (!rules) return
-    this.showConfirmedRules(rules)
+    const confirmed = await this.readConfirmedRules()
+    if (!confirmed) return
+    this.showConfirmedRules(confirmed.rules, confirmed.version)
     this.loaded = true
   }
 
@@ -145,9 +206,9 @@ class ActionActions implements Hydratable, Resetable {
    */
   async discardLocalEdits() {
     if (!useActionStore.getState().isDirty) return
-    const rules = await this.readConfirmedRules()
-    if (rules) {
-      this.showConfirmedRules(rules)
+    const confirmed = await this.readConfirmedRules()
+    if (confirmed) {
+      this.showConfirmedRules(confirmed.rules, confirmed.version)
       return
     }
     await actionSyncService.fetchRules()
@@ -155,24 +216,29 @@ class ActionActions implements Hydratable, Resetable {
 
   async reset() {
     this.loaded = false
-    this.showConfirmedRules([])
+    this.showConfirmedRules([], undefined)
   }
 
   /**
    * Rules as the server has them. They are always written to the local database; the store
    * follows unless the user has unsaved edits that must not be replaced under their hands.
    */
-  async setConfirmedRules(rules: ActionRules, options?: { overwriteLocalEdits?: boolean }) {
+  async setConfirmedRules(
+    rules: ActionRules,
+    options?: { overwriteLocalEdits?: boolean; version?: ActionRulesVersion },
+  ) {
+    const version = options?.version
     if (options?.overwriteLocalEdits || !useActionStore.getState().isDirty) {
-      this.showConfirmedRules(rules)
+      this.showConfirmedRules(rules, version)
     }
     this.loaded = true
 
-    await SyncMetaService.set(ACTION_RULES_DOCUMENT_KEY, JSON.stringify({ rules })).catch(
-      (error) => {
-        console.error("[action] failed to store the rules", error)
-      },
-    )
+    await SyncMetaService.set(
+      ACTION_RULES_DOCUMENT_KEY,
+      JSON.stringify({ rules, updatedAt: version }),
+    ).catch((error) => {
+      console.error("[action] failed to store the rules", error)
+    })
   }
 
   updateRules(rules: ActionRules) {
@@ -494,8 +560,10 @@ registerSyncModel("action", {
     await actionSyncService.fetchRules({ keepLocalEdits: true })
   },
   apply: async (action) => {
-    const data = action.data as { rules?: ActionItemRes[] } | null
+    const data = action.data as { rules?: ActionItemRes[]; updatedAt?: unknown } | null
     if (action.action !== "U" || !data || !Array.isArray(data.rules)) return
-    await actionActions.setConfirmedRules(normalizeRules(data.rules))
+    await actionActions.setConfirmedRules(normalizeRules(data.rules), {
+      version: toRulesVersion(data.updatedAt),
+    })
   },
 })
