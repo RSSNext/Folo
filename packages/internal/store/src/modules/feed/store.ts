@@ -1,5 +1,6 @@
 import type { FeedSchema } from "@follow/database/schemas/types"
 import { FEED_EXTRA_DATA_KEYS, FeedService } from "@follow/database/services/feed"
+import { SyncMetaService } from "@follow/database/services/sync-meta"
 import { getDateISOString, isBizId } from "@follow/utils"
 
 import { api } from "../../context"
@@ -28,6 +29,31 @@ export const useFeedStore = createZustandStore<FeedState>("feed")(() => initialF
 const get = useFeedStore.getState
 const set = useFeedStore.setState
 const immerSet = createImmerSetter(useFeedStore)
+
+/**
+ * The resolved URLs are kept across launches, so a feed followed by an RSSHub instance address
+ * is still found by it. The table belongs to the signed-in account and is cleared with it.
+ */
+const RESOLVED_URLS_KEY = "feed:resolved-urls"
+// Only the most recently resolved addresses are kept
+const MAX_RESOLVED_URLS = 100
+
+const readResolvedUrls = async (): Promise<Record<string, string>> => {
+  try {
+    const stored = await SyncMetaService.get(RESOLVED_URLS_KEY)
+    if (!stored) return {}
+    const parsed: unknown = JSON.parse(stored)
+    if (!parsed || typeof parsed !== "object" || Array.isArray(parsed)) return {}
+    return Object.fromEntries(
+      Object.entries(parsed).filter(
+        (entry): entry is [string, string] => typeof entry[1] === "string",
+      ),
+    )
+  } catch (error) {
+    console.error("[feed] failed to load the resolved URLs", error)
+    return {}
+  }
+}
 // const get = useFeedStore.getState
 // const distanceTime = 1000 * 60 * 60 * 9
 
@@ -49,8 +75,12 @@ const getReplacedPreviewIds = (stored: Record<string, FeedModel>, incoming: Feed
 
 class FeedActions implements Hydratable, Resetable {
   async hydrate() {
-    const feeds = await FeedService.getFeedAll()
+    const [feeds, resolvedUrls] = await Promise.all([FeedService.getFeedAll(), readResolvedUrls()])
     feedActions.upsertManyInSession(feeds)
+    immerSet((draft) => {
+      // Addresses already looked up in this session are the newer ones
+      draft.resolvedUrls = { ...resolvedUrls, ...draft.resolvedUrls }
+    })
   }
 
   upsertManyInSession(feeds: FeedSchema[]) {
@@ -92,13 +122,25 @@ class FeedActions implements Hydratable, Resetable {
     await tx.run()
   }
 
-  /** Remember the URL of the feed the server found for an address */
-  setResolvedUrl(address: string | undefined, feedUrl: string | undefined) {
+  /** Remember the URL of the feed the server found for an address, also for later launches */
+  async setResolvedUrl(address: string | undefined, feedUrl: string | undefined) {
     if (!address || !feedUrl || address === feedUrl) return
     if (get().resolvedUrls[address] === feedUrl) return
     immerSet((draft) => {
+      // The latest address goes last, so the oldest ones are dropped first
+      delete draft.resolvedUrls[address]
       draft.resolvedUrls[address] = feedUrl
+      const addresses = Object.keys(draft.resolvedUrls)
+      for (const stale of addresses.slice(0, Math.max(0, addresses.length - MAX_RESOLVED_URLS))) {
+        delete draft.resolvedUrls[stale]
+      }
     })
+
+    await SyncMetaService.set(RESOLVED_URLS_KEY, JSON.stringify(get().resolvedUrls)).catch(
+      (error) => {
+        console.error("[feed] failed to store the resolved URLs", error)
+      },
+    )
   }
 
   patchInSession(feedId: string, patch: Partial<FeedSchema>) {
@@ -126,8 +168,13 @@ class FeedActions implements Hydratable, Resetable {
       set(initialFeedStore)
     })
 
-    tx.persist(() => {
-      return FeedService.reset()
+    tx.persist(async () => {
+      await Promise.all([
+        FeedService.reset(),
+        SyncMetaService.delete(RESOLVED_URLS_KEY).catch((error) => {
+          console.error("[feed] failed to clear the resolved URLs", error)
+        }),
+      ])
     })
 
     await tx.run()
@@ -189,7 +236,7 @@ class FeedSyncServices {
       finalData["id"] = nonce
     }
     feedActions.upsertMany([finalData])
-    feedActions.setResolvedUrl(url, finalData.url)
+    void feedActions.setResolvedUrl(url, finalData.url)
 
     return {
       responseData: res.data,

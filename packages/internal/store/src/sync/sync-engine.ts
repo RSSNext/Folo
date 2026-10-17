@@ -363,8 +363,8 @@ class SyncEngine implements Resetable {
   /** Forget the cursor. Used on logout; the next start bootstraps again. */
   async reset() {
     this.clearInSession()
-    // Every key in the table belongs to the engine: the cursor, calibration times, and the
-    // bootstrap flags and documents of registered models.
+    // Every key in the table belongs to the signed-in account: the cursor, calibration times,
+    // the bootstrap flags and documents of registered models, and the feed store's resolved URLs.
     await SyncMetaService.reset().catch((error) => {
       console.error("[sync-engine] failed to clear the sync cursor", error)
     })
