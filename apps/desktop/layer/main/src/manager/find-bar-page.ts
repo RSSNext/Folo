@@ -69,6 +69,11 @@ function findBarScript(channel: typeof FindBarChannel) {
     clearTimeout(timer)
     timer = setTimeout(() => find("forward"), 200)
   }
+  const requestClose = () => {
+    // A search still waiting for the typing to stop would run in the page after the bar closed
+    clearTimeout(timer)
+    ipcRenderer.send(channel.close)
+  }
 
   input.addEventListener("input", () => {
     if (!composing) findSoon()
@@ -87,7 +92,7 @@ function findBarScript(channel: typeof FindBarChannel) {
       find(event.shiftKey ? "backward" : "forward")
     } else if (event.key === "Escape") {
       event.preventDefault()
-      ipcRenderer.send(channel.close)
+      requestClose()
     }
   })
   bar.addEventListener("submit", (event) => event.preventDefault())
@@ -97,7 +102,7 @@ function findBarScript(channel: typeof FindBarChannel) {
   }
   previous.addEventListener("click", () => find("backward"))
   next.addEventListener("click", () => find("forward"))
-  close.addEventListener("click", () => ipcRenderer.send(channel.close))
+  close.addEventListener("click", requestClose)
 
   ipcRenderer.on(
     channel.open,

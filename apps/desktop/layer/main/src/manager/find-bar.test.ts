@@ -153,4 +153,19 @@ describe("FindBarManager", () => {
     expect(view.setVisible).toHaveBeenLastCalledWith(false)
     expect(window.webContents.focus).toHaveBeenCalled()
   })
+
+  it("ignores a search the bar sends after it was closed", async () => {
+    const { window, fromBar } = await openFindBar()
+
+    // E.g. text typed right before Escape, whose search waited for the typing to stop
+    fromBar("find-bar:close")
+    fromBar("find-bar:find", { text: "timeline", direction: "forward" })
+
+    expect(window.webContents.findInPage).not.toHaveBeenCalled()
+
+    FindBarManager.open(window as unknown as BrowserWindow)
+    fromBar("find-bar:find", { text: "timeline", direction: "forward" })
+
+    expect(window.webContents.findInPage).toHaveBeenCalledTimes(1)
+  })
 })

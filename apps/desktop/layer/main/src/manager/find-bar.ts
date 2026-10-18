@@ -139,6 +139,9 @@ class FindBar {
   }
 
   find(request: FindRequest) {
+    // The bar's page may still send a search it started before it was closed, e.g. text typed
+    // right before Escape. It would highlight matches with no bar left to clear them.
+    if (!this.shown) return
     this.session.find(request)
   }
 
