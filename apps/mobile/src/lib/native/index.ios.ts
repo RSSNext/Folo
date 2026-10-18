@@ -1,5 +1,6 @@
 import { requireNativeModule } from "expo"
 import { openURL } from "expo-linking"
+import * as WebBrowser from "expo-web-browser"
 
 import { getGeneralSettings } from "@/src/atoms/settings/general"
 
@@ -9,6 +10,8 @@ interface NativeModule {
   openLink: (url: string) => Promise<{
     type: "dismiss"
   }>
+  /** Missing from builds before it was added */
+  dismissPresentedBrowser?: () => Promise<boolean>
   previewImage: (images: string[]) => void
   scrollToTop: (reactTag: number) => void
   isScrollToEnd: (reactTag: number) => Promise<boolean>
@@ -33,6 +36,18 @@ export const openLink = (url: string, onDismiss?: () => void) => {
       onDismiss?.()
     }
   })
+}
+
+/**
+ * Closes the in-app browser if it is open, resolving once it is gone. A screen presented over it
+ * would appear only after the user closed it, such as the follow form of a link opened from it.
+ */
+export const dismissInAppBrowser = async () => {
+  await Promise.allSettled([
+    nativeModule.dismissPresentedBrowser?.(),
+    // Rejects when it shows no browser
+    WebBrowser.dismissBrowser(),
+  ])
 }
 
 export const performNativeScrollToTop = (reactTag: number) => {

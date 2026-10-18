@@ -336,6 +336,9 @@ enum WebViewManager {
     return nil
   }
 
+  // The in-app browser shown last, closed before the app opens a link it is asked to open
+  private static weak var presentedBrowser: SafariViewController?
+
   // Existing method preserved
   static func presentModalWebView(
     url: URL, from viewController: UIViewController, onDismiss: (() -> Void)? = nil
@@ -356,7 +359,20 @@ enum WebViewManager {
     safariVC.preferredControlTintColor = Utils.accentColor
 
     if let onDismiss = onDismiss { safariVC.setOnDismiss(onDismiss) }
+    presentedBrowser = safariVC
     viewController.present(safariVC, animated: true)
+  }
+
+  /// Closes the in-app browser when it is shown; `completion` gets whether it was. Screens the
+  /// app presents meanwhile would only appear once the user closed it.
+  static func dismissPresentedBrowser(completion: @escaping (Bool) -> Void) {
+    guard let browser = presentedBrowser, browser.presentingViewController != nil else {
+      completion(false)
+      return
+    }
+    browser.dismiss(animated: true) {
+      completion(true)
+    }
   }
 }
 

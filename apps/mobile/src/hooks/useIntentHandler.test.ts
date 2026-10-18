@@ -11,7 +11,10 @@ import { handleIncomingUrl, watchPendingFollowScreen } from "./useIntentHandler"
 const mocks = vi.hoisted(() => {
   // Read by the shared constants at import
   vi.stubGlobal("ELECTRON", false)
-  return { whoami: null as { id: string } | null }
+  return {
+    whoami: null as { id: string } | null,
+    dismissInAppBrowser: vi.fn(async () => {}),
+  }
 })
 
 vi.mock("expo", () => ({
@@ -31,12 +34,16 @@ vi.mock("@follow/store/user/hooks", () => ({ invalidateUserSession: vi.fn() }))
 vi.mock("@follow/store/user/getters", () => ({ whoami: () => mocks.whoami }))
 vi.mock("../lib/navigation/hooks", () => ({ useNavigation: vi.fn() }))
 vi.mock("../lib/launch-link", () => ({ getUnhandledLaunchLink: async () => null }))
+vi.mock("../lib/native", () => ({ dismissInAppBrowser: mocks.dismissInAppBrowser }))
 vi.mock("../screens/(modal)/FollowScreen", () => ({ FollowScreen: () => null }))
 vi.mock("../screens/(modal)/LoginScreen", () => ({ LoginScreen: () => null }))
 
 const createNavigation = () => new Navigation({ routesAtom: atom<Route[]>([]) })
 const routesOf = (navigation: Navigation) =>
   jotaiStore.get(navigation.__dangerous_getCtxValue().routesAtom)
+const screensOf = (navigation: Navigation) => routesOf(navigation).map((route) => route.Component)
+// The form opens once the in-app browser, if any, is closed
+const settle = () => new Promise((resolve) => setTimeout(resolve, 0))
 
 // The handler remembers the last link for the whole module, so each test starts much later
 let now = 1_000_000
@@ -49,10 +56,12 @@ describe("handleIncomingUrl", () => {
     now += 3_600_000
     vi.spyOn(Date, "now").mockImplementation(() => now)
     mocks.whoami = { id: "user-1" }
+    mocks.dismissInAppBrowser.mockClear()
   })
 
-  it("opens the follow form for a link", () => {
+  it("opens the follow form for a link", async () => {
     handleIncomingUrl("folo://add?id=1337497420971380736", navigation)
+    await settle()
 
     const routes = routesOf(navigation)
     expect(routes).toHaveLength(1)
@@ -60,10 +69,28 @@ describe("handleIncomingUrl", () => {
     expect(routes[0]!.props).toMatchObject({ id: "1337497420971380736", type: "feed" })
   })
 
-  it("replaces an open follow form with the one for the next link", () => {
+  it("closes the in-app browser first, which would cover the form", async () => {
+    let closeBrowser!: () => void
+    mocks.dismissInAppBrowser.mockImplementationOnce(
+      () => new Promise<void>((resolve) => (closeBrowser = resolve)),
+    )
+
+    handleIncomingUrl("folo://add?id=1337585485484134400", navigation)
+    await settle()
+    expect(mocks.dismissInAppBrowser).toHaveBeenCalledTimes(1)
+    expect(screensOf(navigation)).toEqual([])
+
+    closeBrowser()
+    await settle()
+    expect(screensOf(navigation)).toEqual([FollowScreen])
+  })
+
+  it("replaces an open follow form with the one for the next link", async () => {
     handleIncomingUrl("folo://add?id=1337497420971380736", navigation)
+    await settle()
     now += 60_000
     handleIncomingUrl("folo://add?id=1337585485484134400", navigation)
+    await settle()
 
     const routes = routesOf(navigation)
     expect(routes).toHaveLength(1)
@@ -71,9 +98,10 @@ describe("handleIncomingUrl", () => {
     expect(routes[0]!.props).toMatchObject({ id: "1337585485484134400", type: "feed" })
   })
 
-  it("skips the echo of a link reported twice", () => {
+  it("skips the echo of a link reported twice", async () => {
     handleIncomingUrl("folo://add?id=1337497420971380736", navigation)
     handleIncomingUrl("folo://add?id=1337497420971380736", navigation)
+    await settle()
 
     expect(routesOf(navigation)).toHaveLength(1)
   })
@@ -88,15 +116,14 @@ describe("handleIncomingUrl", () => {
       navigation.presentControllerView(LoginScreen)
 
       handleIncomingUrl("folo://add?id=1337585485484134400", navigation)
+      await settle()
       // The form would cover the sign-in screen
-      expect(routesOf(navigation).map((route) => route.Component)).toEqual([LoginScreen])
+      expect(screensOf(navigation)).toEqual([LoginScreen])
 
       // Signing in closes the sign-in screen
       mocks.whoami = { id: "user-1" }
       navigation.dismiss()
-      await vi.waitFor(() =>
-        expect(routesOf(navigation).map((route) => route.Component)).toEqual([FollowScreen]),
-      )
+      await vi.waitFor(() => expect(screensOf(navigation)).toEqual([FollowScreen]))
       expect(routesOf(navigation)[0]!.props).toMatchObject({ id: "1337585485484134400" })
       stopWatching()
     })
@@ -108,16 +135,15 @@ describe("handleIncomingUrl", () => {
 
       navigation.dismiss()
 
-      await vi.waitFor(() =>
-        expect(routesOf(navigation).map((route) => route.Component)).toEqual([FollowScreen]),
-      )
+      await vi.waitFor(() => expect(screensOf(navigation)).toEqual([FollowScreen]))
       stopWatching()
     })
 
-    it("opens the form at once without a sign-in screen, which the form asks for", () => {
+    it("opens the form at once without a sign-in screen, which the form asks for", async () => {
       handleIncomingUrl("folo://add?id=1337585485484134400", navigation)
+      await settle()
 
-      expect(routesOf(navigation).map((route) => route.Component)).toEqual([FollowScreen])
+      expect(screensOf(navigation)).toEqual([FollowScreen])
     })
   })
 })

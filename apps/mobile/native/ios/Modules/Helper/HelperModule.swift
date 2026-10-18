@@ -28,6 +28,14 @@ public class HelperModule: Module {
       }
     }
 
+    AsyncFunction("dismissPresentedBrowser") { (promise: Promise) in
+      DispatchQueue.main.async {
+        WebViewManager.dismissPresentedBrowser { dismissed in
+          promise.resolve(dismissed)
+        }
+      }
+    }
+
     Function("scrollToTop") { (reactTag: Int) in
       DispatchQueue.main.async { [weak self] in
         if let sourceView = self?.appContext?.findView(withTag: reactTag, ofType: UIView.self) {

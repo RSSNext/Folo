@@ -5,6 +5,7 @@ import * as Linking from "expo-linking"
 import { useEffect } from "react"
 
 import { getUnhandledLaunchLink } from "../lib/launch-link"
+import { dismissInAppBrowser } from "../lib/native"
 import { useNavigation } from "../lib/navigation/hooks"
 import type { Navigation } from "../lib/navigation/Navigation"
 import { FollowScreen } from "../screens/(modal)/FollowScreen"
@@ -31,7 +32,11 @@ type FollowScreenProps = {
 // The follow form of a link that came in while the sign-in screen was up
 let pendingFollowScreen: FollowScreenProps | null = null
 
-const presentFollowScreen = (navigation: Navigation, props: FollowScreenProps) => {
+const presentFollowScreen = async (navigation: Navigation, props: FollowScreenProps) => {
+  // A link opened from a page in the in-app browser, such as "Open in Folo", would open its form
+  // under the browser
+  await dismissInAppBrowser()
+
   // The navigation keeps a screen that is on top already, so the open form would stay, showing
   // and following the feed of the link before. The new link takes its place.
   const topRoute = jotaiStore.get(navigation.__dangerous_getCtxValue().routesAtom).at(-1)
@@ -46,7 +51,7 @@ const presentPendingFollowScreen = (navigation: Navigation) => {
   if (!pendingFollowScreen || navigation.hasControllerView(LoginScreen)) return
   const props = pendingFollowScreen
   pendingFollowScreen = null
-  presentFollowScreen(navigation, props)
+  void presentFollowScreen(navigation, props)
 }
 
 /**
@@ -92,7 +97,7 @@ export const handleIncomingUrl = (incomingUrl: string | null, navigation: Naviga
     return
   }
 
-  presentFollowScreen(navigation, props)
+  void presentFollowScreen(navigation, props)
 }
 
 export function useIntentHandler() {

@@ -29,6 +29,9 @@ export const openLink = (
   })
 }
 
+/** Custom tabs close by themselves when a link brings the app to the front */
+export const dismissInAppBrowser = async () => {}
+
 export const performNativeScrollToTop = (_reactTag: number) => {
   throw new Error("performNativeScrollToTop is not supported on this platform")
 }
