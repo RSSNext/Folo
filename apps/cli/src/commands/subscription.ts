@@ -106,6 +106,14 @@ export const registerSubscriptionCommand = (program: Command) => {
 
         // The feed or list it followed, its unread counts and the sync id of the change
         const response = await client.api.subscriptions.create(request)
+        // A URL without a feed, such as a page that links none or answers 404, is answered with
+        // success and nothing followed
+        if (!response.feed && !response.list) {
+          throw new CLIError(
+            "NOT_FOUND",
+            options.feed ? `No feed found at ${options.feed}.` : `List ${options.list} not found.`,
+          )
+        }
         return toChangeResult(response)
       })
     })
