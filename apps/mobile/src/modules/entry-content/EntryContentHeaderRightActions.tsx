@@ -113,9 +113,14 @@ const HeaderRightActionsImpl = ({
   }
 
   const handleShare = () => {
-    if (!entry?.title || !entry?.url) return
+    if (!entry?.url) return
     Share.share(
-      createLinkShareContent({ platform: Platform.OS, title: entry.title, url: entry.url }),
+      createLinkShareContent({
+        platform: Platform.OS,
+        // Social posts often have no title
+        title: entry.title || t("operation.share_title.link"),
+        url: entry.url,
+      }),
     )
   }
 
@@ -206,7 +211,7 @@ const HeaderRightActionsImpl = ({
       },
       inMenu: true,
     },
-    {
+    !!entry?.url && {
       key: "Share",
       title: t("operation.share"),
       icon: <ShareForwardCuteReIcon />,
