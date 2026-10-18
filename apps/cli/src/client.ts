@@ -89,12 +89,41 @@ export const fetchAuthSession = async ({
     console.error(`[response] GET ${requestUrl} -> ${response.status}`)
   }
 
-  if (!response.ok) {
+  if (response.status === 401 || response.status === 403) {
     const message = await readSessionErrorMessage(response)
     throw new CLIError("UNAUTHORIZED", message || "Token is invalid or expired.")
   }
 
+  // Any other failure, such as a wrong API URL answering 404, says nothing about the token
+  if (!response.ok) {
+    const message = await readSessionErrorMessage(response)
+    throw new CLIError(
+      `HTTP_${response.status}`,
+      message || `Session check failed with HTTP ${response.status}.`,
+    )
+  }
+
   return (await response.json()) as CLIAuthSession
+}
+
+/**
+ * The API URL requests append their paths to, without trailing slashes: an URL saved as
+ * `http://localhost:3000/` sent the session check to `//better-auth/get-session`.
+ */
+export const resolveApiUrl = (value: string): string => {
+  const apiUrl = value.trim().replace(/\/+$/, "")
+
+  let url: URL
+  try {
+    url = new URL(apiUrl)
+  } catch {
+    throw new CLIError("INVALID_ARGUMENT", `Invalid API URL: ${value}`)
+  }
+  if (url.protocol !== "http:" && url.protocol !== "https:") {
+    throw new CLIError("INVALID_ARGUMENT", `Invalid API URL: ${value}. Use an http or https URL.`)
+  }
+
+  return apiUrl
 }
 
 export const getGlobalOptions = (command: Command): GlobalOptions => {
@@ -132,7 +161,7 @@ export const createCommandContext = async (
   const globalOptions = getGlobalOptions(command)
   const config = await readConfig()
   const token = normalizeToken(globalOptions.token ?? process.env.FOLO_TOKEN ?? config.token)
-  const apiUrl = globalOptions.apiUrl ?? config.apiUrl ?? defaultApiURL
+  const apiUrl = resolveApiUrl(globalOptions.apiUrl ?? config.apiUrl ?? defaultApiURL)
 
   if (requireAuth && !token) {
     throw new CLIError(
