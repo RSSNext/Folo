@@ -8,6 +8,8 @@ import i18next from "i18next"
 import { toast } from "sonner"
 import { beforeAll, beforeEach, describe, expect, test, vi } from "vitest"
 
+import { setApiUnreachable } from "~/atoms/api-connection"
+
 import { getFetchErrorMessage, toastFetchError } from "./error-parser"
 
 vi.mock("sonner", () => ({
@@ -69,6 +71,66 @@ describe("toastFetchError", () => {
         expect.objectContaining({ description: "`rules.0.condition`: Invalid input" }),
       )
     })
+  })
+})
+
+describe("a request that got no answer", () => {
+  const unreachable = "Unable to connect to the server."
+
+  beforeAll(async () => {
+    if (!i18next.isInitialized) await i18next.init({ lng: "en", resources: {} })
+    i18next.addResourceBundle("en", "common", { "app.api_unreachable": unreachable }, true, true)
+  })
+
+  beforeEach(() => {
+    vi.mocked(toast.error).mockClear()
+  })
+
+  test.each([
+    ["Chromium", new TypeError("Failed to fetch")],
+    ["Safari", new TypeError("Load failed")],
+    ["Firefox", new TypeError("NetworkError when attempting to fetch resource.")],
+    [
+      "the main process",
+      new Error("Error invoking remote method 'fetch': TypeError: fetch failed"),
+    ],
+  ])("says the server could not be reached instead of the wording of %s", (_, error) => {
+    toastFetchError(error, { title: "Failed to unfollow" })
+
+    expect(toast.error).toHaveBeenCalledWith(
+      "Failed to unfollow",
+      expect.objectContaining({ description: unreachable }),
+    )
+    expect(getFetchErrorMessage(error)).toBe(unreachable)
+  })
+
+  test("keeps the message of other failures", () => {
+    const error = new TypeError("Failed to fetch dynamically imported module: /assets/a.js")
+
+    expect(getFetchErrorMessage(error)).toBe(error.message)
+  })
+
+  test("adds nothing to the notice of an unreachable server, which says the same", () => {
+    setApiUnreachable(true)
+    try {
+      toastFetchError(new TypeError("Failed to fetch"))
+      expect(toast.error).not.toHaveBeenCalled()
+
+      // A title still says which action failed
+      toastFetchError(new TypeError("Failed to fetch"), { title: "Failed to unfollow" })
+      expect(toast.error).toHaveBeenCalledWith(
+        "Failed to unfollow",
+        expect.objectContaining({ description: unreachable }),
+      )
+    } finally {
+      setApiUnreachable(false)
+    }
+  })
+
+  test("says the server could not be reached before the notice shows", () => {
+    toastFetchError(new TypeError("Failed to fetch"))
+
+    expect(toast.error).toHaveBeenCalledWith(unreachable, expect.anything())
   })
 })
 

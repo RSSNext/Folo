@@ -6,6 +6,7 @@ import { createElement } from "react"
 import type { ExternalToast } from "sonner"
 import { toast } from "sonner"
 
+import { getApiUnreachable } from "~/atoms/api-connection"
 import { getIsPaymentEnabled } from "~/atoms/server-configs"
 import { CopyButton } from "~/components/ui/button/CopyButton"
 import { Markdown } from "~/components/ui/markdown/Markdown"
@@ -13,6 +14,15 @@ import { DebugRegistry } from "~/modules/debug/registry"
 
 // The SDK appends the request and its arguments to the server's message
 const stripRequestContext = (message: string) => message.replace(/\r?\nRequest:[\s\S]*$/u, "")
+
+// How fetch fails when no answer came back, offline or with the API down: each browser words it
+// its own way, and a request the main process made for the window comes back as "fetch failed"
+const CONNECTION_FAILURE_MESSAGE =
+  /^(?:failed to fetch|load failed|networkerror when attempting to fetch resource\.?)$|\bfetch failed\b/iu
+
+/** The request got no answer at all, so the browser's own wording would say nothing useful */
+export const isConnectionFailure = (error: Error) =>
+  !(error instanceof FollowAPIError) && CONNECTION_FAILURE_MESSAGE.test(error.message)
 
 // i18next answers a missing key with the key without its namespace, such as "1000"
 const translateErrorCode = (code: unknown, fallback: string) => {
@@ -58,6 +68,10 @@ export const getFetchErrorInfo = (
     } catch {
       return { message }
     }
+  }
+
+  if (isConnectionFailure(error)) {
+    return { message: t("common:app.api_unreachable") }
   }
 
   return { message: error.message }
@@ -132,6 +146,12 @@ export const toastFetchError = (
   // 2fa errors are handled by the form
   if (code === 4007 || code === 4008) {
     return
+  }
+
+  if (isConnectionFailure(error)) {
+    // The notice of an unreachable server says the same and stays until it answers again
+    if (!_title && getApiUnreachable()) return
+    message = t("common:app.api_unreachable")
   }
 
   // Plain errors, such as wrapped auth client errors, carry their text in `message`
