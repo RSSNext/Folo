@@ -83,6 +83,10 @@ Changes the API answers without data, such as `subscription remove`, `collection
    - or `npx --yes folocli@latest subscription add --list <listId>`
 3. List subscriptions:
    - `npx --yes folocli@latest subscription list`
+4. Update or remove one by the feed ID, list ID or feed URL it lists:
+   - `npx --yes folocli@latest subscription update <id> --category <name>`
+   - `npx --yes folocli@latest subscription remove <id>`
+   - Both fail with `NOT_FOUND` for anything you don't follow, without changing anything.
 
 ### 3. Unread Processing
 
