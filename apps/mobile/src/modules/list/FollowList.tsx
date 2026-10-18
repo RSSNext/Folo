@@ -6,7 +6,7 @@ import { subscriptionSyncService } from "@follow/store/subscription/store"
 import { useUserRole } from "@follow/store/user/hooks"
 import { zodResolver } from "@hookform/resolvers/zod"
 import { useQuery } from "@tanstack/react-query"
-import { useEffect, useState } from "react"
+import { useEffect, useMemo, useState } from "react"
 import { Controller, useForm } from "react-hook-form"
 import { useTranslation } from "react-i18next"
 import { StyleSheet, View } from "react-native"
@@ -85,15 +85,24 @@ const Impl = (props: { id: string }) => {
   const role = useUserRole()
   const isPaymentEnabled = useIsPaymentEnabled()
   const isPlanLocked = isPaymentEnabled && (role === UserRole.Free || role === UserRole.Trial)
-  const form = useForm<z.infer<typeof formSchema>>({
-    resolver: zodResolver(formSchema),
-    defaultValues: {
+  const defaultFormValues = useMemo(
+    () => ({
       view: list?.view ?? FeedViewType.Articles,
       isPrivate: subscription?.isPrivate ?? false,
       hideFromTimeline: subscription?.hideFromTimeline ?? undefined,
       title: subscription?.title ?? undefined,
-    },
+    }),
+    [list?.view, subscription],
+  )
+  const form = useForm<z.infer<typeof formSchema>>({
+    resolver: zodResolver(formSchema),
+    defaultValues: defaultFormValues,
   })
+  // The fields the user left alone follow edits that arrive from other devices, so saving
+  // does not write their old values back.
+  useEffect(() => {
+    form.reset(defaultFormValues, { keepDirtyValues: true })
+  }, [defaultFormValues, form])
   const { isValid, isDirty } = form.formState
   const isModal = useScreenIsInSheetModal()
   const navigation = useNavigation()

@@ -164,14 +164,17 @@ const generateSubscriptionContextMenu = (
             key={`SubContent/CreateNewCategory`}
             onSelect={() => {
               // create new category
-              const subscription = getSubscriptionById(id)
-              if (!subscription) return
+              if (!getSubscriptionById(id)) return
               const prompt = isIOS ? Alert.prompt : modalPrompt
 
               prompt(
                 t("operation.create_new_category"),
                 t("operation.enter_name_for_new_category"),
                 (text) => {
+                  // Read once the name is in: another device may have edited the feed meanwhile,
+                  // and an older copy would write those fields back.
+                  const subscription = getSubscriptionById(id)
+                  if (!subscription) return
                   subscriptionSyncService.edit({
                     ...subscription,
                     category: text,
