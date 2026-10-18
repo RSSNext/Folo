@@ -29,7 +29,7 @@ import { GroupedInsetListCard } from "@/src/components/ui/grouped/GroupedList"
 import { IconWithFallback } from "@/src/components/ui/icon/fallback-icon"
 import { PlatformActivityIndicator } from "@/src/components/ui/loading/PlatformActivityIndicator"
 import { Text } from "@/src/components/ui/typography/Text"
-import { toastFetchError } from "@/src/lib/error-parser"
+import { isNotFoundError, toastFetchError } from "@/src/lib/error-parser"
 import { destination } from "@/src/lib/navigation/biz/Destination"
 import { useNavigation, useScreenIsInSheetModal } from "@/src/lib/navigation/hooks"
 import { useSetModalScreenOptions } from "@/src/lib/navigation/ScreenOptionsContext"
@@ -40,6 +40,7 @@ import { FeedViewSelector } from "../feed/view-selector"
 
 export const FollowList = (props: { id: string }) => {
   const { id } = props
+  const { t } = useTranslation()
   const list = useListById(id)
   const { isFetching, error, refetch } = useQuery({
     queryKey: ["list", id],
@@ -59,13 +60,19 @@ export const FollowList = (props: { id: string }) => {
         </FollowStateView>
       )
     }
-    if (error) {
+    if (error && !isNotFoundError(error)) {
       return (
         <FollowStateView>
           <ListErrorView error={error} resetError={() => void refetch()} />
         </FollowStateView>
       )
     }
+    // Also for a list the server does not have, which no retry would find
+    return (
+      <FollowStateView>
+        <Text className="mt-24 px-4 text-center text-label">{t("list.not_found", { id })}</Text>
+      </FollowStateView>
+    )
   }
   return <Impl id={id} />
 }

@@ -39,6 +39,7 @@
   "image.saved": "图片已保存到相册",
   "image.share": "分享图片",
   "image.share_hint": "将图片分享到其他应用",
+  "list.not_found": "未找到列表（{{id}}）。",
   "login.agree_to": "继续即表示您同意我们的",
   "login.back": "返回",
   "login.confirm_password.label": "确认密码",

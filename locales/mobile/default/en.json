@@ -39,6 +39,7 @@
   "image.saved": "Image saved to library",
   "image.share": "Share image",
   "image.share_hint": "Shares image with other apps",
+  "list.not_found": "List ({{id}}) not found.",
   "login.agree_to": "By continuing, you agree to our",
   "login.back": "Back",
   "login.confirm_password.label": "Confirm Password",

@@ -1,7 +1,7 @@
 import { FollowAPIError, FollowAuthError, FollowTimeoutError } from "@follow-app/client-sdk"
 import { beforeEach, describe, expect, it, vi } from "vitest"
 
-import { getFetchErrorMessage, toastFetchError } from "./error-parser"
+import { getFetchErrorMessage, isNotFoundError, toastFetchError } from "./error-parser"
 
 const mocks = vi.hoisted(() => ({
   isPaymentEnabled: false,
@@ -197,5 +197,14 @@ describe("getFetchErrorMessage for API errors", () => {
     )
 
     expect(getFetchErrorMessage(error)).toBe("Service Unavailable")
+  })
+})
+
+describe("isNotFoundError", () => {
+  it("tells what the server says does not exist from what may load later", () => {
+    expect(isNotFoundError(new FollowAPIError("Feed not found", 404, "2001"))).toBe(true)
+    expect(isNotFoundError(new FollowAPIError("List not found", 404, "8000"))).toBe(true)
+    expect(isNotFoundError(new FollowAPIError("Service Unavailable", 503, "503"))).toBe(false)
+    expect(isNotFoundError(new Error("fetch failed: offline"))).toBe(false)
   })
 })

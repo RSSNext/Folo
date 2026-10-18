@@ -35,7 +35,7 @@ import { Text } from "@/src/components/ui/typography/Text"
 import { SafeAlertCuteReIcon } from "@/src/icons/safe_alert_cute_re"
 import { SafetyCertificateCuteReIcon } from "@/src/icons/safety_certificate_cute_re"
 import { User3CuteReIcon } from "@/src/icons/user_3_cute_re"
-import { toastFetchError } from "@/src/lib/error-parser"
+import { isNotFoundError, toastFetchError } from "@/src/lib/error-parser"
 import { destination } from "@/src/lib/navigation/biz/Destination"
 import { useCanDismiss, useNavigation } from "@/src/lib/navigation/hooks"
 import { useSetModalScreenOptions } from "@/src/lib/navigation/ScreenOptionsContext"
@@ -79,9 +79,10 @@ const FeedLoadState = ({
     <FollowStateView>
       {isFetching ? (
         <LoadingIndicator />
-      ) : error ? (
+      ) : error && !isNotFoundError(error) ? (
         <ListErrorView error={error} resetError={onRetry} description={t("feed.fetch_failed")} />
       ) : (
+        // Also for a feed the server does not have, which no retry would find
         <FeedNotFound id={id} />
       )}
     </FollowStateView>

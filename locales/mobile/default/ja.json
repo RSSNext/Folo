@@ -39,6 +39,7 @@
   "image.saved": "画像をライブラリに保存しました",
   "image.share": "画像を共有",
   "image.share_hint": "画像を他のアプリと共有します",
+  "list.not_found": "リスト（{{id}}）が見つかりません。",
   "login.agree_to": " 続行することで、あなたは私たちの",
   "login.back": "戻る",
   "login.confirm_password.label": "パスワードの確認",

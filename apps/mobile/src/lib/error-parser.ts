@@ -74,6 +74,10 @@ export const getFetchErrorInfo = (
   return { message: sanitizeErrorMessage(error.message) }
 }
 
+/** The server says what was asked for does not exist, so trying again cannot help */
+export const isNotFoundError = (error: unknown) =>
+  error instanceof FollowAPIError && error.status === 404
+
 export const getFetchErrorMessage = (error: Error) => {
   const { message } = getFetchErrorInfo(error)
   return message
