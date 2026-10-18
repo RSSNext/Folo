@@ -5,15 +5,17 @@ import { FirebaseAdapter } from "./firebase"
 
 const createAdapter = () => {
   const logEvent = vi.fn()
+  const setUserId = vi.fn()
+  const setUserProperties = vi.fn()
   const adapter = new FirebaseAdapter({
     instance: {
       logEvent,
-      setUserId: vi.fn(),
-      setUserProperties: vi.fn(),
+      setUserId,
+      setUserProperties,
     } as never,
   })
 
-  return { adapter, logEvent }
+  return { adapter, logEvent, setUserId, setUserProperties }
 }
 
 describe("FirebaseAdapter", () => {
@@ -45,5 +47,44 @@ describe("FirebaseAdapter", () => {
 
     expect(logEvent).toHaveBeenCalledWith("manual_event", { source: "manual" })
     expect(properties).toEqual(originalProperties)
+  })
+})
+
+describe("FirebaseAdapter user properties", () => {
+  it("identifies the user by id only", async () => {
+    const { adapter, setUserId, setUserProperties } = createAdapter()
+
+    await adapter.identify({
+      id: "user-1",
+      email: "me@example.com",
+      name: "Me",
+      image: "https://example.com/me.png",
+      handle: "me",
+    })
+
+    expect(setUserId).toHaveBeenCalledWith("user-1")
+    expect(setUserProperties).not.toHaveBeenCalled()
+  })
+
+  it("clears who the user is from the properties it sets", async () => {
+    const { adapter, setUserProperties } = createAdapter()
+
+    await adapter.setUserProperties({
+      build: "web",
+      version: "1.16.0",
+      email: "me@example.com",
+      name: "Me",
+      image: "https://example.com/me.png",
+      handle: "me",
+    })
+
+    expect(setUserProperties).toHaveBeenCalledWith({
+      build: "web",
+      version: "1.16.0",
+      email: null,
+      name: null,
+      image: null,
+      handle: null,
+    })
   })
 })

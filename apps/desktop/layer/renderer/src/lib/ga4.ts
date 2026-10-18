@@ -20,12 +20,13 @@ class Analytics4 {
   }
 
   async setUserProperties(upValue?: Record<string, unknown>) {
-    const userProperties = Object.entries(upValue || {}).reduce((acc, [key, value]) => {
-      acc[key] = {
-        value,
+    const userProperties: Record<string, { value: unknown }> = {}
+    for (const [key, value] of Object.entries(upValue || {})) {
+      // A cleared property, such as who the user is, is left out
+      if (value !== null && value !== undefined) {
+        userProperties[key] = { value }
       }
-      return acc
-    }, {})
+    }
     this.userProperties = userProperties
   }
 
