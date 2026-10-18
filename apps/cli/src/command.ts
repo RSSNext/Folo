@@ -41,7 +41,5 @@ export const runCommand = async <T>(
     const verbose = context?.options.verbose ?? fallbackOptions.verbose
     printFailure(format, normalizeError(error, { verbose, apiUrl: context?.options.apiUrl }))
     process.exitCode = 1
-  } finally {
-    context?.dispose()
   }
 }

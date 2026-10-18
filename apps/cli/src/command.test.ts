@@ -50,3 +50,42 @@ describe("an API the CLI cannot reach", () => {
     expect(vi.getTimerCount()).toBe(0)
   })
 })
+
+describe("an API that does not answer in time", () => {
+  it("fails with TIMEOUT_ERROR once the SDK gives up waiting", async () => {
+    vi.useFakeTimers({ toFake: ["setTimeout", "clearTimeout"] })
+    vi.stubGlobal(
+      "fetch",
+      vi.fn(
+        (_input: unknown, init?: RequestInit) =>
+          new Promise((_resolve, reject) => {
+            // How Node's fetch fails a request whose signal aborted
+            init?.signal?.addEventListener("abort", () => {
+              reject(new DOMException("This operation was aborted", "AbortError"))
+            })
+          }),
+      ),
+    )
+    const stderr = vi.spyOn(console, "error").mockImplementation(() => {})
+    vi.spyOn(console, "info").mockImplementation(() => {})
+
+    const run = runCLI([
+      "node",
+      "folo",
+      "--api-url",
+      "http://127.0.0.1:9",
+      "--token",
+      "t",
+      "timeline",
+    ])
+    await vi.advanceTimersByTimeAsync(30_000)
+    await run
+
+    expect(JSON.parse(String(stderr.mock.calls[0]![0]))).toMatchObject({
+      ok: false,
+      error: { code: "TIMEOUT_ERROR", message: "Request timeout" },
+    })
+    expect(process.exitCode).toBe(1)
+    expect(vi.getTimerCount()).toBe(0)
+  })
+})
