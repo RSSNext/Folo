@@ -137,8 +137,27 @@ const probeApiReachability = async () => {
   return true
 }
 
+const apiRecoveredListeners = new Set<() => void>()
+
+/** Called when the API answers again after it could not be reached. */
+export const onApiRecovered = (listener: () => void) => {
+  apiRecoveredListeners.add(listener)
+  return () => {
+    apiRecoveredListeners.delete(listener)
+  }
+}
+
 trackApiConnection(followClient, {
   probe: probeApiReachability,
   onUnreachable: () => setApiUnreachable(true),
-  onRecovered: () => setApiUnreachable(false),
+  onRecovered: () => {
+    setApiUnreachable(false)
+    for (const listener of apiRecoveredListeners) {
+      try {
+        listener()
+      } catch (error) {
+        console.error("[api-connection] recovery listener threw", error)
+      }
+    }
+  },
 })

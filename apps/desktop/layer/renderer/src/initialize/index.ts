@@ -19,6 +19,7 @@ import { initAnalytics } from "./analytics"
 import { registerHistoryStack } from "./history"
 import { doMigration } from "./migrates"
 import { initializeSettings } from "./settings"
+import { initSyncTriggers } from "./sync"
 
 declare global {
   interface Window {
@@ -34,6 +35,7 @@ export const initializeApp = async () => {
       migrateDatabase: true,
     })
   })
+  initSyncTriggers()
 
   if (DEV) {
     const url = "/favicon-dev.ico"
