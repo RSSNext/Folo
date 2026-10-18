@@ -34,7 +34,9 @@ import { makeMutable, useSharedValue } from "react-native-reanimated"
 
 import { useFetchEntriesSettings } from "@/src/atoms/settings/general"
 import { views } from "@/src/constants/views"
+import { toastFetchError } from "@/src/lib/error-parser"
 
+import type { RemoteTimelineEntries } from "./timeline-entries"
 import { pickTimelineEntries } from "./timeline-entries"
 
 export type SelectedTimeline = {
@@ -170,7 +172,7 @@ export function useIsTimelineEntrySource() {
   return !entryListContext.isPreview && payload !== null && isTimelineEntriesSource(payload)
 }
 
-function useRemoteEntries(props?: UseEntriesProps): UseEntriesReturn {
+function useRemoteEntries(props?: UseEntriesProps): RemoteTimelineEntries {
   const entryListContext = useEntryListContext()
   const selectedFeed = useSelectedFeed()
   const selectedView = useSelectedView()
@@ -205,6 +207,10 @@ function useRemoteEntries(props?: UseEntriesProps): UseEntriesReturn {
   }, [isFetchingFirstPage])
 
   const refetch = useCallback(async () => void query.refetch(), [query])
+  const refetchReportingFailure = useCallback(async () => {
+    const result = await query.refetch()
+    if (result.isError) toastFetchError(result.error)
+  }, [query])
   const fetchNextPage = useCallback(async () => void query.fetchNextPage(), [query])
 
   if (!query.data || query.isLoading) {
@@ -213,6 +219,7 @@ function useRemoteEntries(props?: UseEntriesProps): UseEntriesReturn {
     return {
       ...fallbackReturn,
       refetch,
+      refetchReportingFailure,
       fetchNextPage,
       isLoading: !query.isError,
       isRefetching: query.isRefetching,
@@ -225,6 +232,7 @@ function useRemoteEntries(props?: UseEntriesProps): UseEntriesReturn {
     entriesIds: query.entriesIds,
     hasNext: query.hasNextPage,
     refetch,
+    refetchReportingFailure,
     fetchNextPage,
     isLoading: query.isFetching,
     isRefetching: query.isRefetching,

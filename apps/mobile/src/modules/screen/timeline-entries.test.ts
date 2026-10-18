@@ -2,14 +2,17 @@ import type { UseEntriesReturn } from "@follow/store/entry/types"
 import { fallbackReturn } from "@follow/store/entry/utils"
 import { describe, expect, it } from "vitest"
 
+import type { RemoteTimelineEntries } from "./timeline-entries"
 import { pickTimelineEntries } from "./timeline-entries"
 
 const remoteRefetch = async () => {}
+const reportingRefetch = async () => {}
 const localRefetch = async () => {}
 
-const remote = (overrides: Partial<UseEntriesReturn>): UseEntriesReturn => ({
+const remote = (overrides: Partial<UseEntriesReturn>): RemoteTimelineEntries => ({
   ...fallbackReturn,
   refetch: remoteRefetch,
+  refetchReportingFailure: reportingRefetch,
   ...overrides,
 })
 
@@ -24,7 +27,12 @@ const local = (entriesIds: string[]): UseEntriesReturn => ({
 describe("pickTimelineEntries", () => {
   it("shows the server's entries once its first page is in", () => {
     const loaded = remote({ entriesIds: ["new", "stored"], isReady: true, isLoading: false })
-    expect(pickTimelineEntries(loaded, local(["stored"]))).toBe(loaded)
+    const shown = pickTimelineEntries(loaded, local(["stored"]))
+
+    expect(shown.entriesIds).toEqual(["new", "stored"])
+    expect(shown.isReady).toBe(true)
+    // A refresh that fails leaves them on screen, so it says so
+    expect(shown.refetch).toBe(reportingRefetch)
   })
 
   it("shows the stored entries while the first page loads", () => {
@@ -37,7 +45,7 @@ describe("pickTimelineEntries", () => {
     expect(shown.isReady).toBe(true)
     expect(shown.isFetching).toBe(true)
     expect(shown.error).toBeNull()
-    expect(shown.refetch).toBe(remoteRefetch)
+    expect(shown.refetch).toBe(reportingRefetch)
   })
 
   it("keeps the stored entries when a refresh after a failure starts over", () => {
@@ -57,7 +65,7 @@ describe("pickTimelineEntries", () => {
 
     expect(shown.entriesIds).toEqual(["stored"])
     expect(shown.error).toBe(error)
-    expect(shown.refetch).toBe(remoteRefetch)
+    expect(shown.refetch).toBe(reportingRefetch)
   })
 
   it("reports a failed first page without stored entries, so the empty list says why", () => {
@@ -67,6 +75,8 @@ describe("pickTimelineEntries", () => {
     expect(shown.entriesIds).toEqual([])
     expect(shown.isReady).toBe(true)
     expect(shown.error).toBe(error)
+    // The empty list shows the error, so a refresh does not toast it as well
+    expect(shown.refetch).toBe(remoteRefetch)
   })
 
   it("shows placeholders while loading without stored entries", () => {
