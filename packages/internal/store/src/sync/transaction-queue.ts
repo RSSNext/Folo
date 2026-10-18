@@ -9,9 +9,10 @@ import { isSyncEngineActive } from "./sync-status"
  * Every user mutation becomes a transaction: the optimistic effect is applied to the
  * in-memory stores immediately, the transaction is written to a local outbox, and it is
  * sent to the server in order. Transactions survive restarts (they are replayed from the
- * outbox), are retried while the network is unavailable, and are rolled back only when
- * the server definitively rejects them. While a transaction is pending its overlays let
- * readers rebase server snapshots on top of the local intent instead of losing it.
+ * outbox), are retried for as long as the network or the server is unavailable, and are
+ * rolled back only when the server definitively rejects them. While a transaction is
+ * pending its overlays let readers rebase server snapshots on top of the local intent
+ * instead of losing it.
  */
 
 export interface TransactionOverlay {
@@ -118,7 +119,8 @@ type ErrorDecision = "retry" | "pause" | "fail"
 const FLUSH_DELAY_MS = 100
 const BASE_RETRY_DELAY_MS = 1000
 const MAX_RETRY_DELAY_MS = 60_000
-const MAX_ATTEMPTS = 8
+/** Past this many failures in a row the retry delay stays at its maximum. */
+const MAX_BACKOFF_EXPONENT = 16
 const DEFAULT_MAX_BATCH_SIZE = 200
 const DEFAULT_ACK_GRACE_MS = 30_000
 /**
@@ -145,16 +147,17 @@ export const isNavigatorOnline = () =>
 
 const isOnline = isNavigatorOnline
 
-export const classifyTransactionError = (error: unknown, attempts: number): ErrorDecision => {
-  if (error instanceof FollowAPIError) {
-    if (error.status === 401) return "pause"
-    if (error.status >= 500 || RETRYABLE_STATUS.has(error.status)) {
-      return attempts < MAX_ATTEMPTS ? "retry" : "fail"
-    }
-    return "fail"
-  }
-  // Network failures, timeouts and unknown errors are retried until the attempt budget is spent.
-  return attempts < MAX_ATTEMPTS ? "retry" : "fail"
+/**
+ * Only an answer from the server can reject a change. A request that got no answer (no
+ * connection, a timeout, the API down) or an answer that means "not now" (5xx, 408, 425,
+ * 429) is retried until it goes through, however long the outage lasts: giving up would
+ * throw away what the user did.
+ */
+export const classifyTransactionError = (error: unknown): ErrorDecision => {
+  if (!(error instanceof FollowAPIError)) return "retry"
+  if (error.status === 401) return "pause"
+  if (error.status >= 500 || RETRYABLE_STATUS.has(error.status)) return "retry"
+  return error.status >= 400 ? "fail" : "retry"
 }
 
 export const defineTransactionKind = <P, R = unknown>(
@@ -172,6 +175,7 @@ class TransactionQueue {
   private flushing: Promise<void> | null = null
   private flushTimer: ReturnType<typeof setTimeout> | null = null
   private retryTimer: ReturnType<typeof setTimeout> | null = null
+  /** Failed sends in a row; it only sets the retry delay, never when to give up. */
   private attempts = 0
   private paused = false
   private syncedThrough = 0
@@ -277,9 +281,13 @@ class TransactionQueue {
     return this.flushing
   }
 
-  /** Called when the network or the app comes back: retry immediately. */
+  /**
+   * Called when the network, the API or the app comes back: retry immediately, and start the
+   * back-off over, since the failures before it say nothing about the connection now.
+   */
   resume() {
     this.paused = false
+    this.attempts = 0
     this.clearRetryTimer()
     if (this.queued.length > 0) {
       void this.flush()
@@ -446,7 +454,7 @@ class TransactionQueue {
         this.touch()
         if (!this.isStillQueued(batch)) continue
 
-        const decision = classifyTransactionError(error, this.attempts + 1)
+        const decision = classifyTransactionError(error)
         if (decision === "retry") {
           this.attempts += 1
           this.scheduleRetry()
@@ -456,6 +464,8 @@ class TransactionQueue {
           this.paused = true
           return
         }
+        // The server answered, so the next batch starts with a fresh back-off.
+        this.attempts = 0
         await this.failBatch(batch, error)
         continue
       }
@@ -630,7 +640,9 @@ class TransactionQueue {
   }
 
   private scheduleFlush() {
-    if (this.flushTimer || this.flushing) return
+    // While a retry is pending, new transactions wait for it and go out in the same batch.
+    // Sending each one at once would hit the unreachable server once per gesture.
+    if (this.flushTimer || this.flushing || this.retryTimer) return
     this.flushTimer = setTimeout(() => {
       this.flushTimer = null
       void this.flush()
@@ -639,10 +651,8 @@ class TransactionQueue {
 
   private scheduleRetry() {
     this.clearRetryTimer()
-    const delay = Math.min(
-      MAX_RETRY_DELAY_MS,
-      BASE_RETRY_DELAY_MS * 2 ** Math.max(0, this.attempts - 1),
-    )
+    const exponent = Math.min(MAX_BACKOFF_EXPONENT, Math.max(0, this.attempts - 1))
+    const delay = Math.min(MAX_RETRY_DELAY_MS, BASE_RETRY_DELAY_MS * 2 ** exponent)
     this.retryTimer = setTimeout(() => {
       this.retryTimer = null
       void this.flush()
@@ -684,6 +694,9 @@ class TransactionQueue {
 
     if (typeof globalThis.addEventListener === "function") {
       globalThis.addEventListener("online", () => this.resume())
+      // Switching back to a desktop window does not change the document's visibility, so
+      // the window's own focus is the return signal there.
+      globalThis.addEventListener("focus", () => this.resume())
     }
     if (typeof document !== "undefined" && typeof document.addEventListener === "function") {
       document.addEventListener("visibilitychange", () => {

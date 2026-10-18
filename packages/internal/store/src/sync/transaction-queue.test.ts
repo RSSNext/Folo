@@ -1,5 +1,5 @@
 import { FollowAPIError } from "@follow-app/client-sdk"
-import { afterEach, beforeEach, describe, expect, it, vi } from "vitest"
+import { afterAll, afterEach, beforeAll, beforeEach, describe, expect, it, vi } from "vitest"
 
 import { setSyncEngineActive } from "./sync-status"
 import type { TransactionKind, TransactionPersistContext } from "./transaction-queue"
@@ -65,6 +65,15 @@ const createCounterKind = (
 })
 
 const flushMicrotasks = () => vi.advanceTimersByTimeAsync(0)
+
+// Stands in for the window: the queue attaches its listeners once, on the first restore.
+const windowEvents = new EventTarget()
+beforeAll(() => {
+  vi.stubGlobal("addEventListener", windowEvents.addEventListener.bind(windowEvents))
+})
+afterAll(() => {
+  vi.unstubAllGlobals()
+})
 
 const setNavigatorOnline = (online: boolean | undefined) => {
   if (online === undefined) {
@@ -425,14 +434,184 @@ describe("transactionQueue", () => {
   })
 })
 
+describe("transactionQueue during outages", () => {
+  // What expo/fetch rejects with on a device without a connection.
+  const offlineError = () =>
+    new Error("fetch failed: UnexpectedException: The Internet connection appears to be offline.")
+
+  beforeEach(() => {
+    vi.useFakeTimers()
+    transactionQueue.clearInSession()
+    outboxRows.length = 0
+    for (const key of Object.keys(counters)) delete counters[key]
+    for (const key of Object.keys(persisted)) delete persisted[key]
+    vi.clearAllMocks()
+  })
+
+  afterEach(() => {
+    transactionQueue.clearInSession()
+    vi.useRealTimers()
+  })
+
+  it.each([
+    ["the connection is gone", offlineError],
+    ["the request times out", () => new FollowAPIError("timeout", 408)],
+    ["the server is down", () => new FollowAPIError("unavailable", 503)],
+  ])("keeps the change and its outbox row while %s, then sends it once", async (_, error) => {
+    let reachable = false
+    const execute = vi.fn(async () => {
+      if (!reachable) throw error()
+    })
+    const kind = createCounterKind({ execute })
+    const failures = vi.fn()
+    const stopListening = transactionQueue.onFailure(failures)
+
+    await transactionQueue.enqueue(kind, { key: "a", delta: 1 })
+    // Ten minutes is far past the old budget of eight attempts, about two minutes.
+    await vi.advanceTimersByTimeAsync(10 * 60_000)
+
+    expect(execute.mock.calls.length).toBeGreaterThan(8)
+    expect(counters.a).toBe(1)
+    expect(outboxRows).toHaveLength(1)
+    expect(transactionQueue.getPendingCount()).toBe(1)
+    expect(failures).not.toHaveBeenCalled()
+
+    reachable = true
+    const callsBefore = execute.mock.calls.length
+    transactionQueue.resume()
+    await transactionQueue.whenIdle()
+
+    expect(execute).toHaveBeenCalledTimes(callsBefore + 1)
+    expect(persisted.a).toBe(1)
+    expect(outboxRows).toHaveLength(0)
+    stopListening()
+  })
+
+  it("keeps changes through any number of returns to the app while offline", async () => {
+    const execute = vi.fn(async () => {
+      throw offlineError()
+    })
+    const kind = createCounterKind({ execute })
+
+    await transactionQueue.enqueue(kind, { key: "a", delta: 1 })
+    await vi.advanceTimersByTimeAsync(200)
+    for (let index = 0; index < 20; index++) {
+      transactionQueue.resume()
+      await vi.advanceTimersByTimeAsync(500)
+    }
+
+    expect(execute.mock.calls.length).toBeGreaterThan(8)
+    expect(counters.a).toBe(1)
+    expect(outboxRows).toHaveLength(1)
+  })
+
+  it("does not let a long outage or a rejected batch doom the changes after it", async () => {
+    let failure: () => Error = offlineError
+    const execute = vi.fn(async () => {
+      throw failure()
+    })
+    const kind = createCounterKind({ execute })
+
+    await transactionQueue.enqueue(kind, { key: "a", delta: 1 })
+    await vi.advanceTimersByTimeAsync(5 * 60_000)
+    expect(counters.a).toBe(1)
+
+    // The server comes back and rejects that change: only it is rolled back.
+    failure = () => new FollowAPIError("nope", 422)
+    transactionQueue.resume()
+    await vi.advanceTimersByTimeAsync(0)
+    expect(counters.a).toBe(0)
+    expect(outboxRows).toHaveLength(0)
+
+    // The next change made during the next outage is kept, not rolled back after one try.
+    failure = offlineError
+    await transactionQueue.enqueue(kind, { key: "b", delta: 1 })
+    await vi.advanceTimersByTimeAsync(5 * 60_000)
+    expect(counters.b).toBe(1)
+    expect(outboxRows).toHaveLength(1)
+  })
+
+  it("lets new changes wait for the scheduled retry and sends them in one batch", async () => {
+    let reachable = false
+    const execute = vi.fn(async () => {
+      if (!reachable) throw offlineError()
+    })
+    const kind = createCounterKind({ execute })
+
+    await transactionQueue.enqueue(kind, { key: "a", delta: 1 })
+    await vi.advanceTimersByTimeAsync(100)
+    expect(execute).toHaveBeenCalledTimes(1)
+
+    // Marks made while the retry is pending do not each spend a request.
+    await transactionQueue.enqueue(kind, { key: "a", delta: 2 })
+    await vi.advanceTimersByTimeAsync(500)
+    await transactionQueue.enqueue(kind, { key: "a", delta: 3 })
+    await vi.advanceTimersByTimeAsync(300)
+    expect(execute).toHaveBeenCalledTimes(1)
+
+    reachable = true
+    await vi.advanceTimersByTimeAsync(200)
+    await transactionQueue.whenIdle()
+    expect(execute).toHaveBeenCalledTimes(2)
+    expect(execute).toHaveBeenLastCalledWith([
+      { key: "a", delta: 1 },
+      { key: "a", delta: 2 },
+      { key: "a", delta: 3 },
+    ])
+    expect(persisted.a).toBe(6)
+  })
+
+  it("starts the back-off over when the app or the network comes back", async () => {
+    const execute = vi.fn(async () => {
+      throw offlineError()
+    })
+    const kind = createCounterKind({ execute })
+
+    await transactionQueue.enqueue(kind, { key: "a", delta: 1 })
+    // 100 ms flush, then retries after 1, 2, 4, 8 and 16 s: the next one is 32 s away.
+    await vi.advanceTimersByTimeAsync(100 + 1000 + 2000 + 4000 + 8000 + 16_000)
+    expect(execute).toHaveBeenCalledTimes(6)
+
+    transactionQueue.resume()
+    await vi.advanceTimersByTimeAsync(0)
+    expect(execute).toHaveBeenCalledTimes(7)
+    await vi.advanceTimersByTimeAsync(1000)
+    expect(execute).toHaveBeenCalledTimes(8)
+  })
+
+  it("retries at once when the window gets the focus back", async () => {
+    let reachable = false
+    const execute = vi.fn(async () => {
+      if (!reachable) throw offlineError()
+    })
+    const kind = createCounterKind({ execute })
+
+    await transactionQueue.restore()
+    await transactionQueue.enqueue(kind, { key: "a", delta: 1 })
+    await vi.advanceTimersByTimeAsync(100)
+    expect(execute).toHaveBeenCalledTimes(1)
+
+    reachable = true
+    windowEvents.dispatchEvent(new Event("focus"))
+    await transactionQueue.whenIdle()
+    expect(execute).toHaveBeenCalledTimes(2)
+    expect(persisted.a).toBe(1)
+  })
+})
+
 describe("classifyTransactionError", () => {
-  it("retries transport and server errors, fails on client errors, pauses on auth errors", () => {
-    expect(classifyTransactionError(new TypeError("Failed to fetch"), 1)).toBe("retry")
-    expect(classifyTransactionError(new FollowAPIError("x", 500), 1)).toBe("retry")
-    expect(classifyTransactionError(new FollowAPIError("x", 429), 1)).toBe("retry")
-    expect(classifyTransactionError(new FollowAPIError("x", 400), 1)).toBe("fail")
-    expect(classifyTransactionError(new FollowAPIError("x", 404), 1)).toBe("fail")
-    expect(classifyTransactionError(new FollowAPIError("x", 401), 1)).toBe("pause")
-    expect(classifyTransactionError(new TypeError("Failed to fetch"), 8)).toBe("fail")
+  it("retries what got no answer or a 'not now', fails on rejections, pauses on auth errors", () => {
+    expect(classifyTransactionError(new TypeError("Failed to fetch"))).toBe("retry")
+    expect(classifyTransactionError(new Error("fetch failed: offline"))).toBe("retry")
+    expect(classifyTransactionError(new FollowAPIError("x", 500))).toBe("retry")
+    expect(classifyTransactionError(new FollowAPIError("x", 503))).toBe("retry")
+    expect(classifyTransactionError(new FollowAPIError("x", 408))).toBe("retry")
+    expect(classifyTransactionError(new FollowAPIError("x", 425))).toBe("retry")
+    expect(classifyTransactionError(new FollowAPIError("x", 429))).toBe("retry")
+    expect(classifyTransactionError(new FollowAPIError("x", 400))).toBe("fail")
+    expect(classifyTransactionError(new FollowAPIError("x", 403))).toBe("fail")
+    expect(classifyTransactionError(new FollowAPIError("x", 404))).toBe("fail")
+    expect(classifyTransactionError(new FollowAPIError("x", 422))).toBe("fail")
+    expect(classifyTransactionError(new FollowAPIError("x", 401))).toBe("pause")
   })
 })
