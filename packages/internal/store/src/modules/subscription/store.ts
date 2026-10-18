@@ -944,6 +944,11 @@ class SubscriptionSyncService {
     // Updated once the change log was pulled, below.
     const feedIds = [...getCategoryFeedIds(lastCategory, view)]
     const categoryViews = getCategoryViews(get(), feedIds, view)
+    // A folder the feeds are filed under by name is renamed by name. An auto-grouped folder also
+    // holds feeds by their site, which have no category on the server, so those are named.
+    const isFiledByName = (ids: string[]) =>
+      ids.every((id) => get().data[id]?.category === lastCategory)
+    let renameByName = isFiledByName(feedIds)
 
     const renameInSession = (ids: string[], views: Iterable<FeedViewType>) => {
       immerSet((draft) => {
@@ -972,13 +977,14 @@ class SubscriptionSyncService {
     })
 
     tx.request(async () => {
-      // The server renames only the feeds the request names. Another device may have moved a
-      // feed into the category since the last pull, which would then keep the old name and
-      // split the category, or moved one out of it. Pull first and name the feeds that are in
-      // the category now; only a rename by name on the server closes the gap entirely.
+      // Another device may have moved a feed into the category since the last pull, or out of
+      // it. Pull first, so this device shows the feeds that are in the category now. A rename
+      // by name also takes the feeds moved in after the pull; one by the feeds names only
+      // those, and a feed moved in later would keep the old name and split the category.
       await catchUpBeforeRename()
       const { data } = get()
       const stillNamedBefore = getCategoryFeedIds(lastCategory, view)
+      renameByName &&= isFiledByName(stillNamedBefore)
       const renamed = feedIds.filter((id) => data[id]?.category === newCategory)
       feedIds.splice(0, feedIds.length, ...new Set([...renamed, ...stillNamedBefore]))
       if (stillNamedBefore.length > 0) {
@@ -987,10 +993,11 @@ class SubscriptionSyncService {
         renameInSession(stillNamedBefore, views)
       }
 
-      await api().categories.update({
-        feedIdList: feedIds,
-        category: newCategory,
-      })
+      await api().categories.update(
+        renameByName
+          ? { from: lastCategory, to: newCategory, view }
+          : { feedIdList: feedIds, category: newCategory },
+      )
     })
 
     tx.rollback(() => {

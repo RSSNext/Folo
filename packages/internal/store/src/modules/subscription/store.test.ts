@@ -181,9 +181,49 @@ describe("subscriptionSyncService", () => {
     expect([...state.categories[FeedViewType.Articles]]).toEqual(["Science"])
     expect([...state.categories[FeedViewType.Pictures]]).toEqual(["Science"])
     expect(mocks.updateCategory).toHaveBeenCalledWith({
-      feedIdList: ["a", "b"],
-      category: "Science",
+      from: "Tech",
+      to: "Science",
+      view: FeedViewType.All,
     })
+  })
+
+  test("names the feeds of an auto-grouped folder, which have no category on the server", async () => {
+    useFeedStore.setState({
+      feeds: {
+        a: {
+          type: "feed",
+          id: "a",
+          url: "https://example.com/a.xml",
+          siteUrl: "https://example.com",
+        },
+        b: {
+          type: "feed",
+          id: "b",
+          url: "https://example.com/b.xml",
+          siteUrl: "https://example.com",
+        },
+      } as unknown as Record<string, FeedModel>,
+    })
+    // "a" is in the folder by its site, "b" by name
+    seed([
+      createSubscription("a", FeedViewType.Articles, null),
+      createSubscription("b", FeedViewType.Articles, "Example.com"),
+    ])
+
+    try {
+      await subscriptionSyncService.renameCategory({
+        lastCategory: "Example.com",
+        newCategory: "Blogs",
+        view: FeedViewType.Articles,
+      })
+    } finally {
+      useFeedStore.setState({ feeds: {} })
+    }
+
+    expect(mocks.updateCategory).toHaveBeenCalledWith({ feedIdList: ["a", "b"], category: "Blogs" })
+    const state = useSubscriptionStore.getState()
+    expect(state.data.a!.category).toBe("Blogs")
+    expect(state.data.b!.category).toBe("Blogs")
   })
 
   test("sends only the fields an edit changed, so another device's edit is kept", async () => {
@@ -255,9 +295,11 @@ describe("subscriptionSyncService", () => {
     }
 
     expect(catchUp).toHaveBeenCalledTimes(1)
+    // By name, so the server also renames a feed moved in after the pull
     expect(mocks.updateCategory).toHaveBeenCalledWith({
-      feedIdList: ["a", "b"],
-      category: "CatB3",
+      from: "CatB2",
+      to: "CatB3",
+      view: FeedViewType.Articles,
     })
     const state = useSubscriptionStore.getState()
     expect(state.data.b!.category).toBe("CatB3")
@@ -285,7 +327,11 @@ describe("subscriptionSyncService", () => {
       registerSyncEngine(null)
     }
 
-    expect(mocks.updateCategory).toHaveBeenCalledWith({ feedIdList: ["a"], category: "Science" })
+    expect(mocks.updateCategory).toHaveBeenCalledWith({
+      from: "Tech",
+      to: "Science",
+      view: FeedViewType.Articles,
+    })
     const state = useSubscriptionStore.getState()
     expect(state.data.c!.category).toBe("Other")
     expect(mocks.patchMany).toHaveBeenCalledWith({
@@ -318,7 +364,11 @@ describe("subscriptionSyncService", () => {
       vi.useRealTimers()
     }
 
-    expect(mocks.updateCategory).toHaveBeenCalledWith({ feedIdList: ["a"], category: "Science" })
+    expect(mocks.updateCategory).toHaveBeenCalledWith({
+      from: "Tech",
+      to: "Science",
+      view: FeedViewType.Articles,
+    })
   })
 
   test("forgets a category renamed on another device once no feed uses it", () => {
