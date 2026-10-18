@@ -3,6 +3,14 @@ import * as WebBrowser from "expo-web-browser"
 
 import { getGeneralSettings } from "@/src/atoms/settings/general"
 
+import { isWebUrl } from "../web-url"
+
+const openWithSystem = (url: string) => {
+  openURL(url).catch((error: unknown) => {
+    console.warn("[link] no app opens the link", url, error)
+  })
+}
+
 export const openLink = (
   url: string,
   /**
@@ -11,11 +19,14 @@ export const openLink = (
   _onDismiss?: () => void,
 ) => {
   const { openLinksInExternalApp } = getGeneralSettings()
-  if (openLinksInExternalApp) {
-    openURL(url)
+  // A custom tab shows http(s) pages only; mailto: and other links go to their apps
+  if (openLinksInExternalApp || !isWebUrl(url)) {
+    openWithSystem(url)
     return
   }
-  WebBrowser.openBrowserAsync(url)
+  WebBrowser.openBrowserAsync(url).catch((error: unknown) => {
+    console.warn("[link] the browser did not open the link", url, error)
+  })
 }
 
 export const performNativeScrollToTop = (_reactTag: number) => {

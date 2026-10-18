@@ -3,6 +3,8 @@ import { openURL } from "expo-linking"
 
 import { getGeneralSettings } from "@/src/atoms/settings/general"
 
+import { isWebUrl } from "../web-url"
+
 interface NativeModule {
   openLink: (url: string) => Promise<{
     type: "dismiss"
@@ -12,10 +14,18 @@ interface NativeModule {
   isScrollToEnd: (reactTag: number) => Promise<boolean>
 }
 const nativeModule = requireNativeModule("Helper") as NativeModule
+
+const openWithSystem = (url: string) => {
+  openURL(url).catch((error: unknown) => {
+    console.warn("[link] no app opens the link", url, error)
+  })
+}
+
 export const openLink = (url: string, onDismiss?: () => void) => {
   const { openLinksInExternalApp } = getGeneralSettings()
-  if (openLinksInExternalApp) {
-    openURL(url)
+  // The in-app browser ends the app on any other link than http(s)
+  if (openLinksInExternalApp || !isWebUrl(url)) {
+    openWithSystem(url)
     return
   }
   nativeModule.openLink(url).then((res) => {

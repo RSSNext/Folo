@@ -13,6 +13,8 @@ public class HelperModule: Module {
 
     AsyncFunction("openLink") { (urlString: String, promise: Promise) in
       guard let url = URL(string: urlString) else {
+        // Nothing opens, which settles the call as a closed browser would
+        promise.resolve(["type": "dismiss"])
         return
       }
       DispatchQueue.main.async {

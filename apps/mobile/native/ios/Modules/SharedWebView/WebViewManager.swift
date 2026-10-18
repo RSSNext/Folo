@@ -340,6 +340,17 @@ enum WebViewManager {
   static func presentModalWebView(
     url: URL, from viewController: UIViewController, onDismiss: (() -> Void)? = nil
   ) {
+    // SFSafariViewController raises an exception, which ends the app, for any URL that is not
+    // http(s). Others, such as mailto: and tel:, belong to the apps that handle them; a URL
+    // without a scheme, such as a relative link, cannot be opened at all.
+    guard let scheme = url.scheme?.lowercased(), scheme == "http" || scheme == "https" else {
+      if url.scheme != nil {
+        UIApplication.shared.open(url)
+      }
+      onDismiss?()
+      return
+    }
+
     let safariVC = SafariViewController(url: url)
     safariVC.view.tintColor = Utils.accentColor
     safariVC.preferredControlTintColor = Utils.accentColor
