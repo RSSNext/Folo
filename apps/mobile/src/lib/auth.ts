@@ -24,6 +24,7 @@ import { scheduleLocalDataReset } from "./local-data-reset"
 import { getUserAgent } from "./native/user-agent"
 import { Navigation } from "./navigation/Navigation"
 import { getEnvProfile, proxyEnv } from "./proxy-env"
+import { unregisterPushToken } from "./push-token"
 import { queryClient } from "./query-client"
 import { reloadApp } from "./reload-app"
 import { safeSecureStore } from "./secure-store"
@@ -312,6 +313,8 @@ const resetLocalData = async (reason: string) => {
 }
 
 export const signOut = async () => {
+  // While the session still authorizes the request
+  await unregisterPushToken()
   try {
     await authClient.signOut()
   } catch (error) {
