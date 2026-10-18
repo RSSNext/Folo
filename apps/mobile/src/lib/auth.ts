@@ -10,19 +10,17 @@ import { useQuery } from "@tanstack/react-query"
 import type { BetterAuthClientOptions } from "better-auth/client"
 import { createAuthClient } from "better-auth/react"
 import { nativeApplicationVersion } from "expo-application"
-import * as FileSystem from "expo-file-system/legacy"
 import Storage from "expo-sqlite/kv-store"
 import * as WebBrowser from "expo-web-browser"
 import { Platform } from "react-native"
 import DeviceInfo from "react-native-device-info"
-
-import { getDbPath } from "@/src/database"
 
 import {
   createMobileAuthCookieSyncPlugin,
   createSessionAwareAuthCookieStorage,
 } from "./auth-cookie-sync"
 import { getClientId, getSessionId } from "./client-session"
+import { scheduleLocalDataReset } from "./local-data-reset"
 import { getUserAgent } from "./native/user-agent"
 import { Navigation } from "./navigation/Navigation"
 import { getEnvProfile, proxyEnv } from "./proxy-env"
@@ -307,9 +305,9 @@ const clearAuthStorage = async () => {
   await Promise.all(keys.map((key) => safeSecureStore.removeItemAsync(key)))
 }
 
-/** Delete the local database and reload; the app then starts over for the current session. */
+/** Reload with an empty local database; the app then starts over for the current session. */
 const resetLocalData = async (reason: string) => {
-  await FileSystem.deleteAsync(getDbPath(), { idempotent: true })
+  scheduleLocalDataReset()
   await reloadApp(reason)
 }
 

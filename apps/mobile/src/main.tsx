@@ -1,5 +1,7 @@
 import "./global.css"
 import "./polyfill"
+// Before any module that opens the database
+import "./initialize/scheduled-local-data-reset"
 
 import {
   apiContext,
