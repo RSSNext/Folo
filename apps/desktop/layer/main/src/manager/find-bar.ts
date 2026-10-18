@@ -1,7 +1,7 @@
 import { fileURLToPath } from "node:url"
 
-import type { BrowserWindow, IpcMainEvent, WebContents } from "electron"
-import { ipcMain, WebContentsView } from "electron"
+import type { BrowserWindow, ContextMenuParams, IpcMainEvent, WebContents } from "electron"
+import { ipcMain, Menu, WebContentsView } from "electron"
 import path from "pathe"
 
 import type { FindDirection, FindRequest, FindResult } from "~/lib/find-in-page-session"
@@ -58,6 +58,33 @@ const isFindDirection = (value: unknown): value is FindDirection =>
   value === "forward" || value === "backward"
 
 /**
+ * The editing menu the text fields of the window's page have. Labeled when it opens, so it
+ * follows a change of the app's language. The actions go to the field's page itself, which
+ * need not be the focused one, e.g. after a right click in an inactive window.
+ */
+const showFieldContextMenu = (
+  window: BrowserWindow,
+  field: WebContents,
+  { isEditable, editFlags }: ContextMenuParams,
+) => {
+  if (!isEditable) return
+  Menu.buildFromTemplate([
+    { label: t("menu.undo"), enabled: editFlags.canUndo, click: () => field.undo() },
+    { label: t("menu.redo"), enabled: editFlags.canRedo, click: () => field.redo() },
+    { type: "separator" },
+    { label: t("contextMenu.cut"), enabled: editFlags.canCut, click: () => field.cut() },
+    { label: t("contextMenu.copy"), enabled: editFlags.canCopy, click: () => field.copy() },
+    { label: t("contextMenu.paste"), enabled: editFlags.canPaste, click: () => field.paste() },
+    { type: "separator" },
+    {
+      label: t("contextMenu.selectAll"),
+      enabled: editFlags.canSelectAll,
+      click: () => field.selectAll(),
+    },
+  ]).popup({ window })
+}
+
+/**
  * The window's find bar. Chromium's find in page clears the focus in the page it searches and
  * starts from the selection there, and it would count a field in that page as a match, so the
  * bar lives in a view of its own above the page.
@@ -90,6 +117,10 @@ class FindBar {
       .catch((error) => {
         logger.error("Failed to load the find bar", error)
       })
+    // The app's context menu only covers the window's own page
+    this.view.webContents.on("context-menu", (_event, params) => {
+      showFieldContextMenu(window, this.view.webContents, params)
+    })
 
     this.session = new FindInPageSession({
       find: (request, signal) => findInPage(window.webContents, request, signal),

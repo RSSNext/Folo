@@ -5,9 +5,19 @@ import { beforeEach, describe, expect, it, vi } from "vitest"
 
 const mocks = vi.hoisted(() => ({
   ipcHandlers: new Map<string, (event: { sender: { id: number } }, payload?: unknown) => void>(),
+  menus: [] as Array<{
+    template: Array<{ label?: string; type?: string; enabled?: boolean; click?: () => void }>
+    popup: ReturnType<typeof vi.fn>
+  }>,
   views: [] as Array<{
     setVisible: ReturnType<typeof vi.fn>
-    webContents: { id: number; focus: ReturnType<typeof vi.fn>; send: ReturnType<typeof vi.fn> }
+    webContents: {
+      id: number
+      emit: (event: string, ...args: unknown[]) => boolean
+      focus: ReturnType<typeof vi.fn>
+      paste: ReturnType<typeof vi.fn>
+      send: ReturnType<typeof vi.fn>
+    }
   }>,
 }))
 
@@ -21,6 +31,7 @@ vi.mock("electron", async () => {
     focus = vi.fn()
     isDestroyed = () => false
     loadURL = vi.fn(() => Promise.resolve())
+    paste = vi.fn()
     send = vi.fn()
   }
 
@@ -39,6 +50,13 @@ vi.mock("electron", async () => {
     ipcMain: {
       on: (channel: string, handler: (event: { sender: { id: number } }) => void) => {
         mocks.ipcHandlers.set(channel, handler)
+      },
+    },
+    Menu: {
+      buildFromTemplate: (template: (typeof mocks.menus)[number]["template"]) => {
+        const menu = { template, popup: vi.fn() }
+        mocks.menus.push(menu)
+        return menu
       },
     },
     WebContentsView,
@@ -167,5 +185,39 @@ describe("FindBarManager", () => {
     fromBar("find-bar:find", { text: "timeline", direction: "forward" })
 
     expect(window.webContents.findInPage).toHaveBeenCalledTimes(1)
+  })
+
+  it("gives the field the editing menu of the page's own fields", async () => {
+    const { window, view } = await openFindBar()
+    const editFlags = {
+      canUndo: false,
+      canRedo: false,
+      canCut: true,
+      canCopy: true,
+      canPaste: true,
+      canSelectAll: true,
+    }
+    mocks.menus.length = 0
+
+    view.webContents.emit("context-menu", {}, { isEditable: false, editFlags })
+    expect(mocks.menus).toHaveLength(0)
+
+    view.webContents.emit("context-menu", {}, { isEditable: true, editFlags })
+    const [menu] = mocks.menus
+    expect(menu?.template.map((item) => [item.label ?? item.type, item.enabled])).toEqual([
+      ["menu.undo", false],
+      ["menu.redo", false],
+      ["separator", undefined],
+      ["contextMenu.cut", true],
+      ["contextMenu.copy", true],
+      ["contextMenu.paste", true],
+      ["separator", undefined],
+      ["contextMenu.selectAll", true],
+    ])
+    expect(menu?.popup).toHaveBeenCalledWith({ window })
+
+    // Pastes into the bar even when another page has the focus
+    menu?.template.find((item) => item.label === "contextMenu.paste")?.click?.()
+    expect(view.webContents.paste).toHaveBeenCalledTimes(1)
   })
 })
