@@ -728,10 +728,12 @@ const BillingToggle = ({
       const { width, x } = event.nativeEvent.layout
       segmentLayouts.current[period] = { width, x }
       const measuredAll = BILLING_SEGMENTS.every((option) => segmentLayouts.current[option])
-      if (measuredAll && !indicatorReady) {
+      if (!measuredAll) return
+      if (!indicatorReady) {
         setIndicatorReady(true)
-        animateIndicator(value, false)
       }
+      // Every time, not only the first: a rotation or a window resize moves the segments
+      animateIndicator(value, false)
     },
     [animateIndicator, indicatorReady, value],
   )
