@@ -148,6 +148,9 @@ export class Auth {
       this.authClient.signIn.social({
         provider: provider as "google" | "github" | "apple",
         callbackURL,
+        // A refused sign-in, such as account_not_linked, comes back to the app with `?error=`
+        // instead of ending on the API's error page
+        errorCallbackURL: callbackURL,
       })
     }
   }
