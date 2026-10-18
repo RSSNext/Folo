@@ -1,7 +1,7 @@
 import { deleteDB } from "@follow/database/db"
-import { getStorageNS } from "@follow/utils/ns"
+import { clearStorage, getStorageNS } from "@follow/utils/ns"
 
-import { QUERY_PERSIST_KEY } from "~/constants/app"
+import { getAuthSessionToken, setAuthSessionToken } from "~/lib/client-session"
 
 import { clearImageDimensionsDb } from "../image/db"
 
@@ -11,12 +11,17 @@ export const clearLocalPersistStoreData = async () => {
 
 /**
  * Signed in to another account than the one whose data is in the local database, after that
- * one's session ended without a sign-out. The data on screen and the changes still queued
- * belong to the account before, so start over as a sign-out does, keeping the new session.
+ * one's session ended without a sign-out. The data on screen, the changes still queued and the
+ * settings belong to the account before, so start over as a sign-out does, keeping the new
+ * session. Settings left in place would be uploaded to the new account on its first sync, AI
+ * provider keys included, and its integrations would save to the other account's services.
  */
 export const clearLocalDataOfAnotherAccount = async () => {
-  localStorage.removeItem(QUERY_PERSIST_KEY)
   await clearLocalPersistStoreData()
+  const authSessionToken = getAuthSessionToken()
+  // The query cache and every setting of the account before, as a sign-out clears them
+  clearStorage()
+  if (authSessionToken) setAuthSessionToken(authSessionToken)
   window.location.reload()
 }
 
