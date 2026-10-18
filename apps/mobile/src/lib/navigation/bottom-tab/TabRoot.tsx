@@ -47,7 +47,7 @@ export const TabRoot: FC<PropsWithChildren> = ({ children }) => {
           if (!nativeEvent) return
           const { index, currentIndex } = nativeEvent
           if (index != null && index === currentIndex) {
-            scrollToTop()
+            scrollToTop(index)
           }
         },
         [scrollToTop],
