@@ -4,6 +4,7 @@ import type {
   ListSubscriptionResponse,
   SubscriptionWithFeed,
 } from "@follow-app/client-sdk"
+import { FollowAPIError } from "@follow-app/client-sdk"
 
 import { CLIError } from "./output"
 
@@ -37,6 +38,19 @@ export const getSubscriptionTitle = (value: AnySubscription): string | null => {
   return value.feeds.title ?? null
 }
 
+/** The feed the API stores for a URL, or null when it has none */
+const resolveFeed = async (client: FollowClient, url: string) => {
+  try {
+    const response = await client.api.feeds.get({ url })
+    return response.data.feed
+  } catch (error) {
+    if (error instanceof FollowAPIError) {
+      return null
+    }
+    throw error
+  }
+}
+
 /** What an id or URL given to `subscription update` or `remove` names */
 export type SubscriptionTarget = "feed" | "list" | "url"
 
@@ -66,7 +80,7 @@ export const findSubscription = async (
   target: SubscriptionTarget,
 ): Promise<SubscriptionWithFeed | ListSubscriptionResponse> => {
   const { data } = await client.api.subscriptions.get({})
-  const subscription = data.find((item) => {
+  let subscription = data.find((item) => {
     if (target === "list") {
       return isListSubscription(item) && item.listId === value
     }
@@ -76,6 +90,15 @@ export const findSubscription = async (
     // A list subscription's feedId is its list's id
     return !isInboxSubscription(item) && item.feedId === value
   })
+
+  // The API stores the feeds of RSSHub instances as rsshub:// URLs, so the URL a feed was
+  // followed with, such as https://rsshub.app/..., is not the one listed. It knows which one.
+  if (!subscription && target === "url") {
+    const feed = await resolveFeed(client, value)
+    subscription = feed?.id
+      ? data.find((item) => isFeedSubscription(item) && item.feedId === feed.id)
+      : undefined
+  }
 
   if (!subscription || isInboxSubscription(subscription)) {
     throw new CLIError("NOT_FOUND", `You don't follow ${describeTarget(value, target)}.`)

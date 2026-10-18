@@ -87,6 +87,7 @@ Changes the API answers without data, such as `subscription remove`, `collection
    - `npx --yes folocli@latest subscription update <id> --category <name>`
    - `npx --yes folocli@latest subscription remove <id>`
    - Both fail with `NOT_FOUND` for anything you don't follow, without changing anything.
+   - Feeds of RSSHub instances are listed with `rsshub://` URLs; `remove <url> --target url` and `feed get <url>` take that URL or the one the feed was followed with.
 
 ### 3. Unread Processing
 

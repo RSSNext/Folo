@@ -146,3 +146,64 @@ describe("subscription update", () => {
     expect(parseEnvelope(stderr)).toMatchObject({ error: { code: "INVALID_ARGUMENT" } })
   })
 })
+
+describe("subscription remove --target url", () => {
+  /** The API, which stores feeds of RSSHub instances as rsshub:// URLs */
+  const answerWithFeeds = (request: APIRequest) => {
+    if (request.method === "GET" && request.path === "/feeds") {
+      const url = request.query.url ?? ""
+      const known: Record<string, { id: string; url: string }> = {
+        "https://rsshub.app/github/issue/DIYgod/RSSHub": {
+          id: "100",
+          url: "rsshub://github/issue/DIYgod/RSSHub",
+        },
+        "https://example.com/feed.xml": { id: "400", url: "https://example.com/feed.xml" },
+      }
+      return known[url]
+        ? { code: 0, data: { feed: known[url], entries: [] } }
+        : Response.json({ code: 2001, message: "Feed not found" }, { status: 404 })
+    }
+    return answerSubscriptions(request)
+  }
+
+  it("unfollows a feed by the RSSHub URL it was followed with", async () => {
+    const { requests, stdout } = await runCLIWithAPI(
+      [
+        "subscription",
+        "remove",
+        "https://rsshub.app/github/issue/DIYgod/RSSHub",
+        "--target",
+        "url",
+      ],
+      answerWithFeeds,
+    )
+
+    expect(requests).toMatchObject([
+      { method: "GET", path: "/subscriptions" },
+      {
+        method: "GET",
+        path: "/feeds",
+        query: { url: "https://rsshub.app/github/issue/DIYgod/RSSHub" },
+      },
+      { method: "DELETE", body: { url: "rsshub://github/issue/DIYgod/RSSHub" } },
+    ])
+    expect(parseEnvelope(stdout)).toEqual({ ok: true, data: { lastSyncId: 9 }, error: null })
+  })
+
+  it.each(["https://example.com/feed.xml", "https://example.com/unknown.xml"])(
+    "fails for %s, a feed the user does not follow",
+    async (url) => {
+      const { requests, stderr } = await runCLIWithAPI(
+        ["subscription", "remove", url, "--target", "url"],
+        answerWithFeeds,
+      )
+
+      expect(changes(requests)).toEqual([])
+      expect(parseEnvelope(stderr)).toEqual({
+        ok: false,
+        data: null,
+        error: { code: "NOT_FOUND", message: `You don't follow a feed at ${url}.` },
+      })
+    },
+  )
+})
