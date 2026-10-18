@@ -1,9 +1,7 @@
-import { DeviceType } from "expo-device"
 import { useCallback, useMemo } from "react"
 import type { ViewStyle } from "react-native"
 import { Dimensions, useWindowDimensions } from "react-native"
 
-import { useDeviceType } from "../atoms/hooks/useDeviceType"
 import { isIOS } from "./platform"
 
 const baseWidth = 375
@@ -53,30 +51,42 @@ export const useScaleHeight = () => {
   )
 }
 
-export const useIsTabletLayout = () => {
-  const deviceType = useDeviceType()
-  const { width, height } = useWindowDimensions()
+/**
+ * Whether a window this wide gets the tablet layout. It goes by the window, not the device: an iPad
+ * window as narrow as a phone, in Split View, Slide Over or a resized window, gets the phone layout.
+ */
+export const isTabletLayoutWidth = (windowWidth: number) => isIOS && windowWidth >= tabletMinLength
 
-  if (!isIOS) {
-    return false
+export const useIsTabletLayout = () => {
+  const { width } = useWindowDimensions()
+  return isTabletLayoutWidth(width)
+}
+
+/**
+ * A centred column at most `maxWidth` wide on the tablet layout. It also leaves `gutter` on each
+ * side of the window, which side margins of the same size need to fit in a narrower window.
+ */
+export const getReadableContainerStyle = (
+  windowWidth: number,
+  maxWidth: number,
+  gutter = 24,
+): ViewStyle | undefined => {
+  if (!isTabletLayoutWidth(windowWidth)) {
+    return
   }
 
-  return deviceType === DeviceType.TABLET || Math.min(width, height) >= tabletMinLength
+  return {
+    width: "100%",
+    maxWidth: Math.max(Math.min(maxWidth, windowWidth - gutter * 2), 0),
+    alignSelf: "center",
+  }
 }
 
 export const useReadableContainerStyle = (maxWidth: number, gutter = 24) => {
-  const isTablet = useIsTabletLayout()
   const { width } = useWindowDimensions()
 
-  return useMemo<ViewStyle | undefined>(() => {
-    if (!isTablet) {
-      return
-    }
-
-    return {
-      width: "100%",
-      maxWidth: Math.max(Math.min(maxWidth, width - gutter * 2), 0),
-      alignSelf: "center",
-    }
-  }, [gutter, isTablet, maxWidth, width])
+  return useMemo(
+    () => getReadableContainerStyle(width, maxWidth, gutter),
+    [gutter, maxWidth, width],
+  )
 }

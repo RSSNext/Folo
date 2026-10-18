@@ -13,7 +13,7 @@ import type { SFSymbol } from "sf-symbols-typescript"
 import { Text } from "@/src/components/ui/typography/Text"
 import { CheckFilledIcon } from "@/src/icons/check_filled"
 import { MingcuteRightLine } from "@/src/icons/mingcute_right_line"
-import { useIsTabletLayout } from "@/src/lib/responsive"
+import { useReadableContainerStyle } from "@/src/lib/responsive"
 import { accentColor, useColor } from "@/src/theme/colors"
 
 import { PlatformActivityIndicator } from "../loading/PlatformActivityIndicator"
@@ -29,11 +29,13 @@ import { getGroupedListChildKey } from "./grouped-list-key"
 import { GroupedInsetListCardItemStyle } from "./GroupedInsetListCardItemStyle"
 
 const GROUPED_TABLET_MAX_WIDTH = 760
-const GROUPED_TABLET_CARD_STYLE: ViewStyle = {
-  width: "100%",
-  maxWidth: GROUPED_TABLET_MAX_WIDTH,
-  alignSelf: "center",
-}
+/**
+ * The centred column grouped lists use on the tablet layout. It leaves room for the side margins in
+ * a window narrower than the column and its margins, such as iPad mini in portrait, where a full
+ * width column pushed the cards against the window edges.
+ */
+const useGroupedTabletColumnStyle = () =>
+  useReadableContainerStyle(GROUPED_TABLET_MAX_WIDTH, GROUPED_LIST_MARGIN)
 
 interface GroupedInsetListCardProps {
   showSeparator?: boolean
@@ -64,8 +66,7 @@ export const GroupedInsetListCard: FC<
     const normalizedChildren = Array.isArray(children) ? children : [children]
     return normalizedChildren.filter(Boolean)
   }, [children])
-  const isTablet = useIsTabletLayout()
-  const tabletCardStyle = isTablet ? GROUPED_TABLET_CARD_STYLE : undefined
+  const tabletCardStyle = useGroupedTabletColumnStyle()
   return (
     <View
       {...props}
@@ -121,11 +122,9 @@ export const GroupedInsetListSectionHeader: FC<{
   label: string
   marginSize?: "normal" | "small"
 }> = ({ label, marginSize = "normal" }) => {
-  const isTablet = useIsTabletLayout()
+  const tabletColumnStyle = useGroupedTabletColumnStyle()
   const sectionStyle: ViewStyle = {
-    width: isTablet ? "100%" : undefined,
-    maxWidth: isTablet ? GROUPED_TABLET_MAX_WIDTH : undefined,
-    alignSelf: isTablet ? "center" : undefined,
+    ...tabletColumnStyle,
     paddingHorizontal: GROUPED_LIST_ITEM_PADDING,
     marginHorizontal: GROUPED_LIST_MARGIN,
     marginTop:

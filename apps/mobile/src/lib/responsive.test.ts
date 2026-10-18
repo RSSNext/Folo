@@ -37,8 +37,6 @@ vi.mock("react-native", () => ({
   Dimensions: mocks.Dimensions,
   useWindowDimensions: () => mocks.Dimensions.get("window"),
 }))
-vi.mock("expo-device", () => ({ DeviceType: { PHONE: 1, TABLET: 2 } }))
-vi.mock("../atoms/hooks/useDeviceType", () => ({ useDeviceType: () => 2 }))
 vi.mock("./platform", () => ({ isIOS: true }))
 
 describe("responsive", () => {
@@ -77,5 +75,31 @@ describe("responsive", () => {
 
     expect(scaleWidth(375)).toBe(375)
     expect(scaleHeight(812)).toBe(812)
+  })
+
+  it("lays a window out as a tablet by its width, not by the device", async () => {
+    const { isTabletLayoutWidth } = await import("./responsive")
+
+    // iPad mini in portrait, then a 13-inch iPad in portrait and in landscape
+    expect(isTabletLayoutWidth(744)).toBe(true)
+    expect(isTabletLayoutWidth(1032)).toBe(true)
+    expect(isTabletLayoutWidth(1376)).toBe(true)
+    // An iPad window resized to a phone's width, or half of a 13-inch iPad in landscape
+    expect(isTabletLayoutWidth(375)).toBe(false)
+    expect(isTabletLayoutWidth(678)).toBe(false)
+  })
+
+  it("keeps the gutters of a readable column in a window narrower than it", async () => {
+    const { getReadableContainerStyle } = await import("./responsive")
+
+    expect(getReadableContainerStyle(1032, 760, 24)).toEqual({
+      width: "100%",
+      maxWidth: 760,
+      alignSelf: "center",
+    })
+    // 760 and two 24 pt margins need 808 pt, more than iPad mini in portrait has
+    expect(getReadableContainerStyle(744, 760, 24)).toMatchObject({ maxWidth: 696 })
+    // The phone layout fills the width
+    expect(getReadableContainerStyle(375, 760, 24)).toBeUndefined()
   })
 })
