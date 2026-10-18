@@ -64,7 +64,7 @@ async function signInWithEmail(
     }
 
     if (res.data?.twoFactorRedirect) {
-      Navigation.rootNavigation.presentControllerView(TwoFactorAuthScreen)
+      Navigation.rootNavigation.presentControllerView(TwoFactorAuthScreen, { isSignIn: true })
       return false
     }
   } catch (error) {
