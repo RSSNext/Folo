@@ -124,7 +124,8 @@ export const PlayerScreen: NavigationControllerView = () => {
               </Text>
               <ProgressBar />
               <ControlGroup />
-              <View className="flex-1" />
+              {/* Keeps the volume slider clear of the buttons when the cover leaves no room to spare */}
+              <View className="min-h-6 flex-1" />
               <VolumeBar />
             </View>
           </View>
