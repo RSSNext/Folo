@@ -19,6 +19,14 @@ import { useHeaderHeight } from "@/src/modules/screen/hooks/useHeaderHeight"
 import { EntryListEmpty } from "../entry-list/EntryListEmpty"
 import { shouldApplyScrollResetSignal } from "./scroll-reset"
 
+/**
+ * FlashList keeps the first visible entry in place when entries arrive above it, as the server's
+ * first page does over the stored entries or a refresh with new ones. At the top of a timeline
+ * that leaves the newest entries above the screen, under the transparent header, so a list that
+ * rests at its top scrolls back up to show them. Scrolled down, the entry being read stays put.
+ */
+const keepTopWhenEntriesArriveAbove = { autoscrollToTopThreshold: 10 }
+
 type Props = {
   onRefresh: () => void
   isRefetching: boolean
@@ -182,6 +190,7 @@ export const TimelineSelectorList = ({
           paddingTop: headerHeight,
           paddingBottom: tabBarHeight,
         }}
+        maintainVisibleContentPosition={keepTopWhenEntriesArriveAbove}
         {...props}
         onLayout={onLayout}
         onLoad={onLoad}
@@ -299,6 +308,7 @@ export const TimelineSelectorMasonryList = ({
       ref={ref}
       masonry
       refreshControl={refreshControl}
+      maintainVisibleContentPosition={keepTopWhenEntriesArriveAbove}
       {...props}
       onLoad={onLoad}
       onCommitLayoutEffect={onCommitLayoutEffect}
