@@ -1,6 +1,7 @@
 import { SyncTransactionService } from "@follow/database/services/sync-transaction"
 import { FollowAPIError } from "@follow-app/client-sdk"
 
+import { getLocalDataOwner, onSessionUserConfirmed, verifySessionUser } from "./account"
 import { isSyncEngineActive } from "./sync-status"
 
 /**
@@ -12,7 +13,8 @@ import { isSyncEngineActive } from "./sync-status"
  * outbox), are retried for as long as the network or the server is unavailable, and are
  * rolled back only when the server definitively rejects them. While a transaction is
  * pending its overlays let readers rebase server snapshots on top of the local intent
- * instead of losing it.
+ * instead of losing it. A transaction belongs to the account that made it and is only sent
+ * with that account's session (see `account.ts`).
  */
 
 export interface TransactionOverlay {
@@ -73,6 +75,12 @@ export interface TransactionRecord<P = unknown> {
   kind: string
   payload: P
   createdAt: number
+  /**
+   * The account that owned the local data when the change was made. `null` for changes made
+   * before any account claimed it, and for outbox rows from before owners were recorded:
+   * those belong to the owner of the local data.
+   */
+  userId: string | null
 }
 
 export interface TransactionFailureEvent {
@@ -204,6 +212,7 @@ class TransactionQueue {
       payload,
       createTransactionId(),
       Date.now(),
+      getLocalDataOwner(),
     )
     this.queued.push(record)
     this.touch()
@@ -214,6 +223,7 @@ class TransactionQueue {
         kind: record.kind,
         payload: record.payload,
         createdAt: new Date(record.createdAt),
+        userId: record.userId,
       })
     } catch (error) {
       console.error("[transaction-queue] failed to persist transaction to the outbox", error)
@@ -251,7 +261,13 @@ class TransactionQueue {
         console.error(`[transaction-queue] failed to replay ${row.kind}`, error)
       }
       restored.push(
-        this.createQueuedTransaction(definition, row.payload, row.id, row.createdAt.getTime()),
+        this.createQueuedTransaction(
+          definition,
+          row.payload,
+          row.id,
+          row.createdAt.getTime(),
+          row.userId ?? null,
+        ),
       )
     }
 
@@ -361,6 +377,7 @@ class TransactionQueue {
       kind: definition.kind,
       payload,
       createdAt: now,
+      userId: getLocalDataOwner(),
       definition: definition as AcknowledgedRecord["definition"],
     }
     this.acknowledged.push({
@@ -441,6 +458,37 @@ class TransactionQueue {
     while (this.queued.length > 0) {
       if (!isOnline() || this.paused) return
 
+      // The credentials may belong to another account than the one that made the change, as
+      // when a dead session was replaced by a sign-in to another account. Until the session
+      // endpoint said whose they are, nothing is sent.
+      const sessionUserId = await verifySessionUser()
+      if (sessionUserId === undefined) {
+        // The session endpoint could not be reached either: wait as for any failed request.
+        this.attempts += 1
+        this.scheduleRetry()
+        return
+      }
+      // The queue may have been cleared while the session endpoint answered.
+      const head = this.queued[0]
+      if (!head) return
+      const owner = this.ownerOf(head)
+      if (
+        sessionUserId !== null &&
+        owner !== sessionUserId &&
+        sessionUserId === getLocalDataOwner()
+      ) {
+        // A change of an account whose data is not on this device: it can never be sent, and
+        // it must not hold back the changes of the account that is.
+        await this.discard(head)
+        continue
+      }
+      if (sessionUserId === null || owner !== sessionUserId) {
+        // Signed out, or signed in as another account: the change waits for its own account,
+        // whose next confirmed session resumes the queue.
+        this.paused = true
+        return
+      }
+
       const batch = this.takeBatch()
       const { definition } = batch[0]!
       this.inFlight = new Set(batch.map((record) => record.id))
@@ -484,12 +532,18 @@ class TransactionQueue {
     if (!batchKey) return batch
 
     const key = batchKey(head.payload)
+    const owner = this.ownerOf(head)
     for (let index = 1; index < this.queued.length && batch.length < maxBatchSize; index++) {
       const candidate = this.queued[index]!
       if (candidate.kind !== head.kind || batchKey(candidate.payload) !== key) break
+      if (this.ownerOf(candidate) !== owner) break
       batch.push(candidate)
     }
     return batch
+  }
+
+  private ownerOf(record: TransactionRecord) {
+    return record.userId ?? getLocalDataOwner()
   }
 
   private async completeBatch(batch: QueuedTransaction[], result: unknown) {
@@ -570,11 +624,20 @@ class TransactionQueue {
     }
   }
 
+  /** Forget a transaction without rolling it back or reporting a failure. */
+  private async discard(record: QueuedTransaction) {
+    console.warn(`[transaction-queue] dropping ${record.kind} of another account`)
+    this.removeFromQueue([record])
+    await SyncTransactionService.deleteMany([record.id]).catch(noop)
+    record.resolve()
+  }
+
   private createQueuedTransaction(
     definition: TransactionKind<unknown, unknown>,
     payload: unknown,
     id: string,
     createdAt: number,
+    userId: string | null,
   ): QueuedTransaction {
     let resolve: () => void = noop
     let reject: (error: unknown) => void = noop
@@ -590,6 +653,7 @@ class TransactionQueue {
       kind: definition.kind,
       payload,
       createdAt,
+      userId,
       definition,
       settled,
       resolve,
@@ -707,3 +771,9 @@ class TransactionQueue {
 }
 
 export const transactionQueue = new TransactionQueue()
+
+// A session confirmed for the account of the queued changes, as after signing in again, sends
+// them at once instead of at the next gesture or return to the app.
+onSessionUserConfirmed((userId) => {
+  if (userId) transactionQueue.resume()
+})

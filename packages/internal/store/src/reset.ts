@@ -11,6 +11,7 @@ import { summaryActions } from "./modules/summary/store"
 import { translationActions } from "./modules/translation/store"
 import { unreadActions } from "./modules/unread/store"
 import { userActions } from "./modules/user/store"
+import { clearAccountInSession } from "./sync/account"
 import { syncEngine } from "./sync/sync-engine"
 import { transactionQueue } from "./sync/transaction-queue"
 
@@ -29,6 +30,8 @@ const resets: Resetable[] = [
   actionActions,
   transactionQueue,
   syncEngine,
+  // The owner of the local data is stored with the sync meta, which the engine clears.
+  { reset: async () => clearAccountInSession() },
 ]
 
 export const resetStore = async () => {

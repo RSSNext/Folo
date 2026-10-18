@@ -3,6 +3,7 @@ import { FollowAPIError } from "@follow-app/client-sdk"
 import { afterEach, beforeEach, describe, expect, it, vi } from "vitest"
 
 import { apiContext } from "../../context"
+import { clearAccountInSession, startSessionCheck } from "../../sync/account"
 import type { SyncEngineHandle } from "../../sync/sync-status"
 import { registerSyncEngine, setSyncEngineActive } from "../../sync/sync-status"
 import { transactionQueue } from "../../sync/transaction-queue"
@@ -27,6 +28,15 @@ vi.mock("@follow/database/services/unread", () => ({
     getUnreadAll: vi.fn(),
     reset: vi.fn(),
     upsertMany: unreadUpsertManyMock,
+  },
+}))
+
+vi.mock("@follow/database/services/sync-meta", () => ({
+  SyncMetaService: {
+    get: vi.fn(async () => null),
+    set: vi.fn(async () => {}),
+    delete: vi.fn(async () => {}),
+    reset: vi.fn(async () => {}),
   },
 }))
 
@@ -76,6 +86,9 @@ describe("unreadSyncService", () => {
     vi.useFakeTimers()
     vi.clearAllMocks()
     transactionQueue.clearInSession()
+    // Signed in as the account the local data belongs to.
+    clearAccountInSession()
+    startSessionCheck().confirm("user-1")
 
     useEntryStore.setState({
       data: {},

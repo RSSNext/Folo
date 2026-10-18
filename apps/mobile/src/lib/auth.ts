@@ -1,6 +1,7 @@
 import { expoClient, getSetCookie, storageAdapter } from "@better-auth/expo/client"
 import type { BaseAuthPlugins } from "@follow/shared/auth"
 import { baseAuthPlugins } from "@follow/shared/auth"
+import { invalidateSessionUser, onLocalDataOfAnotherAccount } from "@follow/store/sync/account"
 import { isNewUserQueryKey } from "@follow/store/user/constants"
 import { whoamiQueryKey } from "@follow/store/user/hooks"
 import { userActions } from "@follow/store/user/store"
@@ -121,6 +122,9 @@ const authCookieStorage = createSessionAwareAuthCookieStorage({
   storage: secureAuthCookieStorage,
   onSessionChange() {
     bumpAuthStateRevision()
+    // Whose session it is stays unknown until the session endpoint answers, so queued changes
+    // are not sent with it before.
+    invalidateSessionUser()
     void refreshSessionQueries()
   },
 })
@@ -303,6 +307,12 @@ const clearAuthStorage = async () => {
   await Promise.all(keys.map((key) => safeSecureStore.removeItemAsync(key)))
 }
 
+/** Delete the local database and reload; the app then starts over for the current session. */
+const resetLocalData = async (reason: string) => {
+  await FileSystem.deleteAsync(getDbPath(), { idempotent: true })
+  await reloadApp(reason)
+}
+
 export const signOut = async () => {
   try {
     await authClient.signOut()
@@ -316,10 +326,19 @@ export const signOut = async () => {
   Navigation.rootNavigation.popToRoot()
   bumpAuthStateRevision()
   await refreshSessionQueries()
-  const dbPath = getDbPath()
-  await FileSystem.deleteAsync(dbPath, { idempotent: true })
-  await reloadApp("User sign out")
+  await resetLocalData("User sign out")
 }
+
+let resettingForAnotherAccount = false
+// Signed in to another account than the one whose data is on this device, after that one's
+// session ended without a sign-out. The data on screen and the changes still queued belong to
+// the account before, so start over as a sign-out does, keeping the new session.
+onLocalDataOfAnotherAccount(() => {
+  if (resettingForAnotherAccount) return
+  resettingForAnotherAccount = true
+  Navigation.rootNavigation.popToRoot()
+  void resetLocalData("Signed in to another account")
+})
 
 /**
  * @param TOTPCode - required by the server only when two-factor authentication is enabled

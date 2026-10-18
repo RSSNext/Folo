@@ -40,6 +40,7 @@ import m0036 from "./0036_entry_tag_summary.sql"
 import m0037 from "./0037_bored_the_leader.sql"
 import m0038 from "./0038_sync_transactions.sql"
 import m0039 from "./0039_sync_meta.sql"
+import m0040 from "./0040_sync_transaction_owner.sql"
 import journal from "./meta/_journal.json"
 
 export default {
@@ -85,5 +86,6 @@ export default {
     m0037,
     m0038,
     m0039,
+    m0040,
   },
 }

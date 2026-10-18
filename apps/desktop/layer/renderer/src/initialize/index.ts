@@ -2,6 +2,7 @@ import { initializeDayjs } from "@follow/components/dayjs"
 import { registerGlobalContext } from "@follow/shared/bridge"
 import { DEV, ELECTRON_BUILD, IN_ELECTRON } from "@follow/shared/constants"
 import { hydrateDatabaseToStore } from "@follow/store/hydrate"
+import { onLocalDataOfAnotherAccount } from "@follow/store/sync/account"
 import { ensureSyncedThroughEngine } from "@follow/store/sync/sync-status"
 import { whoami } from "@follow/store/user/getters"
 import { fetchSessionUser } from "@follow/store/user/hooks"
@@ -13,6 +14,7 @@ import { initI18n } from "~/i18n"
 import { hydrateSessionsFromLocalDb } from "~/modules/ai-chat-session"
 import { settingSyncQueue } from "~/modules/settings/helper/sync-queue"
 import { ElectronCloseEvent, ElectronShowEvent } from "~/providers/invalidate-query-provider"
+import { clearLocalDataOfAnotherAccount } from "~/store/utils/clear"
 
 import { appLog } from "../lib/log"
 import { initAnalytics } from "./analytics"
@@ -27,8 +29,18 @@ declare global {
   }
 }
 
+let clearingForAnotherAccount = false
+
 export const initializeApp = async () => {
   appLog(`${APP_NAME}: Follow everything in one place`, repository.url)
+
+  // Before any session answer can arrive: the data on this device must not be shown to, or
+  // sent with the session of, another account.
+  onLocalDataOfAnotherAccount(() => {
+    if (clearingForAnotherAccount) return
+    clearingForAnotherAccount = true
+    void clearLocalDataOfAnotherAccount()
+  })
 
   const dataHydratedTime = await apm("hydrateDatabaseToStore", () => {
     return hydrateDatabaseToStore({

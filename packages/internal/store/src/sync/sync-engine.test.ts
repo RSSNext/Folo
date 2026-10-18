@@ -12,6 +12,7 @@ import { useSubscriptionStore } from "../modules/subscription/store"
 import { unreadActions, unreadSyncService, useUnreadStore } from "../modules/unread/store"
 import { useUserStore } from "../modules/user/store"
 import type { FollowAPI } from "../types"
+import { clearAccountInSession, startSessionCheck } from "./account"
 import { registerSyncModel } from "./model-registry"
 import { syncEngine } from "./sync-engine"
 import { isSyncEngineActive } from "./sync-status"
@@ -190,6 +191,8 @@ describe("syncEngine", () => {
     transactionQueue.clearInSession()
 
     useUserStore.setState((state) => ({ ...state, whoami: { id: "user-1" } as never }))
+    clearAccountInSession()
+    startSessionCheck().confirm("user-1")
     useEntryStore.setState({
       data: {},
       entryIdByView: {
