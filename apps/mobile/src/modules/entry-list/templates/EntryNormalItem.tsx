@@ -100,7 +100,8 @@ export const EntryNormalItem = memo(
       const durationInSeconds = formatTimeToSeconds(audioOrVideo?.duration_in_seconds)
       return durationInSeconds && Math.floor(durationInSeconds / 60)
     }, [audioOrVideo?.duration_in_seconds])
-    if (!entry) return <EntryItemSkeleton />
+    // Nothing loads an entry missing from the store, so its placeholder holds still
+    if (!entry) return <EntryItemSkeleton animated={false} />
     return (
       <EntryItemContextMenu id={entryId} view={view} isTimelineSource={isTimelineSource}>
         <ItemPressable

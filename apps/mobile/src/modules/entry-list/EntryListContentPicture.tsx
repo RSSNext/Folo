@@ -21,6 +21,10 @@ import { TimelineSelectorMasonryList } from "../screen/TimelineSelectorList"
 import { EntryListEndScrollSpacer } from "./EntryListEndScrollSpacer"
 import { GridEntryListFooter } from "./EntryListFooter"
 import { useOnViewableItemsChanged } from "./hooks"
+import {
+  shouldAnimateLoadingPlaceholder,
+  shouldAnimateNextPagePlaceholder,
+} from "./placeholder-animation"
 // import type { MasonryItem } from "./templates/EntryGridItem"
 import { EntryPictureItem } from "./templates/EntryPictureItem"
 
@@ -98,6 +102,7 @@ export const EntryListContentPicture = ({
 
   // Show loading skeleton when entries are not ready and no data yet
   if (!isReady && (!entryIds || entryIds.length === 0)) {
+    const animateLoadingPlaceholder = shouldAnimateLoadingPlaceholder({ active })
     return (
       <View
         className="flex-1 px-2"
@@ -106,7 +111,11 @@ export const EntryListContentPicture = ({
         <View className="flex-row">
           <View className="mr-1 flex-1">
             {PICTURE_SKELETON_COLUMN_KEYS.map((key, index) => (
-              <EntryPictureItemSkeleton key={`left-${key}`} variantIndex={index} />
+              <EntryPictureItemSkeleton
+                key={`left-${key}`}
+                variantIndex={index}
+                animated={animateLoadingPlaceholder}
+              />
             ))}
           </View>
           <View className="ml-1 flex-1">
@@ -114,6 +123,7 @@ export const EntryListContentPicture = ({
               <EntryPictureItemSkeleton
                 key={`right-${key}`}
                 variantIndex={index + PICTURE_SKELETON_COLUMN_KEYS.length}
+                animated={animateLoadingPlaceholder}
               />
             ))}
           </View>
@@ -140,7 +150,10 @@ export const EntryListContentPicture = ({
       ListFooterComponent={
         hasNextPage ? (
           <View className="h-20 items-center justify-center">
-            <PlatformActivityIndicator />
+            {/* The list keeps the footer far below the screen, so it spins only while loading */}
+            {shouldAnimateNextPagePlaceholder({ active, isFetchingNextPage }) && (
+              <PlatformActivityIndicator />
+            )}
           </View>
         ) : (
           <View>
@@ -155,12 +168,18 @@ export const EntryListContentPicture = ({
   )
 }
 
-function EntryPictureItemSkeleton({ variantIndex }: { variantIndex: number }) {
+function EntryPictureItemSkeleton({
+  animated,
+  variantIndex,
+}: {
+  animated: boolean
+  variantIndex: number
+}) {
   const imageHeightStyle =
     PICTURE_SKELETON_HEIGHT_STYLES[variantIndex % PICTURE_SKELETON_HEIGHT_STYLES.length]
 
   return (
-    <SkeletonPulse className="mx-1 mb-2">
+    <SkeletonPulse animated={animated} className="mx-1 mb-2">
       {/* Image placeholder */}
       <Skeleton className="rounded-md" style={imageHeightStyle} />
 

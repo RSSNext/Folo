@@ -20,6 +20,10 @@ import { TimelineSelectorMasonryList } from "../screen/TimelineSelectorList"
 import { EntryListEndScrollSpacer } from "./EntryListEndScrollSpacer"
 import { GridEntryListFooter } from "./EntryListFooter"
 import { useOnViewableItemsChanged } from "./hooks"
+import {
+  shouldAnimateLoadingPlaceholder,
+  shouldAnimateNextPagePlaceholder,
+} from "./placeholder-animation"
 import { EntryVideoItem } from "./templates/EntryVideoItem"
 
 const VIDEO_SKELETON_KEYS = ["video-skeleton-1", "video-skeleton-2", "video-skeleton-3"] as const
@@ -82,12 +86,16 @@ export const EntryListContentVideo = ({
     entryCount: entryIds?.length ?? 0,
     hasNextPage,
   })
+  const animateNextPagePlaceholder = shouldAnimateNextPagePlaceholder({
+    active,
+    isFetchingNextPage,
+  })
   const ListFooterComponent = useMemo(
     () =>
       hasNextPage ? (
         <View className="flex flex-row justify-between">
-          <EntryVideoItemSkeleton />
-          <EntryVideoItemSkeleton />
+          <EntryVideoItemSkeleton animated={animateNextPagePlaceholder} />
+          <EntryVideoItemSkeleton animated={animateNextPagePlaceholder} />
         </View>
       ) : (
         <View>
@@ -95,7 +103,7 @@ export const EntryListContentVideo = ({
           {hasEndSpacer && <EntryListEndScrollSpacer />}
         </View>
       ),
-    [hasEndSpacer, hasNextPage, fetchedTime],
+    [animateNextPagePlaceholder, hasEndSpacer, hasNextPage, fetchedTime],
   )
 
   const renderItem = useTypeScriptHappyCallback(({ item }: { item: string }) => {
@@ -107,6 +115,7 @@ export const EntryListContentVideo = ({
 
   // Show loading skeleton when entries are not ready and no data yet
   if (!isReady && (!entryIds || entryIds.length === 0)) {
+    const animateLoadingPlaceholder = shouldAnimateLoadingPlaceholder({ active })
     return (
       <View
         className="flex-1 px-2"
@@ -115,12 +124,12 @@ export const EntryListContentVideo = ({
         <View className="flex-row">
           <View className="mr-1 flex-1">
             {VIDEO_SKELETON_KEYS.map((key) => (
-              <EntryVideoItemSkeleton key={`left-${key}`} />
+              <EntryVideoItemSkeleton key={`left-${key}`} animated={animateLoadingPlaceholder} />
             ))}
           </View>
           <View className="ml-1 flex-1">
             {VIDEO_SKELETON_KEYS.map((key) => (
-              <EntryVideoItemSkeleton key={`right-${key}`} />
+              <EntryVideoItemSkeleton key={`right-${key}`} animated={animateLoadingPlaceholder} />
             ))}
           </View>
         </View>
@@ -163,9 +172,9 @@ const defaultKeyExtractor = (item: string) => {
   return item
 }
 
-function EntryVideoItemSkeleton() {
+function EntryVideoItemSkeleton({ animated }: { animated: boolean }) {
   return (
-    <SkeletonPulse className="m-1 overflow-hidden rounded-md">
+    <SkeletonPulse animated={animated} className="m-1 overflow-hidden rounded-md">
       {/* Video thumbnail */}
       <Skeleton className="h-32 w-full rounded-md" style={{ aspectRatio: 16 / 9 }} />
 

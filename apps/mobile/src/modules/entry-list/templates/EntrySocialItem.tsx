@@ -115,7 +115,8 @@ export const EntrySocialItem = memo(
       },
       [entry?.media, openLightbox],
     )
-    if (!entry) return <EntryItemSkeleton />
+    // Nothing loads an entry missing from the store, so its placeholder holds still
+    if (!entry) return <EntryItemSkeleton animated={false} />
     const { description, publishedAt, media } = entry
     return (
       <EntryItemContextMenu id={entryId} view={FeedViewType.SocialMedia}>

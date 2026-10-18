@@ -19,6 +19,10 @@ import { TimelineSelectorList } from "../screen/TimelineSelectorList"
 import { EntryListEndScrollSpacer } from "./EntryListEndScrollSpacer"
 import { EntryListFooter } from "./EntryListFooter"
 import { useOnViewableItemsChanged } from "./hooks"
+import {
+  shouldAnimateLoadingPlaceholder,
+  shouldAnimateNextPagePlaceholder,
+} from "./placeholder-animation"
 import { EntryNormalItem } from "./templates/EntryNormalItem"
 import type { EntryExtraData } from "./types"
 
@@ -80,17 +84,21 @@ export const EntryListContentArticle = ({
     entryCount: entryIds?.length ?? 0,
     hasNextPage,
   })
+  const animateNextPagePlaceholder = shouldAnimateNextPagePlaceholder({
+    active,
+    isFetchingNextPage,
+  })
   const ListFooterComponent = useMemo(
     () =>
       hasNextPage ? (
-        <EntryItemSkeleton />
+        <EntryItemSkeleton animated={animateNextPagePlaceholder} />
       ) : (
         <View>
           <EntryListFooter fetchedTime={fetchedTime} />
           {hasEndSpacer && <EntryListEndScrollSpacer />}
         </View>
       ),
-    [hasEndSpacer, hasNextPage, fetchedTime],
+    [hasEndSpacer, hasNextPage, fetchedTime, animateNextPagePlaceholder],
   )
 
   const ref = useRef<FlashListRef<any>>(null)
@@ -126,7 +134,7 @@ export const EntryListContentArticle = ({
       <View className="flex-1" style={{ paddingTop: headerHeight, paddingBottom: tabBarHeight }}>
         {ARTICLE_SKELETON_KEYS.map((key) => (
           <View key={key} style={readableItemStyle}>
-            <EntryItemSkeleton />
+            <EntryItemSkeleton animated={shouldAnimateLoadingPlaceholder({ active })} />
           </View>
         ))}
       </View>
@@ -155,9 +163,12 @@ export const EntryListContentArticle = ({
 
 const defaultKeyExtractor = (id: string) => id
 
-export function EntryItemSkeleton() {
+export function EntryItemSkeleton({ animated }: { animated?: boolean }) {
   return (
-    <SkeletonPulse className="flex flex-row items-center bg-system-background p-4">
+    <SkeletonPulse
+      animated={animated}
+      className="flex flex-row items-center bg-system-background p-4"
+    >
       <View className="flex flex-1 flex-col gap-2">
         <View className="flex flex-row gap-2">
           {/* Icon skeleton */}

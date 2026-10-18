@@ -18,6 +18,10 @@ import { EntryListEndScrollSpacer } from "./EntryListEndScrollSpacer"
 import { EntryListFooter } from "./EntryListFooter"
 import { useOnViewableItemsChanged } from "./hooks"
 import { ItemSeparatorFullWidth } from "./ItemSeparator"
+import {
+  shouldAnimateLoadingPlaceholder,
+  shouldAnimateNextPagePlaceholder,
+} from "./placeholder-animation"
 import { EntrySocialItem } from "./templates/EntrySocialItem"
 import type { EntryExtraData } from "./types"
 
@@ -65,17 +69,26 @@ export const EntryListContentSocial = ({
     entryCount: entryIds?.length ?? 0,
     hasNextPage,
   })
+  const animateNextPagePlaceholder = shouldAnimateNextPagePlaceholder({
+    active,
+    isFetchingNextPage,
+  })
   const ListFooterComponent = useMemo(
     () =>
       hasNextPage ? (
-        <EntryItemSkeleton />
+        <EntryItemSkeleton animated={animateNextPagePlaceholder} />
       ) : (
         <View>
           <EntryListFooter fetchedTime={fetchedTime} />
           {hasEndSpacer && <EntryListEndScrollSpacer />}
         </View>
       ),
-    [hasEndSpacer, hasNextPage, fetchedTime],
+    [hasEndSpacer, hasNextPage, fetchedTime, animateNextPagePlaceholder],
+  )
+  const animateLoadingPlaceholder = shouldAnimateLoadingPlaceholder({ active })
+  const renderLoadingSkeleton = useCallback(
+    () => <EntryItemSkeleton animated={animateLoadingPlaceholder} />,
+    [animateLoadingPlaceholder],
   )
 
   const { onViewableItemsChanged, onScroll, viewableItems } = useOnViewableItemsChanged({
@@ -114,7 +127,7 @@ export const EntryListContentSocial = ({
         resetScrollSignal={contentResetScrollSignal}
         data={Array.from({ length: 5 }).map((_, index) => `skeleton-${index}`)}
         keyExtractor={(id) => id}
-        renderItem={EntryItemSkeleton}
+        renderItem={renderLoadingSkeleton}
         ItemSeparatorComponent={ItemSeparatorFullWidth}
       />
     )
@@ -143,9 +156,9 @@ export const EntryListContentSocial = ({
   )
 }
 
-export function EntryItemSkeleton() {
+export function EntryItemSkeleton({ animated }: { animated?: boolean }) {
   return (
-    <SkeletonPulse className="flex flex-col gap-2 p-4">
+    <SkeletonPulse animated={animated} className="flex flex-col gap-2 p-4">
       {/* Header row with avatar, author, and date */}
       <View className="flex flex-1 flex-row items-center gap-2">
         <Skeleton className="size-8 rounded-full" />
