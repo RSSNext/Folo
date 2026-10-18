@@ -7,9 +7,34 @@
 import ExpoModulesCore
 import UIKit
 
+let onWindowControlsInsetsChange = "onWindowControlsInsetsChange"
+
 public class HelperModule: Module {
   public func definition() -> ExpoModulesCore.ModuleDefinition {
     Name("Helper")
+
+    Events(onWindowControlsInsetsChange)
+
+    // Room the iPadOS window controls take past the safe area, see WindowControlsInsetsObserver
+    AsyncFunction("getWindowControlsInsets") { () -> [String: Double] in
+      WindowControlsInsetsObserver.shared.currentInsets().dictionary
+    }.runOnQueue(.main)
+
+    OnStartObserving(onWindowControlsInsetsChange) {
+      DispatchQueue.main.async { [weak self] in
+        let observer = WindowControlsInsetsObserver.shared
+        observer.onChange = { insets in
+          self?.sendEvent(onWindowControlsInsetsChange, insets.dictionary)
+        }
+        observer.installProbeIfNeeded()
+      }
+    }
+
+    OnStopObserving(onWindowControlsInsetsChange) {
+      DispatchQueue.main.async {
+        WindowControlsInsetsObserver.shared.onChange = nil
+      }
+    }
 
     AsyncFunction("openLink") { (urlString: String, promise: Promise) in
       guard let url = URL(string: urlString) else {
