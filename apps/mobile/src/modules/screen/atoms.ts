@@ -35,6 +35,8 @@ import { makeMutable, useSharedValue } from "react-native-reanimated"
 import { useFetchEntriesSettings } from "@/src/atoms/settings/general"
 import { views } from "@/src/constants/views"
 
+import { pickTimelineEntries } from "./timeline-entries"
+
 export type SelectedTimeline = {
   type: "view"
   viewId: FeedViewType
@@ -369,30 +371,7 @@ export function useEntries(props?: UseEntriesProps): UseEntriesReturn {
   const isTimelineViewQuery = entryListContext.type === "timeline" && selectedFeed?.type === "view"
 
   if (isTimelineViewQuery) {
-    if (remoteQuery.isReady) {
-      return remoteQuery
-    }
-
-    if (remoteQuery.error) {
-      return {
-        ...localQuery,
-        // Pulling to refresh retries the server rather than the stored entries
-        refetch: remoteQuery.refetch,
-        isFetching: remoteQuery.isFetching,
-        isRefetching: remoteQuery.isRefetching,
-        error: remoteQuery.error,
-        isReady: true,
-      }
-    }
-
-    return {
-      ...fallbackReturn,
-      refetch: remoteQuery.refetch,
-      fetchNextPage: remoteQuery.fetchNextPage,
-      isLoading: remoteQuery.isLoading,
-      isFetching: remoteQuery.isFetching,
-      isRefetching: remoteQuery.isRefetching,
-    }
+    return pickTimelineEntries(remoteQuery, localQuery)
   }
 
   const query = remoteQuery.isReady ? remoteQuery : localQuery
