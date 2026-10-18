@@ -98,9 +98,17 @@ const renderTable = (data: unknown) => {
   console.info(renderAsciiTable(rows))
 }
 
+// Node cuts strings after 10,000 characters and arrays after 100 items by default
+const plainInspectOptions = {
+  depth: null,
+  colors: false,
+  maxStringLength: Infinity,
+  maxArrayLength: Infinity,
+} as const
+
 const renderPlain = (data: unknown) => {
   if (Array.isArray(data)) {
-    console.info(data.map((item) => inspect(item, { depth: null, colors: false })).join("\n"))
+    console.info(data.map((item) => inspect(item, plainInspectOptions)).join("\n"))
     return
   }
 
@@ -116,8 +124,7 @@ const renderPlain = (data: unknown) => {
 
   console.info(
     inspect(data, {
-      depth: null,
-      colors: false,
+      ...plainInspectOptions,
       compact: false,
     }),
   )

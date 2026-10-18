@@ -33,3 +33,26 @@ describe("entry get", () => {
     expect(parseEnvelope(stdout)).toEqual({ ok: true, data: entry, error: null })
   })
 })
+
+describe("entry read", () => {
+  const content = `<p>${"word ".repeat(4000)}</p>\n<p>end</p>`
+
+  it("prints the whole content as it is in plain mode", async () => {
+    const { requests, stdout } = await runCLIWithAPI(["-f", "plain", "entry", "read", "1"], () => ({
+      code: 0,
+      data: { content },
+    }))
+
+    expect(requests).toMatchObject([{ method: "GET", path: "/entries/readability" }])
+    expect(stdout).toBe(content)
+  })
+
+  it("keeps the content in the JSON envelope", async () => {
+    const { stdout } = await runCLIWithAPI(["entry", "read", "1"], () => ({
+      code: 0,
+      data: { content },
+    }))
+
+    expect(parseEnvelope(stdout)).toEqual({ ok: true, data: { content }, error: null })
+  })
+})

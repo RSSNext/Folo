@@ -34,8 +34,12 @@ export const registerEntryCommand = (program: Command) => {
     .description("Get readability content")
     .argument("<entryId>", "Entry ID")
     .action(async function (this: Command, entryId: string) {
-      await runCommand(this, async ({ client }) => {
+      await runCommand(this, async ({ client, options }) => {
         const response = await client.api.entries.readability({ id: entryId })
+        // Plain output is the content itself, ready to be piped or saved
+        if (options.format === "plain") {
+          return response.data?.content ?? ""
+        }
         return response.data
       })
     })

@@ -84,6 +84,21 @@ describe("output helpers", () => {
     expect(infoSpy.mock.calls.slice(1)).toEqual([["(empty)"], [""]])
   })
 
+  it("prints long strings and arrays whole in plain mode", () => {
+    const infoSpy = vi.spyOn(console, "info").mockImplementation(() => {})
+    const content = `${"a".repeat(15_000)}end`
+    const ids = Array.from({ length: 150 }, (_, index) => index)
+
+    printSuccess("plain", { content, ids })
+    printSuccess("plain", [{ content }])
+
+    const [[object], [array]] = infoSpy.mock.calls as [[string], [string]]
+    expect(object).toContain(`'${content}'`)
+    expect(object).toContain("149")
+    expect(array).toContain(`'${content}'`)
+    expect(`${object}${array}`).not.toMatch(/more (characters|items)/)
+  })
+
   it("normalizes CLIError", () => {
     const normalized = normalizeError(new CLIError("E_CODE", "message"))
     expect(normalized).toEqual({

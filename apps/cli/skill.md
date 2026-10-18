@@ -72,6 +72,7 @@ Changes the API answers without data, such as `subscription remove`, `collection
    - `npx --yes folocli@latest entry get <entryId>`
 3. Get readability content:
    - `npx --yes folocli@latest entry read <entryId>`
+   - `--format plain` prints the content itself, ready to pipe or save
 
 ### 2. Subscription Management
 
