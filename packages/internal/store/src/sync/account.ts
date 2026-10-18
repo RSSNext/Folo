@@ -27,6 +27,12 @@ type SessionUserListener = (userId: string | null) => void
 type AnotherAccountListener = (event: AnotherAccountEvent) => void
 
 let localDataOwner: string | null = null
+/**
+ * Whether the owner recorded with the local data was read. A launch can get the session's
+ * answer before that; the account it names then stands in as the owner until the recorded
+ * one is known, and is compared with it then.
+ */
+let ownerLoaded = false
 /** `undefined`: the session endpoint has not answered for the current credentials yet. */
 let sessionUserId: string | null | undefined
 /** Bumped when the credentials change, so answers to checks started before are ignored. */
@@ -41,6 +47,16 @@ const persistOwner = (userId: string) =>
     console.error("[account] failed to persist the owner of the local data", error)
   })
 
+const reportAnotherAccount = (event: AnotherAccountEvent) => {
+  for (const listener of anotherAccountListeners) {
+    try {
+      listener(event)
+    } catch (error) {
+      console.error("[account] another-account listener threw", error)
+    }
+  }
+}
+
 /**
  * Read the owner of the local data. A database from before owners were recorded belongs to
  * the account it was last signed in as, which is all the hydrated stores know at this point.
@@ -50,11 +66,17 @@ export const loadLocalDataOwner = async (lastSignedInUserId: string | null | und
     console.error("[account] failed to read the owner of the local data", error)
     return null
   })
-  // A session confirmed while this was loading already claimed the data.
-  if (localDataOwner) return
-  localDataOwner = stored ?? lastSignedInUserId ?? null
-  if (!stored && localDataOwner) {
+  // A session confirmed before the recorded owner was read only stood in for it. The recorded
+  // one decides, so a session of another account, whose answer a launch can get first, is not
+  // given the data and the changes the account before queued.
+  const standIn = localDataOwner
+  ownerLoaded = true
+  localDataOwner = stored ?? lastSignedInUserId ?? standIn ?? null
+  if (localDataOwner && localDataOwner !== stored) {
     await persistOwner(localDataOwner)
+  }
+  if (localDataOwner && sessionUserId && sessionUserId !== localDataOwner) {
+    reportAnotherAccount({ ownerUserId: localDataOwner, sessionUserId })
   }
 }
 
@@ -69,16 +91,10 @@ const confirmSessionUser = (userId: string | null) => {
   if (userId) {
     if (!localDataOwner) {
       localDataOwner = userId
-      void persistOwner(userId)
+      // Before the recorded owner was read this only stands in for it (see `loadLocalDataOwner`).
+      if (ownerLoaded) void persistOwner(userId)
     } else if (localDataOwner !== userId) {
-      const event = { ownerUserId: localDataOwner, sessionUserId: userId }
-      for (const listener of anotherAccountListeners) {
-        try {
-          listener(event)
-        } catch (error) {
-          console.error("[account] another-account listener threw", error)
-        }
-      }
+      reportAnotherAccount({ ownerUserId: localDataOwner, sessionUserId: userId })
     }
   }
   for (const listener of sessionUserListeners) {
@@ -171,6 +187,7 @@ export const onLocalDataOfAnotherAccount = (listener: AnotherAccountListener) =>
 /** Forget everything in memory. The database is reset by the sync meta service. */
 export const clearAccountInSession = () => {
   localDataOwner = null
+  ownerLoaded = false
   sessionUserId = undefined
   credentialsGeneration += 1
   pendingCheck = null

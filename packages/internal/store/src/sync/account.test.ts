@@ -59,11 +59,12 @@ describe("account binding", () => {
     await vi.waitFor(() => expect(syncMeta.get("localDataOwner")).toBe("user-a"))
   })
 
-  it("reports a session of another account than the owner of the local data", () => {
+  it("reports a session of another account than the owner of the local data", async () => {
     const anotherAccount = vi.fn()
     const confirmed = vi.fn()
     const stopAnother = onLocalDataOfAnotherAccount(anotherAccount)
     const stopConfirmed = onSessionUserConfirmed(confirmed)
+    await loadLocalDataOwner(null)
 
     startSessionCheck().confirm("user-a")
     startSessionCheck().confirm(null)
@@ -80,6 +81,44 @@ describe("account binding", () => {
 
     stopAnother()
     stopConfirmed()
+  })
+
+  it("lets the recorded owner decide over a session that answered before it was read", async () => {
+    syncMeta.set("localDataOwner", "user-a")
+    const anotherAccount = vi.fn()
+    const stopAnother = onLocalDataOfAnotherAccount(anotherAccount)
+
+    // A launch with another account's session can get the session's answer first.
+    startSessionCheck().confirm("user-b")
+    expect(anotherAccount).not.toHaveBeenCalled()
+    expect(syncMeta.get("localDataOwner")).toBe("user-a")
+
+    await loadLocalDataOwner("user-a")
+
+    expect(getLocalDataOwner()).toBe("user-a")
+    expect(anotherAccount).toHaveBeenCalledWith({ ownerUserId: "user-a", sessionUserId: "user-b" })
+    expect(syncMeta.get("localDataOwner")).toBe("user-a")
+    stopAnother()
+  })
+
+  it("keeps a session that answered first as the owner when none was recorded", async () => {
+    const anotherAccount = vi.fn()
+    const stopAnother = onLocalDataOfAnotherAccount(anotherAccount)
+
+    startSessionCheck().confirm("user-a")
+    expect(getLocalDataOwner()).toBe("user-a")
+    await loadLocalDataOwner(undefined)
+
+    expect(getLocalDataOwner()).toBe("user-a")
+    expect(syncMeta.get("localDataOwner")).toBe("user-a")
+    expect(anotherAccount).not.toHaveBeenCalled()
+
+    // The same account answering first is the usual launch: nothing to report either.
+    clearAccountInSession()
+    startSessionCheck().confirm("user-a")
+    await loadLocalDataOwner("user-a")
+    expect(anotherAccount).not.toHaveBeenCalled()
+    stopAnother()
   })
 
   it("ignores an answer for credentials that changed while it was on its way", () => {
