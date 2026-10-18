@@ -88,6 +88,7 @@
   "16005": "User MCP service not found",
   "16006": "MCP configuration error",
   "16007": "MCP tool execution failed",
+  "16008": "MCP service limit reached. Remove a service to add another.",
   "17000": "Trial user max feed subscription exceeded",
   "17001": "Trial user max list subscription exceeded",
   "17002": "Trial user max inbox subscription exceeded",

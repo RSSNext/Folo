@@ -6,7 +6,7 @@ import type {
   ActionId,
   ActionItem as ActionItemRes,
 } from "@follow-app/client-sdk"
-import { FollowAPIError } from "@follow-app/client-sdk"
+import { ExceptionCodeMap, FollowAPIError } from "@follow-app/client-sdk"
 import { merge } from "es-toolkit/compat"
 import { t } from "i18next"
 
@@ -36,12 +36,9 @@ export type ActionModel = ActionItem
  */
 export type ActionRulesVersion = string | null | undefined
 
-// `ExceptionCodeMap.ActionRulesConflict`, which the pinned @folo-services/exceptions predates
-const ACTION_RULES_CONFLICT_CODE = 12001
-
 /** Whether a save was refused because the rules were changed elsewhere since they were loaded. */
 export const isActionRulesConflictError = (error: unknown) =>
-  error instanceof FollowAPIError && Number(error.code) === ACTION_RULES_CONFLICT_CODE
+  error instanceof FollowAPIError && Number(error.code) === ExceptionCodeMap.ActionRulesConflict
 
 const toRulesVersion = (updatedAt: unknown): string | undefined => {
   if (typeof updatedAt === "string") return updatedAt

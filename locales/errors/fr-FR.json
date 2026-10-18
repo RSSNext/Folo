@@ -88,6 +88,7 @@
   "16005": "Service MCP utilisateur introuvable",
   "16006": "Erreur de configuration MCP",
   "16007": "Échec de l'exécution de l'outil MCP",
+  "16008": "Limite de services MCP atteinte. Supprimez un service pour en ajouter un autre.",
   "17000": "Limite d'abonnement aux flux max pour utilisateur d'essai dépassée",
   "17001": "Limite d'abonnement aux listes max pour utilisateur d'essai dépassée",
   "17002": "Limite d'abonnement aux boîtes de réception max pour utilisateur d'essai dépassée",

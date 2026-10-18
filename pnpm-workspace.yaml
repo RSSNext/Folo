@@ -14,7 +14,7 @@ shamefullyHoist: true
 saveExact: true
 
 catalog:
-  "@follow-app/client-sdk": 0.3.97
+  "@follow-app/client-sdk": 0.3.98
   "@folo-services/ai-tools": 0.2.69
   tailwindcss-uikit-colors: 1.0.0
   typescript: 6.0.3
@@ -48,10 +48,8 @@ overrides:
   "@floating-ui/dom": 1.8.0
   "@floating-ui/react": 0.27.20
   "@floating-ui/react-dom": 2.1.9
-  "@follow-app/client-sdk": 0.3.97
-  "@folo-services/drizzle": 0.1.49
-  # 0.1.32 shipped without its ESM build and typings (only dist/index.cjs), which breaks the SDK import
-  "@folo-services/exceptions": 0.1.31
+  "@follow-app/client-sdk": 0.3.98
+  "@folo-services/drizzle": 0.1.50
   "@react-native-menu/menu": 2.0.0
   "@types/react": 19.2.18
   array-includes: npm:@nolyfill/array-includes@latest
@@ -163,3 +161,9 @@ minimumReleaseAgeExclude:
   - "vinext@1.0.0-beta.11"
   - "w3c-xmlserializer@6.0.0"
   - "wrangler@4.136.1"
+  # Folo service packages released together on 2026-10-19 (SDK 0.3.98 and its dependencies).
+  - "@follow-app/client-sdk@0.3.98"
+  - "@folo-services/constants@0.1.58"
+  - "@folo-services/drizzle@0.1.50"
+  - "@folo-services/exceptions@0.1.33"
+  - "@folo-services/shared@0.0.50"

@@ -160,14 +160,10 @@ describe("getFetchErrorMessage", () => {
 })
 
 describe("error code translations", () => {
-  // Codes newer servers answer with that the SDK's ExceptionCodeMap does not name yet
-  const codesMissingFromSDK = [8005, 12001, 13008, 15006]
-
   test("cover every code the server answers with in every language", () => {
-    const codes = [
-      ...Object.values(ExceptionCodeMap).filter((code) => typeof code === "number"),
-      ...codesMissingFromSDK,
-    ].map(String)
+    const codes = Object.values(ExceptionCodeMap)
+      .filter((code) => typeof code === "number")
+      .map(String)
     const errorsByLanguage = {
       en: enErrors,
       "zh-CN": zhCNErrors,
