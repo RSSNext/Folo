@@ -49,6 +49,7 @@ import type { NavigationControllerView } from "@/src/lib/navigation/types"
 import { isAndroid } from "@/src/lib/platform"
 import { createLinkShareContent } from "@/src/lib/share"
 import { toast } from "@/src/lib/toast"
+import { UrlBuilder } from "@/src/lib/url-builder"
 import { selectFeed } from "@/src/modules/screen/atoms"
 import { BannerStatusBar } from "@/src/modules/settings/BannerStatusBar"
 import { useShareSubscription } from "@/src/modules/settings/hooks/useShareSubscription"
@@ -107,7 +108,8 @@ function ProfileScreenImpl(props: { userId: string }) {
   const textLabelColor = useColor("label")
   const openShareUrl = useCallback(() => {
     if (!user?.id) return
-    const shareUrl = `https://app.folo.is/share/users/${user.id}`
+    // On the web app of the environment the user is in, as a feed's share link is
+    const shareUrl = UrlBuilder.profile(user.id)
     Share.share(
       createLinkShareContent({
         platform: Platform.OS,
