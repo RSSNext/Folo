@@ -5,7 +5,6 @@ import { FetchError } from "ofetch"
 import { getIsPaymentEnabled } from "@/src/atoms/server-configs"
 import { showUpgradeRequiredDialog } from "@/src/modules/dialogs/UpgradeRequiredDialog"
 
-import { sanitizeErrorMessage } from "./error-message"
 import { isConnectionFailure } from "./network-error"
 import { toast } from "./toast"
 
@@ -36,11 +35,11 @@ export const getFetchErrorInfo = (
       const { reason, code, message } = json
       const i18nMessage = translateErrorCode(code, message)
       return {
-        message: sanitizeErrorMessage(`${i18nMessage}${reason ? `: ${reason}` : ""}`),
+        message: `${i18nMessage}${reason ? `: ${reason}` : ""}`,
         code,
       }
     } catch {
-      return { message: sanitizeErrorMessage(error.message) }
+      return { message: error.message }
     }
   }
 
@@ -59,11 +58,11 @@ export const getFetchErrorInfo = (
     try {
       const i18nMessage = translateErrorCode(code, error.message)
       return {
-        message: sanitizeErrorMessage(i18nMessage),
+        message: i18nMessage,
         code,
       }
     } catch {
-      return { message: sanitizeErrorMessage(error.message) }
+      return { message: error.message }
     }
   }
 
@@ -71,7 +70,7 @@ export const getFetchErrorInfo = (
     return { message: t("common:app.api_unreachable") }
   }
 
-  return { message: sanitizeErrorMessage(error.message) }
+  return { message: error.message }
 }
 
 /** The server says what was asked for does not exist, so trying again cannot help */
@@ -92,7 +91,7 @@ export const createErrorToaster = (title?: string) => (err: Error) =>
 export const toastFetchError = (error: Error, { title: _title }: { title?: string } = {}) => {
   const fallbackMessage = isConnectionFailure(error)
     ? t("common:app.api_unreachable")
-    : sanitizeErrorMessage(error.message)
+    : error.message
   let message = fallbackMessage
   // What the server said, kept next to the translation of its error code
   let serverMessage = ""
@@ -156,9 +155,6 @@ export const toastFetchError = (error: Error, { title: _title }: { title?: strin
       message = t("common:app.request_timeout")
     }
   }
-
-  message = sanitizeErrorMessage(message)
-  serverMessage = sanitizeErrorMessage(serverMessage)
 
   // 2fa errors are handled by the form
   if (code === 4007 || code === 4008) {

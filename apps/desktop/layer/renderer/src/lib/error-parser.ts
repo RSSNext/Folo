@@ -12,9 +12,6 @@ import { CopyButton } from "~/components/ui/button/CopyButton"
 import { Markdown } from "~/components/ui/markdown/Markdown"
 import { DebugRegistry } from "~/modules/debug/registry"
 
-// The SDK appends the request and its arguments to the server's message
-const stripRequestContext = (message: string) => message.replace(/\r?\nRequest:[\s\S]*$/u, "")
-
 // How fetch fails when no answer came back, offline or with the API down: each browser words it
 // its own way, and a request the main process made for the window comes back as "fetch failed"
 const CONNECTION_FAILURE_MESSAGE =
@@ -55,7 +52,7 @@ export const getFetchErrorInfo = (
   }
 
   if (error instanceof FollowAPIError) {
-    const message = stripRequestContext(error.message)
+    const { message } = error
     if (!error.code) return { message }
     // Codes such as "AUTH_REQUIRED" from the SDK are not API error codes
     const code = Number.isNaN(Number(error.code)) ? undefined : Number(error.code)
@@ -128,7 +125,7 @@ export const toastFetchError = (
   if (error instanceof FollowAPIError) {
     code = error.code ? Number(error.code) : undefined
     status = error.status ? Number(error.status) : undefined
-    message = stripRequestContext(error.message)
+    message = error.message
     serverMessage = message
   }
 
@@ -136,7 +133,7 @@ export const toastFetchError = (
     code = Number(error.code)
     try {
       const tValue = t(`errors:${code}` as any)
-      const i18nMessage = tValue === code?.toString() ? stripRequestContext(error.message) : tValue
+      const i18nMessage = tValue === code?.toString() ? error.message : tValue
       message = i18nMessage
     } catch {
       message = error.message

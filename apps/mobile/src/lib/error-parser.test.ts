@@ -47,15 +47,7 @@ describe("toastFetchError", () => {
 
   it("shows a concise upgrade dialog for RSSHub subscription limits", () => {
     mocks.isPaymentEnabled = true
-    const error = new FollowAPIError(
-      [
-        "RSSHub feed subscription limit exceeded",
-        "Request: POST /subscriptions (original: /subscriptions)",
-        'Args: { "headers": { "cookie": "session=secret" } }',
-      ].join("\n"),
-      402,
-      "2012",
-    )
+    const error = new FollowAPIError("RSSHub feed subscription limit exceeded", 402, "2012")
 
     toastFetchError(error)
 
@@ -66,16 +58,8 @@ describe("toastFetchError", () => {
     expect(mocks.toastError).not.toHaveBeenCalled()
   })
 
-  it("does not expose request context when an API error code has no translation", () => {
-    const error = new FollowAPIError(
-      [
-        "Unable to follow this feed",
-        "Request: POST /subscriptions (original: /subscriptions)",
-        'Args: { "headers": { "cookie": "session=secret" } }',
-      ].join("\n"),
-      400,
-      "29999",
-    )
+  it("shows the server's message when an API error code has no translation", () => {
+    const error = new FollowAPIError("Unable to follow this feed", 400, "29999")
 
     toastFetchError(error)
 
@@ -90,13 +74,7 @@ describe("toastFetchError for a rejected request body", () => {
   })
 
   it("names the field the server rejected under the translated code", () => {
-    toastFetchError(
-      new FollowAPIError(
-        "`rules.0.result.webhooks.0`: Invalid URL\nRequest: PUT /actions (original: /actions)\nArgs: {}",
-        422,
-        "3",
-      ),
-    )
+    toastFetchError(new FollowAPIError("`rules.0.result.webhooks.0`: Invalid URL", 422, "3"))
 
     expect(mocks.toastError).toHaveBeenCalledWith("Unprocessable content", {
       description: "`rules.0.result.webhooks.0`: Invalid URL",
@@ -120,10 +98,9 @@ describe("toastFetchError under a title", () => {
   })
 
   it("says what the server answered below the title", () => {
-    toastFetchError(
-      new FollowAPIError("Entry not found\nRequest: POST /collections\nArgs: {}", 404, "4000"),
-      { title: "A change couldn't be saved and was undone" },
-    )
+    toastFetchError(new FollowAPIError("Entry not found", 404, "4000"), {
+      title: "A change couldn't be saved and was undone",
+    })
 
     expect(mocks.toastError).toHaveBeenCalledWith("A change couldn't be saved and was undone", {
       description: "Entry not found",
@@ -175,7 +152,7 @@ describe("toastFetchError for a refused session", () => {
   it("asks to sign in, translated, instead of the server's Unauthorized", () => {
     mocks.toastError.mockClear()
     toastFetchError(
-      new FollowAuthError("Unauthorized\nRequest: POST /subscriptions\nArgs: {}", {
+      new FollowAuthError("Unauthorized", {
         code: 1000,
         message: "Unauthorized",
       }),
@@ -208,28 +185,13 @@ describe("getFetchErrorMessage for API errors", () => {
   })
 
   it("asks to sign in for a refused session instead of the bare status", () => {
-    const error = new FollowAuthError("Unauthorized\nRequest: POST /subscriptions\nArgs: {}")
+    const error = new FollowAuthError("Unauthorized")
     expect(getFetchErrorMessage(error)).toBe("Log in to complete this action.")
   })
 
   it("translates a known API error code", () => {
     const error = new FollowAPIError("limit", 402, "2012")
     expect(getFetchErrorMessage(error)).toBe("RSSHub feed subscription limit exceeded")
-  })
-
-  it("leaves out the request an API error was for, headers included", () => {
-    // How the SDK words an error for a response without a JSON body
-    const error = new FollowAPIError(
-      [
-        "Service Unavailable",
-        "Request: GET /ai/summary (original: /ai/summary)",
-        'Args: { "query": { "id": "1" }, "headers": { "cookie": "[REDACTED]" } }',
-      ].join("\n"),
-      503,
-      "503",
-    )
-
-    expect(getFetchErrorMessage(error)).toBe("Service Unavailable")
   })
 })
 

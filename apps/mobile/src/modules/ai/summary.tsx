@@ -25,7 +25,6 @@ import { CloseCuteReIcon } from "@/src/icons/close_cute_re"
 import { CopyCuteReIcon } from "@/src/icons/copy_cute_re"
 import { PowerMonoIcon } from "@/src/icons/power_mono"
 import { RightCuteReIcon } from "@/src/icons/right_cute_re"
-import { sanitizeErrorMessage } from "@/src/lib/error-message"
 import { getFetchErrorMessage } from "@/src/lib/error-parser"
 import { isAndroid, isIOS } from "@/src/lib/platform"
 import { toast } from "@/src/lib/toast"
@@ -86,10 +85,9 @@ export const AISummary: FC<{
   const isPaymentEnabled = useIsPaymentEnabled()
   const followApiError = error instanceof FollowAPIError ? error : null
   const shouldSuggestUpgrade = Boolean(isPaymentEnabled && followApiError?.status === 402)
-  // An API error's message also holds the request it was for, which is not for the reader
   const errorDetail =
     typeof error === "string"
-      ? sanitizeErrorMessage(error)
+      ? error
       : error instanceof Error
         ? getFetchErrorMessage(error)
         : undefined

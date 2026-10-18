@@ -47,13 +47,7 @@ describe("toastFetchError", () => {
     })
 
     test("names the field the server rejected", () => {
-      toastFetchError(
-        new FollowAPIError(
-          "`rules.0.result.webhooks.0`: Invalid URL\nRequest: PUT /actions (original: /actions)\nArgs: {}",
-          422,
-          "3",
-        ),
-      )
+      toastFetchError(new FollowAPIError("`rules.0.result.webhooks.0`: Invalid URL", 422, "3"))
 
       expect(toast.error).toHaveBeenCalledWith(
         "Unprocessable content",
@@ -139,17 +133,6 @@ describe("getFetchErrorMessage", () => {
     expect(getFetchErrorMessage(new FollowAPIError("Something specific", 400, "9999"))).toBe(
       "Something specific",
     )
-  })
-
-  test("drops the request context the SDK appends", () => {
-    expect(
-      getFetchErrorMessage(
-        new FollowAPIError(
-          'Internal Server Error\nRequest: POST /subscriptions/parse-opml (original: /subscriptions/parse-opml)\nArgs: {"headers":{"x-session-id":"abc"}}',
-          500,
-        ),
-      ),
-    ).toBe("Internal Server Error")
   })
 
   test("keeps the SDK message for a non-numeric code", () => {
