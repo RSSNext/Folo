@@ -37,6 +37,7 @@ import { getSelectedView } from "@/src/modules/screen/atoms"
 import { ReadingScreen } from "@/src/modules/settings/routes/Reading"
 
 import { useEntryContentContext } from "./ctx"
+import { useEntryExternalUrl } from "./external-url"
 
 type ActionItem = {
   key: string
@@ -77,12 +78,13 @@ const HeaderRightActionsImpl = ({
     entryId,
     (entry) =>
       entry && {
-        url: entry.url,
         feedId: entry.feedId,
         title: entry.title,
         settings: entry.settings,
       },
   )
+  // Onboarding entries have no link outside the app, and relative links resolve first
+  const externalUrl = useEntryExternalUrl(entryId)
 
   const { showReadabilityAtom, showAITranslationAtom } = useEntryContentContext()
   const [showTranslation, setShowTranslation] = useAtom(showAITranslationAtom)
@@ -113,13 +115,13 @@ const HeaderRightActionsImpl = ({
   }
 
   const handleShare = () => {
-    if (!entry?.url) return
+    if (!externalUrl) return
     Share.share(
       createLinkShareContent({
         platform: Platform.OS,
         // Social posts often have no title
-        title: entry.title || t("operation.share_title.link"),
-        url: entry.url,
+        title: entry?.title || t("operation.share_title.link"),
+        url: externalUrl,
       }),
     )
   }
@@ -148,14 +150,14 @@ const HeaderRightActionsImpl = ({
   }, [entryId, setShowReadability])
 
   const handleCopyLink = () => {
-    if (!entry?.url) return
-    setStringAsync(entry.url)
+    if (!externalUrl) return
+    setStringAsync(externalUrl)
     toast.success(t("operation.copy_which_success", { which: t("operation.copy.link") }))
   }
 
   const handleOpenInBrowser = () => {
-    if (!entry?.url) return
-    openLink(entry.url)
+    if (!externalUrl) return
+    openLink(externalUrl)
   }
 
   useEffect(() => {
@@ -211,21 +213,21 @@ const HeaderRightActionsImpl = ({
       },
       inMenu: true,
     },
-    !!entry?.url && {
+    !!externalUrl && {
       key: "Share",
       title: t("operation.share"),
       icon: <ShareForwardCuteReIcon />,
       iconIOS: { name: "square.and.arrow.up" },
       onPress: handleShare,
     },
-    {
+    !!externalUrl && {
       key: "CopyLink",
       title: t("operation.copy_which", { which: t("operation.copy.link") }),
       iconIOS: { name: "link" },
       onPress: handleCopyLink,
       inMenu: true,
     },
-    {
+    !!externalUrl && {
       key: "OpenInBrowser",
       title: t("entry_content.header.open_in_browser"),
       iconIOS: { name: "safari" },

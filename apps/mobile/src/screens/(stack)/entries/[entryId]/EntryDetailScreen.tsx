@@ -29,9 +29,11 @@ import { Eye2CuteReIcon } from "@/src/icons/eye_2_cute_re"
 import { openLink } from "@/src/lib/native"
 import { useNavigation } from "@/src/lib/navigation/hooks"
 import type { NavigationControllerView } from "@/src/lib/navigation/types"
+import { isWebUrl } from "@/src/lib/web-url"
 import { EntryContentContext, useEntryContentContext } from "@/src/modules/entry-content/ctx"
 import { EntryAISummary } from "@/src/modules/entry-content/EntryAISummary"
 import { EntryNavigationHeader } from "@/src/modules/entry-content/EntryNavigationHeader"
+import { useEntryExternalUrl } from "@/src/modules/entry-content/external-url"
 import { usePullUpToNext } from "@/src/modules/entry-content/pull-up-navigation/use-pull-up-navigation"
 import { usePreferredFeedTitle } from "@/src/modules/feed/feed-title"
 import { useFloatingPlayerBarInset } from "@/src/modules/player/hooks"
@@ -47,12 +49,13 @@ export const EntryDetailScreen: NavigationControllerView<{
   usePrefetchEntryDetail(entryId, isInbox)
   const entry = useEntry(entryId, (state) => ({
     title: state.title,
-    url: state.url,
     summary: state.settings?.summary,
     translation: state.settings?.translation,
     readability: state.settings?.readability,
     sourceContent: state.settings?.sourceContent,
   }))
+  // Onboarding entries have no link outside the app, and relative links resolve first
+  const externalUrl = useEntryExternalUrl(entryId)
   const isLoggedIn = useIsLoggedIn()
   useAutoMarkAsRead(entryId, !!entry && isLoggedIn)
   const insets = useSafeAreaInsets()
@@ -113,7 +116,7 @@ export const EntryDetailScreen: NavigationControllerView<{
             >
               <ItemPressable
                 itemStyle={ItemPressableStyle.UnStyled}
-                onPress={() => entry?.url && openLink(entry.url)}
+                onPress={() => externalUrl && openLink(externalUrl)}
                 className="rounded-xl px-5 py-4"
               >
                 {viewType === FeedViewType.SocialMedia ? (
@@ -161,8 +164,8 @@ const EntryContentWebViewWithContext = ({ entryId }: { entryId: string }) => {
   const entry = useEntry(entryId, (state) => ({
     content: state.content,
     readabilityContent: state.readabilityContent,
-    url: state.url,
   }))
+  const externalUrl = useEntryExternalUrl(entryId)
   usePrefetchEntryTranslation({
     entryIds: [entryId],
     withContent: true,
@@ -192,10 +195,13 @@ const EntryContentWebViewWithContext = ({ entryId }: { entryId: string }) => {
 
   const showSourceContent = useAtomValue(showSourceContentAtom)
   useEffect(() => {
-    if (showSourceContent && entry?.url) {
-      WebBrowser.openBrowserAsync(entry?.url)
+    // The browser shows web pages only
+    if (showSourceContent && externalUrl && isWebUrl(externalUrl)) {
+      WebBrowser.openBrowserAsync(externalUrl).catch((error: unknown) => {
+        console.warn("[entry] the browser did not open the source", error)
+      })
     }
-  }, [entry?.url, showSourceContent])
+  }, [externalUrl, showSourceContent])
 
   return (
     <EntryContentWebView

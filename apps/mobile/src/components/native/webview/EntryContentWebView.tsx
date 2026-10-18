@@ -11,6 +11,7 @@ import { runOnJS, runOnUI } from "react-native-reanimated"
 
 import { openLink } from "@/src/lib/native"
 import { player } from "@/src/lib/player"
+import { useEntryExternalUrl } from "@/src/modules/entry-content/external-url"
 import { getEntryArtwork } from "@/src/modules/player/artwork"
 
 import { useLightboxControls } from "../../ui/lightbox/lightboxState"
@@ -47,6 +48,7 @@ export function EntryContentWebView(props: EntryContentWebViewProps) {
   const { entryInWebview, isLoading: isContentMissing } = useWebViewEntry(props)
   const isLoading = isContentMissing && props.isContentPending !== false
   const { handleModeSwitch, mode } = useWebViewMode()
+  const externalUrl = useEntryExternalUrl(props.entryId)
 
   const handleSeekAudio = useCallback(
     async (e: AudioSeekEvent) => {
@@ -151,7 +153,7 @@ export function EntryContentWebView(props: EntryContentWebViewProps) {
             <PlatformActivityIndicator />
           </View>
         ) : (
-          isContentMissing && <ContentUnavailable url={entryInWebview?.url} />
+          isContentMissing && <ContentUnavailable url={externalUrl} />
         )}
       </Portal>
       <DebugPanel mode={mode} onModeToggle={handleModeToggle} />
