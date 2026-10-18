@@ -4,7 +4,7 @@ import type { UserSchema } from "@follow/database/schemas/types"
 import { UserService } from "@follow/database/services/user"
 import type { AuthUser } from "@follow-app/client-sdk"
 import { FollowAPIError } from "@follow-app/client-sdk"
-import { create, indexedResolver, windowScheduler } from "@yornaath/batshit"
+import { create, indexedResolver, windowedFiniteBatchScheduler } from "@yornaath/batshit"
 
 import { api, authClient, queryClient } from "../../context"
 import type { Hydratable, Resetable } from "../../lib/base"
@@ -95,6 +95,9 @@ const toProfileChanges = (
   return changes
 }
 
+/** The most profiles one request asks for */
+const USER_BATCH_SIZE = 100
+
 class UserSyncService {
   private userBatcher = create({
     fetcher: async (userIds: string[]) => {
@@ -119,7 +122,9 @@ class UserSyncService {
       return {}
     },
     resolver: indexedResolver(),
-    scheduler: windowScheduler(100),
+    // The server reads at most 1000 ids of a request; a page of a list or a timeline asks for far
+    // fewer, and smaller requests keep each answer quick
+    scheduler: windowedFiniteBatchScheduler({ windowMs: 100, maxBatchSize: USER_BATCH_SIZE }),
   })
 
   async whoami() {
