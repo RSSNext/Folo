@@ -12,11 +12,10 @@ const MAX_LENGTH = {
 export type ProfileTextField = keyof typeof MAX_LENGTH
 
 /**
- * Characters the server refuses in a new handle, as they cannot be seen or space it out: control
- * and format characters, the other characters that render as nothing, and whitespace.
+ * What a new or changed handle is made of, as on desktop and the server: A-Z, a-z, 0-9 and _ only,
+ * which \w is without the u flag. With it and the i flag, \w would also take K and ſ look-alikes.
  */
-const HANDLE_INVALID_CHARACTER =
-  /[\p{Cc}\p{Cf}\p{Default_Ignorable_Code_Point}\p{White_Space}\u2800]/u
+const HANDLE_PATTERN = /^\w+$/
 
 // Counted as the server counts them, so an emoji is one character and not two UTF-16 units
 const countCharacters = (value: string) => Array.from(value).length
@@ -24,9 +23,7 @@ const countCharacters = (value: string) => Array.from(value).length
 const tooLongMessage = (field: ProfileTextField) =>
   t("validation.too_long", { ns: "common", count: MAX_LENGTH[field] })
 
-// Says what is refused. Desktop's message asks for letters, numbers and underscores only, which
-// its stricter check requires but this one, like the server, does not
-const invalidHandleMessage = () => t("profile.handle.invalid_characters", { ns: "settings" })
+const invalidHandleMessage = () => t("profile.handle.invalid", { ns: "settings" })
 
 /**
  * Why the server would refuse a profile field's value, as a translated message. The name and the
@@ -43,7 +40,8 @@ export const getProfileFieldError = (
   if (field === "name" && !text) {
     return t("validation.required", { ns: "common" })
   }
-  if (field === "handle" && text !== storedHandle?.trim() && HANDLE_INVALID_CHARACTER.test(text)) {
+  // A blank handle saves as no handle
+  if (field === "handle" && text && text !== storedHandle?.trim() && !HANDLE_PATTERN.test(text)) {
     return invalidHandleMessage()
   }
   if (countCharacters(text) > MAX_LENGTH[field]) {
@@ -58,7 +56,10 @@ const SERVER_FIELD_ERRORS = new Map<string, { field: ProfileTextField; message: 
     "HANDLE_ALREADY_TAKEN",
     { field: "handle", message: () => t("profile.handle.taken", { ns: "settings" }) },
   ],
+  // Spaces or invisible characters in a new handle, and any other character than A-Z, a-z, 0-9
+  // and _; the check above refuses both first
   ["HANDLE_INVALID_CHARACTERS", { field: "handle", message: invalidHandleMessage }],
+  ["HANDLE_INVALID", { field: "handle", message: invalidHandleMessage }],
   [
     "NAME_CANNOT_BE_EMPTY",
     { field: "name", message: () => t("validation.required", { ns: "common" }) },
