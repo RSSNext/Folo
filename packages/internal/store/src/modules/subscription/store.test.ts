@@ -451,7 +451,7 @@ describe("subscriptionSyncService", () => {
     expect(useUnreadStore.getState().data.direct).toBe(3)
   })
 
-  test("unfollows the selected feeds together and each selected list on its own", async () => {
+  test("unfollows the selected feeds and lists in one request", async () => {
     const createList = (listId: string): SubscriptionModel => ({
       ...createSubscription("", FeedViewType.Articles, null),
       feedId: null,
@@ -476,9 +476,7 @@ describe("subscriptionSyncService", () => {
     await subscriptionSyncService.unsubscribe(["feed1", "list1", "feed2", "list2"])
 
     expect(mocks.deleteSubscriptions.mock.calls).toEqual([
-      [{ feedIdList: ["feed1", "feed2"] }],
-      [{ listId: "list1" }],
-      [{ listId: "list2" }],
+      [{ feedIdList: ["feed1", "feed2"], listIdList: ["list1", "list2"] }],
     ])
     const state = useSubscriptionStore.getState()
     expect(Object.keys(state.data)).toEqual([])
@@ -489,13 +487,13 @@ describe("subscriptionSyncService", () => {
       "feed/feed2",
       "list/list2",
     ])
-    // Each unfollow stays confirmed until the change log reaches its own sync id
+    // The unfollows stay confirmed until the change log reaches the request's sync id
     expect(getConfirmedSubscriptionChange("feed2")).toEqual({ subscription: null, syncId: 41 })
-    expect(getConfirmedSubscriptionChange("list1")).toEqual({ subscription: null, syncId: 42 })
-    expect(getConfirmedSubscriptionChange("list2")).toEqual({ subscription: null, syncId: 43 })
+    expect(getConfirmedSubscriptionChange("list1")).toEqual({ subscription: null, syncId: 41 })
+    expect(getConfirmedSubscriptionChange("list2")).toEqual({ subscription: null, syncId: 41 })
   })
 
-  test("keeps only the subscriptions whose unfollow failed", async () => {
+  test("puts the selection back when its unfollow failed", async () => {
     const list: SubscriptionModel = {
       ...createSubscription("", FeedViewType.Articles, null),
       feedId: null,
@@ -512,21 +510,20 @@ describe("subscriptionSyncService", () => {
       },
     }))
     const error = new Error("Network error")
-    mocks.deleteSubscriptions.mockImplementation(async (body: { listId?: string }) => {
-      if (body.listId) throw error
-      return { code: 0 }
-    })
+    // The server unfollows the feeds and lists of one request together, or none of them
+    mocks.deleteSubscriptions.mockRejectedValue(error)
 
     await expect(subscriptionSyncService.unsubscribe(["leaving", "failingList"])).rejects.toBe(
       error,
     )
 
     const state = useSubscriptionStore.getState()
-    expect(Object.keys(state.data)).toEqual(["failingList"])
+    expect(Object.keys(state.data).sort()).toEqual(["failingList", "leaving"])
     expect(state.listIdByView[FeedViewType.Articles].has("failingList")).toBe(true)
-    expect(state.feedIdByView[FeedViewType.Articles].has("leaving")).toBe(false)
-    expect(mocks.deleteSubscriptionRows).toHaveBeenCalledWith(["feed/leaving"])
+    expect(state.feedIdByView[FeedViewType.Articles].has("leaving")).toBe(true)
+    expect(mocks.deleteSubscriptionRows).not.toHaveBeenCalled()
     expect(getConfirmedSubscriptionChange("failingList")).toBeUndefined()
+    expect(getConfirmedSubscriptionChange("leaving")).toBeUndefined()
   })
 
   test("follows a feed the server has not stored by its URL, not by its nonce id", async () => {

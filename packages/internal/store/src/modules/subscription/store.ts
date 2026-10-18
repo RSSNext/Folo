@@ -238,11 +238,6 @@ export const getSubscriptionChanges = (current: SubscriptionModel, next: Subscri
 }
 
 /** A body of DELETE /subscriptions that the server handles, and the subscriptions it unfollows */
-interface UnfollowRequest {
-  subscriptions: SubscriptionModel[]
-  body: { feedIdList: string[] } | { listId: string }
-}
-
 /** A follow or unfollow of a feed or list that the server confirmed to this device. */
 export interface ConfirmedSubscriptionChange {
   /** The followed subscription, or null once it was unfollowed */
@@ -657,45 +652,38 @@ class SubscriptionSyncService {
 
     subscriptionActions.removeManyInSession(normalizedIds)
 
-    // DELETE /subscriptions unfollows every feed of `feedIdList` at once but only one list, and
-    // ignores `listId` next to `feedIdList`, so each list is unfollowed in a request of its own
+    // One request unfollows the feeds and the lists together, or nothing of them
     const feedSubscriptions = subscriptionList.filter((i) => i.type === "feed" && !!i.feedId)
     const listSubscriptions = subscriptionList.filter((i) => i.type === "list" && !!i.listId)
-    const requests: UnfollowRequest[] = []
-    if (feedSubscriptions.length > 0) {
-      requests.push({
-        subscriptions: feedSubscriptions,
-        body: { feedIdList: feedSubscriptions.map((s) => s.feedId!) },
-      })
-    }
-    for (const subscription of listSubscriptions) {
-      requests.push({ subscriptions: [subscription], body: { listId: subscription.listId! } })
-    }
-
-    const failed = new Set<SubscriptionModel>()
+    const requested = [...feedSubscriptions, ...listSubscriptions]
     let requestError: unknown
-    // One request after another, as the server counts what is left of the previous one
-    for (const { subscriptions, body } of requests) {
+    let failed = false
+    if (requested.length > 0) {
       try {
-        const response = await api().subscriptions.delete(body)
+        const response = await api().subscriptions.delete({
+          ...(feedSubscriptions.length > 0 && {
+            feedIdList: feedSubscriptions.map((s) => s.feedId!),
+          }),
+          ...(listSubscriptions.length > 0 && {
+            listIdList: listSubscriptions.map((s) => s.listId!),
+          }),
+        })
         trackConfirmedChanges(
-          subscriptions.map((subscription) => ({
+          requested.map((subscription) => ({
             id: getSubscriptionStoreId(subscription),
             subscription: null,
           })),
           response,
         )
       } catch (error) {
-        subscriptions.forEach((subscription) => failed.add(subscription))
-        requestError ??= error
+        restoreInSession(requested)
+        requestError = error
+        failed = true
       }
     }
-
-    // A failed request puts back only what it was about
-    if (failed.size > 0) {
-      restoreInSession(Array.from(failed))
-    }
-    const unfollowed = subscriptionList.filter((subscription) => !failed.has(subscription))
+    const unfollowed = failed
+      ? subscriptionList.filter((subscription) => !requested.includes(subscription))
+      : subscriptionList
 
     if (unfollowed.length > 0) {
       await SubscriptionService.delete(unfollowed.map((i) => buildSubscriptionDbId(i)))
@@ -707,7 +695,7 @@ class SubscriptionSyncService {
       clearUnreadOfFeedsOnlyInLists(unfollowed.filter((i) => i.type === "list"))
     }
 
-    if (failed.size > 0) throw requestError
+    if (failed) throw requestError
     return feedsAndLists
   }
 
