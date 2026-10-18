@@ -191,3 +191,5 @@ Loop until `hasNext` is `false`:
   - Check the network connection and `--api-url`, then retry
 - `INVALID_ARGUMENT`
   - Run `npx --yes folocli@latest <command> --help` to inspect accepted options
+- `NOT_FOUND`
+  - The id or URL names nothing the API knows; check it with the matching `list`, `get` or `search` command

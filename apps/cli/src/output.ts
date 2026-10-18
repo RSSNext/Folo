@@ -90,6 +90,10 @@ const renderAsciiTable = (
 }
 
 const renderTable = (data: unknown) => {
+  if (data === null || data === undefined) {
+    console.info(renderAsciiTable([]))
+    return
+  }
   const rows = Array.isArray(data) ? data.map(toTableRow) : [toTableRow(data)]
   console.info(renderAsciiTable(rows))
 }
@@ -123,7 +127,8 @@ export const printSuccess = (format: OutputFormat, data: unknown) => {
   if (format === "json") {
     const payload = {
       ok: true as const,
-      data,
+      // JSON.stringify drops an undefined field, and the envelope always has one
+      data: data ?? null,
       error: null,
     }
     console.info(stringifyJSON(payload))

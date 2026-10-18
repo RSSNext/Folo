@@ -69,6 +69,21 @@ describe("output helpers", () => {
     expect(infoSpy.mock.calls).toEqual([["(empty)"], ["(empty)"]])
   })
 
+  it("always prints a data field", () => {
+    const infoSpy = vi.spyOn(console, "info").mockImplementation(() => {})
+
+    printSuccess("json", undefined)
+    printSuccess("table", undefined)
+    printSuccess("plain", undefined)
+
+    expect(JSON.parse(infoSpy.mock.calls[0]![0] as string)).toEqual({
+      ok: true,
+      data: null,
+      error: null,
+    })
+    expect(infoSpy.mock.calls.slice(1)).toEqual([["(empty)"], [""]])
+  })
+
   it("normalizes CLIError", () => {
     const normalized = normalizeError(new CLIError("E_CODE", "message"))
     expect(normalized).toEqual({
