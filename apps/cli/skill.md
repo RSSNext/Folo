@@ -57,7 +57,7 @@ Usage errors, such as an unknown option, a missing argument or an invalid value,
 You can switch output mode:
 
 - `--format json` (default)
-- `--format table`
+- `--format table` (for people: a row per item with the main fields, long values cut to one line)
 - `--format plain`
 
 Changes the API answers without data, such as `subscription remove`, `collection add`, `entry mark-read` or `list delete`, return the fields it sends: `{ "lastSyncId": 42 }` when the change was recorded for sync, otherwise `{}`. `subscription add` returns `feed`, `list`, `unread` and `lastSyncId`.

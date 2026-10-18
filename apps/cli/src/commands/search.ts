@@ -2,6 +2,7 @@ import type { Command } from "commander"
 
 import { parseChoice, parsePositiveInt, parseView, viewHelp } from "../args"
 import { runCommand } from "../command"
+import { toDiscoveryRow, toTrendingRow } from "../table-views"
 
 type DiscoverTarget = "feeds" | "lists"
 type TrendingRange = "1d" | "3d" | "7d" | "30d"
@@ -36,13 +37,17 @@ export const registerSearchCommand = (program: Command) => {
     .argument("<keyword>", "Search keyword")
     .option("--type <type>", "Discover target: feeds | lists", parseDiscoverTarget)
     .action(async function (this: Command, keyword: string, options: SearchDiscoverOptions) {
-      await runCommand(this, async ({ client }) => {
-        const response = await client.api.discover.discover({
-          keyword,
-          target: options.type,
-        })
-        return response.data
-      })
+      await runCommand(
+        this,
+        async ({ client }) => {
+          const response = await client.api.discover.discover({
+            keyword,
+            target: options.type,
+          })
+          return response.data
+        },
+        { table: (items) => items.map(toDiscoveryRow) },
+      )
     })
 
   searchCommand
@@ -69,26 +74,30 @@ export const registerSearchCommand = (program: Command) => {
     .option("--limit <n>", "Result limit", parsePositiveInt, 20)
     .option("--language <lang>", "Language: eng | cmn", parseTrendingLanguage)
     .action(async function (this: Command, options: SearchTrendingOptions) {
-      await runCommand(this, async ({ client }) => {
-        const response = await client.api.trending.getFeeds({
-          range: options.range,
-          view: options.view,
-          limit: options.limit,
-          language: options.language,
-        })
+      await runCommand(
+        this,
+        async ({ client }) => {
+          const response = await client.api.trending.getFeeds({
+            range: options.range,
+            view: options.view,
+            limit: options.limit,
+            language: options.language,
+          })
 
-        const keyword = options.category?.trim().toLowerCase()
-        const feeds = keyword
-          ? response.data.filter((item) => {
-              const title = item.feed.title?.toLowerCase() || ""
-              const description = item.feed.description?.toLowerCase() || ""
-              return title.includes(keyword) || description.includes(keyword)
-            })
-          : response.data
+          const keyword = options.category?.trim().toLowerCase()
+          const feeds = keyword
+            ? response.data.filter((item) => {
+                const title = item.feed.title?.toLowerCase() || ""
+                const description = item.feed.description?.toLowerCase() || ""
+                return title.includes(keyword) || description.includes(keyword)
+              })
+            : response.data
 
-        return {
-          feeds,
-        }
-      })
+          return {
+            feeds,
+          }
+        },
+        { table: (result) => ({ feeds: result.feeds.map(toTrendingRow) }) },
+      )
     })
 }

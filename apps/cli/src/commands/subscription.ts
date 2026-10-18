@@ -8,6 +8,7 @@ import type { Command } from "commander"
 import { parseChoice, parseView, viewHelp } from "../args"
 import { runCommand, toChangeResult } from "../command"
 import { CLIError } from "../output"
+import { toSubscriptionRow } from "../table-views"
 
 type SubscriptionTarget = "feed" | "list" | "url"
 type UpdateTarget = "feed" | "list"
@@ -51,19 +52,23 @@ export const registerSubscriptionCommand = (program: Command) => {
     .option("--view <type>", `View type: ${viewHelp}`, parseView)
     .option("--category <name>", "Filter by category")
     .action(async function (this: Command, options: SubscriptionListOptions) {
-      await runCommand(this, async ({ client }) => {
-        const response = await client.api.subscriptions.get(
-          options.view !== undefined ? { view: options.view } : {},
-        )
+      await runCommand(
+        this,
+        async ({ client }) => {
+          const response = await client.api.subscriptions.get(
+            options.view !== undefined ? { view: options.view } : {},
+          )
 
-        const subscriptions = options.category
-          ? response.data.filter((item) => item.category === options.category)
-          : response.data
+          const subscriptions = options.category
+            ? response.data.filter((item) => item.category === options.category)
+            : response.data
 
-        return {
-          subscriptions,
-        }
-      })
+          return {
+            subscriptions,
+          }
+        },
+        { table: (result) => ({ subscriptions: result.subscriptions.map(toSubscriptionRow) }) },
+      )
     })
 
   subscriptionCommand

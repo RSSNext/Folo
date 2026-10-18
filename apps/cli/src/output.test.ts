@@ -69,6 +69,98 @@ describe("output helpers", () => {
     expect(infoSpy.mock.calls).toEqual([["(empty)"], ["(empty)"]])
   })
 
+  describe("table", () => {
+    const printTable = (data: unknown) => {
+      const infoSpy = vi.spyOn(console, "info").mockImplementation(() => {})
+      printSuccess("table", data)
+      return String(infoSpy.mock.calls[0]![0])
+    }
+
+    // Each line of a table is as wide as its border when no cell spans lines
+    const expectAligned = (table: string) => {
+      const lines = table.split("\n").filter((line) => line.startsWith("+") || line.startsWith("|"))
+      const width = (line: string) =>
+        [...line].reduce((sum, character) => sum + (/[\u3000-\u9FFF]/.test(character) ? 2 : 1), 0)
+      expect(new Set(lines.map(width)).size).toBe(1)
+    }
+
+    it("prints a row per item of a page and the other fields below it", () => {
+      const table = printTable({
+        entries: [
+          { id: "1", title: "First" },
+          { id: "2", title: "Second" },
+        ],
+        nextCursor: "2026-10-17T22:17:20.350Z",
+        hasNext: true,
+      })
+
+      expect(table).toBe(
+        [
+          "+----+--------+",
+          "| id | title  |",
+          "+----+--------+",
+          "| 1  | First  |",
+          "| 2  | Second |",
+          "+----+--------+",
+          "nextCursor: 2026-10-17T22:17:20.350Z",
+          "hasNext: true",
+        ].join("\n"),
+      )
+    })
+
+    it("keeps every cell on one line", () => {
+      const table = printTable([
+        {
+          title: `A title\nover lines and ${"long ".repeat(30)}`,
+          feeds: { id: "f1", title: "Feed title", url: "https://example.com/feed" },
+          tags: ["a", "b"],
+          media: [{ url: "https://example.com/1.png" }, { url: "https://example.com/2.png" }],
+          settings: { translation: false },
+        },
+      ])
+
+      const row = table.split("\n")[3]!
+      expect(row).toContain("| A title over lines and long long")
+      expect(row).toContain("…")
+      expect(row).toContain("| Feed title |")
+      expect(row).toContain("| a, b |")
+      expect(row).toContain("| 2 items |")
+      expect(row).toContain('| {"translation":false} |')
+      expectAligned(table)
+    })
+
+    it("prints a field per row for a detail", () => {
+      const table = printTable({
+        user: { id: "u1", name: "User", profile: { bio: "Hi" } },
+        session: { id: "s1" },
+        role: "free",
+      })
+
+      expect(table).toBe(
+        [
+          "+------------------+-------+",
+          "| field            | value |",
+          "+------------------+-------+",
+          "| user.id          | u1    |",
+          "| user.name        | User  |",
+          "| user.profile.bio | Hi    |",
+          "| session.id       | s1    |",
+          "| role             | free  |",
+          "+------------------+-------+",
+        ].join("\n"),
+      )
+    })
+
+    it("lines up titles in CJK", () => {
+      const table = printTable([
+        { id: "1", title: "少数派" },
+        { id: "2", title: "Hacker News" },
+      ])
+
+      expectAligned(table)
+    })
+  })
+
   it("always prints a data field", () => {
     const infoSpy = vi.spyOn(console, "info").mockImplementation(() => {})
 

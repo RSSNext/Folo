@@ -1,45 +1,11 @@
-import type {
-  InboxSubscriptionResponse,
-  ListSubscriptionResponse,
-  SubscriptionWithFeed,
-} from "@follow-app/client-sdk"
 import type { Command } from "commander"
 
 import { parseView, viewHelp } from "../args"
 import { runCommand } from "../command"
+import { getSubscriptionTitle, isInboxSubscription, isListSubscription } from "../subscriptions"
 
 interface UnreadListOptions {
   view?: number
-}
-
-const isInboxSubscription = (
-  value: SubscriptionWithFeed | ListSubscriptionResponse | InboxSubscriptionResponse,
-): value is InboxSubscriptionResponse => {
-  return "inboxes" in value
-}
-
-const isListSubscription = (
-  value: SubscriptionWithFeed | ListSubscriptionResponse | InboxSubscriptionResponse,
-): value is ListSubscriptionResponse => {
-  return "lists" in value
-}
-
-const resolveTitle = (
-  value: SubscriptionWithFeed | ListSubscriptionResponse | InboxSubscriptionResponse,
-): string | null => {
-  if (value.title) {
-    return value.title
-  }
-  if ("feeds" in value) {
-    return value.feeds.title ?? null
-  }
-  if ("lists" in value) {
-    return value.lists.title ?? null
-  }
-  if ("inboxes" in value) {
-    return value.inboxes.title ?? null
-  }
-  return null
 }
 
 export const registerUnreadCommand = (program: Command) => {
@@ -86,7 +52,7 @@ export const registerUnreadCommand = (program: Command) => {
                   ? subscription.listId
                   : subscription.feedId,
               feedId: subscription.feedId,
-              title: resolveTitle(subscription),
+              title: getSubscriptionTitle(subscription),
               category: subscription.category ?? null,
               view: subscription.view,
               unreadCount,

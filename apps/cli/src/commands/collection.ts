@@ -3,6 +3,7 @@ import type { Command } from "commander"
 
 import { parseISODate, parsePositiveInt, parseView, viewHelp } from "../args"
 import { runCommand, toChangeResult } from "../command"
+import { toCollectionRow } from "../table-views"
 
 interface CollectionListOptions {
   limit: number
@@ -22,26 +23,30 @@ export const registerCollectionCommand = (program: Command) => {
     .option("--limit <n>", "Number of entries to fetch", parsePositiveInt, 20)
     .option("--cursor <datetime>", "Pagination cursor", parseISODate)
     .action(async function (this: Command, options: CollectionListOptions) {
-      await runCommand(this, async ({ client }) => {
-        const request: EntryListRequest = {
-          isCollection: true,
-          limit: options.limit,
-          publishedAfter: options.cursor,
-        }
+      await runCommand(
+        this,
+        async ({ client }) => {
+          const request: EntryListRequest = {
+            isCollection: true,
+            limit: options.limit,
+            publishedAfter: options.cursor,
+          }
 
-        const response = await client.api.entries.list(request)
-        const entries = response.data
-        const lastEntry = entries.at(-1)
-        // Collections are paged by when they were collected, not when they were published
-        const nextCursor =
-          lastEntry?.collections?.createdAt ?? lastEntry?.entries.publishedAt ?? null
+          const response = await client.api.entries.list(request)
+          const entries = response.data
+          const lastEntry = entries.at(-1)
+          // Collections are paged by when they were collected, not when they were published
+          const nextCursor =
+            lastEntry?.collections?.createdAt ?? lastEntry?.entries.publishedAt ?? null
 
-        return {
-          entries,
-          nextCursor,
-          hasNext: Boolean(nextCursor) && entries.length >= options.limit,
-        }
-      })
+          return {
+            entries,
+            nextCursor,
+            hasNext: Boolean(nextCursor) && entries.length >= options.limit,
+          }
+        },
+        { table: (result) => ({ ...result, entries: result.entries.map(toCollectionRow) }) },
+      )
     })
 
   collectionCommand
