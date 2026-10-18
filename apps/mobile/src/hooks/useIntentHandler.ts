@@ -4,6 +4,7 @@ import { jotaiStore } from "@follow/utils"
 import * as Linking from "expo-linking"
 import { useEffect } from "react"
 
+import { getUnhandledLaunchLink } from "../lib/launch-link"
 import { useNavigation } from "../lib/navigation/hooks"
 import type { Navigation } from "../lib/navigation/Navigation"
 import { FollowScreen } from "../screens/(modal)/FollowScreen"
@@ -100,10 +101,10 @@ export function useIntentHandler() {
   useEffect(() => watchPendingFollowScreen(navigation), [navigation])
 
   useEffect(() => {
-    // The launch link stays the initial URL for the whole session
+    // The launch link stays the initial URL for the whole process, reloads in place included
     if (!initialUrlChecked) {
       initialUrlChecked = true
-      void Linking.getInitialURL().then((url) => {
+      void getUnhandledLaunchLink().then((url) => {
         handleIncomingUrl(url, navigation)
       })
     }

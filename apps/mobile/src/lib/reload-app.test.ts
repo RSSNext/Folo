@@ -6,15 +6,18 @@ import { reloadApp } from "./reload-app"
 const mocks = vi.hoisted(() => ({
   reloadAppAsync: vi.fn(async () => {}),
   cancelQueries: vi.fn(async () => {}),
+  rememberHandledLaunchLink: vi.fn(async () => {}),
 }))
 
 vi.mock("expo", () => ({ reloadAppAsync: mocks.reloadAppAsync }))
 vi.mock("./query-client", () => ({ queryClient: { cancelQueries: mocks.cancelQueries } }))
+vi.mock("./launch-link", () => ({ rememberHandledLaunchLink: mocks.rememberHandledLaunchLink }))
 
 beforeEach(() => {
   vi.useFakeTimers()
   mocks.reloadAppAsync.mockClear()
   mocks.cancelQueries.mockClear()
+  mocks.rememberHandledLaunchLink.mockClear()
 })
 
 afterEach(() => {
@@ -47,6 +50,11 @@ describe("reloadApp", () => {
     await reload
     expect(mocks.reloadAppAsync).toHaveBeenCalledWith("test")
     expect(getInFlightRequestCount()).toBe(0)
+    // So the reloaded app does not open the launch link again
+    expect(mocks.rememberHandledLaunchLink).toHaveBeenCalledTimes(1)
+    expect(mocks.rememberHandledLaunchLink.mock.invocationCallOrder[0]).toBeLessThan(
+      mocks.reloadAppAsync.mock.invocationCallOrder[0]!,
+    )
   })
 
   it("still reloads after the drain timeout when a request ignores the abort", async () => {

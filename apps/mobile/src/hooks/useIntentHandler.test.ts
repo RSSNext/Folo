@@ -30,6 +30,7 @@ vi.mock("expo-linking", () => ({
 vi.mock("@follow/store/user/hooks", () => ({ invalidateUserSession: vi.fn() }))
 vi.mock("@follow/store/user/getters", () => ({ whoami: () => mocks.whoami }))
 vi.mock("../lib/navigation/hooks", () => ({ useNavigation: vi.fn() }))
+vi.mock("../lib/launch-link", () => ({ getUnhandledLaunchLink: async () => null }))
 vi.mock("../screens/(modal)/FollowScreen", () => ({ FollowScreen: () => null }))
 vi.mock("../screens/(modal)/LoginScreen", () => ({ LoginScreen: () => null }))
 
