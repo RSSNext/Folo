@@ -54,6 +54,18 @@ describe("fetchAuthSession", () => {
     ).rejects.toThrowError(new CLIError("UNAUTHORIZED", "Invalid session"))
   })
 
+  // An unknown or revoked session is answered with 200 and a null body
+  it.each([null, {}, { user: null, session: null }])(
+    "reports a session answered as %j as an unauthorized token",
+    async (body) => {
+      stubFetch(Response.json(body))
+
+      await expect(
+        fetchAuthSession({ apiUrl: "http://api.test", token: "token" }),
+      ).rejects.toThrowError(new CLIError("UNAUTHORIZED", "Token is invalid or expired."))
+    },
+  )
+
   it("does not blame the token for other failures", async () => {
     stubFetch(new Response("404 Not Found", { status: 404 }))
 

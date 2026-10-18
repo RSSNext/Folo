@@ -18,11 +18,13 @@ const run = async (...args: string[]) => {
   const requests: string[] = []
   vi.stubGlobal(
     "fetch",
-    vi.fn(async (url: string) => {
+    vi.fn(async (url: string, init?: RequestInit) => {
       requests.push(url)
       const { pathname } = new URL(url)
       if (pathname === "/better-auth/get-session") {
-        return Response.json(session)
+        const known = new Headers(init?.headers).get("authorization") === "Bearer token"
+        // Better Auth answers a token it does not know with 200 and a null body
+        return Response.json(known ? session : null)
       }
       if (pathname === "/better-auth/one-time-token/apply") {
         return Response.json({ message: "Invalid token" }, { status: 400 })
@@ -78,5 +80,31 @@ describe("an API URL with a trailing slash", () => {
     expect(stderr).toBe("")
     expect(JSON.parse(stdout)).toMatchObject({ ok: true, data: { user: session.user } })
     expect(updateConfig).toHaveBeenCalledWith({ token: "token", apiUrl: "http://api.test" })
+  })
+})
+
+describe("a token the API does not know", () => {
+  it.each([
+    [["--token", "expired", "whoami"]],
+    [["--token", "expired", "auth", "whoami"]],
+    [["login", "--token", "expired"]],
+  ])("fails `folo %s` as unauthorized", async (args) => {
+    const { stdout, stderr, exitCode } = await run(...args)
+
+    expect(stdout).toBe("")
+    expect(JSON.parse(stderr)).toEqual({
+      ok: false,
+      data: null,
+      error: { code: "UNAUTHORIZED", message: "Token is invalid or expired." },
+    })
+    expect(exitCode).toBe(1)
+    expect(updateConfig).not.toHaveBeenCalled()
+  })
+
+  it("is printed as a failure in table format", async () => {
+    const { stdout, stderr } = await run("-f", "table", "--token", "expired", "whoami")
+
+    expect(stdout).toBe("")
+    expect(stderr).toBe("[UNAUTHORIZED] Token is invalid or expired.")
   })
 })

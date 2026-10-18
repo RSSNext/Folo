@@ -12,6 +12,10 @@ const readString = (value: unknown): string | undefined => {
   return typeof value === "string" && value.length > 0 ? value : undefined
 }
 
+const isRecord = (value: unknown): value is Record<string, unknown> => {
+  return typeof value === "object" && value !== null && !Array.isArray(value)
+}
+
 export const normalizeToken = (token: string | undefined) => {
   if (!token || !token.includes("%")) {
     return token
@@ -43,8 +47,8 @@ export interface CommandContext {
 }
 
 export interface CLIAuthSession {
-  user?: Record<string, unknown>
-  session?: Record<string, unknown>
+  user: Record<string, unknown>
+  session: Record<string, unknown>
   role?: unknown
   roleEndAt?: unknown
   feedSubscriptionLimit?: unknown
@@ -103,7 +107,13 @@ export const fetchAuthSession = async ({
     )
   }
 
-  return (await response.json()) as CLIAuthSession
+  // A token the API does not know, or a session signed out elsewhere, is answered with a null body
+  const body = (await response.json().catch(() => null)) as unknown
+  if (!isRecord(body) || !isRecord(body.user) || !isRecord(body.session)) {
+    throw new CLIError("UNAUTHORIZED", "Token is invalid or expired.")
+  }
+
+  return body as unknown as CLIAuthSession
 }
 
 /**
