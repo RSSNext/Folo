@@ -17,6 +17,7 @@ export const PaidSettingCell = ({
   label,
   description,
   locked,
+  leftClassName,
   rightClassName,
   children,
 }: {
@@ -24,6 +25,7 @@ export const PaidSettingCell = ({
   description?: string
   /** Whether the user's plan lacks the setting. The control is disabled meanwhile. */
   locked: boolean
+  leftClassName?: string
   rightClassName?: string
   children: ReactNode
 }) => {
@@ -44,6 +46,7 @@ export const PaidSettingCell = ({
       label={label}
       description={description}
       labelAccessory={<PaidBadge feature={label} locked={locked} />}
+      leftClassName={leftClassName}
       rightClassName={rightClassName}
       onPress={locked ? offerUpgrade : undefined}
     >
