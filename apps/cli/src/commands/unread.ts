@@ -85,7 +85,8 @@ export const registerUnreadCommand = (program: Command) => {
 
         return {
           // A feed followed both directly and through a list counts in both rows, but its
-          // entries count once in the total, which then agrees with `unread count`
+          // entries count once in the total. It agrees with `unread count` but for the entries
+          // of inboxes, which GET /reads/total-count leaves out.
           total: countUnread(new Set(subscriptions.flatMap(getUnreadKeys))),
           items,
         }

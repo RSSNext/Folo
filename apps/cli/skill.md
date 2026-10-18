@@ -96,6 +96,7 @@ Changes the API answers without data, such as `subscription remove`, `collection
 2. List unread subscriptions:
    - `npx --yes folocli@latest unread list`
    - A list counts the unread entries of all its feeds, as the app shows it, so a feed you also follow directly counts in both rows; `total` counts each entry once.
+   - `total` also counts the unread entries of inboxes, which `unread count` leaves out.
 3. Read unread entries:
    - `npx --yes folocli@latest timeline --unread-only --limit 20`
 4. Mark read:
