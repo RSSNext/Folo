@@ -4,7 +4,7 @@ import { Image } from "expo-image"
 import { LinearGradient } from "expo-linear-gradient"
 import { memo, useMemo, useState } from "react"
 import { useTranslation } from "react-i18next"
-import { Platform, Pressable, StyleSheet, View } from "react-native"
+import { Platform, Pressable, StyleSheet, useWindowDimensions, View } from "react-native"
 import { useColor } from "react-native-uikit-colors"
 
 import { Grid } from "@/src/components/ui/grid"
@@ -18,11 +18,14 @@ import { Recommendations } from "@/src/modules/discover/Recommendations"
 import { DiscoverSettingsScreen } from "@/src/screens/(modal)/DiscoverSettingsScreen"
 import { RecommendationCategoryScreen } from "@/src/screens/(stack)/recommendation/RecommendationCategoryScreen"
 
+import { getCategoryGridColumns } from "./category-columns"
+
 export const Category = () => {
   const { t } = useTranslation("common")
   const { t: tSettings } = useTranslation("settings")
   const navigation = useNavigation()
   const label = useColor("label")
+  const columns = getCategoryGridColumns(useWindowDimensions().width)
   return (
     <>
       <View className="mt-4 flex-row items-center justify-between pb-1 pl-6 pr-5 pt-4">
@@ -45,7 +48,7 @@ export const Category = () => {
         </ItemPressable>
       </View>
 
-      <Grid columns={2} gap={12} className="p-4">
+      <Grid columns={columns} gap={12} className="p-4">
         {RSSHubCategories.map((category) => (
           <CategoryItem key={category} category={category} />
         ))}
