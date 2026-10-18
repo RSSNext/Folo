@@ -1,5 +1,5 @@
 import { useWhoami } from "@follow/store/user/hooks"
-import { userSyncService } from "@follow/store/user/store"
+import { userSyncService, UserUpdateError } from "@follow/store/user/store"
 import { useMutation } from "@tanstack/react-query"
 import { useState } from "react"
 import { useTranslation } from "react-i18next"
@@ -19,6 +19,7 @@ import {
 } from "@/src/components/ui/grouped/GroupedList"
 import { useTouchOnTypingPause } from "@/src/hooks/useTouchOnTypingPause"
 import { isValidEmail } from "@/src/lib/email"
+import { getAuthErrorMessage } from "@/src/lib/error-parser"
 import { useNavigation } from "@/src/lib/navigation/hooks"
 import type { NavigationControllerView } from "@/src/lib/navigation/types"
 import { toast } from "@/src/lib/toast"
@@ -44,7 +45,13 @@ export const EditEmailScreen: NavigationControllerView = () => {
       await userSyncService.updateEmail(email)
     },
     onError: (error) => {
-      toast.error(error instanceof Error ? error.message : t("profile.email.update_failed"))
+      toast.error(
+        error instanceof UserUpdateError
+          ? getAuthErrorMessage(error)
+          : error instanceof Error
+            ? error.message
+            : t("profile.email.update_failed"),
+      )
     },
     onSuccess: () => {
       // A verified account approves the change from its current email first
@@ -138,9 +145,11 @@ export const EditEmailScreen: NavigationControllerView = () => {
                   })
                   .catch((error) => {
                     toast.error(
-                      error instanceof Error
-                        ? error.message
-                        : t("profile.email.send_verification_failed"),
+                      error instanceof UserUpdateError
+                        ? getAuthErrorMessage(error)
+                        : error instanceof Error
+                          ? error.message
+                          : t("profile.email.send_verification_failed"),
                     )
                   })
                   .finally(() => {

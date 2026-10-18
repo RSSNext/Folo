@@ -5,6 +5,7 @@
   "auth.error.account_not_linked": "Cet email appartient à un compte Folo qui n'est pas encore vérifié. Connectez-vous-y une fois avec un lien magique sur app.folo.is (laissez le mot de passe vide), puis réessayez ce mode de connexion.",
   "auth.error.invalid_token": "Ce lien est invalide ou a expiré. Veuillez en demander un nouveau.",
   "auth.error.sign_in_failed": "Connexion impossible. Veuillez réessayer.",
+  "auth.error.too_many_requests": "Trop de requêtes. Veuillez réessayer plus tard.",
   "auth.error.two_factor_required": "Ce compte utilise l'authentification à deux facteurs. Connectez-vous avec votre mot de passe et votre code d'authentification.",
   "discover.category.all": "Populaire",
   "discover.category.anime": "Anime / Manga",

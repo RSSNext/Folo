@@ -23,7 +23,7 @@ import { AnimatedCommandButton } from "~/components/ui/button/AnimatedCommandBut
 import { CopyButton } from "~/components/ui/button/CopyButton"
 import { useCurrentModal, useModalStack } from "~/components/ui/modal/stacked/hooks"
 import { changeEmail, sendVerificationEmail } from "~/lib/auth"
-import { toastFetchError } from "~/lib/error-parser"
+import { getAuthErrorMessage, toastFetchError } from "~/lib/error-parser"
 
 const formSchema = z.object({
   email: z.string().email(),
@@ -42,7 +42,7 @@ export function EmailManagement() {
       })
       // The auth client resolves with the error instead of throwing
       if (res.error) {
-        throw new Error(res.error.message || res.error.statusText)
+        throw new Error(getAuthErrorMessage(res.error))
       }
       return res
     },
@@ -131,7 +131,7 @@ function EmailManagementForm() {
     mutationFn: async (values: z.infer<typeof formSchema>) => {
       const res = await changeEmail({ newEmail: values.email })
       if (res.error) {
-        throw new Error(res.error.message)
+        throw new Error(getAuthErrorMessage(res.error))
       }
     },
     onSuccess: () => {

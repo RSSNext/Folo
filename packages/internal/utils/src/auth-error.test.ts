@@ -1,6 +1,7 @@
 import { describe, expect, it } from "vitest"
 
 import {
+  describeAuthError,
   getAuthErrorMessageKey,
   readAuthRedirectError,
   withoutAuthRedirectError,
@@ -37,5 +38,37 @@ describe("the error a sign-in came back with", () => {
         "?cli_callback=http%3A%2F%2F127.0.0.1%3A9&error=x&error_description=y",
       ),
     ).toBe("?cli_callback=http%3A%2F%2F127.0.0.1%3A9")
+  })
+})
+
+describe("describeAuthError", () => {
+  const translate = (key: string) => `translated ${key}`
+
+  it("translates the auth server's rate limit, with or without its code", () => {
+    expect(
+      describeAuthError(
+        {
+          code: "TOO_MANY_REQUESTS",
+          message: "Too many requests. Please try again later.",
+          status: 429,
+        },
+        translate,
+      ),
+    ).toBe("translated auth.error.too_many_requests")
+    expect(describeAuthError({ status: 429, statusText: "Too Many Requests" }, translate)).toBe(
+      "translated auth.error.too_many_requests",
+    )
+  })
+
+  it("keeps what the server said about anything else", () => {
+    expect(
+      describeAuthError(
+        { code: "USER_ALREADY_EXISTS", message: "User already exists", status: 422 },
+        translate,
+      ),
+    ).toBe("User already exists")
+    expect(describeAuthError({ status: 500, statusText: "Internal Server Error" }, translate)).toBe(
+      "Internal Server Error",
+    )
   })
 })

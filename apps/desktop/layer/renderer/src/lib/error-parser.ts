@@ -1,3 +1,5 @@
+import type { AuthClientError } from "@follow/utils/auth-error"
+import { describeAuthError } from "@follow/utils/auth-error"
 import { cn } from "@follow/utils/utils"
 import { ExceptionCodeMap, FollowAPIError } from "@follow-app/client-sdk"
 import { t } from "i18next"
@@ -31,6 +33,10 @@ const getServerCode = (error: FollowAPIError) => {
   const code = Number(error.code)
   return error.code && !Number.isNaN(code) ? code : undefined
 }
+
+/** What to tell the user about an error the auth client resolved with, translated where it can */
+export const getAuthErrorMessage = (error: AuthClientError | null | undefined) =>
+  describeAuthError(error, (key) => t(key, { ns: "common" }))
 
 // i18next answers a missing key with the key without its namespace, such as "1000"
 const translateErrorCode = (code: unknown, fallback: string) => {

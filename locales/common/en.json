@@ -5,6 +5,7 @@
   "auth.error.account_not_linked": "This email belongs to a Folo account that isn't verified yet. Sign in to it once with a magic link on app.folo.is (leave the password empty), then try this sign-in method again.",
   "auth.error.invalid_token": "This link is invalid or has expired. Please request a new one.",
   "auth.error.sign_in_failed": "Couldn't sign in. Please try again.",
+  "auth.error.too_many_requests": "Too many requests. Please try again later.",
   "auth.error.two_factor_required": "This account uses two-factor authentication. Sign in with your password and authentication code.",
   "discover.category.all": "Popular",
   "discover.category.anime": "ACG",

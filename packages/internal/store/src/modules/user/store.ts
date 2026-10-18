@@ -221,7 +221,11 @@ class UserSyncService {
     if (!me?.email) return
     const res = await authClient().sendVerificationEmail({ email: me.email! })
     if (res.error) {
-      throw new Error(res.error.message || res.error.statusText)
+      throw new UserUpdateError(
+        res.error.message || res.error.statusText,
+        res.error.code,
+        res.error.status,
+      )
     }
   }
 

@@ -27,6 +27,7 @@ import { useRecaptchaToken } from "~/hooks/common"
 import { loginHandler, signUp, twoFactor } from "~/lib/auth"
 import { ipcServices } from "~/lib/client"
 import { setAuthSessionToken } from "~/lib/client-session"
+import { getAuthErrorMessage } from "~/lib/error-parser"
 import { handleSessionChanges } from "~/queries/auth"
 
 import { TOTPForm } from "../profile/two-factor"
@@ -214,7 +215,7 @@ export function LoginWithPassword({
       })
 
       if (result?.error) {
-        toast.error(result.error.message)
+        toast.error(getAuthErrorMessage(result.error))
         return
       }
 
@@ -237,7 +238,7 @@ export function LoginWithPassword({
           headers,
         })
     if (res?.error) {
-      toast.error(res.error.message)
+      toast.error(getAuthErrorMessage(res.error))
       return
     }
 
@@ -438,7 +439,7 @@ export function RegisterForm({
       })
 
       if (result?.error) {
-        toast.error(result.error.message)
+        toast.error(getAuthErrorMessage(result.error))
         return
       }
 
@@ -465,13 +466,15 @@ export function RegisterForm({
           },
           {
             onError(context) {
-              toast.error(context.error.message)
+              toast.error(getAuthErrorMessage(context.error))
             },
             headers,
           },
         )
 
     if (result?.error) {
+      // The web client's onError above already said why
+      if (IN_ELECTRON) toast.error(getAuthErrorMessage(result.error))
       return result
     }
 

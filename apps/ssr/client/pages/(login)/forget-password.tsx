@@ -18,6 +18,7 @@ import {
 } from "@follow/components/ui/form/index.jsx"
 import { Input } from "@follow/components/ui/input/index.js"
 import { env } from "@follow/shared/env.ssr"
+import { describeAuthError } from "@follow/utils/auth-error"
 import { zodResolver } from "@hookform/resolvers/zod"
 import { useMutation } from "@tanstack/react-query"
 import * as React from "react"
@@ -68,7 +69,7 @@ export function Component() {
         },
       )
       if (res.error) {
-        throw new Error(res.error.message)
+        throw new Error(describeAuthError(res.error, (key) => t(key, { ns: "common" })))
       }
     },
     onError: (error) => {

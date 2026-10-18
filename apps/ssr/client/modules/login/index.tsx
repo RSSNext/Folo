@@ -29,6 +29,7 @@ import { useIsDark } from "@follow/hooks"
 import { DEEPLINK_SCHEME } from "@follow/shared/constants"
 import {
   AUTH_SIGN_IN_FAILED_MESSAGE_KEY,
+  describeAuthError,
   getAuthErrorMessageKey,
   readAuthRedirectError,
   withoutAuthRedirectError,
@@ -392,7 +393,7 @@ function LoginWithPassword() {
       if (needTwoFactor && values.code) {
         const res = await twoFactor.verifyTotp({ code: values.code })
         if (res?.error) {
-          toast.error(res.error.message)
+          toast.error(describeAuthError(res.error, (key) => t(key, { ns: "common" })))
           setIsButtonLoading(false)
         } else {
           queryClient.invalidateQueries({ queryKey: ["auth", "session"] })
@@ -411,7 +412,7 @@ function LoginWithPassword() {
       })
 
       if (res?.error) {
-        toast.error(res.error.message)
+        toast.error(describeAuthError(res.error, (key) => t(key, { ns: "common" })))
         setIsButtonLoading(false)
         return
       }

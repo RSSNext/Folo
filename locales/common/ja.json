@@ -5,6 +5,7 @@
   "auth.error.account_not_linked": "このメールアドレスの Folo アカウントはまだ確認されていません。app.folo.is でマジックリンクを使って一度ログインしてから（パスワードは空欄のまま）、このログイン方法をもう一度お試しください。",
   "auth.error.invalid_token": "このリンクは無効か、有効期限が切れています。新しいリンクをリクエストしてください。",
   "auth.error.sign_in_failed": "ログインできませんでした。もう一度お試しください。",
+  "auth.error.too_many_requests": "リクエストが多すぎます。しばらくしてからもう一度お試しください。",
   "auth.error.two_factor_required": "このアカウントでは二要素認証が有効です。パスワードと認証コードでログインしてください。",
   "discover.category.all": "人気",
   "discover.category.anime": "アニメ・マンガ",

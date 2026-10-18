@@ -33,6 +33,7 @@ import {
   unlinkAccount,
 } from "@/src/lib/auth"
 import { Dialog } from "@/src/lib/dialog"
+import { getAuthErrorMessage } from "@/src/lib/error-parser"
 import { loading } from "@/src/lib/loading"
 import { useNavigation } from "@/src/lib/navigation/hooks"
 import { toast } from "@/src/lib/toast"
@@ -255,10 +256,15 @@ const SecuritySection = () => {
               return
             }
             if (!hasPassword) {
-              forgetPassword({
-                email,
-              })
-              toast.success(t("profile.reset_password_mail_sent"))
+              void (async () => {
+                const res = await forgetPassword({ email })
+                // The auth client resolves with the error instead of throwing
+                if (res.error) {
+                  toast.error(getAuthErrorMessage(res.error))
+                  return
+                }
+                toast.success(t("profile.reset_password_mail_sent"))
+              })()
             } else {
               navigation.pushControllerView(ResetPassword)
             }
